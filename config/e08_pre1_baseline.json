@@ -1,0 +1,51 @@
+{
+  "stage": "E08-pre1",
+  "status": "complete",
+  "note": "Design baseline only; not implemented by the current build.",
+  "resources": {
+    "qemu_ram_mib": 512,
+    "physical_memory_mib": 512,
+    "user_address_window_gib": 1,
+    "process_max_pages": 65536,
+    "tasks": 8,
+    "work_disk_mib": 2048,
+    "work_disk_format": "FAT32",
+    "long_file_names": true,
+    "directories": true
+  },
+  "file_service": {
+    "session_model": "per_task",
+    "message_bytes": 4096,
+    "file_max": "disk_free",
+    "staging": "disk",
+    "path_api": true,
+    "directory_api": true
+  },
+  "elf_loader": {
+    "mode": "streaming_segments",
+    "demand_paging": false,
+    "snapshot_lock": true
+  },
+  "process": {
+    "first": "posix_spawn+waitpid+pipe",
+    "fork": "only_if_audit_proves_needed"
+  },
+  "seed": {
+    "gcc": "16.2.0",
+    "binutils": "2.47.20260726",
+    "newlib": "4.6.0.20260123",
+    "strategy": "canadian_cross",
+    "order": ["binutils", "c_gcc", "cxx_gcc"]
+  },
+  "cpp": {
+    "frontend": true,
+    "libstdcxx": true,
+    "exceptions": true,
+    "rtti": true,
+    "tls": true,
+    "iostream": "optional",
+    "threads": false,
+    "dynamic_linking": false
+  },
+  "e08_1_gate": ">128 KiB ELF from disk; path read/write; sync; reboot persist"
+}

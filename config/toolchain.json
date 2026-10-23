@@ -1,0 +1,9 @@
+{
+  "target": "x86_64-elf",
+  "gcc": "16.2.0",
+  "binutils_release": "2.47",
+  "binutils": "2.47.20260726",
+  "nasm": "3.02",
+  "qemu": "11.1.2",
+  "cpp_standard": "c++20"
+}

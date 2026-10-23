@@ -1,0 +1,9 @@
+# Run `make debug` in another terminal first. Start LLDB from the XOS root:
+# lldb --no-lldbinit -s config/debug_kernel.lldb
+target create --arch x86_64 build/kernel.elf
+gdb-remote 127.0.0.1:1234
+breakpoint set --name kernel_main
+continue
+bt
+frame variable info regions
+register read rip rsp rdi rsi

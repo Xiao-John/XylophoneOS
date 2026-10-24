@@ -18,3 +18,7 @@
 上游 COPYING、LICENSE、GCC Runtime Library Exception、GMP/MPFR/MPC 与 Binutils/zlib 声明均按实际来源保留。newlib 含多种逐文件许可，不可由项目名推断整包许可证。本次材料收集不构成逐源文件/库归档成员法律审计，也不证明静态库成员到源文件的完整追溯；相关未完成项以仓库 `docs/licensing.md` 和 `licenses/components.json` 为准。
 
 打包器为 Apache-2.0 自研脚本 `scripts/package_release_sources.py`。运行方式：`python3 scripts/package_release_sources.py`。脚本只写此版本目录下的 `sources/`，并在原包与已锁摘要不符时终止。
+
+## 派生重链接源码补遗
+
+发布主源码归档生成后补充发现，两个实际派生 GCC Seed 的 `source/libiberty/lrealpath.c` 未进入原包 overlay：`gxx_lrealpath_v5` 与 `open_capacity_fix`。随附独立补遗 `xos-0.0.1-1024-gnu-source-supplement-gxx-lrealpath.tar.gz`，其中包含两份源文件、派生 seed manifest、父 Seed manifest、重链接脚本和对应 XOS patch。补遗 manifest 绑定主源码归档 SHA-256，并逐项记录补遗输入摘要。原始主归档保持不变。

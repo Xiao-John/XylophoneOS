@@ -18,14 +18,18 @@ work_log/0013_e08_2_runtime.md与0015_e08_3_binutils.md。新一组重新登记�
 Git origin 为 Xiao-John/XylophoneOS。0023按用户明确授权提交、推送并发布发行，
 使用本机凭据且不将凭据落盘。原日常 work_disk.img 保留，测试均使用临时专用盘。
 
-## 正在进行：0023首个正式发布
+## 0023完成：首个正式发布
 
 用户授权今天发布GitHub xiao-john/xylophoneos正式Release，版本0.0.1-1024。
 主端占用scripts/package_release.py、发布文档/README、独立build/releases/、Git提交/
 标签/Release上传；压力从端仍占用其测试/报告，不覆盖或清理其build路径，不并发
 make build。发布先复制已验证镜像/SDK到独立目录，打包验证只操作发布副本。
 GNU对应源码、许可、安装工具链映射/校验与启动说明随包提供；不得读取/纳入localpilot。
-发行包已生成，SDK C/C++宿主编译和四项新包客体验证通过，见work_log/0023_first_release.md。
+2026-10-24 23:53:21 CST正式公开Release（draft=false/prerelease=false），8项附件上传并核对远端摘要。
+标签v0.0.1-1024绑定0e541badf27a23e2928881279cff5f165de8b4c9；内核build仍为2c3876e640840ff5。
+SDK C/C++宿主编译和四项新包客体验证通过，见work_log/0023_first_release.md。
+发行回执releases/release_0_0_1_1024.json；压力从端的测试/报告未纳入本组提交，仍由其维护。
+发布工作已结束；后续修复使用新版本，不移动此标签或静默替换发行镜像。
 
 ## 0022完成：原生G++与E08功能闭环
 

@@ -27,5 +27,12 @@ packaged_native_cpp、packaged_sdk_cpp 四项，并 sync 成功。日志 build/r
 清单记录各附件，GitHub 发布地址：
 https://github.com/Xiao-John/XylophoneOS/releases/tag/v0.0.1-1024 。
 
-下一步完成附件上传、公开发行并核对远端状态；后续测试发现的问题单独登记，
+已于2026-10-24 23:53:21 CST公开，Release ID 422824554，draft=false、prerelease=false。
+8项附件的远端大小和SHA-256均与本地匹配，公开API再次读取成功，匿名下载CHECKSUMS.sha256与本地逐字节一致。源码提交
+0e541badf27a23e2928881279cff5f165de8b4c9，标签不移动。对应源码主包另配
+gxx_lrealpath_v5/open_capacity_fix派生修复补遗；校验清单覆盖两份源码材料。
+公开发行回执存releases/release_0_0_1_1024.json。活跃压力侧的e08_post5_p1.py、
+e08_post5_plan/report和e08_gcc_stress_plan留在原工作区，未误收进本次源码标签。
+
+下一步由压力侧继续测试与汇报；后续测试发现的问题单独登记，
 不要重写本次 frozen image 或移动已公开标签。

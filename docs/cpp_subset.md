@@ -26,7 +26,7 @@ GCC、libstdc++ 或用户应用按各自运行环境处理。当前使用 C++20�
 通用编译选项在 `scripts/toolchain.py` 的 `COMMON_FLAGS`。
 x86-64 专用选项单列为 `X86_FLAGS`：基线 `-march=x86-64 -mtune=generic`，
 低地址 small code model、禁 red zone、只生成通用寄存器代码。
-当前内核不使用 FP/SIMD，也没有状态保存机制；实际反汇编检查对应寄存器。
+当前内核不使用 FP/SIMD；E06 已实现用户任务 FXSAVE/FXRSTOR 保存，实际反汇编继续检查内核生成代码。
 使用 FP/SIMD 或切换任务前必须重新审计并落实保存机制。
 
 内核入口使用 System V AMD64 函数约定，调用前栈 16 字节对齐，清方向标志，
@@ -49,3 +49,10 @@ E04 提供最小 CRT、SDK 和静态 ELF 程序，尚非完整用户 C/C++ 环�
 暂使用整数寄存器配置，CR0.EM/TS 使手写 x87 触发任务异常；未来支持 FP/SIMD
 必须先实现上下文保存，不能只删编译选项。中断入口 cld 后才进入 C++，避免用户
 DF 影响内核。详见 `e04_loader_sdk.md`；这不是对未来移植应用的永久语言限制。
+
+## 用户态最新边界（0021，2026-10-24）
+
+上面的E03整数寄存器/无libc段是当时历史，不覆盖当前用户态运行环境；内核限制
+仍不变。用户态已有newlib、FP/SIMD保存、ctors/fini、静态local-exec TLS及正常
+exit的非平凡TLS析构（main return/显式exit已验）。C Seed已验收，目标G++/标准库/
+throw-catch/RTTI仍待E08-5真实gate，不能把内核禁用标志应用到移植的C++程序。

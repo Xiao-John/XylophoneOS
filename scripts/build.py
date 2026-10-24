@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT AND Apache-2.0
+# Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 """Build the BIOS x86-64 kernel and the retained real-mode exercise image."""
 
 import argparse
@@ -41,10 +43,11 @@ def main():
     versions = audit()
     if (TARGET["architecture"], TARGET["platform"], TARGET["firmware"]) != ("x86_64", "pc", "bios"):
         raise SystemExit("Only the x86_64 / PC / BIOS backend is implemented")
-    sources = [ROOT / "Makefile"]
+    sources = [ROOT / "Makefile", ROOT / "LICENSE", ROOT / "NOTICE"]
+    sources.extend(p for p in sorted((ROOT / "licenses").glob("*")) if p.is_file())
     for folder in ("src", "scripts", "tests", "config"):
         sources.extend(p for p in sorted((ROOT / folder).rglob("*"))
-                       if p.suffix in (".asm", ".inc", ".py", ".cpp", ".hpp", ".ld", ".json", ".lldb"))
+                       if p.suffix in (".asm", ".s", ".sh", ".inc", ".py", ".cpp", ".hpp", ".c", ".h", ".ld", ".json", ".lldb"))
     source_hashes = {str(p.relative_to(ROOT)): sha256(p.read_bytes()) for p in sources}
     source_digest = sha256(json.dumps(source_hashes, sort_keys=True).encode())
     build_id = source_digest[:16]

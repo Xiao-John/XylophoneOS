@@ -1,0 +1,6 @@
+0001_libiberty_xos_no_symlinks.patch
+0002_binutils_xos_no_posix_file_modes.patch
+0003_binutils_xos_no_utime.patch
+0004_ld_xos_disable_dynamic_plugins.patch
+0005_libiberty_xos_lrealpath_fallback.patch
+0006_ld_xos_reject_plugin_options.patch

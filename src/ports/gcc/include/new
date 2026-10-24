@@ -1,0 +1,23 @@
+// SPDX-License-Identifier: Apache-2.0
+#pragma once
+/* Minimal <new> for the GCC host runtime; not a target libstdc++. */
+#include <stddef.h>
+
+namespace std {
+using ::size_t;
+struct nothrow_t { explicit nothrow_t() = default; };
+extern const nothrow_t nothrow;
+}
+
+void* operator new(std::size_t size) noexcept;
+void* operator new[](std::size_t size) noexcept;
+void operator delete(void* pointer) noexcept;
+void operator delete[](void* pointer) noexcept;
+void operator delete(void* pointer, std::size_t size) noexcept;
+void operator delete[](void* pointer, std::size_t size) noexcept;
+void* operator new(std::size_t size, const std::nothrow_t&) noexcept;
+void* operator new(std::size_t size, void* where) noexcept;
+void operator delete(void* pointer, void* where) noexcept;
+void* operator new[](std::size_t size, const std::nothrow_t&) noexcept;
+void operator delete(void* pointer, const std::nothrow_t&) noexcept;
+void operator delete[](void* pointer, const std::nothrow_t&) noexcept;

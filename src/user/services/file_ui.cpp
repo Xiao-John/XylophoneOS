@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT AND Apache-2.0
+// Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/file_ui.hpp>
 #include <xos/file_client.hpp>
 #include <xos/sdk.hpp>
@@ -8,7 +10,7 @@ using namespace xos;
 using namespace xos::sdk;
 
 file::Client client;
-u8 image_buffer[file::max_file_bytes];
+u8 image_buffer[24576];
 u8 editor_buffer[8192];
 u32 editor_length;
 
@@ -168,23 +170,49 @@ bool available() {
     return client.ping() == 0;
 }
 
-void list() {
+void list(const char* path) {
     file::entry entries[8]{};
-    u32 count = 0;
-    const i64 result = client.list(entries, 8, count);
-    if (result != 0) { error_line("list", result); return; }
-    for (u32 i = 0; i < count; ++i) {
-        print(entries[i].name); print(" size="); decimal(entries[i].size);
-        print(" version="); decimal(entries[i].version); print("\n");
-    }
+    u32 cursor = 0;
+    do {
+        u32 count = 0;
+        const i64 result = client.list(path, entries, 8, count, cursor);
+        if (result != 0) { error_line("list", result); return; }
+        for (u32 i = 0; i < count; ++i) {
+            print(entries[i].name); if (entries[i].directory) { print("/"); }
+            print(" size="); decimal(entries[i].size);
+            print(" version="); decimal(entries[i].version); print("\n");
+        }
+    } while (cursor != 0);
+}
+
+void make_directory(const char* path) {
+    const i64 result = client.mkdir(path);
+    if (result != 0) { error_line("mkdir", result); return; }
+    print("[files] directory created "); print(path); print("\n");
+}
+
+void rename_file(const char* old_path, const char* new_path) {
+    const i64 result = client.rename(old_path, new_path);
+    if (result != 0) { error_line("rename", result); return; }
+    print("[files] renamed "); print(new_path); print("\n");
 }
 
 void cat(const char* name) {
-    u32 length = 0;
-    const i64 result = client.read_all(name, image_buffer, sizeof(image_buffer), length);
+    u32 handle = 0, size = 0, version = 0;
+    i64 result = client.open(name, file::read_only, handle, size, version);
     if (result != 0) { error_line("cat", result); return; }
-    print_bytes(image_buffer, length);
-    if (length > 0 && image_buffer[length - 1] != '\n') { print("\n"); }
+    bool any = false;
+    u8 last = 0;
+    for (;;) {
+        result = client.read(handle, image_buffer, 512);
+        if (result <= 0) { break; }
+        print_bytes(image_buffer, static_cast<u32>(result));
+        last = image_buffer[static_cast<u32>(result) - 1];
+        any = true;
+    }
+    const i64 closed = client.close(handle);
+    if (result < 0 || closed < 0) { error_line("cat", result < 0 ? result : closed); return; }
+    if (any && last != '\n') { print("\n"); }
 }
 
 void stat(const char* name) {
@@ -239,6 +267,9 @@ void filetest() {
     char short_read[10]{};
     if (client.read(h1, short_read, 10) != 5) { print("[filetest] failed stage=1h\n"); return; }
     if (client.read(h1, short_read, 10) != 0) { print("[filetest] failed stage=1i\n"); return; }
+    if (client.seek(h1, 99) != 5 || client.read(h1, short_read, 1) != 0) {
+        print("[filetest] failed stage=seek_eof\n"); return;
+    }
     if (client.close(h1) != 0 || client.close(h2) != 0) { print("[filetest] failed stage=1j\n"); return; }
     ok = ok && client.open("t1", file::read_write, h1, size, version) == 0;
     ok = ok && client.seek(h1, 5) == 5;
@@ -250,22 +281,18 @@ void filetest() {
     ok = ok && client.read_all("t1", image_buffer, sizeof(image_buffer), length) == 0 &&
          length == 7 && image_buffer[0] == 'a' && image_buffer[5] == 'X';
     if (!ok) { print("[filetest] failed stage=3\n"); return; }
-    ok = ok && client.begin_replace("t1", file::max_file_bytes + 1) ==
-                   static_cast<i64>(file::status::no_space);
+    // Active readers lock replacement; rejected commit must preserve the file.
+    ok = ok && client.open("t1", file::read_only, h1, size, version) == 0;
+    ok = ok && client.replace("t1", "bad", 3) < 0;
+    ok = ok && client.close(h1) == 0;
     ok = ok && client.stat("t1", size, version) == 0 && size == 7;
     if (!ok) { print("[filetest] failed stage=4\n"); return; }
-    ok = ok && client.open("t1", file::read_write, h1, size, version) == 0;
-    ok = ok && client.seek(h1, file::max_file_bytes - 2) == file::max_file_bytes - 2;
-    ok = ok && client.write(h1, "0123456789", 10) == 2;
-    ok = ok && client.close(h1) == 0;
-    ok = ok && client.stat("t1", size, version) == 0 && size == file::max_file_bytes;
-    if (!ok) { print("[filetest] failed stage=5\n"); return; }
     char ignored = 0;
     ok = ok && client.read(99, &ignored, 1) < 0;
     ok = ok && client.remove("t1") == 0;
     if (!ok) { print("[filetest] failed stage=6\n"); return; }
     print(ok ? "[filetest] result=pass short=read/eof handles=independent "
-               "capacity=preserved partial=write invalid=rejected\n"
+               "locked=preserved write=actual invalid=rejected\n"
              : "[filetest] result=FAILED\n");
 }
 }

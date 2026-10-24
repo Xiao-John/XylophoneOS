@@ -1,0 +1,18 @@
+# XOS additions: Apache-2.0. Upstream context retains libiberty/unlink-if-ordinary.c's GPL-2.0-or-later notice and special exception verbatim (GNU Binutils 2.47, lines 19-23).
+# SPDX-License-Identifier: GPL-2.0-or-later AND Apache-2.0
+--- a/libiberty/unlink-if-ordinary.c
++++ b/libiberty/unlink-if-ordinary.c
+@@ -51,5 +51,13 @@
+ #include "libiberty.h"
+ 
++/* XOS does not implement symbolic links or lstat.  Keep this helper's
++   ordinary-file check on stat and do not classify any file as a symlink.  */
++#ifdef XOS_NO_SYMLINKS
++#undef S_ISLNK
++#define S_ISLNK(m) 0
++#define lstat stat
++#endif
++
+ #ifndef S_ISLNK
+ #ifdef S_IFLNK
+ #define S_ISLNK(m) (((m) & S_IFMT) == S_IFLNK)

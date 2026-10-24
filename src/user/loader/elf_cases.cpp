@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT AND Apache-2.0
+// Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/elf.hpp>
 
 namespace xos::elf {
@@ -50,7 +52,7 @@ u32 self_check(u16 machine) {
             put(120 + 16, process_user_begin + 16, 8); put(120 + 8, 8192 + 16, 8);
             put(64 + 40, 16, 8); put(120 + 40, 16, 8); expected = error::overlap; break;
         case 20: put(64 + 16, process_image_end, 8); expected = error::bounds; break;
-        case 21: put(64 + 40, 64 * 4096, 8); expected = error::too_large; break;
+        case 21: put(64 + 40, u64{process_max_pages - process_reserved_pages + 1} * 4096, 8); expected = error::too_large; break;
         case 22: size = 63; expected = error::header; break;
         case 23: put(64, 0, 4); put(120, 0, 4); expected = error::entry; break;
         default: break;

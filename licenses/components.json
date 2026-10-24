@@ -1,0 +1,193 @@
+{
+  "self_authored_new": "Apache-2.0",
+  "historical_self_authored": "MIT",
+  "legacy_inventory": "legacy_mit_files.json",
+  "components": [
+    {
+      "name": "FatFs",
+      "version": "R0.16 w/patch 2",
+      "path": "src/third_party/fatfs",
+      "source": "https://github.com/abbrev/fatfs",
+      "license": "LicenseRef-FatFs",
+      "notices": [
+        "licenses/fatfs.txt",
+        "src/third_party/fatfs/ff.c",
+        "src/third_party/fatfs/ff.h"
+      ],
+      "used_in": [
+        "files task",
+        "offline installer"
+      ],
+      "modifications": "ff_string/configuration and FILINFO SFN directory-entry sector/offset identity extension; preserve upstream notice; details in src/third_party/fatfs/README.md",
+      "artifact_sha256": {
+        "src/third_party/fatfs/ff.c": "22610a39c37d1db311a9428e1c618768ce299537a42881da9cdba8f1d0dda8b0",
+        "licenses/fatfs.txt": "5e865b99f0a4800b699d356a20887741c49681d36f712ba9cd0c2c65dea89f7c",
+        "src/third_party/fatfs/ff.h": "765af966a517fc5dbb2217cb9788d6b7005b35630652a2aa221907dbe66c13a5"
+      }
+    },
+    {
+      "name": "newlib",
+      "version": "4.6.0.20260123",
+      "path": "src/third_party/newlib",
+      "source": "https://sourceware.org/pub/newlib/newlib-4.6.0.20260123.tar.gz",
+      "license": "per-component; see COPYING.NEWLIB and source-file notices",
+      "notices": [
+        "src/third_party/newlib/COPYING.NEWLIB"
+      ],
+      "used_in": [
+        "SDK libc.a/libm.a/headers",
+        "libc_hello"
+      ],
+      "target": "x86_64-elf",
+      "archive_member_license_audit": "not_completed; COPYING.NEWLIB sections 21/22 label LGPL Linux-only components",
+      "artifact_sha256": {
+        "src/third_party/newlib/COPYING.NEWLIB": "f3afe48e4bc6ed8466a42e9dacb6be1d8f9cbf5aac15cb8e474a5ccde8b40ef6",
+        "src/third_party/newlib/x86_64-elf/lib/libc.a": "283fa07ad205c80af92e955a91da027435d8a8a90cb7e27933f57925cc5baa22",
+        "src/third_party/newlib/x86_64-elf/lib/libm.a": "4cfdd6324f6776d025923ee369fad51236a9ee5730c8143a6b3b03b963eefd80"
+      }
+    },
+    {
+      "name": "GCC/Binutils/NASM/QEMU",
+      "path": "external installed tools",
+      "used_in": [
+        "host build/test only"
+      ],
+      "distributed_by_current_sdk": false,
+      "future_action": "Before Seed or libgcc/libstdc++ distribution record actual GPL/LGPL/runtime exception and source obligations; do not infer from executable linkage"
+    },
+    {
+      "name": "GNU Binutils Seed",
+      "version": "2.47",
+      "path": "src/ports/binutils",
+      "source": "https://ftp.gnu.org/gnu/binutils/binutils-2.47.tar.xz",
+      "source_archive_sha256": "154ab23b60070e8f27013c22977f1129425d67d1e8acd6e13010e617811e4cff",
+      "license": "per-component GNU terms; executable tools GPL-3.0-or-later; retain upstream notices and exceptions",
+      "notices": [
+        "src/ports/binutils/upstream/COPYING",
+        "src/ports/binutils/upstream/COPYING.LIB",
+        "src/ports/binutils/upstream/COPYING3",
+        "src/ports/binutils/upstream/COPYING3.LIB"
+      ],
+      "artifact_sha256": {
+        "src/ports/binutils/upstream/COPYING": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c",
+        "src/ports/binutils/upstream/COPYING.LIB": "56bdea73b6145ef6ac5259b3da390b981d840c24cb03b8e1cbc678de7ecfa18d",
+        "src/ports/binutils/upstream/COPYING3": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+        "src/ports/binutils/upstream/COPYING3.LIB": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c"
+      },
+      "used_in": [
+        "XOS-hosted static Seed on explicit test work disk"
+      ],
+      "modifications": "XOS port patches/config and exact source/build/SDK provenance retained by scripts/build_binutils.py",
+      "distribution_status": "local_only; public_release_and_corresponding_source_bundle_review_not_completed"
+    },
+    {
+      "name": "bundled zlib",
+      "version": "1.3.1",
+      "path": "GNU Binutils 2.47 source archive zlib/",
+      "source_archive_sha256": "154ab23b60070e8f27013c22977f1129425d67d1e8acd6e13010e617811e4cff",
+      "license": "Zlib",
+      "notices": [
+        "src/ports/binutils/upstream/zlib-LICENSE"
+      ],
+      "artifact_sha256": {
+        "src/ports/binutils/upstream/zlib-LICENSE": "845efc77857d485d91fb3e0b884aaa929368c717ae8186b66fe1ed2495753243"
+      },
+      "used_in": [
+        "statically linked into GNU Binutils Seed; no external zlib dependency"
+      ]
+    },
+    {
+      "name": "GNU GCC Seed and compiler host C++ runtime",
+      "version": "16.2.0",
+      "path": "src/ports/gcc",
+      "source": "https://ftpmirror.gnu.org/gnu/gcc/gcc-16.2.0/gcc-16.2.0.tar.xz",
+      "license": "GPL-3.0-or-later; library components retain per-file terms and applicable GCC Runtime Library Exception",
+      "notices": [
+        "src/ports/gcc/upstream/GCC-COPYING",
+        "src/ports/gcc/upstream/GCC-COPYING.RUNTIME",
+        "src/ports/gcc/upstream/GCC-COPYING3",
+        "src/ports/gcc/upstream/GCC-COPYING3.LIB"
+      ],
+      "artifact_sha256": {
+        "src/ports/gcc/upstream/GCC-COPYING": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c",
+        "src/ports/gcc/upstream/GCC-COPYING.RUNTIME": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74",
+        "src/ports/gcc/upstream/GCC-COPYING3": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+        "src/ports/gcc/upstream/GCC-COPYING3.LIB": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c"
+      },
+      "used_in": [
+        "XOS-hosted static GCC/G++ Seed compiler host closure",
+        "target application static libstdc++/libsupc++ and GNU libgcc; E08-5 facilities tested separately"
+      ],
+      "modifications": "Source lock, port patches and original/derived Seed manifests retain build and static link provenance. Patch 0007 repairs lrealpath fallback. Target runtime keeps exceptions/RTTI and uses SDK-provided TLS exit entry; independently derived libraries remove GNU fallback member with _GLIBCXX_HAVE___CXA_THREAD_ATEXIT=1. Original/derived manifests bind inputs separately.",
+      "distribution_status": "local_only; corresponding_source_bundle_and_member_license_review_not_completed",
+      "source_archive_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+      "target_runtime_source_manifest": "src/ports/gcc/e08_5_target_runtime_manifest.json",
+      "frontend_source_manifest": "src/ports/gcc/e08_5_gxx_manifest.json"
+    },
+    {
+      "name": "GMP",
+      "version": "6.3.0",
+      "path": "src/ports/gcc",
+      "source": "https://ftpmirror.gnu.org/gmp/gmp-6.3.0.tar.bz2",
+      "license": "Per-component GNU terms; retain COPYING and LGPL/GPL alternatives",
+      "notices": [
+        "src/ports/gcc/upstream/GMP-COPYING",
+        "src/ports/gcc/upstream/GMP-COPYING.LESSERv3",
+        "src/ports/gcc/upstream/GMP-COPYINGv2",
+        "src/ports/gcc/upstream/GMP-COPYINGv3"
+      ],
+      "artifact_sha256": {
+        "src/ports/gcc/upstream/GMP-COPYING": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+        "src/ports/gcc/upstream/GMP-COPYING.LESSERv3": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c",
+        "src/ports/gcc/upstream/GMP-COPYINGv2": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+        "src/ports/gcc/upstream/GMP-COPYINGv3": "e6037104443f9a7829b2aa7c5370d0789a7bda3ca65a0b904cdc0c2e285d9195"
+      },
+      "used_in": [
+        "XOS-hosted static GCC C Seed; compiler host closure only, not accepted E08-5 target runtime"
+      ],
+      "modifications": "Source lock, port patches and original/derived Seed manifests retain build and static link provenance. Patch 0007 repairs lrealpath fallback.",
+      "distribution_status": "local_only; corresponding_source_bundle_and_member_license_review_not_completed",
+      "source_archive_sha512": "3b684c9bcb9ede2b7e54d0ba4c9764bfa17c20d4f3000017c553b6f1e135b536949580ff37341680c25dc236cfe0ba1db8cfdfe619ce013656189ef0871b89f8"
+    },
+    {
+      "name": "MPFR",
+      "version": "4.2.2",
+      "path": "src/ports/gcc",
+      "source": "https://ftpmirror.gnu.org/mpfr/mpfr-4.2.2.tar.bz2",
+      "license": "LGPL-3.0-or-later; retain source notices",
+      "notices": [
+        "src/ports/gcc/upstream/MPFR-COPYING",
+        "src/ports/gcc/upstream/MPFR-COPYING.LESSER"
+      ],
+      "artifact_sha256": {
+        "src/ports/gcc/upstream/MPFR-COPYING": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+        "src/ports/gcc/upstream/MPFR-COPYING.LESSER": "e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118"
+      },
+      "used_in": [
+        "XOS-hosted static GCC C Seed; compiler host closure only, not accepted E08-5 target runtime"
+      ],
+      "modifications": "Source lock, port patches and original/derived Seed manifests retain build and static link provenance. Patch 0007 repairs lrealpath fallback.",
+      "distribution_status": "local_only; corresponding_source_bundle_and_member_license_review_not_completed",
+      "source_archive_sha512": "0176e50808dcc07afbf5bc3e38bf9b7b21918e5f194aa0bfd860d99b00c470630aef149776c4be814a61c44269c3a5b9a4b0b1c0fcd4c9feb1459d8466452da8"
+    },
+    {
+      "name": "MPC",
+      "version": "1.3.1",
+      "path": "src/ports/gcc",
+      "source": "https://ftpmirror.gnu.org/mpc/mpc-1.3.1.tar.gz",
+      "license": "LGPL-3.0-or-later; retain source notices",
+      "notices": [
+        "src/ports/gcc/upstream/MPC-COPYING.LESSER"
+      ],
+      "artifact_sha256": {
+        "src/ports/gcc/upstream/MPC-COPYING.LESSER": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+      },
+      "used_in": [
+        "XOS-hosted static GCC C Seed; compiler host closure only, not accepted E08-5 target runtime"
+      ],
+      "modifications": "Source lock, port patches and original/derived Seed manifests retain build and static link provenance. Patch 0007 repairs lrealpath fallback.",
+      "distribution_status": "local_only; corresponding_source_bundle_and_member_license_review_not_completed",
+      "source_archive_sha512": "4bab4ef6076f8c5dfdc99d810b51108ced61ea2942ba0c1c932d624360a5473df20d32b300fc76f2ba4aa2a97e1f275c9fd494a1ba9f07c4cb2ad7ceaeb1ae97"
+    }
+  ]
+}

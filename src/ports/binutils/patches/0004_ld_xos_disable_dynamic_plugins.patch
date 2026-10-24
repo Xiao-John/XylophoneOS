@@ -1,0 +1,58 @@
+# XOS additions: Apache-2.0; upstream context retains GPL-3.0-or-later.
+# SPDX-License-Identifier: GPL-3.0-or-later AND Apache-2.0
+--- a/ld/plugin.c
++++ b/ld/plugin.c
+@@ -243,6 +243,9 @@
+ void
+ plugin_opt_plugin (const char *plugin)
+ {
++#ifdef XOS_NO_DLOPEN
++  fatal (_("%P: plugin '%s' unsupported: XOS disables dynamic plugins\n"), plugin);
++#else
+   plugin_t *newplug;
+   plugin_t *curplug = plugins_list;
+ 
+@@ -272,6 +275,7 @@
+   /* Record it as current plugin for receiving args.  */
+   last_plugin = newplug;
+   last_plugin_args_tail_chain_ptr = &newplug->args;
++#endif
+ }
+ 
+ /* Accumulate option arguments for last-loaded plugin, or return
+@@ -1103,6 +1107,9 @@
+ void
+ plugin_load_plugins (void)
+ {
++#ifdef XOS_NO_DLOPEN
++  return;
++#else
+   struct ld_plugin_tv *my_tv;
+   unsigned int max_args = 0;
+   plugin_t *curplug = plugins_list;
+@@ -1162,6 +1169,7 @@
+ #if HAVE_MMAP && HAVE_GETPAGESIZE
+   plugin_pagesize = getpagesize ();
+ #endif
++#endif
+ }
+ 
+ /* Call 'claim file' hook for all plugins.  */
+@@ -1391,6 +1399,9 @@
+ void
+ plugin_call_cleanup (void)
+ {
++#ifdef XOS_NO_DLOPEN
++  return;
++#else
+   plugin_t *curplug = plugins_list;
+   while (curplug)
+     {
+@@ -1411,6 +1422,7 @@
+ 	}
+       curplug = curplug->next;
+     }
++#endif
+ }
+ 
+ /* To determine which symbols should be resolved LDPR_PREVAILING_DEF

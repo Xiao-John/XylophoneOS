@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT AND Apache-2.0
+# Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 """E05: RAM file service, editor, file errors, and loader-from-file."""
 import hashlib
 import json
@@ -58,16 +60,16 @@ def main():
             command(guest, f"kill {pid}", b"kill: accepted")
         pump(guest, 0.3)
 
-        listing = command(guest, "ls", b"HELLO.ELF")
-        if not re.search(rb"HELLO\.ELF size=\d+ version=\d+", listing):
+        listing = command(guest, "ls", b"hello.elf")
+        if not re.search(rb"hello\.elf size=\d+ version=\d+", listing):
             raise AssertionError("file list lacks hello.elf metadata")
         checks.append("file_service_boot_and_list")
 
         check = command(guest, "filetest", b"[filetest] result=pass")
-        for marker in (b"short=read/eof", b"handles=independent", b"capacity=preserved", b"partial=write"):
+        for marker in (b"short=read/eof", b"handles=independent", b"locked=preserved", b"write=actual"):
             if marker not in check:
                 raise AssertionError(f"filetest missing {marker!r}")
-        checks.append("short_read_eof_independent_handles_capacity_and_invalid_reject")
+        checks.append("short_read_eof_independent_handles_lock_and_invalid_reject")
 
         start = len(guest.output)
         send_bytes(guest, b"edit note.txt\r")
@@ -106,7 +108,7 @@ def main():
         checks.append("file_errors_are_real_and_named")
 
         command(guest, "rm note.txt", b"removed note.txt")
-        listing = command(guest, "ls", b"HELLO.ELF")
+        listing = command(guest, "ls", b"hello.elf")
         if b"note.txt" in listing:
             raise AssertionError("removed file still listed")
         checks.append("remove_updates_namespace")

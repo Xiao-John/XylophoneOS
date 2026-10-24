@@ -1,0 +1,10 @@
+--- a/libcpp/include/line-map.h
++++ b/libcpp/include/line-map.h
+@@ -22,7 +22,6 @@
+ #ifndef LIBCPP_LINE_MAP_H
+ #define LIBCPP_LINE_MAP_H
+ 
+-#include <utility>
+ 
+ #ifndef GTY
+ #define GTY(x) /* nothing */

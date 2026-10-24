@@ -1,10 +1,12 @@
+// SPDX-License-Identifier: MIT AND Apache-2.0
+// Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #pragma once
 #include <xos/boot_info.hpp>
 
 namespace xos {
 inline constexpr u64 page_size = 4096;
-// Bootstrap cap: bitmap and identity direct map both assume this window.
-inline constexpr u64 max_managed_phys = 128ull * 1024 * 1024;
+// Bootstrap cap: paging_init maps this entire identity window.
+inline constexpr u64 max_managed_phys = 512ull * 1024 * 1024;
 
 enum class memory_result : u8 {
     none,
@@ -51,6 +53,7 @@ const char* memory_result_name(memory_result result);
 // active; it is used to populate a task before its first switch.
 memory_result map_page_in(u64 address_space, u64 virtual_address, u64 physical,
                           page_permissions permissions);
+memory_result unmap_page_in(u64 address_space, u64 virtual_address, u64* physical);
 memory_result query_page_in(u64 address_space, u64 virtual_address, u64* physical,
                             page_permissions* permissions);
 }

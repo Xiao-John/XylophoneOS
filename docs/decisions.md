@@ -211,3 +211,111 @@
   string、异常、RTTI、TLS；iostream 可选；线程/动态链接不在范围。
 - 这些是规划基线，尚未实现；E08-1 第一 gate 是 >128 KiB ELF 从盘上装载、
   按路径读写、sync 后重启保留。若实测推翻基线，必须更新决定记录。
+
+## 2026-10-23：未来图形接口优先 SDL 兼容
+
+历史决定：优先级已由下文2026-10-24 Qt主线决定调整。
+
+用户确认未来图形化 API 优先按 SDL 兼容方向实现，已有另一项目研究基于 SDL 兼容的 GUI 库。
+实现时保留 XOS 窄显示/输入机制与用户态 SDL 适配边界；SDL 版本与兼容子集在图形阶段
+根据对接库实际需求确定。当前没有 SDL/GUI 实现，不增加 E08 前置任务。
+
+## 2026-10-24：新自研代码 Apache-2.0，许可证材料随 SDK 导出
+
+用户要求新代码使用 APL-2.0，本项目按 Apache License 2.0 / SPDX Apache-2.0 落实。
+历史 MIT 基线保留原许可及文件清单；第三方保留原条款，不统一改标。newlib 是多来源
+组件集合，COPYING.NEWLIB 的 LGPL 第21/22节带 Linux target 限定，不能将整个 newlib
+说成 LGPL；当前预构建 .a 的逐成员许可证追溯尚未完成。政策在 licensing.md，
+组件表在 licenses/components.json；构建导出声明并记哈希，license-audit 只验证材料。
+
+## 2026-10-24：0012 完成 E08-1 存储与会话 gate
+
+- 512 MiB 物理窗口/65536 用户页与2 GiB FAT32 基线落地，512 MiB/2 GiB 测量支持继续
+  保留流式读取+预载；这不证明真实 GCC Seed 尺寸/峰值。原日常 FAT16 盘不迁移覆盖。
+- 内核 PID 绑定的每任务文件会话、单调不复用端点 token；生命周期清理；文件服务v2
+  路径/目录/ASCII LFN、磁盘 staging。全局一笔保存 busy，不允许另一活客户端抢占。
+- 持有只读打开锁后校验/逐页读取 ELF，失败关闭/abort；原128KiB仅限制启动模块。
+- 74组验证、双容量双启动、256KiB逐字节回读、65536页回收通过；E08未整体完成。
+  下一步E08-2，未进入binutils/GCC；限制与证据见0012及e08_storage_and_sessions.md。
+
+## 2026-10-24：E08-2 受限工具运行时
+
+保留用户态ELF策略与内核窄机制边界；startup v1前缀兼容，v2承载env/cwd与stdio。
+64项argv/每串255字节，4页startup、32页可用栈与guard；堆区独立保留，sys29真实
+按页分配与缩回。构造权由supervisor通过sys28显式授予直接子任务，不继承。
+pipe有界、引用计数管理；libc暂保留EAGAIN，不承诺任意阻塞流水线或完整POSIX。
+文件适配按真实FatFs能力实现；复用newlib mkstemp而非重复定义。无墙钟/符号链接/
+POSIX mode，明确失败或在GNU移植边界记录可选行为限制，不造成功stub。
+首次受限gate与实际问题见0013/0015；不据此提前标原生binutils/GCC完成。
+
+## 2026-10-24：E08-3 真正GNU工具通过客体验收
+
+GNU Binutils 2.47 Canadian cross的as/ld/ar/ranlib/strip在XOS内产出目标文件、
+归档索引和可执行ELF，strip后及sync重启后均执行退出42；E08-3受限gate通过。
+实际构建、输入哈希、错误过程和最终证据以state/0015为准，不将此扩大为GCC/G++完成。
+
+编译器能生成TLS不代表XOS支持TLS，所有递归configure共享真实cache并关闭TLS；
+Seed静态检查拒绝TLS/动态链接。无dlfcn时CLI显式拒绝动态插件；修复上游无realpath
+路径漏返回值，保留same-file保护。FatFs以真实SFN位置映射有界16位inode，
+不以碰撞hash或跳过GNU检查掩盖身份缺项。Qt评估仅供下一轮讨论，不改变E08-4顺序。
+
+## 2026-10-24：Qt 为 GUI 主线，分阶段移植与验收
+
+用户确认Qt为GUI主线、SDL为次选，并要求写入plan、扩展阶段与验收。
+xos_plan.md v0.5新增E13–E20与G01–G10，分别覆盖运行基底、显示输入、QtCore、
+QtGui/QPA、Widgets、无界面QML、软件Quick和集成交付；QML不依赖Widgets。
+Qt版本/feature、线程方案与资源预算尚未冻结，按实际模块需求验证，不造成功stub。
+首轮允许交叉构建及宿主生成器；原生构建Qt应用和重建Qt本体单独验收。
+Qt平台适配在用户态，对接XOS窄服务，不以SDL、UEFI、GPU或编译器自举为首窗前置。
+本轮仅更新文档，GUI gate全部not_run；下一开发阶段仍E08-4。
+
+## 2026-10-24：E08-4/5 运行基底与 host C++ 闭包
+
+0019已验证POSIX C++ CRT（含当前交叉GCC使用的legacy ctors）、正常退出析构与
+静态.eh_frame注册；复用实际GNU libgcc.a展开器，真实回溯通过，不另造unwind。
+静态TLS在用户态ELF/ISA后端装载，AMD64 variant II，内核arch仅切换FS base；
+sys35限制owned building子任务、映射/RW/arena，失败回滚。模板1MiB、align64KiB
+为当前有界子集，无动态TLS/线程。普通文件X_OK复用ELF校验，不虚构FAT执行位。
+
+从端GCC本体<algorithm>失败证明C Seed也需要host C++头/运行库。由同GCC版本
+源码构建真实静态libstdc++/libsupc++作为工具自身的依赖闭包，仍归从端构建范围；
+主端交不可变SDK/ABI并处理真实运行缺项，不扩大临时new/delete shim成伪STL。
+host闭包可先完成，不等同target应用的E08-5；目标异常/RTTI/TLS基线不降级。
+本次8组运行基底功能与12例解析通过不替代C/C++ Seed gate，后续压力由专人负责。
+
+## 2026-10-24：0020 C Seed集成采用独立派生与直接GNU ld
+
+从端交付原始C Seed后，实际gcc --version暴露libiberty无realpath分支漏返回值，
+主端新增0007补丁，在独立目录只编译lrealpath并重放三条已记录最终链接；原始
+Seed/manifest保留。当前profile显式使用真正GNU ld，XOS CRT负责构造/frame，
+不为未使用collect2扩大子任务构造权，也不把未重链接的collect2列为已验收。
+
+真实cc1读源码要求O_NOCTTY；文件打开本来不获取控制终端，libc接受该标志。
+当前newlib不暴露O_BINARY，GCC将其定义为0，无需虚构公开标志。实际链接再暴露
+8-open会话上限低于BFD至少10项缓存；据调用链将每会话调至16、FatFs全局锁32，
+保留配额、真实失败和退出清理。文件消息ABI布局不变，限额不是完整POSIX承诺。
+工具默认as安装为显式字节相同别名，sysroot/搜索/specs绑定安装白名单，无宿主代编。
+
+提前准备C++ ABI探针，但host工具闭包的-fno-exceptions/-fno-rtti不能替代target
+应用运行库；manifest不就绪时直接not_ready，不构建/启动客体假报通过。
+
+## 2026-10-24：0021正常exit先清理单线程TLS
+
+真实GCC对象需要__cxa_thread_atexit；XOS按静态单映像、每进程一个用户线程提供
+私有LIFO注册列表，不为无动态模块增加DSO卸载，也不推导多线程支持。仅main返回
+前挂钩会漏掉显式exit，因此用强exit统一TLS析构与真实newlib退出处理/stdio/_exit。
+正常两路径及析构时新增TLS注册已在客体通过；递归exit按异常路径直接_exit，
+kill/_exit不保证析构。此用户库补缺发SDK v5，旧SDK/工具输入分别保留；新应用
+sysroot可显式选v5，工具自身旧SDK通过原manifest与tool_runtime_sdks分别记录。
+E08-6 C编辑持久化证据可提前收集，单语言部分通过不替代E08-5/E08整体结论。
+
+## 2026-10-24：0022 GNU目标TLS配置与E08受限功能收口
+
+目标库原配置含GNU atexit_thread回退，实际链接与SDK v5重复定义；按GNU已有
+_GLIBCXX_HAVE___CXA_THREAD_ATEXIT=1配置派生头与归档，libc负责真实TLS退出，
+原始A/B不修改，保留完整hash与工具命令。新g++同样暴露lrealpath漏返回，复用
+0007补丁、仅重放两条真实最终链接，不完整重建GNU。collect2仍未验收，直接GNU ld。
+六项ABI、原生G++设施与C++编辑重启通过，合并先前C增量判定E08当前受限功能
+范围完成，O11/O12/O13按静态配置通过。原始单语言partial报告不改标，由主端
+综合报告记录合并判断及版本差异，不冒称同一最终版本的全量旧回归或压力全绿。
+下一阶段E09交付/试用尚未开始；压力、完整标准库/线程、系统重建和自举另验。

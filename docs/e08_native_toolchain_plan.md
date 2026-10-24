@@ -1,6 +1,6 @@
 # E08 分阶段计划：原生 GCC/G++
 
-状态：**E08-0 审计、E08-pre1 设计均完成；E08-1 未开始**。审计见
+状态：**E08-0 审计、E08-pre1 设计均完成；E08-1 受限实现完成（见 0012）**。审计见
 `e08_stage0_audit.md`，pre1 基线见 `e08_pre1_design.md` 与
 `config/e08_pre1_baseline.json`。E06 的 newlib、E07 的 FAT16 工作盘、E04 的
 用户态 ELF 装载是输入，但还不足以直接搬 GCC。以下阶段各有停点；未过 gate
@@ -67,10 +67,17 @@
 
 - 先让 `as`/`ld` 在 XOS 内运行和产出正确目标文件；`ar`/`ranlib`/`strip`
   随后。它们比 GCC 小，能先验证文件、进程和链接器路径。
+- E08-3 gate 已通过；本阶段压力测试计划见 `e08_3_stress_plan.md`，实际结果见压力报告及0017修复追记；
+  后续压力由专人负责，不在本轮重复。
 - 保持宿主交叉工具只用于生成 Seed，不在宿主代执行 XOS 程序。
 - Gate：XOS 内汇编、链接、静态库、strip 的实际产物能在 XOS 执行。
 
 ### E08-4/E08-5：C Seed，再 C++ Seed
+
+执行分工见[e08_4_5_coordination.md](e08_4_5_coordination.md)及其中两份prompt。
+主agent负责运行基底/ABI/集成/最终gate，另一agent负责统一GCC构建闭包；
+Luna在主agent管理下承担边界明确的子任务。配置准备可并行，正式C/C++ gate按序。
+E08-5异常/RTTI/TLS沿pre1已定基线执行；子集成功不能替代完整阶段结论。
 
 - C Seed 先单文件、再 `-c`/多文件/静态库/错误诊断；搜索路径不得混入宿主库。
 - C++ 单独决策：是否必须异常/RTTI/TLS/libstdc++；缺什么就明确记录，不能
@@ -95,8 +102,17 @@
 
 ## 当前停点
 
-E08-0 审计、E08-pre1 设计均已完成（见 `e08_stage0_audit.md`、
-`e08_pre1_design.md`、`config/e08_pre1_baseline.json`）；E08-1 **未开始**。
-E08-1 的第一个可执行目标不是 GCC，而是“从盘上放一个大于 128 KiB 的 ELF，
-按路径读写一个文件，sync 后重启还在”。这个 gate 不过，后面的编译器讨论都是空话。
-在开始 E08-1 前需要确认盘/内存/文件会话的范围，避免边做边改上限。
+E08-1、E08-2、E08-3受限gate已通过，完整限制和证据见state.md、
+e08_storage_and_sessions.md、e08_runtime.md、e08_binutils_seed.md与0012/0013/0015。
+下一开发阶段E08-4：GCC C Seed的driver/cc1/libgcc/sysroot真实闭包与多文件编译。
+Qt主线与SDL次选已纳入xos_plan.md的E13–E20；本次仅扩展计划，不改变E08-4顺序。GCC/G++尚未实现，O11–O13
+不整体标通过；资源基线仍需测真实GCC/Qt峰值，不由小汇编链路替代。
+
+0020更新：E08-4受限C功能gate已通过（82ffcecab8ccbcce，4组/15命令）；上文早期
+“下一阶段E08-4/GCC尚未实现”为历史。当前下一阶段E08-5真实G++与target运行库，
+E08-6、O11–O13和E08整体均未据此标通过，压力测试由专人负责。
+
+0022最新结论：E08-5原生G++4组/14命令通过，E08-6 C/C++编辑/正常重启两个增量
+均通过，E08受限功能范围收口，O11/O12/O13按该静态配置通过。当前状态和版本
+绑定见reports/e08_acceptance.md；上文早期停点为历史，不冒称真实高水位、完整旧
+回归、压力、完整POSIX/标准库或自举。后续压力仍由专人负责。

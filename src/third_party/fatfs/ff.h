@@ -259,6 +259,8 @@ typedef struct {
 
 typedef struct {
 	FSIZE_t	fsize;			/* File size (invalid for directory) */
+	DWORD	xos_dir_sector;	/* XOS: sector containing the SFN directory entry */
+	WORD	xos_dir_offset;	/* XOS: byte offset of the SFN entry within that sector */
 	WORD	fdate;			/* Date of file modification or directory creation */
 	WORD	ftime;			/* Time of file modification or directory creation */
 #if FF_FS_CRTIME

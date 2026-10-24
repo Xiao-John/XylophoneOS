@@ -1,74 +1,224 @@
+// SPDX-License-Identifier: MIT AND Apache-2.0
+// Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/elf.hpp>
+#include <xos/tls.hpp>
 #include <xos/sdk.hpp>
+#include <xos/file_client.hpp>
 
 namespace xos::sdk {
 namespace {
+// The supervisor is single threaded. Keep large working objects out of its
+// roughly 12 KiB user stack; only one spawn operation can use them at a time.
 u8 image_buffer[131072];
+alignas(16) u8 startup_page[startup_page_count * 4096];
+alignas(16) u8 page_buffer[4096];
+file::Client file_client;
+bool file_client_ready;
+
+bool buffer_read(void* context, u64 offset, u8* destination, u32 length) {
+    const auto* bytes = static_cast<const u8*>(context);
+    if (bytes == nullptr) { return false; }
+    for (u32 i = 0; i < length; ++i) { destination[i] = bytes[offset + i]; }
+    return true;
 }
-i64 spawn_buffer(const char* name, const u8* bytes, u64 size, u32 argc,
-                 const char* const* argv) {
-    if (argc == 0 || argc > process_max_args || argv == nullptr || bytes == nullptr ||
-        size == 0 || size > sizeof(image_buffer)) { return process_error_invalid; }
-    elf::load_plan plan{};
-    const auto inspected = elf::inspect(bytes, size, target_elf_machine(), plan);
-    if (inspected != elf::error::none) {
-        print("elf: rejected reason="); print(elf::error_name(inspected)); print("\n");
+
+struct opened_file { file::Client* client; u32 handle; };
+bool file_read(void* context, u64 offset, u8* destination, u32 length) {
+    auto& source = *static_cast<opened_file*>(context);
+    if (offset > 0xffffffffu || source.client->seek(source.handle, static_cast<u32>(offset)) < 0) {
+        return false;
+    }
+    u32 done = 0;
+    while (done < length) {
+        const u32 remaining = length - done;
+        const u32 request_size = remaining > file::response_data_size
+            ? file::response_data_size : remaining;
+        const i64 got = source.client->read(source.handle, destination + done, request_size);
+        if (got <= 0 || static_cast<u64>(got) > request_size) { return false; }
+        done += static_cast<u32>(got);
+    }
+    return true;
+}
+
+i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
+                 void* read_context, u32 argc, const char* const* argv,
+                 bool close_file, u32 file_handle, const spawn_options* options = nullptr) {
+    if (argc == 0 || argc > process_max_args || argv == nullptr || size == 0 ||
+        read_exact == nullptr || name == nullptr) {
+        if (close_file) { (void)file_client.close(file_handle); }
         return process_error_invalid;
     }
-    // Prepare arguments before creating any kernel resources.
-    alignas(16) u8 page[4096]{};
-    auto* startup = reinterpret_cast<startup_info*>(page);
-    const u64 startup_address = process_stack_top - 4096;
-    *startup = {startup_magic, 1, sizeof(startup_info), argc, 3, startup_address + 64,
-                {0, 1, 2}, 0};
-    auto* arguments = reinterpret_cast<u64*>(page + 64);
-    usize position = 160;
-    for (u32 i = 0; i < argc; ++i) {
-        if (argv[i] == nullptr) { return process_error_invalid; }
-        usize n = 0;
-        while (n < 64 && argv[i][n] != '\0') { ++n; }
-        if (n == 64 || position + n + 1 > sizeof(page)) { return process_error_invalid; }
-        arguments[i] = startup_address + position;
-        for (usize j = 0; j <= n; ++j) { page[position++] = static_cast<u8>(argv[i][j]); }
+    elf::load_plan plan{};
+    const auto inspected = elf::inspect_reader(read_exact, read_context, size,
+                                                target_elf_machine(), plan);
+    if (inspected != elf::error::none) {
+        print("elf: rejected reason="); print(elf::error_name(inspected)); print("\n");
+        if (close_file) { (void)file_client.close(file_handle); }
+        return process_error_invalid;
     }
-    arguments[argc] = 0;
-    const u64 name_length = length(name) > 11 ? 11 : length(name);
-    const i64 child = syscall(sys_process_create, 7, reinterpret_cast<u64>(name),
-                              name_length); // inherited console refs 0/1/2
-    if (child < 0) { return child; }
-    process_page mapping{startup_address, reinterpret_cast<u64>(page), 4096, map_read | map_write};
-    i64 result = syscall(sys_process_map, static_cast<u64>(child), reinterpret_cast<u64>(&mapping));
-    // Once arguments are copied, this scratch page can be reused for segment contents.
+
+    auto fail_before_create = [&](i64 error) {
+        if (close_file) { (void)file_client.close(file_handle); }
+        return error;
+    };
+    const u32 env_count = options == nullptr ? 0 : options->environment_count;
+    if (env_count > startup_environment_max || (env_count != 0 && options->environment == nullptr)) {
+        return fail_before_create(process_error_invalid);
+    }
+    auto* page = startup_page;
+    for (usize i = 0; i < sizeof(startup_page); ++i) { page[i] = 0; }
+    const u64 startup_address = process_stack_top - sizeof(startup_page);
+    const usize argv_offset = options == nullptr ? 64 : 144;
+    const usize env_offset = argv_offset + (argc + 1) * sizeof(u64);
+    usize position = (env_offset + (env_count + 1) * sizeof(u64) + 15) & ~usize{15};
+    auto* startup = reinterpret_cast<startup_info*>(page);
+    *startup = {startup_magic, options == nullptr ? 1u : 2u, sizeof(startup_info), argc, 3,
+                startup_address + argv_offset, {0, 1, 2},
+                options == nullptr ? 0u : startup_extension_offset};
+    auto* arguments = reinterpret_cast<u64*>(page + argv_offset);
+    auto* environments = reinterpret_cast<u64*>(page + env_offset);
+    auto put_string = [&](const char* text, u64& destination) {
+        if (text == nullptr) { return false; }
+        usize n = 0;
+        while (n < process_max_arg_bytes && text[n] != '\0') { ++n; }
+        if (n == process_max_arg_bytes || position > sizeof(startup_page) ||
+            n + 1 > sizeof(startup_page) - position) { return false; }
+        destination = startup_address + position;
+        for (usize i = 0; i <= n; ++i) { page[position++] = static_cast<u8>(text[i]); }
+        return true;
+    };
+    for (u32 i = 0; i < argc; ++i) {
+        if (!put_string(argv[i], arguments[i])) { return fail_before_create(process_error_invalid); }
+    }
+    for (u32 i = 0; i < env_count; ++i) {
+        if (!put_string(options->environment[i], environments[i])) { return fail_before_create(process_error_invalid); }
+    }
+    if (options != nullptr) {
+        auto* extension = reinterpret_cast<startup_extension*>(page + startup_extension_offset);
+        extension->magic = startup_extension_magic;
+        extension->environment_count = env_count;
+        for (u32 fd = 0; fd < 3; ++fd) {
+            if (options->stdio[fd] == -2) { extension->flags |= 1u << fd; }
+        }
+        extension->environment = startup_address + env_offset;
+        if (!put_string(options->working_directory, extension->working_directory)) {
+            return fail_before_create(process_error_invalid);
+        }
+        for (u32 fd = 0; fd < 3; ++fd) {
+            if (options->open_paths[fd] != nullptr &&
+                !put_string(options->open_paths[fd], extension->open_paths[fd])) {
+                return fail_before_create(process_error_invalid);
+            }
+            extension->open_flags[fd] = options->open_flags[fd];
+        }
+    }
+
+    const usize name_size = length(name);
+    const u64 name_length = name_size > 11 ? 11 : name_size;
+    const i64 child = syscall(sys_process_create, options == nullptr ? 7u : 0u, reinterpret_cast<u64>(name), name_length);
+    if (child < 0) {
+        if (close_file) { (void)file_client.close(file_handle); }
+        return child;
+    }
+    process_page mapping{};
+    i64 result = 0;
+    for (u32 index = 0; result >= 0 && index < startup_page_count; ++index) {
+        mapping = {startup_address + u64{index} * 4096,
+                   reinterpret_cast<u64>(page + index * 4096), 4096, map_read | map_write};
+        result = syscall(sys_process_map, static_cast<u64>(child), reinterpret_cast<u64>(&mapping));
+    }
+    if (options != nullptr) {
+        for (u32 fd = 0; result >= 0 && fd < 3; ++fd) {
+            if (options->open_paths[fd] != nullptr || options->stdio[fd] == -2) { continue; }
+            const u64 source = options->stdio[fd] == -1 ? fd : static_cast<u64>(options->stdio[fd]);
+            result = syscall(sys_process_stdio, static_cast<u64>(child), fd, source);
+        }
+        if (result >= 0 && options->grant_spawn) {
+            result = syscall(sys_process_grant, static_cast<u64>(child), 1);
+        }
+    }
     for (u32 i = 0; result >= 0 && i < plan.count; ++i) {
         const auto& segment = plan.segments[i];
         const u64 first = segment.address & ~u64{4095};
         const u64 end = (segment.address + segment.memory_bytes + 4095) & ~u64{4095};
         for (u64 address = first; address < end; address += 4096) {
-            for (usize byte = 0; byte < sizeof(page); ++byte) { page[byte] = 0; }
-            u64 start = address > segment.address ? address : segment.address;
+            for (usize byte = 0; byte < sizeof(page_buffer); ++byte) { page_buffer[byte] = 0; }
+            const u64 start = address > segment.address ? address : segment.address;
             u64 file_end = segment.address + segment.file_bytes;
             if (file_end > address + 4096) { file_end = address + 4096; }
-            for (u64 at = start; at < file_end; ++at) {
-                page[at - address] = bytes[segment.offset + at - segment.address];
+            if (start < file_end &&
+                !read_exact(read_context, segment.offset + start - segment.address,
+                            page_buffer + (start - address),
+                            static_cast<u32>(file_end - start))) {
+                result = process_error_invalid;
+                break;
             }
-            mapping = {address, reinterpret_cast<u64>(page), 4096, segment.permissions};
-            result = syscall(sys_process_map, static_cast<u64>(child), reinterpret_cast<u64>(&mapping));
+            mapping = {address, reinterpret_cast<u64>(page_buffer), 4096,
+                       segment.permissions};
+            result = syscall(sys_process_map, static_cast<u64>(child),
+                              reinterpret_cast<u64>(&mapping));
             if (result < 0) { break; }
         }
     }
-    for (u64 address = process_stack_bottom; result >= 0 && address < startup_address; address += 4096) {
+    for (u64 address = process_stack_bottom; result >= 0 && address < startup_address;
+         address += 4096) {
         mapping = {address, 0, 0, map_read | map_write};
-        result = syscall(sys_process_map, static_cast<u64>(child), reinterpret_cast<u64>(&mapping));
+        result = syscall(sys_process_map, static_cast<u64>(child),
+                          reinterpret_cast<u64>(&mapping));
+    }
+
+    if (result >= 0) {
+        result = map_static_tls(plan, read_exact, read_context, static_cast<u64>(child));
+    }
+    // The open instance pins this file version through validation and all page
+    // copies. A close failure is a failed load and must not make a runnable child.
+    if (close_file) {
+        const i64 closed = file_client.close(file_handle);
+        if (result >= 0 && closed < 0) { result = closed; }
     }
     if (result >= 0) {
         process_entry entry{plan.entry, startup_address - 16, startup_address};
-        result = syscall(sys_process_start, static_cast<u64>(child), reinterpret_cast<u64>(&entry));
+        result = syscall(sys_process_start, static_cast<u64>(child),
+                         reinterpret_cast<u64>(&entry));
     }
     if (result < 0) {
         (void)syscall(sys_process_abort, static_cast<u64>(child));
         return result;
     }
     return child;
+}
+}
+
+i64 spawn_buffer(const char* name, const u8* bytes, u64 size, u32 argc,
+                 const char* const* argv) {
+    if (name == nullptr || bytes == nullptr || size == 0 || size > sizeof(image_buffer)) {
+        return process_error_invalid;
+    }
+    return spawn_reader(name, size, buffer_read, const_cast<u8*>(bytes), argc, argv,
+                        false, 0);
+}
+
+i64 spawn_file_impl(const char* path, u32 argc, const char* const* argv, const spawn_options* options) {
+    if (path == nullptr || argc == 0 || argc > process_max_args || argv == nullptr) {
+        return process_error_invalid;
+    }
+    if (!file_client_ready) {
+        if (!file_client.init()) { return process_error_resources; }
+        file_client_ready = true;
+    }
+    u32 handle = 0, size = 0, version = 0;
+    const i64 opened = file_client.open(path, file::read_only, handle, size, version);
+    (void)version; // The held read-only handle pins the opened version until close.
+    if (opened < 0) { return opened; }
+    opened_file source{&file_client, handle};
+    return spawn_reader(path, size, file_read, &source, argc, argv, true, handle, options);
+}
+
+i64 spawn_file(const char* path, u32 argc, const char* const* argv) {
+    return spawn_file_impl(path, argc, argv, nullptr);
+}
+i64 spawn_file_options(const char* path, u32 argc, const char* const* argv, const spawn_options& options) {
+    return spawn_file_impl(path, argc, argv, &options);
 }
 
 i64 spawn(u32 image, u32 argc, const char* const* argv) {
@@ -79,9 +229,11 @@ i64 spawn(u32 image, u32 argc, const char* const* argv) {
     if (image_metadata.size > sizeof(image_buffer)) { return process_error_resources; }
     image_read_request read_request{0, reinterpret_cast<u64>(image_buffer), image_metadata.size};
     result = syscall(sys_image_read, image, reinterpret_cast<u64>(&read_request));
-    if (result != static_cast<i64>(image_metadata.size)) { return result < 0 ? result : process_error_invalid; }
-    // The image is copied into this buffer before inspection; spawn_buffer never
-    // re-reads the source, so file-backed callers get one consistent snapshot.
+    if (result != static_cast<i64>(image_metadata.size)) {
+        return result < 0 ? result : process_error_invalid;
+    }
+    // The boot-module path remains bounded by the legacy 128 KiB bootstrap
+    // staging area. File-backed ELF uses spawn_file and has no image-size cap.
     return spawn_buffer(image_metadata.name, image_buffer, image_metadata.size, argc, argv);
 }
 }

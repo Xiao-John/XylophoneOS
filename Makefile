@@ -2,7 +2,7 @@ PYTHON ?= python3
 export NASM ?= nasm
 export QEMU ?= qemu-system-x86_64
 
-.PHONY: all build disk libc-audit run run_vga run_real_mode debug smoke clean
+.PHONY: all build disk libc-audit license-audit binutils-smoke run run_vga run_real_mode debug smoke clean
 all: build
 
 build:
@@ -13,6 +13,13 @@ disk:
 
 libc-audit: build
 	$(PYTHON) scripts/libc_audit.py
+
+license-audit: build
+	$(PYTHON) scripts/license_audit.py
+
+# Explicit prepared Seed: ordinary build/smoke never downloads GNU sources.
+binutils-smoke: build
+	$(PYTHON) tests/binutils_smoke.py --seed-manifest "$(SEED_MANIFEST)"
 
 run: build
 	$(PYTHON) scripts/run_qemu.py
@@ -35,6 +42,9 @@ smoke: build
 	$(PYTHON) tests/persist_smoke.py
 	$(PYTHON) tests/full_disk_smoke.py
 	$(PYTHON) tests/libc_smoke.py
+	$(PYTHON) tests/e08_storage_smoke.py
+	$(PYTHON) tests/runtime_smoke.py
+	$(PYTHON) scripts/license_audit.py
 
 clean:
 	$(PYTHON) scripts/build.py --clean

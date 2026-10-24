@@ -1,0 +1,571 @@
+{
+  "artifacts": [
+    {
+      "path": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0",
+      "role": "include_dir",
+      "sha256": "3d7bc55a740c7097d4ca81cbb6ee6855eb4082e8256914265eb95bb1ff77cf42"
+    },
+    {
+      "path": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0/x86_64-unknown-elf",
+      "role": "include_dir",
+      "sha256": "43cac080e0239faf47aad077c406ae43ffbc656ad28d7499956dc010272ceab1"
+    },
+    {
+      "path": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/include",
+      "role": "include_dir",
+      "sha256": "8f2ec842efe9f7568bc52ada4a87b8d8ce9c2eb59d96b9559ee93bfefadaa7bd"
+    },
+    {
+      "path": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libstdc++.a",
+      "role": "archive",
+      "sha256": "8bba188c15fefbdad794816cca8544864f87033a2939011bb7763023b1e6e9ec"
+    },
+    {
+      "path": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos.a",
+      "role": "archive",
+      "sha256": "c439a2ef0f8473259fcb902e73ef6251ec2575808cae255d9537ecd911a15250"
+    },
+    {
+      "path": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos_loader.a",
+      "role": "archive",
+      "sha256": "e887d14cd4f500973c3605b9235701059c6dac2d7e2db917976dc586afa4afbb"
+    },
+    {
+      "path": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libc.a",
+      "role": "archive",
+      "sha256": "283fa07ad205c80af92e955a91da027435d8a8a90cb7e27933f57925cc5baa22"
+    },
+    {
+      "path": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libm.a",
+      "role": "archive",
+      "sha256": "4cfdd6324f6776d025923ee369fad51236a9ee5730c8143a6b3b03b963eefd80"
+    },
+    {
+      "path": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libgcc.a",
+      "role": "archive",
+      "sha256": "1d1755feabef4fbe34527df8f94f44e67f3fc2ce3b1d58dbf824ec858c994dfa"
+    },
+    {
+      "path": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/crt0_posix.o",
+      "role": "crt",
+      "sha256": "315f165c471c3124e211c5579a40d7b902dd8f8444972a5c87a2cbe8c874ea58"
+    },
+    {
+      "path": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/user.ld",
+      "role": "linker_script",
+      "sha256": "54a56cdc05f8db3fac0484ea0e1f869eb6be66196becd3af0297ea5bdbc43eaa"
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "-dumpmachine"
+      ],
+      "display": "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++ -dumpmachine",
+      "phase": "compiler_target_check",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "x86_64-elf\n"
+    },
+    {
+      "command": [
+        "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "-O2",
+        "-fexceptions",
+        "-frtti",
+        "-fno-stack-protector",
+        "-fno-pic",
+        "-fno-pie",
+        "-mcmodel=small",
+        "-mno-red-zone",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0/x86_64-unknown-elf",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/include",
+        "-c",
+        "/Users/xylo/Documents/XylophoneOS/tests/fixtures/cpp_abi/string_vector_probe.cpp",
+        "-o",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/string_vector/string_vector_probe.o"
+      ],
+      "display": "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++ -O2 -fexceptions -frtti -fno-stack-protector -fno-pic -fno-pie -mcmodel=small -mno-red-zone -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0 -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0/x86_64-unknown-elf -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/include -c /Users/xylo/Documents/XylophoneOS/tests/fixtures/cpp_abi/string_vector_probe.cpp -o /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/string_vector/string_vector_probe.o",
+      "feature": "string_vector",
+      "phase": "compile",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "-nostdlib",
+        "-static",
+        "-no-pie",
+        "-Wl,--build-id=none",
+        "-Wl,-z,noexecstack",
+        "-Wl,-z,max-page-size=4096",
+        "-Wl,-T,/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/user.ld",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/crt0_posix.o",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/string_vector/string_vector_probe.o",
+        "-Wl,--start-group",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libstdc++.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos_loader.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libc.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libm.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libgcc.a",
+        "-Wl,--end-group",
+        "-o",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/string_vector/cpp_abi_string_vector.elf"
+      ],
+      "display": "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++ -nostdlib -static -no-pie -Wl,--build-id=none -Wl,-z,noexecstack -Wl,-z,max-page-size=4096 -Wl,-T,/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/user.ld /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/crt0_posix.o /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/string_vector/string_vector_probe.o -Wl,--start-group /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libstdc++.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos_loader.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libc.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libm.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libgcc.a -Wl,--end-group -o /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/string_vector/cpp_abi_string_vector.elf",
+      "feature": "string_vector",
+      "phase": "link",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "-O2",
+        "-fexceptions",
+        "-frtti",
+        "-fno-stack-protector",
+        "-fno-pic",
+        "-fno-pie",
+        "-mcmodel=small",
+        "-mno-red-zone",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0/x86_64-unknown-elf",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/include",
+        "-c",
+        "/Users/xylo/Documents/XylophoneOS/tests/fixtures/cpp_abi/exception_probe.cpp",
+        "-o",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/exceptions/exception_probe.o"
+      ],
+      "display": "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++ -O2 -fexceptions -frtti -fno-stack-protector -fno-pic -fno-pie -mcmodel=small -mno-red-zone -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0 -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0/x86_64-unknown-elf -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/include -c /Users/xylo/Documents/XylophoneOS/tests/fixtures/cpp_abi/exception_probe.cpp -o /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/exceptions/exception_probe.o",
+      "feature": "exceptions",
+      "phase": "compile",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "-nostdlib",
+        "-static",
+        "-no-pie",
+        "-Wl,--build-id=none",
+        "-Wl,-z,noexecstack",
+        "-Wl,-z,max-page-size=4096",
+        "-Wl,-T,/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/user.ld",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/crt0_posix.o",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/exceptions/exception_probe.o",
+        "-Wl,--start-group",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libstdc++.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos_loader.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libc.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libm.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libgcc.a",
+        "-Wl,--end-group",
+        "-o",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/exceptions/cpp_abi_exceptions.elf"
+      ],
+      "display": "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++ -nostdlib -static -no-pie -Wl,--build-id=none -Wl,-z,noexecstack -Wl,-z,max-page-size=4096 -Wl,-T,/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/user.ld /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/crt0_posix.o /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/exceptions/exception_probe.o -Wl,--start-group /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libstdc++.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos_loader.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libc.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libm.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libgcc.a -Wl,--end-group -o /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/exceptions/cpp_abi_exceptions.elf",
+      "feature": "exceptions",
+      "phase": "link",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "-O2",
+        "-fexceptions",
+        "-frtti",
+        "-fno-stack-protector",
+        "-fno-pic",
+        "-fno-pie",
+        "-mcmodel=small",
+        "-mno-red-zone",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0/x86_64-unknown-elf",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/include",
+        "-c",
+        "/Users/xylo/Documents/XylophoneOS/tests/fixtures/cpp_abi/rtti_probe.cpp",
+        "-o",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/rtti/rtti_probe.o"
+      ],
+      "display": "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++ -O2 -fexceptions -frtti -fno-stack-protector -fno-pic -fno-pie -mcmodel=small -mno-red-zone -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0 -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0/x86_64-unknown-elf -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/include -c /Users/xylo/Documents/XylophoneOS/tests/fixtures/cpp_abi/rtti_probe.cpp -o /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/rtti/rtti_probe.o",
+      "feature": "rtti",
+      "phase": "compile",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "-nostdlib",
+        "-static",
+        "-no-pie",
+        "-Wl,--build-id=none",
+        "-Wl,-z,noexecstack",
+        "-Wl,-z,max-page-size=4096",
+        "-Wl,-T,/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/user.ld",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/crt0_posix.o",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/rtti/rtti_probe.o",
+        "-Wl,--start-group",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libstdc++.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos_loader.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libc.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libm.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libgcc.a",
+        "-Wl,--end-group",
+        "-o",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/rtti/cpp_abi_rtti.elf"
+      ],
+      "display": "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++ -nostdlib -static -no-pie -Wl,--build-id=none -Wl,-z,noexecstack -Wl,-z,max-page-size=4096 -Wl,-T,/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/user.ld /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/crt0_posix.o /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/rtti/rtti_probe.o -Wl,--start-group /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libstdc++.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos_loader.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libc.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libm.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libgcc.a -Wl,--end-group -o /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/rtti/cpp_abi_rtti.elf",
+      "feature": "rtti",
+      "phase": "link",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "-O2",
+        "-fexceptions",
+        "-frtti",
+        "-fno-stack-protector",
+        "-fno-pic",
+        "-fno-pie",
+        "-mcmodel=small",
+        "-mno-red-zone",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0/x86_64-unknown-elf",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/include",
+        "-c",
+        "/Users/xylo/Documents/XylophoneOS/tests/fixtures/cpp_abi/local_static_probe.cpp",
+        "-o",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/local_static/local_static_probe.o"
+      ],
+      "display": "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++ -O2 -fexceptions -frtti -fno-stack-protector -fno-pic -fno-pie -mcmodel=small -mno-red-zone -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0 -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0/x86_64-unknown-elf -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/include -c /Users/xylo/Documents/XylophoneOS/tests/fixtures/cpp_abi/local_static_probe.cpp -o /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/local_static/local_static_probe.o",
+      "feature": "local_static",
+      "phase": "compile",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "-nostdlib",
+        "-static",
+        "-no-pie",
+        "-Wl,--build-id=none",
+        "-Wl,-z,noexecstack",
+        "-Wl,-z,max-page-size=4096",
+        "-Wl,-T,/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/user.ld",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/crt0_posix.o",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/local_static/local_static_probe.o",
+        "-Wl,--start-group",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libstdc++.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos_loader.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libc.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libm.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libgcc.a",
+        "-Wl,--end-group",
+        "-o",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/local_static/cpp_abi_local_static.elf"
+      ],
+      "display": "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++ -nostdlib -static -no-pie -Wl,--build-id=none -Wl,-z,noexecstack -Wl,-z,max-page-size=4096 -Wl,-T,/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/user.ld /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/crt0_posix.o /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/local_static/local_static_probe.o -Wl,--start-group /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libstdc++.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos_loader.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libc.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libm.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libgcc.a -Wl,--end-group -o /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/local_static/cpp_abi_local_static.elf",
+      "feature": "local_static",
+      "phase": "link",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "-O2",
+        "-fexceptions",
+        "-frtti",
+        "-fno-stack-protector",
+        "-fno-pic",
+        "-fno-pie",
+        "-mcmodel=small",
+        "-mno-red-zone",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0/x86_64-unknown-elf",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/include",
+        "-c",
+        "/Users/xylo/Documents/XylophoneOS/tests/fixtures/cpp_abi/tls_destructor_probe.cpp",
+        "-o",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/tls_destructors/tls_destructor_probe.o"
+      ],
+      "display": "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++ -O2 -fexceptions -frtti -fno-stack-protector -fno-pic -fno-pie -mcmodel=small -mno-red-zone -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0 -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0/x86_64-unknown-elf -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/include -c /Users/xylo/Documents/XylophoneOS/tests/fixtures/cpp_abi/tls_destructor_probe.cpp -o /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/tls_destructors/tls_destructor_probe.o",
+      "feature": "tls_destructors",
+      "phase": "compile",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "-nostdlib",
+        "-static",
+        "-no-pie",
+        "-Wl,--build-id=none",
+        "-Wl,-z,noexecstack",
+        "-Wl,-z,max-page-size=4096",
+        "-Wl,-T,/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/user.ld",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/crt0_posix.o",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/tls_destructors/tls_destructor_probe.o",
+        "-Wl,--start-group",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libstdc++.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos_loader.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libc.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libm.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libgcc.a",
+        "-Wl,--end-group",
+        "-o",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/tls_destructors/cpp_abi_tls_destructors.elf"
+      ],
+      "display": "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++ -nostdlib -static -no-pie -Wl,--build-id=none -Wl,-z,noexecstack -Wl,-z,max-page-size=4096 -Wl,-T,/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/user.ld /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/crt0_posix.o /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/tls_destructors/tls_destructor_probe.o -Wl,--start-group /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libstdc++.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos_loader.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libc.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libm.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libgcc.a -Wl,--end-group -o /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/tls_destructors/cpp_abi_tls_destructors.elf",
+      "feature": "tls_destructors",
+      "phase": "link",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "-O2",
+        "-fexceptions",
+        "-frtti",
+        "-fno-stack-protector",
+        "-fno-pic",
+        "-fno-pie",
+        "-mcmodel=small",
+        "-mno-red-zone",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0/x86_64-unknown-elf",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/include",
+        "-c",
+        "/Users/xylo/Documents/XylophoneOS/tests/fixtures/cpp_abi/multi_tu_a.cpp",
+        "-o",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/multi_tu/multi_tu_a.o"
+      ],
+      "display": "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++ -O2 -fexceptions -frtti -fno-stack-protector -fno-pic -fno-pie -mcmodel=small -mno-red-zone -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0 -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0/x86_64-unknown-elf -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/include -c /Users/xylo/Documents/XylophoneOS/tests/fixtures/cpp_abi/multi_tu_a.cpp -o /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/multi_tu/multi_tu_a.o",
+      "feature": "multi_tu",
+      "phase": "compile",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "-O2",
+        "-fexceptions",
+        "-frtti",
+        "-fno-stack-protector",
+        "-fno-pic",
+        "-fno-pie",
+        "-mcmodel=small",
+        "-mno-red-zone",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0/x86_64-unknown-elf",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/include",
+        "-c",
+        "/Users/xylo/Documents/XylophoneOS/tests/fixtures/cpp_abi/multi_tu_b.cpp",
+        "-o",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/multi_tu/multi_tu_b.o"
+      ],
+      "display": "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++ -O2 -fexceptions -frtti -fno-stack-protector -fno-pic -fno-pie -mcmodel=small -mno-red-zone -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0 -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0/x86_64-unknown-elf -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/include -c /Users/xylo/Documents/XylophoneOS/tests/fixtures/cpp_abi/multi_tu_b.cpp -o /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/multi_tu/multi_tu_b.o",
+      "feature": "multi_tu",
+      "phase": "compile",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "-O2",
+        "-fexceptions",
+        "-frtti",
+        "-fno-stack-protector",
+        "-fno-pic",
+        "-fno-pie",
+        "-mcmodel=small",
+        "-mno-red-zone",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0/x86_64-unknown-elf",
+        "-I",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/include",
+        "-c",
+        "/Users/xylo/Documents/XylophoneOS/tests/fixtures/cpp_abi/multi_tu_main.cpp",
+        "-o",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/multi_tu/multi_tu_main.o"
+      ],
+      "display": "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++ -O2 -fexceptions -frtti -fno-stack-protector -fno-pic -fno-pie -mcmodel=small -mno-red-zone -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0 -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/include/c++/16.2.0/x86_64-unknown-elf -I /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/include -c /Users/xylo/Documents/XylophoneOS/tests/fixtures/cpp_abi/multi_tu_main.cpp -o /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/multi_tu/multi_tu_main.o",
+      "feature": "multi_tu",
+      "phase": "compile",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "-nostdlib",
+        "-static",
+        "-no-pie",
+        "-Wl,--build-id=none",
+        "-Wl,-z,noexecstack",
+        "-Wl,-z,max-page-size=4096",
+        "-Wl,-T,/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/user.ld",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/crt0_posix.o",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/multi_tu/multi_tu_a.o",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/multi_tu/multi_tu_b.o",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/multi_tu/multi_tu_main.o",
+        "-Wl,--start-group",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libstdc++.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos_loader.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libc.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libm.a",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libgcc.a",
+        "-Wl,--end-group",
+        "-o",
+        "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/multi_tu/cpp_abi_multi_tu.elf"
+      ],
+      "display": "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++ -nostdlib -static -no-pie -Wl,--build-id=none -Wl,-z,noexecstack -Wl,-z,max-page-size=4096 -Wl,-T,/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/user.ld /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/crt0_posix.o /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/multi_tu/multi_tu_a.o /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/multi_tu/multi_tu_b.o /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/multi_tu/multi_tu_main.o -Wl,--start-group /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libstdc++.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libxos_loader.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libc.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490/lib/libm.a /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/lib/libgcc.a -Wl,--end-group -o /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/multi_tu/cpp_abi_multi_tu.elf",
+      "feature": "multi_tu",
+      "phase": "link",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "created_utc": "2026-10-24T13:29:11.925420+00:00",
+  "execution": "host cross-compile preparation; guest execution not performed",
+  "features": {
+    "exceptions": {
+      "declaration_evidence": "GCC 16.2.0 target libstdc++ built with -fexceptions -frtti -ftls-model=local-exec",
+      "elf": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/exceptions/cpp_abi_exceptions.elf",
+      "sha256": "a54e619f5ef055944a73beed7a57656baafc5355fbe664f5099c91b3bf88bb9a",
+      "status": "built_not_run"
+    },
+    "local_static": {
+      "declaration_evidence": "GCC 16.2.0 target libstdc++ built with -fexceptions -frtti -ftls-model=local-exec",
+      "elf": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/local_static/cpp_abi_local_static.elf",
+      "sha256": "52798fdf66018f5da75bf9c8a67bda791a897b5948f528adbd7a9a84a19a392f",
+      "status": "built_not_run"
+    },
+    "multi_tu": {
+      "declaration_evidence": "GCC 16.2.0 target libstdc++ built with -fexceptions -frtti -ftls-model=local-exec",
+      "elf": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/multi_tu/cpp_abi_multi_tu.elf",
+      "sha256": "89229d72c5e6172c2920ce571fdd6e5806a0a32e53ecbd77ee0e1ca6aa52b729",
+      "status": "built_not_run"
+    },
+    "rtti": {
+      "declaration_evidence": "GCC 16.2.0 target libstdc++ built with -fexceptions -frtti -ftls-model=local-exec",
+      "elf": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/rtti/cpp_abi_rtti.elf",
+      "sha256": "3bc92cefa54012747787b5152f131dbab8ab7b170e28e277f271594cdfde8d5c",
+      "status": "built_not_run"
+    },
+    "string_vector": {
+      "declaration_evidence": "GCC 16.2.0 target libstdc++ built with -fexceptions -frtti -ftls-model=local-exec",
+      "elf": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/string_vector/cpp_abi_string_vector.elf",
+      "sha256": "9c401d29494b22116200140b4137c55e74fbbd7ea7e0bda9d425499b440a51b8",
+      "status": "built_not_run"
+    },
+    "tls_destructors": {
+      "declaration_evidence": "GCC 16.2.0 target libstdc++ built with -fexceptions -frtti -ftls-model=local-exec",
+      "elf": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/abi_build/tls_destructors/cpp_abi_tls_destructors.elf",
+      "sha256": "2ab3ffc99e273fc920e624fed0261bb3de2e2345e884e0993e1b42dfac1ccdca",
+      "status": "built_not_run"
+    }
+  },
+  "inputs": {
+    "compiler": {
+      "dumpmachine": "x86_64-elf",
+      "path": "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
+      "target": "x86_64-elf"
+    },
+    "fixture_sha256": {
+      "abi_probe.hpp": "63964f565d78c90bba307b31c67473bdacc9d87676848f470f99775d11c91403",
+      "exception_probe.cpp": "96ec1ff46f66346e5b225cc8ce6dd301ce5d6cd501dc45708b2aa4c6d0a46dc3",
+      "local_static_probe.cpp": "3ef2c45e8d602c1101897912c9fc13e7ec80b75c27d0873f2049b6dde6c0fc21",
+      "multi_tu_a.cpp": "837271d0c2e01a514c5a9727d8c99d36c6f8da924194808387f9a74aff071790",
+      "multi_tu_b.cpp": "d8c647644ae8412d6cf4c887ec099df0f421a4a22b80a8cf6a5827cd95b64230",
+      "multi_tu_main.cpp": "94013d6c10e1a3a68aa5c8f68e5fa8f2ed1e5dfa18f7d22a3986c3264628f948",
+      "rtti_probe.cpp": "03177f82608e4be246fd00b4f9090571fd6d7cd53940c0b295c93dfcc1969849",
+      "string_vector_probe.cpp": "5e8c0668a3d4f8daed520ce70832ea3d425664233abeae810734f735339f60a5",
+      "tls_destructor_probe.cpp": "661e0f930b92995b745a4f3a12e40ae9aca6391ed0771a543162b643234d5fe3"
+    },
+    "runtime_build_flags": [
+      "-fexceptions",
+      "-frtti",
+      "-ftls-model=local-exec"
+    ],
+    "runtime_manifest": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix/manifest.json",
+    "runtime_manifest_sha256": "538baa523869bda07455c79c0d406a69bfbc8442469d96a5b28e2741df9c689e",
+    "runtime_prefix": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/gcc/e08_5/target_runtime/prefix",
+    "runtime_provenance": {
+      "host_stdcxx_not_used": true,
+      "libgcc": "host x86_64-elf libgcc.a with GNU unwinder",
+      "sdk": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490",
+      "source": "gcc-16.2.0/libstdc++-v3"
+    },
+    "sdk": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490",
+    "sdk_manifest_sha256": "1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490",
+    "selected_features": [
+      "string_vector",
+      "exceptions",
+      "rtti",
+      "local_static",
+      "tls_destructors",
+      "multi_tu"
+    ]
+  },
+  "schema_version": 1,
+  "status": "built_not_run"
+}

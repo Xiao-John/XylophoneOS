@@ -1,0 +1,17 @@
+XylophoneOS (XOS)
+Copyright (c) 2026 XOS contributors
+
+New self-authored contributions from 2026-10-24 use Apache License 2.0.
+The historical MIT baseline remains available under its original terms;
+retain licenses/mit_legacy.txt and licenses/legacy_mit_files.json when
+redistributing mixed files. Earlier MIT grants are not revoked.
+Files containing both historical MIT code and new Apache-2.0 contributions
+carry an MIT AND Apache-2.0 SPDX expression where marked.
+
+Third-party components retain their own terms. FatFs: Copyright (C) 2025,
+ChaN; see licenses/fatfs.txt and src/third_party/fatfs. newlib consists of
+multiple components; see src/third_party/newlib/COPYING.NEWLIB and per-file
+notices. XOS's default license does not relicense either component.
+
+The separate localpilot project and externally installed build tools are
+outside the scope of XOS's self-authored license.

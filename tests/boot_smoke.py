@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT AND Apache-2.0
+# Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 """Exercise actual BIOS boot, serial/keyboard input, and corrupt-stage rejection."""
 
 import hashlib
@@ -97,7 +99,7 @@ def main():
     results = []
     report = {
         "build_id": manifest["build_id"], "image_sha256": hashlib.sha256(image).hexdigest(),
-        "machine": MACHINE, "accelerator": "tcg", "cpu": "qemu64", "memory": "64M",
+        "machine": MACHINE, "accelerator": "tcg", "cpu": "qemu64", "memory": "512M",
         "qemu": subprocess.check_output([qemu_command(image_path)[0], "--version"],
                                         text=True).splitlines()[0],
         "checks": results, "status": "failed",

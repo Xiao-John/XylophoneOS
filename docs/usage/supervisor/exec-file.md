@@ -1,20 +1,17 @@
-# `exec-file <file> [args]`
+# `exec-file <path> [args]`
 
-- 控制台：用户态 supervisor
-- 语法：`exec-file <file> [args]`
-- 实现：`src/user/programs/supervisor.cpp`、`src/user/loader/load.cpp`
+在 `sup>` 从工作盘装载静态 ELF，并等待结果。先打开并保持读锁，读取有界 ELF
+header/PHDR，逐段逐页读取与映射，清零 BSS；关闭源文件成功后才启动子任务。
+文件在读取期间不能被写打开/替换，失败关闭并回滚所有构造资源。
 
-先从 FAT16 工作盘读取完整文件到有界缓冲，再做 ELF 检查和装载：
+文件不再受 128 KiB 启动模块上限限制；最多 65536 用户页（含栈），同样检查
+入口、范围、对齐、W^X，拒绝动态链接等未支持特征。例：
 
-1. `stat`/`open` 取得大小与版本，并保持打开实例直到读取完成；
-2. 分块读入缓冲，短读/版本变化视为错误；
-3. 关闭文件后调用 `spawn_buffer`，ELF 检查、段映射、启动都使用同一份快照。
+```text
+exec-file /bin/example.elf arg
+```
 
-因此不会出现“校验时读到版本 A、执行时读版本 B”。文件服务在打开期间拒绝
-替换；读取完成后才关闭。文件来自 `work_disk.img`，不是只读启动模块。
-
-成功输出包含 `[loader] started pid=... file=...` 和 `kind=exited ...`；
-hello.elf 返回 `hello from file` 与退出码 0。文件不存在、超过 24 KiB、ELF
-不合法、资源不足都返回真实错误，不启动半成品。
-
-限制：只装载本 SDK 的静态 ELF；不是动态链接或 Linux 二进制兼容。
+显示实际 PID、退出/故障/终止状态。前台等候可单独按 Escape 取消。命令按空格
+分词，无引号；SDK 可处理含空格的路径，但终端暂不能表达它。
+机制见 `docs/e08_storage_and_sessions.md` 与 `docs/e08_runtime.md`。
+普通exec-file不赋予程序构造子任务的权限；工具驱动使用exec-driver。

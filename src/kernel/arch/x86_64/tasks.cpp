@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT AND Apache-2.0
+// Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/task.hpp>
 #include <xos/block.hpp>
 #include <xos/syscall.hpp>
@@ -19,7 +21,9 @@ constexpr u64 user_data_address = 0x40010000ull;
 constexpr u64 user_stack_top = 0x40020000ull;
 constexpr u64 user_stack_bottom = user_stack_top - 4 * page_size;
 constexpr u64 user_limit = process_user_end;
-constexpr u32 max_endpoints = 4;
+// E03's receiver, the supervisor/files bootstrap pair, and eight task pairs.
+constexpr u32 max_endpoints = 19;
+constexpr u32 file_session_count = 8;
 constexpr u32 default_message_bytes = 64;
 constexpr u32 file_message_bytes = 4096;
 constexpr u32 kernel_stack_bytes = 4096;
@@ -27,6 +31,18 @@ constexpr u32 user_code_selector = 0x2b;
 constexpr u32 user_data_selector = 0x33;
 
 enum class task_state : u32 { free, building, fresh, ready, running, waiting, dead };
+
+struct stdio_route { bool valid; bool console; bool writable; u8 pipe_index; };
+struct pipe_reference { bool used; u32 token; u8 pipe_index; bool writable; };
+struct pipe_object {
+    bool used;
+    u32 references;
+    u32 reader_references;
+    u32 writer_references;
+    u32 head;
+    u32 length;
+    u8 data[process_pipe_bytes];
+};
 
 struct task_record {
     u64 cr3;
@@ -38,8 +54,11 @@ struct task_record {
     char name[12];
     u32 send_handle;
     u32 recv_handle;
+    u32 session_request_handle;
+    u32 session_response_handle;
     bool supervisor;
     bool block_access;
+    bool spawn_access;
     i32 exit_code;
     u64 parent;
     u64 entry;
@@ -48,8 +67,13 @@ struct task_record {
     u64 waiting_pid;
     u64 wait_buffer;
     u32 stdio_mask;
+    stdio_route stdio[3];
+    pipe_reference pipe_references[process_max_pipe_refs];
+    u32 pipe_reference_count;
     u32 user_pages;
     u32 completion_slot;
+    u64 heap_break;
+    u64 thread_pointer;
     alignas(16) u8 fpu_state[512];
 };
 
@@ -58,8 +82,12 @@ completion_record completions[16];
 
 struct endpoint_record {
     bool used;
-    u32 receiver_pid;
+    u32 handle;
+    u64 receiver_pid;
+    u64 sender_pid;
+    u64 owner_pid;
     u32 capacity;
+    bool session_response;
     bool pending;
     u32 length;
     u8 data[file_message_bytes];
@@ -72,6 +100,10 @@ task_record* current;
 u64 tick_count;
 u64 next_pid = 1;
 endpoint_record endpoints[max_endpoints];
+u64 next_endpoint_handle = 1;
+u64 files_pid;
+pipe_object pipes[process_max_pipes];
+u64 next_pipe_token = process_pipe_token_min;
 bool reap_pending[8];
 u8 block_buffer[4096];
 alignas(16) u8 fpu_template[512];
@@ -182,6 +214,74 @@ bool user_range_ok(u64 address, u64 length, bool write) {
     return true;
 }
 
+pipe_reference* pipe_reference_for(task_record* task, u64 token) {
+    if (task == nullptr || token < process_pipe_token_min || token > 0xffffffffull) {
+        return nullptr;
+    }
+    for (auto& reference : task->pipe_references) {
+        if (reference.used && reference.token == token) { return &reference; }
+    }
+    return nullptr;
+}
+
+void pipe_retain(u32 pipe_index, bool writable) {
+    if (pipe_index >= process_max_pipes || !pipes[pipe_index].used) { return; }
+    ++pipes[pipe_index].references;
+    if (writable) { ++pipes[pipe_index].writer_references; }
+    else { ++pipes[pipe_index].reader_references; }
+}
+
+void pipe_release(u32 pipe_index, bool writable) {
+    if (pipe_index >= process_max_pipes || !pipes[pipe_index].used) { return; }
+    pipe_object& pipe = pipes[pipe_index];
+    if (pipe.references != 0) { --pipe.references; }
+    if (writable) {
+        if (pipe.writer_references != 0) { --pipe.writer_references; }
+    } else if (pipe.reader_references != 0) { --pipe.reader_references; }
+    if (pipe.references == 0) { pipe = pipe_object{}; }
+}
+
+void stdio_route_release(task_record* owner, stdio_route& route) {
+    if (route.valid && !route.console) {
+        pipe_release(route.pipe_index, route.writable);
+        if (owner != nullptr && owner->pipe_reference_count != 0) { --owner->pipe_reference_count; }
+    }
+    route = stdio_route{};
+}
+
+void task_pipe_release_all(task_record* task) {
+    for (auto& reference : task->pipe_references) {
+        if (!reference.used) { continue; }
+        pipe_release(reference.pipe_index, reference.writable);
+        if (task->pipe_reference_count != 0) { --task->pipe_reference_count; }
+        reference = pipe_reference{};
+    }
+    for (auto& route : task->stdio) { stdio_route_release(task, route); }
+}
+
+bool stdio_route_copy(task_record* owner, stdio_route& destination, const stdio_route& source) {
+    if (!source.valid) { return false; }
+    if (!source.console &&
+        (owner == nullptr || owner->pipe_reference_count >= process_max_pipe_refs)) { return false; }
+    destination = source;
+    if (!source.console) {
+        pipe_retain(source.pipe_index, source.writable);
+        ++owner->pipe_reference_count;
+    }
+    return true;
+}
+
+bool inherit_stdio(task_record* child, task_record* parent, u32 mask) {
+    child->stdio_mask = 0;
+    for (auto& route : child->stdio) { route = stdio_route{}; }
+    for (u32 fd = 0; fd < 3; ++fd) {
+        if ((mask & (1u << fd)) == 0) { continue; }
+        if (!stdio_route_copy(child, child->stdio[fd], parent->stdio[fd])) { return false; }
+        child->stdio_mask |= 1u << fd;
+    }
+    return true;
+}
+
 task_record* free_slot() {
     for (u32 i = 0; i < 8; ++i) {
         if (tasks[i].state == task_state::free) { return &tasks[i]; }
@@ -213,6 +313,10 @@ task_record* prepare_task(const char* name) {
     task->entry = user_base;
     task->initial_stack = user_stack_top;
     task->stdio_mask = 7;
+    task->heap_break = process_heap_begin;
+    for (u32 fd = 0; fd < 3; ++fd) {
+        task->stdio[fd] = {true, true, fd != 0, 0};
+    }
     ++task_total;
     return task;
 }
@@ -327,6 +431,7 @@ task_record* create_files_service() {
     task->entry = bootstrap_entry_files;
     task->initial_stack = process_stack_top - 16;
     task->stdio_mask = 0;
+    for (auto& route : task->stdio) { route = stdio_route{}; }
     task->block_access = true;
     task->state = task_state::fresh;
     format::text("[task] event=created pid="); format::decimal(task->pid);
@@ -334,34 +439,59 @@ task_record* create_files_service() {
     return task;
 }
 
-u32 endpoint_attach(u32 receiver_pid, u32 capacity) {
+u32 endpoint_attach(u64 receiver_pid, u64 sender_pid, u64 owner_pid, u32 capacity,
+                    bool session_response = false) {
+    if (next_endpoint_handle > 0xffffffffull) { return 0; }
     for (u32 i = 0; i < max_endpoints; ++i) {
         if (!endpoints[i].used) {
             endpoints[i] = endpoint_record{};
             endpoints[i].used = true;
+            endpoints[i].handle = static_cast<u32>(next_endpoint_handle++);
             endpoints[i].receiver_pid = receiver_pid;
+            endpoints[i].sender_pid = sender_pid;
+            endpoints[i].owner_pid = owner_pid;
             endpoints[i].capacity = capacity;
-            return i + 1;
+            endpoints[i].session_response = session_response;
+            return endpoints[i].handle;
         }
     }
     return 0;
 }
 
 endpoint_record* endpoint_for(u64 handle) {
-    if (handle < 1 || handle > max_endpoints) { return nullptr; }
-    endpoint_record* endpoint = &endpoints[handle - 1];
-    return endpoint->used ? endpoint : nullptr;
+    if (handle == 0 || handle > 0xffffffffull) { return nullptr; }
+    for (auto& endpoint : endpoints) {
+        if (endpoint.used && endpoint.handle == handle) { return &endpoint; }
+    }
+    return nullptr;
+}
+
+task_record* task_by_pid(u64 pid) {
+    for (auto& task : tasks) {
+        if (task.state != task_state::free && task.pid == pid) { return &task; }
+    }
+    return nullptr;
+}
+
+bool files_service_live() {
+    task_record* service = task_by_pid(files_pid);
+    return files_pid != 0 && service != nullptr && service->block_access &&
+           service->state != task_state::building && service->state != task_state::dead;
 }
 
 i64 ipc_send(u64 handle, u64 address, u64 length) {
     endpoint_record* endpoint = endpoint_for(handle);
-    if (endpoint == nullptr || current == nullptr ||
-        current->send_handle != handle) {
+    if (endpoint == nullptr || current == nullptr || endpoint->sender_pid != current->pid ||
+        (current->send_handle != handle &&
+         !(current->block_access && endpoint->session_response))) {
         return sys_error_invalid_handle;
     }
     if (endpoint->receiver_pid == current->pid || length == 0 || length > endpoint->capacity) {
         return sys_error_invalid_argument;
     }
+    task_record* receiver = task_by_pid(endpoint->receiver_pid);
+    if (receiver == nullptr || receiver->state == task_state::dead ||
+        receiver->state == task_state::building) { return sys_error_invalid_handle; }
     if (endpoint->pending) { return sys_error_full; }
     if (!user_range_ok(address, length, false)) { return sys_error_invalid_argument; }
     copy_from_user(endpoint->data, address, length);
@@ -372,9 +502,8 @@ i64 ipc_send(u64 handle, u64 address, u64 length) {
 
 i64 ipc_recv(u64 handle, u64 address, u64 length) {
     endpoint_record* endpoint = endpoint_for(handle);
-    if (endpoint == nullptr || current == nullptr ||
-        current->recv_handle != handle ||
-        endpoint->receiver_pid != current->pid) {
+    if (endpoint == nullptr || current == nullptr || endpoint->receiver_pid != current->pid ||
+        (current->recv_handle != handle && !current->block_access)) {
         return sys_error_invalid_handle;
     }
     if (!user_range_ok(address, length, true)) { return sys_error_invalid_argument; }
@@ -385,6 +514,81 @@ i64 ipc_recv(u64 handle, u64 address, u64 length) {
     endpoint->pending = false;
     endpoint->length = 0;
     return static_cast<i64>(length_received);
+}
+
+i64 pipe_read_from(u32 pipe_index, u64 address, u64 length) {
+    if (pipe_index >= process_max_pipes || !pipes[pipe_index].used) {
+        return process_error_invalid;
+    }
+    if (length == 0) { return 0; }
+    pipe_object& pipe = pipes[pipe_index];
+    if (pipe.length == 0) {
+        return pipe.writer_references == 0 ? 0 : process_error_would_block;
+    }
+    const u64 amount64 = length < pipe.length ? length : pipe.length;
+    const u32 amount = static_cast<u32>(amount64);
+    if (!user_range_ok(address, amount, true)) { return process_error_invalid; }
+    for (u32 i = 0; i < amount; ++i) {
+        const u32 offset = (pipe.head + i) % process_pipe_bytes;
+        copy_to_user(address + i, &pipe.data[offset], 1);
+    }
+    pipe.head = (pipe.head + amount) % process_pipe_bytes;
+    pipe.length -= amount;
+    return amount;
+}
+
+i64 pipe_write_to(u32 pipe_index, u64 address, u64 length) {
+    if (pipe_index >= process_max_pipes || !pipes[pipe_index].used) {
+        return process_error_invalid;
+    }
+    if (length == 0) { return 0; }
+    pipe_object& pipe = pipes[pipe_index];
+    if (pipe.reader_references == 0) { return pipe_error_broken; }
+    const u32 available = process_pipe_bytes - pipe.length;
+    if (available == 0) { return process_error_would_block; }
+    const u64 amount64 = length < available ? length : available;
+    const u32 amount = static_cast<u32>(amount64);
+    if (!user_range_ok(address, amount, false)) { return process_error_invalid; }
+    const u32 tail = (pipe.head + pipe.length) % process_pipe_bytes;
+    for (u32 i = 0; i < amount; ++i) {
+        copy_from_user(&pipe.data[(tail + i) % process_pipe_bytes], address + i, 1);
+    }
+    pipe.length += amount;
+    return amount;
+}
+
+i64 stdio_read(task_record* task, u32 fd, u64 address, u64 length,
+               bool console_empty_is_error) {
+    if (fd >= 3 || task == nullptr || (task->stdio_mask & (1u << fd)) == 0 ||
+        !task->stdio[fd].valid || task->stdio[fd].writable) { return process_error_denied; }
+    if (length == 0) { return 0; }
+    const stdio_route& route = task->stdio[fd];
+    if (!route.console) { return pipe_read_from(route.pipe_index, address, length); }
+    if (!user_range_ok(address, 1, true)) { return process_error_invalid; }
+    const int value = platform::debug_read();
+    if (value < 0) { return console_empty_is_error ? process_error_would_block : 0; }
+    const u8 byte = static_cast<u8>(value);
+    copy_to_user(address, &byte, 1);
+    return 1;
+}
+
+i64 stdio_write(task_record* task, u32 fd, u64 address, u64 length) {
+    if (fd >= 3 || task == nullptr || (task->stdio_mask & (1u << fd)) == 0 ||
+        !task->stdio[fd].valid || !task->stdio[fd].writable) { return process_error_denied; }
+    if (length == 0) { return 0; }
+    const stdio_route& route = task->stdio[fd];
+    if (!route.console) { return pipe_write_to(route.pipe_index, address, length); }
+    if (length > 256 || !user_range_ok(address, length, false)) { return process_error_invalid; }
+    u8 bytes[256];
+    copy_from_user(bytes, address, length);
+    return platform::debug_write_bytes(bytes, length);
+}
+
+void pipe_reference_close(task_record* task, pipe_reference* reference) {
+    if (task == nullptr || reference == nullptr || !reference->used) { return; }
+    pipe_release(reference->pipe_index, reference->writable);
+    if (task->pipe_reference_count != 0) { --task->pipe_reference_count; }
+    *reference = pipe_reference{};
 }
 
 i64 block_status(block::result result) {
@@ -411,8 +615,12 @@ void destroy_task(task_record* task) {
     reap_pending[task_index(task)] = false;
     const u64 pid = task->pid;
     for (auto& endpoint : endpoints) {
-        if (endpoint.used && endpoint.receiver_pid == pid) { endpoint = endpoint_record{}; }
+        if (endpoint.used && (endpoint.owner_pid == pid || endpoint.receiver_pid == pid ||
+                              endpoint.sender_pid == pid)) {
+            endpoint = endpoint_record{};
+        }
     }
+    task_pipe_release_all(task);
     u64 freed = 0;
     if (task->cr3 != 0) { freed += destroy_address_space(task->cr3); }
     if (task->kernel_stack_top != 0) {
@@ -509,11 +717,17 @@ task_record* pick_ready() {
     return nullptr;
 }
 
+void set_thread_pointer(u64 pointer) {
+    const u32 low = static_cast<u32>(pointer), high = static_cast<u32>(pointer >> 32);
+    __asm__ volatile("wrmsr" : : "c"(0xc0000100u), "a"(low), "d"(high) : "memory");
+}
+
 void switch_to(task_record* task) {
     current = task;
     task->state = task_state::running;
     set_kernel_stack(task->kernel_stack_top);
     load_address_space(task->cr3);
+    set_thread_pointer(task->thread_pointer);
 }
 
 interrupt_frame* make_initial_frame(task_record* task) {
@@ -557,6 +771,7 @@ interrupt_frame* schedule(interrupt_frame* frame) {
 }
 
 task_record* owned_process(u64 handle) {
+    if (current == nullptr || (!current->supervisor && !current->spawn_access)) { return nullptr; }
     for (auto& task : tasks) {
         if (task.state != task_state::free && task.pid == handle && task.parent == current->pid) {
             return &task;
@@ -580,34 +795,87 @@ bool space_range_ok(u64 space, u64 address, u64 length, bool write) {
     return true;
 }
 
+u64 page_align_up(u64 address) {
+    return (address + page_size - 1) & ~(page_size - 1);
+}
+
+i64 set_heap_break(u64 requested) {
+    if (current == nullptr) { return process_error_state; }
+    if (requested == 0) { return static_cast<i64>(current->heap_break); }
+    if (requested < process_heap_begin || requested > process_heap_end) {
+        return process_error_invalid;
+    }
+    const u64 old_break = current->heap_break;
+    const u64 old_end = page_align_up(old_break);
+    const u64 new_end = page_align_up(requested);
+    if (new_end > old_end) {
+        const u64 add_pages = (new_end - old_end) / page_size;
+        if (current->user_pages > process_max_pages ||
+            add_pages > process_max_pages - current->user_pages) {
+            return process_error_resources;
+        }
+        u64 address = old_end;
+        for (; address < new_end; address += page_size) {
+            u64 physical = 0;
+            if (allocate_page(&physical) != memory_result::none) { break; }
+            if (map_page_in(current->cr3, address, physical, {true, false, true}) != memory_result::none) {
+                (void)release_page(physical);
+                break;
+            }
+            ++current->user_pages;
+        }
+        if (address != new_end) {
+            for (u64 rollback = old_end; rollback < address; rollback += page_size) {
+                u64 physical = 0;
+                if (unmap_page_in(current->cr3, rollback, &physical) == memory_result::none) {
+                    (void)release_page(physical);
+                    if (current->user_pages != 0) { --current->user_pages; }
+                }
+            }
+            return process_error_resources;
+        }
+    } else if (new_end < old_end) {
+        for (u64 address = new_end; address < old_end; address += page_size) {
+            u64 physical = 0;
+            page_permissions permissions{};
+            if (query_page_in(current->cr3, address, &physical, &permissions) != memory_result::none ||
+                !permissions.user || !permissions.writable) { return process_error_state; }
+        }
+        for (u64 address = new_end; address < old_end; address += page_size) {
+            u64 physical = 0;
+            if (unmap_page_in(current->cr3, address, &physical) != memory_result::none ||
+                release_page(physical) != memory_result::none) { return process_error_state; }
+            if (current->user_pages != 0) { --current->user_pages; }
+        }
+    }
+    current->heap_break = requested;
+    return static_cast<i64>(requested);
+}
+
 void* process_syscall(interrupt_frame* frame) {
     i64 result = process_error_invalid;
     const u64 first = frame->rdi, second = frame->rsi, third = frame->rdx;
     switch (frame->rax) {
     case sys_handle_write: {
-        if (first > 2 || first == 0 || (current->stdio_mask & (1u << first)) == 0) {
-            result = process_error_denied; break;
-        }
-        if (third == 0) { result = 0; break; }
-        if (third > 256 || !user_range_ok(second, third, false)) { break; }
-        u8 bytes[256];
-        copy_from_user(bytes, second, third);
-        result = platform::debug_write_bytes(bytes, third);
+        if (first > 2 || first == 0) { result = process_error_denied; break; }
+        result = stdio_write(current, static_cast<u32>(first), second, third);
         break;
     }
     case sys_handle_read: {
-        if (first != 0 || (current->stdio_mask & 1) == 0) { result = process_error_denied; break; }
-        if (third == 0) { result = 0; break; }
-        if (!user_range_ok(second, 1, true)) { break; }
-        if (cancel_foreground() && current->state == task_state::dead) { return schedule(frame); }
-        const int value = platform::debug_read();
-        if (value < 0) { result = process_error_would_block; }
-        else { const u8 byte = static_cast<u8>(value); copy_to_user(second, &byte, 1); result = 1; }
+        if (first != 0) { result = process_error_denied; break; }
+        if (current->stdio[0].valid && current->stdio[0].console &&
+            cancel_foreground() && current->state == task_state::dead) { return schedule(frame); }
+        result = stdio_read(current, 0, second, third, true);
         break;
     }
     case sys_handle_close:
-        if (first > 2 || (current->stdio_mask & (1u << first)) == 0) { result = process_error_denied; }
-        else { current->stdio_mask &= ~(1u << first); result = 0; }
+        if (first > 2 || (current->stdio_mask & (1u << first)) == 0) {
+            result = process_error_denied;
+        } else {
+            current->stdio_mask &= ~(1u << first);
+            stdio_route_release(current, current->stdio[first]);
+            result = 0;
+        }
         break;
     case sys_image_info:
     case sys_image_read: {
@@ -636,9 +904,10 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_process_create: {
-        if (!current->supervisor) { result = process_error_denied; break; }
+        if (!current->supervisor && !current->spawn_access) { result = process_error_denied; break; }
         if (first > 7 || (first & ~u64{current->stdio_mask}) != 0 || third > 11 ||
             (third != 0 && !user_range_ok(second, third, false))) { break; }
+        if (!files_service_live()) { result = process_error_resources; break; }
         completion_record* slot = nullptr;
         for (auto& item : completions) { if (!item.used) { slot = &item; break; } }
         if (slot == nullptr) { result = process_error_resources; break; }
@@ -647,11 +916,165 @@ void* process_syscall(interrupt_frame* frame) {
         task_record* task = prepare_task(name);
         if (task == nullptr) { result = process_error_resources; break; }
         task->parent = current->pid;
-        task->stdio_mask = static_cast<u32>(first);
+        if (!inherit_stdio(task, current, static_cast<u32>(first))) {
+            destroy_task(task); result = process_error_state; break;
+        }
+        {
+            u32 free_count = 0;
+            for (const auto& endpoint : endpoints) { if (!endpoint.used) { ++free_count; } }
+            if (free_count < 2) {
+                destroy_task(task); result = process_error_resources; break;
+            }
+            task->session_request_handle = endpoint_attach(files_pid, task->pid, task->pid,
+                file_message_bytes);
+            task->session_response_handle = endpoint_attach(task->pid, files_pid, task->pid,
+                file_message_bytes, true);
+            if (task->session_request_handle == 0 || task->session_response_handle == 0) {
+                destroy_task(task); result = process_error_resources; break;
+            }
+            task->send_handle = task->session_request_handle;
+            task->recv_handle = task->session_response_handle;
+        }
         *slot = completion_record{};
         slot->used = true; slot->parent = current->pid; slot->status.pid = task->pid;
         task->completion_slot = static_cast<u32>(slot - completions) + 1;
         result = static_cast<i64>(task->pid);
+        break;
+    }
+    case sys_process_grant: {
+        if (!current->supervisor) { result = process_error_denied; break; }
+        if (second > 1) { break; }
+        task_record* task = owned_process(first);
+        if (task == nullptr) { result = process_error_denied; break; }
+        if (task->state != task_state::building) { result = process_error_state; break; }
+        task->spawn_access = second != 0;
+        result = 0;
+        break;
+    }
+    case sys_process_tls: {
+        task_record* task = owned_process(first);
+        if (task == nullptr) { result = process_error_denied; break; }
+        if (task->state != task_state::building) { result = process_error_state; break; }
+        if (second < process_tls_begin || second > process_tls_end - 16 || second % 16 != 0 ||
+            !space_range_ok(task->cr3, second, 16, true)) { break; }
+        task->thread_pointer = second;
+        result = 0;
+        break;
+    }
+    case sys_heap_break:
+        result = set_heap_break(first);
+        break;
+    case sys_pipe_create: {
+        if (!user_range_ok(first, sizeof(pipe_handles), true)) { break; }
+        if (next_pipe_token + 1 > 0xffffffffull ||
+            current->pipe_reference_count > process_max_pipe_refs - 2) {
+            result = process_error_resources; break;
+        }
+        u32 pipe_index = process_max_pipes;
+        for (u32 i = 0; i < process_max_pipes; ++i) {
+            if (!pipes[i].used) { pipe_index = i; break; }
+        }
+        pipe_reference* first_reference = nullptr;
+        pipe_reference* second_reference = nullptr;
+        for (auto& reference : current->pipe_references) {
+            if (reference.used) { continue; }
+            if (first_reference == nullptr) { first_reference = &reference; }
+            else { second_reference = &reference; break; }
+        }
+        if (pipe_index == process_max_pipes || first_reference == nullptr || second_reference == nullptr) {
+            result = process_error_resources; break;
+        }
+        const u32 read_token = static_cast<u32>(next_pipe_token++);
+        const u32 write_token = static_cast<u32>(next_pipe_token++);
+        pipes[pipe_index] = pipe_object{};
+        pipes[pipe_index].used = true;
+        pipes[pipe_index].references = 2;
+        pipes[pipe_index].reader_references = 1;
+        pipes[pipe_index].writer_references = 1;
+        *first_reference = {true, read_token, static_cast<u8>(pipe_index), false};
+        *second_reference = {true, write_token, static_cast<u8>(pipe_index), true};
+        current->pipe_reference_count += 2;
+        const pipe_handles handles{read_token, write_token};
+        copy_to_user(first, &handles, sizeof(handles));
+        result = 0;
+        break;
+    }
+    case sys_pipe_read:
+    case sys_pipe_write: {
+        pipe_reference* reference = pipe_reference_for(current, first);
+        if (reference == nullptr ||
+            (frame->rax == sys_pipe_read && reference->writable) ||
+            (frame->rax == sys_pipe_write && !reference->writable)) {
+            result = process_error_denied; break;
+        }
+        result = frame->rax == sys_pipe_read
+            ? pipe_read_from(reference->pipe_index, second, third)
+            : pipe_write_to(reference->pipe_index, second, third);
+        break;
+    }
+    case sys_pipe_close: {
+        pipe_reference* reference = pipe_reference_for(current, first);
+        if (reference == nullptr) { result = process_error_invalid; break; }
+        pipe_reference_close(current, reference);
+        result = 0;
+        break;
+    }
+    case sys_process_stdio: {
+        if (second >= 3) { break; }
+        task_record* child = owned_process(first);
+        if (child == nullptr) { result = process_error_denied; break; }
+        if (child->state != task_state::building) { result = process_error_state; break; }
+        stdio_route replacement{};
+        const bool target_writable = second != 0;
+        if (third == process_stdio_close) {
+            child->stdio_mask &= ~(1u << second);
+            stdio_route_release(child, child->stdio[second]);
+            result = 0;
+            break;
+        }
+        if (third <= 2) {
+            const u32 source_fd = static_cast<u32>(third);
+            if ((current->stdio_mask & (1u << source_fd)) == 0 ||
+                !current->stdio[source_fd].valid ||
+                current->stdio[source_fd].writable != target_writable ||
+                !stdio_route_copy(child, replacement, current->stdio[source_fd])) {
+                result = process_error_denied; break;
+            }
+        } else {
+            pipe_reference* reference = pipe_reference_for(current, third);
+            if (reference == nullptr || reference->writable != target_writable) {
+                result = process_error_denied; break;
+            }
+            replacement = {true, false, reference->writable, reference->pipe_index};
+            if (child->pipe_reference_count >= process_max_pipe_refs) {
+                result = process_error_resources; break;
+            }
+            pipe_retain(reference->pipe_index, reference->writable);
+            ++child->pipe_reference_count;
+        }
+        stdio_route_release(child, child->stdio[second]);
+        child->stdio[second] = replacement;
+        child->stdio_mask |= 1u << second;
+        result = 0;
+        break;
+    }
+    case sys_file_session: {
+        if (current == nullptr || !current->block_access || current->pid != files_pid) {
+            result = process_error_denied; break;
+        }
+        if (first >= file_session_count ||
+            !user_range_ok(second, sizeof(file_session_info), true)) { break; }
+        file_session_info info{};
+        const task_record& client = tasks[first];
+        if (client.state != task_state::free && client.state != task_state::building &&
+            client.state != task_state::dead &&
+            client.session_request_handle != 0 && client.session_response_handle != 0) {
+            info.pid = client.pid;
+            info.request_handle = client.session_request_handle;
+            info.response_handle = client.session_response_handle;
+        }
+        copy_to_user(second, &info, sizeof(info));
+        result = 0;
         break;
     }
     case sys_process_map: {
@@ -660,10 +1083,16 @@ void* process_syscall(interrupt_frame* frame) {
         if (task->state != task_state::building) { result = process_error_state; break; }
         if (!user_range_ok(second, sizeof(process_page), false)) { break; }
         process_page page{}; copy_from_user(&page, second, sizeof(page));
-        if (page.address < process_user_begin || page.address >= process_user_end ||
+        const bool stack_or_startup = page.address >= process_stack_bottom &&
+                                      page.address < process_user_end;
+        const bool image_page = page.address >= process_user_begin &&
+                                page.address < process_stack_guard;
+        if ((!image_page && !stack_or_startup) ||
+            (page.address >= process_heap_begin && page.address < process_heap_end) ||
             page.address % page_size != 0 || page.length > page_size ||
             (page.permissions & ~u32{7}) != 0 || (page.permissions & map_read) == 0 ||
             (page.permissions & 3) == 3 || !user_range_ok(page.source, page.length, false)) { break; }
+        if (stack_or_startup && page.permissions != (map_read | map_write)) { break; }
         if (task->user_pages == process_max_pages) { result = process_error_resources; break; }
         const page_permissions permissions{(page.permissions & 2) != 0, (page.permissions & 1) != 0, true};
         result = add_user_page(task, page.address, reinterpret_cast<const u8*>(page.source), page.length,
@@ -680,9 +1109,11 @@ void* process_syscall(interrupt_frame* frame) {
         if (!space_range_ok(task->cr3, entry.entry, 1, false) ||
             query_page_in(task->cr3, entry.entry & ~(page_size - 1), &physical, &permissions) != memory_result::none ||
             !permissions.executable || permissions.writable || entry.stack % 16 != 0 ||
-            entry.stack < process_user_begin + 16 ||
+            entry.stack < process_stack_bottom + 16 || entry.stack > process_startup_begin ||
             !space_range_ok(task->cr3, entry.stack - 16, 16, true) ||
             entry.startup % alignof(startup_info) != 0 ||
+            entry.startup < process_startup_begin ||
+            entry.startup > process_stack_top - sizeof(startup_info) ||
             !space_range_ok(task->cr3, entry.startup, sizeof(startup_info), false)) { break; }
         task->entry = entry.entry; task->initial_stack = entry.stack; task->startup = entry.startup;
         task->state = task_state::fresh;
@@ -791,14 +1222,7 @@ void* syscall_entry(interrupt_frame* frame) {
     case sys_write: {
         const u64 address = frame->rdi;
         const u64 length = frame->rsi;
-        if ((current->stdio_mask & 2) == 0) { result = sys_error_invalid_handle; break; }
-        if (length > 0 && length <= 256 && user_range_ok(address, length, false)) {
-            char buffer[257];
-            copy_from_user(buffer, address, length);
-            buffer[length] = '\0';
-            (void)platform::debug_write(buffer);
-            result = static_cast<i64>(length);
-        }
+        result = stdio_write(current, 1, address, length);
         break;
     }
     case sys_exit:
@@ -821,22 +1245,7 @@ void* syscall_entry(interrupt_frame* frame) {
         result = static_cast<i64>(tick_count);
         break;
     case sys_read: {
-        if ((current->stdio_mask & 1) == 0) { result = sys_error_invalid_handle; break; }
-        const u64 address = frame->rdi;
-        if (frame->rsi == 0) {
-            result = 0;
-        } else if (!user_range_ok(address, 1, true)) {
-            result = sys_error_invalid_argument;
-        } else {
-            const int received = platform::debug_read();
-            if (received < 0) {
-                result = 0;
-            } else {
-                const u8 value = static_cast<u8>(received);
-                copy_to_user(address, &value, 1);
-                result = 1;
-            }
-        }
+        result = stdio_read(current, 0, frame->rdi, frame->rsi, false);
         break;
     }
     case sys_tasklist: {
@@ -886,7 +1295,7 @@ void* syscall_entry(interrupt_frame* frame) {
                 break;
             }
         }
-        if (target == nullptr || target == current || target->supervisor ||
+        if (target == nullptr || target == current || target->supervisor || target->block_access ||
             target->state == task_state::dead || target->state == task_state::free) {
             result = sys_error_invalid_handle;
             break;
@@ -932,12 +1341,16 @@ bool tasks_create_default() {
     if (create_task("spinner", spinner, spinner_size) == nullptr) { return false; }
     task_record* receiver_task = create_task("receiver", receiver, receiver_size);
     if (receiver_task == nullptr) { return false; }
-    const u32 handle = endpoint_attach(static_cast<u32>(receiver_task->pid), default_message_bytes);
+    const u32 handle = endpoint_attach(receiver_task->pid, 0, receiver_task->pid,
+        default_message_bytes);
     if (handle != 1) { return false; }
     receiver_task->recv_handle = handle;
     task_record* sender_task = create_task("sender", sender, sender_size);
     if (sender_task == nullptr) { return false; }
     sender_task->send_handle = handle;
+    endpoint_record* channel = endpoint_for(handle);
+    if (channel == nullptr) { return false; }
+    channel->sender_pid = sender_task->pid;
     if (create_task("probe", probe, probe_size) == nullptr) { return false; }
     if (create_task("quitter", quitter, quitter_size) == nullptr) { return false; }
     task_record* supervisor_task = create_supervisor();
@@ -945,11 +1358,16 @@ bool tasks_create_default() {
     supervisor_task->supervisor = true;
     task_record* files_task = create_files_service();
     if (files_task == nullptr) { return false; }
-    const u32 request_handle = endpoint_attach(static_cast<u32>(files_task->pid), file_message_bytes);
-    const u32 response_handle = endpoint_attach(static_cast<u32>(supervisor_task->pid), file_message_bytes);
+    files_pid = files_task->pid;
+    const u32 request_handle = endpoint_attach(files_task->pid, supervisor_task->pid,
+        supervisor_task->pid, file_message_bytes);
+    const u32 response_handle = endpoint_attach(supervisor_task->pid, files_task->pid,
+        supervisor_task->pid, file_message_bytes, true);
     if (request_handle != 2 || response_handle != 3) { return false; }
     supervisor_task->send_handle = request_handle;
     supervisor_task->recv_handle = response_handle;
+    supervisor_task->session_request_handle = request_handle;
+    supervisor_task->session_response_handle = response_handle;
     files_task->recv_handle = request_handle;
     files_task->send_handle = response_handle;
     format::text("[task] event=ready count=");

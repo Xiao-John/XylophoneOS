@@ -75,8 +75,13 @@ memory_result map_page(u64 virtual_address, u64 physical, page_permissions permi
 }
 
 memory_result unmap_page(u64 virtual_address) {
-    if ((virtual_address % page_size) != 0) { return memory_result::invalid; }
-    u64* pml4 = table(read_cr3());
+    return unmap_page_in(read_cr3(), virtual_address, nullptr);
+}
+
+memory_result unmap_page_in(u64 address_space, u64 virtual_address, u64* physical) {
+    if ((address_space % page_size) != 0 || address_space >= max_managed_phys ||
+        (virtual_address % page_size) != 0) { return memory_result::invalid; }
+    u64* pml4 = table(address_space);
     const u64 pml4_entry = pml4[index_of(virtual_address, 39)];
     if ((pml4_entry & present) == 0 || (pml4_entry & huge) != 0) {
         return memory_result::not_mapped;
@@ -93,8 +98,9 @@ memory_result unmap_page(u64 virtual_address) {
     u64* pt = table(pd_entry);
     u64& leaf = pt[index_of(virtual_address, 12)];
     if ((leaf & present) == 0) { return memory_result::not_mapped; }
+    if (physical != nullptr) { *physical = leaf & address_mask; }
     leaf = 0;
-    invalidate(virtual_address);
+    if (read_cr3() == address_space) { invalidate(virtual_address); }
     return memory_result::none;
 }
 

@@ -1,7 +1,7 @@
 # newlib 4.6.0 for x86_64-elf (vendored prebuilt)
 
 Source: https://sourceware.org/pub/newlib/newlib-4.6.0.20260123.tar.gz
-License: see `COPYING.NEWLIB` (newlib contains multiple permissive notices).
+License: per-component; see `COPYING.NEWLIB` and source-file notices. It is not one uniform LGPL license. Archive-member source/license mapping is not completed; see `docs/licensing.md`.
 
 Configuration used to produce `x86_64-elf/lib/libc.a` and `libm.a`:
 

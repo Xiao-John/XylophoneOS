@@ -1,0 +1,10 @@
+# XOS addition: Apache-2.0; upstream libiberty context retains GPL-2.0-or-later with GCC exception.
+# SPDX-License-Identifier: GPL-2.0-or-later WITH GCC-exception-2.0 AND Apache-2.0
+--- a/libiberty/lrealpath.c
++++ b/libiberty/lrealpath.c
+@@ -303,4 +303,5 @@
+     return res;
+   }
+ #endif // _WIN32
++  return strdup (filename);
+ }

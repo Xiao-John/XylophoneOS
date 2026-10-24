@@ -1,0 +1,1108 @@
+{
+  "build_id": "xos-gcc-c-seed-c3b803762179",
+  "component": "gcc-c-seed",
+  "configure_options": [
+    "--host=x86_64-unknown-elf",
+    "--target=x86_64-elf",
+    "--enable-languages=c",
+    "--with-newlib",
+    "--disable-bootstrap",
+    "--disable-shared",
+    "--disable-threads",
+    "--without-isl",
+    "--disable-libstdcxx"
+  ],
+  "host": "x86_64-unknown-elf",
+  "host_stdcxx": {
+    "libstdc++_sha256": "f083d386bb93e4d23004effd47a23946f57d395d9a8a0b4d3c2f550ffc406f8f",
+    "libsupc++_sha256": "174948f1b8025b1ae195ae28d1196f86dd3bf5ea9e491d0b6220bc447570144a",
+    "path": ".cache/xos_seed/gcc/stdcxx/prefix"
+  },
+  "install_files": [
+    {
+      "bytes": 3822624,
+      "guest_path": "/usr/bin/x86_64-elf-cpp",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/bin/x86_64-elf-cpp",
+      "sha256": "1a4175e7b7df62e08d3d6146ddec5dff0547b34a2b2f482ae364f19e048293b2"
+    },
+    {
+      "bytes": 3822584,
+      "guest_path": "/usr/bin/x86_64-elf-gcc",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/bin/x86_64-elf-gcc",
+      "sha256": "4cbf4926f97f22138e7b8c7454f88ad70bdec9d9ed323bc88e4b22733b809ff1"
+    },
+    {
+      "bytes": 3822584,
+      "guest_path": "/usr/bin/x86_64-elf-gcc-16.2.0",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/bin/x86_64-elf-gcc-16.2.0",
+      "sha256": "4cbf4926f97f22138e7b8c7454f88ad70bdec9d9ed323bc88e4b22733b809ff1"
+    },
+    {
+      "bytes": 800096,
+      "guest_path": "/usr/bin/x86_64-elf-gcc-ar",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/bin/x86_64-elf-gcc-ar",
+      "sha256": "3869a5f92152b1031937a677d5b4481de892c0ddf2dbbbc0f311ec78fcf89e67"
+    },
+    {
+      "bytes": 800096,
+      "guest_path": "/usr/bin/x86_64-elf-gcc-nm",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/bin/x86_64-elf-gcc-nm",
+      "sha256": "abe2eadc8de9ec67b86a227cb0a6c94333536193988de255eca465ea4422e065"
+    },
+    {
+      "bytes": 800104,
+      "guest_path": "/usr/bin/x86_64-elf-gcc-ranlib",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/bin/x86_64-elf-gcc-ranlib",
+      "sha256": "d2434b691d4fc61a1a01f760ea534b4c1b30d5d5333514d4c646285637d03a32"
+    },
+    {
+      "bytes": 2810008,
+      "guest_path": "/usr/bin/x86_64-elf-gcov",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/bin/x86_64-elf-gcov",
+      "sha256": "fa86baefa8115422bf81cb9fcb760e8470dfd434d0c0da9d6dcb0e5b3ed40170"
+    },
+    {
+      "bytes": 2502848,
+      "guest_path": "/usr/bin/x86_64-elf-gcov-dump",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/bin/x86_64-elf-gcov-dump",
+      "sha256": "0036e2bbf1f2f536627875db5e6053906b77b66c2391fb6c001e63b92fda5c14"
+    },
+    {
+      "bytes": 3136,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/crtbegin.o",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/crtbegin.o",
+      "sha256": "b13c4d2e37c5fb9276dae5da98fc9354b33a24d093ac962060a045ce4d6f1ead"
+    },
+    {
+      "bytes": 1632,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/crtend.o",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/crtend.o",
+      "sha256": "abab18582b725e367ab0e3a1aea24042d9acb0b72442e513938f614439ff9e56"
+    },
+    {
+      "bytes": 2832,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/adxintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/adxintrin.h",
+      "sha256": "fa5801f788ba0754274efcbe0e318e88cd6aa744af8b428f599fc6f209d91eac"
+    },
+    {
+      "bytes": 3216,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/ammintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/ammintrin.h",
+      "sha256": "5c6158978bab968f533f2b54e546503087b55c6dfe6055e367f26fe6dc922298"
+    },
+    {
+      "bytes": 5953,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/amxavx512intrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/amxavx512intrin.h",
+      "sha256": "0a2c1353ceed265d4f4b7ac989eb4cb04ea40a8b021c0f0e7e0817eaa17bd167"
+    },
+    {
+      "bytes": 1877,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/amxbf16intrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/amxbf16intrin.h",
+      "sha256": "04ced63625b33bc91cfd8e3fa6b92bbc464d52e88e35d156968b8deddfd6ac34"
+    },
+    {
+      "bytes": 2370,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/amxcomplexintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/amxcomplexintrin.h",
+      "sha256": "fd215312e2e623445577be859c5f2ca0d1822c9034a28f0f6d2b9ce63b621eb4"
+    },
+    {
+      "bytes": 1731,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/amxfp16intrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/amxfp16intrin.h",
+      "sha256": "a76c9f614902d2cdf03a50fdbd8ef9713a78f0ae30e7a42c6e51ae190978a65f"
+    },
+    {
+      "bytes": 2767,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/amxfp8intrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/amxfp8intrin.h",
+      "sha256": "8b2d594055f61343dabdee38f0aaea49294efadc3bd11793203f17fefe0be7d8"
+    },
+    {
+      "bytes": 2160,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/amxint8intrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/amxint8intrin.h",
+      "sha256": "1621a5fd5b03c0f19715b9e18ceda3e4bf78c9d005b49e7474dd6f4eaecb32d0"
+    },
+    {
+      "bytes": 2278,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/amxmovrsintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/amxmovrsintrin.h",
+      "sha256": "9af764e23215570fe07dc7dae55372122fdd15f637120a81fdaa8fffdc9d0567"
+    },
+    {
+      "bytes": 1913,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/amxtf32intrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/amxtf32intrin.h",
+      "sha256": "34b4da6fb253cf0d95e96c73dc8a0744131d635032ac56f3760e178a604ab090"
+    },
+    {
+      "bytes": 3224,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/amxtileintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/amxtileintrin.h",
+      "sha256": "0a7927f1115c6ff6ca5511aac58eddc2f8c88142acf1abacd64498226bb4f3c3"
+    },
+    {
+      "bytes": 57858,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx10_2bf16intrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx10_2bf16intrin.h",
+      "sha256": "d69359bb8dcee3e2bce2ab7ef0f1f30b4e1ade3e4e2c1b39539168acf004b403"
+    },
+    {
+      "bytes": 46574,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx10_2convertintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx10_2convertintrin.h",
+      "sha256": "645ccbdc75f4df4eaf9969bc1107389114386d4bc6ea27836845e5746c465a88"
+    },
+    {
+      "bytes": 1612,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx10_2copyintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx10_2copyintrin.h",
+      "sha256": "2072a14b13da6186e5370b1c1db55f94009b8add2affe09493ddc420a30cc8a9"
+    },
+    {
+      "bytes": 37210,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx10_2mediaintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx10_2mediaintrin.h",
+      "sha256": "dc396e9143ef369ff487e7c88e2b4aa121c68ec06fb30c2377a591294cc526a0"
+    },
+    {
+      "bytes": 43593,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx10_2minmaxintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx10_2minmaxintrin.h",
+      "sha256": "97185ced5ca162753e6a6a5a51111664cb85b6482673a47203624e27a3fe6eec"
+    },
+    {
+      "bytes": 91840,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx10_2satcvtintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx10_2satcvtintrin.h",
+      "sha256": "01ebbf342c257b271ae97d54e6b0bee700dc651a7e2f706b244aa0c707a9a112"
+    },
+    {
+      "bytes": 70021,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx2intrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx2intrin.h",
+      "sha256": "4352d0a2b5d8b3817c697146357c1322429850479889f3cb7eb80d4edc752794"
+    },
+    {
+      "bytes": 5044,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512bf16intrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512bf16intrin.h",
+      "sha256": "7820ad1fac217311886a8d69907802c7e12558d45f1ae93fd8f8eeb781719fd7"
+    },
+    {
+      "bytes": 9181,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512bf16vlintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512bf16vlintrin.h",
+      "sha256": "52c2128ba46da6d37140fb70ec5edda2726ad84aee76dd06a359b159035e370c"
+    },
+    {
+      "bytes": 3650,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512bitalgintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512bitalgintrin.h",
+      "sha256": "2c4dd22489aeb96b771d937e0a70a00ab5884932422b65d16b7b87c3b4b80198"
+    },
+    {
+      "bytes": 5811,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512bitalgvlintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512bitalgvlintrin.h",
+      "sha256": "3c5dc1024625394ddbad24c153fae15e8c50b2bb2ebf93fd63364dc20f205295"
+    },
+    {
+      "bytes": 2938,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512bmmintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512bmmintrin.h",
+      "sha256": "7fb16185f3f6d999359f7f027565e34e9bc798421a7dcd5629f0c0fca3698fce"
+    },
+    {
+      "bytes": 3875,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512bmmvlintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512bmmvlintrin.h",
+      "sha256": "4ba55711c928c0003d7401ecdb9d2c0b1ed84e930d698376ddabb38fdbfb96f9"
+    },
+    {
+      "bytes": 103681,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512bwintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512bwintrin.h",
+      "sha256": "7c694f6b9072c45c49db67b48da294932d8403b19ae366ac11e5d0fff5a1091b"
+    },
+    {
+      "bytes": 5822,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512cdintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512cdintrin.h",
+      "sha256": "d13ecfdb1cee249e12f62f9306caf47f3b72f18097c7695d5971a09306be21d1"
+    },
+    {
+      "bytes": 93248,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512dqintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512dqintrin.h",
+      "sha256": "23e80b4e82ec100fc5459438da1483f2ee3aba94f978cb4b1c92402319544470"
+    },
+    {
+      "bytes": 529582,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512fintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512fintrin.h",
+      "sha256": "73fb6379b12282b8f938c40a49d96aa5009d4157468f3e46f490d52dab8c6dd5"
+    },
+    {
+      "bytes": 215780,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512fp16intrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512fp16intrin.h",
+      "sha256": "5bd7c3f6335a4e1bf68ef332fcb9fb47ab8cf3db36fe53faa1219c2a93aba16b"
+    },
+    {
+      "bytes": 97767,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512fp16vlintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512fp16vlintrin.h",
+      "sha256": "a356f44e545719ef21d69cf83d26dc4701bce8f4d916932e30628ef76682b439"
+    },
+    {
+      "bytes": 3437,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512ifmaintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512ifmaintrin.h",
+      "sha256": "fa535d2936c921cd521a12856258bf8a01ba3da73ffd9e5f511e5f87bd40c346"
+    },
+    {
+      "bytes": 4762,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512ifmavlintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512ifmavlintrin.h",
+      "sha256": "cda69d9ba0bdc3f71e46445aa88b26a23c197bb9b8d8d00dfc2b2e818b5d9cc1"
+    },
+    {
+      "bytes": 19489,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vbmi2intrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vbmi2intrin.h",
+      "sha256": "5e7d7f08c0281f7b03671ad32f7896c4e03bde385b2d66f9db0a55a1bfb26be6"
+    },
+    {
+      "bytes": 37000,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vbmi2vlintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vbmi2vlintrin.h",
+      "sha256": "931e0fc4370ec64cfc7a55cbc9018ede03574fbcad2ff5c8e93d845562066a0b"
+    },
+    {
+      "bytes": 4928,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vbmiintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vbmiintrin.h",
+      "sha256": "ffb7a5d065413256a644ea5893582884e2326d75345fff53938c2e2fb70c455f"
+    },
+    {
+      "bytes": 8420,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vbmivlintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vbmivlintrin.h",
+      "sha256": "f36feb524c2058d6687b10722126a050968c863650ea42804675a2df5f844eed"
+    },
+    {
+      "bytes": 164528,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vlbwintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vlbwintrin.h",
+      "sha256": "87fb221dce0d059a69f377ecb9da03b35ddc02d88549a2f3c66a66a8443abf76"
+    },
+    {
+      "bytes": 62185,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vldqintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vldqintrin.h",
+      "sha256": "ec0339649b1dc90c7145f8fc353f0e41967994be9f4b3a47a770df96cc437341"
+    },
+    {
+      "bytes": 434714,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vlintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vlintrin.h",
+      "sha256": "25d48cb770c9d5e90a10e1308359f6fbf7872c991ae5a75b934f66b5ed6845f3"
+    },
+    {
+      "bytes": 4969,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vnniintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vnniintrin.h",
+      "sha256": "d5019db5cecb6f3ba0dca2c0cde66467ec722ab4c3b87098bf97096352b928c5"
+    },
+    {
+      "bytes": 7404,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vnnivlintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vnnivlintrin.h",
+      "sha256": "d0f7c13135a5915500b5e57ecfcfd9c024cf913b30452885dc2f4f97dc09f809"
+    },
+    {
+      "bytes": 2105,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vp2intersectintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vp2intersectintrin.h",
+      "sha256": "26cca2cb4d2fbbff4e67a305e8476c15689b7874c664f8fbcd30bcd33bbdc634"
+    },
+    {
+      "bytes": 2638,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vp2intersectvlintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vp2intersectvlintrin.h",
+      "sha256": "ee1d38051a5ddbf8f9b84b01e6f57ba710d696fd9a24f3590534be7672662aea"
+    },
+    {
+      "bytes": 3117,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vpopcntdqintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vpopcntdqintrin.h",
+      "sha256": "b537c7673c8927e87b7252add391b5339db17c3f58e63d49dd5f78a94f8fe0cc"
+    },
+    {
+      "bytes": 4695,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vpopcntdqvlintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avx512vpopcntdqvlintrin.h",
+      "sha256": "0df31efb197e101a45184299f7362873c97f283d65005e31d9c057c61ba43dbd"
+    },
+    {
+      "bytes": 2551,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avxifmaintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avxifmaintrin.h",
+      "sha256": "b77b3a2ad5e482a163e8eba7145521e3fbc3e3f387eb6d06ce59d41cd3554792"
+    },
+    {
+      "bytes": 51427,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avxintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avxintrin.h",
+      "sha256": "3e98c473ccf8d8a35da55e8941c85cde26d04aaf0cfc69f8a39aa42113b5560e"
+    },
+    {
+      "bytes": 4424,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avxneconvertintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avxneconvertintrin.h",
+      "sha256": "00c3c60f68369d0ee4570a32fbf8cb9ad436529c46c6802140cc35a20d6f1bc4"
+    },
+    {
+      "bytes": 4578,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avxvnniint16intrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avxvnniint16intrin.h",
+      "sha256": "6110f878ed65c74d0091f0d946829ad5157a26b59e7dfba6687aefac861ab775"
+    },
+    {
+      "bytes": 4521,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avxvnniint8intrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avxvnniint8intrin.h",
+      "sha256": "a878882a732fe88118ad47d49e2c096c393b7c9f3c7090bb99304ef824568f0c"
+    },
+    {
+      "bytes": 3604,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/avxvnniintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/avxvnniintrin.h",
+      "sha256": "63a40298c686ce8bd257ef2b819891d67164830bdac3fbfea7be1c2027d30024"
+    },
+    {
+      "bytes": 3355,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/bmi2intrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/bmi2intrin.h",
+      "sha256": "e5553341c2fe311d7273f1c53dde21e08b4d9e681ac5be6f1f6ee30ae91a97ac"
+    },
+    {
+      "bytes": 6149,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/bmiintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/bmiintrin.h",
+      "sha256": "2dd9bd459f7e13a5af1f256f738cb8a7323c4f1ed8ec8fac2a98bc405b35af69"
+    },
+    {
+      "bytes": 1154,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/bmmintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/bmmintrin.h",
+      "sha256": "89f64d639d21e54707afb5bc473e1b767fe0b4651e0b09a8c027d0e899b17db0"
+    },
+    {
+      "bytes": 2665,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/cet.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/cet.h",
+      "sha256": "1aca1a9e65eb57a710e1155a03fec29616ad3316bae278252d8d4dfdb02beb35"
+    },
+    {
+      "bytes": 3334,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/cetintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/cetintrin.h",
+      "sha256": "b1d1e1ca5ba8f4e70fbb28961ed013771981b6eba4622ab63c0aabd380ae7abb"
+    },
+    {
+      "bytes": 1615,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/cldemoteintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/cldemoteintrin.h",
+      "sha256": "fd53c7cd9e7a5a91aba876454ce4259da906f284ab91e87ed23ab07989e703b1"
+    },
+    {
+      "bytes": 1664,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/clflushoptintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/clflushoptintrin.h",
+      "sha256": "7847ca63c6a6e1dd1a1cf6e26f7e0986ef230a31cdfbbe936574328d0dc03f72"
+    },
+    {
+      "bytes": 1586,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/clwbintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/clwbintrin.h",
+      "sha256": "1025db50d85867d8c55056078af7966b9a5cd1697d65c6f2276038b703ca0241"
+    },
+    {
+      "bytes": 1491,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/clzerointrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/clzerointrin.h",
+      "sha256": "76cafd6b3397a7c704c222c803ba8479a9838d1b4ddad12e36234d209d54ca8a"
+    },
+    {
+      "bytes": 2885,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/cmpccxaddintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/cmpccxaddintrin.h",
+      "sha256": "60dc6fbcd7ea8ba5d4f1b9855cfbe637196c4f2b4580789ac9cd6ed879655818"
+    },
+    {
+      "bytes": 10782,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/cpuid.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/cpuid.h",
+      "sha256": "a0fbf282835d09b42b03bb16f909810236047b4ca085a48220ee742e5c20933b"
+    },
+    {
+      "bytes": 2558,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/cross-stdarg.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/cross-stdarg.h",
+      "sha256": "de9850120f7130f53643701f2949440fa365c688f91b71f197cbffec48129161"
+    },
+    {
+      "bytes": 53273,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/emmintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/emmintrin.h",
+      "sha256": "dd289250de5ae6b9905c31962057d4e55f194530e6336c7d5cc277f7bb00d704"
+    },
+    {
+      "bytes": 1817,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/enqcmdintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/enqcmdintrin.h",
+      "sha256": "a28cf8a616520d53d86b38ad5a3d418e2110194c13bd471314a9420cef5b88c9"
+    },
+    {
+      "bytes": 3410,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/f16cintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/f16cintrin.h",
+      "sha256": "add918edb733ed6b624da1736a0342d3907abf609e124978cb3fed62513632c3"
+    },
+    {
+      "bytes": 21430,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/float.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/float.h",
+      "sha256": "28713290dd87e4468602f1e1e013988ca0b6f63b43052b5124f48530b7cdc2b4"
+    },
+    {
+      "bytes": 9132,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/fma4intrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/fma4intrin.h",
+      "sha256": "c22a8a50a09b010a528e5ff16888b02d25431bfd4dc2787240d349d09ee9086c"
+    },
+    {
+      "bytes": 10116,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/fmaintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/fmaintrin.h",
+      "sha256": "6ee23c2cca51cee42797e65c7ea6e6fe0aba139299cd9d7bfefb847f35f24fd9"
+    },
+    {
+      "bytes": 2057,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/fxsrintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/fxsrintrin.h",
+      "sha256": "9822824fe94de50f7f1cb71895b3108fd963f75b2ddcf817086be75f13287373"
+    },
+    {
+      "bytes": 15408,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/gfniintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/gfniintrin.h",
+      "sha256": "b01350350c52696b1ad7c6b04b8a492e2059aa060c995ecebad31d39a29fe1ad"
+    },
+    {
+      "bytes": 1627,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/hresetintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/hresetintrin.h",
+      "sha256": "2bd2c7a0757a100b907a98f07a1e839c69322906c86326d1dc33624d666a3adf"
+    },
+    {
+      "bytes": 7865,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/ia32intrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/ia32intrin.h",
+      "sha256": "040f4979acca904741bf8285d47e76c52cb53b87f447dee71a9e88675fa09eb5"
+    },
+    {
+      "bytes": 3165,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/immintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/immintrin.h",
+      "sha256": "b56104d0d22972865a2537e959799a3afcca92ff6dde6e39d6c86ca0d11bca54"
+    },
+    {
+      "bytes": 1272,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/iso646.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/iso646.h",
+      "sha256": "0584525ab7c2ffc635f7dccd3850c8619fadf78f170987034b5f7a961a85bbdf"
+    },
+    {
+      "bytes": 4440,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/keylockerintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/keylockerintrin.h",
+      "sha256": "c622ea24a04d9da222fc55c46d97a599e7ff03fe6b8e50434b85958acd0e9129"
+    },
+    {
+      "bytes": 4870,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/limits.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/limits.h",
+      "sha256": "c26d2c9badbfe2bffac0695dda2b72117b951d1bd56d981618011dc01a81cccd"
+    },
+    {
+      "bytes": 3406,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/lwpintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/lwpintrin.h",
+      "sha256": "0e240473418fe48537010b55a8632b21e5dfd39488f05689175927bc8b857949"
+    },
+    {
+      "bytes": 2365,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/lzcntintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/lzcntintrin.h",
+      "sha256": "e7f11f403568c2680da40ddd224271a1db1ead73e7dc06caa6ac6e1b97f80eee"
+    },
+    {
+      "bytes": 7076,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/mm3dnow.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/mm3dnow.h",
+      "sha256": "d5fb3c866952524c29e8f9a61f4ef01770fb4af559bb372ece26c07573f04806"
+    },
+    {
+      "bytes": 2314,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/mm_malloc.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/mm_malloc.h",
+      "sha256": "b3e23d3fee62a617d873952acdfadc1e25b7f14fa1e4e291bed4bbce8a69c49b"
+    },
+    {
+      "bytes": 31892,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/mmintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/mmintrin.h",
+      "sha256": "7579ce685ce1b56b8da695d884fcfc091fee5e612e3c50087a37fe3b9a610b7d"
+    },
+    {
+      "bytes": 2348,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/movdirintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/movdirintrin.h",
+      "sha256": "5568f75882a290cddab8695592be368894987b48e50766ef65487a6a00d85429"
+    },
+    {
+      "bytes": 13329,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/movrsintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/movrsintrin.h",
+      "sha256": "49fb71468541741e3ba0db35b3e9b122c03308d055187f58dcb2a981614a0cf3"
+    },
+    {
+      "bytes": 1710,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/mwaitintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/mwaitintrin.h",
+      "sha256": "52574a11ab7d8ee762b189b8607c687c351a20f145c8d74687a1e5f0299cd0e0"
+    },
+    {
+      "bytes": 1747,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/mwaitxintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/mwaitxintrin.h",
+      "sha256": "1a166335e34a577b9cd81e61e6a4d5f3e1fe7cf4aba49c4019a10899a1b18138"
+    },
+    {
+      "bytes": 1288,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/nmmintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/nmmintrin.h",
+      "sha256": "b49f5c36305650ac8ed122552a3730be6a3713a7ac5b9bec9dc6643618fe2dbc"
+    },
+    {
+      "bytes": 2355,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/pconfigintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/pconfigintrin.h",
+      "sha256": "828653f916bdb3b7683dfeead2fcdb2e0c9043b3cd91fd633a2d53633381a291"
+    },
+    {
+      "bytes": 1742,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/pkuintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/pkuintrin.h",
+      "sha256": "a4af8352dc60f0c9d7238dc32cf9bd7980c0494b1eff2c05afc2dcaf9d65df33"
+    },
+    {
+      "bytes": 4016,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/pmmintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/pmmintrin.h",
+      "sha256": "caa6a7cbe9b9b3600abc212bdc159510fc75064ed9050ffc517c03efa143ef0b"
+    },
+    {
+      "bytes": 1750,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/popcntintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/popcntintrin.h",
+      "sha256": "ed8d070814464b6594ddf302f1108f78887095699dd87ea58975e9377d92dc8d"
+    },
+    {
+      "bytes": 2009,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/prfchiintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/prfchiintrin.h",
+      "sha256": "ae5337b7978ca306a537cd05fbc81d275d039df305b7969aac3f6b46e857231b"
+    },
+    {
+      "bytes": 1477,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/prfchwintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/prfchwintrin.h",
+      "sha256": "a04a8a0e5eff6a56e66f7085834c55beaef16c8948121769290e0788660951fd"
+    },
+    {
+      "bytes": 2941,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/raointintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/raointintrin.h",
+      "sha256": "024f1c091bf258d892e1e8a9a91cc56ae504ca5b3702ec2c234f6d37a26b1b97"
+    },
+    {
+      "bytes": 2018,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/rdseedintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/rdseedintrin.h",
+      "sha256": "3f36ee883ee6e2054e6e991a9688102109b527b2a113624f2f441567f1485f68"
+    },
+    {
+      "bytes": 2739,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/rtmintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/rtmintrin.h",
+      "sha256": "26d045753fb00435aca0f3bee049f131334c8c23e0499f81cdefdff7a398df49"
+    },
+    {
+      "bytes": 1624,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/serializeintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/serializeintrin.h",
+      "sha256": "4a9103bb07f5ba5b64ddb12d40a3406bd6732ffccc3179f7c17c04661a7a22c2"
+    },
+    {
+      "bytes": 7091,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/sgxintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/sgxintrin.h",
+      "sha256": "050ced8b70b95fad2b4f7e54d0b8a7af49948ba7a69d030ee05b77b2059f9468"
+    },
+    {
+      "bytes": 2162,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/sha512intrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/sha512intrin.h",
+      "sha256": "b73dc4e565d5fa0b4f734adcb4d123d23e7183ae666fe9f4d726707df8f17afd"
+    },
+    {
+      "bytes": 3204,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/shaintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/shaintrin.h",
+      "sha256": "155ecb7a648e00b34624c99b2765480bb792ec484903d9bcef98c3f53b0ecb6a"
+    },
+    {
+      "bytes": 2382,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/sm3intrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/sm3intrin.h",
+      "sha256": "f190245ed79a41ceda15eccd79ba1be10b7ca9979b9fb082604c69b06152ed23"
+    },
+    {
+      "bytes": 3023,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/sm4intrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/sm4intrin.h",
+      "sha256": "bfc22ef5de66af560c5b0dfba3874e23ac0e41722dba90bdcfaa64020e2885b2"
+    },
+    {
+      "bytes": 28191,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/smmintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/smmintrin.h",
+      "sha256": "75d01acc23a4e096524902d0c979f0675a566a8b4cd5e913028dbd123f47f445"
+    },
+    {
+      "bytes": 1338,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/stdalign.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/stdalign.h",
+      "sha256": "0af28c6982fa1227427bc259117b5cba2b278189f9378fe0c0c1a4ee4b5d1819"
+    },
+    {
+      "bytes": 4378,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/stdarg.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/stdarg.h",
+      "sha256": "173a81bfbe88a2da5ed5d238e14e0eaca61b090ee6d7b12b5f9614daeea21600"
+    },
+    {
+      "bytes": 9715,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/stdatomic.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/stdatomic.h",
+      "sha256": "7e359ce3ebff2f69dd863cf73637e3d70a20486509eba285d659574805c17885"
+    },
+    {
+      "bytes": 1490,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/stdbool.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/stdbool.h",
+      "sha256": "f2a112e8b2128fb1d76e7c0b625cec8760955ebeae5cdf6b419ccf0c6d62768f"
+    },
+    {
+      "bytes": 1509,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/stdckdint.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/stdckdint.h",
+      "sha256": "085abc93851c650db04fce113081fe7ca74b5ef374b999097bd46c6f3baeb788"
+    },
+    {
+      "bytes": 1104,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/stdcountof.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/stdcountof.h",
+      "sha256": "734cd7e7024ced3010d55f704620084d657a50dd6cf610c9beaf020428cecc57"
+    },
+    {
+      "bytes": 14134,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/stddef.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/stddef.h",
+      "sha256": "868352506950054491b9c76a4e2814f4f3601d227d3dea62a3e75875f327f2c1"
+    },
+    {
+      "bytes": 6000,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/stdfix.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/stdfix.h",
+      "sha256": "0d81b862fffaa67a7851809df7427ad6e3368ef588fa7990cccc44842dc07d14"
+    },
+    {
+      "bytes": 9648,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/stdint-gcc.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/stdint-gcc.h",
+      "sha256": "c955891e7a7fbadde60a187f66c5b09564d4a1ed751f1c5dd820fb1d71f246db"
+    },
+    {
+      "bytes": 443,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/stdint.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/stdint.h",
+      "sha256": "64ab730bb09eba38f01a62174fb8371ef281778ac33f141a6fa4217a9b39466a"
+    },
+    {
+      "bytes": 1136,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/stdnoreturn.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/stdnoreturn.h",
+      "sha256": "8e9a835f0009938c402214ab56463500b4732fcd49d1a66583b93d6d032cdeca"
+    },
+    {
+      "bytes": 445,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/syslimits.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/syslimits.h",
+      "sha256": "9409a59233daef9339a757c58b3dd1cee980a65f1ef2590040fe5e106222a4bc"
+    },
+    {
+      "bytes": 5248,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/tbmintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/tbmintrin.h",
+      "sha256": "bde154f5f39ddde6f9a44b4c34587099ed829e831f8151fe7d342458d781c49b"
+    },
+    {
+      "bytes": 5461,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/tgmath.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/tgmath.h",
+      "sha256": "c4742f7a6cac8f610ea6c767b2ae26e66d0c8014288233f943c68d7b43204343"
+    },
+    {
+      "bytes": 8343,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/tmmintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/tmmintrin.h",
+      "sha256": "eb3467cb08696b7d969ef3cc12ce49fc474011219ffd4a656ec5daf2ac84f83a"
+    },
+    {
+      "bytes": 1777,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/tsxldtrkintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/tsxldtrkintrin.h",
+      "sha256": "226ecc74c7657b743980dbb6056a6d0e557d18e08dce535e8b3d3b6c858657e9"
+    },
+    {
+      "bytes": 2307,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/uintrintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/uintrintrin.h",
+      "sha256": "d8b6536abfa4dd44491a2cfe1f585adc5b3623ccdabedb11af1ca937aebadd33"
+    },
+    {
+      "bytes": 1920,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/usermsrintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/usermsrintrin.h",
+      "sha256": "ddedb41802eed683f6b5eeffcaf21183fb2a6c43de62ae60b188d6b7b77f2f01"
+    },
+    {
+      "bytes": 3448,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/vaesintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/vaesintrin.h",
+      "sha256": "37d5eca81719fe96f8ea38acb78a4d6de675bcb084cc1abd170ac0bd881b0948"
+    },
+    {
+      "bytes": 139,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/varargs.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/varargs.h",
+      "sha256": "f9acb21973be5764aa2fd689c941ad963c1ecdd133f3a6529f279803135f8268"
+    },
+    {
+      "bytes": 2702,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/vpclmulqdqintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/vpclmulqdqintrin.h",
+      "sha256": "526ff4debb30d4dc1acf6027fd1e081fee4b25a320a29ac8b249b0c445d3c1b2"
+    },
+    {
+      "bytes": 2000,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/waitpkgintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/waitpkgintrin.h",
+      "sha256": "39f5e71a5cc86ba4070792727dbdc6cbef06a94bd654a3c59f2639b4871c89ab"
+    },
+    {
+      "bytes": 1627,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/wbnoinvdintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/wbnoinvdintrin.h",
+      "sha256": "73f76b0d986d4f3c7602530bdd56baac0debf3373145f541a6daa57320d70174"
+    },
+    {
+      "bytes": 4197,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/wmmintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/wmmintrin.h",
+      "sha256": "cfc9b7611c9fd900315d30e0b9e282af82eb145d6125af9ab25217ca5ebe6136"
+    },
+    {
+      "bytes": 6193,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/x86gprintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/x86gprintrin.h",
+      "sha256": "98c1c85110999a6cc4af86b65a4d56e5657d7395eed4176a7f6c1f4a302c6e15"
+    },
+    {
+      "bytes": 1302,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/x86intrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/x86intrin.h",
+      "sha256": "1dbd714b9213562cf9ebdcb9f92153b1218cebed7b52b051fa41975e7a389cd9"
+    },
+    {
+      "bytes": 46103,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/xmmintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/xmmintrin.h",
+      "sha256": "883e02f8361806d9d38cf4319cf27416dfffcdba9ed59309ff50934d1f060dda"
+    },
+    {
+      "bytes": 28783,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/xopintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/xopintrin.h",
+      "sha256": "a2265ea100225cda7f8f1e9e0e9be05049624670393761a1a818a0f235182875"
+    },
+    {
+      "bytes": 1822,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/xsavecintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/xsavecintrin.h",
+      "sha256": "52f58213ee85bf096dc60db3f1bd7d34d847da31f35b16617b76638d79c33fbb"
+    },
+    {
+      "bytes": 2473,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/xsaveintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/xsaveintrin.h",
+      "sha256": "5f4657e290fc95a2be73f88d71d69f0b862892889df8d7920f0c7a96547a9a40"
+    },
+    {
+      "bytes": 1852,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/xsaveoptintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/xsaveoptintrin.h",
+      "sha256": "0e450234202b16faf544668fba00e19466763a44dd3eb10322bfc765dc41dcf9"
+    },
+    {
+      "bytes": 2158,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/xsavesintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/xsavesintrin.h",
+      "sha256": "106681799476a58cd32b71129e49382f8bfab264b228623cf2742223ba16075a"
+    },
+    {
+      "bytes": 1693,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/include/xtestintrin.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/include/xtestintrin.h",
+      "sha256": "ba44bbc1104890b794528a912abfbff4cb8da8946bb77df8c16750b2eed8210c"
+    },
+    {
+      "bytes": 2,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/install-tools/fixinc_list",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/install-tools/fixinc_list",
+      "sha256": "d8a957038679125d4840554fc43375697e662283121561afdefc2c3fbecaf729"
+    },
+    {
+      "bytes": 445,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/install-tools/gsyslimits.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/install-tools/gsyslimits.h",
+      "sha256": "9409a59233daef9339a757c58b3dd1cee980a65f1ef2590040fe5e106222a4bc"
+    },
+    {
+      "bytes": 4870,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/install-tools/include/limits.h",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/install-tools/include/limits.h",
+      "sha256": "c26d2c9badbfe2bffac0695dda2b72117b951d1bd56d981618011dc01a81cccd"
+    },
+    {
+      "bytes": 0,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/install-tools/macro_list",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/install-tools/macro_list",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 89,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/install-tools/mkheaders.conf",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/install-tools/mkheaders.conf",
+      "sha256": "1518b69cc5a254192c3792b4d57ae09776cad43d4454d108ac23578d324a28b2"
+    },
+    {
+      "bytes": 1790560,
+      "guest_path": "/usr/lib/gcc/x86_64-elf/16.2.0/libgcc.a",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/lib/gcc/x86_64-elf/16.2.0/libgcc.a",
+      "sha256": "1d1755feabef4fbe34527df8f94f44e67f3fc2ce3b1d58dbf824ec858c994dfa"
+    },
+    {
+      "bytes": 47587544,
+      "guest_path": "/usr/libexec/gcc/x86_64-elf/16.2.0/cc1",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/libexec/gcc/x86_64-elf/16.2.0/cc1",
+      "sha256": "f8aba230636acc6c742d11f617a770d3f294b0596c42617341fe05c40829ba38"
+    },
+    {
+      "bytes": 2688000,
+      "guest_path": "/usr/libexec/gcc/x86_64-elf/16.2.0/collect2",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/libexec/gcc/x86_64-elf/16.2.0/collect2",
+      "sha256": "920146cc3ced3731327dbab4ce530cd7111f80203e842ef04cabcc2b32dc0326"
+    },
+    {
+      "bytes": 3538,
+      "guest_path": "/usr/libexec/gcc/x86_64-elf/16.2.0/install-tools/mkinstalldirs",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/libexec/gcc/x86_64-elf/16.2.0/install-tools/mkinstalldirs",
+      "sha256": "3caa88030df8fd0c2585645112ff5e44b8a3c327f6326177e907c1ee14aaaba4"
+    },
+    {
+      "bytes": 3772256,
+      "guest_path": "/usr/libexec/gcc/x86_64-elf/16.2.0/lto-wrapper",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/libexec/gcc/x86_64-elf/16.2.0/lto-wrapper",
+      "sha256": "ae414df7eb443b0ecaa724cb40e43b97cf8b160bc7c67b7dc3dfeb0c8095b090"
+    },
+    {
+      "bytes": 44075,
+      "guest_path": "/usr/share/man/man1/x86_64-elf-cpp.1",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/share/man/man1/x86_64-elf-cpp.1",
+      "sha256": "bc72d3332f9d01b03d4faa1c5cabd0b197cc1ee107da7638a0f1682df3b3420f"
+    },
+    {
+      "bytes": 1656915,
+      "guest_path": "/usr/share/man/man1/x86_64-elf-gcc.1",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/share/man/man1/x86_64-elf-gcc.1",
+      "sha256": "c3ba0b2d45dfc0f1560f43ea5b646e71c674a529beb1a7473383068cb01bfda6"
+    },
+    {
+      "bytes": 3858,
+      "guest_path": "/usr/share/man/man1/x86_64-elf-gcov-dump.1",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/share/man/man1/x86_64-elf-gcov-dump.1",
+      "sha256": "fe6993e3e9246be73c2421a7b6c8d7991db30a3859780ba4a04c1e926f095ff4"
+    },
+    {
+      "bytes": 10375,
+      "guest_path": "/usr/share/man/man1/x86_64-elf-gcov-tool.1",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/share/man/man1/x86_64-elf-gcov-tool.1",
+      "sha256": "88184b4be7d2379e6d938aee352631e46ac7ab69098f128e6a63a787a41cd41f"
+    },
+    {
+      "bytes": 55037,
+      "guest_path": "/usr/share/man/man1/x86_64-elf-gcov.1",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/share/man/man1/x86_64-elf-gcov.1",
+      "sha256": "beff4bcc74c2873762f0005a748fe92cd13c9d4d45edff3c692bc739572f5812"
+    },
+    {
+      "bytes": 4246,
+      "guest_path": "/usr/share/man/man7/fsf-funding.7",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/share/man/man7/fsf-funding.7",
+      "sha256": "61dce053d977b476f808e60b02689f97b0e0e7ab59246355f964c7d2755ea48a"
+    },
+    {
+      "bytes": 26417,
+      "guest_path": "/usr/share/man/man7/gfdl.7",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/share/man/man7/gfdl.7",
+      "sha256": "d77f13837d1cba37ef6ff6bc2681d7fde8008963ec9adea27eb46b509b2dcf15"
+    },
+    {
+      "bytes": 38540,
+      "guest_path": "/usr/share/man/man7/gpl.7",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/share/man/man7/gpl.7",
+      "sha256": "753bfa94ac08d300750ca5246d96fe8cc75d0704aed10cd54cebd36844d1ea5c"
+    }
+  ],
+  "known_limitations": [
+    "C only; cc1/collect2 static XOS ELF; no guest C gate yet",
+    "gcov tools are not part of C compile path; fixincludes disabled",
+    "target libstdc++/exceptions/RTTI/TLS are E08-5, not included",
+    "target sysroot is the f5c74ade SDK snapshot"
+  ],
+  "log": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/build.log",
+  "manifest_schema": 2,
+  "patches": {
+    "0001_c_only_skip_cxx_host_libs.patch": "473b891f8051be4891bbd1b5c595fabd2824b6cc8e5d4cb552c2fca2d0d1aab9",
+    "0002_libiberty_xos_lstat_stat.patch": "0525cb420a6f938a16f380ceb2222f8587cab5b8e8ba58681ca55b4105a57d50",
+    "0003_libcpp_xos_no_utility_header.patch": "d9b597e37eae714615844e6036568009397adc3ebfeeba59de06cf336b1b1a3b",
+    "0004_c_only_skip_fixincludes.patch": "e6342c7c3ec23af14b2e47df42f7b94219021863a7449343e9e960964ae9e00b",
+    "0005_sarif_xos_disable_unix_socket.patch": "2c1032800655013396daa6ddf49cf1c539b8160c6d05fca0c37564638b3627ff",
+    "0006_gcc_xos_no_truncate.patch": "27f95cfad036371b61d0bc1a1b185d13e853ddff11977b4248e41e5dda161096"
+  },
+  "sdk_manifest": {
+    "path": ".cache/xos_seed/sdk_snapshots/f5c74adecb9515878fdbce14a56062cb0567772ae183edecf2a455d15a1f9f74/manifest.json",
+    "sha256": "f5c74adecb9515878fdbce14a56062cb0567772ae183edecf2a455d15a1f9f74"
+  },
+  "source_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+  "sysroot_manifest": {
+    "files": [
+      {
+        "bytes": 1808,
+        "guest_path": "/usr/lib/crt0.o",
+        "path": ".cache/xos_seed/sdk_snapshots/f5c74adecb9515878fdbce14a56062cb0567772ae183edecf2a455d15a1f9f74/crt0.o",
+        "sha256": "7ee2e94bd4bebcd78090aa1ec4d37a94b0560c476371deb30ffced3bc47253f9"
+      },
+      {
+        "bytes": 2048,
+        "guest_path": "/usr/lib/crt0_libc.o",
+        "path": ".cache/xos_seed/sdk_snapshots/f5c74adecb9515878fdbce14a56062cb0567772ae183edecf2a455d15a1f9f74/crt0_libc.o",
+        "sha256": "6d067b504c4627705bae1d3817f6efa96cb117b792a73434b2ff86e1146898ec"
+      },
+      {
+        "bytes": 1808,
+        "guest_path": "/usr/lib/crt0_posix.o",
+        "path": ".cache/xos_seed/sdk_snapshots/f5c74adecb9515878fdbce14a56062cb0567772ae183edecf2a455d15a1f9f74/crt0_posix.o",
+        "sha256": "315f165c471c3124e211c5579a40d7b902dd8f8444972a5c87a2cbe8c874ea58"
+      },
+      {
+        "bytes": 1703,
+        "guest_path": "/usr/lib/user.ld",
+        "path": ".cache/xos_seed/sdk_snapshots/f5c74adecb9515878fdbce14a56062cb0567772ae183edecf2a455d15a1f9f74/user.ld",
+        "sha256": "54a56cdc05f8db3fac0484ea0e1f869eb6be66196becd3af0297ea5bdbc43eaa"
+      },
+      {
+        "bytes": 6720094,
+        "guest_path": "/usr/lib/libc.a",
+        "path": ".cache/xos_seed/sdk_snapshots/f5c74adecb9515878fdbce14a56062cb0567772ae183edecf2a455d15a1f9f74/lib/libc.a",
+        "sha256": "283fa07ad205c80af92e955a91da027435d8a8a90cb7e27933f57925cc5baa22"
+      },
+      {
+        "bytes": 2701158,
+        "guest_path": "/usr/lib/libm.a",
+        "path": ".cache/xos_seed/sdk_snapshots/f5c74adecb9515878fdbce14a56062cb0567772ae183edecf2a455d15a1f9f74/lib/libm.a",
+        "sha256": "4cfdd6324f6776d025923ee369fad51236a9ee5730c8143a6b3b03b963eefd80"
+      },
+      {
+        "bytes": 660320,
+        "guest_path": "/usr/lib/libxos.a",
+        "path": ".cache/xos_seed/sdk_snapshots/f5c74adecb9515878fdbce14a56062cb0567772ae183edecf2a455d15a1f9f74/lib/libxos.a",
+        "sha256": "e08481c53957752d8c1f5b8f718974c99107cab99eaf21e606bd2e4cf8dd02ff"
+      },
+      {
+        "bytes": 226648,
+        "guest_path": "/usr/lib/libxos_loader.a",
+        "path": ".cache/xos_seed/sdk_snapshots/f5c74adecb9515878fdbce14a56062cb0567772ae183edecf2a455d15a1f9f74/lib/libxos_loader.a",
+        "sha256": "e887d14cd4f500973c3605b9235701059c6dac2d7e2db917976dc586afa4afbb"
+      }
+    ]
+  },
+  "target": "x86_64-elf",
+  "tools": {
+    "cc1": {
+      "bytes": 47587544,
+      "guest_path": "/usr/libexec/gcc/x86_64-elf/16.2.0/cc1",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/libexec/gcc/x86_64-elf/16.2.0/cc1",
+      "sha256": "f8aba230636acc6c742d11f617a770d3f294b0596c42617341fe05c40829ba38"
+    },
+    "collect2": {
+      "bytes": 2688000,
+      "guest_path": "/usr/libexec/gcc/x86_64-elf/16.2.0/collect2",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/libexec/gcc/x86_64-elf/16.2.0/collect2",
+      "sha256": "920146cc3ced3731327dbab4ce530cd7111f80203e842ef04cabcc2b32dc0326"
+    },
+    "cpp": {
+      "bytes": 3822624,
+      "guest_path": "/usr/bin/x86_64-elf-cpp",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/bin/x86_64-elf-cpp",
+      "sha256": "1a4175e7b7df62e08d3d6146ddec5dff0547b34a2b2f482ae364f19e048293b2"
+    },
+    "gcc": {
+      "bytes": 3822584,
+      "guest_path": "/usr/bin/x86_64-elf-gcc",
+      "path": ".cache/xos_seed/gcc/build/c3b803762179aaf5929a6785295b852b014a4e54f0d0f091e1cc04262e8268bf/install/usr/bin/x86_64-elf-gcc",
+      "sha256": "4cbf4926f97f22138e7b8c7454f88ad70bdec9d9ed323bc88e4b22733b809ff1"
+    }
+  },
+  "version": "16.2.0"
+}

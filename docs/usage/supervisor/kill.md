@@ -11,3 +11,6 @@ supervisor 的子任务，没有可收集结果。非法 PID 返回 kill: invali
 
 [返回索引](../index.md)
 
+
+E08-1 起 files 块设备服务与 supervisor 同为受保护 bootstrap 服务，kill 拒绝终止它们；
+不提供文件服务自动重启。普通子任务仍可终止并 wait。

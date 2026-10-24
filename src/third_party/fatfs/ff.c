@@ -2669,7 +2669,11 @@ static void get_fileinfo (
 
 
 	fno->fname[0] = 0;
+	fno->xos_dir_sector = 0;
+	fno->xos_dir_offset = 0;
 	if (dp->sect == 0) return;	/* Exit if read pointer has reached end of directory */
+	fno->xos_dir_sector = (DWORD)dp->sect;
+	fno->xos_dir_offset = (WORD)(dp->dir - dp->obj.fs->win);
 
 #if FF_USE_LFN		/* LFN configuration */
 #if FF_FS_EXFAT

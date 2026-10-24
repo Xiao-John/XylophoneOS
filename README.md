@@ -6,7 +6,14 @@
 开发前读 [开发纪律](docs/Discipline.md)、[当前状态](docs/state.md) 和
 [计划](docs/xos_plan.md)。`localpilot/` 是独立项目，不参与 XOS 构建。
 
-## 当前阶段：E06
+## 首个正式发行：0.0.1-1024
+
+[XylophoneOS Revival version 0.0.1-1024](https://github.com/Xiao-John/XylophoneOS/releases/tag/v0.0.1-1024)
+提供可直接启动的镜像、预装原生 GCC/G++ 的工作盘和独立 SDK。
+下载 images 包，解压后运行 `python3 launch.py`，在 `xos64>` 输入 `run`。
+详细操作、配置与限制见 [发行说明](docs/releases/0.0.1-1024.md)。
+E08 受限 C/C++ 编辑、编译、运行、同步重启闭环已验收；压力测试仍在进行，
+不声称压力矩阵或最终镜像全量旧回归全绿。
 
 BIOS 启动后进入 x86-64 C++ 内核：E820 物理页管理、异常 panic、串口调试控制台、
 ring3 用户任务、每任务地址空间、PIT 定时抢占、最小 IPC、用户故障隔离、
@@ -16,17 +23,24 @@ supervisor 用最小 SDK 在用户态装载静态 ELF64、传递 argv/初始句�
 E05 增加独立 ring3 文件服务与 `ls/cat/stat/rm/edit/exec-file`，E07 把 RAM 后端
 换成独立 FAT16 工作盘（ATA PIO + FatFs）、原子保存、`sync` 与重启恢复；
 E06 接入 newlib 4.6，提供常用 C 库、SSE/x87 任务上下文和 `libc_hello`。
-仍没有原生编译、完整 POSIX/文件 stdio、目录/LFN 或完整 shell。
+E08-1 增加 512 MiB 内存基线、2 GiB FAT32 新盘、ASCII LFN/目录、per-task 文件会话、
+磁盘流式保存及大 ELF 按段装载；原 FAT16 盘保持兼容。
+E08-2 接入真实文件stdio、动态堆、受限posix_spawn/waitpid与pipe；E08-3已运行真正
+XOS-hosted GNU as/ld/ar/ranlib/strip，客体生成和strip的ELF均可执行、同步重启保留。
+上述为历史阶段证据。E08-4/5 已加入原生 GCC/G++，E08-6 完成受限 C/C++ 闭环，
+分构建证据见 [E08 验收](docs/reports/e08_acceptance.md)。当前没有完整 shell。
 
 ```sh
 make disk       # 显式创建/格式化 work_disk.img（已有盘默认不动）
+make license-audit # 检查许可登记与 SDK 声明副本
 make libc-audit # 从实际 newlib 产物生成依赖清单 build/libc_audit.json
 make build      # 主线镜像、kernel.elf、练习镜像、符号与哈希清单
 make run        # 64 位内核 + 串口调试控制台；需要已有 work_disk.img
 make run_vga    # macOS：显示 VGA 输出
 make run_real_mode # 保留的 16 位命令行练习
 make debug      # 在复位点暂停，配合 config/debug_kernel.lldb
-make smoke      # 无窗口：6 实模式 + 18 内核 + 12 E03 + 13 E04 + 8 E05 + 5 E07 + 3 E06
+make smoke      # 无窗口：既有回归 + E08存储/运行时gate + 许可证材料检查
+make binutils-smoke SEED_MANIFEST=... # 显式已准备的GNU Seed，临时盘客体验收
 make clean      # 只删除 build/，包括验证日志
 ```
 
@@ -47,8 +61,8 @@ make clean      # 只删除 build/，包括验证日志
   libc 程序用 `scripts/user_build.py` 的 `libc_programs` 显式启用。
 - `edit note.txt` 用原始行模式编辑（正文不经过分词器）；`:wq` 原子保存，
   `sync` 落盘，`cat note.txt` 查看。`make disk` 创建的工作盘在重启后保留内容。
-- 文件为 FAT16 8.3 短名（显示大写），最多 4 个、每文件 24 KiB；挂载失败报错，
-  不格式化、不退回 RAM。
+- 新工作盘默认FAT32、ASCII LFN/目录，不再限制4文件/24KiB；旧FAT16盘仍兼容。
+  挂载失败报错，不格式化、不退回RAM。
 - 在 `sup> ` 输入 `exec demo hello` 可验证参数和退出码 42；`exec spin` 可单独按 Escape 取消。
 - `pf`、`gp`、`ud`、`div`、`df`：故意触发 page fault、#GP、#UD、#DE、double fault，
   用于检查 panic 输出；触发后 CPU 停在 HLT。
@@ -73,3 +87,10 @@ C 库接入、SSE 上下文和 POSIX 边界见 [E06 libc](docs/e06_libc.md)。
 文件服务协议、打开实例与原子保存见 [E05 文件服务](docs/e05_file_service.md)；
 持久工作盘、ATA/FatFs 与同步/恢复见 [E07 工作盘](docs/e07_persistent_work_disk.md)。
 普通程序在客体内解析和执行；`exec-file` 从工作盘文件装载，普通 `exec` 仍用只读启动模块。
+
+自研新代码采用 Apache-2.0；历史 MIT 和第三方许可保留。见 [许可证管理](docs/licensing.md)
+和 [NOTICE](NOTICE)。E08-1 的新盘/路径/文件会话与流式装载见
+[存储与文件会话](docs/e08_storage_and_sessions.md)。Qt为GUI主线，SDL为次选；
+分阶段移植与独立验收见[计划](docs/xos_plan.md)的E13–E20/G系列，当前没有Qt/图形实现。
+GNU Seed构建/使用见 [E08-3说明](docs/e08_binutils_seed.md)；Qt Widgets/QML的未来
+移植评估见 [讨论备忘](docs/qt_port_assessment.md)，尚未开始Qt实现。

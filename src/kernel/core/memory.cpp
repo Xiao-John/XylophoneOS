@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT AND Apache-2.0
+// Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/memory.hpp>
 
 namespace xos {
@@ -15,6 +17,7 @@ u32 allocated_page_count;
 u64 usable_bytes;
 u64 managed_high;
 u64 first_allocatable;
+u32 next_alloc_hint;
 
 bool bit_test(const u64* map, u32 index) {
     return (map[index / 64] & (u64{1} << (index % 64))) != 0;
@@ -41,30 +44,37 @@ void memory_init(const boot_info& info, const memory_region* regions) {
     usable_bytes = 0;
     managed_high = 0;
     first_allocatable = align_up(info.reserved_low_end);
+    next_alloc_hint = static_cast<u32>(first_allocatable / page_size);
 
     u64 highest_usable = 0;
     for (u32 i = 0; i < info.region_count; ++i) {
         const memory_region& region = regions[i];
         if (region.kind != memory_kind::usable) { continue; }
         usable_bytes += region.length;
+        if (region.length > ~u64{0} - region.base) { continue; }
         const u64 end = region.base + region.length;
         if (end > highest_usable) { highest_usable = end; }
     }
     if (highest_usable > max_managed_phys) { highest_usable = max_managed_phys; }
     managed_pages = static_cast<u32>(highest_usable / page_size);
     managed_high = static_cast<u64>(managed_pages) * page_size;
+    if (first_allocatable > managed_high) { first_allocatable = managed_high; }
+    next_alloc_hint = static_cast<u32>(first_allocatable / page_size);
 
     // Pages below the loader-reserved low window never become allocatable.
     for (u32 i = 0; i < info.region_count; ++i) {
         const memory_region& region = regions[i];
         if (region.kind != memory_kind::usable) { continue; }
+        if (region.length > ~u64{0} - region.base) { continue; }
         u64 end = region.base + region.length;
         if (end > managed_high) { end = managed_high; }
         u64 start = region.base;
         if (start < first_allocatable) { start = first_allocatable; }
+        if (start >= managed_high) { continue; }
         start = align_up(start);
+        end &= ~(page_size - 1);
         if (start >= end) { continue; }
-        u32 last = static_cast<u32>((end + page_size - 1) / page_size);
+        u32 last = static_cast<u32>(end / page_size);
         if (last > managed_pages) { last = managed_pages; }
         for (u32 page = static_cast<u32>(start / page_size); page < last; ++page) {
             bit_clear(used_bitmap, page);
@@ -83,6 +93,7 @@ void memory_init(const boot_info& info, const memory_region* regions) {
     for (u32 page = 0; page < managed_pages; ++page) {
         if (!bit_test(used_bitmap, page)) { ++free_page_count; }
     }
+    next_alloc_hint = static_cast<u32>(first_allocatable / page_size);
 }
 
 memory_stats memory_status() {
@@ -100,12 +111,18 @@ memory_stats memory_status() {
 memory_result allocate_page(u64* physical) {
     if (physical == nullptr) { return memory_result::invalid; }
     const u32 first = static_cast<u32>(first_allocatable / page_size);
-    for (u32 page = first; page < managed_pages; ++page) {
+    if (managed_pages <= first) { return memory_result::out_of_memory; }
+    const u32 start = next_alloc_hint < first || next_alloc_hint >= managed_pages
+                          ? first : next_alloc_hint;
+    for (u32 offset = 0; offset < managed_pages - first; ++offset) {
+        const u32 page = first + ((start - first + offset) % (managed_pages - first));
         if (bit_test(used_bitmap, page) || bit_test(allocated_bitmap, page)) { continue; }
         bit_set(used_bitmap, page);
         bit_set(allocated_bitmap, page);
         --free_page_count;
         ++allocated_page_count;
+        next_alloc_hint = page + 1;
+        if (next_alloc_hint >= managed_pages) { next_alloc_hint = first; }
         const u64 address = static_cast<u64>(page) * page_size;
         auto* words = reinterpret_cast<volatile u64*>(address);
         for (u32 i = 0; i < static_cast<u32>(page_size / sizeof(u64)); ++i) {
@@ -127,6 +144,8 @@ memory_result release_page(u64 physical) {
     bit_clear(used_bitmap, page);
     ++free_page_count;
     --allocated_page_count;
+    const u32 first = static_cast<u32>(first_allocatable / page_size);
+    if (page < next_alloc_hint) { next_alloc_hint = page < first ? first : page; }
     return memory_result::none;
 }
 

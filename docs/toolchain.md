@@ -1,5 +1,10 @@
 # E01 工具链与构建
 
+当前E08-2的运行时/CRT更新见 e08_runtime.md；E08-3 Canadian cross构建入口为
+scripts/build_binutils.py、固定来源/补丁见 src/ports/binutils/。真实as/ld/ar/ranlib/strip
+已过客体gate，见e08_binutils_seed.md；普通make build/smoke不会下载或编译GNU源码，
+没有原生GCC/G++。
+
 ## 固定范围
 
 `config/toolchain.json` 固定 GCC/G++ 16.2.0、Binutils 发布版 2.47（实际工具
@@ -111,3 +116,11 @@ QEMU 仅在 loopback:1234 监听，并从复位点暂停；脚本加载 ELF，�
 参考：[GCC x86 options](https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html)、
 [QEMU GDB stub](https://www.qemu.org/docs/master/system/gdb.html)、
 [LLDB remote debugging](https://lldb.llvm.org/use/remote.html)。
+
+## E08-1 更新
+
+默认 QEMU RAM 为 512 MiB，新工作盘为 2 GiB FAT32；现有 FAT16 盘不自动迁移。
+SDK 文件 ABI v2 支持 per-task 会话、路径、目录和流式保存。
+`user_e08_probe.image.elf` 是仅安装到测试盘的 >128 KiB 产物，不嵌入启动镜像。
+构建指纹覆盖第三方 .c/.h 及许可证材料；SDK manifest 导出许可证副本哈希。
+make license-audit 只验证材料，不代替 newlib 预构建库逐成员来源核对。

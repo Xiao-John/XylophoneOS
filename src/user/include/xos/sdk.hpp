@@ -1,6 +1,9 @@
+// SPDX-License-Identifier: MIT AND Apache-2.0
+// Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #pragma once
 #include <xos/process_abi.hpp>
 #include <xos/file_abi.hpp>
+#include <xos/spawn.hpp>
 
 namespace xos::sdk {
 i64 syscall(u64 number, u64 first = 0, u64 second = 0, u64 third = 0);
@@ -36,6 +39,7 @@ bool equal(const char* left, const char* right);
 i64 spawn(u32 image, u32 argc, const char* const* argv);
 i64 spawn_buffer(const char* name, const u8* bytes, u64 size, u32 argc,
                  const char* const* argv);
+i64 spawn_file(const char* path, u32 argc, const char* const* argv);
 inline i64 wait(u64 child, process_status& status) {
     return syscall(sys_process_wait, child, reinterpret_cast<u64>(&status));
 }

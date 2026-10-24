@@ -1,0 +1,14 @@
+--- a/gcc/gcc.cc
++++ b/gcc/gcc.cc
+@@ -9384,9 +9384,8 @@
+   delete_temp_files ();
+ 
+   if (totruncate_file != NULL && !seen_error ())
+-    /* Truncate file specified by -truncate.
+-       Used by lto-wrapper to reduce temporary disk-space usage. */
+-    truncate(totruncate_file, 0);
++    /* XOS does not provide truncate(2); do not pretend it succeeded. */
++    error ("-truncate is not supported by the XOS runtime");
+ 
+   if (print_help_list)
+     {

@@ -1,0 +1,55 @@
+# XOS additions: Apache-2.0; upstream ld context retains GPL-3.0-or-later.
+# SPDX-License-Identifier: GPL-3.0-or-later AND Apache-2.0
+--- a/ld/lexsup.c
++++ b/ld/lexsup.c
+@@ -1248,16 +1248,28 @@
+ 	  command_line.print_output_format = true;
+ 	  break;
+ 	case OPTION_PLUGIN:
++#ifdef XOS_NO_DLOPEN
++	  fatal (_("%P: --plugin is unsupported on XOS\n"));
++#else
+ 	  if (bfd_plugin_enabled ())
+ 	    plugin_opt_plugin (optarg);
++#endif
+ 	  break;
+ 	case OPTION_PLUGIN_OPT:
++#ifdef XOS_NO_DLOPEN
++	  fatal (_("%P: --plugin-opt is unsupported on XOS\n"));
++#else
+ 	  if (bfd_plugin_enabled ()
+ 	      && plugin_opt_plugin_arg (optarg))
+ 	    fatal (_("%P: bad -plugin-opt option\n"));
++#endif
+ 	  break;
+ 	case OPTION_PLUGIN_SAVE_TEMPS:
++#ifdef XOS_NO_DLOPEN
++	  fatal (_("%P: --plugin-save-temps is unsupported on XOS\n"));
++#else
+ 	  config.plugin_save_temps = true;
++#endif
+ 	  break;
+ 	case 'q':
+ 	  link_info.emitrelocations = true;
+@@ -2541,12 +2553,21 @@
+ 	    putchar (' ');
+ 
+ 	  printf ("%s", _(ld_options[i].doc));
++#ifdef XOS_NO_DLOPEN
++	  if (ld_options[i].opt.val == OPTION_PLUGIN
++	      || ld_options[i].opt.val == OPTION_PLUGIN_OPT
++	      || ld_options[i].opt.val == OPTION_PLUGIN_SAVE_TEMPS)
++	    puts (_(" (unsupported on XOS)"));
++	  else
++	    putchar ('\n');
++#else
+ 	  if ((ld_options[i].opt.val == OPTION_PLUGIN
+ 	       || ld_options[i].opt.val == OPTION_PLUGIN_OPT)
+ 	      && !bfd_plugin_enabled ())
+ 	    puts (_(" (ignored)"));
+ 	  else
+ 	    putchar ('\n');
++#endif
+ 	}
+     }
+   printf (_("  @FILE"));

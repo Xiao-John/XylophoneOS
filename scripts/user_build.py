@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT AND Apache-2.0
+# Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 """Build and export the small SDK; package user ELFs as immutable boot modules."""
 import json
 from pathlib import Path
@@ -22,10 +24,19 @@ def build_users(root, build, nasm, run, build_id):
     for folder in ("src/shared/include/xos", "src/user/include/xos"):
         for header in sorted((root / folder).glob("*.hpp")):
             shutil.copyfile(header, sdk / "include/xos" / header.name)
+    for header in sorted((root / "src/user/include").glob("*.h")):
+        shutil.copyfile(header, sdk / "include" / header.name)
     shutil.copyfile(root / "src/user/arch/x86_64/user.ld", sdk / "user.ld")
     shutil.copyfile(root / "LICENSE", sdk / "LICENSE")
+    shutil.copyfile(root / "NOTICE", sdk / "NOTICE")
+    shutil.copytree(root / "licenses", sdk / "licenses", dirs_exist_ok=True)
+    shutil.copyfile(root / "src/third_party/newlib/COPYING.NEWLIB", sdk / "licenses/newlib.txt")
     run([nasm, "-f", "elf64", "-g", "-F", "dwarf", "-o", str(sdk / "crt0.o"),
          str(root / "src/user/arch/x86_64/start.asm")])
+
+    for crt_name, define in (("crt0_libc.o", "XOS_LIBC"), ("crt0_posix.o", "XOS_POSIX_MAIN")):
+        run([nasm, "-f", "elf64", "-g", "-F", "dwarf", "-D" + define + "=1",
+             "-o", str(sdk / crt_name), str(root / "src/user/arch/x86_64/start.asm")])
 
     def compile_source(source, extra=()):
         obj = build / (str(source.relative_to(root)).replace("/", "_") + ".o")
@@ -36,7 +47,7 @@ def build_users(root, build, nasm, run, build_id):
 
     sdk_objects = [compile_source(root / name) for name in (
         "src/user/sdk/text.cpp", "src/user/sdk/file_client.cpp", "src/user/arch/x86_64/syscall.cpp", "src/shared/runtime/memory.cpp")]
-    sdk_objects.append(compile_source(root / "src/user/libc/newlib_syscalls.cpp", ("-w",)))
+    sdk_objects.extend(compile_source(source, ("-w",)) for source in sorted((root / "src/user/libc").glob("*.cpp")))
     def compile_fatfs(source):
         obj = build / (str(source.relative_to(root)).replace("/", "_") + ".o")
         run([tool("g++"), *COMMON_FLAGS, *X86_FLAGS, "-Os", "-w",
@@ -46,7 +57,8 @@ def build_users(root, build, nasm, run, build_id):
         return str(obj)
 
     fatfs_objects = [compile_fatfs(root / "src/third_party/fatfs/ff.c"),
-                     compile_fatfs(root / "src/user/services/fatfs_diskio.cpp")]
+                     compile_fatfs(root / "src/user/services/fatfs_diskio.cpp"),
+                     compile_fatfs(root / "src/user/services/fatfs_unicode.cpp")]
     file_ui_object = compile_source(root / "src/user/services/file_ui.cpp")
     archive = sdk / "lib/libxos.a"
     if archive.exists():
@@ -54,37 +66,45 @@ def build_users(root, build, nasm, run, build_id):
     run([tool("ar"), "rcsD", str(archive), *sdk_objects])
     loader_objects = [compile_source(root / "src/user/loader" / name)
                       for name in ("elf.cpp", "load.cpp", "elf_cases.cpp")]
+    loader_objects.append(compile_source(root / "src/user/arch/x86_64/tls.cpp"))
     loader_archive = sdk / "lib/libxos_loader.a"
     run([tool("ar"), "rcsD", str(loader_archive), *loader_objects])
-    names = ("supervisor", "files", "demo", "fault", "spin", "slow", "echo", "hello", "libc_hello")
+    names = ("supervisor", "files", "demo", "fault", "spin", "slow", "echo", "hello", "libc_hello", "e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe")
     bootstrap_names = ("supervisor", "files")
-    libc_programs = ("libc_hello",)
+    libc_programs = ("libc_hello", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe")
+    disk_programs = ("e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe")
     metadata = []
     header = ["#pragma once", "#include <xos/types.hpp>", "namespace xos::user_images {",
               "struct segment { u64 address, offset, files, memory; u32 permissions; };",
               "struct module { const char* name; const u8* bytes; u64 size; };"]
     for name in names:
         source_path = root / (f"src/user/services/{name}.cpp" if name == "files" else f"src/user/programs/{name}.cpp")
-        main = compile_source(source_path, ("-w",) if name in libc_programs else ())
+        extra_flags = ("-w",) if name in libc_programs else ()
+        if name in ("cpp_runtime_probe", "tls_exit_probe"):
+            extra_flags += ("-fuse-cxa-atexit", "-ftls-model=local-exec",
+                            "-funwind-tables", "-fasynchronous-unwind-tables",
+                            "-fno-optimize-sibling-calls")
+        main = compile_source(source_path, extra_flags)
         fault_objects = [compile_source(root / "src/user/arch/x86_64/fault_test.cpp")] if name == "fault" else []
         executable = build / f"user_{name}.elf"
         run([tool("g++"), *X86_FLAGS, "-nostdlib", "-static", "-no-pie",
              "-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
-             "-T", str(sdk / "user.ld"), str(sdk / "crt0.o"), main,
+             "-T", str(sdk / "user.ld"), str(sdk / ("crt0_posix.o" if name in ("runtime_probe", "cpp_runtime_probe", "tls_exit_probe") else "crt0_libc.o" if name in libc_programs else "crt0.o")), main,
              *([str(loader_archive)] if name == "supervisor" else []), *fault_objects,
              *([file_ui_object] if name == "supervisor" else []),
              *([*fatfs_objects] if name == "files" else []),
-             *(["-Wl,--start-group", str(archive), "-L", str(sdk / "lib"),
+             *(["-Wl,--start-group", str(archive), str(loader_archive), "-L", str(sdk / "lib"),
                 "-lc", "-lm", "-lgcc", "-Wl,--end-group"]
                if name in libc_programs else [str(archive)]),
              "-o", str(executable)])
         image = build / f"user_{name}.image.elf"
         run([tool("objcopy"), "--strip-debug", str(executable), str(image)])
         data = image.read_bytes()
-        if len(data) > 131072:
+        if name not in disk_programs and len(data) > 131072:
             raise SystemExit(f"User ELF {name} exceeds image read limit")
-        values = ",".join(f"0x{value:02x}" for value in data)
-        header.append(f"inline constexpr u8 {name}[] = {{ {values} }};")
+        if name not in disk_programs:
+            values = ",".join(f"0x{value:02x}" for value in data)
+            header.append(f"inline constexpr u8 {name}[] = {{ {values} }};")
         segments = []
         phoff = struct.unpack_from("<Q", data, 32)[0]
         phsize, phcount = struct.unpack_from("<HH", data, 54)
@@ -122,7 +142,7 @@ def build_users(root, build, nasm, run, build_id):
         fixtures.append(str(image.relative_to(build)))
     header.append("inline constexpr module catalog[] = {")
     for name in names:
-        if name in bootstrap_names:  # supervisor/files are not exec catalog entries
+        if name in (*bootstrap_names, *disk_programs):  # disk-only probe never bloats bootstrap
             continue
         header.append(f'{{"{name}", {name}, sizeof({name})}},')
     for name in ("bad_magic", "bad_interp", "bad_overflow"):
@@ -135,6 +155,11 @@ def build_users(root, build, nasm, run, build_id):
         return hashlib.sha256(path.read_bytes()).hexdigest()
     (sdk / "manifest.json").write_text(json.dumps({
         "build_id": build_id, "abi": 1, "target": "x86_64-elf",
+        "licenses": {
+            str(path.relative_to(sdk)): sha256(path)
+            for path in [sdk / "LICENSE", sdk / "NOTICE", *sorted((sdk / "licenses").glob("*"))]
+            if path.is_file()
+        },
         "libc": {"name": "newlib", "version": "4.6.0.20260123",
                  "libc_sha256": sha256(sdk / "lib/libc.a"),
                  "libm_sha256": sha256(sdk / "lib/libm.a")},

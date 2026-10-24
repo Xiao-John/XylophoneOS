@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT AND Apache-2.0
+# Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 """E04: guest-side ELF loading, SDK, wait/status, handles, and exact reclamation."""
 import hashlib
 import json
@@ -144,7 +146,7 @@ def main():
             raise AssertionError("Malformed ELF path allocated resources")
         checks.append("guest_loader_rejects_malformed_interp_overflow_and_24_boundaries")
 
-        command(guest, "primtest", b"rollback=stable")
+        command(guest, "primtest", b"rollback=stable", timeout=120)
         if resources(guest) != baseline:
             raise AssertionError("Construction/abort/capacity rollback leaked pages")
         checks.append("kernel_builder_bounds_permissions_stale_handles_and_capacity_rollback")
@@ -178,7 +180,7 @@ def main():
         stack = mapping(guest, cr3, 0x7ffff000, build)
         if not stack["user"] or not stack["write"] or stack["execute"]:
             raise AssertionError("Wrong initial stack permissions")
-        if mapping(guest, cr3, 0x7fffb000, build) is not None:
+        if mapping(guest, cr3, 0x7ffdb000, build) is not None:
             raise AssertionError("Missing user stack guard")
         if mapping(guest, cr3, 0x100000, build)["user"]:
             raise AssertionError("Kernel page exposed to loaded ELF")

@@ -1,7 +1,10 @@
 # E04：用户态装载器与最小 SDK
 
 实施于 0007。源码与最终证据见 `work_log/0007_e04_user_loader.md` 和 `state.md`。
-只支持本 SDK 构建的静态、整数型 x86-64 ELF64，尚无文件系统或原生编译环境。
+本页保留 E04 机制描述；当前文件服务、资源上限与流式装载以 e08_storage_and_sessions.md 为准。
+已有文件系统、newlib/FPU与E08-3原生binutils；尚无原生GCC/G++编译环境。
+E08-2 的启动v2、argv/env/cwd、32页栈/4页startup、动态堆、显式driver构造权、
+stdio/pipe与libc边界见 e08_runtime.md；下文v1上限保留历史，不覆盖该更新。
 
 ## 谁负责什么
 
@@ -29,11 +32,17 @@ filesz <= memsz、虚拟地址窗口、p_align 的幂与同余、页内偏移同
 不重叠、入口处于有实际文件字节的可执行段。非空 LOAD 必须可读，不能 W+X；
 不同段共享一页也拒绝，避免合并权限产生 W+X。空 LOAD 不建立映射。
 
-拒绝 ET_DYN、PT_INTERP、PT_DYNAMIC、PT_TLS、可执行 GNU_STACK 和其他未知
-PHDR。NULL/NOTE/PHDR/GNU_RELRO 与非执行 GNU_STACK 只作为不参与装载的元数据，
-不提供动态重定位、TLS 或 RELRO 后续重保护。节表不参与运行时重定位。
+0019新增：静态PT_TLS接受有界初始化模板与零填充区；TLS布局由用户态ISA后端
+完成，内核sys35仅为owned building子任务设置已映射的线程指针。AMD64 variant II
+使用独立TLS arena和任务FS base；仅local-exec，无动态模块/DTV/线程。模板1MiB、
+对齐64KiB上限，ELF LOAD不得覆盖TLS arena；失败abort回收。功能证据见0019。
 
-当前模块文件上限 128 KiB（E06 newlib 程序）；每程序最多 64 个用户页，含 4 页栈。LOAD 地址范围为
+拒绝 ET_DYN、PT_INTERP、PT_DYNAMIC、可执行 GNU_STACK 和其他未知
+PHDR。NULL/NOTE/PHDR/GNU_RELRO 与非执行 GNU_STACK 只作为不参与装载的元数据，
+不提供动态重定位、动态TLS 或 RELRO 后续重保护。节表不参与运行时重定位。
+
+只读启动模块文件上限 128 KiB；E08-1 的工作盘 ELF 按段读取、不受该限制。
+每程序最多 65536 个用户页（256 MiB），含 4 页栈。LOAD 地址范围为
 `[0x40000000, 0x7fffb000)`，栈为 `0x7fffc000–0x80000000`，中间一页 guard 不映射。
 ELF 各段逐页清零，再复制实际文件字节；BSS 与段尾保持零。实际页表按 RX/R/RW+NX
 建立，所有用户页私有；内核的共享低地址映射仍为 supervisor-only。
@@ -98,7 +107,7 @@ FXSAVE/FXRSTOR。旧窄 SDK 程序仍保持整数型。实际出现的 memset �
 ## SDK 产物与示例
 
 `make build` 导出 `build/sdk/`：自包含 include/xos、crt0.o、lib/libxos.a、
-特权装载服务使用的 lib/libxos_loader.a、user.ld、MIT LICENSE
+特权装载服务使用的 lib/libxos_loader.a、user.ld、LICENSE/NOTICE 与第三方声明
 和版本清单，全部由主 manifest 记录哈希。`scripts/user_build.py` 用同一份 SDK
 构建 supervisor、demo、fault、spin、slow、echo；完整命令可从 manifest 复现。
 各程序有带 DWARF 的 `user_NAME.elf` 和打包用的 `user_NAME.image.elf`。
@@ -127,8 +136,18 @@ BSS/data/argv/句柄，fault 验证私有页、只读页、NX；E06 后 FPU 探�
 10 次完整装载/等待/退出后，用真实物理页与完成记录计数确认不增长。
 
 计划 O06–O08 的本版受限子集证据见 0007；不把有限矩阵提升为完整 ELF 合规、
-通用安全证明、完整 POSIX 或所有运行库兼容。当前仍单核、无 SMP、无文件系统、
+通用安全证明、完整 POSIX 或所有运行库兼容。当前仍单核、无 SMP、
 无动态链接、无长期压力测试。UEFI 不进入本组关键路径。
 
 规范入口：[ELF gABI Program Header](https://refspecs.linuxfoundation.org/elf/gabi4%2B/ch5.pheader.html)。
 受限子集与上界是 XOS 实施选择，gABI 不替代本轮实际运行证据。
+
+## E08-1 会话补充
+
+sys_file_session=27 是 files 专属的可信会话枚举；普通程序通过 ipc_handles 获得
+自己的文件端点对。任务结束清理端点，服务按真实 PID 清理文件句柄/staging。
+端点 token 单调不复用。文件协议升级为 v2；细节及界限见 e08_storage_and_sessions.md。
+
+0021用户库增量：SDK v5的__cxa_thread_atexit/强exit提供单用户线程的正常TLS析构，
+不改ELF装载/内核ABI；main-return/显式exit的LIFO、TLS先于global/fini已客体验证。
+无动态TLS/线程/DSO卸载。详情见e08_runtime.md与work_log/0021_cpp_seed_start.md。

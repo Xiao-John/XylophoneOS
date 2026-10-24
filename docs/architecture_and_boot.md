@@ -1,6 +1,8 @@
 # 架构边界、启动契约与 UEFI 时机
 
-E01–E04 实施设计，2026-10-23。当前仅实现 x86-64 / QEMU PC / BIOS。
+E01–E08-1 实施记录，2026-10-24。当前仅实现 x86-64 / QEMU PC / BIOS。
+E08-1 的资源/文件会话更新见 e08_storage_and_sessions.md；下文 E03/E05 段落保留阶段历史。
+E08-2 新进程布局和运行时边界见 e08_runtime.md；ELF解析仍仅在用户态。
 
 ## 依赖方向
 
@@ -50,7 +52,7 @@ E04 的用户态 ELF 解析属于另一层机制，详见 `e04_loader_sdk.md`。
 | `0x8000–0x9fff` | 第二阶段装载窗口 |
 | `0x10000–0x8ffff` | 原始内核暂存，E04/E05 文件上限 512 KiB |
 | `0x100000–0x153000` | 内核、只读启动模块、files/supervisor、libc_hello、BSS、IDT、位图和栈；总上限 1 MiB，实际见 manifest |
-| `0x400000–0x3fe0000` | 4–64 MiB 的 2 MiB identity 页，RW + NX；让分配到的物理页可直接访问 |
+| `0x400000–0x1fe00000` | 4–512 MiB 的 2 MiB identity 页，RW + NX；让分配到的物理页可直接访问 |
 
 引导器将低于 1 MiB 的范围整体标为保留，不让后续分配器当作空闲。
 当前页表前 4 MiB 用 4 KiB 页 identity-map，再用 2 MiB 页覆盖 4 MiB–可用
@@ -76,7 +78,7 @@ double fault 用 8 KiB IST1，NMI 用 4 KiB IST2。IDT 向量 8 的 IST 字段�
 
 ## E02 物理内存与基本映射
 
-`memory_init` 消费规范化 E820：4 KiB 页位图覆盖到 128 MiB 上限，只把
+`memory_init` 消费规范化 E820：4 KiB 页位图覆盖到 512 MiB 上限，只把
 `usable` 且不低于 1 MiB 的页标为空闲；内核镜像/BSS/栈、引导信息页、页表与
 loader 低端暂存不会再次分配。每页有两张位图（保留/已分配），因此 free 未分配
 页或 double free 返回 `invalid`，不会误放固件内存。分配返回零页，释放不清零。
@@ -102,7 +104,7 @@ bootstrap 限制，不是最终 VMM 策略。
 GDT 增加 ring3 code/data 描述符（0x2b/0x33）；TSS 仍占两个 GDT 槽，所以用户
 选择子不是 0x20/0x28。每个任务有独立的 4 KiB 内核栈，切换时更新 TSS `rsp0`。
 
-地址空间按任务创建独立 PML4：内核 0–64 MiB 的页表共享且 supervisor-only，
+地址空间按任务创建独立 PML4：内核 0–512 MiB 的页表共享且 supervisor-only，
 用户半区在 1 GiB 处私有。用户代码映射在 `0x40000000`（RX），数据页在
 `0x40010000`（RW+NX），4 页栈在 `0x4001c000–0x40020000`（RW+NX）。用户程序
 在 E03 阶段是嵌入内核的 NASM 平铺二进制；E04 保留六个夹具，supervisor 与
@@ -247,3 +249,19 @@ UEFI 接入验收：BIOS 与 OVMF 启动同一份 kernel.elf 哈希，走相同�
 [ACPI 地址图接口](https://uefi.org/specs/ACPI/6.6/15_System_Address_Map_Interfaces.html)、
 [Intel 架构手册入口](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)。
 引入时机、目录划分与当前内存布局是 XOS 的实施选择，不是上游规定。
+
+## 未来图形接口
+
+用户确认Qt为GUI主线、SDL为次选，阶段与验收见xos_plan.md的E13–E20/G系列。
+XOS窄显示/输入服务与用户态QPA/SDL适配分开，Qt不直接调用固件或绑定ISA；
+优先QPA对接XOS服务，SDL兼容不是Qt的前置。当前未实现，不作为E08前置。
+
+## E08-4/5 静态 TLS 增量（0019进行中）
+
+ELF PT_TLS解析/模板校验仍在用户态loader；通用load_plan只描述文件偏移、地址、
+初始化/零填长度与对齐。AMD64 variant II的TCB/TP布置在user/arch/x86_64/tls.cpp，
+内核arch/x86_64/tasks.cpp为任务保存并恢复FS base；其他ISA需自己的后端与验证，
+不能把现有通用代码编译检查称为TLS移植。sys35仅对owned building子任务设置TP，
+验证已映射RW用户范围，内核不读ELF或库设施。
+仅静态local-exec，任务有独立TLS arena；不承诺动态模块、线程或动态TLS。
+实际功能与版本证据以0019和state.md更新为准，不因接口存在就提前标阶段通过。

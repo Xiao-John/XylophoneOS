@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT AND Apache-2.0
+// Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/file_client.hpp>
 #include <xos/sdk.hpp>
 
@@ -27,6 +29,9 @@ i64 Client::call(op operation) {
         if (received == static_cast<i64>(sizeof(response_)) &&
             response_.magic == response_magic && response_.version == abi_version &&
             response_.request_id == request_.request_id) {
+            if (response_.length > sizeof(response_.data)) {
+                return status_value(status::io);
+            }
             return response_.status_code;
         }
         sdk::yield();
@@ -34,64 +39,126 @@ i64 Client::call(op operation) {
     return status_value(status::would_block);
 }
 
+i64 Client::set_path(const char* path, char* target, u32& length) {
+    if (path == nullptr) { return status_value(status::invalid); }
+    length = 0;
+    while (length < max_name && path[length] != '\0') {
+        const u8 c = static_cast<u8>(path[length]);
+        if (c > 0x7e || c < 0x20) { return status_value(status::invalid); }
+        target[length] = path[length];
+        ++length;
+    }
+    if (length == 0 || length >= max_name || path[length] != '\0') {
+        return status_value(status::invalid);
+    }
+    target[length] = '\0';
+    return 0;
+}
+
 i64 Client::ping() {
     request_ = request{};
     return call(op::ping);
 }
 
+i64 Client::list(const char* path, entry* entries, u32 capacity, u32& count, u32& cursor) {
+    count = 0;
+    if (entries == nullptr || capacity == 0) {
+        return status_value(status::invalid);
+    }
+    request_ = request{};
+    u32 path_length = 0;
+    const i64 path_result = set_path(path, request_.name, path_length);
+    if (path_result != 0) { return path_result; }
+    request_.name_length = path_length;
+    request_.offset = cursor;
+    request_.flags = list_directories;
+    request_.length = capacity;
+    const i64 result = call(op::list);
+    if (result != 0) { return result; }
+
+    u32 position = 0;
+    while (position < response_.length) {
+        if (response_.length - position < list_record_header_size || count >= capacity) {
+            return status_value(status::io);
+        }
+        const u16 name_length = static_cast<u16>(
+            static_cast<u16>(response_.data[position]) |
+            static_cast<u16>(static_cast<u16>(response_.data[position + 1]) << 8));
+        const u8 attributes = response_.data[position + 2];
+        const u32 size = static_cast<u32>(response_.data[position + 3]) |
+            (static_cast<u32>(response_.data[position + 4]) << 8) |
+            (static_cast<u32>(response_.data[position + 5]) << 16) |
+            (static_cast<u32>(response_.data[position + 6]) << 24);
+        position += list_record_header_size;
+        if (name_length == 0 || name_length >= max_name ||
+            name_length > response_.length - position) { return status_value(status::io); }
+        entry& item = entries[count];
+        for (u32 i = 0; i < name_length; ++i) {
+            const u8 c = response_.data[position + i];
+            if (c < 0x20 || c > 0x7e) { return status_value(status::io); }
+            item.name[i] = static_cast<char>(c);
+        }
+        item.name[name_length] = '\0';
+        item.size = size;
+        item.version = 0;
+        item.directory = (attributes & entry_is_directory) != 0;
+        ++count;
+        position += name_length;
+    }
+    if (response_.value > 0xffffffffu) { return status_value(status::io); }
+    cursor = static_cast<u32>(response_.value);
+    return 0;
+}
+
 i64 Client::list(entry* entries, u32 capacity, u32& count) {
     count = 0;
     if (entries == nullptr || capacity == 0) { return status_value(status::invalid); }
-    request_ = request{};
-    const i64 result = call(op::list);
-    if (result != 0) { return result; }
-    u32 position = 0;
-    while (position < response_.length && count < capacity) {
-        entry& item = entries[count];
-        u32 name_length = 0;
-        while (position < response_.length && response_.data[position] != ' ' &&
-               name_length + 1 < max_name) {
-            item.name[name_length++] = static_cast<char>(response_.data[position++]);
-        }
-        item.name[name_length] = '\0';
-        if (position < response_.length && response_.data[position] == ' ') { ++position; }
-        u32 size = 0;
-        while (position < response_.length && response_.data[position] >= '0' &&
-               response_.data[position] <= '9') {
-            size = size * 10 + static_cast<u32>(response_.data[position++] - '0');
-        }
-        if (position < response_.length && response_.data[position] == ' ') { ++position; }
-        u32 version = 0;
-        while (position < response_.length && response_.data[position] >= '0' &&
-               response_.data[position] <= '9') {
-            version = version * 10 + static_cast<u32>(response_.data[position++] - '0');
-        }
-        if (position < response_.length && response_.data[position] == '\n') { ++position; }
-        item.size = size;
-        item.version = version;
-        ++count;
-    }
+    u32 cursor = 0;
+    do {
+        u32 page_count = 0;
+        const i64 result = list("/", entries + count, capacity - count, page_count, cursor);
+        if (result != 0) { return result; }
+        count += page_count;
+        if (count == capacity && cursor != 0) { return status_value(status::full); }
+    } while (cursor != 0);
     return 0;
 }
 
-i64 Client::stat(const char* name, u32& size, u32& version) {
-    if (name == nullptr) { return status_value(status::invalid); }
+i64 Client::stat(const char* path, u32& size, u32& version) {
+    u32 attributes = 0;
+    const i64 result = stat_info(path, size, attributes);
+    version = 0;
+    if (result != 0) { return result; }
+    version = attributes;
+    return 0;
+}
+
+i64 Client::stat_info(const char* path, u32& size, u32& attributes) {
+    u32 identity = 0;
+    return stat_info(path, size, attributes, identity);
+}
+
+i64 Client::stat_info(const char* path, u32& size, u32& attributes, u32& identity) {
     request_ = request{};
-    request_.name_length = static_cast<u32>(sdk::length(name));
-    for (u32 i = 0; i + 1 < max_name && name[i] != '\0'; ++i) { request_.name[i] = name[i]; }
+    u32 path_length = 0;
+    const i64 path_result = set_path(path, request_.name, path_length);
+    if (path_result != 0) { return path_result; }
+    request_.name_length = path_length;
     const i64 result = call(op::stat);
     if (result != 0) { return result; }
     size = static_cast<u32>(response_.value);
-    version = response_.flags;
+    attributes = response_.flags;
+    identity = response_.reserved;
     return 0;
 }
 
-i64 Client::open(const char* name, u32 flags, u32& handle, u32& size, u32& version) {
-    if (name == nullptr) { return status_value(status::invalid); }
+i64 Client::open(const char* path, u32 flags, u32& handle, u32& size, u32& version) {
     request_ = request{};
+    u32 path_length = 0;
+    const i64 path_result = set_path(path, request_.name, path_length);
+    if (path_result != 0) { return path_result; }
     request_.flags = flags;
-    request_.name_length = static_cast<u32>(sdk::length(name));
-    for (u32 i = 0; i + 1 < max_name && name[i] != '\0'; ++i) { request_.name[i] = name[i]; }
+    request_.name_length = path_length;
     const i64 result = call(op::open);
     if (result != 0) { return result; }
     handle = response_.handle;
@@ -100,21 +167,44 @@ i64 Client::open(const char* name, u32 flags, u32& handle, u32& size, u32& versi
     return 0;
 }
 
+i64 Client::fstat(u32 handle, u32& size, u32& attributes) {
+    u32 identity = 0;
+    return fstat(handle, size, attributes, identity);
+}
+
+i64 Client::fstat(u32 handle, u32& size, u32& attributes, u32& identity) {
+    request_ = request{};
+    request_.handle = handle;
+    const i64 result = call(op::fstat);
+    if (result != 0) { return result; }
+    size = static_cast<u32>(response_.value);
+    attributes = response_.flags;
+    identity = response_.reserved;
+    return 0;
+}
+
 i64 Client::read(u32 handle, void* data, u32 length) {
-    if (data == nullptr || length > sizeof(request_.data)) { return status_value(status::invalid); }
+    if ((data == nullptr && length != 0) || length > sizeof(request_.data)) {
+        return status_value(status::invalid);
+    }
     request_ = request{};
     request_.handle = handle;
     request_.length = length;
     const i64 result = call(op::read);
     if (result != 0) { return result; }
     const u32 received = response_.length;
+    if (received > length || received > sizeof(response_.data)) {
+        return status_value(status::io);
+    }
     auto* target = static_cast<u8*>(data);
     for (u32 i = 0; i < received; ++i) { target[i] = response_.data[i]; }
     return static_cast<i64>(received);
 }
 
 i64 Client::write(u32 handle, const void* data, u32 length) {
-    if (data == nullptr || length > sizeof(request_.data)) { return status_value(status::invalid); }
+    if ((data == nullptr && length != 0) || length > sizeof(request_.data)) {
+        return status_value(status::invalid);
+    }
     request_ = request{};
     request_.handle = handle;
     request_.length = length;
@@ -122,6 +212,7 @@ i64 Client::write(u32 handle, const void* data, u32 length) {
     for (u32 i = 0; i < length; ++i) { request_.data[i] = source[i]; }
     const i64 result = call(op::write);
     if (result != 0) { return result; }
+    if (response_.value > length) { return status_value(status::io); }
     return static_cast<i64>(response_.value);
 }
 
@@ -130,8 +221,7 @@ i64 Client::seek(u32 handle, u32 offset) {
     request_.handle = handle;
     request_.offset = offset;
     const i64 result = call(op::seek);
-    if (result != 0) { return result; }
-    return static_cast<i64>(response_.value);
+    return result == 0 ? static_cast<i64>(response_.value) : result;
 }
 
 i64 Client::close(u32 handle) {
@@ -140,62 +230,71 @@ i64 Client::close(u32 handle) {
     return call(op::close);
 }
 
-i64 Client::begin_replace(const char* name, u32 length) {
-    if (name == nullptr || length > max_file_bytes) { return status_value(status::no_space); }
+i64 Client::begin_replace(const char* path, u32 length) {
+    if (length > fat32_max_file_bytes) { return status_value(status::no_space); }
     request_ = request{};
-    request_.handle = 100;
-    request_.reserved = static_cast<u32>(sdk::pid());
+    u32 path_length = 0;
+    const i64 path_result = set_path(path, request_.name, path_length);
+    if (path_result != 0) { return path_result; }
     request_.length = length;
-    request_.name_length = static_cast<u32>(sdk::length(name));
-    for (u32 i = 0; i + 1 < max_name && name[i] != '\0'; ++i) { request_.name[i] = name[i]; }
-    const i64 result = call(op::replace_begin);
-    return result;
+    request_.name_length = path_length;
+    return call(op::replace_begin);
+}
+
+i64 Client::chunk_replace(u32 offset, const void* data, u32 length) {
+    if ((data == nullptr && length != 0) || length > sizeof(request_.data) ||
+        offset > fat32_max_file_bytes || length > fat32_max_file_bytes - offset) {
+        return status_value(status::invalid);
+    }
+    request_ = request{};
+    request_.offset = offset;
+    request_.length = length;
+    const auto* source = static_cast<const u8*>(data);
+    for (u32 i = 0; i < length; ++i) { request_.data[i] = source[i]; }
+    return call(op::replace_chunk);
+}
+
+i64 Client::commit_replace() {
+    request_ = request{};
+    return call(op::replace_commit);
 }
 
 i64 Client::abort_replace() {
     request_ = request{};
-    request_.handle = 100;
-    request_.reserved = static_cast<u32>(sdk::pid());
     return call(op::replace_abort);
 }
 
-i64 Client::replace(const char* name, const void* data, u32 length) {
-    const i64 started = begin_replace(name, length);
+i64 Client::replace(const char* path, const void* data, u32 length) {
+    if (data == nullptr && length != 0) { return status_value(status::invalid); }
+    const i64 started = begin_replace(path, length);
     if (started != 0) { return started; }
     const auto* source = static_cast<const u8*>(data);
     u32 offset = 0;
     while (offset < length) {
         u32 chunk = length - offset;
         if (chunk > sizeof(request_.data)) { chunk = sizeof(request_.data); }
-        request_ = request{};
-        request_.handle = 100;
-        request_.reserved = static_cast<u32>(sdk::pid());
-        request_.offset = offset;
-        request_.length = chunk;
-        for (u32 i = 0; i < chunk; ++i) { request_.data[i] = source[offset + i]; }
-        const i64 result = call(op::replace_chunk);
+        const i64 result = chunk_replace(offset, source + offset, chunk);
         if (result != 0) { (void)abort_replace(); return result; }
         offset += chunk;
     }
-    request_ = request{};
-    request_.handle = 100;
-    request_.reserved = static_cast<u32>(sdk::pid());
-    const i64 committed = call(op::replace_commit);
-    if (committed != 0) { (void)abort_replace(); return committed; }
-    return 0;
+    const i64 committed = commit_replace();
+    if (committed != 0) { (void)abort_replace(); }
+    return committed;
 }
 
-i64 Client::read_all(const char* name, void* data, u32 capacity, u32& length) {
+i64 Client::read_all(const char* path, void* data, u32 capacity, u32& length) {
     length = 0;
     u32 size = 0;
     u32 version = 0;
-    i64 result = stat(name, size, version);
+    i64 result = stat(path, size, version);
     if (result != 0) { return result; }
-    if (size > capacity) { return status_value(status::no_space); }
+    if (size > capacity || (data == nullptr && size != 0)) {
+        return status_value(status::no_space);
+    }
     u32 handle = 0;
     u32 opened_size = 0;
     u32 opened_version = 0;
-    result = open(name, read_only, handle, opened_size, opened_version);
+    result = open(path, read_only, handle, opened_size, opened_version);
     if (result != 0) { return result; }
     if (opened_size != size || opened_version != version) {
         (void)close(handle);
@@ -208,7 +307,10 @@ i64 Client::read_all(const char* name, void* data, u32 capacity, u32& length) {
                                ? static_cast<u32>(sizeof(response_.data))
                                : size - position;
         const i64 got = read(handle, target + position, wanted);
-        if (got <= 0) { (void)close(handle); return status_value(status::io); }
+        if (got <= 0 || static_cast<u64>(got) > wanted) {
+            (void)close(handle);
+            return status_value(status::io);
+        }
         position += static_cast<u32>(got);
     }
     result = close(handle);
@@ -217,16 +319,52 @@ i64 Client::read_all(const char* name, void* data, u32 capacity, u32& length) {
     return 0;
 }
 
+i64 Client::remove(const char* path) {
+    request_ = request{};
+    u32 path_length = 0;
+    const i64 path_result = set_path(path, request_.name, path_length);
+    if (path_result != 0) { return path_result; }
+    request_.name_length = path_length;
+    return call(op::remove);
+}
+
+i64 Client::mkdir(const char* path) {
+    request_ = request{};
+    u32 path_length = 0;
+    const i64 path_result = set_path(path, request_.name, path_length);
+    if (path_result != 0) { return path_result; }
+    request_.name_length = path_length;
+    return call(op::mkdir);
+}
+
+i64 Client::rename(const char* old_path, const char* new_path) {
+    request_ = request{};
+    u32 old_length = 0;
+    const i64 old_result = set_path(old_path, request_.name, old_length);
+    if (old_result != 0) { return old_result; }
+    request_.name_length = old_length;
+    u32 new_length = 0;
+    const i64 new_result = set_path(new_path, reinterpret_cast<char*>(request_.data), new_length);
+    if (new_result != 0 || new_length + 1 > sizeof(request_.data)) {
+        return status_value(status::invalid);
+    }
+    request_.length = new_length;
+    request_.data[new_length] = 0;
+    return call(op::rename);
+}
+
+i64 Client::block_bench(u32 length) {
+    if (length == 0 || length > max_block_bench_bytes) {
+        return status_value(status::invalid);
+    }
+    request_ = request{};
+    request_.length = length;
+    const i64 result = call(op::block_bench);
+    return result == 0 ? static_cast<i64>(response_.value) : result;
+}
+
 i64 Client::sync() {
     request_ = request{};
     return call(op::sync);
-}
-
-i64 Client::remove(const char* name) {
-    if (name == nullptr) { return status_value(status::invalid); }
-    request_ = request{};
-    request_.name_length = static_cast<u32>(sdk::length(name));
-    for (u32 i = 0; i + 1 < max_name && name[i] != '\0'; ++i) { request_.name[i] = name[i]; }
-    return call(op::remove);
 }
 }

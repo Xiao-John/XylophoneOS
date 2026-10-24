@@ -1,0 +1,14 @@
+--- a/libiberty/unlink-if-ordinary.c
++++ b/libiberty/unlink-if-ordinary.c
+@@ -50,6 +50,11 @@
+ 
+ #include "libiberty.h"
+ 
++/* XOS has no symlinks; use stat instead of the unavailable lstat. */
++#ifdef XOS_NO_SYMLINKS
++#define lstat stat
++#endif
++
+ #ifndef S_ISLNK
+ #ifdef S_IFLNK
+ #define S_ISLNK(m) (((m) & S_IFMT) == S_IFLNK)

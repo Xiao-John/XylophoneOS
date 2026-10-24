@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT AND Apache-2.0
+# Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 """E02: exceptions, E820 physical pages, mapping, console, and symbol debugging."""
 import hashlib
 import json
@@ -123,9 +125,9 @@ def main():
             if memory is None:
                 raise AssertionError("Missing memory summary fields")
             usable_kib, managed_kib, pages, free_pages = (int(value) for value in memory.groups())
-            if usable_kib < 60 * 1024 or managed_kib < 60 * 1024:
+            if usable_kib < 500 * 1024 or managed_kib < 500 * 1024:
                 raise AssertionError("E820 reported less RAM than the fixed QEMU configuration")
-            if pages < 15 * 1024 or free_pages < 15 * 1024:
+            if pages < 125 * 1024 or free_pages < 125 * 1024:
                 raise AssertionError("Physical page manager did not adopt usable RAM")
 
             idt = re.search(rb"idt=0x([0-9a-f]{16})", output)
@@ -165,7 +167,7 @@ def main():
             physical = int(allocated.group(1), 16)
             if physical % 4096 != 0 or physical < 0x100000:
                 raise AssertionError("Allocator returned an invalid or reserved-low page")
-            if physical >= 64 * 1024 * 1024:
+            if physical >= 512 * 1024 * 1024:
                 raise AssertionError("Allocator returned a page beyond configured RAM")
             if symbols["kernel_start"] <= physical < symbols["kernel_end"]:
                 raise AssertionError("Allocator returned a page inside the kernel image")

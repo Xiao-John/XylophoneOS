@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT AND Apache-2.0
+# Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 """E07: normal sync/reboot persistence, deletion, and file-count save failure."""
 import json
 import sys
@@ -75,8 +77,8 @@ def main():
         for marker in (b"\n\n  two  spaces  \n", b"third\n", b"fourth\n"):
             if marker not in cat:
                 raise AssertionError(f"persisted text mismatch: {cat[-400:]!r}")
-        listing = command(guest, "ls", b"HELLO.ELF", timeout=15)
-        if b"DEL.TXT" in listing:
+        listing = command(guest, "ls", b"hello.elf", timeout=15)
+        if b"del.txt" in listing.lower():
             raise AssertionError("deleted file returned after reboot")
         checks.append("second_boot_verifies_content_and_deletion")
 
@@ -87,25 +89,13 @@ def main():
         guest.expect(b"sup> ", start=start, timeout=15)
         checks.append("second_boot_executes_persisted_elf")
 
-        # Fill the four-file namespace; the fifth save must fail without touching
-        # the existing file, and the editor must retain its buffer.
+        # E08 removes the old four-file cap; keep persistence regression and
+        # prove the fifth ordinary file is now really saved.
         edit_lines(guest, "a.txt", [b"keep me"], expect_new=True)
         edit_lines(guest, "b.txt", [b"second"], expect_new=True)
-        start = len(guest.output)
-        send_bytes(guest, b"edit c.txt\r")
-        guest.expect(b"(new)", start=start, timeout=10)
-        send_bytes(guest, b"too many\r")
-        guest.expect(b"| ", start=start, timeout=10)
-        send_bytes(guest, b":wq\r")
-        guest.expect(b"[files] save error=-3", start=start, timeout=12)
-        guest.expect(b"[edit] buffer retained", start=start, timeout=12)
-        guest.expect(b"| ", start=start, timeout=12)
-        send_bytes(guest, b":q!\r")
-        guest.expect(b"sup> ", start=start, timeout=12)
-        kept = command(guest, "cat a.txt", b"keep me", timeout=15)
-        if b"keep me" not in kept:
-            raise AssertionError("failed save damaged an existing file")
-        checks.append("full_namespace_save_failure_preserves_old_file_and_buffer")
+        edit_lines(guest, "c.txt", [b"fifth file"], expect_new=True)
+        command(guest, "cat c.txt", b"fifth file")
+        checks.append("expanded_namespace_saves_fifth_file")
 
         command(guest, "sync", b"[files] sync=ok")
         report["disk_bytes"] = disk.stat().st_size

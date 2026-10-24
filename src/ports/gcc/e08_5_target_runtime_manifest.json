@@ -1,0 +1,134 @@
+{
+  "archives": [
+    {
+      "path": "lib/libstdc++.a",
+      "root": "runtime",
+      "sha256": "8bba188c15fefbdad794816cca8544864f87033a2939011bb7763023b1e6e9ec"
+    },
+    {
+      "path": "lib/libxos.a",
+      "root": "sdk",
+      "sha256": "c439a2ef0f8473259fcb902e73ef6251ec2575808cae255d9537ecd911a15250"
+    },
+    {
+      "path": "lib/libxos_loader.a",
+      "root": "sdk",
+      "sha256": "e887d14cd4f500973c3605b9235701059c6dac2d7e2db917976dc586afa4afbb"
+    },
+    {
+      "path": "lib/libc.a",
+      "root": "sdk",
+      "sha256": "283fa07ad205c80af92e955a91da027435d8a8a90cb7e27933f57925cc5baa22"
+    },
+    {
+      "path": "lib/libm.a",
+      "root": "sdk",
+      "sha256": "4cfdd6324f6776d025923ee369fad51236a9ee5730c8143a6b3b03b963eefd80"
+    },
+    {
+      "path": "lib/libgcc.a",
+      "root": "runtime",
+      "sha256": "1d1755feabef4fbe34527df8f94f44e67f3fc2ce3b1d58dbf824ec858c994dfa"
+    }
+  ],
+  "compile_flags": [
+    "-O2",
+    "-fexceptions",
+    "-frtti",
+    "-fno-stack-protector",
+    "-fno-pic",
+    "-fno-pie",
+    "-mcmodel=small",
+    "-mno-red-zone"
+  ],
+  "compiler": {
+    "path": "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+    "sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
+    "target": "x86_64-elf"
+  },
+  "crt": {
+    "path": "crt0_posix.o",
+    "root": "sdk",
+    "sha256": "315f165c471c3124e211c5579a40d7b902dd8f8444972a5c87a2cbe8c874ea58"
+  },
+  "feature_flags": {
+    "exceptions": [],
+    "rtti": []
+  },
+  "features": {
+    "exceptions": {
+      "evidence": "GCC 16.2.0 target libstdc++ built with -fexceptions -frtti -ftls-model=local-exec",
+      "status": "ready"
+    },
+    "local_static": {
+      "evidence": "GCC 16.2.0 target libstdc++ built with -fexceptions -frtti -ftls-model=local-exec",
+      "status": "ready"
+    },
+    "multi_tu": {
+      "evidence": "GCC 16.2.0 target libstdc++ built with -fexceptions -frtti -ftls-model=local-exec",
+      "status": "ready"
+    },
+    "rtti": {
+      "evidence": "GCC 16.2.0 target libstdc++ built with -fexceptions -frtti -ftls-model=local-exec",
+      "status": "ready"
+    },
+    "string_vector": {
+      "evidence": "GCC 16.2.0 target libstdc++ built with -fexceptions -frtti -ftls-model=local-exec",
+      "status": "ready"
+    },
+    "tls_destructors": {
+      "evidence": "GCC 16.2.0 target libstdc++ built with -fexceptions -frtti -ftls-model=local-exec",
+      "status": "ready"
+    }
+  },
+  "host_library_build_flags": [],
+  "include_dirs": [
+    {
+      "path": "include/c++/16.2.0",
+      "root": "runtime",
+      "sha256": "3d7bc55a740c7097d4ca81cbb6ee6855eb4082e8256914265eb95bb1ff77cf42"
+    },
+    {
+      "path": "include/c++/16.2.0/x86_64-unknown-elf",
+      "root": "runtime",
+      "sha256": "43cac080e0239faf47aad077c406ae43ffbc656ad28d7499956dc010272ceab1"
+    },
+    {
+      "path": "include",
+      "root": "sdk",
+      "sha256": "8f2ec842efe9f7568bc52ada4a87b8d8ce9c2eb59d96b9559ee93bfefadaa7bd"
+    }
+  ],
+  "link_flags": [
+    "-nostdlib",
+    "-static",
+    "-no-pie",
+    "-Wl,--build-id=none",
+    "-Wl,-z,noexecstack",
+    "-Wl,-z,max-page-size=4096"
+  ],
+  "linker_script": {
+    "path": "user.ld",
+    "root": "sdk",
+    "sha256": "54a56cdc05f8db3fac0484ea0e1f869eb6be66196becd3af0297ea5bdbc43eaa"
+  },
+  "provenance": {
+    "host_stdcxx_not_used": true,
+    "libgcc": "host x86_64-elf libgcc.a with GNU unwinder",
+    "sdk": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490",
+    "source": "gcc-16.2.0/libstdc++-v3"
+  },
+  "runtime_build_flags": [
+    "-fexceptions",
+    "-frtti",
+    "-ftls-model=local-exec"
+  ],
+  "runtime_kind": "target_application_runtime",
+  "schema_version": 1,
+  "sdk_manifest": {
+    "path": "manifest.json",
+    "sha256": "1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490"
+  },
+  "status": "ready",
+  "target_triple": "x86_64-elf"
+}

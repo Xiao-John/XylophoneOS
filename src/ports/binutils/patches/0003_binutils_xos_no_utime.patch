@@ -1,0 +1,22 @@
+# XOS additions: Apache-2.0; upstream context retains GPL-3.0-or-later.
+# SPDX-License-Identifier: GPL-3.0-or-later AND Apache-2.0
+--- a/binutils/rename.c
++++ b/binutils/rename.c
+@@ -167,6 +167,12 @@
+ void
+ set_times (const char *destination, const struct stat *statbuf)
+ {
++#ifdef XOS_NO_UTIME
++  /* Do not silently claim success for an explicit preserve-dates request. */
++  non_fatal (_("%s: cannot preserve timestamps: XOS has no timestamp-setting API"),
++             destination);
++  (void) statbuf;
++#else
+   int result;
+ #if defined HAVE_UTIMENSAT
+   struct timespec times[2];
+@@ -196,6 +202,7 @@
+   if (result != 0)
+     non_fatal (_("%s: cannot set time: %s"), destination, strerror (errno));
++#endif
+ }

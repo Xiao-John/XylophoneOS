@@ -1,0 +1,51 @@
+--- a/Makefile.def
++++ b/Makefile.def
+@@ -389,7 +389,6 @@
+ dependencies = { module=all-gcc; on=all-build-bison; };
+ dependencies = { module=all-gcc; on=all-build-flex; };
+ dependencies = { module=all-gcc; on=all-build-libiberty; };
+-dependencies = { module=all-gcc; on=all-build-fixincludes; };
+ dependencies = { module=all-gcc; on=all-build-libcpp; };
+ dependencies = { module=all-gcc; on=all-zlib; };
+ dependencies = { module=all-gcc; on=all-libbacktrace; hard=true; };
+@@ -397,14 +396,12 @@
+ dependencies = { module=all-gcc; on=all-libcody; hard=true; };
+ dependencies = { module=all-gcc; on=all-libdecnumber; hard=true; };
+ dependencies = { module=all-gcc; on=all-libiberty; };
+-dependencies = { module=all-gcc; on=all-fixincludes; };
+ dependencies = { module=all-gcc; on=all-lto-plugin; };
+ dependencies = { module=all-gcc; on=all-libiconv; };
+ dependencies = { module=info-gcc; on=all-build-libiberty; };
+ dependencies = { module=dvi-gcc; on=all-build-libiberty; };
+ dependencies = { module=pdf-gcc; on=all-build-libiberty; };
+ dependencies = { module=html-gcc; on=all-build-libiberty; };
+-dependencies = { module=install-gcc ; on=install-fixincludes; };
+ dependencies = { module=install-gcc ; on=install-lto-plugin; };
+ dependencies = { module=install-strip-gcc ; on=install-strip-fixincludes; };
+ dependencies = { module=install-strip-gcc ; on=install-strip-lto-plugin; };
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -68761,7 +68761,6 @@
+ all-stagefeedback-gcc: maybe-all-build-libiberty
+ all-stageautoprofile-gcc: maybe-all-build-libiberty
+ all-stageautofeedback-gcc: maybe-all-build-libiberty
+-all-gcc: maybe-all-build-fixincludes
+ all-stage1-gcc: maybe-all-build-fixincludes
+ all-stage2-gcc: maybe-all-build-fixincludes
+ all-stage3-gcc: maybe-all-build-fixincludes
+@@ -68841,7 +68840,6 @@
+ all-stagefeedback-gcc: maybe-all-stagefeedback-libiberty
+ all-stageautoprofile-gcc: maybe-all-stageautoprofile-libiberty
+ all-stageautofeedback-gcc: maybe-all-stageautofeedback-libiberty
+-all-gcc: maybe-all-fixincludes
+ all-stage1-gcc: maybe-all-stage1-fixincludes
+ all-stage2-gcc: maybe-all-stage2-fixincludes
+ all-stage3-gcc: maybe-all-stage3-fixincludes
+@@ -68911,7 +68909,6 @@
+ html-stagefeedback-gcc: maybe-all-build-libiberty
+ html-stageautoprofile-gcc: maybe-all-build-libiberty
+ html-stageautofeedback-gcc: maybe-all-build-libiberty
+-install-gcc: maybe-install-fixincludes
+ install-gcc: maybe-install-lto-plugin
+ install-strip-gcc: maybe-install-strip-fixincludes
+ install-strip-gcc: maybe-install-strip-lto-plugin

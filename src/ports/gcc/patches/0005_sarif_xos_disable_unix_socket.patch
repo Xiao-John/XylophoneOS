@@ -1,0 +1,54 @@
+--- a/gcc/diagnostics/sarif-sink.cc
++++ b/gcc/diagnostics/sarif-sink.cc
+@@ -20,6 +20,7 @@
+ 
+ #include "config.h"
+ 
++#ifndef XOS_NO_UNIX_SOCKETS
+ #ifdef __MINGW32__
+ #include <winsock2.h>
+ #ifdef HAVE_AFUNIX_H
+@@ -33,6 +34,7 @@
+ #else
+ #include <sys/un.h>
+ #include <sys/socket.h>
++#endif
+ #endif
+ 
+ #define INCLUDE_LIST
+@@ -4216,6 +4218,7 @@
+   int m_ival;
+ };
+ 
++#ifndef XOS_NO_UNIX_SOCKETS
+ class sarif_socket_sink : public sarif_sink
+ {
+ public:
+@@ -4298,6 +4301,8 @@
+ 
+   unique_fd m_fd;
+ };
++#endif
++
+ 
+ /* Print the start of an embedded link to PP, as per 3.11.6.  */
+ 
+@@ -4627,6 +4632,10 @@
+ void
+ maybe_open_sarif_sink_for_socket (context &dc)
+ {
++#ifdef XOS_NO_UNIX_SOCKETS
++  (void) dc;
++  return;
++#else
+   gcc_assert (line_table);
+ 
+   const char * const env_var_name = "EXPERIMENTAL_SARIF_SOCKET";
+@@ -4663,6 +4672,7 @@
+      std::move (sfd));
+   sink_->update_printer ();
+   dc.add_sink (std::move (sink_));
++#endif
+ }
+ 
+ #if CHECKING_P

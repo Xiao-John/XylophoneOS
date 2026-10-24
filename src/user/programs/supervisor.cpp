@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT AND Apache-2.0
+// Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/sdk.hpp>
 #include <xos/elf.hpp>
 #include <xos/file_ui.hpp>
@@ -7,7 +9,6 @@ namespace {
 using namespace xos;
 using namespace xos::sdk;
 
-u8 exec_buffer[file::max_file_bytes];
 bool demo_keep;
 bool demo_quiet;
 
@@ -90,17 +91,22 @@ void primitive_check() {
         ok = ok && syscall(sys_process_abort, handles[i]) == 0;
     }
     const i64 capped = syscall(sys_process_create, 7);
+    const u64 pressure_started = ticks();
+    u32 pressure_pages = 0;
     if (capped <= 0) { ok = false; }
     else {
         for (u32 i = 0; i < process_max_pages; ++i) {
             process_page page{process_user_begin + u64{i} * 4096, 0, 0, map_read | map_write};
             const i64 mapped = syscall(sys_process_map, static_cast<u64>(capped), reinterpret_cast<u64>(&page));
             if (mapped != 0) { ok = false; break; }
+            ++pressure_pages;
         }
         process_page overflow{process_user_begin + process_max_pages * 4096, 0, 0, map_read | map_write};
         ok = ok && syscall(sys_process_map, static_cast<u64>(capped), reinterpret_cast<u64>(&overflow)) == process_error_resources;
         ok = ok && syscall(sys_process_abort, static_cast<u64>(capped)) == 0;
     }
+    print("[primitive] page_pressure="); decimal(pressure_pages);
+    print(" ticks="); decimal(ticks() - pressure_started); print("\n");
     const auto after = stats();
     ok = ok && before.free_pages == after.free_pages && before.tasks == after.tasks &&
          before.completions == after.completions;
@@ -114,7 +120,7 @@ void execute(u32 argc, char** argv) {
         print("ps | kill <pid> | images | exec <image> [args] | spawn <image> [args]\n"
               "wait <pid> | stats | primtest | elftest\n"
               "ls | cat <file> | stat <file> | rm <file> | edit <file> | filetest\n"
-              "sync | exec-file <file> [args] | help\n");
+              "sync | exec-file/spawn-file/exec-driver <file> [args] | mkdir <path> | mv <old> <new> | help\n");
     } else if (equal(argv[0], "ps") && argc == 1) {
         char buffer[768];
         const i64 count = syscall(9, reinterpret_cast<u64>(buffer), sizeof(buffer));
@@ -137,12 +143,16 @@ void execute(u32 argc, char** argv) {
         if (equal(argv[0], "exec")) { result_line(static_cast<u64>(child)); }
     } else if (equal(argv[0], "wait") && argc == 2) {
         result_line(number(argv[1]));
-    } else if (equal(argv[0], "ls") && argc == 1) {
-        ui::list();
+    } else if (equal(argv[0], "ls") && (argc == 1 || argc == 2)) {
+        ui::list(argc == 2 ? argv[1] : "/");
     } else if (equal(argv[0], "cat") && argc == 2) {
         ui::cat(argv[1]);
     } else if (equal(argv[0], "stat") && argc == 2) {
         ui::stat(argv[1]);
+    } else if (equal(argv[0], "mkdir") && argc == 2) {
+        ui::make_directory(argv[1]);
+    } else if (equal(argv[0], "mv") && argc == 3) {
+        ui::rename_file(argv[1], argv[2]);
     } else if (equal(argv[0], "rm") && argc == 2) {
         ui::remove_file(argv[1]);
     } else if (equal(argv[0], "edit") && argc == 2) {
@@ -153,15 +163,16 @@ void execute(u32 argc, char** argv) {
         const i64 synced = ui::sync();
         if (synced == 0) { print("[files] sync=ok\n"); }
         else { print("[files] sync error="); signed_decimal(synced); print("\n"); }
-    } else if (equal(argv[0], "exec-file") && argc >= 2) {
-        u32 length = 0;
-        const i64 loaded = ui::load(argv[1], exec_buffer, sizeof(exec_buffer), length);
-        if (loaded != 0) { print("exec-file: error="); signed_decimal(loaded); print("\n"); return; }
-        const i64 child = spawn_buffer(argv[1], exec_buffer, length, argc - 1, argv + 1);
+    } else if ((equal(argv[0], "exec-file") || equal(argv[0], "spawn-file") || equal(argv[0], "exec-driver")) && argc >= 2) {
+        spawn_options options{};
+        options.grant_spawn = equal(argv[0], "exec-driver");
+        const i64 child = options.grant_spawn
+            ? spawn_file_options(argv[1], argc - 1, argv + 1, options)
+            : spawn_file(argv[1], argc - 1, argv + 1);
         if (child < 0) { print("exec-file: error="); signed_decimal(child); print("\n"); return; }
         print("[loader] started pid="); decimal(static_cast<u64>(child));
         print(" file="); print(argv[1]); print("\n");
-        result_line(static_cast<u64>(child));
+        if (!equal(argv[0], "spawn-file")) { result_line(static_cast<u64>(child)); }
     } else if (equal(argv[0], "demo") && argc == 2) {
         if (equal(argv[1], "keep")) {
             demo_keep = true;
@@ -200,7 +211,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     bool last_cr = false;
     for (;;) {
         print("sup> ");
-        char line[256]{};
+        char line[2048]{};
         u32 used = 0;
         bool overflow = false;
         const u64 prompt_tick = ticks();

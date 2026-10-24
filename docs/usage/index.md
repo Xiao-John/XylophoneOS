@@ -62,7 +62,7 @@
 | `stats` | 资源计数 | [stats](supervisor/stats.md) |
 | `primtest` | 构造机制边界/回滚检查 | [primtest](supervisor/primtest.md) |
 | `elftest` | ELF 边界检查 | [elftest](supervisor/elftest.md) |
-| `ls` | 列出工作盘文件 | [ls](supervisor/ls.md) |
+| `ls [path]` | 列出工作盘文件 | [ls](supervisor/ls.md) |
 | `cat <file>` | 读取并打印工作盘文件 | [cat](supervisor/cat.md) |
 | `stat <file>` | 文件大小/版本 | [stat](supervisor/stat.md) |
 | `rm <file>` | 删除文件 | [rm](supervisor/rm.md) |
@@ -70,12 +70,17 @@
 | `filetest` | 文件短读/EOF/句柄/容量检查 | [filetest](supervisor/filetest.md) |
 | `sync` | 文件与块设备落盘 | [sync](supervisor/sync.md) |
 | `exec-file <file> [args]` | 从工作盘文件装载并等待 | [exec-file](supervisor/exec-file.md) |
+| `exec-driver <path> [args]` | 显式授权工具驱动构造子任务并等待 | [exec-driver](supervisor/exec-driver.md) |
+| `spawn-file <path> [args]` | 从工作盘启动后台程序 | [spawn-file](supervisor/spawn-file.md) |
+| `mkdir <path>` | 创建目录 | [mkdir](supervisor/mkdir.md) |
+| `mv <old> <new>` | 改名/移动，拒绝覆盖 | [mv](supervisor/mv.md) |
 
 这些命令只在 `sup>` 生效。按空格分词，不支持引号、管道、重定向。行上限
-255 字节，程序 argv 最多 8 项（含程序名），每项最多 63 字节；超出拒绝。
-工作盘先由宿主 `make disk` 显式创建/格式化（16 MiB FAT16），`make run` 只打开
-已有盘。文件最多 4 个、每文件 24 KiB、8 个同时打开；单层 8.3 短名，无目录/LFN，
-显示为大写。`edit` 的正文行不走分词器，只有以 `:` 开头的行是编辑器命令。
+255 字节，程序 argv 最多64项（含程序名），每项最多255字节；argv/env/cwd共享
+4页startup，超出拒绝。监督终端行缓冲2047字节，不能代表SDK总参数容量。
+工作盘由宿主 `make disk` 显式创建（新盘默认 2 GiB FAT32），`make run` 只打开
+已有盘，原 16 MiB FAT16 仍兼容且不会被升级覆盖。支持目录和 ASCII LFN，
+每会话 8 个打开、全局 16 个对象锁；没有旧 4 文件/24 KiB 限制。`edit` 的正文行不走分词器，只有以 `:` 开头的行是编辑器命令。
 保存/删除后执行 `sync`，看到 `[files] sync=ok` 再停止 QEMU。
 进入 `sup>` 后约 1 秒无输入会自动停止旧演示任务 1/2/3/4；调试旧用例可先
 `demo keep`，或 `demo quiet` 立即停止。
@@ -102,3 +107,9 @@ Ctrl-C 仍关闭宿主 QEMU。后台 stdin 暂无作业控制，会与终端竞�
 - supervisor：`src/user/programs/supervisor.cpp`、`src/user/loader/`；
   测试 `tests/process_smoke.py`，也要维护每命令一页。
 - 文档描述实际行为；未实现或未验证的能力必须写明“未实现/未运行”，不能写成已支持。
+
+工具链使用见 [E08-4 GCC C Seed](../e08_gcc_seed.md)：安装白名单、显式exec-driver、
+静态sysroot/profile与功能验收命令。G++/target标准库尚未验收。
+
+原生C++工具链见 [E08-5 G++ Seed](../e08_cpp_seed.md)，功能闭环与限制见
+[综合验收](../reports/e08_acceptance.md)。

@@ -1,0 +1,59 @@
+# XOS additions: Apache-2.0; upstream context retains GPL-3.0-or-later.
+# SPDX-License-Identifier: GPL-3.0-or-later AND Apache-2.0
+--- a/bfd/opncls.c
++++ b/bfd/opncls.c
+@@ -857,6 +857,7 @@
+ {
+   /* If the file was open for writing and is now executable,
+      make it so.  */
++#ifndef XOS_NO_POSIX_FILE_MODES
+   if (abfd->direction == write_direction
+       && (abfd->flags & (EXEC_P | DYNAMIC)) != 0)
+     {
+@@ -876,6 +877,7 @@
+ 		  & (buf.st_mode | ((S_IXUSR | S_IXGRP | S_IXOTH) &~ mask))));
+ 	}
+     }
++#endif
+ }
+ 
+ /*
+--- a/binutils/ar.c
++++ b/binutils/ar.c
+@@ -1227,7 +1227,9 @@
+ 
+   output_file = NULL;
+ 
++#ifndef XOS_NO_POSIX_FILE_MODES
+   chmod (output_filename, buf.st_mode);
++#endif
+ 
+   if (preserve_dates)
+     {
+--- a/binutils/rename.c
++++ b/binutils/rename.c
+@@ -68,9 +68,11 @@
+   saved = errno;
+ 
+ #if !defined (_WIN32) || defined (__CYGWIN32__)
++#ifndef XOS_NO_POSIX_FILE_MODES
+   /* Writing to a setuid/setgid file may clear S_ISUID and S_ISGID.
+      Try to restore them, ignoring failure.  */
+   if (target_stat != NULL)
+     fchmod (tofd, target_stat->st_mode);
++#endif
+ #endif
+ 
+   close (fromfd);
+--- a/binutils/objcopy.c
++++ b/binutils/objcopy.c
+@@ -2028,7 +2028,9 @@
+ 
+   /* We should at least be able to read it back when copying an
+      unknown object in an archive.  */
++#ifndef XOS_NO_POSIX_FILE_MODES
+   chmod (bfd_get_filename (obfd), mode | S_IRUSR);
++#endif
+   free (cbuf);
+   return true;
+ }

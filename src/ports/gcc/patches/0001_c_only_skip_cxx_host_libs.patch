@@ -1,0 +1,42 @@
+--- a/configure
++++ b/configure
+@@ -2897,7 +2897,7 @@
+ 
+ # these libraries are used by various programs built for the host environment
+ #f
+-host_libs="gettext libiberty opcodes bfd readline tcl tk itcl libgui zlib libbacktrace libcpp libcody libdecnumber gmp mpfr mpc isl libiconv libctf libsframe libgrust "
++host_libs="gettext libiberty opcodes bfd readline tcl tk itcl libgui zlib libbacktrace libcpp libdecnumber gmp mpfr mpc isl libiconv libctf libsframe "
+ 
+ # these tools are built for the host environment
+ # Note, the powerpc-eabi build depends on sim occurring before gdb in order to
+--- a/configure.ac
++++ b/configure.ac
+@@ -135,7 +135,7 @@
+ 
+ # these libraries are used by various programs built for the host environment
+ #f
+-host_libs="gettext libiberty opcodes bfd readline tcl tk itcl libgui zlib libbacktrace libcpp libcody libdecnumber gmp mpfr mpc isl libiconv libctf libsframe libgrust "
++host_libs="gettext libiberty opcodes bfd readline tcl tk itcl libgui zlib libbacktrace libcpp libdecnumber gmp mpfr mpc isl libiconv libctf libsframe "
+ 
+ # these tools are built for the host environment
+ # Note, the powerpc-eabi build depends on sim occurring before gdb in order to
+--- a/Makefile.def
++++ b/Makefile.def
+@@ -394,7 +394,6 @@
+ dependencies = { module=all-gcc; on=all-zlib; };
+ dependencies = { module=all-gcc; on=all-libbacktrace; hard=true; };
+ dependencies = { module=all-gcc; on=all-libcpp; hard=true; };
+-dependencies = { module=all-gcc; on=all-libcody; hard=true; };
+ dependencies = { module=all-gcc; on=all-libdecnumber; hard=true; };
+ dependencies = { module=all-gcc; on=all-libiberty; };
+ dependencies = { module=all-gcc; on=all-fixincludes; };
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -68811,7 +68811,6 @@
+ all-stagefeedback-gcc: all-stagefeedback-libcpp
+ all-stageautoprofile-gcc: all-stageautoprofile-libcpp
+ all-stageautofeedback-gcc: all-stageautofeedback-libcpp
+-all-gcc: all-libcody
+ all-stage1-gcc: all-stage1-libcody
+ all-stage2-gcc: all-stage2-libcody
+ all-stage3-gcc: all-stage3-libcody

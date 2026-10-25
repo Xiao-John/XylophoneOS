@@ -647,7 +647,9 @@ extern "C" _READ_WRITE_RETURN_TYPE write(int fd, const void* buffer, size_t leng
         return static_cast<ssize_t>(done);
     }
     if (object.kind == object_kind::kernel || object.kind == object_kind::pipe_write) {
-        const size_t chunk = object.kind == object_kind::kernel && length > 256 ? 256 : length;
+        const bool console = object.kind == object_kind::kernel &&
+            xos::sdk::syscall(xos::sys_process_stdio, 0, object.handle) != 0;
+        const size_t chunk = console && length > 256 ? 256 : length;
         for (;;) {
             const xos::i64 result = object.kind == object_kind::kernel
                 ? xos::sdk::write(object.handle, buffer, chunk)
@@ -657,7 +659,8 @@ extern "C" _READ_WRITE_RETURN_TYPE write(int fd, const void* buffer, size_t leng
                 if (result < 0) { errno = error_from_kernel(result); return -1; }
                 return static_cast<ssize_t>(result);
             }
-            const xos::i64 waited = xos::sdk::syscall(xos::sys_pipe_wait, object.handle);
+            const xos::i64 waited = xos::sdk::syscall(xos::sys_pipe_wait, object.handle,
+                chunk <= xos::process_pipe_bytes ? chunk : 1);
             if (waited < 0) {
                 errno = waited == xos::process_error_would_block ? EAGAIN : error_from_kernel(waited);
                 return -1;

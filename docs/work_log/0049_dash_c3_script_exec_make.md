@@ -62,3 +62,8 @@ xypm xos_app.py按冻结SDK tree hash严格登记；本新SDK未擅自写入旧p
 未运行/宣称新SDK包发布兼容。CPython实际重建T3-PY回归，不启用其fork配置；
 Qt/SMP/线程fork/exec/任意迟到RPC恢复not_run/unsupported。ISO保持1MiB payload、
 512KiB kernel和既有映射上限，runtime ELF减去debug避免侵占容量。这里没有新Release。
+
+最终审计补充：原<=4KiB pipe write在仅有部分空间时可能短写，继承pipe还受console
+256字节截断，不能保证多个writer的小写原子性。收口改成等待完整小写空间，并给
+sys54增加writer minimum空间参数（0兼容旧any-space）；补双writer/257字节读取
+强制不足空间时序的定向客体测试。大write短写与C1 gate保留，匹配SDK重新构建。

@@ -172,7 +172,8 @@ def build_users(root, build, nasm, run, build_id):
             "startup_versions": [1, 2, 3], "exec_image_abi": 3, "exec_marker": ".xos.exec",
             "fork_supported": True, "exec_supported": True, "single_main_thread_only": True,
             "max_fork_depth": 3, "replacement_reservations": 1, "fd_count": 32, "spawn_argument_bytes": 255,
-            "exec_argument_bytes": 4095, "startup_bytes": 16384},
+            "exec_argument_bytes": 4095, "startup_bytes": 16384, "pipe_atomic_bytes": 4096,
+            "pipe_wait_write_minimum": True},
         "licenses": {
             str(path.relative_to(sdk)): sha256(path)
             for path in [sdk / "LICENSE", sdk / "NOTICE", *sorted((sdk / "licenses").glob("*"))]

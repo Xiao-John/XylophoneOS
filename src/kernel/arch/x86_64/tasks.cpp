@@ -624,7 +624,9 @@ i64 pipe_write_to(u32 pipe_index, u64 address, u64 length) {
     pipe_object& pipe = pipes[pipe_index];
     if (pipe.reader_references == 0) { return pipe_error_broken; }
     const u32 available = process_pipe_bytes - pipe.length;
-    if (available == 0) { return process_error_would_block; }
+    if (available == 0 || (length <= process_pipe_bytes && length > available)) {
+        return process_error_would_block;
+    }
     const u64 amount64 = length < available ? length : available;
     const u32 amount = static_cast<u32>(amount64);
     if (!user_range_ok(address, amount, false)) { return process_error_invalid; }
@@ -1839,14 +1841,15 @@ void* process_syscall(interrupt_frame* frame) {
         result = 0; break;
     }
     case sys_pipe_wait: {
-        if (second != 0 || third != 0) { result = process_error_invalid; break; }
+        if (second > process_pipe_bytes || third != 0) { result = process_error_invalid; break; }
         u32 pipe_index = process_max_pipes;
         bool writable = false;
         if (first < 3) {
             if ((current->stdio_mask & (1u << first)) == 0 ||
                 !current->stdio[first].valid) { result = process_error_denied; break; }
             const auto& route = current->stdio[first];
-            if (route.console) { result = process_error_would_block; break; }
+            if (route.console) { result = second != 0 && !route.writable
+                ? process_error_invalid : process_error_would_block; break; }
             pipe_index = route.pipe_index;
             writable = route.writable;
         } else {
@@ -1858,9 +1861,10 @@ void* process_syscall(interrupt_frame* frame) {
         if (pipe_index >= process_max_pipes || !pipes[pipe_index].used) {
             result = process_error_invalid; break;
         }
+        if (!writable && second != 0) { result = process_error_invalid; break; }
         const auto& pipe = pipes[pipe_index];
         const bool ready = writable
-            ? pipe.reader_references == 0 || pipe.length < process_pipe_bytes
+            ? pipe.reader_references == 0 || process_pipe_bytes - pipe.length >= (second == 0 ? 1 : second)
             : pipe.writer_references == 0 || pipe.length != 0;
         if (ready) { result = 0; break; }
         // Check and sleep in one non-preemptible kernel critical section.

@@ -291,3 +291,10 @@ listing隐藏；seal不可逆地撤销共享实例写权限且保留偏移。Her
 I/O失败保留待清理实例并重试；不扫描删除崩溃遗留，无法证明跨崩溃文件所有者。
 单会话16/global32打开实例等既有配额保持。普通Client也使用跨实例单调request ID，
 init不重置、溢出拒绝；不宣称任意超时/迟到事务的完整重放或恢复。
+
+C3收口另补小pipe write原子性：当前SDK对<=4096字节的pipe write等待完整空间，
+不能以可用的少量字节短写后和另一writer交错。sys54的second新增writer最小空间
+1..4096（0保留旧any-space语义），read仍必须0，第三参数0；检查/入睡仍原子。
+继承stdio的pipe不再错误套console的256字节上限，console仍限单次256；大于4096
+的write仍允许短写。新SDK与支持该readiness扩展的内核共同使用，旧有效second0
+调用保持兼容；不承诺writer公平性、信号SIGPIPE或完整POSIX。

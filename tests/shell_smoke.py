@@ -48,9 +48,12 @@ REJECT = {
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--isolated', action='store_true', help='C2+ admits pipe, subshell and substitution; their semantics have separate gates')
     p.add_argument('--manifest',type=Path,required=True)
     p.add_argument('--system',type=Path,default=ROOT/'build/releases/0.0.1-1024')
-    a=p.parse_args();manifest=json.loads(a.manifest.read_text())
+    a=p.parse_args()
+    rejected = {k:v for k,v in REJECT.items() if not a.isolated or k == 'background'}
+    manifest=json.loads(a.manifest.read_text())
     elf=ROOT/manifest['elf']
     assert hashlib.sha256(elf.read_bytes()).hexdigest()==manifest['sha256']
     system_manifest = a.system/'manifest.json'
@@ -77,7 +80,7 @@ def main():
             subprocess.run(['clang',str(source),'-o',str(host)],check=True)
             transfer('import','/usr/bin/probe',probe)
             expected={}
-            for name,body in {**CASES,**REJECT}.items():
+            for name,body in {**CASES,**rejected}.items():
                 script=folder/(name+'.sh')
                 script.write_text('PATH=/usr/bin:/bin; PROBE=/usr/bin/probe; export PROBE\n'+body+'\n')
                 transfer('import','/tests/'+script.name,script)
@@ -97,7 +100,7 @@ def main():
                 else:assert wanted in result,(name,wanted,result[-2500:])
                 assert resources(guest)==baseline,name+' leaked resources'
                 report['checks'].append(name)
-            for name in REJECT:
+            for name in rejected:
                 result=command(guest,'exec-driver /usr/bin/dash /tests/'+name+'.sh',b'kind=exited code=2',timeout=30)
                 assert b'SHOULD_NOT_RUN' not in result and (b'unavailable in XOS dash' in result or b'C1 pipeline requires external commands' in result)
                 assert resources(guest)==baseline

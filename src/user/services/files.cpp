@@ -398,6 +398,72 @@ open_record* find_open(client_session& session, u32 handle) {
     return nullptr;
 }
 
+status clone_session(client_session& source, u64 child_pid) {
+    // A caller-supplied PID is not transfer authority. The kernel authenticates
+    // the source and its still-unstarted fork child at both transaction ends.
+    const u64 source_pid = source.pid;
+    if (child_pid == 0 || child_pid == source_pid ||
+        sdk::syscall(sys_process_fork_files, child_pid, source_pid, 0) != 0) {
+        return status::bad_handle;
+    }
+    client_session* target = nullptr;
+    file_session_info child_info{};
+    u32 target_index = max_sessions;
+    for (u32 index = 0; index < max_sessions; ++index) {
+        file_session_info info{};
+        if (sdk::syscall(sys_file_session, index, reinterpret_cast<u64>(&info)) != 0) {
+            return status::io;
+        }
+        if (info.pid == child_pid) {
+            target = &sessions[index]; target_index = index; child_info = info; break;
+        }
+    }
+    if (target == nullptr) { return status::would_block; }
+    // A reused slot may still cache an old session. Let the ordinary session
+    // sweep reclaim it (including any old staging owner); never close another
+    // session as a side effect of a clone request.
+    if (target->pid != 0 && target->pid != child_pid) { return status::would_block; }
+    for (const auto& item : target->opens) {
+        if (item.used) { return status::busy; }
+    }
+    u32 additions[max_open_descriptions]{};
+    for (auto& item : source.opens) {
+        if (!item.used) { continue; }
+        open_description* description = description_for(&item);
+        if (item.handle == 0 || description == nullptr || description->references == 0) {
+            return status::io;
+        }
+        ++additions[item.description - 1];
+    }
+    for (u32 index = 0; index < max_open_descriptions; ++index) {
+        if (additions[index] > 0xffffffffu - descriptions[index].references) { return status::full; }
+    }
+    target->pid = child_pid;
+    target->request_handle = child_info.request_handle;
+    target->response_handle = child_info.response_handle;
+    for (u32 index = 0; index < max_open; ++index) {
+        if (!source.opens[index].used) { continue; }
+        target->opens[index] = source.opens[index];
+        ++descriptions[source.opens[index].description - 1].references;
+    }
+    const u32 source_index = static_cast<u32>(&source - sessions);
+    if (generations[target_index] < generations[source_index]) {
+        generations[target_index] = generations[source_index];
+    }
+    // The service is single threaded: no other request or session sweep can
+    // change either opens[] while we are preempted. A source kill or target
+    // abort can still invalidate the kernel identity, so ACK revalidates it.
+    // On failure, release only references installed in the empty target here.
+    if (sdk::syscall(sys_process_fork_files, child_pid, source_pid, 1) != 0) {
+        for (auto& item : target->opens) {
+            if (item.used) { release_open(item); }
+        }
+        return status::bad_handle;
+    }
+    // Staging transactions retain their original owner and are not inherited.
+    return status::ok;
+}
+
 void abort_staging() {
     if (staging_open) { (void)f_close(&staging_file); staging_open = false; }
     (void)remove_if_present(temp_name);
@@ -646,6 +712,14 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         ++description->references;
         reply(out, in, status::ok);
         out.handle = target_handle;
+        break;
+    }
+    case op::clone_session: {
+        if (in.handle != 0 || in.flags != 0 || in.reserved != 0 ||
+            in.length != 0 || in.name_length != 0) {
+            reply(out, in, status::invalid); break;
+        }
+        reply(out, in, clone_session(session, in.offset));
         break;
     }
     case op::replace_begin: {

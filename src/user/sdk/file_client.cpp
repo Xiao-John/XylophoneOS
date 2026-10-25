@@ -20,11 +20,28 @@ bool Client::init() {
     send_handle_ = 0;
     recv_handle_ = 0;
     request_id_ = 0;
-    return sdk::ipc_handles(send_handle_, recv_handle_) == 0 &&
-           send_handle_ != 0 && recv_handle_ != 0;
+    owner_pid_ = 0;
+    if (sdk::ipc_handles(send_handle_, recv_handle_) != 0 ||
+        send_handle_ == 0 || recv_handle_ == 0) { return false; }
+    owner_pid_ = sdk::pid();
+    return true;
 }
 
 i64 Client::call(op operation) {
+    const u64 caller = sdk::pid();
+    if (owner_pid_ != caller) {
+        // A fork copies arbitrary Client objects, including loader and
+        // application instances. Rebind endpoints without clearing the
+        // request that this operation has already prepared.
+        u32 send = 0, receive = 0;
+        if (sdk::ipc_handles(send, receive) != 0 || send == 0 || receive == 0) {
+            return status_value(status::io);
+        }
+        send_handle_ = send;
+        recv_handle_ = receive;
+        request_id_ = 0;
+        owner_pid_ = caller;
+    }
     request_.magic = request_magic;
     request_.version = abi_version;
     request_.operation = static_cast<u16>(operation);
@@ -258,6 +275,13 @@ i64 Client::transfer(u32 handle, u64 target_pid, u32& target_handle) {
     const i64 result = call(op::transfer);
     if (result == 0) { target_handle = response_.handle; }
     return result;
+}
+
+i64 Client::clone_session(u64 child_pid) {
+    session_guard guard;
+    request_ = request{};
+    request_.offset = child_pid;
+    return call(op::clone_session);
 }
 
 i64 Client::close(u32 handle) {

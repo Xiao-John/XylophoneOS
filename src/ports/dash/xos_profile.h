@@ -12,6 +12,9 @@ static inline uint32_t xos_htonl(uint32_t value) { return __builtin_bswap32(valu
 #define htonl xos_htonl
 ssize_t xos_shell_read(int, void *, size_t);
 union node;
+struct job;
+void xos_job_capture(struct job *, int);
+void xos_jobs_cleanup(void);
 extern int xos_pipeline_active, xos_pipeline_failed;
 void xos_pipeline_begin(void);
 int xos_pipeline_finish(int);

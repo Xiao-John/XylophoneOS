@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Explicit, isolated dash C1 cross build against a frozen XOS SDK."""
+"""Explicit, isolated dash C2 cross build against a frozen XOS SDK."""
 import argparse
 import hashlib
 import json
@@ -79,7 +79,7 @@ def main():
         run([str(source/'configure'),'--build=aarch64-apple-darwin','--host=x86_64-unknown-elf','--without-libedit','--disable-glob','--disable-tee','--disable-memfd-create'],'configure.log')
     run(['make','-j2'],'make.log')
     elf = build/'src/dash'
-    result = {'profile':'dash_c1','version':lock['version'],'elf':str(elf.relative_to(ROOT)),'sha256':sha(elf),'bytes':elf.stat().st_size,'inputs':inputs,'status':'built_not_run'}
+    result = {'profile':'dash_c2','version':lock['version'],'elf':str(elf.relative_to(ROOT)),'sha256':sha(elf),'bytes':elf.stat().st_size,'inputs':inputs,'status':'built_not_run'}
     (work/'manifest.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps({k:v for k,v in result.items() if k!='inputs'}))
 

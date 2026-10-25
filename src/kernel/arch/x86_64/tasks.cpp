@@ -81,6 +81,12 @@ struct process_record {
     u64 exit_owner;
     process_foreground foreground;
     bool foreground_active, foreground_cancelled;
+    // A fork child resumes a copied syscall frame only after the files service
+    // authenticates/clones its session. Depth bounds nested isolated shells;
+    // ordinary spawn delegation remains a separate capability.
+    u64 fork_source;
+    u32 fork_depth;
+    bool fork_pending, fork_files_ack;
 };
 
 struct completion_record { bool used; bool ready; u64 parent; process_status status; };
@@ -1329,10 +1335,146 @@ void* thread_syscall(interrupt_frame* frame) {
     frame->rax = static_cast<u64>(result); return frame;
 }
 
+// Prepare a private address-space snapshot while the single-core kernel cannot
+// be preempted. No child context becomes runnable until fork_commit; every
+// fallible allocation precedes completion-record publication.
+i64 prepare_fork(interrupt_frame* frame) {
+    if (current == nullptr || current->supervisor || current->block_access) {
+        return process_error_denied;
+    }
+    if (current->threads_enabled || current_thread != &main_thread(current) ||
+        !current_thread->main) { return thread_error_unsupported; }
+    for (const auto& peer : threads) {
+        if (peer.process == current && &peer != current_thread &&
+            peer.state != thread_state::free && peer.state != thread_state::dead) {
+            return thread_error_unsupported;
+        }
+    }
+    if (current->spawn_depth == 0) { return process_error_denied; }
+    if (current->closing || current_thread->leaving) { return process_error_state; }
+    if (current->fork_depth >= process_fork_depth_max || !files_service_live()) {
+        return process_error_resources;
+    }
+    completion_record* completion = nullptr;
+    for (auto& item : completions) { if (!item.used) { completion = &item; break; } }
+    u32 free_endpoints = 0;
+    for (const auto& endpoint : endpoints) { if (!endpoint.used) { ++free_endpoints; } }
+    if (completion == nullptr || free_endpoints < 2 || next_endpoint_handle > 0xfffffffeull) {
+        return process_error_resources;
+    }
+    process_record* child = prepare_task(current->name);
+    if (child == nullptr) { return process_error_resources; }
+    child->parent = current->pid;
+    child->spawn_depth = current->spawn_depth;
+    child->fork_source = current->pid;
+    child->fork_depth = current->fork_depth + 1;
+    child->fork_pending = true;
+    child->heap_break = current->heap_break;
+    child->entry = current->entry;
+    child->initial_stack = current->initial_stack;
+    child->startup = current->startup;
+    if (copy_user_pages_in(current->cr3, child->cr3, process_max_pages,
+                           &child->user_pages) != memory_result::none ||
+        child->user_pages != current->user_pages) {
+        destroy_task(child); return process_error_resources;
+    }
+    if (!inherit_stdio(child, current, current->stdio_mask)) {
+        destroy_task(child); return process_error_resources;
+    }
+    // libc's copied FD table contains these exact tokens. Retain the underlying
+    // objects under the new PID; global monotonic tokens are still authorized
+    // by membership in each process's private reference array.
+    for (u32 index = 0; index < process_max_pipe_refs; ++index) {
+        const auto& reference = current->pipe_references[index];
+        if (!reference.used) { continue; }
+        if (child->pipe_reference_count >= process_max_pipe_refs ||
+            reference.pipe_index >= process_max_pipes || !pipes[reference.pipe_index].used) {
+            destroy_task(child); return process_error_resources;
+        }
+        child->pipe_references[index] = reference;
+        pipe_retain(reference.pipe_index, reference.writable);
+        ++child->pipe_reference_count;
+    }
+    if (child->pipe_reference_count != current->pipe_reference_count) {
+        destroy_task(child); return process_error_state;
+    }
+    child->session_request_handle = endpoint_attach(files_pid, child->pid, child->pid,
+        file_message_bytes);
+    child->session_response_handle = endpoint_attach(child->pid, files_pid, child->pid,
+        file_message_bytes, true);
+    if (child->session_request_handle == 0 || child->session_response_handle == 0) {
+        destroy_task(child); return process_error_resources;
+    }
+    child->send_handle = child->session_request_handle;
+    child->recv_handle = child->session_response_handle;
+    auto& thread = main_thread(child);
+    thread.stack_bottom = current_thread->stack_bottom;
+    thread.stack_top = current_thread->stack_top;
+    thread.tls_begin = current_thread->tls_begin;
+    thread.tls_end = current_thread->tls_end;
+    thread.thread_pointer = current_thread->thread_pointer;
+    // The running thread's saved FPU image can predate this syscall. Snapshot
+    // the actual registers now rather than copying the last scheduling image.
+    fpu_save(current_thread->fpu_state);
+    copy_bytes(thread.fpu_state, current_thread->fpu_state, sizeof(thread.fpu_state));
+    auto* child_frame = reinterpret_cast<interrupt_frame*>(thread.kernel_stack_top - sizeof(interrupt_frame));
+    *child_frame = *frame;
+    child_frame->rax = 0;
+    thread.kernel_rsp = reinterpret_cast<u64>(child_frame);
+    thread.state = thread_state::ready;
+    *completion = completion_record{};
+    completion->used = true;
+    completion->parent = current->pid;
+    completion->status.pid = child->pid;
+    child->completion_slot = static_cast<u32>(completion - completions) + 1;
+    if (process_trace_enabled) {
+        format::text("[process] event=fork_prepared pid="); format::decimal(child->pid);
+        format::text(" parent="); format::decimal(child->parent);
+        format::text(" depth="); format::decimal(child->fork_depth);
+        format::text(" pages="); format::decimal(child->user_pages); format::text("\r\n");
+    }
+    return static_cast<i64>(child->pid);
+}
+
 void* process_syscall(interrupt_frame* frame) {
     i64 result = process_error_invalid;
     const u64 first = frame->rdi, second = frame->rsi, third = frame->rdx;
     switch (frame->rax) {
+    case sys_process_fork_prepare:
+        if (first == 0 && second == 0 && third == 0) { result = prepare_fork(frame); }
+        break;
+    case sys_process_fork_commit: {
+        if (second != 0 || third != 0) { break; }
+        process_record* child = owned_process(first);
+        if (child == nullptr) { result = process_error_denied; break; }
+        if (current->closing || child->state != task_state::building || !child->fork_pending ||
+            child->fork_source != current->pid || !child->fork_files_ack) {
+            result = process_error_state; break;
+        }
+        child->fork_pending = false;
+        child->state = task_state::ready;
+        if (process_trace_enabled) {
+            format::text("[process] event=fork_committed pid="); format::decimal(child->pid);
+            format::text(" parent="); format::decimal(child->parent); format::text("\r\n");
+        }
+        result = 0; break;
+    }
+    case sys_process_fork_files: {
+        if (current == nullptr || !current->block_access || current->pid != files_pid) {
+            result = process_error_denied; break;
+        }
+        if (third > 1) { break; }
+        process_record* child = task_by_pid(first);
+        process_record* source = task_by_pid(second);
+        if (child == nullptr || source == nullptr || source->closing ||
+            source->state == task_state::building || source->state == task_state::dead ||
+            child->state != task_state::building || !child->fork_pending ||
+            child->fork_source != second || child->parent != second) {
+            result = process_error_denied; break;
+        }
+        if (third == 1) { child->fork_files_ack = true; }
+        result = 0; break;
+    }
     case sys_boot_payload: {
         if (current == nullptr || !current->supervisor) {
             result = process_error_denied;
@@ -1695,7 +1837,11 @@ void* process_syscall(interrupt_frame* frame) {
     case sys_process_start: {
         process_record* task = owned_process(first);
         if (task == nullptr) { result = process_error_denied; break; }
-        if (task->state != task_state::building) { result = process_error_state; break; }
+        // A copied continuation must use fork_commit after authenticated files
+        // cloning; the ordinary ELF start API cannot bypass that barrier.
+        if (task->state != task_state::building || task->fork_pending) {
+            result = process_error_state; break;
+        }
         if (!user_range_ok(second, sizeof(process_entry), false)) { break; }
         process_entry entry{}; copy_from_user(&entry, second, sizeof(entry));
         u64 physical = 0; page_permissions permissions{};

@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: Apache-2.0 */
-/* Synchronous simple-command backend. No fork, signals or background jobs. */
+/* Bounded foreground spawn/fork backend. No asynchronous signals or background jobs. */
 #include <errno.h>
 #include <spawn.h>
 #include <stdlib.h>
@@ -15,6 +15,10 @@
 #include "output.h"
 #include "eval.h"
 #include "error.h"
+#include "input.h"
+#include "init.h"
+#include "main.h"
+#include "options.h"
 
 int xos_pipeline_active, xos_pipeline_failed;
 static int pipeline_children[4], pipeline_count;
@@ -23,7 +27,7 @@ void xos_pipeline_begin(void) {
     if (xos_shell_foreground(NULL, 0, 1) < 0) sh_error("pipeline: foreground begin");
 }
 int xos_pipeline_finish(int aborting) {
-    int i, status, result = 125, cancelled = 0;
+    int i, status, result = 125, cancelled = 0, failed_status = 0;
     xos_pipeline_active = 0;
     if (!aborting && xos_shell_foreground(pipeline_children, pipeline_count, 1) < 0)
         aborting = cancelled = 1;
@@ -33,10 +37,11 @@ int xos_pipeline_finish(int aborting) {
     for (i = 0; i < pipeline_count; ++i) {
         if (waitpid(pipeline_children[i], &status, 0) < 0) { result = 125; continue; }
         result = WIFEXITED(status) ? WEXITSTATUS(status) : 128 + WTERMSIG(status);
+        if (result) failed_status = result;
     }
     xos_shell_foreground(NULL, 0, 0);
     pipeline_count = 0;
-    return cancelled ? 137 : aborting ? 125 : result;
+    return cancelled ? 137 : aborting ? 125 : pipefail && failed_status ? failed_status : result;
 }
 pid_t backgndpid;
 int job_warning, vforked;
@@ -45,9 +50,84 @@ void showjobs(struct output *out, int mode) { (void)out; (void)mode; }
 int jobscmd(int argc, char **argv) { sh_error("jobs unavailable in XOS dash B2"); }
 int waitcmd(int argc, char **argv) { sh_error("wait unavailable in XOS dash B2"); }
 int killcmd(int argc, char **argv) { sh_error("signals unavailable in XOS dash B2"); }
-struct job *makejob(int count) { sh_error("isolated commands unavailable in XOS dash B2"); }
+struct xos_job { struct job job; unsigned capacity; int capture_fd; struct xos_job *next; };
+static struct xos_job *all_jobs;
+static void free_job(struct job *job) {
+    struct xos_job **link = &all_jobs;
+    while (*link && &(*link)->job != job) link = &(*link)->next;
+    if (*link) {
+        struct xos_job *owned = *link;
+        *link = owned->next; free(owned->job.ps); free(owned);
+    }
+}
+void xos_job_capture(struct job *job, int fd) {
+    ((struct xos_job *)job)->capture_fd = fd;
+}
+void xos_jobs_cleanup(void) {
+    while (all_jobs) {
+        unsigned i;
+        struct job *job = &all_jobs->job;
+        if (all_jobs->capture_fd >= 0) close(all_jobs->capture_fd);
+        for (i = 0; i < job->nprocs; ++i) xos_shell_cancel(job->ps[i].pid);
+        for (i = 0; i < job->nprocs; ++i) waitpid(job->ps[i].pid, NULL, 0);
+        free_job(job);
+    }
+    if (xos_pipeline_active) xos_pipeline_finish(1);
+    xos_shell_foreground(NULL, 0, 0);
+}
+#ifdef mkinit
+RESET {
+    xos_jobs_cleanup();
+}
+EXITRESET {
+    xos_jobs_cleanup();
+}
+#endif
+struct job *makejob(int count) {
+    struct xos_job *owned;
+    if (count < 1 || count > 4 || all_jobs) sh_error("XOS isolated job capacity");
+    owned = calloc(1, sizeof(*owned));
+    if (!owned) sh_error("isolated job allocation");
+    owned->job.ps = calloc(count, sizeof(struct procstat));
+    if (!owned->job.ps) { free(owned); sh_error("isolated job allocation"); }
+    owned->capacity = count; owned->capture_fd = -1; owned->job.used = 1;
+    all_jobs = owned;
+    if (xos_shell_foreground(NULL, 0, 1) < 0) { free_job(&owned->job); sh_error("isolated foreground"); }
+    return &owned->job;
+}
 int forkshell(struct job *job, union node *node, int mode) {
-    sh_error("fork unavailable in XOS dash B2");
+    int child;
+    if (mode == FORK_BG || (!job && !xos_pipeline_active)) sh_error("untracked child unavailable");
+    flushall(); flush_input();
+    child = fork();
+    if (child < 0) {
+        if (job) { free_job(job); xos_shell_foreground(NULL, 0, 0); }
+        sh_error("fork: %s", strerror(errno));
+    }
+    if (!child) {
+        mypid = 0; shlvl++;
+        xos_pipeline_active = xos_pipeline_failed = pipeline_count = 0;
+        while (all_jobs) free_job(&all_jobs->job);
+        forkreset(mode == FORK_NOJOB ? node : NULL);
+        return 0;
+    }
+    if (job) {
+        unsigned i;
+        int children[4];
+        if (job->nprocs >= ((struct xos_job *)job)->capacity) {
+            xos_shell_cancel(child); waitpid(child, NULL, 0); sh_error("isolated job capacity");
+        }
+        job->ps[job->nprocs++].pid = child;
+        for (i = 0; i < job->nprocs; ++i) children[i] = job->ps[i].pid;
+        if (xos_shell_foreground(children, job->nprocs, 1) < 0) {
+            for (i = 0; i < job->nprocs; ++i) xos_shell_cancel(children[i]);
+        }
+    } else {
+        if (pipeline_count >= 4) { xos_shell_cancel(child); waitpid(child, NULL, 0); sh_error("pipeline capacity"); }
+        pipeline_children[pipeline_count++] = child;
+        if (xos_shell_foreground(pipeline_children, pipeline_count, 1) < 0) xos_pipeline_failed = 1;
+    }
+    return child;
 }
 
 static int xos_is_gnu_driver(const char *path) {
@@ -100,6 +180,13 @@ struct job *vforkexec(union node *node, char **argv, const char *path, int idx) 
     return NULL;
 }
 int waitforjob(struct job *job) {
-    if (job) sh_error("unexpected job in XOS dash B2");
-    return exitstatus;
+    unsigned i;
+    int status, result = exitstatus;
+    if (!job) return result;
+    for (i = 0; i < job->nprocs; ++i) {
+        if (waitpid(job->ps[i].pid, &status, 0) < 0) { result = 125; continue; }
+        result = WIFEXITED(status) ? WEXITSTATUS(status) : 128 + WTERMSIG(status);
+    }
+    free_job(job); xos_shell_foreground(NULL, 0, 0);
+    return result;
 }

@@ -33,6 +33,7 @@ def expected_bytes(count):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--isolated', action='store_true', help='C2+: builtin rejection is superseded by isolated execution tests')
     parser.add_argument('--system', type=Path, required=True)
     parser.add_argument('--dash-manifest', type=Path, required=True)
     parser.add_argument('--report', type=Path, default=ROOT/'build/dash_c1_report.json')
@@ -185,8 +186,11 @@ def main():
                 (b'C1_CHECK bytes=127', b'C1_CLOSED_STDERR_OK'))
             run('stage_redirection_overrides_pipe', 'dash /tests/redirect_override.sh', 0,
                 (b'C1_CHECK bytes=0',))
-            output = run('builtin_later_rejection_cleans_started_child', 'dash /tests/builtin_later.sh', 2)
-            if b'SHOULD_NOT_RUN' in output: raise AssertionError('pipeline builtin executed')
+            if not args.isolated:
+                output = run('builtin_later_rejection_cleans_started_child', 'dash /tests/builtin_later.sh', 2)
+                if b'SHOULD_NOT_RUN' in output: raise AssertionError('pipeline builtin executed')
+            else:
+                report['superseded'] = ['builtin_pipeline_rejection: covered by C2 isolated builtin acceptance']
             run('redirection_failure_cleans_children_and_shell_continues', 'dash /tests/redirect_failure.sh', 0,
                 (b'C1_REDIRECT_RECOVERED status=2',))
 

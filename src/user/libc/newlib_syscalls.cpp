@@ -1279,7 +1279,31 @@ extern "C" pid_t waitpid(pid_t pid, int* status, int options) {
     return static_cast<pid_t>(result.pid);
 }
 
-extern "C" int fork(void) { errno = ENOSYS; return -1; }
+extern "C" int fork(void) {
+#ifdef XOS_THREADED_RUNTIME
+    // No pthread-atfork or inherited-lock repair is provided by this profile.
+    errno = ENOTSUP; return -1;
+#else
+    if (!runtime_ready) { errno = EIO; return -1; }
+    const auto child = xos::sdk::syscall(xos::sys_process_fork_prepare);
+    if (child == 0) { return 0; }
+    if (child < 0) { errno = error_from_kernel(child); return -1; }
+    xos::i64 cloned = static_cast<xos::i64>(xos::file::status::would_block);
+    for (unsigned attempt = 0; attempt < 128 &&
+         cloned == static_cast<xos::i64>(xos::file::status::would_block); ++attempt) {
+        cloned = file_client.clone_session(static_cast<u64>(child));
+        if (cloned == static_cast<xos::i64>(xos::file::status::would_block)) xos::sdk::yield();
+    }
+    const auto committed = cloned == 0 ? xos::sdk::syscall(xos::sys_process_fork_commit,
+        static_cast<u64>(child)) : cloned;
+    if (cloned != 0 || committed < 0) {
+        (void)xos::sdk::syscall(xos::sys_process_abort, static_cast<u64>(child));
+        errno = cloned != 0 ? error_from_file(cloned) : error_from_kernel(committed);
+        return -1;
+    }
+    return static_cast<int>(child);
+#endif
+}
 extern "C" int vfork(void) { errno = ENOSYS; return -1; }
 extern "C" void* mmap(void*, size_t, int, int, int, off_t) { errno = ENOSYS; return reinterpret_cast<void*>(-1); }
 extern "C" int munmap(void*, size_t) { errno = ENOSYS; return -1; }

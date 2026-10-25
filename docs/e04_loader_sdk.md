@@ -234,3 +234,23 @@ sys34 的 PID=0 分支只查询自己的 stdio route，第二参数fd、第三�
 libc FD表锁不跨管道等待；在途 I/O pin住对象，普通 close 不中断该在途 I/O；
 直接raw close唤醒后，raw等待者再次I/O必须重新验证权限。F_SETFL对未实现的
 O_NONBLOCK等位明确ENOTSUP，writer F_GETFL报告O_WRONLY。未增加异步信号递送。
+
+
+## 0048：C2单线程完整复制fork（实验分支）
+
+sys57 prepare(0,0,0)为具构造权的普通、未启用线程profile的主线程复制完整用户
+页（有效RW/X）、heap、TLS/FPU、stdio/pipe引用与raw token。新PID/TID/内核栈/
+文件端点/完成记录独立，child保持building，复制帧在child返回0。fork继承同一
+principal的构造权限，不增加权限，独立fork depth限3。无COW，无多线程atfork。
+
+sys58 commit(child,0,0)限源父且要求files已ACK，才允许复制帧运行；普通sys18
+不能启动fork_pending。sys59 files(child,source,0/1)只允许files服务调用，每次
+重新验证活源父与其building fork child；0只查询授权，1仅在克隆完后置ACK。
+文件op20 clone_session保持v2 wire、以会话实际PID为源、offset为目标PID，逐
+打开实例保号retain并提升目标generation高水位；不克隆staging事务。ACK失败
+回滚本次引用。任意被复制Client首次call按当前PID重绑自身端点。
+
+libc fork按prepare→有界克隆RPC重试→commit执行，失败abort；线程SDK与线程
+profile明确ENOTSUP，普通无权EPERM，深度/配额/物理页不足返回真实资源错误。
+进程数仍8，用户页限仍256MiB，fork代价为全部已映射用户页+页表+内核栈。
+完整SDK必须和当前头/库共同重建；旧静态工具的sys0–56与文件v2行为保留。

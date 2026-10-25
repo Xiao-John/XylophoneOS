@@ -9,7 +9,7 @@ backends, `admission_xos.c` is appended to eval.c, and `console_xos.cpp` impleme
 canonical serial input using the existing SDK, including UTF-8 validation and
 code-point-aware backspace. The signal hooks are private
 shell bookkeeping, not successful libc signal emulation. Unsupported operations
-fail explicitly. No fork or vfork implementation is introduced.
+fail explicitly. C2 adds bounded single-thread eager-copy fork; vfork remains unavailable.
 
 The accepted B0/B1 profile recursively admits `case`, shell functions, dot
 scripts, and the existing parameter expansion. It rejects pipelines,
@@ -54,3 +54,19 @@ Full subshell isolation, including side effects of arithmetic expansion, belongs
 to C2 and is not claimed here. Builtins/functions in pipelines, subshells, command
 substitution, here-documents, background jobs and real exec remain rejected.
 Actual evidence and remaining regressions are recorded in work log 0047.
+
+
+C2 uses eager-copy fork, preserving the actual Shell heap/AST/functions, variable
+flags, positional parameters, cwd, all libc descriptors and file-service opens.
+The copied continuation cannot run before an authenticated file-session clone
+ACK. Multithread profiles reject fork; depth is bounded to three and physical
+memory exhaustion rolls back the partially copied image. Literal external
+stages keep C1's direct launch; stages with expansion, builtins, functions or
+compound commands fork before evaluation. This keeps argument side effects out
+of the parent. pipefail and tested errexit contexts use real collected status.
+
+Command substitution supports both $(...) and backticks through the upstream
+expander, with a declared 1 MiB raw stdout bound and tail-newline stripping.
+Errors cancel/reap the capture child and close its read descriptor, so an
+interactive Shell can continue. This is not asynchronous signal delivery or
+real exec replacement; those remain C3 work. Detailed evidence is in 0048.

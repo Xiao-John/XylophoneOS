@@ -26,6 +26,10 @@ inline constexpr u64 sys_boot_payload = 53;
 // C1: sleep until a pipe route changes readability/writability. Zero extra args.
 inline constexpr u64 sys_pipe_wait = 54;
 inline constexpr u64 sys_process_foreground = 55, sys_process_cancel = 56;
+// C2: unstarted eager-copy child, authenticated files clone, then commit.
+inline constexpr u64 sys_process_fork_prepare = 57, sys_process_fork_commit = 58;
+inline constexpr u64 sys_process_fork_files = 59;
+inline constexpr u32 process_fork_depth_max = 3;
 inline constexpr u32 process_pipeline_max = 4;
 struct process_foreground {
     u32 version, size, count, reserved;

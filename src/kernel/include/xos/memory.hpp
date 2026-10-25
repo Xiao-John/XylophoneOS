@@ -56,6 +56,13 @@ memory_result map_page_in(u64 address_space, u64 virtual_address, u64 physical,
 memory_result unmap_page_in(u64 address_space, u64 virtual_address, u64* physical);
 memory_result query_page_in(u64 address_space, u64 virtual_address, u64* physical,
                             page_permissions* permissions);
+// Eager-copy the E04 user window (0x40000000..0x80000000) into an empty
+// constructed address space, preserving effective user/RW/X permissions.
+// Enumerates present page tables rather than probing every possible VA. On
+// failure, copied_pages counts the pages already owned by destination; the
+// constructor must destroy that whole unstarted space to roll back.
+memory_result copy_user_pages_in(u64 source, u64 destination, u32 page_limit,
+                                 u32* copied_pages);
 }
 
 namespace xos::arch {

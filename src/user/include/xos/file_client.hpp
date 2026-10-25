@@ -28,6 +28,7 @@ public:
     i64 seek(u32 handle, u32 offset);
     i64 seek(u32 handle, i64 offset, u32 origin);
     i64 transfer(u32 handle, u64 target_pid, u32& target_handle);
+    i64 clone_session(u64 child_pid);
     i64 close(u32 handle);
     i64 replace(const char* path, const void* data, u32 length);
     i64 read_all(const char* path, void* data, u32 capacity, u32& length);
@@ -47,6 +48,7 @@ private:
     u32 send_handle_;
     u32 recv_handle_;
     u32 request_id_;
+    u64 owner_pid_;
     request request_;
     response response_;
 };

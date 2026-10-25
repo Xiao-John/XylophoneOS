@@ -1,0 +1,22 @@
+{
+  "status": "passed",
+  "dash_sha256": "b03450a8db8cca57098ac7fd6ed78e0960f2efce6d7038f0aeaa3fc1d0f14f6e",
+  "system_build_id": "f62f20ef40b19677",
+  "checks": [
+    "quotes",
+    "control",
+    "while",
+    "external",
+    "temporary_env",
+    "child_status",
+    "cwd",
+    "missing",
+    "positionals",
+    "reject_pipe",
+    "reject_subshell",
+    "reject_substitution",
+    "reject_background",
+    "command_string",
+    "interactive_returns_to_xshell"
+  ]
+}

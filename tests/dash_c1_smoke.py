@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import uuid
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT/'scripts'), str(ROOT/'tests')]
@@ -38,7 +39,8 @@ def main():
     parser.add_argument('--artifacts', type=Path, default=ROOT/'build/dash_c1_evidence')
     args = parser.parse_args()
     args.system = args.system.resolve()
-    args.artifacts.mkdir(parents=True, exist_ok=True)
+    args.artifacts = args.artifacts/uuid.uuid4().hex
+    args.artifacts.mkdir(parents=True, exist_ok=False)
     system = json.loads((args.system/'manifest.json').read_text())
     dash = json.loads(args.dash_manifest.read_text())
     report = {'status': 'failed', 'system_build_id': system['build_id'],

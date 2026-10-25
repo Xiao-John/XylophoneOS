@@ -1,0 +1,78 @@
+{
+  "build_id": "f62f20ef40b19677",
+  "checks": [
+    {
+      "expected": "T3_PY_CORE_OK Lock RLock Condition Event Queue",
+      "fixture": "threading_core.py",
+      "name": "threading_lock_rlock_condition_event_queue",
+      "passed": true,
+      "resources_after": [
+        129833,
+        2,
+        0
+      ],
+      "tail": "python3 /work/t3_py/threading_core.py\n[process] event=started pid=9 parent=7\r\n[process] pid=9 address_space=0x000000000028d000\r\n[loader] started pid=9 file=/usr/bin/python3\n[process] event=wait_blocked parent=7 child=9\r\nCould not find platform dependent libraries <exec_prefix>\nT3_PY_CORE_OK Lock RLock Condition Event Queue\n[task] event=reclaimed pid=9 pages=4285\r\n[wait] pid=9 kind=exited code=0\nxsh> "
+    },
+    {
+      "expected": "T3_PY_BLOCKING_IO_OK",
+      "fixture": "blocking_io.py",
+      "name": "background_thread_progress_during_main_file_io",
+      "passed": true,
+      "resources_after": [
+        129833,
+        2,
+        0
+      ],
+      "tail": "python3 /work/t3_py/blocking_io.py\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x000000000028d000\r\n[loader] started pid=10 file=/usr/bin/python3\n[process] event=wait_blocked parent=7 child=10\r\nCould not find platform dependent libraries <exec_prefix>\nT3_PY_BLOCKING_IO_OK\n[task] event=reclaimed pid=10 pages=2865\r\n[wait] pid=10 kind=exited code=0\nxsh> "
+    },
+    {
+      "expected": "T3_PY_EXCEPTION_OK",
+      "fixture": "worker_exception.py",
+      "name": "worker_exception_hook_and_join",
+      "passed": true,
+      "resources_after": [
+        129833,
+        2,
+        0
+      ],
+      "tail": "python3 /work/t3_py/worker_exception.py\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x000000000028d000\r\n[loader] started pid=11 file=/usr/bin/python3\n[process] event=wait_blocked parent=7 child=11\r\nCould not find platform dependent libraries <exec_prefix>\nT3_PY_EXCEPTION_OK\n[task] event=reclaimed pid=11 pages=2865\r\n[wait] pid=11 kind=exited code=0\nxsh> "
+    },
+    {
+      "expected": "T3_PY_DAEMON_EXIT_OK",
+      "fixture": "daemon_exit.py",
+      "name": "daemon_thread_does_not_block_process_exit",
+      "passed": true,
+      "resources_after": [
+        129833,
+        2,
+        0
+      ],
+      "tail": "python3 /work/t3_py/daemon_exit.py\n[process] event=started pid=12 parent=7\r\n[process] pid=12 address_space=0x000000000028d000\r\n[loader] started pid=12 file=/usr/bin/python3\n[process] event=wait_blocked parent=7 child=12\r\nCould not find platform dependent libraries <exec_prefix>\nT3_PY_DAEMON_EXIT_OK\n[task] event=reclaimed pid=12 pages=3065\r\n[wait] pid=12 kind=exited code=0\nxsh> "
+    },
+    {
+      "expected": "T3_PY_NON_DAEMON_FINISHED",
+      "fixture": "non_daemon_shutdown.py",
+      "name": "interpreter_waits_for_non_daemon_thread",
+      "passed": true,
+      "resources_after": [
+        129833,
+        2,
+        0
+      ],
+      "tail": "python3 /work/t3_py/non_daemon_shutdown.py\n[process] event=started pid=13 parent=7\r\n[process] pid=13 address_space=0x000000000028d000\r\n[loader] started pid=13 file=/usr/bin/python3\n[process] event=wait_blocked parent=7 child=13\r\nCould not find platform dependent libraries <exec_prefix>\nT3_PY_MAIN_FINISHED\nT3_PY_NON_DAEMON_FINISHED\n[task] event=reclaimed pid=13 pages=2869\r\n[wait] pid=13 kind=exited code=0\nxsh> "
+    }
+  ],
+  "cpython_fingerprint": "d7b5bd56caf0261a5d77",
+  "cpython_profile": "py_t3_static_gil_pthread",
+  "phase": "T3-PY",
+  "resources_before": [
+    129833,
+    2,
+    0
+  ],
+  "sdk_manifest_sha256": "da10a61afe2eeced49a2465816801bf87eeef69883bfb2e2869ba1d2ddbb3b18",
+  "stage_file_count": 560,
+  "stage_manifest_sha256": "42d6d6967981940258a25f52eabcee4303a4401ab7e392893603e1893d25cb5f",
+  "status": "passed",
+  "xos_image_sha256": "c95dec12e3a17e2e387d793e8ce4b7fdc98d47d7e8eb43aff8e1a5c6e433a545"
+}

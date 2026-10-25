@@ -51,3 +51,27 @@ GCC16.2.0本地原包为e6738e29…，线程SDK新构建使用独立解压副本
 未来集成：新增sys54–56需其他ABI分支避让；xypm/files wire未改变、ISO容量未改变、
 Qt/SMP/异步信号仍未提供。C2计划选单线程eager-copy fork，需认证的文件会话克隆、
 Client子PID重绑定、权限与有界嵌套；C3真实exec需地址空间原子commit及FD继承。
+
+
+## 2026-10-26 C1最终冻结：passed
+
+源码实现f19c02d、pthread/libc测试ed65bf8；验证runner增加UUID证据子目录，避免重复
+export覆盖旧证据。最终build `f62f20ef40b19677`，xos.img SHA256
+`c95dec12e3a17e2e387d793e8ce4b7fdc98d47d7e8eb43aff8e1a5c6e433a545`。
+Dash SHA256 `b03450a8db8cca57098ac7fd6ed78e0960f2efce6d7038f0aeaa3fc1d0f14f6e`。
+完整回执与各报告在docs/reports/dash_c1_20261026/，本机镜像/SDK/ELF冻结于
+build/dash_c1_frozen/。131109字节流SHA256为
+`46d2d9b2b18193a5f5b44b0f5bf41b2f0f6cc493220d2732d32908d0e098891e`，全部字节相等。
+
+C1专项25项；机制线程探针7组/3轮；pthread管道5组/3轮；进程13、文件8、线程15、
+pthread/newlib10、C++10、CPython T3-PY5、持久化4、原生GCC/G++6、Dash A15、
+B0/B1 7、B2 6及许可材料检查passed。各测试真实命令/输入/输出/资源见报告；
+资源基线[129833,2,0]，占槽故障场景先回占槽基线再清背景回原基线。
+C1主runner初次全回归在export阶段遇已有证据文件（客体用例全部已过），
+修正UUID目标后仅重跑受影响C1专项，其他14个回归结果保留，无伪通过。
+
+CPython宿主引导构建第一次因端口GNU group链接选项在Darwin失败；仅在隔离
+host_build/Makefile去掉该选项后构建同版本3.14.9，再设置COMPILER_PATH指向
+显式cross as/ld完成target构建；target源码未改，最终T3-PY5/5真实客体通过。
+Sbase从官方仓库取得并checkout固定c546c3a、按source_lock逐文件验SHA后构建。
+无远端推送/合并或Release变动。下一阶段C2开始，不借C1回执宣称C2/C3通过。

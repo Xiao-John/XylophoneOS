@@ -1,8 +1,8 @@
 # XOS 当前状态
 
-> `feature/dash-c1-c3`：C1外部命令流水线专项23项、多线程pipe探针3轮已在独立
-> QEMU客体通过，完整受影响回归仍进行中，尚不宣布C1 Gate完成。C2/C3未实现。
-> 基线固定4c78b27，详情见work_log/0047_dash_c1_implementation.md。
+> `feature/dash-c1-c3`：C1外部流水线Gate及受影响回归passed（build f62f20ef40b19677），
+> 冻结回执docs/reports/dash_c1_20261026/。C2隔离执行开始，C3未实现；不扩大为完整POSIX。
+> 固定上游基线4c78b27，过程见work_log/0047_dash_c1_implementation.md。
 
 
 更新时间：2026-10-25（Asia/Shanghai）。新 agent 按 AGENTS.md 的阅读顺序开始。

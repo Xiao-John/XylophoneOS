@@ -1,0 +1,112 @@
+{
+  "status": "passed",
+  "system_build_id": "f62f20ef40b19677",
+  "xos_sha256": "c95dec12e3a17e2e387d793e8ce4b7fdc98d47d7e8eb43aff8e1a5c6e433a545",
+  "dash_sha256": "b03450a8db8cca57098ac7fd6ed78e0960f2efce6d7038f0aeaa3fc1d0f14f6e",
+  "sbase_commit": "c546c3a5724c81cee9a11d816a38ccdf17472129",
+  "checks": [
+    "legacy_direct_driver_grant",
+    "unprivileged_delegation_rejected_without_side_effect",
+    "bounded_dash_to_gcc_cc1_as_ld_delegation",
+    "bounded_dash_to_gxx_cc1plus_as_ld_delegation",
+    "case_function_dot_and_parameter_expansion",
+    "compile_failure_copy_modify_retry_and_execute",
+    "sbase_cat_cp_mkdir_mv_rm_guest_tools"
+  ],
+  "commands": [
+    {
+      "line": "exec-driver /usr/bin/x86_64-elf-gcc --version",
+      "exit_code": 0,
+      "resources": [
+        129833,
+        2,
+        0
+      ],
+      "output_tail": "exec-driver /usr/bin/x86_64-elf-gcc --version\n[process] event=started pid=9 parent=7\r\n[process] pid=9 address_space=0x000000000028d000\r\n[loader] started pid=9 file=/usr/bin/x86_64-elf-gcc\n[process] event=wait_blocked parent=7 child=9\r\nx86_64-elf-gcc (GCC) 16.2.0\nCopyright (C) 2026 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n[task] event=reclaimed pid=9 pages=755\r\n[wait] pid=9 kind=exited code=0\nxsh> "
+    },
+    {
+      "line": "exec-driver /usr/bin/dash /tests/unauthorized.sh",
+      "exit_code": 126,
+      "resources": [
+        129833,
+        2,
+        0
+      ],
+      "output_tail": "exec-driver /usr/bin/dash /tests/unauthorized.sh\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x000000000028d000\r\n[loader] started pid=10 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=10\r\n[task] event=reclaimed pid=11 pages=4\r\n/tests/unauthorized.sh: 3: /usr/bin/x86_64-elf-gcc: Not owner\n[task] event=reclaimed pid=10 pages=158\r\n[wait] pid=10 kind=exited code=126\nxsh> "
+    },
+    {
+      "line": "dash /tests/build.sh",
+      "exit_code": 0,
+      "resources": [
+        129833,
+        2,
+        0
+      ],
+      "output_tail": "ent=13\r\n[process] pid=14 address_space=0x0000000000847000\r\n[process] event=wait_blocked parent=13 child=14\r\n/src/bad.c: In function 'main':\n/src/bad.c:4:49: error: expected ';' before 'return'\n    4 |     puts(\"this source is intentionally invalid\")\n      |                                                 ^\n      |                                                 ;\n    5 |     return 0;\n      |     ~~~~~~                                       \n[task] event=reclaimed pid=14 pages=11578\r\n[task] event=reclaimed pid=13 pages=753\r\nexpected_compile_failure=1\n[process] event=started pid=15 parent=12\r\n[process] pid=15 address_space=0x0000000000556000\r\n[process] event=wait_blocked parent=12 child=15\r\n[task] event=reclaimed pid=15 pages=125\r\n[process] event=started pid=16 parent=12\r\n[process] pid=16 address_space=0x0000000000556000\r\n[process] event=wait_blocked parent=12 child=16\r\n[process] event=started pid=17 parent=16\r\n[process] pid=17 address_space=0x0000000000848000\r\n[process] event=wait_blocked parent=16 child=17\r\n[task] event=reclaimed pid=17 pages=11862\r\n[process] event=started pid=18 parent=16\r\n[process] pid=18 address_space=0x0000000000848000\r\n[process] event=wait_blocked parent=16 child=18\r\n[task] event=reclaimed pid=18 pages=645\r\n[process] event=started pid=19 parent=16\r\n[process] pid=19 address_space=0x0000000000848000\r\n[process] event=wait_blocked parent=16 child=19\r\n[task] event=reclaimed pid=19 pages=11639\r\n[process] event=started pid=20 parent=16\r\n[process] pid=20 address_space=0x0000000000848000\r\n[process] event=wait_blocked parent=16 child=20\r\n[task] event=reclaimed pid=20 pages=643\r\n[process] event=started pid=21 parent=16\r\n[process] pid=21 address_space=0x000000000084c000\r\n[process] event=wait_blocked parent=16 child=21\r\n[task] event=reclaimed pid=21 pages=1770\r\n[task] event=reclaimed pid=16 pages=758\r\n[process] event=started pid=22 parent=12\r\n[process] pid=22 address_space=0x0000000000556000\r\n[process] event=wait_blocked parent=12 child=22\r\nc_app=42\n[task] event=reclaimed pid=22 pages=124\r\ncase=cpp\n[process] event=started pid=23 parent=12\r\n[process] pid=23 address_space=0x0000000000556000\r\n[process] event=wait_blocked parent=12 child=23\r\n[process] event=started pid=24 parent=23\r\n[process] pid=24 address_space=0x000000000084b000\r\n[process] event=wait_blocked parent=23 child=24\r\n[task] event=reclaimed pid=24 pages=19413\r\n[process] event=started pid=25 parent=23\r\n[process] pid=25 address_space=0x000000000084b000\r\n[process] event=wait_blocked parent=23 child=25\r\n[task] event=reclaimed pid=25 pages=807\r\n[process] event=started pid=26 parent=23\r\n[process] pid=26 address_space=0x000000000084f000\r\n[process] event=wait_blocked parent=23 child=26\r\n[task] event=reclaimed pid=26 pages=2765\r\n[task] event=reclaimed pid=23 pages=761\r\n[process] event=started pid=27 parent=12\r\n[process] pid=27 address_space=0x0000000000556000\r\n[process] event=wait_blocked parent=12 child=27\r\ncpp_app=toolchain\n[task] event=reclaimed pid=27 pages=153\r\n[process] event=started pid=28 parent=12\r\n[process] pid=28 address_space=0x0000000000556000\r\n[process] event=wait_blocked parent=12 child=28\r\n[task] event=reclaimed pid=28 pages=125\r\n[process] event=started pid=29 parent=12\r\n[process] pid=29 address_space=0x0000000000556000\r\n[process] event=wait_blocked parent=12 child=29\r\n[task] event=reclaimed pid=29 pages=125\r\n[process] event=started pid=30 parent=12\r\n[process] pid=30 address_space=0x0000000000556000\r\n[process] event=wait_blocked parent=12 child=30\r\n[task] event=reclaimed pid=30 pages=125\r\n[process] event=started pid=31 parent=12\r\n[process] pid=31 address_space=0x0000000000556000\r\n[process] event=wait_blocked parent=12 child=31\r\nsbase_tools=ok\n[task] event=reclaimed pid=31 pages=125\r\n[process] event=started pid=32 parent=12\r\n[process] pid=32 address_space=0x0000000000556000\r\n[process] event=wait_blocked parent=12 child=32\r\n[task] event=reclaimed pid=32 pages=124\r\ndash_b1=ok\n[task] event=reclaimed pid=12 pages=159\r\n[wait] pid=12 kind=exited code=0\nxsh> "
+    }
+  ],
+  "fixtures": {
+    "app.cpp": "72e4b9afee8d828b8b9b947fb561ca1f7e1e7424c4d5d9590f676564e1b9e276",
+    "bad.c": "d4c206bbd33fedbb49a8e6954a9ff80df4b1c38dcaea9d8d6b607ce79f4b3243",
+    "build.sh": "2ee210b549f4ac71bfdd3ccd88c2b9b4823e1b720c68c669d5e3b919e5ee61e9",
+    "good.c": "21ca8ada3efc594cb98458e0c695b0bafc5711523a85861d664b6d02ff78081f",
+    "helper.sh": "a346746a11f2af849a91ac323441dd3fa1421baa4c1fea2d9cbda91b4e3fc3b1",
+    "message.txt": "fcac1e81ff5eb52d859e458864807e3fcb3fa6949628317587ec6a3a95d76005",
+    "unauthorized.sh": "ec866e9343f7f9e76e6db0626686d667368130ab564a3d4b2883d8e734ffbbf6",
+    "value.c": "28603eb9b249bfa67f3b1f1299c20e3375c28823296f3ca10bc9e6a53dcb746f",
+    "value.h": "c438ee9d765ff8a952413fcf8ed720a6b5914765114ff5e1f573823bba7632d4"
+  },
+  "configuration": {
+    "system": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build",
+    "dash_manifest": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/dash/8f176e8a7d037e60db89/manifest.json",
+    "dash_manifest_sha256": "05118e7b652d7097474e660d558f0c21b559a706b706e97e1ec2633ea1c9ca68",
+    "sbase_manifest": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/sbase/dc82534b81323b205b85/manifest.json",
+    "sbase_manifest_sha256": "9fea061c6a96f733f4ba4ce561d49f7cf8b429675a88ea95d4cb83c898136cc2",
+    "release_images": "/Users/perry_guo/Documents/ChatGPT/os/runtime/xos-1024-images.tar.gz",
+    "release_archive_sha256_expected": "a800969aaed03c601b8eb5029da8df1f4faecc5fa7f66ede28482aa65c7be25a"
+  },
+  "disk_input": {
+    "mode": "released_private_copy",
+    "release_archive": "/Users/perry_guo/Documents/ChatGPT/os/runtime/xos-1024-images.tar.gz",
+    "release_archive_sha256": "a800969aaed03c601b8eb5029da8df1f4faecc5fa7f66ede28482aa65c7be25a",
+    "member": "xylophoneos_revival_0.0.1-1024_images/work_disk.img",
+    "initial_disk_bytes": 2147483648,
+    "initial_disk_sha256": "79b38a3abd0b44f38a34cccde17b2330882627f54dd80b597ca5dfee78be45a4"
+  },
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-drive",
+    "file=build/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_b_0aw1ocro/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_x824tzlz/qmp.sock,server=on,wait=off"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "baseline_resources": [
+    129833,
+    2,
+    0
+  ]
+}

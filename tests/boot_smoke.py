@@ -18,12 +18,13 @@ from run_qemu import MACHINE, qemu_command
 
 
 class Guest:
-    def __init__(self, image, name, *, cpu="qemu64", debug_port=None, work_disk=None):
+    def __init__(self, image, name, *, cpu="qemu64", debug_port=None, work_disk=None, iso=False):
         self.name = name
         self.output = bytearray()
         self.temp = tempfile.TemporaryDirectory(prefix="xos_")
         self.qmp_path = str(Path(self.temp.name) / "qmp.sock")
-        self.command = qemu_command(image, qmp=self.qmp_path, cpu=cpu, debug_port=debug_port, work_disk=work_disk)
+        self.command = qemu_command(image, qmp=self.qmp_path, cpu=cpu, debug_port=debug_port,
+                                    work_disk=work_disk, iso=iso)
         self.stderr = open(ROOT / f"build/{name}_qemu.log", "wb")
         self.process = subprocess.Popen(self.command, stdin=subprocess.PIPE,
                                         stdout=subprocess.PIPE, stderr=self.stderr)

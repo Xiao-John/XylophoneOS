@@ -13,6 +13,11 @@
 #include "user_blobs.hpp"
 #include "user_images.hpp"
 
+namespace xos {
+extern u8 boot_payload[];
+extern u64 boot_payload_size;
+}
+
 extern "C" void enter_frame(void* frame) __attribute__((noreturn));
 extern "C" void* interrupt_dispatch(void* frame);
 
@@ -732,15 +737,37 @@ bool cancel_foreground() {
     for (auto& parent : threads) {
         if (parent.state != thread_state::blocked || parent.wait_kind != thread_wait_kind::process ||
             parent.process == nullptr || !parent.process->supervisor) { continue; }
-        for (auto& child : tasks) {
-            if (child.pid == parent.wait_target && child.parent == parent.process->pid &&
-                child.state != task_state::free && child.state != task_state::dead) {
-                (void)platform::debug_read();
-                finish_task(&child, process_outcome::killed, -27);
-                format::text("[process] event=cancelled_by_escape pid="); format::decimal(child.pid);
-                format::text("\r\n");
-                return true;
+        process_record* target = nullptr;
+        u64 expected_parent = parent.process->pid;
+        u64 expected_pid = parent.wait_target;
+        for (u32 depth = 0; depth < 8; ++depth) {
+            process_record* next = nullptr;
+            for (auto& child : tasks) {
+                if (child.pid == expected_pid && child.parent == expected_parent &&
+                    child.state != task_state::free && child.state != task_state::dead) {
+                    next = &child; break;
+                }
             }
+            if (next == nullptr) { break; }
+            target = next;
+            thread_record* waiter = nullptr;
+            for (auto& thread : threads) {
+                if (thread.process == next && thread.state == thread_state::blocked &&
+                    thread.wait_kind == thread_wait_kind::process && thread.wait_target != 0) {
+                    waiter = &thread; break;
+                }
+            }
+            if (waiter == nullptr) { break; }
+            expected_parent = next->pid;
+            expected_pid = waiter->wait_target;
+        }
+        if (target != nullptr) {
+            (void)platform::debug_read();
+            const u64 pid = target->pid;
+            finish_task(target, process_outcome::killed, -27);
+            format::text("[process] event=cancelled_by_escape pid="); format::decimal(pid);
+            format::text("\r\n");
+            return true;
         }
     }
     return false;
@@ -1269,6 +1296,26 @@ void* process_syscall(interrupt_frame* frame) {
     i64 result = process_error_invalid;
     const u64 first = frame->rdi, second = frame->rsi, third = frame->rdx;
     switch (frame->rax) {
+    case sys_boot_payload: {
+        if (current == nullptr || !current->supervisor) {
+            result = process_error_denied;
+            break;
+        }
+        if (second == 0 && third == 0) {
+            result = static_cast<i64>(boot_payload_size);
+            break;
+        }
+        if (first > boot_payload_size) {
+            result = process_error_invalid;
+            break;
+        }
+        u64 length = third;
+        if (length > boot_payload_size - first) { length = boot_payload_size - first; }
+        if (!user_range_ok(second, length, true)) { break; }
+        copy_to_user(second, boot_payload + first, length);
+        result = static_cast<i64>(length);
+        break;
+    }
     case sys_debug_trace:
         if (current == nullptr || !current->supervisor) {
             result = process_error_denied;
@@ -1505,8 +1552,7 @@ void* process_syscall(interrupt_frame* frame) {
             !user_range_ok(second, sizeof(file_session_info), true)) { break; }
         file_session_info info{};
         const process_record& client = tasks[first];
-        if (client.state != task_state::free && client.state != task_state::building &&
-            client.state != task_state::dead &&
+        if (client.state != task_state::free && client.state != task_state::dead &&
             client.session_request_handle != 0 && client.session_response_handle != 0) {
             info.pid = client.pid;
             info.request_handle = client.session_request_handle;

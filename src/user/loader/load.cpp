@@ -76,7 +76,7 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     auto* page = startup_page;
     for (usize i = 0; i < sizeof(startup_page); ++i) { page[i] = 0; }
     const u64 startup_address = process_stack_top - sizeof(startup_page);
-    const usize argv_offset = options == nullptr ? 64 : 144;
+    const usize argv_offset = options == nullptr ? 64 : 160;
     const usize env_offset = argv_offset + (argc + 1) * sizeof(u64);
     usize position = (env_offset + (env_count + 1) * sizeof(u64) + 15) & ~usize{15};
     auto* startup = reinterpret_cast<startup_info*>(page);
@@ -107,6 +107,7 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
         extension->environment_count = env_count;
         for (u32 fd = 0; fd < 3; ++fd) {
             if (options->stdio[fd] == -2) { extension->flags |= 1u << fd; }
+            if (options->file_handles[fd] != 0) { extension->flags |= 1u << (8 + fd); }
         }
         extension->environment = startup_address + env_offset;
         if (!put_string(options->working_directory, extension->working_directory)) {
@@ -131,13 +132,23 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     }
     process_page mapping{};
     i64 result = 0;
-    for (u32 index = 0; result >= 0 && index < startup_page_count; ++index) {
-        mapping = {startup_address + u64{index} * 4096,
-                   reinterpret_cast<u64>(page + index * 4096), 4096, map_read | map_write};
-        result = syscall(sys_process_map, static_cast<u64>(child), reinterpret_cast<u64>(&mapping));
-    }
     if (options != nullptr) {
+        auto* extension = reinterpret_cast<startup_extension*>(page + startup_extension_offset);
         for (u32 fd = 0; result >= 0 && fd < 3; ++fd) {
+            if (options->file_handles[fd] != 0) {
+                if (options->open_paths[fd] != nullptr) { result = process_error_invalid; break; }
+                i64 transferred = static_cast<i64>(file::status::would_block);
+                u32 target_handle = 0;
+                for (u32 attempt = 0; attempt < 64 &&
+                     transferred == static_cast<i64>(file::status::would_block); ++attempt) {
+                    transferred = file_client.transfer(options->file_handles[fd],
+                                                       static_cast<u64>(child), target_handle);
+                    if (transferred == static_cast<i64>(file::status::would_block)) { yield(); }
+                }
+                if (transferred < 0) { result = transferred; break; }
+                extension->file_handles[fd] = target_handle;
+                continue;
+            }
             if (options->open_paths[fd] != nullptr || options->stdio[fd] == -2) { continue; }
             const u64 source = options->stdio[fd] == -1 ? fd : static_cast<u64>(options->stdio[fd]);
             result = syscall(sys_process_stdio, static_cast<u64>(child), fd, source);
@@ -148,6 +159,11 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
         } else if (result >= 0 && options->grant_spawn) {
             result = syscall(sys_process_grant, static_cast<u64>(child), 1);
         }
+    }
+    for (u32 index = 0; result >= 0 && index < startup_page_count; ++index) {
+        mapping = {startup_address + u64{index} * 4096,
+                   reinterpret_cast<u64>(page + index * 4096), 4096, map_read | map_write};
+        result = syscall(sys_process_map, static_cast<u64>(child), reinterpret_cast<u64>(&mapping));
     }
     for (u32 i = 0; result >= 0 && i < plan.count; ++i) {
         const auto& segment = plan.segments[i];

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Explicit, isolated dash B1 cross build against a frozen XOS SDK."""
+"""Explicit, isolated dash B2 cross build against a frozen XOS SDK."""
 import argparse
 import hashlib
 import json
@@ -20,9 +20,11 @@ def sha(path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--sdk', type=Path, default=ROOT/'build/releases/0.0.1-1024/sdk')
-    parser.add_argument('--archive', type=Path, default=ROOT/'.cache/xos_seed/shell_scout/dash-0.5.13.5.tar.gz')
+    parser.add_argument('--sdk', type=Path, default=ROOT/'build/sdk')
+    parser.add_argument('--archive', type=Path, default=ROOT/'src/ports/dash/upstream/dash-0.5.13.5.tar.gz')
     a = parser.parse_args()
+    if not a.archive.exists():
+        parser.error(f'dash archive not found: {a.archive}')
     sdk, archive = a.sdk.resolve(strict=True), a.archive.resolve(strict=True)
     lock = json.loads((PORT/'source_lock.json').read_text())
     if sha(archive) != lock['sha256']: parser.error('dash archive hash mismatch')
@@ -41,7 +43,13 @@ def main():
                 if '..' in parts or Path(member.name).is_absolute() or member.issym() or member.islnk():
                     raise ValueError('unsafe source archive member')
                 member.name = str(Path(*parts[1:]))
-                if member.name != '.':tar.extract(member,source,filter='data')
+                if member.name != '.':
+                    try:
+                        tar.extract(member,source,filter='data')
+                    except TypeError:
+                        tar.extract(member,source)
+        if not (source/'configure').is_file():
+            raise SystemExit(f'dash extraction produced no configure under {source}')
         subprocess.run(['patch','-p1','-i',str(PORT/'patches/0001_xos_simple_commands.patch')],cwd=source,check=True,stdout=subprocess.DEVNULL)
         for local, upstream in (('jobs_xos.c','jobs.c'),('signals_xos.c','trap.c')):
             shutil.copyfile(PORT/local,source/'src'/upstream)
@@ -65,7 +73,7 @@ def main():
         run([str(source/'configure'),'--build=aarch64-apple-darwin','--host=x86_64-unknown-elf','--without-libedit','--disable-glob','--disable-tee','--disable-memfd-create'],'configure.log')
     run(['make','-j2'],'make.log')
     elf = build/'src/dash'
-    result = {'profile':'dash_b1','version':lock['version'],'elf':str(elf.relative_to(ROOT)),'sha256':sha(elf),'bytes':elf.stat().st_size,'inputs':inputs,'status':'built_not_run'}
+    result = {'profile':'dash_b2','version':lock['version'],'elf':str(elf.relative_to(ROOT)),'sha256':sha(elf),'bytes':elf.stat().st_size,'inputs':inputs,'status':'built_not_run'}
     (work/'manifest.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps({k:v for k,v in result.items() if k!='inputs'}))
 

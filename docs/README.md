@@ -1,6 +1,7 @@
 # XOS 文档索引
 
-2026-10-25。过程文档已合并；默认只读这些入口，不再为每个阶段保留散页。
+2026-10-25。默认只读以下入口；`work_log/` 和 `docs/reports/` 是过程/冻结
+证据，不逐篇当入口。项目当前视图见[总览](project_overview.md)。
 
 ## 先读
 
@@ -21,7 +22,9 @@
 - [受限 C++ 子集](cpp_subset.md)
 - [命令使用手册](usage/index.md)
 - [给朋友的用户程序快速开始](friend_user_program_quickstart.md)
-- [CPython 3.14.9 PY0 移植](../src/ports/cpython/README.md)（[工作记录](work_log/0030_cpython_py0.md)）
+- [CPython 3.14.9 PY0/PY1 与 T3-PY](../src/ports/cpython/README.md)（[工作记录](work_log/0030_cpython_py0.md)、[T3-PY](work_log/0043_cpython_t3_py.md)）
+- [xypm P1 验收与交接](work_log/0044_xypm_p1.md)
+- [file-backed ISO 安装](iso_install_plan.md)（容量扩展仍未完成）
 
 ## 历史与验收
 
@@ -29,12 +32,15 @@
 - [E08 原生工具链总览与结论](e08.md)
 - [0.0.1 发布说明](releases/0.0.1-1024.md)
 
-## 正在进行/后续
+## 后续与 release
 
-- [dash/shell 移植侦察](shell_port_scout.md)
-- [独立应用与包管理](package_management.md)（P0已验，P1–P3待实施）
+- [项目总览](project_overview.md)
+- [下一次 release 准备清单](releases/next_release.md)
+- [dash 后续路线](dash_port_plan.md)（B0–B2 已过，C 未做）
+- [shell 移植历史勘查](shell_port_scout.md)（历史资料）
+- [独立应用与包管理](package_management.md)（xypm P0/P1受限已验，P2/P3待实施）
 - [公共线程契约与E13-T计划](threading_contract.md)
-- [UTF-8文本接口计划](utf8_text_plan.md)（U0/U1已通过）
+- [UTF-8文本接口计划](utf8_text_plan.md)（U0/U1已通过；非 release 阻塞）
 - [Open Adventure依赖内建计划](adventure_port_plan.md)
 - [CPython移植计划](cpython_port_plan.md)
 - [Qt 移植评估](qt_port_assessment.md)

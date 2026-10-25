@@ -15,7 +15,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from xpkg_format import (DEFAULT_PROFILE, PackageError, canonical, check_profile, load_json,
+from xypm_format import (DEFAULT_PROFILE, PackageError, canonical, check_profile, load_json,
                          inspect_elf, pack_package, sha_file, strict_json, validate_manifest,
                          verify_package)
 from xos_app import build, check, init_project, pack, sdk_check

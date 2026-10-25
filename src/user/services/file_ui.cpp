@@ -11,6 +11,7 @@ using namespace xos::sdk;
 
 file::Client client;
 u8 image_buffer[24576];
+u8 dash_buffer[1 << 20];
 u8 editor_buffer[8192];
 u32 editor_length;
 
@@ -137,11 +138,38 @@ void run_editor(const char* name) {
 }
 }
 
+void install_boot_dash() {
+    const i64 size = syscall(sys_boot_payload, 0, 0, 0);
+    if (size <= 0) { return; }
+    if (size > static_cast<i64>(sizeof(dash_buffer))) {
+        print("[files] dash payload too large\n");
+        return;
+    }
+    const i64 copied = syscall(sys_boot_payload, 0,
+                               reinterpret_cast<u64>(dash_buffer), static_cast<u64>(size));
+    if (copied != size) {
+        print("[files] dash payload read error\n");
+        return;
+    }
+    u32 existing = 0;
+    u32 version = 0;
+    if (client.stat("/usr/bin/dash", existing, version) == 0) { return; }
+    (void)client.mkdir("/usr");
+    (void)client.mkdir("/usr/bin");
+    const i64 result = client.replace("/usr/bin/dash", dash_buffer, static_cast<u32>(size));
+    if (result != 0) {
+        error_line("dash-install", result);
+        return;
+    }
+    print("[files] dash installed bytes="); decimal(static_cast<u32>(size)); print("\n");
+}
+
 void init() {
     if (!client.init()) {
         print("[files] service unavailable\n");
         return;
     }
+    install_boot_dash();
     u32 existing = 0;
     u32 version = 0;
     const i64 stat_result = client.stat("hello.elf", existing, version);

@@ -1,0 +1,23 @@
+{
+  "name": "open-adventure",
+  "version": "1.12",
+  "release_date": "2023-02-06",
+  "source": "https://gitlab.com/esr/open-adventure/-/archive/1.12/open-adventure-1.12.tar.gz",
+  "archive": ".cache/xos_seed/adventure/open-adventure-1.12.tar.gz",
+  "sha256": "b6db9554157c87907dd2d90f0190217cc826faee5781765b6026ca5ce90235f2",
+  "license": "BSD-2-Clause",
+  "target": "x86_64-unknown-xos",
+  "build": "in-XOS: python3 make_dungeon.py + native gcc link; see build.sh",
+  "data_sha256": {
+    "adventure.yaml": "LOCAL_MODIFIED_ZH",
+    "dungeon.c": "9a2081708f06651a79fc67119f20d29598c79b4999017b0e3b4840a1f97e874c",
+    "dungeon.h": "d3d7553b9525d117332869c9658e61e3b1e27e9d29e81ad70880f9c2bc3a3a23"
+  },
+  "yaml_dependency": "xos/yaml.py subset, byte-identical to PyYAML 6.0.3 for this file",
+  "local_changes": [
+    "adventure.yaml display strings translated to Chinese; English vocabulary unchanged",
+    "make_dungeon.py absolute paths and UTF-8 file encoding",
+    "readline/libedit replaced by xos_readline.cpp",
+    "fixed seed, zero save timestamp, no SIGINT handler"
+  ]
+}

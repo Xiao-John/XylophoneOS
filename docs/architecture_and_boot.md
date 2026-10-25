@@ -170,7 +170,13 @@ supervisor 内置最小编辑器：正文行原样追加（空行、连续空格
 ## E07 工作盘、ATA PIO 与 FatFs
 
 工作盘 `work_disk.img` 独立于 `build/`，由 `make disk` 显式创建/格式化；构建和
-启动只打开已有盘。QEMU 使用只读软盘启动和 `if=ide,index=0,media=disk` 工作盘。
+启动只打开已有盘。`make run` 默认用带 dash payload 的 install ISO（`build/xos-install-dash.iso`），
+`make run_file` 用 file-backed ISO，`make run_iso` 用嵌入 kernel 的旧 ISO，
+`make run_floppy` 保留 1.44 MiB 软盘路径；工作盘仍是 `if=ide,index=0,media=disk`。
+file-backed ISO 的 no-emulation boot image 只有 boot sector + loader，
+`KERNEL.BIN`/`DASH.ELF` 由 loader 经 ATAPI/ISO9660 读入；boot image 不再承载
+kernel。旧 `xos.iso` 仍把 boot sector、loader 和 kernel 一起装进初始映像，
+受真实模式 640 KiB 边界约束。
 测试使用临时 FAT16 副本，`make smoke` 不写日常盘。
 
 内核 `platform/pc/ata.cpp` 做 primary master ATA PIO：IDENTIFY、LBA28 读写、

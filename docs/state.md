@@ -2,31 +2,106 @@
 
 更新时间：2026-10-25（Asia/Shanghai）。新 agent 按 AGENTS.md 的阅读顺序开始。
 
-## 当前方向与协作状态
+## 当前状态
 
-0037线程PR本组完成：Codex独立分支`codex/threading-t0-t2`，基线`9c896df`。
-T0–T2定向实现/验收通过；无剩余编辑/构建占用。普通`build/sdk`保持single，
-新profile单独在`build/threading_sdk`；没有升级发布附件或包管理whitelist。
-系统build`b33da3d9929ace75`，内核356412字节；35线程专项+37旧回归+6原生
-GCC/G++客体检查=78组通过，另有SDK/AArch64编译和许可材料检查。
-冻结回执[0037 qualification](reports/threading_20261025/qualification.json)，
-设计/ABI/命令/限制见[线程实现](threading_implementation.md)，失败和交接见
-[0037工作记录](work_log/0037_threading_t0_t2.md)。T3-PY/T3-QT、SMP、完整POSIX、
-长时间/随机压力、第二ISA运行仍未验。PR待项目所有者审查，不合并main。
+主线已合并线程 PR（基线 `d89d1a3`），并在其上完成 dash B2、file-backed ISO
+A2–A4、CPython T3-PY gate 和 xypm P1。最近一次完整 gate 的 build 为
+`911184be3f3c99f6`；当前源码重建为 `f25009cdbb27c857`（未重跑全量），
+基础镜像 SHA256
+`d9b81936924e729d2cf059d936b2406828a6785c151246603ed77ec9b2c5121d`。
+最新入口看[项目总览](project_overview.md)和[下一次 release 准备](releases/next_release.md)。
 
-以 xos_plan.md v0.9 正文、后续决定和本页状态为准。下划线命名、轻松开发、过程落盘；
+已通过：启动/文件/进程、E08 受限工具链、dash B0–B2、xypm P0/P1 与双 Shell
+10/10、CPython T3-PY 5/5、ISO A2–A4 旧 build 报告。未完成：**ISO 容量扩展**
+（本组不负责）、CPython T3-QT/SMP、完整 POSIX/pipes、xypm P2/P3、Qt/UEFI、
+旧全量回归/压力。不要把 A2–A4 的“kernel 从 ISO 文件加载”写成“容量已突破”。
+
+以 xos_plan.md v0.10 正文、后续决定和本页状态为准。下划线命名、轻松开发、过程落盘；
 固件/ISA/平台/通用内核分层。localpilot/ 独立，不进入 XOS 构建、扫描或清理。
-顺序 E05 → E07 → E06 已完成。E08-1、E08-2、E08-3 的受限 gate 均已通过；
-E08-1至E08-6当前约定的受限功能gate均已通过；E08功能闭环收口（0022）。
-综合证据见e08.md，不冒称最终镜像全量旧回归或压力全绿。
+顺序 E05 → E07 → E06 已完成；E08 受限功能 gate 收口。新一组重新登记范围，
+不得并发构建/清理 build/，GNU 专属 cache 构建使用独立 SDK 快照。
 
-本组协作已结束：主agent完成统一构建/验收/文档；kernel/files/loader Luna分别完成
-机制、文件运行时、GNU构建/补丁。没有剩余占用的编辑范围；责任和失败过程见
-e08.md。新一组重新登记范围，
-仍不得并发构建/清理build/，GNU专属cache构建使用独立SDK快照。
+Git origin 为 Xiao-John/XylophoneOS。0023 发布使用本机凭据且不落盘；原日常
+work_disk.img 保留，测试使用临时专用盘。
 
-Git origin 为 Xiao-John/XylophoneOS。0023按用户明确授权提交、推送并发布发行，
-使用本机凭据且不将凭据落盘。原日常 work_disk.img 保留，测试均使用临时专用盘。
+## 0045 完成：总览、文档清理与 release 准备
+
+删除 `.DS_Store` 和 tests/scripts 的 `__pycache__`；新增
+[项目总览](project_overview.md)、[下一次 release 清单](releases/next_release.md)
+和本记录。更新文档索引，区分入口、work_log 证据、冻结报告和压缩发行材料。
+未删除 work_log、线程冻结报告或发行附件；清掉旧 release 目录中两份逐字节
+重复的源码压缩包，canonical 保留在 `sources/`。未构建/打包新 release。
+发现 install ISO 报告仍绑定旧 build `26eb667dd8318997`，且 ISO 容量仍受
+512 KiB kernel/4 MiB 页表/1 MiB payload 限制，已写入 release 阻塞项。
+详见[work_log/0045_release_prep.md](work_log/0045_release_prep.md)。
+
+## 0043 完成：CPython T3-PY 客体 gate
+
+T3-PY 首次 4/5，原因是 XOS pipe 读为显式 `EAGAIN`，不能作为阻塞 I/O 证据。
+gate 改用真实 files 服务 `read(4096)`，并要求后台线程跨多个 I/O 窗口推进；
+`tests/cpython_t3_py_smoke.py` 5/5、资源 `[129833,2,0]`，fingerprint
+`cebe2527e705a185b6b9`。XOS pipe 仍非阻塞；T3-QT/SMP/完整 POSIX 未验。
+详见[work_log/0043_cpython_t3_py.md](work_log/0043_cpython_t3_py.md)。
+
+## 0044 完成：xypm 定名与 P1 双 Shell 验收
+
+包管理器正式定名 **xypm**，命令/脚本/模块/原生程序/包ID/数据库目录统一改名，
+不保留 xpm/xpkg 可执行别名；`.xpk` 与 v1 容器/schema 不变。P1 交付宿主候选盘
+install/upgrade/remove、归属/依赖校验和客体只读 list/info；客体写入事务留给
+P2，仓库/签名留给 P3。宿主导出临时文件重名问题已修：会话 uuid 前缀 + 递增
+serial + 排他创建。
+
+证据：`build/package_p1/xypm_rename_p0_report.json` 16/16、
+`xypm_rename_host_report.json` 12/12、
+`xypm_acceptance/guest_report.json` 10/10（双 Shell 查询/退出码、B2 重定向、
+升级/移除后重启、用户输出保留）。系统 build `911184be3f3c99f6`，资源
+`[129833,2,0]`，xypm 包 SHA256 `86a7f72f…`，final image `dfa3881d…`。
+未运行：P2 客体写入事务、P3 签名仓库、线程 SDK 登记、旧压力。详见
+[work_log/0044_xypm_p1.md](work_log/0044_xypm_p1.md)。
+
+## 0041完成：多线程PR本地整合确认
+
+已fetch并快进到d89d1a3；本地B2/ISO/其他未提交改动有恢复快照，4文件冲突已
+逐处整合，无unmerged entries。线程38–52保持远端定义，本地ISO payload改53；
+B2顺序动作在私有FD快照执行，Client新操作加session锁，嵌套取消适配线程模型。
+隔离构建660723db5e2b005e通过，新整合7组客体通过，前6组资源[129833,2,0]恢复；
+第7组确认ISO sys53安装/运行dash。报告build/thread_merge_check/merge_report.json、
+merge_receipt.json，详细范围/失败修复见work_log/0041_threading_local_merge.md。
+本组占用解除，B2仍按用户要求暂停；后续包管理线改名为xypm继续。整合修正仍在工作树，未提交
+或push，不自动恢复stash覆盖它们。不执行用户计划中的ISO回滚或新Release。
+未重跑PR全T2资格/旧压力，未把其旧回执改绑本地SDK；cpy仍由另一侧推进。
+
+## 0039 xpm P1准备（旧名；现名 xypm，由0044续接）
+
+用户当时定名xpm并要求同步dash/xsh能力边界；0044因撞名改为xypm。主端占用
+原xpm脚本、新增宿主
+FatFs会话后端、build_xpm.py、只读用户态xpm程序及tests/package_p1_*、自有说明/
+状态；P0 xpkg入口保留兼容。只读复用冻结SDK/隔离镜像，不修改0037的ABI/files/
+loader/libc/dash端口、0038或游戏源码。专用build/package_p1与cache；双Shell原计划
+用固定已验dash B1准备同一外部xpm验收，不借用随后0042的B2回执。
+
+## 0042完成：dash B2
+
+0037的文件打开实例转交、共享偏移、spawn顺序文件动作、dash重定向和嵌套前台
+取消已在0041线程整合后正式验收。最终系统build `911184be3f3c99f6`，xos.img
+SHA256 `d9b81936924e729d2cf059d936b2406828a6785c151246603ed77ec9b2c5121d`；
+dash SHA256 `a730086417e2d3f7204824c9dd1f6ac25cac61e3b0fd59747315fcba72e11646`。
+B2专项6项、B0/B1回归7项、进程/SDK回归13项和许可材料检查均通过，客体资源
+回到`[129833,2,0]`。证据在build/dash_b2_acceptance_report.json、
+build/dash_b_acceptance_report.json、build/process_smoke_report.json、
+build/license_report.json和work_log/0042_dash_b2.md。C阶段管道、子Shell、后台、
+命令替换与here-document仍未实现；本组未提交或推送，`localpilot/`保持隔离。
+
+## 0038 完成：CPython PY1
+
+PY1生成固定560文件的stage及逐文件路径/大小/SHA256清单；客体6/6通过：精确
+argv、cwd `/`、继承PATH、脚本目录优先import且无宿主路径，选定标准库实际操作，
+二进制字节原样读取，以及缺模块/语法错误/未捕获异常退出1。解释器fingerprint
+`ad85d8438b4101d66483`，冻结SDK `2c3876e640840ff5`；测试复用系统build
+`3d7665a665df9443`和隔离临时盘，报告`build/cpython_py1_report.json`。未修改或
+重建内核、文件ABI、files、loader、libc、dash/sbase，未清理共享build或操作日常
+工作盘。全标准库、REPL/input、JSON存档和重启持久性仍未验，下一步PY2。详见
+[work_log/0038_cpython_py1.md](work_log/0038_cpython_py1.md)。本组无剩余编辑占用。
 
 ## 0036：当前基线提交/推送交接
 
@@ -52,6 +127,77 @@ pack/inspect/verify；共享xpkg_format.py严格校验v1普通文件ustar/JSON�
 P0受限完成，P1安装/归属数据库、P2客体xpkg/P3仓库仍not_run；下一步P1独立
 候选盘新安装与源盘保护。未改Open Adventure/CPython/UTF-8源码、未跑旧压力。
 本组结束，无剩余编辑占用；未提交/推送或派出agent，线程PR尚待接收。
+
+## 0040 完成：ISO 安装介质 A3/A4
+
+dash 作为 ISO payload：loader 读 `DASH.ELF`，kernel 复制到 1 MiB 静态区，
+新 `sys_boot_payload` 交给 supervisor，`file_ui` 自动安装到 `/usr/bin/dash`
+（已有文件不覆盖）。`build_install_iso.py` 生成含 `KERNEL.BIN`/`DASH.ELF`/
+`MANIFEST.TXT` 的 install ISO 和宿主 manifest；`make run` 默认使用它，
+`make run_file`/`make run_iso` 保留无 dash/嵌入 kernel 版本。build
+`26eb667dd8318997`，install ISO SHA256 `c29db082…`；
+`tests/iso_dash_install.py` 4/4、A2 回归 2/2。限制：payload 1 MiB、kernel
+仍受 512 KiB 构建上限/4 MiB 页表、无签名/交互分区。详见
+[work_log/0040_iso_install.md](work_log/0040_iso_install.md)。
+
+## 0039 完成：ISO 容量 A2（文件加载 kernel）
+
+loader 从 ISO 读 `KERNEL.BIN` 并直接装入 1 MiB；boot image 只有 boot sector +
+loader。修复 `rep insw` 后重复 `add edi,2048` 的扇区间空洞后，内核进入并到
+`xsh>`。最终 build `26eb667dd8318997`，`xos-install.iso` SHA256 `fc3bad2c…`；
+`tests/iso_file_kernel_smoke.py` 2/2 通过。后续 A3/A4 见 0040；`make run_file`
+保留无 dash 的 file-backed ISO，`make run_iso` 保留嵌入 kernel 的旧 ISO。
+kernel 文件仍受 512 KiB 构建配置和前 4 MiB 页表限制。详见
+[work_log/0039_a2_attempt.md](work_log/0039_a2_attempt.md)。
+
+## 0038 完成：ISO 容量路线 A1（ISO9660 文件）
+
+独立探针通过 ATAPI 逐扇区读 PVD 和根目录，按 extent/size 读出
+`KERNEL.BIN`/`DASH.ELF`，多扇区文件（2100/5000 字节）校验通过；报告
+`build/cd_iso9660_report.json`，串口 `A1 ok KERNEL=2100 DASH=5000`。限制为
+单层根目录、`;1` 名称、单 extent、<64 KiB；尚未把 kernel 装到 1 MiB 以上。
+现有 `xos.iso`/`make run` 路径未改。计划见[iso_install_plan.md](iso_install_plan.md)，
+过程见[work_log/0038_iso9660_a1.md](work_log/0038_iso9660_a1.md)。
+
+## 0037 完成：ISO 容量路线 A0（ATAPI PVD）
+
+在独立探针中验证 ATAPI PIO 可读 CD 的 PVD（LBA 16），串口输出
+`CDTEST ok: CD001`；报告 `build/cd_atapi_report.json`。no-emulation CD 的 BIOS
+`INT 13h AH=42h` 实测返回 `ah=01`，因此后续 loader 走 ATAPI 而非 BIOS 读盘。
+现有 `xos.iso`/`make run` 路径未改；A1 才是 ISO9660 文件与 kernel 读取。
+计划与 A0–A4 见[iso_install_plan.md](iso_install_plan.md)，过程见
+[work_log/0037_cd_atapi_a0.md](work_log/0037_cd_atapi_a0.md)。
+
+## 0036 完成：El Torito ISO 启动
+
+`make run` 默认改为 `build/xos.iso`（El Torito no-emulation），boot sector、
+loader、kernel 一起装进 boot image，不再读软盘；`make run_floppy` 保留旧路径。
+build `2b5f6ecc87ed6d8f`，ISO SHA256 `209367f7…`，`tests/iso_boot_smoke.py`
+2/2 通过；预装 dash 的盘配 ISO 也可 `dash -i`。仍受真实模式 640 KiB 边界，
+不是 UEFI。过程见[work_log/0036_iso_boot.md](work_log/0036_iso_boot.md)。
+
+## 0035 完成：新工作盘预装 dash
+
+dash 仍不能进入 128 KiB 启动模块，改为预装到工作盘：`make dash` 用当前
+`build/sdk` 构建，`make disk` 新建盘后自动导入 `/usr/bin/dash`；已有盘不自动
+修改，可用 `scripts/install_dash.py` 补装。上游 dash 源码包固化在
+`src/ports/dash/upstream/`，离线可构建。验证：build `38c014699e36553f`，
+`dash -i`、`echo`、`exit` 通过，`build/dash_preinstall_report.json` 4/4。
+发行打包脚本也改为对新发行盘预装；冻结的 0.0.1-1024 未重打包。
+过程见[work_log/0035_dash_preinstall.md](work_log/0035_dash_preinstall.md)。
+
+## 0034 完成：Open Adventure 在 XOS 内构建
+
+冻结 Open Adventure 1.12（BSD-2，包 SHA256 `b6db9554…`），在 port 内实现最小
+PyYAML 子集、readline 适配和 `build.sh`；客体由 dash 执行脚本，用既有
+`/usr/bin/python3` 生成 `dungeon.c/h`，再由原生 GCC 链接 `/out/advent`。
+生成数据与宿主 PyYAML 6.0.3 参考逐字节一致；中文欢迎语、起点、得分/等级和
+灯/钥匙/宝箱/金币文本通过客体检查，英文命令仍正常。报告
+`build/adventure_report.json` 4/4，build `3d7665a665df9443`。仅部分翻译；
+存档/读档、脚本输入、完整流程和中文排版未验。计划见
+[adventure_port_plan.md](adventure_port_plan.md)，过程见
+[work_log/0034_adventure.md](work_log/0034_adventure.md)。本组无剩余编辑占用；
+下一步扩充翻译并补存档/脚本 gate。
 
 ## 0033 完成：UTF-8文本通道 U0/U1
 
@@ -405,13 +551,13 @@ QtGui/QPA、Widgets、无界面QML、软件Quick、集成/试用分别验收。
 窄OS服务与用户态Qt/SDL适配分开，不绑定固件/ISA；尚未引入Qt或开始GUI实现。
 本组仅文档修改，责任已结束；交接见work_log/0016_qt_gui_plan.md。
 
-## 下一步：dash B2 / xsh交互；E09试用反馈待补
+## 下一步：dash C / xsh交互；E09试用反馈待补
 
 先读e08.md、e08.md、e08.md。
 
 1. E09发行交付已由0023完成，镜像/工作盘/SDK/源码/说明公开；朋友独立试用与
    备份恢复/升级的真实记录待补，O19/O20仍未验，不阻塞可选dash和xsh后续开发。
-2. dash B0/B1已由0028通过；下一批是B2真实描述符/重定向和前台取消，C阶段仍未开始。
+2. dash B0/B1已由0028通过，B2已由0042通过；下一批是C阶段管道、隔离执行和兼容收口。
    后续压力继续专人负责，使用0022正式派生G++/目标库及0020修复C/binutils；
    不复用含已暴露bug的原始工具。已有功能测试不无变化重复运行。
 3. Qt主线/SDL次选仍按v0.5的独立阶段，当前未开工；系统重建和自举也另行验收。

@@ -1,0 +1,108 @@
+--- a/make_dungeon.py
++++ b/make_dungeon.py
+@@ -10,13 +10,14 @@
+ Copyright (c) 2017 by Eric S. Raymond
+ SPDX-License-Identifier: BSD-2-clause
+ """
+-import sys, yaml
++import os, sys, yaml
+ 
+-YAML_NAME = "adventure.yaml"
+-H_NAME = "dungeon.h"
+-C_NAME = "dungeon.c"
+-H_TEMPLATE_PATH = "templates/dungeon.h.tpl"
+-C_TEMPLATE_PATH = "templates/dungeon.c.tpl"
++BASE = os.path.dirname(os.path.abspath(__file__))
++YAML_NAME = os.path.join(BASE, "adventure.yaml")
++H_NAME = os.path.join(BASE, "dungeon.h")
++C_NAME = os.path.join(BASE, "dungeon.c")
++H_TEMPLATE_PATH = os.path.join(BASE, "templates/dungeon.h.tpl")
++C_TEMPLATE_PATH = os.path.join(BASE, "templates/dungeon.c.tpl")
+ 
+ DONOTEDIT_COMMENT = "/* Generated from adventure.yaml - do not hand-hack! */\n\n"
+ 
+@@ -524,7 +525,7 @@
+     return out
+ 
+ if __name__ == "__main__":
+-    with open(YAML_NAME, "r") as f:
++    with open(YAML_NAME, "r", encoding="utf-8") as f:
+         db = yaml.safe_load(f)
+ 
+     locnames = [x[0] for x in db["locations"]]
+@@ -536,10 +537,10 @@
+                                  db["objects"])
+     ignore = ""
+     try:
+-        with open(H_TEMPLATE_PATH, "r") as htf:
++        with open(H_TEMPLATE_PATH, "r", encoding="utf-8") as htf:
+             # read in dungeon.h template
+             h_template = DONOTEDIT_COMMENT + htf.read()
+-        with open(C_TEMPLATE_PATH, "r") as ctf:
++        with open(C_TEMPLATE_PATH, "r", encoding="utf-8") as ctf:
+             # read in dungeon.c template
+             c_template = DONOTEDIT_COMMENT + ctf.read()
+     except IOError as e:
+@@ -547,7 +548,7 @@
+         sys.exit(-1)
+ 
+     c = c_template.format(
+-        h_file             = H_NAME,
++        h_file             = os.path.basename(H_NAME),
+         arbitrary_messages = get_arbitrary_messages(db["arbitrary_messages"]),
+         classes            = get_class_messages(db["classes"]),
+         turn_thresholds    = get_turn_thresholds(db["turn_thresholds"]),
+@@ -587,10 +588,10 @@
+         state_definitions  = statedefines
+     )
+ 
+-    with open(H_NAME, "w") as hf:
++    with open(H_NAME, "w", encoding="utf-8") as hf:
+         hf.write(h)
+ 
+-    with open(C_NAME, "w") as cf:
++    with open(C_NAME, "w", encoding="utf-8") as cf:
+         cf.write(c)
+ 
+ # end
+--- a/init.c
++++ b/init.c
+@@ -48,7 +48,11 @@
+     if (settings.oldstyle)
+         printf("Initialising...\n");
+ 
++#ifdef __xos__
++    srand(1);
++#else
+     srand(time(NULL));
++#endif
+     int seedval = (int)rand();
+     set_seed(seedval);
+ 
+--- a/saveresume.c
++++ b/saveresume.c
+@@ -45,7 +45,11 @@
+ int savefile(FILE *fp, int32_t version)
+ /* Save game to file. No input or output from user. */
+ {
++#ifdef __xos__
++    save.savetime = 0;
++#else
+     save.savetime = time(NULL);
++#endif
+     save.mode = -1;
+     save.version = (version == 0) ? VRSION : version;
+ 
+--- a/advent.h
++++ b/advent.h
+@@ -3,6 +3,10 @@
+ #include <stdbool.h>
+ #include <stdarg.h>
+ #include <inttypes.h>
++
++#ifndef VERSION
++#define VERSION "1.12"
++#endif
+ 
+ #include "dungeon.h"
+ 

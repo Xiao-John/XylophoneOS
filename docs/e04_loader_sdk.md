@@ -172,6 +172,11 @@ spawn_file_diagnosed返回open/inspect/prepare/create/map/start阶段、错误�
 严格小于自身。委派拒绝使用独立`process_error_delegation=-10`，避免与文件服务
 `not_found=-1`混淆；libc映射为EPERM。
 
+新增`sys_boot_payload=38`：仅真实bootstrap supervisor可调用；first=offset，
+second=目标用户地址，third=长度；third=0且second=0时返回payload总大小。
+payload来自ISO的`DASH.ELF`，上限1 MiB，不授予普通任务；`/usr/bin/dash`已存在
+时安装器不覆盖。旧syscall编号不变。
+
 `spawn_options.delegate_spawn_depth`由用户态启动策略显式设置。Xsh对裸`dash`设为2，dash的
 固定GNU driver profile经xos_posix_spawn_driver给gcc/g++设为1。内核仍只检查调用者、
 直接子任务归属、building状态和深度，不识别文件名、PATH、ELF工具身份或GCC。
@@ -193,3 +198,10 @@ process_stats 的布局及进程权限含义。共享 ABI 见 `thread_abi.hpp`�
 地址保留与兼容策略见 [线程实现](threading_implementation.md)。
 新 SDK 是独立 profile；旧 ELF 继续装载，若占用新线程 arena，显式 opt-in
 返回 ENOTSUP，不能静默覆盖映射。用户态 ELF 策略仍在 loader，内核不解析 TLS 模板。
+
+## 0041本地整合补充
+
+已拉取d89d1a3线程PR；本地未发布ISO sys_boot_payload避开线程38–52改为53。
+文件wire仍v2布局，B2追加操作保留旧工具入口；私有spawn FD快照与有锁的seek/
+transfer共同整合。7组整合gate见work_log/0041_threading_local_merge.md；B2随后由
+0042以新SDK正式收口，证据绑定build `911184be3f3c99f6`，不借用旧回执。

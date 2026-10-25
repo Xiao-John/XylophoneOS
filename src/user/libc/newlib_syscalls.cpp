@@ -54,7 +54,6 @@ struct open_object {
     bool close_on_exec;
     u32 handle;
     u32 flags;
-    u32 position;
     signed char stdio_source;
     char path[max_path];
 };
@@ -333,7 +332,6 @@ int open_normalized(const char* path, int flags) {
         runtime_guard guard(fd_table_lock);
         if (result == 0) { object = alloc_object(object_kind::file, handle, static_cast<u32>(flags)); }
         if (object >= 0) {
-            objects[object].position = (flags & O_APPEND) != 0 ? size : 0;
             memcpy(objects[object].path, normalized, strlen(normalized) + 1);
             descriptors[fd].object = static_cast<signed char>(object);
             descriptors[fd].close_on_exec = (flags & O_CLOEXEC) != 0;
@@ -341,6 +339,7 @@ int open_normalized(const char* path, int flags) {
     }
     if (result != 0) { errno = error_from_file(result); return -1; }
     if (object < 0) { (void)file_client.close(handle); errno = EMFILE; return -1; }
+
     return fd;
 }
 
@@ -431,6 +430,22 @@ extern "C" int xos_libc_init(const xos::startup_info* startup) {
         }
         environ = reinterpret_cast<char**>(extension->environment);
         for (int fd = 0; fd < 3; ++fd) {
+            if ((extension->flags & (1u << (8 + fd))) != 0) {
+                if (extension->file_handles[fd] == 0) { errno = EINVAL; return -1; }
+                const int inherited = alloc_object(object_kind::file,
+                    extension->file_handles[fd], extension->open_flags[fd]);
+                if (inherited < 0) { errno = EMFILE; return -1; }
+                if (valid_fd(fd)) {
+                    const int old_object = descriptors[fd].object;
+                    if (objects[old_object].kind == object_kind::kernel) {
+                        objects[old_object] = open_object{};
+                        descriptors[fd].object = -1;
+                    } else { (void)close_fd(fd); }
+                }
+                descriptors[fd].object = static_cast<signed char>(inherited);
+                descriptors[fd].close_on_exec = false;
+                continue;
+            }
             if (extension->open_paths[fd] == 0) { continue; }
             const char* path = reinterpret_cast<const char*>(extension->open_paths[fd]);
             const int opened = open_normalized(path, static_cast<int>(extension->open_flags[fd]));
@@ -510,7 +525,6 @@ extern "C" _READ_WRITE_RETURN_TYPE read(int fd, void* buffer, size_t length) {
                               ? xos::file::response_data_size : static_cast<u32>(length);
         const xos::i64 result = file_client.read(object.handle, buffer, chunk);
         if (result < 0) { errno = error_from_file(result); return -1; }
-        object.position += static_cast<u32>(result);
         return static_cast<ssize_t>(result);
     }
     if (object.kind == object_kind::kernel) {
@@ -537,14 +551,6 @@ extern "C" _READ_WRITE_RETURN_TYPE write(int fd, const void* buffer, size_t leng
     if (object.kind == object_kind::file) {
         if ((object.flags & O_ACCMODE) == O_RDONLY) { errno = EBADF; return -1; }
         size_t done = 0;
-        const auto update_position = [&object, &done]() {
-            if ((object.flags & O_APPEND) != 0) {
-                u32 size = 0, attributes = 0;
-                if (file_client.fstat(object.handle, size, attributes) == 0) {
-                    object.position = size;
-                } else { object.position += static_cast<u32>(done); }
-            } else { object.position += static_cast<u32>(done); }
-        };
         while (done < length) {
             const size_t remaining = length - done;
             const u32 chunk = remaining > xos::file::request_data_size
@@ -554,18 +560,15 @@ extern "C" _READ_WRITE_RETURN_TYPE write(int fd, const void* buffer, size_t leng
             if (result < 0) {
                 errno = error_from_file(result);
                 if (done == 0) { return -1; }
-                update_position();
                 return static_cast<ssize_t>(done);
             }
             if (result == 0) {
                 errno = EIO;
                 if (done == 0) { return -1; }
-                update_position();
                 return static_cast<ssize_t>(done);
             }
             done += static_cast<size_t>(result);
         }
-        update_position();
         return static_cast<ssize_t>(done);
     }
     if (object.kind == object_kind::kernel) {
@@ -588,23 +591,12 @@ extern "C" off_t lseek(int fd, off_t offset, int whence) {
     if (lease.index < 0) { errno = EBADF; return -1; }
     open_object& object = objects[lease.index];
     if (object.kind != object_kind::file) { errno = ESPIPE; return static_cast<off_t>(-1); }
-    u32 current_size = 0, attributes = 0;
-    xos::i64 result = file_client.fstat(object.handle, current_size, attributes);
-    (void)attributes;
-    if (result != 0) { errno = error_from_file(result); return static_cast<off_t>(-1); }
-    xos::i64 base = 0;
-    if (whence == SEEK_CUR) { base = object.position; }
-    else if (whence == SEEK_END) { base = current_size; }
+    u32 origin = xos::file::seek_set;
+    if (whence == SEEK_CUR) { origin = xos::file::seek_current; }
+    else if (whence == SEEK_END) { origin = xos::file::seek_end; }
     else if (whence != SEEK_SET) { errno = EINVAL; return static_cast<off_t>(-1); }
-    if ((offset < 0 && offset < -base) ||
-        (offset > 0 && base > static_cast<xos::i64>(xos::file::fat32_max_file_bytes) - offset)) {
-        errno = EINVAL; return static_cast<off_t>(-1);
-    }
-    const xos::i64 target = base + offset;
-    if (target < 0 || target > xos::file::fat32_max_file_bytes) { errno = EINVAL; return static_cast<off_t>(-1); }
-    result = file_client.seek(object.handle, static_cast<u32>(target));
+    const xos::i64 result = file_client.seek(object.handle, static_cast<xos::i64>(offset), origin);
     if (result < 0) { errno = error_from_file(result); return static_cast<off_t>(-1); }
-    object.position = static_cast<u32>(result);
     return static_cast<off_t>(result);
 }
 
@@ -1028,16 +1020,51 @@ static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
     runtime_guard spawn_guard(spawn_lock);
     struct spawn_snapshot {
         fd_slot fds[fd_count];
-        open_object open[object_count];
+        open_object open[object_count + action_count]{};
         bool pinned[object_count]{};
+        spawn_snapshot(const spawn_snapshot&) = delete;
+        spawn_snapshot& operator=(const spawn_snapshot&) = delete;
         spawn_snapshot() {
             runtime_guard guard(fd_table_lock);
-            memcpy(fds, descriptors, sizeof(fds)); memcpy(open, objects, sizeof(open));
+            memcpy(fds, descriptors, sizeof(fds)); memcpy(open, objects, sizeof(objects));
             for (auto& fd : fds) {
                 if (fd.object >= 0 && !pinned[fd.object]) { pinned[fd.object] = true; ++objects[fd.object].references; }
             }
         }
-        ~spawn_snapshot() { for (int i = 0; i < object_count; ++i) { if (pinned[i]) { release_object(i); } } }
+        ~spawn_snapshot() {
+            for (int i = 0; i < object_count; ++i) { if (pinned[i]) { release_object(i); } }
+            for (int i = object_count; i < object_count + action_count; ++i) {
+                if (open[i].kind == object_kind::file) { (void)file_client.close(open[i].handle); }
+            }
+        }
+        void assign(int fd, int object, bool cloexec = false) {
+            const int previous = fds[fd].object;
+            fds[fd].object = static_cast<signed char>(object);
+            fds[fd].close_on_exec = cloexec;
+            if (previous >= object_count) {
+                bool used = false;
+                for (const auto& entry : fds) { used = used || entry.object == previous; }
+                if (!used) { (void)file_client.close(open[previous].handle); open[previous] = open_object{}; }
+            }
+        }
+        int open_action(const spawn_action& action) {
+            int index = object_count;
+            while (index < object_count + action_count && open[index].kind != object_kind::none) { ++index; }
+            if (index == object_count + action_count) { return EMFILE; }
+            char path[max_path];
+            if (!normalize_path(action.path, path)) { return ENAMETOOLONG; }
+            u32 flags = 0, handle = 0, size = 0, version = 0;
+            const int translated = open_flags_to_file(action.flags, flags);
+            if (translated != 0) { return translated; }
+            const auto result = file_client.open(path, flags, handle, size, version);
+            if (result < 0) { return error_from_file(result); }
+            open[index] = open_object{};
+            open[index].kind = object_kind::file;
+            open[index].handle = handle;
+            open[index].flags = static_cast<u32>(action.flags);
+            assign(action.first, index, (action.flags & O_CLOEXEC) != 0);
+            return 0;
+        }
         bool valid(int fd) { return fd >= 0 && fd < fd_count && fds[fd].object >= 0; }
     } snapshot;
     if (path == nullptr || argv == nullptr) { return EINVAL; }
@@ -1088,6 +1115,22 @@ static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
     }
     options.environment = environment_vector;
     options.environment_count = env_count;
+    // Ordered actions modify only the private snapshot, never live process FDs.
+    if (set != nullptr) {
+        for (u32 i = 0; i < set->count; ++i) {
+            const spawn_action& action = set->actions[i];
+            if (action.kind == action_kind::open) {
+                const int error = snapshot.open_action(action);
+                if (error != 0) { return error; }
+            } else if (action.kind == action_kind::close) {
+                if (!snapshot.valid(action.first)) { return EBADF; }
+                snapshot.assign(action.first, -1);
+            } else {
+                if (!snapshot.valid(action.first)) { return EBADF; }
+                snapshot.assign(action.second, snapshot.fds[action.first].object);
+            }
+        }
+    }
     for (int fd = 0; fd < 3; ++fd) {
         if (!snapshot.valid(fd) || snapshot.fds[fd].close_on_exec) {
             options.stdio[fd] = -2;
@@ -1099,38 +1142,9 @@ static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
         } else if (object.kind == object_kind::pipe_read || object.kind == object_kind::pipe_write) {
             options.stdio[fd] = object.handle;
         } else if (object.kind == object_kind::file) {
-            options.open_paths[fd] = object.path;
+            options.file_handles[fd] = object.handle;
             options.open_flags[fd] = object.flags & ~O_CLOEXEC;
         } else { return ENOTSUP; }
-    }
-    if (set != nullptr) {
-        for (u32 i = 0; i < set->count; ++i) {
-            const spawn_action& action = set->actions[i];
-            if (action.kind == action_kind::close) {
-                options.stdio[action.first] = -2;
-                options.open_paths[action.first] = nullptr;
-            }
-            else if (action.kind == action_kind::open) {
-                options.stdio[action.first] = -1;
-                options.open_paths[action.first] = action.path;
-                options.open_flags[action.first] = static_cast<u32>(action.flags);
-            } else {
-                if (!snapshot.valid(action.first)) { return EBADF; }
-                const open_object& object = snapshot.open[snapshot.fds[action.first].object];
-                if (object.kind == object_kind::kernel) {
-                    if (object.stdio_source < 0 || object.stdio_source >= 3) { return ENOTSUP; }
-                    options.stdio[action.second] = object.stdio_source;
-                    options.open_paths[action.second] = nullptr;
-                } else if (object.kind == object_kind::pipe_read || object.kind == object_kind::pipe_write) {
-                    options.stdio[action.second] = object.handle;
-                    options.open_paths[action.second] = nullptr;
-                } else if (object.kind == object_kind::file) {
-                    options.stdio[action.second] = -1;
-                    options.open_paths[action.second] = object.path;
-                    options.open_flags[action.second] = object.flags & ~O_CLOEXEC;
-                } else { return ENOTSUP; }
-            }
-        }
     }
     u32 argc = 0;
     u32 aggregate = 0;

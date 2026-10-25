@@ -18,6 +18,12 @@ constexpr u32 disk_slack_clusters = 2;
 struct open_record {
     bool used;
     u32 handle;
+    u32 description;
+};
+
+struct open_description {
+    bool used;
+    u32 references;
     FIL file;
     char path[max_name];
     u32 flags;
@@ -35,6 +41,7 @@ bool mounted;
 bool recovery_failed;
 client_session sessions[max_sessions];
 u32 generations[max_sessions];
+open_description descriptions[max_open_descriptions];
 request request_buffer;
 response response_buffer;
 u8 block_bench_buffer[4096];
@@ -224,16 +231,35 @@ status from_fr(FRESULT result) {
     }
 }
 
-bool any_open(const client_session& session, const char* path) {
-    for (const auto& item : session.opens) {
+bool any_open(const client_session&, const char* path) {
+    for (const auto& item : descriptions) {
         if (item.used && names_equal(item.path, path)) { return true; }
     }
     return false;
 }
 
+open_description* description_for(open_record* item) {
+    if (item == nullptr || item->description == 0 ||
+        item->description > max_open_descriptions) { return nullptr; }
+    open_description& description = descriptions[item->description - 1];
+    return description.used ? &description : nullptr;
+}
+
+void release_open(open_record& item) {
+    open_description* description = description_for(&item);
+    if (description != nullptr) {
+        if (description->references > 1) { --description->references; }
+        else {
+            (void)f_close(&description->file);
+            *description = open_description{};
+        }
+    }
+    item = open_record{};
+}
+
 void close_session(client_session& session) {
     for (auto& item : session.opens) {
-        if (item.used) { (void)f_close(&item.file); item = open_record{}; }
+        if (item.used) { release_open(item); }
     }
     if (staging_active && staging_owner == session.pid) {
         if (staging_open) { (void)f_close(&staging_file); staging_open = false; }
@@ -472,6 +498,11 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         u32 slot = max_open;
         for (u32 i = 0; i < max_open; ++i) { if (!session.opens[i].used) { slot = i; break; } }
         if (slot == max_open) { reply(out, in, status::full); break; }
+        u32 description_slot = max_open_descriptions;
+        for (u32 i = 0; i < max_open_descriptions; ++i) {
+            if (!descriptions[i].used) { description_slot = i; break; }
+        }
+        if (description_slot == max_open_descriptions) { reply(out, in, status::full); break; }
         FILINFO info{};
         const FRESULT stat_result = f_stat(path, &info);
         if (stat_result == FR_OK && (info.fattrib & AM_DIR) != 0) {
@@ -489,49 +520,55 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         else if ((options & open_truncate) != 0) { mode |= FA_CREATE_ALWAYS; }
         else if ((options & open_append) != 0) { mode |= FA_OPEN_APPEND; }
         else if ((options & open_create) != 0) { mode |= FA_OPEN_ALWAYS; }
-        FIL file{};
-        const FRESULT result = f_open(&file, path, mode);
+        open_description& description = descriptions[description_slot];
+        description = open_description{};
+        const FRESULT result = f_open(&description.file, path, mode);
         if (result != FR_OK) { reply(out, in, from_fr(result)); break; }
         if ((options & open_append) != 0) {
-            const FRESULT seek_result = f_lseek(&file, f_size(&file));
+            const FRESULT seek_result = f_lseek(&description.file, f_size(&description.file));
             if (seek_result != FR_OK) {
-                (void)f_close(&file);
+                (void)f_close(&description.file);
+                description = open_description{};
                 reply(out, in, from_fr(seek_result));
                 break;
             }
         }
+        description.used = true;
+        description.references = 1;
+        description.flags = in.flags;
+        copy_text(description.path, path);
         open_record& item = session.opens[slot];
         item = open_record{};
         item.used = true;
         item.handle = handle;
-        item.file = file;
-        item.flags = in.flags;
-        copy_text(item.path, path);
+        item.description = description_slot + 1;
         reply(out, in, status::ok);
         out.handle = item.handle;
-        out.value = f_size(&item.file);
+        out.value = f_size(&description.file);
         break;
     }
     case op::fstat: {
         open_record* item = find_open(session, in.handle);
-        if (item == nullptr) { reply(out, in, status::bad_handle); break; }
+        open_description* description = description_for(item);
+        if (description == nullptr) { reply(out, in, status::bad_handle); break; }
         u16 inode = 0;
-        if (!identity_for_file(item->file, inode)) { reply(out, in, status::full); break; }
+        if (!identity_for_file(description->file, inode)) { reply(out, in, status::full); break; }
         reply(out, in, status::ok);
-        out.value = f_size(&item->file);
+        out.value = f_size(&description->file);
         out.reserved = inode;
         break;
     }
     case op::read: {
         open_record* item = find_open(session, in.handle);
-        if (item == nullptr) { reply(out, in, status::bad_handle); break; }
-        if ((item->flags & read_only) == 0) { reply(out, in, status::invalid); break; }
+        open_description* description = description_for(item);
+        if (description == nullptr) { reply(out, in, status::bad_handle); break; }
+        if ((description->flags & read_only) == 0) { reply(out, in, status::invalid); break; }
         const UINT wanted = in.length > sizeof(out.data)
                                 ? static_cast<UINT>(sizeof(out.data))
                                 : static_cast<UINT>(in.length);
         reply(out, in, status::ok);
         UINT read = 0;
-        const FRESULT result = f_read(&item->file, out.data, wanted, &read);
+        const FRESULT result = f_read(&description->file, out.data, wanted, &read);
         if (result != FR_OK) { reply(out, in, from_fr(result)); break; }
         out.length = read;
         out.value = read;
@@ -539,17 +576,18 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
     }
     case op::write: {
         open_record* item = find_open(session, in.handle);
-        if (item == nullptr) { reply(out, in, status::bad_handle); break; }
-        if ((item->flags & write_only) == 0) { reply(out, in, status::invalid); break; }
-        if ((item->flags & open_append) != 0) {
-            const FRESULT seek_result = f_lseek(&item->file, f_size(&item->file));
+        open_description* description = description_for(item);
+        if (description == nullptr) { reply(out, in, status::bad_handle); break; }
+        if ((description->flags & write_only) == 0) { reply(out, in, status::invalid); break; }
+        if ((description->flags & open_append) != 0) {
+            const FRESULT seek_result = f_lseek(&description->file, f_size(&description->file));
             if (seek_result != FR_OK) { reply(out, in, from_fr(seek_result)); break; }
         }
-        const FSIZE_t position = f_tell(&item->file);
+        const FSIZE_t position = f_tell(&description->file);
         if (position > fat32_max_file_bytes || in.length > sizeof(in.data) ||
             in.length > fat32_max_file_bytes - position) { reply(out, in, status::no_space); break; }
         UINT written = 0;
-        const FRESULT result = f_write(&item->file, in.data, in.length, &written);
+        const FRESULT result = f_write(&description->file, in.data, in.length, &written);
         if (result != FR_OK) { reply(out, in, from_fr(result)); break; }
         reply(out, in, status::ok);
         out.value = written;
@@ -557,20 +595,57 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
     }
     case op::seek: {
         open_record* item = find_open(session, in.handle);
-        if (item == nullptr) { reply(out, in, status::bad_handle); break; }
-        if (in.offset > fat32_max_file_bytes) { reply(out, in, status::invalid); break; }
-        const FRESULT result = f_lseek(&item->file, static_cast<FSIZE_t>(in.offset));
+        open_description* description = description_for(item);
+        if (description == nullptr) { reply(out, in, status::bad_handle); break; }
+        const i64 displacement = static_cast<i64>(in.offset);
+        i64 base = 0;
+        if (in.flags == seek_current) { base = static_cast<i64>(f_tell(&description->file)); }
+        else if (in.flags == seek_end) { base = static_cast<i64>(f_size(&description->file)); }
+        else if (in.flags != seek_set) { reply(out, in, status::invalid); break; }
+        if ((displacement < 0 && displacement < -base) ||
+            (displacement > 0 && base > static_cast<i64>(fat32_max_file_bytes) - displacement)) {
+            reply(out, in, status::invalid); break;
+        }
+        const i64 target = base + displacement;
+        if (target < 0 || target > fat32_max_file_bytes) { reply(out, in, status::invalid); break; }
+        const FRESULT result = f_lseek(&description->file, static_cast<FSIZE_t>(target));
         if (result != FR_OK) { reply(out, in, from_fr(result)); break; }
         reply(out, in, status::ok);
-        out.value = f_tell(&item->file);
+        out.value = f_tell(&description->file);
         break;
     }
     case op::close: {
         open_record* item = find_open(session, in.handle);
         if (item == nullptr) { reply(out, in, status::bad_handle); break; }
-        const FRESULT result = f_close(&item->file);
-        *item = open_record{};
-        reply(out, in, from_fr(result));
+        release_open(*item);
+        reply(out, in, status::ok);
+        break;
+    }
+    case op::transfer: {
+        open_record* source = find_open(session, in.handle);
+        open_description* description = description_for(source);
+        if (description == nullptr || in.offset == 0 || in.offset == session.pid) {
+            reply(out, in, status::bad_handle); break;
+        }
+        client_session* target = nullptr;
+        u32 target_index = 0;
+        for (u32 i = 0; i < max_sessions; ++i) {
+            if (sessions[i].pid == in.offset) { target = &sessions[i]; target_index = i; break; }
+        }
+        if (target == nullptr) { reply(out, in, status::would_block); break; }
+        u32 slot = max_open;
+        for (u32 i = 0; i < max_open; ++i) {
+            if (!target->opens[i].used) { slot = i; break; }
+        }
+        u32 target_handle = 0;
+        if (slot == max_open || !next_handle(target_index, target_handle) ||
+            description->references == 0xffffffffu) {
+            reply(out, in, status::full); break;
+        }
+        target->opens[slot] = open_record{true, target_handle, source->description};
+        ++description->references;
+        reply(out, in, status::ok);
+        out.handle = target_handle;
         break;
     }
     case op::replace_begin: {
@@ -730,13 +805,10 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         break;
     case op::sync: {
         status code = status::ok;
-        for (auto& owner_session : sessions) {
-            for (auto& item : owner_session.opens) {
-                if (!item.used || (item.flags & write_only) == 0) { continue; }
-                const FRESULT synced = f_sync(&item.file);
-                if (synced != FR_OK) { code = from_fr(synced); break; }
-            }
-            if (code != status::ok) { break; }
+        for (auto& item : descriptions) {
+            if (!item.used || (item.flags & write_only) == 0) { continue; }
+            const FRESULT synced = f_sync(&item.file);
+            if (synced != FR_OK) { code = from_fr(synced); break; }
         }
         if (code == status::ok && staging_active && staging_open && f_sync(&staging_file) != FR_OK) {
             code = status::io;

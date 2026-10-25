@@ -3,5 +3,6 @@
   "source": "https://deb.debian.org/debian/pool/main/d/dash/dash_0.5.13.5.orig.tar.gz",
   "sha256": "40090101a2a491f13e901d3d48e90414f26634628b9bfff35ff540363c227a7d",
   "upstream_tag": "https://kernel.googlesource.com/pub/scm/utils/dash/dash/+/refs/tags/v0.5.13.5",
-  "profile": "xos_simple_spawn_no_signals_no_redirection"
+  "profile": "xos_simple_spawn_no_signals_no_redirection",
+  "vendored_archive": "src/ports/dash/upstream/dash-0.5.13.5.tar.gz"
 }

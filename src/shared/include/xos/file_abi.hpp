@@ -7,6 +7,8 @@ namespace xos::file {
 // Internal E08 file-service ABI. Rebuild the kernel, service and SDK together.
 inline constexpr u32 request_magic = 0x51455246;  // FREQ
 inline constexpr u32 response_magic = 0x53455246; // FRES
+// Operations appended after E08 keep the v2 wire layout so existing static
+// tools remain usable. New operations are feature-detected by their result.
 inline constexpr u16 abi_version = 2;
 inline constexpr u32 message_size = 4096;
 inline constexpr u32 max_name = 256; // ASCII bytes including room for NUL.
@@ -14,6 +16,7 @@ inline constexpr u32 fat32_max_file_bytes = 0xfffffffeu;
 inline constexpr u32 max_block_bench_bytes = 8 * 1024 * 1024;
 inline constexpr u32 max_open = 16;
 inline constexpr u32 max_sessions = 8;
+inline constexpr u32 max_open_descriptions = 32;
 inline constexpr u32 request_data_size = message_size - 40 - max_name;
 inline constexpr u32 response_data_size = message_size - 42 - max_name;
 
@@ -22,7 +25,10 @@ enum class op : u16 {
     close = 8, replace_begin = 9, replace_chunk = 10, replace_commit = 11,
     replace_abort = 12, remove = 13, sync = 14, mkdir = 15, rename = 16,
     block_bench = 17, fstat = 18,
+    transfer = 19,
 };
+
+enum seek_origin : u32 { seek_set = 0, seek_current = 1, seek_end = 2 };
 
 enum flags : u32 {
     read_only = 1, write_only = 2, read_write = 3,

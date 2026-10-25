@@ -1,9 +1,10 @@
 # Open Adventure 依赖内建计划：在 XOS 内生成 dungeon 数据并构建
 
-2026-10-25，0034 规划。用户选定 Open Adventure（Colossal Cave），要求中文输出、
+2026-10-25，0034。用户选定 Open Adventure（Colossal Cave），要求中文输出、
 英文输入，并明确：**不是另写一个游戏，而是在 XOS 内实现 Open Adventure 缺少的
-构建依赖**，让它在客体里完成“数据生成 + C 编译 + 运行”。本页只做计划，尚未
-修改源码、未运行客体 gate。
+构建依赖**，让它在客体里完成“数据生成 + C 编译 + 运行”。D1 已实施并通过
+4/4 客体检查；本页保留目标、边界和未完成项，证据见
+[work_log/0034_adventure.md](work_log/0034_adventure.md)。
 
 ## 目标与版本
 
@@ -141,11 +142,9 @@ tests/adventure_smoke.py
 - 不保证完整 POSIX、信号、作业控制、中文排版；
 - 不把宿主生成的 `dungeon.c/h` 当作 XOS 构建输入。
 
-## 下一步（待用户确认）
+## 下一步
 
-推荐先做 **D1（最小 `yaml.py`）**：新增代码最少，且能保持上游生成器不变；
-CPython 已是既有移植，构建盘只多一个解释器和少量标准库。若确认，下一步：
-1. 冻结 1.12 到 `src/ports/adventure/`（source_lock、COPYING、upstream 副本）；
-2. 实现 `yaml.py` 子集并用宿主 PyYAML 做字节 oracle；
-3. 加 readline/time/signal/UTF-8 补丁与 `build.sh`；
-4. 在客体跑 G1–G4。
+D1 已完成：`src/ports/adventure/` 含 source_lock、BSD-2 COPYING、`yaml.py`、
+readline 适配、补丁和 `build.sh`；客体已跑通生成 + 原生编译 + 中文运行。
+未完成：完整中文化、存档/读档与脚本输入 gate、中文排版；D1-C C 生成器仅作
+回退，不默认实施。

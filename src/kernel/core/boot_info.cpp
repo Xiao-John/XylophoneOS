@@ -4,7 +4,7 @@ namespace xos {
 boot_error validate_boot_info(const boot_info& info, const memory_region* regions) {
     if (info.magic != boot_magic || info.version != boot_version ||
         info.size != sizeof(boot_info) || info.region_stride != sizeof(memory_region) ||
-        info.flags != 1 || info.reserved != 0 ||
+        info.flags != 1 ||
         (info.firmware != firmware_kind::bios && info.firmware != firmware_kind::uefi) ||
         info.kernel_start < info.reserved_low_end || info.kernel_end <= info.kernel_start) {
         return boot_error::invalid_header;

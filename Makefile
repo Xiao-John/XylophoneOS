@@ -2,14 +2,20 @@ PYTHON ?= python3
 export NASM ?= nasm
 export QEMU ?= qemu-system-x86_64
 
-.PHONY: all build disk libc-audit license-audit binutils-smoke run run_vga run_real_mode debug smoke clean
+.PHONY: all build dash disk install-iso run run_file run_install libc-audit license-audit binutils-smoke run run_vga run_real_mode debug smoke clean
 all: build
 
 build:
 	$(PYTHON) scripts/build.py
 
-disk:
-	$(PYTHON) scripts/make_work_disk.py
+dash: build
+	$(PYTHON) scripts/build_dash.py
+
+disk: dash
+	$(PYTHON) scripts/make_work_disk.py --with-dash
+
+install-iso: build dash
+	$(PYTHON) scripts/build_install_iso.py
 
 libc-audit: build
 	$(PYTHON) scripts/libc_audit.py
@@ -21,11 +27,23 @@ license-audit: build
 binutils-smoke: build
 	$(PYTHON) tests/binutils_smoke.py --seed-manifest "$(SEED_MANIFEST)"
 
-run: build
+run: install-iso
+	$(PYTHON) scripts/run_qemu.py --install-iso
+
+run_file: build
+	$(PYTHON) scripts/run_qemu.py --iso-file
+
+run_install: install-iso
+	$(PYTHON) scripts/run_qemu.py --install-iso
+
+run_iso: build
+	$(PYTHON) scripts/run_qemu.py --iso
+
+run_floppy: build
 	$(PYTHON) scripts/run_qemu.py
 
 run_vga: build
-	$(PYTHON) scripts/run_qemu.py --vga
+	$(PYTHON) scripts/run_qemu.py --iso --vga
 
 run_real_mode: build
 	$(PYTHON) scripts/run_qemu.py --real-mode

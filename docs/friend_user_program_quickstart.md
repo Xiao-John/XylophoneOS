@@ -1,8 +1,8 @@
 # 给朋友的 XOS 用户程序快速开始
 
 2026-10-25，0032更新。普通用户程序独立开发，不需要修改XOS源码或加入启动镜像。
-已有原生GCC/G++与宿主SDK。0035已交宿主xos_app构建/打包和xpkg检查；包安装/
-升级/卸载仍待P1/P2。见[包管理与现有P0命令](package_management.md)。
+已有原生GCC/G++与宿主SDK。0035已交宿主xos_app构建/打包；0044的xypm已支持宿主候选盘安装/升级/卸载和
+客体只读查询。命令统一为xypm，`.xpk`格式保留；见[包管理命令](package_management.md)。
 
 ## 开发方式
 
@@ -48,7 +48,8 @@ compile.py选择CRT/链接脚本/静态库，普通应用使用main，不必写�
 
 ## 现在的安装方式：显式离线导入
 
-当前没有通用包管理器。使用仓库已有scripts/work_disk.py；先关闭使用该盘的
+已有`.xpk`包时优先使用[宿主xypm候选盘事务](package_management.md)。以下是
+单个开发ELF的文件桥路径，不登记包归属。使用scripts/work_disk.py；先关闭使用该盘的
 QEMU，选择已有工作盘的独立副本。只操作普通镜像，不操作真实磁盘。以下从XOS
 仓库目录执行，WORK/APP替换为实际绝对路径：
 

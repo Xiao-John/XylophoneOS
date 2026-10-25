@@ -26,6 +26,8 @@ public:
     i64 read(u32 handle, void* data, u32 length);
     i64 write(u32 handle, const void* data, u32 length);
     i64 seek(u32 handle, u32 offset);
+    i64 seek(u32 handle, i64 offset, u32 origin);
+    i64 transfer(u32 handle, u64 target_pid, u32& target_handle);
     i64 close(u32 handle);
     i64 replace(const char* path, const void* data, u32 length);
     i64 read_all(const char* path, void* data, u32 capacity, u32& length);

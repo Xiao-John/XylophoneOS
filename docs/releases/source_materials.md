@@ -2,6 +2,9 @@
 
 本目录随 XOS 0.0.1-1024 发布，提供生成随附 GNU Seed 所需的上游源码原包、仓库记录的 XOS 补丁及配置、实际源码树相对原包的差异覆盖层和可取得的构建记录。完整材料位于 `build/releases/0.0.1-1024/sources/xos-0.0.1-1024-gnu-sources.tar.gz`；包内 `source-materials-manifest.json` 记录每个收录文件的来源路径、SHA-256、大小、各上游原包锁校验及差异路径。
 
+> 本地唯一完整副本位于 `build/releases/0.0.1-1024/sources/`；顶层重复压缩包已在 0045 清理，
+> GitHub release 上的已发布附件不变。
+
 ## 收录内容与校验
 
 - GCC 16.2.0、Binutils 2.47、GMP 6.3.0、MPFR 4.2.2、MPC 1.3.1 的原始压缩包；GCC/Binutils 使用仓库 source lock 中的 SHA-256，GMP/MPFR/MPC 使用其中的 SHA-512 校验。

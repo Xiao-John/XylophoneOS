@@ -237,12 +237,27 @@ i64 Client::write(u32 handle, const void* data, u32 length) {
 }
 
 i64 Client::seek(u32 handle, u32 offset) {
+    return seek(handle, static_cast<i64>(offset), seek_set);
+}
+
+i64 Client::seek(u32 handle, i64 offset, u32 origin) {
     session_guard guard;
     request_ = request{};
     request_.handle = handle;
-    request_.offset = offset;
+    request_.offset = static_cast<u64>(offset);
+    request_.flags = origin;
     const i64 result = call(op::seek);
     return result == 0 ? static_cast<i64>(response_.value) : result;
+}
+
+i64 Client::transfer(u32 handle, u64 target_pid, u32& target_handle) {
+    session_guard guard;
+    request_ = request{};
+    request_.handle = handle;
+    request_.offset = target_pid;
+    const i64 result = call(op::transfer);
+    if (result == 0) { target_handle = response_.handle; }
+    return result;
 }
 
 i64 Client::close(u32 handle) {

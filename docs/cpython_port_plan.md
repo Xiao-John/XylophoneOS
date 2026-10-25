@@ -15,6 +15,13 @@ POSIX 或完整标准库。下一批 PY1 脚本路径/argv/import 规则，再 P
 保留单线程bootstrap；主端依次交T0/T1/T2，T2冻结后本移植立即接T3-PY真实pthread
 后端，不再等PY3压缩/包/进程等其他生态功能。0030源码/探针按其回执独立推进。
 
+0038更新：PY1已通过。由已接受的PY0 fingerprint生成560文件的确定性stage和逐文件
+SHA256清单；客体验证argv/cwd/env、脚本目录优先导入、无宿主路径泄漏、二进制文件
+原样读取，以及json/re/collections/itertools/functools/math的选定操作。缺模块、语法
+错误和未捕获异常均退出1并回到Xsh。证据见`build/cpython_py1_report.json`与
+[工作记录](work_log/0038_cpython_py1.md)。这不扩大到全标准库、REPL/input或存档；
+下一批仍是PY2。
+
 ## 第一份可玩的交付
 
 从 Xsh 输入 `python3` 进入传统 `>>>`，能算数、定义函数、处理字符串；能执行

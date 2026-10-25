@@ -6,9 +6,11 @@ import json
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tarfile
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'scripts'))
 VERSION = '0.0.1-1024'
 PREFIX = 'xylophoneos_revival_' + VERSION
 
@@ -81,6 +83,11 @@ def main():
         transfer('mkdir', directory)
     for entry in entries:
         transfer('import', entry['guest_path'], ROOT/entry['path'])
+    subprocess.run([sys.executable, str(ROOT/'scripts/build_dash.py'),
+                    '--sdk', str(out/'sdk')], check=True)
+    from install_dash import install as install_dash, latest_manifest
+    dash = install_dash(disk, latest_manifest())
+    print('installed dash:', dash)
     examples = {
         'hello.c': '#include <stdio.h>\nint main(void) { puts("Happy 1024 from XOS C!"); return 0; }\n',
         'hello.cpp': '#include <cstdio>\n#include <string>\nint main() { std::string s("Happy 1024 from XOS C++!"); std::puts(s.c_str()); return 0; }\n',
@@ -90,6 +97,8 @@ def main():
         path = image_dir/'examples'/name; path.write_text('/* SPDX-License-Identifier: Apache-2.0 */\n'+body)
         transfer('import','/src/'+name,path)
     shutil.copyfile(out/'xos.img',image_dir/'xos.img')
+    if (out/'xos.iso').is_file():
+        shutil.copyfile(out/'xos.iso',image_dir/'xos.iso')
     shutil.copyfile(ROOT/'scripts/release_launcher.py',image_dir/'launch.py')
     shutil.copytree(out/'sdk', sdk_dir, dirs_exist_ok=True)
     target = ROOT/'.cache/xos_seed/gcc/relinks/target_runtime_v5_receipt'

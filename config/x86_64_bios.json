@@ -4,6 +4,6 @@
   "firmware": "bios",
   "kernel_base": 1048576,
   "kernel_max_file_bytes": 524288,
-  "kernel_max_memory_bytes": 1048576,
+  "kernel_max_memory_bytes": 4194304,
   "easter_eggs": true
 }

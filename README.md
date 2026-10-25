@@ -6,18 +6,23 @@
 开发前读 [开发纪律](docs/Discipline.md)、[当前状态](docs/state.md) 和
 [计划](docs/xos_plan.md)。`localpilot/` 是独立项目，不参与 XOS 构建。
 
-## 公共多线程：E13-T 独立开发分支
+## 当前状态与下一次 release
 
-本分支实现单核抢占的 1:1 内核线程：同进程共享地址空间与权限，独立栈/guard、
-静态 TLS 与 FPU 上下文；支持线程创建事务、join/detach、退出仲裁、单调时间、
-比较等待/唤醒，以及独立线程 SDK 的 pthread/newlib/C++ 运行库。
-普通进程最多 4 线程，全局 8 进程/32 线程槽；新线程默认 256 KiB 栈。
+主线已合并线程 PR（基线 `d89d1a3`），当前系统 build 为
+`911184be3f3c99f6`。已完成的受限闭环包括：启动/文件/进程、原生 GCC/G++、
+dash B0–B2、CPython PY0/PY1 与 T3-PY 5/5、xypm P0/P1（双 Shell/重启 10/10）、
+file-backed ISO A2–A4。1:1 线程、ABI 和限制见
+[线程实现与验收](docs/threading_implementation.md)。
 
-普通应用使用单独生成的 `build/threading_sdk`；`build/sdk` 继续是单线程运行库，
-不能仅复制 pthread 头混用旧库。真实客体验证、ABI/地址图、构建与使用命令、
-失败日志及限制见 [线程实现与验收](docs/threading_implementation.md)。
-SMP、完整 POSIX pthread、动态 TLS、取消、实时调度和 Python/Qt 接入另验。
-本分支不更新 0.0.1 的发行标签、镜像附件或日常工作盘。
+**下一次 release 尚未冻结/打包。** 先看[项目总览](docs/project_overview.md)
+和[release 准备清单](docs/releases/next_release.md)。其中 ISO 容量扩展仍是
+阻塞项：当前 kernel 构建上限 512 KiB、页表只映射前 4 MiB、payload 上限
+1 MiB；“kernel 从 ISO 文件加载”不等于“容量已突破”。该工作由 ISO 负责线
+完成后再重建 install ISO 和重跑 gate。
+
+普通 `build/sdk` 仍是单线程；线程开发使用独立的 `build/threading_sdk`，
+不能只复制 pthread 头混用旧库。SMP、完整 POSIX、T3-QT、xypm P2/P3、Qt/UEFI
+和旧全量压力仍未完成，不能写成全绿。
 
 ## 首个正式发行：0.0.1-1024
 
@@ -41,14 +46,18 @@ E08-1 增加 512 MiB 内存基线、2 GiB FAT32 新盘、ASCII LFN/目录、per-
 E08-2 接入真实文件stdio、动态堆、受限posix_spawn/waitpid与pipe；E08-3已运行真正
 XOS-hosted GNU as/ld/ar/ranlib/strip，客体生成和strip的ELF均可执行、同步重启保留。
 上述为历史阶段证据。E08-4/5 已加入原生 GCC/G++，E08-6 完成受限 C/C++ 闭环，
-分构建证据见 [E08 总览](docs/e08.md)。当前没有完整 shell。
+分构建证据见 [E08 总览](docs/e08.md)。当前有原生 xsh 和可选 dash B0–B2；
+dash C 阶段（管道/子 Shell/完整 POSIX）尚未完成。
 
 ```sh
-make disk       # 显式创建/格式化 work_disk.img（已有盘默认不动）
+make disk       # 创建/格式化 work_disk.img 并预装 dash（已有盘默认不动）
 make license-audit # 检查许可登记与 SDK 声明副本
 make libc-audit # 从实际 newlib 产物生成依赖清单 build/libc_audit.json
 make build      # 主线镜像、kernel.elf、练习镜像、符号与哈希清单
-make run        # 64 位内核 + 串口调试控制台；需要已有 work_disk.img
+make run        # 构建/启动带 dash 的 install ISO；需要已有 work_disk.img
+make run_file   # 无 dash 的 file-backed ISO
+make run_iso    # 旧嵌入 kernel ISO
+make run_floppy # 旧 1.44 MiB 软盘镜像路径
 make run_vga    # macOS：显示 VGA 输出
 make run_real_mode # 保留的 16 位命令行练习
 make debug      # 在复位点暂停，配合 config/debug_kernel.lldb

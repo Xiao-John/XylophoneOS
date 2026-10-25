@@ -10,7 +10,7 @@ import subprocess
 import sys
 import tempfile
 
-from xpkg_format import (DEFAULT_PROFILE, PackageError, canonical, check_profile, confined,
+from xypm_format import (DEFAULT_PROFILE, PackageError, canonical, check_profile, confined,
                          fields, identifier, inspect_elf, load_json, pack_package,
                          path_name, require, sha_file, text, validate_manifest)
 
@@ -77,7 +77,7 @@ def input_receipt(project, value):
 
 def output_for(project, value):
     outputs = [x for x in value['files'] if x['role'] == 'executable']
-    require(len(outputs) == 1, 'P0 builds one executable; use xpkg pack for a pre-staged multi-program package')
+    require(len(outputs) == 1, 'P0 builds one executable; use xypm pack for a pre-staged multi-program package')
     relative = outputs[0]['source']
     require(relative.startswith('build/') and len(relative.split('/')) == 2, 'executable output must be a direct build/ file')
     folder = project / 'build'

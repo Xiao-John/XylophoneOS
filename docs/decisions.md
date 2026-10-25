@@ -390,6 +390,19 @@ P0包目录隐含，显式目录/链接/PAX等拒绝，FAT短名含~的显式路
 P1安装/数据库、P2客体事务、P3仓库未实现，现有桥传入新盘不叫安装器通过。
 证据work_log/0035_package_p0.md和build/package_p0/；旧回归/压力未重跑。
 
+## 2026-10-25：0042 dash B2完成
+
+- files服务以引用计数的打开实例作为共享状态，跨进程transfer转交同一FIL/偏移/
+  O_APPEND语义；会话close、退出与kill只在最后引用释放时关闭。文件wire保持v2，
+  新操作append，避免打断已有静态工具。
+- posix_spawn文件动作按调用顺序作用于私有FD快照；成功时把最终0–2映射的真实
+  文件handle转交给child，失败恢复父描述符表且不留下可运行孩子。SEEK_CUR等由
+  files服务真实游标计算，不再用libc本地偏移模拟。
+- dash仅开放0–2上的`<`、`>`、`>>`、`2>`及dup/close类顺序重定向；builtin用
+  上游栈恢复。管道、子Shell、后台、命令替换和here-document仍拒绝，属于C阶段。
+- build `911184be3f3c99f6`上B2 6项、B0/B1 7项、进程/SDK 13项及许可检查通过；
+  资源均回到`[129833,2,0]`。未提交、未推送，证据见0042工作日志。
+
 ## 2026-10-25：0037 公共线程候选实现
 
 按 0031/0036 契约实现 T0–T2，保持 8 个进程、每进程 4 个线程槽的预算。
@@ -403,3 +416,30 @@ newlib 重建为动态 __getreent/真实 retarget locks，C++ 运行库使用 pt
 不持 FD 表锁等服务。GNU patch 0008 将无墙钟的 noexcept system_clock 查询显式
 终止；steady_clock 和 monotonic cond 使用真实 PIT 等待。没有给墙钟/熵填成功桩。
 具体 ABI、回执、失败与未运行范围见 threading_implementation.md 和 0037 工作记录。
+
+## 2026-10-25：0040 ISO 安装 payload 与 sys38
+
+A2 的 file-backed ISO 已把 kernel 从 boot image 移到 `KERNEL.BIN`；A3/A4 继续
+把 `DASH.ELF` 作为 ISO payload。loader 在 `0x2FFFF8` 写长度、`0x300000` 起放
+数据，boot_info.reserved 指向长度头。kernel 在 `memory_init` 前复制到 1 MiB
+静态 `boot_payload`，新增 `sys_boot_payload=38` 仅给真实 bootstrap supervisor：
+first=offset、second=目标用户地址、third=长度；长度 0 查询总大小。
+supervisor/files 初始化时若 `/usr/bin/dash` 不存在则安装，已有文件不覆盖。
+ISO 加 `MANIFEST.TXT` 与宿主 `install_manifest.json`，但未签名、不是交互
+分区安装器；payload 上限 1 MiB。现有 syscall 编号/旧 ISO 路径保持兼容。
+
+整合0037线程PR时本地ISO的sys38与已合并线程38–52冲突；本地未发布的
+sys_boot_payload统一改为53，线程ABI保持远端定义。旧0040的38只描述合并前的
+实验镜像，不是当前数值；ISO源码保留，用户计划的回滚/新发行本轮不执行。
+
+## 2026-10-25：0044包管理器正式命名xypm与P1边界
+
+用户因撞名决定将包管理器定名xypm（C17）。当前命令、脚本/模块、原生程序、
+包ID和数据库目录统一改名，不保留xpm/xpkg可执行别名。`.xpk`与v1容器/schema
+不变；历史工作记录、冻结SDK和已发布附件保留原名与哈希。没有据此声称完成
+商标或全球名称唯一性检索。旧名数据库存在时拒绝自动建立第二份归属库，无静默迁移。
+
+P1采用全会话锁+独立候选镜像：宿主校验、精确依赖/归属、安装/升级/移除、回读后
+发布，源盘不写。客体xypm先提供同一list/info程序给xsh与dash；完整客体维护事务
+留给P2。B2 stdio转交需要新的单线程CRT/profile，旧发行SDK不冒称兼容重定向；
+本轮冻结组合SDK并实测，未注册线程SDK，也不修改dash/内核/CPython。证据见0044。

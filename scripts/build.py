@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 from toolchain import LOCK, TARGET, COMMON_FLAGS, X86_FLAGS, audit, tool, output
 from user_build import build_users
 
@@ -156,6 +157,16 @@ def main():
             "-o", str(BUILD / f"{name}.bin"),
             str(ROOT / f"src/boot/x86/{name}.asm"),
         ])
+    for name in ("boot_sector_iso", "kernel_loader_iso", "kernel_loader_iso_file"):
+        run([
+            nasm, "-f", "bin", "-Wall", "-Wno-reloc-abs-word",
+            "-Wno-reloc-abs-dword", "-Werror",
+            "-I", str(ROOT / "src/boot/x86") + "/",
+            "-I", str(BUILD) + "/",
+            "-l", str(BUILD / f"{name}.lst"),
+            "-o", str(BUILD / f"{name}.bin"),
+            str(ROOT / f"src/boot/x86/{name}.asm"),
+        ])
     boot = (BUILD / "boot_sector.bin").read_bytes()
     if len(boot) != SECTOR_SIZE or boot[-2:] != b"\x55\xaa":
         raise SystemExit("Invalid boot sector size/signature")
@@ -174,6 +185,19 @@ def main():
         temporary = BUILD / (image_name + ".tmp")
         temporary.write_bytes(image)
         temporary.replace(BUILD / image_name)
+    run([sys.executable, str(ROOT / "scripts/make_iso.py"),
+         "--boot", str(BUILD / "boot_sector_iso.bin"),
+         "--loader", str(BUILD / "kernel_loader_iso.bin"),
+         "--kernel", str(BUILD / "kernel.bin"),
+         "--output", str(BUILD / "xos.iso")])
+    empty = BUILD / "empty.bin"
+    empty.write_bytes(b"")
+    run([sys.executable, str(ROOT / "scripts/make_iso.py"),
+         "--boot", str(BUILD / "boot_sector_iso.bin"),
+         "--loader", str(BUILD / "kernel_loader_iso_file.bin"),
+         "--kernel", str(empty),
+         "--file", f"KERNEL.BIN={BUILD / 'kernel.bin'}",
+         "--output", str(BUILD / "xos-install.iso")])
     for name, command in {
         "kernel_disassembly.log": [tool("objdump"), "-d", str(kernel)],
         "kernel_elf.log": [tool("readelf"), "-h", "-l", "-S", str(kernel)],
@@ -183,7 +207,7 @@ def main():
                                 text=True, check=True)
         (BUILD / name).write_text(result.stdout)
     artifact_names = ["boot_sector.bin", "stage_two.bin", "kernel_loader.bin", "kernel.elf",
-                      "kernel.bin", "xos.img", "real_mode.img", *user_artifacts]
+                      "kernel.bin", "xos.img", "xos.iso", "xos-install.iso", "real_mode.img", *user_artifacts]
     artifact_names.extend(str(path.relative_to(BUILD)) for path in sorted((BUILD / "sdk").rglob("*"))
                           if path.is_file())
     manifest = {

@@ -1,10 +1,12 @@
 # CPython for XOS
 
 This directory ports CPython 3.14.9 to XOS following
-`docs/cpython_port_plan.md`. PY0a (cross configure + static link) and PY0b
-(`-c`, scripts, Unicode, exceptions, GC, import, repeated start) pass against
-the frozen 0.0.1-1024 SDK. The interpreter is a static ELF with the GIL and
-CPython's single-thread pthread stubs; it is not a POSIX platform.
+`docs/cpython_port_plan.md`. PY0a (cross configure + static link), PY0b
+(`-c`, scripts, Unicode, exceptions, GC, import, repeated start), and PY1
+(reproducible install stage, script path rules, selected standard library and
+failure exits) pass against the frozen 0.0.1-1024 SDK. The interpreter is a
+static ELF with the GIL and CPython's single-thread pthread stubs; it is not a
+POSIX platform.
 
 ## Build and test
 
@@ -16,6 +18,9 @@ CPython's single-thread pthread stubs; it is not a POSIX platform.
   --compile-probe
 
 /usr/bin/python3 tests/cpython_py0b_smoke.py
+
+/usr/bin/python3 scripts/stage_cpython.py
+/usr/bin/python3 tests/cpython_py1_smoke.py
 ```
 
 The build script verifies the archive hash, hashes the port tree and SDK into a
@@ -30,6 +35,17 @@ The guest test copies a stripped interpreter and the Python standard library
 `lib2to3/`) into a temporary FAT32 disk under `/usr/bin/python3` and
 `/usr/lib/python3.14/`, boots `build/xos.img`, and writes
 `build/cpython_py0b_report.json`.
+
+The PY1 staging script accepts only the fingerprint named by the passed PY0b
+report. It creates a fixed 560-file tree under `stage_py1/` and records every
+installed path, size and SHA256 in `stage_py1_manifest.json`; an existing
+partial stage is never overwritten. The PY1 guest test copies that tree and
+its fixtures to a fresh temporary disk. It verifies exact `argv`, cwd `/`, the
+inherited `PATH`, script-directory-first import with no host path leakage,
+binary file bytes, useful operations from `json`, `re`, `collections`,
+`itertools`, `functools` and `math`, and exit 1 for a missing module, syntax
+error and unhandled exception. Evidence is written to
+`build/cpython_py1_report.json`.
 
 ## Configuration
 

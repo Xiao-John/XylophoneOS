@@ -1,0 +1,31 @@
+{
+  "architecture": "x86_64",
+  "byte_order": "little",
+  "compiler_version": "16.2.0",
+  "evidence": "docs/work_log/0042_dash_b2.md and docs/work_log/0044_xypm_p1.md",
+  "features": [
+    "stdio",
+    "heap",
+    "file_io",
+    "directories",
+    "static_tls",
+    "cxx_runtime",
+    "stdio_transfer",
+    "spawn_delegate"
+  ],
+  "format_version": 1,
+  "id": "xos-x86_64-static-single-b2-v1",
+  "layout": "e08_static_tls_main_stack_128k_b2_stdio",
+  "runtime_model": "single",
+  "scope": "frozen single B2 runtime + frozen single C++ archives; no pthread/thread-safe SDK claim",
+  "sdk_tree_sha256": [
+    "e0fa2330a1c38c162f40857609ef88f97673d66e080069018ac26b85d4a5f110"
+  ],
+  "source_single_sdk_tree_sha256": "1602f676c0c154ba3248bee29f41bb221001aa83ea3550c48b12087afcd0cb72",
+  "startup_version": 2,
+  "syscall_abi": 1,
+  "verified_system_builds": [
+    "911184be3f3c99f6"
+  ],
+  "word_bits": 64
+}

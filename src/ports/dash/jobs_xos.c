@@ -19,12 +19,12 @@ pid_t backgndpid;
 int job_warning, vforked;
 int stoppedjobs(void) { return 0; }
 void showjobs(struct output *out, int mode) { (void)out; (void)mode; }
-int jobscmd(int argc, char **argv) { sh_error("jobs unavailable in XOS dash B1"); }
-int waitcmd(int argc, char **argv) { sh_error("wait unavailable in XOS dash B1"); }
-int killcmd(int argc, char **argv) { sh_error("signals unavailable in XOS dash B1"); }
-struct job *makejob(int count) { sh_error("isolated commands unavailable in XOS dash B1"); }
+int jobscmd(int argc, char **argv) { sh_error("jobs unavailable in XOS dash B2"); }
+int waitcmd(int argc, char **argv) { sh_error("wait unavailable in XOS dash B2"); }
+int killcmd(int argc, char **argv) { sh_error("signals unavailable in XOS dash B2"); }
+struct job *makejob(int count) { sh_error("isolated commands unavailable in XOS dash B2"); }
 int forkshell(struct job *job, union node *node, int mode) {
-    sh_error("fork unavailable in XOS dash B1");
+    sh_error("fork unavailable in XOS dash B2");
 }
 
 static int xos_is_gnu_driver(const char *path) {
@@ -69,6 +69,6 @@ struct job *vforkexec(union node *node, char **argv, const char *path, int idx) 
     return NULL;
 }
 int waitforjob(struct job *job) {
-    if (job) sh_error("unexpected job in XOS dash B1");
+    if (job) sh_error("unexpected job in XOS dash B2");
     return exitstatus;
 }

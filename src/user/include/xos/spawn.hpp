@@ -16,9 +16,10 @@ struct startup_extension {
     u64 working_directory;
     u64 open_paths[3];
     u32 open_flags[3];
+    u32 file_handles[3];
     u32 reserved;
 };
-static_assert(sizeof(startup_extension) == 72);
+static_assert(sizeof(startup_extension) == 88);
 namespace sdk {
 struct spawn_options {
     u32 environment_count = 0;
@@ -28,6 +29,9 @@ struct spawn_options {
     i64 stdio[3] = {-1, -1, -1};
     // A path here is opened by the child's libc startup, replacing that fd.
     const char* open_paths[3] = {nullptr, nullptr, nullptr};
+    // Parent-session file handles are transferred to the child as references
+    // to the same open description. They preserve shared offset and O_APPEND.
+    u32 file_handles[3] = {0, 0, 0};
     u32 open_flags[3] = {0, 0, 0};
     // Legacy direct-child construction authority.
     bool grant_spawn = false;

@@ -11,7 +11,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT/'scripts'), str(ROOT/'tests')]
-from xpkg_format import DEFAULT_PROFILE, canonical, load_json, require, sha_file, verify_package
+from xypm_format import DEFAULT_PROFILE, canonical, load_json, require, sha_file, verify_package
 from boot_smoke import Guest
 from make_work_disk import create_fat32
 from task_smoke import pump, send_bytes

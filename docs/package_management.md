@@ -1,10 +1,71 @@
 # 第三方用户态开发与包管理计划
 
-2026-10-25，0032规划、0035实现P0。宿主xos_app的init/build/check/pack、xpkg的
-pack/inspect/verify及v1 schema/profile现已实现；**尚无包安装数据库、通用安装/
-升级/卸载或客体xpkg**。0030的CPython PY0、0033的Shell UTF-8仍使用各自回执，
-Open Adventure由用户移植线推进。多线程实施已交朋友通过PR交付，本线优先包管理。
-现有开发命令见[快速开始](friend_user_program_quickstart.md)。
+2026-10-25，0035完成P0，0044完成受限P1。包管理器正式名称为 **xypm**，
+命令为`xypm`，包ID为`xos.xypm`；不保留旧的xpm/xpkg命令别名。`.xpk`包扩展名、
+v1容器/schema保持不变。历史日志、旧SDK与发行附件保留当时名称和哈希。
+
+现有交付：独立SDK项目构建/打包/校验、宿主离线候选盘安装/升级/移除/归属校验、
+客体只读list/info。客体写入事务留给P2，仓库分发留给P3。
+见[0044验收与交接](work_log/0044_xypm_p1.md)和[开发快速开始](friend_user_program_quickstart.md)。
+
+## P1现在可用
+
+宿主命令在XOS仓库目录执行；先关闭使用源盘的QEMU。输出必须是新文件，源盘
+只读复制、全会话排他锁定，事务在私有候选盘内进行，完整回读验证后才发布输出。
+不自动替换日常工作盘，也不自动重启QEMU。
+
+```sh
+python3 scripts/xypm.py install app.xpk --image source.img --output-image installed.img --offline
+python3 scripts/xypm.py list --image installed.img
+python3 scripts/xypm.py info friends.hello_friend --image installed.img
+python3 scripts/xypm.py verify-installed --image installed.img
+python3 scripts/xypm.py upgrade newer.xpk --image installed.img --output-image upgraded.img --offline
+python3 scripts/xypm.py remove friends.hello_friend --image upgraded.img --output-image removed.img --offline
+```
+
+各命令用`--profile <file>`选择与包和数据库一致的冻结profile；缺省仍是P0发行
+单线程profile。升级使用明确选择的包，依赖按版本/revision/包SHA256精确匹配，
+不做版本范围求解或自动下载。拒绝未归属文件覆盖、大小写/父路径/真实FAT别名
+冲突、已修改的归属文件及破坏反向依赖的操作。最多64包/8192归属文件，数据库
+上限1 MiB。保留卸载目录内用户文件，只清理本工具原先创建且已经为空的目录。
+
+数据库位于`/var/lib/xypm/db.json`，只读查询投影为同目录`index.tsv`，首行为
+`xypm-index-v1`。旧名数据库/index存在时拒绝查询和事务，避免双重归属；当前没有
+自动迁移器，应保留原盘并在独立副本迁移或重新创建测试盘，不直接改目录名冒充迁移。
+
+原生程序独立构建为包内`/usr/bin/xypm`，不进入内核或启动模块清单：
+
+```sh
+python3 scripts/build_xypm.py --sdk /absolute/path/to/frozen_sdk --profile config/package/xos_x86_64_static_single_b2_v1.json
+```
+
+| 客体命令/行为 | xsh直接调用 | dash调用 |
+|---|---|---|
+| `xypm --help` / `--version` | 退出0 | 退出0 |
+| `xypm list` / `info <id>` | 已装查询退出0 | 同一程序、同一结果 |
+| 不存在的包 | 退出1，stderr诊断 | 退出1，可读`$?` |
+| 不支持的命令/参数 | 退出2 | 退出2 |
+| 数据库/index错误 | 退出3 | 同一程序错误契约；损坏输入专项客体未单独验 |
+| stdout/stderr重定向 | 沿用xsh当前语法边界 | B2支持`>`和`2>`，后续命令stdout恢复 |
+
+原生list/info只展示投影，不能代替宿主`verify-installed`的完整归属文件校验。
+此表同步公共外部命令契约，不给xsh添加dash语法，也不把dash B2扩成管道/子Shell。
+本组实际验收16组P0宿主、12组P1宿主、10组双Shell/重启客体，资源恢复
+`[129833,2,0]`；没有重跑旧压力或修改CPython/线程移植线。
+
+宿主导出临时文件曾出现重名失败：`Disk.export()` 现在使用会话级 uuid 前缀和
+递增 serial，宿主端以排他创建拒绝覆盖；失败样本保留在
+`build/package_p1/xypm_acceptance/export_collision_failure.json`，修复后完整
+验收通过。
+
+### SDK边界
+
+P0发行完整SDK仍绑定旧profile。B2新增`xos-x86_64-static-single-b2-v1`，
+只为已验系统`911184be3f3c99f6`的单线程CRT/stdio转交注册冻结快照，补入旧完整
+SDK的单线程C++归档及相应许可。SDK树哈希、组合方法与真实失败见0044记录。
+新原生xypm声明`stdio_transfer`，必须用该profile构建才获得本组dash重定向证据。
+旧SDK程序能启动并不保证它理解B2标准流转交。该profile不包含pthread/thread-safe
+承诺，不借用CPython线的`build/threading_sdk`或自动登记新库。
 
 ## P0现在可用
 
@@ -17,8 +78,8 @@ python3 scripts/xos_app.py init "$PROJECT" --id friends.hello_friend --language 
 python3 scripts/xos_app.py build "$PROJECT" --sdk "$SDK"
 python3 scripts/xos_app.py check "$PROJECT" --sdk "$SDK"
 python3 scripts/xos_app.py pack "$PROJECT" --sdk "$SDK" -o "$PROJECT/dist/hello_friend.xpk"
-python3 scripts/xpkg.py inspect "$PROJECT/dist/hello_friend.xpk"
-python3 scripts/xpkg.py verify "$PROJECT/dist/hello_friend.xpk" --profile config/package/xos_x86_64_static_single_v1.json
+python3 scripts/xypm.py inspect "$PROJECT/dist/hello_friend.xpk"
+python3 scripts/xypm.py verify "$PROJECT/dist/hello_friend.xpk" --profile config/package/xos_x86_64_static_single_v1.json
 ```
 
 输出已存在则拒绝覆盖；源码/资源/SDK或构建器变化后须重新build，不能把旧ELF当
@@ -29,11 +90,11 @@ python3 scripts/xpkg.py verify "$PROJECT/dist/hello_friend.xpk" --profile config
 被拒绝，构建命令使用固定CRT/静态库，回执保存真实编译器/输入/产物摘要。
 
 P0正式字段见config/package/app_v1.schema.json和xpk_v1.schema.json；语义校验由
-scripts/xpkg_format.py执行（路径、重复key、文件归属冲突、总大小、摘要等并非
+scripts/xypm_format.py执行（路径、重复key、文件归属冲突、总大小、摘要等并非
 仅JSON Schema能表达）。普通应用模板选择Apache-2.0，可自行改许可证；打包自动
 随附该SDK真实声明，材料携带不等于逐库成员合规审计。默认包还带本例源码。
 
-高级端口可先准备完整stage树及manifest，用宿主`xpkg.py pack --root <stage>
+高级端口可先准备完整stage树及manifest，用宿主`xypm.py pack --root <stage>
 --manifest <manifest.json> -o <out.xpk>`复用同一容器；不要求改为简单项目模板。
 inspect/verify完整流式校验payload、executable的受限ELF布局；不执行包内容。
 不带--profile时只检查格式/完整性，带它才检查声明profile/features；二者都不是
@@ -41,8 +102,8 @@ inspect/verify完整流式校验payload、executable的受限ELF布局；不执�
 
 P0归档只含普通文件，目录由路径隐含，拒绝显式目录成员及所有链接/扩展；为避开
 FAT显式短名别名拒绝`~`，路径限定ASCII字母/数字/下划线/点/加减号及斜杠，且必须
-可由ustar name/prefix表示。P1仍要针对实际盘检查既有LFN/短名冲突，不能拿P0的
-包内路径检查冒认已有磁盘归属/升级检查。其余P1–P3仍为下面的计划。
+可由ustar name/prefix表示。P1已针对实际盘检查既有LFN/短名与归属冲突；P0包内检查仍不能代替它。
+后文保留完整设计，P2/P3尚待实施。
 
 0035证据：16组宿主测试通过，真实仓库外C/C++构建/重复打包；经已有文件桥把
 两个包的payload传到全新盘，在冻结系统2c3876e640840ff5运行退出0，各自资源
@@ -55,12 +116,12 @@ gate，不是通用安装器验收，未重跑旧压力或重建内核。
 程序清单或启动镜像。内建服务/系统夹具才进入系统构建。宿主交叉构建与XOS原生
 构建都输出静态用户ELF；本地开发继续exec-file /out/app.elf，不强迫先打包安装。
 
-宿主xos_app已提供init/build/check/pack，客体xpkg的查询/安装留到P2。发行SDK
+宿主xos_app已提供init/build/check/pack，客体xypm已有只读查询，客体安装留到P2。发行SDK
 compile.py和已有离线传输继续可用。工具不默认改日常盘、启动QEMU或授权。
 
 ```text
 hello_friend/          # XOS仓库以外
-  xos_app.json         # 待实施的项目声明
+  xos_app.json         # 已实现的项目声明
   src/main.c
   assets/
   licenses/
@@ -145,8 +206,8 @@ CPython/工具包实际清单核验预算，超界拒绝，修改预算同步sch
 | /usr/bin | PATH中的程序；复用当前PATH |
 | /usr/lib/<软件名> | 私有运行资源，如Python标准库，不代表支持动态库 |
 | /usr/share/<软件名>、/usr/share/licenses/<包id> | 资源、帮助、许可 |
-| /var/lib/xpkg | 持久安装数据库、事务及恢复材料，普通包禁写 |
-| /var/cache/xpkg | 可删除缓存，不存唯一回执 |
+| /var/lib/xypm | 持久安装数据库、事务及恢复材料，普通包禁写 |
+| /var/cache/xypm | 可删除缓存，不存唯一回执 |
 | /src、/out及应用数据目录 | 开发和用户数据，卸载不自动删除 |
 
 首版只安装/usr下的声明文件/目录，不触碰boot/kernel、/sysroot、/etc、/dev或
@@ -166,7 +227,7 @@ CPython/工具包实际清单核验预算，超界拒绝，修改预算同步sch
 检查才能纳管，不能扫描/usr/bin猜归属；旧回执缺新字段时需显式迁移，不填假值。
 运行依赖先为精确锁定DAG，缺包、循环、冲突、移除反向依赖报错。先单包无依赖
 交付，再批量拓扑计划；计划全部预检不等于跨包原子事务，首版不隐式下载。
-Python的pip/venv是语言层，不能改写xpkg拥有的解释器/系统文件。
+Python的pip/venv是语言层，不能改写xypm拥有的解释器/系统文件。
 
 ## 事务与恢复
 
@@ -201,7 +262,7 @@ postinst/hooks，安装器不启动任意payload或下载缺项。
 |---|---|---|
 | P0 | profile/schema、独立项目模板、SDK build/check/pack工具 | 仓库外C/C++构建；无需系统改动；SDK错误、畸形包、路径/大小写别名、容量拒绝；许可/来源回执 |
 | P1 | 宿主打包/查询/校验/候选盘安装；先新装，随后升级/移除/依赖和receipt迁移 | 包→新盘→XOS执行；冲突/满盘/失败源盘不变；重启、归属与原文/本地修改保护 |
-| P2 | 原生单线程xpkg，维护会话、事务/恢复、安装升级移除 | 排他拒绝；每步中止恢复；commit前后重启；恢复幂等；ABI/授权不能被包绕过 |
+| P2 | 原生单线程xypm，维护会话、事务/恢复、安装升级移除 | 排他拒绝；每步中止恢复；commit前后重启；恢复幂等；ABI/授权不能被包绕过 |
 | P3 | 离线仓库索引/锁定；后续签名/密钥轮换及网络镜像 | 可信根、包/索引绑定、撤销/回滚/重放/混版拒绝，实际时钟/网络条件单列 |
 
 0035起线程实施由朋友在PR交付，当前本线优先P0/P1，不抢其内核/SDK范围。P2不依赖多线程、
@@ -229,9 +290,9 @@ P3复用成熟更新设计，研究TUF等现成方案，不发明签名算法。
 
 ## 文件和交付职责
 
-P0已建立scripts/xos_app.py、scripts/xpkg.py、共享xpkg_format.py和config/package/；
-后续按实际需要扩展。scripts/xos_app.py与scripts/xpkg.py为
-宿主工具，复用SDK/FatFs后端；src/user/programs/xpkg/为客体命令，通用解析/事务
+P0已建立scripts/xos_app.py、scripts/xypm.py、共享xypm_format.py和config/package/；
+后续按实际需要扩展。scripts/xos_app.py与scripts/xypm.py为
+宿主工具，复用SDK/FatFs后端；src/user/programs/xypm.cpp为客体只读命令，通用解析/事务
 按职责放用户态库。两端共用schema/畸形包夹具，宿主Python不成为客体运行依赖。
 SHA-256/JSON解析优先审查适合静态环境的成熟实现，保留来源和许可。
 

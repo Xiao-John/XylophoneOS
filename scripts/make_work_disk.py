@@ -2,6 +2,7 @@
 # Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 """Create/format the explicit XOS work disk (FAT32, 2 GiB; legacy test FAT16 supported). Never implicit."""
 import argparse
+import json
 import os
 import struct
 import sys
@@ -92,6 +93,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("image", nargs="?", default="work_disk.img")
     parser.add_argument("--size-mib", type=int, default=2048)
+    parser.add_argument("--with-dash", action="store_true",
+                        help="install the newest built dash as /usr/bin/dash")
+    parser.add_argument("--dash-manifest", type=Path)
     args = parser.parse_args()
     path = Path(args.image)
     if path.exists() or path.is_symlink():
@@ -106,5 +110,8 @@ def main():
         # Exclusive destination creation; never replace an existing work disk.
         os.link(temporary, path)
     print(f"Created work disk: {path} ({path.stat().st_size} bytes)")
+    if args.with_dash:
+        from install_dash import install
+        print(json.dumps(install(path, args.dash_manifest), indent=2))
 
 if __name__ == "__main__": main()

@@ -171,6 +171,10 @@ def target_environment(sdk, build_python, bridge):
         "-ffunction-sections",
         "-fdata-sections",
     ]
+    manifest = json.loads((sdk / "manifest.json").read_text())
+    threaded = manifest.get("thread_abi") == 1
+    if threaded:
+        cflags.extend(["-DXOS_THREADED_RUNTIME", "-ftls-model=local-exec"])
     # LDFLAGS is duplicated into PY_LDFLAGS by CPython's Makefile, and GNU ld
     # rejects the same linker script twice. Keep -L/-T/crt0 in LIBS instead,
     # where they appear exactly once.
@@ -180,6 +184,19 @@ def target_environment(sdk, build_python, bridge):
         "-no-pie",
         "-Wl,--gc-sections,--build-id=none,-z,noexecstack,-z,max-page-size=4096",
     ]
+    sdk_libraries = [
+        str(sdk / "lib/libxos.a"),
+    ]
+    loader_archive = sdk / "lib/libxos_loader.a"
+    if loader_archive.exists():
+        sdk_libraries.append(str(loader_archive))
+    target_libgcc = sdk / "cpp/lib/libgcc.a"
+    threaded_runtime_libraries = []
+    if threaded:
+        threaded_runtime_libraries = [
+            str(sdk / "cpp/lib/libstdc++.a"),
+            str(sdk / "cpp/lib/libsupc++.a"),
+        ]
     libraries = [
         "-L",
         str(sdk / "lib"),
@@ -188,11 +205,11 @@ def target_environment(sdk, build_python, bridge):
         str(sdk / "crt0_posix.o"),
         str(bridge),
         "-Wl,--start-group",
-        str(sdk / "lib/libxos.a"),
-        str(sdk / "lib/libxos_loader.a"),
+        *sdk_libraries,
+        *threaded_runtime_libraries,
         str(sdk / "lib/libc.a"),
         str(sdk / "lib/libm.a"),
-        libgcc,
+        str(target_libgcc) if target_libgcc.exists() else libgcc,
         "-Wl,--end-group",
     ]
     env = dict(os.environ)
@@ -232,6 +249,7 @@ def main():
     if sha256(archive) != lock["sha256"]:
         parser.error("CPython archive SHA-256 does not match source_lock.json")
     manifest = json.loads((sdk / "manifest.json").read_text())
+    threaded = manifest.get("thread_abi") == 1
 
     inputs = {
         "archive_sha256": lock["sha256"],
@@ -272,9 +290,15 @@ def main():
         "phase": "PY0a",
         "version": lock["version"],
         "target": lock["target"],
-        "profile": lock["profile"],
+        "profile": (
+            "py_t3_static_gil_pthread"
+            if threaded
+            else lock["profile"]
+        ),
         "fingerprint": fingerprint,
         "sdk_build_id": manifest.get("build_id"),
+        "sdk_profile": manifest.get("profile"),
+        "sdk_manifest_sha256": sha256(sdk / "manifest.json"),
         "sdk_path": str(sdk),
         "build_python": str(build_python),
         "build_python_sha256": sha256(build_python),

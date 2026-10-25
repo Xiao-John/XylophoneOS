@@ -8,6 +8,11 @@
 #include <xos/block.hpp>
 #include "build_info.hpp"
 
+namespace xos {
+u8 boot_payload[1 << 20];
+u64 boot_payload_size;
+}
+
 namespace {
 volatile xos::u64 bss_probe[512];
 volatile xos::u64 data_probe = 0x584f535f44415441;
@@ -43,6 +48,14 @@ extern "C" [[noreturn]] void kernel_main(const xos::boot_info* info,
     xos::format::text(" vectors=32 double_fault_ist=1\r\n");
 
     xos::arch::paging_init(*info, regions);
+    if (info->reserved != 0) {
+        const xos::u64 declared = *reinterpret_cast<const xos::u64*>(info->reserved);
+        if (declared > 0 && declared <= sizeof(xos::boot_payload)) {
+            const auto* source = reinterpret_cast<const xos::u8*>(info->reserved + 8);
+            for (xos::u64 i = 0; i < declared; ++i) { xos::boot_payload[i] = source[i]; }
+            xos::boot_payload_size = declared;
+        }
+    }
     xos::memory_init(*info, regions);
     const xos::memory_stats stats = xos::memory_status();
     xos::format::text("[mem] event=initialized usable_kib=");

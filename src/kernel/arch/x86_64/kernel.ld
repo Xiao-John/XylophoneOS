@@ -30,6 +30,6 @@ SECTIONS {
     . = ALIGN(4096);
     kernel_end = .;
     ASSERT(kernel_entry == kernel_start, "entry must start raw kernel payload")
-    ASSERT(kernel_end - kernel_start <= 0x100000, "kernel exceeds bootstrap RAM window")
+    ASSERT(kernel_end - kernel_start <= 0x300000, "kernel exceeds bootstrap RAM window")
     /DISCARD/ : { *(.comment) *(.note*) *(.eh_frame*) }
 }

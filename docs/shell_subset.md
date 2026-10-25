@@ -44,15 +44,17 @@ jobs/wait/kill内建明确报错，times/umask不在命令表。没有信号递�
 ## 构建与启动
 
 ```sh
-python3 scripts/build_dash.py --sdk /absolute/frozen/sdk --archive /absolute/dash-0.5.13.5.tar.gz
+make dash                 # 构建 dash；源码包已随仓库放在 src/ports/dash/upstream/
+make disk                 # 新建工作盘并预装 /usr/bin/dash
 ```
 
-默认使用首个发行版本冻结SDK及勘查已缓存原包。普通make build不下载或构建dash。
-构建输出独立.cache/xos_seed/dash/<fingerprint>/，manifest记录原包、移植材料、
+`make disk` 依赖 `make dash`，新盘创建后自动导入 dash；已有盘保持不动，可显式运行
+`python3 scripts/install_dash.py --disk <disk>` 补装。`make build` 本身不构建 dash。
+构建输出独立 `.cache/xos_seed/dash/<fingerprint>/`，manifest记录原包、移植材料、
 构建脚本及SDK逐文件摘要。上游文件由固定原包、独立补丁和本地后端共同定义。
 宿主只运行mkinit/mknodes/mksyntax；未使用mksignames及其宿主信号表。
 
-将manifest的elf显式离线导入专用工作盘/usr/bin/dash，再启动XOS：
+新盘已预装 `/usr/bin/dash`；旧盘按上面的 `install_dash.py` 补装后启动 XOS：
 
 ```text
 xos64> run
@@ -65,7 +67,7 @@ sup>
 普通脚本可用`exec-driver /usr/bin/dash /src/example.sh`；需要调用GCC/G++的B1开发脚本使用
 裸命令`dash /src/build.sh`，由Xsh的明确Shell profile授予可递减委派深度。原生Xshell当前仍按空格拆参数，
 复杂-c字符串应在dash内输入或写成脚本，不把外层引号误认为已由Xshell支持。
-不向用户工作盘自动安装，不替换已公开镜像或标签。
+新工作盘预装 dash；不替换已公开镜像或标签，已有日常盘不被自动修改。
 
 ## 证据与本组修复
 
@@ -96,5 +98,9 @@ SHA256 `195f49af2471bc5d3b39bea68ebc056ee81416cba0700d0510a87cdbd5a5cfdb`，mani
 `build/dash_b_final2/dash_b_acceptance_report.json`；同一最终构建上dash A 16项回归通过，
 报告为`.cache/xos_seed/dash/39f57f408a4362fda92e/shell_smoke_report.json`。许可材料检查通过。
 
-后续B2：描述符真实传递与偏移/重定向顺序、前台取消。后续C：
-阻塞管道、并发等待与隔离环境。xsh的历史搜索/补全/提示符可以独立推进。
+B2已由0042完成：files服务管理带引用计数的共享打开实例，spawn按顺序应用文件
+动作，`<`、`>`、`>>`、`2>`、`2>&1`及相反次序、builtin恢复、失败继续和嵌套
+Escape均通过客体gate。最终build为`911184be3f3c99f6`，B2报告为
+`build/dash_b2_acceptance_report.json`；同一构建上B0/B1 7项、进程/SDK 13项与
+许可材料检查通过。仍不支持here-document、管道、子Shell、后台和命令替换；
+这些属于后续C。xsh的历史搜索/补全/提示符可以独立推进。

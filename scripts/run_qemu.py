@@ -12,15 +12,20 @@ ROOT = Path(__file__).resolve().parents[1]
 MACHINE = "pc-i440fx-10.0"
 
 
-def qemu_command(image, *, vga=False, qmp=None, debug_port=None, cpu="qemu64", work_disk=None):
+def qemu_command(image, *, vga=False, qmp=None, debug_port=None, cpu="qemu64", work_disk=None, iso=False):
     qemu = shutil.which(os.environ.get("QEMU", "qemu-system-x86_64"))
     if not qemu:
         raise SystemExit("QEMU not found; install it or set QEMU=/path/to/qemu-system-x86_64")
     command = [
         qemu, "-machine", MACHINE, "-accel", "tcg", "-cpu", cpu,
         "-m", "512M", "-smp", "1", "-nic", "none",
-        "-drive", f"file={image},format=raw,if=floppy,index=0,readonly=on",
-        "-boot", "order=a,strict=on", "-no-reboot",
+    ]
+    if iso:
+        command += ["-cdrom", str(image), "-boot", "order=d,strict=on", "-no-reboot"]
+    else:
+        command += ["-drive", f"file={image},format=raw,if=floppy,index=0,readonly=on",
+                    "-boot", "order=a,strict=on", "-no-reboot"]
+    command += [
         "-monitor", "none", "-serial", "stdio",
         "-display", "cocoa" if vga else "none",
     ]
@@ -39,8 +44,14 @@ def main():
     parser.add_argument("--real-mode", action="store_true", help="run the original 16-bit exercise")
     parser.add_argument("--debug-port", type=int, help="pause at reset and listen on loopback for LLDB/GDB")
     parser.add_argument("--work-disk", type=Path, help="existing FAT16/FAT32 work disk image")
+    parser.add_argument("--iso", action="store_true", help="boot the embedded-kernel build/xos.iso")
+    parser.add_argument("--iso-file", action="store_true", help="boot the file-backed build/xos-install.iso")
+    parser.add_argument("--install-iso", action="store_true", help="boot build/xos-install-dash.iso")
     args = parser.parse_args()
-    image = ROOT / "build" / ("real_mode.img" if args.real_mode else "xos.img")
+    image = ROOT / "build" / ("real_mode.img" if args.real_mode else
+                              "xos-install-dash.iso" if args.install_iso else
+                              "xos-install.iso" if args.iso_file else
+                              "xos.iso" if args.iso else "xos.img")
     if not image.is_file():
         raise SystemExit("Run make build first")
     work_disk = args.work_disk
@@ -52,7 +63,8 @@ def main():
         print(f"Guest paused at reset; debugger listening on 127.0.0.1:{args.debug_port}", flush=True)
     try:
         subprocess.run(qemu_command(image, vga=args.vga, debug_port=args.debug_port,
-                                    work_disk=None if args.real_mode else work_disk), check=True)
+                                    work_disk=None if args.real_mode else work_disk,
+                                    iso=args.iso or args.iso_file or args.install_iso), check=True)
     except KeyboardInterrupt:
         pass
 

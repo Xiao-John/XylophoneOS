@@ -1,3 +1,5 @@
+> 历史勘查（2026-10-25）。路线已被 dash B0–B2 实现和 `shell_subset.md` 取代；C 阶段见 `dash_port_plan.md`。
+
 # Shell 移植勘查：dash 优先，先接 spawn
 
 2026-10-25。范围为源码分析、目标配置与编译探测；没有修改内核、SDK、Shell

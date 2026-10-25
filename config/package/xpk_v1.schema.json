@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://xylophoneos.invalid/schemas/xpk_v1",
   "title": "XOS xpk_v1",
-  "description": "P0 regular-file subset. Cross-field hashes, path normalization and profile binding are enforced by scripts/xpkg_format.py.",
+  "description": "P0 regular-file subset. Cross-field hashes, path normalization and profile binding are enforced by scripts/xypm_format.py.",
   "type": "object",
   "additionalProperties": false,
   "properties": {

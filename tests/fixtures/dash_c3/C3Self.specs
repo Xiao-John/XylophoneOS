@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: Apache-2.0
+# Explicit native self-build configuration. The released GCC runtime bounds
+# each argv/environment string to 255 bytes, including COLLECT_GCC_OPTIONS.
+# Keep command-line options short; these real linker settings are read by GCC.
+*link:
+-m elf_x86_64 -static -T /xos_sdk/user.ld -L /xos_sdk/lib -L /sysroot/lib --build-id=none -z noexecstack -z max-page-size=4096
+
+*startfile:
+/xos_sdk/crt0_posix.o
+
+*lib:
+--start-group -lxos -lxos_loader -lc -lm -lgcc --end-group
+

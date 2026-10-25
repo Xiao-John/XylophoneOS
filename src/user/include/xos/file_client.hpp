@@ -20,6 +20,8 @@ public:
     i64 stat(const char* path, u32& size, u32& version);
     i64 stat_info(const char* path, u32& size, u32& attributes);
     i64 stat_info(const char* path, u32& size, u32& attributes, u32& identity);
+    i64 anonymous(u32& handle);
+    i64 seal_anonymous(u32 handle);
     i64 open(const char* path, u32 flags, u32& handle, u32& size, u32& version);
     i64 fstat(u32 handle, u32& size, u32& attributes);
     i64 fstat(u32 handle, u32& size, u32& attributes, u32& identity);

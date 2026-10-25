@@ -70,3 +70,18 @@ expander, with a declared 1 MiB raw stdout bound and tail-newline stripping.
 Errors cancel/reap the capture child and close its read descriptor, so an
 interactive Shell can continue. This is not asynchronous signal delivery or
 real exec replacement; those remain C3 work. Detailed evidence is in 0048.
+
+
+C3 uses read-only sealed anonymous file descriptions for here-documents, keeping
+large bodies out of pipe prefill and deleting storage at last close. Explicit
+exec preserves PID/TID and restores complete descriptor groups through startup
+v3, including per-FD CLOEXEC. A read-only .xos.exec CRT declaration is required;
+legacy static tools remain on ordinary spawn, with explicit exec rejected.
+The current SDK's runtime libraries, CRT and linker must be used together.
+The unstripped Dash ELF is retained for debugging; the installed runtime ELF
+removes debug sections only and the builder verifies unchanged entry, PT_LOAD
+and PT_TLS contents. The existing one-MiB ISO payload budget is unchanged.
+Optional sbase Make has a separate explicit -B, serial profile; see 0049 and
+make_subset.md for exact limitations and real guest evidence. This still does
+not provide POSIX asynchronous signals, background jobs, or thread-profile
+fork/exec. No /bin/sh alias or formal Release is installed by the builders.

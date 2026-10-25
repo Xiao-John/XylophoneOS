@@ -94,3 +94,12 @@ CPython3.14.9原始LICENSE与Doc/license.rst从source_lock所绑定、实际SHA2
 核验的源码包复制到src/ports/cpython/upstream/，components.json记录材料摘要。
 公开端口源码/补丁时随附原声明；未创建新二进制发行。静态内建模块的逐成员
 许可映射仍须按实际构建清单复核，不能将整包简化为XOS Apache许可。
+
+
+## sbase Make C3
+
+固定sbase c546c3a的make五个C文件、make.h与根MIT LICENSE原样保存在
+src/ports/make/upstream，source_lock.json与components.json逐文件记SHA256。
+补丁保留原MIT适用条款，独立XOS backend/build/test为Apache-2.0。实际产物
+manifest保存源码/补丁/SDK/工具摘要；没有创建或替换正式Release附件，材料检查
+不扩大成运行库逐成员法律审计。SDK/本机交付材料附对应声明及原始来源。

@@ -1,0 +1,654 @@
+--- a/main.c
++++ b/main.c
+@@ -25,6 +25,7 @@
+ 
+ int kflag, dflag, nflag, iflag, sflag;
+ int eflag, pflag, tflag, qflag;
++int bflag;
+ int exitstatus;
+ volatile sig_atomic_t  stop;
+ 
+@@ -87,17 +88,10 @@
+ 	return memcpy(emalloc(len), s, len);
+ }
+ 
+-void
+-sighandler(int signo)
+-{
+-	killchild();
+-	stop = signo;
+-}
+-
+ static void
+ usage(void)
+ {
+-	fputs("usage: make [-eiknprSstd] [-f file] [-j jobs] "
++	fputs("usage: make -B [-eiknpsSd] [-f file] "
+ 	      "[macro=value ...] [target ...]\n",
+ 	      stderr);
+ 	exit(EXIT_FAILURE);
+@@ -154,7 +148,16 @@
+ 		getarg(args, argv);
+ 
+ 	switch (flag) {
++	case 'B':
++		bflag = 1;
++		appendmakeflags("-B");
++		break;
+ 	case 'j':
++	case 'q':
++	case 't':
++	case 'r':
++		error("option -%c unavailable in XOS explicit always-build profile", flag);
++		break;
+ 	case 'f':
+ 		break;
+ 	case 'e':
+@@ -176,14 +179,6 @@
+ 	case 'p':
+ 		pflag = 1;
+ 		break;
+-	case 'q':
+-		qflag = 1;
+-		appendmakeflags("-q");
+-		break;
+-	case 'r':
+-		addtarget(".SUFFIXES", 0);
+-		appendmakeflags("-r");
+-		break;	
+ 	case 'S':
+ 		kflag = 0;
+ 		appendmakeflags("-S");
+@@ -191,10 +186,6 @@
+ 	case 's':
+ 		sflag = 1;
+ 		appendmakeflags("-s");
+-		break;
+-	case 't':
+-		tflag = 1;
+-		appendmakeflags("-t");
+ 		break;
+ 	case 'd':
+ 		dflag = 1;
+@@ -248,17 +239,20 @@
+ 
+ 	if (targets)
+ 		*targets = argv;
++	else if (*argv)
++		error("unsupported MAKEFLAGS token %s", *argv);
+ }
+ 
+ static void
+ parsemakeflags(void)
+ {
+ 	int c, n;
+-	char *s, *flags, **arr;
++	char *s, *flags, *storage, **arr;
+ 
+ 	if ((flags = getenv("MAKEFLAGS")) == NULL)
+ 		return;
+ 
++	flags = storage = estrdup(flags);
+ 	setmacro("MAKEFLAGS", "", MAKEFLAGS, EXPORT);
+ 
+ 	while (*flags == ' ' || *flags == '\t')
+@@ -283,6 +277,7 @@
+ 			parseargv(arr, NULL, MAKEFLAGS, NOEXPORT);
+ 		free(arr);
+ 	}
++	free(storage);
+ }
+ 
+ static void
+@@ -292,7 +287,14 @@
+ 	int c, hasmake;
+ 
+ 	hasmake = 0;
+-	for ( ; *argv && **argv == '-'; ++argv) {
++	for ( ; *argv; ++argv) {
++		if (!strcmp(*argv, "--"))
++			break;
++		if (**argv != '-') {
++			if (strchr(*argv, '='))
++				continue;
++			break;
++		}
+ 		for (s = *argv; c = *s; ++s) {
+ 			if (hasargs(c))
+ 				arg = getarg(&s, &argv);
+@@ -300,7 +302,8 @@
+ 			if (c == 'f') {
+ 				if (strcmp(arg, "-") == 0)
+ 					arg = NULL;
+-				parse(arg);
++				if (!parse(arg))
++					error("cannot read makefile %s: %s", arg ? arg : "<stdin>", strerror(errno));
+ 				hasmake = 1;
+ 			}
+ 		}
+@@ -313,6 +316,7 @@
+ 		return;
+ 	if (parse("Makefile"))
+ 		return;
++	error("no readable makefile or Makefile");
+ }
+ 
+ /*
+@@ -342,10 +346,8 @@
+ {
+ 	char *arg0, **targets;
+ 
+-	signal(SIGINT, sighandler);
+-	signal(SIGHUP, sighandler);
+-	signal(SIGTERM, sighandler);
+-	signal(SIGQUIT, sighandler);
++	if (atexit(killchild) != 0)
++		error("cannot register child cleanup");
+ 
+ 	targets = NULL;
+ 	arg0 = *argv++;
+@@ -356,6 +358,9 @@
+ 
+ 	parsemakeflags();
+ 	parseargv(argv, &targets, CMDLINE, EXPORT);
++	if (!bflag)
++		error("timestamps unavailable: explicit -B is required; incremental builds are unsupported");
++	fputs("make: XOS always-build (-B); timestamps unavailable; serial explicit recipes\n", stderr);
+ 	parsemakefiles(argv);
+ 
+ 	if (pflag) {
+--- a/make.h
++++ b/make.h
+@@ -33,6 +33,7 @@
+ 	char *req;
+ 	time_t stamp;
+ 	int defined;
++	int visiting, complete, result, rebuilt;
+ 
+ 	int ndeps;
+ 	struct target **deps;
+--- a/defaults.c
++++ b/defaults.c
+@@ -1,61 +1 @@
+-char defaults[] = 
+-	".SUFFIXES: .o .c .y .l .a .sh .f\n"
+-
+-	"AR = ar\n"
+-	"ARFLAGS = -rv\n"
+-	"CC = c99\n"
+-	"CFLAGS = -O\n"
+-	"FC = fort77\n"
+-	"FFLAGS = -O 1\n"
+-	"LDFLAGS =\n"
+-	"LEX = lex\n"
+-	"LFLAGS =\n"
+-	"YACC = yacc\n"
+-	"YFLAGS =\n"
+-	"SHELL = /bin/sh\n"
+-
+-	".c:\n"
+-	"\t${CC} ${CFLAGS} ${LDFLAGS} -o $@ $<\n"
+-
+-	".f:\n"
+-	"\t${FC} ${FFLAGS} ${LDFLAGS} -o $@ $<\n"
+-
+-	".sh:\n"
+-	"\tcp $< $@\n"
+-	"\tchmod a+x $@\n"
+-
+-	".c.o:\n"
+-	"\t${CC} ${CFLAGS} -c $<\n"
+-
+-	".f.o:\n"
+-	"\t${FC} ${FFLAGS} -c $<\n"
+-
+-	".y.o:\n"
+-	"\t${YACC} ${YFLAGS} $<\n"
+-	"\t${CC} ${CFLAGS} -c y.tab.c\n"
+-	"\trm -f y.tab.c\n"
+-	"\tmv y.tab.o $@\n"
+-
+-	".l.o:\n"
+-	"\t${LEX} ${LFLAGS} $<\n"
+-	"\t${CC} ${CFLAGS} -c lex.yy.c\n"
+-	"\trm -f lex.yy.c\n"
+-	"\tmv lex.yy.o $@\n"
+-
+-	".y.c:\n"
+-	"\t${YACC} ${YFLAGS} $<\n"
+-	"\tmv y.tab.c $@\n"
+-
+-	".l.c:\n"
+-	"\t${LEX} ${LFLAGS} $<\n"
+-	"\tmv lex.yy.c $@\n"
+-
+-	".c.a:\n"
+-	"\t${CC} -c ${CFLAGS} $<\n"
+-	"\t${AR} ${ARFLAGS} $@ $*.o\n"
+-	"\trm -f $*.o\n"
+-
+-	".f.a:\n"
+-	"\t${FC} -c ${FFLAGS} $<\n"
+-	"\t${AR} ${ARFLAGS} $@ $*.o\n"
+-	"\trm -f $*.o\n";
++char defaults[] = ".SUFFIXES:\nSHELL = /usr/bin/dash\n";
+--- a/parser.c
++++ b/parser.c
+@@ -532,9 +532,12 @@
+ 		push(FTEXPAN, tp->target);
+ 		break;
+ 	case '<':
+-		if (!tp || !tp->req)
++		if (!tp)
+ 			return;
+-		push(FTEXPAN, tp->req);
++		if (tp->req)
++			push(FTEXPAN, tp->req);
++		else if (tp->deps && *tp->deps)
++			push(FTEXPAN, (*tp->deps)->name);
+ 		break;
+ 	case '*':
+ 		if (!tp || !tp->target)
+@@ -553,20 +556,7 @@
+ 		free(s);
+ 		break;
+ 	case '?':
+-		if (!tp)
+-			return;
+-
+-		if (tp->req && stamp(tp->req) > tp->stamp) {
+-			push(FTEXPAN, " ");
+-			push(FTEXPAN, tp->req);
+-		}
+-
+-		for (p = tp->deps; p && *p; ++p) {
+-			if (stamp((*p)->name) > tp->stamp) {
+-				push(FTEXPAN, " ");
+-				push(FTEXPAN, (*p)->name);
+-			}
+-		}
++		error("timestamp-dependent $? unavailable in XOS always-build profile");
+ 		break;
+ 	default:
+ 		token[0] = c;
+--- a/rules.c
++++ b/rules.c
+@@ -54,6 +54,7 @@
+ 	tp->nactions = 0;
+ 	tp->next = htab[h];
+ 	tp->defined = 0;
++	tp->visiting = tp->complete = tp->result = tp->rebuilt = 0;
+ 	htab[h] = tp;
+ 
+ 	return tp;
+@@ -62,42 +63,9 @@
+ static void
+ cleanup(Target *tp)
+ {
+-	int sig, precious;
+-	Target *p, **q;
+-
+-	sig = stop;
+-	printf("make: signal %d arrived\n", sig);
+-
+-	precious = 0;
+-	p = lookup(".PRECIOUS");
+-	for (q = p->deps; q && *q; q++) {
+-		if (strcmp((*q)->name, tp->name) == 0) {
+-			precious = 1;
+-			break;
+-		}
+-	}
+-
+-	if (!precious && !nflag && !qflag && !is_dir(tp->name)) {
+-		printf("make: trying to remove target %s\n", tp->name);
+-		remove(tp->name);
+-	}
+-
+-	signal(sig, SIG_DFL);
+-	raise(sig);
+-}
+-
+-static int
+-depends(char *target, char *dep)
+-{
+-	int i;
+-	Target **p, *tp = lookup(target);
+-
+-	for (p = tp->deps; p && *p; ++p) {
+-		if (strcmp((*p)->name, target) == 0)
+-			return 1;
+-	}
+-
+-	return 0;
++	killchild();
++	fprintf(stderr, "make: interrupted; retaining partial output %s\n", tp->name);
++	exit(137);
+ }
+ 
+ static int
+@@ -119,6 +87,10 @@
+ {
+ 	Target *tp = lookup(target);
+ 
++	if (!strcmp(target, ".DEFAULT") || is_suffix(target) || strchr(target, '%'))
++		error("implicit/pattern rule unavailable in XOS profile: %s", target);
++	if (!strcmp(target, ".SUFFIXES") && ndeps != 0)
++		error("suffix rules unavailable in XOS profile");
+ 	tp->defined = 1;
+ 	if (!deftarget && target[0] != '.') {
+ 		deftarget = tp;
+@@ -156,10 +128,10 @@
+ 	size_t siz;
+ 	Target **p, *tp = lookup(target);
+ 
+-	if (depends(dep, target)) {
+-		warning("circular dependency %s <- %s dropped", target, dep);
+-		return;
+-	}
++	if (!strcmp(target, dep))
++		error("circular dependency %s <- %s", target, dep);
++	if (strchr(dep, '%'))
++		error("pattern prerequisite unavailable in XOS profile: %s", dep);
+ 
+ 	for (p = tp->deps; p && *p; ++p) {
+ 		if (strcmp((*p)->name, dep) == 0)
+@@ -236,6 +208,8 @@
+ 	}
+ 
+ out_loop:
++	if (plus)
++		error("recipe + prefix unavailable in XOS serial/dry-run profile");
+ 	/* unescape $$ */
+ 	for (l = strlen(s)+1, t = s; *t; --l, ++t) {
+ 		if (t[0] == '$' && t[1] == '$') {
+@@ -273,49 +247,6 @@
+ }
+ 
+ static int
+-touch(char *name, int ignore, int silence)
+-{
+-	char *cmd;
+-	int r, n;
+-
+-	n = snprintf(NULL, 0, "touch %s", name) + 1;
+-	cmd = emalloc(n);
+-	snprintf(cmd, n, "touch %s", name);
+-
+-	if (!sflag && !silence)
+-		puts(cmd);
+-
+-	r = system(cmd);
+-	free(cmd);
+-
+-	if (ignore || iflag)
+-		return 0;
+-
+-	return r;
+-}
+-
+-static int
+-touchdeps(Target *tp, int ignore, int silent)
+-{
+-	int r;
+-	Target **p;
+-
+-	if (tp->req) {
+-		r = touch(tp->req, silent, ignore);
+-		if (r)
+-			return r;
+-	}
+-
+-	for (p = tp->deps; p && *p; ++p) {
+-		r = touch((*p)->name, silent, ignore);
+-		if (r)
+-			return r;
+-	}
+-
+-	return 0;
+-}
+-
+-static int
+ run(Target *tp)
+ {
+ 	int r, i, ignore, silent;
+@@ -340,12 +271,6 @@
+ 		}
+ 	}
+ 
+-	if (tflag) {
+-		r = touchdeps(tp, ignore, silent);
+-		if (r)
+-			return r;
+-	}
+-
+ 	for (i = 0; i < tp->nactions; i++) {
+ 		struct action *p;
+ 
+@@ -362,100 +287,7 @@
+ 			return r;
+ 	}
+ 
+-	if (tflag) {
+-		r = touch(tp->target, ignore, silent);
+-		if (r)
+-			return r;
+-	}
+-
+ 	return 0;
+-}
+-
+-static int
+-enabled(char *suffix)
+-{
+-	Target **p, *tp = lookup(".SUFFIXES");
+-
+-	for (p = tp->deps; p && *p; ++p) {
+-		if (strcmp(suffix, (*p)->name) == 0)
+-			return 1;
+-	}
+-
+-	return 0;
+-}
+-
+-static Target *
+-inference(Target *tp, int force)
+-{
+-	time_t t;
+-	int tolen, r;
+-	char *to, *from;
+-	Target *q, **p, *suffixes;
+-	char buf[FILENAME_MAX], fname[FILENAME_MAX];
+-
+-	debug("searching an inference rule for %s", tp->name);
+-
+-	to = strrchr(tp->name, '.');
+-	if (to && !enabled(to))
+-		return NULL;
+-	tolen = to ? to - tp->name : strlen(tp->name);
+-
+-	if (!to)
+-		to = "";
+-
+-	suffixes = lookup(".SUFFIXES");
+-	for (p = suffixes->deps; p && *p; ++p) {
+-		from = (*p)->name;
+-		debug("trying suffix %s", from);
+-
+-		r = snprintf(buf,
+-		             sizeof(buf),
+-		             "%s%s",
+-		             from, to);
+-
+-		if (r < 0 || r >= sizeof(buf))
+-			error("suffixes too long %s %s", from, to);
+-
+-		q = lookup(buf);
+-		if (!q->actions)
+-			continue;
+-
+-		r = snprintf(fname,
+-		             sizeof(fname),
+-		             "%*.*s%s",
+-		             tolen, tolen, tp->name, from);
+-
+-		if (r < 0 || r >= sizeof(fname)) {
+-			error("prerequisite name too long %s %s",
+-			      tp->name, from);
+-		}
+-
+-		debug("\tsearching prerequisite %s", fname);
+-
+-		t = stamp(fname);
+-		if (t == -1) {
+-			debug("\tprerequisite %s not found", fname);
+-			continue;
+-		}
+-
+-		if (!force && t <= tp->stamp) {
+-			debug("\tdiscarded because is newer");
+-			debug("\t%s: %s", tp->name, ctime(&tp->stamp));
+-			debug("\t%s: %s", fname, ctime(&t));
+-			continue;
+-		}
+-
+-		free(q->req);
+-		q->req = estrdup(fname);
+-		q->deps = tp->deps;
+-		q->target = tp->name;
+-		q->stamp = tp->stamp;
+-
+-		debug("using inference rule %s with %s", q->name, fname);
+-		return q;
+-	}
+-
+-	return NULL;
+ }
+ 
+ static int
+@@ -470,17 +302,6 @@
+ 		return run(tp);
+ 	}
+ 
+-	if ((p = inference(tp, FORCE)) != NULL) {
+-		debug("using inference rule %s", p->name);
+-		return run(p);
+-	}
+-
+-	p = lookup(".DEFAULT");
+-	if (p->defined) {
+-		debug("using default rule");
+-		return run(p);
+-	}
+-
+ 	debug("not rule found to update %s", tp->name);
+ 
+ 	if (!tp->defined)
+@@ -489,77 +310,48 @@
+ 	return 0;
+ }
+ 
+-static int 
++static int
+ rebuild(Target *tp, int *buildp)
+ {
+-	Target **p, *q;;
+-	int r, need, build, err, def;
+-
+-	debug("checking rebuild of %s", tp->name);
+-
++	Target **p;
++	int r = 0, need, err = 0;
++
++	if (tp->visiting)
++		error("circular dependency at %s", tp->name);
++	if (tp->complete) {
++		*buildp = tp->rebuilt;
++		return tp->result;
++	}
++	tp->visiting = 1;
+ 	tp->stamp = stamp(tp->name);
+-
+-	def = err = need = 0;
++	need = tp->nactions != 0 || tp->stamp == -1;
+ 	for (p = tp->deps; p && *p; ++p) {
++		int built = 0;
+ 		if (stop)
+ 			cleanup(tp);
+-
+-		q = *p;
+-		debug("checking dependency %s", q->name);
+-
+-		if (strcmp(q->name, tp->name) == 0 && q->actions)
+-			def = 1;
+-
+-		build = 0;
+-		if (rebuild(q, &build) != 0) {
++		if (rebuild(*p, &built) != 0)
+ 			err = 1;
+-			continue;
+-		}
+-
+-		if (build) {
+-			debug("rebuild of %s forces rebuild of %s",
+-			       q->name, tp->name);
++		if (built)
+ 			need = 1;
+-		} else if (q->stamp > tp->stamp) {
+-			debug("dependency %s is newer than %s",
+-			      q->name, tp->name);
+-			need = 1;
+-		}
+-	}
+-
+-	if (tp->stamp == -1) {
+-		need = 1;
+-	} else if (!def)  {
+-		debug("no action found for %s, looking a inference rule",
+-		      tp->name);
+-		if (inference(tp, NOFORCE))
+-			need = 1;
+-	}
+-
++	}
+ 	if (err) {
+ 		warning("target %s not remade because of errors", tp->name);
+-		return 1;
++		r = 1;
+ 	} else if (need) {
+-		*buildp = 1;
+-
+-		debug("target %s needs updating", tp->name);
++		tp->rebuilt = 1;
+ 		r = update(tp);
+-		if (r == 0)
+-			return 0;
+-
+-		if (stop)
+-			cleanup(tp);
+-
+-		exitstatus = 1;
+-
+-		if (!kflag)
+-			error("target %s: error %d", tp->name, r);
+-		else
+-			warning("target %s: error %d", tp->name, r);
+-		return r;
+-	}
+-
+-	return 0;
++		if (r) {
++			exitstatus = 1;
++			if (!kflag)
++				error("target %s: error %d; partial outputs retained", tp->name, r);
++			warning("target %s: error %d; partial outputs retained", tp->name, r);
++		}
++	}
++	tp->visiting = 0;
++	tp->complete = 1;
++	tp->result = r;
++	*buildp = tp->rebuilt;
++	return r;
+ }
+ 
+ int

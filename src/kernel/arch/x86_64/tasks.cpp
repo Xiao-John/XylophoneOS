@@ -87,6 +87,9 @@ struct process_record {
     u64 fork_source;
     u32 fork_depth;
     bool fork_pending, fork_files_ack;
+    // Private, never-runnable image constructor for exec. It owns pages and a
+    // temporary kernel stack, but no completion, file session, or pipe routes.
+    bool replacement_pending;
 };
 
 struct completion_record { bool used; bool ready; u64 parent; process_status status; };
@@ -897,10 +900,12 @@ interrupt_frame* schedule(interrupt_frame* frame) {
 }
 
 process_record* owned_process(u64 handle) {
-    if (current == nullptr || (!current->supervisor && current->spawn_depth == 0)) { return nullptr; }
+    if (current == nullptr) { return nullptr; }
     for (auto& task : tasks) {
         if (task.state != task_state::free && task.pid == handle && task.parent == current->pid) {
-            return &task;
+            if (current->supervisor || current->spawn_depth != 0 ||
+                (task.state == task_state::building && task.replacement_pending)) { return &task; }
+            return nullptr;
         }
     }
     return nullptr;
@@ -919,6 +924,36 @@ bool space_range_ok(u64 space, u64 address, u64 length, bool write) {
             !permissions.user || (write && !permissions.writable)) { return false; }
     }
     return true;
+}
+
+bool valid_process_entry(const process_record* task, const process_entry& entry) {
+    u64 physical = 0;
+    page_permissions permissions{};
+    return space_range_ok(task->cr3, entry.entry, 1, false) &&
+        query_page_in(task->cr3, entry.entry & ~(page_size - 1), &physical, &permissions) == memory_result::none &&
+        permissions.executable && !permissions.writable && entry.stack % 16 == 0 &&
+        entry.stack >= process_stack_bottom + 16 && entry.stack <= process_startup_begin &&
+        space_range_ok(task->cr3, entry.stack - 16, 16, true) &&
+        entry.startup % alignof(startup_info) == 0 && entry.startup >= process_startup_begin &&
+        entry.startup <= process_stack_top - sizeof(startup_info) &&
+        space_range_ok(task->cr3, entry.startup, sizeof(startup_info), false);
+}
+
+// Replacing a known single-thread image does not require constructing a new
+// runnable principal. Multithreaded runtime state and trusted services require
+// separate replacement protocols and cannot silently take this path.
+i64 replacement_caller_error() {
+    if (current == nullptr || current->supervisor || current->block_access) { return process_error_denied; }
+    if (current->threads_enabled || current_thread != &main_thread(current) || !current_thread->main) {
+        return thread_error_unsupported;
+    }
+    for (const auto& peer : threads) {
+        if (peer.process == current && &peer != current_thread &&
+            peer.state != thread_state::free && peer.state != thread_state::dead) {
+            return thread_error_unsupported;
+        }
+    }
+    return current->closing || current_thread->leaving ? process_error_state : 0;
 }
 
 u64 page_align_up(u64 address) {
@@ -1440,6 +1475,146 @@ void* process_syscall(interrupt_frame* frame) {
     i64 result = process_error_invalid;
     const u64 first = frame->rdi, second = frame->rsi, third = frame->rdx;
     switch (frame->rax) {
+    case sys_process_exec_prepare: {
+        if (first != 0 || third > 11 ||
+            (third != 0 && !user_range_ok(second, third, false))) { break; }
+        result = replacement_caller_error();
+        if (result != 0) { break; }
+        // A single-threaded process can have only one replacement transaction.
+        // This is not authority to reserve arbitrary child process slots.
+        bool pending = false;
+        for (const auto& task : tasks) {
+            pending = pending || (task.parent == current->pid && task.replacement_pending &&
+                                   task.state != task_state::free && task.state != task_state::dead);
+        }
+        if (pending) { result = process_error_state; break; }
+        char name[12] = "exec";
+        if (third != 0) { copy_from_user(name, second, third); name[third] = '\0'; }
+        process_record* stage = prepare_task(name);
+        if (stage == nullptr) { result = process_error_resources; break; }
+        stage->parent = current->pid;
+        stage->replacement_pending = true;
+        stage->stdio_mask = 0;
+        for (auto& route : stage->stdio) { route = stdio_route{}; }
+        if (process_trace_enabled) {
+            format::text("[process] event=exec_prepared pid="); format::decimal(current->pid);
+            format::text(" staging_pid="); format::decimal(stage->pid); format::text("\r\n");
+        }
+        result = static_cast<i64>(stage->pid);
+        break;
+    }
+    case sys_process_exec_commit: {
+        result = replacement_caller_error();
+        if (result != 0) { break; }
+        process_record* stage = owned_process(first);
+        if (stage == nullptr) { result = process_error_denied; break; }
+        if (stage->state != task_state::building || !stage->replacement_pending) {
+            result = process_error_state; break;
+        }
+        // Validate the complete request while the original user mappings and
+        // identity remain intact. Every fallible check precedes the first
+        // state/queue mutation below.
+        result = process_error_invalid;
+        if (!user_range_ok(second, sizeof(process_entry), false)) { break; }
+        process_entry entry{};
+        copy_from_user(&entry, second, sizeof(entry));
+        if (!valid_process_entry(stage, entry)) { break; }
+        u32 depth = current->spawn_depth;
+        if (third != 0) {
+            if (third - 1 > process_max_spawn_depth || third - 1 >= current->spawn_depth) {
+                result = process_error_delegation; break;
+            }
+            depth = static_cast<u32>(third - 1);
+        }
+        endpoint_record* request = endpoint_for(current->session_request_handle);
+        endpoint_record* response = endpoint_for(current->session_response_handle);
+        if (!files_service_live() || request == nullptr || response == nullptr || request == response ||
+            request->owner_pid != current->pid || request->sender_pid != current->pid ||
+            request->receiver_pid != files_pid || request->session_response ||
+            request->capacity != file_message_bytes ||
+            response->owner_pid != current->pid || response->receiver_pid != current->pid ||
+            response->sender_pid != files_pid || !response->session_response ||
+            response->capacity != file_message_bytes || current->send_handle != request->handle ||
+            current->recv_handle != response->handle) {
+            result = process_error_state; break;
+        }
+        if (next_endpoint_handle > 0xfffffffeull) { result = process_error_resources; break; }
+        const u64 old_space = current->cr3;
+        const u32 old_pages = current->user_pages;
+        const u32 old_depth = current->spawn_depth;
+        const auto& staged_thread = main_thread(stage);
+        // The new Client starts a fresh request-ID sequence. Re-key the same
+        // two session slots so a pending/late old-image reply cannot match it.
+        // PID and files-service open descriptions survive; opaque IPC tokens
+        // do not. No fallible step follows the first queue replacement.
+        *request = endpoint_record{};
+        request->used = true;
+        request->handle = static_cast<u32>(next_endpoint_handle++);
+        request->receiver_pid = files_pid;
+        request->sender_pid = request->owner_pid = current->pid;
+        request->capacity = file_message_bytes;
+        *response = endpoint_record{};
+        response->used = true;
+        response->handle = static_cast<u32>(next_endpoint_handle++);
+        response->receiver_pid = response->owner_pid = current->pid;
+        response->sender_pid = files_pid;
+        response->capacity = file_message_bytes;
+        response->session_response = true;
+        current->send_handle = current->session_request_handle = request->handle;
+        current->recv_handle = current->session_response_handle = response->handle;
+        current->cr3 = stage->cr3;
+        current->user_pages = stage->user_pages;
+        current->entry = entry.entry;
+        current->initial_stack = entry.stack;
+        current->startup = entry.startup;
+        current->heap_break = process_heap_begin;
+        current->spawn_depth = depth;
+        copy_name(current->name, stage->name);
+        current_thread->thread_pointer = staged_thread.thread_pointer;
+        current_thread->stack_bottom = staged_thread.stack_bottom;
+        current_thread->stack_top = staged_thread.stack_top;
+        current_thread->tls_begin = staged_thread.tls_begin;
+        current_thread->tls_end = staged_thread.tls_end;
+        current_thread->entry = 0;
+        current_thread->argument = 0;
+        current_thread->initial_stack = 0;
+        current_thread->wait_kind = thread_wait_kind::none;
+        current_thread->wait_target = current_thread->wait_buffer = 0;
+        current_thread->deadline_ns = current_thread->wait_order = 0;
+        current_thread->kernel_rsp = reinterpret_cast<u64>(frame);
+        copy_bytes(current_thread->fpu_state, fpu_template, sizeof(fpu_template));
+        *frame = interrupt_frame{};
+        frame->rip = entry.entry;
+        frame->cs = user_code_selector;
+        frame->rflags = 0x202;
+        frame->rsp = entry.stack;
+        frame->rdi = entry.startup;
+        frame->ss = user_data_selector;
+        // The staging identity never runs and never receives the caller's
+        // handles or children. It retires only the old image and its own spare
+        // kernel stack; the caller keeps PID/TID, parent/completion, session
+        // slots, stdio/pipe references, fork depth, and its active kernel stack.
+        stage->cr3 = old_space;
+        stage->user_pages = old_pages;
+        load_address_space(current->cr3);
+        set_thread_pointer(current_thread->thread_pointer);
+        if (process_trace_enabled) {
+            format::text("[process] event=exec_replaced old_pid="); format::decimal(current->pid);
+            format::text(" current_pid="); format::decimal(current->pid);
+            format::text(" target_pid="); format::decimal(current->pid);
+            format::text(" staging_pid="); format::decimal(stage->pid);
+            format::text(" tid="); format::decimal(current_thread->tid);
+            format::text(" old_address_space="); format::hex(old_space);
+            format::text(" address_space="); format::hex(current->cr3);
+            format::text(" file_session_rekeyed=1 old_spawn_depth="); format::decimal(old_depth);
+            format::text(" spawn_depth="); format::decimal(current->spawn_depth); format::text("\r\n");
+        }
+        destroy_task(stage);
+        fpu_restore(current_thread->fpu_state);
+        // Return the replacement frame directly. Assigning the ordinary
+        // syscall result or returning to the old user continuation is wrong.
+        return frame;
+    }
     case sys_process_fork_prepare:
         if (first == 0 && second == 0 && third == 0) { result = prepare_fork(frame); }
         break;
@@ -1597,7 +1772,9 @@ void* process_syscall(interrupt_frame* frame) {
         if (second > 1) { break; }
         process_record* task = owned_process(first);
         if (task == nullptr) { result = process_error_denied; break; }
-        if (task->state != task_state::building) { result = process_error_state; break; }
+        if (task->state != task_state::building || task->replacement_pending) {
+            result = process_error_state; break;
+        }
         task->spawn_depth = second != 0 ? 1 : 0;
         result = 0;
         break;
@@ -1611,7 +1788,9 @@ void* process_syscall(interrupt_frame* frame) {
         }
         process_record* task = owned_process(first);
         if (task == nullptr) { result = process_error_delegation; break; }
-        if (task->state != task_state::building) { result = process_error_state; break; }
+        if (task->state != task_state::building || task->replacement_pending) {
+            result = process_error_state; break;
+        }
         task->spawn_depth = static_cast<u32>(second);
         result = 0;
         break;
@@ -1759,7 +1938,9 @@ void* process_syscall(interrupt_frame* frame) {
         if (second >= 3) { break; }
         process_record* child = owned_process(first);
         if (child == nullptr) { result = process_error_denied; break; }
-        if (child->state != task_state::building) { result = process_error_state; break; }
+        if (child->state != task_state::building || child->replacement_pending) {
+            result = process_error_state; break;
+        }
         stdio_route replacement{};
         const bool target_writable = second != 0;
         if (third == process_stdio_close) {
@@ -1839,21 +2020,12 @@ void* process_syscall(interrupt_frame* frame) {
         if (task == nullptr) { result = process_error_denied; break; }
         // A copied continuation must use fork_commit after authenticated files
         // cloning; the ordinary ELF start API cannot bypass that barrier.
-        if (task->state != task_state::building || task->fork_pending) {
+        if (task->state != task_state::building || task->fork_pending || task->replacement_pending) {
             result = process_error_state; break;
         }
         if (!user_range_ok(second, sizeof(process_entry), false)) { break; }
         process_entry entry{}; copy_from_user(&entry, second, sizeof(entry));
-        u64 physical = 0; page_permissions permissions{};
-        if (!space_range_ok(task->cr3, entry.entry, 1, false) ||
-            query_page_in(task->cr3, entry.entry & ~(page_size - 1), &physical, &permissions) != memory_result::none ||
-            !permissions.executable || permissions.writable || entry.stack % 16 != 0 ||
-            entry.stack < process_stack_bottom + 16 || entry.stack > process_startup_begin ||
-            !space_range_ok(task->cr3, entry.stack - 16, 16, true) ||
-            entry.startup % alignof(startup_info) != 0 ||
-            entry.startup < process_startup_begin ||
-            entry.startup > process_stack_top - sizeof(startup_info) ||
-            !space_range_ok(task->cr3, entry.startup, sizeof(startup_info), false)) { break; }
+        if (!valid_process_entry(task, entry)) { break; }
         task->entry = entry.entry; task->initial_stack = entry.stack; task->startup = entry.startup;
         task->state = task_state::fresh;
         if (process_trace_enabled) {

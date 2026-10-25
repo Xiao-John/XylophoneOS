@@ -14,6 +14,10 @@ constexpr char temp_name[] = "XOSTMP.TMP";
 constexpr char backup_name[] = "XOSBAK.TMP";
 constexpr char journal_name[] = "XOSJRNL.TMP";
 constexpr u32 disk_slack_clusters = 2;
+// Eight-character FAT names avoid a second, unreserved short-name alias.
+constexpr u32 anonymous_serial_limit = 100000;
+constexpr u32 anonymous_collision_limit = 128;
+u32 next_anonymous_serial;
 
 struct open_record {
     bool used;
@@ -23,6 +27,8 @@ struct open_record {
 
 struct open_description {
     bool used;
+    bool anonymous;
+    bool closed;
     u32 references;
     FIL file;
     char path[max_name];
@@ -156,6 +162,12 @@ bool names_equal(const char* left, const char* right) {
 }
 
 bool reserved_component(const char* begin, u32 length) {
+    // Match the namespace already reserved by the offline disk-transfer API.
+    // It includes anonymous backing names and denies normal path operations.
+    if (length >= 7 && upper(begin[0]) == 'X' && upper(begin[1]) == 'O' &&
+        upper(begin[2]) == 'S' && begin[length - 4] == '.' &&
+        upper(begin[length - 3]) == 'T' && upper(begin[length - 2]) == 'M' &&
+        upper(begin[length - 1]) == 'P') { return true; }
     const char* reserved[] = {temp_name, backup_name, journal_name};
     for (const char* name : reserved) {
         u32 i = 0;
@@ -245,16 +257,61 @@ open_description* description_for(open_record* item) {
     return description.used ? &description : nullptr;
 }
 
-void release_open(open_record& item) {
+bool anonymous_path(const char* path) {
+    if (text_length(path, max_name) != 12 || path[0] != 'X' || path[1] != 'O' ||
+        path[2] != 'S' || !names_equal(path + 8, ".TMP")) { return false; }
+    for (u32 index = 3; index < 8; ++index) {
+        if (path[index] < '0' || path[index] > '9') { return false; }
+    }
+    return true;
+}
+
+status cleanup_description(open_description& description) {
+    // A failed close/unlink remains an owned, zero-reference description so a
+    // later service sweep can retry. Never reuse its FIL or forget its path.
+    if (!description.used || description.references != 0) { return status::invalid; }
+    if (description.anonymous && !anonymous_path(description.path)) { return status::io; }
+    file_identity_key identity{};
+    // FatFs keeps dir_sect/dir_ptr after f_close invalidates obj.fs. The volume
+    // and its window are permanent, so pending unlink retains the same key.
+    if (description.file.dir_ptr != nullptr) {
+        const ptrdiff_t offset = description.file.dir_ptr - fs.win;
+        if (offset >= 0 && offset < FF_MAX_SS) {
+            identity = {static_cast<u32>(description.file.dir_sect), static_cast<u16>(offset), 0};
+        }
+    }
+    if (!description.closed) {
+        const FRESULT result = f_close(&description.file);
+        if (result != FR_OK) { return from_fr(result); }
+        description.closed = true;
+    }
+    if (description.anonymous) {
+        const FRESULT result = f_unlink(description.path);
+        if (result != FR_OK && result != FR_NO_FILE && result != FR_NO_PATH) { return from_fr(result); }
+        (void)forget_identity(identity);
+    }
+    description = open_description{};
+    return status::ok;
+}
+
+status release_open(open_record& item) {
     open_description* description = description_for(&item);
+    status result = status::ok;
     if (description != nullptr) {
         if (description->references > 1) { --description->references; }
         else {
-            (void)f_close(&description->file);
-            *description = open_description{};
+            description->references = 0;
+            result = cleanup_description(*description);
         }
     }
     item = open_record{};
+    return result;
+}
+
+void retry_description_cleanup() {
+    for (auto& description : descriptions) {
+        if (description.used && description.references == 0) { (void)cleanup_description(description); }
+    }
 }
 
 void close_session(client_session& session) {
@@ -551,6 +608,66 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         if ((info.fattrib & AM_DIR) != 0) { out.flags = stat_is_directory; }
         break;
     }
+    case op::anonymous: {
+        bool empty = in.handle == 0 && in.flags == 0 && in.reserved == 0 && in.offset == 0 &&
+            in.length == 0 && in.name_length == 0;
+        for (char byte : in.name) { empty = empty && byte == 0; }
+        for (u8 byte : in.data) { empty = empty && byte == 0; }
+        if (!empty) { reply(out, in, status::invalid); break; }
+        u32 slot = max_open, description_slot = max_open_descriptions;
+        for (u32 i = 0; i < max_open; ++i) { if (!session.opens[i].used) { slot = i; break; } }
+        for (u32 i = 0; i < max_open_descriptions; ++i) {
+            if (!descriptions[i].used) { description_slot = i; break; }
+        }
+        u32 handle = 0;
+        if (slot == max_open || description_slot == max_open_descriptions ||
+            next_anonymous_serial >= anonymous_serial_limit || !next_handle(session_index, handle)) {
+            reply(out, in, status::full); break;
+        }
+        open_description& description = descriptions[description_slot];
+        description = open_description{};
+        FRESULT opened = FR_EXIST;
+        char path[] = "XOS00000.TMP";
+        for (u32 attempt = 0; attempt < anonymous_collision_limit &&
+             next_anonymous_serial < anonymous_serial_limit; ++attempt) {
+            u32 serial = next_anonymous_serial++;
+            for (u32 digit = 0; digit < 5; ++digit) {
+                path[7 - digit] = static_cast<char>('0' + serial % 10); serial /= 10;
+            }
+            opened = f_open(&description.file, path, FA_CREATE_NEW | FA_READ | FA_WRITE);
+            if (opened != FR_EXIST) { break; }
+        }
+        if (opened != FR_OK) {
+            // CREATE_NEW never overwrites a collision. An error does not prove
+            // ownership of a pre-existing path, so do not unlink it here.
+            description = open_description{};
+            reply(out, in, from_fr(opened)); break;
+        }
+        description.used = true;
+        description.anonymous = true;
+        description.references = 1;
+        description.flags = read_write;
+        copy_text(description.path, path);
+        session.opens[slot] = open_record{true, handle, description_slot + 1};
+        reply(out, in, status::ok);
+        out.handle = handle;
+        break;
+    }
+    case op::anonymous_seal: {
+        bool empty = in.flags == 0 && in.reserved == 0 && in.offset == 0 &&
+            in.length == 0 && in.name_length == 0;
+        for (char byte : in.name) { empty = empty && byte == 0; }
+        for (u8 byte : in.data) { empty = empty && byte == 0; }
+        if (!empty) { reply(out, in, status::invalid); break; }
+        open_description* description = description_for(find_open(session, in.handle));
+        if (description == nullptr || !description->anonymous || description->closed ||
+            description->references == 0) { reply(out, in, status::bad_handle); break; }
+        // The one description is shared by all fork/transfer references. Seal
+        // only removes write authority; no FIL close/reopen or seek occurs.
+        description->flags = read_only;
+        reply(out, in, status::ok);
+        break;
+    }
     case op::open: {
         char path[max_name]{};
         const u32 access = in.flags & open_access_mask;
@@ -683,8 +800,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
     case op::close: {
         open_record* item = find_open(session, in.handle);
         if (item == nullptr) { reply(out, in, status::bad_handle); break; }
-        release_open(*item);
-        reply(out, in, status::ok);
+        reply(out, in, release_open(*item));
         break;
     }
     case op::transfer: {
@@ -957,6 +1073,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     if (mounted) { recover(); }
     const u64 own_pid = sdk::pid();
     for (;;) {
+        retry_description_cleanup();
         for (u32 index = 0; index < max_sessions; ++index) {
             file_session_info info{};
             if (sdk::syscall(sys_file_session, index, reinterpret_cast<u64>(&info)) != 0) { continue; }

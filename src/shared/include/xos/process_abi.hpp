@@ -29,6 +29,10 @@ inline constexpr u64 sys_process_foreground = 55, sys_process_cancel = 56;
 // C2: unstarted eager-copy child, authenticated files clone, then commit.
 inline constexpr u64 sys_process_fork_prepare = 57, sys_process_fork_commit = 58;
 inline constexpr u64 sys_process_fork_files = 59;
+// C3: prepare an unstarted replacement (same signature as create, mask=0),
+// then commit(entry, depth_mode): 0 retains depth; n>0 requests depth n-1,
+// which must be strictly smaller than current authority.
+inline constexpr u64 sys_process_exec_commit = 60, sys_process_exec_prepare = 61;
 inline constexpr u32 process_fork_depth_max = 3;
 inline constexpr u32 process_pipeline_max = 4;
 struct process_foreground {
@@ -58,6 +62,8 @@ inline constexpr u64 process_tls_begin = 0x5fe00000, process_tls_end = process_h
 inline constexpr u64 process_tls_max_bytes = 0x100000, process_tls_max_alignment = 65536;
 inline constexpr u32 process_max_pages = 65536, process_max_args = 64;
 inline constexpr u32 process_max_arg_bytes = 256;
+inline constexpr u32 process_max_exec_arg_bytes = 4096;
+inline constexpr u64 exec_image_abi_magic = 0x3349424143455858ull;
 inline constexpr u32 process_max_spawn_depth = 3;
 inline constexpr u32 process_max_pipe_refs = 16, process_max_pipes = 8;
 inline constexpr u32 process_pipe_bytes = 4096;

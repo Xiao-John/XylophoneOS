@@ -12,6 +12,7 @@ struct session_guard {
     session_guard() { if (xos_file_session_lock) { xos_file_session_lock(); } }
     ~session_guard() { if (xos_file_session_unlock) { xos_file_session_unlock(); } }
 };
+u32 fallback_request_id;
 i64 status_value(status code) { return static_cast<i64>(code); }
 }
 
@@ -45,7 +46,8 @@ i64 Client::call(op operation) {
     request_.magic = request_magic;
     request_.version = abi_version;
     request_.operation = static_cast<u16>(operation);
-    request_.request_id = xos_file_request_id ? xos_file_request_id() : ++request_id_;
+    request_.request_id = xos_file_request_id ? xos_file_request_id()
+        : fallback_request_id == 0xffffffffu ? 0 : ++fallback_request_id;
     if (request_.request_id == 0) { return status_value(status::io); }
     if (sdk::ipc_send(send_handle_, &request_, sizeof(request_)) < 0) {
         return status_value(status::io);
@@ -182,6 +184,23 @@ i64 Client::stat_info(const char* path, u32& size, u32& attributes, u32& identit
     attributes = response_.flags;
     identity = response_.reserved;
     return 0;
+}
+
+i64 Client::anonymous(u32& handle) {
+    session_guard guard;
+    request_ = request{};
+    const i64 result = call(op::anonymous);
+    if (result != 0) { return result; }
+    if (response_.handle == 0) { return status_value(status::io); }
+    handle = response_.handle;
+    return 0;
+}
+
+i64 Client::seal_anonymous(u32 handle) {
+    session_guard guard;
+    request_ = request{};
+    request_.handle = handle;
+    return call(op::anonymous_seal);
 }
 
 i64 Client::open(const char* path, u32 flags, u32& handle, u32& size, u32& version) {

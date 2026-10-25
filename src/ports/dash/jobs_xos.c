@@ -6,6 +6,7 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include "shell.h"
 #include "nodes.h"
 #include "jobs.h"
@@ -137,10 +138,51 @@ static int xos_is_gnu_driver(const char *path) {
            !strcmp(name, "gcc") || !strcmp(name, "g++");
 }
 
+static int xos_is_make(const char *path) {
+    const char *name = strrchr(path, '/'); name = name ? name + 1 : path;
+    return !strcmp(name, "make");
+}
+int xos_shell_script(const char *path) {
+    char data[256]; int fd = open(path, O_RDONLY | O_CLOEXEC); ssize_t n; unsigned i;
+    if (fd < 0) return 0;
+    n = read(fd, data, sizeof(data)); close(fd);
+    if (n < 0) return 0;
+    for (i = 0; i < (unsigned)n; ++i) if (!data[i]) return 0;
+    if (n >= 2 && data[0] == '#' && data[1] == '!') {
+        unsigned start = 2, end;
+        while (start < (unsigned)n && (data[start] == ' ' || data[start] == '\t')) ++start;
+        end = start;
+        while (end < (unsigned)n && data[end] != ' ' && data[end] != '\t' && data[end] != '\n' && data[end] != '\r') ++end;
+        if (!((end-start == 7 && !memcmp(data+start,"/bin/sh",7)) ||
+              (end-start == 9 && !memcmp(data+start,"/bin/dash",9)) ||
+              (end-start == 13 && !memcmp(data+start,"/usr/bin/dash",13)))) return 0;
+        while (end < (unsigned)n && (data[end] == ' ' || data[end] == '\t')) ++end;
+        if (end == sizeof(data) || (end < (unsigned)n && data[end] != '\n' && data[end] != '\r')) return 0;
+    }
+    return 1;
+}
+int xos_shell_execve(const char *path, char *const argv[], char *const envp[]) {
+    if (xos_is_gnu_driver(path)) return xos_execve_driver(path, argv, envp);
+    if (xos_is_make(path)) return xos_execve_make(path, argv, envp);
+    return execve(path, argv, envp);
+}
 static int xos_spawn(pid_t *child, const char *path, char **argv, char **envp) {
-    return xos_is_gnu_driver(path)
+    int error = xos_is_gnu_driver(path)
         ? xos_posix_spawn_driver(child, path, NULL, NULL, argv, envp)
+        : xos_is_make(path) ? xos_posix_spawn_make(child, path, NULL, NULL, argv, envp)
         : posix_spawn(child, path, NULL, NULL, argv, envp);
+    if (error == ENOEXEC && xos_shell_script(path)) {
+        char *script[65]; unsigned argc = 0;
+        script[0] = "/usr/bin/dash"; script[1] = (char *)path;
+        while (argv[argc]) { if (argc >= 62) return E2BIG; ++argc; }
+        for (unsigned i = 1; i < argc; ++i) script[i+1] = argv[i];
+        script[argc+1] = NULL;
+        *child = fork();
+        if (*child < 0) return errno;
+        if (!*child) { execve(script[0], script, envp); _exit(errno == ENOENT ? 127 : 126); }
+        return 0;
+    }
+    return error;
 }
 
 struct job *vforkexec(union node *node, char **argv, const char *path, int idx) {

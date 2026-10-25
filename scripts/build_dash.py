@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Explicit, isolated dash C2 cross build against a frozen XOS SDK."""
+"""Explicit, isolated dash C3 cross build against a frozen XOS SDK."""
 import argparse
 import hashlib
 import json
@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import tarfile
 import shlex
+import struct
 
 ROOT = Path(__file__).resolve().parents[1]
 PORT = ROOT/'src/ports/dash'
@@ -78,8 +79,22 @@ def main():
     if not (build/'Makefile').exists():
         run([str(source/'configure'),'--build=aarch64-apple-darwin','--host=x86_64-unknown-elf','--without-libedit','--disable-glob','--disable-tee','--disable-memfd-create'],'configure.log')
     run(['make','-j2'],'make.log')
-    elf = build/'src/dash'
-    result = {'profile':'dash_c2','version':lock['version'],'elf':str(elf.relative_to(ROOT)),'sha256':sha(elf),'bytes':elf.stat().st_size,'inputs':inputs,'status':'built_not_run'}
+    debug_elf = build/'src/dash'
+    elf = build/'src/dash.runtime'
+    objcopy = shutil.which('x86_64-elf-objcopy')
+    subprocess.run([objcopy, '--strip-debug', str(debug_elf), str(elf)], check=True)
+    def load_segments(path):
+        data = path.read_bytes()
+        phoff = struct.unpack_from('<Q', data, 32)[0]
+        phsize, phcount = struct.unpack_from('<HH', data, 54)
+        result = []
+        for index in range(phcount):
+            kind, flags, offset, address, _, files, memory, alignment = struct.unpack_from('<IIQQQQQQ', data, phoff+index*phsize)
+            if kind in (1, 7): result.append((kind, flags, address, files, memory, alignment, data[offset:offset+files]))
+        return struct.unpack_from('<Q', data, 24)[0], result
+    if load_segments(elf) != load_segments(debug_elf):
+        raise SystemExit('debug stripping changed loaded bytes or the entry point')
+    result = {'profile':'dash_c3','version':lock['version'],'elf':str(elf.relative_to(ROOT)),'sha256':sha(elf),'bytes':elf.stat().st_size,'inputs':inputs,'status':'built_not_run','debug_elf':str(debug_elf.relative_to(ROOT)),'debug_sha256':sha(debug_elf),'load_segments_unchanged':True,'objcopy':{'path':objcopy,'sha256':sha(objcopy),'version':subprocess.check_output([objcopy,'--version'],text=True).splitlines()[0]}}
     (work/'manifest.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps({k:v for k,v in result.items() if k!='inputs'}))
 

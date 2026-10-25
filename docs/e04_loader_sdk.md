@@ -254,3 +254,40 @@ libc fork按prepare→有界克隆RPC重试→commit执行，失败abort；线�
 profile明确ENOTSUP，普通无权EPERM，深度/配额/物理页不足返回真实资源错误。
 进程数仍8，用户页限仍256MiB，fork代价为全部已映射用户页+页表+内核栈。
 完整SDK必须和当前头/库共同重建；旧静态工具的sys0–56与文件v2行为保留。
+
+
+## 0049：C3 exec v3与匿名输入实例
+
+sys61 exec_prepare(0,name_ptr,name_len)允许普通无构造权任务准备自己的唯一replacement
+事务（重复EBUSY），保护supervisor/files，拒绝线程profile/非唯一main。stage占全局8
+进程配额但不运行，无完成记录、文件会话或stdio/pipe引用，只允许父map/tls/abort，
+普通start/grant/delegate/stdio不能把它变成可运行子任务。
+
+sys60 exec_commit(stage,&entry,depth_mode)在同一不可抢占提交前完整验证stage所有权、
+RX入口/栈/startup、源文件会话和新endpoint token配额。mode0保留构造深度，n>0
+请求n-1且必须严格小于源深度。成功保留原PID/TID、父/完成记录、子任务、stdio/raw
+pipe引用；切新CR3/TLS/FPU/栈，重置heap，再在新CR3下回收旧映像与stage内核栈，
+直接返回新入口。原2个文件IPC slot在同PID下换新opaque token并清旧队列；服务
+保留同PID打开实例，新Client获取新token，不重用旧响应命名空间。
+
+startup v3保留v2前缀，offset152追加24字节exec extension；descriptor记录24字节，
+最多32项，按object id恢复共享别名，省略CLOEXEC FD；仅余CLOEXEC的对象由新CRT
+在main之前关闭。文件handle仍属于同一PID，不按路径重新打开；file/pipe/kernel
+routes都保留实际打开实例与偏移。成功替换后若底层关闭I/O失败，FD表已关闭，
+诊断deferred cleanup且服务重试；它不是返回旧程序的exec失败，不声称I/O故障下
+所有清理已完成。缺文件/格式/旧ABI/权限/配额/映射ENOMEM等提交前失败保留旧映像
+和FD表，实际场景见C3 exec专项。
+
+完整exec要求目标ELF保留只读ALLOC `.xos.exec` PROGBITS节，16字节为
+magic `0x3349424143455858`、version3、size16。当前匹配的CRT/linker/libxos共同
+生成和消费它；旧静态程序不理解v3，显式exec返回ENOTSUP。普通spawn继续v1/v2
+兼容旧GCC/G++/CPython；绝不以spawn+wait冒充exec。新SDK不可与旧CRT/库混搭。
+execv3每参数/环境串最多4095字节；普通spawn仍255。argc/env各64、总startup16KiB。
+
+file wire v2追加op21 anonymous、op22 anonymous_seal。服务用保留8.3名字
+XOS00000.TMP…XOS99999.TMP排他创建，不能覆盖碰撞文件，普通路径操作不能访问，
+listing隐藏；seal不可逆地撤销共享实例写权限且保留偏移。Here-doc填充/seek0/seal
+后才交stdin，正文不会卡在4KiB pipe里。最后close或退出/kill回收引用时删除，
+I/O失败保留待清理实例并重试；不扫描删除崩溃遗留，无法证明跨崩溃文件所有者。
+单会话16/global32打开实例等既有配额保持。普通Client也使用跨实例单调request ID，
+init不重置、溢出拒绝；不宣称任意超时/迟到事务的完整重放或恢复。

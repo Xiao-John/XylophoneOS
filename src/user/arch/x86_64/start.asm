@@ -42,3 +42,16 @@ _start:
     call _ZN3xos3sdk4exitEi
     ud2
 section .note.GNU-stack noalloc noexec nowrite progbits
+
+; Explicit opt-in: this libc CRT restores complete startup-v3 descriptors.
+%ifdef XOS_LIBC
+%define XOS_EXEC_V3 1
+%endif
+%ifdef XOS_POSIX_MAIN
+%define XOS_EXEC_V3 1
+%endif
+%ifdef XOS_EXEC_V3
+section .xos.exec progbits alloc noexec nowrite align=8
+    dq 0x3349424143455858 ; xos::exec_image_abi_magic
+    dd 3, 16
+%endif

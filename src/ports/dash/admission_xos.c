@@ -14,8 +14,11 @@ static void xos_check_redirect(union node *n) {
             if (n->ndup.dupfd > 2)
                 sh_error("only descriptors 0, 1, and 2 are available in XOS dash B2");
             break;
+        case NHERE: case NXHERE:
+            xos_check_tree(n->nhere.doc);
+            break;
         default:
-            sh_error("redirection form unavailable in XOS dash B2");
+            sh_error("redirection form unavailable in XOS dash C3");
         }
     }
 }

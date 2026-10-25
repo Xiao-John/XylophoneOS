@@ -265,3 +265,12 @@ ELF PT_TLS解析/模板校验仍在用户态loader；通用load_plan只描述文
 验证已映射RW用户范围，内核不读ELF或库设施。
 仅静态local-exec，任务有独立TLS arena；不承诺动态模块、线程或动态TLS。
 实际功能与版本证据以0019和state.md更新为准，不因接口存在就提前标阶段通过。
+
+## E13-T 进程与执行上下文
+
+本分支将 PID/地址空间/权限/文件会话归 process_record，寄存器/内核栈/FS/FPU、
+等待和 join 状态归 thread_record；通用生命周期标记在 core/thread_lifecycle.hpp。
+仍是单核、内核不可抢占；所有线程阻塞时可中断睡眠，IRQ 推进等待截止时间。
+工作线程退出只回收自己的执行资源；全组停止后才由其他安全上下文销毁地址空间。
+内核文件身份仍为 PID，files 服务继续按进程枚举会话，不增加 TID 客户端。
+地址图、预算与客体证据见 [线程实现](threading_implementation.md)。

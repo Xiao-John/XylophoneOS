@@ -47,8 +47,10 @@ SECTIONS {
         KEEP(*(.dtors)) KEEP(*(SORT(.dtors.*)))
         __dtors_end = .;
     } :data
-    .tdata : { *(.tdata .tdata.*) } :data :tls
-    .tbss (NOLOAD) : { *(.tbss .tbss.*) *(.tcommon) } :data :tls
+    .tdata : { __xos_tls_template_start = .; *(.tdata .tdata.*) __xos_tls_file_end = .; } :data :tls
+    .tbss (NOLOAD) : { *(.tbss .tbss.*) *(.tcommon) __xos_tls_memory_end = .; } :data :tls
+    __xos_tls_alignment = MAX(1, MAX(ALIGNOF(.tdata), ALIGNOF(.tbss)));
     .bss (NOLOAD) : { *(.bss .bss.*) *(COMMON) } :data
+    __xos_image_end = .;
     /DISCARD/ : { *(.comment) *(.note*) }
 }

@@ -1,0 +1,33 @@
+python3 scripts/build.py
+Built xos.img + real_mode.img | e8931ce74cd5d5e6 | kernel 356412 bytes
+python3 scripts/build_threading_sdk.py --newlib-prefix ".cache/xos_seed/threading_newlib/prefix" --gcc-source ".cache/threading_sources/gcc-16.2.0" --cpp
+Built experimental threading SDK: <repo>/build/threading_sdk
+python3 scripts/build_threading_probes.py
+Built guest pthread/C++/legacy-layout probes
+python3 tests/threading_compile_checks.py
+PASS SDK receipt and common AArch64 compile checks (no second-ISA runtime claim)
+python3 tests/threading_smoke.py
+PASS 15 threading groups | build e8931ce74cd5d5e6
+python3 tests/threading_pthread_smoke.py
+PASS 10 pthread groups | kernel e8931ce74cd5d5e6
+python3 tests/threading_cpp_smoke.py
+PASS 10 C++ threading groups | kernel e8931ce74cd5d5e6
+python3 tests/process_smoke.py
+PASS: 13 E04 checks | build e8931ce74cd5d5e6
+python3 tests/runtime_smoke.py
+PASS: 5 E08-2 groups | build e8931ce74cd5d5e6
+python3 tests/task_smoke.py
+Traceback (most recent call last):
+  File "<repo>/tests/task_smoke.py", line 137, in <module>
+    main()
+    ~~~~^^
+  File "<repo>/tests/task_smoke.py", line 76, in main
+    guest.expect(b"[task] event=fault pid=5 vector=14", start=start, timeout=8)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<repo>/tests/boot_smoke.py", line 36, in expect
+    return self.expect_any(alternatives, start=start, timeout=timeout)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<repo>/tests/boot_smoke.py", line 52, in expect_any
+    raise AssertionError(f"{self.name}: missing any of {expected_values!r}; output={self.output[-1000:]!r}")
+AssertionError: task_smoke: missing any of (b'[task] event=fault pid=5 vector=14',); output=bytearray(b'\nAAAping\nbad pointer\ntx\nbad length\nbad pointer\nAAping\nbad length\nbad pointer\ntx\nAAAping\nbad length\nbad pointer\ntx\nAAping\nbad length\nbad pointer\ntx\nAAAping\nbad length\nbad pointer\ntx\nAAping\nbad length\nbad pointer\ntx\nbad length\nAAping\nbad pointer\ntx\nbad length\nbad pointer\nAAAping\ntx\nbad length\nbad pointer\nAAping\nbad length\nbad pointer\nAAAtx\nbad length\nbad pointer\nAAping\nbad length\nbad pointer\ntx\nAAping\nbad length\nbad pointer\ntx\nAAAping\nbad length\nbad pointer\ntx\nAAping\nbad length\nbad pointer\ntx\nAAAping\nbad length\nbad pointer\ntx\nAAping\nbad length\nbad pointer\ntx\nbad length\nAAAping\nbad pointer\ntx\nbad length\nbad pointer\nAAping\nbad length\nbad pointer\ntx\nAAping\nbad length\nbad pointer\ntx\nbad length\nAAping\nbad pointer\ntx\nbad length\nbad pointer\nAAAping\nbad length\nbad pointer\ntx\nAAping\nbad length\nbad pointer\ntx\nAAAping\nbad length\nbad pointer\ntx\nAAping\nbad length\nbad pointer\ntx\nbad length\nAAping\nbad pointer\ntx\nbad length\nbad pointer\nAAping\nbad length\nbad pointer\ntx\nAAAping\nbad length\nbad pointer\ntx\nA')
+make: *** [threading-smoke] Error 1

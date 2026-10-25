@@ -47,3 +47,5 @@
 - 构建证据仍在 `build/`、私有 `.cache/xos_seed/` 和 git 历史中；文档只给入口和
   结论，不复制大段日志。
 - `AGENTS.md` 仍是 agent 入口；本索引不替代 `state.md` 的当前事实。
+
+- [E13-T线程实现与冻结验收](threading_implementation.md)：ABI、构建、78组客体检查及限制。

@@ -4,6 +4,16 @@
 
 ## 当前方向与协作状态
 
+0037线程PR本组完成：Codex独立分支`codex/threading-t0-t2`，基线`9c896df`。
+T0–T2定向实现/验收通过；无剩余编辑/构建占用。普通`build/sdk`保持single，
+新profile单独在`build/threading_sdk`；没有升级发布附件或包管理whitelist。
+系统build`b33da3d9929ace75`，内核356412字节；35线程专项+37旧回归+6原生
+GCC/G++客体检查=78组通过，另有SDK/AArch64编译和许可材料检查。
+冻结回执[0037 qualification](reports/threading_20261025/qualification.json)，
+设计/ABI/命令/限制见[线程实现](threading_implementation.md)，失败和交接见
+[0037工作记录](work_log/0037_threading_t0_t2.md)。T3-PY/T3-QT、SMP、完整POSIX、
+长时间/随机压力、第二ISA运行仍未验。PR待项目所有者审查，不合并main。
+
 以 xos_plan.md v0.9 正文、后续决定和本页状态为准。下划线命名、轻松开发、过程落盘；
 固件/ISA/平台/通用内核分层。localpilot/ 独立，不进入 XOS 构建、扫描或清理。
 顺序 E05 → E07 → E06 已完成。E08-1、E08-2、E08-3 的受限 gate 均已通过；

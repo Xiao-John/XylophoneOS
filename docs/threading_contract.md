@@ -1,7 +1,8 @@
 # E13-T：公共线程与等待契约
 
 2026-10-25，0031，契约 v1。用户确认现在确定公共多线程契约和计划。
-本文冻结首版语义与交付顺序；**尚未实现，T0–T3 全部 not_run**。具体 syscall
+本文冻结首版语义与交付顺序。0037 分支已实现并通过 T0–T2 定向验收；实际通过/失败与
+产物绑定见 [实现回执](threading_implementation.md)，T3-PY/T3-QT 仍 not_run。具体 syscall
 编号、结构字节布局和虚拟地址区间在 T0 实施时同步 ABI 头/SDK 后冻结，不在文档
 中预占可能冲突的编号。已有接口的当前语义仍以源码/已验回执为准。
 
@@ -114,7 +115,8 @@ joinable线程），全局最多32个线程槽。进程仍共享原256 MiB用户
 
 joinable默认；同进程一个join者取得回收权，返回时目标TLS/reent清理已结束、
 执行已停止，结果只消费一次，栈/TLS可以安全回收。自join报EDEADLK；无效ID报
-ESRCH，已detach/已有join者报EINVAL。不承诺自动发现任意锁/多线程等待环。
+ESRCH，已detach/已有join者报EINVAL。不承诺自动发现任意锁/多线程等待环。0037澄清：detach/成功join完成回收后，
+旧TID已失效，后续操作报ESRCH；仍有记录的detached目标/已有join者报EINVAL。
 detach支持运行中或已结束但未被join领取的线程；终止后安全自动回收。线程ID
 不得因槽重用指向后来线程。执行资源死亡后尽快回收，保留小型join结果和配额槽
 直到join/detach；不能累积整份死线程栈。主线程pthread_exit也遵循同样语义。

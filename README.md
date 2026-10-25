@@ -6,6 +6,19 @@
 开发前读 [开发纪律](docs/Discipline.md)、[当前状态](docs/state.md) 和
 [计划](docs/xos_plan.md)。`localpilot/` 是独立项目，不参与 XOS 构建。
 
+## 公共多线程：E13-T 独立开发分支
+
+本分支实现单核抢占的 1:1 内核线程：同进程共享地址空间与权限，独立栈/guard、
+静态 TLS 与 FPU 上下文；支持线程创建事务、join/detach、退出仲裁、单调时间、
+比较等待/唤醒，以及独立线程 SDK 的 pthread/newlib/C++ 运行库。
+普通进程最多 4 线程，全局 8 进程/32 线程槽；新线程默认 256 KiB 栈。
+
+普通应用使用单独生成的 `build/threading_sdk`；`build/sdk` 继续是单线程运行库，
+不能仅复制 pthread 头混用旧库。真实客体验证、ABI/地址图、构建与使用命令、
+失败日志及限制见 [线程实现与验收](docs/threading_implementation.md)。
+SMP、完整 POSIX pthread、动态 TLS、取消、实时调度和 Python/Qt 接入另验。
+本分支不更新 0.0.1 的发行标签、镜像附件或日常工作盘。
+
 ## 首个正式发行：0.0.1-1024
 
 [XylophoneOS Revival version 0.0.1-1024](https://github.com/Xiao-John/XylophoneOS/releases/tag/v0.0.1-1024)

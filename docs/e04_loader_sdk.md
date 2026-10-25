@@ -185,3 +185,11 @@ SDK计划，尚未新增thread syscall或修改本页已实现接口。T0须同�
 线程栈/TLS保留区及ELF布局兼容策略；内核只提供映射/线程/等待机制，TLS模板
 解析与复制仍在用户态。进程PID/权限/会话/地址空间与线程TID/上下文分开；
 现有进程wait/kill/委派保留进程语义，T2前不声明线程安全SDK。
+
+## E13-T 线程 ABI v1
+
+本分支新增 sys38–52，保留 sys0–37、startup v1/v2、process_status 和
+process_stats 的布局及进程权限含义。共享 ABI 见 `thread_abi.hpp`，具体布局、
+地址保留与兼容策略见 [线程实现](threading_implementation.md)。
+新 SDK 是独立 profile；旧 ELF 继续装载，若占用新线程 arena，显式 opt-in
+返回 ENOTSUP，不能静默覆盖映射。用户态 ELF 策略仍在 loader，内核不解析 TLS 模板。

@@ -44,6 +44,13 @@
         "src/third_party/newlib/COPYING.NEWLIB": "f3afe48e4bc6ed8466a42e9dacb6be1d8f9cbf5aac15cb8e474a5ccde8b40ef6",
         "src/third_party/newlib/x86_64-elf/lib/libc.a": "283fa07ad205c80af92e955a91da027435d8a8a90cb7e27933f57925cc5baa22",
         "src/third_party/newlib/x86_64-elf/lib/libm.a": "4cfdd6324f6776d025923ee369fad51236a9ee5730c8143a6b3b03b963eefd80"
+      },
+      "threading_profile": {
+        "source_archive_sha256": "6ff27e3bf022666f43f7802255be680eeff722ac181b1725d21e2e8318604ee3",
+        "build_script": "scripts/build_threading_newlib.py",
+        "configuration": "dynamic __getreent; retargetable locking; global stdio/atexit; separate generated prefix",
+        "original_prebuilt_modified": false,
+        "receipt": "build/threading_sdk/manifest.json"
       }
     },
     {
@@ -112,7 +119,8 @@
         "src/ports/gcc/upstream/GCC-COPYING": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c",
         "src/ports/gcc/upstream/GCC-COPYING.RUNTIME": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74",
         "src/ports/gcc/upstream/GCC-COPYING3": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
-        "src/ports/gcc/upstream/GCC-COPYING3.LIB": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c"
+        "src/ports/gcc/upstream/GCC-COPYING3.LIB": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c",
+        "src/ports/gcc/patches/0008-xos-thread-clock-boundary.patch": "698e22d46aebf36344ee99444ad81bf23b8c2d5c59800fd4cec7074269be755c"
       },
       "used_in": [
         "XOS-hosted static GCC/G++ Seed compiler host closure",
@@ -122,7 +130,13 @@
       "distribution_status": "local_only; corresponding_source_bundle_and_member_license_review_not_completed",
       "source_archive_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
       "target_runtime_source_manifest": "src/ports/gcc/e08_5_target_runtime_manifest.json",
-      "frontend_source_manifest": "src/ports/gcc/e08_5_gxx_manifest.json"
+      "frontend_source_manifest": "src/ports/gcc/e08_5_gxx_manifest.json",
+      "threading_profile": {
+        "build_script": "scripts/build_threading_sdk.py",
+        "gthread_model": "posix; rebuilt libstdc++/libsupc++ and five stateful libgcc members",
+        "patch": "src/ports/gcc/patches/0008-xos-thread-clock-boundary.patch",
+        "distribution": "local SDK candidate; no new public binary release; corresponding source archive and patch retained"
+      }
     },
     {
       "name": "GMP",

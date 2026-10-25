@@ -2,6 +2,8 @@
 // Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #define _POSIX_C_SOURCE 200809L
 #include <xos/file_client.hpp>
+#include <xos/runtime_lock.hpp>
+#include <xos/thread_abi.hpp>
 #include <xos/elf.hpp>
 #include <xos/libc_runtime.hpp>
 #include <xos/sdk.hpp>
@@ -21,6 +23,11 @@
 #include <sys/times.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#ifdef XOS_THREADED_RUNTIME
+#include <sys/reent.h>
+extern "C" void __env_lock(struct _reent*);
+extern "C" void __env_unlock(struct _reent*);
+#endif
 
 using xos::i32;
 using xos::u64;
@@ -43,7 +50,7 @@ constexpr u32 pipe_token_base = 65536u;
 enum class object_kind : u8 { none, kernel, file, pipe_read, pipe_write };
 struct open_object {
     object_kind kind;
-    u8 references;
+    u32 references;
     bool close_on_exec;
     u32 handle;
     u32 flags;
@@ -84,6 +91,10 @@ fd_slot descriptors[fd_count];
 open_object objects[object_count];
 directory_state directories[directory_count];
 action_set action_sets[action_set_count];
+using xos::libc::runtime_guard;
+using xos::libc::runtime_mutex;
+runtime_mutex fd_table_lock, object_locks[object_count], directory_lock, cwd_lock, spawn_lock, break_lock;
+
 
 int error_from_file(xos::i64 result) {
     using xos::file::status;
@@ -120,6 +131,11 @@ bool read_executable(void* raw, u64 offset, u8* output, u32 length) {
 }
 
 int error_from_kernel(xos::i64 result) {
+    if (result == xos::thread_error_busy || result == xos::process_error_state) { return EBUSY; }
+    if (result == xos::thread_error_address) { return EFAULT; }
+    if (result == xos::thread_error_timeout) { return ETIMEDOUT; }
+    if (result == xos::thread_error_memory) { return ENOMEM; }
+    if (result == xos::thread_error_unsupported) { return ENOTSUP; }
     if (result == -3) { return EAGAIN; }
     if (result == -7) { return EPIPE; }
     if (result == -1) { return EPERM; }
@@ -160,6 +176,7 @@ bool copy_string(const char* source, char* target, u32 capacity) {
 }
 
 bool normalize_path(const char* path, char* output) {
+    runtime_guard guard(cwd_lock);
     if (path == nullptr || output == nullptr) { return false; }
     char joined[max_path * 2];
     u32 used = 0;
@@ -206,6 +223,7 @@ bool normalize_path(const char* path, char* output) {
 }
 
 int alloc_object(object_kind kind, u32 handle, u32 flags = 0) {
+    runtime_guard guard(fd_table_lock);
     for (int i = 0; i < object_count; ++i) {
         if (objects[i].kind == object_kind::none) {
             objects[i].kind = kind;
@@ -222,7 +240,7 @@ int alloc_object(object_kind kind, u32 handle, u32 flags = 0) {
 
 int alloc_fd(int minimum = 3) {
     for (int fd = minimum; fd < fd_count; ++fd) {
-        if (descriptors[fd].object < 0) { return fd; }
+        if (descriptors[fd].object == -1) { return fd; }
     }
     return -1;
 }
@@ -230,33 +248,45 @@ int alloc_fd(int minimum = 3) {
 bool valid_fd(int fd) { return fd >= 0 && fd < fd_count && descriptors[fd].object >= 0; }
 
 void release_object(int index) {
-    if (index < 0 || index >= object_count || objects[index].kind == object_kind::none) { return; }
-    open_object& object = objects[index];
-    if (object.references > 1) { --object.references; return; }
-    switch (object.kind) {
-    case object_kind::file:
-        (void)file_client.close(object.handle);
-        break;
-    case object_kind::pipe_read:
-    case object_kind::pipe_write:
-        (void)xos::sdk::syscall(xos::sys_pipe_close, object.handle);
-        break;
-    case object_kind::kernel:
-        (void)xos::sdk::close(object.handle);
-        break;
-    case object_kind::none:
-        break;
+    open_object object{};
+    {
+        runtime_guard guard(fd_table_lock);
+        if (index < 0 || index >= object_count || objects[index].kind == object_kind::none) { return; }
+        if (--objects[index].references != 0) { return; }
+        object = objects[index]; objects[index] = open_object{};
     }
-    object = open_object{};
+    // No table lock while entering a service or allocator. Last close can be
+    // deferred to an in-flight operation's pin release.
+    switch (object.kind) {
+    case object_kind::file: (void)file_client.close(object.handle); break;
+    case object_kind::pipe_read: case object_kind::pipe_write:
+        (void)xos::sdk::syscall(xos::sys_pipe_close, object.handle); break;
+    case object_kind::kernel: (void)xos::sdk::close(object.handle); break;
+    case object_kind::none: break;
+    }
 }
-
+struct object_lease {
+    int index = -1;
+    explicit object_lease(int fd) {
+        {
+            runtime_guard guard(fd_table_lock);
+            if (valid_fd(fd)) { index = descriptors[fd].object; ++objects[index].references; }
+        }
+        if (index >= 0) { object_locks[index].lock(); }
+    }
+    ~object_lease() {
+        if (index >= 0) { object_locks[index].unlock(); release_object(index); }
+    }
+};
 int close_fd(int fd) {
-    if (!valid_fd(fd)) { errno = EBADF; return -1; }
-    const int object = descriptors[fd].object;
-    descriptors[fd].object = -1;
-    descriptors[fd].close_on_exec = false;
-    release_object(object);
-    return 0;
+    int index;
+    {
+        runtime_guard guard(fd_table_lock);
+        if (!valid_fd(fd)) { errno = EBADF; return -1; }
+        index = descriptors[fd].object;
+        descriptors[fd].object = -1; descriptors[fd].close_on_exec = false;
+    }
+    release_object(index); return 0;
 }
 
 void close_runtime_descriptors() {
@@ -287,22 +317,30 @@ int open_normalized(const char* path, int flags) {
     char normalized[max_path];
     if (!normalize_path(path, normalized)) { errno = ENAMETOOLONG; return -1; }
     u32 translated = 0;
-    int error = open_flags_to_file(flags, translated);
+    const int error = open_flags_to_file(flags, translated);
     if (error != 0) { errno = error; return -1; }
-    const int fd = alloc_fd();
-    if (fd < 0) { errno = EMFILE; return -1; }
+    int fd;
+    {
+        runtime_guard guard(fd_table_lock);
+        fd = alloc_fd();
+        if (fd < 0) { errno = EMFILE; return -1; }
+        descriptors[fd].object = -2;
+    }
     u32 handle = 0, size = 0, version = 0;
     const xos::i64 result = file_client.open(normalized, translated, handle, size, version);
-    (void)version;
+    int object = -1;
+    {
+        runtime_guard guard(fd_table_lock);
+        if (result == 0) { object = alloc_object(object_kind::file, handle, static_cast<u32>(flags)); }
+        if (object >= 0) {
+            objects[object].position = (flags & O_APPEND) != 0 ? size : 0;
+            memcpy(objects[object].path, normalized, strlen(normalized) + 1);
+            descriptors[fd].object = static_cast<signed char>(object);
+            descriptors[fd].close_on_exec = (flags & O_CLOEXEC) != 0;
+        } else { descriptors[fd].object = -1; }
+    }
     if (result != 0) { errno = error_from_file(result); return -1; }
-    const int object = alloc_object(object_kind::file, handle, static_cast<u32>(flags));
     if (object < 0) { (void)file_client.close(handle); errno = EMFILE; return -1; }
-    // The service starts ordinary opens at zero; only O_APPEND opens at EOF.
-    // This mirror feeds SEEK_CUR and stdio ftell/fseek buffer bookkeeping.
-    objects[object].position = (flags & O_APPEND) != 0 ? size : 0;
-    memcpy(objects[object].path, normalized, strlen(normalized) + 1);
-    descriptors[fd].object = static_cast<signed char>(object);
-    descriptors[fd].close_on_exec = (flags & O_CLOEXEC) != 0;
     return fd;
 }
 
@@ -340,6 +378,7 @@ int spawn_action_set(const posix_spawn_file_actions_t* opaque, action_set*& resu
 }
 
 int append_action(posix_spawn_file_actions_t* opaque, const spawn_action& action) {
+    runtime_guard guard(spawn_lock);
     if (opaque == nullptr || *opaque == nullptr) { return EINVAL; }
     action_set* set = nullptr;
     for (int i = 0; i < action_set_count; ++i) {
@@ -432,14 +471,16 @@ extern "C" void xos_libc_finish() {
 }
 
 extern "C" void* _sbrk(ptrdiff_t increment) {
+    runtime_guard guard(break_lock);
     const xos::i64 current = xos::sdk::syscall(xos::sys_heap_break, 0);
     if (current < static_cast<xos::i64>(heap_base) || current > static_cast<xos::i64>(heap_limit)) {
         errno = ENOMEM; return reinterpret_cast<void*>(-1);
     }
-    const xos::i64 requested = current + increment;
-    if (requested < static_cast<xos::i64>(heap_base) || requested > static_cast<xos::i64>(heap_limit)) {
+    if (increment < static_cast<xos::i64>(heap_base) - current ||
+        increment > static_cast<xos::i64>(heap_limit) - current) {
         errno = ENOMEM; return reinterpret_cast<void*>(-1);
     }
+    const xos::i64 requested = current + increment;
     const xos::i64 result = xos::sdk::syscall(xos::sys_heap_break, static_cast<xos::u64>(requested));
     if (result < 0) { errno = error_from_kernel(result); return reinterpret_cast<void*>(-1); }
     return reinterpret_cast<void*>(static_cast<xos::u64>(current));
@@ -457,11 +498,12 @@ extern "C" int _open(const char* path, int flags, int) { return open(path, flags
 extern "C" int close(int fd) { return close_fd(fd); }
 
 extern "C" _READ_WRITE_RETURN_TYPE read(int fd, void* buffer, size_t length) {
-    if (!valid_fd(fd)) { errno = EBADF; return -1; }
+    object_lease lease(fd);
+    if (lease.index < 0) { errno = EBADF; return -1; }
     if (buffer == nullptr && length != 0) { errno = EFAULT; return -1; }
     if (length == 0) { return 0; }
     if (length > static_cast<size_t>(INT_MAX)) { length = static_cast<size_t>(INT_MAX); }
-    open_object& object = objects[descriptors[fd].object];
+    open_object& object = objects[lease.index];
     if (object.kind == object_kind::file) {
         if ((object.flags & O_ACCMODE) == O_WRONLY) { errno = EBADF; return -1; }
         const u32 chunk = length > xos::file::response_data_size
@@ -486,11 +528,12 @@ extern "C" _READ_WRITE_RETURN_TYPE read(int fd, void* buffer, size_t length) {
 }
 
 extern "C" _READ_WRITE_RETURN_TYPE write(int fd, const void* buffer, size_t length) {
-    if (!valid_fd(fd)) { errno = EBADF; return -1; }
+    object_lease lease(fd);
+    if (lease.index < 0) { errno = EBADF; return -1; }
     if (buffer == nullptr && length != 0) { errno = EFAULT; return -1; }
     if (length == 0) { return 0; }
     if (length > static_cast<size_t>(INT_MAX)) { length = static_cast<size_t>(INT_MAX); }
-    open_object& object = objects[descriptors[fd].object];
+    open_object& object = objects[lease.index];
     if (object.kind == object_kind::file) {
         if ((object.flags & O_ACCMODE) == O_RDONLY) { errno = EBADF; return -1; }
         size_t done = 0;
@@ -541,8 +584,9 @@ extern "C" _READ_WRITE_RETURN_TYPE write(int fd, const void* buffer, size_t leng
 }
 
 extern "C" off_t lseek(int fd, off_t offset, int whence) {
-    if (!valid_fd(fd)) { errno = EBADF; return static_cast<off_t>(-1); }
-    open_object& object = objects[descriptors[fd].object];
+    object_lease lease(fd);
+    if (lease.index < 0) { errno = EBADF; return -1; }
+    open_object& object = objects[lease.index];
     if (object.kind != object_kind::file) { errno = ESPIPE; return static_cast<off_t>(-1); }
     u32 current_size = 0, attributes = 0;
     xos::i64 result = file_client.fstat(object.handle, current_size, attributes);
@@ -619,9 +663,10 @@ extern "C" int _gettimeofday(struct timeval* value, void* zone) {
 }
 
 extern "C" int fstat(int fd, struct stat* status) {
-    if (!valid_fd(fd)) { errno = EBADF; return -1; }
+    object_lease lease(fd);
+    if (lease.index < 0) { errno = EBADF; return -1; }
     if (status == nullptr) { errno = EFAULT; return -1; }
-    const open_object& object = objects[descriptors[fd].object];
+    const open_object& object = objects[lease.index];
     if (object.kind == object_kind::kernel) {
         fill_stat(status, 0, false); status->st_mode = S_IFCHR | 0666; return 0;
     }
@@ -686,7 +731,9 @@ extern "C" int mkdir(const char* path, mode_t) {
 extern "C" int _mkdir(const char* path, mode_t mode) { return mkdir(path, mode); }
 
 extern "C" char* getcwd(char* buffer, size_t size) {
-    const size_t length = strlen(current_directory) + 1;
+    char snapshot[max_path];
+    { runtime_guard guard(cwd_lock); memcpy(snapshot, current_directory, max_path); }
+    const size_t length = strlen(snapshot) + 1;
     if (buffer == nullptr) {
         if (size != 0) { errno = EINVAL; return nullptr; }
         buffer = static_cast<char*>(malloc(length));
@@ -694,7 +741,7 @@ extern "C" char* getcwd(char* buffer, size_t size) {
         size = length;
     }
     if (size < length) { errno = ERANGE; return nullptr; }
-    memcpy(buffer, current_directory, length);
+    memcpy(buffer, snapshot, length);
     return buffer;
 }
 
@@ -706,23 +753,29 @@ extern "C" int chdir(const char* path) {
     (void)size;
     if (result != 0) { errno = error_from_file(result); return -1; }
     if ((attributes & xos::file::stat_is_directory) == 0) { errno = ENOTDIR; return -1; }
-    memcpy(current_directory, normalized, strlen(normalized) + 1);
+    { runtime_guard guard(cwd_lock); memcpy(current_directory, normalized, strlen(normalized) + 1); }
     return 0;
 }
 
 extern "C" int dup2(int old_fd, int new_fd) {
-    if (!valid_fd(old_fd) || new_fd < 0 || new_fd >= fd_count) { errno = EBADF; return -1; }
-    if (old_fd == new_fd) { return new_fd; }
-    if (valid_fd(new_fd)) { (void)close_fd(new_fd); }
-    const int index = descriptors[old_fd].object;
-    if (objects[index].references == 0xff) { errno = EMFILE; return -1; }
-    ++objects[index].references;
-    descriptors[new_fd].object = static_cast<signed char>(index);
-    descriptors[new_fd].close_on_exec = false;
+    int previous = -1;
+    {
+        runtime_guard guard(fd_table_lock);
+        if (!valid_fd(old_fd) || new_fd < 0 || new_fd >= fd_count) { errno = EBADF; return -1; }
+        if (old_fd == new_fd) { return new_fd; }
+        if (descriptors[new_fd].object == -2) { errno = EBUSY; return -1; }
+        if (valid_fd(new_fd)) { previous = descriptors[new_fd].object; }
+        const int index = descriptors[old_fd].object;
+        ++objects[index].references;
+        descriptors[new_fd].object = static_cast<signed char>(index);
+        descriptors[new_fd].close_on_exec = false;
+    }
+    if (previous >= 0) { release_object(previous); }
     return new_fd;
 }
 
 extern "C" int dup(int fd) {
+    runtime_guard guard(fd_table_lock);
     if (!valid_fd(fd)) { errno = EBADF; return -1; }
     const int duplicate = alloc_fd(0);
     if (duplicate < 0) { errno = EMFILE; return -1; }
@@ -735,6 +788,7 @@ extern "C" int dup(int fd) {
 }
 
 extern "C" int fcntl(int fd, int command, ...) {
+    runtime_guard guard(fd_table_lock);
     if (!valid_fd(fd)) { errno = EBADF; return -1; }
     va_list arguments;
     va_start(arguments, command);
@@ -782,12 +836,13 @@ extern "C" int fcntl(int fd, int command, ...) {
 }
 
 extern "C" int pipe(int output[2]) {
+    runtime_guard guard(fd_table_lock);
     if (output == nullptr) { errno = EFAULT; return -1; }
     const int read_fd = alloc_fd();
     if (read_fd < 0) { errno = EMFILE; return -1; }
     int write_fd = -1;
     for (int fd = read_fd + 1; fd < fd_count; ++fd) {
-        if (descriptors[fd].object < 0) { write_fd = fd; break; }
+        if (descriptors[fd].object == -1) { write_fd = fd; break; }
     }
     if (write_fd < 0) { errno = EMFILE; return -1; }
     pipe_handles handles{};
@@ -813,10 +868,12 @@ extern "C" int pipe(int output[2]) {
 }
 
 extern "C" int isatty(int fd) {
+    runtime_guard guard(fd_table_lock);
     return valid_fd(fd) && objects[descriptors[fd].object].kind == object_kind::kernel ? 1 : 0;
 }
 
 extern "C" DIR* opendir(const char* path) {
+    runtime_guard guard(directory_lock);
     char normalized[max_path];
     if (!normalize_path(path, normalized)) { errno = ENAMETOOLONG; return nullptr; }
     u32 size = 0, attributes = 0;
@@ -836,6 +893,7 @@ extern "C" DIR* opendir(const char* path) {
 }
 
 extern "C" struct dirent* readdir(DIR* directory) {
+    runtime_guard guard(directory_lock);
     directory_state* state = get_directory(directory);
     if (state == nullptr) { errno = EBADF; return nullptr; }
     while (state->position >= state->count && !state->eof) {
@@ -855,6 +913,7 @@ extern "C" struct dirent* readdir(DIR* directory) {
 }
 
 extern "C" int closedir(DIR* directory) {
+    runtime_guard guard(directory_lock);
     directory_state* state = get_directory(directory);
     if (state == nullptr) { errno = EBADF; return -1; }
     *state = directory_state{};
@@ -862,12 +921,14 @@ extern "C" int closedir(DIR* directory) {
 }
 
 extern "C" void rewinddir(DIR* directory) {
+    runtime_guard guard(directory_lock);
     directory_state* state = get_directory(directory);
     if (state == nullptr) { errno = EBADF; return; }
     state->cursor = 0; state->position = 0; state->count = 0; state->eof = false;
 }
 
 extern "C" int posix_spawn_file_actions_init(posix_spawn_file_actions_t* output) {
+    runtime_guard guard(spawn_lock);
     if (output == nullptr) { return EINVAL; }
     for (int i = 0; i < action_set_count; ++i) {
         if (!action_sets[i].active) {
@@ -881,6 +942,7 @@ extern "C" int posix_spawn_file_actions_init(posix_spawn_file_actions_t* output)
 }
 
 extern "C" int posix_spawn_file_actions_destroy(posix_spawn_file_actions_t* opaque) {
+    runtime_guard guard(spawn_lock);
     if (opaque == nullptr || *opaque == nullptr) { return EINVAL; }
     action_set* set = nullptr;
     const int error = spawn_action_set(opaque, set);
@@ -963,7 +1025,24 @@ static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
                                   const posix_spawnattr_t* attributes,
                                   char* const argv[], char* const envp[],
                                   u32 delegate_spawn_depth) {
+    runtime_guard spawn_guard(spawn_lock);
+    struct spawn_snapshot {
+        fd_slot fds[fd_count];
+        open_object open[object_count];
+        bool pinned[object_count]{};
+        spawn_snapshot() {
+            runtime_guard guard(fd_table_lock);
+            memcpy(fds, descriptors, sizeof(fds)); memcpy(open, objects, sizeof(open));
+            for (auto& fd : fds) {
+                if (fd.object >= 0 && !pinned[fd.object]) { pinned[fd.object] = true; ++objects[fd.object].references; }
+            }
+        }
+        ~spawn_snapshot() { for (int i = 0; i < object_count; ++i) { if (pinned[i]) { release_object(i); } } }
+        bool valid(int fd) { return fd >= 0 && fd < fd_count && fds[fd].object >= 0; }
+    } snapshot;
     if (path == nullptr || argv == nullptr) { return EINVAL; }
+    char working_directory[max_path];
+    { runtime_guard guard(cwd_lock); memcpy(working_directory, current_directory, max_path); }
     char normalized_path[max_path];
     if (!normalize_path(path, normalized_path)) { return ENAMETOOLONG; }
     if (attributes != nullptr && *attributes != nullptr &&
@@ -973,20 +1052,48 @@ static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
     if (error != 0) { return error; }
     xos::sdk::spawn_options options{};
     options.delegate_spawn_depth = delegate_spawn_depth;
-    options.working_directory = current_directory;
-    options.environment = const_cast<const char* const*>(envp == nullptr ? environ : envp);
-    u32 env_count = 0;
-    if (options.environment != nullptr) {
-        while (options.environment[env_count] != nullptr && env_count <= xos::startup_environment_max) { ++env_count; }
-        if (env_count > xos::startup_environment_max) { return E2BIG; }
+    options.working_directory = working_directory;
+    char environment_bytes[16384];
+    const char* environment_vector[xos::startup_environment_max + 1]{};
+    u32 env_count = 0, environment_used = 0;
+    {
+        // setenv/unsetenv use newlib's environment lock. Snapshot copied bytes
+        // before dropping it so loader RPC never borrows mutable env storage.
+        struct environment_guard {
+            bool active;
+            explicit environment_guard(bool value) : active(value) {
+#ifdef XOS_THREADED_RUNTIME
+                if (active) { __env_lock(_REENT); }
+#endif
+            }
+            ~environment_guard() {
+#ifdef XOS_THREADED_RUNTIME
+                if (active) { __env_unlock(_REENT); }
+#endif
+            }
+        } guard(envp == nullptr);
+        char* const* source = envp == nullptr ? environ : envp;
+        if (source != nullptr) {
+            while (source[env_count] != nullptr) {
+                if (env_count == xos::startup_environment_max) { return E2BIG; }
+                char checked[xos::process_max_arg_bytes];
+                if (!copy_string(source[env_count], checked, sizeof(checked))) { return E2BIG; }
+                const u32 length = static_cast<u32>(strlen(checked) + 1);
+                if (length > sizeof(environment_bytes) - environment_used) { return E2BIG; }
+                memcpy(environment_bytes + environment_used, checked, length);
+                environment_vector[env_count++] = environment_bytes + environment_used;
+                environment_used += length;
+            }
+        }
     }
+    options.environment = environment_vector;
     options.environment_count = env_count;
     for (int fd = 0; fd < 3; ++fd) {
-        if (!valid_fd(fd) || descriptors[fd].close_on_exec) {
+        if (!snapshot.valid(fd) || snapshot.fds[fd].close_on_exec) {
             options.stdio[fd] = -2;
             continue;
         }
-        const open_object& object = objects[descriptors[fd].object];
+        const open_object& object = snapshot.open[snapshot.fds[fd].object];
         if (object.kind == object_kind::kernel && object.stdio_source >= 0 && object.stdio_source < 3) {
             options.stdio[fd] = object.stdio_source;
         } else if (object.kind == object_kind::pipe_read || object.kind == object_kind::pipe_write) {
@@ -1008,8 +1115,8 @@ static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
                 options.open_paths[action.first] = action.path;
                 options.open_flags[action.first] = static_cast<u32>(action.flags);
             } else {
-                if (!valid_fd(action.first)) { return EBADF; }
-                const open_object& object = objects[descriptors[action.first].object];
+                if (!snapshot.valid(action.first)) { return EBADF; }
+                const open_object& object = snapshot.open[snapshot.fds[action.first].object];
                 if (object.kind == object_kind::kernel) {
                     if (object.stdio_source < 0 || object.stdio_source >= 3) { return ENOTSUP; }
                     options.stdio[action.second] = object.stdio_source;

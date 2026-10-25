@@ -32,7 +32,12 @@ class Guest:
         self.qmp_socket = None
 
     def expect(self, expected, *, start=0, timeout=12):
-        alternatives = (expected, b"xsh> ") if expected == b"sup> " else (expected,)
+        if expected == b"sup> ":
+            alternatives = (expected, b"xsh> ")
+        elif expected == b"[sup] demo tasks stopped":
+            alternatives = (expected, b"[xsh] demo tasks stopped")
+        else:
+            alternatives = (expected,)
         return self.expect_any(alternatives, start=start, timeout=timeout)
 
     def expect_any(self, expected_values, *, start=0, timeout=12):

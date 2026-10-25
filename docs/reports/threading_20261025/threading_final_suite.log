@@ -1,0 +1,28 @@
+python3 scripts/build.py
+Built xos.img + real_mode.img | b33da3d9929ace75 | kernel 356412 bytes
+python3 scripts/build_threading_sdk.py --newlib-prefix ".cache/xos_seed/threading_newlib/prefix" --gcc-source ".cache/threading_sources/gcc-16.2.0" --cpp
+Built experimental threading SDK: <repo>/build/threading_sdk
+python3 scripts/build_threading_probes.py
+Built guest pthread/C++/legacy-layout probes
+python3 tests/threading_compile_checks.py
+PASS SDK receipt and common AArch64 compile checks (no second-ISA runtime claim)
+python3 tests/threading_smoke.py
+PASS 15 threading groups | build b33da3d9929ace75
+python3 tests/threading_pthread_smoke.py
+PASS 10 pthread groups | kernel b33da3d9929ace75
+python3 tests/threading_cpp_smoke.py
+PASS 10 C++ threading groups | kernel b33da3d9929ace75
+python3 tests/process_smoke.py
+PASS: 13 E04 checks | build b33da3d9929ace75
+python3 tests/runtime_smoke.py
+PASS: 5 E08-2 groups | build b33da3d9929ace75
+python3 tests/task_smoke.py
+PASS: 12 E03 checks | build b33da3d9929ace75
+python3 tests/libc_smoke.py
+PASS: 3 E06 checks | build b33da3d9929ace75
+python3 tests/persist_smoke.py
+PASS: 4 E07 checks | build b33da3d9929ace75
+python3 scripts/license_audit.py
+PASS: 7 license materials | build b33da3d9929ace75 | member review remains open
+python3 scripts/threading_qualification.py
+PASS scoped T0/T1/T2 qualification | kernel b33da3d9929ace75

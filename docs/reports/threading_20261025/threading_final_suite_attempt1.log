@@ -1,0 +1,31 @@
+python3 scripts/build.py
+Built xos.img + real_mode.img | 6b6abec495704968 | kernel 356412 bytes
+python3 scripts/build_threading_sdk.py --newlib-prefix ".cache/xos_seed/threading_newlib/prefix" --gcc-source ".cache/threading_sources/gcc-16.2.0" --cpp
+Built experimental threading SDK: <repo>/build/threading_sdk
+python3 scripts/build_threading_probes.py
+<repo>/tests/fixtures/threading/pthread_probe.cpp: In function 'void* {anonymous}::worker(void*)':
+<repo>/tests/fixtures/threading/pthread_probe.cpp:67:47: error: 'setenv' was not declared in this scope; did you mean 'getenv'?
+   67 |     for (unsigned i = 0; i < 20; ++i) { check(setenv(envname, "present", 1) == 0, "concurrent-setenv"); }
+      |                                               ^~~~~~
+      |                                               getenv
+Traceback (most recent call last):
+  File "<repo>/scripts/build_threading_probes.py", line 61, in <module>
+    if __name__ == '__main__': main()
+                               ~~~~^^
+  File "<repo>/scripts/build_threading_probes.py", line 32, in main
+    run(['x86_64-elf-gcc' if name == 'c' else 'x86_64-elf-g++', '-std=c11' if name == 'c' else '-std=c++20', '-O2', '-g', '-fno-pic', '-fno-pie',
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+         '-mno-red-zone', '-fno-stack-protector', '-ftls-model=local-exec',
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+         '-I'+str(SDK/'cpp/include'), '-I'+str(SDK/'cpp/include/x86_64-elf'),
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+         '-I'+str(SDK/'include'), '-c', source, '-o', obj])
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<repo>/scripts/build_threading_probes.py", line 28, in run
+    subprocess.run(command, check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['x86_64-elf-g++', '-std=c++20', '-O2', '-g', '-fno-pic', '-fno-pie', '-mno-red-zone', '-fno-stack-protector', '-ftls-model=local-exec', '-I<repo>/build/threading_sdk/cpp/include', '-I<repo>/build/threading_sdk/cpp/include/x86_64-elf', '-I<repo>/build/threading_sdk/include', '-c', PosixPath('<repo>/tests/fixtures/threading/pthread_probe.cpp'), '-o', PosixPath('<repo>/build/threading_pthread_probe.o')]' returned non-zero exit status 1.
+make: *** [threading-smoke] Error 1

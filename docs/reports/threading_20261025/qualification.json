@@ -1,0 +1,237 @@
+{
+  "status": "passed_scoped_T0_T1_T2",
+  "base_commit": "9c896df90c2d589989b5888a495108b36959c684",
+  "kernel_build_id": "b33da3d9929ace75",
+  "boot_image_sha256": "3d1ee35e2e69216918b30742f4c32935dc5a243a2ac8a649cdef9d845ffdcba3",
+  "kernel_elf_sha256": "68122202fbd715ec4ac8d6fee306ad69061545e1e32362eea1d754f570a92a1f",
+  "kernel_binary_bytes": 356412,
+  "sdk_manifest_sha256": "ee633a59f24a31da1ab8f302a8189c9313aa08171ff6b63735e49658b38477ed",
+  "probe_manifest_sha256": "12a36431c89f2251b389e927f8709758d6cf10f35fbbd21a92347a438a87c0da",
+  "source_profile": "xos-threading-v1-experimental",
+  "qemu": {
+    "path": "<home>/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
+    "version": "QEMU emulator version 11.1.2"
+  },
+  "configuration": {
+    "machine": "pc-i440fx-10.0",
+    "cpu": "qemu64",
+    "ram_mib": 512,
+    "smp": 1,
+    "network": "none",
+    "clock_resolution_ns": 10000000
+  },
+  "tools": {
+    "gcc": "16.2.0",
+    "g++": "16.2.0",
+    "target": "x86_64-elf",
+    "ld": "GNU ld (GNU Binutils) 2.47.20260726",
+    "nasm": "NASM version 3.02 compiled on Jun 29 2026",
+    "executables": {
+      "gcc": {
+        "path": "<home>/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "sha256": "078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f"
+      },
+      "g++": {
+        "path": "<home>/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9"
+      },
+      "as": {
+        "path": "<home>/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+        "sha256": "530cf6fbe7d857e0d4ebbc52bcc017867fb7af65552a1f842dbcaa5c50db9026"
+      },
+      "ld": {
+        "path": "<home>/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+        "sha256": "92002feac2ed2e5b05ae6fb47a1aab2979b3b46bd861a4439838e6bcb20e7fe5"
+      },
+      "objcopy": {
+        "path": "<home>/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+        "sha256": "d9faf61c8148cae44ddfef8a8c914a8d7f715671681ac425592403cf96ce8332"
+      },
+      "nm": {
+        "path": "<home>/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-nm",
+        "sha256": "67a991de16c444ad6a163505be9d7f76b955cee417ae1032832369ec5e928b6c"
+      },
+      "ar": {
+        "path": "<home>/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
+        "sha256": "a7e59b3482a0e26d000bd2f4f60f7e8ad1e401909e03ca4c746ba126639087a3"
+      },
+      "cc1": {
+        "path": "<home>/homebrew/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1",
+        "sha256": "93d7ebd594188225ab181fe3790f42ffe2acaa848d5706070477ac7d65acc7a7"
+      },
+      "cc1plus": {
+        "path": "<home>/homebrew/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1plus",
+        "sha256": "f3cb4a8d630d3b20d961e329506f51e1c33a2cc4cebc45c80ec523bd138d17eb"
+      },
+      "nasm": {
+        "path": "<home>/homebrew/Cellar/nasm/3.02/bin/nasm",
+        "sha256": "5d22db7ed80aee4eb0e1cb5ff8a87e40294012f6ddf943601556922d5128b725"
+      }
+    }
+  },
+  "archives": {
+    "lib/libxos.a": "6ccd341527205b41d9634aa840b29bf651d4b6ff6bc336b336750294298e0bb4",
+    "lib/libm.a": "13aeae4af35f92a2666d204601e61ac7d36f573815eb3493c041506c074ebd1a",
+    "lib/libc.a": "d252bb6f1e37133f5e62e3c6a6b6fef337a75e2c22f7b101d63eea5a0fbd9e28",
+    "cpp/lib/libsupc++.a": "e8c5aa21fb8831a5dd7e0793844d86392a912c7244797ffb192015b39109a085",
+    "cpp/lib/libstdc++exp.a": "6f3b7323cf1f4768f194db78b5c2a6841d89d9e313f91228c176aa8ca064408b",
+    "cpp/lib/libstdc++.a": "0d20565e303307c223d285daace326f4acd818901159175a91859540b6837192",
+    "cpp/lib/libgcc.a": "14341707a43f5167154201ddf328774303cc30e9d853b6cd51d7580b65268644"
+  },
+  "reports": {
+    "threading_report": {
+      "sha256": "c7984b13a91f09d2aca4ddd454250d992fc2a7a013ebdc636024041af8ecfcde",
+      "checks": [
+        "guest_shared_memory_stack_static_tls_fpu_timer_preemption",
+        "guest_version_reserved_bad_output_entry_stack_tls_quota_abort_rollback",
+        "guest_join_value_unique_self_unknown_detach_and_reclaim",
+        "guest_wait_compare_deadline_wake_blocked_and_pinned_heap",
+        "guest_main_thread_exit_last_worker_revokes_pending_reservation",
+        "guest_last_exit_waits_for_peer_preempted_between_begin_exit_and_thread_exit",
+        "guest_worker_inherits_process_authority_and_retains_child_on_thread_exit",
+        "guest_worker_fault_stops_entire_process_and_reclaims",
+        "guest_original_fault_isolation_supervisor_survives",
+        "guest_original_file_service_and_sync",
+        "guest_FIFO_unique_join_claim",
+        "guest_partial_prepare_real_ENOMEM_rollback",
+        "guest_timeout_wake_same_tick_single_completion",
+        "guest_cross_process_same_VA_wait_keys",
+        "guest_kill_removes_blocked_threads_and_wait_records"
+      ],
+      "original_local_sha256": "c7984b13a91f09d2aca4ddd454250d992fc2a7a013ebdc636024041af8ecfcde"
+    },
+    "threading_pthread_report": {
+      "sha256": "b60cbb478bc7efee3cc37589c5d1c1546ce82deb67bd6933607453c84fccb99f",
+      "checks": [
+        "guest_pthread_mutex_cond_once_keys_four_rounds_tls_errno",
+        "guest_concurrent_newlib_malloc_realloc_stdio_and_shared_file_session",
+        "guest_shared_open_offset_dup_close_and_stack_query",
+        "guest_monotonic_timeout_relocks_mutex_realtime_returns_ENOTSUP",
+        "guest_last_thread_process_fini_once",
+        "guest_process_exit_stops_running_peer",
+        "guest__exit_skips_callbacks",
+        "guest_recursive_exit_during_TLS_cleanup_does_not_hang",
+        "guest_process_resources_return_to_baseline",
+        "guest_plain_C_consumer_ABI"
+      ],
+      "original_local_sha256": "b60cbb478bc7efee3cc37589c5d1c1546ce82deb67bd6933607453c84fccb99f"
+    },
+    "threading_cpp_report": {
+      "sha256": "5aea08f3830539ba08ffa48a32a1317d54c7564bf23228dab60af7caeba38e72",
+      "checks": [
+        "guest_std_thread_join",
+        "guest_std_mutex_condition_variable",
+        "guest_call_once_exception_retry",
+        "guest_CXX_static_guard_once",
+        "guest_thread_local_destructors",
+        "guest_concurrent_CXX_exceptions",
+        "guest_steady_clock_wait_for_nanosleep",
+        "guest_process_resources_return_to_baseline",
+        "guest_unsupported_system_clock_terminates_explicitly",
+        "guest_legacy_ELF_layout_remains_loadable_thread_opt_in_rejects_overlap"
+      ],
+      "original_local_sha256": "5aea08f3830539ba08ffa48a32a1317d54c7564bf23228dab60af7caeba38e72"
+    },
+    "threading_compile_report": {
+      "sha256": "2a91d3924a6a29b47ab31898db047dac04b2cf0ca7fbe1a93990333f69c9a6a6",
+      "checks": [
+        "SDK artifact/source SHA256 consistency",
+        "AArch64 common lifecycle/pthread/lock compile only"
+      ],
+      "original_local_sha256": "2bab5f77608073eeb32624a1bac7e092ce3a5860a82143e0fcb2683af1e455e3"
+    },
+    "process_smoke_report": {
+      "sha256": "1e881f1ace463511151b2266834747e45b3befb615762fcf1e36fbec0a103296",
+      "checks": [
+        "elf_boundary_cases_truncations_and_mutations_under_sanitizers",
+        "loader_and_sdk_common_code_second_isa_compile",
+        "gcc_cpp_sdk_programs_and_guest_image_catalog",
+        "elf_segments_bss_data_argv_handles_exit_and_single_consumption",
+        "blocking_wait_and_signed_exit_code_with_preemption",
+        "inherited_stdin_stdout_and_nonblocking_read",
+        "guest_loader_rejects_malformed_interp_overflow_and_24_boundaries",
+        "kernel_builder_bounds_permissions_stale_handles_and_capacity_rollback",
+        "private_memory_readonly_nx_and_enabled_fpu_status",
+        "live_loaded_elf_permissions_stack_guard_and_kernel_isolation",
+        "background_spawn_supervisor_kill_and_distinct_killed_status",
+        "foreground_infinite_loop_escape_recovers_terminal",
+        "ten_repeated_load_wait_exit_cycles_exact_resource_stability"
+      ],
+      "original_local_sha256": "9d7f7ed3aa2083ad369da8d1d31c0b62ffd097b73a3ef0c1e37fd50c3a207c26"
+    },
+    "runtime_smoke_report": {
+      "sha256": "f6f7016cb598baa185836e1cf8e29702e7fe2867aba4bbdb9c469f12ee96b2eb",
+      "checks": [
+        "real_driver_files_heap_env_spawn_pipe_redirect_reclaim_0",
+        "real_driver_files_heap_env_spawn_pipe_redirect_reclaim_1",
+        "real_driver_files_heap_env_spawn_pipe_redirect_reclaim_2",
+        "default_spawn_authority_denied_without_resource_leak",
+        "disk_export_confirms_source_child_output_and_stdout_redirect"
+      ],
+      "original_local_sha256": "f6f7016cb598baa185836e1cf8e29702e7fe2867aba4bbdb9c469f12ee96b2eb"
+    },
+    "task_smoke_report": {
+      "sha256": "fe7c71ff525d0f280816e4ff909af3e3119b0af332479e3896df858bb7b9050e",
+      "checks": [
+        "ring3_tasks_and_timer_started",
+        "timer_preemption_keeps_heartbeat_alive",
+        "ipc_bounds_and_user_pointer_rejected",
+        "ipc_message_delivered_between_tasks",
+        "invalid_ipc_handle_and_missing_right_rejected",
+        "user_exit_removed_from_run_queue",
+        "dead_tasks_reclaimed",
+        "user_fault_isolated_to_probe",
+        "supervisor_terminal_lists_live_tasks",
+        "supervisor_kill_reclaims_target",
+        "killed_task_removed_from_tasklist",
+        "per_task_address_spaces_observed"
+      ],
+      "original_local_sha256": "3439ae5b05ee9a5a3102d26e829dfb889b2d2c3d169c25abc931991fde90755d"
+    },
+    "libc_smoke_report": {
+      "sha256": "ff5810432dd16b2f8a2833e33a292c652c32ca88c6bc31853246333193d54166",
+      "checks": [
+        "libc_program_is_in_image_catalog",
+        "newlib_printf_malloc_string_and_exit",
+        "libc_heap_and_stdio_are_reusable_across_runs"
+      ],
+      "original_local_sha256": "c8cc0c07671bff73da1798ae3482cfe48bfae9a884137c1ad69460e23fb83885"
+    },
+    "persist_smoke_report": {
+      "sha256": "97b86258167f3f89f00ad71b0c300ea8f87c7df18e457bfe4ddb41fa71371234",
+      "checks": [
+        "first_boot_create_overwrite_delete_sync",
+        "second_boot_verifies_content_and_deletion",
+        "second_boot_executes_persisted_elf",
+        "expanded_namespace_saves_fifth_file"
+      ],
+      "original_local_sha256": "97b86258167f3f89f00ad71b0c300ea8f87c7df18e457bfe4ddb41fa71371234"
+    },
+    "license_report": {
+      "sha256": "6683c57cefa014b49890fcebd964c0c1614f6896d90b4386a5b9da374dcf4a5e",
+      "checks": [],
+      "original_local_sha256": "6683c57cefa014b49890fcebd964c0c1614f6896d90b4386a5b9da374dcf4a5e"
+    },
+    "threading_native_report": {
+      "sha256": "0ab1195db67c73b58024286c9bd8b2c48b05feabf17116a8bfa2de69ca01e0f9",
+      "checks": [
+        "real_released_GCC_compiles_inside_new_kernel",
+        "real_released_G++_compiles_inside_new_kernel",
+        "both_guest_generated_ELFs_execute",
+        "compile_errors_stay_nonzero",
+        "process_resources_return_to_baseline",
+        "source_bytes_persist_after_sync_and_source_release_archive_unchanged"
+      ],
+      "original_local_sha256": "0ab1195db67c73b58024286c9bd8b2c48b05feabf17116a8bfa2de69ca01e0f9"
+    }
+  },
+  "not_run": [
+    "SMP",
+    "full POSIX pthread compliance",
+    "CPython T3-PY",
+    "Qt T3-QT",
+    "long-duration/random scheduling stress",
+    "second-ISA runtime"
+  ]
+}

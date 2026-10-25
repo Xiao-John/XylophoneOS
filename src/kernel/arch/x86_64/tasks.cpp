@@ -131,6 +131,20 @@ u8 block_buffer[4096];
 alignas(16) u8 fpu_template[512];
 bool process_trace_enabled = true;
 
+void ready_with(thread_record& thread, i64 result);
+
+// Pipe wait keys use a live kernel pipe slot. Closing the final route wakes
+// every sleeper before that slot may be reused; no pending I/O pointer is held.
+void wake_pipe_waiters(u32 pipe_index, bool readers, bool writers) {
+    for (auto& thread : threads) {
+        if (thread.state != thread_state::blocked || thread.wait_target != pipe_index) { continue; }
+        if ((readers && thread.wait_kind == thread_wait_kind::pipe_read) ||
+            (writers && thread.wait_kind == thread_wait_kind::pipe_write)) {
+            ready_with(thread, 0);
+        }
+    }
+}
+
 void fpu_save(u8* state) {
     __asm__ volatile("fxsave64 (%0)" : : "r"(state) : "memory");
 }
@@ -274,7 +288,13 @@ void pipe_release(u32 pipe_index, bool writable) {
     if (writable) {
         if (pipe.writer_references != 0) { --pipe.writer_references; }
     } else if (pipe.reader_references != 0) { --pipe.reader_references; }
-    if (pipe.references == 0) { pipe = pipe_object{}; }
+    // EOF and broken-pipe must wake sleepers even when no bytes move.
+    if (pipe.writer_references == 0) { wake_pipe_waiters(pipe_index, true, false); }
+    if (pipe.reader_references == 0) { wake_pipe_waiters(pipe_index, false, true); }
+    if (pipe.references == 0) {
+        wake_pipe_waiters(pipe_index, true, true);
+        pipe = pipe_object{};
+    }
 }
 
 void stdio_route_release(process_record* owner, stdio_route& route) {
@@ -583,6 +603,7 @@ i64 pipe_read_from(u32 pipe_index, u64 address, u64 length) {
     }
     pipe.head = (pipe.head + amount) % process_pipe_bytes;
     pipe.length -= amount;
+    wake_pipe_waiters(pipe_index, false, true);
     return amount;
 }
 
@@ -603,6 +624,7 @@ i64 pipe_write_to(u32 pipe_index, u64 address, u64 length) {
         copy_from_user(&pipe.data[(tail + i) % process_pipe_bytes], address + i, 1);
     }
     pipe.length += amount;
+    wake_pipe_waiters(pipe_index, true, false);
     return amount;
 }
 
@@ -1450,6 +1472,39 @@ void* process_syscall(interrupt_frame* frame) {
     case sys_heap_break:
         result = set_heap_break(first);
         break;
+    case sys_pipe_wait: {
+        if (second != 0 || third != 0) { result = process_error_invalid; break; }
+        u32 pipe_index = process_max_pipes;
+        bool writable = false;
+        if (first < 3) {
+            if ((current->stdio_mask & (1u << first)) == 0 ||
+                !current->stdio[first].valid) { result = process_error_denied; break; }
+            const auto& route = current->stdio[first];
+            if (route.console) { result = process_error_would_block; break; }
+            pipe_index = route.pipe_index;
+            writable = route.writable;
+        } else {
+            const pipe_reference* reference = pipe_reference_for(current, first);
+            if (reference == nullptr) { result = process_error_denied; break; }
+            pipe_index = reference->pipe_index;
+            writable = reference->writable;
+        }
+        if (pipe_index >= process_max_pipes || !pipes[pipe_index].used) {
+            result = process_error_invalid; break;
+        }
+        const auto& pipe = pipes[pipe_index];
+        const bool ready = writable
+            ? pipe.reader_references == 0 || pipe.length < process_pipe_bytes
+            : pipe.writer_references == 0 || pipe.length != 0;
+        if (ready) { result = 0; break; }
+        // Check and sleep in one non-preemptible kernel critical section.
+        // A subsequent read/write rechecks the pipe and its own user buffer.
+        current_thread->wait_kind = writable ? thread_wait_kind::pipe_write : thread_wait_kind::pipe_read;
+        current_thread->wait_target = pipe_index;
+        current_thread->state = thread_state::blocked;
+        frame->rax = 0;
+        return schedule(frame);
+    }
     case sys_pipe_create: {
         if (!user_range_ok(first, sizeof(pipe_handles), true)) { break; }
         if (next_pipe_token + 1 > 0xffffffffull ||

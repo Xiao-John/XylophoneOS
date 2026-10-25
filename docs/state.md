@@ -1,5 +1,10 @@
 # XOS 当前状态
 
+> `feature/dash-c1-c3` 实验分支记录：C1 pipe wait 原语正在开发，尚未执行完整构建、
+> 客体测试或 C1 pipeline gate；C2/C3 完全未实现。此行只属于该分支，
+> 不能把此状态合并为上游 main 的验收结论。
+
+
 更新时间：2026-10-25（Asia/Shanghai）。新 agent 按 AGENTS.md 的阅读顺序开始。
 
 ## 当前状态

@@ -22,6 +22,8 @@ inline constexpr u64 sys_process_tls = 35;
 inline constexpr u64 sys_debug_trace = 36;
 inline constexpr u64 sys_process_delegate = 37;
 inline constexpr u64 sys_boot_payload = 53;
+// C1: sleep until a pipe route changes readability/writability. Zero extra args.
+inline constexpr u64 sys_pipe_wait = 54;
 inline constexpr i64 block_error_no_device = -1, block_error_invalid = -2;
 inline constexpr i64 block_error_io = -3, block_error_timeout = -4;
 inline constexpr i64 block_error_denied = -5;

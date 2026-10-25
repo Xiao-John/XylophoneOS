@@ -527,16 +527,23 @@ extern "C" _READ_WRITE_RETURN_TYPE read(int fd, void* buffer, size_t length) {
         if (result < 0) { errno = error_from_file(result); return -1; }
         return static_cast<ssize_t>(result);
     }
-    if (object.kind == object_kind::kernel) {
-        const xos::i64 result = xos::sdk::read(object.handle, buffer, length);
-        if (result < 0) { errno = error_from_kernel(result); return -1; }
-        return static_cast<ssize_t>(result);
-    }
-    if (object.kind == object_kind::pipe_read) {
-        const xos::i64 result = xos::sdk::syscall(xos::sys_pipe_read, object.handle,
-                                                   reinterpret_cast<xos::u64>(buffer), length);
-        if (result < 0) { errno = error_from_kernel(result); return -1; }
-        return static_cast<ssize_t>(result);
+    if (object.kind == object_kind::kernel || object.kind == object_kind::pipe_read) {
+        for (;;) {
+            const xos::i64 result = object.kind == object_kind::kernel
+                ? xos::sdk::read(object.handle, buffer, length)
+                : xos::sdk::syscall(xos::sys_pipe_read, object.handle,
+                                    reinterpret_cast<xos::u64>(buffer), length);
+            if (result != xos::process_error_would_block) {
+                if (result < 0) { errno = error_from_kernel(result); return -1; }
+                return static_cast<ssize_t>(result);
+            }
+            const xos::i64 waited = xos::sdk::syscall(xos::sys_pipe_wait, object.handle);
+            if (waited < 0) {
+                // The original nonblocking console behavior is preserved.
+                errno = waited == xos::process_error_would_block ? EAGAIN : error_from_kernel(waited);
+                return -1;
+            }
+        }
     }
     errno = EBADF; return -1;
 }
@@ -571,17 +578,23 @@ extern "C" _READ_WRITE_RETURN_TYPE write(int fd, const void* buffer, size_t leng
         }
         return static_cast<ssize_t>(done);
     }
-    if (object.kind == object_kind::kernel) {
-        const size_t chunk = length > 256 ? 256 : length;
-        const xos::i64 result = xos::sdk::write(object.handle, buffer, chunk);
-        if (result < 0) { errno = error_from_kernel(result); return -1; }
-        return static_cast<ssize_t>(result);
-    }
-    if (object.kind == object_kind::pipe_write) {
-        const xos::i64 result = xos::sdk::syscall(xos::sys_pipe_write, object.handle,
-                                                  reinterpret_cast<xos::u64>(buffer), length);
-        if (result < 0) { errno = error_from_kernel(result); return -1; }
-        return static_cast<ssize_t>(result);
+    if (object.kind == object_kind::kernel || object.kind == object_kind::pipe_write) {
+        const size_t chunk = object.kind == object_kind::kernel && length > 256 ? 256 : length;
+        for (;;) {
+            const xos::i64 result = object.kind == object_kind::kernel
+                ? xos::sdk::write(object.handle, buffer, chunk)
+                : xos::sdk::syscall(xos::sys_pipe_write, object.handle,
+                                    reinterpret_cast<xos::u64>(buffer), chunk);
+            if (result != xos::process_error_would_block) {
+                if (result < 0) { errno = error_from_kernel(result); return -1; }
+                return static_cast<ssize_t>(result);
+            }
+            const xos::i64 waited = xos::sdk::syscall(xos::sys_pipe_wait, object.handle);
+            if (waited < 0) {
+                errno = waited == xos::process_error_would_block ? EAGAIN : error_from_kernel(waited);
+                return -1;
+            }
+        }
     }
     errno = EBADF; return -1;
 }

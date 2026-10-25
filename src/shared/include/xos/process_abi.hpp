@@ -26,6 +26,9 @@ inline constexpr u64 sys_boot_payload = 53;
 // C1/C3: atomic readiness wait; arg2=minimum write bytes (0 means 1),
 // read waits require arg2=0; arg3=0. Minimum never exceeds the 4096-byte pipe.
 inline constexpr u64 sys_pipe_wait = 54;
+// Opt in via bit63 of the handle on sys11/sys32. Unflagged writes retain
+// the existing nonblocking/short-write ABI; atomic writes are <=4096 bytes.
+inline constexpr u64 pipe_write_atomic_flag = u64{1} << 63;
 inline constexpr u64 sys_process_foreground = 55, sys_process_cancel = 56;
 // C2: unstarted eager-copy child, authenticated files clone, then commit.
 inline constexpr u64 sys_process_fork_prepare = 57, sys_process_fork_commit = 58;

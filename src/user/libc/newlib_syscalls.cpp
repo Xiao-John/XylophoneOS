@@ -650,10 +650,12 @@ extern "C" _READ_WRITE_RETURN_TYPE write(int fd, const void* buffer, size_t leng
         const bool console = object.kind == object_kind::kernel &&
             xos::sdk::syscall(xos::sys_process_stdio, 0, object.handle) != 0;
         const size_t chunk = console && length > 256 ? 256 : length;
+        const xos::u64 handle = object.handle | (!console && chunk <= xos::process_pipe_bytes
+            ? xos::pipe_write_atomic_flag : 0);
         for (;;) {
             const xos::i64 result = object.kind == object_kind::kernel
-                ? xos::sdk::write(object.handle, buffer, chunk)
-                : xos::sdk::syscall(xos::sys_pipe_write, object.handle,
+                ? xos::sdk::syscall(xos::sys_handle_write, handle, reinterpret_cast<xos::u64>(buffer), chunk)
+                : xos::sdk::syscall(xos::sys_pipe_write, handle,
                                     reinterpret_cast<xos::u64>(buffer), chunk);
             if (result != xos::process_error_would_block) {
                 if (result < 0) { errno = error_from_kernel(result); return -1; }

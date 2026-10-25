@@ -67,3 +67,7 @@ Qt/SMP/线程fork/exec/任意迟到RPC恢复not_run/unsupported。ISO保持1MiB 
 256字节截断，不能保证多个writer的小写原子性。收口改成等待完整小写空间，并给
 sys54增加writer minimum空间参数（0兼容旧any-space）；补双writer/257字节读取
 强制不足空间时序的定向客体测试。大write短写与C1 gate保留，匹配SDK重新构建。
+
+原子写收口兼容性复核：用sys11/32 handle高位opt-in原子小写，保留不带flag的旧
+raw小/大短写与second0 any-space配对语义；新libc自动选择。定向测试额外要求
+旧raw 512请求在257空间仍返回257，带flag则EAGAIN，避免破坏已冻结ABI。

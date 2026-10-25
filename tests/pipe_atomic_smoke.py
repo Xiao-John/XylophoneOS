@@ -117,8 +117,8 @@ def main():
             final=resources(guest);report['final_resources']=final
             if final!=baseline:raise AssertionError(f'supervisor counters drifted: {final} != {baseline}')
             report['checks']=['raw_wait_writer_minimum_and_read_argument_validation',
-                'small_raw_write_returns_EAGAIN_until_all_512_bytes_fit',
-                'large_raw_write_retains_short_write_behavior',
+                'flagged_small_raw_write_returns_EAGAIN_until_all_512_bytes_fit',
+                'unflagged_small_and_large_raw_writes_retain_legacy_short_write_behavior',
                 'two_spawned_writers_inherit_same_stdout_pipe_and_each_write_returns_512',
                 '257_byte_reads_and_yields_preserve_every_512_byte_A_or_B_record',
                 '64_records_per_writer_65536_bytes_EOF_and_both_exit_zero',

@@ -48,9 +48,12 @@ static void raw_minimum_checks(void) {
     check(raw(32,pair.writer,(unsigned long)raw_buffer,sizeof(raw_buffer))==4096,"large-write-remains-short");
     check(raw(31,pair.reader,(unsigned long)raw_buffer,257)==257,"release-only-257-bytes");
     check(raw(54,pair.writer,0,0)==0,"legacy-minimum-one-ready");
-    check(raw(32,pair.writer,(unsigned long)raw_buffer,512)==-3,"small-write-cannot-partially-consume-space");
+    check(raw(32,pair.writer|(1ul<<63),(unsigned long)raw_buffer,512)==-3,"small-write-cannot-partially-consume-space");
     check(raw(31,pair.reader,(unsigned long)raw_buffer,255)==255,"release-complete-512-space");
-    check(raw(54,pair.writer,512,0)==0 && raw(32,pair.writer,(unsigned long)raw_buffer,512)==512,"minimum-ready-whole-write");
+    check(raw(54,pair.writer,512,0)==0 && raw(32,pair.writer|(1ul<<63),(unsigned long)raw_buffer,512)==512,"minimum-ready-whole-write");
+    check(raw(31,pair.reader,(unsigned long)raw_buffer,257)==257,"legacy-release-257");
+    check(raw(32,pair.writer,(unsigned long)raw_buffer,512)==257,"unflagged-legacy-short-write-preserved");
+    check(raw(32,pair.writer|(1ul<<63),(unsigned long)raw_buffer,7777)==-2,"atomic-over-pipe-buffer-rejected");
     check(raw(33,pair.writer,0,0)==0,"raw-close-writer");
     check(raw(31,pair.reader,(unsigned long)raw_buffer,sizeof(raw_buffer))==4096 &&
           raw(31,pair.reader,(unsigned long)raw_buffer,1)==0,"raw-drain-and-eof");

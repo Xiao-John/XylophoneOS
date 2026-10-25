@@ -616,7 +616,7 @@ i64 pipe_read_from(u32 pipe_index, u64 address, u64 length) {
     return amount;
 }
 
-i64 pipe_write_to(u32 pipe_index, u64 address, u64 length) {
+i64 pipe_write_to(u32 pipe_index, u64 address, u64 length, bool atomic = false) {
     if (pipe_index >= process_max_pipes || !pipes[pipe_index].used) {
         return process_error_invalid;
     }
@@ -624,7 +624,8 @@ i64 pipe_write_to(u32 pipe_index, u64 address, u64 length) {
     pipe_object& pipe = pipes[pipe_index];
     if (pipe.reader_references == 0) { return pipe_error_broken; }
     const u32 available = process_pipe_bytes - pipe.length;
-    if (available == 0 || (length <= process_pipe_bytes && length > available)) {
+    if (atomic && length > process_pipe_bytes) { return process_error_invalid; }
+    if (available == 0 || (atomic && length > available)) {
         return process_error_would_block;
     }
     const u64 amount64 = length < available ? length : available;
@@ -654,12 +655,12 @@ i64 stdio_read(process_record* task, u32 fd, u64 address, u64 length,
     return 1;
 }
 
-i64 stdio_write(process_record* task, u32 fd, u64 address, u64 length) {
+i64 stdio_write(process_record* task, u32 fd, u64 address, u64 length, bool atomic = false) {
     if (fd >= 3 || task == nullptr || (task->stdio_mask & (1u << fd)) == 0 ||
         !task->stdio[fd].valid || !task->stdio[fd].writable) { return process_error_denied; }
     if (length == 0) { return 0; }
     const stdio_route& route = task->stdio[fd];
-    if (!route.console) { return pipe_write_to(route.pipe_index, address, length); }
+    if (!route.console) { return pipe_write_to(route.pipe_index, address, length, atomic); }
     if (length > 256 || !user_range_ok(address, length, false)) { return process_error_invalid; }
     u8 bytes[256];
     copy_from_user(bytes, address, length);
@@ -1685,8 +1686,10 @@ void* process_syscall(interrupt_frame* frame) {
         result = 0;
         break;
     case sys_handle_write: {
-        if (first > 2 || first == 0) { result = process_error_denied; break; }
-        result = stdio_write(current, static_cast<u32>(first), second, third);
+        const u64 handle = first & ~pipe_write_atomic_flag;
+        if (handle > 2 || handle == 0) { result = process_error_denied; break; }
+        result = stdio_write(current, static_cast<u32>(handle), second, third,
+                             (first & pipe_write_atomic_flag) != 0);
         break;
     }
     case sys_handle_read: {
@@ -1912,7 +1915,8 @@ void* process_syscall(interrupt_frame* frame) {
     }
     case sys_pipe_read:
     case sys_pipe_write: {
-        pipe_reference* reference = pipe_reference_for(current, first);
+        const bool atomic = frame->rax == sys_pipe_write && (first & pipe_write_atomic_flag) != 0;
+        pipe_reference* reference = pipe_reference_for(current, atomic ? first & ~pipe_write_atomic_flag : first);
         if (reference == nullptr ||
             (frame->rax == sys_pipe_read && reference->writable) ||
             (frame->rax == sys_pipe_write && !reference->writable)) {
@@ -1920,7 +1924,7 @@ void* process_syscall(interrupt_frame* frame) {
         }
         result = frame->rax == sys_pipe_read
             ? pipe_read_from(reference->pipe_index, second, third)
-            : pipe_write_to(reference->pipe_index, second, third);
+            : pipe_write_to(reference->pipe_index, second, third, atomic);
         break;
     }
     case sys_pipe_close: {

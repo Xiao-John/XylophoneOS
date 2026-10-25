@@ -298,3 +298,8 @@ C3收口另补小pipe write原子性：当前SDK对<=4096字节的pipe write等�
 继承stdio的pipe不再错误套console的256字节上限，console仍限单次256；大于4096
 的write仍允许短写。新SDK与支持该readiness扩展的内核共同使用，旧有效second0
 调用保持兼容；不承诺writer公平性、信号SIGPIPE或完整POSIX。
+
+为保留原raw sys11/32的短写ABI，小写原子性采用handle bit63显式opt-in；无flag
+完全保留原非阻塞短写行为，旧C1等待者second0不会因语义改变忙重试。当前newlib
+对pipe小write自动置flag并以sys54 minimum等待，console不置flag；带flag大于4096
+明确EINVAL，非flag大write仍可短写。SDK header/manifest公开该位与matching需求。

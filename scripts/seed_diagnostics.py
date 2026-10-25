@@ -12,7 +12,7 @@ def diagnose(output, command=''):
     text = output.decode(errors='replace') if isinstance(output, bytes) else output
     # The serial echo is not compiler evidence.
     lines = text.splitlines()
-    if lines and (lines[0].startswith(('exec-file ', 'exec-driver ', 'spawn-file ')) or lines[0] == command):
+    if lines and (lines[0].startswith(('exec-file ', 'exec-driver ', 'spawn-file ', 'exd ')) or lines[0] == command):
         lines = lines[1:]
     actual = '\n'.join(lines)
     waits = re.findall(r'\[wait\] pid=(\d+) kind=(\w+)(?: code=(-?\d+))?', actual)
@@ -70,7 +70,7 @@ def diagnose(output, command=''):
 
 def guest_command(line, drivers=()):
     """Turn a tool invocation into an explicit supervisor command."""
-    if line.startswith(('exec-file ', 'exec-driver ', 'spawn-file ')):
+    if line.startswith(('exec-file ', 'exec-driver ', 'spawn-file ', 'exd ')):
         return line
     executable = line.split(' ', 1)[0]
     return ('exec-driver ' if executable in drivers else 'exec-file ') + line

@@ -1,0 +1,37 @@
+# CPython cross configure cannot inspect target device nodes.
+# XOS currently exposes neither Unix98 nor legacy BSD pseudo terminals.
+ac_cv_file__dev_ptmx=no
+ac_cv_file__dev_ptc=no
+
+# libxos contains an internal mmap-shaped symbol, but the public SDK exposes
+# no sys/mman.h contract. Do not let a link-only autoconf test advertise mmap.
+ac_cv_func_mmap=no
+
+# The SDK archive exposes newlib declarations or linkable wrappers whose full
+# Unix contracts are not present in XOS. Keep those APIs out of the module map.
+ac_cv_func_posix_spawn=no
+ac_cv_func_posix_spawnp=no
+ac_cv_dirent_d_type=no
+
+# newlib's sys/resource.h only describes getrusage(); it has no rlimit types
+# or functions. The resource module therefore cannot be built honestly.
+ac_cv_header_sys_resource_h=no
+
+# newlib declares the XSI timezone variables only as _timezone/_daylight and
+# ships no public times() wrapper. XOS has no CPU-time accounting, so clock()
+# reaches ENOSYS at run time; the bridge supplies the missing times() symbol.
+ac_cv_func_clock=yes
+ac_cv_func_times=no
+
+# These are declared by newlib headers but have no implementation in the XOS
+# SDK, and there is no kernel service behind them. Cross link tests have to be
+# overridden explicitly, otherwise configure records false positives.
+ac_cv_func_chroot=no
+ac_cv_func_link=no
+ac_cv_func_symlink=no
+ac_cv_func_fchdir=no
+ac_cv_func_fsync=no
+ac_cv_func_fdatasync=no
+ac_cv_func_setgroups=no
+ac_cv_func_fork=no
+ac_cv_header_sched_h=no

@@ -1,0 +1,13 @@
+{
+  "version": "3.14.9",
+  "release_date": "2026-10-21",
+  "release_page": "https://www.python.org/downloads/release/python-3149/",
+  "source": "https://www.python.org/ftp/python/3.14.9/Python-3.14.9.tar.xz",
+  "sha256": "e02d9ac21cebda6e46435369744a92c65cc7cd8669697694122cf97ffacd1e53",
+  "sigstore": "https://www.python.org/ftp/python/3.14.9/Python-3.14.9.tar.xz.sigstore",
+  "sigstore_sha256": "6e6c26f5f06c42efb353a378c6a271cc836f6ef8461af482cac2c2e0c048876f",
+  "spdx": "https://www.python.org/ftp/python/3.14.9/Python-3.14.9.tar.xz.spdx.json",
+  "spdx_sha256": "07e7d962235affa97daa0b941c1b14c494573862db0c626b493d47d36e3d0608",
+  "target": "x86_64-unknown-xos",
+  "profile": "py0a_static_gil_single_thread_stub_no_mimalloc"
+}

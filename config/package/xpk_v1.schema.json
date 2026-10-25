@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xylophoneos.invalid/schemas/xpk_v1",
+  "title": "XOS xpk_v1",
+  "description": "P0 regular-file subset. Cross-field hashes, path normalization and profile binding are enforced by scripts/xpkg_format.py.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "format_version": {
+      "const": 1,
+      "type": "integer"
+    },
+    "id": {
+      "type": "string",
+      "maxLength": 80,
+      "pattern": "^[a-z][a-z0-9_]*(?:[.-][a-z0-9_]+)*$"
+    },
+    "upstream_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "target_profile": {
+      "type": "string",
+      "maxLength": 80,
+      "pattern": "^[a-z][a-z0-9_]*(?:[.-][a-z0-9_]+)*$"
+    },
+    "required_features": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "maxLength": 80,
+        "pattern": "^[a-z][a-z0-9_]*(?:[.-][a-z0-9_]+)*$"
+      }
+    },
+    "runtime_dependencies": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^[a-z][a-z0-9_]*(?:[.-][a-z0-9_]+)*$"
+          },
+          "upstream_version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483647
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "required": [
+          "id",
+          "upstream_version",
+          "revision",
+          "sha256"
+        ]
+      }
+    },
+    "licenses": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8192,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 255,
+        "pattern": "^usr/(bin|lib|share)/[A-Za-z0-9_.+/-]+$"
+      }
+    },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8192,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "pattern": "^usr/(bin|lib|share)/[A-Za-z0-9_.+/-]+$"
+          },
+          "type": {
+            "const": "file"
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 67108864
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "role": {
+            "enum": [
+              "executable",
+              "data"
+            ]
+          }
+        },
+        "required": [
+          "path",
+          "type",
+          "size",
+          "sha256",
+          "role"
+        ]
+      }
+    },
+    "build_receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "pattern": "^usr/(bin|lib|share)/[A-Za-z0-9_.+/-]+$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ]
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    }
+  },
+  "required": [
+    "format_version",
+    "id",
+    "upstream_version",
+    "revision",
+    "target_profile",
+    "required_features",
+    "runtime_dependencies",
+    "licenses",
+    "files",
+    "build_receipt",
+    "source"
+  ]
+}

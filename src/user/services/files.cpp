@@ -168,7 +168,8 @@ bool normalize_path(const char* source, u32 source_length, char* output,
         if (c < 0x20 || c > 0x7e || c == '\\' || c == ':' || c == '*' || c == '?' ||
             c == '"' || c == '<' || c == '>' || c == '|') { return false; }
     }
-    if (source[source_length - 1] == '/' && !allow_trailing_slash) { return false; }
+    if (source[source_length - 1] == '/' && !allow_trailing_slash &&
+        !(allow_root && source_length == 1)) { return false; }
     u32 begin = source[0] == '/' ? 1 : 0;
     u32 end = source_length;
     if (allow_trailing_slash && end > begin && source[end - 1] == '/') { --end; }

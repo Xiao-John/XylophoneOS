@@ -11,6 +11,7 @@ void make_directory(const char* path);
 void rename_file(const char* old_path, const char* new_path);
 void cat(const char* name);
 void stat(const char* name);
+bool exists(const char* name);
 void remove_file(const char* name);
 void edit(const char* name);
 void filetest();

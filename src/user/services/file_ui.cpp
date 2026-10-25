@@ -215,6 +215,11 @@ void cat(const char* name) {
     if (any && last != '\n') { print("\n"); }
 }
 
+bool exists(const char* name) {
+    u32 size = 0, version = 0;
+    return client.stat(name, size, version) == 0;
+}
+
 void stat(const char* name) {
     u32 size = 0;
     u32 version = 0;

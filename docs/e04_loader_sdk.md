@@ -1,10 +1,10 @@
 # E04：用户态装载器与最小 SDK
 
-实施于 0007。源码与最终证据见 `work_log/0007_e04_user_loader.md` 和 `state.md`。
-本页保留 E04 机制描述；当前文件服务、资源上限与流式装载以 e08_storage_and_sessions.md 为准。
+实施于 0007。源码与最终证据见 `history/e01_e07.md` 和 `state.md`。
+本页保留 E04 机制描述；当前文件服务、资源上限与流式装载以 e08.md 为准。
 已有文件系统、newlib/FPU与E08-3原生binutils；尚无原生GCC/G++编译环境。
 E08-2 的启动v2、argv/env/cwd、32页栈/4页startup、动态堆、显式driver构造权、
-stdio/pipe与libc边界见 e08_runtime.md；下文v1上限保留历史，不覆盖该更新。
+stdio/pipe与libc边界见 e08.md；下文v1上限保留历史，不覆盖该更新。
 
 ## 谁负责什么
 
@@ -146,8 +146,42 @@ BSS/data/argv/句柄，fault 验证私有页、只读页、NX；E06 后 FPU 探�
 
 sys_file_session=27 是 files 专属的可信会话枚举；普通程序通过 ipc_handles 获得
 自己的文件端点对。任务结束清理端点，服务按真实 PID 清理文件句柄/staging。
-端点 token 单调不复用。文件协议升级为 v2；细节及界限见 e08_storage_and_sessions.md。
+端点 token 单调不复用。文件协议升级为 v2；细节及界限见 e08.md。
 
 0021用户库增量：SDK v5的__cxa_thread_atexit/强exit提供单用户线程的正常TLS析构，
 不改ELF装载/内核ABI；main-return/显式exit的LIFO、TLS先于global/fini已客体验证。
-无动态TLS/线程/DSO卸载。详情见e08_runtime.md与work_log/0021_cpp_seed_start.md。
+无动态TLS/线程/DSO卸载。详情见e08.md与e08.md。
+
+## 0027：用户态执行候选与诊断
+
+新增execution.hpp及loader/command.cpp：候选检查/有序PATH搜索保留在用户态，
+不看扩展名，分missing/directory/executable/not_executable/incompatible/unreadable。
+最终装载仍保持同一打开文件跨校验/映射的锁定，不以预检代替最终保证。
+spawn_file_diagnosed返回open/inspect/prepare/create/map/start阶段、错误码与ELF
+原因；旧spawn接口行为保留。完整策略见xsh.md；不是任意ABI或完整脚本执行支持。
+
+新增sys_debug_trace=36：first为0/1，second/third必须0；仅真实bootstrap supervisor
+可改变正常进程生命周期日志，driver构造权不包含该权限。错误输出不受其影响。
+这是增量调用，没有改动既有启动结构/调用编号或赋予普通任务新权限。
+
+## 0028：受限构造权委派
+
+`sys_process_grant=28`保留旧语义：仅bootstrap supervisor可给自己的building直接
+子任务一层构造权。`sys_process_delegate=37`是新的显式扩展，深度上限3；非supervisor
+调用者必须自身至少有2层，只能修改自己尚未启动的直接子任务，且委派值必须
+严格小于自身。委派拒绝使用独立`process_error_delegation=-10`，避免与文件服务
+`not_found=-1`混淆；libc映射为EPERM。
+
+`spawn_options.delegate_spawn_depth`由用户态启动策略显式设置。Xsh对裸`dash`设为2，dash的
+固定GNU driver profile经xos_posix_spawn_driver给gcc/g++设为1。内核仍只检查调用者、
+直接子任务归属、building状态和深度，不识别文件名、PATH、ELF工具身份或GCC。
+最终客体验收覆盖旧一层兼容、无权委派回滚、dash→GCC/G++→子工具链和资源复原；
+不因此声称任意进程树、fork、collect2或完整POSIX授权。
+
+## 0031：待实施的公共线程契约
+
+E13-T语义已确定，见[threading_contract.md](threading_contract.md)。这是后续ABI/
+SDK计划，尚未新增thread syscall或修改本页已实现接口。T0须同步版本化请求、
+线程栈/TLS保留区及ELF布局兼容策略；内核只提供映射/线程/等待机制，TLS模板
+解析与复制仍在用户态。进程PID/权限/会话/地址空间与线程TID/上下文分开；
+现有进程wait/kill/委派保留进程语义，T2前不声明线程安全SDK。

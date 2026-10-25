@@ -1,0 +1,208 @@
+From: XOS contributors
+Subject: [PATCH] configure: recognize the XOS static single-thread target
+
+Keep the platform admission narrow. XOS uses CPython's existing pthread stub
+backend; this does not advertise a public pthread implementation.
+
+--- a/Modules/faulthandler.c
++++ b/Modules/faulthandler.c
+@@ -1057,7 +1057,7 @@ faulthandler_suppress_crash_report(void)
+     SetErrorMode(mode | SEM_NOGPFAULTERRORBOX);
+ #endif
+ 
+-#ifdef HAVE_SYS_RESOURCE_H
++#if defined(HAVE_SYS_RESOURCE_H) && !defined(__xos__)
+     struct rlimit rl;
+ 
+     /* Disable creation of core dump */
+--- a/Modules/posixmodule.c
++++ b/Modules/posixmodule.c
+@@ -6550,6 +6550,9 @@ static int
+ utime_default(utime_t *ut, const char *path)
+ {
+-#if defined(__APPLE__) && defined(HAVE_UTIMENSAT)
++#if defined(__xos__)
++    errno = ENOSYS;
++    return -1;
++#elif defined(__APPLE__) && defined(HAVE_UTIMENSAT)
+     if (HAVE_UTIMENSAT_RUNTIME) {
+         UTIME_TO_TIMESPEC;
+         return utimensat(DEFAULT_DIR_FD, path, time, 0);
+--- a/Python/fileutils.c
++++ b/Python/fileutils.c
+@@ -3158,6 +3158,8 @@ _Py_strerror(int code)
+ #    define Py_STRERROR_R_GNU
+ #  elif defined(__ANDROID__) && defined(_GNU_SOURCE)
+ #    define Py_STRERROR_R_GNU
++#  elif defined(__xos__) && defined(_GNU_SOURCE)
++#    define Py_STRERROR_R_GNU
+ #  endif
+ #endif
+ 
+--- a/Python/pytime.c
++++ b/Python/pytime.c
+@@ -862,7 +862,7 @@ _PyTime_AsTimevalTime_t(
+ }
+ 
+ 
+-#if defined(HAVE_CLOCK_GETTIME) || defined(HAVE_KQUEUE)
++#if defined(HAVE_CLOCK_GETTIME) || defined(HAVE_KQUEUE) || defined(__xos__)
+ static int
+ pytime_as_timespec(PyTime_t ns, struct timespec *ts, int raise_exc)
+ {
+@@ -1133,5 +1133,9 @@ _PyTime_Init(struct _Py_time_runtime_state *state)
+ }
+ 
++#ifdef __xos__
++extern long long xos_cpython_monotonic_ns(void);
++#endif
++
+ // N.B. If raise_exc=0, this may be called without a thread state.
+ static int
+ py_get_monotonic_clock(PyTime_t *tp, _Py_clock_info_t *info, int raise_exc)
+@@ -1180,6 +1184,15 @@ py_get_monotonic_clock(PyTime_t *tp, _Py_clock_info_t *info, int raise_exc)
+         info->adjustable = 0;
+     }
+ 
++#elif defined(__xos__)
++    *tp = (PyTime_t)xos_cpython_monotonic_ns();
++    if (info) {
++        info->implementation = "XOS PIT ticks";
++        info->resolution = 0.01;
++        info->monotonic = 1;
++        info->adjustable = 0;
++    }
++
+ #else
+ 
+ #ifdef CLOCK_HIGHRES
+--- a/Include/internal/pycore_time.h
++++ b/Include/internal/pycore_time.h
+@@ -221,7 +221,7 @@ PyAPI_FUNC(int) _PyTime_AsTimevalTime_t(
+     int *us,
+     _PyTime_round_t round);
+ 
+-#if defined(HAVE_CLOCK_GETTIME) || defined(HAVE_KQUEUE)
++#if defined(HAVE_CLOCK_GETTIME) || defined(HAVE_KQUEUE) || defined(__xos__)
+ // Create a timestamp from a timespec structure.
+ // Raise an exception and return -1 on overflow, return 0 on success.
+ extern int _PyTime_FromTimespec(PyTime_t *tp, const struct timespec *ts);
+--- a/Python/parking_lot.c
++++ b/Python/parking_lot.c
+@@ -146,4 +146,14 @@ _PySemaphore_PlatformWait(_PySemaphore *sema, PyTime_t timeout)
+             "unexpected error from semaphore: %u (error: %u, handle: %p)",
+             wait, GetLastError(), sema->platform_sem);
+     }
++#elif defined(HAVE_PTHREAD_STUBS)
++    /* There is no second thread that can wake a blocking waiter. Preserve a
++     * queued wakeup, otherwise return without inventing a clock backend. */
++    if (sema->counter > 0) {
++        sema->counter--;
++        res = Py_PARK_OK;
++    }
++    else {
++        res = timeout >= 0 ? Py_PARK_TIMEOUT : Py_PARK_INTR;
++    }
+ #elif defined(_Py_USE_SEMAPHORES)
+     int err;
+     if (timeout >= 0) {
+--- a/Include/pyport.h
++++ b/Include/pyport.h
+@@ -152,7 +152,11 @@ typedef intptr_t        Py_intptr_t;
+ 
+ #elif HAVE_SSIZE_T
+ typedef ssize_t         Py_ssize_t;
++#  if defined(__xos__)
++#    define PY_SSIZE_T_MAX INTPTR_MAX
++#  else
+ #   define PY_SSIZE_T_MAX SSIZE_MAX
++#  endif
+ #elif SIZEOF_VOID_P == SIZEOF_SIZE_T
+ typedef Py_intptr_t     Py_ssize_t;
+ #   define PY_SSIZE_T_MAX INTPTR_MAX
+--- a/Include/cpython/pthread_stubs.h
++++ b/Include/cpython/pthread_stubs.h
+@@ -43,5 +43,9 @@
+ #  endif
+ #  include <bits/alltypes.h>
++#elif defined(__xos__)
++/* newlib exposes the POSIX pthread types through sys/types.h even when the
++ * target does not provide a pthread implementation. Reuse those types. */
++#  include <sys/types.h>
+ #else
+ typedef struct { void *__x; } pthread_cond_t;
+ typedef struct { unsigned __attr; } pthread_condattr_t;
+--- a/config.sub
++++ b/config.sub
+@@ -1761,7 +1761,7 @@ case $os in
+ 	     | openstep* | oskit* | conix* | pw32* | nonstopux* \
+ 	     | storm-chaos* | tops10* | tenex* | tops20* | its* \
+ 	     | os2* | vos* | palmos* | uclinux* | nucleus* | morphos* \
+-	     | scout* | superux* | sysv* | rtmk* | tpf* | windiss* \
++	     | scout* | superux* | sysv* | rtmk* | tpf* | windiss* | xos* \
+ 	     | powermax* | dnix* | nx6 | nx7 | sei* | dragonfly* \
+ 	     | skyos* | haiku* | rdos* | toppers* | drops* | es* \
+ 	     | onefs* | tirtos* | phoenix* | fuchsia* | redox* | bme* \
+--- a/configure.ac
++++ b/configure.ac
+@@ -342,6 +342,9 @@ then
+ 	*-*-wasi*)
+ 	    ac_sys_system=WASI
+ 	    ;;
++	*-*-xos*)
++	    ac_sys_system=XOS
++	    ;;
+ 	*)
+ 		# for now, limit cross builds to known configurations
+ 		MACHDEP="unknown"
+@@ -811,6 +814,9 @@ if test "$cross_compiling" = yes; then
+ 	wasm32-*-* | wasm64-*-*)
+ 		_host_ident=$host_cpu
+ 		;;
++	*-*-xos*)
++		_host_ident=$host_cpu
++		;;
+ 	*)
+ 		# for now, limit cross builds to known configurations
+ 		MACHDEP="unknown"
+@@ -4799,7 +4805,7 @@ else
+     LIBS="$LIBS -lcma"
+     ],[
+     AS_CASE([$ac_sys_system],
+-      [WASI], [posix_threads=stub],
++      [WASI|XOS], [posix_threads=stub],
+       [AC_MSG_ERROR([could not find pthreads on your system])]
+     )
+     ])])])])])])
+--- a/configure
++++ b/configure
+@@ -4130,6 +4130,9 @@ then
+ 	*-*-wasi*)
+ 	    ac_sys_system=WASI
+ 	    ;;
++	*-*-xos*)
++	    ac_sys_system=XOS
++	    ;;
+ 	*)
+ 		# for now, limit cross builds to known configurations
+ 		MACHDEP="unknown"
+@@ -4634,6 +4637,9 @@ if test "$cross_compiling" = yes; then
+ 	wasm32-*-* | wasm64-*-*)
+ 		_host_ident=$host_cpu
+ 		;;
++	*-*-xos*)
++		_host_ident=$host_cpu
++		;;
+ 	*)
+ 		# for now, limit cross builds to known configurations
+ 		MACHDEP="unknown"
+@@ -18201,8 +18207,8 @@ else case e in #(
+   e)
+     case $ac_sys_system in #(
+-  WASI) :
+-    posix_threads=stub ;; #(
++  WASI | XOS) :
++    posix_threads=stub ;; #(
+   *) :
+     as_fn_error $? "could not find pthreads on your system" "$LINENO" 5
+      ;;

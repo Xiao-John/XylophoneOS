@@ -1,7 +1,7 @@
 # XOS 命令使用手册（索引）
 
-本目录是宿主侧使用文档，面向内核调试控制台、用户态 supervisor 和实模式练习。
-客体有 E07 的 FAT16 工作盘、E06 的 newlib C 库与 `sup>` 文件命令；正常
+本目录是宿主侧使用文档，面向内核调试控制台、原生Xsh和实模式练习。
+客体有独立FAT32工作盘、newlib C/C++运行基底与 `xsh>` 文件命令；正常
 `sync` 后重启内容仍在。但工作盘只放用户文件，不能用命令打开这些 Markdown；
 请从宿主阅读。
 
@@ -10,7 +10,7 @@
 | 控制台 | 入口 | 提示符 | 输入 | 阶段 |
 |---|---|---|---|---|
 | 内核调试控制台 | `make run` | `xos64> ` | COM1 轮询 | E02–E07 |
-| 用户态 supervisor | 内核控制台输入 `run` | `sup> ` | SDK 输入句柄 | E04–E07 / 0007–0010 |
+| 原生Xsh（supervisor） | 内核控制台输入 `run` | `xsh> ` | SDK 输入句柄 | E04–E09 / 0027 |
 | 实模式练习控制台 | `make run_real_mode` | `xos> ` | COM1 + BIOS 键盘 | 0001 |
 
 内核控制台单向进入 supervisor，不返回。实模式练习是另一镜像，不互相切换。
@@ -48,11 +48,13 @@
 | `clear` | 清 VGA 文本屏并发送串口清屏序列 | [clear](real_mode/clear.md) |
 | `halt` | 停机并进入 HLT 循环 | [halt](real_mode/halt.md) |
 
-## Supervisor 命令索引
+## Xsh 命令索引
 
 | 命令 | 作用 | 文档 |
 |---|---|---|
 | `help` | 监督终端帮助 | [help](supervisor/help.md) |
+| `type <command>` | 解释内建、别名或最终可执行路径 | [type](supervisor/type.md) |
+| `trace [on\|off]` | 查看/切换详细进程诊断 | [trace](supervisor/trace.md) |
 | `ps` | 任务列表 | [ps](supervisor/ps.md) |
 | `kill <pid>` | 监督终止 | [kill](supervisor/kill.md) |
 | `images` | 启动模块目录 | [images](supervisor/images.md) |
@@ -75,17 +77,21 @@
 | `mkdir <path>` | 创建目录 | [mkdir](supervisor/mkdir.md) |
 | `mv <old> <new>` | 改名/移动，拒绝覆盖 | [mv](supervisor/mv.md) |
 
-这些命令只在 `sup>` 生效。按空格分词，不支持引号、管道、重定向。行上限
-255 字节，程序 argv 最多64项（含程序名），每项最多255字节；argv/env/cwd共享
-4页startup，超出拒绝。监督终端行缓冲2047字节，不能代表SDK总参数容量。
+这些命令在 `xsh>` 生效。按空格分词，不支持引号、管道、重定向；脚本工作可用
+`dash -i`切入可选dash。Xsh行上限2047字节，程序argv最多64项（含程序名），
+每项最多255字节；argv/env/cwd共享4页startup，超出拒绝。
 工作盘由宿主 `make disk` 显式创建（新盘默认 2 GiB FAT32），`make run` 只打开
 已有盘，原 16 MiB FAT16 仍兼容且不会被升级覆盖。支持目录和 ASCII LFN，
-每会话 8 个打开、全局 16 个对象锁；没有旧 4 文件/24 KiB 限制。`edit` 的正文行不走分词器，只有以 `:` 开头的行是编辑器命令。
+每会话16个打开、全局32个对象锁；没有旧4文件/24KiB限制。`edit`的正文行不走分词器，只有以 `:` 开头的行是编辑器命令。
 保存/删除后执行 `sync`，看到 `[files] sync=ok` 再停止 QEMU。
-进入 `sup>` 后约 1 秒无输入会自动停止旧演示任务 1/2/3/4；调试旧用例可先
+进入 `xsh>` 后约1秒无输入会自动停止旧演示任务1/2/3/4；调试旧用例可先
 `demo keep`，或 `demo quiet` 立即停止。
 支持 CR/LF/CRLF 和退格。前台等待时单独按 Escape 终止被等待任务并恢复终端；
 Ctrl-C 仍关闭宿主 QEMU。后台 stdin 暂无作业控制，会与终端竞争。
+
+日常成功命令默认不刷进程日志；`trace on`可恢复详细诊断。程序非零退出、故障和
+取消仍可见。查找/识别/装载的具体规则见[原生Xsh](../xsh.md)；dash后续见
+[移植计划](../dash_port_plan.md)。
 
 ## 内核/实模式通用约定
 
@@ -108,8 +114,8 @@ Ctrl-C 仍关闭宿主 QEMU。后台 stdin 暂无作业控制，会与终端竞�
   测试 `tests/process_smoke.py`，也要维护每命令一页。
 - 文档描述实际行为；未实现或未验证的能力必须写明“未实现/未运行”，不能写成已支持。
 
-工具链使用见 [E08-4 GCC C Seed](../e08_gcc_seed.md)：安装白名单、显式exec-driver、
+工具链使用见 [E08-4 GCC C Seed](../e08.md)：安装白名单、显式exec-driver、
 静态sysroot/profile与功能验收命令。G++/target标准库尚未验收。
 
-原生C++工具链见 [E08-5 G++ Seed](../e08_cpp_seed.md)，功能闭环与限制见
-[综合验收](../reports/e08_acceptance.md)。
+原生C++工具链见 [E08-5 G++ Seed](../e08.md)，功能闭环与限制见
+[综合验收](../e08.md)。

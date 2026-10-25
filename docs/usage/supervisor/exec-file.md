@@ -1,6 +1,6 @@
 # `exec-file <path> [args]`
 
-在 `sup>` 从工作盘装载静态 ELF，并等待结果。先打开并保持读锁，读取有界 ELF
+在 `xsh>` 从工作盘装载静态 ELF，并等待结果。先打开并保持读锁，读取有界 ELF
 header/PHDR，逐段逐页读取与映射，清零 BSS；关闭源文件成功后才启动子任务。
 文件在读取期间不能被写打开/替换，失败关闭并回滚所有构造资源。
 
@@ -11,7 +11,8 @@ header/PHDR，逐段逐页读取与映射，清零 BSS；关闭源文件成功�
 exec-file /bin/example.elf arg
 ```
 
-显示实际 PID、退出/故障/终止状态。前台等候可单独按 Escape 取消。命令按空格
+默认成功不刷日志，非零退出/故障/取消仍显示；trace on显示实际PID和完整结果。
+前台等候可单独按Escape取消。命令按空格
 分词，无引号；SDK 可处理含空格的路径，但终端暂不能表达它。
-机制见 `docs/e08_storage_and_sessions.md` 与 `docs/e08_runtime.md`。
+查找/检查/结构化启动诊断见[xsh](../../xsh.md)，装载机制见E08和E04文档。
 普通exec-file不赋予程序构造子任务的权限；工具驱动使用exec-driver。

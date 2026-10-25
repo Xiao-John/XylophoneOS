@@ -20,6 +20,7 @@
 | GNU Binutils Seed 2.47 | 已在 XOS 验收的静态工具 | 原 GNU 条款；src/ports/binutils 保留源包锁定哈希、许可、移植补丁及构建方法，实际构建清单绑定SDK和工具 |
 | Binutils 捆绑 zlib 1.3.1 | Seed 内部静态库 | Zlib 原许可保留，不是 XOS 自研 Apache 代码，不依赖宿主动态 zlib |
 | GCC 16.2.0 C Seed、host libstdc++/libsupc++、GMP/MPFR/MPC | 本地客体工具闭包 | src/ports/gcc/upstream 与 source_lock.json 保留实际版本和声明；components.json 登记材料哈希；目标 E08-5 库与公开分发审查未完成 |
+| sbase cat/cp/mkdir/mv/rm | dash B1的窄用户态工具 | 固定提交c546c3a；保留上游MIT LICENSE、源文件哈希及XOS适配文件清单；仅本地验收，未公开分发 |
 
 ## newlib 与 LGPL
 
@@ -68,3 +69,28 @@ GCC运行库例外；不能用当前材料检查代替这一步，也不能把�
 0020接收C Seed时补收GMP/MPFR/MPC实际源码内的LGPL/GPL声明，登记GCC运行库例外。
 这些材料及对应源码包/补丁只构成本地来源记录，尚未完成静态归档逐成员追溯或公开
 分发对应源码打包检查。原始C Seed与修复派生Seed分别保留manifest，不覆盖历史证据。
+
+## dash可选移植（0025）
+
+固定dash 0.5.13.5，登记于components.json；完整上游COPYING保存于
+src/ports/dash/upstream。该文本另列mksignames.c的GPL-2.0-or-later；当前no-signals
+profile不构建或链接该生成器/信号表。上游逐文件条款保留，本地独立后端为Apache-2.0。
+只在隔离缓存构建测试，未改已发布SDK/附件；下一次分发要随附原包、补丁、后端和
+实际配置，不把“主要是BSD类”简化为整包单一声明。
+
+## sbase窄工具集（0028）
+
+sbase固定提交`c546c3a5724c81cee9a11d816a38ccdf17472129`及tree
+`a58d176568a1b33d435a7628740b68289ea5c07a`。原始MIT文本逐字保存于
+`src/ports/sbase/upstream/LICENSE`，`source_lock.json`记录上游五个对应源文件与
+许可文件哈希；components.json将五个XOS适配文件显式登记为MIT，不按自研Apache
+默认项误判。当前只在隔离盘验收cat/cp/mkdir/mv/rm，不含递归、符号链接、权限
+保留、跨卷fallback或覆盖保证，也没有改公开发行附件。材料检查通过不替代未来
+公开分发时对实际源码包、修改说明和二进制清单的复核。
+
+## CPython PY0源码材料（0036）
+
+CPython3.14.9原始LICENSE与Doc/license.rst从source_lock所绑定、实际SHA256
+核验的源码包复制到src/ports/cpython/upstream/，components.json记录材料摘要。
+公开端口源码/补丁时随附原声明；未创建新二进制发行。静态内建模块的逐成员
+许可映射仍须按实际构建清单复核，不能将整包简化为XOS Apache许可。

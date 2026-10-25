@@ -65,7 +65,7 @@ def build_users(root, build, nasm, run, build_id):
         archive.unlink()
     run([tool("ar"), "rcsD", str(archive), *sdk_objects])
     loader_objects = [compile_source(root / "src/user/loader" / name)
-                      for name in ("elf.cpp", "load.cpp", "elf_cases.cpp")]
+                      for name in ("elf.cpp", "load.cpp", "elf_cases.cpp", "command.cpp")]
     loader_objects.append(compile_source(root / "src/user/arch/x86_64/tls.cpp"))
     loader_archive = sdk / "lib/libxos_loader.a"
     run([tool("ar"), "rcsD", str(loader_archive), *loader_objects])

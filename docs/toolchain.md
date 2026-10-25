@@ -1,8 +1,8 @@
 # E01 工具链与构建
 
-当前E08-2的运行时/CRT更新见 e08_runtime.md；E08-3 Canadian cross构建入口为
+当前E08-2的运行时/CRT更新见 e08.md；E08-3 Canadian cross构建入口为
 scripts/build_binutils.py、固定来源/补丁见 src/ports/binutils/。真实as/ld/ar/ranlib/strip
-已过客体gate，见e08_binutils_seed.md；普通make build/smoke不会下载或编译GNU源码，
+已过客体gate，见e08.md；普通make build/smoke不会下载或编译GNU源码，
 没有原生GCC/G++。
 
 ## 固定范围

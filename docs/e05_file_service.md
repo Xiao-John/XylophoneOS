@@ -3,7 +3,7 @@
 实施于 0008。E05 当时使用 RAM 后端；E07 已把存储替换为独立 FAT16 工作盘
 （ATA PIO + FatFs），客户端协议、打开实例和编辑器接口保留。持久化/同步/
 恢复边界见 `e07_persistent_work_disk.md`。源码、SDK 与证据见
-`work_log/0008_e05_ram_files.md`、`work_log/0009_e07_persistent_disk.md`
+`history/e01_e07.md`、`history/e01_e07.md`
 和 `src/shared/include/xos/file_abi.hpp`。
 
 ## 角色与拓扑

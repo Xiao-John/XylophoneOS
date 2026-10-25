@@ -50,10 +50,11 @@ def main():
                 raise AssertionError(f"Artifact mismatch: {name}")
         report["image_sha256"] = manifest["artifacts"]["xos.img"]["sha256"]
         guest.expect(b"xos64> ", timeout=20)
+        start = len(guest.output)
         send_bytes(guest, b"run\r")
-        guest.expect(b"XOS E07 user loader", timeout=15)
+        guest.expect_any((b"Welcome to Xshell", b"XOS E07 user loader"), start=start, timeout=15)
         guest.expect(b"[files] ready hello.elf", timeout=15)
-        guest.expect(b"sup> ", timeout=15)
+        guest.expect_supervisor(trace=True, start=start, timeout=15)
         command(guest, "demo keep", b"demo: keep")
         # E03 legacy tasks consume task slots and make the console noisy.
         for pid in (1, 3, 4):

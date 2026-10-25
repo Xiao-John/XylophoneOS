@@ -1,6 +1,6 @@
 # `primtest`
 
-- 控制台：用户态 supervisor，先在 `xos64>` 输入 `run`，提示符 `sup>`。
+- 控制台：用户态 supervisor，先在 `xos64>` 输入 `run`，提示符 `xsh>`。
 - 彩蛋依赖：无。
 - 实现：`src/user/programs/supervisor.cpp`，装载机制见 `docs/e04_loader_sdk.md`。
 

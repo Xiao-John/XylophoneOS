@@ -2,7 +2,7 @@
 
 实施于 0009。目标范围是“正常保存、`sync`、停止 QEMU，再次启动后内容仍在”；
 突然掉电下的事务原子性不是本组验收项。源码与证据见
-`work_log/0009_e07_persistent_disk.md`、`state.md`。
+`history/e01_e07.md`、`state.md`。
 
 ## 工作盘
 

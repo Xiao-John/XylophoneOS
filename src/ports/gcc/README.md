@@ -14,4 +14,4 @@ is copied to `src/ports/gcc/seed_manifest.json`. The host C++ closure uses real
 GCC 16.2.0 libstdc++ objects and headers; target C++/exceptions/RTTI/TLS remain
 E08-5 work. The primary accepted a derived C Seed after real guest fixes; the original installed
 binaries remain historical inputs. The direct-ld profile does not validate collect2. See
-`docs/reports/e08_gcc_seed_handoff.md`.
+`docs/e08.md`.

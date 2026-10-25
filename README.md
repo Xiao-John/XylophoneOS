@@ -28,7 +28,7 @@ E08-1 增加 512 MiB 内存基线、2 GiB FAT32 新盘、ASCII LFN/目录、per-
 E08-2 接入真实文件stdio、动态堆、受限posix_spawn/waitpid与pipe；E08-3已运行真正
 XOS-hosted GNU as/ld/ar/ranlib/strip，客体生成和strip的ELF均可执行、同步重启保留。
 上述为历史阶段证据。E08-4/5 已加入原生 GCC/G++，E08-6 完成受限 C/C++ 闭环，
-分构建证据见 [E08 验收](docs/reports/e08_acceptance.md)。当前没有完整 shell。
+分构建证据见 [E08 总览](docs/e08.md)。当前没有完整 shell。
 
 ```sh
 make disk       # 显式创建/格式化 work_disk.img（已有盘默认不动）
@@ -89,8 +89,8 @@ C 库接入、SSE 上下文和 POSIX 边界见 [E06 libc](docs/e06_libc.md)。
 普通程序在客体内解析和执行；`exec-file` 从工作盘文件装载，普通 `exec` 仍用只读启动模块。
 
 自研新代码采用 Apache-2.0；历史 MIT 和第三方许可保留。见 [许可证管理](docs/licensing.md)
-和 [NOTICE](NOTICE)。E08-1 的新盘/路径/文件会话与流式装载见
-[存储与文件会话](docs/e08_storage_and_sessions.md)。Qt为GUI主线，SDL为次选；
-分阶段移植与独立验收见[计划](docs/xos_plan.md)的E13–E20/G系列，当前没有Qt/图形实现。
-GNU Seed构建/使用见 [E08-3说明](docs/e08_binutils_seed.md)；Qt Widgets/QML的未来
-移植评估见 [讨论备忘](docs/qt_port_assessment.md)，尚未开始Qt实现。
+和 [NOTICE](NOTICE)。E08 的存储/运行时/工具链/验收合并见
+[E08 总览](docs/e08.md)，全部文档入口见 [文档索引](docs/README.md)。
+Qt为GUI主线，SDL为次选；分阶段移植与独立验收见[计划](docs/xos_plan.md)的
+E13–E20/G系列，当前没有Qt/图形实现。Qt Widgets/QML 的未来移植评估见
+[讨论备忘](docs/qt_port_assessment.md)，尚未开始 Qt 实现。

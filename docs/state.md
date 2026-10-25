@@ -1,22 +1,185 @@
 # XOS 当前状态
 
-更新时间：2026-10-24（Asia/Shanghai）。新 agent 按 AGENTS.md 的阅读顺序开始。
+更新时间：2026-10-25（Asia/Shanghai）。新 agent 按 AGENTS.md 的阅读顺序开始。
 
 ## 当前方向与协作状态
 
-以 xos_plan.md v0.5 正文、后续决定和本页状态为准。下划线命名、轻松开发、过程落盘；
+以 xos_plan.md v0.9 正文、后续决定和本页状态为准。下划线命名、轻松开发、过程落盘；
 固件/ISA/平台/通用内核分层。localpilot/ 独立，不进入 XOS 构建、扫描或清理。
 顺序 E05 → E07 → E06 已完成。E08-1、E08-2、E08-3 的受限 gate 均已通过；
 E08-1至E08-6当前约定的受限功能gate均已通过；E08功能闭环收口（0022）。
-综合证据见reports/e08_acceptance.md，不冒称最终镜像全量旧回归或压力全绿。
+综合证据见e08.md，不冒称最终镜像全量旧回归或压力全绿。
 
 本组协作已结束：主agent完成统一构建/验收/文档；kernel/files/loader Luna分别完成
 机制、文件运行时、GNU构建/补丁。没有剩余占用的编辑范围；责任和失败过程见
-work_log/0013_e08_2_runtime.md与0015_e08_3_binutils.md。新一组重新登记范围，
+e08.md。新一组重新登记范围，
 仍不得并发构建/清理build/，GNU专属cache构建使用独立SDK快照。
 
 Git origin 为 Xiao-John/XylophoneOS。0023按用户明确授权提交、推送并发布发行，
 使用本机凭据且不将凭据落盘。原日常 work_disk.img 保留，测试均使用临时专用盘。
+
+## 0036：当前基线提交/推送交接
+
+用户要求立即推送main供朋友多线程PR，不等待Open Adventure。本次收口已完成的
+Shell/UTF-8/CPython PY0/包管理P0与契约文档；游戏进行中源码src/ports/adventure/
+保留本地，不提交或删除。朋友按threading_contract.md从T0开工，syscall已至37；
+主端继续包管理P1，不并行改线程代码。核心源码摘要与3d7665a665df9443回执一致；
+没有重建或重跑旧测试。补齐CPython原许可证与登记，不改发行标签/附件。
+范围与接手说明见work_log/0036_thread_pr_baseline.md；Git提交/远端ref定位实际快照。
+
+## 0035完成：包管理P0实现
+
+用户将多线程实施交朋友、通过PR接收；本线优先包管理，不占内核/ABI/libc源码。
+宿主scripts/xos_app.py已支持独立项目init/build/check/pack，scripts/xpkg.py支持
+pack/inspect/verify；共享xpkg_format.py严格校验v1普通文件ustar/JSON、路径/哈希/
+受限ELF和声明profile；config/package/冻结schema及已验发行SDK快照profile。
+只接受明确登记的完整单线程SDK，不把任意同ISA/新线程库冒认为兼容。
+宿主16组通过，真实仓库外C/C++项目构建与重复打包；2项包payload客体退出0，
+每项资源[130342,2,0]恢复。用冻结系统2c3876e640840ff5和全新测试盘，通过已有
+文件桥传输；不是通用安装器验收，未重建系统或操作日常盘/发行附件。
+报告build/package_p0/host_report.json、guest_report.json、final_receipt.json；关键
+哈希见work_log/0035_package_p0.md。主计划v0.9及开发入口已同步。
+P0受限完成，P1安装/归属数据库、P2客体xpkg/P3仓库仍not_run；下一步P1独立
+候选盘新安装与源盘保护。未改Open Adventure/CPython/UTF-8源码、未跑旧压力。
+本组结束，无剩余编辑占用；未提交/推送或派出agent，线程PR尚待接收。
+
+## 0033 完成：UTF-8文本通道 U0/U1
+
+Xsh与dash的控制台行编辑已接受UTF-8字节，按码点退格、按显示宽度擦除；非法UTF-8
+整行拒绝，合法字节原样传给argv。共享实现`xos::text`（解码/校验/宽度/erase_last），
+未改文件服务、locale、内核控制台或进程ABI。系统build`3d7665a665df9443`，镜像
+SHA256 `74b07888…`。主目标通过：客体原生G++编译运行`UNICODE_example1.cpp`，
+逐字节输出德/中两行；Xsh 6/6、dash 4/4客体检查通过。dash空闲读的
+EWOULDBLOCK刷屏已修为yield重试；dash用当前`build/sdk`重建。
+
+明确限制：UTF-8文件名/目录仍受U2的ASCII路径限制（`cannot read program`）；
+VGA不渲染UTF-8；无UTF-8 locale/字符级glob；无客体键盘/输入法。未做语言包管理器。
+计划见[utf8_text_plan.md](utf8_text_plan.md)，过程与哈希见
+[work_log/0033_utf8_text.md](work_log/0033_utf8_text.md)。本组无剩余编辑占用；
+下一步U2路径，L0只读数据包+Unicode工具可选，N1输入法另立。
+
+## 0032完成：包管理与独立第三方开发规划
+
+方案见[package_management.md](package_management.md)，独立SDK项目→P0开发/包
+契约→P1宿主候选盘离线安装→P2客体事务/恢复→P3仓库。xos_app/xpkg与包格式
+均待实施，未建立schema/CLI或包数据库。C16只确认独立开发/包管理方向，P07
+记录待核验工程方案；主计划v0.8、决策/索引已同步。
+重写[开发入口](friend_user_program_quickstart.md)：普通main、发行SDK compile.py、
+现有离线非覆盖导入、原生GCC/G++后exec-file，不再要求改系统源码/重建镜像。
+已核对0030 PY0与0033 UTF-8文本通道结果，Open Adventure由用户移植线负责；
+文本UTF-8不推导路径U2。首包样本hello/CPython/Open Adventure，构建/运行依赖
+分开。线程T0–T2仍优先。本组仅文档，无源码/构建/安装/客体或旧压力重跑；
+记录work_log/0032_package_management.md。规划结束，无剩余编辑占用。
+
+## 0031完成：公共线程契约与计划
+
+用户确认E13-T提前，契约见[threading_contract.md](threading_contract.md) v1。
+1:1内核线程/单核抢占；T0进程线程分离/生命周期、T1比较等待/单调时间、T2真实
+pthread与线程安全newlib/C++ SDK、T3-PY/T3-QT各自接入。0028已交付，下一组可
+领取T0；0030继续依赖探针，T2后真实Python线程前移，不等PY3其余生态功能。
+主计划v0.7/C15、决策、CPython计划/SDK计划引用/索引已同步。所有线程实现与
+gate均not_run，仅定语义/验收；数值ABI/布局由T0同步头/SDK冻结。无源码修改、
+构建/客体/压力，也未修改0030源码或旧发行。详见work_log/0031_threading_contract.md。
+本组文档完成，无剩余编辑占用，尚未启动线程实现或派出代理。
+
+## 0030 完成：CPython PY0a/PY0b
+
+接手意外暂停的移植后，PY0a/PY0b 已通过。冻结 CPython 3.14.9 与发布 SDK
+`2c3876e640840ff5`；构建 fingerprint `ad85d8438b4101d66483`，静态解释器
+`target_build/python.exe`（unstrip SHA256 `bc7aeca3…`，strip 后 `71839cb7…`，
+7928480 字节），装入 `/usr/bin/python3` 与 `/usr/lib/python3.14/`。客体报告
+`build/cpython_py0b_report.json` 7/7：`-c` 算术、脚本、Unicode、未捕获异常
+退出 1、GC、同目录 import、重复启动；运行镜像 build `498ad82e530fbf23`，
+SHA256 `66a98859…`。114 模块中 71 静态内建、0 共享、25 n/a、9 禁用、9 缺失。
+
+诚实限制：无熵服务，bootstrap 固定 hash seed 0（非安全随机）；`time.sleep()`
+自旋 PIT tick；无墙钟/CPU 时间、fork/exec/select/动态加载/线程；REPL 与
+input/PY1 路径规则尚未验；128 KiB 用户栈要求 `-O2`。未修改 libc/内核/loader、
+dash/sbase 或发布镜像，未并发运行共享构建；未重跑旧压力。证据与逐项修复见
+[work_log/0030_cpython_py0.md](work_log/0030_cpython_py0.md)，构建/测试入口见
+`src/ports/cpython/README.md`。本组无剩余编辑占用；下一步 PY1 脚本/import，
+再 PY2 REPL/JSON 存档，熵/墙钟与 T3-PY 等公共底座另开 gate。
+
+## 0029完成：CPython移植规划
+
+朋友投票优先CPython，用户要求先规划，实施仍交专门用户态agent。方案见
+[cpython_port_plan.md](cpython_port_plan.md)：建议3.14维护分支，先PY0a冻结源码/SDK
+及依赖探针，再PY0b静态单线程核心、PY1脚本/import、PY2传统REPL与文件存档；
+之后可收一次PY4分发，PY3扩展按实际底座逐项推进。线程内部锁/TSS、时钟/熵、
+启动编码、输入和小栈为重点，不全球伪造pthread或POSIX。不要求fork/dash先完成。
+本轮只交设计，所有CPython构建/客体gate未运行，候选版本尚未锁定；未修改0028
+代码或运行共享构建/压力，未改计划正文C决策。记录work_log/0029_cpython_port_plan.md。
+规划结束，无剩余编辑占用；下位agent先拿冻结SDK并重新登记范围。
+
+## 0028完成：dash B0+B1
+
+B0新增最大3层的显式构造权委派；非supervisor只能给直接building子任务
+更小深度。旧grant_spawn仍是一层直接构造权。Xsh仅对裸dash启动配置深度2，
+dash的用户态固定profile仅对GCC/G++ driver委派1层；内核不识别工具名或路径。
+未获委派的exec-driver dash启动GCC被明确EPERM拒绝、退126且无目标文件。
+
+B1放行case、函数、dot source和已有参数展开；引入锁定sbase commit
+c546c3a5724c81cee9a11d816a38ccdf17472129的cat/cp/mkdir/mv/rm窄子集。最终隔离构建
+f3fdb780732801ab，xos.img SHA256 b91905f4ec723326a7863c0a6c6aee4d956c24b057c337214ae0116f455b6d3b；
+dash SHA256 195f49af2471bc5d3b39bea68ebc056ee81416cba0700d0510a87cdbd5a5cfdb。
+B0/B1 7项客体gate通过：真实GCC→cc1/as/ld、G++→cc1plus/as/ld，故意编译失败后
+cp修改源码、重译并执行C/C++，工具文件副作用和拒绝路径；各组资源回到
+[130336,2,0]。dash A 16项回归与许可材料检查通过；无管道/重定向/子Shell/
+后台/exec替换，B2/C仍未开始。证据build/dash_b_final2/dash_b_acceptance_report.json、
+.cache/xos_seed/dash/39f57f408a4362fda92e/shell_smoke_report.json与work_log/0028_dash_b0_b1.md。
+本组完成，无编辑占用；发行附件、日常工作盘和localpilot未改。
+
+## 0027完成：Xsh交互与可执行查找优化
+
+用户追加可执行文件设计优化并授权子agent。主agent占用supervisor.cpp、整合/文档和
+build/xsh_ui串行构建；kernel_trace子agent独占tasks.cpp/process_abi.hpp的日志开关；
+execution子agent独占新增execution.hpp、loader候选检查/结构化启动诊断及user_build.py
+的loader对象登记；ui_cases子agent独占tests/xsh_ui_smoke.py与新夹具。接口先固定后
+并行编辑，不覆盖对方文件。PATH/ELF/错误解释都在用户态，driver授权语义本组不改。
+不动发行附件、localpilot或他人文档整理；旧sup>测试适配在定向runner中明确处理。
+统一隔离构建b508acc417e218b3，build/xsh_ui/xos.img SHA256
+2371b0118ea1499450f49d4801e87238073eec86a45679fad2f25714e087499b。
+新UI/执行11组、dash A16项客体通过，资源基线[130336,2,0]逐组恢复。
+欢迎/提示改xsh>，默认成功简洁、trace on可看详情；type显示命令来源。PATH按ELF
+检查跳过无效候选，显式路径不fallback，资源/读取错误停止搜索；结构化装载错误
+与sys36仅supervisor诊断开关见xsh.md。ABI/脚本/授权仍有明确范围。
+新增候选与装载两文件AArch64仅编译通过，许可材料检查通过；未重跑旧全量/压力。
+证据work_log/0027_xsh_execution_ui.md；后续dash计划dash_port_plan.md，B0/B1优先。
+本组完成，三个子agent均交付，无编辑占用；共享发布镜像/日常盘未变。
+
+## 0026完成：确认Xshell exd与PATH
+
+用户新增的exd别名与固定PATH=/usr/bin:/bin:/已定向客体验证，系统498ad82e530fbf23。
+exd dash脚本可经继承PATH再次启动hello；裸dash、原exec-driver与显式路径均退出0，
+四项资源回到[130342,2,0]。见work_log/0026_xshell_alias_confirmation.md；没有修改
+对方实现。0025所述并发PATH修改现由0026补验，dash仍为可选程序，无编辑占用。
+
+## 0025完成：可选dash A与E09发行交付收口
+
+用户授权开始dash A。主agent占用src/ports/dash/、scripts/build_dash.py、
+tests/shell_smoke.py、docs/shell_subset.md及本页/工作记录/计划。隔离构建使用
+.cache/xos_seed/dash/和发行冻结SDK，测试用独立盘。cd /暴露files根路径被尾斜杠
+检查拒绝，主端增加files.cpp这一行修复与build/dash_system隔离系统重建；不改发布镜像。
+E09发行交付完成；朋友独立试用和备份恢复/升级验收记录仍待补，不假报已测。
+用户确认Xshell/xsh保留原生入口与交互定义权；dash是/usr/bin/dash可选程序，
+不替换默认Shell，不自动安装/bin/sh。A的16项客体验证通过，退出回到Xshell。
+ELF SHA256 97dd273e34924203bad691df02b3f4f13e3fd448571c84d2065335c05fb7072e，
+系统64fcf112f8efc899含根路径修复。报告shell_subset.md、work_log/0025_dash_a.md。
+同时发现其他任务在整理历史文档和改supervisor PATH；均未覆盖。本次镜像使用
+发布版supervisor，后来的PATH修改未验，不声称最新工作区整体已验收。B/C尚未开始。
+本组无剩余编辑占用；下一步可按B继续，或独立改善xsh交互。
+
+## 0024完成：Shell移植勘查
+
+主agent只占用docs/shell_port_scout.md、work_log/0024_shell_port_scout.md和本页，
+下载/配置/编译探测限定.cache/xos_seed/shell_scout/，不构建主系统或运行旧压力。
+比较dash与BusyBox hush的真实进程/描述符依赖，确定最短落地路线；不把源码分析
+或宿主编译当成XOS客体运行。压力从端文件和发行标签/附件不修改。
+建议dash 0.5.13.5 + 受限posix_spawn执行后端，先简单命令/脚本，再描述符与
+原生编译，最后管道/隔离执行。dash目标configure通过，make部分生成14对象后
+失败；尚无完整Shell ELF或客体运行。hush NOMMU仍需vfork且有libbb/组合许可成本。
+报告shell_port_scout.md、工作记录0024；本组已结束，无剩余占用。路线是建议，
+尚未修改主计划或标记Shell已实现；下一步可直接按报告A批次实施。
 
 ## 0023完成：首个正式发布
 
@@ -35,12 +198,12 @@ SDK C/C++宿主编译和四项新包客体验证通过，见work_log/0023_first_
 
 接收A/B后，六项早期ABI客体通过；E08-5原生G++设施4组/14命令通过，
 6b7d5cfc3612fdf4，资源[130342,2,0]。实际修复TLS回退重复定义和g++ lrealpath漏返回，
-原始输入不覆盖，派生入口/安装命令见e08_cpp_seed.md与work_log/0022_cpp_seed_acceptance.md。
+原始输入不覆盖，派生入口/安装命令见e08.md与e08.md。
 当前最终系统2c3876e640840ff5，xos.img SHA256
 1c2cfa90d65b9a9585ac3d5cef32c8376b1806e65f7502321912b2e15b54454c。
 E08-6 C++编辑→重编→运行→sync→重启通过4项/18命令，结合0021已通过的C增量，
 主端判定E08受限功能验收通过，O11/O12/O13在固定静态配置通过。单语言原报告
-仍标partial，综合报告reports/e08_acceptance.md、build/e08_acceptance_report.json
+仍标partial，综合报告e08.md、build/e08_acceptance_report.json
 分别绑定测试版本；没有重跑C/旧CRT/历史压力，也不把旧证据归到最终镜像同一次测试。
 最终系统与native gate相比仅更新目标库许可登记，实际CRT/库/头与SDK v5一致。
 目标库与修复G++分别在.cache/xos_seed/gcc/relinks/target_runtime_v5_receipt/、
@@ -55,7 +218,7 @@ Qt、系统重建、自举不因本组通过自动开工。下面0021/旧阶段�
 
 用户授权开始E08-5，争取2026-10-24晚进入E08验收。主端负责libc/ABI/SDK、C++
 安装整合/正式gate、共享文档与build/串行构建/QEMU。从端任务已写
-prompts/e08_5_secondary.md，外部从端待用户转交/启动，不能误认为已经运行；独占
+e08.md，外部从端待用户转交/启动，不能误认为已经运行；独占
 GNU构建脚本/ports/gcc及新e08_5私有cache，优先分批交target运行库，再交g++/cc1plus。
 本轮两位Luna均已交付冻结，主端当前持有共享文件和build/，没有其他编辑占用。
 主端新运行基底f40c9a254b5433d7已构建，TLS main-return/显式exit两条客体路径通过，
@@ -64,14 +227,14 @@ GNU构建脚本/ports/gcc及新e08_5私有cache，优先分批交target运行库
 C++安装/profile合同5例、v5 target sysroot readonly预检、许可材料核对通过。
 E08-5仍not_run；E08-6提前验证的C部分已通过4项/18命令（82ffcecab8ccbcce），
 报告build/e08_6_c_report.json；旧测试镜像/manifest已保存，不因新构建丢失绑定。
-完整记录work_log/0021_cpp_seed_start.md。等待从端分批交真实target库/G++后继续
+完整记录e08.md。等待从端分批交真实target库/G++后继续
 独立ABI→原生G++设施→C++编辑/重启增量。C++未验，不标E08-6/整体通过。
 不重跑已完成C gate/旧压力，后续压力由专人负责。
 
 ## 0018–0019历史：E08-4/5分工
 
 0018已写好主agent（含Luna）与另一协作agent的执行prompt，入口
-[e08_4_5_coordination.md](e08_4_5_coordination.md)。主agent负责ABI/运行基底/集成/验收，
+[e08.md](e08.md)。主agent负责ABI/运行基底/集成/验收，
 协作者负责GCC/G++构建和依赖闭包；build/归主agent串行使用。
 用户已启动从端；主agent现在启动实施。主agent独占内核/loader/ABI、构建集成、
 共享文档和build/；luna_runtime负责指定libc分析/实现，luna_cases负责新增测试；
@@ -82,7 +245,7 @@ E08-5仍not_run；E08-6提前验证的C部分已通过4项/18命令（82ffcecab8
 SDK v2已冻结到 .cache/xos_seed/sdk_snapshots/f5c74adecb9515878fdbce14a56062cb0567772ae183edecf2a455d15a1f9f74，
 供从端构建使用；不包含libstdc++/libsupc++，不能当GCC/C++阶段完成。
 从端<algorithm>阻塞已回复：由从端先构建真实host静态标准库闭包，继续指令在
-[主端回复](reports/e08_gcc_primary_reply.md)，不等待主端另交预构建STL。
+[主端回复](e08.md)，不等待主端另交预构建STL。
 
 ## 0020已完成：C Seed集成与验收
 
@@ -90,7 +253,7 @@ E08-4受限功能gate通过，构建82ffcecab8ccbcce，xos.img SHA256
 bd5dd6d7342b42ce5904f0937675c3285f9058fa93d0568792b63e3d31530a8d。
 4组/15命令：真实GCC/cc1/as/ld多文件归档链接与执行、libgcc128位辅助函数、
 错误路径、源码逐字节保护；每条资源恢复[130342,2,0]。完整证据和接续命令见
-[0020](work_log/0020_seed_integration.md)、[C Seed使用](e08_gcc_seed.md)。
+[e08.md](e08.md)。
 修复lrealpath漏返回值、O_NOCTTY拒绝、as安装名和8-open链接容量缺口；
 文件消息布局不变，每会话16打开/全局32锁。SDK v4冻结为
 .cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490，
@@ -114,7 +277,7 @@ manifest SHA256 4986571a249ba23a814454848837eaebb0791dbb5dc6273c563df1c141dc4193
 运行时已静态链接进新工具，旧 Seed 仍含 bug，不应与修复版本混用。
 对应 SDK 快照 f187691498b56720feb7ee118ad6cd70b2808cd4145ad7d4ea3d640ee51a1a93。
 证据 build/archive_link_regression_report.json、file_position_regression_report.json、
-work_log/0017_archive_position_fix.md；下面5276ff16全量结果仍属于历史版本，
+e08.md；下面5276ff16全量结果仍属于历史版本，
 不冒称本次全量已复验。S2 原压力失败报告保留，定向修复不将整份压力测试改成全绿。
 
 ## 当前已实现
@@ -156,12 +319,12 @@ work_log/0017_archive_position_fix.md；下面5276ff16全量结果仍属于历�
 - E08-2 newlib适配已连接真实文件/目录/临时文件/errno、动态sbrk堆、受限
   posix_spawn/waitpid/stdio/pipe。exec-driver显式授权，不继承给孙任务；
   普通程序不能创建子工具。最终5组runtime检查及完整集成回归通过。
-  限制见e08_runtime.md；不是完整POSIX，无fork/mmap/墙钟/符号链接/权限位。
+  限制见e08.md；不是完整POSIX，无fork/mmap/墙钟/符号链接/权限位。
 - stat/fstat返回真实SFN目录项映射身份，root inode=1、其余16位编号不复用，
   每次服务生命最多65534个非root身份，耗尽失败；rename/保存保持身份。
 - GNU Binutils 2.47的as/ld/ar/ranlib/strip为工作盘XOS可执行Seed，真正客体产出
   目标文件/静态库/ELF，strip后重启可执行。另4个工具仅静态检查，不冒称客体验收。
-  使用方法与限制见e08_binutils_seed.md；无TLS/动态插件，捆绑zlib静态链接。
+  使用方法与限制见e08.md；无TLS/动态插件，捆绑zlib静态链接。
 - 显式离线 work_disk.py 可 mkdir/import/export，拒绝覆盖目标；运行时文件/装载
   都在客体，不由宿主代执行。
 
@@ -178,7 +341,7 @@ xos.img SHA256 7f4e361efed1c8b40470b30bfdb859d7d95c7bea13cfbfa3504949f82b28513a�
   final `ld` 报成员unknown architecture（首次21.o，probe中0.o，首个失败成员不稳定）。
   不是对象生成错误；host对象/archive有效，guest `ar t`和`ld -r`可读。E08-3压力
   不算全绿，S2当时是E08-4 archive/GCC前的blocker；0017已定向修复，见上。报告：
-  `docs/reports/e08_3_stress_report.md`、`build/e08_3_stress_combined.json`。
+  `e08.md`、`build/e08_3_stress_combined.json`。
   生成ELF及stripped ELF均输出seed chain并退出42，宿主readelf/nm仅静态核对。
 - make build同源重建完整manifest相同，193个产物、260个源码哈希均核对通过。
 - Seed构建指纹47ddd3071e2ad7f69b8b903c51b491aa59d81ed96e173fb0f506341248af0a9e，
@@ -232,13 +395,14 @@ QtGui/QPA、Widgets、无界面QML、软件Quick、集成/试用分别验收。
 窄OS服务与用户态Qt/SDL适配分开，不绑定固件/ISA；尚未引入Qt或开始GUI实现。
 本组仅文档修改，责任已结束；交接见work_log/0016_qt_gui_plan.md。
 
-## 下一步：E09交付/试用；Qt GUI 扩展已纳入计划
+## 下一步：dash B2 / xsh交互；E09试用反馈待补
 
-先读reports/e08_acceptance.md、work_log/0022_cpp_seed_acceptance.md、e08_cpp_seed.md。
+先读e08.md、e08.md、e08.md。
 
-1. E09尚未开始：准备可交给朋友的镜像、独立工作盘、版本化SDK和真实上手说明；
-   公开分发前补GNU对应源码/许可材料核对，不能把本地材料检查当完整发布审查。
-2. 后续压力继续专人负责，使用0022正式派生G++/目标库及0020修复C/binutils；
+1. E09发行交付已由0023完成，镜像/工作盘/SDK/源码/说明公开；朋友独立试用与
+   备份恢复/升级的真实记录待补，O19/O20仍未验，不阻塞可选dash和xsh后续开发。
+2. dash B0/B1已由0028通过；下一批是B2真实描述符/重定向和前台取消，C阶段仍未开始。
+   后续压力继续专人负责，使用0022正式派生G++/目标库及0020修复C/binutils；
    不复用含已暴露bug的原始工具。已有功能测试不无变化重复运行。
 3. Qt主线/SDL次选仍按v0.5的独立阶段，当前未开工；系统重建和自举也另行验收。
 

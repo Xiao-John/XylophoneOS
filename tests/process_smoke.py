@@ -94,9 +94,10 @@ def main():
         guest = Guest(build / "xos.img", "process_smoke")
         report["command"] = guest.command
         guest.expect(b"xos64> ", timeout=20)
+        start = len(guest.output)
         send_bytes(guest, b"run\r")
-        guest.expect(b"XOS E07 user loader", timeout=15)
-        guest.expect(b"sup> ")
+        guest.expect_any((b"Welcome to Xshell", b"XOS E07 user loader"), start=start, timeout=15)
+        guest.expect_supervisor(trace=True, start=start)
         command(guest, "demo keep", b"demo: keep")
         pump(guest, 0.2)
         # Keep the heartbeat and the non-yielding legacy spinner, reduce IPC log noise.

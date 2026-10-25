@@ -1,0 +1,261 @@
+From: XOS contributors
+Subject: [PATCH] configure: scope XOS modules to what the runtime provides
+
+XOS has no fork/exec, select, pty, dlopen, zoneinfo or entropy service, and
+newlib does not implement lstat, pause, or the XSI timezone names. Keep those
+modules and code paths out of the static bootstrap instead of linking against
+absent symbols. Static modules are the only build type XOS can load. Link every
+archive in one group: module archives follow LIBS, so libc and libgcc must be
+revisited after they are seen. The bootstrap profile uses a deterministic hash
+seed and spins for time.sleep(); neither is a claim of secure randomness or a
+blocking timer service.
+--- base1/configure	2026-10-25 12:33:49
++++ mod/configure	2026-10-25 12:33:36
+@@ -31797,9 +31797,41 @@
+     py_cv_module__testimportmultiple=n/a
+     py_cv_module__testmultiphase=n/a
+     py_cv_module__testsinglephase=n/a
++    py_cv_module_fcntl=n/a
++    py_cv_module_mmap=n/a
++    py_cv_module_termios=n/a
++    py_cv_module_xxlimited=n/a
++    py_cv_module_xxlimited_35=n/a
++    py_cv_module_=n/a
++
++   ;; #(
++  XOS) :
++
++    py_cv_module__curses=n/a
++    py_cv_module__curses_panel=n/a
++    py_cv_module__dbm=n/a
++    py_cv_module__gdbm=n/a
++    py_cv_module__multiprocessing=n/a
++    py_cv_module__posixshmem=n/a
++    py_cv_module__posixsubprocess=n/a
++    py_cv_module__scproxy=n/a
++    py_cv_module__tkinter=n/a
++    py_cv_module_grp=n/a
++    py_cv_module_pwd=n/a
++    py_cv_module_resource=n/a
++    py_cv_module_select=n/a
++    py_cv_module_syslog=n/a
+     py_cv_module_fcntl=n/a
+     py_cv_module_mmap=n/a
++    py_cv_module_readline=n/a
+     py_cv_module_termios=n/a
++    py_cv_module_=n/a
++
++    py_cv_module__ctypes_test=n/a
++    py_cv_module__remote_debugging=n/a
++    py_cv_module__testimportmultiple=n/a
++    py_cv_module__testmultiphase=n/a
++    py_cv_module__testsinglephase=n/a
+     py_cv_module_xxlimited=n/a
+     py_cv_module_xxlimited_35=n/a
+     py_cv_module_=n/a
+@@ -31821,6 +31853,10 @@
+     MODULE_BUILDTYPE=${MODULE_BUILDTYPE:-shared}
+  ;;
+ esac
++
++if test "$ac_sys_system" = XOS; then :
++  MODULE_BUILDTYPE=static
++fi
+ 
+ 
+ 
+--- base1/configure.ac	2026-10-25 12:33:49
++++ mod/configure.ac	2026-10-25 12:33:36
+@@ -7997,6 +7997,38 @@
+       [xxlimited_35],
+     )
+   ],
++  [XOS], [
++    dnl No fork/exec, select, pty, dlopen or zoneinfo-backed services.
++    PY_STDLIB_MOD_SET_NA(
++      [_curses],
++      [_curses_panel],
++      [_dbm],
++      [_gdbm],
++      [_multiprocessing],
++      [_posixshmem],
++      [_posixsubprocess],
++      [_scproxy],
++      [_tkinter],
++      [grp],
++      [pwd],
++      [resource],
++      [select],
++      [syslog],
++      [fcntl],
++      [mmap],
++      [readline],
++      [termios],
++    )
++    PY_STDLIB_MOD_SET_NA(
++      [_ctypes_test],
++      [_remote_debugging],
++      [_testimportmultiple],
++      [_testmultiphase],
++      [_testsinglephase],
++      [xxlimited],
++      [xxlimited_35],
++    )
++  ],
+   [PY_STDLIB_MOD_SET_NA([_scproxy])]
+ )
+ 
+@@ -8007,6 +8039,7 @@
+   [wasm32|wasm64], [MODULE_BUILDTYPE=static],
+   [MODULE_BUILDTYPE=${MODULE_BUILDTYPE:-shared}]
+ )
++AS_IF([test "$ac_sys_system" = XOS], [MODULE_BUILDTYPE=static])
+ AC_SUBST([MODULE_BUILDTYPE])
+ 
+ dnl _MODULE_BLOCK_ADD([VAR], [VALUE])
+--- base1/Makefile.pre.in	2026-10-25 12:33:47
++++ mod/Makefile.pre.in	2026-10-25 12:35:34
+@@ -990,7 +990,7 @@
+ 
+ # Build the interpreter
+ $(BUILDPYTHON):	Programs/python.o $(LINK_PYTHON_DEPS)
+-	$(LINKCC) $(PY_CORE_LDFLAGS) $(LINKFORSHARED) -o $@ Programs/python.o $(LINK_PYTHON_OBJS) $(LIBS) $(MODLIBS) $(SYSLIBS)
++	$(LINKCC) $(PY_CORE_LDFLAGS) $(LINKFORSHARED) -o $@ Programs/python.o $(LINK_PYTHON_OBJS) -Wl,--start-group $(LIBS) $(MODLIBS) $(SYSLIBS) -Wl,--end-group
+ 
+ platform: $(PYTHON_FOR_BUILD_DEPS) pybuilddir.txt
+ 	$(RUNSHARED) $(PYTHON_FOR_BUILD) -c 'import sys ; from sysconfig import get_platform ; print("%s-%d.%d" % (get_platform(), *sys.version_info[:2]))' >platform
+@@ -1097,7 +1097,7 @@
+ $(DLLLIBRARY) libpython$(LDVERSION).dll.a: $(LIBRARY_OBJS)
+ 	if test -n "$(DLLLIBRARY)"; then \
+ 		$(LDSHARED) -Wl,--out-implib=$@ -o $(DLLLIBRARY) $^ \
+-			$(LIBS) $(MODLIBS) $(SYSLIBS); \
++			-Wl,--start-group $(LIBS) $(MODLIBS) $(SYSLIBS) -Wl,--end-group; \
+ 	else true; \
+ 	fi
+ 
+@@ -1673,7 +1673,7 @@
+ 	$(RUNSHARED) ./$(BUILDPYTHON) $(srcdir)/Tools/build/generate_re_casefix.py $(srcdir)/Lib/re/_casefix.py
+ 
+ Programs/_testembed: Programs/_testembed.o $(LINK_PYTHON_DEPS)
+-	$(LINKCC) $(PY_CORE_LDFLAGS) $(LINKFORSHARED) -o $@ Programs/_testembed.o $(LINK_PYTHON_OBJS) $(LIBS) $(MODLIBS) $(SYSLIBS)
++	$(LINKCC) $(PY_CORE_LDFLAGS) $(LINKFORSHARED) -o $@ Programs/_testembed.o $(LINK_PYTHON_OBJS) -Wl,--start-group $(LIBS) $(MODLIBS) $(SYSLIBS) -Wl,--end-group
+ 
+ ############################################################################
+ # "Bootstrap Python" used to run Programs/_freeze_module.py
+@@ -1687,7 +1687,7 @@
+ 
+ _bootstrap_python: $(LIBRARY_OBJS_OMIT_FROZEN) Programs/_bootstrap_python.o Modules/getpath.o Modules/Setup.local
+ 	$(LINKCC) $(PY_LDFLAGS_NOLTO) -o $@ $(LIBRARY_OBJS_OMIT_FROZEN) \
+-		Programs/_bootstrap_python.o Modules/getpath.o $(LIBS) $(MODLIBS) $(SYSLIBS)
++		Programs/_bootstrap_python.o Modules/getpath.o -Wl,--start-group $(LIBS) $(MODLIBS) $(SYSLIBS) -Wl,--end-group
+ 	# Dummy pybuilddir.txt  is needed for _bootstrap_python to be runnable
+ 	@echo "none" > ./pybuilddir.txt
+ 
+@@ -1774,7 +1774,7 @@
+ Modules/getpath_noop.o: $(srcdir)/Modules/getpath_noop.c Makefile
+ 
+ Programs/_freeze_module: Programs/_freeze_module.o Modules/getpath_noop.o $(LIBRARY_OBJS_OMIT_FROZEN)
+-	$(LINKCC) $(PY_CORE_LDFLAGS) -o $@ Programs/_freeze_module.o Modules/getpath_noop.o $(LIBRARY_OBJS_OMIT_FROZEN) $(LIBS) $(MODLIBS) $(SYSLIBS)
++	$(LINKCC) $(PY_CORE_LDFLAGS) -o $@ Programs/_freeze_module.o Modules/getpath_noop.o $(LIBRARY_OBJS_OMIT_FROZEN) -Wl,--start-group $(LIBS) $(MODLIBS) $(SYSLIBS) -Wl,--end-group
+ 
+ # We manually freeze getpath.py rather than through freeze_modules
+ Python/frozen_modules/getpath.h: Modules/getpath.py $(FREEZE_MODULE_BOOTSTRAP_DEPS)
+--- base1/Python/thread_pthread.h	2026-10-25 12:33:47
++++ mod/Python/thread_pthread.h	2026-10-25 12:33:43
+@@ -438,6 +438,9 @@
+     while (1) {
+ #if defined(__wasi__)
+         sleep(9999999);  // WASI doesn't have pause() ?!
++#elif defined(__xos__)
++        /* XOS has no pause(); the single-threaded profile never reaches here. */
++        for (;;) { }
+ #else
+         pause();
+ #endif
+--- base1/Python/bootstrap_hash.c	2026-10-25 12:33:47
++++ mod/Python/bootstrap_hash.c	2026-10-25 12:47:27
+@@ -560,6 +560,15 @@
+     }
+     _Py_HashSecret_Initialized = 1;
+ 
++#ifdef __xos__
++    if (!config->use_hash_seed) {
++        /* XOS has no entropy service yet. This explicit bootstrap profile uses
++         * a deterministic seed; it is not secure randomness. */
++        memset(secret, 0, secret_size);
++        return _PyStatus_OK();
++    }
++#endif
++
+     if (config->use_hash_seed) {
+         if (config->hash_seed == 0) {
+             /* disable the randomized hash */
+--- base1/Python/fileutils.c	2026-10-25 12:33:49
++++ mod/Python/fileutils.c	2026-10-25 12:47:27
+@@ -3071,7 +3071,10 @@
+ int
+ _Py_GetTicksPerSecond(long *ticks_per_second)
+ {
+-#if defined(HAVE_SYSCONF) && defined(_SC_CLK_TCK)
++#if defined(__xos__)
++    /* XOS has no sysconf(_SC_CLK_TCK); newlib's clock() uses CLOCKS_PER_SEC. */
++    *ticks_per_second = CLOCKS_PER_SEC;
++#elif defined(HAVE_SYSCONF) && defined(_SC_CLK_TCK)
+     long value = sysconf(_SC_CLK_TCK);
+     if (value < 1) {
+         return -1;
+--- base1/Modules/posixmodule.c	2026-10-25 12:33:49
++++ mod/Modules/posixmodule.c	2026-10-25 12:33:43
+@@ -15839,9 +15839,16 @@
+         if (follow_symlinks) {
+             result = STAT(path, &st);
+         }
++#ifdef __xos__
+         else {
++            /* XOS has no symbolic links; lstat is stat. */
++            result = STAT(path, &st);
++        }
++#else
++        else {
+             result = LSTAT(path, &st);
+         }
++#endif
+         Py_END_ALLOW_THREADS
+     }
+ 
+--- base1/Modules/timemodule.c	2026-10-25 12:33:48
++++ mod/Modules/timemodule.c	2026-10-25 12:41:15
+@@ -42,6 +42,12 @@
+ #endif
+ 
+ #ifdef _MSC_VER
++#  define _Py_timezone _timezone
++#  define _Py_daylight _daylight
++#  define _Py_tzname _tzname
++#elif defined(__xos__)
++/* newlib exposes the XSI timezone variables only under their internal names.
++ * XOS has no zoneinfo database; tzset() leaves them at UTC/no-DST. */
+ #  define _Py_timezone _timezone
+ #  define _Py_daylight _daylight
+ #  define _Py_tzname _tzname
+@@ -2228,6 +2234,12 @@
+     assert(timeout >= 0);
+ 
+ #ifndef MS_WINDOWS
++#ifdef __xos__
++    // XOS has no blocking sleep primitive; the bridge spins on PIT ticks.
++    extern void xos_cpython_sleep_ns(long long);
++    xos_cpython_sleep_ns(timeout);
++    return 0;
++#else
+ #ifdef HAVE_CLOCK_NANOSLEEP
+     struct timespec timeout_abs;
+ #elif defined(HAVE_NANOSLEEP)
+@@ -2303,6 +2315,7 @@
+     } while (1);
+ 
+     return 0;
++#endif  // __xos__
+ #else  // MS_WINDOWS
+     PyTime_t timeout_100ns = _PyTime_As100Nanoseconds(timeout,
+                                                        _PyTime_ROUND_CEILING);

@@ -1,0 +1,408 @@
+--- a/src/Makefile.in
++++ b/src/Makefile.in
+@@ -113,7 +113,7 @@
+ 	bltin/test.$(OBJEXT) bltin/times.$(OBJEXT) var.$(OBJEXT)
+ am_dash_OBJECTS = $(am__objects_1)
+ dash_OBJECTS = $(am_dash_OBJECTS)
+-dash_DEPENDENCIES = builtins.o init.o nodes.o signames.o syntax.o
++dash_DEPENDENCIES = builtins.o init.o nodes.o syntax.o
+ AM_V_P = $(am__v_P_@AM_V@)
+ am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
+ am__v_P_0 = false
+@@ -328,7 +328,7 @@
+ 	myhistedit.h mystring.h options.h output.h parser.h redir.h shell.h \
+ 	show.h system.h trap.h var.h
+ 
+-dash_LDADD = builtins.o init.o nodes.o signames.o syntax.o
++dash_LDADD = builtins.o init.o nodes.o syntax.o
+ HELPERS = mkinit mksyntax mknodes mksignames
+ BUILT_SOURCES = builtins.h nodes.h syntax.h token.h token_vars.h
+ CLEANFILES = \
+@@ -808,7 +808,7 @@
+ 	$(AM_V_GEN)$(SHELL) $^
+ 
+ builtins.def: builtins.def.in $(top_builddir)/config.h
+-	$(AM_V_CC)$(COMPILE) -E -x c -o $@ $<
++	$(AM_V_CC)$(COMPILE) -DDASH_BUILTINS_ONLY -E -x c -o $@ $<
+ 
+ builtins.c builtins.h: mkbuiltins builtins.def
+ 	$(AM_V_GEN)$(SHELL) $^
+--- a/src/bltin/printf.c
++++ b/src/bltin/printf.c
+@@ -29,7 +29,7 @@
+  * SUCH DAMAGE.
+  */
+ 
+-#include <arpa/inet.h>
++/* XOS profile: optional header omitted. */
+ #include <ctype.h>
+ #include <errno.h>
+ #include <inttypes.h>
+--- a/src/bltin/test.c
++++ b/src/bltin/test.c
+@@ -396,11 +396,11 @@
+ 	switch (mode) {
+ #ifndef HAVE_FACCESSAT
+ 	case FILRD:
+-		return test_access(&s, R_OK);
++		return access(nm, R_OK) == 0;
+ 	case FILWR:
+-		return test_access(&s, W_OK);
++		return access(nm, W_OK) == 0;
+ 	case FILEX:
+-		return test_access(&s, X_OK);
++		return access(nm, X_OK) == 0;
+ #endif
+ 	case FILEXIST:
+ 		return 1;
+@@ -429,9 +429,9 @@
+ 	case FILGZ:
+ 		return !!s.st_size;
+ 	case FILUID:
+-		return s.st_uid == geteuid();
++		sh_error("ownership tests unavailable in XOS dash B1");
+ 	case FILGID:
+-		return s.st_gid == getegid();
++		sh_error("ownership tests unavailable in XOS dash B1");
+ 	default:
+ 		return 1;
+ 	}
+@@ -661,42 +661,6 @@
+  */
+ int test_access(const struct stat64 *sp, int stmode)
+ {
+-	gid_t *groups;
+-	register int n;
+-	uid_t euid;
+-	int maxgroups;
+-
+-	/*
+-	 * I suppose we could use access() if not running as root and if we are
+-	 * running with ((euid == uid) && (egid == gid)), but we've already
+-	 * done the stat() so we might as well just test the permissions
+-	 * directly instead of asking the kernel to do it....
+-	 */
+-	euid = geteuid();
+-	if (euid == 0) {
+-		if (stmode != X_OK)
+-			return 1;
+-
+-		/* any bit is good enough */
+-		stmode = (stmode << 6) | (stmode << 3) | stmode;
+-	} else if (sp->st_uid == euid)
+-		stmode <<= 6;
+-	else if (sp->st_gid == getegid())
+-		stmode <<= 3;
+-	else {
+-		/* XXX stolen almost verbatim from ksh93.... */
+-		/* on some systems you can be in several groups */
+-		maxgroups = getgroups(0, NULL);
+-		groups = stalloc(maxgroups * sizeof(*groups));
+-		n = getgroups(maxgroups, groups);
+-		while (--n >= 0) {
+-			if (groups[n] == sp->st_gid) {
+-				stmode <<= 3;
+-				break;
+-			}
+-		}
+-	}
+-
+-	return sp->st_mode & stmode;
++sh_error("permission-bit tests unavailable in XOS dash B1");
+ }
+ #endif	/* HAVE_FACCESSAT */
+--- a/src/builtins.def.in
++++ b/src/builtins.def.in
+@@ -78,11 +78,9 @@
+ returncmd	-s return
+ setcmd		-s set
+ shiftcmd	-s shift
+-timescmd	-s times
+ trapcmd		-s trap
+ truecmd		-s : -u true
+ typecmd		-u type
+-umaskcmd	-u umask
+ unaliascmd	-u unalias
+ unsetcmd	-s unset
+ waitcmd		-u wait
+--- a/src/cd.c
++++ b/src/cd.c
+@@ -147,7 +147,7 @@
+ 	goto docd;
+ 
+ err:
+-	sh_error("can't cd to %s", dest);
++	sh_error("can't cd to %s: %s", dest, strerror(errno));
+ 	/* NOTREACHED */
+ out:
+ 	if (flags & CD_PRINT)
+--- a/src/eval.c
++++ b/src/eval.c
+@@ -187,6 +187,7 @@
+ 	for (; (n = parsecmd(0)) != NEOF; popstackmark(&smark)) {
+ 		int i;
+ 
++		xos_check_tree(n);
+ 		i = evaltree(n, flags & ~(parser_eof() ? 0 : EV_EXIT));
+ 		if (n)
+ 			status = i;
+@@ -911,7 +912,7 @@
+ 		flush_input();
+ 
+ 		/* Fork off a child process if necessary. */
+-		if (!(flags & EV_EXIT) || have_traps()) {
++		if (1) { /* XOS always uses spawn, including EV_EXIT. */
+ 			INTOFF;
+ 			jp = vforkexec(cmd, argv, path, cmdentry.u.index);
+ 			break;
+--- a/src/exec.c
++++ b/src/exec.c
+@@ -108,65 +108,14 @@
+ void
+ shellexec(char **argv, const char *path, int idx)
+ {
+-	char *cmdname;
+-	int e;
+-	char **envp;
+-	int exerrno;
+-
+-	envp = environment();
+-	if (strchr(argv[0], '/') != NULL) {
+-		tryexec(argv[0], argv, envp);
+-		e = errno;
+-	} else {
+-		e = ENOENT;
+-		while (padvance(&path, argv[0]) >= 0) {
+-			cmdname = stackblock();
+-			if (--idx < 0 && pathopt == NULL) {
+-				tryexec(cmdname, argv, envp);
+-				if (errno != ENOENT && errno != ENOTDIR)
+-					e = errno;
+-			}
+-		}
+-	}
+-
+-	/* Map to POSIX errors */
+-	switch (e) {
+-	default:
+-		exerrno = 126;
+-		break;
+-	case ELOOP:
+-	case ENAMETOOLONG:
+-	case ENOENT:
+-	case ENOTDIR:
+-		exerrno = 127;
+-		break;
+-	}
+-	exitstatus = exerrno;
+-	TRACE(("shellexec failed for %s, errno %d, suppressint %d\n",
+-		argv[0], e, suppressint ));
+-	exerror(EXEND, "%s: %s", argv[0], errmsg(e, E_EXEC));
+-	/* NOTREACHED */
++sh_error("exec replacement unavailable in XOS dash B1");
+ }
+ 
+ 
+ STATIC void
+ tryexec(char *cmd, char **argv, char **envp)
+ {
+-	char *const path_bshell = _PATH_BSHELL;
+-
+-repeat:
+-#ifdef SYSV
+-	do {
+-		execve(cmd, argv, envp);
+-	} while (errno == EINTR);
+-#else
+-	execve(cmd, argv, envp);
+-#endif
+-	if (cmd != path_bshell && errno == ENOEXEC) {
+-		*argv-- = cmd;
+-		*argv = cmd = path_bshell;
+-		goto repeat;
+-	}
++sh_error("exec replacement unavailable in XOS dash B1");
+ }
+ 
+ static const char *legal_pathopt(const char *opt, const char *term, int magic)
+--- a/src/expand.c
++++ b/src/expand.c
+@@ -1730,7 +1730,7 @@
+ 
+ 		if (*dname == '.' && !matchdot)
+ 			goto check_int;
+-		if (c && dp->d_type != DT_DIR && dp->d_type != DT_LNK &&
++		if (c && dp->d_type != DT_DIR  &&
+ 		    dp->d_type != DT_UNKNOWN)
+ 			goto check_int;
+ 		len = strlen(dname) + 1;
+--- a/src/input.c
++++ b/src/input.c
+@@ -37,7 +37,7 @@
+ #include <stdio.h>	/* defines BUFSIZ */
+ #include <stdlib.h>
+ #include <string.h>
+-#include <termios.h>
++/* XOS profile: optional header omitted. */
+ #include <unistd.h>
+ 
+ /*
+@@ -67,7 +67,7 @@
+ 	off_t seekable;
+ 	int pip[2];
+ 	int pending;
+-	tcflag_t bufferable;
++	int bufferable;
+ };
+ 
+ MKINIT struct parsefile basepf;	/* top level input file */
+@@ -87,7 +87,7 @@
+ #ifdef mkinit
+ INCLUDE <stdio.h>
+ INCLUDE <string.h>
+-INCLUDE <termios.h>
++/* XOS has shell-local canonical serial input. */
+ INCLUDE <unistd.h>
+ INCLUDE "input.h"
+ INCLUDE "error.h"
+@@ -131,18 +131,9 @@
+ 
+ void input_init(void)
+ {
+-	struct stdin_state *st = &stdin_state;
+-	struct termios tios;
+-	int istty;
+-
+-	istty = tcgetattr(0, &tios) + 1;
+-	stdin_istty = istty;
+-	if (istty)
+-		st->bufferable = tios.c_lflag & ICANON;
+-	else {
+-		st->seekable = lseek(0, 0, SEEK_CUR) + 1;
+-		st->bufferable = !!st->seekable;
+-	}
++stdin_istty = isatty(0);
++stdin_state.seekable = 0;
++stdin_state.bufferable = 1;
+ }
+ 
+ static bool stdin_bufferable(void)
+@@ -351,7 +342,7 @@
+ 	}
+ 
+ 	if (nr > 0)
+-		nr = read(fd, buf, nr);
++		nr = xos_shell_read(fd, buf, nr);
+ 
+ 	if (nr < 0) {
+ 		if (errno == EINTR && !(basepf.prev && pending_sig))
+--- a/src/jobs.c
++++ b/src/jobs.c
+@@ -46,7 +46,7 @@
+ #include <sys/time.h>
+ #include <sys/resource.h>
+ #endif
+-#include <sys/ioctl.h>
++/* XOS profile: optional header omitted. */
+ 
+ #include "shell.h"
+ #if JOBS
+--- a/src/main.c
++++ b/src/main.c
+@@ -158,9 +158,7 @@
+ state2:
+ 	state = 3;
+ 	if (
+-#ifndef linux
+-		getuid() == geteuid() && getgid() == getegid() &&
+-#endif
++/* No login identities in the XOS profile. */
+ 		iflag
+ 	) {
+ 		if ((shinit = lookupvar("ENV")) != NULL && *shinit != '\0') {
+@@ -241,6 +239,7 @@
+ 
+ 			job_warning = (job_warning == 2) ? 1 : 0;
+ 			numeof = 0;
++			xos_check_tree(n);
+ 			i = evaltree(n, 0);
+ 			if (n)
+ 				status = i;
+--- a/src/output.c
++++ b/src/output.c
+@@ -45,7 +45,7 @@
+ 
+ #include <sys/types.h>		/* quad_t */
+ #include <sys/param.h>		/* BSD4_4 */
+-#include <sys/ioctl.h>
++/* XOS profile: optional header omitted. */
+ 
+ #include <stdio.h>	/* defines BUFSIZ */
+ #include <string.h>
+--- a/src/redir.c
++++ b/src/redir.c
+@@ -32,7 +32,7 @@
+  * SUCH DAMAGE.
+  */
+ 
+-#include <sys/mman.h>
++/* XOS profile: optional header omitted. */
+ #include <sys/stat.h>
+ #include <sys/types.h>
+ #include <sys/param.h>	/* PIPE_BUF */
+--- a/src/system.h
++++ b/src/system.h
+@@ -37,22 +37,7 @@
+ 
+ static inline void sigclearmask(void)
+ {
+-#if defined(HAVE_SIGSETMASK) && \
+-    (!defined(__GLIBC__) || \
+-     (defined(__GNUC__) && (__GNUC__ * 1000 + __GNUC_MINOR__) >= 4006))
+-#ifdef __GLIBC__
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+-#endif
+-	sigsetmask(0);
+-#ifdef __GLIBC__
+-#pragma GCC diagnostic pop
+-#endif
+-#else
+-	sigset_t set;
+-	sigemptyset(&set);
+-	sigprocmask(SIG_SETMASK, &set, 0);
+-#endif
++/* No asynchronous signal delivery in this Shell profile. */
+ }
+ 
+ #ifndef HAVE_MEMFD_CREATE
+--- a/src/var.c
++++ b/src/var.c
+@@ -140,7 +140,7 @@
+ 	struct stat64 st1, st2;
+ 
+ 	initvar();
+-	for (envp = environ ; *envp ; envp++) {
++	for (envp = environ ; envp && *envp ; envp++) {
+ 		p = endofname(*envp);
+ 		if (p != *envp && *p == '=') {
+ 			setvareq(*envp, VEXPORT|VTEXTFIXED);
+@@ -150,8 +150,7 @@
+ 	setvareq(defifsvar, VTEXTFIXED);
+ 	setvareq(defoptindvar, VTEXTFIXED);
+ 
+-	fmtstr(ppid + 5, sizeof(ppid) - 5, "%ld", (long) getppid());
+-	setvareq(ppid, VTEXTFIXED);
++	/* PPID unavailable: do not fabricate a parent identity. */
+ 
+ 	p = lookupvar("PWD");
+ 	if (p)
+@@ -207,7 +206,7 @@
+ 	/*
+ 	 * PS1 depends on uid
+ 	 */
+-	if (!geteuid())
++	if (0) /* XOS has no root identity. */
+ 		vps1.text = "PS1=# ";
+ }
+ 

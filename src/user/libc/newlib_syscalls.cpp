@@ -125,6 +125,7 @@ int error_from_kernel(xos::i64 result) {
     if (result == -1) { return EPERM; }
     if (result == -2) { return EINVAL; }
     if (result == -5) { return ENOMEM; }
+    if (result == xos::process_error_delegation) { return EPERM; }
     return EIO;
 }
 
@@ -957,10 +958,11 @@ extern "C" int posix_spawnattr_setschedpolicy(posix_spawnattr_t*, int) { return 
 extern "C" int posix_spawnattr_setsigdefault(posix_spawnattr_t*, const sigset_t*) { return ENOTSUP; }
 extern "C" int posix_spawnattr_setsigmask(posix_spawnattr_t*, const sigset_t*) { return ENOTSUP; }
 
-extern "C" int posix_spawn(pid_t* output_pid, const char* path,
-                             const posix_spawn_file_actions_t* actions,
-                             const posix_spawnattr_t* attributes,
-                             char* const argv[], char* const envp[]) {
+static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
+                                  const posix_spawn_file_actions_t* actions,
+                                  const posix_spawnattr_t* attributes,
+                                  char* const argv[], char* const envp[],
+                                  u32 delegate_spawn_depth) {
     if (path == nullptr || argv == nullptr) { return EINVAL; }
     char normalized_path[max_path];
     if (!normalize_path(path, normalized_path)) { return ENAMETOOLONG; }
@@ -970,6 +972,7 @@ extern "C" int posix_spawn(pid_t* output_pid, const char* path,
     int error = spawn_action_set(actions, set);
     if (error != 0) { return error; }
     xos::sdk::spawn_options options{};
+    options.delegate_spawn_depth = delegate_spawn_depth;
     options.working_directory = current_directory;
     options.environment = const_cast<const char* const*>(envp == nullptr ? environ : envp);
     u32 env_count = 0;
@@ -1050,6 +1053,20 @@ extern "C" int posix_spawn(pid_t* output_pid, const char* path,
     }
     if (output_pid != nullptr) { *output_pid = static_cast<pid_t>(child); }
     return 0;
+}
+
+extern "C" int posix_spawn(pid_t* output_pid, const char* path,
+                             const posix_spawn_file_actions_t* actions,
+                             const posix_spawnattr_t* attributes,
+                             char* const argv[], char* const envp[]) {
+    return posix_spawn_with_depth(output_pid, path, actions, attributes, argv, envp, 0);
+}
+
+extern "C" int xos_posix_spawn_driver(pid_t* output_pid, const char* path,
+                                        const posix_spawn_file_actions_t* actions,
+                                        const posix_spawnattr_t* attributes,
+                                        char* const argv[], char* const envp[]) {
+    return posix_spawn_with_depth(output_pid, path, actions, attributes, argv, envp, 1);
 }
 
 extern "C" int posix_spawnp(pid_t* output_pid, const char* path,

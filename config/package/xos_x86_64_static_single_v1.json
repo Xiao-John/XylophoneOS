@@ -1,0 +1,28 @@
+{
+  "architecture": "x86_64",
+  "byte_order": "little",
+  "compiler_version": "16.2.0",
+  "evidence": "docs/work_log/0023_first_release.md; current package guest gate recorded separately",
+  "features": [
+    "stdio",
+    "heap",
+    "file_io",
+    "directories",
+    "static_tls",
+    "cxx_runtime"
+  ],
+  "format_version": 1,
+  "id": "xos-x86_64-static-single-v1",
+  "layout": "e08_static_tls_main_stack_128k",
+  "runtime_model": "single",
+  "scope": "conservative frozen SDK; not a signature or arbitrary ELF ABI proof",
+  "sdk_tree_sha256": [
+    "e78726755d11d19feabcb7c36faebf6ed9a4e663f85f6beb081ffabae105a874"
+  ],
+  "startup_version": 2,
+  "syscall_abi": 1,
+  "verified_system_builds": [
+    "2c3876e640840ff5"
+  ],
+  "word_bits": 64
+}

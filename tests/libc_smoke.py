@@ -27,8 +27,9 @@ def main():
     report["command"] = guest.command
     try:
         guest.expect(b"xos64> ", timeout=20)
+        start = len(guest.output)
         send_bytes(guest, b"run\r")
-        guest.expect(b"sup> ", timeout=20)
+        guest.expect_supervisor(trace=True, start=start, timeout=20)
         guest.expect(b"[sup] demo tasks stopped", timeout=10)
         pump(guest, 0.3)
         images = command(guest, "images", b"image=libc_hello")

@@ -58,7 +58,7 @@ struct task_record {
     u32 session_response_handle;
     bool supervisor;
     bool block_access;
-    bool spawn_access;
+    u32 spawn_depth;
     i32 exit_code;
     u64 parent;
     u64 entry;
@@ -107,6 +107,7 @@ u64 next_pipe_token = process_pipe_token_min;
 bool reap_pending[8];
 u8 block_buffer[4096];
 alignas(16) u8 fpu_template[512];
+bool process_trace_enabled = true;
 
 void fpu_save(u8* state) {
     __asm__ volatile("fxsave64 (%0)" : : "r"(state) : "memory");
@@ -630,11 +631,13 @@ void destroy_task(task_record* task) {
     }
     *task = task_record{};
     if (task_total > 0) { --task_total; }
-    format::text("[task] event=reclaimed pid=");
-    format::decimal(pid);
-    format::text(" pages=");
-    format::decimal(freed);
-    format::text("\r\n");
+    if (process_trace_enabled) {
+        format::text("[task] event=reclaimed pid=");
+        format::decimal(pid);
+        format::text(" pages=");
+        format::decimal(freed);
+        format::text("\r\n");
+    }
 }
 
 void reap_dead() {
@@ -771,7 +774,7 @@ interrupt_frame* schedule(interrupt_frame* frame) {
 }
 
 task_record* owned_process(u64 handle) {
-    if (current == nullptr || (!current->supervisor && !current->spawn_access)) { return nullptr; }
+    if (current == nullptr || (!current->supervisor && current->spawn_depth == 0)) { return nullptr; }
     for (auto& task : tasks) {
         if (task.state != task_state::free && task.pid == handle && task.parent == current->pid) {
             return &task;
@@ -856,6 +859,18 @@ void* process_syscall(interrupt_frame* frame) {
     i64 result = process_error_invalid;
     const u64 first = frame->rdi, second = frame->rsi, third = frame->rdx;
     switch (frame->rax) {
+    case sys_debug_trace:
+        if (current == nullptr || !current->supervisor) {
+            result = process_error_denied;
+            break;
+        }
+        if (first > 1 || second != 0 || third != 0) {
+            result = process_error_invalid;
+            break;
+        }
+        process_trace_enabled = first != 0;
+        result = 0;
+        break;
     case sys_handle_write: {
         if (first > 2 || first == 0) { result = process_error_denied; break; }
         result = stdio_write(current, static_cast<u32>(first), second, third);
@@ -904,7 +919,7 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_process_create: {
-        if (!current->supervisor && !current->spawn_access) { result = process_error_denied; break; }
+        if (!current->supervisor && current->spawn_depth == 0) { result = process_error_denied; break; }
         if (first > 7 || (first & ~u64{current->stdio_mask}) != 0 || third > 11 ||
             (third != 0 && !user_range_ok(second, third, false))) { break; }
         if (!files_service_live()) { result = process_error_resources; break; }
@@ -947,7 +962,21 @@ void* process_syscall(interrupt_frame* frame) {
         task_record* task = owned_process(first);
         if (task == nullptr) { result = process_error_denied; break; }
         if (task->state != task_state::building) { result = process_error_state; break; }
-        task->spawn_access = second != 0;
+        task->spawn_depth = second != 0 ? 1 : 0;
+        result = 0;
+        break;
+    }
+    case sys_process_delegate: {
+        if (current == nullptr || second > process_max_spawn_depth) {
+            result = process_error_invalid; break;
+        }
+        if (!current->supervisor && (current->spawn_depth < 2 || second >= current->spawn_depth)) {
+            result = process_error_delegation; break;
+        }
+        task_record* task = owned_process(first);
+        if (task == nullptr) { result = process_error_delegation; break; }
+        if (task->state != task_state::building) { result = process_error_state; break; }
+        task->spawn_depth = static_cast<u32>(second);
         result = 0;
         break;
     }
@@ -1117,10 +1146,12 @@ void* process_syscall(interrupt_frame* frame) {
             !space_range_ok(task->cr3, entry.startup, sizeof(startup_info), false)) { break; }
         task->entry = entry.entry; task->initial_stack = entry.stack; task->startup = entry.startup;
         task->state = task_state::fresh;
-        format::text("[process] event=started pid="); format::decimal(task->pid);
-        format::text(" parent="); format::decimal(task->parent); format::text("\r\n");
-        format::text("[process] pid="); format::decimal(task->pid);
-        format::text(" address_space="); format::hex(task->cr3); format::text("\r\n");
+        if (process_trace_enabled) {
+            format::text("[process] event=started pid="); format::decimal(task->pid);
+            format::text(" parent="); format::decimal(task->parent); format::text("\r\n");
+            format::text("[process] pid="); format::decimal(task->pid);
+            format::text(" address_space="); format::hex(task->cr3); format::text("\r\n");
+        }
         result = 0;
         break;
     }
@@ -1144,8 +1175,10 @@ void* process_syscall(interrupt_frame* frame) {
             if (child == nullptr || child->state == task_state::building) { result = process_error_state; break; }
             current->waiting_pid = first; current->wait_buffer = second;
             current->state = task_state::waiting; frame->rax = 0;
-            format::text("[process] event=wait_blocked parent="); format::decimal(current->pid);
-            format::text(" child="); format::decimal(first); format::text("\r\n");
+            if (process_trace_enabled) {
+                format::text("[process] event=wait_blocked parent="); format::decimal(current->pid);
+                format::text(" child="); format::decimal(first); format::text("\r\n");
+            }
             return schedule(frame);
         }
         break;
@@ -1301,9 +1334,11 @@ void* syscall_entry(interrupt_frame* frame) {
             break;
         }
         finish_task(target, process_outcome::killed, -9);
-        format::text("[task] event=killed_by_supervisor pid=");
-        format::decimal(pid);
-        format::text("\r\n");
+        if (process_trace_enabled) {
+            format::text("[task] event=killed_by_supervisor pid=");
+            format::decimal(pid);
+            format::text("\r\n");
+        }
         destroy_task(target);
         result = 0;
         break;

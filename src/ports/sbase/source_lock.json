@@ -1,0 +1,14 @@
+{
+  "name": "sbase",
+  "commit": "c546c3a5724c81cee9a11d816a38ccdf17472129",
+  "tree": "a58d176568a1b33d435a7628740b68289ea5c07a",
+  "source": "https://git.suckless.org/sbase",
+  "files": {
+    "LICENSE": "eb0b719b3327af6c4b480cd21f7944e944a5ddf571c04572eb8d025f52e056c6",
+    "cat.c": "77412bfd11435541add6e02208cd19fc357e2988132b874d546647c3f091b7ab",
+    "cp.c": "d0a857bec6e56bad90a050642872055c3ed11b50fcf7cc77c9edc452d1a62bd0",
+    "mkdir.c": "6ab0be3108bc5c94499acdc9e30aa0f50ed996e945b97a39125e110e4526d0cd",
+    "mv.c": "4216a26d46169f402d6b1cccdef41f79a98d045f68280bfdcf841419ad801796",
+    "rm.c": "ce4115722d42e1604d0144f9d9f14e1acda24d9d5d9c0d38a050eee51cdbfcb3"
+  }
+}

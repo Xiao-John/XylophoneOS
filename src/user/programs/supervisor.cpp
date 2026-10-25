@@ -2,8 +2,12 @@
 // Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/sdk.hpp>
 #include <xos/elf.hpp>
+#include <xos/execution.hpp>
+#include <string.h>
+#include <unistd.h>
 #include <xos/file_ui.hpp>
 #include <xos/file_abi.hpp>
+#include <xos/text.hpp>
 
 namespace {
 using namespace xos;
@@ -11,6 +15,7 @@ using namespace xos::sdk;
 
 bool demo_keep;
 bool demo_quiet;
+bool verbose_trace;
 
 u64 number(const char* text) {
     u64 value = 0;
@@ -21,10 +26,22 @@ u64 number(const char* text) {
     }
     return value;
 }
-void result_line(u64 child) {
+void result_line(u64 child, bool explicit_wait = false) {
     process_status status{};
     const i64 result = wait(child, status);
     if (result < 0) { print("wait: error="); signed_decimal(result); print("\n"); return; }
+    if (!verbose_trace) {
+        if (status.outcome == process_outcome::exited) {
+            if (status.code != 0 || explicit_wait) {
+                print("xsh: program exited with status "); signed_decimal(status.code); print("\n");
+            }
+        } else if (status.outcome == process_outcome::faulted) {
+            print("xsh: program faulted (vector="); decimal(status.vector); print(")\n");
+        } else {
+            print("xsh: program cancelled (code="); signed_decimal(status.code); print(")\n");
+        }
+        return;
+    }
     print("[wait] pid="); decimal(status.pid); print(" kind=");
     switch (status.outcome) {
     case process_outcome::exited: print("exited"); break;
@@ -51,6 +68,75 @@ void image_list() {
         if (syscall(sys_image_info, id, reinterpret_cast<u64>(&info)) < 0) { break; }
         print("image="); print(info.name); print(" bytes="); decimal(info.size); print("\n");
     }
+}
+const char* const kChildPath[] = {"PATH=/usr/bin:/bin:/", nullptr};
+
+const char* candidate_description(execution::candidate_kind kind) {
+    switch (kind) {
+    case execution::candidate_kind::missing: return "not found";
+    case execution::candidate_kind::directory: return "is a directory";
+    case execution::candidate_kind::not_executable: return "not executable";
+    case execution::candidate_kind::incompatible: return "incompatible target or format";
+    case execution::candidate_kind::unreadable: return "cannot read program";
+    case execution::candidate_kind::executable: return "executable";
+    }
+    return "unavailable";
+}
+void candidate_error(const char* name, const execution::candidate& candidate) {
+    if (verbose_trace && candidate.format_error != elf::error::none) {
+        print("elf: rejected reason="); print(elf::error_name(candidate.format_error)); print("\n");
+    }
+    print("xsh: "); print(candidate.path[0] ? candidate.path : name); print(": ");
+    print(candidate_description(candidate.kind));
+    if (verbose_trace) {
+        print(" (format="); print(elf::error_name(candidate.format_error));
+        print(", error="); signed_decimal(candidate.error); print(")");
+    }
+    print("\n");
+}
+const char* launch_stage_name(execution::launch_stage stage) {
+    switch (stage) {
+    case execution::launch_stage::open: return "open file";
+    case execution::launch_stage::inspect: return "validate executable";
+    case execution::launch_stage::prepare: return "prepare arguments and handles";
+    case execution::launch_stage::create: return "create process";
+    case execution::launch_stage::map: return "load process image";
+    case execution::launch_stage::start: return "start process";
+    case execution::launch_stage::none: return "launch program";
+    }
+    return "launch program";
+}
+bool builtin_named(const char* name) {
+    const char* const names[] = {"help", "trace", "type", "ps", "kill", "images", "exec", "spawn",
+        "wait", "stats", "primtest", "elftest", "ls", "cat", "stat", "rm", "edit", "filetest",
+        "sync", "exec-file", "exec-driver", "exd", "spawn-file", "mkdir", "mv", "demo"};
+    for (const auto* item : names) { if (equal(name, item)) { return true; } }
+    return false;
+}
+void launch_file(const char* name, u32 argc, char** argv, u32 spawn_depth, bool background) {
+    const auto candidate = execution::resolve(name, "/usr/bin:/bin:/");
+    if (candidate.kind != execution::candidate_kind::executable) {
+        candidate_error(name, candidate); return;
+    }
+    spawn_options options{};
+    options.grant_spawn = spawn_depth == 1;
+    options.delegate_spawn_depth = spawn_depth > 1 ? spawn_depth : 0;
+    options.environment = kChildPath;
+    options.environment_count = 1;
+    execution::launch_diagnostic diagnostic{};
+    const i64 child = execution::spawn_file_diagnosed(candidate.path, argc, argv, options, diagnostic);
+    if (child < 0) {
+        print("xsh: cannot "); print(launch_stage_name(diagnostic.stage)); print(": "); print(candidate.path);
+        print(" (error="); signed_decimal(child); print(")\n");
+        return;
+    }
+    if (verbose_trace) {
+        print("[loader] started pid="); decimal(static_cast<u64>(child));
+        print(" file="); print(candidate.path); print("\n");
+    } else if (background) {
+        print("xsh: started pid="); decimal(static_cast<u64>(child)); print("\n");
+    }
+    if (!background) { result_line(static_cast<u64>(child)); }
 }
 void show_stats() {
     const auto state = stats();
@@ -117,17 +203,37 @@ void primitive_check() {
 void execute(u32 argc, char** argv) {
     if (argc == 0) { return; }
     if (equal(argv[0], "help")) {
-        print("ps | kill <pid> | images | exec <image> [args] | spawn <image> [args]\n"
-              "wait <pid> | stats | primtest | elftest\n"
-              "ls | cat <file> | stat <file> | rm <file> | edit <file> | filetest\n"
-              "sync | exec-file/spawn-file/exec-driver <file> [args] | mkdir <path> | mv <old> <new> | help\n");
+        print("Files     ls [path] | cat/stat/rm/edit <file> | mkdir <path> | mv <old> <new> | sync\n"
+              "Programs  <command> [args] | exd <command> [args] | type <command>\n"
+              "          exec-file | exec-driver (exd) | spawn-file | exec | spawn | wait\n"
+              "Shell     dash -i starts dash; exit inside dash returns here\n"
+              "Debug     trace on/off | ps | kill <pid> | stats | images | primtest | elftest | filetest\n"
+              "Search    /usr/bin:/bin:/; paths containing '/' are used directly\n");
+    } else if (equal(argv[0], "trace")) {
+        if (argc == 1) { print(verbose_trace ? "xsh: trace on\n" : "xsh: trace off\n"); }
+        else if (argc == 2 && (equal(argv[1], "on") || equal(argv[1], "off"))) {
+            const bool enabled = equal(argv[1], "on");
+            const auto result = syscall(sys_debug_trace, enabled ? 1 : 0);
+            if (result < 0) { print("xsh: cannot change trace (error="); signed_decimal(result); print(")\n"); }
+            else { verbose_trace = enabled; print(enabled ? "xsh: trace on\n" : "xsh: trace off\n"); }
+        } else { print("Usage: trace [on|off]\n"); }
+    } else if (equal(argv[0], "type")) {
+        if (argc != 2) { print("Usage: type <command>\n"); }
+        else if (equal(argv[1], "exd")) { print("exd: alias for exec-driver\n"); }
+        else if (builtin_named(argv[1])) { print(argv[1]); print(": Xsh builtin\n"); }
+        else {
+            const auto candidate = execution::resolve(argv[1], "/usr/bin:/bin:/");
+            if (candidate.kind == execution::candidate_kind::executable) {
+                print(argv[1]); print(" -> "); print(candidate.path); print("\n");
+            } else { candidate_error(argv[1], candidate); }
+        }
     } else if (equal(argv[0], "ps") && argc == 1) {
         char buffer[768];
         const i64 count = syscall(9, reinterpret_cast<u64>(buffer), sizeof(buffer));
         if (count < 0) { print("ps: error="); signed_decimal(count); print("\n"); return; }
         for (i64 offset = 0; count > 0 && offset < count;) {
             const i64 chunk = count - offset > 256 ? 256 : count - offset;
-            (void)write(1, buffer + offset, static_cast<u64>(chunk)); offset += chunk;
+            (void)xos::sdk::write(1, buffer + offset, static_cast<u64>(chunk)); offset += chunk;
         }
     } else if (equal(argv[0], "kill") && argc == 2) {
         print(syscall(10, number(argv[1])) == 0 ? "kill: accepted\n" : "kill: invalid pid\n");
@@ -138,11 +244,13 @@ void execute(u32 argc, char** argv) {
         if (image == 0) { print("exec: unknown image\n"); return; }
         const i64 child = spawn(image, argc - 1, argv + 1);
         if (child < 0) { print("exec: error="); signed_decimal(child); print("\n"); return; }
-        print("[loader] started pid="); decimal(static_cast<u64>(child));
-        print(" image="); print(argv[1]); print("\n");
+        if (verbose_trace || equal(argv[0], "spawn")) {
+            print("[loader] started pid="); decimal(static_cast<u64>(child));
+            print(" image="); print(argv[1]); print("\n");
+        }
         if (equal(argv[0], "exec")) { result_line(static_cast<u64>(child)); }
     } else if (equal(argv[0], "wait") && argc == 2) {
-        result_line(number(argv[1]));
+        result_line(number(argv[1]), true);
     } else if (equal(argv[0], "ls") && (argc == 1 || argc == 2)) {
         ui::list(argc == 2 ? argv[1] : "/");
     } else if (equal(argv[0], "cat") && argc == 2) {
@@ -163,16 +271,11 @@ void execute(u32 argc, char** argv) {
         const i64 synced = ui::sync();
         if (synced == 0) { print("[files] sync=ok\n"); }
         else { print("[files] sync error="); signed_decimal(synced); print("\n"); }
-    } else if ((equal(argv[0], "exec-file") || equal(argv[0], "spawn-file") || equal(argv[0], "exec-driver")) && argc >= 2) {
-        spawn_options options{};
-        options.grant_spawn = equal(argv[0], "exec-driver");
-        const i64 child = options.grant_spawn
-            ? spawn_file_options(argv[1], argc - 1, argv + 1, options)
-            : spawn_file(argv[1], argc - 1, argv + 1);
-        if (child < 0) { print("exec-file: error="); signed_decimal(child); print("\n"); return; }
-        print("[loader] started pid="); decimal(static_cast<u64>(child));
-        print(" file="); print(argv[1]); print("\n");
-        if (!equal(argv[0], "spawn-file")) { result_line(static_cast<u64>(child)); }
+    } else if ((equal(argv[0], "exec-file") || equal(argv[0], "spawn-file") ||
+                equal(argv[0], "exec-driver") || equal(argv[0], "exd")) && argc >= 2) {
+        const bool driver = equal(argv[0], "exec-driver") || equal(argv[0], "exd");
+        launch_file(argv[1], argc - 1, argv + 1, driver ? 1u : 0u,
+                    equal(argv[0], "spawn-file"));
     } else if (equal(argv[0], "demo") && argc == 2) {
         if (equal(argv[1], "keep")) {
             demo_keep = true;
@@ -199,25 +302,33 @@ void execute(u32 argc, char** argv) {
         print("[elf] cases="); decimal(checked);
         print(checked == 24 && before.free_pages == after.free_pages ? " result=pass resources=stable\n"
                                                                     : " result=FAILED\n");
-    } else { print("supervisor: unknown command; try help\n"); }
+    } else {
+        // dash is the explicitly configured development shell and may delegate
+        // one smaller construction depth to a GNU compiler driver. Other bare
+        // commands retain the legacy direct-child construction authority.
+        launch_file(argv[0], argc, argv, equal(argv[0], "dash") ? 2u : 1u, false);
+    }
 }
 }
 
 extern "C" int xos_user_main(const xos::startup_info*) {
     using namespace xos;
     using namespace xos::sdk;
-    print("[sup] XOS E07 user loader + persistent work disk; type help; Escape cancels a foreground child\n");
+    const auto trace_result = syscall(sys_debug_trace, 0);
+    if (trace_result < 0) { print("xsh: lifecycle trace control unavailable\n"); }
     ui::init();
+    print("\nWelcome to Xshell | XylophoneOS\n"
+          "help: commands   dash -i: POSIX shell   trace on: diagnostics\n\n");
     bool last_cr = false;
     for (;;) {
-        print("sup> ");
+        print("xsh> ");
         char line[2048]{};
         u32 used = 0;
         bool overflow = false;
         const u64 prompt_tick = ticks();
         for (;;) {
             char byte;
-            const auto got = read(0, &byte, 1);
+            const auto got = xos::sdk::read(0, &byte, 1);
             if (got <= 0) {
                 if (!demo_keep && !demo_quiet && ticks() - prompt_tick >= 100) {
                     bool killed = false;
@@ -226,7 +337,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
                     killed = syscall(10, 3) == 0 || killed;
                     killed = syscall(10, 4) == 0 || killed;
                     demo_quiet = true;
-                    if (killed) { print("\n[sup] demo tasks stopped; prompt is sup>\nsup> "); }
+                    if (killed) { print(verbose_trace ? "\n[xsh] demo tasks stopped\nxsh> " : "\nxsh> "); }
                 }
                 yield();
                 continue;
@@ -234,15 +345,21 @@ extern "C" int xos_user_main(const xos::startup_info*) {
             if (byte == '\n' && last_cr) { last_cr = false; continue; }
             last_cr = byte == '\r';
             if (byte == '\r' || byte == '\n') { print("\n"); break; }
-            if (byte == '\b' || byte == 127) {
-                if (used > 0 && !overflow) { --used; print("\b \b"); }
-            } else if (byte >= 32 && byte <= 126) {
+            const u8 value = static_cast<u8>(byte);
+            if (value == '\b' || value == 127) {
+                if (used > 0 && !overflow) {
+                    const auto erased = xos::text::erase_last(line, used);
+                    used = erased.size;
+                    for (u32 i = 0; i < erased.columns; ++i) { print("\b \b"); }
+                }
+            } else if ((value >= 32 && value <= 126) || value >= 0x80) {
                 if (used < sizeof(line) - 1 && !overflow) {
-                    line[used++] = byte; (void)write(1, &byte, 1);
+                    line[used++] = byte; (void)xos::sdk::write(1, &byte, 1);
                 } else { overflow = true; }
             }
         }
-        if (overflow) { print("supervisor: line_too_long\n"); continue; }
+        if (overflow) { print("xsh: input line too long\n"); continue; }
+        if (!xos::text::valid(line, used)) { print("xsh: invalid UTF-8 input\n"); continue; }
         line[used] = '\0';
         char* arguments[process_max_args + 1]{};
         u32 count = 0;
@@ -254,7 +371,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
                 arguments[count++] = line + i; in_word = true;
             }
         }
-        if (count == 99) { print("supervisor: too_many_arguments\n"); continue; }
+        if (count == 99) { print("xsh: too many arguments\n"); continue; }
         execute(count, arguments);
     }
 }

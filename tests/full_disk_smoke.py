@@ -69,8 +69,9 @@ def main():
     try:
         guest = Guest(build / "xos.img", "full_disk_boot", work_disk=disk)
         guest.expect(b"xos64> ", timeout=20)
+        start = len(guest.output)
         send_bytes(guest, b"run\r")
-        guest.expect(b"sup> ", timeout=20)
+        guest.expect_supervisor(trace=True, start=start, timeout=20)
         command(guest, "demo keep", b"demo: keep")
         for pid in (1, 3, 4):
             command(guest, f"kill {pid}", b"kill: accepted")

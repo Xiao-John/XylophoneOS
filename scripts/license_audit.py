@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 """Check registered notice materials and exact SDK copies; not a legal/member audit."""
+import argparse
 import hashlib
 import json
 from pathlib import Path
@@ -9,9 +10,13 @@ ROOT = Path(__file__).resolve().parents[1]
 def sha(path): return hashlib.sha256(path.read_bytes()).hexdigest()
 
 def main():
-    build=ROOT/'build'; sdk=build/'sdk'
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--build',type=Path,default=ROOT/'build')
+    args=parser.parse_args()
+    build=args.build.resolve(strict=True); sdk=build/'sdk'
     manifest=json.loads((sdk/'manifest.json').read_text())
     components=json.loads((ROOT/'licenses/components.json').read_text())
+    component_sources={}
     checked={}
     for relative,digest in manifest['licenses'].items():
         artifact=sdk/relative
@@ -27,12 +32,22 @@ def main():
             if not (ROOT/relative).is_file():raise SystemExit(f'Missing registered notice: {relative}')
         for relative,digest in component.get('artifact_sha256',{}).items():
             if sha(ROOT/relative)!=digest:raise SystemExit(f'Registered component changed: {relative}')
+        for relative,identifier in component.get('source_files',{}).items():
+            if relative in component_sources:raise SystemExit(f'Duplicate registered component source: {relative}')
+            source=ROOT/relative
+            if not source.is_file():raise SystemExit(f'Missing registered component source: {relative}')
+            if f'SPDX-License-Identifier: {identifier}' not in source.read_text():
+                raise SystemExit(f'Component source SPDX mismatch: {relative}')
+            component_sources[relative]=identifier
     legacy=set(json.loads((ROOT/'licenses/legacy_mit_files.json').read_text())['files'])
     built=json.loads((build/'manifest.json').read_text())
     new_sources=[]
     for relative in built['sources']:
         if relative.startswith(('src/third_party/','licenses/')) or relative in legacy:continue
         if Path(relative).suffix not in ('.cpp','.hpp','.py','.asm','.c','.h','.s','.sh','.ld'):continue
+        if relative in component_sources:
+            new_sources.append(relative)
+            continue
         if 'SPDX-License-Identifier: Apache-2.0' not in (ROOT/relative).read_text():
             raise SystemExit(f'New source missing Apache-2.0 identifier: {relative}')
         new_sources.append(relative)

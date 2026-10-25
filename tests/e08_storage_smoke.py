@@ -20,8 +20,9 @@ from process_smoke import command,resources
 def boot(disk,name):
     g=Guest(ROOT/'build/xos.img',name,work_disk=disk)
     g.expect(b'xos64> ',timeout=25)
+    start=len(g.output)
     send_bytes(g,b'run\r')
-    g.expect(b'sup> ',timeout=25)
+    g.expect_supervisor(trace=True,start=start,timeout=25)
     # Allow the normal automatic retirement; this is not an E03 fixture run.
     pump(g,1.5)
     return g

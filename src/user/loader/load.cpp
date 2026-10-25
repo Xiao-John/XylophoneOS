@@ -4,6 +4,7 @@
 #include <xos/tls.hpp>
 #include <xos/sdk.hpp>
 #include <xos/file_client.hpp>
+#include <xos/execution.hpp>
 
 namespace xos::sdk {
 namespace {
@@ -42,9 +43,12 @@ bool file_read(void* context, u64 offset, u8* destination, u32 length) {
 
 i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
                  void* read_context, u32 argc, const char* const* argv,
-                 bool close_file, u32 file_handle, const spawn_options* options = nullptr) {
+                 bool close_file, u32 file_handle, const spawn_options* options = nullptr,
+                 execution::launch_diagnostic* diagnostic = nullptr) {
+    if (diagnostic != nullptr) { *diagnostic = {execution::launch_stage::none, 0, elf::error::none}; }
     if (argc == 0 || argc > process_max_args || argv == nullptr || size == 0 ||
         read_exact == nullptr || name == nullptr) {
+        if (diagnostic != nullptr) { *diagnostic = {execution::launch_stage::prepare, process_error_invalid, elf::error::none}; }
         if (close_file) { (void)file_client.close(file_handle); }
         return process_error_invalid;
     }
@@ -52,12 +56,16 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     const auto inspected = elf::inspect_reader(read_exact, read_context, size,
                                                 target_elf_machine(), plan);
     if (inspected != elf::error::none) {
-        print("elf: rejected reason="); print(elf::error_name(inspected)); print("\n");
+        if (diagnostic != nullptr) { *diagnostic = {execution::launch_stage::inspect, process_error_invalid, inspected}; }
+        else { print("elf: rejected reason="); print(elf::error_name(inspected)); print("\n"); }
         if (close_file) { (void)file_client.close(file_handle); }
         return process_error_invalid;
     }
 
     auto fail_before_create = [&](i64 error) {
+        if (diagnostic != nullptr && diagnostic->stage == execution::launch_stage::none) {
+            *diagnostic = {execution::launch_stage::prepare, error, elf::error::none};
+        }
         if (close_file) { (void)file_client.close(file_handle); }
         return error;
     };
@@ -117,6 +125,7 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     const u64 name_length = name_size > 11 ? 11 : name_size;
     const i64 child = syscall(sys_process_create, options == nullptr ? 7u : 0u, reinterpret_cast<u64>(name), name_length);
     if (child < 0) {
+        if (diagnostic != nullptr) { *diagnostic = {execution::launch_stage::create, child, elf::error::none}; }
         if (close_file) { (void)file_client.close(file_handle); }
         return child;
     }
@@ -133,7 +142,10 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
             const u64 source = options->stdio[fd] == -1 ? fd : static_cast<u64>(options->stdio[fd]);
             result = syscall(sys_process_stdio, static_cast<u64>(child), fd, source);
         }
-        if (result >= 0 && options->grant_spawn) {
+        if (result >= 0 && options->delegate_spawn_depth != 0) {
+            result = syscall(sys_process_delegate, static_cast<u64>(child),
+                             options->delegate_spawn_depth);
+        } else if (result >= 0 && options->grant_spawn) {
             result = syscall(sys_process_grant, static_cast<u64>(child), 1);
         }
     }
@@ -180,8 +192,14 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
         process_entry entry{plan.entry, startup_address - 16, startup_address};
         result = syscall(sys_process_start, static_cast<u64>(child),
                          reinterpret_cast<u64>(&entry));
+        if (result < 0 && diagnostic != nullptr) {
+            *diagnostic = {execution::launch_stage::start, result, elf::error::none};
+        }
     }
     if (result < 0) {
+        if (diagnostic != nullptr && diagnostic->stage == execution::launch_stage::none) {
+            *diagnostic = {execution::launch_stage::map, result, elf::error::none};
+        }
         (void)syscall(sys_process_abort, static_cast<u64>(child));
         return result;
     }
@@ -214,6 +232,33 @@ i64 spawn_file_impl(const char* path, u32 argc, const char* const* argv, const s
     return spawn_reader(path, size, file_read, &source, argc, argv, true, handle, options);
 }
 
+i64 spawn_file_diagnosed_impl(const char* path, u32 argc, const char* const* argv,
+                              const spawn_options& options,
+                              execution::launch_diagnostic& diagnostic) {
+    diagnostic = {execution::launch_stage::none, 0, elf::error::none};
+    if (path == nullptr || argc == 0 || argc > process_max_args || argv == nullptr) {
+        diagnostic = {execution::launch_stage::prepare, process_error_invalid, elf::error::none};
+        return process_error_invalid;
+    }
+    if (!file_client_ready) {
+        if (!file_client.init()) {
+            diagnostic = {execution::launch_stage::open, process_error_resources, elf::error::none};
+            return process_error_resources;
+        }
+        file_client_ready = true;
+    }
+    u32 handle = 0, size = 0, version = 0;
+    const i64 opened = file_client.open(path, file::read_only, handle, size, version);
+    (void)version;
+    if (opened < 0) {
+        diagnostic = {execution::launch_stage::open, opened, elf::error::none};
+        return opened;
+    }
+    opened_file source{&file_client, handle};
+    return spawn_reader(path, size, file_read, &source, argc, argv, true, handle,
+                        &options, &diagnostic);
+}
+
 i64 spawn_file(const char* path, u32 argc, const char* const* argv) {
     return spawn_file_impl(path, argc, argv, nullptr);
 }
@@ -235,5 +280,13 @@ i64 spawn(u32 image, u32 argc, const char* const* argv) {
     // The boot-module path remains bounded by the legacy 128 KiB bootstrap
     // staging area. File-backed ELF uses spawn_file and has no image-size cap.
     return spawn_buffer(image_metadata.name, image_buffer, image_metadata.size, argc, argv);
+}
+}
+
+namespace xos::execution {
+i64 spawn_file_diagnosed(const char* path, u32 argc, const char* const* argv,
+                         const sdk::spawn_options& options,
+                         launch_diagnostic& diagnostic) {
+    return sdk::spawn_file_diagnosed_impl(path, argc, argv, options, diagnostic);
 }
 }

@@ -164,8 +164,9 @@ def source_inputs(disk: Path, language: str) -> tuple[dict[str, str], dict[str, 
 def boot_guest(image: Path, disk: Path, name: str) -> Guest:
     guest = Guest(image, name, work_disk=disk)
     guest.expect(b"xos64> ", timeout=25)
+    start = len(guest.output)
     send_bytes(guest, b"run\r")
-    guest.expect(b"sup> ", timeout=25)
+    guest.expect_supervisor(trace=True, start=start, timeout=25)
     pump(guest, 1.5)
     return guest
 

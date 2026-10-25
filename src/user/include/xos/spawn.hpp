@@ -29,7 +29,11 @@ struct spawn_options {
     // A path here is opened by the child's libc startup, replacing that fd.
     const char* open_paths[3] = {nullptr, nullptr, nullptr};
     u32 open_flags[3] = {0, 0, 0};
+    // Legacy direct-child construction authority.
     bool grant_spawn = false;
+    // Explicit bounded delegation. A non-supervisor may only grant a smaller
+    // depth than it received; zero leaves the child unprivileged.
+    u32 delegate_spawn_depth = 0;
 };
 i64 spawn_file_options(const char* path, u32 argc, const char* const* argv,
                        const spawn_options& options);

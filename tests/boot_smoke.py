@@ -32,16 +32,36 @@ class Guest:
         self.qmp_socket = None
 
     def expect(self, expected, *, start=0, timeout=12):
+        alternatives = (expected, b"xsh> ") if expected == b"sup> " else (expected,)
+        return self.expect_any(alternatives, start=start, timeout=timeout)
+
+    def expect_any(self, expected_values, *, start=0, timeout=12):
+        expected_values = tuple(expected_values)
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
-            if expected in self.output[start:]:
-                return
+            matches = [(self.output.find(expected, start), expected)
+                       for expected in expected_values]
+            matches = [(position, expected) for position, expected in matches if position >= 0]
+            if matches:
+                return min(matches)[1]
             if self.process.poll() is not None:
                 raise AssertionError(f"{self.name}: QEMU exited {self.process.returncode}")
             for key, _ in self.selector.select(timeout=0.1):
                 data = key.fileobj.read1(4096)
                 self.output.extend(data)
-        raise AssertionError(f"{self.name}: missing {expected!r}; output={self.output[-1000:]!r}")
+        raise AssertionError(f"{self.name}: missing any of {expected_values!r}; output={self.output[-1000:]!r}")
+
+    def expect_supervisor(self, *, trace=False, start=0, timeout=12):
+        prompt = self.expect_any((b"sup> ", b"xsh> "), start=start, timeout=timeout)
+        if prompt == b"xsh> " and trace:
+            command_start = len(self.output)
+            for value in b"trace on\r":
+                self.process.stdin.write(bytes([value]))
+                self.process.stdin.flush()
+                time.sleep(0.003)
+            self.expect(b"xsh: trace on", start=command_start, timeout=timeout)
+            self.expect_any((b"xsh> ", b"sup> "), start=command_start, timeout=timeout)
+        return prompt
 
     def send_line(self, data, expected):
         start = len(self.output)

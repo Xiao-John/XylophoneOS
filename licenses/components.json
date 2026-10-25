@@ -188,6 +188,69 @@
       "modifications": "Source lock, port patches and original/derived Seed manifests retain build and static link provenance. Patch 0007 repairs lrealpath fallback.",
       "distribution_status": "local_only; corresponding_source_bundle_and_member_license_review_not_completed",
       "source_archive_sha512": "4bab4ef6076f8c5dfdc99d810b51108ced61ea2942ba0c1c932d624360a5473df20d32b300fc76f2ba4aa2a97e1f275c9fd494a1ba9f07c4cb2ad7ceaeb1ae97"
+    },
+    {
+      "name": "dash",
+      "version": "0.5.13.5",
+      "path": "src/ports/dash",
+      "source": "https://deb.debian.org/debian/pool/main/d/dash/dash_0.5.13.5.orig.tar.gz",
+      "license": "per-file BSD-style; upstream COPYING additionally describes GPL-2.0-or-later mksignames.c; generator/table not used by XOS profile",
+      "notices": [
+        "src/ports/dash/upstream/COPYING"
+      ],
+      "used_in": [
+        "optional /usr/bin/dash; launched from Xshell"
+      ],
+      "modifications": "XOS synchronous posix_spawn backend and restricted A profile; no default shell replacement",
+      "artifact_sha256": {
+        "src/ports/dash/upstream/COPYING": "254a7894923ff62e69184a991dcbccae97edee58a1105e8efbe78caf10595d72"
+      }
+    },
+    {
+      "name": "sbase",
+      "version": "c546c3a5724c81cee9a11d816a38ccdf17472129",
+      "path": "src/ports/sbase",
+      "source": "https://git.suckless.org/sbase",
+      "license": "MIT",
+      "notices": [
+        "src/ports/sbase/upstream/LICENSE"
+      ],
+      "used_in": [
+        "optional XOS cat/cp/mkdir/mv/rm user tools for dash B1"
+      ],
+      "source_files": {
+        "src/ports/sbase/xos/cat.c": "MIT",
+        "src/ports/sbase/xos/cp.c": "MIT",
+        "src/ports/sbase/xos/mkdir.c": "MIT",
+        "src/ports/sbase/xos/mv.c": "MIT",
+        "src/ports/sbase/xos/rm.c": "MIT"
+      },
+      "modifications": "Narrow regular-file, same-volume XOS adaptations; no recursive copy/remove, symlink, mode preservation, overwrite, or cross-filesystem fallback",
+      "distribution_status": "local_only; pinned source and adapted files recorded",
+      "artifact_sha256": {
+        "src/ports/sbase/upstream/LICENSE": "eb0b719b3327af6c4b480cd21f7944e944a5ddf571c04572eb8d025f52e056c6"
+      }
+    },
+    {
+      "name": "CPython",
+      "version": "3.14.9",
+      "path": "src/ports/cpython",
+      "source": "https://www.python.org/ftp/python/3.14.9/Python-3.14.9.tar.xz",
+      "source_archive_sha256": "e02d9ac21cebda6e46435369744a92c65cc7cd8669697694122cf97ffacd1e53",
+      "license": "PSF and incorporated per-component terms; preserve upstream LICENSE and license.rst",
+      "notices": [
+        "src/ports/cpython/upstream/LICENSE",
+        "src/ports/cpython/upstream/license.rst"
+      ],
+      "artifact_sha256": {
+        "src/ports/cpython/upstream/LICENSE": "b0e25a78cffb43f4d92de8b61ccfa1f1f98ecbc22330b54b5251e7b6ba010231",
+        "src/ports/cpython/upstream/license.rst": "cd6f471c0bfdb099efefc25ddff9b3df8bf62e10428987f1f05e6f2f9e35d563"
+      },
+      "used_in": [
+        "CPython PY0 static port; local build/guest evidence in work_log/0030_cpython_py0.md"
+      ],
+      "modifications": "XOS configure/module-scope patches and private time backend; no complete POSIX/thread claim",
+      "distribution_status": "port source and patches; no new binary release; actual linked-module member review remains separate"
     }
   ]
 }

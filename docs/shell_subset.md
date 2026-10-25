@@ -1,6 +1,7 @@
-# Dash 当前受限支持范围（C3候选）
+# Dash 当前受限支持范围（C1–C3已验收）
 
-C1/C2已独立验收，C3已通过中间专项、最终回归进行中，见0047–0049与独立报告。
+C1/C2/C3已按顺序独立验收，最终22个串行入口全部通过，build2f7160b7d6633ee6，
+见0047–0049与docs/reports/dash_c3_20261026/qualification.json。
 支持最多4段前台流水线、真实单线程fork隔离（深度3）、builtin/函数/子Shell、
 $()与backticks（raw stdout上限1MiB）、Here-document（引用/展开/<<-与大正文）、
 带完整32FD/CLOEXEC的当前SDK v3目标exec；不是完整POSIX Shell。Shell用户重定向

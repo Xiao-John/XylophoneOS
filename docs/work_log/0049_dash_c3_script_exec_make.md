@@ -84,3 +84,35 @@ Dash A/B0/B1/B2、libc和ISO全部通过；C3主专项在末尾真实旧GCC重�
 
 许可检查保留已有SPDX规则不变，新增仅对component/upstream下逐SHA锁定的原样
 vendored文件验证其登记LICENSE/声明；不往原始Make源码塞新SPDX破坏源hash。
+
+
+## 最终C3 Gate：passed（2026-10-26）
+
+实现源码e729dc6511ede000a6cfaf57bf771934f8310eea（完整历史保留a455f53、6e57afd、
+3079484等审查阶段），build2f7160b7d6633ee6，kernel380988B。QEMU11.1.2 TCG/
+pc-i440fx-10.0/qemu64/512M/1CPU/无网络；GCC/G++16.2.0、Binutils2.47.20260726、
+NASM3.02。完整source/工具/镜像/SDK/测试输入输出哈希见最终qualification与各报告。
+
+最终22个串行验收入口全部退出0：C3主66项、exec16项、atomic7项，C2/C1及其
+机制/pthread探针，进程/文件/线程/C++、CPython T3-PY、native GCC/G++、持久化、
+Dash A/B0/B1/B2、libc、ISO A2和A3/A4、许可材料。新ABI拒绝旧未知CRT file stdio
+和exec边界、同PID权限下降3→2、onestage EBUSY、真实fork/exec部分ENOMEM回滚、
+raw legacy短写保持、小写原子与反压、1MiB捕获错误清理均有真实客体证据。
+
+最终资源baseline=end=[129826,2,0]。普通SDK tree SHA256
+`d531a24b2f679c8ae4b96fd6cb18127bb42a0798ac306152a4c90d362764e393`，线程SDK tree
+`8cf47213690c2dbe95719c087cb1f84b456ddc06b9f2b7987940b00d4a747444`；后者仍不支持fork/exec。
+本机冻结build/dash_c3_frozen/，公开源码回执docs/reports/dash_c3_20261026/。
+SDK manifest保留构建时not_run字段，qualification按完整SHA单独给出实际资格，不
+事后改输入manifest再伪绑定二进制。xos.img SHA256
+`5deb880b9479ce7b155a24362fe97a7290938112244da4d41b3ebffbba1b0a1d`以实际qualification为准。
+
+测试源最终仅修正report-only旧预期字段：ordinary console expected0与file-stdio
+expected126分别命名；真实run断言此前已严格要求file-stdio=126并通过，运行行为/
+输出/状态未改变。原JSON完整保留dash_c3_report.raw.json，修正副本附erratum，
+不以修改结果伪造通过。源码e729为实际构建/运行版本，之后资格提交为文档与报告。
+所有失败日志与精确候选SDK/镜像（含c104）保留，不删除历史失败。
+
+不承诺：完整POSIX/GNU Make、async signals/后台/Qt/SMP、线程fork/exec、未知旧
+CRT继承文件stdio、任意RPC迟到恢复、掉电匿名遗留回收、新SDK xypm白名单或无关
+大型随机压力。未修改/发布正式Release，不自动合并上游。

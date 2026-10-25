@@ -216,7 +216,7 @@ def main():
             })
             scripts['legacy_spawn_driver']='/usr/bin/x86_64-elf-gcc --version > /out/c3_legacy_spawn.stdout\n'
             scripts['legacy_exec_driver']='exec /usr/bin/x86_64-elf-gcc --version > /out/c3_legacy_exec.stdout\nprintf SHOULD_NOT > /out/c3_legacy_after_exec.txt\n'
-            report['legacy_crt_contract']={'ordinary_spawn_expected_exit':0,'explicit_exec_expected_exit':126,
+            report['legacy_crt_contract']={'ordinary_console_spawn_expected_exit':0,'ordinary_file_stdio_spawn_expected_exit':126,'explicit_exec_expected_exit':126,
                 'exec_replaced_allowed':False,'post_exec_body_allowed':False,
                 'redirection_note':'Shell creates/truncates stdout before exec; the expected empty file is an allowed redirection side effect, not a failed image-commit atomicity check'}
             # Direct script dispatch is a separately declared compatibility

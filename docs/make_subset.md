@@ -65,3 +65,12 @@ dash /tests/run_make.sh
 终止状态137在此profile中保留：包括recipe Shell转递其外部任务的SIGKILL/fault
 状态，即使-i/-/.IGNORE也停止Make。显式`exit 137`同样停止，不承诺完整POSIX
 ignore行为；这条规则避免中间Shell把终止转换成普通退出后掩盖实际失败。
+
+## 最终真实资格（2026-10-26）
+
+C3主专项66项通过，包含真实C/G++项目、坏源/修复、重复-B、各负例/取消与匿名
+生命周期；还由XOS内真实GCC/G++编译该Make源码，运行其产物重建项目，并以
+显式exec执行自建Make验证同PID及权限3→2。具体输入、输出、状态、配置/工具、
+SDK/ELF SHA与资源计数在docs/reports/dash_c3_20261026/。
+旧GNU工具普通console编译已验证；未知CRT的文件stdio继承明确拒绝。不要把该
+profile宣称为GNU Make、增量构建、异步信号或所有旧静态ABI兼容。

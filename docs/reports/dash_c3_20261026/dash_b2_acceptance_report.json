@@ -1,0 +1,76 @@
+{
+  "status": "passed",
+  "system_build_id": "2f7160b7d6633ee6",
+  "xos_sha256": "5deb880b9479ce7b155a24362fe97a7290938112244da4d41b3ebffbba1b0a1d",
+  "dash_sha256": "d262b8299734d07c27e8d5ac696a3460c82cba4fe56159d3cbdcceee8f703ff9",
+  "checks": [
+    "truncate_append_and_input_redirection",
+    "shared_stdout_stderr_open_description",
+    "ordered_duplication_differs_from_later_open",
+    "builtin_redirection_restores_parent_descriptors",
+    "redirection_failure_keeps_shell_and_resources",
+    "escape_cancels_nested_foreground_and_returns_to_dash"
+  ],
+  "fixtures": {
+    "b2.sh": "3129ac4bd4b1dfb014e5e36451df5ed4c39730927fb60d6b23201cad7f752420",
+    "spin.c": "004b130532850ef575fd44fcf447f726ae08c0dad906247b096e23b5337a3f1e",
+    "stdio_probe.c": "5fff2559c7df2bb046f3b9c58fa787396965d11ef5722e599e294c3e800ad9ff"
+  },
+  "configuration": {
+    "system": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build",
+    "dash_manifest": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/dash/e4e7615a2880cf3270d4/manifest.json",
+    "dash_manifest_sha256": "134b99fc840af9df13a3b1a5b250e8a73fa0864505e392d7e5bed3aaa5764231",
+    "sbase_manifest": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/sbase/9f051d7f64407891b2fa/manifest.json",
+    "sbase_manifest_sha256": "6d22d437b1c6a0e97893f91b9ab9e033baa870687f84d0129f43d3d67b2a1479",
+    "release_images": "/Users/perry_guo/Documents/ChatGPT/os/runtime/xos-1024-images.tar.gz",
+    "release_archive_sha256_expected": "a800969aaed03c601b8eb5029da8df1f4faecc5fa7f66ede28482aa65c7be25a"
+  },
+  "disk_input": {
+    "mode": "released_private_copy",
+    "release_archive": "/Users/perry_guo/Documents/ChatGPT/os/runtime/xos-1024-images.tar.gz",
+    "release_archive_sha256": "a800969aaed03c601b8eb5029da8df1f4faecc5fa7f66ede28482aa65c7be25a",
+    "member": "xylophoneos_revival_0.0.1-1024_images/work_disk.img",
+    "initial_disk_bytes": 2147483648,
+    "initial_disk_sha256": "79b38a3abd0b44f38a34cccde17b2330882627f54dd80b597ca5dfee78be45a4"
+  },
+  "probes": {
+    "stdio_probe": "00224bbcc3655bdac6431d951892129632fdfd44b2f8fd89f401b53e51fdc355",
+    "spin": "714ad012c9d4776bf6e018201f938834218e58e8d7f6c4e9da00118764aad0b1"
+  },
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-drive",
+    "file=build/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_b2_5zqmbkdg/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_bg4chkds/qmp.sock,server=on,wait=off"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "baseline_resources": [
+    129826,
+    2,
+    0
+  ]
+}

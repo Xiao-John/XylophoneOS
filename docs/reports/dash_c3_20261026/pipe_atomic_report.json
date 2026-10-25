@@ -1,0 +1,209 @@
+{
+  "status": "passed",
+  "run_id": "22ab2165434f4a9ebb65c884cbbc798e",
+  "scope": "one directed two-process inherited-pipe atomic-write run",
+  "source_commit": "e729dc6511ede000a6cfaf57bf771934f8310eea",
+  "sources": {
+    "tests/fixtures/dash_c1/pipe_atomic.c": "2fd84ea42ed12aa6120e2a38c14a7d409bf48b77ac92aa5562d34efeafa12da3",
+    "tests/pipe_atomic_smoke.py": "68b38656139eab71a46b1ae94971b99d83b2b29ecf012ecf4857e67b7934277d",
+    "src/kernel/arch/x86_64/tasks.cpp": "b397cba1c2f18ed1d4d984edbccf637c9f122fd76a14ff5ecbf85b1099689d55",
+    "src/user/libc/newlib_syscalls.cpp": "ab197665d760b29f074ae47ed6f1ca7778f0b3aed019908158a99ccb371cda1e",
+    "src/shared/include/xos/process_abi.hpp": "99b71c1b9cbee404a947522f7f61037aefffe70f012aab7f81b68f5cabce7d83"
+  },
+  "tools": {
+    "gcc": {
+      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+      "sha256": "078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f",
+      "version": "x86_64-elf-gcc (GCC) 16.2.0"
+    },
+    "as": {
+      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+      "sha256": "530cf6fbe7d857e0d4ebbc52bcc017867fb7af65552a1f842dbcaa5c50db9026",
+      "version": "GNU assembler (GNU Binutils) 2.47.20260726"
+    },
+    "ld": {
+      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "sha256": "92002feac2ed2e5b05ae6fb47a1aab2979b3b46bd861a4439838e6bcb20e7fe5",
+      "version": "GNU ld (GNU Binutils) 2.47.20260726"
+    },
+    "qemu": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+      "sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
+      "version": "QEMU emulator version 11.1.2"
+    }
+  },
+  "build_commands": [
+    [
+      "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
+      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/target_tools/",
+      "-std=gnu11",
+      "-O2",
+      "-g",
+      "-mno-red-zone",
+      "-fno-pie",
+      "-fno-pic",
+      "-fno-stack-protector",
+      "-idirafter",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/sdk/include",
+      "-nostdlib",
+      "-static",
+      "-no-pie",
+      "-Wl,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096",
+      "-T",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/sdk/user.ld",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/sdk/crt0_posix.o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/pipe_atomic_evidence/22ab2165434f4a9ebb65c884cbbc798e/pipe_atomic.c",
+      "-Wl,--start-group",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/sdk/lib/libxos.a",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/sdk/lib/libxos_loader.a",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/sdk/lib/libc.a",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/sdk/lib/libm.a",
+      "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/../lib/gcc/x86_64-elf/16.2.0/libgcc.a",
+      "-Wl,--end-group",
+      "-o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/pipe_atomic_evidence/22ab2165434f4a9ebb65c884cbbc798e/pipe_atomic.elf"
+    ]
+  ],
+  "checks": [
+    "raw_wait_writer_minimum_and_read_argument_validation",
+    "flagged_small_raw_write_returns_EAGAIN_until_all_512_bytes_fit",
+    "unflagged_small_and_large_raw_writes_retain_legacy_short_write_behavior",
+    "two_spawned_writers_inherit_same_stdout_pipe_and_each_write_returns_512",
+    "257_byte_reads_and_yields_preserve_every_512_byte_A_or_B_record",
+    "64_records_per_writer_65536_bytes_EOF_and_both_exit_zero",
+    "guest_and_supervisor_resources_return_to_baseline"
+  ],
+  "expected": {
+    "writers": 2,
+    "records_each": 64,
+    "write_bytes": 512,
+    "read_chunk": 257,
+    "bytes": 65536,
+    "exit_code": 0
+  },
+  "not_run": [
+    "SMP",
+    "long_randomized_stress"
+  ],
+  "system_build_id": "2f7160b7d6633ee6",
+  "system_manifest_sha256": "523e269b699b38fbf1881ff3b3214c8b79676340d5afbe07d33c769c8fd7e987",
+  "xos_sha256": "5deb880b9479ce7b155a24362fe97a7290938112244da4d41b3ebffbba1b0a1d",
+  "sdk_manifest_sha256": "195a81b9fe6601f1cb0be5da0cab195363f1cd61a34ac2a37f77db971df67493",
+  "libgcc_sha256": "1d1755feabef4fbe34527df8f94f44e67f3fc2ce3b1d58dbf824ec858c994dfa",
+  "sdk_inputs": {
+    "crt0_posix.o": "495d4fcc62ace2c1961138312e737be2be6bd6c53293a4e3af90a3675a65932a",
+    "user.ld": "d7574d234323eb7f2b481d6d99aca931bc236b843462e10cd2ef55b7ee88441b",
+    "lib/libxos.a": "eab8673f03ac9d8a502d398bf57c03faf00beefc433037d30521157840aeff7e",
+    "lib/libxos_loader.a": "a0e84567e8c0c1b126502e10892f8f024f9b73c4be4d755372088e69053b300e",
+    "lib/libc.a": "283fa07ad205c80af92e955a91da027435d8a8a90cb7e27933f57925cc5baa22",
+    "lib/libm.a": "4cfdd6324f6776d025923ee369fad51236a9ee5730c8143a6b3b03b963eefd80",
+    "include/xos/process_abi.hpp": "99b71c1b9cbee404a947522f7f61037aefffe70f012aab7f81b68f5cabce7d83"
+  },
+  "probe": {
+    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/pipe_atomic_evidence/22ab2165434f4a9ebb65c884cbbc798e/pipe_atomic.elf",
+    "sha256": "41584e6be8056ca96c360dd5b51192fd278d5fc45511b83076cd984bf333410e",
+    "bytes": 766000
+  },
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_pipe_atomic_xbe5407n/boot.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_pipe_atomic_xbe5407n/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_w_xgn4td/qmp.sock,server=on,wait=off"
+  ],
+  "baseline_resources": [
+    129826,
+    2,
+    0
+  ],
+  "guest_command": "exec-driver /tests/pipe_atomic",
+  "output": "exec-driver /tests/pipe_atomic\n[process] event=started pid=9 parent=7\r\n[process] pid=9 address_space=0x0000000000292000\r\n[loader] started pid=9 file=/tests/pipe_atomic\nPIPE_ATOMIC_RESOURCES warmup free=129698 processes=3 threads=1 reservations=0 waiting=0 results=0 user_pages=122 kernel_pages=1\nPIPE_ATOMIC_RESOURCES baseline free=129698 processes=3 threads=1 reservations=0 waiting=0 results=0 user_pages=122 kernel_pages=1\nPIPE_ATOMIC_RAW minimum_validation=ok insufficient_space=EAGAIN whole_512=ok large_7777_short_4096=ok PASS\n[process] event=wait_blocked parent=7 child=9\r\n[process] event=started pid=10 parent=9\r\n[process] pid=10 address_space=0x000000000053e000\r\n[process] event=started pid=11 parent=9\r\n[process] pid=11 address_space=0x00000000005be000\r\nPIPE_ATOMIC_WRITER A records=64 write_each=512 PASS\n[task] event=reclaimed pid=10 pages=128\r\nPIPE_ATOMIC_WRITER B records=64 write_each=512 PASS\n[task] event=reclaimed pid=11 pages=128\r\nPIPE_ATOMIC_RESOURCES final free=129698 processes=3 threads=1 reservations=0 waiting=0 results=0 user_pages=122 kernel_pages=1\nPIPE_ATOMIC_PARENT child_a=10 child_b=11 records_A=64 records_B=64 bytes=65536 read_calls=256 read_chunk=257 eof=1 resource_baseline=ok PASS\n[task] event=reclaimed pid=9 pages=128\r\n[wait] pid=9 kind=exited code=0\nxsh> ",
+  "probe_serial_log": {
+    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/pipe_atomic_evidence/22ab2165434f4a9ebb65c884cbbc798e/probe.serial.log",
+    "sha256": "1846f899e66d041eafdbcd088ae10f10fd4b93f79d77ad1bf8ccf6c8982353ef"
+  },
+  "actual": {
+    "child_pids": [
+      10,
+      11
+    ],
+    "records_A": 64,
+    "records_B": 64,
+    "bytes": 65536,
+    "read_calls": 256,
+    "eof": true,
+    "all_512_byte_records_uniform": true,
+    "child_exit_codes": [
+      0,
+      0
+    ],
+    "exit_code": 0
+  },
+  "guest_resource_counters": [
+    {
+      "phase": "warmup",
+      "free": 129698,
+      "processes": 3,
+      "threads": 1,
+      "reservations": 0,
+      "waiting": 0,
+      "results": 0,
+      "user_pages": 122,
+      "kernel_pages": 1
+    },
+    {
+      "phase": "baseline",
+      "free": 129698,
+      "processes": 3,
+      "threads": 1,
+      "reservations": 0,
+      "waiting": 0,
+      "results": 0,
+      "user_pages": 122,
+      "kernel_pages": 1
+    },
+    {
+      "phase": "final",
+      "free": 129698,
+      "processes": 3,
+      "threads": 1,
+      "reservations": 0,
+      "waiting": 0,
+      "results": 0,
+      "user_pages": 122,
+      "kernel_pages": 1
+    }
+  ],
+  "final_resources": [
+    129826,
+    2,
+    0
+  ],
+  "serial_log": {
+    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/pipe_atomic_evidence/22ab2165434f4a9ebb65c884cbbc798e/all.serial.log",
+    "sha256": "ab30c3ca2d937d558daf18b78e1608c56572baf53d5da1a2a786b770a8a9ac43"
+  }
+}

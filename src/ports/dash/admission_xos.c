@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: Apache-2.0 */
+#include <fcntl.h>
 /* Appended to eval.c, with its upstream node/error declarations in scope. */
 void xos_check_tree(union node *n);
 static void xos_check_redirect(union node *n) {
@@ -49,9 +50,76 @@ void xos_check_tree(union node *n) {
     case NREDIR:
         xos_check_tree(n->nredir.n); xos_check_redirect(n->nredir.redirect); break;
     case NNOT: xos_check_tree(n->nnot.com); break;
-    case NPIPE: sh_error("pipeline unavailable in XOS dash B2");
+    case NPIPE: {
+        struct nodelist *lp;
+        unsigned count = 0;
+        if (n->npipe.backgnd) sh_error("background pipeline unavailable in XOS dash C1");
+        for (lp = n->npipe.cmdlist; lp; lp = lp->next) {
+            if (++count > 4) sh_error("XOS dash C1 supports at most 4 pipeline stages");
+            if (lp->n->type != NCMD) sh_error("C1 pipeline requires external simple commands");
+            xos_check_tree(lp->n);
+        }
+        break;
+    }
     case NSUBSHELL: sh_error("subshell unavailable in XOS dash B2");
     case NBACKGND: sh_error("background jobs unavailable in XOS dash B2");
     default: sh_error("construct unavailable in XOS dash B2");
     }
+}
+
+/* Run the normal argument/assignment/redirection evaluator for each external
+ * stage. Only vforkexec changes mode: launch now, collect after ALL launches.
+ * Saved descriptors and the upstream unwind stacks cover every error path. */
+int xos_evalpipe(union node *n, int flags) {
+    struct jmploc loc;
+    struct jmploc *savehandler = handler;
+    struct localvar_list *locals = pushlocalvars(0);
+    struct parsefile *files = parsefile;
+    struct redirtab *redirs = pushredir(NULL);
+    struct nodelist *lp;
+    static int saved[2], pip[2], previous;
+    int caught, status = 125, fd;
+    (void)flags;
+    saved[0] = saved[1] = -2; pip[0] = pip[1] = previous = -1;
+    caught = setjmp(loc.loc);
+    if (!caught) {
+        handler = &loc;
+        xos_pipeline_begin();
+        for (fd = 0; fd < 2; ++fd) {
+            saved[fd] = fcntl(fd, F_DUPFD_CLOEXEC, 10);
+            if (saved[fd] < 0 && errno != EBADF) sh_error("pipeline: save descriptor");
+        }
+        for (lp = n->npipe.cmdlist; lp; lp = lp->next) {
+            if (lp->next && pipe(pip) < 0) sh_error("pipeline: pipe: %s", strerror(errno));
+            if (previous >= 0 && dup2(previous, 0) < 0) sh_error("pipeline: stdin");
+            if (pip[1] >= 0 && dup2(pip[1], 1) < 0) sh_error("pipeline: stdout");
+            status = evalcommand(lp->n, 0);
+            unwindredir(redirs); unwindfiles(files); unwindlocalvars(locals);
+            for (fd = 0; fd < 2; ++fd) {
+                if (saved[fd] >= 0) dup2(saved[fd], fd); else close(fd);
+            }
+            if (previous >= 0) close(previous);
+            previous = -1;
+            if (pip[1] >= 0) close(pip[1]);
+            pip[1] = -1;
+            previous = pip[0]; pip[0] = -1;
+            if (xos_pipeline_failed || status) break;
+        }
+    }
+    handler = savehandler;
+    unwindredir(redirs); unwindfiles(files); unwindlocalvars(locals);
+    for (fd = 0; fd < 2; ++fd) {
+        if (saved[fd] >= 0) { dup2(saved[fd], fd); close(saved[fd]); }
+        else if (saved[fd] == -1) close(fd);
+    }
+    if (previous >= 0) close(previous);
+    if (pip[0] >= 0) close(pip[0]);
+    if (pip[1] >= 0) close(pip[1]);
+    if (caught || xos_pipeline_failed || status) {
+        int failure = caught ? 2 : status;
+        xos_pipeline_finish(1);
+        if (caught) longjmp(handler->loc, 1);
+        return failure;
+    }
+    return xos_pipeline_finish(0);
 }

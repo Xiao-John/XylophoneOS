@@ -205,3 +205,32 @@ process_stats 的布局及进程权限含义。共享 ABI 见 `thread_abi.hpp`�
 文件wire仍v2布局，B2追加操作保留旧工具入口；私有spawn FD快照与有锁的seek/
 transfer共同整合。7组整合gate见work_log/0041_threading_local_merge.md；B2随后由
 0042以新SDK正式收口，证据绑定build `911184be3f3c99f6`，不借用旧回执。
+
+
+## 0047：C1 管道等待与前台流水线（实验分支）
+
+保持 sys0–53 与 startup v1/v2 布局。sys54 `sys_pipe_wait(token,0,0)` 接受本进程
+pipe token 或 0–2 的有效内核 stdio route；console 返回 would_block，不睡眠。
+可读为有数据/最后 writer 已关闭；可写为有空间/最后 reader 已关闭。
+校验、检查、登记 blocked 在单核不可抢占内核中原子完成；允许伪唤醒，调用方
+必须重试 I/O 并重新验证 token。每次 close 和数据流动唤醒等待者，slot 回收前
+广播；token 单调不复用。底层 read/write 仍可短读写并返回 EAGAIN，新增 libc
+在管道 EAGAIN 后阻塞重试，不把 console 的旧非阻塞语义改成 EOF。
+
+sys55 `sys_process_foreground(&request,active,0)`：request 为48字节固定宽度
+`process_foreground{version=1,size=48,count,reserved=0,pids[4]}`；未使用 PID 必须0。
+每个 PID 必须有属于调用者的 completion，且不重复。active=1 从开始构造流水线
+起登记（count=0合法），每段启动后更新；Escape 取消全组并锁存 cancelled，后续
+active 更新返回 state，调用者停止构造并清理本地已启动列表。active=0/count=0
+撤销登记并清锁存。它是有界前台取消机制，不是 POSIX process group/作业控制。
+
+sys56 `sys_process_cancel(pid,0,0)` 仅接受调用者有构造权的直接、已启动子任务，
+不接收任意 PID/信号；停止子任务及其后代，保留 completion 待 wait 消费。
+sys20 第三个参数现接受0（阻塞）/1（完成查询）；未完成时查询返回 would_block，
+libc waitpid(WNOHANG)返回0，不消费记录。其他位拒绝。
+sys34 的 PID=0 分支只查询自己的 stdio route，第二参数fd、第三参数0，返回
+1 console/0 pipe/负错误；libc isatty据此区分继承的pipe与console。
+
+libc FD表锁不跨管道等待；在途 I/O pin住对象，普通 close 不中断该在途 I/O；
+直接raw close唤醒后，raw等待者再次I/O必须重新验证权限。F_SETFL对未实现的
+O_NONBLOCK等位明确ENOTSUP，writer F_GETFL报告O_WRONLY。未增加异步信号递送。

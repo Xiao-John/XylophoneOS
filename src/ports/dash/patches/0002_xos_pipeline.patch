@@ -1,0 +1,8 @@
+--- a/src/eval.c
++++ b/src/eval.c
+@@ -568,0 +569 @@
++	return xos_evalpipe(n, flags);
+@@ -831,0 +833,3 @@
++	if (xos_pipeline_active && (argc == 0 || cmdentry.cmdtype == CMDBUILTIN || cmdentry.cmdtype == CMDFUNCTION))
++		sh_error("C1 pipeline requires external commands");
++

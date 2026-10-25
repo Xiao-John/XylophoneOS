@@ -17,6 +17,7 @@ from work_disk import transfer
 from gcc_seed_smoke import import_manifest_files
 from process_smoke import command, resources
 from task_smoke import send_bytes, pump
+from released_test_disk import ARCHIVE_SHA256, prepare_release_disk, ensure_directory, sha256
 
 
 def sha(path):
@@ -27,7 +28,7 @@ def build_probe(source, output, sdk):
     compiler = shutil.which('x86_64-elf-gcc') or 'x86_64-elf-gcc'
     libgcc = subprocess.check_output([compiler, '-print-libgcc-file-name'], text=True).strip()
     subprocess.run([
-        compiler, '-O2', '-mno-red-zone', '-fno-pie', '-fno-pic', '-fno-stack-protector',
+        compiler, '-B'+str(ROOT/'build/target_tools')+'/', '-O2', '-mno-red-zone', '-fno-pie', '-fno-pic', '-fno-stack-protector',
         '-idirafter', str(sdk/'include'), '-nostdlib', '-static', '-no-pie',
         '-Wl,--build-id=none,-z,noexecstack,-z,max-page-size=4096',
         '-T', str(sdk/'user.ld'), str(sdk/'crt0_posix.o'), str(source),
@@ -44,16 +45,23 @@ def main():
     parser.add_argument('--sbase-manifest', type=Path, required=True)
     parser.add_argument('--seed-manifest', type=Path, default=ROOT/'build/cpp_bundle/seed_manifest.json')
     parser.add_argument('--sysroot-manifest', type=Path, default=ROOT/'build/cpp_bundle/sysroot_manifest.json')
+    parser.add_argument('--release-images', type=Path,
+                        help='use the SHA256-pinned 1024 release work disk instead of Seed/sysroot manifests')
     parser.add_argument('--report', type=Path, default=ROOT/'build/dash_b2_acceptance_report.json')
     args = parser.parse_args()
     system = json.loads((args.system/'manifest.json').read_text())
     dash = json.loads(args.dash_manifest.read_text())
     sbase = json.loads(args.sbase_manifest.read_text())
-    seed = json.loads(args.seed_manifest.read_text())
-    sysroot = json.loads(args.sysroot_manifest.read_text())
     report = {'status': 'failed', 'system_build_id': system['build_id'],
               'xos_sha256': sha(args.system/'xos.img'), 'dash_sha256': dash['sha256'],
-              'checks': [], 'fixtures': {}}
+              'checks': [], 'fixtures': {}, 'configuration': {
+                  'system': str(args.system.resolve()),
+                  'dash_manifest': str(args.dash_manifest.resolve()),
+                  'dash_manifest_sha256': sha256(args.dash_manifest),
+                  'sbase_manifest': str(args.sbase_manifest.resolve()),
+                  'sbase_manifest_sha256': sha256(args.sbase_manifest),
+                  'release_images': str(args.release_images.resolve()) if args.release_images else None,
+                  'release_archive_sha256_expected': ARCHIVE_SHA256 if args.release_images else None}}
     guest = None
     try:
         if report['xos_sha256'] != system['artifacts']['xos.img']['sha256']:
@@ -69,11 +77,22 @@ def main():
             spin_probe = folder/'spin'
             build_probe(ROOT/'tests/fixtures/dash_b2/stdio_probe.c', stdio_probe, sdk)
             build_probe(ROOT/'tests/fixtures/dash_b2/spin.c', spin_probe, sdk)
-            create_fat32(disk, 2048)
-            import_manifest_files(disk, ROOT, seed['install_files'], 'Seed install')
-            import_manifest_files(disk, ROOT, sysroot['files'], 'target sysroot')
+            if args.release_images:
+                report['disk_input'] = prepare_release_disk(args.release_images, disk)
+            else:
+                seed = json.loads(args.seed_manifest.read_text())
+                sysroot = json.loads(args.sysroot_manifest.read_text())
+                report['disk_input'] = {
+                    'mode': 'manifest_import',
+                    'seed_manifest': str(args.seed_manifest.resolve()),
+                    'seed_manifest_sha256': sha256(args.seed_manifest),
+                    'sysroot_manifest': str(args.sysroot_manifest.resolve()),
+                    'sysroot_manifest_sha256': sha256(args.sysroot_manifest)}
+                create_fat32(disk, 2048)
+                import_manifest_files(disk, ROOT, seed['install_files'], 'Seed install')
+                import_manifest_files(disk, ROOT, sysroot['files'], 'target sysroot')
             for directory in ('/tests', '/out', '/tmp'):
-                transfer(disk, 'mkdir', directory)
+                ensure_directory(disk, directory)
             transfer(disk, 'import', '/usr/bin/dash', dash_elf)
             for name, item in sbase['tools'].items():
                 binary = ROOT/item['path']
@@ -90,6 +109,8 @@ def main():
             report['probes'] = {'stdio_probe': sha(stdio_probe), 'spin': sha(spin_probe)}
 
             guest = Guest(args.system/'xos.img', 'dash_b2', work_disk=disk)
+            report['qemu_command'] = guest.command
+            report['qemu_version'] = subprocess.check_output([guest.command[0], '--version'], text=True).splitlines()[0]
             guest.expect(b'xos64> ', timeout=40)
             send_bytes(guest, b'run\r')
             guest.expect_supervisor(trace=True, timeout=40)

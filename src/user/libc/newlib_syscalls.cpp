@@ -808,7 +808,8 @@ extern "C" int fcntl(int fd, int command, ...) {
         result = static_cast<int>(objects[descriptors[fd].object].flags);
     } else if (command == F_SETFL) {
         const int value = va_arg(arguments, int);
-        if (((value ^ static_cast<int>(objects[descriptors[fd].object].flags)) & O_APPEND) != 0) {
+        if ((value & ~(O_ACCMODE | O_APPEND)) != 0 ||
+            ((value ^ static_cast<int>(objects[descriptors[fd].object].flags)) & O_APPEND) != 0) {
             errno = ENOTSUP;
         } else { result = 0; }
     } else if (command == F_DUPFD
@@ -856,7 +857,7 @@ extern "C" int pipe(int output[2]) {
         errno = error_from_kernel(result); return -1;
     }
     const int read_object = alloc_object(object_kind::pipe_read, handles.read_token);
-    const int write_object = alloc_object(object_kind::pipe_write, handles.write_token);
+    const int write_object = alloc_object(object_kind::pipe_write, handles.write_token, O_WRONLY);
     if (read_object < 0 || write_object < 0) {
         if (read_object >= 0) { release_object(read_object); }
         else { (void)xos::sdk::syscall(xos::sys_pipe_close, handles.read_token); }
@@ -874,7 +875,12 @@ extern "C" int pipe(int output[2]) {
 
 extern "C" int isatty(int fd) {
     runtime_guard guard(fd_table_lock);
-    return valid_fd(fd) && objects[descriptors[fd].object].kind == object_kind::kernel ? 1 : 0;
+    if (!valid_fd(fd)) { errno = EBADF; return 0; }
+    const auto& object = objects[descriptors[fd].object];
+    if (object.kind != object_kind::kernel) { errno = ENOTTY; return 0; }
+    const auto result = xos::sdk::syscall(xos::sys_process_stdio, 0, object.handle);
+    if (result != 1) { errno = ENOTTY; return 0; }
+    return 1;
 }
 
 extern "C" DIR* opendir(const char* path) {
@@ -1257,12 +1263,14 @@ extern "C" int posix_spawnp(pid_t* output_pid, const char* path,
 
 extern "C" pid_t waitpid(pid_t pid, int* status, int options) {
     if (pid <= 0) { errno = EINVAL; return -1; }
-    if ((options & ~WNOHANG) != 0 || (options & WNOHANG) != 0) {
+    if ((options & ~WNOHANG) != 0) {
         errno = ENOTSUP;
         return -1;
     }
     xos::process_status result{};
-    const xos::i64 waited = xos::sdk::wait(static_cast<xos::u64>(pid), result);
+    const xos::i64 waited = xos::sdk::syscall(xos::sys_process_wait,
+        static_cast<xos::u64>(pid), reinterpret_cast<u64>(&result), (options & WNOHANG) ? 1 : 0);
+    if (waited == xos::process_error_would_block && (options & WNOHANG)) { return 0; }
     if (waited < 0) { errno = error_from_kernel(waited); return -1; }
     if (status != nullptr) {
         if (result.outcome == xos::process_outcome::exited) { *status = (static_cast<int>(result.code) & 0xff) << 8; }

@@ -5,6 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import subprocess
 import sys
 import tempfile
 
@@ -16,6 +17,7 @@ from work_disk import transfer
 from gcc_seed_smoke import import_manifest_files
 from process_smoke import command, resources
 from task_smoke import send_bytes, pump
+from released_test_disk import ARCHIVE_SHA256, prepare_release_disk, ensure_directory, sha256
 
 def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
@@ -27,17 +29,24 @@ def main():
     parser.add_argument('--sbase-manifest', type=Path, required=True)
     parser.add_argument('--seed-manifest', type=Path, default=ROOT/'build/cpp_bundle/seed_manifest.json')
     parser.add_argument('--sysroot-manifest', type=Path, default=ROOT/'build/cpp_bundle/sysroot_manifest.json')
+    parser.add_argument('--release-images', type=Path,
+                        help='use the SHA256-pinned 1024 release work disk instead of Seed/sysroot manifests')
     parser.add_argument('--report', type=Path, default=ROOT/'build/dash_b_acceptance_report.json')
     args = parser.parse_args()
     system = json.loads((args.system/'manifest.json').read_text())
     dash = json.loads(args.dash_manifest.read_text())
     sbase = json.loads(args.sbase_manifest.read_text())
-    seed = json.loads(args.seed_manifest.read_text())
-    sysroot = json.loads(args.sysroot_manifest.read_text())
     report = {'status': 'failed', 'system_build_id': system['build_id'],
               'xos_sha256': sha(args.system/'xos.img'), 'dash_sha256': dash['sha256'],
               'sbase_commit': sbase['commit'], 'checks': [], 'commands': [],
-              'fixtures': {}}
+              'fixtures': {}, 'configuration': {
+                  'system': str(args.system.resolve()),
+                  'dash_manifest': str(args.dash_manifest.resolve()),
+                  'dash_manifest_sha256': sha256(args.dash_manifest),
+                  'sbase_manifest': str(args.sbase_manifest.resolve()),
+                  'sbase_manifest_sha256': sha256(args.sbase_manifest),
+                  'release_images': str(args.release_images.resolve()) if args.release_images else None,
+                  'release_archive_sha256_expected': ARCHIVE_SHA256 if args.release_images else None}}
     guest = None
     try:
         if report['xos_sha256'] != system['artifacts']['xos.img']['sha256']:
@@ -48,13 +57,22 @@ def main():
         with tempfile.TemporaryDirectory(prefix='xos_dash_b_') as folder_name:
             folder = Path(folder_name)
             disk = folder/'work.img'
-            create_fat32(disk, 2048)
-            import_manifest_files(disk, ROOT, seed['install_files'], 'Seed install')
-            import_manifest_files(disk, ROOT, sysroot['files'], 'target sysroot')
-            transfer(disk, 'mkdir', '/tests')
-            transfer(disk, 'mkdir', '/src')
-            transfer(disk, 'mkdir', '/out')
-            transfer(disk, 'mkdir', '/tmp')
+            if args.release_images:
+                report['disk_input'] = prepare_release_disk(args.release_images, disk)
+            else:
+                seed = json.loads(args.seed_manifest.read_text())
+                sysroot = json.loads(args.sysroot_manifest.read_text())
+                report['disk_input'] = {
+                    'mode': 'manifest_import',
+                    'seed_manifest': str(args.seed_manifest.resolve()),
+                    'seed_manifest_sha256': sha256(args.seed_manifest),
+                    'sysroot_manifest': str(args.sysroot_manifest.resolve()),
+                    'sysroot_manifest_sha256': sha256(args.sysroot_manifest)}
+                create_fat32(disk, 2048)
+                import_manifest_files(disk, ROOT, seed['install_files'], 'Seed install')
+                import_manifest_files(disk, ROOT, sysroot['files'], 'target sysroot')
+            for directory in ('/tests', '/src', '/out', '/tmp'):
+                ensure_directory(disk, directory)
             transfer(disk, 'import', '/usr/bin/dash', dash_elf)
             for name, item in sbase['tools'].items():
                 binary = ROOT/item['path']
@@ -72,6 +90,8 @@ def main():
             transfer(disk, 'import', '/src/current.c', fixtures/'bad.c')
 
             guest = Guest(args.system/'xos.img', 'dash_b', work_disk=disk)
+            report['qemu_command'] = guest.command
+            report['qemu_version'] = subprocess.check_output([guest.command[0], '--version'], text=True).splitlines()[0]
             guest.expect(b'xos64> ', timeout=40)
             send_bytes(guest, b'run\r')
             guest.expect_supervisor(trace=True, timeout=40)

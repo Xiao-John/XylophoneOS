@@ -38,3 +38,19 @@ upstream mksignames generator and its output are omitted in this no-signals
 profile. New local backend/build/test files are Apache-2.0; modified upstream
 files retain their original licenses. The pinned upstream tarball is kept under
 `upstream/` so an offline checkout can build and preinstall dash.
+
+
+C1 experimental branch adds external-only, foreground pipelines of at most four
+simple-command stages. All stages launch before any blocking wait. Parent pipe
+ends close promptly, ordered stage redirections override pipe defaults, failed
+launches cancel/collect already started children, and Escape cancels the whole
+foreground pipeline even during construction. The last stage supplies status;
+missing commands are 127, other spawn failures 126, cancellation 137. A fifth
+stage is rejected before execution. Fewer free process slots can fail a shorter
+pipeline; the global eight-process quota is unchanged.
+
+This intermediate C1 evaluator expands external arguments in the parent shell.
+Full subshell isolation, including side effects of arithmetic expansion, belongs
+to C2 and is not claimed here. Builtins/functions in pipelines, subshells, command
+substitution, here-documents, background jobs and real exec remain rejected.
+Actual evidence and remaining regressions are recorded in work log 0047.

@@ -42,7 +42,6 @@ REJECT = {
     'pipe': 'printf SHOULD_NOT_RUN | printf BAD',
     'subshell': '(printf SHOULD_NOT_RUN)',
     'substitution': 'printf SHOULD_NOT_RUN "$(printf BAD)"',
-    'redirection': 'printf SHOULD_NOT_RUN >/tmp/rejected.txt',
     'background': 'printf SHOULD_NOT_RUN &',
 }
 
@@ -63,7 +62,8 @@ def main():
     try:
         with tempfile.TemporaryDirectory(prefix='xos_dash_a_') as temp:
             folder=Path(temp);disk=folder/'work.img';create_fat32(disk,512)
-            helper=ROOT/'build/work_disk_host'
+            from work_disk import host_tool
+            helper=host_tool()
             def transfer(op,path,source=None):
                 args=[str(helper),str(disk),op,path]
                 if source is not None:args.append(str(source))
@@ -72,7 +72,8 @@ def main():
             transfer('import','/usr/bin/dash',elf)
             source=folder/'probe.c';source.write_text(PROBE)
             probe=folder/'probe.elf';host=folder/'probe_host'
-            subprocess.run([sys.executable,str(ROOT/'build/releases/0.0.1-1024/xylophoneos_revival_0.0.1-1024_sdk/compile.py'),'--c',str(source),'-o',str(probe)],check=True)
+            from dash_b2_smoke import build_probe
+            build_probe(source, probe, a.system/'sdk')
             subprocess.run(['clang',str(source),'-o',str(host)],check=True)
             transfer('import','/usr/bin/probe',probe)
             expected={}
@@ -98,7 +99,7 @@ def main():
                 report['checks'].append(name)
             for name in REJECT:
                 result=command(guest,'exec-driver /usr/bin/dash /tests/'+name+'.sh',b'kind=exited code=2',timeout=30)
-                assert b'SHOULD_NOT_RUN' not in result and b'unavailable in XOS dash' in result
+                assert b'SHOULD_NOT_RUN' not in result and (b'unavailable in XOS dash' in result or b'C1 pipeline requires external commands' in result)
                 assert resources(guest)==baseline
                 report['checks'].append('reject_'+name)
             command(guest,'exec-driver /usr/bin/dash -c true',b'kind=exited code=0',timeout=30)

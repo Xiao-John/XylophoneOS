@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Explicit, isolated dash B2 cross build against a frozen XOS SDK."""
+"""Explicit, isolated dash C1 cross build against a frozen XOS SDK."""
 import argparse
 import hashlib
 import json
@@ -50,14 +50,20 @@ def main():
                         tar.extract(member,source)
         if not (source/'configure').is_file():
             raise SystemExit(f'dash extraction produced no configure under {source}')
-        subprocess.run(['patch','-p1','-i',str(PORT/'patches/0001_xos_simple_commands.patch')],cwd=source,check=True,stdout=subprocess.DEVNULL)
+        for patch in sorted((PORT/'patches').glob('*.patch')):
+            subprocess.run(['patch','-p1','-i',str(patch)],cwd=source,check=True,stdout=subprocess.DEVNULL)
         for local, upstream in (('jobs_xos.c','jobs.c'),('signals_xos.c','trap.c')):
             shutil.copyfile(PORT/local,source/'src'/upstream)
         with (source/'src/eval.c').open('a') as stream:stream.write('\n'+(PORT/'admission_xos.c').read_text())
     build = work/'build';build.mkdir(exist_ok=True)
     cc = os.environ.get('XOS_CC',shutil.which('x86_64-elf-gcc') or 'x86_64-elf-gcc')
     cxx = os.environ.get('XOS_CXX',shutil.which('x86_64-elf-g++') or 'x86_64-elf-g++')
-    flags = ['-O2','-mno-red-zone','-fno-pie','-fno-pic','-fno-stack-protector','-ffunction-sections','-fdata-sections','-isystem',str(ROOT/'src/user/include')]
+    target_tools = work/'target_tools'
+    target_tools.mkdir(exist_ok=True)
+    for name in ('as', 'ld'):
+        link = target_tools/name
+        if not link.exists(): link.symlink_to(Path(shutil.which('x86_64-elf-'+name)).resolve())
+    flags = ['-B'+str(target_tools)+'/', '-O2','-mno-red-zone','-fno-pie','-fno-pic','-fno-stack-protector','-ffunction-sections','-fdata-sections','-isystem',str(ROOT/'src/user/include')]
     bridge = work/'console_xos.o'
     subprocess.run([cxx,*flags,'-fno-exceptions','-fno-rtti','-isystem',str(sdk/'include'),'-c',str(PORT/'console_xos.cpp'),'-o',str(bridge)],check=True)
     libs = [str(bridge),'-Wl,--start-group',*[str(sdk/'lib'/n) for n in ('libxos.a','libxos_loader.a','libc.a','libm.a')],subprocess.check_output([cc,'-print-libgcc-file-name'],text=True).strip(),'-Wl,--end-group']
@@ -73,7 +79,7 @@ def main():
         run([str(source/'configure'),'--build=aarch64-apple-darwin','--host=x86_64-unknown-elf','--without-libedit','--disable-glob','--disable-tee','--disable-memfd-create'],'configure.log')
     run(['make','-j2'],'make.log')
     elf = build/'src/dash'
-    result = {'profile':'dash_b2','version':lock['version'],'elf':str(elf.relative_to(ROOT)),'sha256':sha(elf),'bytes':elf.stat().st_size,'inputs':inputs,'status':'built_not_run'}
+    result = {'profile':'dash_c1','version':lock['version'],'elf':str(elf.relative_to(ROOT)),'sha256':sha(elf),'bytes':elf.stat().st_size,'inputs':inputs,'status':'built_not_run'}
     (work/'manifest.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps({k:v for k,v in result.items() if k!='inputs'}))
 

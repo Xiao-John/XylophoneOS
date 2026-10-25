@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <unistd.h>
 #include "shell.h"
 #include "nodes.h"
 #include "jobs.h"
@@ -15,6 +16,28 @@
 #include "eval.h"
 #include "error.h"
 
+int xos_pipeline_active, xos_pipeline_failed;
+static int pipeline_children[4], pipeline_count;
+void xos_pipeline_begin(void) {
+    pipeline_count = 0; xos_pipeline_failed = 0; xos_pipeline_active = 1;
+    if (xos_shell_foreground(NULL, 0, 1) < 0) sh_error("pipeline: foreground begin");
+}
+int xos_pipeline_finish(int aborting) {
+    int i, status, result = 125, cancelled = 0;
+    xos_pipeline_active = 0;
+    if (!aborting && xos_shell_foreground(pipeline_children, pipeline_count, 1) < 0)
+        aborting = cancelled = 1;
+    for (i = 0; i < pipeline_count; ++i) {
+        if (aborting) xos_shell_cancel(pipeline_children[i]);
+    }
+    for (i = 0; i < pipeline_count; ++i) {
+        if (waitpid(pipeline_children[i], &status, 0) < 0) { result = 125; continue; }
+        result = WIFEXITED(status) ? WEXITSTATUS(status) : 128 + WTERMSIG(status);
+    }
+    xos_shell_foreground(NULL, 0, 0);
+    pipeline_count = 0;
+    return cancelled ? 137 : aborting ? 125 : result;
+}
 pid_t backgndpid;
 int job_warning, vforked;
 int stoppedjobs(void) { return 0; }
@@ -60,6 +83,14 @@ struct job *vforkexec(union node *node, char **argv, const char *path, int idx) 
     if (error) {
         sh_warnx("%s: %s", argv[0], strerror(error));
         exitstatus = (error == ENOENT || error == ENOTDIR) ? 127 : 126;
+        if (xos_pipeline_active) xos_pipeline_failed = 1;
+    } else if (xos_pipeline_active) {
+        if (pipeline_count >= 4) { xos_shell_cancel(child); waitpid(child, &status, 0); sh_error("pipeline limit"); }
+        pipeline_children[pipeline_count++] = child;
+        exitstatus = 0;
+        if (xos_shell_foreground(pipeline_children, pipeline_count, 1) < 0) {
+            xos_pipeline_failed = 1; exitstatus = 137;
+        }
     } else if (waitpid(child, &status, 0) < 0) {
         sh_warnx("wait: %s", strerror(errno));
         exitstatus = 125;

@@ -79,6 +79,8 @@ struct process_record {
     bool threads_enabled;
     bool closing;
     u64 exit_owner;
+    process_foreground foreground;
+    bool foreground_active, foreground_cancelled;
 };
 
 struct completion_record { bool used; bool ready; u64 parent; process_status status; };
@@ -288,13 +290,11 @@ void pipe_release(u32 pipe_index, bool writable) {
     if (writable) {
         if (pipe.writer_references != 0) { --pipe.writer_references; }
     } else if (pipe.reader_references != 0) { --pipe.reader_references; }
-    // EOF and broken-pipe must wake sleepers even when no bytes move.
-    if (pipe.writer_references == 0) { wake_pipe_waiters(pipe_index, true, false); }
-    if (pipe.reader_references == 0) { wake_pipe_waiters(pipe_index, false, true); }
-    if (pipe.references == 0) {
-        wake_pipe_waiters(pipe_index, true, true);
-        pipe = pipe_object{};
-    }
+    // A raw close may invalidate a sleeping token/route even when another
+    // reference of that direction survives. Wake all and require revalidation.
+    wake_pipe_waiters(pipe_index, true, true);
+    // This also covers EOF/EPIPE, before a final release can reuse the slot.
+    if (pipe.references == 0) { pipe = pipe_object{}; }
 }
 
 void stdio_route_release(process_record* owner, stdio_route& route) {
@@ -772,6 +772,21 @@ bool cancel_foreground() {
             }
             if (next == nullptr) { break; }
             target = next;
+            if (next->foreground_active) {
+                (void)platform::debug_read();
+                next->foreground_cancelled = true;
+                for (u32 i = 0; i < next->foreground.count; ++i) {
+                    for (auto& member : tasks) {
+                        if (member.pid == next->foreground.pids[i] && member.parent == next->pid &&
+                            member.state != task_state::free && member.state != task_state::dead) {
+                            finish_task(&member, process_outcome::killed, -27);
+                        }
+                    }
+                }
+                format::text("[process] event=cancelled_by_escape pipeline_parent=");
+                format::decimal(next->pid); format::text("\r\n");
+                return true;
+            }
             thread_record* waiter = nullptr;
             for (auto& thread : threads) {
                 if (thread.process == next && thread.state == thread_state::blocked &&
@@ -1472,6 +1487,36 @@ void* process_syscall(interrupt_frame* frame) {
     case sys_heap_break:
         result = set_heap_break(first);
         break;
+    case sys_process_cancel: {
+        if (second != 0 || third != 0) { break; }
+        process_record* task = owned_process(first);
+        if (task == nullptr) { result = process_error_denied; break; }
+        if (task->state == task_state::building) { result = process_error_state; break; }
+        finish_task(task, process_outcome::killed, -9);
+        destroy_task(task);
+        result = 0; break;
+    }
+    case sys_process_foreground: {
+        if (second > 1 || third != 0 || !user_range_ok(first, sizeof(process_foreground), false)) { break; }
+        process_foreground request{};
+        copy_from_user(&request, first, sizeof(request));
+        if (request.version != 1 || request.size != sizeof(request) || request.reserved != 0 ||
+            request.count > process_pipeline_max || (second == 0 && request.count != 0)) { break; }
+        bool valid = true;
+        for (u32 i = 0; i < process_pipeline_max; ++i) {
+            if (i >= request.count) { valid = valid && request.pids[i] == 0; continue; }
+            valid = valid && completion_for(current->pid, request.pids[i]) != nullptr;
+            for (u32 j = 0; j < i; ++j) { valid = valid && request.pids[j] != request.pids[i]; }
+        }
+        if (!valid) { result = process_error_denied; break; }
+        if (second == 1 && current->foreground_active && current->foreground_cancelled) {
+            result = process_error_state; break;
+        }
+        current->foreground = request;
+        current->foreground_active = second == 1;
+        current->foreground_cancelled = false;
+        result = 0; break;
+    }
     case sys_pipe_wait: {
         if (second != 0 || third != 0) { result = process_error_invalid; break; }
         u32 pipe_index = process_max_pipes;
@@ -1561,6 +1606,14 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_process_stdio: {
+        // PID zero is a read-only query of this process's fixed kernel route.
+        if (first == 0) {
+            if (second > 2 || third != 0) { break; }
+            const auto& route = current->stdio[second];
+            result = (current->stdio_mask & (1u << second)) && route.valid
+                ? (route.console ? 1 : 0) : process_error_denied;
+            break;
+        }
         if (second >= 3) { break; }
         process_record* child = owned_process(first);
         if (child == nullptr) { result = process_error_denied; break; }
@@ -1675,6 +1728,7 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_process_wait: {
+        if (third > 1) { break; }
         if (!user_range_ok(second, sizeof(process_status), true)) { break; }
         completion_record* item = completion_for(current->pid, first);
         if (item == nullptr) { result = process_error_denied; break; }
@@ -1682,6 +1736,7 @@ void* process_syscall(interrupt_frame* frame) {
             copy_to_user(second, &item->status, sizeof(process_status));
             *item = completion_record{}; result = 0;
         } else {
+            if (third == 1) { result = process_error_would_block; break; }
             process_record* child = owned_process(first);
             if (child == nullptr || child->state == task_state::building) { result = process_error_state; break; }
             for (const auto& waiter : threads) {

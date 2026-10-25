@@ -17,6 +17,7 @@ inline constexpr u64 sys_file_session = 27;
 inline constexpr u64 sys_process_grant = 28, sys_heap_break = 29;
 inline constexpr u64 sys_pipe_create = 30, sys_pipe_read = 31;
 inline constexpr u64 sys_pipe_write = 32, sys_pipe_close = 33;
+// PID=0 queries own route (fd in arg2, arg3=0): 1 console, 0 pipe.
 inline constexpr u64 sys_process_stdio = 34;
 inline constexpr u64 sys_process_tls = 35;
 inline constexpr u64 sys_debug_trace = 36;
@@ -24,6 +25,13 @@ inline constexpr u64 sys_process_delegate = 37;
 inline constexpr u64 sys_boot_payload = 53;
 // C1: sleep until a pipe route changes readability/writability. Zero extra args.
 inline constexpr u64 sys_pipe_wait = 54;
+inline constexpr u64 sys_process_foreground = 55, sys_process_cancel = 56;
+inline constexpr u32 process_pipeline_max = 4;
+struct process_foreground {
+    u32 version, size, count, reserved;
+    u64 pids[process_pipeline_max];
+};
+static_assert(sizeof(process_foreground) == 48);
 inline constexpr i64 block_error_no_device = -1, block_error_invalid = -2;
 inline constexpr i64 block_error_io = -3, block_error_timeout = -4;
 inline constexpr i64 block_error_denied = -5;

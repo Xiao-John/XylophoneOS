@@ -58,6 +58,9 @@ def threaded_probe(source, sdk, folder):
         [cc, *flags, '-DXOS_THREADED_RUNTIME', '-I'+str(sdk/'include'), '-c', str(source), '-o', str(obj)],
         [cxx, *flags, '-nostdlib', '-static', '-no-pie', '-Wl,--build-id=none,-z,noexecstack,-z,max-page-size=4096', '-T', str(sdk/'user.ld'), str(sdk/'crt0_posix.o'), str(obj), '-Wl,--start-group', str(sdk/'lib/libxos.a'), str(sdk/'lib/libxos_loader.a'), str(sdk/'cpp/lib/libstdc++.a'), str(sdk/'cpp/lib/libsupc++.a'), str(sdk/'lib/libc.a'), str(sdk/'lib/libm.a'), str(sdk/'cpp/lib/libgcc.a'), '-Wl,--end-group', '-o', str(elf)],
     ]
+    # The threaded SDK folds loader objects into libxos.a.
+    if not (sdk/'lib/libxos_loader.a').exists():
+        commands[1].remove(str(sdk/'lib/libxos_loader.a'))
     for line in commands: subprocess.run(line, check=True)
     return elf, commands
 
@@ -222,7 +225,7 @@ def main():
             report['commands'].append({'name':'escape_cancels_substitution_and_recovers_shell','status':'passed','output':output.decode(errors='replace')})
             report['checks'].append('escape_cancels_substitution_and_recovers_shell')
             overflow_start=len(guest.output)
-            send_bytes(guest,b'a=$(/out/probe text 1048701)\r')
+            send_bytes(guest,b'a=$(/out/probe text 2097277)\r')
             guest.expect(b'exceeds 1048576',start=overflow_start,timeout=180)
             guest.expect(b'$ ',start=overflow_start,timeout=60)
             overflow=bytes(guest.output[overflow_start:])
@@ -235,7 +238,7 @@ def main():
             overflow_log=args.artifacts/'capture_limit_and_recovery.serial.log'
             overflow_log.write_bytes(overflow+recovery)
             report['commands'].append({'name':'command_substitution_capture_limit_recovers_shell',
-                'status':'passed','producer_text_bytes':1048701,'producer_stdout_bytes':1048704,'capture_limit_bytes':1048576,
+                'status':'passed','producer_text_bytes':2097277,'producer_stdout_bytes':2097280,'capture_limit_bytes':1048576,
                 'expected_overflow_status':2,'actual_overflow_status':2,
                 'expected_recovery_status':0,'actual_recovery_status':0,
                 'output':(overflow+recovery).decode(errors='replace'),

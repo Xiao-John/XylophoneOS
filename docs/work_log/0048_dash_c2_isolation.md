@@ -30,3 +30,26 @@ build/dash_c2_oom_report.json含持有大分配前后及失败后实际计数，
 补EV_TESTED和pipefail，正常客体已验证。随后增加捕获上限与互动超限清理定向用例。
 最终完整源码构建、线程SDK拒绝fork及全部受影响旧回归进行中，未先宣告C2 Gate。
 C3匿名here-doc、真实exec/身份/FD/失败原子性及实际Make尚未实现，不算passed。
+
+
+## 最终C2 Gate：passed
+
+源码ea3d2d0，build85df2bcabbd6ace9、kernel364604B，完整回执与实际SHA256在
+`docs/reports/dash_c2_20261026/qualification.json`，本机镜像/两份SDK/ELF冻结于
+build/dash_c2_frozen/。Dash a2449bb7d11f0543e415d98966abd322971fd7d0a9eba3dfd345fdb035fc9963。
+
+C2专项30项passed：包含新线程SDK拒绝fork、254MiB真实复制ENOMEM回滚、2MiB
+生产者在1MiB捕获上限错误后被取消/收集且下一次命令替换成功；14个参考case
+stdout与文件副作用全部完整字节比较。资源[129832,2,0]，一页固定增长来自新内核。
+
+旧回归全部passed：C1功能24项（builtin拒绝由C2真实隔离支持替代，未伪计通过），
+C1机制线程7组/3轮、pthread管道5组/3轮、进程13、文件8、线程15、pthread/newlib10、
+C++10、CPython T3-PY5、持久化4、原生GCC/G++6、Dash A12（pipe/subshell/substitution
+拒绝由C2真实语义验收替代）、B0/B1 7、B2 6、许可材料检查。新CPython fingerprint
+`ecc4693a8cc1b3e783cb`绑定当前重建线程SDK与同版本宿主引导解释器。
+
+最终整合首次C2测试在客体启动前因测试多链接不存在的独立threaded loader归档
+失败；该SDK实际将loader合入libxos.a。修正测试配置后仅重跑受影响C2，其他15份
+通过回执保留。捕获生产者扩为2MiB以确保上限触发时writer仍受4KiB反压而活跃，
+不是依赖生产者恰好自然结束。所有失败日志保留build/c2_*，无源码功能降级。
+C1/C2 Gate独立完成，C3此时尚未实现；不宣称真实exec或Make通过。

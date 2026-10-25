@@ -303,3 +303,10 @@ C3收口另补小pipe write原子性：当前SDK对<=4096字节的pipe write等�
 完全保留原非阻塞短写行为，旧C1等待者second0不会因语义改变忙重试。当前newlib
 对pipe小write自动置flag并以sys54 minimum等待，console不置flag；带flag大于4096
 明确EINVAL，非flag大write仍可短写。SDK header/manifest公开该位与matching需求。
+
+普通spawn若继承files服务stdio，同样要求目标声明当前CRT能力。冻结的旧GNU版本
+不仅不懂v3，也不识别B2 file_handles；此前会忽略继承信息并向console输出。现在
+未知/旧目标的文件stdio继承明确ENOTSUP，不以path重开冒充共享实例；旧console
+启动及实测native编译保留，阻塞pipe/文件stdio完整保证限匹配的当前SDK。旧B2
+无能力标记的二进制需要用新SDK重建；xypm旧profile也须独立登记/迁移，不能推断
+它能接受新继承形式。这是显式ABI admission，不能声称所有旧静态stdio都兼容。

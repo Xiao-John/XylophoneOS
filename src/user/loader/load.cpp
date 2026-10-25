@@ -111,7 +111,13 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
         return error;
     };
     const bool replacing = options != nullptr && options->replace_image;
-    if (replacing && !exec_abi_supported(read_exact, read_context, size, plan)) {
+    bool inherits_file = false;
+    if (options != nullptr) {
+        for (u32 fd=0;fd<3;++fd) inherits_file = inherits_file || options->file_handles[fd] != 0;
+    }
+    // Pre-B2 static CRTs silently ignore file_handles. Never report successful
+    // inheritance into an unadvertised target or reopen its paths as a proxy.
+    if ((replacing || inherits_file) && !exec_abi_supported(read_exact, read_context, size, plan)) {
         if (diagnostic != nullptr) *diagnostic = {execution::launch_stage::inspect, thread_error_unsupported, elf::error::none};
         return fail_before_create(thread_error_unsupported);
     }

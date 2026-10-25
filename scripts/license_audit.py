@@ -39,6 +39,19 @@ def main():
             if f'SPDX-License-Identifier: {identifier}' not in source.read_text():
                 raise SystemExit(f'Component source SPDX mismatch: {relative}')
             component_sources[relative]=identifier
+        for relative, provenance in component.get('vendored_source_files', {}).items():
+            if relative in component_sources: raise SystemExit(f'Duplicate registered component source: {relative}')
+            source=ROOT/relative
+            upstream=Path(component['path'])/'upstream'
+            if not Path(relative).is_relative_to(upstream) or not source.is_file():
+                raise SystemExit(f'Vendored source is not an existing upstream file: {relative}')
+            if hashlib.sha256(source.read_bytes()).hexdigest()!=provenance['sha256']:
+                raise SystemExit(f'Vendored source SHA mismatch: {relative}')
+            if provenance['notice'] not in component['notices'] or not (ROOT/provenance['notice']).is_file():
+                raise SystemExit(f'Vendored source lacks its registered notice: {relative}')
+            if provenance['license'] not in ('MIT',):
+                raise SystemExit(f'Unreviewed vendored source declaration: {relative}')
+            component_sources[relative]=provenance['license']
     legacy=set(json.loads((ROOT/'licenses/legacy_mit_files.json').read_text())['files'])
     built=json.loads((build/'manifest.json').read_text())
     new_sources=[]

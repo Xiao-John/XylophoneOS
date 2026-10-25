@@ -8,7 +8,7 @@ $()与backticks（raw stdout上限1MiB）、Here-document（引用/展开/<<-与
 startup总16KiB，进程全局8个；资源不足明确失败与清理，不承诺任意长度/深度。
 
 后台、trap/jobs/wait/kill等信号/作业内建继续明确拒绝；取消为前台Escape机制，
-没有异步POSIX信号、SMP或线程profile fork/exec承诺。旧静态ELF可普通spawn，
+没有异步POSIX信号、SMP或线程profile fork/exec承诺。旧静态ELF可普通console spawn；未知/旧目标继承普通文件stdio明确拒绝，
 显式exec未带`.xos.exec`标记的旧CRT返回ENOTSUP，不丢FD后继续冒称兼容。
 正常外部命令仍走已验spawn；`exec`内建和Make后端才使用真实替换。
 

@@ -298,7 +298,7 @@ def main():
             for name in HERE_CASES:run('heredoc_'+name,'dash /tests/c3_here_'+name+'.sh',0)
             run('direct_posix_script_dispatch_and_parent_isolation','dash /tests/c3_direct_script_driver.sh',0)
             run('unsupported_shebang_explicit_126_without_body','dash /tests/c3_rejected_shebang_driver.sh',0)
-            run('legacy_gcc_ordinary_spawn_still_supported','dash /tests/c3_legacy_spawn_driver.sh',0)
+            run('legacy_gcc_file_stdio_rejected_before_false_success','dash /tests/c3_legacy_spawn_driver.sh',126)
             legacy_failure=run('legacy_gcc_explicit_exec_rejected_before_replace','dash /tests/c3_legacy_exec_driver.sh',126)
             if b'exec_replaced' in legacy_failure or b'SHOULD_NOT' in legacy_failure:
                 raise AssertionError('unsupported legacy exec committed an image or ran its following Shell body')
@@ -353,7 +353,7 @@ def main():
                 if wanted is not None and data!=wanted:raise AssertionError('complete byte comparison failed: '+path)
                 return data
             legacy_version=export('legacy_spawn.guest','/out/c3_legacy_spawn.stdout')
-            if b'16.2.0' not in legacy_version:raise AssertionError('legacy GCC spawn version stdout is missing actual 16.2.0 output')
+            if legacy_version:raise AssertionError('unsupported legacy file-stdio spawn wrote data after rejection')
             export('legacy_exec_rejected.guest','/out/c3_legacy_exec.stdout',b'')
             export('direct_posix_script.guest','/out/c3_direct_script.stdout',direct_expected)
             export('unsupported_shebang.guest','/out/c3_wrong_script.stdout',b'C3_REJECT_BEGIN\nC3_REJECT status=126\nC3_REJECT_RECOVERED\n')

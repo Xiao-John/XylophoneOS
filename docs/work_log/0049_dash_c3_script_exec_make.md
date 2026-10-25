@@ -71,3 +71,16 @@ sys54增加writer minimum空间参数（0兼容旧any-space）；补双writer/25
 原子写收口兼容性复核：用sys11/32 handle高位opt-in原子小写，保留不带flag的旧
 raw小/大短写与second0 any-space配对语义；新libc自动选择。定向测试额外要求
 旧raw 512请求在257空间仍返回257，带flag则EAGAIN，避免破坏已冻结ABI。
+
+最终全套首次执行：原子写、exec15、C1/C2、线程/文件/进程/CPython/GCC/G++/持久化、
+Dash A/B0/B1/B2、libc和ISO全部通过；C3主专项在末尾真实旧GCC重定向导出检查
+失败，许可检查因原样上游源码无SPDX失败。前者揭示冻结GNU CRT连B2 file_handles
+都不认识，不能假称ordinary file stdio兼容：新loader对未知能力的file stdio继承
+明确ENOTSUP，当前SDK标记目标继续真实共享句柄，不用path重开。对应旧工具边界
+测试改为验证显式拒绝与空预创建文件，普通console GCC版本及编译仍真实验收。
+旧B2未标记二进制需当前SDK重建，xypm迁移要求已写入，未降低新SDK B2 Gate。
+原始失败/精确candidate SDK镜像保留build/dash_c3_failed_legacy_stdio_report.json
+与build/dash_c3_candidate_c104e286/。
+
+许可检查保留已有SPDX规则不变，新增仅对component/upstream下逐SHA锁定的原样
+vendored文件验证其登记LICENSE/声明；不往原始Make源码塞新SPDX破坏源hash。

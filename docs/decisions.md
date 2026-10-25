@@ -389,3 +389,17 @@ P0包目录隐含，显式目录/链接/PAX等拒绝，FAT短名含~的显式路
 包不执行脚本或授予构造权。16组宿主与两项新payload客体执行通过，主计划v0.9。
 P1安装/数据库、P2客体事务、P3仓库未实现，现有桥传入新盘不叫安装器通过。
 证据work_log/0035_package_p0.md和build/package_p0/；旧回归/压力未重跑。
+
+## 2026-10-25：0037 公共线程候选实现
+
+按 0031/0036 契约实现 T0–T2，保持 8 个进程、每进程 4 个线程槽的预算。
+旧 ABI 及旧 ELF LOAD 范围保留；新增线程 profile 显式确认 0x70000000–0x71000000
+为空，按 4 MiB slot 预留栈/TLS，旧布局冲突返回 ENOTSUP。主线程和旧 SDK 不扩栈。
+join 结果由内核保留，死线程页先回收；结果输出不能放在目标即将回收的栈/TLS。
+最后线程先关创建入口，再等其他已 begin_exit 上下文安全停止；之后才运行进程收尾。
+
+newlib 重建为动态 __getreent/真实 retarget locks，C++ 运行库使用 pthread gthread。
+同一文件会话整次 RPC 串行；FD 表只做短暂查找/引用操作，I/O 用对象 pin 和独立锁，
+不持 FD 表锁等服务。GNU patch 0008 将无墙钟的 noexcept system_clock 查询显式
+终止；steady_clock 和 monotonic cond 使用真实 PIT 等待。没有给墙钟/熵填成功桩。
+具体 ABI、回执、失败与未运行范围见 threading_implementation.md 和 0037 工作记录。

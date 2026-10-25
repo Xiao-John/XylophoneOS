@@ -40,6 +40,20 @@ def main():
     if not nasm:
         raise SystemExit("NASM not found; install it or set NASM=/path/to/nasm")
     BUILD.mkdir(exist_ok=True)
+    # Bind the relocated cross compiler to the exact selected target tools.
+    # This environment belongs only to this build process, not native host tests.
+    target_tools = BUILD / "target_tools"
+    if target_tools.is_symlink():
+        raise SystemExit("Refusing a symlinked target-tool directory")
+    target_tools.mkdir(exist_ok=True)
+    for name in ("as", "ld"):
+        link = target_tools / name
+        if link.is_symlink():
+            link.unlink()
+        elif link.exists():
+            raise SystemExit(f"Refusing to overwrite a non-symlink target tool: {link}")
+        link.symlink_to(Path(tool(name)).resolve())
+    os.environ["COMPILER_PATH"] = str(target_tools)
     versions = audit()
     if (TARGET["architecture"], TARGET["platform"], TARGET["firmware"]) != ("x86_64", "pc", "bios"):
         raise SystemExit("Only the x86_64 / PC / BIOS backend is implemented")

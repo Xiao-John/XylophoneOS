@@ -101,6 +101,18 @@ memory_result unmap_page_in(u64 address_space, u64 virtual_address, u64* physica
     if (physical != nullptr) { *physical = leaf & address_mask; }
     leaf = 0;
     if (read_cr3() == address_space) { invalidate(virtual_address); }
+    // Thread reservations are repeatedly created/aborted in a live process.
+    // Return their empty leaf tables too; the shared kernel tables stay intact.
+    if (virtual_address >= 0x40000000ull && virtual_address < 0x80000000ull) {
+        bool empty = true;
+        for (u32 i = 0; i < 512; ++i) {
+            if ((pt[i] & present) != 0) { empty = false; break; }
+        }
+        if (empty) {
+            pd[index_of(virtual_address, 21)] = 0;
+            (void)release_page(pd_entry & address_mask);
+        }
+    }
     return memory_result::none;
 }
 

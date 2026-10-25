@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 #include <xos/libc_runtime.hpp>
+#ifdef XOS_THREADED_RUNTIME
+#include <xos/thread_core.hpp>
+#endif
 #include <stdlib.h>
 #include <stdint.h>
 #include <sys/reent.h>
@@ -35,9 +38,14 @@ struct tls_destructor {
     void* object;
     tls_destructor* next;
 };
+#ifdef XOS_THREADED_RUNTIME
+thread_local tls_destructor* tls_destructors;
+thread_local bool draining_tls_destructors;
+#else
 tls_destructor* tls_destructors;
-bool exit_started;
 bool draining_tls_destructors;
+#endif
+bool exit_started;
 
 void drain_tls_destructors() {
     if (draining_tls_destructors) { return; }
@@ -118,7 +126,30 @@ extern "C" int __cxa_thread_atexit(void (*function)(void*), void* object, void*)
 // Keep newlib's normal process-exit sequence, but run per-task TLS destructors
 // before global atexit handlers. __call_exitprocs removes callbacks before
 // invoking them and rescans handlers registered during callbacks.
+#ifdef XOS_THREADED_RUNTIME
+extern "C" void xos_thread_cleanup();
+extern "C" int xos_thread_cleanup_active();
+extern "C" void xos_cpp_tls_cleanup() { drain_tls_destructors(); }
+extern "C" [[noreturn]] void xos_thread_process_finish(int status) {
+    exit_started = true;
+    do {
+        __call_exitprocs(status, nullptr);
+        drain_tls_destructors();
+    } while (tls_destructors != nullptr);
+    if (__stdio_exit_handler != nullptr) { __stdio_exit_handler(); }
+    _exit(status);
+}
+#endif
 extern "C" [[noreturn]] void exit(int status) {
+#ifdef XOS_THREADED_RUNTIME
+    if (exit_started || xos_thread_cleanup_active()) { _exit(status); }
+    // Only this caller continues executing before any process-level callbacks.
+    if (xos::sdk::syscall(xos::sys_process_begin_exit) != 0) { _exit(status); }
+    if (exit_started) { _exit(status); }
+    exit_started = true;
+    xos_thread_cleanup();
+    xos_thread_process_finish(status);
+#else
     if (exit_started) { _exit(status); }
     exit_started = true;
     do {
@@ -127,6 +158,7 @@ extern "C" [[noreturn]] void exit(int status) {
     } while (tls_destructors != nullptr);
     if (__stdio_exit_handler != nullptr) { __stdio_exit_handler(); }
     _exit(status);
+#endif
 }
 
 extern "C" int xos_cpp_runtime_init() {

@@ -73,7 +73,7 @@ def main():
         checks.append("first_boot_create_overwrite_delete_sync")
 
         guest = boot(disk, "persist_boot2")
-        guest.expect(b"[files] hello.elf present bytes=9128", timeout=15)
+        guest.expect(f"[files] hello.elf present bytes={(build / 'user_hello.image.elf').stat().st_size}".encode(), timeout=15)
         cat = command(guest, "cat note.txt", b"first line", timeout=15)
         for marker in (b"\n\n  two  spaces  \n", b"third\n", b"fourth\n"):
             if marker not in cat:

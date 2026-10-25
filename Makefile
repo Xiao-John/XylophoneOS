@@ -48,3 +48,30 @@ smoke: build
 
 clean:
 	$(PYTHON) scripts/build.py --clean
+
+# Public-threading candidate: explicitly supplied, verified upstream sources.
+THREADING_NEWLIB_PREFIX ?= .cache/xos_seed/threading_newlib/prefix
+GCC_SOURCE ?= .cache/xos_seed/threading_sources/gcc-16.2.0
+.PHONY: threading-newlib threading-sdk threading-probes threading-smoke
+threading-newlib:
+	$(PYTHON) scripts/build_threading_newlib.py --archive "$(NEWLIB_ARCHIVE)"
+threading-sdk:
+	$(PYTHON) scripts/build_threading_sdk.py --newlib-prefix "$(THREADING_NEWLIB_PREFIX)" --gcc-source "$(GCC_SOURCE)" --cpp
+threading-probes:
+	$(PYTHON) scripts/build_threading_probes.py
+# Keep the shared build stages and guest checks sequential even under make -j.
+threading-smoke:
+	$(PYTHON) scripts/build.py
+	$(PYTHON) scripts/build_threading_sdk.py --newlib-prefix "$(THREADING_NEWLIB_PREFIX)" --gcc-source "$(GCC_SOURCE)" --cpp
+	$(PYTHON) scripts/build_threading_probes.py
+	$(PYTHON) tests/threading_compile_checks.py
+	$(PYTHON) tests/threading_smoke.py
+	$(PYTHON) tests/threading_pthread_smoke.py
+	$(PYTHON) tests/threading_cpp_smoke.py
+	$(PYTHON) tests/process_smoke.py
+	$(PYTHON) tests/runtime_smoke.py
+	$(PYTHON) tests/task_smoke.py
+	$(PYTHON) tests/libc_smoke.py
+	$(PYTHON) tests/persist_smoke.py
+	$(PYTHON) scripts/license_audit.py
+	$(PYTHON) scripts/threading_qualification.py

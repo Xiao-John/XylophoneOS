@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT AND Apache-2.0
 // Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/task.hpp>
+#include <xos/thread_abi.hpp>
+#include "../../core/thread_lifecycle.hpp"
 #include <xos/block.hpp>
 #include <xos/syscall.hpp>
 #include <xos/memory.hpp>
@@ -44,10 +46,8 @@ struct pipe_object {
     u8 data[process_pipe_bytes];
 };
 
-struct task_record {
+struct process_record {
     u64 cr3;
-    u64 kernel_rsp;
-    u64 kernel_stack_top;
     u64 pid;
     u64 ticks;
     task_state state;
@@ -64,8 +64,6 @@ struct task_record {
     u64 entry;
     u64 initial_stack;
     u64 startup;
-    u64 waiting_pid;
-    u64 wait_buffer;
     u32 stdio_mask;
     stdio_route stdio[3];
     pipe_reference pipe_references[process_max_pipe_refs];
@@ -73,8 +71,9 @@ struct task_record {
     u32 user_pages;
     u32 completion_slot;
     u64 heap_break;
-    u64 thread_pointer;
-    alignas(16) u8 fpu_state[512];
+    bool threads_enabled;
+    bool closing;
+    u64 exit_owner;
 };
 
 struct completion_record { bool used; bool ready; u64 parent; process_status status; };
@@ -93,10 +92,28 @@ struct endpoint_record {
     u8 data[file_message_bytes];
 };
 
-task_record tasks[8];
+struct thread_record : thread_lifetime {
+    process_record* process;
+    u64 kernel_rsp;
+    u64 kernel_stack_top;
+    u64 thread_pointer;
+    u64 entry;
+    u64 argument;
+    u64 initial_stack;
+    alignas(16) u8 fpu_state[512];
+};
+process_record tasks[8];
+thread_record threads[thread_max_total];
+thread_record* current_thread;
+u64 next_tid = 1;
+u64 next_wait_order = 1;
+thread_record& main_thread(process_record* process) {
+    return threads[static_cast<u32>(process - tasks) * thread_max_per_process];
+}
+
 u32 task_total;
 u32 cursor;
-task_record* current;
+process_record* current;
 u64 tick_count;
 u64 next_pid = 1;
 endpoint_record endpoints[max_endpoints];
@@ -176,7 +193,20 @@ void append_decimal(char* buffer, u32& used, u32 capacity, u64 value) {
     }
 }
 
-char state_label(const task_record& task) {
+char state_label(const process_record& task) {
+    if (task.state != task_state::free && task.state != task_state::dead && task.state != task_state::building) {
+        bool ready = false, fresh = false, blocked = false;
+        for (const auto& thread : threads) {
+            if (thread.process != &task) { continue; }
+            if (thread.state == thread_state::running) { return 'R'; }
+            ready = ready || thread.state == thread_state::ready;
+            fresh = fresh || thread.state == thread_state::fresh;
+            blocked = blocked || thread.state == thread_state::blocked;
+        }
+        if (ready) { return 'r'; }
+        if (fresh) { return 'N'; }
+        if (blocked) { return 'W'; }
+    }
     switch (task.state) {
     case task_state::running: return 'R';
     case task_state::ready: return 'r';
@@ -215,7 +245,7 @@ bool user_range_ok(u64 address, u64 length, bool write) {
     return true;
 }
 
-pipe_reference* pipe_reference_for(task_record* task, u64 token) {
+pipe_reference* pipe_reference_for(process_record* task, u64 token) {
     if (task == nullptr || token < process_pipe_token_min || token > 0xffffffffull) {
         return nullptr;
     }
@@ -242,7 +272,7 @@ void pipe_release(u32 pipe_index, bool writable) {
     if (pipe.references == 0) { pipe = pipe_object{}; }
 }
 
-void stdio_route_release(task_record* owner, stdio_route& route) {
+void stdio_route_release(process_record* owner, stdio_route& route) {
     if (route.valid && !route.console) {
         pipe_release(route.pipe_index, route.writable);
         if (owner != nullptr && owner->pipe_reference_count != 0) { --owner->pipe_reference_count; }
@@ -250,7 +280,7 @@ void stdio_route_release(task_record* owner, stdio_route& route) {
     route = stdio_route{};
 }
 
-void task_pipe_release_all(task_record* task) {
+void task_pipe_release_all(process_record* task) {
     for (auto& reference : task->pipe_references) {
         if (!reference.used) { continue; }
         pipe_release(reference.pipe_index, reference.writable);
@@ -260,7 +290,7 @@ void task_pipe_release_all(task_record* task) {
     for (auto& route : task->stdio) { stdio_route_release(task, route); }
 }
 
-bool stdio_route_copy(task_record* owner, stdio_route& destination, const stdio_route& source) {
+bool stdio_route_copy(process_record* owner, stdio_route& destination, const stdio_route& source) {
     if (!source.valid) { return false; }
     if (!source.console &&
         (owner == nullptr || owner->pipe_reference_count >= process_max_pipe_refs)) { return false; }
@@ -272,7 +302,7 @@ bool stdio_route_copy(task_record* owner, stdio_route& destination, const stdio_
     return true;
 }
 
-bool inherit_stdio(task_record* child, task_record* parent, u32 mask) {
+bool inherit_stdio(process_record* child, process_record* parent, u32 mask) {
     child->stdio_mask = 0;
     for (auto& route : child->stdio) { route = stdio_route{}; }
     for (u32 fd = 0; fd < 3; ++fd) {
@@ -283,7 +313,7 @@ bool inherit_stdio(task_record* child, task_record* parent, u32 mask) {
     return true;
 }
 
-task_record* free_slot() {
+process_record* free_slot() {
     for (u32 i = 0; i < 8; ++i) {
         if (tasks[i].state == task_state::free) { return &tasks[i]; }
     }
@@ -294,22 +324,31 @@ bool map_user(u64 cr3, u64 virtual_address, u64 physical, page_permissions permi
     return map_page_in(cr3, virtual_address, physical, permissions) == memory_result::none;
 }
 
-void destroy_task(task_record* task);
+void destroy_task(process_record* task);
 
-task_record* prepare_task(const char* name) {
-    task_record* task = free_slot();
-    if (task == nullptr || next_pid == 0 || next_pid > 0x7fffffffffffffff) { return nullptr; }
-    *task = task_record{};
-    for (u32 i = 0; i < sizeof(task->fpu_state); ++i) { task->fpu_state[i] = fpu_template[i]; }
+process_record* prepare_task(const char* name) {
+    process_record* task = free_slot();
+    if (task == nullptr || next_pid == 0 || next_pid > 0x7fffffffffffffff ||
+        next_tid == 0 || next_tid > 0x7fffffffffffffff) { return nullptr; }
+    *task = process_record{};
     task->pid = next_pid++;
     copy_name(task->name, name);
     task->cr3 = create_address_space();
-    if (task->cr3 == 0) { *task = task_record{}; return nullptr; }
+    if (task->cr3 == 0) { *task = process_record{}; return nullptr; }
     u64 kernel_stack = 0;
     if (allocate_page(&kernel_stack) != memory_result::none) {
-        (void)destroy_address_space(task->cr3); *task = task_record{}; return nullptr;
+        (void)destroy_address_space(task->cr3); *task = process_record{}; return nullptr;
     }
-    task->kernel_stack_top = kernel_stack + kernel_stack_bytes;
+    auto& thread = main_thread(task);
+    thread = thread_record{};
+    thread.process = task;
+    thread.tid = next_tid++;
+    thread.main = true;
+    thread.state = thread_state::fresh;
+    thread.kernel_stack_top = kernel_stack + kernel_stack_bytes;
+    thread.stack_bottom = process_stack_bottom;
+    thread.stack_top = process_startup_begin;
+    copy_bytes(thread.fpu_state, fpu_template, sizeof(fpu_template));
     task->state = task_state::building;
     task->entry = user_base;
     task->initial_stack = user_stack_top;
@@ -322,7 +361,7 @@ task_record* prepare_task(const char* name) {
     return task;
 }
 
-bool add_user_page(task_record* task, u64 address, const u8* bytes, u32 size,
+bool add_user_page(process_record* task, u64 address, const u8* bytes, u32 size,
                    u32 offset, page_permissions permissions) {
     if (task->user_pages == process_max_pages || offset > page_size || size > page_size - offset) {
         return false;
@@ -337,9 +376,9 @@ bool add_user_page(task_record* task, u64 address, const u8* bytes, u32 size,
     return true;
 }
 
-task_record* create_task(const char* name, const u8* blob, u32 size) {
+process_record* create_task(const char* name, const u8* blob, u32 size) {
     if (size == 0 || size > 32 * 1024) { return nullptr; }
-    task_record* task = prepare_task(name);
+    process_record* task = prepare_task(name);
     if (task == nullptr) { return nullptr; }
 
     const u32 code_pages = static_cast<u32>((size + page_size - 1) / page_size);
@@ -363,6 +402,8 @@ task_record* create_task(const char* name, const u8* blob, u32 size) {
         }
     }
 
+    main_thread(task).stack_bottom = user_stack_bottom;
+    main_thread(task).stack_top = user_stack_top;
     task->state = task_state::fresh;
     format::text("[task] event=created pid=");
     format::decimal(task->pid);
@@ -372,9 +413,9 @@ task_record* create_task(const char* name, const u8* blob, u32 size) {
     return task;
 }
 
-task_record* create_supervisor() {
+process_record* create_supervisor() {
     using namespace user_images;
-    task_record* task = prepare_task("supervisor");
+    process_record* task = prepare_task("supervisor");
     if (task == nullptr) { return nullptr; }
     for (const auto& segment : bootstrap_segments) {
         const u64 first = segment.address & ~(page_size - 1);
@@ -398,6 +439,7 @@ task_record* create_supervisor() {
     }
     task->entry = bootstrap_entry;
     task->initial_stack = process_stack_top - 16;
+    main_thread(task).stack_top = process_stack_top;
     task->supervisor = true;
     task->state = task_state::fresh;
     format::text("[task] event=created pid="); format::decimal(task->pid);
@@ -405,9 +447,9 @@ task_record* create_supervisor() {
     return task;
 }
 
-task_record* create_files_service() {
+process_record* create_files_service() {
     using namespace user_images;
-    task_record* task = prepare_task("files");
+    process_record* task = prepare_task("files");
     if (task == nullptr) { return nullptr; }
     for (const auto& segment : bootstrap_segments_files) {
         const u64 first = segment.address & ~(page_size - 1);
@@ -431,6 +473,7 @@ task_record* create_files_service() {
     }
     task->entry = bootstrap_entry_files;
     task->initial_stack = process_stack_top - 16;
+    main_thread(task).stack_top = process_stack_top;
     task->stdio_mask = 0;
     for (auto& route : task->stdio) { route = stdio_route{}; }
     task->block_access = true;
@@ -467,7 +510,7 @@ endpoint_record* endpoint_for(u64 handle) {
     return nullptr;
 }
 
-task_record* task_by_pid(u64 pid) {
+process_record* task_by_pid(u64 pid) {
     for (auto& task : tasks) {
         if (task.state != task_state::free && task.pid == pid) { return &task; }
     }
@@ -475,7 +518,7 @@ task_record* task_by_pid(u64 pid) {
 }
 
 bool files_service_live() {
-    task_record* service = task_by_pid(files_pid);
+    process_record* service = task_by_pid(files_pid);
     return files_pid != 0 && service != nullptr && service->block_access &&
            service->state != task_state::building && service->state != task_state::dead;
 }
@@ -490,7 +533,7 @@ i64 ipc_send(u64 handle, u64 address, u64 length) {
     if (endpoint->receiver_pid == current->pid || length == 0 || length > endpoint->capacity) {
         return sys_error_invalid_argument;
     }
-    task_record* receiver = task_by_pid(endpoint->receiver_pid);
+    process_record* receiver = task_by_pid(endpoint->receiver_pid);
     if (receiver == nullptr || receiver->state == task_state::dead ||
         receiver->state == task_state::building) { return sys_error_invalid_handle; }
     if (endpoint->pending) { return sys_error_full; }
@@ -558,7 +601,7 @@ i64 pipe_write_to(u32 pipe_index, u64 address, u64 length) {
     return amount;
 }
 
-i64 stdio_read(task_record* task, u32 fd, u64 address, u64 length,
+i64 stdio_read(process_record* task, u32 fd, u64 address, u64 length,
                bool console_empty_is_error) {
     if (fd >= 3 || task == nullptr || (task->stdio_mask & (1u << fd)) == 0 ||
         !task->stdio[fd].valid || task->stdio[fd].writable) { return process_error_denied; }
@@ -573,7 +616,7 @@ i64 stdio_read(task_record* task, u32 fd, u64 address, u64 length,
     return 1;
 }
 
-i64 stdio_write(task_record* task, u32 fd, u64 address, u64 length) {
+i64 stdio_write(process_record* task, u32 fd, u64 address, u64 length) {
     if (fd >= 3 || task == nullptr || (task->stdio_mask & (1u << fd)) == 0 ||
         !task->stdio[fd].valid || !task->stdio[fd].writable) { return process_error_denied; }
     if (length == 0) { return 0; }
@@ -585,7 +628,7 @@ i64 stdio_write(task_record* task, u32 fd, u64 address, u64 length) {
     return platform::debug_write_bytes(bytes, length);
 }
 
-void pipe_reference_close(task_record* task, pipe_reference* reference) {
+void pipe_reference_close(process_record* task, pipe_reference* reference) {
     if (task == nullptr || reference == nullptr || !reference->used) { return; }
     pipe_release(reference->pipe_index, reference->writable);
     if (task->pipe_reference_count != 0) { --task->pipe_reference_count; }
@@ -603,40 +646,37 @@ i64 block_status(block::result result) {
     return block_error_io;
 }
 
-u32 task_index(task_record* task) {
+u32 task_index(process_record* task) {
     return static_cast<u32>(task - tasks);
 }
 
-void mark_reap(task_record* task) {
+void mark_reap(process_record* task) {
     if (task != nullptr) { reap_pending[task_index(task)] = true; }
 }
 
-void destroy_task(task_record* task) {
-    if (task == nullptr || task->state == task_state::free) { return; }
+// This always runs on a different process's kernel stack. Shared pages have one owner.
+void destroy_task(process_record* task) {
+    if (task == nullptr || task->state == task_state::free || task == current) { return; }
     reap_pending[task_index(task)] = false;
     const u64 pid = task->pid;
     for (auto& endpoint : endpoints) {
         if (endpoint.used && (endpoint.owner_pid == pid || endpoint.receiver_pid == pid ||
-                              endpoint.sender_pid == pid)) {
-            endpoint = endpoint_record{};
-        }
+                              endpoint.sender_pid == pid)) { endpoint = endpoint_record{}; }
     }
     task_pipe_release_all(task);
     u64 freed = 0;
-    if (task->cr3 != 0) { freed += destroy_address_space(task->cr3); }
-    if (task->kernel_stack_top != 0) {
-        if (release_page(task->kernel_stack_top - kernel_stack_bytes) == memory_result::none) {
-            ++freed;
-        }
+    for (auto& thread : threads) {
+        if (thread.process != task) { continue; }
+        if (thread.kernel_stack_top != 0 &&
+            release_page(thread.kernel_stack_top - kernel_stack_bytes) == memory_result::none) { ++freed; }
+        thread = thread_record{};
     }
-    *task = task_record{};
+    if (task->cr3 != 0) { freed += destroy_address_space(task->cr3); }
+    *task = process_record{};
     if (task_total > 0) { --task_total; }
     if (process_trace_enabled) {
-        format::text("[task] event=reclaimed pid=");
-        format::decimal(pid);
-        format::text(" pages=");
-        format::decimal(freed);
-        format::text("\r\n");
+        format::text("[task] event=reclaimed pid="); format::decimal(pid);
+        format::text(" pages="); format::decimal(freed); format::text("\r\n");
     }
 }
 
@@ -653,23 +693,32 @@ completion_record* completion_for(u64 parent, u64 pid) {
     return nullptr;
 }
 
-void finish_task(task_record* task, process_outcome outcome, i64 code,
+void finish_task(process_record* task, process_outcome outcome, i64 code,
                   u64 vector = 0, u64 address = 0, u64 instruction = 0) {
+    if (task->state == task_state::dead) { return; }
+    task->closing = true;
     task->state = task_state::dead;
+    for (auto& thread : threads) {
+        if (thread.process == task && thread.state != thread_state::free) {
+            thread.state = thread_state::dead;
+            thread.wait_kind = thread_wait_kind::none;
+        }
+    }
     task->exit_code = static_cast<i32>(code);
     if (task->completion_slot != 0) {
         auto& item = completions[task->completion_slot - 1];
         item.status = {1, outcome, task->pid, code, vector, address, instruction};
         item.ready = true;
-        for (auto& parent : tasks) {
-            if (parent.pid == task->parent && parent.state == task_state::waiting &&
-                parent.waiting_pid == task->pid) { parent.state = task_state::ready; }
+        for (auto& parent : threads) {
+            if (parent.process != nullptr && parent.process->pid == task->parent &&
+                parent.state == thread_state::blocked && parent.wait_kind == thread_wait_kind::process &&
+                parent.wait_target == task->pid) { parent.state = thread_state::ready; }
         }
     }
     // Builder authority is not inherited. Losing the builder cancels its children.
     for (auto& child : tasks) {
         if (child.state != task_state::free && child.parent == task->pid) {
-            child.state = task_state::dead; mark_reap(&child);
+            finish_task(&child, process_outcome::killed, -9);
         }
     }
     for (auto& item : completions) {
@@ -680,10 +729,11 @@ void finish_task(task_record* task, process_outcome outcome, i64 code,
 
 bool cancel_foreground() {
     if (platform::debug_peek() != 27) { return false; }
-    for (auto& parent : tasks) {
-        if (parent.state != task_state::waiting || !parent.supervisor) { continue; }
+    for (auto& parent : threads) {
+        if (parent.state != thread_state::blocked || parent.wait_kind != thread_wait_kind::process ||
+            parent.process == nullptr || !parent.process->supervisor) { continue; }
         for (auto& child : tasks) {
-            if (child.pid == parent.waiting_pid && child.parent == parent.pid &&
+            if (child.pid == parent.wait_target && child.parent == parent.process->pid &&
                 child.state != task_state::free && child.state != task_state::dead) {
                 (void)platform::debug_read();
                 finish_task(&child, process_outcome::killed, -27);
@@ -696,25 +746,28 @@ bool cancel_foreground() {
     return false;
 }
 
-void deliver_wait(task_record* task, interrupt_frame* frame) {
-    if (task->waiting_pid == 0) { return; }
-    completion_record* item = completion_for(task->pid, task->waiting_pid);
+void deliver_wait(thread_record* thread, interrupt_frame* frame) {
+    if (thread->wait_kind != thread_wait_kind::process) { return; }
+    completion_record* item = completion_for(thread->process->pid, thread->wait_target);
     if (item == nullptr || !item->ready) { return; }
-    if (user_range_ok(task->wait_buffer, sizeof(process_status), true)) {
-        copy_to_user(task->wait_buffer, &item->status, sizeof(process_status));
+    if (user_range_ok(thread->wait_buffer, sizeof(process_status), true)) {
+        copy_to_user(thread->wait_buffer, &item->status, sizeof(process_status));
         *item = completion_record{};
         frame->rax = 0;
     } else { frame->rax = static_cast<u64>(process_error_invalid); }
-    task->waiting_pid = 0;
+    thread->wait_kind = thread_wait_kind::none;
+    thread->wait_target = 0;
 }
 
-task_record* pick_ready() {
-    for (u32 i = 0; i < 8; ++i) {
-        const u32 index = (cursor + i) % 8;
-        task_record& task = tasks[index];
-        if (task.state == task_state::ready || task.state == task_state::fresh) {
-            cursor = (index + 1) % 8;
-            return &task;
+thread_record* pick_ready() {
+    for (u32 i = 0; i < thread_max_total; ++i) {
+        const u32 index = (cursor + i) % thread_max_total;
+        thread_record& thread = threads[index];
+        if (thread.process == nullptr || thread.process->state == task_state::building ||
+            thread.process->state == task_state::dead) { continue; }
+        if (thread.state == thread_state::ready || thread.state == thread_state::fresh) {
+            cursor = (index + 1) % thread_max_total;
+            return &thread;
         }
     }
     return nullptr;
@@ -725,55 +778,55 @@ void set_thread_pointer(u64 pointer) {
     __asm__ volatile("wrmsr" : : "c"(0xc0000100u), "a"(low), "d"(high) : "memory");
 }
 
-void switch_to(task_record* task) {
-    current = task;
-    task->state = task_state::running;
-    set_kernel_stack(task->kernel_stack_top);
-    load_address_space(task->cr3);
-    set_thread_pointer(task->thread_pointer);
+void switch_to(thread_record* thread) {
+    current_thread = thread;
+    current = thread->process;
+    current->state = task_state::running;
+    thread->state = thread_state::running;
+    set_kernel_stack(thread->kernel_stack_top);
+    load_address_space(current->cr3);
+    set_thread_pointer(thread->thread_pointer);
 }
 
-interrupt_frame* make_initial_frame(task_record* task) {
-    auto* frame = reinterpret_cast<interrupt_frame*>(
-        task->kernel_stack_top - sizeof(interrupt_frame));
+interrupt_frame* make_initial_frame(thread_record* thread) {
+    auto* frame = reinterpret_cast<interrupt_frame*>(thread->kernel_stack_top - sizeof(interrupt_frame));
     *frame = interrupt_frame{};
-    frame->rip = task->entry;
+    frame->rip = thread->main ? thread->process->entry : thread->entry;
     frame->cs = user_code_selector;
-    frame->rflags = 0x202; // reserved bit 1 + IF
-    frame->rsp = task->initial_stack;
-    frame->rdi = task->startup;
+    frame->rflags = 0x202;
+    frame->rsp = thread->main ? thread->process->initial_stack : thread->initial_stack;
+    frame->rdi = thread->main ? thread->process->startup : thread->argument;
     frame->ss = user_data_selector;
     return frame;
 }
 
+void reap_threads();
+void expire_waiters();
 interrupt_frame* schedule(interrupt_frame* frame) {
     reap_dead();
-    if (current != nullptr) {
-        if (current->state == task_state::running) {
-            current->state = task_state::ready;
-        }
-        if (frame != nullptr && current->state != task_state::dead) {
-            current->kernel_rsp = reinterpret_cast<u64>(frame);
-        }
+    reap_threads();
+    if (current_thread != nullptr && current_thread->state != thread_state::dead) {
+        if (current_thread->state == thread_state::running) { current_thread->state = thread_state::ready; }
+        if (frame != nullptr) { current_thread->kernel_rsp = reinterpret_cast<u64>(frame); }
+        fpu_save(current_thread->fpu_state);
     }
-    if (current != nullptr && current->state != task_state::dead) {
-        fpu_save(current->fpu_state);
+    thread_record* next = pick_ready();
+    // Interrupts in ring0 never schedule: the idle loop keeps this saved syscall
+    // frame and only permits IRQs to advance time. No blocked syscall polls userspace.
+    while (next == nullptr) {
+        __asm__ volatile("sti; hlt; cli" : : : "memory");
+        expire_waiters();
+        next = pick_ready();
     }
-    task_record* next = pick_ready();
-    if (next == nullptr) {
-        format::text("[sched] event=no_ready_tasks result=halt\r\n");
-        halt();
-    }
-    interrupt_frame* next_frame = next->state == task_state::fresh
-                                      ? make_initial_frame(next)
-                                      : reinterpret_cast<interrupt_frame*>(next->kernel_rsp);
+    interrupt_frame* next_frame = next->state == thread_state::fresh
+        ? make_initial_frame(next) : reinterpret_cast<interrupt_frame*>(next->kernel_rsp);
     switch_to(next);
     fpu_restore(next->fpu_state);
     deliver_wait(next, next_frame);
     return next_frame;
 }
 
-task_record* owned_process(u64 handle) {
+process_record* owned_process(u64 handle) {
     if (current == nullptr || (!current->supervisor && current->spawn_depth == 0)) { return nullptr; }
     for (auto& task : tasks) {
         if (task.state != task_state::free && task.pid == handle && task.parent == current->pid) {
@@ -801,6 +854,8 @@ bool space_range_ok(u64 space, u64 address, u64 length, bool write) {
 u64 page_align_up(u64 address) {
     return (address + page_size - 1) & ~(page_size - 1);
 }
+
+bool pinned_range(process_record* process, u64 begin, u64 end);
 
 i64 set_heap_break(u64 requested) {
     if (current == nullptr) { return process_error_state; }
@@ -838,6 +893,7 @@ i64 set_heap_break(u64 requested) {
             return process_error_resources;
         }
     } else if (new_end < old_end) {
+        if (pinned_range(current, new_end, old_end)) { return thread_error_busy; }
         for (u64 address = new_end; address < old_end; address += page_size) {
             u64 physical = 0;
             page_permissions permissions{};
@@ -853,6 +909,360 @@ i64 set_heap_break(u64 requested) {
     }
     current->heap_break = requested;
     return static_cast<i64>(requested);
+}
+
+u64 monotonic_ns() {
+    return tick_count > (thread_deadline_infinite - 1) / thread_tick_ns
+        ? thread_deadline_infinite - 1 : tick_count * thread_tick_ns;
+}
+
+bool valid_header(const thread_header& header, u32 size) {
+    return header.version == thread_abi_version && header.size == size && header.reserved == 0;
+}
+
+template<class T> i64 read_thread_request(u64 address, T& request) {
+    if (!user_range_ok(address, sizeof(T), false)) { return thread_error_address; }
+    copy_from_user(&request, address, sizeof(T));
+    return valid_header(request.header, sizeof(T)) ? 0 : process_error_invalid;
+}
+
+thread_record* thread_by_id(u64 tid) {
+    for (auto& thread : threads) {
+        if (thread.state != thread_state::free && thread.process == current && thread.tid == tid) {
+            return &thread;
+        }
+    }
+    return nullptr;
+}
+
+// A mapping cannot be removed while the kernel may still use a blocked user's
+// word/result buffer. On this single CPU every caller holds the interrupt gate.
+bool pinned_range(process_record* process, u64 begin, u64 end) {
+    for (const auto& thread : threads) {
+        if (thread.process != process || thread.state != thread_state::blocked) { continue; }
+        u64 address = 0, bytes = 0;
+        if (thread.wait_kind == thread_wait_kind::word) { address = thread.wait_target; bytes = 4; }
+        if (thread.wait_kind == thread_wait_kind::process) { address = thread.wait_buffer; bytes = sizeof(process_status); }
+        if (thread.wait_kind == thread_wait_kind::join) { address = thread.wait_buffer; bytes = sizeof(u64); }
+        if (bytes != 0 && address < end && address + bytes > begin) { return true; }
+    }
+    return false;
+}
+
+void release_thread_range(thread_record& thread, u64 begin, u64 end) {
+    for (u64 address = begin; address < end; address += page_size) {
+        u64 physical = 0;
+        if (unmap_page_in(thread.process->cr3, address, &physical) == memory_result::none) {
+            (void)release_page(physical);
+            if (thread.process->user_pages != 0) { --thread.process->user_pages; }
+        }
+    }
+}
+
+void ready_with(thread_record& thread, i64 result) {
+    auto* saved = reinterpret_cast<interrupt_frame*>(thread.kernel_rsp);
+    saved->rax = static_cast<u64>(result);
+    thread.wait_kind = thread_wait_kind::none;
+    thread.wait_target = 0;
+    thread.state = thread_state::ready;
+}
+
+void reap_threads() {
+    for (auto& thread : threads) {
+        if (thread.state != thread_state::dead || thread.process == nullptr ||
+            thread.process->state == task_state::dead || &thread == current_thread) { continue; }
+        if (!thread.reaped) {
+            if (pinned_range(thread.process, thread.stack_bottom, thread.stack_top) ||
+                pinned_range(thread.process, thread.tls_begin, thread.tls_end)) { continue; }
+            release_thread_range(thread, thread.stack_bottom, thread.stack_top);
+            release_thread_range(thread, thread.tls_begin, thread.tls_end);
+            if (thread.kernel_stack_top != 0) {
+                (void)release_page(thread.kernel_stack_top - kernel_stack_bytes);
+                thread.kernel_stack_top = 0;
+            }
+            thread.reaped = true;
+        }
+        if (thread.joiner != 0) {
+            for (auto& waiter : threads) {
+                if (waiter.process != thread.process || waiter.tid != thread.joiner ||
+                    waiter.state != thread_state::blocked || waiter.wait_kind != thread_wait_kind::join) { continue; }
+                // Reaper may run with another address space active: copy through
+                // its validated physical page instead of changing the active CR3.
+                u64 physical = 0; page_permissions permissions{};
+                const u64 address = waiter.wait_buffer;
+                if (query_page_in(waiter.process->cr3, address & ~(page_size - 1), &physical, &permissions)
+                    == memory_result::none && permissions.user && permissions.writable) {
+                    copy_bytes(reinterpret_cast<void*>(physical + (address & (page_size - 1))),
+                               &thread.result, sizeof(u64));
+                    ready_with(waiter, 0);
+                } else { ready_with(waiter, thread_error_address); }
+            }
+            thread = thread_record{};
+        } else if (thread.detached) { thread = thread_record{}; }
+    }
+    for (auto& waiter : threads) {
+        if (waiter.state != thread_state::blocked || waiter.wait_kind != thread_wait_kind::exit_barrier) { continue; }
+        bool stopped = true;
+        for (const auto& peer : threads) {
+            if (peer.process == waiter.process && &peer != &waiter &&
+                peer.state != thread_state::free && peer.state != thread_state::dead &&
+                peer.state != thread_state::reserved) { stopped = false; }
+        }
+        if (stopped) { waiter.leaving = false; ready_with(waiter, 1); }
+    }
+}
+
+void expire_waiters() {
+    const u64 now = monotonic_ns();
+    for (auto& thread : threads) {
+        if (thread.state == thread_state::blocked &&
+            (thread.wait_kind == thread_wait_kind::word || thread.wait_kind == thread_wait_kind::sleep) &&
+            thread_deadline_reached(now, thread.deadline_ns)) {
+            ready_with(thread, thread.wait_kind == thread_wait_kind::sleep ? 0 : thread_error_timeout);
+        }
+    }
+}
+
+void* thread_syscall(interrupt_frame* frame) {
+    i64 result = process_error_invalid;
+    const u64 first = frame->rdi, second = frame->rsi;
+    if (frame->rdx != 0 || (second != 0 && frame->rax != sys_thread_prepare &&
+        frame->rax != sys_thread_join && frame->rax != sys_wake_word) ||
+        ((frame->rax == sys_thread_begin_exit || frame->rax == sys_process_begin_exit) && first != 0)) {
+        frame->rax = static_cast<u64>(process_error_invalid); return frame;
+    }
+    if (current_thread->leaving && frame->rax != sys_thread_exit && frame->rax != sys_exit) {
+        frame->rax = static_cast<u64>(process_error_state); return frame;
+    }
+    switch (frame->rax) {
+    case sys_thread_profile: {
+        thread_header header{};
+        if (!user_range_ok(first, sizeof(header), false)) { result = thread_error_address; break; }
+        copy_from_user(&header, first, sizeof(header));
+        if (!valid_header(header, sizeof(header))) { break; }
+        if (current->closing) { result = process_error_state; break; }
+        if (!current->threads_enabled) {
+            // Explicit opt-in: an old ELF with a LOAD in this formerly available
+            // interval remains executable but cannot opt into the new profile.
+            bool occupied = false;
+            for (u64 address = thread_arena_begin; address < thread_arena_end; address += page_size) {
+                u64 physical = 0; page_permissions permissions{};
+                if (query_page_in(current->cr3, address, &physical, &permissions) == memory_result::none) {
+                    occupied = true; break;
+                }
+            }
+            if (occupied) { result = thread_error_unsupported; break; }
+            current->threads_enabled = true;
+            auto& main = main_thread(current);
+            main.tls_begin = process_tls_begin;
+            main.tls_end = process_tls_end;
+        }
+        result = 0; break;
+    }
+    case sys_thread_prepare: {
+        thread_prepare_request request{};
+        result = read_thread_request(first, request);
+        if (result != 0) { break; }
+        if (!user_range_ok(second, sizeof(thread_reservation), true)) { result = thread_error_address; break; }
+        if (!current->threads_enabled) { result = thread_error_unsupported; break; }
+        if (current->closing) { result = process_error_state; break; }
+        if (request.stack_bytes < thread_stack_min || request.stack_bytes > thread_stack_max ||
+            request.stack_bytes % page_size != 0 || request.tls_bytes < 16 ||
+            request.tls_bytes > thread_tls_max || (request.flags & ~thread_flag_detached) != 0) {
+            result = process_error_invalid; break;
+        }
+        thread_record* target = nullptr;
+        const u32 offset = task_index(current) * thread_max_per_process;
+        // A safely reaped/detached original thread can donate its quota slot.
+        for (u32 i = 0; i < thread_max_per_process; ++i) {
+            if (threads[offset + i].state == thread_state::free) { target = &threads[offset + i]; break; }
+        }
+        if (target == nullptr || next_tid == 0 || next_tid > 0x7fffffffffffffff) {
+            result = process_error_resources; break;
+        }
+        *target = thread_record{}; target->process = current; target->tid = next_tid++;
+        target->state = thread_state::reserved;
+        target->detached = (request.flags & thread_flag_detached) != 0;
+        const u64 slot = static_cast<u64>(target - threads) % thread_max_per_process;
+        const u64 base = thread_arena_begin + slot * thread_slot_bytes;
+        target->stack_top = base + thread_slot_bytes;
+        target->stack_bottom = target->stack_top - request.stack_bytes;
+        target->tls_begin = base;
+        target->tls_end = page_align_up(base + request.tls_bytes);
+        u64 kernel_stack = 0;
+        bool success = allocate_page(&kernel_stack) == memory_result::none;
+        if (success) { target->kernel_stack_top = kernel_stack + kernel_stack_bytes; }
+        for (u64 address = target->tls_begin; success && address < target->tls_end; address += page_size) {
+            success = add_user_page(current, address, nullptr, 0, 0, {true, false, true});
+        }
+        for (u64 address = target->stack_bottom; success && address < target->stack_top; address += page_size) {
+            success = add_user_page(current, address, nullptr, 0, 0, {true, false, true});
+        }
+        if (!success) {
+            release_thread_range(*target, target->stack_bottom, target->stack_top);
+            release_thread_range(*target, target->tls_begin, target->tls_end);
+            if (kernel_stack != 0) { (void)release_page(kernel_stack); }
+            *target = thread_record{}; result = thread_error_memory; break;
+        }
+        copy_bytes(target->fpu_state, fpu_template, sizeof(fpu_template));
+        thread_reservation reservation{{thread_abi_version, sizeof(thread_reservation), 0}, target->tid,
+            target->stack_bottom, target->stack_top, target->tls_begin, target->tls_end};
+        copy_to_user(second, &reservation, sizeof(reservation));
+        result = 0; break;
+    }
+    case sys_thread_start: {
+        thread_start_request request{};
+        result = read_thread_request(first, request); if (result != 0) { break; }
+        thread_record* target = thread_by_id(request.tid);
+        if (target == nullptr) { result = thread_error_not_found; break; }
+        if (current->closing || target->state != thread_state::reserved) { result = process_error_state; break; }
+        u64 physical = 0; page_permissions permissions{};
+        if (!user_range_ok(request.entry, 1, false) ||
+            query_page(request.entry & ~(page_size - 1), &physical, &permissions) != memory_result::none ||
+            !permissions.executable || permissions.writable || request.stack % 16 != 0 ||
+            request.stack < target->stack_bottom + 16 || request.stack > target->stack_top ||
+            request.thread_pointer % 16 != 0 || request.thread_pointer < target->tls_begin ||
+            request.thread_pointer > target->tls_end - 16 ||
+            !user_range_ok(request.stack - 16, 16, true) || !user_range_ok(request.thread_pointer, 16, true)) {
+            result = process_error_invalid; break;
+        }
+        target->entry = request.entry; target->argument = request.argument;
+        target->initial_stack = request.stack; target->thread_pointer = request.thread_pointer;
+        target->state = thread_state::fresh; result = 0; break;
+    }
+    case sys_thread_abort: {
+        thread_record* target = thread_by_id(first);
+        if (target == nullptr) { result = thread_error_not_found; break; }
+        if (target->state != thread_state::reserved) { result = process_error_state; break; }
+        if (pinned_range(current, target->stack_bottom, target->stack_top) ||
+            pinned_range(current, target->tls_begin, target->tls_end)) { result = thread_error_busy; break; }
+        target->state = thread_state::dead; target->detached = true;
+        reap_threads(); result = 0; break;
+    }
+    case sys_thread_info: {
+        if (!user_range_ok(first, sizeof(thread_info), true)) { result = thread_error_address; break; }
+        const auto& t = *current_thread;
+        thread_info info{{thread_abi_version, sizeof(thread_info), 0}, current->pid, t.tid,
+            t.stack_bottom, t.stack_top, t.thread_pointer};
+        copy_to_user(first, &info, sizeof(info)); result = 0; break;
+    }
+    case sys_thread_begin_exit: {
+        if (current_thread->leaving || current->closing) { result = process_error_state; break; }
+        current_thread->leaving = true;
+        bool last = true;
+        for (const auto& peer : threads) {
+            if (peer.process == current && thread_has_user_work(peer)) { last = false; }
+        }
+        if (!last) { result = 0; break; }
+        current->closing = true; current->exit_owner = current_thread->tid;
+        bool stopped = true;
+        for (auto& peer : threads) {
+            if (peer.process != current || &peer == current_thread) { continue; }
+            if (peer.state == thread_state::reserved) { peer.state = thread_state::dead; peer.detached = true; }
+            else if (peer.state != thread_state::free && peer.state != thread_state::dead) { stopped = false; }
+        }
+        if (stopped) { current_thread->leaving = false; result = 1; break; }
+        current_thread->state = thread_state::blocked;
+        current_thread->wait_kind = thread_wait_kind::exit_barrier;
+        frame->rax = 1; return schedule(frame);
+    }
+    case sys_thread_exit: {
+        if (!current_thread->leaving && current->exit_owner != current_thread->tid) { result = process_error_state; break; }
+        current_thread->result = first;
+        current_thread->wait_kind = thread_wait_kind::none;
+        current_thread->state = thread_state::dead;
+        if (current->exit_owner == current_thread->tid) { finish_task(current, process_outcome::exited, 0); }
+        return schedule(frame);
+    }
+    case sys_process_begin_exit: {
+        if (current->closing && current->exit_owner != current_thread->tid) { result = process_error_state; break; }
+        current->closing = true; current->exit_owner = current_thread->tid;
+        for (auto& peer : threads) {
+            if (peer.process == current && &peer != current_thread && peer.state != thread_state::free) {
+                peer.state = thread_state::dead; peer.wait_kind = thread_wait_kind::none; peer.detached = true;
+            }
+        }
+        reap_threads(); result = 0; break;
+    }
+    case sys_thread_join: {
+        if (first == current_thread->tid) { result = thread_error_deadlock; break; }
+        thread_record* target = thread_by_id(first);
+        if (target == nullptr) { result = thread_error_not_found; break; }
+        if (target->detached || target->joiner != 0 || target->state == thread_state::reserved) { break; }
+        // Eight-byte alignment ensures the physical reaper copy is in one page.
+        if ((second < target->stack_top && second + sizeof(u64) > target->stack_bottom) ||
+            (second < target->tls_end && second + sizeof(u64) > target->tls_begin) ||
+            second % 8 != 0 || !user_range_ok(second, sizeof(u64), true)) { result = thread_error_address; break; }
+        if (target->reaped) {
+            copy_to_user(second, &target->result, sizeof(u64)); *target = thread_record{}; result = 0; break;
+        }
+        target->joiner = current_thread->tid;
+        current_thread->wait_target = first; current_thread->wait_buffer = second;
+        current_thread->wait_kind = thread_wait_kind::join;
+        current_thread->state = thread_state::blocked;
+        frame->rax = 0; return schedule(frame);
+    }
+    case sys_thread_detach: {
+        thread_record* target = thread_by_id(first);
+        if (target == nullptr) { result = thread_error_not_found; break; }
+        if (target->detached || target->joiner != 0 || target->state == thread_state::reserved) { break; }
+        target->detached = true; reap_threads(); result = 0; break;
+    }
+    case sys_clock_monotonic:
+        result = first == 0 ? static_cast<i64>(monotonic_ns()) : first == 1 ? static_cast<i64>(thread_tick_ns) : process_error_invalid;
+        break;
+    case sys_sleep_until:
+        if (thread_deadline_reached(monotonic_ns(), first)) { result = 0; break; }
+        current_thread->deadline_ns = first; current_thread->wait_kind = thread_wait_kind::sleep;
+        current_thread->state = thread_state::blocked; frame->rax = 0; return schedule(frame);
+    case sys_wait_word: {
+        thread_wait_request request{};
+        result = read_thread_request(first, request); if (result != 0) { break; }
+        if (request.reserved != 0) { result = process_error_invalid; break; }
+        if (request.address % 4 != 0 || !user_range_ok(request.address, 4, true)) { result = thread_error_address; break; }
+        u32 value = 0; copy_from_user(&value, request.address, sizeof(value));
+        if (value != request.expected) { result = thread_value_changed; break; }
+        if (thread_deadline_reached(monotonic_ns(), request.deadline_ns)) { result = thread_error_timeout; break; }
+        if (next_wait_order == 0) { result = process_error_resources; break; }
+        current_thread->wait_order = next_wait_order++;
+        current_thread->wait_target = request.address;
+        current_thread->deadline_ns = request.deadline_ns;
+        current_thread->wait_kind = thread_wait_kind::word;
+        current_thread->state = thread_state::blocked; frame->rax = 0; return schedule(frame);
+    }
+    case sys_wake_word: {
+        if (first % 4 != 0 || !user_range_ok(first, 4, true)) { result = thread_error_address; break; }
+        if (second > 0xffffffffull) { break; }
+        u32 count = 0;
+        while (count < second) {
+            thread_record* oldest = nullptr;
+            for (auto& peer : threads) {
+                if (peer.process == current && peer.state == thread_state::blocked &&
+                    peer.wait_kind == thread_wait_kind::word && peer.wait_target == first &&
+                    (oldest == nullptr || peer.wait_order < oldest->wait_order)) { oldest = &peer; }
+            }
+            if (oldest == nullptr) { break; }
+            ready_with(*oldest, 0); ++count;
+        }
+        result = count; break;
+    }
+    case sys_thread_stats: {
+        if (!user_range_ok(first, sizeof(thread_stats), true)) { result = thread_error_address; break; }
+        thread_stats stats{{thread_abi_version, sizeof(thread_stats), 0}, task_total, 0, 0, 0, 0,
+            memory_status().free_pages, current->user_pages, 0};
+        for (const auto& peer : threads) {
+            if (peer.process == current && peer.kernel_stack_top != 0) { ++stats.process_kernel_stack_pages; }
+            if (peer.state == thread_state::free || (!current->supervisor && peer.process != current)) { continue; }
+            ++stats.threads;
+            if (peer.state == thread_state::reserved) { ++stats.reserved; }
+            if (peer.state == thread_state::blocked) { ++stats.waiting; }
+            if (peer.state == thread_state::dead && peer.reaped) { ++stats.results; }
+        }
+        copy_to_user(first, &stats, sizeof(stats)); result = 0; break;
+    }
+    default: break;
+    }
+    frame->rax = static_cast<u64>(result); return frame;
 }
 
 void* process_syscall(interrupt_frame* frame) {
@@ -928,7 +1338,7 @@ void* process_syscall(interrupt_frame* frame) {
         if (slot == nullptr) { result = process_error_resources; break; }
         char name[12] = "elf";
         if (third != 0) { copy_from_user(name, second, third); name[third] = '\0'; }
-        task_record* task = prepare_task(name);
+        process_record* task = prepare_task(name);
         if (task == nullptr) { result = process_error_resources; break; }
         task->parent = current->pid;
         if (!inherit_stdio(task, current, static_cast<u32>(first))) {
@@ -959,7 +1369,7 @@ void* process_syscall(interrupt_frame* frame) {
     case sys_process_grant: {
         if (!current->supervisor) { result = process_error_denied; break; }
         if (second > 1) { break; }
-        task_record* task = owned_process(first);
+        process_record* task = owned_process(first);
         if (task == nullptr) { result = process_error_denied; break; }
         if (task->state != task_state::building) { result = process_error_state; break; }
         task->spawn_depth = second != 0 ? 1 : 0;
@@ -973,7 +1383,7 @@ void* process_syscall(interrupt_frame* frame) {
         if (!current->supervisor && (current->spawn_depth < 2 || second >= current->spawn_depth)) {
             result = process_error_delegation; break;
         }
-        task_record* task = owned_process(first);
+        process_record* task = owned_process(first);
         if (task == nullptr) { result = process_error_delegation; break; }
         if (task->state != task_state::building) { result = process_error_state; break; }
         task->spawn_depth = static_cast<u32>(second);
@@ -981,12 +1391,12 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_process_tls: {
-        task_record* task = owned_process(first);
+        process_record* task = owned_process(first);
         if (task == nullptr) { result = process_error_denied; break; }
         if (task->state != task_state::building) { result = process_error_state; break; }
         if (second < process_tls_begin || second > process_tls_end - 16 || second % 16 != 0 ||
             !space_range_ok(task->cr3, second, 16, true)) { break; }
-        task->thread_pointer = second;
+        main_thread(task).thread_pointer = second;
         result = 0;
         break;
     }
@@ -1050,7 +1460,7 @@ void* process_syscall(interrupt_frame* frame) {
     }
     case sys_process_stdio: {
         if (second >= 3) { break; }
-        task_record* child = owned_process(first);
+        process_record* child = owned_process(first);
         if (child == nullptr) { result = process_error_denied; break; }
         if (child->state != task_state::building) { result = process_error_state; break; }
         stdio_route replacement{};
@@ -1094,7 +1504,7 @@ void* process_syscall(interrupt_frame* frame) {
         if (first >= file_session_count ||
             !user_range_ok(second, sizeof(file_session_info), true)) { break; }
         file_session_info info{};
-        const task_record& client = tasks[first];
+        const process_record& client = tasks[first];
         if (client.state != task_state::free && client.state != task_state::building &&
             client.state != task_state::dead &&
             client.session_request_handle != 0 && client.session_response_handle != 0) {
@@ -1107,7 +1517,7 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_process_map: {
-        task_record* task = owned_process(first);
+        process_record* task = owned_process(first);
         if (task == nullptr) { result = process_error_denied; break; }
         if (task->state != task_state::building) { result = process_error_state; break; }
         if (!user_range_ok(second, sizeof(process_page), false)) { break; }
@@ -1129,7 +1539,7 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_process_start: {
-        task_record* task = owned_process(first);
+        process_record* task = owned_process(first);
         if (task == nullptr) { result = process_error_denied; break; }
         if (task->state != task_state::building) { result = process_error_state; break; }
         if (!user_range_ok(second, sizeof(process_entry), false)) { break; }
@@ -1156,7 +1566,7 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_process_abort: {
-        task_record* task = owned_process(first);
+        process_record* task = owned_process(first);
         if (task == nullptr) { result = process_error_denied; break; }
         if (task->state != task_state::building) { result = process_error_state; break; }
         if (task->completion_slot != 0) { completions[task->completion_slot - 1] = completion_record{}; }
@@ -1171,10 +1581,16 @@ void* process_syscall(interrupt_frame* frame) {
             copy_to_user(second, &item->status, sizeof(process_status));
             *item = completion_record{}; result = 0;
         } else {
-            task_record* child = owned_process(first);
+            process_record* child = owned_process(first);
             if (child == nullptr || child->state == task_state::building) { result = process_error_state; break; }
-            current->waiting_pid = first; current->wait_buffer = second;
-            current->state = task_state::waiting; frame->rax = 0;
+            for (const auto& waiter : threads) {
+                if (waiter.process == current && waiter.wait_kind == thread_wait_kind::process &&
+                    waiter.wait_target == first) { result = thread_error_busy; break; }
+            }
+            if (result == thread_error_busy) { break; }
+            current_thread->wait_target = first; current_thread->wait_buffer = second;
+            current_thread->wait_kind = thread_wait_kind::process;
+            current_thread->state = thread_state::blocked; frame->rax = 0;
             if (process_trace_enabled) {
                 format::text("[process] event=wait_blocked parent="); format::decimal(current->pid);
                 format::text(" child="); format::decimal(first); format::text("\r\n");
@@ -1240,8 +1656,10 @@ void* process_syscall(interrupt_frame* frame) {
 
 void* timer_entry(interrupt_frame* frame) {
     pic_eoi(0);
-    ++tick_count;
-    if (current != nullptr) { ++current->ticks; }
+    if (tick_count != ~u64{0}) { ++tick_count; }
+    if (current != nullptr && current_thread != nullptr &&
+        current_thread->state == thread_state::running) { ++current->ticks; }
+    expire_waiters();
     (void)cancel_foreground();
     if ((frame->cs & 3) == 3) { return schedule(frame); }
     return frame;
@@ -1249,7 +1667,12 @@ void* timer_entry(interrupt_frame* frame) {
 
 void* syscall_entry(interrupt_frame* frame) {
     reap_dead();
+    reap_threads();
     const u64 number = frame->rax;
+    if (number >= sys_thread_prepare && number <= sys_thread_profile) { return thread_syscall(frame); }
+    if (current_thread->leaving && number != sys_exit) {
+        frame->rax = static_cast<u64>(process_error_state); return frame;
+    }
     i64 result = sys_error_invalid_argument;
     switch (number) {
     case sys_write: {
@@ -1291,7 +1714,7 @@ void* syscall_entry(interrupt_frame* frame) {
         char buffer[768];
         u32 used = 0;
         for (u32 i = 0; i < 8; ++i) {
-            const task_record& task = tasks[i];
+            const process_record& task = tasks[i];
             if (task.state == task_state::free || task.state == task_state::dead) { continue; }
             append_text(buffer, used, sizeof(buffer), "pid=");
             append_decimal(buffer, used, sizeof(buffer), task.pid);
@@ -1321,7 +1744,7 @@ void* syscall_entry(interrupt_frame* frame) {
             break;
         }
         const u64 pid = frame->rdi;
-        task_record* target = nullptr;
+        process_record* target = nullptr;
         for (u32 i = 0; i < 8; ++i) {
             if (tasks[i].state != task_state::free && tasks[i].pid == pid) {
                 target = &tasks[i];
@@ -1362,7 +1785,9 @@ void* user_fault(interrupt_frame* frame) {
         format::text(" cr2=");
         format::hex(fault_address);
     }
-    format::text(" result=killed\r\n");
+    format::text(" result=killed tid=");
+    format::decimal(current_thread != nullptr ? current_thread->tid : 0);
+    format::text("\r\n");
     if (current != nullptr) {
         finish_task(current, process_outcome::faulted, 0, frame->vector, fault_address, frame->rip);
     }
@@ -1374,13 +1799,13 @@ bool tasks_create_default() {
     using namespace xos::user_blobs;
     if (create_task("heartbeat", heartbeat, heartbeat_size) == nullptr) { return false; }
     if (create_task("spinner", spinner, spinner_size) == nullptr) { return false; }
-    task_record* receiver_task = create_task("receiver", receiver, receiver_size);
+    process_record* receiver_task = create_task("receiver", receiver, receiver_size);
     if (receiver_task == nullptr) { return false; }
     const u32 handle = endpoint_attach(receiver_task->pid, 0, receiver_task->pid,
         default_message_bytes);
     if (handle != 1) { return false; }
     receiver_task->recv_handle = handle;
-    task_record* sender_task = create_task("sender", sender, sender_size);
+    process_record* sender_task = create_task("sender", sender, sender_size);
     if (sender_task == nullptr) { return false; }
     sender_task->send_handle = handle;
     endpoint_record* channel = endpoint_for(handle);
@@ -1388,10 +1813,10 @@ bool tasks_create_default() {
     channel->sender_pid = sender_task->pid;
     if (create_task("probe", probe, probe_size) == nullptr) { return false; }
     if (create_task("quitter", quitter, quitter_size) == nullptr) { return false; }
-    task_record* supervisor_task = create_supervisor();
+    process_record* supervisor_task = create_supervisor();
     if (supervisor_task == nullptr) { return false; }
     supervisor_task->supervisor = true;
-    task_record* files_task = create_files_service();
+    process_record* files_task = create_files_service();
     if (files_task == nullptr) { return false; }
     files_pid = files_task->pid;
     const u32 request_handle = endpoint_attach(files_task->pid, supervisor_task->pid,
@@ -1414,7 +1839,7 @@ bool tasks_create_default() {
 [[noreturn]] void tasks_enter() {
     pic_init();
     timer_init(100);
-    task_record* first = pick_ready();
+    thread_record* first = pick_ready();
     if (first == nullptr) {
         format::text("[sched] event=no_ready_tasks result=halt\r\n");
         halt();
@@ -1434,7 +1859,7 @@ u32 snapshot_count() {
 task_snapshot snapshot_at(u32 index) {
     task_snapshot snapshot{};
     if (index >= 8) { return snapshot; }
-    const task_record& task = tasks[index];
+    const process_record& task = tasks[index];
     snapshot.pid = static_cast<u32>(task.pid);
     snapshot.ticks = task.ticks;
     snapshot.name = task.name;

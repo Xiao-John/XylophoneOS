@@ -1,0 +1,37 @@
+{
+  "build_id": "b33da3d9929ace75",
+  "checks": [
+    "libc_program_is_in_image_catalog",
+    "newlib_printf_malloc_string_and_exit",
+    "libc_heap_and_stdio_are_reusable_across_runs"
+  ],
+  "status": "passed",
+  "command": [
+    "<home>/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-drive",
+    "file=<repo>/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_d0pffs2v/qmp.sock,server=on,wait=off"
+  ]
+}

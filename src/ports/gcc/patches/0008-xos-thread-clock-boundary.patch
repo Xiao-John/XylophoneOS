@@ -1,0 +1,18 @@
+# XOS additions: Apache-2.0; GNU context retains its runtime library terms.
+# SPDX-License-Identifier: GPL-3.0-or-later WITH GCC-exception-3.1 AND Apache-2.0
+--- a/libstdc++-v3/src/c++11/chrono.cc
++++ b/libstdc++-v3/src/c++11/chrono.cc
+@@ -51,7 +51,12 @@
+     system_clock::time_point
+     system_clock::now() noexcept
+     {
+-#ifdef _GLIBCXX_USE_CLOCK_REALTIME
++#ifdef __XOS_NO_WALL_CLOCK__
++      // XOS v1 has a monotonic clock but no wall-clock service. This noexcept
++      // interface has no error result: terminate instead of inventing a date
++      // or reading an uninitialized gettimeofday result.
++      __builtin_trap();
++#elif defined(_GLIBCXX_USE_CLOCK_REALTIME)
+       timespec tp;
+       // -EINVAL, -EFAULT
+ #ifdef _GLIBCXX_USE_CLOCK_GETTIME_SYSCALL

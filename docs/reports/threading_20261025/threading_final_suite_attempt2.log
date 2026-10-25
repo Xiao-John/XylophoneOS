@@ -1,0 +1,23 @@
+python3 scripts/build.py
+Built xos.img + real_mode.img | 6a49a5497498a6d6 | kernel 356412 bytes
+python3 scripts/build_threading_sdk.py --newlib-prefix ".cache/xos_seed/threading_newlib/prefix" --gcc-source ".cache/threading_sources/gcc-16.2.0" --cpp
+Built experimental threading SDK: <repo>/build/threading_sdk
+python3 scripts/build_threading_probes.py
+Built guest pthread/C++/legacy-layout probes
+python3 tests/threading_compile_checks.py
+Traceback (most recent call last):
+  File "<repo>/tests/threading_compile_checks.py", line 34, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "<repo>/tests/threading_compile_checks.py", line 28, in main
+    assert result.returncode == 0,result.stdout
+           ^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: <repo>/src/user/threading/pthread.cpp:125:14: error: 'noreturn' attribute does not appear on the first declaration
+  125 | extern "C" [[noreturn]] void pthread_exit(void* value) {
+      |              ^
+<repo>/build/threading_sdk/include/pthread.h:39:6: note: previous declaration is here
+   39 | void pthread_exit(void*) __attribute__((noreturn));
+      |      ^
+1 error generated.
+
+make: *** [threading-smoke] Error 1

@@ -1,0 +1,109 @@
+{
+  "build_id": "b33da3d9929ace75",
+  "checks": [
+    "elf_boundary_cases_truncations_and_mutations_under_sanitizers",
+    "loader_and_sdk_common_code_second_isa_compile",
+    "gcc_cpp_sdk_programs_and_guest_image_catalog",
+    "elf_segments_bss_data_argv_handles_exit_and_single_consumption",
+    "blocking_wait_and_signed_exit_code_with_preemption",
+    "inherited_stdin_stdout_and_nonblocking_read",
+    "guest_loader_rejects_malformed_interp_overflow_and_24_boundaries",
+    "kernel_builder_bounds_permissions_stale_handles_and_capacity_rollback",
+    "private_memory_readonly_nx_and_enabled_fpu_status",
+    "live_loaded_elf_permissions_stack_guard_and_kernel_isolation",
+    "background_spawn_supervisor_kill_and_distinct_killed_status",
+    "foreground_infinite_loop_escape_recovers_terminal",
+    "ten_repeated_load_wait_exit_cycles_exact_resource_stability"
+  ],
+  "status": "passed",
+  "image_sha256": "3d1ee35e2e69216918b30742f4c32935dc5a243a2ac8a649cdef9d845ffdcba3",
+  "command": [
+    "<home>/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-drive",
+    "file=<repo>/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_w50szc3t/qmp.sock,server=on,wait=off"
+  ],
+  "baseline_resources": [
+    130305,
+    4,
+    0
+  ],
+  "loaded_spin": {
+    "pid": 33,
+    "cr3": 1716224
+  },
+  "repeated_resources": [
+    [
+      130305,
+      4,
+      0
+    ],
+    [
+      130305,
+      4,
+      0
+    ],
+    [
+      130305,
+      4,
+      0
+    ],
+    [
+      130305,
+      4,
+      0
+    ],
+    [
+      130305,
+      4,
+      0
+    ],
+    [
+      130305,
+      4,
+      0
+    ],
+    [
+      130305,
+      4,
+      0
+    ],
+    [
+      130305,
+      4,
+      0
+    ],
+    [
+      130305,
+      4,
+      0
+    ],
+    [
+      130305,
+      4,
+      0
+    ]
+  ]
+}

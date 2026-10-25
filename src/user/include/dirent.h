@@ -26,3 +26,12 @@ void rewinddir(DIR* directory);
 #ifdef __cplusplus
 }
 #endif
+
+/* Standard d_type tags for consumers; XOS currently emits DIR/REG only. */
+#ifndef DT_BLK
+#define DT_BLK 6
+#define DT_CHR 2
+#define DT_FIFO 1
+#define DT_LNK 10
+#define DT_SOCK 12
+#endif

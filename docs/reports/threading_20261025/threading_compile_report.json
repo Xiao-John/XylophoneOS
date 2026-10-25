@@ -1,0 +1,66 @@
+{
+  "status": "passed",
+  "checks": [
+    "SDK artifact/source SHA256 consistency",
+    "AArch64 common lifecycle/pthread/lock compile only"
+  ],
+  "not_run": [
+    "AArch64 boot/runtime"
+  ],
+  "commands": [
+    [
+      "/usr/bin/clang++",
+      "--target=aarch64-none-elf",
+      "-std=c++20",
+      "-ffreestanding",
+      "-nostdinc++",
+      "-fno-exceptions",
+      "-fno-rtti",
+      "-DXOS_THREADED_RUNTIME",
+      "-I<repo>/build/threading_sdk/include",
+      "-I<repo>/src/user/include",
+      "-I<repo>/src/shared/include",
+      "-I<repo>/src/kernel/core",
+      "-c",
+      "<repo>/build/threading_common_compile.cpp",
+      "-o",
+      "<repo>/build/threading_aarch64_threading_common_compile.o"
+    ],
+    [
+      "/usr/bin/clang++",
+      "--target=aarch64-none-elf",
+      "-std=c++20",
+      "-ffreestanding",
+      "-nostdinc++",
+      "-fno-exceptions",
+      "-fno-rtti",
+      "-DXOS_THREADED_RUNTIME",
+      "-I<repo>/build/threading_sdk/include",
+      "-I<repo>/src/user/include",
+      "-I<repo>/src/shared/include",
+      "-I<repo>/src/kernel/core",
+      "-c",
+      "<repo>/src/user/threading/pthread.cpp",
+      "-o",
+      "<repo>/build/threading_aarch64_pthread.o"
+    ],
+    [
+      "/usr/bin/clang++",
+      "--target=aarch64-none-elf",
+      "-std=c++20",
+      "-ffreestanding",
+      "-nostdinc++",
+      "-fno-exceptions",
+      "-fno-rtti",
+      "-DXOS_THREADED_RUNTIME",
+      "-I<repo>/build/threading_sdk/include",
+      "-I<repo>/src/user/include",
+      "-I<repo>/src/shared/include",
+      "-I<repo>/src/kernel/core",
+      "-c",
+      "<repo>/src/user/threading/newlib_locks.cpp",
+      "-o",
+      "<repo>/build/threading_aarch64_newlib_locks.o"
+    ]
+  ]
+}

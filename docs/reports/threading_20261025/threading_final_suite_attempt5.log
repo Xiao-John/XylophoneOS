@@ -1,0 +1,35 @@
+python3 scripts/build.py
+Built xos.img + real_mode.img | 26a785b400803bd6 | kernel 356412 bytes
+python3 scripts/build_threading_sdk.py --newlib-prefix ".cache/xos_seed/threading_newlib/prefix" --gcc-source ".cache/threading_sources/gcc-16.2.0" --cpp
+Built experimental threading SDK: <repo>/build/threading_sdk
+python3 scripts/build_threading_probes.py
+Built guest pthread/C++/legacy-layout probes
+python3 tests/threading_compile_checks.py
+PASS SDK receipt and common AArch64 compile checks (no second-ISA runtime claim)
+python3 tests/threading_smoke.py
+PASS 15 threading groups | build 26a785b400803bd6
+python3 tests/threading_pthread_smoke.py
+PASS 10 pthread groups | kernel 26a785b400803bd6
+python3 tests/threading_cpp_smoke.py
+PASS 10 C++ threading groups | kernel 26a785b400803bd6
+python3 tests/process_smoke.py
+PASS: 13 E04 checks | build 26a785b400803bd6
+python3 tests/runtime_smoke.py
+PASS: 5 E08-2 groups | build 26a785b400803bd6
+python3 tests/task_smoke.py
+PASS: 12 E03 checks | build 26a785b400803bd6
+python3 tests/libc_smoke.py
+Traceback (most recent call last):
+  File "<repo>/tests/libc_smoke.py", line 63, in <module>
+    main()
+    ~~~~^^
+  File "<repo>/tests/libc_smoke.py", line 33, in main
+    guest.expect(b"[sup] demo tasks stopped", timeout=10)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<repo>/tests/boot_smoke.py", line 36, in expect
+    return self.expect_any(alternatives, start=start, timeout=timeout)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<repo>/tests/boot_smoke.py", line 52, in expect_any
+    raise AssertionError(f"{self.name}: missing any of {expected_values!r}; output={self.output[-1000:]!r}")
+AssertionError: libc_smoke: missing any of (b'[sup] demo tasks stopped',); output=bytearray(b'AAping\nbad length\nbad pointer\ntx\nAAping\nAAbad length\nbad pointer\ntx\nAAping\nbad length\nbad pointer\ntx\nAAAping\nbad length\nbad pointer\ntx\nAAping\nbad length\nbad pointer\ntx\nAAAping\nbad length\nbad pointer\ntx\nbad length\nAAping\nbad pointer\ntx\nbad length\nbad pointer\nAAAping\nbad length\nbad pointer\ntx\nAping\nbad length\nbad pointer\ntx\nAAAping\nbad length\nbad pointer\ntx\nAAping\nbad length\nbad pointer\ntx\nAAAping\nbad length\nbad pointer\ntx\nAAping\nbad length\nbad pointer\ntx\nAAAping\nbad length\nbad pointer\ntx\nbad length\nbad pointer\nAAping\nbad length\nbad pointer\ntx\nAAping\nbad length\nbad pointer\ntx\nAAAping\nbad length\nbad pointer\ntx\nAAAping\nbad length\nbad pointer\ntx\n[task] event=killed_by_supervisor pid=1\r\n[task] event=reclaimed pid=1 pages=11\r\n[task] event=killed_by_supervisor pid=2\r\n[task] event=reclaimed pid=2 pages=11\r\n[task] event=killed_by_supervisor pid=3\r\n[task] event=reclaimed pid=3 pages=11\r\n[task] event=killed_by_supervisor pid=4\r\n[task] event=reclaimed pid=4 pages=11\r\n\n[xsh] demo tasks stopped\nxsh> ')
+make: *** [threading-smoke] Error 1

@@ -23,6 +23,8 @@ def build_users(root, build, nasm, run, build_id):
     shutil.copyfile(root / "src/third_party/newlib/COPYING.NEWLIB", sdk / "COPYING.NEWLIB")
     for folder in ("src/shared/include/xos", "src/user/include/xos"):
         for header in sorted((root / folder).glob("*.hpp")):
+            if header.name == "thread_core.hpp":
+                continue  # T0 mechanism API is not part of the legacy libc SDK.
             shutil.copyfile(header, sdk / "include/xos" / header.name)
     for header in sorted((root / "src/user/include").glob("*.h")):
         shutil.copyfile(header, sdk / "include" / header.name)
@@ -40,14 +42,20 @@ def build_users(root, build, nasm, run, build_id):
 
     def compile_source(source, extra=()):
         obj = build / (str(source.relative_to(root)).replace("/", "_") + ".o")
-        run([tool("g++"), *COMMON_FLAGS, *X86_FLAGS, "-I", str(sdk / "include"),
+        isa_flags = [flag for flag in X86_FLAGS if source.name != "core_probe.cpp" or flag != "-mgeneral-regs-only"]
+        run([tool("g++"), *COMMON_FLAGS, *isa_flags, "-I", str(sdk / "include"),
              "-I", str(root / "src/third_party/fatfs"),
+             "-I", str(root / "src/user/include"),
              *extra, "-ffile-prefix-map=" + str(root) + "=.", "-c", str(source), "-o", str(obj)])
         return str(obj)
 
     sdk_objects = [compile_source(root / name) for name in (
         "src/user/sdk/text.cpp", "src/user/sdk/file_client.cpp", "src/user/arch/x86_64/syscall.cpp", "src/shared/runtime/memory.cpp")]
     sdk_objects.extend(compile_source(source, ("-w",)) for source in sorted((root / "src/user/libc").glob("*.cpp")))
+    thread_core = compile_source(root / "src/user/arch/x86_64/thread_core.cpp")
+    core_archive = build / "threading_core/libxos_thread_core.a"
+    core_archive.parent.mkdir(exist_ok=True)
+    run([tool("ar"), "rcsD", str(core_archive), thread_core])
     def compile_fatfs(source):
         obj = build / (str(source.relative_to(root)).replace("/", "_") + ".o")
         run([tool("g++"), *COMMON_FLAGS, *X86_FLAGS, "-Os", "-w",
@@ -69,21 +77,25 @@ def build_users(root, build, nasm, run, build_id):
     loader_objects.append(compile_source(root / "src/user/arch/x86_64/tls.cpp"))
     loader_archive = sdk / "lib/libxos_loader.a"
     run([tool("ar"), "rcsD", str(loader_archive), *loader_objects])
-    names = ("supervisor", "files", "demo", "fault", "spin", "slow", "echo", "hello", "libc_hello", "e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe")
+    names = ("supervisor", "files", "demo", "fault", "spin", "slow", "echo", "hello", "libc_hello", "e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe")
     bootstrap_names = ("supervisor", "files")
     libc_programs = ("libc_hello", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe")
-    disk_programs = ("e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe")
+    disk_programs = ("e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe")
     metadata = []
     header = ["#pragma once", "#include <xos/types.hpp>", "namespace xos::user_images {",
               "struct segment { u64 address, offset, files, memory; u32 permissions; };",
               "struct module { const char* name; const u8* bytes; u64 size; };"]
     for name in names:
         source_path = root / (f"src/user/services/{name}.cpp" if name == "files" else f"src/user/programs/{name}.cpp")
+        if name == "threading_core_probe":
+            source_path = root / "tests/fixtures/threading/core_probe.cpp"
         extra_flags = ("-w",) if name in libc_programs else ()
         if name in ("cpp_runtime_probe", "tls_exit_probe"):
             extra_flags += ("-fuse-cxa-atexit", "-ftls-model=local-exec",
                             "-funwind-tables", "-fasynchronous-unwind-tables",
                             "-fno-optimize-sibling-calls")
+        if name == "threading_core_probe":
+            extra_flags += ("-ftls-model=local-exec",)
         main = compile_source(source_path, extra_flags)
         fault_objects = [compile_source(root / "src/user/arch/x86_64/fault_test.cpp")] if name == "fault" else []
         executable = build / f"user_{name}.elf"
@@ -91,6 +103,7 @@ def build_users(root, build, nasm, run, build_id):
              "-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
              "-T", str(sdk / "user.ld"), str(sdk / ("crt0_posix.o" if name in ("runtime_probe", "cpp_runtime_probe", "tls_exit_probe") else "crt0_libc.o" if name in libc_programs else "crt0.o")), main,
              *([str(loader_archive)] if name == "supervisor" else []), *fault_objects,
+             *([str(core_archive), str(loader_archive)] if name == "threading_core_probe" else []),
              *([file_ui_object] if name == "supervisor" else []),
              *([*fatfs_objects] if name == "files" else []),
              *(["-Wl,--start-group", str(archive), str(loader_archive), "-L", str(sdk / "lib"),

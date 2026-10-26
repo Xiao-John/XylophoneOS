@@ -43,6 +43,14 @@ struct boot_payload_descriptor {
     u64 size;
 };
 static_assert(sizeof(boot_payload_descriptor) == 24);
+inline constexpr u32 boot_display_version = 2;
+struct boot_display {
+    u32 version, size, width, height, stride, format;
+    u64 physical, bytes;
+    u32 status, reserved; // 1 ready, 0 absent/unsupported; no firmware structures
+};
+static_assert(sizeof(boot_display) == 48);
+inline constexpr u32 boot_info_display_size = sizeof(boot_info) + sizeof(boot_display);
 enum class boot_error { none, invalid_header, invalid_map, kernel_not_usable };
 boot_error validate_boot_info(const boot_info& info, const memory_region* regions);
 }

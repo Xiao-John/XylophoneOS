@@ -154,6 +154,8 @@ loader_start:
     je a20_failure
     xor ax, ax
     mov es, ax
+    call display_probe
+    cli
     lgdt [gdt_pointer]
     mov eax, cr0
     or eax, 1
@@ -186,6 +188,7 @@ disk_error db "BOOT_ERROR: kernel_disk_read", 13, 10, 0
 a20_error db "BOOT_ERROR: a20", 13, 10, 0
 
 %include "console.inc"
+%include "display.inc"
 
 align 8
 gdt:

@@ -4,7 +4,7 @@
 
 namespace xos {
 enum class thread_state : u32 { free, reserved, fresh, ready, running, blocked, dead };
-enum class thread_wait_kind : u32 { none, process, join, word, sleep, exit_barrier, pipe_read, pipe_write };
+enum class thread_wait_kind : u32 { none, process, join, word, sleep, exit_barrier, pipe_read, pipe_write, display };
 
 // No ISA state or kernel pointers in the shared lifecycle contract.
 struct thread_lifetime {

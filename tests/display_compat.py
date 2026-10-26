@@ -45,7 +45,7 @@ printf '%s\\n' "$text"
 ''')
             makefile=folder/'Makefile';makefile.write_text('SHELL=/usr/bin/dash\nall:\n\tprintf "MAKE_OK\\n" > /out/e14.txt\n')
             transfer(disk,'import','/work/g02.sh',script);transfer(disk,'import','/work/Makefile',makefile)
-            transfer(disk,'import','/work/threading.py',ROOT/'tests/fixtures/cpython_t3_py/threading_core.py')
+            transfer(disk,'import','/work/e14_threads.py',ROOT/'tests/fixtures/cpython_t3_py/threading_core.py')
             guest=Guest(build/'xos-install-dash.iso','display_compat',work_disk=disk,iso=True)
             guest.expect(b'xos64> ');guest.expect(b'payload_bytes=')
             send_bytes(guest,b'run\r');guest.expect_supervisor(trace=True);pump(guest,1.6)
@@ -57,7 +57,7 @@ printf '%s\\n' "$text"
             assert b'kind=exited code=0' in output,output[-2000:]
             output=command(guest,'cat /out/e14.txt',b'MAKE_OK');assert resources(guest)==baseline
             report['checks'].append('make_runs_real_shell_recipe_and_file_content_matches')
-            output=command(guest,'python3 /work/threading.py',b'kind=exited code=',timeout=90)
+            output=command(guest,'python3 /work/e14_threads.py',b'kind=exited code=',timeout=90)
             assert b'T3_PY_CORE_OK Lock RLock Condition Event Queue' in output and b'kind=exited code=0' in output,output[-2000:]
             assert resources(guest)==baseline;report['checks'].append('CPython_real_threads_locks_condition_event_queue')
             output=command(guest,'display-start',b'result=0');service=int(re.search(rb'pid=(\d+) result=0',output)[1]);with_service=resources(guest)

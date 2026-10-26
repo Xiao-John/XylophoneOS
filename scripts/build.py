@@ -65,7 +65,7 @@ def main():
     versions = audit()
     if (TARGET["architecture"], TARGET["platform"], TARGET["firmware"]) != ("x86_64", "pc", "bios"):
         raise SystemExit("Only the x86_64 / PC / BIOS backend is implemented")
-    sources = [ROOT / "Makefile", ROOT / "LICENSE", ROOT / "NOTICE"]
+    sources = [ROOT / "Makefile", ROOT / "VERSION", ROOT / "LICENSE", ROOT / "NOTICE"]
     sources.extend(p for p in sorted((ROOT / "licenses").glob("*")) if p.is_file())
     for folder in ("src", "scripts", "tests", "config"):
         sources.extend(p for p in sorted((ROOT / folder).rglob("*"))
@@ -242,7 +242,8 @@ def main():
     artifact_names.extend(str(path.relative_to(BUILD)) for path in sorted((BUILD / "sdk").rglob("*"))
                           if path.is_file())
     manifest = {
-        "build_id": build_id, "source_sha256": source_digest,
+        "build_id": build_id,
+        "version": (ROOT / "VERSION").read_text().strip(), "source_sha256": source_digest,
         "capacity_probe": args.capacity_probe, "legacy_images_available": legacy_available,
         "sources": source_hashes,
         "tools": versions, "toolchain": LOCK, "configuration": TARGET, "commands": commands,

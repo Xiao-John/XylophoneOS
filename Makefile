@@ -11,8 +11,8 @@ build:
 dash: build
 	$(PYTHON) scripts/build_dash.py
 
-disk: dash
-	$(PYTHON) scripts/make_work_disk.py --with-dash
+disk:
+	$(PYTHON) scripts/make_work_disk.py
 
 install-iso: build dash
 	$(PYTHON) scripts/build_install_iso.py

@@ -79,8 +79,8 @@
 | `mv <old> <new>` | 改名/移动，拒绝覆盖 | [mv](supervisor/mv.md) |
 
 这些命令在 `xsh>` 生效。按空格分词，不支持引号、管道、重定向；脚本工作可用
-`dash -i`切入可选dash。新工作盘由 `make disk` 创建时会把 dash 预装到
-`/usr/bin/dash`；已有旧盘不会自动改动，可用
+`dash -i`切入可选dash。`make disk`仅创建工作盘，不预装dash；install ISO携带dash并在首次启动时
+安装到`/usr/bin/dash`（已存在时保留）。已有旧盘也可用
 `python3 scripts/install_dash.py --disk <disk>` 手动补装。Xsh行上限2047字节，程序argv最多64项（含程序名），
 每项最多255字节；argv/env/cwd共享4页startup，超出拒绝。
 工作盘由宿主 `make disk` 显式创建（新盘默认 2 GiB FAT32），`make run` 只打开

@@ -212,6 +212,10 @@ def main():
     if final_inputs != initial_inputs:
         raise SystemExit('SDK inputs changed during the build; retry with a stable source snapshot')
     receipt = {'profile': 'xos-threading-v1-experimental', 'abi': 1, 'thread_abi': 1,
+               'process_extensions': {'syscalls': list(range(54,62)), 'file_operations': [20,21,22],
+                   'startup_versions': [1,2,3], 'exec_image_abi': 3, 'exec_marker': '.xos.exec',
+                   'fork_supported': False, 'exec_supported': False, 'fd_count': 32,
+                   'pipe_atomic_bytes': 4096, 'pipe_wait_write_minimum': True, 'pipe_atomic_flag': '0x8000000000000000'},
                'qualification': 'not_run', 'commands': commands,
                'inputs': initial_inputs,
                'newlib_build_receipt_sha256': sha(prefix.parent / 'receipt.json'),

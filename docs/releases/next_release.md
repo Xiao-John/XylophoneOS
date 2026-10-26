@@ -1,7 +1,7 @@
 # 下一次 XOS release：准备清单
 
-2026-10-26。状态：**准备中，未冻结版本号，未重新打包**。本页只做 release
-准备；不修改已发布的 0.0.1-1024 资产。
+2026-10-26。状态：**0.0.1-1026 候选已构建并跑完 release smoke；待用户确认后提交源码/发布**。
+本页只做 release 准备；不修改已发布的 0.0.1-1024 资产。
 
 ## 必须先解决的阻塞项
 
@@ -19,10 +19,16 @@
    新 install ISO 会自动安装 dash；旧 `make disk`/发行盘预装是否删除要在
    release 前统一决定。当前代码仍保留 `--with-dash` 和
    `scripts/install_dash.py` 作为兼容/应急，不是最终 release 形态。
-4. **更新 release 工具**
-   `VERSION` 和 `scripts/package_release.py` 仍固定为 `0.0.1-1024`；新
-   release 需要更新版本、system manifest、install ISO 入包和 release notes，
-   不能直接复用旧目录。
+4. **release 工具**
+   `VERSION` 已为 `0.0.1-1026`，`package_release.py` 已按版本目录工作；仍需
+   在源码提交后生成 source materials 并把提交哈希写入发行回执。
+
+## 当前候选回执
+
+- build `2e338e3d7a2adc42`；release smoke 11/11，资源 `[130272,2,0]`。
+- install ISO SHA256 `fde6422c0321f4e664ada7a41631db3428a090e551f51ea8932c6b8cf9dcde0a`。
+- images/SDK tar 已生成；许可审计 7 份材料通过，成员级审计仍开放。
+- 候选目录 `build/releases/0.0.1-1026`；源码提交后重新生成 source materials。
 
 ## 验收 gate
 

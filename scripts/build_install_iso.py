@@ -54,7 +54,7 @@ def main():
             raise SystemExit("stale system artifact: " + name)
     metadata = {
         "format": 1,
-        "version": system.get("version", "0.0.1-1024"),
+        "version": system.get("version", (ROOT/"VERSION").read_text().strip()),
         "build_id": system["build_id"],
         "kernel_sha256": sha256(kernel),
         "dash_sha256": sha256(dash),

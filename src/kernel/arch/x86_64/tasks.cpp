@@ -79,6 +79,17 @@ struct process_record {
     bool threads_enabled;
     bool closing;
     u64 exit_owner;
+    process_foreground foreground;
+    bool foreground_active, foreground_cancelled;
+    // A fork child resumes a copied syscall frame only after the files service
+    // authenticates/clones its session. Depth bounds nested isolated shells;
+    // ordinary spawn delegation remains a separate capability.
+    u64 fork_source;
+    u32 fork_depth;
+    bool fork_pending, fork_files_ack;
+    // Private, never-runnable image constructor for exec. It owns pages and a
+    // temporary kernel stack, but no completion, file session, or pipe routes.
+    bool replacement_pending;
 };
 
 struct completion_record { bool used; bool ready; u64 parent; process_status status; };
@@ -131,6 +142,20 @@ u8 block_buffer[4096];
 alignas(16) u8 fpu_template[512];
 bool process_trace_enabled = true;
 process_guard_info admission_guard{};
+
+void ready_with(thread_record& thread, i64 result);
+
+// Pipe wait keys use a live kernel pipe slot. Closing the final route wakes
+// every sleeper before that slot may be reused; no pending I/O pointer is held.
+void wake_pipe_waiters(u32 pipe_index, bool readers, bool writers) {
+    for (auto& thread : threads) {
+        if (thread.state != thread_state::blocked || thread.wait_target != pipe_index) { continue; }
+        if ((readers && thread.wait_kind == thread_wait_kind::pipe_read) ||
+            (writers && thread.wait_kind == thread_wait_kind::pipe_write)) {
+            ready_with(thread, 0);
+        }
+    }
+}
 
 void fpu_save(u8* state) {
     __asm__ volatile("fxsave64 (%0)" : : "r"(state) : "memory");
@@ -275,6 +300,10 @@ void pipe_release(u32 pipe_index, bool writable) {
     if (writable) {
         if (pipe.writer_references != 0) { --pipe.writer_references; }
     } else if (pipe.reader_references != 0) { --pipe.reader_references; }
+    // A raw close may invalidate a sleeping token/route even when another
+    // reference of that direction survives. Wake all and require revalidation.
+    wake_pipe_waiters(pipe_index, true, true);
+    // This also covers EOF/EPIPE, before a final release can reuse the slot.
     if (pipe.references == 0) { pipe = pipe_object{}; }
 }
 
@@ -584,10 +613,11 @@ i64 pipe_read_from(u32 pipe_index, u64 address, u64 length) {
     }
     pipe.head = (pipe.head + amount) % process_pipe_bytes;
     pipe.length -= amount;
+    wake_pipe_waiters(pipe_index, false, true);
     return amount;
 }
 
-i64 pipe_write_to(u32 pipe_index, u64 address, u64 length) {
+i64 pipe_write_to(u32 pipe_index, u64 address, u64 length, bool atomic = false) {
     if (pipe_index >= process_max_pipes || !pipes[pipe_index].used) {
         return process_error_invalid;
     }
@@ -595,7 +625,10 @@ i64 pipe_write_to(u32 pipe_index, u64 address, u64 length) {
     pipe_object& pipe = pipes[pipe_index];
     if (pipe.reader_references == 0) { return pipe_error_broken; }
     const u32 available = process_pipe_bytes - pipe.length;
-    if (available == 0) { return process_error_would_block; }
+    if (atomic && length > process_pipe_bytes) { return process_error_invalid; }
+    if (available == 0 || (atomic && length > available)) {
+        return process_error_would_block;
+    }
     const u64 amount64 = length < available ? length : available;
     const u32 amount = static_cast<u32>(amount64);
     if (!user_range_ok(address, amount, false)) { return process_error_invalid; }
@@ -604,6 +637,7 @@ i64 pipe_write_to(u32 pipe_index, u64 address, u64 length) {
         copy_from_user(&pipe.data[(tail + i) % process_pipe_bytes], address + i, 1);
     }
     pipe.length += amount;
+    wake_pipe_waiters(pipe_index, true, false);
     return amount;
 }
 
@@ -622,12 +656,12 @@ i64 stdio_read(process_record* task, u32 fd, u64 address, u64 length,
     return 1;
 }
 
-i64 stdio_write(process_record* task, u32 fd, u64 address, u64 length) {
+i64 stdio_write(process_record* task, u32 fd, u64 address, u64 length, bool atomic = false) {
     if (fd >= 3 || task == nullptr || (task->stdio_mask & (1u << fd)) == 0 ||
         !task->stdio[fd].valid || !task->stdio[fd].writable) { return process_error_denied; }
     if (length == 0) { return 0; }
     const stdio_route& route = task->stdio[fd];
-    if (!route.console) { return pipe_write_to(route.pipe_index, address, length); }
+    if (!route.console) { return pipe_write_to(route.pipe_index, address, length, atomic); }
     if (length > 256 || !user_range_ok(address, length, false)) { return process_error_invalid; }
     u8 bytes[256];
     copy_from_user(bytes, address, length);
@@ -751,6 +785,21 @@ bool cancel_foreground() {
             }
             if (next == nullptr) { break; }
             target = next;
+            if (next->foreground_active) {
+                (void)platform::debug_read();
+                next->foreground_cancelled = true;
+                for (u32 i = 0; i < next->foreground.count; ++i) {
+                    for (auto& member : tasks) {
+                        if (member.pid == next->foreground.pids[i] && member.parent == next->pid &&
+                            member.state != task_state::free && member.state != task_state::dead) {
+                            finish_task(&member, process_outcome::killed, -27);
+                        }
+                    }
+                }
+                format::text("[process] event=cancelled_by_escape pipeline_parent=");
+                format::decimal(next->pid); format::text("\r\n");
+                return true;
+            }
             thread_record* waiter = nullptr;
             for (auto& thread : threads) {
                 if (thread.process == next && thread.state == thread_state::blocked &&
@@ -855,10 +904,12 @@ interrupt_frame* schedule(interrupt_frame* frame) {
 }
 
 process_record* owned_process(u64 handle) {
-    if (current == nullptr || (!current->supervisor && current->spawn_depth == 0)) { return nullptr; }
+    if (current == nullptr) { return nullptr; }
     for (auto& task : tasks) {
         if (task.state != task_state::free && task.pid == handle && task.parent == current->pid) {
-            return &task;
+            if (current->supervisor || current->spawn_depth != 0 ||
+                (task.state == task_state::building && task.replacement_pending)) { return &task; }
+            return nullptr;
         }
     }
     return nullptr;
@@ -877,6 +928,36 @@ bool space_range_ok(u64 space, u64 address, u64 length, bool write) {
             !permissions.user || (write && !permissions.writable)) { return false; }
     }
     return true;
+}
+
+bool valid_process_entry(const process_record* task, const process_entry& entry) {
+    u64 physical = 0;
+    page_permissions permissions{};
+    return space_range_ok(task->cr3, entry.entry, 1, false) &&
+        query_page_in(task->cr3, entry.entry & ~(page_size - 1), &physical, &permissions) == memory_result::none &&
+        permissions.executable && !permissions.writable && entry.stack % 16 == 0 &&
+        entry.stack >= process_stack_bottom + 16 && entry.stack <= process_startup_begin &&
+        space_range_ok(task->cr3, entry.stack - 16, 16, true) &&
+        entry.startup % alignof(startup_info) == 0 && entry.startup >= process_startup_begin &&
+        entry.startup <= process_stack_top - sizeof(startup_info) &&
+        space_range_ok(task->cr3, entry.startup, sizeof(startup_info), false);
+}
+
+// Replacing a known single-thread image does not require constructing a new
+// runnable principal. Multithreaded runtime state and trusted services require
+// separate replacement protocols and cannot silently take this path.
+i64 replacement_caller_error() {
+    if (current == nullptr || current->supervisor || current->block_access) { return process_error_denied; }
+    if (current->threads_enabled || current_thread != &main_thread(current) || !current_thread->main) {
+        return thread_error_unsupported;
+    }
+    for (const auto& peer : threads) {
+        if (peer.process == current && &peer != current_thread &&
+            peer.state != thread_state::free && peer.state != thread_state::dead) {
+            return thread_error_unsupported;
+        }
+    }
+    return current->closing || current_thread->leaving ? process_error_state : 0;
 }
 
 u64 page_align_up(u64 address) {
@@ -1293,6 +1374,107 @@ void* thread_syscall(interrupt_frame* frame) {
     frame->rax = static_cast<u64>(result); return frame;
 }
 
+// Prepare a private address-space snapshot while the single-core kernel cannot
+// be preempted. No child context becomes runnable until fork_commit; every
+// fallible allocation precedes completion-record publication.
+i64 prepare_fork(interrupt_frame* frame) {
+    if (current == nullptr || current->supervisor || current->block_access) {
+        return process_error_denied;
+    }
+    if (current->threads_enabled || current_thread != &main_thread(current) ||
+        !current_thread->main) { return thread_error_unsupported; }
+    for (const auto& peer : threads) {
+        if (peer.process == current && &peer != current_thread &&
+            peer.state != thread_state::free && peer.state != thread_state::dead) {
+            return thread_error_unsupported;
+        }
+    }
+    if (current->spawn_depth == 0) { return process_error_denied; }
+    if (current->closing || current_thread->leaving) { return process_error_state; }
+    if (current->fork_depth >= process_fork_depth_max || !files_service_live()) {
+        return process_error_resources;
+    }
+    completion_record* completion = nullptr;
+    for (auto& item : completions) { if (!item.used) { completion = &item; break; } }
+    u32 free_endpoints = 0;
+    for (const auto& endpoint : endpoints) { if (!endpoint.used) { ++free_endpoints; } }
+    if (completion == nullptr || free_endpoints < 2 || next_endpoint_handle > 0xfffffffeull) {
+        return process_error_resources;
+    }
+    process_record* child = prepare_task(current->name);
+    if (child == nullptr) { return process_error_resources; }
+    child->parent = current->pid;
+    child->spawn_depth = current->spawn_depth;
+    child->fork_source = current->pid;
+    child->fork_depth = current->fork_depth + 1;
+    child->fork_pending = true;
+    child->heap_break = current->heap_break;
+    child->entry = current->entry;
+    child->initial_stack = current->initial_stack;
+    child->startup = current->startup;
+    if (copy_user_pages_in(current->cr3, child->cr3, process_max_pages,
+                           &child->user_pages) != memory_result::none ||
+        child->user_pages != current->user_pages) {
+        destroy_task(child); return process_error_resources;
+    }
+    if (!inherit_stdio(child, current, current->stdio_mask)) {
+        destroy_task(child); return process_error_resources;
+    }
+    // libc's copied FD table contains these exact tokens. Retain the underlying
+    // objects under the new PID; global monotonic tokens are still authorized
+    // by membership in each process's private reference array.
+    for (u32 index = 0; index < process_max_pipe_refs; ++index) {
+        const auto& reference = current->pipe_references[index];
+        if (!reference.used) { continue; }
+        if (child->pipe_reference_count >= process_max_pipe_refs ||
+            reference.pipe_index >= process_max_pipes || !pipes[reference.pipe_index].used) {
+            destroy_task(child); return process_error_resources;
+        }
+        child->pipe_references[index] = reference;
+        pipe_retain(reference.pipe_index, reference.writable);
+        ++child->pipe_reference_count;
+    }
+    if (child->pipe_reference_count != current->pipe_reference_count) {
+        destroy_task(child); return process_error_state;
+    }
+    child->session_request_handle = endpoint_attach(files_pid, child->pid, child->pid,
+        file_message_bytes);
+    child->session_response_handle = endpoint_attach(child->pid, files_pid, child->pid,
+        file_message_bytes, true);
+    if (child->session_request_handle == 0 || child->session_response_handle == 0) {
+        destroy_task(child); return process_error_resources;
+    }
+    child->send_handle = child->session_request_handle;
+    child->recv_handle = child->session_response_handle;
+    auto& thread = main_thread(child);
+    thread.stack_bottom = current_thread->stack_bottom;
+    thread.stack_top = current_thread->stack_top;
+    thread.tls_begin = current_thread->tls_begin;
+    thread.tls_end = current_thread->tls_end;
+    thread.thread_pointer = current_thread->thread_pointer;
+    // The running thread's saved FPU image can predate this syscall. Snapshot
+    // the actual registers now rather than copying the last scheduling image.
+    fpu_save(current_thread->fpu_state);
+    copy_bytes(thread.fpu_state, current_thread->fpu_state, sizeof(thread.fpu_state));
+    auto* child_frame = reinterpret_cast<interrupt_frame*>(thread.kernel_stack_top - sizeof(interrupt_frame));
+    *child_frame = *frame;
+    child_frame->rax = 0;
+    thread.kernel_rsp = reinterpret_cast<u64>(child_frame);
+    thread.state = thread_state::ready;
+    *completion = completion_record{};
+    completion->used = true;
+    completion->parent = current->pid;
+    completion->status.pid = child->pid;
+    child->completion_slot = static_cast<u32>(completion - completions) + 1;
+    if (process_trace_enabled) {
+        format::text("[process] event=fork_prepared pid="); format::decimal(child->pid);
+        format::text(" parent="); format::decimal(child->parent);
+        format::text(" depth="); format::decimal(child->fork_depth);
+        format::text(" pages="); format::decimal(child->user_pages); format::text("\r\n");
+    }
+    return static_cast<i64>(child->pid);
+}
+
 void* process_syscall(interrupt_frame* frame) {
     i64 result = process_error_invalid;
     const u64 first = frame->rdi, second = frame->rsi, third = frame->rdx;
@@ -1322,6 +1504,186 @@ void* process_syscall(interrupt_frame* frame) {
         if (action == process_guard_action::end) { admission_guard = {}; result = 0; }
         else if (action == process_guard_action::rearm) { admission_guard.worker_pid = 0; result = 0; }
         break;
+    }
+    case sys_process_exec_prepare: {
+        if (admission_guard.owner_pid != 0) { result = process_error_busy; break; }
+        if (first != 0 || third > 11 ||
+            (third != 0 && !user_range_ok(second, third, false))) { break; }
+        result = replacement_caller_error();
+        if (result != 0) { break; }
+        // A single-threaded process can have only one replacement transaction.
+        // This is not authority to reserve arbitrary child process slots.
+        bool pending = false;
+        for (const auto& task : tasks) {
+            pending = pending || (task.parent == current->pid && task.replacement_pending &&
+                                   task.state != task_state::free && task.state != task_state::dead);
+        }
+        if (pending) { result = process_error_state; break; }
+        char name[12] = "exec";
+        if (third != 0) { copy_from_user(name, second, third); name[third] = '\0'; }
+        process_record* stage = prepare_task(name);
+        if (stage == nullptr) { result = process_error_resources; break; }
+        stage->parent = current->pid;
+        stage->replacement_pending = true;
+        stage->stdio_mask = 0;
+        for (auto& route : stage->stdio) { route = stdio_route{}; }
+        if (process_trace_enabled) {
+            format::text("[process] event=exec_prepared pid="); format::decimal(current->pid);
+            format::text(" staging_pid="); format::decimal(stage->pid); format::text("\r\n");
+        }
+        result = static_cast<i64>(stage->pid);
+        break;
+    }
+    case sys_process_exec_commit: {
+        if (admission_guard.owner_pid != 0) { result = process_error_busy; break; }
+        result = replacement_caller_error();
+        if (result != 0) { break; }
+        process_record* stage = owned_process(first);
+        if (stage == nullptr) { result = process_error_denied; break; }
+        if (stage->state != task_state::building || !stage->replacement_pending) {
+            result = process_error_state; break;
+        }
+        // Validate the complete request while the original user mappings and
+        // identity remain intact. Every fallible check precedes the first
+        // state/queue mutation below.
+        result = process_error_invalid;
+        if (!user_range_ok(second, sizeof(process_entry), false)) { break; }
+        process_entry entry{};
+        copy_from_user(&entry, second, sizeof(entry));
+        if (!valid_process_entry(stage, entry)) { break; }
+        u32 depth = current->spawn_depth;
+        if (third != 0) {
+            if (third - 1 > process_max_spawn_depth || third - 1 >= current->spawn_depth) {
+                result = process_error_delegation; break;
+            }
+            depth = static_cast<u32>(third - 1);
+        }
+        endpoint_record* request = endpoint_for(current->session_request_handle);
+        endpoint_record* response = endpoint_for(current->session_response_handle);
+        if (!files_service_live() || request == nullptr || response == nullptr || request == response ||
+            request->owner_pid != current->pid || request->sender_pid != current->pid ||
+            request->receiver_pid != files_pid || request->session_response ||
+            request->capacity != file_message_bytes ||
+            response->owner_pid != current->pid || response->receiver_pid != current->pid ||
+            response->sender_pid != files_pid || !response->session_response ||
+            response->capacity != file_message_bytes || current->send_handle != request->handle ||
+            current->recv_handle != response->handle) {
+            result = process_error_state; break;
+        }
+        if (next_endpoint_handle > 0xfffffffeull) { result = process_error_resources; break; }
+        const u64 old_space = current->cr3;
+        const u32 old_pages = current->user_pages;
+        const u32 old_depth = current->spawn_depth;
+        const auto& staged_thread = main_thread(stage);
+        // The new Client starts a fresh request-ID sequence. Re-key the same
+        // two session slots so a pending/late old-image reply cannot match it.
+        // PID and files-service open descriptions survive; opaque IPC tokens
+        // do not. No fallible step follows the first queue replacement.
+        *request = endpoint_record{};
+        request->used = true;
+        request->handle = static_cast<u32>(next_endpoint_handle++);
+        request->receiver_pid = files_pid;
+        request->sender_pid = request->owner_pid = current->pid;
+        request->capacity = file_message_bytes;
+        *response = endpoint_record{};
+        response->used = true;
+        response->handle = static_cast<u32>(next_endpoint_handle++);
+        response->receiver_pid = response->owner_pid = current->pid;
+        response->sender_pid = files_pid;
+        response->capacity = file_message_bytes;
+        response->session_response = true;
+        current->send_handle = current->session_request_handle = request->handle;
+        current->recv_handle = current->session_response_handle = response->handle;
+        current->cr3 = stage->cr3;
+        current->user_pages = stage->user_pages;
+        current->entry = entry.entry;
+        current->initial_stack = entry.stack;
+        current->startup = entry.startup;
+        current->heap_break = process_heap_begin;
+        current->spawn_depth = depth;
+        copy_name(current->name, stage->name);
+        current_thread->thread_pointer = staged_thread.thread_pointer;
+        current_thread->stack_bottom = staged_thread.stack_bottom;
+        current_thread->stack_top = staged_thread.stack_top;
+        current_thread->tls_begin = staged_thread.tls_begin;
+        current_thread->tls_end = staged_thread.tls_end;
+        current_thread->entry = 0;
+        current_thread->argument = 0;
+        current_thread->initial_stack = 0;
+        current_thread->wait_kind = thread_wait_kind::none;
+        current_thread->wait_target = current_thread->wait_buffer = 0;
+        current_thread->deadline_ns = current_thread->wait_order = 0;
+        current_thread->kernel_rsp = reinterpret_cast<u64>(frame);
+        copy_bytes(current_thread->fpu_state, fpu_template, sizeof(fpu_template));
+        *frame = interrupt_frame{};
+        frame->rip = entry.entry;
+        frame->cs = user_code_selector;
+        frame->rflags = 0x202;
+        frame->rsp = entry.stack;
+        frame->rdi = entry.startup;
+        frame->ss = user_data_selector;
+        // The staging identity never runs and never receives the caller's
+        // handles or children. It retires only the old image and its own spare
+        // kernel stack; the caller keeps PID/TID, parent/completion, session
+        // slots, stdio/pipe references, fork depth, and its active kernel stack.
+        stage->cr3 = old_space;
+        stage->user_pages = old_pages;
+        load_address_space(current->cr3);
+        set_thread_pointer(current_thread->thread_pointer);
+        if (process_trace_enabled) {
+            format::text("[process] event=exec_replaced old_pid="); format::decimal(current->pid);
+            format::text(" current_pid="); format::decimal(current->pid);
+            format::text(" target_pid="); format::decimal(current->pid);
+            format::text(" staging_pid="); format::decimal(stage->pid);
+            format::text(" tid="); format::decimal(current_thread->tid);
+            format::text(" old_address_space="); format::hex(old_space);
+            format::text(" address_space="); format::hex(current->cr3);
+            format::text(" file_session_rekeyed=1 old_spawn_depth="); format::decimal(old_depth);
+            format::text(" spawn_depth="); format::decimal(current->spawn_depth); format::text("\r\n");
+        }
+        destroy_task(stage);
+        fpu_restore(current_thread->fpu_state);
+        // Return the replacement frame directly. Assigning the ordinary
+        // syscall result or returning to the old user continuation is wrong.
+        return frame;
+    }
+    case sys_process_fork_prepare:
+        if (admission_guard.owner_pid != 0) { result = process_error_busy; break; }
+        if (first == 0 && second == 0 && third == 0) { result = prepare_fork(frame); }
+        break;
+    case sys_process_fork_commit: {
+        if (admission_guard.owner_pid != 0) { result = process_error_busy; break; }
+        if (second != 0 || third != 0) { break; }
+        process_record* child = owned_process(first);
+        if (child == nullptr) { result = process_error_denied; break; }
+        if (current->closing || child->state != task_state::building || !child->fork_pending ||
+            child->fork_source != current->pid || !child->fork_files_ack) {
+            result = process_error_state; break;
+        }
+        child->fork_pending = false;
+        child->state = task_state::ready;
+        if (process_trace_enabled) {
+            format::text("[process] event=fork_committed pid="); format::decimal(child->pid);
+            format::text(" parent="); format::decimal(child->parent); format::text("\r\n");
+        }
+        result = 0; break;
+    }
+    case sys_process_fork_files: {
+        if (admission_guard.owner_pid != 0) { result = process_error_busy; break; }
+        if (current == nullptr || !current->block_access || current->pid != files_pid) {
+            result = process_error_denied; break;
+        }
+        if (third > 1) { break; }
+        process_record* child = task_by_pid(first);
+        process_record* source = task_by_pid(second);
+        if (child == nullptr || source == nullptr || source->closing ||
+            source->state == task_state::building || source->state == task_state::dead ||
+            child->state != task_state::building || !child->fork_pending ||
+            child->fork_source != second || child->parent != second) {
+            result = process_error_denied; break;
+        }
+        if (third == 1) { child->fork_files_ack = true; }
+        result = 0; break;
     }
     case sys_boot_payload: {
         if (current == nullptr || !current->supervisor) {
@@ -1356,8 +1718,10 @@ void* process_syscall(interrupt_frame* frame) {
         result = 0;
         break;
     case sys_handle_write: {
-        if (first > 2 || first == 0) { result = process_error_denied; break; }
-        result = stdio_write(current, static_cast<u32>(first), second, third);
+        const u64 handle = first & ~pipe_write_atomic_flag;
+        if (handle > 2 || handle == 0) { result = process_error_denied; break; }
+        result = stdio_write(current, static_cast<u32>(handle), second, third,
+                             (first & pipe_write_atomic_flag) != 0);
         break;
     }
     case sys_handle_read: {
@@ -1451,7 +1815,9 @@ void* process_syscall(interrupt_frame* frame) {
         if (second > 1) { break; }
         process_record* task = owned_process(first);
         if (task == nullptr) { result = process_error_denied; break; }
-        if (task->state != task_state::building) { result = process_error_state; break; }
+        if (task->state != task_state::building || task->replacement_pending) {
+            result = process_error_state; break;
+        }
         task->spawn_depth = second != 0 ? 1 : 0;
         result = 0;
         break;
@@ -1466,7 +1832,9 @@ void* process_syscall(interrupt_frame* frame) {
         }
         process_record* task = owned_process(first);
         if (task == nullptr) { result = process_error_delegation; break; }
-        if (task->state != task_state::building) { result = process_error_state; break; }
+        if (task->state != task_state::building || task->replacement_pending) {
+            result = process_error_state; break;
+        }
         task->spawn_depth = static_cast<u32>(second);
         result = 0;
         break;
@@ -1484,6 +1852,71 @@ void* process_syscall(interrupt_frame* frame) {
     case sys_heap_break:
         result = set_heap_break(first);
         break;
+    case sys_process_cancel: {
+        if (second != 0 || third != 0) { break; }
+        process_record* task = owned_process(first);
+        if (task == nullptr) { result = process_error_denied; break; }
+        if (task->state == task_state::building) { result = process_error_state; break; }
+        finish_task(task, process_outcome::killed, -9);
+        destroy_task(task);
+        result = 0; break;
+    }
+    case sys_process_foreground: {
+        if (second > 1 || third != 0 || !user_range_ok(first, sizeof(process_foreground), false)) { break; }
+        process_foreground request{};
+        copy_from_user(&request, first, sizeof(request));
+        if (request.version != 1 || request.size != sizeof(request) || request.reserved != 0 ||
+            request.count > process_pipeline_max || (second == 0 && request.count != 0)) { break; }
+        bool valid = true;
+        for (u32 i = 0; i < process_pipeline_max; ++i) {
+            if (i >= request.count) { valid = valid && request.pids[i] == 0; continue; }
+            valid = valid && completion_for(current->pid, request.pids[i]) != nullptr;
+            for (u32 j = 0; j < i; ++j) { valid = valid && request.pids[j] != request.pids[i]; }
+        }
+        if (!valid) { result = process_error_denied; break; }
+        if (second == 1 && current->foreground_active && current->foreground_cancelled) {
+            result = process_error_state; break;
+        }
+        current->foreground = request;
+        current->foreground_active = second == 1;
+        current->foreground_cancelled = false;
+        result = 0; break;
+    }
+    case sys_pipe_wait: {
+        if (second > process_pipe_bytes || third != 0) { result = process_error_invalid; break; }
+        u32 pipe_index = process_max_pipes;
+        bool writable = false;
+        if (first < 3) {
+            if ((current->stdio_mask & (1u << first)) == 0 ||
+                !current->stdio[first].valid) { result = process_error_denied; break; }
+            const auto& route = current->stdio[first];
+            if (route.console) { result = second != 0 && !route.writable
+                ? process_error_invalid : process_error_would_block; break; }
+            pipe_index = route.pipe_index;
+            writable = route.writable;
+        } else {
+            const pipe_reference* reference = pipe_reference_for(current, first);
+            if (reference == nullptr) { result = process_error_denied; break; }
+            pipe_index = reference->pipe_index;
+            writable = reference->writable;
+        }
+        if (pipe_index >= process_max_pipes || !pipes[pipe_index].used) {
+            result = process_error_invalid; break;
+        }
+        if (!writable && second != 0) { result = process_error_invalid; break; }
+        const auto& pipe = pipes[pipe_index];
+        const bool ready = writable
+            ? pipe.reader_references == 0 || process_pipe_bytes - pipe.length >= (second == 0 ? 1 : second)
+            : pipe.writer_references == 0 || pipe.length != 0;
+        if (ready) { result = 0; break; }
+        // Check and sleep in one non-preemptible kernel critical section.
+        // A subsequent read/write rechecks the pipe and its own user buffer.
+        current_thread->wait_kind = writable ? thread_wait_kind::pipe_write : thread_wait_kind::pipe_read;
+        current_thread->wait_target = pipe_index;
+        current_thread->state = thread_state::blocked;
+        frame->rax = 0;
+        return schedule(frame);
+    }
     case sys_pipe_create: {
         if (!user_range_ok(first, sizeof(pipe_handles), true)) { break; }
         if (next_pipe_token + 1 > 0xffffffffull ||
@@ -1521,7 +1954,8 @@ void* process_syscall(interrupt_frame* frame) {
     }
     case sys_pipe_read:
     case sys_pipe_write: {
-        pipe_reference* reference = pipe_reference_for(current, first);
+        const bool atomic = frame->rax == sys_pipe_write && (first & pipe_write_atomic_flag) != 0;
+        pipe_reference* reference = pipe_reference_for(current, atomic ? first & ~pipe_write_atomic_flag : first);
         if (reference == nullptr ||
             (frame->rax == sys_pipe_read && reference->writable) ||
             (frame->rax == sys_pipe_write && !reference->writable)) {
@@ -1529,7 +1963,7 @@ void* process_syscall(interrupt_frame* frame) {
         }
         result = frame->rax == sys_pipe_read
             ? pipe_read_from(reference->pipe_index, second, third)
-            : pipe_write_to(reference->pipe_index, second, third);
+            : pipe_write_to(reference->pipe_index, second, third, atomic);
         break;
     }
     case sys_pipe_close: {
@@ -1540,10 +1974,20 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_process_stdio: {
+        // PID zero is a read-only query of this process's fixed kernel route.
+        if (first == 0) {
+            if (second > 2 || third != 0) { break; }
+            const auto& route = current->stdio[second];
+            result = (current->stdio_mask & (1u << second)) && route.valid
+                ? (route.console ? 1 : 0) : process_error_denied;
+            break;
+        }
         if (second >= 3) { break; }
         process_record* child = owned_process(first);
         if (child == nullptr) { result = process_error_denied; break; }
-        if (child->state != task_state::building) { result = process_error_state; break; }
+        if (child->state != task_state::building || child->replacement_pending) {
+            result = process_error_state; break;
+        }
         stdio_route replacement{};
         const bool target_writable = second != 0;
         if (third == process_stdio_close) {
@@ -1621,19 +2065,14 @@ void* process_syscall(interrupt_frame* frame) {
     case sys_process_start: {
         process_record* task = owned_process(first);
         if (task == nullptr) { result = process_error_denied; break; }
-        if (task->state != task_state::building) { result = process_error_state; break; }
+        // A copied continuation must use fork_commit after authenticated files
+        // cloning; the ordinary ELF start API cannot bypass that barrier.
+        if (task->state != task_state::building || task->fork_pending || task->replacement_pending) {
+            result = process_error_state; break;
+        }
         if (!user_range_ok(second, sizeof(process_entry), false)) { break; }
         process_entry entry{}; copy_from_user(&entry, second, sizeof(entry));
-        u64 physical = 0; page_permissions permissions{};
-        if (!space_range_ok(task->cr3, entry.entry, 1, false) ||
-            query_page_in(task->cr3, entry.entry & ~(page_size - 1), &physical, &permissions) != memory_result::none ||
-            !permissions.executable || permissions.writable || entry.stack % 16 != 0 ||
-            entry.stack < process_stack_bottom + 16 || entry.stack > process_startup_begin ||
-            !space_range_ok(task->cr3, entry.stack - 16, 16, true) ||
-            entry.startup % alignof(startup_info) != 0 ||
-            entry.startup < process_startup_begin ||
-            entry.startup > process_stack_top - sizeof(startup_info) ||
-            !space_range_ok(task->cr3, entry.startup, sizeof(startup_info), false)) { break; }
+        if (!valid_process_entry(task, entry)) { break; }
         task->entry = entry.entry; task->initial_stack = entry.stack; task->startup = entry.startup;
         task->state = task_state::fresh;
         if (process_trace_enabled) {
@@ -1654,6 +2093,7 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_process_wait: {
+        if (third > 1) { break; }
         if (!user_range_ok(second, sizeof(process_status), true)) { break; }
         completion_record* item = completion_for(current->pid, first);
         if (item == nullptr) { result = process_error_denied; break; }
@@ -1661,6 +2101,7 @@ void* process_syscall(interrupt_frame* frame) {
             copy_to_user(second, &item->status, sizeof(process_status));
             *item = completion_record{}; result = 0;
         } else {
+            if (third == 1) { result = process_error_would_block; break; }
             process_record* child = owned_process(first);
             if (child == nullptr || child->state == task_state::building) { result = process_error_state; break; }
             for (const auto& waiter : threads) {

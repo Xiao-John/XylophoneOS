@@ -5,6 +5,7 @@
 #include <xos/runtime_lock.hpp>
 #include <xos/thread_abi.hpp>
 #include <xos/elf.hpp>
+#include <xos/execution.hpp>
 #include <xos/libc_runtime.hpp>
 #include <xos/sdk.hpp>
 #include <xos/spawn.hpp>
@@ -221,6 +222,17 @@ bool normalize_path(const char* path, char* output) {
     return true;
 }
 
+// argv/environment are byte strings; filesystem paths retain their separate
+// ASCII normalization contract. Newlines/tabs are valid shell -c arguments.
+bool copy_argument(const char* source, char* target, u32 capacity) {
+    if (!source || !target || !capacity) return false;
+    for (u32 i = 0; i < capacity; ++i) {
+        target[i] = source[i];
+        if (!source[i]) return true;
+    }
+    return false;
+}
+
 int alloc_object(object_kind kind, u32 handle, u32 flags = 0) {
     runtime_guard guard(fd_table_lock);
     for (int i = 0; i < object_count; ++i) {
@@ -246,23 +258,28 @@ int alloc_fd(int minimum = 3) {
 
 bool valid_fd(int fd) { return fd >= 0 && fd < fd_count && descriptors[fd].object >= 0; }
 
-void release_object(int index) {
+int release_object(int index) {
     open_object object{};
     {
         runtime_guard guard(fd_table_lock);
-        if (index < 0 || index >= object_count || objects[index].kind == object_kind::none) { return; }
-        if (--objects[index].references != 0) { return; }
+        if (index < 0 || index >= object_count || objects[index].kind == object_kind::none) { return 0; }
+        if (--objects[index].references != 0) { return 0; }
         object = objects[index]; objects[index] = open_object{};
     }
     // No table lock while entering a service or allocator. Last close can be
     // deferred to an in-flight operation's pin release.
     switch (object.kind) {
-    case object_kind::file: (void)file_client.close(object.handle); break;
+    case object_kind::file: {
+        const auto result = file_client.close(object.handle);
+        if (result < 0) { errno = error_from_file(result); return -1; }
+        break;
+    }
     case object_kind::pipe_read: case object_kind::pipe_write:
         (void)xos::sdk::syscall(xos::sys_pipe_close, object.handle); break;
     case object_kind::kernel: (void)xos::sdk::close(object.handle); break;
     case object_kind::none: break;
     }
+    return 0;
 }
 struct object_lease {
     int index = -1;
@@ -285,7 +302,7 @@ int close_fd(int fd) {
         index = descriptors[fd].object;
         descriptors[fd].object = -1; descriptors[fd].close_on_exec = false;
     }
-    release_object(index); return 0;
+    return release_object(index);
 }
 
 void close_runtime_descriptors() {
@@ -393,6 +410,56 @@ int append_action(posix_spawn_file_actions_t* opaque, const spawn_action& action
 
 char** environ;
 
+static int restore_exec_descriptors(const xos::startup_info* startup) {
+    const auto* extension = reinterpret_cast<const xos::startup_exec_extension*>(
+        reinterpret_cast<const u8*>(startup) + xos::startup_exec_offset);
+    const u64 start = xos::process_startup_begin, end = xos::process_stack_top;
+    const u64 bytes = static_cast<u64>(extension->count) * sizeof(xos::startup_descriptor);
+    if (startup->version != 3 || extension->magic != xos::startup_exec_magic ||
+        extension->reserved || extension->count > fd_count || extension->descriptors < start ||
+        extension->descriptors > end || bytes > end - extension->descriptors) { errno = EINVAL; return -1; }
+    const auto* list = reinterpret_cast<const xos::startup_descriptor*>(extension->descriptors);
+    // Initial stdio objects only borrow the kernel routes. Rebuild the whole FD
+    // table without releasing routes that non-CLOEXEC aliases still own.
+    for (auto& fd : descriptors) { fd = {-1, false}; }
+    for (auto& object : objects) object = open_object{};
+    for (u32 i = 0; i < extension->count; ++i) {
+        const auto& item = list[i];
+        if (item.object >= object_count || item.kind < 1 || item.kind > 4 || item.reserved ||
+            (item.fd != 0xffffffffu && item.fd >= fd_count)) { errno = EINVAL; return -1; }
+        if (item.fd == 0xffffffffu) continue;
+        if (valid_fd(static_cast<int>(item.fd))) { errno = EINVAL; return -1; }
+        auto& object = objects[item.object];
+        const auto kind = static_cast<object_kind>(item.kind);
+        if (object.kind == object_kind::none) {
+            object.kind = kind; object.handle = item.handle; object.flags = item.flags;
+            object.stdio_source = kind == object_kind::kernel ? static_cast<signed char>(item.handle) : -1;
+        } else if (object.kind != kind || object.handle != item.handle || object.flags != item.flags) {
+            errno = EINVAL; return -1;
+        }
+        ++object.references;
+        descriptors[item.fd] = {static_cast<signed char>(item.object), false};
+    }
+    for (u32 i = 0; i < extension->count; ++i) {
+        const auto& item = list[i];
+        if (item.fd != 0xffffffffu) continue;
+        if (objects[item.object].kind != object_kind::none) { errno = EINVAL; return -1; }
+        xos::i64 result;
+        const auto kind = static_cast<object_kind>(item.kind);
+        if (kind == object_kind::file) result = file_client.close(item.handle);
+        else if (kind == object_kind::kernel) result = xos::sdk::close(item.handle);
+        else result = xos::sdk::syscall(xos::sys_pipe_close, item.handle);
+        if (result < 0) {
+            // Already committed: the FD is closed in the new table, and the
+            // service retries deferred I/O cleanup. Never return to old code.
+            const int saved = errno;
+            const char message[] = "xos: exec descriptor cleanup deferred\n";
+            (void)write(2, message, sizeof(message)-1); errno = saved;
+        }
+    }
+    return 0;
+}
+
 extern "C" int xos_libc_init(const xos::startup_info* startup) {
     if (startup == nullptr || !file_client.init()) { errno = EIO; return -1; }
     for (int i = 0; i < fd_count; ++i) {
@@ -413,7 +480,7 @@ extern "C" int xos_libc_init(const xos::startup_info* startup) {
     }
     for (int fd = 0; fd < 3; ++fd) {
         if (extension != nullptr && (extension->flags & (1u << fd)) != 0) { continue; }
-        const int object = alloc_object(object_kind::kernel, startup->handles[fd]);
+        const int object = alloc_object(object_kind::kernel, startup->handles[fd], fd == 0 ? O_RDONLY : O_WRONLY);
         if (object < 0) { errno = EMFILE; return -1; }
         descriptors[fd].object = static_cast<signed char>(object);
         descriptors[fd].close_on_exec = false;
@@ -429,6 +496,7 @@ extern "C" int xos_libc_init(const xos::startup_info* startup) {
             errno = EINVAL; return -1;
         }
         environ = reinterpret_cast<char**>(extension->environment);
+        if (startup->version >= 3) return restore_exec_descriptors(startup);
         for (int fd = 0; fd < 3; ++fd) {
             if ((extension->flags & (1u << (8 + fd))) != 0) {
                 if (extension->file_handles[fd] == 0) { errno = EINVAL; return -1; }
@@ -527,16 +595,23 @@ extern "C" _READ_WRITE_RETURN_TYPE read(int fd, void* buffer, size_t length) {
         if (result < 0) { errno = error_from_file(result); return -1; }
         return static_cast<ssize_t>(result);
     }
-    if (object.kind == object_kind::kernel) {
-        const xos::i64 result = xos::sdk::read(object.handle, buffer, length);
-        if (result < 0) { errno = error_from_kernel(result); return -1; }
-        return static_cast<ssize_t>(result);
-    }
-    if (object.kind == object_kind::pipe_read) {
-        const xos::i64 result = xos::sdk::syscall(xos::sys_pipe_read, object.handle,
-                                                   reinterpret_cast<xos::u64>(buffer), length);
-        if (result < 0) { errno = error_from_kernel(result); return -1; }
-        return static_cast<ssize_t>(result);
+    if (object.kind == object_kind::kernel || object.kind == object_kind::pipe_read) {
+        for (;;) {
+            const xos::i64 result = object.kind == object_kind::kernel
+                ? xos::sdk::read(object.handle, buffer, length)
+                : xos::sdk::syscall(xos::sys_pipe_read, object.handle,
+                                    reinterpret_cast<xos::u64>(buffer), length);
+            if (result != xos::process_error_would_block) {
+                if (result < 0) { errno = error_from_kernel(result); return -1; }
+                return static_cast<ssize_t>(result);
+            }
+            const xos::i64 waited = xos::sdk::syscall(xos::sys_pipe_wait, object.handle);
+            if (waited < 0) {
+                // The original nonblocking console behavior is preserved.
+                errno = waited == xos::process_error_would_block ? EAGAIN : error_from_kernel(waited);
+                return -1;
+            }
+        }
     }
     errno = EBADF; return -1;
 }
@@ -571,17 +646,28 @@ extern "C" _READ_WRITE_RETURN_TYPE write(int fd, const void* buffer, size_t leng
         }
         return static_cast<ssize_t>(done);
     }
-    if (object.kind == object_kind::kernel) {
-        const size_t chunk = length > 256 ? 256 : length;
-        const xos::i64 result = xos::sdk::write(object.handle, buffer, chunk);
-        if (result < 0) { errno = error_from_kernel(result); return -1; }
-        return static_cast<ssize_t>(result);
-    }
-    if (object.kind == object_kind::pipe_write) {
-        const xos::i64 result = xos::sdk::syscall(xos::sys_pipe_write, object.handle,
-                                                  reinterpret_cast<xos::u64>(buffer), length);
-        if (result < 0) { errno = error_from_kernel(result); return -1; }
-        return static_cast<ssize_t>(result);
+    if (object.kind == object_kind::kernel || object.kind == object_kind::pipe_write) {
+        const bool console = object.kind == object_kind::kernel &&
+            xos::sdk::syscall(xos::sys_process_stdio, 0, object.handle) != 0;
+        const size_t chunk = console && length > 256 ? 256 : length;
+        const xos::u64 handle = object.handle | (!console && chunk <= xos::process_pipe_bytes
+            ? xos::pipe_write_atomic_flag : 0);
+        for (;;) {
+            const xos::i64 result = object.kind == object_kind::kernel
+                ? xos::sdk::syscall(xos::sys_handle_write, handle, reinterpret_cast<xos::u64>(buffer), chunk)
+                : xos::sdk::syscall(xos::sys_pipe_write, handle,
+                                    reinterpret_cast<xos::u64>(buffer), chunk);
+            if (result != xos::process_error_would_block) {
+                if (result < 0) { errno = error_from_kernel(result); return -1; }
+                return static_cast<ssize_t>(result);
+            }
+            const xos::i64 waited = xos::sdk::syscall(xos::sys_pipe_wait, object.handle,
+                chunk <= xos::process_pipe_bytes ? chunk : 1);
+            if (waited < 0) {
+                errno = waited == xos::process_error_would_block ? EAGAIN : error_from_kernel(waited);
+                return -1;
+            }
+        }
     }
     errno = EBADF; return -1;
 }
@@ -795,7 +881,8 @@ extern "C" int fcntl(int fd, int command, ...) {
         result = static_cast<int>(objects[descriptors[fd].object].flags);
     } else if (command == F_SETFL) {
         const int value = va_arg(arguments, int);
-        if (((value ^ static_cast<int>(objects[descriptors[fd].object].flags)) & O_APPEND) != 0) {
+        if ((value & ~(O_ACCMODE | O_APPEND)) != 0 ||
+            ((value ^ static_cast<int>(objects[descriptors[fd].object].flags)) & O_APPEND) != 0) {
             errno = ENOTSUP;
         } else { result = 0; }
     } else if (command == F_DUPFD
@@ -843,7 +930,7 @@ extern "C" int pipe(int output[2]) {
         errno = error_from_kernel(result); return -1;
     }
     const int read_object = alloc_object(object_kind::pipe_read, handles.read_token);
-    const int write_object = alloc_object(object_kind::pipe_write, handles.write_token);
+    const int write_object = alloc_object(object_kind::pipe_write, handles.write_token, O_WRONLY);
     if (read_object < 0 || write_object < 0) {
         if (read_object >= 0) { release_object(read_object); }
         else { (void)xos::sdk::syscall(xos::sys_pipe_close, handles.read_token); }
@@ -861,7 +948,12 @@ extern "C" int pipe(int output[2]) {
 
 extern "C" int isatty(int fd) {
     runtime_guard guard(fd_table_lock);
-    return valid_fd(fd) && objects[descriptors[fd].object].kind == object_kind::kernel ? 1 : 0;
+    if (!valid_fd(fd)) { errno = EBADF; return 0; }
+    const auto& object = objects[descriptors[fd].object];
+    if (object.kind != object_kind::kernel) { errno = ENOTTY; return 0; }
+    const auto result = xos::sdk::syscall(xos::sys_process_stdio, 0, object.handle);
+    if (result != 1) { errno = ENOTTY; return 0; }
+    return 1;
 }
 
 extern "C" DIR* opendir(const char* path) {
@@ -1104,7 +1196,7 @@ static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
             while (source[env_count] != nullptr) {
                 if (env_count == xos::startup_environment_max) { return E2BIG; }
                 char checked[xos::process_max_arg_bytes];
-                if (!copy_string(source[env_count], checked, sizeof(checked))) { return E2BIG; }
+                if (!copy_argument(source[env_count], checked, sizeof(checked))) { return E2BIG; }
                 const u32 length = static_cast<u32>(strlen(checked) + 1);
                 if (length > sizeof(environment_bytes) - environment_used) { return E2BIG; }
                 memcpy(environment_bytes + environment_used, checked, length);
@@ -1150,7 +1242,7 @@ static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
     u32 aggregate = 0;
     while (argv[argc] != nullptr && argc < xos::process_max_args) {
         char checked[xos::process_max_arg_bytes];
-        if (!copy_string(argv[argc], checked, sizeof(checked))) { return E2BIG; }
+        if (!copy_argument(argv[argc], checked, sizeof(checked))) { return E2BIG; }
         const u32 length = static_cast<u32>(strlen(checked) + 1);
         if (aggregate > 16384u - length) { return E2BIG; }
         aggregate += length;
@@ -1160,7 +1252,7 @@ static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
     if (options.environment != nullptr) {
         for (u32 i = 0; i < env_count; ++i) {
             char checked[xos::process_max_arg_bytes];
-            if (!copy_string(options.environment[i], checked, sizeof(checked))) { return E2BIG; }
+            if (!copy_argument(options.environment[i], checked, sizeof(checked))) { return E2BIG; }
             const u32 length = static_cast<u32>(strlen(checked) + 1);
             if (aggregate > 16384u - length) { return E2BIG; }
             aggregate += length;
@@ -1244,12 +1336,14 @@ extern "C" int posix_spawnp(pid_t* output_pid, const char* path,
 
 extern "C" pid_t waitpid(pid_t pid, int* status, int options) {
     if (pid <= 0) { errno = EINVAL; return -1; }
-    if ((options & ~WNOHANG) != 0 || (options & WNOHANG) != 0) {
+    if ((options & ~WNOHANG) != 0) {
         errno = ENOTSUP;
         return -1;
     }
     xos::process_status result{};
-    const xos::i64 waited = xos::sdk::wait(static_cast<xos::u64>(pid), result);
+    const xos::i64 waited = xos::sdk::syscall(xos::sys_process_wait,
+        static_cast<xos::u64>(pid), reinterpret_cast<u64>(&result), (options & WNOHANG) ? 1 : 0);
+    if (waited == xos::process_error_would_block && (options & WNOHANG)) { return 0; }
     if (waited < 0) { errno = error_from_kernel(waited); return -1; }
     if (status != nullptr) {
         if (result.outcome == xos::process_outcome::exited) { *status = (static_cast<int>(result.code) & 0xff) << 8; }
@@ -1258,7 +1352,154 @@ extern "C" pid_t waitpid(pid_t pid, int* status, int options) {
     return static_cast<pid_t>(result.pid);
 }
 
-extern "C" int fork(void) { errno = ENOSYS; return -1; }
+extern "C" int fork(void) {
+#ifdef XOS_THREADED_RUNTIME
+    // No pthread-atfork or inherited-lock repair is provided by this profile.
+    errno = ENOTSUP; return -1;
+#else
+    if (!runtime_ready) { errno = EIO; return -1; }
+    const auto child = xos::sdk::syscall(xos::sys_process_fork_prepare);
+    if (child == 0) { return 0; }
+    if (child < 0) { errno = error_from_kernel(child); return -1; }
+    xos::i64 cloned = static_cast<xos::i64>(xos::file::status::would_block);
+    for (unsigned attempt = 0; attempt < 128 &&
+         cloned == static_cast<xos::i64>(xos::file::status::would_block); ++attempt) {
+        cloned = file_client.clone_session(static_cast<u64>(child));
+        if (cloned == static_cast<xos::i64>(xos::file::status::would_block)) xos::sdk::yield();
+    }
+    const auto committed = cloned == 0 ? xos::sdk::syscall(xos::sys_process_fork_commit,
+        static_cast<u64>(child)) : cloned;
+    if (cloned != 0 || committed < 0) {
+        (void)xos::sdk::syscall(xos::sys_process_abort, static_cast<u64>(child));
+        errno = cloned != 0 ? error_from_file(cloned) : error_from_kernel(committed);
+        return -1;
+    }
+    return static_cast<int>(child);
+#endif
+}
+static int exec_image(const char* path, char* const argv[], char* const envp[], u32 depth_mode) {
+#ifdef XOS_THREADED_RUNTIME
+    (void)path; (void)argv; (void)envp; (void)depth_mode;
+    errno = ENOTSUP; return -1;
+#else
+    if (!runtime_ready || !path || !argv) { errno = EINVAL; return -1; }
+    char normalized[max_path], cwd[max_path];
+    if (!normalize_path(path, normalized)) { errno = ENAMETOOLONG; return -1; }
+    { runtime_guard guard(cwd_lock); memcpy(cwd, current_directory, max_path); }
+    xos::sdk::spawn_options options{};
+    options.replace_image = true; options.exec_depth_mode = depth_mode;
+    options.working_directory = cwd;
+    u32 argc = 0;
+    char checked[xos::process_max_exec_arg_bytes];
+    while (argc < xos::process_max_args && argv[argc]) {
+        if (!copy_argument(argv[argc], checked, sizeof(checked))) { errno = E2BIG; return -1; }
+        ++argc;
+    }
+    if (!argc || argv[argc]) { errno = E2BIG; return -1; }
+    u32 env_count = 0;
+    if (envp) while (env_count < xos::startup_environment_max && envp[env_count]) {
+        if (!copy_argument(envp[env_count], checked, sizeof(checked))) { errno = E2BIG; return -1; }
+        ++env_count;
+    }
+    if (envp && envp[env_count]) { errno = E2BIG; return -1; }
+    options.environment_count = env_count; options.environment = const_cast<const char* const*>(envp);
+    xos::startup_descriptor entries[fd_count]{};
+    u32 count = 0;
+    bool kept[object_count]{};
+    {
+        runtime_guard guard(fd_table_lock);
+        for (u32 fd = 0; fd < fd_count; ++fd) {
+            if (!valid_fd(static_cast<int>(fd)) || descriptors[fd].close_on_exec) continue;
+            const auto index = static_cast<u32>(descriptors[fd].object);
+            const auto& object = objects[index]; kept[index] = true;
+            entries[count++] = {fd, index, static_cast<u32>(object.kind), object.handle, object.flags & ~O_CLOEXEC, 0};
+        }
+        for (u32 index = 0; index < object_count; ++index) {
+            const auto& object = objects[index];
+            if (object.kind == object_kind::none || kept[index]) continue;
+            if (count == fd_count) { errno = EMFILE; return -1; }
+            entries[count++] = {0xffffffffu, index, static_cast<u32>(object.kind), object.handle, object.flags & ~O_CLOEXEC, 0};
+        }
+    }
+    options.descriptor_count = count; options.descriptors = entries;
+    xos::execution::launch_diagnostic diagnostic{};
+    const auto result = xos::execution::spawn_file_diagnosed(normalized, argc,
+        const_cast<const char* const*>(argv), options, diagnostic);
+    if (result >= 0) { errno = EIO; return -1; } // successful exec never returns
+    using stage = xos::execution::launch_stage;
+    if (diagnostic.stage == stage::open) errno = error_from_file(result);
+    else if (diagnostic.stage == stage::inspect) errno = result == xos::thread_error_unsupported ? ENOTSUP : ENOEXEC;
+    else if (diagnostic.stage == stage::prepare) errno = E2BIG;
+    else errno = error_from_kernel(result);
+    return -1;
+#endif
+}
+extern "C" int execve(const char* path, char* const argv[], char* const envp[]) {
+    return exec_image(path, argv, envp, 0);
+}
+extern "C" int _execve(const char* path, char* const argv[], char* const envp[]) { return execve(path, argv, envp); }
+extern "C" int execv(const char* path, char* const argv[]) { return execve(path, argv, environ); }
+extern "C" int xos_execve_driver(const char* path, char* const argv[], char* const envp[]) {
+    return exec_image(path, argv, envp, 2); // require/decrease to GNU depth one
+}
+extern "C" int xos_execve_make(const char* path, char* const argv[], char* const envp[]) {
+    return exec_image(path, argv, envp, 3); // require/decrease to Make depth two
+}
+extern "C" int xos_posix_spawn_make(pid_t* pid, const char* path,
+    const posix_spawn_file_actions_t* actions, const posix_spawnattr_t* attributes,
+    char* const argv[], char* const envp[]) {
+    return posix_spawn_with_depth(pid, path, actions, attributes, argv, envp, 2);
+}
+extern "C" int execvp(const char* path, char* const argv[]) {
+    if (!path || !*path) { errno = ENOENT; return -1; }
+    if (strchr(path, '/')) return execve(path, argv, environ);
+    const char* search = getenv("PATH"); if (!search) search = "/usr/bin:/bin";
+    int saved = ENOENT;
+    const size_t name_length = strlen(path);
+    for (u32 start = 0;;) {
+        u32 end = start; while (search[end] && search[end] != ':') ++end;
+        const size_t directory_length = end - start;
+        if (directory_length + (directory_length ? 1u : 0u) + name_length >= max_path) {
+            saved = ENAMETOOLONG;
+        } else {
+            char candidate[max_path]; u32 used = 0;
+            for (u32 i = start; i < end; ++i) candidate[used++] = search[i];
+            if (end > start) candidate[used++] = '/';
+            for (size_t i = 0; i < name_length; ++i) candidate[used++] = path[i];
+            candidate[used] = 0;
+            execve(candidate, argv, environ);
+            if (errno != ENOENT && errno != ENOTDIR && errno != EACCES) return -1;
+            if (errno == EACCES) saved = errno;
+        }
+        if (!search[end]) break;
+        start = end + 1;
+    }
+    errno = saved; return -1;
+}
+extern "C" int xos_seal_anonymous(int fd) {
+    object_lease lease(fd);
+    if (lease.index < 0) { errno = EBADF; return -1; }
+    auto& object = objects[lease.index];
+    if (object.kind != object_kind::file) { errno = EINVAL; return -1; }
+    const auto result = file_client.seal_anonymous(object.handle);
+    if (result < 0) { errno = error_from_file(result); return -1; }
+    { runtime_guard guard(fd_table_lock); object.flags = (object.flags & ~O_ACCMODE) | O_RDONLY; }
+    return 0;
+}
+extern "C" int xos_open_anonymous(void) {
+    u32 handle = 0;
+    const auto result = file_client.anonymous(handle);
+    if (result < 0) { errno = error_from_file(result); return -1; }
+    if (!handle) { errno = EIO; return -1; }
+    int object, fd;
+    {
+        runtime_guard guard(fd_table_lock);
+        fd = alloc_fd(); object = fd < 0 ? -1 : alloc_object(object_kind::file, handle, O_RDWR);
+        if (object >= 0) descriptors[fd] = {static_cast<signed char>(object), true};
+    }
+    if (object < 0) { (void)file_client.close(handle); errno = EMFILE; return -1; }
+    return fd;
+}
 extern "C" int vfork(void) { errno = ENOSYS; return -1; }
 extern "C" void* mmap(void*, size_t, int, int, int, off_t) { errno = ENOSYS; return reinterpret_cast<void*>(-1); }
 extern "C" int munmap(void*, size_t) { errno = ENOSYS; return -1; }

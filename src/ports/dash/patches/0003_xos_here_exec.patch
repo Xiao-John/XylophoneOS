@@ -1,0 +1,113 @@
+--- a/src/exec.c
++++ b/src/exec.c
+@@ -111 +111,38 @@
+-sh_error("exec replacement unavailable in XOS dash B1");
++	char *cmdname;
++	int e;
++	char **envp;
++	int exerrno;
++
++	envp = environment();
++	if (strchr(argv[0], '/') != NULL) {
++		tryexec(argv[0], argv, envp);
++		e = errno;
++	} else {
++		e = ENOENT;
++		while (padvance(&path, argv[0]) >= 0) {
++			cmdname = stackblock();
++			if (--idx < 0 && pathopt == NULL) {
++				tryexec(cmdname, argv, envp);
++				if (errno != ENOENT && errno != ENOTDIR)
++					e = errno;
++			}
++		}
++	}
++
++	/* Map to POSIX errors */
++	switch (e) {
++	default:
++		exerrno = 126;
++		break;
++	case ELOOP:
++	case ENAMETOOLONG:
++	case ENOENT:
++	case ENOTDIR:
++		exerrno = 127;
++		break;
++	}
++	exitstatus = exerrno;
++	TRACE(("shellexec failed for %s, errno %d, suppressint %d\n",
++		argv[0], e, suppressint ));
++	exerror(EXEND, "%s: %s", argv[0], errmsg(e, E_EXEC));
++	/* NOTREACHED */
+@@ -118 +155,15 @@
+-sh_error("exec replacement unavailable in XOS dash B1");
++	char *const path_bshell = "/usr/bin/dash";
++
++repeat:
++#ifdef SYSV
++	do {
++		xos_shell_execve(cmd, argv, envp);
++	} while (errno == EINTR);
++#else
++	xos_shell_execve(cmd, argv, envp);
++#endif
++	if (cmd != path_bshell && errno == ENOEXEC && xos_shell_script(cmd)) {
++		*argv-- = cmd;
++		*argv = cmd = path_bshell;
++		goto repeat;
++	}
+--- a/src/redir.c
++++ b/src/redir.c
+@@ -356,37 +356,14 @@
+-	size_t len = 0;
+-	int pip[2];
+-	int memfd;
+-	char *p;
+-
+-	p = redir->nhere.doc->narg.text;
+-	if (redir->type == NXHERE) {
+-		expandarg(redir->nhere.doc, NULL, EXP_QUOTED);
+-		p = stackblock();
+-	}
+-
+-	len = strlen(p);
+-	memfd = sh_pipe(pip, len > PIPESIZE);
+-
+-	if (memfd || len <= PIPESIZE) {
+-		xwrite(pip[1], p, len);
+-		lseek(pip[1], 0, SEEK_SET);
+-		goto out;
+-	}
+-
+-	if (forkshell((struct job *)NULL, (union node *)NULL, FORK_NOJOB) == 0) {
+-		close(pip[0]);
+-		signal(SIGINT, SIG_IGN);
+-		signal(SIGQUIT, SIG_IGN);
+-		signal(SIGHUP, SIG_IGN);
+-#ifdef SIGTSTP
+-		signal(SIGTSTP, SIG_IGN);
+-#endif
+-		signal(SIGPIPE, SIG_DFL);
+-		xwrite(pip[1], p, len);
+-		_exit(0);
+-	}
+-out:
+-	close(pip[1]);
+-	return pip[0];
+-}
+-
++    const char *p = redir->nhere.doc->narg.text;
++    int fd, saved_error;
++    if (redir->type == NXHERE) {
++        expandarg(redir->nhere.doc, NULL, EXP_QUOTED);
++        p = stackblock();
++    }
++    fd = xos_open_anonymous();
++    if (fd < 0) sh_error("here-document: %s", strerror(errno));
++    if (xwrite(fd, p, strlen(p)) < 0 || lseek(fd, 0, SEEK_SET) < 0 || xos_seal_anonymous(fd) < 0) {
++        saved_error = errno; close(fd);
++        sh_error("here-document: %s", strerror(saved_error));
++    }
++    return fd;
++}

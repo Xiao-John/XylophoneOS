@@ -25,12 +25,25 @@ extern "C" int xos_user_main(const startup_info* startup) {
     }
     if (!gate.owner_pid||gate.worker_pid!=sdk::pid())return bad(10);
     if(files.replace("/out/p2_without_lease.txt","bad",3)!=static_cast<i64>(file::status::busy))return bad(11);
+    u32 anonymous_handle=0;
+    if(files.anonymous(anonymous_handle)!=static_cast<i64>(file::status::busy))return bad(20);
+    if(files.seal_anonymous(0)!=static_cast<i64>(file::status::busy))return bad(21);
+    if(files.clone_session(sdk::pid())!=static_cast<i64>(file::status::busy))return bad(22);
     if(files.maintenance_acquire())return bad(12);
     if(files.maintenance_acquire()!=static_cast<i64>(file::status::busy))return bad(13);
     if(files.maintenance_release()!=static_cast<i64>(file::status::invalid))return bad(14);
     if(sdk::syscall(sys_process_create,7)!=process_error_busy)return bad(15);
     if(sdk::syscall(sys_process_grant,0,1)!=process_error_denied)return bad(16);
     if(sdk::syscall(sys_process_delegate,0,1)!=process_error_denied)return bad(17);
+    if(sdk::syscall(sys_process_fork_prepare)!=process_error_busy)return bad(23);
+    if(sdk::syscall(sys_process_fork_commit)!=process_error_busy)return bad(24);
+    if(sdk::syscall(sys_process_exec_prepare)!=process_error_busy)return bad(25);
+    if(sdk::syscall(sys_process_exec_commit)!=process_error_busy)return bad(26);
+    if(files.anonymous(anonymous_handle))return bad(27);
+    if(files.write(anonymous_handle,"abc",3)!=3)return bad(28);
+    if(files.seal_anonymous(anonymous_handle))return bad(29);
+    if(files.close(anonymous_handle))return bad(30);
+    sdk::print("P2_C_STAGE isolated_abi new_paths_guarded\n");
     const char* value=sdk::equal(mode,"recover")?"recovered":"worker";
     if(files.replace("/out/p2_worker.txt",value,static_cast<u32>(sdk::length(value))))return bad(18);
     if(files.sync())return bad(19);

@@ -1,0 +1,380 @@
+{
+  "status": "passed",
+  "phase": "C2",
+  "source_commit": "3e5f321196529d4d921099bb75c7fe5dc5344ade",
+  "system_build_id": "0a5482b6c3c8467b",
+  "xos_sha256": "77e3ba2e18bed6619815fe74a227e943ed7ae8561da78c1ff861ca838e40c53d",
+  "sdk_manifest_sha256": "1c8fb8574baffc66d3a9c39662b4ccc06d8eda73400b70beabe27e155e8d0012",
+  "dash_sha256": "650d0492f6e319815672f619209dfa4bc8debb13a5552249b0b4d8b3e4a1962e",
+  "artifacts": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c2_evidence/1517e0fe505643a189338a755265eb61",
+  "only_fork_oom": true,
+  "fork_oom_mib": 254,
+  "commands": [
+    {
+      "name": "real_fork_copy_ENOMEM_rollback",
+      "command": "exec-driver /out/probe oom /out/oom_parent.bin 254",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "exec-driver /out/probe oom /out/oom_parent.bin 254\n[process] event=started pid=9 parent=7\r\n[process] pid=9 address_space=0x000000000028e000\r\n[loader] started pid=9 file=/out/probe\n[process] event=wait_blocked parent=7 child=9\r\nC2_OOM_BEGIN one_allocation_one_fork\n[task] event=reclaimed pid=10 pages=64551\r\nC2_OOM_COUNTERS initial free=129703 processes=3 threads=1 reserved=0 waiting=0 results=0 user_pages=122 kernel_stack_pages=1\nC2_OOM_COUNTERS held free=64551 processes=3 threads=1 reserved=0 waiting=0 results=0 user_pages=65147 kernel_stack_pages=1\nC2_OOM_COUNTERS failed free=64551 processes=3 threads=1 reserved=0 waiting=0 results=0 user_pages=65147 kernel_stack_pages=1\nC2_OOM_COUNTERS after_free free=129703 processes=3 threads=1 reserved=0 waiting=0 results=0 user_pages=122 kernel_stack_pages=1\nC2_OOM fork_errno=ENOMEM malloc_mib=254 partial_child_resources=baseline parent_memory=valid parent_fd=valid PASS\n[task] event=reclaimed pid=9 pages=129\r\n[wait] pid=9 kind=exited code=0\nxsh> ",
+      "resource_counters": [
+        {
+          "phase": "initial",
+          "free": 129703,
+          "processes": 3,
+          "threads": 1,
+          "reserved": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 122,
+          "kernel_stack_pages": 1
+        },
+        {
+          "phase": "held",
+          "free": 64551,
+          "processes": 3,
+          "threads": 1,
+          "reserved": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 65147,
+          "kernel_stack_pages": 1
+        },
+        {
+          "phase": "failed",
+          "free": 64551,
+          "processes": 3,
+          "threads": 1,
+          "reserved": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 65147,
+          "kernel_stack_pages": 1
+        },
+        {
+          "phase": "after_free",
+          "free": 129703,
+          "processes": 3,
+          "threads": 1,
+          "reserved": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 122,
+          "kernel_stack_pages": 1
+        }
+      ],
+      "resources_after": [
+        129832,
+        2,
+        0
+      ],
+      "serial_sha256": "cf1840e47507d8649a0f2e953db1829ad9258d16ea349d33f525384bbf637c6a"
+    }
+  ],
+  "checks": [
+    "real_fork_copy_ENOMEM_rollback"
+  ],
+  "host_reference": {
+    "builtin_pipeline": {
+      "shell": "/bin/sh",
+      "input": "printf 'builtin words\\n' | \"$PROBE\" copy\nprintf 'last=%s\\n' \"$?\"\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "builtin words\nlast=0\n",
+      "stdout_sha256": "3c78f6624d787bae9a1f4d4cdd4b679c840c3b372b772c9c9cab5d81a2f0b307",
+      "stderr": ""
+    },
+    "function_pipeline": {
+      "shell": "/bin/sh",
+      "input": "v=parent; e=envparent; export e; set -- 'one two' ''; readonly ro=fixed\ng() { printf 'original_function\\n'; }\nf() { v=child; e=child; export e; cd /tmp; set -- changed; g() { printf 'child_function\\n'; }; printf '%s:%s:%s:%s:%s\\n' \"$v\" \"$e\" \"$1\" \"$ro\" \"$PWD\"; }\nf | \"$PROBE\" copy\nprintf 'parent=%s:%s:%s:%s:%s:%s\\n' \"$v\" \"$e\" \"$1\" \"$#\" \"$ro\" \"$PWD\"\ng\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "child:child:changed:fixed:/tmp\nparent=parent:envparent:one two:2:fixed:/\noriginal_function\n",
+      "stdout_sha256": "20b240d1cbfaf4d15d863d9257ec639b3f709673aac284f7149bd259b5986dc6",
+      "stderr": ""
+    },
+    "subshell_state": {
+      "shell": "/bin/sh",
+      "input": "v=parent; export C2_EXPORTED=before; set -- 'alpha beta' ''; readonly fixed=immutable\ng() { printf 'parent_function\\n'; }\n(v=child; C2_EXPORTED=after; export C2_EXPORTED; cd /tmp; set -- child; g() { printf 'child_function\\n'; }; printf 'child=%s:%s:%s:%s:%s\\n' \"$v\" \"$C2_EXPORTED\" \"$1\" \"$fixed\" \"$PWD\"; g)\nprintf 'parent=%s:%s:%s:%s:%s:%s\\n' \"$v\" \"$C2_EXPORTED\" \"$1\" \"$#\" \"$fixed\" \"$PWD\"\ng\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "child=child:after:child:immutable:/tmp\nchild_function\nparent=parent:before:alpha beta:2:immutable:/\nparent_function\n",
+      "stdout_sha256": "93c5df44f6dbeabf430c337581cc50b7aea31e58afac2798e6012ef131675f90",
+      "stderr": ""
+    },
+    "local_variable": {
+      "shell": "/bin/sh",
+      "input": "f() { local v=inside; (v=child; printf 'child=%s\\n' \"$v\"); printf 'local=%s\\n' \"$v\"; }; v=outside; f; printf 'global=%s\\n' \"$v\"\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "child=child\nlocal=inside\nglobal=outside\n",
+      "stdout_sha256": "df136f81806984140fa88d09c7c8bcab533b3f17e79903cd7700f7def6da282e",
+      "stderr": ""
+    },
+    "arithmetic_stage_isolation": {
+      "shell": "/bin/sh",
+      "input": "x=5; \"$PROBE\" echo \"$((x=x+1))\" | \"$PROBE\" copy; printf 'parent_x=%s\\n' \"$x\"\nfalse; printf 'before=%s\\n' \"$?\" | \"$PROBE\" copy; printf 'after=%s\\n' \"$?\"\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "<6>\nparent_x=5\nbefore=1\nafter=0\n",
+      "stdout_sha256": "d3c560a46d791398c666f4a210078fa101e3fc6f4f407c97ba3964edd217102f",
+      "stderr": ""
+    },
+    "substitution_forms": {
+      "shell": "/bin/sh",
+      "input": "a=$(printf 'one\\n\\n\\n'); b=`printf 'two\\n\\n'`; c=$(printf ''); printf 'a=<%s> b=<%s> c=<%s>\\n' \"$a\" \"$b\" \"$c\"\nv=parent; d=$(v=child; cd /tmp; printf '%s:%s' \"$v\" \"$PWD\"); printf 'captured=<%s> parent=%s:%s\\n' \"$d\" \"$v\" \"$PWD\"\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "a=<one> b=<two> c=<>\ncaptured=<child:/tmp> parent=parent:/\n",
+      "stdout_sha256": "e3ee4c52e6c3b2bc13d36ee4fdbdf6036ed14a841e7437bc3d76943ea0c3c280",
+      "stderr": ""
+    },
+    "substitution_exit_status": {
+      "shell": "/bin/sh",
+      "input": "a=$(printf 'value\\n'; exit 23); s=$?; printf 'capture=<%s> status=%s\\n' \"$a\" \"$s\"\nb=$(false); s=$?; printf 'empty=<%s> status=%s\\n' \"$b\" \"$s\"\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "capture=<value> status=23\nempty=<> status=1\n",
+      "stdout_sha256": "a9ea2100fe565cdc969a19f757f3da53fc151d6058a777b46cfb1a6606908141",
+      "stderr": ""
+    },
+    "substitution_large": {
+      "shell": "/bin/sh",
+      "input": "value=$(\"$PROBE\" text 32781); printf 'length=%s\\n' \"${#value}\"; printf '%s' \"$value\" | \"$PROBE\" check 32781\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "length=32781\nC2_TEXT bytes=32781 eof=1\n",
+      "stdout_sha256": "7c16d11bec1356e8fb12768832955ad16583ac73f88e08d1faf44ff8323d37a4",
+      "stderr": ""
+    },
+    "substitution_three_levels": {
+      "shell": "/bin/sh",
+      "input": "a=$(b=$(c=$(printf nested); printf '%s' \"$c\"); printf '%s' \"$b\"); printf 'nested=<%s>\\n' \"$a\"\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "nested=<nested>\n",
+      "stdout_sha256": "579accb7df9a1f0742569ba6d0954bd08bcb67598ecde9ddcf972b9bc088818b",
+      "stderr": ""
+    },
+    "subshell_status": {
+      "shell": "/bin/sh",
+      "input": "(printf 'subshell_status\\n'; exit 23)\n",
+      "expected_exit": 23,
+      "actual_exit": 23,
+      "stdout": "subshell_status\n",
+      "stdout_sha256": "9c293effa88184ba0fd6ff8df196c061698186aa0688da2359835331404be009",
+      "stderr": ""
+    },
+    "function_pipeline_status": {
+      "shell": "/bin/sh",
+      "input": "f() { printf data; return 17; }; g() { \"$PROBE\" copy; return 29; }; f | g; s=$?; printf '\\nlast_status=%s\\n' \"$s\"; test \"$s\" -eq 29\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "data\nlast_status=29\n",
+      "stdout_sha256": "009858f36fda0787d96dd0af5f5e56d8949aeca883227ed5022cf39f828159fe",
+      "stderr": ""
+    },
+    "errexit_tested_pipeline_functions": {
+      "shell": "/bin/sh",
+      "input": "set -e\nf() { false; printf 'tested_function_continued\\n'; }\nif f | \"$PROBE\" copy; then printf 'if_pipeline_ok\\n'; else printf 'BAD_IF_BRANCH\\n'; fi\nf | \"$PROBE\" copy && printf 'and_pipeline_ok\\n'\nprintf 'set_e_parent_continued\\n'\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "tested_function_continued\nif_pipeline_ok\ntested_function_continued\nand_pipeline_ok\nset_e_parent_continued\n",
+      "stdout_sha256": "38e5439dc94c73389bd8a14d94c41dc58dc2704a0799593f18d49af47e7330d6",
+      "stderr": ""
+    },
+    "pipefail_rightmost_status": {
+      "shell": "/bin/sh",
+      "input": "set -o pipefail\nf() { return 7; }; g() { return 23; }; f | g | true; printf 'rightmost=%s\\n' \"$?\"\nfalse | true; printf 'left_failure=%s\\n' \"$?\"\ntrue | false | true; printf 'middle_failure=%s\\n' \"$?\"\ntrue | true; printf 'all_success=%s\\n' \"$?\"\nset +o pipefail; false | true; printf 'pipefail_off=%s\\n' \"$?\"\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "rightmost=23\nleft_failure=1\nmiddle_failure=1\nall_success=0\npipefail_off=0\n",
+      "stdout_sha256": "1182e705a5b42ff7ed7a08a5549b81a0db1f23c7019c9cf602856e5620ef54ff",
+      "stderr": ""
+    },
+    "descriptor_restore": {
+      "shell": "/bin/sh",
+      "input": "f() { printf 'child_file\\n' > /var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_c2_5qwyvqfe/native_out/child_marker; }; f | \"$PROBE\" copy; printf 'parent_stdout_restored\\n'\n(printf 'subshell_file\\n' > /var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_c2_5qwyvqfe/native_out/sub_marker); printf 'parent_again\\n'\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "parent_stdout_restored\nparent_again\n",
+      "stdout_sha256": "b0c7954fd389e1a3e61b1b8cf75fd31ba7861e77473ed65f4c5c468339004d68",
+      "stderr": ""
+    },
+    "fork_probe": {
+      "actual_exit": 0,
+      "stdout": "C2_FORK memory=isolated pid=distinct fd=shared_offset cloexec=inherited cwd=isolated env=isolated eof=1 PASS\n",
+      "stderr": "",
+      "file_sha256": "ea00e34063170a030521d13f022ff1be267b188a3370a959ce4c97567ca34ee1"
+    }
+  },
+  "side_effects": {
+    "oom_parent.bin": {
+      "bytes": 11,
+      "sha256": "31c2400e49aa9f4e10264dc2a73542ad7ce327c1ee55b29af1164b2acbc01b42"
+    }
+  },
+  "not_run": [
+    "SMP",
+    "long_randomized_stress",
+    "C3_here_document_exec_and_make",
+    "threaded_libc_fork_rejection_requires_threading_sdk",
+    "other_C2_guest_cases_excluded_by_only_fork_oom"
+  ],
+  "tools": {
+    "x86_64-elf-gcc": {
+      "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
+      "sha256": "078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f",
+      "version": "x86_64-elf-gcc (GCC) 16.2.0"
+    },
+    "x86_64-elf-g++": {
+      "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-g++",
+      "sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
+      "version": "x86_64-elf-g++ (GCC) 16.2.0"
+    },
+    "nasm": {
+      "path": "/Users/perry_guo/homebrew/bin/nasm",
+      "sha256": "5d22db7ed80aee4eb0e1cb5ff8a87e40294012f6ddf943601556922d5128b725",
+      "version": "NASM version 3.02 compiled on Jun 29 2026"
+    },
+    "clang": {
+      "path": "/usr/bin/clang",
+      "sha256": "34129c71a01a74f7f3b2443521519b2e5447553fa187f5fcafaaf8c42cc192e2",
+      "version": "Apple clang version 21.0.0 (clang-2100.3.34.2)"
+    },
+    "qemu": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+      "sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
+      "version": "QEMU emulator version 11.1.2"
+    }
+  },
+  "probe_source_sha256": "f9df90bfac0b9b66fd64f25e8a2a0658a3480875c5cadf35a171ec0834ccd293",
+  "probe_sha256": "6152f3c89b82ab4c7739ae5d78356347188b6b4a8989a1baa191ea752178b88d",
+  "scripts": {
+    "builtin_pipeline": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\nprintf 'builtin words\\n' | \"$PROBE\" copy\nprintf 'last=%s\\n' \"$?\"\n} > /out/builtin_pipeline.stdout\n",
+      "sha256": "becb3513ca51f359d5521c28596b75be85508d3b6f81cb03ec8f1a676c89424f",
+      "expected_exit": 0
+    },
+    "function_pipeline": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\nv=parent; e=envparent; export e; set -- 'one two' ''; readonly ro=fixed\ng() { printf 'original_function\\n'; }\nf() { v=child; e=child; export e; cd /tmp; set -- changed; g() { printf 'child_function\\n'; }; printf '%s:%s:%s:%s:%s\\n' \"$v\" \"$e\" \"$1\" \"$ro\" \"$PWD\"; }\nf | \"$PROBE\" copy\nprintf 'parent=%s:%s:%s:%s:%s:%s\\n' \"$v\" \"$e\" \"$1\" \"$#\" \"$ro\" \"$PWD\"\ng\n} > /out/function_pipeline.stdout\n",
+      "sha256": "b744d054c9606d6f7301bf92cdc69971a1a9490f2bb9de8f84105ee3807e766b",
+      "expected_exit": 0
+    },
+    "subshell_state": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\nv=parent; export C2_EXPORTED=before; set -- 'alpha beta' ''; readonly fixed=immutable\ng() { printf 'parent_function\\n'; }\n(v=child; C2_EXPORTED=after; export C2_EXPORTED; cd /tmp; set -- child; g() { printf 'child_function\\n'; }; printf 'child=%s:%s:%s:%s:%s\\n' \"$v\" \"$C2_EXPORTED\" \"$1\" \"$fixed\" \"$PWD\"; g)\nprintf 'parent=%s:%s:%s:%s:%s:%s\\n' \"$v\" \"$C2_EXPORTED\" \"$1\" \"$#\" \"$fixed\" \"$PWD\"\ng\n} > /out/subshell_state.stdout\n",
+      "sha256": "046b49fcf1ab999690312aad6ba5e76ba57b48f536f9b3c38e21463b992a7de3",
+      "expected_exit": 0
+    },
+    "local_variable": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\nf() { local v=inside; (v=child; printf 'child=%s\\n' \"$v\"); printf 'local=%s\\n' \"$v\"; }; v=outside; f; printf 'global=%s\\n' \"$v\"\n} > /out/local_variable.stdout\n",
+      "sha256": "b7e8d2f83c0a5841cbb896bcfdfce45579373550b0e001add065b2b7e7163c78",
+      "expected_exit": 0
+    },
+    "arithmetic_stage_isolation": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\nx=5; \"$PROBE\" echo \"$((x=x+1))\" | \"$PROBE\" copy; printf 'parent_x=%s\\n' \"$x\"\nfalse; printf 'before=%s\\n' \"$?\" | \"$PROBE\" copy; printf 'after=%s\\n' \"$?\"\n} > /out/arithmetic_stage_isolation.stdout\n",
+      "sha256": "a117fb15df041ff2a6cd4a00b9f1a25ca114ab33e2baad232ff423739f03e815",
+      "expected_exit": 0
+    },
+    "substitution_forms": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\na=$(printf 'one\\n\\n\\n'); b=`printf 'two\\n\\n'`; c=$(printf ''); printf 'a=<%s> b=<%s> c=<%s>\\n' \"$a\" \"$b\" \"$c\"\nv=parent; d=$(v=child; cd /tmp; printf '%s:%s' \"$v\" \"$PWD\"); printf 'captured=<%s> parent=%s:%s\\n' \"$d\" \"$v\" \"$PWD\"\n} > /out/substitution_forms.stdout\n",
+      "sha256": "ad8fb10790b17a9e65f449fc53d2b3a832c253ecb09738c1737662a9b5a4b6de",
+      "expected_exit": 0
+    },
+    "substitution_exit_status": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\na=$(printf 'value\\n'; exit 23); s=$?; printf 'capture=<%s> status=%s\\n' \"$a\" \"$s\"\nb=$(false); s=$?; printf 'empty=<%s> status=%s\\n' \"$b\" \"$s\"\n} > /out/substitution_exit_status.stdout\n",
+      "sha256": "895448ae8f06203881aad5c17c8107cb2f8b9ee90ccce7001a16f19a4fcd383b",
+      "expected_exit": 0
+    },
+    "substitution_large": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\nvalue=$(\"$PROBE\" text 32781); printf 'length=%s\\n' \"${#value}\"; printf '%s' \"$value\" | \"$PROBE\" check 32781\n} > /out/substitution_large.stdout\n",
+      "sha256": "172e18caeb31c69da86588e3f3042e1df9d6a2a103ed8860c0bb2f1eafdc6971",
+      "expected_exit": 0
+    },
+    "substitution_three_levels": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\na=$(b=$(c=$(printf nested); printf '%s' \"$c\"); printf '%s' \"$b\"); printf 'nested=<%s>\\n' \"$a\"\n} > /out/substitution_three_levels.stdout\n",
+      "sha256": "2dcaab7f3c420c8a061f074a39c6b2720ad66e2629c3d7b4189e8c3b1e7bb144",
+      "expected_exit": 0
+    },
+    "subshell_status": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\n(printf 'subshell_status\\n'; exit 23)\n} > /out/subshell_status.stdout\n",
+      "sha256": "8ee7264e7f101d21c78ca4df55377ab9f2087a669ae8779a676ec6e02684adc6",
+      "expected_exit": 23
+    },
+    "function_pipeline_status": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\nf() { printf data; return 17; }; g() { \"$PROBE\" copy; return 29; }; f | g; s=$?; printf '\\nlast_status=%s\\n' \"$s\"; test \"$s\" -eq 29\n} > /out/function_pipeline_status.stdout\n",
+      "sha256": "09525992992a03cce356c966b5ec727be83ae5b4405707a531bdaa9b6e24f8c8",
+      "expected_exit": 0
+    },
+    "errexit_tested_pipeline_functions": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\nset -e\nf() { false; printf 'tested_function_continued\\n'; }\nif f | \"$PROBE\" copy; then printf 'if_pipeline_ok\\n'; else printf 'BAD_IF_BRANCH\\n'; fi\nf | \"$PROBE\" copy && printf 'and_pipeline_ok\\n'\nprintf 'set_e_parent_continued\\n'\n} > /out/errexit_tested_pipeline_functions.stdout\n",
+      "sha256": "c74c474f4a300f29ac9704f97bb6df46fc4c2f382f6ec3a83d9f74ba7c8b0c53",
+      "expected_exit": 0
+    },
+    "pipefail_rightmost_status": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\nset -o pipefail\nf() { return 7; }; g() { return 23; }; f | g | true; printf 'rightmost=%s\\n' \"$?\"\nfalse | true; printf 'left_failure=%s\\n' \"$?\"\ntrue | false | true; printf 'middle_failure=%s\\n' \"$?\"\ntrue | true; printf 'all_success=%s\\n' \"$?\"\nset +o pipefail; false | true; printf 'pipefail_off=%s\\n' \"$?\"\n} > /out/pipefail_rightmost_status.stdout\n",
+      "sha256": "a6bc0e0032955af501ace8af08155b51c39ce148dca24eb10daffc764db78d2d",
+      "expected_exit": 0
+    },
+    "descriptor_restore": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\nf() { printf 'child_file\\n' > /out/child_marker; }; f | \"$PROBE\" copy; printf 'parent_stdout_restored\\n'\n(printf 'subshell_file\\n' > /out/sub_marker); printf 'parent_again\\n'\n} > /out/descriptor_restore.stdout\n",
+      "sha256": "aafce3b6baf4d8f15e57b609c304191a2cbefb974f52131e0b3fbad096b61650",
+      "expected_exit": 0
+    },
+    "depth_limit": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\na=$(b=$(c=$(d=$(printf UNREACHABLE_DEPTH)))); s=$?; if test \"$s\" -eq 0; then printf C2_DEPTH_BAD; exit 90; fi; printf 'C2_DEPTH_RECOVERED status=%s\\n' \"$s\"\n} > /out/depth_limit.stdout\n",
+      "sha256": "4c7e5f5e44c1455591712c3311b75c877671651d14cf20bef0a9f5eb019a9f53",
+      "expected_exit": 0
+    },
+    "fault_substitution": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\na=$(\"$PROBE\" fault); s=$?; printf 'fault_capture=<%s> status=%s\\n' \"$a\" \"$s\"; test \"$s\" -eq 137\n} > /out/fault_substitution.stdout\n",
+      "sha256": "bd13fbc7fee851eedb0607a86717028f295e0841879927a872568f31853dac23",
+      "expected_exit": 0
+    },
+    "fork_exhaustion": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\nf() { while :; do :; done; }; f | f | f | f\n} > /out/fork_exhaustion.stdout\n",
+      "sha256": "a4c4a87ce4f99c0db64144157f7497650e7398ce34bc21a0604b8118ae1cc6e2",
+      "expected_exit": 2
+    }
+  },
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_c2_5qwyvqfe/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_7zednkcs/qmp.sock,server=on,wait=off"
+  ],
+  "baseline_resources": [
+    129832,
+    2,
+    0
+  ],
+  "final_resources": [
+    129832,
+    2,
+    0
+  ]
+}

@@ -226,3 +226,107 @@ Client增加对应方法。files对每个请求读取kernel guard状态：仅指
 Xsh入口见usage/supervisor/maintenance.md，定向证据见0048。这不是新线程SDK
 profile，也不是P2完整包事务；旧静态程序的已有操作布局保持，SDK/服务/内核新操作
 需要对应实现。持久恢复策略留用户态xypm P2-2，当前不开放客体安装/升级/卸载。
+
+## 0047：C1 管道等待与前台流水线（实验分支）
+
+保持 sys0–53 与 startup v1/v2 布局。sys54 `sys_pipe_wait(token,0,0)` 接受本进程
+pipe token 或 0–2 的有效内核 stdio route；console 返回 would_block，不睡眠。
+可读为有数据/最后 writer 已关闭；可写为有空间/最后 reader 已关闭。
+校验、检查、登记 blocked 在单核不可抢占内核中原子完成；允许伪唤醒，调用方
+必须重试 I/O 并重新验证 token。每次 close 和数据流动唤醒等待者，slot 回收前
+广播；token 单调不复用。底层 read/write 仍可短读写并返回 EAGAIN，新增 libc
+在管道 EAGAIN 后阻塞重试，不把 console 的旧非阻塞语义改成 EOF。
+
+sys55 `sys_process_foreground(&request,active,0)`：request 为48字节固定宽度
+`process_foreground{version=1,size=48,count,reserved=0,pids[4]}`；未使用 PID 必须0。
+每个 PID 必须有属于调用者的 completion，且不重复。active=1 从开始构造流水线
+起登记（count=0合法），每段启动后更新；Escape 取消全组并锁存 cancelled，后续
+active 更新返回 state，调用者停止构造并清理本地已启动列表。active=0/count=0
+撤销登记并清锁存。它是有界前台取消机制，不是 POSIX process group/作业控制。
+
+sys56 `sys_process_cancel(pid,0,0)` 仅接受调用者有构造权的直接、已启动子任务，
+不接收任意 PID/信号；停止子任务及其后代，保留 completion 待 wait 消费。
+sys20 第三个参数现接受0（阻塞）/1（完成查询）；未完成时查询返回 would_block，
+libc waitpid(WNOHANG)返回0，不消费记录。其他位拒绝。
+sys34 的 PID=0 分支只查询自己的 stdio route，第二参数fd、第三参数0，返回
+1 console/0 pipe/负错误；libc isatty据此区分继承的pipe与console。
+
+libc FD表锁不跨管道等待；在途 I/O pin住对象，普通 close 不中断该在途 I/O；
+直接raw close唤醒后，raw等待者再次I/O必须重新验证权限。F_SETFL对未实现的
+O_NONBLOCK等位明确ENOTSUP，writer F_GETFL报告O_WRONLY。未增加异步信号递送。
+
+
+## 0048：C2单线程完整复制fork（实验分支）
+
+sys57 prepare(0,0,0)为具构造权的普通、未启用线程profile的主线程复制完整用户
+页（有效RW/X）、heap、TLS/FPU、stdio/pipe引用与raw token。新PID/TID/内核栈/
+文件端点/完成记录独立，child保持building，复制帧在child返回0。fork继承同一
+principal的构造权限，不增加权限，独立fork depth限3。无COW，无多线程atfork。
+
+sys58 commit(child,0,0)限源父且要求files已ACK，才允许复制帧运行；普通sys18
+不能启动fork_pending。sys59 files(child,source,0/1)只允许files服务调用，每次
+重新验证活源父与其building fork child；0只查询授权，1仅在克隆完后置ACK。
+文件op20 clone_session保持v2 wire、以会话实际PID为源、offset为目标PID，逐
+打开实例保号retain并提升目标generation高水位；不克隆staging事务。ACK失败
+回滚本次引用。任意被复制Client首次call按当前PID重绑自身端点。
+
+libc fork按prepare→有界克隆RPC重试→commit执行，失败abort；线程SDK与线程
+profile明确ENOTSUP，普通无权EPERM，深度/配额/物理页不足返回真实资源错误。
+进程数仍8，用户页限仍256MiB，fork代价为全部已映射用户页+页表+内核栈。
+完整SDK必须和当前头/库共同重建；旧静态工具的sys0–56与文件v2行为保留。
+
+
+## 0049：C3 exec v3与匿名输入实例
+
+sys61 exec_prepare(0,name_ptr,name_len)允许普通无构造权任务准备自己的唯一replacement
+事务（重复EBUSY），保护supervisor/files，拒绝线程profile/非唯一main。stage占全局8
+进程配额但不运行，无完成记录、文件会话或stdio/pipe引用，只允许父map/tls/abort，
+普通start/grant/delegate/stdio不能把它变成可运行子任务。
+
+sys60 exec_commit(stage,&entry,depth_mode)在同一不可抢占提交前完整验证stage所有权、
+RX入口/栈/startup、源文件会话和新endpoint token配额。mode0保留构造深度，n>0
+请求n-1且必须严格小于源深度。成功保留原PID/TID、父/完成记录、子任务、stdio/raw
+pipe引用；切新CR3/TLS/FPU/栈，重置heap，再在新CR3下回收旧映像与stage内核栈，
+直接返回新入口。原2个文件IPC slot在同PID下换新opaque token并清旧队列；服务
+保留同PID打开实例，新Client获取新token，不重用旧响应命名空间。
+
+startup v3保留v2前缀，offset152追加24字节exec extension；descriptor记录24字节，
+最多32项，按object id恢复共享别名，省略CLOEXEC FD；仅余CLOEXEC的对象由新CRT
+在main之前关闭。文件handle仍属于同一PID，不按路径重新打开；file/pipe/kernel
+routes都保留实际打开实例与偏移。成功替换后若底层关闭I/O失败，FD表已关闭，
+诊断deferred cleanup且服务重试；它不是返回旧程序的exec失败，不声称I/O故障下
+所有清理已完成。缺文件/格式/旧ABI/权限/配额/映射ENOMEM等提交前失败保留旧映像
+和FD表，实际场景见C3 exec专项。
+
+完整exec要求目标ELF保留只读ALLOC `.xos.exec` PROGBITS节，16字节为
+magic `0x3349424143455858`、version3、size16。当前匹配的CRT/linker/libxos共同
+生成和消费它；旧静态程序不理解v3，显式exec返回ENOTSUP。普通spawn继续v1/v2
+兼容旧GCC/G++/CPython；绝不以spawn+wait冒充exec。新SDK不可与旧CRT/库混搭。
+execv3每参数/环境串最多4095字节；普通spawn仍255。argc/env各64、总startup16KiB。
+
+file wire v2追加op21 anonymous、op22 anonymous_seal。服务用保留8.3名字
+XOS00000.TMP…XOS99999.TMP排他创建，不能覆盖碰撞文件，普通路径操作不能访问，
+listing隐藏；seal不可逆地撤销共享实例写权限且保留偏移。Here-doc填充/seek0/seal
+后才交stdin，正文不会卡在4KiB pipe里。最后close或退出/kill回收引用时删除，
+I/O失败保留待清理实例并重试；不扫描删除崩溃遗留，无法证明跨崩溃文件所有者。
+单会话16/global32打开实例等既有配额保持。普通Client也使用跨实例单调request ID，
+init不重置、溢出拒绝；不宣称任意超时/迟到事务的完整重放或恢复。
+
+C3收口另补小pipe write原子性：当前SDK对<=4096字节的pipe write等待完整空间，
+不能以可用的少量字节短写后和另一writer交错。sys54的second新增writer最小空间
+1..4096（0保留旧any-space语义），read仍必须0，第三参数0；检查/入睡仍原子。
+继承stdio的pipe不再错误套console的256字节上限，console仍限单次256；大于4096
+的write仍允许短写。新SDK与支持该readiness扩展的内核共同使用，旧有效second0
+调用保持兼容；不承诺writer公平性、信号SIGPIPE或完整POSIX。
+
+为保留原raw sys11/32的短写ABI，小写原子性采用handle bit63显式opt-in；无flag
+完全保留原非阻塞短写行为，旧C1等待者second0不会因语义改变忙重试。当前newlib
+对pipe小write自动置flag并以sys54 minimum等待，console不置flag；带flag大于4096
+明确EINVAL，非flag大write仍可短写。SDK header/manifest公开该位与matching需求。
+
+普通spawn若继承files服务stdio，同样要求目标声明当前CRT能力。冻结的旧GNU版本
+不仅不懂v3，也不识别B2 file_handles；此前会忽略继承信息，stdout写失败但工具仍可返回0（本次实际导出为空）。现在
+未知/旧目标的文件stdio继承明确ENOTSUP，不以path重开冒充共享实例；旧console
+启动及实测native编译保留，阻塞pipe/文件stdio完整保证限匹配的当前SDK。旧B2
+无能力标记的二进制需要用新SDK重建；xypm旧profile也须独立登记/迁移，不能推断
+它能接受新继承形式。这是显式ABI admission，不能声称所有旧静态stdio都兼容。

@@ -1,8 +1,26 @@
 # XOS 当前状态
 
 更新时间：2026-10-26（Asia/Shanghai）。新 agent 按 AGENTS.md 的阅读顺序开始。
+> `feature/dash-c1-c3`：C1/C2/C3三个Gate及受影响旧回归全部passed。
+> 最终源码实现e729dc6，build2f7160b7d6633ee6；22个最终串行验收入口全部退出0。
+> 冻结证据docs/reports/dash_c{1,2,3}_20261026/；不是完整POSIX或正式Release。
+> 固定上游integration基线4c78b27，未合并上游，旧SDK的exec/file-stdio兼容边界明确拒绝。
 
-## 当前状态
+
+更新时间：2026-10-26（Asia/Shanghai）。本页上方为实验分支状态，后文保留integration基线历史。
+
+## 本分支C阶段交付
+
+0047/0048/0049分别记录C1并发pipe、C2真实fork隔离、C3匿名HereDoc/真实exec/Make。
+C1/C2各自冻结后才进入下一阶段。C3主专项66项、exec16项、atomic pipe7项，
+真实GCC/G++编译/链接、自建Make与消费、CPython/线程/文件/进程/持久化、旧Dash
+与ISO/许可回归均passed，最终资源[129826,2,0]。SDK普通/线程profile与不可用能力
+见shell_subset.md、e04_loader_sdk.md和最终qualification.json，不混用旧静态CRT。
+
+后台/async POSIX信号、SMP、Qt、线程fork/exec、xypm新SDK登记仍不支持/未运行。
+审查入口：UPSTREAM_DASH_C1_C3_REVIEW.md。未触碰日常盘、旧Release或localpilot。
+
+## integration基线历史状态（4c78b27）
 
 主线已合并线程PR（基线d89d1a3，整合提交4c78b27），已有dash B2、CPython
 T3-PY/PY2及PY3 A1/A2/A3、xypm P0/P1。2026-10-26本轮完成ISO扩容0047和xypm P2-1维护门控0048。

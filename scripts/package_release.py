@@ -11,7 +11,7 @@ import tarfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
-VERSION = '0.0.1-1024'
+VERSION = (ROOT/'VERSION').read_text().strip()
 PREFIX = 'xylophoneos_revival_' + VERSION
 
 
@@ -29,8 +29,12 @@ def copy_notices(destination):
         shutil.copyfile(ROOT/name, destination/name)
     shutil.copyfile(ROOT/'src/third_party/newlib/COPYING.NEWLIB', destination/'COPYING.NEWLIB')
     shutil.copytree(ROOT/'licenses', destination/'licenses', dirs_exist_ok=True)
-    for component in ('gcc', 'binutils'):
-        shutil.copytree(ROOT/'src/ports'/component/'upstream', destination/'licenses'/component, dirs_exist_ok=True)
+    for component in json.loads((ROOT/'licenses/components.json').read_text())['components']:
+        for notice in component.get('notices',[]):
+            source=ROOT/notice
+            target=destination/'third_party_notices'/notice
+            target.parent.mkdir(parents=True,exist_ok=True)
+            shutil.copyfile(source,target)
 
 
 def archive(source, output):
@@ -42,6 +46,10 @@ def archive(source, output):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--release-dir', type=Path, default=ROOT/'build/releases'/VERSION)
+    p.add_argument('--dash-manifest',type=Path,required=True)
+    p.add_argument('--cpython-stage',type=Path)
+    p.add_argument('--extra-elf',action='append',default=[],metavar='NAME=PATH')
+    p.add_argument('--wheel-package',type=Path)
     a = p.parse_args()
     out = a.release_dir.resolve(strict=True)
     if ROOT/'build/releases' not in out.parents:
@@ -66,7 +74,20 @@ def main():
     helper = ROOT/'build/work_disk_host'
     if not helper.is_file():
         p.error('build/work_disk_host must already be prepared; do not rebuild shared tools')
-    entries = seed['install_files'] + sysroot['files']
+    entries = list(seed['install_files']) + list(sysroot['files'])
+    if a.cpython_stage:
+        stage_manifest=json.loads(a.cpython_stage.read_text())
+        stage_root=a.cpython_stage.parent/'stage_py3'
+        for item in stage_manifest['files']:
+            source=stage_root/item['path'].lstrip('/')
+            if sha(source)!=item['sha256']:raise ValueError('CPython stage changed: '+item['path'])
+            entries.append({'path':str(source.resolve()),'guest_path':item['path'],'sha256':item['sha256']})
+    for item in a.extra_elf:
+        name,source=item.split('=',1)
+        if not name or any(c not in 'abcdefghijklmnopqrstuvwxyz0123456789_-' for c in name):raise ValueError('invalid program name')
+        source=Path(source).resolve(strict=True)
+        entries.append({'path':str(source),'guest_path':'/usr/bin/'+name,'sha256':sha(source)})
+    if len({e['guest_path'].lower() for e in entries})!=len(entries):raise ValueError('duplicate guest path')
     directories = {'/src','/out','/tmp'}
     for entry in entries:
         source = ROOT/entry['path']
@@ -83,14 +104,24 @@ def main():
         transfer('mkdir', directory)
     for entry in entries:
         transfer('import', entry['guest_path'], ROOT/entry['path'])
-    subprocess.run([sys.executable, str(ROOT/'scripts/build_dash.py'),
-                    '--sdk', str(out/'sdk')], check=True)
-    from install_dash import install as install_dash, latest_manifest
-    dash = install_dash(disk, latest_manifest())
-    print('installed dash:', dash)
+    # dash is carried by the ISO only; fresh release work disks must not contain it.
+    dash=json.loads(a.dash_manifest.read_text())
+    dash_elf=ROOT/dash['elf']
+    if sha(dash_elf)!=dash['sha256']:raise ValueError('dash manifest mismatch')
+    install=json.loads((out/'install_manifest.json').read_text())
+    if install['dash_sha256']!=dash['sha256'] or install['build_id']!=system['build_id']:
+        raise ValueError('install ISO is not bound to the frozen system/dash')
+    if a.wheel_package:
+        from xypm_image import transact
+        from xypm_format import load_json,DEFAULT_PROFILE
+        candidate=image_dir/'wheel_candidate.img'
+        profile=load_json(ROOT/'config/package/xos_x86_64_static_single_b2_v1.json')
+        receipt=transact(disk,candidate,profile,'install',package=a.wheel_package)
+        candidate.replace(disk)
+        (out/'wheel_install_receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
     examples = {
-        'hello.c': '#include <stdio.h>\nint main(void) { puts("Happy 1024 from XOS C!"); return 0; }\n',
-        'hello.cpp': '#include <cstdio>\n#include <string>\nint main() { std::string s("Happy 1024 from XOS C++!"); std::puts(s.c_str()); return 0; }\n',
+        'hello.c': '#include <stdio.h>\nint main(void) { puts("Hello from XOS C!"); return 0; }\n',
+        'hello.cpp': '#include <cstdio>\n#include <string>\nint main() { std::string s("Hello from XOS C++!"); std::puts(s.c_str()); return 0; }\n',
     }
     (image_dir/'examples').mkdir(exist_ok=True)
     for name, body in examples.items():
@@ -99,6 +130,8 @@ def main():
     shutil.copyfile(out/'xos.img',image_dir/'xos.img')
     if (out/'xos.iso').is_file():
         shutil.copyfile(out/'xos.iso',image_dir/'xos.iso')
+    shutil.copyfile(out/'xos-install-dash.iso',image_dir/'xos-install-dash.iso')
+    shutil.copyfile(out/'install_manifest.json',image_dir/'install_manifest.json')
     shutil.copyfile(ROOT/'scripts/release_launcher.py',image_dir/'launch.py')
     shutil.copytree(out/'sdk', sdk_dir, dirs_exist_ok=True)
     target = ROOT/'.cache/xos_seed/gcc/relinks/target_runtime_v5_receipt'
@@ -109,7 +142,7 @@ def main():
     shutil.copyfile(target/'manifest.json',sdk_dir/'target_runtime_provenance.json')
     shutil.copytree(image_dir/'examples',sdk_dir/'examples',dirs_exist_ok=True)
     (sdk_dir/'compile.py').write_text(COMPILE_SCRIPT)
-    notes = ROOT/'docs/releases'/('0.0.1-1024.md')
+    notes = ROOT/'docs/releases'/(VERSION+'.md')
     for folder in (image_dir,sdk_dir):
         copy_notices(folder)
         shutil.copyfile(notes,folder/'README.md')
@@ -117,7 +150,9 @@ def main():
                'system_build_id':system['build_id'],'xos_sha256':sha(out/'xos.img'),
                'seed_manifest_sha256':sha(ROOT/'build/cpp_bundle/seed_manifest.json'),
                'sysroot_manifest_sha256':sha(ROOT/'build/cpp_bundle/sysroot_manifest.json'),
-               'stress_status':'separate agent running; not claimed passed',
+               'install_iso_sha256':sha(out/'xos-install-dash.iso'),
+               'dash_sha256':dash['sha256'],'dash_installation':'ISO payload; absent on fresh work disk',
+               'stress_status':'not_rerun',
                'guest_files':{item['guest_path']:item['sha256'] for item in entries},
                'notice':'static AMD64 BIOS/QEMU configuration; original licenses retained'}
     for folder in (image_dir,sdk_dir):

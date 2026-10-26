@@ -1,0 +1,89 @@
+{
+  "status": "passed",
+  "stage": "C2",
+  "source_commit": "ea3d2d0",
+  "validation_note": "Final test-only corrections: optional folded threaded loader archive; capture producer extended to 2 MiB to force blocked-writer cleanup",
+  "build_id": "85df2bcabbd6ace9",
+  "reports": {
+    "dash_c2_final_report.json": {
+      "sha256": "3f0f12f33714e24cfd089b7fce580ba7d727628083bbfef335a0f9e33b6fee9b",
+      "checks": 30
+    },
+    "dash_c2_oom_report.json": {
+      "sha256": "c29eb48426dc4a1319672a6bddbe59d40fc321ff1f8584077b5ed68155248742",
+      "checks": 1
+    },
+    "dash_c1_report.json": {
+      "sha256": "f7114fb2ab3560a1d59dcada00bf54eacd2bdaaaecec0a6a55051ecb775ca2d3",
+      "checks": 24
+    },
+    "dash_c1_threads_report.json": {
+      "sha256": "65eb9bcb4250a76a48452980679b5116f1fc264d3b4787f78506e761d8c19f5e",
+      "checks": 7
+    },
+    "dash_c1_pthread_report.json": {
+      "sha256": "6a4e04e3acac9d527e32b25cab54151a778dc041833c491531c2f4a09e2e703d",
+      "checks": 5
+    },
+    "process_smoke_report.json": {
+      "sha256": "fbcb2cffb240a666cf5c998330f3a0c25afd97512bc2545fe971e00cb90e5141",
+      "checks": 13
+    },
+    "file_smoke_report.json": {
+      "sha256": "0ed00b578ff4e5e31551f77eb546804c6ff289e71eeddbdd60f305761df3cb8f",
+      "checks": 8
+    },
+    "threading_report.json": {
+      "sha256": "3cdcc38c962ea08758797a145c9abb1d6986c5be0c08b1e461b3d78fed8ba884",
+      "checks": 15
+    },
+    "threading_pthread_report.json": {
+      "sha256": "365e4db8fc76717eb888a3436e34a67ff8d54c10dd0a1d918bcce971181c0b14",
+      "checks": 10
+    },
+    "threading_cpp_report.json": {
+      "sha256": "012d9638a14d3f658e13691a9a8a3dfaff4c0d4ecc5dab1b728b54acd04b02fb",
+      "checks": 10
+    },
+    "cpython_t3_py_report.json": {
+      "sha256": "43a99a3b6cd63112221710fd2f28e35a167cef147c2c8499db32f3f8a621da5e",
+      "checks": 5
+    },
+    "persist_smoke_report.json": {
+      "sha256": "922271b516b4e4b17533cfb9d22e61d8ba14b0627bdfe55a6c60055b4a202c95",
+      "checks": 4
+    },
+    "threading_native_report.json": {
+      "sha256": "776a92b123577646ae10eb18889044022bb10028324ed1a55eb95c8522232fa2",
+      "checks": 6
+    },
+    "dash_b_acceptance_report.json": {
+      "sha256": "55bb8ff28120b39acfb4e8dfbbf8a6b7ad32972f14690a5a5fb0a7c40a06728c",
+      "checks": 7
+    },
+    "dash_b2_acceptance_report.json": {
+      "sha256": "b045ebf9a28f11e37d35ebf648e1e394ca45d1488744627546d36a65a1881a62",
+      "checks": 6
+    },
+    "license_report.json": {
+      "sha256": "716fc684284d280da3acbfc119248e60320c2150936df115f945af00ddb13045",
+      "checks": 0
+    },
+    "shell_smoke_report.json": {
+      "sha256": "a62d21328057b8d3794854955212eebbb22208811ead4ea2c05459d6b28893e6",
+      "checks": 12
+    }
+  },
+  "xos.img": "e1ffba13e56295fc4ad40f7c74c7457a1d1c2587e10b073458ba3da5f648ae0e",
+  "kernel.bin": "8f59793e39937e00b7f3c6341988e2125771bd430954d980011b630d7717b5df",
+  "sdk/manifest.json": "4f4e5d7983fb2b5e2a0f43a61ef907776264a874fabac1a7006136e8a74c9f2a",
+  "threading_sdk/manifest.json": "d4634a9d603d4d174e1ac92e9a6c2517940d5fec6a09b27d5101f48a9b0dc054",
+  "dash": {
+    "profile": "dash_c2",
+    "version": "0.5.13.5",
+    "elf": ".cache/xos_seed/dash/2b36a1eafa719d3fc2f1/build/src/dash",
+    "sha256": "a2449bb7d11f0543e415d98966abd322971fd7d0a9eba3dfd345fdb035fc9963",
+    "bytes": 1032808,
+    "status": "built_not_run"
+  }
+}

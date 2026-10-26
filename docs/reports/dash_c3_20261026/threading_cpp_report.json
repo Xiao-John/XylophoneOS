@@ -1,0 +1,48 @@
+{
+  "kernel_build_id": "2f7160b7d6633ee6",
+  "status": "passed",
+  "checks": [
+    "guest_std_thread_join",
+    "guest_std_mutex_condition_variable",
+    "guest_call_once_exception_retry",
+    "guest_CXX_static_guard_once",
+    "guest_thread_local_destructors",
+    "guest_concurrent_CXX_exceptions",
+    "guest_steady_clock_wait_for_nanosleep",
+    "guest_process_resources_return_to_baseline",
+    "guest_unsupported_system_clock_terminates_explicitly",
+    "guest_legacy_ELF_layout_remains_loadable_thread_opt_in_rejects_overlap"
+  ],
+  "runs": [
+    {
+      "iteration": 0,
+      "resources_after": [
+        129826,
+        2,
+        0
+      ]
+    },
+    {
+      "iteration": 1,
+      "resources_after": [
+        129826,
+        2,
+        0
+      ]
+    },
+    {
+      "iteration": 2,
+      "resources_after": [
+        129826,
+        2,
+        0
+      ]
+    }
+  ],
+  "payload_sha256": "c9ec5680c3cad50eb024a07605f5a37e58737664f3ede077129f164946c55aee",
+  "resources_before": [
+    129826,
+    2,
+    0
+  ]
+}

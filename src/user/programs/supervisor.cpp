@@ -351,10 +351,12 @@ void execute(u32 argc, char** argv) {
         print(checked == 24 && before.free_pages == after.free_pages ? " result=pass resources=stable\n"
                                                                     : " result=FAILED\n");
     } else {
-        // dash is the explicitly configured development shell and may delegate
-        // one smaller construction depth to a GNU compiler driver. Other bare
-        // commands retain the legacy direct-child construction authority.
-        launch_file(argv[0], argc, argv, equal(argv[0], "dash") ? 2u : 1u, false);
+        // dash is the explicitly configured development shell; make is the
+        // pinned explicit -B build tool. Both may delegate smaller construction
+        // depths to the other and to GNU compiler drivers. Other bare commands
+        // retain the legacy direct-child construction authority.
+        const bool development_tool = equal(argv[0], "dash") || equal(argv[0], "make");
+        launch_file(argv[0], argc, argv, development_tool ? 3u : 1u, false);
     }
 }
 }

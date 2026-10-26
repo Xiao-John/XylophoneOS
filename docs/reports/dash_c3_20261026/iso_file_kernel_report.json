@@ -1,0 +1,16 @@
+{
+  "build_id": "2f7160b7d6633ee6",
+  "checks": [
+    {
+      "name": "kernel-from-file",
+      "passed": true
+    },
+    {
+      "name": "files-service",
+      "passed": true
+    }
+  ],
+  "gate": "A2 file-backed kernel",
+  "iso_sha256": "de8a3fc96ebf52b8ef2edee28fdbfd045327bf572f8e849703750c15a83fbd6f",
+  "status": "passed"
+}

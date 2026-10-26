@@ -1,0 +1,23 @@
+{
+  "status": "checked_with_declared_limits",
+  "xypm": {
+    "expected_rejection": true,
+    "message": "SDK snapshot not registered for profile; do not mix headers/libraries",
+    "profile_sha256": "137937c09d73f0a8d1be47af309206a3eb4ae506c423f2ca96d7688290f9a983"
+  },
+  "cpython": {
+    "report": "cpython_t3_py_report.json",
+    "sha256": "16cd910f2ae9d5107576016e8c564bdebd37301b1d83c2e14758134ce62d57d6",
+    "thread_fork_exec": "unsupported"
+  },
+  "iso": {
+    "file_report_sha256": "125313c2c154053ee40f6d20ff7413e6a67b4efdd7402c89d2f7ad4a0e32f54a",
+    "dash_install_report_sha256": "d36647ec08adc15924eeeb754182298c07b52cb105ae8672123c2ffe57b6252d",
+    "kernel_limit_bytes": 524288,
+    "payload_limit_bytes": 1048576,
+    "kernel_bytes": 380988,
+    "dash_runtime_bytes": 264784
+  },
+  "Qt_SMP": "not_run",
+  "Release_tags_assets": "unchanged"
+}

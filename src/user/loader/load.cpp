@@ -5,6 +5,7 @@
 #include <xos/sdk.hpp>
 #include <xos/file_client.hpp>
 #include <xos/execution.hpp>
+#include <xos/thread_abi.hpp>
 
 namespace xos::sdk {
 namespace {
@@ -41,6 +42,46 @@ bool file_read(void* context, u64 offset, u8* destination, u32 length) {
     return true;
 }
 
+// Only a CRT declaring the read-only .xos.exec opt-in can restore v3 FDs.
+// Ordinary spawn stays compatible with existing static v1/v2 applications.
+bool exec_abi_supported(elf::read_exact_fn read, void* context, u64 size,
+                        const elf::load_plan& plan) {
+    u8 header[64], section[64], strings[64], name[10], record[16];
+    auto value = [](const u8* bytes, u32 count) {
+        u64 result = 0;
+        for (u32 i = 0; i < count; ++i) result |= u64{bytes[i]} << (i * 8);
+        return result;
+    };
+    auto range = [size](u64 offset, u64 length) { return offset <= size && length <= size-offset; };
+    if (!read(context,0,header,sizeof(header))) return false;
+    const u64 offset=value(header+40,8), count=value(header+60,2), names=value(header+62,2);
+    if (value(header+58,2)!=64 || !count || count>4096 || names>=count ||
+        !range(offset,count*64) || !read(context,offset+names*64,strings,64)) return false;
+    const u64 string_offset=value(strings+24,8), string_size=value(strings+32,8);
+    if (!range(string_offset,string_size)) return false;
+    for (u64 i=0;i<count;++i) {
+        if (!read(context,offset+i*64,section,64)) return false;
+        const u64 label=value(section,4);
+        if (label>string_size || 10>string_size-label || !read(context,string_offset+label,name,10)) continue;
+        const char expected[]=".xos.exec"; bool matches=true;
+        for (u32 j=0;j<10;++j) matches=matches && name[j]==static_cast<u8>(expected[j]);
+        if (!matches) continue;
+        const u64 flags=value(section+8,8), address=value(section+16,8);
+        const u64 file=value(section+24,8), bytes=value(section+32,8);
+        if (value(section+4,4)!=1 || !(flags&2) || (flags&1) || bytes!=16 ||
+            !range(file,bytes) || !read(context,file,record,16) || value(record,8)!=exec_image_abi_magic ||
+            value(record+8,4)!=3 || value(record+12,4)!=16) return false;
+        for (u32 j=0;j<plan.count;++j) {
+            const auto& segment=plan.segments[j];
+            if (!(segment.permissions&map_write) && file>=segment.offset &&
+                file-segment.offset<=segment.file_bytes && bytes<=segment.file_bytes-(file-segment.offset) &&
+                address==segment.address+(file-segment.offset)) return true;
+        }
+        return false;
+    }
+    return false;
+}
+
 i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
                  void* read_context, u32 argc, const char* const* argv,
                  bool close_file, u32 file_handle, const spawn_options* options = nullptr,
@@ -69,6 +110,17 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
         if (close_file) { (void)file_client.close(file_handle); }
         return error;
     };
+    const bool replacing = options != nullptr && options->replace_image;
+    bool inherits_file = false;
+    if (options != nullptr) {
+        for (u32 fd=0;fd<3;++fd) inherits_file = inherits_file || options->file_handles[fd] != 0;
+    }
+    // Pre-B2 static CRTs silently ignore file_handles. Never report successful
+    // inheritance into an unadvertised target or reopen its paths as a proxy.
+    if ((replacing || inherits_file) && !exec_abi_supported(read_exact, read_context, size, plan)) {
+        if (diagnostic != nullptr) *diagnostic = {execution::launch_stage::inspect, thread_error_unsupported, elf::error::none};
+        return fail_before_create(thread_error_unsupported);
+    }
     const u32 env_count = options == nullptr ? 0 : options->environment_count;
     if (env_count > startup_environment_max || (env_count != 0 && options->environment == nullptr)) {
         return fail_before_create(process_error_invalid);
@@ -76,11 +128,11 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     auto* page = startup_page;
     for (usize i = 0; i < sizeof(startup_page); ++i) { page[i] = 0; }
     const u64 startup_address = process_stack_top - sizeof(startup_page);
-    const usize argv_offset = options == nullptr ? 64 : 160;
+    const usize argv_offset = replacing ? 192 : options == nullptr ? 64 : 160;
     const usize env_offset = argv_offset + (argc + 1) * sizeof(u64);
     usize position = (env_offset + (env_count + 1) * sizeof(u64) + 15) & ~usize{15};
     auto* startup = reinterpret_cast<startup_info*>(page);
-    *startup = {startup_magic, options == nullptr ? 1u : 2u, sizeof(startup_info), argc, 3,
+    *startup = {startup_magic, replacing ? 3u : options == nullptr ? 1u : 2u, sizeof(startup_info), argc, 3,
                 startup_address + argv_offset, {0, 1, 2},
                 options == nullptr ? 0u : startup_extension_offset};
     auto* arguments = reinterpret_cast<u64*>(page + argv_offset);
@@ -88,8 +140,8 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     auto put_string = [&](const char* text, u64& destination) {
         if (text == nullptr) { return false; }
         usize n = 0;
-        while (n < process_max_arg_bytes && text[n] != '\0') { ++n; }
-        if (n == process_max_arg_bytes || position > sizeof(startup_page) ||
+        while (n < (replacing ? process_max_exec_arg_bytes : process_max_arg_bytes) && text[n] != '\0') { ++n; }
+        if (n == (replacing ? process_max_exec_arg_bytes : process_max_arg_bytes) || position > sizeof(startup_page) ||
             n + 1 > sizeof(startup_page) - position) { return false; }
         destination = startup_address + position;
         for (usize i = 0; i <= n; ++i) { page[position++] = static_cast<u8>(text[i]); }
@@ -122,9 +174,25 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
         }
     }
 
+    if (replacing) {
+        if (options->descriptor_count > 32 ||
+            (options->descriptor_count && options->descriptors == nullptr)) {
+            return fail_before_create(process_error_invalid);
+        }
+        position = (position + 7) & ~usize{7};
+        const usize bytes = static_cast<usize>(options->descriptor_count) * sizeof(startup_descriptor);
+        if (position > sizeof(startup_page) || bytes > sizeof(startup_page) - position) {
+            return fail_before_create(process_error_invalid);
+        }
+        auto* execution = reinterpret_cast<startup_exec_extension*>(page + startup_exec_offset);
+        *execution = {startup_exec_magic, startup_address + position, options->descriptor_count, 0};
+        for (usize i = 0; i < bytes; ++i) {
+            page[position + i] = reinterpret_cast<const u8*>(options->descriptors)[i];
+        }
+    }
     const usize name_size = length(name);
     const u64 name_length = name_size > 11 ? 11 : name_size;
-    const i64 child = syscall(sys_process_create, options == nullptr ? 7u : 0u, reinterpret_cast<u64>(name), name_length);
+    const i64 child = syscall(replacing ? sys_process_exec_prepare : sys_process_create, options == nullptr ? 7u : 0u, reinterpret_cast<u64>(name), name_length);
     if (child < 0) {
         if (diagnostic != nullptr) { *diagnostic = {execution::launch_stage::create, child, elf::error::none}; }
         if (close_file) { (void)file_client.close(file_handle); }
@@ -132,7 +200,7 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     }
     process_page mapping{};
     i64 result = 0;
-    if (options != nullptr) {
+    if (options != nullptr && !replacing) {
         auto* extension = reinterpret_cast<startup_extension*>(page + startup_extension_offset);
         for (u32 fd = 0; result >= 0 && fd < 3; ++fd) {
             if (options->file_handles[fd] != 0) {
@@ -206,8 +274,8 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     }
     if (result >= 0) {
         process_entry entry{plan.entry, startup_address - 16, startup_address};
-        result = syscall(sys_process_start, static_cast<u64>(child),
-                         reinterpret_cast<u64>(&entry));
+        result = syscall(replacing ? sys_process_exec_commit : sys_process_start, static_cast<u64>(child),
+                         reinterpret_cast<u64>(&entry), replacing ? options->exec_depth_mode : 0);
         if (result < 0 && diagnostic != nullptr) {
             *diagnostic = {execution::launch_stage::start, result, elf::error::none};
         }

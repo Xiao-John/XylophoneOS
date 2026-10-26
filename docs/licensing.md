@@ -107,3 +107,11 @@ CPython3.14.9原始LICENSE与Doc/license.rst从source_lock所绑定、实际SHA2
 `src/ports/cpython/upstream/idna-LICENSE.md`，生成的 XPK 携带到
 `/usr/share/licenses/python_idna/LICENSE.md`。本地 guest gate 不代表公开发布；未来
 二进制分发还须提供匹配 wheel/源码材料。
+
+## sbase Make C3
+
+固定sbase c546c3a的make五个C文件、make.h与根MIT LICENSE原样保存在
+src/ports/make/upstream，source_lock.json与components.json逐文件记SHA256。
+补丁保留原MIT适用条款，独立XOS backend/build/test为Apache-2.0。实际产物
+manifest保存源码/补丁/SDK/工具摘要；没有创建或替换正式Release附件，材料检查
+不扩大成运行库逐成员法律审计。SDK/本机交付材料附对应声明及原始来源。

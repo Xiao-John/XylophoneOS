@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT AND Apache-2.0
+// Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/memory.hpp>
 
 namespace xos {
@@ -147,6 +149,64 @@ memory_result query_page_in(u64 address_space, u64 virtual_address, u64* physica
 }
 memory_result query_page(u64 virtual_address, u64* physical, page_permissions* permissions) {
     return query_page_in(read_cr3(), virtual_address, physical, permissions);
+}
+
+memory_result copy_user_pages_in(u64 source, u64 destination, u32 page_limit,
+                                 u32* copied_pages) {
+    if (copied_pages == nullptr) { return memory_result::invalid; }
+    *copied_pages = 0;
+    if (source == 0 || destination == 0 || source == destination ||
+        source % page_size != 0 || destination % page_size != 0 ||
+        source >= max_managed_phys || destination >= max_managed_phys) {
+        return memory_result::invalid;
+    }
+    // create_address_space gives each process its own PML4[0]/PDPT[1]/PD,
+    // while PDPT[0] is the shared supervisor-only physical identity window.
+    // Only PDPT[1] belongs to the E04 user address interval.
+    const u64 pml4_entry = table(source)[0];
+    if ((pml4_entry & present) == 0 || (pml4_entry & huge) != 0) {
+        return memory_result::invalid;
+    }
+    const u64 pdpt_entry = table(pml4_entry)[1];
+    if ((pdpt_entry & present) == 0 || (pdpt_entry & huge) != 0) {
+        return memory_result::invalid;
+    }
+    const u64* pd = table(pdpt_entry);
+    for (u32 index = 0; index < 512; ++index) {
+        const u64 pd_entry = pd[index];
+        if ((pd_entry & present) == 0) { continue; }
+        if ((pd_entry & huge) != 0) { return memory_result::invalid; }
+        const u64* pt = table(pd_entry);
+        for (u32 leaf_index = 0; leaf_index < 512; ++leaf_index) {
+            const u64 leaf = pt[leaf_index];
+            if ((leaf & present) == 0) { continue; }
+            const page_permissions permissions{
+                (leaf & pd_entry & pdpt_entry & pml4_entry & writable) != 0,
+                ((leaf | pd_entry | pdpt_entry | pml4_entry) & no_execute) == 0,
+                (leaf & pd_entry & pdpt_entry & pml4_entry & user) != 0,
+            };
+            const u64 source_physical = leaf & address_mask;
+            if (!permissions.user || source_physical >= max_managed_phys) {
+                return memory_result::invalid;
+            }
+            if (*copied_pages == page_limit) { return memory_result::out_of_memory; }
+            u64 physical = 0;
+            const memory_result allocated = allocate_page(&physical);
+            if (allocated != memory_result::none) { return allocated; }
+            auto* output = reinterpret_cast<u64*>(physical);
+            const auto* input = reinterpret_cast<const u64*>(source_physical);
+            for (u32 word = 0; word < page_size / sizeof(u64); ++word) { output[word] = input[word]; }
+            const u64 address = 0x40000000ull + static_cast<u64>(index) * 0x200000ull +
+                                static_cast<u64>(leaf_index) * page_size;
+            const memory_result mapped = map_page_in(destination, address, physical, permissions);
+            if (mapped != memory_result::none) {
+                (void)release_page(physical);
+                return mapped;
+            }
+            ++*copied_pages;
+        }
+    }
+    return memory_result::none;
 }
 }
 

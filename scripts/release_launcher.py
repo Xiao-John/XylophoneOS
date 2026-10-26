@@ -48,8 +48,8 @@ def build_command(qemu: str, boot_image: Path, work_disk: Path,
         "-m", "512",
         "-smp", "1",
         "-net", "none",
-        "-boot", "order=a",
-        "-drive", f"file={boot_image},format=raw,if=floppy,readonly=on",
+        "-boot", "order=d",
+        "-drive", f"file={boot_image},format=raw,if=ide,index=2,media=cdrom,readonly=on",
         "-drive", f"file={work_disk},format=raw,if=ide,index=0,media=disk",
         "-serial", "stdio",
         "-monitor", "none",
@@ -65,7 +65,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--image-dir", type=Path, default=Path(__file__).resolve().parent,
-        help="directory containing xos.img and work_disk.img (default: this script's directory)",
+        help="directory containing xos-install-dash.iso and work_disk.img (default: this script's directory)",
     )
     parser.add_argument("--qemu", default="qemu-system-x86_64",
                         help="QEMU executable name or path")
@@ -76,7 +76,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     try:
         qemu = qemu_executable(args.qemu)
         folder = args.image_dir.expanduser().resolve()
-        boot_image = image_path(folder, "xos.img")
+        boot_image = image_path(folder, "xos-install-dash.iso")
         work_disk = image_path(folder, "work_disk.img")
         command = build_command(qemu, boot_image, work_disk, args.display)
     except (FileNotFoundError, ValueError) as error:

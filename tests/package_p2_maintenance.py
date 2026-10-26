@@ -67,9 +67,11 @@ def main():
             command('maint-run /out/p2_probe ok',b'busy or denied error=-11',False)
             command('kill '+str(pid),b'kill: accepted',False);command('wait '+str(pid),b'kind=killed code=-9')
             report['checks'].append('live_ordinary_process_blocks_maintenance')
-            command('maint-run /out/p2_probe ok',b'maintenance: completed')
+            data=command('maint-run /out/p2_probe ok',b'maintenance: completed')
             command('maint-status',b'owner=0 worker=0 error=0')
             report['checks'].append('exclusive_worker_write_lease_and_no_spawn')
+            require(b'P2_C_STAGE isolated_abi new_paths_guarded' in data,'C-stage guard probe missing')
+            report['checks'].append('c1_c3_abi_and_new_creation_paths_guarded')
             for mode in ('fail','fault','spin'):
                 if mode=='spin':
                     start=len(guest.output);send_bytes(guest,b'maint-run /out/p2_probe spin\r')

@@ -1,0 +1,16 @@
+--- a/src/eval.c
++++ b/src/eval.c
+@@ -568,0 +569 @@
++	return xos_evalpipe(n, flags);
+@@ -667,0 +669 @@
++	xos_job_capture(jp, pip[0]);
+--- a/src/expand.c
++++ b/src/expand.c
+@@ -538,0 +539 @@
++	size_t xos_captured = 0;
+@@ -558,0 +560,3 @@
++		if ((size_t)i > 1048576 - xos_captured)
++			sh_error("XOS command substitution output exceeds 1048576 bytes");
++		xos_captured += i;
+@@ -566,0 +571 @@
++		if (i < 0) sh_error("command substitution read: %s", strerror(errno));

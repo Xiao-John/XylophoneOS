@@ -1,0 +1,44 @@
+{
+  "assets": [
+    {
+      "digest": "sha256:e65457ba52f40d23ff602ebf3e53479a614c51a3c95f8e580d4c607392f15848",
+      "name": "CHECKSUMS.sha256",
+      "size": 585,
+      "url": "https://github.com/Xiao-John/XylophoneOS/releases/download/v0.0.1-1026/CHECKSUMS.sha256"
+    },
+    {
+      "digest": "sha256:6d73a563b9ae7089e324e381dc912223a5103897d88230ff79948159cb8051d6",
+      "name": "release_manifest.json",
+      "size": 214628,
+      "url": "https://github.com/Xiao-John/XylophoneOS/releases/download/v0.0.1-1026/release_manifest.json"
+    },
+    {
+      "digest": "sha256:3f1ead9867ca567a3a1e14edd59fcbca42d238b9159c115fc96b9e7727930657",
+      "name": "xos-0.0.1-1026-sources.tar.gz",
+      "size": 206421996,
+      "url": "https://github.com/Xiao-John/XylophoneOS/releases/download/v0.0.1-1026/xos-0.0.1-1026-sources.tar.gz"
+    },
+    {
+      "digest": "sha256:8dcc344f5126c2128896684455116d288d8331ca08f5d16118bf72abf7d131a8",
+      "name": "xylophoneos_revival_0.0.1-1026_images.tar.gz",
+      "size": 90033806,
+      "url": "https://github.com/Xiao-John/XylophoneOS/releases/download/v0.0.1-1026/xylophoneos_revival_0.0.1-1026_images.tar.gz"
+    },
+    {
+      "digest": "sha256:a09e6157fc5409152e2646484eb03cec5509433558734fb921d161c53365b4a1",
+      "name": "xylophoneos_revival_0.0.1-1026_sdk.tar.gz",
+      "size": 9160070,
+      "url": "https://github.com/Xiao-John/XylophoneOS/releases/download/v0.0.1-1026/xylophoneos_revival_0.0.1-1026_sdk.tar.gz"
+    }
+  ],
+  "created_at": "2026-10-26T04:16:14Z",
+  "draft": false,
+  "html_url": "https://github.com/Xiao-John/XylophoneOS/releases/tag/v0.0.1-1026",
+  "name": "XylophoneOS Revival version 0.0.1-1026",
+  "prerelease": false,
+  "published_at": "2026-10-26T04:22:30Z",
+  "release_id": 423856125,
+  "source_commit": "db5b46cf36b57a602946a370269563f9c8dd212f",
+  "tag_commit": "db5b46cf36b57a602946a370269563f9c8dd212f",
+  "tag_name": "v0.0.1-1026"
+}

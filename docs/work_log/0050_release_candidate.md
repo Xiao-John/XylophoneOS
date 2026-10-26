@@ -48,6 +48,15 @@ python3 scripts/release_smoke.py
 - release 镜像额外包含 sbase cat/cp/mkdir/mv/rm、make、xypm、CPython PY3
   stage 和 idna 包；这些是 release smoke 的实际依赖，不是新的 xypm 功能。
 
+## 发布结果
+
+- GitHub Release `0.0.1-1026` 已创建并公开，release id `423856125`。
+- URL：https://github.com/Xiao-John/XylophoneOS/releases/tag/v0.0.1-1026
+- 远端资产：images、SDK、source、CHECKSUMS、release_manifest；API 返回的
+  SHA256 与本地一致。
+- 远端 `main` 为 `16d2856`，标签 `v0.0.1-1026` 指向 `db5b46c`。
+- 发布回执：`docs/releases/release_0_0_1_1026.json`。
+
 ## 未完成/待确认
 
 - 源码尚未提交；release source materials 必须在提交后用 `git archive` 生成，

@@ -5,6 +5,7 @@
 // firmware interrupt numbers, register names, or device addresses.
 namespace xos::platform {
 void debug_init();
+void debug_graphics(bool active);
 bool debug_write(const char* text);
 i64 debug_write_bytes(const u8* bytes, usize length);
 // Returns one received byte, or -1 when the input is empty. Polling only.

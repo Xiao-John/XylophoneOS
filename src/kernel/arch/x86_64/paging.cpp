@@ -72,6 +72,24 @@ memory_result map_page_in(u64 address_space, u64 virtual_address, u64 physical,
     return memory_result::none;
 }
 
+memory_result map_device_page(u64 virtual_address, u64 physical) {
+    if (virtual_address < 0x30000000ull || virtual_address >= 0x31000000ull ||
+        virtual_address % page_size != 0 || physical % page_size != 0 ||
+        physical < max_managed_phys || physical >= 0x100000000ull) {
+        return memory_result::invalid;
+    }
+    u64* pdpt = table(table(read_cr3())[0]);
+    u64* pd = table(pdpt[0]);
+    memory_result result{};
+    u64* pt = ensure_table(pd, index_of(virtual_address, 21), false, &result);
+    if (pt == nullptr) { return result; }
+    auto& leaf = pt[index_of(virtual_address, 12)];
+    if ((leaf & present) != 0) { return memory_result::already_mapped; }
+    leaf = physical | present | writable | no_execute | (1ull << 3) | (1ull << 4);
+    invalidate(virtual_address);
+    return memory_result::none;
+}
+
 memory_result map_page(u64 virtual_address, u64 physical, page_permissions permissions) {
     return map_page_in(read_cr3(), virtual_address, physical, permissions);
 }

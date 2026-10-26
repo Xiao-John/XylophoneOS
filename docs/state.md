@@ -1,5 +1,12 @@
 # XOS 当前状态
 
+## 正在进行：E14 显示后端
+
+Codex 独占 feature/display-backend-e14 的 loader、display/input、ABI、SDK、服务与测试。
+基线 origin/main 5b4e5e1；无其他 XOS 活跃编辑任务。构建仅本 worktree/build，
+测试仅专用临时盘；D0→D4 串行。G02 尚未验收，不修改旧 Release/日常盘。
+
+
 更新时间：2026-10-26（Asia/Shanghai）。新 agent 按 AGENTS.md 的阅读顺序开始。
 > `feature/dash-c1-c3`：C1/C2/C3三个Gate及受影响旧回归全部passed。
 > 最终源码实现e729dc6，build2f7160b7d6633ee6；22个最终串行验收入口全部退出0。

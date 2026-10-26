@@ -7,8 +7,10 @@ constexpr u16 uart = 0x3f8;
 usize row;
 usize column;
 int pending_input = -1;
+bool graphics_active;
 auto* const text_buffer = reinterpret_cast<volatile u16*>(0xb8000);
 void vga_char(char value) {
+    if (graphics_active) { return; }
     if (value == '\r') { column = 0; return; }
     if (value == '\n') { ++row; column = 0; }
     else {
@@ -22,6 +24,7 @@ void vga_char(char value) {
     }
 }
 }
+void debug_graphics(bool active) { graphics_active = active; }
 void debug_init() {
     arch::out_byte(uart + 1, 0);
     arch::out_byte(uart + 3, 0x80);
@@ -32,7 +35,9 @@ void debug_init() {
     arch::out_byte(uart + 4, 0x0b);
     row = 0;
     column = 0;
-    for (usize i = 0; i < 80 * 25; ++i) { text_buffer[i] = 0x0720; }
+    if (!graphics_active) {
+        for (usize i = 0; i < 80 * 25; ++i) { text_buffer[i] = 0x0720; }
+    }
 }
 int debug_peek() {
     if (pending_input < 0 && (arch::in_byte(uart + 5) & 1) != 0) {

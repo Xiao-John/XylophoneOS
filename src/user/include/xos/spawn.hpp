@@ -20,6 +20,13 @@ struct startup_extension {
     u32 reserved;
 };
 static_assert(sizeof(startup_extension) == 88);
+// v3 exec-only extension follows the compatible v2 header at offset 152.
+inline constexpr u64 startup_exec_magic = 0x335845534f585546ull;
+inline constexpr u32 startup_exec_offset = startup_extension_offset + sizeof(startup_extension);
+enum class startup_fd_kind : u32 { kernel = 1, file = 2, pipe_read = 3, pipe_write = 4 };
+struct startup_descriptor { u32 fd, object, kind, handle, flags, reserved; };
+struct startup_exec_extension { u64 magic, descriptors; u32 count, reserved; };
+static_assert(sizeof(startup_descriptor) == 24 && sizeof(startup_exec_extension) == 24);
 namespace sdk {
 struct spawn_options {
     u32 environment_count = 0;
@@ -38,6 +45,12 @@ struct spawn_options {
     // Explicit bounded delegation. A non-supervisor may only grant a smaller
     // depth than it received; zero leaves the child unprivileged.
     u32 delegate_spawn_depth = 0;
+    // Same-session descriptors are restored by the replacement's libc startup.
+    // fd=UINT32_MAX requests last-object CLOEXEC cleanup before new main.
+    bool replace_image = false;
+    u32 exec_depth_mode = 0;
+    u32 descriptor_count = 0;
+    const startup_descriptor* descriptors = nullptr;
 };
 i64 spawn_file_options(const char* path, u32 argc, const char* const* argv,
                        const spawn_options& options);

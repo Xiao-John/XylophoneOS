@@ -1,0 +1,331 @@
+{
+  "build_id": "2f7160b7d6633ee6",
+  "source_commit": "e729dc6511ede000a6cfaf57bf771934f8310eea",
+  "dash_manifest": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/dash/e4e7615a2880cf3270d4/manifest.json",
+  "sbase_manifest": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/sbase/9f051d7f64407891b2fa/manifest.json",
+  "runs": [
+    {
+      "name": "atomic",
+      "command": [
+        "python3",
+        "tests/pipe_atomic_smoke.py",
+        "--system",
+        "build"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 2.89,
+      "log": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/c3r2_regression_atomic.log",
+      "sha256": "d1725350c6abc4bbfefff845c9c3e9308b7df864d7758b29f66b6635f31f14e8"
+    },
+    {
+      "name": "c3_exec",
+      "command": [
+        "python3",
+        "tests/dash_c3_exec_smoke.py",
+        "--system",
+        "build",
+        "--threading-sdk",
+        "build/threading_sdk"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 22.83,
+      "log": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/c3r2_regression_c3_exec.log",
+      "sha256": "23c91c54f72defe42e8ae3d3ad4be75dac9b8e523578f342572887cadd229c35"
+    },
+    {
+      "name": "c3_make",
+      "command": [
+        "python3",
+        "tests/dash_c3_smoke.py",
+        "--system",
+        "build",
+        "--dash-manifest",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/dash/e4e7615a2880cf3270d4/manifest.json",
+        "--make-manifest",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/make/552ade4ee885e9281f9c/manifest.json",
+        "--sbase-manifest",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/sbase/9f051d7f64407891b2fa/manifest.json",
+        "--release-images",
+        "../runtime/xos-1024-images.tar.gz"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 334.68,
+      "log": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/c3r2_regression_c3_make.log",
+      "sha256": "053fe3b88d6e92ab1226d1cfd0cff31c1b299fad2bfb94e3afeb60eb47add0db"
+    },
+    {
+      "name": "c2",
+      "command": [
+        "python3",
+        "tests/dash_c2_smoke.py",
+        "--system",
+        "build",
+        "--dash-manifest",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/dash/e4e7615a2880cf3270d4/manifest.json",
+        "--threading-sdk",
+        "build/threading_sdk"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 20.71,
+      "log": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/c3r2_regression_c2.log",
+      "sha256": "d028ea4eee4e974d60194d32c56205a9c8a1dc2059ab06a8f46e329e115908fd"
+    },
+    {
+      "name": "c1",
+      "command": [
+        "python3",
+        "tests/dash_c1_smoke.py",
+        "--system",
+        "build",
+        "--dash-manifest",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/dash/e4e7615a2880cf3270d4/manifest.json",
+        "--isolated"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 24.3,
+      "log": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/c3r2_regression_c1.log",
+      "sha256": "b8bf3e5f0f8617e979823b823252bbcdacf90d5f84c78b911d83e816d2f69193"
+    },
+    {
+      "name": "c1_threads",
+      "command": [
+        "python3",
+        "tests/dash_c1_threads_smoke.py",
+        "--system",
+        "build"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 3.34,
+      "log": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/c3r2_regression_c1_threads.log",
+      "sha256": "a859cfa85a8b65bea95764a8724ba86a76e53de7277491803e70f5ef45b93df0"
+    },
+    {
+      "name": "c1_pthread",
+      "command": [
+        "python3",
+        "tests/dash_c1_pthread_smoke.py",
+        "--system",
+        "build",
+        "--sdk",
+        "build/threading_sdk"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 3.51,
+      "log": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/c3r2_regression_c1_pthread.log",
+      "sha256": "3c32d8156023712c5ddc158b863f35c46c6b371c054a857503f7e547de506c51"
+    },
+    {
+      "name": "process",
+      "command": [
+        "python3",
+        "tests/process_smoke.py"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 8.13,
+      "log": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/c3r2_regression_process.log",
+      "sha256": "bf0eb52c1acbfc546dc588a7b64c709b263e0d73cfb3e7339f7f30640b59b822"
+    },
+    {
+      "name": "file",
+      "command": [
+        "python3",
+        "tests/file_smoke.py"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 3.24,
+      "log": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/c3r2_regression_file.log",
+      "sha256": "ba070b0d2f201373148318e1faf3e27e9b8109446f0db524d454d181fe11288b"
+    },
+    {
+      "name": "threading",
+      "command": [
+        "python3",
+        "tests/threading_smoke.py"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 6.97,
+      "log": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/c3r2_regression_threading.log",
+      "sha256": "9ad9a8d64847bd408fb9a3839a1fc5e4a4adda61ecaa6120413d5f51ea09ff2b"
+    },
+    {
+      "name": "pthread",
+      "command": [
+        "python3",
+        "tests/threading_pthread_smoke.py"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 4.6,
+      "log": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/c3r2_regression_pthread.log",
+      "sha256": "31c1b646966042621dfae5220e7eeb649cc626c148d02e3dd098c083f3a67e22"
+    },
+    {
+      "name": "cpp",
+      "command": [
+        "python3",
+        "tests/threading_cpp_smoke.py"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 3.83,
+      "log": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/c3r2_regression_cpp.log",
+      "sha256": "2244332fc24129cc72ba7c6889ee7599f9f4535d1207f771d99fd015dccd77f4"
+    },
+    {
+      "name": "cpython",
+      "command": [
+        "python3",
+        "tests/cpython_t3_py_smoke.py",
+        "--work",
+        ".cache/xos_seed/cpython/bd955d1c4528d41ea5ce"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 20.43,
+      "log": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/c3r2_regression_cpython.log",
+      "sha256": "16cd910f2ae9d5107576016e8c564bdebd37301b1d83c2e14758134ce62d57d6"
+    },
+    {
+      "name": "persist",
+      "command": [
+        "python3",
+        "tests/persist_smoke.py"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 4.28,
+      "log": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/c3r2_regression_persist.log",
+      "sha256": "50999761b06efcd37c1d8948195f81a1e0e1925acd01e4c9994af2e1683d8a89"
+    },
+    {
+      "name": "native",
+      "command": [
+        "python3",
+        "tests/threading_native_toolchain.py",
+        "--release-images",
+        "../runtime/xos-1024-images.tar.gz"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 46.99,
+      "log": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/c3r2_regression_native.log",
+      "sha256": "21fca0089672d683ba3982cfc438a08a0a544ae8672f756cdb953c60c0dcee98"
+    },
+    {
+      "name": "dash_a",
+      "command": [
+        "python3",
+        "tests/shell_smoke.py",
+        "--manifest",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/dash/e4e7615a2880cf3270d4/manifest.json",
+        "--system",
+        "build",
+        "--isolated"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 8.53,
+      "log": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/c3r2_regression_dash_a.log",
+      "sha256": "f9a02678e367a3c71cc3b04c37817acf8ec6ef7aa6c5ffab8ed42b20d5460483"
+    },
+    {
+      "name": "dash_b",
+      "command": [
+        "python3",
+        "tests/dash_b_smoke.py",
+        "--system",
+        "build",
+        "--dash-manifest",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/dash/e4e7615a2880cf3270d4/manifest.json",
+        "--sbase-manifest",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/sbase/9f051d7f64407891b2fa/manifest.json",
+        "--release-images",
+        "../runtime/xos-1024-images.tar.gz"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 55.99,
+      "log": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/c3r2_regression_dash_b.log",
+      "sha256": "3cacb5102c520c3858ab6a4326c378bd3ab4512dcb4d10668ac706905de2f56b"
+    },
+    {
+      "name": "dash_b2",
+      "command": [
+        "python3",
+        "tests/dash_b2_smoke.py",
+        "--system",
+        "build",
+        "--dash-manifest",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/dash/e4e7615a2880cf3270d4/manifest.json",
+        "--sbase-manifest",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/sbase/9f051d7f64407891b2fa/manifest.json",
+        "--release-images",
+        "../runtime/xos-1024-images.tar.gz"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 7.02,
+      "log": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/c3r2_regression_dash_b2.log",
+      "sha256": "e2183040ed293e177565a451966ff11ffe0d42d383a5e6317dedffacab6694ba"
+    },
+    {
+      "name": "libc",
+      "command": [
+        "python3",
+        "tests/libc_smoke.py"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 2.26,
+      "log": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/c3r2_regression_libc.log",
+      "sha256": "3781bda8d7bb561c99397f986089c9ae66bce3149546eb5dfeeda4f24403b9ef"
+    },
+    {
+      "name": "iso_file",
+      "command": [
+        "python3",
+        "tests/iso_file_kernel_smoke.py"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 1.24,
+      "log": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/c3r2_regression_iso_file.log",
+      "sha256": "125313c2c154053ee40f6d20ff7413e6a67b4efdd7402c89d2f7ad4a0e32f54a"
+    },
+    {
+      "name": "iso_install",
+      "command": [
+        "python3",
+        "tests/iso_dash_install.py"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 11.91,
+      "log": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/c3r2_regression_iso_install.log",
+      "sha256": "d36647ec08adc15924eeeb754182298c07b52cb105ae8672123c2ffe57b6252d"
+    },
+    {
+      "name": "license",
+      "command": [
+        "python3",
+        "scripts/license_audit.py"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.09,
+      "log": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/c3r2_regression_license.log",
+      "sha256": "7fa4619c8c17406c2142a858754e1ee1056df7f5417b5625432bae798c7c02e2"
+    }
+  ],
+  "status": "passed"
+}

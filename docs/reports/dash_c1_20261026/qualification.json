@@ -1,0 +1,81 @@
+{
+  "status": "passed",
+  "stage": "C1",
+  "source_commit": "ed65bf8b478eaa0ff39b7398156be492ae6bea21",
+  "validation_note": "C1 runner UUID evidence destination fix after source commit; no production source change",
+  "build_id": "f62f20ef40b19677",
+  "reports": {
+    "dash_c1_final_report.json": {
+      "sha256": "cff43f71d3a894a16fb39c5da3ce81543692d81328d5f90965974c974835e4e3",
+      "checks": 25
+    },
+    "dash_c1_threads_report.json": {
+      "sha256": "1684b1b7c89ec4f3bb462e869c2ff5f006bd734d3ca0c56b2e1c3bb8e7e50feb",
+      "checks": 7
+    },
+    "dash_c1_pthread_report.json": {
+      "sha256": "f72ebf90a55785195be897b6043fd49b4ddf7fd5d3481e621683e82e43adce6c",
+      "checks": 5
+    },
+    "process_smoke_report.json": {
+      "sha256": "4141b0f0c3af33a3e0d8d11c04d758cbbe1b827d597ddbd5ba9e9b3b12009d71",
+      "checks": 13
+    },
+    "file_smoke_report.json": {
+      "sha256": "1cc80edfe2f6ff2498d3d34b144a56c68719f1673e6df7cd2a24114d8a482192",
+      "checks": 8
+    },
+    "threading_report.json": {
+      "sha256": "d8cf8dc2e3915b05d523dc31ec8a97537f6888c4a72f6fbce8806e371579f27e",
+      "checks": 15
+    },
+    "threading_pthread_report.json": {
+      "sha256": "c3369c35738120de68c1237875315a23f3cdd5c92c37ce4108899135a45071e5",
+      "checks": 10
+    },
+    "threading_cpp_report.json": {
+      "sha256": "1e793ca340f881ea9b961b71c0f4d3cff80b67ad96113d2a0fd5b5006a574457",
+      "checks": 10
+    },
+    "cpython_t3_py_report.json": {
+      "sha256": "e82184cfa89d0f7637492eb0272565e51c31dfdf7365de1e30b0250d352f31fc",
+      "checks": 5
+    },
+    "persist_smoke_report.json": {
+      "sha256": "f0e6d0db2a02e76566c7b7802bb4357e2d8623f1625c3a5556e6470ea98064e1",
+      "checks": 4
+    },
+    "threading_native_report.json": {
+      "sha256": "d6bbf357412a3bed598ffa73f784d0e5d1279bad502f9d335597d881efe18f66",
+      "checks": 6
+    },
+    "dash_b_acceptance_report.json": {
+      "sha256": "e859884acae3ca1107b6d45a3521e8a85b75c04f5759b234b8574039e50ddf3f",
+      "checks": 7
+    },
+    "dash_b2_acceptance_report.json": {
+      "sha256": "f76fef519066eda9d6a7d622625d7b9e01b6f862f9ccfa1c009d8c7b455a132f",
+      "checks": 6
+    },
+    "license_report.json": {
+      "sha256": "d83fdc5b463f88a4579e678dc98dcc38ab94602f82fdc2d9ca70511b9146f2a9",
+      "checks": 0
+    },
+    "shell_smoke_report.json": {
+      "sha256": "a874eceb499145fef79414d43b8632187d3f0a755516ef6c5d0e655184b7be08",
+      "checks": 15
+    }
+  },
+  "xos.img": "c95dec12e3a17e2e387d793e8ce4b7fdc98d47d7e8eb43aff8e1a5c6e433a545",
+  "kernel.bin": "8c66819309ba4a2e57d2f0682be571d1ccf97e3d0ca24db6f2f2788abdb8b27c",
+  "sdk/manifest.json": "a228f9c5a0472e8a0ef4a05fd56e7f28fe3add7a65a65e68bb6d948e175d4570",
+  "threading_sdk/manifest.json": "da10a61afe2eeced49a2465816801bf87eeef69883bfb2e2869ba1d2ddbb3b18",
+  "dash": {
+    "profile": "dash_c1",
+    "version": "0.5.13.5",
+    "elf": ".cache/xos_seed/dash/8f176e8a7d037e60db89/build/src/dash",
+    "sha256": "b03450a8db8cca57098ac7fd6ed78e0960f2efce6d7038f0aeaa3fc1d0f14f6e",
+    "bytes": 1021536,
+    "status": "built_not_run"
+  }
+}

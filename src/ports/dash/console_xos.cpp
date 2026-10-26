@@ -59,3 +59,15 @@ extern "C" ssize_t xos_shell_read(int fd, void* output, size_t count) {
     for (size_t i = 0; i < used; ++i) { static_cast<char*>(output)[i] = line[offset++]; }
     return static_cast<ssize_t>(used);
 }
+
+// Private orchestration API. Child cancellation is limited to direct children.
+extern "C" int xos_shell_foreground(const int* children, unsigned count, int active) {
+    if (count > xos::process_pipeline_max) { return -1; }
+    xos::process_foreground request{1, sizeof(request), count, 0, {}};
+    for (unsigned i = 0; i < count; ++i) { request.pids[i] = static_cast<xos::u64>(children[i]); }
+    return static_cast<int>(xos::sdk::syscall(xos::sys_process_foreground,
+                                            reinterpret_cast<xos::u64>(&request), static_cast<xos::u64>(active)));
+}
+extern "C" void xos_shell_cancel(int child) {
+    (void)xos::sdk::syscall(xos::sys_process_cancel, static_cast<xos::u64>(child));
+}

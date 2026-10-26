@@ -1,0 +1,166 @@
+{
+  "stage": "C3",
+  "status": "passed",
+  "scope": "declared bounded foreground XOS profile; not full POSIX",
+  "base_commit": "4c78b27c8f07eeb69145d85786660689fe2db9df",
+  "source_commit": "e729dc6511ede000a6cfaf57bf771934f8310eea",
+  "source_tree": "3ce510a84618e3917b35c33d8dd506e2518798fd",
+  "build_id": "2f7160b7d6633ee6",
+  "source_manifest_sha256": "523e269b699b38fbf1881ff3b3214c8b79676340d5afbe07d33c769c8fd7e987",
+  "sdk": {
+    "sdk": {
+      "tree_sha256": "d531a24b2f679c8ae4b96fd6cb18127bb42a0798ac306152a4c90d362764e393",
+      "file_count": 166,
+      "manifest_sha256": "195a81b9fe6601f1cb0be5da0cab195363f1cd61a34ac2a37f77db971df67493"
+    },
+    "threading_sdk": {
+      "tree_sha256": "8cf47213690c2dbe95719c087cb1f84b456ddc06b9f2b7987940b00d4a747444",
+      "file_count": 1053,
+      "manifest_sha256": "e8138f6b3f1e60be42c496b1c305f1a67dc54a2ea683ac52c2a0730f42296cf5"
+    }
+  },
+  "ports": {
+    "dash": {
+      "elf_sha256": "d262b8299734d07c27e8d5ac696a3460c82cba4fe56159d3cbdcceee8f703ff9",
+      "bytes": 264784,
+      "manifest_sha256": "134b99fc840af9df13a3b1a5b250e8a73fa0864505e392d7e5bed3aaa5764231"
+    },
+    "make": {
+      "elf_sha256": "dfe2aa23c9e2adc7f9644f869f2c9618131d3dd1771ef392122d796b81053725",
+      "bytes": 906080,
+      "manifest_sha256": "dc3abac0a42e64641818b2b2839a8560b5e5b06852d075d635093d940ceb71f9"
+    }
+  },
+  "artifacts": {
+    "xos.img": "5deb880b9479ce7b155a24362fe97a7290938112244da4d41b3ebffbba1b0a1d",
+    "kernel.elf": "38dfd4064f9070e648b4f4bd40ce9d5d481f1d721a184b5ac3d6b77de56ec4b7",
+    "kernel.bin": "14b7d7fb924e59f1a6f4180d6df8204fc5c77622c4c2e124a52fe42246841707",
+    "xos.iso": "2254cc067f2efba3afec04c656016c203309b844ea29e1402afc757db1b5cb77",
+    "xos-install.iso": "de8a3fc96ebf52b8ef2edee28fdbfd045327bf572f8e849703750c15a83fbd6f",
+    "xos-install-dash.iso": "339662758687e7f507e0e12e1498fe53ec308f8dc8f45f04bd270160307f6207"
+  },
+  "reports": {
+    "dash_c3_report.json": {
+      "sha256": "31d4028e46fbde0dd0d246a2bf8dfe74fa39f0849bb6bebfe9e7e55a7953020b",
+      "raw_sha256": "cee914a2dd0a8380b047cffc173ff770da286cfdd213e071d8a88b85dacd9cc3",
+      "checks": 66
+    },
+    "dash_c3_exec_report.json": {
+      "sha256": "310cd81591c2abf3668624e1e85ad7dc9687fb38fe8112186f61f790f2ea8cea",
+      "checks": 16
+    },
+    "pipe_atomic_report.json": {
+      "sha256": "9407d222ef319caa92a82aa15e8a75742a9bd5a8fe3467b5e4222b038cf96582",
+      "checks": 7
+    },
+    "dash_c2_report.json": {
+      "sha256": "883099bf8970670dd5ae70e89ec6770114326e6a592cf5c507f3019903c2e61f",
+      "checks": 30
+    },
+    "dash_c1_report.json": {
+      "sha256": "82a4a5040bc047cb730e6809f6a17603d10d4a69e2f798744b92aca725420436",
+      "checks": 24
+    },
+    "dash_c1_threads_report.json": {
+      "sha256": "ddfa11497e96031f847ca789497da373fc39c268bb8633da099ffb5ffb2a7d2d",
+      "checks": 7
+    },
+    "dash_c1_pthread_report.json": {
+      "sha256": "e3b792dcaf09738ab4de34a440a6dd796b144c4a28f55bb90e9e665d2bd77e5b",
+      "checks": 5
+    },
+    "process_smoke_report.json": {
+      "sha256": "06d605e5e8d4fe7149edb95a8c8e1ec6cc95d7c377249ad841bed3173ba24efd",
+      "checks": 13
+    },
+    "file_smoke_report.json": {
+      "sha256": "fdd746c677bf964301b38e78b990e1017f44b747f4c14ba7e11a6736d11d9351",
+      "checks": 8
+    },
+    "threading_report.json": {
+      "sha256": "3bbd739e0c94efdffc50aabdf91c6c0f5b421d483a4c080e9e640b8bd35b34e0",
+      "checks": 15
+    },
+    "threading_pthread_report.json": {
+      "sha256": "5739baa93e57f4ce696000e672d80a9176aa7364ed3c0c98e5769b9c72b6b005",
+      "checks": 10
+    },
+    "threading_cpp_report.json": {
+      "sha256": "5f941fea891b88740b44f71ed727a747355ded201c4a5059b41ad36aaebf38ae",
+      "checks": 10
+    },
+    "cpython_t3_py_report.json": {
+      "sha256": "16cd910f2ae9d5107576016e8c564bdebd37301b1d83c2e14758134ce62d57d6",
+      "checks": 5
+    },
+    "persist_smoke_report.json": {
+      "sha256": "23ea0c46c0dde2ef9fdfd05092e9a120e16d213e00f35ef6d0f5789e43dae4c2",
+      "checks": 4
+    },
+    "threading_native_report.json": {
+      "sha256": "08ff111dfcbd437b6519b2d9b6b6fab02ee13ac50dde6c5bd5f39feb37d85982",
+      "checks": 6
+    },
+    "dash_b_acceptance_report.json": {
+      "sha256": "f0677ac3a255165467aa25c2bd92fcbae17dab4d2c5ad8b33b2673b498010680",
+      "checks": 7
+    },
+    "dash_b2_acceptance_report.json": {
+      "sha256": "151fa77bb1aa3fc527bb59012679048c41b27495b831f9de4c46535f1c2ee603",
+      "checks": 6
+    },
+    "libc_smoke_report.json": {
+      "sha256": "9779726bcd27ce10097f90997e43a4b588bdceabf1a8b34c83a497b7ebeca2cf",
+      "checks": 3
+    },
+    "iso_file_kernel_report.json": {
+      "sha256": "125313c2c154053ee40f6d20ff7413e6a67b4efdd7402c89d2f7ad4a0e32f54a",
+      "checks": 2
+    },
+    "iso_dash_install_report.json": {
+      "sha256": "d36647ec08adc15924eeeb754182298c07b52cb105ae8672123c2ffe57b6252d",
+      "checks": 4
+    },
+    "license_report.json": {
+      "sha256": "9788064d23457971cb0c3a19c9d789b979b99054f9eebc715956a897609b47ea",
+      "checks": 0
+    },
+    "shell_smoke_report.json": {
+      "sha256": "69ecf6095af80a13996527847d4af50dfc26814f382bbe68b9f9d52d8edec6f7",
+      "checks": 12
+    }
+  },
+  "validation": {
+    "command_groups": 22,
+    "all_exit_zero": true,
+    "baseline_resources": [
+      129826,
+      2,
+      0
+    ],
+    "final_resources": [
+      129826,
+      2,
+      0
+    ],
+    "guest_self_built_make": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/guest_self_built_make.elf",
+      "bytes": 910432,
+      "sha256": "9ef76509c7e2fe6738f58738076b9e855f228168eb45d543d6eff624eb251be7"
+    }
+  },
+  "errata": [
+    "dash_c3_report.raw.json retained; report-only ordinary-console/file-stdio expectation label clarified in corrected report and future runner; no runtime assertion or output changed"
+  ],
+  "not_run_or_unsupported": [
+    "full_POSIX_and_GNU_Make",
+    "SMP_and_Qt",
+    "asynchronous_POSIX_signals_and_background_jobs",
+    "thread_profile_fork_exec",
+    "legacy_unadvertised_file_stdio_and_exec",
+    "arbitrary_RPC_timeout_replay",
+    "power_loss_anonymous_orphan_recovery",
+    "new_SDK_xypm_profile_registration",
+    "unrelated_randomized_long_stress"
+  ]
+}

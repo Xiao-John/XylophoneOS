@@ -1,0 +1,12 @@
+{
+  "sdk": {
+    "tree_sha256": "d531a24b2f679c8ae4b96fd6cb18127bb42a0798ac306152a4c90d362764e393",
+    "file_count": 166,
+    "manifest_sha256": "195a81b9fe6601f1cb0be5da0cab195363f1cd61a34ac2a37f77db971df67493"
+  },
+  "threading_sdk": {
+    "tree_sha256": "8cf47213690c2dbe95719c087cb1f84b456ddc06b9f2b7987940b00d4a747444",
+    "file_count": 1053,
+    "manifest_sha256": "e8138f6b3f1e60be42c496b1c305f1a67dc54a2ea683ac52c2a0730f42296cf5"
+  }
+}

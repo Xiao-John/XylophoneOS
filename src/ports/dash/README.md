@@ -9,7 +9,7 @@ backends, `admission_xos.c` is appended to eval.c, and `console_xos.cpp` impleme
 canonical serial input using the existing SDK, including UTF-8 validation and
 code-point-aware backspace. The signal hooks are private
 shell bookkeeping, not successful libc signal emulation. Unsupported operations
-fail explicitly. No fork or vfork implementation is introduced.
+fail explicitly. C2 adds bounded single-thread eager-copy fork; vfork remains unavailable.
 
 The accepted B0/B1 profile recursively admits `case`, shell functions, dot
 scripts, and the existing parameter expansion. It rejects pipelines,
@@ -38,3 +38,50 @@ upstream mksignames generator and its output are omitted in this no-signals
 profile. New local backend/build/test files are Apache-2.0; modified upstream
 files retain their original licenses. The pinned upstream tarball is kept under
 `upstream/` so an offline checkout can build and preinstall dash.
+
+
+C1 experimental branch adds external-only, foreground pipelines of at most four
+simple-command stages. All stages launch before any blocking wait. Parent pipe
+ends close promptly, ordered stage redirections override pipe defaults, failed
+launches cancel/collect already started children, and Escape cancels the whole
+foreground pipeline even during construction. The last stage supplies status;
+missing commands are 127, other spawn failures 126, cancellation 137. A fifth
+stage is rejected before execution. Fewer free process slots can fail a shorter
+pipeline; the global eight-process quota is unchanged.
+
+This intermediate C1 evaluator expands external arguments in the parent shell.
+Full subshell isolation, including side effects of arithmetic expansion, belongs
+to C2 and is not claimed here. Builtins/functions in pipelines, subshells, command
+substitution, here-documents, background jobs and real exec remain rejected.
+Actual evidence and remaining regressions are recorded in work log 0047.
+
+
+C2 uses eager-copy fork, preserving the actual Shell heap/AST/functions, variable
+flags, positional parameters, cwd, all libc descriptors and file-service opens.
+The copied continuation cannot run before an authenticated file-session clone
+ACK. Multithread profiles reject fork; depth is bounded to three and physical
+memory exhaustion rolls back the partially copied image. Literal external
+stages keep C1's direct launch; stages with expansion, builtins, functions or
+compound commands fork before evaluation. This keeps argument side effects out
+of the parent. pipefail and tested errexit contexts use real collected status.
+
+Command substitution supports both $(...) and backticks through the upstream
+expander, with a declared 1 MiB raw stdout bound and tail-newline stripping.
+Errors cancel/reap the capture child and close its read descriptor, so an
+interactive Shell can continue. This is not asynchronous signal delivery or
+real exec replacement; those remain C3 work. Detailed evidence is in 0048.
+
+
+C3 uses read-only sealed anonymous file descriptions for here-documents, keeping
+large bodies out of pipe prefill and deleting storage at last close. Explicit
+exec preserves PID/TID and restores complete descriptor groups through startup
+v3, including per-FD CLOEXEC. A read-only .xos.exec CRT declaration is required;
+legacy static tools remain on ordinary spawn, with explicit exec rejected.
+The current SDK's runtime libraries, CRT and linker must be used together.
+The unstripped Dash ELF is retained for debugging; the installed runtime ELF
+removes debug sections only and the builder verifies unchanged entry, PT_LOAD
+and PT_TLS contents. The existing one-MiB ISO payload budget is unchanged.
+Optional sbase Make has a separate explicit -B, serial profile; see 0049 and
+make_subset.md for exact limitations and real guest evidence. This still does
+not provide POSIX asynchronous signals, background jobs, or thread-profile
+fork/exec. No /bin/sh alias or formal Release is installed by the builders.

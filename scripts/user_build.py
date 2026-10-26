@@ -168,6 +168,12 @@ def build_users(root, build, nasm, run, build_id):
         return hashlib.sha256(path.read_bytes()).hexdigest()
     (sdk / "manifest.json").write_text(json.dumps({
         "build_id": build_id, "abi": 1, "target": "x86_64-elf",
+        "process_extensions": {"syscalls": list(range(54, 62)), "file_operations": [20, 21, 22],
+            "startup_versions": [1, 2, 3], "exec_image_abi": 3, "exec_marker": ".xos.exec",
+            "fork_supported": True, "exec_supported": True, "single_main_thread_only": True,
+            "max_fork_depth": 3, "replacement_reservations": 1, "fd_count": 32, "spawn_argument_bytes": 255,
+            "exec_argument_bytes": 4095, "startup_bytes": 16384, "pipe_atomic_bytes": 4096,
+            "pipe_wait_write_minimum": True, "pipe_atomic_flag": "0x8000000000000000"},
         "licenses": {
             str(path.relative_to(sdk)): sha256(path)
             for path in [sdk / "LICENSE", sdk / "NOTICE", *sorted((sdk / "licenses").glob("*"))]

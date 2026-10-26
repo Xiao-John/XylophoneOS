@@ -1,0 +1,15 @@
+{
+  "name": "sbase make",
+  "commit": "c546c3a5724c81cee9a11d816a38ccdf17472129",
+  "tree": "a58d176568a1b33d435a7628740b68289ea5c07a",
+  "source": "https://git.suckless.org/sbase",
+  "files": {
+    "LICENSE": "eb0b719b3327af6c4b480cd21f7944e944a5ddf571c04572eb8d025f52e056c6",
+    "make/main.c": "d60b8cae9f711f2cff3b7c01711db86a4be6a126e685e159834f86c207f892a7",
+    "make/parser.c": "1b03819bd6d0ca46edc1d9158bb01acad290573e6128cc70fe3ea45aecc7ad73",
+    "make/rules.c": "b3ba91e8526711560bc1c1ae7550514b2dbf412727616a3854ed2d86200bdc7d",
+    "make/defaults.c": "96b5de61e2c04766b3868c3b178fd50dbf4c68f2434a0c7f33f2c0c81a49c018",
+    "make/posix.c": "25f30bce2dd50396f6a391a5838448775576291cfd0e5fa6ab70c27846b9edaf",
+    "make/make.h": "d31a88ca4ab6ac7c4685dc586f8a05dab698647869aed5e1e90dc0b444d4802f"
+  }
+}

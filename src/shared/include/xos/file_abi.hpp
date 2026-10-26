@@ -26,6 +26,9 @@ enum class op : u16 {
     replace_abort = 12, remove = 13, sync = 14, mkdir = 15, rename = 16,
     block_bench = 17, fstat = 18,
     transfer = 19,
+    anonymous_seal = 22, // irrevocably remove write access from an anonymous instance
+    anonymous = 21, // private disk-backed open description, unlinked at last close
+    clone_session = 20, // source authenticated by session; offset = fork child PID
 };
 
 enum seek_origin : u32 { seek_set = 0, seek_current = 1, seek_end = 2 };

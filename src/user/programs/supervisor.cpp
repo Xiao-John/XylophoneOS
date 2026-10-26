@@ -304,9 +304,9 @@ void execute(u32 argc, char** argv) {
                                                                     : " result=FAILED\n");
     } else {
         // dash is the explicitly configured development shell and may delegate
-        // one smaller construction depth to a GNU compiler driver. Other bare
+        // smaller construction depths to Make and GNU compiler drivers. Other bare
         // commands retain the legacy direct-child construction authority.
-        launch_file(argv[0], argc, argv, equal(argv[0], "dash") ? 2u : 1u, false);
+        launch_file(argv[0], argc, argv, equal(argv[0], "dash") ? 3u : 1u, false);
     }
 }
 }

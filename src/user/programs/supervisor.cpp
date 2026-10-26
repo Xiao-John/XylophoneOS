@@ -1,3 +1,4 @@
+#include <xos/display_client.hpp>
 // SPDX-License-Identifier: MIT AND Apache-2.0
 // Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/sdk.hpp>
@@ -247,6 +248,7 @@ void execute(u32 argc, char** argv) {
               "          exec-file | exec-driver (exd) | spawn-file | exec | spawn | wait\n"
               "Maintain  maint-run <program> [args] | maint-recover <program> [args] | maint-status\n"
               "Shell     dash -i starts dash; exit inside dash returns here\n"
+              "Display   display-start | exec gfxdemo [check|fault|hold|stop]\n"
               "Debug     trace on/off | ps | kill <pid> | stats | images | primtest | elftest | filetest\n"
               "Search    /usr/bin:/bin:/; paths containing '/' are used directly\n");
     } else if (equal(argv[0], "trace")) {
@@ -279,6 +281,12 @@ void execute(u32 argc, char** argv) {
         print(syscall(10, number(argv[1])) == 0 ? "kill: accepted\n" : "kill: invalid pid\n");
     } else if (equal(argv[0], "images") && argc == 1) {
         image_list();
+    } else if (equal(argv[0], "display-start") && argc==1) {
+        const char* args[]={"display"};
+        const i64 child=spawn(image_named("display"),1,args);
+        const i64 granted=child>0?display_control(display_action::grant_service,static_cast<u64>(child)):child;
+        print("[display-start] pid=");signed_decimal(child);print(" result=");signed_decimal(granted);print("\n");
+        if(child>0 && granted!=0){(void)syscall(10,static_cast<u64>(child));result_line(static_cast<u64>(child));}
     } else if ((equal(argv[0], "exec") || equal(argv[0], "spawn")) && argc >= 2) {
         const u32 image = image_named(argv[1]);
         if (image == 0) { print("exec: unknown image\n"); return; }

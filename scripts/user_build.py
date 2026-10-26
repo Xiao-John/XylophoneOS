@@ -77,7 +77,7 @@ def build_users(root, build, nasm, run, build_id):
     loader_objects.append(compile_source(root / "src/user/arch/x86_64/tls.cpp"))
     loader_archive = sdk / "lib/libxos_loader.a"
     run([tool("ar"), "rcsD", str(loader_archive), *loader_objects])
-    names = ("supervisor", "files", "demo", "fault", "spin", "slow", "echo", "hello", "libc_hello", "e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe")
+    names = ("supervisor", "files", "demo", "fault", "spin", "slow", "echo", "hello", "libc_hello", "e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "display", "gfxdemo")
     bootstrap_names = ("supervisor", "files")
     libc_programs = ("libc_hello", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe")
     disk_programs = ("e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe")
@@ -86,7 +86,7 @@ def build_users(root, build, nasm, run, build_id):
               "struct segment { u64 address, offset, files, memory; u32 permissions; };",
               "struct module { const char* name; const u8* bytes; u64 size; };"]
     for name in names:
-        source_path = root / (f"src/user/services/{name}.cpp" if name == "files" else f"src/user/programs/{name}.cpp")
+        source_path = root / (f"src/user/services/{name}.cpp" if name in ("files", "display") else f"src/user/programs/{name}.cpp")
         if name == "threading_core_probe":
             source_path = root / "tests/fixtures/threading/core_probe.cpp"
         extra_flags = ("-w",) if name in libc_programs else ()
@@ -168,6 +168,7 @@ def build_users(root, build, nasm, run, build_id):
         return hashlib.sha256(path.read_bytes()).hexdigest()
     (sdk / "manifest.json").write_text(json.dumps({
         "build_id": build_id, "abi": 1, "target": "x86_64-elf",
+        "display_extensions": {"version": 1, "syscalls": [63, 64], "pixel_format": "XRGB8888", "surface_count": 1},
         "process_extensions": {"syscalls": list(range(54, 62)), "file_operations": [20, 21, 22],
             "startup_versions": [1, 2, 3], "exec_image_abi": 3, "exec_marker": ".xos.exec",
             "fork_supported": True, "exec_supported": True, "single_main_thread_only": True,

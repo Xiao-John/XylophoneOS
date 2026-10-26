@@ -1,10 +1,20 @@
 # XOS 当前状态
 
-## 正在进行：E14 显示后端
+## 0051：E14 / G02 完成（2026-10-26）
 
-Codex 独占 feature/display-backend-e14 的 loader、display/input、ABI、SDK、服务与测试。
-基线 origin/main 5b4e5e1；无其他 XOS 活跃编辑任务。构建仅本 worktree/build，
-测试仅专用临时盘；D0→D4 串行。G02 尚未验收，不修改旧 Release/日常盘。
+独立分支`feature/display-backend-e14`，上游main基线`5b4e5e1`；源码`23a3698`，
+最终build `01c8b149ecc0e4cf`。BIOS VBE 800×600 XRGB8888/stride3200真实像素、
+PS/2 IRQ1/12、受保护用户态display服务及SDK、原生木琴演示已实现。
+G02 19组通过（含23项显示检查、双线程/真实OOM/异常/回收/三启动/无显卡）；
+Dash/Make/CPython/C++线程5组兼容通过，原有9个回归入口通过，详情看冻结报告。
+启动后资源基线[130323,2,0]，服务停机/客户端异常后准确恢复。
+
+接口与复现见[display_backend.md](display_backend.md)，正式证据见
+[reports/display_e14_20261026/qualification.json](reports/display_e14_20261026/qualification.json)，
+过程/失败记录见[0051](work_log/0051_display_backend_e14.md)。仅QEMU11.1.2/
+pc-i440fx-10.0/TCG/单核512MiB验证；640×480回退、真机、SMP、长时压力、Qt均未验。
+不包含Qt编译/GPU/窗口管理器。其他工作区、日常盘与旧Release保持原状。
+本组编辑/构建占用已解除；后文保留历史状态，不把旧“正在进行”当本组占用。
 
 
 更新时间：2026-10-26（Asia/Shanghai）。新 agent 按 AGENTS.md 的阅读顺序开始。

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Create a deterministic PY1 install tree from an accepted CPython build."""
+"""Create a deterministic CPython install stage from an accepted build."""
 
 import argparse
 import hashlib
@@ -47,7 +47,7 @@ def selected_library_files(source):
             yield path, relative
 
 
-def build_manifest(stage, *, work, build_report):
+def build_manifest(stage, *, work, build_report, phase):
     files = []
     for path in sorted(stage.rglob("*")):
         if path.is_file():
@@ -56,8 +56,8 @@ def build_manifest(stage, *, work, build_report):
                 "bytes": path.stat().st_size,
                 "sha256": sha256(path),
             })
-    return {
-        "phase": "PY1",
+    result = {
+        "phase": phase,
         "version": build_report["version"],
         "fingerprint": build_report["fingerprint"],
         "sdk_build_id": build_report["sdk_build_id"],
@@ -71,15 +71,26 @@ def build_manifest(stage, *, work, build_report):
         "file_count": len(files),
         "status": "staged_not_guest_tested",
     }
+    if build_report.get("zlib_prefix"):
+        result["static_extensions"] = ["zlib"]
+        result["dependencies"] = {
+            "zlib_version": "1.3.2",
+            "zlib_report_sha256": build_report["zlib_report_sha256"],
+            "zlib_license": "/usr/share/licenses/zlib/LICENSE",
+        }
+    return result
 
 
-def stage_cpython(work):
+def stage_cpython(work, phase="PY1"):
+    if phase not in ("PY1", "PY3"):
+        raise ValueError("stage phase must be PY1 or PY3")
     work = Path(work).resolve(strict=True)
     build_report = json.loads((work / "py0a_report.json").read_text())
     if build_report.get("status") != "built_not_run":
         raise ValueError("CPython work tree is not a completed static build")
-    output = work / "stage_py1"
-    manifest_path = work / "stage_py1_manifest.json"
+    stage_name = "stage_py1" if phase == "PY1" else "stage_py3"
+    output = work / stage_name
+    manifest_path = work / f"{stage_name}_manifest.json"
     if output.exists() and manifest_path.exists():
         return output, json.loads(manifest_path.read_text())
     if output.exists() or manifest_path.exists():
@@ -105,7 +116,24 @@ def stage_cpython(work):
             ROOT / "src/ports/cpython/upstream/LICENSE",
             license_dir / "LICENSE",
         )
-        manifest = build_manifest(temporary, work=work, build_report=build_report)
+        manifest = build_manifest(temporary, work=work, build_report=build_report, phase=phase)
+        if build_report.get("zlib_prefix"):
+            license_dir = temporary / "usr/share/licenses/zlib"
+            license_dir.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(
+                ROOT / "src/ports/cpython/upstream/zlib-LICENSE",
+                license_dir / "LICENSE",
+            )
+            manifest["layout"]["zlib_license"] = "/usr/share/licenses/zlib/LICENSE"
+            manifest["files"] = []
+            for path in sorted(temporary.rglob("*")):
+                if path.is_file():
+                    manifest["files"].append({
+                        "path": "/" + path.relative_to(temporary).as_posix(),
+                        "bytes": path.stat().st_size,
+                        "sha256": sha256(path),
+                    })
+            manifest["file_count"] = len(manifest["files"])
         os.rename(temporary, output)
     manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
     return output, manifest
@@ -114,11 +142,12 @@ def stage_cpython(work):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--work", type=Path)
+    parser.add_argument("--phase", choices=("PY1", "PY3"), default="PY1")
     args = parser.parse_args()
-    stage, manifest = stage_cpython(args.work or accepted_work())
+    stage, manifest = stage_cpython(args.work or accepted_work(), phase=args.phase)
     print(json.dumps({
         "stage": str(stage),
-        "manifest": str(stage.parent / "stage_py1_manifest.json"),
+        "manifest": str(stage.parent / f"{stage.name}_manifest.json"),
         "file_count": manifest["file_count"],
         "status": manifest["status"],
     }, indent=2))

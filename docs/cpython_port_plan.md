@@ -29,6 +29,16 @@ Ctrl-D，文件/目录/短读/失败、UTF-8 JSON保存及`sync`后重启读取�
 [PY3分档](cpython_py3_options.md)；建议先做已构建模块闭包，再做zlib和离线纯
 Python包。首次PY4收口仍不等待PY3全部完成。
 
+0049更新：A1选定标准库闭包客体验收通过（hashlib/HMAC向量、pathlib、argparse、
+dataclasses、tomllib、decimal、XML、未压缩zip）；`statistics`导入触发`random`
+默认熵读取，当前以ENOSYS失败，单独记为底座阻塞。A2采用官方zlib 1.3.2摘要
+`d7a06547…a792f3`，静态libz绑定至新的CPython fingerprint
+`2b6c1342ebe6fb8c22dc`；zlib/gzip、deflate ZIP/zipimport及损坏数据客体gate通过。
+许可和修改头文件补丁登记见[许可管理](licensing.md)；完整证据见
+[0049工作记录](work_log/0049_cpython_py3_a1_a3.md)。A3采用idna 3.20固定哈希
+纯Python wheel；首版边界为单包离线打包、xypm候选盘安装/卸载与客体导入，不含
+在线pip、依赖求解、console script生成或原生wheel。
+
 ## 第一份可玩的交付
 
 从 Xsh 输入 `python3` 进入传统 `>>>`，能算数、定义函数、处理字符串；能执行

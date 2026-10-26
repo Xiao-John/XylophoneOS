@@ -6,7 +6,9 @@ This directory ports CPython 3.14.9 to XOS following
 (reproducible install stage, script path rules, selected standard library and
 failure exits), T3-PY (real pthreads with the GIL), and PY2 (basic REPL,
 `input()`, files and reboot-persistent JSON) have passed their guest gates. The
-interpreter is a static ELF with the GIL; it is not a POSIX platform.
+interpreter is a static ELF with the GIL; PY3 A1 selected-library checks, A2
+zlib 1.3.2 and A3's locked offline pure-Python wheel path also pass. It is not
+a POSIX platform.
 
 ## Build and test
 
@@ -30,6 +32,18 @@ interpreter is a static ELF with the GIL; it is not a POSIX platform.
 /usr/bin/python3 scripts/stage_cpython.py \
   --work .cache/xos_seed/cpython/<fingerprint>
 /usr/bin/python3 tests/cpython_py2_smoke.py \
+  --work .cache/xos_seed/cpython/<fingerprint>
+
+/usr/bin/python3 scripts/build_cpython_zlib.py --sdk build/threading_sdk
+/usr/bin/python3 scripts/build_cpython.py \
+  --sdk build/threading_sdk \
+  --archive .cache/xos_seed/cpython/sources/Python-3.14.9.tar.xz \
+  --build-python .cache/xos_seed/cpython/host_build/python.exe \
+  --zlib-prefix .cache/xos_seed/cpython/zlib/<fingerprint>/prefix \
+  --compile-probe
+/usr/bin/python3 scripts/stage_cpython.py \
+  --work .cache/xos_seed/cpython/<fingerprint> --phase PY3
+/usr/bin/python3 tests/cpython_py3_a2_smoke.py \
   --work .cache/xos_seed/cpython/<fingerprint>
 ```
 
@@ -66,6 +80,34 @@ short reads, expected failures, UTF-8 JSON save, `sync`, reboot and reload.
 Escape is still a supervisor force-cancel, not Python `KeyboardInterrupt`.
 Evidence is written to `build/cpython_py2_report.json`.
 
+PY3 A1 uses the already accepted no-zlib interpreter to verify SHA-2/SHA-3/
+BLAKE2/MD5/SHA1 and HMAC known vectors, plus selected operations from pathlib,
+argparse, dataclasses, tomllib, decimal, XML and stored zipfile. `statistics`
+currently fails during its `random` dependency's default seed because XOS has no
+system entropy; this remains an explicit blocker. Evidence is written to
+`build/cpython_py3_a1_report.json`.
+
+For A2, `build_cpython_zlib.py` verifies the official zlib 1.3.2 source archive,
+applies the small XOS `errno.h` portability patch and builds a static `libz.a`
+under an input fingerprint. Pass its `prefix/` to `build_cpython.py` with
+`--zlib-prefix`; the option is bound into the CPython fingerprint and enables
+the built-in `zlib` module. `stage_cpython.py --phase PY3` adds the Zlib license
+to the install manifest and stage. The guest gate tests streaming compression,
+gzip, deflate ZIP, zipimport, and malformed/truncated data. Evidence is written
+to `build/cpython_py3_a2_report.json`.
+
+For A3, `src/ports/cpython/idna_lock.json` pins the official idna 3.20
+`py3-none-any` wheel and license. `scripts/xypm_python_wheel.py` checks the
+wheel hash, pure tag, member paths/types, `RECORD` hashes and sizes, and
+preserved license before creating an ordinary XPK package for the frozen B2
+profile. It installs package files only under `/usr/lib/python3.14/site-packages`
+and carries the license and build receipt. `tests/cpython_py3_a3_smoke.py`
+verifies guest import/IDNA behavior, xypm candidate-image install/remove,
+source-image preservation, wrong-hash rejection and native-module rejection.
+This first slice does not resolve dependencies or generate console scripts and
+does not support online pip, venv, source builds or native wheels. Evidence is
+written to `build/cpython_py3_a3_report.json`.
+
 ## Configuration
 
 - Target `x86_64-unknown-xos`, prefix `/usr`, static modules only
@@ -100,6 +142,8 @@ Evidence is written to `build/cpython_py2_report.json`.
   editing and no Ctrl-C/`KeyboardInterrupt`. CR and LF were tested separately;
   Escape terminates the whole foreground process through the supervisor.
 - `-c` needs `linecache.py` in this CPython version even for a one-line command.
+- `statistics` is not currently usable because importing it seeds `random` from
+  system entropy; no deterministic or insecure fallback is installed.
 
 ## Layout
 
@@ -107,6 +151,8 @@ Evidence is written to `build/cpython_py2_report.json`.
 source_lock.json          frozen archive/sigstore/spdx hashes
 patches/0001…0003         platform, modules, pthread and thread-state glue
 patches/0004…             basic REPL and console line input
+zlib_lock.json             pinned zlib archive and license hashes
+zlib_patches/              XOS errno header portability patch
 config/xos_config.site    explicit autoconf overrides
 xos_time.cpp              XOS timing/sleep bridge objects
 ```

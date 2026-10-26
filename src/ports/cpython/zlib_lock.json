@@ -1,0 +1,8 @@
+{
+  "version": "1.3.2",
+  "source": "https://zlib.net/zlib-1.3.2.tar.xz",
+  "sha256": "d7a0654783a4da529d1bb793b7ad9c3318020af77667bcae35f95d0e42a792f3",
+  "license": "Zlib",
+  "license_path": "src/ports/cpython/upstream/zlib-LICENSE",
+  "license_sha256": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2"
+}

@@ -155,7 +155,7 @@ def build_xos_bridge(work, sdk):
     return output
 
 
-def target_environment(sdk, build_python, bridge):
+def target_environment(sdk, build_python, bridge, zlib_prefix=None):
     cc = os.environ.get("XOS_CC") or tool("x86_64-elf-gcc")
     cxx = os.environ.get("XOS_CXX") or tool("x86_64-elf-g++")
     ar = os.environ.get("XOS_AR") or tool("x86_64-elf-ar")
@@ -187,6 +187,18 @@ def target_environment(sdk, build_python, bridge):
     sdk_libraries = [
         str(sdk / "lib/libxos.a"),
     ]
+    if zlib_prefix is not None:
+        zlib_prefix = Path(zlib_prefix).resolve(strict=True)
+        if not (zlib_prefix / "include/zlib.h").is_file():
+            raise FileNotFoundError(f"missing zlib.h under {zlib_prefix}")
+        if not (zlib_prefix / "include/zconf.h").is_file():
+            raise FileNotFoundError(f"missing zconf.h under {zlib_prefix}")
+        if not (zlib_prefix / "lib/libz.a").is_file():
+            raise FileNotFoundError(f"missing static libz.a under {zlib_prefix}")
+        ldflags.extend(["-L", str(zlib_prefix / "lib")])
+    cppflags = ["-D__xos__=1", "-isystem", str(sdk / "include")]
+    if zlib_prefix is not None:
+        cppflags.extend(["-isystem", str(zlib_prefix / "include")])
     loader_archive = sdk / "lib/libxos_loader.a"
     if loader_archive.exists():
         sdk_libraries.append(str(loader_archive))
@@ -206,6 +218,7 @@ def target_environment(sdk, build_python, bridge):
         str(bridge),
         "-Wl,--start-group",
         *sdk_libraries,
+        *( ["-lz"] if zlib_prefix is not None else [] ),
         *threaded_runtime_libraries,
         str(sdk / "lib/libc.a"),
         str(sdk / "lib/libm.a"),
@@ -221,7 +234,7 @@ def target_environment(sdk, build_python, bridge):
         READELF=readelf,
         CFLAGS=shlex.join(cflags),
         CPPFLAGS=shlex.join(
-            ["-D__xos__=1", "-isystem", str(sdk / "include")]
+            cppflags
         ),
         LDFLAGS=shlex.join(ldflags),
         LIBS=shlex.join(libraries),
@@ -237,6 +250,11 @@ def main():
     parser.add_argument("--sdk", type=Path, default=DEFAULT_SDK)
     parser.add_argument("--build-python", type=Path)
     parser.add_argument(
+        "--zlib-prefix",
+        type=Path,
+        help="prefix produced by build_cpython_zlib.py; enables static zlib",
+    )
+    parser.add_argument(
         "--compile-probe",
         action="store_true",
         help="continue through make to expose the first target compile/link gap",
@@ -250,12 +268,24 @@ def main():
         parser.error("CPython archive SHA-256 does not match source_lock.json")
     manifest = json.loads((sdk / "manifest.json").read_text())
     threaded = manifest.get("thread_abi") == 1
+    zlib_prefix = args.zlib_prefix.resolve(strict=True) if args.zlib_prefix else None
+    zlib_report = None
+    if zlib_prefix is not None:
+        zlib_report_path = zlib_prefix.parent / "report.json"
+        zlib_report = json.loads(zlib_report_path.read_text())
+        if zlib_report.get("status") != "built":
+            parser.error("zlib build report is not successful")
+        if zlib_report.get("prefix") != str(zlib_prefix):
+            parser.error("zlib prefix does not match its build report")
 
     inputs = {
         "archive_sha256": lock["sha256"],
         "port": hash_tree(PORT),
         "script_sha256": sha256(__file__),
         "sdk": hash_tree(sdk),
+        "zlib_report_sha256": (
+            sha256(zlib_prefix.parent / "report.json") if zlib_prefix is not None else None
+        ),
     }
     fingerprint = hashlib.sha256(
         json.dumps(inputs, sort_keys=True).encode()
@@ -300,6 +330,8 @@ def main():
         "sdk_profile": manifest.get("profile"),
         "sdk_manifest_sha256": sha256(sdk / "manifest.json"),
         "sdk_path": str(sdk),
+        "zlib_prefix": str(zlib_prefix) if zlib_prefix is not None else None,
+        "zlib_report_sha256": inputs["zlib_report_sha256"],
         "build_python": str(build_python),
         "build_python_sha256": sha256(build_python),
         "configure_command": configure_command,
@@ -312,7 +344,7 @@ def main():
         run(
             configure_command,
             cwd=target_build,
-            env=target_environment(sdk, build_python, bridge),
+            env=target_environment(sdk, build_python, bridge, zlib_prefix),
             log=work / "target_configure.log",
         )
         report["status"] = "configured_not_built"
@@ -321,7 +353,7 @@ def main():
                 run(
                     ["make", "-j2"],
                     cwd=target_build,
-                    env=target_environment(sdk, build_python, bridge),
+                    env=target_environment(sdk, build_python, bridge, zlib_prefix),
                     log=work / "target_make.log",
                 )
                 report["status"] = "built_not_run"

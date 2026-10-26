@@ -5,7 +5,7 @@
 ## 当前状态
 
 主线已合并线程PR（基线d89d1a3，整合提交4c78b27），已有dash B2、CPython
-T3-PY/PY2、xypm P0/P1。2026-10-26本轮完成ISO扩容0047和xypm P2-1维护门控0048。
+T3-PY/PY2及PY3 A1/A2/A3、xypm P0/P1。2026-10-26本轮完成ISO扩容0047和xypm P2-1维护门控0048。
 共同正常候选位于`build/iso_capacity/normal`，build `4c79f3a789dcff61`，kernel
 360508字节；xos.img SHA256
 `4950c4c2fb53c36ac7cf36d4b6e40954c5b36507f8fc11207b867b54520b16ee`。
@@ -26,6 +26,15 @@ CPython T3-QT/SMP、完整POSIX/pipes、Qt/UEFI、旧全量/压力。
 
 Git origin 为 Xiao-John/XylophoneOS。0023 发布使用本机凭据且不落盘；原日常
 work_disk.img 保留，测试使用临时专用盘。
+
+## 正在进行：0050 PR #2整合、PY3许可与推送
+
+用户确认PY3 A1–A3除许可审计外已验，并已review/merge PR #2。主端本批占用
+整合冲突文件、维护ABI与门禁适配、许可材料/审计、共享文档及新增定向测试；
+先提交PY3现有源码保存快照，再同步origin/integration/2026-10-25。PR已占用
+sys54–61/file op20–22，本地P2-1编号须迁移，并检查fork/exec/anonymous新路径。
+正常重建刷新组件表/SDK许可副本，不篡改冻结SDK/旧验收报告，不重跑旧压力。
+完成后提交并推送同名远端分支；不擅自发布release或改写main。
 
 ## 0049：当前工作树统一提交
 
@@ -65,6 +74,21 @@ fingerprint `c69e0fbf7772c775ab3e`，系统build `f25009cdbb27c857`，每项结�
 未操作日常工作盘。PY3候选已按重要性和公共底座依赖分档，建议先验已构建模块
 闭包，再做zlib和离线纯Python包。详见[工作记录](work_log/0046_cpython_py2.md)和
 [PY3可选扩展](cpython_py3_options.md)。本组无剩余编辑占用。
+
+## 0049 完成：CPython PY3 A1–A3
+
+A1在当前正常系统镜像上验过hashlib/HMAC向量、pathlib、argparse、dataclasses、
+tomllib、decimal、XML和固定时间戳未压缩zip，资源恢复至`[130345,2,0]`；
+`statistics`因导入`random`时系统熵接口返回ENOSYS而阻塞，已单独留证。A2采用
+zlib 1.3.2静态模块，`libz.a` 155598字节；gzip、流式压缩/解压、deflate ZIP、
+zipimport、截断流、损坏adler和ZIP CRC客体验收通过，资源恢复至`[130345,2,0]`。
+CPython fingerprint `2b6c1342ebe6fb8c22dc`，PY3 stage 561文件并包含zlib许可。
+随后A3以固定哈希的idna 3.20纯Python wheel打通离线XPK和xypm安装/卸载；客体
+`site-packages`导入及IDNA编解码通过，错误哈希和原生`.so`成员被拒绝，卸载后索引
+为空且包文件消失。输入候选盘未变。没有修改公共内核/ABI/libc或dash。
+详见[0049工作记录](work_log/0049_cpython_py3_a1_a3.md)、[A3报告](../build/cpython_py3_a3_report.json)
+与[PY3分档](cpython_py3_options.md)。A1–A3完成；熵服务仍阻塞`statistics`和默认
+`random`初始化。更广泛包支持按实际需要再选，不默认扩成pip/venv。
 
 ## 0045 完成：总览、文档清理与 release 准备
 

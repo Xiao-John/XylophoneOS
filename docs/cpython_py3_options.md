@@ -4,6 +4,18 @@
 而是一组各自有依赖、许可和客体 gate 的可选扩展。以下按朋友能直接获得的价值、
 对公共底座的侵入和验证成本分档。任何一项都不能因“模块可导入”自动算通过。
 
+0049进度：A1选定闭包已在XOS客体实测通过，覆盖hashlib已知向量/HMAC、pathlib、
+argparse、dataclasses、tomllib、decimal、XML和固定时间戳的未压缩zip；`statistics`
+因导入`random`时无系统熵而阻塞，保留在清单中，不伪造熵。A2 zlib 1.3.2已静态
+集成，gzip、deflate ZIP、zipimport及损坏/截断输入客体gate通过。完整报告见
+`build/cpython_py3_a1_report.json`、`build/cpython_py3_a2_report.json`和
+[0049工作记录](work_log/0049_cpython_py3_a1_a3.md)。A3选用无依赖的`idna 3.20`
+纯 Python wheel，已通过离线 `.xpk` 打包、哈希校验、xypm 候选盘安装/卸载、客体
+真实导入与 IDNA 编解码；错误 wheel 哈希和原生 `.so` 成员均被拒绝。A3 首版边界为
+单个锁定的`py3-none-any` wheel、校验`RECORD`、只安装到 CPython 3.14 的
+`site-packages`，不生成 console script，不支持依赖求解、在线 pip、venv 或原生内容。
+证据见`build/cpython_py3_a3_report.json`和0049工作记录补充。
+
 ## A 档：优先，直接扩大可用面
 
 1. **已构建模块的标准库闭包验收。** 先用已在静态解释器中的能力做已知向量和实际

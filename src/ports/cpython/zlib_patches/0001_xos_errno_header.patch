@@ -1,0 +1,15 @@
+From: XOS contributors
+Subject: [PATCH] gzguts.h: include errno declarations on XOS
+
+The XOS SDK's unistd.h does not transitively include errno.h. zlib's gzip
+reader uses errno and EAGAIN/EWOULDBLOCK, so include the standard header
+explicitly for this target.
+
+--- a/gzguts.h
++++ b/gzguts.h
+@@ -32,4 +32,5 @@
+ #include <stdio.h>
++#include <errno.h>
+ #include "zlib.h"
+ #ifdef STDC
+ #  include <string.h>

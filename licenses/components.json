@@ -265,6 +265,47 @@
       ],
       "modifications": "XOS configure/module-scope patches and private time backend; no complete POSIX/thread claim",
       "distribution_status": "port source and patches; no new binary release; actual linked-module member review remains separate"
+    },
+    {
+      "name": "zlib (CPython)",
+      "version": "1.3.2",
+      "path": "src/ports/cpython/zlib_patches",
+      "source": "https://zlib.net/zlib-1.3.2.tar.xz",
+      "source_archive_sha256": "d7a0654783a4da529d1bb793b7ad9c3318020af77667bcae35f95d0e42a792f3",
+      "license": "Zlib",
+      "notices": [
+        "src/ports/cpython/upstream/zlib-LICENSE"
+      ],
+      "artifact_sha256": {
+        "src/ports/cpython/upstream/zlib-LICENSE": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2",
+        "src/ports/cpython/zlib_patches/0001_xos_errno_header.patch": "da73f294389ce1ebccb101a3b50a13bb3b170946fbe101bc4aff13d8100693c8",
+        "src/ports/cpython/zlib_lock.json": "3d084526751f4b39c750411223dcc09e560c5789aae1ccbd63affb1884d915bc"
+      },
+      "used_in": [
+        "CPython 3.14.9 static zlib module, gzip, deflate ZIP and zipimport"
+      ],
+      "modifications": "XOS portability patch explicitly includes errno.h in gzguts.h; source archive remains pinned in local build cache",
+      "distribution_status": "local guest-accepted build; no new binary release; include the pinned source and patch in any corresponding source bundle"
+    },
+    {
+      "name": "idna (CPython PY3 A3)",
+      "version": "3.20",
+      "path": "src/ports/cpython/idna_lock.json",
+      "source": "https://pypi.org/project/idna/3.20/",
+      "license": "BSD-3-Clause",
+      "notices": [
+        "src/ports/cpython/upstream/idna-LICENSE.md"
+      ],
+      "artifact_sha256": {
+        "src/ports/cpython/upstream/idna-LICENSE.md": "1a9a4f0e3d479a27240ddd59a9137a66ab4a0f9dfdc8ca6188cc0bfd85187f04",
+        "src/ports/cpython/idna_lock.json": "c6c7fc8b825ef1a842d6658361051e549ce7d8260886bff1abab9539eb340834"
+      },
+      "used_in": [
+        "Optional offline pure-Python package installed under CPython 3.14 site-packages"
+      ],
+      "modifications": "No upstream wheel files modified; XPK wrapper carries the upstream license and a hash-bound build receipt; entry point metadata is retained but no console script is generated",
+      "distribution_status": "local guest-accepted package; preserve matching wheel/source and license materials for any future binary distribution",
+      "wheel_sha256": "ab7ae7122974553370f0bdb919e1a960b2cd1bc1ef0276416d896db81c14582c"
     }
   ]
 }

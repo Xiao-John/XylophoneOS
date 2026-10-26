@@ -21,6 +21,7 @@
 | Binutils 捆绑 zlib 1.3.1 | Seed 内部静态库 | Zlib 原许可保留，不是 XOS 自研 Apache 代码，不依赖宿主动态 zlib |
 | GCC 16.2.0 C Seed、host libstdc++/libsupc++、GMP/MPFR/MPC | 本地客体工具闭包 | src/ports/gcc/upstream 与 source_lock.json 保留实际版本和声明；components.json 登记材料哈希；目标 E08-5 库与公开分发审查未完成 |
 | sbase cat/cp/mkdir/mv/rm | dash B1的窄用户态工具 | 固定提交c546c3a；保留上游MIT LICENSE、源文件哈希及XOS适配文件清单；仅本地验收，未公开分发 |
+| idna 3.20 | CPython PY3 A3离线纯Python wheel | 固定wheel与BSD-3-Clause许可哈希；本地验收，未公开分发 |
 
 ## newlib 与 LGPL
 
@@ -94,3 +95,15 @@ CPython3.14.9原始LICENSE与Doc/license.rst从source_lock所绑定、实际SHA2
 核验的源码包复制到src/ports/cpython/upstream/，components.json记录材料摘要。
 公开端口源码/补丁时随附原声明；未创建新二进制发行。静态内建模块的逐成员
 许可映射仍须按实际构建清单复核，不能将整包简化为XOS Apache许可。
+
+0049增加zlib 1.3.2静态模块。官方tar.xz摘要与官网公布值一致，原始Zlib许可
+复制到`src/ports/cpython/upstream/zlib-LICENSE`并登记；XOS补丁只在`gzguts.h`
+显式引入`errno.h`，保留上游声明。PY3 stage另携带
+`/usr/share/licenses/zlib/LICENSE`。本地构建/客体验收不等于发布；对应源码包与
+补丁须在未来任何二进制分发时一并提供。
+
+0049 A3 增加 idna 3.20 纯 Python wheel：官方 wheel SHA256、wheel 内 BSD-3-Clause
+`LICENSE.md` SHA256与锁定文件一并登记，许可原文保存在
+`src/ports/cpython/upstream/idna-LICENSE.md`，生成的 XPK 携带到
+`/usr/share/licenses/python_idna/LICENSE.md`。本地 guest gate 不代表公开发布；未来
+二进制分发还须提供匹配 wheel/源码材料。

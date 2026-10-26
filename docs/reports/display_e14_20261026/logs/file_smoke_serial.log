@@ -1,0 +1,177 @@
+XOS: loading stage_two
+[loader] firmware=bios target=x86_64
+[boot] event=kernel_enter arch=x86_64 build=01c8b149ecc0e4cf
+[boot] event=boot_info_valid memory_map=complete
+[boot] event=runtime_checked bss=zero data=valid
+[cpu] event=exceptions_ready idt=0x00000000001750e0 vectors=32 double_fault_ist=1
+[display] state=ready width=800 height=600 stride=3200 physical=0x00000000fd000000 bytes=1920000 cache=uc user_mapping=none
+[mem] event=initialized usable_kib=523775 managed_kib=524160 pages=131040 free_pages=130623 allocated_pages=1
+[mem] event=window low=0x0000000000100000 high=0x000000001ffe0000
+[vm] event=self_check result=pass address=0x0000000040000000 physical=0x00000000001a1000
+[block] event=ready device=ata sectors=32768
+[task] event=created pid=1 name=heartbeat
+[task] event=created pid=2 name=spinner
+[task] event=created pid=3 name=receiver
+[task] event=created pid=4 name=sender
+[task] event=created pid=5 name=probe
+[task] event=created pid=6 name=quitter
+[task] event=created pid=7 name=supervisor bootstrap=trusted_segments
+[task] event=created pid=8 name=files bootstrap=trusted_segments
+[task] event=ready count=8
+[boot] result=ready stage=E04
+The underscores made it to 64 bits.
+
+  ================================================
+   XOS 0.0.2 | 64-bit | more checks than excuses
+   Guest star: Guo YePeng (did not panic, yet)
+   "It booted on my machine." - everyone, ever
+  ================================================
+   guo = ceremonial greeting    joke = deterministic
+   help = actual work
+xos64> run
+[sched] event=starting
+[input] ps2=ready irq1=enabled irq12=enabled
+[sched] event=start tasks=8
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+bad handle rejected
+no send right
+[task] event=fault pid=5 vector=14 rip=0x0000000040000060 cr2=0x0000000000100000 result=killed tid=5
+[task] event=reclaimed pid=5 pages=11
+bye
+[task] event=reclaimed pid=6 pages=11
+Aping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+[files] ready hello.elf bytes=9872
+
+Welcome to Xshell | XylophoneOS
+help: commands   dash -i: POSIX shell   trace on: diagnostics
+
+xsh> tAAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+race on
+xsh: trace on
+xsh> AAping
+bad length
+bad pointer
+tx
+demo keeAAping
+bad length
+bad pointer
+tx
+p
+demo: keep
+xsh> Aping
+bad length
+bad pointer
+tx
+kill 1
+[task] event=killed_by_supervisor pid=1
+[task] event=reclaimed pid=1 pages=11
+kill: accepted
+xsh> ping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+kill 3ping
+bad length
+bad pointer
+tx
+
+[task] event=killed_by_supervisor pid=3
+[task] event=reclaimed pid=3 pages=11
+kill: accepted
+xsh> bad length
+bad pointer
+kill bad length
+bad pointer
+4
+[task] event=killed_by_supervisor pid=4
+[task] event=reclaimed pid=4 pages=11
+kill: accepted
+xsh> ls
+hello.elf size=9872 version=0
+xsh> filetest
+[filetest] result=pass short=read/eof handles=independent locked=preserved write=actual invalid=rejected
+xsh> edit note.txt
+[edit] note.txt bytes=0 (new)
+[edit] text lines are stored verbatim; commands start with ':'
+[edit] :w save  :wq save+quit  :q quit  :q! discard  :p print  :c clear
+| first line
+| 
+|   two  spaces  
+| third
+| :wq
+[edit] saved note.txt bytes=34
+xsh> cat note.txt
+first line
+
+  two  spaces  
+third
+xsh> stat note.txt
+note.txt size=34 version=0
+xsh> edit note.txt
+[edit] note.txt bytes=34 (loaded)
+[edit] text lines are stored verbatim; commands start with ':'
+[edit] :w save  :wq save+quit  :q quit  :q! discard  :p print  :c clear
+| fourth
+| :wq
+[edit] saved note.txt bytes=41
+xsh> cat note.txt
+first line
+
+  two  spaces  
+third
+fourth
+xsh> stat note.txt
+note.txt size=41 version=0
+xsh> cat missing.txt
+[files] cat error=-1
+xsh> stat missing.txt
+[files] stat error=-1
+xsh> rm note.txt
+[files] removed note.txt
+xsh> ls
+hello.elf size=9872 version=0
+xsh> exec-file hello.elf
+[process] event=started pid=9 parent=7
+[process] pid=9 address_space=0x00000000001a1000
+[loader] started pid=9 file=/hello.elf
+[process] event=wait_blocked parent=7 child=9
+hello from file
+[task] event=reclaimed pid=9 pages=44
+[wait] pid=9 kind=exited code=0
+xsh> 

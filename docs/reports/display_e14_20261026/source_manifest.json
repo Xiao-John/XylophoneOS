@@ -1,0 +1,1407 @@
+{
+  "build_id": "01c8b149ecc0e4cf",
+  "source_sha256": "01c8b149ecc0e4cf392d6de23d889798d2e29819da887c50f0ffb11670c993d9",
+  "sources": {
+    "Makefile": "691d89f1abd5175d8868e83e029d17b402d32e3a967775e0c58c3173c31699fa",
+    "VERSION": "18b1676e2109dcf9bdae9e54afcd827fbbc064198f6051b727793433f6391bff",
+    "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "NOTICE": "90e390e976854766ccc20370b6395bf547cd2fd5a486aaf2c1abf504a03c4a06",
+    "licenses/components.json": "803ac42019ceee199275ff89b65453c1b741e7762ceeac26a3714d603b72bb1a",
+    "licenses/fatfs.txt": "5e865b99f0a4800b699d356a20887741c49681d36f712ba9cd0c2c65dea89f7c",
+    "licenses/legacy_mit_files.json": "56bdd672a3c0545cf5043289c0b29a4fef49ba0d3fef2fd29350e6f2ec093429",
+    "licenses/mit_legacy.txt": "846e254011ce5097413db5a432bd11a83954834ff17500a1a13b55e1405aec69",
+    "src/boot/x86/boot_sector.asm": "1fd2ef9d87b47722468e9770e62b708f1d0d793d09724752f990c71333329cee",
+    "src/boot/x86/boot_sector_iso.asm": "f91e0f9bb2944108711fd19566e8148aeb3df6d577a8fe7078affff7dea43297",
+    "src/boot/x86/console.inc": "789712da33d60593c08d05f615f410b382732c42f4b88ca45c4ece5403c59a7e",
+    "src/boot/x86/display.inc": "1e211f087e8deb18bf859659b9c6ae44f6313f48ef03dbcb5e05f68bc1412e44",
+    "src/boot/x86/kernel_loader.asm": "d1ffbfce5eaaaa86e5484ec875a00350df76fb4e41c66548735cc04a8c0db4b0",
+    "src/boot/x86/kernel_loader_iso.asm": "8c1db22acaacc238c983cafd74f99a097082425ec8954866c08c1897fbb55a33",
+    "src/boot/x86/kernel_loader_iso_file.asm": "d098e8ab4ec69ccd271b9e8dd84f7c69617e83f32d0a8d73c7ff4f0116afa9c9",
+    "src/boot/x86/layout.inc": "1bcf5efef00840680e44f869ec36f36d10ec7bbb5961c60d4be6fe08858b370f",
+    "src/boot/x86/stage_two.asm": "90f3141278b1f8c2e57f62d2ff1f9f2f19a9bef74afb6be8160d76754cb253e6",
+    "src/kernel/arch/x86_64/cpu.cpp": "000fa0e2114500ea40fd48ef2395a639fb6730096ff0427485f7f1403c90d508",
+    "src/kernel/arch/x86_64/display_tasks.inc": "f3d284a4650ca75724320b4a067449da210547f69b4c8610a2d30f83c2921923",
+    "src/kernel/arch/x86_64/entry.asm": "2fbec70eb989c001f33b238f68770d559d7102d9d447a2a68bdc685a1d4a0745",
+    "src/kernel/arch/x86_64/exceptions.cpp": "60ac599a86d8cc68115da1237ab8eefde7e53b7f26d825c44f56a0e22a1fa223",
+    "src/kernel/arch/x86_64/frame.hpp": "f729ed273459e972c269406a206bb1927c0678316ae4042ac5658e5d3ef3f7f5",
+    "src/kernel/arch/x86_64/interrupt_entry.hpp": "c7afb1c88ccea7a6a7b7dda1e8a41f6171b5a4940d3d629728fd73886711d1d2",
+    "src/kernel/arch/x86_64/interrupts.asm": "a0889b954f27ff9ef41579a53d9eee8798f8e69cdae1fca391e51cb5bc7a8f39",
+    "src/kernel/arch/x86_64/io.hpp": "167fba1c3df9b242c6e7a9af3b0ebb61776264ac06bdeb96d53d0727ed7765f0",
+    "src/kernel/arch/x86_64/kernel.ld": "6fb27c2c6e1468449df0ce82dc393b267d636dc61891b8ce5973cfa34e9be6c2",
+    "src/kernel/arch/x86_64/paging.cpp": "9b53ef9b30939f125acd6db7a239e885b502934db0926e5f8772ca5c1a3a6c23",
+    "src/kernel/arch/x86_64/pic.cpp": "a84eda5aefdd0546d77539b21e88f7b4c87a70c30f74ed81eb8797c756bad535",
+    "src/kernel/arch/x86_64/pic.hpp": "fafe018e0a20f5e2fe30b9ad2d36981b80b33dd73c7d76aca0fa9f2454b9a53b",
+    "src/kernel/arch/x86_64/tasks.cpp": "864ca91db3906bc60ccbc3745a84d312c3715c4d4774d1734805ba5e971dfec0",
+    "src/kernel/core/boot_info.cpp": "a08a1703e16974adb4cc25886f3e9438c54f9cc4e63961e10fe5a67ac0b9376b",
+    "src/kernel/core/console.cpp": "a7ba70134807e53a04ee1819ecdb8808432a26c9dbef8dec509501f6e7c6fd2d",
+    "src/kernel/core/kernel_main.cpp": "4f4a18f27e8fc8cfae36bdb7715bceb91cb0b0d9f4c9d775e860c36830c6775d",
+    "src/kernel/core/memory.cpp": "72b297227633d9007c440dbd9cd889efaaf48501637921f3cfc9fafd1578d16f",
+    "src/kernel/core/panic.cpp": "1a68fbd50eabe7223f73bb54b99c62ad3712a466d1bf2848d755ea2752a62e1c",
+    "src/kernel/core/self_check.cpp": "50c88d2859b901c98f388dab4c65e95952e472c39092be4a9049ac944e45aee1",
+    "src/kernel/core/thread_lifecycle.hpp": "aab551cfc80f2d10c0f71dad3b169af411809b78ed20eec67dc584063f57cb12",
+    "src/kernel/include/xos/block.hpp": "1dfd8f83875a191581053e7b6a881d61c5cca77ca7a0383b06cd3fd99484a5e7",
+    "src/kernel/include/xos/boot_info.hpp": "094dc056a2598e7d28d7396bce58c8588174c4da793cd42020d2671535b5e0d0",
+    "src/kernel/include/xos/console.hpp": "6c4852ade2ef535ed6477c2a26892d67c910a8c52c35ba0c6ef9bd68a2602ac8",
+    "src/kernel/include/xos/display.hpp": "e9611eab327d34e8f458fa81447b42c3ed0c37ec6f9d7b275ad689ce904c743b",
+    "src/kernel/include/xos/fault.hpp": "3bdcbb1829414ace2f035093ebdcd357c9e4a63ed595fe3ba2de3df37c0f49ae",
+    "src/kernel/include/xos/format.hpp": "aa1186ff8db2dbfb3fb4d73b6f920842c45699cf39482028a1be4fbe409c8770",
+    "src/kernel/include/xos/memory.hpp": "0b1063542005dcac22bb1ef135484501ac6c6066adf3a26cd22af3acdff8e259",
+    "src/kernel/include/xos/platform.hpp": "d0c231d666520e968faf29e781e50feda7ea283c6aa914527320be8d3adb3059",
+    "src/kernel/include/xos/syscall.hpp": "58e66d953d83552308f2824fd19767ce3f15adc752038d0cb9effcabe5664b53",
+    "src/kernel/include/xos/task.hpp": "6481f5600a94573be8838f42cf9f8170944a6216203064a3ae7265ba3e56a59d",
+    "src/kernel/include/xos/types.hpp": "35c134f4e43d155b72097d72f9fa306e385463a3afd021f568482637251a6895",
+    "src/kernel/platform/pc/ata.cpp": "cbfb2bd43bf55fd0a5ee76b05d5d4cbc38a93f1201977c8647d81478002a220f",
+    "src/kernel/platform/pc/debug_console.cpp": "0577590fffb7ec828073075ab2176dfef330145a3178a8e62d964a5e5b6b81b3",
+    "src/kernel/platform/pc/display.cpp": "29bba3ee99b9545df34f218d5b2cbba6c8b7dc9523ed67737ff6ec0eb5260be9",
+    "src/kernel/platform/pc/ps2.cpp": "02f7091bedcb1858f1e9c05394250d4c26f4051d2bd22ddfd4681bff1a93d8f3",
+    "src/ports/adventure/build.sh": "1f57d99051c2aaf06aaab8906ed885882d7b39d0f30e2d1f987aae2cf6a7acec",
+    "src/ports/adventure/include/editline/readline.h": "35915e00e1bc550a49aa70c0554b67b8eddac64eb86566c9c18b44e4fcfbc0a4",
+    "src/ports/adventure/source_lock.json": "b4139d056a66de72573d969f1a3e62f2715412103284ff47f6e9caa7cfe17d6e",
+    "src/ports/adventure/xos/yaml.py": "971967bfad4a619a2bafabecff5b0e78512e88eea0196797c33a6eca6334e224",
+    "src/ports/adventure/xos_readline.cpp": "01dd4563ecd13834e9c8a8d8746705a32c36c0a029f35401d291f6ac20a4b5dd",
+    "src/ports/binutils/config/xos_cache_seed.sh": "1505bc2a1801d04f9c6e7056207e3f827baa1a91f43591d8eba7def415ff90d4",
+    "src/ports/binutils/source_lock.json": "18272072ed9a7f1d9b9ee43a2c022a471f5bc3786eca4e59bd49c3fba3b0136f",
+    "src/ports/cpython/idna_lock.json": "c6c7fc8b825ef1a842d6658361051e549ce7d8260886bff1abab9539eb340834",
+    "src/ports/cpython/source_lock.json": "8afcd6eccbcfb3c3e6395037164158739cf98e55c9474521f83f9dd6db8986fa",
+    "src/ports/cpython/xos_time.cpp": "47dc7477cc73cdda0c7c53de82ea4777f805565152b311cd2594c31f501c72da",
+    "src/ports/cpython/zlib_lock.json": "3d084526751f4b39c750411223dcc09e560c5789aae1ccbd63affb1884d915bc",
+    "src/ports/dash/admission_xos.c": "22c9d9c1ad6a50dc63fbf696160d6f57068c346f2e610808432687b6e3b0bb20",
+    "src/ports/dash/console_xos.cpp": "9c43f57ef611b81b23c58219afa41f44bc057441ffeeec0d9269bd023c6f5950",
+    "src/ports/dash/jobs_xos.c": "e766fb567b8cfff7c1ae3c9073360bb5da25991a47752b11d3bdd6f5c935cac1",
+    "src/ports/dash/signals_xos.c": "65fb4df159541504cd2c539dca475128f03069381de635cd6aaeaeba5043d76d",
+    "src/ports/dash/source_lock.json": "d2988258efeff75f11239cbf57b4dc572c108a8639edf8481fdaedcdccc01c26",
+    "src/ports/dash/xos_profile.h": "be17807582dad8a6071086ea219232d3ba2480d0c3d39a3edd131b605db5c50c",
+    "src/ports/gcc/config/xos_cache_seed.sh": "dd5e3630301f1ce254c3f8b3799d4d966101054f2e7bda966ce315428eba636e",
+    "src/ports/gcc/cxx_runtime.cpp": "6ef8fc75dc92b477c62e9ef6eb87c8c04b21bf6fd020a70111309c4d1ce26175",
+    "src/ports/gcc/e08_5_abi_build_report.json": "65f46bb55aaca35007daa185607b4450b37495dc11055a57e76a451c76133b30",
+    "src/ports/gcc/e08_5_gxx_manifest.json": "ddc22e04954c68d871d4ed70adb7c224de2d8bf2d1213aa4e3a49b5433964e88",
+    "src/ports/gcc/e08_5_target_runtime_manifest.json": "538baa523869bda07455c79c0d406a69bfbc8442469d96a5b28e2741df9c689e",
+    "src/ports/gcc/include/xos_dirent_compat.h": "5ac152bf81f4599afd8789e8c7fa003de2ba20b43d57f316eb52eccb527ab396",
+    "src/ports/gcc/seed_manifest.json": "6c4bbcc5b2753a85e26e5b3ace6cb9ddec93f267021a4bd9c24334a9fc509ff7",
+    "src/ports/gcc/source_lock.json": "e4db97ce304c6d2bafc115bb0575d03b0fe8e09562d0f4871784111fd9a83353",
+    "src/ports/make/posix_xos.cpp": "5650d8c8202e7083a46996679e42fd66fe0f91d4dd533accd15383c3cdc1557a",
+    "src/ports/make/source_lock.json": "8ba08180ec1b1dfa3dd1aba3e1e87127ca962881a5b00e91ee648882f7910cf6",
+    "src/ports/make/upstream/make/defaults.c": "96b5de61e2c04766b3868c3b178fd50dbf4c68f2434a0c7f33f2c0c81a49c018",
+    "src/ports/make/upstream/make/main.c": "d60b8cae9f711f2cff3b7c01711db86a4be6a126e685e159834f86c207f892a7",
+    "src/ports/make/upstream/make/make.h": "d31a88ca4ab6ac7c4685dc586f8a05dab698647869aed5e1e90dc0b444d4802f",
+    "src/ports/make/upstream/make/parser.c": "1b03819bd6d0ca46edc1d9158bb01acad290573e6128cc70fe3ea45aecc7ad73",
+    "src/ports/make/upstream/make/posix.c": "25f30bce2dd50396f6a391a5838448775576291cfd0e5fa6ab70c27846b9edaf",
+    "src/ports/make/upstream/make/rules.c": "b3ba91e8526711560bc1c1ae7550514b2dbf412727616a3854ed2d86200bdc7d",
+    "src/ports/sbase/source_lock.json": "a2dc6c168498a5a89893f89433fb7ec04b1d35bd8d297ce1a8daef5dd42fedac",
+    "src/ports/sbase/xos/cat.c": "cba6380f92da3d86aa1f7fa3172915fc4e5c29ef26f8652921aa70a2fd2c5ec9",
+    "src/ports/sbase/xos/cp.c": "3627229f099fa8e9f2de9244a5489fc0b42cba81fe93fb6a2769146072daefea",
+    "src/ports/sbase/xos/mkdir.c": "0705f7a459a32935b5c30d4537dbfeb60e08f85c1ee9668b1ec59686b48c0eb6",
+    "src/ports/sbase/xos/mv.c": "18dc9befef538113f5f59769f7d50be8829262fd65784f97d81901cc972a443e",
+    "src/ports/sbase/xos/rm.c": "0216086d74c93d3208ae0270120bac5a267adcf0ca834a17a91d620c103a8516",
+    "src/shared/include/xos/abi_types.hpp": "2a417532cbdafc1d7545064ef78fe692b07ab0ec430f44367d779415fdc48478",
+    "src/shared/include/xos/display_abi.hpp": "7dfb1a723d95041f1726353a11f5843d66a5258eefbbc31a7ad364544e3f1f30",
+    "src/shared/include/xos/file_abi.hpp": "26725175aead9345e8d08be97c4f55e9bf359b4942f9cf052e402d4961bed8a3",
+    "src/shared/include/xos/process_abi.hpp": "81dec8207fd4b4a023f249cb07016e146be9a3c6bb45d0c09a34b346346b4983",
+    "src/shared/include/xos/thread_abi.hpp": "2dc12676cebf56d6f16b682e52f35fa14dd21f0a2ea94525115f33bc8d576585",
+    "src/shared/runtime/memory.cpp": "dcb0cabd06523fc1cdad1b8f7f48c97dd4f1d30c8e4bdf717fda4c969d20cb09",
+    "src/third_party/fatfs/diskio.h": "1c2b29f53e061c55d43b2e412c3a61320b2621bac7561a05e275514baa44785a",
+    "src/third_party/fatfs/ff.c": "22610a39c37d1db311a9428e1c618768ce299537a42881da9cdba8f1d0dda8b0",
+    "src/third_party/fatfs/ff.h": "765af966a517fc5dbb2217cb9788d6b7005b35630652a2aa221907dbe66c13a5",
+    "src/third_party/fatfs/ff_string.h": "9d83ff806564a8b506c896cce3aa6bca4d9dced43ee9755e9e08cfbe9133c690",
+    "src/third_party/fatfs/ffconf.h": "c0d6a52d9fea1d0e994d1d01c94a14b3209dcb3d27f42290ed9f90bf21131706",
+    "src/third_party/newlib/x86_64-elf/include/_ansi.h": "5c6403b471ee897c9a6c12e00a58617247804eb3ee72d7baeb7c08616090dd1d",
+    "src/third_party/newlib/x86_64-elf/include/_newlib_version.h": "be2a4d2763fd9f409369fc62a741dff6722b71ca56050b7c6469581c81fd2420",
+    "src/third_party/newlib/x86_64-elf/include/_syslist.h": "4854135fb4359f0a94414cf1411a0ef919102b859a320f0a0c5bc16cad84beba",
+    "src/third_party/newlib/x86_64-elf/include/alloca.h": "fdebd60de65105d933b55dcde1650f6c9b3cf6142c225397c5f956638208d4de",
+    "src/third_party/newlib/x86_64-elf/include/ar.h": "175fb88b901e13ec66f1b057a02ffb2eb312d19cf462dd5bc7bb6c39fbebb7e2",
+    "src/third_party/newlib/x86_64-elf/include/argz.h": "24aa4dd94a5b1d542ae5638cb0232ae5115e0040e029c535581fd7b0a3ebc3a4",
+    "src/third_party/newlib/x86_64-elf/include/assert.h": "76d2c321e49e268077d5e6f14e3da71b8f1e28ced650fe3cd403261b3d09923f",
+    "src/third_party/newlib/x86_64-elf/include/complex.h": "65f0b5a99760e676cbf6d65a07fd07d2202d2ba9a4d8015c722ff29cce581202",
+    "src/third_party/newlib/x86_64-elf/include/cpio.h": "70007b46d90fb58e511086afe37241abe27a54464105418b41c2b0cc541a1d61",
+    "src/third_party/newlib/x86_64-elf/include/ctype.h": "ec663418676640bb11abdd350e08066d25b31ac9084dc58bec29bff192372456",
+    "src/third_party/newlib/x86_64-elf/include/devctl.h": "73a3aebebd3729e1f7895444f12dbbef9fa320559bfb95b5766ac2a337f42e45",
+    "src/third_party/newlib/x86_64-elf/include/dirent.h": "151dbd6097a08b77f16f7a092a6b376530bc98fe62d127ecffb7a667d8926827",
+    "src/third_party/newlib/x86_64-elf/include/elf.h": "ec24622d27f989cde00b6843fe088f0b4423842f6ab16b549a2238b52c39d6a4",
+    "src/third_party/newlib/x86_64-elf/include/envlock.h": "09f86b8887f4b636701b99199a6b5184755c33174ce7b68035aa60c364ff5f53",
+    "src/third_party/newlib/x86_64-elf/include/envz.h": "de0aaab946479a0d95063cfbfcab5793487a5a0b19e051f7be3c3319c351b347",
+    "src/third_party/newlib/x86_64-elf/include/errno.h": "53d288d669b43f2341048bf58bc5e6e46a5cfbe68c6d296a3b2e2f1378ac3ca8",
+    "src/third_party/newlib/x86_64-elf/include/fastmath.h": "7fb7ff119150be066f9e06ea4afa62c4fd13def8a15d3dde3968d57d7f82ba66",
+    "src/third_party/newlib/x86_64-elf/include/fcntl.h": "637889253928e98bc028dbdcd58560492aed8e981eff349c43a8e7e6a45f75f5",
+    "src/third_party/newlib/x86_64-elf/include/fenv.h": "950a1a60988c93532171fc60b08e690afbdf9bc75509001344e43d4a910abd2e",
+    "src/third_party/newlib/x86_64-elf/include/fnmatch.h": "3a6ca8bce057d57213e430ebff2ebb478d55edcc2fe844eebf13326f2e272f9a",
+    "src/third_party/newlib/x86_64-elf/include/ftw.h": "a1cf28b60e5950867c27091afbdf29a40b8894db47be6906c9b65b52410f6213",
+    "src/third_party/newlib/x86_64-elf/include/getopt.h": "3cc4000afb3722b80000c39012d826aeaf15451d05fb77228eeb982558bf26f0",
+    "src/third_party/newlib/x86_64-elf/include/glob.h": "5187486085ba34960d9e95cc00507ab11c0075c11c2eca974987c172317c49b0",
+    "src/third_party/newlib/x86_64-elf/include/grp.h": "d1124c6cd4b46a7becd189d5e21a5afbce82e4e0b5f3f398729af40ab94e80ed",
+    "src/third_party/newlib/x86_64-elf/include/iconv.h": "0a91edea4d05ac47f67e8c67e3928445b1079d033fd0c94cd167f94456af25ed",
+    "src/third_party/newlib/x86_64-elf/include/ieeefp.h": "b5832d987da4574360acb486ee2dc93e9300ae0ee8001219cb2e41c3df43225e",
+    "src/third_party/newlib/x86_64-elf/include/inttypes.h": "de91bd3417f3c69ace8b332edea2ff3db8a7fddb4f61cb6017272a06e5727837",
+    "src/third_party/newlib/x86_64-elf/include/langinfo.h": "c58b3d439f010c9e86e5c294bb72afa7a5dd9982ef8e4a33f4ad68e6bbe12875",
+    "src/third_party/newlib/x86_64-elf/include/libgen.h": "b8abf8738f130d5d9085af48ae67449a76ea0b6e7b39124a1a36dd23eb96728f",
+    "src/third_party/newlib/x86_64-elf/include/limits.h": "16b91bb4b4f7053ddfbbe6ec0925d901093499468151289d5c224d718ec25e44",
+    "src/third_party/newlib/x86_64-elf/include/locale.h": "0d8540e663a4df6aa321a66be97a59ea63ed71537b30d2feacc97338d8027bcf",
+    "src/third_party/newlib/x86_64-elf/include/machine/_arc4random.h": "88a214651e481bc693c67b4c00447cb3f08f3c13285c9971fae24bf4630176ae",
+    "src/third_party/newlib/x86_64-elf/include/machine/_default_types.h": "5d8f9f7ead7927e4b8b7ed00172e84f2ae82ea7f5f6ba3240ff813a9236771b3",
+    "src/third_party/newlib/x86_64-elf/include/machine/_endian.h": "6a2878de2ce76eed443de3891e5dd49c67e3f41eea7054b47f9bd7ec27a144d0",
+    "src/third_party/newlib/x86_64-elf/include/machine/_fpmath.h": "3acb5feb06b70cf162c71e6ff7f1ea86735446ee8da0b4b3d6c5ea0b73c4a64c",
+    "src/third_party/newlib/x86_64-elf/include/machine/_time.h": "30d5767d9856a34b13effab3cc2663bc48d77eaf778d313f243b25015dfe1d8b",
+    "src/third_party/newlib/x86_64-elf/include/machine/_types.h": "44544ecbbc10c8aa58ca2da6d0617ffeee5af847af24515ab108c8218d6d92c8",
+    "src/third_party/newlib/x86_64-elf/include/machine/ansi.h": "b8920447822ad8f3d5698a3fd70cd0c72d28c1b4d0a57f849ce6e6ccdca2ce72",
+    "src/third_party/newlib/x86_64-elf/include/machine/endian.h": "c9cb16333e537785dde867ed059915ef2d09661dbab7cc8b4519b646735eace4",
+    "src/third_party/newlib/x86_64-elf/include/machine/fastmath.h": "a8ceea7a1395306b3cd8c9046eaca22bfe6ce26b146a86ed27c85d36aa26bda3",
+    "src/third_party/newlib/x86_64-elf/include/machine/ieee.h": "d42f5669c165d20aca5a6ce9aba49e8fd0daac842cec2898240d1d69ea5f865a",
+    "src/third_party/newlib/x86_64-elf/include/machine/ieeefp.h": "26c64fcff653e1461d227e6ab5c61e30203d057bfd04956aacea2fb2a7fdcac4",
+    "src/third_party/newlib/x86_64-elf/include/machine/malloc.h": "c6e33eb2fa8cf9038cf4114d87df62468b476caffb045f33949ba97fcaf78a79",
+    "src/third_party/newlib/x86_64-elf/include/machine/param.h": "04400a508514ef63937aa1067163ac8d1e56549c2fed1c518607d739d1e4ee1d",
+    "src/third_party/newlib/x86_64-elf/include/machine/setjmp-dj.h": "4b50c451e3f13d626d70a8087a2749fdc21c24cefa63ba416d0f07da92499765",
+    "src/third_party/newlib/x86_64-elf/include/machine/setjmp.h": "65cfad16b8e5221b391c034083513631ef77203a7754957886603d40512ff1b3",
+    "src/third_party/newlib/x86_64-elf/include/machine/stdlib.h": "43552e520d412993325ba62cb496839cd03fd46b0df67149a5ccbe1b95c45fdd",
+    "src/third_party/newlib/x86_64-elf/include/machine/termios.h": "d6e16ee56b728aff179afd72ac18247320a64c124e43060a9d96261be2ea462c",
+    "src/third_party/newlib/x86_64-elf/include/machine/time.h": "ac7672170b5e2df1fe1d40a9aa5a83356e7df9c221de771c8dbf79da68e0757d",
+    "src/third_party/newlib/x86_64-elf/include/machine/types.h": "3be8e785d201f2972db6a96ae1adb4263227623c7e298aded1a662cb8da93ea3",
+    "src/third_party/newlib/x86_64-elf/include/malloc.h": "bfe98e78707f66256511d839874b60c9f5d1424510faedce6c8e71c118175a8a",
+    "src/third_party/newlib/x86_64-elf/include/math.h": "af8b612e6f341fdaab6d30f154e1c24b18695cc0a8dc17b6e98da3cb3ecfdb72",
+    "src/third_party/newlib/x86_64-elf/include/memory.h": "026f83881db9f03068affceaa81aea160f603e11f3c9d657f7140e7af9bb8fc9",
+    "src/third_party/newlib/x86_64-elf/include/ndbm.h": "647ce1aeeb03c1f2a0d4658086f91c8ccd333a926b0a2328fcfbbdf0a667639a",
+    "src/third_party/newlib/x86_64-elf/include/newlib.h": "f83c3134b15f42b48bb595259c43ab971aac50f7d1d8a21dd32944980d13380b",
+    "src/third_party/newlib/x86_64-elf/include/paths.h": "d8a6145404b72ccff930347f8301720350ed3bc11febaf4a1ede636fcb5c8a0c",
+    "src/third_party/newlib/x86_64-elf/include/pthread.h": "3bf12f11e00043f02a294b054e219172c54fbf3b0ffef1da00cd59a4ba208331",
+    "src/third_party/newlib/x86_64-elf/include/pwd.h": "daa01af6624320d0896b33a4744e1deefa97b0cc79d523ecf2c1ca12be018414",
+    "src/third_party/newlib/x86_64-elf/include/reent.h": "e14cbe8accb69ed01d32145ecc45f902d0b237042245051c00d319cbf0aa72a0",
+    "src/third_party/newlib/x86_64-elf/include/regdef.h": "e889cdb89b2b0c335eeaff98d11bd5cb455118c798d66d6239130860558197d9",
+    "src/third_party/newlib/x86_64-elf/include/regex.h": "bc1ec4c32000212fdc0ed74a6696f78d3ade1bd4d3d9d45ca9291f6abe06a6d9",
+    "src/third_party/newlib/x86_64-elf/include/sched.h": "f764c017b8afb592a04b39c21df42a3c50c5d7276e692e6de64be67bd5c1f522",
+    "src/third_party/newlib/x86_64-elf/include/search.h": "f41dc36c7b257787b9f8737ac12d43923df88db2b3bf266fe69befe57eb8921b",
+    "src/third_party/newlib/x86_64-elf/include/setjmp.h": "7ae0edf5ec5228717fc490b730699689043a616226ed4efb97889e459a414374",
+    "src/third_party/newlib/x86_64-elf/include/signal.h": "663ea64d0ea7288f6b7bd4c9c61a28b182a0199278bc39bf5e1cd9570cf24d39",
+    "src/third_party/newlib/x86_64-elf/include/spawn.h": "96d6f7c6181283fb966d6e4742cae8ecc8b9356253296bbeaafe18e6c690f99a",
+    "src/third_party/newlib/x86_64-elf/include/ssp/ssp.h": "9339cfd4cf84db056dd68c4aca2e6d7954b6c81aea557a622425d8750da82810",
+    "src/third_party/newlib/x86_64-elf/include/ssp/stdio.h": "4cb15cadb5685fe3bc36f6f33004629998521989f48a8b1b8410432b7342f1f5",
+    "src/third_party/newlib/x86_64-elf/include/ssp/stdlib.h": "f6de6e2501ed2ffacd320d9f8deccf84dc1e863082fcb51dfdae5f5c0f6c853d",
+    "src/third_party/newlib/x86_64-elf/include/ssp/string.h": "f0de3741774c57884d831e6db40e16cbe29032b907b3b3396e1b673589edbcef",
+    "src/third_party/newlib/x86_64-elf/include/ssp/strings.h": "9a342edfac50fff733eb96acb37bc801abed9fbe9aaaf21b6fbd3f44190de50b",
+    "src/third_party/newlib/x86_64-elf/include/ssp/unistd.h": "69893f53a3029623af416e662e5997e7b4043b9086c05f0fac42ca290e0c19fe",
+    "src/third_party/newlib/x86_64-elf/include/ssp/wchar.h": "ad25221c5db89238d6d0fe16b2b98ee76bd1ca9a073d7a277a91d24685501f14",
+    "src/third_party/newlib/x86_64-elf/include/stdatomic.h": "19ccd68478bce7eb9a9ba8a7a556854947ed5f8454ea0ef94c587b9f594cdb0a",
+    "src/third_party/newlib/x86_64-elf/include/stdint.h": "99fe201684856075ccd92704f63b702f6fa882b9dab61bd7a9bcce2588275861",
+    "src/third_party/newlib/x86_64-elf/include/stdio.h": "c900e320b44518e1a214792b8caf7cffa683fda7bae2cb70714bdcd8087fe2f8",
+    "src/third_party/newlib/x86_64-elf/include/stdio_ext.h": "9c150a3ae08e82d3876a25a254eb8a19b9e80bd7e94e68d38ac4b0b7909404fd",
+    "src/third_party/newlib/x86_64-elf/include/stdlib.h": "6818259ef7240e2dd9b3fc789ac35e8d51651bc0c46f671948b491639e19913b",
+    "src/third_party/newlib/x86_64-elf/include/string.h": "1295b0de202192a52e600dcc4ff1d490054bc4d2820a7b6a21450f46fd324456",
+    "src/third_party/newlib/x86_64-elf/include/strings.h": "743121afb2f530045eb63bcfa3fdbc4ecf555131bd1cf7ce36a268f758bb4be5",
+    "src/third_party/newlib/x86_64-elf/include/sys/_default_fcntl.h": "57421d7c663ad1c56657647ffe98fe33744707db5e659bca70daf7a88a486d94",
+    "src/third_party/newlib/x86_64-elf/include/sys/_intsup.h": "1af8abe244b43a3a5b5a85f6c834aa206930b6938e8109fbec430bc140b68df5",
+    "src/third_party/newlib/x86_64-elf/include/sys/_locale.h": "adc8e11513e5f83a0c73ac641c256815b0aa6cc8a09a43d2c97b1ee79db9f154",
+    "src/third_party/newlib/x86_64-elf/include/sys/_pthreadtypes.h": "e0924bdccdc1b9983c51436971b690cd58024aa7c56b83f3e076bfc4f51091b6",
+    "src/third_party/newlib/x86_64-elf/include/sys/_sigset.h": "16e78626ff97ef85ec70ba9898082fccf70b741b0c6586c57e4421fc60b9a07d",
+    "src/third_party/newlib/x86_64-elf/include/sys/_stdint.h": "49f8328943afa2a83ed4a35fcb808ed08b8c9fcb55373c786fb1b1d3a21952d7",
+    "src/third_party/newlib/x86_64-elf/include/sys/_timespec.h": "cea8007561c4c9285063cc2f941a284d008e9f044fdfa346572e8bb39f236391",
+    "src/third_party/newlib/x86_64-elf/include/sys/_timeval.h": "976b01c11c44422953444b3f612ca6a7d41d70569e25a4c0674e9f8899101b22",
+    "src/third_party/newlib/x86_64-elf/include/sys/_types.h": "1abe39aca5104bafbde2e0219e7cdc3e96129b22ce1ef5cd58b66d8d147d3fb7",
+    "src/third_party/newlib/x86_64-elf/include/sys/_tz_structs.h": "19c466e74992b819d44b4862ff03ef36f5e3ad156b7bd8063636979bb0da1ff6",
+    "src/third_party/newlib/x86_64-elf/include/sys/cdefs.h": "6934407e76242c86361247a6fcadf1f885985bd7cdd3652afc26d8056073f32e",
+    "src/third_party/newlib/x86_64-elf/include/sys/config.h": "6e40b5263b35e7d685e38b7765464160d6e4f471e6d887bf7dce8a83edb6aec7",
+    "src/third_party/newlib/x86_64-elf/include/sys/custom_file.h": "7a8f3cc9612d591c93281dc05188d874e2dc7ebfce430f6f44e16b9b1e499bc7",
+    "src/third_party/newlib/x86_64-elf/include/sys/dir.h": "1b4d4865531636af9f7a493bbbb662e221b6bdfa5061807fbc5a237c94c5b68d",
+    "src/third_party/newlib/x86_64-elf/include/sys/dirent.h": "be21c82d8ce7898426689c520d0e01fb19d2dda10988ba3dac8f19514723882c",
+    "src/third_party/newlib/x86_64-elf/include/sys/endian.h": "fa570b7f928985298b719bc01dc6c812ca99d13dfb75bd12b08711077b262167",
+    "src/third_party/newlib/x86_64-elf/include/sys/errno.h": "b3f6da7e0a9eb56605d901ef6745ff228af9ac4044db5abc512541e2046257b1",
+    "src/third_party/newlib/x86_64-elf/include/sys/fcntl.h": "471e655eee7e30a4a8c5c34a465c0891c85a0bed33a26bd555d7538a91bd6e9b",
+    "src/third_party/newlib/x86_64-elf/include/sys/features.h": "a5a354650269fde5003f824c747a56016a10738ea2aa919bf5abe786a78e4d27",
+    "src/third_party/newlib/x86_64-elf/include/sys/fenv.h": "e1b4d1697a2fb8845cf2b814dbcf563a6893eae688606903e8f536ef0ed00373",
+    "src/third_party/newlib/x86_64-elf/include/sys/file.h": "c4e08fdb66f877ddc18fc704b7127aea39766f08593fa833d7f385beea0b5a35",
+    "src/third_party/newlib/x86_64-elf/include/sys/iconvnls.h": "dbcc72531a4590fd2b94c75ef02730ed5a1985abbddc7ffee7dff26a4f23a0dc",
+    "src/third_party/newlib/x86_64-elf/include/sys/lock.h": "f5cad9196ce745967fd2673e085b5c03df7887d4d11d7544aff05ff6679be6b8",
+    "src/third_party/newlib/x86_64-elf/include/sys/param.h": "e440a04d5d95c0712db3d434b03fbfd2e996c36eb3453fb26c6f7e62f142902c",
+    "src/third_party/newlib/x86_64-elf/include/sys/queue.h": "c622d82410a368e1c437d38473b71fd796b538f9bc322f0a1ef45deb016d6e8b",
+    "src/third_party/newlib/x86_64-elf/include/sys/reent.h": "44726a2edc83783ecaba3c83a6c7c71db3466ffd6d607c89b1f3ff74311510da",
+    "src/third_party/newlib/x86_64-elf/include/sys/resource.h": "17acb6bb387d0bb38bb9cbfeb9008cb9f7bac3535b981668d01ca6130a93d6b1",
+    "src/third_party/newlib/x86_64-elf/include/sys/sched.h": "37eb9944e6a7f70e51a9a0600ff4d5ac6d85307c92ea1c50af8061078fc7b632",
+    "src/third_party/newlib/x86_64-elf/include/sys/select.h": "95b29d3fbd8a106e718038a2fabf6ad64fb9ce1b4a549334d5ee1ca274def4a7",
+    "src/third_party/newlib/x86_64-elf/include/sys/signal.h": "649554c762b965b91bd39b69d218be4a3289f3aa7098612ef6afe8ffe1b80669",
+    "src/third_party/newlib/x86_64-elf/include/sys/stat.h": "dbf0db6890c92c5a9afac4df7494bd9411616d0cac5efcdb7273f28c8a6c087b",
+    "src/third_party/newlib/x86_64-elf/include/sys/stdio.h": "bd987ea6fed5d31d8a4e7d183a7d988e981ecca3cffce76ee482fcb0bf65594b",
+    "src/third_party/newlib/x86_64-elf/include/sys/string.h": "b7164ee36ccb0a08bc27c7e381ea417c97d8c3fd3157de62b75d2a6bf7a0a589",
+    "src/third_party/newlib/x86_64-elf/include/sys/syslimits.h": "780971936dd4b8f3b192669e693430c204a72c7fb05e7a1db67d48f02cd9aec4",
+    "src/third_party/newlib/x86_64-elf/include/sys/time.h": "4339fef02543373b805426f6b9540c9810737ad855082354981e027480bfce4f",
+    "src/third_party/newlib/x86_64-elf/include/sys/timeb.h": "208f4cf1df8d97e68b4a73c962ff3b0c5e0771bee39321dfaf7541b64dfa616e",
+    "src/third_party/newlib/x86_64-elf/include/sys/times.h": "c15b32414d3a99b24ce37ed444eec2e4b50e9ff18aecf4aa1e070cbaaa0c4954",
+    "src/third_party/newlib/x86_64-elf/include/sys/timespec.h": "c2c2dfdcf9deacccb8919ff633f212afa455e4779a2d12c47b9afa0eff7d73c1",
+    "src/third_party/newlib/x86_64-elf/include/sys/tree.h": "ea81ed212bea5c3878f0291d34ff064c4cddbd7e73ac347f6f2944047052d417",
+    "src/third_party/newlib/x86_64-elf/include/sys/types.h": "659abc34a2db9f62109d06135699e72a8759cce553626aac5340bfd84988d8a7",
+    "src/third_party/newlib/x86_64-elf/include/sys/unistd.h": "03d0d4d822bde32e703fe2b4e73d2d9f11bda097816582d96785426e94cc7e52",
+    "src/third_party/newlib/x86_64-elf/include/sys/utime.h": "2bcd7d80d018eb7ef8912394fa6c84da8a2212fba9561db9e0b03d9ee8e40d34",
+    "src/third_party/newlib/x86_64-elf/include/sys/wait.h": "f1a190e79e4ae9b0bc2c25ddd011861f0d4eca08ae4c3159c58bba0e3ba29f15",
+    "src/third_party/newlib/x86_64-elf/include/tar.h": "66008622fce9fe0b5c305e52bebc1dbc3291a5531682d886d575d4c4976f069a",
+    "src/third_party/newlib/x86_64-elf/include/termios.h": "fc13c1c649a2530491bed09e072743a931822b0faa826efb34e98bafd7373fa8",
+    "src/third_party/newlib/x86_64-elf/include/tgmath.h": "4cee5f66824b507890fa22a0462ce46d177ca14345280e01d7bee660e01d42c9",
+    "src/third_party/newlib/x86_64-elf/include/threads.h": "7b12eae65db429bc21f7f9480e43b09ecec8e09a14ef17b7a6c3b86739459354",
+    "src/third_party/newlib/x86_64-elf/include/time.h": "374f3643cd0441150575271cbab976d543cdb37cde6890167ed66c7a051c2d4a",
+    "src/third_party/newlib/x86_64-elf/include/unctrl.h": "cd52a305a468bdb6aea3e6c03f9dcd7d40c2074f6b2a66ffceb17f7786c41897",
+    "src/third_party/newlib/x86_64-elf/include/unistd.h": "19f31553182c4d649dd0d6301ffdbb5b4d7903b28373dd070a553798b41f524f",
+    "src/third_party/newlib/x86_64-elf/include/utime.h": "be672799c1b20fc35446ee2bf6b3c800677f2168983a1c99b366cf8036dbc418",
+    "src/third_party/newlib/x86_64-elf/include/utmp.h": "0cf902b1dcfa51852a3127a012ef4e77182510b0c5c89dab89d522656366e237",
+    "src/third_party/newlib/x86_64-elf/include/wchar.h": "dcb1f58b8913d4b617022a9f2c5804e9ec3f262670c78159a746032f44d55221",
+    "src/third_party/newlib/x86_64-elf/include/wctype.h": "afdf3415c9a74cfbbc8942d83e25f277528e6638ccd2b18c1239c6d61c579930",
+    "src/third_party/newlib/x86_64-elf/include/wordexp.h": "cb95592bd02595459a64ce2caab45c67564fa67b0110164aa00e38747b1448ee",
+    "src/user/arch/x86_64/fault_test.cpp": "6133d07079c37c64ce71769b574ee482c441a758204d37a0eed5bc2f7027abc1",
+    "src/user/arch/x86_64/start.asm": "bb731a050a6fc8f60f5da81e3a7271600a96bc8f9bca0f15dee4e63e01db8d2c",
+    "src/user/arch/x86_64/syscall.cpp": "29d689dce8e56a6dfd11911b84d667e860b391912af39eb30c0080b28f662ddb",
+    "src/user/arch/x86_64/thread_context.cpp": "580b409814ec6e103dfe196d70a9f1c7e55e88753fd4f2fb2a3d5a145e856b92",
+    "src/user/arch/x86_64/thread_core.cpp": "25e43b0a323994e11c77cd1533f6144a3bc8e788b62499ade4331c1f1f3e0732",
+    "src/user/arch/x86_64/tls.cpp": "07bfc7630f5d9aa3a88af20fead65bb6e3a25cf877cc3a4a369750fb96e1a143",
+    "src/user/arch/x86_64/user.ld": "d7574d234323eb7f2b481d6d99aca931bc236b843462e10cd2ef55b7ee88441b",
+    "src/user/demo/heartbeat.asm": "8f11e39d6ca7cd7d7d3a59a49909779e8e2eb687d85d2787d13e4d2b7cd8e765",
+    "src/user/demo/probe.asm": "a237acf72009507e3336dd4f4beac874b935f2c8ddff67c21a85fca4cf433b81",
+    "src/user/demo/quitter.asm": "dda91ce95e09db68ed04a45a30ce0e936e1d759a81fc98665fb9e67cfadcd08a",
+    "src/user/demo/receiver.asm": "93e3a1a4bc305687af33b1cf3a2af63f637f4b1d39809ed207ebb8e516ad99f5",
+    "src/user/demo/sender.asm": "e0a0f64f0071c20ce317157b70dcfa4c61899c063c0e02a8046a8d3966700824",
+    "src/user/demo/spinner.asm": "b6c048a32b53350cb1cd4dec877a60266b819146b6c88052386aabb7269d7881",
+    "src/user/include/dirent.h": "458f4de3bf177e302606827f5888fffc2da02dfa4314557d13fe7f42035b48f4",
+    "src/user/include/xos/display_client.hpp": "93f8349de6efdd765e31747847c512e7e76466930bd84f1b61fe3e6dbb15a395",
+    "src/user/include/xos/elf.hpp": "a80999738ae4985e09b0c05cac5495945794dc7bde11cb83ac9174423d1490f0",
+    "src/user/include/xos/execution.hpp": "b47bc21b0e4e6af2c1d17a501d1f780ceb49fbf2f29e39d4c2f9c2620bb29e47",
+    "src/user/include/xos/file_client.hpp": "c34d81b9ca5eb4def1999bdbcad056fbf3529944af85dfa0d95ceaf466c57257",
+    "src/user/include/xos/file_ui.hpp": "39fa7997ba0cdb8fd6d2b79231a9b926408d06f12bf3238554a715171ea00538",
+    "src/user/include/xos/libc_runtime.hpp": "d2808f67bf4be32d9de8d8003dded9c41ffa5b2169a8a63e1eb2cd93c9401dce",
+    "src/user/include/xos/runtime_lock.hpp": "047cefb19504110544a94f9053950eb543bc827dace493513be31ccb24be9706",
+    "src/user/include/xos/sdk.hpp": "f147517828424c4ae52515c9aaa84d570465792f50dbf7fb0f4730c6e9d8355b",
+    "src/user/include/xos/spawn.hpp": "9aa935d0eecc18c19147f58a26073d77a80e6afe018c723c89649bcc86166ff8",
+    "src/user/include/xos/text.hpp": "c2c86767d2716c622128bd6023ae19a91a26613526a659449cf8f4ecdff61db2",
+    "src/user/include/xos/thread_core.hpp": "a9fdf5923eab60d225678a96aacf31599d8d9f45f841ab1ee8de4737e4e8bb7d",
+    "src/user/include/xos/tls.hpp": "c67cb8d2caea4f4da7ed44db61f26fba3ad20bc0f4f53e79d8ae752797d2e6e7",
+    "src/user/libc/cpp_runtime.cpp": "12a9eca8c79a2cc75983be6b497fa3f6129cf2a70fa8199107bbfb317c2941dd",
+    "src/user/libc/main_entry.cpp": "aa8f145e1beb9204c4ec9db0f06f2ae3c96c2bccf53d0737a616d9c1a17ad3ed",
+    "src/user/libc/newlib_syscalls.cpp": "ab197665d760b29f074ae47ed6f1ca7778f0b3aed019908158a99ccb371cda1e",
+    "src/user/loader/command.cpp": "d26c3f7a7643e8b28efffd80e831a660424f80f437f52991786a6fd8b29455ab",
+    "src/user/loader/elf.cpp": "77e14482843952f333957ccf4bdef52e349ced9660df04d9e3e7da84e6b3b61e",
+    "src/user/loader/elf_cases.cpp": "612b23528e08a374a6eb803df911529f4164aa4c372d9b88b8341378440f78af",
+    "src/user/loader/load.cpp": "03f114a70b8117890ace9d7c86f5f6de7a9249ff5f119484748e7cb91156acb8",
+    "src/user/programs/cpp_runtime_probe.cpp": "060853ccbd609a37006743517c3b1fa7ad853cc8f574a51d9bf0864b6ca263ab",
+    "src/user/programs/demo.cpp": "b1be4366a3610611e9522d561cec1bb6ff9769da3e8d9cb9d6f999c878b12939",
+    "src/user/programs/e08_probe.cpp": "bde0c7a844753d54965fbaa4984377bd204e8e08a5e8eee53a365acd87cc0744",
+    "src/user/programs/echo.cpp": "1db87e9c1cce7abdccb037c2b982cb7aab390c30b9f9a697b5fb285d93bac169",
+    "src/user/programs/fault.cpp": "38be777b6c30efebfddbe9d369cd4a2b2b12925a93c3206ece22cd3d2c41bcf6",
+    "src/user/programs/gfxdemo.cpp": "209beb32c1074401cedfa89fa2e4343682c2351513cede212c6a151f735dcb6c",
+    "src/user/programs/hello.cpp": "a42cc86821764c74ea3e5e2523131af7a1663499eb33e6f5e7a20f10017ec53e",
+    "src/user/programs/libc_hello.cpp": "3bcbe673765e9df8d7330035d80f132317b782a5d39425dd429b3636872a7b47",
+    "src/user/programs/runtime_probe.cpp": "98fc595f8c7873316d8d90e3c90e3782bef39a3c5b3ab6255077158b4ed03899",
+    "src/user/programs/slow.cpp": "7f773d1a2140beade753f19f83cfcc47bcb397c4419818a8acde13e19127066b",
+    "src/user/programs/spin.cpp": "ca328df168bd6f9625cdeabf7b559d4a3f2729ba3ae1910712d2f69347f620a8",
+    "src/user/programs/supervisor.cpp": "b58851ce4f48811f5feed9b0f8db2df5937e7c2ba2d260103bdd9cccac5ac63c",
+    "src/user/programs/tls_exit_probe.cpp": "36c5775a1c23952a84396d87d5b6c5245b42d082d1239d58d3fe39be09c34f71",
+    "src/user/programs/xypm.cpp": "0f6b678aed51acd580f34e21b765bb7f6199a3a031370b5c268aaa3c64ee0ce2",
+    "src/user/sdk/file_client.cpp": "3a5734af159c8cf2ef5d3a53924b63a11077f71084d6f55d5e09cb7e8fe39cf8",
+    "src/user/sdk/text.cpp": "6f9a8389c89d02f94d9003381fe438ab39705494095ad50593862eaad0cf9d21",
+    "src/user/services/display.cpp": "6a144cc64e956968d2cec8be65ccae14db1761a888b551ce1cc9ee96bb570648",
+    "src/user/services/fatfs_diskio.cpp": "695923ae8b2c0be68347106063cd0084f32f70ae8765bede46bcb578113f9e0c",
+    "src/user/services/fatfs_unicode.cpp": "c77573939b51e4cac66743beffe938347d9203cbf272241fe89fa9b4b87e3e57",
+    "src/user/services/file_ui.cpp": "46d761ac759d5fce9648197fe331ff999d2468a106177e96e7824261122516e7",
+    "src/user/services/files.cpp": "03e95bfb9b7d4de1f71645b35b97bbaf6ccd301cf05fb8107b989df50bb6246a",
+    "src/user/threading/compile.py": "efb63dfefea25cc7fa83eacc05e87f2c194a58b9ad65dda06179c4c6795d65a5",
+    "src/user/threading/include/pthread.h": "ab7f3bd8a2eed1465fc5c2a02fdcc5f186311bf872f8d5a6a7751d1b5e26f8d0",
+    "src/user/threading/include/sys/_pthreadtypes.h": "53196a2f61d3f1e6175701e3351d3c323a8268de1475d80a1389ca9f88098e2a",
+    "src/user/threading/newlib_locks.cpp": "339e202c98d209946803e0516a21b527253dd251a63dcb7e3cde5abf4ed17552",
+    "src/user/threading/pthread.cpp": "55195dfb4717feaffe5a3e68187b78db308619086fd4b7031b6c1e4bbfbb75b3",
+    "src/user/threading/runtime.hpp": "5db6e77d493183f8a6823843d71390f9675a6fbff88775fa66b4048ba1638e9a",
+    "scripts/build.py": "134c485d5d52a390e699184b1708be08153d5665b82f83628af8a3363d17abab",
+    "scripts/build_binutils.py": "b728d993cd18a75857c5c4779767ee5d49f8a94176de31bf7c7031f5992bae40",
+    "scripts/build_cpp_abi_probe.py": "6188bc9306943c3459592fa1eba5fd699e19d68d086824afa3d8f44d0f10f10b",
+    "scripts/build_cpython.py": "3d2b8921224b1bf9da7d43ab287e53cdbc2a35ff1a094f3b72666443b2996fbe",
+    "scripts/build_cpython_zlib.py": "546229031cc3fc134c4235161dc672ecd21a37d32979a804dac335861eac5e79",
+    "scripts/build_dash.py": "45080f3472b7a79ec5120e1c2f4a04c5e0f46fe8badfaff934d6a16879f15277",
+    "scripts/build_gcc.py": "8f5e56ffdbe4471de81340c5a18d144ab9d5705c092d37858c1828072b85faa7",
+    "scripts/build_install_iso.py": "35888a0eca0c57adfedbb58883e445bc62dd29db15b67b24e12d840b1f098045",
+    "scripts/build_make.py": "c2d52e0ca36ea50364bd748c8838e11679b28cd2e3ee4ad06a47ae1431ba4520",
+    "scripts/build_newlib.sh": "abd2bf4a1c4865b760cc280d9e1df99386465fcfc5d4ea8541edb11e4bbbe7af",
+    "scripts/build_sbase.py": "8ba98da5fcdb6957d774f863a81f20d046da8dcbbd3576264c58d5808b90fec3",
+    "scripts/build_threading_newlib.py": "aad02be8535d8ea9e19fd963faabfbc994b5f1aa307938c5abe6d5dafa705b9d",
+    "scripts/build_threading_probes.py": "7723eb8f02d75e7baaa36bd0eae7423339b38173358bdf53557461c8754474b7",
+    "scripts/build_threading_sdk.py": "b402d9958659eac4b26dec656a2a733b728188083faeaca2de34686b9f76a3ba",
+    "scripts/build_xypm.py": "7e37592a1cc7ea34ca7e439a6bafa2c4a16851ed4558aa459accb6d98173cd13",
+    "scripts/cpp_seed_bundle.py": "079ba587eadc068af2140b777619d436a2b884102955a79b88f0c5272aba8714",
+    "scripts/derive_cpp_runtime.py": "776f4a6606398b02aa39670380b827fbcc20eb77f45f4da4737ebeab8ce39d94",
+    "scripts/e08_stage0_audit.py": "5eebce6441972a963c3b507eecd9dec00c012befa58966b5fa1afaaa9ad24d7c",
+    "scripts/install_dash.py": "242f0148fe4ead2bef79263a6b00488b46a823fa9815ca101bcdd7fe98590b06",
+    "scripts/libc_audit.py": "832a38df8d32887fa35dd9e43b962277a740eb411b6668b1262e5ba50a6f5697",
+    "scripts/license_audit.py": "27aa43502aaaa8d6715da17fbc507dbe85e7caf967a76c9b3e31c933927c3b4e",
+    "scripts/make_iso.py": "ca7624b0eb8cdd3065f229ebb454abfefdb75434bcc315c2200c7979358a96e5",
+    "scripts/make_work_disk.py": "253258bc57e2c3ca69bfe6499688661e6d040b305157efd06628ab67405bfb71",
+    "scripts/package_release.py": "02f682053797b33b93480146d501e1eb6b66b56444d3d8ee4165da6fa7ea9856",
+    "scripts/package_release_materials.py": "8747a5b2c3de29481afeb3323fd4c30fd5a66fd3403bfcf718a7c6e54cb2ee27",
+    "scripts/package_release_sources.py": "9c6c14cd78243b053847bd52c92225dbe8df5abf1c7b0cc7f65b37138327b444",
+    "scripts/prepare_gcc_seed.py": "62d2a3442bc48f01ca7b1e4f74309b1ab304314ad12cc56ffed44805d3e4af72",
+    "scripts/prepare_xypm_sdk.py": "eb981fbf5efffc30551d54651d663f5ab062a48c93eaadb25cfe7ff50222ebb8",
+    "scripts/release_launcher.py": "e20ac2b756f9309caa0df85b312da8012f0b9c2e0aad48eb093eb7c40e7c4886",
+    "scripts/release_smoke.py": "c1159dd6c577d273c47127dc248b8c25b65d0169784b7856c28a20665337b5fe",
+    "scripts/relink_gcc_seed.py": "eaea0d2257f956fa2eada19edb03c935d611f9890b75bda6fbd1187a51aa465f",
+    "scripts/run_qemu.py": "706ae334dc438b3b95f142042ec6b53ae81b3071860f7b2f3bb515b6b87d54a9",
+    "scripts/seed_diagnostics.py": "6f6e81ebb2806b1990d140dc29ffb3e1470d3e0dff6b84b0c9c5fd5e338a9d11",
+    "scripts/seed_preflight.py": "0f009ac2962e22f57920befe7c7907e0b631cd40b2bb73f7339c027892067afa",
+    "scripts/stage_cpython.py": "30e6b467adc3c93b0cc5e7d1b07a9d581178fdaa94afc1980e405da581327c58",
+    "scripts/threading_qualification.py": "05e7bc1dff6b2749005388df87dd96d4742cecdefabc84f38b51e0758ea98536",
+    "scripts/toolchain.py": "42327d9b01daf6e325efa50c62f13cc79c045524aefe3aedec6660807e50a471",
+    "scripts/user_build.py": "8cdc55d726e302cfe464253d1b1bcf040447ffee9240460f6b445f6e907c4832",
+    "scripts/work_disk.py": "43ebdf6ef5265f3826b37a4346e456f6de90584a20ef2f8270ba8540385dcd23",
+    "scripts/work_disk_host.cpp": "936d17065ab4b8f1b1fe4ed8fa4b3fcc6c60cc8eb4bb661a4dbb0e195de3de44",
+    "scripts/xos_app.py": "cd8c83355f3badfa7428948bef1a22b27339cbbce4577874e1459e0e2946c889",
+    "scripts/xypm.py": "86dd3806f1f2b28c835a46fdf6db49f47de6921a0cf96f32a7963b7f00b6644b",
+    "scripts/xypm_disk_host.cpp": "102f34c9a44a2d53dafd854c5b17a7a724fe5972358cdb61e4dd3070f05f3309",
+    "scripts/xypm_format.py": "6083be49662413b73e0b88e97dd321da2daabbfffb1e80562aff1ed279224708",
+    "scripts/xypm_image.py": "16b033772859a9d7ec900a17515d65ecab57561ed12119eac258a308d4881453",
+    "scripts/xypm_python_wheel.py": "e4a4c48bc3ee16471daad7452d87d06c5df93aebf8c7cc667a1f89a32d318ae9",
+    "tests/adventure_smoke.py": "a7ef63d097852a9eb0cc76e4885194bd8e62730016e7e3653f7025e104898984",
+    "tests/archive_link_regression.py": "1643481772c44b5d4a2715f7309edbcb98f7aa9d4d766446d1f7324708680d18",
+    "tests/binutils_smoke.py": "bc4cf050530703841ed16dc248b82cf202e45705dcfebbc3e4bbb3ed4167f6c4",
+    "tests/binutils_stress.py": "0dd860b58ea774e11b5ea62b9d27d8b8f757e684768cb4cbf378e32bd491f4e1",
+    "tests/boot_info_cases.cpp": "2f4fbb742eeb3784e1319a662a3119fbf63f9cffba705107580f98df3f054b1d",
+    "tests/boot_smoke.py": "41cc4f5bcec6ff86b99c1ca2528c3340b814ae3c03136d70958ba04e7503ce5a",
+    "tests/cd_atapi_probe.py": "02abb2901e746fc6adeb5e6ac1ad0ce6edf09c202126329051fa24fedadf0578",
+    "tests/cd_iso9660_probe.py": "e35ada0db41a31ac160c1730113a65f8a80296ce114dd93963f436eb0edf3bf1",
+    "tests/cpp_abi_smoke.py": "f263b450e47706a6803eff62557dc2e2e6a3d523c677f1dfd0a427787ba2b0a7",
+    "tests/cpp_runtime_smoke.py": "8389f2dd8e34eac304d9e97161a313bfca95079db10de6d344d930763ff5a7aa",
+    "tests/cpp_seed_bundle_cases.py": "3ed310ab28e1662f57dbc9f28dc9a99d530c9fed9250b88ddd69ccab9dfb8d99",
+    "tests/cpp_seed_smoke.py": "b7f403c3add253416f74d913abc078f005e553d9935aaa22a70eb44920f48295",
+    "tests/cpython_py0b_smoke.py": "68a034be4588bcaf519d4fe8033b8932342a4e36f57e27916f2b2a7a407ece77",
+    "tests/cpython_py1_smoke.py": "e06c34fe74b8d28bdb2bba4cf09183bb733a8949f9062a4860825896f0fa5412",
+    "tests/cpython_py2_smoke.py": "61a7d06d07a8c27afd0bc40d8b3ecd301eda6f47d9fd1871cca3f0c424028b79",
+    "tests/cpython_py3_a1_smoke.py": "08d114f35cdb242b97c413253341dd3ff2f9b3156d56a24c83ad24bb78bdcf61",
+    "tests/cpython_py3_a2_smoke.py": "2db208213e3d1f8d50ea46863f44522daba8489b246a3360651ddfa545b268ea",
+    "tests/cpython_py3_a3_smoke.py": "8d9b2f9ace70bee3ce7a0c8bd97eab714fdace840a9284891c0d6432eafcef48",
+    "tests/cpython_t3_py_smoke.py": "0abe826e5db18f3f69dd0e01344b88bff76a5e1c2bead6ac762428461e092b76",
+    "tests/dash_b2_smoke.py": "708f27da141f67137a350578f9e86dea8d4e5eb95d63abfc06317e14168b5ecd",
+    "tests/dash_b_smoke.py": "e279207236d3614a675629c98780897c57aa965b9dbdd842933aa4d3ac56c325",
+    "tests/dash_c1_pthread_smoke.py": "1f7a2d199aa143d9d6d5ae81e8eb7641bd751886e13bbb176e3fb0f8ecc94bfe",
+    "tests/dash_c1_smoke.py": "00b8dfa55a91586a4029bd58e1ab9072688ac385367f330ac5eac1597694553b",
+    "tests/dash_c1_threads_smoke.py": "55072a3eff306fdf9635655e0c4189e94ba1240e8953bee3c5de75ae8de9b341",
+    "tests/dash_c2_smoke.py": "ac12c971bb03b3f3984107c485e20bd9e96deb488ac0d83146d8071439b09c41",
+    "tests/dash_c3_exec_smoke.py": "a1d25c0932b491ad364ba03fcabf2cfa0dedb9032ff035b327f2ec9891f8e4fd",
+    "tests/dash_c3_smoke.py": "1e06eb6a76314567a0a77289f2101c3d61d38d08edb755700961e1fded4c4f2b",
+    "tests/dash_preinstall_smoke.py": "7f3a7961d8823e21efb3b1297b7410c8170570d54c452535d8584b9e3f817673",
+    "tests/display_compat.py": "7adda246474b1c33d1ccf1f1763da9936402afbd1e808e0866fb7983ff15aec3",
+    "tests/display_smoke.py": "954bd935b0924c3a075c7828ccc57b79d372a6e2ae230e52900413b6977d12ab",
+    "tests/e08_integration_smoke.py": "1cfe836c395769fde9f9f4824468b8ce6c41393ddfd47e95e502443dd3feea0e",
+    "tests/e08_post5_p1.py": "379bd72dd97f9926dd17a3820fbce484de60168e47db6610bb77d6cf6bc98296",
+    "tests/e08_storage_smoke.py": "e512e7ca4598b0926c466bb0771ec9f7172d2fb3edf4101ab4f0794c022bfe29",
+    "tests/elf_cases.cpp": "a4fb8d8f012ed4c69b0e77ccee3b6f645237a99b3fd6169b6818a7da0cdcf8a9",
+    "tests/file_smoke.py": "5faec8ea079fff973b066eba45e39a6e531843ad5db4c83733c8603615f16778",
+    "tests/fixtures/binutils/answer.s": "5c977909f88a3e500af9c148090e0e836720e01ef3e899c6df6b2d6699aaa5f3",
+    "tests/fixtures/binutils/app.ld": "baf8f3ee9e2ce9126ddfe2750674614aed3e156eec1a1b062f2df7baf1156212",
+    "tests/fixtures/binutils/bad.s": "4fcd44f26ec509ad783e04c3d8884760434b6c77d883ebb54b61b135d0680000",
+    "tests/fixtures/binutils/start.s": "e08098a0c83757454077b52fe477850a0f0052dff53b0be5d3a0431bba9615ea",
+    "tests/fixtures/binutils/unresolved.s": "b6a7559f4da846d336801a1b901725f0b367bcd2105ccec1a914dfa0431ad5cc",
+    "tests/fixtures/cd_probe/boot.asm": "deb3313ae7cbb9959d296b82c3e3900b443098eace2a62314e3e5f44014e794a",
+    "tests/fixtures/cd_probe/iso_stage.asm": "163519a38c84aab245936daa7651beb723c42b866ae2853d3bd12024ae2cfd75",
+    "tests/fixtures/cd_probe/stage.asm": "7c9a92e3bd44cfbde2042b873e4931ad5bf38e43bf72a68690e0584509e6f9dd",
+    "tests/fixtures/cpp/exception_rtti.cpp": "2475c10dbfdfc3fa2dd20546c65c437090babe43b8adf3d098db8cca26346e24",
+    "tests/fixtures/cpp/library.cpp": "d301f6243cf52f60e4288cedba09acdc14012d5f7471970d8bb68c3d0830a215",
+    "tests/fixtures/cpp/link_error.cpp": "640e32438d6812094eab0f0ca91031b0e1c1506d87271ead4ba5a02160989cfc",
+    "tests/fixtures/cpp/main.cpp": "09b07a6e5989f903cc6267eaa313050c38b140bf72421b6026d470598095fe72",
+    "tests/fixtures/cpp/state.hpp": "3532d1d4ebd0d31fd121fd4636bb59f6426f5730dcdb280643317bc3de829180",
+    "tests/fixtures/cpp/syntax_error.cpp": "28124fa8e4f82308ec3b60f97cabe37f8b5fd9ece69ad94f9f7bbcc7e542c4ce",
+    "tests/fixtures/cpp/tls.cpp": "35f4e208d8085e4e4874809eb6e83747b6acf6a40e834b046c5e7e8fb8469f6f",
+    "tests/fixtures/cpp/tls_worker.cpp": "bd6ba8f577a81cd3d7bff46a252ff15ff0c1cb2a44ff338c8fc0dd37bb46326a",
+    "tests/fixtures/cpp/translation_unit.cpp": "74dd6ea3b16184c2bd0162d376e7941dbc545fa299666b8123a1d484e61c34cf",
+    "tests/fixtures/cpp_abi/abi_probe.hpp": "63964f565d78c90bba307b31c67473bdacc9d87676848f470f99775d11c91403",
+    "tests/fixtures/cpp_abi/exception_probe.cpp": "96ec1ff46f66346e5b225cc8ce6dd301ce5d6cd501dc45708b2aa4c6d0a46dc3",
+    "tests/fixtures/cpp_abi/local_static_probe.cpp": "3ef2c45e8d602c1101897912c9fc13e7ec80b75c27d0873f2049b6dde6c0fc21",
+    "tests/fixtures/cpp_abi/multi_tu_a.cpp": "837271d0c2e01a514c5a9727d8c99d36c6f8da924194808387f9a74aff071790",
+    "tests/fixtures/cpp_abi/multi_tu_b.cpp": "d8c647644ae8412d6cf4c887ec099df0f421a4a22b80a8cf6a5827cd95b64230",
+    "tests/fixtures/cpp_abi/multi_tu_main.cpp": "94013d6c10e1a3a68aa5c8f68e5fa8f2ed1e5dfa18f7d22a3986c3264628f948",
+    "tests/fixtures/cpp_abi/rtti_probe.cpp": "03177f82608e4be246fd00b4f9090571fd6d7cd53940c0b295c93dfcc1969849",
+    "tests/fixtures/cpp_abi/string_vector_probe.cpp": "5e8c0668a3d4f8daed520ce70832ea3d425664233abeae810734f735339f60a5",
+    "tests/fixtures/cpp_abi/tls_destructor_probe.cpp": "661e0f930b92995b745a4f3a12e40ae9aca6391ed0771a543162b643234d5fe3",
+    "tests/fixtures/cpython_py1/helper.py": "e0ed1f1d8271ab7e59c56ec7530f674c50c11231c674036d95d99927f90f2bff",
+    "tests/fixtures/cpython_py1/main.py": "fba6e02d2bb72d1be068ea9b50c08aa6dd533329bfcda3dc2d6cec1c0adfa7ce",
+    "tests/fixtures/cpython_py1/missing_import.py": "c6aeae23750612566fcfb3b7dc508b2a0e0edb4b46b27a5c88218902fc38bc71",
+    "tests/fixtures/cpython_py1/stdlib_probe.py": "d40ed496f32481dcb633e638af041c6f9a578d3e46f9e3713d13d90179c72dd2",
+    "tests/fixtures/cpython_py1/syntax_error.py": "279c69cfb045dee385db31c1fd0c0c9184cec970fbe0d8488a4b3462ced13b3d",
+    "tests/fixtures/cpython_py1/unhandled.py": "c0da52f02cb83bb23ae0e1594d350a402d4ddf9829ce02c891dd7ab0d1fe0d9a",
+    "tests/fixtures/cpython_py2/file_probe.py": "a71ff91cc14c2a6357ed9a0ff5ab9091ea72ae1de59c2f8cbb7fe296c6fbd39d",
+    "tests/fixtures/cpython_py2/input_probe.py": "faa829d029526c0963a8677fc209a5696fc6475e309bed07b0168d9c81172526",
+    "tests/fixtures/cpython_py2/load_json.py": "6f0d98d256a87ddd258c25f0d2a98e0dcfd3877db11d9947b6a6b2ab4cb599a0",
+    "tests/fixtures/cpython_py2/save_json.py": "fb2a6df2be618ccf2f09a2f2f789ba1e8a1b3d246ea404706714a1c265a9b79d",
+    "tests/fixtures/cpython_py3_a1/stdlib_probe.py": "c0148eb2a96aec5dfea9bac737cc9c5771035e8290754dedfb36b5c337c9ce58",
+    "tests/fixtures/cpython_py3_a2/zlib_probe.py": "40e01975035b186018427e191827175518357841b7e4e10ddeb63a7cb70933ca",
+    "tests/fixtures/cpython_py3_a3/absence_probe.py": "3e19d8270a83b34829d06a24e6d926196cf20d0b64eb19ff041bf662c225bf4e",
+    "tests/fixtures/cpython_py3_a3/idna_probe.py": "7137243fb1ac25d8dd36fffe0b5cfcd1e9d39a08339ed74d17907792ef5755e9",
+    "tests/fixtures/cpython_t3_py/blocking_io.py": "f90d012e13709bd25624cc7941b8720fca94dea60a74af82cae2db99bd512e63",
+    "tests/fixtures/cpython_t3_py/daemon_exit.py": "733b2f864f642dcace6ec4164548c9697d702f22b3c784c79bec90edd9b09eec",
+    "tests/fixtures/cpython_t3_py/non_daemon_shutdown.py": "1ac8c9f48c90f4d142a217c24f375da13e33424a7bc087a352882f19b37f1a93",
+    "tests/fixtures/cpython_t3_py/threading_core.py": "82e32e7ab61c0f4949d6c13ad08f2af6f4285e6d4ebb26fd6ed6c8ddb3d0e505",
+    "tests/fixtures/cpython_t3_py/worker_exception.py": "7f1f1f86038fd9c1b1c1d82949ba69c8313cb681d619ed275784045f7163cce4",
+    "tests/fixtures/dash_b/app.cpp": "72e4b9afee8d828b8b9b947fb561ca1f7e1e7424c4d5d9590f676564e1b9e276",
+    "tests/fixtures/dash_b/bad.c": "d4c206bbd33fedbb49a8e6954a9ff80df4b1c38dcaea9d8d6b607ce79f4b3243",
+    "tests/fixtures/dash_b/build.sh": "2ee210b549f4ac71bfdd3ccd88c2b9b4823e1b720c68c669d5e3b919e5ee61e9",
+    "tests/fixtures/dash_b/good.c": "21ca8ada3efc594cb98458e0c695b0bafc5711523a85861d664b6d02ff78081f",
+    "tests/fixtures/dash_b/helper.sh": "a346746a11f2af849a91ac323441dd3fa1421baa4c1fea2d9cbda91b4e3fc3b1",
+    "tests/fixtures/dash_b/unauthorized.sh": "ec866e9343f7f9e76e6db0626686d667368130ab564a3d4b2883d8e734ffbbf6",
+    "tests/fixtures/dash_b/value.c": "28603eb9b249bfa67f3b1f1299c20e3375c28823296f3ca10bc9e6a53dcb746f",
+    "tests/fixtures/dash_b/value.h": "c438ee9d765ff8a952413fcf8ed720a6b5914765114ff5e1f573823bba7632d4",
+    "tests/fixtures/dash_b2/b2.sh": "3129ac4bd4b1dfb014e5e36451df5ed4c39730927fb60d6b23201cad7f752420",
+    "tests/fixtures/dash_b2/spin.c": "004b130532850ef575fd44fcf447f726ae08c0dad906247b096e23b5337a3f1e",
+    "tests/fixtures/dash_b2/stdio_probe.c": "5fff2559c7df2bb046f3b9c58fa787396965d11ef5722e599e294c3e800ad9ff",
+    "tests/fixtures/dash_c1/pipe_atomic.c": "2fd84ea42ed12aa6120e2a38c14a7d409bf48b77ac92aa5562d34efeafa12da3",
+    "tests/fixtures/dash_c1/pipe_probe.c": "386e0b329dc07278970b96cf94453b5a436d22f1b74ab23169d6de663281becb",
+    "tests/fixtures/dash_c1/pipe_pthread.cpp": "0c47158dbeae3497cda0d40edada122d3ea9616f553c7b5e3329c960281d5157",
+    "tests/fixtures/dash_c1/pipe_threads.cpp": "4a0c381a40c6acaaff1014ec72aedab8b6cf936ca0e58745770fea27d6843c1a",
+    "tests/fixtures/dash_c2/fork_probe.c": "f9df90bfac0b9b66fd64f25e8a2a0658a3480875c5cadf35a171ec0834ccd293",
+    "tests/fixtures/dash_c3/anonymous_service.cpp": "c178319705b88c6e4de951b698b77a4940962b6008f4640655f4fac2256f9ea3",
+    "tests/fixtures/dash_c3/app.cpp": "2568ba207b20187a15a1cfa6885d9a5f539cb2517a8dfe98174e16dfa2300a6b",
+    "tests/fixtures/dash_c3/c3_posix_direct.sh": "193102fb9a3713ed38128bfd6bae44fa774f5da49bc7361edb71a2672a076177",
+    "tests/fixtures/dash_c3/c3_wrong_shebang.sh": "8ed2ceeb582773641c368a293a070ae52c112b6d9e7c869c27fce4c1b831f069",
+    "tests/fixtures/dash_c3/io_probe.c": "d34c376dc7aa430b56c608fa1b06deb5660b6ce905328f8c6a9ad35150d34a88",
+    "tests/fixtures/dash_c3/value.c": "b78e36b7a2e9ce9385963348041427647897e4d0d76b777c6062d10e4b74a32a",
+    "tests/fixtures/dash_c3/value.h": "6bc636e181816c31b042c5f9ea6bfb1a419e3e0fff7d9930d23a518dcadea842",
+    "tests/fixtures/dash_c3_exec/common.h": "0a4720cf80fe92f23e7eb249a84afac83ded8804107589ff65d8c958668e8228",
+    "tests/fixtures/dash_c3_exec/source.c": "304703a4a34d1013040f82bcd1110eba343d74c244cf3b692c726acdc54f76cb",
+    "tests/fixtures/dash_c3_exec/target.c": "849075140828220b69325c23b56a19983af6dc20dfdbfebbed84f8a9940086e7",
+    "tests/fixtures/e08_integration/c/adjust.c": "e5b57dee0a794d3b7b163c0df5cfc56e66038307ff600168c19ffdc0a85252e1",
+    "tests/fixtures/e08_integration/c/main.c": "a2db1d58d730cd80c92a0a7fea200c565fdae994d33bf9f433a76606308d031f",
+    "tests/fixtures/e08_integration/c/project.c": "9d3af6eda21f30ac6d66f94da78ac76c9d5a07282021ff1aa875b602eeb48e78",
+    "tests/fixtures/e08_integration/c/project.h": "0cbeee47dbd6e3e88b6e03d540846773d58dc9671b0e7f881e78f7e56ccd3608",
+    "tests/fixtures/e08_integration/cpp/adjust.cpp": "60176c961c67c4024be9f5a5db2cce037fd7c722d60c89d25ec09bb976cce48d",
+    "tests/fixtures/e08_integration/cpp/main.cpp": "2e8cdf6ef8e0e5282b6aeb648b7c303958b4033ceeef302a353280586cb61724",
+    "tests/fixtures/e08_integration/cpp/project.cpp": "1527c0c1fc8feae0340966d44437e523b47b8bbecb1234cd810fcc53d7ccd334",
+    "tests/fixtures/e08_integration/cpp/project.hpp": "d5caa74a65f269ada9df092ef3323b690cd150e6106c958f02c84772027f851d",
+    "tests/fixtures/gcc/answer.c": "75232ae8ca66563a0f8a90e0e949a5c1386212900c9880ea207e672a8e64b0c6",
+    "tests/fixtures/gcc/answer.h": "60d8bcd958681c2b20fdff9cdcdd24d597eb529ed2d06edfdd2f1af2a35f9b8a",
+    "tests/fixtures/gcc/header_error.c": "cf2a390bef8d21b8fb077d81696c52b0af98589587c4483a7e971df2ab420800",
+    "tests/fixtures/gcc/libgcc.c": "001a6a4015ec8f3902d1bd239b50d06a9b3a20b644687c3e1474bfcb51127da1",
+    "tests/fixtures/gcc/link_error.c": "1c3da284c5d59b30116aa75b01eb77294fdff91e7eaab8cdca244767b1127014",
+    "tests/fixtures/gcc/main.c": "9b122589e26c3ab8931be3af8a858085d6d76e004029e8880e6e488c14e9cf11",
+    "tests/fixtures/gcc/syntax_error.c": "5deb5680afb286bf0d5b5c7adcac5abce7b58ee8177971d590e251fb068bb6ce",
+    "tests/fixtures/gcc/value.c": "8287188547b06bdad1a039154d022c51b0f0fafd3ff2e8e85754d10502ad0529",
+    "tests/fixtures/package_p2/maintenance_probe.cpp": "56ba41007fa22b9e1d114f3768754fd7e796ec4894eb45cddce1fa977766615a",
+    "tests/fixtures/threading/c_probe.c": "3138c0a9ac1d914a2cb7a582824a5e02f81bdfa7fded498cba762f5df59adef9",
+    "tests/fixtures/threading/core_probe.cpp": "88d4fb6fb6f5efd02ba9ff4f0ae353badad58dc3cfd842ebdafdb734d4da8bfa",
+    "tests/fixtures/threading/cpp_probe.cpp": "1b219e3871669a257376570b76a310bc4a40dced1ab3f6e6b1ee8bc5fd328f18",
+    "tests/fixtures/threading/legacy_arena.asm": "2f6b790a901670cab53dab08d83b168fa768981809468722cc92fc38418afa34",
+    "tests/fixtures/threading/pthread_probe.cpp": "55b585a37ac4b27461d052294250db5a078e6fd879c491c25e4186b897e6dbc4",
+    "tests/fixtures/utf8/UNICODE_example1.cpp": "cd9eedac3ce2b385aa530b401cd96b746a9daddeef1d4c3608e2ebdb987901ef",
+    "tests/fixtures/utf8/argv_utf8.cpp": "3c775d5ec57b962313ee941f872d06db7046f66c7e5001cd6a50aad22229c100",
+    "tests/fixtures/xsh_ui/diagnostic.cpp": "dcfad6f356e76e7331acc8753aa5ba42c07a8fae024c9c94ad519d14c28c78c5",
+    "tests/fixtures/xsh_ui/exit_17.cpp": "0e5f644a80698a809cf108b3e0ac2af307dea36e18597f10c7bba9c97f6c46bf",
+    "tests/fixtures/xsh_ui/hello.cpp": "457a822eae2bb6d6ee449decaf43bae90f3a6eed19269d99ea05c438bbcb80cf",
+    "tests/full_disk_smoke.py": "e72b71a00cdd03cd8784f2dd6fe5a3f5b75e5409c73cfe8370edaaea430f9e16",
+    "tests/gcc_seed_smoke.py": "070955b9a7d2cb038faea3bd71bfa42774d7ba042dc6d9d8c485bc91a26c543c",
+    "tests/iso_boot_smoke.py": "e44a7b574e76593891c970fb375679b1b222dcb28beccb69d5b9bb0b7b711976",
+    "tests/iso_capacity_compat.py": "5ecb9f060663669789dd40a3e5df624e37367eafb26c1ec429b03edb977a1d52",
+    "tests/iso_capacity_smoke.py": "8c8e39f3085824a3280c9375f2209ffc09cfc1f8bb71400a44c579b03200ca51",
+    "tests/iso_dash_install.py": "459dd45d721069992099dfab062f4bbeeb65e3d475b8477edd709151f80d4864",
+    "tests/iso_file_kernel_smoke.py": "1199d9dc18b53faba21eeaac2f33b35067d36b0be32260e5b216a409046ba4be",
+    "tests/kernel_smoke.py": "fc6c2e3425ba85da0752047fd2b98f4eba77e6230de68178be1ba6ff2c89cfd7",
+    "tests/libc_smoke.py": "474712213f427ade0ee2a1e58026705d9272b17e6a0aaf230139357361c71e42",
+    "tests/package_p0_cases.py": "4706174a0a8832e82255b9d158ec13e62047d09ce10fbfbfa220ec7c32f68c74",
+    "tests/package_p0_guest.py": "9bb760f81114b86cc959605a010809f0ea859448f05ffa21682d35548d468b7b",
+    "tests/package_p1_cases.py": "9c00c98f786bae6fbef0a9b34cad685bde67a1f4db43f604ace2d823e9f1a799",
+    "tests/package_p1_guest.py": "1e1c6ad61d7cbed0867d87121b9373c92f8f35cc67cacab10ae91b28eff39e7f",
+    "tests/package_p2_maintenance.py": "c5e89f5ed4b8ec61fc57436b22c53c5295c7a3e91ef4244673cfe1c4500cad36",
+    "tests/persist_smoke.py": "26074194b80c40c371263f7901ff2cc401182d043d81a0cb01d47178a89872c5",
+    "tests/pipe_atomic_smoke.py": "68b38656139eab71a46b1ae94971b99d83b2b29ecf012ecf4857e67b7934277d",
+    "tests/process_smoke.py": "9b77ae9f404f7357689d69fe4de032f17240de8ce6945ae3f20404bddaf254b0",
+    "tests/released_test_disk.py": "5aa71a12031047d8ed5216297bfe8cc722e4b586cdb25f1d62f382aca7c5bd48",
+    "tests/runtime_smoke.py": "2fbe58132e747cf9d64ef2a5d6fc8e05eead95fecb7221663f0e15605b395d5b",
+    "tests/seed_diagnostics_cases.py": "69c733fc4d54813145d39371ba9891d3e7d9550eb2b4c8914fbdf48561606d13",
+    "tests/seed_preflight_cases.py": "95ef34f479698ae9780295be069974a3c6c5e994f6a6df83461a0ffda1263fef",
+    "tests/shell_smoke.py": "6bd229bb79bddb45140469d7a0aaa3f1e9cfb40ee1e0ea845cea42a214d72c44",
+    "tests/static_tls_cases.cpp": "9341ff4333160342c7815d7dda8223bbb6659c16498cb0f9e0350ac0f1f5cb61",
+    "tests/task_smoke.py": "f80466a8c0b64ec3f88bba127f7c47cd054ef322859f3d53c3330e6fe0ded57f",
+    "tests/thread_merge_smoke.py": "e912c59379e29faeec15caadf03f8750c8e818ce7ffd14fafe12ef2f2ff973a3",
+    "tests/threading_compile_checks.py": "1a85731995f730ce05667019f4009ced88f9359d76ce348465ea3cb99fbd808d",
+    "tests/threading_cpp_smoke.py": "580cd86c144ae22cdcd582ed344680c63888ede14d135f850f601f6178ec95dc",
+    "tests/threading_native_toolchain.py": "b1bab591e6d6e8c5f14b27d43929cb91ae6875e6bc6940f4c3616d3dcd8c763c",
+    "tests/threading_pthread_smoke.py": "4ea1479a8363f642458b29aa81e4a966f44f329aa346e2ff7035f269997e47b4",
+    "tests/threading_smoke.py": "24f5a70165f0b596394883cbdaca8cd2be5435debd6e1813b751afb9b08a0765",
+    "tests/tls_exit_smoke.py": "286deb047aa4877eb093bb9392e96a0688861ddac3dc0dddcbb1b00ace2fc203",
+    "tests/utf8_dash_smoke.py": "bfb60840e4699dfd6f59c9cabdfcc9911074db50739b24238b397a5f04bc1639",
+    "tests/utf8_example1_native.py": "342e09b9a4b9465145bf393ab59f213643d0db67d6801f6eb693adfba4cb9f79",
+    "tests/utf8_text_smoke.py": "19a4b4cf8710e01fd7cacffa2476fbb67370622d9a615813e1425db242f250c6",
+    "tests/xsh_ui_smoke.py": "a2fb763177d65c653857c0dba8e18e441861c08228140546e708eca3f89058ce",
+    "config/debug_kernel.lldb": "060986b97e1fa7c54a9a9e8266cfff727dad961eb6550198c32b1e36395a0285",
+    "config/e08_pre1_baseline.json": "d4cf5fb358e806ec39957d8d38cf7068d770f06dcd6ca5ea4098c73040ae62fe",
+    "config/package/app_v1.schema.json": "742d040b59e4d1d30f3e0a6e7c9433a283448cd6ee04fd866883b89ee094b55b",
+    "config/package/xos_x86_64_static_single_b2_v1.json": "137937c09d73f0a8d1be47af309206a3eb4ae506c423f2ca96d7688290f9a983",
+    "config/package/xos_x86_64_static_single_v1.json": "fd35dc5b949ea332d150e192e538ebc3da9a9868d8c0cdd4d6040cf3fa4e0253",
+    "config/package/xpk_v1.schema.json": "bb7f05410604107f5d7e1db4276d6291671bf343ac2b3226050448a4e7b00cbc",
+    "config/toolchain.json": "14accad6a2177180cc16c2eb854083d6aa3310d2b27c358339f191e0f9413700",
+    "config/x86_64_bios.json": "610b6574561503c4b7c871269f4aad541e4ee0ab55e0ac661203a580618daabc"
+  },
+  "artifacts": {
+    "boot_sector.bin": {
+      "bytes": 512,
+      "sha256": "b0f1a71bad28d36e73f1015222f69ea3297df26e46f768b6b334421873582620"
+    },
+    "stage_two.bin": {
+      "bytes": 950,
+      "sha256": "34702219e4a10a66510e9c49b5343a67ffbb7d87d9e079e98a0b1fbf3074c325"
+    },
+    "kernel_loader.bin": {
+      "bytes": 1653,
+      "sha256": "b2cce17c7e768668ac9e39ff9275658af678092e100701cc833dce40d02c2adb"
+    },
+    "kernel.elf": {
+      "bytes": 1234832,
+      "sha256": "52bbfd6a2c63d9f387e46341ab66410c33310dfec9fda848a827d50c60738139"
+    },
+    "kernel.bin": {
+      "bytes": 426044,
+      "sha256": "a26575d588cb4a69e2efa1c5411be553254ab19b9503206f6b67e60c25e296d8"
+    },
+    "boot_sector_iso.bin": {
+      "bytes": 512,
+      "sha256": "f2c4aa1f41676883082c46854b19b830a88338afe549b455e099e45c1743f910"
+    },
+    "kernel_loader_iso.bin": {
+      "bytes": 1533,
+      "sha256": "69817d89a6f763278d3b38b3efdba7180e014211a161ad702e8b93eb053a9274"
+    },
+    "kernel_loader_iso_file.bin": {
+      "bytes": 2936,
+      "sha256": "8eac6dad34472fcb1729788e2408c97a3692b7c2099c843ec14d6fc01f1837e2"
+    },
+    "xos-install.iso": {
+      "bytes": 491520,
+      "sha256": "1d013eb61b28cde7910cf62bf7cb67140f4b90e413b3b1c3688da4164fa75652"
+    },
+    "real_mode.img": {
+      "bytes": 1474560,
+      "sha256": "4fd3d8bd9a2033f413eb1922f79dc70060fa3f0cf12757e515b80e880e784321"
+    },
+    "user_supervisor.elf": {
+      "bytes": 341608,
+      "sha256": "3d2cd7b6138e2c1164425ca8f7c18fc066b09a77daa2566ee4a5bd5c21c4e5cc"
+    },
+    "user_supervisor.image.elf": {
+      "bytes": 54096,
+      "sha256": "5ff2672f483c3e5a7d2a05f2613605c6a44c0aefff3b5a511896b4c199cb9dec"
+    },
+    "user_files.elf": {
+      "bytes": 282352,
+      "sha256": "f9d8630e89553023a4d738e3f5779bdf1815018a97526b5ac55dd0bbfe5d3ebf"
+    },
+    "user_files.image.elf": {
+      "bytes": 47848,
+      "sha256": "25dabcfffe4d0fcaf0fca69f6544451aa8a5289dfee4712f1eb13c4d480b5372"
+    },
+    "user_demo.elf": {
+      "bytes": 41808,
+      "sha256": "b8168268feddb8b5e94b7c7473655bb9370e0c3041a548268351c02ea63f7caa"
+    },
+    "user_demo.image.elf": {
+      "bytes": 14184,
+      "sha256": "49a37b5ecee1ea2be39b9a72f9f4027342756d348ca5c57e61fc53e8a1fa1b03"
+    },
+    "user_fault.elf": {
+      "bytes": 36584,
+      "sha256": "b48da71c1d7e14b5c57852e9febc780d1b3eca5774678244b8877103b7cb8ec7"
+    },
+    "user_fault.image.elf": {
+      "bytes": 10152,
+      "sha256": "9e223004f7a1fbfe483b00ffd6df1a203fd3fc57945cd1457aec1243139ae9df"
+    },
+    "user_spin.elf": {
+      "bytes": 34960,
+      "sha256": "a3cd74c78e537c52dff3d8fbb5147b28057f47151b94950d962baad4ceb8b6d8"
+    },
+    "user_spin.image.elf": {
+      "bytes": 9864,
+      "sha256": "92acddf26a569048410fb4f6d63abf08e4a5ca7812632fb4c9fb0ed5d24fc880"
+    },
+    "user_slow.elf": {
+      "bytes": 35408,
+      "sha256": "8e591abc415f4310d62755bc4623c565b4033245a1fbacf71e213168b5566b0e"
+    },
+    "user_slow.image.elf": {
+      "bytes": 9872,
+      "sha256": "ee4b1b57bc77003cec85463144dd7e07e3daf7efd53d86763254818328055a56"
+    },
+    "user_echo.elf": {
+      "bytes": 36704,
+      "sha256": "4f4b8806a58786df06a43da55b30f44cd15e8ff1db24cc1f9ec670b009249536"
+    },
+    "user_echo.image.elf": {
+      "bytes": 9880,
+      "sha256": "20fa9ab81c4355caf7c2355f7c0de5dba36860a77508f9391ff6842d4071cb41"
+    },
+    "user_hello.elf": {
+      "bytes": 34696,
+      "sha256": "8b0fe3ed8d25d38ac3601a65797c9e5fd267c87b400344fd849850057598530c"
+    },
+    "user_hello.image.elf": {
+      "bytes": 9872,
+      "sha256": "994642fdd031f3db7eabedfdb85919a07929789a513f89ce0d96cf2d1d2b99bd"
+    },
+    "user_libc_hello.elf": {
+      "bytes": 726360,
+      "sha256": "4dd66b81c7470b60e741db6119864faa6210e87de181b391af0e5b42f389f01e"
+    },
+    "user_libc_hello.image.elf": {
+      "bytes": 116448,
+      "sha256": "ce8140ce84429722b160f3b102e53719676a5f53a41e01d84597b51d74ff8c3b"
+    },
+    "user_e08_probe.elf": {
+      "bytes": 383432,
+      "sha256": "97df3dedaf2b9c3f6fe5c8056c3bcb08c2669c58a4a37a8347d383a5fb745907"
+    },
+    "user_e08_probe.image.elf": {
+      "bytes": 283392,
+      "sha256": "54ebbf076bc36db5a8834f9dec152707c99053d1b1ed5cf9853c7ef83fbd8301"
+    },
+    "user_runtime_probe.elf": {
+      "bytes": 829728,
+      "sha256": "7dcd96d6c678dc759fa8c535b32a38cd901c3d8245b6394cacf4298306e857b5"
+    },
+    "user_runtime_probe.image.elf": {
+      "bytes": 130552,
+      "sha256": "9244e3847d38902e3306c1bdde37a75339e987346484f81bf3c585e33d6e73d5"
+    },
+    "user_cpp_runtime_probe.elf": {
+      "bytes": 684176,
+      "sha256": "0947cc5b3bb5a7ee87b55c6de0d664b10a44b2230a0c0ffbd5532069e51e9aea"
+    },
+    "user_cpp_runtime_probe.image.elf": {
+      "bytes": 107552,
+      "sha256": "9c50790acda65b65eeb37abf46dc2c539478b6f799bea340cdf078a10e62cfa9"
+    },
+    "user_tls_exit_probe.elf": {
+      "bytes": 569320,
+      "sha256": "ab3e54a11c0233102f5fabad61f385646be16022c853480641e91786bd7d3074"
+    },
+    "user_tls_exit_probe.image.elf": {
+      "bytes": 78608,
+      "sha256": "fff2d743597e6c0cdc95e6e410d567ca08acaa29591452884fe9d9377dbbdef7"
+    },
+    "user_threading_core_probe.elf": {
+      "bytes": 263208,
+      "sha256": "7d9c94df87a35ab483d7d843017e3f117fa09995133866de7eed8089049dd22b"
+    },
+    "user_threading_core_probe.image.elf": {
+      "bytes": 44504,
+      "sha256": "bea273060ceb074ef2b756a81d1dd4c595f82535fcb9f288decc47c8dc82c3ac"
+    },
+    "user_display.elf": {
+      "bytes": 43720,
+      "sha256": "5335bc744a5562c2313ba045d9a6738a7f37a646c65f61a1fa022a660c47045e"
+    },
+    "user_display.image.elf": {
+      "bytes": 10088,
+      "sha256": "cd48418f59be9337cd27ae12d775de2136328b283f8e7865cb75566129d928c4"
+    },
+    "user_gfxdemo.elf": {
+      "bytes": 139272,
+      "sha256": "a9f8977f5f5d260aae6321dae8ec6aa17c0795d036130629d0a9081b3e5fffd1"
+    },
+    "user_gfxdemo.image.elf": {
+      "bytes": 23616,
+      "sha256": "b82b6a09b000cc928892392eafe72c15a16eaef53567ac31570895b0bc417055"
+    },
+    "user_bad_magic.image.elf": {
+      "bytes": 14184,
+      "sha256": "f607db6ba6d11504f5e09c483868d703df22088d67ae59031372ee9347189685"
+    },
+    "user_bad_interp.image.elf": {
+      "bytes": 14184,
+      "sha256": "9192ff9fc9519213542a6cbbce3c8b899600830e6a78e15ee53972f7800e01c5"
+    },
+    "user_bad_overflow.image.elf": {
+      "bytes": 14184,
+      "sha256": "a57502b27b4bc0048c69ece78143d522c1a993dc51644b57c974da1b454a36a1"
+    },
+    "xos.img": {
+      "bytes": 1474560,
+      "sha256": "45c852501fe821a5ee33cc781afef643206a7d2662ee41440607061a6c00c999"
+    },
+    "xos.iso": {
+      "bytes": 489472,
+      "sha256": "05e86e635829f8664fb02fea04fae086d18f6b10e5d986a9a3522c94496e939b"
+    },
+    "sdk/COPYING.NEWLIB": {
+      "bytes": 78388,
+      "sha256": "f3afe48e4bc6ed8466a42e9dacb6be1d8f9cbf5aac15cb8e474a5ccde8b40ef6"
+    },
+    "sdk/LICENSE": {
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    "sdk/NOTICE": {
+      "bytes": 885,
+      "sha256": "90e390e976854766ccc20370b6395bf547cd2fd5a486aaf2c1abf504a03c4a06"
+    },
+    "sdk/crt0.o": {
+      "bytes": 1840,
+      "sha256": "f105e808ab8eb673794f480b47f81a8d4078afccae8bfabe718177f8b0478753"
+    },
+    "sdk/crt0_libc.o": {
+      "bytes": 2192,
+      "sha256": "097694df3251ad292d2c8f150e75d66e97aa32693a6bf6025a40758392adf00a"
+    },
+    "sdk/crt0_posix.o": {
+      "bytes": 1968,
+      "sha256": "f6fe7dc81f08df666dbbc719ea62e5f56cc39e38f8cdf385d814e3f93f0fed5e"
+    },
+    "sdk/include/_ansi.h": {
+      "bytes": 2625,
+      "sha256": "5c6403b471ee897c9a6c12e00a58617247804eb3ee72d7baeb7c08616090dd1d"
+    },
+    "sdk/include/_newlib_version.h": {
+      "bytes": 336,
+      "sha256": "be2a4d2763fd9f409369fc62a741dff6722b71ca56050b7c6469581c81fd2420"
+    },
+    "sdk/include/_syslist.h": {
+      "bytes": 1201,
+      "sha256": "4854135fb4359f0a94414cf1411a0ef919102b859a320f0a0c5bc16cad84beba"
+    },
+    "sdk/include/alloca.h": {
+      "bytes": 412,
+      "sha256": "fdebd60de65105d933b55dcde1650f6c9b3cf6142c225397c5f956638208d4de"
+    },
+    "sdk/include/ar.h": {
+      "bytes": 2721,
+      "sha256": "175fb88b901e13ec66f1b057a02ffb2eb312d19cf462dd5bc7bb6c39fbebb7e2"
+    },
+    "sdk/include/argz.h": {
+      "bytes": 1337,
+      "sha256": "24aa4dd94a5b1d542ae5638cb0232ae5115e0040e029c535581fd7b0a3ebc3a4"
+    },
+    "sdk/include/assert.h": {
+      "bytes": 1172,
+      "sha256": "76d2c321e49e268077d5e6f14e3da71b8f1e28ced650fe3cd403261b3d09923f"
+    },
+    "sdk/include/complex.h": {
+      "bytes": 4844,
+      "sha256": "65f0b5a99760e676cbf6d65a07fd07d2202d2ba9a4d8015c722ff29cce581202"
+    },
+    "sdk/include/cpio.h": {
+      "bytes": 1072,
+      "sha256": "70007b46d90fb58e511086afe37241abe27a54464105418b41c2b0cc541a1d61"
+    },
+    "sdk/include/ctype.h": {
+      "bytes": 6046,
+      "sha256": "ec663418676640bb11abdd350e08066d25b31ac9084dc58bec29bff192372456"
+    },
+    "sdk/include/devctl.h": {
+      "bytes": 2080,
+      "sha256": "73a3aebebd3729e1f7895444f12dbbef9fa320559bfb95b5766ac2a337f42e45"
+    },
+    "sdk/include/dirent.h": {
+      "bytes": 639,
+      "sha256": "458f4de3bf177e302606827f5888fffc2da02dfa4314557d13fe7f42035b48f4"
+    },
+    "sdk/include/elf.h": {
+      "bytes": 75903,
+      "sha256": "ec24622d27f989cde00b6843fe088f0b4423842f6ab16b549a2238b52c39d6a4"
+    },
+    "sdk/include/envlock.h": {
+      "bytes": 350,
+      "sha256": "09f86b8887f4b636701b99199a6b5184755c33174ce7b68035aa60c364ff5f53"
+    },
+    "sdk/include/envz.h": {
+      "bytes": 781,
+      "sha256": "de0aaab946479a0d95063cfbfcab5793487a5a0b19e051f7be3c3319c351b347"
+    },
+    "sdk/include/errno.h": {
+      "bytes": 174,
+      "sha256": "53d288d669b43f2341048bf58bc5e6e46a5cfbe68c6d296a3b2e2f1378ac3ca8"
+    },
+    "sdk/include/fastmath.h": {
+      "bytes": 185,
+      "sha256": "7fb7ff119150be066f9e06ea4afa62c4fd13def8a15d3dde3968d57d7f82ba66"
+    },
+    "sdk/include/fcntl.h": {
+      "bytes": 23,
+      "sha256": "637889253928e98bc028dbdcd58560492aed8e981eff349c43a8e7e6a45f75f5"
+    },
+    "sdk/include/fenv.h": {
+      "bytes": 1111,
+      "sha256": "950a1a60988c93532171fc60b08e690afbdf9bc75509001344e43d4a910abd2e"
+    },
+    "sdk/include/fnmatch.h": {
+      "bytes": 2325,
+      "sha256": "3a6ca8bce057d57213e430ebff2ebb478d55edcc2fe844eebf13326f2e272f9a"
+    },
+    "sdk/include/ftw.h": {
+      "bytes": 2343,
+      "sha256": "a1cf28b60e5950867c27091afbdf29a40b8894db47be6906c9b65b52410f6213"
+    },
+    "sdk/include/getopt.h": {
+      "bytes": 6564,
+      "sha256": "3cc4000afb3722b80000c39012d826aeaf15451d05fb77228eeb982558bf26f0"
+    },
+    "sdk/include/glob.h": {
+      "bytes": 3854,
+      "sha256": "5187486085ba34960d9e95cc00507ab11c0075c11c2eca974987c172317c49b0"
+    },
+    "sdk/include/grp.h": {
+      "bytes": 3073,
+      "sha256": "d1124c6cd4b46a7becd189d5e21a5afbce82e4e0b5f3f398729af40ab94e80ed"
+    },
+    "sdk/include/iconv.h": {
+      "bytes": 2127,
+      "sha256": "0a91edea4d05ac47f67e8c67e3928445b1079d033fd0c94cd167f94456af25ed"
+    },
+    "sdk/include/ieeefp.h": {
+      "bytes": 6446,
+      "sha256": "b5832d987da4574360acb486ee2dc93e9300ae0ee8001219cb2e41c3df43225e"
+    },
+    "sdk/include/inttypes.h": {
+      "bytes": 9726,
+      "sha256": "de91bd3417f3c69ace8b332edea2ff3db8a7fddb4f61cb6017272a06e5727837"
+    },
+    "sdk/include/langinfo.h": {
+      "bytes": 8459,
+      "sha256": "c58b3d439f010c9e86e5c294bb72afa7a5dd9982ef8e4a33f4ad68e6bbe12875"
+    },
+    "sdk/include/libgen.h": {
+      "bytes": 854,
+      "sha256": "b8abf8738f130d5d9085af48ae67449a76ea0b6e7b39124a1a36dd23eb96728f"
+    },
+    "sdk/include/limits.h": {
+      "bytes": 3888,
+      "sha256": "16b91bb4b4f7053ddfbbe6ec0925d901093499468151289d5c224d718ec25e44"
+    },
+    "sdk/include/locale.h": {
+      "bytes": 2383,
+      "sha256": "0d8540e663a4df6aa321a66be97a59ea63ed71537b30d2feacc97338d8027bcf"
+    },
+    "sdk/include/machine/_arc4random.h": {
+      "bytes": 51,
+      "sha256": "88a214651e481bc693c67b4c00447cb3f08f3c13285c9971fae24bf4630176ae"
+    },
+    "sdk/include/machine/_default_types.h": {
+      "bytes": 6650,
+      "sha256": "5d8f9f7ead7927e4b8b7ed00172e84f2ae82ea7f5f6ba3240ff813a9236771b3"
+    },
+    "sdk/include/machine/_endian.h": {
+      "bytes": 665,
+      "sha256": "6a2878de2ce76eed443de3891e5dd49c67e3f41eea7054b47f9bd7ec27a144d0"
+    },
+    "sdk/include/machine/_fpmath.h": {
+      "bytes": 2018,
+      "sha256": "3acb5feb06b70cf162c71e6ff7f1ea86735446ee8da0b4b3d6c5ea0b73c4a64c"
+    },
+    "sdk/include/machine/_time.h": {
+      "bytes": 91,
+      "sha256": "30d5767d9856a34b13effab3cc2663bc48d77eaf778d313f243b25015dfe1d8b"
+    },
+    "sdk/include/machine/_types.h": {
+      "bytes": 112,
+      "sha256": "44544ecbbc10c8aa58ca2da6d0617ffeee5af847af24515ab108c8218d6d92c8"
+    },
+    "sdk/include/machine/ansi.h": {
+      "bytes": 48,
+      "sha256": "b8920447822ad8f3d5698a3fd70cd0c72d28c1b4d0a57f849ce6e6ccdca2ce72"
+    },
+    "sdk/include/machine/endian.h": {
+      "bytes": 1725,
+      "sha256": "c9cb16333e537785dde867ed059915ef2d09661dbab7cc8b4519b646735eace4"
+    },
+    "sdk/include/machine/fastmath.h": {
+      "bytes": 2804,
+      "sha256": "a8ceea7a1395306b3cd8c9046eaca22bfe6ce26b146a86ed27c85d36aa26bda3"
+    },
+    "sdk/include/machine/ieee.h": {
+      "bytes": 2989,
+      "sha256": "d42f5669c165d20aca5a6ce9aba49e8fd0daac842cec2898240d1d69ea5f865a"
+    },
+    "sdk/include/machine/ieeefp.h": {
+      "bytes": 11536,
+      "sha256": "26c64fcff653e1461d227e6ab5c61e30203d057bfd04956aacea2fb2a7fdcac4"
+    },
+    "sdk/include/machine/malloc.h": {
+      "bytes": 138,
+      "sha256": "c6e33eb2fa8cf9038cf4114d87df62468b476caffb045f33949ba97fcaf78a79"
+    },
+    "sdk/include/machine/param.h": {
+      "bytes": 50,
+      "sha256": "04400a508514ef63937aa1067163ac8d1e56549c2fed1c518607d739d1e4ee1d"
+    },
+    "sdk/include/machine/setjmp-dj.h": {
+      "bytes": 947,
+      "sha256": "4b50c451e3f13d626d70a8087a2749fdc21c24cefa63ba416d0f07da92499765"
+    },
+    "sdk/include/machine/setjmp.h": {
+      "bytes": 11136,
+      "sha256": "65cfad16b8e5221b391c034083513631ef77203a7754957886603d40512ff1b3"
+    },
+    "sdk/include/machine/stdlib.h": {
+      "bytes": 138,
+      "sha256": "43552e520d412993325ba62cb496839cd03fd46b0df67149a5ccbe1b95c45fdd"
+    },
+    "sdk/include/machine/termios.h": {
+      "bytes": 29,
+      "sha256": "d6e16ee56b728aff179afd72ac18247320a64c124e43060a9d96261be2ea462c"
+    },
+    "sdk/include/machine/time.h": {
+      "bytes": 384,
+      "sha256": "ac7672170b5e2df1fe1d40a9aa5a83356e7df9c221de771c8dbf79da68e0757d"
+    },
+    "sdk/include/machine/types.h": {
+      "bytes": 372,
+      "sha256": "3be8e785d201f2972db6a96ae1adb4263227623c7e298aded1a662cb8da93ea3"
+    },
+    "sdk/include/malloc.h": {
+      "bytes": 4166,
+      "sha256": "bfe98e78707f66256511d839874b60c9f5d1424510faedce6c8e71c118175a8a"
+    },
+    "sdk/include/math.h": {
+      "bytes": 20534,
+      "sha256": "af8b612e6f341fdaab6d30f154e1c24b18695cc0a8dc17b6e98da3cb3ecfdb72"
+    },
+    "sdk/include/memory.h": {
+      "bytes": 80,
+      "sha256": "026f83881db9f03068affceaa81aea160f603e11f3c9d657f7140e7af9bb8fc9"
+    },
+    "sdk/include/ndbm.h": {
+      "bytes": 3208,
+      "sha256": "647ce1aeeb03c1f2a0d4658086f91c8ccd333a926b0a2328fcfbbdf0a667639a"
+    },
+    "sdk/include/newlib.h": {
+      "bytes": 12038,
+      "sha256": "f83c3134b15f42b48bb595259c43ab971aac50f7d1d8a21dd32944980d13380b"
+    },
+    "sdk/include/paths.h": {
+      "bytes": 193,
+      "sha256": "d8a6145404b72ccff930347f8301720350ed3bc11febaf4a1ede636fcb5c8a0c"
+    },
+    "sdk/include/pthread.h": {
+      "bytes": 15698,
+      "sha256": "3bf12f11e00043f02a294b054e219172c54fbf3b0ffef1da00cd59a4ba208331"
+    },
+    "sdk/include/pwd.h": {
+      "bytes": 2762,
+      "sha256": "daa01af6624320d0896b33a4744e1deefa97b0cc79d523ecf2c1ca12be018414"
+    },
+    "sdk/include/reent.h": {
+      "bytes": 8617,
+      "sha256": "e14cbe8accb69ed01d32145ecc45f902d0b237042245051c00d319cbf0aa72a0"
+    },
+    "sdk/include/regdef.h": {
+      "bytes": 220,
+      "sha256": "e889cdb89b2b0c335eeaff98d11bd5cb455118c798d66d6239130860558197d9"
+    },
+    "sdk/include/regex.h": {
+      "bytes": 3566,
+      "sha256": "bc1ec4c32000212fdc0ed74a6696f78d3ade1bd4d3d9d45ca9291f6abe06a6d9"
+    },
+    "sdk/include/sched.h": {
+      "bytes": 2699,
+      "sha256": "f764c017b8afb592a04b39c21df42a3c50c5d7276e692e6de64be67bd5c1f522"
+    },
+    "sdk/include/search.h": {
+      "bytes": 1449,
+      "sha256": "f41dc36c7b257787b9f8737ac12d43923df88db2b3bf266fe69befe57eb8921b"
+    },
+    "sdk/include/setjmp.h": {
+      "bytes": 300,
+      "sha256": "7ae0edf5ec5228717fc490b730699689043a616226ed4efb97889e459a414374"
+    },
+    "sdk/include/signal.h": {
+      "bytes": 774,
+      "sha256": "663ea64d0ea7288f6b7bd4c9c61a28b182a0199278bc39bf5e1cd9570cf24d39"
+    },
+    "sdk/include/spawn.h": {
+      "bytes": 4635,
+      "sha256": "96d6f7c6181283fb966d6e4742cae8ecc8b9356253296bbeaafe18e6c690f99a"
+    },
+    "sdk/include/ssp/ssp.h": {
+      "bytes": 3273,
+      "sha256": "9339cfd4cf84db056dd68c4aca2e6d7954b6c81aea557a622425d8750da82810"
+    },
+    "sdk/include/ssp/stdio.h": {
+      "bytes": 3622,
+      "sha256": "4cb15cadb5685fe3bc36f6f33004629998521989f48a8b1b8410432b7342f1f5"
+    },
+    "sdk/include/ssp/stdlib.h": {
+      "bytes": 721,
+      "sha256": "f6de6e2501ed2ffacd320d9f8deccf84dc1e863082fcb51dfdae5f5c0f6c853d"
+    },
+    "sdk/include/ssp/string.h": {
+      "bytes": 4881,
+      "sha256": "f0de3741774c57884d831e6db40e16cbe29032b907b3b3396e1b673589edbcef"
+    },
+    "sdk/include/ssp/strings.h": {
+      "bytes": 2202,
+      "sha256": "9a342edfac50fff733eb96acb37bc801abed9fbe9aaaf21b6fbd3f44190de50b"
+    },
+    "sdk/include/ssp/unistd.h": {
+      "bytes": 3456,
+      "sha256": "69893f53a3029623af416e662e5997e7b4043b9086c05f0fac42ca290e0c19fe"
+    },
+    "sdk/include/ssp/wchar.h": {
+      "bytes": 3155,
+      "sha256": "ad25221c5db89238d6d0fe16b2b98ee76bd1ca9a073d7a277a91d24685501f14"
+    },
+    "sdk/include/stdatomic.h": {
+      "bytes": 14444,
+      "sha256": "19ccd68478bce7eb9a9ba8a7a556854947ed5f8454ea0ef94c587b9f594cdb0a"
+    },
+    "sdk/include/stdint.h": {
+      "bytes": 12432,
+      "sha256": "99fe201684856075ccd92704f63b702f6fa882b9dab61bd7a9bcce2588275861"
+    },
+    "sdk/include/stdio.h": {
+      "bytes": 29660,
+      "sha256": "c900e320b44518e1a214792b8caf7cffa683fda7bae2cb70714bdcd8087fe2f8"
+    },
+    "sdk/include/stdio_ext.h": {
+      "bytes": 1799,
+      "sha256": "9c150a3ae08e82d3876a25a254eb8a19b9e80bd7e94e68d38ac4b0b7909404fd"
+    },
+    "sdk/include/stdlib.h": {
+      "bytes": 11867,
+      "sha256": "6818259ef7240e2dd9b3fc789ac35e8d51651bc0c46f671948b491639e19913b"
+    },
+    "sdk/include/string.h": {
+      "bytes": 5639,
+      "sha256": "1295b0de202192a52e600dcc4ff1d490054bc4d2820a7b6a21450f46fd324456"
+    },
+    "sdk/include/strings.h": {
+      "bytes": 2788,
+      "sha256": "743121afb2f530045eb63bcfa3fdbc4ecf555131bd1cf7ce36a268f758bb4be5"
+    },
+    "sdk/include/sys/_default_fcntl.h": {
+      "bytes": 7609,
+      "sha256": "57421d7c663ad1c56657647ffe98fe33744707db5e659bca70daf7a88a486d94"
+    },
+    "sdk/include/sys/_intsup.h": {
+      "bytes": 5741,
+      "sha256": "1af8abe244b43a3a5b5a85f6c834aa206930b6938e8109fbec430bc140b68df5"
+    },
+    "sdk/include/sys/_locale.h": {
+      "bytes": 247,
+      "sha256": "adc8e11513e5f83a0c73ac641c256815b0aa6cc8a09a43d2c97b1ee79db9f154"
+    },
+    "sdk/include/sys/_pthreadtypes.h": {
+      "bytes": 7510,
+      "sha256": "e0924bdccdc1b9983c51436971b690cd58024aa7c56b83f3e076bfc4f51091b6"
+    },
+    "sdk/include/sys/_sigset.h": {
+      "bytes": 2087,
+      "sha256": "16e78626ff97ef85ec70ba9898082fccf70b741b0c6586c57e4421fc60b9a07d"
+    },
+    "sdk/include/sys/_stdint.h": {
+      "bytes": 1824,
+      "sha256": "49f8328943afa2a83ed4a35fcb808ed08b8c9fcb55373c786fb1b1d3a21952d7"
+    },
+    "sdk/include/sys/_timespec.h": {
+      "bytes": 2173,
+      "sha256": "cea8007561c4c9285063cc2f941a284d008e9f044fdfa346572e8bb39f236391"
+    },
+    "sdk/include/sys/_timeval.h": {
+      "bytes": 2188,
+      "sha256": "976b01c11c44422953444b3f612ca6a7d41d70569e25a4c0674e9f8899101b22"
+    },
+    "sdk/include/sys/_types.h": {
+      "bytes": 5094,
+      "sha256": "1abe39aca5104bafbde2e0219e7cdc3e96129b22ce1ef5cd58b66d8d147d3fb7"
+    },
+    "sdk/include/sys/_tz_structs.h": {
+      "bytes": 540,
+      "sha256": "19c466e74992b819d44b4862ff03ef36f5e3ad156b7bd8063636979bb0da1ff6"
+    },
+    "sdk/include/sys/cdefs.h": {
+      "bytes": 24506,
+      "sha256": "6934407e76242c86361247a6fcadf1f885985bd7cdd3652afc26d8056073f32e"
+    },
+    "sdk/include/sys/config.h": {
+      "bytes": 7477,
+      "sha256": "6e40b5263b35e7d685e38b7765464160d6e4f471e6d887bf7dce8a83edb6aec7"
+    },
+    "sdk/include/sys/custom_file.h": {
+      "bytes": 50,
+      "sha256": "7a8f3cc9612d591c93281dc05188d874e2dc7ebfce430f6f44e16b9b1e499bc7"
+    },
+    "sdk/include/sys/dir.h": {
+      "bytes": 171,
+      "sha256": "1b4d4865531636af9f7a493bbbb662e221b6bdfa5061807fbc5a237c94c5b68d"
+    },
+    "sdk/include/sys/dirent.h": {
+      "bytes": 395,
+      "sha256": "be21c82d8ce7898426689c520d0e01fb19d2dda10988ba3dac8f19514723882c"
+    },
+    "sdk/include/sys/endian.h": {
+      "bytes": 5169,
+      "sha256": "fa570b7f928985298b719bc01dc6c812ca99d13dfb75bd12b08711077b262167"
+    },
+    "sdk/include/sys/errno.h": {
+      "bytes": 7656,
+      "sha256": "b3f6da7e0a9eb56605d901ef6745ff228af9ac4044db5abc512541e2046257b1"
+    },
+    "sdk/include/sys/fcntl.h": {
+      "bytes": 83,
+      "sha256": "471e655eee7e30a4a8c5c34a465c0891c85a0bed33a26bd555d7538a91bd6e9b"
+    },
+    "sdk/include/sys/features.h": {
+      "bytes": 17680,
+      "sha256": "a5a354650269fde5003f824c747a56016a10738ea2aa919bf5abe786a78e4d27"
+    },
+    "sdk/include/sys/fenv.h": {
+      "bytes": 6809,
+      "sha256": "e1b4d1697a2fb8845cf2b814dbcf563a6893eae688606903e8f536ef0ed00373"
+    },
+    "sdk/include/sys/file.h": {
+      "bytes": 24,
+      "sha256": "c4e08fdb66f877ddc18fc704b7127aea39766f08593fa833d7f385beea0b5a35"
+    },
+    "sdk/include/sys/iconvnls.h": {
+      "bytes": 2714,
+      "sha256": "dbcc72531a4590fd2b94c75ef02730ed5a1985abbddc7ffee7dff26a4f23a0dc"
+    },
+    "sdk/include/sys/lock.h": {
+      "bytes": 2455,
+      "sha256": "f5cad9196ce745967fd2673e085b5c03df7887d4d11d7544aff05ff6679be6b8"
+    },
+    "sdk/include/sys/param.h": {
+      "bytes": 703,
+      "sha256": "e440a04d5d95c0712db3d434b03fbfd2e996c36eb3453fb26c6f7e62f142902c"
+    },
+    "sdk/include/sys/queue.h": {
+      "bytes": 30288,
+      "sha256": "c622d82410a368e1c437d38473b71fd796b538f9bc322f0a1ef45deb016d6e8b"
+    },
+    "sdk/include/sys/reent.h": {
+      "bytes": 30286,
+      "sha256": "44726a2edc83783ecaba3c83a6c7c71db3466ffd6d607c89b1f3ff74311510da"
+    },
+    "sdk/include/sys/resource.h": {
+      "bytes": 486,
+      "sha256": "17acb6bb387d0bb38bb9cbfeb9008cb9f7bac3535b981668d01ca6130a93d6b1"
+    },
+    "sdk/include/sys/sched.h": {
+      "bytes": 2065,
+      "sha256": "37eb9944e6a7f70e51a9a0600ff4d5ac6d85307c92ea1c50af8061078fc7b632"
+    },
+    "sdk/include/sys/select.h": {
+      "bytes": 2660,
+      "sha256": "95b29d3fbd8a106e718038a2fabf6ad64fb9ce1b4a549334d5ee1ca274def4a7"
+    },
+    "sdk/include/sys/signal.h": {
+      "bytes": 12424,
+      "sha256": "649554c762b965b91bd39b69d218be4a3289f3aa7098612ef6afe8ffe1b80669"
+    },
+    "sdk/include/sys/stat.h": {
+      "bytes": 5849,
+      "sha256": "dbf0db6890c92c5a9afac4df7494bd9411616d0cac5efcdb7273f28c8a6c087b"
+    },
+    "sdk/include/sys/stdio.h": {
+      "bytes": 799,
+      "sha256": "bd987ea6fed5d31d8a4e7d183a7d988e981ecca3cffce76ee482fcb0bf65594b"
+    },
+    "sdk/include/sys/string.h": {
+      "bytes": 116,
+      "sha256": "b7164ee36ccb0a08bc27c7e381ea417c97d8c3fd3157de62b75d2a6bf7a0a589"
+    },
+    "sdk/include/sys/syslimits.h": {
+      "bytes": 2974,
+      "sha256": "780971936dd4b8f3b192669e693430c204a72c7fb05e7a1db67d48f02cd9aec4"
+    },
+    "sdk/include/sys/time.h": {
+      "bytes": 11671,
+      "sha256": "4339fef02543373b805426f6b9540c9810737ad855082354981e027480bfce4f"
+    },
+    "sdk/include/sys/timeb.h": {
+      "bytes": 800,
+      "sha256": "208f4cf1df8d97e68b4a73c962ff3b0c5e0771bee39321dfaf7541b64dfa616e"
+    },
+    "sdk/include/sys/times.h": {
+      "bytes": 651,
+      "sha256": "c15b32414d3a99b24ce37ed444eec2e4b50e9ff18aecf4aa1e070cbaaa0c4954"
+    },
+    "sdk/include/sys/timespec.h": {
+      "bytes": 2411,
+      "sha256": "c2c2dfdcf9deacccb8919ff633f212afa455e4779a2d12c47b9afa0eff7d73c1"
+    },
+    "sdk/include/sys/tree.h": {
+      "bytes": 29856,
+      "sha256": "ea81ed212bea5c3878f0291d34ff064c4cddbd7e73ac347f6f2944047052d417"
+    },
+    "sdk/include/sys/types.h": {
+      "bytes": 5414,
+      "sha256": "659abc34a2db9f62109d06135699e72a8759cce553626aac5340bfd84988d8a7"
+    },
+    "sdk/include/sys/unistd.h": {
+      "bytes": 23220,
+      "sha256": "03d0d4d822bde32e703fe2b4e73d2d9f11bda097816582d96785426e94cc7e52"
+    },
+    "sdk/include/sys/utime.h": {
+      "bytes": 363,
+      "sha256": "2bcd7d80d018eb7ef8912394fa6c84da8a2212fba9561db9e0b03d9ee8e40d34"
+    },
+    "sdk/include/sys/wait.h": {
+      "bytes": 977,
+      "sha256": "f1a190e79e4ae9b0bc2c25ddd011861f0d4eca08ae4c3159c58bba0e3ba29f15"
+    },
+    "sdk/include/tar.h": {
+      "bytes": 1389,
+      "sha256": "66008622fce9fe0b5c305e52bebc1dbc3291a5531682d886d575d4c4976f069a"
+    },
+    "sdk/include/termios.h": {
+      "bytes": 92,
+      "sha256": "fc13c1c649a2530491bed09e072743a931822b0faa826efb34e98bafd7373fa8"
+    },
+    "sdk/include/tgmath.h": {
+      "bytes": 8156,
+      "sha256": "4cee5f66824b507890fa22a0462ce46d177ca14345280e01d7bee660e01d42c9"
+    },
+    "sdk/include/threads.h": {
+      "bytes": 3040,
+      "sha256": "7b12eae65db429bc21f7f9480e43b09ecec8e09a14ef17b7a6c3b86739459354"
+    },
+    "sdk/include/time.h": {
+      "bytes": 7626,
+      "sha256": "374f3643cd0441150575271cbab976d543cdb37cde6890167ed66c7a051c2d4a"
+    },
+    "sdk/include/unctrl.h": {
+      "bytes": 1938,
+      "sha256": "cd52a305a468bdb6aea3e6c03f9dcd7d40c2074f6b2a66ffceb17f7786c41897"
+    },
+    "sdk/include/unistd.h": {
+      "bytes": 89,
+      "sha256": "19f31553182c4d649dd0d6301ffdbb5b4d7903b28373dd070a553798b41f524f"
+    },
+    "sdk/include/utime.h": {
+      "bytes": 185,
+      "sha256": "be672799c1b20fc35446ee2bf6b3c800677f2168983a1c99b366cf8036dbc418"
+    },
+    "sdk/include/utmp.h": {
+      "bytes": 90,
+      "sha256": "0cf902b1dcfa51852a3127a012ef4e77182510b0c5c89dab89d522656366e237"
+    },
+    "sdk/include/wchar.h": {
+      "bytes": 12012,
+      "sha256": "dcb1f58b8913d4b617022a9f2c5804e9ec3f262670c78159a746032f44d55221"
+    },
+    "sdk/include/wctype.h": {
+      "bytes": 1770,
+      "sha256": "afdf3415c9a74cfbbc8942d83e25f277528e6638ccd2b18c1239c6d61c579930"
+    },
+    "sdk/include/wordexp.h": {
+      "bytes": 1526,
+      "sha256": "cb95592bd02595459a64ce2caab45c67564fa67b0110164aa00e38747b1448ee"
+    },
+    "sdk/include/xos/abi_types.hpp": {
+      "bytes": 388,
+      "sha256": "2a417532cbdafc1d7545064ef78fe692b07ab0ec430f44367d779415fdc48478"
+    },
+    "sdk/include/xos/display_abi.hpp": {
+      "bytes": 1416,
+      "sha256": "7dfb1a723d95041f1726353a11f5843d66a5258eefbbc31a7ad364544e3f1f30"
+    },
+    "sdk/include/xos/display_client.hpp": {
+      "bytes": 2242,
+      "sha256": "93f8349de6efdd765e31747847c512e7e76466930bd84f1b61fe3e6dbb15a395"
+    },
+    "sdk/include/xos/elf.hpp": {
+      "bytes": 979,
+      "sha256": "a80999738ae4985e09b0c05cac5495945794dc7bde11cb83ac9174423d1490f0"
+    },
+    "sdk/include/xos/execution.hpp": {
+      "bytes": 890,
+      "sha256": "b47bc21b0e4e6af2c1d17a501d1f780ceb49fbf2f29e39d4c2f9c2620bb29e47"
+    },
+    "sdk/include/xos/file_abi.hpp": {
+      "bytes": 3396,
+      "sha256": "26725175aead9345e8d08be97c4f55e9bf359b4942f9cf052e402d4961bed8a3"
+    },
+    "sdk/include/xos/file_client.hpp": {
+      "bytes": 2059,
+      "sha256": "c34d81b9ca5eb4def1999bdbcad056fbf3529944af85dfa0d95ceaf466c57257"
+    },
+    "sdk/include/xos/file_ui.hpp": {
+      "bytes": 596,
+      "sha256": "39fa7997ba0cdb8fd6d2b79231a9b926408d06f12bf3238554a715171ea00538"
+    },
+    "sdk/include/xos/libc_runtime.hpp": {
+      "bytes": 320,
+      "sha256": "d2808f67bf4be32d9de8d8003dded9c41ffa5b2169a8a63e1eb2cd93c9401dce"
+    },
+    "sdk/include/xos/process_abi.hpp": {
+      "bytes": 6002,
+      "sha256": "81dec8207fd4b4a023f249cb07016e146be9a3c6bb45d0c09a34b346346b4983"
+    },
+    "sdk/include/xos/runtime_lock.hpp": {
+      "bytes": 776,
+      "sha256": "047cefb19504110544a94f9053950eb543bc827dace493513be31ccb24be9706"
+    },
+    "sdk/include/xos/sdk.hpp": {
+      "bytes": 2119,
+      "sha256": "f147517828424c4ae52515c9aaa84d570465792f50dbf7fb0f4730c6e9d8355b"
+    },
+    "sdk/include/xos/spawn.hpp": {
+      "bytes": 2649,
+      "sha256": "9aa935d0eecc18c19147f58a26073d77a80e6afe018c723c89649bcc86166ff8"
+    },
+    "sdk/include/xos/text.hpp": {
+      "bytes": 4344,
+      "sha256": "c2c86767d2716c622128bd6023ae19a91a26613526a659449cf8f4ecdff61db2"
+    },
+    "sdk/include/xos/thread_abi.hpp": {
+      "bytes": 2606,
+      "sha256": "2dc12676cebf56d6f16b682e52f35fa14dd21f0a2ea94525115f33bc8d576585"
+    },
+    "sdk/include/xos/tls.hpp": {
+      "bytes": 306,
+      "sha256": "c67cb8d2caea4f4da7ed44db61f26fba3ad20bc0f4f53e79d8ae752797d2e6e7"
+    },
+    "sdk/lib/libc.a": {
+      "bytes": 6720094,
+      "sha256": "283fa07ad205c80af92e955a91da027435d8a8a90cb7e27933f57925cc5baa22"
+    },
+    "sdk/lib/libm.a": {
+      "bytes": 2701158,
+      "sha256": "4cfdd6324f6776d025923ee369fad51236a9ee5730c8143a6b3b03b963eefd80"
+    },
+    "sdk/lib/libxos.a": {
+      "bytes": 946766,
+      "sha256": "a11960d125300a0b1a62d6974f90b565fa3bbbd8f05f287f7bcbd934684e6d83"
+    },
+    "sdk/lib/libxos_loader.a": {
+      "bytes": 319238,
+      "sha256": "338f36fe9559aee984201491cf46fb157f9f568c8062a86cbeb0d3479607e470"
+    },
+    "sdk/licenses/components.json": {
+      "bytes": 19587,
+      "sha256": "803ac42019ceee199275ff89b65453c1b741e7762ceeac26a3714d603b72bb1a"
+    },
+    "sdk/licenses/fatfs.txt": {
+      "bytes": 944,
+      "sha256": "5e865b99f0a4800b699d356a20887741c49681d36f712ba9cd0c2c65dea89f7c"
+    },
+    "sdk/licenses/legacy_mit_files.json": {
+      "bytes": 6038,
+      "sha256": "56bdd672a3c0545cf5043289c0b29a4fef49ba0d3fef2fd29350e6f2ec093429"
+    },
+    "sdk/licenses/mit_legacy.txt": {
+      "bytes": 1223,
+      "sha256": "846e254011ce5097413db5a432bd11a83954834ff17500a1a13b55e1405aec69"
+    },
+    "sdk/licenses/newlib.txt": {
+      "bytes": 78388,
+      "sha256": "f3afe48e4bc6ed8466a42e9dacb6be1d8f9cbf5aac15cb8e474a5ccde8b40ef6"
+    },
+    "sdk/manifest.json": {
+      "bytes": 1839,
+      "sha256": "e745fe6470faadd814d19370c09d9edd9651c71fa121cc062dbfec08a55fb38f"
+    },
+    "sdk/user.ld": {
+      "bytes": 1936,
+      "sha256": "d7574d234323eb7f2b481d6d99aca931bc236b843462e10cd2ef55b7ee88441b"
+    }
+  },
+  "toolchain": {
+    "target": "x86_64-elf",
+    "gcc": "16.2.0",
+    "binutils_release": "2.47",
+    "binutils": "2.47.20260726",
+    "nasm": "3.02",
+    "qemu": "11.1.2",
+    "cpp_standard": "c++20"
+  },
+  "configuration": {
+    "architecture": "x86_64",
+    "platform": "pc",
+    "firmware": "bios",
+    "kernel_base": 1048576,
+    "kernel_max_file_bytes": 8388608,
+    "kernel_max_memory_bytes": 16777216,
+    "easter_eggs": true,
+    "iso_payload_address": 33554432,
+    "iso_payload_max_bytes": 33554432
+  }
+}

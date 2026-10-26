@@ -1,6 +1,6 @@
 # XOS 项目总览
 
-2026-10-25。本页给新读者和 release 准备一个当前视图；细节以 `state.md`、
+2026-10-26。本页给新读者和 release 准备一个当前视图；细节以 `state.md`、
 `xos_plan.md`、work log 和报告为准。
 
 ## 这是什么
@@ -20,9 +20,10 @@ dash/xsh。目标是能自己开发、保存、编译和运行程序，不以商
 - 原生 SDK/GCC/G++/Binutils 和客体 C/C++ 编译运行。
 - xsh 原生入口；dash 0.5.13.5 的 B0/B1/B2 受限功能，C 阶段未完成。
 - file-backed El Torito ISO：`KERNEL.BIN` 从 ISO 读入，dash 作为 payload
-  自动安装；A2–A4 的受限安装 gate 已通过。
+  自动安装；0047解除旧容量限制，kernel文件8 MiB/内存16 MiB、payload32 MiB。
 - CPython 3.14.9 PY0/PY1 与 T3-PY 真实 pthread/GIL gate。
-- xypm P0/P1：宿主候选盘 install/upgrade/remove、客体只读 `list/info`。
+- xypm P0/P1：宿主候选盘 install/upgrade/remove、客体只读 `list/info`；
+  P2-1维护准入/文件写租约与失败关闭已验。
 - Open Adventure 在 XOS 内构建的受限验证；完整游戏/文本门未收口。
 
 ## 当前证据
@@ -35,17 +36,15 @@ dash/xsh。目标是能自己开发、保存、编译和运行程序，不以商
 - CPython T3-PY：5/5，资源 `[129833,2,0]`；见 `work_log/0043_cpython_t3_py.md`。
 - xypm：P0 宿主 16/16、P1 宿主 12/12、双 Shell/重启客体 10/10；见
   `work_log/0044_xypm_p1.md`。
-- ISO A2–A4：A2 2/2、A3/A4 4/4；但报告是 build `26eb667dd8318997` 的
-  旧产物，当前 `911184be3f3c99f6` 需要重建复核；见 `iso_install_plan.md`。
+- 0047 ISO：大容量10/10、正常兼容4/4。5.6 MiB真实kernel和2.1 MiB载荷
+  完整验证；正常共同build4c79f3a789dcff61位于build/iso_capacity/normal。
+- 0048 P2-1：在共同build上8/8，资源[130345,2,0]；该build全部src/摘要匹配。
+  旧综合/应用回执没有因此重新取得当前build资格，release仍需统一冻结/验收。
 
 ## 明确未完成
 
-- **ISO 扩容**：本页只登记，不在本轮实现。当前 file-backed loader 直接写
-  1 MiB，页表只映射前 4 MiB，kernel 构建上限仍 512 KiB；不能把“kernel
-  在 ISO 文件中”误报成“容量已突破”。新 release 前必须由负责该线的组完成
-  并重跑大 kernel/ISO gate。
 - CPython T3-QT、SMP、完整 POSIX/pipes、信号/终端语义。
-- xypm P2 客体写入事务、P3 签名仓库；dash C 阶段。
+- xypm P2原生包验证/持久日志/客体写命令（已有P2-1门控）、P3签名仓库；dash C阶段。
 - Qt 实现、UEFI、完整 release 打包/签名。
 - 长时间/随机压力、旧全量回归未重跑；不得写成全绿。
 

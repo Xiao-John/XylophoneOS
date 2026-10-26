@@ -14,7 +14,7 @@
 #include "user_images.hpp"
 
 namespace xos {
-extern u8 boot_payload[];
+extern const u8* boot_payload;
 extern u64 boot_payload_size;
 }
 
@@ -130,6 +130,7 @@ bool reap_pending[8];
 u8 block_buffer[4096];
 alignas(16) u8 fpu_template[512];
 bool process_trace_enabled = true;
+process_guard_info admission_guard{};
 
 void fpu_save(u8* state) {
     __asm__ volatile("fxsave64 (%0)" : : "r"(state) : "memory");
@@ -1296,6 +1297,32 @@ void* process_syscall(interrupt_frame* frame) {
     i64 result = process_error_invalid;
     const u64 first = frame->rdi, second = frame->rsi, third = frame->rdx;
     switch (frame->rax) {
+    case sys_process_guard: {
+        if (third != 0) { break; }
+        const auto action = static_cast<process_guard_action>(first);
+        if (action == process_guard_action::query) {
+            if (!user_range_ok(second, sizeof(admission_guard), true)) { break; }
+            copy_to_user(second, &admission_guard, sizeof(admission_guard)); result = 0; break;
+        }
+        if (!current->supervisor) { result = process_error_denied; break; }
+        if (second != 0) { break; }
+        if (action == process_guard_action::begin) {
+            if (admission_guard.owner_pid != 0) { result = process_error_busy; break; }
+            bool busy = false;
+            for (const auto& task : tasks) {
+                if (task.state != task_state::free && task.state != task_state::dead &&
+                    &task != current && task.pid != files_pid) { busy = true; }
+            }
+            if (busy) { result = process_error_busy; break; }
+            admission_guard = {current->pid, 0}; result = 0; break;
+        }
+        if (admission_guard.owner_pid != current->pid) { result = process_error_state; break; }
+        const process_record* worker = task_by_pid(admission_guard.worker_pid);
+        if (worker != nullptr && worker->state != task_state::dead) { result = process_error_busy; break; }
+        if (action == process_guard_action::end) { admission_guard = {}; result = 0; }
+        else if (action == process_guard_action::rearm) { admission_guard.worker_pid = 0; result = 0; }
+        break;
+    }
     case sys_boot_payload: {
         if (current == nullptr || !current->supervisor) {
             result = process_error_denied;
@@ -1376,6 +1403,10 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_process_create: {
+        if (admission_guard.owner_pid != 0 &&
+            (current->pid != admission_guard.owner_pid || admission_guard.worker_pid != 0)) {
+            result = process_error_busy; break;
+        }
         if (!current->supervisor && current->spawn_depth == 0) { result = process_error_denied; break; }
         if (first > 7 || (first & ~u64{current->stdio_mask}) != 0 || third > 11 ||
             (third != 0 && !user_range_ok(second, third, false))) { break; }
@@ -1410,10 +1441,12 @@ void* process_syscall(interrupt_frame* frame) {
         *slot = completion_record{};
         slot->used = true; slot->parent = current->pid; slot->status.pid = task->pid;
         task->completion_slot = static_cast<u32>(slot - completions) + 1;
+        if (admission_guard.owner_pid != 0) { admission_guard.worker_pid = task->pid; }
         result = static_cast<i64>(task->pid);
         break;
     }
     case sys_process_grant: {
+        if (admission_guard.owner_pid != 0) { result = process_error_denied; break; }
         if (!current->supervisor) { result = process_error_denied; break; }
         if (second > 1) { break; }
         process_record* task = owned_process(first);
@@ -1424,6 +1457,7 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_process_delegate: {
+        if (admission_guard.owner_pid != 0) { result = process_error_denied; break; }
         if (current == nullptr || second > process_max_spawn_depth) {
             result = process_error_invalid; break;
         }

@@ -62,6 +62,7 @@
 | `spawn <image> [args]` | 装载后返回终端 | [spawn](supervisor/spawn.md) |
 | `wait <pid>` | 收集子任务结果 | [wait](supervisor/wait.md) |
 | `stats` | 资源计数 | [stats](supervisor/stats.md) |
+| `maint-run` / `maint-recover` / `maint-status` | 单worker维护会话与恢复入口（P2-1） | [maintenance](supervisor/maintenance.md) |
 | `primtest` | 构造机制边界/回滚检查 | [primtest](supervisor/primtest.md) |
 | `elftest` | ELF 边界检查 | [elftest](supervisor/elftest.md) |
 | `ls [path]` | 列出工作盘文件 | [ls](supervisor/ls.md) |

@@ -11,7 +11,7 @@ using namespace xos::sdk;
 
 file::Client client;
 u8 image_buffer[24576];
-u8 dash_buffer[1 << 20];
+u8 dash_buffer[file::request_data_size];
 u8 editor_buffer[8192];
 u32 editor_length;
 
@@ -141,14 +141,8 @@ void run_editor(const char* name) {
 void install_boot_dash() {
     const i64 size = syscall(sys_boot_payload, 0, 0, 0);
     if (size <= 0) { return; }
-    if (size > static_cast<i64>(sizeof(dash_buffer))) {
+    if (static_cast<u64>(size) > 32ull * 1024 * 1024) {
         print("[files] dash payload too large\n");
-        return;
-    }
-    const i64 copied = syscall(sys_boot_payload, 0,
-                               reinterpret_cast<u64>(dash_buffer), static_cast<u64>(size));
-    if (copied != size) {
-        print("[files] dash payload read error\n");
         return;
     }
     u32 existing = 0;
@@ -156,8 +150,22 @@ void install_boot_dash() {
     if (client.stat("/usr/bin/dash", existing, version) == 0) { return; }
     (void)client.mkdir("/usr");
     (void)client.mkdir("/usr/bin");
-    const i64 result = client.replace("/usr/bin/dash", dash_buffer, static_cast<u32>(size));
+    i64 result = client.begin_replace("/usr/bin/dash", static_cast<u32>(size));
+    if (result != 0) { error_line("dash-stage", result); return; }
+    u32 offset = 0;
+    while (offset < static_cast<u32>(size)) {
+        u32 count = static_cast<u32>(size) - offset;
+        if (count > sizeof(dash_buffer)) { count = sizeof(dash_buffer); }
+        const i64 copied = syscall(sys_boot_payload, offset,
+                                   reinterpret_cast<u64>(dash_buffer), count);
+        if (copied != static_cast<i64>(count)) { result = -1; break; }
+        result = client.chunk_replace(offset, dash_buffer, count);
+        if (result != 0) { break; }
+        offset += count;
+    }
+    if (result == 0) { result = client.commit_replace(); }
     if (result != 0) {
+        (void)client.abort_replace();
         error_line("dash-install", result);
         return;
     }

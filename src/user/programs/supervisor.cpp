@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <xos/file_ui.hpp>
 #include <xos/file_abi.hpp>
+#include <xos/file_client.hpp>
 #include <xos/text.hpp>
 
 namespace {
@@ -109,7 +110,8 @@ const char* launch_stage_name(execution::launch_stage stage) {
 bool builtin_named(const char* name) {
     const char* const names[] = {"help", "trace", "type", "ps", "kill", "images", "exec", "spawn",
         "wait", "stats", "primtest", "elftest", "ls", "cat", "stat", "rm", "edit", "filetest",
-        "sync", "exec-file", "exec-driver", "exd", "spawn-file", "mkdir", "mv", "demo"};
+        "sync", "exec-file", "exec-driver", "exd", "spawn-file", "mkdir", "mv", "demo",
+        "maint-run", "maint-recover", "maint-status"};
     for (const auto* item : names) { if (equal(name, item)) { return true; } }
     return false;
 }
@@ -137,6 +139,43 @@ void launch_file(const char* name, u32 argc, char** argv, u32 spawn_depth, bool 
         print("xsh: started pid="); decimal(static_cast<u64>(child)); print("\n");
     }
     if (!background) { result_line(static_cast<u64>(child)); }
+}
+// Explicit supervisor entry; filenames do not confer maintenance authority.
+void maintenance_run(u32 argc, char** argv, bool recovering) {
+    process_guard_info gate{};
+    if (syscall(sys_process_guard, static_cast<u64>(process_guard_action::query),
+                reinterpret_cast<u64>(&gate)) != 0) { print("maintenance: unavailable\n"); return; }
+    file::Client files;
+    if (!files.init()) { print("maintenance: files unavailable\n"); return; }
+    i64 result;
+    if (recovering) {
+        if (gate.owner_pid != pid()) { print("maintenance: no retained session\n"); return; }
+        // Releasing only the file lease leaves the kernel admission barrier up.
+        result = files.maintenance_release();
+        if (result == 0) { result = syscall(sys_process_guard, static_cast<u64>(process_guard_action::rearm)); }
+    } else {
+        result = syscall(sys_process_guard, static_cast<u64>(process_guard_action::begin));
+    }
+    if (result != 0) {
+        print("maintenance: busy or denied error="); signed_decimal(result); print("\n"); return;
+    }
+    const auto candidate = execution::resolve(argv[0], "/usr/bin:/bin:/");
+    execution::launch_diagnostic diagnostic{};
+    spawn_options options{};
+    options.environment = kChildPath; options.environment_count = 1;
+    const i64 child = candidate.kind == execution::candidate_kind::executable ?
+        execution::spawn_file_diagnosed(candidate.path, argc, argv, options, diagnostic) : -1;
+    process_status outcome{};
+    const bool completed = child > 0 && wait(static_cast<u64>(child), outcome) == 0;
+    const bool success = completed && outcome.outcome == process_outcome::exited && outcome.code == 0;
+    if (!success && (child > 0 || recovering)) {
+        print("maintenance: retained; run maint-recover with a recovery tool\n"); return;
+    }
+    result = files.maintenance_release();
+    if (result == 0) { result = syscall(sys_process_guard, static_cast<u64>(process_guard_action::end)); }
+    if (result != 0) { print("maintenance: retained; cleanup error="); signed_decimal(result); print("\n"); }
+    else if (child > 0) { print("maintenance: completed\n"); }
+    else { print("maintenance: program unavailable; session closed\n"); }
 }
 void show_stats() {
     const auto state = stats();
@@ -206,6 +245,7 @@ void execute(u32 argc, char** argv) {
         print("Files     ls [path] | cat/stat/rm/edit <file> | mkdir <path> | mv <old> <new> | sync\n"
               "Programs  <command> [args] | exd <command> [args] | type <command>\n"
               "          exec-file | exec-driver (exd) | spawn-file | exec | spawn | wait\n"
+              "Maintain  maint-run <program> [args] | maint-recover <program> [args] | maint-status\n"
               "Shell     dash -i starts dash; exit inside dash returns here\n"
               "Debug     trace on/off | ps | kill <pid> | stats | images | primtest | elftest | filetest\n"
               "Search    /usr/bin:/bin:/; paths containing '/' are used directly\n");
@@ -271,6 +311,14 @@ void execute(u32 argc, char** argv) {
         const i64 synced = ui::sync();
         if (synced == 0) { print("[files] sync=ok\n"); }
         else { print("[files] sync error="); signed_decimal(synced); print("\n"); }
+    } else if ((equal(argv[0], "maint-run") || equal(argv[0], "maint-recover")) && argc >= 2) {
+        maintenance_run(argc - 1, argv + 1, equal(argv[0], "maint-recover"));
+    } else if (equal(argv[0], "maint-status") && argc == 1) {
+        process_guard_info gate{};
+        const i64 result = syscall(sys_process_guard, static_cast<u64>(process_guard_action::query),
+                                   reinterpret_cast<u64>(&gate));
+        print("maintenance: owner="); decimal(gate.owner_pid); print(" worker="); decimal(gate.worker_pid);
+        print(" error="); signed_decimal(result); print("\n");
     } else if ((equal(argv[0], "exec-file") || equal(argv[0], "spawn-file") ||
                 equal(argv[0], "exec-driver") || equal(argv[0], "exd")) && argc >= 2) {
         const bool driver = equal(argv[0], "exec-driver") || equal(argv[0], "exd");

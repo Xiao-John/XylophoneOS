@@ -78,3 +78,10 @@ python3 tests/shell_smoke.py --manifest .cache/xos_seed/dash/439a3c7825a15e276be
 仍是ASCII（U2未做），VGA不渲染UTF-8，原生输入法未实现。
 当前不提供type --all、动态PATH赋值、cwd提示、通用alias、引号或完整Shell语法；
 继续把脚本工作交给dash。后续xsh体验改进可独立推进。
+
+## 维护入口（0048，P2-1）
+
+`maint-run`、`maint-recover`、`maint-status`负责显式监督工作会话，见
+[使用与失败关闭语义](usage/supervisor/maintenance.md)。它们不把xypm或任何文件名
+变成内核权限来源；dash保持普通应用身份，先退出到Xsh才能请求无其他应用的维护。
+当前只开放准入/写租约机制，客体包事务尚未开放。

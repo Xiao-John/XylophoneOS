@@ -25,9 +25,16 @@ def sha256(data):
 
 
 def main():
+    global BUILD
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--clean", action="store_true")
+    parser.add_argument("--output-dir", type=Path, default=BUILD)
+    parser.add_argument("--capacity-probe", action="store_true",
+                        help="link a verified 5 MiB read-only section for the ISO capacity gate")
     args = parser.parse_args()
+    BUILD = args.output_dir.resolve()
+    if BUILD != ROOT / "build" and ROOT / "build" not in BUILD.parents:
+        raise SystemExit("output directory must be build/ or one of its subdirectories")
     if args.clean:
         # One fixed generated directory only. Never walk or clean the workspace.
         if BUILD.is_symlink():
@@ -40,7 +47,7 @@ def main():
     nasm = shutil.which(os.environ.get("NASM", "nasm"))
     if not nasm:
         raise SystemExit("NASM not found; install it or set NASM=/path/to/nasm")
-    BUILD.mkdir(exist_ok=True)
+    BUILD.mkdir(parents=True, exist_ok=True)
     # Bind the relocated cross compiler to the exact selected target tools.
     # This environment belongs only to this build process, not native host tests.
     target_tools = BUILD / "target_tools"
@@ -64,13 +71,13 @@ def main():
         sources.extend(p for p in sorted((ROOT / folder).rglob("*"))
                        if p.suffix in (".asm", ".s", ".sh", ".inc", ".py", ".cpp", ".hpp", ".c", ".h", ".ld", ".json", ".lldb"))
     source_hashes = {str(p.relative_to(ROOT)): sha256(p.read_bytes()) for p in sources}
-    source_digest = sha256(json.dumps(source_hashes, sort_keys=True).encode())
+    source_digest = sha256(json.dumps({"sources": source_hashes, "capacity_probe": args.capacity_probe}, sort_keys=True).encode())
     build_id = source_digest[:16]
     eggs = int(TARGET["easter_eggs"])
     (BUILD / "build_info.inc").write_text(
         f'%define xos_build_id "{build_id}"\n%define xos_easter_eggs {eggs}\n')
     (BUILD / "build_info.hpp").write_text(
-        f'#define XOS_BUILD_ID "{build_id}"\n#define XOS_EASTER_EGGS {eggs}\n')
+        f'#define XOS_BUILD_ID "{build_id}"\n#define XOS_EASTER_EGGS {eggs}\n#define XOS_CAPACITY_PROBE {int(args.capacity_probe)}\n')
     commands = []
 
     def run(command):
@@ -116,6 +123,15 @@ def main():
          "-Wno-reloc-abs-qword", "-Wno-reloc-rel-dword", "-Werror",
          str(ROOT / "src/kernel/arch/x86_64/interrupts.asm"), "-o", str(interrupts)])
     objects.append(str(interrupts))
+    if args.capacity_probe:
+        probe = BUILD / "capacity_probe.asm"
+        probe.write_text("section .rodata.capacity_probe align=4096\n"
+                         "global capacity_probe_begin, capacity_probe_end\n"
+                         "capacity_probe_begin:\n times 5242880 db 0xa5\ncapacity_probe_end:\n"
+                         "section .note.GNU-stack noalloc noexec nowrite progbits\n")
+        obj = BUILD / "capacity_probe.o"
+        run([nasm, "-f", "elf64", str(probe), "-o", str(obj)])
+        objects.append(str(obj))
     kernel = BUILD / "kernel.elf"
     run([tool("g++"), *X86_FLAGS, "-nostdlib", "-static", "-no-pie",
          "-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
@@ -143,6 +159,9 @@ def main():
         "kernel_data_start": symbols["data_start"],
         "kernel_file_bytes": len(raw_kernel),
         "kernel_disk_sectors": (len(raw_kernel) + 511) // 512,
+        "iso_kernel_max_file_bytes": TARGET["kernel_max_file_bytes"],
+        "iso_payload_address": TARGET["iso_payload_address"],
+        "iso_payload_max_bytes": TARGET["iso_payload_max_bytes"],
     }
     (BUILD / "kernel_layout.inc").write_text("".join(
         f"%define {name} {value}\n" for name, value in layout.items()))
@@ -170,7 +189,11 @@ def main():
     boot = (BUILD / "boot_sector.bin").read_bytes()
     if len(boot) != SECTOR_SIZE or boot[-2:] != b"\x55\xaa":
         raise SystemExit("Invalid boot sector size/signature")
-    for stage_name, image_name in (("stage_two", "real_mode.img"), ("kernel_loader", "xos.img")):
+    legacy_available = len(raw_kernel) <= 512 * 1024 and symbols["kernel_end"] <= 0x400000
+    legacy_stages = [("stage_two", "real_mode.img")]
+    if legacy_available:
+        legacy_stages.append(("kernel_loader", "xos.img"))
+    for stage_name, image_name in legacy_stages:
         stage = (BUILD / f"{stage_name}.bin").read_bytes()
         if not 6 <= len(stage) <= STAGE_TWO_SECTORS * SECTOR_SIZE:
             raise SystemExit(f"{stage_name} must fit in the 16-sector window")
@@ -185,11 +208,16 @@ def main():
         temporary = BUILD / (image_name + ".tmp")
         temporary.write_bytes(image)
         temporary.replace(BUILD / image_name)
-    run([sys.executable, str(ROOT / "scripts/make_iso.py"),
-         "--boot", str(BUILD / "boot_sector_iso.bin"),
-         "--loader", str(BUILD / "kernel_loader_iso.bin"),
-         "--kernel", str(BUILD / "kernel.bin"),
-         "--output", str(BUILD / "xos.iso")])
+    if legacy_available:
+        run([sys.executable, str(ROOT / "scripts/make_iso.py"),
+             "--boot", str(BUILD / "boot_sector_iso.bin"),
+             "--loader", str(BUILD / "kernel_loader_iso.bin"),
+             "--kernel", str(BUILD / "kernel.bin"),
+             "--output", str(BUILD / "xos.iso")])
+    else:
+        # Never leave a stale small-kernel legacy image beside a large ISO build.
+        for name in ("xos.img", "xos.iso"):
+            (BUILD / name).unlink(missing_ok=True)
     empty = BUILD / "empty.bin"
     empty.write_bytes(b"")
     run([sys.executable, str(ROOT / "scripts/make_iso.py"),
@@ -207,11 +235,15 @@ def main():
                                 text=True, check=True)
         (BUILD / name).write_text(result.stdout)
     artifact_names = ["boot_sector.bin", "stage_two.bin", "kernel_loader.bin", "kernel.elf",
-                      "kernel.bin", "xos.img", "xos.iso", "xos-install.iso", "real_mode.img", *user_artifacts]
+                      "kernel.bin", "boot_sector_iso.bin", "kernel_loader_iso.bin", "kernel_loader_iso_file.bin",
+                      "xos-install.iso", "real_mode.img", *user_artifacts]
+    if legacy_available:
+        artifact_names.extend(("xos.img", "xos.iso"))
     artifact_names.extend(str(path.relative_to(BUILD)) for path in sorted((BUILD / "sdk").rglob("*"))
                           if path.is_file())
     manifest = {
         "build_id": build_id, "source_sha256": source_digest,
+        "capacity_probe": args.capacity_probe, "legacy_images_available": legacy_available,
         "sources": source_hashes,
         "tools": versions, "toolchain": LOCK, "configuration": TARGET, "commands": commands,
         "kernel_layout": layout, "symbols": {k: symbols[k] for k in (
@@ -223,7 +255,7 @@ def main():
         },
     }
     (BUILD / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
-    print(f"Built xos.img + real_mode.img | {build_id} | kernel {len(raw_kernel)} bytes")
+    print(f"Built xos-install.iso + real_mode.img | {build_id} | kernel {len(raw_kernel)} bytes | legacy={legacy_available}")
 
 
 if __name__ == "__main__":

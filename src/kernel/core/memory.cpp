@@ -90,6 +90,16 @@ void memory_init(const boot_info& info, const memory_region* regions) {
         if (page < managed_pages) { bit_set(used_bitmap, page); }
     }
 
+    if (info.reserved != 0) {
+        const auto& payload = *reinterpret_cast<const boot_payload_descriptor*>(info.reserved);
+        const u64 first = payload.address & ~(page_size - 1);
+        const u64 last = align_up(payload.address + payload.size);
+        for (u64 address = first; address < last; address += page_size) {
+            const u32 page = static_cast<u32>(address / page_size);
+            if (page < managed_pages) { bit_set(used_bitmap, page); }
+        }
+    }
+
     for (u32 page = 0; page < managed_pages; ++page) {
         if (!bit_test(used_bitmap, page)) { ++free_page_count; }
     }

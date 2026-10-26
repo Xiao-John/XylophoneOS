@@ -1,20 +1,23 @@
 # XOS 当前状态
 
-更新时间：2026-10-25（Asia/Shanghai）。新 agent 按 AGENTS.md 的阅读顺序开始。
+更新时间：2026-10-26（Asia/Shanghai）。新 agent 按 AGENTS.md 的阅读顺序开始。
 
 ## 当前状态
 
-主线已合并线程 PR（基线 `d89d1a3`），并在其上完成 dash B2、file-backed ISO
-A2–A4、CPython T3-PY gate 和 xypm P1。最近一次完整 gate 的 build 为
-`911184be3f3c99f6`；当前源码重建为 `f25009cdbb27c857`（未重跑全量），
-基础镜像 SHA256
-`d9b81936924e729d2cf059d936b2406828a6785c151246603ed77ec9b2c5121d`。
-最新入口看[项目总览](project_overview.md)和[下一次 release 准备](releases/next_release.md)。
+主线已合并线程PR（基线d89d1a3，整合提交4c78b27），已有dash B2、CPython
+T3-PY/PY2、xypm P0/P1。2026-10-26本轮完成ISO扩容0047和xypm P2-1维护门控0048。
+共同正常候选位于`build/iso_capacity/normal`，build `4c79f3a789dcff61`，kernel
+360508字节；xos.img SHA256
+`4950c4c2fb53c36ac7cf36d4b6e40954c5b36507f8fc11207b867b54520b16ee`。
+这是本轮定向gate的隔离候选，未替换共享build或发布新release，旧全量/压力未重跑。
+最近旧综合gate build911184be3f3c99f6和根build/f25009cdbb27c857属于各自既有回执，
+不得把其dash/CPython全量证据改绑到当前候选。
 
-已通过：启动/文件/进程、E08 受限工具链、dash B0–B2、xypm P0/P1 与双 Shell
-10/10、CPython T3-PY 5/5、ISO A2–A4 旧 build 报告。未完成：**ISO 容量扩展**
-（本组不负责）、CPython T3-QT/SMP、完整 POSIX/pipes、xypm P2/P3、Qt/UEFI、
-旧全量回归/压力。不要把 A2–A4 的“kernel 从 ISO 文件加载”写成“容量已突破”。
+新增通过：ISO容量10/10、正常启动兼容4/4、受影响通用代码AArch64编译；
+P2-1维护8/8（资源[130345,2,0]），7份许可材料完整性检查。P1最终冻结SDK/包
+双Shell10/10见0044补充。未完成：xypm P2原生校验/多文件持久事务及恢复/P3、
+CPython T3-QT/SMP、完整POSIX/pipes、Qt/UEFI、旧全量/压力。
+最新入口看[项目总览](project_overview.md)和[下一次release准备](releases/next_release.md)。
 
 以 xos_plan.md v0.10 正文、后续决定和本页状态为准。下划线命名、轻松开发、过程落盘；
 固件/ISA/平台/通用内核分层。localpilot/ 独立，不进入 XOS 构建、扫描或清理。
@@ -23,6 +26,45 @@ A2–A4、CPython T3-PY gate 和 xypm P1。最近一次完整 gate 的 build 为
 
 Git origin 为 Xiao-John/XylophoneOS。0023 发布使用本机凭据且不落盘；原日常
 work_disk.img 保留，测试使用临时专用盘。
+
+## 0049：当前工作树统一提交
+
+2026-10-26用户明确要求提交所有当前改动。本次将CPython PY2/后续计划、ISO扩容、
+xypm P2-1及现有Adventure测试调整一起纳入单次Git快照；不重建系统或重跑既有
+测试。0047/0048的“未提交”保留为当时任务收口记录，本次提交状态以Git HEAD为准。
+不包含被忽略的build/cache产物或独立localpilot，不推送远端或创建新release。
+范围和检查见[0049](work_log/0049_commit_snapshot.md)。
+
+## 0047 / 0048完成：ISO扩容与xypm P2-1
+
+子代理完成ISO loader/builders、boot_info/kernel_main/memory/linker及分块payload
+安装；主端完成通用准入屏障sys54、files写租约op20/21、SDK与supervisor维护入口。
+双方独立输出、不改CPython/dash/线程算法或日常盘，全部270份src/摘要与共同正常
+build匹配。构建/编辑占用全部解除；未提交、push或发布本组。
+
+ISO预算：kernel文件8 MiB、内存16 MiB；payload32 MiB。实际5,603,388字节
+kernel跨4 MiB且5 MiB节完整校验；2,097,485字节dash载荷RAM/落盘全SHA匹配，
+容量专项10项、正常兼容4项通过。正式正常候选ISO
+`build/iso_capacity/normal/xos-install-dash.iso`，SHA256
+`4e7b5351cbd8a4988423334ed50e52940b4c414b56eb1453b500bb36d9f9df76`。
+容量probe kernel和带测试trailer的dash只用于验收，不能分发冒充正常版本。
+
+P2-1：无其他应用才能进入维护、单worker/禁止spawn、写租约、失败关闭、显式
+恢复入口；8项通过。非零/故障/Escape后仍拒绝新启动与普通写入，成功恢复才
+释放。客体xypm仍只读，安装/升级/卸载未开放，内存门禁不等于重启恢复。
+下一步P2-2原生校验/计划→P2-3持久日志/启动恢复门禁→P2-4用户写命令。
+记录[0047](work_log/0047_iso_capacity.md)、[0048](work_log/0048_xypm_p2_maintenance.md)；
+回执build/iso_capacity/final_receipt.json、build/package_p2/final/final_receipt.json。
+
+## 0046 完成：CPython PY2
+
+PY2客体gate 6/6通过：basic REPL和`input()`空闲不EOF，CR/LF、退格、Ctrl-D、
+监督Escape取消、文件/目录/短读/失败、UTF-8 JSON存档及`sync`后重启读取均通过。
+fingerprint `c69e0fbf7772c775ab3e`，系统build `f25009cdbb27c857`，每项结束资源
+回到`[129833,2,0]`。未修改内核、公共ABI、libc/files/loader、dash/xypm/游戏，
+未操作日常工作盘。PY3候选已按重要性和公共底座依赖分档，建议先验已构建模块
+闭包，再做zlib和离线纯Python包。详见[工作记录](work_log/0046_cpython_py2.md)和
+[PY3可选扩展](cpython_py3_options.md)。本组无剩余编辑占用。
 
 ## 0045 完成：总览、文档清理与 release 准备
 
@@ -55,7 +97,8 @@ serial + 排他创建。
 `xypm_rename_host_report.json` 12/12、
 `xypm_acceptance/guest_report.json` 10/10（双 Shell 查询/退出码、B2 重定向、
 升级/移除后重启、用户输出保留）。系统 build `911184be3f3c99f6`，资源
-`[129833,2,0]`，xypm 包 SHA256 `86a7f72f…`，final image `dfa3881d…`。
+`[129833,2,0]`，最后冻结SDK组合树e0fa2330…，最终包b03b208d…、候选盘0ecfb209…；
+首次86a7f72f/dfa3881d回执保留历史。最终报告在xypm_final/，系统f25009cdbb27c857（首次为911184），详见0044补充。
 未运行：P2 客体写入事务、P3 签名仓库、线程 SDK 登记、旧压力。详见
 [work_log/0044_xypm_p1.md](work_log/0044_xypm_p1.md)。
 

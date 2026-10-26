@@ -27,13 +27,22 @@ struct boot_info {
     u64 kernel_end;
     firmware_kind firmware;
     u32 flags; // bit 0: memory map complete; other bits reserved
-    u64 reserved;
+    u64 reserved; // optional normalized boot_payload_descriptor in reserved low RAM
 };
 static_assert(sizeof(memory_region) == 24);
 static_assert(sizeof(boot_info) == 64);
 static_assert(__builtin_offsetof(boot_info, region_count) == 16);
 static_assert(__builtin_offsetof(boot_info, kernel_start) == 32);
 static_assert(__builtin_offsetof(boot_info, firmware) == 48);
+// Boot data has no firmware record or instruction-set dependency.
+inline constexpr u64 boot_payload_magic = 0x31444c50534f5858ull; // XXOSPLD1
+inline constexpr u64 boot_payload_max_bytes = 32ull * 1024 * 1024;
+struct boot_payload_descriptor {
+    u64 magic;
+    u64 address;
+    u64 size;
+};
+static_assert(sizeof(boot_payload_descriptor) == 24);
 enum class boot_error { none, invalid_header, invalid_map, kernel_not_usable };
 boot_error validate_boot_info(const boot_info& info, const memory_region* regions);
 }

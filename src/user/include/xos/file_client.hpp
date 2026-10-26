@@ -36,6 +36,8 @@ public:
     i64 rename(const char* old_path, const char* new_path);
     i64 block_bench(u32 length);
     i64 sync();
+    i64 maintenance_acquire();
+    i64 maintenance_release();
     i64 begin_replace(const char* path, u32 length);
     i64 chunk_replace(u32 offset, const void* data, u32 length);
     i64 commit_replace();

@@ -24,10 +24,13 @@ def sha256(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dash-manifest", type=Path)
-    parser.add_argument("--output", type=Path, default=ROOT / "build/xos-install-dash.iso")
-    parser.add_argument("--manifest", type=Path, default=ROOT / "build/install_manifest.json")
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--manifest", type=Path)
+    parser.add_argument("--build-dir", type=Path, default=ROOT / "build")
     args = parser.parse_args()
-    build = ROOT / "build"
+    build = args.build_dir.resolve()
+    args.output = args.output or build / "xos-install-dash.iso"
+    args.manifest = args.manifest or build / "install_manifest.json"
     boot = build / "boot_sector_iso.bin"
     loader = build / "kernel_loader_iso_file.bin"
     kernel = build / "kernel.bin"
@@ -40,6 +43,15 @@ def main():
     if sha256(dash) != dash_data["sha256"]:
         raise SystemExit("dash ELF does not match its manifest")
     system = json.loads((build / "manifest.json").read_text())
+    configuration = system["configuration"]
+    if not 0 < kernel.stat().st_size <= configuration["kernel_max_file_bytes"]:
+        raise SystemExit("kernel exceeds the qualified ISO file budget")
+    if not 0 < dash.stat().st_size <= configuration["iso_payload_max_bytes"]:
+        raise SystemExit("dash payload exceeds the qualified ISO payload budget")
+    for name, path in (("kernel.bin", kernel), ("boot_sector_iso.bin", boot), ("kernel_loader_iso_file.bin", loader)):
+        expected = system["artifacts"].get(name)
+        if expected is not None and sha256(path) != expected["sha256"]:
+            raise SystemExit("stale system artifact: " + name)
     metadata = {
         "format": 1,
         "version": system.get("version", "0.0.1-1024"),
@@ -48,6 +60,8 @@ def main():
         "dash_sha256": sha256(dash),
         "dash_bytes": dash.stat().st_size,
     }
+    args.manifest.parent.mkdir(parents=True, exist_ok=True)
+    args.output.parent.mkdir(parents=True, exist_ok=True)
     args.manifest.write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n")
     text = build / "ISO_MANIFEST.TXT"
     text.write_text("".join(f"{key}={value}\n" for key, value in metadata.items()))

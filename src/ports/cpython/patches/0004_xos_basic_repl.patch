@@ -1,0 +1,99 @@
+--- a/Modules/main.c
++++ b/Modules/main.c
+@@ -584,7 +584,8 @@ _pymain_run_repl(PyConfig *config, int startup)
+         return pymain_exit_err_print();
+     }
+ 
++#ifndef __xos__
+     if (isatty(fileno(stdin))
+         && !_Py_GetEnv(config->use_environment, "PYTHON_BASIC_REPL")) {
+         PyObject *pyrepl = PyImport_ImportModule("_pyrepl");
+         if (pyrepl != NULL) {
+@@ -599,6 +600,7 @@ _pymain_run_repl(PyConfig *config, int startup)
+         }
+         PyErr_Clear();
+     }
++#endif
+ 
+     PyCompilerFlags cf = _PyCompilerFlags_INIT;
+     PyObject *result = NULL;
+--- a/Parser/myreadline.c
++++ b/Parser/myreadline.c
+@@ -22,6 +22,10 @@
+ #  include <unistd.h>             // isatty()
+ #endif
+ 
++#ifdef __xos__
++#  include <sched.h>
++#endif
++
+ 
+ // Export the symbol since it's used by the readline shared extension
+ PyAPI_DATA(PyThreadState*) _PyOS_ReadlineTState;
+@@ -40,5 +44,66 @@ int (*PyOS_InputHook)(void) = NULL;
++#ifdef __xos__
++static int
++xos_console_fgets(char *buf, int len, FILE *fp)
++{
++    int used = 0;
++    const int fd = fileno(fp);
++    while (used + 1 < len) {
++        unsigned char value;
++        ssize_t got = read(fd, &value, 1);
++        if (got < 0) {
++            if (errno == EINTR || errno == EAGAIN) {
++                clearerr(fp);
++                sched_yield();
++                continue;
++            }
++            return -2;
++        }
++        if (got == 0) {
++            /* XOS uses zero for "console currently empty".  This is not EOF;
++             * yield so idle input does not spin inside the Python runtime. */
++            clearerr(fp);
++            sched_yield();
++            continue;
++        }
++        if (value == 0x04) {
++            if (used == 0) {
++                buf[0] = '\0';
++                return -1;
++            }
++            break;
++        }
++        if (value == '\b' || value == 0x7f) {
++            if (used != 0) {
++                do {
++                    --used;
++                } while (used != 0 && ((unsigned char)buf[used] & 0xc0) == 0x80);
++                (void)fputs("\b \b", stdout);
++                (void)fflush(stdout);
++            }
++            continue;
++        }
++        if (value == '\r' || value == '\n') {
++            buf[used++] = '\n';
++            (void)fputc('\n', stdout);
++            (void)fflush(stdout);
++            break;
++        }
++        buf[used++] = (char)value;
++        (void)fputc(value, stdout);
++        (void)fflush(stdout);
++    }
++    buf[used] = '\0';
++    return 0;
++}
++#endif
++
+ static int
+ my_fgets(PyThreadState* tstate, char *buf, int len, FILE *fp)
+ {
++#ifdef __xos__
++    if (fp == stdin && isatty(fileno(fp))) {
++        return xos_console_fgets(buf, len, fp);
++    }
++#endif
+ #ifdef MS_WINDOWS
+     HANDLE handle;

@@ -443,3 +443,21 @@ P1采用全会话锁+独立候选镜像：宿主校验、精确依赖/归属、�
 发布，源盘不写。客体xypm先提供同一list/info程序给xsh与dash；完整客体维护事务
 留给P2。B2 stdio转交需要新的单线程CRT/profile，旧发行SDK不冒称兼容重定向；
 本轮冻结组合SDK并实测，未注册线程SDK，也不修改dash/内核/CPython。证据见0044。
+
+## 2026-10-26：0048 xypm P2先交维护门控
+
+本地工程选择：将P2拆为维护准入/写租约→原生校验/计划→持久日志恢复→用户写命令。
+内核sys54仅提供单worker进程准入屏障，包策略留用户态；files根据真实kernel
+owner/worker限制写入，路径和程序名不授予维护权。worker失败不自动释放。
+Xsh提供显式maint-run/recover/status，dash保留普通应用身份，退出dash后才能满足
+无其他应用的维护前提；两个Shell的普通xypm查询契约保持一致。P2-1不开放
+install/upgrade/remove，也不承诺内存屏障能跨重启；P2-2以后补持久恢复门禁。
+
+## 2026-10-26：0047 ISO扩容而不引入UEFI
+
+继续BIOS/ATAPI/file-backed ISO，kernel预算8 MiB文件/16 MiB内存，前18 MiB
+以4 KiB页保留W^X映射；payload在32 MiB处、上限32 MiB。loader交规范化descriptor，
+kernel验证范围并为实际载荷预留页，不额外拷贝到固定1 MiB缓冲；sys53仍仅监督
+可读，文件服务分块staging安装。大kernel无法安全用旧低内存loader时不生成兼容
+镜像，避免发布名义成功的坏启动文件。真实5.6 MiB kernel/2.1 MiB payload与
+正常兼容gate见0047；真机、UEFI、任意断电不从这些QEMU结果推出。

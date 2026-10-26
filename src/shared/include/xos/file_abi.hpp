@@ -26,6 +26,7 @@ enum class op : u16 {
     replace_abort = 12, remove = 13, sync = 14, mkdir = 15, rename = 16,
     block_bench = 17, fstat = 18,
     transfer = 19,
+    maintenance_acquire = 20, maintenance_release = 21,
 };
 
 enum seek_origin : u32 { seek_set = 0, seek_current = 1, seek_end = 2 };

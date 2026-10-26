@@ -17,14 +17,14 @@ def main():
     parser.add_argument('--cpp-sdk',type=Path,default=ROOT/'build/releases/0.0.1-1024/xylophoneos_revival_0.0.1-1024_sdk')
     args=parser.parse_args()
     single,cpp=args.single_sdk.resolve(),args.cpp_sdk.resolve()
-    require(tree_receipt(single)[0]==SINGLE_SHA,'single SDK differs from qualified B2 input')
-    require(tree_receipt(cpp)[0]==CPP_SHA,'C++ SDK differs from qualified release input')
     profile=load_json(ROOT/'config/package/xos_x86_64_static_single_b2_v1.json')
     parent=ROOT/'.cache/xos_seed/xypm_sdk';parent.mkdir(parents=True,exist_ok=True)
     output=parent/'single_b2_v1'
     if output.exists():
         require(tree_receipt(output)[0] in profile['sdk_tree_sha256'],'existing frozen SDK changed')
         print(output);return
+    require(tree_receipt(single)[0]==SINGLE_SHA,'single SDK differs from qualified B2 input')
+    require(tree_receipt(cpp)[0]==CPP_SHA,'C++ SDK differs from qualified release input')
     with tempfile.TemporaryDirectory(prefix='prepare_',dir=parent) as folder:
         stage=Path(folder)/'sdk';shutil.copytree(single,stage)
         shutil.copytree(cpp/'cpp',stage/'cpp')

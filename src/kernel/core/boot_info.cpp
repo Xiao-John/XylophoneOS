@@ -1,4 +1,5 @@
 #include <xos/boot_info.hpp>
+#include <xos/memory.hpp>
 
 namespace xos {
 boot_error validate_boot_info(const boot_info& info, const memory_region* regions) {
@@ -31,6 +32,25 @@ boot_error validate_boot_info(const boot_info& info, const memory_region* region
             kernel_covered = true;
         }
     }
-    return kernel_covered ? boot_error::none : boot_error::kernel_not_usable;
+    if (!kernel_covered) { return boot_error::kernel_not_usable; }
+    if (info.reserved != 0) {
+        if (info.reserved < 4096 || info.reserved_low_end < sizeof(boot_payload_descriptor) ||
+            info.reserved > info.reserved_low_end - sizeof(boot_payload_descriptor)) {
+            return boot_error::invalid_header;
+        }
+        const auto& payload = *reinterpret_cast<const boot_payload_descriptor*>(info.reserved);
+        if (payload.magic != boot_payload_magic || payload.size == 0 ||
+            payload.size > boot_payload_max_bytes || payload.address < info.kernel_end ||
+            payload.address > max_managed_phys - payload.size) { return boot_error::invalid_header; }
+        bool payload_covered = false;
+        for (u32 i = 0; i < info.region_count; ++i) {
+            if (regions[i].kind == memory_kind::usable && regions[i].base <= payload.address &&
+                regions[i].base + regions[i].length >= payload.address + payload.size) {
+                payload_covered = true;
+            }
+        }
+        if (!payload_covered) { return boot_error::invalid_header; }
+    }
+    return boot_error::none;
 }
 }

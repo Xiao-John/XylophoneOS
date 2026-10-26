@@ -415,4 +415,14 @@ i64 Client::sync() {
     request_ = request{};
     return call(op::sync);
 }
+i64 Client::maintenance_acquire() {
+    session_guard guard;
+    request_ = request{};
+    return call(op::maintenance_acquire);
+}
+i64 Client::maintenance_release() {
+    session_guard guard;
+    request_ = request{};
+    return call(op::maintenance_release);
+}
 }

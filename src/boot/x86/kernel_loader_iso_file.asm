@@ -7,7 +7,9 @@ org 0x8000
 
 %define memory_map_address 0x6000
 %define boot_info_address 0x6800
-%define kernel_blob_address 0x9000
+%define payload_descriptor 0x6900
+%define page_table_base 0x10000
+%define low_map_bytes 0x1200000
 
     jmp short loader_start
     dd stage_two_magic
@@ -208,11 +210,18 @@ protected_entry:
     cld
     call load_kernel32
     jnc load_done_32
+    mov esi, [cd_error_message]
+.error_next:
+    lodsb
+    test al, al
+    jz .error_halt
     mov dx, 0x3f8
-    mov al, '!'
     out dx, al
+    jmp .error_next
+.error_halt:
     cli
     hlt
+    jmp .error_halt
 ; --- 32-bit ATAPI + ISO9660 kernel load --------------------------------
 %define cd_base 0x170
 %define cd_ctrl 0x376
@@ -223,7 +232,7 @@ protected_entry:
 
 load_kernel32:
     mov dx, cd_ctrl
-    xor al, al
+    mov al, 2                 ; mask device IRQ; bounded polling only
     out dx, al
     mov dx, cd_drive
     mov al, 0xa0
@@ -242,48 +251,235 @@ load_kernel32:
     mov edi, 0x2000
     call cd_read_one
     jc .fail
+    mov dword [cd_error_message], directory_error
     cmp byte [0x2000], 1
     jne .fail
-    cmp dword [0x2000 + 1], 0x30304443
+    cmp dword [0x2001], 0x30304443
     jne .fail
-
-    mov eax, [0x2000 + 156 + 2]
+    cmp byte [0x2005], '1'
+    jne .fail
+    cmp byte [0x2006], 1
+    jne .fail
+    cmp word [0x2080], 2048
+    jne .fail
+    mov eax, [0x2050]
+    test eax, eax
+    jz .fail
+    mov [cd_volume_sectors], eax
+    bswap eax
+    cmp eax, [0x2054]
+    jne .fail
+    mov eax, [0x209e]
     mov [cd_root_lba], eax
-    mov eax, [0x2000 + 156 + 10]
+    mov eax, [0x20a6]
+    test eax, eax
+    jz .fail
+    cmp eax, 2048
+    ja .fail
     mov [cd_root_size], eax
+    mov dword [cd_file_sectors], 1
     mov eax, [cd_root_lba]
+    mov [cd_file_lba], eax
+    call check_extent
+    jc .fail
     mov edi, 0x2800
     call cd_read_one
     jc .fail
 
-    mov esi, 0x2800
-.next_record:
-    movzx eax, byte [esi]
-    test eax, eax
-    jz .fail
-    mov ebx, esi
-    cmp byte [esi + 32], 12
-    jne .skip
-    lea esi, [esi + 33]
-    mov edi, cd_kernel_name
+    mov ebp, cd_kernel_name
     mov ecx, 12
-    repe cmpsb
-    je .found
-.skip:
-    mov esi, ebx
-    movzx eax, byte [esi]
-    add esi, eax
-    jmp .next_record
-.found:
+    call find_record
+    jc .fail
+    mov eax, [ebx + 10]
+    mov edx, eax
+    bswap edx
+    cmp edx, [ebx + 14]
+    jne .fail
+    mov dword [cd_error_message], kernel_size_error
+    cmp eax, kernel_file_bytes
+    jne .fail
+    cmp eax, iso_kernel_max_file_bytes
+    ja .fail
+    mov [cd_file_size], eax
+    add eax, 2047
+    jc .fail
+    shr eax, 11
+    mov [cd_file_sectors], eax
     mov eax, [ebx + 2]
     mov [cd_file_lba], eax
+    call check_extent
+    jc .fail
+    mov edi, kernel_load_address
+    call read_file
+    jc .fail
+
+    mov ebp, cd_dash_name
+    mov ecx, 10
+    call find_record
+    jnc .payload_found
+    cmp dword [cd_missing], 1
+    je .no_payload
+    jmp .fail
+.payload_found:
     mov eax, [ebx + 10]
-    mov [cd_file_size], eax
+    mov edx, eax
+    bswap edx
+    cmp edx, [ebx + 14]
+    jne .fail
+    mov dword [cd_error_message], payload_size_error
+    test eax, eax
+    jz .fail
+    cmp eax, iso_payload_max_bytes
+    ja .fail
+    mov [cd_payload_size], eax
+    add eax, 2047
+    jc .fail
+    and eax, ~2047
+    mov edx, eax
+    add edx, iso_payload_address
+    jc .fail
+    mov eax, iso_payload_address
+    mov dword [cd_error_message], payload_memory_error
+    call check_ram
+    jc .fail
+    mov eax, [ebx + 2]
+    mov [cd_file_lba], eax
+    mov eax, [cd_payload_size]
     add eax, 2047
     shr eax, 11
     mov [cd_file_sectors], eax
-    mov edi, kernel_load_address
-.read_file:
+    call check_extent
+    jc .fail
+    mov edi, iso_payload_address
+    call read_file
+    jc .fail
+    mov dword [payload_descriptor], 0x534f5858
+    mov dword [payload_descriptor + 4], 0x31444c50
+    mov dword [payload_descriptor + 8], iso_payload_address
+    mov dword [payload_descriptor + 12], 0
+    mov eax, [cd_payload_size]
+    mov [payload_descriptor + 16], eax
+    mov dword [payload_descriptor + 20], 0
+    mov dword [boot_info_address + 56], payload_descriptor
+    mov dword [boot_info_address + 60], 0
+.no_payload:
+    clc
+    ret
+.fail:
+    stc
+    ret
+
+; Validate each root record before comparing its name. CF + missing=1 is optional absence.
+find_record:
+    mov [cd_name_length], ecx
+    mov esi, 0x2800
+    mov dword [cd_missing], 0
+.next:
+    mov edx, 0x2800
+    add edx, [cd_root_size]
+    cmp esi, edx
+    jae .missing
+    movzx eax, byte [esi]
+    test eax, eax
+    jz .missing
+    cmp eax, 34
+    jb .bad
+    mov ebx, esi
+    add eax, esi
+    cmp eax, edx
+    ja .bad
+    movzx edx, byte [esi + 32]
+    add edx, 33
+    add edx, esi
+    cmp edx, eax
+    ja .bad
+    test byte [esi + 25], 0x82 ; no directories or multi-extent files
+    jnz .skip
+    mov ecx, [cd_name_length]
+    movzx edx, byte [esi + 32]
+    cmp edx, ecx
+    jne .skip
+    lea esi, [esi + 33]
+    mov edi, ebp
+    repe cmpsb
+    je .found
+.skip:
+    mov esi, eax
+    jmp .next
+.found:
+    clc
+    ret
+.missing:
+    mov dword [cd_missing], 1
+.bad:
+    mov dword [cd_error_message], directory_error
+    stc
+    ret
+
+check_extent:
+    mov eax, [cd_file_lba]
+    cmp eax, [cd_volume_sectors]
+    jae .bad
+    mov edx, [cd_volume_sectors]
+    sub edx, eax
+    cmp [cd_file_sectors], edx
+    ja .bad
+    clc
+    ret
+.bad:
+    mov dword [cd_error_message], extent_error
+    stc
+    ret
+
+; EAX=first, EDX=rounded end. Keep EBX (the directory entry) intact.
+check_ram:
+    push ebx
+    mov ebp, eax
+    mov edi, edx
+    mov esi, memory_map_address
+    mov ecx, [boot_info_address + 16]
+    xor ebx, ebx
+.next:
+    cmp dword [esi + 4], 0
+    jne .skip
+    cmp [esi], edi
+    jae .skip
+    mov eax, [esi]
+    mov edx, [esi + 4]
+    add eax, [esi + 8]
+    adc edx, [esi + 12]
+    jc .bad
+    test edx, edx
+    jnz .overlap
+    cmp eax, ebp
+    jbe .skip
+.overlap:
+    cmp dword [esi + 16], 1
+    jne .bad
+    cmp [esi], ebp
+    ja .skip
+    test edx, edx
+    jnz .covered
+    cmp eax, edi
+    jb .skip
+.covered:
+    mov ebx, 1
+.skip:
+    add esi, 24
+    loop .next
+    test ebx, ebx
+    jz .bad
+    pop ebx
+    clc
+    ret
+.bad:
+    pop ebx
+    stc
+    ret
+
+read_file:
+    mov dword [cd_error_message], read_error
+.next:
     cmp dword [cd_file_sectors], 0
     je .done
     mov eax, [cd_file_lba]
@@ -291,52 +487,8 @@ load_kernel32:
     jc .fail
     inc dword [cd_file_lba]
     dec dword [cd_file_sectors]
-    jmp .read_file
+    jmp .next
 .done:
-    ; Optional DASH.ELF payload for the installer.
-    mov esi, 0x2800
-.next_dash:
-    movzx eax, byte [esi]
-    test eax, eax
-    jz .no_dash
-    mov ebx, esi
-    cmp byte [esi + 32], 10
-    jne .skip_dash
-    lea esi, [esi + 33]
-    mov edi, cd_dash_name
-    mov ecx, 10
-    repe cmpsb
-    je .found_dash
-.skip_dash:
-    mov esi, ebx
-    movzx eax, byte [esi]
-    add esi, eax
-    jmp .next_dash
-.found_dash:
-    mov eax, [ebx + 2]
-    mov [cd_dash_lba], eax
-    mov eax, [ebx + 10]
-    mov [cd_dash_size], eax
-    add eax, 2047
-    shr eax, 11
-    mov [cd_file_sectors], eax
-    mov edi, 0x300000
-.read_dash:
-    cmp dword [cd_file_sectors], 0
-    je .dash_done
-    mov eax, [cd_dash_lba]
-    call cd_read_one
-    jc .fail
-    inc dword [cd_dash_lba]
-    dec dword [cd_file_sectors]
-    jmp .read_dash
-.dash_done:
-    mov eax, [ebx + 10]
-    mov [0x2ffff8], eax
-    mov dword [0x2ffffc], 0
-    mov dword [0x6800 + 56], 0x2ffff8
-    mov dword [0x6800 + 60], 0
-.no_dash:
     clc
     ret
 .fail:
@@ -351,6 +503,15 @@ cd_read_one:
     mov dx, cd_status
     call cd_wait_not_busy
     jc .fail
+    mov dx, cd_base + 1
+    xor al, al
+    out dx, al
+    mov dx, cd_base + 4
+    xor al, al
+    out dx, al
+    inc dx
+    mov al, 8
+    out dx, al
     mov dx, cd_command
     mov al, 0xa0
     out dx, al
@@ -394,12 +555,13 @@ cd_wait_drq:
     mov ecx, 0xffff
 .loop:
     in al, dx
-    test al, 0x01
+    test al, 0x80
+    jnz .again
+    test al, 0x21
     jnz .fail
     test al, 0x08
     jnz .ok
-    test al, 0x80
-    jnz .loop
+.again:
     loop .loop
 .fail:
     stc
@@ -410,6 +572,17 @@ cd_wait_drq:
 
 cd_packet:
     db 0x28, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0
+cd_error_message: dd read_error
+cd_volume_sectors: dd 0
+cd_name_length: dd 0
+cd_missing: dd 0
+cd_payload_size: dd 0
+read_error: db "BOOT_ERROR: iso_read", 13, 10, 0
+directory_error: db "BOOT_ERROR: iso_directory", 13, 10, 0
+kernel_size_error: db "BOOT_ERROR: iso_kernel_size", 13, 10, 0
+payload_size_error: db "BOOT_ERROR: iso_payload_size", 13, 10, 0
+payload_memory_error: db "BOOT_ERROR: iso_payload_memory", 13, 10, 0
+extent_error: db "BOOT_ERROR: iso_extent", 13, 10, 0
 cd_lba: dd 0
 cd_root_lba: dd 0
 cd_root_size: dd 0
@@ -424,16 +597,26 @@ cd_dash_name:
     db 'DASH.ELF;1'
 load_done_32:
 
-    ; Five 4 KiB tables: PML4, PDPT, PD, PT0, PT1. Identity map first 4 MiB.
+    ; Nine leaf tables at 0x10000 cover 18 MiB, preserving kernel W^X beyond 4 MiB.
     mov edi, 0x1000
     xor eax, eax
     mov ecx, 0x5000 / 4
     rep stosd
     mov dword [0x1000], 0x2003
     mov dword [0x2000], 0x3003
-    mov dword [0x3000], 0x4003
-    mov dword [0x3008], 0x5003
-    mov edi, 0x4000
+    mov edi, page_table_base
+    xor eax, eax
+    mov ecx, (low_map_bytes / 0x200000) * 4096 / 4
+    rep stosd
+    mov edi, 0x3000
+    mov eax, page_table_base | 3
+    mov ecx, low_map_bytes / 0x200000
+.link_leaf:
+    stosd
+    add edi, 4
+    add eax, 4096
+    loop .link_leaf
+    mov edi, page_table_base
     xor ebx, ebx
 .map_page:
     mov eax, ebx
@@ -469,7 +652,7 @@ load_done_32:
     mov [edi + 4], edx
     add edi, 8
     add ebx, 4096
-    cmp ebx, 0x400000
+    cmp ebx, low_map_bytes
     jb .map_page
     mov eax, cr4
     or eax, 1 << 5            ; PAE

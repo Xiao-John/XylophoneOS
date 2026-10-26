@@ -22,6 +22,13 @@ SHA256清单；客体验证argv/cwd/env、脚本目录优先导入、无宿主�
 [工作记录](work_log/0038_cpython_py1.md)。这不扩大到全标准库、REPL/input或存档；
 下一批仍是PY2。
 
+0046更新：PY2已通过6/6。basic REPL和`input()`已验空闲等待、CR/LF、退格、
+Ctrl-D，文件/目录/短读/失败、UTF-8 JSON保存及`sync`后重启读取均通过；每项结束
+资源回到基线。证据见`build/cpython_py2_report.json`与
+[工作记录](work_log/0046_cpython_py2.md)。PY3不作为整包推进，候选范围与顺序见
+[PY3分档](cpython_py3_options.md)；建议先做已构建模块闭包，再做zlib和离线纯
+Python包。首次PY4收口仍不等待PY3全部完成。
+
 ## 第一份可玩的交付
 
 从 Xsh 输入 `python3` 进入传统 `>>>`，能算数、定义函数、处理字符串；能执行

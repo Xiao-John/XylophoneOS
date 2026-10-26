@@ -71,10 +71,28 @@ def stage(folder):
     return source
 
 
+def build_in_guest(folder, guest, report):
+    """Run build.sh inside XOS; returns True on exit code 0."""
+    start = len(guest.output)
+    send_bytes(guest, b"dash /src/open-adventure/build.sh\r")
+    guest.expect(b"kind=exited code=", start=start, timeout=600)
+    exited = guest.output.find(b"kind=exited code=", start)
+    guest.expect_any((b"xsh> ", b"sup> "), start=exited, timeout=60)
+    build_output = bytes(guest.output[start:])
+    report["checks"].append({"name": "in-xos-build",
+                             "passed": b"kind=exited code=0" in build_output,
+                             "tail": build_output[-600:].decode("utf-8", "replace")})
+    return b"kind=exited code=0" in build_output
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--report", type=Path,
                         default=ROOT / "build/adventure_report.json")
+    parser.add_argument("--export-elf", type=Path,
+                        help="also export the XOS-built /out/advent ELF here")
+    parser.add_argument("--export-generated", type=Path,
+                        help="also export dungeon.c/h into this directory")
     args = parser.parse_args()
     assert sha256(ARCHIVE) == ARCHIVE_SHA256
     system = json.loads((ROOT / "build/manifest.json").read_text())
@@ -149,15 +167,7 @@ def main():
             guest.expect(b"xsh: trace on", start=len(guest.output) - 64, timeout=20)
             pump(guest, 0.3)
 
-            start = len(guest.output)
-            send_bytes(guest, b"dash /src/open-adventure/build.sh\r")
-            guest.expect(b"kind=exited code=", start=start, timeout=600)
-            exited = guest.output.find(b"kind=exited code=", start)
-            guest.expect_any((b"xsh> ", b"sup> "), start=exited, timeout=60)
-            build_output = bytes(guest.output[start:])
-            report["checks"].append({"name": "in-xos-build",
-                                     "passed": b"kind=exited code=0" in build_output,
-                                     "tail": build_output[-600:].decode("utf-8", "replace")})
+            build_in_guest(folder, guest, report)
 
             start = len(guest.output)
             send_bytes(guest, b"/out/advent\r")
@@ -177,6 +187,15 @@ def main():
         finally:
             guest.close()
 
+        if args.export_elf is not None:
+            args.export_elf.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(disk.resolve(), disk.resolve())
+            transfer(disk, "export", "/out/advent", args.export_elf)
+        if args.export_generated is not None:
+            args.export_generated.mkdir(parents=True, exist_ok=True)
+            for name in EXPECTED:
+                transfer(disk, "export", "/src/open-adventure/" + name,
+                         args.export_generated / name)
         for name, expected in EXPECTED.items():
             dest = folder / name
             transfer(disk, "export", "/src/open-adventure/" + name, dest)

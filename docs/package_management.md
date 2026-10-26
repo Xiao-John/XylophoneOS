@@ -67,6 +67,27 @@ SDK的单线程C++归档及相应许可。SDK树哈希、组合方法与真实�
 旧SDK程序能启动并不保证它理解B2标准流转交。该profile不包含pthread/thread-safe
 承诺，不借用CPython线的`build/threading_sdk`或自动登记新库。
 
+## P2分段与当前实现
+
+0048先落地P2-1：通用进程准入屏障、一个worker的文件写租约、成功清理释放、
+失败关闭与显式恢复工作入口。新客体8项定向通过；它不修改包文件，也不替代
+多文件事务。接口/权限见[e04_loader_sdk.md](e04_loader_sdk.md)，命令见
+[maintenance](usage/supervisor/maintenance.md)。
+
+接续顺序：
+
+1. **P2-2 原生验证与计划**：有界ustar/严格JSON/SHA256、profile/精确依赖/归属
+   与实际FAT别名检查，与宿主共享畸形包/数据库夹具，解析全过程不执行payload。
+   在完整校验前只读源包；验证、staging期间固定同一打开实例。
+2. **P2-3 持久恢复**：持久intent+新文件stage+旧文件备份、幂等回滚/清尾和
+   recovery-required启动门禁。每步中止/进程故障/正常sync重启验证，损坏日志
+   保留材料并阻止普通写入。P2-1的内存门禁本身不能充当重启恢复。
+3. **P2-4 用户命令**：上述gate通过后才开放原生install/upgrade/remove/recover；
+   由监督维护入口显式选定xypm worker，失败默认留在恢复状态。分别验xsh/dash
+   的查询/错误契约，以及退出dash后进入维护的流程；不让dash获得隐式监督权。
+
+P1的宿主candidate原子发布继续可用；P2-2至P2-4完成前，客体xypm仍只有只读查询。
+
 ## P0现在可用
 
 从XOS仓库目录运行，PROJECT指定尚不存在的仓库外目录：
@@ -268,7 +289,8 @@ postinst/hooks，安装器不启动任意payload或下载缺项。
 0035起线程实施由朋友在PR交付，当前本线优先P0/P1，不抢其内核/SDK范围。P2不依赖多线程、
 fork或CPython，先写原生单线程工具。先用hello_friend和一个已验工具演示，不把
 整个GNU工具链纳管作为起跑条件；打包成功不提升dash/CPython/Qt功能支持等级。
-P0已通过上述定向gate并有CLI/schema/包产物；P1/P2/P3仍not_run，没有通用安装结果。
+P0/P1已通过本文列出的受限gate；receipt显式纳管、跨包批量事务仍未交付。
+P2-1维护会话正在实施；完整客体包事务P2、仓库P3仍未完成。
 
 P3复用成熟更新设计，研究TUF等现成方案，不发明签名算法。P1摘要只提供完整性，
 人工核验来源的本地包可先用，不能称为已认证仓库。可信根、签名/防回滚及时间

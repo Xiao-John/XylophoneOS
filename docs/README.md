@@ -38,11 +38,12 @@
 - [下一次 release 准备清单](releases/next_release.md)
 - [dash 后续路线](dash_port_plan.md)（B0–B2 已过，C 未做）
 - [shell 移植历史勘查](shell_port_scout.md)（历史资料）
-- [独立应用与包管理](package_management.md)（xypm P0/P1受限已验，P2/P3待实施）
+- [独立应用与包管理](package_management.md)（xypm P0/P1已验，P2-1维护门控已验，其余P2/P3待实施）
 - [公共线程契约与E13-T计划](threading_contract.md)
 - [UTF-8文本接口计划](utf8_text_plan.md)（U0/U1已通过；非 release 阻塞）
 - [Open Adventure依赖内建计划](adventure_port_plan.md)
-- [CPython移植计划](cpython_port_plan.md)
+- [CPython移植计划](cpython_port_plan.md)（PY0–PY2、T3-PY已通过）
+- [CPython PY3可选扩展](cpython_py3_options.md)（按价值与底座依赖分档）
 - [Qt 移植评估](qt_port_assessment.md)
 - [许可管理](licensing.md)
 

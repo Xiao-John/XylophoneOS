@@ -3,7 +3,9 @@
   "platform": "pc",
   "firmware": "bios",
   "kernel_base": 1048576,
-  "kernel_max_file_bytes": 524288,
-  "kernel_max_memory_bytes": 4194304,
-  "easter_eggs": true
+  "kernel_max_file_bytes": 8388608,
+  "kernel_max_memory_bytes": 16777216,
+  "easter_eggs": true,
+  "iso_payload_address": 33554432,
+  "iso_payload_max_bytes": 33554432
 }

@@ -1,24 +1,20 @@
 # 下一次 XOS release：准备清单
 
-2026-10-25。状态：**准备中，未冻结版本号，未重新打包**。本页只做 release
+2026-10-26。状态：**准备中，未冻结版本号，未重新打包**。本页只做 release
 准备；不修改已发布的 0.0.1-1024 资产。
 
 ## 必须先解决的阻塞项
 
-1. **ISO 扩容（不由本清理组负责）**
-   当前 `xos-install-dash.iso` 已能把 `KERNEL.BIN` 从 ISO 读入并安装 dash，
-   但容量仍受：
-   - kernel 构建上限 `config/x86_64_bios.json` 的 512 KiB；
-   - loader 页表只映射前 4 MiB；
-   - payload 上限 1 MiB。
-   负责 ISO 的组需要解除这些限制，并用大于 640 KiB 的真实 kernel/ISO gate
-   验证，而不是只验证 344 KiB kernel。完成前，release notes 不能宣称
-   “ISO 容量已突破”。
-2. **用当前源码重建 install ISO**
-   现有 A3/A4 报告绑定 build `26eb667dd8318997`；最近完整 gate 是
-   `911184be3f3c99f6`，当前源码重建为 `f25009cdbb27c857`。需要
-   `make build dash install-iso` 后重跑
-   `tests/iso_file_kernel_smoke.py`、`tests/iso_dash_install.py`，更新哈希。
+1. **ISO扩容已完成（0047）**
+   kernel文件8 MiB/内存16 MiB、payload32 MiB；真实5.6 MiB kernel与2.1 MiB
+   载荷通过容量10项，正常启动兼容4项通过。候选在build/iso_capacity/normal，
+   build4c79f3a789dcff61，安装ISO SHA256
+   4e7b5351cbd8a4988423334ed50e52940b4c414b56eb1453b500bb36d9f9df76。
+   此目录是正常候选；父目录的probe kernel/trailer dash仅用于验收，不进发行。
+2. **统一release构建与资格**
+   0047/0048已共用正常候选，P2-1 8项和许可材料检查通过。仍需按发行冻结
+   SDK、dash/CPython/工具链并取得对应回执，旧911184/f25009回执不能自动改绑。
+   不自动改写共享build或替换已发布0.0.1附件。
 3. **决定是否回滚工作盘预装 dash**
    新 install ISO 会自动安装 dash；旧 `make disk`/发行盘预装是否删除要在
    release 前统一决定。当前代码仍保留 `--with-dash` 和
@@ -54,9 +50,8 @@
   `build/releases/0.0.1-1024/sources/`；GitHub 远端附件不受影响。
 - `src/ports/dash/upstream/dash-0.5.13.5.tar.gz` 是离线构建输入，保留。
 
-## Release notes 最低内容
+## 公开说明与工程材料
 
-- 版本/日期、build ID、kernel/ISO/SDK 哈希。
-- 已通过 gate 与未运行项分开写。
-- ISO 扩容状态；若未完成，明确“install ISO 可用，容量仍受限”。
-- xypm/CPython/dash 的能力边界；不给未实现 POSIX/P2/P3 承诺。
+公开release notes遵从用户指定的纪念发行风格：简洁，只介绍已有功能。
+build ID、产物哈希、SDK/profile、通过/失败/未运行及已知限制保存在manifest、
+验收报告与工程文档；完整证据不靠公开发布文案承担，不把未验证能力写成已有。

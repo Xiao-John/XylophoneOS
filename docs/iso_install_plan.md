@@ -1,18 +1,32 @@
 # ISO 安装介质计划：从 no-emulation 启动到可安装镜像
 
-2026-10-25，0037。用户要求先不上 UEFI，突破当前 ISO 的容量限制，并明确最终
-ISO 应能作为唯一安装介质，dash 预装在 ISO 中是合理目标。本页记录方案和 A0
-探针；不把探针结果当成完整 ISO 文件系统或安装器已完成。
+2026-10-26更新：A0–A4已完成，0047完成受限容量扩展A5；当前实现和证据见
+[0047工作记录](work_log/0047_iso_capacity.md)。旧A0/A1探针结论仍作为历史保留。
 
-## 现状与真实瓶颈
+## 当前容量与路径
 
-- `make run` 已改为 El Torito **no-emulation** ISO；boot sector、loader、kernel
-  一起装进 boot image，约 349 KiB。
-- 限制不再是 1.44 MiB 软盘，而是 BIOS 把 boot image 装进 **640 KiB 真实模式
-  内存**；kernel 已 344 KiB，dash 约 991 KiB 无法放入。
-- 在 no-emulation CD 上直接使用 BIOS `INT 13h AH=42h` 读 LBA 实测失败
-  （SeaBIOS 返回 `ah=01`），所以不能靠 BIOS 读 ISO。
-- ISO 镜像可以做大，但当前没有客体侧的 CD 读取路径，也没有 ISO9660 文件访问。
+默认仍为BIOS El Torito no-emulation；小boot image只含boot/loader，kernel与
+可选dash分别为ISO根目录的`KERNEL.BIN`/`DASH.ELF`。ATAPI/ISO9660在loader内，
+不依赖BIOS的CD读LBA，也不要求引入UEFI。
+
+| 项目 | 当前预算/布局 | 本组实际证据 |
+|---|---|---|
+| kernel文件 | 8 MiB | 真链接5,603,388字节，额外5 MiB只读节全字节核对 |
+| kernel内存 | 16 MiB，自1 MiB起 | 末端0x68d000，跨4 MiB |
+| 初始页表 | 前18 MiB细粒度4 KiB页，保留W^X | 高rodata实际PTE R+NX |
+| boot payload | 32 MiB起，最大32 MiB | 2,097,485字节RAM/安装后全哈希一致 |
+| payload寿命 | 规范化descriptor，原位保留，allocator预留实际页 | bitmap逐页检查 |
+| 安装 | 小缓存分块staging/commit，已有dash不覆盖 | 原生dash交互/退出、落盘全哈希 |
+
+`boot_info.reserved`现在传24字节magic/address/size descriptor；BIOS实例放
+0x6900，通用kernel不接收BIOS原始结构。原先0x2ffff8长度头、0x300000载荷、
+1 MiB kernel拷贝缓存属于0040历史，不再是当前布局。sys_boot_payload仍为53，
+只允许bootstrap supervisor按offset读取。
+
+容量专项10/10、正常kernel/legacy兼容4/4、受影响通用源3个AArch64对象编译
+通过；未重跑旧压力，未做真机/UEFI/任意掉电。8/16/32 MiB为预算，不能把预算
+说成所有边界和全部硬件均已实测。默认旧floppy/embedded ISO仅在kernel仍满足
+其512 KiB/4 MiB边界时生成；大kernel只走file-backed ISO。
 
 ## 方案比较
 
@@ -31,8 +45,10 @@ ISO 应能作为唯一安装介质，dash 预装在 ISO 中是合理目标。本
 - **A2（已通过）**：loader 从 ISO 读 `KERNEL.BIN` 并直接装入 1 MiB；
   `xos-install.iso` 的 boot image 不含 kernel，`make run` 默认使用它。
   `tests/iso_file_kernel_smoke.py` 通过。
-- A3：dash 等安装负载从 ISO 交给 files 服务/安装流程，ISO 预装。
-- A4：ISO 构建器写文件清单、哈希和安装元数据；ISO 成为正式安装介质。
+- **A3（已通过）**：dash 安装负载从 ISO 交给 files 服务，见0040。
+- **A4（已通过）**：ISO 构建器写文件清单、哈希和安装元数据，见0040。
+- **A5（0047已通过）**：kernel/页表/payload容量扩展、原位预留、流式安装与
+  越界拒绝；10项容量专项和4项正常兼容通过。
 
 ## A0 验收（已通过）
 
@@ -66,4 +82,5 @@ ISO 应能作为唯一安装介质，dash 预装在 ISO 中是合理目标。本
 
 ## 下一步
 
-先完成 A0 探针；通过后再决定 A1 的目录格式和 dash 在 ISO 中的路径。
+按release新快照统一冻结与打包；容量probe和测试trailer不进入正式发行。
+后续按真实需求增加安装器/认证或ISO目录能力，不能借本轮宣称通用光盘安装器。

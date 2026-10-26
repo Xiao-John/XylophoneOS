@@ -39,6 +39,7 @@ struct client_session {
 FATFS fs;
 bool mounted;
 bool recovery_failed;
+u64 maintenance_writer;
 client_session sessions[max_sessions];
 u32 generations[max_sessions];
 open_description descriptions[max_open_descriptions];
@@ -461,6 +462,40 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         return;
     }
     if (!mounted || recovery_failed) { reply(out, in, status::io); return; }
+    process_guard_info gate{};
+    if (sdk::syscall(sys_process_guard, static_cast<u64>(process_guard_action::query),
+                     reinterpret_cast<u64>(&gate)) != 0) { reply(out, in, status::io); return; }
+    if (operation == op::maintenance_acquire) {
+        if (gate.owner_pid == 0 || gate.worker_pid != session.pid || maintenance_writer != 0 || staging_active) {
+            reply(out, in, status::busy); return;
+        }
+        for (const auto& description : descriptions) {
+            if (description.used) { reply(out, in, status::busy); return; }
+        }
+        maintenance_writer = session.pid;
+        reply(out, in, status::ok); return;
+    }
+    if (operation == op::maintenance_release) {
+        if (gate.owner_pid != session.pid) { reply(out, in, status::invalid); return; }
+        // Dead sessions are swept by the service loop. Do not release while
+        // their handles or an unfinished single-file replacement remain open.
+        if (staging_active) { reply(out, in, status::busy); return; }
+        for (const auto& description : descriptions) {
+            if (description.used) { reply(out, in, status::busy); return; }
+        }
+        if (sdk::syscall(sys_block_sync) != 0) { reply(out, in, status::io); return; }
+        maintenance_writer = 0;
+        reply(out, in, status::ok); return;
+    }
+    const bool mutating = operation == op::write || operation == op::replace_begin ||
+        operation == op::replace_chunk || operation == op::replace_commit || operation == op::replace_abort ||
+        operation == op::remove || operation == op::mkdir || operation == op::rename || operation == op::sync ||
+        (operation == op::open && ((in.flags & open_access_mask) != read_only ||
+                                  (in.flags & open_option_mask) != 0));
+    if (mutating && (gate.owner_pid != 0 || maintenance_writer != 0) &&
+        (gate.owner_pid == 0 || gate.worker_pid != session.pid || maintenance_writer != session.pid)) {
+        reply(out, in, status::busy); return;
+    }
     switch (operation) {
     case op::list:
         list_directory(in, out);

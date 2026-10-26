@@ -9,9 +9,14 @@
 #include "build_info.hpp"
 
 namespace xos {
-u8 boot_payload[1 << 20];
+const u8* boot_payload;
 u64 boot_payload_size;
 }
+
+#if XOS_CAPACITY_PROBE
+extern "C" const xos::u8 capacity_probe_begin[];
+extern "C" const xos::u8 capacity_probe_end[];
+#endif
 
 namespace {
 volatile xos::u64 bss_probe[512];
@@ -42,6 +47,18 @@ extern "C" [[noreturn]] void kernel_main(const xos::boot_info* info,
     xos::format::text("[boot] event=boot_info_valid memory_map=complete\r\n");
     xos::format::text("[boot] event=runtime_checked bss=zero data=valid\r\n");
 
+#if XOS_CAPACITY_PROBE
+    const auto bytes = static_cast<xos::u64>(capacity_probe_end - capacity_probe_begin);
+    for (xos::u64 i = 0; i < bytes; ++i) {
+        if (capacity_probe_begin[i] != 0xa5) {
+            xos::format::text("[boot] result=failed reason=capacity_probe_corrupt\r\n");
+            xos::arch::halt();
+        }
+    }
+    xos::format::text("[boot] capacity_probe_verified bytes=");
+    xos::format::decimal(bytes);
+    xos::format::text("\r\n");
+#endif
     xos::arch::exceptions_init();
     xos::format::text("[cpu] event=exceptions_ready idt=");
     xos::format::hex(xos::arch::exception_idt_address());
@@ -49,12 +66,14 @@ extern "C" [[noreturn]] void kernel_main(const xos::boot_info* info,
 
     xos::arch::paging_init(*info, regions);
     if (info->reserved != 0) {
-        const xos::u64 declared = *reinterpret_cast<const xos::u64*>(info->reserved);
-        if (declared > 0 && declared <= sizeof(xos::boot_payload)) {
-            const auto* source = reinterpret_cast<const xos::u8*>(info->reserved + 8);
-            for (xos::u64 i = 0; i < declared; ++i) { xos::boot_payload[i] = source[i]; }
-            xos::boot_payload_size = declared;
-        }
+        const auto& payload = *reinterpret_cast<const xos::boot_payload_descriptor*>(info->reserved);
+        xos::boot_payload = reinterpret_cast<const xos::u8*>(payload.address);
+        xos::boot_payload_size = payload.size;
+        xos::format::text("[boot] payload_bytes=");
+        xos::format::decimal(payload.size);
+        xos::format::text(" source=");
+        xos::format::hex(payload.address);
+        xos::format::text("\r\n");
     }
     xos::memory_init(*info, regions);
     const xos::memory_stats stats = xos::memory_status();

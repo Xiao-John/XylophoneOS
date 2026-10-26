@@ -205,3 +205,24 @@ process_stats 的布局及进程权限含义。共享 ABI 见 `thread_abi.hpp`�
 文件wire仍v2布局，B2追加操作保留旧工具入口；私有spawn FD快照与有锁的seek/
 transfer共同整合。7组整合gate见work_log/0041_threading_local_merge.md；B2随后由
 0042以新SDK正式收口，证据绑定build `911184be3f3c99f6`，不借用旧回执。
+
+## 0048：P2-1通用进程准入与文件写租约
+
+2026-10-26追加`sys_process_guard=54`，53仍为ISO payload，38–52线程ABI不变。
+first为process_guard_action（query0/begin1/end2/rearm3），third必须0；query的
+second指向16字节process_guard_info（owner_pid/worker_pid），其他动作second为0。
+begin/end/rearm仅真实supervisor可用，普通应用返回denied；begin拒绝其他存活或
+构造中应用（files服务除外），busy为process_error_busy=-11。屏障内仅owner能
+创建一次worker；不授予构造权，不接受grant/delegate。end/rearm要求旧worker已死，
+不重用PID。内核只管理生命周期与准入，不处理路径、包、数据库或journal。
+
+file v2 wire布局保持不变，追加op20 maintenance_acquire、op21 maintenance_release，
+Client增加对应方法。files对每个请求读取kernel guard状态：仅指定worker可取
+写租约，取租约前所有打开实例和单文件staging必须为空；普通应用不能按伪造PID取权。
+屏障或租约有效时，写/有写选项的open/replace/remove/mkdir/rename/sync均要求
+该worker持租约；其他只读操作可用。只有真实owner session能释放，释放前要求
+打开实例和staging清空，并同步块设备。worker退出不会自动解除全局写门禁。
+
+Xsh入口见usage/supervisor/maintenance.md，定向证据见0048。这不是新线程SDK
+profile，也不是P2完整包事务；旧静态程序的已有操作布局保持，SDK/服务/内核新操作
+需要对应实现。持久恢复策略留用户态xypm P2-2，当前不开放客体安装/升级/卸载。

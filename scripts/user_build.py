@@ -103,7 +103,7 @@ def build_users(root, build, nasm, run, build_id):
              "-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
              "-T", str(sdk / "user.ld"), str(sdk / ("crt0_posix.o" if name in ("runtime_probe", "cpp_runtime_probe", "tls_exit_probe") else "crt0_libc.o" if name in libc_programs else "crt0.o")), main,
              *([str(loader_archive)] if name == "supervisor" else []), *fault_objects,
-             *([str(core_archive), str(loader_archive)] if name == "threading_core_probe" else []),
+             *([str(core_archive), str(loader_archive)] if name in ("threading_core_probe", "gfxdemo") else []),
              *([file_ui_object] if name == "supervisor" else []),
              *([*fatfs_objects] if name == "files" else []),
              *(["-Wl,--start-group", str(archive), str(loader_archive), "-L", str(sdk / "lib"),

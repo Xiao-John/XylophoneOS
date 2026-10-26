@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 #include <xos/display_client.hpp>
+#include <xos/thread_core.hpp>
 namespace {
 using namespace xos;using namespace xos::sdk;
 u32 pixels[800*600];
@@ -15,6 +16,12 @@ display_present buffer(display_rect rect){
 bool expect(bool condition,const char* label){
     print("[gfx-check] ");print(label);print(condition?"=pass\n":"=FAIL\n");return condition;
 }
+u64 denied_worker(void*){
+    display_client other;
+    if(other.open()!=display_busy || syscall(sys_display_present,1)!=display_denied ||
+       display_control(display_action::grant_service,pid())!=display_denied){return 1;}
+    return 0;
+}
 void event_line(const display_event& e){
     print("[gfx-event] seq=");decimal(e.sequence);print(" ns=");decimal(e.monotonic_ns);
     print(" kind=");decimal(e.kind);print(" code=");decimal(e.code);print(" mods=");decimal(e.modifiers);
@@ -26,6 +33,19 @@ extern "C" int xos_user_main(const xos::startup_info* startup){
     using namespace xos;using namespace xos::sdk;
     const auto* argv=reinterpret_cast<const char* const*>(startup->argv);
     const char* action=startup->argc>1?argv[1]:"hold";
+    if(equal(action,"memhold")){
+        if(syscall(sys_heap_break,process_heap_begin+200ull*1024*1024)<0){return 10;}
+        print("[gfx] memory_held bytes=209715200\n");for(;;){yield();}
+    }
+    if(equal(action,"oom")){
+        thread_stats before{},after{};
+        (void)syscall(sys_thread_stats,reinterpret_cast<u64>(&before));
+        const auto result=syscall(sys_heap_break,process_heap_begin+128ull*1024*1024);
+        (void)syscall(sys_thread_stats,reinterpret_cast<u64>(&after));
+        const bool ok=result==process_error_resources && syscall(sys_heap_break)==process_heap_begin &&
+            before.free_pages==after.free_pages && before.process_user_pages==after.process_user_pages;
+        print(ok?"[gfx] physical_oom_rollback=pass\n":"[gfx] physical_oom_rollback=FAIL\n");return ok?0:11;
+    }
     if(equal(action,"deny")){
         display_event event{};
         bool ok=expect(display_control(display_action::grant_service,pid())==display_denied,"grant_denied");
@@ -36,6 +56,14 @@ extern "C" int xos_user_main(const xos::startup_info* startup){
     }
     const i64 opened=client.open();
     if(opened!=0){print("[gfx] open=");signed_decimal(opened);print("\n");return 1;}
+    if(equal(action,"threads")){
+        bool ok=expect(thread::enable()==0,"thread_profile");
+        u64 ids[2]{},result=99;
+        for(u32 i=0;i<2;++i){ok&=expect(thread::create(ids[i],denied_worker,nullptr)==0,"thread_create");}
+        for(u32 i=0;i<2;++i){ok&=expect(thread::join(ids[i],result)==0 && result==0,"thread_authority");}
+        (void)client.close();print(ok?"[gfx] threads=pass\n":"[gfx] threads=FAIL\n");return ok?0:12;
+    }
+    if(equal(action,"mmio")){print("[gfx] mmio_fault_probe\n");(void)*reinterpret_cast<volatile u32*>(0x30000000);return 99;}
     if(equal(action,"fault")){print("[gfx] fault_after_connect\n");__asm__ volatile("ud2");}
     if(equal(action,"stop")){
         const auto result=client.stop();(void)client.close();return result==0?0:1;
@@ -73,6 +101,16 @@ extern "C" int xos_user_main(const xos::startup_info* startup){
         ok&=expect(client.present(invalid)==display_fault,"pointer_end_overflow");
         invalid=frame;invalid.pixels=process_heap_begin;
         ok&=expect(client.present(invalid)==display_fault,"unmapped_buffer");
+        const u64 sparse_bytes=((frame.length+4095)&~u64{4095})-4096;
+        bool sparse_ok=syscall(sys_heap_break,process_heap_begin+sparse_bytes)>0;
+        if(sparse_ok){*reinterpret_cast<volatile u32*>(process_heap_begin)=0xff00ff;}
+        invalid=frame;invalid.pixels=process_heap_begin;
+        ok&=expect(sparse_ok && client.present(invalid)==display_fault,"last_page_fault_atomic");
+        ok&=expect(syscall(sys_heap_break,process_heap_begin)==static_cast<i64>(process_heap_begin),"sparse_buffer_reclaimed");
+        display_request malformed{};display_reply reply{};malformed.operation=display_operation::mode;malformed.reserved=1;
+        ok&=expect(client.call(malformed,reply)==display_invalid,"reserved_request");
+        malformed={};malformed.operation=static_cast<display_operation>(999);
+        ok&=expect(client.call(malformed,reply)==display_invalid,"unknown_operation");
         const i64 original=syscall(sys_heap_break);
         ok&=expect(syscall(sys_heap_break,process_heap_end)==process_error_resources,"page_quota");
         ok&=expect(syscall(sys_heap_break)==original,"quota_rollback");

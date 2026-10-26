@@ -1,7 +1,7 @@
-#include <xos/display_client.hpp>
 // SPDX-License-Identifier: MIT AND Apache-2.0
 // Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/sdk.hpp>
+#include <xos/display_client.hpp>
 #include <xos/elf.hpp>
 #include <xos/execution.hpp>
 #include <string.h>
@@ -28,6 +28,20 @@ u64 number(const char* text) {
     }
     return value;
 }
+void display_started(i64 child,i64 result) {
+    char output[96]{};u32 used=0;
+    const auto append=[&](const char* text){while(*text!=0 && used+1<sizeof(output)){output[used++]=*text++;}};
+    const auto integer=[&](i64 value){
+        if(value<0){output[used++]='-';}
+        u64 number_value=value<0?u64{0}-static_cast<u64>(value):static_cast<u64>(value);
+        char digits[20];u32 count=0;
+        do{digits[count++]=static_cast<char>('0'+number_value%10);number_value/=10;}while(number_value!=0);
+        while(count!=0){output[used++]=digits[--count];}
+    };
+    append("[display-start] pid=");integer(child);append(" result=");integer(result);append("\n");
+    (void)xos::sdk::write(1,output,used); // one serial write: service startup cannot split this receipt
+}
+
 void result_line(u64 child, bool explicit_wait = false) {
     process_status status{};
     const i64 result = wait(child, status);
@@ -281,11 +295,11 @@ void execute(u32 argc, char** argv) {
         print(syscall(10, number(argv[1])) == 0 ? "kill: accepted\n" : "kill: invalid pid\n");
     } else if (equal(argv[0], "images") && argc == 1) {
         image_list();
-    } else if (equal(argv[0], "display-start") && argc==1) {
-        const char* args[]={"display"};
-        const i64 child=spawn(image_named("display"),1,args);
+    } else if (equal(argv[0], "display-start") && (argc==1 || (argc==2 && equal(argv[1],"fault")))) {
+        const char* args[]={"display",argc==2?"fault":"normal"};
+        const i64 child=spawn(image_named("display"),2,args);
         const i64 granted=child>0?display_control(display_action::grant_service,static_cast<u64>(child)):child;
-        print("[display-start] pid=");signed_decimal(child);print(" result=");signed_decimal(granted);print("\n");
+        display_started(child,granted);
         if(child>0 && granted!=0){(void)syscall(10,static_cast<u64>(child));result_line(static_cast<u64>(child));}
     } else if ((equal(argv[0], "exec") || equal(argv[0], "spawn")) && argc >= 2) {
         const u32 image = image_named(argv[1]);

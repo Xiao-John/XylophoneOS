@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 #include <xos/display_client.hpp>
-extern "C" int xos_user_main(const xos::startup_info*) {
+extern "C" int xos_user_main(const xos::startup_info* startup) {
     using namespace xos;using namespace xos::sdk;
     // Supervisor grants the narrowly scoped role immediately after spawn.
     const auto deadline=ticks()+100;
@@ -12,6 +12,8 @@ extern "C" int xos_user_main(const xos::startup_info*) {
        syscall(sys_block_info,reinterpret_cast<u64>(&sectors))!=block_error_denied ||
        syscall(sys_process_create,7)!=process_error_denied){return 2;}
     print("[display-service] ready file=denied block=denied spawn=denied\n");
+    const auto* argv=reinterpret_cast<const char* const*>(startup->argv);
+    const bool fault=startup->argc>1 && equal(argv[1],"fault");
     for(;;){
         display_channel channel{};
         const auto accepted=display_control(display_action::accept,reinterpret_cast<u64>(&channel));
@@ -19,6 +21,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
         display_request request{};
         const auto received=ipc_recv(channel.request,&request,sizeof(request));
         if(received<0){(void)display_control(display_action::wait,channel.request);continue;}
+        if(fault){print("[display-service] fault_after_request\n");__asm__ volatile("ud2");}
         display_reply reply{};reply.result=display_invalid;
         bool stop=false;
         if(received==sizeof(request) && request.version==1 && request.size==sizeof(request) && request.reserved==0){

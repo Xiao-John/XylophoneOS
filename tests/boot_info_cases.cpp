@@ -9,6 +9,13 @@ int main() {
     memory_region regions[] = {{0, 0xa0000, memory_kind::usable, 1},
                                {0x100000, 0x3e00000, memory_kind::usable, 1}};
     CHECK(validate_boot_info(info, regions) == boot_error::none);
+    info.version=boot_display_version;info.size=boot_info_display_size;
+    CHECK(validate_boot_info(info,regions)==boot_error::none);
+    info.size=64;
+    CHECK(validate_boot_info(info,regions)==boot_error::invalid_header);
+    info.version=boot_version;info.size=boot_info_display_size;
+    CHECK(validate_boot_info(info,regions)==boot_error::invalid_header);
+    info.size=64;
     info.firmware = firmware_kind::uefi; // same normalized contract, no UEFI loader implied
     CHECK(validate_boot_info(info, regions) == boot_error::none);
     info.magic = 0;

@@ -11,5 +11,6 @@ void write(u64 offset, const u8* bytes, u64 length);
 void input_init();
 void input_irq(u8 irq, u64 now);
 void input_reset(bool focused);
+bool input_pending();
 bool input_read(display_event& event);
 }

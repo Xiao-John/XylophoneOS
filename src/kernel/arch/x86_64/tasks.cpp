@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT AND Apache-2.0
 // Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/task.hpp>
+#include <xos/display.hpp>
 #include <xos/thread_abi.hpp>
 #include "../../core/thread_lifecycle.hpp"
 #include <xos/block.hpp>
@@ -2175,6 +2176,11 @@ void* process_syscall(interrupt_frame* frame) {
 }
 }
 
+void* input_entry(interrupt_frame* frame) {
+    display::input_irq(frame->vector == 33 ? 1 : 12, tick_count * 10000000ull);
+    return frame;
+}
+
 void* timer_entry(interrupt_frame* frame) {
     pic_eoi(0);
     if (tick_count != ~u64{0}) { ++tick_count; }
@@ -2359,6 +2365,7 @@ bool tasks_create_default() {
 
 [[noreturn]] void tasks_enter() {
     pic_init();
+    display::input_init();
     timer_init(100);
     thread_record* first = pick_ready();
     if (first == nullptr) {

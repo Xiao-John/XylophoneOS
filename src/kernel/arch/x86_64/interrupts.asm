@@ -60,6 +60,17 @@ irq0_stub:
     push qword 32
     jmp interrupt_common
 
+global irq1_stub
+irq1_stub:
+    push qword 0
+    push qword 33
+    jmp interrupt_common
+global irq12_stub
+irq12_stub:
+    push qword 0
+    push qword 44
+    jmp interrupt_common
+
 global syscall_stub
 syscall_stub:
     push qword 0

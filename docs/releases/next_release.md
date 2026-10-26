@@ -25,8 +25,8 @@
 
 ## 当前候选回执
 
-- build `2e338e3d7a2adc42`；release smoke 11/11，资源 `[130272,2,0]`。
-- install ISO SHA256 `fde6422c0321f4e664ada7a41631db3428a090e551f51ea8932c6b8cf9dcde0a`。
+- build `7a4668477d7323de`；release smoke 11/11，资源 `[130272,2,0]`。
+- install ISO SHA256 `db2f607781a7818a5238eaecb86c13d63f449383cf9a8e32be4590e83b594f12`。
 - images/SDK tar 已生成；许可审计 7 份材料通过，成员级审计仍开放。
 - 候选目录 `build/releases/0.0.1-1026`；源码提交后重新生成 source materials。
 

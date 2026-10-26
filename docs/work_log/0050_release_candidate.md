@@ -22,18 +22,20 @@ python3 scripts/release_smoke.py
 
 ## 结果
 
-- build `2e338e3d7a2adc42`，kernel 385084 字节。
+- 最终 build `7a4668477d7323de`，kernel 385084 字节；source commit `db5b46c`。
 - `release_smoke.py` 11/11：新盘无 dash、launcher 用 install ISO、原生/SDK
   C/C++、dash C3 here-doc、Make、CPython PY3 线程/JSON/zlib/idna、xypm 查询、
   ISO 安装 dash 全文件哈希；资源 `[130272,2,0]` 前后一致。
 - `license_audit.py`：7 份已登记材料通过，成员级审计仍未完成。
-- `xos.img` SHA256 `d66e1125d136aba1d89d3c0fdaac70d2d91d62f1b8ed58deec33121718e4e690`。
+- `xos.img` SHA256 `f0f7360b11b018379b3e62dd6f3ca822f47af68ad72649cf69448cc7cf622d8a`。
 - `xos-install-dash.iso` SHA256
-  `fde6422c0321f4e664ada7a41631db3428a090e551f51ea8932c6b8cf9dcde0a`。
+  `db2f607781a7818a5238eaecb86c13d63f449383cf9a8e32be4590e83b594f12`。
 - images tar SHA256
-  `9a73259bbba02211d87efdeec7e1e6e4529b2a471b79022841845fbe436cf4c7`。
+  `8dcc344f5126c2128896684455116d288d8331ca08f5d16118bf72abf7d131a8`。
 - SDK tar SHA256
-  `efaca7984bcdef6abad460e3370e65e496e683766bb31591bd5644d1ecc3d650`。
+  `a09e6157fc5409152e2646484eb03cec5509433558734fb921d161c53365b4a1`。
+- source tar SHA256
+  `3f1ead9867ca567a3a1e14edd59fcbca42d238b9159c115fc96b9e7727930657`（source commit `db5b46c`）。
 
 ## 本次为通过 release smoke 做的修正
 

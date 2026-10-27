@@ -41,8 +41,10 @@ def main():
                 guest.expect_supervisor(start=start, timeout=40); pump(guest, .4)
                 send_bytes(guest, b'demo quiet\r'); pump(guest, .4)
                 start = len(guest.output); send_bytes(guest, b'dash /tests/du12.sh\r')
-                guest.expect(b'DU12_OK', start=start, timeout=180)
-                guest.expect_supervisor(start=start, timeout=30)
+                guest.expect_supervisor(start=start, timeout=180)
+                output = bytes(guest.output[start:])
+                if b'DU12_OK' not in output:
+                    raise AssertionError('daily utility script failed: ' + output[-4000:].decode('utf-8', 'replace'))
                 start = len(guest.output); send_bytes(guest, b'sync\r'); guest.expect_supervisor(start=start, timeout=30)
                 report['checks'].append('dash_operations_pipe_and_rejected_unsafe_cases')
             finally:

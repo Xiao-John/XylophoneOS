@@ -10,7 +10,7 @@
   7份许可材料检查通过，newlib成员级追溯仍开放。
 - 新工作盘不预装dash；install ISO携带dash并在首次启动安装，已存在文件不覆盖。
 - images/SDK/source/校验表/manifest均已上传，来源与哈希见
-  [发布回执](release_0_0_1_1026.json)及[0050过程记录](../work_log/0050_release_candidate.md)。
+  [发布回执](release_0_0_1_1026.json)及[0050过程记录](../history/delivery_audit.md#log-0050_release_candidate)。
 - 容量probe kernel和附加trailer的dash仅用于0047验收，不是发行载荷。
 
 | 已发布资产 | SHA256 |

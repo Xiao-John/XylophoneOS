@@ -2,7 +2,7 @@
 
 2026-10-25，0032更新。普通用户程序独立开发，不需要修改XOS源码或加入启动镜像。
 已有原生GCC/G++与宿主SDK。0035已交宿主xos_app构建/打包；0044的xypm已支持宿主候选盘安装/升级/卸载和
-客体只读查询。命令统一为xypm，`.xpk`格式保留；见[包管理命令](package_management.md)。
+客体只读查询。命令统一为xypm，`.xpk`格式保留；见[包管理命令](plans/packages.md)。
 
 ## 开发方式
 
@@ -17,7 +17,7 @@
 ## 新的独立项目工具（P0已实现）
 
 在XOS仓库目录，用`python3 scripts/xos_app.py init /tmp/my_xos_app --id friends.my_app`
-创建新项目，再用build/check/pack指定完整冻结SDK；完整命令见[包管理P0](package_management.md)。
+创建新项目，再用build/check/pack指定完整冻结SDK；完整命令见[包管理P0](plans/packages.md)。
 项目位于仓库外，不修改系统程序清单。工具产出build_receipt.json和.xpk，xpk只
 代表可校验分发材料，当前安装仍走下文离线桥。发行compile.py也继续支持：
 
@@ -48,7 +48,7 @@ compile.py选择CRT/链接脚本/静态库，普通应用使用main，不必写�
 
 ## 现在的安装方式：显式离线导入
 
-已有`.xpk`包时优先使用[宿主xypm候选盘事务](package_management.md)。以下是
+已有`.xpk`包时优先使用[宿主xypm候选盘事务](plans/packages.md)。以下是
 单个开发ELF的文件桥路径，不登记包归属。使用scripts/work_disk.py；先关闭使用该盘的
 QEMU，选择已有工作盘的独立副本。只操作普通镜像，不操作真实磁盘。以下从XOS
 仓库目录执行，WORK/APP替换为实际绝对路径：
@@ -104,7 +104,7 @@ exec-file。最新dash B0/B1还可走已配置的GNU启动链，见shell_subset.
 
 CPython 3.14.9的PY0已通过（0030），可复用其已安装解释器执行已验脚本子集；
 REPL/input和PY1完整路径规则仍待后续gate，不据Shell通道完成推导Python输入
-也已通过。Open Adventure正在独立移植，构建方式以[该计划](adventure_port_plan.md)
+也已通过。Open Adventure正在独立移植，构建方式以[该计划](plans/adventure.md)
 及其回执为准，包管理不会要求把第三方程序塞进系统镜像。
 
 ## 能力和常见问题

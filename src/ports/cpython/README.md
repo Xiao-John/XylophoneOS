@@ -1,7 +1,7 @@
 # CPython for XOS
 
 This directory ports CPython 3.14.9 to XOS following
-`docs/cpython_port_plan.md`. PY0a (cross configure + static link), PY0b
+`docs/plans/cpython.md`. PY0a (cross configure + static link), PY0b
 (`-c`, scripts, Unicode, exceptions, GC, import, repeated start), PY1
 (reproducible install stage, script path rules, selected standard library and
 failure exits), T3-PY (real pthreads with the GIL), and PY2 (basic REPL,
@@ -115,8 +115,8 @@ receipt and links `_sqlite3`, `_bz2`, `_lzma` and `_zstd` into the interpreter.
 guest gates exercise RTC-backed UTC time, POSIX DST rules and `ZoneInfo`;
 SQLite transactions, constraints, busy/corruption behavior and sync/reboot;
 and bounded stream roundtrips, truncation and corruption for each compression
-module. Exact versions and evidence are in [PY3 options](../../docs/cpython_py3_options.md)
-and [0057](../../docs/work_log/0057_cpython_py3_b_segment.md).
+module. Exact versions and evidence are in [PY3 options](../../../docs/plans/cpython_extensions.md)
+and [0057](../../../docs/history/userland.md#log-0058_cpython_py3_b_segment).
 
 ## Configuration
 

@@ -1,10 +1,8 @@
-# E04：用户态装载器与最小 SDK
+# 用户态装载、进程与SDK契约
 
-实施于 0007。源码与最终证据见 `history/e01_e07.md` 和 `state.md`。
-本页保留 E04 机制描述；当前文件服务、资源上限与流式装载以 e08.md 为准。
-已有文件系统、newlib/FPU与E08-3原生binutils；尚无原生GCC/G++编译环境。
-E08-2 的启动v2、argv/env/cwd、32页栈/4页startup、动态堆、显式driver构造权、
-stdio/pipe与libc边界见 e08.md；下文v1上限保留历史，不覆盖该更新。
+2026-10-27。本文保留当前受限装载/运行语义，不重复早期构建步骤与待实施叙事。
+架构原则见xos_plan.md；ABI登记见[全表](contracts/abi_registry.md)，源码/回执见对应主题历史。
+原始E04与后续各次记录可按history/source_index.json恢复，不覆盖旧SDK或冻结报告。
 
 ## 当前ABI速查（0054）
 
@@ -54,7 +52,7 @@ filesz <= memsz、虚拟地址窗口、p_align 的幂与同余、页内偏移同
 
 0019新增：静态PT_TLS接受有界初始化模板与零填充区；TLS布局由用户态ISA后端
 完成，内核sys35仅为owned building子任务设置已映射的线程指针。AMD64 variant II
-使用独立TLS arena和任务FS base；仅local-exec，无动态模块/DTV/线程。模板1MiB、
+使用独立TLS arena和任务FS base；仅local-exec；线程profile静态TLS另见线程契约，无动态模块/DTV。模板1MiB、
 对齐64KiB上限，ELF LOAD不得覆盖TLS arena；失败abort回收。功能证据见0019。
 
 拒绝 ET_DYN、PT_INTERP、PT_DYNAMIC、可执行 GNU_STACK 和其他未知
@@ -62,8 +60,9 @@ PHDR。NULL/NOTE/PHDR/GNU_RELRO 与非执行 GNU_STACK 只作为不参与装载�
 不提供动态重定位、动态TLS 或 RELRO 后续重保护。节表不参与运行时重定位。
 
 只读启动模块文件上限 128 KiB；E08-1 的工作盘 ELF 按段读取、不受该限制。
-每程序最多 65536 个用户页（256 MiB），含 4 页栈。LOAD 地址范围为
-`[0x40000000, 0x7fffb000)`，栈为 `0x7fffc000–0x80000000`，中间一页 guard 不映射。
+每程序最多65536个用户页（256MiB），当前普通栈32页/128KiB、startup4页/16KiB，
+另有guard；LOAD/heap/TLS/线程arena边界按process_abi.hpp与thread_abi.hpp校验，
+不沿用初版4页栈地址。当前用户窗口[0x40000000,0x80000000)，保留区域不得覆盖。
 ELF 各段逐页清零，再复制实际文件字节；BSS 与段尾保持零。实际页表按 RX/R/RW+NX
 建立，所有用户页私有；内核的共享低地址映射仍为 supervisor-only。
 
@@ -97,72 +96,16 @@ wait 只能收集自己的已提交子任务，未完成则真正挂起父任务
 信号或完整 TTY；不撤销程序已产生的副作用。UART 输入仍是有限轮询，取消键应
 单独发送，不保证长串未读输入后的控制键及时性。Ctrl-C 仍由宿主关闭 QEMU。
 
-## 初始 ABI 与句柄
+## 当前startup、FD与SDK
 
-内核/SDK 共享 `src/shared/include/xos/process_abi.hpp`；内部 ABI 版本 1，升级需
-共同重建。x86-64 的 `_start` 在 RDI 收到 48 字节 startup_info；内含 argc、argv
-地址、0/1/2 标准句柄。CRT 按 SysV AMD64 调用 `xos_user_main`，返回值自动 exit。
-这不是 Linux 初始栈协议。argv 最多 8 项（含程序名），每项最多 63 字节；
-字符串与 NULL 结尾指针表置于栈顶一页，初始 RSP 在其下方，因此可用调用栈约 12 KiB。
+startup v1/v2/v3按匹配profile/CRT准入；x86-64入口按对应CRT处理，不能当作Linux初始栈。
+当前argc/env各64、spawn单串最多255字节、exec最多4095、总startup16KiB；底层FD表32项，
+Shell重定向仍限0–2。console、pipe和文件打开描述按身份/所有者继承，CLOEXEC作用于FD。
+旧未知CRT的文件stdio/exec继承明确拒绝，不静默丢FD后继续运行。
+SDK产物包含头、CRT、libxos/libxos_loader、newlib、user.ld与manifest/许可；线程/C++
+profile另建且绑定运行库。示例及链接步骤统一见[快速开始](friend_user_program_quickstart.md)。
 
-stdin 只读，stdout/stderr 只写，当前都指向串口控制台；错误输出与正常输出
-共用设备。继承的是任务内的引用，子任务关闭 stdout 不改变父任务 stdout。
-旧 E03 write/read 入口也服从对应引用的关闭状态，不能绕过 close。
-
-- write：单次最多 256 字节，0 字节返回 0，真实返回发送字节数；可短写。
-  SDK 的 print 自动分块。普通 write 不补 NUL；串口可发送零字节。
-- read：非阻塞，一次最多返回 1 字节；无数据返回 -3（would_block），0 长度返回 0。
-  当前控制台没有 EOF，不能把无数据当作文件 EOF。
-- close：失效后不可用，重复关闭/方向不符/不存在句柄返回 -1。
-- -2 为无效参数或指针；-5 为资源不足/重复映射等构造失败；-6 为生命周期状态不符。
-  底层构造错误目前较粗，不承诺 errno 或 POSIX 语义。
-
-E04 当时 SDK 无 libc、堆、异常、RTTI、TLS、动态构造、浮点/SIMD 或标准 C++ 库；
-E06 已把 newlib 作为 `libc_programs` 的可选 C 库接入，并加入每任务 SSE/x87
-FXSAVE/FXRSTOR。旧窄 SDK 程序仍保持整数型。实际出现的 memset 由
-`src/shared/runtime/memory.cpp` 完整实现，既用于 SDK 也用于内核。
-内核编译仍使用 general-regs-only；E06 的 FPU 上下文边界见 `e06_libc.md`。
-中断/syscall 入口 cld，用户 DF 不影响内核 C++，返回仍恢复用户保存的标志。
-
-## SDK 产物与示例
-
-`make build` 导出 `build/sdk/`：自包含 include/xos、crt0.o、lib/libxos.a、
-特权装载服务使用的 lib/libxos_loader.a、user.ld、LICENSE/NOTICE 与第三方声明
-和版本清单，全部由主 manifest 记录哈希。`scripts/user_build.py` 用同一份 SDK
-构建 supervisor、demo、fault、spin、slow、echo；完整命令可从 manifest 复现。
-各程序有带 DWARF 的 `user_NAME.elf` 和打包用的 `user_NAME.image.elf`。
-
-```cpp
-#include <xos/sdk.hpp>
-extern "C" int xos_user_main(const xos::startup_info*) {
-    xos::sdk::print("hello from XOS\n");
-    return 7;
-}
-```
-
-新程序目前需加入 user_build.py 的模块名单，再在宿主重建镜像；libc 程序还要
-加入 `libc_programs`。没有客体编译器，不能假装已支持在 XOS 内添加源文件或编译。E05/E07 已加入文件服务、
-编辑与持久工作盘（`e05_file_service.md`/`e07_persistent_work_disk.md`）。
-为了容纳真实 ELF 模块，BIOS 原始内核暂存扩为 `0x10000–0x8ffff`（512 KiB），
-内核含 BSS 上限 1 MiB；仍是专用软盘镜像，不写宿主分区。
-
-## 验证与范围
-
-`make smoke` 运行 E04 的 13 组检查和旧 36 组回归。ELF 24 个确定性用例在宿主
-ASan/UBSan 与真实用户态各跑一遍；宿主另测截断和 512 组确定性变异。
-bad_magic / bad_interp / bad_overflow 是目录中的故障夹具，走完整 exec 拒绝路径。
-测试读取实际子任务页表，对照 ELF flags，检查 guard 和内核页；普通 demo 验证
-BSS/data/argv/句柄，fault 验证私有页、只读页、NX；E06 后 FPU 探针正常退出 99。
-10 次完整装载/等待/退出后，用真实物理页与完成记录计数确认不增长。
-
-计划 O06–O08 的本版受限子集证据见 0007；不把有限矩阵提升为完整 ELF 合规、
-通用安全证明、完整 POSIX 或所有运行库兼容。当前仍单核、无 SMP、
-无动态链接、无长期压力测试。UEFI 不进入本组关键路径。
-
-规范入口：[ELF gABI Program Header](https://refspecs.linuxfoundation.org/elf/gabi4%2B/ch5.pheader.html)。
-受限子集与上界是 XOS 实施选择，gABI 不替代本轮实际运行证据。
-
-## E08-1 会话补充
+## 文件会话与TLS
 
 sys_file_session=27 是 files 专属的可信会话枚举；普通程序通过 ipc_handles 获得
 自己的文件端点对。任务结束清理端点，服务按真实 PID 清理文件句柄/staging。
@@ -170,9 +113,9 @@ sys_file_session=27 是 files 专属的可信会话枚举；普通程序通过 i
 
 0021用户库增量：SDK v5的__cxa_thread_atexit/强exit提供单用户线程的正常TLS析构，
 不改ELF装载/内核ABI；main-return/显式exit的LIFO、TLS先于global/fini已客体验证。
-无动态TLS/线程/DSO卸载。详情见e08.md与e08.md。
+普通SDK的该历史资格不包括线程；线程SDK见contracts/threading.md。无动态TLS/DSO卸载。
 
-## 0027：用户态执行候选与诊断
+## 用户态执行候选与诊断
 
 新增execution.hpp及loader/command.cpp：候选检查/有序PATH搜索保留在用户态，
 不看扩展名，分missing/directory/executable/not_executable/incompatible/unreadable。
@@ -184,7 +127,7 @@ spawn_file_diagnosed返回open/inspect/prepare/create/map/start阶段、错误�
 可改变正常进程生命周期日志，driver构造权不包含该权限。错误输出不受其影响。
 这是增量调用，没有改动既有启动结构/调用编号或赋予普通任务新权限。
 
-## 0028：受限构造权委派
+## 受限构造权委派
 
 `sys_process_grant=28`保留旧语义：仅bootstrap supervisor可给自己的building直接
 子任务一层构造权。`sys_process_delegate=37`是新的显式扩展，深度上限3；非supervisor
@@ -203,28 +146,13 @@ payload来自ISO的`DASH.ELF`，上限1 MiB，不授予普通任务；`/usr/bin/
 最终客体验收覆盖旧一层兼容、无权委派回滚、dash→GCC/G++→子工具链和资源复原；
 不因此声称任意进程树、fork、collect2或完整POSIX授权。
 
-## 0031：待实施的公共线程契约
-
-E13-T语义已确定，见[threading_contract.md](threading_contract.md)。这是后续ABI/
-SDK计划，尚未新增thread syscall或修改本页已实现接口。T0须同步版本化请求、
-线程栈/TLS保留区及ELF布局兼容策略；内核只提供映射/线程/等待机制，TLS模板
-解析与复制仍在用户态。进程PID/权限/会话/地址空间与线程TID/上下文分开；
-现有进程wait/kill/委派保留进程语义，T2前不声明线程安全SDK。
-
 ## E13-T 线程 ABI v1
 
 本分支新增 sys38–52，保留 sys0–37、startup v1/v2、process_status 和
 process_stats 的布局及进程权限含义。共享 ABI 见 `thread_abi.hpp`，具体布局、
-地址保留与兼容策略见 [线程实现](threading_implementation.md)。
+地址保留与兼容策略见 [线程实现](implementation/threads.md)。
 新 SDK 是独立 profile；旧 ELF 继续装载，若占用新线程 arena，显式 opt-in
 返回 ENOTSUP，不能静默覆盖映射。用户态 ELF 策略仍在 loader，内核不解析 TLS 模板。
-
-## 0041本地整合补充
-
-已拉取d89d1a3线程PR；本地未发布ISO sys_boot_payload避开线程38–52改为53。
-文件wire仍v2布局，B2追加操作保留旧工具入口；私有spawn FD快照与有锁的seek/
-transfer共同整合。7组整合gate见work_log/0041_threading_local_merge.md；B2随后由
-0042以新SDK正式收口，证据绑定build `911184be3f3c99f6`，不借用旧回执。
 
 ## P2-1通用进程准入与文件写租约（0048实现、PR #2整合后编号）
 
@@ -250,7 +178,7 @@ Xsh入口见usage/supervisor/maintenance.md，定向证据见0048。这不是新
 profile，也不是P2完整包事务；旧静态程序的已有操作布局保持，SDK/服务/内核新操作
 需要对应实现。持久恢复策略留用户态xypm P2-2，当前不开放客体安装/升级/卸载。
 
-## 0047：C1 管道等待与前台流水线（实验分支）
+## C1 管道等待与前台流水线
 
 保持 sys0–53 与 startup v1/v2 布局。sys54 `sys_pipe_wait(token,0,0)` 接受本进程
 pipe token 或 0–2 的有效内核 stdio route；console 返回 would_block，不睡眠。
@@ -279,7 +207,7 @@ libc FD表锁不跨管道等待；在途 I/O pin住对象，普通 close 不中�
 O_NONBLOCK等位明确ENOTSUP，writer F_GETFL报告O_WRONLY。未增加异步信号递送。
 
 
-## 0048：C2单线程完整复制fork（实验分支）
+## C2 单线程完整复制fork
 
 sys57 prepare(0,0,0)为具构造权的普通、未启用线程profile的主线程复制完整用户
 页（有效RW/X）、heap、TLS/FPU、stdio/pipe引用与raw token。新PID/TID/内核栈/
@@ -299,7 +227,7 @@ profile明确ENOTSUP，普通无权EPERM，深度/配额/物理页不足返回�
 完整SDK必须和当前头/库共同重建；旧静态工具的sys0–56与文件v2行为保留。
 
 
-## 0049：C3 exec v3与匿名输入实例
+## C3 exec v3与匿名输入实例
 
 sys61 exec_prepare(0,name_ptr,name_len)允许普通无构造权任务准备自己的唯一replacement
 事务（重复EBUSY），保护supervisor/files，拒绝线程profile/非唯一main。stage占全局8
@@ -373,6 +301,6 @@ x86-64仅在CPUID.1:ECX[30]置位后执行RDRAND，每64位最多尝试10次并�
 
 sys65=display控制/认证channel/等待，sys66=服务角色对已接收request的批量呈现。
 共享布局在display_abi.hpp、SDK在display_client.hpp，完整权限/所有权/错误/等待
-见[display_backend.md](display_backend.md)。0059整合保留sys0–64（含熵63/墙钟64）、ELF/startup/thread/file布局
+见[display_backend.md](implementation/display.md)。0059整合保留sys0–64（含熵63/墙钟64）、ELF/startup/thread/file布局
 保持不变；新模块追加目录，不改变原image ID。boot_info v1仍64字节，v2为112
 字节，保留reserved的ISO payload语义。旧内核不能消费新v2引导器。

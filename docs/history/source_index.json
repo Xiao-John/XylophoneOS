@@ -1,0 +1,371 @@
+{
+  "source_commit": "a265061ee00b787287011e5939054ebe3da4e397",
+  "policy": "Compressed implementation/evidence summaries; original bytes recoverable with git show source_commit:path. Frozen reports unchanged.",
+  "sources": [
+    {
+      "path": "docs/work_log/0023_first_release.md",
+      "sha256": "1217bf7335d946591b828ff344bc494418e20d729d8e5efe430baa0021468be3",
+      "summary": "docs/history/delivery_audit.md#log-0023_first_release"
+    },
+    {
+      "path": "docs/work_log/0024_shell_port_scout.md",
+      "sha256": "a055626aa3deba05afda664d16b4c9972abb536daf3991d13841d8bc8719aa73",
+      "summary": "docs/history/shell.md#log-0024_shell_port_scout"
+    },
+    {
+      "path": "docs/work_log/0025_dash_a.md",
+      "sha256": "8bbf387344cbb592ec4c6051b3c10a25ab9791529128468f57bc52b005e18494",
+      "summary": "docs/history/shell.md#log-0025_dash_a"
+    },
+    {
+      "path": "docs/work_log/0026_xshell_alias_confirmation.md",
+      "sha256": "4e8a200384f576899a42baffec1edd60077ba4e0f75382a4416df3158561cb98",
+      "summary": "docs/history/shell.md#log-0026_xshell_alias_confirmation"
+    },
+    {
+      "path": "docs/work_log/0027_xsh_execution_ui.md",
+      "sha256": "347f856c6603a0f1d89cb5bf408266df9ae8f998f45bf0d496a43121d2c9b28e",
+      "summary": "docs/history/shell.md#log-0027_xsh_execution_ui"
+    },
+    {
+      "path": "docs/work_log/0028_dash_b0_b1.md",
+      "sha256": "6410f2055bb0a7abe5fe19a7307219bae92076780265b162d5140a001bab3d92",
+      "summary": "docs/history/shell.md#log-0028_dash_b0_b1"
+    },
+    {
+      "path": "docs/work_log/0028_userland_port_catalog.md",
+      "sha256": "84e61c338a7d6092b9163f663857dc5e49996e798b679cef5b9d1fd0606e4cca",
+      "summary": "docs/history/userland.md#log-0028_userland_port_catalog"
+    },
+    {
+      "path": "docs/work_log/0029_cpython_port_plan.md",
+      "sha256": "3116fa19984ee213b1757e023f24356f72741da33d30da61fadb4a8e0882b40b",
+      "summary": "docs/history/userland.md#log-0029_cpython_port_plan"
+    },
+    {
+      "path": "docs/work_log/0030_cpython_py0.md",
+      "sha256": "472153e6387e00089ae312eef65fc671637898bc47bba9c8c9b393dbbd54d4e3",
+      "summary": "docs/history/userland.md#log-0030_cpython_py0"
+    },
+    {
+      "path": "docs/work_log/0031_threading_contract.md",
+      "sha256": "fef6b0c4144020b2beb134f59e5f6a963ec57ab822aff92c27fc518fc5fcd5d9",
+      "summary": "docs/history/threading.md#log-0031_threading_contract"
+    },
+    {
+      "path": "docs/work_log/0032_package_management.md",
+      "sha256": "662e314431bd6c3434a1009421d4d806ef283db7163900df0b54a3c82df6aa92",
+      "summary": "docs/history/packages.md#log-0032_package_management"
+    },
+    {
+      "path": "docs/work_log/0033_utf8_text.md",
+      "sha256": "726fbd222b12100c93ac891fa5a2ffaac1618a97b008198b7039e56433c8c2b8",
+      "summary": "docs/history/shell.md#log-0033_utf8_text"
+    },
+    {
+      "path": "docs/work_log/0034_adventure.md",
+      "sha256": "a22433b48d13d5a9c3806ae9b3bc924de605b42e0d676c1e634d061418d0417c",
+      "summary": "docs/history/userland.md#log-0034_adventure"
+    },
+    {
+      "path": "docs/work_log/0035_dash_preinstall.md",
+      "sha256": "941eaed65146f06bd9c579fed281637525486132a4ab9c756fe875ffb140c5d2",
+      "summary": "docs/history/boot_display.md#log-0035_dash_preinstall"
+    },
+    {
+      "path": "docs/work_log/0035_package_p0.md",
+      "sha256": "54d813ca1c8afc2c55443b082db4a5daedf88fa564ede8df5a966594eb43b875",
+      "summary": "docs/history/packages.md#log-0035_package_p0"
+    },
+    {
+      "path": "docs/work_log/0036_iso_boot.md",
+      "sha256": "2a09002bd7599ebdfd704372cd704921d764b208cd09819825bd44324808cf20",
+      "summary": "docs/history/boot_display.md#log-0036_iso_boot"
+    },
+    {
+      "path": "docs/work_log/0036_thread_pr_baseline.md",
+      "sha256": "b6a84acbd95723eb09829cfda743c6740444ecf4dfdeda36942265d85ca55451",
+      "summary": "docs/history/threading.md#log-0036_thread_pr_baseline"
+    },
+    {
+      "path": "docs/work_log/0037_cd_atapi_a0.md",
+      "sha256": "d9e788907ee73efc8fca5a06da1998f36c9077b510749c4d2af0eccda0abcb49",
+      "summary": "docs/history/boot_display.md#log-0037_cd_atapi_a0"
+    },
+    {
+      "path": "docs/work_log/0037_threading_t0_t2.md",
+      "sha256": "b638befe21d2e09c164359e1ab0aba6bfaccbfc8dcabab4ba73f80b2d8faf223",
+      "summary": "docs/history/threading.md#log-0037_threading_t0_t2"
+    },
+    {
+      "path": "docs/work_log/0038_cpython_py1.md",
+      "sha256": "fb9a50d4b8d33c9651d17de7f7fc6270bada8f656395701fc5753eb177df4df2",
+      "summary": "docs/history/userland.md#log-0038_cpython_py1"
+    },
+    {
+      "path": "docs/work_log/0038_iso9660_a1.md",
+      "sha256": "3226a852c1a8c43fba7b2b1d767e24b799e8210d54fdd9dadd29b3664d57ecba",
+      "summary": "docs/history/boot_display.md#log-0038_iso9660_a1"
+    },
+    {
+      "path": "docs/work_log/0039_a2_attempt.md",
+      "sha256": "cdbf22b81f038d9eb77ca271e54a80264d36e2ec91c42d663c153b2b1ec8e1ac",
+      "summary": "docs/history/delivery_audit.md#log-0039_a2_attempt"
+    },
+    {
+      "path": "docs/work_log/0040_iso_install.md",
+      "sha256": "e45427f0fb8510a6d027033a4a61eaae9cefd7a305b61fe31a43fbfe3cb8d8d1",
+      "summary": "docs/history/boot_display.md#log-0040_iso_install"
+    },
+    {
+      "path": "docs/work_log/0041_threading_local_merge.md",
+      "sha256": "aea5428c5b4b7bd16aa8d9c98232bf9fdcf34f884f4e6d849a87ab46446b336b",
+      "summary": "docs/history/threading.md#log-0041_threading_local_merge"
+    },
+    {
+      "path": "docs/work_log/0042_dash_b2.md",
+      "sha256": "088e44ee11b0e2fc84b8e68f9d3d6b2fe283d3a278fad23e9c50080e9e8a16d3",
+      "summary": "docs/history/shell.md#log-0042_dash_b2"
+    },
+    {
+      "path": "docs/work_log/0043_cpython_t3_py.md",
+      "sha256": "62a95100b7e0b1fe9394383b00df2601947e0d7d6fa2c949a228238f25edce8e",
+      "summary": "docs/history/userland.md#log-0043_cpython_t3_py"
+    },
+    {
+      "path": "docs/work_log/0044_xypm_p1.md",
+      "sha256": "7d9372eb4bfe1b9f74618ea9fb08642c3d33f432bca4db1430d882df615d9e79",
+      "summary": "docs/history/packages.md#log-0044_xypm_p1"
+    },
+    {
+      "path": "docs/work_log/0045_release_prep.md",
+      "sha256": "d91a9b739d09d38e9851c6771875f4b88d3918d211a95f73949ffec730a314b3",
+      "summary": "docs/history/delivery_audit.md#log-0045_release_prep"
+    },
+    {
+      "path": "docs/work_log/0046_cpython_py2.md",
+      "sha256": "fcffbedb537b10bf08e4f7d42a2d58b29626b3abb5f71951ed7ff97995688f0f",
+      "summary": "docs/history/userland.md#log-0046_cpython_py2"
+    },
+    {
+      "path": "docs/work_log/0046_dash_c1_pipe_wait_wip.md",
+      "sha256": "ad5619f220a305eb4c745ca746023388e3c700eb59aff2330223184997be4276",
+      "summary": "docs/history/shell.md#log-0046_dash_c1_pipe_wait_wip"
+    },
+    {
+      "path": "docs/work_log/0047_dash_c1_implementation.md",
+      "sha256": "bd9f2300333660634e326faf0e2f5f265abc48495b9abdd3849f39435667ba6d",
+      "summary": "docs/history/shell.md#log-0047_dash_c1_implementation"
+    },
+    {
+      "path": "docs/work_log/0047_iso_capacity.md",
+      "sha256": "d1dce0c9c63360bfbecd11ac1ce7d7bab8bc6a41f625868e40118ba32d701aac",
+      "summary": "docs/history/boot_display.md#log-0047_iso_capacity"
+    },
+    {
+      "path": "docs/work_log/0048_dash_c2_isolation.md",
+      "sha256": "4e3bcaa360afd81a87b6961ac3b18623130d1e7f0ba21c30e8bea46b0096e4d7",
+      "summary": "docs/history/shell.md#log-0048_dash_c2_isolation"
+    },
+    {
+      "path": "docs/work_log/0048_xypm_p2_maintenance.md",
+      "sha256": "245910b5d379605dea4edaf0bbc50e9def1c0ce0622694a17297f582e98b2de5",
+      "summary": "docs/history/packages.md#log-0048_xypm_p2_maintenance"
+    },
+    {
+      "path": "docs/work_log/0049_commit_snapshot.md",
+      "sha256": "cc74e9dcf5e3ae46bdb74998230dd2e14e92b894b1225df31f2498071f319969",
+      "summary": "docs/history/delivery_audit.md#log-0049_commit_snapshot"
+    },
+    {
+      "path": "docs/work_log/0049_cpython_py3_a1_a3.md",
+      "sha256": "621b10da5a5876aa2d2f3442cce61814d1dbd281f10d3bafae7168262a8730e8",
+      "summary": "docs/history/userland.md#log-0049_cpython_py3_a1_a3"
+    },
+    {
+      "path": "docs/work_log/0049_dash_c3_script_exec_make.md",
+      "sha256": "dbffa306cd1872c399e5e63c80d8aeab609112110e615b9b9185c2cbdbe44211",
+      "summary": "docs/history/shell.md#log-0049_dash_c3_script_exec_make"
+    },
+    {
+      "path": "docs/work_log/0050_release_candidate.md",
+      "sha256": "fbf3f49c2b7df9fcb79cc1483b2d5a3e6b3167441123a7a37f766942825c8b33",
+      "summary": "docs/history/delivery_audit.md#log-0050_release_candidate"
+    },
+    {
+      "path": "docs/work_log/0051_display_backend_e14.md",
+      "sha256": "5341b52ddf4258a12b723cce1cdb2143d2069a743246ddc2af89644fe313e846",
+      "summary": "docs/history/boot_display.md#log-0051_display_backend_e14"
+    },
+    {
+      "path": "docs/work_log/0051_xypm_p2_verify_plan.md",
+      "sha256": "4f75d183d0dc6a366dd71f028c3c2d54e5d614ac0a40a2a29045fa454fe6503d",
+      "summary": "docs/history/packages.md#log-0051_xypm_p2_verify_plan"
+    },
+    {
+      "path": "docs/work_log/0052_cpython_b1_entropy.md",
+      "sha256": "85bbeea7348510b52bd05d72ff5f6fe906569349cdd7384dab6df73d4142a1ba",
+      "summary": "docs/history/userland.md#log-0052_cpython_b1_entropy"
+    },
+    {
+      "path": "docs/work_log/0053_audit_snapshot.md",
+      "sha256": "7d963117d9ec5126a663d93e1e246f49d2d891fea77fbae4ede1b62f58420d04",
+      "summary": "docs/history/delivery_audit.md#log-0053_audit_snapshot"
+    },
+    {
+      "path": "docs/work_log/0054_audit_01_fixes.md",
+      "sha256": "54e49c281113ce9f3a798589d01ffbba7f2df6a8ea7e17420081ec657aa3e010",
+      "summary": "docs/history/delivery_audit.md#log-0054_audit_01_fixes"
+    },
+    {
+      "path": "docs/work_log/0055_xypm_p2_elf_validation.md",
+      "sha256": "44603256ca7917cfebf3555170c8abbb46d093f3dec987ffe64bcc62451e4bab",
+      "summary": "docs/history/packages.md#log-0055_xypm_p2_elf_validation"
+    },
+    {
+      "path": "docs/work_log/0056_posix_subset_contract.md",
+      "sha256": "0b1bdab9420c121bb8f27b9c39f9a099edce061832d119950159c62209b19037",
+      "summary": "docs/history/delivery_audit.md#log-0056_posix_subset_contract"
+    },
+    {
+      "path": "docs/work_log/0057_pr_3_conflict_review.md",
+      "sha256": "2c8956678f9d71d42bc661021d6821037214fc544f11fbf984fe187d8400fbde",
+      "summary": "docs/history/delivery_audit.md#log-0057_pr_3_conflict_review"
+    },
+    {
+      "path": "docs/work_log/0058_cpython_py3_b_segment.md",
+      "sha256": "4a27c998592af8885f30044b45820f97f9e804e62473e2ad0e8f0ff129574ffc",
+      "summary": "docs/history/userland.md#log-0058_cpython_py3_b_segment"
+    },
+    {
+      "path": "docs/work_log/0059_pr_3_local_compat.md",
+      "sha256": "48ecc9d06ccd53948a1db2f918a7e5db853e4d0b5b7bbb217529fe90e068a6fc",
+      "summary": "docs/history/delivery_audit.md#log-0059_pr_3_local_compat"
+    },
+    {
+      "path": "docs/work_log/0060_pr_3_squash_alignment.md",
+      "sha256": "fa7c749905cad759b599fcc3fbfc79c13b9778d2300909ec95baa39c3e781ba0",
+      "summary": "docs/history/delivery_audit.md#log-0060_pr_3_squash_alignment"
+    },
+    {
+      "path": "docs/shell_port_scout.md",
+      "sha256": "e152da3552c343e114c619e63612dbd5746c0595db79724f29ede290684d7a81",
+      "summary": "docs/history/shell.md#source-shell_port_scout"
+    },
+    {
+      "path": "docs/UPSTREAM_DASH_C1_C3_REVIEW.md",
+      "sha256": "0076968c4177928af7f79bc3c362499172608c0951e85f408c64a264faac4955",
+      "summary": "docs/history/shell.md#source-upstream_dash_c1_c3_review"
+    },
+    {
+      "path": "docs/history/state_cb26f7b.md",
+      "sha256": "3bf8d7677939e1e8a81d441161556193a6dcf174dd0e66b20149de73f8310ffc",
+      "summary": "docs/history/delivery_audit.md#source-state_cb26f7b"
+    },
+    {
+      "path": "docs/xos_plan.md",
+      "sha256": "785efb6a04e75b79d7340bfdb3c6d30e41efe6ac03ce8141e065078e79e7ded8",
+      "summary": "docs/history/design.md"
+    },
+    {
+      "path": "docs/decisions.md",
+      "sha256": "0481f733a814ab2fc28ed1392535ec52435d8edb5090e56e3884812cc4753dbd",
+      "summary": "docs/history/design.md"
+    },
+    {
+      "path": "docs/package_management.md",
+      "sha256": "9b10e90ac00e30c130ea885c276c99ac1704d74125c40616d62b36ea08c1da23",
+      "summary": "docs/plans/packages.md"
+    },
+    {
+      "path": "docs/cpython_port_plan.md",
+      "sha256": "b3f6c92f9a866a9048d80d5fdb16b122eeb961e5ff63df3299827dbecaeed2a7",
+      "summary": "docs/plans/cpython.md"
+    },
+    {
+      "path": "docs/cpython_py3_options.md",
+      "sha256": "3a13f1c4574e9309906db032a643199c1c4ad7fc54ec42d78b80fb4761c2ea72",
+      "summary": "docs/plans/cpython_extensions.md"
+    },
+    {
+      "path": "docs/dash_port_plan.md",
+      "sha256": "f772a6ac9c92d014252b4d0d3fc1484de6fa58e3f006754ed6fda782da94dd22",
+      "summary": "docs/plans/dash.md"
+    },
+    {
+      "path": "docs/posix_roadmap.md",
+      "sha256": "c1161bb687b67400a9807c155e78e92016c504b2b3e74abec7676f24ddc068d5",
+      "summary": "docs/plans/posix.md"
+    },
+    {
+      "path": "docs/utf8_text_plan.md",
+      "sha256": "24121c0c49038662e21fc7f7e09833058202e2c5bfb5c5986f20503b434d1420",
+      "summary": "docs/plans/utf8.md"
+    },
+    {
+      "path": "docs/iso_install_plan.md",
+      "sha256": "9dcf901010955d222de9c57aaf76ae9547bf0d178a245c6a6207127b9a3957e0",
+      "summary": "docs/plans/iso.md"
+    },
+    {
+      "path": "docs/adventure_port_plan.md",
+      "sha256": "63128162de2abd97d0a489f4b19181f282e421aa90c905de5129562af850ccc2",
+      "summary": "docs/plans/adventure.md"
+    },
+    {
+      "path": "docs/qt_port_assessment.md",
+      "sha256": "0e6206b553c407a9e593e4d0a0f8ed4a3d36171739a2c41662c98f9778a8a069",
+      "summary": "docs/plans/qt.md"
+    },
+    {
+      "path": "docs/userland_port_catalog.md",
+      "sha256": "bfc63efa59b92850ef1dd8b415e2d0442f1c54720dad5b1c44970b270d377c3f",
+      "summary": "docs/plans/userland.md"
+    },
+    {
+      "path": "docs/threading_contract.md",
+      "sha256": "6c6e34054ce820d3b49505942e0e52438ebfb59e36bdee6f6b5174121507adc5",
+      "summary": "docs/contracts/threading.md"
+    },
+    {
+      "path": "docs/posix_subset_contract.md",
+      "sha256": "4bf2af4534f107f9deb2c45a2727c059c8becf930b012dc475fa3e773ac029fe",
+      "summary": "docs/contracts/posix_subset.md"
+    },
+    {
+      "path": "docs/display_backend.md",
+      "sha256": "bf6b115562c558fdc6a362388b5376cc78059682da7485009cddd8a36b119a9e",
+      "summary": "docs/implementation/display.md"
+    },
+    {
+      "path": "docs/threading_implementation.md",
+      "sha256": "99c532c330a558425e1024cbea3338151e32830cee894dd719a6e600c27e469c",
+      "summary": "docs/implementation/threads.md"
+    },
+    {
+      "path": "docs/make_subset.md",
+      "sha256": "981bcdeda9a9fd0ab98ec5675529b08f5e6d3c1039330092436cb2a3c20ec3f8",
+      "summary": "docs/implementation/make.md"
+    },
+    {
+      "path": "docs/shell_subset.md",
+      "sha256": "e59269a955601a71b267926a43471bec0de15d86ee17fe3f8a0750fdf8a5d799",
+      "summary": "docs/implementation/shell.md"
+    },
+    {
+      "path": "docs/e06_libc.md",
+      "sha256": "0d8796bc77c457038d012fc2b1269fbbb4eab67aacd92c62e2676f10f590b52a",
+      "summary": "docs/e06_libc.md"
+    },
+    {
+      "path": "docs/toolchain.md",
+      "sha256": "f08d17ed34aa6bcae4f3d7bb7047646a33dd05948fb46a7f886ba5c044019dda",
+      "summary": "docs/toolchain.md"
+    },
+    {
+      "path": "docs/e04_loader_sdk.md",
+      "sha256": "18ad421abbc1bf215d10f3ce386a6b001ee39f80a31746f2fedfcd7bdb47e410",
+      "summary": "docs/e04_loader_sdk.md"
+    }
+  ]
+}

@@ -1,126 +1,43 @@
-# E01 工具链与构建
+# 工具链与构建入口
 
-当前E08-2的运行时/CRT更新见 e08.md；E08-3 Canadian cross构建入口为
-scripts/build_binutils.py、固定来源/补丁见 src/ports/binutils/。真实as/ld/ar/ranlib/strip
-已过客体gate，见e08.md；普通make build/smoke不会下载或编译GNU源码，
-没有原生GCC/G++。
+2026-10-27。构建输入以config/toolchain.json、config/x86_64_bios.json与实际manifest为准。
+固定目标x86_64-elf、GCC/G++16.2.0、Binutils2.47（版本串2.47.20260726）、NASM3.02、
+QEMU11.1.2。宿主交叉工具、XOS原生Seed、目标运行库和原生重建是不同产物。
 
-## 固定范围
-
-`config/toolchain.json` 固定 GCC/G++ 16.2.0、Binutils 发布版 2.47（实际工具
-版本串 2.47.20260726）、NASM 3.02、QEMU 11.1.2，目标 `x86_64-elf`。
-`config/x86_64_bios.json` 固定当前架构/平台/固件、内核容量与彩蛋开关。
-这是一套宿主运行的 freestanding 交叉工具，不是 XOS 原生 GCC 或 XOS sysroot。
-
-实际宿主为 Apple Silicon macOS，GCC 构建/运行地均为宿主，代码目标为 x86-64 ELF。
-已安装 Homebrew 的 `x86_64-elf-gcc` 与 `x86_64-elf-binutils` bottle。
-`compiler_configuration.log` 实际配置包含 `--target=x86_64-elf --without-headers
---enable-languages=c,c++ --disable-nls --without-isl`，线程模型 single。
-
-当前不选择 libc，不创建 Linux/POSIX 兼容 ABI，也没有交叉构建原生 Seed。
-E04 提供自有、版本化的最小 SDK 与初始进程 ABI。
-宿主自带 g++ 不用于生成客体代码。Clang 只用于宿主边界测试与第二 ISA 编译检查，
-LLDB 只用于调试；二者不替代 GCC 主线。
-
-## 准备与运行
-
-本机已安装，可直接 `make build`。新 macOS 宿主可用：
+## 普通系统构建
 
 ```sh
-brew install x86_64-elf-gcc x86_64-elf-binutils nasm qemu
 make build
-make smoke
+python3 scripts/build.py --output-dir build/<task>/system
 ```
 
-Homebrew 未来可能升级，不能把该安装命令当作永久版本锁。
-构建会核对固定版本、target 和 GCC 实际配置的 as/ld 路径，不符合即失败；
-需准备匹配工具，或显式评审升级锁文件并重跑验证。支持 `CROSS_PREFIX` 指定工具前缀。
-本轮没有从源码重建 GCC/Binutils；配置来源为安装包与工具实际输出，不宣称验证过
-源码构建流程或源码压缩包哈希。
+普通构建不下载或重编整个GNU工具链，导出匹配SDK/用户ELF、带符号kernel、镜像和manifest。
+新系统输出放build/私有子目录，保留旧资格；共享build排他，禁止根目录清理。
+默认运行路径为file-backed安装ISO；legacy软盘/embedded ISO仅在其预算内生成。
+已有工作盘不自动迁移；make disk不预装dash，安装ISO携带dash供首次启动安装。
 
-首次安装的默认下载源曾连接失败，本机通过单次环境变量使用中科大 bottle 镜像
-完成安装，没有改全局 Homebrew 配置。若复用该方式，只对安装命令设置：
+scripts/toolchain.py核工具版本、target与实际as/ld路径；构建进程绑定交叉工具，不把该环境
+泄漏给宿主Clang。manifest记录源码/配置、完整命令、工具可执行文件哈希、布局/符号与产物。
+同版本字符串不等于同二进制。只验证同宿主同输入重建时，不声称跨宿主逐字节可复现。
 
-```sh
-HOMEBREW_NO_AUTO_UPDATE=1 \
-HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles \
-HOMEBREW_API_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles/api \
-brew install x86_64-elf-gcc x86_64-elf-binutils
-```
+## Seed与SDK
 
-## 产物与审计
+- C/C++原生Seed、运行库输入、安装布局和受限验收见[E08](e08.md)。原始Seed不覆盖，
+  派生/relink从实际receipt取输入，GCC执行依赖与自举构建依赖分别审计。
+- 普通newlib SDK由scripts/user_build.py产生；线程SDK由scripts/build_threading_sdk.py
+  独立导出。静态CRT/ABI/profile要匹配，不拿宿主库/头补目标链接。
+- NASM处理手写架构汇编，GCC生成汇编由GNU as处理；宿主生成器与XOS程序执行地分开。
+- 目标C++已具受限异常/RTTI/TLS/标准库等专项证据；内核仍无libc/libstdc++且禁异常/RTTI，
+  两个语言/运行库面不能互相套用。源码边界见[受限C++](cpp_subset.md)。
 
-`make build` 每次由明确选定的源文件构建，输出主线 `xos.img`、练习
-`real_mode.img`、带 DWARF 的 `kernel.elf`、`kernel.bin`、链接 map、反汇编和 ELF 清单。
-链接使用 `-nostdlib -static`，不使用宿主启动对象、libc 或标准 C++ 库；
-要求无未解析符号。编译没有引入宿主头文件，自研头文件位于 `include/xos/`。
+## 测试、调试与分发
 
-`manifest.json` 记录代码与配置逐文件哈希、构建 ID、实际完整命令、工具版本、
-GCC/cc1/cc1plus/as/ld/objcopy/nm/ar/NASM 的真实可执行文件哈希、内核符号和产物哈希。
-该记录绑定本轮工具和源码，不把版本字符串相同等同于二进制相同。
-当前验证同宿主同工具重建产物相同，不声称跨宿主逐字节可复现。
+按本次改动运行相关探针，不因文档或元数据变化重复旧全量/压力。第二ISA只编译通用源，
+不是另一ISA启动。详细结果和未运行项进入专项回执，旧报告不改绑新源码。
 
-`make libc-audit` 从 `build/sdk` 的实际 newlib 产物生成
-`build/libc_audit.json`；普通 `make build` 只复制预构建包，不联网。
-`make smoke` 运行八套检查，产生 `smoke_report.json`、
-`kernel_smoke_report.json`、`task_smoke_report.json`、`process_smoke_report.json`、
-`file_smoke_report.json`、`persist_smoke_report.json`、
-`full_disk_smoke_report.json` 与 `libc_smoke_report.json`：
+make debug/LLDB入口与config/debug_kernel.lldb用于带符号目标调试；调试器在64位入口后
+核对寄存器/符号，复位时16位固件反汇编不作内核执行证据。终端/监督保留救援能力。
 
-- 实模式 6 项：启动、命令/边界、键盘、清屏、halt、损坏阶段拒绝。
-- 内核 18 项：ELF 权限、实际执行模式、BSS/data、页表与 identity 页 W^X、
-  IDT/IST、E820 分配边界与 double free、映射往返、控制台、彩蛋、五类真实异常、
-  缺 NX 拒绝、启动信息失败边界、第二 ISA 编译、LLDB 符号断点；E04/E05/E07 的详细项见各报告。
-- E03 12 项：ring3 启动、PIT 抢占下 heartbeat 存活、IPC 送达、无效句柄/越权/
-  超长/坏指针拒绝、用户故障隔离、退出移除、probe/quitter 回收、supervisor
-  `ps` 与 `kill`、被杀任务移除、多个 CR3 与 CPL=3 观察。
-- E04 13 项：用户态 ELF 解析/装载、argv/句柄、阻塞 wait、故障/终止状态、
-  构造回滚、页表权限/guard、Escape、10 次回收稳定等。
-- E05 8 项：文件服务启动/列表、短读/EOF/独立打开/容量/无效句柄、
-  编辑器空行与连续空格、修改既有文件、文件错误、删除、文件装载执行。
-- E07 5 项：第一次启动创建/覆盖/删除+sync、第二次启动验证正文/删除、
-  执行盘上 ELF、命名空间满与物理满盘时保存失败且旧文件/缓冲保留。
-- E06 3 项：newlib 程序进入 catalog、printf/malloc/string/exit、第二次运行复用。
-- 合计 65 项；E08–E12 尚未运行。
-
-六个旧 demo/*.asm 仍是 E03 回归夹具；新的用户程序在 user/programs/*.cpp，
-文件服务在 user/services/files.cpp（链接 FatFs R0.16），低层 ATA PIO 在
-kernel/platform/pc；文件客户端/编辑器在 user/sdk 与 user/services。
-E06 的 newlib 4.6.0 预构建包在 third_party/newlib，libc 适配层在
-user/libc；make libc-audit 从实际产物生成依赖清单。
-user_build.py 导出 SDK，用同一 SDK 构建真实 ELF，并生成只读启动模块与可信
-bootstrap 段清单；`files` 与 supervisor 都走可信 bootstrap 段，内核不解析 ELF。
-SDK、用户 ELF、文件服务与 hello 的哈希进入主 manifest。机制分别见
-`e04_loader_sdk.md` 与 `e05_file_service.md`。测试依赖 Python 3.10+、Clang 与 LLDB；
-本机实际版本记录在报告。
-
-## 调试
-
-第一个终端：
-
-```sh
-make debug
-```
-
-第二个终端从 XOS 根目录执行：
-
-```sh
-lldb --no-lldbinit -s config/debug_kernel.lldb
-```
-
-QEMU 仅在 loopback:1234 监听，并从复位点暂停；脚本加载 ELF，在 kernel_main
-断下并打印调用栈、启动参数和寄存器。调试器使用 x86-64 解码，复位时的 16 位
-固件反汇编不能据此判断正确性；继续到内核断点后才检查 64 位源码。
-自动测试使用随机 loopback 端口，实际完成过连接、断点、参数查看、符号栈与 detach。
-
-参考：[GCC x86 options](https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html)、
-[QEMU GDB stub](https://www.qemu.org/docs/master/system/gdb.html)、
-[LLDB remote debugging](https://lldb.llvm.org/use/remote.html)。
-
-## E08-1 更新
-
-默认 QEMU RAM 为 512 MiB，新工作盘为 2 GiB FAT32；现有 FAT16 盘不自动迁移。
-SDK 文件 ABI v2 支持 per-task 会话、路径、目录和流式保存。
-`user_e08_probe.image.elf` 是仅安装到测试盘的 >128 KiB 产物，不嵌入启动镜像。
-构建指纹覆盖第三方 .c/.h 及许可证材料；SDK manifest 导出许可证副本哈希。
-make license-audit 只验证材料，不代替 newlib 预构建库逐成员来源核对。
+SDK/发行打包必须核system manifest、完整文件/目录/哈希、配置与运行库来源；输入与实际
+拷贝/成品绑定，不复用旧staging。许可、源码、符号与发行镜像可对应；见[许可](licensing.md)
+和[发行/审计摘要](history/delivery_audit.md)。系统内重建与编译器自举均尚未验收。

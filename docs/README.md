@@ -1,62 +1,41 @@
-# XOS 文档索引
+# XOS文档入口
 
-2026-10-25。默认只读以下入口；`work_log/` 和 `docs/reports/` 是过程/冻结
-证据，不逐篇当入口。项目当前视图见[总览](project_overview.md)。
+按职责读一份权威说明，状态与原则分开。当前主线和阶段证据见[state](state.md)。
 
-## 先读
+## 开始工作
 
-1. [开发纪律](Discipline.md)
-2. [当前状态](state.md)
-3. [总体计划](xos_plan.md)
-4. [已定决策](decisions.md)
+1. [开发纪律](Discipline.md)：流程、文件边界、证据和PR交付。
+2. [当前状态/占用](state.md)：实际能力、冻结证据与接续任务。
+3. [项目宪法](xos_plan.md)：第一部分裁定设计，第二部分登记事实。
+4. [ABI登记](contracts/abi_registry.md)及对应专项契约；[决策入口](decisions.md)不再重复规则。
 
-## 当前实现
+## 目录与权威位置
 
-- [架构、启动与异常/内存边界](architecture_and_boot.md)
-- [显示与输入后端](display_backend.md)（PR #3原分支G02已验；本地组合见0059）
-- [实模式练习](real_mode_boot.md)
-- [E04 用户态装载/SDK](e04_loader_sdk.md)
-- [E05 文件服务](e05_file_service.md)
-- [E06 libc/newlib](e06_libc.md)
-- [E07 持久工作盘](e07_persistent_work_disk.md)
-- [工具链与构建](toolchain.md)
-- [受限 C++ 子集](cpp_subset.md)
-- [命令使用手册](usage/index.md)
-- [给朋友的用户程序快速开始](friend_user_program_quickstart.md)
-- [CPython 3.14.9 PY0/PY1 与 T3-PY](../src/ports/cpython/README.md)（[工作记录](work_log/0030_cpython_py0.md)、[T3-PY](work_log/0043_cpython_t3_py.md)）
-- [xypm P1 验收与交接](work_log/0044_xypm_p1.md)
-- [xypm P2-2校验/计划实现初版](work_log/0051_xypm_p2_verify_plan.md)
-- [xypm P2-2客体ELF布局校验](work_log/0055_xypm_p2_elf_validation.md)
-- [file-backed ISO 安装](iso_install_plan.md)（容量扩展已验，见0047工作记录）
+| 位置 | 用途 | 维护方式 |
+|---|---|---|
+| 根入口 | 宪法、状态、流程、SDK/架构/工具链及使用入口 | 稳定路径，避免重复登记 |
+| contracts/ | ABI分配、线程、POSIX子集、Qt协作 | 细化原则内的接口；分配与验收分开 |
+| implementation/ | 已实现的显示、线程、Shell、Make | 当前行为、错误/资源边界与证据入口 |
+| plans/ | 包/CPython/Qt/POSIX/ISO/UTF-8/游戏/工具后续 | 已实现与建议/未验显式区分 |
+| history/ | 合并后的实现/证据摘要与source_index.json | 原文按Git提交/路径/哈希恢复，不复制过程叙事 |
+| work_log/ | 尚未合并的新任务交接 | 收口后归入主题history，保留来源映射 |
+| reports/、releases/ | 冻结测试、失败、来源和发行回执 | 不因重组移动或改写 |
+| usage/ | 用户命令手册 | 面向使用，保留现有路径 |
 
-## 历史与验收
+## 按任务阅读
 
-- [E01–E07 简史](history/e01_e07.md)
-- [E08 原生工具链总览与结论](e08.md)
-- [0.0.1 发布说明](releases/0.0.1-1024.md)
+- 基底：[架构/启动](architecture_and_boot.md)、[C++子集](cpp_subset.md)、[工具链](toolchain.md)、
+  [用户装载/SDK](e04_loader_sdk.md)、[文件服务](e05_file_service.md)、[libc](e06_libc.md)、[持久盘](e07_persistent_work_disk.md)。
+- 移植：[线程契约](contracts/threading.md)、[Qt协作](contracts/qt_platform.md)、[POSIX](contracts/posix_subset.md)、
+  [显示](implementation/display.md)、[Shell](implementation/shell.md)、[Make](implementation/make.md)。
+- 下一阶段：[包管理](plans/packages.md)、[CPython](plans/cpython.md)/[扩展](plans/cpython_extensions.md)、
+  [Qt](plans/qt.md)、[POSIX路线](plans/posix.md)、[工具菜单](plans/userland.md)、[UTF-8](plans/utf8.md)、
+  [ISO](plans/iso.md)、[Open Adventure](plans/adventure.md)。
+- 使用/分发：[开发快速开始](friend_user_program_quickstart.md)、[命令](usage/index.md)、[许可](licensing.md)、
+  [下一发行](releases/next_release.md)、[验收登记](acceptance.md)。
+- 历史：[E01–E07](history/e01_e07.md)、[E08](e08.md)、[Shell](history/shell.md)、[线程](history/threading.md)、
+  [用户态](history/userland.md)、[包](history/packages.md)、[引导/显示](history/boot_display.md)、
+  [发行/审计](history/delivery_audit.md)、[设计沿革](history/design.md)。
 
-## 后续与 release
-
-- [项目总览](project_overview.md)
-- [下一次 release 准备清单](releases/next_release.md)
-- [dash 后续路线](dash_port_plan.md)（C1–C3受限gate已过，范围见[shell_subset.md](shell_subset.md)）
-- [shell 移植历史勘查](shell_port_scout.md)（历史资料）
-- [独立应用与包管理](package_management.md)（xypm P0/P1、P2-1已验；P2-2实现待guest验收，P2-3/4与P3未完成）
-- [POSIX子集契约](posix_subset_contract.md)与[推进路线/验收](posix_roadmap.md)（PX0文档完成，后续未实施）
-- [公共线程契约与E13-T计划](threading_contract.md)
-- [UTF-8文本接口计划](utf8_text_plan.md)（U0/U1已通过；非 release 阻塞）
-- [Open Adventure依赖内建计划](adventure_port_plan.md)
-- [CPython移植计划](cpython_port_plan.md)（PY0–PY2、T3-PY已通过）
-- [CPython PY3可选扩展](cpython_py3_options.md)（按价值与底座依赖分档）
-- [Qt 移植评估](qt_port_assessment.md)
-- [许可管理](licensing.md)
-
-## 约定
-
-- E01–E07 的逐阶段 work log、E08 的 plan/prompt/handoff/report 已合并到上述两篇
-  简史；旧文件不再恢复。
-- 构建证据仍在 `build/`、私有 `.cache/xos_seed/` 和 git 历史中；文档只给入口和
-  结论，不复制大段日志。
-- `AGENTS.md` 仍是 agent 入口；本索引不替代 `state.md` 的当前事实。
-
-- [E13-T线程实现与冻结验收](threading_implementation.md)：ABI、构建、78组客体检查及限制。
+冻结报告里的旧文件路径、旧编号和源码哈希保留原样，只描述其原输入。压缩不重跑旧测试，
+也不丢弃失败；迁移关系和原文摘要见[来源索引](history/source_index.json)。

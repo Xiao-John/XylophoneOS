@@ -16,4 +16,4 @@ exec-driver /bin/runtime_probe.elf driver
 dash启动普通子程序，但不能再把构造权委派给GCC；该路径会明确EPERM。需要运行
 原生编译器的B1脚本，应从Xsh使用裸命令`dash script.sh`：Xsh为这个明确profile
 配置深度2，dash再仅向用户态识别的GCC/G++ driver委派深度1。内核不识别dash、
-GCC或路径。该有界委派不是通用Shell权限继承，详见`docs/dash_port_plan.md`。
+GCC或路径。该有界委派不是通用Shell权限继承，详见`docs/plans/dash.md`。

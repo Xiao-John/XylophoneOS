@@ -1,7 +1,7 @@
 # dash for XOS
 
 Optional `/usr/bin/dash`, launched by Xshell. No default-shell replacement or
-`/bin/sh` alias. See `docs/shell_subset.md` for accepted scope and guest evidence.
+`/bin/sh` alias. See `docs/implementation/shell.md` for accepted scope and guest evidence.
 
 `source_lock.json` pins the pristine release archive. `patches/` changes the
 upstream sources; `jobs_xos.c` and `signals_xos.c` replace the selected upstream
@@ -18,7 +18,7 @@ bare `dash` launched by Xsh, the process ABI supplies a bounded depth-two
 construction capability; this user-space backend delegates one remaining level
 only to the fixed GCC/G++ driver basenames. The kernel never matches tool names.
 The legacy `exec-driver dash` path remains depth one and cannot compile through
-GCC. See `docs/dash_port_plan.md` for the exact boundary.
+GCC. See `docs/plans/dash.md` for the exact boundary.
 
 B2 admits ordered `<`, `>`, `>>`, `2>`, and descriptor duplication/closure for
 descriptors 0-2. Dash applies and restores builtin redirections with its normal

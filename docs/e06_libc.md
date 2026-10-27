@@ -1,108 +1,35 @@
-# E06：newlib 与用户态 C 运行库
+# libc与运行库适配
 
-实施于 0010。目标不是“完整 POSIX 系统”，而是让实际 SDK 程序可以用 C 库的
-常用部分，并留下从真实配置/产物得到的依赖清单。E08 才移植原生 GCC/G++。
+2026-10-27。当前采用newlib4.6.0.20260123、x86_64-elf静态链接；具体产物/配置/哈希以
+对应SDK manifest为准，不把初版库大小或旧build/sdk当作所有后续SDK的身份。
 
-## 结论
+## 当前实现
 
-- 选择的 libc：**newlib 4.6.0.20260123**，target `x86_64-elf`，静态链接。
-- 已跑通：`printf`、`puts`、`malloc/free`、`strcpy` 等 string 函数、返回码/退出。
-- 已提供 C 控制台 read/write、静态 64 KiB `sbrk` 堆、errno 基本映射。
-- 已启用 per-task SSE/x87 状态（FXSAVE/FXRSTOR）；newlib 的 x86-64 ABI 使用
-  SSE 寄存器，不能靠“禁用 SSE”可靠运行。
-- 没有 libstdc++、异常/RTTI、TLS、线程、动态链接、C++ 静态构造初始化。
-- 文件描述符已映射到 XOS 文件服务的受限接口，支持 `open`/`stat`/`unlink`、
-  `fsync` 与 `ftruncate`；这不等于完整 POSIX 路径/偏移/并发语义。
+- CRT正常初始化/退出、heap、stdio、errno、文件/目录与受限posix_spawn；C++运行库、
+  构造/析构、异常/RTTI、静态TLS和线程接入有各自gate，见[E08](e08.md)、[线程实现](implementation/threads.md)。
+- SSE/x87按任务/线程保存，newlib/应用可使用所需ABI；内核仍遵循受限C++与寄存器约束。
+- 普通SDK与线程SDK分开，后者使用newlib重入状态、锁/TSS/TLS和线程安全适配；不能用
+  freestanding默认single线程模型替代真实pthread，也不覆盖旧冻结SDK。
+- 文件描述符映射到files对象引用；共享打开描述、dup/CLOEXEC、32FD exec转交与匿名文件
+  见[SDK](e04_loader_sdk.md)、[Shell](implementation/shell.md)。当前FD不代表完整POSIX。
+- getentropy→sys63真实RDRAND接口；墙钟/gettimeofday→sys64，单调时间/睡眠走线程等待
+  机制。输出大小、errno、不支持/硬件失败按各自契约；不以uptime或固定种子补安全接口。
+- truncate/ftruncate接files op25；stat仍有合成属性。权限、链接、完整时间元数据、locale、
+  signals、socket、通用就绪等待与mmap族未取得完整资格，缺项不能永远成功。
 
-## SDK 与链接
+## 构建与使用
 
-`build/sdk/` 现在包含：
+普通构建scripts/user_build.py导出头/CRT/libxos/libxos_loader/newlib/user.ld及许可，
+scripts/build_threading_sdk.py另建线程/可选C++ SDK。第三方应用使用冻结SDK/profile，
+见[快速开始](friend_user_program_quickstart.md)；不默认修改系统程序清单来安装软件。
 
-- newlib 头（`include/`）；
-- `lib/libc.a`（6,720,094 字节，SHA-256
-  `283fa07ad205c80af92e955a91da027435d8a8a90cb7e27933f57925cc5baa22`）；
-- `lib/libm.a`（2,701,158 字节）；
-- `xos` 头、CRT、`libxos.a`、`libxos_loader.a`、`user.ld`；
-- `COPYING.NEWLIB` 与 SDK `manifest.json` 中的 libc 版本/哈希。
+适配集中于src/user/libc/newlib_syscalls.cpp、src/user/threading/与对应SDK/架构CRT。
+新增接口同步公共定义、普通/线程生成器和真实消费者；pthread直接错误号与errno型接口
+分别处理，不把同一个负内核返回无差别传播。
 
-`scripts/user_build.py` 的 `libc_programs` 列表决定哪些程序链接 newlib。
-当前只有 `libc_hello`；其他旧程序保持窄 SDK，避免内核镜像无谓膨胀。新增
-libc 程序时同时加入 `names` 与 `libc_programs`。
+## 验收与许可
 
-示例 `src/user/programs/libc_hello.cpp`：
-
-```cpp
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-extern "C" int xos_user_main(const xos::startup_info*) {
-    char* text = static_cast<char*>(malloc(32));
-    strcpy(text, "malloc+printf");
-    printf("libc says: %s %d %x\n", text, 42, 0xbeef);
-    free(text);
-    puts("second line");
-    return 7;
-}
-```
-
-程序在 `sup> exec libc_hello` 下输出两行并返回 7；第二次运行也通过，
-说明 stdio/heap 没有在第一次退出后留下坏状态。实际截图见
-`build/libc_screen.png`。
-
-## 运行库适配层
-
-`src/user/libc/newlib_syscalls.cpp` 提供 newlib 需要的系统接口：
-
-- `_write` / `write`：stdout/stderr 走 XOS handle write，按 256 字节分块。
-- `_read` / `read`：当前是单字节非阻塞控制台；空状态映射为 EAGAIN。
-- `_sbrk` / `sbrk`：进程私有静态 64 KiB 堆，越界返回 ENOMEM；不是内核 brk。
-- `_close`、`_fstat`（字符设备）、`_isatty`、`_lseek`、`_exit`、`_getpid`、
-  `_kill`、`_times`。
-- `getentropy`：最多256字节，通过公共 syscall 取架构安全随机源；不可用或硬件失败
-  返回真实 errno。不得以时间、计时器或常量填充。
-- `open`/`stat`/`unlink`/`ftruncate`：走XOS文件服务；路径、句柄和FAT32上界由
-  XOS接口约束。`fsync(fd)`当前同步文件服务的所有可写描述符，故SQLite配置要求
-  单进程且无其他写入者。FatFs的seek越过EOF会扩展文件，不能据此宣称完整POSIX lseek。
-
-## SSE/x87 上下文
-
-E06 必须在 E04 的整数型任务上增加浮点状态，否则 newlib 的 `malloc` 等代码
-一执行 SSE 就会 #UD。实现：
-
-- `CR0.EM/TS` 清除，`CR4.OSFXSR/OSXMMEXCPT` 置位，`fninit`，MXCSR 默认 0x1F80。
-- 每个 `task_record` 有 16 字节对齐的 512 字节 FXSAVE 区；任务切换前
-  `fxsave64`，切入后 `fxrstor64`。内核代码仍 `-mgeneral-regs-only`，不把
-  XMM 状态带进内核 C++。
-- E04 的 `fault fpu` 探针因此不再 #UD；E04 回归改为验证它正常退出 99。
-  这不是“FPU 故障测试失效”，而是 E06 正式支持了 FPU 上下文。
-
-## 实际依赖清单
-
-`python3 scripts/libc_audit.py` 从 `build/sdk` 与 `libc.a` 实际产物生成
-`build/libc_audit.json`。关键项：
-
-- newlib `libc.a`/`libm.a` 哈希与字节数来自实际文件，不是手填版本号。
-- libc 对象引用的控制台/堆/文件符号由 `libxos.a` 与文件服务适配层提供；
-  尚未实现的接口仍应返回真实错误，不推导成完整POSIX文件系统。
-- `libc_hello.image.elf` 66,664 字节，BSS 约 66 KiB（含 64 KiB 堆），
-  用户页 40 页；在 64 页上限内。
-- `libc.a` 中仍有大量未解析符号（约 1037 个，含 libm/可选函数）；只有实际
-  被链接对象才需要解析，不能把“libc.a 很大”当成完整实现证明。
-
-## 构建可复现性
-
-`src/third_party/newlib/` 保存预构建的 `x86_64-elf` 头与 `libc.a`/`libm.a`
-以及 `COPYING.NEWLIB`；`README.md` 和 `scripts/build_newlib.sh` 记录从
-`sourceware.org` 下载 4.6.0.20260123、configure 与编译的路径。普通
-`make build` 不联网、不重建 newlib，只把已存在的预构建包复制进 SDK。
-重新生成时须重新记录哈希，不能默认版本相同即二进制相同。
-
-## 验证与边界
-
-`make smoke` 新增 E06 3 项：库程序进入 image catalog、printf/malloc/string/
-退出 7、第二次运行可复用；E01–E07 旧 62 项继续通过（合计 65）。
-
-未实现/不声称：完整 POSIX、目录/路径、`fopen`、文件服务 POSIX 映射、libstdc++、
-C++ 异常/RTTI、TLS、线程、动态链接、C++ 静态构造、跨进程 malloc 共享、
-真实掉电下的库缓冲一致性。E08 才把 GCC/G++ 搬进 XOS。
+初版printf/malloc/string/exit和FXSAVE检查见[E01–E07](history/e01_e07.md)；原生C/C++、
+线程、CPython与SDK身份绑定各自保留冻结证据。当前程序可运行不等于newlib全部接口合规。
+newlib包含多来源许可；声明/组件清单见[许可管理](licensing.md)。材料检查与预构建库逐成员
+归属审计分开，后者未完成的部分继续明确保留，不以libc文件名推定单一LGPL授权。

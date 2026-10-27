@@ -4,7 +4,7 @@
 目标是能在系统内编辑、保存、编译和运行程序。
 
 开发前读 [开发纪律](docs/Discipline.md)、[当前状态](docs/state.md)、
-[总体计划](docs/xos_plan.md)。`localpilot/` 是独立项目，不参与 XOS 构建。
+[项目宪法与当前登记](docs/xos_plan.md)。`localpilot/` 是独立项目，不参与 XOS 构建。
 
 ## 当前发行：0.0.1-1026
 
@@ -78,15 +78,15 @@ ring3 用户任务、每任务地址空间、PIT 抢占、IPC、用户故障隔�
 - CPython 没有安全熵、墙钟、socket/TLS、fork/subprocess 等完整 POSIX 能力。
 - xypm P2 写入事务/P3 仓库仍未完整交付；签名不等于沙箱。
 - 旧全量压力与部分历史回归未在本发行重跑；未跑项不会被写成通过。
-- Qt 是未来 GUI 主线，目前没有实现；见 [Qt 评估](docs/qt_port_assessment.md)。
+- Qt 是未来 GUI 主线，目前没有实现；见 [Qt 评估](docs/plans/qt.md)。
 
 ## 文档与许可
 
 - [文档索引](docs/README.md)
 - [架构、启动与内存边界](docs/architecture_and_boot.md)
-- [线程实现与验收](docs/threading_implementation.md)
-- [独立应用与包管理](docs/package_management.md)
-- [CPython 移植计划](docs/cpython_port_plan.md)
+- [线程实现与验收](docs/implementation/threads.md)
+- [独立应用与包管理](docs/plans/packages.md)
+- [CPython 移植计划](docs/plans/cpython.md)
 - [发行与源码材料](docs/releases/source_materials.md)
 
 自研新代码采用 Apache-2.0；历史 MIT 与第三方许可保留。见

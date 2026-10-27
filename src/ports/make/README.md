@@ -24,7 +24,7 @@ digests. The manifest says `built_not_run`; neither build success nor this
 README is a guest acceptance result.
 
 The selected behavior, exclusions, and required guest evidence are documented
-in `docs/make_subset.md`. This port does not install itself, change a work disk,
+in `docs/implementation/make.md`. This port does not install itself, change a work disk,
 or add a `/bin/sh` alias.
 
 The ordinary SDK supplies C headers; the C++ backend intentionally uses their

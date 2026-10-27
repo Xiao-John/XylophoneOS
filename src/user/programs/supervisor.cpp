@@ -19,6 +19,61 @@ bool demo_keep;
 bool demo_quiet;
 bool verbose_trace;
 
+// Session-only command history, bounded independently of the supervisor stack.
+constexpr u32 history_capacity = 16;
+constexpr u32 input_capacity = 2048;
+char input_history[history_capacity][input_capacity]{};
+u32 history_count;
+
+u32 input_columns(const char* line, u32 start, u32 end) {
+    u32 columns = 0;
+    while (start < end) {
+        xos::text::decoded unit{};
+        if (xos::text::decode(line + start, end - start, unit) != xos::text::decode_status::ok) {
+            ++start; ++columns; continue;
+        }
+        columns += xos::text::width(unit.codepoint);
+        start += unit.bytes;
+    }
+    return columns;
+}
+
+u32 previous_character(const char* line, u32 position) {
+    if (position == 0) { return 0; }
+    --position;
+    while (position != 0 && xos::text::continuation(static_cast<u8>(line[position]))) { --position; }
+    return position;
+}
+
+u32 next_character(const char* line, u32 length, u32 position) {
+    if (position >= length) { return length; }
+    xos::text::decoded unit{};
+    if (xos::text::decode(line + position, length - position, unit) != xos::text::decode_status::ok) {
+        return position + 1;
+    }
+    return position + unit.bytes;
+}
+
+void redraw_input(const char* line, u32 length, u32 position) {
+    print("\rxsh> ");
+    if (length != 0) { (void)xos::sdk::write(1, line, length); }
+    print("\x1b[K");
+    const u32 columns = input_columns(line, position, length);
+    for (u32 i = 0; i < columns; ++i) { print("\b"); }
+}
+
+void remember_input(const char* line, u32 length) {
+    if (length == 0) { return; }
+    if (history_count != 0 && equal(input_history[history_count - 1], line)) { return; }
+    if (history_count == history_capacity) {
+        for (u32 i = 1; i < history_count; ++i) { memcpy(input_history[i - 1], input_history[i], input_capacity); }
+        --history_count;
+    }
+    memcpy(input_history[history_count], line, length);
+    input_history[history_count][length] = '\0';
+    ++history_count;
+}
+
 u64 number(const char* text) {
     u64 value = 0;
     if (*text == '\0') { return 0; }
@@ -394,14 +449,51 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     bool last_cr = false;
     for (;;) {
         print("xsh> ");
-        char line[2048]{};
-        u32 used = 0;
-        bool overflow = false;
+        char line[input_capacity]{};
+        char draft[input_capacity]{};
+        char pending[4]{};
+        u32 used = 0, cursor = 0, pending_size = 0;
+        u32 history_index = history_count;
+        bool overflow = false, invalid = false;
+        // 0 normal, 1 ESC, 2 CSI, 3 discard malformed sequence, 4 SS3.
+        u32 escape_state = 0, sequence_size = 0;
+        char sequence[8]{};
+        u64 escape_tick = 0;
         const u64 prompt_tick = ticks();
+        const auto restore_history = [&](u32 index) {
+            const char* source = index == history_count ? draft : input_history[index];
+            used = static_cast<u32>(strlen(source));
+            memcpy(line, source, used + 1);
+            cursor = used;
+            redraw_input(line, used, cursor);
+        };
+        const auto apply_sequence = [&](char key) {
+            if (key == 'D') { cursor = previous_character(line, cursor); }
+            else if (key == 'C') { cursor = next_character(line, used, cursor); }
+            else if (key == 'H') { cursor = 0; }
+            else if (key == 'F') { cursor = used; }
+            else if (key == 'A' && history_index > 0) {
+                if (history_index == history_count) { memcpy(draft, line, used); draft[used] = 0; }
+                restore_history(--history_index);
+                return;
+            } else if (key == 'B' && history_index < history_count) {
+                restore_history(++history_index);
+                return;
+            } else if (key == 'X' && cursor < used) {
+                u32 next = next_character(line, used, cursor);
+                memmove(line + cursor, line + next, used - next);
+                used -= next - cursor; line[used] = 0;
+            }
+            redraw_input(line, used, cursor);
+        };
         for (;;) {
             char byte;
             const auto got = xos::sdk::read(0, &byte, 1);
             if (got <= 0) {
+                if (escape_state != 0 && ticks() - escape_tick >= 20) {
+                    if (escape_state == 1) { escape_state = 0; }
+                    else { escape_state = 3; invalid = true; }
+                }
                 if (!demo_keep && !demo_quiet && ticks() - prompt_tick >= 100) {
                     bool killed = false;
                     killed = syscall(10, 1) == 0 || killed;
@@ -416,23 +508,79 @@ extern "C" int xos_user_main(const xos::startup_info*) {
             }
             if (byte == '\n' && last_cr) { last_cr = false; continue; }
             last_cr = byte == '\r';
-            if (byte == '\r' || byte == '\n') { print("\n"); break; }
-            const u8 value = static_cast<u8>(byte);
-            if (value == '\b' || value == 127) {
-                if (used > 0 && !overflow) {
-                    const auto erased = xos::text::erase_last(line, used);
-                    used = erased.size;
-                    for (u32 i = 0; i < erased.columns; ++i) { print("\b \b"); }
-                }
-            } else if ((value >= 32 && value <= 126) || value >= 0x80) {
-                if (used < sizeof(line) - 1 && !overflow) {
-                    line[used++] = byte; (void)xos::sdk::write(1, &byte, 1);
-                } else { overflow = true; }
+            if (byte == '\r' || byte == '\n') {
+                if (escape_state > 1 || pending_size != 0) { invalid = true; }
+                print("\n"); break;
             }
+            const u8 value = static_cast<u8>(byte);
+            if (overflow) { continue; }
+            if (escape_state != 0) {
+                escape_tick = ticks();
+                if (escape_state == 1) {
+                    if (value == '[') { escape_state = 2; sequence_size = 0; }
+                    else if (value == 'O') { escape_state = 4; }
+                    else { escape_state = 0; invalid = true; }
+                } else if (escape_state == 3) {
+                    if (value >= 0x40 && value <= 0x7e) { escape_state = 0; }
+                } else if (escape_state == 4) {
+                    escape_state = 0;
+                    if (value == 'H' || value == 'F') { apply_sequence(static_cast<char>(value)); }
+                    else { invalid = true; }
+                } else if (value >= 0x40 && value <= 0x7e) {
+                    escape_state = 0;
+                    char action = 0;
+                    if (sequence_size == 0 && (value == 'A' || value == 'B' || value == 'C' || value == 'D' || value == 'H' || value == 'F')) {
+                        action = static_cast<char>(value);
+                    } else if (value == '~' && sequence_size == 1) {
+                        if (sequence[0] == '1' || sequence[0] == '7') { action = 'H'; }
+                        else if (sequence[0] == '4' || sequence[0] == '8') { action = 'F'; }
+                        else if (sequence[0] == '3') { action = 'X'; }
+                    }
+                    if (action) { apply_sequence(action); } else { invalid = true; }
+                } else if (sequence_size < sizeof(sequence) && value >= 0x20 && value <= 0x3f) {
+                    sequence[sequence_size++] = byte;
+                } else { escape_state = 3; invalid = true; }
+                continue;
+            }
+            if (value == 0x1b) {
+                if (pending_size != 0) { invalid = true; pending_size = 0; }
+                escape_state = 1; escape_tick = ticks(); continue;
+            }
+            if (value == '\b' || value == 127) {
+                if (pending_size != 0) { pending_size = 0; }
+                else if (cursor != 0) {
+                    u32 previous = previous_character(line, cursor);
+                    const bool at_end = cursor == used;
+                    const u32 erased_columns = input_columns(line, previous, cursor);
+                    memmove(line + previous, line + cursor, used - cursor);
+                    used -= cursor - previous; cursor = previous; line[used] = 0;
+                    if (at_end) {
+                        for (u32 i = 0; i < erased_columns; ++i) { print("\b \b"); }
+                    } else { redraw_input(line, used, cursor); }
+                }
+                continue;
+            }
+            if ((value >= 32 && value <= 126) || value >= 0x80) {
+                if (pending_size >= sizeof(pending)) { invalid = true; pending_size = 0; continue; }
+                pending[pending_size++] = byte;
+                xos::text::decoded unit{};
+                const auto status = xos::text::decode(pending, pending_size, unit);
+                if (status == xos::text::decode_status::incomplete) { continue; }
+                if (status == xos::text::decode_status::invalid) { invalid = true; pending_size = 0; continue; }
+                if (pending_size > sizeof(line) - 1 - used) { overflow = true; pending_size = 0; continue; }
+                const bool at_end = cursor == used;
+                memmove(line + cursor + pending_size, line + cursor, used - cursor);
+                memcpy(line + cursor, pending, pending_size);
+                cursor += pending_size; used += pending_size; line[used] = 0;
+                if (at_end) { (void)xos::sdk::write(1, pending, pending_size); }
+                else { redraw_input(line, used, cursor); }
+                pending_size = 0;
+            } else { invalid = true; }
         }
         if (overflow) { print("xsh: input line too long\n"); continue; }
-        if (!xos::text::valid(line, used)) { print("xsh: invalid UTF-8 input\n"); continue; }
+        if (invalid || !xos::text::valid(line, used)) { print("xsh: invalid UTF-8 input or key sequence\n"); continue; }
         line[used] = '\0';
+        memcpy(draft, line, used + 1);
         char* arguments[process_max_args + 1]{};
         u32 count = 0;
         bool in_word = false;
@@ -444,6 +592,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
             }
         }
         if (count == 99) { print("xsh: too many arguments\n"); continue; }
+        remember_input(draft, used);
         execute(count, arguments);
     }
 }

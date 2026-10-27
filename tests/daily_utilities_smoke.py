@@ -24,7 +24,8 @@ def main():
     a = p.parse_args()
     build = json.loads((a.tools / 'manifest.json').read_text())
     report = {'status': 'failed', 'image_sha256': hashlib.sha256(a.image.read_bytes()).hexdigest(),
-              'tools_manifest_sha256': hashlib.sha256((a.tools / 'manifest.json').read_bytes()).hexdigest(), 'checks': []}
+              'tools_manifest_sha256': hashlib.sha256((a.tools / 'manifest.json').read_bytes()).hexdigest(),
+              'dash_sha256': hashlib.sha256(a.dash.read_bytes()).hexdigest(), 'checks': []}
     try:
         with tempfile.TemporaryDirectory(prefix='xos_du12_') as tmp:
             folder = Path(tmp); disk = folder / 'disk.img'; create_fat32(disk, 512)
@@ -45,8 +46,14 @@ def main():
                 output = bytes(guest.output[start:])
                 if b'DU12_OK' not in output:
                     raise AssertionError('daily utility script failed: ' + output[-4000:].decode('utf-8', 'replace'))
+                start = len(guest.output); send_bytes(guest, b'exec-file /usr/bin/ls /tmp/du\r')
+                guest.expect_supervisor(start=start, timeout=30)
+                output = bytes(guest.output[start:])
+                if b'head.txt' not in output or b'moved' not in output:
+                    raise AssertionError('xsh explicit ls failed: ' + output[-2000:].decode('utf-8', 'replace'))
                 start = len(guest.output); send_bytes(guest, b'sync\r'); guest.expect_supervisor(start=start, timeout=30)
                 report['checks'].append('dash_operations_pipe_and_rejected_unsafe_cases')
+                report['checks'].append('xsh_exec_file_ls')
             finally:
                 guest.close()
             expected = {'ls.txt':b'data\n','all.txt':b'.\n..\n.secret\ndata\n',

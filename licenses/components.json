@@ -246,13 +246,13 @@
         "optional XOS cat/cp/mkdir/mv/rm user tools for dash B1"
       ],
       "source_files": {
-        "src/ports/sbase/xos/cat.c": "MIT",
-        "src/ports/sbase/xos/cp.c": "MIT",
-        "src/ports/sbase/xos/mkdir.c": "MIT",
-        "src/ports/sbase/xos/mv.c": "MIT",
-        "src/ports/sbase/xos/rm.c": "MIT"
+        "src/ports/sbase/xos/cat.c": "MIT AND Apache-2.0",
+        "src/ports/sbase/xos/cp.c": "MIT AND Apache-2.0",
+        "src/ports/sbase/xos/mkdir.c": "MIT AND Apache-2.0",
+        "src/ports/sbase/xos/mv.c": "MIT AND Apache-2.0",
+        "src/ports/sbase/xos/rm.c": "MIT AND Apache-2.0"
       },
-      "modifications": "Narrow regular-file, same-volume XOS adaptations; no recursive copy/remove, symlink, mode preservation, overwrite, or cross-filesystem fallback",
+      "modifications": "Narrow XOS adaptations of five MIT utilities, later XOS changes Apache-2.0; additional self-authored Apache-2.0 commands are listed in daily_utilities.json; no recursive copy/remove, symlink, mode preservation or cross-filesystem fallback",
       "distribution_status": "local_only; pinned source and adapted files recorded",
       "artifact_sha256": {
         "src/ports/sbase/upstream/LICENSE": "eb0b719b3327af6c4b480cd21f7944e944a5ddf571c04572eb8d025f52e056c6"

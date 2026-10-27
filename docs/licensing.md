@@ -21,6 +21,7 @@
 | Binutils 捆绑 zlib 1.3.1 | Seed 内部静态库 | Zlib 原许可保留，不是 XOS 自研 Apache 代码，不依赖宿主动态 zlib |
 | GCC 16.2.0 C Seed、host libstdc++/libsupc++、GMP/MPFR/MPC | 本地客体工具闭包 | src/ports/gcc/upstream 与 source_lock.json 保留实际版本和声明；components.json 登记材料哈希；目标 E08-5 库与公开分发审查未完成 |
 | sbase cat/cp/mkdir/mv/rm | dash B1的窄用户态工具 | 固定提交c546c3a；保留上游MIT LICENSE、源文件哈希及XOS适配文件清单；仅本地验收，未公开分发 |
+| 日常工具DU1/DU2 | 13个独立候选程序 | 原五个sbase适配保留MIT，2026-10-27新修改Apache-2.0；新增八个XOS自研命令Apache-2.0，许可清单按实际包材料核对 |
 | Open Adventure 1.12 | 独立用户态游戏 | 上游BSD-2-Clause声明与源码锁在src/ports/adventure；XOS自研适配为Apache-2.0；包携带SDK许可材料，逐成员审计仍未完成 |
 | idna 3.20 | CPython PY3 A3离线纯Python wheel | 固定wheel与BSD-3-Clause许可哈希；本地验收，未公开分发 |
 | tzdata 2026.5 | CPython PY3 B2 ZoneInfo fallback | 固定PyPI wheel与Apache-2.0全文；本地验收，未公开分发 |

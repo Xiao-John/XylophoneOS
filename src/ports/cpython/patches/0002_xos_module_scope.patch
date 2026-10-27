@@ -1,14 +1,13 @@
 From: XOS contributors
 Subject: [PATCH] configure: scope XOS modules to what the runtime provides
 
-XOS has no fork/exec, select, pty, dlopen, zoneinfo or entropy service, and
+XOS has no fork/exec, select, pty, dlopen or system zoneinfo database, and
 newlib does not implement lstat, pause, or the XSI timezone names. Keep those
 modules and code paths out of the static bootstrap instead of linking against
 absent symbols. Static modules are the only build type XOS can load. Link every
 archive in one group: module archives follow LIBS, so libc and libgcc must be
-revisited after they are seen. The bootstrap profile uses a deterministic hash
-seed and spins for time.sleep(); neither is a claim of secure randomness or a
-blocking timer service.
+revisited after they are seen. The target supplies secure random bytes and
+POSIX TZ parsing; time.sleep() advances by spinning on monotonic PIT ticks.
 --- base1/configure	2026-10-25 12:33:49
 +++ mod/configure	2026-10-25 12:33:36
 @@ -31797,9 +31797,41 @@
@@ -234,7 +233,7 @@ blocking timer service.
 +#  define _Py_tzname _tzname
 +#elif defined(__xos__)
 +/* newlib exposes the XSI timezone variables only under their internal names.
-+ * XOS has no zoneinfo database; tzset() leaves them at UTC/no-DST. */
++ * XOS uses newlib's POSIX TZ parser; IANA zones are supplied by tzdata. */
  #  define _Py_timezone _timezone
  #  define _Py_daylight _daylight
  #  define _Py_tzname _tzname

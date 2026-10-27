@@ -18,7 +18,7 @@ from run_qemu import MACHINE, qemu_command
 
 
 class Guest:
-    def __init__(self, image, name, *, cpu="qemu64", debug_port=None, work_disk=None, iso=False):
+    def __init__(self, image, name, *, cpu="qemu64,+rdrand", debug_port=None, work_disk=None, iso=False):
         self.name = name
         self.output = bytearray()
         self.temp = tempfile.TemporaryDirectory(prefix="xos_")
@@ -131,7 +131,7 @@ def main():
         "checks": results, "status": "failed",
     }
     try:
-        guest = Guest(image_path, "boot_smoke")
+        guest = Guest(image_path, "boot_smoke", cpu="qemu64")
         report["command"] = guest.command
         try:
             guest.expect(b"XOS real_mode | build " + manifest["build_id"].encode())
@@ -177,7 +177,7 @@ def main():
             bad[514:518] = b"NOPE"
             bad_path = Path(folder) / "bad_stage.img"
             bad_path.write_bytes(bad)
-            guest = Guest(bad_path, "bad_stage")
+            guest = Guest(bad_path, "bad_stage", cpu="qemu64")
             try:
                 guest.expect(b"BOOT_ERROR: stage_two_magic")
                 registers = guest.qmp("human-monitor-command", {"command-line": "info registers"})

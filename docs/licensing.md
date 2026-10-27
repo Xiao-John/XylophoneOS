@@ -22,6 +22,9 @@
 | GCC 16.2.0 C Seed、host libstdc++/libsupc++、GMP/MPFR/MPC | 本地客体工具闭包 | src/ports/gcc/upstream 与 source_lock.json 保留实际版本和声明；components.json 登记材料哈希；目标 E08-5 库与公开分发审查未完成 |
 | sbase cat/cp/mkdir/mv/rm | dash B1的窄用户态工具 | 固定提交c546c3a；保留上游MIT LICENSE、源文件哈希及XOS适配文件清单；仅本地验收，未公开分发 |
 | idna 3.20 | CPython PY3 A3离线纯Python wheel | 固定wheel与BSD-3-Clause许可哈希；本地验收，未公开分发 |
+| tzdata 2026.5 | CPython PY3 B2 ZoneInfo fallback | 固定PyPI wheel与Apache-2.0全文；本地验收，未公开分发 |
+| SQLite 3.54.1 | CPython PY3 B3静态模块及XOS VFS | 上游许可文本、源码锁定和移植记录保存在src/ports/cpython/sqlite；本地验收，未公开分发 |
+| bzip2 1.0.8、xz/liblzma 5.8.4、zstd 1.5.7 | CPython PY3 B4静态模块 | 固定上游源码及各自许可文本，保存在src/ports/cpython/compression；本地验收，未公开分发 |
 
 ## newlib 与 LGPL
 
@@ -107,6 +110,17 @@ CPython3.14.9原始LICENSE与Doc/license.rst从source_lock所绑定、实际SHA2
 `src/ports/cpython/upstream/idna-LICENSE.md`，生成的 XPK 携带到
 `/usr/share/licenses/python_idna/LICENSE.md`。本地 guest gate 不代表公开发布；未来
 二进制分发还须提供匹配 wheel/源码材料。
+
+## CPython PY3 B2–B4（0058）
+
+B2固定tzdata 2026.5 wheel并随本地stage携带Apache-2.0声明；RTC墙钟及POSIX时区规则
+属于XOS系统实现。B3固定SQLite 3.54.1，保留上游许可、源码与补丁材料；XOS VFS及适配
+补丁不改变SQLite原许可。B4固定bzip2 1.0.8、xz/liblzma 5.8.4和zstd 1.5.7，各自保留
+上游许可材料。源包、补丁、wheel及构建记录均在本地端口目录或锁文件中。
+
+这些组件目前只用于本地隔离stage和客体验收，没有公开发行。若随二进制发布，须提供
+对应源码/补丁、声明文本和实际构建清单；本地`license_audit.py`检查登记及材料哈希，
+不替代逐成员法律审查或发布包复核。
 
 ## sbase Make C3
 

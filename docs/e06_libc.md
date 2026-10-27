@@ -11,7 +11,8 @@
 - 已启用 per-task SSE/x87 状态（FXSAVE/FXRSTOR）；newlib 的 x86-64 ABI 使用
   SSE 寄存器，不能靠“禁用 SSE”可靠运行。
 - 没有 libstdc++、异常/RTTI、TLS、线程、动态链接、C++ 静态构造初始化。
-- `fopen`/POSIX 路径尚未映射到 XOS 文件服务；`open`/`stat`/`unlink` 返回 ENOSYS。
+- 文件描述符已映射到 XOS 文件服务的受限接口，支持 `open`/`stat`/`unlink`、
+  `fsync` 与 `ftruncate`；这不等于完整 POSIX 路径/偏移/并发语义。
 
 ## SDK 与链接
 
@@ -58,8 +59,11 @@ extern "C" int xos_user_main(const xos::startup_info*) {
 - `_sbrk` / `sbrk`：进程私有静态 64 KiB 堆，越界返回 ENOMEM；不是内核 brk。
 - `_close`、`_fstat`（字符设备）、`_isatty`、`_lseek`、`_exit`、`_getpid`、
   `_kill`、`_times`。
-- `open`/`stat`/`unlink` stub 返回 ENOSYS，明确不把宿主路径或 XOS 文件服务
-  伪装成 POSIX 文件系统。
+- `getentropy`：最多256字节，通过公共 syscall 取架构安全随机源；不可用或硬件失败
+  返回真实 errno。不得以时间、计时器或常量填充。
+- `open`/`stat`/`unlink`/`ftruncate`：走XOS文件服务；路径、句柄和FAT32上界由
+  XOS接口约束。`fsync(fd)`当前同步文件服务的所有可写描述符，故SQLite配置要求
+  单进程且无其他写入者。FatFs的seek越过EOF会扩展文件，不能据此宣称完整POSIX lseek。
 
 ## SSE/x87 上下文
 
@@ -79,8 +83,8 @@ E06 必须在 E04 的整数型任务上增加浮点状态，否则 newlib 的 `m
 `build/libc_audit.json`。关键项：
 
 - newlib `libc.a`/`libm.a` 哈希与字节数来自实际文件，不是手填版本号。
-- libc 对象引用的控制台/堆符号由 `libxos.a` 的适配层提供；`open`/`stat`/`unlink`
-  被显式列为 unsupported，而不是假装成功。
+- libc 对象引用的控制台/堆/文件符号由 `libxos.a` 与文件服务适配层提供；
+  尚未实现的接口仍应返回真实错误，不推导成完整POSIX文件系统。
 - `libc_hello.image.elf` 66,664 字节，BSS 约 66 KiB（含 64 KiB 堆），
   用户页 40 页；在 64 页上限内。
 - `libc.a` 中仍有大量未解析符号（约 1037 个，含 libm/可选函数）；只有实际

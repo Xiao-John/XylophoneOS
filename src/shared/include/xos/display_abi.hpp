@@ -2,7 +2,7 @@
 #pragma once
 #include <xos/abi_types.hpp>
 namespace xos {
-inline constexpr u64 sys_display = 63, sys_display_present = 64;
+inline constexpr u64 sys_display = 65, sys_display_present = 66;
 inline constexpr i64 display_denied=-1, display_invalid=-2, display_again=-3,
     display_resources=-5, display_unavailable=-19, display_fault=-14, display_busy=-16;
 inline constexpr u32 display_xrgb8888=1, display_event_capacity=64;

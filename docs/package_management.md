@@ -43,6 +43,8 @@ python3 scripts/build_xypm.py --sdk /absolute/path/to/frozen_sdk --profile confi
 |---|---|---|
 | `xypm --help` / `--version` | 退出0 | 退出0 |
 | `xypm list` / `info <id>` | 已装查询退出0 | 同一程序、同一结果 |
+| `xypm verify <package.xpk> [sha256]` | 有界包结构/清单/逐文件摘要核验，成功退出0 | 同一客体程序 |
+| `xypm plan install|upgrade <package.xpk>` | 只读预检；不写入文件或授权worker | 同一客体程序 |
 | 不存在的包 | 退出1，stderr诊断 | 退出1，可读`$?` |
 | 不支持的命令/参数 | 退出2 | 退出2 |
 | 数据库/index错误 | 退出3 | 同一程序错误契约；损坏输入专项客体未单独验 |
@@ -74,6 +76,19 @@ SDK的单线程C++归档及相应许可。SDK树哈希、组合方法与真实�
 多文件事务。接口/权限见[e04_loader_sdk.md](e04_loader_sdk.md)，命令见
 [maintenance](usage/supervisor/maintenance.md)。
 
+P2-2实现初版增加客体 `verify` 与 `plan install|upgrade`。包校验在同一只读打开句柄上
+流式处理包字节，限制 manifest 1 MiB、单文件64 MiB、payload 256 MiB、8192个成员和
+ustar archive 上限；拒绝重复JSON键、非UTF-8、非整数数值、超深结构、链接/扩展成员、
+路径/大小/哈希不匹配和不符合本次编译profile的包。计划阶段解析数据库和index投影，
+校验数据库SHA绑定、profile、依赖锁/依赖环、全局文件归属、已安装文件内容摘要、
+目标路径父项及FatFs目录项规范名。计划命令不写文件、不执行payload、不授权进程。
+
+P2-2已实现与宿主 `inspect_elf` 对齐的客体 ELF64/x86-64 程序头、PT_LOAD/PT_TLS边界、
+装载页重叠/地址区间、入口和页预算检查。该检查仍随包payload摘要核验流式执行，不解包
+到目标目录。变更由冻结 `xos-x86_64-static-single-b2-v1` SDK构建/打包通过，详见
+[0055工作记录](work_log/0055_xypm_p2_elf_validation.md)。客体执行及与宿主共享的畸形包/
+数据库夹具尚未验，P2-2 gate 仍未关闭。P2-3持久恢复和P2-4写命令都未开始。
+
 接续顺序：
 
 1. **P2-2 原生验证与计划**：有界ustar/严格JSON/SHA256、profile/精确依赖/归属
@@ -86,7 +101,7 @@ SDK的单线程C++归档及相应许可。SDK树哈希、组合方法与真实�
    由监督维护入口显式选定xypm worker，失败默认留在恢复状态。分别验xsh/dash
    的查询/错误契约，以及退出dash后进入维护的流程；不让dash获得隐式监督权。
 
-P1的宿主candidate原子发布继续可用；P2-2至P2-4完成前，客体xypm仍只有只读查询。
+P1的宿主candidate原子发布继续可用；P2-4完成前，客体xypm仅提供查询、包校验和只读计划。
 
 ## P0现在可用
 

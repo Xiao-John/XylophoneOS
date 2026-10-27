@@ -5,8 +5,9 @@
 对公共底座的侵入和验证成本分档。任何一项都不能因“模块可导入”自动算通过。
 
 0049进度：A1选定闭包已在XOS客体实测通过，覆盖hashlib已知向量/HMAC、pathlib、
-argparse、dataclasses、tomllib、decimal、XML和固定时间戳的未压缩zip；`statistics`
-因导入`random`时无系统熵而阻塞，保留在清单中，不伪造熵。A2 zlib 1.3.2已静态
+argparse、dataclasses、tomllib、decimal、XML和固定时间戳的未压缩zip；当时`statistics`
+因导入`random`时无系统熵而阻塞，原报告保留该历史结果。0052完成B1后，更新解释器
+可通过系统熵使用这些随机接口。A2 zlib 1.3.2已静态
 集成，gzip、deflate ZIP、zipimport及损坏/截断输入客体gate通过。完整报告见
 `build/cpython_py3_a1_report.json`、`build/cpython_py3_a2_report.json`和
 [0049工作记录](work_log/0049_cpython_py3_a1_a3.md)。A3选用无依赖的`idna 3.20`
@@ -31,16 +32,26 @@ argparse、dataclasses、tomllib、decimal、XML和固定时间戳的未压缩zi
 推荐顺序是 **A1 → A2 → A3**。A1 可立即开始；A2 完成后，A3 对现实包的覆盖面会
 显著增加。三项均保持在端口/分发层，不要求先扩张内核接口。
 
-## B 档：重要，但先补真实公共底座
+## B 档：重要，已按独立范围完成
 
-1. **安全熵。** 提供可审计的系统熵后，才能移除固定 hash seed，并开放
-   `os.urandom()`、`secrets` 和随机 UUID；伪随机或 uptime 不得冒充安全熵。
-2. **墙钟与时区。** 真实 Unix 时间、校时来源和时区数据分别验收；现有单调 PIT
-   tick 不能冒充墙钟。这是可靠时间戳、证书有效期和更多 `datetime` 操作的前提。
-3. **SQLite 静态模块。** 固定 SQLite 源码和许可，验证建库、事务、并发 busy、
-   损坏/容量失败、`sync` 后重启读取；不能只验内存数据库。
-4. **其他压缩格式。** `_bz2`、`_lzma`、`_zstd` 各自冻结依赖并单独设 gate；优先级
-   低于 zlib，不把其中一个通过写成“压缩完整”。
+1. **安全熵（B1 已完成）。** `sys_random_bytes=63` 通过 x86-64 RDRAND 产生至多
+   256 字节；`getentropy()`如实报告硬件不可用或失败，不从TSC、计时器或固定种子造熵。
+   CPython客体验证了`os.urandom()`、`random`、`secrets`和`statistics`，并在QEMU关闭
+   RDRAND时确认调用失败。熵质量仍依赖CPU/虚拟机实现；没有virtio-rng路径。详情见
+   [0052工作记录](work_log/0052_cpython_b1_entropy.md)。
+2. **墙钟与时区（B2 已完成）。** PC RTC 提供启动时UTC epoch，PIT仅用于之后单调推进；
+   QEMU设置UTC。CPython POSIX TZ规则、ZoneInfo与锁定tzdata 2026.5通过客体gate。
+   RTC只在启动时取样，VM暂停期间没有外部RTC刷新承诺。
+3. **SQLite 静态模块（B3 已完成）。** SQLite 3.54.1自定义XOS VFS，客体通过建库、
+   提交/回滚、唯一约束、busy、损坏输入及sync/重启/完整性检查。范围限单进程、单个
+   可写连接和rollback journal；无WAL、共享内存和跨进程锁。
+4. **其他压缩格式（B4 已完成）。** `_bz2`使用bzip2 1.0.8，`_lzma`使用liblzma
+   5.8.4，`_zstd`使用zstd 1.5.7；三者分别通过有界流式roundtrip、截断/损坏输入与
+   资源回收gate。zstd损坏校验探针显式启用帧checksum。
+
+B2、B3、B4均绑定同一CPython fingerprint和SDK，报告/限制见
+[0058工作记录](work_log/0058_cpython_py3_b_segment.md)。B段不代表完整POSIX时钟、
+跨进程SQLite并发、完整压缩生态或任何新发行版已经发布。
 
 ## C 档：生态扩展，依赖更大的系统能力
 

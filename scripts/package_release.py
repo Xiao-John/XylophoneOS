@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import sys
 import tarfile
+from sdk_receipt import verify_sdk, verify_runtime, tree_receipt, verify_copied_inputs
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
@@ -57,6 +58,9 @@ def main():
     system = json.loads((out/'system_manifest.json').read_text())
     if sha(out/'xos.img') != system['artifacts']['xos.img']['sha256']:
         p.error('frozen boot image differs from accepted manifest')
+    sdk_input = verify_sdk(out/'sdk', system)
+    target = ROOT/'.cache/xos_seed/gcc/relinks/target_runtime_v5_receipt'
+    runtime_input = verify_runtime(target, json.loads((ROOT/'config/release_cpp_runtime_v5.json').read_text()))
     seed = json.loads((ROOT/'build/cpp_bundle/seed_manifest.json').read_text())
     sysroot = json.loads((ROOT/'build/cpp_bundle/sysroot_manifest.json').read_text())
     from seed_preflight import validate_bundle
@@ -64,8 +68,10 @@ def main():
     if not result.ok:
         raise ValueError(result.diagnostics)
     image_dir, sdk_dir = out/(PREFIX+'_images'), out/(PREFIX+'_sdk')
-    image_dir.mkdir(exist_ok=True)
-    sdk_dir.mkdir(exist_ok=True)
+    if image_dir.exists() or sdk_dir.exists():
+        p.error('refuse existing image/SDK staging directories; choose a fresh release directory')
+    image_dir.mkdir()
+    sdk_dir.mkdir()
     disk = image_dir/'work_disk.img'
     if disk.exists():
         p.error('refuse to overwrite release work disk')
@@ -134,7 +140,6 @@ def main():
     shutil.copyfile(out/'install_manifest.json',image_dir/'install_manifest.json')
     shutil.copyfile(ROOT/'scripts/release_launcher.py',image_dir/'launch.py')
     shutil.copytree(out/'sdk', sdk_dir, dirs_exist_ok=True)
-    target = ROOT/'.cache/xos_seed/gcc/relinks/target_runtime_v5_receipt'
     shutil.copytree(target/'include',sdk_dir/'cpp/include',dirs_exist_ok=True)
     (sdk_dir/'cpp/lib').mkdir(parents=True,exist_ok=True)
     for name in ('libstdc++.a','libsupc++.a','libgcc.a'):
@@ -146,8 +151,15 @@ def main():
     for folder in (image_dir,sdk_dir):
         copy_notices(folder)
         shutil.copyfile(notes,folder/'README.md')
+    if verify_sdk(out/'sdk',system) != sdk_input:
+        raise ValueError('SDK changed while packaging')
+    if verify_runtime(target,json.loads((ROOT/'config/release_cpp_runtime_v5.json').read_text())) != runtime_input:
+        raise ValueError('runtime changed while packaging')
+    verify_copied_inputs(sdk_dir,sdk_input,runtime_input)
+    sdk_binding={'input':sdk_input,'runtime':runtime_input,
+                 'packaged':tree_receipt(sdk_dir,exclude=('release.json',))}
     release = {'name':'XylophoneOS Revival version '+VERSION,'version':VERSION,
-               'system_build_id':system['build_id'],'xos_sha256':sha(out/'xos.img'),
+               'system_build_id':system['build_id'],'sdk_binding':sdk_binding,'xos_sha256':sha(out/'xos.img'),
                'seed_manifest_sha256':sha(ROOT/'build/cpp_bundle/seed_manifest.json'),
                'sysroot_manifest_sha256':sha(ROOT/'build/cpp_bundle/sysroot_manifest.json'),
                'install_iso_sha256':sha(out/'xos-install-dash.iso'),

@@ -283,6 +283,43 @@ bool user_range_ok(u64 address, u64 length, bool write) {
     return true;
 }
 
+bool rdrand_supported() {
+    u32 eax = 1, ebx = 0, ecx = 0, edx = 0;
+    __asm__ volatile("cpuid" : "+a"(eax), "=b"(ebx), "+c"(ecx), "=d"(edx) :: "memory");
+    return (ecx & (1u << 30)) != 0;
+}
+
+bool rdrand_word(u64& value) {
+    for (u32 attempt = 0; attempt < 10; ++attempt) {
+        u8 ready = 0;
+        __asm__ volatile("rdrand %0; setc %1" : "=&r"(value), "=qm"(ready) :: "cc");
+        if (ready != 0) { return true; }
+    }
+    return false;
+}
+
+i64 random_bytes(u64 destination, u64 length) {
+    if (length > 256) { return random_error_invalid; }
+    if (length == 0) { return 0; }
+    if (!user_range_ok(destination, length, true)) { return random_error_fault; }
+    if (!rdrand_supported()) { return random_error_unsupported; }
+
+    // Stage the complete request so a transient hardware failure never
+    // returns a buffer that looks fully initialized but contains a prefix.
+    u8 bytes[256];
+    for (u64 offset = 0; offset < length;) {
+        u64 word = 0;
+        if (!rdrand_word(word)) { return random_error_io; }
+        const u64 amount = length - offset < sizeof(word) ? length - offset : sizeof(word);
+        for (u64 index = 0; index < amount; ++index) {
+            bytes[offset + index] = static_cast<u8>(word >> (index * 8));
+        }
+        offset += amount;
+    }
+    copy_to_user(destination, bytes, length);
+    return 0;
+}
+
 pipe_reference* pipe_reference_for(process_record* task, u64 token) {
     if (task == nullptr || token < process_pipe_token_min || token > 0xffffffffull) {
         return nullptr;
@@ -2286,6 +2323,14 @@ void* syscall_entry(interrupt_frame* frame) {
         }
         break;
     }
+    case sys_random_bytes:
+        result = frame->rdx == 0 ? random_bytes(frame->rdi, frame->rsi)
+                                 : random_error_invalid;
+        break;
+    case sys_clock_realtime:
+        result = frame->rdi == 0 ? platform::realtime_clock_ns(monotonic_ns())
+                                 : process_error_invalid;
+        break;
     case sys_kill: {
         if (current == nullptr || !current->supervisor) {
             result = sys_error_invalid_handle;
@@ -2388,6 +2433,9 @@ bool tasks_create_default() {
     pic_init();
     display::input_init();
     timer_init(100);
+    if (!platform::realtime_clock_init(monotonic_ns())) {
+        format::text("[clock] event=realtime unavailable=rtc_invalid\r\n");
+    }
     thread_record* first = pick_ready();
     if (first == nullptr) {
         format::text("[sched] event=no_ready_tasks result=halt\r\n");

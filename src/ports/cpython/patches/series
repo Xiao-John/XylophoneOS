@@ -2,3 +2,4 @@
 0002_xos_module_scope.patch
 0003_xos_pthread_backend.patch
 0004_xos_basic_repl.patch
+0005_xos_zoneinfo_tzdata_fallback.patch

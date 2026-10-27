@@ -7,8 +7,9 @@ This directory ports CPython 3.14.9 to XOS following
 failure exits), T3-PY (real pthreads with the GIL), and PY2 (basic REPL,
 `input()`, files and reboot-persistent JSON) have passed their guest gates. The
 interpreter is a static ELF with the GIL; PY3 A1 selected-library checks, A2
-zlib 1.3.2 and A3's locked offline pure-Python wheel path also pass. It is not
-a POSIX platform.
+zlib 1.3.2, A3's locked offline pure-Python wheel path and B1–B4's entropy,
+clock/timezone, SQLite and compression extensions also pass their guest gates.
+This remains a bounded XOS profile, not a POSIX port.
 
 ## Build and test
 
@@ -108,42 +109,55 @@ This first slice does not resolve dependencies or generate console scripts and
 does not support online pip, venv, source builds or native wheels. Evidence is
 written to `build/cpython_py3_a3_report.json`.
 
+For B2–B4, `build_cpython.py` accepts the pinned SQLite prefix and compression
+receipt and links `_sqlite3`, `_bz2`, `_lzma` and `_zstd` into the interpreter.
+`stage_cpython.py --phase PY3` adds locked tzdata and dependency notices. The
+guest gates exercise RTC-backed UTC time, POSIX DST rules and `ZoneInfo`;
+SQLite transactions, constraints, busy/corruption behavior and sync/reboot;
+and bounded stream roundtrips, truncation and corruption for each compression
+module. Exact versions and evidence are in [PY3 options](../../docs/cpython_py3_options.md)
+and [0057](../../docs/work_log/0057_cpython_py3_b_segment.md).
+
 ## Configuration
 
 - Target `x86_64-unknown-xos`, prefix `/usr`, static modules only
   (`MODULE_BUILDTYPE=static`), no mimalloc, no readline, no IPv6.
-- `config/xos_config.site` overrides autoconf results that are false positives
-  on XOS: chroot/link/symlink/fchdir/fsync/fdatasync/setgroups/fork, sched.h,
-  `sys/resource.h`, posix_spawn, mmap and pty probes.
-- `Modules/Setup.stdlib.in`-driven modules that need fork/exec, select, pty,
-  dlopen or zoneinfo are marked n/a for XOS in `configure`.
+- `config/xos_config.site` overrides target probes for unavailable chroot,
+  link/symlink, setgroups, fork, sched.h, `sys/resource.h`, posix_spawn, mmap,
+  fdatasync and pty facilities. `fsync`, `ftruncate` and POSIX `tzset` are
+  enabled because their XOS bridges/parser are present.
+- Modules that need fork/exec, select, pty or dlopen remain unavailable.
+  `zoneinfo` uses the locked `tzdata` package when no system database exists.
 - `xos_time.cpp` provides the monotonic clock in 10 ms PIT ticks, a `times()`
   wrapper that reports ENOSYS to newlib's `clock()`, and a spin-based
   `time.sleep()`.
 
 ## Honest limits of this profile
 
-- The hash seed is deterministic (`0`). This is an explicit bootstrap profile,
-  not secure randomness; `os.urandom`/`secrets` are not provided.
+- CPython's hash secret remains deterministic in this port patch, even though
+  `os.urandom()`, `random` and `secrets` use the B1 system entropy service. Do
+  not treat randomized hashing as a security boundary.
 - `time.sleep()` spins on PIT ticks and consumes CPU. There is no blocking
   timer or wakeup service.
-- There is no wall clock: `gettimeofday` is ENOSYS, so `time.time()` and
-  `datetime.now()` are unavailable. `timezone`/`daylight` stay at newlib's
-  zero defaults because XOS has no zoneinfo database.
+- `time.time()`, UTC `datetime` and the locked ZoneInfo database are available.
+  The wall clock samples the PC RTC at boot and advances using PIT ticks; there
+  is no separate RTC refresh while a VM is paused or suspended.
 - `time.process_time()` raises `RuntimeError` because XOS has no CPU-time
   accounting.
 - Real pthread-backed Python threads have passed T3-PY with the GIL. There is
-  still no fork/exec, select, symlink/link, chroot, fsync, pty, dynamic `.so`
+  still no fork/exec, select, symlink/link, chroot, fdatasync, pty, dynamic `.so`
   loading or sockets. `subprocess`, `resource`, `select`, `fcntl`, `mmap`,
   `termios` and related modules are not built. XOS pipes remain nonblocking.
+- SQLite is restricted to one process and one writable connection per database,
+  rollback journal only; WAL, shared-memory and cross-process locks are not
+  provided. `lseek` past EOF follows current FatFs behavior and is not claimed
+  to have full POSIX semantics.
 - The user stack is 128 KiB. This build needs `-O2`; unoptimized CPython
   overflows the stack during import.
 - The basic REPL is intentionally minimal: no readline/history/full terminal
   editing and no Ctrl-C/`KeyboardInterrupt`. CR and LF were tested separately;
   Escape terminates the whole foreground process through the supervisor.
 - `-c` needs `linecache.py` in this CPython version even for a one-line command.
-- `statistics` is not currently usable because importing it seeds `random` from
-  system entropy; no deterministic or insecure fallback is installed.
 
 ## Layout
 
@@ -151,10 +165,14 @@ written to `build/cpython_py3_a3_report.json`.
 source_lock.json          frozen archive/sigstore/spdx hashes
 patches/0001…0003         platform, modules, pthread and thread-state glue
 patches/0004…             basic REPL and console line input
+patches/0005…             ZoneInfo fallback to the pinned tzdata package
 zlib_lock.json             pinned zlib archive and license hashes
 zlib_patches/              XOS errno header portability patch
+sqlite/                    SQLite source lock, XOS VFS, profile and notice
+compression/               bzip2/liblzma/zstd source locks and notices
+tzdata_lock.json            pinned timezone database wheel and license
 config/xos_config.site    explicit autoconf overrides
-xos_time.cpp              XOS timing/sleep bridge objects
+xos_time.cpp              XOS wall-clock and sleep bridge objects
 ```
 
 CPython keeps its PSF and bundled third-party licenses; the pinned archive's

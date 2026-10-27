@@ -14,12 +14,18 @@ from process_smoke import command,resources
 from xypm_image import Disk
 from xypm_format import require,sha_file
 from release_launcher import build_command
+from sdk_receipt import verify_sdk, verify_packaged_sdk, verify_copied_inputs
 
 def main():
     version=(ROOT/'VERSION').read_text().strip();release=ROOT/'build/releases'/version
     images=release/('xylophoneos_revival_'+version+'_images');sdk=release/('xylophoneos_revival_'+version+'_sdk')
     metadata=json.loads((release/'release_manifest.json').read_text())
-    report={'status':'failed','version':version,'build_id':metadata['system_build_id'],'checks':[]}
+    system=json.loads((release/'system_manifest.json').read_text())
+    input_binding=verify_sdk(release/'sdk',system)
+    require(input_binding==metadata['sdk_binding']['input'],'release SDK input differs from qualification')
+    sdk_binding=verify_packaged_sdk(sdk,metadata)
+    verify_copied_inputs(sdk,input_binding,metadata['sdk_binding']['runtime'])
+    report={'status':'failed','version':version,'build_id':metadata['system_build_id'],'checks':[],'sdk_input':input_binding,'sdk_packaged_tree_sha256':sdk_binding['tree_sha256']}
     guest=None
     try:
         with tempfile.TemporaryDirectory(prefix='xos_release_') as folder:

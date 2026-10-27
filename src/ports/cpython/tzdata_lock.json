@@ -1,0 +1,9 @@
+{
+  "version": "2026.5",
+  "wheel": "tzdata-2026.5-py2.py3-none-any.whl",
+  "source": "https://pypi.org/project/tzdata/2026.5/",
+  "wheel_sha256": "b683bd1b6659ddcd810ff02ad09ba821d4bf1065072805063eb35c49617905ac",
+  "license": "Apache-2.0",
+  "license_file_in_wheel": "tzdata-2026.5.dist-info/licenses/licenses/LICENSE_APACHE",
+  "stage_path": "/usr/lib/python3.14/site-packages/tzdata"
+}

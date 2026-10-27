@@ -246,6 +246,8 @@ def main():
         "version": (ROOT / "VERSION").read_text().strip(), "source_sha256": source_digest,
         "capacity_probe": args.capacity_probe, "legacy_images_available": legacy_available,
         "sources": source_hashes,
+        "sdk_directories": [p.relative_to(BUILD / "sdk").as_posix()
+                            for p in sorted((BUILD / "sdk").rglob("*")) if p.is_dir()],
         "tools": versions, "toolchain": LOCK, "configuration": TARGET, "commands": commands,
         "kernel_layout": layout, "symbols": {k: symbols[k] for k in (
             "kernel_entry", "kernel_main", "kernel_start", "kernel_end", "bss_start",

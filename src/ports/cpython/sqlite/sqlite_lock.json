@@ -1,0 +1,13 @@
+{
+  "version": "3.54.1",
+  "source": "https://www.sqlite.org/2026/sqlite-autoconf-3540100.tar.gz",
+  "archive": "sqlite-autoconf-3540100.tar.gz",
+  "archive_bytes": 3332984,
+  "sha256": "926ef8d3eab93fbf6e06011901273eec076b25594a4e1cdadd50c987f4f6d64e",
+  "sha3_256": "b6ced585c750916b1052667239a12c25a7ff34e7f06e1e6e01ecb0427657d9c4",
+  "license": "SQLite blessing / public domain dedication",
+  "license_source": "https://www.sqlite.org/copyright.html",
+  "license_file": "src/ports/cpython/sqlite/UPSTREAM_LICENSE.md",
+  "license_sha256": "3a487aaf2da3a06e58adba55c6e507a927cda568bc20d822bf62c36bdeb33d14",
+  "upstream_checkin": "555e07ef33f69a0957d24d8e555b702464a1"
+}

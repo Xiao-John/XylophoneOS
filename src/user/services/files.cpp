@@ -167,7 +167,10 @@ bool names_equal(const char* left, const char* right) {
 bool same_path_object(const char* left, const char* right) {
     if (names_equal(left, right)) { return true; }
     FILINFO a{}, b{};
-    if (f_stat(left, &a) != FR_OK || f_stat(right, &b) != FR_OK) { return false; }
+    const FRESULT ar = f_stat(left, &a), br = f_stat(right, &b);
+    if ((ar != FR_OK && ar != FR_NO_FILE && ar != FR_NO_PATH) ||
+        (br != FR_OK && br != FR_NO_FILE && br != FR_NO_PATH)) { return true; }
+    if (ar != FR_OK || br != FR_OK) { return false; }
     const auto ak = identity_key(a), bk = identity_key(b);
     return ak.sector != 0 && same_identity_key(ak, bk);
 }
@@ -256,7 +259,9 @@ status from_fr(FRESULT result) {
 
 bool any_open(const client_session&, const char* path) {
     FILINFO info{};
-    const bool found = f_stat(path, &info) == FR_OK;
+    const FRESULT result = f_stat(path, &info);
+    if (result != FR_OK && result != FR_NO_FILE && result != FR_NO_PATH) { return true; }
+    const bool found = result == FR_OK;
     const file_identity_key key = found ? identity_key(info) : file_identity_key{};
     for (const auto& item : descriptions) {
         if (item.used && (names_equal(item.path, path) ||

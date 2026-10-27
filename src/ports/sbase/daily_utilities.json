@@ -1,0 +1,84 @@
+{
+  "format_version": 1,
+  "scope": "DU1/DU2 implementation candidates; guest acceptance and package profile pending",
+  "tools": [
+    {
+      "name": "ls",
+      "source": "xos/ls.c",
+      "license": "Apache-2.0",
+      "scope": "-1 -a -A -d --; bytewise sorting; bounded directory list"
+    },
+    {
+      "name": "cat",
+      "source": "xos/cat.c",
+      "license": "MIT AND Apache-2.0",
+      "scope": "stdin, files, -, -u, --"
+    },
+    {
+      "name": "cp",
+      "source": "xos/cp.c",
+      "license": "MIT AND Apache-2.0",
+      "scope": "regular file, directory target, --; no atomic overwrite"
+    },
+    {
+      "name": "mv",
+      "source": "xos/mv.c",
+      "license": "MIT AND Apache-2.0",
+      "scope": "same-volume rename, directory target, --; no overwrite guarantee"
+    },
+    {
+      "name": "rm",
+      "source": "xos/rm.c",
+      "license": "MIT AND Apache-2.0",
+      "scope": "files only, -f, --; no recursion"
+    },
+    {
+      "name": "mkdir",
+      "source": "xos/mkdir.c",
+      "license": "MIT AND Apache-2.0",
+      "scope": "directories, -p, --"
+    },
+    {
+      "name": "rmdir",
+      "source": "xos/rmdir.c",
+      "license": "Apache-2.0",
+      "scope": "empty directories, --"
+    },
+    {
+      "name": "head",
+      "source": "xos/head.c",
+      "license": "Apache-2.0",
+      "scope": "-n count, --, stdin/files"
+    },
+    {
+      "name": "tail",
+      "source": "xos/tail.c",
+      "license": "Apache-2.0",
+      "scope": "-n count, --, stdin/files; bounded retained bytes"
+    },
+    {
+      "name": "wc",
+      "source": "xos/wc.c",
+      "license": "Apache-2.0",
+      "scope": "-l -w -c --; ASCII whitespace"
+    },
+    {
+      "name": "tee",
+      "source": "xos/tee.c",
+      "license": "Apache-2.0",
+      "scope": "-a --; bounded file outputs"
+    },
+    {
+      "name": "basename",
+      "source": "xos/basename.c",
+      "license": "Apache-2.0",
+      "scope": "path and optional suffix, --"
+    },
+    {
+      "name": "dirname",
+      "source": "xos/dirname.c",
+      "license": "Apache-2.0",
+      "scope": "path, --"
+    }
+  ]
+}

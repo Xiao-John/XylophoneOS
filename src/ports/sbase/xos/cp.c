@@ -1,4 +1,5 @@
-/* SPDX-License-Identifier: MIT */
+/* SPDX-License-Identifier: MIT AND Apache-2.0 */
+/* Upstream-derived MIT portions retained; XOS changes from 2026-10-27 are Apache-2.0. */
 /* XOS regular-file subset adapted from sbase cp.c; see ../upstream/LICENSE. */
 #include <errno.h>
 #include <fcntl.h>
@@ -8,19 +9,30 @@
 #include <unistd.h>
 
 int main(int argc, char **argv) {
-    if (argc != 3) { fprintf(stderr, "usage: cp source dest\n"); return 2; }
+    int first = 1;
+    if (argc > 1 && !strcmp(argv[1], "--")) first = 2;
+    else if (argc > 1 && argv[1][0] == '-' && argv[1][1]) { fprintf(stderr, "cp: unsupported option: %s\n", argv[1]); return 2; }
+    if (argc - first != 2) { fprintf(stderr, "usage: cp [--] source dest\n"); return 2; }
+    const char *source = argv[first], *target = argv[first + 1];
+    char destination[256];
     struct stat source_status, target_status;
-    if (stat(argv[1], &source_status) < 0 || !S_ISREG(source_status.st_mode)) {
-        fprintf(stderr, "cp: %s: %s\n", argv[1], strerror(errno)); return 1;
+    if (stat(source, &source_status) < 0) { fprintf(stderr, "cp: %s: %s\n", source, strerror(errno)); return 1; }
+    if (!S_ISREG(source_status.st_mode)) { fprintf(stderr, "cp: %s: not a regular file\n", source); return 1; }
+    if (stat(target, &target_status) == 0 && S_ISDIR(target_status.st_mode)) {
+        const char *base = strrchr(source, '/'); base = base ? base + 1 : source;
+        if (!*base || snprintf(destination, sizeof(destination), "%s/%s", target, base) >= (int)sizeof(destination)) {
+            fprintf(stderr, "cp: invalid or overlong target\n"); return 1;
+        }
+        target = destination;
     }
-    if (stat(argv[2], &target_status) == 0 && source_status.st_dev == target_status.st_dev &&
+    if (stat(target, &target_status) == 0 && source_status.st_dev == target_status.st_dev &&
         source_status.st_ino == target_status.st_ino) {
-        fprintf(stderr, "cp: %s and %s are the same file\n", argv[1], argv[2]); return 1;
+        fprintf(stderr, "cp: %s and %s are the same file\n", source, target); return 1;
     }
-    int input = open(argv[1], O_RDONLY);
-    if (input < 0) { fprintf(stderr, "cp: %s: %s\n", argv[1], strerror(errno)); return 1; }
-    int output = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, 0666);
-    if (output < 0) { fprintf(stderr, "cp: %s: %s\n", argv[2], strerror(errno)); close(input); return 1; }
+    int input = open(source, O_RDONLY);
+    if (input < 0) { fprintf(stderr, "cp: %s: %s\n", source, strerror(errno)); return 1; }
+    int output = open(target, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+    if (output < 0) { fprintf(stderr, "cp: %s: %s\n", target, strerror(errno)); close(input); return 1; }
     char buffer[4096];
     int result = 0;
     for (;;) {
@@ -36,6 +48,6 @@ int main(int argc, char **argv) {
         if (result) { break; }
     }
     if (close(output) < 0) { result = 1; }
-    close(input);
+    if (close(input) < 0) { result = 1; }
     return result;
 }

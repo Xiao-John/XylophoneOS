@@ -37,6 +37,8 @@
 
 ## 接手与下一步
 
+- 日常工具 DU1/DU2 13 个候选已完成源码和交叉构建，尚未进行客体验收或打包；
+  DU3/DU4 尚未完成，详见[0069](work_log/0069_daily_utilities.md)。
 - UTF-8 文件名已接入文件服务、FatFs、SDK 和 newlib；中文创建、目录列举、改名、
   客体重启及原生程序有定向证据，详见[0068](work_log/0068_utf8_filenames.md)。
   非 ASCII 大小写折叠与 xypm 包内路径不在本批承诺。

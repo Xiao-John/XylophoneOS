@@ -188,9 +188,26 @@ def main():
                 if value & 1 and value & 2 and not value >> 63:
                     raise AssertionError("Writable executable PTE")
             pdes = struct.unpack_from("<512Q", tables, 0x2000)
-            for value in pdes[2:]:
-                if value & 1 and not value >> 63:
-                    raise AssertionError("Identity-extension page is executable")
+            for index,value in enumerate(pdes[2:],start=2):
+                if not value & 1:
+                    continue
+                if value & 128:
+                    if not value >> 63:
+                        raise AssertionError("Identity-extension huge page is executable")
+                else:
+                    # ISO-capacity loaders use 4KiB leaves through 18MiB;
+                    # E14 also adds a 4KiB device aperture outside RAM.
+                    path=build/f"kernel_pt_{index}.bin"
+                    guest.qmp("pmemsave", {"val":value & 0x000ffffffffff000,"size":4096,"filename":str(path)})
+                    entries=struct.unpack("<512Q",path.read_bytes())
+                    for leaf in entries:
+                        if leaf & 1 and not leaf >> 63:
+                            raise AssertionError("Identity-extension/device leaf is executable")
+                        if leaf & 4:
+                            raise AssertionError("Kernel/device leaf exposed to userspace")
+                    if index==0x30000000//0x200000:
+                        if any(leaf & 1 and leaf & 0x18 != 0x18 for leaf in entries):
+                            raise AssertionError("Device mapping lacks UC cache flags")
             for address, writable, executable in (
                 (symbols["kernel_entry"], False, True),
                 (symbols["rodata_start"], False, False),

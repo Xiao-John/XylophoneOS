@@ -1,0 +1,285 @@
+XOS: loading stage_two
+[loader] firmware=bios target=x86_64
+[boot] event=kernel_enter arch=x86_64 build=01c8b149ecc0e4cf
+[boot] event=boot_info_valid memory_map=complete
+[boot] event=runtime_checked bss=zero data=valid
+[cpu] event=exceptions_ready idt=0x00000000001750e0 vectors=32 double_fault_ist=1
+[display] state=ready width=800 height=600 stride=3200 physical=0x00000000fd000000 bytes=1920000 cache=uc user_mapping=none
+[mem] event=initialized usable_kib=523775 managed_kib=524160 pages=131040 free_pages=130623 allocated_pages=1
+[mem] event=window low=0x0000000000100000 high=0x000000001ffe0000
+[vm] event=self_check result=pass address=0x0000000040000000 physical=0x00000000001a1000
+[block] event=ready device=ata sectors=1048576
+[task] event=created pid=1 name=heartbeat
+[task] event=created pid=2 name=spinner
+[task] event=created pid=3 name=receiver
+[task] event=created pid=4 name=sender
+[task] event=created pid=5 name=probe
+[task] event=created pid=6 name=quitter
+[task] event=created pid=7 name=supervisor bootstrap=trusted_segments
+[task] event=created pid=8 name=files bootstrap=trusted_segments
+[task] event=ready count=8
+[boot] result=ready stage=E04
+The underscores made it to 64 bits.
+
+  ================================================
+   XOS 0.0.2 | 64-bit | more checks than excuses
+   Guest star: Guo YePeng (did not panic, yet)
+   "It booted on my machine." - everyone, ever
+  ================================================
+   guo = ceremonial greeting    joke = deterministic
+   help = actual work
+xos64> run
+[sched] event=starting
+[input] ps2=ready irq1=enabled irq12=enabled
+[sched] event=start tasks=8
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+bad handle rejected
+no send right
+[task] event=fault pid=5 vector=14 rip=0x0000000040000060 cr2=0x0000000000100000 result=killed tid=5
+[task] event=reclaimed pid=5 pages=11
+bye
+[task] event=reclaimed pid=6 pages=11
+Aping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+[files] ready hello.elf bytes=9872
+
+Welcome to Xshell | XylophoneOS
+help: commands   dash -i: POSIX shell   trace on: diagnostics
+
+xsh> tAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+race on
+xsh: trace on
+xsh> AAping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+ping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+Aping
+bad length
+bad pointer
+tx
+[task] event=killed_by_supervisor pid=1
+[task] event=reclaimed pid=1 pages=11
+[task] event=killed_by_supervisor pid=2
+[task] event=reclaimed pid=2 pages=11
+[task] event=killed_by_supervisor pid=3
+[task] event=reclaimed pid=3 pages=11
+[task] event=killed_by_supervisor pid=4
+[task] event=reclaimed pid=4 pages=11
+
+[xsh] demo tasks stopped
+xsh> stats
+[resources] free=130323 tasks=2 completions=0
+xsh> exec-driver /bin/runtime_probe.elf driver
+[process] event=started pid=9 parent=7
+[process] pid=9 address_space=0x00000000001a1000
+[loader] started pid=9 file=/bin/runtime_probe.elf
+[process] event=wait_blocked parent=7 child=9
+[process] event=started pid=10 parent=9
+[process] pid=10 address_space=0x000000000034f000
+[process] event=wait_blocked parent=9 child=10
+[task] event=reclaimed pid=10 pages=130
+[process] event=started pid=11 parent=9
+[process] pid=11 address_space=0x000000000034f000
+[process] event=wait_blocked parent=9 child=11
+[task] event=reclaimed pid=11 pages=130
+[process] event=started pid=12 parent=9
+[process] pid=12 address_space=0x000000000034f000
+[process] event=wait_blocked parent=9 child=12
+[task] event=reclaimed pid=12 pages=130
+[runtime] files=ok heap=8m args_env_cwd=ok spawn_wait=ok pipe=ok source=preserved
+[task] event=reclaimed pid=9 pages=130
+[wait] pid=9 kind=exited code=0
+xsh> stats
+[resources] free=130323 tasks=2 completions=0
+xsh> exec-driver /bin/runtime_probe.elf driver
+[process] event=started pid=13 parent=7
+[process] pid=13 address_space=0x00000000001a1000
+[loader] started pid=13 file=/bin/runtime_probe.elf
+[process] event=wait_blocked parent=7 child=13
+[process] event=started pid=14 parent=13
+[process] pid=14 address_space=0x000000000034f000
+[process] event=wait_blocked parent=13 child=14
+[task] event=reclaimed pid=14 pages=130
+[process] event=started pid=15 parent=13
+[process] pid=15 address_space=0x000000000034f000
+[process] event=wait_blocked parent=13 child=15
+[task] event=reclaimed pid=15 pages=130
+[process] event=started pid=16 parent=13
+[process] pid=16 address_space=0x000000000034f000
+[process] event=wait_blocked parent=13 child=16
+[task] event=reclaimed pid=16 pages=130
+[runtime] files=ok heap=8m args_env_cwd=ok spawn_wait=ok pipe=ok source=preserved
+[task] event=reclaimed pid=13 pages=130
+[wait] pid=13 kind=exited code=0
+xsh> stats
+[resources] free=130323 tasks=2 completions=0
+xsh> exec-driver /bin/runtime_probe.elf driver
+[process] event=started pid=17 parent=7
+[process] pid=17 address_space=0x00000000001a1000
+[loader] started pid=17 file=/bin/runtime_probe.elf
+[process] event=wait_blocked parent=7 child=17
+[process] event=started pid=18 parent=17
+[process] pid=18 address_space=0x000000000034f000
+[process] event=wait_blocked parent=17 child=18
+[task] event=reclaimed pid=18 pages=130
+[process] event=started pid=19 parent=17
+[process] pid=19 address_space=0x000000000034f000
+[process] event=wait_blocked parent=17 child=19
+[task] event=reclaimed pid=19 pages=130
+[process] event=started pid=20 parent=17
+[process] pid=20 address_space=0x000000000034f000
+[process] event=wait_blocked parent=17 child=20
+[task] event=reclaimed pid=20 pages=130
+[runtime] files=ok heap=8m args_env_cwd=ok spawn_wait=ok pipe=ok source=preserved
+[task] event=reclaimed pid=17 pages=130
+[wait] pid=17 kind=exited code=0
+xsh> stats
+[resources] free=130323 tasks=2 completions=0
+xsh> exec-file /bin/runtime_probe.elf driver
+[process] event=started pid=21 parent=7
+[process] pid=21 address_space=0x00000000001a1000
+[loader] started pid=21 file=/bin/runtime_probe.elf
+[process] event=wait_blocked parent=7 child=21
+[runtime] FAILED spawn-copy/wait errno=21
+[task] event=reclaimed pid=21 pages=130
+[wait] pid=21 kind=exited code=1
+xsh> stats
+[resources] free=130323 tasks=2 completions=0
+xsh> sync
+[files] sync=ok
+xsh> 

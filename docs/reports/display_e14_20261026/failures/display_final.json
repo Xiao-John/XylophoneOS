@@ -1,0 +1,24 @@
+{
+  "status": "failed",
+  "build_id": "8e3c208abd616f58",
+  "checks": [
+    {
+      "name": "source_and_artifact_hashes_match_manifest",
+      "status": "passed"
+    }
+  ],
+  "source_sha256": "8e3c208abd616f58b6e1823c7c0ead44f7bf22562d84efd5939d2db9127de734",
+  "image_sha256": "9bdee6a936cfdc7f2a16628b4af7001993db3b1c6d89d32735957df8b5b651ca",
+  "not_run": [
+    "real_hardware",
+    "SMP",
+    "Qt",
+    "long_term_stress"
+  ],
+  "resource_baseline": [
+    130323,
+    2,
+    0
+  ],
+  "error": "AssertionError(\"display_final/main: missing any of (b'result=0',); output=bytearray(b'ad length\\\\nbad pointer\\\\ntx\\\\nAAping\\\\nbad length\\\\nbad pointer\\\\ntx\\\\nbad length\\\\nbad pointer\\\\nAAping\\\\nbad length\\\\nbad pointer\\\\ntx\\\\nAAping\\\\nbad length\\\\nbad pointer\\\\ntx\\\\nAAping\\\\nbad length\\\\nbad pointer\\\\ntx\\\\nAping\\\\nbad length\\\\nbad pointer\\\\ntx\\\\nbad length\\\\nbad pointer\\\\nAAping\\\\nbad length\\\\nbad pointer\\\\ntx\\\\nAAping\\\\nbad length\\\\nbad pointer\\\\ntx\\\\nAAping\\\\nbad length\\\\nbad pointer\\\\ntx\\\\nAAping\\\\nbad length\\\\nbad pointer\\\\ntx\\\\nbad length\\\\nbad pointer\\\\n[task] event=killed_by_supervisor pid=1\\\\r\\\\n[task] event=reclaimed pid=1 pages=11\\\\r\\\\n[task] event=killed_by_supervisor pid=2\\\\r\\\\n[task] event=reclaimed pid=2 pages=11\\\\r\\\\n[task] event=killed_by_supervisor pid=3\\\\r\\\\n[task] event=reclaimed pid=3 pages=11\\\\r\\\\n[task] event=killed_by_supervisor pid=4\\\\r\\\\n[task] event=reclaimed pid=4 pages=11\\\\r\\\\n\\\\n[xsh] demo tasks stopped\\\\nxsh> stats\\\\n[resources] free=130323 tasks=2 completions=0\\\\nxsh> display-start\\\\n[process] event=started pid=9 parent=7\\\\r\\\\n[process] pid=9 address_space=0x00000000001a1000\\\\r\\\\n[display-start] pid=9 result=[display-service] ready file=denied block=denied spawn=denied\\\\n0\\\\nxsh> ')\")"
+}

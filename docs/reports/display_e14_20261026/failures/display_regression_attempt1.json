@@ -1,0 +1,89 @@
+{
+  "build_id": "cc1e694b5de44330",
+  "checks": [
+    {
+      "name": "kernel",
+      "exit_code": 1,
+      "seconds": 0.947232874983456,
+      "command": [
+        "python3",
+        "tests/kernel_smoke.py"
+      ]
+    },
+    {
+      "name": "process",
+      "exit_code": 0,
+      "seconds": 8.33520316699287,
+      "command": [
+        "python3",
+        "tests/process_smoke.py"
+      ]
+    },
+    {
+      "name": "threading",
+      "exit_code": 0,
+      "seconds": 7.491505082987715,
+      "command": [
+        "python3",
+        "tests/threading_smoke.py"
+      ]
+    },
+    {
+      "name": "runtime",
+      "exit_code": 1,
+      "seconds": 2.614288957993267,
+      "command": [
+        "python3",
+        "tests/runtime_smoke.py"
+      ]
+    },
+    {
+      "name": "libc",
+      "exit_code": 0,
+      "seconds": 2.2652711250120774,
+      "command": [
+        "python3",
+        "tests/libc_smoke.py"
+      ]
+    },
+    {
+      "name": "file",
+      "exit_code": 0,
+      "seconds": 3.0404081249726005,
+      "command": [
+        "python3",
+        "tests/file_smoke.py"
+      ]
+    },
+    {
+      "name": "persist",
+      "exit_code": 0,
+      "seconds": 4.053576125006657,
+      "command": [
+        "python3",
+        "tests/persist_smoke.py"
+      ]
+    },
+    {
+      "name": "license",
+      "exit_code": 0,
+      "seconds": 0.08491237502312288,
+      "command": [
+        "python3",
+        "scripts/license_audit.py"
+      ]
+    },
+    {
+      "name": "native",
+      "exit_code": 0,
+      "seconds": 52.92940195801202,
+      "command": [
+        "python3",
+        "tests/threading_native_toolchain.py",
+        "--release-images",
+        "/Users/perry_guo/Documents/ChatGPT/os/runtime/xos-1024-images.tar.gz"
+      ]
+    }
+  ],
+  "status": "failed"
+}

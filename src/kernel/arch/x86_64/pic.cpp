@@ -37,6 +37,11 @@ void pic_init() {
     out_byte(slave_data, 0xff);
 }
 
+void pic_input_enable() {
+    out_byte(master_data, 0xf8); // PIT, keyboard and slave cascade
+    out_byte(slave_data, 0xef); // IRQ12
+}
+
 void timer_init(u32 hz) {
     const u32 divisor = pit_frequency / hz;
     out_byte(pit_command, 0x36); // channel 0, lobyte/hibyte, mode 3

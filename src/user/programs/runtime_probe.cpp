@@ -135,8 +135,9 @@ int main(int argc,char** argv) {
     int error=posix_spawn(&child,argv[0],nullptr,nullptr,child_args,child_env);
     if(error) return fail("spawn-copy/wait");
     errno=0;
-    if(waitpid(child,&status,WNOHANG)!=-1 || errno!=ENOTSUP) return fail("unsupported nonblocking wait");
-    if(waitpid(child,&status,0)!=child || !WIFEXITED(status) || WEXITSTATUS(status)!=17) return fail("spawn-copy/wait");
+    const pid_t polled=waitpid(child,&status,WNOHANG);
+    if(polled!=0 && polled!=child) return fail("nonblocking wait");
+    if((polled==0 && waitpid(child,&status,0)!=child) || !WIFEXITED(status) || WEXITSTATUS(status)!=17) return fail("spawn-copy/wait");
     FILE* object=fopen("/out/object.bin","rb");
     if(!object || fread(text,1,3,object)!=3 || memcmp(text,"int",3) || fclose(object)) return fail("object");
     int ends[2];if(pipe(ends)) return fail("pipe");

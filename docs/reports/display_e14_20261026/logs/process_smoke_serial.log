@@ -1,0 +1,408 @@
+XOS: loading stage_two
+[loader] firmware=bios target=x86_64
+[boot] event=kernel_enter arch=x86_64 build=01c8b149ecc0e4cf
+[boot] event=boot_info_valid memory_map=complete
+[boot] event=runtime_checked bss=zero data=valid
+[cpu] event=exceptions_ready idt=0x00000000001750e0 vectors=32 double_fault_ist=1
+[display] state=ready width=800 height=600 stride=3200 physical=0x00000000fd000000 bytes=1920000 cache=uc user_mapping=none
+[mem] event=initialized usable_kib=523775 managed_kib=524160 pages=131040 free_pages=130623 allocated_pages=1
+[mem] event=window low=0x0000000000100000 high=0x000000001ffe0000
+[vm] event=self_check result=pass address=0x0000000040000000 physical=0x00000000001a1000
+[block] event=absent device=ata
+[task] event=created pid=1 name=heartbeat
+[task] event=created pid=2 name=spinner
+[task] event=created pid=3 name=receiver
+[task] event=created pid=4 name=sender
+[task] event=created pid=5 name=probe
+[task] event=created pid=6 name=quitter
+[task] event=created pid=7 name=supervisor bootstrap=trusted_segments
+[task] event=created pid=8 name=files bootstrap=trusted_segments
+[task] event=ready count=8
+[boot] result=ready stage=E04
+The underscores made it to 64 bits.
+
+  ================================================
+   XOS 0.0.2 | 64-bit | more checks than excuses
+   Guest star: Guo YePeng (did not panic, yet)
+   "It booted on my machine." - everyone, ever
+  ================================================
+   guo = ceremonial greeting    joke = deterministic
+   help = actual work
+xos64> run
+[sched] event=starting
+[input] ps2=ready irq1=enabled irq12=enabled
+[sched] event=start tasks=8
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+bad handle rejected
+no send right
+[task] event=fault pid=5 vector=14 rip=0x0000000040000060 cr2=0x0000000000100000 result=killed tid=5
+[task] event=reclaimed pid=5 pages=11
+bye
+[task] event=reclaimed pid=6 pages=11
+AAping
+bad length
+bad pointer
+tx
+[files] bootstrap-stat error=-7
+
+Welcome to Xshell | XylophoneOS
+help: commands   dash -i: POSIX shell   trace on: diagnostics
+
+xsh> tAping
+bad length
+bad pointer
+tx
+race on
+xsh: trace on
+xsh> AAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+demo keepAAping
+bad length
+bad pointer
+tx
+
+demo: keep
+xsh> AAping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+Aping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+kill 3
+[task] event=killed_by_supervisor pid=3
+[task] event=reclaimed pid=3 pages=11
+kill: accepted
+xsh> Abad length
+bad pointer
+kill 4AAbad length
+bad pointer
+
+[task] event=killed_by_supervisor pid=4
+[task] event=reclaimed pid=4 pages=11
+kill: accepted
+xsh> AAstatsAA
+[resources] free=130301 tasks=4 completions=0
+xsh> AAimagAAes
+image=demo bytes=14184
+image=fault bytes=10152
+image=spin bytes=9864
+image=slow bytes=9872
+image=echo bytes=9880
+image=hello bytes=9872
+image=libc_hello bytes=116448
+image=display bytes=10088
+image=gfxdemo bytes=23616
+image=bad_magic bytes=14184
+image=bad_interp bytes=14184
+image=bad_overflow bytes=14184
+xsh> AexecAA demAAo helAAlo wAAorldAA
+[process] event=started pid=9 parent=7
+[process] pid=9 address_space=0x00000000001b8000
+[loader] started pid=9 image=demo
+[process] event=wait_blocked parent=7 child=9
+A[demo] bss=zero data=valid argc=3
+arg[0]=demo
+arg[1]=hello
+arg[2]=world
+[demo] stderr=valid
+[demo] handles=checked create=denied
+[task] event=reclaimed pid=9 pages=47
+[wait] pid=9 kind=exited code=42
+xsh> AwaitAA 9
+wait: error=-1
+xsh> AAwait AA1
+wait: error=-1
+xsh> AstatAAs
+[resources] free=130301 tasks=4 completions=0
+xsh> AAexec AAslowAA
+[process] event=started pid=10 parent=7
+[process] pid=10 address_space=0x00000000001b8000
+[loader] started pid=10 image=slow
+[process] event=wait_blocked parent=7 child=10
+A[slow] waiting ticks
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAA[task] event=reclaimed pid=10 pages=44
+[wait] pid=10 kind=exited code=-7
+xsh> AAexec AAechoAA
+[process] event=started pid=11 parent=7
+[process] pid=11 address_space=0x00000000001b8000
+[loader] started pid=11 image=echo
+[process] event=wait_blocked parent=7 child=11
+A[echo] input> AAhelloAA_froAAm_stAAdin
+[echo] done
+[task] event=reclaimed pid=11 pages=44
+[wait] pid=11 kind=exited code=0
+xsh> AAexeAc badAA_magAAic
+elf: rejected reason=header
+exec: error=-2
+xsh> AAexecAA badAA_intAerp
+elf: rejected reason=unsupported
+exec: error=-2
+xsh> AAexecAA badAA_oveAArfloAAw
+elf: rejected reason=bounds
+exec: error=-2
+xsh> AAelfteAAst
+[elf] cases=24 result=pass resources=stable
+xsh> AAstatsA
+[resources] free=130301 tasks=4 completions=0
+xsh> AAprimAAtestAA
+[task] event=reclaimed pid=12 pages=6
+[task] event=reclaimed pid=13 pages=6
+[task] event=reclaimed pid=14 pages=6
+[task] event=reclaimed pid=15 pages=6
+[task] event=reclaimed pid=16 pages=6
+[task] event=reclaimed pid=17 pages=6
+[task] event=reclaimed pid=18 pages=6
+[task] event=reclaimed pid=19 pages=6
+[task] event=reclaimed pid=20 pages=6
+[task] event=reclaimed pid=21 pages=6
+[task] event=reclaimed pid=22 pages=6
+[task] event=reclaimed pid=23 pages=6
+[task] event=reclaimed pid=24 pages=4
+[task] event=reclaimed pid=25 pages=4
+[task] event=reclaimed pid=26 pages=4
+[task] event=reclaimed pid=27 pages=4
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA[task] event=reclaimed pid=28 pages=65668
+A[primitive] page_pressure=65536 ticks=75
+[primitive] bounds=w_x=source=duplicate=entry=stale=capacity checked rollback=stable
+xsh> AAstatAAs
+[resources] free=130301 tasks=4 completions=0
+xsh> AexecAA fauAAlt
+[process] event=started pid=29 parent=7
+[process] pid=29 address_space=0x00000000001b8000
+[loader] started pid=29 image=fault
+[process] event=wait_blocked parent=7 child=29
+AA[fault] testing protected memory
+[task] event=fault pid=29 vector=14 rip=0x00000000400000bf cr2=0x0000000000100000 result=killed tid=29
+[task] event=reclaimed pid=29 pages=45
+[wait] pid=29 kind=faulted code=0 vector=14 address=1048576
+xsh> AexecAA fauAAlt rAAeadoAAnly
+[process] event=started pid=30 parent=7
+[process] pid=30 address_space=0x00000000001b8000
+[loader] started pid=30 image=fault
+[process] event=wait_blocked parent=7 child=30
+AA[fault] testing protected memory
+[task] event=fault pid=30 vector=14 rip=0x00000000400000d8 cr2=0x0000000040001040 result=killed tid=30
+[task] event=reclaimed pid=30 pages=45
+[wait] pid=30 kind=faulted code=0 vector=14 address=1073745984
+xsh> AexecAA fauAAlt nAAx
+[process] event=started pid=31 parent=7
+[process] pid=31 address_space=0x00000000001b8000
+[loader] started pid=31 image=fault
+[process] event=wait_blocked parent=7 child=31
+AA[fault] testing protected memory
+[task] event=fault pid=31 vector=14 rip=0x0000000040002000 cr2=0x0000000040002000 result=killed tid=31
+[task] event=reclaimed pid=31 pages=45
+[wait] pid=31 kind=faulted code=0 vector=14 address=1073750016
+xsh> Aexec AAfaulAAt fpAAu
+[process] event=started pid=32 parent=7
+[process] pid=32 address_space=0x00000000001b8000
+[loader] started pid=32 image=fault
+[process] event=wait_blocked parent=7 child=32
+AA[fault] testing protected memory
+[task] event=reclaimed pid=32 pages=45
+[wait] pid=32 kind=exited code=99
+xsh> AstatAAs
+[resources] free=130301 tasks=4 completions=0
+xsh> AAspawnA spiAAn
+[process] event=started pid=33 parent=7
+[process] pid=33 address_space=0x00000000001b8000
+[loader] started pid=33 image=spin
+xsh> AA[spin] alive
+psAA
+pid=1 name=heartbeat state=r ticks=131
+pid=2 name=spinner state=r ticks=131
+pid=33 name=spin state=r ticks=2
+pid=7 name=supervisor state=R ticks=25
+pid=8 name=files state=r ticks=0
+xsh> Akill 3AA3
+[task] event=killed_by_supervisor pid=33
+[task] event=reclaimed pid=33 pages=44
+kill: accepted
+xsh> AAwaitAA 33
+[wait] pid=33 kind=killed code=-9
+xsh> AAwaitAA 33
+wait: error=-1
+xsh> AAstatAs
+[resources] free=130301 tasks=4 completions=0
+xsh> AAexecAA spiAAn
+[process] event=started pid=34 parent=7
+[process] pid=34 address_space=0x00000000001b8000
+[loader] started pid=34 image=spin
+[process] event=wait_blocked parent=7 child=34
+A[spin] alive
+[process] event=cancelled_by_escape pid=34
+[task] event=reclaimed pid=34 pages=44
+[wait] pid=34 kind=killed code=-27
+xsh> AAstatsAA
+[resources] free=130301 tasks=4 completions=0
+xsh> AAexecAA demoA agaAAin
+[process] event=started pid=35 parent=7
+[process] pid=35 address_space=0x00000000001b8000
+[loader] started pid=35 image=demo
+[process] event=wait_blocked parent=7 child=35
+AA[demo] bss=zero data=valid argc=2
+arg[0]=demo
+arg[1]=again
+[demo] stderr=valid
+[demo] handles=checked create=denied
+[task] event=reclaimed pid=35 pages=47
+[wait] pid=35 kind=exited code=42
+xsh> AAstatAs
+[resources] free=130301 tasks=4 completions=0
+xsh> AAexecAA demAAo agaAAin
+[process] event=started pid=36 parent=7
+[process] pid=36 address_space=0x00000000001b8000
+[loader] started pid=36 image=demo
+[process] event=wait_blocked parent=7 child=36
+AA[demo] bss=zero data=valid argc=2
+arg[0]=demo
+arg[1]=again
+[demo] stderr=valid
+[demo] handles=checked create=denied
+[task] event=reclaimed pid=36 pages=47
+[wait] pid=36 kind=exited code=42
+xsh> AstatsAA
+[resources] free=130301 tasks=4 completions=0
+xsh> AAexec AAdemoAA agaAAin
+[process] event=started pid=37 parent=7
+[process] pid=37 address_space=0x00000000001b8000
+[loader] started pid=37 image=demo
+[process] event=wait_blocked parent=7 child=37
+A[demo] bss=zero data=valid argc=2
+arg[0]=demo
+arg[1]=again
+[demo] stderr=valid
+[demo] handles=checked create=denied
+[task] event=reclaimed pid=37 pages=47
+[wait] pid=37 kind=exited code=42
+xsh> AAstatAAs
+[resources] free=130301 tasks=4 completions=0
+xsh> AexecAA demAAo agAAain
+[process] event=started pid=38 parent=7
+[process] pid=38 address_space=0x00000000001b8000
+[loader] started pid=38 image=demo
+[process] event=wait_blocked parent=7 child=38
+AA[demo] bss=zero data=valid argc=2
+arg[0]=demo
+arg[1]=again
+[demo] stderr=valid
+[demo] handles=checked create=denied
+[task] event=reclaimed pid=38 pages=47
+[wait] pid=38 kind=exited code=42
+xsh> AstatAAs
+[resources] free=130301 tasks=4 completions=0
+xsh> AAexec AAdemoAA agaAAin
+[process] event=started pid=39 parent=7
+[process] pid=39 address_space=0x00000000001b8000
+[loader] started pid=39 image=demo
+[process] event=wait_blocked parent=7 child=39
+A[demo] bss=zero data=valid argc=2
+arg[0]=demo
+arg[1]=again
+[demo] stderr=valid
+[demo] handles=checked create=denied
+[task] event=reclaimed pid=39 pages=47
+[wait] pid=39 kind=exited code=42
+xsh> AAstatAAs
+[resources] free=130301 tasks=4 completions=0
+xsh> AexecAA demAAo agAAain
+[process] event=started pid=40 parent=7
+[process] pid=40 address_space=0x00000000001b8000
+[loader] started pid=40 image=demo
+[process] event=wait_blocked parent=7 child=40
+AA[demo] bss=zero data=valid argc=2
+arg[0]=demo
+arg[1]=again
+[demo] stderr=valid
+[demo] handles=checked create=denied
+[task] event=reclaimed pid=40 pages=47
+[wait] pid=40 kind=exited code=42
+xsh> AAstatsA
+[resources] free=130301 tasks=4 completions=0
+xsh> AAexec AAdemoAA agaAAin
+[process] event=started pid=41 parent=7
+[process] pid=41 address_space=0x00000000001b8000
+[loader] started pid=41 image=demo
+[process] event=wait_blocked parent=7 child=41
+AA[demo] bss=zero data=valid argc=2
+arg[0]=demo
+arg[1]=again
+[demo] stderr=valid
+[demo] handles=checked create=denied
+[task] event=reclaimed pid=41 pages=47
+[wait] pid=41 kind=exited code=42
+xsh> AstatAAs
+[resources] free=130301 tasks=4 completions=0
+xsh> AAexec AdemoAA agaAAin
+[process] event=started pid=42 parent=7
+[process] pid=42 address_space=0x00000000001b8000
+[loader] started pid=42 image=demo
+[process] event=wait_blocked parent=7 child=42
+AA[demo] bss=zero data=valid argc=2
+arg[0]=demo
+arg[1]=again
+[demo] stderr=valid
+[demo] handles=checked create=denied
+[task] event=reclaimed pid=42 pages=47
+[wait] pid=42 kind=exited code=42
+xsh> AstatAAs
+[resources] free=130301 tasks=4 completions=0
+xsh> AAexecAA demoAA agaAin
+[process] event=started pid=43 parent=7
+[process] pid=43 address_space=0x00000000001b8000
+[loader] started pid=43 image=demo
+[process] event=wait_blocked parent=7 child=43
+AA[demo] bss=zero data=valid argc=2
+arg[0]=demo
+arg[1]=again
+[demo] stderr=valid
+[demo] handles=checked create=denied
+[task] event=reclaimed pid=43 pages=47
+[wait] pid=43 kind=exited code=42
+xsh> AAstatAAs
+[resources] free=130301 tasks=4 completions=0
+xsh> Aexec AAdemoAA agaAAin
+[process] event=started pid=44 parent=7
+[process] pid=44 address_space=0x00000000001b8000
+[loader] started pid=44 image=demo
+[process] event=wait_blocked parent=7 child=44
+AA[demo] bss=zero data=valid argc=2
+arg[0]=demo
+arg[1]=again
+[demo] stderr=valid
+[demo] handles=checked create=denied
+[task] event=reclaimed pid=44 pages=47
+[wait] pid=44 kind=exited code=42
+xsh> AstatAAs
+[resources] free=130301 tasks=4 completions=0
+xsh> 

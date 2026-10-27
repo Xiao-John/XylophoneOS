@@ -1,0 +1,53 @@
+XOS: loading stage_two
+[loader] firmware=bios target=x86_64
+[boot] event=kernel_enter arch=x86_64 build=01c8b149ecc0e4cf
+[boot] event=boot_info_valid memory_map=complete
+[boot] event=runtime_checked bss=zero data=valid
+[cpu] event=exceptions_ready idt=0x00000000001750e0 vectors=32 double_fault_ist=1
+[display] state=ready width=800 height=600 stride=3200 physical=0x00000000fd000000 bytes=1920000 cache=uc user_mapping=none
+[mem] event=initialized usable_kib=523775 managed_kib=524160 pages=131040 free_pages=130623 allocated_pages=1
+[mem] event=window low=0x0000000000100000 high=0x000000001ffe0000
+[vm] event=self_check result=pass address=0x0000000040000000 physical=0x00000000001a1000
+[block] event=absent device=ata
+[task] event=created pid=1 name=heartbeat
+[task] event=created pid=2 name=spinner
+[task] event=created pid=3 name=receiver
+[task] event=created pid=4 name=sender
+[task] event=created pid=5 name=probe
+[task] event=created pid=6 name=quitter
+[task] event=created pid=7 name=supervisor bootstrap=trusted_segments
+[task] event=created pid=8 name=files bootstrap=trusted_segments
+[task] event=ready count=8
+[boot] result=ready stage=E04
+The underscores made it to 64 bits.
+
+  ================================================
+   XOS 0.0.2 | 64-bit | more checks than excuses
+   Guest star: Guo YePeng (did not panic, yet)
+   "It booted on my machine." - everyone, ever
+  ================================================
+   guo = ceremonial greeting    joke = deterministic
+   help = actual work
+xos64> mem
+[mem] usable_kib=523775 managed_kib=524160 pages=131040 free=130257 allocated=367
+[mem] window=0x0000000000100000..0x000000001ffe0000
+xos64> guo
+[guo] name="Guo YePeng" role="friend, chaos consultant"
+[guo] status=did_not_panic_yet ego=+1
+[guo] tip=if it breaks, check the GDT first
+xos64> joke
+[joke] Why did the page fault cross the road? It had a valid CR2.
+xos64> about
+XOS E07 | x86-64 | NASM + restricted C++ | build=01c8b149ecc0e4cf
+Not Linux, not trying to be. Guo YePeng is in the credits; the bugs are still mine.
+xos64> alloc
+alloc result=ok phys=0x000000000030f000
+xos64> free
+free result=ok
+xos64> free
+free result=invalid
+xos64> vmtest
+[vm] event=self_check result=pass address=0x0000000040000000 physical=0x000000000030f000
+vmtest result=pass
+xos64> halt
+HALTED: CPU resting; close QEMU to exit.

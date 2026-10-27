@@ -1,0 +1,3 @@
+# Preserve the exact guest UART bytes used by the qualification hashes.
+logs/*.log -text
+failures/*.log -text

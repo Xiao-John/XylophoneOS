@@ -330,3 +330,11 @@ C3收口另补小pipe write原子性：当前SDK对<=4096字节的pipe write等�
 启动及实测native编译保留，阻塞pipe/文件stdio完整保证限匹配的当前SDK。旧B2
 无能力标记的二进制需要用新SDK重建；xypm旧profile也须独立登记/迁移，不能推断
 它能接受新继承形式。这是显式ABI admission，不能声称所有旧静态stdio都兼容。
+
+## E14 display ABI v1（2026-10-26）
+
+sys63=display控制/认证channel/等待，sys64=服务角色对已接收request的批量呈现。
+共享布局在display_abi.hpp、SDK在display_client.hpp，完整权限/所有权/错误/等待
+见[display_backend.md](display_backend.md)。旧sys0–62、ELF/startup/thread/file布局
+保持不变；新模块追加目录，不改变原image ID。boot_info v1仍64字节，v2为112
+字节，保留reserved的ISO payload语义。旧内核不能消费新v2引导器。

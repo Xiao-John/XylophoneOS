@@ -1,0 +1,15 @@
+{
+  "status": "failed",
+  "build_id": "44050845d97763c1",
+  "input_sha256": {
+    "dash": "d262b8299734d07c27e8d5ac696a3460c82cba4fe56159d3cbdcceee8f703ff9",
+    "make": "dfe2aa23c9e2adc7f9644f869f2c9618131d3dd1771ef392122d796b81053725",
+    "cpp_threads": "c9ec5680c3cad50eb024a07605f5a37e58737664f3ede077129f164946c55aee"
+  },
+  "checks": [
+    "dash_C1_pipeline_C2_fork_command_substitution_C3_heredoc",
+    "make_runs_real_shell_recipe_and_file_content_matches"
+  ],
+  "python_stage_manifest_sha256": "38ae341b4257d46319f18c596ca168bd15664c270cd3bff6d49ce75e8b70dac1",
+  "error": "AssertionError(b'python3 /work/threading.py\\n[process] event=started pid=17 parent=7\\r\\n[process] pid=17 address_space=0x00000000001a1000\\r\\n[loader] started pid=17 file=/usr/bin/python3\\n[process] event=wait_blocked parent=7 child=17\\r\\nCould not find platform dependent libraries <exec_prefix>\\nTraceback (most recent call last):\\n  File \\x1b[35m\"/work/threading.py\"\\x1b[0m, line \\x1b[35m2\\x1b[0m, in \\x1b[35m<module>\\x1b[0m\\n    import queue\\n  File \\x1b[35m\"/usr/lib/python3.14/queue.py\"\\x1b[0m, line \\x1b[35m3\\x1b[0m, in \\x1b[35m<module>\\x1b[0m\\n    import threading\\n  File \\x1b[35m\"/work/threading.py\"\\x1b[0m, line \\x1b[35m7\\x1b[0m, in \\x1b[35m<module>\\x1b[0m\\n    counter_lock = \\x1b[1;31mthreading.Lock\\x1b[0m()\\n                   \\x1b[1;31m^^^^^^^^^^^^^^\\x1b[0m\\n\\x1b[1;35mAttributeError\\x1b[0m: \\x1b[35mmodule \\'threading\\' has no attribute \\'Lock\\' (consider renaming \\'/work/threading.py\\' since it has the same name as the standard library module named \\'threading\\' and prevents importing that standard library module)\\x1b[0m\\n[task] event=reclaimed pid=17 pages=2868\\r\\n[wait] pid=17 kind=exited code=1\\nxsh> ')"
+}

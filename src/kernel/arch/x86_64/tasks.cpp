@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT AND Apache-2.0
 // Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/task.hpp>
+#include <xos/display.hpp>
 #include <xos/thread_abi.hpp>
 #include "../../core/thread_lifecycle.hpp"
 #include <xos/block.hpp>
@@ -29,7 +30,7 @@ constexpr u64 user_stack_top = 0x40020000ull;
 constexpr u64 user_stack_bottom = user_stack_top - 4 * page_size;
 constexpr u64 user_limit = process_user_end;
 // E03's receiver, the supervisor/files bootstrap pair, and eight task pairs.
-constexpr u32 max_endpoints = 19;
+constexpr u32 max_endpoints = 21;
 constexpr u32 file_session_count = 8;
 constexpr u32 default_message_bytes = 64;
 constexpr u32 file_message_bytes = 4096;
@@ -144,6 +145,12 @@ bool process_trace_enabled = true;
 process_guard_info admission_guard{};
 
 void ready_with(thread_record& thread, i64 result);
+bool display_endpoint(u64 handle);
+void display_wake(u64 handle,i64 result);
+void display_release(u64 pid);
+extern u64 display_service_pid;
+extern u32 display_request_handle,display_response_handle;
+extern bool display_delivered,display_presented;
 
 // Pipe wait keys use a live kernel pipe slot. Closing the final route wakes
 // every sleeper before that slot may be reused; no pending I/O pointer is held.
@@ -562,7 +569,7 @@ i64 ipc_send(u64 handle, u64 address, u64 length) {
     endpoint_record* endpoint = endpoint_for(handle);
     if (endpoint == nullptr || current == nullptr || endpoint->sender_pid != current->pid ||
         (current->send_handle != handle &&
-         !(current->block_access && endpoint->session_response))) {
+         !(current->block_access && endpoint->session_response) && !display_endpoint(handle))) {
         return sys_error_invalid_handle;
     }
     if (endpoint->receiver_pid == current->pid || length == 0 || length > endpoint->capacity) {
@@ -571,18 +578,21 @@ i64 ipc_send(u64 handle, u64 address, u64 length) {
     process_record* receiver = task_by_pid(endpoint->receiver_pid);
     if (receiver == nullptr || receiver->state == task_state::dead ||
         receiver->state == task_state::building) { return sys_error_invalid_handle; }
-    if (endpoint->pending) { return sys_error_full; }
+    if (endpoint->pending || (handle==display_request_handle && display_delivered)) { return sys_error_full; }
+    if (handle==display_response_handle && !display_delivered) {return sys_error_invalid_argument;}
     if (!user_range_ok(address, length, false)) { return sys_error_invalid_argument; }
     copy_from_user(endpoint->data, address, length);
     endpoint->length = static_cast<u32>(length);
     endpoint->pending = true;
+    if(handle==display_response_handle){display_delivered=false;display_presented=false;}
+    if(display_endpoint(handle)){display_wake(handle,0);}
     return 0;
 }
 
 i64 ipc_recv(u64 handle, u64 address, u64 length) {
     endpoint_record* endpoint = endpoint_for(handle);
     if (endpoint == nullptr || current == nullptr || endpoint->receiver_pid != current->pid ||
-        (current->recv_handle != handle && !current->block_access)) {
+        (current->recv_handle != handle && !current->block_access && !display_endpoint(handle))) {
         return sys_error_invalid_handle;
     }
     if (!user_range_ok(address, length, true)) { return sys_error_invalid_argument; }
@@ -591,7 +601,8 @@ i64 ipc_recv(u64 handle, u64 address, u64 length) {
     copy_to_user(address, endpoint->data, endpoint->length);
     const u32 length_received = endpoint->length;
     endpoint->pending = false;
-    endpoint->length = 0;
+    if(handle==display_request_handle){display_delivered=true;display_presented=false;}
+    else {endpoint->length = 0;}
     return static_cast<i64>(length_received);
 }
 
@@ -736,6 +747,7 @@ completion_record* completion_for(u64 parent, u64 pid) {
 void finish_task(process_record* task, process_outcome outcome, i64 code,
                   u64 vector = 0, u64 address = 0, u64 instruction = 0) {
     if (task->state == task_state::dead) { return; }
+    display_release(task->pid);
     task->closing = true;
     task->state = task_state::dead;
     for (auto& thread : threads) {
@@ -1475,6 +1487,8 @@ i64 prepare_fork(interrupt_frame* frame) {
     return static_cast<i64>(child->pid);
 }
 
+#include "display_tasks.inc"
+
 void* process_syscall(interrupt_frame* frame) {
     i64 result = process_error_invalid;
     const u64 first = frame->rdi, second = frame->rsi, third = frame->rdx;
@@ -1571,6 +1585,7 @@ void* process_syscall(interrupt_frame* frame) {
             result = process_error_state; break;
         }
         if (next_endpoint_handle > 0xfffffffeull) { result = process_error_resources; break; }
+        display_release(current->pid);
         const u64 old_space = current->cr3;
         const u32 old_pages = current->user_pages;
         const u32 old_depth = current->spawn_depth;
@@ -2175,6 +2190,12 @@ void* process_syscall(interrupt_frame* frame) {
 }
 }
 
+void* input_entry(interrupt_frame* frame) {
+    display::input_irq(frame->vector == 33 ? 1 : 12, tick_count * 10000000ull);
+    if(display::input_pending()){display_wake(0,0);}
+    return frame;
+}
+
 void* timer_entry(interrupt_frame* frame) {
     pic_eoi(0);
     if (tick_count != ~u64{0}) { ++tick_count; }
@@ -2190,10 +2211,16 @@ void* syscall_entry(interrupt_frame* frame) {
     reap_dead();
     reap_threads();
     const u64 number = frame->rax;
+    if(current->pid==display_service_pid &&
+       (number==sys_process_create || number==sys_process_exec_prepare || number==sys_process_fork_prepare ||
+        number==sys_process_delegate || number==sys_process_grant)) {
+        frame->rax=static_cast<u64>(display_denied);return frame;
+    }
     if (number >= sys_thread_prepare && number <= sys_thread_profile) { return thread_syscall(frame); }
     if (current_thread->leaving && number != sys_exit) {
         frame->rax = static_cast<u64>(process_error_state); return frame;
     }
+    if(number==sys_display || number==sys_display_present){return display_syscall(frame);}
     i64 result = sys_error_invalid_argument;
     switch (number) {
     case sys_write: {
@@ -2359,6 +2386,7 @@ bool tasks_create_default() {
 
 [[noreturn]] void tasks_enter() {
     pic_init();
+    display::input_init();
     timer_init(100);
     thread_record* first = pick_ready();
     if (first == nullptr) {

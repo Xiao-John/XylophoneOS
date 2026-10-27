@@ -45,6 +45,8 @@ memory_result map_page(u64 virtual_address, u64 physical, page_permissions permi
 memory_result unmap_page(u64 virtual_address);
 memory_result query_page(u64 virtual_address, u64* physical, page_permissions* permissions);
 
+memory_result map_device_page(u64 virtual_address, u64 physical);
+
 bool memory_self_check();
 const char* memory_result_name(memory_result result);
 

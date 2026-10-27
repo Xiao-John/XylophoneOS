@@ -1,0 +1,22 @@
+{
+  "status": "passed",
+  "build_id": "01c8b149ecc0e4cf",
+  "input_sha256": {
+    "dash": "d262b8299734d07c27e8d5ac696a3460c82cba4fe56159d3cbdcceee8f703ff9",
+    "make": "dfe2aa23c9e2adc7f9644f869f2c9618131d3dd1771ef392122d796b81053725",
+    "cpp_threads": "c9ec5680c3cad50eb024a07605f5a37e58737664f3ede077129f164946c55aee"
+  },
+  "checks": [
+    "dash_C1_pipeline_C2_fork_command_substitution_C3_heredoc",
+    "make_runs_real_shell_recipe_and_file_content_matches",
+    "CPython_real_threads_locks_condition_event_queue",
+    "accepted_Cpp_thread_profile_runs_while_display_service_active",
+    "file_backed_ISO_payload_contract_and_gui_recovery_with_existing_userland"
+  ],
+  "python_stage_manifest_sha256": "38ae341b4257d46319f18c596ca168bd15664c270cd3bff6d49ce75e8b70dac1",
+  "resource_baseline": [
+    130258,
+    2,
+    0
+  ]
+}

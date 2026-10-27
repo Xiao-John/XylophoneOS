@@ -461,3 +461,14 @@ kernel验证范围并为实际载荷预留页，不额外拷贝到固定1 MiB缓
 可读，文件服务分块staging安装。大kernel无法安全用旧低内存loader时不生成兼容
 镜像，避免发布名义成功的坏启动文件。真实5.6 MiB kernel/2.1 MiB payload与
 正常兼容gate见0047；真机、UEFI、任意断电不从这些QEMU结果推出。
+
+## 2026-10-26：0051 E14 BIOS VBE、单surface与窄服务
+
+保持BIOS主线，VBE在16位loader探测/设置XRGB8888，800×600优先、640×480次选。
+boot_info v2追加显示扩展，不借用payload字段。显存在512MiB RAM管理之外以
+supervisor RW/NX UC aperture映射，普通用户不获MMIO权，图形模式禁止VGA文本写，
+串口保留。sys63/64与既有0–62不冲突，现有IPC认证单surface/焦点，用户RAM批量
+提交，PS/2 IRQ1/12有界事件FIFO/丢失重同步。服务无文件/块设备/构造权，退出撤销
+channel并唤醒。单核内核不可抢占保证buffer预检和复制无同进程解除映射竞争；
+SMP若引入必须先重做pin/锁。Qt QPA仍留E16，E14不编译Qt，不引入GPU/桌面。
+正式结果与未验边界见display_backend.md、0051工作记录和reports/display_e14_20261026/。

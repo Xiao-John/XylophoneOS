@@ -6,6 +6,7 @@
 #include <xos/platform.hpp>
 #include <xos/task.hpp>
 #include <xos/block.hpp>
+#include <xos/display.hpp>
 #include "build_info.hpp"
 
 namespace xos {
@@ -25,6 +26,11 @@ volatile xos::u64 data_probe = 0x584f535f44415441;
 
 extern "C" [[noreturn]] void kernel_main(const xos::boot_info* info,
                                          const xos::memory_region* regions) {
+    if (info != nullptr && info->version == xos::boot_display_version &&
+        info->size == xos::boot_info_display_size) {
+        const auto* display = reinterpret_cast<const xos::boot_display*>(info + 1);
+        xos::platform::debug_graphics(display->status == 1);
+    }
     xos::platform::debug_init();
     xos::format::text("[boot] event=kernel_enter arch=");
     xos::format::text(xos::arch::name());
@@ -76,6 +82,7 @@ extern "C" [[noreturn]] void kernel_main(const xos::boot_info* info,
         xos::format::text("\r\n");
     }
     xos::memory_init(*info, regions);
+    xos::display::init(*info);
     const xos::memory_stats stats = xos::memory_status();
     xos::format::text("[mem] event=initialized usable_kib=");
     xos::format::decimal(stats.usable_bytes / 1024);

@@ -15,12 +15,18 @@
 | Shell | dash C1–C3受限通过，xsh保留默认 | [C3资格](reports/dash_c3_20261026/qualification.json)，build2f7160b7d6633ee6；无完整信号/作业控制 |
 | 显示/ISO | 原分支G02、ISO容量各有受限证据；PR4显示改65/66 | [显示](history/boot_display.md)，[ABI](contracts/abi_registry.md)；未编译Qt |
 | CPython | PY0–PY2/T3-PY、A1–A3、B1–B4专项通过 | [用户态摘要](history/userland.md)；B2–B4系统6251d26b611a388d，Python11c39c52e451a9499450 |
-| xypm | P0/P1/P2-1通过；P2-2只读verify/plan和ELF校验已实现/打包 | [包摘要](history/packages.md)；P2-2 guest/adversarial未验，P2-3/4与P3未开始 |
+| xypm | P2原生验证、事务和启动恢复已实现；限定范围内验收通过 | [包计划](plans/packages.md)、[0066](work_log/0066_xypm_p2_validation.md)；P2验收范围和局限见记录；P3未完成 |
 | 审计/整合 | A01–A04修复与PR3兼容已交付PR4 | [整合摘要](history/delivery_audit.md)，组合build76a2e4380f64fb2e，7定向组通过；非旧全量重验 |
 | POSIX/Qt | PX0子集文档已有；Qt接口/ABI预留仅契约 | [PX路线](plans/posix.md)、[Qt协作](contracts/qt_platform.md)，PX1以后/Qt实现未开始 |
 
 每项资格只对其冻结输入成立。旧源/SDK/镜像不改绑；许可材料通过不代表逐成员审计完成。
 详细哈希和未运行项保留在history/reports；当前实现说明不重复放置逐日交接叙事。
+
+## xypm P2接续
+
+独立工作区 `codex/xypm-p2-p3` 已实现客体事务、持久恢复与内置恢复器；
+验证覆盖和未覆盖范围见[0066](work_log/0066_xypm_p2_validation.md)。P3已按
+网络依赖拆分，P2限定范围内验收通过；P3网络前工作尚未实现。
 
 ## 0062：微内核原则补充（仅本地交付）
 
@@ -41,5 +47,5 @@
   无须从已合并工作日志猜当前状态。
 - Qt移植先基于本登记合入后的main：复用65/66、pthread/时钟，向底座提最小缺口探针；
   67–79内存、80–95等待/信号、96–111显示扩展只预留，未分配具体新接口。
-- 主端下一建议为PX4-A设计包；xypm先补P2-2共享有效/畸形输入和guest，再进入持久事务。
+- 主端下一建议为PX4-A设计包；xypm完成最终构建的P2验收，再推进P3网络前工作。
 - 新实现按模块登记占用，ABI逐项先登记，独立分支/PR交付；公共build排他，localpilot隔离。

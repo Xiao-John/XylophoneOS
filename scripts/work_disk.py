@@ -29,8 +29,12 @@ def transfer(image, operation, path, source=None):
         raise ValueError('Expected an existing regular image, not a symlink or device')
     if not path.startswith('/') or any(x in ('.', '..') for x in path.split('/')):
         raise ValueError('Use an absolute guest path without dot components')
-    if any(ord(c)<32 or ord(c)>126 for c in path):
-        raise ValueError('This version supports printable ASCII paths')
+    try:
+        encoded = path.encode('utf-8', 'strict')
+    except UnicodeError as error:
+        raise ValueError('Expected a valid UTF-8 path') from error
+    if len(encoded) >= 256 or any(ord(c) < 32 or ord(c) == 127 for c in path):
+        raise ValueError('Invalid or overlong UTF-8 path')
     for component in path.split('/'):
         if component.upper().startswith('XOS') and component.upper().endswith('.TMP'):
             raise ValueError('Reserved recovery name')

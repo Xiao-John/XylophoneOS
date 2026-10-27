@@ -189,7 +189,6 @@ def main():
 
         if args.export_elf is not None:
             args.export_elf.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(disk.resolve(), disk.resolve())
             transfer(disk, "export", "/out/advent", args.export_elf)
         if args.export_generated is not None:
             args.export_generated.mkdir(parents=True, exist_ok=True)

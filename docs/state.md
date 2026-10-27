@@ -37,6 +37,8 @@
 
 ## 接手与下一步
 
+- Open Adventure 包化准备见[0066](work_log/0066_open_adventure_package.md)：提供回执与 XPK
+  打包入口；历史运行回执未保留 ELF，尚未生成实际包或完成验收。
 - 遵循Discipline→本页→宪法→专项契约/登记；需要原过程时用[来源索引](history/source_index.json)，
   无须从已合并工作日志猜当前状态。
 - Qt移植先基于本登记合入后的main：复用65/66、pthread/时钟，向底座提最小缺口探针；

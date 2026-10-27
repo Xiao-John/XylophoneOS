@@ -4,6 +4,19 @@
   "legacy_inventory": "legacy_mit_files.json",
   "components": [
     {
+      "name": "Open Adventure",
+      "version": "1.12",
+      "path": "src/ports/adventure",
+      "source": "https://gitlab.com/esr/open-adventure/-/archive/1.12/open-adventure-1.12.tar.gz",
+      "license": "BSD-2-Clause",
+      "notices": ["src/ports/adventure/upstream/COPYING"],
+      "used_in": ["Open Adventure user application"],
+      "modifications": "XOS generator, console and deterministic runtime port; see source_lock.json and patches; XOS-authored glue is Apache-2.0",
+      "artifact_sha256": {
+        "src/ports/adventure/upstream/COPYING": "731ee6313e1e17e510cfe9110c6a94d5fec97b1cce73d9974e4d82d29aa00297"
+      }
+    },
+    {
       "name": "FatFs",
       "version": "R0.16 w/patch 2",
       "path": "src/third_party/fatfs",

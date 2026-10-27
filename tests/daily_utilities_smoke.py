@@ -59,8 +59,9 @@ def main():
             expected = {'ls.txt':b'data\n','all.txt':b'.\n..\n.secret\ndata\n',
                         'almost.txt':b'.secret\ndata\n','dir.txt':b'/tmp/du/a\n',
                         'cat.txt':b'one\ntwo\nthree\n','head.txt':b'one\ntwo\n',
-                        'tail.txt':b'two\nthree\n','wc.txt':b'3 3 14 /tmp/du/moved\n',
-                        'tee.txt':b'hello\n','tee_out.txt':b'hello\n',
+                        'tail.txt':b'two\nthree\n', 'tail_pipe.txt':b'b\nc', 'head_pipe.txt':b'a\nb\n',
+                        'wc.txt':b'3 3 14 /tmp/du/moved\n',
+                        'tee.txt':b'hello\nagain\n','tee_out.txt':b'hello\n', 'tee_append_out.txt':b'again\n',
                         'base.txt':b'moved\n','parent.txt':b'/tmp/du\n'}
             for name, contents in expected.items():
                 result = folder / name; transfer(disk, 'export', '/tmp/du/' + name, result)

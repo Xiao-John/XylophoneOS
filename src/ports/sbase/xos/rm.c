@@ -19,7 +19,11 @@ int main(int argc, char **argv) {
     for (int i = first; i < argc; ++i) {
         struct stat status;
         int removed;
-        if (stat(argv[i], &status) == 0 && S_ISDIR(status.st_mode)) { errno = EISDIR; removed = -1; }
+        if (stat(argv[i], &status) < 0) {
+            if (force && errno == ENOENT) continue;
+            fprintf(stderr, "rm: %s: %s\n", argv[i], strerror(errno)); result = 1; continue;
+        }
+        if (S_ISDIR(status.st_mode)) { errno = EISDIR; removed = -1; }
         else { removed = unlink(argv[i]); }
         if (removed < 0 && !(force && errno == ENOENT)) {
             fprintf(stderr, "rm: %s: %s\n", argv[i], strerror(errno)); result = 1;

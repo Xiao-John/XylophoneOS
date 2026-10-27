@@ -15,6 +15,19 @@ build/daily_utilities_du12` 13 个 ELF 成功；该构建在最终许可证标�
 作为最终源码回执，须重新构建。未执行系统构建、客体运行、管道/文件错误验收、
 许可证审计或 xypm/ISO 安装；所有候选为 built_not_run，尚不能宣布 DU1/DU2 已完成。
 
-后续提交本工作后重建系统及工具、用私有盘运行 `tests/daily_utilities_smoke.py`，补充
+## 提交后定向验证
+
+源码 `a25b3cd`、系统 build `0b7cdbfda763d948`，镜像 SHA256
+`a45d868fa32ab06723c67eb7cb7a90d3dcbf3eb4caca8c8f963a19303ac0f461`；
+工具清单 SHA256 `c427ec68dafc1184f68708c1c7c12420b16b562e761acc0ba23d81305345176c`。
+`scripts/build_daily_utilities.py` 使用该系统 SDK 重建 13 个 ELF；
+`tests/daily_utilities_smoke.py` 在专用盘用 dash C3（SHA256
+`9fdd8b45e065f6756f21a264ea642744ea8675cff84194a5090335fbec57fd59`）验证
+13 个工具组成的基本命令链、管道、部分错误和结果字节，以及 xsh 显式调用 ls，通过。
+资格仅限这些输入；单独 13 项完整支持面、所有失败模式及资源回收未通过完整 gate。
+首次错误选用 dash A，因重定向不可用失败；换用 C3 后通过，不改写早期失败报告。
+许可材料检查及 ABI 文档检查通过；未做逐成员法律审计。
+
+下一步补充
 各工具的选项/错误/大输入/资源回收及 xsh/dash/UTF-8 路径边界。DU3、工具包 profile、
 发行路径和空盘 ISO 完整安装均未实施；xypm P2 另行完成并验收，不能把旧资格改绑。

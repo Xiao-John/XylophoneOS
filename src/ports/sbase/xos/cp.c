@@ -25,10 +25,11 @@ int main(int argc, char **argv) {
         }
         target = destination;
     }
-    if (stat(target, &target_status) == 0 && source_status.st_dev == target_status.st_dev &&
-        source_status.st_ino == target_status.st_ino) {
-        fprintf(stderr, "cp: %s and %s are the same file\n", source, target); return 1;
-    }
+    if (stat(target, &target_status) == 0) {
+        if (source_status.st_dev == target_status.st_dev && source_status.st_ino == target_status.st_ino) {
+            fprintf(stderr, "cp: %s and %s are the same file\n", source, target); return 1;
+        }
+    } else if (errno != ENOENT) { fprintf(stderr, "cp: %s: %s\n", target, strerror(errno)); return 1; }
     int input = open(source, O_RDONLY);
     if (input < 0) { fprintf(stderr, "cp: %s: %s\n", source, strerror(errno)); return 1; }
     int output = open(target, O_WRONLY | O_CREAT | O_TRUNC, 0666);

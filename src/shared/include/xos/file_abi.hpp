@@ -27,6 +27,7 @@ enum class op : u16 {
     block_bench = 17, fstat = 18,
     transfer = 19,
     maintenance_acquire = 23, maintenance_release = 24,
+    truncate = 25, // handle + offset=size; FatFs-backed, regular writable file only.
     anonymous_seal = 22, // irrevocably remove write access from an anonymous instance
     anonymous = 21, // private disk-backed open description, unlinked at last close
     clone_session = 20, // source authenticated by session; offset = fork child PID

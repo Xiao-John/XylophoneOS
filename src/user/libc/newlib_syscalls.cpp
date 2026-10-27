@@ -732,8 +732,49 @@ extern "C" long sysconf(int name) {
     }
 }
 
-extern "C" int gettimeofday(struct timeval*, void*) {
-    errno = ENOSYS;
+extern "C" int fsync(int fd) {
+    object_lease lease(fd);
+    if (lease.index < 0) { errno = EBADF; return -1; }
+    if (objects[lease.index].kind != object_kind::file) { errno = EINVAL; return -1; }
+    const xos::i64 result = file_client.sync();
+    if (result < 0) { errno = error_from_file(result); return -1; }
+    return 0;
+}
+
+extern "C" int ftruncate(int fd, off_t length) {
+    if (length < 0 || static_cast<xos::u64>(length) > xos::file::fat32_max_file_bytes) {
+        errno = EINVAL; return -1;
+    }
+    object_lease lease(fd);
+    if (lease.index < 0) { errno = EBADF; return -1; }
+    const open_object& object = objects[lease.index];
+    if (object.kind != object_kind::file) { errno = EINVAL; return -1; }
+    if ((object.flags & O_ACCMODE) == O_RDONLY) { errno = EINVAL; return -1; }
+    const xos::i64 result = file_client.truncate(object.handle, static_cast<xos::u32>(length));
+    if (result < 0) { errno = error_from_file(result); return -1; }
+    return 0;
+}
+
+extern "C" int gettimeofday(struct timeval* value, void*) {
+    if (value == nullptr) { errno = EFAULT; return -1; }
+    const xos::i64 now = xos::sdk::syscall(xos::sys_clock_realtime, 0);
+    if (now < 0) { errno = now == xos::realtime_error_io ? EIO : EINVAL; return -1; }
+    value->tv_sec = static_cast<time_t>(now / 1000000000);
+    value->tv_usec = static_cast<suseconds_t>((now % 1000000000) / 1000);
+    return 0;
+}
+extern "C" int getentropy(void* buffer, size_t length) {
+    if (length > 256) { errno = EINVAL; return -1; }
+    const xos::i64 result = xos::sdk::syscall(xos::sys_random_bytes,
+        reinterpret_cast<xos::u64>(buffer), static_cast<xos::u64>(length));
+    if (result == 0) { return 0; }
+    switch (result) {
+    case xos::random_error_io: errno = EIO; break;
+    case xos::random_error_fault: errno = EFAULT; break;
+    case xos::random_error_invalid: errno = EINVAL; break;
+    case xos::random_error_unsupported: errno = ENOSYS; break;
+    default: errno = EIO; break;
+    }
     return -1;
 }
 extern "C" int _gettimeofday(struct timeval* value, void* zone) {

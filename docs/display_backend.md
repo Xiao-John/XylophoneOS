@@ -40,8 +40,8 @@ QPA无跨小版本源码/二进制兼容保证，E16必须固定Qt版本。
 
 ## SDK、权限与生命周期
 
-`display_abi.hpp` v1 为固定宽度共享布局；sys63 是窄控制/等待接口，sys64 是
-服务端批量呈现机制。旧sys0–62、startup/线程/文件ABI不变。SDK manifest增加
+`display_abi.hpp` v1 为固定宽度共享布局；sys65 是窄控制/等待接口，sys66 是
+服务端批量呈现机制。已有sys0–64（熵63/墙钟64）、startup/线程/文件ABI不变。SDK manifest增加
 `display_extensions`，所有旧镜像目录顺序保留，新display/gfxdemo追加。
 `display_client.hpp` 为无硬件依赖客户端，用户在自己的普通RAM中绘图。
 
@@ -56,7 +56,7 @@ QPA无跨小版本源码/二进制兼容保证，E16必须固定Qt版本。
 接收别人请求、冒充服务、直接呈现、读取设备事件或映射MMIO。
 
 present发送48字节版本化描述（源地址、完整buffer长度、stride/format和dirty rect），
-没有每像素IPC或整屏分拆为数百条4KiB消息。sys64仅接受服务角色+已接收的活跃
+没有每像素IPC或整屏分拆为数百条4KiB消息。sys66仅接受服务角色+已接收的活跃
 request handle，从内核IPC快照取得原请求和发送者地址空间，忽略用户自报身份。
 内核在首次显存写入前验证全部buffer页、范围、坐标/长度溢出、格式及stride，
 随后按行/物理页批量写入显存。一次完整buffer仅一次request/reply、一次批量提交。
@@ -129,3 +129,10 @@ QEMU=/path/qemu-system-x86_64 python3 scripts/run_qemu.py --iso-file --vga --wor
 QWindow raster全屏几何可直接映射唯一surface；destroy断开连接。E16仍须按固定Qt
 源码实现QPA、字体、QWindowSystemInterface及事件分发，当前接口存在不代表Qt已运行。
 SDL的CPU raster后端可复用相同mode/present/input，SDL不是Qt的前置依赖。
+
+
+## 0059本地兼容整合（2026-10-27）
+
+当前显示ABI使用sys65/66，保留已采用的熵63和墙钟64。PR #3原分支及其冻结G02报告
+仍对应63/64，不能用该报告直接证明本地组合；本轮独立构建与定向结果见0059工作记录。
+显示目标须以当前共享头/SDK重建；旧PR显示二进制与当前组合内核不可混用。

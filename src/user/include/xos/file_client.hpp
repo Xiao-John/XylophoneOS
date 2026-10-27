@@ -29,6 +29,7 @@ public:
     i64 write(u32 handle, const void* data, u32 length);
     i64 seek(u32 handle, u32 offset);
     i64 seek(u32 handle, i64 offset, u32 origin);
+    i64 truncate(u32 handle, u32 size);
     i64 transfer(u32 handle, u64 target_pid, u32& target_handle);
     i64 clone_session(u64 child_pid);
     i64 close(u32 handle);

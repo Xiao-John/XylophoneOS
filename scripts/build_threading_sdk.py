@@ -30,11 +30,15 @@ def tree_fingerprint(root):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--newlib-prefix', required=True, type=Path)
-    parser.add_argument('--gcc-source', required=True, type=Path)
+    parser.add_argument('--gcc-source', type=Path)
+    parser.add_argument('--output', type=Path, default=ROOT / 'build/threading_sdk')
     parser.add_argument('--cpp', action='store_true')
     args = parser.parse_args()
-    prefix, gcc = args.newlib_prefix.resolve(), args.gcc_source.resolve()
-    if (gcc / 'gcc/BASE-VER').read_text().strip() != '16.2.0':
+    prefix = args.newlib_prefix.resolve()
+    if args.cpp and args.gcc_source is None:
+        parser.error('--gcc-source is required with --cpp')
+    gcc = args.gcc_source.resolve(strict=True) if args.gcc_source else None
+    if gcc is not None and (gcc / 'gcc/BASE-VER').read_text().strip() != '16.2.0':
         raise SystemExit('The threading runtime requires the frozen GCC 16.2.0 source')
     verified_newlib = json.loads((prefix.parent / 'receipt.json').read_text())
     for name in ['libc.a', 'libm.a']:
@@ -51,11 +55,17 @@ def main():
                     ROOT / 'src/user/threading/compile.py', ROOT / 'src/user/arch/x86_64/user.ld',
                     ROOT / 'src/user/arch/x86_64/start.asm']
     initial_inputs = {str(p.relative_to(ROOT)): sha(p) for p in owned_inputs}
-    chrono_source = gcc / 'libstdc++-v3/src/c++11/chrono.cc'
+    chrono_source = gcc / 'libstdc++-v3/src/c++11/chrono.cc' if args.cpp else None
     if args.cpp and '__XOS_NO_WALL_CLOCK__' not in chrono_source.read_text():
         subprocess.run(['patch', '-p1', '-i', str(ROOT / 'src/ports/gcc/patches/0008-xos-thread-clock-boundary.patch')], cwd=gcc, check=True)
-    gcc_tree_before = tree_fingerprint(gcc)
-    output = ROOT / 'build/threading_sdk'
+    gcc_tree_before = tree_fingerprint(gcc) if args.cpp else None
+    if args.output.is_symlink():
+        raise SystemExit('Refusing a symlinked SDK output directory')
+    output = args.output.resolve()
+    if output != ROOT / 'build' and ROOT / 'build' not in output.parents:
+        raise SystemExit('output directory must be build/ or one of its subdirectories')
+    if output.is_symlink():
+        raise SystemExit('Refusing a symlinked SDK output directory')
     output.mkdir(parents=True, exist_ok=True)
     logs = ROOT / 'build/threading_sdk_logs'
     logs.mkdir(exist_ok=True)
@@ -206,12 +216,13 @@ def main():
         for name in ['COPYING3', 'COPYING.RUNTIME']:
             shutil.copyfile(gcc / name, output / 'licenses' / ('gcc-' + name))
     final_inputs = {str(p.relative_to(ROOT)): sha(p) for p in owned_inputs}
-    gcc_tree_after = tree_fingerprint(gcc)
-    if gcc_tree_before != gcc_tree_after:
+    gcc_tree_after = tree_fingerprint(gcc) if args.cpp else None
+    if args.cpp and gcc_tree_before != gcc_tree_after:
         raise SystemExit('GCC source tree changed during the runtime build')
     if final_inputs != initial_inputs:
         raise SystemExit('SDK inputs changed during the build; retry with a stable source snapshot')
     receipt = {'profile': 'xos-threading-v1-experimental', 'abi': 1, 'thread_abi': 1,
+               'display_extensions': {'version': 1, 'syscalls': [65, 66], 'pixel_format': 'XRGB8888', 'surface_count': 1},
                'process_extensions': {'syscalls': list(range(54,62)), 'file_operations': [20,21,22],
                    'startup_versions': [1,2,3], 'exec_image_abi': 3, 'exec_marker': '.xos.exec',
                    'fork_supported': False, 'exec_supported': False, 'fd_count': 32,
@@ -219,8 +230,9 @@ def main():
                'qualification': 'not_run', 'commands': commands,
                'inputs': initial_inputs,
                'newlib_build_receipt_sha256': sha(prefix.parent / 'receipt.json'),
-               'gcc_source_archive_sha256': json.loads((ROOT / 'src/ports/gcc/source_lock.json').read_text())['sha256'],
-               'gcc_chrono_source_sha256': sha(chrono_source),
+               'gcc_source_archive_sha256': (json.loads((ROOT / 'src/ports/gcc/source_lock.json').read_text())['sha256']
+                                             if args.cpp else None),
+               'gcc_chrono_source_sha256': sha(chrono_source) if args.cpp else None,
                'gcc_source_tree': gcc_tree_before,
                'compiler': {'path': cross, 'sha256': sha(cross), 'version': '16.2.0'},
                'base_libgcc_sha256': sha(original) if args.cpp else None,

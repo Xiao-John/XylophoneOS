@@ -320,8 +320,9 @@ void close_session(client_session& session) {
         if (item.used) { release_open(item); }
     }
     if (staging_active && staging_owner == session.pid) {
-        if (staging_open) { (void)f_close(&staging_file); staging_open = false; }
-        (void)f_unlink(temp_name);
+        if (staging_open) { if (f_close(&staging_file) != FR_OK) { recovery_failed = true; } staging_open = false; }
+        const FRESULT removed = f_unlink(temp_name);
+        if (removed != FR_OK && removed != FR_NO_FILE && removed != FR_NO_PATH) { recovery_failed = true; }
         staging_active = false;
         staging_owner = 0;
         staging_written = 0;
@@ -332,8 +333,9 @@ void close_session(client_session& session) {
 
 bool remove_if_present(const char* path) {
     FILINFO info{};
-    if (f_stat(path, &info) != FR_OK) { return true; }
-    return f_unlink(path) == FR_OK;
+    const FRESULT result = f_stat(path, &info);
+    if (result == FR_NO_FILE || result == FR_NO_PATH) { return true; }
+    return result == FR_OK && f_unlink(path) == FR_OK;
 }
 
 bool write_journal(const char* path) {
@@ -352,35 +354,59 @@ bool read_journal(char* path) {
     if (f_open(&file, journal_name, FA_READ) != FR_OK) { return false; }
     UINT read = 0;
     const FRESULT result = f_read(&file, path, max_name, &read);
-    (void)f_close(&file);
-    if (result != FR_OK || read < 2 || read > max_name || path[read - 1] != '\0') { return false; }
+    const FRESULT closed = f_close(&file);
+    if (result != FR_OK || closed != FR_OK || read < 2 || read > max_name || path[read - 1] != '\0') { return false; }
     return normalize_path(path, read - 1, path, false);
+}
+
+bool missing(FRESULT result) { return result == FR_NO_FILE || result == FR_NO_PATH; }
+
+// Keep the journal through cleanup and its flush. On an ambiguous final delete/
+// flush error, try to restore the marker; never reopen the service after failure.
+bool finish_recovery(const char* path) {
+    if (disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK ||
+        !remove_if_present(temp_name) || !remove_if_present(backup_name) ||
+        disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK) { return false; }
+    if (f_unlink(journal_name) != FR_OK) { return false; }
+    if (disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK) {
+        (void)write_journal(path); // deleted marker: best effort; caller stays failed closed
+        return false;
+    }
+    return true;
 }
 
 void recover() {
     FILINFO journal_info{};
-    if (f_stat(journal_name, &journal_info) != FR_OK) {
-        (void)remove_if_present(temp_name);
+    const FRESULT journal_result = f_stat(journal_name, &journal_info);
+    if (missing(journal_result)) {
+        if (!remove_if_present(temp_name) || disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK) {
+            recovery_failed = true;
+        }
         return;
+    }
+    if (journal_result != FR_OK || (journal_info.fattrib & AM_DIR) != 0 ||
+        journal_info.fsize < 2 || journal_info.fsize > max_name) {
+        recovery_failed = true; return;
     }
     char path[max_name]{};
     if (!read_journal(path)) { recovery_failed = true; return; }
-    FILINFO target_info{};
-    FILINFO backup_info{};
-    const bool target_exists = f_stat(path, &target_info) == FR_OK;
-    const bool backup_exists = f_stat(backup_name, &backup_info) == FR_OK;
-    if (target_exists && (target_info.fattrib & AM_DIR) != 0) { recovery_failed = true; return; }
-    if (backup_exists && (backup_info.fattrib & AM_DIR) != 0) { recovery_failed = true; return; }
-    if (backup_exists) {
-        if (!target_exists) {
-            if (f_rename(backup_name, path) != FR_OK) { recovery_failed = true; }
-        } else {
-            (void)remove_if_present(backup_name);
-        }
+    FILINFO target_info{}, backup_info{}, temp_info{};
+    const FRESULT target_result = f_stat(path, &target_info);
+    const FRESULT backup_result = f_stat(backup_name, &backup_info);
+    const FRESULT temp_result = f_stat(temp_name, &temp_info);
+    // Complete all existence/type checks before removing any recovery material.
+    if ((target_result != FR_OK && !missing(target_result)) ||
+        (backup_result != FR_OK && !missing(backup_result)) ||
+        (temp_result != FR_OK && !missing(temp_result)) ||
+        (target_result == FR_OK && (target_info.fattrib & AM_DIR) != 0) ||
+        (backup_result == FR_OK && (backup_info.fattrib & AM_DIR) != 0) ||
+        (temp_result == FR_OK && (temp_info.fattrib & AM_DIR) != 0)) {
+        recovery_failed = true; return;
     }
-    (void)remove_if_present(temp_name);
-    if (!recovery_failed) { (void)f_unlink(journal_name); }
-    if (disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK) { recovery_failed = true; }
+    if (backup_result == FR_OK && missing(target_result) && f_rename(backup_name, path) != FR_OK) {
+        recovery_failed = true; return;
+    }
+    if (!finish_recovery(path)) { recovery_failed = true; }
 }
 
 void reply(response& out, const request& in, status code) {
@@ -523,8 +549,8 @@ status clone_session(client_session& source, u64 child_pid) {
 }
 
 void abort_staging() {
-    if (staging_open) { (void)f_close(&staging_file); staging_open = false; }
-    (void)remove_if_present(temp_name);
+    if (staging_open) { if (f_close(&staging_file) != FR_OK) { recovery_failed = true; } staging_open = false; }
+    if (!remove_if_present(temp_name)) { recovery_failed = true; }
     staging_active = false;
     staging_owner = 0;
     staging_written = 0;
@@ -614,6 +640,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         operation == op::clone_session || operation == op::write || operation == op::replace_begin ||
         operation == op::replace_chunk || operation == op::replace_commit || operation == op::replace_abort ||
         operation == op::remove || operation == op::mkdir || operation == op::rename || operation == op::sync ||
+        operation == op::truncate ||
         (operation == op::open && ((in.flags & open_access_mask) != read_only ||
                                   (in.flags & open_option_mask) != 0));
     if (mutating && (gate.owner_pid != 0 || maintenance_writer != 0) &&
@@ -833,6 +860,20 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         out.value = f_tell(&description->file);
         break;
     }
+    case op::truncate: {
+        open_record* item = find_open(session, in.handle);
+        open_description* description = description_for(item);
+        if (description == nullptr) { reply(out, in, status::bad_handle); break; }
+        if ((description->flags & write_only) == 0 || in.offset > fat32_max_file_bytes ||
+            in.flags != 0 || in.length != 0 || in.name_length != 0) {
+            reply(out, in, status::invalid); break;
+        }
+        const FRESULT seek_result = f_lseek(&description->file, static_cast<FSIZE_t>(in.offset));
+        if (seek_result != FR_OK) { reply(out, in, from_fr(seek_result)); break; }
+        const FRESULT truncate_result = f_truncate(&description->file);
+        reply(out, in, from_fr(truncate_result));
+        break;
+    }
     case op::close: {
         open_record* item = find_open(session, in.handle);
         if (item == nullptr) { reply(out, in, status::bad_handle); break; }
@@ -924,16 +965,12 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             if (any_open(owner_session, staging_path)) { reply(out, in, status::busy); return; }
         }
         FRESULT result = f_sync(&staging_file);
-        if (result == FR_OK) { result = f_close(&staging_file); }
+        const FRESULT closed = f_close(&staging_file);
+        if (result == FR_OK) { result = closed; }
         staging_open = false;
         if (result != FR_OK) {
             abort_staging();
             reply(out, in, from_fr(result));
-            break;
-        }
-        if (!write_journal(staging_path)) {
-            abort_staging();
-            reply(out, in, status::io);
             break;
         }
         FILINFO info{};
@@ -946,7 +983,6 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         }
         if (target_exists && (info.fattrib & AM_DIR) != 0) {
             abort_staging();
-            (void)f_unlink(journal_name);
             reply(out, in, status::invalid);
             break;
         }
@@ -961,6 +997,13 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         } else if (!can_allocate_identity()) {
             abort_staging();
             reply(out, in, status::full);
+            break;
+        }
+        if (!write_journal(staging_path)) {
+            recovery_failed = true;
+            staging_active = false;
+            staging_owner = 0;
+            reply(out, in, status::io);
             break;
         }
         bool failed = false;
@@ -984,11 +1027,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             }
         }
         if (failed) {
-            (void)remove_if_present(temp_name);
-            if (!recovery_failed) {
-                (void)f_unlink(journal_name);
-                (void)remove_if_present(backup_name);
-            }
+            recovery_failed = true;
             staging_active = false;
             staging_owner = 0;
             reply(out, in, status::io);
@@ -1012,9 +1051,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             reply(out, in, status::io);
             break;
         }
-        (void)remove_if_present(backup_name);
-        (void)f_unlink(journal_name);
-        if (disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK) { recovery_failed = true; }
+        if (!finish_recovery(staging_path)) { recovery_failed = true; }
         staging_active = false;
         staging_owner = 0;
         reply(out, in, recovery_failed ? status::io : status::ok);

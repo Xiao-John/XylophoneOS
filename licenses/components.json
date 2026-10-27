@@ -362,6 +362,105 @@
           "notice": "src/ports/make/upstream/LICENSE"
         }
       }
+    },
+    {
+      "name": "tzdata (CPython PY3 B2)",
+      "version": "2026.5",
+      "path": "src/ports/cpython",
+      "source": "https://pypi.org/project/tzdata/2026.5/",
+      "source_archive_sha256": "b683bd1b6659ddcd810ff02ad09ba821d4bf1065072805063eb35c49617905ac",
+      "license": "Apache-2.0",
+      "notices": [
+        "src/ports/cpython/upstream/tzdata-LICENSE"
+      ],
+      "artifact_sha256": {
+        "src/ports/cpython/upstream/tzdata-LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+        "src/ports/cpython/upstream/tzdata-2026.5-py2.py3-none-any.whl": "b683bd1b6659ddcd810ff02ad09ba821d4bf1065072805063eb35c49617905ac",
+        "src/ports/cpython/tzdata_lock.json": "d47b7345284c283f3ab4aa8422b2b22d8dcbb36f5524088765038b452f9dada8"
+      },
+      "used_in": [
+        "CPython PY3 ZoneInfo fallback; installed as a locked pure-Python data package"
+      ],
+      "distribution_status": "local guest-accepted build; carry the matching wheel and Apache license in any binary distribution"
+    },
+    {
+      "name": "SQLite",
+      "version": "3.54.1",
+      "path": "src/ports/cpython/sqlite",
+      "source": "https://www.sqlite.org/2026/sqlite-autoconf-3540100.tar.gz",
+      "source_archive_sha256": "926ef8d3eab93fbf6e06011901273eec076b25594a4e1cdadd50c987f4f6d64e",
+      "source_archive_sha3_256": "b6ced585c750916b1052667239a12c25a7ff34e7f06e1e6e01ecb0427657d9c4",
+      "license": "SQLite blessing / public domain dedication",
+      "notices": [
+        "src/ports/cpython/sqlite/UPSTREAM_LICENSE.md"
+      ],
+      "artifact_sha256": {
+        "src/ports/cpython/sqlite/UPSTREAM_LICENSE.md": "3a487aaf2da3a06e58adba55c6e507a927cda568bc20d822bf62c36bdeb33d14",
+        "src/ports/cpython/sqlite/sqlite_lock.json": "c0f54b2c5682e8d0462183e3f48e69d80e257342a3fdcb660a3ce580fb8d2e73",
+        "src/ports/cpython/sqlite/xos_vfs.c": "1a01a6b34bdb190834ff2bbdade92bf101108242e11f3f7bb7b5871d107550eb"
+      },
+      "used_in": [
+        "Static CPython _sqlite3 module with XOS VFS, rollback journal and one-process database locking"
+      ],
+      "modifications": "XOS VFS uses fsync/ftruncate hooks, EOF-safe reads for FatFs, and maps busy open errors to SQLITE_BUSY; WAL and loadable extensions disabled",
+      "distribution_status": "local guest-accepted build; source archive retained in local cache; carry matching source and license if binaries are distributed"
+    },
+    {
+      "name": "bzip2 (CPython PY3 B4)",
+      "version": "1.0.8",
+      "path": "src/ports/cpython/compression",
+      "source": "https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz",
+      "source_archive_sha256": "ab5a03176ee106d3f0fa90e381da478ddae405918153cca248e682cd0c4a2269",
+      "license": "bzip2",
+      "notices": [
+        "src/ports/cpython/compression/upstream/bzip2-LICENSE"
+      ],
+      "artifact_sha256": {
+        "src/ports/cpython/compression/upstream/bzip2-LICENSE": "c6dbbf828498be844a89eaa3b84adbab3199e342eb5cb2ed2f0d4ba7ec0f38a3",
+        "src/ports/cpython/compression/compression_lock.json": "dcb34e462231d80954f46387e30ecff69da28c6e7e248ab76024f760a6ee5773"
+      },
+      "used_in": [
+        "Static CPython bzip2 module for bounded streaming compression and decompression"
+      ],
+      "distribution_status": "local guest-accepted build; source archive retained in local cache; carry matching source and license if binaries are distributed"
+    },
+    {
+      "name": "xz (CPython PY3 B4)",
+      "version": "5.8.4",
+      "path": "src/ports/cpython/compression",
+      "source": "https://github.com/tukaani-project/xz/releases/download/v5.8.4/xz-5.8.4.tar.xz",
+      "source_archive_sha256": "4ce24038fd4221e0d13bc1a2de7a4db56e90b92b3bf75321f6c14be73f65de4b",
+      "license": "0BSD",
+      "notices": [
+        "src/ports/cpython/compression/upstream/xz-COPYING.0BSD"
+      ],
+      "artifact_sha256": {
+        "src/ports/cpython/compression/upstream/xz-COPYING.0BSD": "0b01625d853911cd0e2e088dcfb743261034a091bb379246cb25a14cc4c74bf1",
+        "src/ports/cpython/compression/compression_lock.json": "dcb34e462231d80954f46387e30ecff69da28c6e7e248ab76024f760a6ee5773"
+      },
+      "used_in": [
+        "Static CPython xz module for bounded streaming compression and decompression"
+      ],
+      "distribution_status": "local guest-accepted build; source archive retained in local cache; carry matching source and license if binaries are distributed"
+    },
+    {
+      "name": "zstd (CPython PY3 B4)",
+      "version": "1.5.7",
+      "path": "src/ports/cpython/compression",
+      "source": "https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz",
+      "source_archive_sha256": "eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3",
+      "license": "BSD-3-Clause",
+      "notices": [
+        "src/ports/cpython/compression/upstream/zstd-LICENSE"
+      ],
+      "artifact_sha256": {
+        "src/ports/cpython/compression/upstream/zstd-LICENSE": "7055266497633c9025b777c78eb7235af13922117480ed5c674677adc381c9d8",
+        "src/ports/cpython/compression/compression_lock.json": "dcb34e462231d80954f46387e30ecff69da28c6e7e248ab76024f760a6ee5773"
+      },
+      "used_in": [
+        "Static CPython zstd module for bounded streaming compression and decompression"
+      ],
+      "distribution_status": "local guest-accepted build; source archive retained in local cache; carry matching source and license if binaries are distributed"
     }
   ]
 }

@@ -16,17 +16,28 @@ def main():
     args=parser.parse_args()
     profile=load_json(args.profile)
     source=ROOT/'src/user/programs/xypm.cpp'
-    key=hashlib.sha256(canonical({'source':sha_file(source),'text_header':sha_file(ROOT/'src/user/include/xos/text.hpp'),'build_script':sha_file(__file__),'builder':sha_file(ROOT/'scripts/xos_app.py'),'sdk_profile':profile})).hexdigest()[:20]
+    native_header=ROOT/'src/user/programs/xypm_native.hpp'
+    key=hashlib.sha256(canonical({'source':sha_file(source),'native_header':sha_file(native_header),'text_header':sha_file(ROOT/'src/user/include/xos/text.hpp'),'build_script':sha_file(__file__),'builder':sha_file(ROOT/'scripts/xos_app.py'),'sdk_profile':profile})).hexdigest()[:20]
     folder=ROOT/'.cache/xos_seed/xypm'/key;folder.mkdir(parents=True,exist_ok=True)
     project=folder/'project'
     if not project.exists():
         init_project(project,'xos.xypm','cpp',profile)
         shutil.copyfile(source,project/'src/main.cpp')
+        shutil.copyfile(native_header,project/'src/xypm_native.hpp')
         (project/'src/xos').mkdir()
         shutil.copyfile(ROOT/'src/user/include/xos/text.hpp',project/'src/xos/text.hpp')
+        feature_rows=''.join('    if (!__builtin_strcmp(name,'+json.dumps(name)+')) return true;\n' for name in profile['features'])
+        profile_header=('// SPDX-License-Identifier: Apache-2.0\n#pragma once\n#include <cstring>\n'
+                        '#define XYP_PACKAGE_PROFILE_ID '+json.dumps(profile['id'])+'\n'
+                        'static inline bool xypm_profile_feature(const char* name) {\n'
+                        +feature_rows+'    return false;\n}\n'
+                        '#define XYP_PACKAGE_FEATURES(name) xypm_profile_feature(name)\n')
+        (project/'src/xypm_profile.hpp').write_text(profile_header,encoding='utf-8')
         app=load_json(project/'xos_app.json')
         if 'stdio_transfer' in profile['features']:app['required_features'].append('stdio_transfer')
         app['files'].append({'source':'src/xos/text.hpp','path':'usr/share/xos.xypm/source/xos/text.hpp','role':'data'})
+        app['files'].append({'source':'src/xypm_native.hpp','path':'usr/share/xos.xypm/source/xypm_native.hpp','role':'data'})
+        app['files'].append({'source':'src/xypm_profile.hpp','path':'usr/share/xos.xypm/source/xypm_profile.hpp','role':'data'})
         (project/'xos_app.json').write_bytes(canonical(app))
     receipt=build(project,args.sdk,profile)
     output=folder/'xypm.xpk'

@@ -6,6 +6,26 @@
 E08-2 的启动v2、argv/env/cwd、32页栈/4页startup、动态堆、显式driver构造权、
 stdio/pipe与libc边界见 e08.md；下文v1上限保留历史，不覆盖该更新。
 
+## 当前ABI速查（0054）
+
+共享头是数值来源；下表由`tests/abi_doc_consistency.py`核对，仅对当前说明生效。
+冻结工作记录中的旧编号保留历史，不作为新程序编码依据。
+
+| 接口 | 当前编号 |
+|---|---:|
+| `sys_pipe_wait` | 54 |
+| `sys_process_guard` | 62 |
+| `sys_random_bytes` | 63 |
+| `sys_clock_realtime` | 64 |
+| `sys_display` | 65 |
+| `sys_display_present` | 66 |
+| `clone_session` | 20 |
+| `anonymous` | 21 |
+| `anonymous_seal` | 22 |
+| `maintenance_acquire` | 23 |
+| `maintenance_release` | 24 |
+| `truncate` | 25 |
+
 ## 谁负责什么
 
 `src/user/loader/elf.cpp` 在 ring3 解析 ELF；`load.cpp` 负责装载策略、BSS、
@@ -206,9 +226,9 @@ process_stats 的布局及进程权限含义。共享 ABI 见 `thread_abi.hpp`�
 transfer共同整合。7组整合gate见work_log/0041_threading_local_merge.md；B2随后由
 0042以新SDK正式收口，证据绑定build `911184be3f3c99f6`，不借用旧回执。
 
-## 0048：P2-1通用进程准入与文件写租约
+## P2-1通用进程准入与文件写租约（0048实现、PR #2整合后编号）
 
-2026-10-26追加`sys_process_guard=54`，53仍为ISO payload，38–52线程ABI不变。
+2026-10-26当前为`sys_process_guard=62`，53仍为ISO payload，38–52线程ABI不变。
 first为process_guard_action（query0/begin1/end2/rearm3），third必须0；query的
 second指向16字节process_guard_info（owner_pid/worker_pid），其他动作second为0。
 begin/end/rearm仅真实supervisor可用，普通应用返回denied；begin拒绝其他存活或
@@ -216,7 +236,10 @@ begin/end/rearm仅真实supervisor可用，普通应用返回denied；begin拒�
 创建一次worker；不授予构造权，不接受grant/delegate。end/rearm要求旧worker已死，
 不重用PID。内核只管理生命周期与准入，不处理路径、包、数据库或journal。
 
-file v2 wire布局保持不变，追加op20 maintenance_acquire、op21 maintenance_release，
+合并前0048使用sys54与op20/21；PR #2整合后维护接口迁到62与23/24，
+旧编号分别归pipe wait、fork会话克隆和匿名文件。旧报告保持原样，不代表当前ABI。
+
+file v2 wire布局保持不变，追加op23 maintenance_acquire、op24 maintenance_release，
 Client增加对应方法。files对每个请求读取kernel guard状态：仅指定worker可取
 写租约，取租约前所有打开实例和单文件staging必须为空；普通应用不能按伪造PID取权。
 屏障或租约有效时，写/有写选项的open/replace/remove/mkdir/rename/sync均要求
@@ -331,10 +354,25 @@ C3收口另补小pipe write原子性：当前SDK对<=4096字节的pipe write等�
 无能力标记的二进制需要用新SDK重建；xypm旧profile也须独立登记/迁移，不能推断
 它能接受新继承形式。这是显式ABI admission，不能声称所有旧静态stdio都兼容。
 
+## 0052：B1 系统熵服务
+
+共享 process ABI 新增`sys_random_bytes=63`（避免占用38–52线程ABI及54–61 Dash扩展）。
+参数为RDI用户可写缓冲区、RSI长度、RDX保留为0；长度上限256。返回0表示完整填充，
+`-14`为无效用户地址、`-22`为长度/参数错误、`-38`为CPU不支持RDRAND、`-5`为
+硬件在有限重试内未返回有效字。内核先把完整请求暂存于内核缓冲，成功后一次复制，
+硬件失败不向应用交付部分输出。
+
+x86-64仅在CPUID.1:ECX[30]置位后执行RDRAND，每64位最多尝试10次并检查CF。newlib
+`getentropy()`最多256字节并映射为真实errno；不支持RDRAND时返回ENOSYS，反复硬件
+失败返回EIO。当前BIOS/QEMU启动器默认使用`qemu64,+rdrand`；显式的`qemu64`仍用于
+无特性场景验收。QEMU未传入固定随机种子/record-replay配置。系统信任CPU或hypervisor
+提供的RDRAND质量；没有RDSEED或virtio-rng后备，故不承诺恶意hypervisor或确定性录制
+环境中的不可预测性。
+
 ## E14 display ABI v1（2026-10-26）
 
-sys63=display控制/认证channel/等待，sys64=服务角色对已接收request的批量呈现。
+sys65=display控制/认证channel/等待，sys66=服务角色对已接收request的批量呈现。
 共享布局在display_abi.hpp、SDK在display_client.hpp，完整权限/所有权/错误/等待
-见[display_backend.md](display_backend.md)。旧sys0–62、ELF/startup/thread/file布局
+见[display_backend.md](display_backend.md)。0059整合保留sys0–64（含熵63/墙钟64）、ELF/startup/thread/file布局
 保持不变；新模块追加目录，不改变原image ID。boot_info v1仍64字节，v2为112
 字节，保留reserved的ISO payload语义。旧内核不能消费新v2引导器。

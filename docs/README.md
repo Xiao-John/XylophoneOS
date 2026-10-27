@@ -13,6 +13,7 @@
 ## 当前实现
 
 - [架构、启动与异常/内存边界](architecture_and_boot.md)
+- [显示与输入后端](display_backend.md)（PR #3原分支G02已验；本地组合见0059）
 - [实模式练习](real_mode_boot.md)
 - [E04 用户态装载/SDK](e04_loader_sdk.md)
 - [E05 文件服务](e05_file_service.md)
@@ -24,7 +25,9 @@
 - [给朋友的用户程序快速开始](friend_user_program_quickstart.md)
 - [CPython 3.14.9 PY0/PY1 与 T3-PY](../src/ports/cpython/README.md)（[工作记录](work_log/0030_cpython_py0.md)、[T3-PY](work_log/0043_cpython_t3_py.md)）
 - [xypm P1 验收与交接](work_log/0044_xypm_p1.md)
-- [file-backed ISO 安装](iso_install_plan.md)（容量扩展仍未完成）
+- [xypm P2-2校验/计划实现初版](work_log/0051_xypm_p2_verify_plan.md)
+- [xypm P2-2客体ELF布局校验](work_log/0055_xypm_p2_elf_validation.md)
+- [file-backed ISO 安装](iso_install_plan.md)（容量扩展已验，见0047工作记录）
 
 ## 历史与验收
 
@@ -36,9 +39,10 @@
 
 - [项目总览](project_overview.md)
 - [下一次 release 准备清单](releases/next_release.md)
-- [dash 后续路线](dash_port_plan.md)（B0–B2 已过，C 未做）
+- [dash 后续路线](dash_port_plan.md)（C1–C3受限gate已过，范围见[shell_subset.md](shell_subset.md)）
 - [shell 移植历史勘查](shell_port_scout.md)（历史资料）
-- [独立应用与包管理](package_management.md)（xypm P0/P1已验，P2-1维护门控已验，其余P2/P3待实施）
+- [独立应用与包管理](package_management.md)（xypm P0/P1、P2-1已验；P2-2实现待guest验收，P2-3/4与P3未完成）
+- [POSIX子集契约](posix_subset_contract.md)与[推进路线/验收](posix_roadmap.md)（PX0文档完成，后续未实施）
 - [公共线程契约与E13-T计划](threading_contract.md)
 - [UTF-8文本接口计划](utf8_text_plan.md)（U0/U1已通过；非 release 阻塞）
 - [Open Adventure依赖内建计划](adventure_port_plan.md)

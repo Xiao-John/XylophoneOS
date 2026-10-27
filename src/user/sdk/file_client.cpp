@@ -286,6 +286,15 @@ i64 Client::seek(u32 handle, i64 offset, u32 origin) {
     return result == 0 ? static_cast<i64>(response_.value) : result;
 }
 
+i64 Client::truncate(u32 handle, u32 size) {
+    session_guard guard;
+    if (size > fat32_max_file_bytes) { return status_value(status::no_space); }
+    request_ = request{};
+    request_.handle = handle;
+    request_.offset = size;
+    return call(op::truncate);
+}
+
 i64 Client::transfer(u32 handle, u64 target_pid, u32& target_handle) {
     session_guard guard;
     request_ = request{};

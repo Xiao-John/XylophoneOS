@@ -462,13 +462,87 @@ kernel验证范围并为实际载荷预留页，不额外拷贝到固定1 MiB缓
 镜像，避免发布名义成功的坏启动文件。真实5.6 MiB kernel/2.1 MiB payload与
 正常兼容gate见0047；真机、UEFI、任意断电不从这些QEMU结果推出。
 
+## 2026-10-26：0051 xypm P2-2只读校验与计划实现
+
+按package_management.md的P2顺序，当前推进P2-2，先提供客体 `verify` 与
+`plan install|upgrade`；二者都只读，不写文件、不执行payload，也不授予构造权。
+校验使用编译时固定profile，解析单一打开包句柄，验证受限ustar、严格UTF-8/整数JSON、
+schema/profile/features、完整成员集合与SHA-256；计划另校验数据库/index绑定、精确依赖、
+循环、归属、已安装文件摘要和FAT规范目录项。SHA-256只证明内容与声明匹配，不证明发布者。
+
+实现初版由冻结单线程B2 SDK成功构建/打包，但guest/adversarial gate未运行，故P2-2
+仍为进行中。客体尚未检查完整ELF PT_LOAD布局；在写命令开放前应补齐，或以共同契约
+明确该限制并确保不会绕过装载器的最终ELF校验。P2-3持久journal/启动恢复与P2-4写事务
+保持未开始，不能由只读计划或P2-1内存屏障代替。
+
+## 2026-10-26：0052 B1 安全熵先用 x86-64 RDRAND
+
+先通过共享syscall 63向用户态提供最多256字节，普通与线程newlib SDK都由`getentropy()`
+调用；在现有BIOS/QEMU目标上采用CPUID检测后的RDRAND，每64位最多10次检查CF，
+整批暂存成功后再复制。sys38–52线程ABI与sys54–61 Dash扩展保持原值。CPU不支持时
+ENOSYS，有限重试失败为EIO；不以TSC、uptime、timer jitter或固定种子回退。
+
+QEMU默认guest CPU增设`+rdrand`，并保留不带该特性的错误验收。RDRAND质量依赖
+CPU/hypervisor信任，未实现RDSEED/virtio-rng；QEMU固定seed及record/replay不纳入安全
+熵保证。virtio-rng需要先补PCI与virtio队列驱动，超出本轮B1边界。
+
+## 2026-10-26：0054恢复失败关闭与发行SDK身份
+
+恢复的存在性检查只把FR_NO_FILE/FR_NO_PATH当明确缺失，其他错误保留恢复材料并阻止
+普通文件请求。journal保留至清理及同步成功；删除后flush失败只能尽力重建marker，
+任何修复尝试均不抹掉原始失败。这是现有单文件恢复修正，不提前宣称P2-3或掉电安全。
+
+当前ABI文档维护62/23/24与共享定义一致，54/20–22归PR #2；历史快照编号原样保留。
+现有T0–T2/T3-PY、dash C1–C3与1026发布证据继续有效，只对各自冻结输入成立。
+未来发行要绑定系统记录的SDK完整集合/目录/manifest/配置、固定单线程C++运行库来源
+与实际拷贝结果，并让资格报告核对；身份绑定不等于认证发行者或普遍ABI兼容证明。
+
+
+## 2026-10-26：0056 POSIX子集契约与独立验收
+
+用户授权先建立契约等文档；以POSIX.1-2024为参照，XOS自定义子集名称为
+xos-posix-subset-v1，不视为标准profile/认证或新SDK ABI。维持C14的xsh默认入口，
+dash作为可选程序；完整POSIX继续暂缓。实现状态、标准基础/选项归类和证据各自记录，
+不从newlib、dash或某应用成功推定完整兼容。COW为优化，不列为fork合规门槛。
+
+PX路线/接口取舍是P类建议，具体ABI、标准选项和资源预算仍待专项设计；PX0只有文档，
+后续未实施。墙钟复用现有PY3 B2工作，不抢占移植/显示/包管理所有权。契约与gate见
+posix_subset_contract.md、posix_roadmap.md；本次不授权发布、推送或重新执行历史压力。
+
+## 2026-10-27：0058 CPython PY3 B2–B4边界
+
+B2采用CMOS RTC启动采样加PIT单调经过时间提供UTC墙钟；QEMU显式使用host UTC。
+ZoneInfo通过固定tzdata wheel补充时区数据库。暂停/挂起期间不刷新独立虚拟RTC，恢复后的
+墙钟误差取决于虚拟机时钟行为，不承诺宿主级校准。
+
+B3固定SQLite 3.54.1与XOS VFS，验收事务、约束/忙错误、损坏输入及同步重启持久性。
+边界是单进程、每库单个可写连接、rollback journal；不含WAL、共享内存或跨进程锁。
+B4固定bzip2 1.0.8、liblzma 5.8.4、zstd 1.5.7并以内建静态模块提供流式接口。
+三项均通过客体专项gate；不据此声明完整CPython生态兼容或公开发行资格。详细构建、
+客体证据、哈希与未运行项见docs/work_log/0058_cpython_py3_b_segment.md。
+
 ## 2026-10-26：0051 E14 BIOS VBE、单surface与窄服务
 
 保持BIOS主线，VBE在16位loader探测/设置XRGB8888，800×600优先、640×480次选。
 boot_info v2追加显示扩展，不借用payload字段。显存在512MiB RAM管理之外以
 supervisor RW/NX UC aperture映射，普通用户不获MMIO权，图形模式禁止VGA文本写，
-串口保留。sys63/64与既有0–62不冲突，现有IPC认证单surface/焦点，用户RAM批量
+串口保留。原分支sys63/64（0059本地整合改65/66，保留熵63/墙钟64），现有IPC认证单surface/焦点，用户RAM批量
 提交，PS/2 IRQ1/12有界事件FIFO/丢失重同步。服务无文件/块设备/构造权，退出撤销
 channel并唤醒。单核内核不可抢占保证buffer预检和复制无同进程解除映射竞争；
 SMP若引入必须先重做pin/锁。Qt QPA仍留E16，E14不编译Qt，不引入GPU/桌面。
 正式结果与未验边界见display_backend.md、0051工作记录和reports/display_e14_20261026/。
+
+
+## 2026-10-27：后续开发通过PR交付
+
+用户要求为公平保留commit贡献，后续开发采用独立分支→PR→review/合并，不直接交付到main。
+保留原始作者与贡献归属；本次0059仍遵循已约定的本地未提交整合，由用户squash现有PR和
+处理本地提交，不借此擅自推送或创建本轮PR。规则见Discipline.md。
+
+
+## 2026-10-27：0059显示ABI本地整合为65/66
+
+为保留已验CPython B段二进制，熵63/墙钟64保持，PR #3显示控制/呈现改65/66；
+同步普通/线程SDK生成器与当前接口文档。PR原始G02/SDK报告不改号，不代表新组合资格。
+用户先squash原PR，再处理本地差异；本轮只整合工作树，不提交/推送或移动main。
+7组组合客体与其他定向检查见0059；未来新工作通过PR交付，不直接落main。

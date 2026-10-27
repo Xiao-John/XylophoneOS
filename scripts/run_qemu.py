@@ -12,13 +12,14 @@ ROOT = Path(__file__).resolve().parents[1]
 MACHINE = "pc-i440fx-10.0"
 
 
-def qemu_command(image, *, vga=False, qmp=None, debug_port=None, cpu="qemu64", work_disk=None, iso=False):
+def qemu_command(image, *, vga=False, qmp=None, debug_port=None, cpu="qemu64,+rdrand", work_disk=None, iso=False):
     qemu = shutil.which(os.environ.get("QEMU", "qemu-system-x86_64"))
     if not qemu:
         raise SystemExit("QEMU not found; install it or set QEMU=/path/to/qemu-system-x86_64")
     command = [
         qemu, "-machine", MACHINE, "-accel", "tcg", "-cpu", cpu,
         "-m", "512M", "-smp", "1", "-nic", "none", "-vga", "std",
+        "-rtc", "base=utc,clock=host",
     ]
     if iso:
         command += ["-cdrom", str(image), "-boot", "order=d,strict=on", "-no-reboot"]

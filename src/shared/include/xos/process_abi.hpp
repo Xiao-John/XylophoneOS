@@ -24,6 +24,13 @@ inline constexpr u64 sys_debug_trace = 36;
 inline constexpr u64 sys_process_delegate = 37;
 inline constexpr u64 sys_boot_payload = 53;
 inline constexpr u64 sys_process_guard = 62;
+// Fill up to 256 user bytes from the architecture secure random instruction.
+inline constexpr u64 sys_random_bytes = 63;
+inline constexpr i64 random_error_io = -5, random_error_fault = -14;
+inline constexpr i64 random_error_invalid = -22, random_error_unsupported = -38;
+// Returns UTC nanoseconds since Unix epoch; -5 means the PC RTC was invalid.
+inline constexpr u64 sys_clock_realtime = 64;
+inline constexpr i64 realtime_error_io = -5;
 enum class process_guard_action : u64 { query = 0, begin = 1, end = 2, rearm = 3 };
 struct process_guard_info { u64 owner_pid; u64 worker_pid; };
 inline constexpr i64 process_error_busy = -11;

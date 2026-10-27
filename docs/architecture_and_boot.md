@@ -280,3 +280,11 @@ ELF PT_TLS解析/模板校验仍在用户态loader；通用load_plan只描述文
 工作线程退出只回收自己的执行资源；全组停止后才由其他安全上下文销毁地址空间。
 内核文件身份仍为 PID，files 服务继续按进程枚举会话，不增加 TID 客户端。
 地址图、预算与客体证据见 [线程实现](threading_implementation.md)。
+
+## 0054：单文件恢复错误语义修正
+
+journal/target/backup/temp的存在性检查仅FR_NO_FILE/FR_NO_PATH表示缺失；其他读取错误
+在修改恢复材料前锁定为io。读取journal也检查close，清理检查删除/重命名/同步。
+恢复成功路径保持原提交/回滚语义，journal在清理及其flush后最后删除。若删除之后的
+最终flush失败，尽力重建marker且仍拒绝服务；持续介质错误下不保证重建成功，也不
+承诺任意掉电原子性。0054的宿主API故障注入和真实客体恢复证据分别报告，不互代。

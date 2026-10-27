@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import shutil
 import struct
-from toolchain import COMMON_FLAGS, X86_FLAGS, tool
+from toolchain import COMMON_FLAGS, X86_FLAGS, TARGET, tool
 
 
 def build_users(root, build, nasm, run, build_id):
@@ -168,7 +168,8 @@ def build_users(root, build, nasm, run, build_id):
         return hashlib.sha256(path.read_bytes()).hexdigest()
     (sdk / "manifest.json").write_text(json.dumps({
         "build_id": build_id, "abi": 1, "target": "x86_64-elf",
-        "display_extensions": {"version": 1, "syscalls": [63, 64], "pixel_format": "XRGB8888", "surface_count": 1},
+        "configuration": TARGET, "runtime_model": "single",
+        "display_extensions": {"version": 1, "syscalls": [65, 66], "pixel_format": "XRGB8888", "surface_count": 1},
         "process_extensions": {"syscalls": list(range(54, 62)), "file_operations": [20, 21, 22],
             "startup_versions": [1, 2, 3], "exec_image_abi": 3, "exec_marker": ".xos.exec",
             "fork_supported": True, "exec_supported": True, "single_main_thread_only": True,

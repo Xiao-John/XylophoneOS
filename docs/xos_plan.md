@@ -12,7 +12,7 @@ XOS Revival 首先是一个供自己和朋友开发、练习、娱乐的独立�
 
 ## 本轮修改与阅读方式
 
-2026-10-26补充：0047完成ISO容量扩展的独立gate；0048交付xypm P2-1维护准入/写租约，8项新客体检查通过。P2拆为维护门控→原生校验/计划→持久恢复→用户写命令；后几项尚未完成，不能宣称P2全过。详情与最终共同build见state.md。
+2026-10-26补充：0047完成ISO容量扩展的独立gate；0048交付xypm P2-1维护准入/写租约，8项新客体检查通过。P2-2已开始：客体原生校验与只读install/upgrade计划可用，冻结SDK构建/打包成功，但guest与畸形输入gate未运行，不能记为通过。P2拆为维护门控→原生校验/计划→持久恢复→用户写命令；P2-3/4未开始。详情见state.md和work_log/0051_xypm_p2_verify_plan.md。
 
 v0.10新增：用户正式定名xypm，移除xpm/xpkg命令入口，保留.xpk容器。0044交付宿主候选盘安装/升级/移除、归属校验和客体只读查询；16组P0宿主、12组P1宿主、10组双Shell/重启客体通过。B2单线程SDK单独冻结，未登记线程SDK；P2客体维护事务、P3仓库仍待实施。
 
@@ -59,7 +59,7 @@ C 为项目所有者已确认，P 为可逆工程建议，O 为尚未确定，D 
 | C15 | 已确认 | 公共线程底座E13-T提前：1:1内核线程、单核抢占，内核提供生命周期/隔离等待，用户态提供pthread与运行库同步；T2及应用各自gate通过后才声明对应能力，详见threading_contract.md |
 | C16 | 已确认方向 | 第三方用户态应用独立开发/安装，规划包管理，不再以修改系统源码和启动程序清单为常规入口；本地ELF开发运行继续可用，包安装与权限授予分开 |
 | C17 | 已确认 | 包管理器定名xypm，旧xpm/xpkg入口撤除；.xpk包容器不因命令改名而变更 |
-| P07 | P0/P1受限实现；后续待验 | 独立构建、包格式、宿主候选盘事务/精确依赖与客体只读查询已验（0035/0044）；客体维护事务P2、仓库P3待实施，见package_management.md |
+| P07 | P0/P1通过；P2进行中 | 客体原生verify/plan已构建，但P2-2客体与畸形输入验收未运行；P2-3持久恢复、P2-4写命令及P3仓库未完成，见package_management.md |
 | P01 | 建议 | 小型自写微内核，复用成熟启动工具及用户态组件；先检查已有代码再决定具体复用边界 |
 | P02 | 建议 | 首先固定一种 x86-64 QEMU 配置、单核、串口/终端、固定内存规模 |
 | P03 | 建议 | ELF64、现成 AMD64 函数调用约定、初期静态链接；不据此承诺 Linux 二进制或 syscall 兼容 |
@@ -287,7 +287,7 @@ E01–E08 的实际进度与受限 gate 见 state.md；本表保留目标，不�
 | E06 | E04,E05 | 审计 GCC/G++ Seed 运行与构建依赖，选择 libc/兼容层并扩展 | 一份由实际配置和产物得出的依赖清单、首批工具运行结果 |
 | E07 | E05 | 块设备与复用文件系统适配 | 正常同步关机重启后源码仍在，明确掉电保证边界 |
 | E08 | E06 | 交叉构建并移植原生 GCC/G++ 及所需工具 | 在 XOS 内编译 C/C++ 多文件程序并由 XOS 执行 |
-| E09 | E07,E08 | 镜像、工作盘、SDK 和说明；朋友独立上手 | 0.0.1-1024发行交付完成（0023）；朋友独立试用、备份恢复/升级记录继续补齐，O19/O20仍待验 |
+| E09 | E07,E08 | 镜像、工作盘、SDK 和说明；朋友独立上手 | 0.0.1-1024与0.0.1-1026已发行；1026回执见docs/releases/release_0_0_1_1026.json；朋友独立试用、备份恢复/升级记录继续补齐，O19/O20仍待验 |
 | E10 | E08 | 补齐系统构建依赖，重建新版 XOS | 系统内构建日志、新镜像与启动证据；未完成的镜像步骤单独报告 |
 | E11 | E08 | 原生重建选定 GCC/G++，之后升级版本 | 自举比较、相应上游测试与真实失败记录 |
 | E12 | E08 及各目标依赖 | 按兴趣逐个移植 CPython、编辑器、构建工具、Clang/LLVM 等 | 每个软件独立报告构建、运行、限制与可复用适配 |
@@ -304,21 +304,34 @@ E01–E08 的实际进度与受限 gate 见 state.md；本表保留目标，不�
 
 E07 可在工具链适配期间推进；E09、E10、E11、E12 不强制串行。先让系统可以玩，再按兴趣和实际阻塞扩大。Lua 等现成小工具可以作为可选支线，但不成为 GCC/G++ 的前置关卡。
 
-E13-T：公共线程契约已确定，详见[threading_contract.md](threading_contract.md)。0028 dash B0/B1已交付；0035用户将T0–T2实施交朋友通过PR接收，本线不再占其实现；CPython PY0已由0030完成，移植线继续PY1/PY2与Open Adventure依赖构建。T0机制、T1等待、T2线程安全SDK、T3-PY/T3-QT各自验收，全部not_run。首版不要求SMP/fork/动态链接；线程与进程退出、权限和资源归属分开。T2交付后CPython真实线程接入前移，不再等PY3其他生态功能。
+E13-T：公共线程契约已确定，详见[threading_contract.md](threading_contract.md)。0028 dash B0/B1已交付；0035用户将T0–T2实施交朋友通过PR接收，本线不再占其实现；CPython PY0已由0030完成，移植线继续PY1/PY2与Open Adventure依赖构建。T0机制、T1等待、T2线程安全SDK已通过0037冻结资格；T3-PY由0043通过，PY2/PY3及B1–B4有各自专项证据（B段见0058）；T3-QT未运行。旧结果不自动改绑当前源码/SDK。首版不要求SMP/fork/动态链接；线程与进程退出、权限和资源归属分开。T2交付后CPython真实线程接入前移，不再等PY3其他生态功能。
 
-E12-PKG：包管理按[package_management.md](package_management.md)推进，0035已交P0，0044完成受限P1，下一步客体事务P2；线程PR已合并，CPython线程接入由用户态线推进。现有SDK/离线导入/原生编译流程见[开发入口](friend_user_program_quickstart.md)。0030已验CPython PY0、0033已验Shell UTF-8文本/argv通道，UTF-8文件路径U2仍未完成；Open Adventure由用户移植线推进，不由包管理重写游戏或代验其构建。
+E12-PKG：包管理按[package_management.md](package_management.md)推进，0035已交P0，0044完成受限P1，0048完成P2-1，当前P2-2实现初版待guest/adversarial验收；P2-3恢复和P2-4写命令未开始。线程PR已合并，CPython线程接入由用户态线推进。现有SDK/离线导入/原生编译流程见[开发入口](friend_user_program_quickstart.md)。0030已验CPython PY0、0033已验Shell UTF-8文本/argv通道，UTF-8文件路径U2仍未完成；Open Adventure由用户移植线推进，不由包管理重写游戏或代验其构建。
 
 E12-SH：采用dash 0.5.13.5移植POSIX Shell子集。A已实现简单命令/脚本与同步spawn；
-B0有界编译器委派与B1简单开发脚本已由0028通过客体验收。B2继续补真实描述符
-重定向与前台取消，C补阻塞管道/隔离执行环境；逐批客体验收。
+B0/B1由0028、B2由0042通过客体验收；PR #2的C1/C2/C3已合并，
+阻塞管道、eager-copy fork隔离、命令替换、匿名HereDoc、真实exec与Make的受限
+gate见docs/reports/dash_c3_20261026/qualification.json（build2f7160b7d6633ee6）。
 Xshell是原生入口，dash仅独立安装为/usr/bin/dash；不以dash或POSIX约束未来xsh的
 全部交互设计。实现范围和证据见shell_subset.md，勘查依据见shell_port_scout.md。
 0027已完成Xsh轻量UI与可执行候选/结构化启动诊断，见xsh.md；dash后续按
-dash_port_plan.md推进B2–C3，不能把B0/B1结果扩大为重定向、管道或完整POSIX兼容。
+dash_port_plan.md与各阶段独立证据为准，不从这些受限gate推出完整POSIX兼容。
 
 E 系列同时参照“面向未来研究的架构预留”，在相应模块首次实现时落实通用边界；无需先实现 AI、Linux 后端或实验平台。
 
 第一轮实现优先收口 E01–E04，取得可启动、可调试、有隔离用户程序的系统。对后续依赖只做足以避免 ABI 返工的准备，不先花大量时间实现整套 POSIX 或研究 AI。不得把开工重新变成无限架构讨论。
+
+## POSIX子集推进（PX系列）
+
+2026-10-26：用户授权先建立契约与文档。统一参照POSIX.1-2024，使用XOS自定义
+`xos-posix-subset-v1`名称；不声明标准profile或完整兼容，不把dash C3通过等同系统合规。
+边界与状态见[posix_subset_contract.md](posix_subset_contract.md)，分期与验收见
+[posix_roadmap.md](posix_roadmap.md)。PX0文档已完成，其余尚未开始，不覆盖既有E阶段。
+
+建议按信号→TTY/作业控制、就绪等待、VMA/映射、文件语义、线程/时间、工具/locale、
+网络/IPC各线推进；先后以具体消费者和所有权协调为准。主端下一项建议是PX4-A设计，
+不是已开工。墙钟复用现有PY3 B2任务。完整POSIX仍属D04；本轮授权不把所有选项转为
+实现承诺，也不要求Qt/CPython先等待完整兼容。xsh默认定位不变，COW单列可选优化。
 
 ## Qt GUI 主线的分阶段边界
 

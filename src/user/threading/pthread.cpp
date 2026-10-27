@@ -315,12 +315,19 @@ extern "C" int pthread_setcanceltype(int, int*) { return ENOTSUP; }
 extern "C" int pthread_atfork(void(*)(), void(*)(), void(*)()) { return ENOTSUP; }
 extern "C" int clock_gettime(clockid_t clock, timespec* value) {
     if (!value) { errno = EFAULT; return -1; }
-    if (clock != CLOCK_MONOTONIC) { errno = clock == CLOCK_REALTIME ? ENOTSUP : EINVAL; return -1; }
+    if (clock == CLOCK_REALTIME) {
+        const i64 now = sdk::syscall(sys_clock_realtime, 0);
+        if (now < 0) { errno = now == realtime_error_io ? EIO : EINVAL; return -1; }
+        value->tv_sec = static_cast<time_t>(now / 1000000000);
+        value->tv_nsec = static_cast<long>(now % 1000000000);
+        return 0;
+    }
+    if (clock != CLOCK_MONOTONIC) { errno = EINVAL; return -1; }
     const u64 now = thread::clock(); value->tv_sec = static_cast<time_t>(now / 1000000000);
     value->tv_nsec = static_cast<long>(now % 1000000000); return 0;
 }
 extern "C" int clock_getres(clockid_t clock, timespec* value) {
-    if (clock != CLOCK_MONOTONIC) { errno = clock == CLOCK_REALTIME ? ENOTSUP : EINVAL; return -1; }
+    if (clock != CLOCK_MONOTONIC && clock != CLOCK_REALTIME) { errno = EINVAL; return -1; }
     if (value) { value->tv_sec = 0; value->tv_nsec = static_cast<long>(sdk::syscall(sys_clock_monotonic, 1)); } return 0;
 }
 extern "C" int nanosleep(const timespec* duration, timespec* remainder) {
@@ -350,6 +357,3 @@ extern "C" int usleep(useconds_t microseconds) {
         static_cast<long>(microseconds % 1000000) * 1000};
     return nanosleep(&duration, nullptr);
 }
-// There is no entropy service in this profile. In particular, never satisfy
-// newlib arc4random or std::random_device with a constant/fake random source.
-extern "C" int getentropy(void*, size_t) { errno = ENOSYS; return -1; }

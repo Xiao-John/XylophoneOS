@@ -18,34 +18,28 @@ dash/xsh。目标是能自己开发、保存、编译和运行程序，不以商
 - 启动、长模式、异常/内存、任务/进程隔离、supervisor 与 files 服务。
 - FAT32 持久工作盘；文件编辑、目录、同步、重启保留。
 - 原生 SDK/GCC/G++/Binutils 和客体 C/C++ 编译运行。
-- xsh 原生入口；dash 0.5.13.5 的 B0/B1/B2 受限功能，C 阶段未完成。
+- xsh 原生入口；dash 0.5.13.5 的 B0–B2及PR #2 C1–C3受限gate；流水线/隔离/HereDoc/exec/Make已有各自证据。
 - file-backed El Torito ISO：`KERNEL.BIN` 从 ISO 读入，dash 作为 payload
   自动安装；0047解除旧容量限制，kernel文件8 MiB/内存16 MiB、payload32 MiB。
 - CPython 3.14.9 PY0/PY1 与 T3-PY 真实 pthread/GIL gate。
-- xypm P0/P1：宿主候选盘 install/upgrade/remove、客体只读 `list/info`；
-  P2-1维护准入/文件写租约与失败关闭已验。
+- xypm P0/P1和P2-1门控已验；P2-2客体包校验/只读计划已实现初版并成功构建，
+  尚未guest验收；P2-3持久恢复、P2-4写命令和P3仓库未完成。
 - Open Adventure 在 XOS 内构建的受限验证；完整游戏/文本门未收口。
 
 ## 当前证据
 
-- 最近一次完整 gate 的系统 build：`911184be3f3c99f6`；基础镜像
-  `d9b81936924e729d2cf059d936b2406828a6785c151246603ed77ec9b2c5121d`。
-  当前源码（含 T3-PY gate 文本、xypm 脚本等）重建为 `f25009cdbb27c857`，
-  需要重跑全量 gate 后才能作为 release 回执。
-- dash B2：6/6；B0/B1 回归 7/7；见 `work_log/0042_dash_b2.md`。
-- CPython T3-PY：5/5，资源 `[129833,2,0]`；见 `work_log/0043_cpython_t3_py.md`。
-- xypm：P0 宿主 16/16、P1 宿主 12/12、双 Shell/重启客体 10/10；见
-  `work_log/0044_xypm_p1.md`。
-- 0047 ISO：大容量10/10、正常兼容4/4。5.6 MiB真实kernel和2.1 MiB载荷
-  完整验证；正常共同build4c79f3a789dcff61位于build/iso_capacity/normal。
-- 0048 P2-1：在共同build上8/8，资源[130345,2,0]；该build全部src/摘要匹配。
-  旧综合/应用回执没有因此重新取得当前build资格，release仍需统一冻结/验收。
+- 0.0.1-1026已发布，tag/source为db5b46c，build7a4668477d7323de；release smoke
+  11/11与7份许可材料检查，资产/SDK/source哈希见[发布回执](releases/release_0_0_1_1026.json)。
+- 线程T0–T2、T3-PY与dash B/C各自冻结资格保留在对应reports/work_log，不改绑本地后续源码。
+- 0052系统熵候选build46cb97b1555633f1已有RDRAND/不支持两种配置证据；未更新1026资产。
+- xypm P2-2仍只有实现/构建，guest与畸形输入未验。0054针对审计错误另建隔离回执，
+  以[当前状态](state.md)和[0054](work_log/0054_audit_01_fixes.md)为准，不构成新release。
 
 ## 明确未完成
 
-- CPython T3-QT、SMP、完整 POSIX/pipes、信号/终端语义。
-- xypm P2原生包验证/持久日志/客体写命令（已有P2-1门控）、P3签名仓库；dash C阶段。
-- Qt 实现、UEFI、完整 release 打包/签名。
+- CPython T3-QT、SMP、完整POSIX、信号/终端语义；受限阻塞pipe已由PR #2交付。
+- xypm P2-2 guest/adversarial验收、P2-3持久日志/启动恢复、P2-4客体写命令、P3签名仓库；dash完整POSIX。
+- Qt实现、UEFI及发行签名。0.0.1-1026打包/发布已完成，后续源码另验。
 - 长时间/随机压力、旧全量回归未重跑；不得写成全绿。
 
 ## 文档与压缩材料

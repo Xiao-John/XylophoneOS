@@ -1,0 +1,7 @@
+{
+  "format_version": 1,
+  "scope": "frozen single C++ runtime v5; not a threaded SDK registration",
+  "evidence": "docs/work_log/0050_release_candidate.md; published 1026 C/C++ package smoke",
+  "manifest_sha256": "fe685d9f20fe7594440fb4a5c3adb77ae640ce68bec2403aff772b721ba09988",
+  "tree_sha256": "f9803aba7a125d3025db894078801687ea109864b97683fcb6274c1699b057d9"
+}

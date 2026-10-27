@@ -2,6 +2,7 @@
 // Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/file_client.hpp>
 #include <xos/sdk.hpp>
+#include <xos/text.hpp>
 
 extern "C" void xos_file_session_lock() __attribute__((weak));
 extern "C" void xos_file_session_unlock() __attribute__((weak));
@@ -72,13 +73,14 @@ i64 Client::set_path(const char* path, char* target, u32& length) {
     length = 0;
     while (length < max_name && path[length] != '\0') {
         const u8 c = static_cast<u8>(path[length]);
-        if (c > 0x7e || c < 0x20) { return status_value(status::invalid); }
+        if (c == 0x7f || c < 0x20) { return status_value(status::invalid); }
         target[length] = path[length];
         ++length;
     }
     if (length == 0 || length >= max_name || path[length] != '\0') {
         return status_value(status::invalid);
     }
+    if (!xos::text::valid(path, length)) { return status_value(status::invalid); }
     target[length] = '\0';
     return 0;
 }
@@ -125,10 +127,11 @@ i64 Client::list(const char* path, entry* entries, u32 capacity, u32& count, u32
         entry& item = entries[count];
         for (u32 i = 0; i < name_length; ++i) {
             const u8 c = response_.data[position + i];
-            if (c < 0x20 || c > 0x7e) { return status_value(status::io); }
+            if (c < 0x20 || c == 0x7f) { return status_value(status::io); }
             item.name[i] = static_cast<char>(c);
         }
         item.name[name_length] = '\0';
+        if (!xos::text::valid(item.name, name_length)) { return status_value(status::io); }
         item.size = size;
         item.version = 0;
         item.directory = (attributes & entry_is_directory) != 0;

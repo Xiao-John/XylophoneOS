@@ -9,6 +9,7 @@
 #include <xos/libc_runtime.hpp>
 #include <xos/sdk.hpp>
 #include <xos/spawn.hpp>
+#include <xos/text.hpp>
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -166,11 +167,12 @@ bool copy_string(const char* source, char* target, u32 capacity) {
     u32 i = 0;
     while (i + 1 < capacity && source[i] != '\0') {
         const u8 c = static_cast<u8>(source[i]);
-        if (c < 0x20 || c > 0x7e) { return false; }
+        if (c < 0x20 || c == 0x7f) { return false; }
         target[i] = source[i];
         ++i;
     }
     if (source[i] != '\0') { return false; }
+    if (!xos::text::valid(source, i)) { return false; }
     target[i] = '\0';
     return true;
 }
@@ -189,12 +191,13 @@ bool normalize_path(const char* path, char* output) {
     }
     for (u32 i = 0; path[i] != '\0'; ++i) {
         const u8 c = static_cast<u8>(path[i]);
-        if (c < 0x20 || c > 0x7e || c == ':') { return false; }
+        if (c < 0x20 || c == 0x7f || c == ':') { return false; }
         if (used + 1 >= sizeof(joined)) { return false; }
         joined[used++] = path[i];
     }
     if (used == 0) { joined[used++] = '/'; }
     joined[used] = '\0';
+    if (!xos::text::valid(joined, used)) { return false; }
     u32 out = 0;
     output[out++] = '/';
     u32 i = 0;
@@ -222,8 +225,8 @@ bool normalize_path(const char* path, char* output) {
     return true;
 }
 
-// argv/environment are byte strings; filesystem paths retain their separate
-// ASCII normalization contract. Newlines/tabs are valid shell -c arguments.
+// argv/environment are byte strings; filesystem paths use UTF-8.
+// Newlines/tabs are valid shell -c arguments.
 bool copy_argument(const char* source, char* target, u32 capacity) {
     if (!source || !target || !capacity) return false;
     for (u32 i = 0; i < capacity; ++i) {

@@ -11,7 +11,7 @@ inline constexpr u32 response_magic = 0x53455246; // FRES
 // tools remain usable. New operations are feature-detected by their result.
 inline constexpr u16 abi_version = 2;
 inline constexpr u32 message_size = 4096;
-inline constexpr u32 max_name = 256; // ASCII bytes including room for NUL.
+inline constexpr u32 max_name = 256; // UTF-8 bytes including room for NUL.
 inline constexpr u32 fat32_max_file_bytes = 0xfffffffeu;
 inline constexpr u32 max_block_bench_bytes = 8 * 1024 * 1024;
 inline constexpr u32 max_open = 16;

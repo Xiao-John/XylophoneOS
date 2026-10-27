@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "ff.h"
 
-// XOS exposes visible ASCII paths. FAT long-name records are UTF-16 on disk;
-// the minimal converter deliberately rejects non-ASCII API names rather than
-// guessing an OEM encoding. Existing non-ASCII directory entries remain on disk.
+// FatFs uses UTF-8 for API long names and UTF-16 on disk. The OEM converter
+// only supports ASCII short aliases; non-ASCII OEM code pages are unsupported.
+// Name comparisons fold ASCII only; no general Unicode case folding is claimed.
 extern "C" WCHAR ff_oem2uni(WCHAR oem, WORD) {
     return oem >= 0x20 && oem <= 0x7e ? oem : 0;
 }

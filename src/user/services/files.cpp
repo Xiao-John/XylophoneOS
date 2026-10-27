@@ -2,6 +2,7 @@
 // Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/sdk.hpp>
 #include <xos/file_abi.hpp>
+#include <xos/text.hpp>
 #include <stddef.h>
 #include "ff.h"
 #include "diskio.h"
@@ -162,6 +163,15 @@ bool names_equal(const char* left, const char* right) {
     return left[i] == '\0' && right[i] == '\0';
 }
 
+// FAT long names and generated short aliases can identify the same entry.
+bool same_path_object(const char* left, const char* right) {
+    if (names_equal(left, right)) { return true; }
+    FILINFO a{}, b{};
+    if (f_stat(left, &a) != FR_OK || f_stat(right, &b) != FR_OK) { return false; }
+    const auto ak = identity_key(a), bk = identity_key(b);
+    return ak.sector != 0 && same_identity_key(ak, bk);
+}
+
 bool reserved_component(const char* begin, u32 length) {
     // Match the namespace already reserved by the offline disk-transfer API.
     // It includes anonymous backing names and denies normal path operations.
@@ -178,14 +188,14 @@ bool reserved_component(const char* begin, u32 length) {
     return false;
 }
 
-// Convert a protocol path to FatFs' root-relative form. Only visible ASCII is
-// supported; absolute and relative paths share the volume root as their base.
+// Protocol paths are validated UTF-8; FatFs stores long names as UTF-16.
 bool normalize_path(const char* source, u32 source_length, char* output,
                     bool allow_root, bool allow_trailing_slash = false) {
     if (source_length == 0 || source_length >= max_name) { return false; }
+    if (!xos::text::valid(source, source_length)) { return false; }
     for (u32 i = 0; i < source_length; ++i) {
         const u8 c = static_cast<u8>(source[i]);
-        if (c < 0x20 || c > 0x7e || c == '\\' || c == ':' || c == '*' || c == '?' ||
+        if (c < 0x20 || c == 0x7f || c == '\\' || c == ':' || c == '*' || c == '?' ||
             c == '"' || c == '<' || c == '>' || c == '|') { return false; }
     }
     if (source[source_length - 1] == '/' && !allow_trailing_slash &&
@@ -245,8 +255,12 @@ status from_fr(FRESULT result) {
 }
 
 bool any_open(const client_session&, const char* path) {
+    FILINFO info{};
+    const bool found = f_stat(path, &info) == FR_OK;
+    const file_identity_key key = found ? identity_key(info) : file_identity_key{};
     for (const auto& item : descriptions) {
-        if (item.used && names_equal(item.path, path)) { return true; }
+        if (item.used && (names_equal(item.path, path) ||
+            (found && key.sector != 0 && same_identity_key(key, identity_key(item.file))))) { return true; }
     }
     return false;
 }
@@ -420,9 +434,10 @@ void reply(response& out, const request& in, status code) {
 bool supported_name(const char* name, u32& length) {
     length = text_length(name, max_name);
     if (length == 0 || length >= max_name) { return false; }
+    if (!xos::text::valid(name, length)) { return false; }
     for (u32 i = 0; i < length; ++i) {
         const u8 c = static_cast<u8>(name[i]);
-        if (c < 0x20 || c > 0x7e) { return false; }
+        if (c < 0x20 || c == 0x7f) { return false; }
     }
     return true;
 }
@@ -1083,7 +1098,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
     case op::remove: {
         char path[max_name]{};
         if (!request_path(in, path)) { reply(out, in, status::invalid); break; }
-        if (staging_active && names_equal(staging_path, path)) { reply(out, in, status::busy); break; }
+        if (staging_active && same_path_object(staging_path, path)) { reply(out, in, status::busy); break; }
         for (const auto& owner_session : sessions) {
             if (any_open(owner_session, path)) { reply(out, in, status::busy); return; }
         }
@@ -1108,7 +1123,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             !normalize_path(reinterpret_cast<const char*>(in.data), in.length, new_path, false)) {
             reply(out, in, status::invalid); break;
         }
-        if (staging_active && (names_equal(staging_path, old_path) || names_equal(staging_path, new_path))) {
+        if (staging_active && (same_path_object(staging_path, old_path) || same_path_object(staging_path, new_path))) {
             reply(out, in, status::busy); break;
         }
         for (const auto& owner_session : sessions) {

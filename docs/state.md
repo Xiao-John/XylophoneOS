@@ -37,6 +37,8 @@
 
 ## 接手与下一步
 
+- UTF-8 文件名实现进行中：文件服务、FatFs、SDK 和 newlib 接入；验收尚未运行，
+  ASCII 大小写折叠之外的 Unicode 大小写与包路径支持不在本批承诺。
 - Open Adventure 1.12 的 `games.open_adventure` XPK 已构建；离线安装/校验/卸载和
   XOS 客体启动、中文输出、退出有定向证据，见[0067](work_log/0067_open_adventure_xpk.md)。
   不代表客体端安装、完整游戏/存档或公开分发资格。

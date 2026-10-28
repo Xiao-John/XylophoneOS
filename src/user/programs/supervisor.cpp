@@ -18,6 +18,33 @@ using namespace xos::sdk;
 bool demo_keep;
 bool demo_quiet;
 bool verbose_trace;
+bool persistent_recovery_gate;
+
+// The transaction directory is a durable recovery marker. Only a definite
+// not-found result permits ordinary startup or release of the admission guard.
+i64 persistent_marker_status(const char* path) {
+    file::Client files;
+    if (!files.init()) { return static_cast<i64>(file::status::io); }
+    u32 size = 0, attributes = 0;
+    return files.stat_info(path, size, attributes);
+}
+
+bool marker_is_absent() {
+    return persistent_marker_status("/var/lib/xypm/transaction") == static_cast<i64>(file::status::not_found) &&
+           persistent_marker_status("/var/lib/xypm/txdata") == static_cast<i64>(file::status::not_found) &&
+           persistent_marker_status("/var/lib/xypm/transaction_commit") == static_cast<i64>(file::status::not_found);
+}
+
+void start_persistent_recovery_gate() {
+    if (marker_is_absent()) { return; }
+    persistent_recovery_gate = true;
+    // The boot demos are the only ordinary tasks allowed before Xsh starts.
+    for (u64 demo = 1; demo <= 4; ++demo) { (void)syscall(10, demo); }
+    demo_quiet = true;
+    const i64 guarded = syscall(sys_process_guard, static_cast<u64>(process_guard_action::begin));
+    print(guarded == 0 ? "maintenance: persistent recovery required\n"
+                       : "maintenance: recovery check failed; startup locked\n");
+}
 
 // Session-only command history, bounded independently of the supervisor stack.
 constexpr u32 history_capacity = 16;
@@ -141,6 +168,7 @@ void image_list() {
     }
 }
 const char* const kChildPath[] = {"PATH=/usr/bin:/bin:/", nullptr};
+const char* const kMaintenancePath[] = {"PATH=/usr/bin:/bin:/", "XYP_RECOVERY_ABI=1", nullptr};
 
 const char* candidate_description(execution::candidate_kind kind) {
     switch (kind) {
@@ -181,7 +209,7 @@ bool builtin_named(const char* name) {
     const char* const names[] = {"help", "trace", "type", "ps", "kill", "images", "exec", "spawn",
         "wait", "stats", "primtest", "elftest", "ls", "cat", "stat", "rm", "edit", "filetest",
         "sync", "exec-file", "exec-driver", "exd", "spawn-file", "mkdir", "mv", "demo",
-        "maint-run", "maint-recover", "maint-status"};
+        "maint-run", "maint-recover", "maint-recover-boot", "maint-status"};
     for (const auto* item : names) { if (equal(name, item)) { return true; } }
     return false;
 }
@@ -211,7 +239,7 @@ void launch_file(const char* name, u32 argc, char** argv, u32 spawn_depth, bool 
     if (!background) { result_line(static_cast<u64>(child)); }
 }
 // Explicit supervisor entry; filenames do not confer maintenance authority.
-void maintenance_run(u32 argc, char** argv, bool recovering) {
+void maintenance_run(u32 argc, char** argv, bool recovering, bool boot_image = false) {
     process_guard_info gate{};
     if (syscall(sys_process_guard, static_cast<u64>(process_guard_action::query),
                 reinterpret_cast<u64>(&gate)) != 0) { print("maintenance: unavailable\n"); return; }
@@ -219,33 +247,64 @@ void maintenance_run(u32 argc, char** argv, bool recovering) {
     if (!files.init()) { print("maintenance: files unavailable\n"); return; }
     i64 result;
     if (recovering) {
-        if (gate.owner_pid != pid()) { print("maintenance: no retained session\n"); return; }
-        // Releasing only the file lease leaves the kernel admission barrier up.
-        result = files.maintenance_release();
-        if (result == 0) { result = syscall(sys_process_guard, static_cast<u64>(process_guard_action::rearm)); }
+        if (gate.owner_pid == 0 && persistent_recovery_gate) {
+            result = syscall(sys_process_guard, static_cast<u64>(process_guard_action::begin));
+        } else {
+            if (gate.owner_pid != pid()) { print("maintenance: no retained session\n"); return; }
+            // Releasing only the file lease leaves the kernel admission barrier up.
+            result = files.maintenance_release();
+            if (result == 0) { result = syscall(sys_process_guard, static_cast<u64>(process_guard_action::rearm)); }
+        }
     } else {
         result = syscall(sys_process_guard, static_cast<u64>(process_guard_action::begin));
     }
     if (result != 0) {
         print("maintenance: busy or denied error="); signed_decimal(result); print("\n"); return;
     }
-    const auto candidate = execution::resolve(argv[0], "/usr/bin:/bin:/");
-    execution::launch_diagnostic diagnostic{};
-    spawn_options options{};
-    options.environment = kChildPath; options.environment_count = 1;
-    const i64 child = candidate.kind == execution::candidate_kind::executable ?
-        execution::spawn_file_diagnosed(candidate.path, argc, argv, options, diagnostic) : -1;
+    i64 child = -1;
+    if (boot_image) {
+        const u32 image = image_named("xypm_recover");
+        const char* arguments[] = {"xypm_recover"};
+        if (image != 0) { child = spawn(image, 1, arguments); }
+    } else {
+        const auto candidate = execution::resolve(argv[0], "/usr/bin:/bin:/");
+        execution::launch_diagnostic diagnostic{};
+        spawn_options options{};
+        const bool has_recovery_image = image_named("xypm_recover") != 0;
+        options.environment = has_recovery_image ? kMaintenancePath : kChildPath;
+        options.environment_count = has_recovery_image ? 2 : 1;
+        if (candidate.kind == execution::candidate_kind::executable) {
+            child = execution::spawn_file_diagnosed(candidate.path, argc, argv, options, diagnostic);
+        }
+    }
     process_status outcome{};
     const bool completed = child > 0 && wait(static_cast<u64>(child), outcome) == 0;
     const bool success = completed && outcome.outcome == process_outcome::exited && outcome.code == 0;
     if (!success && (child > 0 || recovering)) {
         print("maintenance: retained; run maint-recover with a recovery tool\n"); return;
     }
+    if (!marker_is_absent()) {
+        persistent_recovery_gate = true;
+        // A committed transaction is finalized by the immutable recovery image,
+        // not by reopening the possibly replaced on-disk xypm executable.
+        if (!recovering && success) {
+            result = files.maintenance_release();
+            if (result == 0) { result = syscall(sys_process_guard, static_cast<u64>(process_guard_action::rearm)); }
+            const u32 image = image_named("xypm_recover");
+            const char* arguments[] = {"xypm_recover"};
+            const i64 recovery_child = result == 0 && image != 0 ? spawn(image, 1, arguments) : -1;
+            process_status recovery_outcome{};
+            const bool cleaned = recovery_child > 0 && wait(static_cast<u64>(recovery_child), recovery_outcome) == 0 &&
+                recovery_outcome.outcome == process_outcome::exited && recovery_outcome.code == 0;
+            if (!cleaned) { print("maintenance: retained; automatic recovery failed\n"); return; }
+        }
+        if (!marker_is_absent()) { print("maintenance: retained; persistent recovery is required\n"); return; }
+    }
     result = files.maintenance_release();
     if (result == 0) { result = syscall(sys_process_guard, static_cast<u64>(process_guard_action::end)); }
     if (result != 0) { print("maintenance: retained; cleanup error="); signed_decimal(result); print("\n"); }
-    else if (child > 0) { print("maintenance: completed\n"); }
-    else { print("maintenance: program unavailable; session closed\n"); }
+    else { persistent_recovery_gate = false; if (child > 0) { print("maintenance: completed\n"); }
+        else { print("maintenance: program unavailable; session closed\n"); } }
 }
 void show_stats() {
     const auto state = stats();
@@ -311,11 +370,18 @@ void primitive_check() {
 
 void execute(u32 argc, char** argv) {
     if (argc == 0) { return; }
+    if (persistent_recovery_gate && !equal(argv[0], "help") && !equal(argv[0], "trace") &&
+        !equal(argv[0], "ps") && !equal(argv[0], "kill") && !equal(argv[0], "stats") &&
+        !equal(argv[0], "ls") && !equal(argv[0], "cat") && !equal(argv[0], "stat") &&
+        !equal(argv[0], "maint-status") && !equal(argv[0], "maint-recover") &&
+        !equal(argv[0], "maint-recover-boot")) {
+        print("maintenance: persistent recovery required; command blocked\n"); return;
+    }
     if (equal(argv[0], "help")) {
         print("Files     ls [path] | cat/stat/rm/edit <file> | mkdir <path> | mv <old> <new> | sync\n"
               "Programs  <command> [args] | exd <command> [args] | type <command>\n"
               "          exec-file | exec-driver (exd) | spawn-file | exec | spawn | wait\n"
-              "Maintain  maint-run <program> [args] | maint-recover <program> [args] | maint-status\n"
+              "Maintain  maint-run <program> [args] | maint-recover <program> [args] | maint-recover-boot | maint-status\n"
               "Shell     dash -i starts dash; exit inside dash returns here\n"
               "Display   display-start | exec gfxdemo [check|fault|hold|stop]\n"
               "Debug     trace on/off | ps | kill <pid> | stats | images | primtest | elftest | filetest\n"
@@ -388,6 +454,8 @@ void execute(u32 argc, char** argv) {
         const i64 synced = ui::sync();
         if (synced == 0) { print("[files] sync=ok\n"); }
         else { print("[files] sync error="); signed_decimal(synced); print("\n"); }
+    } else if (equal(argv[0], "maint-recover-boot") && argc == 1) {
+        maintenance_run(0, nullptr, true, true);
     } else if ((equal(argv[0], "maint-run") || equal(argv[0], "maint-recover")) && argc >= 2) {
         maintenance_run(argc - 1, argv + 1, equal(argv[0], "maint-recover"));
     } else if (equal(argv[0], "maint-status") && argc == 1) {
@@ -443,7 +511,13 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     using namespace xos::sdk;
     const auto trace_result = syscall(sys_debug_trace, 0);
     if (trace_result < 0) { print("xsh: lifecycle trace control unavailable\n"); }
-    ui::init();
+    start_persistent_recovery_gate();
+    // Bootstrap installation must not run when marker inspection or guard
+    // establishment fails; doing so could modify a disk awaiting recovery.
+    process_guard_info startup_gate{};
+    const i64 gate_query = syscall(sys_process_guard, static_cast<u64>(process_guard_action::query),
+                                   reinterpret_cast<u64>(&startup_gate));
+    if (!persistent_recovery_gate || (gate_query == 0 && startup_gate.owner_pid == pid())) { ui::init(); }
     print("\nWelcome to Xshell | XylophoneOS\n"
           "help: commands   dash -i: POSIX shell   trace on: diagnostics\n\n");
     bool last_cr = false;

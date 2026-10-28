@@ -22,13 +22,19 @@
 | Shell | dash C1–C3受限通过，xsh保留默认 | [C3资格](reports/dash_c3_20261026/qualification.json)，build2f7160b7d6633ee6；无完整信号/作业控制 |
 | 显示/ISO | sys65/66 在 build48e5e73bcd649f44 重验 G02 19组通过 | [当前报告](reports/qt_e15_qualified_20261028/g02_report.json)、[显示历史](history/boot_display.md)；QtGui/QPA未实现 |
 | CPython | PY0–PY2/T3-PY、A1–A3、B1–B4专项通过 | [用户态摘要](history/userland.md)；B2–B4系统6251d26b611a388d，Python11c39c52e451a9499450 |
-| xypm | P0/P1/P2-1通过；P2-2只读verify/plan和ELF校验已实现/打包 | [包摘要](history/packages.md)；P2-2 guest/adversarial未验，P2-3/4与P3未开始 |
+| xypm | P2原生验证、事务和启动恢复已实现；限定范围内验收通过 | [包计划](plans/packages.md)、[0066](work_log/0066_xypm_p2_validation.md)；P2验收范围和局限见记录；P3未完成 |
 | 审计/整合 | A01–A04修复与PR3兼容已交付PR4 | [整合摘要](history/delivery_audit.md)，组合build76a2e4380f64fb2e，7定向组通过；非旧全量重验 |
 | POSIX/Qt | PX0子集文档已有；QtCore 6.8.3 静态受限客体 G01/G03 功能通过 | [PX路线](plans/posix.md)、[Qt资格](reports/qt_e15_qualified_20261028/qualification.json)；QtGui/QPA 未开始，绝对峰值/发行许可未完成 |
 
 每项资格只对其冻结输入成立。旧源/SDK/镜像不改绑；许可材料通过不代表逐成员审计完成。
 QtCore 的系统 build48e5e73bcd649f44 和本地输入编辑的 build3200de2c3b80a9d9 分别保留资格；
 本次合并未运行二者的新组合。Qt 实现入口见[QtCore](implementation/qt_core.md)。
+
+## xypm P2接续
+
+客体事务、持久恢复与内置恢复器已整合；验证覆盖和未覆盖范围见
+[0066](work_log/0066_xypm_p2_validation.md)。P3已按网络依赖拆分，网络前工作尚未实现。
+历史P2验收针对原系统；本次与Qt和输入编辑组合需另行验证。
 
 ## 本地实现与尚未整合的分支
 
@@ -37,7 +43,7 @@ QtCore 的系统 build48e5e73bcd649f44 和本地输入编辑的 build3200de2c3b8
 | 当前分支输入编辑 F1/F2 | 4003511；已有定向证据，完整设计 partial | [0064](work_log/0064_input_edit_first_stage.md)；故障、复杂终端等仍待补测 |
 | 当前分支 DU 设计 | 928c755；[DU路线](plans/daily_utilities.md)已落盘 | 本分支尚未包含工具实现；DU1/2 13 命令，DU3 按依赖、DU4 包/ISO交付 |
 | codex/daily_utilities | 核对时 a770fc0，工作区干净 | 含 Open Adventure、UTF-8 文件名、xypm P2 和 DU 工具组合；有各自定向证据，尚未与当前 Qt/输入编辑组合整合 |
-| codex/xypm-p2-p3 | d6363f8，工作区干净 | P2事务与恢复限定验收已保存；本分支的 xypm 当前登记仍按上表，P3未完成 |
+| codex/xypm-p2-p3 | d6363f8，工作区干净 | P2事务与恢复限定验收已保存；P2已整合到当前组合，P3未完成 |
 
 独立分支实际进展不等于当前分支已交付，也不能因当前登记未合入而否认分支已有证据。
 本地提交范围和各分支来源见[0069](work_log/0069_all_worktree_local_commit.md)。

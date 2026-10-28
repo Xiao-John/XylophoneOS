@@ -1,0 +1,17 @@
+{
+  "format_version": 1,
+  "id": "xos-x86_64-daily-p2-candidate-v1",
+  "architecture": "x86_64",
+  "byte_order": "little",
+  "word_bits": 64,
+  "runtime_model": "single",
+  "syscall_abi": 1,
+  "startup_version": 3,
+  "compiler_version": "16.2.0",
+  "layout": "e08_static_tls_main_stack_128k_c3_stdio",
+  "features": ["stdio", "heap", "file_io", "directories", "static_tls", "cxx_runtime", "stdio_transfer", "spawn_delegate"],
+  "sdk_tree_sha256": ["9193cd1ded75abc826138b121e8970500b20e2fc4f62465e816be9b3d43e2b08"],
+  "verified_system_builds": ["35881bb342b35a3e"],
+  "scope": "candidate P2 integration; qualification pending; combined system SDK plus frozen single B2 C++ runtime",
+  "evidence": "docs/work_log/0069_daily_utilities.md"
+}

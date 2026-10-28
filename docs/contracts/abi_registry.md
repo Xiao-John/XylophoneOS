@@ -128,5 +128,5 @@ claimed必须位于对应reserved段，不能与现有接口或其他认领重�
    和tests/abi_doc_consistency.py；前者也核保留段无占用。Git无文本冲突不代表ABI无语义冲突。
 5. 公共分发/头/SDK生成器由登记负责人整合；其他移植PR只在所声明文件范围工作。
 
-当前登记PR为本次文档宪法化分支；原始编号/迁移证据见history/delivery_audit.md与
+当前登记已随 PR #5 合入 main；PR #8 复用现有 ABI，没有新增分配。原始编号/迁移证据见history/delivery_audit.md与
 history/boot_display.md。没有预先给Qt保留专属syscall或通用内核对象类型。

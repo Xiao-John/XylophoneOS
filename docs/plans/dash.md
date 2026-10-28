@@ -14,3 +14,6 @@
 引入ELF解析入内核或工具名授予构造权。B2共享打开描述不能用path重开模拟。
 单线程fork/exec不推出线程profile支持；POSIX基础/选项按[子集契约](../contracts/posix_subset.md)
 逐项审计。参考dash行为或宿主对照仅作指定输入对照，不替代完整标准符合性。
+
+日常独立工具统一按[daily_utilities.md](daily_utilities.md)补齐；命令实现和安装是独立交付，
+不靠扩充xsh内建或更换dash默认入口解决。DU设计尚未实施。

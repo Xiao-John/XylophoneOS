@@ -44,6 +44,33 @@ def archive(source, output):
     print(output, output.stat().st_size, flush=True)
 
 
+def prepare_daily_package(package, profile_path, sdk, system, entries, wheel_package):
+    """Preflight the candidate package against the actual release inputs."""
+    from xos_app import tree_receipt as sdk_tree_receipt
+    from xypm_format import load_json, require, strict_json, verify_package
+    require(not wheel_package, 'daily and wheel packages use distinct profiles; migrate them before combining')
+    profile = load_json(profile_path)
+    require(system['build_id'] in profile.get('verified_system_builds', []), 'daily profile does not admit release system')
+    digest, _ = sdk_tree_receipt(sdk)
+    require(digest in profile.get('sdk_tree_sha256', []), 'daily profile does not admit release SDK')
+    receipt_data = bytearray()
+    receipt_path = 'usr/share/xos.daily_utilities/build_receipt.json'
+    def sink(event, item, data):
+        if item['path'] == receipt_path and event == 'data':
+            require(len(receipt_data) + len(data) <= 1048576, 'daily build receipt too large')
+            receipt_data.extend(data)
+    package_info = verify_package(package, profile, sink=sink)
+    manifest = package_info['manifest']
+    require(manifest['id'] == 'xos.daily_utilities', 'not a daily utility package')
+    require(manifest['build_receipt']['path'] == receipt_path, 'unexpected daily build receipt path')
+    receipt = strict_json(bytes(receipt_data))
+    require(receipt['sdk_tree_sha256'] == digest, 'daily ELF build SDK differs from release SDK')
+    existing = {item['guest_path'].lower() for item in entries}
+    for item in manifest['files']:
+        require(('/' + item['path']).lower() not in existing, 'daily package conflicts with release input: ' + item['path'])
+    return profile, package_info
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--release-dir', type=Path, default=ROOT/'build/releases'/VERSION)
@@ -51,7 +78,11 @@ def main():
     p.add_argument('--cpython-stage',type=Path)
     p.add_argument('--extra-elf',action='append',default=[],metavar='NAME=PATH')
     p.add_argument('--wheel-package',type=Path)
+    p.add_argument('--daily-package', type=Path, help='explicit daily utilities candidate XPK')
+    p.add_argument('--daily-profile', type=Path, help='profile bound to the daily package and release SDK')
     a = p.parse_args()
+    if bool(a.daily_package) != bool(a.daily_profile):
+        p.error('--daily-package and --daily-profile must be supplied together')
     out = a.release_dir.resolve(strict=True)
     if ROOT/'build/releases' not in out.parents:
         p.error('use a dedicated build/releases directory')
@@ -70,13 +101,9 @@ def main():
     image_dir, sdk_dir = out/(PREFIX+'_images'), out/(PREFIX+'_sdk')
     if image_dir.exists() or sdk_dir.exists():
         p.error('refuse existing image/SDK staging directories; choose a fresh release directory')
-    image_dir.mkdir()
-    sdk_dir.mkdir()
     disk = image_dir/'work_disk.img'
     if disk.exists():
         p.error('refuse to overwrite release work disk')
-    from make_work_disk import create_fat32
-    create_fat32(disk, 2048)
     helper = ROOT/'build/work_disk_host'
     if not helper.is_file():
         p.error('build/work_disk_host must already be prepared; do not rebuild shared tools')
@@ -94,6 +121,12 @@ def main():
         source=Path(source).resolve(strict=True)
         entries.append({'path':str(source),'guest_path':'/usr/bin/'+name,'sha256':sha(source)})
     if len({e['guest_path'].lower() for e in entries})!=len(entries):raise ValueError('duplicate guest path')
+    daily = (prepare_daily_package(a.daily_package, a.daily_profile, out/'sdk', system, entries, a.wheel_package)
+             if a.daily_package else None)
+    image_dir.mkdir()
+    sdk_dir.mkdir()
+    from make_work_disk import create_fat32
+    create_fat32(disk, 2048)
     directories = {'/src','/out','/tmp'}
     for entry in entries:
         source = ROOT/entry['path']
@@ -125,6 +158,14 @@ def main():
         receipt=transact(disk,candidate,profile,'install',package=a.wheel_package)
         candidate.replace(disk)
         (out/'wheel_install_receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+    if daily:
+        from xypm_image import transact
+        profile, package_info = daily
+        candidate = image_dir/'daily_candidate.img'
+        receipt = transact(disk, candidate, profile, 'install', package=a.daily_package,
+                           expected_sha256=package_info['sha256'])
+        candidate.replace(disk)
+        (out/'daily_install_receipt.json').write_text(json.dumps(receipt, indent=2)+'\n')
     examples = {
         'hello.c': '#include <stdio.h>\nint main(void) { puts("Hello from XOS C!"); return 0; }\n',
         'hello.cpp': '#include <cstdio>\n#include <string>\nint main() { std::string s("Hello from XOS C++!"); std::puts(s.c_str()); return 0; }\n',
@@ -167,6 +208,12 @@ def main():
                'stress_status':'not_rerun',
                'guest_files':{item['guest_path']:item['sha256'] for item in entries},
                'notice':'static AMD64 BIOS/QEMU configuration; original licenses retained'}
+    if daily:
+        profile, package_info = daily
+        release['daily_package'] = {'sha256': package_info['sha256'], 'profile': profile['id'],
+                                    'scope': profile.get('scope', 'unspecified')}
+        for item in package_info['manifest']['files']:
+            release['guest_files']['/' + item['path']] = item['sha256']
     for folder in (image_dir,sdk_dir):
         (folder/'release.json').write_text(json.dumps(release,indent=2)+'\n')
     (out/'release_manifest.json').write_text(json.dumps(release,indent=2)+'\n')

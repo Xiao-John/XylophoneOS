@@ -40,6 +40,7 @@ def main():
                 backend.command('import','/usr/bin/dash',args.dash)
                 backend.command('import','/out/daily.xpk',args.package)
                 backend.command('import','/tests/du12.sh',ROOT/'tests/fixtures/daily_utilities/du12.sh')
+                backend.command('import','/tests/binary.dat',ROOT/'tests/fixtures/daily_utilities/binary.dat')
             def boot():
                 g=Guest(image,'daily_p2',work_disk=disk);g.expect(b'xos64> ',timeout=40)
                 send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=40);pump(g,1.5);return g

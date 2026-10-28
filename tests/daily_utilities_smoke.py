@@ -36,6 +36,7 @@ def main():
                 assert hashlib.sha256(source.read_bytes()).hexdigest() == entry['elf_sha256']
                 transfer(disk, 'import', entry['guest_path'], source)
             transfer(disk, 'import', '/tests/du12.sh', ROOT / 'tests/fixtures/daily_utilities/du12.sh')
+            transfer(disk, 'import', '/tests/binary.dat', ROOT / 'tests/fixtures/daily_utilities/binary.dat')
             guest = Guest(a.image, 'daily_utilities', work_disk=disk)
             try:
                 guest.expect(b'xos64> ', timeout=30); start = len(guest.output); send_bytes(guest, b'run\r')
@@ -62,7 +63,11 @@ def main():
                         'tail.txt':b'two\nthree\n', 'tail_pipe.txt':b'b\nc', 'head_pipe.txt':b'a\nb\n',
                         'wc.txt':b'3 3 14 /tmp/du/moved\n',
                         'tee.txt':b'hello\nagain\n','tee_out.txt':b'hello\n', 'tee_append_out.txt':b'again\n',
-                        'base.txt':b'moved\n','parent.txt':b'/tmp/du\n'}
+                        'base.txt':b'moved\n','parent.txt':b'/tmp/du\n',
+                        'binary_copy.dat':b'alpha\x00beta\n\nlast\x00',
+                        'binary_head.dat':b'alpha\x00beta\n\n','binary_tail.dat':b'last\x00',
+                        'binary_wc.txt':b'17 /tests/binary.dat\n','empty_head.txt':b'',
+                        'empty_tail.txt':b'', 'root_base.txt':b'/\n', 'root_dir.txt':b'/\n'}
             for name, contents in expected.items():
                 result = folder / name; transfer(disk, 'export', '/tmp/du/' + name, result)
                 assert result.read_bytes() == contents, (name, result.read_bytes(), contents)

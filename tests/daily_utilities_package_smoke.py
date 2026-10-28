@@ -67,6 +67,7 @@ def main():
             for d in ('/tmp','/tests'): transfer(installed,'mkdir',d)
             transfer(installed,'import','/usr/bin/dash',a.dash)
             transfer(installed,'import','/tests/du12.sh',ROOT/'tests/fixtures/daily_utilities/du12.sh')
+            transfer(installed,'import','/tests/binary.dat',ROOT/'tests/fixtures/daily_utilities/binary.dat')
             guest=Guest(a.image,'daily_package',work_disk=installed)
             try:
                 guest.expect(b'xos64> ',timeout=30);start=len(guest.output);send_bytes(guest,b'run\r')

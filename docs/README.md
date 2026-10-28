@@ -28,6 +28,7 @@
   [用户装载/SDK](e04_loader_sdk.md)、[文件服务](e05_file_service.md)、[libc](e06_libc.md)、[持久盘](e07_persistent_work_disk.md)。
 - 移植：[线程契约](contracts/threading.md)、[Qt协作](contracts/qt_platform.md)、[POSIX](contracts/posix_subset.md)、
   [显示](implementation/display.md)、[Shell](implementation/shell.md)、[Make](implementation/make.md)。
+- [日常工具集设计](plans/daily_utilities.md)：DU1/2首批13命令、后续环境/时间/文本处理、包/ISO交付闭环；设计未实施。
 - 下一阶段：[包管理](plans/packages.md)、[CPython](plans/cpython.md)/[扩展](plans/cpython_extensions.md)、
   [Qt](plans/qt.md)、[POSIX路线](plans/posix.md)、[工具菜单](plans/userland.md)、[UTF-8](plans/utf8.md)、
   [ISO](plans/iso.md)、[Open Adventure](plans/adventure.md)。

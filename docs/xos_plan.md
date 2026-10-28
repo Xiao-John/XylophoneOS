@@ -97,6 +97,7 @@
 | E18 | 无界面QML/QV4解释执行，未开始 | E15，不依赖Widgets，G06 |
 | E19 | Quick软件呈现，未开始 | E16/E18，G07 |
 | E20 | GUI整合/朋友试用，未开始 | Widgets/Quick可分别交付，G08–G10 |
+| DU | 日常独立工具统一补齐设计，未实施 | [DU路线](plans/daily_utilities.md)；DU1/2首批13命令，DU3按依赖、DU4包/ISO交付闭环；不扩大xsh或新增内核工具特例 |
 | PX | PX0契约已有；其余未实施 | [POSIX路线](plans/posix.md)，建议先设计PX4-A，不构成已派工 |
 
 Qt对接边界见[协作契约](contracts/qt_platform.md)；版本/模块/预算在G01冻结，不由

@@ -6,6 +6,7 @@
 #include <QEvent>
 #include <QEventLoop>
 #include <QThread>
+#include <QSocketNotifier>
 #include <QTimer>
 #include <xos/thread_core.hpp>
 #include <cstdio>
@@ -63,6 +64,10 @@ int main(int argc, char **argv)
         std::puts("QT_FAULT_TRIGGER");
         __builtin_trap();
     }
+    QSocketNotifier unsupported(1, QSocketNotifier::Read);
+    if (unsupported.isEnabled()) return 34;
+    unsupported.setEnabled(true);
+    if (unsupported.isEnabled()) return 35;
     QEventLoop outer;
     bool nested = false;
     bool timerEarly = false;
@@ -88,6 +93,6 @@ int main(int argc, char **argv)
     poster.start();
     posted.exec();
     if (!poster.wait(3000) || receiver.count != 32 || !poster.observedWait) return 31;
-    std::puts("QT_EVENTS_OK nested timer posted interrupt blocked-state joined");
+    std::puts("QT_EVENTS_OK unsupported-notifier nested timer posted interrupt blocked-state joined");
     return 0;
 }

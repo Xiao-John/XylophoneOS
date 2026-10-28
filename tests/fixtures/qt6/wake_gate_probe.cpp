@@ -29,6 +29,7 @@ static void *race_worker(void *raw) {
 }
 int main() {
     if (xos::thread::enable() != 0) return 1;
+    if (xos::thread::wait(reinterpret_cast<xos::u32 *>(1), 0, xos::thread::clock() + 100000000ULL) != xos::thread_error_address) return 28;
     if (gate.wake() < 0) return 2;
     if (gate.wait(xos::thread::clock() + 1000000000ULL) != xos::thread_value_changed) return 3;
     if (!gate.take()) return 27;
@@ -55,6 +56,6 @@ int main() {
         if (status == xos::thread_error_timeout && after < deadline) return 11;
         if (pthread_join(racing, nullptr) != 0 || !local.pending()) return 12;
     }
-    std::puts("QT_WAKE_GATE_OK wake-before-wait timeout pthread-wake blocked-state race destroy-joined");
+    std::puts("QT_WAKE_GATE_OK wake-before-wait timeout pthread-wake blocked-state race invalid-address destroy-joined");
     return 0;
 }

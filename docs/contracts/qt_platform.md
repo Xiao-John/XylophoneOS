@@ -46,3 +46,5 @@ FD/socket notifier 拒绝，不能与显示等待复用。QMutex 使用 pthread 
 QThread 取消、映射、路径 canonicalization、UID 权限及无覆盖 rename 不支持。
 源码、竞态/生命周期限制与客体候选证据见 [0063](../work_log/0063_qt_e15_continuation.md)。
 G01/G03 已受限功能通过，见 [0064](../work_log/0064_qt_e15_qualification.md)；绝对峰值和发行审计未完成。不据此开放新 ABI 或声明 poll 支持。
+同一冻结实现的阻塞边界投递、伪唤醒/绝对deadline及活动定时器线程退出补验见
+[0065](../work_log/0065_qt_e15_lifecycle_recheck.md)；未扩展公共机制或更改ABI。

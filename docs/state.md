@@ -1,8 +1,8 @@
 # XOS 当前状态
 
 2026-10-28。远端 main 已合入 PR #5（244ac40）与 PR #8（7a7481f）。
-当前本地分支 `codex/daily_utilities` 整合该 main、本地 C20–C26、输入编辑、DU 设计及实现。
-发布资产仍为 0.0.1-1026；本地新组合未重新构建或客体验收。
+本地整合含 C20–C26、输入编辑、DU 设计与实现；新组合定向验收见下。
+发布资产仍为 0.0.1-1026，未随本地整合更新。
 原则裁决见[xos_plan.md第一部分](xos_plan.md#第一部分设计原则)，本页只登记事实与占用。
 
 ## 本次同步与提交
@@ -28,14 +28,14 @@
 
 每项资格只对其冻结输入成立。旧源/SDK/镜像不改绑；许可材料通过不代表逐成员审计完成。
 QtCore 的系统 build48e5e73bcd649f44 和本地输入编辑的 build3200de2c3b80a9d9 分别保留资格；
-本次合并未运行二者的新组合。Qt 实现入口见[QtCore](implementation/qt_core.md)。
+该日常工具组合的输入编辑已复验，QtCore 本身未在该组合重新验收。Qt 实现入口见[QtCore](implementation/qt_core.md)。
 
 ## 本地实现与组合边界
 
 - 输入编辑 F1/F2 的原有定向证据见[0064](work_log/0064_input_edit_first_stage.md)；
   故障与复杂终端覆盖仍待补测。
 - 日常工具 DU1/DU2 的 13 个候选、XPK 及 xypm P2 已在旧组合定向验证；
-  本次与 Qt/输入编辑的组合须重新构建并核对，详见[0069](work_log/0069_daily_utilities.md)。
+  与 Qt 源码/输入编辑整合后的组合已重新构建并通过定向测试，详见[0069](work_log/0069_daily_utilities.md)。
   完整逐命令资格、实际发行与空盘 ISO 安装仍未完成。
 - UTF-8 文件名及 Open Adventure 各有原分支定向证据，见
   [0068](work_log/0068_utf8_filenames.md)、[0067](work_log/0067_open_adventure_xpk.md)；
@@ -45,8 +45,8 @@ QtCore 的系统 build48e5e73bcd649f44 和本地输入编辑的 build3200de2c3b8
 
 ## 接手与下一步
 
-- 验证新组合下的 SDK/profile、xypm P2、工具、UTF-8 路径与安装清单；
-  ISO 通用载荷和空盘安装尚未实施，不能套用已有包安装证据。
+- 新组合已验证 SDK/profile、xypm P2、工具、UTF-8 路径与候选安装清单；
+  继续补齐逐命令边界和完整发行。ISO 通用载荷与空盘安装尚未实施。
 - Qt E15 已经 PR #8 合入；E16/G04 仍需完成组合等待。完整成员许可、静态分发、
   绝对峰值及图形资格未完成。
 - 输入编辑按[第一档](plans/input_edit_foundation.md)、[第二档](plans/terminal_editor.md)及

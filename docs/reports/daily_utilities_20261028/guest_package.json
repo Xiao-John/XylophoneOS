@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "system_build_id": "a89a2a8921e5e2a6",
+  "image_sha256": "6b7490e53bd627c94624efcf30a3302f470a9af742a79e93c141db757a657bfa",
+  "xypm_elf_sha256": "4edbfb0d1fab17288e544e9b623b5b8889bd7dc1227767a06f5ca2311cef0729",
+  "package_sha256": "d8638ed5871e48ad0768465566d43d8501650c59124040c9a99cd1980c03f1f3",
+  "profile_sha256": "2c5669aebbe90d0f0705365c1b680a7231325fb8cd171818ef163a12f2ff17b9",
+  "dash_sha256": "8a4b394ab8bed84c12cd1a52531b83499f33a6f866ecf8b4b8de343326bccbde",
+  "checks": [
+    "guest_p2_install",
+    "reboot_and_installed_tools",
+    "guest_p2_remove_preserves_user_data"
+  ],
+  "not_run": [
+    "fault_injection",
+    "abrupt_power_loss",
+    "upgrade",
+    "iso_install"
+  ],
+  "baseline": [
+    130297,
+    2,
+    0
+  ]
+}

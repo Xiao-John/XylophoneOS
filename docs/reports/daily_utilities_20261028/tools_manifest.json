@@ -1,0 +1,237 @@
+{
+  "builder_sha256": "4940e3ed1477cbaa92d6db88f063f7493692489007e063966bd9821537cd32be",
+  "compiler": {
+    "sha256": "078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f",
+    "target": "x86_64-elf",
+    "version": "16.2.0"
+  },
+  "libgcc_sha256": "1d1755feabef4fbe34527df8f94f44e67f3fc2ce3b1d58dbf824ec858c994dfa",
+  "registry_sha256": "e7f43b5ab1c74b03d7de895e68962f9e1fd208f4332642e40cca9502773a91db",
+  "sdk_manifest_sha256": "5b8a1230d97fd342f253a22a5167f6b186011871325383b9dfaf3ada5458194e",
+  "sdk_tree_sha256": "48af645220b5089ed86bf18cee2f52c30ed9c9a811acc4fee50d0721fad7f961",
+  "source_commit": "c546c3a5724c81cee9a11d816a38ccdf17472129",
+  "status": "built_not_run",
+  "tools": [
+    {
+      "elf_layout": {
+        "format": "static_elf64",
+        "load_and_main_stack_pages": 122,
+        "load_segments": 3,
+        "machine": "x86_64",
+        "static_tls": false
+      },
+      "elf_sha256": "b1ecb0a6660b6d288bc6b843c453beb8a1ae87bf0d84d73b8a8cefe7d52f0c82",
+      "guest_path": "/usr/bin/ls",
+      "license": "Apache-2.0",
+      "name": "ls",
+      "scope": "-1 -a -A -d --; bytewise sorting; bounded directory list",
+      "size": 817216,
+      "source": "xos/ls.c",
+      "source_sha256": "0127e5d634457f925695135c9073cef94a5a500344dec54339a856e6cfea7109"
+    },
+    {
+      "elf_layout": {
+        "format": "static_elf64",
+        "load_and_main_stack_pages": 121,
+        "load_segments": 3,
+        "machine": "x86_64",
+        "static_tls": false
+      },
+      "elf_sha256": "48d8976fb53aa4ba2318a9b9ce48e1c2a1ecef55ceda966fde81aeeabce3a709",
+      "guest_path": "/usr/bin/cat",
+      "license": "MIT AND Apache-2.0",
+      "name": "cat",
+      "scope": "stdin, files, -, -u, --",
+      "size": 774464,
+      "source": "xos/cat.c",
+      "source_sha256": "51b36574df735ce3ddeb857bb79db97f1eda94336b62ef98d47114698660dcbe"
+    },
+    {
+      "elf_layout": {
+        "format": "static_elf64",
+        "load_and_main_stack_pages": 125,
+        "load_segments": 3,
+        "machine": "x86_64",
+        "static_tls": false
+      },
+      "elf_sha256": "b0e653e2e11d4d891017085aeac33d63abb705b81be044aec0f5ab22f2f2960f",
+      "guest_path": "/usr/bin/cp",
+      "license": "MIT AND Apache-2.0",
+      "name": "cp",
+      "scope": "regular file, directory target, --; no atomic overwrite",
+      "size": 826504,
+      "source": "xos/cp.c",
+      "source_sha256": "0d133d301b021ac54b64dad2ad86deca0acab44d79af023b44ee6e085f05173e"
+    },
+    {
+      "elf_layout": {
+        "format": "static_elf64",
+        "load_and_main_stack_pages": 125,
+        "load_segments": 3,
+        "machine": "x86_64",
+        "static_tls": false
+      },
+      "elf_sha256": "b7211e49f98661aade0c3dc3ea36ec6b98cde2b9363358c97fce71e336ec3cf1",
+      "guest_path": "/usr/bin/mv",
+      "license": "MIT AND Apache-2.0",
+      "name": "mv",
+      "scope": "same-volume rename, directory target, --; no overwrite guarantee",
+      "size": 826504,
+      "source": "xos/mv.c",
+      "source_sha256": "6dcd64d93f9fdcc9219940586c5b52944e002770097f77c91f8f19156397da1e"
+    },
+    {
+      "elf_layout": {
+        "format": "static_elf64",
+        "load_and_main_stack_pages": 121,
+        "load_segments": 3,
+        "machine": "x86_64",
+        "static_tls": false
+      },
+      "elf_sha256": "159e6f90d726505b963d6337bdf1f6746a9a4d0b6549749b23c0d7c731234ba5",
+      "guest_path": "/usr/bin/rm",
+      "license": "MIT AND Apache-2.0",
+      "name": "rm",
+      "scope": "files only, -f, --; no recursion",
+      "size": 766448,
+      "source": "xos/rm.c",
+      "source_sha256": "63ca04d6662150474d8e4b959cecec4600cc8e8decd2a276a86e7a1207ea1bfb"
+    },
+    {
+      "elf_layout": {
+        "format": "static_elf64",
+        "load_and_main_stack_pages": 121,
+        "load_segments": 3,
+        "machine": "x86_64",
+        "static_tls": false
+      },
+      "elf_sha256": "cd5a8678b21810d57dcefe51262c06e8bab666c0dc2e99142b671b8411522112",
+      "guest_path": "/usr/bin/mkdir",
+      "license": "MIT AND Apache-2.0",
+      "name": "mkdir",
+      "scope": "directories, -p, --",
+      "size": 771608,
+      "source": "xos/mkdir.c",
+      "source_sha256": "555054fdbdd2560461ad4192be28d2576a1710a002ac082bec25543b0bd5b065"
+    },
+    {
+      "elf_layout": {
+        "format": "static_elf64",
+        "load_and_main_stack_pages": 121,
+        "load_segments": 3,
+        "machine": "x86_64",
+        "static_tls": false
+      },
+      "elf_sha256": "35b108b2a2443eaf9fa92ee8ab23d8cc3cb9a8816c9fd32d83094c1a8c27e0b0",
+      "guest_path": "/usr/bin/rmdir",
+      "license": "Apache-2.0",
+      "name": "rmdir",
+      "scope": "empty directories, --",
+      "size": 771576,
+      "source": "xos/rmdir.c",
+      "source_sha256": "98554f700308a75acc7e84831f76ffc80bbdfe8e4114e7f68a474863f2c4ff42"
+    },
+    {
+      "elf_layout": {
+        "format": "static_elf64",
+        "load_and_main_stack_pages": 122,
+        "load_segments": 3,
+        "machine": "x86_64",
+        "static_tls": false
+      },
+      "elf_sha256": "ac65b40a369235d36dbabcf0d987021cfc7635b97d0a75fdc06ae5eb8d8f09ef",
+      "guest_path": "/usr/bin/head",
+      "license": "Apache-2.0",
+      "name": "head",
+      "scope": "-n count, --, stdin/files",
+      "size": 828352,
+      "source": "xos/head.c",
+      "source_sha256": "8fceaa2ea3391b3628a946a06a092db35dd57bc3ece3773932db51bb9c4d35a3"
+    },
+    {
+      "elf_layout": {
+        "format": "static_elf64",
+        "load_and_main_stack_pages": 122,
+        "load_segments": 3,
+        "machine": "x86_64",
+        "static_tls": false
+      },
+      "elf_sha256": "4f9a6655662ca90439af838f56f964945c91c2816520009e6bb66041d4386be1",
+      "guest_path": "/usr/bin/tail",
+      "license": "Apache-2.0",
+      "name": "tail",
+      "scope": "-n count, --, stdin/files; bounded retained bytes",
+      "size": 828352,
+      "source": "xos/tail.c",
+      "source_sha256": "e223562be8ce48bb371ac4c94a3b2b769297c0c863ebcf7591ee75022fd1b94d"
+    },
+    {
+      "elf_layout": {
+        "format": "static_elf64",
+        "load_and_main_stack_pages": 122,
+        "load_segments": 3,
+        "machine": "x86_64",
+        "static_tls": false
+      },
+      "elf_sha256": "34632c64d570acad97c0f181ce3a39ab4dbabd9f02ea5b1022be1f670efbff29",
+      "guest_path": "/usr/bin/wc",
+      "license": "Apache-2.0",
+      "name": "wc",
+      "scope": "-l -w -c --; ASCII whitespace",
+      "size": 817160,
+      "source": "xos/wc.c",
+      "source_sha256": "a597399d4f3f6ebf7c357e5bb8a28f1d383bb93bcbabf3299d81c866288867b2"
+    },
+    {
+      "elf_layout": {
+        "format": "static_elf64",
+        "load_and_main_stack_pages": 121,
+        "load_segments": 3,
+        "machine": "x86_64",
+        "static_tls": false
+      },
+      "elf_sha256": "8a8350a98a7a155bd83849a722d30ce5627569b3dc287a13c971e9b67850bf40",
+      "guest_path": "/usr/bin/tee",
+      "license": "Apache-2.0",
+      "name": "tee",
+      "scope": "-a --; bounded file outputs",
+      "size": 779560,
+      "source": "xos/tee.c",
+      "source_sha256": "4f25ce4bee107b5745bdfdb79b7e005c3acb687d66fd83729aa41ed2d04f377a"
+    },
+    {
+      "elf_layout": {
+        "format": "static_elf64",
+        "load_and_main_stack_pages": 110,
+        "load_segments": 3,
+        "machine": "x86_64",
+        "static_tls": false
+      },
+      "elf_sha256": "b54f7f148ae7141fe2163f4d0edbd6777349f85531d146d57a4de0ab7706703b",
+      "guest_path": "/usr/bin/basename",
+      "license": "Apache-2.0",
+      "name": "basename",
+      "scope": "path and optional suffix, --",
+      "size": 596056,
+      "source": "xos/basename.c",
+      "source_sha256": "667b837c21009b03610ec8f61a63765adafdab4fe38459276ef3a6f83ba5868d"
+    },
+    {
+      "elf_layout": {
+        "format": "static_elf64",
+        "load_and_main_stack_pages": 110,
+        "load_segments": 3,
+        "machine": "x86_64",
+        "static_tls": false
+      },
+      "elf_sha256": "58d4dc78c74b9fe0829622455f50bf61c173965d1a2aacad8e6b977785d0ad2b",
+      "guest_path": "/usr/bin/dirname",
+      "license": "Apache-2.0",
+      "name": "dirname",
+      "scope": "path, --",
+      "size": 595128,
+      "source": "xos/dirname.c",
+      "source_sha256": "6bef0f3d670ab43e06699484ac1270bffb2915bb89d84edf29fb7bd4f6c4baee"
+    }
+  ]
+}

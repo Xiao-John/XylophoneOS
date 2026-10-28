@@ -1,0 +1,6 @@
+PASS composed sdk matches system and target runtime
+PASS wrong system
+PASS mismatched sdk
+PASS unmanaged path collision
+PASS wheel profile not mixed
+PASS actual package and sdk

@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "image_sha256": "6b7490e53bd627c94624efcf30a3302f470a9af742a79e93c141db757a657bfa",
+  "package_sha256": "d8638ed5871e48ad0768465566d43d8501650c59124040c9a99cd1980c03f1f3",
+  "profile_sha256": "2c5669aebbe90d0f0705365c1b680a7231325fb8cd171818ef163a12f2ff17b9",
+  "dash_sha256": "8a4b394ab8bed84c12cd1a52531b83499f33a6f866ecf8b4b8de343326bccbde",
+  "checks": [
+    "corrupt_package_rejected",
+    "unmanaged_conflict_preserves_source_image",
+    "offline_install_verified_payload",
+    "installed_tools_guest_dash_pipe",
+    "sync_result_and_installed_hashes",
+    "remove_preserves_user_file"
+  ]
+}

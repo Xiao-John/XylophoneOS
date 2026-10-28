@@ -1,0 +1,28 @@
+{
+  "baseline": [
+    130297,
+    2,
+    0
+  ],
+  "checks": [
+    "ordinary_install_denied",
+    "expected_hash_mismatch_rejected_before_mutation_and_xypm_recovery",
+    "guest_install_and_cleanup",
+    "install_survives_reboot",
+    "guest_upgrade_and_cleanup",
+    "guest_remove_and_cleanup",
+    "remove_persists_and_empty_owned_directory_removed",
+    "nonempty_owned_directory_and_user_data_preserved"
+  ],
+  "image_sha256": "6b7490e53bd627c94624efcf30a3302f470a9af742a79e93c141db757a657bfa",
+  "not_run": [
+    "stepwise_fault_injection",
+    "power_loss",
+    "sector_tearing"
+  ],
+  "status": "passed",
+  "system_build_id": "a89a2a8921e5e2a6",
+  "test_sha256": "3c96b133a78e3718384cf876a9d1c1550ae0462395396307dfcd67a269946275",
+  "xypm_elf_sha256": "4edbfb0d1fab17288e544e9b623b5b8889bd7dc1227767a06f5ca2311cef0729",
+  "xypm_package_sha256": "bff80c19b69bd01f14ccac69734eda6043ae9beff5577fa75abb8745927015b0"
+}

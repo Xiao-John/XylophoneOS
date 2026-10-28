@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "image_sha256": "6b7490e53bd627c94624efcf30a3302f470a9af742a79e93c141db757a657bfa",
+  "tools_manifest_sha256": "ceebcc2dc2afc624d7b38718389875442f54149a965419d1563381cb0e020a28",
+  "dash_sha256": "8a4b394ab8bed84c12cd1a52531b83499f33a6f866ecf8b4b8de343326bccbde",
+  "checks": [
+    "dash_operations_pipe_and_rejected_unsafe_cases",
+    "xsh_exec_file_ls",
+    "offline_exact_output_bytes"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "architecture": "x86_64",
+  "byte_order": "little",
+  "compiler_version": "16.2.0",
+  "evidence": "docs/work_log/0069_daily_utilities.md",
+  "features": [
+    "stdio",
+    "heap",
+    "file_io",
+    "directories",
+    "static_tls",
+    "cxx_runtime",
+    "stdio_transfer",
+    "spawn_delegate"
+  ],
+  "format_version": 1,
+  "id": "xos-x86_64-daily-p2-candidate-v1",
+  "layout": "e08_static_tls_main_stack_128k_c3_stdio",
+  "runtime_model": "single",
+  "scope": "candidate only; qualification bound to independently executed checks",
+  "sdk_tree_sha256": [
+    "48af645220b5089ed86bf18cee2f52c30ed9c9a811acc4fee50d0721fad7f961"
+  ],
+  "startup_version": 3,
+  "syscall_abi": 1,
+  "verified_system_builds": [
+    "a89a2a8921e5e2a6"
+  ],
+  "word_bits": 64
+}

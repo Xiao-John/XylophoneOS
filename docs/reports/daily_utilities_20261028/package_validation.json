@@ -1,0 +1,226 @@
+{
+  "baseline": [
+    130297,
+    2,
+    0
+  ],
+  "cases": [
+    {
+      "expected": true,
+      "guest": true,
+      "host": true,
+      "name": "valid",
+      "sha256": "d94fe09680a2aa9d5ee773e85b5176bd564de56a6c6950f59f130778a49d7ff6"
+    },
+    {
+      "expected": true,
+      "guest": true,
+      "host": true,
+      "name": "unicode_version",
+      "sha256": "be23207f220695afd5f7b9de5d605b6941dea468259eb50736361115bd934e47"
+    },
+    {
+      "expected": false,
+      "guest": false,
+      "host": false,
+      "name": "license_case",
+      "sha256": "04a67ecaa5438b67b787ca933ec7f281bb5f7bc4afec3c4708c0c81b1796a0b5"
+    },
+    {
+      "expected": false,
+      "guest": false,
+      "host": false,
+      "name": "receipt_case",
+      "sha256": "8e451a98ceb5f5611706a26262e30ab7c9320d46451d940d83989e02591d72a1"
+    },
+    {
+      "expected": false,
+      "guest": false,
+      "host": false,
+      "name": "duplicate_key",
+      "sha256": "9803afc519e1d0b7c4a480fbeeb487f1ce638c9ee7dd7b69f02644a253fa4021"
+    },
+    {
+      "expected": false,
+      "guest": false,
+      "host": false,
+      "name": "invalid_utf8",
+      "sha256": "9e53b3abcdadd41f278e90da6492e571c5b46c0d98785af3fe3ffdb83f11a761"
+    },
+    {
+      "expected": false,
+      "guest": false,
+      "host": false,
+      "name": "surrogate",
+      "sha256": "e097ed2d4f5781fd9f609a95c4974367cb2c707c78e445d1a4f161a1162750d0"
+    },
+    {
+      "expected": false,
+      "guest": false,
+      "host": false,
+      "name": "float_number",
+      "sha256": "4bc2aaea4f0c642aebf094802af2ff1712a6f36df6c2c71918ab7a139cb6ba08"
+    },
+    {
+      "expected": false,
+      "guest": false,
+      "host": false,
+      "name": "profile",
+      "sha256": "383a1a4e201ee2b0b73386371229de0bb3c7cc214b357ff31ca0d4de24ab5aa0"
+    },
+    {
+      "expected": false,
+      "guest": false,
+      "host": false,
+      "name": "payload_hash",
+      "sha256": "674ceb2c28d0df8acb3e0bbb5ad3ab87e76285975ca2c54af0d333aa03efa2a6"
+    },
+    {
+      "expected": false,
+      "guest": false,
+      "host": false,
+      "name": "extra_member",
+      "sha256": "5c1c4fe0aec800d0966725a7b58e921481f35de676f89b0d7c6c585059197f1c"
+    },
+    {
+      "expected": false,
+      "guest": false,
+      "host": false,
+      "name": "duplicate_member",
+      "sha256": "ffa83c3c5043d688bb5ac3f48a6ece11a1bba4f39adb8c4e80dc30aa071d3606"
+    },
+    {
+      "expected": false,
+      "guest": false,
+      "host": false,
+      "name": "traversal",
+      "sha256": "a3323f509adf0cbfa2c1154d96eff59a92182ec200d50f58aa24d9195a826e4c"
+    },
+    {
+      "expected": false,
+      "guest": false,
+      "host": false,
+      "name": "fat_short_alias_syntax",
+      "sha256": "4fd2249f825e92e7ff77411d583a6e38b24f140e3731e10ffffb3e2cd92f40c3"
+    },
+    {
+      "expected": true,
+      "guest": true,
+      "host": true,
+      "name": "elf_valid",
+      "sha256": "881bd20c96e6567787ca5c6701207be53530acc8e13c84183db42b6de458b205"
+    },
+    {
+      "expected": false,
+      "guest": false,
+      "host": false,
+      "name": "elf_machine",
+      "sha256": "2a18a619b03a6cd27f59ff34c7bbadb02e6bf06747b43d048e469e7582cc7742"
+    },
+    {
+      "expected": false,
+      "guest": false,
+      "host": false,
+      "name": "elf_dynamic",
+      "sha256": "d7a01644638e727b5ae5b50069d1de6ab2446081aecc42c8bc7864055f692c49"
+    },
+    {
+      "expected": false,
+      "guest": false,
+      "host": false,
+      "name": "elf_entry",
+      "sha256": "b1236eb3fef6ca3fa2acb7176319f50dc0f0ffcc95957d5c763d227c1852244b"
+    },
+    {
+      "expected": false,
+      "guest": false,
+      "host": false,
+      "name": "truncated",
+      "sha256": "32f3bee21ad4cb2258cd0bcaa4e1b91ad63429d9652b7a4bcdb3801aa260a9cb"
+    },
+    {
+      "expected": false,
+      "guest": false,
+      "host": false,
+      "name": "bad_checksum",
+      "sha256": "a1c1f90e7e7eeb9b1db561dd617f96591b781941ee4c9d539e1de39c39f9ad29"
+    },
+    {
+      "expected": false,
+      "guest": false,
+      "host": false,
+      "name": "tar_link",
+      "sha256": "846bfa0aa40635d000a53a99d2fc40a93e0891a8736b3dfefce220893e3cf390"
+    },
+    {
+      "guest": true,
+      "host": true,
+      "name": "dep_good",
+      "sha256": "499a607fb4a195d6f2ed1354ba8054d2e0f0ba1d1937662da4598f18cee7858b"
+    },
+    {
+      "guest": false,
+      "host": false,
+      "name": "dep_bad",
+      "sha256": "f110ad7d0671fccb491f8da90d4772665484a40202915ed45b6f45a06cbc874b"
+    },
+    {
+      "guest": false,
+      "host": false,
+      "name": "owned_collision",
+      "sha256": "dcee8c6857444981834b2dd8c95894438431dfc4fd52bcc0648da56f015119ec"
+    },
+    {
+      "guest": false,
+      "host": false,
+      "name": "unmanaged_collision",
+      "sha256": "dc37fda04d139bc7fcdf9fb7d90ea188638d285291bc26afd19cff7f3fe429fa"
+    },
+    {
+      "guest": false,
+      "host": false,
+      "name": "case_collision",
+      "sha256": "e8a3b936fa219a1fc8fb588cf4e3ffa3c1feceee1443c24c295d7f3072315a00"
+    },
+    {
+      "guest": false,
+      "host": false,
+      "name": "parent_file",
+      "sha256": "2aa9783661ee84a4bc4e16d86bda0dbe4c5f4696cde0ca0d7507d78a4dc0aec6"
+    }
+  ],
+  "checks": [
+    "empty_database_install_plan",
+    "missing_upgrade_rejected",
+    "expected_package_hash_mismatch",
+    "installed_database_upgrade_and_duplicate_install",
+    "installed_and_missing_remove_plan",
+    "plan_dep_good",
+    "plan_dep_bad",
+    "plan_owned_collision",
+    "plan_unmanaged_collision",
+    "plan_case_collision",
+    "plan_parent_file",
+    "dash_verify_plan_and_error_status",
+    "dash_exit_then_maintenance_upgrade",
+    "dash_redirected_results",
+    "remove_plan_checks_reverse_dependencies",
+    "host_and_guest_reject_database_dependency_cycle",
+    "host_and_guest_reject_modified_managed_file",
+    "host_and_guest_reject_corrupt_index"
+  ],
+  "dash_sha256": "8a4b394ab8bed84c12cd1a52531b83499f33a6f866ecf8b4b8de343326bccbde",
+  "image_sha256": "6b7490e53bd627c94624efcf30a3302f470a9af742a79e93c141db757a657bfa",
+  "not_run": [
+    "guest_install_upgrade_remove",
+    "persistent_recovery",
+    "power_loss"
+  ],
+  "profile": "xos-x86_64-daily-p2-candidate-v1",
+  "profile_sha256": "2c5669aebbe90d0f0705365c1b680a7231325fb8cd171818ef163a12f2ff17b9",
+  "status": "passed",
+  "system_build_id": "a89a2a8921e5e2a6",
+  "test_sha256": "25fc7fff222a790551dec273beefe1131c4be9f6b6faf32621ec22f12b82650e",
+  "xypm_elf_sha256": "4edbfb0d1fab17288e544e9b623b5b8889bd7dc1227767a06f5ca2311cef0729",
+  "xypm_package_sha256": "bff80c19b69bd01f14ccac69734eda6043ae9beff5577fa75abb8745927015b0"
+}

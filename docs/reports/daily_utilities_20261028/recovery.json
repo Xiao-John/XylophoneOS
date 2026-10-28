@@ -1,0 +1,29 @@
+{
+  "baseline": [
+    130297,
+    2,
+    0
+  ],
+  "checks": [
+    "rollback",
+    "partial_rollback",
+    "committed",
+    "commit_moved",
+    "commit_orphan",
+    "unpublished",
+    "unpublished_bad",
+    "corrupt_journal",
+    "corrupt_commit",
+    "changed_target",
+    "corrupt_backup"
+  ],
+  "image_sha256": "6b7490e53bd627c94624efcf30a3302f470a9af742a79e93c141db757a657bfa",
+  "not_run": [
+    "actual_xypm_transaction_producer",
+    "power_loss",
+    "sector_tearing"
+  ],
+  "status": "passed",
+  "system_build_id": "a89a2a8921e5e2a6",
+  "test_sha256": "71cd22eca2a46475dda869adee9513a5cfe79a269077fb974345ef5b30b52c6f"
+}

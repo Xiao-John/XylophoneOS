@@ -1,0 +1,17 @@
+{
+  "status": "passed",
+  "image_sha256": "6b7490e53bd627c94624efcf30a3302f470a9af742a79e93c141db757a657bfa",
+  "checks": [
+    "insert_left",
+    "delete",
+    "home_end",
+    "unicode_cursor",
+    "history",
+    "history_draft",
+    "invalid_utf8",
+    "incomplete_utf8",
+    "unknown_sequence",
+    "crlf",
+    "timed_out_sequence_rejected"
+  ]
+}

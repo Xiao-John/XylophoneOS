@@ -1,0 +1,10 @@
+{
+  "builder_sha256": "e119d0836908f2ea65d79d4a389b6994d3fb13f50d970a69475156a512f1b0a6",
+  "composed_sdk_tree": "48af645220b5089ed86bf18cee2f52c30ed9c9a811acc4fee50d0721fad7f961",
+  "cpp_sdk_tree": "e0fa2330a1c38c162f40857609ef88f97673d66e080069018ac26b85d4a5f110",
+  "image_sha256": "6b7490e53bd627c94624efcf30a3302f470a9af742a79e93c141db757a657bfa",
+  "profile_sha256": "2c5669aebbe90d0f0705365c1b680a7231325fb8cd171818ef163a12f2ff17b9",
+  "status": "prepared_not_qualified",
+  "system_build_id": "a89a2a8921e5e2a6",
+  "system_sdk_tree": "eb9750123c66a40282cd8f08f3f0ce67d8894d32c1dc55c6c2e784927babd5c9"
+}

@@ -43,8 +43,8 @@
 
 ## 接手与下一步
 
-- 日常工具 DU1/DU2 13 个候选已构建并通过基础命令链定向客体检查；完整验收、工具包、
-  DU3/DU4 尚未完成，详见[0069](work_log/0069_daily_utilities.md)。
+- 日常工具 DU1/DU2 13 个候选及 XPK 已有组合系统定向验证；合入的 xypm P2 可在客体
+  安装/移除工具包。完整逐命令资格、发行及空盘 ISO 安装仍未完成，见[0069](work_log/0069_daily_utilities.md)。
 - UTF-8 文件名已接入文件服务、FatFs、SDK 和 newlib；中文创建、目录列举、改名、
   客体重启及原生程序有定向证据，详见[0068](work_log/0068_utf8_filenames.md)。
   非 ASCII 大小写折叠与 xypm 包内路径不在本批承诺。

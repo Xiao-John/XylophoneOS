@@ -44,3 +44,27 @@ build/daily_utilities_du12` 13 个 ELF 成功；该构建在最终许可证标�
 `scripts/package_daily_utilities.py`，用于绑定 0babbb11032c9197 的实际 SDK 树、13 个
 ELF 和材料生成离线候选 XPK。此 profile 仅记录已跑过的受限命令链，不是已冻结的发行
 profile 或完整工具资格；包安装、旧 profile 拒绝和客体检查待提交后运行。
+
+## 2026-10-28：候选包与 P2 组合
+
+- 先以旧组合 `0babbb11032c9197` 生成 `xos.daily_utilities` 候选包；旧 B2 profile
+  因不匹配拒绝。专盘离线安装、客体命令链、卸载及用户文件保留通过；损坏包与已有
+  未托管 `/usr/bin/ls` 拒绝，源盘摘要不变。
+- 在本分支合入 `d6363f8` 的 xypm P2，组合系统 build `35881bb342b35a3e`、镜像
+  SHA256 `37b72ac21a669348609d497c9ae058a05395149edfb454e729ac590bc40ada18`。
+  合成 SDK tree `9193cd1ded75abc826138b121e8970500b20e2fc4f62465e816be9b3d43e2b08`，
+  使用新 profile 重建 xypm 和 13 个工具，候选 XPK SHA256
+  `aea8f71b243a6047e94227b518409b76ed0b68614e6b2fabd57e7de5eb854699`。
+  P2组合事务 8 项通过；宿主/客体 21 个包样本和计划/错误路径比较通过，报告分别在
+  `build/daily_utilities_p2_transactions/` 和 `build/daily_utilities_p2_verify/`。
+- 实际工具 XPK 经客体 P2 `maint-run` 安装、重启后执行包含二进制 NUL/管道的命令链，
+  客体卸载并保留用户文件，安装/执行/卸载资源回到基线；
+  `build/daily_utilities_p2_guest_v2/report.json`。此前 P2 大规模故障检查资格未改绑。
+- `scripts/prepare_daily_sdk.py` 可按系统产物和已登记 B2 C++ SDK 重现组合 SDK 与候选
+  profile；`scripts/package_release.py` 增加显式候选包/profile/SDK入口并校验文件冲突、
+  profile、构建回执、系统 SDK 和 C++ 运行库。预检覆盖有效输入、错误系统/SDK、
+  未托管冲突和不兼容 wheel profile；未实际打出发行或修改既有发行资产。
+- 新增客体测试文件和打包脚本在组合系统构建后提交；因此上述证据严格绑定该系统镜像、
+  SDK、实际包和测试输入，不宣称当前完整源码清单的最终系统重建资格。坏盘、断电、
+  安装中断、实际升级、大文件和全部命令选项仍需补测。ISO 通用载荷及空盘安装未实施，
+  DU3 尚未开始；不能说“启动 ISO 已获得工具集”。

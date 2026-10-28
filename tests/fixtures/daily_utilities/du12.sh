@@ -1,6 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 set -e
 mkdir -p /tmp/du/a
+mkdir -p /tmp/du/中文
+printf 'UTF8\n' > /tmp/du/中文/文件.txt
+cat /tmp/du/中文/文件.txt > /tmp/du/unicode.txt
 printf 'one\ntwo\nthree\n' > /tmp/du/a/data
 printf 'hidden\n' > /tmp/du/a/.secret
 ls /tmp/du/a > /tmp/du/ls.txt
@@ -36,6 +39,15 @@ if tail -n -1 /tmp/du/moved 2>/dev/null; then echo TAIL_COUNT_WRONG; exit 1; fi
 if wc -m /tmp/du/moved 2>/dev/null; then echo WC_OPTION_WRONG; exit 1; fi
 if rmdir /tmp/du/a 2>/dev/null; then echo RMDIR_NONEMPTY_WRONG; exit 1; fi
 if cat /tmp/du/absent 2>/dev/null; then echo CAT_MISSING_WRONG; exit 1; fi
+if head -z 2>/dev/null; then echo HEAD_OPTION_WRONG; exit 1; fi
+if tee -z 2>/dev/null; then echo TEE_OPTION_WRONG; exit 1; fi
+if mkdir -z 2>/dev/null; then echo MKDIR_OPTION_WRONG; exit 1; fi
+if mv -z 2>/dev/null; then echo MV_OPTION_WRONG; exit 1; fi
+if cp -z 2>/dev/null; then echo CP_OPTION_WRONG; exit 1; fi
+if rm -r /tmp/du/a 2>/dev/null; then echo RM_OPTION_WRONG; exit 1; fi
+if rmdir -p /tmp/du/a 2>/dev/null; then echo RMDIR_OPTION_WRONG; exit 1; fi
 rm /tmp/du/a/data /tmp/du/a/.secret
 rmdir /tmp/du/a
+rm /tmp/du/中文/文件.txt
+rmdir /tmp/du/中文
 printf 'DU12_OK\n'

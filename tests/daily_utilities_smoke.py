@@ -67,7 +67,8 @@ def main():
                         'binary_copy.dat':b'alpha\x00beta\n\nlast\x00',
                         'binary_head.dat':b'alpha\x00beta\n\n','binary_tail.dat':b'last\x00',
                         'binary_wc.txt':b'17 /tests/binary.dat\n','empty_head.txt':b'',
-                        'empty_tail.txt':b'', 'root_base.txt':b'/\n', 'root_dir.txt':b'/\n'}
+                        'empty_tail.txt':b'', 'root_base.txt':b'/\n', 'root_dir.txt':b'/\n',
+                        'unicode.txt':b'UTF8\n'}
             for name, contents in expected.items():
                 result = folder / name; transfer(disk, 'export', '/tmp/du/' + name, result)
                 assert result.read_bytes() == contents, (name, result.read_bytes(), contents)

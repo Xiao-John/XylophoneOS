@@ -6,7 +6,7 @@
 
 ## 正在进行
 
-- E15 Qt 移植：`codex/qt6-e15`；Qt 端口、私有构建、夹具及线程 SDK 编译入口修复（需整合者审查）。G01/G03 尚未验收；不占用公共 ABI。详见 [实施记录](plans/qt_e15_execution.md)。
+- E15 Qt 移植：`codex/qt6-e15`；Qt 端口、私有构建、夹具及线程 SDK 编译入口修复（需整合者审查）。QtCore 已有候选真实客体运行与错误路径证据；G01/G03 最终版本绑定资格尚未完成，不占用公共 ABI。详见 [实施记录](plans/qt_e15_execution.md) 与 [0063](work_log/0063_qt_e15_continuation.md)。
 
 ## 当前能力与证据
 

@@ -24,6 +24,8 @@ p = argparse.ArgumentParser()
 p.add_argument('--image', type=Path, required=True)
 p.add_argument('--payload', type=Path, required=True)
 p.add_argument('--report', type=Path, required=True)
+p.add_argument('--marker', default='[cppthread] thread mutex cond once retry TLS exception guard chrono=ok')
+p.add_argument('--argument', default='', choices=['', 'quota'])
 a = p.parse_args()
 a.report.parent.mkdir(parents=True, exist_ok=True)
 report = {'status': 'FAILED', 'image_sha256': hashlib.sha256(a.image.read_bytes()).hexdigest(),
@@ -44,9 +46,9 @@ try:
         guest.expect_supervisor(trace=True, timeout=30)
         pump(guest, 1.5)
         before = resources(guest)
-        output = command(guest, 'exec-file /bin/cppthread.elf', b'kind=exited code=', timeout=90)
+        output = command(guest, 'exec-file /bin/cppthread.elf' + (' ' + a.argument if a.argument else ''), b'kind=exited code=', timeout=90)
         assert b'kind=exited code=0' in output, output[-4000:]
-        assert b'[cppthread] thread mutex cond once retry TLS exception guard chrono=ok' in output, output[-4000:]
+        assert a.marker.encode() in output, output[-4000:]
         after = resources(guest)
         assert before == after, (before, after)
         report.update(status='PASSED', resources_before=before, resources_after=after)

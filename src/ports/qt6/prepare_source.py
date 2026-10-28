@@ -38,5 +38,21 @@ with tarfile.open(a.archive, 'r:xz') as archive:
         archive.extract(member, path=a.destination, filter='data')
 subprocess.run(['patch', '-p1', '-i', str(here / 'patches/0001-xos-platform-detection.patch')],
                cwd=a.destination, check=True)
+subprocess.run(['patch', '-p1', '-i', str(here / 'patches/0002-xos-event-dispatcher-selection.patch')],
+               cwd=a.destination, check=True)
+subprocess.run(['patch', '-p1', '-i', str(here / 'patches/0003-xos-system-info.patch')],
+               cwd=a.destination, check=True)
+subprocess.run(['patch', '-p1', '-i', str(here / 'patches/0004-xos-environment.patch')],
+               cwd=a.destination, check=True)
+subprocess.run(['patch', '-p1', '-i', str(here / 'patches/0005-xos-no-mmap.patch')],
+               cwd=a.destination, check=True)
+subprocess.run(['patch', '-p1', '-i', str(here / 'patches/0006-xos-sha3-endian.patch')],
+               cwd=a.destination, check=True)
+subprocess.run(['patch', '-p1', '-i', str(here / 'patches/0007-xos-filesystem.patch')],
+               cwd=a.destination, check=True)
 shutil.copytree(here / 'mkspecs/xos-g++', a.destination / 'mkspecs/xos-g++')
+for name in ('qeventdispatcher_xos.cpp', 'qeventdispatcher_xos_p.h', 'wake_gate.hpp'):
+    shutil.copyfile(here / 'runtime' / name, a.destination / 'src/corelib/kernel' / name)
+shutil.copyfile(here / 'runtime/qmutex_xos.cpp', a.destination / 'src/corelib/thread/qmutex_xos.cpp')
+shutil.copyfile(here / 'runtime/unsupported_posix.cpp', a.destination / 'src/corelib/global/qxos_unsupported.cpp')
 print('Prepared verified QtBase source:', a.destination)

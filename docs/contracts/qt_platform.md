@@ -38,3 +38,11 @@ Qt具体版本、模块、feature、工具和资源预算在G01确定，不能�
 5. QtCore G03、首窗G04、Widgets G05、QML G06、Quick G07分别验；未实现/未运行/失败明确区分。
 
 当前没有派工或新Qt实现。本契约和ABI保留段合入main后，其他人从该基线开移植分支。
+
+## E15 候选实现（未完成资格）
+
+`codex/qt6-e15` 使用单消费者 coalescing wait-word 分发 posted events 和单调定时器；
+FD/socket notifier 拒绝，不能与显示等待复用。QMutex 使用 pthread 单调条件变量；
+QThread 取消、映射、路径 canonicalization、UID 权限及无覆盖 rename 不支持。
+源码、竞态/生命周期限制与客体候选证据见 [0063](../work_log/0063_qt_e15_continuation.md)。
+最终 G01/G03 与发行审计尚未完成；不据此开放新 ABI 或声明 poll 支持。

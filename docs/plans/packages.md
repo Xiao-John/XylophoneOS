@@ -5,7 +5,7 @@
 v1容器/schema保持不变。历史日志、旧SDK与发行附件保留当时名称和哈希。
 
 现有交付：独立SDK项目构建/打包/校验、宿主离线候选盘安装/升级/移除/归属校验、
-客体只读list/info。客体写入事务留给P2，仓库分发留给P3。
+客体list/info，以及P2的客体验证、事务和恢复。仓库分发留给P3。
 见[0044验收与交接](../history/packages.md#log-0044_xypm_p1)和[开发快速开始](../friend_user_program_quickstart.md)。
 
 ## P1现在可用
@@ -44,7 +44,7 @@ python3 scripts/build_xypm.py --sdk /absolute/path/to/frozen_sdk --profile confi
 | `xypm --help` / `--version` | 退出0 | 退出0 |
 | `xypm list` / `info <id>` | 已装查询退出0 | 同一程序、同一结果 |
 | `xypm verify <package.xpk> [sha256]` | 有界包结构/清单/逐文件摘要核验，成功退出0 | 同一客体程序 |
-| `xypm plan install|upgrade <package.xpk>` | 只读预检；不写入文件或授权worker | 同一客体程序 |
+| `xypm plan install|upgrade <package.xpk>` / `plan remove <id>` | 只读预检；移除计划检查反向依赖；不写入文件或授权worker | 同一客体程序 |
 | 不存在的包 | 退出1，stderr诊断 | 退出1，可读`$?` |
 | 不支持的命令/参数 | 退出2 | 退出2 |
 | 数据库/index错误 | 退出3 | 同一程序错误契约；损坏输入专项客体未单独验 |
@@ -76,32 +76,27 @@ SDK的单线程C++归档及相应许可。SDK树哈希、组合方法与真实�
 多文件事务。接口/权限见[e04_loader_sdk.md](../e04_loader_sdk.md)，命令见
 [maintenance](../usage/supervisor/maintenance.md)。
 
-P2-2实现初版增加客体 `verify` 与 `plan install|upgrade`。包校验在同一只读打开句柄上
+P2-2增加客体 `verify`、`plan install|upgrade` 与 `plan remove`。包校验在同一只读打开句柄上
 流式处理包字节，限制 manifest 1 MiB、单文件64 MiB、payload 256 MiB、8192个成员和
 ustar archive 上限；拒绝重复JSON键、非UTF-8、非整数数值、超深结构、链接/扩展成员、
 路径/大小/哈希不匹配和不符合本次编译profile的包。计划阶段解析数据库和index投影，
 校验数据库SHA绑定、profile、依赖锁/依赖环、全局文件归属、已安装文件内容摘要、
 目标路径父项及FatFs目录项规范名。计划命令不写文件、不执行payload、不授权进程。
 
-P2-2已实现与宿主 `inspect_elf` 对齐的客体 ELF64/x86-64 程序头、PT_LOAD/PT_TLS边界、
+P2-2已实现按宿主 `inspect_elf` 规则编写的客体 ELF64/x86-64 程序头、PT_LOAD/PT_TLS边界、
 装载页重叠/地址区间、入口和页预算检查。该检查仍随包payload摘要核验流式执行，不解包
 到目标目录。变更由冻结 `xos-x86_64-static-single-b2-v1` SDK构建/打包通过，详见
-[0055工作记录](../history/packages.md#log-0055_xypm_p2_elf_validation)。客体执行及与宿主共享的畸形包/
-数据库夹具尚未验，P2-2 gate 仍未关闭。P2-3持久恢复和P2-4写命令都未开始。
+[0055工作记录](../history/packages.md#log-0055_xypm_p2_elf_validation)。新增共享输入、数据库与双Shell检查见[0066](../work_log/0066_xypm_p2_validation.md)。
 
-接续顺序：
+P2-3/4已实现：安装、升级、移除在维护会话中校验原包并固定打开实例，准备新文件和
+旧文件备份、同步发布journal，执行变更后记录commit；启动恢复器来自系统内置镜像，
+即使磁盘上的xypm缺失也能回滚或清理。监督器检查`transaction`、`txdata`和
+`transaction_commit`，状态异常或无法读取时保留门禁。损坏或不一致材料保留供诊断，
+不得手动删除标记冒充恢复。可运行`maint-recover-boot`，也可显式运行`xypm recover`。
 
-1. **P2-2 原生验证与计划**：有界ustar/严格JSON/SHA256、profile/精确依赖/归属
-   与实际FAT别名检查，与宿主共享畸形包/数据库夹具，解析全过程不执行payload。
-   在完整校验前只读源包；验证、staging期间固定同一打开实例。
-2. **P2-3 持久恢复**：持久intent+新文件stage+旧文件备份、幂等回滚/清尾和
-   recovery-required启动门禁。每步中止/进程故障/正常sync重启验证，损坏日志
-   保留材料并阻止普通写入。P2-1的内存门禁本身不能充当重启恢复。
-3. **P2-4 用户命令**：上述gate通过后才开放原生install/upgrade/remove/recover；
-   由监督维护入口显式选定xypm worker，失败默认留在恢复状态。分别验xsh/dash
-   的查询/错误契约，以及退出dash后进入维护的流程；不让dash获得隐式监督权。
-
-P1的宿主candidate原子发布继续可用；P2-4完成前，客体xypm仅提供查询、包校验和只读计划。
+现有验证覆盖真实客体安装/升级/移除、满盘、日志损坏、启动恢复和逐点进程中断；
+具体构建、测试结果及未覆盖范围见[0066](../work_log/0066_xypm_p2_validation.md)。
+这些检查不构成突然断电、设备写缓存丢失或扇区撕裂的保证。P2在该记录所列源码构建和限定范围内已通过验收；P3网络前/网络后工作仍按下文独立推进。
 
 ## P0现在可用
 
@@ -305,11 +300,25 @@ postinst/hooks，安装器不启动任意payload或下载缺项。
 fork或CPython，先写原生单线程工具。先用hello_friend和一个已验工具演示，不把
 整个GNU工具链纳管作为起跑条件；打包成功不提升dash/CPython/Qt功能支持等级。
 P0/P1已通过本文列出的受限gate；receipt显式纳管、跨包批量事务仍未交付。
-P2-1维护会话正在实施；完整客体包事务P2、仓库P3仍未完成。
+P2客体事务已实现，最终验收与限制见工作记录；仓库P3仍未完成。
 
 P3复用成熟更新设计，研究TUF等现成方案，不发明签名算法。P1摘要只提供完整性，
 人工核验来源的本地包可先用，不能称为已认证仓库。可信根、签名/防回滚及时间
 依赖在对应批次实际验证再冻结，不让在线仓库阻塞离线第一包。
+
+### P3按网络依赖拆分（规划，尚未验收）
+
+**有网络前可做**：本地仓库生成和读取有界索引；按明确选择的包版本、revision、
+profile和SHA-256生成与校验可重复的锁文件；从用户提供的本地包核对索引与锁文件，
+拒绝缺包、混版、摘要不符及不满足精确依赖。离线可信根配置、成熟签名方案的签名与
+校验、密钥轮换、撤销及持久版本防回滚也不依赖网络，但需单独选定实现和威胁模型，
+证明密钥与持久状态的保护；可靠时间不可用时不能声称过期或冻结攻击已被检测。
+宿主工具与客体实现、密钥操作、恢复/重放行为各自记录实际证据。
+
+**需要网络后才能完成**：客体网络设备和协议栈、DNS、连接及TLS，仓库镜像访问、
+自动拉取/更新、超时重试及镜像故障处理，以及在线环境下的传输、恢复与安全验收。
+可信时间及其来源需要独立建设和验证；仅有网络或RTC不自动使时钟可信。在线功能
+不能以宿主代下载冒充客体网络，离线摘要也不能冒充发布者认证。
 
 ## 首批真实包样本
 

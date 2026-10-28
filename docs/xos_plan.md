@@ -77,7 +77,7 @@
 | Shell | xsh默认；dash C1–C3受限gate已过；不是完整POSIX | [范围](implementation/shell.md)、[Make](implementation/make.md) |
 | 显示/输入 | E14/G02原分支受限已验；PR #4组合显示65/66与熵63/墙钟64共存定向已验 | [显示](implementation/display.md)、[整合证据](history/delivery_audit.md) |
 | CPython | PY0–PY2、T3-PY、PY3 A1–A3与B1–B4按各自输入已验 | [移植](plans/cpython.md)、[扩展](plans/cpython_extensions.md)、[证据](history/userland.md) |
-| xypm | P0/P1、P2-1已验；P2-2实现/打包，guest与畸形输入待验；P2-3/4与P3未开始 | [计划/契约](plans/packages.md)、[证据](history/packages.md) |
+| xypm | P2验证、客体事务与启动恢复已实现并通过限定范围验收；P3未完成 | [计划/契约](plans/packages.md)、[证据](work_log/0066_xypm_p2_validation.md) |
 | 发行 | 0.0.1-1026已发布；后续源码不是该release资格 | [不可变回执](releases/release_0_0_1_1026.json) |
 
 ### 5. 阶段登记与依赖
@@ -109,7 +109,7 @@ Qt对接边界见[协作契约](contracts/qt_platform.md)；版本/模块/预算
 |---|---|
 | P01/P02/P03 | 继续小型微内核、固定QEMU配置、静态ELF64/SysV函数约定；不承诺Linux ABI |
 | P04–P06 | 受限C++细则、消息复制/生命周期和兼容层选择按实际契约实施，不自动提升为宪法 |
-| P07 | xypm P2按维护准入→只读验证/计划→持久恢复→写命令推进；P2-2尚未验收 |
+| P07 | xypm P2按维护准入→只读验证/计划→持久恢复→写命令推进；P2事务已实现并通过限定范围验收 |
 | O01–O04 | 当前BIOS/QEMU、GCC16.2.0/Binutils2.47/NASM3.02、newlib4.6与C++20已采用；升级/替换方案仍须专项评估，不能沿用旧“未选择”状态 |
 | O05 | 后续编辑/开发工具按实际兴趣与依赖选择，不强制自研 |
 | O06 | QtCore 6.8.3 受限版本/特性已冻结；QtGui 字体/图片依赖与预算待 G04，绝对峰值和发行审计未验 |

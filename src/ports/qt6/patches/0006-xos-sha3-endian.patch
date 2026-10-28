@@ -1,0 +1,11 @@
+--- a/src/3rdparty/sha3/brg_endian.h
++++ b/src/3rdparty/sha3/brg_endian.h
+@@ -34,6 +34,8 @@
+ /* Include files where endian defines and byteswap functions may reside */
+ #if defined( __sun )
+ #  include <sys/isa_defs.h>
++#elif defined( __XOS__ )
++#  include <machine/endian.h>
+ #elif defined( __FreeBSD__ ) || defined( __OpenBSD__ ) || defined( __NetBSD__ )
+ #  include <sys/endian.h>
+ #elif defined( BSD ) && ( BSD >= 199103 ) || defined( __APPLE__ ) || \

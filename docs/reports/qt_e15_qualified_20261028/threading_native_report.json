@@ -1,0 +1,70 @@
+{
+  "status": "passed",
+  "build_id": "48e5e73bcd649f44",
+  "release_archive_sha256": "a800969aaed03c601b8eb5029da8df1f4faecc5fa7f66ede28482aa65c7be25a",
+  "checks": [
+    "real_released_GCC_compiles_inside_new_kernel",
+    "real_released_G++_compiles_inside_new_kernel",
+    "both_guest_generated_ELFs_execute",
+    "compile_errors_stay_nonzero",
+    "process_resources_return_to_baseline",
+    "source_bytes_persist_after_sync_and_source_release_archive_unchanged"
+  ],
+  "commands": [
+    {
+      "line": "exec-driver /usr/bin/x86_64-elf-gcc -static --sysroot=/sysroot /src/thread_c.c -o /out/thread_c.elf",
+      "exit_code": 0,
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "output": "exec-driver /usr/bin/x86_64-elf-gcc -static --sysroot=/sysroot /src/thread_c.c -o /out/thread_c.elf\n[process] event=started pid=9 parent=7\r\n[process] pid=9 address_space=0x00000000001a2000\r\n[loader] started pid=9 file=/usr/bin/x86_64-elf-gcc\n[process] event=wait_blocked parent=7 child=9\r\n[process] event=started pid=10 parent=9\r\n[process] pid=10 address_space=0x00000000005c0000\r\n[process] event=wait_blocked parent=9 child=10\r\n[task] event=reclaimed pid=10 pages=11846\r\n[process] event=started pid=11 parent=9\r\n[process] pid=11 address_space=0x00000000005c0000\r\n[process] event=wait_blocked parent=9 child=11\r\n[task] event=reclaimed pid=11 pages=645\r\n[process] event=started pid=12 parent=9\r\n[process] pid=12 address_space=0x00000000005c4000\r\n[process] event=wait_blocked parent=9 child=12\r\n[task] event=reclaimed pid=12 pages=1566\r\n[task] event=reclaimed pid=9 pages=758\r\n[wait] pid=9 kind=exited code=0\nxsh> "
+    },
+    {
+      "line": "exec-file /out/thread_c.elf",
+      "exit_code": 0,
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "output": "exec-file /out/thread_c.elf\n[process] event=started pid=13 parent=7\r\n[process] pid=13 address_space=0x00000000001a2000\r\n[loader] started pid=13 file=/out/thread_c.elf\n[process] event=wait_blocked parent=7 child=13\r\n[legacy] native GCC C=ok\n[task] event=reclaimed pid=13 pages=114\r\n[wait] pid=13 kind=exited code=0\nxsh> "
+    },
+    {
+      "line": "exec-driver /usr/bin/x86_64-elf-g++ -static --sysroot=/sysroot /src/thread_cpp.cpp -o /out/thread_cpp.elf",
+      "exit_code": 0,
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "output": "exec-driver /usr/bin/x86_64-elf-g++ -static --sysroot=/sysroot /src/thread_cpp.cpp -o /out/thread_cpp.elf\n[process] event=started pid=14 parent=7\r\n[process] pid=14 address_space=0x00000000001a2000\r\n[loader] started pid=14 file=/usr/bin/x86_64-elf-g++\n[process] event=wait_blocked parent=7 child=14\r\n[process] event=started pid=15 parent=14\r\n[process] pid=15 address_space=0x00000000005c2000\r\n[process] event=wait_blocked parent=14 child=15\r\n[task] event=reclaimed pid=15 pages=21885\r\n[process] event=started pid=16 parent=14\r\n[process] pid=16 address_space=0x00000000005c2000\r\n[process] event=wait_blocked parent=14 child=16\r\n[task] event=reclaimed pid=16 pages=784\r\n[process] event=started pid=17 parent=14\r\n[process] pid=17 address_space=0x00000000005c7000\r\n[process] event=wait_blocked parent=14 child=17\r\n[task] event=reclaimed pid=17 pages=2632\r\n[task] event=reclaimed pid=14 pages=761\r\n[wait] pid=14 kind=exited code=0\nxsh> "
+    },
+    {
+      "line": "exec-file /out/thread_cpp.elf",
+      "exit_code": 0,
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "output": "exec-file /out/thread_cpp.elf\n[process] event=started pid=18 parent=7\r\n[process] pid=18 address_space=0x00000000001a2000\r\n[loader] started pid=18 file=/out/thread_cpp.elf\n[process] event=wait_blocked parent=7 child=18\r\n[legacy] native G++ C++=ok\n[task] event=reclaimed pid=18 pages=143\r\n[wait] pid=18 kind=exited code=0\nxsh> "
+    },
+    {
+      "line": "exec-driver /usr/bin/x86_64-elf-gcc -static --sysroot=/sysroot /src/thread_bad.c -o /out/thread_bad.elf",
+      "exit_code": 1,
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "output": "exec-driver /usr/bin/x86_64-elf-gcc -static --sysroot=/sysroot /src/thread_bad.c -o /out/thread_bad.elf\n[process] event=started pid=19 parent=7\r\n[process] pid=19 address_space=0x00000000001a2000\r\n[loader] started pid=19 file=/usr/bin/x86_64-elf-gcc\n[process] event=wait_blocked parent=7 child=19\r\n[process] event=started pid=20 parent=19\r\n[process] pid=20 address_space=0x00000000005c0000\r\n[process] event=wait_blocked parent=19 child=20\r\n/src/thread_bad.c: In function 'main':\n/src/thread_bad.c:1:18: error: unknown type name 'this'\n    1 | int main(void) { this is not C; }\n      |                  ^~~~\n/src/thread_bad.c:1:26: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'not'\n    1 | int main(void) { this is not C; }\n      |                          ^~~\n[task] event=reclaimed pid=20 pages=11361\r\n[task] event=reclaimed pid=19 pages=754\r\n[wait] pid=19 kind=exited code=1\nxsh> "
+    }
+  ],
+  "resource_baseline": [
+    130322,
+    2,
+    0
+  ]
+}

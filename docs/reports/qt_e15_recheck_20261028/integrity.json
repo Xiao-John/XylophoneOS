@@ -1,0 +1,19 @@
+{
+  "status": "PASSED",
+  "checks": {
+    "source_archive": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80",
+    "system_manifest": "1679678d9cac6e7ec59880e8a5719729b266b24deb1872d1c3ee33a04670db37",
+    "system_image": "8d46f18a2a4255b8df8e251cce23962e654bcced3b6357cfab95b5a6649bbdaf",
+    "install_iso": "4c8f3f7c2e13daeb274ea5043861e1710bb5a2f22c51a858b9cc8079c7d93c7c",
+    "kernel_elf": "fb0c12f618dc533cf535e07d1077008f893af08839b62500d8ca9f1e492ffc70",
+    "threading_sdk_manifest": "2e5a53ac965fd626eeefed070f3027ff7a11f82fe6d19a94c75e97003547e50c",
+    "qtcore_archive": "d9435accf464ff5f7fa6d668b59c77ed5f3b5da21f2a0f56de512794aab474d3",
+    "pcre2_archive": "6ec118b31608f6d7efc7f18a107eb0000cd951be576b81a3b85d5d92ea0798d4",
+    "zlib_archive": "73833e987f567879fa56081f11d87469a8df03db584940d1cd96b2c2a22251b5",
+    "qt_config_summary": "f0b83161c12ddf6083286ea5cc46c290241687a8edb57133df91532394ff5ea5",
+    "qualified_system_source_inputs": 565,
+    "frozen_sdk_source_inputs": 66,
+    "sdk_artifacts": 1054,
+    "fixture_receipts": 7
+  }
+}

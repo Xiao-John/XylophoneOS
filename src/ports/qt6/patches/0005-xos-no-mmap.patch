@@ -1,0 +1,100 @@
+--- a/src/corelib/io/qresource.cpp
++++ b/src/corelib/io/qresource.cpp
+@@ -33,7 +33,7 @@
+ #  include <zstd.h>
+ #endif
+ 
+-#if defined(Q_OS_UNIX) && !defined(Q_OS_INTEGRITY)
++#if defined(Q_OS_UNIX) && !defined(Q_OS_INTEGRITY) && !defined(Q_OS_XOS)
+ #  define QT_USE_MMAP
+ #  include <sys/mman.h>
+ #  ifdef Q_OS_LINUX
+@@ -1696,6 +1696,7 @@
+ }
+ #endif
+ 
++#ifndef Q_OS_XOS
+ // Returns the page boundaries of where \a location is located in memory.
+ static auto mappingBoundaries(const void *location, qsizetype size)
+ {
+@@ -1722,8 +1723,12 @@
+     return r;
+ }
+ 
++#endif
+ bool QResourceFileEnginePrivate::mapUncompressed_sys()
+ {
++#ifdef Q_OS_XOS
++    return false;
++#else
+     auto r = mappingBoundaries(resource.data(), resource.uncompressedSize());
+     void *ptr = nullptr;
+ 
+@@ -1773,12 +1778,17 @@
+     uncompressed = QByteArray::fromRawData(newdata, resource.uncompressedSize());
+     mustUnmap = true;
+     return true;
++#endif
+ }
+ 
+ void QResourceFileEnginePrivate::unmapUncompressed_sys()
+ {
++#ifndef Q_OS_XOS
+     auto r = mappingBoundaries(uncompressed.constBegin(), uncompressed.size());
+     QDynamicFileResourceRoot::unmap_sys(r.begin, r.size);
++#else
++    Q_ASSERT(!mustUnmap);
++#endif
+ }
+ 
+ #endif // !defined(QT_BOOTSTRAPPED)
+--- a/src/corelib/io/qfsfileengine_unix.cpp
++++ b/src/corelib/io/qfsfileengine_unix.cpp
+@@ -17,7 +17,9 @@
+ #include "qdatetime.h"
+ #include "qvarlengtharray.h"
+ 
++#ifndef Q_OS_XOS
+ #include <sys/mman.h>
++#endif
+ #include <stdlib.h>
+ #include <limits.h>
+ #include <errno.h>
+@@ -541,6 +543,12 @@
+ 
+ uchar *QFSFileEnginePrivate::map(qint64 offset, qint64 size, QFile::MemoryMapFlags flags)
+ {
++#ifdef Q_OS_XOS
++    Q_UNUSED(offset); Q_UNUSED(size); Q_UNUSED(flags);
++    Q_Q(QFSFileEngine);
++    q->setError(QFile::UnspecifiedError, qt_error_string(ENOTSUP));
++    return nullptr;
++#else
+     qint64 maxFileOffset = std::numeric_limits<QT_OFF_T>::max();
+ #if (defined(Q_OS_LINUX) || defined(Q_OS_ANDROID)) && Q_PROCESSOR_WORDSIZE == 4
+     // The Linux mmap2 system call on 32-bit takes a page-shifted 32-bit
+@@ -620,11 +628,12 @@
+         break;
+     }
+     return nullptr;
++#endif
+ }
+ 
+ bool QFSFileEnginePrivate::unmap(uchar *ptr)
+ {
+-#if !defined(Q_OS_INTEGRITY)
++#if !defined(Q_OS_INTEGRITY) && !defined(Q_OS_XOS)
+     Q_Q(QFSFileEngine);
+     const auto it = std::as_const(maps).find(ptr);
+     if (it == maps.cend()) {
+--- a/src/corelib/kernel/qtranslator.cpp
++++ b/src/corelib/kernel/qtranslator.cpp
+@@ -26,7 +26,7 @@
+ 
+ #include <QtCore/private/qduplicatetracker_p.h>
+ 
+-#if defined(Q_OS_UNIX) && !defined(Q_OS_INTEGRITY)
++#if defined(Q_OS_UNIX) && !defined(Q_OS_INTEGRITY) && !defined(Q_OS_XOS)
+ #  define QT_USE_MMAP
+ #  include "private/qcore_unix_p.h"
+ // for mmap

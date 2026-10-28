@@ -23,9 +23,9 @@
 
 | ID | 范围/判据 | 当前登记 |
 |---|---|---|
-| G01 | Qt版本/模块/依赖/许可、C++运行库、真实线程/TLS/等待、资源预算冻结 | not_run；公共T0–T2资格不等于Qt接入 |
-| G02 | 显示边界/像素、PS2事件/溢出/焦点、权限/故障/退出回收、串口救援 | 原分支build01c8b149ecc0e4cf受限passed；[冻结报告](reports/display_e14_20261026/qualification.json)。0059组合仅定向passed |
-| G03 | QtCore字符串/文件/资源、短读/满盘/缺失、投递/唤醒/定时器、空闲阻塞与退出 | not_run |
+| G01 | Qt版本/模块/依赖/许可、C++运行库、真实线程/TLS/等待、资源预算冻结 | **PASSED（受限功能）**；Qt 6.8.3 静态 Core、实际客体 ABI/线程/等待；峰值为采样、发行许可审计未完成，见[0064](work_log/0064_qt_e15_qualification.md) |
+| G02 | 显示边界/像素、PS2事件/溢出/焦点、权限/故障/退出回收、串口救援 | 当前 build48e5e73bcd649f44、sys65/66 19组 PASSED；旧[冻结报告](reports/display_e14_20261026/qualification.json)保持原绑定 |
+| G03 | QtCore字符串/文件/资源、短读/满盘/缺失、投递/唤醒/定时器、空闲阻塞与退出 | **PASSED（受限功能）**；真实 QtCore 6.8.3 客体、错误/重启/回收，见[资格](reports/qt_e15_qualified_20261028/qualification.json)及[生命周期补验](work_log/0065_qt_e15_lifecycle_recheck.md) |
 | G04 | QtGui/QPA文字/图形、重绘/输入/焦点、窗口创建销毁与关闭回终端 | not_run |
 | G05 | Widgets编辑器输入/选择/布局/保存、重启正文一致、错误保护与回收 | not_run |
 | G06 | 无界面QML/QV4绑定、JS、资源、诊断、GC/销毁与内存失败 | not_run，不表示Quick可用 |

@@ -1,0 +1,3 @@
+ISO /Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/xos.iso sectors=241 boot_sectors=851 boot_bytes=435260 kernel_bytes=430140
+ISO /Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/xos-install.iso sectors=242 boot_sectors=10 boot_bytes=5120 kernel_bytes=0
+Built xos-install.iso + real_mode.img | 48e5e73bcd649f44 | kernel 430140 bytes | legacy=True

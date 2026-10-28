@@ -1,0 +1,38 @@
+{
+  "status": "PASSED",
+  "tool_hashes": {
+    "target_gxx": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
+    "nasm": "5d22db7ed80aee4eb0e1cb5ff8a87e40294012f6ddf943601556922d5128b725",
+    "qemu": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
+    "cmake": "fa8ab06aca06b06030a579b77365061c6e504783b57b2dc810d51ff8ab80be7c",
+    "ninja": "78db38d68dde4904f4a7a9cae2dfd0ef47f5f00e2ec88462b0f24d85ac610586",
+    "moc": "6ab35b238fef41dab4dc4c425f92710cc76dc099d4bc54ba29c9152e332c2793",
+    "rcc": "63c711e483fa2b6bf1f478add86ff5e8235302b2a119bb0d7b7e4b68bc1cacff"
+  },
+  "prior_package_files": 99,
+  "prior_package_index_sha256": "835cec926f8aeec5b9ade673bfc2ce8374eba3cc36a77bd5fb65a524b0e31394",
+  "commands": [
+    {
+      "command": [
+        ".cache/qt-host-tools/bin/cmake",
+        "--build",
+        "build/qt_e15/final_qt",
+        "--target",
+        "Core",
+        "--parallel",
+        "4"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "diff",
+        "-qr",
+        ".cache/qtbase-e15-frozen-8929176",
+        ".cache/qtbase-e15-replay-b090d45"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "qtcore_archive_after_build_sha256": "d9435accf464ff5f7fa6d668b59c77ed5f3b5da21f2a0f56de512794aab474d3"
+}

@@ -1,0 +1,8 @@
+{
+  "display_smoke": "PASSED",
+  "threading_smoke": "PASSED",
+  "threading_pthread_smoke": "PASSED",
+  "threading_cpp_smoke": "PASSED",
+  "file_smoke": "PASSED",
+  "persist_smoke": "PASSED"
+}

@@ -1,0 +1,11 @@
+{
+  "build_id": "48e5e73bcd649f44",
+  "checks": [
+    "real_driver_files_heap_env_spawn_pipe_redirect_reclaim_0",
+    "real_driver_files_heap_env_spawn_pipe_redirect_reclaim_1",
+    "real_driver_files_heap_env_spawn_pipe_redirect_reclaim_2",
+    "default_spawn_authority_denied_without_resource_leak",
+    "disk_export_confirms_source_child_output_and_stdout_redirect"
+  ],
+  "status": "passed"
+}

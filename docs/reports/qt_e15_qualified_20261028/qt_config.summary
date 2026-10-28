@@ -1,0 +1,80 @@
+
+Building for: xos-g++ (x86_64, CPU features: )
+Compiler: gcc 16.2.0
+Build options:
+  Mode ................................... release
+  Optimize release build for size ........ no
+  Fully optimize release builds (-O3) .... no
+  Building shared libraries .............. no
+  Using ccache ........................... no
+  Unity Build ............................ no
+  Relocatable ............................ no
+  Using precompiled headers .............. yes
+  Using Link Time Optimization (LTCG) .... no
+  Using Intel Control-flow Enforcement Technology (CET)  no
+  Using Glibc function fortification ..... no
+  Using -ftrivial-auto-var-init=pattern .. yes
+  Using -fstack-protector-strong ......... no
+  Using -fstack-clash-protection ......... no
+  Using libstdc++ assertions ............. yes
+  Using libc++ hardening ................. no
+  Using -z relro -z now when linking ..... no
+  Target compiler supports:
+    x86 Intrinsics ....................... Basic VAES AVX512VBMI2
+  Sanitizers:
+    Addresses ............................ no
+    Threads .............................. no
+    Memory ............................... no
+    Fuzzer (instrumentation only) ........ no
+    Undefined ............................ no
+  Build parts ............................ libs
+  Install examples sources ............... no
+Qt modules and options:
+  Qt Concurrent .......................... no
+  Qt D-Bus ............................... no
+  Qt D-Bus directly linked to libdbus .... no
+  Qt Gui ................................. no
+  Qt Network ............................. no
+  Qt PrintSupport ........................ no
+  Qt Sql ................................. no
+  Qt Testlib ............................. no
+  Qt Widgets ............................. no
+  Qt Xml ................................. no
+Support enabled for:
+  Using pkg-config ....................... no
+  Using vcpkg ............................ no
+  udev ................................... no
+  OpenSSL ................................ no
+    Qt directly linked to OpenSSL ........ no
+  OpenSSL 1.1 ............................ no
+  OpenSSL 3.0 ............................ no
+  Using system zlib ...................... no
+  Zstandard support ...................... no
+  Thread support ......................... yes
+Common build options:
+  Linker can resolve circular dependencies  yes
+Qt Core:
+  backtrace .............................. no
+  C++23 <stacktrace> ..................... no
+  DoubleConversion ....................... yes
+    Using system DoubleConversion ........ no
+  GLib ................................... no
+  ICU .................................... no
+  Using system libb2 ..................... no
+  Built-in copy of the MIME database ..... yes
+  Application permissions ................ yes
+  Defaulting legacy IPC to POSIX ......... no
+  Tracing backend ........................ <none>
+  OpenSSL based cryptographic hash ....... no
+  Logging backends:
+    journald ............................. no
+    syslog ............................... no
+    slog2 ................................ no
+  PCRE2 .................................. yes
+    Using system PCRE2 ................... no
+Core tools:
+  Android deployment tool ................ no
+  macOS deployment tool .................. no
+  Windows deployment tool ................ no
+  qmake .................................. yes
+Note: Using static linking will disable the use of dynamically loaded plugins. Make sure to import all needed static plugins, or compile needed modules into the library.

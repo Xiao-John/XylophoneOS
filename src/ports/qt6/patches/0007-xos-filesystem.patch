@@ -1,0 +1,90 @@
+--- a/src/corelib/io/qfilesystemengine_unix.cpp
++++ b/src/corelib/io/qfilesystemengine_unix.cpp
+@@ -649,6 +649,11 @@
+ //static
+ QFileSystemEntry QFileSystemEngine::canonicalName(const QFileSystemEntry &entry, QFileSystemMetaData &data)
+ {
++#ifdef Q_OS_XOS
++    Q_UNUSED(entry); Q_UNUSED(data);
++    errno = ENOTSUP;
++    return {};
++#else
+     Q_CHECK_FILE_NAME(entry, entry);
+     char *resolved_name = nullptr;
+ 
+@@ -684,6 +689,7 @@
+         return QFileSystemEntry();
+     }
+     return entry;
++#endif
+ }
+ 
+ //static
+@@ -1189,7 +1195,7 @@
+ 
+ #ifdef Q_OS_DARWIN
+ // see qfilesystemengine_mac.mm
+-#elif defined(QT_BOOTSTRAPPED) || !defined(AT_FDCWD) || defined(Q_OS_ANDROID) || defined(Q_OS_VXWORKS)
++#elif defined(QT_BOOTSTRAPPED) || !defined(AT_FDCWD) || defined(Q_OS_ANDROID) || defined(Q_OS_VXWORKS) || defined(Q_OS_XOS)
+ // bootstrapped tools don't need this, and we don't want QStorageInfo
+ //static
+ bool QFileSystemEngine::moveFileToTrash(const QFileSystemEntry &, QFileSystemEntry &,
+@@ -1570,6 +1576,11 @@
+ //static
+ bool QFileSystemEngine::renameFile(const QFileSystemEntry &source, const QFileSystemEntry &target, QSystemError &error)
+ {
++#ifdef Q_OS_XOS
++    Q_UNUSED(source); Q_UNUSED(target);
++    error = QSystemError(ENOTSUP, QSystemError::StandardLibraryError);
++    return false; // no proven atomic rename-no-replace primitive
++#else
+     QFileSystemEntry::NativePath srcPath = source.nativeFilePath();
+     QFileSystemEntry::NativePath tgtPath = target.nativeFilePath();
+ 
+@@ -1637,6 +1648,7 @@
+ 
+     error = QSystemError(errno, QSystemError::StandardLibraryError);
+     return false;
++#endif
+ }
+ 
+ //static
+--- a/src/corelib/io/qstandardpaths_unix.cpp
++++ b/src/corelib/io/qstandardpaths_unix.cpp
+@@ -90,6 +90,10 @@
+ 
+ static bool checkXdgRuntimeDir(const QString &xdgRuntimeDir)
+ {
++#ifdef Q_OS_XOS
++    Q_UNUSED(xdgRuntimeDir);
++    return false; // no per-user ownership or permission model
++#else
+     auto describeMetaData = [](const QFileSystemMetaData &metaData) -> QByteArray {
+         if (!metaData.exists())
+             return "a broken symlink";
+@@ -168,6 +172,7 @@
+     }
+ 
+     return true;
++#endif
+ }
+ 
+ QString QStandardPaths::writableLocation(StandardLocation type)
+@@ -256,6 +261,9 @@
+     }
+     case RuntimeLocation:
+     {
++#ifdef Q_OS_XOS
++        return {};
++#else
+         QString xdgRuntimeDir = QFile::decodeName(qgetenv("XDG_RUNTIME_DIR"));
+         if (!xdgRuntimeDir.startsWith(u'/'))
+             xdgRuntimeDir.clear(); // spec says relative paths should be ignored
+@@ -278,6 +286,7 @@
+         }
+ 
+         return xdgRuntimeDir;
++#endif
+     }
+     default:
+         break;

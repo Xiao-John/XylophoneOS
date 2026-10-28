@@ -1,0 +1,64 @@
+--- a/src/corelib/global/qsysinfo.cpp
++++ b/src/corelib/global/qsysinfo.cpp
+@@ -11,7 +11,9 @@
+ #include <private/qoperatingsystemversion_p.h>
+ 
+ #ifdef Q_OS_UNIX
+-#  include <sys/utsname.h>
++#  ifndef Q_OS_XOS
++#    include <sys/utsname.h>
++#  endif
+ #  include <private/qcore_unix_p.h>
+ #endif
+ 
+@@ -561,6 +563,8 @@
+     }
+ #elif defined(Q_OS_DARWIN) && !defined(Q_OS_MACOS)
+     // iOS-based OSes do not return the architecture on uname(2)'s result.
++    return buildCpuArchitecture();
++#elif defined(Q_OS_XOS)
+     return buildCpuArchitecture();
+ #elif defined(Q_OS_UNIX)
+     long ret = -1;
+@@ -693,7 +697,9 @@
+ */
+ QString QSysInfo::kernelType()
+ {
+-#if defined(Q_OS_WIN)
++#if defined(Q_OS_XOS)
++    return QStringLiteral("xos");
++#elif defined(Q_OS_WIN)
+     return QStringLiteral("winnt");
+ #elif defined(Q_OS_UNIX)
+     struct utsname u;
+@@ -719,7 +725,9 @@
+ */
+ QString QSysInfo::kernelVersion()
+ {
+-#ifdef Q_OS_WIN
++#if defined(Q_OS_XOS)
++    return {}; // no kernel version API
++#elif defined(Q_OS_WIN)
+     const auto osver = QOperatingSystemVersion::current();
+     return QString::asprintf("%d.%d.%d",
+                              osver.majorVersion(), osver.minorVersion(), osver.microVersion());
+@@ -917,6 +925,8 @@
+ #  endif // Windows
+ #elif defined(Q_OS_HAIKU)
+     return "Haiku "_L1 + productVersion();
++#elif defined(Q_OS_XOS)
++    return QStringLiteral("XylophoneOS");
+ #elif defined(Q_OS_UNIX)
+ #  ifdef USE_ETC_OS_RELEASE
+     QUnixOSVersion unixOsVersion;
+@@ -950,7 +960,9 @@
+ QString QSysInfo::machineHostName()
+ {
+     // the hostname can change, so we can't cache it
+-#if defined(Q_OS_LINUX)
++#if defined(Q_OS_XOS)
++    return {}; // no hostname service
++#elif defined(Q_OS_LINUX)
+     // gethostname(3) on Linux just calls uname(2), so do it ourselves
+     // and avoid a memcpy
+     struct utsname u;

@@ -1,0 +1,199 @@
+{
+  "qualification": "SCOPED_FUNCTIONAL_PASS",
+  "g01": "PASSED",
+  "g03": "PASSED",
+  "distribution": "NOT_RUN",
+  "upstream_main": "244ac40bbf4e4fb7743c51bc5ece0bd9fec594de",
+  "implementation_commit": "892917626721e6e8e39bedbc046de841a01c07ff",
+  "tested_source_commit": "b090d4532ff5aa19ec5290da16863154c7d08860",
+  "system_build_id": "48e5e73bcd649f44",
+  "system_source_sha256": "48e5e73bcd649f442ad3eb9ee36b9d7ca079c3f41108ea1d13a9838793718c99",
+  "qt": {
+    "version": "6.8.3",
+    "tag": "v6.8.3",
+    "commit": "c07c2d5a527a644d36e7853d55132ae38921682f",
+    "source_sha256": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80",
+    "modules": [
+      "QtCore"
+    ],
+    "dependencies": [
+      "bundled PCRE2 10.45 without JIT",
+      "bundled Qt zlib 1.3.1",
+      "bundled double-conversion 3.3.0",
+      "bundled SHA3"
+    ],
+    "configuration": "qt_config.summary and qt_features.txt",
+    "qt_exceptions": "QtCore compiled with -fexceptions; application exceptions tested in a Qt-linked ELF",
+    "clean_replay": "PASSED: byte-for-byte recursive diff empty",
+    "patch_and_runtime_sha256": {
+      "src/ports/qt6/patches/0001-xos-platform-detection.patch": "fbce5274742c204e1aae33f2784dd2af4173171783d4b8ca253fc7e81263f9aa",
+      "src/ports/qt6/patches/0002-xos-event-dispatcher-selection.patch": "cdec41ec6eeefe15dfb71593c3025ea536e15aff1d0838885d506afbc380b2f7",
+      "src/ports/qt6/patches/0003-xos-system-info.patch": "0f21850057360b30c959dc2dce2346e4fa5f28fb3e3b86fb0ab6f70cba8d1435",
+      "src/ports/qt6/patches/0004-xos-environment.patch": "738455a0da869c08209a3a9d533121ad123340d5adce8265acaa568c46b9ab81",
+      "src/ports/qt6/patches/0005-xos-no-mmap.patch": "5263f0c2be9eac37fd83f851661e25c5fd31c67bfa2a34936b4ce51dd3cf4ece",
+      "src/ports/qt6/patches/0006-xos-sha3-endian.patch": "38c46c7e3d310104c0d81686df877dda94770f2ad5259bbf025595a5bc328580",
+      "src/ports/qt6/patches/0007-xos-filesystem.patch": "4e4bc852cb32fac245603c3338019fe53793855c139b47e1fc8267b5712fb63c",
+      "src/ports/qt6/runtime/qeventdispatcher_xos.cpp": "1931d168f974a419d6c846e531daf957e39539274fc8ff6c032f1faacaf83fee",
+      "src/ports/qt6/runtime/qeventdispatcher_xos_p.h": "b421b4d70aa0d7b1fdc129f82f950412cd5fbed894959d812ab7d0f1f731708c",
+      "src/ports/qt6/runtime/qmutex_xos.cpp": "80fe2cca2604e4f0d7221e8356386299190aca474b39c53f634bba7749d16d88",
+      "src/ports/qt6/runtime/unsupported_posix.cpp": "e6f5252c609db3d8cf9d1bcf9faa2582bf72dfd85946697d648b88b33b3f7402",
+      "src/ports/qt6/runtime/wake_gate.hpp": "3b211a0061fe82f9489c7dd5c973d589c31961275005d8113252f47b5f243018"
+    }
+  },
+  "artifacts": {
+    "source_archive": {
+      "path": ".cache/qtbase-everywhere-src-6.8.3.tar.xz",
+      "sha256": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80"
+    },
+    "system_manifest": {
+      "path": "build/qt_e15/qualified_system/manifest.json",
+      "sha256": "1679678d9cac6e7ec59880e8a5719729b266b24deb1872d1c3ee33a04670db37"
+    },
+    "system_image": {
+      "path": "build/qt_e15/qualified_system/xos.img",
+      "sha256": "8d46f18a2a4255b8df8e251cce23962e654bcced3b6357cfab95b5a6649bbdaf"
+    },
+    "install_iso": {
+      "path": "build/qt_e15/qualified_system/xos-install.iso",
+      "sha256": "4c8f3f7c2e13daeb274ea5043861e1710bb5a2f22c51a858b9cc8079c7d93c7c"
+    },
+    "kernel_elf": {
+      "path": "build/qt_e15/qualified_system/kernel.elf",
+      "sha256": "fb0c12f618dc533cf535e07d1077008f893af08839b62500d8ca9f1e492ffc70"
+    },
+    "threading_sdk_manifest": {
+      "path": "build/qt_e15/frozen_sdk/manifest.json",
+      "sha256": "2e5a53ac965fd626eeefed070f3027ff7a11f82fe6d19a94c75e97003547e50c"
+    },
+    "qtcore_archive": {
+      "path": "build/qt_e15/final_qt/lib/libQt6Core.a",
+      "sha256": "d9435accf464ff5f7fa6d668b59c77ed5f3b5da21f2a0f56de512794aab474d3"
+    },
+    "pcre2_archive": {
+      "path": "build/qt_e15/final_qt/lib/libQt6BundledPcre2.a",
+      "sha256": "6ec118b31608f6d7efc7f18a107eb0000cd951be576b81a3b85d5d92ea0798d4"
+    },
+    "zlib_archive": {
+      "path": "build/qt_e15/final_qt/lib/libQt6BundledZLIB.a",
+      "sha256": "73833e987f567879fa56081f11d87469a8df03db584940d1cd96b2c2a22251b5"
+    },
+    "qt_config_summary": {
+      "path": "build/qt_e15/final_qt/config.summary",
+      "sha256": "f0b83161c12ddf6083286ea5cc46c290241687a8edb57133df91532394ff5ea5"
+    }
+  },
+  "fixture_receipts": {
+    "final_core_smoke": "c6b180cce159360dfa4c26423b5911b22a4774c370a7d02a2a61ffe0ae27f608",
+    "final_core_extended": "71f068b0893df66cc693e037019b303b32de7200e5cbd7bd287c7265df060fc2",
+    "final_core_events_v2": "adf8a1e5ea0fcbc6f86d827e9fe2e60310ff7ac6b9fbaf9a068fa5633eb614a4",
+    "final_core_abi": "84e50e436f5b453c23dcd501e7ff59049ed5486edcc3bda289617204569e7b3f",
+    "final_core_memory": "1b6d4b7f7fb588ae4abbffd3705cbadcbeb2a8968c0d90a7087ef987596158af",
+    "qualified_mutex_contention": "c08cf82a0ae47a864e36ed606663bacbeed8abe086bff6a30d9f7582fd2e454c",
+    "qualified_interrupt": "d79310b530c290798476d462321fd1c2a47ef304c6091e50975c7f719967d03f"
+  },
+  "runtime": {
+    "qemu_machine": "pc-i440fx-10.0",
+    "acceleration": "TCG",
+    "cpu": "qemu64,+rdrand",
+    "smp": 1,
+    "ram_mib": 512,
+    "process_user_page_limit": 65536,
+    "page_size": 4096,
+    "thread_limit_per_process": 4,
+    "default_thread_stack_bytes": 262144,
+    "heap_address_window_bytes": 268435456,
+    "sampled_peak_user_pages": 2122,
+    "memory_samples": 10,
+    "peak_limit": "sampled high-water, not a guarantee of the true peak",
+    "idle": "kernel waiting count observed; no CPU percentage measurement"
+  },
+  "tools": {
+    "target_gxx": {
+      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
+      "version": "x86_64-elf-g++ (GCC) 16.2.0"
+    },
+    "nasm": {
+      "path": "/Users/perry_guo/homebrew/Cellar/nasm/3.02/bin/nasm",
+      "sha256": "5d22db7ed80aee4eb0e1cb5ff8a87e40294012f6ddf943601556922d5128b725",
+      "version": "NASM version 3.02 compiled on Jun 29 2026"
+    },
+    "qemu": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+      "sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
+      "version": "QEMU emulator version 11.1.2"
+    },
+    "cmake": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/.cache/qt-host-tools/bin/cmake",
+      "sha256": "fa8ab06aca06b06030a579b77365061c6e504783b57b2dc810d51ff8ab80be7c",
+      "version": "cmake version 4.4.4"
+    },
+    "ninja": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/.cache/qt-host-tools/bin/ninja",
+      "sha256": "78db38d68dde4904f4a7a9cae2dfd0ef47f5f00e2ec88462b0f24d85ac610586",
+      "version": "1.13.2.git.kitware.jobserver-pipe-1"
+    },
+    "moc": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/host-install/libexec/moc",
+      "sha256": "6ab35b238fef41dab4dc4c425f92710cc76dc099d4bc54ba29c9152e332c2793",
+      "version": "moc 6.8.3"
+    },
+    "rcc": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/host-install/libexec/rcc",
+      "sha256": "63c711e483fa2b6bf1f478add86ff5e8235302b2a119bb0d7b7e4b68bc1cacff",
+      "version": "rcc 6.8.3"
+    }
+  },
+  "host": {
+    "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+    "python": "3.14.6",
+    "apple_clang": "Apple clang version 21.0.0 (clang-2100.3.34.2)"
+  },
+  "tests": {
+    "qualified-smoke-1": "PASSED",
+    "qualified-smoke-2": "PASSED",
+    "qualified-smoke-3": "PASSED",
+    "qualified-wake": "PASSED",
+    "qualified-events": "PASSED",
+    "qualified-quota": "PASSED",
+    "qualified-fault": "PASSED",
+    "qualified-qt-persist": "PASSED",
+    "qualified-qt-errors": "PASSED",
+    "qualified-qt-abi": "PASSED",
+    "qualified-qt-memory": "PASSED",
+    "qualified-mutex-contention": "PASSED",
+    "qualified-interrupt": "PASSED"
+  },
+  "regressions": {
+    "G02": "PASSED 19 groups",
+    "display_compat": "PASSED 5 groups",
+    "T0_T2": "PASSED 15+10+10 groups",
+    "file_persist": "PASSED 8+4 groups",
+    "native_gcc_gxx": "PASSED 6 groups",
+    "dash_C1_C2_C3": "PASSED; see reports",
+    "CPython_T3": "PASSED 5 groups with hash-verified pre-existing binary, not rebuilt with current SDK",
+    "license_materials": "PASSED 7; member audit not complete"
+  },
+  "not_run": [
+    "absolute memory high-water measurement",
+    "full Qt component/member license and static redistribution/relink review",
+    "long randomized stress",
+    "SMP",
+    "full POSIX",
+    "QtGui/QPA, Widgets, QML and Quick",
+    "direct pthread_exit from a Qt worker",
+    "full CPython rebuild and extension suite"
+  ],
+  "unsupported": [
+    "socket and FD notifiers",
+    "multi-source polling",
+    "thread cancellation",
+    "file mmap",
+    "dynamic libraries",
+    "symlink and ownership APIs",
+    "no-replace rename and trash",
+    "Unicode filesystem names",
+    "guaranteed UTF-8 locale",
+    "multi-window or graphics"
+  ]
+}

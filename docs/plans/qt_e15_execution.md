@@ -1,7 +1,7 @@
 # E15 QtBase implementation and qualification record
 
 Baseline: upstream main `244ac40bbf4e4fb7743c51bc5ece0bd9fec594de`, branch
-`codex/qt6-e15`. This document is a working plan, not a G01 qualification.
+`codex/qt6-e15`. This document records the working plan; scoped G01/G03 qualification is in [0064](../work_log/0064_qt_e15_qualification.md).
 Ownership: Qt port, private build inputs and Qt fixtures; shared ABI is not claimed.
 The upstream open coordination issues #6 and #7 had no replies at inspection.
 
@@ -10,8 +10,7 @@ The upstream open coordination issues #6 and #7 had no replies at inspection.
 Use QtBase 6.8.3, tag `v6.8.3` commit `c07c2d5a527a644d36e7853d55132ae38921682f`.
 The official archive and SHA-256 are locked in `src/ports/qt6/source_lock.json`.
 This stable Qt 6 LTS line supplies QtCore, Gui and Widgets together without
-fetching the whole Qt ecosystem. The choice is provisional until target configure,
-license audit and guest tests pass. Security updates require a separately reviewed
+fetching the whole Qt ecosystem. The target configuration and scoped guest functionality passed; full member license audit and redistribution qualification remain open. Security updates require a separately reviewed
 version/patch update, not silently changing this lock.
 
 First configure static QtCore with threads, event loop, timer, file and resource
@@ -26,25 +25,23 @@ Target is x86_64 ELF, GCC 16.2, C++17 minimum, static threading SDK/newlib and
 libstdc++; local-exec TLS, no red zone, matching CRT/linker and SDK manifest.
 C++ exceptions, RTTI, aligned allocation, initialization/destruction and TLS,
 pthread mutex/condition/thread exit must be tested on the exact new image. A
-compile-only CMake try-compile cannot qualify linking or execution. The current
-experimental toolchain file is discovery scaffolding and is not a platform port.
+compile-only CMake try-compile cannot qualify linking or execution. The XOS toolchain and platform selection are qualified only for the recorded static QtCore profile.
 
 ## Event and I/O contract
 
 Qt 6.8.3 `qeventdispatcher_unix.cpp` constructs an eventfd or nonblocking pipe
 and calls `qt_safe_poll`; `qcore_unix.cpp` calls poll/ppoll or select fallback.
 XOS `wait_word` plus display wait does not supply that multi-object contract.
-First implement a user-space dispatcher limited to posted events, timers and
-cross-thread wake on an atomic generation word and absolute monotonic deadline,
-only if races and shutdown can be proven; explicitly reject unsupported socket
-notifiers and do not pretend file or display readiness is multiplexed. If G04
+The user-space dispatcher handles posted events, timers and cross-thread wake
+using a coalescing atomic wait word and absolute monotonic deadline. Guest tests
+cover bounded race and shutdown cases; socket notifiers are rejected, and file
+or display readiness is not multiplexed. If G04
 requires combining display and cross-thread wake, specify a generic mechanism,
 claim a registry entry before implementing it and review existing consumers.
 No Qt-specific kernel syscall. Validate check/sleep atomicity, deadline rollover,
 wake-before-sleep, simultaneous wake/timeout, teardown and idle blocking in guest.
 
-The existing `mmap`/`munmap` report ENOSYS; use Qt's supported buffered file
-paths when verified, and explicitly fail mapping if requested. File service paths
+The existing `mmap`/`munmap` report ENOSYS; Qt uses buffered resource/translator fallbacks and file mapping fails explicitly. File service paths
 are limited to its actual supported names and semantics; resource paths use real
 rcc-generated data. Test EOF/short reads, missing/read-only/full disk, sync and
 restart with disposable images. No assumption of network, locale, symlinks,

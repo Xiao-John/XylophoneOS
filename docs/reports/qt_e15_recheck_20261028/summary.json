@@ -1,0 +1,38 @@
+{
+  "g01": "PASSED_SCOPED_FUNCTIONAL",
+  "g03": "PASSED_SCOPED_FUNCTIONAL",
+  "distribution": "NOT_RUN",
+  "prior_qualification_sha256": "2202647c4d90d2397bbe828f79c366fab300b224b291a40aa815190f466041c4",
+  "production_runtime_commit": "892917626721e6e8e39bedbc046de841a01c07ff",
+  "rechecked_head": "0a7c61450e470b02c825a1140d91952eee16f486",
+  "system_build_id": "48e5e73bcd649f44",
+  "qtcore_sha256": "d9435accf464ff5f7fa6d668b59c77ed5f3b5da21f2a0f56de512794aab474d3",
+  "lifecycle_source_sha256": "0e0733d081a569a4c6562062ad890d915deed1d62c04bdc9e28699fad1a1b3d7",
+  "lifecycle_elf_sha256": "27bef682341ad241d2e84782c7c445ee7a96bf4dd174712fe2c1a21b4a59fc14",
+  "lifecycle_fixture": "tests/fixtures/qt6/core_lifecycle.cpp",
+  "recheck_runner_sha256": "ffc9195817490ae008817aa5a97449d3f23dc6818e7a393bd46383ccda941a50",
+  "guest_cases": 16,
+  "lifecycle_launches": 3,
+  "check_to_block_deliveries": 48,
+  "timer_worker_exits": 24,
+  "fresh_regressions": {
+    "display_smoke": "PASSED",
+    "threading_smoke": "PASSED",
+    "threading_pthread_smoke": "PASSED",
+    "threading_cpp_smoke": "PASSED",
+    "file_smoke": "PASSED",
+    "persist_smoke": "PASSED"
+  },
+  "retained_previous_regressions": [
+    "Dash C1/C2/C3 and C3 exec",
+    "native GCC/G++",
+    "display compatibility",
+    "CPython T3 from existing binary"
+  ],
+  "limits": [
+    "same frozen production sources, QtCore, SDK and image; no new ABI or runtime change",
+    "bounded single-core guest tests; not exhaustive scheduling coverage",
+    "idle waiting observed; CPU percentage not measured",
+    "full license-member, static redistribution/relink, absolute memory peak, SMP and long stress remain NOT_RUN"
+  ]
+}

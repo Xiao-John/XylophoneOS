@@ -1,6 +1,7 @@
 # E13-T：公共线程与等待契约
 
-2026-10-27，契约v1语义保持。T0–T2与T3-PY已有各自受限资格，T3-QT未验；
+2026-10-28，契约v1语义保持。T0–T2与T3-PY已有各自受限资格，QtCore线程接入已有受限实测；
+完整T3-QT未单列，Qt资格见[QtCore](../implementation/qt_core.md)；
 实现与证据见[线程实现](../implementation/threads.md)和[主题摘要](../history/threading.md)。
 当前编号见[ABI登记](abi_registry.md)，不得根据早期“待实施”文字重新领取已交付工作。
 本页规定首版线程语义，后续信号/VMA/多线程fork须独立修订和验收，不反向扩大旧资格。

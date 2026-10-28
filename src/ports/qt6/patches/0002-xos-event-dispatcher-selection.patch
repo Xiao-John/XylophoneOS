@@ -1,0 +1,207 @@
+--- a/src/corelib/configure.cmake
++++ b/src/corelib/configure.cmake
+@@ -1043,7 +1043,7 @@
+ qt_configure_add_report_entry(
+     TYPE ERROR
+     MESSAGE "Qt requires poll(), ppoll(), poll_ts() or select() on this platform"
+-    CONDITION ( UNIX OR INTEGRITY ) AND ( NOT QT_FEATURE_poll_ppoll ) AND ( NOT QT_FEATURE_poll_pollts ) AND ( NOT QT_FEATURE_poll_poll ) AND ( NOT QT_FEATURE_poll_select )
++    CONDITION NOT CMAKE_SYSTEM_NAME STREQUAL "XOS" AND ( UNIX OR INTEGRITY ) AND ( NOT QT_FEATURE_poll_ppoll ) AND ( NOT QT_FEATURE_poll_pollts ) AND ( NOT QT_FEATURE_poll_poll ) AND ( NOT QT_FEATURE_poll_select )
+ )
+ qt_configure_add_report_entry(
+     TYPE WARNING
+--- a/src/corelib/CMakeLists.txt
++++ b/src/corelib/CMakeLists.txt
+@@ -716,11 +716,17 @@
+     )
+ endif()
+ 
+-qt_internal_extend_target(Core CONDITION UNIX AND NOT WASM
++qt_internal_extend_target(Core CONDITION UNIX AND NOT WASM AND NOT CMAKE_SYSTEM_NAME STREQUAL "XOS"
+     SOURCES
+         kernel/qeventdispatcher_unix.cpp kernel/qeventdispatcher_unix_p.h
+ )
+ 
++qt_internal_extend_target(Core CONDITION CMAKE_SYSTEM_NAME STREQUAL "XOS"
++    SOURCES
++        kernel/qeventdispatcher_xos.cpp kernel/qeventdispatcher_xos_p.h
++        global/qxos_unsupported.cpp
++)
++
+ qt_internal_extend_target(Core CONDITION QT_FEATURE_thread
+     SOURCES
+         thread/qatomic.cpp
+@@ -743,7 +749,7 @@
+         thread/qmutex_mac.cpp
+ )
+ 
+-qt_internal_extend_target(Core CONDITION QT_FEATURE_thread AND UNIX AND NOT APPLE AND NOT LINUX
++qt_internal_extend_target(Core CONDITION QT_FEATURE_thread AND UNIX AND NOT APPLE AND NOT LINUX AND NOT CMAKE_SYSTEM_NAME STREQUAL "XOS"
+     SOURCES
+         thread/qmutex_unix.cpp
+ )
+@@ -1109,8 +1115,14 @@
+     CONDITION UNIX AND NOT LINUX AND NOT APPLE AND NOT HAIKU AND NOT ANDROID AND NOT VXWORKS
+     SOURCES
+         io/qstandardpaths_unix.cpp
+-        io/qstorageinfo_unix.cpp
++)
++
++qt_internal_extend_target(Core CONDITION UNIX AND NOT LINUX AND NOT APPLE AND NOT HAIKU AND NOT ANDROID AND NOT VXWORKS AND NOT CMAKE_SYSTEM_NAME STREQUAL "XOS"
++    SOURCES io/qstorageinfo_unix.cpp
+ )
++qt_internal_extend_target(Core CONDITION CMAKE_SYSTEM_NAME STREQUAL "XOS"
++    SOURCES io/qstorageinfo_stub.cpp
++)
+ 
+ qt_internal_extend_target(Core CONDITION LINUX AND NOT ANDROID AND NOT VXWORKS
+     SOURCES
+--- a/src/corelib/thread/qthread_unix.cpp
++++ b/src/corelib/thread/qthread_unix.cpp
+@@ -11,7 +11,9 @@
+ #include "qloggingcategory.h"
+ #include <private/qtools_p.h>
+ 
+-#if defined(Q_OS_DARWIN)
++#if defined(Q_OS_XOS)
++#  include <private/qeventdispatcher_xos_p.h>
++#elif defined(Q_OS_DARWIN)
+ #  include <private/qeventdispatcher_cf_p.h>
+ #elif defined(Q_OS_WASM)
+ #    include <private/qeventdispatcher_wasm_p.h>
+@@ -21,7 +23,7 @@
+ #  endif
+ #endif
+ 
+-#if !defined(Q_OS_WASM)
++#if !defined(Q_OS_WASM) && !defined(Q_OS_XOS)
+ #  include <private/qeventdispatcher_unix_p.h>
+ #endif
+ 
+@@ -264,7 +266,9 @@
+ QAbstractEventDispatcher *QThreadPrivate::createEventDispatcher(QThreadData *data)
+ {
+     Q_UNUSED(data);
+-#if defined(Q_OS_DARWIN)
++#if defined(Q_OS_XOS)
++    return new QEventDispatcherXos;
++#elif defined(Q_OS_DARWIN)
+     bool ok = false;
+     int value = qEnvironmentVariableIntValue("QT_EVENT_DISPATCHER_CORE_FOUNDATION", &ok);
+     if (ok && value > 0)
+@@ -335,7 +339,9 @@
+     // this ensures the thread-local is created as early as possible
+     set_thread_data(data);
+ 
++#ifndef Q_OS_XOS
+     pthread_cleanup_push([](void *arg) { static_cast<QThread *>(arg)->d_func()->finish(); }, arg);
++#endif
+     terminate_on_exception([&] {
+         {
+             QMutexLocker locker(&thr->d_func()->mutex);
+@@ -377,7 +383,11 @@
+ 
+     // This calls finish(); later, the currentThreadCleanup thread-local
+     // destructor will call cleanup().
++#ifdef Q_OS_XOS
++    thr->d_func()->finish();
++#else
+     pthread_cleanup_pop(1);
++#endif
+     return nullptr;
+ }
+ 
+@@ -878,8 +888,11 @@
+                "Current thread was not started with QThread.");
+ 
+     Q_UNUSED(thr);
+-#if defined(Q_OS_ANDROID)
++#if defined(Q_OS_ANDROID) || defined(Q_OS_XOS)
+     Q_UNUSED(enabled);
++#ifdef Q_OS_XOS
++    qWarning("QThread::setTerminationEnabled: thread cancellation is unsupported on XOS");
++#endif
+ #else
+     pthread_setcancelstate(enabled ? PTHREAD_CANCEL_ENABLE : PTHREAD_CANCEL_DISABLE, nullptr);
+     if (enabled)
+--- a/src/corelib/kernel/qcoreapplication.cpp
++++ b/src/corelib/kernel/qcoreapplication.cpp
+@@ -57,7 +57,7 @@
+ #   include "qeventdispatcher_glib_p.h"
+ #  endif
+ # endif
+-# if !defined(Q_OS_WASM)
++# if !defined(Q_OS_WASM) && !defined(Q_OS_XOS)
+ #  include "qeventdispatcher_unix_p.h"
+ # endif
+ #endif
+@@ -465,7 +465,7 @@
+ #ifndef QT_NO_QOBJECT
+     QCoreApplicationPrivate::is_app_closing = false;
+ 
+-#  if defined(Q_OS_UNIX)
++#  if defined(Q_OS_UNIX) && !defined(Q_OS_XOS)
+     if (Q_UNLIKELY(!setuidAllowed && (geteuid() != getuid())))
+         qFatal("FATAL: The application binary appears to be running setuid, this is a security hole.");
+ #  endif // Q_OS_UNIX
+--- a/src/corelib/kernel/qcore_unix.cpp
++++ b/src/corelib/kernel/qcore_unix.cpp
+@@ -22,6 +22,7 @@
+ 
+ void qt_ignore_sigpipe() noexcept // noexcept: sigaction(2) is not a Posix Cancellation Point
+ {
++#ifndef Q_OS_XOS
+     // Set to ignore SIGPIPE once only.
+     Q_CONSTINIT static QBasicAtomicInt atom = Q_BASIC_ATOMIC_INITIALIZER(0);
+     if (!atom.loadRelaxed()) {
+@@ -33,6 +34,9 @@
+         ::sigaction(SIGPIPE, &noaction, nullptr);
+         atom.storeRelaxed(1);
+     }
++#else
++    // XOS pipes report EPIPE and do not generate POSIX SIGPIPE.
++#endif
+ }
+ 
+ QByteArray qt_readlink(const char *path)
+@@ -78,7 +82,7 @@
+ #  endif
+ #endif
+ 
+-#ifndef QT_BOOTSTRAPPED
++#if !defined(QT_BOOTSTRAPPED) && !defined(Q_OS_XOS)
+ 
+ #if QT_CONFIG(poll_pollts)
+ #  define ppoll pollts
+--- a/src/corelib/thread/qmutex_p.h
++++ b/src/corelib/thread/qmutex_p.h
+@@ -27,6 +27,8 @@
+ 
+ #if defined(Q_OS_DARWIN)
+ # include <mach/semaphore.h>
++#elif defined(Q_OS_XOS)
++# include <pthread.h>
+ #elif defined(Q_OS_UNIX)
+ #  include <semaphore.h>
+ #endif
+@@ -84,6 +86,10 @@
+     //platform specific stuff
+ #if defined(Q_OS_DARWIN)
+     semaphore_t mach_semaphore;
++#elif defined(Q_OS_XOS)
++    pthread_mutex_t xosMutex;
++    pthread_cond_t xosCondition;
++    unsigned xosCount;
+ #elif defined(Q_OS_UNIX)
+     sem_t semaphore;
+ #endif
+--- a/src/corelib/thread/qmutex.cpp
++++ b/src/corelib/thread/qmutex.cpp
+@@ -913,6 +913,8 @@
+ 
+ #if defined(QT_ALWAYS_USE_FUTEX)
+ // nothing
++#elif defined(Q_OS_XOS)
++#  include "qmutex_xos.cpp"
+ #elif defined(Q_OS_DARWIN)
+ #  include "qmutex_mac.cpp"
+ #else

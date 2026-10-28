@@ -1,0 +1,20 @@
+--- a/src/corelib/global/qtenvironmentvariables.cpp
++++ b/src/corelib/global/qtenvironmentvariables.cpp
+@@ -277,7 +277,7 @@
+ #if defined(Q_CC_MSVC)
+     const auto locker = qt_scoped_lock(environmentMutex);
+     return _putenv_s(varName, value.data()) == 0;
+-#elif (defined(_POSIX_VERSION) && (_POSIX_VERSION-0) >= 200112L) || defined(Q_OS_HAIKU)
++#elif (defined(_POSIX_VERSION) && (_POSIX_VERSION-0) >= 200112L) || defined(Q_OS_HAIKU) || defined(Q_OS_XOS)
+     // POSIX.1-2001 has setenv
+     const auto locker = qt_scoped_lock(environmentMutex);
+     return setenv(varName, value.data(), true) == 0;
+@@ -313,7 +313,7 @@
+ #if defined(Q_CC_MSVC)
+     const auto locker = qt_scoped_lock(environmentMutex);
+     return _putenv_s(varName, "") == 0;
+-#elif (defined(_POSIX_VERSION) && (_POSIX_VERSION-0) >= 200112L) || defined(Q_OS_BSD4) || defined(Q_OS_HAIKU)
++#elif (defined(_POSIX_VERSION) && (_POSIX_VERSION-0) >= 200112L) || defined(Q_OS_BSD4) || defined(Q_OS_HAIKU) || defined(Q_OS_XOS)
+     // POSIX.1-2001, BSD and Haiku have unsetenv
+     const auto locker = qt_scoped_lock(environmentMutex);
+     return unsetenv(varName) == 0;

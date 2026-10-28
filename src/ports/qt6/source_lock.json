@@ -1,0 +1,9 @@
+{
+  "component": "qtbase",
+  "version": "6.8.3",
+  "tag": "v6.8.3",
+  "tag_commit": "c07c2d5a527a644d36e7853d55132ae38921682f",
+  "url": "https://download.qt.io/archive/qt/6.8/6.8.3/submodules/qtbase-everywhere-src-6.8.3.tar.xz",
+  "sha256": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80",
+  "status": "candidate; target configuration and licenses not yet qualified"
+}

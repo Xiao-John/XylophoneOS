@@ -3,6 +3,7 @@
 #include <xos/file_ui.hpp>
 #include <xos/file_client.hpp>
 #include <xos/sdk.hpp>
+#include <xos/text.hpp>
 
 namespace xos::ui {
 namespace {
@@ -49,7 +50,7 @@ void save_editor(const char* name, bool& dirty) {
     const i64 result = client.replace(name, editor_buffer, editor_length);
     if (result != 0) {
         error_line("save", result);
-        print("[edit] buffer retained; old file not truncated\n");
+        print("[edit] buffer retained; result may be unknown, reread file before retry\n");
         return;
     }
     dirty = false;
@@ -57,8 +58,141 @@ void save_editor(const char* name, bool& dirty) {
 }
 
 void editor_help() {
-    print("[edit] text lines are stored verbatim; commands start with ':'\n"
-          "[edit] :w save  :wq save+quit  :q quit  :q! discard  :p print  :c clear\n");
+    print("[edit] text lines append; :: starts a literal ':' line\n"
+          "[edit] :w save  :wq save+quit  :q quit  :q! discard  :p [N [M]] print\n"
+          "[edit] :i N insert before  :r N replace  :d N delete  :c clear  :help\n");
+}
+
+// A line includes its terminating LF, if present. CR and all other bytes are content.
+u32 editor_lines() {
+    u32 count = 0;
+    for (u32 i = 0; i < editor_length; ++i) {
+        if (editor_buffer[i] == '\n') { ++count; }
+    }
+    if (editor_length && editor_buffer[editor_length - 1] != '\n') { ++count; }
+    return count;
+}
+
+bool editor_line_range(u32 number, u32& start, u32& end) {
+    if (!number) { return false; }
+    u32 current = 1;
+    start = 0;
+    while (start < editor_length && current < number) {
+        if (editor_buffer[start++] == '\n') { ++current; }
+    }
+    if (current != number || start >= editor_length) { return false; }
+    end = start;
+    while (end < editor_length && editor_buffer[end] != '\n') { ++end; }
+    if (end < editor_length) { ++end; }
+    return true;
+}
+
+// Only safe printable UTF-8 reaches the terminal. Controls and malformed bytes
+// are rendered as hexadecimal, never interpreted as terminal commands.
+void editor_print_range(u32 start, u32 end) {
+    static const char hex[] = "0123456789ABCDEF";
+    for (u32 i = start; i < end;) {
+        const u8 ch = editor_buffer[i];
+        if (ch == '\n') { print("\n"); ++i; continue; }
+        xos::text::decoded unit{};
+        const auto status = xos::text::decode(reinterpret_cast<const char*>(editor_buffer + i), end - i, unit);
+        if (status == xos::text::decode_status::ok && unit.codepoint >= 0x20 &&
+            !(unit.codepoint >= 0x7f && unit.codepoint <= 0x9f)) {
+            print_bytes(editor_buffer + i, unit.bytes);
+            i += unit.bytes;
+        } else {
+            char escaped[] = {'\\', 'x', hex[ch >> 4], hex[ch & 15]};
+            (void)write(1, escaped, sizeof(escaped));
+            ++i;
+        }
+    }
+}
+
+bool editor_number(const char*& p, u32& value) {
+    while (*p == ' ') { ++p; }
+    if (*p < '0' || *p > '9') { return false; }
+    value = 0;
+    do {
+        const u32 digit = static_cast<u32>(*p++ - '0');
+        if (value > (0xffffffffu - digit) / 10u) { return false; }
+        value = value * 10u + digit;
+    } while (*p >= '0' && *p <= '9');
+    return true;
+}
+
+bool editor_end(const char* p) {
+    while (*p == ' ') { ++p; }
+    return *p == '\0';
+}
+
+// Returns false for an entire rejected input; no caller mutates the buffer.
+bool editor_read_line(char* line, u32& used, bool& last_cr) {
+    used = 0;
+    u32 echoed = 0;
+    bool invalid = false;
+    bool overflow = false;
+    for (;;) {
+        char byte = 0;
+        const i64 got = read(0, &byte, 1);
+        if (got <= 0) { yield(); continue; }
+        if (byte == '\n' && last_cr) { last_cr = false; continue; }
+        last_cr = byte == '\r';
+        if (byte == '\r' || byte == '\n') { print("\n"); break; }
+        const u8 value = static_cast<u8>(byte);
+        if (value == '\b' || value == 127) {
+            if (used && !overflow && !invalid) {
+                const auto erased = text::erase_last(line, used);
+                used = erased.size;
+                if (echoed > used) { echoed = used; }
+                for (u32 i = 0; i < erased.columns; ++i) { print("\b \b"); }
+            }
+        } else if ((value >= 32 && value <= 126) || value >= 0x80) {
+            if (used < 159 && !overflow && !invalid) {
+                line[used++] = byte;
+                text::decoded unit{};
+                const auto status = text::decode(line + echoed, used - echoed, unit);
+                if (status == text::decode_status::invalid ||
+                    (status == text::decode_status::ok && unit.codepoint >= 0x7f && unit.codepoint <= 0x9f)) {
+                    invalid = true;
+                } else if (status == text::decode_status::ok) {
+                    (void)write(1, line + echoed, unit.bytes);
+                    echoed += unit.bytes;
+                }
+            } else { overflow = true; }
+        } else { invalid = true; }
+    }
+    line[used] = '\0';
+    if (overflow) { print("[edit] line too long; discarded\n"); return false; }
+    if (invalid || !text::valid(line, used)) {
+        print("[edit] invalid input; discarded\n"); return false;
+    }
+    // C1 controls are legal UTF-8 but must not reach the document via input.
+    for (u32 i = 0; i < used;) {
+        text::decoded unit{};
+        (void)text::decode(line + i, used - i, unit);
+        if (unit.codepoint >= 0x7f && unit.codepoint <= 0x9f) {
+            print("[edit] invalid input; discarded\n"); return false;
+        }
+        i += unit.bytes;
+    }
+    return true;
+}
+
+bool editor_replace_range(u32 start, u32 end, const char* data, u32 length, bool newline) {
+    const u32 removed = end - start;
+    const u32 added = length + (newline ? 1u : 0u);
+    if (added > sizeof(editor_buffer) - (editor_length - removed)) {
+        print("[edit] buffer full; line rejected, buffer retained\n"); return false;
+    }
+    if (added > removed) {
+        for (u32 i = editor_length; i > end; --i) { editor_buffer[i + added - removed - 1] = editor_buffer[i - 1]; }
+    } else if (added < removed) {
+        for (u32 i = end; i < editor_length; ++i) { editor_buffer[i - removed + added] = editor_buffer[i]; }
+    }
+    for (u32 i = 0; i < length; ++i) { editor_buffer[start + i] = static_cast<u8>(data[i]); }
+    if (newline) { editor_buffer[start + length] = '\n'; }
+    editor_length = editor_length - removed + added;
+    return true;
 }
 
 void run_editor(const char* name) {
@@ -74,6 +208,7 @@ void run_editor(const char* name) {
     editor_length = loaded;
     const bool existed = result == 0;
     bool dirty = false;
+    bool last_cr = false;
     print("[edit] "); print(name); print(" bytes="); decimal(editor_length);
     print(existed ? " (loaded)\n" : " (new)\n");
     editor_help();
@@ -81,59 +216,83 @@ void run_editor(const char* name) {
         print("| ");
         char line[160]{};
         u32 used = 0;
-        bool overflow = false;
-        for (;;) {
-            char byte = 0;
-            const i64 got = read(0, &byte, 1);
-            if (got <= 0) { yield(); continue; }
-            if (byte == '\r' || byte == '\n') {
-                print("\n");
-                break;
-            }
-            if (byte == '\b' || byte == 127) {
-                if (used > 0 && !overflow) { --used; print("\b \b"); }
-            } else if (byte >= 32 && byte <= 126) {
-                if (used + 1 < sizeof(line) && !overflow) {
-                    line[used++] = byte;
-                    (void)write(1, &byte, 1);
-                } else {
-                    overflow = true;
-                }
-            }
-        }
-        if (overflow) { print("[edit] line too long; discarded\n"); continue; }
-        line[used] = '\0';
-        if (line[0] == ':') {
+        if (!editor_read_line(line, used, last_cr)) { continue; }
+        if (line[0] == ':' && line[1] != ':') {
             if (equal(line, ":w") || equal(line, ":wq")) {
-                save_editor(name, dirty);
-                if (equal(line, ":wq") && !dirty) { return; }
+                // A failed save of a clean buffer must not make :wq exit.
+                bool save_pending = true;
+                save_editor(name, save_pending);
+                if (!save_pending) { dirty = false; }
+                if (equal(line, ":wq") && !save_pending) { return; }
             } else if (equal(line, ":q")) {
                 if (dirty) { print("[edit] unsaved changes; use :w or :q!\n"); }
                 else { return; }
             } else if (equal(line, ":q!")) {
                 return;
-            } else if (equal(line, ":p")) {
-                print_bytes(editor_buffer, editor_length);
-                if (editor_length > 0 && editor_buffer[editor_length - 1] != '\n') { print("\n"); }
+            } else if (line[1] == 'p' && (line[2] == '\0' || line[2] == ' ')) {
+                const char* p = line + 2;
+                u32 first = 1, last = editor_lines();
+                if (!editor_end(p)) {
+                    if (!editor_number(p, first)) { print("[edit] invalid range\n"); continue; }
+                    last = first;
+                    if (!editor_end(p) && !editor_number(p, last)) { print("[edit] invalid range\n"); continue; }
+                    if (!editor_end(p) || !first || first > last || last > editor_lines()) {
+                        print("[edit] invalid range\n"); continue;
+                    }
+                }
+                if (line[2] == '\0') {
+                    editor_print_range(0, editor_length);
+                    if (editor_length && editor_buffer[editor_length - 1] != '\n') { print("\n"); }
+                } else {
+                    for (u32 n = first; n <= last; ++n) {
+                        u32 start = 0, end = 0; (void)editor_line_range(n, start, end);
+                        decimal(n); print(": "); editor_print_range(start, end);
+                        if (end == start || editor_buffer[end - 1] != '\n') { print("\n"); }
+                    }
+                }
+            } else if ((line[1] == 'i' || line[1] == 'r' || line[1] == 'd') && line[2] == ' ') {
+                const char operation = line[1];
+                const char* p = line + 2;
+                u32 number = 0, start = 0, end = 0;
+                if (!editor_number(p, number) || !editor_end(p) || !number ||
+                    (operation == 'i' && number > editor_lines() + 1) ||
+                    (operation != 'i' && !editor_line_range(number, start, end))) {
+                    print("[edit] invalid line number\n"); continue;
+                }
+                if (operation == 'i') {
+                    if (number == editor_lines() + 1) { start = end = editor_length; }
+                    else { (void)editor_line_range(number, start, end); end = start; }
+                }
+                if (operation == 'd') {
+                    if (editor_replace_range(start, end, "", 0, false)) { dirty = true; }
+                    continue;
+                }
+                print("text| ");
+                char replacement[160]{}; u32 length = 0;
+                if (!editor_read_line(replacement, length, last_cr)) { continue; }
+                const bool terminated = operation == 'i' || (end > start && editor_buffer[end - 1] == '\n');
+                // Appending after a non-LF final line needs a separate separator.
+                if (operation == 'i' && start == editor_length && editor_length && editor_buffer[editor_length - 1] != '\n') {
+                    if (editor_length + 1u + length + 1u > sizeof(editor_buffer)) {
+                        print("[edit] buffer full; line rejected, buffer retained\n"); continue;
+                    }
+                    editor_buffer[editor_length++] = '\n'; ++start; ++end;
+                }
+                if (editor_replace_range(start, end, replacement, length, terminated)) { dirty = true; }
             } else if (equal(line, ":c")) {
-                editor_length = 0;
-                dirty = true;
-                print("[edit] buffer cleared\n");
-            } else if (equal(line, ":help")) {
-                editor_help();
-            } else {
-                print("[edit] unknown command; :help\n");
-            }
+                editor_length = 0; dirty = true; print("[edit] buffer cleared\n");
+            } else if (equal(line, ":help")) { editor_help(); }
+            else { print("[edit] unknown command; :help\n"); }
             continue;
         }
-        const u32 needed = used + 1;
-        if (editor_length + needed > sizeof(editor_buffer)) {
-            print("[edit] buffer full; line rejected, buffer retained\n");
-            continue;
+        const char* content = line;
+        if (line[0] == ':' && line[1] == ':') { ++content; --used; }
+        const bool separator = editor_length && editor_buffer[editor_length - 1] != '\n';
+        if (editor_length + (separator ? 1u : 0u) + used + 1u > sizeof(editor_buffer)) {
+            print("[edit] buffer full; line rejected, buffer retained\n"); continue;
         }
-        for (u32 i = 0; i < used; ++i) { editor_buffer[editor_length++] = static_cast<u8>(line[i]); }
-        editor_buffer[editor_length++] = '\n';
-        dirty = true;
+        if (separator) { editor_buffer[editor_length++] = '\n'; }
+        if (editor_replace_range(editor_length, editor_length, content, used, true)) { dirty = true; }
     }
 }
 }

@@ -1,0 +1,942 @@
+{
+  "status": "passed",
+  "phase": "C2",
+  "source_commit": "b090d4532ff5aa19ec5290da16863154c7d08860",
+  "system_build_id": "48e5e73bcd649f44",
+  "xos_sha256": "8d46f18a2a4255b8df8e251cce23962e654bcced3b6357cfab95b5a6649bbdaf",
+  "sdk_manifest_sha256": "17f2bf09794e31d269afdbbeadaac408969469c177828be17f495b553d1935d9",
+  "dash_sha256": "15b0c29cc2018e0699a73965f2a2b134b04ae2203c0c4cfd41c1cc6b30bec205",
+  "artifacts": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c2/cd4137c8b9b34b6cb3704b597af7d9e0",
+  "only_fork_oom": false,
+  "fork_oom_mib": 254,
+  "commands": [
+    {
+      "name": "low_level_eager_fork_memory_pid_and_open_description_0",
+      "command": "exec-driver /out/probe fork /out/fork_shared.bin",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "exec-driver /out/probe fork /out/fork_shared.bin\n[process] event=started pid=9 parent=7\r\n[process] pid=9 address_space=0x00000000001a2000\r\n[loader] started pid=9 file=/out/probe\n[process] event=wait_blocked parent=7 child=9\r\n[process] event=fork_prepared pid=10 parent=9 depth=1 pages=124\r\n[process] event=fork_committed pid=10 parent=9\r\n[process] event=wait_blocked parent=9 child=10\r\n[task] event=reclaimed pid=10 pages=131\r\nC2_FORK memory=isolated pid=distinct fd=shared_offset cloexec=inherited cwd=isolated env=isolated eof=1 PASS\n[task] event=reclaimed pid=9 pages=131\r\n[wait] pid=9 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "a44bbe35e24377adbdbeda068c3c57c7ebd5bffa79fbed55da7a4ba097b5be08"
+    },
+    {
+      "name": "low_level_eager_fork_memory_pid_and_open_description_1",
+      "command": "exec-driver /out/probe fork /out/fork_shared.bin",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "exec-driver /out/probe fork /out/fork_shared.bin\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x00000000001a2000\r\n[loader] started pid=11 file=/out/probe\n[process] event=wait_blocked parent=7 child=11\r\n[process] event=fork_prepared pid=12 parent=11 depth=1 pages=124\r\n[process] event=fork_committed pid=12 parent=11\r\n[process] event=wait_blocked parent=11 child=12\r\n[task] event=reclaimed pid=12 pages=131\r\nC2_FORK memory=isolated pid=distinct fd=shared_offset cloexec=inherited cwd=isolated env=isolated eof=1 PASS\n[task] event=reclaimed pid=11 pages=131\r\n[wait] pid=11 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "9ec448ff5e55108d01c6ab4362963f1ffad071661ae6ef7000237022d13625af"
+    },
+    {
+      "name": "low_level_eager_fork_memory_pid_and_open_description_2",
+      "command": "exec-driver /out/probe fork /out/fork_shared.bin",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "exec-driver /out/probe fork /out/fork_shared.bin\n[process] event=started pid=13 parent=7\r\n[process] pid=13 address_space=0x00000000001a2000\r\n[loader] started pid=13 file=/out/probe\n[process] event=wait_blocked parent=7 child=13\r\n[process] event=fork_prepared pid=14 parent=13 depth=1 pages=124\r\n[process] event=fork_committed pid=14 parent=13\r\n[process] event=wait_blocked parent=13 child=14\r\n[task] event=reclaimed pid=14 pages=131\r\nC2_FORK memory=isolated pid=distinct fd=shared_offset cloexec=inherited cwd=isolated env=isolated eof=1 PASS\n[task] event=reclaimed pid=13 pages=131\r\n[wait] pid=13 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "a8f788885598f636dd1263a7aadaf0b31bcc2e53b9e9919fc165e8cfb7d1a0f6"
+    },
+    {
+      "name": "fork_privilege_arguments_and_files_service_auth",
+      "command": "exec-file /out/probe denied",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "exec-file /out/probe denied\n[process] event=started pid=15 parent=7\r\n[process] pid=15 address_space=0x00000000001a2000\r\n[loader] started pid=15 file=/out/probe\n[process] event=wait_blocked parent=7 child=15\r\nC2_FORK denied=EPERM arguments=EINVAL commit_without_child=denied service_auth=denied PASS\n[task] event=reclaimed pid=15 pages=131\r\n[wait] pid=15 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "dde78222a2f7be28ccfa5d111f6d166db2b02d85313fc97f0c6ed2c3e3e30bb5"
+    },
+    {
+      "name": "kernel_thread_profile_rejects_fork",
+      "command": "exec-driver /out/probe profile",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "exec-driver /out/probe profile\n[process] event=started pid=16 parent=7\r\n[process] pid=16 address_space=0x00000000001a2000\r\n[loader] started pid=16 file=/out/probe\n[process] event=wait_blocked parent=7 child=16\r\nC2_FORK thread_profile=ENOTSUP PASS\n[task] event=reclaimed pid=16 pages=131\r\n[wait] pid=16 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "429f02a02f827dfe0aa933bf9b8a361b4d52414901b1f07b4cea71fb92286b24"
+    },
+    {
+      "name": "threaded_libc_explicitly_rejects_fork",
+      "command": "exec-file /out/threaded_probe threaded_reject",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "exec-file /out/threaded_probe threaded_reject\n[process] event=started pid=17 parent=7\r\n[process] pid=17 address_space=0x00000000001a2000\r\n[loader] started pid=17 file=/out/threaded_probe\n[process] event=wait_blocked parent=7 child=17\r\nC2_FORK threaded_libc=ENOTSUP PASS\n[task] event=reclaimed pid=17 pages=187\r\n[wait] pid=17 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "894c9c99404b5d7e7ee549d3b9c0746a2083b802a60e8b7f4cdd0c501b5b2c1b"
+    },
+    {
+      "name": "real_fork_copy_ENOMEM_rollback",
+      "command": "exec-driver /out/probe oom /out/oom_parent.bin 254",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "exec-driver /out/probe oom /out/oom_parent.bin 254\n[process] event=started pid=18 parent=7\r\n[process] pid=18 address_space=0x00000000001a2000\r\n[loader] started pid=18 file=/out/probe\n[process] event=wait_blocked parent=7 child=18\r\nC2_OOM_BEGIN one_allocation_one_fork\n[task] event=reclaimed pid=19 pages=65039\r\nC2_OOM_COUNTERS initial free=130191 processes=3 threads=1 reserved=0 waiting=0 results=0 user_pages=124 kernel_stack_pages=1\nC2_OOM_COUNTERS held free=65039 processes=3 threads=1 reserved=0 waiting=0 results=0 user_pages=65149 kernel_stack_pages=1\nC2_OOM_COUNTERS failed free=65039 processes=3 threads=1 reserved=0 waiting=0 results=0 user_pages=65149 kernel_stack_pages=1\nC2_OOM_COUNTERS after_free free=130191 processes=3 threads=1 reserved=0 waiting=0 results=0 user_pages=124 kernel_stack_pages=1\nC2_OOM fork_errno=ENOMEM malloc_mib=254 partial_child_resources=baseline parent_memory=valid parent_fd=valid PASS\n[task] event=reclaimed pid=18 pages=131\r\n[wait] pid=18 kind=exited code=0\nxsh> ",
+      "resource_counters": [
+        {
+          "phase": "initial",
+          "free": 130191,
+          "processes": 3,
+          "threads": 1,
+          "reserved": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 124,
+          "kernel_stack_pages": 1
+        },
+        {
+          "phase": "held",
+          "free": 65039,
+          "processes": 3,
+          "threads": 1,
+          "reserved": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 65149,
+          "kernel_stack_pages": 1
+        },
+        {
+          "phase": "failed",
+          "free": 65039,
+          "processes": 3,
+          "threads": 1,
+          "reserved": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 65149,
+          "kernel_stack_pages": 1
+        },
+        {
+          "phase": "after_free",
+          "free": 130191,
+          "processes": 3,
+          "threads": 1,
+          "reserved": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 124,
+          "kernel_stack_pages": 1
+        }
+      ],
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "a9fc23cd54883940e8df83f4134b045a36caf7f06d3695426707aa53d1fef17c"
+    },
+    {
+      "name": "builtin_pipeline",
+      "command": "dash /tests/builtin_pipeline.sh",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "dash /tests/builtin_pipeline.sh\n[process] event=started pid=20 parent=7\r\n[process] pid=20 address_space=0x00000000001a2000\r\n[loader] started pid=20 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=20\r\n[process] event=fork_prepared pid=21 parent=20 depth=1 pages=154\r\n[process] event=fork_committed pid=21 parent=20\r\n[process] event=fork_prepared pid=22 parent=20 depth=1 pages=154\r\n[process] event=fork_committed pid=22 parent=20\r\n[process] event=wait_blocked parent=20 child=21\r\n[task] event=reclaimed pid=21 pages=161\r\n[process] event=wait_blocked parent=20 child=22\r\n[process] event=started pid=23 parent=22\r\n[process] pid=23 address_space=0x000000000036f000\r\n[process] event=wait_blocked parent=22 child=23\r\n[task] event=reclaimed pid=23 pages=129\r\n[task] event=reclaimed pid=22 pages=161\r\n[task] event=reclaimed pid=20 pages=161\r\n[wait] pid=20 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "8da9d834f974925e87207cde3c58b7b373437ca837fe4f3a42190b16071258aa"
+    },
+    {
+      "name": "function_pipeline",
+      "command": "dash /tests/function_pipeline.sh",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "dash /tests/function_pipeline.sh\n[process] event=started pid=24 parent=7\r\n[process] pid=24 address_space=0x00000000001a2000\r\n[loader] started pid=24 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=24\r\n[process] event=fork_prepared pid=25 parent=24 depth=1 pages=155\r\n[process] event=fork_committed pid=25 parent=24\r\n[process] event=fork_prepared pid=26 parent=24 depth=1 pages=155\r\n[process] event=fork_committed pid=26 parent=24\r\n[process] event=wait_blocked parent=24 child=25\r\n[task] event=reclaimed pid=25 pages=163\r\n[process] event=wait_blocked parent=24 child=26\r\n[process] event=started pid=27 parent=26\r\n[process] pid=27 address_space=0x0000000000370000\r\n[process] event=wait_blocked parent=26 child=27\r\n[task] event=reclaimed pid=27 pages=129\r\n[task] event=reclaimed pid=26 pages=162\r\n[task] event=reclaimed pid=24 pages=163\r\n[wait] pid=24 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "4b0e91d011707d0b9ba81b6cc684e4e692126fdfa0a54b3f836011ee65532bf8"
+    },
+    {
+      "name": "subshell_state",
+      "command": "dash /tests/subshell_state.sh",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "dash /tests/subshell_state.sh\n[process] event=started pid=28 parent=7\r\n[process] pid=28 address_space=0x00000000001a2000\r\n[loader] started pid=28 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=28\r\n[process] event=fork_prepared pid=29 parent=28 depth=1 pages=155\r\n[process] event=fork_committed pid=29 parent=28\r\n[process] event=wait_blocked parent=28 child=29\r\n[task] event=reclaimed pid=29 pages=162\r\n[task] event=reclaimed pid=28 pages=162\r\n[wait] pid=28 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "f2c02d319f814936cb8d7a55606b9d21321086d29db4e638383d1868b9eaca0f"
+    },
+    {
+      "name": "local_variable",
+      "command": "dash /tests/local_variable.sh",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "dash /tests/local_variable.sh\n[process] event=started pid=30 parent=7\r\n[process] pid=30 address_space=0x00000000001a2000\r\n[loader] started pid=30 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=30\r\n[process] event=fork_prepared pid=31 parent=30 depth=1 pages=154\r\n[process] event=fork_committed pid=31 parent=30\r\n[process] event=wait_blocked parent=30 child=31\r\n[task] event=reclaimed pid=31 pages=162\r\n[task] event=reclaimed pid=30 pages=162\r\n[wait] pid=30 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "382b7d7ab8e33cca6a4ba76183cede63b333540de72d340ffc1ee419b76318b0"
+    },
+    {
+      "name": "arithmetic_stage_isolation",
+      "command": "dash /tests/arithmetic_stage_isolation.sh",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "dash /tests/arithmetic_stage_isolation.sh\n[process] event=started pid=32 parent=7\r\n[process] pid=32 address_space=0x00000000001a2000\r\n[loader] started pid=32 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=32\r\n[process] event=fork_prepared pid=33 parent=32 depth=1 pages=154\r\n[process] event=fork_committed pid=33 parent=32\r\n[process] event=fork_prepared pid=34 parent=32 depth=1 pages=154\r\n[process] event=fork_committed pid=34 parent=32\r\n[process] event=wait_blocked parent=32 child=33\r\n[process] event=started pid=35 parent=33\r\n[process] pid=35 address_space=0x00000000004b1000\r\n[process] event=wait_blocked parent=33 child=35\r\n[task] event=reclaimed pid=35 pages=131\r\n[task] event=reclaimed pid=33 pages=161\r\n[process] event=wait_blocked parent=32 child=34\r\n[process] event=started pid=36 parent=34\r\n[process] pid=36 address_space=0x00000000004c2000\r\n[process] event=wait_blocked parent=34 child=36\r\n[task] event=reclaimed pid=36 pages=129\r\n[task] event=reclaimed pid=34 pages=161\r\n[process] event=fork_prepared pid=37 parent=32 depth=1 pages=155\r\n[process] event=fork_committed pid=37 parent=32\r\n[process] event=fork_prepared pid=38 parent=32 depth=1 pages=155\r\n[process] event=fork_committed pid=38 parent=32\r\n[process] event=wait_blocked parent=32 child=37\r\n[task] event=reclaimed pid=37 pages=162\r\n[process] event=wait_blocked parent=32 child=38\r\n[process] event=started pid=39 parent=38\r\n[process] pid=39 address_space=0x0000000000370000\r\n[process] event=wait_blocked parent=38 child=39\r\n[task] event=reclaimed pid=39 pages=129\r\n[task] event=reclaimed pid=38 pages=162\r\n[task] event=reclaimed pid=32 pages=162\r\n[wait] pid=32 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "190da948a708a361cd19e13d7e0c326f2e19c341e4ae98108e68a62d83890c89"
+    },
+    {
+      "name": "substitution_forms",
+      "command": "dash /tests/substitution_forms.sh",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "dash /tests/substitution_forms.sh\n[process] event=started pid=40 parent=7\r\n[process] pid=40 address_space=0x00000000001a2000\r\n[loader] started pid=40 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=40\r\n[process] event=fork_prepared pid=41 parent=40 depth=1 pages=154\r\n[process] event=fork_committed pid=41 parent=40\r\n[task] event=reclaimed pid=41 pages=162\r\n[process] event=fork_prepared pid=42 parent=40 depth=1 pages=154\r\n[process] event=fork_committed pid=42 parent=40\r\n[task] event=reclaimed pid=42 pages=162\r\n[process] event=fork_prepared pid=43 parent=40 depth=1 pages=154\r\n[process] event=fork_committed pid=43 parent=40\r\n[task] event=reclaimed pid=43 pages=161\r\n[process] event=fork_prepared pid=44 parent=40 depth=1 pages=155\r\n[process] event=fork_committed pid=44 parent=40\r\n[task] event=reclaimed pid=44 pages=162\r\n[task] event=reclaimed pid=40 pages=162\r\n[wait] pid=40 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "72de3bf00caf83ae4b69d2d55abfb1a199c675e31041b470a009a2002fff9cf4"
+    },
+    {
+      "name": "substitution_exit_status",
+      "command": "dash /tests/substitution_exit_status.sh",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "dash /tests/substitution_exit_status.sh\n[process] event=started pid=45 parent=7\r\n[process] pid=45 address_space=0x00000000001a2000\r\n[loader] started pid=45 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=45\r\n[process] event=fork_prepared pid=46 parent=45 depth=1 pages=154\r\n[process] event=fork_committed pid=46 parent=45\r\n[task] event=reclaimed pid=46 pages=162\r\n[process] event=fork_prepared pid=47 parent=45 depth=1 pages=155\r\n[process] event=fork_committed pid=47 parent=45\r\n[task] event=reclaimed pid=47 pages=162\r\n[task] event=reclaimed pid=45 pages=162\r\n[wait] pid=45 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "f252db2624bf47d9791f03fe35211d29cc0bd40736fc45291bf6dce10d7304fc"
+    },
+    {
+      "name": "substitution_large",
+      "command": "dash /tests/substitution_large.sh",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "dash /tests/substitution_large.sh\n[process] event=started pid=48 parent=7\r\n[process] pid=48 address_space=0x00000000001a2000\r\n[loader] started pid=48 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=48\r\n[process] event=fork_prepared pid=49 parent=48 depth=1 pages=154\r\n[process] event=fork_committed pid=49 parent=48\r\n[process] event=started pid=50 parent=49\r\n[process] pid=50 address_space=0x0000000000410000\r\n[process] event=wait_blocked parent=49 child=50\r\n[task] event=reclaimed pid=50 pages=129\r\n[task] event=reclaimed pid=49 pages=161\r\n[process] event=fork_prepared pid=51 parent=48 depth=1 pages=176\r\n[process] event=fork_committed pid=51 parent=48\r\n[process] event=fork_prepared pid=52 parent=48 depth=1 pages=176\r\n[process] event=fork_committed pid=52 parent=48\r\n[process] event=wait_blocked parent=48 child=51\r\n[process] event=started pid=53 parent=52\r\n[process] pid=53 address_space=0x000000000051d000\r\n[process] event=wait_blocked parent=52 child=53\r\n[task] event=reclaimed pid=51 pages=225\r\n[process] event=wait_blocked parent=48 child=52\r\n[task] event=reclaimed pid=53 pages=131\r\n[task] event=reclaimed pid=52 pages=183\r\n[task] event=reclaimed pid=48 pages=183\r\n[wait] pid=48 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "a8852a33b84dd9f0ef5fec029dad099ee263444b181984386dc96564c6ce6cf4"
+    },
+    {
+      "name": "substitution_three_levels",
+      "command": "dash /tests/substitution_three_levels.sh",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "dash /tests/substitution_three_levels.sh\n[process] event=started pid=54 parent=7\r\n[process] pid=54 address_space=0x00000000001a2000\r\n[loader] started pid=54 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=54\r\n[process] event=fork_prepared pid=55 parent=54 depth=1 pages=154\r\n[process] event=fork_committed pid=55 parent=54\r\n[process] event=fork_prepared pid=56 parent=55 depth=2 pages=154\r\n[process] event=fork_committed pid=56 parent=55\r\n[process] event=fork_prepared pid=57 parent=56 depth=3 pages=154\r\n[process] event=fork_committed pid=57 parent=56\r\n[task] event=reclaimed pid=57 pages=161\r\n[task] event=reclaimed pid=56 pages=162\r\n[task] event=reclaimed pid=55 pages=162\r\n[task] event=reclaimed pid=54 pages=161\r\n[wait] pid=54 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "6519429842dbb81657fb71b1c0059a1b85796cbd79bfa1ca606ed8963a5e385c"
+    },
+    {
+      "name": "subshell_status",
+      "command": "dash /tests/subshell_status.sh",
+      "expected_exit": 23,
+      "status": "passed",
+      "actual_exit": 23,
+      "output": "dash /tests/subshell_status.sh\n[process] event=started pid=58 parent=7\r\n[process] pid=58 address_space=0x00000000001a2000\r\n[loader] started pid=58 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=58\r\n[process] event=fork_prepared pid=59 parent=58 depth=1 pages=154\r\n[process] event=fork_committed pid=59 parent=58\r\n[process] event=wait_blocked parent=58 child=59\r\n[task] event=reclaimed pid=59 pages=161\r\n[task] event=reclaimed pid=58 pages=161\r\n[wait] pid=58 kind=exited code=23\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "aa5ce570146d6cfe64cc918945fb2a46bef33af901a47f26fc83009bbeacab7d"
+    },
+    {
+      "name": "function_pipeline_status",
+      "command": "dash /tests/function_pipeline_status.sh",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "dash /tests/function_pipeline_status.sh\n[process] event=started pid=60 parent=7\r\n[process] pid=60 address_space=0x00000000001a2000\r\n[loader] started pid=60 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=60\r\n[process] event=fork_prepared pid=61 parent=60 depth=1 pages=154\r\n[process] event=fork_committed pid=61 parent=60\r\n[process] event=fork_prepared pid=62 parent=60 depth=1 pages=154\r\n[process] event=fork_committed pid=62 parent=60\r\n[process] event=wait_blocked parent=60 child=61\r\n[task] event=reclaimed pid=61 pages=162\r\n[process] event=wait_blocked parent=60 child=62\r\n[process] event=started pid=63 parent=62\r\n[process] pid=63 address_space=0x000000000036f000\r\n[process] event=wait_blocked parent=62 child=63\r\n[task] event=reclaimed pid=63 pages=129\r\n[task] event=reclaimed pid=62 pages=161\r\n[task] event=reclaimed pid=60 pages=162\r\n[wait] pid=60 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "d930d52f8735b2967163cdad812faf7ef7616b08ed12b2aa64263f3a65a7c142"
+    },
+    {
+      "name": "errexit_tested_pipeline_functions",
+      "command": "dash /tests/errexit_tested_pipeline_functions.sh",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "dash /tests/errexit_tested_pipeline_functions.sh\n[process] event=started pid=64 parent=7\r\n[process] pid=64 address_space=0x00000000001a2000\r\n[loader] started pid=64 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=64\r\n[process] event=fork_prepared pid=65 parent=64 depth=1 pages=154\r\n[process] event=fork_committed pid=65 parent=64\r\n[process] event=fork_prepared pid=66 parent=64 depth=1 pages=154\r\n[process] event=fork_committed pid=66 parent=64\r\n[process] event=wait_blocked parent=64 child=65\r\n[task] event=reclaimed pid=65 pages=162\r\n[process] event=wait_blocked parent=64 child=66\r\n[process] event=started pid=67 parent=66\r\n[process] pid=67 address_space=0x000000000036f000\r\n[process] event=wait_blocked parent=66 child=67\r\n[task] event=reclaimed pid=67 pages=129\r\n[task] event=reclaimed pid=66 pages=161\r\n[process] event=fork_prepared pid=68 parent=64 depth=1 pages=155\r\n[process] event=fork_committed pid=68 parent=64\r\n[process] event=fork_prepared pid=69 parent=64 depth=1 pages=155\r\n[process] event=fork_committed pid=69 parent=64\r\n[process] event=wait_blocked parent=64 child=68\r\n[task] event=reclaimed pid=68 pages=162\r\n[process] event=wait_blocked parent=64 child=69\r\n[process] event=started pid=70 parent=69\r\n[process] pid=70 address_space=0x0000000000370000\r\n[process] event=wait_blocked parent=69 child=70\r\n[task] event=reclaimed pid=70 pages=129\r\n[task] event=reclaimed pid=69 pages=162\r\n[task] event=reclaimed pid=64 pages=162\r\n[wait] pid=64 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "c6999a8f886ba5cc4d0ec7a037a1c19911a8971850d33120bce0c49a4fcb5e7d"
+    },
+    {
+      "name": "pipefail_rightmost_status",
+      "command": "dash /tests/pipefail_rightmost_status.sh",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "dash /tests/pipefail_rightmost_status.sh\n[process] event=started pid=71 parent=7\r\n[process] pid=71 address_space=0x00000000001a2000\r\n[loader] started pid=71 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=71\r\n[process] event=fork_prepared pid=72 parent=71 depth=1 pages=155\r\n[process] event=fork_committed pid=72 parent=71\r\n[process] event=fork_prepared pid=73 parent=71 depth=1 pages=155\r\n[process] event=fork_committed pid=73 parent=71\r\n[process] event=fork_prepared pid=74 parent=71 depth=1 pages=155\r\n[process] event=fork_committed pid=74 parent=71\r\n[process] event=wait_blocked parent=71 child=72\r\n[task] event=reclaimed pid=72 pages=162\r\n[process] event=wait_blocked parent=71 child=73\r\n[task] event=reclaimed pid=73 pages=162\r\n[process] event=wait_blocked parent=71 child=74\r\n[task] event=reclaimed pid=74 pages=162\r\n[process] event=fork_prepared pid=75 parent=71 depth=1 pages=155\r\n[process] event=fork_committed pid=75 parent=71\r\n[process] event=fork_prepared pid=76 parent=71 depth=1 pages=155\r\n[process] event=fork_committed pid=76 parent=71\r\n[process] event=wait_blocked parent=71 child=75\r\n[task] event=reclaimed pid=75 pages=162\r\n[task] event=reclaimed pid=76 pages=162\r\n[process] event=fork_prepared pid=77 parent=71 depth=1 pages=155\r\n[process] event=fork_committed pid=77 parent=71\r\n[process] event=fork_prepared pid=78 parent=71 depth=1 pages=155\r\n[process] event=fork_committed pid=78 parent=71\r\n[process] event=fork_prepared pid=79 parent=71 depth=1 pages=155\r\n[task] event=reclaimed pid=77 pages=162\r\n[process] event=fork_committed pid=79 parent=71\r\n[process] event=wait_blocked parent=71 child=78\r\n[task] event=reclaimed pid=78 pages=162\r\n[task] event=reclaimed pid=79 pages=162\r\n[process] event=fork_prepared pid=80 parent=71 depth=1 pages=155\r\n[process] event=fork_committed pid=80 parent=71\r\n[process] event=fork_prepared pid=81 parent=71 depth=1 pages=155\r\n[process] event=fork_committed pid=81 parent=71\r\n[process] event=wait_blocked parent=71 child=80\r\n[task] event=reclaimed pid=80 pages=162\r\n[process] event=wait_blocked parent=71 child=81\r\n[task] event=reclaimed pid=81 pages=162\r\n[process] event=fork_prepared pid=82 parent=71 depth=1 pages=155\r\n[process] event=fork_committed pid=82 parent=71\r\n[process] event=fork_prepared pid=83 parent=71 depth=1 pages=155\r\n[process] event=fork_committed pid=83 parent=71\r\n[process] event=wait_blocked parent=71 child=82\r\n[task] event=reclaimed pid=82 pages=162\r\n[task] event=reclaimed pid=83 pages=162\r\n[task] event=reclaimed pid=71 pages=162\r\n[wait] pid=71 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "53d9cf22f0c7048991f927c6f5a8e4f71f07f4b18ae3bd7f073b2c76adf0622f"
+    },
+    {
+      "name": "descriptor_restore",
+      "command": "dash /tests/descriptor_restore.sh",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "dash /tests/descriptor_restore.sh\n[process] event=started pid=84 parent=7\r\n[process] pid=84 address_space=0x00000000001a2000\r\n[loader] started pid=84 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=84\r\n[process] event=fork_prepared pid=85 parent=84 depth=1 pages=154\r\n[process] event=fork_committed pid=85 parent=84\r\n[process] event=fork_prepared pid=86 parent=84 depth=1 pages=154\r\n[process] event=fork_committed pid=86 parent=84\r\n[process] event=wait_blocked parent=84 child=85\r\n[task] event=reclaimed pid=85 pages=162\r\n[process] event=wait_blocked parent=84 child=86\r\n[process] event=started pid=87 parent=86\r\n[process] pid=87 address_space=0x000000000036f000\r\n[process] event=wait_blocked parent=86 child=87\r\n[task] event=reclaimed pid=87 pages=129\r\n[task] event=reclaimed pid=86 pages=161\r\n[process] event=fork_prepared pid=88 parent=84 depth=1 pages=155\r\n[process] event=fork_committed pid=88 parent=84\r\n[process] event=wait_blocked parent=84 child=88\r\n[task] event=reclaimed pid=88 pages=162\r\n[task] event=reclaimed pid=84 pages=162\r\n[wait] pid=84 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "45cbbfdd7d43e99d8b1f8bac45e3c8f0d3a8399ffa13220452cddc9b20784247"
+    },
+    {
+      "name": "depth_limit",
+      "command": "dash /tests/depth_limit.sh",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "dash /tests/depth_limit.sh\n[process] event=started pid=89 parent=7\r\n[process] pid=89 address_space=0x00000000001a2000\r\n[loader] started pid=89 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=89\r\n[process] event=fork_prepared pid=90 parent=89 depth=1 pages=154\r\n[process] event=fork_committed pid=90 parent=89\r\n[process] event=fork_prepared pid=91 parent=90 depth=2 pages=154\r\n[process] event=fork_committed pid=91 parent=90\r\n[process] event=fork_prepared pid=92 parent=91 depth=3 pages=154\r\n[process] event=fork_committed pid=92 parent=91\r\n/tests/depth_limit.sh: 5: fork: Not enough space\n[task] event=reclaimed pid=92 pages=161\r\n[task] event=reclaimed pid=91 pages=161\r\n[task] event=reclaimed pid=90 pages=161\r\n[task] event=reclaimed pid=89 pages=162\r\n[wait] pid=89 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "a577403f0d38e377399cb276147397aefd3cf75748b83556b7949bb3002cf89a"
+    },
+    {
+      "name": "fault_substitution",
+      "command": "dash /tests/fault_substitution.sh",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "dash /tests/fault_substitution.sh\n[process] event=started pid=93 parent=7\r\n[process] pid=93 address_space=0x00000000001a2000\r\n[loader] started pid=93 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=93\r\n[process] event=fork_prepared pid=94 parent=93 depth=1 pages=154\r\n[process] event=fork_committed pid=94 parent=93\r\n[process] event=started pid=95 parent=94\r\n[process] pid=95 address_space=0x0000000000410000\r\n[process] event=wait_blocked parent=94 child=95\r\n[task] event=fault pid=95 vector=14 rip=0x0000000040000b52 cr2=0x0000000000001000 result=killed tid=95\r\n[task] event=reclaimed pid=95 pages=129\r\n[task] event=reclaimed pid=94 pages=161\r\n[task] event=reclaimed pid=93 pages=161\r\n[wait] pid=93 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "ce3826e32346b437ad05873b5264949d9e5b19f4cafe6e9b2e9ae275bf4635a6"
+    },
+    {
+      "name": "fork_exhaustion_partial_pipeline_cleanup",
+      "command": "dash /tests/fork_exhaustion.sh",
+      "expected_exit": 2,
+      "status": "passed",
+      "actual_exit": 2,
+      "output": "dash /tests/fork_exhaustion.sh\n[process] event=started pid=98 parent=7\r\n[process] pid=98 address_space=0x00000000003d0000\r\n[loader] started pid=98 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=98\r\n[process] event=fork_prepared pid=99 parent=98 depth=1 pages=154\r\n[process] event=fork_committed pid=99 parent=98\r\n[process] event=fork_prepared pid=100 parent=98 depth=1 pages=154\r\n[process] event=fork_committed pid=100 parent=98\r\n[process] event=fork_prepared pid=101 parent=98 depth=1 pages=154\r\n[process] event=fork_committed pid=101 parent=98\r\n/tests/fork_exhaustion.sh: 4: fork: Not enough space\n[task] event=reclaimed pid=99 pages=161\r\n[task] event=reclaimed pid=100 pages=161\r\n[task] event=reclaimed pid=101 pages=161\r\n[task] event=reclaimed pid=98 pages=161\r\n[wait] pid=98 kind=exited code=2\nxsh> ",
+      "resources_after": [
+        130064,
+        4,
+        2
+      ],
+      "serial_sha256": "ee6d47ad7bc886cf083cc105d228e3e0d6bf364697c1684cffd5e33c0ca1437f"
+    },
+    {
+      "name": "escape_cancels_substitution_and_recovers_shell",
+      "status": "passed",
+      "output": "v=$(/out/probe spin); printf 'C2_CANCEL_RECOVERED status=%d\\n' $?\n[process] event=fork_prepared pid=103 parent=102 depth=1 pages=154\r\n[process] event=fork_committed pid=103 parent=102\r\n[process] event=started pid=104 parent=103\r\n[process] pid=104 address_space=0x0000000000410000\r\n[process] event=wait_blocked parent=103 child=104\r\nC2_SPIN_READY\n[process] event=cancelled_by_escape pipeline_parent=102\r\n[task] event=reclaimed pid=103 pages=161\r\n[task] event=reclaimed pid=104 pages=129\r\nC2_CANCEL_RECOVERED status=137\n$ "
+    },
+    {
+      "name": "command_substitution_capture_limit_recovers_shell",
+      "status": "passed",
+      "producer_text_bytes": 2097277,
+      "producer_stdout_bytes": 2097280,
+      "capture_limit_bytes": 1048576,
+      "expected_overflow_status": 2,
+      "actual_overflow_status": 2,
+      "expected_recovery_status": 0,
+      "actual_recovery_status": 0,
+      "output": "a=$(/out/probe text 2097277)\n[process] event=fork_prepared pid=105 parent=102 depth=1 pages=154\r\n[process] event=fork_committed pid=105 parent=102\r\n[process] event=started pid=106 parent=105\r\n[process] pid=106 address_space=0x0000000000410000\r\n[process] event=wait_blocked parent=105 child=106\r\ndash: 2: XOS command substitution output exceeds 1048576 bytes\n[task] event=reclaimed pid=105 pages=161\r\n[task] event=reclaimed pid=106 pages=129\r\n$ printf 'C2_CAPTURE_LIMIT status=%d\\n' $?; b=$(printf recovered); printf 'C2_CAPTURE_AFTER=<%s> status=%d\\n' \"$b\" $?\nC2_CAPTURE_LIMIT status=2\n[process] event=fork_prepared pid=107 parent=102 depth=1 pages=154\r\n[process] event=fork_committed pid=107 parent=102\r\n[task] event=reclaimed pid=107 pages=161\r\nC2_CAPTURE_AFTER=<recovered> status=0\n$ ",
+      "serial_sha256": "1ef7211e17709e596f02b4815192883cf87adc48f054bcd6d7633df8919b77d4"
+    },
+    {
+      "name": "repeated_isolation_reclamation_0",
+      "command": "dash /tests/substitution_forms.sh",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "dash /tests/substitution_forms.sh\n[process] event=started pid=108 parent=7\r\n[process] pid=108 address_space=0x00000000001a2000\r\n[loader] started pid=108 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=108\r\n[process] event=fork_prepared pid=109 parent=108 depth=1 pages=154\r\n[process] event=fork_committed pid=109 parent=108\r\n[task] event=reclaimed pid=109 pages=162\r\n[process] event=fork_prepared pid=110 parent=108 depth=1 pages=154\r\n[process] event=fork_committed pid=110 parent=108\r\n[task] event=reclaimed pid=110 pages=162\r\n[process] event=fork_prepared pid=111 parent=108 depth=1 pages=154\r\n[process] event=fork_committed pid=111 parent=108\r\n[task] event=reclaimed pid=111 pages=161\r\n[process] event=fork_prepared pid=112 parent=108 depth=1 pages=155\r\n[process] event=fork_committed pid=112 parent=108\r\n[task] event=reclaimed pid=112 pages=162\r\n[task] event=reclaimed pid=108 pages=162\r\n[wait] pid=108 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "8fd9a0a4d1a36d4e3d9f527dd434cc606a0f1f647fc8e172512862caca26f7db"
+    },
+    {
+      "name": "repeated_isolation_reclamation_1",
+      "command": "dash /tests/substitution_forms.sh",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "dash /tests/substitution_forms.sh\n[process] event=started pid=113 parent=7\r\n[process] pid=113 address_space=0x00000000001a2000\r\n[loader] started pid=113 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=113\r\n[process] event=fork_prepared pid=114 parent=113 depth=1 pages=154\r\n[process] event=fork_committed pid=114 parent=113\r\n[task] event=reclaimed pid=114 pages=162\r\n[process] event=fork_prepared pid=115 parent=113 depth=1 pages=154\r\n[process] event=fork_committed pid=115 parent=113\r\n[task] event=reclaimed pid=115 pages=162\r\n[process] event=fork_prepared pid=116 parent=113 depth=1 pages=154\r\n[process] event=fork_committed pid=116 parent=113\r\n[task] event=reclaimed pid=116 pages=161\r\n[process] event=fork_prepared pid=117 parent=113 depth=1 pages=155\r\n[process] event=fork_committed pid=117 parent=113\r\n[task] event=reclaimed pid=117 pages=162\r\n[task] event=reclaimed pid=113 pages=162\r\n[wait] pid=113 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "06d41213b1c8b7fed321136cf318ad72dfebf6d9ea1b782b68906f3c45b709fc"
+    },
+    {
+      "name": "repeated_isolation_reclamation_2",
+      "command": "dash /tests/substitution_forms.sh",
+      "expected_exit": 0,
+      "status": "passed",
+      "actual_exit": 0,
+      "output": "dash /tests/substitution_forms.sh\n[process] event=started pid=118 parent=7\r\n[process] pid=118 address_space=0x00000000001a2000\r\n[loader] started pid=118 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=118\r\n[process] event=fork_prepared pid=119 parent=118 depth=1 pages=154\r\n[process] event=fork_committed pid=119 parent=118\r\n[task] event=reclaimed pid=119 pages=162\r\n[process] event=fork_prepared pid=120 parent=118 depth=1 pages=154\r\n[process] event=fork_committed pid=120 parent=118\r\n[task] event=reclaimed pid=120 pages=162\r\n[process] event=fork_prepared pid=121 parent=118 depth=1 pages=154\r\n[process] event=fork_committed pid=121 parent=118\r\n[task] event=reclaimed pid=121 pages=161\r\n[process] event=fork_prepared pid=122 parent=118 depth=1 pages=155\r\n[process] event=fork_committed pid=122 parent=118\r\n[task] event=reclaimed pid=122 pages=162\r\n[task] event=reclaimed pid=118 pages=162\r\n[wait] pid=118 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "serial_sha256": "0de3ada9e82685b92a421a9e7ce510468b8220e514998869fa52c6c6f92f0e94"
+    }
+  ],
+  "checks": [
+    "low_level_eager_fork_memory_pid_and_open_description_0",
+    "low_level_eager_fork_memory_pid_and_open_description_1",
+    "low_level_eager_fork_memory_pid_and_open_description_2",
+    "fork_privilege_arguments_and_files_service_auth",
+    "kernel_thread_profile_rejects_fork",
+    "threaded_libc_explicitly_rejects_fork",
+    "real_fork_copy_ENOMEM_rollback",
+    "builtin_pipeline",
+    "function_pipeline",
+    "subshell_state",
+    "local_variable",
+    "arithmetic_stage_isolation",
+    "substitution_forms",
+    "substitution_exit_status",
+    "substitution_large",
+    "substitution_three_levels",
+    "subshell_status",
+    "function_pipeline_status",
+    "errexit_tested_pipeline_functions",
+    "pipefail_rightmost_status",
+    "descriptor_restore",
+    "depth_limit",
+    "fault_substitution",
+    "fork_exhaustion_partial_pipeline_cleanup",
+    "escape_cancels_substitution_and_recovers_shell",
+    "command_substitution_capture_limit_recovers_shell",
+    "repeated_isolation_reclamation_0",
+    "repeated_isolation_reclamation_1",
+    "repeated_isolation_reclamation_2",
+    "all_stdout_and_file_side_effects_match_host_or_explicit_guest_contract"
+  ],
+  "host_reference": {
+    "builtin_pipeline": {
+      "shell": "/bin/sh",
+      "input": "printf 'builtin words\\n' | \"$PROBE\" copy\nprintf 'last=%s\\n' \"$?\"\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "builtin words\nlast=0\n",
+      "stdout_sha256": "3c78f6624d787bae9a1f4d4cdd4b679c840c3b372b772c9c9cab5d81a2f0b307",
+      "stderr": ""
+    },
+    "function_pipeline": {
+      "shell": "/bin/sh",
+      "input": "v=parent; e=envparent; export e; set -- 'one two' ''; readonly ro=fixed\ng() { printf 'original_function\\n'; }\nf() { v=child; e=child; export e; cd /tmp; set -- changed; g() { printf 'child_function\\n'; }; printf '%s:%s:%s:%s:%s\\n' \"$v\" \"$e\" \"$1\" \"$ro\" \"$PWD\"; }\nf | \"$PROBE\" copy\nprintf 'parent=%s:%s:%s:%s:%s:%s\\n' \"$v\" \"$e\" \"$1\" \"$#\" \"$ro\" \"$PWD\"\ng\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "child:child:changed:fixed:/tmp\nparent=parent:envparent:one two:2:fixed:/\noriginal_function\n",
+      "stdout_sha256": "20b240d1cbfaf4d15d863d9257ec639b3f709673aac284f7149bd259b5986dc6",
+      "stderr": ""
+    },
+    "subshell_state": {
+      "shell": "/bin/sh",
+      "input": "v=parent; export C2_EXPORTED=before; set -- 'alpha beta' ''; readonly fixed=immutable\ng() { printf 'parent_function\\n'; }\n(v=child; C2_EXPORTED=after; export C2_EXPORTED; cd /tmp; set -- child; g() { printf 'child_function\\n'; }; printf 'child=%s:%s:%s:%s:%s\\n' \"$v\" \"$C2_EXPORTED\" \"$1\" \"$fixed\" \"$PWD\"; g)\nprintf 'parent=%s:%s:%s:%s:%s:%s\\n' \"$v\" \"$C2_EXPORTED\" \"$1\" \"$#\" \"$fixed\" \"$PWD\"\ng\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "child=child:after:child:immutable:/tmp\nchild_function\nparent=parent:before:alpha beta:2:immutable:/\nparent_function\n",
+      "stdout_sha256": "93c5df44f6dbeabf430c337581cc50b7aea31e58afac2798e6012ef131675f90",
+      "stderr": ""
+    },
+    "local_variable": {
+      "shell": "/bin/sh",
+      "input": "f() { local v=inside; (v=child; printf 'child=%s\\n' \"$v\"); printf 'local=%s\\n' \"$v\"; }; v=outside; f; printf 'global=%s\\n' \"$v\"\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "child=child\nlocal=inside\nglobal=outside\n",
+      "stdout_sha256": "df136f81806984140fa88d09c7c8bcab533b3f17e79903cd7700f7def6da282e",
+      "stderr": ""
+    },
+    "arithmetic_stage_isolation": {
+      "shell": "/bin/sh",
+      "input": "x=5; \"$PROBE\" echo \"$((x=x+1))\" | \"$PROBE\" copy; printf 'parent_x=%s\\n' \"$x\"\nfalse; printf 'before=%s\\n' \"$?\" | \"$PROBE\" copy; printf 'after=%s\\n' \"$?\"\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "<6>\nparent_x=5\nbefore=1\nafter=0\n",
+      "stdout_sha256": "d3c560a46d791398c666f4a210078fa101e3fc6f4f407c97ba3964edd217102f",
+      "stderr": ""
+    },
+    "substitution_forms": {
+      "shell": "/bin/sh",
+      "input": "a=$(printf 'one\\n\\n\\n'); b=`printf 'two\\n\\n'`; c=$(printf ''); printf 'a=<%s> b=<%s> c=<%s>\\n' \"$a\" \"$b\" \"$c\"\nv=parent; d=$(v=child; cd /tmp; printf '%s:%s' \"$v\" \"$PWD\"); printf 'captured=<%s> parent=%s:%s\\n' \"$d\" \"$v\" \"$PWD\"\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "a=<one> b=<two> c=<>\ncaptured=<child:/tmp> parent=parent:/\n",
+      "stdout_sha256": "e3ee4c52e6c3b2bc13d36ee4fdbdf6036ed14a841e7437bc3d76943ea0c3c280",
+      "stderr": ""
+    },
+    "substitution_exit_status": {
+      "shell": "/bin/sh",
+      "input": "a=$(printf 'value\\n'; exit 23); s=$?; printf 'capture=<%s> status=%s\\n' \"$a\" \"$s\"\nb=$(false); s=$?; printf 'empty=<%s> status=%s\\n' \"$b\" \"$s\"\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "capture=<value> status=23\nempty=<> status=1\n",
+      "stdout_sha256": "a9ea2100fe565cdc969a19f757f3da53fc151d6058a777b46cfb1a6606908141",
+      "stderr": ""
+    },
+    "substitution_large": {
+      "shell": "/bin/sh",
+      "input": "value=$(\"$PROBE\" text 32781); printf 'length=%s\\n' \"${#value}\"; printf '%s' \"$value\" | \"$PROBE\" check 32781\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "length=32781\nC2_TEXT bytes=32781 eof=1\n",
+      "stdout_sha256": "7c16d11bec1356e8fb12768832955ad16583ac73f88e08d1faf44ff8323d37a4",
+      "stderr": ""
+    },
+    "substitution_three_levels": {
+      "shell": "/bin/sh",
+      "input": "a=$(b=$(c=$(printf nested); printf '%s' \"$c\"); printf '%s' \"$b\"); printf 'nested=<%s>\\n' \"$a\"\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "nested=<nested>\n",
+      "stdout_sha256": "579accb7df9a1f0742569ba6d0954bd08bcb67598ecde9ddcf972b9bc088818b",
+      "stderr": ""
+    },
+    "subshell_status": {
+      "shell": "/bin/sh",
+      "input": "(printf 'subshell_status\\n'; exit 23)\n",
+      "expected_exit": 23,
+      "actual_exit": 23,
+      "stdout": "subshell_status\n",
+      "stdout_sha256": "9c293effa88184ba0fd6ff8df196c061698186aa0688da2359835331404be009",
+      "stderr": ""
+    },
+    "function_pipeline_status": {
+      "shell": "/bin/sh",
+      "input": "f() { printf data; return 17; }; g() { \"$PROBE\" copy; return 29; }; f | g; s=$?; printf '\\nlast_status=%s\\n' \"$s\"; test \"$s\" -eq 29\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "data\nlast_status=29\n",
+      "stdout_sha256": "009858f36fda0787d96dd0af5f5e56d8949aeca883227ed5022cf39f828159fe",
+      "stderr": ""
+    },
+    "errexit_tested_pipeline_functions": {
+      "shell": "/bin/sh",
+      "input": "set -e\nf() { false; printf 'tested_function_continued\\n'; }\nif f | \"$PROBE\" copy; then printf 'if_pipeline_ok\\n'; else printf 'BAD_IF_BRANCH\\n'; fi\nf | \"$PROBE\" copy && printf 'and_pipeline_ok\\n'\nprintf 'set_e_parent_continued\\n'\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "tested_function_continued\nif_pipeline_ok\ntested_function_continued\nand_pipeline_ok\nset_e_parent_continued\n",
+      "stdout_sha256": "38e5439dc94c73389bd8a14d94c41dc58dc2704a0799593f18d49af47e7330d6",
+      "stderr": ""
+    },
+    "pipefail_rightmost_status": {
+      "shell": "/bin/sh",
+      "input": "set -o pipefail\nf() { return 7; }; g() { return 23; }; f | g | true; printf 'rightmost=%s\\n' \"$?\"\nfalse | true; printf 'left_failure=%s\\n' \"$?\"\ntrue | false | true; printf 'middle_failure=%s\\n' \"$?\"\ntrue | true; printf 'all_success=%s\\n' \"$?\"\nset +o pipefail; false | true; printf 'pipefail_off=%s\\n' \"$?\"\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "rightmost=23\nleft_failure=1\nmiddle_failure=1\nall_success=0\npipefail_off=0\n",
+      "stdout_sha256": "1182e705a5b42ff7ed7a08a5549b81a0db1f23c7019c9cf602856e5620ef54ff",
+      "stderr": ""
+    },
+    "descriptor_restore": {
+      "shell": "/bin/sh",
+      "input": "f() { printf 'child_file\\n' > /var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_c2_dv725wo8/native_out/child_marker; }; f | \"$PROBE\" copy; printf 'parent_stdout_restored\\n'\n(printf 'subshell_file\\n' > /var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_c2_dv725wo8/native_out/sub_marker); printf 'parent_again\\n'\n",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": "parent_stdout_restored\nparent_again\n",
+      "stdout_sha256": "b0c7954fd389e1a3e61b1b8cf75fd31ba7861e77473ed65f4c5c468339004d68",
+      "stderr": ""
+    },
+    "fork_probe": {
+      "actual_exit": 0,
+      "stdout": "C2_FORK memory=isolated pid=distinct fd=shared_offset cloexec=inherited cwd=isolated env=isolated eof=1 PASS\n",
+      "stderr": "",
+      "file_sha256": "ea00e34063170a030521d13f022ff1be267b188a3370a959ce4c97567ca34ee1"
+    }
+  },
+  "side_effects": {
+    "builtin_pipeline": {
+      "bytes": 21,
+      "sha256": "3c78f6624d787bae9a1f4d4cdd4b679c840c3b372b772c9c9cab5d81a2f0b307",
+      "expected_sha256": "3c78f6624d787bae9a1f4d4cdd4b679c840c3b372b772c9c9cab5d81a2f0b307"
+    },
+    "function_pipeline": {
+      "bytes": 91,
+      "sha256": "20b240d1cbfaf4d15d863d9257ec639b3f709673aac284f7149bd259b5986dc6",
+      "expected_sha256": "20b240d1cbfaf4d15d863d9257ec639b3f709673aac284f7149bd259b5986dc6"
+    },
+    "subshell_state": {
+      "bytes": 116,
+      "sha256": "93c5df44f6dbeabf430c337581cc50b7aea31e58afac2798e6012ef131675f90",
+      "expected_sha256": "93c5df44f6dbeabf430c337581cc50b7aea31e58afac2798e6012ef131675f90"
+    },
+    "local_variable": {
+      "bytes": 40,
+      "sha256": "df136f81806984140fa88d09c7c8bcab533b3f17e79903cd7700f7def6da282e",
+      "expected_sha256": "df136f81806984140fa88d09c7c8bcab533b3f17e79903cd7700f7def6da282e"
+    },
+    "arithmetic_stage_isolation": {
+      "bytes": 32,
+      "sha256": "d3c560a46d791398c666f4a210078fa101e3fc6f4f407c97ba3964edd217102f",
+      "expected_sha256": "d3c560a46d791398c666f4a210078fa101e3fc6f4f407c97ba3964edd217102f"
+    },
+    "substitution_forms": {
+      "bytes": 59,
+      "sha256": "e3ee4c52e6c3b2bc13d36ee4fdbdf6036ed14a841e7437bc3d76943ea0c3c280",
+      "expected_sha256": "e3ee4c52e6c3b2bc13d36ee4fdbdf6036ed14a841e7437bc3d76943ea0c3c280"
+    },
+    "substitution_exit_status": {
+      "bytes": 44,
+      "sha256": "a9ea2100fe565cdc969a19f757f3da53fc151d6058a777b46cfb1a6606908141",
+      "expected_sha256": "a9ea2100fe565cdc969a19f757f3da53fc151d6058a777b46cfb1a6606908141"
+    },
+    "substitution_large": {
+      "bytes": 39,
+      "sha256": "7c16d11bec1356e8fb12768832955ad16583ac73f88e08d1faf44ff8323d37a4",
+      "expected_sha256": "7c16d11bec1356e8fb12768832955ad16583ac73f88e08d1faf44ff8323d37a4"
+    },
+    "substitution_three_levels": {
+      "bytes": 16,
+      "sha256": "579accb7df9a1f0742569ba6d0954bd08bcb67598ecde9ddcf972b9bc088818b",
+      "expected_sha256": "579accb7df9a1f0742569ba6d0954bd08bcb67598ecde9ddcf972b9bc088818b"
+    },
+    "subshell_status": {
+      "bytes": 16,
+      "sha256": "9c293effa88184ba0fd6ff8df196c061698186aa0688da2359835331404be009",
+      "expected_sha256": "9c293effa88184ba0fd6ff8df196c061698186aa0688da2359835331404be009"
+    },
+    "function_pipeline_status": {
+      "bytes": 20,
+      "sha256": "009858f36fda0787d96dd0af5f5e56d8949aeca883227ed5022cf39f828159fe",
+      "expected_sha256": "009858f36fda0787d96dd0af5f5e56d8949aeca883227ed5022cf39f828159fe"
+    },
+    "errexit_tested_pipeline_functions": {
+      "bytes": 106,
+      "sha256": "38e5439dc94c73389bd8a14d94c41dc58dc2704a0799593f18d49af47e7330d6",
+      "expected_sha256": "38e5439dc94c73389bd8a14d94c41dc58dc2704a0799593f18d49af47e7330d6"
+    },
+    "pipefail_rightmost_status": {
+      "bytes": 74,
+      "sha256": "1182e705a5b42ff7ed7a08a5549b81a0db1f23c7019c9cf602856e5620ef54ff",
+      "expected_sha256": "1182e705a5b42ff7ed7a08a5549b81a0db1f23c7019c9cf602856e5620ef54ff"
+    },
+    "descriptor_restore": {
+      "bytes": 36,
+      "sha256": "b0c7954fd389e1a3e61b1b8cf75fd31ba7861e77473ed65f4c5c468339004d68",
+      "expected_sha256": "b0c7954fd389e1a3e61b1b8cf75fd31ba7861e77473ed65f4c5c468339004d68"
+    },
+    "depth_limit": {
+      "stdout": "C2_DEPTH_RECOVERED status=2\n",
+      "sha256": "1319af6885fddb60b911e66a7015a007219eab1398e71177e88c972d75ee7fcf"
+    },
+    "fault_substitution": {
+      "stdout": "fault_capture=<> status=137\n",
+      "sha256": "ecf9515245c8cd71394f7b4c806f91c6113659d904665439b1da96e79347673b"
+    },
+    "child_marker": {
+      "bytes": 11,
+      "sha256": "e0f9f13dc856a5002cc29a00aa97eedef060734228ba9a8435b1934443173221"
+    },
+    "sub_marker": {
+      "bytes": 14,
+      "sha256": "9b23b16b253e2735fa4514df0c2f2e748f7cf13adc6e0406ff5cdd40b086addb"
+    },
+    "fork_shared.bin": {
+      "bytes": 6,
+      "sha256": "ea00e34063170a030521d13f022ff1be267b188a3370a959ce4c97567ca34ee1"
+    },
+    "oom_parent.bin": {
+      "bytes": 11,
+      "sha256": "31c2400e49aa9f4e10264dc2a73542ad7ce327c1ee55b29af1164b2acbc01b42"
+    }
+  },
+  "not_run": [
+    "SMP",
+    "long_randomized_stress",
+    "C3_here_document_exec_and_make"
+  ],
+  "tools": {
+    "x86_64-elf-gcc": {
+      "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
+      "sha256": "078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f",
+      "version": "x86_64-elf-gcc (GCC) 16.2.0"
+    },
+    "x86_64-elf-g++": {
+      "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-g++",
+      "sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
+      "version": "x86_64-elf-g++ (GCC) 16.2.0"
+    },
+    "nasm": {
+      "path": "/Users/perry_guo/homebrew/bin/nasm",
+      "sha256": "5d22db7ed80aee4eb0e1cb5ff8a87e40294012f6ddf943601556922d5128b725",
+      "version": "NASM version 3.02 compiled on Jun 29 2026"
+    },
+    "clang": {
+      "path": "/usr/bin/clang",
+      "sha256": "34129c71a01a74f7f3b2443521519b2e5447553fa187f5fcafaaf8c42cc192e2",
+      "version": "Apple clang version 21.0.0 (clang-2100.3.34.2)"
+    },
+    "qemu": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+      "sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
+      "version": "QEMU emulator version 11.1.2"
+    }
+  },
+  "probe_source_sha256": "f9df90bfac0b9b66fd64f25e8a2a0658a3480875c5cadf35a171ec0834ccd293",
+  "probe_sha256": "02113307514722c33bee869f8e431966f32ba5f4dcf209fd4b7e7735c918b061",
+  "threading_sdk_manifest_sha256": "2e5a53ac965fd626eeefed070f3027ff7a11f82fe6d19a94c75e97003547e50c",
+  "threaded_probe": {
+    "sha256": "b7ad4e1c5cb1b35413100d32e9c362d7555f7e059955e84af22aaaa418d6d6f2",
+    "commands": [
+      [
+        "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
+        "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/target_tools/",
+        "-O2",
+        "-mno-red-zone",
+        "-fno-pie",
+        "-fno-pic",
+        "-fno-stack-protector",
+        "-DXOS_THREADED_RUNTIME",
+        "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/include",
+        "-c",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/tests/fixtures/dash_c2/fork_probe.c",
+        "-o",
+        "/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_c2_dv725wo8/threaded_probe.o"
+      ],
+      [
+        "/Users/perry_guo/homebrew/bin/x86_64-elf-g++",
+        "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/target_tools/",
+        "-O2",
+        "-mno-red-zone",
+        "-fno-pie",
+        "-fno-pic",
+        "-fno-stack-protector",
+        "-nostdlib",
+        "-static",
+        "-no-pie",
+        "-Wl,--build-id=none,-z,noexecstack,-z,max-page-size=4096",
+        "-T",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/user.ld",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/crt0_posix.o",
+        "/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_c2_dv725wo8/threaded_probe.o",
+        "-Wl,--start-group",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/lib/libxos.a",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/cpp/lib/libstdc++.a",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/cpp/lib/libsupc++.a",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/lib/libc.a",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/lib/libm.a",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/cpp/lib/libgcc.a",
+        "-Wl,--end-group",
+        "-o",
+        "/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_c2_dv725wo8/threaded_probe"
+      ]
+    ]
+  },
+  "scripts": {
+    "builtin_pipeline": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\nprintf 'builtin words\\n' | \"$PROBE\" copy\nprintf 'last=%s\\n' \"$?\"\n} > /out/builtin_pipeline.stdout\n",
+      "sha256": "becb3513ca51f359d5521c28596b75be85508d3b6f81cb03ec8f1a676c89424f",
+      "expected_exit": 0
+    },
+    "function_pipeline": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\nv=parent; e=envparent; export e; set -- 'one two' ''; readonly ro=fixed\ng() { printf 'original_function\\n'; }\nf() { v=child; e=child; export e; cd /tmp; set -- changed; g() { printf 'child_function\\n'; }; printf '%s:%s:%s:%s:%s\\n' \"$v\" \"$e\" \"$1\" \"$ro\" \"$PWD\"; }\nf | \"$PROBE\" copy\nprintf 'parent=%s:%s:%s:%s:%s:%s\\n' \"$v\" \"$e\" \"$1\" \"$#\" \"$ro\" \"$PWD\"\ng\n} > /out/function_pipeline.stdout\n",
+      "sha256": "b744d054c9606d6f7301bf92cdc69971a1a9490f2bb9de8f84105ee3807e766b",
+      "expected_exit": 0
+    },
+    "subshell_state": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\nv=parent; export C2_EXPORTED=before; set -- 'alpha beta' ''; readonly fixed=immutable\ng() { printf 'parent_function\\n'; }\n(v=child; C2_EXPORTED=after; export C2_EXPORTED; cd /tmp; set -- child; g() { printf 'child_function\\n'; }; printf 'child=%s:%s:%s:%s:%s\\n' \"$v\" \"$C2_EXPORTED\" \"$1\" \"$fixed\" \"$PWD\"; g)\nprintf 'parent=%s:%s:%s:%s:%s:%s\\n' \"$v\" \"$C2_EXPORTED\" \"$1\" \"$#\" \"$fixed\" \"$PWD\"\ng\n} > /out/subshell_state.stdout\n",
+      "sha256": "046b49fcf1ab999690312aad6ba5e76ba57b48f536f9b3c38e21463b992a7de3",
+      "expected_exit": 0
+    },
+    "local_variable": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\nf() { local v=inside; (v=child; printf 'child=%s\\n' \"$v\"); printf 'local=%s\\n' \"$v\"; }; v=outside; f; printf 'global=%s\\n' \"$v\"\n} > /out/local_variable.stdout\n",
+      "sha256": "b7e8d2f83c0a5841cbb896bcfdfce45579373550b0e001add065b2b7e7163c78",
+      "expected_exit": 0
+    },
+    "arithmetic_stage_isolation": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\nx=5; \"$PROBE\" echo \"$((x=x+1))\" | \"$PROBE\" copy; printf 'parent_x=%s\\n' \"$x\"\nfalse; printf 'before=%s\\n' \"$?\" | \"$PROBE\" copy; printf 'after=%s\\n' \"$?\"\n} > /out/arithmetic_stage_isolation.stdout\n",
+      "sha256": "a117fb15df041ff2a6cd4a00b9f1a25ca114ab33e2baad232ff423739f03e815",
+      "expected_exit": 0
+    },
+    "substitution_forms": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\na=$(printf 'one\\n\\n\\n'); b=`printf 'two\\n\\n'`; c=$(printf ''); printf 'a=<%s> b=<%s> c=<%s>\\n' \"$a\" \"$b\" \"$c\"\nv=parent; d=$(v=child; cd /tmp; printf '%s:%s' \"$v\" \"$PWD\"); printf 'captured=<%s> parent=%s:%s\\n' \"$d\" \"$v\" \"$PWD\"\n} > /out/substitution_forms.stdout\n",
+      "sha256": "ad8fb10790b17a9e65f449fc53d2b3a832c253ecb09738c1737662a9b5a4b6de",
+      "expected_exit": 0
+    },
+    "substitution_exit_status": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\na=$(printf 'value\\n'; exit 23); s=$?; printf 'capture=<%s> status=%s\\n' \"$a\" \"$s\"\nb=$(false); s=$?; printf 'empty=<%s> status=%s\\n' \"$b\" \"$s\"\n} > /out/substitution_exit_status.stdout\n",
+      "sha256": "895448ae8f06203881aad5c17c8107cb2f8b9ee90ccce7001a16f19a4fcd383b",
+      "expected_exit": 0
+    },
+    "substitution_large": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\nvalue=$(\"$PROBE\" text 32781); printf 'length=%s\\n' \"${#value}\"; printf '%s' \"$value\" | \"$PROBE\" check 32781\n} > /out/substitution_large.stdout\n",
+      "sha256": "172e18caeb31c69da86588e3f3042e1df9d6a2a103ed8860c0bb2f1eafdc6971",
+      "expected_exit": 0
+    },
+    "substitution_three_levels": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\na=$(b=$(c=$(printf nested); printf '%s' \"$c\"); printf '%s' \"$b\"); printf 'nested=<%s>\\n' \"$a\"\n} > /out/substitution_three_levels.stdout\n",
+      "sha256": "2dcaab7f3c420c8a061f074a39c6b2720ad66e2629c3d7b4189e8c3b1e7bb144",
+      "expected_exit": 0
+    },
+    "subshell_status": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\n(printf 'subshell_status\\n'; exit 23)\n} > /out/subshell_status.stdout\n",
+      "sha256": "8ee7264e7f101d21c78ca4df55377ab9f2087a669ae8779a676ec6e02684adc6",
+      "expected_exit": 23
+    },
+    "function_pipeline_status": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\nf() { printf data; return 17; }; g() { \"$PROBE\" copy; return 29; }; f | g; s=$?; printf '\\nlast_status=%s\\n' \"$s\"; test \"$s\" -eq 29\n} > /out/function_pipeline_status.stdout\n",
+      "sha256": "09525992992a03cce356c966b5ec727be83ae5b4405707a531bdaa9b6e24f8c8",
+      "expected_exit": 0
+    },
+    "errexit_tested_pipeline_functions": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\nset -e\nf() { false; printf 'tested_function_continued\\n'; }\nif f | \"$PROBE\" copy; then printf 'if_pipeline_ok\\n'; else printf 'BAD_IF_BRANCH\\n'; fi\nf | \"$PROBE\" copy && printf 'and_pipeline_ok\\n'\nprintf 'set_e_parent_continued\\n'\n} > /out/errexit_tested_pipeline_functions.stdout\n",
+      "sha256": "c74c474f4a300f29ac9704f97bb6df46fc4c2f382f6ec3a83d9f74ba7c8b0c53",
+      "expected_exit": 0
+    },
+    "pipefail_rightmost_status": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\nset -o pipefail\nf() { return 7; }; g() { return 23; }; f | g | true; printf 'rightmost=%s\\n' \"$?\"\nfalse | true; printf 'left_failure=%s\\n' \"$?\"\ntrue | false | true; printf 'middle_failure=%s\\n' \"$?\"\ntrue | true; printf 'all_success=%s\\n' \"$?\"\nset +o pipefail; false | true; printf 'pipefail_off=%s\\n' \"$?\"\n} > /out/pipefail_rightmost_status.stdout\n",
+      "sha256": "a6bc0e0032955af501ace8af08155b51c39ce148dca24eb10daffc764db78d2d",
+      "expected_exit": 0
+    },
+    "descriptor_restore": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\nf() { printf 'child_file\\n' > /out/child_marker; }; f | \"$PROBE\" copy; printf 'parent_stdout_restored\\n'\n(printf 'subshell_file\\n' > /out/sub_marker); printf 'parent_again\\n'\n} > /out/descriptor_restore.stdout\n",
+      "sha256": "aafce3b6baf4d8f15e57b609c304191a2cbefb974f52131e0b3fbad096b61650",
+      "expected_exit": 0
+    },
+    "depth_limit": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\na=$(b=$(c=$(d=$(printf UNREACHABLE_DEPTH)))); s=$?; if test \"$s\" -eq 0; then printf C2_DEPTH_BAD; exit 90; fi; printf 'C2_DEPTH_RECOVERED status=%s\\n' \"$s\"\n} > /out/depth_limit.stdout\n",
+      "sha256": "4c7e5f5e44c1455591712c3311b75c877671651d14cf20bef0a9f5eb019a9f53",
+      "expected_exit": 0
+    },
+    "fault_substitution": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\na=$(\"$PROBE\" fault); s=$?; printf 'fault_capture=<%s> status=%s\\n' \"$a\" \"$s\"; test \"$s\" -eq 137\n} > /out/fault_substitution.stdout\n",
+      "sha256": "bd13fbc7fee851eedb0607a86717028f295e0841879927a872568f31853dac23",
+      "expected_exit": 0
+    },
+    "fork_exhaustion": {
+      "input": "PROBE=/out/probe; export PROBE\ncd /\n{\nf() { while :; do :; done; }; f | f | f | f\n} > /out/fork_exhaustion.stdout\n",
+      "sha256": "a4c4a87ce4f99c0db64144157f7497650e7398ce34bc21a0604b8118ae1cc6e2",
+      "expected_exit": 2
+    }
+  },
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_c2_dv725wo8/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_lhl7_4mt/qmp.sock,server=on,wait=off"
+  ],
+  "baseline_resources": [
+    130322,
+    2,
+    0
+  ],
+  "quota_setup": {
+    "pids": [
+      96,
+      97
+    ],
+    "resources": [
+      130064,
+      4,
+      2
+    ]
+  },
+  "final_resources": [
+    130322,
+    2,
+    0
+  ]
+}

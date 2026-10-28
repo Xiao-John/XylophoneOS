@@ -1,0 +1,1145 @@
+{
+  "status": "passed",
+  "phase": "C3 exec",
+  "run_id": "ffb9ceec03d64601b8d3586cc09f5c55",
+  "artifacts": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55",
+  "source_commit": "b090d4532ff5aa19ec5290da16863154c7d08860",
+  "sources": {
+    "tests/dash_c3_exec_smoke.py": "a1d25c0932b491ad364ba03fcabf2cfa0dedb9032ff035b327f2ec9891f8e4fd",
+    "tests/fixtures/dash_c3_exec/common.h": "0a4720cf80fe92f23e7eb249a84afac83ded8804107589ff65d8c958668e8228",
+    "tests/fixtures/dash_c3_exec/source.c": "304703a4a34d1013040f82bcd1110eba343d74c244cf3b692c726acdc54f76cb",
+    "tests/fixtures/dash_c3_exec/target.c": "849075140828220b69325c23b56a19983af6dc20dfdbfebbed84f8a9940086e7",
+    "src/kernel/arch/x86_64/tasks.cpp": "c839644c7791501cb3cbd7cfa041447f3f14ba8fe7582d24b7dfd71370c583a5",
+    "src/user/libc/newlib_syscalls.cpp": "256278148e6c1aecc921ff6f41cdf47b0f4923a0d16d51facd95dcb9b514bf82",
+    "src/user/loader/load.cpp": "03f114a70b8117890ace9d7c86f5f6de7a9249ff5f119484748e7cb91156acb8",
+    "src/shared/include/xos/process_abi.hpp": "303402e2dbb83c291bb91d1908c0a0b4d880108aaf8b9633bb6a9e0fea576424"
+  },
+  "tools": {
+    "gcc": {
+      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+      "sha256": "078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f",
+      "version": "x86_64-elf-gcc (GCC) 16.2.0"
+    },
+    "g++": {
+      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
+      "version": "x86_64-elf-g++ (GCC) 16.2.0"
+    },
+    "as": {
+      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+      "sha256": "530cf6fbe7d857e0d4ebbc52bcc017867fb7af65552a1f842dbcaa5c50db9026",
+      "version": "GNU assembler (GNU Binutils) 2.47.20260726"
+    },
+    "ld": {
+      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "sha256": "92002feac2ed2e5b05ae6fb47a1aab2979b3b46bd861a4439838e6bcb20e7fe5",
+      "version": "GNU ld (GNU Binutils) 2.47.20260726"
+    },
+    "objcopy": {
+      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+      "sha256": "d9faf61c8148cae44ddfef8a8c914a8d7f715671681ac425592403cf96ce8332",
+      "version": "GNU objcopy (GNU Binutils) 2.47.20260726"
+    },
+    "qemu": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+      "sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
+      "version": "QEMU emulator version 11.1.2"
+    }
+  },
+  "build_commands": [
+    [
+      "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
+      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/target_tools/",
+      "-std=gnu11",
+      "-O2",
+      "-g",
+      "-mno-red-zone",
+      "-fno-pie",
+      "-fno-pic",
+      "-fno-stack-protector",
+      "-ftls-model=local-exec",
+      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/include",
+      "-c",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/fixture_sources/source.c",
+      "-o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/source.o"
+    ],
+    [
+      "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
+      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/target_tools/",
+      "-nostdlib",
+      "-static",
+      "-no-pie",
+      "-Wl,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096",
+      "-T",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/single_probe.ld",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/crt0_posix.o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/source.o",
+      "-Wl,--start-group",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libxos.a",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libxos_loader.a",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libc.a",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libm.a",
+      "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/../lib/gcc/x86_64-elf/16.2.0/libgcc.a",
+      "-Wl,--end-group",
+      "-o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/source.elf"
+    ],
+    [
+      "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
+      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/target_tools/",
+      "-std=gnu11",
+      "-O2",
+      "-g",
+      "-mno-red-zone",
+      "-fno-pie",
+      "-fno-pic",
+      "-fno-stack-protector",
+      "-ftls-model=local-exec",
+      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/include",
+      "-c",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/fixture_sources/target.c",
+      "-o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/target.o"
+    ],
+    [
+      "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
+      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/target_tools/",
+      "-nostdlib",
+      "-static",
+      "-no-pie",
+      "-Wl,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096",
+      "-T",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/single_probe.ld",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/crt0_posix.o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/target.o",
+      "-Wl,--start-group",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libxos.a",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libxos_loader.a",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libc.a",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libm.a",
+      "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/../lib/gcc/x86_64-elf/16.2.0/libgcc.a",
+      "-Wl,--end-group",
+      "-o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/target.elf"
+    ],
+    [
+      "/Users/perry_guo/homebrew/bin/x86_64-elf-objcopy",
+      "--remove-section=.xos.exec",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/target.elf",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/legacy_target.elf"
+    ],
+    [
+      "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
+      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/target_tools/",
+      "-std=gnu11",
+      "-O2",
+      "-g",
+      "-mno-red-zone",
+      "-fno-pie",
+      "-fno-pic",
+      "-fno-stack-protector",
+      "-ftls-model=local-exec",
+      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/include",
+      "-DC3_HUGE_TARGET",
+      "-c",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/fixture_sources/target.c",
+      "-o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/huge_target.o"
+    ],
+    [
+      "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
+      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/target_tools/",
+      "-nostdlib",
+      "-static",
+      "-no-pie",
+      "-Wl,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096",
+      "-T",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/single_probe.ld",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/crt0_posix.o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/huge_target.o",
+      "-Wl,--start-group",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libxos.a",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libxos_loader.a",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libc.a",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libm.a",
+      "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/../lib/gcc/x86_64-elf/16.2.0/libgcc.a",
+      "-Wl,--end-group",
+      "-o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/huge_target.elf"
+    ],
+    [
+      "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
+      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/target_tools/",
+      "-std=gnu11",
+      "-O2",
+      "-g",
+      "-mno-red-zone",
+      "-fno-pie",
+      "-fno-pic",
+      "-fno-stack-protector",
+      "-ftls-model=local-exec",
+      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/include",
+      "-DXOS_THREADED_RUNTIME",
+      "-c",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/fixture_sources/source.c",
+      "-o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/threaded_source.o"
+    ],
+    [
+      "/Users/perry_guo/homebrew/bin/x86_64-elf-g++",
+      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/target_tools/",
+      "-nostdlib",
+      "-static",
+      "-no-pie",
+      "-Wl,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096",
+      "-T",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/threaded_probe.ld",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/crt0_posix.o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/threaded_source.o",
+      "-Wl,--start-group",
+      "-Wl,--whole-archive",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/lib/libxos.a",
+      "-Wl,--no-whole-archive",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/cpp/lib/libstdc++.a",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/cpp/lib/libsupc++.a",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/lib/libc.a",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/lib/libm.a",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/cpp/lib/libgcc.a",
+      "-Wl,--end-group",
+      "-o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/threaded_source.elf"
+    ]
+  ],
+  "commands": [
+    {
+      "mode": "execve",
+      "line": "exec-file /tests/source execve",
+      "expected_code": 37,
+      "status": "passed",
+      "output": "exec-file /tests/source execve\n[process] event=started pid=9 parent=7\r\n[process] pid=9 address_space=0x00000000001a2000\r\n[loader] started pid=9 file=/tests/source\n[process] event=wait_blocked parent=7 child=9\r\nC3_EXEC_SOURCE pid=9 tid=9 heap=1610649600 mode=execve\n[process] event=exec_prepared pid=9 staging_pid=10\r\n[process] event=exec_replaced old_pid=9 current_pid=9 target_pid=9 staging_pid=10 tid=9 old_address_space=0x00000000001a2000 address_space=0x000000000035c000 file_session_rekeyed=1 old_spawn_depth=0 spawn_depth=0\r\n[task] event=reclaimed pid=10 pages=142\r\nC3_EXEC_TARGET pid=9 tid=9 old_heap=1610649600 new_heap=1610612736 argv_env_cwd_fd_alias_cloexec_pipe_stack_tls_fpu=ok PASS\n[task] event=reclaimed pid=9 pages=129\r\n[wait] pid=9 kind=exited code=37\nxsh> ",
+      "source_pid": 9,
+      "source_tid": 9,
+      "replacement": {
+        "staging_pid": 10,
+        "old_cr3": "0x00000000001a2000",
+        "new_cr3": "0x000000000035c000",
+        "reclaimed_pages": 142,
+        "session_rekeyed": true
+      },
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "actual_code": 37,
+      "serial_log": {
+        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/execve.serial.log",
+        "sha256": "47acc092ac1cc9aa932d8a31cd837286ba08110ce50ab062d5f741954bd472b4"
+      }
+    },
+    {
+      "mode": "execv",
+      "line": "exec-file /tests/source execv",
+      "expected_code": 37,
+      "status": "passed",
+      "output": "exec-file /tests/source execv\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x00000000001a2000\r\n[loader] started pid=11 file=/tests/source\n[process] event=wait_blocked parent=7 child=11\r\nC3_EXEC_SOURCE pid=11 tid=11 heap=1610649600 mode=execv\n[process] event=exec_prepared pid=11 staging_pid=12\r\n[process] event=exec_replaced old_pid=11 current_pid=11 target_pid=11 staging_pid=12 tid=11 old_address_space=0x00000000001a2000 address_space=0x000000000035c000 file_session_rekeyed=1 old_spawn_depth=0 spawn_depth=0\r\n[task] event=reclaimed pid=12 pages=142\r\nC3_EXEC_TARGET pid=11 tid=11 old_heap=1610649600 new_heap=1610612736 argv_env_cwd_fd_alias_cloexec_pipe_stack_tls_fpu=ok PASS\n[task] event=reclaimed pid=11 pages=129\r\n[wait] pid=11 kind=exited code=37\nxsh> ",
+      "source_pid": 11,
+      "source_tid": 11,
+      "replacement": {
+        "staging_pid": 12,
+        "old_cr3": "0x00000000001a2000",
+        "new_cr3": "0x000000000035c000",
+        "reclaimed_pages": 142,
+        "session_rekeyed": true
+      },
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "actual_code": 37,
+      "serial_log": {
+        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/execv.serial.log",
+        "sha256": "5419379662f39a834bc7a2e022b6a324107dbf32d385ca8fb078574745a67c9c"
+      }
+    },
+    {
+      "mode": "execvp",
+      "line": "exec-file /tests/source execvp",
+      "expected_code": 37,
+      "status": "passed",
+      "output": "exec-file /tests/source execvp\n[process] event=started pid=13 parent=7\r\n[process] pid=13 address_space=0x00000000001a2000\r\n[loader] started pid=13 file=/tests/source\n[process] event=wait_blocked parent=7 child=13\r\nC3_EXEC_SOURCE pid=13 tid=13 heap=1610649600 mode=execvp\n[process] event=exec_prepared pid=13 staging_pid=14\r\n[process] event=exec_replaced old_pid=13 current_pid=13 target_pid=13 staging_pid=14 tid=13 old_address_space=0x00000000001a2000 address_space=0x000000000035c000 file_session_rekeyed=1 old_spawn_depth=0 spawn_depth=0\r\n[task] event=reclaimed pid=14 pages=142\r\nC3_EXEC_TARGET pid=13 tid=13 old_heap=1610649600 new_heap=1610612736 argv_env_cwd_fd_alias_cloexec_pipe_stack_tls_fpu=ok PASS\n[task] event=reclaimed pid=13 pages=129\r\n[wait] pid=13 kind=exited code=37\nxsh> ",
+      "source_pid": 13,
+      "source_tid": 13,
+      "replacement": {
+        "staging_pid": 14,
+        "old_cr3": "0x00000000001a2000",
+        "new_cr3": "0x000000000035c000",
+        "reclaimed_pages": 142,
+        "session_rekeyed": true
+      },
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "actual_code": 37,
+      "serial_log": {
+        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/execvp.serial.log",
+        "sha256": "044fbabf05568b387f7b9471738c52a8600259e0b2c8f1bc70af8881e997f270"
+      }
+    },
+    {
+      "mode": "_execve",
+      "line": "exec-file /tests/source _execve",
+      "expected_code": 37,
+      "status": "passed",
+      "output": "exec-file /tests/source _execve\n[process] event=started pid=15 parent=7\r\n[process] pid=15 address_space=0x00000000001a2000\r\n[loader] started pid=15 file=/tests/source\n[process] event=wait_blocked parent=7 child=15\r\nC3_EXEC_SOURCE pid=15 tid=15 heap=1610649600 mode=_execve\n[process] event=exec_prepared pid=15 staging_pid=16\r\n[process] event=exec_replaced old_pid=15 current_pid=15 target_pid=15 staging_pid=16 tid=15 old_address_space=0x00000000001a2000 address_space=0x000000000035c000 file_session_rekeyed=1 old_spawn_depth=0 spawn_depth=0\r\n[task] event=reclaimed pid=16 pages=142\r\nC3_EXEC_TARGET pid=15 tid=15 old_heap=1610649600 new_heap=1610612736 argv_env_cwd_fd_alias_cloexec_pipe_stack_tls_fpu=ok PASS\n[task] event=reclaimed pid=15 pages=129\r\n[wait] pid=15 kind=exited code=37\nxsh> ",
+      "source_pid": 15,
+      "source_tid": 15,
+      "replacement": {
+        "staging_pid": 16,
+        "old_cr3": "0x00000000001a2000",
+        "new_cr3": "0x000000000035c000",
+        "reclaimed_pages": 142,
+        "session_rekeyed": true
+      },
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "actual_code": 37,
+      "serial_log": {
+        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/_execve.serial.log",
+        "sha256": "d438350233a490791a108e1fcfd700dfe26c0357c87f57702b85f7535f67a098"
+      }
+    },
+    {
+      "mode": "authority",
+      "line": "exec-driver /tests/source authority",
+      "expected_code": 37,
+      "status": "passed",
+      "output": "exec-driver /tests/source authority\n[process] event=started pid=17 parent=7\r\n[process] pid=17 address_space=0x00000000001a2000\r\n[loader] started pid=17 file=/tests/source\n[process] event=wait_blocked parent=7 child=17\r\nC3_EXEC_SOURCE pid=17 tid=17 heap=1610649600 mode=authority\n[process] event=exec_prepared pid=17 staging_pid=18\r\n[process] event=exec_replaced old_pid=17 current_pid=17 target_pid=17 staging_pid=18 tid=17 old_address_space=0x00000000001a2000 address_space=0x000000000035c000 file_session_rekeyed=1 old_spawn_depth=1 spawn_depth=1\r\n[task] event=reclaimed pid=18 pages=142\r\n[task] event=reclaimed pid=19 pages=4\r\nC3_EXEC_TARGET pid=17 tid=17 old_heap=1610649600 new_heap=1610612736 argv_env_cwd_fd_alias_cloexec_pipe_stack_tls_fpu=ok PASS\n[task] event=reclaimed pid=17 pages=129\r\n[wait] pid=17 kind=exited code=37\nxsh> ",
+      "source_pid": 17,
+      "source_tid": 17,
+      "replacement": {
+        "staging_pid": 18,
+        "old_cr3": "0x00000000001a2000",
+        "new_cr3": "0x000000000035c000",
+        "reclaimed_pages": 142,
+        "session_rekeyed": true
+      },
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "actual_code": 37,
+      "serial_log": {
+        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/authority.serial.log",
+        "sha256": "19b18afaabbeea4f09f28a965065179065117cb6b2422c17460e2634a4d1ffe6"
+      }
+    },
+    {
+      "mode": "long_arg",
+      "line": "exec-file /tests/source long_arg",
+      "expected_code": 37,
+      "status": "passed",
+      "output": "exec-file /tests/source long_arg\n[process] event=started pid=20 parent=7\r\n[process] pid=20 address_space=0x00000000001a2000\r\n[loader] started pid=20 file=/tests/source\n[process] event=wait_blocked parent=7 child=20\r\nC3_EXEC_SPAWN_ARG_LIMIT E2BIG PASS\nC3_EXEC_SOURCE pid=20 tid=20 heap=1610649600 mode=long_arg\n[process] event=exec_prepared pid=20 staging_pid=21\r\n[process] event=exec_replaced old_pid=20 current_pid=20 target_pid=20 staging_pid=21 tid=20 old_address_space=0x00000000001a2000 address_space=0x000000000035c000 file_session_rekeyed=1 old_spawn_depth=0 spawn_depth=0\r\n[task] event=reclaimed pid=21 pages=142\r\nC3_EXEC_LONG_ARGUMENT bytes=1024 exact_bytes=ok PASS\nC3_EXEC_TARGET pid=20 tid=20 old_heap=1610649600 new_heap=1610612736 argv_env_cwd_fd_alias_cloexec_pipe_stack_tls_fpu=ok PASS\n[task] event=reclaimed pid=20 pages=129\r\n[wait] pid=20 kind=exited code=37\nxsh> ",
+      "source_pid": 20,
+      "source_tid": 20,
+      "replacement": {
+        "staging_pid": 21,
+        "old_cr3": "0x00000000001a2000",
+        "new_cr3": "0x000000000035c000",
+        "reclaimed_pages": 142,
+        "session_rekeyed": true
+      },
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "actual_code": 37,
+      "serial_log": {
+        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/long_arg.serial.log",
+        "sha256": "676576338e9cfeb3c5e414b86a03ee2a840e521ac9826ef743a995205f5b3176"
+      }
+    },
+    {
+      "mode": "missing",
+      "line": "exec-file /tests/source missing",
+      "expected_code": 0,
+      "status": "passed",
+      "output": "exec-file /tests/source missing\n[process] event=started pid=22 parent=7\r\n[process] pid=22 address_space=0x00000000001a2000\r\n[loader] started pid=22 file=/tests/source\n[process] event=wait_blocked parent=7 child=22\r\nC3_EXEC_SOURCE pid=22 tid=22 heap=1610649600 mode=missing\nC3_EXEC_RESOURCES failure_before free=130180 processes=3 threads=1 reservations=0 waiting=0 results=0 user_pages=133 kernel_pages=1\nC3_EXEC_RESOURCES failure_after free=130180 processes=3 threads=1 reservations=0 waiting=0 results=0 user_pages=133 kernel_pages=1\nC3_EXEC_FAILURE mode=missing errno=2 old_pid=22 memory_fd_cloexec=valid PASS\n[task] event=reclaimed pid=22 pages=142\r\n[wait] pid=22 kind=exited code=0\nxsh> ",
+      "source_pid": 22,
+      "source_tid": 22,
+      "guest_resource_counters": [
+        {
+          "phase": "failure_before",
+          "free": 130180,
+          "processes": 3,
+          "threads": 1,
+          "reservations": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 133,
+          "kernel_pages": 1
+        },
+        {
+          "phase": "failure_after",
+          "free": 130180,
+          "processes": 3,
+          "threads": 1,
+          "reservations": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 133,
+          "kernel_pages": 1
+        }
+      ],
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "actual_code": 0,
+      "serial_log": {
+        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/missing.serial.log",
+        "sha256": "0aa6457ca8d80d0101b14405580e5265501570151d86fd08d8e872f578cbfc1f"
+      }
+    },
+    {
+      "mode": "invalid",
+      "line": "exec-file /tests/source invalid",
+      "expected_code": 0,
+      "status": "passed",
+      "output": "exec-file /tests/source invalid\n[process] event=started pid=23 parent=7\r\n[process] pid=23 address_space=0x00000000001a2000\r\n[loader] started pid=23 file=/tests/source\n[process] event=wait_blocked parent=7 child=23\r\nC3_EXEC_SOURCE pid=23 tid=23 heap=1610649600 mode=invalid\nC3_EXEC_RESOURCES failure_before free=130180 processes=3 threads=1 reservations=0 waiting=0 results=0 user_pages=133 kernel_pages=1\nC3_EXEC_RESOURCES failure_after free=130180 processes=3 threads=1 reservations=0 waiting=0 results=0 user_pages=133 kernel_pages=1\nC3_EXEC_FAILURE mode=invalid errno=8 old_pid=23 memory_fd_cloexec=valid PASS\n[task] event=reclaimed pid=23 pages=142\r\n[wait] pid=23 kind=exited code=0\nxsh> ",
+      "source_pid": 23,
+      "source_tid": 23,
+      "guest_resource_counters": [
+        {
+          "phase": "failure_before",
+          "free": 130180,
+          "processes": 3,
+          "threads": 1,
+          "reservations": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 133,
+          "kernel_pages": 1
+        },
+        {
+          "phase": "failure_after",
+          "free": 130180,
+          "processes": 3,
+          "threads": 1,
+          "reservations": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 133,
+          "kernel_pages": 1
+        }
+      ],
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "actual_code": 0,
+      "serial_log": {
+        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/invalid.serial.log",
+        "sha256": "507813cf90ffd55af823b9dc344b150f1a98299ba850861f978b35a997f5f350"
+      }
+    },
+    {
+      "mode": "legacy",
+      "line": "exec-file /tests/source legacy",
+      "expected_code": 0,
+      "status": "passed",
+      "output": "exec-file /tests/source legacy\n[process] event=started pid=24 parent=7\r\n[process] pid=24 address_space=0x00000000001a2000\r\n[loader] started pid=24 file=/tests/source\n[process] event=wait_blocked parent=7 child=24\r\nC3_EXEC_SOURCE pid=24 tid=24 heap=1610649600 mode=legacy\nC3_EXEC_RESOURCES failure_before free=130180 processes=3 threads=1 reservations=0 waiting=0 results=0 user_pages=133 kernel_pages=1\nC3_EXEC_RESOURCES failure_after free=130180 processes=3 threads=1 reservations=0 waiting=0 results=0 user_pages=133 kernel_pages=1\nC3_EXEC_FAILURE mode=legacy errno=134 old_pid=24 memory_fd_cloexec=valid PASS\n[task] event=reclaimed pid=24 pages=142\r\n[wait] pid=24 kind=exited code=0\nxsh> ",
+      "source_pid": 24,
+      "source_tid": 24,
+      "guest_resource_counters": [
+        {
+          "phase": "failure_before",
+          "free": 130180,
+          "processes": 3,
+          "threads": 1,
+          "reservations": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 133,
+          "kernel_pages": 1
+        },
+        {
+          "phase": "failure_after",
+          "free": 130180,
+          "processes": 3,
+          "threads": 1,
+          "reservations": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 133,
+          "kernel_pages": 1
+        }
+      ],
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "actual_code": 0,
+      "serial_log": {
+        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/legacy.serial.log",
+        "sha256": "f920b8c2bf024ee6b56d7fc8870e5d6ba86fcadbe3d55773c3666ee279e0756b"
+      }
+    },
+    {
+      "mode": "path_invalid",
+      "line": "exec-file /tests/source path_invalid",
+      "expected_code": 0,
+      "status": "passed",
+      "output": "exec-file /tests/source path_invalid\n[process] event=started pid=25 parent=7\r\n[process] pid=25 address_space=0x00000000001a2000\r\n[loader] started pid=25 file=/tests/source\n[process] event=wait_blocked parent=7 child=25\r\nC3_EXEC_SOURCE pid=25 tid=25 heap=1610649600 mode=path_invalid\nC3_EXEC_RESOURCES failure_before free=130180 processes=3 threads=1 reservations=0 waiting=0 results=0 user_pages=133 kernel_pages=1\nC3_EXEC_RESOURCES failure_after free=130180 processes=3 threads=1 reservations=0 waiting=0 results=0 user_pages=133 kernel_pages=1\nC3_EXEC_FAILURE mode=path_invalid errno=8 old_pid=25 memory_fd_cloexec=valid PASS\n[task] event=reclaimed pid=25 pages=142\r\n[wait] pid=25 kind=exited code=0\nxsh> ",
+      "source_pid": 25,
+      "source_tid": 25,
+      "guest_resource_counters": [
+        {
+          "phase": "failure_before",
+          "free": 130180,
+          "processes": 3,
+          "threads": 1,
+          "reservations": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 133,
+          "kernel_pages": 1
+        },
+        {
+          "phase": "failure_after",
+          "free": 130180,
+          "processes": 3,
+          "threads": 1,
+          "reservations": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 133,
+          "kernel_pages": 1
+        }
+      ],
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "actual_code": 0,
+      "serial_log": {
+        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/path_invalid.serial.log",
+        "sha256": "ed0e2615a16d06523cd13545df709dcf5899a753e6e6d7d619e428291b2008a6"
+      }
+    },
+    {
+      "mode": "path_legacy",
+      "line": "exec-file /tests/source path_legacy",
+      "expected_code": 0,
+      "status": "passed",
+      "output": "exec-file /tests/source path_legacy\n[process] event=started pid=26 parent=7\r\n[process] pid=26 address_space=0x00000000001a2000\r\n[loader] started pid=26 file=/tests/source\n[process] event=wait_blocked parent=7 child=26\r\nC3_EXEC_SOURCE pid=26 tid=26 heap=1610649600 mode=path_legacy\nC3_EXEC_RESOURCES failure_before free=130180 processes=3 threads=1 reservations=0 waiting=0 results=0 user_pages=133 kernel_pages=1\nC3_EXEC_RESOURCES failure_after free=130180 processes=3 threads=1 reservations=0 waiting=0 results=0 user_pages=133 kernel_pages=1\nC3_EXEC_FAILURE mode=path_legacy errno=134 old_pid=26 memory_fd_cloexec=valid PASS\n[task] event=reclaimed pid=26 pages=142\r\n[wait] pid=26 kind=exited code=0\nxsh> ",
+      "source_pid": 26,
+      "source_tid": 26,
+      "guest_resource_counters": [
+        {
+          "phase": "failure_before",
+          "free": 130180,
+          "processes": 3,
+          "threads": 1,
+          "reservations": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 133,
+          "kernel_pages": 1
+        },
+        {
+          "phase": "failure_after",
+          "free": 130180,
+          "processes": 3,
+          "threads": 1,
+          "reservations": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 133,
+          "kernel_pages": 1
+        }
+      ],
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "actual_code": 0,
+      "serial_log": {
+        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/path_legacy.serial.log",
+        "sha256": "5db9b6240a887d7cb3ac4e2f8aee5baf9919dd66ef95f783352d3af27ef046ce"
+      }
+    },
+    {
+      "mode": "raw",
+      "line": "exec-file /tests/source raw",
+      "expected_code": 0,
+      "status": "passed",
+      "output": "exec-file /tests/source raw\n[process] event=started pid=27 parent=7\r\n[process] pid=27 address_space=0x00000000001a2000\r\n[loader] started pid=27 file=/tests/source\n[process] event=wait_blocked parent=7 child=27\r\nC3_EXEC_SOURCE pid=27 tid=27 heap=1610649600 mode=raw\nC3_EXEC_RESOURCES raw_before free=130180 processes=3 threads=1 reservations=0 waiting=0 results=0 user_pages=133 kernel_pages=1\n[process] event=exec_prepared pid=27 staging_pid=28\r\n[task] event=reclaimed pid=28 pages=9\r\nC3_EXEC_RESOURCES raw_after free=130180 processes=3 threads=1 reservations=0 waiting=0 results=0 user_pages=133 kernel_pages=1\nC3_EXEC_RAW stage_barrier invalid_entry depth_failure no_completion abort=stable PASS\n[task] event=reclaimed pid=27 pages=142\r\n[wait] pid=27 kind=exited code=0\nxsh> ",
+      "source_pid": 27,
+      "source_tid": 27,
+      "guest_resource_counters": [
+        {
+          "phase": "raw_before",
+          "free": 130180,
+          "processes": 3,
+          "threads": 1,
+          "reservations": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 133,
+          "kernel_pages": 1
+        },
+        {
+          "phase": "raw_after",
+          "free": 130180,
+          "processes": 3,
+          "threads": 1,
+          "reservations": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 133,
+          "kernel_pages": 1
+        }
+      ],
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "actual_code": 0,
+      "serial_log": {
+        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/raw.serial.log",
+        "sha256": "8d100badfeef60aa61835949ac87e782625d9516720342d084d45fe2a8c1546c"
+      }
+    },
+    {
+      "mode": "quota",
+      "line": "exec-driver /tests/source quota",
+      "expected_code": 0,
+      "status": "passed",
+      "output": "exec-driver /tests/source quota\n[process] event=started pid=29 parent=7\r\n[process] pid=29 address_space=0x00000000001a2000\r\n[loader] started pid=29 file=/tests/source\n[process] event=wait_blocked parent=7 child=29\r\nC3_EXEC_SOURCE pid=29 tid=29 heap=1610649600 mode=quota\n[process] event=started pid=30 parent=29\r\n[process] pid=30 address_space=0x000000000035c000\r\n[process] event=started pid=31 parent=29\r\n[process] pid=31 address_space=0x00000000003dd000\r\n[process] event=started pid=32 parent=29\r\n[process] pid=32 address_space=0x000000000045e000\r\n[process] event=started pid=33 parent=29\r\n[process] pid=33 address_space=0x00000000004df000\r\n[process] event=started pid=34 parent=29\r\n[process] pid=34 address_space=0x0000000000560000\r\nC3_EXEC_RESOURCES failure_before free=129535 processes=8 threads=1 reservations=0 waiting=0 results=0 user_pages=133 kernel_pages=1\nC3_EXEC_RESOURCES failure_after free=129535 processes=8 threads=1 reservations=0 waiting=0 results=0 user_pages=133 kernel_pages=1\n[task] event=reclaimed pid=30 pages=129\r\n[task] event=reclaimed pid=31 pages=129\r\n[task] event=reclaimed pid=32 pages=129\r\n[task] event=reclaimed pid=33 pages=129\r\n[task] event=reclaimed pid=34 pages=129\r\nC3_EXEC_FAILURE mode=quota errno=12 old_pid=29 memory_fd_cloexec=valid PASS\n[task] event=reclaimed pid=29 pages=142\r\n[wait] pid=29 kind=exited code=0\nxsh> ",
+      "source_pid": 29,
+      "source_tid": 29,
+      "guest_resource_counters": [
+        {
+          "phase": "failure_before",
+          "free": 129535,
+          "processes": 8,
+          "threads": 1,
+          "reservations": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 133,
+          "kernel_pages": 1
+        },
+        {
+          "phase": "failure_after",
+          "free": 129535,
+          "processes": 8,
+          "threads": 1,
+          "reservations": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 133,
+          "kernel_pages": 1
+        }
+      ],
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "actual_code": 0,
+      "serial_log": {
+        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/quota.serial.log",
+        "sha256": "5de036de3df555515b7e8d8b8b86c948e96d4dd965709e9a723be8f1c16ee8d1"
+      }
+    },
+    {
+      "mode": "oom",
+      "line": "exec-driver /tests/source oom",
+      "expected_code": 0,
+      "status": "passed",
+      "output": "exec-driver /tests/source oom\n[process] event=started pid=35 parent=7\r\n[process] pid=35 address_space=0x00000000001a2000\r\n[loader] started pid=35 file=/tests/source\n[process] event=wait_blocked parent=7 child=35\r\nC3_EXEC_SOURCE pid=35 tid=35 heap=1610649600 mode=oom\nC3_EXEC_RESOURCES failure_before free=65029 processes=3 threads=1 reservations=0 waiting=0 results=0 user_pages=65157 kernel_pages=1\n[process] event=exec_prepared pid=35 staging_pid=36\r\n[task] event=reclaimed pid=36 pages=65029\r\nC3_EXEC_RESOURCES failure_after free=65029 processes=3 threads=1 reservations=0 waiting=0 results=0 user_pages=65157 kernel_pages=1\nC3_EXEC_FAILURE mode=oom errno=12 old_pid=35 memory_fd_cloexec=valid PASS\n[task] event=reclaimed pid=35 pages=142\r\n[wait] pid=35 kind=exited code=0\nxsh> ",
+      "source_pid": 35,
+      "source_tid": 35,
+      "guest_resource_counters": [
+        {
+          "phase": "failure_before",
+          "free": 65029,
+          "processes": 3,
+          "threads": 1,
+          "reservations": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 65157,
+          "kernel_pages": 1
+        },
+        {
+          "phase": "failure_after",
+          "free": 65029,
+          "processes": 3,
+          "threads": 1,
+          "reservations": 0,
+          "waiting": 0,
+          "results": 0,
+          "user_pages": 65157,
+          "kernel_pages": 1
+        }
+      ],
+      "partial_mapping_reclaimed_pages": 65029,
+      "resources_after": [
+        130322,
+        2,
+        0
+      ],
+      "actual_code": 0,
+      "serial_log": {
+        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/oom.serial.log",
+        "sha256": "9519ddffa7760f9f9c4ffbb59d87b96fa40b8bd1f5289b952456bd9f46592faf"
+      }
+    },
+    {
+      "mode": "threaded",
+      "line": "exec-file /tests/threaded",
+      "status": "passed",
+      "actual_code": 0,
+      "output": "exec-file /tests/threaded\n[process] event=started pid=37 parent=7\r\n[process] pid=37 address_space=0x00000000001a2000\r\n[loader] started pid=37 file=/tests/threaded\n[process] event=wait_blocked parent=7 child=37\r\nC3_EXEC_THREADED ENOTSUP unchanged_fd PASS\n[task] event=reclaimed pid=37 pages=189\r\n[wait] pid=37 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        130322,
+        2,
+        0
+      ]
+    }
+  ],
+  "checks": [
+    "execve",
+    "execv",
+    "execvp",
+    "_execve",
+    "authority",
+    "long_arg",
+    "missing",
+    "invalid",
+    "legacy",
+    "path_invalid",
+    "path_legacy",
+    "raw",
+    "quota",
+    "oom",
+    "threaded_profile_ENOTSUP_unchanged_fd",
+    "offline_full_byte_side_effect_comparison_after_guest_sync"
+  ],
+  "side_effects": {
+    "execve-stream.dat": {
+      "sha256": "5100ef911e64d42968ead9ba713d73473d288f764b503c3f17e764f288511be4",
+      "bytes": 10,
+      "expected_sha256": "5100ef911e64d42968ead9ba713d73473d288f764b503c3f17e764f288511be4",
+      "expected_bytes": "0123XY6789"
+    },
+    "execve-combined.log": {
+      "sha256": "f96e674686ea6789d5faaae00afcb198d7aaae6c956547e31ba26802f5299fe9",
+      "bytes": 28,
+      "expected_sha256": "f96e674686ea6789d5faaae00afcb198d7aaae6c956547e31ba26802f5299fe9",
+      "expected_bytes": "stdout-target\nstderr-target\n"
+    },
+    "execve-only-clo.dat": {
+      "sha256": "6db7d803e74f1ffa7d8f5adc0bf95b3e15bf4c8373fffadf546227cc6c6742cb",
+      "bytes": 6,
+      "expected_sha256": "6db7d803e74f1ffa7d8f5adc0bf95b3e15bf4c8373fffadf546227cc6c6742cb",
+      "expected_bytes": "before"
+    },
+    "execv-stream.dat": {
+      "sha256": "5100ef911e64d42968ead9ba713d73473d288f764b503c3f17e764f288511be4",
+      "bytes": 10,
+      "expected_sha256": "5100ef911e64d42968ead9ba713d73473d288f764b503c3f17e764f288511be4",
+      "expected_bytes": "0123XY6789"
+    },
+    "execv-combined.log": {
+      "sha256": "f96e674686ea6789d5faaae00afcb198d7aaae6c956547e31ba26802f5299fe9",
+      "bytes": 28,
+      "expected_sha256": "f96e674686ea6789d5faaae00afcb198d7aaae6c956547e31ba26802f5299fe9",
+      "expected_bytes": "stdout-target\nstderr-target\n"
+    },
+    "execv-only-clo.dat": {
+      "sha256": "6db7d803e74f1ffa7d8f5adc0bf95b3e15bf4c8373fffadf546227cc6c6742cb",
+      "bytes": 6,
+      "expected_sha256": "6db7d803e74f1ffa7d8f5adc0bf95b3e15bf4c8373fffadf546227cc6c6742cb",
+      "expected_bytes": "before"
+    },
+    "execvp-stream.dat": {
+      "sha256": "5100ef911e64d42968ead9ba713d73473d288f764b503c3f17e764f288511be4",
+      "bytes": 10,
+      "expected_sha256": "5100ef911e64d42968ead9ba713d73473d288f764b503c3f17e764f288511be4",
+      "expected_bytes": "0123XY6789"
+    },
+    "execvp-combined.log": {
+      "sha256": "f96e674686ea6789d5faaae00afcb198d7aaae6c956547e31ba26802f5299fe9",
+      "bytes": 28,
+      "expected_sha256": "f96e674686ea6789d5faaae00afcb198d7aaae6c956547e31ba26802f5299fe9",
+      "expected_bytes": "stdout-target\nstderr-target\n"
+    },
+    "execvp-only-clo.dat": {
+      "sha256": "6db7d803e74f1ffa7d8f5adc0bf95b3e15bf4c8373fffadf546227cc6c6742cb",
+      "bytes": 6,
+      "expected_sha256": "6db7d803e74f1ffa7d8f5adc0bf95b3e15bf4c8373fffadf546227cc6c6742cb",
+      "expected_bytes": "before"
+    },
+    "_execve-stream.dat": {
+      "sha256": "5100ef911e64d42968ead9ba713d73473d288f764b503c3f17e764f288511be4",
+      "bytes": 10,
+      "expected_sha256": "5100ef911e64d42968ead9ba713d73473d288f764b503c3f17e764f288511be4",
+      "expected_bytes": "0123XY6789"
+    },
+    "_execve-combined.log": {
+      "sha256": "f96e674686ea6789d5faaae00afcb198d7aaae6c956547e31ba26802f5299fe9",
+      "bytes": 28,
+      "expected_sha256": "f96e674686ea6789d5faaae00afcb198d7aaae6c956547e31ba26802f5299fe9",
+      "expected_bytes": "stdout-target\nstderr-target\n"
+    },
+    "_execve-only-clo.dat": {
+      "sha256": "6db7d803e74f1ffa7d8f5adc0bf95b3e15bf4c8373fffadf546227cc6c6742cb",
+      "bytes": 6,
+      "expected_sha256": "6db7d803e74f1ffa7d8f5adc0bf95b3e15bf4c8373fffadf546227cc6c6742cb",
+      "expected_bytes": "before"
+    },
+    "authority-stream.dat": {
+      "sha256": "5100ef911e64d42968ead9ba713d73473d288f764b503c3f17e764f288511be4",
+      "bytes": 10,
+      "expected_sha256": "5100ef911e64d42968ead9ba713d73473d288f764b503c3f17e764f288511be4",
+      "expected_bytes": "0123XY6789"
+    },
+    "authority-combined.log": {
+      "sha256": "f96e674686ea6789d5faaae00afcb198d7aaae6c956547e31ba26802f5299fe9",
+      "bytes": 28,
+      "expected_sha256": "f96e674686ea6789d5faaae00afcb198d7aaae6c956547e31ba26802f5299fe9",
+      "expected_bytes": "stdout-target\nstderr-target\n"
+    },
+    "authority-only-clo.dat": {
+      "sha256": "6db7d803e74f1ffa7d8f5adc0bf95b3e15bf4c8373fffadf546227cc6c6742cb",
+      "bytes": 6,
+      "expected_sha256": "6db7d803e74f1ffa7d8f5adc0bf95b3e15bf4c8373fffadf546227cc6c6742cb",
+      "expected_bytes": "before"
+    },
+    "long_arg-stream.dat": {
+      "sha256": "5100ef911e64d42968ead9ba713d73473d288f764b503c3f17e764f288511be4",
+      "bytes": 10,
+      "expected_sha256": "5100ef911e64d42968ead9ba713d73473d288f764b503c3f17e764f288511be4",
+      "expected_bytes": "0123XY6789"
+    },
+    "long_arg-combined.log": {
+      "sha256": "f96e674686ea6789d5faaae00afcb198d7aaae6c956547e31ba26802f5299fe9",
+      "bytes": 28,
+      "expected_sha256": "f96e674686ea6789d5faaae00afcb198d7aaae6c956547e31ba26802f5299fe9",
+      "expected_bytes": "stdout-target\nstderr-target\n"
+    },
+    "long_arg-only-clo.dat": {
+      "sha256": "6db7d803e74f1ffa7d8f5adc0bf95b3e15bf4c8373fffadf546227cc6c6742cb",
+      "bytes": 6,
+      "expected_sha256": "6db7d803e74f1ffa7d8f5adc0bf95b3e15bf4c8373fffadf546227cc6c6742cb",
+      "expected_bytes": "before"
+    },
+    "missing-stream.dat": {
+      "sha256": "84d89877f0d4041efb6bf91a16f0248f2fd573e6af05c19f96bedb9f882f7882",
+      "bytes": 10,
+      "expected_sha256": "84d89877f0d4041efb6bf91a16f0248f2fd573e6af05c19f96bedb9f882f7882",
+      "expected_bytes": "0123456789"
+    },
+    "missing-combined.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_bytes": ""
+    },
+    "missing-only-clo.dat": {
+      "sha256": "fa84bdca3cb879b4d0817f27ab4715ee42d6553953313494befd5714847719c4",
+      "bytes": 12,
+      "expected_sha256": "fa84bdca3cb879b4d0817f27ab4715ee42d6553953313494befd5714847719c4",
+      "expected_bytes": "before-after"
+    },
+    "invalid-stream.dat": {
+      "sha256": "84d89877f0d4041efb6bf91a16f0248f2fd573e6af05c19f96bedb9f882f7882",
+      "bytes": 10,
+      "expected_sha256": "84d89877f0d4041efb6bf91a16f0248f2fd573e6af05c19f96bedb9f882f7882",
+      "expected_bytes": "0123456789"
+    },
+    "invalid-combined.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_bytes": ""
+    },
+    "invalid-only-clo.dat": {
+      "sha256": "fa84bdca3cb879b4d0817f27ab4715ee42d6553953313494befd5714847719c4",
+      "bytes": 12,
+      "expected_sha256": "fa84bdca3cb879b4d0817f27ab4715ee42d6553953313494befd5714847719c4",
+      "expected_bytes": "before-after"
+    },
+    "legacy-stream.dat": {
+      "sha256": "84d89877f0d4041efb6bf91a16f0248f2fd573e6af05c19f96bedb9f882f7882",
+      "bytes": 10,
+      "expected_sha256": "84d89877f0d4041efb6bf91a16f0248f2fd573e6af05c19f96bedb9f882f7882",
+      "expected_bytes": "0123456789"
+    },
+    "legacy-combined.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_bytes": ""
+    },
+    "legacy-only-clo.dat": {
+      "sha256": "fa84bdca3cb879b4d0817f27ab4715ee42d6553953313494befd5714847719c4",
+      "bytes": 12,
+      "expected_sha256": "fa84bdca3cb879b4d0817f27ab4715ee42d6553953313494befd5714847719c4",
+      "expected_bytes": "before-after"
+    },
+    "path_invalid-stream.dat": {
+      "sha256": "84d89877f0d4041efb6bf91a16f0248f2fd573e6af05c19f96bedb9f882f7882",
+      "bytes": 10,
+      "expected_sha256": "84d89877f0d4041efb6bf91a16f0248f2fd573e6af05c19f96bedb9f882f7882",
+      "expected_bytes": "0123456789"
+    },
+    "path_invalid-combined.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_bytes": ""
+    },
+    "path_invalid-only-clo.dat": {
+      "sha256": "fa84bdca3cb879b4d0817f27ab4715ee42d6553953313494befd5714847719c4",
+      "bytes": 12,
+      "expected_sha256": "fa84bdca3cb879b4d0817f27ab4715ee42d6553953313494befd5714847719c4",
+      "expected_bytes": "before-after"
+    },
+    "path_legacy-stream.dat": {
+      "sha256": "84d89877f0d4041efb6bf91a16f0248f2fd573e6af05c19f96bedb9f882f7882",
+      "bytes": 10,
+      "expected_sha256": "84d89877f0d4041efb6bf91a16f0248f2fd573e6af05c19f96bedb9f882f7882",
+      "expected_bytes": "0123456789"
+    },
+    "path_legacy-combined.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_bytes": ""
+    },
+    "path_legacy-only-clo.dat": {
+      "sha256": "fa84bdca3cb879b4d0817f27ab4715ee42d6553953313494befd5714847719c4",
+      "bytes": 12,
+      "expected_sha256": "fa84bdca3cb879b4d0817f27ab4715ee42d6553953313494befd5714847719c4",
+      "expected_bytes": "before-after"
+    },
+    "raw-stream.dat": {
+      "sha256": "84d89877f0d4041efb6bf91a16f0248f2fd573e6af05c19f96bedb9f882f7882",
+      "bytes": 10,
+      "expected_sha256": "84d89877f0d4041efb6bf91a16f0248f2fd573e6af05c19f96bedb9f882f7882",
+      "expected_bytes": "0123456789"
+    },
+    "raw-combined.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_bytes": ""
+    },
+    "raw-only-clo.dat": {
+      "sha256": "fa84bdca3cb879b4d0817f27ab4715ee42d6553953313494befd5714847719c4",
+      "bytes": 12,
+      "expected_sha256": "fa84bdca3cb879b4d0817f27ab4715ee42d6553953313494befd5714847719c4",
+      "expected_bytes": "before-after"
+    },
+    "quota-stream.dat": {
+      "sha256": "84d89877f0d4041efb6bf91a16f0248f2fd573e6af05c19f96bedb9f882f7882",
+      "bytes": 10,
+      "expected_sha256": "84d89877f0d4041efb6bf91a16f0248f2fd573e6af05c19f96bedb9f882f7882",
+      "expected_bytes": "0123456789"
+    },
+    "quota-combined.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_bytes": ""
+    },
+    "quota-only-clo.dat": {
+      "sha256": "fa84bdca3cb879b4d0817f27ab4715ee42d6553953313494befd5714847719c4",
+      "bytes": 12,
+      "expected_sha256": "fa84bdca3cb879b4d0817f27ab4715ee42d6553953313494befd5714847719c4",
+      "expected_bytes": "before-after"
+    },
+    "oom-stream.dat": {
+      "sha256": "84d89877f0d4041efb6bf91a16f0248f2fd573e6af05c19f96bedb9f882f7882",
+      "bytes": 10,
+      "expected_sha256": "84d89877f0d4041efb6bf91a16f0248f2fd573e6af05c19f96bedb9f882f7882",
+      "expected_bytes": "0123456789"
+    },
+    "oom-combined.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_bytes": ""
+    },
+    "oom-only-clo.dat": {
+      "sha256": "fa84bdca3cb879b4d0817f27ab4715ee42d6553953313494befd5714847719c4",
+      "bytes": 12,
+      "expected_sha256": "fa84bdca3cb879b4d0817f27ab4715ee42d6553953313494befd5714847719c4",
+      "expected_bytes": "before-after"
+    }
+  },
+  "only_oom": false,
+  "skip_oom": false,
+  "not_run": [
+    "SMP",
+    "asynchronous_POSIX_signals",
+    "long_randomized_stress"
+  ],
+  "system_build_id": "48e5e73bcd649f44",
+  "system_manifest_sha256": "1679678d9cac6e7ec59880e8a5719729b266b24deb1872d1c3ee33a04670db37",
+  "xos_sha256": "8d46f18a2a4255b8df8e251cce23962e654bcced3b6357cfab95b5a6649bbdaf",
+  "sdk_manifest_sha256": "17f2bf09794e31d269afdbbeadaac408969469c177828be17f495b553d1935d9",
+  "base_libgcc_sha256": "1d1755feabef4fbe34527df8f94f44e67f3fc2ce3b1d58dbf824ec858c994dfa",
+  "sdk_inputs": {
+    "crt0_posix.o": "b2b56ec5aa7922105f5346a3fada3aa26b30f6d30c6b0b942326f47e749b9973",
+    "user.ld": "d7574d234323eb7f2b481d6d99aca931bc236b843462e10cd2ef55b7ee88441b",
+    "lib/libxos.a": "c0cf50179529051d1236d5a02f52021557fe69d39c7286caf3aedaa2c28a8360",
+    "lib/libxos_loader.a": "f6c6a1beed22be5fe49ca32770586526af13386ef10fd40757af5af8ebbbd988",
+    "lib/libc.a": "283fa07ad205c80af92e955a91da027435d8a8a90cb7e27933f57925cc5baa22",
+    "lib/libm.a": "4cfdd6324f6776d025923ee369fad51236a9ee5730c8143a6b3b03b963eefd80",
+    "include/xos/process_abi.hpp": "303402e2dbb83c291bb91d1908c0a0b4d880108aaf8b9633bb6a9e0fea576424",
+    "include/xos/spawn.hpp": "9aa935d0eecc18c19147f58a26073d77a80e6afe018c723c89649bcc86166ff8"
+  },
+  "probes": {
+    "source": {
+      "sha256": "e8cb2ffa725cc78c7df7111b91d676e8d71b69cbebb3342feb0b52a2d8a00c17",
+      "bytes": 805008,
+      "object_sha256": "c961ccc49c2db40a268e9edd2d511d9ad7ad28c3fab94fe94ff8054b698f08df",
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/source.elf",
+      "exec_abi_marker": {
+        "section": ".xos.exec",
+        "address": 1073841936,
+        "offset": 104208,
+        "flags": 2,
+        "load_flags": 4,
+        "sha256": "604c184f80d2c947a4cd359c3fb720343dfc2d1c6a006f6e4bf10a558a42e962",
+        "magic": "0x3349424143455858",
+        "version": 3,
+        "size": 16
+      }
+    },
+    "target": {
+      "sha256": "ff595fa2950915f6ae4008543aac2df6dfea36a86219451c50d46d1ca67b3e29",
+      "bytes": 789056,
+      "object_sha256": "8797e85f4674b0a815f843f2384db86520c566ee5c9227b20fe9a699357395dd",
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/target.elf",
+      "exec_abi_marker": {
+        "section": ".xos.exec",
+        "address": 1073836544,
+        "offset": 98816,
+        "flags": 2,
+        "load_flags": 4,
+        "sha256": "604c184f80d2c947a4cd359c3fb720343dfc2d1c6a006f6e4bf10a558a42e962",
+        "magic": "0x3349424143455858",
+        "version": 3,
+        "size": 16
+      }
+    },
+    "huge_target": {
+      "sha256": "097afd4e3eb4225892b5dd8d9db4f41b949d7c9df38c9d866f1353ed7e921f67",
+      "bytes": 537600,
+      "object_sha256": "b1a096f1d69267a2596a87236816e7b85297ec67280fb17bb31142cf7c4fe495",
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/huge_target.elf",
+      "exec_abi_marker": {
+        "section": ".xos.exec",
+        "address": 1073791768,
+        "offset": 54040,
+        "flags": 2,
+        "load_flags": 4,
+        "sha256": "604c184f80d2c947a4cd359c3fb720343dfc2d1c6a006f6e4bf10a558a42e962",
+        "magic": "0x3349424143455858",
+        "version": 3,
+        "size": 16
+      }
+    },
+    "threaded_source": {
+      "sha256": "e3b9a58cdb3bdec7315f1e20af5f6bd9b3aedf481303a3e2b785b719cba3fc4c",
+      "bytes": 1341712,
+      "object_sha256": "968dafc9b579a0154b34c8021393b85112f9e3e48d0b8ee0bb5a7f9927d6ddb4",
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/threaded_source.elf"
+    }
+  },
+  "legacy_fixture": {
+    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/legacy_target.elf",
+    "sha256": "e004765ab1b4b720698bb09437e9d9daf3d18f74032d7a695719a0a099817f20",
+    "derived_from_sha256": "ff595fa2950915f6ae4008543aac2df6dfea36a86219451c50d46d1ca67b3e29",
+    "transformation": "objcopy --remove-section=.xos.exec; current target code with exec opt-in removed",
+    "scope": "unmarked ABI admission negative fixture; not a published legacy binary qualification"
+  },
+  "threading_sdk_manifest_sha256": "2e5a53ac965fd626eeefed070f3027ff7a11f82fe6d19a94c75e97003547e50c",
+  "execvp_candidates": {
+    "invalid_first_sha256": "34e4a7e37e72377be85e6274abf209c46e7b37cc3d4fa0f9ce838e0ffed63440",
+    "unmarked_first_sha256": "e004765ab1b4b720698bb09437e9d9daf3d18f74032d7a695719a0a099817f20",
+    "second_valid_sha256": "ff595fa2950915f6ae4008543aac2df6dfea36a86219451c50d46d1ca67b3e29",
+    "command": "execvp(candidate, valid_target_arguments)",
+    "expected": "first candidate ENOEXEC/ENOTSUP returns without executing the second candidate"
+  },
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_c3_exec_18ihpbfo/boot.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_c3_exec_18ihpbfo/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_rrx2mtza/qmp.sock,server=on,wait=off"
+  ],
+  "baseline_resources": [
+    130322,
+    2,
+    0
+  ],
+  "final_resources": [
+    130322,
+    2,
+    0
+  ],
+  "serial_log": {
+    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/all.serial.log",
+    "sha256": "b597fb01d627e77ff6309e743abdf382c66d7befe0885a128b3e79bb58bc90e8"
+  }
+}

@@ -1,8 +1,8 @@
 # Qt主线：阶段与底座依赖
 
-2026-10-27。Qt版本/模块/feature、许可与预算尚待G01冻结；本页是P类实施建议。
-当前尚无Qt运行资格。公共GCC/G++、线程、显示、墙钟已有各自受限证据，不能沿用旧勘查
-中“没有这些能力”的状态，也不能把它们直接算作Qt接入成功。
+2026-10-28。QtBase 6.8.3 静态 QtCore 已在 XOS 客体完成受限 G01/G03 功能资格；
+准确特性、预算采样、禁用能力及证据见 [0064](../work_log/0064_qt_e15_qualification.md)。
+发行许可与绝对内存峰值未完成；QtGui/QPA 尚未实现，G04 另行验收。
 
 ## Widgets与QML/Quick分开
 
@@ -18,8 +18,8 @@ Qt是GUI主线，SDL只是复用窄平台服务的次选消费者，不作为Qt�
 
 ## 当前缺口与分工
 
-- QtCore事件分发：真实可阻塞且可跨线程唤醒的多源等待/截止时间；现有wait_word和显示
-  wait不自动等于通用poll/select。Qt侧先给最小调用探针，由等待线补公共机制。
+- QtCore事件分发：受限 posted event/计时/跨线程唤醒已有客体验证；wait_word和显示
+  wait不自动等于通用poll/select。E16先核显示与跨线程组合等待，必要时提出通用机制。
 - QtGui/QPA：接display_client的实际mode/stride、局部呈现、输入/焦点/退出。服务当前
   单surface；不直接调用BIOS/映射MMIO，不从旧G02报告推定任意窗口语义。
 - 文件/路径：核短读写/错误/资源路径，当前ASCII路径与UTF-8内容分开；权限/链接/locale

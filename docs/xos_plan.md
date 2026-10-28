@@ -1,6 +1,6 @@
 # XOS 项目宪法与当前登记
 
-2026-10-27 · v1.1。本文是项目最高设计文件，分为规范性的设计原则与事实性的当前登记。
+2026-10-28 · v1.1。本文是项目最高设计文件，分为规范性的设计原则与事实性的当前登记。
 直接用户指令优先；`Discipline.md`规定流程，专项契约细化语义，历史材料只作证据和追溯。
 
 ## 第一部分：设计原则
@@ -73,7 +73,7 @@
 |---|---|---|
 | 引导/核心 | x86-64 / PC / BIOS，QEMU单核512MiB；隔离、抢占、受保护IPC、用户态ELF装载 | [架构](architecture_and_boot.md)、[E01–E07](history/e01_e07.md) |
 | 文件/工具链 | 用户态FatFs、正常sync重启、原生GCC/G++/Binutils、受限静态C/C++开发 | [SDK](e04_loader_sdk.md)、[E08](e08.md) |
-| 线程 | T0–T2、T3-PY已有独立资格；T3-QT未验 | [契约](contracts/threading.md)、[实现](implementation/threads.md) |
+| 线程 | T0–T2、T3-PY有独立资格；Qt QThread受限实测，完整T3-QT未单列 | [契约](contracts/threading.md)、[实现](implementation/threads.md) |
 | Shell | xsh默认；dash C1–C3受限gate已过；不是完整POSIX | [范围](implementation/shell.md)、[Make](implementation/make.md) |
 | 显示/输入 | E14/G02原分支受限已验；PR #4组合显示65/66与熵63/墙钟64共存定向已验 | [显示](implementation/display.md)、[整合证据](history/delivery_audit.md) |
 | CPython | PY0–PY2、T3-PY、PY3 A1–A3与B1–B4按各自输入已验 | [移植](plans/cpython.md)、[扩展](plans/cpython_extensions.md)、[证据](history/userland.md) |
@@ -89,14 +89,15 @@
 | E10 | XOS内重建系统并启动新产物，未验 | E08及实际镜像/生成工具依赖 |
 | E11 | XOS内重建GCC/G++及自举比较，未验 | E08及实际构建依赖；不阻塞E10 |
 | E12 | 各软件独立移植；Shell/包管理/CPython按专项状态 | 不等待完整POSIX或LLVM |
-| E13-T | 公共线程已交付T0–T2/T3-PY；Qt接入待验 | T3-QT及选定运行库/版本配置G01 |
+| E13-T | 公共线程已交付T0–T2/T3-PY；QtCore受限线程接入已验 | G01实际运行库/版本配置；完整T3-QT未单列 |
 | E14 | 显示输入服务受限已验 | G02；Qt QPA不在此阶段 |
-| E15 | QtCore，未开始 | E13、实际等待/文件/时钟依赖，G03 |
+| E15 | QtCore 6.8.3 受限客体功能通过 | G01/G03 受限通过；发行许可、绝对峰值和未支持接口另列，见 [0064](work_log/0064_qt_e15_qualification.md) |
 | E16 | QtGui/QPA、字体/输入、raster全屏，未开始 | E14/E15，G04 |
 | E17 | Widgets小编辑器，未开始 | E16，G05 |
 | E18 | 无界面QML/QV4解释执行，未开始 | E15，不依赖Widgets，G06 |
 | E19 | Quick软件呈现，未开始 | E16/E18，G07 |
 | E20 | GUI整合/朋友试用，未开始 | Widgets/Quick可分别交付，G08–G10 |
+| DU | 日常独立工具统一补齐设计，未实施 | [DU路线](plans/daily_utilities.md)；DU1/2首批13命令，DU3按依赖、DU4包/ISO交付闭环；不扩大xsh或新增内核工具特例 |
 | PX | PX0契约已有；其余未实施 | [POSIX路线](plans/posix.md)，建议先设计PX4-A，不构成已派工 |
 
 Qt对接边界见[协作契约](contracts/qt_platform.md)；版本/模块/预算在G01冻结，不由
@@ -111,7 +112,7 @@ Qt对接边界见[协作契约](contracts/qt_platform.md)；版本/模块/预算
 | P07 | xypm P2按维护准入→只读验证/计划→持久恢复→写命令推进；P2事务已实现并通过限定范围验收 |
 | O01–O04 | 当前BIOS/QEMU、GCC16.2.0/Binutils2.47/NASM3.02、newlib4.6与C++20已采用；升级/替换方案仍须专项评估，不能沿用旧“未选择”状态 |
 | O05 | 后续编辑/开发工具按实际兴趣与依赖选择，不强制自研 |
-| O06 | Qt固定版本、模块/feature、字体/图片依赖及预算尚待冻结 |
+| O06 | QtCore 6.8.3 受限版本/特性已冻结；QtGui 字体/图片依赖与预算待 G04，绝对峰值和发行审计未验 |
 | D01/D02 | AI/Router、论文与Linux研究对照暂缓；重启须另定问题，不激活旧附录 |
 | D03 | 自研XCC非必需，不排阻塞任务 |
 | D04 | 全POSIX、GPU、SMP、UEFI、动态链接与32位兼容分别按需要规划，当前不作为GUI首窗前置 |

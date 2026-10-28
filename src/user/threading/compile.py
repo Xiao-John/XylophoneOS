@@ -29,9 +29,10 @@ for relative, digest in manifest['artifacts'].items():
         raise SystemExit('Threading SDK artifact differs from its receipt: ' + relative)
 obj = a.output.with_suffix('.xos.o')
 flags = ['-O2','-g','-fno-pic','-fno-pie','-mno-red-zone','-fno-stack-protector',
-         '-ftls-model=local-exec','-DXOS_THREADED_RUNTIME','-D_POSIX_C_SOURCE=200809L','-I'+str(SDK/'include')]
+         '-ftls-model=local-exec','-DXOS_THREADED_RUNTIME','-D_POSIX_C_SOURCE=200809L']
 if not a.c:
-    flags += ['-I'+str(SDK/'cpp/include'),'-I'+str(SDK/'cpp/include/x86_64-elf')]
+    flags += ['-nostdinc++','-I'+str(SDK/'cpp/include'),'-I'+str(SDK/'cpp/include/x86_64-elf')]
+flags += ['-I'+str(SDK/'include')]
 subprocess.run(['x86_64-elf-gcc' if a.c else 'x86_64-elf-g++',
                 '-std=c11' if a.c else '-std=c++20',*flags,'-c',str(a.source),'-o',str(obj)],check=True)
 subprocess.run(['x86_64-elf-g++','-nostdlib','-static','-no-pie',

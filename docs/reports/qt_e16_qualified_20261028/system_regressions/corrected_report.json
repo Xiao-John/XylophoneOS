@@ -1,0 +1,35 @@
+{
+  "status": "PASSED",
+  "image_sha256": "7ae8e55e3ef9223c67c94075523696b8e12c48fe304e9da7954a4681b7bbd87f",
+  "tests": {
+    "threading_smoke": {
+      "status": "PASSED",
+      "checks": 15,
+      "report": "threading_report.json"
+    },
+    "threading_pthread_smoke": {
+      "status": "PASSED",
+      "checks": 10,
+      "report": "threading_pthread_report.json"
+    },
+    "threading_cpp_smoke": {
+      "status": "PASSED",
+      "checks": 10,
+      "report": "threading_cpp_report.json"
+    },
+    "file_smoke": {
+      "status": "PASSED",
+      "checks": 8,
+      "report": "file_smoke_report.json"
+    },
+    "persist_smoke": {
+      "status": "PASSED",
+      "checks": 4,
+      "report": "persist_smoke_report.json"
+    }
+  },
+  "corrections": [
+    "C++ first run did not execute: missing threading_legacy.elf; retry passed",
+    "File and persistence guest runs passed; original driver read incorrect report filenames. Correct reports retained."
+  ]
+}

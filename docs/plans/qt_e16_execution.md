@@ -2,7 +2,7 @@
 
 E16 从上游 PR #8 的实际 HEAD `d1e108d8f31ffcb1ebf43b40a412af933fb074cd`
 建立独立 `codex/qt6-e16-qpa` worktree。启动时上游 main 为 `244ac40`，E15 开放、
-非 Draft、未合并且无 review。E16 依赖 E15，不把全部 E15 差异提交上游 main。
+非 Draft、未合并且无 review。E15 随后 squash merge 到 `7a7481f`，树与 `d1e108d` 完全相同；E16 已重放到该实际 main，只提交 E16 差异。
 
 ## 构建输入和配置
 
@@ -18,6 +18,8 @@ poll/select。没有 X11/Wayland 或宿主 Qt 窗口。QtGui 仍包含若干未�
 
 FreeType 的 Unix 文件后端需要缺失的 sys/mman.h；0008 选择其原生标准 C 缓冲读取
 后端，未制造 mmap。0008 同时排除不适用于 XOS 的 Unix GUI 分发/服务源码。
+HarfBuzz 构建清单遗漏的原有 graph/gsubgpos-context.cc 由 0008 补入，完整 Qt 归档符号
+闭包最终仅剩链接器提供的 `_GLOBAL_OFFSET_TABLE_`；实际 ELF 无未定义符号。
 QPA 字体数据库从 rcc 资源读取原版 DejaVuSans 2.37，通过 QFreeTypeFontDatabase、
 Qt 字体匹配、HarfBuzz 和 QPainter 绘制文字。字体不修改、不自研替代字符路径。
 

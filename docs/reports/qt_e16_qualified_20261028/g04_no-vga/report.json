@@ -1,0 +1,61 @@
+{
+  "status": "PASSED",
+  "case": "no-vga",
+  "image_sha256": "7ae8e55e3ef9223c67c94075523696b8e12c48fe304e9da7954a4681b7bbd87f",
+  "elf_sha256": "cd63910fdebea9b6dd1c83dff1876ee237c4c5ebe7fdab49bf23f878e454d352",
+  "checks": [
+    {
+      "name": "missing_graphics_device_fails_explicitly_and_serial_recovers",
+      "status": "PASSED"
+    }
+  ],
+  "build_receipt_sha256": "08bcda41b6da7b13b6c8bd430e63c29fd69ce6b0c516e13aea33142a6d7e5685",
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "none",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_qt_g04_u8d_zc8i/test.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_cjm_q4vg/qmp.sock,server=on,wait=off"
+  ],
+  "baseline": [
+    130323,
+    2,
+    0
+  ],
+  "measurements": {
+    "sampled_peak_user_pages": 0,
+    "present_duration_ns": [],
+    "paint_duration_ns": [],
+    "normal_key_latency_ns": [],
+    "clock_resolution_ns": 10000000,
+    "absolute_peak": "NOT_RUN",
+    "cpu_percentage": "NOT_RUN"
+  }
+}

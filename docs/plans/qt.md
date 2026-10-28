@@ -2,7 +2,7 @@
 
 2026-10-28。QtBase 6.8.3 静态 QtCore 已在 XOS 客体完成受限 G01/G03 功能资格；
 准确特性、预算采样、禁用能力及证据见 [0064](../work_log/0064_qt_e15_qualification.md)。
-发行许可与绝对内存峰值未完成；QtGui/QPA 尚未实现，G04 另行验收。
+发行许可与绝对内存峰值未完成；QtGui/QPA G04 已受限功能通过，见 [0066](../work_log/0066_qt_e16_qualification.md)。
 
 ## Widgets与QML/Quick分开
 
@@ -19,7 +19,7 @@ Qt是GUI主线，SDL只是复用窄平台服务的次选消费者，不作为Qt�
 ## 当前缺口与分工
 
 - QtCore事件分发：受限 posted event/计时/跨线程唤醒已有客体验证；wait_word和显示
-  wait不自动等于通用poll/select。E16先核显示与跨线程组合等待，必要时提出通用机制。
+  wait不自动等于通用poll/select。E16 已用锁外等待的 joinable 输入线程与 GUI queued invocation 验证组合；没有新增 ABI。
 - QtGui/QPA：接display_client的实际mode/stride、局部呈现、输入/焦点/退出。服务当前
   单surface；不直接调用BIOS/映射MMIO，不从旧G02报告推定任意窗口语义。
 - 文件/路径：核短读写/错误/资源路径，当前ASCII路径与UTF-8内容分开；权限/链接/locale
@@ -34,3 +34,6 @@ Qt是GUI主线，SDL只是复用窄平台服务的次选消费者，不作为Qt�
 验收按[GUI G01–G10](../acceptance.md)，Widgets与Quick分别记录预算、错误/回收与未支持项。
 Qt/字体/图片组件按实际模块核许可与来源；静态分发的源码/补丁/重链接对象及配方、替换运行
 说明在发行前单独核对，不把Qt整体改为XOS授权，也不以本计划代表许可审计完成。
+
+E16 实际配置、构建/链接、QPA 线程生命周期和复现见 [实施说明](qt_e16_execution.md)。
+G04 仅对冻结输入及声明范围通过；G05/G06/G07 未运行，不由首窗资格推出。

@@ -76,3 +76,15 @@ profile 或完整工具资格；包安装、旧 profile 拒绝和客体检查待
   同组输入亦通过 `build/daily_utilities_p2_guest_v3/report.json`。旧 dash 失败记录保留。
 - [ISO载荷设计](../plans/daily_utilities_iso_payload.md)厘清旧载荷和授权/校验窗口，
   尚未冻结具体字节布局或实施，尤其不能仅按磁盘路径授权 bootstrap worker。
+
+2026-10-28：对代码提交 `434025b` 重建并复核组合系统 `5041835a6fe861bb`
+（镜像 SHA256 `a1dadd5de3432026861538886808d238a5a5a091033891e4b639cdb986fe076f`）。
+候选 daily XPK SHA256 `e1abfe15a0c42096e307c240bf8d7706b8fed574c598a9cce74b306e581723f9`，
+组合 SDK SHA256 `b25957a0824f973237eaa8208da0c1bfc9883370a991edf7495e591861fd6a7e`。
+`build/daily_utilities_final_system/du12_report.json` 的基础命令客体测试通过；
+`build/daily_utilities_final_guest/report.json` 通过真实 P2 安装、重启后运行及卸载保留
+用户数据，资源基线一致。`build/daily_utilities_final_p2_transactions/report.json`
+通过 xypm 安装、升级、卸载及重启等八项基本事务；没有运行逐步故障注入或断电测试。
+发行输入预检通过，包括不同系统、SDK、未托管路径冲突和旧 wheel profile 的拒绝；
+并未执行完整发行构建。许可材料检查通过，成员审核仍待完成。这些是受限验证，
+不代替 DU1/2 完整逐项边界验收，也不代表 DU4 空盘 ISO 安装完成。

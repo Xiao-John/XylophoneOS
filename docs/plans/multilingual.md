@@ -10,7 +10,7 @@
 | 优先级 | 范围 | 状态与目标 |
 |---|---|---|
 | 最高 M1 | 串口 UTF-8 输入和文件内容 | Xshell/dash U0/U1 已有受限资格；本组为 `edit` 增加 UTF-8 正文输入、按字节保留已有内容，与 Xshell 行内编辑一起验收 |
-| 高 M2 | UTF-8 文件和目录路径 | 当前未支持；紧接第一档开展设计探针和文件服务实现，作为后续编辑器的重要依赖，不等待 Qt 或完整 locale |
+| 高 M2 | UTF-8 文件和目录路径 | 文件服务及 SDK 已有受限实现和客体证据；继续补边界与消费者，不等待 Qt 或完整 locale |
 | 后续 M3 | 字符宽度、组合字符、locale | 分别核 Unicode 版本、宽度和应用需求；当前码点退格不是完整字素簇处理 |
 | 后续 M4 | 原生键盘布局、字体与输入法 | 对接 E16/QPA、焦点和字体，图形文本与组合输入单独验收，不把宿主输入法冒充客体输入法 |
 
@@ -33,10 +33,11 @@
 
 ## M2：路径和目录专项
 
-现有 [文件 ABI](../../src/shared/include/xos/file_abi.hpp) 的 `max_name` 为 256 字节，
-`files.cpp` 的路径校验只接受可见 ASCII；FatFs 开启 LFN，`FF_LFN_UNICODE=0`、
-code page 437，自研 `fatfs_unicode.cpp` 只做 ASCII 转换。仅删除 ASCII 拒绝条件
-会造成名称错误或碰撞；当前不能声称中文文件名可用。
+当前 [文件 ABI](../../src/shared/include/xos/file_abi.hpp) 的 `max_name` 为 256 字节，
+`files.cpp` 校验 UTF-8，FatFs 启用 `FF_LFN_UNICODE=2`。已有中文路径创建、枚举、
+读写、改名和 sync/重启的受限证据见[0068](../work_log/0068_utf8_filenames.md)。
+仅 ASCII 大小写折叠、ASCII OEM 转换；不做 Unicode 规范化，包格式路径仍限 ASCII。
+以下保留实施设计与尚需补齐的边界，不将旧“未支持”描述当作当前事实。
 
 1. **冻结端到端契约。** 路径以合法 UTF-8 字节传递，保持现有 NUL 终止与路径长度
    边界，分量和 FAT UTF-16 限额分别检查；拒绝 NUL、非法编码、禁止字符、非法分量与

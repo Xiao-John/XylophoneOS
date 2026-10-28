@@ -50,7 +50,8 @@ QtCore 的系统 build48e5e73bcd649f44 和本地输入编辑的 build3200de2c3b8
 - Qt E15 已经 PR #8 合入；E16/G04 仍需完成组合等待。完整成员许可、静态分发、
   绝对峰值及图形资格未完成。
 - 输入编辑按[第一档](plans/input_edit_foundation.md)、[第二档](plans/terminal_editor.md)及
-  [多语言](plans/multilingual.md)继续；kg 仅是探索对象。
+  [多语言](plans/multilingual.md)继续；先设计[ncursesw 公共底座](plans/ncursesw.md)，
+  再优先评估 nano，kg 为备选。尚未实施或验收；相关改动提交后再验收。
 - 67–79 内存、80–95 等待/信号、96–111 显示扩展仍仅预留，具体接口先登记。
 - 按 Discipline→本页→宪法→专项契约/登记接手；新开发独立分支/PR交付，
   公共 build 排他，localpilot 隔离。

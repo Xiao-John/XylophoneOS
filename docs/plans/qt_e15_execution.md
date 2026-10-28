@@ -2,6 +2,8 @@
 
 Baseline: upstream main `244ac40bbf4e4fb7743c51bc5ece0bd9fec594de`, branch
 `codex/qt6-e15`. This document records the working plan; scoped G01/G03 qualification is in [0064](../work_log/0064_qt_e15_qualification.md).
+Status: merged through PR #8 as `7a7481f` on 2026-10-28. The branch and baseline
+above identify the original implementation inputs, not an active work claim.
 Ownership: Qt port, private build inputs and Qt fixtures; shared ABI is not claimed.
 The unchanged production inputs and supplemental blocking/lifecycle guest probes
 were rechecked in [0065](../work_log/0065_qt_e15_lifecycle_recheck.md).

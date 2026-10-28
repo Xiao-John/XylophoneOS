@@ -11,6 +11,14 @@ static int run(const char *name, unsigned long count) {
     size_t start = 0, used = 0; unsigned long lines = 0; int c, failed = 0;
     while ((c = fgetc(f)) != EOF) {
         if (!count) continue;
+        /* The next byte starts a new line after count complete lines.  Drop
+           the oldest one before reserving space for that byte. */
+        if (lines == count && used && buffer[(start + used - 1) % LIMIT] == '\n') {
+            while (used) {
+                unsigned char b = buffer[start]; start = (start + 1) % LIMIT; --used;
+                if (b == '\n') { --lines; break; }
+            }
+        }
         if (used == LIMIT) { fprintf(stderr, "tail: retained text exceeds 1 MiB\n"); failed = 1; break; }
         buffer[(start + used++) % LIMIT] = (unsigned char)c;
         if (c == '\n') ++lines;

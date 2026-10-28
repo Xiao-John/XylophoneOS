@@ -28,8 +28,21 @@ tail -n 1 /tests/binary.dat > /tmp/du/binary_tail.dat
 wc -c /tests/binary.dat > /tmp/du/binary_wc.txt
 head -n 0 /tmp/du/moved > /tmp/du/empty_head.txt
 tail -n 0 /tmp/du/moved > /tmp/du/empty_tail.txt
+tail -n 1 /tests/tail_limit.dat > /tmp/du/tail_limit.txt
+if tail -n 1 /tests/tail_over_limit.dat > /tmp/du/tail_over_limit.txt 2>/dev/null; then echo TAIL_LIMIT_WRONG; exit 1; fi
+printf 'alpha\nbeta\n' > /tmp/du/extra
+head -n 1 /tmp/du/moved /tmp/du/extra > /tmp/du/multi_head.txt
+tail -n 1 /tmp/du/moved /tmp/du/extra > /tmp/du/multi_tail.txt
+wc -lc /tmp/du/moved /tmp/du/extra > /tmp/du/multi_wc.txt
+basename '' > /tmp/du/empty_base.txt
+basename /tmp/du/file.txt .txt > /tmp/du/suffix_base.txt
+dirname //tmp/du/file.txt > /tmp/du/slashes_dir.txt
 basename / > /tmp/du/root_base.txt
 dirname / > /tmp/du/root_dir.txt
+mkdir /tmp/du/keepdir
+if rmdir /tmp/du/keepdir -z 2>/dev/null; then echo RMDIR_OPTION_WRONG; exit 1; fi
+ls -d /tmp/du/keepdir > /tmp/du/keepdir.txt
+rmdir /tmp/du/keepdir
 rm -f /tmp/du/absent
 if rm /tmp/du/a 2>/dev/null; then echo RM_DIR_WRONG; exit 1; fi
 if mkdir -p /tmp/du/moved 2>/dev/null; then echo MKDIR_FILE_WRONG; exit 1; fi

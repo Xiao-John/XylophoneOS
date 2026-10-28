@@ -41,6 +41,10 @@ def main():
                 backend.command('import','/out/daily.xpk',args.package)
                 backend.command('import','/tests/du12.sh',ROOT/'tests/fixtures/daily_utilities/du12.sh')
                 backend.command('import','/tests/binary.dat',ROOT/'tests/fixtures/daily_utilities/binary.dat')
+                limit=root/'tail_limit.dat';limit.write_bytes(b'a'*(1024*1024-1)+b'\nlast\n')
+                over=root/'tail_over_limit.dat';over.write_bytes(b'a'*(1024*1024+1))
+                backend.command('import','/tests/tail_limit.dat',limit)
+                backend.command('import','/tests/tail_over_limit.dat',over)
             def boot():
                 g=Guest(image,'daily_p2',work_disk=disk);g.expect(b'xos64> ',timeout=40)
                 send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=40);pump(g,1.5);return g

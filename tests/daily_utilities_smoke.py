@@ -37,6 +37,12 @@ def main():
                 transfer(disk, 'import', entry['guest_path'], source)
             transfer(disk, 'import', '/tests/du12.sh', ROOT / 'tests/fixtures/daily_utilities/du12.sh')
             transfer(disk, 'import', '/tests/binary.dat', ROOT / 'tests/fixtures/daily_utilities/binary.dat')
+            # A full retained line may be evicted before its successor; an
+            # individually oversized final line must still fail closed.
+            limit = folder / 'tail_limit.dat'; limit.write_bytes(b'a' * (1024 * 1024 - 1) + b'\nlast\n')
+            over = folder / 'tail_over_limit.dat'; over.write_bytes(b'a' * (1024 * 1024 + 1))
+            transfer(disk, 'import', '/tests/tail_limit.dat', limit)
+            transfer(disk, 'import', '/tests/tail_over_limit.dat', over)
             guest = Guest(a.image, 'daily_utilities', work_disk=disk)
             try:
                 guest.expect(b'xos64> ', timeout=30); start = len(guest.output); send_bytes(guest, b'run\r')
@@ -68,7 +74,13 @@ def main():
                         'binary_head.dat':b'alpha\x00beta\n\n','binary_tail.dat':b'last\x00',
                         'binary_wc.txt':b'17 /tests/binary.dat\n','empty_head.txt':b'',
                         'empty_tail.txt':b'', 'root_base.txt':b'/\n', 'root_dir.txt':b'/\n',
-                        'unicode.txt':b'UTF8\n'}
+                        'unicode.txt':b'UTF8\n', 'tail_limit.txt':b'last\n',
+                        'tail_over_limit.txt':b'', 'empty_base.txt':b'.\n',
+                        'suffix_base.txt':b'file\n', 'slashes_dir.txt':b'//tmp/du\n',
+                        'keepdir.txt':b'/tmp/du/keepdir\n',
+                        'multi_head.txt':b'==> /tmp/du/moved <==\none\n\n==> /tmp/du/extra <==\nalpha\n',
+                        'multi_tail.txt':b'==> /tmp/du/moved <==\nthree\n\n==> /tmp/du/extra <==\nbeta\n',
+                        'multi_wc.txt':b'3 14 /tmp/du/moved\n2 11 /tmp/du/extra\n5 25 total\n'}
             for name, contents in expected.items():
                 result = folder / name; transfer(disk, 'export', '/tmp/du/' + name, result)
                 assert result.read_bytes() == contents, (name, result.read_bytes(), contents)

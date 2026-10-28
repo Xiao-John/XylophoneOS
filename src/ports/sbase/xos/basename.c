@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
     }
     char *p = strdup(argv[n]); if (!p) return 1;
     size_t len = strlen(p);
-    if (!len) { free(p); return puts(".") == EOF; }
+    if (!len) { free(p); return puts(".") == EOF || fflush(stdout) == EOF; }
     while (len > 1 && p[len - 1] == '/') p[--len] = 0;
     char *name = strrchr(p, '/'); name = name ? name + 1 : p;
     if (!*name) name = p;

@@ -80,9 +80,12 @@ def main():
     p.add_argument('--wheel-package',type=Path)
     p.add_argument('--daily-package', type=Path, help='explicit daily utilities candidate XPK')
     p.add_argument('--daily-profile', type=Path, help='profile bound to the daily package and release SDK')
+    p.add_argument('--daily-sdk', type=Path, help='composed SDK used by daily utilities; must match system SDK and C++ runtime')
     a = p.parse_args()
     if bool(a.daily_package) != bool(a.daily_profile):
         p.error('--daily-package and --daily-profile must be supplied together')
+    if a.daily_sdk and not a.daily_package:
+        p.error('--daily-sdk requires --daily-package and --daily-profile')
     out = a.release_dir.resolve(strict=True)
     if ROOT/'build/releases' not in out.parents:
         p.error('use a dedicated build/releases directory')
@@ -121,7 +124,10 @@ def main():
         source=Path(source).resolve(strict=True)
         entries.append({'path':str(source),'guest_path':'/usr/bin/'+name,'sha256':sha(source)})
     if len({e['guest_path'].lower() for e in entries})!=len(entries):raise ValueError('duplicate guest path')
-    daily = (prepare_daily_package(a.daily_package, a.daily_profile, out/'sdk', system, entries, a.wheel_package)
+    if a.daily_sdk:
+        verify_copied_inputs(a.daily_sdk, sdk_input, runtime_input)
+    daily_sdk = a.daily_sdk if a.daily_sdk else out/'sdk'
+    daily = (prepare_daily_package(a.daily_package, a.daily_profile, daily_sdk, system, entries, a.wheel_package)
              if a.daily_package else None)
     image_dir.mkdir()
     sdk_dir.mkdir()
@@ -196,6 +202,12 @@ def main():
         raise ValueError('SDK changed while packaging')
     if verify_runtime(target,json.loads((ROOT/'config/release_cpp_runtime_v5.json').read_text())) != runtime_input:
         raise ValueError('runtime changed while packaging')
+    if daily:
+        if a.daily_sdk:
+            verify_copied_inputs(a.daily_sdk, sdk_input, runtime_input)
+        checked = prepare_daily_package(a.daily_package, a.daily_profile, daily_sdk, system, entries, a.wheel_package)
+        if checked[1]['sha256'] != daily[1]['sha256']:
+            raise ValueError('daily package changed while packaging')
     verify_copied_inputs(sdk_dir,sdk_input,runtime_input)
     sdk_binding={'input':sdk_input,'runtime':runtime_input,
                  'packaged':tree_receipt(sdk_dir,exclude=('release.json',))}

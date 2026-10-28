@@ -5,6 +5,17 @@
 发布资产仍为 0.0.1-1026，未随本地整合更新。
 原则裁决见[xos_plan.md第一部分](xos_plan.md#第一部分设计原则)，本页只登记事实与占用。
 
+## 正在进行：ncursesw W0/W1
+
+W0 勘查和 W1 [工作契约草案](contracts/terminal_w1.md)已开始；W0 未冻结，W1 未
+实现或验收。终端 ESC、输入所有权、UART 等待与 newlib 多字节缺口见
+[0074](work_log/0074_ncursesw_w1_scout.md)。本组无新 ABI 或公共 build 占用；用户要求
+所有相关改动提交后再验收。
+
+前期缺口已开始：隔离多字节 newlib 的 single/threaded 候选已构建，ncurses 配置/编译
+探针复现终端头缺失；均非客体验收或新 SDK 资格。终端机制分层见工作契约，具体证据与
+后续见[0075](work_log/0075_ncursesw_preliminary_gaps.md)。当前无源码/文档/build 占用。
+
 ## 本次同步与提交
 
 全部三个已登记工作区已核对。当前工作区的 DU 设计及 PR 审查保存为 928c755；

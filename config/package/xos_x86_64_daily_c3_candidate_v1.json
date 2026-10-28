@@ -1,0 +1,17 @@
+{
+  "format_version": 1,
+  "id": "xos-x86_64-daily-c3-candidate-v1",
+  "architecture": "x86_64",
+  "byte_order": "little",
+  "word_bits": 64,
+  "runtime_model": "single",
+  "syscall_abi": 1,
+  "startup_version": 3,
+  "compiler_version": "16.2.0",
+  "layout": "e08_static_tls_main_stack_128k_c3_stdio",
+  "features": ["stdio", "heap", "file_io", "directories", "static_tls", "stdio_transfer"],
+  "sdk_tree_sha256": ["95540279559a9b1e6e408ebb63785d22397ae52e9b0dd28af82b1409e20903ab"],
+  "verified_system_builds": ["0babbb11032c9197"],
+  "scope": "candidate only; single-thread SDK and bounded DU1/DU2 smoke, not release or full POSIX qualification",
+  "evidence": "docs/work_log/0069_daily_utilities.md"
+}

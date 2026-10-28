@@ -39,3 +39,8 @@ build/daily_utilities_du12` 13 个 ELF 成功；该构建在最终许可证标�
 下一步补充
 各工具的选项/错误/大输入/资源回收及 xsh/dash/UTF-8 路径边界。DU3、工具包 profile、
 发行路径和空盘 ISO 完整安装均未实施；xypm P2 另行完成并验收，不能把旧资格改绑。
+
+2026-10-28：增加 `config/package/xos_x86_64_daily_c3_candidate_v1.json` 和
+`scripts/package_daily_utilities.py`，用于绑定 0babbb11032c9197 的实际 SDK 树、13 个
+ELF 和材料生成离线候选 XPK。此 profile 仅记录已跑过的受限命令链，不是已冻结的发行
+profile 或完整工具资格；包安装、旧 profile 拒绝和客体检查待提交后运行。

@@ -136,3 +136,10 @@ SDL的CPU raster后端可复用相同mode/present/input，SDL不是Qt的前置�
 当前显示ABI使用sys65/66，保留已采用的熵63和墙钟64。PR #3原分支及其冻结G02报告
 仍对应63/64，不能用该报告直接证明本地组合；本轮独立构建与定向结果见0059工作记录。
 显示目标须以当前共享头/SDK重建；旧PR显示二进制与当前组合内核不可混用。
+
+## E16 QtGui 消费者（2026-10-28）
+
+真实 Qt 6.8.3 静态 xos QPA 已通过 Display Service 呈现 QPainter 图形及 FreeType 字体，
+并接入 QMP PS/2 输入；显示服务/内核/ABI 未改。QPA 使用用户 RAM，锁外 wait_input、
+锁内事务，disconnect 后 pthread_join；一个独占全屏窗口。见 [E16实施](../plans/qt_e16_execution.md)
+及 [G04资格](../reports/qt_e16_qualified_20261028/qualification.json)。本节不改绑旧 E14 证据。

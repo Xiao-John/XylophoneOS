@@ -1,0 +1,207 @@
+{
+  "status": "PASSED",
+  "image_sha256": "7ae8e55e3ef9223c67c94075523696b8e12c48fe304e9da7954a4681b7bbd87f",
+  "tests": {
+    "smoke": {
+      "status": "PASSED",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/tests/qt6_sdk_probe.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_system/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/final_core_smoke.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_regressions/smoke.json",
+        "--marker",
+        "QT_CORE_SMOKE_OK"
+      ],
+      "payload_sha256": "74b56d20a7a043d96b46564edb96c515fb91c663f6ace838e690c6208d037fbb",
+      "runner_sha256": "c8dbfb32604035aaf5595a3746c80307aa263b8687e0627e1d5d8efac46ef3be"
+    },
+    "wake": {
+      "status": "PASSED",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/tests/qt6_sdk_probe.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_system/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/final_wake_gate_v2.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_regressions/wake.json",
+        "--marker",
+        "QT_WAKE_GATE_OK"
+      ],
+      "payload_sha256": "10d3bdd56991cc1f7422e68e29c9415084d1e88ddaf1854168ba685af5da80b8",
+      "runner_sha256": "c8dbfb32604035aaf5595a3746c80307aa263b8687e0627e1d5d8efac46ef3be"
+    },
+    "events": {
+      "status": "PASSED",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/tests/qt6_sdk_probe.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_system/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/final_core_events_v2.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_regressions/events.json",
+        "--marker",
+        "QT_EVENTS_OK"
+      ],
+      "payload_sha256": "b5fd057b67c21af7c316a0db33eb78214af82eb2428b8163333d977c5b956724",
+      "runner_sha256": "c8dbfb32604035aaf5595a3746c80307aa263b8687e0627e1d5d8efac46ef3be"
+    },
+    "quota": {
+      "status": "PASSED",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/tests/qt6_sdk_probe.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_system/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/final_core_events_v2.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_regressions/quota.json",
+        "--marker",
+        "QT_THREAD_QUOTA_OK",
+        "--argument",
+        "quota"
+      ],
+      "payload_sha256": "b5fd057b67c21af7c316a0db33eb78214af82eb2428b8163333d977c5b956724",
+      "runner_sha256": "c8dbfb32604035aaf5595a3746c80307aa263b8687e0627e1d5d8efac46ef3be"
+    },
+    "fault": {
+      "status": "PASSED",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/tests/qt6_fault_probe.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_system/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/final_core_events_v2.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_regressions/fault.json"
+      ],
+      "payload_sha256": "b5fd057b67c21af7c316a0db33eb78214af82eb2428b8163333d977c5b956724",
+      "runner_sha256": "9830709f6a8e0e105da40b107ea68ecabf9c71eeb4dc6eea9975606cc3916d50"
+    },
+    "persist": {
+      "status": "PASSED",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/tests/qt6_persist_probe.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_system/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/final_core_extended.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_regressions/persist.json"
+      ],
+      "payload_sha256": "6aac62e7ab6da0e9f115cb5b69f9686260c9db2acd46082af5519c59b74c68b4",
+      "runner_sha256": "bdfa48fd3c0e42190a909702461079c5a154acd4e5ac255b51d7d6050da15c15"
+    },
+    "file-errors": {
+      "status": "PASSED",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/tests/qt6_file_errors.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_system/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/final_core_extended.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_regressions/file-errors.json"
+      ],
+      "payload_sha256": "6aac62e7ab6da0e9f115cb5b69f9686260c9db2acd46082af5519c59b74c68b4",
+      "runner_sha256": "d2da73a10b1c565d97d3978cd24387ad86c578255b87d40b20c778fb2028a680"
+    },
+    "abi": {
+      "status": "PASSED",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/tests/qt6_sdk_probe.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_system/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/final_core_abi.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_regressions/abi.json",
+        "--marker",
+        "QT_ABI_OK"
+      ],
+      "payload_sha256": "0e9473a5764c5dfdc69e05aa9c8d9109afbb0c734f2ad346e6c434686fa954c2",
+      "runner_sha256": "c8dbfb32604035aaf5595a3746c80307aa263b8687e0627e1d5d8efac46ef3be"
+    },
+    "memory": {
+      "status": "PASSED",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/tests/qt6_sdk_probe.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_system/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/final_core_memory.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_regressions/memory.json",
+        "--marker",
+        "QT_MEMORY_SAMPLE_OK"
+      ],
+      "payload_sha256": "0da5c55b3ff903f7fd4e32cca9c8be111d1876df878c967d42e8d6ee78dcb237",
+      "runner_sha256": "c8dbfb32604035aaf5595a3746c80307aa263b8687e0627e1d5d8efac46ef3be"
+    },
+    "mutex": {
+      "status": "PASSED",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/tests/qt6_sdk_probe.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_system/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_mutex_contention.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_regressions/mutex.json",
+        "--marker",
+        "QT_MUTEX_CONTENTION_OK"
+      ],
+      "payload_sha256": "2b8454e2829ccc746d86f4547696c3dc3fac7fcd9604b889a20a66899740cb2a",
+      "runner_sha256": "c8dbfb32604035aaf5595a3746c80307aa263b8687e0627e1d5d8efac46ef3be"
+    },
+    "interrupt": {
+      "status": "PASSED",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/tests/qt6_sdk_probe.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_system/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_interrupt.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_regressions/interrupt.json",
+        "--marker",
+        "QT_INTERRUPT_ONLY_OK"
+      ],
+      "payload_sha256": "063fe38dfb0e7f388ab87267cf0207c131aee72e959c84e89dca5ed922f7108b",
+      "runner_sha256": "c8dbfb32604035aaf5595a3746c80307aa263b8687e0627e1d5d8efac46ef3be"
+    },
+    "core-lifecycle": {
+      "status": "PASSED",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/tests/qt6_sdk_probe.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_system/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/recheck_20261028/core_lifecycle_v2.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_regressions/core-lifecycle.json",
+        "--marker",
+        "QT_LIFECYCLE_OK"
+      ],
+      "payload_sha256": "27bef682341ad241d2e84782c7c445ee7a96bf4dd174712fe2c1a21b4a59fc14",
+      "runner_sha256": "c8dbfb32604035aaf5595a3746c80307aa263b8687e0627e1d5d8efac46ef3be"
+    }
+  },
+  "driver_sha256": "4b32f3717f07c64134aa93bc46b448bb32eed240114ac837feee64afb6e647f8"
+}

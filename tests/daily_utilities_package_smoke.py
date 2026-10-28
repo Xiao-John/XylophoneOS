@@ -14,6 +14,7 @@ from boot_smoke import Guest
 from make_work_disk import create_fat32
 from task_smoke import pump, send_bytes
 from work_disk import transfer
+from xypm_format import load_json, verify_package
 
 
 def sha_file(path):
@@ -32,6 +33,7 @@ def main():
     p.add_argument('--dash', type=Path, required=True)
     p.add_argument('--report', type=Path, required=True)
     a = p.parse_args()
+    payload_count = len(verify_package(a.package, load_json(a.profile))['manifest']['files'])
     report = {'status':'failed', 'image_sha256':hashlib.sha256(a.image.read_bytes()).hexdigest(),
               'package_sha256':hashlib.sha256(a.package.read_bytes()).hexdigest(),
               'profile_sha256':hashlib.sha256(a.profile.read_bytes()).hexdigest(),
@@ -62,12 +64,16 @@ def main():
             assert sha_file(conflict) == before
             report['checks'].append('unmanaged_conflict_preserves_source_image')
             install=xypm('install',a.package,'--image',empty,'--output-image',installed,'--offline')
-            assert install['id']=='xos.daily_utilities' and install['verified_files']==27
+            assert install['id']=='xos.daily_utilities' and install['verified_files']==payload_count
             report['checks'].append('offline_install_verified_payload')
             for d in ('/tmp','/tests'): transfer(installed,'mkdir',d)
             transfer(installed,'import','/usr/bin/dash',a.dash)
             transfer(installed,'import','/tests/du12.sh',ROOT/'tests/fixtures/daily_utilities/du12.sh')
             transfer(installed,'import','/tests/binary.dat',ROOT/'tests/fixtures/daily_utilities/binary.dat')
+            limit=root/'tail_limit.dat';limit.write_bytes(b'a'*(1024*1024-1)+b'\nlast\n')
+            over=root/'tail_over_limit.dat';over.write_bytes(b'a'*(1024*1024+1))
+            transfer(installed,'import','/tests/tail_limit.dat',limit)
+            transfer(installed,'import','/tests/tail_over_limit.dat',over)
             guest=Guest(a.image,'daily_package',work_disk=installed)
             try:
                 guest.expect(b'xos64> ',timeout=30);start=len(guest.output);send_bytes(guest,b'run\r')
@@ -82,7 +88,7 @@ def main():
             data=root/'result';transfer(installed,'export','/tmp/du/tail_pipe.txt',data)
             assert data.read_bytes()==b'b\nc'
             verify=xypm('verify-installed','--image',installed)
-            assert verify['status']=='verified' and verify['files']==27
+            assert verify['status']=='verified' and verify['files']==payload_count
             report['checks'].append('sync_result_and_installed_hashes')
             result=xypm('remove','xos.daily_utilities','--image',installed,'--output-image',removed,'--offline')
             assert result['id']=='xos.daily_utilities'

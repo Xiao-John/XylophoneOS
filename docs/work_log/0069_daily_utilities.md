@@ -68,3 +68,11 @@ profile 或完整工具资格；包安装、旧 profile 拒绝和客体检查待
   SDK、实际包和测试输入，不宣称当前完整源码清单的最终系统重建资格。坏盘、断电、
   安装中断、实际升级、大文件和全部命令选项仍需补测。ISO 通用载荷及空盘安装未实施，
   DU3 尚未开始；不能说“启动 ISO 已获得工具集”。
+
+- 追加中文路径与选项错误测试：旧 dash C3 使用旧 ASCII SDK，中文重定向实际失败；
+  用组合 SDK 重建 dash（SHA256
+  `8a4b394ab8bed84c12cd1a52531b83499f33a6f866ecf8b4b8de343326bccbde`）后，
+  中文目录/文件、二进制、管道、选项错误在组合系统通过；P2 实际安装/重启/运行/移除
+  同组输入亦通过 `build/daily_utilities_p2_guest_v3/report.json`。旧 dash 失败记录保留。
+- [ISO载荷设计](../plans/daily_utilities_iso_payload.md)厘清旧载荷和授权/校验窗口，
+  尚未冻结具体字节布局或实施，尤其不能仅按磁盘路径授权 bootstrap worker。

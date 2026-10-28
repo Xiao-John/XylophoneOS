@@ -1,0 +1,3 @@
+# Preserve verbatim upstream license text including its original final blank line.
+src/ports/qt6/licenses/ZLIB-LICENSE whitespace=-blank-at-eof
+src/ports/qt6/licenses/Zlib.txt whitespace=-blank-at-eof

@@ -461,6 +461,38 @@
         "Static CPython zstd module for bounded streaming compression and decompression"
       ],
       "distribution_status": "local guest-accepted build; source archive retained in local cache; carry matching source and license if binaries are distributed"
+    },
+    {
+      "name": "QtBase preflight",
+      "version": "6.8.3",
+      "path": "src/ports/qt6",
+      "source": "https://download.qt.io/archive/qt/6.8/6.8.3/submodules/qtbase-everywhere-src-6.8.3.tar.xz",
+      "source_archive_sha256": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80",
+      "license": "per-file Qt and bundled component terms; member audit NOT_RUN",
+      "notices": [
+        "src/ports/qt6/licenses/GPL-2.0-only.txt",
+        "src/ports/qt6/licenses/GPL-3.0-only.txt",
+        "src/ports/qt6/licenses/LGPL-3.0-only.txt",
+        "src/ports/qt6/licenses/LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception.txt",
+        "src/ports/qt6/licenses/PCRE2-LICENCE-SLJIT",
+        "src/ports/qt6/licenses/PCRE2-LICENCE.md",
+        "src/ports/qt6/licenses/ZLIB-LICENSE",
+        "src/ports/qt6/licenses/Zlib.txt"
+      ],
+      "used_in": [
+        "experimental host tools and target compilation only; not distributed"
+      ],
+      "modifications": "XOS platform detection patch in src/ports/qt6/patches; no full license or distribution qualification",
+      "artifact_sha256": {
+        "src/ports/qt6/licenses/GPL-2.0-only.txt": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+        "src/ports/qt6/licenses/GPL-3.0-only.txt": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+        "src/ports/qt6/licenses/LGPL-3.0-only.txt": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768",
+        "src/ports/qt6/licenses/LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception.txt": "0526625fcc746a42d3f19a0ab357d3dc8479fdbe3bfd168825498f50215c7a63",
+        "src/ports/qt6/licenses/PCRE2-LICENCE-SLJIT": "5f216505c0f6ea3273caec89e766eef93cdeb7bbb0c429f9360116d7c938feeb",
+        "src/ports/qt6/licenses/PCRE2-LICENCE.md": "9cf7ac6976099a1d856826d3ef1b093bd6b84489dc6100628ac79e740cf9885a",
+        "src/ports/qt6/licenses/ZLIB-LICENSE": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080",
+        "src/ports/qt6/licenses/Zlib.txt": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+      }
     }
   ]
 }

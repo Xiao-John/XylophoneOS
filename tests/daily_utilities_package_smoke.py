@@ -16,6 +16,14 @@ from task_smoke import pump, send_bytes
 from work_disk import transfer
 
 
+def sha_file(path):
+    digest = hashlib.sha256()
+    with path.open('rb') as source:
+        for chunk in iter(lambda: source.read(1 << 20), b''):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--image', type=Path, required=True)
@@ -37,6 +45,22 @@ def main():
         with tempfile.TemporaryDirectory(prefix='xos_du_package_') as tmp:
             root=Path(tmp); empty=root/'empty.img'; installed=root/'installed.img'; removed=root/'removed.img'
             create_fat32(empty, 512)
+            bad = root/'bad.xpk'; corrupted = bytearray(a.package.read_bytes()); corrupted[0] ^= 1; bad.write_bytes(corrupted)
+            check = subprocess.run([sys.executable, str(ROOT/'scripts/xypm.py'), 'verify', str(bad),
+                                    '--profile', str(a.profile)], capture_output=True)
+            assert check.returncode != 0
+            report['checks'].append('corrupt_package_rejected')
+            conflict = root/'conflict.img'; rejected = root/'rejected.img'; create_fat32(conflict, 512)
+            for path in ('/usr','/usr/bin'): transfer(conflict, 'mkdir', path)
+            user_file = root/'existing'; user_file.write_bytes(b'user-owned-file')
+            transfer(conflict, 'import', '/usr/bin/ls', user_file)
+            before = sha_file(conflict)
+            result = subprocess.run([sys.executable, str(ROOT/'scripts/xypm.py'), 'install', str(a.package),
+                                     '--image', str(conflict), '--output-image', str(rejected), '--offline',
+                                     '--profile', str(a.profile)], capture_output=True)
+            assert result.returncode != 0 and not rejected.exists()
+            assert sha_file(conflict) == before
+            report['checks'].append('unmanaged_conflict_preserves_source_image')
             install=xypm('install',a.package,'--image',empty,'--output-image',installed,'--offline')
             assert install['id']=='xos.daily_utilities' and install['verified_files']==27
             report['checks'].append('offline_install_verified_payload')

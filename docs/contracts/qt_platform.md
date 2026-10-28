@@ -9,7 +9,7 @@ Qt具体版本、模块、feature、工具和资源预算在G01确定，不能�
 |---|---|---|
 | C++/pthread/TLS | 工具链/线程线；T0–T2、T3-PY和Qt QThread受限测试有各自证据 | Qt配置与QThread/互斥/条件/退出探针；不复制第二套线程库或空锁 |
 | 单调/墙钟 | 时钟SDK；单调等待与PY3 B2墙钟已有受限证据 | QtCore计时/超时与实际分辨率，唤醒deadline不被墙钟调整替换 |
-| 事件就绪/唤醒 | QtCore受限 posted event/单调计时与跨线程唤醒已客体验证；通用多对象poll/select未实现 | E16需核实显示与跨线程组合等待；不得长期yield忙轮询或假报FD就绪 |
+| 事件就绪/唤醒 | QtCore受限 posted event/单调计时与跨线程唤醒已客体验证；通用多对象poll/select未实现 | E16 通过锁外阻塞输入线程、Qt queued wake 组合；无通用 poll/select，不忙轮询或假报 FD 就绪 |
 | 显示/输入 | 显示线；display_client、65/66、单surface/焦点、CPU raster与PS2 | QPA integration/screen/window/backing-store/input；读取实际mode/stride，客户端RAM呈现，不直接MMIO/BIOS |
 | 内存/映射 | 内存线；堆/页预算已有，VMA/mmap/mprotect未实施 | 列实际调用与合法回退，提交最小失败探针；不从Qt侧另加内核mmap特例 |
 | 文件/路径 | 文件服务+libc；现有受限FD/路径，权限/链接/完整locale未完成 | QtCore读写/资源/错误，明确ASCII路径边界；UTF-8内容不代表Unicode文件名合规 |
@@ -37,7 +37,7 @@ Qt具体版本、模块、feature、工具和资源预算在G01确定，不能�
 4. 各自私有输出目录，SDK/构建输入固定；共享build排他。旧G02/T2/Python结果只佐证其原输入。
 5. QtCore G03、首窗G04、Widgets G05、QML G06、Quick G07分别验；未实现/未运行/失败明确区分。
 
-E15 已由 PR #8 合入 main（7a7481f）；E16 从该基线继续，新组合须独立记录输入与验收。
+E15 已由 PR #8 合入（7a7481f），E16 已由 PR #9 合入（be1e9c1）；新组合须独立记录输入与验收。
 
 ## E15 受限实现与资格
 
@@ -48,3 +48,22 @@ QThread 取消、映射、路径 canonicalization、UID 权限及无覆盖 renam
 G01/G03 已受限功能通过，见 [0064](../work_log/0064_qt_e15_qualification.md)；绝对峰值和发行审计未完成。不据此开放新 ABI 或声明 poll 支持。
 同一冻结实现的阻塞边界投递、伪唤醒/绝对deadline及活动定时器线程退出补验见
 [0065](../work_log/0065_qt_e15_lifecycle_recheck.md)；未扩展公共机制或更改ABI。
+
+## E16 受限 QPA 契约
+
+Qt 6.8.3 静态 `xos` 平台插件：真实 mode/stride、RGB32 用户态 QImage、QRegion
+裁剪与同步 Display Service present；无 MMIO 映射/程序名授权。一个独占全屏 Surface，
+第二个窗口 connect=-16 后明确诊断并退出；非零 offset/子窗口 flush 不支持。
+
+同一 display_client 的请求/回复事务用 QMutex 串行。输入线程是 SDK joinable pthread，
+`wait_input()` 不持该锁，读取后向 GUI 线程的 QObject 投递任务，由 GUI 线程调用
+QWindowSystemInterface。退出先置停止、disconnect 唤醒，再 pthread_join，最后清
+投递目标；服务死亡以 -19/退出码72处理，重新启动服务后新客户端可恢复。正常共两线程，
+仍受每进程4线程限制。没有扩大 syscall65/66 或 display wire v1。
+
+Qt 6.8.3 当前 QThread::wait 的 detached 清理通知可早于内核线程退出；E16 不改变 E15，
+输入线程使用 pthread_join 取得完整回收保证。隐藏窗口产生 Qt 焦点退出并抑制 GUI 输入，
+独占 Surface 直到窗口销毁才撤销。Set1 英文及 Shift/Ctrl/Alt/Caps、鼠标三键、序列、
+64项溢出 resync；无 IME/滚轮/USB/多窗口合成。字体为原版 DejaVu 经实际 FreeType/
+HarfBuzz/QPainter 路径。实现、失败与资格见 [E16实施](../plans/qt_e16_execution.md) 和
+[0066](../work_log/0066_qt_e16_qualification.md)。静态发行/逐成员许可审查仍未完成。

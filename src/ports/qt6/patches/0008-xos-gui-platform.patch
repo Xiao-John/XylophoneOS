@@ -1,0 +1,79 @@
+--- a/src/3rdparty/freetype/CMakeLists.txt
++++ b/src/3rdparty/freetype/CMakeLists.txt
+@@ -80,12 +80,12 @@
+ qt_disable_warnings(BundledFreetype)
+ qt_set_symbol_visibility_hidden(BundledFreetype)
+ 
+-qt_internal_extend_target(BundledFreetype CONDITION WIN32
++qt_internal_extend_target(BundledFreetype CONDITION WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "XOS"
+     SOURCES
+         src/base/ftsystem.c
+ )
+ 
+-qt_internal_extend_target(BundledFreetype CONDITION UNIX
++qt_internal_extend_target(BundledFreetype CONDITION UNIX AND NOT CMAKE_SYSTEM_NAME STREQUAL "XOS"
+     SOURCES
+         builds/unix/ftsystem.c
+     INCLUDE_DIRECTORIES
+--- a/src/gui/CMakeLists.txt
++++ b/src/gui/CMakeLists.txt
+@@ -762,7 +762,7 @@
+         WrapFreetype::WrapFreetype
+ )
+ 
+-qt_internal_extend_target(Gui CONDITION UNIX AND NOT APPLE
++qt_internal_extend_target(Gui CONDITION UNIX AND NOT CMAKE_SYSTEM_NAME STREQUAL "XOS" AND NOT APPLE
+     SOURCES
+         text/unix/qgenericunixfontdatabase_p.h
+ )
+@@ -987,12 +987,12 @@
+         platform/wasm/qwasmlocalfileaccess.cpp platform/wasm/qwasmlocalfileaccess_p.h
+ )
+ 
+-qt_internal_extend_target(Gui CONDITION UNIX
++qt_internal_extend_target(Gui CONDITION UNIX AND NOT CMAKE_SYSTEM_NAME STREQUAL "XOS"
+     SOURCES
+         platform/unix/qunixnativeinterface.cpp
+ )
+ 
+-qt_internal_extend_target(Gui CONDITION UNIX AND NOT WASM
++qt_internal_extend_target(Gui CONDITION UNIX AND NOT CMAKE_SYSTEM_NAME STREQUAL "XOS" AND NOT WASM
+     SOURCES
+         platform/unix/qgenericunixeventdispatcher.cpp platform/unix/qgenericunixeventdispatcher_p.h
+         platform/unix/qunixeventdispatcher.cpp
+@@ -1006,12 +1006,12 @@
+         GLIB2::GLIB2
+ )
+ 
+-qt_internal_extend_target(Gui CONDITION UNIX AND (QT_FEATURE_xcb OR NOT UIKIT)
++qt_internal_extend_target(Gui CONDITION UNIX AND NOT CMAKE_SYSTEM_NAME STREQUAL "XOS" AND (QT_FEATURE_xcb OR NOT UIKIT)
+     SOURCES
+         platform/unix/qgenericunixservices.cpp platform/unix/qgenericunixservices_p.h
+ )
+ 
+-qt_internal_extend_target(Gui CONDITION UNIX AND (QT_FEATURE_xcb)
++qt_internal_extend_target(Gui CONDITION UNIX AND NOT CMAKE_SYSTEM_NAME STREQUAL "XOS" AND (QT_FEATURE_xcb)
+     SOURCES
+         platform/unix/qtx11extras.cpp platform/unix/qtx11extras_p.h
+ )
+@@ -1021,7 +1021,7 @@
+         Qt::DBus
+ )
+ 
+-qt_internal_extend_target(Gui CONDITION UNIX AND (QT_FEATURE_xcb OR NOT MACOS) AND (QT_FEATURE_xcb OR NOT UIKIT)
++qt_internal_extend_target(Gui CONDITION UNIX AND NOT CMAKE_SYSTEM_NAME STREQUAL "XOS" AND (QT_FEATURE_xcb OR NOT MACOS) AND (QT_FEATURE_xcb OR NOT UIKIT)
+     SOURCES
+         platform/unix/qgenericunixthemes.cpp platform/unix/qgenericunixthemes_p.h
+ )
+--- a/src/3rdparty/harfbuzz-ng/CMakeLists.txt
++++ b/src/3rdparty/harfbuzz-ng/CMakeLists.txt
+@@ -196,3 +196,9 @@
+ qt_internal_add_3rdparty_header_module(HarfbuzzPrivate
+     EXTERNAL_HEADERS_DIR include
+ )
++
++# XOS static symbol closure: subset/repacker uses these upstream definitions.
++qt_internal_extend_target(BundledHarfbuzz CONDITION CMAKE_SYSTEM_NAME STREQUAL "XOS"
++    SOURCES
++        src/graph/gsubgpos-context.cc
++)

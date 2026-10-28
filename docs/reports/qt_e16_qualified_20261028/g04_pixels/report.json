@@ -1,0 +1,83 @@
+{
+  "status": "PASSED",
+  "case": "pixels",
+  "image_sha256": "7ae8e55e3ef9223c67c94075523696b8e12c48fe304e9da7954a4681b7bbd87f",
+  "elf_sha256": "cd63910fdebea9b6dd1c83dff1876ee237c4c5ebe7fdab49bf23f878e454d352",
+  "checks": [
+    {
+      "name": "qimage_exact_bytes_equal_scanout_full_dirty_clip_font_and_xrgb",
+      "status": "PASSED",
+      "width": 800,
+      "height": 600,
+      "stride": 3200,
+      "text_ink_pixels": 2269,
+      "image_sha256": "2475c71ff6e7d862d3080dde695fd1e10f129d874678fcc7865f5f4acc03769a",
+      "framebuffer_sha256": "2475c71ff6e7d862d3080dde695fd1e10f129d874678fcc7865f5f4acc03769a",
+      "screenshot_sha256": "a92b63cd2f935fea15dfcebf8328657f0e2a7cc7d5b442f1c5df55112b748aef"
+    }
+  ],
+  "build_receipt_sha256": "08bcda41b6da7b13b6c8bd430e63c29fd69ce6b0c516e13aea33142a6d7e5685",
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16/build/qt_e16/qualified_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_qt_g04_5d8ie9fv/test.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_mr2x6kcf/qmp.sock,server=on,wait=off"
+  ],
+  "baseline": [
+    130322,
+    2,
+    0
+  ],
+  "with_service": [
+    130278,
+    3,
+    1
+  ],
+  "measurements": {
+    "sampled_peak_user_pages": 3666,
+    "present_duration_ns": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "paint_duration_ns": [
+      50000000,
+      0
+    ],
+    "normal_key_latency_ns": [
+      0
+    ],
+    "clock_resolution_ns": 10000000,
+    "absolute_peak": "NOT_RUN",
+    "cpu_percentage": "NOT_RUN"
+  }
+}

@@ -132,3 +132,9 @@ src/ports/make/upstream，source_lock.json与components.json逐文件记SHA256�
 补丁保留原MIT适用条款，独立XOS backend/build/test为Apache-2.0。实际产物
 manifest保存源码/补丁/SDK/工具摘要；没有创建或替换正式Release附件，材料检查
 不扩大成运行库逐成员法律审计。SDK/本机交付材料附对应声明及原始来源。
+
+E16 新增 QtGui、FreeType 2.13.3、HarfBuzz 10.4.0、DejaVu 2.37、MD4C 0.5.2 及
+Qt raster/region 的上游声明，原文与来源路径保留在 `src/ports/qt6/licenses/gui`，哈希在
+`licenses/components.json`。原版 DejaVuSans.ttf 从锁定 QtBase archive 提取并嵌入资源。
+0008 还补入 HarfBuzz 静态符号闭包遗漏的上游 graph 源文件。功能测试、材料完整性检查
+不授予静态再分发资格；逐成员、安全审查、重链接/对应源码与完整分发材料仍 NOT_RUN。

@@ -6,6 +6,8 @@
 
 ## 正在进行
 
+- E16 QtGui/QPA：`codex/qt6-e16-qpa`，从未合并 PR #8 HEAD `d1e108d` 独立开发；负责 `src/ports/qt6` 的独立 Gui 配置/QPA、Qt 图形夹具/验收及相关文档；私有 `build/qt_e16`，不占用新公共 ABI。G04 尚未通过。
+
 - E15 Qt 移植：`codex/qt6-e15`；Qt 端口、私有构建、夹具及线程 SDK 编译入口修复（需整合者审查）。QtCore 6.8.3 的 G01/G03 已完成受限客体功能资格；不占用公共 ABI。详见 [实施记录](plans/qt_e15_execution.md) 与 [0064](work_log/0064_qt_e15_qualification.md)。
 
 ## 当前能力与证据

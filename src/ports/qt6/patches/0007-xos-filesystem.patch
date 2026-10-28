@@ -20,6 +20,15 @@
  }
  
  //static
+@@ -1189,7 +1195,7 @@
+ 
+ #ifdef Q_OS_DARWIN
+ // see qfilesystemengine_mac.mm
+-#elif defined(QT_BOOTSTRAPPED) || !defined(AT_FDCWD) || defined(Q_OS_ANDROID) || defined(Q_OS_VXWORKS)
++#elif defined(QT_BOOTSTRAPPED) || !defined(AT_FDCWD) || defined(Q_OS_ANDROID) || defined(Q_OS_VXWORKS) || defined(Q_OS_XOS)
+ // bootstrapped tools don't need this, and we don't want QStorageInfo
+ //static
+ bool QFileSystemEngine::moveFileToTrash(const QFileSystemEntry &, QFileSystemEntry &,
 @@ -1570,6 +1576,11 @@
  //static
  bool QFileSystemEngine::renameFile(const QFileSystemEntry &source, const QFileSystemEntry &target, QSystemError &error)

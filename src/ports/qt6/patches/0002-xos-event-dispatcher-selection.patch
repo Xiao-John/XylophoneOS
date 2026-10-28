@@ -145,7 +145,25 @@
  #  endif // Q_OS_UNIX
 --- a/src/corelib/kernel/qcore_unix.cpp
 +++ b/src/corelib/kernel/qcore_unix.cpp
-@@ -78,7 +78,7 @@
+@@ -22,6 +22,7 @@
+ 
+ void qt_ignore_sigpipe() noexcept // noexcept: sigaction(2) is not a Posix Cancellation Point
+ {
++#ifndef Q_OS_XOS
+     // Set to ignore SIGPIPE once only.
+     Q_CONSTINIT static QBasicAtomicInt atom = Q_BASIC_ATOMIC_INITIALIZER(0);
+     if (!atom.loadRelaxed()) {
+@@ -33,6 +34,9 @@
+         ::sigaction(SIGPIPE, &noaction, nullptr);
+         atom.storeRelaxed(1);
+     }
++#else
++    // XOS pipes report EPIPE and do not generate POSIX SIGPIPE.
++#endif
+ }
+ 
+ QByteArray qt_readlink(const char *path)
+@@ -78,7 +82,7 @@
  #  endif
  #endif
  

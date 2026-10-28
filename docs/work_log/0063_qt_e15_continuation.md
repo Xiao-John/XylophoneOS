@@ -58,3 +58,11 @@ performance/peak memory, dynamic plugins or file-name Unicode. They are not a
 license or distribution qualification. G01/G03 and final source-bound regressions
 remain NOT_RUN until a clean-source build, complete gate tests and matching
 system/SDK artifacts are recorded.
+
+Subsequent whole-archive symbol inventory found unreferenced `getuid`, `*at`
+and `sigaction` dependencies despite successful section-garbage-collected app
+linking. The XOS patch now selects Qt's explicit unsupported trash path and
+avoids SIGPIPE setup because XOS pipes return EPIPE and do not deliver SIGPIPE.
+After recompilation, comparison of QtCore undefined symbols against the actual
+Qt/SDK static archives leaves only the linker-provided `_GLOBAL_OFFSET_TABLE_`;
+this is a static symbol inventory, not proof that all APIs work at runtime.

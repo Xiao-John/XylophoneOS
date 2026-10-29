@@ -14,10 +14,13 @@ import shlex
 import shutil
 import subprocess
 import tarfile
+from xos_app import tree_receipt
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE_URL = 'https://invisible-mirror.net/archives/ncurses/ncurses-6.5.tar.gz'
-SOURCE_SHA256 = '136d91bc269a9a5785e5f9e980bc76ab57428f604ce3e5a5a90cebc767971cc6'
+LOCK_PATH = ROOT / 'src/ports/ncurses/source_lock.json'
+LOCK = json.loads(LOCK_PATH.read_text())
+SOURCE_URL = LOCK['source_url']
+SOURCE_SHA256 = LOCK['archive_sha256']
 
 
 def digest(path):
@@ -37,6 +40,7 @@ def main():
     parser.add_argument('--build', action='store_true',
                         help='also attempt target library compilation (still not acceptance)')
     args = parser.parse_args()
+    lock_hash = digest(LOCK_PATH)
     archive, sdk, work = args.archive.resolve(), args.sdk.resolve(), args.output.resolve()
     if (work.is_relative_to(ROOT / 'src') or work.is_relative_to(ROOT / 'localpilot')
             or work.is_relative_to(sdk)):
@@ -47,6 +51,9 @@ def main():
                  'lib/libxos_loader.a', 'crt0_posix.o', 'user.ld', 'manifest.json'):
         if not (sdk / item).exists():
             raise SystemExit('SDK is missing ' + item)
+    sdk_tree, _ = tree_receipt(sdk)
+    if digest(ROOT / 'src/ports/ncurses' / LOCK['notice']) != LOCK['notice_sha256']:
+        raise SystemExit('stored upstream notice does not match lock')
     cc = shutil.which('x86_64-elf-gcc')
     cc_build = shutil.which('cc')
     target_as, target_ld = (shutil.which('x86_64-elf-' + n) for n in ('as', 'ld'))
@@ -56,6 +63,8 @@ def main():
     with tarfile.open(archive) as source_archive:
         source_archive.extractall(work, filter='data')
     source = work / 'ncurses-6.5'
+    if digest(source / 'COPYING') != LOCK['notice_sha256']:
+        raise SystemExit('upstream archive notice does not match lock')
     build = work / 'build'
     build.mkdir()
     tools = work / 'target_tools'
@@ -87,7 +96,10 @@ def main():
         with (work / 'make.log').open('w') as log:
             build_exit_code = subprocess.run(['make', '-j2'], cwd=build, env=env,
                                              stdout=log, stderr=subprocess.STDOUT).returncode
+    inputs_unchanged = tree_receipt(sdk)[0] == sdk_tree and digest(LOCK_PATH) == lock_hash
     report = {'kind': 'cross_configuration_probe_only', 'source_url': SOURCE_URL,
+              'source_lock_sha256': lock_hash, 'sdk_tree_sha256': sdk_tree,
+              'inputs_unchanged': inputs_unchanged,
               'source_sha256': SOURCE_SHA256, 'sdk_manifest_sha256': digest(sdk / 'manifest.json'),
               'sdk_libc_sha256': digest(sdk / 'lib/libc.a'), 'target_compiler': cc,
               'build_compiler': cc_build, 'configure_command': command,
@@ -97,7 +109,7 @@ def main():
               'note': 'Configure probes do not establish target runtime semantics or a supported port.'}
     (work / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report, indent=2))
-    return result.returncode or (build_exit_code or 0)
+    return result.returncode or (build_exit_code or 0) or (0 if inputs_unchanged else 1)
 
 
 if __name__ == '__main__':

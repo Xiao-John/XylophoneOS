@@ -82,6 +82,8 @@ sys54 显式截止时间/console IRQ 等待已实现但未客体验证，老行�
 W1 在本分支实现 sys80 独占字节流读取权，契约见[stream_lease](contracts/stream_lease.md)，
 宿主状态测试与构建见[0092](work_log/0092_stream_lease_mechanism.md)；尚未跨分支同步
 或客体验收，用户态终端服务、模式恢复和救援入口仍未实现。
+通用 IPC 通道 sys81 的本地认领与会话、等待契约见[channel](contracts/channel.md)，
+尚未实现、跨分支同步或验收。
 
 ## 2026-10-28 历史整合与交付（保留记录）
 

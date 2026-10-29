@@ -6,6 +6,13 @@ UTF-8文件名、游戏及ncursesw前期探针。新增整合资格限于0081的
 其他旧资格仍绑定原输入，不构成全系统重验。发布资产仍为0.0.1-1026，未更新Release。
 原则裁决见[xos_plan.md第一部分](xos_plan.md#第一部分设计原则)，本页只登记事实与占用。
 
+## Aurora Browser PR #19 审查修复（待客体验证）
+
+同步 main `3e5ccd0` 后修复 HTTP host 分量校验及浏览器失败导航状态；宿主 parser
+ASan/UBSan 定向检查通过。新增图形交互回归尚未运行，不能沿用旧镜像资格；
+具体冻结输入、执行情况和后续见[0096](work_log/0096_browser_review_fixes.md)。
+临时视图加载期间同时保留新旧页面，峰值内存未测；不占公共 build。
+
 ## Aurora Browser B0/B1：受限本地 HTML/CSS
 
 2026-10-29，独立 `codex/aurora-browser-b1` 从 upstream `39083f9` 实施真实 liteHTML0.9/

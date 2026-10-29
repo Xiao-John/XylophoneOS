@@ -164,13 +164,16 @@ error get_request(const url& u, char* out, size_t cap, size_t& size) {
     for (size_t i = 0; i < tn; ++i) absolute[a++] = u.target[i];
     url checked;
     if (parse_url(absolute, a, checked) != error::ok || u.target[0] != '/') return error::invalid;
+    const size_t checked_host_length = length(checked.host, sizeof checked.host);
+    if (checked_host_length != hn) return error::invalid;
+    for (size_t i = 0; i < hn; ++i) if (checked.host[i] != lower(u.host[i])) return error::invalid;
     const size_t canonical_target_length = length(checked.target, sizeof checked.target);
     auto append = [&](const char* s, size_t n) {
         if (n > cap - size) return false;
         for (size_t i = 0; i < n; ++i) out[size++] = s[i];
         return true;
     };
-    if (!append("GET ", 4) || !append(checked.target, canonical_target_length) || !append(" HTTP/1.1\r\nHost: ", 17) || !append(checked.host, hn)) { size = 0; return error::too_large; }
+    if (!append("GET ", 4) || !append(checked.target, canonical_target_length) || !append(" HTTP/1.1\r\nHost: ", 17) || !append(checked.host, checked_host_length)) { size = 0; return error::too_large; }
     if (u.port != 80) {
         char digits[6]; size_t n = 0; unsigned port = u.port;
         do { digits[n++] = char('0' + port % 10); port /= 10; } while (port);

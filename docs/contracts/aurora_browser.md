@@ -73,3 +73,8 @@ Aurora navigation or the kernel.
 
 Evidence, measured scope and failed iterations are in
 [0083](../work_log/0083_aurora_browser_offline.md).
+
+Navigation loads a candidate view before replacing the current one. If parsing, stylesheet
+loading or initial layout fails, the current page, scroll, address, history and active tab
+remain in place; the status reports the error. This behavior is implemented but its new
+interactive guest regression has not yet been run on the merged input.

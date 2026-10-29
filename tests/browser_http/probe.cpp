@@ -37,6 +37,22 @@ int main() {
     ok &= check(get_request(u,request,4,size) == error::too_large && size == 0,"request_capacity");
     v = u; strcpy(v.host,"a\r\nInjected:x");
     ok &= check(get_request(v,request,sizeof request,size) == error::invalid,"request_revalidates");
+    const char* bad_hosts[] = {"a/b", "a?b", "a#b", "a:80", "a@b", "a b", "a\\b"};
+    for (const auto* host : bad_hosts) {
+        v = u; strcpy(v.host,host);
+        ok &= check(get_request(v,request,sizeof request,size)==error::invalid && size==0,"request_invalid_host_component");
+    }
+    v = u; strcpy(v.host,"EXAMPLE.TEST");
+    ok &= check(get_request(v,request,sizeof request,size)==error::ok,"request_uppercase_host");
+    v = u; size_t host_pos=0;
+    for (unsigned label=0;label<4;++label) {
+        if(label) v.host[host_pos++]='.';
+        for (unsigned j=0;j<(label==3?61u:63u);++j) v.host[host_pos++]='a';
+    }
+    v.host[host_pos]=0;
+    ok &= check(host_pos==253 && get_request(v,request,sizeof request,size)==error::ok,"request_max_dns_host");
+    v.host[253]='a';
+    ok &= check(get_request(v,request,sizeof request,size)==error::invalid && size==0,"request_unterminated_host");
     v = u; strcpy(v.target,"/a/../z#not_sent");
     ok &= check(get_request(v,request,sizeof request,size)==error::ok && size>7 && !memcmp(request,"GET /z ",7),"request_strips_fragment");
     response r;

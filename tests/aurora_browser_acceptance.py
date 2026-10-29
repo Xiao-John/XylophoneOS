@@ -55,6 +55,21 @@ try:
    for path in ['/web/start.html','/web/garden.html','/web/reading.html']*2:navigate(path)
    mark('repeated_navigation_releases_previous_document')
   elif a.case=='negative':
+   # A linked stylesheet fails only after the engine has begun loading the page.
+   # Preserve the rendered old page and its scroll, then exercise history and tabs.
+   navigate('/web/reading.html');stroke('end');pump(g,.2)
+   before=screenshot('before-failed-load').crop((70,220,730,500))
+   before_scroll=int(re.findall(rb'BROWSER_SCROLL value=(\d+)',bytes(g.output)[b:])[-1])
+   navigate('/web/external.html',b'Page error: Engine allocation or resource budget failed')
+   after=screenshot('after-failed-load').crop((70,220,730,500))
+   assert before.tobytes()==after.tobytes(), 'failed load changed the rendered page'
+   sb=len(g.output);chord('alt','left');g.expect(b'BROWSER_LOADED path=/web/start.html',start=sb)
+   sb=len(g.output);chord('alt','right');g.expect(b'BROWSER_LOADED path=/web/reading.html',start=sb)
+   stroke('end');pump(g,.2);assert int(re.findall(rb'BROWSER_SCROLL value=(\d+)',bytes(g.output)[b:])[-1])==before_scroll
+   sb=len(g.output);chord('ctrl','t');g.expect(b'BROWSER_TAB active=1',start=sb)
+   sb=len(g.output);chord('ctrl','tab');g.expect(b'BROWSER_TAB active=0',start=sb);g.expect(b'BROWSER_LOADED path=/web/reading.html',start=sb)
+   assert int(re.findall(rb'BROWSER_SCROLL value=(\d+)',bytes(g.output)[sb:])[-1])==before_scroll
+   mark('failed_engine_load_preserves_page_history_scroll_and_tabs')
    cases=[('/web/missing.html',b'Page error: Page or resource missing'),('/web/broken.html',b'Page error: Unclosed markup rejected'),('/web/deep.html',b'Page error: HTML nesting budget exceeded'),('/web/huge.html',b'Page error: Resource byte budget exceeded'),('/web/script.html',b'Page error: Unsupported HTML tag: script'),('/web/badcss.html',b'Page error: Stylesheet budget rejected'),('/web/attr.html',b'Page error: Unsupported or excessive HTML attributes'),('/web/dimension.html',b'Page error: Unsupported or excessive HTML attributes'),('/web/exponent.html',b'Page error: Stylesheet budget rejected'),('/web/imports.html',b'Page error: Engine allocation or resource budget failed'),('/web/external.html',b'Page error: Engine allocation or resource budget failed'),('/bin/aurora.elf',b'Blocked: local /web pages only')]
    for path,wanted in cases:navigate(path,wanted);mark('reject_'+path.rsplit('/',1)[-1])
    navigate('/web/badimage.html');assert b'BROWSER_RESOURCE_REJECT image' in bytes(g.output)[b:] or b'BROWSER_RESOURCE_REJECT bmp-header' in bytes(g.output)[b:];mark('malformed_image_contained');navigate('/web/start.html');screenshot('error-recovery');mark('valid_navigation_after_rejected_input')

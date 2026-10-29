@@ -23,24 +23,38 @@ class Browser final:public aurora::Canvas {
     struct Tab{QStringList history;int index=-1,scroll=0;};
     Tab states[4];int active=0;QTabBar *tabbar;bool switching=false;
     void switchTab(int target){if(switching||target==active||target<0||target>3)return;
-        states[active]={history,index,view->verticalScrollBar()->value()};active=target;history=states[active].history;index=states[active].index;
-        if(index<0)navigate("/web/start.html");else{navigate(history[index],false);view->verticalScrollBar()->setValue(states[active].scroll);}std::printf("BROWSER_TAB active=%d history=%d\n",active,int(history.size()));}
+        const int previous=active;const auto old_history=history;const int old_index=index;
+        states[active]={history,index,view->verticalScrollBar()->value()};
+        active=target;history=states[active].history;index=states[active].index;
+        const bool loaded=index<0?navigate("/web/start.html"):navigate(history[index],false);
+        if(!loaded){active=previous;history=old_history;index=old_index;switching=true;tabbar->setCurrentIndex(previous);switching=false;updateButtons();return;}
+        if(states[active].index>=0)view->verticalScrollBar()->setValue(states[active].scroll);
+        std::printf("BROWSER_TAB active=%d history=%d\n",active,int(history.size()));}
 
     QStringList bookmarks;
     QWidget *bookmarkRow;
     void message(QString text){status->setText(text);std::printf("BROWSER_STATUS %s\n",text.toUtf8().constData());}
     void updateButtons(){back->setEnabled(index>0);forward->setEnabled(index+1<history.size());}
-    void navigate(QString url,bool record=true){
+    bool navigate(QString url,bool record=true){
         QString path=browser::resolve(url,index>=0?history[index]:"/web/start.html");
-        if(path.isEmpty()){message("Blocked: local /web pages only; HTTP / HTTPS unavailable");return;}
-        QString error;message("Loading local page...");
-        if(!view->load(path,error)){message("Page error: "+error);return;}
-        address->setText("file:"+path);
+        if(path.isEmpty()){message("Blocked: local /web pages only; HTTP / HTTPS unavailable");if(view->current().size())address->setText("file:"+view->current());return false;}
+        QString error, candidate_title;message("Loading local page...");
+        auto *candidate=new browser::HtmlView(this);
+        candidate->resize(view->size());
+        candidate->titleChanged=[&candidate_title](QString text){candidate_title=text;};
+        if(!candidate->load(path,error)){delete candidate;if(view->current().size())address->setText("file:"+view->current());message("Page error: "+error);return false;}
+        candidate->navigate=[this](QString target){navigate(target);};
+        candidate->titleChanged=[this](QString text){title->setText(text+" · Aurora");};
+        candidate->setObjectName("page");
+        auto *old=view;view=candidate;
+        auto *item=layout()->replaceWidget(old,view);delete item;old->hide();view->show();old->deleteLater();
+        title->setText(candidate_title+" · Aurora");address->setText("file:"+path);
         if(record){while(history.size()>index+1)history.removeLast();history.append(path);if(history.size()>16)history.removeFirst();index=history.size()-1;}
         tabbar->setTabText(active,title->text().section(" ·",0,0).left(19));updateButtons();message("Local page · liteHTML 0.9 · JavaScript off · network unavailable");view->setFocus();
         QTimer::singleShot(100,this,[this]{xos::thread_stats stats{};xos::sdk::syscall(xos::sys_thread_stats,reinterpret_cast<xos::u64>(&stats));std::printf("BROWSER_SAMPLE pages=%u threads=%u tab=%d scroll=%d\n",stats.process_user_pages,stats.threads,active,view->verticalScrollBar()->value());});
+        return true;
     }
-    void travel(int delta){const int target=index+delta;if(target<0||target>=history.size())return;int previous=index;index=target;navigate(history[index],false);if(view->current()!=history[index])index=previous;updateButtons();}
+    void travel(int delta){const int target=index+delta;if(target<0||target>=history.size())return;if(navigate(history[target],false))index=target;updateButtons();}
     void point(const char *name,QWidget *w){auto p=w->mapToGlobal(w->rect().center());std::printf("BROWSER_POINT %s=%d,%d\n",name,p.x(),p.y());}
 public:
     Browser(){setWindowTitle("Xylophone Browser — Aurora");resize(800,600);

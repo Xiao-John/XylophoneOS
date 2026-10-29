@@ -6,6 +6,12 @@ UTF-8文件名、游戏及ncursesw前期探针。新增整合资格限于0081的
 其他旧资格仍绑定原输入，不构成全系统重验。发布资产仍为0.0.1-1026，未更新Release。
 原则裁决见[xos_plan.md第一部分](xos_plan.md#第一部分设计原则)，本页只登记事实与占用。
 
+## Modern Platform运行时探针（PR #25）
+
+本分支保留Promise完成/pending/rejection等冻结探针结果，Web/应用能力仍BLOCKED。
+已同步当前main；已整合PR #21共用的QuickJS构建/runner与许可，保留phase2 Promise语义及phase1入口兼容；
+旧结果不改绑新组合。范围和未验项见[0099](work_log/0099_probe_branch_reconciliation.md)。
+
 ## N2用户态网络接续（当前规范）
 
 2026-10-29。旧frame-proxy路线已废止；当前接续以[网络交接](plans/network_handoff.md)为准，

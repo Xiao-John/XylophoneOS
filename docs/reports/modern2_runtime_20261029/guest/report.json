@@ -1,0 +1,259 @@
+{
+  "status": "PASSED",
+  "scope": "QuickJS embedding language and missing Web APIs; not V8 or browser acceptance",
+  "image_sha256": "f5f5186f5d19358a6793d185b0d335c214275955e661eec8e49669a5f67fcd01",
+  "elf_sha256": "b3d51732c2e6a3df104b67759b86aeb7ffbdb014619fcb8e19db87bf49cbdcba",
+  "stripped_sha256": "899e6f9e37e6d3d6f7ab4e2800ce698ecf0f5c89d1778506682bee646f798298",
+  "fixture_sha256": {
+    "tests/fixtures/modern2_runtime/async_failure.js": "e1ca842d06b1d26bb98b37ef1c4a155c7e3873d569cad1824a66b4225f957be9",
+    "tests/fixtures/modern2_runtime/buffers.js": "9dbcf9905da0fdafa4033067a9695f14a45d34c3da3e5613fef442e695db6ea4",
+    "tests/fixtures/modern2_runtime/dom.js": "39749c01de4bff91ed81e5236c68a7930317cb6c610781647c6202d431796b30",
+    "tests/fixtures/modern2_runtime/events.js": "bd08367623a96999308d0fabba80a3267407ab192b8c7ef932fb9e1829bb21d7",
+    "tests/fixtures/modern2_runtime/globals.js": "66bc5f4909d4a721a0d57ab716331f5f9099d5b5c8e9e7a012fa889e91600e8a",
+    "tests/fixtures/modern2_runtime/import.mjs": "79890b5a875d7e07d6fb3a326a888bc5d704b0e43f4b99d5b0aea4e47039c799",
+    "tests/fixtures/modern2_runtime/module.mjs": "b46c69a3bb00508c1020299bc8dbbd226fadeaee3e5ccee3995b04b5cbea8050",
+    "tests/fixtures/modern2_runtime/origin.js": "abf3f7e001ee0e2518f25f35cb4fa8dc18820393c3c31284a54e66d97c3bbc6d",
+    "tests/fixtures/modern2_runtime/pending.mjs": "bbb691b4659a1f50d70f169870f9c2ea94b3b3baf9422eea3ef95bbee9939043",
+    "tests/fixtures/modern2_runtime/promises.js": "3388a113b3010b1e5145a73355049253cdd8b2ac8d3e4183ea2fec2216381cb8",
+    "tests/fixtures/modern2_runtime/rejected.js": "7594733aa33cc7856bf2dc64068d1684c28796a06effdf5729c3d883ab7e1186",
+    "tests/fixtures/modern2_runtime/wasm.js": "2ffbc1b7f435d17202b53b3b2a3a5f53e0fad9409f1002de482703e7240c5e58",
+    "tests/fixtures/modern2_runtime/worker.js": "3b5123137b8f7b9677ae4576d20d1698b85a91b0e18aff80118a6b85039c0c20"
+  },
+  "disk_before_sha256": "4f1eba87f7c5d550c16d21bb7eff287db194f342bd648c27a243d7afa52f5e69",
+  "strip_command": [
+    "x86_64-elf-strip",
+    "-o",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/final3_guest/jsprobe",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/final2_quickjs/js_probe.elf"
+  ],
+  "checks": [
+    {
+      "file": "buffers.js",
+      "command": "jsprobe /work/probes/buffers.js",
+      "capability_status": "PASSED_LANGUAGE_ONLY",
+      "harness_status": "PASSED",
+      "expected_marker": "BUFFER_LANGUAGE_OK",
+      "expected_exit": "0",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "file": "promises.js",
+      "command": "jsprobe /work/probes/promises.js",
+      "capability_status": "PASSED_LANGUAGE_ONLY",
+      "harness_status": "PASSED",
+      "expected_marker": "JS_PROMISE_FULFILLED:PROMISE_JOBS_DONE",
+      "expected_exit": "0",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "file": "module.mjs",
+      "command": "jsprobe /work/probes/module.mjs",
+      "capability_status": "PASSED_SINGLE_MODULE_ONLY",
+      "harness_status": "PASSED",
+      "expected_marker": "JS_PROMISE_FULFILLED:undefined",
+      "expected_exit": "0",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "file": "pending.mjs",
+      "command": "jsprobe /work/probes/pending.mjs",
+      "capability_status": "PASSED_PENDING_REJECTION_CONTROL",
+      "harness_status": "PASSED",
+      "expected_marker": "JS_PROMISE_PENDING",
+      "expected_exit": "1",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "file": "rejected.js",
+      "command": "jsprobe /work/probes/rejected.js",
+      "capability_status": "PASSED_REJECTION_CONTROL",
+      "harness_status": "PASSED",
+      "expected_marker": "CONTROL_REJECTED_PROMISE",
+      "expected_exit": "1",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "file": "async_failure.js",
+      "command": "jsprobe /work/probes/async_failure.js",
+      "capability_status": "PASSED_JOB_DRAIN_CONTROL",
+      "harness_status": "PASSED",
+      "expected_marker": "CONTROL_ASYNC_ASSERTION",
+      "expected_exit": "1",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "file": "import.mjs",
+      "command": "jsprobe /work/probes/import.mjs",
+      "capability_status": "FAILED_MODULE_LOADER",
+      "harness_status": "PASSED",
+      "expected_marker": "could not load module",
+      "expected_exit": "1",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "file": "dom.js",
+      "command": "jsprobe /work/probes/dom.js",
+      "capability_status": "FAILED_MISSING_WEB_API",
+      "harness_status": "PASSED",
+      "expected_marker": "'document' is not defined",
+      "expected_exit": "1",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "file": "events.js",
+      "command": "jsprobe /work/probes/events.js",
+      "capability_status": "FAILED_MISSING_WEB_API",
+      "harness_status": "PASSED",
+      "expected_marker": "'EventTarget' is not defined",
+      "expected_exit": "1",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "file": "worker.js",
+      "command": "jsprobe /work/probes/worker.js",
+      "capability_status": "FAILED_MISSING_WEB_API",
+      "harness_status": "PASSED",
+      "expected_marker": "'Worker' is not defined",
+      "expected_exit": "1",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "file": "wasm.js",
+      "command": "jsprobe /work/probes/wasm.js",
+      "capability_status": "FAILED_MISSING_WEB_API",
+      "harness_status": "PASSED",
+      "expected_marker": "'WebAssembly' is not defined",
+      "expected_exit": "1",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "file": "origin.js",
+      "command": "jsprobe /work/probes/origin.js",
+      "capability_status": "FAILED_NO_ORIGIN_MODEL",
+      "harness_status": "PASSED",
+      "expected_marker": "'location' is not defined",
+      "expected_exit": "1",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "file": "globals.js",
+      "command": "jsprobe /work/probes/globals.js",
+      "capability_status": "OBSERVATION_ONLY",
+      "harness_status": "PASSED",
+      "expected_marker": "JS_RESULT:{",
+      "expected_exit": "0",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "file": "buffers.js",
+      "command": "jsprobe /work/probes/buffers.js",
+      "capability_status": "PASSED_RECOVERY_ONLY",
+      "harness_status": "PASSED",
+      "expected_marker": "BUFFER_LANGUAGE_OK",
+      "expected_exit": "0",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    }
+  ],
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/final3_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/final3_guest/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_eogtohrq/qmp.sock,server=on,wait=off"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "resources_before": [
+    130279,
+    2,
+    0
+  ],
+  "resources_after": [
+    130279,
+    2,
+    0
+  ],
+  "disk_after_sha256": "2ebcdc552e3c43b0bab37c947a358dbc119e73ae81a07e873ef976c8aa189922"
+}

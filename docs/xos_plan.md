@@ -93,7 +93,7 @@
 | E14 | 显示输入服务受限已验 | G02；Qt QPA不在此阶段 |
 | E15 | QtCore 6.8.3 受限客体功能通过 | G01/G03 受限通过；发行许可、绝对峰值和未支持接口另列，见 [0064](work_log/0064_qt_e15_qualification.md) |
 | E16 | QtGui/QPA 6.8.3、字体/PS2输入、独占 raster 全屏受限已验 | E14/E15，G04；见 [0066](work_log/0066_qt_e16_qualification.md)，非发行资格 |
-| E17 | Widgets小编辑器，未开始 | E16，G05 |
+| E17 | Qt Widgets 6.8.3 / Aurora Notes 受限客体功能通过，PR #13已合入 | E16，G05；见[0078](work_log/0078_qt_e17_aurora_qualification.md)，非发行资格 |
 | E18 | 无界面QML/QV4解释执行，未开始 | E15，不依赖Widgets，G06 |
 | E19 | Quick软件呈现，未开始 | E16/E18，G07 |
 | E20 | GUI整合/朋友试用，未开始 | Widgets/Quick可分别交付，G08–G10 |

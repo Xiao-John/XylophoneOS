@@ -1,0 +1,125 @@
+{
+  "status": "PASSED",
+  "tests": {
+    "widgets_lifecycle": {
+      "status": "PASSED",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/tests/virtio_gpu_run_qt.py",
+        "--runner",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/tests/qt6_widgets_acceptance.py",
+        "--backend",
+        "virtio",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/qualified/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_editor/notes.elf",
+        "--output",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/compat/widgets_lifecycle",
+        "--case",
+        "lifecycle"
+      ],
+      "error": null
+    },
+    "gui_input": {
+      "status": "PASSED",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/tests/virtio_gpu_run_qt.py",
+        "--runner",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/tests/qt6_gui_acceptance.py",
+        "--backend",
+        "virtio",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/qualified/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/final_gui/qt_demo.elf",
+        "--output",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/compat/gui_input",
+        "--case",
+        "interactive"
+      ],
+      "error": null
+    },
+    "gui_lifecycle": {
+      "status": "PASSED",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/tests/virtio_gpu_run_qt.py",
+        "--runner",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/tests/qt6_gui_acceptance.py",
+        "--backend",
+        "virtio",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/qualified/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/final_gui/qt_demo.elf",
+        "--output",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/compat/gui_lifecycle",
+        "--case",
+        "lifecycle"
+      ],
+      "error": null
+    },
+    "core_events": {
+      "status": "PASSED",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/tests/virtio_gpu_run_qt.py",
+        "--runner",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/tests/qt6_sdk_probe.py",
+        "--backend",
+        "virtio",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/qualified/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/core_regressions/core_events.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/compat/core_events.json",
+        "--marker",
+        "QT_EVENTS_OK"
+      ],
+      "error": null
+    },
+    "core_abi": {
+      "status": "PASSED",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/tests/virtio_gpu_run_qt.py",
+        "--runner",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/tests/qt6_sdk_probe.py",
+        "--backend",
+        "virtio",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/qualified/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/core_regressions/core_abi.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/compat/core_abi.json",
+        "--marker",
+        "QT_ABI_OK"
+      ],
+      "error": null
+    },
+    "core_lifecycle": {
+      "status": "PASSED",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/tests/virtio_gpu_run_qt.py",
+        "--runner",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/tests/qt6_sdk_probe.py",
+        "--backend",
+        "virtio",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/qualified/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/core_regressions/core_lifecycle.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/compat/core_lifecycle.json",
+        "--marker",
+        "QT_LIFECYCLE_OK"
+      ],
+      "error": null
+    }
+  }
+}

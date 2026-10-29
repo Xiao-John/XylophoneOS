@@ -143,3 +143,13 @@ SDL的CPU raster后端可复用相同mode/present/input，SDL不是Qt的前置�
 并接入 QMP PS/2 输入；显示服务/内核/ABI 未改。QPA 使用用户 RAM，锁外 wait_input、
 锁内事务，disconnect 后 pthread_join；一个独占全屏窗口。见 [E16实施](../plans/qt_e16_execution.md)
 及 [G04资格](../reports/qt_e16_qualified_20261028/qualification.json)。本节不改绑旧 E14 证据。
+
+## 2026-10-29 可选 VirtIO-GPU 2D 后端
+
+以上为保留的E14 VBE基线；新增平台后端的受限资格见
+[0081](../work_log/0081_virtio_gpu_2d_qualification.md)、
+[接口/所有权契约](../contracts/virtio_gpu_2d.md)。用户态Display Service与sys65/66布局不变，
+合法客户端RAM仍经认证、预检、复制后提交。VBE仍受支持；modern PCI VirtIO-GPU成功
+初始化时优先使用内核私有scatter backing和fenced transfer/flush。无GPU/初始化失败
+回退VBE，无受支持设备保留串口；运行期设备失效不承诺透明切换或热插拔恢复。
+这不是3D、Qt绘制/着色器加速、多窗口合成或通用用户MMIO/DMA接口。

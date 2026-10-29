@@ -1,9 +1,12 @@
+// SPDX-License-Identifier: MIT AND Apache-2.0
+// Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/console.hpp>
 #include <xos/fault.hpp>
 #include <xos/format.hpp>
 #include <xos/memory.hpp>
 #include <xos/platform.hpp>
 #include <xos/task.hpp>
+#include <xos/virtio_gpu.hpp>
 #include "build_info.hpp"
 
 namespace xos {
@@ -137,6 +140,8 @@ void execute() {
     else if (equals(line, "alloc")) { command_alloc(); }
     else if (equals(line, "free")) { command_free(); }
     else if (equals(line, "vmtest")) { command_vmtest(); }
+    else if (equals(line, "gpu-quota-test")) {format::text(virtio_gpu::resource_limit_test()?"gpu-quota-test pass\r\n":"gpu-quota-test unavailable_or_failed\r\n");}
+    else if (equals(line, "gpu-test")) {format::text(virtio_gpu::self_test()?"gpu-test pass\r\n":"gpu-test unavailable_or_failed\r\n");}
     else if (equals(line, "run")) {
         format::text("[sched] event=starting\r\n");
         tasks_start();

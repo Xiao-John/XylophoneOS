@@ -1,0 +1,19 @@
+{
+  "scripts/build.py": "42dec5fcf28f9c0291b80e05e918053f86b4de0d7096c21b427222d548c56494",
+  "src/kernel/arch/x86_64/display_tasks.inc": "de1d146369619c5b9c55c99ce433915db2f6f75dd94b31b49b7e1417934f6bb1",
+  "src/kernel/arch/x86_64/io.hpp": "52a657b92bf4da0e54d618c48f5b8a7a7866fbe609d50db17d25d494874f58e4",
+  "src/kernel/arch/x86_64/paging.cpp": "eb962792231f046cc1f93162a93c73695bebab370daeb8a53abf34fba0e9ff7e",
+  "src/kernel/core/console.cpp": "4c7dfe72758d8d0ca88bdc53ce96027677d125917e8e142917a0a2911600b5c5",
+  "src/kernel/include/xos/display.hpp": "866278e21fb14dc9ceb46f1d25db0dfa8a46595dfd2e52d163bb45d14e99e64d",
+  "src/kernel/include/xos/memory.hpp": "fff838fa61c34337b3eca9912623129cc8a8b1b2c58832091f841d3d2446412e",
+  "src/kernel/include/xos/pci.hpp": "0388765125af042f2f064b97dc86eea0b4901f88246ba834bb3da7150ad2122f",
+  "src/kernel/include/xos/virtio_gpu.hpp": "27f90e07dce37ec21b0e7a1573d88031844d81985f45854cb23ff3e4c5e4859a",
+  "src/kernel/platform/pc/display.cpp": "bc9715ec65f84c2c2f4256c70ffd19600f75b6a637f78db06fd76e6ce1a21f0b",
+  "src/kernel/platform/pc/pci.cpp": "1084cdf214cf7b755f0db97df23e7c38fa7bd2d7f110049121410ea7f1b84e8d",
+  "src/kernel/platform/pc/virtio_gpu.cpp": "843a32c58ee8c51f8ca16140dc768a5463c7a06d64851639456243b4fd502842",
+  "tests/fixtures/virtio_gpu/access_fault.cpp": "520259113593363554af3f4c1c6384695b94742cf7dc2a7e86c8bedca5c9b061",
+  "tests/virtio_gpu_acceptance.py": "8a095075387556c5bb03af63f11c247f561edd5b928174f20139f29a3645ae1a",
+  "tests/virtio_gpu_fault_profiles.py": "a273590e5f4b21a146f8db3b81a7bc0c7c1cd05c0c9841e894716163f523ea22",
+  "tests/virtio_gpu_qualification.py": "4934eb8e1a08e29d57e4ec5e757e465a319b2acab400b9a154fd817d10760917",
+  "tests/virtio_gpu_run_qt.py": "e273a2dbb9b7f75bc04ac5a755c742f3ca1ae0b0f3945454a3262646d6584a93"
+}

@@ -1,9 +1,9 @@
 # XOS 当前状态
 
-2026-10-28。本次同步的远端 main 为 be1e9c1，已合入 PR #9（QtGui/QPA）、#10
-（输入编辑/文档）和 #11（xypm P2）。当前组合保留日常工具、UTF-8 文件名、游戏及
-ncursesw 前期探针。各旧资格绑定原输入，本次 Git 整合不产生新组合客体资格。
-发布资产仍为 0.0.1-1026，未随本地整合更新。
+2026-10-29。本次GPU后端整合同步的远端 main 为 `85120a7`；E17/Aurora PR #13
+已由维护者合入，FB0故障包勘查与音频计划也已保留。当前组合继续保留日常工具、
+UTF-8文件名、游戏及ncursesw前期探针。新增整合资格限于0081的21套定向检查；
+其他旧资格仍绑定原输入，不构成全系统重验。发布资产仍为0.0.1-1026，未更新Release。
 原则裁决见[xos_plan.md第一部分](xos_plan.md#第一部分设计原则)，本页只登记事实与占用。
 
 ## FB0 应用故障包勘查（受限通过）
@@ -34,6 +34,19 @@ Widgets 6.8.3、可复用 `libXosAurora.a` 与单全屏图形编辑器。G05 **P
 保存提交错误为 UNKNOWN，不承诺任意失败/断电事务安全；不发布 Qt 静态产品/新 Release。
 本轮因上游无写权限，按用户最新指令通过独立功能 PR 交付，不自行合并。
 
+## VirtIO-GPU 2D 可选后端：受限客体资格通过
+
+2026-10-29，独立 `codex/virtio-gpu2d` 已同步 upstream `85120a7`；
+在最终整合镜像 `c8bdc86d5bbc2629` 重建并通过21套定向检查。
+FB0计划/测试与原E17事实均保留，运行时和公共ABI没有跨线修改。
+真实 modern VirtIO PCI、split queue、内核自有 scatter DMA、2D资源/scanout/
+transfer/flush、dirty region、设备reset及VBE回退；同Qt帧的1,440,000个RGB字节
+与VBE及客体QImage完全一致。证据与边界见[0081](work_log/0081_virtio_gpu_2d_qualification.md)。
+不新增 syscall/display wire，不授予用户MMIO/PCI IO/DMA，不改Qt/libc/文件/终端/xypm。
+固定473个DMA页属平台显示生命周期；不是逐客户端分配，也不是3D/Qt绘制加速。
+仅QEMU/单核/800×600受限通过，运行期设备失效后透明恢复、热插拔、SMP/真机未验。
+私有 worktree/build；通过独立功能PR交付，不自行合并main或改旧Release。
+
 ## 正在进行：ncursesw W0/W1
 
 W0 勘查和 W1 [工作契约草案](contracts/terminal_w1.md)已开始；W0 未冻结，W1 未
@@ -48,7 +61,7 @@ W0 勘查和 W1 [工作契约草案](contracts/terminal_w1.md)已开始；W0 未
 多字节候选配合重新编译的 XOS libc 适配层已在隔离目录交叉链接 locale 探针；
 仅为构建证据，运行及线程 profile 尚未验证，详情见[0076](work_log/0076_utf8_link_probe.md)。
 
-## 本次同步与交付
+## 2026-10-28 历史整合与交付（保留记录）
 
 本轮用户明确要求解决冲突后直接 push main，作为此次整合的交付例外，后续仍按 PR 流程。
 四个工作区均检查；本地未提交 ncursesw 契约/探针先保存为 6403fb9，同期新增链接探针一并

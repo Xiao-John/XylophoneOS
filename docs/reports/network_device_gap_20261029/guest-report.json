@@ -1,0 +1,425 @@
+{
+  "status": "PASSED",
+  "mode": "echo",
+  "build_id": "67883ca24e9dcdae",
+  "image_sha256": "f019c215cd7cec00d3a5f5bbdbe91f511d0c76325c9633c7baa5eecfda721d61",
+  "host_frames": [
+    {
+      "index": 0,
+      "sequence": 0,
+      "length": 60,
+      "sha256": "44840080bcf96af77b9497a4bf6e85ec07dfea0307d08aefceea27173f632f95"
+    },
+    {
+      "index": 1,
+      "sequence": 1,
+      "length": 83,
+      "sha256": "eca91c8b73733ce48936d5a0d958f3b4b6c480a6ba64dc1a371973a034e5d23d"
+    },
+    {
+      "index": 2,
+      "sequence": 2,
+      "length": 106,
+      "sha256": "497688e4740191af8600fce7c0b6829eba12026f13827849c594a6020e64033c"
+    },
+    {
+      "index": 3,
+      "sequence": 3,
+      "length": 129,
+      "sha256": "f5b7f3d0f5f9a1f783816093537082d20f2b06760300059780377ca2225149ae"
+    },
+    {
+      "index": 4,
+      "sequence": 4,
+      "length": 152,
+      "sha256": "90fb4b2c803c6ce1d3f19b58db3b0d5e71f74ea2543a4822c6d27c394c978a11"
+    },
+    {
+      "index": 5,
+      "sequence": 5,
+      "length": 175,
+      "sha256": "ff9ff3b9da0e7477c132689d7004e2df6dfb18bd87bd14962f8c4561a6283cb1"
+    },
+    {
+      "index": 6,
+      "sequence": 6,
+      "length": 198,
+      "sha256": "443a1c89c80a932a5a7df81a7d2504d944f6f0dd2d92ff985fd3346cb64e780e"
+    },
+    {
+      "index": 7,
+      "sequence": 7,
+      "length": 221,
+      "sha256": "23afec63ee39a87e58fde226df74a681532d7862d2a77b031b0dd365a68306bc"
+    },
+    {
+      "index": 8,
+      "sequence": 8,
+      "length": 244,
+      "sha256": "a6b0bdfda13d54ebd8ecf1695a3d3736887727762a795ce0bf3d681f026d5718"
+    },
+    {
+      "index": 9,
+      "sequence": 9,
+      "length": 267,
+      "sha256": "f2645a4a625164427c298833d4845a6ec0a1fb3105e020d921f9ca933043dca0"
+    },
+    {
+      "index": 10,
+      "sequence": 10,
+      "length": 290,
+      "sha256": "5bb9763b9e809fbaf3c1191f0dacb617ae5f322ca94d10c087552de2817ae29e"
+    },
+    {
+      "index": 11,
+      "sequence": 11,
+      "length": 313,
+      "sha256": "7fd163356d971eed76cf5343bcf0a5abbe3533ed230dee2554c3e16642834fb0"
+    },
+    {
+      "index": 12,
+      "sequence": 12,
+      "length": 336,
+      "sha256": "afaa0d07c5006d0f90927b77edda5e1a5eaea49a47f6d3ff84e336037baa158b"
+    },
+    {
+      "index": 13,
+      "sequence": 13,
+      "length": 359,
+      "sha256": "f511afca8580966d00db64d715a26f7210b34c240e1addc521c37e0bdbf67954"
+    },
+    {
+      "index": 14,
+      "sequence": 14,
+      "length": 382,
+      "sha256": "92c5248c8fcaf40a7edaf8b846897c2f7cd521bb7e254072f80f53fb1e9aae67"
+    },
+    {
+      "index": 15,
+      "sequence": 15,
+      "length": 1514,
+      "sha256": "fbe1b6b9693b04268f5cfd40b3fb6870b2b15e67940414016771cc8722e50242"
+    },
+    {
+      "index": 16,
+      "sequence": 0,
+      "length": 60,
+      "sha256": "44840080bcf96af77b9497a4bf6e85ec07dfea0307d08aefceea27173f632f95"
+    },
+    {
+      "index": 17,
+      "sequence": 1,
+      "length": 83,
+      "sha256": "eca91c8b73733ce48936d5a0d958f3b4b6c480a6ba64dc1a371973a034e5d23d"
+    },
+    {
+      "index": 18,
+      "sequence": 2,
+      "length": 106,
+      "sha256": "497688e4740191af8600fce7c0b6829eba12026f13827849c594a6020e64033c"
+    },
+    {
+      "index": 19,
+      "sequence": 3,
+      "length": 129,
+      "sha256": "f5b7f3d0f5f9a1f783816093537082d20f2b06760300059780377ca2225149ae"
+    },
+    {
+      "index": 20,
+      "sequence": 4,
+      "length": 152,
+      "sha256": "90fb4b2c803c6ce1d3f19b58db3b0d5e71f74ea2543a4822c6d27c394c978a11"
+    },
+    {
+      "index": 21,
+      "sequence": 5,
+      "length": 175,
+      "sha256": "ff9ff3b9da0e7477c132689d7004e2df6dfb18bd87bd14962f8c4561a6283cb1"
+    },
+    {
+      "index": 22,
+      "sequence": 6,
+      "length": 198,
+      "sha256": "443a1c89c80a932a5a7df81a7d2504d944f6f0dd2d92ff985fd3346cb64e780e"
+    },
+    {
+      "index": 23,
+      "sequence": 7,
+      "length": 221,
+      "sha256": "23afec63ee39a87e58fde226df74a681532d7862d2a77b031b0dd365a68306bc"
+    },
+    {
+      "index": 24,
+      "sequence": 8,
+      "length": 244,
+      "sha256": "a6b0bdfda13d54ebd8ecf1695a3d3736887727762a795ce0bf3d681f026d5718"
+    },
+    {
+      "index": 25,
+      "sequence": 9,
+      "length": 267,
+      "sha256": "f2645a4a625164427c298833d4845a6ec0a1fb3105e020d921f9ca933043dca0"
+    },
+    {
+      "index": 26,
+      "sequence": 10,
+      "length": 290,
+      "sha256": "5bb9763b9e809fbaf3c1191f0dacb617ae5f322ca94d10c087552de2817ae29e"
+    },
+    {
+      "index": 27,
+      "sequence": 11,
+      "length": 313,
+      "sha256": "7fd163356d971eed76cf5343bcf0a5abbe3533ed230dee2554c3e16642834fb0"
+    },
+    {
+      "index": 28,
+      "sequence": 12,
+      "length": 336,
+      "sha256": "afaa0d07c5006d0f90927b77edda5e1a5eaea49a47f6d3ff84e336037baa158b"
+    },
+    {
+      "index": 29,
+      "sequence": 13,
+      "length": 359,
+      "sha256": "f511afca8580966d00db64d715a26f7210b34c240e1addc521c37e0bdbf67954"
+    },
+    {
+      "index": 30,
+      "sequence": 14,
+      "length": 382,
+      "sha256": "92c5248c8fcaf40a7edaf8b846897c2f7cd521bb7e254072f80f53fb1e9aae67"
+    },
+    {
+      "index": 31,
+      "sequence": 15,
+      "length": 1514,
+      "sha256": "fbe1b6b9693b04268f5cfd40b3fb6870b2b15e67940414016771cc8722e50242"
+    }
+  ],
+  "runs": [
+    "net-test\r\n[virtio-net] pci id=1af4:1041 bus=0 slot=3 irq=11 kernel_only=1\r\n[virtio-net] ready VERSION_1 MAC MRG_RXBUF single_buffer MTU=1500 RX=16 TX=16 dma_pages=34 INTx=11 level=1 polling_idle=0\r\n[virtio-net] submitted=16 queue_backpressure=AGAIN invalid_lengths=INVALID waiting=HLT\r\n[virtio-net] test rx=16 tx_completed=16 irqs=2 rejected=2 dropped=0 failed=0 live_dma=34 rejected_header=0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000001 0x0000000000000000 \r\n[virtio-net] reset reclaimed=34 before=130215 baseline=130180 after=130214 result=pass\r\nnet-test pass\r\nxos64> ",
+    "net-test\r\n[virtio-net] ready VERSION_1 MAC MRG_RXBUF single_buffer MTU=1500 RX=16 TX=16 dma_pages=34 INTx=11 level=1 polling_idle=0\r\n[virtio-net] submitted=16 queue_backpressure=AGAIN invalid_lengths=INVALID waiting=HLT\r\n[virtio-net] test rx=16 tx_completed=16 irqs=16 rejected=2 dropped=0 failed=0 live_dma=34 rejected_header=0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000001 0x0000000000000000 \r\n[virtio-net] reset reclaimed=34 before=130214 baseline=130180 after=130214 result=pass\r\nnet-test pass\r\nxos64> "
+  ],
+  "access_elf_sha256": "7c4f741362068346d903abc7e511aff6f7bcf643ee3ac7680b6191461cb3cac3",
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/build/network/qualified_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/build/network/qualified_gates/echo_isolation/probe_disk.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_qzit5of4/qmp.sock,server=on,wait=off",
+    "-netdev",
+    "socket,id=net,connect=127.0.0.1:53275",
+    "-device",
+    "virtio-net-pci,netdev=net,disable-legacy=on,mac=52:54:00:12:34:56"
+  ],
+  "pci": [
+    {
+      "bus": 0,
+      "devices": [
+        {
+          "irq_pin": 0,
+          "bus": 0,
+          "qdev_id": "",
+          "slot": 0,
+          "class_info": {
+            "class": 1536,
+            "desc": "Host bridge"
+          },
+          "id": {
+            "device": 4663,
+            "subsystem-vendor": 6900,
+            "vendor": 32902,
+            "subsystem": 4352
+          },
+          "function": 0,
+          "regions": []
+        },
+        {
+          "irq_pin": 0,
+          "bus": 0,
+          "qdev_id": "",
+          "slot": 1,
+          "class_info": {
+            "class": 1537,
+            "desc": "ISA bridge"
+          },
+          "id": {
+            "device": 28672,
+            "subsystem-vendor": 6900,
+            "vendor": 32902,
+            "subsystem": 4352
+          },
+          "function": 0,
+          "regions": []
+        },
+        {
+          "irq_pin": 0,
+          "bus": 0,
+          "qdev_id": "",
+          "slot": 1,
+          "class_info": {
+            "class": 257,
+            "desc": "IDE controller"
+          },
+          "id": {
+            "device": 28688,
+            "subsystem-vendor": 6900,
+            "vendor": 32902,
+            "subsystem": 4352
+          },
+          "function": 1,
+          "regions": [
+            {
+              "bar": 4,
+              "size": 16,
+              "address": 49152,
+              "type": "io"
+            }
+          ]
+        },
+        {
+          "irq_pin": 1,
+          "bus": 0,
+          "qdev_id": "",
+          "irq": 9,
+          "slot": 1,
+          "class_info": {
+            "class": 1664,
+            "desc": "Bridge"
+          },
+          "id": {
+            "device": 28947,
+            "subsystem-vendor": 6900,
+            "vendor": 32902,
+            "subsystem": 4352
+          },
+          "function": 3,
+          "regions": []
+        },
+        {
+          "irq_pin": 0,
+          "bus": 0,
+          "qdev_id": "",
+          "slot": 2,
+          "class_info": {
+            "class": 768,
+            "desc": "VGA controller"
+          },
+          "id": {
+            "device": 4369,
+            "subsystem-vendor": 6900,
+            "vendor": 4660,
+            "subsystem": 4352
+          },
+          "function": 0,
+          "regions": [
+            {
+              "prefetch": true,
+              "mem_type_64": false,
+              "bar": 0,
+              "size": 16777216,
+              "address": 4244635648,
+              "type": "memory"
+            },
+            {
+              "prefetch": false,
+              "mem_type_64": false,
+              "bar": 2,
+              "size": 4096,
+              "address": 4273799168,
+              "type": "memory"
+            },
+            {
+              "prefetch": false,
+              "mem_type_64": false,
+              "bar": 6,
+              "size": 65536,
+              "address": -1,
+              "type": "memory"
+            }
+          ]
+        },
+        {
+          "irq_pin": 1,
+          "bus": 0,
+          "qdev_id": "",
+          "irq": 11,
+          "slot": 3,
+          "class_info": {
+            "class": 512,
+            "desc": "Ethernet controller"
+          },
+          "id": {
+            "device": 4161,
+            "subsystem-vendor": 6900,
+            "vendor": 6900,
+            "subsystem": 4352
+          },
+          "function": 0,
+          "regions": [
+            {
+              "prefetch": false,
+              "mem_type_64": false,
+              "bar": 1,
+              "size": 4096,
+              "address": 4273803264,
+              "type": "memory"
+            },
+            {
+              "prefetch": true,
+              "mem_type_64": true,
+              "bar": 4,
+              "size": 16384,
+              "address": 4261412864,
+              "type": "memory"
+            },
+            {
+              "prefetch": false,
+              "mem_type_64": false,
+              "bar": 6,
+              "size": 262144,
+              "address": -1,
+              "type": "memory"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "old_system_boot": "PASSED",
+  "ordinary_user_MMIO_PCI_IO_denied": "PASSED",
+  "fault_resource_baseline": [
+    130280,
+    2,
+    0
+  ],
+  "host_errors": []
+}

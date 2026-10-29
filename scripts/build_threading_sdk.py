@@ -33,8 +33,11 @@ def main():
     parser.add_argument('--gcc-source', type=Path)
     parser.add_argument('--output', type=Path, default=ROOT / 'build/threading_sdk')
     parser.add_argument('--logs-dir', type=Path, default=ROOT / 'build/threading_sdk_logs')
+    parser.add_argument('--cpp-work-dir', type=Path, default=ROOT / '.cache/xos_seed/threading_cpp')
     parser.add_argument('--cpp', action='store_true')
     args = parser.parse_args()
+    if args.cpp_work_dir != ROOT / '.cache/xos_seed/threading_cpp' and args.cpp_work_dir.exists():
+        parser.error('a custom --cpp-work-dir must not already exist')
     prefix = args.newlib_prefix.resolve()
     if args.cpp and args.gcc_source is None:
         parser.error('--gcc-source is required with --cpp')
@@ -143,7 +146,9 @@ def main():
     run(['x86_64-elf-ar', 'rcsD', str(archive), *map(str, compiled)], 'archive.log')
     # Keep the C++ configuration in a private, separate target runtime build.
     if args.cpp:
-        work = ROOT / '.cache/xos_seed/threading_cpp'
+        work = args.cpp_work_dir.resolve()
+        if work == ROOT or work.is_relative_to(ROOT / 'src') or work.is_relative_to(ROOT / 'localpilot'):
+            raise SystemExit('C++ build directory must not be a source directory')
         build = work / 'libstdcxx_build'
         (work / 'libgcc').mkdir(parents=True, exist_ok=True)
         shutil.copyfile(gcc / 'libgcc/gthr-posix.h', work / 'libgcc/gthr-default.h')

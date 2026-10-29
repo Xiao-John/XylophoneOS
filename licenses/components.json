@@ -589,6 +589,23 @@
       "distribution_status": "NOT_RUN: complete static source/relink materials, member-level license and binary distribution review; no new Release"
     },
     {
+      "name": "Pillow (CPython static imaging)",
+      "version": "11.3.0",
+      "path": "src/ports/cpython/pillow",
+      "source": "https://files.pythonhosted.org/packages/f3/0d/d0d6dea55cd152ce3d6767bb38a8fc10e33796ba4ba210cbab9354b6d238/pillow-11.3.0.tar.gz",
+      "license": "HPND",
+      "notices": [
+        "src/ports/cpython/pillow/LICENSE"
+      ],
+      "used_in": [
+        "Optional CPython static PIL._imaging with zlib; guest qualification separately recorded"
+      ],
+      "modifications": "Unmodified pinned Pillow C/Python sources; XOS static build selection and package-qualified builtin registration. Optional codecs not enabled.",
+      "artifact_sha256": {
+        "src/ports/cpython/pillow/LICENSE": "17f240ae101143707e5e7303a5d800450d9ccc7475b463cedb555cefdb3c6ece"
+      }
+    },
+    {
       "name": "QuickJS compatibility probe",
       "version": "2025-09-13-2",
       "path": "tests/fixtures/modern_apps",

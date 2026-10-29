@@ -1,0 +1,205 @@
+{
+  "status": "PASSED",
+  "case": "lifecycle",
+  "image_sha256": "a6df4df2c490d16df09905b218a993f6d4f1ce7e704aed291a5b67d3db7ecdca",
+  "elf_sha256": "998637cb1426315b06f780762a4e3bf8dfe2e024c3c6bed87ed5a32a6c7077ec",
+  "checks": [
+    {
+      "name": "client_auto_resource_recovery",
+      "status": "PASSED"
+    },
+    {
+      "name": "client_repeat_resource_recovery",
+      "status": "PASSED"
+    },
+    {
+      "name": "client_focus_resource_recovery",
+      "status": "PASSED"
+    },
+    {
+      "name": "client_idle_resource_recovery",
+      "status": "PASSED"
+    },
+    {
+      "name": "client_oom_resource_recovery",
+      "status": "PASSED"
+    },
+    {
+      "name": "client_quota_resource_recovery",
+      "status": "PASSED"
+    },
+    {
+      "name": "client_fault_resource_recovery",
+      "status": "PASSED"
+    },
+    {
+      "name": "client_second_resource_recovery",
+      "status": "PASSED"
+    },
+    {
+      "name": "client_kill_with_input_wait_and_timer_reclaims_surface_and_thread",
+      "status": "PASSED"
+    },
+    {
+      "name": "service_death_wakes_input_and_client_exits_all_resources_return",
+      "status": "PASSED"
+    },
+    {
+      "name": "service_restart_new_qt_client_recovers_and_serial_rescue_works",
+      "status": "PASSED"
+    },
+    {
+      "name": "service_fault_during_real_qt_present_releases_inflight_ipc",
+      "status": "PASSED"
+    }
+  ],
+  "build_receipt_sha256": "d0609ba70a19956c538195a18f4c9a43458a6b0aa2f806f98c4a3c387fa8a7da",
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "none",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/qualified/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_qt_g04_jjikstjs/test.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_2akz1myu/qmp.sock,server=on,wait=off",
+    "-device",
+    "virtio-gpu-pci,id=vgpu,disable-legacy=on"
+  ],
+  "baseline": [
+    129817,
+    2,
+    0
+  ],
+  "with_service": [
+    129773,
+    3,
+    1
+  ],
+  "measurements": {
+    "sampled_peak_user_pages": 3723,
+    "present_duration_ns": [
+      10000000,
+      0,
+      0,
+      0,
+      0,
+      0,
+      10000000,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      10000000,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      10000000,
+      0,
+      10000000,
+      10000000,
+      0,
+      10000000,
+      0,
+      0,
+      0,
+      10000000,
+      0,
+      0,
+      0,
+      0,
+      10000000,
+      10000000,
+      0,
+      0,
+      0,
+      0
+    ],
+    "paint_duration_ns": [
+      60000000,
+      0,
+      0,
+      0,
+      0,
+      0,
+      60000000,
+      0,
+      0,
+      0,
+      0,
+      10000000,
+      0,
+      0,
+      0,
+      0,
+      0,
+      10000000,
+      0,
+      0,
+      0,
+      0,
+      0,
+      60000000,
+      0,
+      10000000,
+      0,
+      70000000,
+      60000000,
+      0,
+      60000000,
+      0,
+      0,
+      0,
+      60000000,
+      0,
+      0,
+      0,
+      60000000,
+      60000000,
+      70000000,
+      0,
+      0,
+      0,
+      0,
+      50000000
+    ],
+    "normal_key_latency_ns": [],
+    "clock_resolution_ns": 10000000,
+    "absolute_peak": "NOT_RUN",
+    "cpu_percentage": "NOT_RUN"
+  }
+}

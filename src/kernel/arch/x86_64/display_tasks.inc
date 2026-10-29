@@ -56,6 +56,7 @@ i64 display_present_channel(u64 handle) {
             source+=amount;destination+=amount;remaining-=amount;
         }
     }
+    if(!display::commit(p.rect)){return display_unavailable;}
     display_presented=true;return 0;
 }
 

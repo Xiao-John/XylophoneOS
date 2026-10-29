@@ -1,0 +1,58 @@
+{
+  "build_id": "c8bdc86d5bbc2629",
+  "status": "passed",
+  "checks": [
+    "guest_shared_memory_stack_static_tls_fpu_timer_preemption",
+    "guest_version_reserved_bad_output_entry_stack_tls_quota_abort_rollback",
+    "guest_join_value_unique_self_unknown_detach_and_reclaim",
+    "guest_wait_compare_deadline_wake_blocked_and_pinned_heap",
+    "guest_main_thread_exit_last_worker_revokes_pending_reservation",
+    "guest_last_exit_waits_for_peer_preempted_between_begin_exit_and_thread_exit",
+    "guest_worker_inherits_process_authority_and_retains_child_on_thread_exit",
+    "guest_worker_fault_stops_entire_process_and_reclaims",
+    "guest_original_fault_isolation_supervisor_survives",
+    "guest_original_file_service_and_sync",
+    "guest_FIFO_unique_join_claim",
+    "guest_partial_prepare_real_ENOMEM_rollback",
+    "guest_timeout_wake_same_tick_single_completion",
+    "guest_cross_process_same_VA_wait_keys",
+    "guest_kill_removes_blocked_threads_and_wait_records"
+  ],
+  "scope": "T0/T1 mechanism probes; T2 newlib/pthread/C++ not qualified",
+  "runs": [
+    {
+      "mode": "core",
+      "iteration": 0,
+      "resources_after": [
+        130290,
+        2,
+        0
+      ]
+    },
+    {
+      "mode": "core",
+      "iteration": 1,
+      "resources_after": [
+        130290,
+        2,
+        0
+      ]
+    },
+    {
+      "mode": "core",
+      "iteration": 2,
+      "resources_after": [
+        130290,
+        2,
+        0
+      ]
+    }
+  ],
+  "image_sha256": "c5cac2b2d96e367d9822517101f5525fed362b0b278065745dee8f086785c4be",
+  "probe_sha256": "3545b02b3cd638c05b8def5c5e3fbb07ba93074e4c2144ef920642fdeb4b2939",
+  "resource_baseline": [
+    130290,
+    2,
+    0
+  ]
+}

@@ -34,7 +34,7 @@ try:
         for d in ('/usr', '/usr/bin', '/bin'): transfer(disk, 'mkdir', d)
         for dest, source in (('/usr/bin/dash', dash_elf), ('/usr/bin/xos-diag', a.system/'user_xos_diag.image.elf'), ('/bin/fault.elf', a.system/'user_fault.image.elf'), ('/bin/hello.elf', a.system/'user_hello.image.elf')):
             transfer(disk, 'import', dest, source)
-        for name, line in (('normal', 'exec /usr/bin/xos-diag /bin/hello.elf'), ('fault', 'exec /usr/bin/xos-diag /bin/fault.elf'), ('missing', 'exec /usr/bin/xos-diag /bin/missing')):
+        for name, line in (('normal', '(exec /usr/bin/xos-diag /bin/hello.elf); echo NORMAL:$?'), ('fault', '(exec /usr/bin/xos-diag /bin/fault.elf); echo FAULT:$?'), ('missing', '(exec /usr/bin/xos-diag /bin/missing); echo MISSING:$?')):
             script = tmp / (name + '.sh'); script.write_text(line + '\n')
             transfer(disk, 'import', '/bin/' + name + '.sh', script)
         guest = Guest(a.system/'xos.img', str(a.output.relative_to(ROOT/'build')) + '/dash', work_disk=disk, cpu='qemu64,+rdrand')
@@ -42,15 +42,18 @@ try:
         command(guest, 'demo keep', b'demo: keep')
         for pid in (1, 3, 4): command(guest, f'kill {pid}', b'kill: accepted')
         pump(guest, .3)
-        normal = command(guest, 'exec-driver /usr/bin/dash /bin/normal.sh', b'kind=exited code=0', timeout=90)
+        normal = command(guest, 'exec-driver /usr/bin/dash /bin/normal.sh', b'NORMAL:0', timeout=90)
         assert b'[fault-bundle] saved' not in normal
         report['checks'].append('dash_normal_exit_no_bundle')
-        fault = command(guest, 'exec-driver /usr/bin/dash /bin/fault.sh', b'kind=exited code=128', timeout=90)
+        fault = command(guest, 'exec-driver /usr/bin/dash /bin/fault.sh', b'FAULT:128', timeout=90)
         assert b'[xos-diag] kind=faulted vector=14' in fault
         match = re.search(rb'\[fault-bundle\] saved (/FAULTS/[0-9a-f]{32})', fault); assert match, fault[-3000:]
-        missing = command(guest, 'exec-driver /usr/bin/dash /bin/missing.sh', b'kind=exited code=127', timeout=90)
+        missing = command(guest, 'exec-driver /usr/bin/dash /bin/missing.sh', b'MISSING:127', timeout=90)
         assert b'[fault-bundle] saved' not in missing
         report['checks'].append('dash_missing_command_exit_127')
+        direct = command(guest, 'exec-driver /usr/bin/xos-diag /bin/fault.elf', b'kind=exited code=128', timeout=90)
+        assert b'[xos-diag] kind=faulted vector=14' in direct and b'[fault-bundle] saved /FAULTS/' in direct
+        report['checks'].append('xsh_external_diagnostic_fault')
         command(guest, 'sync', b'sync=ok'); (a.output/'dash.serial.log').write_bytes(guest.output); guest.close(); guest = None
         bundle = a.output/'bundle'; bundle.mkdir(exist_ok=True)
         for name in ('report.json', 'image.json', 'context.json', 'manifest.json'):

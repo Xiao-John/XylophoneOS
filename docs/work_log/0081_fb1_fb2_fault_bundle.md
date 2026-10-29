@@ -71,13 +71,20 @@ python3 tests/abi_doc_consistency.py --output-dir /workspace/xos-env/logs/fb12-d
 
 ## 边界与接续
 
-FB1/2通过范围仅限xsh直接启动并等待的文件ELF、page fault/#UD/除零及已列出场景。
+原FB1/2资格仅限xsh直接启动并等待的文件ELF、page fault/#UD/除零及已列出场景。
 FAT共享命名空间中的16包/2 MiB配额检查不具备跨进程原子性；没有UID权限隔离，
 故障包不提供保密或认证。日志/argv/环境、全局收集、后台/孙进程、寄存器/栈快照、
 真实硬件、任意断电/扇区撕裂和全量smoke/长期压力未验。FB3/FB4未实施。
 
 后续用户要求建PR时，已确认FB0经PR #15合入主线，合入内容与验收基线一致；本组
-提交移至该主线之后。dash没有FB1客体验收：`diag`是xsh内建入口，dash孙进程不在
-其收集范围；FB2脚本在宿主运行，不适用客体Shell双验收。宪法C27为后续适用的系统内
-工具规定尽可能分别经xsh和dash验收，不改写本组或历史证据。并发配额和更广泛设备
+提交移至该主线之后，又变基至含VirtIO-GPU PR #16的39083f9。用户要求补齐dash支持，
+新增独立 `xos-diag`：dash 通过子shell `(exec xos-diag 程序)` 保留启动授权并在结束后
+继续，xsh通过 `exec-driver` 使用同一工具。构建产物须安装到工作盘；普通外部启动不
+继承创建进程授权。首次普通调用因授权不足失败，第二次因旧CRT缺少exec ABI标记失败；
+两次原始日志保留于[新证据](../reports/fb12_dash_20261029/README.md)。
+
+最终组合build `f87bebabb97dc166` 重跑原xsh 14项FB1/FB2检查通过；dash验证正常退出、
+缺失命令退出127、page fault退出128并回到dash、导出故障包与目标ELF摘要一致；独立工具
+也在xsh触发故障并保存。FB2脚本在宿主运行，不适用客体Shell双验收。宪法C27为后续适用
+的系统内工具规定尽可能分别经xsh和dash验收，不改写历史证据。并发配额和更广泛设备
 故障仍待补足；FB3/4按需要另行实施。

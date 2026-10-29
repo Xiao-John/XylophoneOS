@@ -6,14 +6,15 @@ UTF-8文件名、游戏及ncursesw前期探针。新增整合资格限于0081的
 其他旧资格仍绑定原输入，不构成全系统重验。发布资产仍为0.0.1-1026，未更新Release。
 原则裁决见[xos_plan.md第一部分](xos_plan.md#第一部分设计原则)，本页只登记事实与占用。
 
-## FB1/FB2 应用故障包（本地受限通过）
+## FB1/FB2 应用故障包（受限通过）
 
-2026-10-29，`codex/fb2-offline-symbols` 基于尚未合并的 FB0 提交 `be1c21f`。
+2026-10-29，`codex/fb2-offline-symbols` 基于已合入FB0和VirtIO-GPU的主线 `39083f9`。
 受限 FB1/FB2 已在 build `32fe73250f191e04` 完成真实客体生成、sync/重启、导出
 和宿主符号定位；正常退出、无熵、配额、满盘、真实块写失败和路径替换各有定向证据。
 格式与使用见[FB1/FB2实施](implementation/fb12_fault_bundle.md)，验证见
-[0081](work_log/0081_fb1_fb2_fault_bundle.md)。本地工作尚未提交/建PR；无新增内核ABI。
-当前仅覆盖xsh直接启动并等待的文件ELF；并发配额原子性、全局收集、寄存器/栈、
+[0081](work_log/0081_fb1_fb2_fault_bundle.md)。更新后的组合 build `f87bebabb97dc166`
+在xsh和dash完成定向验收；无新增内核ABI。
+当前覆盖xsh及dash经显式诊断入口启动并等待的文件ELF；并发配额原子性、全局收集、寄存器/栈、
 任意断电安全和完整压力未验，不将受限结果扩大到FB3/FB4。
 
 ## FB0 应用故障包勘查（受限通过）

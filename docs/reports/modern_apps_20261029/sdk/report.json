@@ -1,0 +1,163 @@
+[
+  {
+    "name": "dlopen",
+    "scope": "required-interface compilation preflight, not a full upstream build",
+    "status": "FAILED",
+    "returncode": 1,
+    "command": [
+      "x86_64-elf-g++",
+      "-std=c++20",
+      "-nostdinc++",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/cpp/include",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/cpp/include/x86_64-elf",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/include",
+      "-I",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/sources/v8",
+      "-c",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/tests/fixtures/modern_apps/dlopen.cc",
+      "-o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/sdk-final/dlopen.o"
+    ]
+  },
+  {
+    "name": "file_watch",
+    "scope": "required-interface compilation preflight, not a full upstream build",
+    "status": "FAILED",
+    "returncode": 1,
+    "command": [
+      "x86_64-elf-g++",
+      "-std=c++20",
+      "-nostdinc++",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/cpp/include",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/cpp/include/x86_64-elf",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/include",
+      "-I",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/sources/v8",
+      "-c",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/tests/fixtures/modern_apps/file_watch.cc",
+      "-o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/sdk-final/file_watch.o"
+    ]
+  },
+  {
+    "name": "mprotect",
+    "scope": "required-interface compilation preflight, not a full upstream build",
+    "status": "FAILED",
+    "returncode": 1,
+    "command": [
+      "x86_64-elf-g++",
+      "-std=c++20",
+      "-nostdinc++",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/cpp/include",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/cpp/include/x86_64-elf",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/include",
+      "-I",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/sources/v8",
+      "-c",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/tests/fixtures/modern_apps/mprotect.cc",
+      "-o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/sdk-final/mprotect.o"
+    ]
+  },
+  {
+    "name": "pty",
+    "scope": "required-interface compilation preflight, not a full upstream build",
+    "status": "FAILED",
+    "returncode": 1,
+    "command": [
+      "x86_64-elf-g++",
+      "-std=c++20",
+      "-nostdinc++",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/cpp/include",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/cpp/include/x86_64-elf",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/include",
+      "-I",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/sources/v8",
+      "-c",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/tests/fixtures/modern_apps/pty.cc",
+      "-o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/sdk-final/pty.o"
+    ]
+  },
+  {
+    "name": "socket_header",
+    "scope": "required-interface compilation preflight, not a full upstream build",
+    "status": "FAILED",
+    "returncode": 1,
+    "command": [
+      "x86_64-elf-g++",
+      "-std=c++20",
+      "-nostdinc++",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/cpp/include",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/cpp/include/x86_64-elf",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/include",
+      "-I",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/sources/v8",
+      "-c",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/tests/fixtures/modern_apps/socket_header.cc",
+      "-o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/sdk-final/socket_header.o"
+    ]
+  },
+  {
+    "name": "v8_posix_system_includes",
+    "scope": "required-interface compilation preflight, not a full upstream build",
+    "status": "FAILED",
+    "returncode": 1,
+    "command": [
+      "x86_64-elf-g++",
+      "-std=c++20",
+      "-nostdinc++",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/cpp/include",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/cpp/include/x86_64-elf",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/include",
+      "-I",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/sources/v8",
+      "-c",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/tests/fixtures/modern_apps/v8_posix_system_includes.cc",
+      "-o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/sdk-final/v8_posix_system_includes.o"
+    ]
+  },
+  {
+    "name": "v8_target",
+    "scope": "required-interface compilation preflight, not a full upstream build",
+    "status": "FAILED",
+    "returncode": 1,
+    "command": [
+      "x86_64-elf-g++",
+      "-std=c++20",
+      "-nostdinc++",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/cpp/include",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/cpp/include/x86_64-elf",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/include",
+      "-I",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/sources/v8",
+      "-c",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/tests/fixtures/modern_apps/v8_target.cc",
+      "-o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/sdk-final/v8_target.o"
+    ]
+  }
+]

@@ -20,3 +20,12 @@ PR #13/#16已合并，#17仍open；所有旧worktree、分支、build和冻结�
 JS、静态产品发行许可在本登记PR均NOT_RUN。合入前公开设备接口实施BLOCKED，
 并不阻止独立N1驱动和本地HTML/CSS浏览器工程继续。下一步：审查并合入claimed登记，
 按提案冻结结构/错误数值，统一实施共享头、dispatch、SDK/manifest、权利/回收测试。
+
+## C28/C29 后续修订（2026-10-29）
+
+以上记录原时点，旧帧代理接续建议现已撤销。基于已合入PR #28的主线，撤回112
+`sys_net_device`认领，改写[通用设备授权设计](../contracts/network_device_v1_proposal.md)：
+候选请求布局、逐设备权利、MMIO、DMA、IRQ、撤销及quarantine供维护者审查，编号和
+完整数值另登记；不得把本设计视作实现授权。内核不管理VirtIO队列或代理帧。旧探针报告
+保持原字节和原输入；没有新客体、SDK、镜像或新运行资格。本修订执行 `python3 tests/docs_consistency.py`、`python3 tests/abi_doc_consistency.py
+--output-dir /tmp/xos_pr18_abi_audit` 与 `git diff --check` 均通过；所有新架构guest gates为NOT_RUN。

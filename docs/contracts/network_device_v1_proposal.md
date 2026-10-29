@@ -1,102 +1,110 @@
-# 网络设备 v1 认领提案（未实现）
+# 通用设备授权机制设计提案（未登记、未实现）
 
-2026-10-29。状态：**PROPOSED / BLOCKED_IMPLEMENTATION**。本PR仅认领一个编号，
-不提供源码常量、假成功桩或SDK supported声明。需本登记合入后才能实施公开接口。
-N1内部设备测试不依赖本提案合入；TCP/HTTP业务不进入内核。
+2026-10-29。**PROPOSED / IMPLEMENTATION BLOCKED**。本页替代旧 `sys_net_device`
+帧代理提案：撤回112认领，不分配任何编号、不定义共享头常量、不声明SDK能力。
+维护者须先按C20审核必要性及资源界限，再以独立登记PR冻结接口、编号和错误数值；
+本设计不授权实现或调用新ABI。遵循[xos_plan](../xos_plan.md) C28/C29及
+[时间域契约](time_domains.md)。旧N1的内核VirtIO驱动和帧复制不是交付方案。
 
-## 实际缺口与分层
+## 缺口与信任边界
 
-基线 upstream `39083f9968d84b5679c86a74a6c8394033c0d915`：
+基线 `39083f9` 的PCI BAR映射只供内核；用户空间缺少逐设备授权、DMA对象和IRQ通知。
+[原隔离探针](../reports/network_device_gap_20261029/README.md)记录普通用户MMIO及PCI IO
+失败，属于当时输入的历史证据，不证明本设计或新组合通过。现有 `sys_process_grant` 28
+只处理子进程spawn_depth，不复用其参数或暗中扩大语义。
 
-- `pci::map_bar_range`只提供内核有界UC映射。用户堆与IPC不能取得PCI配置、BAR、
-  DMA所有权或网卡完成事件；不应放开它们来方便移植。
-- `tasks.cpp::ipc_send/ipc_recv`只接受内核已建立且绑定双方PID的endpoint。
-  客户端不能自建“网卡handle”；现有`sys_ipc_handles`返回文件会话而非设备。
-- `sys_process_grant`28仅在supervisor拥有的未启动子进程上设置spawn_depth，第二参数
-  仅允许0/1。它没有设备right，不借用该参数悄悄改变旧语义。
-- PIC当前只开放PIT/PS2，IDT未提供一般PCI INTx入口。N1需先实际验证中断与回收。
-  已有GPU测试中用户MMIO/PCI IO会fault，不能把破坏隔离当用户态驱动方案。
+用户态驱动负责设备初始化、feature协商、设备队列、数据收发和设备协议复位；内核只执行
+通用发现、资源授予、映射、IRQ递送/应答、回收与撤权，不解析VirtIO队列或代理整帧。
+网络服务和浏览器通过用户态IPC通信，普通应用默认无PCI配置、MMIO或DMA权。
 
-本轮已独立重跑[真实失败探针](../reports/network_device_gap_20261029/README.md)：在N1
-实际BAR映射及32帧收发后，普通应用的MMIO写/PCI OUT分别fault14/13，且资源精确回收。
-这是现有隔离机制按预期拒绝，不能冒称已实现用户态网卡API。
+无IOMMU时受授权设备可能发起超出DMA对象的访问：pin和配额**不能证明DMA隔离**。
+首期只能授予受信、审核过的驱动及设备组合；必须明确设备可见地址、平台能力和信任假设。
+无法隔离不可信设备时拒绝其授权，不把软件边界宣传成硬件隔离。
 
-设备机制由PC平台驱动和通用受保护调用边界提供。用户态网络服务运行lwIP等固定来源
-协议栈，负责ARP/IP/UDP/TCP/DNS和客户端连接策略。普通浏览器只持用户态服务会话，
-不得取得原始帧、reset、DMA、PCI或进程管理权利。POSIX socket适配仍为NOT_RUN。
+## 可评审的候选请求布局
 
-## 编号、协作和文件所有权
+以下仅供审查，**不是已分配的wire ABI**；实现前须另行登记入口、op和错误数值，确认
+架构、对齐及向后兼容。候选单请求为64字节、小端、8字节对齐，输入先完整快照；所有
+保留位为零，不读调用者自报PID来认证身份。请求成功结果通过返回值及独立受检输出区返回，
+输出先完整验证/固定；失败不留下半授予。输出区与被撤销映射重叠时拒绝，不边撤销边copyout。
 
-仅提议把112从unallocated扩为reserved，并claimed `sys_net_device`。113以后保持
-unallocated；不预占整个未来网络号段。ABI表的allocated 1–66不变。
-本PR负责人只改本提案、登记、state和独立work_log；后续实现负责人统一改
-`process_record`权限/退出、dispatch、共享头、SDK普通/线程生成器及manifest。
-浏览器PR不修改这些公共文件。PR #17的FB1/FB2与C27提案不在本PR范围内。
+| 偏移 | 候选字段 | 约束 |
+|---:|---|---|
+| 0 | u32 version | 1，未知版本拒绝 |
+| 4 | u32 size | 64，其他拒绝 |
+| 8 | u32 operation | 本节概念操作，数值另登记 |
+| 12 | u32 flags | 首版均为0，另定义前拒绝非零 |
+| 16 | u64 object_token | 操作对象，未使用时为0 |
+| 24 | u64 input_address | 输入结构的调用者虚拟地址，未使用为0 |
+| 32 | u32 input_length | 精确结构大小，未使用为0 |
+| 36 | u32 output_length | 精确容量，未使用为0 |
+| 40 | u64 output_address | 调用者虚拟地址，未使用为0 |
+| 48 | u64 deadline_ns | 仅WAIT使用的系统单调绝对期限；0为非阻塞 |
+| 56 | u64 reserved | 必须0 |
 
-## 拟定调用、身份和生命周期
+所有输入/输出结构均版本化并校验长度、溢出、未使用字段和保留位；先认证主体、对象及
+权利，再访问对象相关输入。错误类别为INVALID、FAULT、DENIED、STALE、BUSY、RESOURCES、
+NO_DEVICE、TIMEOUT、CLOSED、IO和UNKNOWN；具体数值、优先级和SDK映射须在登记中冻结。
+用户输出区pin失败或短缓冲在副作用之前失败；完成后释放pin。候选资源输出字段均为固定
+宽度：`token:u64`、`generation:u64`、`rights:u64`、`length:u64`、`offset:u64`、
+`attributes:u64`，各操作规定未使用字段为0；不输出内核指针或任意物理地址。
 
-单个x86-64 profile入口，参数为用户request地址与精确64字节长度，第三参数必须0。
-结构固定宽度，不含内核指针；地址为调用进程虚拟地址。version=1、size=64，未知op、
-flag、reserved及版本均拒绝，不部分解释。字段顺序：
+## 主体、操作与权利
 
-| 字段 | 类型/偏移 | 语义 |
+对象由内核创建并绑定设备实例、进程生命周期身份及不可重用代际；token跨进程无效，
+不能仅用可复用PID作身份。代际耗尽时拒绝新分配而非回绕。认证supervisor通过其现有
+受保护子进程对象授予指定驱动实例，或经另行登记的运行期授权操作授予活体进程；不得
+以名称、路径或客户端声明身份授权。grant是明确的设备对象和rights子集，不可转授；
+无设备权的进程不能发现可操作资源。设备独占一个驱动owner，grant竞争返回BUSY。
+
+候选操作（具体编码及结构尺寸另登记）：
+
+| 操作 | 最小输入与输出 | 行为及权利 |
 |---|---|---|
-| version, size, operation, flags | u32 ×4 / 0 | flags首版必须0 |
-| object_token | u64 /16 | OPEN输出会话token；其余设备操作输入token；GRANT输入目标PID |
-| data_address, data_length | u64 ×2 /24 | 受检用户缓冲区，零地址只用于不需数据的op |
-| deadline_ns | u64 /40 | WAIT的绝对单调deadline，0为不阻塞 |
-| result_length, status | u32 ×2 /48 | 输入0；输出实际字节数/事件位，其他op不得擅用 |
-| reserved | u64 /56 | 必须0 |
+| GRANT | 受保护进程对象、设备实例、rights子集；返回代际token | 仅设备授权者；目标活体或未启动均需明确验证，不能借用spawn-only 28；不自动启动进程 |
+| QUERY | grant token；输出有限资源描述符：资源索引、长度、权限与属性 | 只暴露已获权设备资源的可授权窗口及IRQ能力，不开放任意PCI配置或全局扫描；设备发现和必要配置另经C20登记 |
+| MAP / UNMAP | grant token、资源索引、页对齐offset/length、请求权限；返回映射地址与映射token | 需MMIO_MAP；精确校验资源边界、溢出及映射属性。页粒度暴露其他设备或敏感寄存器时拒绝或由经审核的更小安全窗口解决；UNMAP使映射token失效并同步TLB |
+| DMA_ALLOC / DMA_RELEASE | grant token、长度、对齐及设备方向；返回DMA对象token、用户VA、设备可见地址和实际长度 | 需DMA；仅内核分配、固定并计入该设备和进程配额的页可作为DMA对象，不能把任意用户页/地址交给设备。释放前须证明设备不再访问或进入隔离 |
+| IRQ_BIND / WAIT / ACK | grant token、IRQ资源索引；返回事件token和序号；WAIT输入上次确认序号及deadline，ACK输入对应序号 | 需IRQ；仅授权路由。检查事件与睡眠原子化，序号防止丢唤醒；设备状态由用户驱动读取，内核不消费队列。ACK校验owner、代际和序号，重复/过期ACK拒绝 |
+| REVOKE / CLOSE | grant或对象token | 授权者可撤销运行中的grant并唤醒WAIT；owner可关闭。停止新操作、撤销映射/IRQ并执行以下DMA终止协议，旧token不可重指 |
 
-拟定op为INFO0、TX1、RX2、WAIT3、RESET4、CLOSE5、OPEN6、GRANT7。具体共享头
-尚未生成。INFO的输出结构、事件位和right位必须在实施前冻结并逐项验收。
+rights分别为QUERY、MMIO_MAP、DMA、IRQ，不因一项隐含其他项；操作/字段最终以另行
+登记契约为准。每一权限及DMA方向均须在grant和资源操作处验证。`QUERY` 的资源索引仅在
+该设备generation内有效。候选v1使用设备独占、单IRQ route、有限对象数；共享IRQ、热插拔、
+SMP和无受信硬件隔离情况下的不可信驱动均不宣称支持。
 
-- GRANT只允许已认证supervisor对其拥有且未启动的child授予显式TX/RX/WAIT/RESET
-  right子集；无名称/路径授权。首版不允许进一步委派。rights=0撤销，需唤醒现有等待。
-  具体rights位经独立小型grant输入结构传递，不能混入flags的保留位。
-- OPEN仅已被明确授予设备right的进程可调用，一次仅一个网络服务所有者。占用时BUSY。
-  owner是进程生命周期身份，token是不可重指新会话的generation标识，不能只用PID索引。
-- 所有操作先认证主体和right，再访问payload；request自身仍须按用户地址规则校验。
-  无权调用返回DENIED，泄漏给另一进程的token无效。OPEN成功不扩大right。
-- CLOSE使token失效、取消等待并停止会话新提交；不自动撤销原grant。退出/故障/exec
-  必须先撤销设备权利和token、停止新提交并按reset/quarantine契约处理outstanding DMA。
-  是否重新OPEN由有权用户态策略决定，不自动重连。fork不继承设备权利。
-- RESET必须持RESET right，先冻结提交，再实际reset并确认DMA停止；成功使旧token
-  全部失效，需重新OPEN。reset失败使设备不可用且DMA隔离保留；不释放仍可能被设备
-  写入的页。返回IO并标记在途发送结果UNKNOWN，不能宣称未发送/已远端收到。
+## IRQ、时间与终止顺序
 
-INFO含MAC、MTU、link/ready/failed状态和有界资源计数，不返回BAR/物理地址。事件检查
-与挂起在同一内核临界区完成；IRQ只记录完成并唤醒，协议栈不在中断上下文执行。
-WAIT按绝对单调时钟，最长单次30秒；不得丢唤醒或无限等待，无网络活动不持续轮询。
+IRQ到达时内核屏蔽/记录该路由待处理事件并唤醒等待者；ACK完成后按平台路由语义重新
+允许递送，用户驱动先处理并清除设备原因。设备原因持续或事件积压须有有界计数、溢出
+状态和可恢复/失败规则，不能无限排队或丢失导致永久睡眠。平台EOI与掩码不执行设备
+队列逻辑或隐式推进系统时间，透明有界诊断不得改变功能。WAIT采用统一系统单调deadline；
+任何设备计数或其他时间域不得直接作为期限，转换按时间域契约。
 
-## 资源和错误语义（实现前需冻结数值）
+撤销、exec、exit、故障均先标记closing，阻止新提交，取消等待并使grant/token失效；
+然后屏蔽和解绑IRQ，撤销CPU映射并同步TLB。**撤销CPU映射不等于DMA停止**：授权者或
+受控驱动必须在权限撤去前完成设备协议停止，或由独立审查的通用总线机制禁用bus mastering
+并确认终止；设备协议reset不由内核VirtIO驱动代做。停止需要的受控权限不得提前消失。
+仅有可验证的设备/总线停止及必要的事务排空证据时，才解除pin并将页归还通用池。
+设备无响应、reset/排空超时、无法证实停机时，设备标记不可用，相关DMA页及必要对象
+**quarantine**，禁止重分配和新owner复用；既有在途操作结果为UNKNOWN，不宣称未发生。
+重启/解除隔离须有明确安全证据，系统重启也不是本提案所证明的恢复机制。fork不继承
+设备权；exec及进程退出撤销。每个失败路径报告已回收与隔离数量，不要求危险的精确回收。
 
-首版拟定Ethernet MTU1500，无VLAN/TSO/校验和卸载/多队列；完整帧14–1514字节。
-RX/TX各16个descriptor，设备自有有界缓冲；实际DMA页数由N1收据冻结，不能用提案预算
-冒称测量。每次只复制一帧，用户指针永不交设备。无权提交任意目的DMA。
+## 限额、实现前登记和验收
 
-| 情况 | 拟定符号语义 |
-|---|---|
-| TX队列满 | AGAIN，0字节入队；重试须等待TX事件 |
-| TX成功 | 整帧已复制并入队；不承诺已发到线缆或对端接收，TCP由用户态ACK证明 |
-| RX为空 | AGAIN，0字节，无假EOF |
-| RX缓冲过小 | SMALL，报告所需长度，帧留在队列供重试；不悄悄截断 |
-| WAIT已到期限 | TIMEOUT，不保证下一瞬间无事件；调用者可再次检查 |
-| 设备缺失/初始化失败 | NO_DEVICE / IO；旧文件/Qt/串口继续可用 |
-| 关闭、撤销或失效token | CLOSED / INVALID；旧token不能命中新对象 |
-| 非法长度、地址、版本或保留位 | INVALID / FAULT；不提交设备 |
-| 配额或内存不足 | RESOURCES；失败路径回滚，仍活跃DMA只可隔离 |
-| 提交后设备故障/reset不确定 | IO + UNKNOWN在途语义；禁止伪造零执行 |
+设备和owner均有固定上限：grant数、MMIO总页数/映射数、DMA对象数/页数、IRQ绑定数及
+等待者数；具体数值在新登记PR以目标平台预算冻结，超额RESOURCES且无部分授予。设备
+可见地址宽度、对齐、缓存一致性和方向由平台契约明确；DMA对象和CPU映射不可跨设备
+借用。无IOMMU时不授予无法满足信任要求的对象，失败保持原有隔离。
 
-上述为XOS接口，不是errno数字承诺或POSIX socket。错误数值、INFO/grant布局和同步
-复制失败的原子性需由后续实现PR给出共享头、SDK与客体探针，不在本登记PR放占位实现。
-TCP连接对象另外需要session身份、配额、close/服务退出、部分send/超时/断线语义，
-由用户态network service v1专项登记；设备入口不是网络客户端API。
+登记前须冻结数字op、每操作精确输入/输出结构及reserved、rights、错误优先级、资源预算、
+线程竞争与撤销序列、设备发现/PCI配置的最小机制，以及停机确认/隔离回收策略。必须
+论证现有IPC、等待及资源管理为何不足，并核ABI冲突；本页不使112或任何编号claimed。
 
-## 实施验收与退出门槛
-
-登记合入后，公开实现必须同时提供普通/线程SDK、两个manifest、grant/撤销/退出测试、
-跨进程token拒绝、无卡/初始化失败、IRQ deadline/race、真实TX/RX、队列满/分配失败、
-reset回收/隔离、文件/Qt/线程定向回归。未通过不得升级allocated或supported。
-本提案不声称已经满足这些门槛，不把N1内核boot-monitor诊断作为N2客体TCP回执。
-HTTPS、CA/时间/随机数、证书链/域名校验以及JavaScript均独立NOT_RUN。
+真实新镜像验收须覆盖：无权/跨设备/越界/旧token/代际耗尽拒绝；实际用户态驱动ELF
+初始化VirtIO及双向收发；不同权限与DMA配额；页粒度越权拒绝；WAIT/ACK/撤销/超时竞态；
+故障与停止失败时DMA quarantine不被重新分配；正常退出、kill、fork/exec及资源计数；
+同组合文件、线程、显示与旧应用回归。须保存源码、SDK、ELF、镜像、QEMU命令和原始
+回执。所有上述新机制及guest gates **NOT_RUN**；旧N1结果不重绑。HTTPS、DNS及完整网络
+协议仍独立验收，不能由设备设计推定通过。

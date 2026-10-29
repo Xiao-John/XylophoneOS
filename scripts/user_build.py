@@ -77,10 +77,10 @@ def build_users(root, build, nasm, run, build_id):
     loader_objects.append(compile_source(root / "src/user/arch/x86_64/tls.cpp"))
     loader_archive = sdk / "lib/libxos_loader.a"
     run([tool("ar"), "rcsD", str(loader_archive), *loader_objects])
-    names = ("supervisor", "files", "demo", "fault", "spin", "slow", "echo", "hello", "libc_hello", "e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "display", "gfxdemo", "xypm_recover")
+    names = ("supervisor", "files", "demo", "fault", "spin", "slow", "echo", "hello", "libc_hello", "e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "display", "gfxdemo", "xypm_recover", "xos_diag")
     bootstrap_names = ("supervisor", "files")
-    libc_programs = ("libc_hello", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe")
-    disk_programs = ("e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe")
+    libc_programs = ("libc_hello", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "xos_diag")
+    disk_programs = ("e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "xos_diag")
     metadata = []
     header = ["#pragma once", "#include <xos/types.hpp>", "namespace xos::user_images {",
               "struct segment { u64 address, offset, files, memory; u32 permissions; };",
@@ -102,7 +102,7 @@ def build_users(root, build, nasm, run, build_id):
         run([tool("g++"), *X86_FLAGS, "-nostdlib", "-static", "-no-pie",
              "-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
              "-T", str(sdk / "user.ld"), str(sdk / ("crt0_posix.o" if name in ("runtime_probe", "cpp_runtime_probe", "tls_exit_probe") else "crt0_libc.o" if name in libc_programs else "crt0.o")), main,
-             *([str(loader_archive)] if name == "supervisor" else []), *fault_objects,
+             *([str(loader_archive)] if name in ("supervisor", "xos_diag") else []), *fault_objects,
              *([str(core_archive), str(loader_archive)] if name in ("threading_core_probe", "gfxdemo") else []),
              *([file_ui_object] if name == "supervisor" else []),
              *([*fatfs_objects] if name == "files" else []),
@@ -170,6 +170,8 @@ def build_users(root, build, nasm, run, build_id):
         "build_id": build_id, "abi": 1, "target": "x86_64-elf",
         "configuration": TARGET, "runtime_model": "single",
         "display_extensions": {"version": 1, "syscalls": [65, 66], "pixel_format": "XRGB8888", "surface_count": 1},
+        "diagnostic_extensions": {"fault_bundle_format": 1, "loader_receipt": "sha256-held-instance",
+                                  "diagnostic_shell_command": "diag"},
         "process_extensions": {"syscalls": list(range(54, 62)), "file_operations": [20, 21, 22],
             "startup_versions": [1, 2, 3], "exec_image_abi": 3, "exec_marker": ".xos.exec",
             "fork_supported": True, "exec_supported": True, "single_main_thread_only": True,

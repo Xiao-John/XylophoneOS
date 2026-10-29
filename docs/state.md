@@ -79,6 +79,8 @@ ncurses 候选源码锁和上游许可材料已登记，探针现在核整个 SD
 sys54 显式截止时间/console IRQ 等待已实现但未客体验证，老行为保持；前台独占及
 模式仍未实现，详见[0089](work_log/0089_explicit_input_wait.md)。
 相关的受限客体测试入口已准备但未运行，范围与未覆盖项见[0090](work_log/0090_wait_acceptance_harness.md)。
+W1 在本分支认领 sys80 通用字节流读取权机制，契约见[stream_lease](contracts/stream_lease.md)；
+目前仅设计与本地认领，尚未实现、跨分支同步或验收。
 
 ## 2026-10-28 历史整合与交付（保留记录）
 

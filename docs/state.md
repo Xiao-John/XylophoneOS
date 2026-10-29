@@ -6,6 +6,18 @@ UTF-8文件名、游戏及ncursesw前期探针。新增整合资格限于0081的
 其他旧资格仍绑定原输入，不构成全系统重验。发布资产仍为0.0.1-1026，未更新Release。
 原则裁决见[xos_plan.md第一部分](xos_plan.md#第一部分设计原则)，本页只登记事实与占用。
 
+## PR #23时间域契约同步
+
+匿名VM提案已同步当前C29；不再要求时间中断唯一写入，V1–V7仍NOT_RUN。
+无新实现或追加ABI，见[0098](work_log/0098_vm_time_domains.md)。文档占用解除。
+
+## 时间域与驱动边界修订（文档PR）
+
+2026-10-29，`codex/time_domains_docs` 基于远端0ec0ad6：C28澄清内核基础设施和存量整改，
+C29约束统一时间管理、显式时间域及EOI职责；专项契约给出禁止/允许案例和审查清单。
+仅文档，无新ABI、实现或客体资格，见[修订交接](work_log/0095_time_domain_amendment.md)。
+本组文档占用解除，不占公共build；其他分支未合入本PR。
+
 ## FB1/FB2 应用故障包（受限通过）
 
 2026-10-29，`codex/fb2-offline-symbols` 基于已合入FB0和VirtIO-GPU的主线 `39083f9`。

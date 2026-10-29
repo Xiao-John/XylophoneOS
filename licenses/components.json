@@ -589,6 +589,151 @@
       "distribution_status": "NOT_RUN: complete static source/relink materials, member-level license and binary distribution review; no new Release"
     },
     {
+      "name": "liteHTML and bundled Gumbo (Aurora Browser)",
+      "version": "liteHTML v0.9 commit 6ca1ab0419e770e6d35a1ef690238773a1dafcee; bundled Gumbo tree",
+      "path": "src/ports/aurora_browser",
+      "source": "https://github.com/litehtml/litehtml",
+      "license": "BSD-3-Clause AND Apache-2.0",
+      "notices": [
+        "src/ports/aurora_browser/licenses/litehtml-LICENSE",
+        "src/ports/aurora_browser/licenses/gumbo-LICENSE"
+      ],
+      "artifact_sha256": {
+        "src/ports/aurora_browser/licenses/litehtml-LICENSE": "71bd488e77ee821bf38d89e2b8a9c5ebe687553fcae9cefa00a96499792a3e23",
+        "src/ports/aurora_browser/licenses/gumbo-LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      "used_in": [
+        "static local-only Aurora HTML/CSS prototype; actual target engine and parser"
+      ],
+      "modifications": "No upstream code patches; XOS QPainter container, read-only content admission, shell and build code Apache-2.0. Exact upstream git archive and per-file hashes in source_lock.json.",
+      "distribution_status": "Local guest qualification only; Qt static relinking/source and full binary redistribution review NOT_RUN; no Release."
+    },
+    {
+      "name": "QuickJS compatibility probe",
+      "version": "2025-09-13-2",
+      "path": "tests/fixtures/modern_apps",
+      "source": "https://bellard.org/quickjs/quickjs-2025-09-13-2.tar.xz",
+      "license": "MIT",
+      "notices": [
+        "licenses/modern_apps/quickjs_LICENSE"
+      ],
+      "used_in": [
+        "Independent QuickJS guest language and Web platform gap probes; no default application or V8 claim"
+      ],
+      "modifications": "Two explicit source adaptations inherited from PR21; builder and runner provenance in modern2_runtime report",
+      "artifact_sha256": {
+        "licenses/modern_apps/quickjs_LICENSE": "598fd7fc928e4350abce36e337ba5a1346923c5c692f5be92c3d8e29ddd7c18d"
+      },
+      "distribution_review": "NOT_RUN; cached sources, test disk and receipts only"
+    },
+    {
+      "name": "psutil compatibility probe",
+      "version": "7.1.3",
+      "path": "tests/fixtures/modern_apps",
+      "source": "https://pypi.org/project/psutil/7.1.3/",
+      "license": "BSD-3-Clause",
+      "notices": [
+        "licenses/modern_apps/psutil_LICENSE"
+      ],
+      "used_in": [
+        "isolated modern application compatibility probes only; not default image application"
+      ],
+      "modifications": "QuickJS: two explicit source adaptations in quickjs_xos.patch; other inspected sources unchanged",
+      "artifact_sha256": {
+        "licenses/modern_apps/psutil_LICENSE": "b89c063b3786e28e0c0a38f1931db61fed35e69dd2a2966fbecffee0f46c8d10"
+      },
+      "distribution_review": "NOT_RUN; cached sources, test disk and receipts only"
+    },
+    {
+      "name": "Pillow compatibility probe",
+      "version": "11.3.0",
+      "path": "tests/fixtures/modern_apps",
+      "source": "https://pypi.org/project/Pillow/11.3.0/",
+      "license": "HPND",
+      "notices": [
+        "licenses/modern_apps/pillow_LICENSE"
+      ],
+      "used_in": [
+        "isolated modern application compatibility probes only; not default image application"
+      ],
+      "modifications": "QuickJS: two explicit source adaptations in quickjs_xos.patch; other inspected sources unchanged",
+      "artifact_sha256": {
+        "licenses/modern_apps/pillow_LICENSE": "17f240ae101143707e5e7303a5d800450d9ccc7475b463cedb555cefdb3c6ece"
+      },
+      "distribution_review": "NOT_RUN; cached sources, test disk and receipts only"
+    },
+    {
+      "name": "Code OSS compatibility probe",
+      "version": "1.106.0",
+      "path": "tests/fixtures/modern_apps",
+      "source": "https://github.com/microsoft/vscode/tree/1.106.0",
+      "license": "MIT",
+      "notices": [
+        "licenses/modern_apps/code_oss_LICENSE.txt"
+      ],
+      "used_in": [
+        "isolated modern application compatibility probes only; not default image application"
+      ],
+      "modifications": "QuickJS: two explicit source adaptations in quickjs_xos.patch; other inspected sources unchanged",
+      "artifact_sha256": {
+        "licenses/modern_apps/code_oss_LICENSE.txt": "9480271317925265e806a9a196aaa33410a962fa9d4d1e248a4a5187bc8c9df9"
+      },
+      "distribution_review": "NOT_RUN; cached sources, test disk and receipts only"
+    },
+    {
+      "name": "pypdf compatibility probe",
+      "version": "6.1.1",
+      "path": "tests/fixtures/modern_apps",
+      "source": "https://pypi.org/project/pypdf/",
+      "license": "BSD-3-Clause",
+      "notices": [
+        "licenses/modern_apps/pypdf_LICENSE"
+      ],
+      "used_in": [
+        "isolated modern application compatibility probes only; not default image application"
+      ],
+      "modifications": "QuickJS: two explicit source adaptations in quickjs_xos.patch; other inspected sources unchanged",
+      "artifact_sha256": {
+        "licenses/modern_apps/pypdf_LICENSE": "a97ac230e5f33ef10a5367a850eb01f91f1a0b064e34742c7794d2294557f524"
+      },
+      "distribution_review": "NOT_RUN; cached sources, test disk and receipts only"
+    },
+    {
+      "name": "defusedxml compatibility probe",
+      "version": "0.7.1",
+      "path": "tests/fixtures/modern_apps",
+      "source": "https://pypi.org/project/defusedxml/",
+      "license": "PSF-2.0",
+      "notices": [
+        "licenses/modern_apps/defusedxml_LICENSE"
+      ],
+      "used_in": [
+        "isolated modern application compatibility probes only; not default image application"
+      ],
+      "modifications": "QuickJS: two explicit source adaptations in quickjs_xos.patch; other inspected sources unchanged",
+      "artifact_sha256": {
+        "licenses/modern_apps/defusedxml_LICENSE": "b80ce9da8c42a1f91079627fbbe2bf27210ae108a0ffe5f077d5b08e076c24c8"
+      },
+      "distribution_review": "NOT_RUN; cached sources, test disk and receipts only"
+    },
+    {
+      "name": "Pillow (CPython static imaging)",
+      "version": "11.3.0",
+      "path": "src/ports/cpython/pillow",
+      "source": "https://files.pythonhosted.org/packages/f3/0d/d0d6dea55cd152ce3d6767bb38a8fc10e33796ba4ba210cbab9354b6d238/pillow-11.3.0.tar.gz",
+      "license": "HPND",
+      "notices": [
+        "src/ports/cpython/pillow/LICENSE"
+      ],
+      "used_in": [
+        "Optional CPython static PIL._imaging with zlib; guest qualification separately recorded"
+      ],
+      "modifications": "Unmodified pinned Pillow C/Python sources; XOS static build selection and package-qualified builtin registration. Optional codecs not enabled.",
+      "artifact_sha256": {
+        "src/ports/cpython/pillow/LICENSE": "17f240ae101143707e5e7303a5d800450d9ccc7475b463cedb555cefdb3c6ece"
+      }
+    },
+    {
       "name": "lwIP",
       "version": "2.2.1",
       "path": "src/ports/lwip",

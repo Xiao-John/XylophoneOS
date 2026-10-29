@@ -1,0 +1,10 @@
+{
+  "scope": "HOST_FIXTURE_ONLY; N2 BLOCKED until lawful bridge",
+  "host": "127.0.0.1",
+  "port": 61612,
+  "guest_host": "10.0.2.2",
+  "token": "9f545df9cd655d70f8d387a0f5ac1ec5",
+  "path": "/probe/9f545df9cd655d70f8d387a0f5ac1ec5",
+  "body_sha256": "5e13548242bb0b0625eec1f5a354f30ad38f3781e62aedb6b4de86ae98c6d8e5",
+  "tls": "NOT_RUN"
+}

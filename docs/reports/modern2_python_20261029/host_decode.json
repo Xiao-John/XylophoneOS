@@ -1,0 +1,19 @@
+{
+  "scope": "independent host decoder verifies real exported guest bytes, not guest execution",
+  "pillow_version": "12.3.0",
+  "raw_sha256": "098eac87305cc0f96b14e264312587bf236f960644366c5b617453e188863053",
+  "checks": [
+    {
+      "format": "png",
+      "bytes": 88,
+      "sha256": "a71a482cb9b7b7b95d0970d90a67f8fff29b3121fb96474bc7e7b4879f672948",
+      "status": "PASSED"
+    },
+    {
+      "format": "bmp",
+      "bytes": 822,
+      "sha256": "76895d2586036597e46a3fc4e73482576e7edadca2d5e63d1d7352d4584c026c",
+      "status": "PASSED"
+    }
+  ]
+}

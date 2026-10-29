@@ -1,0 +1,37 @@
+{
+  "x86_64-elf-gcc": {
+    "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
+    "sha256": "078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f",
+    "version": "x86_64-elf-gcc (GCC) 16.2.0"
+  },
+  "x86_64-elf-g++": {
+    "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-g++",
+    "sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
+    "version": "x86_64-elf-g++ (GCC) 16.2.0"
+  },
+  "x86_64-elf-as": {
+    "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-as",
+    "sha256": "530cf6fbe7d857e0d4ebbc52bcc017867fb7af65552a1f842dbcaa5c50db9026",
+    "version": "GNU assembler (GNU Binutils) 2.47.20260726"
+  },
+  "x86_64-elf-ld": {
+    "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-ld",
+    "sha256": "92002feac2ed2e5b05ae6fb47a1aab2979b3b46bd861a4439838e6bcb20e7fe5",
+    "version": "GNU ld (GNU Binutils) 2.47.20260726"
+  },
+  "x86_64-elf-strip": {
+    "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-strip",
+    "sha256": "11763c5485c8cb9ff5257348ba5e54aaaadb8adc9592551e14a566b78c7ae43e",
+    "version": "GNU strip (GNU Binutils) 2.47.20260726"
+  },
+  "nasm": {
+    "path": "/Users/perry_guo/homebrew/bin/nasm",
+    "sha256": "5d22db7ed80aee4eb0e1cb5ff8a87e40294012f6ddf943601556922d5128b725",
+    "version": "NASM version 3.02 compiled on Jun 29 2026"
+  },
+  "qemu": {
+    "path": "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
+    "version": "QEMU emulator version 11.1.2"
+  }
+}

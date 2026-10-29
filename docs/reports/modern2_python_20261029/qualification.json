@@ -1,0 +1,236 @@
+{
+  "base_sha": "aaec2e9d8ffe61ce1d523cd56852d36cde3edd07",
+  "system_build_id": "ec4b7ffa0c53f5a4",
+  "source_sdk_verification": "PASSED_EXACT_CURRENT_BYTES",
+  "core_status": "PASSED_CORE_SUBSET",
+  "core_harness_checks": [
+    {
+      "name": "xsh_success",
+      "status": "PASSED",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "xsh_error",
+      "status": "PASSED",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "xsh_recovery",
+      "status": "PASSED",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "dash_success",
+      "status": "PASSED",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "dash_error",
+      "status": "PASSED",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "original_dependency_observations",
+      "status": "PASSED"
+    }
+  ],
+  "thread_qualification": "UNSUPPORTED_BLOCKED_UNRESOLVED_PRIOR_DASH_MALLOC_FAULT",
+  "final_thread_diagnostics": [
+    {
+      "name": "xsh_original_threads",
+      "status": "PASSED",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "dash_original_threads",
+      "status": "PASSED",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "xsh_thread_pillow",
+      "status": "PASSED",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "dash_thread_diagnosed",
+      "status": "PASSED",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "xsh_thread_baseline",
+      "status": "PASSED",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "dash_thread_baseline",
+      "status": "PASSED",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "dash_thread_pillow",
+      "status": "PASSED",
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    }
+  ],
+  "resources_before": [
+    130279,
+    2,
+    0
+  ],
+  "resources_after": [
+    130279,
+    2,
+    0
+  ],
+  "pillow_version": "11.3.0",
+  "pillow_core_c_sources": 76,
+  "pillow_locked_code_files": 217,
+  "artifacts": [
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-python/build/modern2-python/final-system/xos.img",
+      "bytes": 1474560,
+      "sha256": "7538d7bc8fc3f517c920ecd26cb1c1e2e7215f899204f4f237ce0ed4ea202ed1",
+      "retention": "local only; no binary release; work disks may contain private source"
+    },
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-python/build/modern2-python/final-system/kernel.elf",
+      "bytes": 1543768,
+      "sha256": "7b90bb09816a399202ec793cf7d518d8ed34e5a9ba4be7515a1784807094bd29",
+      "retention": "local only; no binary release; work disks may contain private source"
+    },
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-python/.cache/xos_seed/cpython/d2d064e8db8332bc7d91/target_build/python.exe",
+      "bytes": 47526744,
+      "sha256": "53f97bd25f3f982ce77ffa667a7c6d87b62dae21d64e9105695dfd45b6a8674c",
+      "retention": "local only; no binary release; work disks may contain private source"
+    },
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-python/.cache/xos_seed/cpython/d2d064e8db8332bc7d91/stage_py1/usr/bin/python3",
+      "bytes": 9653344,
+      "sha256": "3ee8819c9a02b7b967da96455fb1c105abbc21d9006bfaf0af5c9aacfa0a5ca2",
+      "retention": "local only; no binary release; work disks may contain private source"
+    },
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-python/build/modern2-python/final-guest/work.img",
+      "bytes": 2147483648,
+      "sha256": "7a7fc59a3fbba1f2ea093b5330600c3cb012e34b5740643b32c77835eb634205",
+      "retention": "local only; no binary release; work disks may contain private source"
+    },
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-python/build/modern2-python/guest-attempt2/work.img",
+      "bytes": 2147483648,
+      "sha256": "286236a3dfe523a894f1cb7f4d55fc4bdf533bd2d602e4741cfc476647aa4dfd",
+      "retention": "local only; no binary release; work disks may contain private source"
+    },
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-python/build/modern2-python/guest-attempt1/work.img",
+      "bytes": 2147483648,
+      "sha256": "67df4d93b1172c912de97afefcc8c1d19e35cdf45fa7d9bc7d3651e85631f210",
+      "retention": "local only; no binary release; work disks may contain private source"
+    }
+  ],
+  "private_originals": [
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-python/build/modern2-python/guest-attempt2/report.json",
+      "bytes": 154198,
+      "sha256": "f7e333a111b1912f08b57d86ad20d0f0f01b63c0e031ce281f599096144dee03",
+      "retention": "local private original; public copy removes only private traceback source lines"
+    },
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-python/build/modern2-python/guest-attempt2/serial.log",
+      "bytes": 36090,
+      "sha256": "72ba972337c334d330417a64f683c122b3b4f08f8548e9c607bd859cd9b0debd",
+      "retention": "local private original; public copy removes only private traceback source lines"
+    },
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-python/build/modern2-python/guest-attempt2/dependencies.log",
+      "bytes": 25717,
+      "sha256": "24bdc67763bdfec26e0a91584ac41f918e22608a6385f0d0ce962796be8629a2",
+      "retention": "local private original; public copy removes only private traceback source lines"
+    },
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-python/build/modern2-python/final-guest/report.json",
+      "bytes": 155420,
+      "sha256": "695d34d3db1bf000fabee9a75fc74bcdd24c99bb0c0197300484ba234cf13a32",
+      "retention": "local private original; public copy removes only private traceback source lines"
+    },
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-python/build/modern2-python/final-guest/serial.log",
+      "bytes": 43746,
+      "sha256": "a2c9a9e6ed4275f3fac79e90676a1e66160de603fa9a3cb2e68c392c169e8712",
+      "retention": "local private original; public copy removes only private traceback source lines"
+    },
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-python/build/modern2-python/final-guest/dependencies.log",
+      "bytes": 25717,
+      "sha256": "db05785299eef83238a589eb2ce4d56509616d8e1f4d22432d865ad3674280e3",
+      "retention": "local private original; public copy removes only private traceback source lines"
+    }
+  ],
+  "original_fault": {
+    "iteration": "guest-attempt2",
+    "vector": 14,
+    "rip": "0x4037927b",
+    "cr2": "0x60cc5fc8",
+    "worker_tid": 20,
+    "main_tid": 17,
+    "rip_symbol": "_malloc_r",
+    "source": "newlib/libc/stdlib/_mallocr.c:2597",
+    "rsp": "NOT_CAPTURED",
+    "root_cause": "UNKNOWN; final limited controls did not reproduce; no runtime/allocator fix applied"
+  },
+  "N2": "BLOCKED",
+  "LocalPilot_API_1_0": "BLOCKED",
+  "identity_operator_UNKNOWN": "NOT_RUN",
+  "release": "NOT_QUALIFIED",
+  "delivery_base_sha": "169f51e6b410863b8d8c9707b7ea84a6f649d59c",
+  "delivery_update": "PR24 docs-only C28/C29 merge; no code/runtime change or new guest-run claim"
+}

@@ -64,6 +64,8 @@ transfer/flush、dirty region、设备reset及VBE回退；同Qt帧的1,440,000�
 本组负责 `docs/contracts/anonymous_vm.md`、ABI 67 的 claimed 提案、PX 路线和
 `docs/reports/modern2_px4a_20261029/`；共享头、dispatch、SDK、内核和旧证据不改。
 具体认领须由维护者审查合入后才能实施；本分支不是全项目登记，运行资格仍 **BLOCKED**。
+后续已合入 upstream `169f51e` 的PR #24两份文档，明确C29公共唯一时基消费/禁止VM自建tick；
+未改原aaec2e9源码审计或回执，未重绑旧测试，未实施公共时基/VM。
 独立 `build/modern2_px4a/` 仅作源码审计，不构建/运行新客体。网络112属 PR #18，未触碰。
 
 ## 正在进行：ncursesw W0/W1

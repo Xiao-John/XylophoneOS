@@ -2,6 +2,9 @@
 #include "safe_file.hpp"
 #include "../aurora/aurora.hpp"
 #include "../aurora/style.hpp"
+#include "../aurora/ssg.hpp"
+#include <QtCore/QJsonDocument>
+#include <memory>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QPushButton>
@@ -32,6 +35,13 @@ class NoteHighlight final : public QSyntaxHighlighter {
 public:explicit NoteHighlight(QTextDocument *doc):QSyntaxHighlighter(doc){}
 };
 class Editor final : public aurora::Canvas {
+    std::unique_ptr<aurora::QtScene> scene;
+    quint64 previous_scene=0;
+    QString previous_epoch;
+    void dump_scene(){if(!scene)return;const auto snapshot=scene->snapshot(false,"document");
+        std::printf("SSG_NOTES_SNAPSHOT %s\n",QJsonDocument(snapshot).toJson(QJsonDocument::Compact).constData());
+        std::printf("SSG_NOTES_DIFF %s\n",QJsonDocument(scene->diff(previous_scene,previous_epoch)).toJson(QJsonDocument::Compact).constData());
+        previous_scene=snapshot["sceneVersion"].toString().toULongLong();previous_epoch=snapshot["sourceEpoch"].toString();}
     QLineEdit *path;
     QPlainTextEdit *text;
     QLabel *status,*fileTitle,*sideFile,*position;
@@ -108,7 +118,7 @@ protected:
     }
     void closeEvent(QCloseEvent *event) override {event->ignore();request(Pending::Quit);}
 public:
-    explicit Editor(QString initial) {
+    explicit Editor(QString initial,bool ssg_probe=false) {
         setWindowTitle("Xylophone Notes — Aurora Glass");
         setStyleSheet("QLabel { color: #becce2; background: transparent; } QLineEdit { background: rgba(9,20,40,120); color: #e0eafa; border: 1px solid rgba(180,207,243,35); border-radius: 10px; padding: 6px 10px; selection-background-color: #536eb7; } QLineEdit:focus { border-color: #8abddf; } QPlainTextEdit { color: #dce4f3; background: transparent; border: 0; selection-background-color: #4a5e9d; selection-color: #ffffff; } QScrollBar:vertical { background: transparent; width: 7px; margin: 6px 0; } QScrollBar::handle:vertical { background: #52627e; border-radius: 3px; min-height: 28px; } QScrollBar::handle:vertical:hover { background: #8299bf; } QScrollBar::add-line:vertical,QScrollBar::sub-line:vertical { height: 0px; } QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical { background: transparent; } QScrollBar:horizontal { background: transparent; height: 7px; } QScrollBar::handle:horizontal { background: #52627e; min-width: 28px; border-radius: 3px; } QScrollBar::add-line:horizontal,QScrollBar::sub-line:horizontal { width: 0; }");
         auto *shell=new QHBoxLayout(this);shell->setContentsMargins(32,32,32,32);shell->setSpacing(32);
@@ -148,6 +158,8 @@ public:
         connect(path,&QLineEdit::returnPressed,this,[this]{request(Pending::Open);});
         connect(text,&QPlainTextEdit::textChanged,this,[this]{if(!loading){message("Modified — not saved");std::printf("EDITOR_CHANGE characters=%d\n",text->document()->characterCount()-1);}});
         connect(text,&QPlainTextEdit::selectionChanged,this,[this]{std::printf("EDITOR_SELECTION start=%d end=%d\n",text->textCursor().selectionStart(),text->textCursor().selectionEnd());});
+        if(ssg_probe){scene=std::make_unique<aurora::QtScene>(this);scene->host_allow_observation(true);
+            shortcut(QKeySequence(Qt::CTRL|Qt::Key_I),[this]{dump_scene();});}
         setGeometry(QApplication::primaryScreen()->geometry());showFullScreen();
         if(!initial.isEmpty()) openFile();text->setFocus();
         auto *sampler=new QTimer(this);sampler->setInterval(1000);
@@ -156,12 +168,13 @@ public:
             std::printf("EDITOR_SAMPLE pages=%u threads=%u scroll=%d cursor=%d\n",stats.process_user_pages,stats.threads,text->verticalScrollBar()->value(),text->textCursor().position());
         });sampler->start();
         QTimer::singleShot(250,this,[this]{logPoint("save",saveButton);logPoint("exit",exitButton);logPoint("document",text->viewport());logPoint("path",path);
+            if(scene){std::printf("SSG_NOTES_TREE %s\n",QJsonDocument(scene->snapshot()).toJson(QJsonDocument::Compact).constData());dump_scene();}
             std::printf("QT_EDITOR_READY viewport=%dx%d\n",text->viewport()->width(),text->viewport()->height());});
     }
 };
 int main(int argc,char **argv) {
     QApplication app(argc,argv);aurora::initialize(app);
     QFont font(QStringLiteral("DejaVu Sans"));font.setPixelSize(16);app.setFont(font);
-    Editor editor(argc>1?QString::fromUtf8(argv[1]):QString());
+    Editor editor(argc>1 && QByteArray(argv[1])!="--ssg-probe"?QString::fromUtf8(argv[1]):QString(),app.arguments().contains("--ssg-probe"));
     return app.exec();
 }

@@ -1,8 +1,8 @@
 # XOS 当前状态
 
-2026-10-30：Aurora UI SDK v2 的原生设计/质量/应用内语义原型已验，见[0102](work_log/0102_aurora_ui_v2_sdk.md)。
-内核/系统 ABI/QPA 源码改动为0。用户明确启动AI-native用户态方向；完整桌面和应用接入由独立审查单元交付。
-深色 Midnight Current 是完善优先方向，最终审美待复核。
+2026-10-30：原生[Aurora SDK](work_log/0102_aurora_ui_v2_sdk.md)及[Notes/Browser SSG 接入](work_log/0103_aurora_ssg_consumers.md)已通过限定客体验收。
+跨进程SSG/合成器/生产权限仍BLOCKED，无内核/系统ABI/QPA改动；LocalPilot仅LP0研究。
+单Surface桌面另一个审查单元交付。旧资格与失败保持原输入。
 
 ## 保留的历史状态
 

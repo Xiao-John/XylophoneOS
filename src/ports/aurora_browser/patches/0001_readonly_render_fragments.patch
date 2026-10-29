@@ -1,0 +1,38 @@
+--- a/include/litehtml/element.h
++++ b/include/litehtml/element.h
+@@ -51,6 +51,8 @@
+ 		bool						is_inline_box()				const;	// returns true if element is inline box (inline-table, inline-box, inline-flex)
+ 		bool						is_block_box()				const;
+ 		position					get_placement()				const;
++        // XOS: bounded read-only access to actual visible render fragments.
++        bool get_rendering_fragments(position::vector& boxes, unsigned limit) const;
+ 		bool						is_positioned()				const;
+ 		bool						is_float()					const;
+ 		bool						is_block_formatting_context() const;
+--- a/src/element.cpp
++++ b/src/element.cpp
+@@ -45,6 +45,24 @@
+ 		}
+ 	}
+ 	return pos;
++}
++
++bool element::get_rendering_fragments(position::vector& boxes, unsigned limit) const
++{
++    boxes.clear();
++    for(const auto& weak : m_renders)
++    {
++        auto render = weak.lock();
++        if(!render || !render->is_visible()) continue;
++        position::vector fragments;
++        render->get_rendering_boxes(fragments);
++        for(const auto& fragment : fragments)
++        {
++            if(boxes.size() >= limit) return false;
++            boxes.push_back(fragment);
++        }
++    }
++    return true;
+ }
+ 
+ bool element::is_inline() const

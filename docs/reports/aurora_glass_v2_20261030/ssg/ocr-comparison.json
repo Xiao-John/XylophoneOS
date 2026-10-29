@@ -1,0 +1,28 @@
+{
+  "scope": "HOST_ONLY OCR on one synthetic guest capture; not a guest OCR or AX benchmark",
+  "image_sha256": "ff3d81cbcf64985f7329965ebbf63ac233b8a19909621e69a1f31a0c31cfb59f",
+  "ssg_source_epoch": "42949672965",
+  "ssg_link_fragment": [
+    48,
+    318,
+    139,
+    19
+  ],
+  "offline_ocr_localizations": [
+    {
+      "text": "Native link target",
+      "confidence": 1,
+      "pixelBounds": [
+        45.99999978787879,
+        319.99999997272727,
+        144.0,
+        18.000000000000014
+      ],
+      "overlaps_live_ssg_fragment": true
+    }
+  ],
+  "host_first_request_ns": "62540202875",
+  "ocr_action_execution": "NOT_RUN",
+  "ssg_actual_engine_click": "PASSED in guest provider gate",
+  "real_ax_service": "NOT_IMPLEMENTED / NOT_RUN"
+}

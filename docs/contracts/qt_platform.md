@@ -91,3 +91,13 @@ precommit 错误保留原目标；commit/final sync 错误为 UNKNOWN，保留�
 G05/Aurora 仅对冻结夹具和已声明范围通过；静态分发/完整许可/重链接、绝对峰值、
 CPU、长期压力、完整 Unicode 字体、IME/剪贴板、QML/Quick 均没有继承资格。
 复现见 [E17 实施](../plans/qt_e17_implementation.md)。
+
+## 2026-10-30 Aurora v2 / application-local SSG
+
+The opt-in static Aurora library now has tokens v2, native materials, accessibility
+and quality fallback, independent standard-Widgets consumers and an app-local
+SSG/Intent prototype. See [SDK work log](../work_log/0102_aurora_ui_v2_sdk.md),
+[SSG contract](semantic_scene_graph.md) and [consumer qualification](../work_log/0103_aurora_ssg_consumers.md).
+No QtCore/Gui/QPA source, system ABI or kernel file changed. Legacy non-Aurora
+Widgets remain byte-identical to the archived E17 probe and run on the new image.
+The E17 dark Canvas/Panel consumers have not acquired global live theme migration.

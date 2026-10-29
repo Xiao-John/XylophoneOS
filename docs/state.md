@@ -6,6 +6,14 @@ ncursesw 前期探针。各旧资格绑定原输入，本次 Git 整合不产生
 发布资产仍为 0.0.1-1026，未随本地整合更新。
 原则裁决见[xos_plan.md第一部分](xos_plan.md#第一部分设计原则)，本页只登记事实与占用。
 
+## 应用故障包与音频计划（仅文档）
+
+2026-10-29，用户要求的[应用故障包](plans/app_fault_bundle.md)与
+[音频输出](plans/audio_output.md)两份计划已编写，分别定义 FB0–FB4 与 AU0–AU5。
+故障包首版复用父进程单一wait结果；音频先PC Speaker单音，PCM独立后续。
+仅文档，未实施、未运行客体专项；无新ABI、源码或公共build占用，不改变既有主线排期。
+范围、验证与接续见[0079](work_log/0079_fault_bundle_audio_plans.md)。
+
 ## E17 / G05 Qt Widgets 与 Aurora Glass
 
 2026-10-29，从 upstream `c39cef1` 的独立 `codex/qt6-e17-widgets` 完成真实 Qt

@@ -29,6 +29,8 @@
 - 移植：[线程契约](contracts/threading.md)、[Qt协作](contracts/qt_platform.md)、[POSIX](contracts/posix_subset.md)、
   [QtCore](implementation/qt_core.md)、[显示](implementation/display.md)、[Shell](implementation/shell.md)、[Make](implementation/make.md)。
 - [日常工具集设计](plans/daily_utilities.md)：DU1/2首批13命令已有实现与定向证据；完整逐命令资格、后续工具及包/ISO交付见state。
+- 独立扩展计划：[应用故障包](plans/app_fault_bundle.md)、[音频输出](plans/audio_output.md)。
+  两项仅完成计划，尚无实现或专项验收；不新增ABI或改变既有主线排期。
 - 下一阶段：[包管理](plans/packages.md)、[CPython](plans/cpython.md)/[扩展](plans/cpython_extensions.md)、
   [Qt](plans/qt.md)、[POSIX路线](plans/posix.md)、[工具菜单](plans/userland.md)、[UTF-8](plans/utf8.md)、
   [ISO](plans/iso.md)、[Open Adventure](plans/adventure.md)。

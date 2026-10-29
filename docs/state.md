@@ -8,13 +8,13 @@ UTF-8文件名、游戏及ncursesw前期探针。新增整合资格限于0081的
 
 ## Modern Platform Phase 2：网络维护者交接（BLOCKED）
 
-2026-10-29，`codex/modern2-network-handoff` 基于重新fetch的main `aaec2e9`。
-范围仅为 `docs/reports/modern2_network_20261029/`、本状态和独立工作记录；不占用公共
-头、dispatch、SDK、设备驱动、浏览器或公共build。网络、PX4-A和Python在不同worktree推进。
-PR #18仍Draft/open/unmerged，公开reviews/threads/comments为空；因此不实现或调用112。
-[维护者审查包](reports/modern2_network_20261029/README.md)列出原提案的活体撤销歧义、
-copyout原子性、N1运行期IRQ边界，以及D1–D3、TCP/HTTP和渲染的最小验收。
-本轮网络没有新客体或镜像资格；旧N1/B1/QuickJS各自仍只绑定原输入。
+2026-10-29，`codex/modern2-network-handoff`已同步main `169f51e`的C28/C29修正。
+[替代交接](reports/modern2_network_c28_20261029/README.md)优先于修订前的冻结建议：
+设备初始化、VirtIO队列与传输收发须用户态；内核仅窄MMIO/DMA/IRQ/IPC/撤权机制，
+旧PR #18内核frame-proxy须维护者重设计并重新登记，不能原样实施；旧N1内核驱动不得作为交付主线。
+唯一单调时基须独立公共模块，EOI/屏蔽无计时统计副作用；旧N1双计数器不符合C29。
+PR #18仍Draft/open/unmerged，N2继续BLOCKED；没有实现或调用112，没有自行抢号/批准/合并。
+仅修改本状态、工作记录与专有报告；原冻结报告字节不变，没有新guest或镜像资格。
 详见[0086网络接续](work_log/0086_modern2_network_handoff.md)。
 
 ## FB1/FB2 应用故障包（受限通过）

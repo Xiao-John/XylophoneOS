@@ -1,0 +1,12 @@
+{
+  "scope": "superseding C28/C29 handoff only; no guest qualification",
+  "sha256": {
+    "README.md": "68b476e7d966dff6a06f54ffb6aa9c103f2970bb81913b41680ecf4e7a984d19",
+    "checks/abi_doc_consistency.log": "1807f4eb8e9f76181b05c0f6831eda90f862be2f816a7eab9123e11d1be8655c",
+    "checks/diff_check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "checks/docs_consistency.log": "f52eb40c6195aeb4b0b8e45c5e37cf83fde479c8df0bd820d6d3cf707058da38",
+    "checks/old_frozen_verification.log": "18b71bbf8bb1418ea619b7347555ade79680280d22988095ae75e56097d8cb2b",
+    "input_verification.json": "3746c52c96841048262cbb2a9637a98f82006706e3cbe9e3950d63bcbc486524",
+    "pr_snapshot.json": "49cfa7020078566971ce5c5f181a182dd45ad1deb9ddf30a8c5f0d42f7937629"
+  }
+}

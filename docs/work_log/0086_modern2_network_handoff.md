@@ -40,3 +40,12 @@ git diff --check
 共享头/dispatch/生命周期/两个SDK与manifest，真实通过D1–D3。用户态网络服务再接固定lwIP2.2.1，
 先numeric host+显式IPv4完成真实HTTP，最后接Aurora；DNS/DHCP、TLS、DOM/Worker/WASM各自独立。
 本docs PR不能充当维护者对PR #18的批准，也不解锁本轮最低真实公共兼容能力成功标准。
+
+## C28/C29生效后的替代补充
+
+20:14北京时间重新核查：PR #24已合入main `169f51e`，本独立分支已merge该上游文档提交。
+[新补充](../reports/modern2_network_c28_20261029/README.md)替代本记录前述按旧frame-proxy继续实施的建议。
+旧PR #18须按用户态驱动的窄MMIO/DMA/IRQ授权原语重设计并重新登记；N1内核队列/数据通路不能作为
+交付驱动主线。内核唯一单调时基由时间中断唯一写入，EOI/屏蔽无计时统计副作用。
+原冻结reports字节不改，补充固定PR #18/#20/#22/#24实时快照和8份新旧原始文件哈希；
+重新运行docs/ABI/diff检查，未实现任何新ABI或客体驱动。N2继续BLOCKED，没有自行批准/合并。

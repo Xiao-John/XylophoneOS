@@ -72,6 +72,8 @@ locale 探针；它仍未在客体运行，线程 SDK 和终端服务/等待机�
 硬件 overrun 内核观测计数的构建和限制见[0085](work_log/0085_w1_uart_overrun.md)。
 newlib UTF-8 代理码点输入与 UCS-4 输出的源码缺口已在隔离候选中修补，探针仅交叉
 链接，尚未运行；来源、许可与边界见[0086](work_log/0086_newlib_utf8_surrogates.md)。
+ncurses 6.5 锁定源码已重新取得；使用该新 SDK 的探针仍因终端头缺失而失败，见
+[0087](work_log/0087_ncurses_strict_sdk_probe.md)。
 
 ## 2026-10-28 历史整合与交付（保留记录）
 

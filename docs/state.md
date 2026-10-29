@@ -76,6 +76,8 @@ ncurses 6.5 锁定源码已重新取得；使用该新 SDK 的探针仍因终端
 [0087](work_log/0087_ncurses_strict_sdk_probe.md)。
 ncurses 候选源码锁和上游许可材料已登记，探针现在核整个 SDK 树及锁文件；目标库仍
 未构建，详见[0088](work_log/0088_ncurses_source_material.md)。
+sys54 显式截止时间/console IRQ 等待已实现但未客体验证，老行为保持；前台独占及
+模式仍未实现，详见[0089](work_log/0089_explicit_input_wait.md)。
 
 ## 2026-10-28 历史整合与交付（保留记录）
 

@@ -26,7 +26,9 @@ Escape 取消不能同时工作，救援通过可用的监督操作；不声称 
 
 ## 等待与设备
 
-现有 `sys_pipe_wait` 对 console 返回 would_block，旧 `sys_read` 空闲可返回 0；newlib
+`sys_pipe_wait` 的原始第三参数为零时对 console 返回 would_block；开发中增加显式
+非零单调截止时间以等待可读 console 或管道，IRQ 唤醒、close/超时语义见
+`e04_loader_sdk.md`，但尚未客体验证。旧 `sys_read` 空闲可返回 0；newlib
 读取可返回 EAGAIN。COM1 接收 IRQ 当前关闭，`debug_peek` 是轮询与单字节缓存；进程内
 `wait_word` 不会因串口到达而唤醒。因此不得把空闲当 EOF，也不得把周期 sleep 轮询说成
 事件驱动/无丢唤醒。应评估 UART IRQ4、有界队列、溢出报告、设备权限和原子检查/登记

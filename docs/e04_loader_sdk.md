@@ -188,6 +188,14 @@ pipe token 或 0–2 的有效内核 stdio route；console 返回 would_block，
 广播；token 单调不复用。底层 read/write 仍可短读写并返回 EAGAIN，新增 libc
 在管道 EAGAIN 后阻塞重试，不把 console 的旧非阻塞语义改成 EOF。
 
+W1 开发中扩展 sys54：第三参数非零时是绝对单调纳秒截止时间，`UINT64_MAX` 为无限；
+在此显式形式下，持有可读 console route 的调用者可等待串口输入，检查与阻塞在同一
+不可抢占内核区间，IRQ 到达时唤醒；管道也接受截止时间。就绪优先于过期，过期返回
+`thread_error_timeout`，close 唤醒本进程 console 等待并返回 denied。可伪唤醒，
+调用者必须重试读取；单核、10ms 时钟量化，不承诺超时精度。参数为零的旧 console
+行为及普通 libc 的 EAGAIN 保持。此扩展尚未客体验收，也不提供前台独占、终端模式、
+文件描述符多源等待、EOF 或 POSIX poll；旧 Escape 取消仍可能消费输入。
+
 sys55 `sys_process_foreground(&request,active,0)`：request 为48字节固定宽度
 `process_foreground{version=1,size=48,count,reserved=0,pids[4]}`；未使用 PID 必须0。
 每个 PID 必须有属于调用者的 completion，且不重复。active=1 从开始构造流水线

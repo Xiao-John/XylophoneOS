@@ -34,8 +34,10 @@ inline constexpr i64 realtime_error_io = -5;
 enum class process_guard_action : u64 { query = 0, begin = 1, end = 2, rearm = 3 };
 struct process_guard_info { u64 owner_pid; u64 worker_pid; };
 inline constexpr i64 process_error_busy = -11;
-// C1/C3: atomic readiness wait; arg2=minimum write bytes (0 means 1),
-// read waits require arg2=0; arg3=0. Minimum never exceeds the 4096-byte pipe.
+// Atomic readiness wait; arg2=minimum write bytes (0 means 1), read waits
+// require arg2=0. arg3=0 preserves the original pipe/console behavior;
+// otherwise it is an absolute monotonic-nanosecond deadline, with UINT64_MAX
+// denoting infinity. Console input only supports an explicit nonzero deadline.
 inline constexpr u64 sys_pipe_wait = 54;
 // Opt in via bit63 of the handle on sys11/sys32. Unflagged writes retain
 // the existing nonblocking/short-write ABI; atomic writes are <=4096 bytes.

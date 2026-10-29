@@ -164,6 +164,15 @@ void wake_pipe_waiters(u32 pipe_index, bool readers, bool writers) {
     }
 }
 
+void wake_console_waiters(process_record* owner, i64 result) {
+    for (auto& thread : threads) {
+        if (thread.state == thread_state::blocked && thread.wait_kind == thread_wait_kind::console_read &&
+            (owner == nullptr || thread.process == owner)) {
+            ready_with(thread, result);
+        }
+    }
+}
+
 void fpu_save(u8* state) {
     __asm__ volatile("fxsave64 (%0)" : : "r"(state) : "memory");
 }
@@ -1174,7 +1183,9 @@ void expire_waiters() {
     const u64 now = monotonic_ns();
     for (auto& thread : threads) {
         if (thread.state == thread_state::blocked &&
-            (thread.wait_kind == thread_wait_kind::word || thread.wait_kind == thread_wait_kind::sleep) &&
+            (thread.wait_kind == thread_wait_kind::word || thread.wait_kind == thread_wait_kind::sleep ||
+             thread.wait_kind == thread_wait_kind::pipe_read || thread.wait_kind == thread_wait_kind::pipe_write ||
+             thread.wait_kind == thread_wait_kind::console_read) &&
             thread_deadline_reached(now, thread.deadline_ns)) {
             ready_with(thread, thread.wait_kind == thread_wait_kind::sleep ? 0 : thread_error_timeout);
         }
@@ -1787,6 +1798,9 @@ void* process_syscall(interrupt_frame* frame) {
         if (first > 2 || (current->stdio_mask & (1u << first)) == 0) {
             result = process_error_denied;
         } else {
+            if (first == 0 && current->stdio[0].console) {
+                wake_console_waiters(current, process_error_denied);
+            }
             current->stdio_mask &= ~(1u << first);
             stdio_route_release(current, current->stdio[first]);
             result = 0;
@@ -1935,15 +1949,25 @@ void* process_syscall(interrupt_frame* frame) {
         result = 0; break;
     }
     case sys_pipe_wait: {
-        if (second > process_pipe_bytes || third != 0) { result = process_error_invalid; break; }
+        if (second > process_pipe_bytes) { result = process_error_invalid; break; }
         u32 pipe_index = process_max_pipes;
         bool writable = false;
         if (first < 3) {
             if ((current->stdio_mask & (1u << first)) == 0 ||
                 !current->stdio[first].valid) { result = process_error_denied; break; }
             const auto& route = current->stdio[first];
-            if (route.console) { result = second != 0 && !route.writable
-                ? process_error_invalid : process_error_would_block; break; }
+            if (route.console) {
+                if (third == 0) { result = second != 0 && !route.writable
+                    ? process_error_invalid : process_error_would_block; break; }
+                if (route.writable || second != 0) { result = process_error_invalid; break; }
+                if (platform::debug_peek() >= 0) { result = 0; break; }
+                if (thread_deadline_reached(monotonic_ns(), third)) { result = thread_error_timeout; break; }
+                current_thread->wait_kind = thread_wait_kind::console_read;
+                current_thread->deadline_ns = third;
+                current_thread->state = thread_state::blocked;
+                frame->rax = 0;
+                return schedule(frame);
+            }
             pipe_index = route.pipe_index;
             writable = route.writable;
         } else {
@@ -1961,10 +1985,14 @@ void* process_syscall(interrupt_frame* frame) {
             ? pipe.reader_references == 0 || process_pipe_bytes - pipe.length >= (second == 0 ? 1 : second)
             : pipe.writer_references == 0 || pipe.length != 0;
         if (ready) { result = 0; break; }
+        if (third != 0 && thread_deadline_reached(monotonic_ns(), third)) {
+            result = thread_error_timeout; break;
+        }
         // Check and sleep in one non-preemptible kernel critical section.
         // A subsequent read/write rechecks the pipe and its own user buffer.
         current_thread->wait_kind = writable ? thread_wait_kind::pipe_write : thread_wait_kind::pipe_read;
         current_thread->wait_target = pipe_index;
+        current_thread->deadline_ns = third == 0 ? thread_deadline_infinite : third;
         current_thread->state = thread_state::blocked;
         frame->rax = 0;
         return schedule(frame);
@@ -2230,6 +2258,7 @@ void* process_syscall(interrupt_frame* frame) {
 void* input_entry(interrupt_frame* frame) {
     if (frame->vector == 36) {
         platform::debug_input_irq();
+        if (platform::debug_peek() >= 0) { wake_console_waiters(nullptr, 0); }
         pic_eoi(4);
         return frame;
     }

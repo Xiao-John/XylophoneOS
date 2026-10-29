@@ -81,6 +81,14 @@ transfer/flush、dirty region、设备reset及VBE回退；同Qt帧的1,440,000�
 仅QEMU/单核/800×600受限通过，运行期设备失效后透明恢复、热插拔、SMP/真机未验。
 私有 worktree/build；通过独立功能PR交付，不自行合并main或改旧Release。
 
+## 正在进行：Browser Foundation 的独立网络/浏览器工作
+
+2026-10-29，旧 `sys_net_device` 112 帧代理认领已撤回；[通用设备授权设计](contracts/network_device_v1_proposal.md)
+仅供审查，不认领编号或实现。C28要求VirtIO初始化、队列和收发在用户态，内核仅提供受控
+MMIO、DMA、IRQ、撤权等通用机制；停止不可确认时隔离DMA页。未来登记和真实guest验收前
+网络接入仍BLOCKED；旧N1及隔离探针只属于原冻结输入，不是新架构资格。历史与修正见
+[0082](work_log/0082_network_device_abi_claim.md)。
+
 ## 正在进行：ncursesw W0/W1
 
 W0 勘查和 W1 [工作契约草案](contracts/terminal_w1.md)已开始；W0 未冻结，W1 未

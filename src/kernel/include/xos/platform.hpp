@@ -15,6 +15,8 @@ int debug_peek();
 void debug_input_enable();
 void debug_input_irq();
 u64 debug_input_dropped();
+// Hardware overrun observations; one observation may represent several bytes.
+u64 debug_input_overruns();
 // PC wall clock: snapshot UTC RTC at boot, then advance it from monotonic ticks.
 bool realtime_clock_init(u64 monotonic_ns);
 i64 realtime_clock_ns(u64 monotonic_ns);

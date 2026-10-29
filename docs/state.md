@@ -6,6 +6,30 @@ UTF-8文件名、游戏及ncursesw前期探针。新增整合资格限于0081的
 其他旧资格仍绑定原输入，不构成全系统重验。发布资产仍为0.0.1-1026，未更新Release。
 原则裁决见[xos_plan.md第一部分](xos_plan.md#第一部分设计原则)，本页只登记事实与占用。
 
+## PR批次整合交付（2026-10-29）
+
+#18/#21/#22/#23/#25/#27已合入，#19修复随本次PR交付；#20保持RC且未合并。
+旧112网卡帧代理认领撤回，设备授权仍未登记/实现；67仅VM提案认领。
+当前浏览器修复的宿主检查通过，Qt目标编译/新客体导航和新探针组合guest尚未运行。
+Pillow线程故障根因仍未解，不授予线程/LocalPilot/发行资格。详见[0100](work_log/0100_pr_batch_delivery.md)。
+本组无公共build占用，旧冻结证据保持原样；以下任务/历史节保留其各自时点和输入。
+
+## Aurora Browser PR #19 审查修复（待客体验证）
+
+同步 main `3e5ccd0` 后修复 HTTP host 分量校验及浏览器失败导航状态；宿主 parser
+ASan/UBSan 定向检查通过。新增图形交互回归尚未运行，不能沿用旧镜像资格；
+具体冻结输入、执行情况和后续见[0096](work_log/0096_browser_review_fixes.md)。
+临时视图加载期间同时保留新旧页面，峰值内存未测；不占公共 build。
+
+## Aurora Browser B0/B1：受限本地 HTML/CSS
+
+2026-10-29，独立 `codex/aurora-browser-b1` 从 upstream `39083f9` 实施真实 liteHTML0.9/
+Gumbo + Qt6.8.3 QPainter/Aurora 浏览器；B0目标交叉编译/链接通过，B1受限客体本地页面、
+PS/2链接、地址/历史/刷新/滚动、单窗口标签及书签、坏输入与资源回收通过。
+新系统build `3fb1bb7d6b9e7bf9`；来源、失败和边界见[0083](work_log/0083_aurora_browser_offline.md)。
+无新内核/ABI/Qt底座变更。网络尚未接入，B2 BLOCKED；HTTPS/JavaScript/互联网及完整
+现代浏览器均未通过。仅本地32KiB有界HTML/CSS/BMP子集，不发布Qt静态产品或Release。
+
 ## Modern Platform运行时探针（PR #25）
 
 本分支保留Promise完成/pending/rejection等冻结探针结果，Web/应用能力仍BLOCKED。

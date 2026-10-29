@@ -1,0 +1,55 @@
+{
+  "scope": "DOCUMENTATION_AND_SOURCE_AUDIT_ONLY",
+  "guest_status": "NOT_RUN",
+  "time_utc": "2026-10-29T12:01:45.725625+00:00",
+  "python": "3.14.6 (v3.14.6:c63aec69bd5, Jun 10 2026, 08:07:54) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "git_version": "git version 2.54.0 (Apple Git-157)",
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "tests/docs_consistency.py"
+      ],
+      "exit_code": 0,
+      "status": "PASSED",
+      "output": "{\"status\": \"passed\", \"local_links\": 473, \"allocated_syscalls\": 66, \"history_sources\": 73}\n"
+    },
+    {
+      "command": [
+        "python3",
+        "tests/abi_doc_consistency.py"
+      ],
+      "exit_code": 0,
+      "status": "PASSED",
+      "output": "PASS current ABI table: {'sys_pipe_wait': 54, 'sys_process_guard': 62, 'sys_random_bytes': 63, 'sys_clock_realtime': 64, 'sys_display': 65, 'sys_display_present': 66, 'clone_session': 20, 'anonymous': 21, 'anonymous_seal': 22, 'maintenance_acquire': 23, 'maintenance_release': 24, 'truncate': 25}\n"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "status": "PASSED",
+      "output": ""
+    }
+  ],
+  "source_audit_repeat": "PASSED; second generated JSON byte-identical by cmp",
+  "kernel_runtime_changes": false,
+  "new_public_syscall_implementation": false,
+  "initial_failure": {
+    "command": [
+      "python3",
+      "tests/docs_consistency.py"
+    ],
+    "status": "FAILED",
+    "reason": "work_log linked validation.json before receipt existed; created receipt then reran all checks",
+    "missing_link": "docs/work_log/0087_modern2_px4a_design.md -> ../reports/modern2_px4a_20261029/validation.json"
+  },
+  "parent_review_clarifications": [
+    "reserve protection must be NONE; info unused fields zero",
+    "mmap V1 only PROT_NONE; no double-call atomicity claim",
+    "anonymous RIP/RSP teardown may fault on return; kernel saved user pointers pinned across waits",
+    "statistics wire requires separate preimplementation registration or genuine diagnostic counts"
+  ]
+}

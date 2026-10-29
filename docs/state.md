@@ -12,6 +12,18 @@ UTF-8文件名、游戏及ncursesw前期探针。新增整合资格限于0081的
 已同步当前main；已整合PR #21共用的QuickJS构建/runner与许可，保留phase2 Promise语义及phase1入口兼容；
 旧结果不改绑新组合。范围和未验项见[0099](work_log/0099_probe_branch_reconciliation.md)。
 
+## N2用户态网络接续（当前规范）
+
+2026-10-29。旧frame-proxy路线已废止；当前接续以[网络交接](plans/network_handoff.md)为准，
+按C28用户态驱动、C29统一管理的时间域实施。旧冻结审查包保留原时点，N2继续BLOCKED。
+本轮同步main并修改活文档，无新ABI/实现或客体资格；见[0097](work_log/0097_network_time_domains.md)。
+本组无源码/公共build占用。
+
+## PR #23时间域契约同步
+
+匿名VM提案已同步当前C29；不再要求时间中断唯一写入，V1–V7仍NOT_RUN。
+无新实现或追加ABI，见[0098](work_log/0098_vm_time_domains.md)。文档占用解除。
+
 ## 时间域与驱动边界修订（文档PR）
 
 2026-10-29，`codex/time_domains_docs` 基于远端0ec0ad6：C28澄清内核基础设施和存量整改，
@@ -70,6 +82,16 @@ transfer/flush、dirty region、设备reset及VBE回退；同Qt帧的1,440,000�
 固定473个DMA页属平台显示生命周期；不是逐客户端分配，也不是3D/Qt绘制加速。
 仅QEMU/单核/800×600受限通过，运行期设备失效后透明恢复、热插拔、SMP/真机未验。
 私有 worktree/build；通过独立功能PR交付，不自行合并main或改旧Release。
+
+## PX4-A 匿名虚拟内存：独立设计认领（未实施）
+
+2026-10-29，`codex/px4a-vma-claim` 从 fetched upstream `aaec2e9` 建立。
+本组负责 `docs/contracts/anonymous_vm.md`、ABI 67 的 claimed 提案、PX 路线和
+`docs/reports/modern2_px4a_20261029/`；共享头、dispatch、SDK、内核和旧证据不改。
+具体认领须由维护者审查合入后才能实施；本分支不是全项目登记，运行资格仍 **BLOCKED**。
+后续已同步PR #28的受管理时间域契约，禁止VM私建时基替代系统deadline；
+未改原aaec2e9源码审计或回执，未重绑旧测试，未实施公共时基/VM。
+独立 `build/modern2_px4a/` 仅作源码审计，不构建/运行新客体。旧网络112认领已由 PR #18 撤回，设备授权另登记。
 
 ## 正在进行：Browser Foundation 的独立网络/浏览器工作
 

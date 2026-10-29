@@ -1,0 +1,128 @@
+{
+  "base_sha": "39083f9968d84b5679c86a74a6c8394033c0d915",
+  "system_build_id": "a538733bd3b8e43f",
+  "harness_status": "PASSED",
+  "harness_checks": 11,
+  "python_feature_counts": {
+    "PASSED": 4,
+    "FAILED": 12
+  },
+  "resources_before": [
+    130290,
+    2,
+    0
+  ],
+  "resources_after": [
+    130290,
+    2,
+    0
+  ],
+  "N2": "BLOCKED",
+  "full_chromium": "BLOCKED",
+  "full_chromium_build": "NOT_RUN",
+  "localpilot_core_api": "BLOCKED",
+  "localpilot_actual_guest_frontend": "FAILED",
+  "code_oss_actual_iframe_guest": "FAILED",
+  "full_code_oss": "BLOCKED",
+  "HTTPS": "NOT_RUN",
+  "artifacts": [
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/final-system/xos.img",
+      "bytes": 1474560,
+      "sha256": "5cc2cee133439e67def5c2c5ea2d4da9f6fb06cfcf7bb36d903b4a3699df95a8",
+      "retention": "local; not a release asset"
+    },
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/final-system/xos-install.iso",
+      "bytes": 565248,
+      "sha256": "09da93636ee82d0fb6a58438e0e4b197f1dc4cb28d5ca8a004dca275789e95e3",
+      "retention": "local; not a release asset"
+    },
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/final-system/kernel.elf",
+      "bytes": 1502696,
+      "sha256": "5499a6a8042ac66010fd4e04d5c8be9f67a9bc2e3e8602e1e21b232417805b16",
+      "retention": "local; not a release asset"
+    },
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/js_probe.elf",
+      "bytes": 6048016,
+      "sha256": "7c7ec9c5ffbe0a32193ba90b554f2c21641748d3e7f7deb4e3d7321da290b449",
+      "retention": "local; not a release asset"
+    },
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/final-guest-01/js_probe",
+      "bytes": 1177880,
+      "sha256": "db70b2ff3a6f2a4b9b2588ae19702cd9b03572c15738c883a3d8b35659227f11",
+      "retention": "local; not a release asset"
+    },
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/.cache/xos_seed/cpython/a8201ed0a683f05afdf3/target_build/python.exe",
+      "bytes": 45651448,
+      "sha256": "f43e60580829ff0c928485ea9092d7a88944dcd7aaa5b3aaf08b2dfdf062084d",
+      "retention": "local; not a release asset"
+    },
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/.cache/xos_seed/cpython/a8201ed0a683f05afdf3/stage_py1/usr/bin/python3",
+      "bytes": 9281920,
+      "sha256": "051f897ab9007dae8bc86f845571377c3cde25542c8b7bade0b6c892994b4af4",
+      "retention": "local; not a release asset"
+    },
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/final-guest-01/work.img",
+      "bytes": 2147483648,
+      "sha256": "64f7f84eace18fd46ca36ab1e1390e6e480a27f4a4b564a0e9f9b67b1caa9aeb",
+      "retention": "local; not a release asset"
+    },
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/localpilot-wheel/localpilot_agent_service-5.0.0b20+channels.1-py3-none-any.whl",
+      "bytes": 567734,
+      "sha256": "7db91d1ed21a964197d2661cba97c256e0ee69cbe2eb91ed2d043aea30667b09",
+      "retention": "local; not a release asset"
+    },
+    {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+      "bytes": 25855552,
+      "sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
+      "retention": "external existing test tool"
+    }
+  ],
+  "owned_probe_sources_sha256": {
+    "scripts/modern_apps_freeze.py": "e700f135a45bb8eeb0d613c885e65cb7ccf0608798885e0d3dd08ce3309cc384",
+    "scripts/modern_apps_localpilot_audit.py": "e7ff7dbc1ef54a301cbc07f5f3e8981d045e0ced09ffd0525dd889220c6ec250",
+    "scripts/modern_apps_matrix.py": "3b9118f31af6cb5f833abcb65f2ce02f141fd25ad8b9ea86ef7d9eb5d6059c68",
+    "scripts/modern_apps_sdk_probe.py": "4ff33ef1ee3cd4d8f75616a46eefe0493ff5142d914457af1090ac33c86b6791",
+    "scripts/modern_apps_sources.py": "3232b533e6fb64ed5a8a41501d3c6520652284d81d604e9e5ccb6aec6c6094df",
+    "scripts/modern_apps_build_js.py": "ae3d8103d79e1948d693d3d253463e00c5882fe1364fdb68a354eceee38f5061",
+    "scripts/modern_apps_http_fixture.py": "dd45c4c2c984781d316d38d2f6c3bfa4616fdbbf6571f7923b0d654d0417526b",
+    "scripts/modern_apps_prepare.py": "4097a3f1c816bafc289ff4f956a8878b42f655a780bc2bdcf210f56cf1c87d24",
+    "scripts/modern_apps_native_probe.py": "bdd9491095b4f241c79503f958e40c4e2591b2c7b6abdcc738adf0d77da1e714",
+    "tests/modern_apps_guest.py": "42767be62f7449f885910927de659fa6e0e2e529d1b71baa069f921b50c1f931",
+    "tests/modern_apps_http_fixture.py": "9396d56f8110edee94abb376366f059ba905e56d53db269e43569c9aa2559c50",
+    "tests/fixtures/modern_apps/dlopen.cc": "1dd217ded7d324d1f3102f8e458bb4e0c24422fb0b0ef9e34e0494282dafb8a5",
+    "tests/fixtures/modern_apps/file_watch.cc": "ae693ef1dcb633079d2b0afdaa41aed734cf5d028413bb219465c8f38e731eeb",
+    "tests/fixtures/modern_apps/exception.js": "9ff5f577c21435d2634b790ca6a0e0c1ec905c259fa1eb5d24591a48883a0f48",
+    "tests/fixtures/modern_apps/rejection.js": "2d8d28049dcb419c9114c3bce557d34d93fc4582f06267a272a81f021277780e",
+    "tests/fixtures/modern_apps/js_runner.c": "e76884255287b40936f78862d48f02b7415a4ebfde5833c2d6d47f80c84744f5",
+    "tests/fixtures/modern_apps/memory.js": "48fc36f579074ac7588b5c954f2c28afdc0ecd5aa4580abaf8d6b90929e1be64",
+    "tests/fixtures/modern_apps/v8_target.cc": "ab3b5cc21fd8b83ce125ef610e1df177a472914daed06a44df79556a70a28207",
+    "tests/fixtures/modern_apps/pty.cc": "35c8e4f82c9784b36953ebef669eed555b67d26a08355c8c4374ba094b58d7e4",
+    "tests/fixtures/modern_apps/web_capabilities.js": "51090d57b887462473e2af4dc0bef3507fe5dc19e0d383a2507dd775b63a1e2c",
+    "tests/fixtures/modern_apps/socket_header.cc": "e5300f4393781fdc2b2b07ecb8a724038b16e01107a5aaadf7cfd5ea2a192fc6",
+    "tests/fixtures/modern_apps/v8_posix_system_includes.cc": "4825835cf52964af334ce9295c24d9dbe685cd90691e26520da62bf8866c3dc4",
+    "tests/fixtures/modern_apps/quickjs_xos.patch": "a37251c7306c2cadeb77a2b841f986c819b8e30e0c2b7a43d4881db6c0583397",
+    "tests/fixtures/modern_apps/mprotect.cc": "d54b2c10f9e0ec3dfb0c9d4146fdf7f53ccc7d105c3d7d21d1ec6b81ae007664",
+    "tests/fixtures/modern_apps/loop.js": "bdf7406dd1f1d0e564113bf689713de7acaf36222148556e7d58a67e5d52ae22",
+    "tests/fixtures/modern_apps/language.js": "27618e20c827f89143d9aadf8f508b5dcb24f6696b51cbac2952c3717d000716",
+    "tests/fixtures/modern_apps/python_probe.py": "c0168b2f482db38fc91922201fb3cd0f0bf060ef65fe6a9e5647272f6ebfe42d",
+    "tests/fixtures/modern_apps/stack.js": "0697d147d768cbf1fe488d3878272ffc2c1ee244556459d28d66642f63ee7947",
+    "licenses/modern_apps/defusedxml_LICENSE": "b80ce9da8c42a1f91079627fbbe2bf27210ae108a0ffe5f077d5b08e076c24c8",
+    "licenses/modern_apps/pillow_LICENSE": "17f240ae101143707e5e7303a5d800450d9ccc7475b463cedb555cefdb3c6ece",
+    "licenses/modern_apps/quickjs_LICENSE": "598fd7fc928e4350abce36e337ba5a1346923c5c692f5be92c3d8e29ddd7c18d",
+    "licenses/modern_apps/pypdf_LICENSE": "a97ac230e5f33ef10a5367a850eb01f91f1a0b064e34742c7794d2294557f524",
+    "licenses/modern_apps/psutil_LICENSE": "b89c063b3786e28e0c0a38f1931db61fed35e69dd2a2966fbecffee0f46c8d10",
+    "licenses/modern_apps/code_oss_LICENSE.txt": "9480271317925265e806a9a196aaa33410a962fa9d4d1e248a4a5187bc8c9df9",
+    "licenses/components.json": "2d63ac6fc8e6c3ecdcf50778ae852f3dc9d09ad7cdb4e8dfcac7be29025574f4"
+  },
+  "note": "harness PASSED includes successful reproduction of compatibility failures; not product qualification"
+}

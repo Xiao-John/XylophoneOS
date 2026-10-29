@@ -1,0 +1,53 @@
+{
+  "status": "passed",
+  "image_sha256": "1b181a468326b3c09f565359124b3ee07fc1dfe6a4d815080a2985af516ade95",
+  "probe_sha256": "8c19130faf3f9d8d610e36228912dbb1fecf8974e9147ce34d24f2fb14526ed5",
+  "injected_source_sha256": "1b6df6659492d422b71f7ec76aea77fa5b513ea7b8bd562dd99fea9917c4a1f1",
+  "injection": "test-only UD2 in file service on stat /FB0FAULT",
+  "build_id": "084024c841126499",
+  "baseline_build_id": "6c2e83dfaa2737bb",
+  "checks": [
+    {
+      "name": "inflight_request_then_service_exit",
+      "stat": -8,
+      "ping": -7
+    },
+    {
+      "name": "supervisor_remains_responsive"
+    }
+  ],
+  "qemu_command": [
+    "/workspace/xos-env/prefix/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/workspace/fb0-service-fault/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/tmp/xos_fb0_service_aur0ta91/disk.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/tmp/xos_mend9do5/qmp.sock,server=on,wait=off"
+  ]
+}

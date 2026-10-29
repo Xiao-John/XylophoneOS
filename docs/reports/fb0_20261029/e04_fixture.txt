@@ -1,0 +1,14 @@
+import pathlib,sys,tempfile
+root=pathlib.Path('/workspace/XylophoneOS')
+sys.path.insert(0,str(root/'tests'));sys.path.insert(0,str(root/'scripts'))
+import boot_smoke
+from make_work_disk import make_image
+original=boot_smoke.Guest
+with tempfile.TemporaryDirectory(prefix='xos_fb0_') as folder:
+ disk=pathlib.Path(folder)/'work.img';disk.write_bytes(make_image())
+ def guest(image,name,**kwargs):
+  kwargs.setdefault('work_disk',disk)
+  return original(image,name,**kwargs)
+ boot_smoke.Guest=guest
+ import process_smoke
+ process_smoke.main()

@@ -6,12 +6,21 @@ ncursesw 前期探针。各旧资格绑定原输入，本次 Git 整合不产生
 发布资产仍为 0.0.1-1026，未随本地整合更新。
 原则裁决见[xos_plan.md第一部分](xos_plan.md#第一部分设计原则)，本页只登记事实与占用。
 
+## FB0 应用故障包勘查（受限通过）
+
+2026-10-29，`codex/fb0-scout` 完成单一wait、装载/文件链路勘查、[v1格式冻结](implementation/fb0_fault_bundle_contract.md)
+与真实客体探针。正常系统build `6c2e83dfaa2737bb` 中，装载器同一读句柄ELF SHA-256、
+wait单次消费、满盘和真实块写错误已验证；独立故障注入build `084024c841126499`
+验证文件服务进程退出时在途/后续请求分别返回-8/-7。详细范围与证据见[0080](work_log/0080_fb0_fault_bundle.md)。
+生产报告器/解析器、全局收集、寄存器/栈快照、断电安全均未实现/未验；无新ABI或
+公共build占用。下一步是FB1，不把FB0探针冒称生产功能。
+
 ## 应用故障包与音频计划（仅文档）
 
 2026-10-29，用户要求的[应用故障包](plans/app_fault_bundle.md)与
 [音频输出](plans/audio_output.md)两份计划已编写，分别定义 FB0–FB4 与 AU0–AU5。
 故障包首版复用父进程单一wait结果；音频先PC Speaker单音，PCM独立后续。
-仅文档，未实施、未运行客体专项；无新ABI、源码或公共build占用，不改变既有主线排期。
+音频仅文档；故障包进度以本页FB0节为准。无新ABI，不改变既有主线排期。
 范围、验证与接续见[0079](work_log/0079_fault_bundle_audio_plans.md)。
 
 ## E17 / G05 Qt Widgets 与 Aurora Glass

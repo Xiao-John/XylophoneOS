@@ -1,0 +1,16 @@
+--- a/src/user/services/files.cpp
++++ b/src/user/services/files.cpp
+@@ -597,6 +597,13 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
+         return;
+     }
+     const op operation = static_cast<op>(in.operation);
++    // FB0 fault-injection build ONLY: crash on a dedicated test path.
++    if (operation == op::stat && in.name_length == 9 &&
++        in.name[0]=='/' && in.name[1]=='F' && in.name[2]=='B' && in.name[3]=='0' &&
++        in.name[4]=='F' && in.name[5]=='A' && in.name[6]=='U' && in.name[7]=='L' && in.name[8]=='T') {
++        __asm__ volatile("ud2");
++    }
++
+     if (operation == op::ping) {
+         reply(out, in, mounted && !recovery_failed ? status::ok : status::io);
+         return;

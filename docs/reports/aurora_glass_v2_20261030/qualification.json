@@ -1,0 +1,207 @@
+{
+  "base": "3377dbf35bdb43d850c9a2b8e8076da3be146f3d",
+  "build_id": "7ccd5871c0c00297",
+  "status": "PASSED_SCOPED_PROTOTYPE",
+  "visual_priority": "Midnight Current",
+  "final_aesthetic_acceptance": "PENDING_USER_REVIEW",
+  "system_kernel_and_abi_changes": 0,
+  "cases": [
+    {
+      "group": "sdk",
+      "name": "render",
+      "status": "PASSED",
+      "checks": 13
+    },
+    {
+      "group": "sdk",
+      "name": "semantic",
+      "status": "PASSED",
+      "checks": 5
+    },
+    {
+      "group": "sdk",
+      "name": "studio",
+      "status": "PASSED",
+      "checks": 4
+    },
+    {
+      "group": "ssg",
+      "name": "notes",
+      "status": "PASSED",
+      "checks": 5
+    },
+    {
+      "group": "ssg",
+      "name": "browser",
+      "status": "PASSED",
+      "checks": 7
+    },
+    {
+      "group": "ssg",
+      "name": "dash",
+      "status": "PASSED",
+      "checks": 2
+    },
+    {
+      "group": "ssg",
+      "name": "notes-regression-interactive",
+      "status": "PASSED",
+      "checks": 7
+    },
+    {
+      "group": "ssg",
+      "name": "notes-regression-lifecycle",
+      "status": "PASSED",
+      "checks": 4
+    },
+    {
+      "group": "ssg",
+      "name": "notes-regression-no-vga",
+      "status": "PASSED",
+      "checks": 1
+    },
+    {
+      "group": "ssg",
+      "name": "browser-regression-interactive",
+      "status": "PASSED",
+      "checks": 10
+    },
+    {
+      "group": "ssg",
+      "name": "browser-regression-negative",
+      "status": "PASSED",
+      "checks": 18
+    },
+    {
+      "group": "ssg",
+      "name": "browser-regression-lifecycle",
+      "status": "PASSED",
+      "checks": 7
+    },
+    {
+      "group": "desktop",
+      "name": "interactive",
+      "status": "PASSED",
+      "checks": 11
+    },
+    {
+      "group": "desktop",
+      "name": "lifecycle",
+      "status": "PASSED",
+      "checks": 7
+    },
+    {
+      "group": "desktop",
+      "name": "session",
+      "status": "PASSED",
+      "checks": 6
+    }
+  ],
+  "artifacts": {
+    "build/aurora_glass/v5/desktop/desktop.elf": {
+      "sha256": "a4325eea0cff82a91b5bd0bfb54623033908f2a97f015aef28cab8e3d01694fb",
+      "bytes": 31968184
+    },
+    "build/aurora_glass/v5/render/render.elf": {
+      "sha256": "5dae3516fef70547bef8df5939a1a805bd377670a4006b05b47794dbe0fa6a34",
+      "bytes": 31916648
+    },
+    "build/aurora_glass/v5/semantics/semantics.elf": {
+      "sha256": "4ef35843c6fab0adab633e1dac15d2a994eaaf5a48d3ee6125719bf2a104f9bd",
+      "bytes": 32021032
+    },
+    "build/aurora_glass/v5/studio/studio.elf": {
+      "sha256": "e2696250ab84a9ddbc0f3574793db6f4cda4c63fe8bad7b7fd2eab7f52b2af1c",
+      "bytes": 31923648
+    },
+    "build/aurora_glass/v5/session.elf": {
+      "sha256": "c1702ac1915b4ae3cc5b05e5bc335c7a2b638d52c8b96daaf65d349ea5de78cc",
+      "bytes": 1398320
+    },
+    "build/aurora_glass/v5/compositor_gap.elf": {
+      "sha256": "41ba0a63e9f2649315ca4a79a86f5f3b46db540744f088840b776b466e44daa7",
+      "bytes": 1389320
+    },
+    "build/aurora_glass/v5-apps/browser/browser.elf": {
+      "sha256": "51a55f2c680ef039f7e9ffe145cb325d34688a20aa907323997030b546612a14",
+      "bytes": 33282408
+    },
+    "build/aurora_glass/v5-apps/legacy/legacy.elf": {
+      "sha256": "f52b1bb2351e512d836545b52a49b18a479b4c61290b79bed7df8dc04eeddea2",
+      "bytes": 30438200
+    },
+    "build/aurora_glass/v5-apps/notes/notes.elf": {
+      "sha256": "1323ae6557896dc94c6886e427be15d6df8dca11131819abf49455b70bdc412f",
+      "bytes": 32033368
+    },
+    "build/aurora_glass/system-v5/xos.img": {
+      "sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+      "bytes": 1474560
+    },
+    "build/aurora_glass/system-v5/xos.iso": {
+      "sha256": "f7e231b628e479542e263fe5a1e4675199507a3b0de3259c93860098a1abe3ca",
+      "bytes": 583680
+    },
+    "build/aurora_glass/system-v5/kernel.elf": {
+      "sha256": "9a5645855ddcdf8228f750b77dfbb4f860fa2e2fcd2e101299cada1281ed0420",
+      "bytes": 1543744
+    },
+    "build/aurora_glass/system-v5/sdk/manifest.json": {
+      "sha256": "c3449f1b31b2ea74e613fc4eddbd227ccd4f33b53069291fce390484490b6ea0",
+      "bytes": 2326
+    }
+  },
+  "sources": {
+    "src/ports/qt6/aurora/style.cpp": "c84d9825a94af436e7f54b48fbc57f56816036baaf181044a0bdd80d2447aa3c",
+    "src/ports/qt6/aurora/desktop.hpp": "6df3fc1b3c6f35fa6986b241993fd3809b063373869e1106ded7f34206f25e81",
+    "src/ports/qt6/aurora/theme.hpp": "01929283123fe2177519f9ff822adb888c1040c62aed7b0ee5bb94691a857192",
+    "src/ports/qt6/aurora/blur.hpp": "d72095989c3c7e4179b70b45a0faa789e6ce90861e83289552281ece2ca9edba",
+    "src/ports/qt6/aurora/ssg.hpp": "82cee12746280c48ebfad802e3bda091a4e62e43b209ee7810d613ae981a88d2",
+    "src/ports/qt6/aurora/aurora.hpp": "c181dee0fb68483d61a7486d5f2fe30da8c3c2ee2a067da0d5fe9a1ef725d4fa",
+    "src/ports/qt6/aurora/semantics.cpp": "f81e7cb75badc430a73e9f4826cf9d6280877a06be8a6c7c4b21469942524933",
+    "src/ports/qt6/aurora/theme.cpp": "b1c2a1dfd8c9609526cdd6719f6b8251a8731b02072bc4f93985cb52ce6c86d5",
+    "src/ports/qt6/aurora/blur.cpp": "e9ba31d3202f56f2128d7d2f5558118a6472658877e6399551d2b694517eaca0",
+    "src/ports/qt6/aurora/ssg.cpp": "a9a904229b4aa77d6ac34607df6fa13faa5ce435559db764c6e768dc934f3b9c",
+    "src/ports/qt6/aurora/semantics.hpp": "8e8a4520923185eec73f2796ecd7b120b00c57d989267016f5817dca110a35f6",
+    "src/ports/qt6/aurora/style.hpp": "8007ad7a09ad5d72c037a1794da629b93a503ec289e6d48c62a3a515fe979c9f",
+    "src/ports/qt6/aurora/assets/provenance.json": "739cda9a5d26a905650a877da6b7f2de955807b4c40273d96f6b2b735b9f9b1a",
+    "src/ports/aurora_desktop/build.py": "037c89c4c981a4c1b55bc49e32eedbbf05d7f56a15594c78a1cfd3ed33326aaf",
+    "src/ports/aurora_desktop/session.cpp": "5642f787bf90eaf16408190ec548e458d2c0d303eca6514f02b6f3a9b76249aa",
+    "src/ports/aurora_desktop/main.cpp": "9c6fbbe9add72195d0678544bd939e599c78f54f8e3a9462ad86345385e337ca",
+    "src/ports/aurora_browser/build.py": "343e7e1754bae32900c1728c8d94e9aa1a2269546e4b55739b92ee56180e99ac",
+    "src/ports/aurora_browser/content.hpp": "e2742a15f933fc95fc78d6dcadcba557dac6d01a254575807b20c7d783397881",
+    "src/ports/aurora_browser/view.hpp": "6a211f2954d8bf18e57b7b3a4c73a563c69af50371f6997a2f6b0b97c13af01a",
+    "src/ports/aurora_browser/source_lock.json": "5737df122030a880301512a9129a9599be4f1c84a101321329c356033e0070e4",
+    "src/ports/aurora_browser/main.cpp": "822ed680c6dc09dc6f47e26113f11cc6dccfecc43d46f05d85b909d5e7a55ba9",
+    "src/ports/aurora_browser/patches/0001_readonly_render_fragments.patch": "2559951b2b94baf50a2947c8e50d1d717ff1a1a9c7011d3ce2d9ac59da04c4be",
+    "src/ports/qt6/editor/main.cpp": "57ddcd8c064f6aa78cfd1501639c7f3d5c1b385028bae169ddb0e94866c8797b",
+    "src/ports/qt6/build_aurora.py": "bcd21c4c490abe2c090e816084f92dfa842d8c898448a6ed7cfa81feb845dc9a",
+    "src/ports/qt6/build_widgets_fixture.py": "1a831f3689e4ab6ed9c1efd4c4d067eb5fc08db07a93134fb5aa747f0de34b50",
+    "tests/aurora_platform_guest.py": "34e1c442dac899f060fe1688bc834c06e24210aeec93f1e9364615cb413c8c97",
+    "tests/aurora_desktop_guest.py": "8c17d1c316c302ab72ce7e9ecd46aa4e10b949b32bc11c351a4a2ce4ca0c6180",
+    "tests/mock_semantic_agent.py": "884e3e18708549eb33a94b82b9f57a784f9303b3bb8530803f9475e26d6ccd7b",
+    "tests/aurora_scope_audit.py": "4aa938fdfd1d5087a2d9c5e57af4dbd1c3a333613632b9359af59fed3368620b",
+    "tests/aurora_blur_cases.cpp": "9aaad4cbaa8c5a0d5de380ed779ef8d0bef0a4ce5aece4c6946d4e295cd630d5",
+    "tests/aurora_ocr_reference.swift": "f2553feec36a4a7334aff53e93f8fd8e2dac9309a7a0800b061ac880abcfeff9",
+    "tests/fixtures/qt6/aurora_render_probe.cpp": "454aa3ddc4b4ec22a555282ccf159478fdf7e518dc9550d4bd22da206a775f7f",
+    "tests/fixtures/qt6/aurora_v2_studio.cpp": "cd56116715095c626e9826a94a26ec3894a6094a16b59506e67559326733ed7f",
+    "tests/fixtures/qt6/aurora_semantics.cpp": "5405e3cc3ca4e9150322f5c50c33464fef71755edfeb0fc376d74a8da9b8312b",
+    "tests/fixtures/qt6/aurora_showcase.cpp": "63e1ac99e292977e715e8a142e34b16f74ac8364c9b856742a756aaedd0b28f0"
+  },
+  "boundaries": {
+    "cross_process_compositor": "BLOCKED",
+    "cross_process_SSG_and_actions": "BLOCKED / NOT_RUN",
+    "global_live_theme_broker": "PROPOSED / NOT_IMPLEMENTED",
+    "LocalPilot": "LP0 research only",
+    "guest_OCR": "NOT_IMPLEMENTED; host-only reference recorded",
+    "real_allocator_oom": "NOT_RUN; explicit cache budget denial passed",
+    "GPU_shader_and_refraction": "NOT_IMPLEMENTED",
+    "hardware_SMP_stress_and_static_distribution": "NOT_RUN"
+  },
+  "external_dash": {
+    "sha256": "d262b8299734d07c27e8d5ac696a3460c82cba4fe56159d3cbdcceee8f703ff9",
+    "version": "0.5.13.5",
+    "scope": "existing actual runtime used by dash guest gate; source/manifest retained in prior port"
+  },
+  "additional_local_demo_smoke": "PASSED"
+}

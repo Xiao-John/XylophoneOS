@@ -1,0 +1,75 @@
+{
+  "status": "FAILED",
+  "case": "session",
+  "image_sha256": "87f61feb8871670f94956b5d698f5af6fa34d58ddb79b61bf0093b93d8cc8af4",
+  "elf_sha256": {
+    "desktop": "a4325eea0cff82a91b5bd0bfb54623033908f2a97f015aef28cab8e3d01694fb",
+    "studio": "e2696250ab84a9ddbc0f3574793db6f4cda4c63fe8bad7b7fd2eab7f52b2af1c",
+    "session": "c1702ac1915b4ae3cc5b05e5bc335c7a2b638d52c8b96daaf65d349ea5de78cc",
+    "gap": "41ba0a63e9f2649315ca4a79a86f5f3b46db540744f088840b776b466e44daa7",
+    "notes": "c2c99b27b4602314ed7e56df08c63ea849d6bfff1a52d6987cbf2df9bb5b75c3",
+    "browser": "8559ec0faa6118614a1fd80db1b5e9573981d3bb1a6e18df0c6690d9a9f25452",
+    "legacy": "f52b1bb2351e512d836545b52a49b18a479b4c61290b79bed7df8dc04eeddea2"
+  },
+  "checks": [],
+  "screenshots": {
+    "launched-1": "c4ad4c89c7013d6a1ca5346494f9e9f8539cfd33d5455b34b1a78861bc76fd5b"
+  },
+  "latency_host_ms": [
+    6348.41
+  ],
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v4/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_desktop_inuk1soz/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_1_vryzi9/qmp.sock,server=on,wait=off"
+  ],
+  "baseline": [
+    130279,
+    2,
+    0
+  ],
+  "with_service": [
+    130235,
+    3,
+    1
+  ],
+  "error": "aurora_glass/qualified-desktop-session/guest: missing any of (b'SESSION_APP_ENDED app=1',); output=bytearray(b'=148 w=6 h=20 stride=3200 ns=0\\nEDITOR_SAMPLE pages=6890 threads=3 scroll=0 cursor=0\\n[qpa-flush] same=1 offset=0,0 rects=1\\n[qpa-frame] x=242 y=148 w=6 h=20 stride=3200 ns=0\\n[qpa-flush] same=1 offset=0,0 rects=1\\n[qpa-frame] x=242 y=148 w=6 h=20 stride=3200 ns=0\\nEDITOR_SAMPLE pages=6890 threads=3 scroll=0 cursor=0\\n[qpa-flush] same=1 offset=0,0 rects=1\\n[qpa-frame] x=242 y=148 w=6 h=20 stride=3200 ns=0\\n[qpa-flush] same=1 offset=0,0 rects=1\\n[qpa-frame] x=242 y=148 w=6 h=20 stride=3200 ns=0\\nEDITOR_SAMPLE pages=6890 threads=3 scroll=0 cursor=0\\n[qpa-flush] same=1 offset=0,0 rects=1\\n[qpa-frame] x=242 y=148 w=6 h=20 stride=3200 ns=0\\n[qpa-flush] same=1 offset=0,0 rects=1\\n[qpa-frame] x=242 y=148 w=6 h=20 stride=3200 ns=0\\nEDITOR_SAMPLE pages=6890 threads=3 scroll=0 cursor=0\\n[qpa-flush] same=1 offset=0,0 rects=1\\n[qpa-frame] x=242 y=148 w=6 h=20 stride=3200 ns=0\\n[qpa-flush] same=1 offset=0,0 rects=1\\n[qpa-frame] x=242 y=148 w=6 h=20 stride=3200 ns=0\\nEDITOR_SAMPLE pages=6825 threads=2 scroll=0 cursor=0\\n')",
+  "sampled_pages": [
+    6740
+  ],
+  "sampled_threads": [
+    3
+  ],
+  "visual_cache_bytes": [
+    3840000
+  ]
+}

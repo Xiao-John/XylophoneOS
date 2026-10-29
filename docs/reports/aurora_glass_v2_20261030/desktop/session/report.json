@@ -1,0 +1,115 @@
+{
+  "status": "PASSED",
+  "case": "session",
+  "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+  "elf_sha256": {
+    "desktop": "a4325eea0cff82a91b5bd0bfb54623033908f2a97f015aef28cab8e3d01694fb",
+    "studio": "e2696250ab84a9ddbc0f3574793db6f4cda4c63fe8bad7b7fd2eab7f52b2af1c",
+    "session": "c1702ac1915b4ae3cc5b05e5bc335c7a2b638d52c8b96daaf65d349ea5de78cc",
+    "gap": "41ba0a63e9f2649315ca4a79a86f5f3b46db540744f088840b776b466e44daa7",
+    "notes": "1323ae6557896dc94c6886e427be15d6df8dca11131819abf49455b70bdc412f",
+    "browser": "51a55f2c680ef039f7e9ffe145cb325d34688a20aa907323997030b546612a14",
+    "legacy": "f52b1bb2351e512d836545b52a49b18a479b4c61290b79bed7df8dc04eeddea2"
+  },
+  "checks": [
+    {
+      "name": "independent_application_handoff_1",
+      "status": "PASSED"
+    },
+    {
+      "name": "independent_application_handoff_2",
+      "status": "PASSED"
+    },
+    {
+      "name": "independent_application_handoff_3",
+      "status": "PASSED"
+    },
+    {
+      "name": "session_exit_exact_resources",
+      "status": "PASSED"
+    },
+    {
+      "name": "non_aurora_app_preserved",
+      "status": "PASSED"
+    },
+    {
+      "name": "service_stop_and_file_sync",
+      "status": "PASSED"
+    }
+  ],
+  "screenshots": {
+    "launched-1": "c4ad4c89c7013d6a1ca5346494f9e9f8539cfd33d5455b34b1a78861bc76fd5b",
+    "launched-2": "814b4923c87cf56554eca25addcf9a93a7c12a808279c1a3e6299338aaf07ddb",
+    "launched-3": "367364e0f310f45f62516566aaec0a27065839bf228938d3f34fc18f28350e34",
+    "legacy-no-aurora": "afb769fe58d17c9a6113f57330b1103fc9ef418b9bf54a748c8af641e9b29549"
+  },
+  "latency_host_ms": [
+    6842.63,
+    6102.92,
+    1209.77,
+    5766.64
+  ],
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_desktop_p0f11yrl/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_wwf6xi20/qmp.sock,server=on,wait=off"
+  ],
+  "baseline": [
+    130279,
+    2,
+    0
+  ],
+  "with_service": [
+    130235,
+    3,
+    1
+  ],
+  "sampled_pages": [
+    6740,
+    6746,
+    6745,
+    6745
+  ],
+  "sampled_threads": [
+    3,
+    3,
+    3,
+    3
+  ],
+  "visual_cache_bytes": [
+    3840000,
+    3840000,
+    3840000,
+    3840000,
+    3840000
+  ]
+}

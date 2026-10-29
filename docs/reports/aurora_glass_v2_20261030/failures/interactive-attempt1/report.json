@@ -1,0 +1,87 @@
+{
+  "status": "FAILED",
+  "case": "interactive",
+  "image_sha256": "86c42a419f309d6b649580f4c0d6a2bf6da91fea05373064e39240e7c053d803",
+  "elf_sha256": {
+    "desktop": "a69b0103ea7f3f5124df82ee0c4796ea27eb40c0a484e295d05735e1f1895378",
+    "studio": "7941b70fec22dea7f4060b03e22aaa17fc32bad3c9db5d6fb5bba9577da97878",
+    "session": "8df34d416ebf89499b47a3c86da824e3c8d16dd7bbae251bf798552903f1f4f7",
+    "gap": "41ba0a63e9f2649315ca4a79a86f5f3b46db540744f088840b776b466e44daa7"
+  },
+  "checks": [
+    {
+      "name": "real_single_surface_desktop",
+      "status": "PASSED"
+    },
+    {
+      "name": "two_distinct_native_designs",
+      "status": "PASSED"
+    }
+  ],
+  "screenshots": {
+    "midnight-home": "5064285f9bf94f8a7821cf4b632a8773b2b9edad1af32c492054dd1ddfd507c3",
+    "midnight-settings": "78fc75d16cec0c394143bb07587344cd4d135fb1ea349b4ad20005bae6cc308a",
+    "daybreak-settings": "0906a25c2bbb9057e5b00497d7ed2c69e2dfeeede6a36b2fcee3cfdca8047315"
+  },
+  "latency_host_ms": [
+    1199.2,
+    1271.27,
+    1091.32
+  ],
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_desktop_n8iu47dc/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_8c_v54y9/qmp.sock,server=on,wait=off"
+  ],
+  "baseline": [
+    130279,
+    2,
+    0
+  ],
+  "with_service": [
+    130235,
+    3,
+    1
+  ],
+  "error": "",
+  "sampled_pages": [
+    6729
+  ],
+  "sampled_threads": [
+    3
+  ],
+  "visual_cache_bytes": [
+    3840000,
+    3840000,
+    3840000
+  ]
+}

@@ -1,10 +1,31 @@
 # XOS 当前状态
 
-2026-10-30：原生[Aurora SDK](work_log/0102_aurora_ui_v2_sdk.md)及[Notes/Browser SSG 接入](work_log/0103_aurora_ssg_consumers.md)已通过限定客体验收。
-跨进程SSG/合成器/生产权限仍BLOCKED，无内核/系统ABI/QPA改动；LocalPilot仅LP0研究。
-单Surface桌面另一个审查单元交付。旧资格与失败保持原输入。
+2026-10-30。独立 Aurora 原型基于重新 fetch/复核的 main `3377dbf`；系统 build
+`7ccd5871c0c00297`。本轮 15 套客体检查、107 项顶层 gate 通过，另有 25 项原生语义
+断言和 396 blur 向量/6 错误控制。它不是全系统重验或新发行。
 
-## 保留的历史状态
+## Aurora / AI Native 当前交付
+
+- [0102 SDK](work_log/0102_aurora_ui_v2_sdk.md)：原生 tokens v2、两套布局、辅助功能、
+  四档画质/关闭玻璃、缓存/可分离模糊和独立 Widgets 消费者。深色 Midnight Current
+  是用户选择的完善优先级；最终审美仍待复核。系统实时主题 broker 和完整 G3 未实现。
+- [0103 SSG](work_log/0103_aurora_ssg_consumers.md)：Notes 真 Qt 结构、Browser 真文档/
+  渲染片段、只读 Snapshot/Diff、有界文本/可见性/失效及本地显式授权夹具通过。
+  跨进程观察/动作/聚合 BLOCKED；宿主 OCR 仅参考，LocalPilot 仅 LP0 研究。
+- [0104 Desktop](work_log/0104_aurora_desktop_shell.md)：真实单 Surface Shell/session，
+  三个独立 GUI 顺序启动/返回、输入/故障/资源回收通过。不是多窗口合成器。
+- 内核/系统 ABI/libc/QPA/IRQ/时钟/设备职责源码修改为 0。C04 记录用户明确的
+  AI-native 用户态方向；没有模型特权、私有时基或新的设备授权。
+- [冻结证据](reports/aurora_glass_v2_20261030/README.md) 保留源码/产物哈希、真实截图、
+  原始失败与性能边界。独立工作区输出，无公共 build 占用；未改其他工作区或正式 Mac 应用。
+
+下一步：[G2-Scout](contracts/aurora_compositor_proposal.md) 的通用传输/生命周期先审查，
+之后再实现真实双进程合成；生产 SSG 权限与 LocalPilot WebView/网络依赖仍未解除。
+原 #20 架构阻塞保留，不合并、不发行、不把历史资格改绑新输入。
+
+## 以下为保留的 2026-10-29 整合历史
+
+下文“未验”等描述保留其原始时点；本轮只由以上新证据补验受影响部分。
 
 2026-10-29。本次GPU后端整合同步的远端 main 为 `85120a7`；E17/Aurora PR #13
 已由维护者合入，FB0故障包勘查与音频计划也已保留。当前组合继续保留日常工具、

@@ -1,0 +1,498 @@
+{
+  "capped": false,
+  "metadata": {
+    "globalScene": "BLOCKED",
+    "provider": "qt-widget-v1",
+    "roleFilter": "",
+    "scope": "application-root",
+    "subscriptions": "NOT_IMPLEMENTED",
+    "textAuthorized": true,
+    "visibleOnly": false
+  },
+  "nodes": [
+    {
+      "actionAuthority": "NOT_GRANTED_BY_OBSERVATION",
+      "actions": [],
+      "bounds": [
+        0,
+        0,
+        800,
+        600
+      ],
+      "class": "QWidget",
+      "contentTrust": "untrusted-application-content",
+      "enabled": true,
+      "focused": false,
+      "id": "16",
+      "name": "",
+      "nativeName": "",
+      "parent": "0",
+      "role": "custom",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "semantics": "SEMANTICS_UNAVAILABLE",
+      "sensitive": false,
+      "source": "qt-widget",
+      "text": "",
+      "textTruncated": false,
+      "visibility": "locally-visible",
+      "visibleBounds": [
+        0,
+        0,
+        800,
+        600
+      ]
+    },
+    {
+      "actionAuthority": "NOT_GRANTED_BY_OBSERVATION",
+      "actions": [],
+      "bounds": [
+        0,
+        0,
+        20,
+        26
+      ],
+      "class": "QWidget",
+      "contentTrust": "untrusted-application-content",
+      "enabled": true,
+      "focused": false,
+      "id": "17",
+      "name": "",
+      "nativeName": "",
+      "parent": "16",
+      "role": "custom",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "semantics": "SEMANTICS_UNAVAILABLE",
+      "sensitive": false,
+      "source": "qt-widget",
+      "text": "",
+      "textTruncated": false,
+      "visibility": "hidden",
+      "visibleBounds": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "actionAuthority": "NOT_GRANTED_BY_OBSERVATION",
+      "actions": [],
+      "bounds": [
+        60,
+        46,
+        680,
+        508
+      ],
+      "class": "QWidget",
+      "contentTrust": "untrusted-application-content",
+      "enabled": true,
+      "focused": false,
+      "id": "18",
+      "name": "",
+      "nativeName": "",
+      "parent": "16",
+      "role": "custom",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "semantics": "SEMANTICS_UNAVAILABLE",
+      "sensitive": false,
+      "source": "qt-widget",
+      "text": "",
+      "textTruncated": false,
+      "visibility": "locally-visible",
+      "visibleBounds": [
+        60,
+        46,
+        680,
+        508
+      ]
+    },
+    {
+      "actionAuthority": "NOT_GRANTED_BY_OBSERVATION",
+      "actions": [],
+      "bounds": [
+        88,
+        70,
+        624,
+        69
+      ],
+      "class": "QLabel",
+      "contentTrust": "untrusted-application-content",
+      "enabled": true,
+      "focused": false,
+      "id": "19",
+      "name": "",
+      "nativeName": "",
+      "parent": "18",
+      "role": "label",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "semantics": "native-structure",
+      "sensitive": false,
+      "source": "qt-widget",
+      "text": "AI0  /  Intent & UI Semantics",
+      "textTruncated": false,
+      "visibility": "locally-visible",
+      "visibleBounds": [
+        88,
+        70,
+        624,
+        69
+      ]
+    },
+    {
+      "actionAuthority": "NOT_GRANTED_BY_OBSERVATION",
+      "actions": [],
+      "bounds": [
+        88,
+        151,
+        624,
+        68
+      ],
+      "class": "QLabel",
+      "contentTrust": "untrusted-application-content",
+      "enabled": true,
+      "focused": false,
+      "id": "20",
+      "name": "",
+      "nativeName": "",
+      "parent": "18",
+      "role": "label",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "semantics": "native-structure",
+      "sensitive": false,
+      "source": "qt-widget",
+      "text": "Observe > Propose > Authorize > Execute > Verify",
+      "textTruncated": false,
+      "visibility": "locally-visible",
+      "visibleBounds": [
+        88,
+        151,
+        624,
+        68
+      ]
+    },
+    {
+      "actionAuthority": "NOT_GRANTED_BY_OBSERVATION",
+      "actions": [
+        "inspect",
+        "focus",
+        "set_text"
+      ],
+      "bounds": [
+        88,
+        231,
+        624,
+        36
+      ],
+      "class": "QLineEdit",
+      "contentTrust": "untrusted-application-content",
+      "enabled": true,
+      "focused": true,
+      "id": "21",
+      "intentRef": {
+        "epoch": "42949672961",
+        "id": "1",
+        "revision": "4"
+      },
+      "name": "Draft title",
+      "nativeName": "draft-title",
+      "parent": "18",
+      "readOnly": false,
+      "role": "textbox",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "selectionLength": 0,
+      "selectionStart": -1,
+      "semantics": "native-structure",
+      "sensitive": false,
+      "source": "qt-widget",
+      "text": "original",
+      "textTruncated": false,
+      "visibility": "locally-visible",
+      "visibleBounds": [
+        88,
+        231,
+        624,
+        36
+      ]
+    },
+    {
+      "actionAuthority": "NOT_GRANTED_BY_OBSERVATION",
+      "actions": [],
+      "bounds": [
+        88,
+        279,
+        624,
+        26
+      ],
+      "class": "QLineEdit",
+      "contentTrust": "untrusted-application-content",
+      "enabled": true,
+      "focused": false,
+      "id": "22",
+      "name": "",
+      "nativeName": "protected-password",
+      "parent": "18",
+      "role": "textbox",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "semantics": "native-structure",
+      "sensitive": true,
+      "source": "qt-widget",
+      "textStatus": "PROTECTED",
+      "visibility": "locally-visible",
+      "visibleBounds": [
+        88,
+        279,
+        624,
+        26
+      ]
+    },
+    {
+      "actionAuthority": "NOT_GRANTED_BY_OBSERVATION",
+      "actions": [],
+      "bounds": [
+        60,
+        46,
+        100,
+        30
+      ],
+      "class": "QLabel",
+      "contentTrust": "untrusted-application-content",
+      "enabled": true,
+      "focused": false,
+      "id": "23",
+      "name": "",
+      "nativeName": "hidden-label",
+      "parent": "18",
+      "role": "label",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "semantics": "native-structure",
+      "sensitive": false,
+      "source": "qt-widget",
+      "text": "hidden text",
+      "textTruncated": false,
+      "visibility": "hidden",
+      "visibleBounds": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "actionAuthority": "NOT_GRANTED_BY_OBSERVATION",
+      "actions": [],
+      "bounds": [
+        88,
+        317,
+        624,
+        34
+      ],
+      "class": "QWidget",
+      "contentTrust": "untrusted-application-content",
+      "enabled": true,
+      "focused": false,
+      "id": "24",
+      "name": "",
+      "nativeName": "",
+      "parent": "18",
+      "role": "custom",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "semantics": "SEMANTICS_UNAVAILABLE",
+      "sensitive": false,
+      "source": "qt-widget",
+      "text": "",
+      "textTruncated": false,
+      "visibility": "locally-visible",
+      "visibleBounds": [
+        88,
+        317,
+        624,
+        34
+      ]
+    },
+    {
+      "actionAuthority": "NOT_GRANTED_BY_OBSERVATION",
+      "actions": [
+        "inspect",
+        "focus",
+        "activate"
+      ],
+      "bounds": [
+        88,
+        317,
+        240,
+        32
+      ],
+      "checkable": false,
+      "checked": false,
+      "class": "QPushButton",
+      "contentTrust": "untrusted-application-content",
+      "enabled": true,
+      "focused": false,
+      "id": "25",
+      "name": "",
+      "nativeName": "covered-button",
+      "parent": "24",
+      "role": "button",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "semantics": "native-structure",
+      "sensitive": false,
+      "source": "qt-widget",
+      "text": "Covered fixture",
+      "textTruncated": false,
+      "visibility": "locally-occluded-or-clipped",
+      "visibleBounds": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "actionAuthority": "NOT_GRANTED_BY_OBSERVATION",
+      "actions": [],
+      "bounds": [
+        88,
+        317,
+        240,
+        32
+      ],
+      "class": "QLabel",
+      "contentTrust": "untrusted-application-content",
+      "enabled": true,
+      "focused": false,
+      "id": "26",
+      "name": "",
+      "nativeName": "",
+      "parent": "24",
+      "role": "label",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "semantics": "native-structure",
+      "sensitive": false,
+      "source": "qt-widget",
+      "text": "Opaque overlay fixture",
+      "textTruncated": false,
+      "visibility": "locally-visible",
+      "visibleBounds": [
+        88,
+        317,
+        240,
+        32
+      ]
+    },
+    {
+      "actionAuthority": "NOT_GRANTED_BY_OBSERVATION",
+      "actions": [
+        "inspect",
+        "focus",
+        "set_text"
+      ],
+      "bounds": [
+        88,
+        363,
+        624,
+        36
+      ],
+      "class": "QLineEdit",
+      "contentTrust": "untrusted-application-content",
+      "enabled": true,
+      "focused": false,
+      "id": "27",
+      "name": "",
+      "nativeName": "",
+      "parent": "18",
+      "readOnly": false,
+      "role": "textbox",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "selectionLength": 0,
+      "selectionStart": -1,
+      "semantics": "native-structure",
+      "sensitive": false,
+      "source": "qt-widget",
+      "text": "",
+      "textTruncated": false,
+      "visibility": "locally-visible",
+      "visibleBounds": [
+        88,
+        363,
+        624,
+        36
+      ]
+    },
+    {
+      "actionAuthority": "NOT_GRANTED_BY_OBSERVATION",
+      "actions": [
+        "inspect",
+        "focus",
+        "activate"
+      ],
+      "bounds": [
+        88,
+        411,
+        624,
+        38
+      ],
+      "checkable": false,
+      "checked": false,
+      "class": "QPushButton",
+      "contentTrust": "untrusted-application-content",
+      "enabled": true,
+      "focused": false,
+      "id": "28",
+      "name": "",
+      "nativeName": "",
+      "parent": "18",
+      "role": "button",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "semantics": "native-structure",
+      "sensitive": false,
+      "source": "qt-widget",
+      "text": "Authorize once (local fixture)",
+      "textTruncated": false,
+      "visibility": "locally-visible",
+      "visibleBounds": [
+        88,
+        411,
+        624,
+        38
+      ]
+    },
+    {
+      "actionAuthority": "NOT_GRANTED_BY_OBSERVATION",
+      "actions": [],
+      "bounds": [
+        88,
+        461,
+        624,
+        69
+      ],
+      "class": "QLabel",
+      "contentTrust": "untrusted-application-content",
+      "enabled": true,
+      "focused": false,
+      "id": "29",
+      "name": "",
+      "nativeName": "",
+      "parent": "18",
+      "role": "label",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "semantics": "native-structure",
+      "sensitive": false,
+      "source": "qt-widget",
+      "text": "Discovery grants no rights. No model, network or external side effects.",
+      "textTruncated": false,
+      "visibility": "locally-visible",
+      "visibleBounds": [
+        88,
+        461,
+        624,
+        69
+      ]
+    }
+  ],
+  "observedMonotonicNs": "7440000000",
+  "queryDurationNs": "50000000",
+  "sceneVersion": "1",
+  "sourceEpoch": "42949672964",
+  "status": "OK",
+  "version": 1
+}

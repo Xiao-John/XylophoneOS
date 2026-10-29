@@ -1,0 +1,147 @@
+{
+  "status": "PASSED",
+  "case": "interactive",
+  "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+  "elf_sha256": {
+    "desktop": "a4325eea0cff82a91b5bd0bfb54623033908f2a97f015aef28cab8e3d01694fb",
+    "studio": "e2696250ab84a9ddbc0f3574793db6f4cda4c63fe8bad7b7fd2eab7f52b2af1c",
+    "session": "c1702ac1915b4ae3cc5b05e5bc335c7a2b638d52c8b96daaf65d349ea5de78cc",
+    "gap": "41ba0a63e9f2649315ca4a79a86f5f3b46db540744f088840b776b466e44daa7",
+    "notes": "1323ae6557896dc94c6886e427be15d6df8dca11131819abf49455b70bdc412f",
+    "browser": "51a55f2c680ef039f7e9ffe145cb325d34688a20aa907323997030b546612a14",
+    "legacy": "f52b1bb2351e512d836545b52a49b18a479b4c61290b79bed7df8dc04eeddea2"
+  },
+  "checks": [
+    {
+      "name": "real_single_surface_desktop",
+      "status": "PASSED"
+    },
+    {
+      "name": "two_distinct_native_designs",
+      "status": "PASSED"
+    },
+    {
+      "name": "setting_highContrast",
+      "status": "PASSED"
+    },
+    {
+      "name": "setting_reduceTransparency",
+      "status": "PASSED"
+    },
+    {
+      "name": "setting_reduceMotion",
+      "status": "PASSED"
+    },
+    {
+      "name": "hide_restore_panel",
+      "status": "PASSED"
+    },
+    {
+      "name": "real_menu_notification_text_and_keyboard",
+      "status": "PASSED"
+    },
+    {
+      "name": "desktop_exit_exact_resources",
+      "status": "PASSED"
+    },
+    {
+      "name": "display_released_after_desktop",
+      "status": "PASSED"
+    },
+    {
+      "name": "non_aurora_app_preserved",
+      "status": "PASSED"
+    },
+    {
+      "name": "service_stop_and_file_sync",
+      "status": "PASSED"
+    }
+  ],
+  "screenshots": {
+    "midnight-home": "c4c0650d6872bfbaa55a4f5e9924830d3d561b54b6cbb6be43e24d16f30b2f45",
+    "midnight-settings": "248826958406d53dee787493f7335fbf9bcc08f7b84b64362d01b3265ff2fc42",
+    "daybreak-settings": "9236dad56cada8dc46bc3d248053d71b8ef87d2479138ef5246cfbc0d78846f4",
+    "highContrast": "55ad7e9639a6c4448150ca582f069406a4744312691415847be6987dea74f432",
+    "reduceTransparency": "f798535d70a7a1a91f63f0d6ef9efa1dc034b40346363832c113709f4f232f8b",
+    "reduceMotion": "8d366a3408f6c6dd61ed38513a232675d4ef6753c23c692e000d7478709e935d",
+    "wallpaper-alternative": "d472e52d2eae253e31e9b1791923d7703cae3509f5b659b6a950f8a5ea4c0e6e",
+    "daybreak-home": "e715cdf89c9cfc624ece12eaf4db0aabd6586fff23e4166e5115dfcf41699871",
+    "panel-hidden": "25da335c39b9c5fe35281f65bc6e4257a48549e7e30f6ffb41f190eb8c4e9a39",
+    "component-studio": "00784c187556299cf5999401cb70e102d13b9b079223174ca12cede36215153e",
+    "notification": "2971880e5ddce8496d0209b36ed18b6f75c236e744caebc84506d95370cc9075",
+    "keyboard-focus": "0ffd009c0c7a713b42c51b62c8a98cfd03a2a445f64bfbbb662151c7dd94ecbe",
+    "legacy-no-aurora": "c184f04636cf3675c3dd7b1163dbc6e1a171722b4690cd8cf41df2b180126d74"
+  },
+  "latency_host_ms": [
+    1206.84,
+    1282.83,
+    1116.67,
+    1117.13,
+    1130.56,
+    1384.91,
+    976.14,
+    1271.19,
+    984.19,
+    1099.74,
+    1167.71,
+    1205.34,
+    1153.52
+  ],
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_desktop_24iumzkd/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_a0hewthh/qmp.sock,server=on,wait=off"
+  ],
+  "baseline": [
+    130279,
+    2,
+    0
+  ],
+  "with_service": [
+    130235,
+    3,
+    1
+  ],
+  "sampled_pages": [
+    6740
+  ],
+  "sampled_threads": [
+    3
+  ],
+  "visual_cache_bytes": [
+    3840000,
+    3840000,
+    1920000,
+    1920000,
+    1920000
+  ]
+}

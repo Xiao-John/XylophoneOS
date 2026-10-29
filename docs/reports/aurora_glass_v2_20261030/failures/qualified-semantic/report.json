@@ -1,0 +1,57 @@
+{
+  "status": "FAILED",
+  "case": "semantic",
+  "image_sha256": "87f61feb8871670f94956b5d698f5af6fa34d58ddb79b61bf0093b93d8cc8af4",
+  "checks": [
+    {
+      "name": "independent_mock_selects_real_ssg_target",
+      "status": "PASSED",
+      "native_checks": 23
+    }
+  ],
+  "screenshots": {},
+  "runs": [],
+  "elf_sha256": {
+    "render": "d06ee857c47738ae8519f97c13979f8a6e65c4dee4a221cf52d62d9ecd9f43d2",
+    "semantics": "b1e2fac23db07b8f5742d50002905c0745a072096fe4e77a070ec2cdb319d745",
+    "notes": "c2c99b27b4602314ed7e56df08c63ea849d6bfff1a52d6987cbf2df9bb5b75c3",
+    "browser": "8559ec0faa6118614a1fd80db1b5e9573981d3bb1a6e18df0c6690d9a9f25452",
+    "desktop": "a4325eea0cff82a91b5bd0bfb54623033908f2a97f015aef28cab8e3d01694fb",
+    "session": "c1702ac1915b4ae3cc5b05e5bc335c7a2b638d52c8b96daaf65d349ea5de78cc"
+  },
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v4/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_aurora_platform_jqsxi3r1/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ainewup2/qmp.sock,server=on,wait=off"
+  ],
+  "error": "JSONDecodeError('Unterminated string starting at: line 1 column 3181 (char 3180)')"
+}

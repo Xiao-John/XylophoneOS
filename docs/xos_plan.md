@@ -102,7 +102,7 @@ v1.5修订（2026-10-30，用户明确补充）：长期目标为 AI-Native OS�
 | E17 | Qt Widgets 6.8.3 / Aurora Notes 受限客体功能通过，PR #13已合入 | E16，G05；见[0078](work_log/0078_qt_e17_aurora_qualification.md)，非发行资格 |
 | E18 | 无界面QML/QV4解释执行，未开始 | E15，不依赖Widgets，G06 |
 | E19 | Quick软件呈现，未开始 | E16/E18，G07 |
-| E20 | GUI整合/朋友试用，未开始 | Widgets/Quick可分别交付，G08–G10 |
+| E20 | Aurora G0/G1已有独立原型；G08–G10完整整合与朋友试用未完成 | Widgets/Quick可分别交付，G08–G10 |
 | DU | DU1/2 13工具与XPK已有实现和定向组合证据；DU3/4未完成 | [DU路线](plans/daily_utilities.md)；DU1/2首批13命令，DU3按依赖、DU4包/ISO交付闭环；不扩大xsh或新增内核工具特例 |
 | PX | PX0契约已有；其余未实施 | [POSIX路线](plans/posix.md)，建议先设计PX4-A，不构成已派工 |
 

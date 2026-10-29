@@ -1,0 +1,81 @@
+{
+  "status": "FAILED",
+  "case": "interactive",
+  "image_sha256": "87f61feb8871670f94956b5d698f5af6fa34d58ddb79b61bf0093b93d8cc8af4",
+  "elf_sha256": "8559ec0faa6118614a1fd80db1b5e9573981d3bb1a6e18df0c6690d9a9f25452",
+  "receipt_sha256": "c62a2f6cb11f7f0ea846b1210c6fe03ff167ff9be79587c2e0028b8f1a1f1d65",
+  "source_pages": {
+    "src/ports/aurora_browser/pages/theme.css": "0a56ef6865913a9e161672898f8fa2753945e48a094641ee0c18896a03ca2c54",
+    "src/ports/aurora_browser/pages/garden.bmp": "ef846504d0c60f1fbe9731d42edfb0c8cca8763b2928f837753b61c55ca04109",
+    "src/ports/aurora_browser/pages/start.html": "2cd05d76a959980159fcc6d04e4bc8b257e15f3f4d9d6f09cb10a0bfb40ec9c5",
+    "src/ports/aurora_browser/pages/reading.html": "83e35c5316b4cf6c514f625b748a2b786b23e06654d73fe1827ddc16405ea321",
+    "src/ports/aurora_browser/pages/garden.html": "b081c7068cf67947fcaa9f65cf0e70afbdc3971e9261a627a18357e76c420dbd"
+  },
+  "runner_sha256": "d655e2197bdd6dd2892fd60c9ed4fb3df083049a8a75fcddc2c72ce09ce3e947",
+  "checks": [
+    {
+      "name": "real_litehtml_engine_and_aurora_start_page",
+      "status": "PASSED"
+    }
+  ],
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v4/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_browser_txvrsts8/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_5tjes0kg/qmp.sock,server=on,wait=off"
+  ],
+  "baseline": [
+    130279,
+    2,
+    0
+  ],
+  "with_service": [
+    130235,
+    3,
+    1
+  ],
+  "screenshots": {
+    "start": "814b4923c87cf56554eca25addcf9a93a7c12a808279c1a3e6299338aaf07ddb"
+  },
+  "error": "aurora_glass/qualified-browser-interactive/guest: missing any of (b'BROWSER_LINK target=/web/reading.html',); output=bytearray(b'ons=0 lost=0 gui_ns=8870000000\\n[qpa-flush] same=1 offset=0,0 rects=2\\n[qpa-frame] x=45 y=400 w=20 h=26 stride=3200 ns=0\\n[qpa-frame] x=45 y=480 w=20 h=26 stride=3200 ns=0\\n[qpa-input] seq=17 ns=8940000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=8940000000\\n[qpa-flush] same=1 offset=0,0 rects=3\\n[qpa-frame] x=32 y=222 w=736 h=322 stride=3200 ns=0\\n[qpa-frame] x=32 y=554 w=736 h=20 stride=3200 ns=0\\n[qpa-frame] x=45 y=574 w=20 h=12 stride=3200 ns=10000000\\n[qpa-input] seq=18 ns=8970000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=8980000000\\n[qpa-flush] same=1 offset=0,0 rects=3\\n[qpa-frame] x=32 y=554 w=736 h=20 stride=3200 ns=0\\n[qpa-frame] x=45 y=574 w=20 h=12 stride=3200 ns=0\\n[qpa-frame] x=45 y=599 w=20 h=1 stride=3200 ns=0\\n[qpa-input] seq=19 ns=9040000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=9040000000\\n[qpa-input] seq=20 ns=9190000000 kind=3 code=0 mods=0 buttons=1 lost=0 gui_ns=9190000000\\n[qpa-input] seq=21 ns=9290000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=9290000000\\n')",
+  "measurements": {
+    "sampled_pages": [
+      7153
+    ],
+    "sampled_threads": [
+      3
+    ],
+    "visual_cache_bytes": [
+      3840000
+    ],
+    "absolute_peak": "NOT_RUN"
+  }
+}

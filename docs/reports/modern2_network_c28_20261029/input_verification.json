@@ -1,0 +1,69 @@
+{
+  "scope": "C28/C29 superseding source audit only; no new guest result",
+  "files": [
+    {
+      "commit": "169f51e6b410863b8d8c9707b7ea84a6f649d59c",
+      "path": "docs/xos_plan.md",
+      "bytes": 14977,
+      "sha256": "6f98f5063e4ef41fcbcc4c62cfbc57af6a6276a6f9bf55d2aabfac1016c2654f",
+      "git_blob": "dcc243ad082cfe4a38174d96e1f0aab093a848bf",
+      "checkout_equal": true
+    },
+    {
+      "commit": "169f51e6b410863b8d8c9707b7ea84a6f649d59c",
+      "path": "docs/work_log/0086_principle_amendment_driver_timebase.md",
+      "bytes": 2646,
+      "sha256": "15f6ca355b2abf2aae37f22d6daff4b2c016eee7b12e454af8d148568163cd42",
+      "git_blob": "5a896d9177448cefc5f6702b788e064339108aec",
+      "checkout_equal": true
+    },
+    {
+      "commit": "169f51e6b410863b8d8c9707b7ea84a6f649d59c",
+      "path": "src/kernel/arch/x86_64/pic.cpp",
+      "bytes": 1394,
+      "sha256": "a84eda5aefdd0546d77539b21e88f7b4c87a70c30f74ed81eb8797c756bad535",
+      "git_blob": "ce22828a64898b7308fdaba1a7c8ea53043754e9",
+      "checkout_equal": true
+    },
+    {
+      "commit": "169f51e6b410863b8d8c9707b7ea84a6f649d59c",
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "bytes": 113590,
+      "sha256": "c839644c7791501cb3cbd7cfa041447f3f14ba8fe7582d24b7dfd71370c583a5",
+      "git_blob": "05f39343ed99a03f715bec0464204c61bac731cc",
+      "checkout_equal": true
+    },
+    {
+      "commit": "9b832fa06061b6905d00529a2e0a8445ea389a2a",
+      "path": "src/kernel/arch/x86_64/pic.cpp",
+      "bytes": 2022,
+      "sha256": "438c578b780d8b548518e4ab5c88b80c61e8f4489a812e9c56b684708bcefe10",
+      "git_blob": "1f4154ccf8972efa2c0c5ce214389b1a691480f7",
+      "checkout_equal": true
+    },
+    {
+      "commit": "9b832fa06061b6905d00529a2e0a8445ea389a2a",
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "bytes": 113590,
+      "sha256": "c839644c7791501cb3cbd7cfa041447f3f14ba8fe7582d24b7dfd71370c583a5",
+      "git_blob": "05f39343ed99a03f715bec0464204c61bac731cc",
+      "checkout_equal": true
+    },
+    {
+      "commit": "9b832fa06061b6905d00529a2e0a8445ea389a2a",
+      "path": "src/kernel/platform/pc/virtio_net.cpp",
+      "bytes": 13230,
+      "sha256": "504dd055afb2b0b002b7d9b9fba1d8462d38795b701e48005f52063cadc6cdeb",
+      "git_blob": "83d0d731644fe25acdb905b033f27d74e30317f1",
+      "checkout_equal": true
+    },
+    {
+      "commit": "97947c07853e785530d3c907738a8b45f530986e",
+      "path": "docs/contracts/network_device_v1_proposal.md",
+      "bytes": 7258,
+      "sha256": "a76fbf738af2fb00a438a911b7eb51508d686e16450d2b5aa61c2dc516056f18",
+      "git_blob": "adec68ac5ddfaf1ea994be3199d72e79cdaa1fc0",
+      "checkout_equal": true
+    }
+  ]
+}

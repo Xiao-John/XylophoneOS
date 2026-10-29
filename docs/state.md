@@ -6,6 +6,17 @@ UTF-8文件名、游戏及ncursesw前期探针。新增整合资格限于0081的
 其他旧资格仍绑定原输入，不构成全系统重验。发布资产仍为0.0.1-1026，未更新Release。
 原则裁决见[xos_plan.md第一部分](xos_plan.md#第一部分设计原则)，本页只登记事实与占用。
 
+## Modern Platform Phase 2：网络维护者交接（BLOCKED）
+
+2026-10-29，`codex/modern2-network-handoff` 基于重新fetch的main `aaec2e9`。
+范围仅为 `docs/reports/modern2_network_20261029/`、本状态和独立工作记录；不占用公共
+头、dispatch、SDK、设备驱动、浏览器或公共build。网络、PX4-A和Python在不同worktree推进。
+PR #18仍Draft/open/unmerged，公开reviews/threads/comments为空；因此不实现或调用112。
+[维护者审查包](reports/modern2_network_20261029/README.md)列出原提案的活体撤销歧义、
+copyout原子性、N1运行期IRQ边界，以及D1–D3、TCP/HTTP和渲染的最小验收。
+本轮网络没有新客体或镜像资格；旧N1/B1/QuickJS各自仍只绑定原输入。
+详见[0086网络接续](work_log/0086_modern2_network_handoff.md)。
+
 ## FB1/FB2 应用故障包（受限通过）
 
 2026-10-29，`codex/fb2-offline-symbols` 基于已合入FB0和VirtIO-GPU的主线 `39083f9`。

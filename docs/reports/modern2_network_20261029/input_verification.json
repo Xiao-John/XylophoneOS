@@ -1,0 +1,186 @@
+{
+  "scope": "READ_ONLY_SOURCE_AND_OLD_RECEIPT_VERIFICATION; no guest rerun or new qualification",
+  "base_commit": "aaec2e9d8ffe61ce1d523cd56852d36cde3edd07",
+  "source_inputs": [
+    {
+      "upstream_pr": 18,
+      "workspace": "XylophoneOS-network-abi",
+      "commit": "97947c07853e785530d3c907738a8b45f530986e",
+      "path": "docs/contracts/network_device_v1_proposal.md",
+      "bytes": 7258,
+      "sha256": "a76fbf738af2fb00a438a911b7eb51508d686e16450d2b5aa61c2dc516056f18",
+      "git_blob": "adec68ac5ddfaf1ea994be3199d72e79cdaa1fc0",
+      "content_equals_checkout": true
+    },
+    {
+      "upstream_pr": 18,
+      "workspace": "XylophoneOS-network-abi",
+      "commit": "97947c07853e785530d3c907738a8b45f530986e",
+      "path": "docs/contracts/abi_registry.md",
+      "bytes": 9441,
+      "sha256": "afdb924ceced3823cc9626df0121c72c1f16cf3bbb5442aaa34c3e4006eec4ce",
+      "git_blob": "c29175f3f474a26b216998cd70772133c3be790c",
+      "content_equals_checkout": true
+    },
+    {
+      "upstream_pr": 18,
+      "workspace": "XylophoneOS-network-abi",
+      "commit": "97947c07853e785530d3c907738a8b45f530986e",
+      "path": "docs/reports/network_device_gap_20261029/inputs.json",
+      "bytes": 1551,
+      "sha256": "51f7ce796beda9e44a122c5858057a0ffc029f4751bc7bb7c6981010226816b5",
+      "git_blob": "e8d9dec2c515d9705b4fdd80f5abe5ec03b3a9b3",
+      "content_equals_checkout": true
+    },
+    {
+      "upstream_pr": 18,
+      "workspace": "XylophoneOS-network-abi",
+      "commit": "97947c07853e785530d3c907738a8b45f530986e",
+      "path": "docs/reports/network_device_gap_20261029/guest-report.json",
+      "bytes": 12124,
+      "sha256": "3ed20eae97ec07e44d7d487cbd4c9f0bb6af5b91b463c700562d8824e2ebdd39",
+      "git_blob": "e2e05e1fe17e134ebfbd02ed01a5c85511364fb5",
+      "content_equals_checkout": true
+    },
+    {
+      "upstream_pr": 20,
+      "workspace": "XylophoneOS-browser-net",
+      "commit": "9b832fa06061b6905d00529a2e0a8445ea389a2a",
+      "path": "docs/contracts/virtio_net.md",
+      "bytes": 6844,
+      "sha256": "3dc263fde498cf7a6e8c42c160862e6e0932981667af925c794d21a604c793ef",
+      "git_blob": "67455ae8ee18c4221789b7837ed9e5c4bd5f819d",
+      "content_equals_checkout": true
+    },
+    {
+      "upstream_pr": 20,
+      "workspace": "XylophoneOS-browser-net",
+      "commit": "9b832fa06061b6905d00529a2e0a8445ea389a2a",
+      "path": "src/kernel/platform/pc/virtio_net.cpp",
+      "bytes": 13230,
+      "sha256": "504dd055afb2b0b002b7d9b9fba1d8462d38795b701e48005f52063cadc6cdeb",
+      "git_blob": "83d0d731644fe25acdb905b033f27d74e30317f1",
+      "content_equals_checkout": true
+    },
+    {
+      "upstream_pr": 20,
+      "workspace": "XylophoneOS-browser-net",
+      "commit": "9b832fa06061b6905d00529a2e0a8445ea389a2a",
+      "path": "src/ports/lwip/README.md",
+      "bytes": 2523,
+      "sha256": "68ff96b4755ddd605e5de9e8afc7ea32164eabe5df694b6178bc47bbde228230",
+      "git_blob": "80b36fb0916ca64fb2e2f543264b80e807ba201b",
+      "content_equals_checkout": true
+    },
+    {
+      "upstream_pr": 20,
+      "workspace": "XylophoneOS-browser-net",
+      "commit": "9b832fa06061b6905d00529a2e0a8445ea389a2a",
+      "path": "src/ports/lwip/include/lwipopts.h",
+      "bytes": 1074,
+      "sha256": "eba80683bf75b1acbf50abffbf53e32364b4be53ba41fea121db4457fda50bb4",
+      "git_blob": "d6b10cf6a02d121a10df4091b71c0444d07b5a58",
+      "content_equals_checkout": true
+    },
+    {
+      "upstream_pr": 20,
+      "workspace": "XylophoneOS-browser-net",
+      "commit": "9b832fa06061b6905d00529a2e0a8445ea389a2a",
+      "path": "src/ports/lwip/include/arch/cc.h",
+      "bytes": 651,
+      "sha256": "e4aa51e2ee3e11eadc541262b4b8e835079484960ae88f610e17ce195ff1d969",
+      "git_blob": "ff8b1afeafb5654b0a8b5fc9f4972803f3ad6812",
+      "content_equals_checkout": true
+    },
+    {
+      "upstream_pr": 20,
+      "workspace": "XylophoneOS-browser-net",
+      "commit": "9b832fa06061b6905d00529a2e0a8445ea389a2a",
+      "path": "src/ports/lwip/source_lock.json",
+      "bytes": 31884,
+      "sha256": "75bb98059cc7cdcc336333dcd6415d10cb31161473c66069908b8237333c6c30",
+      "git_blob": "3d00324c65eacec931c9ba6cfbc8a842c3eaad65",
+      "content_equals_checkout": true
+    },
+    {
+      "upstream_pr": 20,
+      "workspace": "XylophoneOS-browser-net",
+      "commit": "9b832fa06061b6905d00529a2e0a8445ea389a2a",
+      "path": "docs/reports/virtio_net_n1_20261029/qualification.json",
+      "bytes": 5350,
+      "sha256": "41e7513d51d8682c73ae289fa53ebb3407371d39257e8af257dabc92b60d7e97",
+      "git_blob": "ead3f6b4f48dd5946601143f75927553b2e7f320",
+      "content_equals_checkout": true
+    },
+    {
+      "upstream_pr": 20,
+      "workspace": "XylophoneOS-browser-net",
+      "commit": "9b832fa06061b6905d00529a2e0a8445ea389a2a",
+      "path": "docs/reports/virtio_net_n1_20261029/inputs/lwip_receipt.json",
+      "bytes": 28958,
+      "sha256": "d801fb15a7b1b913ea39f6d1eda7c8a2ce56426b690a1e3c8ac7eb7217810053",
+      "git_blob": "d105f74fc29253e52a152a771998fe32969838e0",
+      "content_equals_checkout": true
+    },
+    {
+      "upstream_pr": 19,
+      "workspace": "XylophoneOS-aurora-browser",
+      "commit": "88cdbc01b0e30b2c2b449d9831d057468b9d6a77",
+      "path": "docs/contracts/aurora_browser.md",
+      "bytes": 5252,
+      "sha256": "f75e6a7f207afa004c83247e9bc9ad59535ec1754d0a3c314c34d24dab2ae7a1",
+      "git_blob": "8c0ed4c9e6d55ac682378984a4a0984124faf63f",
+      "content_equals_checkout": true
+    },
+    {
+      "upstream_pr": 19,
+      "workspace": "XylophoneOS-aurora-browser",
+      "commit": "88cdbc01b0e30b2c2b449d9831d057468b9d6a77",
+      "path": "docs/reports/aurora_browser_20261029/qualification.json",
+      "bytes": 22238,
+      "sha256": "d9fdde5d8474a2904d0ca28e23cae0243ea421746e932fc681b09d577888dd03",
+      "git_blob": "fc48b01754c701d5d59e30c37b3e437aa40080a0",
+      "content_equals_checkout": true
+    },
+    {
+      "upstream_pr": 21,
+      "workspace": "XylophoneOS-modern-app-phase1",
+      "commit": "c152f7f93fb11291eb019d572219c2b4d69743a9",
+      "path": "docs/reports/modern_apps_20261029/README.md",
+      "bytes": 7469,
+      "sha256": "823632ed1592854b6753acfc56f912366dd78762525f3cf03f68c233afd3908e",
+      "git_blob": "f6d9c5719a00159b673f33d3cc8b89d91958b5e5",
+      "content_equals_checkout": true
+    },
+    {
+      "upstream_pr": 21,
+      "workspace": "XylophoneOS-modern-app-phase1",
+      "commit": "c152f7f93fb11291eb019d572219c2b4d69743a9",
+      "path": "docs/reports/modern_apps_20261029/n2_network.md",
+      "bytes": 7034,
+      "sha256": "f357cbad9f7adb6912d4d4f3bfaf8b2780f94d55d46f2ffc49a9f7ad6fce8865",
+      "git_blob": "e1252b237888ab8282b7583a3bcc34616d3b92f1",
+      "content_equals_checkout": true
+    },
+    {
+      "upstream_pr": 21,
+      "workspace": "XylophoneOS-modern-app-phase1",
+      "commit": "c152f7f93fb11291eb019d572219c2b4d69743a9",
+      "path": "docs/reports/modern_apps_20261029/qualification.json",
+      "bytes": 7966,
+      "sha256": "fed63fefb0a5fec1e9442e3edba2b0a43692f698f49f4e4940c99055e283e7e5",
+      "git_blob": "7c97dcd8a84e0869763b1f8c58e6f4deafd8807a",
+      "content_equals_checkout": true
+    },
+    {
+      "upstream_pr": 21,
+      "workspace": "XylophoneOS-modern-app-phase1",
+      "commit": "c152f7f93fb11291eb019d572219c2b4d69743a9",
+      "path": "scripts/modern_apps_http_fixture.py",
+      "bytes": 3342,
+      "sha256": "dd45c4c2c984781d316d38d2f6c3bfa4616fdbbf6571f7923b0d654d0417526b",
+      "git_blob": "145e7e3303a489c4426e37d774baaa907c60e6a9",
+      "content_equals_checkout": true
+    }
+  ]
+}

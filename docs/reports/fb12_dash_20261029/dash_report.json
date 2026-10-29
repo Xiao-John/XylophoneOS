@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "build_id": "f87bebabb97dc166",
+  "dash_sha256": "5ea141bf4d1c3e109c6d9e035c49c49e42a2cb0f4e2627d88a873087306c77b0",
+  "checks": [
+    "dash_normal_exit_no_bundle",
+    "dash_missing_command_exit_127",
+    "xsh_external_diagnostic_fault",
+    "dash_fault_report_valid_and_bound_to_target"
+  ]
+}

@@ -10,6 +10,7 @@
 #include <xos/file_abi.hpp>
 #include <xos/file_client.hpp>
 #include <xos/text.hpp>
+#include "fault_bundle.hpp"
 
 namespace {
 using namespace xos;
@@ -124,7 +125,7 @@ void display_started(i64 child,i64 result) {
     (void)xos::sdk::write(1,output,used); // one serial write: service startup cannot split this receipt
 }
 
-void result_line(u64 child, bool explicit_wait = false) {
+void result_line(u64 child, bool explicit_wait = false, const fault_bundle::receipt* diagnostic = nullptr) {
     process_status status{};
     const i64 result = wait(child, status);
     if (result < 0) { print("wait: error="); signed_decimal(result); print("\n"); return; }
@@ -138,6 +139,7 @@ void result_line(u64 child, bool explicit_wait = false) {
         } else {
             print("xsh: program cancelled (code="); signed_decimal(status.code); print(")\n");
         }
+        if (diagnostic != nullptr && !fault_bundle::save(status, *diagnostic)) { print("[fault-bundle] not saved; result unknown\n"); }
         return;
     }
     print("[wait] pid="); decimal(status.pid); print(" kind=");
@@ -151,6 +153,7 @@ void result_line(u64 child, bool explicit_wait = false) {
         print(" vector="); decimal(status.vector); print(" address="); decimal(status.address);
     }
     print("\n");
+    if (diagnostic != nullptr && !fault_bundle::save(status, *diagnostic)) { print("[fault-bundle] not saved; result unknown\n"); }
 }
 u32 image_named(const char* name) {
     for (u32 id = 1; id < 32; ++id) {
@@ -209,22 +212,25 @@ bool builtin_named(const char* name) {
     const char* const names[] = {"help", "trace", "type", "ps", "kill", "images", "exec", "spawn",
         "wait", "stats", "primtest", "elftest", "ls", "cat", "stat", "rm", "edit", "filetest",
         "sync", "exec-file", "exec-driver", "exd", "spawn-file", "mkdir", "mv", "demo",
-        "maint-run", "maint-recover", "maint-recover-boot", "maint-status"};
+        "maint-run", "maint-recover", "maint-recover-boot", "maint-status", "diag"};
     for (const auto* item : names) { if (equal(name, item)) { return true; } }
     return false;
 }
-void launch_file(const char* name, u32 argc, char** argv, u32 spawn_depth, bool background) {
+void launch_file(const char* name, u32 argc, char** argv, u32 spawn_depth, bool background, bool diagnosed = false) {
     const auto candidate = execution::resolve(name, "/usr/bin:/bin:/");
     if (candidate.kind != execution::candidate_kind::executable) {
         candidate_error(name, candidate); return;
     }
     spawn_options options{};
+    fault_bundle::receipt diagnostic_receipt{};
     options.grant_spawn = spawn_depth == 1;
     options.delegate_spawn_depth = spawn_depth > 1 ? spawn_depth : 0;
     options.environment = kChildPath;
     options.environment_count = 1;
     execution::launch_diagnostic diagnostic{};
-    const i64 child = execution::spawn_file_diagnosed(candidate.path, argc, argv, options, diagnostic);
+    const i64 child = diagnosed
+        ? execution::spawn_file_diagnosed_receipt(candidate.path, argc, argv, options, diagnostic, diagnostic_receipt)
+        : execution::spawn_file_diagnosed(candidate.path, argc, argv, options, diagnostic);
     if (child < 0) {
         print("xsh: cannot "); print(launch_stage_name(diagnostic.stage)); print(": "); print(candidate.path);
         print(" (error="); signed_decimal(child); print(")\n");
@@ -236,7 +242,7 @@ void launch_file(const char* name, u32 argc, char** argv, u32 spawn_depth, bool 
     } else if (background) {
         print("xsh: started pid="); decimal(static_cast<u64>(child)); print("\n");
     }
-    if (!background) { result_line(static_cast<u64>(child)); }
+    if (!background) { result_line(static_cast<u64>(child), false, diagnosed ? &diagnostic_receipt : nullptr); }
 }
 // Explicit supervisor entry; filenames do not confer maintenance authority.
 void maintenance_run(u32 argc, char** argv, bool recovering, bool boot_image = false) {
@@ -384,7 +390,7 @@ void execute(u32 argc, char** argv) {
               "Maintain  maint-run <program> [args] | maint-recover <program> [args] | maint-recover-boot | maint-status\n"
               "Shell     dash -i starts dash; exit inside dash returns here\n"
               "Display   display-start | exec gfxdemo [check|fault|hold|stop]\n"
-              "Debug     trace on/off | ps | kill <pid> | stats | images | primtest | elftest | filetest\n"
+              "Debug     diag <program> [args] | trace on/off | ps | kill <pid> | stats | images | primtest | elftest | filetest\n"
               "Search    /usr/bin:/bin:/; paths containing '/' are used directly\n");
     } else if (equal(argv[0], "trace")) {
         if (argc == 1) { print(verbose_trace ? "xsh: trace on\n" : "xsh: trace off\n"); }
@@ -464,6 +470,8 @@ void execute(u32 argc, char** argv) {
                                    reinterpret_cast<u64>(&gate));
         print("maintenance: owner="); decimal(gate.owner_pid); print(" worker="); decimal(gate.worker_pid);
         print(" error="); signed_decimal(result); print("\n");
+    } else if (equal(argv[0], "diag") && argc >= 2) {
+        launch_file(argv[1], argc - 1, argv + 1, 0, false, true);
     } else if ((equal(argv[0], "exec-file") || equal(argv[0], "spawn-file") ||
                 equal(argv[0], "exec-driver") || equal(argv[0], "exd")) && argc >= 2) {
         const bool driver = equal(argv[0], "exec-driver") || equal(argv[0], "exd");

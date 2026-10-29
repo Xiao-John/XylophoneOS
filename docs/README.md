@@ -30,7 +30,7 @@
   [QtCore](implementation/qt_core.md)、[显示](implementation/display.md)、[Shell](implementation/shell.md)、[Make](implementation/make.md)。
 - [日常工具集设计](plans/daily_utilities.md)：DU1/2首批13命令已有实现与定向证据；完整逐命令资格、后续工具及包/ISO交付见state。
 - 独立扩展：[应用故障包计划](plans/app_fault_bundle.md)的[FB0格式与勘查](implementation/fb0_fault_bundle_contract.md)
-  已按限定范围完成；生产故障包尚未实现。[音频输出](plans/audio_output.md)仍仅为计划。
+  已按限定范围完成；[FB1/FB2 使用与边界](implementation/fb12_fault_bundle.md)已在本地实现并验证。[音频输出](plans/audio_output.md)仍仅为计划。
   两项不新增ABI或改变既有主线排期。
 - 下一阶段：[包管理](plans/packages.md)、[CPython](plans/cpython.md)/[扩展](plans/cpython_extensions.md)、
   [Qt](plans/qt.md)、[POSIX路线](plans/posix.md)、[工具菜单](plans/userland.md)、[UTF-8](plans/utf8.md)、

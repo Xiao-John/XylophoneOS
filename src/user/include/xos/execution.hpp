@@ -34,8 +34,14 @@ struct launch_diagnostic {
     elf::error format_error;
 };
 
+struct image_receipt { u8 digest[32]; u32 size; };
+
 i64 spawn_file_diagnosed(const char* path, u32 argc, const char* const* argv,
                          const sdk::spawn_options& options,
                          launch_diagnostic& diagnostic);
+
+i64 spawn_file_diagnosed_receipt(const char* path, u32 argc, const char* const* argv,
+                                 const sdk::spawn_options& options,
+                                 launch_diagnostic& diagnostic, image_receipt& receipt);
 
 }

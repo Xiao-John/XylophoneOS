@@ -37,11 +37,23 @@ int main(int argc,char **argv) {
     JSValue value=JS_Eval(ctx,source,n,argv[1],(strstr(argv[1],".mjs") ? JS_EVAL_TYPE_MODULE : JS_EVAL_TYPE_GLOBAL));free(source);
     int failed=JS_IsException(value);if(failed)exception(ctx);
     if(!failed){const char*s=JS_ToCString(ctx,value);printf("JS_RESULT:%s\n",s?s:"unknown");JS_FreeCString(ctx,s);}
-    JS_FreeValue(ctx,value);
     JSContext *job_ctx=ctx;unsigned jobs=0;int result=0;
     while(!failed&&(result=JS_ExecutePendingJob(rt,&job_ctx))>0&&++jobs<128){}
     if(result<0){exception(job_ctx);failed=1;}
     if(jobs>=128)failed=1;
+    if(!failed){
+        JSPromiseStateEnum state=JS_PromiseState(ctx,value);
+        if(state==JS_PROMISE_PENDING){fprintf(stderr,"JS_PROMISE_PENDING\n");failed=1;}
+        else if(state==JS_PROMISE_REJECTED){fprintf(stderr,"JS_PROMISE_REJECTED\n");failed=1;}
+        else if(state==JS_PROMISE_FULFILLED){
+            JSValue fulfilled=JS_PromiseResult(ctx,value);
+            const char *message=JS_ToCString(ctx,fulfilled);
+            printf("JS_PROMISE_FULFILLED:%s\n",message?message:"unknown");
+            JS_FreeCString(ctx,message);JS_FreeValue(ctx,fulfilled);
+        }
+        printf("JS_JOBS_DRAINED:%u\n",jobs);
+    }
+    JS_FreeValue(ctx,value);
     for(unsigned i=0;i<128;i++)if(active[i]){
         JSValue reason=JS_PromiseResult(ctx,rejected[i]);
         const char *message=JS_ToCString(ctx,reason);

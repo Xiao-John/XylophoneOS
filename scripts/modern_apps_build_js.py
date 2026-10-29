@@ -4,8 +4,10 @@ import argparse,hashlib,json,os,pathlib,shutil,subprocess
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def main():
- p=argparse.ArgumentParser();p.add_argument('--source',type=pathlib.Path,required=True);p.add_argument('--sdk',type=pathlib.Path,required=True);p.add_argument('--cpp-runtime',type=pathlib.Path,required=True);a=p.parse_args()
- source=a.source.resolve();sdk=a.sdk.resolve();out=ROOT/'build/modern_apps/quickjs';out.mkdir(parents=True,exist_ok=True)
+ p=argparse.ArgumentParser();p.add_argument('--source',type=pathlib.Path,required=True);p.add_argument('--sdk',type=pathlib.Path,required=True);p.add_argument('--cpp-runtime',type=pathlib.Path,required=True);p.add_argument('--output',type=pathlib.Path,default=ROOT/'build/modern_apps/quickjs',help='new output directory; defaults to the phase-1 path and refuses reuse');a=p.parse_args()
+ source=a.source.resolve();sdk=a.sdk.resolve();out=a.output.resolve()
+ if ROOT/'build' not in out.parents:raise ValueError('output must be a new directory beneath build/')
+ out.mkdir(parents=True,exist_ok=False)
  tools=out/'tools';tools.mkdir(exist_ok=True)
  for name in ['as','ld']:
   target=tools/name
@@ -13,13 +15,13 @@ def main():
  env=os.environ.copy();env['COMPILER_PATH']=str(tools)
  upstream=source
  patched=out/'source'
- if not patched.exists():
-  shutil.copytree(source,patched)
-  subprocess.run(['patch','-p1','-i',str(ROOT/'tests/fixtures/modern_apps/quickjs_xos.patch')],cwd=patched,check=True)
+ upstream_hashes={str(x.relative_to(source)):sha(x) for x in sorted(source.rglob('*')) if x.is_file()}
+ shutil.copytree(source,patched)
+ subprocess.run(['patch','-p1','-i',str(ROOT/'tests/fixtures/modern_apps/quickjs_xos.patch')],cwd=patched,check=True)
  source=patched
  sources=[source/x for x in ['quickjs.c','dtoa.c','libregexp.c','libunicode.c','cutils.c']]+[ROOT/'tests/fixtures/modern_apps/js_runner.c']
  common=['-O2','-g','-mno-red-zone','-fno-pic','-fno-pie','-fno-stack-protector','-ftls-model=local-exec','-D_GNU_SOURCE','-D__xos__=1','-DXOS_THREADED_RUNTIME','-DCONFIG_VERSION="2025-09-13"','-I'+str(source),'-I'+str(sdk/'include')]
- report={'status':'FAILED','upstream_modified':True,'patch_sha256':sha(ROOT/'tests/fixtures/modern_apps/quickjs_xos.patch'),'source_files':{str(x.relative_to(ROOT)):sha(x) for x in source.iterdir() if x.is_file()},'sdk_manifest_sha256':sha(sdk/'manifest.json'),'runtime_libraries':{str(x.resolve()):sha(x) for x in [a.cpp_runtime/'libsupc++.a',a.cpp_runtime/'libgcc.a']},'commands':[]}
+ report={'status':'FAILED','upstream_modified':True,'upstream_source_path':str(upstream),'upstream_source_files':upstream_hashes,'patch_sha256':sha(ROOT/'tests/fixtures/modern_apps/quickjs_xos.patch'),'runner_sha256':sha(ROOT/'tests/fixtures/modern_apps/js_runner.c'),'builder_sha256':sha(pathlib.Path(__file__)),'source_files':{str(x.relative_to(ROOT)):sha(x) for x in source.iterdir() if x.is_file()},'sdk_manifest_sha256':sha(sdk/'manifest.json'),'runtime_libraries':{str(x.resolve()):sha(x) for x in [a.cpp_runtime/'libsupc++.a',a.cpp_runtime/'libgcc.a']},'commands':[]}
  def run(cmd):
   report['commands'].append(cmd)
   with (out/'build.log').open('a') as log:r=subprocess.run(cmd,env=env,stdout=log,stderr=subprocess.STDOUT)

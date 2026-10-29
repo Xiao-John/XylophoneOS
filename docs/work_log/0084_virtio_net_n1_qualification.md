@@ -129,7 +129,9 @@ hardware until the device authority/copy/wait/lifecycle registration is accepted
 ## Verification, failures and reproduction
 
 All final source hashes were rechecked against manifest after the gates. License
-material/SDK copy check passes7 materials; not a member-level/static-distribution
+material/SDK copy check passes7 materials; verbatim lwIP COPYING retains its original
+final blank line through the same file-specific Git whitespace attribute used for
+existing Qt upstream licenses; not a member-level/static-distribution
 legal audit. ABI table remains66 allocated syscalls; ABI/doc consistency passes.
 Meaningful failed compiler, noMRG, QEMU relocation and fixture attempts are retained
 in exploratory_failures, with the explicit limit that early exploratory full source

@@ -24,5 +24,26 @@ int main(void) {
     errno = 0;
     if (mbrtowc(&character, "\xff", 1, &state) != (size_t)-1 || errno != EILSEQ) return 8;
     if (wcwidth(L'A') != 1 || wcwidth(0x0301) != 0 || wcwidth(0x4e2d) != 2) return 9;
+    const char *invalid[] = {"\xc0\x80", "\xed\xa0\x80", "\xed\xbf\xbf", "\xf4\x90\x80\x80"};
+    const size_t invalid_length[] = {2, 3, 3, 4};
+    for (size_t i = 0; i < sizeof(invalid) / sizeof(invalid[0]); ++i) {
+        memset(&state, 0, sizeof(state));
+        errno = 0;
+        if (mbrtowc(&character, invalid[i], invalid_length[i], &state) != (size_t)-1 || errno != EILSEQ)
+            return 10 + (int)i;
+    }
+    memset(&state, 0, sizeof(state));
+    if (mbrtowc(&character, "\xed", 1, &state) != (size_t)-2) return 14;
+    errno = 0;
+    if (mbrtowc(&character, "\xa0", 1, &state) != (size_t)-1 || errno != EILSEQ) return 15;
+    memset(&state, 0, sizeof(state));
+    errno = 0;
+    if (wcrtomb(output, (wchar_t)0xd800, &state) != (size_t)-1 || errno != EILSEQ) return 16;
+    memset(&state, 0, sizeof(state));
+    errno = 0;
+    if (wcrtomb(output, (wchar_t)0xdfff, &state) != (size_t)-1 || errno != EILSEQ) return 17;
+    memset(&state, 0, sizeof(state));
+    if (mbrtowc(&character, "\xf0\x9f\x98\x80", 4, &state) != 4 || character != 0x1f600) return 18;
+    if (wcrtomb(output, character, &state) != 4 || memcmp(output, "\xf0\x9f\x98\x80", 4) != 0) return 19;
     return 0;
 }

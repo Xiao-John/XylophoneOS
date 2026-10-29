@@ -136,6 +136,9 @@ C++ thread_local析构，再进行pthread TSS析构（最多4轮，调用前清�
 
 ## 等待、唤醒与时间契约
 
+系统时间管理遵循[时间域契约](time_domains.md)。本契约已有单调deadline和条件变量时钟
+约定保持；不得用私有中断次数替代，也不限制未来时源选择或要求周期中断推进时钟。
+
 内核提供进程私有 wait_word/wake_word；用户库在其上实现pthread锁/条件变量。
 等待键为“所属进程身份 + 对齐的32位用户地址”，不是裸物理地址，不允许跨进程
 唤醒。逻辑请求为 wait_word(address, expected_u32, deadline_ns)，内核在同一个

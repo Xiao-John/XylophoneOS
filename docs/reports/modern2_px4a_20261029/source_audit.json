@@ -1,0 +1,448 @@
+{
+  "kind": "SOURCE_AUDIT_ONLY",
+  "guest_status": "NOT_RUN",
+  "kernel_base": "aaec2e9d8ffe61ce1d523cd56852d36cde3edd07",
+  "v8_sha": "bb294624702efbb17691b642333f06bf5108e600",
+  "source_lock_sha256": "7da8bcef7b9af46a7c4df0f94f907ca6db79b0de484c2495f9dc7280ab8ec980",
+  "kernel": [
+    {
+      "path": "src/kernel/core/memory.cpp",
+      "sha256": "72b297227633d9007c440dbd9cd889efaaf48501637921f3cfc9fafd1578d16f",
+      "bytes": 6987,
+      "calling_points": {
+        "allocate_page": [
+          121
+        ],
+        "release_page": [
+          147
+        ]
+      }
+    },
+    {
+      "path": "src/kernel/arch/x86_64/paging.cpp",
+      "sha256": "eb962792231f046cc1f93162a93c73695bebab370daeb8a53abf34fba0e9ff7e",
+      "bytes": 14872,
+      "calling_points": {
+        "map_page_in": [
+          52,
+          112,
+          116,
+          119,
+          237
+        ],
+        "unmap_page_in": [
+          116,
+          119
+        ],
+        "query_page_in": [
+          157,
+          187
+        ],
+        "copy_user_pages_in": [
+          190
+        ],
+        "create_address_space": [
+          199,
+          250
+        ],
+        "destroy_address_space": [
+          288
+        ]
+      }
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "sha256": "c839644c7791501cb3cbd7cfa041447f3f14ba8fe7582d24b7dfd71370c583a5",
+      "bytes": 113590,
+      "calling_points": {
+        "user_range_ok": [
+          268,
+          304,
+          620,
+          635,
+          657,
+          682,
+          699,
+          713,
+          879,
+          1082,
+          1198,
+          1224,
+          1278,
+          1284,
+          1301,
+          1353,
+          1380,
+          1392,
+          1408,
+          1537,
+          1562,
+          1601,
+          1755,
+          1802,
+          1810,
+          1815,
+          1828,
+          1917,
+          1973,
+          2082,
+          2099,
+          2109,
+          2125,
+          2149,
+          2177,
+          2184,
+          2198,
+          2218,
+          2295
+        ],
+        "set_heap_break": [
+          1018,
+          1905
+        ],
+        "pinned_range": [
+          1016,
+          1054,
+          1098,
+          1133,
+          1134,
+          1295,
+          1296
+        ],
+        "sys_wait_word": [
+          1376
+        ],
+        "prepare_fork": [
+          1429,
+          1704
+        ],
+        "sys_process_exec_prepare": [
+          1559,
+          2252
+        ],
+        "sys_process_exec_commit": [
+          1588
+        ],
+        "sys_process_map": [
+          2095
+        ],
+        "destroy_task": [
+          406,
+          470,
+          475,
+          480,
+          510,
+          516,
+          544,
+          550,
+          746,
+          773,
+          1467,
+          1470,
+          1480,
+          1487,
+          1494,
+          1696,
+          1839,
+          1845,
+          1852,
+          1913,
+          2144,
+          2358
+        ]
+      }
+    },
+    {
+      "path": "src/shared/include/xos/process_abi.hpp",
+      "sha256": "303402e2dbb83c291bb91d1908c0a0b4d880108aaf8b9633bb6a9e0fea576424",
+      "bytes": 6443,
+      "calling_points": {
+        "process_user_begin": [
+          66
+        ],
+        "process_heap_begin": [
+          74,
+          76
+        ],
+        "process_max_pages": [
+          78
+        ]
+      }
+    },
+    {
+      "path": "src/shared/include/xos/thread_abi.hpp",
+      "sha256": "2dc12676cebf56d6f16b682e52f35fa14dd21f0a2ea94525115f33bc8d576585",
+      "bytes": 2606,
+      "calling_points": {
+        "thread_arena_begin": [
+          13,
+          14
+        ]
+      }
+    },
+    {
+      "path": "src/user/libc/newlib_syscalls.cpp",
+      "sha256": "e0b660db21881d748a6651e57386513499d12c2f46eb566f0bb5f862c82718bf",
+      "bytes": 70835,
+      "calling_points": {
+        "void* mmap": [
+          1548
+        ],
+        "int munmap": [
+          1549
+        ]
+      }
+    },
+    {
+      "path": "src/user/loader/load.cpp",
+      "sha256": "7e144650122307c87840c0eb0ea92631eebb2aebb1b9eb3be1217ec0b3f59729",
+      "bytes": 21041,
+      "calling_points": {
+        "process_map": [
+          235,
+          255,
+          263
+        ],
+        "process_create": [
+          196
+        ],
+        "process_abort": [
+          288
+        ]
+      }
+    },
+    {
+      "path": "src/user/loader/elf.cpp",
+      "sha256": "77e14482843952f333957ccf4bdef52e349ced9660df04d9e3e7da84e6b3b61e",
+      "bytes": 7020,
+      "calling_points": {
+        "if (kind != 1)": [
+          61
+        ],
+        "map_write": [
+          44
+        ],
+        "map_execute": [
+          97
+        ]
+      }
+    },
+    {
+      "path": "src/boot/x86/kernel_loader.asm",
+      "sha256": "d1ffbfce5eaaaa86e5484ec875a00350df76fb4e41c66548735cc04a8c0db4b0",
+      "bytes": 8046,
+      "calling_points": {
+        "cpu_requires_long_mode_nx_pae": [
+          229
+        ],
+        "LME + NXE": [
+          317
+        ]
+      }
+    }
+  ],
+  "v8": [
+    {
+      "path": "include/v8-platform.h",
+      "sha256": "67cc9fcc2a7e8dbd24efb34a80dcf7bfb816eca52463f015f7d0657eb3a66d49",
+      "bytes": 52546,
+      "calling_points": {
+        "AllocatePages": [
+          459,
+          502,
+          531,
+          536,
+          539,
+          541,
+          555,
+          560,
+          597,
+          881,
+          891,
+          894,
+          955,
+          1027,
+          1092
+        ],
+        "SetPermissions": [
+          465,
+          568
+        ],
+        "DecommitPages": [
+          599,
+          1096
+        ],
+        "RecommitPages": [
+          576,
+          1069
+        ],
+        "DiscardSystemPages": [
+          589,
+          605,
+          1082
+        ]
+      },
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/include/v8-platform.h",
+      "phase1_hash_verified": true
+    },
+    {
+      "path": "src/base/platform/platform-posix.cc",
+      "sha256": "eebe24e926485dba3c30231c2d81071462b4025a360952d70b20474f5c0ca5a4",
+      "bytes": 46032,
+      "calling_points": {
+        "void* OS::Allocate(": [
+          459
+        ],
+        "void OS::Free(": [
+          500
+        ],
+        "bool OS::SetPermissions(": [
+          534
+        ],
+        "bool OS::RecommitPages(": [
+          588
+        ],
+        "bool OS::DecommitPages(": [
+          637
+        ],
+        "MAP_FIXED | MAP_ANONYMOUS": [
+          647,
+          1151
+        ]
+      },
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/src/base/platform/platform-posix.cc",
+      "phase1_hash_verified": true
+    },
+    {
+      "path": "src/base/platform/platform.h",
+      "sha256": "6ad32d92a26eba029c5009095ea2994156725002be7679bbbb0a27220a2b0cb8",
+      "bytes": 25666,
+      "calling_points": {
+        "kReadWriteExecute": [
+          224
+        ],
+        "DecommitPages": [
+          415,
+          491
+        ]
+      },
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/src/base/platform/platform.h",
+      "phase1_hash_verified": true
+    },
+    {
+      "path": "src/sandbox/sandbox.h",
+      "sha256": "33e8897d1efe7db58febd5a37d4dd619b0b8e1b6852e2e111818bcf9fff3b0a4",
+      "bytes": 14322,
+      "calling_points": {
+        "(Ideally) 1 TB": [
+          51
+        ],
+        "32 GB": [
+          51
+        ],
+        "partially-reserved": [
+          69,
+          80,
+          83,
+          101,
+          103,
+          105,
+          150,
+          199,
+          202,
+          307,
+          347
+        ],
+        "first four GB": [
+          113,
+          116
+        ]
+      },
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/src/sandbox/sandbox.h",
+      "phase1_hash_verified": false
+    },
+    {
+      "path": "src/common/globals.h",
+      "sha256": "21376a49ac51ef088da19a097049aac7532360ac4337f2fcb4927a86d998ebd1",
+      "bytes": 105325,
+      "calling_points": {
+        "kMaximalCodeRangeSize": [
+          469,
+          472,
+          477,
+          482,
+          502,
+          507,
+          512
+        ],
+        "kMinimumCodeRangeSize": [
+          485,
+          503,
+          508,
+          513,
+          750
+        ]
+      },
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/src/common/globals.h",
+      "phase1_hash_verified": false
+    },
+    {
+      "path": "src/base/page-allocator.cc",
+      "sha256": "6318d05f601e67d27d7f7ea773956db77c1168138bf6bc48dc1dc4903bb873ac",
+      "bytes": 5460,
+      "calling_points": {
+        "PageAllocator::AllocatePages": [
+          45
+        ],
+        "PageAllocator::SetPermissions": [
+          145
+        ],
+        "PageAllocator::DecommitPages": [
+          161
+        ]
+      },
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/src/base/page-allocator.cc",
+      "phase1_hash_verified": false
+    }
+  ],
+  "additional_fetch": [
+    {
+      "path": "src/sandbox/sandbox.h",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/src/sandbox/sandbox.h?format=TEXT",
+      "status": "FETCHED"
+    },
+    {
+      "path": "src/common/globals.h",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/src/common/globals.h?format=TEXT",
+      "status": "FETCHED"
+    },
+    {
+      "path": "src/heap/heap.cc",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/src/heap/heap.cc?format=TEXT",
+      "status": "FAILED",
+      "error": "<urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1082)>"
+    },
+    {
+      "path": "src/base/page-allocator.cc",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/src/base/page-allocator.cc?format=TEXT",
+      "status": "FETCHED"
+    }
+  ],
+  "standards_fetch": [
+    {
+      "url": "https://pubs.opengroup.org/onlinepubs/9799919799/functions/mmap.html",
+      "status": "FAILED",
+      "error": "web open returned 403 Forbidden"
+    },
+    {
+      "url": "https://pubs.opengroup.org/onlinepubs/9799919799/functions/munmap.html",
+      "status": "FAILED",
+      "error": "web open returned 403 Forbidden"
+    },
+    {
+      "url": "https://pubs.opengroup.org/onlinepubs/9799919799/functions/mprotect.html",
+      "status": "FAILED",
+      "error": "web open returned 403 Forbidden"
+    }
+  ]
+}

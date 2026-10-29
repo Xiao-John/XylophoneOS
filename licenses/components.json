@@ -618,9 +618,9 @@
         "licenses/modern_apps/quickjs_LICENSE"
       ],
       "used_in": [
-        "isolated modern application compatibility probes only; not default image application"
+        "Independent QuickJS guest language and Web platform gap probes; no default application or V8 claim"
       ],
-      "modifications": "QuickJS: two explicit source adaptations in quickjs_xos.patch; other inspected sources unchanged",
+      "modifications": "Two explicit source adaptations inherited from PR21; builder and runner provenance in modern2_runtime report",
       "artifact_sha256": {
         "licenses/modern_apps/quickjs_LICENSE": "598fd7fc928e4350abce36e337ba5a1346923c5c692f5be92c3d8e29ddd7c18d"
       },

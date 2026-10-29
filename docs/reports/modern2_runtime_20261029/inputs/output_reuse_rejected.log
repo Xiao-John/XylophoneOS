@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/scripts/modern_apps_build_js.py", line 39, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/scripts/modern_apps_build_js.py", line 10, in main
+    out.mkdir(parents=True,exist_ok=False)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py", line 1011, in mkdir
+    os.mkdir(self, mode)
+    ~~~~~~~~^^^^^^^^^^^^
+FileExistsError: [Errno 17] File exists: '/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/final2_quickjs'

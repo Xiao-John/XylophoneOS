@@ -12,6 +12,7 @@
 | 接口 | 当前编号 |
 |---|---:|
 | `sys_pipe_wait` | 54 |
+| `sys_stream_lease` | 80 |
 | `sys_process_guard` | 62 |
 | `sys_random_bytes` | 63 |
 | `sys_clock_realtime` | 64 |
@@ -195,6 +196,10 @@ W1 开发中扩展 sys54：第三参数非零时是绝对单调纳秒截止时�
 调用者必须重试读取；单核、10ms 时钟量化，不承诺超时精度。参数为零的旧 console
 行为及普通 libc 的 EAGAIN 保持。此扩展尚未客体验收，也不提供前台独占、终端模式、
 文件描述符多源等待、EOF 或 POSIX poll；旧 Escape 取消仍可能消费输入。
+
+sys80 `sys_stream_lease` 是开发中的独占字节流读取权机制；参数、委派和回收见
+[专项契约](contracts/stream_lease.md)。当前只支持 console stdin，未客体验收；它不
+提供用户态终端服务、终端模式或 POSIX 作业控制。未显式 claim 时旧读取行为保持。
 
 sys55 `sys_process_foreground(&request,active,0)`：request 为48字节固定宽度
 `process_foreground{version=1,size=48,count,reserved=0,pids[4]}`；未使用 PID 必须0。

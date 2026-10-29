@@ -10,7 +10,8 @@
 | 0 | 0 | reserved | 既有空位，禁止擅自使用 |
 | 1 | 66 | allocated | 现有分配，逐项见下表；不重新编号 |
 | 67 | 79 | reserved | 内存线：VMA/映射机制；具体接口尚未设计 |
-| 80 | 95 | reserved | 系统底座线：通用等待/信号/进程控制；具体接口尚未设计 |
+| 80 | 80 | allocated | 通用字节流授权；实现未验 |
+| 81 | 95 | reserved | 系统底座线：通用等待/信号/进程控制；具体接口尚未设计 |
 | 96 | 111 | reserved | 显示/输入线的后续机制；现有65/66保留 |
 | 112 | 65535 | unallocated | 不存在私有试用号；先通过登记PR分配，扩大范围亦须明确登记 |
 
@@ -90,6 +91,7 @@
 | 64 | `sys_clock_realtime` | `src/shared/include/xos/process_abi.hpp` |
 | 65 | `sys_display` | `src/shared/include/xos/display_abi.hpp` |
 | 66 | `sys_display_present` | `src/shared/include/xos/display_abi.hpp` |
+| 80 | `sys_stream_lease` | `src/shared/include/xos/process_abi.hpp` |
 
 ## 待实施的具体预分配
 
@@ -100,7 +102,6 @@ sys54 的显式截止时间及 console 等待扩展已实现但尚未客体验�
 
 | 编号 | 拟用符号 | 责任角色 | 状态 | 实现PR |
 |---:|---|---|---|---|
-| 80 | `sys_stream_lease` | W1 通用字节流授权机制 | claimed | 待创建 |
 
 claimed必须位于对应reserved段，不能与现有接口或其他认领重复；不生成源码常量或能力。
 实现PR再将该号从认领表移到逐项分配表，并拆分号段：该号allocated，其余仍reserved。

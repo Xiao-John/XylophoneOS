@@ -50,6 +50,9 @@ inline constexpr u64 sys_process_fork_files = 59;
 // then commit(entry, depth_mode): 0 retains depth; n>0 requests depth n-1,
 // which must be strictly smaller than current authority.
 inline constexpr u64 sys_process_exec_commit = 60, sys_process_exec_prepare = 61;
+// Exclusive byte-stream read authority. fd currently identifies console input.
+inline constexpr u64 sys_stream_lease = 80;
+enum class stream_lease_action : u64 { claim = 0, delegate = 1, reclaim = 2, query = 3 };
 inline constexpr u32 process_fork_depth_max = 3;
 inline constexpr u32 process_pipeline_max = 4;
 struct process_foreground {

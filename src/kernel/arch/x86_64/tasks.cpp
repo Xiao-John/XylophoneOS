@@ -4,6 +4,7 @@
 #include <xos/display.hpp>
 #include <xos/thread_abi.hpp>
 #include "../../core/thread_lifecycle.hpp"
+#include "../../core/stream_lease.hpp"
 #include <xos/block.hpp>
 #include <xos/syscall.hpp>
 #include <xos/memory.hpp>
@@ -143,6 +144,7 @@ u8 block_buffer[4096];
 alignas(16) u8 fpu_template[512];
 bool process_trace_enabled = true;
 process_guard_info admission_guard{};
+stream_lease input_lease{};
 
 void ready_with(thread_record& thread, i64 result);
 bool display_endpoint(u64 handle);
@@ -169,6 +171,16 @@ void wake_console_waiters(process_record* owner, i64 result) {
         if (thread.state == thread_state::blocked && thread.wait_kind == thread_wait_kind::console_read &&
             (owner == nullptr || thread.process == owner)) {
             ready_with(thread, result);
+        }
+    }
+}
+
+void wake_revoked_console_waiters() {
+    if (!input_lease.active()) { return; }
+    for (auto& thread : threads) {
+        if (thread.state == thread_state::blocked && thread.wait_kind == thread_wait_kind::console_read &&
+            (thread.process == nullptr || thread.process->pid != input_lease.holder())) {
+            ready_with(thread, process_error_denied);
         }
     }
 }
@@ -705,6 +717,7 @@ i64 stdio_read(process_record* task, u32 fd, u64 address, u64 length,
     if (length == 0) { return 0; }
     const stdio_route& route = task->stdio[fd];
     if (!route.console) { return pipe_read_from(route.pipe_index, address, length); }
+    if (input_lease.active() && input_lease.holder() != task->pid) { return process_error_denied; }
     if (!user_range_ok(address, 1, true)) { return process_error_invalid; }
     const int value = platform::debug_read();
     if (value < 0) { return console_empty_is_error ? process_error_would_block : 0; }
@@ -754,6 +767,7 @@ void mark_reap(process_record* task) {
 // This always runs on a different process's kernel stack. Shared pages have one owner.
 void destroy_task(process_record* task) {
     if (task == nullptr || task->state == task_state::free || task == current) { return; }
+    if (input_lease.remove(task->pid)) { wake_revoked_console_waiters(); }
     reap_pending[task_index(task)] = false;
     const u64 pid = task->pid;
     for (auto& endpoint : endpoints) {
@@ -793,6 +807,7 @@ completion_record* completion_for(u64 parent, u64 pid) {
 void finish_task(process_record* task, process_outcome outcome, i64 code,
                   u64 vector = 0, u64 address = 0, u64 instruction = 0) {
     if (task->state == task_state::dead) { return; }
+    if (input_lease.remove(task->pid)) { wake_revoked_console_waiters(); }
     display_release(task->pid);
     task->closing = true;
     task->state = task_state::dead;
@@ -826,6 +841,7 @@ void finish_task(process_record* task, process_outcome outcome, i64 code,
 }
 
 bool cancel_foreground() {
+    if (input_lease.active()) { return false; }
     if (platform::debug_peek() != 27) { return false; }
     for (auto& parent : threads) {
         if (parent.state != thread_state::blocked || parent.wait_kind != thread_wait_kind::process ||
@@ -1541,6 +1557,39 @@ void* process_syscall(interrupt_frame* frame) {
     i64 result = process_error_invalid;
     const u64 first = frame->rdi, second = frame->rsi, third = frame->rdx;
     switch (frame->rax) {
+    case sys_stream_lease: {
+        if (first != 0 || (current->stdio_mask & 1u) == 0 ||
+            !current->stdio[0].valid || !current->stdio[0].console || current->stdio[0].writable) {
+            result = process_error_denied; break;
+        }
+        const auto action = static_cast<stream_lease_action>(second);
+        if (action == stream_lease_action::claim) {
+            if (third != 0) { break; }
+            if (!current->supervisor) { result = process_error_denied; break; }
+            result = input_lease.claim(current->pid) ? 0 : process_error_state;
+        } else if (action == stream_lease_action::delegate) {
+            if (!input_lease.active() || input_lease.holder() != current->pid) {
+                result = process_error_denied; break;
+            }
+            process_record* child = task_by_pid(third);
+            if (child == nullptr || child->parent != current->pid || completion_for(current->pid, third) == nullptr ||
+                child->state == task_state::dead || child->replacement_pending ||
+                (child->stdio_mask & 1u) == 0 || !child->stdio[0].valid ||
+                !child->stdio[0].console || child->stdio[0].writable) {
+                result = process_error_denied; break;
+            }
+            result = input_lease.delegate(current->pid, child->pid) ? 0 : process_error_state;
+        } else if (action == stream_lease_action::reclaim) {
+            if (third != 0) { break; }
+            if (!input_lease.contains(current->pid)) { result = process_error_denied; break; }
+            result = input_lease.reclaim(current->pid) ? 0 : process_error_state;
+        } else if (action == stream_lease_action::query) {
+            if (third != 0) { break; }
+            result = input_lease.contains(current->pid) ? static_cast<i64>(input_lease.holder()) : process_error_denied;
+        } else { break; }
+        if (result == 0 && action != stream_lease_action::query) { wake_revoked_console_waiters(); }
+        break;
+    }
     case sys_process_guard: {
         if (third != 0) { break; }
         const auto action = static_cast<process_guard_action>(first);
@@ -1800,6 +1849,7 @@ void* process_syscall(interrupt_frame* frame) {
         } else {
             if (first == 0 && current->stdio[0].console) {
                 wake_console_waiters(current, process_error_denied);
+                if (input_lease.remove(current->pid)) { wake_revoked_console_waiters(); }
             }
             current->stdio_mask &= ~(1u << first);
             stdio_route_release(current, current->stdio[first]);
@@ -1957,6 +2007,9 @@ void* process_syscall(interrupt_frame* frame) {
                 !current->stdio[first].valid) { result = process_error_denied; break; }
             const auto& route = current->stdio[first];
             if (route.console) {
+                if (input_lease.active() && input_lease.holder() != current->pid) {
+                    result = process_error_denied; break;
+                }
                 if (third == 0) { result = second != 0 && !route.writable
                     ? process_error_invalid : process_error_would_block; break; }
                 if (route.writable || second != 0) { result = process_error_invalid; break; }
@@ -2071,6 +2124,8 @@ void* process_syscall(interrupt_frame* frame) {
         stdio_route replacement{};
         const bool target_writable = second != 0;
         if (third == process_stdio_close) {
+            if (second == 0 && child->stdio[0].valid && child->stdio[0].console &&
+                input_lease.remove(child->pid)) { wake_revoked_console_waiters(); }
             child->stdio_mask &= ~(1u << second);
             stdio_route_release(child, child->stdio[second]);
             result = 0;
@@ -2096,6 +2151,8 @@ void* process_syscall(interrupt_frame* frame) {
             pipe_retain(reference->pipe_index, reference->writable);
             ++child->pipe_reference_count;
         }
+        if (second == 0 && child->stdio[0].valid && child->stdio[0].console && !replacement.console &&
+            input_lease.remove(child->pid)) { wake_revoked_console_waiters(); }
         stdio_route_release(child, child->stdio[second]);
         child->stdio[second] = replacement;
         child->stdio_mask |= 1u << second;

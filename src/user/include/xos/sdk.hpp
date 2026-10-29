@@ -15,6 +15,9 @@ inline i64 read(u32 handle, void* data, u64 length) {
     return syscall(sys_handle_read, handle, reinterpret_cast<u64>(data), length);
 }
 inline i64 close(u32 handle) { return syscall(sys_handle_close, handle); }
+inline i64 stream_lease(u32 handle, stream_lease_action action, u64 target = 0) {
+    return syscall(sys_stream_lease, handle, static_cast<u64>(action), target);
+}
 inline i64 ipc_send(u32 handle, const void* data, u64 length) {
     return syscall(4, handle, reinterpret_cast<u64>(data), length);
 }

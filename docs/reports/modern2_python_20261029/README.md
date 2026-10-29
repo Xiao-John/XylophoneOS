@@ -66,7 +66,7 @@ JPEG/JPEG2000/TIFF/WebP/AVIF、FreeType/LCMS/RAQM/imagequant/Tk 后端未集成�
 - `build/`：最终系统构建、完整CPython配置/编译/链接命令和输入回执；早期失败保留。
 - `guest/`：最终两入口结果、逐操作资源、QEMU命令、版本和实际图像；`failures/`保留初始归档路径错误、
   Setup变量/版本引号/嵌套object目录错误、首次重复mkdir及真实客体fault。
-- [工具回执](tools.json)与[实际命令](commands.json)；未沿用旧“通过”。冻结前再次验证全部671个系统源码、
+- [工具回执](tools.json)与[实际命令](commands.json)；未沿用旧“通过”。冻结前再次验证全部675个系统源码、
   CPython构建器/端口及实际SDK逐文件SHA精确匹配。
 
 **`*.redacted.*`是脱敏公开副本，不能称为无损串口副本。** 原始依赖traceback会打印私有源码行，
@@ -77,4 +77,4 @@ JPEG/JPEG2000/TIFF/WebP/AVIF、FreeType/LCMS/RAQM/imagequant/Tk 后端未集成�
 
 交付前同步上游PR #24到`169f51e`，仅两份原则文档；已阅读C28用户态驱动、C29唯一单调时基。
 Pillow无驱动/计时机制改动；N2需按新原则重审，仍BLOCKED。真实测试输入仍上述冻结源码与镜像，
-未将文档同步冒充运行重验。再次核对671个系统源码SHA保持一致。
+未将文档同步冒充运行重验。再次核对675个系统源码SHA保持一致。

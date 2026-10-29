@@ -23,7 +23,7 @@ API1.0/身份/Operator审批/UNKNOWN各自NOT_RUN；完整Core/网络/发行没�
 
 构建迭代曾遇错误归档路径、Setup等号解析、版本引号、嵌套object目录；均保留原始日志，
 只修构建胶水。客体初次安装重复mkdir也保留。最终稳定源码重建新系统并重新实际客体验收，
-未改绑初期镜像通过。全部671个系统source SHA、CPython构建器/端口与实际SDK再校验精确匹配。
+未改绑初期镜像通过。全部675个系统source SHA、CPython构建器/端口与实际SDK再校验精确匹配。
 
 [完整回执、原始本地保留位置、状态和复现命令](../reports/modern2_python_20261029/README.md)；
 [实现及可选范围](../implementation/cpython_pillow.md)。私有traceback原始份本地保留，公开副本删除
@@ -34,4 +34,4 @@ API1.0/身份/Operator审批/UNKNOWN各自NOT_RUN；完整Core/网络/发行没�
 
 交付前同步上游PR #24到`169f51e`，仅两份原则文档；已阅读C28用户态驱动、C29唯一单调时基。
 Pillow无驱动/计时机制改动；N2需按新原则重审，仍BLOCKED。真实测试输入仍上述冻结源码与镜像，
-未将文档同步冒充运行重验。再次核对671个系统源码SHA保持一致。
+未将文档同步冒充运行重验。再次核对675个系统源码SHA保持一致。

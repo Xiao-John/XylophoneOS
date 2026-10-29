@@ -232,5 +232,6 @@
   "identity_operator_UNKNOWN": "NOT_RUN",
   "release": "NOT_QUALIFIED",
   "delivery_base_sha": "169f51e6b410863b8d8c9707b7ea84a6f649d59c",
-  "delivery_update": "PR24 docs-only C28/C29 merge; no code/runtime change or new guest-run claim"
+  "delivery_update": "PR24 docs-only C28/C29 merge; no code/runtime change or new guest-run claim",
+  "verified_system_source_count": 675
 }

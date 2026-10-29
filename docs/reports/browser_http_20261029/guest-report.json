@@ -1,0 +1,88 @@
+{
+  "status": "PASSED",
+  "evidence_kind": "XOS_guest_parser_only",
+  "network": "NOT_RUN",
+  "build_command": [
+    "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/sdk/compile.py",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser/build/browser_http_guest_parser_final/parser_probe.cpp",
+    "-o",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser/build/browser_http_guest_parser_final/parser.elf"
+  ],
+  "input_sha256": {
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser/src/ports/browser_http/http.hpp": "1d2d7065e828917cfc71a0d5d77ca13b9b6bfeb30e61c17e0430e95a5a9fa570",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser/src/ports/browser_http/http.cpp": "6a08a388a031a1a075726e46d25086f27aa2d658b9e71c48a564c62d3158fa0e",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser/tests/browser_http/probe.cpp": "df0b84228ee66116819c7219b7ce93d9c708a1759994aba03cc10421944e5e50",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/sdk/manifest.json": "24dcc3ba938013c852a12f386ea2f7e16ebcec7cb4bfaff477794530c5d0e4b1",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/latest_system/xos.img": "c5cac2b2d96e367d9822517101f5525fed362b0b278065745dee8f086785c4be",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser/build/browser_http_guest_parser_final/parser.elf": "b756321d28eb92e1e8ad1e0a16f1d619b80a5518733f19fa2dd0b7c5daf63284"
+  },
+  "runs": [
+    {
+      "iteration": 0,
+      "status": "PASSED",
+      "resources_after": [
+        130290,
+        2,
+        0
+      ]
+    },
+    {
+      "iteration": 1,
+      "status": "PASSED",
+      "resources_after": [
+        130290,
+        2,
+        0
+      ]
+    },
+    {
+      "iteration": 2,
+      "status": "PASSED",
+      "resources_after": [
+        130290,
+        2,
+        0
+      ]
+    }
+  ],
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/latest_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_http_parser_kp1q6e8y/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_0zzrmlpl/qmp.sock,server=on,wait=off"
+  ],
+  "baseline_resources": [
+    130290,
+    2,
+    0
+  ]
+}

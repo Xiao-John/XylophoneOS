@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT AND Apache-2.0
+// Historical MIT base; network IRQ additions 2026-10-29 are Apache-2.0.
 #pragma once
 #include <xos/types.hpp>
 
@@ -5,6 +7,8 @@
 // firmware interrupt numbers, register names, or device addresses.
 namespace xos::platform {
 void debug_init();
+// Acknowledge a selected platform PCI device interrupt; no service protocol.
+void device_irq(u8 irq);
 void debug_graphics(bool active);
 bool debug_write(const char* text);
 i64 debug_write_bytes(const u8* bytes, usize length);

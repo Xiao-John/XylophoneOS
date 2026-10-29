@@ -1,8 +1,11 @@
+// SPDX-License-Identifier: MIT AND Apache-2.0
+// Historical MIT base; network IRQ additions 2026-10-29 are Apache-2.0.
 #include <xos/fault.hpp>
 #include <xos/format.hpp>
 #include <xos/platform.hpp>
 #include <xos/task.hpp>
 #include "frame.hpp"
+#include "pic.hpp"
 #include "interrupt_entry.hpp"
 
 namespace xos::arch {
@@ -12,6 +15,10 @@ extern u8 kernel_stack_top[];
 extern void irq0_stub();
 extern void irq1_stub();
 extern void irq12_stub();
+extern void irq5_stub();
+extern void irq9_stub();
+extern void irq10_stub();
+extern void irq11_stub();
 extern void syscall_stub();
 void gdt_load(const void* pointer);
 
@@ -160,6 +167,10 @@ void exceptions_init() {
     fill_gate(idt[32], reinterpret_cast<u64>(&irq0_stub), 0x08, 0, 0x8e);
     fill_gate(idt[33], reinterpret_cast<u64>(&irq1_stub), 0x08, 0, 0x8e);
     fill_gate(idt[44], reinterpret_cast<u64>(&irq12_stub), 0x08, 0, 0x8e);
+    fill_gate(idt[37], reinterpret_cast<u64>(&irq5_stub), 0x08, 0, 0x8e);
+    fill_gate(idt[41], reinterpret_cast<u64>(&irq9_stub), 0x08, 0, 0x8e);
+    fill_gate(idt[42], reinterpret_cast<u64>(&irq10_stub), 0x08, 0, 0x8e);
+    fill_gate(idt[43], reinterpret_cast<u64>(&irq11_stub), 0x08, 0, 0x8e);
     fill_gate(idt[128], reinterpret_cast<u64>(&syscall_stub), 0x08, 0, 0xee);
 
     idt_pointer.limit = static_cast<u16>(sizeof(idt) - 1);
@@ -182,6 +193,11 @@ extern "C" void* interrupt_dispatch(void* raw_frame) {
     if (vector == 128) { return xos::arch::syscall_entry(frame); }
     if (vector == 32) { return xos::arch::timer_entry(frame); }
     if (vector == 33 || vector == 44) { return xos::arch::input_entry(frame); }
+    if (vector == 37 || (vector >= 41 && vector <= 43)) {
+        xos::platform::device_irq(static_cast<xos::u8>(vector - 32));
+        xos::arch::pic_eoi(static_cast<xos::u8>(vector - 32));
+        return frame;
+    }
     if (vector < 32) {
         if ((frame->cs & 3) == 3) { return xos::arch::user_fault(frame); }
         xos::fault_info info{};

@@ -1,0 +1,49 @@
+{
+  "status": "PASSED",
+  "image_sha256": "f019c215cd7cec00d3a5f5bbdbe91f511d0c76325c9633c7baa5eecfda721d61",
+  "elf_sha256": "3978717bfbe42c0612354b67b0a7ccbdb0f2fc6776406e2cea38b22381a54aae",
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_qt_sdk_probe_yjwtymy8/boot.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_qt_sdk_probe_yjwtymy8/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_259vh59g/qmp.sock,server=on,wait=off"
+  ],
+  "resources_before": [
+    130281,
+    2,
+    0
+  ],
+  "resources_after": [
+    130281,
+    2,
+    0
+  ]
+}

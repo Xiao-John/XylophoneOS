@@ -1,8 +1,11 @@
+// SPDX-License-Identifier: MIT AND Apache-2.0
+// Historical MIT base; network IRQ additions 2026-10-29 are Apache-2.0.
 #include "pic.hpp"
 #include "io.hpp"
 
 namespace xos::arch {
 namespace {
+volatile u64 ticks;
 constexpr u16 master_command = 0x20;
 constexpr u16 master_data = 0x21;
 constexpr u16 slave_command = 0xa0;
@@ -49,7 +52,19 @@ void timer_init(u32 hz) {
     out_byte(pit_channel0, static_cast<u8>((divisor >> 8) & 0xff));
 }
 
+u64 pic_ticks() { return ticks; }
+
+void pic_line_enable(u8 irq, bool enabled) {
+    if (irq >= 16) { return; }
+    const u16 port = irq < 8 ? master_data : slave_data;
+    const u8 bit = static_cast<u8>(1u << (irq & 7));
+    const u8 old = in_byte(port);
+    out_byte(port, enabled ? static_cast<u8>(old & ~bit) : static_cast<u8>(old | bit));
+    if (enabled && irq >= 8) { out_byte(master_data, static_cast<u8>(in_byte(master_data) & ~4u)); }
+}
+
 void pic_eoi(u8 irq) {
+    if (irq == 0) { ticks = ticks + 1; }
     if (irq >= 8) { out_byte(slave_command, 0x20); }
     out_byte(master_command, 0x20);
 }

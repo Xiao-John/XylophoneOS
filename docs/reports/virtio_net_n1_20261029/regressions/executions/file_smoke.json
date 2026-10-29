@@ -1,0 +1,6 @@
+{
+  "runner": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/file_smoke.py",
+  "original_sha256": "5faec8ea079fff973b066eba45e39a6e531843ad5db4c83733c8603615f16778",
+  "executed_sha256": "917969129ce183e1e67d564ca03a90a325865938454f5ff73def9d1b6b001e97",
+  "changed": "ROOT assignment only; all assertions and guest inputs unchanged"
+}

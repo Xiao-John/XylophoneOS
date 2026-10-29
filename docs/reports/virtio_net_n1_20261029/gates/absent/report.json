@@ -1,0 +1,174 @@
+{
+  "status": "PASSED",
+  "mode": "absent",
+  "build_id": "67883ca24e9dcdae",
+  "image_sha256": "f019c215cd7cec00d3a5f5bbdbe91f511d0c76325c9633c7baa5eecfda721d61",
+  "host_frames": [],
+  "runs": [
+    "net-test\r\n[virtio-net] absent modern_id=1af4:1041\r\nnet-test unavailable_or_failed\r\nxos64> "
+  ],
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/build/network/qualified_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_aqz2mrtd/qmp.sock,server=on,wait=off"
+  ],
+  "pci": [
+    {
+      "bus": 0,
+      "devices": [
+        {
+          "irq_pin": 0,
+          "bus": 0,
+          "qdev_id": "",
+          "slot": 0,
+          "class_info": {
+            "class": 1536,
+            "desc": "Host bridge"
+          },
+          "id": {
+            "device": 4663,
+            "subsystem-vendor": 6900,
+            "vendor": 32902,
+            "subsystem": 4352
+          },
+          "function": 0,
+          "regions": []
+        },
+        {
+          "irq_pin": 0,
+          "bus": 0,
+          "qdev_id": "",
+          "slot": 1,
+          "class_info": {
+            "class": 1537,
+            "desc": "ISA bridge"
+          },
+          "id": {
+            "device": 28672,
+            "subsystem-vendor": 6900,
+            "vendor": 32902,
+            "subsystem": 4352
+          },
+          "function": 0,
+          "regions": []
+        },
+        {
+          "irq_pin": 0,
+          "bus": 0,
+          "qdev_id": "",
+          "slot": 1,
+          "class_info": {
+            "class": 257,
+            "desc": "IDE controller"
+          },
+          "id": {
+            "device": 28688,
+            "subsystem-vendor": 6900,
+            "vendor": 32902,
+            "subsystem": 4352
+          },
+          "function": 1,
+          "regions": [
+            {
+              "bar": 4,
+              "size": 16,
+              "address": 49152,
+              "type": "io"
+            }
+          ]
+        },
+        {
+          "irq_pin": 1,
+          "bus": 0,
+          "qdev_id": "",
+          "irq": 9,
+          "slot": 1,
+          "class_info": {
+            "class": 1664,
+            "desc": "Bridge"
+          },
+          "id": {
+            "device": 28947,
+            "subsystem-vendor": 6900,
+            "vendor": 32902,
+            "subsystem": 4352
+          },
+          "function": 3,
+          "regions": []
+        },
+        {
+          "irq_pin": 0,
+          "bus": 0,
+          "qdev_id": "",
+          "slot": 2,
+          "class_info": {
+            "class": 768,
+            "desc": "VGA controller"
+          },
+          "id": {
+            "device": 4369,
+            "subsystem-vendor": 6900,
+            "vendor": 4660,
+            "subsystem": 4352
+          },
+          "function": 0,
+          "regions": [
+            {
+              "prefetch": true,
+              "mem_type_64": false,
+              "bar": 0,
+              "size": 16777216,
+              "address": 4244635648,
+              "type": "memory"
+            },
+            {
+              "prefetch": false,
+              "mem_type_64": false,
+              "bar": 2,
+              "size": 4096,
+              "address": 4273930240,
+              "type": "memory"
+            },
+            {
+              "prefetch": false,
+              "mem_type_64": false,
+              "bar": 6,
+              "size": 65536,
+              "address": -1,
+              "type": "memory"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "old_system_boot": "PASSED",
+  "host_errors": []
+}

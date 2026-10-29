@@ -1,3 +1,5 @@
+; SPDX-License-Identifier: MIT AND Apache-2.0
+; Historical MIT base; PCI IRQ stubs 2026-10-29 are Apache-2.0.
 ; x86-64 exception/IRQ/syscall entry stubs, frame entry, and GDT reload helper.
 bits 64
 default rel
@@ -70,6 +72,18 @@ irq12_stub:
     push qword 0
     push qword 44
     jmp interrupt_common
+
+%macro device_irq 1
+global irq%1_stub
+irq%1_stub:
+    push qword 0
+    push qword (32 + %1)
+    jmp interrupt_common
+%endmacro
+device_irq 5
+device_irq 9
+device_irq 10
+device_irq 11
 
 global syscall_stub
 syscall_stub:

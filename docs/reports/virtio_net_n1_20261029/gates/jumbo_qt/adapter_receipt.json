@@ -1,0 +1,10 @@
+{
+  "original_runner_sha256": "4783317934d6e0c39063276cadba8382aa2c2e50c1ea8c646ddc67d48a31e899",
+  "executed_runner_sha256": "51023d437983e7eccf7b642da6f28e1d0964757e8e463b1e4441766615f31573",
+  "adaptations": [
+    "import source-matched existing QtGui ELF into isolated FAT",
+    "after actual NIC jumbo fail/reset and run: start Display Service, render Qt pixels, real QMP screenshot/Escape, stop service with exact resources",
+    "host packet socket timeout extended for real GUI workload"
+  ],
+  "image_manifest": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/build/network/qualified_system/manifest.json"
+}

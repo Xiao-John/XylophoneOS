@@ -587,6 +587,23 @@
       ],
       "modifications": "Widgets-only configuration enables actual Widgets and disables unsupported native file-dialog module; opt-in user-space style, no QtCore changes",
       "distribution_status": "NOT_RUN: complete static source/relink materials, member-level license and binary distribution review; no new Release"
+    },
+    {
+      "name": "lwIP",
+      "version": "2.2.1",
+      "path": "src/ports/lwip",
+      "source": "https://git.savannah.nongnu.org/git/lwip.git",
+      "license": "BSD-3-Clause",
+      "notices": [
+        "src/ports/lwip/upstream/COPYING"
+      ],
+      "used_in": [
+        "experimental target NO_SYS archive only; no installed network service"
+      ],
+      "modifications": "No upstream patches; bounded XOS NO_SYS configuration and compiler glue. Source hashes in source_lock.json. Guest TCP/IP not qualified.",
+      "artifact_sha256": {
+        "src/ports/lwip/upstream/COPYING": "ef4aac92e05e87cd1cdc140870ed52206ba03d4a7fe46c1e11d7ffa6c87d252b"
+      }
     }
   ]
 }

@@ -35,7 +35,10 @@ def main():
                         help="kernel VirtIO-GPU DMA page budget; low values are explicit fault profiles")
     parser.add_argument("--gpu-poll-limit", type=int, default=10000000,
                         help="bounded VirtIO-GPU completion polls; zero is an explicit timeout profile")
+    parser.add_argument("--net-dma-page-limit", type=int, default=34, help="VirtIO-Net DMA quota; values below 34 are explicit fault profiles")
     args = parser.parse_args()
+    if not 0 <= args.net_dma_page_limit <= 34:
+        parser.error("invalid VirtIO-Net DMA quota")
     if not 1 <= args.gpu_dma_page_limit <= 4096 or not 0 <= args.gpu_poll_limit <= 100000000:
         parser.error("invalid VirtIO-GPU diagnostic budget")
     gpu_config = {"dma_page_limit": args.gpu_dma_page_limit, "poll_limit": args.gpu_poll_limit}
@@ -78,7 +81,7 @@ def main():
         sources.extend(p for p in sorted((ROOT / folder).rglob("*"))
                        if p.suffix in (".asm", ".s", ".sh", ".inc", ".py", ".cpp", ".hpp", ".c", ".h", ".ld", ".json", ".lldb"))
     source_hashes = {str(p.relative_to(ROOT)): sha256(p.read_bytes()) for p in sources}
-    source_digest = sha256(json.dumps({"sources": source_hashes, "capacity_probe": args.capacity_probe, "virtio_gpu": gpu_config}, sort_keys=True).encode())
+    source_digest = sha256(json.dumps({"sources": source_hashes, "capacity_probe": args.capacity_probe, "virtio_gpu": gpu_config, "virtio_net": {"dma_page_limit": args.net_dma_page_limit}}, sort_keys=True).encode())
     build_id = source_digest[:16]
     eggs = int(TARGET["easter_eggs"])
     (BUILD / "build_info.inc").write_text(
@@ -115,6 +118,8 @@ def main():
         obj = BUILD / (str(source.relative_to(ROOT)).replace("/", "_") + ".o")
         gpu_flags = ["-DXOS_VGPU_DMA_PAGE_LIMIT=" + str(args.gpu_dma_page_limit),
                      "-DXOS_VGPU_POLL_LIMIT=" + str(args.gpu_poll_limit)] if source.name == "virtio_gpu.cpp" else []
+        if source.name == "virtio_net.cpp":
+            gpu_flags += ["-DXOS_VNET_DMA_PAGE_LIMIT=" + str(args.net_dma_page_limit)]
         run([tool("g++"), *COMMON_FLAGS, *X86_FLAGS, *gpu_flags,
              "-I", str(ROOT / "src/kernel/include"), "-I", str(ROOT / "src/kernel"),
              "-I", str(ROOT / "src/shared/include"),
@@ -253,7 +258,7 @@ def main():
     manifest = {
         "build_id": build_id,
         "version": (ROOT / "VERSION").read_text().strip(), "source_sha256": source_digest,
-        "capacity_probe": args.capacity_probe, "virtio_gpu": gpu_config, "legacy_images_available": legacy_available,
+        "capacity_probe": args.capacity_probe, "virtio_gpu": gpu_config, "virtio_net": {"dma_page_limit": args.net_dma_page_limit}, "legacy_images_available": legacy_available,
         "sources": source_hashes,
         "sdk_directories": [p.relative_to(BUILD / "sdk").as_posix()
                             for p in sorted((BUILD / "sdk").rglob("*")) if p.is_dir()],

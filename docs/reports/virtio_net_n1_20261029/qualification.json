@@ -1,0 +1,126 @@
+{
+  "status": "PASSED_RESTRICTED_ETHERNET_DIAGNOSTIC",
+  "date": "2026-10-29",
+  "upstream_main": "39083f9968d84b5679c86a74a6c8394033c0d915",
+  "build_id": "67883ca24e9dcdae",
+  "image_sha256": "f019c215cd7cec00d3a5f5bbdbe91f511d0c76325c9633c7baa5eecfda721d61",
+  "kernel_elf_sha256": "c0ea8f2ef3c89b73da61ddda971614f37da3d699114478fa3eaf1de99cd05d35",
+  "quota_build_id": "619f05eee29b98e8",
+  "quota_image_sha256": "10fda06ed1a245e01051c37e2983ed78f327b5b7a64c92a4e1fcb6b80e357060",
+  "configuration": {
+    "machine": "pc-i440fx-10.0",
+    "cpu": "qemu64,+rdrand",
+    "accelerator": "tcg",
+    "cpus": 1,
+    "memory_mib": 512,
+    "device": "virtio-net-pci,disable-legacy=on,mac=52:54:00:12:34:56",
+    "backend": "isolated loopback TCP socket carrying raw Ethernet; this is NOT guest TCP/IP",
+    "MTU": 1500,
+    "RX_descriptors": 16,
+    "TX_descriptors": 16,
+    "DMA_pages": 34,
+    "pending_frames": 16
+  },
+  "milestones": {
+    "N0": "PASSED_REUSE_AUDIT_AND_DEVICE_CONTRACT; USER_BRIDGE_PROPOSED_SEPARATELY",
+    "N1": "PASSED_RESTRICTED_BOOT_DIAGNOSTIC_ETHERNET",
+    "N2": "BLOCKED_ON_REGISTERED_AND_ACCEPTED_USER_DEVICE_BRIDGE",
+    "DNS_HTTP_TLS": "NOT_RUN"
+  },
+  "gates": {
+    "echo": {
+      "status": "PASSED",
+      "report": "gates/echo/report.json",
+      "report_sha256": "f5f3ecfd61ea3872eb5f132a5db7b9529eaea0ba4f163daf17e661918405d437"
+    },
+    "timeout": {
+      "status": "PASSED",
+      "report": "gates/timeout/report.json",
+      "report_sha256": "1eeb3c82d4d7fd499db9b12a881aba9892dd8c0565cc9407e45da273402dad87"
+    },
+    "overflow": {
+      "status": "PASSED",
+      "report": "gates/overflow/report.json",
+      "report_sha256": "1bd724a15b869d5846496dcfe86050c551f9d3b0fde1c7a205ee8c1a52d1dabb"
+    },
+    "jumbo": {
+      "status": "PASSED",
+      "report": "gates/jumbo/report.json",
+      "report_sha256": "31b4b867f6ee613017e31ec75187a3f858f560c5739f35a9fd25cd09b2d9c588"
+    },
+    "absent": {
+      "status": "PASSED",
+      "report": "gates/absent/report.json",
+      "report_sha256": "94321cd06a75d998d2a288c11a5759d4ce7c827346e977a7ced1f84b28b1f0ee"
+    },
+    "echo_gpu": {
+      "status": "PASSED",
+      "report": "gates/echo_gpu/report.json",
+      "report_sha256": "4d7877f3e4541d49216ea6b5e0d7c8cf0a7da0f7c58734c3593778d6221bde3f"
+    },
+    "echo_isolation": {
+      "status": "PASSED",
+      "report": "gates/echo_isolation/report.json",
+      "report_sha256": "3ed20eae97ec07e44d7d487cbd4c9f0bb6af5b91b463c700562d8824e2ebdd39"
+    },
+    "quota": {
+      "status": "PASSED",
+      "report": "gates/quota/report.json",
+      "report_sha256": "d6379c0d80a57345246a8257af8d5d0ffac85bc9752afcb2284c87383be3f08f"
+    },
+    "quota_reclaim": {
+      "status": "PASSED",
+      "report": "gates/quota_reclaim/report.json",
+      "report_sha256": "2c68fde0e358aebcdd1dbef75a61f6d8241f12afd3bb1d867eb05089957b406e"
+    },
+    "jumbo_qt": {
+      "status": "PASSED",
+      "report": "gates/jumbo_qt/report.json",
+      "report_sha256": "5461d15f7ce86ec172a8589954980efd1fee594a3270a2d3b4394f4caaf17cce",
+      "pixel_comparison": "gates/jumbo_qt/pixel_comparison.json",
+      "scope": "same actual jumbo failure/reset boot: real Qt render/QMP Escape, exact resource return, ordinary MMIO/PCI IO faults and file sync"
+    }
+  },
+  "lwip": {
+    "status": "CROSS_COMPILE_PASSED; GUEST_NETWORK_NOT_RUN",
+    "version": "2.2.1",
+    "commit": "77dcd25a72509eb83f72b033d219b1d40cd8eb95",
+    "archive_sha256": "ddce54f8e7d61f6462e56a22fe9f70c4f1162e4d1306d7809c5aeed9ee5ca68c",
+    "receipt": "inputs/lwip_receipt.json",
+    "sdk_manifest_sha256": "2c749400cdec17e04fc9dd3949eb94186f86832618a8c7ac52d1f0162114d758",
+    "source_lock_sha256": "75bb98059cc7cdcc336333dcd6415d10cb31161473c66069908b8237333c6c30"
+  },
+  "isolated_user_probe": {
+    "source": "tests/fixtures/virtio_gpu/access_fault.cpp",
+    "source_sha256": "520259113593363554af3f4c1c6384695b94742cf7dc2a7e86c8bedca5c9b061",
+    "elf_sha256": "7c4f741362068346d903abc7e511aff6f7bcf643ee3ac7680b6191461cb3cac3",
+    "MMIO_vector": 14,
+    "MMIO_address": "0x32000000",
+    "PCI_IO_vector": 13,
+    "port": "0xcf8",
+    "exact_resource_baseline": [
+      130280,
+      2,
+      0
+    ]
+  },
+  "not_run": [
+    "user_network_service_and_client_protocol",
+    "IPv4_ARP_UDP_TCP_ICMP_DHCP_DNS_guest_communication",
+    "POSIX_sockets_HTTP_HTTPS",
+    "TLS_CA_hostname_certificate_time_entropy_qualification",
+    "physical_hardware_SMP_hotplug_shared_live_INTx",
+    "device_reset_timeout_quarantine_fault_injection",
+    "malicious_device_used_ring_ID_length_metadata_fault_injection",
+    "absolute_memory_peak_and_long_stress",
+    "full_system_requalification"
+  ],
+  "exploratory_failures": "Preserved compile errors, private QEMU dylib failure, strict noMRG zero num_buffers rejects, and isolation fixture minimum-size/trace setup failures. None are counted as passes. Root host setup COMPILER_PATH leakage and E04 missing-workdisk maintenance guard also retained; corrected final runners pass.",
+  "regression": {
+    "status": "PASSED",
+    "suite_count": 21,
+    "report": "regressions/affected_regression/report.json",
+    "report_sha256": "e13cee39f604b25bebb14373f0830f186b4d9e4399fc7d28a5d326f7283d926a",
+    "scope": "E04, G02, thread3, file/persist, QtCore9, QtGui3, Widgets2; exact SDK inputs and runner adapters preserved"
+  }
+}

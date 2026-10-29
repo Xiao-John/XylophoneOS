@@ -7,6 +7,7 @@
 #include <xos/platform.hpp>
 #include <xos/task.hpp>
 #include <xos/virtio_gpu.hpp>
+#include <xos/virtio_net.hpp>
 #include "build_info.hpp"
 
 namespace xos {
@@ -140,6 +141,10 @@ void execute() {
     else if (equals(line, "alloc")) { command_alloc(); }
     else if (equals(line, "free")) { command_free(); }
     else if (equals(line, "vmtest")) { command_vmtest(); }
+    else if (equals(line, "net-test")) { format::text(virtio_net::self_test(0)?"net-test pass\r\n":"net-test unavailable_or_failed\r\n"); }
+    else if (equals(line, "net-overflow")) { format::text(virtio_net::self_test(2)?"net-overflow pass\r\n":"net-overflow unavailable_or_failed\r\n"); }
+    else if (equals(line, "net-jumbo")) { format::text(virtio_net::self_test(3)?"net-jumbo pass\r\n":"net-jumbo unavailable_or_failed\r\n"); }
+    else if (equals(line, "net-timeout")) { format::text(virtio_net::self_test(1)?"net-timeout pass\r\n":"net-timeout unavailable_or_failed\r\n"); }
     else if (equals(line, "gpu-quota-test")) {format::text(virtio_gpu::resource_limit_test()?"gpu-quota-test pass\r\n":"gpu-quota-test unavailable_or_failed\r\n");}
     else if (equals(line, "gpu-test")) {format::text(virtio_gpu::self_test()?"gpu-test pass\r\n":"gpu-test unavailable_or_failed\r\n");}
     else if (equals(line, "run")) {

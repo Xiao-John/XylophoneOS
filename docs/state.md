@@ -6,6 +6,18 @@ UTF-8文件名、游戏及ncursesw前期探针。新增整合资格限于0081的
 其他旧资格仍绑定原输入，不构成全系统重验。发布资产仍为0.0.1-1026，未更新Release。
 原则裁决见[xos_plan.md第一部分](xos_plan.md#第一部分设计原则)，本页只登记事实与占用。
 
+## VirtIO-Net N0/N1 与 lwIP 目标编译（受限网络底座）
+
+2026-10-29，独立 `codex/browser-net-n1` 从新 fetch 的 upstream39083f9 实施；
+[0084](work_log/0084_virtio_net_n1_qualification.md)冻结真实现代VirtIO-Net双队列、
+IRQ/HLT、34DMA页生命周期、受控宿主Ethernet收发及10项客体门禁；
+同一冻结组合另通过21套定向回归，故障后同次启动的Qt像素/文件同步亦实测。
+N1仅trusted boot诊断范围通过，不是已安装网络服务或TCP/IP。
+无新公共ABI；网络设备授权/复制/等待机制另行登记，N2用户态接入因此BLOCKED。
+lwIP2.2.1固定官方来源/哈希/许可，NO_SYS真实目标静态归档交叉编译通过；
+ARP/IP/UDP/TCP/DHCP/DNS客体通信、Socket、HTTP/HTTPS仍NOT_RUN。
+私有worktree/build，未改PR17、Qt底座或默认 `-nic none`，不合并main/发布Release。
+
 ## FB0 应用故障包勘查（受限通过）
 
 2026-10-29，`codex/fb0-scout` 完成单一wait、装载/文件链路勘查、[v1格式冻结](implementation/fb0_fault_bundle_contract.md)

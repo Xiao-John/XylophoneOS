@@ -1,0 +1,8 @@
+{
+  "build_id": "6c2e83dfaa2737bb",
+  "checks": [
+    "full_media_save_failure_preserves_old_file"
+  ],
+  "status": "passed",
+  "disk_bytes": 16777216
+}

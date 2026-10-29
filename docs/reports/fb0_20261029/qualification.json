@@ -1,0 +1,68 @@
+{
+  "status": "passed_scoped",
+  "base_commit": "4322caf",
+  "system_build_id": "6c2e83dfaa2737bb",
+  "fault_injection_build_id": "084024c841126499",
+  "guest_checks": [
+    {
+      "name": "same_handle_read_replace_and_reread",
+      "sha256": "f3a25aa93aa2fbba28d79260535bbd6a5eb0fc1c24a8b0f04e12b484c1dfe363",
+      "replace_status": -5
+    },
+    {
+      "name": "guest_elf_sha256_same_read_handle",
+      "sha256": "8c19130faf3f9d8d610e36228912dbb1fecf8974e9147ce34d24f2fb14526ed5"
+    },
+    {
+      "name": "loader_open_instance_sha256_and_wait_single_consumption",
+      "sha256": "9e223004f7a1fbfe483b00ffd6df1a203fd3fc57945cd1457aec1243139ae9df",
+      "output": "exec-driver /bin/probe.elf loader\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x00000000001af000\r\n[loader] started pid=11 file=/bin/probe.elf\n[process] event=wait_blocked parent=7 child=11\r\nFB0_LOADER_SHA256=9e223004f7a1fbfe483b00ffd6df1a203fd3fc57945cd1457aec1243139ae9df\n[process] event=started pid=12 parent=11\r\n[process] pid=12 address_space=0x000000000034e000\r\nFB0_INVALID_WAIT=-2\n[process] event=wait_blocked parent=11 child=12\r\n[fault] testing protected memory\n[task] event=fault pid=12 vector=14 rip=0x00000000400000bf cr2=0x0000000000100000 result=killed tid=12\r\n[task] event=reclaimed pid=12 pages=45\r\nFB0_WAIT_RESULT=0\nFB0_WAIT_VECTOR=14\nFB0_WAIT_ADDRESS=1048576\nFB0_WAIT_RIP=1073742015\nFB0_WAIT_AGAIN=-1\nFB0_LOADER_WAIT_OK\n[task] event=reclaimed pid=11 pages=92\r\n[wait] pid=11 kind=exited code=0\nxsh> "
+    },
+    {
+      "name": "fault_status_then_normal_program",
+      "fault_output": "exec fault\n[process] event=started pid=13 parent=7\r\n[process] pid=13 address_space=0x00000000001af000\r\n[loader] started pid=13 image=fault\n[process] event=wait_blocked parent=7 child=13\r\n[fault] testing protected memory\n[task] event=fault pid=13 vector=14 rip=0x00000000400000bf cr2=0x0000000000100000 result=killed tid=13\r\n[task] event=reclaimed pid=13 pages=45\r\n[wait] pid=13 kind=faulted code=0 vector=14 address=1048576\nxsh> ",
+      "normal_exit": 42
+    },
+    {
+      "name": "blkdebug_write_error",
+      "save_output": "edit /NEW.TXT\n[edit] /NEW.TXT bytes=0 (new)\n[edit] text lines append; :: starts a literal ':' line\n[edit] :w save  :wq save+quit  :q quit  :q! discard  :p [N [M]] print\n[edit] :i N insert before  :r N replace  :d N delete  :c clear  :help\n| fb0 write\n| :wq\n[files] save error=-7\n",
+      "ping_status": -7
+    }
+  ],
+  "service_checks": [
+    {
+      "name": "inflight_request_then_service_exit",
+      "stat": -8,
+      "ping": -7
+    },
+    {
+      "name": "supervisor_remains_responsive"
+    }
+  ],
+  "not_run": [
+    "production_report_writer",
+    "production_report_parser",
+    "process_tree_collection",
+    "full_registers_and_stack",
+    "arbitrary_power_loss",
+    "physical_media"
+  ],
+  "files": {
+    "README.md": "533b47414bc1fbd9b13f0c677548d41c8ce848293828f5f209c7d37111896295",
+    "attempts/no_disk_failure.log.gz": "b65f6230a714fb99696bfc56e89147769deaab5f9512ae144df2f1e86cdbb9d2",
+    "attempts/partial_serial_race.log.gz": "fcbbf13b9405bcee966107e4603574806b129502e084afcbc125cb7928e8397d",
+    "attempts/untriggered_block_fault.log.gz": "730ce3c0daa3044cd807ef1b2e18ef1faa62b42a11f7d1a70931327e64b2100a",
+    "e04_fixture.txt": "87fe6de5d587db997cab07494c70267d1a4bd1604f02df1bc4732bbaf3a9c088",
+    "file_report.json": "53ef8e9ed19a388c8e72ac81767788ef0fadfcbf687f57acebde867b290c779d",
+    "full_disk_report.json": "58154f5a44f84afb59ab59b6b978593df80b3e04ab10bf29fc5c334a2f6382b6",
+    "guest_report.json": "e451aa88ee0c668d7df4ba647cb29b49694ee799650908eed3ca4ed7b089c7c7",
+    "guest_serial.log.gz": "e8823c87d0d3f02dad0217332f64bde84e20a02f0d1dc4be8e48ac99bdbbbd49",
+    "host_client.log": "a575bd7af59183bf20de3ae3baec1874e727e060c60d52363b3fde71101b5961",
+    "process_report.json": "e71fef2778bc620cf9059fde6cd9d84d397465eae5de73c61c4ad36a830d61df",
+    "service_exit_report.json": "f6b12a085a13b7cc429250262551dc4d2cf1836a3be2f05c50611a61eabc4db5",
+    "service_exit_serial.log.gz": "09a85499582830e8525cdbe4c4aa397e8ad0930260a6a01c5992470d49c6d8bb",
+    "service_system_manifest.json.gz": "90ac35b2a9bb8646e1ff7aca6e06aa878e0b7da8a78a80205997e7a969c50d68",
+    "system_manifest.json.gz": "3e874a08a9b4f1ff24ab1bb1c1ab977035706c68c79ca42641c2be659faedaa2"
+  },
+  "fault_patch_sha256": "9fe1ac7b474c3f1f329a76608925b02d27ba5be2dcef008d1d07516057aae678"
+}

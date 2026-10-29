@@ -1,0 +1,75 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "name": "same_handle_read_replace_and_reread",
+      "sha256": "f3a25aa93aa2fbba28d79260535bbd6a5eb0fc1c24a8b0f04e12b484c1dfe363",
+      "replace_status": -5
+    },
+    {
+      "name": "guest_elf_sha256_same_read_handle",
+      "sha256": "8c19130faf3f9d8d610e36228912dbb1fecf8974e9147ce34d24f2fb14526ed5"
+    },
+    {
+      "name": "loader_open_instance_sha256_and_wait_single_consumption",
+      "sha256": "9e223004f7a1fbfe483b00ffd6df1a203fd3fc57945cd1457aec1243139ae9df",
+      "output": "exec-driver /bin/probe.elf loader\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x00000000001af000\r\n[loader] started pid=11 file=/bin/probe.elf\n[process] event=wait_blocked parent=7 child=11\r\nFB0_LOADER_SHA256=9e223004f7a1fbfe483b00ffd6df1a203fd3fc57945cd1457aec1243139ae9df\n[process] event=started pid=12 parent=11\r\n[process] pid=12 address_space=0x000000000034e000\r\nFB0_INVALID_WAIT=-2\n[process] event=wait_blocked parent=11 child=12\r\n[fault] testing protected memory\n[task] event=fault pid=12 vector=14 rip=0x00000000400000bf cr2=0x0000000000100000 result=killed tid=12\r\n[task] event=reclaimed pid=12 pages=45\r\nFB0_WAIT_RESULT=0\nFB0_WAIT_VECTOR=14\nFB0_WAIT_ADDRESS=1048576\nFB0_WAIT_RIP=1073742015\nFB0_WAIT_AGAIN=-1\nFB0_LOADER_WAIT_OK\n[task] event=reclaimed pid=11 pages=92\r\n[wait] pid=11 kind=exited code=0\nxsh> "
+    },
+    {
+      "name": "fault_status_then_normal_program",
+      "fault_output": "exec fault\n[process] event=started pid=13 parent=7\r\n[process] pid=13 address_space=0x00000000001af000\r\n[loader] started pid=13 image=fault\n[process] event=wait_blocked parent=7 child=13\r\n[fault] testing protected memory\n[task] event=fault pid=13 vector=14 rip=0x00000000400000bf cr2=0x0000000000100000 result=killed tid=13\r\n[task] event=reclaimed pid=13 pages=45\r\n[wait] pid=13 kind=faulted code=0 vector=14 address=1048576\nxsh> ",
+      "normal_exit": 42
+    },
+    {
+      "name": "blkdebug_write_error",
+      "save_output": "edit /NEW.TXT\n[edit] /NEW.TXT bytes=0 (new)\n[edit] text lines append; :: starts a literal ':' line\n[edit] :w save  :wq save+quit  :q quit  :q! discard  :p [N [M]] print\n[edit] :i N insert before  :r N replace  :d N delete  :c clear  :help\n| fb0 write\n| :wq\n[files] save error=-7\n",
+      "ping_status": -7
+    }
+  ],
+  "not_run": [
+    "file_service_process_death",
+    "power_loss",
+    "kernel_panic",
+    "fault_snapshot",
+    "production_report_writer"
+  ],
+  "build_id": "6c2e83dfaa2737bb",
+  "fixture_sha256": "ae06ebbc4bc37a5a941aa7543cdb4d735827cfd0c6eced6f31890587b51166eb",
+  "sha_fixture_sha256": "04e28a644eadaf21cc86dd1063456141caccd845d4a338604cd981212357f45d",
+  "elf_sha256": "8c19130faf3f9d8d610e36228912dbb1fecf8974e9147ce34d24f2fb14526ed5",
+  "qemu_command": [
+    "/workspace/xos-env/prefix/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/workspace/XylophoneOS/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/tmp/xos_fb0_t2s_vcr8/disk.img,format=raw,if=ide,index=0,media=disk,cache=writeback,id=workdisk,node-name=workraw,werror=report,rerror=report",
+    "-qmp",
+    "unix:/tmp/xos_u4houmrh/qmp.sock,server=on,wait=off"
+  ],
+  "service_discovery": "ps\npid=2 name=spinner state=r ticks=482\npid=7 name=supervisor state=R ticks=0\npid=8 name=files state=r ticks=0\nxsh> "
+}

@@ -66,8 +66,9 @@ V8源码 sandbox.h 描述1 TiB加前后32 GiB guard；本arena允许稀疏表达
 
 info仅接受address=0、其余字段0，返回v1能力位：bit0匿名保留、1显式commit、2protect、
 3decommit、4unmap、5strict_WX、6NX、7sparse；只有已通过该组合验收的位才可置1。
-页大小、arena及限额由版本化profile常量冻结；统计复用扩展后的独立版本资源查询，
-具体统计ABI尚未认领，不能向旧stats结构追加字段。
+页大小、arena及限额由版本化profile常量冻结；当前info不提供计数。实施前须独立
+登记v1统计查询op/输出布局（或采用仅诊断的真实内核计数回执），明确VMA/页表/
+暂存事务/用户页的分别计数；不能向旧stats结构直接追加字段或用估算替代验收。
 
 | 值 | 逻辑错误 / SDK errno | 情况 |
 |---:|---|---|
@@ -86,7 +87,8 @@ SDK直接采用该域的独立映射表，不套现有错误转换。
 
 ## 操作与POSIX适配
 
-reserve：创建NONE保留，返回实际地址，物理提交为0。hint碰撞可另选，exact_nonreplace
+reserve：protection必须NONE，其他保护拒绝invalid；创建NONE保留，返回实际地址，
+物理提交为0。hint碰撞可另选，exact_nonreplace
 碰撞整次失败；不得覆盖ELF/栈/其他VMA。commit：对完整保留范围提交清零页并设R/RW/RX；
 已提交页只允许相同保护的幂等调用，不改变内容；混合提交预先计划，失败整次不变。
 RX新提交页仅有零内容，不凭空生成代码。
@@ -98,7 +100,7 @@ unmap：移除相交的匿名VMA片段并释放页；洞允许无操作成功；
 
 | SDK接口 | v1候选子集与明确限制 |
 |---|---|
-| mmap | MAP_PRIVATE\|MAP_ANONYMOUS，fd=-1、offset=0，长度向上取页且检查溢出；PROT_NONE先reserve，R/RW/RX须reserve+commit同一内核事务扩展后才开放；当前wire需两步，SDK失败必须unmap私有新保留且不得提前返回指针 |
+| mmap | V1仅支持MAP_PRIVATE\|MAP_ANONYMOUS与PROT_NONE，fd=-1、offset=0，长度向上取页且检查溢出；R/RW/RX返回ENOTSUP，不用两次syscall模拟原子的mmap。调用者可在已取得NONE保留后显式mprotect提交；未来原子reserve+commit须另登记operation/错误/回滚后开放 |
 | mmap flags | MAP_FIXED、MAP_SHARED、文件fd/offset、未知标志 ENOTSUP；XOS独立nonreplace选项只映射exact_nonreplace，不谎称MAP_FIXED |
 | munmap | 地址页对齐、len>0、向上取页；局部释放/洞规则按上述定义；EBUSY为XOS偏差，不能称完整POSIX |
 | mprotect | 地址页对齐、长度向上取页；NONE/R/RW/RX；W-only和X-only显式ENOTSUP，RWX EACCES；非匿名范围ENOTSUP |
@@ -123,9 +125,12 @@ VMA元数据/等待pin/关闭仲裁属于通用core；PTE、NX、TLB和页表遍
 后续VM调用阻塞排队，禁止持锁yield忙轮询。锁序：进程lifecycle→VM元数据/pin→
 物理分配器；不得持有此序中的锁等待用户服务或其他用户线程。
 
-请求已复制后可撤销其所在匿名页；syscall返回RIP/当前RSP所在页和所有线程栈/TLS
-仍按既有专用区域保护，不在匿名arena。线程可主动在匿名arena运行代码，需调用方
-同步；不能承诺unmap正在执行的任意应用代码后仍存活。内核不保存稍后要读的匿名指针。
+请求已复制后可撤销其所在匿名页。既有内核管理的线程栈/TLS仍为专用所有权，
+但应用可主动把RIP/RSP移到匿名arena（协程、手工栈或JIT）；它们不因此获得永久pin。
+调用方须同步正在执行的代码/栈：unmap或设NONE覆盖自身返回RIP/RSP后，返回用户态
+产生真实异常是允许结果，不能伪造成功继续运行。内核保存的返回现场必须始终在
+受保护内核存储中；任何跨阻塞需要再次读写的用户现场/指针须pin并支持退出取消，
+不得在调度或回滚中不经验证解引用已撤销的匿名栈。
 所有会在阻塞完成时写用户内存的路径都要纳入pin：不止word，还含process_wait、
 thread_join及显示等实际等待缓冲。pin登记/检查/撤销与VM事务使用同一生命周期锁。
 撤销、decommit和降低写权限相交返回EBUSY；纯增权也不得在NONE后偷越pin。

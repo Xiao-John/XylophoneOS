@@ -5,7 +5,7 @@
 没有实施67、修改内核/libc/SDK或运行新镜像；不复用旧报告为本分支资格。
 
 [契约提案](../../contracts/anonymous_vm.md)定义sys_vm67的64字节只读请求、
-6项操作、数值错误域、匿名地址图、片段/提交配额、W^X/NX/guard、等待pin、
+6项操作、数值错误域（reserve仅NONE，mmap V1仅PROT_NONE）、匿名地址图、片段/提交配额、W^X/NX/guard、等待pin、
 失败原子性和V1–V7真实验收。它是本分支的claimed提案，不是全项目已分配ABI。
 PR #18 的设备112属于独立网络负责人，未挪用。网络未完成不妨碍匿名VM设计。
 

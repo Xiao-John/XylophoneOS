@@ -45,5 +45,11 @@
     "status": "FAILED",
     "reason": "work_log linked validation.json before receipt existed; created receipt then reran all checks",
     "missing_link": "docs/work_log/0087_modern2_px4a_design.md -> ../reports/modern2_px4a_20261029/validation.json"
-  }
+  },
+  "parent_review_clarifications": [
+    "reserve protection must be NONE; info unused fields zero",
+    "mmap V1 only PROT_NONE; no double-call atomicity claim",
+    "anonymous RIP/RSP teardown may fault on return; kernel saved user pointers pinned across waits",
+    "statistics wire requires separate preimplementation registration or genuine diagnostic counts"
+  ]
 }

@@ -27,3 +27,6 @@ QuickJS原版malloc/tm字段及runtime链接失败；256KiB预算超过XOS128KiB
 
 许可证：新自研代码Apache-2.0，原QuickJS/Code及Python依赖条款原样保留。
 只做受限本地探针，不发布浏览器、LocalPilot、Code或新XOS发行版；逐成员/产品静态分发审查未完成。
+
+交付哈希复核发现Git默认换行会改写矩阵CSV；`.gitattributes`仅限定本轮三份矩阵保留原字节，
+并对原样保留的defusedxml许可证空白禁用格式检查。不改许可证正文；最终Git内容逐文件核验。

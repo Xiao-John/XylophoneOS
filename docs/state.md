@@ -6,6 +6,13 @@ UTF-8文件名、游戏及ncursesw前期探针。新增整合资格限于0081的
 其他旧资格仍绑定原输入，不构成全系统重验。发布资产仍为0.0.1-1026，未更新Release。
 原则裁决见[xos_plan.md第一部分](xos_plan.md#第一部分设计原则)，本页只登记事实与占用。
 
+## 时间域与驱动边界修订（文档PR）
+
+2026-10-29，`codex/time_domains_docs` 基于远端0ec0ad6：C28澄清内核基础设施和存量整改，
+C29约束统一时间管理、显式时间域及EOI职责；专项契约给出禁止/允许案例和审查清单。
+仅文档，无新ABI、实现或客体资格，见[修订交接](work_log/0095_time_domain_amendment.md)。
+本组文档占用解除，不占公共build；其他分支未合入本PR。
+
 ## FB1/FB2 应用故障包（受限通过）
 
 2026-10-29，`codex/fb2-offline-symbols` 基于已合入FB0和VirtIO-GPU的主线 `39083f9`。
@@ -68,6 +75,14 @@ vector14；最终有限对照未复现，未修复或建立线程资格。
 无ABI/内核/libc修改；LocalPilot原API/安全主体/Operator/UNKNOWN及N2仍未验收。
 范围、原始失败/来源/命令和证据见[0088](work_log/0088_cpython_static_pillow.md)。
 公共文件由Python兼容线维护，独立PR交维护者审查；未修改其他工作区或正式安装。
+
+## 正在进行：Browser Foundation 的独立网络/浏览器工作
+
+2026-10-29，旧 `sys_net_device` 112 帧代理认领已撤回；[通用设备授权设计](contracts/network_device_v1_proposal.md)
+仅供审查，不认领编号或实现。C28要求VirtIO初始化、队列和收发在用户态，内核仅提供受控
+MMIO、DMA、IRQ、撤权等通用机制；停止不可确认时隔离DMA页。未来登记和真实guest验收前
+网络接入仍BLOCKED；旧N1及隔离探针只属于原冻结输入，不是新架构资格。历史与修正见
+[0082](work_log/0082_network_device_abi_claim.md)。
 
 ## 正在进行：ncursesw W0/W1
 
@@ -135,3 +150,17 @@ QtCore 的系统 build48e5e73bcd649f44 和本地输入编辑的 build3200de2c3b8
 - 67–79 内存、80–95 等待/信号、96–111 显示扩展仍仅预留，具体接口先登记。
 - 按 Discipline→本页→宪法→专项契约/登记接手；新开发独立分支/PR交付，
   公共 build 排他，localpilot 隔离。
+
+## 现代应用兼容平台第一阶段：受限探针交付，N2阻塞
+
+2026-10-29，Codex 在独立 `codex/modern-app-phase1` / worktree
+`XylophoneOS-modern-app-phase1`，基线 upstream `39083f9`。占用
+`scripts/modern_apps_*`、`tests/modern_apps_*`、`tests/fixtures/modern_apps/`、
+`docs/reports/modern_apps_20261029/`、独立兼容报告及工作记录0085；私有build。
+本轮只由本负责人汇总本分支state；未修改其他工作区、内核、ABI、Qt/Aurora或N1驱动。
+PR #18/#19/#20 当前Draft/open且无review；#18未审查合入，N2公共设备桥接
+实施BLOCKED。已交付真实SDK/客体依赖探针、固定源码审计和独立QuickJS解释器试验；
+最终build `a538733bd3b8e43f`，11项测试器断言通过（含正确复现应用失败），Python16项中4通过/12失败，
+资源均回到free130290/tasks2/completions0。完整现代浏览器、Core/API、Code与HTTPS未通过。
+三份独立报告、N2门槛、原始失败和接续见[0085](work_log/0085_modern_app_compatibility_phase1.md)。
+不合并上游，不改发行版，不引入第二套LocalPilot Runtime；本组公共文件/build占用释放。

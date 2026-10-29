@@ -1,0 +1,128 @@
+{
+  "status": "FAILED",
+  "scope": "compatibility observations, not browser/LocalPilot/Code qualification",
+  "image_sha256": "c5cac2b2d96e367d9822517101f5525fed362b0b278065745dee8f086785c4be",
+  "js_elf_sha256": "03dfc0a6a130aa26f94ee1886794cc49e0b7133646c0a9335887577a177d2cec",
+  "js_stripped_sha256": "466e3ac6e8c3de4bda1d9c414225cdceb60cd8e0ca5b955046daf2090230b6f2",
+  "checks": [
+    {
+      "name": "language",
+      "harness_status": "PASSED",
+      "compatibility_status": "PASSED",
+      "expected_marker": "LANGUAGE_OK",
+      "expected_exit": "0",
+      "resources_after": [
+        130290,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "js_exception",
+      "harness_status": "PASSED",
+      "compatibility_status": "PASSED",
+      "expected_marker": "intentional exception probe",
+      "expected_exit": "1",
+      "resources_after": [
+        130290,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "js_interrupt",
+      "harness_status": "PASSED",
+      "compatibility_status": "PASSED",
+      "expected_marker": "interrupted",
+      "expected_exit": "1",
+      "resources_after": [
+        130290,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "language_after_interrupt",
+      "harness_status": "PASSED",
+      "compatibility_status": "PASSED",
+      "expected_marker": "LANGUAGE_OK",
+      "expected_exit": "0",
+      "resources_after": [
+        130290,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "web_capabilities",
+      "harness_status": "PASSED",
+      "compatibility_status": "PASSED",
+      "expected_marker": "\"document\":\"undefined\"",
+      "expected_exit": "0",
+      "resources_after": [
+        130290,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "code_actual_iframe",
+      "harness_status": "FAILED",
+      "compatibility_status": "FAILED",
+      "expected_marker": "'document' is not defined",
+      "expected_exit": "1",
+      "resources_after": [
+        130290,
+        2,
+        0
+      ]
+    }
+  ],
+  "disk_before_sha256": "85e31ccf5d2a205538477f18ecd64f1988e8a13149e962f64b82664de3f4f0e2",
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=build/modern_apps/system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/js-guest-02/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_b5gtzoj5/qmp.sock,server=on,wait=off"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "resources_before": [
+    130290,
+    2,
+    0
+  ],
+  "resources_after": [
+    130290,
+    2,
+    0
+  ],
+  "disk_after_sha256": "643eeb75fba0326d1a41d887e46ce35955a09962437f2f91ce387d65dfcf3c73"
+}

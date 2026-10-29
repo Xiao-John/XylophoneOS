@@ -1,0 +1,53 @@
+[
+  {
+    "name": "psutil",
+    "scope": "single unmodified translation unit with required build macros; not complete package link/import qualification",
+    "source_sha256": "ad76d086e31870aa721e04bf86f286bc89f851d358b2ae7198d579119da87aca",
+    "command": [
+      "x86_64-elf-gcc",
+      "-std=gnu11",
+      "-D__xos__=1",
+      "-DXOS_THREADED_RUNTIME",
+      "-mno-red-zone",
+      "-fno-pie",
+      "-fno-pic",
+      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/.cache/xos_seed/cpython/a8201ed0a683f05afdf3/target_build",
+      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/.cache/xos_seed/cpython/a8201ed0a683f05afdf3/source/Include",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/include",
+      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/python_deps/native-source/psutil-7.1.3/psutil",
+      "-c",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/python_deps/native-source/psutil-7.1.3/psutil/arch/posix/proc.c",
+      "-o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/native-final/psutil.o"
+    ],
+    "returncode": 1,
+    "status": "FAILED"
+  },
+  {
+    "name": "Pillow",
+    "scope": "single unmodified translation unit with required build macros; not complete package link/import qualification",
+    "source_sha256": "f8fc8086f83e2ffec207f240d840f8781a701ef995674b3ff58bc94d0025f749",
+    "command": [
+      "x86_64-elf-gcc",
+      "-std=gnu11",
+      "-D__xos__=1",
+      "-DXOS_THREADED_RUNTIME",
+      "-mno-red-zone",
+      "-fno-pie",
+      "-fno-pic",
+      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/.cache/xos_seed/cpython/a8201ed0a683f05afdf3/target_build",
+      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/.cache/xos_seed/cpython/a8201ed0a683f05afdf3/source/Include",
+      "-isystem",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/include",
+      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/python_deps/native-source/pillow-11.3.0/src/libImaging",
+      "-DPILLOW_VERSION=\"11.3.0\"",
+      "-c",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/python_deps/native-source/pillow-11.3.0/src/_imaging.c",
+      "-o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/native-final/Pillow.o"
+    ],
+    "returncode": 0,
+    "status": "PASSED"
+  }
+]

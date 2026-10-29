@@ -1,0 +1,31 @@
+{
+  "scope": "host fixture qualification only",
+  "N2": "BLOCKED",
+  "checks": [
+    {
+      "name": "probe",
+      "status": "PASSED",
+      "execution": "HOST_LOOPBACK_ONLY"
+    },
+    {
+      "name": "chunked",
+      "status": "PASSED",
+      "execution": "HOST_LOOPBACK_ONLY"
+    },
+    {
+      "name": "slow",
+      "status": "PASSED",
+      "execution": "HOST_LOOPBACK_ONLY"
+    },
+    {
+      "name": "redirect",
+      "status": "PASSED",
+      "execution": "HOST_LOOPBACK_ONLY"
+    },
+    {
+      "name": "truncate",
+      "status": "PASSED",
+      "execution": "HOST_LOOPBACK_ONLY"
+    }
+  ]
+}

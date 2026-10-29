@@ -4,7 +4,7 @@ import argparse,hashlib,json,os,pathlib,shutil,subprocess
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def main():
- p=argparse.ArgumentParser();p.add_argument('--source',type=pathlib.Path,required=True);p.add_argument('--sdk',type=pathlib.Path,required=True);p.add_argument('--cpp-runtime',type=pathlib.Path,required=True);p.add_argument('--output',type=pathlib.Path,required=True);a=p.parse_args()
+ p=argparse.ArgumentParser();p.add_argument('--source',type=pathlib.Path,required=True);p.add_argument('--sdk',type=pathlib.Path,required=True);p.add_argument('--cpp-runtime',type=pathlib.Path,required=True);p.add_argument('--output',type=pathlib.Path,default=ROOT/'build/modern_apps/quickjs',help='new output directory; defaults to the phase-1 path and refuses reuse');a=p.parse_args()
  source=a.source.resolve();sdk=a.sdk.resolve();out=a.output.resolve()
  if ROOT/'build' not in out.parents:raise ValueError('output must be a new directory beneath build/')
  out.mkdir(parents=True,exist_ok=False)

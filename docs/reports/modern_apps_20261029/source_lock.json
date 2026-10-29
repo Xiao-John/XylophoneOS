@@ -1,0 +1,363 @@
+{
+  "scope": "source retrieval, not a complete checkout or runtime qualification",
+  "chromium": {
+    "version": "142.0.7444.59",
+    "sha": "4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa"
+  },
+  "v8": {
+    "sha": "bb294624702efbb17691b642333f06bf5108e600"
+  },
+  "code_oss": {
+    "version": "1.106.0",
+    "sha": "ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57"
+  },
+  "files": [
+    {
+      "path": "chromium/DEPS",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/DEPS?format=TEXT",
+      "sha256": "2bcbc993c76bf81b692d391cd150a849797372b8418df5df8d9a29ac6b058a99",
+      "bytes": 183675,
+      "status": "PASSED"
+    },
+    {
+      "path": "chromium/LICENSE",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/LICENSE?format=TEXT",
+      "sha256": "368cca1106be99d39ecd32a38d8305585d802a475effb66380b91ffc9bcf709b",
+      "bytes": 1536,
+      "status": "PASSED"
+    },
+    {
+      "path": "chromium/build/config/BUILDCONFIG.gn",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/build/config/BUILDCONFIG.gn?format=TEXT",
+      "sha256": "a4d156e9fc4ab5d646b2929705cdf0ad2a9a52c094df1dbecbdf51de897902bf",
+      "bytes": 32705,
+      "status": "PASSED"
+    },
+    {
+      "path": "chromium/base/memory/platform_shared_memory_region_posix.cc",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/base/memory/platform_shared_memory_region_posix.cc?format=TEXT",
+      "sha256": "a3f662172cb6c61f6154d4bb1d52485d6fcaf5fa812f1527824f176b04c4f706",
+      "bytes": 9234,
+      "status": "PASSED"
+    },
+    {
+      "path": "chromium/base/files/file_path_watcher_linux.cc",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/base/files/file_path_watcher_linux.cc?format=TEXT",
+      "status": "FAILED",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "path": "chromium/sandbox/linux/services/credentials.cc",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/sandbox/linux/services/credentials.cc?format=TEXT",
+      "sha256": "43e3968be3683c5c81b3992c97e113668d5bc83e06e0f0e3ca9236f4dedce372",
+      "bytes": 11673,
+      "status": "PASSED"
+    },
+    {
+      "path": "chromium/content/shell/app/shell_main.cc",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/content/shell/app/shell_main.cc?format=TEXT",
+      "sha256": "e5a969a5ceb315b6dfe666fb85f3c4d4f74991540ecbd2cc391dc41cae0097ba",
+      "bytes": 3571,
+      "status": "PASSED"
+    },
+    {
+      "path": "chromium/base/process/launch_posix.cc",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/base/process/launch_posix.cc?format=TEXT",
+      "sha256": "6b4c567d78c6ae4ec5899521c152ed4765041b9d29baf269370743c9efe264e0",
+      "bytes": 27338,
+      "status": "PASSED"
+    },
+    {
+      "path": "chromium/base/message_loop/message_pump_epoll.cc",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/base/message_loop/message_pump_epoll.cc?format=TEXT",
+      "sha256": "e5436e0880bcf2fb4d0473307b790a68545bc9721ac0c1942d1a59a9baa19068",
+      "bytes": 26374,
+      "status": "PASSED"
+    },
+    {
+      "path": "chromium/base/native_library_posix.cc",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/base/native_library_posix.cc?format=TEXT",
+      "sha256": "6309fc4e6f7b18da8c1a1e7285271600fcf64f2ce2d2b2324b0f2cb6311912cf",
+      "bytes": 1846,
+      "status": "PASSED"
+    },
+    {
+      "path": "v8/LICENSE",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/LICENSE?format=TEXT",
+      "sha256": "6ab33af8774a0f396ee3aeeb761e3229057682d6f9fa7f572e390c2cb3a6e509",
+      "bytes": 3093,
+      "status": "PASSED"
+    },
+    {
+      "path": "v8/include/v8-platform.h",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/include/v8-platform.h?format=TEXT",
+      "sha256": "67cc9fcc2a7e8dbd24efb34a80dcf7bfb816eca52463f015f7d0657eb3a66d49",
+      "bytes": 52546,
+      "status": "PASSED"
+    },
+    {
+      "path": "v8/src/base/platform/platform-posix.cc",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/src/base/platform/platform-posix.cc?format=TEXT",
+      "sha256": "eebe24e926485dba3c30231c2d81071462b4025a360952d70b20474f5c0ca5a4",
+      "bytes": 46032,
+      "status": "PASSED"
+    },
+    {
+      "path": "v8/src/base/platform/platform.h",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/src/base/platform/platform.h?format=TEXT",
+      "sha256": "6ad32d92a26eba029c5009095ea2994156725002be7679bbbb0a27220a2b0cb8",
+      "bytes": 25666,
+      "status": "PASSED"
+    },
+    {
+      "path": "v8/src/base/build_config.h",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/src/base/build_config.h?format=TEXT",
+      "sha256": "5b809f262ea64aa231e87f2fe218b0720f8b7927ad23b8472ef4da9b813cd6d5",
+      "bytes": 3932,
+      "status": "PASSED"
+    },
+    {
+      "path": "v8/src/base/platform/mutex.cc",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/src/base/platform/mutex.cc?format=TEXT",
+      "sha256": "ea689d9f3a8ffc6aa23a225433edd21cf5478e0d5692ae57bf5378a465a0d2cf",
+      "bytes": 1552,
+      "status": "PASSED"
+    },
+    {
+      "path": "v8/src/base/platform/semaphore.cc",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/src/base/platform/semaphore.cc?format=TEXT",
+      "sha256": "b4649c5024b4c92b0cbb50dd7e57cf2cc00d487953d2d3904df672fb0e74916c",
+      "bytes": 4487,
+      "status": "PASSED"
+    },
+    {
+      "path": "v8/BUILD.gn",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/BUILD.gn?format=TEXT",
+      "sha256": "96ac2460810a184c8e601a344c56c8703cf75c195b41a9dcc1699ef367538b5c",
+      "bytes": 285363,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/LICENSE.txt",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/LICENSE.txt",
+      "sha256": "9480271317925265e806a9a196aaa33410a962fa9d4d1e248a4a5187bc8c9df9",
+      "bytes": 1088,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/package.json",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/package.json",
+      "sha256": "f4311d4e1a6070986651351cd6ab5169a79c5c5a2ea3a92f63a5ee0fdb9c9b3f",
+      "bytes": 10282,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/.npmrc",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/.npmrc",
+      "sha256": "7fe34213c184f9ccb353146f992b6f728890ad5b8bc355b2aea684ef027b8e6a",
+      "bytes": 242,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/base/browser/defaultWorkerFactory.ts",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/base/browser/defaultWorkerFactory.ts",
+      "status": "FAILED",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "path": "vscode/src/vs/base/browser/browser.ts",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/base/browser/browser.ts",
+      "sha256": "f7c74086baeb30e2aa4b3c806d494f7d2b2c7092b43ef10b4302c35d1d126684",
+      "bytes": 6492,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/platform/files/browser/htmlFileSystemProvider.ts",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/platform/files/browser/htmlFileSystemProvider.ts",
+      "sha256": "b590bc2831a9efd44c98a1332c21af958e138d1895fb03ecec4ff4ef4990952b",
+      "bytes": 17454,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/platform/terminal/node/ptyService.ts",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/platform/terminal/node/ptyService.ts",
+      "sha256": "f6e764136284a348162dc7fe198d1532bee6cac543fcc3693d7cd43c3a2972ec",
+      "bytes": 44549,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/platform/files/node/watcher/watcherMain.ts",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/platform/files/node/watcher/watcherMain.ts",
+      "sha256": "58a5f5979d78ba8fe68dec84a097184a56df6553edd40dc959be305a65a17775",
+      "bytes": 1143,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/workbench/services/extensions/browser/webWorkerExtensionHost.ts",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/workbench/services/extensions/browser/webWorkerExtensionHost.ts",
+      "sha256": "495cd2324ff92cb9ecdabbb8138ee108317624d40a98a1452bd9febf02fced49",
+      "bytes": 14850,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/editor/browser/controller/editContext/nativeEditContext.ts",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/editor/browser/controller/editContext/nativeEditContext.ts",
+      "status": "FAILED",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "path": "vscode/src/vs/workbench/browser/web.main.ts",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/workbench/browser/web.main.ts",
+      "sha256": "818574a208cf1a956f0f3a7edbf1420e6b8ed20638287248e59792e9f1201ea9",
+      "bytes": 30828,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/workbench/api/node/extensionHostProcess.ts",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/workbench/api/node/extensionHostProcess.ts",
+      "sha256": "13f692dd065470e6c2701332ceb86c8ecd4b01fafde0a7bafb38138e49f7106e",
+      "bytes": 17269,
+      "status": "PASSED"
+    },
+    {
+      "path": "v8/include/v8config.h",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/include/v8config.h?format=TEXT",
+      "sha256": "c769e52576acfa93e79a3be395d23c46f69c9fb477082a3b97d5c5c63104b058",
+      "bytes": 37023,
+      "status": "PASSED"
+    },
+    {
+      "path": "v8/include/v8-version.h",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/include/v8-version.h?format=TEXT",
+      "sha256": "7fc0d78ff43b564d29fc37014ccdd9b6170a061034da8a7f2f815e8fcb625389",
+      "bytes": 773,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/editor/browser/controller/editContext/native/nativeEditContext.css",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/editor/browser/controller/editContext/native/nativeEditContext.css",
+      "sha256": "55a9ea2063303039a0e4c6b2628a78ea7a4c8ac6f9b3662fe46e6ebbec7e542a",
+      "bytes": 1460,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/editor/browser/controller/editContext/native/nativeEditContext.ts",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/editor/browser/controller/editContext/native/nativeEditContext.ts",
+      "sha256": "22e940df2610b6b7969e84628e42e50e834eb336768a7c96370ecddd5415d489",
+      "bytes": 26102,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/editor/browser/controller/editContext/native/nativeEditContextRegistry.ts",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/editor/browser/controller/editContext/native/nativeEditContextRegistry.ts",
+      "sha256": "27a122f3bd387e7faeaf1d526a2bbfeec9c2975964abab2a6d6d977d923e4f52",
+      "bytes": 1041,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/editor/browser/controller/editContext/native/nativeEditContextUtils.ts",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/editor/browser/controller/editContext/native/nativeEditContextUtils.ts",
+      "sha256": "57c1d35fa64c8aec9829556c2e4f92a63d2a2e23441ca6869a63a3fede1c5e03",
+      "bytes": 2960,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/workbench/services/extensions/worker/webWorkerExtensionHostIframe.html",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/workbench/services/extensions/worker/webWorkerExtensionHostIframe.html",
+      "sha256": "38624dd1cb0e26a6c6cab77d74118e688fa90f8d52c76d6dab854a2a7aa5977d",
+      "bytes": 5287,
+      "status": "PASSED"
+    },
+    {
+      "path": "node/deps/uv/src/unix/core.c",
+      "url": "https://raw.githubusercontent.com/nodejs/node/caa20e28dc1f21a97f7b2a7134973fd6435b65f0/deps/uv/src/unix/core.c",
+      "sha256": "bebf5062eefb617a1d03e5e78f864b6384e14fb7055d534c3a092fc2132f4ac4",
+      "bytes": 48102,
+      "status": "PASSED"
+    },
+    {
+      "path": "node/deps/uv/src/unix/linux.c",
+      "url": "https://raw.githubusercontent.com/nodejs/node/caa20e28dc1f21a97f7b2a7134973fd6435b65f0/deps/uv/src/unix/linux.c",
+      "sha256": "d527b1b7330c474f60b363b0ec8ccea50bc2f1b7ae7e185fc97b6943bf993d99",
+      "bytes": 73847,
+      "status": "PASSED"
+    },
+    {
+      "path": "node/src/spawn_sync.cc",
+      "url": "https://raw.githubusercontent.com/nodejs/node/caa20e28dc1f21a97f7b2a7134973fd6435b65f0/src/spawn_sync.cc",
+      "sha256": "14703e4de80b806e3c89aeb1d09772e5c1d17d4ea55ee0ff83cd0a7a14b80f13",
+      "bytes": 34661,
+      "status": "PASSED"
+    },
+    {
+      "path": "node/src/process_wrap.cc",
+      "url": "https://raw.githubusercontent.com/nodejs/node/caa20e28dc1f21a97f7b2a7134973fd6435b65f0/src/process_wrap.cc",
+      "sha256": "6eb3ffc7bc67c20d8232301badeebd3d5b1d0ccfdfed41643dacbcb22743fe72",
+      "bytes": 13507,
+      "status": "PASSED"
+    },
+    {
+      "path": "node/src/tty_wrap.cc",
+      "url": "https://raw.githubusercontent.com/nodejs/node/caa20e28dc1f21a97f7b2a7134973fd6435b65f0/src/tty_wrap.cc",
+      "sha256": "9b0a591dd9970276eb5283d065d2e3e2646ca8972f9e3b2ba83d3579c4cb8710",
+      "bytes": 5690,
+      "status": "PASSED"
+    },
+    {
+      "path": "node/src/node_file.cc",
+      "url": "https://raw.githubusercontent.com/nodejs/node/caa20e28dc1f21a97f7b2a7134973fd6435b65f0/src/node_file.cc",
+      "sha256": "c91b943bb17d4459e42e8494c94172c606973d0ac9b82ac4faa8eadc8bea474f",
+      "bytes": 136800,
+      "status": "PASSED"
+    },
+    {
+      "path": "node/LICENSE",
+      "url": "https://raw.githubusercontent.com/nodejs/node/caa20e28dc1f21a97f7b2a7134973fd6435b65f0/LICENSE",
+      "sha256": "e991d81497a85bb24fc6bffae0a3637a6accd6c6bc5ce1f2c5698bd555cf9d49",
+      "bytes": 143299,
+      "status": "PASSED"
+    },
+    {
+      "path": "chromium/tools/clang/scripts/update.py",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/tools/clang/scripts/update.py?format=TEXT",
+      "sha256": "e96d40bb3d971438147d12e25a5a98da6fe5809922408be4d715563747a820da",
+      "bytes": 13771,
+      "status": "PASSED"
+    },
+    {
+      "path": "chromium/build/config/compiler/BUILD.gn",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/build/config/compiler/BUILD.gn?format=TEXT",
+      "sha256": "a81a76ef9dd6c8724b0607cc5ba95ffb20d1cbf312a33dbb6379dd0bd1696a0a",
+      "bytes": 120282,
+      "status": "PASSED"
+    },
+    {
+      "path": "electron/DEPS",
+      "url": "https://raw.githubusercontent.com/electron/electron/dfc60f0f4246a542a45601f93572eca77bdff2f9/DEPS",
+      "sha256": "cc7f2b6eadd08e3ed5230536939ed961fa1fadf06e942d2ce0447c9f34ed0015",
+      "bytes": 6610,
+      "status": "PASSED"
+    },
+    {
+      "path": "electron/LICENSE",
+      "url": "https://raw.githubusercontent.com/electron/electron/dfc60f0f4246a542a45601f93572eca77bdff2f9/LICENSE",
+      "sha256": "5154e165bd6c2cc0cfbcd8916498c7abab0497923bafcd5cb07673fe8480087d",
+      "bytes": 1096,
+      "status": "PASSED"
+    }
+  ],
+  "electron": {
+    "version": "v37.7.0",
+    "sha": "dfc60f0f4246a542a45601f93572eca77bdff2f9"
+  },
+  "node": {
+    "version": "v22.20.0",
+    "sha": "caa20e28dc1f21a97f7b2a7134973fd6435b65f0"
+  },
+  "quickjs": {
+    "version": "2025-09-13-2",
+    "archive": "quickjs-2025-09-13-2.tar.xz",
+    "url": "https://bellard.org/quickjs/quickjs-2025-09-13-2.tar.xz",
+    "sha256": "996c6b5018fc955ad4d06426d0e9cb713685a00c825aa5c0418bd53f7df8b0b4"
+  }
+}

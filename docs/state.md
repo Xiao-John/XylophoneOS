@@ -9,7 +9,8 @@ UTF-8文件名、游戏及ncursesw前期探针。新增整合资格限于0081的
 ## Modern Platform运行时探针（PR #25）
 
 本分支保留Promise完成/pending/rejection等冻结探针结果，Web/应用能力仍BLOCKED。
-已同步当前main；将继续整合PR #21共用的QuickJS构建/runner与许可，旧结果不改绑新组合。
+已同步当前main；已整合PR #21共用的QuickJS构建/runner与许可，保留phase2 Promise语义及phase1入口兼容；
+旧结果不改绑新组合。范围和未验项见[0099](work_log/0099_probe_branch_reconciliation.md)。
 
 ## 时间域与驱动边界修订（文档PR）
 
@@ -136,3 +137,17 @@ QtCore 的系统 build48e5e73bcd649f44 和本地输入编辑的 build3200de2c3b8
 - 67–79 内存、80–95 等待/信号、96–111 显示扩展仍仅预留，具体接口先登记。
 - 按 Discipline→本页→宪法→专项契约/登记接手；新开发独立分支/PR交付，
   公共 build 排他，localpilot 隔离。
+
+## 现代应用兼容平台第一阶段：受限探针交付，N2阻塞
+
+2026-10-29，Codex 在独立 `codex/modern-app-phase1` / worktree
+`XylophoneOS-modern-app-phase1`，基线 upstream `39083f9`。占用
+`scripts/modern_apps_*`、`tests/modern_apps_*`、`tests/fixtures/modern_apps/`、
+`docs/reports/modern_apps_20261029/`、独立兼容报告及工作记录0085；私有build。
+本轮只由本负责人汇总本分支state；未修改其他工作区、内核、ABI、Qt/Aurora或N1驱动。
+PR #18/#19/#20 当前Draft/open且无review；#18未审查合入，N2公共设备桥接
+实施BLOCKED。已交付真实SDK/客体依赖探针、固定源码审计和独立QuickJS解释器试验；
+最终build `a538733bd3b8e43f`，11项测试器断言通过（含正确复现应用失败），Python16项中4通过/12失败，
+资源均回到free130290/tasks2/completions0。完整现代浏览器、Core/API、Code与HTTPS未通过。
+三份独立报告、N2门槛、原始失败和接续见[0085](work_log/0085_modern_app_compatibility_phase1.md)。
+不合并上游，不改发行版，不引入第二套LocalPilot Runtime；本组公共文件/build占用释放。

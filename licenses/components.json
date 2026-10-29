@@ -605,6 +605,96 @@
         "licenses/modern_apps/quickjs_LICENSE": "598fd7fc928e4350abce36e337ba5a1346923c5c692f5be92c3d8e29ddd7c18d"
       },
       "distribution_review": "NOT_RUN; cached sources, test disk and receipts only"
+    },
+    {
+      "name": "psutil compatibility probe",
+      "version": "7.1.3",
+      "path": "tests/fixtures/modern_apps",
+      "source": "https://pypi.org/project/psutil/7.1.3/",
+      "license": "BSD-3-Clause",
+      "notices": [
+        "licenses/modern_apps/psutil_LICENSE"
+      ],
+      "used_in": [
+        "isolated modern application compatibility probes only; not default image application"
+      ],
+      "modifications": "QuickJS: two explicit source adaptations in quickjs_xos.patch; other inspected sources unchanged",
+      "artifact_sha256": {
+        "licenses/modern_apps/psutil_LICENSE": "b89c063b3786e28e0c0a38f1931db61fed35e69dd2a2966fbecffee0f46c8d10"
+      },
+      "distribution_review": "NOT_RUN; cached sources, test disk and receipts only"
+    },
+    {
+      "name": "Pillow compatibility probe",
+      "version": "11.3.0",
+      "path": "tests/fixtures/modern_apps",
+      "source": "https://pypi.org/project/Pillow/11.3.0/",
+      "license": "HPND",
+      "notices": [
+        "licenses/modern_apps/pillow_LICENSE"
+      ],
+      "used_in": [
+        "isolated modern application compatibility probes only; not default image application"
+      ],
+      "modifications": "QuickJS: two explicit source adaptations in quickjs_xos.patch; other inspected sources unchanged",
+      "artifact_sha256": {
+        "licenses/modern_apps/pillow_LICENSE": "17f240ae101143707e5e7303a5d800450d9ccc7475b463cedb555cefdb3c6ece"
+      },
+      "distribution_review": "NOT_RUN; cached sources, test disk and receipts only"
+    },
+    {
+      "name": "Code OSS compatibility probe",
+      "version": "1.106.0",
+      "path": "tests/fixtures/modern_apps",
+      "source": "https://github.com/microsoft/vscode/tree/1.106.0",
+      "license": "MIT",
+      "notices": [
+        "licenses/modern_apps/code_oss_LICENSE.txt"
+      ],
+      "used_in": [
+        "isolated modern application compatibility probes only; not default image application"
+      ],
+      "modifications": "QuickJS: two explicit source adaptations in quickjs_xos.patch; other inspected sources unchanged",
+      "artifact_sha256": {
+        "licenses/modern_apps/code_oss_LICENSE.txt": "9480271317925265e806a9a196aaa33410a962fa9d4d1e248a4a5187bc8c9df9"
+      },
+      "distribution_review": "NOT_RUN; cached sources, test disk and receipts only"
+    },
+    {
+      "name": "pypdf compatibility probe",
+      "version": "6.1.1",
+      "path": "tests/fixtures/modern_apps",
+      "source": "https://pypi.org/project/pypdf/",
+      "license": "BSD-3-Clause",
+      "notices": [
+        "licenses/modern_apps/pypdf_LICENSE"
+      ],
+      "used_in": [
+        "isolated modern application compatibility probes only; not default image application"
+      ],
+      "modifications": "QuickJS: two explicit source adaptations in quickjs_xos.patch; other inspected sources unchanged",
+      "artifact_sha256": {
+        "licenses/modern_apps/pypdf_LICENSE": "a97ac230e5f33ef10a5367a850eb01f91f1a0b064e34742c7794d2294557f524"
+      },
+      "distribution_review": "NOT_RUN; cached sources, test disk and receipts only"
+    },
+    {
+      "name": "defusedxml compatibility probe",
+      "version": "0.7.1",
+      "path": "tests/fixtures/modern_apps",
+      "source": "https://pypi.org/project/defusedxml/",
+      "license": "PSF-2.0",
+      "notices": [
+        "licenses/modern_apps/defusedxml_LICENSE"
+      ],
+      "used_in": [
+        "isolated modern application compatibility probes only; not default image application"
+      ],
+      "modifications": "QuickJS: two explicit source adaptations in quickjs_xos.patch; other inspected sources unchanged",
+      "artifact_sha256": {
+        "licenses/modern_apps/defusedxml_LICENSE": "b80ce9da8c42a1f91079627fbbe2bf27210ae108a0ffe5f077d5b08e076c24c8"
+      },
+      "distribution_review": "NOT_RUN; cached sources, test disk and receipts only"
     }
   ]
 }

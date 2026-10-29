@@ -1,0 +1,22 @@
+{
+  "scope": "actual unmodified V8 configuration header cross-compile; not full V8 build",
+  "command": [
+    "x86_64-elf-g++",
+    "-std=c++20",
+    "-nostdinc++",
+    "-isystem",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/cpp/include",
+    "-isystem",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/cpp/include/x86_64-elf",
+    "-isystem",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/include",
+    "-I",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/sources/v8",
+    "-c",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/probes/v8_config.cc",
+    "-o",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/probes/v8_config.o"
+  ],
+  "returncode": 0,
+  "status": "PASSED"
+}

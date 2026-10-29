@@ -32,6 +32,7 @@ def main():
     parser.add_argument('--newlib-prefix', required=True, type=Path)
     parser.add_argument('--gcc-source', type=Path)
     parser.add_argument('--output', type=Path, default=ROOT / 'build/threading_sdk')
+    parser.add_argument('--logs-dir', type=Path, default=ROOT / 'build/threading_sdk_logs')
     parser.add_argument('--cpp', action='store_true')
     args = parser.parse_args()
     prefix = args.newlib_prefix.resolve()
@@ -67,7 +68,9 @@ def main():
     if output.is_symlink():
         raise SystemExit('Refusing a symlinked SDK output directory')
     output.mkdir(parents=True, exist_ok=True)
-    logs = ROOT / 'build/threading_sdk_logs'
+    logs = args.logs_dir.resolve()
+    if logs != ROOT / 'build' and ROOT / 'build' not in logs.parents:
+        raise SystemExit('logs directory must be build/ or one of its subdirectories')
     logs.mkdir(exist_ok=True)
     commands = []
     def run(command, name, cwd=None, env=None):

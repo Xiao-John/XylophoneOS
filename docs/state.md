@@ -99,6 +99,17 @@ transfer/flush、dirty region、设备reset及VBE回退；同Qt帧的1,440,000�
 仅QEMU/单核/800×600受限通过，运行期设备失效后透明恢复、热插拔、SMP/真机未验。
 私有 worktree/build；通过独立功能PR交付，不自行合并main或改旧Release。
 
+## Modern Platform Phase 2 / Python 静态 Pillow：受限核心通过，并发阻塞
+
+2026-10-29，`codex/python-static-imaging`，独立工作区/build/cache。
+原始Pillow11.3.0核心静态注册和原包stage；最终系统ec4b7ffa0c53f5a4，
+xsh/dash单线程像素/PNG/BMP、防护拒绝、错误/恢复与精确回收通过。
+**Pillow线程使用UNSUPPORTED/BLOCKED**：保留真实dash worker newlib `_malloc_r`
+vector14；最终有限对照未复现，未修复或建立线程资格。
+无ABI/内核/libc修改；LocalPilot原API/安全主体/Operator/UNKNOWN及N2仍未验收。
+范围、原始失败/来源/命令和证据见[0088](work_log/0088_cpython_static_pillow.md)。
+公共文件由Python兼容线维护，独立PR交维护者审查；未修改其他工作区或正式安装。
+
 ## PX4-A 匿名虚拟内存：独立设计认领（未实施）
 
 2026-10-29，`codex/px4a-vma-claim` 从 fetched upstream `aaec2e9` 建立。

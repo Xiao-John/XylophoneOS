@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "scope": "production recovery with real host FatFs and API-boundary injected errors",
+  "guest": "not_run_by_this_runner",
+  "output": "RECOVERY_CASES_PASSED=21\n",
+  "command": [
+    "/usr/bin/clang++",
+    "-std=c++17",
+    "-O1",
+    "-w",
+    "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/src/third_party/fatfs",
+    "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/src/user/include",
+    "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/src/shared/include",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/tests/fixtures/recovery/recovery_faults.cpp",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/src/third_party/fatfs/ff.c",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/src/user/services/fatfs_unicode.cpp",
+    "-o",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/audit_01/recovery/recovery_faults"
+  ],
+  "sources": {
+    "src/user/services/files.cpp": "f3e1810f53b0165609c96ed03a684683e0c23783742e670d949e772fcdf5992f",
+    "tests/fixtures/recovery/recovery_faults.cpp": "5c3110baff39a580e6cb639b9e7a6bd3f49faae21dd886ce05de468df1ec29c4",
+    "src/third_party/fatfs/ff.c": "22610a39c37d1db311a9428e1c618768ce299537a42881da9cdba8f1d0dda8b0"
+  }
+}

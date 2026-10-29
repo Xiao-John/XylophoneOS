@@ -6,6 +6,17 @@ ncursesw 前期探针。各旧资格绑定原输入，本次 Git 整合不产生
 发布资产仍为 0.0.1-1026，未随本地整合更新。
 原则裁决见[xos_plan.md第一部分](xos_plan.md#第一部分设计原则)，本页只登记事实与占用。
 
+## E17 / G05 Qt Widgets 与 Aurora Glass
+
+2026-10-29，从 upstream `c39cef1` 的独立 `codex/qt6-e17-widgets` 完成真实 Qt
+Widgets 6.8.3、可复用 `libXosAurora.a` 与单全屏图形编辑器。G05 **PASSED（受限功能）**；
+实际打开、PS/2 编辑/选择/滚动、保存/sync/重启字节比对、错误与回收有独立客体证据。
+来源计划 PR #12 开工时 Draft/open，未合并；实现不重带其规划文件。
+冻结输入、失败、许可边界和性能见 [0078](work_log/0078_qt_e17_aurora_qualification.md)。
+私有 worktree/build；不改通用 ABI、内核、文件服务、libc 或终端/xypm。
+保存提交错误为 UNKNOWN，不承诺任意失败/断电事务安全；不发布 Qt 静态产品/新 Release。
+本轮因上游无写权限，按用户最新指令通过独立功能 PR 交付，不自行合并。
+
 ## 正在进行：ncursesw W0/W1
 
 W0 勘查和 W1 [工作契约草案](contracts/terminal_w1.md)已开始；W0 未冻结，W1 未
@@ -40,7 +51,7 @@ W0 勘查和 W1 [工作契约草案](contracts/terminal_w1.md)已开始；W0 未
 | CPython | PY0–PY2/T3-PY、A1–A3、B1–B4专项通过 | [用户态摘要](history/userland.md)；B2–B4系统6251d26b611a388d，Python11c39c52e451a9499450 |
 | xypm | P2原生验证、事务和启动恢复已实现；限定范围内验收通过 | [包计划](plans/packages.md)、[0066](work_log/0066_xypm_p2_validation.md)；P2验收范围和局限见记录；P3未完成 |
 | 审计/整合 | A01–A04修复与PR3兼容已交付PR4 | [整合摘要](history/delivery_audit.md)，组合build76a2e4380f64fb2e，7定向组通过；非旧全量重验 |
-| POSIX/Qt | PX0子集文档已有；QtCore 6.8.3 G01/G03 与 QtGui/QPA G04 受限客体功能通过 | [PX路线](plans/posix.md)、[E16资格](reports/qt_e16_qualified_20261028/qualification.json)；Widgets/QML/Quick 未验，绝对峰值/发行许可未完成 |
+| POSIX/Qt | PX0子集文档已有；QtCore 6.8.3 G01/G03 与 QtGui/QPA G04 受限客体功能通过 | [PX路线](plans/posix.md)、[E16资格](reports/qt_e16_qualified_20261028/qualification.json)；Widgets/G05 已受限客体验证，见0078；QML/Quick、绝对峰值/发行许可未完成 |
 
 每项资格只对其冻结输入成立。旧源/SDK/镜像不改绑；许可材料通过不代表逐成员审计完成。
 QtCore 的系统 build48e5e73bcd649f44 和本地输入编辑的 build3200de2c3b80a9d9 分别保留资格；
@@ -64,7 +75,7 @@ QtCore 的系统 build48e5e73bcd649f44 和本地输入编辑的 build3200de2c3b8
 - 新组合已验证 SDK/profile、xypm P2、工具、UTF-8 路径与候选安装清单；
   继续补齐逐命令边界和完整发行。ISO 通用载荷与空盘安装尚未实施。
 - Qt E16/G04 已经 PR #9 合入，使用可 join 的输入线程与 QtCore wait-word 分发器；
-  只验单独占全屏 raster。E17 Widgets、E18 QML 分别推进，完整成员许可、静态分发、
+  只验单独占全屏 raster。E17 Widgets/G05 已受限通过，E18 QML 独立推进；完整成员许可、静态分发、
   绝对峰值和本次新组合客体资格尚未完成。
 - 输入编辑按[第一档](plans/input_edit_foundation.md)、[第二档](plans/terminal_editor.md)及
   [多语言](plans/multilingual.md)继续；先设计[ncursesw 公共底座](plans/ncursesw.md)，

@@ -1,0 +1,77 @@
+{
+  "status": "PASSED",
+  "elf_sha256": "d05e357286473c00fd2bb687c0a2c4b476268d20f0871c9472c6b3eac8f8fe2a",
+  "image_sha256": "1f75150345382511e9e350a89a3eaa87d8b4d0ece0dfcb6a16c7639b71e7c853",
+  "checks": [
+    {
+      "name": "oom",
+      "status": "PASSED",
+      "resources": [
+        130253,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "quota",
+      "status": "PASSED",
+      "resources": [
+        130253,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "fault",
+      "status": "PASSED",
+      "resources": [
+        130253,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "display_service_fault_in_present",
+      "status": "PASSED",
+      "resources": [
+        130297,
+        2,
+        0
+      ]
+    }
+  ],
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_widgets_resources_at9_7mcy/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_damcurh8/qmp.sock,server=on,wait=off"
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "status": "PASSED",
+  "elf_sha256": "9788a54afe44471b689acf00f21a03508caf14cee008f8c8eb3cd78464e463ca",
+  "image_sha256": "1f75150345382511e9e350a89a3eaa87d8b4d0ece0dfcb6a16c7639b71e7c853",
+  "checks": [
+    "independent_linked_style_library",
+    "standard_QPushButton_QLineEdit_QPlainTextEdit_QLabel",
+    "enabled_primary_disabled_focus_hover_pressed",
+    "cached_glass_and_software_pointer",
+    "resources_exactly_restored"
+  ],
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_aurora_uwepiuag/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_big58v4i/qmp.sock,server=on,wait=off"
+  ],
+  "screenshots": {
+    "standard-widgets": "db79cb98a1deb74cf5150dc23a176374c6c2d8b07eefd1db6bad05bbc185f762",
+    "keyboard-focus": "4a56e23d306441356827e886db2d9d5691d57e9f124b449c2e26f1d29847c06c",
+    "hover": "9ec08e9732b53988ecbcccb15fb978b9d30ffe66534fbb14a41e8a0cb3a7a595",
+    "pressed": "9ec08e9732b53988ecbcccb15fb978b9d30ffe66534fbb14a41e8a0cb3a7a595"
+  }
+}

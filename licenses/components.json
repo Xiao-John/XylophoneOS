@@ -9,8 +9,12 @@
       "path": "src/ports/adventure",
       "source": "https://gitlab.com/esr/open-adventure/-/archive/1.12/open-adventure-1.12.tar.gz",
       "license": "BSD-2-Clause",
-      "notices": ["src/ports/adventure/upstream/COPYING"],
-      "used_in": ["Open Adventure user application"],
+      "notices": [
+        "src/ports/adventure/upstream/COPYING"
+      ],
+      "used_in": [
+        "Open Adventure user application"
+      ],
       "modifications": "XOS generator, console and deterministic runtime port; see source_lock.json and patches; XOS-authored glue is Apache-2.0",
       "artifact_sha256": {
         "src/ports/adventure/upstream/COPYING": "731ee6313e1e17e510cfe9110c6a94d5fec97b1cce73d9974e4d82d29aa00297"
@@ -565,6 +569,24 @@
       ],
       "modifications": "0008 selects buffered FreeType file backend and excludes unsupported Unix platform services/dispatch; no font modifications",
       "distribution_status": "NOT_RUN: member-level audit, security review, complete static relinking/source/notice distribution obligations; no Release authorized"
+    },
+    {
+      "name": "Qt Widgets E17 and Xylophone Aurora Glass",
+      "version": "QtBase 6.8.3; Aurora 1 (local qualification)",
+      "path": "src/ports/qt6",
+      "source": "https://download.qt.io/archive/qt/6.8/6.8.3/submodules/qtbase-everywhere-src-6.8.3.tar.xz",
+      "source_archive_sha256": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80",
+      "license": "Qt per-file LGPL-3.0/GPL/commercial terms; XOS theme/editor Apache-2.0; generated wallpaper provenance recorded separately",
+      "notices": [
+        "src/ports/qt6/licenses/LGPL-3.0-only.txt",
+        "src/ports/qt6/licenses/GPL-3.0-only.txt",
+        "src/ports/qt6/aurora/assets/provenance.json"
+      ],
+      "used_in": [
+        "real static Qt Widgets guest editor and independent Aurora style consumer; E15/E16 dependency notices retained"
+      ],
+      "modifications": "Widgets-only configuration enables actual Widgets and disables unsupported native file-dialog module; opt-in user-space style, no QtCore changes",
+      "distribution_status": "NOT_RUN: complete static source/relink materials, member-level license and binary distribution review; no new Release"
     }
   ]
 }

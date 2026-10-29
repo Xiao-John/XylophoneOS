@@ -27,10 +27,10 @@
 | G02 | 显示边界/像素、PS2事件/溢出/焦点、权限/故障/退出回收、串口救援 | 当前 build48e5e73bcd649f44、sys65/66 19组 PASSED；旧[冻结报告](reports/display_e14_20261026/qualification.json)保持原绑定 |
 | G03 | QtCore字符串/文件/资源、短读/满盘/缺失、投递/唤醒/定时器、空闲阻塞与退出 | **PASSED（受限功能）**；真实 QtCore 6.8.3 客体、错误/重启/回收，见[资格](reports/qt_e15_qualified_20261028/qualification.json)及[生命周期补验](work_log/0065_qt_e15_lifecycle_recheck.md) |
 | G04 | QtGui/QPA文字/图形、重绘/输入/焦点、窗口创建销毁与关闭回终端 | **PASSED（受限功能）**；Qt 6.8.3 静态 raster、独占全屏、实际 QMP PS/2、字体与全字节显存比对、故障/服务重启/回收；见 [0066](work_log/0066_qt_e16_qualification.md)，发行/绝对峰值未完成 |
-| G05 | Widgets编辑器输入/选择/布局/保存、重启正文一致、错误保护与回收 | not_run |
+| G05 | Widgets编辑器输入/选择/布局/保存、重启正文一致、错误保护与回收 | **PASSED（受限功能）**；真实 Widgets 6.8.3/Aurora、PS/2、文件/sync/重启/故障回收；提交错误 UNKNOWN，不承诺任意失败原路径不变，见[0078](work_log/0078_qt_e17_aurora_qualification.md) |
 | G06 | 无界面QML/QV4绑定、JS、资源、诊断、GC/销毁与内存失败 | not_run，不表示Quick可用 |
 | G07 | Quick软件场景/动画/输入/调度，帧时和内存，功能子集清单 | not_run |
-| G08 | Widgets/Quick分别测启动/空闲/交互预算、输入延迟与循环回收；控制与文件故障遏制 | not_run，开始前冻结阈值，不事后放宽 |
+| G08 | Widgets/Quick分别测启动/空闲/交互预算、输入延迟与循环回收；控制与文件故障遏制 | E17 Widgets 有预冻结目标、输入/呈现及同ELF采样内存对照；绝对峰值/CPU/完整G08和Quick NOT_RUN，见0078 |
 | G09 | 朋友独立操作/错误恢复、SDK/符号对应、适用许可证与分发材料 | not_run |
 | G10 | XOS内构建Qt应用 / 重建Qt本体后重新运行G03–G07 | not_run，另拆任务；不阻塞首窗 |
 

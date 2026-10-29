@@ -1,0 +1,8 @@
+{
+  "status": "FAILED",
+  "image_sha256": "1f75150345382511e9e350a89a3eaa87d8b4d0ece0dfcb6a16c7639b71e7c853",
+  "elf_sha256": "fae621f879eb7f413b917dfd8dbadabf1e4ec749a4fef90e58b191bcb1826cf6",
+  "checks": [],
+  "mechanism": "QEMU blkdebug EIO at host block write/flush; real guest ATA error propagation, not power loss or torn sectors",
+  "error": "qt_e17/review_block_faults_2/flush_to_disk: missing any of (b'kind=exited code=',); output=bytearray(b'ng\\nbad length\\nbad pointer\\ntx\\nbad length\\nbad pointer\\nAAping\\nbad length\\nbad pointer\\ntx\\nAAping\\nbad length\\nbad pointer\\ntx\\nAAping\\nbad length\\nbad pointer\\ntx\\nbad length\\nbad pointer\\nAping\\nbad length\\nbad pointer\\ntx\\nAAping\\nbad length\\nbad pointer\\ntx\\nAAping\\nbad length\\nbad pointer\\ntx\\nAAping\\nbad length\\nbad pointer\\ntx\\nAAping\\nbad length\\nbad pointer\\ntx\\nbad length\\nbad pointer\\nAAping\\nbad length\\nbad pointer\\ntx\\nAAping\\nbad length\\nbad pointer\\ntx\\nAAping\\nbad length\\nbad pointer\\ntx\\nbad length\\nbad pointer\\n[task] event=killed_by_supervisor pid=1\\r\\n[task] event=reclaimed pid=1 pages=11\\r\\n[task] event=killed_by_supervisor pid=2\\r\\n[task] event=reclaimed pid=2 pages=11\\r\\n[task] event=killed_by_supervisor pid=3\\r\\n[task] event=reclaimed pid=3 pages=11\\r\\n[task] event=killed_by_supervisor pid=4\\r\\n[task] event=reclaimed pid=4 pages=11\\r\\n\\n[xsh] demo tasks stopped\\nxsh> stats\\n[resources] free=130297 tasks=2 completions=0\\nxsh> exec-file /bin/save.elf storage /LOCK.TXT\\nxsh: /bin/save.elf: cannot read program (format=ok, error=-7)\\nxsh> ')"
+}

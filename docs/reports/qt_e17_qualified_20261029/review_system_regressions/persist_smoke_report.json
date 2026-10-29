@@ -1,0 +1,11 @@
+{
+  "build_id": "0bb7b60ae0d85953",
+  "checks": [
+    "first_boot_create_overwrite_delete_sync",
+    "second_boot_verifies_content_and_deletion",
+    "second_boot_executes_persisted_elf",
+    "expanded_namespace_saves_fifth_file"
+  ],
+  "status": "passed",
+  "disk_bytes": 16777216
+}

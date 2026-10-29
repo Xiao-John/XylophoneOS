@@ -1,0 +1,1964 @@
+{
+  "status": "PASSED_SOURCE_AUDIT_ONLY",
+  "source_lock_sha256": "7da8bcef7b9af46a7c4df0f94f907ca6db79b0de484c2495f9dc7280ab8ec980",
+  "versions": {
+    "scope": "source retrieval, not a complete checkout or runtime qualification",
+    "chromium": {
+      "version": "142.0.7444.59",
+      "sha": "4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa"
+    },
+    "v8": {
+      "sha": "bb294624702efbb17691b642333f06bf5108e600"
+    },
+    "code_oss": {
+      "version": "1.106.0",
+      "sha": "ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57"
+    },
+    "electron": {
+      "version": "v37.7.0",
+      "sha": "dfc60f0f4246a542a45601f93572eca77bdff2f9"
+    },
+    "node": {
+      "version": "v22.20.0",
+      "sha": "caa20e28dc1f21a97f7b2a7134973fd6435b65f0"
+    },
+    "quickjs": {
+      "version": "2025-09-13-2",
+      "archive": "quickjs-2025-09-13-2.tar.xz",
+      "url": "https://bellard.org/quickjs/quickjs-2025-09-13-2.tar.xz",
+      "sha256": "996c6b5018fc955ad4d06426d0e9cb713685a00c825aa5c0418bd53f7df8b0b4"
+    }
+  },
+  "public_files": [
+    {
+      "path": "chromium/DEPS",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/DEPS?format=TEXT",
+      "sha256": "2bcbc993c76bf81b692d391cd150a849797372b8418df5df8d9a29ac6b058a99",
+      "bytes": 183675,
+      "status": "PASSED"
+    },
+    {
+      "path": "chromium/LICENSE",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/LICENSE?format=TEXT",
+      "sha256": "368cca1106be99d39ecd32a38d8305585d802a475effb66380b91ffc9bcf709b",
+      "bytes": 1536,
+      "status": "PASSED"
+    },
+    {
+      "path": "chromium/build/config/BUILDCONFIG.gn",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/build/config/BUILDCONFIG.gn?format=TEXT",
+      "sha256": "a4d156e9fc4ab5d646b2929705cdf0ad2a9a52c094df1dbecbdf51de897902bf",
+      "bytes": 32705,
+      "status": "PASSED"
+    },
+    {
+      "path": "chromium/base/memory/platform_shared_memory_region_posix.cc",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/base/memory/platform_shared_memory_region_posix.cc?format=TEXT",
+      "sha256": "a3f662172cb6c61f6154d4bb1d52485d6fcaf5fa812f1527824f176b04c4f706",
+      "bytes": 9234,
+      "status": "PASSED"
+    },
+    {
+      "path": "chromium/sandbox/linux/services/credentials.cc",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/sandbox/linux/services/credentials.cc?format=TEXT",
+      "sha256": "43e3968be3683c5c81b3992c97e113668d5bc83e06e0f0e3ca9236f4dedce372",
+      "bytes": 11673,
+      "status": "PASSED"
+    },
+    {
+      "path": "chromium/content/shell/app/shell_main.cc",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/content/shell/app/shell_main.cc?format=TEXT",
+      "sha256": "e5a969a5ceb315b6dfe666fb85f3c4d4f74991540ecbd2cc391dc41cae0097ba",
+      "bytes": 3571,
+      "status": "PASSED"
+    },
+    {
+      "path": "chromium/base/process/launch_posix.cc",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/base/process/launch_posix.cc?format=TEXT",
+      "sha256": "6b4c567d78c6ae4ec5899521c152ed4765041b9d29baf269370743c9efe264e0",
+      "bytes": 27338,
+      "status": "PASSED"
+    },
+    {
+      "path": "chromium/base/message_loop/message_pump_epoll.cc",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/base/message_loop/message_pump_epoll.cc?format=TEXT",
+      "sha256": "e5436e0880bcf2fb4d0473307b790a68545bc9721ac0c1942d1a59a9baa19068",
+      "bytes": 26374,
+      "status": "PASSED"
+    },
+    {
+      "path": "chromium/base/native_library_posix.cc",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/base/native_library_posix.cc?format=TEXT",
+      "sha256": "6309fc4e6f7b18da8c1a1e7285271600fcf64f2ce2d2b2324b0f2cb6311912cf",
+      "bytes": 1846,
+      "status": "PASSED"
+    },
+    {
+      "path": "v8/LICENSE",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/LICENSE?format=TEXT",
+      "sha256": "6ab33af8774a0f396ee3aeeb761e3229057682d6f9fa7f572e390c2cb3a6e509",
+      "bytes": 3093,
+      "status": "PASSED"
+    },
+    {
+      "path": "v8/include/v8-platform.h",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/include/v8-platform.h?format=TEXT",
+      "sha256": "67cc9fcc2a7e8dbd24efb34a80dcf7bfb816eca52463f015f7d0657eb3a66d49",
+      "bytes": 52546,
+      "status": "PASSED"
+    },
+    {
+      "path": "v8/src/base/platform/platform-posix.cc",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/src/base/platform/platform-posix.cc?format=TEXT",
+      "sha256": "eebe24e926485dba3c30231c2d81071462b4025a360952d70b20474f5c0ca5a4",
+      "bytes": 46032,
+      "status": "PASSED"
+    },
+    {
+      "path": "v8/src/base/platform/platform.h",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/src/base/platform/platform.h?format=TEXT",
+      "sha256": "6ad32d92a26eba029c5009095ea2994156725002be7679bbbb0a27220a2b0cb8",
+      "bytes": 25666,
+      "status": "PASSED"
+    },
+    {
+      "path": "v8/src/base/build_config.h",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/src/base/build_config.h?format=TEXT",
+      "sha256": "5b809f262ea64aa231e87f2fe218b0720f8b7927ad23b8472ef4da9b813cd6d5",
+      "bytes": 3932,
+      "status": "PASSED"
+    },
+    {
+      "path": "v8/src/base/platform/mutex.cc",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/src/base/platform/mutex.cc?format=TEXT",
+      "sha256": "ea689d9f3a8ffc6aa23a225433edd21cf5478e0d5692ae57bf5378a465a0d2cf",
+      "bytes": 1552,
+      "status": "PASSED"
+    },
+    {
+      "path": "v8/src/base/platform/semaphore.cc",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/src/base/platform/semaphore.cc?format=TEXT",
+      "sha256": "b4649c5024b4c92b0cbb50dd7e57cf2cc00d487953d2d3904df672fb0e74916c",
+      "bytes": 4487,
+      "status": "PASSED"
+    },
+    {
+      "path": "v8/BUILD.gn",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/BUILD.gn?format=TEXT",
+      "sha256": "96ac2460810a184c8e601a344c56c8703cf75c195b41a9dcc1699ef367538b5c",
+      "bytes": 285363,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/LICENSE.txt",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/LICENSE.txt",
+      "sha256": "9480271317925265e806a9a196aaa33410a962fa9d4d1e248a4a5187bc8c9df9",
+      "bytes": 1088,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/package.json",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/package.json",
+      "sha256": "f4311d4e1a6070986651351cd6ab5169a79c5c5a2ea3a92f63a5ee0fdb9c9b3f",
+      "bytes": 10282,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/.npmrc",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/.npmrc",
+      "sha256": "7fe34213c184f9ccb353146f992b6f728890ad5b8bc355b2aea684ef027b8e6a",
+      "bytes": 242,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/base/browser/browser.ts",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/base/browser/browser.ts",
+      "sha256": "f7c74086baeb30e2aa4b3c806d494f7d2b2c7092b43ef10b4302c35d1d126684",
+      "bytes": 6492,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/platform/files/browser/htmlFileSystemProvider.ts",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/platform/files/browser/htmlFileSystemProvider.ts",
+      "sha256": "b590bc2831a9efd44c98a1332c21af958e138d1895fb03ecec4ff4ef4990952b",
+      "bytes": 17454,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/platform/terminal/node/ptyService.ts",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/platform/terminal/node/ptyService.ts",
+      "sha256": "f6e764136284a348162dc7fe198d1532bee6cac543fcc3693d7cd43c3a2972ec",
+      "bytes": 44549,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/platform/files/node/watcher/watcherMain.ts",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/platform/files/node/watcher/watcherMain.ts",
+      "sha256": "58a5f5979d78ba8fe68dec84a097184a56df6553edd40dc959be305a65a17775",
+      "bytes": 1143,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/workbench/services/extensions/browser/webWorkerExtensionHost.ts",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/workbench/services/extensions/browser/webWorkerExtensionHost.ts",
+      "sha256": "495cd2324ff92cb9ecdabbb8138ee108317624d40a98a1452bd9febf02fced49",
+      "bytes": 14850,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/workbench/browser/web.main.ts",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/workbench/browser/web.main.ts",
+      "sha256": "818574a208cf1a956f0f3a7edbf1420e6b8ed20638287248e59792e9f1201ea9",
+      "bytes": 30828,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/workbench/api/node/extensionHostProcess.ts",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/workbench/api/node/extensionHostProcess.ts",
+      "sha256": "13f692dd065470e6c2701332ceb86c8ecd4b01fafde0a7bafb38138e49f7106e",
+      "bytes": 17269,
+      "status": "PASSED"
+    },
+    {
+      "path": "v8/include/v8config.h",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/include/v8config.h?format=TEXT",
+      "sha256": "c769e52576acfa93e79a3be395d23c46f69c9fb477082a3b97d5c5c63104b058",
+      "bytes": 37023,
+      "status": "PASSED"
+    },
+    {
+      "path": "v8/include/v8-version.h",
+      "url": "https://chromium.googlesource.com/v8/v8/+/bb294624702efbb17691b642333f06bf5108e600/include/v8-version.h?format=TEXT",
+      "sha256": "7fc0d78ff43b564d29fc37014ccdd9b6170a061034da8a7f2f815e8fcb625389",
+      "bytes": 773,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/editor/browser/controller/editContext/native/nativeEditContext.css",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/editor/browser/controller/editContext/native/nativeEditContext.css",
+      "sha256": "55a9ea2063303039a0e4c6b2628a78ea7a4c8ac6f9b3662fe46e6ebbec7e542a",
+      "bytes": 1460,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/editor/browser/controller/editContext/native/nativeEditContext.ts",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/editor/browser/controller/editContext/native/nativeEditContext.ts",
+      "sha256": "22e940df2610b6b7969e84628e42e50e834eb336768a7c96370ecddd5415d489",
+      "bytes": 26102,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/editor/browser/controller/editContext/native/nativeEditContextRegistry.ts",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/editor/browser/controller/editContext/native/nativeEditContextRegistry.ts",
+      "sha256": "27a122f3bd387e7faeaf1d526a2bbfeec9c2975964abab2a6d6d977d923e4f52",
+      "bytes": 1041,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/editor/browser/controller/editContext/native/nativeEditContextUtils.ts",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/editor/browser/controller/editContext/native/nativeEditContextUtils.ts",
+      "sha256": "57c1d35fa64c8aec9829556c2e4f92a63d2a2e23441ca6869a63a3fede1c5e03",
+      "bytes": 2960,
+      "status": "PASSED"
+    },
+    {
+      "path": "vscode/src/vs/workbench/services/extensions/worker/webWorkerExtensionHostIframe.html",
+      "url": "https://raw.githubusercontent.com/microsoft/vscode/ac4cbdf48759c7d8c3eb91ffe6bb04316e263c57/src/vs/workbench/services/extensions/worker/webWorkerExtensionHostIframe.html",
+      "sha256": "38624dd1cb0e26a6c6cab77d74118e688fa90f8d52c76d6dab854a2a7aa5977d",
+      "bytes": 5287,
+      "status": "PASSED"
+    },
+    {
+      "path": "node/deps/uv/src/unix/core.c",
+      "url": "https://raw.githubusercontent.com/nodejs/node/caa20e28dc1f21a97f7b2a7134973fd6435b65f0/deps/uv/src/unix/core.c",
+      "sha256": "bebf5062eefb617a1d03e5e78f864b6384e14fb7055d534c3a092fc2132f4ac4",
+      "bytes": 48102,
+      "status": "PASSED"
+    },
+    {
+      "path": "node/deps/uv/src/unix/linux.c",
+      "url": "https://raw.githubusercontent.com/nodejs/node/caa20e28dc1f21a97f7b2a7134973fd6435b65f0/deps/uv/src/unix/linux.c",
+      "sha256": "d527b1b7330c474f60b363b0ec8ccea50bc2f1b7ae7e185fc97b6943bf993d99",
+      "bytes": 73847,
+      "status": "PASSED"
+    },
+    {
+      "path": "node/src/spawn_sync.cc",
+      "url": "https://raw.githubusercontent.com/nodejs/node/caa20e28dc1f21a97f7b2a7134973fd6435b65f0/src/spawn_sync.cc",
+      "sha256": "14703e4de80b806e3c89aeb1d09772e5c1d17d4ea55ee0ff83cd0a7a14b80f13",
+      "bytes": 34661,
+      "status": "PASSED"
+    },
+    {
+      "path": "node/src/process_wrap.cc",
+      "url": "https://raw.githubusercontent.com/nodejs/node/caa20e28dc1f21a97f7b2a7134973fd6435b65f0/src/process_wrap.cc",
+      "sha256": "6eb3ffc7bc67c20d8232301badeebd3d5b1d0ccfdfed41643dacbcb22743fe72",
+      "bytes": 13507,
+      "status": "PASSED"
+    },
+    {
+      "path": "node/src/tty_wrap.cc",
+      "url": "https://raw.githubusercontent.com/nodejs/node/caa20e28dc1f21a97f7b2a7134973fd6435b65f0/src/tty_wrap.cc",
+      "sha256": "9b0a591dd9970276eb5283d065d2e3e2646ca8972f9e3b2ba83d3579c4cb8710",
+      "bytes": 5690,
+      "status": "PASSED"
+    },
+    {
+      "path": "node/src/node_file.cc",
+      "url": "https://raw.githubusercontent.com/nodejs/node/caa20e28dc1f21a97f7b2a7134973fd6435b65f0/src/node_file.cc",
+      "sha256": "c91b943bb17d4459e42e8494c94172c606973d0ac9b82ac4faa8eadc8bea474f",
+      "bytes": 136800,
+      "status": "PASSED"
+    },
+    {
+      "path": "node/LICENSE",
+      "url": "https://raw.githubusercontent.com/nodejs/node/caa20e28dc1f21a97f7b2a7134973fd6435b65f0/LICENSE",
+      "sha256": "e991d81497a85bb24fc6bffae0a3637a6accd6c6bc5ce1f2c5698bd555cf9d49",
+      "bytes": 143299,
+      "status": "PASSED"
+    },
+    {
+      "path": "chromium/tools/clang/scripts/update.py",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/tools/clang/scripts/update.py?format=TEXT",
+      "sha256": "e96d40bb3d971438147d12e25a5a98da6fe5809922408be4d715563747a820da",
+      "bytes": 13771,
+      "status": "PASSED"
+    },
+    {
+      "path": "chromium/build/config/compiler/BUILD.gn",
+      "url": "https://chromium.googlesource.com/chromium/src/+/4b8153ab58d3c3f4c9f7e4baad9616ecf80db5fa/build/config/compiler/BUILD.gn?format=TEXT",
+      "sha256": "a81a76ef9dd6c8724b0607cc5ba95ffb20d1cbf312a33dbb6379dd0bd1696a0a",
+      "bytes": 120282,
+      "status": "PASSED"
+    },
+    {
+      "path": "electron/DEPS",
+      "url": "https://raw.githubusercontent.com/electron/electron/dfc60f0f4246a542a45601f93572eca77bdff2f9/DEPS",
+      "sha256": "cc7f2b6eadd08e3ed5230536939ed961fa1fadf06e942d2ce0447c9f34ed0015",
+      "bytes": 6610,
+      "status": "PASSED"
+    },
+    {
+      "path": "electron/LICENSE",
+      "url": "https://raw.githubusercontent.com/electron/electron/dfc60f0f4246a542a45601f93572eca77bdff2f9/LICENSE",
+      "sha256": "5154e165bd6c2cc0cfbcd8916498c7abab0497923bafcd5cb07673fe8480087d",
+      "bytes": 1096,
+      "status": "PASSED"
+    }
+  ],
+  "private_scope": "metadata and call/import names only; no source text",
+  "localpilot_commit": "9a21ebbe6621de43be6568b64433230c317eb81a",
+  "localpilot_files": [
+    {
+      "path": "agent/__init__.py",
+      "sha256": "6c25adc800d496789506cdd1b61c712097d8a9608a80ced438a61a392dd1802c",
+      "bytes": 711,
+      "locations": [
+        {
+          "kind": "import",
+          "line": 3,
+          "module": "commands"
+        },
+        {
+          "kind": "import",
+          "line": 4,
+          "module": "patches"
+        },
+        {
+          "kind": "import",
+          "line": 5,
+          "module": "safety"
+        },
+        {
+          "kind": "import",
+          "line": 6,
+          "module": "deepseek"
+        },
+        {
+          "kind": "import",
+          "line": 7,
+          "module": "registry"
+        },
+        {
+          "kind": "import",
+          "line": 8,
+          "module": "tools"
+        },
+        {
+          "kind": "import",
+          "line": 24,
+          "module": "session"
+        }
+      ]
+    },
+    {
+      "path": "agent/commands.py",
+      "sha256": "3c0094d52053678ab12e8793bbbcfab1cdc73a1210aa7f8f62c9225a5a0e8780",
+      "bytes": 5438,
+      "locations": [
+        {
+          "kind": "import",
+          "line": 3,
+          "module": "math"
+        },
+        {
+          "kind": "import",
+          "line": 4,
+          "module": "os"
+        },
+        {
+          "kind": "import",
+          "line": 5,
+          "module": "pathlib"
+        },
+        {
+          "kind": "import",
+          "line": 6,
+          "module": "selectors"
+        },
+        {
+          "kind": "import",
+          "line": 7,
+          "module": "shutil"
+        },
+        {
+          "kind": "import",
+          "line": 8,
+          "module": "signal"
+        },
+        {
+          "kind": "import",
+          "line": 9,
+          "module": "subprocess"
+        },
+        {
+          "kind": "import",
+          "line": 10,
+          "module": "sys"
+        },
+        {
+          "kind": "import",
+          "line": 11,
+          "module": "time"
+        },
+        {
+          "kind": "import",
+          "line": 13,
+          "module": "safety"
+        },
+        {
+          "kind": "call",
+          "line": 32,
+          "function": "os.killpg"
+        },
+        {
+          "kind": "call",
+          "line": 63,
+          "function": "subprocess.Popen"
+        },
+        {
+          "kind": "call",
+          "line": 71,
+          "function": "selectors.DefaultSelector"
+        },
+        {
+          "kind": "call",
+          "line": 73,
+          "function": "os.set_blocking"
+        },
+        {
+          "kind": "call",
+          "line": 80,
+          "function": "selector.select"
+        },
+        {
+          "kind": "call",
+          "line": 81,
+          "function": "os.read"
+        }
+      ]
+    },
+    {
+      "path": "localpilot_api/service.py",
+      "sha256": "4b6a7ba06cd91d1acd1a3dd900f3e6ceddf645792611ae16a2ac8b5c94b441ef",
+      "bytes": 61163,
+      "locations": [
+        {
+          "kind": "import",
+          "line": 2,
+          "module": "copy"
+        },
+        {
+          "kind": "import",
+          "line": 3,
+          "module": "dataclasses"
+        },
+        {
+          "kind": "import",
+          "line": 4,
+          "module": "json"
+        },
+        {
+          "kind": "import",
+          "line": 5,
+          "module": "math"
+        },
+        {
+          "kind": "import",
+          "line": 6,
+          "module": "threading"
+        },
+        {
+          "kind": "import",
+          "line": 7,
+          "module": "time"
+        },
+        {
+          "kind": "import",
+          "line": 8,
+          "module": "uuid"
+        },
+        {
+          "kind": "import",
+          "line": 10,
+          "module": "agent.async_runtime"
+        },
+        {
+          "kind": "import",
+          "line": 11,
+          "module": "agent.computer_ledger"
+        },
+        {
+          "kind": "import",
+          "line": 12,
+          "module": "agent.backends"
+        },
+        {
+          "kind": "import",
+          "line": 13,
+          "module": "agent.session"
+        },
+        {
+          "kind": "import",
+          "line": 14,
+          "module": "agent.persistence"
+        },
+        {
+          "kind": "import",
+          "line": 16,
+          "module": "computer.schemas"
+        },
+        {
+          "kind": "import",
+          "line": 206,
+          "module": "agent.session"
+        },
+        {
+          "kind": "import",
+          "line": 222,
+          "module": "localpilot_service.desktop_sessions"
+        },
+        {
+          "kind": "import",
+          "line": 357,
+          "module": "localpilot_service.desktop_sessions"
+        },
+        {
+          "kind": "import",
+          "line": 587,
+          "module": "dataclasses"
+        },
+        {
+          "kind": "import",
+          "line": 685,
+          "module": "agent.loop"
+        },
+        {
+          "kind": "import",
+          "line": 909,
+          "module": "computer.human_recovery"
+        }
+      ]
+    },
+    {
+      "path": "localpilot_service/security.py",
+      "sha256": "d58aecd611fa10c36b638cfb388cdacd8b5fb58a17bd0a8cef45d8780aa51919",
+      "bytes": 5105,
+      "locations": [
+        {
+          "kind": "import",
+          "line": 2,
+          "module": "dataclasses"
+        },
+        {
+          "kind": "import",
+          "line": 3,
+          "module": "collections"
+        },
+        {
+          "kind": "import",
+          "line": 4,
+          "module": "hmac"
+        },
+        {
+          "kind": "import",
+          "line": 5,
+          "module": "json"
+        },
+        {
+          "kind": "import",
+          "line": 6,
+          "module": "os"
+        },
+        {
+          "kind": "import",
+          "line": 7,
+          "module": "pathlib"
+        },
+        {
+          "kind": "import",
+          "line": 8,
+          "module": "re"
+        },
+        {
+          "kind": "import",
+          "line": 9,
+          "module": "stat"
+        },
+        {
+          "kind": "import",
+          "line": 10,
+          "module": "threading"
+        },
+        {
+          "kind": "import",
+          "line": 11,
+          "module": "time"
+        },
+        {
+          "kind": "import",
+          "line": 13,
+          "module": "localpilot_api.service"
+        },
+        {
+          "kind": "call",
+          "line": 19,
+          "function": "os.open"
+        },
+        {
+          "kind": "call",
+          "line": 21,
+          "function": "os.fstat"
+        },
+        {
+          "kind": "call",
+          "line": 22,
+          "function": "os.getuid"
+        },
+        {
+          "kind": "call",
+          "line": 24,
+          "function": "os.read"
+        },
+        {
+          "kind": "call",
+          "line": 70,
+          "function": "os.open"
+        },
+        {
+          "kind": "call",
+          "line": 71,
+          "function": "os.fstat"
+        },
+        {
+          "kind": "call",
+          "line": 72,
+          "function": "os.getuid"
+        }
+      ]
+    },
+    {
+      "path": "localpilot_service/workspaces.py",
+      "sha256": "696c8d89de88c2a84275a161fb564f8d47a25613c8a74c264b2ef5e2bc0b8f2e",
+      "bytes": 10443,
+      "locations": [
+        {
+          "kind": "import",
+          "line": 2,
+          "module": "contextlib"
+        },
+        {
+          "kind": "import",
+          "line": 3,
+          "module": "dataclasses"
+        },
+        {
+          "kind": "import",
+          "line": 4,
+          "module": "json"
+        },
+        {
+          "kind": "import",
+          "line": 5,
+          "module": "os"
+        },
+        {
+          "kind": "import",
+          "line": 6,
+          "module": "pathlib"
+        },
+        {
+          "kind": "import",
+          "line": 7,
+          "module": "threading"
+        },
+        {
+          "kind": "import",
+          "line": 8,
+          "module": "uuid"
+        },
+        {
+          "kind": "import",
+          "line": 9,
+          "module": "localpilot_api.service"
+        },
+        {
+          "kind": "import",
+          "line": 10,
+          "module": "security"
+        },
+        {
+          "kind": "call",
+          "line": 19,
+          "function": "os.open"
+        },
+        {
+          "kind": "import",
+          "line": 27,
+          "module": "agent.safe_files"
+        },
+        {
+          "kind": "import",
+          "line": 28,
+          "module": "agent.safety"
+        },
+        {
+          "kind": "call",
+          "line": 35,
+          "function": "os.open"
+        },
+        {
+          "kind": "call",
+          "line": 36,
+          "function": "os.fstat"
+        },
+        {
+          "kind": "call",
+          "line": 41,
+          "function": "os.getuid"
+        },
+        {
+          "kind": "call",
+          "line": 56,
+          "function": "os.getuid"
+        },
+        {
+          "kind": "call",
+          "line": 58,
+          "function": "os.open"
+        },
+        {
+          "kind": "call",
+          "line": 59,
+          "function": "os.fstat"
+        },
+        {
+          "kind": "import",
+          "line": 81,
+          "module": "agent.registry"
+        },
+        {
+          "kind": "import",
+          "line": 82,
+          "module": "agent.safety"
+        },
+        {
+          "kind": "import",
+          "line": 83,
+          "module": "agent.hybrid"
+        },
+        {
+          "kind": "import",
+          "line": 86,
+          "module": "localpilot_plugins.adapter"
+        },
+        {
+          "kind": "import",
+          "line": 102,
+          "module": "localpilot_plugins.adapter"
+        },
+        {
+          "kind": "import",
+          "line": 140,
+          "module": "agent.safe_files"
+        }
+      ]
+    },
+    {
+      "path": "localpilot_service/cli.py",
+      "sha256": "701ed142c9d3b0944c814c16a4f96add0ea7d6c04b106e9089b7cd8bb13f6a35",
+      "bytes": 29728,
+      "locations": [
+        {
+          "kind": "import",
+          "line": 2,
+          "module": "argparse"
+        },
+        {
+          "kind": "import",
+          "line": 3,
+          "module": "contextlib"
+        },
+        {
+          "kind": "import",
+          "line": 4,
+          "module": "fcntl"
+        },
+        {
+          "kind": "import",
+          "line": 5,
+          "module": "json"
+        },
+        {
+          "kind": "import",
+          "line": 6,
+          "module": "math"
+        },
+        {
+          "kind": "import",
+          "line": 7,
+          "module": "os"
+        },
+        {
+          "kind": "import",
+          "line": 8,
+          "module": "pathlib"
+        },
+        {
+          "kind": "import",
+          "line": 9,
+          "module": "re"
+        },
+        {
+          "kind": "import",
+          "line": 10,
+          "module": "signal"
+        },
+        {
+          "kind": "import",
+          "line": 11,
+          "module": "subprocess"
+        },
+        {
+          "kind": "import",
+          "line": 12,
+          "module": "sys"
+        },
+        {
+          "kind": "import",
+          "line": 13,
+          "module": "time"
+        },
+        {
+          "kind": "import",
+          "line": 14,
+          "module": "urllib.error"
+        },
+        {
+          "kind": "import",
+          "line": 15,
+          "module": "uuid"
+        },
+        {
+          "kind": "import",
+          "line": 17,
+          "module": ""
+        },
+        {
+          "kind": "import",
+          "line": 18,
+          "module": "protocol"
+        },
+        {
+          "kind": "import",
+          "line": 19,
+          "module": "sdk"
+        },
+        {
+          "kind": "import",
+          "line": 20,
+          "module": "security"
+        },
+        {
+          "kind": "call",
+          "line": 30,
+          "function": "os.getuid"
+        },
+        {
+          "kind": "call",
+          "line": 37,
+          "function": "os.open"
+        },
+        {
+          "kind": "call",
+          "line": 45,
+          "function": "os.open"
+        },
+        {
+          "kind": "call",
+          "line": 47,
+          "function": "fcntl.flock"
+        },
+        {
+          "kind": "call",
+          "line": 61,
+          "function": "os.getuid"
+        },
+        {
+          "kind": "import",
+          "line": 90,
+          "module": "psutil"
+        },
+        {
+          "kind": "call",
+          "line": 95,
+          "function": "os.getuid"
+        },
+        {
+          "kind": "import",
+          "line": 137,
+          "module": "cached_omlx"
+        },
+        {
+          "kind": "import",
+          "line": 152,
+          "module": "cached_omlx"
+        },
+        {
+          "kind": "import",
+          "line": 159,
+          "module": "configure"
+        },
+        {
+          "kind": "import",
+          "line": 160,
+          "module": "contextlib"
+        },
+        {
+          "kind": "import",
+          "line": 160,
+          "module": "io"
+        },
+        {
+          "kind": "import",
+          "line": 185,
+          "module": "socket"
+        },
+        {
+          "kind": "call",
+          "line": 190,
+          "function": "os.open"
+        },
+        {
+          "kind": "import",
+          "line": 193,
+          "module": "lifecycle"
+        },
+        {
+          "kind": "call",
+          "line": 197,
+          "function": "subprocess.Popen"
+        },
+        {
+          "kind": "import",
+          "line": 228,
+          "module": "psutil"
+        },
+        {
+          "kind": "import",
+          "line": 244,
+          "module": "psutil"
+        },
+        {
+          "kind": "import",
+          "line": 322,
+          "module": "psutil"
+        },
+        {
+          "kind": "call",
+          "line": 330,
+          "function": "os.getuid"
+        },
+        {
+          "kind": "call",
+          "line": 337,
+          "function": "subprocess.Popen"
+        },
+        {
+          "kind": "import",
+          "line": 354,
+          "module": "psutil"
+        },
+        {
+          "kind": "import",
+          "line": 377,
+          "module": "psutil"
+        },
+        {
+          "kind": "import",
+          "line": 442,
+          "module": "psutil"
+        },
+        {
+          "kind": "import",
+          "line": 443,
+          "module": "lifecycle"
+        },
+        {
+          "kind": "import",
+          "line": 446,
+          "module": "__main__"
+        },
+        {
+          "kind": "import",
+          "line": 461,
+          "module": "lifecycle"
+        },
+        {
+          "kind": "import",
+          "line": 482,
+          "module": "lifecycle"
+        }
+      ]
+    },
+    {
+      "path": "localpilot_service/protocol.py",
+      "sha256": "f4a36b97b7c8375a479dcd8e3a20a21eadfbe5b48ed4eb142966b157d7570169",
+      "bytes": 2462,
+      "locations": [
+        {
+          "kind": "import",
+          "line": 2,
+          "module": "re"
+        },
+        {
+          "kind": "import",
+          "line": 15,
+          "module": "agent.routing"
+        }
+      ]
+    }
+  ],
+  "cpython_files": [
+    {
+      "path": "Lib/subprocess.py",
+      "sha256": "7fa4af83422024a19e64a80937f6c8094244c3397372a495b348dfbe44a5dd72",
+      "bytes": 90748,
+      "locations": [
+        {
+          "kind": "import",
+          "line": 43,
+          "module": "builtins"
+        },
+        {
+          "kind": "import",
+          "line": 44,
+          "module": "errno"
+        },
+        {
+          "kind": "import",
+          "line": 45,
+          "module": "io"
+        },
+        {
+          "kind": "import",
+          "line": 46,
+          "module": "locale"
+        },
+        {
+          "kind": "import",
+          "line": 47,
+          "module": "os"
+        },
+        {
+          "kind": "import",
+          "line": 48,
+          "module": "time"
+        },
+        {
+          "kind": "import",
+          "line": 49,
+          "module": "signal"
+        },
+        {
+          "kind": "import",
+          "line": 50,
+          "module": "sys"
+        },
+        {
+          "kind": "import",
+          "line": 51,
+          "module": "threading"
+        },
+        {
+          "kind": "import",
+          "line": 52,
+          "module": "warnings"
+        },
+        {
+          "kind": "import",
+          "line": 53,
+          "module": "contextlib"
+        },
+        {
+          "kind": "import",
+          "line": 54,
+          "module": "time"
+        },
+        {
+          "kind": "import",
+          "line": 55,
+          "module": "types"
+        },
+        {
+          "kind": "import",
+          "line": 58,
+          "module": "fcntl"
+        },
+        {
+          "kind": "import",
+          "line": 71,
+          "module": "msvcrt"
+        },
+        {
+          "kind": "import",
+          "line": 81,
+          "module": "_winapi"
+        },
+        {
+          "kind": "import",
+          "line": 82,
+          "module": "_winapi"
+        },
+        {
+          "kind": "import",
+          "line": 106,
+          "module": "_posixsubprocess"
+        },
+        {
+          "kind": "import",
+          "line": 124,
+          "module": "select"
+        },
+        {
+          "kind": "import",
+          "line": 125,
+          "module": "selectors"
+        },
+        {
+          "kind": "import",
+          "line": 919,
+          "module": "grp"
+        },
+        {
+          "kind": "import",
+          "line": 947,
+          "module": "grp"
+        },
+        {
+          "kind": "import",
+          "line": 975,
+          "module": "pwd"
+        },
+        {
+          "kind": "call",
+          "line": 1149,
+          "function": "os.open"
+        },
+        {
+          "kind": "call",
+          "line": 1943,
+          "function": "os.read"
+        },
+        {
+          "kind": "call",
+          "line": 2153,
+          "function": "selector.select"
+        },
+        {
+          "kind": "call",
+          "line": 2173,
+          "function": "os.read"
+        }
+      ]
+    },
+    {
+      "path": "Lib/selectors.py",
+      "sha256": "4b8a60cfbb619d080f87dffe1578372e56e8c0ac826f043224a154cf7b77606d",
+      "bytes": 19457,
+      "locations": [
+        {
+          "kind": "import",
+          "line": 8,
+          "module": "abc"
+        },
+        {
+          "kind": "import",
+          "line": 9,
+          "module": "collections"
+        },
+        {
+          "kind": "import",
+          "line": 10,
+          "module": "collections.abc"
+        },
+        {
+          "kind": "import",
+          "line": 11,
+          "module": "math"
+        },
+        {
+          "kind": "import",
+          "line": 12,
+          "module": "select"
+        },
+        {
+          "kind": "import",
+          "line": 13,
+          "module": "sys"
+        }
+      ]
+    },
+    {
+      "path": "Lib/socket.py",
+      "sha256": "4a8747dc77383df192b22bb95f4620cadafeffe6b621c61b1f3b8c386393643c",
+      "bytes": 37734,
+      "locations": [
+        {
+          "kind": "import",
+          "line": 52,
+          "module": "_socket"
+        },
+        {
+          "kind": "import",
+          "line": 53,
+          "module": "_socket"
+        },
+        {
+          "kind": "import",
+          "line": 55,
+          "module": "io"
+        },
+        {
+          "kind": "import",
+          "line": 56,
+          "module": "os"
+        },
+        {
+          "kind": "import",
+          "line": 57,
+          "module": "sys"
+        },
+        {
+          "kind": "import",
+          "line": 58,
+          "module": "enum"
+        },
+        {
+          "kind": "import",
+          "line": 61,
+          "module": "errno"
+        },
+        {
+          "kind": "import",
+          "line": 355,
+          "module": "selectors"
+        },
+        {
+          "kind": "call",
+          "line": 364,
+          "function": "os.fstat"
+        },
+        {
+          "kind": "import",
+          "line": 563,
+          "module": "array"
+        },
+        {
+          "kind": "import",
+          "line": 577,
+          "module": "array"
+        }
+      ]
+    },
+    {
+      "path": "Lib/ssl.py",
+      "sha256": "dc44dc9a0b041790b2527e3613bc97e7f268ac369cef2e69ad563e7bda5ecf2a",
+      "bytes": 53296,
+      "locations": [
+        {
+          "kind": "import",
+          "line": 94,
+          "module": "sys"
+        },
+        {
+          "kind": "import",
+          "line": 95,
+          "module": "os"
+        },
+        {
+          "kind": "import",
+          "line": 96,
+          "module": "collections"
+        },
+        {
+          "kind": "import",
+          "line": 97,
+          "module": "enum"
+        },
+        {
+          "kind": "import",
+          "line": 98,
+          "module": "enum"
+        },
+        {
+          "kind": "import",
+          "line": 100,
+          "module": "_ssl"
+        },
+        {
+          "kind": "import",
+          "line": 102,
+          "module": "_ssl"
+        },
+        {
+          "kind": "import",
+          "line": 103,
+          "module": "_ssl"
+        },
+        {
+          "kind": "import",
+          "line": 104,
+          "module": "_ssl"
+        },
+        {
+          "kind": "import",
+          "line": 108,
+          "module": "_ssl"
+        },
+        {
+          "kind": "import",
+          "line": 109,
+          "module": "_ssl"
+        },
+        {
+          "kind": "import",
+          "line": 111,
+          "module": "_ssl"
+        },
+        {
+          "kind": "import",
+          "line": 117,
+          "module": "_ssl"
+        },
+        {
+          "kind": "import",
+          "line": 121,
+          "module": "_ssl"
+        },
+        {
+          "kind": "import",
+          "line": 258,
+          "module": "_ssl"
+        },
+        {
+          "kind": "import",
+          "line": 260,
+          "module": "socket"
+        },
+        {
+          "kind": "import",
+          "line": 261,
+          "module": "socket"
+        },
+        {
+          "kind": "import",
+          "line": 262,
+          "module": "socket"
+        },
+        {
+          "kind": "import",
+          "line": 263,
+          "module": "base64"
+        },
+        {
+          "kind": "import",
+          "line": 264,
+          "module": "errno"
+        },
+        {
+          "kind": "import",
+          "line": 265,
+          "module": "warnings"
+        },
+        {
+          "kind": "import",
+          "line": 1471,
+          "module": "time"
+        },
+        {
+          "kind": "import",
+          "line": 1472,
+          "module": "calendar"
+        }
+      ]
+    }
+  ],
+  "pypdf_files": [
+    {
+      "path": "pypdf/__init__.py",
+      "sha256": "612ff566b4378c13c7b1180cb2da89ac0b6cde5500a63fe530e30ae6a88b1b9c",
+      "bytes": 1283,
+      "locations": [
+        {
+          "kind": "import",
+          "line": 10,
+          "module": "_crypt_providers"
+        },
+        {
+          "kind": "import",
+          "line": 11,
+          "module": "_doc_common"
+        },
+        {
+          "kind": "import",
+          "line": 12,
+          "module": "_encryption"
+        },
+        {
+          "kind": "import",
+          "line": 13,
+          "module": "_page"
+        },
+        {
+          "kind": "import",
+          "line": 14,
+          "module": "_reader"
+        },
+        {
+          "kind": "import",
+          "line": 15,
+          "module": "_text_extraction"
+        },
+        {
+          "kind": "import",
+          "line": 16,
+          "module": "_version"
+        },
+        {
+          "kind": "import",
+          "line": 17,
+          "module": "_writer"
+        },
+        {
+          "kind": "import",
+          "line": 18,
+          "module": "constants"
+        },
+        {
+          "kind": "import",
+          "line": 19,
+          "module": "pagerange"
+        },
+        {
+          "kind": "import",
+          "line": 20,
+          "module": "papersizes"
+        },
+        {
+          "kind": "import",
+          "line": 23,
+          "module": "PIL"
+        }
+      ]
+    },
+    {
+      "path": "pypdf/_page.py",
+      "sha256": "9c919064b0d2ac5b40c8bb50002a32a689230cd2fd16897f9b9541a242ce7439",
+      "bytes": 88927,
+      "locations": [
+        {
+          "kind": "import",
+          "line": 30,
+          "module": "math"
+        },
+        {
+          "kind": "import",
+          "line": 31,
+          "module": "collections.abc"
+        },
+        {
+          "kind": "import",
+          "line": 32,
+          "module": "dataclasses"
+        },
+        {
+          "kind": "import",
+          "line": 33,
+          "module": "decimal"
+        },
+        {
+          "kind": "import",
+          "line": 34,
+          "module": "io"
+        },
+        {
+          "kind": "import",
+          "line": 35,
+          "module": "pathlib"
+        },
+        {
+          "kind": "import",
+          "line": 36,
+          "module": "typing"
+        },
+        {
+          "kind": "import",
+          "line": 46,
+          "module": "_cmap"
+        },
+        {
+          "kind": "import",
+          "line": 49,
+          "module": "_protocols"
+        },
+        {
+          "kind": "import",
+          "line": 50,
+          "module": "_text_extraction"
+        },
+        {
+          "kind": "import",
+          "line": 53,
+          "module": "_text_extraction._text_extractor"
+        },
+        {
+          "kind": "import",
+          "line": 54,
+          "module": "_utils"
+        },
+        {
+          "kind": "import",
+          "line": 61,
+          "module": "constants"
+        },
+        {
+          "kind": "import",
+          "line": 62,
+          "module": "constants"
+        },
+        {
+          "kind": "import",
+          "line": 63,
+          "module": "constants"
+        },
+        {
+          "kind": "import",
+          "line": 64,
+          "module": "constants"
+        },
+        {
+          "kind": "import",
+          "line": 65,
+          "module": "constants"
+        },
+        {
+          "kind": "import",
+          "line": 66,
+          "module": "errors"
+        },
+        {
+          "kind": "import",
+          "line": 67,
+          "module": "filters"
+        },
+        {
+          "kind": "import",
+          "line": 68,
+          "module": "generic"
+        },
+        {
+          "kind": "import",
+          "line": 85,
+          "module": "PIL.Image"
+        },
+        {
+          "kind": "import",
+          "line": 374,
+          "module": "_reader"
+        },
+        {
+          "kind": "import",
+          "line": 377,
+          "module": "filters"
+        },
+        {
+          "kind": "import",
+          "line": 378,
+          "module": "generic"
+        },
+        {
+          "kind": "import",
+          "line": 1888,
+          "module": "json"
+        }
+      ]
+    },
+    {
+      "path": "pypdf/_doc_common.py",
+      "sha256": "934f96a1fe5dcf656d12767994958108cee40fbd4b781f337ba4705f79a63edd",
+      "bytes": 52385,
+      "locations": [
+        {
+          "kind": "import",
+          "line": 31,
+          "module": "struct"
+        },
+        {
+          "kind": "import",
+          "line": 32,
+          "module": "zlib"
+        },
+        {
+          "kind": "import",
+          "line": 33,
+          "module": "abc"
+        },
+        {
+          "kind": "import",
+          "line": 34,
+          "module": "collections.abc"
+        },
+        {
+          "kind": "import",
+          "line": 35,
+          "module": "datetime"
+        },
+        {
+          "kind": "import",
+          "line": 36,
+          "module": "typing"
+        },
+        {
+          "kind": "import",
+          "line": 43,
+          "module": "_encryption"
+        },
+        {
+          "kind": "import",
+          "line": 44,
+          "module": "_page"
+        },
+        {
+          "kind": "import",
+          "line": 45,
+          "module": "_page_labels"
+        },
+        {
+          "kind": "import",
+          "line": 46,
+          "module": "_utils"
+        },
+        {
+          "kind": "import",
+          "line": 51,
+          "module": "constants"
+        },
+        {
+          "kind": "import",
+          "line": 52,
+          "module": "constants"
+        },
+        {
+          "kind": "import",
+          "line": 53,
+          "module": "constants"
+        },
+        {
+          "kind": "import",
+          "line": 59,
+          "module": "constants"
+        },
+        {
+          "kind": "import",
+          "line": 60,
+          "module": "constants"
+        },
+        {
+          "kind": "import",
+          "line": 61,
+          "module": "constants"
+        },
+        {
+          "kind": "import",
+          "line": 62,
+          "module": "constants"
+        },
+        {
+          "kind": "import",
+          "line": 63,
+          "module": "errors"
+        },
+        {
+          "kind": "import",
+          "line": 64,
+          "module": "generic"
+        },
+        {
+          "kind": "import",
+          "line": 85,
+          "module": "generic._files"
+        },
+        {
+          "kind": "import",
+          "line": 86,
+          "module": "types"
+        },
+        {
+          "kind": "import",
+          "line": 87,
+          "module": "xmp"
+        }
+      ]
+    },
+    {
+      "path": "pypdf/filters.py",
+      "sha256": "3f69780dbe2c40cc91c8bfd3d89093fcc9dd337b1eed9df96a352a6815e36d26",
+      "bytes": 33983,
+      "locations": [
+        {
+          "kind": "import",
+          "line": 38,
+          "module": "math"
+        },
+        {
+          "kind": "import",
+          "line": 39,
+          "module": "os"
+        },
+        {
+          "kind": "import",
+          "line": 40,
+          "module": "shutil"
+        },
+        {
+          "kind": "import",
+          "line": 41,
+          "module": "struct"
+        },
+        {
+          "kind": "import",
+          "line": 42,
+          "module": "subprocess"
+        },
+        {
+          "kind": "import",
+          "line": 43,
+          "module": "zlib"
+        },
+        {
+          "kind": "import",
+          "line": 44,
+          "module": "base64"
+        },
+        {
+          "kind": "import",
+          "line": 45,
+          "module": "dataclasses"
+        },
+        {
+          "kind": "import",
+          "line": 46,
+          "module": "io"
+        },
+        {
+          "kind": "import",
+          "line": 47,
+          "module": "pathlib"
+        },
+        {
+          "kind": "import",
+          "line": 48,
+          "module": "tempfile"
+        },
+        {
+          "kind": "import",
+          "line": 49,
+          "module": "typing"
+        },
+        {
+          "kind": "import",
+          "line": 51,
+          "module": "_codecs._codecs"
+        },
+        {
+          "kind": "import",
+          "line": 52,
+          "module": "_utils"
+        },
+        {
+          "kind": "import",
+          "line": 57,
+          "module": "constants"
+        },
+        {
+          "kind": "import",
+          "line": 58,
+          "module": "constants"
+        },
+        {
+          "kind": "import",
+          "line": 59,
+          "module": "constants"
+        },
+        {
+          "kind": "import",
+          "line": 60,
+          "module": "constants"
+        },
+        {
+          "kind": "import",
+          "line": 61,
+          "module": "constants"
+        },
+        {
+          "kind": "import",
+          "line": 62,
+          "module": "constants"
+        },
+        {
+          "kind": "import",
+          "line": 63,
+          "module": "errors"
+        },
+        {
+          "kind": "import",
+          "line": 64,
+          "module": "generic"
+        },
+        {
+          "kind": "import",
+          "line": 727,
+          "module": "_utils"
+        },
+        {
+          "kind": "import",
+          "line": 807,
+          "module": "_xobj_image_helpers"
+        }
+      ]
+    },
+    {
+      "path": "pypdf/_utils.py",
+      "sha256": "bf9efd8c91079fe268a614c2e048f63011531284068ad3d6b3f779d3ba724ba8",
+      "bytes": 20194,
+      "locations": [
+        {
+          "kind": "import",
+          "line": 32,
+          "module": "functools"
+        },
+        {
+          "kind": "import",
+          "line": 33,
+          "module": "logging"
+        },
+        {
+          "kind": "import",
+          "line": 34,
+          "module": "re"
+        },
+        {
+          "kind": "import",
+          "line": 35,
+          "module": "sys"
+        },
+        {
+          "kind": "import",
+          "line": 36,
+          "module": "warnings"
+        },
+        {
+          "kind": "import",
+          "line": 37,
+          "module": "dataclasses"
+        },
+        {
+          "kind": "import",
+          "line": 38,
+          "module": "datetime"
+        },
+        {
+          "kind": "import",
+          "line": 39,
+          "module": "io"
+        },
+        {
+          "kind": "import",
+          "line": 40,
+          "module": "os"
+        },
+        {
+          "kind": "import",
+          "line": 41,
+          "module": "re"
+        },
+        {
+          "kind": "import",
+          "line": 42,
+          "module": "typing"
+        },
+        {
+          "kind": "import",
+          "line": 52,
+          "module": "typing"
+        },
+        {
+          "kind": "import",
+          "line": 54,
+          "module": "typing_extensions"
+        },
+        {
+          "kind": "import",
+          "line": 57,
+          "module": "typing"
+        },
+        {
+          "kind": "import",
+          "line": 59,
+          "module": "typing_extensions"
+        },
+        {
+          "kind": "import",
+          "line": 61,
+          "module": "errors"
+        },
+        {
+          "kind": "import",
+          "line": 559,
+          "module": "generic"
+        }
+      ]
+    }
+  ]
+}

@@ -6,6 +6,15 @@ UTF-8文件名、游戏及ncursesw前期探针。新增整合资格限于0081的
 其他旧资格仍绑定原输入，不构成全系统重验。发布资产仍为0.0.1-1026，未更新Release。
 原则裁决见[xos_plan.md第一部分](xos_plan.md#第一部分设计原则)，本页只登记事实与占用。
 
+## 正在进行：Modern Platform Phase 2，独立并行范围
+
+2026-10-29，已fetch upstream `aaec2e9`（PR #17合入）。PR #18–#21仍draft/open，
+没有维护者review，N2保持BLOCKED。网络交接、PX4-A认领、Pillow静态集成及本分支
+运行时缺口探针各自独立worktree/build/PR；公共ABI不跨线实施。
+本分支`codex/modern2-runtime-probes`只占用`scripts/modern2_*`、QuickJS probe builder/
+fixtures、`tests/modern2_runtime_guest.py`、自身reports/state/work_log0090与许可登记。
+不改内核/SDK/文件服务或原LocalPilot。阶段事实见[运行时报告](reports/modern2_runtime_20261029/README.md)。
+
 ## FB1/FB2 应用故障包（受限通过）
 
 2026-10-29，`codex/fb2-offline-symbols` 基于已合入FB0和VirtIO-GPU的主线 `39083f9`。

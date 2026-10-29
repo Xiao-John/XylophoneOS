@@ -587,6 +587,24 @@
       ],
       "modifications": "Widgets-only configuration enables actual Widgets and disables unsupported native file-dialog module; opt-in user-space style, no QtCore changes",
       "distribution_status": "NOT_RUN: complete static source/relink materials, member-level license and binary distribution review; no new Release"
+    },
+    {
+      "name": "QuickJS compatibility probe",
+      "version": "2025-09-13-2",
+      "path": "tests/fixtures/modern_apps",
+      "source": "https://bellard.org/quickjs/quickjs-2025-09-13-2.tar.xz",
+      "license": "MIT",
+      "notices": [
+        "licenses/modern_apps/quickjs_LICENSE"
+      ],
+      "used_in": [
+        "Independent QuickJS guest language and Web platform gap probes; no default application or V8 claim"
+      ],
+      "modifications": "Two explicit source adaptations inherited from PR21; builder and runner provenance in modern2_runtime report",
+      "artifact_sha256": {
+        "licenses/modern_apps/quickjs_LICENSE": "598fd7fc928e4350abce36e337ba5a1346923c5c692f5be92c3d8e29ddd7c18d"
+      },
+      "distribution_review": "NOT_RUN; cached sources, test disk and receipts only"
     }
   ]
 }

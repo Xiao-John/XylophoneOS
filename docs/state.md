@@ -6,16 +6,19 @@ UTF-8文件名、游戏及ncursesw前期探针。新增整合资格限于0081的
 其他旧资格仍绑定原输入，不构成全系统重验。发布资产仍为0.0.1-1026，未更新Release。
 原则裁决见[xos_plan.md第一部分](xos_plan.md#第一部分设计原则)，本页只登记事实与占用。
 
-## Modern Platform Phase 2：网络维护者交接（BLOCKED）
+## N2用户态网络接续（当前规范）
 
-2026-10-29，`codex/modern2-network-handoff`已同步main `169f51e`的C28/C29修正。
-[替代交接](reports/modern2_network_c28_20261029/README.md)优先于修订前的冻结建议：
-设备初始化、VirtIO队列与传输收发须用户态；内核仅窄MMIO/DMA/IRQ/IPC/撤权机制，
-旧PR #18内核frame-proxy须维护者重设计并重新登记，不能原样实施；旧N1内核驱动不得作为交付主线。
-唯一单调时基须独立公共模块，EOI/屏蔽无计时统计副作用；旧N1双计数器不符合C29。
-PR #18仍Draft/open/unmerged，N2继续BLOCKED；没有实现或调用112，没有自行抢号/批准/合并。
-仅修改本状态、工作记录与专有报告；原冻结报告字节不变，没有新guest或镜像资格。
-详见[0086网络接续](work_log/0086_modern2_network_handoff.md)。
+2026-10-29。旧frame-proxy路线已废止；当前接续以[网络交接](plans/network_handoff.md)为准，
+按C28用户态驱动、C29统一管理的时间域实施。旧冻结审查包保留原时点，N2继续BLOCKED。
+本轮同步main并修改活文档，无新ABI/实现或客体资格；见[0097](work_log/0097_network_time_domains.md)。
+本组无源码/公共build占用。
+
+## 时间域与驱动边界修订（文档PR）
+
+2026-10-29，`codex/time_domains_docs` 基于远端0ec0ad6：C28澄清内核基础设施和存量整改，
+C29约束统一时间管理、显式时间域及EOI职责；专项契约给出禁止/允许案例和审查清单。
+仅文档，无新ABI、实现或客体资格，见[修订交接](work_log/0095_time_domain_amendment.md)。
+本组文档占用解除，不占公共build；其他分支未合入本PR。
 
 ## FB1/FB2 应用故障包（受限通过）
 

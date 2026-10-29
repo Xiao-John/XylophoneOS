@@ -8,9 +8,13 @@ void debug_init();
 void debug_graphics(bool active);
 bool debug_write(const char* text);
 i64 debug_write_bytes(const u8* bytes, usize length);
-// Returns one received byte, or -1 when the input is empty. Polling only.
+// Before IRQ setup the debug console polls; afterwards the input queue is IRQ-fed.
+// Caller must serialize with the receive interrupt.
 int debug_read();
 int debug_peek();
+void debug_input_enable();
+void debug_input_irq();
+u64 debug_input_dropped();
 // PC wall clock: snapshot UTC RTC at boot, then advance it from monotonic ticks.
 bool realtime_clock_init(u64 monotonic_ns);
 i64 realtime_clock_ns(u64 monotonic_ns);

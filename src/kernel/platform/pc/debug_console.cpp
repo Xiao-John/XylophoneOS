@@ -1,4 +1,5 @@
 #include <xos/platform.hpp>
+#include <xos/byte_queue.hpp>
 #include "arch/x86_64/io.hpp"
 
 namespace xos::platform {
@@ -6,7 +7,8 @@ namespace {
 constexpr u16 uart = 0x3f8;
 usize row;
 usize column;
-int pending_input = -1;
+byte_queue<1024> input_queue;
+bool input_irq_enabled;
 bool graphics_active;
 auto* const text_buffer = reinterpret_cast<volatile u16*>(0xb8000);
 void vga_char(char value) {
@@ -40,16 +42,32 @@ void debug_init() {
     }
 }
 int debug_peek() {
-    if (pending_input < 0 && (arch::in_byte(uart + 5) & 1) != 0) {
-        pending_input = static_cast<int>(arch::in_byte(uart));
+    if (!input_irq_enabled && input_queue.length() == 0 && (arch::in_byte(uart + 5) & 1) != 0) {
+        (void)input_queue.push(arch::in_byte(uart));
     }
-    return pending_input;
+    u8 value = 0;
+    return input_queue.peek(value) ? static_cast<int>(value) : -1;
 }
 int debug_read() {
     const int value = debug_peek();
-    pending_input = -1;
+    u8 ignored = 0;
+    if (value >= 0) { (void)input_queue.pop(ignored); }
     return value;
 }
+
+void debug_input_enable() {
+    input_irq_enabled = true;
+    arch::out_byte(uart + 1, 1); // receive data available
+}
+
+void debug_input_irq() {
+    // Bound work per interrupt; UART FIFO remains asserted if more input arrives.
+    for (u32 i = 0; i < 64 && (arch::in_byte(uart + 5) & 1) != 0; ++i) {
+        (void)input_queue.push(arch::in_byte(uart));
+    }
+}
+
+u64 debug_input_dropped() { return input_queue.dropped(); }
 
 bool debug_write(const char* text) {
     usize length = 0;

@@ -11,6 +11,7 @@ extern const u64 exception_stub_table[32];
 extern u8 kernel_stack_top[];
 extern void irq0_stub();
 extern void irq1_stub();
+extern void irq4_stub();
 extern void irq12_stub();
 extern void syscall_stub();
 void gdt_load(const void* pointer);
@@ -159,6 +160,7 @@ void exceptions_init() {
     }
     fill_gate(idt[32], reinterpret_cast<u64>(&irq0_stub), 0x08, 0, 0x8e);
     fill_gate(idt[33], reinterpret_cast<u64>(&irq1_stub), 0x08, 0, 0x8e);
+    fill_gate(idt[36], reinterpret_cast<u64>(&irq4_stub), 0x08, 0, 0x8e);
     fill_gate(idt[44], reinterpret_cast<u64>(&irq12_stub), 0x08, 0, 0x8e);
     fill_gate(idt[128], reinterpret_cast<u64>(&syscall_stub), 0x08, 0, 0xee);
 
@@ -181,7 +183,7 @@ extern "C" void* interrupt_dispatch(void* raw_frame) {
     const xos::u32 vector = static_cast<xos::u32>(frame->vector);
     if (vector == 128) { return xos::arch::syscall_entry(frame); }
     if (vector == 32) { return xos::arch::timer_entry(frame); }
-    if (vector == 33 || vector == 44) { return xos::arch::input_entry(frame); }
+    if (vector == 33 || vector == 36 || vector == 44) { return xos::arch::input_entry(frame); }
     if (vector < 32) {
         if ((frame->cs & 3) == 3) { return xos::arch::user_fault(frame); }
         xos::fault_info info{};

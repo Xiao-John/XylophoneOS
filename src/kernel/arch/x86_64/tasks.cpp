@@ -2228,6 +2228,11 @@ void* process_syscall(interrupt_frame* frame) {
 }
 
 void* input_entry(interrupt_frame* frame) {
+    if (frame->vector == 36) {
+        platform::debug_input_irq();
+        pic_eoi(4);
+        return frame;
+    }
     display::input_irq(frame->vector == 33 ? 1 : 12, tick_count * 10000000ull);
     if(display::input_pending()){display_wake(0,0);}
     return frame;
@@ -2432,6 +2437,8 @@ bool tasks_create_default() {
 [[noreturn]] void tasks_enter() {
     pic_init();
     display::input_init();
+    platform::debug_input_enable();
+    pic_serial_enable();
     timer_init(100);
     if (!platform::realtime_clock_init(monotonic_ns())) {
         format::text("[clock] event=realtime unavailable=rtc_invalid\r\n");

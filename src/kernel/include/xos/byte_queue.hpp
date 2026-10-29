@@ -32,6 +32,12 @@ public:
         return true;
     }
 
+    bool peek(u8& value) const {
+        if (length_ == 0) { return false; }
+        value = bytes_[head_];
+        return true;
+    }
+
     u32 length() const { return length_; }
     u64 dropped() const { return dropped_; }
 };

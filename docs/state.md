@@ -47,6 +47,15 @@ transfer/flush、dirty region、设备reset及VBE回退；同Qt帧的1,440,000�
 仅QEMU/单核/800×600受限通过，运行期设备失效后透明恢复、热插拔、SMP/真机未验。
 私有 worktree/build；通过独立功能PR交付，不自行合并main或改旧Release。
 
+## 正在进行：Browser Foundation 的独立网络/浏览器工作
+
+2026-10-29，重新fetch upstream `39083f9`。Codex在独立worktree/私有build推进
+`codex/browser-net-n1`的PCI/INTx/RX/TX设备机制，以及`codex/aurora-browser-b1`的
+Qt/Aurora离线HTML/CSS浏览器；两线不同时修改公共ABI或Qt底座。
+本`codex/network-device-abi-claim`分支仅提出[112 claimed与权限设计](contracts/network_device_v1_proposal.md)，
+不实现接口；公开设备机制需先合入登记，用户态TCP/HTTP接入仍BLOCKED。
+里程碑结果以各自后续冻结报告为准，本登记不提供N1/N2/B1/B2资格。详见[0082](work_log/0082_network_device_abi_claim.md)。
+
 ## 正在进行：ncursesw W0/W1
 
 W0 勘查和 W1 [工作契约草案](contracts/terminal_w1.md)已开始；W0 未冻结，W1 未

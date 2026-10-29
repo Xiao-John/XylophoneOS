@@ -1,0 +1,97 @@
+{
+  "status": "PASSED",
+  "case": "interactive",
+  "image_sha256": "8b3364bff5f274eee128121776c1df6600d393d82262b69e4cc9e2a78cac9fd2",
+  "elf_sha256": "9ea42c72aa87f8d4d86ca2e9df9b145b6bd401f6ebf7067e3c6f2fc34aa47a48",
+  "receipt_sha256": "75f9947ee232423b4011c76bcd6257138c76bb708f7af55228dceee9b58b73c7",
+  "checks": [
+    {
+      "name": "real_litehtml_engine_and_aurora_start_page",
+      "status": "PASSED"
+    },
+    {
+      "name": "real_ps2_anchor_click",
+      "status": "PASSED"
+    },
+    {
+      "name": "address_bar_and_long_document_scroll",
+      "status": "PASSED"
+    },
+    {
+      "name": "independent_back_forward_refresh",
+      "status": "PASSED"
+    },
+    {
+      "name": "two_tabs_independent_history",
+      "status": "PASSED"
+    },
+    {
+      "name": "css_layout_bmp_and_utf8",
+      "status": "PASSED",
+      "glyph_scope": "DejaVu Latin/Greek; no full Unicode claim"
+    },
+    {
+      "name": "repeated_navigation_releases_previous_document",
+      "status": "PASSED"
+    },
+    {
+      "name": "normal_exit_exact_resource_return",
+      "status": "PASSED"
+    },
+    {
+      "name": "file_sync_and_serial_rescue_after_browser",
+      "status": "PASSED"
+    }
+  ],
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser/build/browser/system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_browser_x6bz62j6/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_gcfxcvx7/qmp.sock,server=on,wait=off"
+  ],
+  "baseline": [
+    130290,
+    2,
+    0
+  ],
+  "with_service": [
+    130246,
+    3,
+    1
+  ],
+  "screenshots": {
+    "start": "1c0c5dcebe529a9861d70ee6d7c5afda583741a1500eca326b6acfbefcbf0267",
+    "reading-top": "3c5a2736cee0bf8ab3630ee933875624539c37eb4be494fc5fe28e5b56b4d5ee",
+    "reading-end": "62882e59ab0a6486264624946015fee0d8c15b87eda3702fcfebcec4c0661aa7",
+    "tabs": "6bb3f230a073386bfde77e57a048cad5951a772cd5433ccca00b1f80cbee53ad",
+    "garden": "edb93b0f1d71f4e0ceaf1d9534b5865eee5a30198fd495847a42baaa6b7fed4a"
+  }
+}

@@ -18,6 +18,12 @@ The initial final-parser run uses the frozen GPU qualification system from
 rebuild of the browser branch. The application ran with default `-nic none`.
 Raw serial is `guest-serial.log.gz`. Larger ELF/object files remain private.
 
+The unchanged final parser was additionally cross-linked and run three times on
+the browser worktree's freshly built current-main system `f1e3adb4812a141b`, again
+with exact resource return. Those additional receipts are
+`current-main-guest-report.json`, `current-main-system.json` and
+`current-main-guest-serial.log.gz`; the initial frozen-GPU receipt stays intact.
+
 The first direct stack-measurement compilation selected macOS's assembler because
 the compiler needs explicitly isolated target as/ld paths. This tooling failure
 did not occur in the SDK-driven successful guest build. Reusing the SDK's target

@@ -6,6 +6,15 @@ UTF-8文件名、游戏及ncursesw前期探针。新增整合资格限于0081的
 其他旧资格仍绑定原输入，不构成全系统重验。发布资产仍为0.0.1-1026，未更新Release。
 原则裁决见[xos_plan.md第一部分](xos_plan.md#第一部分设计原则)，本页只登记事实与占用。
 
+## Aurora Browser B0/B1：受限本地 HTML/CSS
+
+2026-10-29，独立 `codex/aurora-browser-b1` 从 upstream `39083f9` 实施真实 liteHTML0.9/
+Gumbo + Qt6.8.3 QPainter/Aurora 浏览器；B0目标交叉编译/链接通过，B1受限客体本地页面、
+PS/2链接、地址/历史/刷新/滚动、单窗口标签及书签、坏输入与资源回收通过。
+新系统build `3fb1bb7d6b9e7bf9`；来源、失败和边界见[0083](work_log/0083_aurora_browser_offline.md)。
+无新内核/ABI/Qt底座变更。网络尚未接入，B2 BLOCKED；HTTPS/JavaScript/互联网及完整
+现代浏览器均未通过。仅本地32KiB有界HTML/CSS/BMP子集，不发布Qt静态产品或Release。
+
 ## FB0 应用故障包勘查（受限通过）
 
 2026-10-29，`codex/fb0-scout` 完成单一wait、装载/文件链路勘查、[v1格式冻结](implementation/fb0_fault_bundle_contract.md)

@@ -1,0 +1,61 @@
+{
+  "status": "FAILED",
+  "case": "interactive",
+  "image_sha256": "8b3364bff5f274eee128121776c1df6600d393d82262b69e4cc9e2a78cac9fd2",
+  "elf_sha256": "dcba5d6b4cf4f51d2f5161b6909ecf40c9ec76597db3110cac82997d49b686fd",
+  "receipt_sha256": "3d723f564b2f9edcbc7a6c2181688051f24a0aa074a04cab53905a929e08a465",
+  "checks": [
+    {
+      "name": "real_litehtml_engine_and_aurora_start_page",
+      "status": "PASSED"
+    }
+  ],
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser/build/browser/system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_browser_r28g5cke/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_4x_7bepq/qmp.sock,server=on,wait=off"
+  ],
+  "baseline": [
+    130290,
+    2,
+    0
+  ],
+  "with_service": [
+    130246,
+    3,
+    1
+  ],
+  "screenshots": {
+    "start": "1c0c5dcebe529a9861d70ee6d7c5afda583741a1500eca326b6acfbefcbf0267"
+  },
+  "error": "browser/interaction-v2/guest: missing any of (b'BROWSER_LINK target=/web/reading.html',); output=bytearray(b'0000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=7280000000\\n[qpa-input] seq=14 ns=7270000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=7280000000\\n[qpa-input] seq=15 ns=7270000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=7280000000\\n[qpa-flush] same=1 offset=0,0 rects=8\\n[qpa-frame] x=0 y=0 w=20 h=26 stride=3200 ns=0\\n[qpa-frame] x=73 y=0 w=20 h=26 stride=3200 ns=0\\n[qpa-frame] x=32 y=74 w=199 h=35 stride=3200 ns=0\\n[qpa-frame] x=200 y=109 w=20 h=10 stride=3200 ns=0\\n[qpa-frame] x=32 y=119 w=736 h=50 stride=3200 ns=0\\n[qpa-frame] x=32 y=179 w=736 h=34 stride=3200 ns=0\\n[qpa-frame] x=68 y=213 w=20 h=10 stride=3200 ns=10000000\\n[qpa-frame] x=32 y=223 w=736 h=321 stride=3200 ns=0\\n[qpa-flush] same=1 offset=0,0 rects=2\\n[qpa-frame] x=42 y=127 w=36 h=34 stride=3200 ns=0\\n[qpa-frame] x=32 y=182 w=80 h=28 stride=3200 ns=0\\n[qpa-input] seq=16 ns=7400000000 kind=3 code=0 mods=0 buttons=1 lost=0 gui_ns=7400000000\\n[qpa-input] seq=17 ns=7500000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=7500000000\\n')"
+}

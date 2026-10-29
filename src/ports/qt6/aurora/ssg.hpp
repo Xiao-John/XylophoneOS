@@ -1,0 +1,37 @@
+// SPDX-License-Identifier: Apache-2.0
+#pragma once
+#include <QtCore/QJsonObject>
+#include <QtCore/QJsonArray>
+#include <QtCore/QPointer>
+#include <QtCore/QVector>
+#include <QtWidgets/QWidget>
+namespace aurora {
+// Bounded app-owned stream. No discovery endpoint, cross-process reads or grants.
+class SceneStream {
+    QJsonObject current,previous;
+    quint64 version=0,epoch;
+public:
+    SceneStream();
+    void invalidate();
+    QString source_epoch() const;
+    QJsonObject publish(const QJsonArray &nodes,const QJsonObject &metadata,bool capped=false);
+    QJsonObject diff(quint64 since,const QString &expected_epoch) const;
+};
+class QtScene {
+    struct Identity {QPointer<QWidget> widget;quint64 id;};
+    QPointer<QWidget> root;
+    QVector<Identity> identities;
+    quint64 next_id=1;
+    bool permitted=false,text_permitted=false;
+    unsigned node_limit=96;
+    SceneStream stream;
+public:
+    explicit QtScene(QWidget *application_root):root(application_root){}
+    // Trusted application host only; this is not an OS authorization API.
+    void host_allow_observation(bool read_text);
+    void revoke();
+    void set_node_limit(unsigned value){node_limit=qMin(value,96u);}
+    QJsonObject snapshot(bool visible_only=false,const QString &role={});
+    QJsonObject diff(quint64 since,const QString &epoch) const {return stream.diff(since,epoch);}
+};
+}

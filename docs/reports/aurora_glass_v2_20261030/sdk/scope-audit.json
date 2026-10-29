@@ -1,0 +1,8 @@
+{
+  "status": "PASSED",
+  "base": "3377dbf35bdb43d850c9a2b8e8076da3be146f3d",
+  "kernel_source_changes": [],
+  "system_abi_and_runtime_changes": [],
+  "scope": "system sources/ABI; new opt-in Aurora userspace APIs are intentional",
+  "violations": []
+}

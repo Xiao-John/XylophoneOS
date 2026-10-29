@@ -1,0 +1,7 @@
+{
+  "old": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/final_probe/widgets_probe.elf",
+  "new": "build/aurora_glass/v5-apps/legacy/legacy.elf",
+  "old_sha256": "f52b1bb2351e512d836545b52a49b18a479b4c61290b79bed7df8dc04eeddea2",
+  "new_sha256": "f52b1bb2351e512d836545b52a49b18a479b4c61290b79bed7df8dc04eeddea2",
+  "binary_identical": true
+}

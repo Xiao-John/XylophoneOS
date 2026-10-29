@@ -95,6 +95,11 @@ Key mapKey(xos::u32 code, xos::u32 mods) {
     if(code==0x14d) return {Qt::Key_Right,{}};
     if(code==0x148) return {Qt::Key_Up,{}};
     if(code==0x150) return {Qt::Key_Down,{}};
+    if(code==0x147) return {Qt::Key_Home,{}};
+    if(code==0x14f) return {Qt::Key_End,{}};
+    if(code==0x149) return {Qt::Key_PageUp,{}};
+    if(code==0x151) return {Qt::Key_PageDown,{}};
+    if(code==0x153) return {Qt::Key_Delete,{}};
     if(code>=sizeof(normal)-1) return {};
     const char n=normal[code];
     if(!n) return {};
@@ -238,6 +243,8 @@ public:
         image.fill(Qt::black);
     }
     void flush(QWindow *w,const QRegion &region,const QPoint &offset) override {
+        std::printf("[qpa-flush] same=%d offset=%d,%d rects=%d\n",
+            w==window(),offset.x(),offset.y(),region.rectCount());
         if(!offset.isNull() || w!=window()) qFatal("XOS QPA: child/offset flush unsupported");
         auto *platform=static_cast<Window*>(w->handle());
         const QRegion clipped=region.intersected(image.rect());

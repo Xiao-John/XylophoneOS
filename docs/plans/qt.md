@@ -37,3 +37,8 @@ Qt/字体/图片组件按实际模块核许可与来源；静态分发的源码/
 
 E16 实际配置、构建/链接、QPA 线程生命周期和复现见 [实施说明](qt_e16_execution.md)。
 G04 仅对冻结输入及声明范围通过；G05/G06/G07 未运行，不由首窗资格推出。
+
+E17/G05 已在冻结输入上实现真实 Widgets 与 Aurora Notes，受限功能资格见
+[0078](../work_log/0078_qt_e17_aurora_qualification.md)，构建/保存/复现见
+[E17 实施](qt_e17_implementation.md)。可复用视觉库与编辑器功能分离；不推出
+完整成员许可、静态再分发、绝对峰值、QML/QV4 或 Qt Quick 已完成。

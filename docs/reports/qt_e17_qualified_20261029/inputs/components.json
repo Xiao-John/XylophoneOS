@@ -1,0 +1,592 @@
+{
+  "self_authored_new": "Apache-2.0",
+  "historical_self_authored": "MIT",
+  "legacy_inventory": "legacy_mit_files.json",
+  "components": [
+    {
+      "name": "Open Adventure",
+      "version": "1.12",
+      "path": "src/ports/adventure",
+      "source": "https://gitlab.com/esr/open-adventure/-/archive/1.12/open-adventure-1.12.tar.gz",
+      "license": "BSD-2-Clause",
+      "notices": [
+        "src/ports/adventure/upstream/COPYING"
+      ],
+      "used_in": [
+        "Open Adventure user application"
+      ],
+      "modifications": "XOS generator, console and deterministic runtime port; see source_lock.json and patches; XOS-authored glue is Apache-2.0",
+      "artifact_sha256": {
+        "src/ports/adventure/upstream/COPYING": "731ee6313e1e17e510cfe9110c6a94d5fec97b1cce73d9974e4d82d29aa00297"
+      }
+    },
+    {
+      "name": "FatFs",
+      "version": "R0.16 w/patch 2",
+      "path": "src/third_party/fatfs",
+      "source": "https://github.com/abbrev/fatfs",
+      "license": "LicenseRef-FatFs",
+      "notices": [
+        "licenses/fatfs.txt",
+        "src/third_party/fatfs/ff.c",
+        "src/third_party/fatfs/ff.h"
+      ],
+      "used_in": [
+        "files task",
+        "offline installer"
+      ],
+      "modifications": "ff_string/configuration and FILINFO SFN directory-entry sector/offset identity extension; preserve upstream notice; details in src/third_party/fatfs/README.md",
+      "artifact_sha256": {
+        "src/third_party/fatfs/ff.c": "22610a39c37d1db311a9428e1c618768ce299537a42881da9cdba8f1d0dda8b0",
+        "licenses/fatfs.txt": "5e865b99f0a4800b699d356a20887741c49681d36f712ba9cd0c2c65dea89f7c",
+        "src/third_party/fatfs/ff.h": "765af966a517fc5dbb2217cb9788d6b7005b35630652a2aa221907dbe66c13a5"
+      }
+    },
+    {
+      "name": "newlib",
+      "version": "4.6.0.20260123",
+      "path": "src/third_party/newlib",
+      "source": "https://sourceware.org/pub/newlib/newlib-4.6.0.20260123.tar.gz",
+      "license": "per-component; see COPYING.NEWLIB and source-file notices",
+      "notices": [
+        "src/third_party/newlib/COPYING.NEWLIB"
+      ],
+      "used_in": [
+        "SDK libc.a/libm.a/headers",
+        "libc_hello"
+      ],
+      "target": "x86_64-elf",
+      "archive_member_license_audit": "not_completed; COPYING.NEWLIB sections 21/22 label LGPL Linux-only components",
+      "artifact_sha256": {
+        "src/third_party/newlib/COPYING.NEWLIB": "f3afe48e4bc6ed8466a42e9dacb6be1d8f9cbf5aac15cb8e474a5ccde8b40ef6",
+        "src/third_party/newlib/x86_64-elf/lib/libc.a": "283fa07ad205c80af92e955a91da027435d8a8a90cb7e27933f57925cc5baa22",
+        "src/third_party/newlib/x86_64-elf/lib/libm.a": "4cfdd6324f6776d025923ee369fad51236a9ee5730c8143a6b3b03b963eefd80"
+      },
+      "threading_profile": {
+        "source_archive_sha256": "6ff27e3bf022666f43f7802255be680eeff722ac181b1725d21e2e8318604ee3",
+        "build_script": "scripts/build_threading_newlib.py",
+        "configuration": "dynamic __getreent; retargetable locking; global stdio/atexit; separate generated prefix",
+        "original_prebuilt_modified": false,
+        "receipt": "build/threading_sdk/manifest.json"
+      }
+    },
+    {
+      "name": "GCC/Binutils/NASM/QEMU",
+      "path": "external installed tools",
+      "used_in": [
+        "host build/test only"
+      ],
+      "distributed_by_current_sdk": false,
+      "future_action": "Before Seed or libgcc/libstdc++ distribution record actual GPL/LGPL/runtime exception and source obligations; do not infer from executable linkage"
+    },
+    {
+      "name": "GNU Binutils Seed",
+      "version": "2.47",
+      "path": "src/ports/binutils",
+      "source": "https://ftp.gnu.org/gnu/binutils/binutils-2.47.tar.xz",
+      "source_archive_sha256": "154ab23b60070e8f27013c22977f1129425d67d1e8acd6e13010e617811e4cff",
+      "license": "per-component GNU terms; executable tools GPL-3.0-or-later; retain upstream notices and exceptions",
+      "notices": [
+        "src/ports/binutils/upstream/COPYING",
+        "src/ports/binutils/upstream/COPYING.LIB",
+        "src/ports/binutils/upstream/COPYING3",
+        "src/ports/binutils/upstream/COPYING3.LIB"
+      ],
+      "artifact_sha256": {
+        "src/ports/binutils/upstream/COPYING": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c",
+        "src/ports/binutils/upstream/COPYING.LIB": "56bdea73b6145ef6ac5259b3da390b981d840c24cb03b8e1cbc678de7ecfa18d",
+        "src/ports/binutils/upstream/COPYING3": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+        "src/ports/binutils/upstream/COPYING3.LIB": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c"
+      },
+      "used_in": [
+        "XOS-hosted static Seed on explicit test work disk"
+      ],
+      "modifications": "XOS port patches/config and exact source/build/SDK provenance retained by scripts/build_binutils.py",
+      "distribution_status": "local_only; public_release_and_corresponding_source_bundle_review_not_completed"
+    },
+    {
+      "name": "bundled zlib",
+      "version": "1.3.1",
+      "path": "GNU Binutils 2.47 source archive zlib/",
+      "source_archive_sha256": "154ab23b60070e8f27013c22977f1129425d67d1e8acd6e13010e617811e4cff",
+      "license": "Zlib",
+      "notices": [
+        "src/ports/binutils/upstream/zlib-LICENSE"
+      ],
+      "artifact_sha256": {
+        "src/ports/binutils/upstream/zlib-LICENSE": "845efc77857d485d91fb3e0b884aaa929368c717ae8186b66fe1ed2495753243"
+      },
+      "used_in": [
+        "statically linked into GNU Binutils Seed; no external zlib dependency"
+      ]
+    },
+    {
+      "name": "GNU GCC Seed and compiler host C++ runtime",
+      "version": "16.2.0",
+      "path": "src/ports/gcc",
+      "source": "https://ftpmirror.gnu.org/gnu/gcc/gcc-16.2.0/gcc-16.2.0.tar.xz",
+      "license": "GPL-3.0-or-later; library components retain per-file terms and applicable GCC Runtime Library Exception",
+      "notices": [
+        "src/ports/gcc/upstream/GCC-COPYING",
+        "src/ports/gcc/upstream/GCC-COPYING.RUNTIME",
+        "src/ports/gcc/upstream/GCC-COPYING3",
+        "src/ports/gcc/upstream/GCC-COPYING3.LIB"
+      ],
+      "artifact_sha256": {
+        "src/ports/gcc/upstream/GCC-COPYING": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c",
+        "src/ports/gcc/upstream/GCC-COPYING.RUNTIME": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74",
+        "src/ports/gcc/upstream/GCC-COPYING3": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+        "src/ports/gcc/upstream/GCC-COPYING3.LIB": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c",
+        "src/ports/gcc/patches/0008-xos-thread-clock-boundary.patch": "698e22d46aebf36344ee99444ad81bf23b8c2d5c59800fd4cec7074269be755c"
+      },
+      "used_in": [
+        "XOS-hosted static GCC/G++ Seed compiler host closure",
+        "target application static libstdc++/libsupc++ and GNU libgcc; E08-5 facilities tested separately"
+      ],
+      "modifications": "Source lock, port patches and original/derived Seed manifests retain build and static link provenance. Patch 0007 repairs lrealpath fallback. Target runtime keeps exceptions/RTTI and uses SDK-provided TLS exit entry; independently derived libraries remove GNU fallback member with _GLIBCXX_HAVE___CXA_THREAD_ATEXIT=1. Original/derived manifests bind inputs separately.",
+      "distribution_status": "local_only; corresponding_source_bundle_and_member_license_review_not_completed",
+      "source_archive_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+      "target_runtime_source_manifest": "src/ports/gcc/e08_5_target_runtime_manifest.json",
+      "frontend_source_manifest": "src/ports/gcc/e08_5_gxx_manifest.json",
+      "threading_profile": {
+        "build_script": "scripts/build_threading_sdk.py",
+        "gthread_model": "posix; rebuilt libstdc++/libsupc++ and five stateful libgcc members",
+        "patch": "src/ports/gcc/patches/0008-xos-thread-clock-boundary.patch",
+        "distribution": "local SDK candidate; no new public binary release; corresponding source archive and patch retained"
+      }
+    },
+    {
+      "name": "GMP",
+      "version": "6.3.0",
+      "path": "src/ports/gcc",
+      "source": "https://ftpmirror.gnu.org/gmp/gmp-6.3.0.tar.bz2",
+      "license": "Per-component GNU terms; retain COPYING and LGPL/GPL alternatives",
+      "notices": [
+        "src/ports/gcc/upstream/GMP-COPYING",
+        "src/ports/gcc/upstream/GMP-COPYING.LESSERv3",
+        "src/ports/gcc/upstream/GMP-COPYINGv2",
+        "src/ports/gcc/upstream/GMP-COPYINGv3"
+      ],
+      "artifact_sha256": {
+        "src/ports/gcc/upstream/GMP-COPYING": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+        "src/ports/gcc/upstream/GMP-COPYING.LESSERv3": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c",
+        "src/ports/gcc/upstream/GMP-COPYINGv2": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+        "src/ports/gcc/upstream/GMP-COPYINGv3": "e6037104443f9a7829b2aa7c5370d0789a7bda3ca65a0b904cdc0c2e285d9195"
+      },
+      "used_in": [
+        "XOS-hosted static GCC C Seed; compiler host closure only, not accepted E08-5 target runtime"
+      ],
+      "modifications": "Source lock, port patches and original/derived Seed manifests retain build and static link provenance. Patch 0007 repairs lrealpath fallback.",
+      "distribution_status": "local_only; corresponding_source_bundle_and_member_license_review_not_completed",
+      "source_archive_sha512": "3b684c9bcb9ede2b7e54d0ba4c9764bfa17c20d4f3000017c553b6f1e135b536949580ff37341680c25dc236cfe0ba1db8cfdfe619ce013656189ef0871b89f8"
+    },
+    {
+      "name": "MPFR",
+      "version": "4.2.2",
+      "path": "src/ports/gcc",
+      "source": "https://ftpmirror.gnu.org/mpfr/mpfr-4.2.2.tar.bz2",
+      "license": "LGPL-3.0-or-later; retain source notices",
+      "notices": [
+        "src/ports/gcc/upstream/MPFR-COPYING",
+        "src/ports/gcc/upstream/MPFR-COPYING.LESSER"
+      ],
+      "artifact_sha256": {
+        "src/ports/gcc/upstream/MPFR-COPYING": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+        "src/ports/gcc/upstream/MPFR-COPYING.LESSER": "e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118"
+      },
+      "used_in": [
+        "XOS-hosted static GCC C Seed; compiler host closure only, not accepted E08-5 target runtime"
+      ],
+      "modifications": "Source lock, port patches and original/derived Seed manifests retain build and static link provenance. Patch 0007 repairs lrealpath fallback.",
+      "distribution_status": "local_only; corresponding_source_bundle_and_member_license_review_not_completed",
+      "source_archive_sha512": "0176e50808dcc07afbf5bc3e38bf9b7b21918e5f194aa0bfd860d99b00c470630aef149776c4be814a61c44269c3a5b9a4b0b1c0fcd4c9feb1459d8466452da8"
+    },
+    {
+      "name": "MPC",
+      "version": "1.3.1",
+      "path": "src/ports/gcc",
+      "source": "https://ftpmirror.gnu.org/mpc/mpc-1.3.1.tar.gz",
+      "license": "LGPL-3.0-or-later; retain source notices",
+      "notices": [
+        "src/ports/gcc/upstream/MPC-COPYING.LESSER"
+      ],
+      "artifact_sha256": {
+        "src/ports/gcc/upstream/MPC-COPYING.LESSER": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+      },
+      "used_in": [
+        "XOS-hosted static GCC C Seed; compiler host closure only, not accepted E08-5 target runtime"
+      ],
+      "modifications": "Source lock, port patches and original/derived Seed manifests retain build and static link provenance. Patch 0007 repairs lrealpath fallback.",
+      "distribution_status": "local_only; corresponding_source_bundle_and_member_license_review_not_completed",
+      "source_archive_sha512": "4bab4ef6076f8c5dfdc99d810b51108ced61ea2942ba0c1c932d624360a5473df20d32b300fc76f2ba4aa2a97e1f275c9fd494a1ba9f07c4cb2ad7ceaeb1ae97"
+    },
+    {
+      "name": "dash",
+      "version": "0.5.13.5",
+      "path": "src/ports/dash",
+      "source": "https://deb.debian.org/debian/pool/main/d/dash/dash_0.5.13.5.orig.tar.gz",
+      "license": "per-file BSD-style; upstream COPYING additionally describes GPL-2.0-or-later mksignames.c; generator/table not used by XOS profile",
+      "notices": [
+        "src/ports/dash/upstream/COPYING"
+      ],
+      "used_in": [
+        "optional /usr/bin/dash; launched from Xshell"
+      ],
+      "modifications": "XOS bounded foreground pipes, eager fork isolation, anonymous read-only here-documents, explicit startup-v3 exec; upstream signal generator omitted; no default Shell replacement",
+      "artifact_sha256": {
+        "src/ports/dash/upstream/COPYING": "254a7894923ff62e69184a991dcbccae97edee58a1105e8efbe78caf10595d72"
+      }
+    },
+    {
+      "name": "sbase",
+      "version": "c546c3a5724c81cee9a11d816a38ccdf17472129",
+      "path": "src/ports/sbase",
+      "source": "https://git.suckless.org/sbase",
+      "license": "MIT",
+      "notices": [
+        "src/ports/sbase/upstream/LICENSE"
+      ],
+      "used_in": [
+        "optional XOS cat/cp/mkdir/mv/rm user tools for dash B1"
+      ],
+      "source_files": {
+        "src/ports/sbase/xos/cat.c": "MIT AND Apache-2.0",
+        "src/ports/sbase/xos/cp.c": "MIT AND Apache-2.0",
+        "src/ports/sbase/xos/mkdir.c": "MIT AND Apache-2.0",
+        "src/ports/sbase/xos/mv.c": "MIT AND Apache-2.0",
+        "src/ports/sbase/xos/rm.c": "MIT AND Apache-2.0"
+      },
+      "modifications": "Narrow XOS adaptations of five MIT utilities, later XOS changes Apache-2.0; additional self-authored Apache-2.0 commands are listed in daily_utilities.json; no recursive copy/remove, symlink, mode preservation or cross-filesystem fallback",
+      "distribution_status": "local_only; pinned source and adapted files recorded",
+      "artifact_sha256": {
+        "src/ports/sbase/upstream/LICENSE": "eb0b719b3327af6c4b480cd21f7944e944a5ddf571c04572eb8d025f52e056c6"
+      }
+    },
+    {
+      "name": "CPython",
+      "version": "3.14.9",
+      "path": "src/ports/cpython",
+      "source": "https://www.python.org/ftp/python/3.14.9/Python-3.14.9.tar.xz",
+      "source_archive_sha256": "e02d9ac21cebda6e46435369744a92c65cc7cd8669697694122cf97ffacd1e53",
+      "license": "PSF and incorporated per-component terms; preserve upstream LICENSE and license.rst",
+      "notices": [
+        "src/ports/cpython/upstream/LICENSE",
+        "src/ports/cpython/upstream/license.rst"
+      ],
+      "artifact_sha256": {
+        "src/ports/cpython/upstream/LICENSE": "b0e25a78cffb43f4d92de8b61ccfa1f1f98ecbc22330b54b5251e7b6ba010231",
+        "src/ports/cpython/upstream/license.rst": "cd6f471c0bfdb099efefc25ddff9b3df8bf62e10428987f1f05e6f2f9e35d563"
+      },
+      "used_in": [
+        "CPython PY0 static port; local build/guest evidence in work_log/0030_cpython_py0.md"
+      ],
+      "modifications": "XOS configure/module-scope patches and private time backend; no complete POSIX/thread claim",
+      "distribution_status": "port source and patches; no new binary release; actual linked-module member review remains separate"
+    },
+    {
+      "name": "zlib (CPython)",
+      "version": "1.3.2",
+      "path": "src/ports/cpython/zlib_patches",
+      "source": "https://zlib.net/zlib-1.3.2.tar.xz",
+      "source_archive_sha256": "d7a0654783a4da529d1bb793b7ad9c3318020af77667bcae35f95d0e42a792f3",
+      "license": "Zlib",
+      "notices": [
+        "src/ports/cpython/upstream/zlib-LICENSE"
+      ],
+      "artifact_sha256": {
+        "src/ports/cpython/upstream/zlib-LICENSE": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2",
+        "src/ports/cpython/zlib_patches/0001_xos_errno_header.patch": "da73f294389ce1ebccb101a3b50a13bb3b170946fbe101bc4aff13d8100693c8",
+        "src/ports/cpython/zlib_lock.json": "3d084526751f4b39c750411223dcc09e560c5789aae1ccbd63affb1884d915bc"
+      },
+      "used_in": [
+        "CPython 3.14.9 static zlib module, gzip, deflate ZIP and zipimport"
+      ],
+      "modifications": "XOS portability patch explicitly includes errno.h in gzguts.h; source archive remains pinned in local build cache",
+      "distribution_status": "local guest-accepted build; no new binary release; include the pinned source and patch in any corresponding source bundle"
+    },
+    {
+      "name": "idna (CPython PY3 A3)",
+      "version": "3.20",
+      "path": "src/ports/cpython/idna_lock.json",
+      "source": "https://pypi.org/project/idna/3.20/",
+      "license": "BSD-3-Clause",
+      "notices": [
+        "src/ports/cpython/upstream/idna-LICENSE.md"
+      ],
+      "artifact_sha256": {
+        "src/ports/cpython/upstream/idna-LICENSE.md": "1a9a4f0e3d479a27240ddd59a9137a66ab4a0f9dfdc8ca6188cc0bfd85187f04",
+        "src/ports/cpython/idna_lock.json": "c6c7fc8b825ef1a842d6658361051e549ce7d8260886bff1abab9539eb340834"
+      },
+      "used_in": [
+        "Optional offline pure-Python package installed under CPython 3.14 site-packages"
+      ],
+      "modifications": "No upstream wheel files modified; XPK wrapper carries the upstream license and a hash-bound build receipt; entry point metadata is retained but no console script is generated",
+      "distribution_status": "local guest-accepted package; preserve matching wheel/source and license materials for any future binary distribution",
+      "wheel_sha256": "ab7ae7122974553370f0bdb919e1a960b2cd1bc1ef0276416d896db81c14582c"
+    },
+    {
+      "name": "sbase Make",
+      "version": "c546c3a5724c81cee9a11d816a38ccdf17472129",
+      "path": "src/ports/make",
+      "source": "https://git.suckless.org/sbase",
+      "license": "MIT for retained upstream; Apache-2.0 for independent XOS backend and build code",
+      "notices": [
+        "src/ports/make/upstream/LICENSE"
+      ],
+      "artifact_sha256": {
+        "src/ports/make/upstream/LICENSE": "eb0b719b3327af6c4b480cd21f7944e944a5ddf571c04572eb8d025f52e056c6",
+        "src/ports/make/upstream/make/main.c": "d60b8cae9f711f2cff3b7c01711db86a4be6a126e685e159834f86c207f892a7",
+        "src/ports/make/upstream/make/parser.c": "1b03819bd6d0ca46edc1d9158bb01acad290573e6128cc70fe3ea45aecc7ad73",
+        "src/ports/make/upstream/make/rules.c": "b3ba91e8526711560bc1c1ae7550514b2dbf412727616a3854ed2d86200bdc7d",
+        "src/ports/make/upstream/make/defaults.c": "96b5de61e2c04766b3868c3b178fd50dbf4c68f2434a0c7f33f2c0c81a49c018",
+        "src/ports/make/upstream/make/posix.c": "25f30bce2dd50396f6a391a5838448775576291cfd0e5fa6ab70c27846b9edaf",
+        "src/ports/make/upstream/make/make.h": "d31a88ca4ab6ac7c4685dc586f8a05dab698647869aed5e1e90dc0b444d4802f"
+      },
+      "used_in": [
+        "optional /usr/bin/make; explicit -B serial always-build profile"
+      ],
+      "modifications": "Explicit dependency profile, bounded graph traversal, genuine fork/exec/wait backend, Escape cancellation; no incremental timestamps, parallel, inference or signal emulation",
+      "distribution_status": "source_and_adaptations_retained; qualification_recorded_separately; no_formal_Release",
+      "vendored_source_files": {
+        "src/ports/make/upstream/make/main.c": {
+          "license": "MIT",
+          "sha256": "d60b8cae9f711f2cff3b7c01711db86a4be6a126e685e159834f86c207f892a7",
+          "notice": "src/ports/make/upstream/LICENSE"
+        },
+        "src/ports/make/upstream/make/parser.c": {
+          "license": "MIT",
+          "sha256": "1b03819bd6d0ca46edc1d9158bb01acad290573e6128cc70fe3ea45aecc7ad73",
+          "notice": "src/ports/make/upstream/LICENSE"
+        },
+        "src/ports/make/upstream/make/rules.c": {
+          "license": "MIT",
+          "sha256": "b3ba91e8526711560bc1c1ae7550514b2dbf412727616a3854ed2d86200bdc7d",
+          "notice": "src/ports/make/upstream/LICENSE"
+        },
+        "src/ports/make/upstream/make/defaults.c": {
+          "license": "MIT",
+          "sha256": "96b5de61e2c04766b3868c3b178fd50dbf4c68f2434a0c7f33f2c0c81a49c018",
+          "notice": "src/ports/make/upstream/LICENSE"
+        },
+        "src/ports/make/upstream/make/posix.c": {
+          "license": "MIT",
+          "sha256": "25f30bce2dd50396f6a391a5838448775576291cfd0e5fa6ab70c27846b9edaf",
+          "notice": "src/ports/make/upstream/LICENSE"
+        },
+        "src/ports/make/upstream/make/make.h": {
+          "license": "MIT",
+          "sha256": "d31a88ca4ab6ac7c4685dc586f8a05dab698647869aed5e1e90dc0b444d4802f",
+          "notice": "src/ports/make/upstream/LICENSE"
+        }
+      }
+    },
+    {
+      "name": "tzdata (CPython PY3 B2)",
+      "version": "2026.5",
+      "path": "src/ports/cpython",
+      "source": "https://pypi.org/project/tzdata/2026.5/",
+      "source_archive_sha256": "b683bd1b6659ddcd810ff02ad09ba821d4bf1065072805063eb35c49617905ac",
+      "license": "Apache-2.0",
+      "notices": [
+        "src/ports/cpython/upstream/tzdata-LICENSE"
+      ],
+      "artifact_sha256": {
+        "src/ports/cpython/upstream/tzdata-LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+        "src/ports/cpython/upstream/tzdata-2026.5-py2.py3-none-any.whl": "b683bd1b6659ddcd810ff02ad09ba821d4bf1065072805063eb35c49617905ac",
+        "src/ports/cpython/tzdata_lock.json": "d47b7345284c283f3ab4aa8422b2b22d8dcbb36f5524088765038b452f9dada8"
+      },
+      "used_in": [
+        "CPython PY3 ZoneInfo fallback; installed as a locked pure-Python data package"
+      ],
+      "distribution_status": "local guest-accepted build; carry the matching wheel and Apache license in any binary distribution"
+    },
+    {
+      "name": "SQLite",
+      "version": "3.54.1",
+      "path": "src/ports/cpython/sqlite",
+      "source": "https://www.sqlite.org/2026/sqlite-autoconf-3540100.tar.gz",
+      "source_archive_sha256": "926ef8d3eab93fbf6e06011901273eec076b25594a4e1cdadd50c987f4f6d64e",
+      "source_archive_sha3_256": "b6ced585c750916b1052667239a12c25a7ff34e7f06e1e6e01ecb0427657d9c4",
+      "license": "SQLite blessing / public domain dedication",
+      "notices": [
+        "src/ports/cpython/sqlite/UPSTREAM_LICENSE.md"
+      ],
+      "artifact_sha256": {
+        "src/ports/cpython/sqlite/UPSTREAM_LICENSE.md": "3a487aaf2da3a06e58adba55c6e507a927cda568bc20d822bf62c36bdeb33d14",
+        "src/ports/cpython/sqlite/sqlite_lock.json": "c0f54b2c5682e8d0462183e3f48e69d80e257342a3fdcb660a3ce580fb8d2e73",
+        "src/ports/cpython/sqlite/xos_vfs.c": "1a01a6b34bdb190834ff2bbdade92bf101108242e11f3f7bb7b5871d107550eb"
+      },
+      "used_in": [
+        "Static CPython _sqlite3 module with XOS VFS, rollback journal and one-process database locking"
+      ],
+      "modifications": "XOS VFS uses fsync/ftruncate hooks, EOF-safe reads for FatFs, and maps busy open errors to SQLITE_BUSY; WAL and loadable extensions disabled",
+      "distribution_status": "local guest-accepted build; source archive retained in local cache; carry matching source and license if binaries are distributed"
+    },
+    {
+      "name": "bzip2 (CPython PY3 B4)",
+      "version": "1.0.8",
+      "path": "src/ports/cpython/compression",
+      "source": "https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz",
+      "source_archive_sha256": "ab5a03176ee106d3f0fa90e381da478ddae405918153cca248e682cd0c4a2269",
+      "license": "bzip2",
+      "notices": [
+        "src/ports/cpython/compression/upstream/bzip2-LICENSE"
+      ],
+      "artifact_sha256": {
+        "src/ports/cpython/compression/upstream/bzip2-LICENSE": "c6dbbf828498be844a89eaa3b84adbab3199e342eb5cb2ed2f0d4ba7ec0f38a3",
+        "src/ports/cpython/compression/compression_lock.json": "dcb34e462231d80954f46387e30ecff69da28c6e7e248ab76024f760a6ee5773"
+      },
+      "used_in": [
+        "Static CPython bzip2 module for bounded streaming compression and decompression"
+      ],
+      "distribution_status": "local guest-accepted build; source archive retained in local cache; carry matching source and license if binaries are distributed"
+    },
+    {
+      "name": "xz (CPython PY3 B4)",
+      "version": "5.8.4",
+      "path": "src/ports/cpython/compression",
+      "source": "https://github.com/tukaani-project/xz/releases/download/v5.8.4/xz-5.8.4.tar.xz",
+      "source_archive_sha256": "4ce24038fd4221e0d13bc1a2de7a4db56e90b92b3bf75321f6c14be73f65de4b",
+      "license": "0BSD",
+      "notices": [
+        "src/ports/cpython/compression/upstream/xz-COPYING.0BSD"
+      ],
+      "artifact_sha256": {
+        "src/ports/cpython/compression/upstream/xz-COPYING.0BSD": "0b01625d853911cd0e2e088dcfb743261034a091bb379246cb25a14cc4c74bf1",
+        "src/ports/cpython/compression/compression_lock.json": "dcb34e462231d80954f46387e30ecff69da28c6e7e248ab76024f760a6ee5773"
+      },
+      "used_in": [
+        "Static CPython xz module for bounded streaming compression and decompression"
+      ],
+      "distribution_status": "local guest-accepted build; source archive retained in local cache; carry matching source and license if binaries are distributed"
+    },
+    {
+      "name": "zstd (CPython PY3 B4)",
+      "version": "1.5.7",
+      "path": "src/ports/cpython/compression",
+      "source": "https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz",
+      "source_archive_sha256": "eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3",
+      "license": "BSD-3-Clause",
+      "notices": [
+        "src/ports/cpython/compression/upstream/zstd-LICENSE"
+      ],
+      "artifact_sha256": {
+        "src/ports/cpython/compression/upstream/zstd-LICENSE": "7055266497633c9025b777c78eb7235af13922117480ed5c674677adc381c9d8",
+        "src/ports/cpython/compression/compression_lock.json": "dcb34e462231d80954f46387e30ecff69da28c6e7e248ab76024f760a6ee5773"
+      },
+      "used_in": [
+        "Static CPython zstd module for bounded streaming compression and decompression"
+      ],
+      "distribution_status": "local guest-accepted build; source archive retained in local cache; carry matching source and license if binaries are distributed"
+    },
+    {
+      "name": "QtBase preflight",
+      "version": "6.8.3",
+      "path": "src/ports/qt6",
+      "source": "https://download.qt.io/archive/qt/6.8/6.8.3/submodules/qtbase-everywhere-src-6.8.3.tar.xz",
+      "source_archive_sha256": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80",
+      "license": "per-file Qt and bundled component terms; member audit NOT_RUN",
+      "notices": [
+        "src/ports/qt6/licenses/DOUBLE-CONVERSION-LICENSE",
+        "src/ports/qt6/licenses/GPL-2.0-only.txt",
+        "src/ports/qt6/licenses/GPL-3.0-only.txt",
+        "src/ports/qt6/licenses/LGPL-3.0-only.txt",
+        "src/ports/qt6/licenses/LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception.txt",
+        "src/ports/qt6/licenses/PCRE2-LICENCE-SLJIT",
+        "src/ports/qt6/licenses/PCRE2-LICENCE.md",
+        "src/ports/qt6/licenses/SHA3-BRG-ENDIAN-LICENSE",
+        "src/ports/qt6/licenses/SHA3-CC0-LICENSE",
+        "src/ports/qt6/licenses/ZLIB-LICENSE",
+        "src/ports/qt6/licenses/Zlib.txt"
+      ],
+      "used_in": [
+        "experimental host tools and target compilation only; not distributed"
+      ],
+      "modifications": "XOS platform and QtCore changes in src/ports/qt6/patches; full member and redistribution review NOT_RUN",
+      "artifact_sha256": {
+        "src/ports/qt6/licenses/DOUBLE-CONVERSION-LICENSE": "4af93c12062c58058378de2397dc1c92bbff9ddfb1d583a01c84127557ce97ca",
+        "src/ports/qt6/licenses/GPL-2.0-only.txt": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+        "src/ports/qt6/licenses/GPL-3.0-only.txt": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+        "src/ports/qt6/licenses/LGPL-3.0-only.txt": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768",
+        "src/ports/qt6/licenses/LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception.txt": "0526625fcc746a42d3f19a0ab357d3dc8479fdbe3bfd168825498f50215c7a63",
+        "src/ports/qt6/licenses/PCRE2-LICENCE-SLJIT": "5f216505c0f6ea3273caec89e766eef93cdeb7bbb0c429f9360116d7c938feeb",
+        "src/ports/qt6/licenses/PCRE2-LICENCE.md": "9cf7ac6976099a1d856826d3ef1b093bd6b84489dc6100628ac79e740cf9885a",
+        "src/ports/qt6/licenses/SHA3-BRG-ENDIAN-LICENSE": "2fed6f252ca4a7e813811de3cd3cd08183edd4138bdee909410ef6eee394e82c",
+        "src/ports/qt6/licenses/SHA3-CC0-LICENSE": "1f2786e2c5befeb4dcba6638db6528bf96ef5d2cf24bc85ab5a81ef00abef59d",
+        "src/ports/qt6/licenses/ZLIB-LICENSE": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080",
+        "src/ports/qt6/licenses/Zlib.txt": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+      }
+    },
+    {
+      "name": "QtGui E16 raster dependencies",
+      "version": "QtBase 6.8.3; FreeType 2.13.3; HarfBuzz 10.4.0; DejaVu 2.37; MD4C 0.5.2",
+      "path": "src/ports/qt6",
+      "source": "https://download.qt.io/archive/qt/6.8/6.8.3/submodules/qtbase-everywhere-src-6.8.3.tar.xz",
+      "source_archive_sha256": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80",
+      "license": "per-file Qt terms; FTL OR GPL-2.0-only; MIT; Bitstream-Vera; X11 AND HPND; BSD-2-Clause AND Imlib2; BSD-3-Clause",
+      "notices": [
+        "src/ports/qt6/licenses/gui/src/3rdparty/freetype/LICENSE.txt",
+        "src/ports/qt6/licenses/gui/src/3rdparty/freetype/docs/FTL.TXT",
+        "src/ports/qt6/licenses/gui/src/3rdparty/freetype/docs/GPLv2.TXT",
+        "src/ports/qt6/licenses/gui/src/3rdparty/freetype/ZLIB-LICENSE.txt",
+        "src/ports/qt6/licenses/gui/src/3rdparty/freetype/BDF-LICENSE.txt",
+        "src/ports/qt6/licenses/gui/src/3rdparty/freetype/PCF-LICENSE.txt",
+        "src/ports/qt6/licenses/gui/src/3rdparty/harfbuzz-ng/COPYING",
+        "src/ports/qt6/licenses/gui/src/3rdparty/wasm/DEJAVU-LICENSE",
+        "src/ports/qt6/licenses/gui/src/3rdparty/md4c/LICENSE.md",
+        "src/ports/qt6/licenses/gui/src/gui/painting/XCONSORTIUM_LICENSE.txt",
+        "src/ports/qt6/licenses/gui/src/gui/painting/QIMAGETRANSFORM_LICENSE.txt",
+        "src/ports/qt6/licenses/gui/src/gui/text/AGLFN_LICENSE.txt",
+        "src/ports/qt6/licenses/gui/src/3rdparty/freetype/qt_attribution.json",
+        "src/ports/qt6/licenses/gui/src/3rdparty/harfbuzz-ng/qt_attribution.json",
+        "src/ports/qt6/licenses/gui/src/3rdparty/wasm/qt_attribution.json",
+        "src/ports/qt6/licenses/gui/src/3rdparty/md4c/qt_attribution.json",
+        "src/ports/qt6/licenses/gui/src/gui/painting/qt_attribution.json",
+        "src/ports/qt6/licenses/gui/src/gui/text/qt_attribution.json"
+      ],
+      "artifact_sha256": {
+        "src/ports/qt6/licenses/gui/src/3rdparty/freetype/LICENSE.txt": "bf543cdda11864477b8d2ca2aa9afc2aaa8f9133461b4d962ed6ec73646256a1",
+        "src/ports/qt6/licenses/gui/src/3rdparty/freetype/docs/FTL.TXT": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1",
+        "src/ports/qt6/licenses/gui/src/3rdparty/freetype/docs/GPLv2.TXT": "c4120c6752c910c299e3bd9cb3a46ff262c268303ca2069b61f92f10a5656c18",
+        "src/ports/qt6/licenses/gui/src/3rdparty/freetype/ZLIB-LICENSE.txt": "2b1f5d615382a151af3eb71462ad17d89e2efee8fa7664058d35d3d9237ebb19",
+        "src/ports/qt6/licenses/gui/src/3rdparty/freetype/BDF-LICENSE.txt": "e4e792f29e66750f2e410fd7b50a567652c180f6ee15e1a4dfa0bb5cde524537",
+        "src/ports/qt6/licenses/gui/src/3rdparty/freetype/PCF-LICENSE.txt": "6938597bfdeca0db191a8f9ede52eaf2482c2c71a0094c084747a1235f9958fe",
+        "src/ports/qt6/licenses/gui/src/3rdparty/harfbuzz-ng/COPYING": "ba8f810f2455c2f08e2d56bb49b72f37fcf68f1f4fade38977cfd7372050ad64",
+        "src/ports/qt6/licenses/gui/src/3rdparty/wasm/DEJAVU-LICENSE": "7a083b136e64d064794c3419751e5c7dd10d2f64c108fe5ba161eae5e5958a93",
+        "src/ports/qt6/licenses/gui/src/3rdparty/md4c/LICENSE.md": "d30937367d5413e7eaa218b1640b8946ff76fd34d97152f6979fd96169d5d0fc",
+        "src/ports/qt6/licenses/gui/src/gui/painting/XCONSORTIUM_LICENSE.txt": "a216b01291eb38fc1af93cfccf1fc67b48d9923612e517c2a695e95b3f03c22c",
+        "src/ports/qt6/licenses/gui/src/gui/painting/QIMAGETRANSFORM_LICENSE.txt": "46b3cbfa2f2946b93291506351e9be1dd0a28d2a53260f5aa488abd36fbeca9d",
+        "src/ports/qt6/licenses/gui/src/gui/text/AGLFN_LICENSE.txt": "40818155548ff41c67d3a40edf355e9658992b292c227f4c1147425cedc746c6",
+        "src/ports/qt6/licenses/gui/src/3rdparty/freetype/qt_attribution.json": "3bb2eabc9379310a420ec2461e85a3224396cf8ba15fd53591d770ca16715553",
+        "src/ports/qt6/licenses/gui/src/3rdparty/harfbuzz-ng/qt_attribution.json": "c998c9784a4a0021c2f68632a9e8cd5589dbc7f7336feeb156a4240b6b32d718",
+        "src/ports/qt6/licenses/gui/src/3rdparty/wasm/qt_attribution.json": "2019d37665bfb2ce7d4931d0bdf7427ea178919399cf37c0fef14a229144936b",
+        "src/ports/qt6/licenses/gui/src/3rdparty/md4c/qt_attribution.json": "59098b9262ac268e73495cb1b1603b5c899d5c532db6ca96e69ffac7062445f5",
+        "src/ports/qt6/licenses/gui/src/gui/painting/qt_attribution.json": "6827f1fec09e4a3c89381f0724c998243e412a56a47735ab5b899d470fb47ddf",
+        "src/ports/qt6/licenses/gui/src/gui/text/qt_attribution.json": "cc5c2eedae7d50df84088f1f73a7e3b4720eb3de07019e0ddcc97af74e631671"
+      },
+      "used_in": [
+        "static QtGui and QPA local functional qualification; embedded original DejaVuSans.ttf from locked Qt source"
+      ],
+      "modifications": "0008 selects buffered FreeType file backend and excludes unsupported Unix platform services/dispatch; no font modifications",
+      "distribution_status": "NOT_RUN: member-level audit, security review, complete static relinking/source/notice distribution obligations; no Release authorized"
+    },
+    {
+      "name": "Qt Widgets E17 and Xylophone Aurora Glass",
+      "version": "QtBase 6.8.3; Aurora 1 (local qualification)",
+      "path": "src/ports/qt6",
+      "source": "https://download.qt.io/archive/qt/6.8/6.8.3/submodules/qtbase-everywhere-src-6.8.3.tar.xz",
+      "source_archive_sha256": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80",
+      "license": "Qt per-file LGPL-3.0/GPL/commercial terms; XOS theme/editor Apache-2.0; generated wallpaper provenance recorded separately",
+      "notices": [
+        "src/ports/qt6/licenses/LGPL-3.0-only.txt",
+        "src/ports/qt6/licenses/GPL-3.0-only.txt",
+        "src/ports/qt6/aurora/assets/provenance.json"
+      ],
+      "used_in": [
+        "real static Qt Widgets guest editor and independent Aurora style consumer; E15/E16 dependency notices retained"
+      ],
+      "modifications": "Widgets-only configuration enables actual Widgets and disables unsupported native file-dialog module; opt-in user-space style, no QtCore changes",
+      "distribution_status": "NOT_RUN: complete static source/relink materials, member-level license and binary distribution review; no new Release"
+    }
+  ]
+}

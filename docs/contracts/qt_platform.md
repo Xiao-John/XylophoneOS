@@ -67,3 +67,27 @@ Qt 6.8.3 当前 QThread::wait 的 detached 清理通知可早于内核线程退�
 64项溢出 resync；无 IME/滚轮/USB/多窗口合成。字体为原版 DejaVu 经实际 FreeType/
 HarfBuzz/QPainter 路径。实现、失败与资格见 [E16实施](../plans/qt_e16_execution.md) 和
 [0066](../work_log/0066_qt_e16_qualification.md)。静态发行/逐成员许可审查仍未完成。
+
+## E17 Widgets / Aurora 受限契约
+
+使用同一份新构建的 SDK/C++ 运行库交叉编译 Core/Gui/Widgets，冻结 QtBase 6.8.3；
+不混用旧 E15 归档。E15/E16 原构建入口与冻结报告保留。Widgets 的非原生子控件、
+viewport 和滚动实测使用顶层 backing store、零 offset；现有 child/native、非零
+flush offset 和第二顶层拒绝语义不扩展。QPA 仅补 Home/End/PageUp/PageDown/Delete
+Set1 映射和 flush 观测；没有新 syscall 或 display wire 变更。
+
+`libXosAurora.a` 提供 `aurora::initialize(QApplication&)`，选择 QProxyStyle/QPalette
+及标准按钮/文本/输入的深色样式；Canvas/Panel/Button 为可选共享控件。有限低频模糊、
+环境混合和软件指针都在该应用内完成，不是系统合成器、跨应用折射或 GPU 加速。
+QtGui 的图像/绘制线程池可多占一个线程，实测常见为3线程，仍受4线程配额；不是把
+E16 的两个线程结论照搬到 Widgets。正常/kill/fault/服务故障后的进程资源已核对。
+
+保存复用文件 wire-v2 的 staging/journal。只读以非截断可写 open + close 检查；
+QFile 用于读/核对，不用 WriteOnly 截断目标；QSaveFile 不构成安全覆盖承诺。
+precommit 错误保留原目标；commit/final sync 错误为 UNKNOWN，保留缓冲并阻止重试。
+消费者旧内容比较不是并发 CAS；不宣称所有错误都保留旧路径、任意断电或扇区撕裂安全。
+实际错误路径、注入层级、重启字节比对及局限见 [0078](../work_log/0078_qt_e17_aurora_qualification.md)。
+
+G05/Aurora 仅对冻结夹具和已声明范围通过；静态分发/完整许可/重链接、绝对峰值、
+CPU、长期压力、完整 Unicode 字体、IME/剪贴板、QML/Quick 均没有继承资格。
+复现见 [E17 实施](../plans/qt_e17_implementation.md)。

@@ -1,0 +1,14 @@
+{
+  "origin": "Generated for this task using the built-in image_gen tool, 2026-10-29; no Apple artwork or user reference image pixels reused",
+  "source": "aurora.png",
+  "target": "aurora.bmp",
+  "conversion": "sips -s format bmp --resampleHeightWidth 600 800 aurora.png --out aurora.bmp",
+  "prompt": "Original premium 4:3 midnight ocean/indigo wallpaper, broad cyan and violet aurora, distant mountains and calm water, restrained warm horizon, quiet dark center, no UI/text/logos. Full generation prompt is recorded in the E17 design study.",
+  "sha256": {
+    "aurora.png": "db408e4f1971d57302de5466b42948d6d296eab10e3f97009858f581df00ebcd",
+    "aurora.bmp": "bf7f20155b329125e1fcf135f9de51ccf6c2e5cc700464d8f022908868d5cfe4",
+    "generation_prompt.txt": "52414c2c8cfe99a22d741fdd93037f53c547b20978883d09bd2e7c5d0d6a5d03"
+  },
+  "distribution_review": "Full product/static-distribution review NOT_RUN",
+  "full_prompt": "generation_prompt.txt"
+}

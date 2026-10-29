@@ -1,0 +1,63 @@
+{
+  "status": "PASSED",
+  "image_sha256": "1f75150345382511e9e350a89a3eaa87d8b4d0ece0dfcb6a16c7639b71e7c853",
+  "elf_sha256": "c666c9ff599ee8cc138d89186db9c7d4b955173ac7fc892eb154af2435aa44df",
+  "runs": [
+    {
+      "baseline": 5729,
+      "baseline_threads": 3,
+      "aurora": 6689,
+      "aurora_threads": 3,
+      "additional_sampled_bytes": 3932160
+    },
+    {
+      "baseline": 5729,
+      "baseline_threads": 3,
+      "aurora": 6697,
+      "aurora_threads": 3,
+      "additional_sampled_bytes": 3964928
+    },
+    {
+      "baseline": 5729,
+      "baseline_threads": 3,
+      "aurora": 6689,
+      "aurora_threads": 3,
+      "additional_sampled_bytes": 3932160
+    }
+  ],
+  "absolute_peak": "NOT_RUN",
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_aurora_memory_7ed7e7va/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_lhfeum2m/qmp.sock,server=on,wait=off"
+  ]
+}

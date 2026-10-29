@@ -1,0 +1,25 @@
+{
+  "status": "PASSED",
+  "tests": {
+    "threading_smoke": {
+      "status": "PASSED",
+      "checks": 15
+    },
+    "threading_pthread_smoke": {
+      "status": "PASSED",
+      "checks": 10
+    },
+    "threading_cpp_smoke": {
+      "status": "PASSED",
+      "checks": 10
+    },
+    "file_smoke": {
+      "status": "PASSED",
+      "checks": 8
+    },
+    "persist_smoke": {
+      "status": "PASSED",
+      "checks": 4
+    }
+  }
+}

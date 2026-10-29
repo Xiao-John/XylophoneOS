@@ -6,14 +6,17 @@ UTF-8文件名、游戏及ncursesw前期探针。新增整合资格限于0081的
 其他旧资格仍绑定原输入，不构成全系统重验。发布资产仍为0.0.1-1026，未更新Release。
 原则裁决见[xos_plan.md第一部分](xos_plan.md#第一部分设计原则)，本页只登记事实与占用。
 
-## 正在进行：Modern Platform Phase 2，独立并行范围
+## Modern Platform运行时探针（PR #25）
 
-2026-10-29，已fetch upstream `aaec2e9`（PR #17合入）。PR #18–#21仍draft/open，
-没有维护者review，N2保持BLOCKED。网络交接、PX4-A认领、Pillow静态集成及本分支
-运行时缺口探针各自独立worktree/build/PR；公共ABI不跨线实施。
-本分支`codex/modern2-runtime-probes`只占用`scripts/modern2_*`、QuickJS probe builder/
-fixtures、`tests/modern2_runtime_guest.py`、自身reports/state/work_log0090与许可登记。
-不改内核/SDK/文件服务或原LocalPilot。阶段事实见[运行时报告](reports/modern2_runtime_20261029/README.md)。
+本分支保留Promise完成/pending/rejection等冻结探针结果，Web/应用能力仍BLOCKED。
+已同步当前main；将继续整合PR #21共用的QuickJS构建/runner与许可，旧结果不改绑新组合。
+
+## 时间域与驱动边界修订（文档PR）
+
+2026-10-29，`codex/time_domains_docs` 基于远端0ec0ad6：C28澄清内核基础设施和存量整改，
+C29约束统一时间管理、显式时间域及EOI职责；专项契约给出禁止/允许案例和审查清单。
+仅文档，无新ABI、实现或客体资格，见[修订交接](work_log/0095_time_domain_amendment.md)。
+本组文档占用解除，不占公共build；其他分支未合入本PR。
 
 ## FB1/FB2 应用故障包（受限通过）
 

@@ -21,7 +21,7 @@ POSIX `/dev/dsp`、PulseAudio/PipeWire/ALSA 兼容或实时音频承诺。PC Spe
 
 | 源码/环境 | 当前事实 | 必须补齐的内容 |
 |---|---|---|
-| `src/kernel/arch/x86_64/pic.cpp` | PIT channel 0 产生调度时钟；使用 `0x40`/`0x43` | Speaker 不能重编程 channel 0，也不能改变现有时钟频率 |
+| `src/kernel/platform/pc/interrupts.cpp` | PIT channel 0 产生调度时钟；使用 `0x40`/`0x43` | Speaker 不能重编程 channel 0，也不能改变现有时钟频率 |
 | `src/kernel/platform/pc/` | 已有 PC 输出、RTC、PS/2、ATA等设备实现，没有音频实现 | PC Speaker 平台后端、受控访问、强制静音和生命周期 |
 | 线程时钟与等待 ABI | 已有单调时钟、sleep_until、wait_word等受限能力 | 核对时间粒度、服务排队与终止；不把 sleep 成功当作音频准时送达 |
 | IPC/句柄与进程退出 | 已有认证主体与资源回收机制 | 音频会话/设备租约如何授予、撤销，旧连接如何失效 |

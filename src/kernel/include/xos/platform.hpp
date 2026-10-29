@@ -7,7 +7,11 @@
 // firmware interrupt numbers, register names, or device addresses.
 namespace xos::platform {
 void debug_init();
-// Acknowledge a selected platform PCI device interrupt; no service protocol.
+// Initialize the platform interrupt controller and timer once, leaving IF=0.
+void interrupts_init();
+// IRQ0 time advancement and platform acknowledgement, no scheduling policy.
+void timer_interrupt();
+// Dispatch and acknowledge a selected device IRQ; no service protocol.
 void device_irq(u8 irq);
 void debug_graphics(bool active);
 bool debug_write(const char* text);

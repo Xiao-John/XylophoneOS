@@ -604,6 +604,22 @@
       "artifact_sha256": {
         "src/ports/lwip/upstream/COPYING": "ef4aac92e05e87cd1cdc140870ed52206ba03d4a7fe46c1e11d7ffa6c87d252b"
       }
+    },
+    {
+      "name": "PC PIC/PIT relocation and IRQ ownership repair",
+      "version": "2026-10-29",
+      "path": "src/kernel/platform/pc",
+      "source": "XylophoneOS historical arch/x86_64/pic.cpp at 9b832fa; original authors retained",
+      "license": "MIT AND Apache-2.0",
+      "notices": [
+        "licenses/mit_legacy.txt",
+        "LICENSE",
+        "NOTICE"
+      ],
+      "source_files": {
+        "src/kernel/platform/pc/interrupts.cpp": "MIT AND Apache-2.0"
+      },
+      "modifications": "Relocate historical PIC/PIT I/O; remove duplicate time state; platform-only exclusive diagnostic IRQ ownership, no new syscall"
     }
   ]
 }

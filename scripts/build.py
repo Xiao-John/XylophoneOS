@@ -36,7 +36,11 @@ def main():
     parser.add_argument("--gpu-poll-limit", type=int, default=10000000,
                         help="bounded VirtIO-GPU completion polls; zero is an explicit timeout profile")
     parser.add_argument("--net-dma-page-limit", type=int, default=34, help="VirtIO-Net DMA quota; values below 34 are explicit fault profiles")
+    parser.add_argument("--clock-irq-probe", action="store_true", help="test-only clock/IRQ ownership probe, excluded from normal image")
+    parser.add_argument("--net-boot-diagnostic", action="store_true", help="test-only existing N1 kernel hardware diagnostic; never linked into default image")
     args = parser.parse_args()
+    if args.net_dma_page_limit != 34 and not args.net_boot_diagnostic:
+        parser.error("network fault quota requires explicit --net-boot-diagnostic")
     if not 0 <= args.net_dma_page_limit <= 34:
         parser.error("invalid VirtIO-Net DMA quota")
     if not 1 <= args.gpu_dma_page_limit <= 4096 or not 0 <= args.gpu_poll_limit <= 100000000:
@@ -81,13 +85,13 @@ def main():
         sources.extend(p for p in sorted((ROOT / folder).rglob("*"))
                        if p.suffix in (".asm", ".s", ".sh", ".inc", ".py", ".cpp", ".hpp", ".c", ".h", ".ld", ".json", ".lldb"))
     source_hashes = {str(p.relative_to(ROOT)): sha256(p.read_bytes()) for p in sources}
-    source_digest = sha256(json.dumps({"sources": source_hashes, "capacity_probe": args.capacity_probe, "virtio_gpu": gpu_config, "virtio_net": {"dma_page_limit": args.net_dma_page_limit}}, sort_keys=True).encode())
+    source_digest = sha256(json.dumps({"sources": source_hashes, "capacity_probe": args.capacity_probe, "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config, "virtio_net": {"boot_diagnostic": args.net_boot_diagnostic, "dma_page_limit": args.net_dma_page_limit}}, sort_keys=True).encode())
     build_id = source_digest[:16]
     eggs = int(TARGET["easter_eggs"])
     (BUILD / "build_info.inc").write_text(
         f'%define xos_build_id "{build_id}"\n%define xos_easter_eggs {eggs}\n')
     (BUILD / "build_info.hpp").write_text(
-        f'#define XOS_BUILD_ID "{build_id}"\n#define XOS_EASTER_EGGS {eggs}\n#define XOS_CAPACITY_PROBE {int(args.capacity_probe)}\n')
+        f'#define XOS_BUILD_ID "{build_id}"\n#define XOS_EASTER_EGGS {eggs}\n#define XOS_CAPACITY_PROBE {int(args.capacity_probe)}\n#define XOS_CLOCK_IRQ_PROBE {int(args.clock_irq_probe)}\n#define XOS_NET_BOOT_DIAGNOSTIC {int(args.net_boot_diagnostic)}\n')
     commands = []
 
     def run(command):
@@ -114,7 +118,11 @@ def main():
     for folder in ("core", "arch/x86_64", "platform/pc"):
         cpp_sources.extend(sorted((ROOT / "src/kernel" / folder).glob("*.cpp")))
     cpp_sources.extend(sorted((ROOT / "src/shared/runtime").glob("*.cpp")))
+    if args.clock_irq_probe:
+        cpp_sources.append(ROOT / "tests/kernel/clock_irq_probe.cpp")
     for source in cpp_sources:
+        if source.name == "virtio_net.cpp" and not args.net_boot_diagnostic:
+            continue
         obj = BUILD / (str(source.relative_to(ROOT)).replace("/", "_") + ".o")
         gpu_flags = ["-DXOS_VGPU_DMA_PAGE_LIMIT=" + str(args.gpu_dma_page_limit),
                      "-DXOS_VGPU_POLL_LIMIT=" + str(args.gpu_poll_limit)] if source.name == "virtio_gpu.cpp" else []
@@ -258,7 +266,7 @@ def main():
     manifest = {
         "build_id": build_id,
         "version": (ROOT / "VERSION").read_text().strip(), "source_sha256": source_digest,
-        "capacity_probe": args.capacity_probe, "virtio_gpu": gpu_config, "virtio_net": {"dma_page_limit": args.net_dma_page_limit}, "legacy_images_available": legacy_available,
+        "capacity_probe": args.capacity_probe, "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config, "virtio_net": {"boot_diagnostic": args.net_boot_diagnostic, "dma_page_limit": args.net_dma_page_limit}, "legacy_images_available": legacy_available,
         "sources": source_hashes,
         "sdk_directories": [p.relative_to(BUILD / "sdk").as_posix()
                             for p in sorted((BUILD / "sdk").rglob("*")) if p.is_dir()],

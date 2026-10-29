@@ -4,8 +4,9 @@
 #include <xos/pci.hpp>
 #include <xos/memory.hpp>
 #include <xos/format.hpp>
-#include "arch/x86_64/pic.hpp"
-#include "arch/x86_64/io.hpp"
+#include "interrupts.hpp"
+#include <xos/clock.hpp>
+#include "arch/x86_64/interrupt_wait.hpp"
 #ifndef XOS_VNET_DMA_PAGE_LIMIT
 #define XOS_VNET_DMA_PAGE_LIMIT 34
 #endif
@@ -21,7 +22,7 @@ pci::function function{};
 volatile u8 *common,*notify,*isr,*configuration;
 u32 notify_bytes,multiplier,dma_pages;
 queue rx{},tx{};
-u8 irq_line,old_elcr,old_master_mask,old_slave_mask;
+u8 irq_line;
 u16 old_command;
 bool mapped,probe_attempted,live,broken,route_enabled;
 u64 interrupts,spurious,received,transmitted,rejected,dropped;
@@ -50,7 +51,7 @@ bool reset(){
 void fail(){broken=true;live=false;pci::write16(function,4,u16(pci::read16(function,4)|0x400));}
 bool release(){
  live=false;
- if(route_enabled){arch::pic_line_enable(irq_line,false);const u16 port=irq_line<8?0x4d0:0x4d1;arch::out_byte(port,old_elcr);arch::out_byte(0x21,old_master_mask);arch::out_byte(0xa1,old_slave_mask);route_enabled=false;}
+ if(route_enabled){if(!platform::pc::release_diagnostic_irq(irq_line,interrupt))return false;route_enabled=false;}
  if(!reset())return false;
  for(auto& p:rx.pages){free_page(p);}free_page(rx.ring);rx={};
  for(auto& p:tx.pages){free_page(p);}free_page(tx.ring);tx={};
@@ -118,11 +119,10 @@ bool init(){
  bool stable=false;u8 mac[6]{};
  for(u32 n=0;n<8;++n){const auto gen=r8(21);for(u32 i=0;i<6;++i)mac[i]=configuration[i];barrier();if(gen==r8(21)){stable=true;break;}}
  if(!stable || (mac[0]&1)){release();return false;}
- old_master_mask=arch::in_byte(0x21);old_slave_mask=arch::in_byte(0xa1);
- if(!((irq_line<8?old_master_mask:old_slave_mask)&(1u<<(irq_line&7)))){log("diagnostic_IRQ_already_unmasked");release();return false;}
- const u16 port=irq_line<8?0x4d0:0x4d1;old_elcr=arch::in_byte(port);route_enabled=true;arch::out_byte(port,u8(old_elcr|(1u<<(irq_line&7))));
- if(!(arch::in_byte(port)&(1u<<(irq_line&7)))){release();return false;}
- route_enabled=true;live=true;w8(20,15);arch::pic_line_enable(irq_line,true);kick(rx,0);
+ // The PC platform owns the exclusive route and all PIC/ELCR state.
+ // IF is clear, so the callback cannot run before DRIVER_OK and live are set.
+ if(!platform::pc::claim_diagnostic_irq(irq_line,interrupt)){log("diagnostic_IRQ_unavailable");release();return false;}
+ route_enabled=true;live=true;w8(20,15);kick(rx,0);
  format::text("[virtio-net] ready VERSION_1 MAC MRG_RXBUF single_buffer MTU=1500 RX=16 TX=16");number(" dma_pages=",dma_pages);number(" INTx=",irq_line);format::text(" level=1 polling_idle=0\r\n");return true;
 }
 // Called with interrupts disabled; all accesses are serialized on the qualified single CPU.
@@ -153,8 +153,8 @@ void consume(queue& q,bool receive){
  if(receive && !broken)kick(q,0);
 }
 bool wait_until(u64 rx_count,u64 tx_count,u64 ticks){
- const auto deadline=arch::pic_ticks()+ticks;
- while(!broken && (received<rx_count || transmitted<tx_count) && arch::pic_ticks()<deadline){__asm__ volatile("sti; hlt; cli" ::: "memory");}
+ const auto deadline=clock::ticks()+ticks;
+ while(!broken && (received<rx_count || transmitted<tx_count) && clock::ticks()<deadline){arch::wait_for_interrupt();}
  return !broken && received>=rx_count && transmitted>=tx_count;
 }
 void pattern(u8* data,u32 length,u8 sequence){
@@ -173,7 +173,6 @@ bool self_test(u32 profile){
  const bool echo_expected=profile==0 || profile==2;
  // Explicit C26 diagnostic before scheduler entry. It always quiesces on return.
  // The existing boot monitor itself polls UART; network waiting uses PIT/INTx HLT.
- arch::pic_init();arch::timer_init(100);
  const auto before=memory_status().free_pages;
  if(!init())return false;
  const auto baseline=memory_status().free_pages;bool ok=true;u8 bytes[maximum_frame];
@@ -182,7 +181,7 @@ bool self_test(u32 profile){
  ok=ok && send(bytes,60)==-11;
  log("submitted=16 queue_backpressure=AGAIN invalid_lengths=INVALID waiting=HLT");
  const bool completed=wait_until(echo_expected?16:1,16,echo_expected?500:30);
- if(profile==2){const auto end=arch::pic_ticks()+20;while(!broken && arch::pic_ticks()<end){__asm__ volatile("sti; hlt; cli" ::: "memory");}}
+ if(profile==2){const auto end=clock::ticks()+20;while(!broken && clock::ticks()<end){arch::wait_for_interrupt();}}
  if(echo_expected){
   ok=ok && completed && pending_count==16;
   u16 seen=0;
@@ -203,4 +202,3 @@ bool self_test(u32 profile){
  return ok;
 }
 }
-namespace xos::platform {void device_irq(u8 irq){virtio_net::interrupt(irq);}}

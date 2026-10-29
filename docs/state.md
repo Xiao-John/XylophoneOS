@@ -6,6 +6,14 @@ UTF-8文件名、游戏及ncursesw前期探针。新增整合资格限于0081的
 其他旧资格仍绑定原输入，不构成全系统重验。发布资产仍为0.0.1-1026，未更新Release。
 原则裁决见[xos_plan.md第一部分](xos_plan.md#第一部分设计原则)，本页只登记事实与占用。
 
+## 正在进行：PR20时钟/IRQ职责整改
+
+本轮暂停功能扩张，仅在独立`codex/net-clock-irq-repair`处理统一时钟、PC IRQ/PIC与
+启动前诊断生命周期；不推进N2/lwIP/HTTP/VMA/新syscall。已完成只读审计，
+[审计表](reports/net_clock_irq_repair_20261029/audit.md)与[实施前测试计划](reports/net_clock_irq_repair_20261029/test_plan.md)冻结范围。
+占用core clock、arch中断/任务入口、PC PIC/IRQ/PS2与NIC诊断调用，以及本分支build/报告。
+原PR20工作区与其他协作者工作区保持不变，旧报告不改绑。未完成整改/回归前不宣称可合并。
+
 ## VirtIO-Net N0/N1 与 lwIP 目标编译（受限网络底座）
 
 2026-10-29，独立 `codex/browser-net-n1` 从新 fetch 的 upstream39083f9 实施；

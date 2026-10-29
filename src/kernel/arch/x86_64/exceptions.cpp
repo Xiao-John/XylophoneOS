@@ -5,7 +5,6 @@
 #include <xos/platform.hpp>
 #include <xos/task.hpp>
 #include "frame.hpp"
-#include "pic.hpp"
 #include "interrupt_entry.hpp"
 
 namespace xos::arch {
@@ -195,7 +194,6 @@ extern "C" void* interrupt_dispatch(void* raw_frame) {
     if (vector == 33 || vector == 44) { return xos::arch::input_entry(frame); }
     if (vector == 37 || (vector >= 41 && vector <= 43)) {
         xos::platform::device_irq(static_cast<xos::u8>(vector - 32));
-        xos::arch::pic_eoi(static_cast<xos::u8>(vector - 32));
         return frame;
     }
     if (vector < 32) {

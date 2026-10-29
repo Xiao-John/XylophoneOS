@@ -58,6 +58,14 @@ transfer/flush、dirty region、设备reset及VBE回退；同Qt帧的1,440,000�
 仅QEMU/单核/800×600受限通过，运行期设备失效后透明恢复、热插拔、SMP/真机未验。
 私有 worktree/build；通过独立功能PR交付，不自行合并main或改旧Release。
 
+## PX4-A 匿名虚拟内存：独立设计认领（未实施）
+
+2026-10-29，`codex/px4a-vma-claim` 从 fetched upstream `aaec2e9` 建立。
+本组负责 `docs/contracts/anonymous_vm.md`、ABI 67 的 claimed 提案、PX 路线和
+`docs/reports/modern2_px4a_20261029/`；共享头、dispatch、SDK、内核和旧证据不改。
+具体认领须由维护者审查合入后才能实施；本分支不是全项目登记，运行资格仍 **BLOCKED**。
+独立 `build/modern2_px4a/` 仅作源码审计，不构建/运行新客体。网络112属 PR #18，未触碰。
+
 ## 正在进行：ncursesw W0/W1
 
 W0 勘查和 W1 [工作契约草案](contracts/terminal_w1.md)已开始；W0 未冻结，W1 未

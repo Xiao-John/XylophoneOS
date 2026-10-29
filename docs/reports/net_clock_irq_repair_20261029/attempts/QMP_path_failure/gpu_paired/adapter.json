@@ -1,0 +1,17 @@
+{
+  "original_runner": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/virtio_gpu_acceptance.py",
+  "original_sha256": "8a095075387556c5bb03af63f11c247f561edd5b928174f20139f29a3645ae1a",
+  "executed_sha256": "c4ade17b1ce66e23fd56a670d2679196267528300a1101e39cac5e0ed92771fa",
+  "adaptations": [
+    "ROOT/output isolation",
+    "original floppy and ISO inputs preserved",
+    "verify old Qt SDK against its actual original source owner; new system separately hash-verified"
+  ],
+  "thread_inputs": {
+    "threading_pthread_probe.elf": "c7e07c1f8e8676bd705cee2a2e2ca829965cb837650a7e2fa8c732b5fae0f5b7",
+    "threading_cpp_probe.elf": "3d86aa65c2da43da30603e5b97c219d5f5267c6f051f2cef89c724d2f1e08c08",
+    "threading_c_probe.elf": "3ae678d91382525f1f2d5a5a70b01bb39dd9a80aa57a4d1f451e7cfc7c266006",
+    "threading_legacy.elf": "3e62eaf127f8576ce5f9ba3d8bb21bb424aaba489aa2aa6c5f8db97ce1e3b602"
+  },
+  "system_manifest_sha256": "d8e60e10f8b9c1c768e87e20489d5576add43c5e0d367d63091b03f8eef2085a"
+}

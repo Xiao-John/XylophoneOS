@@ -1,0 +1,16 @@
+{
+  "original_runner": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/qt6_sdk_probe.py",
+  "original_sha256": "c8dbfb32604035aaf5595a3746c80307aa263b8687e0627e1d5d8efac46ef3be",
+  "executed_sha256": "6edb8027386ca1cc16f4678b7692875caad535e195efd9341dd495f600f7a2f0",
+  "adaptations": [
+    "ROOT/output isolation",
+    "original floppy and ISO inputs preserved"
+  ],
+  "thread_inputs": {
+    "threading_pthread_probe.elf": "c7e07c1f8e8676bd705cee2a2e2ca829965cb837650a7e2fa8c732b5fae0f5b7",
+    "threading_cpp_probe.elf": "3d86aa65c2da43da30603e5b97c219d5f5267c6f051f2cef89c724d2f1e08c08",
+    "threading_c_probe.elf": "3ae678d91382525f1f2d5a5a70b01bb39dd9a80aa57a4d1f451e7cfc7c266006",
+    "threading_legacy.elf": "3e62eaf127f8576ce5f9ba3d8bb21bb424aaba489aa2aa6c5f8db97ce1e3b602"
+  },
+  "system_manifest_sha256": "7586d96a3ae1d62137c7b423dee90bc2bcbd68892d5c5eb3927650c730d40885"
+}

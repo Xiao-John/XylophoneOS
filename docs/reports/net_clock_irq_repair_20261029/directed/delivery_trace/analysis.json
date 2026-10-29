@@ -1,0 +1,14 @@
+{
+  "status": "PASSED",
+  "scope": "actual QEMU delivered OS IRQs and matching slave/master EOI writes; no kernel EOI statistics",
+  "trace_sha256": "8086d6477f95b8dc8a6af37e1bc3c60fd5bcb8a7bb334d7f3b2e3637a6d8cec7",
+  "OS_IRQ_counts": {
+    "0": 482,
+    "10": 1,
+    "1": 3,
+    "12": 1
+  },
+  "complete_irq_eoi_sequences": 487,
+  "errors": [],
+  "firmware_events_excluded": 36
+}

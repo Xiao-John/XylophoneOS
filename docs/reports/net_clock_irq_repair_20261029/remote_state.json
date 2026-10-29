@@ -1,0 +1,129 @@
+{
+  "checked_at_utc": "2026-10-29 13:59:14 UTC",
+  "start_main": "169f51e6b410863b8d8c9707b7ea84a6f649d59c",
+  "integrated_main": "3377dbf35bdb43d850c9a2b8e8076da3be146f3d",
+  "initial": [
+    {
+      "number": 17,
+      "state": "closed",
+      "merged": true,
+      "head": "92acd023e739186d64609233ca923175ccd5e171",
+      "reviews": []
+    },
+    {
+      "number": 18,
+      "state": "open",
+      "merged": false,
+      "head": "97947c07853e785530d3c907738a8b45f530986e",
+      "reviews": []
+    },
+    {
+      "number": 19,
+      "state": "open",
+      "merged": false,
+      "head": "88cdbc01b0e30b2c2b449d9831d057468b9d6a77",
+      "reviews": []
+    },
+    {
+      "number": 20,
+      "state": "open",
+      "merged": false,
+      "head": "9b832fa06061b6905d00529a2e0a8445ea389a2a",
+      "reviews": []
+    },
+    {
+      "number": 21,
+      "state": "open",
+      "merged": false,
+      "head": "c152f7f93fb11291eb019d572219c2b4d69743a9",
+      "reviews": []
+    },
+    {
+      "number": 22,
+      "state": "open",
+      "merged": false,
+      "head": "9a1b16276754ce68a8024b942b5fd46ca4e6210b",
+      "reviews": []
+    },
+    {
+      "number": 23,
+      "state": "open",
+      "merged": false,
+      "head": "d1fcc363ba49ebfd62b3293ea05191125d227aed",
+      "reviews": []
+    }
+  ],
+  "delivery_pre_push": [
+    {
+      "number": 17,
+      "state": "closed",
+      "merged": true,
+      "head": "92acd023e739186d64609233ca923175ccd5e171",
+      "reviews": []
+    },
+    {
+      "number": 18,
+      "state": "closed",
+      "merged": true,
+      "head": "61f3ade7f816232bb1c252c157aa02effa6a4fd6",
+      "reviews": [
+        {
+          "id": "PRR_kwDOVU8IlM8AAAABU51SKA",
+          "state": "CHANGES_REQUESTED",
+          "author": "Xiao-John",
+          "submitted_at": "2026-10-29T12:37:11Z"
+        }
+      ]
+    },
+    {
+      "number": 19,
+      "state": "closed",
+      "merged": true,
+      "head": "61840f531693f1949c08fff9a55febf865384441",
+      "reviews": [
+        {
+          "id": "PRR_kwDOVU8IlM8AAAABU51lcA",
+          "state": "CHANGES_REQUESTED",
+          "author": "Xiao-John",
+          "submitted_at": "2026-10-29T12:37:37Z"
+        }
+      ]
+    },
+    {
+      "number": 20,
+      "state": "open",
+      "merged": false,
+      "head": "9b832fa06061b6905d00529a2e0a8445ea389a2a",
+      "reviews": [
+        {
+          "id": "PRR_kwDOVU8IlM8AAAABU5s8xw",
+          "state": "CHANGES_REQUESTED",
+          "author": "Xiao-John",
+          "submitted_at": "2026-10-29T12:26:10Z"
+        }
+      ]
+    },
+    {
+      "number": 21,
+      "state": "closed",
+      "merged": true,
+      "head": "c152f7f93fb11291eb019d572219c2b4d69743a9",
+      "reviews": []
+    },
+    {
+      "number": 22,
+      "state": "closed",
+      "merged": true,
+      "head": "d4294087add4a13686225aec9618c27d1bfcb5e2",
+      "reviews": []
+    },
+    {
+      "number": 23,
+      "state": "closed",
+      "merged": true,
+      "head": "d57ff0e4674d297c6d4e1e20e3ba16a76dec3d57",
+      "reviews": []
+    }
+  ],
+  "review_scope": "PR20 remains CHANGES_REQUESTED for user-mode driver; this work does not dismiss or approve the review."
+}

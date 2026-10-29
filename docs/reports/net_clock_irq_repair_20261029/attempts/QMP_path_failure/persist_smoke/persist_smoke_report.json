@@ -1,0 +1,6 @@
+{
+  "build_id": "8378ff4e9dbf24bd",
+  "checks": [],
+  "status": "failed",
+  "error": "persist_boot1: QEMU exited 1"
+}

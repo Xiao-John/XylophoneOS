@@ -1,0 +1,184 @@
+[
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS",
+    "HEAD": "1699b6c86ee9f48a37647e41f7065d56ee7f56e4",
+    "branch": "refs/heads/codex/threading-t0-t2",
+    "status": []
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser",
+    "HEAD": "88cdbc01b0e30b2c2b449d9831d057468b9d6a77",
+    "branch": "refs/heads/codex/aurora-browser-b1",
+    "status": []
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net",
+    "HEAD": "9b832fa06061b6905d00529a2e0a8445ea389a2a",
+    "branch": "refs/heads/codex/browser-net-n1",
+    "status": []
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3",
+    "HEAD": "630374e9eff68436a5b22c42d49b1e69fd979c7f",
+    "branch": "refs/heads/feature/dash-c1-c3",
+    "status": []
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-display-e14",
+    "HEAD": "f84745a9079be23b5ae959fb7bc927837e2a6294",
+    "branch": "refs/heads/feature/display-backend-e14",
+    "status": []
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1",
+    "HEAD": "c152f7f93fb11291eb019d572219c2b4d69743a9",
+    "branch": "refs/heads/codex/modern-app-phase1",
+    "status": []
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-net",
+    "HEAD": "9a1b16276754ce68a8024b942b5fd46ca4e6210b",
+    "branch": "refs/heads/codex/modern2-network-handoff",
+    "status": []
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-python",
+    "HEAD": "3b20ec7416d6d2dabcdd976a11e1c34f31ee5332",
+    "branch": "refs/heads/codex/python-static-imaging",
+    "status": []
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime",
+    "HEAD": "1557bbc7341fb672cb41c272130723c651801d1b",
+    "branch": "refs/heads/codex/modern2-runtime-probes",
+    "status": [
+      " M docs/reports/modern2_runtime_20261029/README.md",
+      " D docs/reports/modern2_runtime_20261029/guest/00_buffers.js.log.gz",
+      " D docs/reports/modern2_runtime_20261029/guest/01_promises.js.log.gz",
+      " D docs/reports/modern2_runtime_20261029/guest/02_module.mjs.log.gz",
+      " D docs/reports/modern2_runtime_20261029/guest/03_pending.mjs.log.gz",
+      " D docs/reports/modern2_runtime_20261029/guest/04_rejected.js.log.gz",
+      " D docs/reports/modern2_runtime_20261029/guest/05_async_failure.js.log.gz",
+      " D docs/reports/modern2_runtime_20261029/guest/06_import.mjs.log.gz",
+      " D docs/reports/modern2_runtime_20261029/guest/07_dom.js.log.gz",
+      " D docs/reports/modern2_runtime_20261029/guest/08_events.js.log.gz",
+      " D docs/reports/modern2_runtime_20261029/guest/09_worker.js.log.gz",
+      " D docs/reports/modern2_runtime_20261029/guest/10_wasm.js.log.gz",
+      " D docs/reports/modern2_runtime_20261029/guest/11_origin.js.log.gz",
+      " D docs/reports/modern2_runtime_20261029/guest/12_globals.js.log.gz",
+      " D docs/reports/modern2_runtime_20261029/guest/13_buffers.js.log.gz",
+      " M docs/reports/modern2_runtime_20261029/guest/qemu.log.gz",
+      " M docs/reports/modern2_runtime_20261029/guest/report.json",
+      " M docs/reports/modern2_runtime_20261029/guest/serial.log.gz",
+      " M docs/reports/modern2_runtime_20261029/inputs/system_manifest.json.gz",
+      " M docs/reports/modern2_runtime_20261029/iterations/README.md",
+      " M docs/reports/modern2_runtime_20261029/qualification.json",
+      " M docs/state.md",
+      " M docs/work_log/0090_modern2_runtime_probes.md",
+      " M tests/modern2_runtime_guest.py",
+      "?? docs/reports/modern2_runtime_20261029/build/dual_shell_system_build.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/delivery_snapshot.json",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash00.sh",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash01.sh",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash02.sh",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash03.sh",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash04.sh",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash05.sh",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash06.sh",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash07.sh",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash08.sh",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash09.sh",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash10.sh",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash11.sh",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash12.sh",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash13.sh",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash_00_buffers.js.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash_01_promises.js.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash_02_module.mjs.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash_03_pending.mjs.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash_04_rejected.js.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash_05_async_failure.js.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash_06_import.mjs.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash_07_dom.js.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash_08_events.js.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash_09_worker.js.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash_10_wasm.js.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash_11_origin.js.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash_12_globals.js.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/dash_13_buffers.js.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/xsh_00_buffers.js.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/xsh_01_promises.js.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/xsh_02_module.mjs.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/xsh_03_pending.mjs.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/xsh_04_rejected.js.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/xsh_05_async_failure.js.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/xsh_06_import.mjs.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/xsh_07_dom.js.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/xsh_08_events.js.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/xsh_09_worker.js.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/xsh_10_wasm.js.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/xsh_11_origin.js.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/xsh_12_globals.js.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/guest/xsh_13_buffers.js.log.gz",
+      "?? docs/reports/modern2_runtime_20261029/inputs/dash_manifest.json.gz",
+      "?? docs/reports/modern2_runtime_20261029/iterations/single_shell_final/",
+      "?? docs/reports/modern2_runtime_20261029/iterations/single_shell_manifest.json.gz",
+      "?? docs/reports/modern2_runtime_20261029/iterations/single_shell_qualification.json"
+    ]
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-vm",
+    "HEAD": "d1fcc363ba49ebfd62b3293ea05191125d227aed",
+    "branch": "refs/heads/codex/px4a-vma-claim",
+    "status": []
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair",
+    "HEAD": "fda4d6262cca8e3b07c142a914edbbdcc33b075b",
+    "branch": "refs/heads/codex/net-clock-irq-repair",
+    "status": [
+      " M docs/reports/net_clock_irq_repair_20261029/README.md",
+      " M docs/state.md",
+      "?? docs/reports/net_clock_irq_repair_20261029/attempts/",
+      "?? docs/reports/net_clock_irq_repair_20261029/build/",
+      "?? docs/reports/net_clock_irq_repair_20261029/directed/",
+      "?? docs/reports/net_clock_irq_repair_20261029/inputs/",
+      "?? docs/reports/net_clock_irq_repair_20261029/local_artifacts.json",
+      "?? docs/reports/net_clock_irq_repair_20261029/qualification.json",
+      "?? docs/reports/net_clock_irq_repair_20261029/regressions/",
+      "?? docs/reports/net_clock_irq_repair_20261029/remote_state.json",
+      "?? docs/reports/net_clock_irq_repair_20261029/tools/",
+      "?? docs/work_log/0101_pr20_clock_irq_repair.md"
+    ]
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi",
+    "HEAD": "97947c07853e785530d3c907738a8b45f530986e",
+    "branch": "refs/heads/codex/network-device-abi-claim",
+    "status": []
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15",
+    "HEAD": "d1e108d8f31ffcb1ebf43b40a412af933fb074cd",
+    "branch": "refs/heads/codex/qt6-e15",
+    "status": []
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16",
+    "HEAD": "aaf70fcfd5b06364ff09c7a87d6239a730fcdd66",
+    "branch": "refs/heads/codex/qt6-e16-qpa",
+    "status": []
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17",
+    "HEAD": "66ac0026e4b35bce8fee4cb1d05eb86644835417",
+    "branch": "refs/heads/codex/qt6-e17-widgets",
+    "status": []
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d",
+    "HEAD": "00d7a57f04caba2252487eb5ac790c1fb810be92",
+    "branch": "refs/heads/codex/virtio-gpu2d",
+    "status": []
+  }
+]

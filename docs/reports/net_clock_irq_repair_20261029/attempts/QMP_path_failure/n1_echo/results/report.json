@@ -1,0 +1,9 @@
+{
+  "status": "FAILED",
+  "mode": "echo",
+  "build_id": "c8ab279dbf867dfd",
+  "image_sha256": "2be1943ac40cb2f7e5648e31edbdcf92a3aa06a874fa1c4cfd3f3fd26100109c",
+  "host_frames": [],
+  "runs": [],
+  "host_errors": []
+}

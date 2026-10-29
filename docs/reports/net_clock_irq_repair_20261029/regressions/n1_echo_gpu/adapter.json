@@ -1,0 +1,16 @@
+{
+  "original_runner": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/virtio_net_acceptance.py",
+  "original_sha256": "4783317934d6e0c39063276cadba8382aa2c2e50c1ea8c646ddc67d48a31e899",
+  "executed_sha256": "0aee8df8c750f3c29ba625935a15c9748dea7d7b62918496e8c5b4a2797a240c",
+  "adaptations": [
+    "ROOT/output isolation",
+    "explicit supported file-ISO image and artifact key; optical boot"
+  ],
+  "thread_inputs": {
+    "threading_pthread_probe.elf": "c7e07c1f8e8676bd705cee2a2e2ca829965cb837650a7e2fa8c732b5fae0f5b7",
+    "threading_cpp_probe.elf": "3d86aa65c2da43da30603e5b97c219d5f5267c6f051f2cef89c724d2f1e08c08",
+    "threading_c_probe.elf": "3ae678d91382525f1f2d5a5a70b01bb39dd9a80aa57a4d1f451e7cfc7c266006",
+    "threading_legacy.elf": "3e62eaf127f8576ce5f9ba3d8bb21bb424aaba489aa2aa6c5f8db97ce1e3b602"
+  },
+  "system_manifest_sha256": "b9bd31ae9e41879d80ac30d4a850d2b21d389e030c9de506a676a3b377cdf69f"
+}

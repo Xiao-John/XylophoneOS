@@ -1,0 +1,9 @@
+{
+  "status": "FAILED",
+  "mode": "quota",
+  "build_id": "2aa3dd45417ec061",
+  "image_sha256": "31735ab3be9d9cf02b0c0d9bfc23625c986dcf8fb6adc978f776b3703643ea93",
+  "host_frames": [],
+  "runs": [],
+  "host_errors": []
+}

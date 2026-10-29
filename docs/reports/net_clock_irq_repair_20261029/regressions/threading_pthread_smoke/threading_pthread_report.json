@@ -1,0 +1,78 @@
+{
+  "kernel_build_id": "919bd09bb69b6e0f",
+  "status": "passed",
+  "checks": [
+    "guest_pthread_mutex_cond_once_keys_four_rounds_tls_errno",
+    "guest_concurrent_newlib_malloc_realloc_stdio_and_shared_file_session",
+    "guest_shared_open_offset_dup_close_and_stack_query",
+    "guest_monotonic_timeout_relocks_mutex_realtime_returns_ENOTSUP",
+    "guest_last_thread_process_fini_once",
+    "guest_process_exit_stops_running_peer",
+    "guest__exit_skips_callbacks",
+    "guest_recursive_exit_during_TLS_cleanup_does_not_hang",
+    "guest_process_resources_return_to_baseline",
+    "guest_plain_C_consumer_ABI"
+  ],
+  "runs": [
+    {
+      "mode": "core",
+      "code": 0,
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "mode": "core",
+      "code": 0,
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "mode": "last",
+      "code": 0,
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "mode": "exit",
+      "code": 9,
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "mode": "quick",
+      "code": 19,
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    },
+    {
+      "mode": "recursive",
+      "code": 23,
+      "resources_after": [
+        130279,
+        2,
+        0
+      ]
+    }
+  ],
+  "payload_sha256": "c7e07c1f8e8676bd705cee2a2e2ca829965cb837650a7e2fa8c732b5fae0f5b7",
+  "resources_before": [
+    130279,
+    2,
+    0
+  ]
+}

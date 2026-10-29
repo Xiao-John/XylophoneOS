@@ -1,0 +1,49 @@
+{
+  "status": "PASSED",
+  "image_sha256": "791a867a78194f21ad4c339c41e668f41b817c5ac0f436c786cd7b0705a3f102",
+  "elf_sha256": "17f39fdcf53611053b3edce7e9aa2381856fd830cf674819d07c855ef65b2756",
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/core_abi/build/temporary_inputs/xos_qt_sdk_probe_hhi2cptb/boot.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/core_abi/build/temporary_inputs/xos_qt_sdk_probe_hhi2cptb/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_zv1pz_04/qmp.sock,server=on,wait=off"
+  ],
+  "resources_before": [
+    130279,
+    2,
+    0
+  ],
+  "resources_after": [
+    130279,
+    2,
+    0
+  ]
+}

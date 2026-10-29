@@ -1,0 +1,9 @@
+{
+  "original": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser/tests/aurora_browser_acceptance.py",
+  "original_sha256": "57a4e15352e6a8039a0042084136c1635c04bd7db898a383421f31b2ce6fdd14",
+  "input_sha256": "51a34945848be1c5a8efb29e60edd274cbe0d0885944d964c4e9029051133ad0",
+  "changes": [
+    "read original immutable browser pages from original source owner; report relative paths against same owner",
+    "no assertion changes"
+  ]
+}

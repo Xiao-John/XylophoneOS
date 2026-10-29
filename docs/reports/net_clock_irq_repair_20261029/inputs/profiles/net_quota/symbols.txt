@@ -1,0 +1,41 @@
+00000000001beda8 b xos::virtio_net::(anonymous namespace)::interrupts
+00000000001bef2c b xos::virtio_net::(anonymous namespace)::multiplier
+00000000001bedb6 b xos::virtio_net::(anonymous namespace)::old_command
+00000000001bed90 b xos::virtio_net::(anonymous namespace)::transmitted
+00000000001bef30 b xos::virtio_net::(anonymous namespace)::notify_bytes
+00000000001bef38 b xos::virtio_net::(anonymous namespace)::configuration
+00000000001b8eae b xos::virtio_net::(anonymous namespace)::pending_begin
+00000000001b8eac b xos::virtio_net::(anonymous namespace)::pending_count
+00000000001bedb0 b xos::virtio_net::(anonymous namespace)::route_enabled
+00000000001bedb3 b xos::virtio_net::(anonymous namespace)::probe_attempted
+00000000001b8ea0 b xos::virtio_net::(anonymous namespace)::rejected_header
+00000000001bee80 b xos::virtio_net::(anonymous namespace)::rx
+00000000001bedc0 b xos::virtio_net::(anonymous namespace)::tx
+00000000001bef40 b xos::virtio_net::(anonymous namespace)::isr
+00000000001bedb2 b xos::virtio_net::(anonymous namespace)::live
+00000000001121a0 t xos::virtio_net::(anonymous namespace)::send(unsigned char const*, unsigned int)
+00000000001bedb1 b xos::virtio_net::(anonymous namespace)::broken
+00000000001bef50 b xos::virtio_net::(anonymous namespace)::common
+00000000001bedb4 b xos::virtio_net::(anonymous namespace)::mapped
+00000000001bef48 b xos::virtio_net::(anonymous namespace)::notify
+0000000000112580 t xos::virtio_net::(anonymous namespace)::consume(xos::virtio_net::(anonymous namespace)::queue&, bool)
+00000000001bed80 b xos::virtio_net::(anonymous namespace)::dropped
+0000000000111f00 t xos::virtio_net::(anonymous namespace)::pattern(unsigned char*, unsigned int, unsigned char)
+00000000001b8ec0 b xos::virtio_net::(anonymous namespace)::pending
+00000000001122e0 t xos::virtio_net::(anonymous namespace)::release()
+00000000001bef58 b xos::virtio_net::(anonymous namespace)::function
+00000000001bedb8 b xos::virtio_net::(anonymous namespace)::irq_line
+00000000001bed98 b xos::virtio_net::(anonymous namespace)::received
+00000000001bed88 b xos::virtio_net::(anonymous namespace)::rejected
+00000000001beda0 b xos::virtio_net::(anonymous namespace)::spurious
+0000000000111f90 t xos::virtio_net::(anonymous namespace)::configure(xos::virtio_net::(anonymous namespace)::queue&, unsigned short)
+00000000001bef28 b xos::virtio_net::(anonymous namespace)::dma_pages
+0000000000112900 T xos::virtio_net::interrupt(unsigned char)
+0000000000112a20 T xos::virtio_net::self_test(unsigned int)
+0000000000183000 b xos::clock::(anonymous namespace)::tick_count
+00000000001002e0 T xos::clock::monotonic_ns()
+0000000000100310 T xos::clock::timer_interrupt()
+00000000001002d0 T xos::clock::ticks()
+000000000010dc60 T xos::platform::device_irq(unsigned char)
+000000000010d9c0 T xos::platform::pc::claim_diagnostic_irq(unsigned char, void (*)(unsigned char))
+000000000010d990 T xos::platform::pc::pic_eoi(unsigned char)

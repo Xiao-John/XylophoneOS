@@ -18,6 +18,18 @@ inline i64 close(u32 handle) { return syscall(sys_handle_close, handle); }
 inline i64 stream_lease(u32 handle, stream_lease_action action, u64 target = 0) {
     return syscall(sys_stream_lease, handle, static_cast<u64>(action), target);
 }
+inline i64 channel_open(const channel_create& request) {
+    return syscall(sys_channel, static_cast<u64>(channel_action::create), reinterpret_cast<u64>(&request));
+}
+inline i64 channel_get(u32 index, channel_info& info) {
+    return syscall(sys_channel, static_cast<u64>(channel_action::enumerate), index, reinterpret_cast<u64>(&info));
+}
+inline i64 channel_close(u32 handle) {
+    return syscall(sys_channel, static_cast<u64>(channel_action::close), handle);
+}
+inline i64 channel_wait(u32 handle, u64 deadline) {
+    return syscall(sys_channel, static_cast<u64>(channel_action::wait), handle, deadline);
+}
 inline i64 ipc_send(u32 handle, const void* data, u64 length) {
     return syscall(4, handle, reinterpret_cast<u64>(data), length);
 }

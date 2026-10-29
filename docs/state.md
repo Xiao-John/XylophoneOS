@@ -82,8 +82,8 @@ sys54 显式截止时间/console IRQ 等待已实现但未客体验证，老行�
 W1 在本分支实现 sys80 独占字节流读取权，契约见[stream_lease](contracts/stream_lease.md)，
 宿主状态测试与构建见[0092](work_log/0092_stream_lease_mechanism.md)；尚未跨分支同步
 或客体验收，用户态终端服务、模式恢复和救援入口仍未实现。
-通用 IPC 通道 sys81 的本地认领与会话、等待契约见[channel](contracts/channel.md)，
-尚未实现、跨分支同步或验收。
+通用 IPC 通道 sys81 已在本分支实现，会话、等待契约见[channel](contracts/channel.md)，
+构建与未验范围见[0094](work_log/0094_generic_channel.md)；尚未跨分支同步或客体验收。
 
 ## 2026-10-28 历史整合与交付（保留记录）
 
@@ -134,7 +134,7 @@ QtCore 的系统 build48e5e73bcd649f44 和本地输入编辑的 build3200de2c3b8
 - 输入编辑按[第一档](plans/input_edit_foundation.md)、[第二档](plans/terminal_editor.md)及
   [多语言](plans/multilingual.md)继续；先设计[ncursesw 公共底座](plans/ncursesw.md)，
   再优先评估 nano，kg 为备选。尚未实施或验收；相关改动提交后再验收。
-- 67–79 内存、81–95 等待/信号、96–111 显示扩展仍仅预留，具体接口先登记；
-  本分支 sys80 已实现但未验，合并前须核验其他分支分配。
+- 67–79 内存、82–95 等待/信号、96–111 显示扩展仍仅预留，具体接口先登记；
+  本分支 sys80/81 已实现但未验，合并前须核验其他分支分配。
 - 按 Discipline→本页→宪法→专项契约/登记接手；新开发独立分支/PR交付，
   公共 build 排他，localpilot 隔离。

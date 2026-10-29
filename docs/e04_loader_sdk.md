@@ -13,6 +13,7 @@
 |---|---:|
 | `sys_pipe_wait` | 54 |
 | `sys_stream_lease` | 80 |
+| `sys_channel` | 81 |
 | `sys_process_guard` | 62 |
 | `sys_random_bytes` | 63 |
 | `sys_clock_realtime` | 64 |
@@ -200,6 +201,9 @@ W1 开发中扩展 sys54：第三参数非零时是绝对单调纳秒截止时�
 sys80 `sys_stream_lease` 是开发中的独占字节流读取权机制；参数、委派和回收见
 [专项契约](contracts/stream_lease.md)。当前只支持 console stdin，未客体验收；它不
 提供用户态终端服务、终端模式或 POSIX 作业控制。未显式 claim 时旧读取行为保持。
+
+sys81 `sys_channel` 是开发中的受控单槽 IPC 与等待机制，身份和生命周期见
+[专项契约](contracts/channel.md)；当前未客体验收，不等于用户态终端服务完成。
 
 sys55 `sys_process_foreground(&request,active,0)`：request 为48字节固定宽度
 `process_foreground{version=1,size=48,count,reserved=0,pids[4]}`；未使用 PID 必须0。

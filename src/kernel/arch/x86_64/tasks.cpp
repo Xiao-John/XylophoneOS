@@ -105,6 +105,7 @@ struct endpoint_record {
     u64 owner_pid;
     u32 capacity;
     bool session_response;
+    bool generic_channel;
     bool pending;
     u32 length;
     u8 data[file_message_bytes];
@@ -181,6 +182,30 @@ void wake_revoked_console_waiters() {
         if (thread.state == thread_state::blocked && thread.wait_kind == thread_wait_kind::console_read &&
             (thread.process == nullptr || thread.process->pid != input_lease.holder())) {
             ready_with(thread, process_error_denied);
+        }
+    }
+}
+
+void wake_channel_waiters(u32 handle, bool readers, bool writers, i64 result) {
+    for (auto& thread : threads) {
+        if (thread.state != thread_state::blocked || thread.wait_target != handle) { continue; }
+        if ((readers && thread.wait_kind == thread_wait_kind::channel_read) ||
+            (writers && thread.wait_kind == thread_wait_kind::channel_write)) {
+            ready_with(thread, result);
+        }
+    }
+}
+
+void close_channel(endpoint_record& endpoint) {
+    wake_channel_waiters(endpoint.handle, true, true, sys_error_invalid_handle);
+    endpoint = endpoint_record{};
+}
+
+void release_channels(u64 pid) {
+    for (auto& endpoint : endpoints) {
+        if (endpoint.used && endpoint.generic_channel &&
+            (endpoint.owner_pid == pid || endpoint.sender_pid == pid || endpoint.receiver_pid == pid)) {
+            close_channel(endpoint);
         }
     }
 }
@@ -627,7 +652,8 @@ i64 ipc_send(u64 handle, u64 address, u64 length) {
     endpoint_record* endpoint = endpoint_for(handle);
     if (endpoint == nullptr || current == nullptr || endpoint->sender_pid != current->pid ||
         (current->send_handle != handle &&
-         !(current->block_access && endpoint->session_response) && !display_endpoint(handle))) {
+         !(current->block_access && endpoint->session_response) && !display_endpoint(handle) &&
+         !endpoint->generic_channel)) {
         return sys_error_invalid_handle;
     }
     if (endpoint->receiver_pid == current->pid || length == 0 || length > endpoint->capacity) {
@@ -642,6 +668,7 @@ i64 ipc_send(u64 handle, u64 address, u64 length) {
     copy_from_user(endpoint->data, address, length);
     endpoint->length = static_cast<u32>(length);
     endpoint->pending = true;
+    if (endpoint->generic_channel) { wake_channel_waiters(endpoint->handle, true, false, 0); }
     if(handle==display_response_handle){display_delivered=false;display_presented=false;}
     if(display_endpoint(handle)){display_wake(handle,0);}
     return 0;
@@ -650,7 +677,8 @@ i64 ipc_send(u64 handle, u64 address, u64 length) {
 i64 ipc_recv(u64 handle, u64 address, u64 length) {
     endpoint_record* endpoint = endpoint_for(handle);
     if (endpoint == nullptr || current == nullptr || endpoint->receiver_pid != current->pid ||
-        (current->recv_handle != handle && !current->block_access && !display_endpoint(handle))) {
+        (current->recv_handle != handle && !current->block_access && !display_endpoint(handle) &&
+         !endpoint->generic_channel)) {
         return sys_error_invalid_handle;
     }
     if (!user_range_ok(address, length, true)) { return sys_error_invalid_argument; }
@@ -659,6 +687,7 @@ i64 ipc_recv(u64 handle, u64 address, u64 length) {
     copy_to_user(address, endpoint->data, endpoint->length);
     const u32 length_received = endpoint->length;
     endpoint->pending = false;
+    if (endpoint->generic_channel) { wake_channel_waiters(endpoint->handle, false, true, 0); }
     if(handle==display_request_handle){display_delivered=true;display_presented=false;}
     else {endpoint->length = 0;}
     return static_cast<i64>(length_received);
@@ -767,6 +796,7 @@ void mark_reap(process_record* task) {
 // This always runs on a different process's kernel stack. Shared pages have one owner.
 void destroy_task(process_record* task) {
     if (task == nullptr || task->state == task_state::free || task == current) { return; }
+    release_channels(task->pid);
     if (input_lease.remove(task->pid)) { wake_revoked_console_waiters(); }
     reap_pending[task_index(task)] = false;
     const u64 pid = task->pid;
@@ -807,6 +837,7 @@ completion_record* completion_for(u64 parent, u64 pid) {
 void finish_task(process_record* task, process_outcome outcome, i64 code,
                   u64 vector = 0, u64 address = 0, u64 instruction = 0) {
     if (task->state == task_state::dead) { return; }
+    release_channels(task->pid);
     if (input_lease.remove(task->pid)) { wake_revoked_console_waiters(); }
     display_release(task->pid);
     task->closing = true;
@@ -1201,7 +1232,8 @@ void expire_waiters() {
         if (thread.state == thread_state::blocked &&
             (thread.wait_kind == thread_wait_kind::word || thread.wait_kind == thread_wait_kind::sleep ||
              thread.wait_kind == thread_wait_kind::pipe_read || thread.wait_kind == thread_wait_kind::pipe_write ||
-             thread.wait_kind == thread_wait_kind::console_read) &&
+             thread.wait_kind == thread_wait_kind::console_read || thread.wait_kind == thread_wait_kind::channel_read ||
+             thread.wait_kind == thread_wait_kind::channel_write) &&
             thread_deadline_reached(now, thread.deadline_ns)) {
             ready_with(thread, thread.wait_kind == thread_wait_kind::sleep ? 0 : thread_error_timeout);
         }
@@ -1557,6 +1589,72 @@ void* process_syscall(interrupt_frame* frame) {
     i64 result = process_error_invalid;
     const u64 first = frame->rdi, second = frame->rsi, third = frame->rdx;
     switch (frame->rax) {
+    case sys_channel: {
+        const auto action = static_cast<channel_action>(first);
+        if (action == channel_action::create) {
+            if (third != 0 || !user_range_ok(second, sizeof(channel_create), false)) { break; }
+            channel_create request{};
+            copy_from_user(&request, second, sizeof(request));
+            if (request.version != channel_version || request.size != sizeof(request) || request.reserved != 0 ||
+                request.capacity == 0 || request.capacity > file_message_bytes ||
+                request.sender_pid == request.receiver_pid) { break; }
+            process_record* sender = task_by_pid(request.sender_pid);
+            process_record* receiver = task_by_pid(request.receiver_pid);
+            auto controlled = [](const process_record* task) {
+                return task != nullptr && task->state != task_state::dead && !task->closing &&
+                    !task->replacement_pending &&
+                    (task == current || (task->parent == current->pid &&
+                     completion_for(current->pid, task->pid) != nullptr));
+            };
+            if (!controlled(sender) || !controlled(receiver)) { result = process_error_denied; break; }
+            u32 owned = 0;
+            for (const auto& endpoint : endpoints) {
+                if (endpoint.used && endpoint.generic_channel && endpoint.owner_pid == current->pid) { ++owned; }
+            }
+            if (owned >= 4) { result = process_error_resources; break; }
+            const u32 handle = endpoint_attach(receiver->pid, sender->pid, current->pid, request.capacity);
+            if (handle == 0) { result = process_error_resources; break; }
+            endpoint_for(handle)->generic_channel = true;
+            result = static_cast<i64>(handle);
+        } else if (action == channel_action::enumerate) {
+            if (second >= max_endpoints || !user_range_ok(third, sizeof(channel_info), true)) { break; }
+            u64 ordinal = 0;
+            result = thread_error_not_found;
+            for (const auto& endpoint : endpoints) {
+                if (!endpoint.used || !endpoint.generic_channel ||
+                    (endpoint.sender_pid != current->pid && endpoint.receiver_pid != current->pid)) { continue; }
+                if (ordinal++ != second) { continue; }
+                const bool sender = endpoint.sender_pid == current->pid;
+                const channel_info info{channel_version, sizeof(channel_info), endpoint.handle,
+                    sender ? channel_send : channel_receive,
+                    sender ? endpoint.receiver_pid : endpoint.sender_pid, endpoint.owner_pid};
+                copy_to_user(third, &info, sizeof(info)); result = 0; break;
+            }
+        } else if (action == channel_action::close) {
+            if (third != 0) { break; }
+            endpoint_record* endpoint = endpoint_for(second);
+            if (endpoint == nullptr || !endpoint->generic_channel ||
+                (endpoint->owner_pid != current->pid && endpoint->sender_pid != current->pid &&
+                 endpoint->receiver_pid != current->pid)) { result = process_error_denied; break; }
+            close_channel(*endpoint); result = 0;
+        } else if (action == channel_action::wait) {
+            endpoint_record* endpoint = endpoint_for(second);
+            if (endpoint == nullptr || !endpoint->generic_channel ||
+                (endpoint->sender_pid != current->pid && endpoint->receiver_pid != current->pid)) {
+                result = process_error_denied; break;
+            }
+            const bool sender = endpoint->sender_pid == current->pid;
+            if (sender ? !endpoint->pending : endpoint->pending) { result = 0; break; }
+            if (third == 0) { result = process_error_would_block; break; }
+            if (thread_deadline_reached(monotonic_ns(), third)) { result = thread_error_timeout; break; }
+            current_thread->wait_kind = sender ? thread_wait_kind::channel_write : thread_wait_kind::channel_read;
+            current_thread->wait_target = endpoint->handle;
+            current_thread->deadline_ns = third;
+            current_thread->state = thread_state::blocked;
+            frame->rax = 0; return schedule(frame);
+        }
+        break;
+    }
     case sys_stream_lease: {
         if (first != 0 || (current->stdio_mask & 1u) == 0 ||
             !current->stdio[0].valid || !current->stdio[0].console || current->stdio[0].writable) {
@@ -1682,6 +1780,7 @@ void* process_syscall(interrupt_frame* frame) {
             result = process_error_state; break;
         }
         if (next_endpoint_handle > 0xfffffffeull) { result = process_error_resources; break; }
+        release_channels(current->pid);
         display_release(current->pid);
         const u64 old_space = current->cr3;
         const u32 old_pages = current->user_pages;

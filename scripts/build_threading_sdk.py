@@ -237,6 +237,7 @@ def main():
                    'pipe_atomic_bytes': 4096, 'pipe_wait_write_minimum': True,
                    'pipe_wait_deadline': 'implemented_unqualified',
                    'stream_lease': {'syscall': 80, 'status': 'implemented_unqualified'},
+                   'channel': {'syscall': 81, 'status': 'implemented_unqualified'},
                    'pipe_atomic_flag': '0x8000000000000000'},
                'qualification': 'not_run', 'commands': commands,
                'inputs': initial_inputs,

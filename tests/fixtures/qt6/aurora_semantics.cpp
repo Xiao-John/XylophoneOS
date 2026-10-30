@@ -70,7 +70,14 @@ int main(int argc,char **argv) {
         bool covered_ok=false;for(auto v:first["nodes"].toArray()){auto n=v.toObject();if(n["nativeName"]=="covered-button")covered_ok=n["visibility"]=="locally-occluded-or-clipped";}
         check(covered_ok,"ssg_local_occlusion");
         scene.set_node_limit(0);check(scene.snapshot()["status"]=="RESOURCE_LIMIT","ssg_budget_denial");scene.set_node_limit(96);
-        target->setText("changed for diff");auto second=scene.snapshot();auto delta=scene.diff(first_version,epoch);check(delta["status"]=="OK" && !delta["changed"].toArray().isEmpty(),"ssg_incremental_change");
+        // The full tree above is intentionally bounded and may be capped. A
+        // filtered complete query is the appropriate basis for this diff test.
+        const auto before_edit=scene.snapshot(false,"textbox");
+        check(before_edit["status"]=="OK" && !before_edit["capped"].toBool(),"ssg_targeted_snapshot_complete");
+        target->setText("changed for diff");auto second=scene.snapshot(false,"textbox");
+        auto delta=scene.diff(before_edit["sceneVersion"].toString().toULongLong(),before_edit["sourceEpoch"].toString());
+        bool changed_target=false;for(auto v:delta["changed"].toArray()){auto n=v.toObject();if(n["nativeName"]=="draft-title" && n["text"]=="changed for diff")changed_target=true;}
+        check(!second["capped"].toBool() && delta["status"]=="OK" && changed_target,"ssg_incremental_change");
         check(QJsonDocument(delta).toJson().size()<QJsonDocument(second).toJson().size(),"ssg_diff_smaller");
         auto *ephemeral=new QLabel("temporary",panel);ephemeral->setObjectName("ephemeral");ephemeral->show();
         const auto with_node=scene.snapshot(false,"label");QString removed_id;

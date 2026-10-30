@@ -4,6 +4,13 @@
 跨进程SSG/合成器/生产权限仍BLOCKED，无内核/系统ABI/QPA改动；LocalPilot仅LP0研究。
 单Surface桌面另一个审查单元交付。旧资格与失败保持原输入。
 
+## SSG Diff 审查修复（待审）
+
+在 SDK `758dde49` 上修正截断、查询范围变化及重复 ID 的 Diff 语义；独立
+客体回归 12/12、既有本地语义回归 5 项通过。Browser 需随 SDK 变更调整
+查询作用域并重验；无生产 Broker。见 [0105](work_log/0105_ssg_diff_integrity.md)。
+
+
 ## 保留的历史状态
 
 2026-10-29。本次GPU后端整合同步的远端 main 为 `85120a7`；E17/Aurora PR #13

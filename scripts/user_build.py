@@ -8,7 +8,7 @@ import struct
 from toolchain import COMMON_FLAGS, X86_FLAGS, TARGET, tool
 
 
-def build_users(root, build, nasm, run, build_id):
+def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=False):
     sdk = build / "sdk"
     if sdk.is_symlink():
         raise SystemExit("Refusing a symlinked SDK output directory")
@@ -88,6 +88,8 @@ def build_users(root, build, nasm, run, build_id):
               "struct module { const char* name; const u8* bytes; u64 size; };"]
     for name in names:
         source_path = root / (f"src/user/services/{name}.cpp" if name in ("files", "display", "terminal") else f"src/user/programs/{name}.cpp")
+        if name == "supervisor" and terminal_supervisor_probe:
+            source_path = root / "tests/fixtures/ncursesw/terminal_supervisor_probe.cpp"
         if name == "threading_core_probe":
             source_path = root / "tests/fixtures/threading/core_probe.cpp"
         extra_flags = ("-w",) if name in libc_programs else ()
@@ -107,6 +109,7 @@ def build_users(root, build, nasm, run, build_id):
              *([str(core_archive), str(loader_archive)] if name in ("threading_core_probe", "gfxdemo", "terminal") else []),
              *([compile_source(root / "src/user/drivers/uart_16550.cpp")] if name == "terminal" else []),
              *([file_ui_object, terminal_control_object] if name == "supervisor" else []),
+             *([str(loader_archive)] if name == "supervisor" else []),
              *([*fatfs_objects] if name == "files" else []),
              *(["-Wl,--start-group", str(archive), str(loader_archive), "-L", str(sdk / "lib"),
                 "-lc", "-lm", "-lgcc", "-Wl,--end-group"]

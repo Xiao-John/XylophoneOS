@@ -165,6 +165,8 @@ sys83 的受控 IRQ4 事件已在本分支实现，契约见[irq_event](contract
 [0129](work_log/0129_terminal_service_host_probe.md)。
 COM1 显式解除隔离并重新授权的基础已实现，尚无完整服务重启或客体验证，见
 [0130](work_log/0130_com1_reauthorization.md)。
+独立 supervisor 交接探针与测试镜像已能构建，尚未运行客体，见
+[0131](work_log/0131_terminal_guest_probe.md)。
 用户态 UART 的 PIO、IRQ 与 COM1 调试通路交接提案见
 [uart_user_driver_proposal](contracts/uart_user_driver_proposal.md)，为早期设计提案，具体
 现状以 PIO/IRQ 契约及上述工作记录为准。

@@ -15,7 +15,7 @@ namespace {
 class Style final : public QProxyStyle {
 public:
     Style():QProxyStyle(QStyleFactory::create("Fusion")) {setObjectName("Xylophone Aurora Glass");}
-    void polish(QWidget *w) override {QProxyStyle::polish(w);w->setPalette(qApp->palette());w->setAttribute(Qt::WA_Hover);w->setMouseTracking(true);}
+    void polish(QWidget *w) override {QProxyStyle::polish(w);w->setAttribute(Qt::WA_Hover);w->setMouseTracking(true);}
     void drawControl(ControlElement element,const QStyleOption *option,QPainter *p,const QWidget *w=nullptr) const override {
         if(element!=CE_PushButton){QProxyStyle::drawControl(element,option,p,w);return;}
         const auto *b=qstyleoption_cast<const QStyleOptionButton*>(option);
@@ -32,13 +32,16 @@ public:
         p->fillPath(path,fill);if(down)p->fillPath(path,QColor(4,12,29,70));
         p->setPen(t.border);p->drawPath(path);
         if(b->state&State_HasFocus){p->setPen(QPen(t.focus,2));p->drawPath(corner(r.adjusted(3,3,-3,-3),t.control_radius-3));}
-        p->setPen(accent?t.content:t.text);p->drawText(b->rect,Qt::AlignCenter,b->text);p->restore();
+        // Let Qt render the standard label, including icons and mnemonics,
+        // while keeping the Aurora panel and its intended foreground color.
+        auto label=*b;label.palette.setColor(QPalette::ButtonText,accent?t.content:t.text);
+        QProxyStyle::drawControl(CE_PushButtonLabel,&label,p,w);p->restore();
     }
     void drawPrimitive(PrimitiveElement element,const QStyleOption *o,QPainter *p,const QWidget *w=nullptr) const override {
         if(element==PE_PanelLineEdit) {
             const auto t=tokens();
             p->save();p->setRenderHint(QPainter::Antialiasing);const auto path=corner(QRectF(o->rect).adjusted(1,1,-1,-1),t.control_radius);
-            p->fillPath(path,t.content);p->setPen(QPen((o->state&State_HasFocus)?t.focus:t.border,(o->state&State_HasFocus)?2:1));p->drawPath(path);p->restore();return;
+            p->fillPath(path,o->palette.color(QPalette::Base));p->setPen(QPen((o->state&State_HasFocus)?t.focus:t.border,(o->state&State_HasFocus)?2:1));p->drawPath(path);p->restore();return;
         }
         if(element==PE_IndicatorCheckBox) {
             const auto t=tokens();p->save();p->setRenderHint(QPainter::Antialiasing);

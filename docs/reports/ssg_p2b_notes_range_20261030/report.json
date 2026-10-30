@@ -1,0 +1,111 @@
+{
+  "status": "PASSED",
+  "inputs": {
+    "image": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img",
+      "sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08"
+    },
+    "session": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-p2b-notes/build/ssg-p2b-notes-final/session.elf",
+      "sha256": "a655bba4e92bbffac7ec636e6032bab3237859661a9071b9a5050a07404a1dcb"
+    },
+    "consumer": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-p2b-notes/build/ssg-p2b-notes-final/consumer/ssg-consumer.elf",
+      "sha256": "7f5841fca843a9de1551244195832a35407b2252ca0c168906d5f89804158029"
+    },
+    "notes": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-p2b-notes/build/ssg-p2b-notes-final/notes/notes.elf",
+      "sha256": "a049c10079dec138cbf04da8d5e27ce810736a622e5ec6c78cf5c367df2a378c"
+    }
+  },
+  "checks": [
+    "long_unicode_range_exact_reconstruction",
+    "provider_consumer_resources_reclaimed"
+  ],
+  "qemu_command": [
+    "../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ssg_range_7zfl099x/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_lpjlydef/qmp.sock,server=on,wait=off"
+  ],
+  "pages": [
+    {
+      "start": 0,
+      "end": 512,
+      "revision": "0"
+    },
+    {
+      "start": 512,
+      "end": 1024,
+      "revision": "0"
+    },
+    {
+      "start": 1024,
+      "end": 1536,
+      "revision": "0"
+    },
+    {
+      "start": 1536,
+      "end": 2048,
+      "revision": "0"
+    },
+    {
+      "start": 2048,
+      "end": 2560,
+      "revision": "0"
+    },
+    {
+      "start": 2560,
+      "end": 3072,
+      "revision": "0"
+    },
+    {
+      "start": 3072,
+      "end": 3584,
+      "revision": "0"
+    },
+    {
+      "start": 3584,
+      "end": 3623,
+      "revision": "0"
+    }
+  ],
+  "resources_before": [
+    130235,
+    3,
+    1
+  ],
+  "resources_after": [
+    130235,
+    3,
+    1
+  ]
+}

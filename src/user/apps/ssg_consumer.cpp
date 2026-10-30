@@ -197,6 +197,29 @@ int main(int argc,char **argv){
         bool ok=false;const auto result=client.request(req,&ok);display(result);
         return ok && result.value("status")=="OK"?0:1;
     }
+    if(mode=="text-range"){
+        bool ok=false;const auto base=client.request(query("document"),&ok);
+        const auto nodes=base.value("nodes").toArray();
+        if(!ok || base.value("status")!="OK" || base.value("capped").toBool() || nodes.size()!=1)return 1;
+        QJsonObject req{{"op","text_range"},{"sourceInstance",base.value("sourceInstance")},
+            {"sourceEpoch",base.value("sourceEpoch")},{"nodeId",nodes.first().toObject().value("id")},
+            {"start",0},{"maxLength",512}};
+        int offset=0,total=-1;QString revision;int pages=0;
+        while(pages++<256){
+            req["start"]=offset;if(!revision.isEmpty())req["documentRevision"]=revision;
+            const auto part=client.request(req,&ok);
+            if(!ok || part.value("status")!="OK" || part.value("sourceInstance")!=base.value("sourceInstance") ||
+               part.value("sourceEpoch")!=base.value("sourceEpoch") || part.value("start").toInt(-1)!=offset ||
+               (!revision.isEmpty() && part.value("documentRevision").toString()!=revision))return 1;
+            revision=part.value("documentRevision").toString();
+            if(total<0)total=part.value("documentLength").toInt(-1);
+            if(total!=part.value("documentLength").toInt(-1) || revision.isEmpty())return 1;
+            const int end=part.value("end").toInt(-1);
+            if(end<offset || end>total || (end==offset && end!=total) || part.value("text").toString().size()!=end-offset || part.value("remaining").toInt(-1)!=total-end)return 1;
+            offset=end;if(offset==total){std::printf("SSG_TEXT_RANGE_COMPLETE pages=%d units=%d revision=%s\n",pages,total,revision.toUtf8().constData());return 0;}
+        }
+        std::printf("SSG_TEXT_RANGE_INCOMPLETE offset=%d total=%d\n",offset,total);return 1;
+    }
     if(mode=="detail"){
         const QString role=argc>2?QString::fromUtf8(argv[2]):QString();
         const QString requested_id=argc>3?QString::fromUtf8(argv[3]):QString();

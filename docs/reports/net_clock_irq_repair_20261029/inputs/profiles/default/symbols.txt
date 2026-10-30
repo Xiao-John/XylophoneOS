@@ -1,0 +1,6 @@
+0000000000180000 b xos::clock::(anonymous namespace)::tick_count
+00000000001002e0 T xos::clock::monotonic_ns()
+0000000000100310 T xos::clock::timer_interrupt()
+00000000001002d0 T xos::clock::ticks()
+000000000010d940 T xos::platform::device_irq(unsigned char)
+000000000010d850 T xos::platform::pc::pic_eoi(unsigned char)

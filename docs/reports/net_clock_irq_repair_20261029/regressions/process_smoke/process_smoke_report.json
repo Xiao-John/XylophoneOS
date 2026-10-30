@@ -1,0 +1,115 @@
+{
+  "build_id": "919bd09bb69b6e0f",
+  "checks": [
+    "elf_boundary_cases_truncations_and_mutations_under_sanitizers",
+    "loader_and_sdk_common_code_second_isa_compile",
+    "gcc_cpp_sdk_programs_and_guest_image_catalog",
+    "elf_segments_bss_data_argv_handles_exit_and_single_consumption",
+    "blocking_wait_and_signed_exit_code_with_preemption",
+    "inherited_stdin_stdout_and_nonblocking_read",
+    "guest_loader_rejects_malformed_interp_overflow_and_24_boundaries",
+    "kernel_builder_bounds_permissions_stale_handles_and_capacity_rollback",
+    "private_memory_readonly_nx_and_enabled_fpu_status",
+    "live_loaded_elf_permissions_stack_guard_and_kernel_isolation",
+    "background_spawn_supervisor_kill_and_distinct_killed_status",
+    "foreground_infinite_loop_escape_recovers_terminal",
+    "ten_repeated_load_wait_exit_cycles_exact_resource_stability"
+  ],
+  "status": "passed",
+  "image_sha256": "791a867a78194f21ad4c339c41e668f41b817c5ac0f436c786cd7b0705a3f102",
+  "command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/process_smoke/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/process_smoke/build/temporary_inputs/xos_e04_explicit_disk_j1rwubj4/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_padp_9ly/qmp.sock,server=on,wait=off"
+  ],
+  "baseline_resources": [
+    130257,
+    4,
+    0
+  ],
+  "loaded_spin": {
+    "pid": 33,
+    "cr3": 1908736
+  },
+  "repeated_resources": [
+    [
+      130257,
+      4,
+      0
+    ],
+    [
+      130257,
+      4,
+      0
+    ],
+    [
+      130257,
+      4,
+      0
+    ],
+    [
+      130257,
+      4,
+      0
+    ],
+    [
+      130257,
+      4,
+      0
+    ],
+    [
+      130257,
+      4,
+      0
+    ],
+    [
+      130257,
+      4,
+      0
+    ],
+    [
+      130257,
+      4,
+      0
+    ],
+    [
+      130257,
+      4,
+      0
+    ],
+    [
+      130257,
+      4,
+      0
+    ]
+  ]
+}

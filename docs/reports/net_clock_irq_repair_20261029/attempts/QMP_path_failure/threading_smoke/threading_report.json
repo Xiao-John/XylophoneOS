@@ -1,0 +1,10 @@
+{
+  "build_id": "8378ff4e9dbf24bd",
+  "status": "failed",
+  "checks": [],
+  "scope": "T0/T1 mechanism probes; T2 newlib/pthread/C++ not qualified",
+  "runs": [],
+  "image_sha256": "ed88e69dd94c032af1bcd609e5ad7f639178728f25873529b31eb6c5412bb704",
+  "probe_sha256": "0777f8430d28f19e066c4ce71a83a5fce4a106bb6a65b1e007d7599a2067e216",
+  "error": "threading: QEMU exited 1"
+}

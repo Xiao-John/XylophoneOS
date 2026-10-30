@@ -1,0 +1,103 @@
+{
+  "status": "PASSED",
+  "image_sha256": "f019c215cd7cec00d3a5f5bbdbe91f511d0c76325c9633c7baa5eecfda721d61",
+  "elf_sha256": "97933a3ec29a34f01aac9d8e4dfd5d63b3a7ebce54427c43b2a40f93914a7a39",
+  "runs": [
+    {
+      "run": 0,
+      "marker": "QT_CORE_EXTENDED_OK",
+      "resources_before": [
+        130281,
+        2,
+        0
+      ],
+      "resources_after": [
+        130281,
+        2,
+        0
+      ],
+      "qemu_command": [
+        "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+        "-machine",
+        "pc-i440fx-10.0",
+        "-accel",
+        "tcg",
+        "-cpu",
+        "qemu64,+rdrand",
+        "-m",
+        "512M",
+        "-smp",
+        "1",
+        "-nic",
+        "none",
+        "-vga",
+        "std",
+        "-rtc",
+        "base=utc,clock=host",
+        "-drive",
+        "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_qt_persist_mv6rpx7k/boot.img,format=raw,if=floppy,index=0,readonly=on",
+        "-boot",
+        "order=a,strict=on",
+        "-no-reboot",
+        "-monitor",
+        "none",
+        "-serial",
+        "stdio",
+        "-display",
+        "none",
+        "-drive",
+        "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_qt_persist_mv6rpx7k/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "-qmp",
+        "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_v720rq90/qmp.sock,server=on,wait=off"
+      ]
+    },
+    {
+      "run": 1,
+      "marker": "QT_PERSIST_READ_OK",
+      "resources_before": [
+        130281,
+        2,
+        0
+      ],
+      "resources_after": [
+        130281,
+        2,
+        0
+      ],
+      "qemu_command": [
+        "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+        "-machine",
+        "pc-i440fx-10.0",
+        "-accel",
+        "tcg",
+        "-cpu",
+        "qemu64,+rdrand",
+        "-m",
+        "512M",
+        "-smp",
+        "1",
+        "-nic",
+        "none",
+        "-vga",
+        "std",
+        "-rtc",
+        "base=utc,clock=host",
+        "-drive",
+        "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_qt_persist_mv6rpx7k/boot.img,format=raw,if=floppy,index=0,readonly=on",
+        "-boot",
+        "order=a,strict=on",
+        "-no-reboot",
+        "-monitor",
+        "none",
+        "-serial",
+        "stdio",
+        "-display",
+        "none",
+        "-drive",
+        "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_qt_persist_mv6rpx7k/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "-qmp",
+        "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_kvs179yp/qmp.sock,server=on,wait=off"
+      ]
+    }
+  ]
+}

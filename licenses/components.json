@@ -732,6 +732,39 @@
       "artifact_sha256": {
         "src/ports/cpython/pillow/LICENSE": "17f240ae101143707e5e7303a5d800450d9ccc7475b463cedb555cefdb3c6ece"
       }
+    },
+    {
+      "name": "lwIP",
+      "version": "2.2.1",
+      "path": "src/ports/lwip",
+      "source": "https://git.savannah.nongnu.org/git/lwip.git",
+      "license": "BSD-3-Clause",
+      "notices": [
+        "src/ports/lwip/upstream/COPYING"
+      ],
+      "used_in": [
+        "experimental target NO_SYS archive only; no installed network service"
+      ],
+      "modifications": "No upstream patches; bounded XOS NO_SYS configuration and compiler glue. Source hashes in source_lock.json. Guest TCP/IP not qualified.",
+      "artifact_sha256": {
+        "src/ports/lwip/upstream/COPYING": "ef4aac92e05e87cd1cdc140870ed52206ba03d4a7fe46c1e11d7ffa6c87d252b"
+      }
+    },
+    {
+      "name": "PC PIC/PIT relocation and IRQ ownership repair",
+      "version": "2026-10-29",
+      "path": "src/kernel/platform/pc",
+      "source": "XylophoneOS historical arch/x86_64/pic.cpp at 9b832fa; original authors retained",
+      "license": "MIT AND Apache-2.0",
+      "notices": [
+        "licenses/mit_legacy.txt",
+        "LICENSE",
+        "NOTICE"
+      ],
+      "source_files": {
+        "src/kernel/platform/pc/interrupts.cpp": "MIT AND Apache-2.0"
+      },
+      "modifications": "Relocate historical PIC/PIT I/O; remove duplicate time state; platform-only exclusive diagnostic IRQ ownership, no new syscall"
     }
   ]
 }

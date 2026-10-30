@@ -1,0 +1,30 @@
+{
+  "command": [
+    "x86_64-elf-g++",
+    "-m64",
+    "-mno-red-zone",
+    "-nostdlib",
+    "-static",
+    "-no-pie",
+    "-Wl,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096",
+    "-T",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/accepted_default/sdk/user.ld",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/accepted_default/sdk/crt0_libc.o",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/accepted_probe_run/clock.o",
+    "-Wl,--start-group",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/accepted_default/sdk/lib/libxos.a",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/accepted_default/sdk/lib/libxos_loader.a",
+    "-L/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/accepted_default/sdk/lib",
+    "-lc",
+    "-lm",
+    "-lgcc",
+    "-Wl,--end-group",
+    "-o",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/inputs/clock_libc.elf"
+  ],
+  "sdk_manifest_sha256": "c23dd24b0653bc438aa21cecb6820605f944c961282f47a555895b5f08d32128",
+  "input_object_sha256": "3b4cd39adce0dd86ae2df89981b14b7ab31665e9a74fe46d782ece3fdb76321d",
+  "genuine_crt0_libc_sha256": "144fcba4b8f8e42874705430d845d101b343be8dd57e1d6fad1eefca483d7b1b",
+  "elf_sha256": "dc0e83631f10f230f50f26034c2490250cfc9b1cb3911c86681f997651508471",
+  "reason": "Original raw crt0 intentionally lacks exec-v3 marker; use the genuine descriptor-restoring libc CRT rather than forging an opt-in"
+}

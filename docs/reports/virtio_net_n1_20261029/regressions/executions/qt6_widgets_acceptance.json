@@ -1,0 +1,6 @@
+{
+  "runner": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/qt6_widgets_acceptance.py",
+  "original_sha256": "26eef50b2ade534a4e89610861a6795816835b039f31fcc95fcd44741db7c77d",
+  "executed_sha256": "59393cb955ac4cb5e1b1641d30e6747f934b4d48fb8b5349530fbee33bad14d3",
+  "changed": "ROOT assignment only; all assertions and guest inputs unchanged"
+}

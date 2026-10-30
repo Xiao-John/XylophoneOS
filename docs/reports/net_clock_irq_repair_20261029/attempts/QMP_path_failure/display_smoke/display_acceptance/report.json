@@ -1,0 +1,19 @@
+{
+  "status": "failed",
+  "build_id": "8378ff4e9dbf24bd",
+  "checks": [
+    {
+      "name": "source_and_artifact_hashes_match_manifest",
+      "status": "passed"
+    }
+  ],
+  "source_sha256": "8378ff4e9dbf24bd38c33315ff4a06388256a613f956072ce4df3d9363d19e19",
+  "image_sha256": "ed88e69dd94c032af1bcd609e5ad7f639178728f25873529b31eb6c5412bb704",
+  "not_run": [
+    "real_hardware",
+    "SMP",
+    "Qt",
+    "long_term_stress"
+  ],
+  "error": "AssertionError('display_acceptance/main: QEMU exited 1')"
+}

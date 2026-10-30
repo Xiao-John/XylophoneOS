@@ -1,0 +1,10 @@
+{
+  "original": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/virtio_net_acceptance.py",
+  "original_sha256": "4783317934d6e0c39063276cadba8382aa2c2e50c1ea8c646ddc67d48a31e899",
+  "executed_sha256": "1b1ebfafd1e6498f9231822d92bf1923c8fb228241f49c2d83b54aef5a350032",
+  "changes": [
+    "add test-only kernel ownership/IRQ0 control before real NIC diagnostics",
+    "after actual real Ethernet and user isolation faults, run actual clock ELF and compare before/after run counters",
+    "all original packet, device and resource assertions retained"
+  ]
+}

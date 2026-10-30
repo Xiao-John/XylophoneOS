@@ -1,0 +1,42 @@
+{
+  "build_id": "67883ca24e9dcdae",
+  "checks": [
+    "elf_boundary_cases_truncations_and_mutations_under_sanitizers",
+    "loader_and_sdk_common_code_second_isa_compile"
+  ],
+  "status": "failed",
+  "image_sha256": "f019c215cd7cec00d3a5f5bbdbe91f511d0c76325c9633c7baa5eecfda721d61",
+  "command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_5yfxtm3_/qmp.sock,server=on,wait=off"
+  ],
+  "error": "process_smoke: missing any of (b'demo: keep',); output=bytearray(b'===================================\\r\\n   XOS 0.0.2 | 64-bit | more checks than excuses\\r\\n   Guest star: Guo YePeng (did not panic, yet)\\r\\n   \"It booted on my machine.\" - everyone, ever\\r\\n  ================================================\\r\\n   guo = ceremonial greeting    joke = deterministic\\r\\n   help = actual work\\r\\nxos64> run\\r\\n[sched] event=starting\\r\\n[input] ps2=ready irq1=enabled irq12=enabled\\r\\n[sched] event=start tasks=8\\r\\nbad length\\nbad pointer\\ntx\\nbad length\\nbad pointer\\nbad handle rejected\\nno send right\\n[task] event=fault pid=5 vector=14 rip=0x0000000040000060 cr2=0x0000000000100000 result=killed tid=5\\r\\n[task] event=reclaimed pid=5 pages=11\\r\\nbye\\n[task] event=reclaimed pid=6 pages=11\\r\\nAAping\\nbad length\\nbad pointer\\ntx\\nmaintenance: persistent recovery required\\n[files] bootstrap-stat error=-7\\n\\nWelcome to Xshell | XylophoneOS\\nhelp: commands   dash -i: POSIX shell   trace on: diagnostics\\n\\nxsh> trace on\\nxsh: trace on\\nxsh> demo keep\\nmaintenance: persistent recovery required; command blocked\\nxsh> ')"
+}

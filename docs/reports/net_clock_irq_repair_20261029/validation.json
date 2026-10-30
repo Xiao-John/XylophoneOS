@@ -1,0 +1,18 @@
+{
+  "status": "PASSED",
+  "docs": {
+    "status": "passed",
+    "local_links": 530,
+    "allocated_syscalls": 66,
+    "history_sources": 73
+  },
+  "allocated_syscalls": 66,
+  "ABI_check": "PASSED",
+  "license_material_and_SDK_copy_checks": "PASSED_default_and_diagnostic",
+  "old_N1_report_bytes": "UNCHANGED_against_9b832fa",
+  "runtime_regression": "36_of_36_PASSED",
+  "limitations": [
+    "CHANGES_REQUESTED remains; no ring-3 driver acceptance",
+    "material audit is not member-level static distribution approval"
+  ]
+}

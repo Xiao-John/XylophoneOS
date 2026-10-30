@@ -1,0 +1,233 @@
+{
+  "scope": "CLOCK_IRQ_REPAIR_WITH_EXPERIMENTAL_N1_ONLY; NOT_MERGE_READY",
+  "runtime_base": "3377dbf35bdb43d850c9a2b8e8076da3be146f3d",
+  "profiles": {
+    "default": {
+      "build_id": "919bd09bb69b6e0f",
+      "source_digest": "919bd09bb69b6e0f9490a433f310e70f256f129d26136a08461141b543662a4f",
+      "source_count": 718,
+      "clock_irq_probe": false,
+      "virtio_net": {
+        "boot_diagnostic": false,
+        "dma_page_limit": 34
+      },
+      "legacy_images_available": true,
+      "artifacts": {
+        "kernel.elf": {
+          "bytes": 1551360,
+          "sha256": "782e44ff613d2bd4ae14a53832fab7b29591fc88931f5fbada65842ed7b90497"
+        },
+        "xos-install.iso": {
+          "bytes": 585728,
+          "sha256": "0bf08850cec5812055a363b0ab22293cc1ce4e5414c49c395bcd696207d6004a"
+        },
+        "real_mode.img": {
+          "bytes": 1474560,
+          "sha256": "97d831567ecb5c613f9aecb51e0c2f783ea1c31389ea873a837651ee898563f5"
+        },
+        "xos.img": {
+          "bytes": 1474560,
+          "sha256": "791a867a78194f21ad4c339c41e668f41b817c5ac0f436c786cd7b0705a3f102"
+        },
+        "xos.iso": {
+          "bytes": 583680,
+          "sha256": "a491433b379384ac5cfe5bf302739646ab70512c03def0dee351dddff0015324"
+        }
+      },
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_default"
+    },
+    "diagnostic": {
+      "build_id": "2ef23d2706818868",
+      "source_digest": "2ef23d2706818868a243919db52785fd728d3c229f8609f982e506a15cd6c984",
+      "source_count": 718,
+      "clock_irq_probe": false,
+      "virtio_net": {
+        "boot_diagnostic": true,
+        "dma_page_limit": 34
+      },
+      "legacy_images_available": false,
+      "artifacts": {
+        "kernel.elf": {
+          "bytes": 1638672,
+          "sha256": "5d0dc21b53044f05ac3e61ed90de885069eecee30b1b85c1c3f09e6682ce0051"
+        },
+        "xos-install.iso": {
+          "bytes": 598016,
+          "sha256": "4eec49f4e2639ea289da4c9cad77f736d2fdb0a90255988189bda07e2318f285"
+        },
+        "real_mode.img": {
+          "bytes": 1474560,
+          "sha256": "6d8f4c225d5aec204bb34446b7c286a150432c8f7cd01545fe4fe9b90c3ed8d3"
+        }
+      },
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_diagnostic"
+    },
+    "probe": {
+      "build_id": "96c3a71ea876dbcf",
+      "source_digest": "96c3a71ea876dbcfc3cdc7b8e0be3782f8fd303aafc5e40d6f97f863b951b66a",
+      "source_count": 718,
+      "clock_irq_probe": true,
+      "virtio_net": {
+        "boot_diagnostic": false,
+        "dma_page_limit": 34
+      },
+      "legacy_images_available": false,
+      "artifacts": {
+        "kernel.elf": {
+          "bytes": 1588152,
+          "sha256": "2303570b3ec6b470336035aaa0e9f99794610913f7aac807c071787a63a92ffd"
+        },
+        "xos-install.iso": {
+          "bytes": 589824,
+          "sha256": "9bdda8c07098af167fd6d0994883c7dcf23fbf51e4979b8d95d250d7b7947159"
+        },
+        "real_mode.img": {
+          "bytes": 1474560,
+          "sha256": "a2ade5ebbe1247db0b7a24e65dcd058ca445ca564c7101853afc9463a89050b9"
+        }
+      },
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_probe"
+    },
+    "net_quota": {
+      "build_id": "b8fcafc740a43edf",
+      "source_digest": "b8fcafc740a43edfe80e48ca131bfc87c9d079c6d15cb8d0a999bcc6a7f855b0",
+      "source_count": 718,
+      "clock_irq_probe": false,
+      "virtio_net": {
+        "boot_diagnostic": true,
+        "dma_page_limit": 3
+      },
+      "legacy_images_available": false,
+      "artifacts": {
+        "kernel.elf": {
+          "bytes": 1638672,
+          "sha256": "d4da02d2bfd525b9a48dd4a6168e3aec83cd9117bc8cc475693f60f73062a2da"
+        },
+        "xos-install.iso": {
+          "bytes": 598016,
+          "sha256": "88484e45f526d2cafdc18a8c5ddf71aaf6b4da6287d453435dcbd478def59cf0"
+        },
+        "real_mode.img": {
+          "bytes": 1474560,
+          "sha256": "43fd1e627c107912ce23e7d4bdfa8d9ee42023e5d16bb4488608f53c6fd30598"
+        }
+      },
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_net_quota"
+    },
+    "gpu_quota": {
+      "build_id": "bb28a785008436fa",
+      "source_digest": "bb28a785008436fa1a59a91d601442d9d09cfc809d5cb202eeb4755c43863d55",
+      "source_count": 718,
+      "clock_irq_probe": false,
+      "virtio_net": {
+        "boot_diagnostic": false,
+        "dma_page_limit": 34
+      },
+      "legacy_images_available": true,
+      "artifacts": {
+        "kernel.elf": {
+          "bytes": 1551360,
+          "sha256": "91c78fd740cd83152880d391f5a41724dc3add6c56fd4d7bfa7f196c2f87438a"
+        },
+        "xos-install.iso": {
+          "bytes": 585728,
+          "sha256": "4fad6b98c3311dfc01a372991f4d407f00a2567af35948e5237ad287e5e99a2f"
+        },
+        "real_mode.img": {
+          "bytes": 1474560,
+          "sha256": "a43e283e9c917eec1c412caba0c46ec1b120a02d704404478fae054193612acd"
+        },
+        "xos.img": {
+          "bytes": 1474560,
+          "sha256": "7816bdd5d5c57d2c27a4789d74f5d523df2dcf149c312c389538c7ee3ad3a175"
+        },
+        "xos.iso": {
+          "bytes": 583680,
+          "sha256": "cfd47c1ec6797f95fdfe45f13ed8f51223c0c77a0cb64264e74fcce1eb5ec0ac"
+        }
+      },
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_gpu_quota"
+    },
+    "gpu_timeout": {
+      "build_id": "0178bd56a6018397",
+      "source_digest": "0178bd56a6018397733f0e1a4e9ef514ee9b3da67a7d3bba21374a3ff196d395",
+      "source_count": 718,
+      "clock_irq_probe": false,
+      "virtio_net": {
+        "boot_diagnostic": false,
+        "dma_page_limit": 34
+      },
+      "legacy_images_available": true,
+      "artifacts": {
+        "kernel.elf": {
+          "bytes": 1524088,
+          "sha256": "d714596b08dd455f719ee5961cad4065eb3a1e1400b34358548dfbc6db4f43e5"
+        },
+        "xos-install.iso": {
+          "bytes": 581632,
+          "sha256": "5aad8047ebd8177d85c3089b20d561c0e9909a69c3a808d773a5d3b5c3a12481"
+        },
+        "real_mode.img": {
+          "bytes": 1474560,
+          "sha256": "8008178435bd0ecf75f0d008af6378f03506a8e434384fc0aa28836973ef05f6"
+        },
+        "xos.img": {
+          "bytes": 1474560,
+          "sha256": "962617732f55c91cf681f51266c70a4cc613d48a7cb1bdaac46b19228c68a81a"
+        },
+        "xos.iso": {
+          "bytes": 579584,
+          "sha256": "405d7926e811b007357587428a9ca4c0cebc59219ef011d6b2e9de1c068ec3c8"
+        }
+      },
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_gpu_timeout"
+    },
+    "combined": {
+      "build_id": "288d715bc351e2a2",
+      "source_digest": "288d715bc351e2a2665bfb867fd9fd53f1174e74e23b02bb59a8285493316438",
+      "source_count": 718,
+      "clock_irq_probe": true,
+      "virtio_net": {
+        "boot_diagnostic": true,
+        "dma_page_limit": 34
+      },
+      "legacy_images_available": false,
+      "artifacts": {
+        "kernel.elf": {
+          "bytes": 1662976,
+          "sha256": "122a07c56bd76ccb095734c2ff68d7d0ca9a20d4af7b12bad7c97976daed1499"
+        },
+        "xos-install.iso": {
+          "bytes": 598016,
+          "sha256": "e6c1abe6b5e3275dd04bf4825937d71e09f4cd69fcebe7d660cb2e0326c86faf"
+        },
+        "real_mode.img": {
+          "bytes": 1474560,
+          "sha256": "6be92ef31b254aa2ab9fc58430b8fee1e0eee087cd71f2823cc52c8de1ee7fdc"
+        }
+      },
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_combined"
+    }
+  },
+  "affected_suites": 36,
+  "affected_status": "PASSED",
+  "trace": {
+    "status": "PASSED",
+    "scope": "actual QEMU delivered OS IRQs and matching slave/master EOI writes; no kernel EOI statistics",
+    "trace_sha256": "8086d6477f95b8dc8a6af37e1bc3c60fd5bcb8a7bb334d7f3b2e3637a6d8cec7",
+    "OS_IRQ_counts": {
+      "0": 482,
+      "10": 1,
+      "1": 3,
+      "12": 1
+    },
+    "complete_irq_eoi_sequences": 487,
+    "errors": [],
+    "firmware_events_excluded": 36
+  },
+  "remaining_review": "CHANGES_REQUESTED: full user-mode driver and device authority acceptance remain outside this no-new-syscall repair",
+  "all_final_source_and_artifact_hashes": "PASSED",
+  "old_Qt_SDK_artifacts_reverified": 1054,
+  "consumer_source_owner": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17",
+  "large_artifacts_local_only": true
+}

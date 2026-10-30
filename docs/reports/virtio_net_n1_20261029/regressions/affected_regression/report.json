@@ -1,0 +1,443 @@
+{
+  "status": "PASSED",
+  "build_id": "67883ca24e9dcdae",
+  "image_sha256": "f019c215cd7cec00d3a5f5bbdbe91f511d0c76325c9633c7baa5eecfda721d61",
+  "sdk_source_reverification": {
+    "src/shared/include/xos/abi_types.hpp": "2a417532cbdafc1d7545064ef78fe692b07ab0ec430f44367d779415fdc48478",
+    "src/shared/include/xos/display_abi.hpp": "cb68448ca2d8d72622698a1e95441ae665a25e484a8abdcb94f29036378e1622",
+    "src/shared/include/xos/file_abi.hpp": "5ffbfe4d3d018401d35f5e03b737cfe75b415a8db2171c2513e07a86c22f0435",
+    "src/shared/include/xos/process_abi.hpp": "303402e2dbb83c291bb91d1908c0a0b4d880108aaf8b9633bb6a9e0fea576424",
+    "src/shared/include/xos/thread_abi.hpp": "2dc12676cebf56d6f16b682e52f35fa14dd21f0a2ea94525115f33bc8d576585",
+    "src/user/include/xos/display_client.hpp": "93f8349de6efdd765e31747847c512e7e76466930bd84f1b61fe3e6dbb15a395",
+    "src/user/include/xos/elf.hpp": "a80999738ae4985e09b0c05cac5495945794dc7bde11cb83ac9174423d1490f0",
+    "src/user/include/xos/execution.hpp": "b47bc21b0e4e6af2c1d17a501d1f780ceb49fbf2f29e39d4c2f9c2620bb29e47",
+    "src/user/include/xos/file_client.hpp": "cdce7b2599c7a819f6badaa54d75becaac2b22fa9a42eeb3aa6bdc94abc3b8a8",
+    "src/user/include/xos/file_ui.hpp": "39fa7997ba0cdb8fd6d2b79231a9b926408d06f12bf3238554a715171ea00538",
+    "src/user/include/xos/libc_runtime.hpp": "d2808f67bf4be32d9de8d8003dded9c41ffa5b2169a8a63e1eb2cd93c9401dce",
+    "src/user/include/xos/runtime_lock.hpp": "047cefb19504110544a94f9053950eb543bc827dace493513be31ccb24be9706",
+    "src/user/include/xos/sdk.hpp": "f147517828424c4ae52515c9aaa84d570465792f50dbf7fb0f4730c6e9d8355b",
+    "src/user/include/xos/spawn.hpp": "9aa935d0eecc18c19147f58a26073d77a80e6afe018c723c89649bcc86166ff8",
+    "src/user/include/xos/text.hpp": "c2c86767d2716c622128bd6023ae19a91a26613526a659449cf8f4ecdff61db2",
+    "src/user/include/xos/thread_core.hpp": "a9fdf5923eab60d225678a96aacf31599d8d9f45f841ab1ee8de4737e4e8bb7d",
+    "src/user/include/xos/tls.hpp": "c67cb8d2caea4f4da7ed44db61f26fba3ad20bc0f4f53e79d8ae752797d2e6e7",
+    "src/user/programs/xypm_journal.hpp": "dfb2b1393c1832e281f4fdf80e100434ae4abbda958fe6a7a654f210057e09cc",
+    "src/user/programs/xypm_native.hpp": "61c4a85e31e5d442d35b10ded40d1b152458759eb0c8e72cca05bba076512676",
+    "src/user/programs/xypm_transaction_impl.hpp": "6cc32856a6a3161df815077657fee325f28b3f1e9d647949e9c6bd532770657c",
+    "src/user/threading/runtime.hpp": "5db6e77d493183f8a6823843d71390f9675a6fbff88775fa66b4048ba1638e9a",
+    "src/user/include/dirent.h": "458f4de3bf177e302606827f5888fffc2da02dfa4314557d13fe7f42035b48f4",
+    "src/user/threading/include/pthread.h": "ab7f3bd8a2eed1465fc5c2a02fdcc5f186311bf872f8d5a6a7751d1b5e26f8d0",
+    "src/user/threading/include/sys/_pthreadtypes.h": "53196a2f61d3f1e6175701e3351d3c323a8268de1475d80a1389ca9f88098e2a",
+    "src/user/arch/x86_64/fault_test.cpp": "6133d07079c37c64ce71769b574ee482c441a758204d37a0eed5bc2f7027abc1",
+    "src/user/arch/x86_64/syscall.cpp": "29d689dce8e56a6dfd11911b84d667e860b391912af39eb30c0080b28f662ddb",
+    "src/user/arch/x86_64/thread_context.cpp": "580b409814ec6e103dfe196d70a9f1c7e55e88753fd4f2fb2a3d5a145e856b92",
+    "src/user/arch/x86_64/thread_core.cpp": "25e43b0a323994e11c77cd1533f6144a3bc8e788b62499ade4331c1f1f3e0732",
+    "src/user/arch/x86_64/tls.cpp": "07bfc7630f5d9aa3a88af20fead65bb6e3a25cf877cc3a4a369750fb96e1a143",
+    "src/user/libc/cpp_runtime.cpp": "12a9eca8c79a2cc75983be6b497fa3f6129cf2a70fa8199107bbfb317c2941dd",
+    "src/user/libc/main_entry.cpp": "aa8f145e1beb9204c4ec9db0f06f2ae3c96c2bccf53d0737a616d9c1a17ad3ed",
+    "src/user/libc/newlib_syscalls.cpp": "e0b660db21881d748a6651e57386513499d12c2f46eb566f0bb5f862c82718bf",
+    "src/user/loader/command.cpp": "d26c3f7a7643e8b28efffd80e831a660424f80f437f52991786a6fd8b29455ab",
+    "src/user/loader/elf.cpp": "77e14482843952f333957ccf4bdef52e349ced9660df04d9e3e7da84e6b3b61e",
+    "src/user/loader/elf_cases.cpp": "612b23528e08a374a6eb803df911529f4164aa4c372d9b88b8341378440f78af",
+    "src/user/loader/load.cpp": "03f114a70b8117890ace9d7c86f5f6de7a9249ff5f119484748e7cb91156acb8",
+    "src/user/programs/cpp_runtime_probe.cpp": "060853ccbd609a37006743517c3b1fa7ad853cc8f574a51d9bf0864b6ca263ab",
+    "src/user/programs/demo.cpp": "b1be4366a3610611e9522d561cec1bb6ff9769da3e8d9cb9d6f999c878b12939",
+    "src/user/programs/e08_probe.cpp": "bde0c7a844753d54965fbaa4984377bd204e8e08a5e8eee53a365acd87cc0744",
+    "src/user/programs/echo.cpp": "1db87e9c1cce7abdccb037c2b982cb7aab390c30b9f9a697b5fb285d93bac169",
+    "src/user/programs/fault.cpp": "38be777b6c30efebfddbe9d369cd4a2b2b12925a93c3206ece22cd3d2c41bcf6",
+    "src/user/programs/gfxdemo.cpp": "209beb32c1074401cedfa89fa2e4343682c2351513cede212c6a151f735dcb6c",
+    "src/user/programs/hello.cpp": "a42cc86821764c74ea3e5e2523131af7a1663499eb33e6f5e7a20f10017ec53e",
+    "src/user/programs/libc_hello.cpp": "3bcbe673765e9df8d7330035d80f132317b782a5d39425dd429b3636872a7b47",
+    "src/user/programs/runtime_probe.cpp": "98fc595f8c7873316d8d90e3c90e3782bef39a3c5b3ab6255077158b4ed03899",
+    "src/user/programs/slow.cpp": "7f773d1a2140beade753f19f83cfcc47bcb397c4419818a8acde13e19127066b",
+    "src/user/programs/spin.cpp": "ca328df168bd6f9625cdeabf7b559d4a3f2729ba3ae1910712d2f69347f620a8",
+    "src/user/programs/supervisor.cpp": "d900da0e10a8cecec38358f785f4bc7f12ebd0f16a24c2fae032bc787ae514a1",
+    "src/user/programs/tls_exit_probe.cpp": "36c5775a1c23952a84396d87d5b6c5245b42d082d1239d58d3fe39be09c34f71",
+    "src/user/programs/xypm.cpp": "5cc6d1ea0f4176a14297437c98687fe5b38c66b5b25f93554cf1b7c59a30f124",
+    "src/user/programs/xypm_recover.cpp": "5bf0d6a722672d5a479de658ff036990e3e9f07b54cd9b7d9876ab656c6e84f0",
+    "src/user/sdk/file_client.cpp": "9ccc59fd4fc0e61ac88f0e897f6023765bd786d89e5ec5a015758328d79d557c",
+    "src/user/sdk/text.cpp": "6f9a8389c89d02f94d9003381fe438ab39705494095ad50593862eaad0cf9d21",
+    "src/user/services/display.cpp": "6a144cc64e956968d2cec8be65ccae14db1761a888b551ce1cc9ee96bb570648",
+    "src/user/services/fatfs_diskio.cpp": "695923ae8b2c0be68347106063cd0084f32f70ae8765bede46bcb578113f9e0c",
+    "src/user/services/fatfs_unicode.cpp": "9989bd8e66f2c84a6d10e48f7e7a6790e9fcc1f31f9d15a5d57c14da067d2dc9",
+    "src/user/services/file_ui.cpp": "f3bae7daff3808c7d8857335b840d4d0aab79a0f5ad231ef880e57bc978fd29a",
+    "src/user/services/files.cpp": "f3e1810f53b0165609c96ed03a684683e0c23783742e670d949e772fcdf5992f",
+    "src/user/threading/newlib_locks.cpp": "339e202c98d209946803e0516a21b527253dd251a63dcb7e3cde5abf4ed17552",
+    "src/user/threading/pthread.cpp": "a2b5d2137abdcdd66e841789367d1ce8da4d6637a24f1a1a887d409ebbc5369c",
+    "src/ports/gcc/patches/0008-xos-thread-clock-boundary.patch": "698e22d46aebf36344ee99444ad81bf23b8c2d5c59800fd4cec7074269be755c",
+    "src/user/threading/compile.py": "46c1de050d7ae48fab63a36b84144a2997102f3fc08897bfe798cad44302815b",
+    "src/user/arch/x86_64/user.ld": "d7574d234323eb7f2b481d6d99aca931bc236b843462e10cd2ef55b7ee88441b",
+    "src/user/arch/x86_64/start.asm": "bb731a050a6fc8f60f5da81e3a7271600a96bc8f9bca0f15dee4e63e01db8d2c"
+  },
+  "tests": {
+    "process_smoke": {
+      "status": "PASSED",
+      "returncode": 0,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_adapter.py",
+        "--worker",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/process_smoke.py"
+      ],
+      "result": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/process_smoke_report.json",
+      "error": null,
+      "fixture_change": "Explicit disposable512MiBFAT32 attached; original no-disk attempt blocked by baseline persistent-maintenance guard; all13 assertions unchanged",
+      "repair_command": [
+        "python3",
+        "qualified_regression_adapter.py",
+        "--worker",
+        "tests/process_smoke.py"
+      ]
+    },
+    "display_smoke": {
+      "status": "PASSED",
+      "returncode": 0,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_adapter.py",
+        "--worker",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/display_smoke.py"
+      ],
+      "result": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/display_acceptance/report.json",
+      "error": null
+    },
+    "threading_smoke": {
+      "status": "PASSED",
+      "returncode": 0,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_adapter.py",
+        "--worker",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/threading_smoke.py"
+      ],
+      "result": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/threading_report.json",
+      "error": null
+    },
+    "threading_pthread_smoke": {
+      "status": "PASSED",
+      "returncode": 0,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_adapter.py",
+        "--worker",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/threading_pthread_smoke.py"
+      ],
+      "result": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/threading_pthread_report.json",
+      "error": null
+    },
+    "threading_cpp_smoke": {
+      "status": "PASSED",
+      "returncode": 0,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_adapter.py",
+        "--worker",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/threading_cpp_smoke.py"
+      ],
+      "result": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/threading_cpp_report.json",
+      "error": null
+    },
+    "file_smoke": {
+      "status": "PASSED",
+      "returncode": 0,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_adapter.py",
+        "--worker",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/file_smoke.py"
+      ],
+      "result": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/file_smoke_report.json",
+      "error": null
+    },
+    "persist_smoke": {
+      "status": "PASSED",
+      "returncode": 0,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_adapter.py",
+        "--worker",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/persist_smoke.py"
+      ],
+      "result": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/persist_smoke_report.json",
+      "error": null
+    },
+    "core_smoke": {
+      "status": "PASSED",
+      "returncode": 0,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_adapter.py",
+        "--worker",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/qt6_sdk_probe.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/core_regressions/core_smoke.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/core_smoke.json",
+        "--marker",
+        "QT_CORE_SMOKE_OK"
+      ],
+      "result": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/core_smoke.json",
+      "error": null
+    },
+    "core_events": {
+      "status": "PASSED",
+      "returncode": 0,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_adapter.py",
+        "--worker",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/qt6_sdk_probe.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/core_regressions/core_events.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/core_events.json",
+        "--marker",
+        "QT_EVENTS_OK"
+      ],
+      "result": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/core_events.json",
+      "error": null
+    },
+    "core_quota": {
+      "status": "PASSED",
+      "returncode": 0,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_adapter.py",
+        "--worker",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/qt6_sdk_probe.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/core_regressions/core_events.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/core_quota.json",
+        "--marker",
+        "QT_THREAD_QUOTA_OK",
+        "--argument",
+        "quota"
+      ],
+      "result": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/core_quota.json",
+      "error": null
+    },
+    "core_abi": {
+      "status": "PASSED",
+      "returncode": 0,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_adapter.py",
+        "--worker",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/qt6_sdk_probe.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/core_regressions/core_abi.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/core_abi.json",
+        "--marker",
+        "QT_ABI_OK"
+      ],
+      "result": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/core_abi.json",
+      "error": null
+    },
+    "core_memory": {
+      "status": "PASSED",
+      "returncode": 0,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_adapter.py",
+        "--worker",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/qt6_sdk_probe.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/core_regressions/core_memory.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/core_memory.json",
+        "--marker",
+        "QT_MEMORY_SAMPLE_OK"
+      ],
+      "result": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/core_memory.json",
+      "error": null
+    },
+    "core_lifecycle": {
+      "status": "PASSED",
+      "returncode": 0,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_adapter.py",
+        "--worker",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/qt6_sdk_probe.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/core_regressions/core_lifecycle.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/core_lifecycle.json",
+        "--marker",
+        "QT_LIFECYCLE_OK"
+      ],
+      "result": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/core_lifecycle.json",
+      "error": null
+    },
+    "core_fault": {
+      "status": "PASSED",
+      "returncode": 0,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_adapter.py",
+        "--worker",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/qt6_fault_probe.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/core_regressions/core_events.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/core_fault.json"
+      ],
+      "result": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/core_fault.json",
+      "error": null
+    },
+    "core_persist": {
+      "status": "PASSED",
+      "returncode": 0,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_adapter.py",
+        "--worker",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/qt6_persist_probe.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/core_regressions/core_extended.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/core_persist.json"
+      ],
+      "result": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/core_persist.json",
+      "error": null
+    },
+    "core_file_errors": {
+      "status": "PASSED",
+      "returncode": 0,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_adapter.py",
+        "--worker",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/qt6_file_errors.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/core_regressions/core_extended.elf",
+        "--report",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/core_file_errors.json"
+      ],
+      "result": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/core_file_errors.json",
+      "error": null
+    },
+    "gui_pixels": {
+      "status": "PASSED",
+      "returncode": 0,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_adapter.py",
+        "--worker",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/qt6_gui_acceptance.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/final_gui/qt_demo.elf",
+        "--output",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/gui_pixels",
+        "--case",
+        "pixels"
+      ],
+      "result": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/gui_pixels/report.json",
+      "error": null
+    },
+    "gui_interactive": {
+      "status": "PASSED",
+      "returncode": 0,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_adapter.py",
+        "--worker",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/qt6_gui_acceptance.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/final_gui/qt_demo.elf",
+        "--output",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/gui_interactive",
+        "--case",
+        "interactive"
+      ],
+      "result": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/gui_interactive/report.json",
+      "error": null
+    },
+    "gui_lifecycle": {
+      "status": "PASSED",
+      "returncode": 0,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_adapter.py",
+        "--worker",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/qt6_gui_acceptance.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/final_gui/qt_demo.elf",
+        "--output",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/gui_lifecycle",
+        "--case",
+        "lifecycle"
+      ],
+      "result": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/gui_lifecycle/report.json",
+      "error": null
+    },
+    "widgets_interactive": {
+      "status": "PASSED",
+      "returncode": 0,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_adapter.py",
+        "--worker",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/qt6_widgets_acceptance.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_editor/notes.elf",
+        "--output",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/widgets_interactive",
+        "--case",
+        "interactive"
+      ],
+      "result": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/widgets_interactive/report.json",
+      "error": null
+    },
+    "widgets_lifecycle": {
+      "status": "PASSED",
+      "returncode": 0,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_adapter.py",
+        "--worker",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/qt6_widgets_acceptance.py",
+        "--image",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/xos.img",
+        "--payload",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_editor/notes.elf",
+        "--output",
+        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/widgets_lifecycle",
+        "--case",
+        "lifecycle"
+      ],
+      "result": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace/build/affected_regression/widgets_lifecycle/report.json",
+      "error": null
+    }
+  },
+  "original_no_disk_attempt": "e04_no_workdisk_attempt_report.json and e04_no_workdisk_attempt_serial.log",
+  "first_host_setup_attempt": "Earlier regression_workspace logs show targetCOMPILER_PATH leaked into hostclang; restored before finalrun. No runtime failure claimed.",
+  "adapter_sha256": "66bc8eba6c5f2e08b6ea31bf1ef92ad56316d0acdea23dfcd787e67ac45f954d"
+}

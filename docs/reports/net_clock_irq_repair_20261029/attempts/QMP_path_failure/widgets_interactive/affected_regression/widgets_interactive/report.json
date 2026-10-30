@@ -1,0 +1,53 @@
+{
+  "status": "FAILED",
+  "case": "interactive",
+  "image_sha256": "ed88e69dd94c032af1bcd609e5ad7f639178728f25873529b31eb6c5412bb704",
+  "elf_sha256": "68134ab2f3755dd3a405457521add8e2f1a6f01b89d5a54db70f5d9c276b0581",
+  "receipt_sha256": "e434bb84a2fae5550e4129f442b240f41f248af709406e2b2719cba585b97c9a",
+  "checks": [],
+  "qemu_commands": [
+    [
+      "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+      "-machine",
+      "pc-i440fx-10.0",
+      "-accel",
+      "tcg",
+      "-cpu",
+      "qemu64,+rdrand",
+      "-m",
+      "512M",
+      "-smp",
+      "1",
+      "-nic",
+      "none",
+      "-vga",
+      "std",
+      "-rtc",
+      "base=utc,clock=host",
+      "-drive",
+      "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/final_runs/widgets_interactive/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
+      "-boot",
+      "order=a,strict=on",
+      "-no-reboot",
+      "-monitor",
+      "none",
+      "-serial",
+      "stdio",
+      "-display",
+      "none",
+      "-drive",
+      "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/final_runs/widgets_interactive/build/temporary_inputs/xos_g05_1hxvlqhx/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+      "-qmp",
+      "unix:/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/final_runs/widgets_interactive/build/temporary_inputs/xos_n3y1qjbo/qmp.sock,server=on,wait=off"
+    ]
+  ],
+  "error": "affected_regression/widgets_interactive/guest: QEMU exited 1",
+  "measurements": {
+    "sampled_peak_pages": 0,
+    "input_latency_ns": [],
+    "present_ns": [],
+    "visual_cache": [],
+    "absolute_peak": "NOT_RUN",
+    "clock_resolution_ns": 10000000
+  }
+}

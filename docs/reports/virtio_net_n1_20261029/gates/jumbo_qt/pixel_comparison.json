@@ -1,0 +1,6 @@
+{
+  "status": "PASSED",
+  "compared_RGB_bytes": 1440000,
+  "RGB_sha256": "31af37eda326c732cf093ae7273e4e33edf9bf932f4952b955b62aeb9705dfee",
+  "guest_QImage_sha256": "2475c71ff6e7d862d3080dde695fd1e10f129d874678fcc7865f5f4acc03769a"
+}

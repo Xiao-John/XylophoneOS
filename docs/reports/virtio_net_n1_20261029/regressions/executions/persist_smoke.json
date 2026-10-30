@@ -1,0 +1,6 @@
+{
+  "runner": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/persist_smoke.py",
+  "original_sha256": "26074194b80c40c371263f7901ff2cc401182d043d81a0cb01d47178a89872c5",
+  "executed_sha256": "2a723a1e3598979341806d6eb2fba8648d79520be16a9d91577f8b30d6e5c893",
+  "changed": "ROOT assignment only; all assertions and guest inputs unchanged"
+}

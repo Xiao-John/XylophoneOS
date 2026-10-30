@@ -1,0 +1,9 @@
+{
+  "status": "FAILED",
+  "case": "lifecycle",
+  "image_sha256": "ba38ce894b7e74c09d3c146b851c48945c0f6a9a90d9eaefbf9137a45724e800",
+  "elf_sha256": "998637cb1426315b06f780762a4e3bf8dfe2e024c3c6bed87ed5a32a6c7077ec",
+  "checks": [],
+  "build_receipt_sha256": "d0609ba70a19956c538195a18f4c9a43458a6b0aa2f806f98c4a3c387fa8a7da",
+  "error": "Command '['/usr/bin/clang++', '-std=c++17', '-O2', '-w', '-I', '/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/regression_workspace/src/third_party/fatfs', '/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/regression_workspace/scripts/work_disk_host.cpp', '/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/regression_workspace/src/third_party/fatfs/ff.c', '/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/regression_workspace/src/user/services/fatfs_unicode.cpp', '-o', '/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/regression_workspace/build/work_disk_host']' returned non-zero exit status 1."
+}

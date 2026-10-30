@@ -150,6 +150,16 @@ alignas(16) u8 fpu_template[512];
 bool process_trace_enabled = true;
 process_guard_info admission_guard{};
 stream_lease input_lease{};
+u64 pio_com1_owner;
+bool pio_com1_quarantined;
+
+void quarantine_com1(process_record* task) {
+    if (task == nullptr || pio_com1_owner != task->pid) { return; }
+    pic_mask_irq(4);
+    task->io_window_first = task->io_window_length = 0;
+    pio_com1_owner = 0;
+    pio_com1_quarantined = true;
+}
 
 void ready_with(thread_record& thread, i64 result);
 bool display_endpoint(u64 handle);
@@ -731,6 +741,7 @@ i64 stdio_read(process_record* task, u32 fd, u64 address, u64 length,
     if (length == 0) { return 0; }
     const stdio_route& route = task->stdio[fd];
     if (!route.console) { return pipe_read_from(route.pipe_index, address, length); }
+    if (!platform::debug_serial_attached()) { return process_error_denied; }
     if (input_lease.active() && input_lease.holder() != task->pid) { return process_error_denied; }
     if (!user_range_ok(address, 1, true)) { return process_error_invalid; }
     const int value = platform::debug_read();
@@ -781,6 +792,7 @@ void mark_reap(process_record* task) {
 // This always runs on a different process's kernel stack. Shared pages have one owner.
 void destroy_task(process_record* task) {
     if (task == nullptr || task->state == task_state::free || task == current) { return; }
+    quarantine_com1(task);
     release_channels(task->pid);
     (void)input_lease.remove(task->pid);
     reap_pending[task_index(task)] = false;
@@ -822,6 +834,7 @@ completion_record* completion_for(u64 parent, u64 pid) {
 void finish_task(process_record* task, process_outcome outcome, i64 code,
                   u64 vector = 0, u64 address = 0, u64 instruction = 0) {
     if (task->state == task_state::dead) { return; }
+    quarantine_com1(task);
     release_channels(task->pid);
     (void)input_lease.remove(task->pid);
     display_release(task->pid);
@@ -1577,6 +1590,35 @@ void* process_syscall(interrupt_frame* frame) {
     i64 result = process_error_invalid;
     const u64 first = frame->rdi, second = frame->rsi, third = frame->rdx;
     switch (frame->rax) {
+    case sys_pio_grant: {
+        if (!current->supervisor) { result = process_error_denied; break; }
+        if (third != pio_resource_com1) { break; }
+        const auto action = static_cast<pio_grant_action>(first);
+        if (action == pio_grant_action::query) {
+            if (second != 0) { break; }
+            result = pio_com1_quarantined ? 2 : pio_com1_owner != 0 ? 1 : 0;
+        } else if (action == pio_grant_action::grant) {
+            process_record* target = owned_process(second);
+            if (target == nullptr || target->state != task_state::building || target->replacement_pending ||
+                target->fork_pending || target->io_window_length != 0) {
+                result = process_error_denied; break;
+            }
+            if (pio_com1_owner != 0 || pio_com1_quarantined) { result = process_error_state; break; }
+            if (!platform::debug_detach_serial()) { result = process_error_busy; break; }
+            pic_mask_irq(4);
+            target->io_window_first = 0x3f8;
+            target->io_window_length = 8;
+            pio_com1_owner = target->pid;
+            result = 0;
+        } else if (action == pio_grant_action::revoke) {
+            process_record* target = task_by_pid(second);
+            if (target == nullptr || target->parent != current->pid || target->pid != pio_com1_owner) {
+                result = process_error_denied; break;
+            }
+            quarantine_com1(target); result = 0;
+        }
+        break;
+    }
     case sys_channel: {
         const auto action = static_cast<channel_action>(first);
         if (action == channel_action::create) {
@@ -1769,6 +1811,7 @@ void* process_syscall(interrupt_frame* frame) {
             result = process_error_state; break;
         }
         if (next_endpoint_handle > 0xfffffffeull) { result = process_error_resources; break; }
+        quarantine_com1(current);
         release_channels(current->pid);
         display_release(current->pid);
         const u64 old_space = current->cr3;

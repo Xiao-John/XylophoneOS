@@ -238,6 +238,7 @@ def main():
                    'pipe_wait_deadline': 'implemented_unqualified',
                    'stream_lease': {'syscall': 80, 'status': 'claim_unsupported'},
                    'channel': {'syscall': 81, 'status': 'implemented_unqualified'},
+                   'pio_grant': {'syscall': 82, 'status': 'implemented_unqualified'},
                    'pipe_atomic_flag': '0x8000000000000000'},
                'qualification': 'not_run', 'commands': commands,
                'inputs': initial_inputs,

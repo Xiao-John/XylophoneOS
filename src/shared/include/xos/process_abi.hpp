@@ -54,6 +54,9 @@ inline constexpr u64 sys_process_exec_commit = 60, sys_process_exec_prepare = 61
 inline constexpr u64 sys_stream_lease = 80;
 enum class stream_lease_action : u64 { claim = 0, delegate = 1, reclaim = 2, query = 3 };
 inline constexpr u64 sys_channel = 81;
+inline constexpr u64 sys_pio_grant = 82;
+enum class pio_grant_action : u64 { grant = 0, revoke = 1, query = 2 };
+inline constexpr u64 pio_resource_com1 = 1;
 enum class channel_action : u64 { create = 0, enumerate = 1, close = 2, wait = 3 };
 inline constexpr u32 channel_version = 1, channel_send = 1, channel_receive = 2;
 struct channel_create {

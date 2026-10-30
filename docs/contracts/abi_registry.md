@@ -12,7 +12,8 @@
 | 67 | 79 | reserved | 内存线：VMA/映射机制；67 的 PX4-A 提案见下表 |
 | 80 | 80 | allocated | 通用字节流授权；实现未验 |
 | 81 | 81 | allocated | 通用受控 IPC；实现未验 |
-| 82 | 95 | reserved | 系统底座线：通用等待/信号/进程控制；具体接口尚未登记 |
+| 82 | 82 | allocated | 受控设备 PIO；实现未验 |
+| 83 | 95 | reserved | 系统底座线：通用等待/信号/进程控制；具体接口尚未登记 |
 | 96 | 111 | reserved | 显示/输入线的后续机制；现有65/66保留 |
 | 112 | 65535 | unallocated | 不存在私有试用号；先通过登记PR分配，扩大范围亦须明确登记 |
 
@@ -94,6 +95,7 @@
 | 66 | `sys_display_present` | `src/shared/include/xos/display_abi.hpp` |
 | 80 | `sys_stream_lease` | `src/shared/include/xos/process_abi.hpp` |
 | 81 | `sys_channel` | `src/shared/include/xos/process_abi.hpp` |
+| 82 | `sys_pio_grant` | `src/shared/include/xos/process_abi.hpp` |
 
 ## 待实施的具体预分配
 
@@ -105,7 +107,6 @@ PX4-A 提议认领如下；本分支未合入前不构成全项目登记，不�
 | 编号 | 拟用符号 | 责任角色 | 状态 | 实现PR |
 |---:|---|---|---|---|
 | 67 | `sys_vm` | VM负责人；匿名私有VMA v1 | claimed | 待登记合入后另开；[契约提案](anonymous_vm.md) |
-| 82 | `sys_pio_grant` | 受控设备端口授权 | claimed | 待创建 |
 
 claimed必须位于对应reserved段，不能与现有接口或其他认领重复；不生成源码常量或能力。
 实现PR再将该号从认领表移到逐项分配表，并拆分号段：该号allocated，其余仍reserved。

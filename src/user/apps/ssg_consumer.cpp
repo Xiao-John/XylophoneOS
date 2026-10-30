@@ -224,10 +224,15 @@ static int browser_pages(Client &client){
     return done && nodes>0?0:1;
 }
 // This mode is limited to the existing prewired read-only parent/child pipe.
-static bool collect_baseline(Client &client, BaselineCollector &collector){
+static bool collect_baseline(Client &client, BaselineCollector &collector, bool inject=false, bool *stale=nullptr){
+    if(stale)*stale=false;
     collector.begin(); bool transport=false; QString cursor,instance; QJsonObject request{{"op","snapshot_begin"},{"maxNodes",8}};
     for(unsigned seq=1;seq<=BaselineCollector::max_pages;++seq){
         const auto r=client.request(request,&transport);
+        if(transport && r.value("status")=="STALE_CURSOR"){
+            collector.cancel(); if(stale)*stale=true;
+            std::printf("SSG_RECOVERY_STALE discarded=1\n"); return false;
+        }
         auto exact_bool=[&](const QJsonObject &o,const char *k){return o.value(k).isBool();};
         if(!transport || r.value("status")!="OK" || r.value("pageSequence").toString()!=QString::number(seq) ||
            !r.value("nodes").isArray() || !r.value("cursor").isString() || !r.value("query").isString() ||
@@ -256,6 +261,10 @@ static bool collect_baseline(Client &client, BaselineCollector &collector){
         }
         if(!collector.accept(p))return false;
         if(p.complete)return true;
+        if(inject && seq==3){
+            std::printf("SSG_RECOVERY_INJECTION_READY pages=%u session=%s\n",seq,p.session.c_str());
+            xos::thread::sleep_until(xos::thread::clock()+15000000000ull);
+        }
         cursor=r.value("cursor").toString();instance=r.value("sourceInstance").toString();request={{"op","snapshot_next"},{"sourceInstance",instance},{"cursor",cursor}};
     }
     collector.cancel();return false;
@@ -264,11 +273,26 @@ static bool commit_baseline(BaselineCollector &c,const char *label){
     if(!c.commit())return false;const auto &b=*c.committed();
     std::printf("SSG_BASELINE_%s_COMMITTED nodes=%u instance=%s epoch=%s revision=%s session=%s scrollY=%d\n",label,unsigned(b.nodes.size()),b.instance.c_str(),b.epoch.c_str(),b.revision.c_str(),b.session.c_str(),b.scroll);return true;
 }
-static int browser_pages_diff(Client &client){
+static int browser_pages_diff(Client &client, bool recover=false){
     BaselineCollector a,b;
     if(!collect_baseline(client,a) || !commit_baseline(a,"A"))return 1;
-    std::printf("SSG_CONSUMER_WAIT_AB_SCROLL seconds=15\n");xos::thread::sleep_until(xos::thread::clock()+15000000000ull);
-    if(!collect_baseline(client,b) || !commit_baseline(b,"B"))return 1;
+    if(recover){
+        bool complete=false;
+        for(unsigned attempt=0;attempt<=2;++attempt){
+            bool stale=false;
+            if(collect_baseline(client,b,attempt==0,&stale)){
+                if(attempt==0){b.cancel();std::printf("SSG_RECOVERY_FAILED status=RESET_REQUIRED no_interruption=1\n");return 1;}
+                complete=true;break;
+            }
+            if(!stale){std::printf("SSG_RECOVERY_FAILED status=RESET_REQUIRED\n");return 1;}
+            std::printf("SSG_RECOVERY_LAST_GOOD session=%s nodes=%u\n",a.committed()->session.c_str(),unsigned(a.committed()->nodes.size()));
+        }
+        if(!complete){std::printf("SSG_RECOVERY_FAILED status=RESET_REQUIRED budget=2\n");return 1;}
+    } else {
+        std::printf("SSG_CONSUMER_WAIT_AB_SCROLL seconds=15\n");xos::thread::sleep_until(xos::thread::clock()+15000000000ull);
+        if(!collect_baseline(client,b))return 1;
+    }
+    if(!commit_baseline(b,"B"))return 1;
     const auto d=compare_baselines(*a.committed(),*b.committed());QJsonArray changes;
     for(const auto &c:d.changes){QJsonObject item{{"kind",QString::fromStdString(c.kind)},{"id",QString::fromStdString(c.id)}};
         if(c.kind=="ScrollChanged"){item["before"]=std::stoi(c.before);item["after"]=std::stoi(c.after);}
@@ -300,6 +324,7 @@ int main(int argc,char **argv){
     if(mode=="browser-scenario")return browser_scenario(client);
     if(mode=="browser-pages")return browser_pages(client);
     if(mode=="browser-pages-diff")return browser_pages_diff(client);
+    if(mode=="browser-pages-recover")return browser_pages_diff(client,true);
     if(mode=="browser-guard")return browser_guard(client);
     if(mode=="truncated"){
         char header[12]={'S','S','G','1'};put32(header+4,32);put32(header+8,1);

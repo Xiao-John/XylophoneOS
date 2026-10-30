@@ -51,7 +51,7 @@ private:
         for(char c:s) { if(c<'0'||c>'9'||n>(UINT64_MAX-unsigned(c-'0'))/10) return false; n=n*10+unsigned(c-'0'); }
         return true;
     }
-    bool fail(){ state_=State::invalid; staging_=Baseline{}; ids_.clear(); stack_.clear(); return false; }
+    bool fail(){ state_=State::invalid; staging_=Baseline{}; ids_.clear(); stack_.clear(); continuity_=PageContinuity{}; expected_cursor_.clear(); bytes_=text_bytes_=0; return false; }
 public:
     void begin(){state_=State::staging; staging_=Baseline{}; continuity_=PageContinuity{}; ids_.clear(); stack_.clear(); bytes_=text_bytes_=0; expected_cursor_.clear();}
     void cancel(){fail();}

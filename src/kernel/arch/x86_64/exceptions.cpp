@@ -175,6 +175,12 @@ void set_kernel_stack(u64 top) {
     tss.state.rsp0 = top;
 }
 
+bool set_user_io_window(u32 first, u32 length) {
+    tss.ports.deny_all();
+    if (length == 0) { return first == 0; }
+    return tss.ports.set_range(first, length, true);
+}
+
 u64 exception_idt_address() {
     return reinterpret_cast<u64>(&idt);
 }

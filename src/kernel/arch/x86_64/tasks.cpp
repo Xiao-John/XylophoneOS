@@ -11,6 +11,7 @@
 #include <xos/format.hpp>
 #include <xos/platform.hpp>
 #include "frame.hpp"
+#include "interrupt_entry.hpp"
 #include "pic.hpp"
 #include "user_blobs.hpp"
 #include "user_images.hpp"
@@ -57,6 +58,9 @@ struct process_record {
     u64 cr3;
     u64 pid;
     u64 ticks;
+    // Reserved for a future kernel-authenticated device grant. No current
+    // syscall assigns these fields; zero means all port I/O is denied.
+    u32 io_window_first, io_window_length;
     task_state state;
     char name[12];
     u32 send_handle;
@@ -945,6 +949,10 @@ void switch_to(thread_record* thread) {
     current = thread->process;
     current->state = task_state::running;
     thread->state = thread_state::running;
+    if (!set_user_io_window(current->io_window_first, current->io_window_length)) {
+        format::text("[sched] event=invalid_io_window result=halt\r\n");
+        halt();
+    }
     set_kernel_stack(thread->kernel_stack_top);
     load_address_space(current->cr3);
     set_thread_pointer(thread->thread_pointer);
@@ -1787,6 +1795,8 @@ void* process_syscall(interrupt_frame* frame) {
         current->send_handle = current->session_request_handle = request->handle;
         current->recv_handle = current->session_response_handle = response->handle;
         current->cr3 = stage->cr3;
+        current->io_window_first = current->io_window_length = 0;
+        (void)set_user_io_window(0, 0);
         current->user_pages = stage->user_pages;
         current->entry = entry.entry;
         current->initial_stack = entry.stack;

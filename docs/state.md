@@ -143,8 +143,10 @@ MMIO、DMA、IRQ、撤权等通用机制；停止不可确认时隔离DMA页。�
 不能以调试例外作为交付依据。设备端口授权、IRQ 交付和撤销还需补齐；不得以当前
 构建或既有主线调试串口证据宣称 W1/W2 通过。详见[0114](work_log/0114_w1_main_reconciliation.md)。
 新增内核 UART IRQ 数据通路已撤回，sys80 claim 暂时不可用，见[0115](work_log/0115_w1_c28_irq_withdrawal.md)。
-x86 TSS 已准备默认全拒绝的 I/O bitmap，尚无授权/切换/撤权或 guest 资格；详见
+x86 TSS 已准备默认全拒绝的 I/O bitmap，尚无授权/撤权或 guest 资格；详见
 [0116](work_log/0116_x86_io_bitmap_foundation.md)。
+进程切换和成功 exec 的位图重装基础见[0118](work_log/0118_pio_context_foundation.md)；
+没有用户可用的 PIO 授权，COM1 独占交接仍由本任务继续实现。
 用户态 UART 的 PIO、IRQ 与 COM1 调试通路交接提案见
 [uart_user_driver_proposal](contracts/uart_user_driver_proposal.md)，仅设计，尚无授权 ABI。
 

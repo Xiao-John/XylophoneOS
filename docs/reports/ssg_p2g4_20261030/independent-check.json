@@ -1,0 +1,23 @@
+{
+  "status": "PASSED_SCOPED",
+  "pages": [
+    34,
+    34
+  ],
+  "nodes": [
+    267,
+    267
+  ],
+  "scroll": [
+    0,
+    282
+  ],
+  "change_counts": {
+    "ScrollChanged": 1,
+    "WindowGeometryChanged": 219,
+    "VisibilityChanged": 90
+  },
+  "identity": "same complete preorder ID/parent/role/tag within one epoch",
+  "document_sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f",
+  "resource_counters_match": true
+}

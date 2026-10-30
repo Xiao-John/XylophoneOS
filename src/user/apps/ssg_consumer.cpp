@@ -2,6 +2,7 @@
 // Deterministic, independent, read-only consumer of the private pipe protocol.
 #include "../ssg/pipe_wire.hpp"
 #include "../ssg/page_continuity.hpp"
+#include "../ssg/baseline_diff.hpp"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
@@ -222,6 +223,61 @@ static int browser_pages(Client &client){
     std::printf("SSG_PAGED_CONSUMER_DONE pages=%d nodes=%d complete=%d completeness=ORACLE_REQUIRED\n",pages,nodes,int(done));
     return done && nodes>0?0:1;
 }
+// This mode is limited to the existing prewired read-only parent/child pipe.
+static bool collect_baseline(Client &client, BaselineCollector &collector){
+    collector.begin(); bool transport=false; QString cursor,instance; QJsonObject request{{"op","snapshot_begin"},{"maxNodes",8}};
+    for(unsigned seq=1;seq<=BaselineCollector::max_pages;++seq){
+        const auto r=client.request(request,&transport);
+        auto exact_bool=[&](const QJsonObject &o,const char *k){return o.value(k).isBool();};
+        if(!transport || r.value("status")!="OK" || r.value("pageSequence").toString()!=QString::number(seq) ||
+           !r.value("nodes").isArray() || !r.value("cursor").isString() || !r.value("query").isString() ||
+           !exact_bool(r,"complete") || !exact_bool(r,"visibleOnly") || !exact_bool(r,"sourceValid") ||
+           !exact_bool(r,"hasNext") || !exact_bool(r,"hasData") || !exact_bool(r,"traversalComplete")) {collector.cancel();return false;}
+        const int scroll=r.value("scrollY").toInt(-1), visited=r.value("visited").toInt(-1);
+        if(!r.value("scrollY").isDouble() || r.value("scrollY").toDouble()!=scroll || !r.value("visited").isDouble() || r.value("visited").toDouble()!=visited || visited<0 ||
+           r.value("stopReason")!=(r.value("complete").toBool()?"EXHAUSTED":"PAGE_BUDGET")){collector.cancel();return false;}
+        BaselinePage p; p.instance=r.value("sourceInstance").toString().toStdString();p.epoch=r.value("sourceEpoch").toString().toStdString();
+        p.revision=r.value("sourceRevision").toString().toStdString();p.session=r.value("sessionId").toString().toStdString();
+        p.scope=r.value("query").toString().toStdString();p.request_cursor=cursor.toStdString();p.cursor=r.value("cursor").toString().toStdString();
+        p.sequence=seq;p.scroll=scroll;p.visited=unsigned(visited);p.visible_only=r.value("visibleOnly").toBool();p.complete=r.value("complete").toBool();
+        p.source_valid=r.value("sourceValid").toBool();p.has_next=r.value("hasNext").toBool();p.has_data=r.value("hasData").toBool();p.traversal_complete=r.value("traversalComplete").toBool();
+        for(const auto v:r.value("nodes").toArray()){
+            if(!v.isObject()){collector.cancel();return false;} const auto n=v.toObject();
+            if(!n.value("id").isString() || !n.value("parent").isString() || !n.value("role").isString() || !n.value("tag").isString() || n.value("source")!="litehtml-model-and-render-layout" ||
+               !n.value("visibility").isString() || !n.value("fragmentsComplete").isBool()){collector.cancel();return false;}
+            auto valid_rect=[](const QJsonValue &v){if(!v.isArray() || v.toArray().size()!=4)return false;for(const auto x:v.toArray())if(!x.isDouble())return false;return true;};
+            auto valid_rects=[&](const QJsonValue &v){if(!v.isArray() || v.toArray().size()>8)return false;for(const auto x:v.toArray())if(!valid_rect(x))return false;return true;};
+            if(!valid_rect(n.value("bounds")) || !valid_rect(n.value("visibleBounds")) || !valid_rects(n.value("fragments")) || !valid_rects(n.value("visibleFragments"))){collector.cancel();return false;}
+            BaselineNode node;node.id=n.value("id").toString().toStdString();node.parent=n.value("parent").toString().toStdString();node.role=n.value("role").toString().toStdString();node.tag=n.value("tag").toString().toStdString();
+            node.has_text=n.value("text").isString();node.has_href=n.value("href").isString();node.text=n.value("text").toString().toStdString();node.href=n.value("href").toString().toStdString();
+            if(node.has_text && (n.value("textTruncated")!=false || n.value("text").toString().size()>1024 || n.value("textRange").toArray()!=QJsonArray{0,n.value("text").toString().size()})){collector.cancel();return false;}
+            auto array=[&](const char *k){return QJsonDocument(n.value(k).toArray()).toJson(QJsonDocument::Compact).toStdString();};
+            node.fragments=array("fragments");node.visible_fragments=array("visibleFragments");node.bounds=array("bounds");node.visible_bounds=array("visibleBounds");node.visibility=n.value("visibility").toString().toStdString();node.geometry_known=true;node.fragments_complete=n.value("fragmentsComplete").toBool();p.nodes.push_back(node);
+        }
+        if(!collector.accept(p))return false;
+        if(p.complete)return true;
+        cursor=r.value("cursor").toString();instance=r.value("sourceInstance").toString();request={{"op","snapshot_next"},{"sourceInstance",instance},{"cursor",cursor}};
+    }
+    collector.cancel();return false;
+}
+static bool commit_baseline(BaselineCollector &c,const char *label){
+    if(!c.commit())return false;const auto &b=*c.committed();
+    std::printf("SSG_BASELINE_%s_COMMITTED nodes=%u instance=%s epoch=%s revision=%s session=%s scrollY=%d\n",label,unsigned(b.nodes.size()),b.instance.c_str(),b.epoch.c_str(),b.revision.c_str(),b.session.c_str(),b.scroll);return true;
+}
+static int browser_pages_diff(Client &client){
+    BaselineCollector a,b;
+    if(!collect_baseline(client,a) || !commit_baseline(a,"A"))return 1;
+    std::printf("SSG_CONSUMER_WAIT_AB_SCROLL seconds=15\n");xos::thread::sleep_until(xos::thread::clock()+15000000000ull);
+    if(!collect_baseline(client,b) || !commit_baseline(b,"B"))return 1;
+    const auto d=compare_baselines(*a.committed(),*b.committed());QJsonArray changes;
+    for(const auto &c:d.changes){QJsonObject item{{"kind",QString::fromStdString(c.kind)},{"id",QString::fromStdString(c.id)}};
+        if(c.kind=="ScrollChanged"){item["before"]=std::stoi(c.before);item["after"]=std::stoi(c.after);}
+        else if(c.kind=="WindowGeometryChanged" || c.kind=="VisibilityChanged"){item["before"]=QJsonDocument::fromJson(QByteArray::fromStdString(c.before)).object();item["after"]=QJsonDocument::fromJson(QByteArray::fromStdString(c.after)).object();}
+        else {item["before"]=QString::fromStdString(c.before);item["after"]=QString::fromStdString(c.after);}changes.append(item);}
+    QJsonObject result{{"status",d.status==DiffStatus::ok?"OK":d.status==DiffStatus::resource_limit?"RESOURCE_LIMIT":"RESET_REQUIRED"},{"geometryComplete",d.geometry_complete},{"changes",changes}};
+    std::printf("SSG_CONSUMER_DIFF_JSON %s\n",QJsonDocument(result).toJson(QJsonDocument::Compact).constData());
+    std::printf("SSG_CONSUMER_DIFF_DONE status=%s\n",result.value("status").toString().toUtf8().constData());return d.status==DiffStatus::ok?0:1;
+}
 static int browser_guard(Client &client){
     const auto first=client.request(query("content"));
     std::printf("SSG_CONSUMER_WAIT_BROWSER_GUARD seconds=8\n");
@@ -243,6 +299,7 @@ int main(int argc,char **argv){
     if(mode=="scenario")return scenario(client);
     if(mode=="browser-scenario")return browser_scenario(client);
     if(mode=="browser-pages")return browser_pages(client);
+    if(mode=="browser-pages-diff")return browser_pages_diff(client);
     if(mode=="browser-guard")return browser_guard(client);
     if(mode=="truncated"){
         char header[12]={'S','S','G','1'};put32(header+4,32);put32(header+8,1);

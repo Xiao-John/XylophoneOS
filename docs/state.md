@@ -181,8 +181,9 @@ Xsh 所需的 supervisor 进程内终端桥接入口已构建但默认未启用�
 构建与未验边界见[0137](work_log/0137_terminal_libc_stdio.md)。
 终端服务已试行原始模式及有限 VMIN/VTIME 读取；
 见[0138](work_log/0138_terminal_mode_foundation.md)。
-单线程 libc 现有受限原始 termios 映射；ncursesw 在非多字节 SDK 上仅交叉编译通过，
-严格 UTF-8 和客体验收仍未完成，见[0139](work_log/0139_termios_raw_ncurses_probe.md)。
+单线程 libc 现有受限原始 termios 映射；0139 中的 ncurses 归档为空，已更正，见
+[0139](work_log/0139_termios_raw_ncurses_probe.md)及[0142](work_log/0142_ncurses_target_archive.md)。
+严格 UTF-8 候选与有效 ncursesw 库、两个消费者已交叉链接，客体和发行资格仍未完成。
 用户态驱动已试行按 TEMT 确认发送排空，尚未客体验证；见
 [0140](work_log/0140_terminal_drain.md)。
 输入清空和 `TCSAFLUSH` 已试行实现，连续输入失败可能已丢弃部分硬件字节，尚未客体验证；

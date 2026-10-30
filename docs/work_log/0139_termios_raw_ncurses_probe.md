@@ -1,5 +1,9 @@
 # 0139：受限 termios 与 ncurses 编译探针
 
+**2026-10-30 更正：**本记录中的 make 退出 0 仅证明对象编译完成；当时错误地使用
+宿主 `ar/ranlib`，所记 96 字节 `libncursesw.a` 只有空索引，没有 ncurses 目标对象，
+不能算有效静态库。原因、修复和新的严格 UTF-8 组合证据见[0142](0142_ncurses_target_archive.md)。
+
 2026-10-30。新增自有 `termios.h` 和单线程 libc 映射：`tcgetattr` 从服务查询模式，
 `tcsetattr(TCSANOW)` 仅接受固定 115200 8N1 和已实现的无回显非规范 VMIN/VTIME
 子集；普通终端 read 使用服务的 `read_mode`。不支持的设置及 `TCSADRAIN`、

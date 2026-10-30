@@ -24,11 +24,15 @@ markup. Shadow DOM, modern JS DOM and cross-origin frame traversal do not exist
 in this browser. They are not bypassed through privileged reading.
 
 Browser nodes distinguish `not-rendered`, `scroll-required`, `viewport-partial`
-and `viewport-visible` using actual render boxes clipped to the viewport after
-scroll translation. These statuses concern this admitted normal-flow engine
-subset; external screen occlusion remains UNKNOWN_NO_COMPOSITOR. Fragments and
-their completeness are returned instead of treating a DOM node as necessarily
-seen. Current pointer hit identity comes from the actual engine's mouse state,
+and `viewport-visible` using actual render fragments clipped individually to the
+viewport after scroll translation. When the engine's bounded fragment list is
+incomplete, `UNKNOWN_FRAGMENT_TRUNCATED` or
+`viewport-visible-fragments-incomplete` preserves that uncertainty. Bounding
+rectangles may contain holes and are not proof of visibility or hit testing at
+every point. These statuses concern this admitted normal-flow engine subset;
+external screen occlusion remains UNKNOWN_NO_COMPOSITOR. Original and clipped
+fragments and their completeness are returned instead of treating a DOM node as
+necessarily seen. Current pointer hit identity comes from the actual engine's mouse state,
 not a fabricated coordinate lookup. Unvisited/capped nodes are not inferred.
 
 Qt nodes distinguish hidden, locally clipped/occluded and locally visible, with
@@ -72,6 +76,9 @@ instructions or authorizations. Password QLineEdit values and selections are
 withheld even when normal text observation is enabled.
 
 Queries can filter visible nodes and role; Notes prioritizes a document-role query after its initial bounded tree export, and Browser uses a body-text/link content query. Filtering avoids formatting every unrelated control; a capped whole-tree export is never treated as complete.
+Browser publishes a stable query scope separately from mutable viewport/scroll
+metadata, so a scoped diff can include changes without confusing a scroll with a
+different query; this depends on the separately reviewed SceneStream diff fix.
 
 The retained stream keeps only current
 and previous states. Diff returns changed/new nodes and removed IDs, or

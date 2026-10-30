@@ -123,15 +123,26 @@ try:
    shot('notes-scrolled');stroke('esc');g.expect(b'EDITOR_UNSAVED_GUARD',start=b);pump(g,.3);click_xy(*point(rb'EDITOR_POINT discard=(\d+),(\d+)'));g.expect(b'kind=exited code=0',start=b);g.expect_supervisor(start=b);assert resources(g)==active;mark('notes_ssg_exit_exact_resources')
   elif a.case=='browser':
    b=launch('browser','--ssg-probe',b'BROWSER_READY')
+   def check_fragments(scene):
+    vx,vy,vw,vh=scene['metadata']['viewport']
+    for node in scene['nodes']:
+     expected=[]
+     for x,y,w,h in node['fragments']:
+      x0,y0=max(x,vx),max(y,vy);x1,y1=min(x+w,vx+vw),min(y+h,vy+vh)
+      if x1>x0 and y1>y0:expected.append([x0,y0,x1-x0,y1-y0])
+     assert node['visibleFragments']==expected
+     if node['visibility'] in ('viewport-visible','viewport-partial','viewport-visible-fragments-incomplete'):assert expected
+     if node['visibility'] in ('not-rendered','scroll-required','UNKNOWN_FRAGMENT_TRUNCATED'):assert not expected
    def navigate(path,expected=None):
     sb=len(g.output);chord('ctrl','l');type_text(path);stroke('ret');g.expect(expected or b'BROWSER_LOADED path='+path.encode(),start=sb,timeout=30);pump(g,.3)
-   navigate('/web/ssg.html');first,_=snapshot(b'BROWSER');assert first['status']=='OK'
+   navigate('/web/ssg.html');first,_=snapshot(b'BROWSER');assert first['status']=='OK';check_fragments(first)
    texts=[n for n in first['nodes'] if n.get('role')=='text'];assert 'Visible' in ''.join(n.get('text','') for n in texts)
    hidden=[n for n in texts if 'HIDDEN_SECRET' in n.get('text','')];assert hidden and all(n['visibility']=='not-rendered' for n in hidden)
    assert any(n['visibility']=='scroll-required' for n in first['nodes']);mark('browser_dom_layout_hidden_and_offviewport')
    link=next(n for n in first['nodes'] if n.get('href')=='start.html');assert link['fragments'] and link['visibility'].startswith('viewport')
    x,y,w,h=link['fragments'][0];shot('browser-dom-first');click_xy(x+min(8,w//2),y+min(8,h//2));g.expect(b'BROWSER_LOADED path=/web/start.html',start=b);mark('ssg_link_geometry_matches_actual_engine_hit')
    navigate('/web/ssg.html');again,_=snapshot(b'BROWSER');assert again['sourceEpoch']!=first['sourceEpoch'];stroke('end');bottom,delta=snapshot(b'BROWSER');assert bottom['sourceEpoch']==again['sourceEpoch'] and delta['status']=='OK'
+   check_fragments(bottom);assert delta['metadata']['scrollY']>0 and delta['capped']==False
    assert any(n.get('text','').find('Below')>=0 and n['visibility'].startswith('viewport') for n in bottom['nodes']);mark('browser_scroll_changes_visibility_with_stable_epoch')
    sb=len(g.output);chord('ctrl','r');g.expect(b'BROWSER_LOADED path=/web/ssg.html',start=sb);reload,diff=snapshot(b'BROWSER');assert reload['sourceEpoch']!=bottom['sourceEpoch'] and diff['status']=='SOURCE_REPLACED';mark('reload_invalidates_old_document_references')
    navigate('/web/unsupported.html',b'Unsupported HTML tag');retained,_=snapshot(b'BROWSER');assert retained['sourceEpoch']==reload['sourceEpoch'];mark('unsupported_canvas_rejected_no_fabricated_semantics')

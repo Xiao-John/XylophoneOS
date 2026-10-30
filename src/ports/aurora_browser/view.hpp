@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
 #include "content.hpp"
+#include "scene_geometry.hpp"
 #include "../qt6/aurora/ssg.hpp"
 #include <litehtml.h>
 #include <QtWidgets/QAbstractScrollArea>
@@ -78,13 +79,14 @@ public:
             if(query=="content" && !e->is_text() && name!="a"){
                 for(auto &child:e->children()){walk(child,id,depth+1);if(capped)break;}return;
             }
-            litehtml::position::vector boxes;const bool complete=e->get_rendering_fragments(boxes,8);QJsonArray fragments;QRect bounds;
-            for(const auto &box:boxes){const auto local=QRect(box.x,box.y-verticalScrollBar()->value(),box.width,box.height).translated(origin);if(!local.isEmpty()){bounds=bounds.isNull()?local:bounds.united(local);fragments.append(QJsonArray{local.x(),local.y(),local.width(),local.height()});}}
-            const auto clipped=bounds.intersected(view_rect);
-            const QString visibility=bounds.isEmpty()?"not-rendered":clipped.isEmpty()?"scroll-required":clipped==bounds?"viewport-visible":"viewport-partial";
+            litehtml::position::vector boxes;const bool complete=e->get_rendering_fragments(boxes,8);QVector<QRect> local_boxes;
+            for(const auto &box:boxes)local_boxes.append(QRect(box.x,box.y-verticalScrollBar()->value(),box.width,box.height).translated(origin));
+            const auto geometry=scene_geometry(local_boxes,view_rect,complete);
+            const auto bounds=geometry.bounds,clipped=geometry.visible_bounds;
             QJsonObject n{{"id",QString::number(id)},{"parent",QString::number(parent)},{"source","litehtml-model-and-render-layout"},
-                {"role",e->is_text()?"text":name=="a"?"link":"element"},{"tag",name},{"visibility",visibility},
-                {"fragments",fragments},{"fragmentsComplete",complete},{"screenOcclusion","UNKNOWN_NO_COMPOSITOR"},
+                {"role",e->is_text()?"text":name=="a"?"link":"element"},{"tag",name},{"visibility",geometry.visibility},
+                {"fragments",geometry.fragments},{"visibleFragments",geometry.visible_fragments},
+                {"fragmentsComplete",complete},{"screenOcclusion","UNKNOWN_NO_COMPOSITOR"},
                 {"bounds",QJsonArray{bounds.x(),bounds.y(),bounds.width(),bounds.height()}},
                 {"visibleBounds",QJsonArray{clipped.x(),clipped.y(),clipped.width(),clipped.height()}},
                 {"displayNone",e->css().get_display()==litehtml::display_none},{"contentTrust","untrusted-document-content"},
@@ -95,7 +97,8 @@ public:
         };
         walk(doc->root(),0,0);
         QString hit="NONE";if(auto actual=doc->get_over_element()){const auto key=reinterpret_cast<quintptr>(actual.get());hit=scene_ids.contains(key)?QString::number(scene_ids[key]):"OUTSIDE_SNAPSHOT";}
-        auto result=scene.publish(nodes,{{"provider","litehtml-v0.9-ssg-readonly"},{"document",page},{"query",query},{"scrollY",verticalScrollBar()->value()},
+        const QJsonObject scope{{"provider","litehtml-v0.9-ssg-readonly"},{"document",page},{"query",query}};
+        auto result=scene.publish(nodes,{{"provider","litehtml-v0.9-ssg-readonly"},{"document",page},{"query",query},{"queryScope",scope},{"scrollY",verticalScrollBar()->value()},
             {"viewport",QJsonArray{view_rect.x(),view_rect.y(),view_rect.width(),view_rect.height()}},{"hitNode",hit},
             {"hitSource","actual-engine-mouse-state"},{"iframes","UNSUPPORTED"},{"shadowDOM","UNSUPPORTED"},
             {"forms","UNSUPPORTED"},{"globalScene","BLOCKED"},{"subscriptions","NOT_IMPLEMENTED"}},capped);

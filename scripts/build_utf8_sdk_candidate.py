@@ -48,7 +48,7 @@ def main():
         subprocess.run(cmd, check=True)
 
     sources = [ROOT / name for name in (
-        'src/user/sdk/text.cpp', 'src/user/sdk/file_client.cpp',
+        'src/user/sdk/text.cpp', 'src/user/sdk/file_client.cpp', 'src/user/sdk/terminal_client.cpp',
         'src/user/arch/x86_64/syscall.cpp', 'src/shared/runtime/memory.cpp')]
     sources += sorted((ROOT / 'src/user/libc').glob('*.cpp'))
     loader_sources = [ROOT / 'src/user/loader' / name for name in

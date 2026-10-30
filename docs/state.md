@@ -175,8 +175,10 @@ Xsh 所需的 supervisor 进程内终端桥接入口已构建但默认未启用�
 见[0134](work_log/0134_terminal_application_channel.md)。
 应用侧已具备内核通道身份核对与有界读写客户端；见
 [0135](work_log/0135_terminal_application_client.md)。
-试行 startup2 扩展现可为显式 opt-in 的应用传递受认证通道句柄，libc 仍未接入；
+试行 startup2 扩展现可为显式 opt-in 的应用传递受认证通道句柄；
 构建与未验边界见[0136](work_log/0136_terminal_startup_handoff.md)。
+单线程 libc 的初始终端 fd 已试行接入，fork/exec 和多线程 profile 仍明确拒绝；
+构建与未验边界见[0137](work_log/0137_terminal_libc_stdio.md)。
 用户态 UART 的 PIO、IRQ 与 COM1 调试通路交接提案见
 [uart_user_driver_proposal](contracts/uart_user_driver_proposal.md)，为早期设计提案，具体
 现状以 PIO/IRQ 契约及上述工作记录为准。

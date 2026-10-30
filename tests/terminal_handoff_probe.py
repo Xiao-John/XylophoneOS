@@ -66,6 +66,8 @@ def main():
             report["checks"].append("handoff_irq_input_byte")
             guest.expect(b"W1_CANCEL_OK", timeout=30)
             report["checks"].append("pending_read_control_interrupt")
+            guest.expect(b"W1_APP_READY", timeout=30)
+            send_bytes(guest, b"A")
             guest.expect(b"W1_APP_OK", timeout=30)
             guest.expect(b"W1_APP_REAPED", timeout=30)
             report["checks"].append("authenticated_application_start_and_exit")

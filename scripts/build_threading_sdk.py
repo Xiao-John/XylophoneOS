@@ -128,6 +128,7 @@ def main():
              '-I' + str(output / 'include')]
     sources = [*sorted((ROOT / 'src/user/libc').glob('*.cpp')),
                ROOT / 'src/user/sdk/file_client.cpp', ROOT / 'src/user/sdk/text.cpp',
+               ROOT / 'src/user/sdk/terminal_client.cpp',
                ROOT / 'src/user/arch/x86_64/syscall.cpp', ROOT / 'src/user/arch/x86_64/tls.cpp',
                ROOT / 'src/shared/runtime/memory.cpp',
                *sorted((ROOT / 'src/user/loader').glob('*.cpp')),

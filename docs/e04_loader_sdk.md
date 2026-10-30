@@ -224,7 +224,8 @@ stdio 均关闭，且必须提供 prepare 回调与 `terminal_send_handle`。加
 映射和文件关闭后执行回调，回调为 building 子进程授权；非零发送 handle 放入
 startup2 扩展的 flag bit16 和 reserved 字段，再映射启动页，最后启动。失败会 abort
 子进程，调用方仍负责关闭创建的通道。应用用 `connect_startup` 根据内核认证的通道
-信息核对句柄及双方身份；标记不授予权限。暂不支持 exec、fork 或 libc stdio 接线，
+信息核对句柄及双方身份；标记不授予权限。单线程 libc 初始 fd 0/1/2 可接该客户端，
+但带终端描述符的 exec/fork 及多线程 libc 暂时明确拒绝，终端模式未实现；
 未客体验收。旧镜像无标记时拒绝终端启动，不影响原有非终端启动路径。
 
 SDK 控制台 read/write 的可选弱符号钩子供单个可执行文件自行接入用户态服务；没有

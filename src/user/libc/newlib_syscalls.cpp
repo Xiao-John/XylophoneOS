@@ -9,6 +9,7 @@
 #include <xos/libc_runtime.hpp>
 #include <xos/sdk.hpp>
 #include <xos/spawn.hpp>
+#include <xos/terminal_client.hpp>
 #include <xos/text.hpp>
 #include <dirent.h>
 #include <errno.h>
@@ -49,7 +50,7 @@ constexpr u32 heap_base = 0x60000000u;
 constexpr u32 heap_limit = 0x70000000u;
 constexpr u32 pipe_token_base = 65536u;
 
-enum class object_kind : u8 { none, kernel, file, pipe_read, pipe_write };
+enum class object_kind : u8 { none, kernel, file, pipe_read, pipe_write, terminal };
 struct open_object {
     object_kind kind;
     u32 references;
@@ -86,6 +87,7 @@ struct action_set {
 struct pipe_handles { u32 read_token; u32 write_token; };
 
 xos::file::Client file_client;
+xos::terminal::client terminal_client;
 bool runtime_ready;
 char current_directory[max_path] = "/";
 fd_slot descriptors[fd_count];
@@ -280,6 +282,7 @@ int release_object(int index) {
     case object_kind::pipe_read: case object_kind::pipe_write:
         (void)xos::sdk::syscall(xos::sys_pipe_close, object.handle); break;
     case object_kind::kernel: (void)xos::sdk::close(object.handle); break;
+    case object_kind::terminal: xos::terminal::close(terminal_client); break;
     case object_kind::none: break;
     }
     return 0;
@@ -312,6 +315,12 @@ void close_runtime_descriptors() {
     for (int fd = 0; fd < fd_count; ++fd) {
         if (valid_fd(fd)) { (void)close_fd(fd); }
     }
+}
+
+bool has_terminal_descriptor() {
+    runtime_guard guard(fd_table_lock);
+    for (const auto& object : objects) if (object.kind == object_kind::terminal) return true;
+    return false;
 }
 
 int open_flags_to_file(int flags, u32& translated) {
@@ -481,7 +490,27 @@ extern "C" int xos_libc_init(const xos::startup_info* startup) {
             errno = EINVAL; return -1;
         }
     }
+    const bool terminal_startup = extension != nullptr &&
+        (extension->flags & xos::startup_flag_terminal) != 0;
+    if (terminal_startup) {
+#ifdef XOS_THREADED_RUNTIME
+        errno = ENOTSUP; return -1;
+#else
+        if (startup->version != 2 || (extension->flags & 7u) != 7u ||
+            (extension->flags & (7u << 8)) != 0 || extension->open_paths[0] != 0 ||
+            extension->open_paths[1] != 0 || extension->open_paths[2] != 0) {
+            errno = EINVAL; return -1;
+        }
+        const xos::i64 connected = xos::terminal::connect_startup(terminal_client, startup);
+        if (connected != 0) { errno = error_from_kernel(connected); return -1; }
+        const int object = alloc_object(object_kind::terminal, 0, O_RDWR);
+        if (object < 0) { xos::terminal::close(terminal_client); errno = EMFILE; return -1; }
+        objects[object].references = 3;
+        for (int fd = 0; fd < 3; ++fd) descriptors[fd] = {static_cast<signed char>(object), false};
+#endif
+    }
     for (int fd = 0; fd < 3; ++fd) {
+        if (terminal_startup) continue;
         if (extension != nullptr && (extension->flags & (1u << fd)) != 0) { continue; }
         const int object = alloc_object(object_kind::kernel, startup->handles[fd], fd == 0 ? O_RDONLY : O_WRONLY);
         if (object < 0) { errno = EMFILE; return -1; }
@@ -590,6 +619,12 @@ extern "C" _READ_WRITE_RETURN_TYPE read(int fd, void* buffer, size_t length) {
     if (length == 0) { return 0; }
     if (length > static_cast<size_t>(INT_MAX)) { length = static_cast<size_t>(INT_MAX); }
     open_object& object = objects[lease.index];
+    if (object.kind == object_kind::terminal) {
+        const u32 chunk = length > xos::terminal::data_bytes ? xos::terminal::data_bytes : static_cast<u32>(length);
+        const xos::i64 result = xos::terminal::read_until(terminal_client, buffer, chunk, xos::thread_deadline_infinite);
+        if (result < 0) { errno = result == xos::terminal::interrupted ? EINTR : error_from_kernel(result); return -1; }
+        return static_cast<ssize_t>(result);
+    }
     if (object.kind == object_kind::file) {
         if ((object.flags & O_ACCMODE) == O_WRONLY) { errno = EBADF; return -1; }
         const u32 chunk = length > xos::file::response_data_size
@@ -626,6 +661,12 @@ extern "C" _READ_WRITE_RETURN_TYPE write(int fd, const void* buffer, size_t leng
     if (length == 0) { return 0; }
     if (length > static_cast<size_t>(INT_MAX)) { length = static_cast<size_t>(INT_MAX); }
     open_object& object = objects[lease.index];
+    if (object.kind == object_kind::terminal) {
+        const u32 chunk = length > xos::terminal::data_bytes ? xos::terminal::data_bytes : static_cast<u32>(length);
+        const xos::i64 result = xos::terminal::write_until(terminal_client, buffer, chunk, xos::thread_deadline_infinite);
+        if (result < 0) { errno = result == xos::terminal::interrupted ? EINTR : error_from_kernel(result); return -1; }
+        return static_cast<ssize_t>(result);
+    }
     if (object.kind == object_kind::file) {
         if ((object.flags & O_ACCMODE) == O_RDONLY) { errno = EBADF; return -1; }
         size_t done = 0;
@@ -789,7 +830,7 @@ extern "C" int fstat(int fd, struct stat* status) {
     if (lease.index < 0) { errno = EBADF; return -1; }
     if (status == nullptr) { errno = EFAULT; return -1; }
     const open_object& object = objects[lease.index];
-    if (object.kind == object_kind::kernel) {
+    if (object.kind == object_kind::kernel || object.kind == object_kind::terminal) {
         fill_stat(status, 0, false); status->st_mode = S_IFCHR | 0666; return 0;
     }
     if (object.kind == object_kind::pipe_read || object.kind == object_kind::pipe_write) {
@@ -994,6 +1035,7 @@ extern "C" int isatty(int fd) {
     runtime_guard guard(fd_table_lock);
     if (!valid_fd(fd)) { errno = EBADF; return 0; }
     const auto& object = objects[descriptors[fd].object];
+    if (object.kind == object_kind::terminal) return 1;
     if (object.kind != object_kind::kernel) { errno = ENOTTY; return 0; }
     const auto result = xos::sdk::syscall(xos::sys_process_stdio, 0, object.handle);
     if (result != 1) { errno = ENOTTY; return 0; }
@@ -1402,6 +1444,7 @@ extern "C" int fork(void) {
     errno = ENOTSUP; return -1;
 #else
     if (!runtime_ready) { errno = EIO; return -1; }
+    if (has_terminal_descriptor()) { errno = ENOTSUP; return -1; }
     const auto child = xos::sdk::syscall(xos::sys_process_fork_prepare);
     if (child == 0) { return 0; }
     if (child < 0) { errno = error_from_kernel(child); return -1; }
@@ -1427,6 +1470,7 @@ static int exec_image(const char* path, char* const argv[], char* const envp[], 
     errno = ENOTSUP; return -1;
 #else
     if (!runtime_ready || !path || !argv) { errno = EINVAL; return -1; }
+    if (has_terminal_descriptor()) { errno = ENOTSUP; return -1; }
     char normalized[max_path], cwd[max_path];
     if (!normalize_path(path, normalized)) { errno = ENAMETOOLONG; return -1; }
     { runtime_guard guard(cwd_lock); memcpy(cwd, current_directory, max_path); }

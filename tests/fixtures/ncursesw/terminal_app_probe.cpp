@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-#include <xos/terminal_client.hpp>
-#include <xos/thread_abi.hpp>
+#include <xos/spawn.hpp>
+#include <errno.h>
+#include <unistd.h>
 
 namespace {
 struct marker { xos::u64 magic; xos::u32 version, size; };
@@ -9,11 +10,22 @@ struct marker { xos::u64 magic; xos::u32 version, size; };
 }
 extern "C" int xos_user_main(const xos::startup_info* startup) {
     using namespace xos;
-    terminal::client client{};
-    if (terminal::connect_startup(client, startup) != 0) return 1;
+    if (startup == nullptr || !isatty(0) || !isatty(1) || !isatty(2)) return 1;
+    const int duplicate = dup(1);
+    if (duplicate < 0 || close(1) != 0) return 2;
+    errno = 0;
+    if (fork() != -1 || errno != ENOTSUP) return 5;
+    char executable[] = "/missing", *arguments[] = {executable, nullptr};
+    errno = 0;
+    if (execv(executable, arguments) != -1 || errno != ENOTSUP) return 6;
+    const char ready[] = "W1_APP_READY\n";
+    for (u32 i = 0; i < sizeof(ready) - 1; ++i)
+        if (write(duplicate, ready + i, 1) != 1) return 7;
+    char input = 0;
+    if (read(0, &input, 1) != 1 || input != 'A') return 8;
     const char message[] = "W1_APP_OK\n";
     for (u32 i = 0; i < sizeof(message) - 1; ++i)
-        if (terminal::write_until(client, message + i, 1, thread_deadline_infinite) != 1) return 2;
-    terminal::close(client);
+        if (write(duplicate, message + i, 1) != 1) return 3;
+    if (close(duplicate) != 0) return 4;
     return 0;
 }

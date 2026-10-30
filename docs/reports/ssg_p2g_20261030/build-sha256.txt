@@ -1,0 +1,4 @@
+6a56bc7fc2af92a7aa63acdb78901667ec6b98187155fe9ca36fc8b88be545e5  build/p2g-consumer/ssg-consumer.elf
+fbe84dee0906ee6a74be401586b670e4f98022b0d156f53531413101b52a8dd4  src/user/apps/ssg_consumer.cpp
+0dfffb4f701dc20ec6f921b5155bb9b819d58dd3fb07b7a0e067b5ccfbd6b9a6  src/user/ssg/page_continuity.hpp
+4ded279e839d97d9ebdfd02b03c8fa7eb77eda11facbd82851ab7670536ad64a  tests/fixtures/ssg_p2g/page_continuity.cpp

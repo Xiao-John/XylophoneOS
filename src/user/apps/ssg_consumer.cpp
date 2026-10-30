@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Deterministic, independent, read-only consumer of the private pipe protocol.
 #include "../ssg/pipe_wire.hpp"
+#include "../ssg/page_continuity.hpp"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
@@ -147,6 +148,7 @@ static int browser_scenario(Client &client){
 }
 static int browser_pages(Client &client){
     bool transport=false;QSet<QString> ids;QVector<QString> ancestors;
+    PageContinuity continuity;
     QString instance,epoch,revision,cursor;int pages=0,nodes=0;bool done=false;
     auto decimal_id=[](const QJsonValue &value){
         if(!value.isString())return false;const auto s=value.toString();
@@ -168,6 +170,11 @@ static int browser_pages(Client &client){
            !exact_bool(result,"sourceValid",true) || !result.value("cursor").isString())break;
         const auto page_nodes=result.value("nodes").toArray();
         const bool exhausted=result.value("complete").toBool();
+        const auto scroll_value=result.value("scrollY");
+        const int scroll=scroll_value.toInt(-1);
+        if(!scroll_value.isDouble() || scroll_value.toDouble()!=scroll ||
+           !continuity.accept(instance.toStdString(),epoch.toStdString(),revision.toStdString(),
+                              unsigned(pages),scroll,exhausted,result.value("cursor").toString().toStdString()))break;
         const int visited=result.value("visited").toInt(-1);
         if(page_nodes.size()>8 || visited<page_nodes.size() || visited>16 ||
            result.value("visited").toDouble(-1)!=visited || (!exhausted && visited==0) ||

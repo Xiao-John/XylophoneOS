@@ -1,0 +1,25 @@
+{
+  "base_head": "56354acd979fc8bbfb6cf18f9a1acf81d1b00e3b",
+  "gate_b": "NOT_QUALIFIED",
+  "B1": "NOT_RUN_NEW",
+  "B2": "NOT_RUN",
+  "B3": "NOT_RUN",
+  "B4": "NOT_IMPLEMENTED",
+  "B5": "NOT_RUN",
+  "guest_negative_tests": "NOT_RUN",
+  "guest_regressions": "NOT_RUN",
+  "host_continuity_fixture": "PASS",
+  "host_p2f_validator_tests": {
+    "status": "PASS",
+    "count": 52
+  },
+  "consumer_cross_build": "PASS",
+  "qemu_in_path": null,
+  "limitations": [
+    "No independently verified A/B guest snapshots or actual scroll",
+    "No independent consumer Diff or reference Diff",
+    "Continuity check cannot prove complete structure or detect every forged same-revision response",
+    "Legacy first nonpaged TIME truncation unresolved",
+    "P2F A1 scope unchanged; overall Gate A remains NOT_QUALIFIED"
+  ]
+}

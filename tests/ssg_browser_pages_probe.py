@@ -139,7 +139,6 @@ def test_link_hit():
     x, y, w, h = selected['visibleFragments'][0]
     require(w > 0 and h > 0, 'selected link has no interior')
     px, py = x + min(8, (w - 1) // 2) + window_x, y + min(8, (h - 1) // 2) + window_y
-    require(0 <= px < 1024 and 0 <= py < 768, 'selected link outside test screen')
     href = selected['href']
     require(':' not in href and '?' not in href and '%' not in href and '\\' not in href,
             'link fixture target outside supported local path syntax')
@@ -158,6 +157,9 @@ def test_link_hit():
     qmp('screendump', {'filename': str(ppm)})
     from PIL import Image
     with Image.open(ppm) as picture:
+        screen_width, screen_height = picture.size
+        require(0 <= px < screen_width and 0 <= py < screen_height,
+                'selected link outside the actual QEMU framebuffer')
         picture.save(out / 'link-before.png')
     ppm.unlink()
     start = len(g.output)
@@ -167,6 +169,7 @@ def test_link_hit():
     return {'status': 'PASSED_SCOPED', 'scope': 'one visible link after completed paging',
             'consumer_node_id': selected['id'], 'href': href, 'node': selected,
             'screen_point': [px, py], 'window_origin': [window_x, window_y],
+            'screen_size': [screen_width, screen_height],
             'viewport_in_window': viewport, 'loaded_target': target,
             'input': 'QEMU input-send-event to guest PS/2; no synthetic widget call',
             'rendered_fragments_global': 'NOT_QUALIFIED', 'screen_occlusion': 'NOT_TESTED',

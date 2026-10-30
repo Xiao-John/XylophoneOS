@@ -1,0 +1,37 @@
+{
+  "base_sdk": "758dde49d312277135fb2fa51887c2b4a94d6761",
+  "base_system": "3377dbf35bdb43d850c9a2b8e8076da3be146f3d",
+  "inputs_sha256": {
+    "src/ports/qt6/aurora/ssg.cpp": "4bfcb74c71db5bc8c394f4cbe619e5cf260e8f5aaa01856a3dd9d48f08922be8",
+    "src/ports/qt6/aurora/ssg.hpp": "6f506540167153ee511cb443023302a9f542f2f030a87aacffdd775eb832d5b1",
+    "tests/fixtures/qt6/ssg_diff_integrity.cpp": "04bda09635dd9f387a496f732a76b011567e576f59f8ccea84a2721a8c6aa2f2",
+    "tests/ssg_diff_guest.py": "64cf36ab2add7b0fa6821ff59544a92d638466eae4e3598e33b605ff05bebcce",
+    "../XylophoneOS-qt6-e17/build/qt_e17/sdk/manifest.json": "24dcc3ba938013c852a12f386ea2f7e16ebcec7cb4bfaff477794530c5d0e4b1"
+  },
+  "evidence_sha256": {
+    "README.md": "08593325f155e412aecfb82ed8fbe283e818edeb4df78c0ed38cca39b79a1b45",
+    "after-fault-build.log.gz": "a069df44146471b0c54d12f387b10b378901a3375eee75062257ee5d27dd684e",
+    "before/guest_qemu.log.gz": "d31ab2b1f764118d872cf450cdba7f8a6f077db57056e884a794e45fdc33a0b9",
+    "before/guest_serial.log.gz": "10273d35de0a5517b102015110e3385c9e7bec60e43127c534df467c091ffab3",
+    "before/report.json": "5dad5022e26a4da824e980e4ea6e424a7db97803dee370d458b6ad0af58a31d6",
+    "before-build.log.gz": "803cc33d1d9dc5c5c3170123ec8c636a442008fed510dbb1a7296cd800e7fbe0",
+    "before-receipt.json.gz": "bf39ee940963b52466bc2841ee0d466ef6b9c3c2bb1c59ce0dcb128e66579d93",
+    "final/guest_qemu.log.gz": "e2bbca193119e4ed9f4fc3709cf031adccb6b557e5f22592bd98c44a69899f58",
+    "final/guest_serial.log.gz": "518c4f02ec03c7d681fc783f1631213f9e7924fdd5e3b052b25044095169b67a",
+    "final/report.json": "5e11888eb7b444cd004256c9a3df3bac1b562d42224627d9370e0e5590c21d6f",
+    "final-build.log.gz": "9182dd3c443df3e2b3f437ab656cae6a96d9778ac629e42c95bfa5f9927af1d6",
+    "final-receipt.json.gz": "0a17de99fa50ac68cff754864f3c0448bdf0ee96e68609aa81a391eaed5abcce",
+    "first-fix-fault/guest_qemu.log.gz": "20a9e58594468e8c95cd84ba599d0fb33d9acacc3e7cd9dbf60ab6c4959089b9",
+    "first-fix-fault/guest_serial.log.gz": "7bc448f90b7e8eb38b8cc4fecd9869bc201466c1590554f1749918102bf4a8ed",
+    "first-fix-fault/report.json": "8acefbdf585fe7657da319ae9213d01a71e2b6735c09b19e155263d9cd0e4901",
+    "initial-harness-failure/guest_qemu.log.gz": "dc1f2943fce9b2c49bb65063a3d91a25aac7c3093e9311f06fdd5fe2766c7f03",
+    "initial-harness-failure/guest_serial.log.gz": "d70b9fb481f6a06bea6d2f4bd8e08f7725bd2b0eb3080d84cc87ec790b85b489",
+    "initial-harness-failure/report.json": "7ffda4465f7841eba442ac09f5f7de832e5a44d606df839b2ac0005f6851787e",
+    "semantic-build.log.gz": "22824dfafd8893f05914de5d30c4ea792556caa3da841807d0c9fe9df0475ad0",
+    "semantic-receipt.json.gz": "d0567112c656be9b4cb9bb2a291b82b3381b3b3c9b8a9b77e20158d2119ad8fa",
+    "semantic-regression/guest_qemu.log.gz": "536611431628a644a8003f5b67973f14a2f1d23185b3a17375413c0a0120f8ed",
+    "semantic-regression/guest_serial.log.gz": "ca813e4b07e7afd34847a45c85b89c69edb2d50bb2d6e63de845c23ae5b89f5e",
+    "semantic-regression/report.json": "7305bbfa4acff2e03e066f07dc3cf5af4091fa03642e33c1c0024bed32ca5b34",
+    "semantic-regression/serial.log.gz": "ca813e4b07e7afd34847a45c85b89c69edb2d50bb2d6e63de845c23ae5b89f5e"
+  }
+}

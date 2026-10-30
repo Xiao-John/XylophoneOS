@@ -27,6 +27,14 @@ void SceneStream::invalidate(){epoch=(quint64(QCoreApplication::applicationPid()
 QJsonObject SceneStream::publish(const QJsonArray &nodes,const QJsonObject &meta,bool capped) try {
     if(nodes.size()>128 || QJsonDocument(nodes).toJson(QJsonDocument::Compact).size()>65536 || encode(meta).size()>4096)
         return {{"status","RESOURCE_LIMIT"}};
+    if(meta.contains("queryScope") && !meta["queryScope"].isObject())return {{"status","BAD_QUERY"}};
+    QSet<QString> ids;
+    for(const auto &value:nodes){
+        if(!value.isObject())return {{"status","BAD_NODES"}};
+        const QJsonValue id=value.toObject().value(QStringLiteral("id"));
+        if(!id.isString() || id.toString().isEmpty() || ids.contains(id.toString()))return {{"status","BAD_NODES"}};
+        ids.insert(id.toString());
+    }
     QJsonObject stable{{"nodes",nodes},{"metadata",meta},{"capped",capped}};
     auto old=current;old.remove("observedMonotonicNs");old.remove("sceneVersion");old.remove("sourceEpoch");old.remove("version");old.remove("status");
     if(current.isEmpty() || encode(stable)!=encode(old)){previous=current;current=stable;++version;}
@@ -37,8 +45,22 @@ QJsonObject SceneStream::diff(quint64 since,const QString &expected_epoch) const
     if(current.isEmpty())return {{"status","UNAVAILABLE"}};
     QJsonObject result{{"version",1},{"sourceEpoch",source_epoch()},{"sceneVersion",QString::number(version)}};
     if(expected_epoch!=source_epoch()){result["status"]="SOURCE_REPLACED";return result;}
+    result["metadata"]=current["metadata"];result["capped"]=current["capped"];
+    result["removalMeaning"]="LEFT_QUERY_RESULT";
+    // An incomplete traversal cannot establish which omitted nodes left the
+    // result. Even an unchanged partial snapshot cannot certify a full diff.
+    if(current["capped"].toBool()){result["status"]="RESET_REQUIRED";return result;}
     if(since==version){result["status"]="OK";result["changed"]=QJsonArray();result["removed"]=QJsonArray();return result;}
     if(previous.isEmpty() || previous["sceneVersion"].toString()!=QString::number(since)){result["status"]="RESET_REQUIRED";return result;}
+    if(previous["capped"].toBool()){result["status"]="RESET_REQUIRED";return result;}
+    const auto old_meta=previous["metadata"].toObject(),new_meta=current["metadata"].toObject();
+    // Explicit scope permits mutable metadata (e.g. scroll position) to be
+    // reported without treating it as a different query. Legacy publishers
+    // without a scope conservatively require all metadata to match.
+    if(old_meta.contains("queryScope") != new_meta.contains("queryScope") ||
+       (old_meta.contains("queryScope") ? old_meta["queryScope"]!=new_meta["queryScope"] : old_meta!=new_meta)){
+        result["status"]="RESET_REQUIRED";return result;
+    }
     QJsonObject before,after;for(auto value:previous["nodes"].toArray()){auto n=value.toObject();before[n["id"].toString()]=n;}
     QJsonArray changed,removed;
     for(auto value:current["nodes"].toArray()){auto n=value.toObject();const auto id=n["id"].toString();after[id]=n;if(before[id]!=n)changed.append(n);}
@@ -98,8 +120,11 @@ QJsonObject QtScene::snapshot(bool visible_only,const QString &requested_role) t
         for(auto *child:w->children())if(auto *widget=qobject_cast<QWidget*>(child)){walk(widget,id,depth+1);if(capped)break;}
     };
     walk(root,0,0);
+    const QJsonObject query_scope{{"provider","qt-widget-v1"},{"scope","application-root"},{"textAuthorized",text_permitted},
+        {"visibleOnly",visible_only},{"roleFilter",requested_role}};
     auto result=stream.publish(nodes,{{"provider","qt-widget-v1"},{"scope","application-root"},{"textAuthorized",text_permitted},
-        {"visibleOnly",visible_only},{"roleFilter",requested_role},{"globalScene","BLOCKED"},{"subscriptions","NOT_IMPLEMENTED"}},capped);
+        {"visibleOnly",visible_only},{"roleFilter",requested_role},{"queryScope",query_scope},
+        {"globalScene","BLOCKED"},{"subscriptions","NOT_IMPLEMENTED"}},capped);
     result["queryDurationNs"]=QString::number(timer.nsecsElapsed());return result;
 } catch(const std::bad_alloc &) {return {{"status","RESOURCE_LIMIT"}};}
 }

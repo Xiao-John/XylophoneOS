@@ -176,6 +176,12 @@ W0 勘查和 W1 [工作契约草案](contracts/terminal_w1.md)已开始；W0 未
 QtCore 的系统 build48e5e73bcd649f44 和本地输入编辑的 build3200de2c3b80a9d9 分别保留资格；
 该日常工具组合的输入编辑已复验，QtCore 本身未在该组合重新验收。Qt 实现入口见[QtCore](implementation/qt_core.md)。
 
+## Aurora SDK / SSG / Desktop 独立复核（待审）
+
+已复核三个草稿依赖及冻结证据；新组合 15 套客体回归经记录的修正/重跑后
+通过，共 107 项顶层检查。当前不合并、不把结果改绑后续上游基线；详见
+[0110](work_log/0110_aurora_g3_review.md)。
+
 ## 本地实现与组合边界
 
 - 输入编辑 F1/F2 的原有定向证据见[0064](work_log/0064_input_edit_first_stage.md)；

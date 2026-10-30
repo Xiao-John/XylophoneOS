@@ -1,13 +1,13 @@
 # XOS 当前状态
 
+2026-10-30：Aurora UI SDK v2 的原生设计/质量/应用内语义原型已验，见[0102](work_log/0102_aurora_ui_v2_sdk.md)。
+内核/系统 ABI/QPA 源码改动为0。用户明确启动AI-native用户态方向；完整桌面和应用接入由独立审查单元交付。
+深色 Midnight Current 是完善优先方向，最终审美待复核。
+
 ## 标准 Qt 控件审查修复（待审）
 
 修正普通按钮图标与显式调色板；真实客体前后截图及 3 项检查已冻结。
 旧 `Canvas/Panel/Button` 偏好一致性尚未完成；见 [0106](work_log/0106_aurora_standard_controls.md)。
-
-2026-10-30：Aurora UI SDK v2 的原生设计/质量/应用内语义原型已验，见[0102](work_log/0102_aurora_ui_v2_sdk.md)。
-内核/系统 ABI/QPA 源码改动为0。用户明确启动AI-native用户态方向；完整桌面和应用接入由独立审查单元交付。
-深色 Midnight Current 是完善优先方向，最终审美待复核。
 
 ## 保留的历史状态
 

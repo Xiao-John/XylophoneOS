@@ -17,7 +17,7 @@
 namespace aurora {
 namespace {
 quint32 epochs=0;
-quint64 now_ns(){QElapsedTimer t;t.start();return quint64(t.msecsSinceReference())*1000000;}
+quint64 now_ns(){static const QElapsedTimer base=[]{QElapsedTimer t;t.start();return t;}();return quint64(base.nsecsElapsed());}
 QByteArray encode(const QJsonObject &o){return QJsonDocument(o).toJson(QJsonDocument::Compact);}
 QJsonArray rect(const QRect &r){return {r.x(),r.y(),r.width(),r.height()};}
 }

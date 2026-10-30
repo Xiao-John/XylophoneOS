@@ -43,6 +43,10 @@ int main(int argc, char **argv) {
     const auto duplicate = stream.publish(QJsonArray{node("1", "first"), node("1", "second")}, meta("filtered", 1));
     check(duplicate["status"] == "BAD_NODES" && stream.diff(version, epoch)["status"] == "OK", "duplicate_id_rejected_without_changing_history");
     check(stream.publish(QJsonArray{QJsonObject{{"text", "missing id"}}}, meta("filtered", 1))["status"] == "BAD_NODES", "missing_id_rejected");
+    stream.publish(QJsonArray{node("1", "stale generation")}, meta("filtered", 1));
+    const auto stale = stream.publish(QJsonArray{node("1", "stale generation 2")}, meta("filtered", 1));
+    check(stream.diff(version, epoch)["status"] == "RESET_REQUIRED", "stale_generation_since_resets");
+    version = stale["sceneVersion"].toString().toULongLong();
     aurora::scene_stream legacy;
     auto old = legacy.publish(QJsonArray{node("1", "one")}, QJsonObject{{"query", "all"}, {"scrollY", 0}});
     legacy.publish(QJsonArray{node("1", "one")}, QJsonObject{{"query", "all"}, {"scrollY", 1}});

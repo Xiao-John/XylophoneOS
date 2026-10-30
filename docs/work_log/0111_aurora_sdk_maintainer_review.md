@@ -1,4 +1,4 @@
-# 0111 Aurora SDK maintainer review fixes
+# 0111 Aurora SDK maintainer-review fixes (author re-verification)
 
 2026-10-30. Repairs for the five requested changes on upstream PR #29. The work
 started from the PR head `758dde49d312277135fb2fa51887c2b4a94d6761`, fetched the

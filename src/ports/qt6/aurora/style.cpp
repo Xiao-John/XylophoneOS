@@ -34,7 +34,7 @@ public:
         if(b->state&State_HasFocus){p->setPen(QPen(t.focus,2));p->drawPath(corner(r.adjusted(3,3,-3,-3),t.control_radius-3));}
         // Let Qt render the standard label, including icons and mnemonics,
         // while keeping the Aurora panel and its intended foreground color.
-        auto label=*b;label.palette.setColor(QPalette::ButtonText,accent?t.content:t.text);
+        auto label=*b;if(!(w&&w->testAttribute(Qt::WA_SetPalette)))label.palette.setColor(QPalette::ButtonText,accent?t.content:t.text);
         QProxyStyle::drawControl(CE_PushButtonLabel,&label,p,w);p->restore();
     }
     void drawPrimitive(PrimitiveElement element,const QStyleOption *o,QPainter *p,const QWidget *w=nullptr) const override {

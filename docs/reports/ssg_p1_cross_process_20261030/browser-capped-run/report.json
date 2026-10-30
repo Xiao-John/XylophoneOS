@@ -1,0 +1,419 @@
+{
+  "status": "FAILED",
+  "inputs": {
+    "image": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img",
+      "sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08"
+    },
+    "session": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/build/ssg-p1-final-04/session.elf",
+      "sha256": "05a9d26a20df998457c0781c5048130c3ffc55a7167c749964b1da5eca851f70"
+    },
+    "consumer": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/build/ssg-p1-final-04/consumer/ssg-consumer.elf",
+      "sha256": "038ae33896bd2878812fdc549659c365ed1c3c10140ae64efa67074e50858e91"
+    },
+    "notes": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/build/ssg-p1-final-04/notes/notes.elf",
+      "sha256": "01ca9118658f9ea19cab03ce0e6c94d2df41537d05699f9dbc4f1cd181461aa7"
+    },
+    "browser": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/build/ssg-p1-final-04/browser/browser.elf",
+      "sha256": "b0fe91be4e8e9ec83d7b67a03566277591901e2d711f542a7ab9cad1ab7dfbbf"
+    },
+    "dash": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_frozen/dash.elf",
+      "sha256": "d262b8299734d07c27e8d5ac696a3460c82cba4fe56159d3cbdcceee8f703ff9"
+    }
+  },
+  "checks": [
+    "gui_input_remains_responsive_under_pipe_backpressure",
+    "separate_processes_bound_by_parent",
+    "consumer_parsed_live_notes_and_failure_semantics",
+    "recorded_real_keyboard_edit_and_consumer_diff",
+    "both_children_and_pipe_resources_reclaimed",
+    "actual_provider_restart_rejects_old_node_reference",
+    "text_scope_denied_by_default",
+    "standalone_cli_detail_and_diff",
+    "truncated_frame_disconnect_and_cleanup",
+    "oversized_frame_refused_and_cleanup",
+    "consumer_timeout_disconnect_and_cleanup",
+    "provider_partial_frame_timeout_and_cleanup"
+  ],
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ssg_ipc_sjzdb_jp/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_864a_c95/qmp.sock,server=on,wait=off"
+  ],
+  "baseline_resources": [
+    130279,
+    2,
+    0
+  ],
+  "display_resources": [
+    130235,
+    3,
+    1
+  ],
+  "guest_command": "exec-driver /bin/session.elf /ssg.txt scenario --text",
+  "processes": {
+    "parent_pid": 10,
+    "provider_pid": 12,
+    "consumer_pid": 11,
+    "instance": "db2a9fe817f79d03bf7d0fe6bd114549"
+  },
+  "consumer_checks": [
+    {
+      "name": "live_line_edit",
+      "status": "PASS"
+    },
+    {
+      "name": "large_snapshot_crosses_pipe_capacity",
+      "status": "PASS"
+    },
+    {
+      "name": "live_document_snapshot",
+      "status": "PASS"
+    },
+    {
+      "name": "parsed_node_text_geometry",
+      "status": "PASS"
+    },
+    {
+      "name": "live_edit_diff",
+      "status": "PASS"
+    },
+    {
+      "name": "live_edit_snapshot",
+      "status": "PASS"
+    },
+    {
+      "name": "stale_node_version_refused",
+      "status": "PASS"
+    },
+    {
+      "name": "live_node_detail",
+      "status": "PASS"
+    },
+    {
+      "name": "scroll_diff",
+      "status": "PASS"
+    },
+    {
+      "name": "live_scroll_state",
+      "status": "PASS"
+    },
+    {
+      "name": "stale_epoch_refused",
+      "status": "PASS"
+    },
+    {
+      "name": "old_provider_instance_refused",
+      "status": "PASS"
+    },
+    {
+      "name": "changed_scope_requires_snapshot",
+      "status": "PASS"
+    },
+    {
+      "name": "node_limit_reports_truncation",
+      "status": "PASS"
+    },
+    {
+      "name": "truncated_diff_refused",
+      "status": "PASS"
+    },
+    {
+      "name": "replayed_message_refused",
+      "status": "PASS"
+    },
+    {
+      "name": "provider_exit_eof",
+      "status": "PASS"
+    }
+  ],
+  "frames": [
+    {
+      "direction": "REQ",
+      "sequence": 1,
+      "bytes": 68,
+      "sha256": "1a0ee9f71f13a1e043b180849874b645e32298b7c617c4b11ad9a747fab7e29e",
+      "file": "01-req.json",
+      "op": "snapshot",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 1,
+      "bytes": 1198,
+      "sha256": "ff21ca712392dbe8dac856179c8e714451ce790743056cc22bbfa7dc81f503ad",
+      "file": "01-resp.json",
+      "op": null,
+      "status": "OK"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 2,
+      "bytes": 61,
+      "sha256": "3314b38184acd8cd4370ba2e308a7f4ca49755f337e273953db74ecbb6cf0ab2",
+      "file": "02-req.json",
+      "op": "snapshot",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 2,
+      "bytes": 6413,
+      "sha256": "f625c75fbadeef9455523a26fb7dbb1f032e2a688bee1ca5344cd183447df6d6",
+      "file": "02-resp.json",
+      "op": null,
+      "status": "OK"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 3,
+      "bytes": 69,
+      "sha256": "9c80dd1e9925f57e89bc780f921fb1a5ccaba91ce11405c056cbc1ea544f84fb",
+      "file": "03-req.json",
+      "op": "snapshot",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 3,
+      "bytes": 2341,
+      "sha256": "888f9205f740231e895156b89e3bd21e4fec579aad5c29328b610430533e6c94",
+      "file": "03-resp.json",
+      "op": null,
+      "status": "OK"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 4,
+      "bytes": 130,
+      "sha256": "2e1c0c31bd0551be6c702178b7254216c6549a1b4b9ffdaa46bb2a8e11866b78",
+      "file": "04-req.json",
+      "op": "diff",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 4,
+      "bytes": 2364,
+      "sha256": "9014b8bd8a46f58a3b7ab1a26f7ff36bfe171569069f4f5aea4413383c860de0",
+      "file": "04-resp.json",
+      "op": null,
+      "status": "OK"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 5,
+      "bytes": 69,
+      "sha256": "9c80dd1e9925f57e89bc780f921fb1a5ccaba91ce11405c056cbc1ea544f84fb",
+      "file": "05-req.json",
+      "op": "snapshot",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 5,
+      "bytes": 2341,
+      "sha256": "00fbddc01d913865b029e46d0f02da6eec2aed2bda521f1d9c1278e856d6b308",
+      "file": "05-resp.json",
+      "op": null,
+      "status": "OK"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 6,
+      "bytes": 146,
+      "sha256": "9f1d88b0f713507da986219594d24acadbc1daef2d49aa86161840cde27686c4",
+      "file": "06-req.json",
+      "op": "detail",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 6,
+      "bytes": 127,
+      "sha256": "1702628461faf06bd8182e4efe122e9cf6bc3fb7280730b8857c4d4be4eeea9f",
+      "file": "06-resp.json",
+      "op": null,
+      "status": "STALE_REFERENCE"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 7,
+      "bytes": 146,
+      "sha256": "9422e6c5754cde3259512c117d6bf0d71254f0644334f0638b2d27b1449543d9",
+      "file": "07-req.json",
+      "op": "detail",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 7,
+      "bytes": 1888,
+      "sha256": "fab022baaab8709f18e89871b088611a4c05516467afe97f1f03f12eab15e73c",
+      "file": "07-resp.json",
+      "op": null,
+      "status": "OK"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 8,
+      "bytes": 130,
+      "sha256": "a25cb5d14a8ab463590ead3b8364e212f7c60039f5340185b6f0c5c145b382f8",
+      "file": "08-req.json",
+      "op": "diff",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 8,
+      "bytes": 2371,
+      "sha256": "36514c0e31b30d64b185f58b07f4d9bf9497c0a801d2272553d051b6128ee175",
+      "file": "08-resp.json",
+      "op": null,
+      "status": "OK"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 9,
+      "bytes": 69,
+      "sha256": "9c80dd1e9925f57e89bc780f921fb1a5ccaba91ce11405c056cbc1ea544f84fb",
+      "file": "09-req.json",
+      "op": "snapshot",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 9,
+      "bytes": 2348,
+      "sha256": "cc18ed6fcc8b54816a7fa966e1949a9c2436c547c055e9eb0d49e86e244362ad",
+      "file": "09-resp.json",
+      "op": null,
+      "status": "OK"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 10,
+      "bytes": 120,
+      "sha256": "b8ef3e0566b8bdde71dd6df1bd8154542ae5f9b5fc65777b55438383aa42fffa",
+      "file": "10-req.json",
+      "op": "diff",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 10,
+      "bytes": 108,
+      "sha256": "b2945c5dbd2ebb9ed655c707a45e3698c29be3702443eedfd40b00bd7ef71e3f",
+      "file": "10-resp.json",
+      "op": null,
+      "status": "SOURCE_REPLACED"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 11,
+      "bytes": 100,
+      "sha256": "3a6f2db0870f41822d62f49eee59f499dfdd75a58481685e490e83a473fe52ba",
+      "file": "11-req.json",
+      "op": "diff",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 11,
+      "bytes": 80,
+      "sha256": "f41328adb06ce00af4afbfe2377b348768dbf9d3e76099ba31c1ea6274ae8bcf",
+      "file": "11-resp.json",
+      "op": null,
+      "status": "SOURCE_REPLACED"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 12,
+      "bytes": 129,
+      "sha256": "a822ec04e24b4d9ba499ebfec6b5c48c20bbcfe075086d3455e3e70d9cbcbef4",
+      "file": "12-req.json",
+      "op": "diff",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 12,
+      "bytes": 546,
+      "sha256": "c134d1962372ef1fda1dc2c54f9b1187ffd27532cbd892fdaad436041f10adc7",
+      "file": "12-resp.json",
+      "op": null,
+      "status": "RESET_REQUIRED"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 13,
+      "bytes": 60,
+      "sha256": "ce68a894badf08ab5566be2944867ef400636dd86c7d95e1c92cc43bd8013a00",
+      "file": "13-req.json",
+      "op": "snapshot",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 13,
+      "bytes": 1071,
+      "sha256": "e53878d024fb7ff7b98f950470d49e83503bc9e28600a2d7afbb39ab8bf1f2a4",
+      "file": "13-resp.json",
+      "op": null,
+      "status": "OK"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 14,
+      "bytes": 135,
+      "sha256": "2620875745adc2685bcb69235ca2fb36b43475f66863a05f36257a96f0da22b2",
+      "file": "14-req.json",
+      "op": "diff",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 14,
+      "bytes": 530,
+      "sha256": "20d5e7693def948f6076050df86ba90a6440dab7ff385237bd15f4b85645145d",
+      "file": "14-resp.json",
+      "op": null,
+      "status": "RESET_REQUIRED"
+    }
+  ],
+  "error": "AssertionError(\"ssg-p1-final-04/guest/guest: missing any of (b'SSG_CONSUMER_BROWSER_DONE failures=0',); output=bytearray(b'ZWwtYW5kLXJlbmRlci1sYXlvdXQiLCJ0\\\\nSSG_FRAME_PART RESP 8 1152 YWciOiJhIiwidmlzaWJpbGl0eSI6InZpZXdwb3J0LXZpc2libGUiLCJ2aXNpYmxlQm91bmRzIjpbNDgsMzE4LDEzOSwxOV0s\\\\nSSG_FRAME_PART RESP 8 1248 InZpc2libGVGcmFnbWVudHMiOltbNDgsMzE4LDEzOSwxOV1dfV0sIm9ic2VydmVkTW9ub3RvbmljTnMiOiIxODA5NTAwMDAw\\\\nSSG_FRAME_PART RESP 8 1344 MDAiLCJwcm92aWRlclBpZCI6IjM5IiwicXVlcnlEdXJhdGlvbk5zIjoiMzAwMDAwMDAiLCJzY2VuZVZlcnNpb24iOiIyIiwi\\\\nSSG_FRAME_PART RESP 8 1440 c291cmNlRXBvY2giOiIxNjc1MDM3MjQ1NDkiLCJzb3VyY2VJbnN0YW5jZSI6IjVkMmU0YTE3ZjcwMDk4ZTMzZTU5Y2I4ZjNm\\\\nSSG_FRAME_PART RESP 8 1536 MjRhN2FmIiwic3RhdHVzIjoiT0siLCJ2ZXJzaW9uIjoxfQ==\\\\nSSG_FRAME_END RESP 8\\\\nSSG_CONSUMER_CHECK browser_visible_link_query=PASS\\\\nSSG_CONSUMER_BROWSER_DONE failures=2 waiting_for_provider_exit=1\\\\nSSG_PROVIDER_END pid=39 reason=EOF\\\\nSSG_CONSUMER_CHECK browser_provider_exit_eof=FAIL\\\\nSSG_CONSUMER_BROWSER_EXIT failures=3\\\\n[task] event=reclaimed pid=38 pages=1060\\\\r\\\\nSSG_SESSION consumer_wait=0 outcome=1 code=1\\\\n[process] event=wait_blocked parent=37 child=39\\\\r\\\\n')\")"
+}

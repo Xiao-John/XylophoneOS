@@ -1,0 +1,101 @@
+{
+  "status": "PASSED_SCOPED_PROBE",
+  "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+  "payload_sha256": "22c6f5510fedbdef9a9e7f8d02835c3937056cb4bec829d7c6661cc5d63a2f1e",
+  "dash_sha256": "d262b8299734d07c27e8d5ac696a3460c82cba4fe56159d3cbdcceee8f703ff9",
+  "checks": [
+    {
+      "name": "running_child_cannot_be_rewired",
+      "status": "PASS"
+    },
+    {
+      "name": "parent_closes_unused_ends",
+      "status": "PASS"
+    },
+    {
+      "name": "bounded_request_sent",
+      "status": "PASS"
+    },
+    {
+      "name": "child_reply_received",
+      "status": "PASS"
+    },
+    {
+      "name": "request_closed",
+      "status": "PASS"
+    },
+    {
+      "name": "provider_exit_observed",
+      "status": "PASS"
+    },
+    {
+      "name": "reply_eof_after_exit",
+      "status": "PASS"
+    },
+    {
+      "name": "closed_reference_rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "bounded_queue_backpressure",
+      "status": "PASS"
+    },
+    {
+      "name": "queue_drain",
+      "status": "PASS"
+    },
+    {
+      "name": "closed_reader_detected",
+      "status": "PASS"
+    },
+    {
+      "name": "pressure_pipe_closed",
+      "status": "PASS"
+    }
+  ],
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_semantic_pipe_wygh0zxf/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_1472a5_c/qmp.sock,server=on,wait=off"
+  ],
+  "baseline_resources": [
+    130279,
+    2,
+    0
+  ],
+  "dash": "EXPECTED_DENIAL: probe did not inherit child-spawn authority",
+  "after_resources": [
+    130279,
+    2,
+    0
+  ]
+}

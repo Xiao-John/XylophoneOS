@@ -1,0 +1,68 @@
+{
+  "status": "FAILED",
+  "inputs": {
+    "image": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img",
+      "sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08"
+    },
+    "session": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/build/ssg-p1/session.elf",
+      "sha256": "7891e6209cb2a920ee58275439d5125e2d45675812de52f12eae12c82fa629f2"
+    },
+    "consumer": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/build/ssg-p1/consumer/ssg-consumer.elf",
+      "sha256": "79be5bf310c1bd0adf206204bb4206a76b33213c0a4e74f9d52c85aea61e3b30"
+    },
+    "notes": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/build/ssg-p1/notes/notes.elf",
+      "sha256": "ad00dfe91b33418cd2368028e5fdf4c06fb7697fd2cad40e0d20215921cbbb79"
+    }
+  },
+  "checks": [],
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ssg_ipc_ot48v_bi/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_qe1kt5ya/qmp.sock,server=on,wait=off"
+  ],
+  "baseline_resources": [
+    130279,
+    2,
+    0
+  ],
+  "display_resources": [
+    130235,
+    3,
+    1
+  ],
+  "guest_command": "exec-driver /bin/session.elf /ssg.txt scenario",
+  "error": "AssertionError(\"ssg-p1/attempt-01/guest: missing any of (b'SSG_CONSUMER_WAIT_EDIT',); output=bytearray(b'=148 w=6 h=27 stride=3200 ns=0\\\\nEDITOR_SAMPLE pages=7201 threads=2 scroll=0 cursor=0\\\\n[qpa-flush] same=1 offset=0,0 rects=1\\\\n[qpa-frame] x=242 y=148 w=6 h=27 stride=3200 ns=0\\\\n[qpa-flush] same=1 offset=0,0 rects=1\\\\n[qpa-frame] x=242 y=148 w=6 h=27 stride=3200 ns=0\\\\nEDITOR_SAMPLE pages=7201 threads=2 scroll=0 cursor=0\\\\n[qpa-flush] same=1 offset=0,0 rects=1\\\\n[qpa-frame] x=242 y=148 w=6 h=27 stride=3200 ns=0\\\\n[qpa-flush] same=1 offset=0,0 rects=1\\\\n[qpa-frame] x=242 y=148 w=6 h=27 stride=3200 ns=0\\\\nEDITOR_SAMPLE pages=7201 threads=2 scroll=0 cursor=0\\\\n[qpa-flush] same=1 offset=0,0 rects=1\\\\n[qpa-frame] x=242 y=148 w=6 h=27 stride=3200 ns=0\\\\n[qpa-flush] same=1 offset=0,0 rects=1\\\\n[qpa-frame] x=242 y=148 w=6 h=27 stride=3200 ns=0\\\\nEDITOR_SAMPLE pages=7201 threads=2 scroll=0 cursor=0\\\\n[qpa-flush] same=1 offset=0,0 rects=1\\\\n[qpa-frame] x=242 y=148 w=6 h=27 stride=3200 ns=0\\\\n[qpa-flush] same=1 offset=0,0 rects=1\\\\n[qpa-frame] x=242 y=148 w=6 h=27 stride=3200 ns=0\\\\nEDITOR_SAMPLE pages=7201 threads=2 scroll=0 cursor=0\\\\n')\")"
+}

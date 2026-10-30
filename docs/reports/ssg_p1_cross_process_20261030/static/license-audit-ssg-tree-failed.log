@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/scripts/license_audit.py", line 72, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/scripts/license_audit.py", line 64, in main
+    if 'SPDX-License-Identifier: Apache-2.0' not in (ROOT/relative).read_text():
+                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py", line 787, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py", line 771, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/src/ports/aurora_desktop/build.py'

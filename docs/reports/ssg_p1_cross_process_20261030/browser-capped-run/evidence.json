@@ -1,0 +1,12 @@
+{
+  "partial-snapshot.json": {
+    "sha256": "1e0a9c825c0fc99fd5d29d871307a7c97c231e24644ce280180236adfc940e2b",
+    "status": "OK",
+    "capped": true
+  },
+  "reset-required-diff.json": {
+    "sha256": "a65bb4a68fe634111865dd1660ed577bd38580300c28c1257abecc01be544dc9",
+    "status": "RESET_REQUIRED",
+    "capped": false
+  }
+}

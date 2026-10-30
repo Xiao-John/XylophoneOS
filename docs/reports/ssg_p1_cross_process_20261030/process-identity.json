@@ -1,0 +1,30 @@
+{
+  "processes": {
+    "pids": {
+      "parent_pid": 10,
+      "provider_pid": 12,
+      "consumer_pid": 11,
+      "instance": "46813c80001569705f12fc17fe14ce66"
+    },
+    "kernel_recorded_address_spaces": {
+      "parent": "0x00000000001e8000",
+      "provider": "0x0000000000807000",
+      "consumer": "0x00000000003e4000"
+    },
+    "parent_child_start_records": "verified"
+  },
+  "browser_processes": {
+    "pids": {
+      "parent_pid": 37,
+      "provider_pid": 39,
+      "consumer_pid": 38,
+      "instance": "ea0747ea7839f3406b2aac25a5451f10"
+    },
+    "kernel_recorded_address_spaces": {
+      "parent": "0x00000000001e8000",
+      "provider": "0x0000000000807000",
+      "consumer": "0x00000000003e4000"
+    },
+    "parent_child_start_records": "verified"
+  }
+}

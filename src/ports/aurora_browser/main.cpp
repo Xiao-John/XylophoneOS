@@ -2,6 +2,8 @@
 #include "view.hpp"
 #include "../qt6/aurora/aurora.hpp"
 #include "../qt6/aurora/style.hpp"
+#include "../qt6/aurora/ssg_pipe_provider.hpp"
+#include <memory>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QLabel>
@@ -17,9 +19,14 @@
 Q_IMPORT_PLUGIN(QXosIntegrationPlugin)
 class Browser final:public aurora::Canvas {
     browser::HtmlView *view;
+    QString pipe_instance;bool pipe_text=false;
+    std::unique_ptr<aurora::PipeProvider> pipe_provider;
     quint64 previous_scene=0;
     QString previous_epoch;
-    void dump_scene(){view->allow_scene_observation(true);const auto snapshot=view->scene_snapshot("content");
+    void dump_scene(){
+        // The legacy local probe must not expand a prewired consumer's scope.
+        if(!pipe_instance.isEmpty() && !pipe_text){std::printf("SSG_BROWSER_PROBE DENIED\n");return;}
+        view->allow_scene_observation(true);const auto snapshot=view->scene_snapshot("content");
         std::printf("SSG_BROWSER_SNAPSHOT %s\n",QJsonDocument(snapshot).toJson(QJsonDocument::Compact).constData());
         std::printf("SSG_BROWSER_DIFF %s\n",QJsonDocument(view->scene_diff(previous_scene,previous_epoch)).toJson(QJsonDocument::Compact).constData());
         previous_scene=snapshot["sceneVersion"].toString().toULongLong();previous_epoch=snapshot["sourceEpoch"].toString();}
@@ -50,6 +57,7 @@ class Browser final:public aurora::Canvas {
         candidate->resize(view->size());
         candidate->titleChanged=[&candidate_title](QString text){candidate_title=text;};
         if(!candidate->load(path,error)){delete candidate;if(view->current().size())address->setText("file:"+view->current());message("Page error: "+error);return false;}
+        if(!pipe_instance.isEmpty())candidate->allow_scene_observation(pipe_text);
         candidate->navigate=[this](QString target){navigate(target);};
         candidate->titleChanged=[this](QString text){title->setText(text+" · Aurora");};
         candidate->setObjectName("page");
@@ -64,7 +72,7 @@ class Browser final:public aurora::Canvas {
     void travel(int delta){const int target=index+delta;if(target<0||target>=history.size())return;if(navigate(history[target],false))index=target;updateButtons();}
     void point(const char *name,QWidget *w){auto p=w->mapToGlobal(w->rect().center());std::printf("BROWSER_POINT %s=%d,%d\n",name,p.x(),p.y());}
 public:
-    Browser(){setWindowTitle("Xylophone Browser — Aurora");resize(800,600);
+    Browser(QString initial={},QString instance={},bool text_scope=false):pipe_instance(std::move(instance)),pipe_text(text_scope){setWindowTitle("Xylophone Browser — Aurora");resize(800,600);
         auto *layout=new QVBoxLayout(this);layout->setContentsMargins(32,30,32,26);layout->setSpacing(10);
         auto *tabs=new QHBoxLayout;title=new QLabel("Aurora / Start");title->setStyleSheet("color:#eef5ff;font-size:16px;font-weight:600;");tabs->addWidget(title,1);
         auto *newTab=new QLabel("LOCAL PREVIEW");newTab->setStyleSheet("color:#91cfdc;font-size:11px;");tabs->addWidget(newTab);
@@ -89,7 +97,30 @@ public:
             auto *ssg=new QShortcut(QKeySequence(Qt::CTRL|Qt::Key_I),this);
             connect(ssg,&QShortcut::activated,this,[this]{dump_scene();});
         }
-        QTimer::singleShot(0,this,[this,bookmark]{navigate("/web/start.html");point("address",address);point("back",back);point("forward",forward);point("page",view);point("tabs",tabbar);point("bookmark",bookmark);std::printf("BROWSER_READY engine=litehtml-0.9 local_only=1 javascript=0\n");});
+        QTimer::singleShot(0,this,[this,bookmark,initial]{
+            navigate(initial.isEmpty()?QStringLiteral("/web/start.html"):initial);
+            if(!pipe_instance.isEmpty()){
+                pipe_provider=std::make_unique<aurora::PipeProvider>(pipe_instance,
+                    [this](bool visible,const QString &role,unsigned limit){return view->scene_snapshot(role,visible,limit);},
+                    [this](quint64 version,const QString &epoch){return view->scene_diff(version,epoch);});
+                pipe_provider->start();
+                std::printf("SSG_PROVIDER_READY pid=%llu instance=%s text=%d kind=browser\n",(unsigned long long)xos::sdk::pid(),pipe_instance.toUtf8().constData(),int(pipe_text));
+            }
+            point("address",address);point("back",back);point("forward",forward);point("page",view);point("tabs",tabbar);point("bookmark",bookmark);std::printf("BROWSER_READY engine=litehtml-0.9 local_only=1 javascript=0\n");});
     }
 };
-int main(int argc,char **argv){QApplication app(argc,argv);aurora::initialize(app);Browser browser;browser.show();return app.exec();}
+static void ipc_qt_message(QtMsgType,const QMessageLogContext &,const QString &message){std::printf("QT_MESSAGE %s\n",message.toUtf8().constData());}
+int main(int argc,char **argv){
+    QString instance,initial;bool text_scope=false;
+    for(int i=1;i<argc;++i){const QByteArray arg(argv[i]);
+        if(arg=="--ssg-ipc-provider" && i+1<argc)instance=QString::fromLatin1(argv[++i]);
+        else if(arg=="--ssg-ipc-text")text_scope=true;
+        else if(!arg.startsWith('-') && initial.isEmpty())initial=QString::fromUtf8(arg);
+    }
+    if(!instance.isEmpty()){
+        if(instance.size()!=32 || xos::sdk::syscall(xos::sys_process_stdio,0,0)!=0 || xos::sdk::syscall(xos::sys_process_stdio,0,2)!=0)return 2;
+        for(const auto c:instance)if(!((c>='0' && c<='9') || (c>='a' && c<='f')))return 2;
+        qInstallMessageHandler(ipc_qt_message);
+    }
+    QApplication app(argc,argv);aurora::initialize(app);Browser browser(initial,instance,text_scope);browser.show();return app.exec();
+}

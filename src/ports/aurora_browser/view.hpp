@@ -64,21 +64,23 @@ public:
     }
     QString current()const{return page;}
     void allow_scene_observation(bool value){scene_allowed=value;if(!value){scene.invalidate();scene_ids.clear();}}
-    QJsonObject scene_snapshot(const QString &query={}) try {
+    QJsonObject scene_snapshot(const QString &query={},bool visible_only=false,unsigned node_limit=96) try {
         if(!scene_allowed)return {{"status","DENIED"}};
         if(!doc)return {{"status","SEMANTICS_UNAVAILABLE"}};
+        if((!query.isEmpty() && query!="content" && query!="link" && query!="text") || node_limit<1 || node_limit>96)
+            return {{"status","BAD_QUERY"}};
         QJsonArray nodes;int visited=0,text_left=8192;bool capped=false;QElapsedTimer timer;timer.start();
         const auto origin=viewport()->mapTo(window(),QPoint());
         const QRect view_rect(origin,viewport()->size());
         auto node_id=[&](const litehtml::element::ptr &e){const auto p=reinterpret_cast<quintptr>(e.get());if(!scene_ids.contains(p))scene_ids[p]=next_scene_id++;return scene_ids[p];};
         std::function<void(litehtml::element::ptr,quint64,int)> walk;
         walk=[&](litehtml::element::ptr e,quint64 parent,int depth){
-            if(++visited>96 || depth>18 || timer.elapsed()>30){capped=true;return;}
+            if(++visited>96 || nodes.size()>=int(node_limit) || depth>18 || timer.elapsed()>30){capped=true;return;}
             const auto id=node_id(e);const auto *tag=e->get_tagName();const auto name=QString::fromUtf8(tag?tag:"");
-            if(query=="content" && name=="head")return;
-            if(query=="content" && !e->is_text() && name!="a"){
-                for(auto &child:e->children()){walk(child,id,depth+1);if(capped)break;}return;
-            }
+            if(!query.isEmpty() && name=="head")return;
+            const bool matches=query.isEmpty() || (query=="content" && (e->is_text() || name=="a")) ||
+                (query=="link" && name=="a") || (query=="text" && e->is_text());
+            if(!matches){for(auto &child:e->children()){walk(child,id,depth+1);if(capped)break;}return;}
             litehtml::position::vector boxes;const bool complete=e->get_rendering_fragments(boxes,8);QVector<QRect> local_boxes;
             for(const auto &box:boxes)local_boxes.append(QRect(box.x,box.y-verticalScrollBar()->value(),box.width,box.height).translated(origin));
             const auto geometry=scene_geometry(local_boxes,view_rect,complete);
@@ -93,11 +95,13 @@ public:
                 {"actionAuthority","READ_ONLY_NO_GRANT"}};
             if(e->is_text()){litehtml::string text;e->get_text(text);const auto q=QString::fromUtf8(text.c_str());const auto value=q.left(qMin(1024,text_left));n["text"]=value;n["textTruncated"]=value.size()!=q.size();n["textRange"]=QJsonArray{0,value.size()};text_left-=value.size();}
             if(name=="a"){n["href"]=QString::fromUtf8(e->get_attr("href","")).left(256);n["actions"]=QJsonArray{"inspect","click"};n["execution"]="NOT_IMPLEMENTED";}
-            nodes.append(n);for(auto &child:e->children()){walk(child,id,depth+1);if(capped)break;}
+            if(!visible_only || !geometry.visible_fragments.isEmpty())nodes.append(n);
+            for(auto &child:e->children()){walk(child,id,depth+1);if(capped)break;}
         };
         walk(doc->root(),0,0);
         QString hit="NONE";if(auto actual=doc->get_over_element()){const auto key=reinterpret_cast<quintptr>(actual.get());hit=scene_ids.contains(key)?QString::number(scene_ids[key]):"OUTSIDE_SNAPSHOT";}
-        const QJsonObject scope{{"provider","litehtml-v0.9-ssg-readonly"},{"document",page},{"query",query}};
+        const QJsonObject scope{{"provider","litehtml-v0.9-ssg-readonly"},{"document",page},{"query",query},
+            {"visibleOnly",visible_only},{"nodeLimit",int(node_limit)}};
         auto result=scene.publish(nodes,{{"provider","litehtml-v0.9-ssg-readonly"},{"document",page},{"query",query},{"queryScope",scope},{"scrollY",verticalScrollBar()->value()},
             {"viewport",QJsonArray{view_rect.x(),view_rect.y(),view_rect.width(),view_rect.height()}},{"hitNode",hit},
             {"hitSource","actual-engine-mouse-state"},{"iframes","UNSUPPORTED"},{"shadowDOM","UNSUPPORTED"},

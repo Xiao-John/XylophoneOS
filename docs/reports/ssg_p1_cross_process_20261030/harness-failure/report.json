@@ -1,0 +1,76 @@
+{
+  "status": "FAILED",
+  "inputs": {
+    "image": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img",
+      "sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08"
+    },
+    "session": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/build/ssg-p1/session.elf",
+      "sha256": "7ca5485c59065ccbf11ec0e8f4039084ef14867248f8594fea1afc88d854deb0"
+    },
+    "consumer": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/build/ssg-p1/consumer/ssg-consumer.elf",
+      "sha256": "14fb63289627cd045cd145e9c207c3b0dafdd518ea3a6c05fc81454820f3250f"
+    },
+    "notes": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/build/ssg-p1/notes/notes.elf",
+      "sha256": "7bfbbd93b8a042945576828379942760b2e4cc9e9fe682faac8386ce776fe170"
+    },
+    "browser": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/build/ssg-p1/browser/browser.elf",
+      "sha256": "5b5f2aba8b1c1c6211536a641b03c91882ff15f412e6254e9c01bc463bde9d2c"
+    },
+    "dash": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_frozen/dash.elf",
+      "sha256": "d262b8299734d07c27e8d5ac696a3460c82cba4fe56159d3cbdcceee8f703ff9"
+    }
+  },
+  "checks": [],
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ssg_ipc_2r3c_5fn/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_fzxtbdu5/qmp.sock,server=on,wait=off"
+  ],
+  "baseline_resources": [
+    130279,
+    2,
+    0
+  ],
+  "display_resources": [
+    130235,
+    3,
+    1
+  ],
+  "guest_command": "exec-driver /bin/session.elf /ssg.txt scenario --text",
+  "error": "AssertionError('consumer scenario reported failures')"
+}

@@ -1,0 +1,61 @@
+{
+  "status": "FAILED",
+  "case": "browser",
+  "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+  "checks": [
+    {
+      "name": "browser_dom_layout_hidden_and_offviewport",
+      "status": "PASSED"
+    },
+    {
+      "name": "ssg_link_geometry_matches_actual_engine_hit",
+      "status": "PASSED"
+    }
+  ],
+  "screenshots": {
+    "browser-dom-first": {
+      "sha256": "ff3d81cbcf64985f7329965ebbf63ac233b8a19909621e69a1f31a0c31cfb59f",
+      "png_bytes": 250043,
+      "host_capture_ms": 59.88112502382137
+    }
+  },
+  "runs": [],
+  "elf_sha256": {
+    "browser": "548be4a1a3ef17f03a90b15687f29ceb82bfe6f72768fab08c3547cb3a1bcd09"
+  },
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_aurora_platform_kz9rkpdq/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_htsqxd50/qmp.sock,server=on,wait=off"
+  ],
+  "error": "AssertionError()"
+}

@@ -1,0 +1,109 @@
+{
+  "status": "BUILT",
+  "commands": [
+    [
+      "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/sdk/compile.py",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/src/user/apps/ssg_session.cpp",
+      "-o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/build/ssg-p1-final-04/session.elf"
+    ],
+    [
+      "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/src/ports/qt6/build_fixture.py",
+      "--source",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/src/user/apps/ssg_consumer.cpp",
+      "--qrc",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/tests/fixtures/qt6/resources.qrc",
+      "--sdk",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/sdk",
+      "--qt-build",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/widgets",
+      "--host-qt",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/host-install",
+      "--binutils",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/.cache/xos_seed/threading_sdk_tools",
+      "--output",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/build/ssg-p1-final-04/consumer/ssg-consumer.elf"
+    ],
+    [
+      "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/src/ports/qt6/build_widgets_fixture.py",
+      "--source",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/src/ports/qt6/editor/main.cpp",
+      "--sdk",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/sdk",
+      "--qt-build",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/widgets",
+      "--qt-source",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/qtbase",
+      "--core-build",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/widgets",
+      "--host-qt",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/host-install",
+      "--binutils",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/.cache/xos_seed/threading_sdk_tools",
+      "--output",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/build/ssg-p1-final-04/notes/notes.elf"
+    ],
+    [
+      "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/src/ports/aurora_browser/build.py",
+      "--sdk",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/sdk",
+      "--qt-build",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/widgets",
+      "--qt-source",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/qtbase",
+      "--host-qt",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/host-install",
+      "--binutils",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/.cache/xos_seed/threading_sdk_tools",
+      "--output",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/build/ssg-p1-final-04/browser/browser.elf"
+    ]
+  ],
+  "source_sha256": {
+    "scripts/build_ssg_p1.py": "7c7b4329d05c7794783274de90cfca967a0d3bf3c94a9170abfd78f7abe79184",
+    "src/user/apps/ssg_session.cpp": "d972bd3c02b3c8db01b6e8c759969c309fd510ab939298d0ad4dcbcefc9b0871",
+    "src/user/apps/ssg_consumer.cpp": "90e740826b40d4231e162d0871adbb9e5d2dfcc74e20207ed4e9b0bf27922fd3",
+    "src/user/ssg/pipe_wire.hpp": "862470393d5e7c9a8392cb89ae782dec7a13a715c38d845e101ea12a623aa450",
+    "src/ports/qt6/aurora/ssg_pipe_provider.hpp": "99f6765c9e961a418e9bd41ecd9470948757418d1ea538683ff0ab0bdef9956a",
+    "src/ports/qt6/aurora/ssg.cpp": "43bb59d6dde779749aa87fbfec6026c82e360c5f94210e576e82d6b1135da054",
+    "src/ports/qt6/aurora/ssg.hpp": "6f506540167153ee511cb443023302a9f542f2f030a87aacffdd775eb832d5b1",
+    "src/ports/qt6/editor/main.cpp": "fccdec346d7efae1f2a83200138446461edaf3e9af4c706f2a8c04d171dfdf52",
+    "src/ports/aurora_browser/main.cpp": "4e30b6f54d232b0c78fd9566c8ba5be770baef44b641aac13673239c6e3ec79e",
+    "src/ports/aurora_browser/view.hpp": "c5e32600bbb0f63676c5c85fae93527d3bc3a38dcc4e1a404211866e0768a918",
+    "src/ports/aurora_browser/scene_geometry.hpp": "46ceb67c37427115f3201ab685dd380e16386c9871ccbf13b0d35d24a4743da8",
+    "src/ports/aurora_browser/content.hpp": "e2742a15f933fc95fc78d6dcadcba557dac6d01a254575807b20c7d783397881",
+    "src/ports/aurora_browser/patches/0001_readonly_render_fragments.patch": "2559951b2b94baf50a2947c8e50d1d717ff1a1a9c7011d3ce2d9ac59da04c4be",
+    "src/ports/aurora_browser/source_lock.json": "5737df122030a880301512a9129a9599be4f1c84a101321329c356033e0070e4",
+    "tests/ssg_ipc_guest.py": "74aef482d4be360df6adb9f2998bd90e1775c85878c018e58870bc3e01c95c4b"
+  },
+  "sdk_manifest_sha256": "24dcc3ba938013c852a12f386ea2f7e16ebcec7cb4bfaff477794530c5d0e4b1",
+  "qt_cache_sha256": "406964513c0220090224068428d016bd0a75553da0d976be545dc02c8e8cd465",
+  "output": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/build/ssg-p1-final-04",
+  "tools": {
+    "x86_64-elf-g++": {
+      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
+      "version": "x86_64-elf-g++ (GCC) 16.2.0"
+    },
+    "x86_64-elf-gcc": {
+      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+      "sha256": "078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f",
+      "version": "x86_64-elf-gcc (GCC) 16.2.0"
+    },
+    "x86_64-elf-ar": {
+      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
+      "sha256": "a7e59b3482a0e26d000bd2f4f60f7e8ad1e401909e03ca4c746ba126639087a3",
+      "version": "GNU ar (GNU Binutils) 2.47.20260726"
+    }
+  },
+  "artifacts": {
+    "session.elf": "05a9d26a20df998457c0781c5048130c3ffc55a7167c749964b1da5eca851f70",
+    "consumer/ssg-consumer.elf": "038ae33896bd2878812fdc549659c365ed1c3c10140ae64efa67074e50858e91",
+    "notes/notes.elf": "01ca9118658f9ea19cab03ce0e6c94d2df41537d05699f9dbc4f1cd181461aa7",
+    "browser/browser.elf": "b0fe91be4e8e9ec83d7b67a03566277591901e2d711f542a7ab9cad1ab7dfbbf"
+  }
+}

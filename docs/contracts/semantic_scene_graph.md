@@ -1,7 +1,9 @@
-# XOS Semantic Scene Graph — application-local v1 prototype
+# XOS Semantic Scene Graph — application-owned v1 and restricted pipe prototype
 
 2026-10-30. Userspace only. **No kernel/shared ABI change.** This round delivers
-bounded read-only native providers and a separate local Intent test adapter.
+bounded read-only native providers, a restricted prewired cross-process path and
+a separate local Intent test adapter. The path and its limits are described in
+[SSG-P1](ssg_p1_pipe.md).
 Cross-process broker, production authority, subscriptions, global compositor
 scene, screen observation and cross-process action execution are **BLOCKED / NOT_RUN**.
 Neither the model nor an SSG snapshot grants authority.
@@ -45,20 +47,23 @@ semantic provider for more precise meaning. Drawing commands alone are not meani
 
 ## Ownership, identity, query and bounded diff
 
-All provider/Intent calls run on the GUI thread; no thread-safe or cross-process
-call interface is implied. A trusted host must marshal worker proposals as data.
+All provider/Intent calls run on the GUI thread; these in-process objects are not
+thread-safe. SSG-P1 marshals a worker's bounded read-only requests onto that
+thread and returns the actual results through prewired child pipes.
 
 `QtScene` holds a QPointer to its application root and bounded QPointers for node
 identities. Nothing scans another process, maps its heap, reads scanout, obtains
 MMIO/DMA or elevates an application. Default observation is DENIED. The trusted
 application host explicitly enables text scope or revokes it; this API is an
 in-process adapter, not proof that an untrusted same-process plugin is isolated.
-Normal Notes/Browser export nothing unless launched with `--ssg-probe` and queried
-with Ctrl+I (Notes also emits its initial opt-in snapshot). Guest probes use only
-synthetic documents and serial output to the authorized test harness. They create
-no global endpoint or publicly readable scene file.
+Normal Notes/Browser export nothing unless explicitly launched with `--ssg-probe`
+or the SSG-P1 prewired provider option. The former is an application-local probe;
+the latter accepts only the parent's preconnected pipes, with text separately
+enabled. Guest probes use synthetic documents. Consumer console logging records
+the received pipe bytes as evidence; it is not the transport. Neither mode
+creates a global endpoint or publicly readable scene file.
 
-A reference consists of source epoch + node ID + scene version. Epochs include
+A local reference consists of source epoch + node ID + scene version. Epochs include
 the running process identity and provider generation, not a guessed PID field
 supplied by a consumer. Node IDs are not reused within an epoch. A QPointer clears
 on widget destruction; a new widget gets a new ID even if its address is reused.
@@ -67,13 +72,19 @@ stored scenes and changes epoch. A diff query from another epoch returns
 SOURCE_REPLACED (or unavailable after revocation), not a misleading empty diff.
 IDs are not secrets and convey no authority. Production broker identities need
 kernel-authenticated transport and service-instance lifecycle, currently missing.
+SSG-P1 additionally binds references to a fresh parent-generated source instance;
+this avoids reusing old references in the experiment but does not authenticate a
+peer or provide production revocation.
 
 The snapshot has version, source epoch, scene version, canonical monotonic
 observation time, source/metadata, query scope and a capped flag. Integer identity
 and clock values are decimal strings to preserve width in future JS consumers.
 Native names, document text and labels are untrusted application content, never
 instructions or authorizations. Password QLineEdit values and selections are
-withheld even when normal text observation is enabled.
+withheld even when normal text observation is enabled. A trusted application may
+mark a Qt widget with `xosSsgProtected=true`; that widget and its descendants
+withhold text, accessible/object names and widget-specific values. This marker
+does not independently detect unmarked sensitive content or replace policy.
 
 Queries can filter visible nodes and role; Notes prioritizes a document-role query after its initial bounded tree export, and Browser uses a body-text/link content query. Filtering avoids formatting every unrelated control; a capped whole-tree export is never treated as complete.
 Browser publishes a stable query scope separately from mutable viewport/scroll

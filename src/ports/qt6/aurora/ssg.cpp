@@ -4,6 +4,7 @@
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QSet>
+#include <QtCore/QVariant>
 #include <QtWidgets/QAbstractButton>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
@@ -77,18 +78,19 @@ QJsonObject QtScene::snapshot(bool visible_only,const QString &requested_role) t
     identities.erase(std::remove_if(identities.begin(),identities.end(),[](const Identity &i){return i.widget.isNull();}),identities.end());
     QJsonArray nodes;int text_budget=8192,visited=0;bool capped=false;QElapsedTimer timer;timer.start();
     auto identity=[&](QWidget *w){for(const auto &i:identities)if(i.widget==w)return i.id;if(identities.size()>=128)return quint64(0);identities.append({w,next_id++});return next_id-1;};
-    std::function<void(QWidget*,quint64,int)> walk;
-    walk=[&](QWidget *w,quint64 parent,int depth){
+    std::function<void(QWidget*,quint64,int,bool)> walk;
+    walk=[&](QWidget *w,quint64 parent,int depth,bool protected_parent){
         if(++visited>128 || nodes.size()>=int(node_limit) || depth>12 || timer.elapsed()>30){capped=true;return;}
         const auto id=identity(w);if(!id){capped=true;return;}
+        const bool protected_here=protected_parent || w->property("xosSsgProtected").toBool();
         if(!requested_role.isEmpty()){
             const QString quick=qobject_cast<QLineEdit*>(w)?"textbox":qobject_cast<QPlainTextEdit*>(w)?"document":qobject_cast<QAbstractButton*>(w)?"button":qobject_cast<QLabel*>(w)?"label":qobject_cast<QScrollBar*>(w)?"scrollbar":"custom";
-            if(quick!=requested_role){for(auto *child:w->children())if(auto *widget=qobject_cast<QWidget*>(child)){walk(widget,id,depth+1);if(capped)break;}return;}
+            if(quick!=requested_role){for(auto *child:w->children())if(auto *widget=qobject_cast<QWidget*>(child)){walk(widget,id,depth+1,protected_here);if(capped)break;}return;}
         }
         QString role="custom",text,name=w->accessibleName();QJsonObject extra;
-        bool sensitive=false;
+        bool sensitive=protected_here;
         if(auto *line=qobject_cast<QLineEdit*>(w)){
-            role="textbox";sensitive=line->echoMode()!=QLineEdit::Normal;
+            role="textbox";sensitive=sensitive || line->echoMode()!=QLineEdit::Normal;
             if(!sensitive){text=line->text();extra["selectionStart"]=line->selectionStart();extra["selectionLength"]=line->selectedText().size();extra["readOnly"]=line->isReadOnly();}
         } else if(auto *edit=qobject_cast<QPlainTextEdit*>(w)){
             role="document";auto cursor=edit->textCursor();cursor.setPosition(0);cursor.setPosition(qMin(1024,edit->document()->characterCount()-1),QTextCursor::KeepAnchor);text=cursor.selectedText();text.replace(QChar::ParagraphSeparator,'\n');extra["documentLength"]=edit->document()->characterCount()-1;extra["selectionStart"]=edit->textCursor().selectionStart();extra["selectionEnd"]=edit->textCursor().selectionEnd();
@@ -106,8 +108,9 @@ QJsonObject QtScene::snapshot(bool visible_only,const QString &requested_role) t
         const QString visibility=hidden?"hidden":visible.isEmpty()?"locally-occluded-or-clipped":"locally-visible";
         if((!visible_only || visibility=="locally-visible") && (requested_role.isEmpty() || role==requested_role)){
             QJsonArray actions;if(role=="textbox" && !sensitive){actions={"inspect","focus","select"};if(!extra["readOnly"].toBool())actions.append("set_text");}else if(role=="button")actions={"inspect","focus","activate"};else if(role=="document")actions={"inspect","focus","select","scroll"};
-            QJsonObject n{{"id",QString::number(id)},{"parent",QString::number(parent)},{"role",role},{"name",name.left(128)},
-                {"nativeName",w->objectName().left(128)},{"class",QString::fromLatin1(w->metaObject()->className()).left(64)},
+            if(sensitive)actions=QJsonArray{"inspect"};
+            QJsonObject n{{"id",QString::number(id)},{"parent",QString::number(parent)},{"role",role},{"name",sensitive?QString():name.left(128)},
+                {"nativeName",sensitive?QString():w->objectName().left(128)},{"class",QString::fromLatin1(w->metaObject()->className()).left(64)},
                 {"enabled",w->isEnabled()},{"focused",w->hasFocus()},{"visibility",visibility},{"bounds",rect(geometry)},
                 {"visibleBounds",rect(visible)},{"visibleFragments",visible_fragments},{"fragmentsComplete",region.rectCount()<=8},{"source","qt-widget"},{"contentTrust","untrusted-application-content"},
                 {"screenOcclusion","UNKNOWN_NO_COMPOSITOR"},{"sensitive",sensitive},{"actions",actions},
@@ -117,11 +120,11 @@ QJsonObject QtScene::snapshot(bool visible_only,const QString &requested_role) t
             if(!sensitive)for(auto it=extra.begin();it!=extra.end();++it)n[it.key()]=it.value();
             nodes.append(n);
         }
-        for(auto *child:w->children())if(auto *widget=qobject_cast<QWidget*>(child)){walk(widget,id,depth+1);if(capped)break;}
+        for(auto *child:w->children())if(auto *widget=qobject_cast<QWidget*>(child)){walk(widget,id,depth+1,protected_here);if(capped)break;}
     };
-    walk(root,0,0);
+    walk(root,0,0,false);
     const QJsonObject query_scope{{"provider","qt-widget-v1"},{"scope","application-root"},{"textAuthorized",text_permitted},
-        {"visibleOnly",visible_only},{"roleFilter",requested_role}};
+        {"visibleOnly",visible_only},{"roleFilter",requested_role},{"nodeLimit",int(node_limit)}};
     auto result=stream.publish(nodes,{{"provider","qt-widget-v1"},{"scope","application-root"},{"textAuthorized",text_permitted},
         {"visibleOnly",visible_only},{"roleFilter",requested_role},{"queryScope",query_scope},
         {"globalScene","BLOCKED"},{"subscriptions","NOT_IMPLEMENTED"}},capped);

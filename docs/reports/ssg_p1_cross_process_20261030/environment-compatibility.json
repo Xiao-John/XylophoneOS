@@ -1,0 +1,26 @@
+{
+  "image_build_id": "7ccd5871c0c00297",
+  "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+  "system_manifest_sha256": "19ef6d7a3a404362f1331a6985b9f05680b5c639adb80a34c0d0cfab6c14d123",
+  "system_source_comparison": {
+    "src/kernel/": {
+      "checked": 40,
+      "different_or_missing": []
+    },
+    "src/shared/include/xos/": {
+      "checked": 5,
+      "different_or_missing": []
+    }
+  },
+  "sdk_manifest_sha256": "24dcc3ba938013c852a12f386ea2f7e16ebcec7cb4bfaff477794530c5d0e4b1",
+  "sdk_header_comparison": {
+    "matching_count": 16,
+    "different": [
+      "src/user/include/xos/execution.hpp"
+    ],
+    "not_in_sdk": [
+      "src/user/include/xos/fault_sha256.hpp"
+    ],
+    "difference_note": "execution.hpp adds an unused execution-receipt helper; fault_sha256.hpp is not used by these programs"
+  }
+}

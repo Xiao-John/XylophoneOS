@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "current": {
+    "sys_pipe_wait": 54,
+    "sys_process_guard": 62,
+    "sys_random_bytes": 63,
+    "sys_clock_realtime": 64,
+    "sys_display": 65,
+    "sys_display_present": 66,
+    "clone_session": 20,
+    "anonymous": 21,
+    "anonymous_seal": 22,
+    "maintenance_acquire": 23,
+    "maintenance_release": 24,
+    "truncate": 25
+  },
+  "historical_reports": "not_modified"
+}

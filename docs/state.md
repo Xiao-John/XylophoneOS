@@ -1,7 +1,10 @@
 # XOS 当前状态
 
-2026-10-30：原生[Aurora SDK](work_log/0102_aurora_ui_v2_sdk.md)及[Notes/Browser SSG 接入](work_log/0103_aurora_ssg_consumers.md)已通过限定客体验收。
-跨进程SSG/合成器/生产权限仍BLOCKED，无内核/系统ABI/QPA改动；LocalPilot仅LP0研究。
+2026-10-30：原生[Aurora SDK](work_log/0102_aurora_ui_v2_sdk.md)及[Notes/Browser SSG 接入](work_log/0103_aurora_ssg_consumers.md)已有应用内限定客体证据。
+[SSG-P1](contracts/ssg_p1_pipe.md)另以合法父进程预接线，运行独立消费者和真实
+Notes/Browser 提供者；最终组合与失败证据见[0112](work_log/0112_ssg_p1_cross_process.md)。
+任意进程发现、生产 Broker、
+远程授权/撤销和合成器仍 BLOCKED。无内核/系统ABI/QPA改动；LocalPilot仍为普通消费者方向。
 单Surface桌面另一个审查单元交付。旧资格与失败保持原输入。
 
 ## SSG Diff 审查修复（待审）

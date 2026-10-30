@@ -1,0 +1,69 @@
+{
+  "date": "2026-10-30",
+  "upstream_main": "3377dbf35bdb43d850c9a2b8e8076da3be146f3d",
+  "fork_main": "9c896df90c2d589989b5888a495108b36959c684",
+  "branch_base": "45f7df28498bb11ed615190a02f6500923e1681b",
+  "merged_diff_head": "8197004b12148abd566cc3ed69eaba7451025094",
+  "pull_requests": [
+    {
+      "baseRefName": "main",
+      "baseRefOid": "3377dbf35bdb43d850c9a2b8e8076da3be146f3d",
+      "headRefName": "codex/aurora-sdk-v2-20261030",
+      "headRefOid": "758dde49d312277135fb2fa51887c2b4a94d6761",
+      "isDraft": true,
+      "number": 29,
+      "state": "OPEN",
+      "title": "feat(aurora): reusable native UI v2 SDK with bounded local semantics",
+      "url": "https://github.com/Xiao-John/XylophoneOS/pull/29",
+      "repository": "Xiao-John/XylophoneOS"
+    },
+    {
+      "baseRefName": "main",
+      "baseRefOid": "3377dbf35bdb43d850c9a2b8e8076da3be146f3d",
+      "headRefName": "codex/semantic-broker-pipe-probe-20261030",
+      "headRefOid": "c3e87b817db7eea1d559da7a193165280696a755",
+      "isDraft": true,
+      "number": 30,
+      "state": "OPEN",
+      "title": "research(ssg): qualify a bounded parent-child pipe path",
+      "url": "https://github.com/Xiao-John/XylophoneOS/pull/30",
+      "repository": "Xiao-John/XylophoneOS"
+    },
+    {
+      "baseRefName": "codex/aurora-sdk-v2-20261030",
+      "baseRefOid": "758dde49d312277135fb2fa51887c2b4a94d6761",
+      "headRefName": "codex/aurora-ssg-20261030",
+      "headRefOid": "a4c61619a2ab2ce974b98ab5078fbc946cbed9ee",
+      "isDraft": true,
+      "number": 1,
+      "state": "OPEN",
+      "title": "feat(ssg): native Notes and real browser-model scene snapshots",
+      "url": "https://github.com/www080327-glitch/XylophoneOS/pull/1",
+      "repository": "www080327-glitch/XylophoneOS"
+    },
+    {
+      "baseRefName": "codex/aurora-sdk-v2-20261030",
+      "baseRefOid": "758dde49d312277135fb2fa51887c2b4a94d6761",
+      "headRefName": "codex/ssg-diff-integrity-20261030",
+      "headRefOid": "8197004b12148abd566cc3ed69eaba7451025094",
+      "isDraft": true,
+      "number": 3,
+      "state": "OPEN",
+      "title": "fix(ssg): keep bounded diffs honest across query changes",
+      "url": "https://github.com/www080327-glitch/XylophoneOS/pull/3",
+      "repository": "www080327-glitch/XylophoneOS"
+    },
+    {
+      "baseRefName": "codex/aurora-ssg-20261030",
+      "baseRefOid": "a4c61619a2ab2ce974b98ab5078fbc946cbed9ee",
+      "headRefName": "codex/ssg-browser-scope-20261030",
+      "headRefOid": "45f7df28498bb11ed615190a02f6500923e1681b",
+      "isDraft": true,
+      "number": 5,
+      "state": "OPEN",
+      "title": "fix(browser): clip individual semantic render fragments",
+      "url": "https://github.com/www080327-glitch/XylophoneOS/pull/5",
+      "repository": "www080327-glitch/XylophoneOS"
+    }
+  ]
+}

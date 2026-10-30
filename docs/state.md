@@ -158,6 +158,8 @@ sys83 的受控 IRQ4 事件已在本分支实现，契约见[irq_event](contract
 [0125](work_log/0125_terminal_failure_wakeup.md)。
 控制协议现有有限截止时间读取的初始实现，尚无应用会话或客体验证；见
 [0126](work_log/0126_terminal_timed_read.md)。
+终端通道现对允许的伪唤醒重新检查和等待，仅宿主模拟验证，见
+[0127](work_log/0127_channel_spurious_wakeup.md)。
 用户态 UART 的 PIO、IRQ 与 COM1 调试通路交接提案见
 [uart_user_driver_proposal](contracts/uart_user_driver_proposal.md)，仅设计，尚无授权 ABI。
 

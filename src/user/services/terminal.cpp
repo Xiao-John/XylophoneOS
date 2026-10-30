@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 #include <xos/sdk.hpp>
+#include <xos/channel_io.hpp>
 #include <xos/thread_core.hpp>
 #include <xos/terminal_abi.hpp>
 #include "../drivers/uart_16550.hpp"
@@ -95,9 +96,9 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     if (thread::create(worker, receive_worker, nullptr) != 0) { (void)device.close(); return 4; }
     bool done = false;
     while (!done) {
-        if (sdk::channel_wait(incoming, thread_deadline_infinite) != 0) break;
         terminal::request request{};
-        if (sdk::ipc_recv(incoming, &request, sizeof(request)) != static_cast<i64>(sizeof(request))) break;
+        if (sdk::channel_receive_wait(incoming, &request, sizeof(request), thread_deadline_infinite) !=
+            static_cast<i64>(sizeof(request))) break;
         terminal::response response{};
         response.version = terminal::version; response.size = sizeof(response); response.sequence = request.sequence;
         if (request.version != terminal::version || request.size != sizeof(request) ||
@@ -131,8 +132,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
             response.breaks = stats.breaks;
             unlock();
         }
-        if (sdk::channel_wait(outgoing, thread_deadline_infinite) != 0 ||
-            sdk::ipc_send(outgoing, &response, sizeof(response)) != 0) break;
+        if (sdk::channel_send_wait(outgoing, &response, sizeof(response), thread_deadline_infinite) != 0) break;
     }
     __atomic_store_n(&stopping, 1u, __ATOMIC_RELEASE);
     lock(); (void)device.close(); unlock();

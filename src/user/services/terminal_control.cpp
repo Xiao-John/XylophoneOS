@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 #include <xos/sdk.hpp>
+#include <xos/channel_io.hpp>
 #include <xos/terminal_control.hpp>
 #include <xos/thread_abi.hpp>
 
@@ -52,12 +53,10 @@ i64 exchange(control& session, request& message, response& reply) {
     if (session.child == 0 || session.send_handle == 0 || session.receive_handle == 0 ||
         session.next_sequence == 0) return process_error_state;
     message.version = version; message.size = sizeof(message); message.sequence = session.next_sequence++;
-    i64 result = sdk::channel_wait(session.send_handle, thread_deadline_infinite);
-    if (result == 0) result = sdk::ipc_send(session.send_handle, &message, sizeof(message));
+    i64 result = sdk::channel_send_wait(session.send_handle, &message, sizeof(message), thread_deadline_infinite);
     if (result != 0) { invalidate_channels(session); return result; }
-    result = sdk::channel_wait(session.receive_handle, thread_deadline_infinite);
-    if (result != 0) { invalidate_channels(session); return result; }
-    result = sdk::ipc_recv(session.receive_handle, &reply, sizeof(reply));
+    result = sdk::channel_receive_wait(session.receive_handle, &reply, sizeof(reply), thread_deadline_infinite);
+    if (result < 0) { invalidate_channels(session); return result; }
     if (result != static_cast<i64>(sizeof(reply)) || reply.version != version ||
         reply.size != sizeof(reply) || reply.sequence != message.sequence ||
         reply.length > data_bytes) { invalidate_channels(session); return process_error_state; }

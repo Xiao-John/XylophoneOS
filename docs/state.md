@@ -162,6 +162,8 @@ sys83 的受控 IRQ4 事件已在本分支实现，契约见[irq_event](contract
 [0127](work_log/0127_channel_spurious_wakeup.md)。
 控制接收线程与有界 mailbox 支持读取等待期间接收新请求，试行协议及限制见
 [0128](work_log/0128_terminal_control_interrupt.md)；尚无客体验证。
+读取/中断的服务源码已获得有限宿主线程模拟覆盖；常规 Xsh 仍未切换，见
+[0129](work_log/0129_terminal_service_host_probe.md)。
 用户态 UART 的 PIO、IRQ 与 COM1 调试通路交接提案见
 [uart_user_driver_proposal](contracts/uart_user_driver_proposal.md)，仅设计，尚无授权 ABI。
 

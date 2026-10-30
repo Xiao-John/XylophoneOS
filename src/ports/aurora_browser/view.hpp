@@ -34,7 +34,7 @@ class HtmlView final:public QAbstractScrollArea,public litehtml::document_contai
     QMap<quintptr,quint64> scene_ids;
     quint64 next_scene_id=1;
     struct PageFrame { litehtml::element::ptr element; quint64 parent; int depth; decltype(std::declval<litehtml::element &>().children().begin()) child; bool entered=false; quint64 id=0; };
-    struct PageSession { QVector<PageFrame> stack; QString query,epoch,token; bool visible=false; unsigned limit=0; quint64 revision=0,sequence=0; QElapsedTimer age; };
+    struct PageSession { QVector<PageFrame> stack; QString query,epoch,token,session_id; bool visible=false; unsigned limit=0; quint64 revision=0,sequence=0; QElapsedTimer age; };
     std::unique_ptr<PageSession> page_session;
     QTimer page_expiry;
     quint64 page_revision=1, page_nonce=0;
@@ -112,10 +112,13 @@ public:
             const int limit=request.contains("maxNodes")?request.value("maxNodes").toInt(-1):16;
             if((!query.isEmpty() && query!="content" && query!="text" && query!="link") || limit<1 || limit>16)
                 return {{"status","BAD_QUERY"}};
+            // Never wrap the session counter within this provider instance.
+            if(page_nonce==~quint64(0))return {{"status","RESOURCE_LIMIT"}};
             page_session.reset(new PageSession);
             auto &s=*page_session;s.query=query;s.visible=request.value("visibleOnly").toBool(false);s.limit=unsigned(limit);
             s.epoch=scene.source_epoch();s.revision=page_revision;s.age.start();page_expiry.start(30000);
-            s.token=s.epoch+":"+QString::number(++page_nonce)+":0";
+            s.session_id=QString::number(++page_nonce);
+            s.token=s.epoch+":"+s.session_id+":0";
             s.stack.append(PageFrame{doc->root(),0,0});
         }else{
             if(!page_session || request.value("cursor").toString()!=page_session->token)
@@ -162,10 +165,11 @@ public:
             }else s.stack.removeLast();
         }
         const bool complete=s.stack.isEmpty();const auto epoch=s.epoch;const auto revision=s.revision;const auto query=s.query;const auto visible=s.visible;
-        const auto seq=++s.sequence;const auto cursor=complete?QString():s.epoch+":"+QString::number(page_nonce)+":"+QString::number(seq);
+        const auto session_id=s.session_id;
+        const auto seq=++s.sequence;const auto cursor=complete?QString():s.epoch+":"+session_id+":"+QString::number(seq);
         s.token=cursor;
         QJsonObject result{{"status","OK"},{"sourceEpoch",epoch},{"sourceRevision",QString::number(revision)},
-            {"query",query},{"visibleOnly",visible},{"pageSequence",QString::number(seq)},{"complete",complete},
+            {"query",query},{"visibleOnly",visible},{"sessionId",session_id},{"pageSequence",QString::number(seq)},{"complete",complete},
             {"hasData",!nodes.isEmpty()},{"hasNext",!complete},{"sourceValid",true},
             {"traversalComplete",complete},{"stopReason",complete?"EXHAUSTED":"PAGE_BUDGET"},
             {"scrollY",verticalScrollBar()->value()},

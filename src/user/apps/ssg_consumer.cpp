@@ -149,7 +149,7 @@ static int browser_scenario(Client &client){
 static int browser_pages(Client &client){
     bool transport=false;QSet<QString> ids;QVector<QString> ancestors;
     PageContinuity continuity;
-    QString instance,epoch,revision,cursor;int pages=0,nodes=0;bool done=false;
+    QString instance,epoch,revision,session,cursor;int pages=0,nodes=0;bool done=false;
     auto decimal_id=[](const QJsonValue &value){
         if(!value.isString())return false;const auto s=value.toString();
         if(s.isEmpty() || s=="0" || s.startsWith('0'))return false;
@@ -163,8 +163,8 @@ static int browser_pages(Client &client){
     for(int i=0;i<1024;++i){
         auto result=client.request(request,&transport);++pages;
         if(!transport || result.value("status")!="OK" || result.value("pageSequence").toString()!=QString::number(pages))break;
-        if(pages==1){instance=result.value("sourceInstance").toString();epoch=result.value("sourceEpoch").toString();revision=result.value("sourceRevision").toString();}
-        if(instance.isEmpty() || epoch.isEmpty() || revision.isEmpty() || result.value("sourceInstance")!=instance || result.value("sourceEpoch")!=epoch || result.value("sourceRevision")!=revision)break;
+        if(pages==1){instance=result.value("sourceInstance").toString();epoch=result.value("sourceEpoch").toString();revision=result.value("sourceRevision").toString();session=result.value("sessionId").toString();}
+        if(instance.isEmpty() || epoch.isEmpty() || revision.isEmpty() || session.isEmpty() || result.value("sourceInstance")!=instance || result.value("sourceEpoch")!=epoch || result.value("sourceRevision")!=revision || result.value("sessionId")!=session)break;
         if(!result.value("nodes").isArray() || !result.value("complete").isBool() ||
            result.value("query")!="" || !exact_bool(result,"visibleOnly",false) ||
            !exact_bool(result,"sourceValid",true) || !result.value("cursor").isString())break;

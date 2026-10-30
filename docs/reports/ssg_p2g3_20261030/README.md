@@ -1,0 +1,11 @@
+# SSG P2G-3 — incomplete checkpoint
+
+Gate B: **NOT_QUALIFIED**. This is not the requested A/B Diff delivery.
+
+The Browser private pagination response now includes a sessionId allocated once per snapshot, with counter wrap refused. The existing browser-pages Consumer requires the same nonempty sessionId throughout its read. Old Consumers ignore the additive field. This is a session identifier scoped to the Provider instance, not an authorization credential and not a Cursor replacement. Cross-session uniqueness and mixed-session rejection have not yet been tested in a guest or in the required integration suite.
+
+The current Browser, Consumer and Session cross-built using the existing E17 SDK. A new QEMU 11.1.2 run against the 267-node P2F page observed 34 pages, 267 reported nodes, one sessionId across the response pages, and a complete terminal page. The runner recorded OBSERVED, not qualification. No independent structure oracle was enabled, no second snapshot or PS/2 scroll occurred, and no Diff was computed. Display-service before/after counters in observation.json match; this does not establish full system cleanup. The .wire headers in the archive are reconstructed; payloads are the Consumer-logged bytes. The 52 existing P2F validator tests passed; they are tests of the validator, not the new integration.
+
+The original P2G-2 prototypes are preserved unmodified and are not connected to the Consumer. The address-keyed node mapping has not established a safe identity contract for object replacement. A trusted wire adapter, transactional integration, normalized geometry diff, real two-snapshot session tests, independent scroll reference and resource qualification are all outstanding. The caller-provided stable_ids boolean remains in the prototype and must not be relied upon. No production Broker, dynamic authentication, or remote revocation is claimed. No kernel, ABI, QPA or driver changes were made.
+
+Evidence: observation.tar.gz contains the raw guest logs, response/request payloads, reconstructed wire frames, runner report and QMP events; observation.json retains input and executable hashes, command and counters. Browser and Consumer build logs and the 52-test log are included. This checkpoint does not represent the user's requested end-to-end result.

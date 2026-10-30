@@ -185,6 +185,8 @@ Xsh 所需的 supervisor 进程内终端桥接入口已构建但默认未启用�
 严格 UTF-8 和客体验收仍未完成，见[0139](work_log/0139_termios_raw_ncurses_probe.md)。
 用户态驱动已试行按 TEMT 确认发送排空，尚未客体验证；见
 [0140](work_log/0140_terminal_drain.md)。
+输入清空和 `TCSAFLUSH` 已试行实现，连续输入失败可能已丢弃部分硬件字节，尚未客体验证；
+见[0141](work_log/0141_terminal_input_flush.md)。
 用户态 UART 的 PIO、IRQ 与 COM1 调试通路交接提案见
 [uart_user_driver_proposal](contracts/uart_user_driver_proposal.md)，为早期设计提案，具体
 现状以 PIO/IRQ 契约及上述工作记录为准。

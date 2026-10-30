@@ -1065,7 +1065,6 @@ extern "C" int tcsetattr(int fd, int action, const struct termios* value) {
     if (value == nullptr) { errno = EFAULT; return -1; }
     if (objects[lease.index].kind != object_kind::terminal) { errno = ENOTTY; return -1; }
     if (action != TCSANOW && action != TCSADRAIN && action != TCSAFLUSH) { errno = EINVAL; return -1; }
-    if (action == TCSAFLUSH) { errno = ENOTSUP; return -1; }
     if (value->c_iflag != 0 || value->c_oflag != 0 || value->c_lflag != 0 ||
         value->c_cflag != (CS8 | CREAD | CLOCAL) ||
         value->c_ispeed != B115200 || value->c_ospeed != B115200) {
@@ -1076,7 +1075,9 @@ extern "C" int tcsetattr(int fd, int action, const struct termios* value) {
     }
     xos::terminal::mode mode = xos::terminal::default_mode;
     mode.vmin = value->c_cc[VMIN]; mode.vtime = value->c_cc[VTIME];
-    const xos::i64 result = xos::terminal::set_mode(terminal_client, mode, action == TCSADRAIN);
+    const auto mode_action = action == TCSANOW ? xos::terminal::mode_action::now :
+        action == TCSADRAIN ? xos::terminal::mode_action::drain : xos::terminal::mode_action::drain_flush_input;
+    const xos::i64 result = xos::terminal::set_mode(terminal_client, mode, mode_action);
     if (result != 0) { errno = result == xos::terminal::interrupted ? EINTR : error_from_kernel(result); return -1; }
     return 0;
 }
@@ -1086,7 +1087,10 @@ extern "C" int tcflush(int fd, int queue) {
     if (lease.index < 0) { errno = EBADF; return -1; }
     if (objects[lease.index].kind != object_kind::terminal) { errno = ENOTTY; return -1; }
     if (queue != TCIFLUSH && queue != TCOFLUSH && queue != TCIOFLUSH) { errno = EINVAL; return -1; }
-    errno = ENOTSUP; return -1;
+    if (queue != TCIFLUSH) { errno = ENOTSUP; return -1; }
+    const xos::i64 result = xos::terminal::flush_input(terminal_client);
+    if (result != 0) { errno = result == xos::terminal::interrupted ? EINTR : error_from_kernel(result); return -1; }
+    return 0;
 }
 extern "C" int tcdrain(int fd) {
     object_lease lease(fd);

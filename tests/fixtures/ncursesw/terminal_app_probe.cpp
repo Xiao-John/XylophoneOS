@@ -18,8 +18,9 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
     if (tcsetattr(0, TCSANOW, &tty) != -1 || errno != ENOTSUP) return 10;
     if (tcgetattr(0, &tty) != 0 || tty.c_lflag != 0) return 11;
     if (tcsetattr(0, TCSADRAIN, &tty) != 0 || tcdrain(1) != 0) return 15;
+    if (tcflush(0, TCIFLUSH) != 0 || tcsetattr(0, TCSAFLUSH, &tty) != 0) return 16;
     errno = 0;
-    if (tcflush(0, TCIFLUSH) != -1 || errno != ENOTSUP) return 16;
+    if (tcflush(0, TCOFLUSH) != -1 || errno != ENOTSUP) return 18;
     tty.c_cc[VMIN] = 0;
     if (tcsetattr(0, TCSANOW, &tty) != 0) return 12;
     char empty = 0;

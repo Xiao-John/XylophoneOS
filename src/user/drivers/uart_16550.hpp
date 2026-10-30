@@ -26,6 +26,7 @@ public:
     i64 write(const u8* input, u32 length);
     i64 arm_write();
     i64 transmitter_empty();
+    i64 flush_input();
     i64 close();
     u64 token() const { return irq_token_; }
     statistics counters() const { return stats_; }

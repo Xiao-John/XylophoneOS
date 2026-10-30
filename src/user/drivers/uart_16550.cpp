@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "uart_16550.hpp"
+#include <xos/thread_abi.hpp>
 
 namespace xos::user::uart {
 namespace {
@@ -105,6 +106,24 @@ i64 driver::transmitter_empty() {
     const u8 line_status = status();
     if (line_status == 0xff) return process_error_state;
     return (line_status & 0x40) != 0 ? 1 : 0;
+}
+
+i64 driver::flush_input() {
+    if (!started_) return process_error_state;
+    // Bounded drain avoids monopolizing the CPU if input never stops. On
+    // failure hardware bytes may already have been discarded; never claim an
+    // atomic rollback. The caller serializes this with IRQ queue processing.
+    for (u32 i = 0; i <= 256; ++i) {
+        const u8 line_status = status();
+        if (line_status == 0xff) return process_error_state;
+        if ((line_status & ready) == 0) {
+            head_ = 0; length_ = 0;
+            return 0;
+        }
+        if (i == 256) return thread_error_busy;
+        (void)read_port(base);
+    }
+    return process_error_state;
 }
 
 i64 driver::close() {

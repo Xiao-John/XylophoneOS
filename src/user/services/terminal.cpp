@@ -301,7 +301,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
                 op == terminal::operation::read_mode ||
                 op == terminal::operation::write || op == terminal::operation::write_until;
             const bool mode_op = op == terminal::operation::mode_get || op == terminal::operation::mode_set ||
-                op == terminal::operation::drain;
+                op == terminal::operation::drain || op == terminal::operation::flush_input;
             const bool denied = (from_app && !(io_op || mode_op || op == terminal::operation::cancel)) ||
                 (!from_app && mode_op) ||
                 (!from_app && app_thread != 0 && io_op) ||
@@ -317,17 +317,23 @@ extern "C" int xos_user_main(const xos::startup_info*) {
             } else if (op == terminal::operation::mode_set) {
                 terminal::mode proposed{};
                 auto* bytes = reinterpret_cast<u8*>(&proposed);
-                if (request.length != sizeof(proposed) || request.deadline_ns > 1) response.result = process_error_invalid;
+                if (request.length != sizeof(proposed) || request.deadline_ns > 2) response.result = process_error_invalid;
                 else {
                     for (u32 i = 0; i < sizeof(proposed); ++i) bytes[i] = request.data[i];
                     if (!terminal::valid_mode(proposed)) response.result = thread_error_unsupported;
                     else {
-                        response.result = request.deadline_ns == 1 ? drain_output() : 0;
+                        response.result = request.deadline_ns != 0 ? drain_output() : 0;
+                        if (response.result == 0 && request.deadline_ns == 2) {
+                            lock(); response.result = device.flush_input(); unlock();
+                        }
                         if (response.result == 0) app_mode = proposed;
                     }
                 }
             } else if (op == terminal::operation::drain) {
                 response.result = request.length == 0 ? drain_output() : process_error_invalid;
+            } else if (op == terminal::operation::flush_input) {
+                if (request.length != 0) response.result = process_error_invalid;
+                else { lock(); response.result = device.flush_input(); unlock(); }
             } else if (op == terminal::operation::read_mode) {
                 response.result = read_configured(response.data, request.length);
                 if (response.result > 0) response.length = static_cast<u32>(response.result);

@@ -85,14 +85,25 @@ i64 get_mode(client& session, mode& value) {
     return 0;
 }
 
-i64 set_mode(client& session, const mode& value, bool drain_first) {
+i64 set_mode(client& session, const mode& value, mode_action action) {
     if (!valid_mode(value)) return thread_error_unsupported;
+    if (action != mode_action::now && action != mode_action::drain && action != mode_action::drain_flush_input)
+        return process_error_invalid;
     request message{}; response reply{};
     message.operation = static_cast<u32>(operation::mode_set);
-    message.deadline_ns = drain_first ? 1 : 0;
+    message.deadline_ns = static_cast<u32>(action);
     message.length = sizeof(value);
     const auto* bytes = reinterpret_cast<const u8*>(&value);
     for (u32 i = 0; i < sizeof(value); ++i) message.data[i] = bytes[i];
+    const i64 transport = exchange(session, message, reply);
+    if (transport != 0) return transport;
+    if (reply.result > 0 || reply.length != 0) { close(session); return process_error_state; }
+    return reply.result;
+}
+
+i64 flush_input(client& session) {
+    request message{}; response reply{};
+    message.operation = static_cast<u32>(operation::flush_input);
     const i64 transport = exchange(session, message, reply);
     if (transport != 0) return transport;
     if (reply.result > 0 || reply.length != 0) { close(session); return process_error_state; }

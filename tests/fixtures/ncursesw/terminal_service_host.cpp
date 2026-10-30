@@ -58,6 +58,7 @@ i64 driver::read(u8* output, u32 length) {
 i64 driver::write(const u8*, u32 length) { return length != 0 && transmit_ready ? 1 : 0; }
 i64 driver::arm_write() { return 0; }
 i64 driver::transmitter_empty() { return transmitter_idle ? 1 : 0; }
+i64 driver::flush_input() { has_byte = false; return 0; }
 i64 driver::close() { return 0; }
 }
 

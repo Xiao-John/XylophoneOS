@@ -30,6 +30,12 @@ PS/2链接、地址/历史/刷新/滚动、单窗口标签及书签、坏输入�
 无新内核/ABI/Qt底座变更。网络尚未接入，B2 BLOCKED；HTTPS/JavaScript/互联网及完整
 现代浏览器均未通过。仅本地32KiB有界HTML/CSS/BMP子集，不发布Qt静态产品或Release。
 
+## Semantic Broker 传输勘查（待审）
+
+实际客体证明显式委派父进程可预接线两个 pipe 并与受限子进程交换合成消息；
+12 项边界检查通过，dash 未获子进程委派时如实拒绝。动态发现、可撤销授权与
+生产 Broker 仍未实现。设计及原始证据见 [0108](work_log/0108_semantic_pipe_probe.md)。
+
 ## Modern Platform运行时探针（PR #25）
 
 本分支保留Promise完成/pending/rejection等冻结探针结果，Web/应用能力仍BLOCKED。

@@ -19,3 +19,7 @@ hashes, findings, metrics and unsupported claims. No kernel, public system ABI,
 QPA, driver or formal LocalPilot installation changes. Re-review, synchronize and
 rerun affected guests after each accepted upstream dependency; multiwindow,
 production Broker and real video perception remain separate unfinished work.
+
+The later independent Dock refinement has separate scanout and five affected
+guest suites. A first Studio/legacy exit wait timed out, then the same binary
+passed on rerun; the cause remains unknown. See fork PR #6 for its own evidence.

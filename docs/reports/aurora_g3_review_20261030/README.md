@@ -118,5 +118,11 @@ fell in the zero bin, and maxima were 10 ms; sampled input delivery was 0 or
 [Combined evidence](combined/manifest.json) indexes each report, actual QEMU
 command, source/ELF/tool hashes and every member of the verified evidence bundle,
 which retains compressed serial, original PPM scanouts, build receipts and
-initial failure logs. Selected PNGs are included for convenient review. A further Dock visual refinement is independent and
-requires its own guest screenshots and affected Desktop reruns.
+initial failure logs. Selected PNGs are included for convenient review.
+
+The subsequent [Dock refinement in fork #6](https://github.com/www080327-glitch/XylophoneOS/pull/6)
+adds six native glyphs and has its own real guest before/after screenshots and
+five affected suites / 30 checks passing after rerun. One first Studio run saw
+the unchanged legacy Qt program print its completion marker without returning
+within the wait timeout; the same binary later passed. The cause remains unknown
+and the failed run is preserved in the Dock PR's separate evidence bundle.

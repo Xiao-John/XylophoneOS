@@ -36,6 +36,12 @@ PS/2链接、地址/历史/刷新/滚动、单窗口标签及书签、坏输入�
 无新内核/ABI/Qt底座变更。网络尚未接入，B2 BLOCKED；HTTPS/JavaScript/互联网及完整
 现代浏览器均未通过。仅本地32KiB有界HTML/CSS/BMP子集，不发布Qt静态产品或Release。
 
+## Semantic Broker 传输勘查（待审）
+
+实际客体证明显式委派父进程可预接线两个 pipe 并与受限子进程交换合成消息；
+12 项边界检查通过，dash 未获子进程委派时如实拒绝。动态发现、可撤销授权与
+生产 Broker 仍未实现。设计及原始证据见 [0108](work_log/0108_semantic_pipe_probe.md)。
+
 ## Modern Platform运行时探针（PR #25）
 
 本分支保留Promise完成/pending/rejection等冻结探针结果，Web/应用能力仍BLOCKED。
@@ -80,6 +86,12 @@ wait单次消费、满盘和真实块写错误已验证；独立故障注入buil
 验证文件服务进程退出时在途/后续请求分别返回-8/-7。详细范围与证据见[0080](work_log/0080_fb0_fault_bundle.md)。
 生产报告器/解析器、全局收集、寄存器/栈快照、断电安全均未实现/未验；无新ABI或
 公共build占用。下一步是FB1，不把FB0探针冒称生产功能。
+
+## Temporal Semantic Stream 限定模型（待审）
+
+已提出用户态媒体时间/观察时间、字幕、帧引用、授权和模型推断的区分；
+仅有宿主合成生产者及测试，无实际视频解码或 AI 视觉能力。见
+[0109](work_log/0109_temporal_semantics.md)。
 
 ## 应用故障包与音频计划（仅文档）
 
@@ -181,6 +193,12 @@ W0 勘查和 W1 [工作契约草案](contracts/terminal_w1.md)已开始；W0 未
 每项资格只对其冻结输入成立。旧源/SDK/镜像不改绑；许可材料通过不代表逐成员审计完成。
 QtCore 的系统 build48e5e73bcd649f44 和本地输入编辑的 build3200de2c3b80a9d9 分别保留资格；
 该日常工具组合的输入编辑已复验，QtCore 本身未在该组合重新验收。Qt 实现入口见[QtCore](implementation/qt_core.md)。
+
+## Aurora SDK / SSG / Desktop 独立复核（待审）
+
+已复核三个草稿依赖及冻结证据；新组合 15 套客体回归经记录的修正/重跑后
+通过，共 107 项顶层检查。当前不合并、不把结果改绑后续上游基线；详见
+[0110](work_log/0110_aurora_g3_review.md)。
 
 ## 本地实现与组合边界
 

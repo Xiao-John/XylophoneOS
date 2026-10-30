@@ -8,9 +8,14 @@ namespace xos::terminal {
 // outcome can be unknown. The child remains available for the caller to reap.
 struct control {
     u32 send_handle = 0, receive_handle = 0;
-    u64 child = 0, next_sequence = 1;
+    u64 child = 0, next_sequence = 1, next_response = 1;
+    u32 outstanding = 0;
 };
 i64 start(control& session, const char* path);
+// At most two requests may be outstanding, answered in order. A request arriving during
+// read_until interrupts that read; its response precedes the new response.
+i64 submit(control& session, request& message);
+i64 receive(control& session, response& reply);
 i64 exchange(control& session, request& message, response& reply);
 void close(control& session);
 }

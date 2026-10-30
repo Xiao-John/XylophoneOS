@@ -49,17 +49,39 @@ i64 start(control& session, const char* path) {
     return child;
 }
 
-i64 exchange(control& session, request& message, response& reply) {
+i64 submit(control& session, request& message) {
     if (session.child == 0 || session.send_handle == 0 || session.receive_handle == 0 ||
         session.next_sequence == 0) return process_error_state;
+    if (session.outstanding >= 2) return process_error_busy;
     message.version = version; message.size = sizeof(message); message.sequence = session.next_sequence++;
-    i64 result = sdk::channel_send_wait(session.send_handle, &message, sizeof(message), thread_deadline_infinite);
+    const i64 result = sdk::channel_send_wait(session.send_handle, &message, sizeof(message), thread_deadline_infinite);
     if (result != 0) { invalidate_channels(session); return result; }
-    result = sdk::channel_receive_wait(session.receive_handle, &reply, sizeof(reply), thread_deadline_infinite);
+    ++session.outstanding;
+    return 0;
+}
+
+i64 receive(control& session, response& reply) {
+    if (session.child == 0 || session.send_handle == 0 || session.receive_handle == 0 ||
+        session.outstanding == 0) return process_error_state;
+    const i64 result = sdk::channel_receive_wait(session.receive_handle, &reply, sizeof(reply), thread_deadline_infinite);
     if (result < 0) { invalidate_channels(session); return result; }
     if (result != static_cast<i64>(sizeof(reply)) || reply.version != version ||
-        reply.size != sizeof(reply) || reply.sequence != message.sequence ||
+        reply.size != sizeof(reply) || reply.sequence != session.next_response ||
         reply.length > data_bytes) { invalidate_channels(session); return process_error_state; }
+    ++session.next_response;
+    --session.outstanding;
+    return 0;
+}
+
+i64 exchange(control& session, request& message, response& reply) {
+    if (session.child == 0 || session.send_handle == 0 || session.receive_handle == 0)
+        return process_error_state;
+    if (session.outstanding != 0) return process_error_busy;
+    i64 result = submit(session, message);
+    if (result != 0) return result;
+    result = receive(session, reply);
+    if (result != 0) return result;
+    if (reply.sequence != message.sequence) { invalidate_channels(session); return process_error_state; }
     return 0;
 }
 }

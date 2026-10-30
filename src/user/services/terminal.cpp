@@ -8,10 +8,11 @@
 namespace {
 using namespace xos;
 user::uart::driver device;
-u32 lock_word, stopping, input_ready;
+u32 lock_word, stopping, input_ready, request_pending;
 i64 worker_error;
 u64 device_irq_token;
 u32 control_incoming, control_outgoing;
+terminal::request pending_request;
 void lock();
 void unlock();
 
@@ -54,11 +55,12 @@ u64 receive_worker(void*) {
 }
 
 i64 read_until(u8* output, u32 length, u64 deadline) {
-    if (deadline == thread_deadline_infinite) return process_error_invalid;
     for (;;) {
         lock();
         const i64 error = __atomic_load_n(&worker_error, __ATOMIC_ACQUIRE);
-        const i64 result = error != 0 ? error : device.read(output, length);
+        const i64 result = error != 0 ? error :
+            length != 0 && __atomic_load_n(&request_pending, __ATOMIC_ACQUIRE) != 0 ? terminal::interrupted :
+            device.read(output, length);
         if (result != 0 || length == 0) { unlock(); return result; }
         // Reset while holding the same lock used by the IRQ worker. If the
         // worker runs before wait registers, the value comparison prevents sleep.
@@ -66,6 +68,48 @@ i64 read_until(u8* output, u32 length, u64 deadline) {
         unlock();
         const i64 waited = thread::wait(&input_ready, 0, deadline);
         if (waited != 0 && waited != thread_value_changed) return waited;
+    }
+}
+
+u64 control_worker(void*) {
+    while (__atomic_load_n(&stopping, __ATOMIC_ACQUIRE) == 0) {
+        while (__atomic_load_n(&request_pending, __ATOMIC_ACQUIRE) != 0 &&
+               __atomic_load_n(&stopping, __ATOMIC_ACQUIRE) == 0)
+            (void)thread::wait(&request_pending, 1);
+        if (__atomic_load_n(&stopping, __ATOMIC_ACQUIRE) != 0) break;
+        terminal::request request{};
+        const i64 received = sdk::channel_receive_wait(control_incoming, &request, sizeof(request),
+                                                        thread_deadline_infinite);
+        if (received != static_cast<i64>(sizeof(request))) {
+            if (__atomic_load_n(&stopping, __ATOMIC_ACQUIRE) == 0)
+                fail_worker(received < 0 ? received : process_error_state);
+            break;
+        }
+        lock();
+        pending_request = request;
+        __atomic_store_n(&request_pending, 1u, __ATOMIC_RELEASE);
+        __atomic_store_n(&input_ready, 1u, __ATOMIC_RELEASE);
+        unlock();
+        (void)thread::wake(&input_ready, 1);
+    }
+    return 0;
+}
+
+bool next_request(terminal::request& request) {
+    for (;;) {
+        lock();
+        if (__atomic_load_n(&request_pending, __ATOMIC_ACQUIRE) != 0) {
+            request = pending_request;
+            __atomic_store_n(&request_pending, 0u, __ATOMIC_RELEASE);
+            unlock();
+            (void)thread::wake(&request_pending, 1);
+            return true;
+        }
+        if (__atomic_load_n(&worker_error, __ATOMIC_ACQUIRE) != 0) { unlock(); return false; }
+        __atomic_store_n(&input_ready, 0u, __ATOMIC_RELEASE);
+        unlock();
+        const i64 waited = thread::wait(&input_ready, 0);
+        if (waited != 0 && waited != thread_value_changed) return false;
     }
 }
 
@@ -94,11 +138,16 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     device_irq_token = device.token();
     u64 worker = 0;
     if (thread::create(worker, receive_worker, nullptr) != 0) { (void)device.close(); return 4; }
+    u64 control_thread = 0;
+    if (thread::create(control_thread, control_worker, nullptr) != 0) {
+        __atomic_store_n(&stopping, 1u, __ATOMIC_RELEASE);
+        lock(); (void)device.close(); unlock();
+        u64 result = 0; (void)thread::join(worker, result); return 4;
+    }
     bool done = false;
     while (!done) {
         terminal::request request{};
-        if (sdk::channel_receive_wait(incoming, &request, sizeof(request), thread_deadline_infinite) !=
-            static_cast<i64>(sizeof(request))) break;
+        if (!next_request(request)) break;
         terminal::response response{};
         response.version = terminal::version; response.size = sizeof(response); response.sequence = request.sequence;
         if (request.version != terminal::version || request.size != sizeof(request) ||
@@ -124,6 +173,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
                 response.result = device.write(request.data, request.length);
                 if (response.result == 0 && request.length != 0) response.result = process_error_would_block;
             } else if (op == terminal::operation::statistics) response.result = 0;
+            else if (op == terminal::operation::cancel) response.result = 0;
             else if (op == terminal::operation::stop) { response.result = 0; done = true; }
             else response.result = process_error_invalid;
             const auto stats = device.counters();
@@ -135,7 +185,14 @@ extern "C" int xos_user_main(const xos::startup_info*) {
         if (sdk::channel_send_wait(outgoing, &response, sizeof(response), thread_deadline_infinite) != 0) break;
     }
     __atomic_store_n(&stopping, 1u, __ATOMIC_RELEASE);
-    lock(); (void)device.close(); unlock();
-    u64 result = 0;
-    return thread::join(worker, result) == 0 && done ? 0 : 5;
+    (void)sdk::channel_close(incoming);
+    lock();
+    __atomic_store_n(&request_pending, 0u, __ATOMIC_RELEASE);
+    (void)device.close();
+    unlock();
+    (void)thread::wake(&request_pending, 1);
+    u64 result = 0, control_result = 0;
+    const i64 irq_join = thread::join(worker, result);
+    const i64 control_join = thread::join(control_thread, control_result);
+    return irq_join == 0 && control_join == 0 && done ? 0 : 5;
 }

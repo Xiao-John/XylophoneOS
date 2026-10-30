@@ -1,5 +1,10 @@
 # XOS 当前状态
 
+## Browser SSG 片段可见性修复（待审）
+
+逐真实渲染碎片裁剪，截断时保留未知；稳定查询作用域依赖 SDK Diff 修复。
+组合客体几何 6/6、Browser SSG 7/7 通过，见 [0107](work_log/0107_browser_ssg_fragments.md)。
+
 2026-10-30：原生[Aurora SDK](work_log/0102_aurora_ui_v2_sdk.md)及[Notes/Browser SSG 接入](work_log/0103_aurora_ssg_consumers.md)已通过限定客体验收。
 跨进程SSG/合成器/生产权限仍BLOCKED，无内核/系统ABI/QPA改动；LocalPilot仅LP0研究。
 单Surface桌面另一个审查单元交付。旧资格与失败保持原输入。

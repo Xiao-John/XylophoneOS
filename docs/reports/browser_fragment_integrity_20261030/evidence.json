@@ -1,0 +1,29 @@
+{
+  "source_combination": "b1b56225 plus 8120215, 3995120, 0a40448",
+  "inputs_sha256": {
+    "src/ports/aurora_browser/view.hpp": "1a676598df79d72cc9d5f33bcc17567f600ea5090162c5228d4e765f392927ff",
+    "src/ports/aurora_browser/scene_geometry.hpp": "46ceb67c37427115f3201ab685dd380e16386c9871ccbf13b0d35d24a4743da8",
+    "tests/fixtures/qt6/browser_scene_geometry.cpp": "813f0642d46c419059a36ad8bff8168a42d9932fb210edf2b5c42e34aed90b9f",
+    "tests/aurora_platform_guest.py": "2798567d75cd16ca100b719e95dd4a599180231bf3a46e28d4318df02c7208b4"
+  },
+  "files": {
+    "README.md": "c027a0225ae73a232abbbe882f95c268cc7a182d2199a04ee86732d14950f836",
+    "browser/bottom.json.gz": "21b0a424865b5e8e8279966fcd806f1d0dadc933a60cf57f50dd156e75d25399",
+    "browser/browser-dom-first.png": "ff3d81cbcf64985f7329965ebbf63ac233b8a19909621e69a1f31a0c31cfb59f",
+    "browser/browser-dom-reload.png": "6e26f3aaa2ad8396982260ad6e348b9283f3ae3ddfbf5f005f7ba0a491feaa54",
+    "browser/first.json.gz": "5eaabcead0fc7102217f2d6ace0c88991030f22a76defc896586fd2cdc0727be",
+    "browser/guest_qemu.log.gz": "c7f97c0a02ac8ee08f603b32a27b503174b5d9ad0dc2836c63e01604c1f4cbf8",
+    "browser/guest_serial.log.gz": "99a3876ae3aa7e97af5e6cc4fd5db5142e0873107a441ef90074e6577ef7932c",
+    "browser/reload-diff.json.gz": "b1ad69a603253a0e1ff7a9a01ab86fc696add46d7376047c9d6a1d93b1636bcb",
+    "browser/reload.json.gz": "28ccbec48a00df341700a1078d9fd9fd334180bb12b1ab31985299b7a6e49aab",
+    "browser/report.json": "1bf10d30cd0c64360dba3e9c4609d2513fba2963ece13b794ab68c28c50aec9c",
+    "browser/serial.log.gz": "99a3876ae3aa7e97af5e6cc4fd5db5142e0873107a441ef90074e6577ef7932c",
+    "browser-build.log.gz": "efadbc320ec3429ecaf3fa06bbba3b4c39861a7e2782fe0b86ae93173b90c092",
+    "browser.receipt.json.gz": "a81e7f11eb8560efddc209bb49d3fac2ee5bb26c05a09113c75abf412d8b5682",
+    "geometry/guest_qemu.log.gz": "195430400a4ebcf5dacb5ca47fa048ad5c344c2d6ff4be46399930cde3c1c704",
+    "geometry/guest_serial.log.gz": "ccd92b2a2d2f28998e48e82f6401831ca519d346846d044e45af81715016244f",
+    "geometry/report.json": "6453564cce9c4adf3a42aa2a37f395cde5052ef9ab63087641fd70cc70d843b4",
+    "geometry-build.log.gz": "ba8e3d77c0ff2f6f2e5bd579b48423ef227a4559e5e52021b774aea98b6de2c8",
+    "geometry.receipt.json.gz": "ec0a86a71a055c8d40525275623bdf0701be09cbad1e728f65ad51c1c4947e1a"
+  }
+}

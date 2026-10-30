@@ -77,6 +77,7 @@ try:
   g=Guest(a.image.resolve(),str(out.relative_to(ROOT/'build'))+'/guest',work_disk=disk);report['qemu_command']=g.command
   g.expect(b'xos64> ',timeout=45);send_bytes(g,b'run\r');g.expect_supervisor(trace=True);pump(g,1.3);base=resources(g)
   service_result=command(g,'display-start',b'result=0');service=int(re.search(rb'\[display-start\] pid=(\d+)',service_result)[1]);g.expect(b'[display-service] ready');active=resources(g)
+  report['resources']={'idle_baseline':base,'display_active':active}
   def launch(name,args='',ready=None):
    b=len(g.output);send_bytes(g,f'exec-file /bin/{name}.elf {args}\r'.encode());g.expect(ready or (name.upper()+'_READY').encode(),start=b,timeout=90);pump(g,.4);return b
   def finish(b):stroke('esc');g.expect(b'kind=exited code=0',start=b,timeout=40);g.expect_supervisor(start=b);assert resources(g)==active
@@ -113,18 +114,18 @@ try:
    sb=len(g.output);click_xy(*point(rb'SEMANTIC_POINT name=authorize xy=(\d+),(\d+)'))
    g.expect(b'SEMANTIC_EXECUTE VERIFIED_LOCAL value=mock-agent-verified replay=DENIED',start=sb,timeout=30);g.expect(b'SEMANTIC_WITHOUT_GRANT DENIED',start=sb)
    result=latest(b'SSG_AGENT_RESULT',sb);assert any(n.get('nativeName')=='draft-title' and n.get('text')=='mock-agent-verified' for n in result['nodes'])
-   shot('semantic-authorized-local-result');mark('query_propose_explicit_fixture_authorize_execute_verify');finish(b);mark('semantic_app_exact_resource_return')
+   shot('semantic-authorized-local-result');mark('query_propose_explicit_fixture_authorize_execute_verify');finish(b);report['resources']['after_xsh_semantics']=resources(g);mark('semantic_app_exact_resource_return')
    if a.dash:
     start=len(g.output);send_bytes(g,b'exec-driver /bin/dash /semantic-dash.sh\r');g.expect(b'SEMANTIC_READY',start=start,timeout=90);pump(g,.4)
     data=bytes(g.output)[start:];dash_checks=re.findall(rb'SEMANTIC_CHECK ([^\r\n]+)=PASS',data)
     assert len(dash_checks)>=19 and b'=FAIL' not in data
-    stroke('esc');g.expect(b'kind=exited code=0',start=start,timeout=40);g.expect_supervisor(start=start);assert resources(g)==active
+    stroke('esc');g.expect(b'kind=exited code=0',start=start,timeout=40);g.expect_supervisor(start=start);assert resources(g)==active;report['resources']['after_dash_semantics']=resources(g)
     report['dash_checks']=[name.decode() for name in dash_checks];mark('dash_semantics_lifecycle_and_resource_return',native_checks=len(dash_checks))
    restart=len(g.output);send_bytes(g,b'spawn-file /bin/semantics.elf\r');g.expect(b'SEMANTIC_READY',start=restart,timeout=90);pump(g,.4)
    pid=int(re.search(rb'\[loader\] started pid=(\d+)',bytes(g.output)[restart:])[1])
    click_xy(*point(rb'SEMANTIC_POINT name=proposal xy=(\d+),(\d+)'));type_text(proposal)
    sb=len(g.output);click_xy(*point(rb'SEMANTIC_POINT name=authorize xy=(\d+),(\d+)'));g.expect(b'SEMANTIC_REJECT WRONG_SCOPE',start=sb)
-   command(g,f'kill {pid}',b'kill: accepted');command(g,f'wait {pid}',b'kind=killed');assert resources(g)==active
+   command(g,f'kill {pid}',b'kill: accepted');command(g,f'wait {pid}',b'kind=killed');assert resources(g)==active;report['resources']['after_old_process_test']=resources(g)
    mark('old_process_reference_refused_and_killed_ssg_resources_restored')
    projection=[{k:n[k] for k in ('role','name','enabled') if k in n} for n in snapshot_data['nodes']]
    report['coverage_comparison']={'ssg_json_bytes':len(json.dumps(snapshot_data).encode()),'ax_style_projection_bytes':len(json.dumps(projection).encode()),'ax_style_scope':'projection from Qt metadata, not a qualified XOS AX service','mock_target_success':'1/1 controlled target','screenshot_ocr':'NOT_RUN','cross_process_agent_execution':'BLOCKED / NOT_RUN'}
@@ -155,7 +156,7 @@ try:
   else:
    assert a.dash
    b=len(g.output);send_bytes(g,b'exec-driver /bin/dash /check.sh\r');g.expect(b'DESKTOP_READY',start=b,timeout=90);chord('ctrl','q');g.expect(b'DESKTOP_DASH_STATUS:0',start=b);g.expect(b'SEMANTIC_READY',start=b,timeout=90);stroke('esc');g.expect(b'SEMANTIC_DASH_STATUS:0',start=b);g.expect(b'GAP_DASH_STATUS:0',start=b);g.expect(b'SESSION_START_FAILED error=-1',start=b);g.expect(b'SESSION_DASH_STATUS:1',start=b);g.expect_supervisor(start=b,timeout=40);assert resources(g)==active;mark('dash_real_desktop_and_semantic_elf_lifecycle')
-  command(g,'exec gfxdemo stop',b'kind=exited code=0');command(g,f'wait {service}',b'kind=exited code=0');assert resources(g)==base;command(g,'sync',b'[files] sync=ok');mark('serial_file_service_and_resource_baseline');report['status']='PASSED'
+  command(g,'exec gfxdemo stop',b'kind=exited code=0');command(g,f'wait {service}',b'kind=exited code=0');assert resources(g)==base;report['resources']['after_cleanup']=resources(g);command(g,'sync',b'[files] sync=ok');mark('serial_file_service_and_resource_baseline');report['status']='PASSED'
 except Exception as error:report['error']=repr(error);raise
 finally:
  if g:(out/'serial.log').write_bytes(g.output);g.close()

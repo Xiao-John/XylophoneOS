@@ -19,8 +19,8 @@
 | 线 | 状态 | 记录 |
 |---|---|---|
 | 应用故障包 FB0–FB2 | 受限通过；FB3/FB4、断电安全、全局收集未验 | [0080](work_log/0080_fb0_fault_bundle.md)、[0081](work_log/0081_fb1_fb2_fault_bundle.md) |
-| 时钟/IRQ 统一（C29） | #33 已合，统一时基落地 | [0101](work_log/0101_pr20_clock_irq_repair.md) |
-| VirtIO-Net N1 / PR #20 | 保持 RC 未合并：要求拆分，驱动留实验分支 | [0084](work_log/0084_virtio_net_n1_qualification.md) |
+| 时钟/IRQ 统一（C29） | #33 已合，统一时基落地 | [0112](work_log/0112_clock_irq_split.md) |
+| VirtIO-Net N1 / PR #20 | 保持 RC 未合并：要求拆分，驱动留实验分支 | PR #20 分支内记录（0084/0101） |
 | N2 用户态网络 | BLOCKED，待设备授权原语登记与实施 | [0097](work_log/0097_network_time_domains.md) |
 | 浏览器 B0/B1 | 已合（本地 HTML/CSS 子集）；B2 网络 BLOCKED | [0083](work_log/0083_aurora_browser_offline.md)、[0096](work_log/0096_browser_review_fixes.md) |
 | Aurora UI v2 SDK | #29 已合（含 C30 改名与评审修复） | [0102](work_log/0102_aurora_ui_v2_sdk.md)、[0112](work_log/0112_aurora_c30_rename_and_fixes.md) |

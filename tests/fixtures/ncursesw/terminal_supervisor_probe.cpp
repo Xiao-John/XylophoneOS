@@ -11,17 +11,8 @@ terminal::control session;
 
 bool transmit(const char* text) {
     for (u32 offset = 0; text[offset] != 0;) {
-        terminal::request request{}; terminal::response response{};
-        request.operation = static_cast<u32>(terminal::operation::write);
-        request.length = 1; request.data[0] = static_cast<u8>(text[offset]);
-        bool written = false;
-        for (u32 retry = 0; retry < 2000; ++retry) {
-            if (terminal::exchange(session, request, response) != 0) return false;
-            if (response.result == 1) { written = true; break; }
-            if (response.result != process_error_would_block) return false;
-            sdk::yield();
-        }
-        if (!written) return false;
+        const i64 written = terminal::write_until(session, text + offset, 1, thread_deadline_infinite);
+        if (written != 1) return false;
         ++offset;
     }
     return true;

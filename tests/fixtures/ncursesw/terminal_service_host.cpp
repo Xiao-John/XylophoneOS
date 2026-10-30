@@ -13,6 +13,7 @@ std::mutex wait_mutex;
 std::condition_variable wait_changed;
 std::atomic<unsigned> waits{0};
 bool has_byte = false;
+bool transmit_ready = false;
 xos::u8 simulated_byte = 0;
 }
 
@@ -45,7 +46,8 @@ i64 driver::read(u8* output, u32 length) {
     if (length == 0 || !has_byte) return 0;
     *output = simulated_byte; has_byte = false; return 1;
 }
-i64 driver::write(const u8*, u32) { return 0; }
+i64 driver::write(const u8*, u32 length) { return length != 0 && transmit_ready ? 1 : 0; }
+i64 driver::arm_write() { return 0; }
 i64 driver::close() { return 0; }
 }
 
@@ -84,5 +86,19 @@ int main() {
     cancelled.join();
     if (result != terminal::interrupted) return 5;
     lock(); __atomic_store_n(&request_pending, 0u, __ATOMIC_RELEASE); unlock();
+    if (write_until(&output, 1, 0) != thread_error_timeout) return 6;
+    const unsigned before_write = waits.load();
+    std::thread writer([&] { result = write_until(&output, 1, thread_deadline_infinite); });
+    {
+        std::unique_lock<std::mutex> guard(wait_mutex);
+        if (!wait_changed.wait_for(guard, std::chrono::seconds(2), [&] { return waits.load() > before_write; })) {
+            guard.unlock(); writer.join(); return 7;
+        }
+        lock(); transmit_ready = true;
+        __atomic_store_n(&input_ready, 1u, __ATOMIC_RELEASE); unlock();
+    }
+    (void)thread::wake(&input_ready, 1);
+    writer.join();
+    if (result != 1) return 8;
     return 0;
 }

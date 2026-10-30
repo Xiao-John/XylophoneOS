@@ -84,4 +84,37 @@ i64 exchange(control& session, request& message, response& reply) {
     if (reply.sequence != message.sequence) { invalidate_channels(session); return process_error_state; }
     return 0;
 }
+
+i64 read_until(control& session, void* data, u32 length, u64 deadline_ns) {
+    if (data == nullptr && length != 0) return process_error_invalid;
+    if (length > data_bytes) length = data_bytes;
+    request message{}; response reply{};
+    message.operation = static_cast<u32>(operation::read_until);
+    message.length = length; message.deadline_ns = deadline_ns;
+    const i64 transport = exchange(session, message, reply);
+    if (transport != 0) return transport;
+    if (reply.result > static_cast<i64>(length) ||
+        (reply.result > 0 ? reply.length != static_cast<u32>(reply.result) : reply.length != 0)) {
+        invalidate_channels(session); return process_error_state;
+    }
+    auto* output = static_cast<u8*>(data);
+    for (u32 i = 0; i < reply.length; ++i) output[i] = reply.data[i];
+    return reply.result;
+}
+
+i64 write_until(control& session, const void* data, u32 length, u64 deadline_ns) {
+    if (data == nullptr && length != 0) return process_error_invalid;
+    if (length > data_bytes) length = data_bytes;
+    request message{}; response reply{};
+    message.operation = static_cast<u32>(operation::write_until);
+    message.length = length; message.deadline_ns = deadline_ns;
+    const auto* input = static_cast<const u8*>(data);
+    for (u32 i = 0; i < length; ++i) message.data[i] = input[i];
+    const i64 transport = exchange(session, message, reply);
+    if (transport != 0) return transport;
+    if (reply.result > static_cast<i64>(length) || reply.length != 0) {
+        invalidate_channels(session); return process_error_state;
+    }
+    return reply.result;
+}
 }

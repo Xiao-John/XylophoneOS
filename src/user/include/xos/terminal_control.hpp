@@ -17,5 +17,7 @@ i64 start(control& session, const char* path);
 i64 submit(control& session, request& message);
 i64 receive(control& session, response& reply);
 i64 exchange(control& session, request& message, response& reply);
+i64 read_until(control& session, void* data, u32 length, u64 deadline_ns);
+i64 write_until(control& session, const void* data, u32 length, u64 deadline_ns);
 void close(control& session);
 }

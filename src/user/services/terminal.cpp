@@ -71,6 +71,23 @@ i64 read_until(u8* output, u32 length, u64 deadline) {
     }
 }
 
+i64 write_until(const u8* input, u32 length, u64 deadline) {
+    for (;;) {
+        lock();
+        const i64 error = __atomic_load_n(&worker_error, __ATOMIC_ACQUIRE);
+        const i64 result = error != 0 ? error :
+            length != 0 && __atomic_load_n(&request_pending, __ATOMIC_ACQUIRE) != 0 ? terminal::interrupted :
+            device.write(input, length);
+        if (result != 0 || length == 0) { unlock(); return result; }
+        __atomic_store_n(&input_ready, 0u, __ATOMIC_RELEASE);
+        const i64 armed = device.arm_write();
+        unlock();
+        if (armed != 0) return armed;
+        const i64 waited = thread::wait(&input_ready, 0, deadline);
+        if (waited != 0 && waited != thread_value_changed) return waited;
+    }
+}
+
 u64 control_worker(void*) {
     while (__atomic_load_n(&stopping, __ATOMIC_ACQUIRE) == 0) {
         while (__atomic_load_n(&request_pending, __ATOMIC_ACQUIRE) != 0 &&
@@ -159,12 +176,16 @@ extern "C" int xos_user_main(const xos::startup_info*) {
                 response.result = read_until(response.data, request.length, request.deadline_ns);
                 if (response.result > 0) response.length = static_cast<u32>(response.result);
             }
+            if (op == terminal::operation::write_until)
+                response.result = write_until(request.data, request.length, request.deadline_ns);
             lock();
             const i64 error = __atomic_load_n(&worker_error, __ATOMIC_ACQUIRE);
-            if (error != 0 && !(op == terminal::operation::read_until && response.result > 0)) {
+            if (error != 0 && !((op == terminal::operation::read_until ||
+                                 op == terminal::operation::write_until) && response.result > 0)) {
                 response.result = error; response.length = 0;
             }
             else if (op == terminal::operation::read_until) { /* already serviced */ }
+            else if (op == terminal::operation::write_until) { /* already serviced */ }
             else if (op == terminal::operation::read) {
                 response.result = device.read(response.data, request.length);
                 if (response.result == 0 && request.length != 0) response.result = process_error_would_block;

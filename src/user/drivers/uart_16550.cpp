@@ -53,6 +53,9 @@ i64 driver::wait(u64 deadline) {
 
 i64 driver::service_irq(u64 sequence) {
     if (!started_ || sequence == 0) return process_error_state;
+    // THRE is level-triggered on common 16550s. Disarm it until a blocked
+    // writer explicitly rearms, including when another UART cause woke us.
+    write_port(base + 1, 0x05);
     // The device remains IRQ-masked until ack. Bound work even if input keeps
     // arriving; a still-asserted source raises a new event after unmasking.
     for (u32 i = 0; i < 256; ++i) {
@@ -81,6 +84,12 @@ i64 driver::write(const u8* input, u32 length) {
     u32 written = 0;
     while (written < length && (status() & tx_ready)) write_port(base, input[written++]);
     return static_cast<i64>(written);
+}
+
+i64 driver::arm_write() {
+    if (!started_) return process_error_state;
+    write_port(base + 1, 0x07);
+    return 0;
 }
 
 i64 driver::close() {

@@ -24,6 +24,7 @@ public:
     i64 service_irq(u64 sequence);
     i64 read(u8* output, u32 limit);
     i64 write(const u8* input, u32 length);
+    i64 arm_write();
     i64 close();
     u64 token() const { return irq_token_; }
     statistics counters() const { return stats_; }

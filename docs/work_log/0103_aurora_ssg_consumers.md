@@ -48,7 +48,8 @@ Next: review generic authenticated peer transport/discovery/revocation before an
 aggregator. Add bounded text-range/current-visible-text APIs, custom providers and
 subscriptions only with real consumers/quotas; do not claim universal GUI semantics.
 
-Frozen report: [qualification](../reports/aurora_glass_v2_20261030/qualification.json).
+Frozen SSG report: [scoped evidence](../reports/aurora_glass_v2_20261030/ssg/README.md).
+The combined qualification index is supplied later by the Desktop review unit.
 Base freshly fetched/rechecked upstream `3377dbf35bdb43d850c9a2b8e8076da3be146f3d`.
 Current system build `7ccd5871c0c00297`, image SHA256
 `165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08`.

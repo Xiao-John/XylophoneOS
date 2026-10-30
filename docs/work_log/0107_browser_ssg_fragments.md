@@ -15,3 +15,8 @@ No kernel, system ABI, QPA, driver, network or file-service change. The result
 does not establish whole-screen occlusion, cross-process authority, forms,
 iframe, Canvas, JavaScript or complete modern-Web behavior. Integrate the SDK
 repair first and rerun affected Browser/Notes gates after every base change.
+
+The original SSG work log linked to a combined qualification file introduced
+only by the later Desktop PR, so the SSG branch's standalone docs check failed.
+Its frozen SSG evidence link now points to the report present on that branch;
+the later combined index remains in the Desktop review unit.

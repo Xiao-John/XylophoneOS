@@ -50,7 +50,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
         return str(obj)
 
     sdk_objects = [compile_source(root / name) for name in (
-        "src/user/sdk/text.cpp", "src/user/sdk/file_client.cpp", "src/user/arch/x86_64/syscall.cpp", "src/shared/runtime/memory.cpp")]
+        "src/user/sdk/text.cpp", "src/user/sdk/file_client.cpp", "src/user/sdk/terminal_client.cpp", "src/user/arch/x86_64/syscall.cpp", "src/shared/runtime/memory.cpp")]
     sdk_objects.extend(compile_source(source, ("-w",)) for source in sorted((root / "src/user/libc").glob("*.cpp")))
     thread_core = compile_source(root / "src/user/arch/x86_64/thread_core.cpp")
     core_archive = build / "threading_core/libxos_thread_core.a"

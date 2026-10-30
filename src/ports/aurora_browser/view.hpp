@@ -18,6 +18,9 @@
 #include <utility>
 #include <cstdio>
 #include <stdexcept>
+#ifdef XOS_SSG_TEST_ORACLE
+#include "test_structure_oracle.hpp"
+#endif
 namespace browser {
 class HtmlView final:public QAbstractScrollArea,public litehtml::document_container {
     litehtml::document::ptr doc;
@@ -35,6 +38,9 @@ class HtmlView final:public QAbstractScrollArea,public litehtml::document_contai
     std::unique_ptr<PageSession> page_session;
     QTimer page_expiry;
     quint64 page_revision=1, page_nonce=0;
+#ifdef XOS_SSG_TEST_ORACLE
+    QByteArray oracle_input_sha256;
+#endif
     void invalidate_pages(){++page_revision;page_expiry.stop();page_session.reset();}
     static QColor color(litehtml::web_color c){return QColor(c.red,c.green,c.blue,c.alpha);}
     static QRect box(const litehtml::position &r){return QRect(r.x,r.y,r.width,r.height);}
@@ -57,6 +63,9 @@ public:
     std::function<void(QString)> titleChanged;
     HtmlView(QWidget *parent):QAbstractScrollArea(parent){page_expiry.setSingleShot(true);connect(&page_expiry,&QTimer::timeout,this,[this]{page_session.reset();});setFrameShape(QFrame::NoFrame);viewport()->setMouseTracking(true);setFocusPolicy(Qt::StrongFocus);setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);connect(verticalScrollBar(),&QScrollBar::valueChanged,this,[this](int value){invalidate_pages();viewport()->update();std::printf("BROWSER_SCROLL value=%d max=%d\n",value,verticalScrollBar()->maximum());});}
     bool load(const QString &path,QString &error){QByteArray bytes;if(!read(path,bytes,32768,error)||!html_allowed(bytes,error))return false;
+#ifdef XOS_SSG_TEST_ORACLE
+        oracle_input_sha256=QCryptographicHash::hash(bytes,QCryptographicHash::Sha256).toHex();
+#endif
         invalidate_pages();doc.reset();scene.invalidate();scene_ids.clear();next_scene_id=1;images.clear();page=path;caption.clear();imports=0;fonts=0;verticalScrollBar()->setValue(0);
         try{doc=litehtml::document::createFromString(bytes.constData(),this);relayout();if(!doc){error="Layout resource budget failed";return false;}if(doc->height()>65536){doc.reset();error="Layout height budget exceeded";return false;}}
         catch(const std::exception&){layoutBusy=false;doc.reset();error="Engine allocation or resource budget failed";return false;}
@@ -72,6 +81,25 @@ public:
         std::printf("BROWSER_ANCHOR_UNAVAILABLE outside-viewport-or-not-rendered\n");
     }
     QString current()const{return page;}
+#ifdef XOS_SSG_TEST_ORACLE
+    QJsonObject test_structure_reference() const {
+        // No authority is granted by the test build. The existing explicit
+        // document/text permission is still required before any model is read.
+        if(!scene_allowed)return {{"status","DENIED"}};
+        if(!doc)return {{"status","SEMANTICS_UNAVAILABLE"}};
+        auto result=test::structure_oracle(doc->root());
+        result["document"]=page;
+        result["inputSha256"]=QString::fromLatin1(oracle_input_sha256);
+        result["sourceEpoch"]=scene.source_epoch();
+        result["sourceRevision"]=QString::number(page_revision);
+        const auto window_origin=window()->mapToGlobal(QPoint());
+        const auto viewport_origin=viewport()->mapTo(window(),QPoint());
+        result["windowOrigin"]=QJsonArray{window_origin.x(),window_origin.y()};
+        result["viewportInWindow"]=QJsonArray{viewport_origin.x(),viewport_origin.y(),
+                                              viewport()->width(),viewport()->height()};
+        return result;
+    }
+#endif
     void allow_scene_observation(bool value){invalidate_pages();scene_allowed=value;if(!value){scene.invalidate();scene_ids.clear();}}
     // One bounded, single-use continuation session per view. The stack contains
     // only the active DFS path; pages are never published to SceneStream.

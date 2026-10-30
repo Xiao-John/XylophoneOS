@@ -21,6 +21,25 @@ class Browser final:public aurora::Canvas {
     browser::HtmlView *view;
     QString pipe_instance;bool pipe_text=false;
     std::unique_ptr<aurora::PipeProvider> pipe_provider;
+#ifdef XOS_SSG_TEST_ORACLE
+    quint64 oracle_capture=0;
+    void log_test_structure_oracle(const char *phase){
+        if(!pipe_text)return;
+        auto reference=view->test_structure_reference();
+        reference["phase"]=QString::fromLatin1(phase);
+        reference["sourceInstance"]=pipe_instance;
+        reference["providerPid"]=QString::number(xos::sdk::pid());
+        const auto payload=QJsonDocument(reference).toJson(QJsonDocument::Compact);
+        const auto encoded=payload.toBase64();const auto capture=++oracle_capture;
+        std::printf("SSG_ORACLE_BEGIN %llu %lld %lld\n",(unsigned long long)capture,
+                    (long long)payload.size(),(long long)encoded.size());
+        for(qsizetype offset=0;offset<encoded.size();offset+=192)
+            std::printf("SSG_ORACLE_PART %llu %lld %s\n",(unsigned long long)capture,
+                        (long long)offset,encoded.mid(offset,192).constData());
+        std::printf("SSG_ORACLE_END %llu\n",(unsigned long long)capture);
+        std::fflush(stdout);
+    }
+#endif
     quint64 previous_scene=0;
     QString previous_epoch;
     void dump_scene(){
@@ -103,7 +122,17 @@ public:
                 pipe_provider=std::make_unique<aurora::PipeProvider>(pipe_instance,
                     [this](bool visible,const QString &role,unsigned limit){return view->scene_snapshot(role,visible,limit);},
                     [this](quint64 version,const QString &epoch){return view->scene_diff(version,epoch);},
-                    [this](const QJsonObject &request){return view->scene_page(request);});
+                    [this](const QJsonObject &request){
+#ifdef XOS_SSG_TEST_ORACLE
+                        if(request.value("op")=="snapshot_begin")log_test_structure_oracle("before");
+#endif
+                        auto result=view->scene_page(request);
+#ifdef XOS_SSG_TEST_ORACLE
+                        if(result.value("status")=="OK" && result.value("complete").toBool())
+                            log_test_structure_oracle("after");
+#endif
+                        return result;
+                    });
                 pipe_provider->start();
                 std::printf("SSG_PROVIDER_READY pid=%llu instance=%s text=%d kind=browser\n",(unsigned long long)xos::sdk::pid(),pipe_instance.toUtf8().constData(),int(pipe_text));
             }

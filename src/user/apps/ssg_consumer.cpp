@@ -7,6 +7,7 @@
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonParseError>
 #include <QtCore/QSet>
+#include <QtCore/QVector>
 #include <cstdio>
 using namespace ssg_pipe;
 static void frame_log(const char *direction,unsigned seq,const QByteArray &bytes){
@@ -145,23 +146,74 @@ static int browser_scenario(Client &client){
     std::printf("SSG_CONSUMER_BROWSER_EXIT failures=%d\n",failures);return failures?1:0;
 }
 static int browser_pages(Client &client){
-    bool transport=false;QSet<QString> ids;QString instance,epoch,revision,cursor;int pages=0,nodes=0;bool done=false;
+    bool transport=false;QSet<QString> ids;QVector<QString> ancestors;
+    QString instance,epoch,revision,cursor;int pages=0,nodes=0;bool done=false;
+    auto decimal_id=[](const QJsonValue &value){
+        if(!value.isString())return false;const auto s=value.toString();
+        if(s.isEmpty() || s=="0" || s.startsWith('0'))return false;
+        for(const auto c:s)if(c<'0' || c>'9')return false;
+        bool ok=false;s.toULongLong(&ok);return ok;
+    };
+    auto exact_bool=[](const QJsonObject &o,const char *key,bool expected){
+        return o.value(key).isBool() && o.value(key).toBool()==expected;
+    };
     QJsonObject request{{"op","snapshot_begin"},{"maxNodes",8}};
     for(int i=0;i<1024;++i){
         auto result=client.request(request,&transport);++pages;
         if(!transport || result.value("status")!="OK" || result.value("pageSequence").toString()!=QString::number(pages))break;
         if(pages==1){instance=result.value("sourceInstance").toString();epoch=result.value("sourceEpoch").toString();revision=result.value("sourceRevision").toString();}
         if(instance.isEmpty() || epoch.isEmpty() || revision.isEmpty() || result.value("sourceInstance")!=instance || result.value("sourceEpoch")!=epoch || result.value("sourceRevision")!=revision)break;
-        bool unique=true;for(const auto value:result.value("nodes").toArray()){const auto n=value.toObject();const auto id=n.value("id").toString();if(id.isEmpty() || ids.contains(id))unique=false;ids.insert(id);++nodes;}
-        if(!unique)break;
-        done=result.value("complete").toBool();const auto next=result.value("cursor").toString();
-        std::printf("SSG_PAGED_CONSUMER page=%d nodes=%d visited=%d elapsed_ms=%s complete=%d\n",pages,int(result.value("nodes").toArray().size()),result.value("visited").toInt(),result.value("elapsedMs").toString().toUtf8().constData(),int(done));
+        if(!result.value("nodes").isArray() || !result.value("complete").isBool() ||
+           result.value("query")!="" || !exact_bool(result,"visibleOnly",false) ||
+           !exact_bool(result,"sourceValid",true) || !result.value("cursor").isString())break;
+        const auto page_nodes=result.value("nodes").toArray();
+        const bool exhausted=result.value("complete").toBool();
+        const int visited=result.value("visited").toInt(-1);
+        if(page_nodes.size()>8 || visited<page_nodes.size() || visited>16 ||
+           result.value("visited").toDouble(-1)!=visited || (!exhausted && visited==0) ||
+           !exact_bool(result,"hasData",!page_nodes.isEmpty()) ||
+           !exact_bool(result,"hasNext",!exhausted) ||
+           !exact_bool(result,"traversalComplete",exhausted) ||
+           result.value("stopReason")!=(exhausted?"EXHAUSTED":"PAGE_BUDGET"))break;
+        bool valid=true;
+        for(const auto value:page_nodes){
+            if(!value.isObject()){valid=false;break;}
+            const auto n=value.toObject();const auto id=n.value("id").toString();
+            const auto parent=n.value("parent").toString();
+            if(!decimal_id(n.value("id")) || ids.contains(id) || ids.size()>=4096 ||
+               !n.value("parent").isString() || !n.value("tag").isString() ||
+               n.value("source")!="litehtml-model-and-render-layout") {valid=false;break;}
+            if(ids.isEmpty()){
+                if(parent!="0"){valid=false;break;}
+            }else{
+                // An unfiltered preorder must keep every parent, and cannot
+                // return to a subtree that has already been closed.
+                const auto parent_index=ancestors.lastIndexOf(parent);
+                if(parent_index<0){valid=false;break;}
+                ancestors.resize(parent_index+1);
+            }
+            ancestors.append(id);ids.insert(id);++nodes;
+            const auto role=n.value("role").toString();
+            if(role!="text" && role!="link" && role!="element"){valid=false;break;}
+            if(role=="text"){
+                const auto range=n.value("textRange").toArray();
+                if(!n.value("text").isString() || n.value("text").toString().size()>1024 ||
+                   !exact_bool(n,"textTruncated",false) || range.size()!=2 ||
+                   range[0]!=QJsonValue(0) || range[1]!=QJsonValue(int(n.value("text").toString().size()))) {valid=false;break;}
+            }
+            if(role=="link" && (!n.value("href").isString() || n.value("tag")!="a")){valid=false;break;}
+        }
+        if(!valid)break;
+        done=exhausted;const auto next=result.value("cursor").toString();
+        std::printf("SSG_PAGED_CONSUMER page=%d nodes=%d visited=%d elapsed_ms=%s complete=%d\n",pages,int(page_nodes.size()),visited,result.value("elapsedMs").toString().toUtf8().constData(),int(done));
         if(done){if(!next.isEmpty())done=false;break;}
         if(next.isEmpty() || next==cursor)break;cursor=next;
         request={{"op","snapshot_next"},{"sourceInstance",instance},{"cursor",cursor}};
     }
-    std::printf("SSG_PAGED_CONSUMER_DONE pages=%d nodes=%d complete=%d\n",pages,nodes,int(done));
-    return done && pages>1?0:1;
+    // Local consistency still cannot discover a missing whole subtree. Only
+    // the independent test Oracle can qualify structure/text completeness.
+    std::printf("SSG_PAGED_CONSUMER_DONE pages=%d nodes=%d complete=%d completeness=ORACLE_REQUIRED\n",pages,nodes,int(done));
+    return done && nodes>0?0:1;
 }
 static int browser_guard(Client &client){
     const auto first=client.request(query("content"));

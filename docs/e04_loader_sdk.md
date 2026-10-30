@@ -15,6 +15,7 @@
 | `sys_stream_lease` | 80 |
 | `sys_channel` | 81 |
 | `sys_pio_grant` | 82 |
+| `sys_irq_event` | 83 |
 | `sys_process_guard` | 62 |
 | `sys_random_bytes` | 63 |
 | `sys_clock_realtime` | 64 |
@@ -205,7 +206,10 @@ sys81 `sys_channel` 是开发中的受控单槽 IPC 与等待机制，身份和�
 [专项契约](contracts/channel.md)；当前未客体验收，不等于用户态终端服务完成。
 
 sys82 `sys_pio_grant` 是开发中的固定设备 PIO 授权；COM1 交接和隔离边界见
-[专项契约](contracts/pio_grant.md)，尚未客体验收、无 IRQ 或用户态终端资格。
+[专项契约](contracts/pio_grant.md)，尚未客体验收，不等于 IRQ 或用户态终端资格。
+
+sys83 `sys_irq_event` 为受控 IRQ 事件、等待和确认；当前仅 IRQ4、未客体验收，
+详见[专项契约](contracts/irq_event.md)。不读取设备数据，不等于 UART 驱动完成。
 
 sys55 `sys_process_foreground(&request,active,0)`：request 为48字节固定宽度
 `process_foreground{version=1,size=48,count,reserved=0,pids[4]}`；未使用 PID 必须0。

@@ -149,7 +149,8 @@ x86 TSS 已准备默认全拒绝的 I/O bitmap，尚无授权/撤权或 guest �
 没有用户可用的 PIO 授权，COM1 独占交接仍由本任务继续实现。
 sys82 COM1 窄 PIO 授权及调试串口脱离已在本分支实现，边界见[pio_grant](contracts/pio_grant.md)，
 构建及限制见[0120](work_log/0120_com1_pio_handoff.md)；尚无 IRQ、恢复/救援或客体验收。
-sys83 通用 IRQ 事件的本地认领见[irq_event](contracts/irq_event.md)，尚未实现或验收。
+sys83 的受控 IRQ4 事件已在本分支实现，契约见[irq_event](contracts/irq_event.md)，
+构建和未验范围见[0122](work_log/0122_irq_event_mechanism.md)；尚无客体验收。
 用户态 UART 的 PIO、IRQ 与 COM1 调试通路交接提案见
 [uart_user_driver_proposal](contracts/uart_user_driver_proposal.md)，仅设计，尚无授权 ABI。
 
@@ -238,8 +239,8 @@ QtCore 的系统 build48e5e73bcd649f44 和本地输入编辑的 build3200de2c3b8
 - 输入编辑按[第一档](plans/input_edit_foundation.md)、[第二档](plans/terminal_editor.md)及
   [多语言](plans/multilingual.md)继续；先设计[ncursesw 公共底座](plans/ncursesw.md)，
   再优先评估 nano，kg 为备选。尚未实施或验收；相关改动提交后再验收。
-- 67–79 内存、83–95 等待/信号、96–111 显示扩展仍仅预留，具体接口先登记；
-  本分支 sys80/81/82 尚未验，合并前须核验其他分支分配。
+- 67–79 内存、84–95 等待/信号、96–111 显示扩展仍仅预留，具体接口先登记；
+  本分支 sys80–83 尚未验，合并前须核验其他分支分配。
 - 按 Discipline→本页→宪法→专项契约/登记接手；新开发独立分支/PR交付，
   公共 build 排他，localpilot 隔离。
 

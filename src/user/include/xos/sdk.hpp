@@ -21,6 +21,9 @@ inline i64 stream_lease(u32 handle, stream_lease_action action, u64 target = 0) 
 inline i64 pio_grant(pio_grant_action action, u64 target, u64 resource) {
     return syscall(sys_pio_grant, static_cast<u64>(action), target, resource);
 }
+inline i64 irq_event(irq_event_action action, u64 value, u64 argument = 0) {
+    return syscall(sys_irq_event, static_cast<u64>(action), value, argument);
+}
 inline i64 channel_open(const channel_create& request) {
     return syscall(sys_channel, static_cast<u64>(channel_action::create), reinterpret_cast<u64>(&request));
 }

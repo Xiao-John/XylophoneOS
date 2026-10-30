@@ -152,16 +152,35 @@ process_guard_info admission_guard{};
 stream_lease input_lease{};
 u64 pio_com1_owner;
 bool pio_com1_quarantined;
+u64 irq_owner, irq_token, irq_next_token = 1, irq_sequence;
+bool irq_pending, irq_quarantined;
+void ready_with(thread_record& thread, i64 result);
+
+void wake_irq_waiters(i64 result) {
+    for (auto& thread : threads) {
+        if (thread.state == thread_state::blocked && thread.wait_kind == thread_wait_kind::irq_event &&
+            thread.wait_target == irq_token) { ready_with(thread, result); }
+    }
+}
+
+void release_irq() {
+    if (irq_token == 0) { return; }
+    pic_mask_irq(4);
+    wake_irq_waiters(process_error_denied);
+    irq_owner = irq_token = 0;
+    irq_pending = false;
+    irq_quarantined = true;
+}
 
 void quarantine_com1(process_record* task) {
     if (task == nullptr || pio_com1_owner != task->pid) { return; }
     pic_mask_irq(4);
+    release_irq();
     task->io_window_first = task->io_window_length = 0;
     pio_com1_owner = 0;
     pio_com1_quarantined = true;
 }
 
-void ready_with(thread_record& thread, i64 result);
 bool display_endpoint(u64 handle);
 void display_wake(u64 handle,i64 result);
 void display_release(u64 pid);
@@ -1234,7 +1253,7 @@ void expire_waiters() {
             (thread.wait_kind == thread_wait_kind::word || thread.wait_kind == thread_wait_kind::sleep ||
              thread.wait_kind == thread_wait_kind::pipe_read || thread.wait_kind == thread_wait_kind::pipe_write ||
              thread.wait_kind == thread_wait_kind::channel_read ||
-             thread.wait_kind == thread_wait_kind::channel_write) &&
+             thread.wait_kind == thread_wait_kind::channel_write || thread.wait_kind == thread_wait_kind::irq_event) &&
             thread_deadline_reached(now, thread.deadline_ns)) {
             ready_with(thread, thread.wait_kind == thread_wait_kind::sleep ? 0 : thread_error_timeout);
         }
@@ -1590,6 +1609,46 @@ void* process_syscall(interrupt_frame* frame) {
     i64 result = process_error_invalid;
     const u64 first = frame->rdi, second = frame->rsi, third = frame->rdx;
     switch (frame->rax) {
+    case sys_irq_event: {
+        const auto action = static_cast<irq_event_action>(first);
+        if (action == irq_event_action::bind) {
+            if (second != pio_resource_com1 || third != 0) { break; }
+            if (current->pid != pio_com1_owner) { result = process_error_denied; break; }
+            if (irq_token != 0 || irq_quarantined || irq_next_token > 0x7fffffffffffffffull) {
+                result = process_error_state; break;
+            }
+            irq_owner = current->pid;
+            irq_token = irq_next_token++;
+            irq_sequence = 0;
+            irq_pending = false;
+            pic_unmask_irq(4);
+            result = static_cast<i64>(irq_token);
+        } else {
+            if (irq_token == 0 || second != irq_token || current->pid != irq_owner) {
+                result = process_error_denied; break;
+            }
+            if (action == irq_event_action::wait) {
+                if (irq_pending) { result = static_cast<i64>(irq_sequence); break; }
+                if (third == 0) { result = process_error_would_block; break; }
+                if (thread_deadline_reached(monotonic_ns(), third)) { result = thread_error_timeout; break; }
+                current_thread->wait_kind = thread_wait_kind::irq_event;
+                current_thread->wait_target = irq_token;
+                current_thread->deadline_ns = third;
+                current_thread->state = thread_state::blocked;
+                frame->rax = 0; return schedule(frame);
+            }
+            if (action == irq_event_action::ack) {
+                if (!irq_pending || third != irq_sequence) { result = process_error_state; break; }
+                irq_pending = false;
+                pic_unmask_irq(4);
+                result = 0;
+            } else if (action == irq_event_action::close) {
+                if (third != 0) { break; }
+                release_irq(); result = 0;
+            }
+        }
+        break;
+    }
     case sys_pio_grant: {
         if (!current->supervisor) { result = process_error_denied; break; }
         if (third != pio_resource_com1) { break; }
@@ -2438,6 +2497,15 @@ void* process_syscall(interrupt_frame* frame) {
 }
 
 void* input_entry(interrupt_frame* frame) {
+    if (frame->vector == 36) {
+        pic_mask_irq(4);
+        pic_eoi(4);
+        if (irq_token != 0 && !irq_pending) {
+            if (irq_sequence == 0x7fffffffffffffffull) { release_irq(); }
+            else { irq_pending = true; ++irq_sequence; wake_irq_waiters(static_cast<i64>(irq_sequence)); }
+        }
+        return frame;
+    }
     display::input_irq(frame->vector == 33 ? 1 : 12, tick_count * 10000000ull);
     if(display::input_pending()){display_wake(0,0);}
     return frame;

@@ -47,6 +47,11 @@ void pic_mask_irq(u8 irq) {
     else if (irq < 16) { out_byte(slave_data, static_cast<u8>(in_byte(slave_data) | (1u << (irq - 8)))); }
 }
 
+void pic_unmask_irq(u8 irq) {
+    if (irq < 8) { out_byte(master_data, static_cast<u8>(in_byte(master_data) & ~(1u << irq))); }
+    else if (irq < 16) { out_byte(slave_data, static_cast<u8>(in_byte(slave_data) & ~(1u << (irq - 8)))); }
+}
+
 void timer_init(u32 hz) {
     const u32 divisor = pit_frequency / hz;
     out_byte(pit_command, 0x36); // channel 0, lobyte/hibyte, mode 3

@@ -1,0 +1,367 @@
+{
+  "captured_at": "2026-10-29T12:14:05.305Z",
+  "repository": "Xiao-John/XylophoneOS",
+  "source_main": "169f51e6b410863b8d8c9707b7ea84a6f649d59c",
+  "pull_requests": [
+    {
+      "number": 18,
+      "info": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "url": "https://github.com/Xiao-John/XylophoneOS/pull/18",
+          "number": 18,
+          "state": "open",
+          "merged": false,
+          "mergeable": true,
+          "draft": true,
+          "body": "XOS has no lawful user-mode NIC endpoint or device right. This proposes only reserved/claimed syscall 112 (`sys_net_device`) and a versioned authority, copy, wait and lifecycle contract so a later user-mode network service can use the N1 driver. No syscall constant, dispatch implementation, SDK supported flag or change to existing 1–66 is included; public implementation remains blocked until this registration is reviewed and merged.\n\nThe frozen gap probe first exchanges 32 real Ethernet frames on the separate N1 candidate, then confirms ordinary MMIO and PCI OUT attempts fault with vectors 14/13 and restore exact resources. Candidate image/source, SDK and ELF hashes, QEMU command and lossless serial are in `docs/reports/network_device_gap_20261029/`. This is not a TCP/HTTP acceptance result. The proposed grant is explicit and supervisor-controlled; it does not reinterpret spawn-only `sys_process_grant`28.\n\nValidation: documentation consistency passed (457 links, 66 allocated syscalls, 73 historical sources), ABI documentation check and `git diff --check`. Based on fetched upstream 39083f9; independent worktrees preserve PR #17 and existing Qt/GPU work. No main push, merge or Release.\n",
+          "title": "docs(net): claim a bounded network device mechanism after guest gap probes",
+          "base": "main",
+          "base_sha": "39083f9968d84b5679c86a74a6c8394033c0d915",
+          "head": "codex/network-device-abi-claim",
+          "head_sha": "97947c07853e785530d3c907738a8b45f530986e",
+          "head_repo_id": 1432956786,
+          "head_repo_full_name": "www080327-glitch/XylophoneOS",
+          "merge_commit_sha": "b7e289002df887c270cb22a391a4474f7ed536b1",
+          "user": {
+            "login": "www080327-glitch",
+            "name": "www080327-glitch",
+            "email": null,
+            "avatar_url": "https://avatars.githubusercontent.com/u/298606827?v=4",
+            "id": 298606827
+          },
+          "requested_reviewers": null,
+          "requested_team_reviewers": null,
+          "diff": null,
+          "comments": null,
+          "created_at": "2026-10-29T09:45:52Z",
+          "updated_at": "2026-10-29T09:45:52Z",
+          "closed_at": null,
+          "merged_at": null,
+          "commits": 1,
+          "changed_files": 8,
+          "additions": 617,
+          "deletions": 2,
+          "display_url": "https://github.com/Xiao-John/XylophoneOS/pull/18",
+          "display_title": "docs(net): claim a bounded network device mechanism after guest gap probes"
+        },
+        "isError": false
+      },
+      "reviews": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "reviews": []
+        },
+        "isError": false
+      },
+      "threads": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "review_threads": []
+        },
+        "isError": false
+      },
+      "comments": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "comments": [],
+          "url": "https://github.com/Xiao-John/XylophoneOS/issues/18",
+          "title": "Xiao-John/XylophoneOS Issue #18 comments",
+          "display_url": "https://github.com/Xiao-John/XylophoneOS/issues/18",
+          "display_title": "Xiao-John/XylophoneOS Issue #18 comments"
+        },
+        "isError": false
+      }
+    },
+    {
+      "number": 20,
+      "info": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "url": "https://github.com/Xiao-John/XylophoneOS/pull/20",
+          "number": 20,
+          "state": "open",
+          "merged": false,
+          "mergeable": false,
+          "draft": true,
+          "body": "XOS has PCI/VirtIO-GPU support but no real NIC mechanism. This adds a modern VirtIO-Net device backend using the existing PCI discovery/BAR mapping, separate boundedRX/TX queues, actual PIC/INTx completion handling, kernel-owned DMA and reset-before-reclaim. It remains an explicit trusted pre-run diagnostic and quiesces the NIC before ordinary userspace; default startup stays `-nic none`.\n\nN0 reuse/device-contract review and restricted N1 Ethernet pass. Ten network gates cover32 byte-verified bidirectional frames across reset cycles, GPU coexistence, timeout, malformed lengths, pending queue overflow, actual5000-byte merged/jumbo fail-closed handling, no device, allocation quota/repeated reclaim, and ordinary user MMIO/PCI-IO denial. Every successful reset returns34 DMA pages. A same-boot test follows the actual NIC failure/reset with real QtGui pixels, file sync, isolation faults and exact resources. Twenty-one independent affected regression suites pass on frozen build67883ca24e9dcdae: E04, G02, threading, files/persistence, QtCore/Gui/Widgets. The old E04 no-workdisk fixture was blocked by the existing maintenance guard; its failure is retained and its repaired explicit512MiBFAT32 fixture keeps all13 assertions.\n\nFull source/image/SDK/ELF hashes, actual QEMU commands, raw host frames, lossless serial, screenshots, resource counts and failed experiments are in `docs/reports/virtio_net_n1_20261029/`; work log0084 defines the limits. The required MRG_RXBUF negotiation and rejected noMRG experiment are explicit. No shared live IRQ routing, device hotplug, SMP, physical-device or IOMMU qualification is claimed.\n\nPinned lwIP2.2.1 sources/licenses/member hashes and a bounded NO_SYS cross-compiled archive are included as preparation only. There is no guest IP/ARP/UDP/TCP/DNS/HTTP service, socket ABI or browser networking claim. N2 is BLOCKED on review/merge and actual implementation/acceptance of the separately proposed lawful user-device bridgePR#18. No new syscall/shared SDK interface, user BAR/DMA permission or kernel TCP/HTTP policy is added. Browser local rendering is delivered independently inPR#19.\n\nValidation also includes license-material audit, documentation/ABI consistency, source/artifact reverification and whitespace checks. Based on fetched upstream39083f9. No main push, merge, unrelated workspace changes or Release.\n",
+          "title": "feat(net): qualify VirtIO-Net Ethernet IRQ and DMA foundation",
+          "base": "main",
+          "base_sha": "39083f9968d84b5679c86a74a6c8394033c0d915",
+          "head": "codex/browser-net-n1",
+          "head_sha": "9b832fa06061b6905d00529a2e0a8445ea389a2a",
+          "head_repo_id": 1432956786,
+          "head_repo_full_name": "www080327-glitch/XylophoneOS",
+          "merge_commit_sha": null,
+          "user": {
+            "login": "www080327-glitch",
+            "name": "www080327-glitch",
+            "email": null,
+            "avatar_url": "https://avatars.githubusercontent.com/u/298606827?v=4",
+            "id": 298606827
+          },
+          "requested_reviewers": null,
+          "requested_team_reviewers": null,
+          "diff": null,
+          "comments": null,
+          "created_at": "2026-10-29T09:52:57Z",
+          "updated_at": "2026-10-29T09:52:57Z",
+          "closed_at": null,
+          "merged_at": null,
+          "commits": 2,
+          "changed_files": 446,
+          "additions": 11981,
+          "deletions": 2,
+          "display_url": "https://github.com/Xiao-John/XylophoneOS/pull/20",
+          "display_title": "feat(net): qualify VirtIO-Net Ethernet IRQ and DMA foundation"
+        },
+        "isError": false
+      },
+      "reviews": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "reviews": []
+        },
+        "isError": false
+      },
+      "threads": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "review_threads": []
+        },
+        "isError": false
+      },
+      "comments": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "comments": [],
+          "url": "https://github.com/Xiao-John/XylophoneOS/issues/20",
+          "title": "Xiao-John/XylophoneOS Issue #20 comments",
+          "display_url": "https://github.com/Xiao-John/XylophoneOS/issues/20",
+          "display_title": "Xiao-John/XylophoneOS Issue #20 comments"
+        },
+        "isError": false
+      }
+    },
+    {
+      "number": 22,
+      "info": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "url": "https://github.com/Xiao-John/XylophoneOS/pull/22",
+          "number": 22,
+          "state": "open",
+          "merged": false,
+          "mergeable": true,
+          "draft": true,
+          "body": "PR #18 is still draft/open/unmerged, so N2 remains BLOCKED and this change does not implement or call proposed syscall 112. It provides a source-pinned maintainer handoff identifying the live-revocation ambiguity, unfrozen layouts/numeric semantics, copyout side effects, pre-run N1 versus scheduled service IRQ lifecycle, reset-timeout quarantine and client IPC questions.\n\nThe acceptance plan separates D1–D3 from lwIP/TCP/HTTP and Aurora integration, with guest request nonce, host-generated response challenge, Ethernet/ARP/IPv4/TCP packet capture, independently compared response bytes/digests, actual guest screenshot and resource ownership. Old N1/B1 reports remain bound to their original inputs. HTTPS is an independent security gate.\n\nBased on fetched upstream aaec2e9; PR #17 is merged and #18–#21 remain open drafts in the frozen public snapshot. Verified 18 committed input files byte-for-byte. Documentation consistency (465 links, 66 allocated syscalls, 73 historical sources), ABI documentation consistency and whitespace checks pass. No runtime/kernel/SDK/driver/browser changes, no new guest qualification, no self-approval/merge or Release.",
+          "title": "docs(net): clarify N2 review blockers and causal guest acceptance",
+          "base": "main",
+          "base_sha": "aaec2e9d8ffe61ce1d523cd56852d36cde3edd07",
+          "head": "codex/modern2-network-handoff",
+          "head_sha": "8bbf698e0a801fa273924fc153eaebe6f81041fa",
+          "head_repo_id": 1432956786,
+          "head_repo_full_name": "www080327-glitch/XylophoneOS",
+          "merge_commit_sha": "98442bba2cca9b900e762e0970e7de1f3cf77873",
+          "user": {
+            "login": "www080327-glitch",
+            "name": "www080327-glitch",
+            "email": null,
+            "avatar_url": "https://avatars.githubusercontent.com/u/298606827?v=4",
+            "id": 298606827
+          },
+          "requested_reviewers": null,
+          "requested_team_reviewers": null,
+          "diff": null,
+          "comments": null,
+          "created_at": "2026-10-29T11:59:36Z",
+          "updated_at": "2026-10-29T11:59:36Z",
+          "closed_at": null,
+          "merged_at": null,
+          "commits": 1,
+          "changed_files": 11,
+          "additions": 707,
+          "deletions": 0,
+          "display_url": "https://github.com/Xiao-John/XylophoneOS/pull/22",
+          "display_title": "docs(net): clarify N2 review blockers and causal guest acceptance"
+        },
+        "isError": false
+      },
+      "reviews": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "reviews": []
+        },
+        "isError": false
+      },
+      "threads": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "review_threads": []
+        },
+        "isError": false
+      },
+      "comments": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "comments": [],
+          "url": "https://github.com/Xiao-John/XylophoneOS/issues/22",
+          "title": "Xiao-John/XylophoneOS Issue #22 comments",
+          "display_url": "https://github.com/Xiao-John/XylophoneOS/issues/22",
+          "display_title": "Xiao-John/XylophoneOS Issue #22 comments"
+        },
+        "isError": false
+      }
+    },
+    {
+      "number": 24,
+      "info": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "url": "https://github.com/Xiao-John/XylophoneOS/pull/24",
+          "number": 24,
+          "state": "closed",
+          "merged": true,
+          "mergeable": false,
+          "draft": false,
+          "body": "## 内容\n\n按宪法第1节修订程序（用户 2026-10-29 明确确认并记录），本次为**仅文档**修正案，v1.2 → v1.3：\n\n- **C28 驱动纯洁性**：设备驱动（设备初始化、队列与数据通路管理、传输收发）实现为用户态驱动服务；内核只保留中断递送与应答、授权MMIO（逐设备、窄窗口、显式、可撤销，仅面向已认证驱动服务）、DMA资源授予、IPC与权利撤销等通用机制。内核暂缺所需接口不构成把驱动放入内核的理由，缺少的机制按C20论证后正确创建。内核态驱动实现为架构违规，过渡例外按C26登记且不得作为交付驱动进入主线。C21末句\"不能机械要求所有驱动用户态\"的让步由C28替代。\n- **C29 时基与中断应答**：内核只维护一套单调时基，由时间中断唯一写入、归属独立公共模块；sys_ticks、单调/实时时钟、线程deadline、驱动等待及一切超时语义同源导出；任何模块不得复制、旁路或自建计时；EOI、屏蔽等PIC操作为纯机制操作，不得携带计时、统计或其他副作用。\n\n修订记录及裁定影响（PR #20 内核驱动与 pic_eoi 计时、PR #18 frame-proxy 认领的处置）见 `docs/work_log/0086_principle_amendment_driver_timebase.md`。按C26末句，旧验收结果不追改，也不默认已符合新原则。\n\n## 范围\n\n- 仅 `docs/xos_plan.md` 与新增 work_log 0086；未改 `docs/state.md`、`licenses/components.json` 等 #18–#21 在途 PR 占用的公共文件（Discipline：避免同时修改同一文件）。\n- 无实现、ABI、build、冻结报告变更。\n\n## 检查\n\n- `tests/docs_consistency.py` passed（461 本地链接 / 66 已分配 syscall / 73 历史来源）\n- `tests/abi_doc_consistency.py` PASS\n- `git diff --check` clean",
+          "title": "docs(principle): add C28/C29 driver purity and unified time base",
+          "base": "main",
+          "base_sha": "aaec2e9d8ffe61ce1d523cd56852d36cde3edd07",
+          "head": "codex/principle-driver-purity-timebase",
+          "head_sha": "12a9c88fcfc9c7d3fe94c16d67f5bffb63c7781d",
+          "head_repo_id": 1431242900,
+          "head_repo_full_name": "Xiao-John/XylophoneOS",
+          "merge_commit_sha": "169f51e6b410863b8d8c9707b7ea84a6f649d59c",
+          "user": {
+            "login": "Xiao-John",
+            "name": "Xiao-John",
+            "email": null,
+            "avatar_url": "https://avatars.githubusercontent.com/u/75989255?v=4",
+            "id": 75989255
+          },
+          "requested_reviewers": null,
+          "requested_team_reviewers": null,
+          "diff": null,
+          "comments": null,
+          "created_at": "2026-10-29T12:11:58Z",
+          "updated_at": "2026-10-29T12:12:25Z",
+          "closed_at": "2026-10-29T12:12:25Z",
+          "merged_at": "2026-10-29T12:12:24Z",
+          "commits": 1,
+          "changed_files": 2,
+          "additions": 42,
+          "deletions": 1,
+          "display_url": "https://github.com/Xiao-John/XylophoneOS/pull/24",
+          "display_title": "docs(principle): add C28/C29 driver purity and unified time base"
+        },
+        "isError": false
+      },
+      "reviews": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "reviews": []
+        },
+        "isError": false
+      },
+      "threads": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "review_threads": []
+        },
+        "isError": false
+      },
+      "comments": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "comments": [],
+          "url": "https://github.com/Xiao-John/XylophoneOS/issues/24",
+          "title": "Xiao-John/XylophoneOS Issue #24 comments",
+          "display_url": "https://github.com/Xiao-John/XylophoneOS/issues/24",
+          "display_title": "Xiao-John/XylophoneOS Issue #24 comments"
+        },
+        "isError": false
+      }
+    }
+  ]
+}

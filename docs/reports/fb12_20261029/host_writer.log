@@ -1,0 +1,1 @@
+PASS writer success and positive short writes; zero write, close, sync, rename, final sync and random failures do not report success

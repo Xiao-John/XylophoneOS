@@ -1,0 +1,10 @@
+body { margin:0; padding:26px; background:#f4f7fc; color:#23344e; font-family:DejaVu Sans; font-size:15px; line-height:1.5; }
+h1 { font-size:38px; line-height:1.15; color:#163555; margin:12px 0; }
+h2 { font-size:18px; color:#244c6e; }
+a { color:#245ca8; text-decoration:underline; }
+.hero { padding:16px 10px 28px; border-bottom:1px solid #cdd9e8; }
+.eyebrow { color:#327e8b; font-size:11px; letter-spacing:2px; }
+.cards { display:flex; margin-top:16px; }
+.card { width:48%; margin-right:12px; padding:10px; background:#e6eef8; border:1px solid #cbd9e9; }
+.foot { font-size:11px; color:#557087; margin-top:24px; }
+pre { background:#e0e8f2; padding:12px; }

@@ -1,0 +1,115 @@
+{
+  "build_id": "f87bebabb97dc166",
+  "checks": [
+    "elf_boundary_cases_truncations_and_mutations_under_sanitizers",
+    "loader_and_sdk_common_code_second_isa_compile",
+    "gcc_cpp_sdk_programs_and_guest_image_catalog",
+    "elf_segments_bss_data_argv_handles_exit_and_single_consumption",
+    "blocking_wait_and_signed_exit_code_with_preemption",
+    "inherited_stdin_stdout_and_nonblocking_read",
+    "guest_loader_rejects_malformed_interp_overflow_and_24_boundaries",
+    "kernel_builder_bounds_permissions_stale_handles_and_capacity_rollback",
+    "private_memory_readonly_nx_and_enabled_fpu_status",
+    "live_loaded_elf_permissions_stack_guard_and_kernel_isolation",
+    "background_spawn_supervisor_kill_and_distinct_killed_status",
+    "foreground_infinite_loop_escape_recovers_terminal",
+    "ten_repeated_load_wait_exit_cycles_exact_resource_stability"
+  ],
+  "status": "passed",
+  "image_sha256": "99e22253fa6cedefc39651906fdeb0b77d6100ec331f2a084341298d1a641272",
+  "command": [
+    "/workspace/xos-env/prefix/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/workspace/XylophoneOS/build/fb12/merged_final3/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/tmp/xos_fb12_e04_dwkxg0r0/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/tmp/xos_sw2fb53_/qmp.sock,server=on,wait=off"
+  ],
+  "baseline_resources": [
+    130257,
+    4,
+    0
+  ],
+  "loaded_spin": {
+    "pid": 33,
+    "cr3": 1908736
+  },
+  "repeated_resources": [
+    [
+      130257,
+      4,
+      0
+    ],
+    [
+      130257,
+      4,
+      0
+    ],
+    [
+      130257,
+      4,
+      0
+    ],
+    [
+      130257,
+      4,
+      0
+    ],
+    [
+      130257,
+      4,
+      0
+    ],
+    [
+      130257,
+      4,
+      0
+    ],
+    [
+      130257,
+      4,
+      0
+    ],
+    [
+      130257,
+      4,
+      0
+    ],
+    [
+      130257,
+      4,
+      0
+    ],
+    [
+      130257,
+      4,
+      0
+    ]
+  ]
+}

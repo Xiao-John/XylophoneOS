@@ -1,0 +1,13 @@
+{
+  "scope": "this documentation handoff only; no guest qualification",
+  "sha256": {
+    "README.md": "7657e3140b86759178dcc47e3e018d568e04e39ae53e1f2a59b6fe9cabfb68ae",
+    "acceptance_gates.md": "34601bd52a0778656601b464275c5894aa679310759ee799fa8ce30bb94ef652",
+    "checks/abi_doc_consistency.log": "1807f4eb8e9f76181b05c0f6831eda90f862be2f816a7eab9123e11d1be8655c",
+    "checks/diff_check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "checks/docs_consistency.log": "438cf9dddeb020da617c70b17b02342c1d0291d04f0b254ba3ba2df8aacda4fe",
+    "input_verification.json": "6b53f297a7acb0535876383e5899a2489c02449680773fbc8622d983f6db010d",
+    "pr_snapshot.json": "e329c4d7a0836f2167936641b716dca8ecbadfabe06896ac3b8b8ebd43a3246a",
+    "review_decisions.md": "33cb72131b577ce5c8ff274cd7846974101be7ba45fec921a14638426aded8a2"
+  }
+}

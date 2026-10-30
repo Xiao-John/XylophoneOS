@@ -1,0 +1,57 @@
+[
+  {
+    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS",
+    "head": "1699b6c86ee9f48a37647e41f7065d56ee7f56e4",
+    "status": ""
+  },
+  {
+    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser",
+    "head": "88cdbc01b0e30b2c2b449d9831d057468b9d6a77",
+    "status": ""
+  },
+  {
+    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net",
+    "head": "9b832fa06061b6905d00529a2e0a8445ea389a2a",
+    "status": ""
+  },
+  {
+    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3",
+    "head": "630374e9eff68436a5b22c42d49b1e69fd979c7f",
+    "status": ""
+  },
+  {
+    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-display-e14",
+    "head": "f84745a9079be23b5ae959fb7bc927837e2a6294",
+    "status": ""
+  },
+  {
+    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1",
+    "head": "39083f9968d84b5679c86a74a6c8394033c0d915",
+    "status": " M docs/state.md\n?? docs/reports/modern_apps_20261029/\n?? scripts/modern_apps_build_js.py\n?? scripts/modern_apps_sources.py\n?? tests/fixtures/modern_apps/\n?? tests/modern_apps_guest.py\n"
+  },
+  {
+    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi",
+    "head": "97947c07853e785530d3c907738a8b45f530986e",
+    "status": ""
+  },
+  {
+    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15",
+    "head": "d1e108d8f31ffcb1ebf43b40a412af933fb074cd",
+    "status": ""
+  },
+  {
+    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16",
+    "head": "aaf70fcfd5b06364ff09c7a87d6239a730fcdd66",
+    "status": ""
+  },
+  {
+    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17",
+    "head": "66ac0026e4b35bce8fee4cb1d05eb86644835417",
+    "status": ""
+  },
+  {
+    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d",
+    "head": "00d7a57f04caba2252487eb5ac790c1fb810be92",
+    "status": ""
+  }
+]

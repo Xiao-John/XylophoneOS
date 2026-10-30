@@ -1,0 +1,55 @@
+{
+  "status": "PASSED",
+  "commands": [
+    {
+      "command": [
+        "python3",
+        "tests/docs_consistency.py"
+      ],
+      "returncode": 0,
+      "log": "inputs/docs_check.log"
+    },
+    {
+      "command": [
+        "python3",
+        "tests/abi_doc_consistency.py"
+      ],
+      "returncode": 0,
+      "log": "inputs/abi_check.log"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/license_audit.py",
+        "--build",
+        "build/modern2_runtime/final3_system"
+      ],
+      "returncode": 0,
+      "log": "inputs/license_check.log"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "returncode": 0
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/modern_apps_build_js.py",
+        "--output",
+        "build/modern2_runtime/final2_quickjs",
+        "[same pinned source/sdk arguments]"
+      ],
+      "returncode": 1,
+      "expected": "FileExistsError before mutation",
+      "log": "inputs/output_reuse_rejected.log"
+    }
+  ],
+  "limits": [
+    "license material/SDK copy audit only; member-level distribution review NOT_RUN",
+    "no runtime ABI change or whole-system requalification"
+  ]
+}

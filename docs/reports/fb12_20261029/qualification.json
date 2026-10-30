@@ -1,0 +1,103 @@
+{
+  "status": "passed_scoped",
+  "build_id": "32fe73250f191e04",
+  "baseline_commit": "be1c21f",
+  "checks": [
+    {
+      "name": "normal_exit_has_no_fault_bundle"
+    },
+    {
+      "name": "guest_exception_divide",
+      "vector": 0
+    },
+    {
+      "name": "guest_exception_ud",
+      "vector": 6
+    },
+    {
+      "name": "guest_cancel_no_false_fault_bundle"
+    },
+    {
+      "name": "faulted_process_resources_reclaimed",
+      "baseline": [
+        130275,
+        3,
+        0
+      ]
+    },
+    {
+      "name": "guest_report_fields_divide",
+      "vector": 0,
+      "address": null
+    },
+    {
+      "name": "guest_report_fields_ud",
+      "vector": 6,
+      "address": null
+    },
+    {
+      "name": "guest_fault_bundle_and_bound_symbol",
+      "path": "/FAULTS/f611aeaaf5d597dd37fd1c7a49137552",
+      "location": "././src/user/arch/x86_64/fault_test.cpp:14",
+      "run_sha256": "9e223004f7a1fbfe483b00ffd6df1a203fd3fc57945cd1457aec1243139ae9df"
+    },
+    {
+      "name": "sync_reboot_exact_bytes",
+      "files": {
+        "manifest.json": "75523ef83ed866ce4a211f25295236e08b95d68a703898013dacbdf86d1739b6",
+        "context.json": "9d6d6a8f37c2cd36e04056a91a2ff02a4100982b01e784dfbee794737ad455dc",
+        "image.json": "be24997b49bc2eac8c5395b555de510d8364691d44f5d2fee34517966581778c",
+        "report.json": "206c3790f183e19b629a14065da341d2ff34a44d0a9a4c71c876f669cb10c9a2"
+      }
+    },
+    {
+      "name": "random_unavailable_preserves_fault"
+    },
+    {
+      "name": "changed_path_does_not_rebind_original_report"
+    },
+    {
+      "name": "quota_refuses_without_deleting_user_file"
+    },
+    {
+      "name": "full_disk_preserves_fault"
+    },
+    {
+      "name": "real_write_error_no_false_success_preserves_other_file"
+    }
+  ],
+  "limitations": [
+    "guest_direct_file_children_only",
+    "no_register_or_stack_snapshot",
+    "no_automatic_upload",
+    "no_power_loss_claim",
+    "no_hardware_qualification",
+    "no_full_smoke",
+    "quota_not_atomic_against_other_processes"
+  ],
+  "files": {
+    "README.md": "1a3710ee7e4d32e75fe3c4ff58b17ffa718ae9487cf027bf5150ce80050353b6",
+    "acceptance.json": "46fc5f3f698e2125139ce164722671b883c79cb214b1374596beea8b2e5f6352",
+    "attempts/invalid_demo_expectation.log.gz": "9c0ba1ac8c7f305c1507f5c3073f4356af1af5474b3478cc083281c4fc55c0a0",
+    "attempts/mixed_old_build_log.gz": "35e389d7e3b07d31cc309dc3a3e76c70392eb6859af281aa911e54a89e4665c6",
+    "binding.json": "1a16d04a56e0e592cf6e6b1ddaf8d032983367338dcc631c45620034acd05afb",
+    "file_report.json": "038cfb0a82e69a2ad637231969af0209091a819d7da8a3f9160474588d5402ed",
+    "first.serial.log.gz": "14b6d61e2d9dfccf1d67732fc0338a0c15c3f7d98c955983de2d634d59c09c8a",
+    "full.serial.log.gz": "7d54f85615e3e13b3d31233454cb552fdf570d82233d714ee4729aec7f4537eb",
+    "host_symbols.log": "1ca7b13c0d45c0e9cad8d2fbfbc3a9a0f155e1757f4a95e60e5e084f94ad2a6e",
+    "host_writer.log": "680a34971d327b89a6c2025ee1d5646f9080a845e8dba5fc07434d763e96bfd8",
+    "ioerror.serial.log.gz": "94fab922784f7e5e0de0f17f718fbc185f3b2909a59847b5197d9f5efeb02643",
+    "no_entropy.serial.log.gz": "b79e00aac0a5654dab20c7c7f3193d1b32cad46b02e0b66583f5a746a090575b",
+    "process_report.json": "9ff88553e629d89adddbb63d541da95182c22cae18b416fa753818dac7e11ca5",
+    "quota.serial.log.gz": "522cb6246bc47a4e7a72d92eda6d2cff98654d47a1f1454b57ed3c65548ef0cd",
+    "reboot.serial.log.gz": "0f40a30d35b28e2ff433fd3b24f408dfb602315d759ed4ac55940be734030f87",
+    "replacement.serial.log.gz": "b79e00aac0a5654dab20c7c7f3193d1b32cad46b02e0b66583f5a746a090575b",
+    "sample_bundle/context.json": "9d6d6a8f37c2cd36e04056a91a2ff02a4100982b01e784dfbee794737ad455dc",
+    "sample_bundle/image.json": "be24997b49bc2eac8c5395b555de510d8364691d44f5d2fee34517966581778c",
+    "sample_bundle/manifest.json": "75523ef83ed866ce4a211f25295236e08b95d68a703898013dacbdf86d1739b6",
+    "sample_bundle/report.json": "206c3790f183e19b629a14065da341d2ff34a44d0a9a4c71c876f669cb10c9a2",
+    "system_manifest.json.gz": "6c8cad423df0fc6e10709678543303fe726495c5bdfeffea746d97f440e3b3ad"
+  },
+  "fixture_sha256": "ba860e31ec22183f443982d7abe093429e9df58d1262b86d226cd84e55be63c0",
+  "fixture_elf_sha256": "4c11179c346de8ca6e1c4e385aa5e96071318220bcc6597154df5716faab9e41"
+}

@@ -1,0 +1,29 @@
+{
+  "status": "PASSED",
+  "evidence_kind": "host_parser_only",
+  "network": "NOT_RUN",
+  "command": [
+    "clang++",
+    "-std=c++17",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wconversion",
+    "-Wshadow",
+    "-fsanitize=address,undefined",
+    "-fno-omit-frame-pointer",
+    "-O1",
+    "-g",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser/src/ports/browser_http/http.cpp",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser/tests/browser_http/probe.cpp",
+    "-o",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser/build/browser_http_host/probe"
+  ],
+  "returncode": 0,
+  "source_sha256": {
+    "src/ports/browser_http/http.cpp": "6a08a388a031a1a075726e46d25086f27aa2d658b9e71c48a564c62d3158fa0e",
+    "tests/browser_http/probe.cpp": "df0b84228ee66116819c7219b7ce93d9c708a1759994aba03cc10421944e5e50"
+  },
+  "compiler": "Apple clang version 21.0.0 (clang-2100.3.34.2)",
+  "output": "browser_http checks=198 malformed_vectors=4096 result=PASSED\n"
+}

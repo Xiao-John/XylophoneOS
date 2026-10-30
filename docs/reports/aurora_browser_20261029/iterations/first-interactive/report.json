@@ -1,0 +1,88 @@
+{
+  "status": "PASSED",
+  "case": "interactive",
+  "image_sha256": "8b3364bff5f274eee128121776c1df6600d393d82262b69e4cc9e2a78cac9fd2",
+  "elf_sha256": "18a388e72e1340ca8eb4117c0c932641dd0c8c8c869798cecc63d27bbea5419c",
+  "receipt_sha256": "c7c59482e1e0b54dc175ac058e99c1542984de6aad8c740d6f502dfa8b815944",
+  "checks": [
+    {
+      "name": "real_litehtml_engine_and_aurora_start_page",
+      "status": "PASSED"
+    },
+    {
+      "name": "address_bar_and_long_document_scroll",
+      "status": "PASSED"
+    },
+    {
+      "name": "independent_back_forward_refresh",
+      "status": "PASSED"
+    },
+    {
+      "name": "css_layout_bmp_and_utf8",
+      "status": "PASSED",
+      "glyph_scope": "DejaVu Latin/Greek; no full Unicode claim"
+    },
+    {
+      "name": "repeated_navigation_releases_previous_document",
+      "status": "PASSED"
+    },
+    {
+      "name": "normal_exit_exact_resource_return",
+      "status": "PASSED"
+    },
+    {
+      "name": "file_sync_and_serial_rescue_after_browser",
+      "status": "PASSED"
+    }
+  ],
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser/build/browser/system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_browser_lq0nuzu4/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_nn72eia6/qmp.sock,server=on,wait=off"
+  ],
+  "baseline": [
+    130290,
+    2,
+    0
+  ],
+  "with_service": [
+    130246,
+    3,
+    1
+  ],
+  "screenshots": {
+    "start": "025ba19a82df0ad36b6855747c7ea78be2a8e45c5d25589d0bdda73dd828da85",
+    "reading-top": "5330d0976fc7de213b94bd354640a9dbd6a9d3eeb12232683a5723f7c194acee",
+    "reading-end": "1cd2e48f991ae9a176e329c3219c95dac45046ab3559b797fc09f4d7f867cd5c",
+    "garden": "81c17c1dc29ad965bcea11579e1e49190148ac8558062428331350dc2f52a2ca"
+  }
+}

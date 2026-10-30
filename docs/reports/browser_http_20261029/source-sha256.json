@@ -1,0 +1,8 @@
+{
+  "src/ports/browser_http/http.hpp": "1d2d7065e828917cfc71a0d5d77ca13b9b6bfeb30e61c17e0430e95a5a9fa570",
+  "src/ports/browser_http/README.md": "04e5b82f040d43701ab2ac98996482fb742593610f1233e3fdda2a2006df75a2",
+  "src/ports/browser_http/http.cpp": "6a08a388a031a1a075726e46d25086f27aa2d658b9e71c48a564c62d3158fa0e",
+  "tests/browser_http/probe.cpp": "df0b84228ee66116819c7219b7ce93d9c708a1759994aba03cc10421944e5e50",
+  "tests/browser_http_test.py": "d38d1fb606b4bd16079fd25244a7cb08b34e0bac7612b4e647c17268f6cd845f",
+  "tests/browser_http_guest.py": "23aa25204272047b6e68e38cd8915a8e94136455c65d3d46b4d1983ea5a70098"
+}

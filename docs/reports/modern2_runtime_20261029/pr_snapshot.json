@@ -1,0 +1,391 @@
+{
+  "checked_at": "2026-10-29 11:56:49 UTC",
+  "upstream_main": "aaec2e9d8ffe61ce1d523cd56852d36cde3edd07",
+  "prs": {
+    "17": {
+      "status": "fulfilled",
+      "value": {
+        "n": 17,
+        "info": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Action completed."
+            }
+          ],
+          "structuredContent": {
+            "url": "https://github.com/Xiao-John/XylophoneOS/pull/17",
+            "number": 17,
+            "state": "closed",
+            "merged": true,
+            "mergeable": false,
+            "draft": false,
+            "body": "## 内容\n\n实现 FB1 用户态故障包和 FB2 离线符号定位。xsh 的 `diag` 以及可通过 dash 子 shell 调用的 `xos-diag` 为显式启动的直接子进程保存故障报告；离线工具校验报告与实际 ELF、符号文件的摘要和剥离结果后定位指令。宪法 C27 要求适用的系统内工具尽可能分别在 xsh 和 dash 下验收，明确记录不适用或未验的情况。\n\n分支基于包含 VirtIO-GPU PR #16 的主线。故障包配额检查不具备跨进程原子性，FAT 报告不提供保密或认证；不覆盖自动收集其他进程、任意断电或 FB3/FB4。dash 当前以 `(exec xos-diag PROGRAM)` 的子 shell 形式调用，独立程序需要安装到工作盘。\n\n## 验证\n\n- 最新组合 build `f87bebabb97dc166`：xsh FB1/FB2 14 项客体与导出检查；dash 正常退出、缺失命令、故障及导出报告；同一独立程序在 xsh 下的故障检查。\n- E04 13 项和 E05 8 项回归；宿主符号校验与畸形输入检查。\n- 文档一致性 461 个链接、66 个 syscall、73 个历史来源，ABI 文档一致性与 `git diff --check` 通过。\n- 原始记录、失败尝试、构建输入和产物回执见 `docs/reports/fb12_20261029/` 与 `docs/reports/fb12_dash_20261029/`。\n",
+            "title": "feat: application fault bundles and offline symbolization",
+            "base": "main",
+            "base_sha": "39083f9968d84b5679c86a74a6c8394033c0d915",
+            "head": "codex/fb2-offline-symbols",
+            "head_sha": "92acd023e739186d64609233ca923175ccd5e171",
+            "head_repo_id": 1431242900,
+            "head_repo_full_name": "Xiao-John/XylophoneOS",
+            "merge_commit_sha": "aaec2e9d8ffe61ce1d523cd56852d36cde3edd07",
+            "user": {
+              "login": "Xiao-John",
+              "name": "Xiao-John",
+              "email": null,
+              "avatar_url": "https://avatars.githubusercontent.com/u/75989255?v=4",
+              "id": 75989255
+            },
+            "requested_reviewers": null,
+            "requested_team_reviewers": null,
+            "diff": null,
+            "comments": null,
+            "created_at": "2026-10-29T07:09:52Z",
+            "updated_at": "2026-10-29T11:42:18Z",
+            "closed_at": "2026-10-29T11:42:18Z",
+            "merged_at": "2026-10-29T11:42:18Z",
+            "commits": 3,
+            "changed_files": 58,
+            "additions": 1694,
+            "deletions": 23,
+            "display_url": "https://github.com/Xiao-John/XylophoneOS/pull/17",
+            "display_title": "feat: application fault bundles and offline symbolization"
+          },
+          "isError": false
+        },
+        "reviews": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Action completed."
+            }
+          ],
+          "structuredContent": {
+            "reviews": []
+          },
+          "isError": false
+        },
+        "threads": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Action completed."
+            }
+          ],
+          "structuredContent": {
+            "review_threads": []
+          },
+          "isError": false
+        }
+      }
+    },
+    "18": {
+      "status": "fulfilled",
+      "value": {
+        "n": 18,
+        "info": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Action completed."
+            }
+          ],
+          "structuredContent": {
+            "url": "https://github.com/Xiao-John/XylophoneOS/pull/18",
+            "number": 18,
+            "state": "open",
+            "merged": false,
+            "mergeable": true,
+            "draft": true,
+            "body": "XOS has no lawful user-mode NIC endpoint or device right. This proposes only reserved/claimed syscall 112 (`sys_net_device`) and a versioned authority, copy, wait and lifecycle contract so a later user-mode network service can use the N1 driver. No syscall constant, dispatch implementation, SDK supported flag or change to existing 1–66 is included; public implementation remains blocked until this registration is reviewed and merged.\n\nThe frozen gap probe first exchanges 32 real Ethernet frames on the separate N1 candidate, then confirms ordinary MMIO and PCI OUT attempts fault with vectors 14/13 and restore exact resources. Candidate image/source, SDK and ELF hashes, QEMU command and lossless serial are in `docs/reports/network_device_gap_20261029/`. This is not a TCP/HTTP acceptance result. The proposed grant is explicit and supervisor-controlled; it does not reinterpret spawn-only `sys_process_grant`28.\n\nValidation: documentation consistency passed (457 links, 66 allocated syscalls, 73 historical sources), ABI documentation check and `git diff --check`. Based on fetched upstream 39083f9; independent worktrees preserve PR #17 and existing Qt/GPU work. No main push, merge or Release.\n",
+            "title": "docs(net): claim a bounded network device mechanism after guest gap probes",
+            "base": "main",
+            "base_sha": "39083f9968d84b5679c86a74a6c8394033c0d915",
+            "head": "codex/network-device-abi-claim",
+            "head_sha": "97947c07853e785530d3c907738a8b45f530986e",
+            "head_repo_id": 1432956786,
+            "head_repo_full_name": "www080327-glitch/XylophoneOS",
+            "merge_commit_sha": "b7e289002df887c270cb22a391a4474f7ed536b1",
+            "user": {
+              "login": "www080327-glitch",
+              "name": "www080327-glitch",
+              "email": null,
+              "avatar_url": "https://avatars.githubusercontent.com/u/298606827?v=4",
+              "id": 298606827
+            },
+            "requested_reviewers": null,
+            "requested_team_reviewers": null,
+            "diff": null,
+            "comments": null,
+            "created_at": "2026-10-29T09:45:52Z",
+            "updated_at": "2026-10-29T09:45:52Z",
+            "closed_at": null,
+            "merged_at": null,
+            "commits": 1,
+            "changed_files": 8,
+            "additions": 617,
+            "deletions": 2,
+            "display_url": "https://github.com/Xiao-John/XylophoneOS/pull/18",
+            "display_title": "docs(net): claim a bounded network device mechanism after guest gap probes"
+          },
+          "isError": false
+        },
+        "reviews": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Action completed."
+            }
+          ],
+          "structuredContent": {
+            "reviews": []
+          },
+          "isError": false
+        },
+        "threads": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Action completed."
+            }
+          ],
+          "structuredContent": {
+            "review_threads": []
+          },
+          "isError": false
+        }
+      }
+    },
+    "19": {
+      "status": "fulfilled",
+      "value": {
+        "n": 19,
+        "info": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Action completed."
+            }
+          ],
+          "structuredContent": {
+            "url": "https://github.com/Xiao-John/XylophoneOS/pull/19",
+            "number": 19,
+            "state": "open",
+            "merged": false,
+            "mergeable": false,
+            "draft": true,
+            "body": "XOS previously had no real HTML/CSS browser. This adds Xylophone Browser — Aurora: a Qt6.8.3/QPainter container for pinned liteHTML0.9/Gumbo, the existing Aurora library, a bounded read-only local provider and actual address/back/forward/reload/link/scroll/tab/bookmark interactions inside one native fullscreen window.\n\nB0 target compile/static link and restricted B1 local rendering pass. Five final real XOS/QEMU suites contain47 passed checks, including malformed/oversized content, rejection-to-valid recovery, client/service failure and exact process resource return. The identical VBE and actual VirtIO-GPU2D browser start frames match all1,440,000 RGB bytes. Sources, original licenses, file hashes, ELF/system/SDK receipts, screenshots, raw logs and failed attempts are frozen under `docs/reports/aurora_browser_20261029/`; work log0083 and the engine evaluation define the supported subset. Sampled high water7558pages/3threads is not an absolute peak or stress claim.\n\nNo kernel, public ABI, libc or Qt foundation changes. The independent allocation-free URL/HTTP parser has198 host assertions with sanitizers and real XOS process tests, but it is not connected to a transport. HTTP/TCP integration remains blocked on a lawful network service and the separate device registrationPR#18. HTTPS and JavaScript are unavailable and stated in the UI; this is not Chrome/Firefox or general Internet browsing. No3D rendering or static Qt product distribution is claimed.\n\nValidation: final47 browser checks, target undefined-symbol closure, source/SDK hash verification, license-material audit, documentation458links/66syscalls/73historical sources, ABI consistency and whitespace checks. Independent branch from fetched upstream39083f9; no main push, merge or Release.\n",
+            "title": "feat(browser): render real local HTML/CSS in an Aurora Qt browser",
+            "base": "main",
+            "base_sha": "39083f9968d84b5679c86a74a6c8394033c0d915",
+            "head": "codex/aurora-browser-b1",
+            "head_sha": "88cdbc01b0e30b2c2b449d9831d057468b9d6a77",
+            "head_repo_id": 1432956786,
+            "head_repo_full_name": "www080327-glitch/XylophoneOS",
+            "merge_commit_sha": null,
+            "user": {
+              "login": "www080327-glitch",
+              "name": "www080327-glitch",
+              "email": null,
+              "avatar_url": "https://avatars.githubusercontent.com/u/298606827?v=4",
+              "id": 298606827
+            },
+            "requested_reviewers": null,
+            "requested_team_reviewers": null,
+            "diff": null,
+            "comments": null,
+            "created_at": "2026-10-29T09:50:08Z",
+            "updated_at": "2026-10-29T09:50:08Z",
+            "closed_at": null,
+            "merged_at": null,
+            "commits": 2,
+            "changed_files": 128,
+            "additions": 13649,
+            "deletions": 0,
+            "display_url": "https://github.com/Xiao-John/XylophoneOS/pull/19",
+            "display_title": "feat(browser): render real local HTML/CSS in an Aurora Qt browser"
+          },
+          "isError": false
+        },
+        "reviews": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Action completed."
+            }
+          ],
+          "structuredContent": {
+            "reviews": []
+          },
+          "isError": false
+        },
+        "threads": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Action completed."
+            }
+          ],
+          "structuredContent": {
+            "review_threads": []
+          },
+          "isError": false
+        }
+      }
+    },
+    "20": {
+      "status": "fulfilled",
+      "value": {
+        "n": 20,
+        "info": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Action completed."
+            }
+          ],
+          "structuredContent": {
+            "url": "https://github.com/Xiao-John/XylophoneOS/pull/20",
+            "number": 20,
+            "state": "open",
+            "merged": false,
+            "mergeable": true,
+            "draft": true,
+            "body": "XOS has PCI/VirtIO-GPU support but no real NIC mechanism. This adds a modern VirtIO-Net device backend using the existing PCI discovery/BAR mapping, separate boundedRX/TX queues, actual PIC/INTx completion handling, kernel-owned DMA and reset-before-reclaim. It remains an explicit trusted pre-run diagnostic and quiesces the NIC before ordinary userspace; default startup stays `-nic none`.\n\nN0 reuse/device-contract review and restricted N1 Ethernet pass. Ten network gates cover32 byte-verified bidirectional frames across reset cycles, GPU coexistence, timeout, malformed lengths, pending queue overflow, actual5000-byte merged/jumbo fail-closed handling, no device, allocation quota/repeated reclaim, and ordinary user MMIO/PCI-IO denial. Every successful reset returns34 DMA pages. A same-boot test follows the actual NIC failure/reset with real QtGui pixels, file sync, isolation faults and exact resources. Twenty-one independent affected regression suites pass on frozen build67883ca24e9dcdae: E04, G02, threading, files/persistence, QtCore/Gui/Widgets. The old E04 no-workdisk fixture was blocked by the existing maintenance guard; its failure is retained and its repaired explicit512MiBFAT32 fixture keeps all13 assertions.\n\nFull source/image/SDK/ELF hashes, actual QEMU commands, raw host frames, lossless serial, screenshots, resource counts and failed experiments are in `docs/reports/virtio_net_n1_20261029/`; work log0084 defines the limits. The required MRG_RXBUF negotiation and rejected noMRG experiment are explicit. No shared live IRQ routing, device hotplug, SMP, physical-device or IOMMU qualification is claimed.\n\nPinned lwIP2.2.1 sources/licenses/member hashes and a bounded NO_SYS cross-compiled archive are included as preparation only. There is no guest IP/ARP/UDP/TCP/DNS/HTTP service, socket ABI or browser networking claim. N2 is BLOCKED on review/merge and actual implementation/acceptance of the separately proposed lawful user-device bridgePR#18. No new syscall/shared SDK interface, user BAR/DMA permission or kernel TCP/HTTP policy is added. Browser local rendering is delivered independently inPR#19.\n\nValidation also includes license-material audit, documentation/ABI consistency, source/artifact reverification and whitespace checks. Based on fetched upstream39083f9. No main push, merge, unrelated workspace changes or Release.\n",
+            "title": "feat(net): qualify VirtIO-Net Ethernet IRQ and DMA foundation",
+            "base": "main",
+            "base_sha": "39083f9968d84b5679c86a74a6c8394033c0d915",
+            "head": "codex/browser-net-n1",
+            "head_sha": "9b832fa06061b6905d00529a2e0a8445ea389a2a",
+            "head_repo_id": 1432956786,
+            "head_repo_full_name": "www080327-glitch/XylophoneOS",
+            "merge_commit_sha": "ee4f61f95e8e400ef70ae09b98adb3f8ff9c63a9",
+            "user": {
+              "login": "www080327-glitch",
+              "name": "www080327-glitch",
+              "email": null,
+              "avatar_url": "https://avatars.githubusercontent.com/u/298606827?v=4",
+              "id": 298606827
+            },
+            "requested_reviewers": null,
+            "requested_team_reviewers": null,
+            "diff": null,
+            "comments": null,
+            "created_at": "2026-10-29T09:52:57Z",
+            "updated_at": "2026-10-29T09:52:57Z",
+            "closed_at": null,
+            "merged_at": null,
+            "commits": 2,
+            "changed_files": 446,
+            "additions": 11981,
+            "deletions": 2,
+            "display_url": "https://github.com/Xiao-John/XylophoneOS/pull/20",
+            "display_title": "feat(net): qualify VirtIO-Net Ethernet IRQ and DMA foundation"
+          },
+          "isError": false
+        },
+        "reviews": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Action completed."
+            }
+          ],
+          "structuredContent": {
+            "reviews": []
+          },
+          "isError": false
+        },
+        "threads": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Action completed."
+            }
+          ],
+          "structuredContent": {
+            "review_threads": []
+          },
+          "isError": false
+        }
+      }
+    },
+    "21": {
+      "status": "fulfilled",
+      "value": {
+        "n": 21,
+        "info": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Action completed."
+            }
+          ],
+          "structuredContent": {
+            "url": "https://github.com/Xiao-John/XylophoneOS/pull/21",
+            "number": 21,
+            "state": "open",
+            "merged": false,
+            "mergeable": true,
+            "draft": true,
+            "body": "XOS currently lacks the device-service, VM and runtime capabilities required by modern browsers, LocalPilot and Code - OSS. This adds real XOS compatibility probes and three independent source-backed reports, with 35 precise calling-point rows and reproducible build/run commands. It does not create imitation applications.\n\nN2 remains BLOCKED: PR #18 is still draft/open, unreviewed and unmerged. No proposed syscall is implemented or treated as supported. PR #19/#20 and all existing worktrees remain unchanged. The controlled HTTP fixture passes five HOST loopback cases only; there is no guest TCP/HTTP, browser networking or HTTPS success claim.\n\nThe actual guest runs a pinned QuickJS interpreter with two explicit portability adaptations. Final tests cover language execution, exceptions, unhandled Promise rejection, loop interruption, memory/stack limits and recovery. The original Code extension-host script fails on missing URL; the original LocalPilot React bundle builds on the host and fails in the guest on missing document. A freshly built CPython 3.14.9/SQLite/zlib candidate records 16 dependency observations: four PASSED, twelve FAILED. Original service imports and file-security checks fail without bypasses. The earlier real stack fault and the test harness's initial Promise-rejection mistake are retained as negative evidence.\n\nValidation: final system build a538733bd3b8e43f; 11 guest harness assertions PASSED, including correct reproduction of application failures, with every final operation returning free=130290/tasks=2/completions=0. Seven target SDK prerequisite compilations fail as recorded; a Pillow translation unit compiles but package integration remains unqualified. Documentation/ABI checks pass (457 links, 66 allocated syscalls, 73 historical sources), license-material and exact SDK notice checks pass, and all 138 frozen evidence files match the committed bytes. No kernel, public ABI/libc, Qt, driver or Aurora runtime changes. No main merge or Release.\n\nReports and raw receipts: [evidence index](docs/reports/modern_apps_20261029/README.md), [Chromium](docs/reports/modern_apps_20261029/chromium_compatibility.md), [LocalPilot](docs/reports/modern_apps_20261029/localpilot_compatibility.md), [Code - OSS](docs/reports/modern_apps_20261029/code_oss_compatibility.md), [N2 gates and next owners](docs/reports/modern_apps_20261029/n2_network.md). LocalPilot probes require an authorized checkout of private main 9a21ebb; its source, wheel, test disk and all executable/image artifacts stay local. Public reports contain metadata and failure observations, not private source text. Full Chromium/Electron/Code builds, general browser sandbox qualification, TLS and product distribution remain NOT_RUN.",
+            "title": "test(compat): run real guest JS and modern-app dependency probes; keep N2 blocked",
+            "base": "main",
+            "base_sha": "39083f9968d84b5679c86a74a6c8394033c0d915",
+            "head": "codex/modern-app-phase1",
+            "head_sha": "c152f7f93fb11291eb019d572219c2b4d69743a9",
+            "head_repo_id": 1432956786,
+            "head_repo_full_name": "www080327-glitch/XylophoneOS",
+            "merge_commit_sha": "a0f0874f8932df98679afddba98c644003385055",
+            "user": {
+              "login": "www080327-glitch",
+              "name": "www080327-glitch",
+              "email": null,
+              "avatar_url": "https://avatars.githubusercontent.com/u/298606827?v=4",
+              "id": 298606827
+            },
+            "requested_reviewers": null,
+            "requested_team_reviewers": null,
+            "diff": null,
+            "comments": null,
+            "created_at": "2026-10-29T11:14:21Z",
+            "updated_at": "2026-10-29T11:14:21Z",
+            "closed_at": null,
+            "merged_at": null,
+            "commits": 3,
+            "changed_files": 177,
+            "additions": 31848,
+            "deletions": 0,
+            "display_url": "https://github.com/Xiao-John/XylophoneOS/pull/21",
+            "display_title": "test(compat): run real guest JS and modern-app dependency probes; keep N2 blocked"
+          },
+          "isError": false
+        },
+        "reviews": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Action completed."
+            }
+          ],
+          "structuredContent": {
+            "reviews": []
+          },
+          "isError": false
+        },
+        "threads": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Action completed."
+            }
+          ],
+          "structuredContent": {
+            "review_threads": []
+          },
+          "isError": false
+        }
+      }
+    }
+  }
+}

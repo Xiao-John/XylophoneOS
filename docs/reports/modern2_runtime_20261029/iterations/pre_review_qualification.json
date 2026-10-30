@@ -1,0 +1,118 @@
+{
+  "status": "PASSED_HARNESS_WITH_RECORDED_COMPATIBILITY_FAILURES",
+  "build_id": "e885d9593cc29d63",
+  "upstream_commit": "aaec2e9d8ffe61ce1d523cd56852d36cde3edd07",
+  "artifacts": {
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/final_system/xos.img": {
+      "sha256": "ee60476c228d39bc96b2db5d9e5260a6537f894ea02a7f9199884892b9431273",
+      "bytes": 1474560
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern_apps/quickjs/js_probe.elf": {
+      "sha256": "6e1f31b7c92de0bcadf44ccabdd92668296d13f505b01d854914a94043d34ff3",
+      "bytes": 6048072
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/final_guest/jsprobe": {
+      "sha256": "d517dc9aeb2d0030b8f0011ee7f1c075862ea1c447e8fd62547a6939e4cc06ce",
+      "bytes": 1177880
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/final_guest/work.img": {
+      "sha256": "6b15bf9129876cd771664acc7ec1aecfd4cb1cedadb47ed655af417e2c5c1a33",
+      "bytes": 536870912
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/guest1/work.img": {
+      "sha256": "6b15bf9129876cd771664acc7ec1aecfd4cb1cedadb47ed655af417e2c5c1a33",
+      "bytes": 536870912
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/manifest.json": {
+      "sha256": "a203fbda0b9d984d60e3271c33418d3b796f77060b3cba4661bc0be2eb4117b7",
+      "bytes": 143152
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/lib/libxos.a": {
+      "sha256": "f3224b113d8db94fa999b3b5b4fbc8922a9f39037fe5f47a9b5feff174d89372",
+      "bytes": 792494
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/lib/libc.a": {
+      "sha256": "d252bb6f1e37133f5e62e3c6a6b6fef337a75e2c22f7b101d63eea5a0fbd9e28",
+      "bytes": 7111170
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/lib/libm.a": {
+      "sha256": "13aeae4af35f92a2666d204601e61ac7d36f573815eb3493c041506c074ebd1a",
+      "bytes": 2906142
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/user.ld": {
+      "sha256": "f7b4334b0504720b0c9cf6e84ad21ab791c95721d0f9fa2ffa25fb730854d119",
+      "bytes": 2023
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/crt0_posix.o": {
+      "sha256": "68dbd965575e8460f17b6c0630c2678134fec6958b18fc33d0f1fddc2ebd0e0f",
+      "bytes": 1984
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/threading_sdk/cpp/lib/libgcc.a": {
+      "sha256": "b8ad185745e6d12861435f1fcebde33dd3ab142f82ae49ec651e10649bf6224e",
+      "bytes": 1828256
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/threading_sdk/cpp/lib/libsupc++.a": {
+      "sha256": "3f1d0a2da3e01fedc1231e7185e0f64900fa36d53b146af08f37d818f8a509be",
+      "bytes": 1644338
+    }
+  },
+  "tools": {
+    "x86_64-elf-gcc": {
+      "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
+      "sha256": "078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f",
+      "version": "x86_64-elf-gcc (GCC) 16.2.0"
+    },
+    "x86_64-elf-ld": {
+      "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-ld",
+      "sha256": "92002feac2ed2e5b05ae6fb47a1aab2979b3b46bd861a4439838e6bcb20e7fe5",
+      "version": "GNU ld (GNU Binutils) 2.47.20260726"
+    },
+    "x86_64-elf-strip": {
+      "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-strip",
+      "sha256": "11763c5485c8cb9ff5257348ba5e54aaaadb8adc9592551e14a566b78c7ae43e",
+      "version": "GNU strip (GNU Binutils) 2.47.20260726"
+    },
+    "nasm": {
+      "path": "/Users/perry_guo/homebrew/bin/nasm",
+      "sha256": "5d22db7ed80aee4eb0e1cb5ff8a87e40294012f6ddf943601556922d5128b725",
+      "version": "NASM version 3.02 compiled on Jun 29 2026"
+    }
+  },
+  "sdk_verification": {
+    "artifact_count": 1052,
+    "status": "PASSED_ALL_ARTIFACT_HASHES"
+  },
+  "source_verification": {
+    "system_manifest_sources": 675,
+    "status": "PASSED_ALL_INPUT_HASHES"
+  },
+  "public_probe_sources": {
+    "tests/modern2_runtime_guest.py": "a42a8adf22287843df0d92d8222158ec7236efd19e8306624b9e3b156996b501",
+    "scripts/modern2_source_audit.py": "298c89a21e7d4f11da5cf76f2acfb7fa7fddc6544cae4e35396280d21a1658e0",
+    "scripts/modern_apps_build_js.py": "ae3d8103d79e1948d693d3d253463e00c5882fe1364fdb68a354eceee38f5061",
+    "tests/fixtures/modern2_runtime/module.mjs": "b46c69a3bb00508c1020299bc8dbbd226fadeaee3e5ccee3995b04b5cbea8050",
+    "tests/fixtures/modern2_runtime/globals.js": "66bc5f4909d4a721a0d57ab716331f5f9099d5b5c8e9e7a012fa889e91600e8a",
+    "tests/fixtures/modern2_runtime/events.js": "bd08367623a96999308d0fabba80a3267407ab192b8c7ef932fb9e1829bb21d7",
+    "tests/fixtures/modern2_runtime/promises.js": "66d570adf8776378ecf917843bf70d8cf0b20400e547a8cd68517073d6ade935",
+    "tests/fixtures/modern2_runtime/worker.js": "3b5123137b8f7b9677ae4576d20d1698b85a91b0e18aff80118a6b85039c0c20",
+    "tests/fixtures/modern2_runtime/python_dependencies.py": "f8fcfdc12557ddc2245529eb96b390437b13764b787be44b0dd20df87830385c",
+    "tests/fixtures/modern2_runtime/origin.js": "abf3f7e001ee0e2518f25f35cb4fa8dc18820393c3c31284a54e66d97c3bbc6d",
+    "tests/fixtures/modern2_runtime/buffers.js": "9dbcf9905da0fdafa4033067a9695f14a45d34c3da3e5613fef442e695db6ea4",
+    "tests/fixtures/modern2_runtime/dom.js": "39749c01de4bff91ed81e5236c68a7930317cb6c610781647c6202d431796b30",
+    "tests/fixtures/modern2_runtime/import.mjs": "79890b5a875d7e07d6fb3a326a888bc5d704b0e43f4b99d5b0aea4e47039c799",
+    "tests/fixtures/modern2_runtime/wasm.js": "2ffbc1b7f435d17202b53b3b2a3a5f53e0fad9409f1002de482703e7240c5e58"
+  },
+  "not_run": [
+    "V8",
+    "Chromium",
+    "DOM",
+    "Worker",
+    "WASM",
+    "origin isolation",
+    "N2",
+    "HTTPS",
+    "LocalPilot API 1.0",
+    "Code OSS workbench",
+    "release qualification"
+  ]
+}

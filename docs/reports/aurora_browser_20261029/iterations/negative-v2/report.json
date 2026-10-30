@@ -1,0 +1,117 @@
+{
+  "status": "PASSED",
+  "case": "negative",
+  "image_sha256": "8b3364bff5f274eee128121776c1df6600d393d82262b69e4cc9e2a78cac9fd2",
+  "elf_sha256": "dcba5d6b4cf4f51d2f5161b6909ecf40c9ec76597db3110cac82997d49b686fd",
+  "receipt_sha256": "3d723f564b2f9edcbc7a6c2181688051f24a0aa074a04cab53905a929e08a465",
+  "checks": [
+    {
+      "name": "real_litehtml_engine_and_aurora_start_page",
+      "status": "PASSED"
+    },
+    {
+      "name": "reject_missing.html",
+      "status": "PASSED"
+    },
+    {
+      "name": "reject_broken.html",
+      "status": "PASSED"
+    },
+    {
+      "name": "reject_deep.html",
+      "status": "PASSED"
+    },
+    {
+      "name": "reject_huge.html",
+      "status": "PASSED"
+    },
+    {
+      "name": "reject_script.html",
+      "status": "PASSED"
+    },
+    {
+      "name": "reject_badcss.html",
+      "status": "PASSED"
+    },
+    {
+      "name": "reject_attr.html",
+      "status": "PASSED"
+    },
+    {
+      "name": "reject_dimension.html",
+      "status": "PASSED"
+    },
+    {
+      "name": "reject_exponent.html",
+      "status": "PASSED"
+    },
+    {
+      "name": "reject_aurora.elf",
+      "status": "PASSED"
+    },
+    {
+      "name": "malformed_image_contained",
+      "status": "PASSED"
+    },
+    {
+      "name": "valid_navigation_after_rejected_input",
+      "status": "PASSED"
+    },
+    {
+      "name": "normal_exit_exact_resource_return",
+      "status": "PASSED"
+    },
+    {
+      "name": "file_sync_and_serial_rescue_after_browser",
+      "status": "PASSED"
+    }
+  ],
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser/build/browser/system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_browser_9skhz0w1/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_0o0c65zl/qmp.sock,server=on,wait=off"
+  ],
+  "baseline": [
+    130290,
+    2,
+    0
+  ],
+  "with_service": [
+    130246,
+    3,
+    1
+  ],
+  "screenshots": {
+    "start": "1c0c5dcebe529a9861d70ee6d7c5afda583741a1500eca326b6acfbefcbf0267",
+    "error-recovery": "3c2123d8a3d585205c6dd4ee0d27f162ee34f7f491a7646e62eda34d25f297ae"
+  }
+}

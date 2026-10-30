@@ -1,0 +1,70 @@
+{
+  "status": "passed",
+  "build_id": "32fe73250f191e04",
+  "checks": [
+    {
+      "name": "normal_exit_has_no_fault_bundle"
+    },
+    {
+      "name": "guest_exception_divide",
+      "vector": 0
+    },
+    {
+      "name": "guest_exception_ud",
+      "vector": 6
+    },
+    {
+      "name": "guest_cancel_no_false_fault_bundle"
+    },
+    {
+      "name": "faulted_process_resources_reclaimed",
+      "baseline": [
+        130275,
+        3,
+        0
+      ]
+    },
+    {
+      "name": "guest_report_fields_divide",
+      "vector": 0,
+      "address": null
+    },
+    {
+      "name": "guest_report_fields_ud",
+      "vector": 6,
+      "address": null
+    },
+    {
+      "name": "guest_fault_bundle_and_bound_symbol",
+      "path": "/FAULTS/f611aeaaf5d597dd37fd1c7a49137552",
+      "location": "././src/user/arch/x86_64/fault_test.cpp:14",
+      "run_sha256": "9e223004f7a1fbfe483b00ffd6df1a203fd3fc57945cd1457aec1243139ae9df"
+    },
+    {
+      "name": "sync_reboot_exact_bytes",
+      "files": {
+        "manifest.json": "75523ef83ed866ce4a211f25295236e08b95d68a703898013dacbdf86d1739b6",
+        "context.json": "9d6d6a8f37c2cd36e04056a91a2ff02a4100982b01e784dfbee794737ad455dc",
+        "image.json": "be24997b49bc2eac8c5395b555de510d8364691d44f5d2fee34517966581778c",
+        "report.json": "206c3790f183e19b629a14065da341d2ff34a44d0a9a4c71c876f669cb10c9a2"
+      }
+    },
+    {
+      "name": "random_unavailable_preserves_fault"
+    },
+    {
+      "name": "changed_path_does_not_rebind_original_report"
+    },
+    {
+      "name": "quota_refuses_without_deleting_user_file"
+    },
+    {
+      "name": "full_disk_preserves_fault"
+    },
+    {
+      "name": "real_write_error_no_false_success_preserves_other_file"
+    }
+  ],
+  "fixture_sha256": "ba860e31ec22183f443982d7abe093429e9df58d1262b86d226cd84e55be63c0",
+  "fixture_elf_sha256": "4c11179c346de8ca6e1c4e385aa5e96071318220bcc6597154df5716faab9e41"
+}

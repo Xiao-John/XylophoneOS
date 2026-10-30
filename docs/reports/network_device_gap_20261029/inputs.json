@@ -1,0 +1,24 @@
+{
+  "status": "PASSED_rejection_probe",
+  "candidate_worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net",
+  "candidate_branch": "codex/browser-net-n1",
+  "system_build_id": "67883ca24e9dcdae",
+  "image": {
+    "bytes": 1474560,
+    "sha256": "f019c215cd7cec00d3a5f5bbdbe91f511d0c76325c9633c7baa5eecfda721d61"
+  },
+  "candidate_source_sha256": {
+    "src/kernel/platform/pc/pci.cpp": "1084cdf214cf7b755f0db97df23e7c38fa7bd2d7f110049121410ea7f1b84e8d",
+    "src/kernel/platform/pc/virtio_net.cpp": "504dd055afb2b0b002b7d9b9fba1d8462d38795b701e48005f52063cadc6cdeb",
+    "src/kernel/arch/x86_64/pic.cpp": "438c578b780d8b548518e4ab5c88b80c61e8f4489a812e9c56b684708bcefe10",
+    "src/kernel/arch/x86_64/exceptions.cpp": "937f14fe474955b9c49dbacc1da4138b2df725b3c9da1fadcc362026a5f97660",
+    "src/kernel/arch/x86_64/interrupts.asm": "06053593edd6b78ceb1f8cc044635e9b97ffadbbab46e7f7adca6df171ed3fbf",
+    "src/kernel/arch/x86_64/tasks.cpp": "c839644c7791501cb3cbd7cfa041447f3f14ba8fe7582d24b7dfd71370c583a5",
+    "src/shared/include/xos/process_abi.hpp": "303402e2dbb83c291bb91d1908c0a0b4d880108aaf8b9633bb6a9e0fea576424",
+    "tests/fixtures/virtio_gpu/access_fault.cpp": "520259113593363554af3f4c1c6384695b94742cf7dc2a7e86c8bedca5c9b061",
+    "tests/virtio_net_acceptance.py": "4783317934d6e0c39063276cadba8382aa2c2e50c1ea8c646ddc67d48a31e899"
+  },
+  "sdk_manifest_sha256": "24dcc3ba938013c852a12f386ea2f7e16ebcec7cb4bfaff477794530c5d0e4b1",
+  "claim_branch": "docs_only_no_new_constants_or_syscalls",
+  "network_TCP": "NOT_RUN"
+}

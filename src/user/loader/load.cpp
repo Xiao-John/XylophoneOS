@@ -6,6 +6,7 @@
 #include <xos/file_client.hpp>
 #include <xos/execution.hpp>
 #include <xos/thread_abi.hpp>
+#include <xos/fault_sha256.hpp>
 
 namespace xos::sdk {
 namespace {
@@ -318,8 +319,12 @@ i64 spawn_file_impl(const char* path, u32 argc, const char* const* argv, const s
 
 i64 spawn_file_diagnosed_impl(const char* path, u32 argc, const char* const* argv,
                               const spawn_options& options,
-                              execution::launch_diagnostic& diagnostic) {
+                              execution::launch_diagnostic& diagnostic, execution::image_receipt* receipt) {
     diagnostic = {execution::launch_stage::none, 0, elf::error::none};
+    if (receipt != nullptr) {
+        for (u32 i = 0; i < sizeof(receipt->digest); ++i) receipt->digest[i] = 0;
+        receipt->size = 0;
+    }
     if (path == nullptr || argc == 0 || argc > process_max_args || argv == nullptr) {
         diagnostic = {execution::launch_stage::prepare, process_error_invalid, elf::error::none};
         return process_error_invalid;
@@ -339,8 +344,29 @@ i64 spawn_file_diagnosed_impl(const char* path, u32 argc, const char* const* arg
         return opened;
     }
     opened_file source{&file_client, handle};
-    return spawn_reader(path, size, file_read, &source, argc, argv, true, handle,
-                        &options, &diagnostic);
+    if (receipt != nullptr) {
+        sha256 digest;
+        for (u32 offset = 0; offset < size;) {
+            const u32 remaining = size - offset;
+            const u32 amount = remaining > sizeof(page_buffer) ? sizeof(page_buffer) : remaining;
+            if (!file_read(&source, offset, page_buffer, amount)) {
+                (void)file_client.close(handle);
+                diagnostic = {execution::launch_stage::inspect, process_error_invalid, elf::error::none};
+                return process_error_invalid;
+            }
+            digest.update(page_buffer, amount);
+            offset += amount;
+        }
+        digest.finish(receipt->digest);
+        receipt->size = size;
+    }
+    const i64 child = spawn_reader(path, size, file_read, &source, argc, argv, true, handle,
+                                   &options, &diagnostic);
+    if (child < 0 && receipt != nullptr) {
+        for (u32 i = 0; i < sizeof(receipt->digest); ++i) receipt->digest[i] = 0;
+        receipt->size = 0;
+    }
+    return child;
 }
 
 i64 spawn_file(const char* path, u32 argc, const char* const* argv) {
@@ -371,6 +397,11 @@ namespace xos::execution {
 i64 spawn_file_diagnosed(const char* path, u32 argc, const char* const* argv,
                          const sdk::spawn_options& options,
                          launch_diagnostic& diagnostic) {
-    return sdk::spawn_file_diagnosed_impl(path, argc, argv, options, diagnostic);
+    return sdk::spawn_file_diagnosed_impl(path, argc, argv, options, diagnostic, nullptr);
+}
+i64 spawn_file_diagnosed_receipt(const char* path, u32 argc, const char* const* argv,
+                                 const sdk::spawn_options& options,
+                                 launch_diagnostic& diagnostic, image_receipt& receipt) {
+    return sdk::spawn_file_diagnosed_impl(path, argc, argv, options, diagnostic, &receipt);
 }
 }

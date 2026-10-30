@@ -1,0 +1,34 @@
+{
+  "status": "PASSED",
+  "threading_sdk_manifest_sha256": "a203fbda0b9d984d60e3271c33418d3b796f77060b3cba4661bc0be2eb4117b7",
+  "threading_sdk_files_verified": 1052,
+  "cpp_runtime_source_manifest_sha256": "e8138f6b3f1e60be42c496b1c305f1a67dc54a2ea683ac52c2a0730f42296cf5",
+  "cpp_files_verified": 872,
+  "cpython_receipt_sha256": "1d6ea2e9cd0ef322c080019f36c054c0b385c3b7a62d0efbf3a984259586b060",
+  "cpython_fingerprint": "a8201ed0a683f05afdf3",
+  "cpython_sdk_matches": true,
+  "sqlite_c_only_sdk_manifest_reconstructed_and_matches": true,
+  "sdk_note": "own SDK rebuilt from verified newlib; C++ runtime imported unchanged and verified from frozen sibling SDK; not rebuilt",
+  "tools": {
+    "x86_64-elf-gcc": {
+      "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
+      "version": "x86_64-elf-gcc (GCC) 16.2.0"
+    },
+    "x86_64-elf-ld": {
+      "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-ld",
+      "version": "GNU ld (GNU Binutils) 2.47.20260726"
+    },
+    "nasm": {
+      "path": "/Users/perry_guo/homebrew/bin/nasm",
+      "version": "NASM version 3.02 compiled on Jun 29 2026"
+    },
+    "node": {
+      "path": "/usr/local/bin/node",
+      "version": "v24.20.0"
+    },
+    "npm": {
+      "path": "/usr/local/bin/npm",
+      "version": "11.19.0"
+    }
+  }
+}

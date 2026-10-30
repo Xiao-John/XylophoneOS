@@ -1,0 +1,137 @@
+{
+  "status": "PASSED_HARNESS_WITH_RECORDED_COMPATIBILITY_FAILURES",
+  "build_id": "8ac129a963b75031",
+  "upstream_commit": "aaec2e9d8ffe61ce1d523cd56852d36cde3edd07",
+  "artifacts": {
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/final3_system/xos.img": {
+      "sha256": "f5f5186f5d19358a6793d185b0d335c214275955e661eec8e49669a5f67fcd01",
+      "bytes": 1474560
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/final2_quickjs/js_probe.elf": {
+      "sha256": "b3d51732c2e6a3df104b67759b86aeb7ffbdb014619fcb8e19db87bf49cbdcba",
+      "bytes": 6049352
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/final3_guest/jsprobe": {
+      "sha256": "899e6f9e37e6d3d6f7ab4e2800ce698ecf0f5c89d1778506682bee646f798298",
+      "bytes": 1177880
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/final3_guest/work.img": {
+      "sha256": "2ebcdc552e3c43b0bab37c947a358dbc119e73ae81a07e873ef976c8aa189922",
+      "bytes": 536870912
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/final2_guest/work.img": {
+      "sha256": "da43cda6eef9afe311c184c76c67faf402834819d7bc7620db87682c992e06a1",
+      "bytes": 536870912
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/final_guest/work.img": {
+      "sha256": "6b15bf9129876cd771664acc7ec1aecfd4cb1cedadb47ed655af417e2c5c1a33",
+      "bytes": 536870912
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/guest1/work.img": {
+      "sha256": "6b15bf9129876cd771664acc7ec1aecfd4cb1cedadb47ed655af417e2c5c1a33",
+      "bytes": 536870912
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/manifest.json": {
+      "sha256": "a203fbda0b9d984d60e3271c33418d3b796f77060b3cba4661bc0be2eb4117b7",
+      "bytes": 143152
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/lib/libxos.a": {
+      "sha256": "f3224b113d8db94fa999b3b5b4fbc8922a9f39037fe5f47a9b5feff174d89372",
+      "bytes": 792494
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/lib/libc.a": {
+      "sha256": "d252bb6f1e37133f5e62e3c6a6b6fef337a75e2c22f7b101d63eea5a0fbd9e28",
+      "bytes": 7111170
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/lib/libm.a": {
+      "sha256": "13aeae4af35f92a2666d204601e61ac7d36f573815eb3493c041506c074ebd1a",
+      "bytes": 2906142
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/user.ld": {
+      "sha256": "f7b4334b0504720b0c9cf6e84ad21ab791c95721d0f9fa2ffa25fb730854d119",
+      "bytes": 2023
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/crt0_posix.o": {
+      "sha256": "68dbd965575e8460f17b6c0630c2678134fec6958b18fc33d0f1fddc2ebd0e0f",
+      "bytes": 1984
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/threading_sdk/cpp/lib/libgcc.a": {
+      "sha256": "b8ad185745e6d12861435f1fcebde33dd3ab142f82ae49ec651e10649bf6224e",
+      "bytes": 1828256
+    },
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/threading_sdk/cpp/lib/libsupc++.a": {
+      "sha256": "3f1d0a2da3e01fedc1231e7185e0f64900fa36d53b146af08f37d818f8a509be",
+      "bytes": 1644338
+    }
+  },
+  "tools": {
+    "x86_64-elf-gcc": {
+      "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
+      "sha256": "078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f",
+      "version": "x86_64-elf-gcc (GCC) 16.2.0"
+    },
+    "x86_64-elf-ld": {
+      "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-ld",
+      "sha256": "92002feac2ed2e5b05ae6fb47a1aab2979b3b46bd861a4439838e6bcb20e7fe5",
+      "version": "GNU ld (GNU Binutils) 2.47.20260726"
+    },
+    "x86_64-elf-strip": {
+      "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-strip",
+      "sha256": "11763c5485c8cb9ff5257348ba5e54aaaadb8adc9592551e14a566b78c7ae43e",
+      "version": "GNU strip (GNU Binutils) 2.47.20260726"
+    },
+    "nasm": {
+      "path": "/Users/perry_guo/homebrew/bin/nasm",
+      "sha256": "5d22db7ed80aee4eb0e1cb5ff8a87e40294012f6ddf943601556922d5128b725",
+      "version": "NASM version 3.02 compiled on Jun 29 2026"
+    }
+  },
+  "sdk_verification": {
+    "artifact_count": 1052,
+    "status": "PASSED_ALL_ARTIFACT_HASHES"
+  },
+  "source_verification": {
+    "system_manifest_sources": 675,
+    "status": "PASSED_ALL_INPUT_HASHES"
+  },
+  "public_probe_sources": {
+    "tests/modern2_runtime_guest.py": "ff3b03a221605195118c2703bbc9ed34960d75255aad40c82893211b16593bdb",
+    "scripts/modern2_source_audit.py": "298c89a21e7d4f11da5cf76f2acfb7fa7fddc6544cae4e35396280d21a1658e0",
+    "scripts/modern_apps_build_js.py": "9ea6744e28765f8edfc3287ccb008d1dc5dd41b5e894f7a2e6a7a1df21c9900c",
+    "tests/fixtures/modern_apps/js_runner.c": "9625e30e25d97808d3b97a570738a32201ed3e0a003626237ef17f15eaffb758",
+    "tests/fixtures/modern_apps/quickjs_xos.patch": "a37251c7306c2cadeb77a2b841f986c819b8e30e0c2b7a43d4881db6c0583397",
+    "tests/fixtures/modern2_runtime/module.mjs": "b46c69a3bb00508c1020299bc8dbbd226fadeaee3e5ccee3995b04b5cbea8050",
+    "tests/fixtures/modern2_runtime/globals.js": "66bc5f4909d4a721a0d57ab716331f5f9099d5b5c8e9e7a012fa889e91600e8a",
+    "tests/fixtures/modern2_runtime/events.js": "bd08367623a96999308d0fabba80a3267407ab192b8c7ef932fb9e1829bb21d7",
+    "tests/fixtures/modern2_runtime/async_failure.js": "e1ca842d06b1d26bb98b37ef1c4a155c7e3873d569cad1824a66b4225f957be9",
+    "tests/fixtures/modern2_runtime/promises.js": "3388a113b3010b1e5145a73355049253cdd8b2ac8d3e4183ea2fec2216381cb8",
+    "tests/fixtures/modern2_runtime/worker.js": "3b5123137b8f7b9677ae4576d20d1698b85a91b0e18aff80118a6b85039c0c20",
+    "tests/fixtures/modern2_runtime/rejected.js": "7594733aa33cc7856bf2dc64068d1684c28796a06effdf5729c3d883ab7e1186",
+    "tests/fixtures/modern2_runtime/pending.mjs": "bbb691b4659a1f50d70f169870f9c2ea94b3b3baf9422eea3ef95bbee9939043",
+    "tests/fixtures/modern2_runtime/python_dependencies.py": "f8fcfdc12557ddc2245529eb96b390437b13764b787be44b0dd20df87830385c",
+    "tests/fixtures/modern2_runtime/origin.js": "abf3f7e001ee0e2518f25f35cb4fa8dc18820393c3c31284a54e66d97c3bbc6d",
+    "tests/fixtures/modern2_runtime/buffers.js": "9dbcf9905da0fdafa4033067a9695f14a45d34c3da3e5613fef442e695db6ea4",
+    "tests/fixtures/modern2_runtime/dom.js": "39749c01de4bff91ed81e5236c68a7930317cb6c610781647c6202d431796b30",
+    "tests/fixtures/modern2_runtime/import.mjs": "79890b5a875d7e07d6fb3a326a888bc5d704b0e43f4b99d5b0aea4e47039c799",
+    "tests/fixtures/modern2_runtime/wasm.js": "2ffbc1b7f435d17202b53b3b2a3a5f53e0fad9409f1002de482703e7240c5e58"
+  },
+  "not_run": [
+    "V8",
+    "Chromium",
+    "DOM",
+    "Worker",
+    "WASM",
+    "origin isolation",
+    "N2",
+    "HTTPS",
+    "LocalPilot API 1.0",
+    "Code OSS workbench",
+    "release qualification"
+  ],
+  "runner_controls": [
+    "pending module rejected",
+    "rejected returned Promise rejected",
+    "async job assertion rejected",
+    "existing builder output rejected"
+  ]
+}

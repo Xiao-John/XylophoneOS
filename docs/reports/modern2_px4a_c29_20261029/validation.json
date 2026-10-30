@@ -1,0 +1,42 @@
+{
+  "scope": "PR24_C29_DOCUMENTATION_SYNC_ONLY",
+  "upstream_commit": "169f51e6b410863b8d8c9707b7ea84a6f649d59c",
+  "time_utc": "2026-10-29T12:14:40.936004+00:00",
+  "runtime_status": "NOT_RUN",
+  "abi_status": "67 claimed only; no implementation",
+  "original_frozen_evidence_sha256": {
+    "docs/reports/modern2_px4a_20261029/README.md": "b05c0531a39e4efee582db5ca202e20677c901a47f0cb5b4d953e371e4ce24e2",
+    "docs/reports/modern2_px4a_20261029/source_audit.json": "25014dd1cee583e8bbe16e138b1b948c7d804d26d499183c76e67f383b6897f2",
+    "docs/reports/modern2_px4a_20261029/validation.json": "b3df5016cb390237b2492451c88805a518bf0a8e3e1bafa5d3db29e41007c92b"
+  },
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "tests/docs_consistency.py"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"status\": \"passed\", \"local_links\": 475, \"allocated_syscalls\": 66, \"history_sources\": 73}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "tests/abi_doc_consistency.py"
+      ],
+      "exit_code": 0,
+      "stdout": "PASS current ABI table: {'sys_pipe_wait': 54, 'sys_process_guard': 62, 'sys_random_bytes': 63, 'sys_clock_realtime': 64, 'sys_display': 65, 'sys_display_present': 66, 'clone_session': 20, 'anonymous': 21, 'anonymous_seal': 22, 'maintenance_acquire': 23, 'maintenance_release': 24, 'truncate': 25}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

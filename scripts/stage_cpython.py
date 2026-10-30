@@ -92,6 +92,13 @@ def build_manifest(stage, *, work, build_report, phase):
             "license_path": "/usr/share/licenses/tzdata/LICENSE",
         }
     dependencies = result.setdefault("dependencies", {})
+    if build_report.get("pillow"):
+        pillow = build_report["pillow"]
+        dependencies["pillow"] = {"version": pillow["version"],
+                                  "archive_sha256": pillow["sha256"],
+                                  "builtin_name": pillow["builtin_name"],
+                                  "features": pillow["features"],
+                                  "license": "/usr/share/licenses/pillow/LICENSE"}
     if build_report.get("sqlite_prefix"):
         receipt = json.loads((Path(build_report["sqlite_prefix"]).parent / "receipt.json").read_text())
         dependencies["sqlite"] = {
@@ -179,6 +186,18 @@ def stage_cpython(work, phase="PY1"):
             ROOT / "src/ports/cpython/upstream/LICENSE",
             license_dir / "LICENSE",
         )
+        if build_report.get("pillow"):
+            pillow = work / "source/Modules/xos_pillow"
+            package = library_dir / "site-packages/PIL"
+            package.mkdir(parents=True)
+            for source_file in sorted((pillow / "src/PIL").rglob("*")):
+                if source_file.is_file() and source_file.suffix in {".py", ".pyi"}:
+                    target = package / source_file.relative_to(pillow / "src/PIL")
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copyfile(source_file, target)
+            target = temporary / "usr/share/licenses/pillow/LICENSE"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(pillow / "LICENSE", target)
         if phase == "PY3":
             install_tzdata(temporary)
         manifest = build_manifest(temporary, work=work, build_report=build_report, phase=phase)

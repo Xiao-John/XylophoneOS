@@ -6,6 +6,66 @@ UTF-8文件名、游戏及ncursesw前期探针。新增整合资格限于0081的
 其他旧资格仍绑定原输入，不构成全系统重验。发布资产仍为0.0.1-1026，未更新Release。
 原则裁决见[xos_plan.md第一部分](xos_plan.md#第一部分设计原则)，本页只登记事实与占用。
 
+## PR批次整合交付（2026-10-29）
+
+#18/#21/#22/#23/#25/#27已合入，#19修复随本次PR交付；#20保持RC且未合并。
+旧112网卡帧代理认领撤回，设备授权仍未登记/实现；67仅VM提案认领。
+当前浏览器修复的宿主检查通过，Qt目标编译/新客体导航和新探针组合guest尚未运行。
+Pillow线程故障根因仍未解，不授予线程/LocalPilot/发行资格。详见[0100](work_log/0100_pr_batch_delivery.md)。
+本组无公共build占用，旧冻结证据保持原样；以下任务/历史节保留其各自时点和输入。
+
+## Aurora Browser PR #19 审查修复（待客体验证）
+
+同步 main `3e5ccd0` 后修复 HTTP host 分量校验及浏览器失败导航状态；宿主 parser
+ASan/UBSan 定向检查通过。新增图形交互回归尚未运行，不能沿用旧镜像资格；
+具体冻结输入、执行情况和后续见[0096](work_log/0096_browser_review_fixes.md)。
+临时视图加载期间同时保留新旧页面，峰值内存未测；不占公共 build。
+
+## Aurora Browser B0/B1：受限本地 HTML/CSS
+
+2026-10-29，独立 `codex/aurora-browser-b1` 从 upstream `39083f9` 实施真实 liteHTML0.9/
+Gumbo + Qt6.8.3 QPainter/Aurora 浏览器；B0目标交叉编译/链接通过，B1受限客体本地页面、
+PS/2链接、地址/历史/刷新/滚动、单窗口标签及书签、坏输入与资源回收通过。
+新系统build `3fb1bb7d6b9e7bf9`；来源、失败和边界见[0083](work_log/0083_aurora_browser_offline.md)。
+无新内核/ABI/Qt底座变更。网络尚未接入，B2 BLOCKED；HTTPS/JavaScript/互联网及完整
+现代浏览器均未通过。仅本地32KiB有界HTML/CSS/BMP子集，不发布Qt静态产品或Release。
+
+## Modern Platform运行时探针（PR #25）
+
+本分支保留Promise完成/pending/rejection等冻结探针结果，Web/应用能力仍BLOCKED。
+已同步当前main；已整合PR #21共用的QuickJS构建/runner与许可，保留phase2 Promise语义及phase1入口兼容；
+旧结果不改绑新组合。范围和未验项见[0099](work_log/0099_probe_branch_reconciliation.md)。
+
+## N2用户态网络接续（当前规范）
+
+2026-10-29。旧frame-proxy路线已废止；当前接续以[网络交接](plans/network_handoff.md)为准，
+按C28用户态驱动、C29统一管理的时间域实施。旧冻结审查包保留原时点，N2继续BLOCKED。
+本轮同步main并修改活文档，无新ABI/实现或客体资格；见[0097](work_log/0097_network_time_domains.md)。
+本组无源码/公共build占用。
+
+## PR #23时间域契约同步
+
+匿名VM提案已同步当前C29；不再要求时间中断唯一写入，V1–V7仍NOT_RUN。
+无新实现或追加ABI，见[0098](work_log/0098_vm_time_domains.md)。文档占用解除。
+
+## 时间域与驱动边界修订（文档PR）
+
+2026-10-29，`codex/time_domains_docs` 基于远端0ec0ad6：C28澄清内核基础设施和存量整改，
+C29约束统一时间管理、显式时间域及EOI职责；专项契约给出禁止/允许案例和审查清单。
+仅文档，无新ABI、实现或客体资格，见[修订交接](work_log/0095_time_domain_amendment.md)。
+本组文档占用解除，不占公共build；其他分支未合入本PR。
+
+## FB1/FB2 应用故障包（受限通过）
+
+2026-10-29，`codex/fb2-offline-symbols` 基于已合入FB0和VirtIO-GPU的主线 `39083f9`。
+受限 FB1/FB2 已在 build `32fe73250f191e04` 完成真实客体生成、sync/重启、导出
+和宿主符号定位；正常退出、无熵、配额、满盘、真实块写失败和路径替换各有定向证据。
+格式与使用见[FB1/FB2实施](implementation/fb12_fault_bundle.md)，验证见
+[0081](work_log/0081_fb1_fb2_fault_bundle.md)。更新后的组合 build `f87bebabb97dc166`
+在xsh和dash完成定向验收；无新增内核ABI。
+当前覆盖xsh及dash经显式诊断入口启动并等待的文件ELF；并发配额原子性、全局收集、寄存器/栈、
+任意断电安全和完整压力未验，不将受限结果扩大到FB3/FB4。
+
 ## FB0 应用故障包勘查（受限通过）
 
 2026-10-29，`codex/fb0-scout` 完成单一wait、装载/文件链路勘查、[v1格式冻结](implementation/fb0_fault_bundle_contract.md)
@@ -47,7 +107,41 @@ transfer/flush、dirty region、设备reset及VBE回退；同Qt帧的1,440,000�
 仅QEMU/单核/800×600受限通过，运行期设备失效后透明恢复、热插拔、SMP/真机未验。
 私有 worktree/build；通过独立功能PR交付，不自行合并main或改旧Release。
 
+## Modern Platform Phase 2 / Python 静态 Pillow：受限核心通过，并发阻塞
+
+2026-10-29，`codex/python-static-imaging`，独立工作区/build/cache。
+原始Pillow11.3.0核心静态注册和原包stage；最终系统ec4b7ffa0c53f5a4，
+xsh/dash单线程像素/PNG/BMP、防护拒绝、错误/恢复与精确回收通过。
+**Pillow线程使用UNSUPPORTED/BLOCKED**：保留真实dash worker newlib `_malloc_r`
+vector14；最终有限对照未复现，未修复或建立线程资格。
+无ABI/内核/libc修改；LocalPilot原API/安全主体/Operator/UNKNOWN及N2仍未验收。
+范围、原始失败/来源/命令和证据见[0088](work_log/0088_cpython_static_pillow.md)。
+公共文件由Python兼容线维护，独立PR交维护者审查；未修改其他工作区或正式安装。
+
+## PX4-A 匿名虚拟内存：独立设计认领（未实施）
+
+2026-10-29，`codex/px4a-vma-claim` 从 fetched upstream `aaec2e9` 建立。
+本组负责 `docs/contracts/anonymous_vm.md`、ABI 67 的 claimed 提案、PX 路线和
+`docs/reports/modern2_px4a_20261029/`；共享头、dispatch、SDK、内核和旧证据不改。
+具体认领须由维护者审查合入后才能实施；本分支不是全项目登记，运行资格仍 **BLOCKED**。
+后续已同步PR #28的受管理时间域契约，禁止VM私建时基替代系统deadline；
+未改原aaec2e9源码审计或回执，未重绑旧测试，未实施公共时基/VM。
+独立 `build/modern2_px4a/` 仅作源码审计，不构建/运行新客体。旧网络112认领已由 PR #18 撤回，设备授权另登记。
+
+## 正在进行：Browser Foundation 的独立网络/浏览器工作
+
+2026-10-29，旧 `sys_net_device` 112 帧代理认领已撤回；[通用设备授权设计](contracts/network_device_v1_proposal.md)
+仅供审查，不认领编号或实现。C28要求VirtIO初始化、队列和收发在用户态，内核仅提供受控
+MMIO、DMA、IRQ、撤权等通用机制；停止不可确认时隔离DMA页。未来登记和真实guest验收前
+网络接入仍BLOCKED；旧N1及隔离探针只属于原冻结输入，不是新架构资格。历史与修正见
+[0082](work_log/0082_network_device_abi_claim.md)。
+
 ## 正在进行：ncursesw W0/W1
+
+2026-10-30：本分支正整合本地 main `3377dbf`。C28 要求设备数据通路在用户态；
+本分支新增的内核 UART IRQ 接收与队列不符合该原则，必须迁移到受控用户态驱动，
+不能以调试例外作为交付依据。设备端口授权、IRQ 交付和撤销还需补齐；不得以当前
+构建或既有主线调试串口证据宣称 W1/W2 通过。详见[0114](work_log/0114_w1_main_reconciliation.md)。
 
 W0 勘查和 W1 [工作契约草案](contracts/terminal_w1.md)已开始；W0 未冻结，W1 未
 实现或验收。终端 ESC、输入所有权、UART 等待与 newlib 多字节缺口见
@@ -147,3 +241,16 @@ QtCore 的系统 build48e5e73bcd649f44 和本地输入编辑的 build3200de2c3b8
 通道入口和负向断言已补齐并交叉链接，见[0113](work_log/0113_channel_acceptance_entry.md)。
 客体未运行；需先完成 W1 相关提交/宪法与 ABI 整合，再新构建并运行。
 本组源码占用已结束，无公共 build 占用。
+## 现代应用兼容平台第一阶段：受限探针交付，N2阻塞
+
+2026-10-29，Codex 在独立 `codex/modern-app-phase1` / worktree
+`XylophoneOS-modern-app-phase1`，基线 upstream `39083f9`。占用
+`scripts/modern_apps_*`、`tests/modern_apps_*`、`tests/fixtures/modern_apps/`、
+`docs/reports/modern_apps_20261029/`、独立兼容报告及工作记录0085；私有build。
+本轮只由本负责人汇总本分支state；未修改其他工作区、内核、ABI、Qt/Aurora或N1驱动。
+PR #18/#19/#20 当前Draft/open且无review；#18未审查合入，N2公共设备桥接
+实施BLOCKED。已交付真实SDK/客体依赖探针、固定源码审计和独立QuickJS解释器试验；
+最终build `a538733bd3b8e43f`，11项测试器断言通过（含正确复现应用失败），Python16项中4通过/12失败，
+资源均回到free130290/tasks2/completions0。完整现代浏览器、Core/API、Code与HTTPS未通过。
+三份独立报告、N2门槛、原始失败和接续见[0085](work_log/0085_modern_app_compatibility_phase1.md)。
+不合并上游，不改发行版，不引入第二套LocalPilot Runtime；本组公共文件/build占用释放。

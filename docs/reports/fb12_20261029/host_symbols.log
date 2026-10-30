@@ -1,0 +1,2 @@
+symbol: ././src/user/arch/x86_64/fault_test.cpp:14
+PASS matched symbols; reject wrong/missing symbols, tampering, extra/duplicate fields, invalid address/UTF-8, forged binding, symlink and oversize

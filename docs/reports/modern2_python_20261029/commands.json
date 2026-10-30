@@ -1,0 +1,53 @@
+{
+  "cwd": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-python",
+  "build_environment": {
+    "COMPILER_PATH": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-python/build/modern2-python/tools",
+    "as": "/Users/perry_guo/homebrew/bin/x86_64-elf-as",
+    "ld": "/Users/perry_guo/homebrew/bin/x86_64-elf-ld"
+  },
+  "cpython_command": [
+    "python3",
+    "scripts/build_cpython.py",
+    "--archive",
+    "../XylophoneOS-dash-c1-c3/.cache/xos_seed/cpython/sources/Python-3.14.9.tar.xz",
+    "--sdk",
+    "../XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk",
+    "--build-python",
+    "../XylophoneOS-dash-c1-c3/.cache/xos_seed/cpython/d7b5bd56caf0261a5d77/host_build/python.exe",
+    "--zlib-prefix",
+    "../XylophoneOS-modern-app-phase1/.cache/xos_seed/cpython/zlib/d595d33af9bd8aff416d/prefix",
+    "--sqlite-prefix",
+    "../XylophoneOS-modern-app-phase1/.cache/xos_seed/cpython/sqlite/builds/b070c3096398181c2b7c/prefix",
+    "--pillow-archive",
+    "../XylophoneOS-modern-app-phase1/build/modern_apps/python_deps/pillow-11.3.0.tar.gz",
+    "--compile-probe"
+  ],
+  "system_command": [
+    "python3",
+    "scripts/build.py",
+    "--output-dir",
+    "build/modern2-python/final-system"
+  ],
+  "guest_command": [
+    "python3",
+    "tests/pillow_static_guest.py",
+    "--work",
+    ".cache/xos_seed/cpython/d2d064e8db8332bc7d91",
+    "--image",
+    "build/modern2-python/final-system/xos.img",
+    "--dash",
+    "../XylophoneOS-dash-c1-c3/.cache/xos_seed/dash/e4e7615a2880cf3270d4/build/src/dash.runtime",
+    "--output",
+    "build/modern2-python/final-guest",
+    "--extra-probe",
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/tests/fixtures/modern2_runtime/python_dependencies.py",
+    "--dependencies",
+    "../XylophoneOS-modern-app-phase1/build/modern_apps/python_deps",
+    "--localpilot",
+    "../localpilot-source-audit-20261029"
+  ],
+  "guest_environment": {
+    "QEMU": "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64"
+  },
+  "note": "Paths are actual session inputs; use new output paths. Optional external dependency-probe source is separately owned by the runtime compatibility PR and bound by hash in guest receipt."
+}

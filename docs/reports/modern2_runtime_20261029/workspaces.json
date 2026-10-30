@@ -1,0 +1,92 @@
+[
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS",
+    "HEAD": "1699b6c86ee9f48a37647e41f7065d56ee7f56e4",
+    "branch": "refs/heads/codex/threading-t0-t2",
+    "status_porcelain": ""
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser",
+    "HEAD": "88cdbc01b0e30b2c2b449d9831d057468b9d6a77",
+    "branch": "refs/heads/codex/aurora-browser-b1",
+    "status_porcelain": ""
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net",
+    "HEAD": "9b832fa06061b6905d00529a2e0a8445ea389a2a",
+    "branch": "refs/heads/codex/browser-net-n1",
+    "status_porcelain": ""
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3",
+    "HEAD": "630374e9eff68436a5b22c42d49b1e69fd979c7f",
+    "branch": "refs/heads/feature/dash-c1-c3",
+    "status_porcelain": ""
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-display-e14",
+    "HEAD": "f84745a9079be23b5ae959fb7bc927837e2a6294",
+    "branch": "refs/heads/feature/display-backend-e14",
+    "status_porcelain": ""
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1",
+    "HEAD": "c152f7f93fb11291eb019d572219c2b4d69743a9",
+    "branch": "refs/heads/codex/modern-app-phase1",
+    "status_porcelain": ""
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-net",
+    "HEAD": "8bbf698e0a801fa273924fc153eaebe6f81041fa",
+    "branch": "refs/heads/codex/modern2-network-handoff",
+    "status_porcelain": ""
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-python",
+    "HEAD": "aaec2e9d8ffe61ce1d523cd56852d36cde3edd07",
+    "branch": "refs/heads/codex/python-static-imaging",
+    "status_porcelain": " M docs/state.md\n M licenses/components.json\n M scripts/build_cpython.py\n M scripts/stage_cpython.py\n?? src/ports/cpython/pillow/\n?? tests/fixtures/pillow_static/\n?? tests/pillow_static_guest.py\n"
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime",
+    "HEAD": "aaec2e9d8ffe61ce1d523cd56852d36cde3edd07",
+    "branch": "refs/heads/codex/modern2-runtime-probes",
+    "status_porcelain": " M docs/state.md\n M licenses/components.json\n?? docs/reports/modern2_runtime_20261029/\n?? licenses/modern_apps/\n?? scripts/modern2_source_audit.py\n?? scripts/modern_apps_build_js.py\n?? tests/fixtures/modern2_runtime/\n?? tests/fixtures/modern_apps/\n?? tests/modern2_runtime_guest.py\n"
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-vm",
+    "HEAD": "06d159d5b154b74bb02618eea73d01c29c6a9aee",
+    "branch": "refs/heads/codex/px4a-vma-claim",
+    "status_porcelain": ""
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi",
+    "HEAD": "97947c07853e785530d3c907738a8b45f530986e",
+    "branch": "refs/heads/codex/network-device-abi-claim",
+    "status_porcelain": ""
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15",
+    "HEAD": "d1e108d8f31ffcb1ebf43b40a412af933fb074cd",
+    "branch": "refs/heads/codex/qt6-e15",
+    "status_porcelain": ""
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16",
+    "HEAD": "aaf70fcfd5b06364ff09c7a87d6239a730fcdd66",
+    "branch": "refs/heads/codex/qt6-e16-qpa",
+    "status_porcelain": ""
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17",
+    "HEAD": "66ac0026e4b35bce8fee4cb1d05eb86644835417",
+    "branch": "refs/heads/codex/qt6-e17-widgets",
+    "status_porcelain": ""
+  },
+  {
+    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d",
+    "HEAD": "00d7a57f04caba2252487eb5ac790c1fb810be92",
+    "branch": "refs/heads/codex/virtio-gpu2d",
+    "status_porcelain": ""
+  }
+]

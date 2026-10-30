@@ -1,0 +1,24 @@
+{
+  "command": [
+    "/Users/perry_guo/homebrew/bin/x86_64-elf-g++",
+    "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser/build/browser_http_host/target_tools/",
+    "-std=c++17",
+    "-O2",
+    "-fstack-usage",
+    "-ffreestanding",
+    "-fno-pic",
+    "-fno-pie",
+    "-mno-red-zone",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wconversion",
+    "-Wshadow",
+    "-c",
+    "src/ports/browser_http/http.cpp",
+    "-o",
+    "build/browser_http_host/target_parser.o"
+  ],
+  "returncode": 0,
+  "earlier_failed_attempt": "A direct compiler invocation without target as/ld isolation selected macOS assembler; fixed by same target-tool isolation as SDK. No source change."
+}

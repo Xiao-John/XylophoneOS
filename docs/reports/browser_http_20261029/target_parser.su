@@ -1,0 +1,12 @@
+src/ports/browser_http/http.cpp:7:6:bool browser_http::{anonymous}::equal(const char*, size_t, const char*)	8	static
+src/ports/browser_http/http.cpp:27:6:bool browser_http::{anonymous}::safe_reference(const char*, size_t)	8	static
+src/ports/browser_http/http.cpp:41:7:browser_http::error browser_http::{anonymous}::target(const char*, size_t, char*)	24	static
+src/ports/browser_http/http.cpp:83:7:constprop(const char*, size_t, url&)	8	static
+src/ports/browser_http/http.cpp:83:7:browser_http::error browser_http::parse_url(const char*, size_t, url&)	48	static
+src/ports/browser_http/http.cpp:124:7:0(const url&, const char*, size_t, url&)	2112	static
+src/ports/browser_http/http.cpp:124:7:browser_http::error browser_http::resolve(const url&, const char*, size_t, url&)	32	static
+src/ports/browser_http/http.cpp:155:7:browser_http::error browser_http::get_request(const url&, char*, size_t, size_t&)	4832	static
+src/ports/browser_http/http.cpp:185:7:browser_http::error browser_http::parse_response(const unsigned char*, size_t, bool, response&)	128	static
+src/ports/browser_http/http.cpp:249:6:bool browser_http::is_redirect(unsigned int)	8	static
+src/ports/browser_http/http.cpp:250:7:browser_http::error browser_http::redirect(const url&, const response&, unsigned int&, url&)	48	static
+src/ports/browser_http/http.cpp:257:13:const char* browser_http::error_name(error)	8	static

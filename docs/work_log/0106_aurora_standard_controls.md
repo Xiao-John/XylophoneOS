@@ -18,3 +18,6 @@ third-party application. Existing E17 `Canvas/Panel/Button` have separate
 hard-coded visual/motion behavior and do not yet uniformly consume the v2
 preferences. Actual combined UI/Notes/Browser regressions are separate; see
 subsequent integration evidence. Review before changing the upstream SDK branch.
+
+The final three-check control fixture also ran under xsh and actual dash with
+normal GUI exit and resource recovery; see [dual-shell evidence](../reports/aurora_standard_button_dash_20261030/README.md).

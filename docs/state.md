@@ -1,5 +1,11 @@
 # XOS 当前状态
 
+## SSG Diff 审查修复（待审）
+
+在 SDK `758dde49` 上修正截断、查询范围变化及重复 ID 的 Diff 语义；独立
+客体回归 12/12、既有本地语义回归 5 项通过。Browser 需随 SDK 变更调整
+查询作用域并重验；无生产 Broker。见 [0105](work_log/0105_ssg_diff_integrity.md)。
+
 2026-10-30：Aurora UI SDK v2 的原生设计/质量/应用内语义原型已验，见[0102](work_log/0102_aurora_ui_v2_sdk.md)。
 内核/系统 ABI/QPA 源码改动为0。用户明确启动AI-native用户态方向；完整桌面和应用接入由独立审查单元交付。
 深色 Midnight Current 是完善优先方向，最终审美待复核。

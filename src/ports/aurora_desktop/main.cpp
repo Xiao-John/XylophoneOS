@@ -10,6 +10,7 @@
 #include <QtWidgets/QCheckBox>
 #include <QtGui/QScreen>
 #include <QtGui/QShortcut>
+#include <QtGui/QIcon>
 #include <QtCore/QtPlugin>
 #include <xos/sdk.hpp>
 #include <xos/thread_core.hpp>
@@ -22,10 +23,33 @@ class Desktop final : public aurora::DesktopSurface {
     QStackedWidget *pages;
     QLabel *toast, *heading, *subtitle;
     QList<QPushButton*> controls;
+    QList<QPair<QPushButton*,int>> dock_icons;
     QCheckBox *contrast, *opaque, *motion, *glass;
     QElapsedTimer elapsed;
     int page=0;
     bool session_mode=false;
+    QIcon dock_icon(int kind) {
+        QPixmap image(16,16);image.fill(Qt::transparent);QPainter p(&image);
+        p.setRenderHint(QPainter::Antialiasing);
+        p.setPen(QPen(aurora::tokens().text,1.4,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
+        if(kind==0){ // Home
+            QPainterPath home;home.moveTo(2,7);home.lineTo(8,2);home.lineTo(14,7);
+            home.moveTo(4,6);home.lineTo(4,13);home.lineTo(12,13);home.lineTo(12,6);
+            home.moveTo(7,13);home.lineTo(7,9);home.lineTo(9,9);home.lineTo(9,13);p.drawPath(home);
+        } else if(kind==1){ // Apps
+            for(int y:{3,9})for(int x:{3,9})p.drawRoundedRect(QRectF(x,y,4,4),.8,.8);
+        } else if(kind==2){ // Studio
+            p.drawRoundedRect(QRectF(2.5,3,11,10),1.5,1.5);p.drawLine(QPointF(5,10),QPointF(11,5));
+        } else if(kind==3){ // Settings
+            p.drawLine(QPointF(3,5),QPointF(13,5));p.drawLine(QPointF(3,11),QPointF(13,11));
+            p.setBrush(aurora::tokens().text);p.drawEllipse(QPointF(6,5),1.3,1.3);p.drawEllipse(QPointF(10,11),1.3,1.3);
+        } else if(kind==4){ // Quality
+            QPainterPath star;star.moveTo(8,2);star.lineTo(9.5,6.5);star.lineTo(14,8);star.lineTo(9.5,9.5);
+            star.lineTo(8,14);star.lineTo(6.5,9.5);star.lineTo(2,8);star.lineTo(6.5,6.5);star.closeSubpath();p.drawPath(star);
+        } else {p.drawLine(QPointF(3,8),QPointF(13,8));} // Hide
+        return QIcon(image);
+    }
+    void refresh_dock_icons(){for(const auto &entry:dock_icons)entry.first->setIcon(dock_icon(entry.second));}
     QPushButton *button(QString name,QBoxLayout *layout,std::function<void()> action,bool accent=false) {
         auto *b=new QPushButton(name);b->setMinimumHeight(aurora::tokens().control_height);
         b->setProperty("auroraAccent",accent);b->setAccessibleName(name);b->setToolTip(QString());
@@ -46,7 +70,7 @@ class Desktop final : public aurora::DesktopSurface {
     void apply() {
         auto prefs=aurora::preferences();prefs.high_contrast=contrast->isChecked();
         prefs.reduce_transparency=opaque->isChecked();prefs.reduce_motion=motion->isChecked();prefs.glass_enabled=glass->isChecked();
-        aurora::set_preferences(prefs);arrange();
+        aurora::set_preferences(prefs);refresh_dock_icons();arrange();
         notify("Appearance updated for this desktop session");
         std::printf("DESKTOP_THEME_JSON %s\n",aurora::theme_json().constData());
         QTimer::singleShot(50,this,[this]{points();});
@@ -83,10 +107,13 @@ public:
         top->addWidget(new QLabel("Aurora  /  Single-app session"));button("Exit",top,[]{qApp->quit();});
         heading=new QLabel(this);subtitle=new QLabel(this);
         dock=new aurora::GlassPanel(this);auto *nav=new QBoxLayout(QBoxLayout::LeftToRight,dock);nav->setContentsMargins(10,6,10,6);nav->setSpacing(8);
-        button("Home",nav,[this]{select(0);});button("Apps",nav,[this]{select(1);});
-        button("Studio",nav,[this]{select(2);});button("Settings",nav,[this]{select(3);});
-        button("Quality",nav,[this]{select(5);});
-        button("Hide",nav,[this]{card->hide();notify("Panel hidden. Home restores it.");});
+        auto dock_button=[&](const QString &name,int icon,std::function<void()> action){
+            auto *b=button(name,nav,action);b->setIconSize(QSize(16,16));dock_icons.append(qMakePair(b,icon));b->setIcon(dock_icon(icon));
+        };
+        dock_button("Home",0,[this]{select(0);});dock_button("Apps",1,[this]{select(1);});
+        dock_button("Studio",2,[this]{select(2);});dock_button("Settings",3,[this]{select(3);});
+        dock_button("Quality",4,[this]{select(5);});
+        dock_button("Hide",5,[this]{card->hide();notify("Panel hidden. Home restores it.");});
         card=new aurora::GlassPanel(this);pages=new QStackedWidget(card);
         auto *home=new_page();label("YOUR WORKSPACE",home,12);label("Make room for the next idea.",home,24);
         label("A native desktop built around calm materials, clear controls and your own applications.",home);

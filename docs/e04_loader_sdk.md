@@ -217,6 +217,10 @@ sys83 `sys_irq_event` 为受控 IRQ 事件、等待和确认；当前仅 IRQ4、
 负责清理自己建立的通道等资源。若回调已成功授予 COM1，后续启动失败仍会隔离设备，
 不保证恢复。该回调和终端控制协议尚未客体验收，不能作为稳定 SDK 资格。
 
+SDK 控制台 read/write 的可选弱符号钩子供单个可执行文件自行接入用户态服务；没有
+定义时直接使用旧 syscall。当前 supervisor 编入试验桥接，默认保持旧路径，不为应用
+授予终端权，也不改变子进程 stdio；该钩子尚未客体验收或冻结。
+
 sys55 `sys_process_foreground(&request,active,0)`：request 为48字节固定宽度
 `process_foreground{version=1,size=48,count,reserved=0,pids[4]}`；未使用 PID 必须0。
 每个 PID 必须有属于调用者的 completion，且不重复。active=1 从开始构造流水线

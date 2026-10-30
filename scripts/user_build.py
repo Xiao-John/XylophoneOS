@@ -69,6 +69,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                      compile_fatfs(root / "src/user/services/fatfs_unicode.cpp")]
     file_ui_object = compile_source(root / "src/user/services/file_ui.cpp")
     terminal_control_object = compile_source(root / "src/user/services/terminal_control.cpp")
+    shell_terminal_object = compile_source(root / "src/user/services/shell_terminal.cpp")
     archive = sdk / "lib/libxos.a"
     if archive.exists():
         archive.unlink()
@@ -108,7 +109,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
              *([str(loader_archive)] if name in ("supervisor", "xos_diag") else []), *fault_objects,
              *([str(core_archive), str(loader_archive)] if name in ("threading_core_probe", "gfxdemo", "terminal") else []),
              *([compile_source(root / "src/user/drivers/uart_16550.cpp")] if name == "terminal" else []),
-             *([file_ui_object, terminal_control_object] if name == "supervisor" else []),
+             *([file_ui_object, terminal_control_object, shell_terminal_object] if name == "supervisor" else []),
              *([str(loader_archive)] if name == "supervisor" else []),
              *([*fatfs_objects] if name == "files" else []),
              *(["-Wl,--start-group", str(archive), str(loader_archive), "-L", str(sdk / "lib"),

@@ -8,10 +8,16 @@
 namespace xos::sdk {
 i64 syscall(u64 number, u64 first = 0, u64 second = 0, u64 third = 0);
 u16 target_elf_machine();
+// Optional per-executable console mediation; absent in ordinary applications.
+extern "C" i64 xos_console_write_hook(u32, const void*, u64) __attribute__((weak));
+extern "C" i64 xos_console_read_hook(u32, void*, u64) __attribute__((weak));
 inline i64 write(u32 handle, const void* data, u64 length) {
+    if ((handle == 1 || handle == 2) && xos_console_write_hook)
+        return xos_console_write_hook(handle, data, length);
     return syscall(sys_handle_write, handle, reinterpret_cast<u64>(data), length);
 }
 inline i64 read(u32 handle, void* data, u64 length) {
+    if (handle == 0 && xos_console_read_hook) return xos_console_read_hook(handle, data, length);
     return syscall(sys_handle_read, handle, reinterpret_cast<u64>(data), length);
 }
 inline i64 close(u32 handle) { return syscall(sys_handle_close, handle); }

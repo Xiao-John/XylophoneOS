@@ -61,12 +61,16 @@ try:
   disk=Path(tmp)/'work.img';create_fat32(disk,512)
   for name in ('/bin','/web'):transfer(disk,'mkdir',name)
   for name,f in payloads.items():transfer(disk,'import','/bin/'+name+'.elf',f)
+  if a.dash:
+   transfer(disk,'import','/bin/dash',a.dash);report['dash_sha256']=sha(a.dash)
+   if a.case=='semantic':
+    script=Path(tmp)/'semantic-dash.sh';script.write_text('/bin/semantics.elf\necho SEMANTIC_DASH_STATUS:$?\n');transfer(disk,'import','/semantic-dash.sh',script)
   for f in (ROOT/'src/ports/aurora_browser/pages').iterdir():transfer(disk,'import','/web/'+f.name,f)
   fixtures={'ssg.txt':('Visible note title\n'+''.join(f'Line {i:03d}: native document semantics.\n' for i in range(80))).encode(),
    'ssg.html':b'<html><head><title>SSG fixture</title><style>body { margin:0; padding:16px; background:#f4f7fc; color:#23344e; font-size:16px; } .hidden { display:none; } .spacer { height:700px; }</style></head><body><h1>Visible Alpha</h1><a href="start.html">Native link target</a><div class="hidden"><p>HIDDEN_SECRET_FIXTURE</p></div><div class="spacer"></div><p>Below viewport omega</p><a href="garden.html">Bottom link</a></body></html>',
    'unsupported.html':b'<html><body><canvas>not a semantic model</canvas></body></html>'}
   for name,data in fixtures.items():f=Path(tmp)/name;f.write_bytes(data);transfer(disk,'import',('/web/' if name.endswith('.html') else '/')+name,f)
-  if a.dash:
+  if a.dash and a.case=='dash':
    transfer(disk,'import','/bin/dash',a.dash)
    script=Path(tmp)/'check.sh';script.write_text('/bin/desktop.elf\necho DESKTOP_DASH_STATUS:$?\n/bin/semantics.elf\necho SEMANTIC_DASH_STATUS:$?\n/bin/gap.elf\necho GAP_DASH_STATUS:$?\n/bin/session.elf\necho SESSION_DASH_STATUS:$?\n')
    transfer(disk,'import','/check.sh',script)
@@ -95,16 +99,27 @@ try:
    assert next(x for x in report['runs'] if x['mode']=='budget')['cache_bytes']==0
    mark('budget_denial_safe_fallback_no_cache_rebuild_on_typing')
   elif a.case=='semantic':
-   b=launch('semantics',ready=b'SEMANTIC_READY');data=bytes(g.output)[b:];assert b'=FAIL' not in data
-   checks=re.findall(rb'SEMANTIC_CHECK ([^\r\n]+)=PASS',data);assert len(checks)>=19
+   b=len(g.output);send_bytes(g,b'exec-file /bin/semantics.elf\r')
+   marker=g.expect_any((b'SEMANTIC_READY',b'kind=exited code=1',b'kind=faulted',b'kind=killed'),start=b,timeout=90)
+   if marker!=b'SEMANTIC_READY':raise AssertionError('semantic guest failed before readiness: '+repr(bytes(g.output)[b:]))
+   pump(g,.4);data=bytes(g.output)[b:]
+   native_checks=re.findall(rb'SEMANTIC_CHECK ([^=\r\n]+)=(PASS|FAIL)',data)
+   assert len(native_checks)>=19 and all(status==b'PASS' for _,status in native_checks)
    snapshot_data=latest(b'SSG_AGENT_SNAPSHOT',b);(out/'snapshot.json').write_text(json.dumps(snapshot_data,indent=2)+'\n')
    mock=subprocess.run([sys.executable,ROOT/'tests/mock_semantic_agent.py'],input=json.dumps(snapshot_data),text=True,capture_output=True,check=True)
-   proposal=mock.stdout.strip();(out/'proposal.json').write_text(proposal+'\n');mark('independent_mock_selects_real_ssg_target',native_checks=len(checks))
+   proposal=mock.stdout.strip();(out/'proposal.json').write_text(proposal+'\n');mark('independent_mock_selects_real_ssg_target',native_checks=len(native_checks))
+   report['native_checks']=[{'name':name.decode(),'status':status.decode()} for name,status in native_checks]
    click_xy(*point(rb'SEMANTIC_POINT name=proposal xy=(\d+),(\d+)'));type_text(proposal)
    sb=len(g.output);click_xy(*point(rb'SEMANTIC_POINT name=authorize xy=(\d+),(\d+)'))
    g.expect(b'SEMANTIC_EXECUTE VERIFIED_LOCAL value=mock-agent-verified replay=DENIED',start=sb,timeout=30);g.expect(b'SEMANTIC_WITHOUT_GRANT DENIED',start=sb)
    result=latest(b'SSG_AGENT_RESULT',sb);assert any(n.get('nativeName')=='draft-title' and n.get('text')=='mock-agent-verified' for n in result['nodes'])
    shot('semantic-authorized-local-result');mark('query_propose_explicit_fixture_authorize_execute_verify');finish(b);mark('semantic_app_exact_resource_return')
+   if a.dash:
+    start=len(g.output);send_bytes(g,b'exec-driver /bin/dash /semantic-dash.sh\r');g.expect(b'SEMANTIC_READY',start=start,timeout=90);pump(g,.4)
+    data=bytes(g.output)[start:];dash_checks=re.findall(rb'SEMANTIC_CHECK ([^\r\n]+)=PASS',data)
+    assert len(dash_checks)>=19 and b'=FAIL' not in data
+    stroke('esc');g.expect(b'kind=exited code=0',start=start,timeout=40);g.expect_supervisor(start=start);assert resources(g)==active
+    report['dash_checks']=[name.decode() for name in dash_checks];mark('dash_semantics_lifecycle_and_resource_return',native_checks=len(dash_checks))
    restart=len(g.output);send_bytes(g,b'spawn-file /bin/semantics.elf\r');g.expect(b'SEMANTIC_READY',start=restart,timeout=90);pump(g,.4)
    pid=int(re.search(rb'\[loader\] started pid=(\d+)',bytes(g.output)[restart:])[1])
    click_xy(*point(rb'SEMANTIC_POINT name=proposal xy=(\d+),(\d+)'));type_text(proposal)

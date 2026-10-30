@@ -3,6 +3,8 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
+#include <QtCore/QEvent>
+#include <QtCore/QCoreApplication>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QAbstractButton>
 namespace aurora {
@@ -58,12 +60,22 @@ void Semantics::revoke(){++authorization_epoch;}
 QString Semantics::execute(const QJsonObject &p,Grant &g) {
     if(g.used || g.epoch!=authorization_epoch || clock.elapsed()>=g.expires || g.binding!=encode(p))return "DENIED";
     g.used=true;QString error;if(!validate(p,error))return error;
-    auto &e=entries[p["id"].toString().toUInt()-1];
-    if(auto *line=qobject_cast<QLineEdit*>(e.widget.data())){
+    const auto index=int(p["id"].toString().toUInt()-1);
+    const QPointer<QWidget> target=entries.at(index).widget;
+    const QString role=entries.at(index).role;
+    if(role=="textbox"){
+        auto *line=qobject_cast<QLineEdit*>(target.data());
+        if(!line)return "UNKNOWN";
         const auto expected=p["value"].toString();line->setText(expected);
-        return e.widget && line->text()==expected?"VERIFIED_LOCAL":"UNKNOWN";
+        // A synchronous handler can append entries (reallocating the vector),
+        // destroy the widget, or queue deleteLater(). QPointer protects the
+        // post-dispatch read; deferred deletion remains Qt's event-loop job.
+        // The local value is verified only while the guarded target still lives.
+        if(!target)return "UNKNOWN";
+        auto *current=qobject_cast<QLineEdit*>(target.data());
+        return current && current->text()==expected?"VERIFIED_LOCAL":"UNKNOWN";
     }
-    auto *button=qobject_cast<QAbstractButton*>(e.widget.data());button->click();
+    auto *button=qobject_cast<QAbstractButton*>(target.data());if(!button)return "UNKNOWN";button->click();
     // Signal dispatch cannot prove an external transaction completed. Never replay.
     return "UNKNOWN";
 }

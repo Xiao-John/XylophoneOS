@@ -33,6 +33,10 @@ public:
         }
     };
     Semantics();
+    Semantics(const Semantics &)=delete;
+    Semantics &operator=(const Semantics &)=delete;
+    Semantics(Semantics &&)=delete;
+    Semantics &operator=(Semantics &&)=delete;
     bool expose(QWidget *widget,const QString &role,bool external_effect=false);
     QJsonObject observe();
     bool propose(const QJsonObject &proposal,QString &error);

@@ -36,6 +36,8 @@ i64 syscall(u64 number, u64 first, u64 second, u64 third) {
             auto* bytes = reinterpret_cast<u8*>(&mode_value);
             for (u32 i = 0; i < sizeof(mode_value); ++i) bytes[i] = last_request.data[i];
             response.result = 0;
+        } else if (last_request.operation == static_cast<u32>(terminal::operation::drain)) {
+            response.result = 0;
         } else if (last_request.operation == static_cast<u32>(terminal::operation::read_mode)) {
             response.result = 0;
         } else if (last_request.operation == static_cast<u32>(terminal::operation::read_until)) {
@@ -62,7 +64,8 @@ int main() {
     terminal::mode selected{};
     if (terminal::get_mode(client, selected) != 0 || selected.vmin != 1 || selected.vtime != 0) return 7;
     selected.vmin = 0; selected.vtime = 1;
-    if (terminal::set_mode(client, selected) != 0 || mode_value.vtime != 1) return 8;
+    if (terminal::set_mode(client, selected, true) != 0 || mode_value.vtime != 1 ||
+        last_request.deadline_ns != 1 || terminal::drain(client) != 0) return 8;
     selected.lflag = 1;
     if (terminal::set_mode(client, selected) != thread_error_unsupported || mode_value.lflag != 0) return 9;
     char buffer[300]{};

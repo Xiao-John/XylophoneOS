@@ -113,6 +113,28 @@ i64 read_configured(u8* output, u32 length) {
     return result == thread_error_timeout && app_mode.vmin == 0 ? 0 : result;
 }
 
+i64 drain_output() {
+    for (;;) {
+        lock();
+        const i64 error = __atomic_load_n(&worker_error, __ATOMIC_ACQUIRE);
+        const bool interrupted = __atomic_load_n(&request_pending, __ATOMIC_ACQUIRE) != 0 ||
+            __atomic_load_n(&app_pending, __ATOMIC_ACQUIRE) != 0 ||
+            __atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) != 0;
+        const i64 empty = error != 0 ? error : interrupted ? terminal::interrupted : device.transmitter_empty();
+        unlock();
+        if (empty < 0) return empty;
+        if (empty == 1) return 0;
+        // 16550 has no TEMT interrupt. Sleep for a timer tick before checking
+        // again; cancellation and peer failure are observed on the next tick.
+        const i64 now = sdk::syscall(sys_clock_monotonic);
+        if (now < 0) return now;
+        const u64 current = static_cast<u64>(now);
+        if (current >= thread_deadline_infinite - thread_tick_ns) return thread_error_timeout;
+        const i64 waited = thread::sleep_until(current + thread_tick_ns);
+        if (waited != 0) return waited;
+    }
+}
+
 u64 control_worker(void*) {
     while (__atomic_load_n(&stopping, __ATOMIC_ACQUIRE) == 0) {
         while (__atomic_load_n(&request_pending, __ATOMIC_ACQUIRE) != 0 &&
@@ -278,7 +300,8 @@ extern "C" int xos_user_main(const xos::startup_info*) {
             const bool io_op = op == terminal::operation::read || op == terminal::operation::read_until ||
                 op == terminal::operation::read_mode ||
                 op == terminal::operation::write || op == terminal::operation::write_until;
-            const bool mode_op = op == terminal::operation::mode_get || op == terminal::operation::mode_set;
+            const bool mode_op = op == terminal::operation::mode_get || op == terminal::operation::mode_set ||
+                op == terminal::operation::drain;
             const bool denied = (from_app && !(io_op || mode_op || op == terminal::operation::cancel)) ||
                 (!from_app && mode_op) ||
                 (!from_app && app_thread != 0 && io_op) ||
@@ -294,12 +317,17 @@ extern "C" int xos_user_main(const xos::startup_info*) {
             } else if (op == terminal::operation::mode_set) {
                 terminal::mode proposed{};
                 auto* bytes = reinterpret_cast<u8*>(&proposed);
-                if (request.length != sizeof(proposed)) response.result = process_error_invalid;
+                if (request.length != sizeof(proposed) || request.deadline_ns > 1) response.result = process_error_invalid;
                 else {
                     for (u32 i = 0; i < sizeof(proposed); ++i) bytes[i] = request.data[i];
                     if (!terminal::valid_mode(proposed)) response.result = thread_error_unsupported;
-                    else { app_mode = proposed; response.result = 0; }
+                    else {
+                        response.result = request.deadline_ns == 1 ? drain_output() : 0;
+                        if (response.result == 0) app_mode = proposed;
+                    }
                 }
+            } else if (op == terminal::operation::drain) {
+                response.result = request.length == 0 ? drain_output() : process_error_invalid;
             } else if (op == terminal::operation::read_mode) {
                 response.result = read_configured(response.data, request.length);
                 if (response.result > 0) response.length = static_cast<u32>(response.result);

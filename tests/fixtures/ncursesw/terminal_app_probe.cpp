@@ -17,8 +17,7 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
     tty.c_lflag |= ECHO; errno = 0;
     if (tcsetattr(0, TCSANOW, &tty) != -1 || errno != ENOTSUP) return 10;
     if (tcgetattr(0, &tty) != 0 || tty.c_lflag != 0) return 11;
-    errno = 0;
-    if (tcsetattr(0, TCSADRAIN, &tty) != -1 || errno != ENOTSUP) return 15;
+    if (tcsetattr(0, TCSADRAIN, &tty) != 0 || tcdrain(1) != 0) return 15;
     errno = 0;
     if (tcflush(0, TCIFLUSH) != -1 || errno != ENOTSUP) return 16;
     tty.c_cc[VMIN] = 0;
@@ -42,6 +41,7 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
     const char message[] = "W1_APP_OK\n";
     for (u32 i = 0; i < sizeof(message) - 1; ++i)
         if (write(duplicate, message + i, 1) != 1) return 3;
+    if (tcdrain(duplicate) != 0) return 17;
     if (close(duplicate) != 0) return 4;
     return 0;
 }

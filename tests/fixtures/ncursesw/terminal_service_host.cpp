@@ -14,6 +14,8 @@ std::condition_variable wait_changed;
 std::atomic<unsigned> waits{0};
 bool has_byte = false;
 bool transmit_ready = false;
+bool transmitter_idle = true;
+unsigned sleeps = 0;
 xos::u8 simulated_byte = 0;
 xos::channel_info mock_channels[2]{};
 }
@@ -39,6 +41,7 @@ i64 syscall(u64 number, u64 first, u64 second, u64 third) {
         return changed ? 0 : thread_error_timeout;
     }
     if (number == sys_wake_word) { wait_changed.notify_all(); return 0; }
+    if (number == sys_sleep_until) { ++sleeps; transmitter_idle = true; return 0; }
     return 0;
 }
 }
@@ -54,6 +57,7 @@ i64 driver::read(u8* output, u32 length) {
 }
 i64 driver::write(const u8*, u32 length) { return length != 0 && transmit_ready ? 1 : 0; }
 i64 driver::arm_write() { return 0; }
+i64 driver::transmitter_empty() { return transmitter_idle ? 1 : 0; }
 i64 driver::close() { return 0; }
 }
 
@@ -129,5 +133,10 @@ int main() {
     if (read_configured(&output, 1) != 0) return 17;
     lock(); simulated_byte = 'X'; has_byte = true; unlock();
     if (read_configured(&output, 1) != 1 || output != 'X') return 18;
+    transmitter_idle = false;
+    if (drain_output() != 0 || sleeps != 1) return 19;
+    __atomic_store_n(&request_pending, 1u, __ATOMIC_RELEASE);
+    if (drain_output() != terminal::interrupted) return 20;
+    __atomic_store_n(&request_pending, 0u, __ATOMIC_RELEASE);
     return 0;
 }

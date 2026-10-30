@@ -59,7 +59,9 @@ i64 driver::service_irq(u64 sequence) {
     // The device remains IRQ-masked until ack. Bound work even if input keeps
     // arriving; a still-asserted source raises a new event after unmasking.
     for (u32 i = 0; i < 256; ++i) {
-        if (!(status() & ready)) break;
+        const u8 line_status = status();
+        if (line_status == 0xff) return process_error_state;
+        if (!(line_status & ready)) break;
         const u8 byte = read_port(base);
         if (length_ == capacity) count(stats_.software_drops);
         else { data_[(head_ + length_) % capacity] = byte; ++length_; }
@@ -82,7 +84,12 @@ i64 driver::read(u8* output, u32 limit) {
 i64 driver::write(const u8* input, u32 length) {
     if (!started_ || (input == nullptr && length != 0)) return process_error_invalid;
     u32 written = 0;
-    while (written < length && (status() & tx_ready)) write_port(base, input[written++]);
+    while (written < length) {
+        const u8 line_status = status();
+        if (line_status == 0xff) return written != 0 ? static_cast<i64>(written) : process_error_state;
+        if (!(line_status & tx_ready)) break;
+        write_port(base, input[written++]);
+    }
     return static_cast<i64>(written);
 }
 
@@ -90,6 +97,14 @@ i64 driver::arm_write() {
     if (!started_) return process_error_state;
     write_port(base + 1, 0x07);
     return 0;
+}
+
+i64 driver::transmitter_empty() {
+    if (!started_) return process_error_state;
+    // TEMT includes the shift register; THRE alone is not a drain.
+    const u8 line_status = status();
+    if (line_status == 0xff) return process_error_state;
+    return (line_status & 0x40) != 0 ? 1 : 0;
 }
 
 i64 driver::close() {

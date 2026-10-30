@@ -54,8 +54,11 @@ SDK 试行 `terminal_client.hpp` 可按启动者给出的 supervisor 与服务 P
 单线程 libc 现提供试行 `termios.h` 和原始模式映射：`tcgetattr` 查询服务实际模式，
 `tcsetattr(TCSANOW)` 仅接受上述模式和固定 115200 8N1；未支持标志和组合返回
 ENOTSUP，非终端返回 ENOTTY。初始终端 read 使用 `read_mode`，零值可能表示限时或
-非阻塞读取无数据。`TCSADRAIN`、`TCSAFLUSH`、`tcdrain` 和 `tcflush` 目前返回
-ENOTSUP，不代表发送排空或清空已发生；符号速率常量不代表设备支持改变速率。
+非阻塞读取无数据。`tcdrain` 和 `TCSADRAIN` 通过用户态驱动检查 16550 的 TEMT 位
+确认发送寄存器及移位寄存器均空；硬件没有 TEMT 中断，未空时按单调时钟 tick 睡眠
+后重查，控制请求或失效可中断。`TCSADRAIN` 仅在确认排空后更新模式，中断或错误
+时模式不变。`TCSAFLUSH` 和 `tcflush` 仍返回 ENOTSUP，不代表清空已发生；符号
+速率常量不代表设备支持改变速率。排空及中断行为尚未客体验证。
 
 当前不提供完整应用前台会话、完整 termios、通用 stdio 继承、故障恢复、信号或稳定设备救援；所有
 权限、并发、时限、短写及退出路径均须在相关修改提交后的真实客体测试中验证。

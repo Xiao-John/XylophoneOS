@@ -1065,7 +1065,7 @@ extern "C" int tcsetattr(int fd, int action, const struct termios* value) {
     if (value == nullptr) { errno = EFAULT; return -1; }
     if (objects[lease.index].kind != object_kind::terminal) { errno = ENOTTY; return -1; }
     if (action != TCSANOW && action != TCSADRAIN && action != TCSAFLUSH) { errno = EINVAL; return -1; }
-    if (action != TCSANOW) { errno = ENOTSUP; return -1; }
+    if (action == TCSAFLUSH) { errno = ENOTSUP; return -1; }
     if (value->c_iflag != 0 || value->c_oflag != 0 || value->c_lflag != 0 ||
         value->c_cflag != (CS8 | CREAD | CLOCAL) ||
         value->c_ispeed != B115200 || value->c_ospeed != B115200) {
@@ -1076,8 +1076,8 @@ extern "C" int tcsetattr(int fd, int action, const struct termios* value) {
     }
     xos::terminal::mode mode = xos::terminal::default_mode;
     mode.vmin = value->c_cc[VMIN]; mode.vtime = value->c_cc[VTIME];
-    const xos::i64 result = xos::terminal::set_mode(terminal_client, mode);
-    if (result != 0) { errno = error_from_kernel(result); return -1; }
+    const xos::i64 result = xos::terminal::set_mode(terminal_client, mode, action == TCSADRAIN);
+    if (result != 0) { errno = result == xos::terminal::interrupted ? EINTR : error_from_kernel(result); return -1; }
     return 0;
 }
 
@@ -1092,7 +1092,9 @@ extern "C" int tcdrain(int fd) {
     object_lease lease(fd);
     if (lease.index < 0) { errno = EBADF; return -1; }
     if (objects[lease.index].kind != object_kind::terminal) { errno = ENOTTY; return -1; }
-    errno = ENOTSUP; return -1;
+    const xos::i64 result = xos::terminal::drain(terminal_client);
+    if (result != 0) { errno = result == xos::terminal::interrupted ? EINTR : error_from_kernel(result); return -1; }
+    return 0;
 }
 
 extern "C" speed_t cfgetispeed(const struct termios* value) { return value->c_ispeed; }

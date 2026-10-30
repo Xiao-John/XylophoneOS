@@ -13,7 +13,8 @@ struct client {
 i64 connect(client& session, u64 controller_pid, u64 service_pid);
 i64 connect_startup(client& session, const startup_info* startup);
 i64 get_mode(client& session, mode& value);
-i64 set_mode(client& session, const mode& value);
+i64 set_mode(client& session, const mode& value, bool drain_first = false);
+i64 drain(client& session);
 // May return zero for an empty nonblocking/timed read, not EOF.
 i64 read_mode(client& session, void* data, u32 length);
 i64 read_until(client& session, void* data, u32 length, u64 deadline_ns);

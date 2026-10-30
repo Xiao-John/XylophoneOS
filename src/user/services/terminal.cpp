@@ -7,13 +7,19 @@
 namespace {
 using namespace xos;
 user::uart::driver device;
-u32 lock_word, stopping;
+u32 lock_word, stopping, input_ready;
 i64 worker_error;
 u64 device_irq_token;
 u32 control_incoming, control_outgoing;
+void lock();
+void unlock();
 
 void fail_worker(i64 error) {
+    lock();
     __atomic_store_n(&worker_error, error == 0 ? process_error_state : error, __ATOMIC_RELEASE);
+    __atomic_store_n(&input_ready, 1u, __ATOMIC_RELEASE);
+    unlock();
+    (void)thread::wake(&input_ready, 1);
     // Wake both the request loop and a controller waiting for a response. A
     // response already sent may have been observed; this is not a rollback.
     (void)sdk::channel_close(control_incoming);
@@ -38,10 +44,28 @@ u64 receive_worker(void*) {
         }
         lock();
         const i64 result = device.service_irq(static_cast<u64>(event));
+        __atomic_store_n(&input_ready, 1u, __ATOMIC_RELEASE);
         unlock();
+        (void)thread::wake(&input_ready, 1);
         if (result != 0) { fail_worker(result); return 0; }
     }
     return 0;
+}
+
+i64 read_until(u8* output, u32 length, u64 deadline) {
+    if (deadline == thread_deadline_infinite) return process_error_invalid;
+    for (;;) {
+        lock();
+        const i64 error = __atomic_load_n(&worker_error, __ATOMIC_ACQUIRE);
+        const i64 result = error != 0 ? error : device.read(output, length);
+        if (result != 0 || length == 0) { unlock(); return result; }
+        // Reset while holding the same lock used by the IRQ worker. If the
+        // worker runs before wait registers, the value comparison prevents sleep.
+        __atomic_store_n(&input_ready, 0u, __ATOMIC_RELEASE);
+        unlock();
+        const i64 waited = thread::wait(&input_ready, 0, deadline);
+        if (waited != 0 && waited != thread_value_changed) return waited;
+    }
 }
 
 bool find_control_channels(u64 controller, u32& incoming, u32& outgoing) {
@@ -80,10 +104,17 @@ extern "C" int xos_user_main(const xos::startup_info*) {
             request.length > terminal::data_bytes || request.sequence == 0) {
             response.result = process_error_invalid;
         } else {
+            const auto op = static_cast<terminal::operation>(request.operation);
+            if (op == terminal::operation::read_until) {
+                response.result = read_until(response.data, request.length, request.deadline_ns);
+                if (response.result > 0) response.length = static_cast<u32>(response.result);
+            }
             lock();
             const i64 error = __atomic_load_n(&worker_error, __ATOMIC_ACQUIRE);
-            const auto op = static_cast<terminal::operation>(request.operation);
-            if (error != 0) response.result = error;
+            if (error != 0 && !(op == terminal::operation::read_until && response.result > 0)) {
+                response.result = error; response.length = 0;
+            }
+            else if (op == terminal::operation::read_until) { /* already serviced */ }
             else if (op == terminal::operation::read) {
                 response.result = device.read(response.data, request.length);
                 if (response.result == 0 && request.length != 0) response.result = process_error_would_block;

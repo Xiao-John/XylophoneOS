@@ -211,6 +211,11 @@ sys82 `sys_pio_grant` 是开发中的固定设备 PIO 授权；COM1 交接和隔
 sys83 `sys_irq_event` 为受控 IRQ 事件、等待和确认；当前仅 IRQ4、未客体验收，
 详见[专项契约](contracts/irq_event.md)。不读取设备数据，不等于 UART 驱动完成。
 
+`spawn_options.prepare_child` 是用户态加载器的临时准备回调，在映射和文件关闭成功后、
+新子进程运行前调用；不适用于 exec。回调或启动失败时加载器 abort 子进程，调用方
+负责清理自己建立的通道等资源。若回调已成功授予 COM1，后续启动失败仍会隔离设备，
+不保证恢复。该回调和终端控制协议尚未客体验收，不能作为稳定 SDK 资格。
+
 sys55 `sys_process_foreground(&request,active,0)`：request 为48字节固定宽度
 `process_foreground{version=1,size=48,count,reserved=0,pids[4]}`；未使用 PID 必须0。
 每个 PID 必须有属于调用者的 completion，且不重复。active=1 从开始构造流水线

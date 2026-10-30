@@ -17,7 +17,9 @@
 状态；不自动重启驱动、恢复内核串口或宣称救援可用。调试串口关闭后，内核串口
 输出不能伪报成功。实际用户态驱动、终端服务和备用救援路径仍须另行实现。
 
-action 为 grant=0、revoke=1、query=2；query 的 target=0，结果 0 可授权、1 已授权、
+action 为 grant=0、revoke=1、query=2、controller=3；仅当前 PIO 持有者可用
+controller 查询内核认证的授权者 PID，target 必须为 0，失权后拒绝。query 仅限
+supervisor，target=0，结果 0 可授权、1 已授权、
 2 已隔离。grant/revoke 的 target 为直接子 PID、resource=1；busy 表示交接时存在未
 消费输入，授权失败不改变资源状态。授权成功后内核 debug 不再访问串口；串口
 输出返回 0（VGA 可显示），原 console 读取返回 denied。授权后终止一律隔离到重启，

@@ -68,6 +68,7 @@ def build_users(root, build, nasm, run, build_id):
                      compile_fatfs(root / "src/user/services/fatfs_diskio.cpp"),
                      compile_fatfs(root / "src/user/services/fatfs_unicode.cpp")]
     file_ui_object = compile_source(root / "src/user/services/file_ui.cpp")
+    terminal_control_object = compile_source(root / "src/user/services/terminal_control.cpp")
     archive = sdk / "lib/libxos.a"
     if archive.exists():
         archive.unlink()
@@ -77,16 +78,16 @@ def build_users(root, build, nasm, run, build_id):
     loader_objects.append(compile_source(root / "src/user/arch/x86_64/tls.cpp"))
     loader_archive = sdk / "lib/libxos_loader.a"
     run([tool("ar"), "rcsD", str(loader_archive), *loader_objects])
-    names = ("supervisor", "files", "demo", "fault", "spin", "slow", "echo", "hello", "libc_hello", "e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "display", "gfxdemo", "xypm_recover", "xos_diag")
+    names = ("supervisor", "files", "demo", "fault", "spin", "slow", "echo", "hello", "libc_hello", "e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "display", "gfxdemo", "xypm_recover", "xos_diag", "terminal")
     bootstrap_names = ("supervisor", "files")
     libc_programs = ("libc_hello", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "xos_diag")
-    disk_programs = ("e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "xos_diag")
+    disk_programs = ("e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "xos_diag", "terminal")
     metadata = []
     header = ["#pragma once", "#include <xos/types.hpp>", "namespace xos::user_images {",
               "struct segment { u64 address, offset, files, memory; u32 permissions; };",
               "struct module { const char* name; const u8* bytes; u64 size; };"]
     for name in names:
-        source_path = root / (f"src/user/services/{name}.cpp" if name in ("files", "display") else f"src/user/programs/{name}.cpp")
+        source_path = root / (f"src/user/services/{name}.cpp" if name in ("files", "display", "terminal") else f"src/user/programs/{name}.cpp")
         if name == "threading_core_probe":
             source_path = root / "tests/fixtures/threading/core_probe.cpp"
         extra_flags = ("-w",) if name in libc_programs else ()
@@ -103,8 +104,9 @@ def build_users(root, build, nasm, run, build_id):
              "-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
              "-T", str(sdk / "user.ld"), str(sdk / ("crt0_posix.o" if name in ("runtime_probe", "cpp_runtime_probe", "tls_exit_probe") else "crt0_libc.o" if name in libc_programs else "crt0.o")), main,
              *([str(loader_archive)] if name in ("supervisor", "xos_diag") else []), *fault_objects,
-             *([str(core_archive), str(loader_archive)] if name in ("threading_core_probe", "gfxdemo") else []),
-             *([file_ui_object] if name == "supervisor" else []),
+             *([str(core_archive), str(loader_archive)] if name in ("threading_core_probe", "gfxdemo", "terminal") else []),
+             *([compile_source(root / "src/user/drivers/uart_16550.cpp")] if name == "terminal" else []),
+             *([file_ui_object, terminal_control_object] if name == "supervisor" else []),
              *([*fatfs_objects] if name == "files" else []),
              *(["-Wl,--start-group", str(archive), str(loader_archive), "-L", str(sdk / "lib"),
                 "-lc", "-lm", "-lgcc", "-Wl,--end-group"]

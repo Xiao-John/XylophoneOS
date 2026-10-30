@@ -51,6 +51,11 @@ struct spawn_options {
     u32 exec_depth_mode = 0;
     u32 descriptor_count = 0;
     const startup_descriptor* descriptors = nullptr;
+    // Runs after the image is mapped but before the child becomes runnable.
+    // The caller owns cleanup of any resources created by this callback if
+    // either the callback or the subsequent start fails.
+    i64 (*prepare_child)(u64 child, void* context) = nullptr;
+    void* prepare_context = nullptr;
 };
 i64 spawn_file_options(const char* path, u32 argc, const char* const* argv,
                        const spawn_options& options);

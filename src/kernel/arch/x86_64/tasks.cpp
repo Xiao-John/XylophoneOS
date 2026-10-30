@@ -150,7 +150,7 @@ alignas(16) u8 fpu_template[512];
 bool process_trace_enabled = true;
 process_guard_info admission_guard{};
 stream_lease input_lease{};
-u64 pio_com1_owner;
+u64 pio_com1_owner, pio_com1_controller;
 bool pio_com1_quarantined;
 u64 irq_owner, irq_token, irq_next_token = 1, irq_sequence;
 bool irq_pending, irq_quarantined;
@@ -178,6 +178,7 @@ void quarantine_com1(process_record* task) {
     release_irq();
     task->io_window_first = task->io_window_length = 0;
     pio_com1_owner = 0;
+    pio_com1_controller = 0;
     pio_com1_quarantined = true;
 }
 
@@ -1650,9 +1651,15 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_pio_grant: {
-        if (!current->supervisor) { result = process_error_denied; break; }
         if (third != pio_resource_com1) { break; }
         const auto action = static_cast<pio_grant_action>(first);
+        if (action == pio_grant_action::controller) {
+            if (second != 0) { break; }
+            result = current->pid == pio_com1_owner && pio_com1_controller != 0
+                ? static_cast<i64>(pio_com1_controller) : process_error_denied;
+            break;
+        }
+        if (!current->supervisor) { result = process_error_denied; break; }
         if (action == pio_grant_action::query) {
             if (second != 0) { break; }
             result = pio_com1_quarantined ? 2 : pio_com1_owner != 0 ? 1 : 0;
@@ -1668,6 +1675,7 @@ void* process_syscall(interrupt_frame* frame) {
             target->io_window_first = 0x3f8;
             target->io_window_length = 8;
             pio_com1_owner = target->pid;
+            pio_com1_controller = current->pid;
             result = 0;
         } else if (action == pio_grant_action::revoke) {
             process_record* target = task_by_pid(second);

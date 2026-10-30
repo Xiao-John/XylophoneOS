@@ -112,6 +112,9 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
         return error;
     };
     const bool replacing = options != nullptr && options->replace_image;
+    if (replacing && options->prepare_child != nullptr) {
+        return fail_before_create(process_error_invalid);
+    }
     bool inherits_file = false;
     if (options != nullptr) {
         for (u32 fd=0;fd<3;++fd) inherits_file = inherits_file || options->file_handles[fd] != 0;
@@ -272,6 +275,9 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     if (close_file) {
         const i64 closed = file_client.close(file_handle);
         if (result >= 0 && closed < 0) { result = closed; }
+    }
+    if (result >= 0 && options != nullptr && options->prepare_child != nullptr) {
+        result = options->prepare_child(static_cast<u64>(child), options->prepare_context);
     }
     if (result >= 0) {
         process_entry entry{plan.entry, startup_address - 16, startup_address};

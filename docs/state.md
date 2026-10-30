@@ -148,10 +148,12 @@ x86 TSS 已准备默认全拒绝的 I/O bitmap，尚无授权/撤权或 guest �
 进程切换和成功 exec 的位图重装基础见[0118](work_log/0118_pio_context_foundation.md)；
 没有用户可用的 PIO 授权，COM1 独占交接仍由本任务继续实现。
 sys82 COM1 窄 PIO 授权及调试串口脱离已在本分支实现，边界见[pio_grant](contracts/pio_grant.md)，
-构建及限制见[0120](work_log/0120_com1_pio_handoff.md)；尚无 IRQ、恢复/救援或客体验收。
+构建及限制见[0120](work_log/0120_com1_pio_handoff.md)；尚无恢复/救援或客体验收。
 sys83 的受控 IRQ4 事件已在本分支实现，契约见[irq_event](contracts/irq_event.md)，
 构建和未验范围见[0122](work_log/0122_irq_event_mechanism.md)；尚无客体验收。
-用户态 COM1 驱动类已开始，尚未接入服务或运行，见[0123](work_log/0123_user_uart_driver.md)。
+用户态 COM1 驱动类的初始实现见[0123](work_log/0123_user_uart_driver.md)。
+用户态终端服务、控制客户端及加载器启动前回调的基础已构建，尚未实际启动或接入
+应用会话；限制和证据见[0124](work_log/0124_terminal_handoff_foundation.md)。
 用户态 UART 的 PIO、IRQ 与 COM1 调试通路交接提案见
 [uart_user_driver_proposal](contracts/uart_user_driver_proposal.md)，仅设计，尚无授权 ABI。
 

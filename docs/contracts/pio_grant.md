@@ -17,13 +17,20 @@
 状态；不自动重启驱动、恢复内核串口或宣称救援可用。调试串口关闭后，内核串口
 输出不能伪报成功。实际用户态驱动、终端服务和备用救援路径仍须另行实现。
 
-action 为 grant=0、revoke=1、query=2、controller=3；仅当前 PIO 持有者可用
+action 为 grant=0、revoke=1、query=2、controller=3、recover=4；仅当前 PIO 持有者可用
 controller 查询内核认证的授权者 PID，target 必须为 0，失权后拒绝。query 仅限
 supervisor，target=0，结果 0 可授权、1 已授权、
 2 已隔离。grant/revoke 的 target 为直接子 PID、resource=1；busy 表示交接时存在未
 消费输入，授权失败不改变资源状态。授权成功后内核 debug 不再访问串口；串口
-输出返回 0（VGA 可显示），原 console 读取返回 denied。授权后终止一律隔离到重启，
-未实现安全复原和救援。该语义不承诺交接间输入流未丢失：设备 FIFO 满和电气错误
+输出返回 0（VGA 可显示），原 console 读取返回 denied。授权后终止会隔离资源。
+`recover` 仅允许真实 supervisor 在没有 PIO/IRQ 持有者、调试串口已脱离时请求；内核
+保持 IRQ4 屏蔽并解除 COM1 的授权和中断隔离，允许随后重新授权 building 子进程，
+不会访问、重置或读取设备。此限定只适用于无 DMA 且 IRQ4 独占的 COM1，不推广到
+其他设备。下一用户态驱动在绑定 IRQ 前设置 115200 8N1、禁用旧中断使能并重建配置，
+并不保证旧请求结果、旧队列或电气输入保真；不可据此宣称透明恢复或救援已实现。
+原 console 不重新接管，旧调试串口在首次成功脱离后不会重新附着。若 IRQ token 已耗尽
+仍不能绑定。以上恢复路径尚未经过客体验证。
+该语义不承诺交接间输入流未丢失：设备 FIFO 满和电气错误
 须由后续驱动与真实环境验证。
 
 接口要求定向测试无权 fault、边界、

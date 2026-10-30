@@ -145,10 +145,9 @@ MMIO、DMA、IRQ、撤权等通用机制；停止不可确认时隔离DMA页。�
 新增内核 UART IRQ 数据通路已撤回，sys80 claim 暂时不可用，见[0115](work_log/0115_w1_c28_irq_withdrawal.md)。
 x86 TSS 已准备默认全拒绝的 I/O bitmap，尚无授权/撤权或 guest 资格；详见
 [0116](work_log/0116_x86_io_bitmap_foundation.md)。
-进程切换和成功 exec 的位图重装基础见[0118](work_log/0118_pio_context_foundation.md)；
-没有用户可用的 PIO 授权，COM1 独占交接仍由本任务继续实现。
+进程切换和成功 exec 的位图重装基础见[0118](work_log/0118_pio_context_foundation.md)。
 sys82 COM1 窄 PIO 授权及调试串口脱离已在本分支实现，边界见[pio_grant](contracts/pio_grant.md)，
-构建及限制见[0120](work_log/0120_com1_pio_handoff.md)；尚无恢复/救援或客体验收。
+构建及限制见[0120](work_log/0120_com1_pio_handoff.md)；尚无救援或客体验收。
 sys83 的受控 IRQ4 事件已在本分支实现，契约见[irq_event](contracts/irq_event.md)，
 构建和未验范围见[0122](work_log/0122_irq_event_mechanism.md)；尚无客体验收。
 用户态 COM1 驱动类的初始实现见[0123](work_log/0123_user_uart_driver.md)。
@@ -164,8 +163,11 @@ sys83 的受控 IRQ4 事件已在本分支实现，契约见[irq_event](contract
 [0128](work_log/0128_terminal_control_interrupt.md)；尚无客体验证。
 读取/中断的服务源码已获得有限宿主线程模拟覆盖；常规 Xsh 仍未切换，见
 [0129](work_log/0129_terminal_service_host_probe.md)。
+COM1 显式解除隔离并重新授权的基础已实现，尚无完整服务重启或客体验证，见
+[0130](work_log/0130_com1_reauthorization.md)。
 用户态 UART 的 PIO、IRQ 与 COM1 调试通路交接提案见
-[uart_user_driver_proposal](contracts/uart_user_driver_proposal.md)，仅设计，尚无授权 ABI。
+[uart_user_driver_proposal](contracts/uart_user_driver_proposal.md)，为早期设计提案，具体
+现状以 PIO/IRQ 契约及上述工作记录为准。
 
 W0 勘查和 W1 [工作契约草案](contracts/terminal_w1.md)已开始；W0 未冻结，W1 未
 实现或验收。终端 ESC、输入所有权、UART 等待与 newlib 多字节缺口见

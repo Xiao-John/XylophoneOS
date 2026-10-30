@@ -205,7 +205,8 @@ sys80 `sys_stream_lease` 是开发中的独占字节流读取权机制；参数�
 sys81 `sys_channel` 是开发中的受控单槽 IPC 与等待机制，身份和生命周期见
 [专项契约](contracts/channel.md)；当前未客体验收，不等于用户态终端服务完成。
 
-sys82 `sys_pio_grant` 是开发中的固定设备 PIO 授权；COM1 交接和隔离边界见
+sys82 `sys_pio_grant` 是开发中的固定设备 PIO 授权；COM1 交接、隔离及显式
+重新授权边界见
 [专项契约](contracts/pio_grant.md)，尚未客体验收，不等于 IRQ 或用户态终端资格。
 
 sys83 `sys_irq_event` 为受控 IRQ 事件、等待和确认；当前仅 IRQ4、未客体验收，

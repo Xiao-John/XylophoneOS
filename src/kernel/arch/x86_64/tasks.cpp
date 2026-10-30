@@ -1670,12 +1670,25 @@ void* process_syscall(interrupt_frame* frame) {
                 result = process_error_denied; break;
             }
             if (pio_com1_owner != 0 || pio_com1_quarantined) { result = process_error_state; break; }
-            if (!platform::debug_detach_serial()) { result = process_error_busy; break; }
+            if (platform::debug_serial_attached() && !platform::debug_detach_serial()) {
+                result = process_error_busy; break;
+            }
             pic_mask_irq(4);
             target->io_window_first = 0x3f8;
             target->io_window_length = 8;
             pio_com1_owner = target->pid;
             pio_com1_controller = current->pid;
+            result = 0;
+        } else if (action == pio_grant_action::recover) {
+            if (second != 0) { break; }
+            // COM1 has no DMA and IRQ4 is exclusively routed. Reset only the
+            // kernel's access/interrupt bookkeeping; the next user driver must
+            // reinitialize the device and cannot infer prior I/O results.
+            if (!pio_com1_quarantined || pio_com1_owner != 0 || irq_owner != 0 || irq_token != 0 ||
+                platform::debug_serial_attached()) { result = process_error_state; break; }
+            pic_mask_irq(4);
+            irq_quarantined = false;
+            pio_com1_quarantined = false;
             result = 0;
         } else if (action == pio_grant_action::revoke) {
             process_record* target = task_by_pid(second);

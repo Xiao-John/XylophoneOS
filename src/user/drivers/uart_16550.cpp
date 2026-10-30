@@ -27,11 +27,20 @@ u8 driver::status() {
 
 i64 driver::start() {
     if (started_) return process_error_state;
+    // The kernel keeps IRQ4 masked while the new owner initializes. A prior
+    // owner could have left DLAB or interrupt enables set: normalize the line
+    // before binding the IRQ, without intentionally clearing the input FIFO.
+    write_port(base + 3, 0x03);
+    write_port(base + 1, 0x00);
+    write_port(base + 3, 0x83);
+    write_port(base, 0x01);
+    write_port(base + 1, 0x00);
+    write_port(base + 3, 0x03);
+    write_port(base + 4, 0x0b);
     const i64 result = sdk::irq_event(irq_event_action::bind, pio_resource_com1);
     if (result <= 0) return result < 0 ? result : process_error_state;
     irq_token_ = static_cast<u64>(result);
-    // Preserve the inherited line settings and FIFO; clearing the FIFO would
-    // discard bytes arriving during COM1 handoff. Enable RX and line status.
+    // Leave the FIFO intact. Enable RX and line status after binding.
     write_port(base + 1, 0x05);
     started_ = true;
     return 0;

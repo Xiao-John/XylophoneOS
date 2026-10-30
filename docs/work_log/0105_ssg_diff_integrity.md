@@ -21,3 +21,10 @@ new combined Notes/Browser/Desktop results cannot be inferred from these tests.
 Cross-process observation/action, secure global identity and true allocator OOM
 remain unimplemented or untested. After review, combine with the dependent SSG
 change and rerun affected guest gates on each changed upstream baseline.
+
+A combined-source semantic fixture subsequently failed its whole-tree diff
+assertion once; the recorded run lacks enough detail to establish the cause.
+A diagnostic rerun passed. The fixture now explicitly checks an uncapped,
+role-filtered pair and the changed real target; it passed 26 native assertions
+and five SDK-branch guest gates. See [new evidence](../reports/ssg_targeted_diff_20261030/README.md);
+the affected combined-source rerun is a separate required gate.

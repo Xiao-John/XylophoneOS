@@ -149,6 +149,7 @@ x86 TSS 已准备默认全拒绝的 I/O bitmap，尚无授权/撤权或 guest �
 没有用户可用的 PIO 授权，COM1 独占交接仍由本任务继续实现。
 sys82 COM1 窄 PIO 授权及调试串口脱离已在本分支实现，边界见[pio_grant](contracts/pio_grant.md)，
 构建及限制见[0120](work_log/0120_com1_pio_handoff.md)；尚无 IRQ、恢复/救援或客体验收。
+sys83 通用 IRQ 事件的本地认领见[irq_event](contracts/irq_event.md)，尚未实现或验收。
 用户态 UART 的 PIO、IRQ 与 COM1 调试通路交接提案见
 [uart_user_driver_proposal](contracts/uart_user_driver_proposal.md)，仅设计，尚无授权 ABI。
 

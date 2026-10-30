@@ -151,6 +151,7 @@ sys82 COM1 窄 PIO 授权及调试串口脱离已在本分支实现，边界见[
 构建及限制见[0120](work_log/0120_com1_pio_handoff.md)；尚无 IRQ、恢复/救援或客体验收。
 sys83 的受控 IRQ4 事件已在本分支实现，契约见[irq_event](contracts/irq_event.md)，
 构建和未验范围见[0122](work_log/0122_irq_event_mechanism.md)；尚无客体验收。
+用户态 COM1 驱动类已开始，尚未接入服务或运行，见[0123](work_log/0123_user_uart_driver.md)。
 用户态 UART 的 PIO、IRQ 与 COM1 调试通路交接提案见
 [uart_user_driver_proposal](contracts/uart_user_driver_proposal.md)，仅设计，尚无授权 ABI。
 

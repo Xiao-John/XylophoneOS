@@ -56,3 +56,9 @@ Visual checks: real rendered controls and glyphs; consistent insets/curves; no
 white/default frames; legible text and selection; correct focus/hover/pressed/
 modified/error/confirmation; scroll clipping; display-fault exit and exact resource
 return. Host draft is not evidence of these checks.
+
+## 2026-10-30 Aurora v2 continuation
+
+Two native proposals, shared tokens, quality/accessibility fallback and the single-Surface
+Shell continue in [Aurora Glass v2](aurora_glass_v2.md). The E17 evidence above retains
+its original scope; neither it nor the new Shell implies a cross-process compositor.

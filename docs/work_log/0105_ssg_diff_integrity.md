@@ -28,3 +28,7 @@ A diagnostic rerun passed. The fixture now explicitly checks an uncapped,
 role-filtered pair and the changed real target; it passed 26 native assertions
 and five SDK-branch guest gates. See [new evidence](../reports/ssg_targeted_diff_20261030/README.md);
 the affected combined-source rerun is a separate required gate.
+
+The focused 12-check diff fixture was subsequently rerun under both xsh and
+actual dash, with normal exit and exact resource return; see
+[the dual-shell report](../reports/ssg_diff_dash_20261030/README.md).

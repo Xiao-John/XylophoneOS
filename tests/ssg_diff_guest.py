@@ -21,6 +21,7 @@ parser = argparse.ArgumentParser()
 for name in ('image', 'payload', 'output'):
     parser.add_argument('--' + name, type=Path, required=True)
 parser.add_argument('--expected-checks', type=int, default=12)
+parser.add_argument('--dash', type=Path)
 args = parser.parse_args()
 out = args.output.resolve()
 out.mkdir(parents=True, exist_ok=False)
@@ -38,6 +39,12 @@ try:
         create_fat32(disk, 512)
         transfer(disk, 'mkdir', '/bin')
         transfer(disk, 'import', '/bin/ssgdiff.elf', args.payload)
+        if args.dash:
+            transfer(disk, 'import', '/bin/dash', args.dash)
+            script=Path(tmp)/'ssg-diff-dash.sh'
+            script.write_text('/bin/ssgdiff.elf\necho SSG_DIFF_DASH_STATUS:$?\n')
+            transfer(disk, 'import', '/ssg-diff-dash.sh', script)
+            report['dash_sha256']=sha(args.dash)
         guest = Guest(args.image.resolve(), str(out.relative_to(ROOT / 'build')) + '/guest', work_disk=disk)
         report['qemu_command'] = guest.command
         guest.expect(b'xos64> ', timeout=45)
@@ -60,6 +67,18 @@ try:
             all(item['status'] == 'PASS' for item in report['checks']) and
             report['baseline_resources'] == report['after_resources'] and
             b'kind=exited code=0' in output) else 'FAILED'
+        if args.dash:
+            start=len(guest.output);send_bytes(guest,b'exec-driver /bin/dash /ssg-diff-dash.sh\r')
+            guest.expect(b'SSG_DIFF_TEST_DONE failures=0',start=start,timeout=90)
+            guest.expect(b'SSG_DIFF_DASH_STATUS:0',start=start,timeout=30)
+            guest.expect_supervisor(start=start,timeout=30)
+            output=bytes(guest.output)[start:]
+            dash_checks=re.findall(rb'SSG_DIFF_CHECK ([a-z_]+)=(PASS|FAIL)',output)
+            report['dash_checks']=[{'name':n.decode(),'status':s.decode()} for n,s in dash_checks]
+            report['dash_after_resources']=resources(guest)
+            if (len(dash_checks)!=args.expected_checks or any(s!=b'PASS' for _,s in dash_checks)
+                    or report['dash_after_resources']!=baseline):
+                report['status']='FAILED'
 except Exception as error:
     report['error'] = repr(error)
     raise

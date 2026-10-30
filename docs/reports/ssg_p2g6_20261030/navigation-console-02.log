@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/tests/ssg_p2g6_navigation_guest.py", line 214, in <module>
+    qmp('input-send-event', {'events': [{'type': 'key', 'data': {'down': down, 'key': {'type': 'qcode', 'data': key}}}]})
+                                                                         ^^^^
+NameError: name 'down' is not defined

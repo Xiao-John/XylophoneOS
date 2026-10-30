@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/tests/ssg_p2g6_navigation_guest.py", line 212, in <module>
+    report['geometry'] = test_link_hit()
+                         ~~~~~~~~~~~~~^^
+  File "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/tests/ssg_p2g6_navigation_guest.py", line 152, in test_link_hit
+    require(len({n['id'] for n in nodes if n.get('role') == 'link' and resolved_target(n) == target}) == 1,
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            'navigation target is shared by multiple links; a hit cannot identify the selected link')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/tests/ssg_p2g6_navigation_guest.py", line 69, in require
+    raise ValueError(message)
+ValueError: navigation target is shared by multiple links; a hit cannot identify the selected link

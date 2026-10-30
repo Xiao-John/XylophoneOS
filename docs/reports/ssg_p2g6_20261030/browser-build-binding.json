@@ -1,0 +1,26 @@
+{
+  "normal": {
+    "test_structure_oracle": false,
+    "source_hash_matches": {
+      "src/ports/aurora_browser/build.py": true,
+      "src/ports/aurora_browser/main.cpp": true,
+      "src/ports/aurora_browser/view.hpp": true,
+      "src/ports/aurora_browser/test_structure_oracle.hpp": true,
+      "src/ports/aurora_browser/content.hpp": true,
+      "src/ports/aurora_browser/scene_geometry.hpp": true
+    },
+    "elf_sha256": "fe9f16d9deb2b6e1fc6bf240bee4b53202b0538880db0e93c07448d1ada888e3"
+  },
+  "test": {
+    "test_structure_oracle": true,
+    "source_hash_matches": {
+      "src/ports/aurora_browser/build.py": true,
+      "src/ports/aurora_browser/main.cpp": true,
+      "src/ports/aurora_browser/view.hpp": true,
+      "src/ports/aurora_browser/test_structure_oracle.hpp": true,
+      "src/ports/aurora_browser/content.hpp": true,
+      "src/ports/aurora_browser/scene_geometry.hpp": true
+    },
+    "elf_sha256": "1e3a24001f4a06cd9490ebe1c1d6e99322159568b5db1427173a63bfcc48cdc0"
+  }
+}

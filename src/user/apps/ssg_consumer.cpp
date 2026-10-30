@@ -273,14 +273,14 @@ static bool commit_baseline(BaselineCollector &c,const char *label){
     if(!c.commit())return false;const auto &b=*c.committed();
     std::printf("SSG_BASELINE_%s_COMMITTED nodes=%u instance=%s epoch=%s revision=%s session=%s scrollY=%d\n",label,unsigned(b.nodes.size()),b.instance.c_str(),b.epoch.c_str(),b.revision.c_str(),b.session.c_str(),b.scroll);return true;
 }
-static int browser_pages_diff(Client &client, bool recover=false){
+static int browser_pages_diff(Client &client, bool recover=false, bool exhaust=false){
     BaselineCollector a,b;
     if(!collect_baseline(client,a) || !commit_baseline(a,"A"))return 1;
     if(recover){
         bool complete=false;
         for(unsigned attempt=0;attempt<=2;++attempt){
             bool stale=false;
-            if(collect_baseline(client,b,attempt==0,&stale)){
+            if(collect_baseline(client,b,exhaust || attempt==0,&stale)){
                 if(attempt==0){b.cancel();std::printf("SSG_RECOVERY_FAILED status=RESET_REQUIRED no_interruption=1\n");return 1;}
                 complete=true;break;
             }
@@ -301,6 +301,24 @@ static int browser_pages_diff(Client &client, bool recover=false){
     QJsonObject result{{"status",d.status==DiffStatus::ok?"OK":d.status==DiffStatus::resource_limit?"RESOURCE_LIMIT":"RESET_REQUIRED"},{"geometryComplete",d.geometry_complete},{"changes",changes}};
     std::printf("SSG_CONSUMER_DIFF_JSON %s\n",QJsonDocument(result).toJson(QJsonDocument::Compact).constData());
     std::printf("SSG_CONSUMER_DIFF_DONE status=%s\n",result.value("status").toString().toUtf8().constData());return d.status==DiffStatus::ok?0:1;
+}
+static int browser_pages_reload(Client &client){
+    bool transport=false;
+    const auto scene=client.request(query("content"),&transport);
+    if(!transport || scene.value("status")!="OK" || scene.value("nodes").toArray().isEmpty())return 1;
+    BaselineCollector a, staging, c;
+    if(!collect_baseline(client,a) || !commit_baseline(a,"A"))return 1;
+    bool stale=false;
+    if(collect_baseline(client,staging,true,&stale) || !stale){std::printf("SSG_RELOAD_FAILED no_stale=1\n");return 1;}
+    auto old_node=reference(scene,"detail","content");
+    old_node["nodeId"]=scene.value("nodes").toArray().first().toObject().value("id");
+    const auto old=client.request(old_node,&transport);
+    if(!transport || old.value("status")!="SOURCE_REPLACED")return 1;
+    std::printf("SSG_RELOAD_OLD_NODE status=SOURCE_REPLACED\n");
+    if(!collect_baseline(client,c) || !commit_baseline(c,"C"))return 1;
+    const auto d=compare_baselines(*a.committed(),*c.committed());
+    std::printf("SSG_RELOAD_DIFF status=%s changes=%u old_session=%s\n",d.status==DiffStatus::reset_required?"RESET_REQUIRED":"UNEXPECTED",unsigned(d.changes.size()),a.committed()->session.c_str());
+    return d.status==DiffStatus::reset_required && d.changes.empty()?0:1;
 }
 static int browser_guard(Client &client){
     const auto first=client.request(query("content"));
@@ -325,6 +343,8 @@ int main(int argc,char **argv){
     if(mode=="browser-pages")return browser_pages(client);
     if(mode=="browser-pages-diff")return browser_pages_diff(client);
     if(mode=="browser-pages-recover")return browser_pages_diff(client,true);
+    if(mode=="browser-pages-retry-exhaust")return browser_pages_diff(client,true,true);
+    if(mode=="browser-pages-reload")return browser_pages_reload(client);
     if(mode=="browser-guard")return browser_guard(client);
     if(mode=="truncated"){
         char header[12]={'S','S','G','1'};put32(header+4,32);put32(header+8,1);

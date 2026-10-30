@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT AND Apache-2.0
 #include <xos/fault.hpp>
 #include <xos/format.hpp>
 #include <xos/platform.hpp>

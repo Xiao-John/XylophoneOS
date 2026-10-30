@@ -117,5 +117,17 @@ int main() {
     if (authenticated_app_channels(channels)) return 11;
     mock_channels[1].peer_pid = 7; mock_channels[1].rights = channel_receive;
     if (authenticated_app_channels(channels)) return 12;
+    auto mode = terminal::default_mode;
+    if (!terminal::valid_mode(mode)) return 13;
+    mode.vmin = 0; mode.vtime = 255;
+    if (!terminal::valid_mode(mode)) return 14;
+    mode.vmin = 2;
+    if (terminal::valid_mode(mode)) return 15;
+    mode = terminal::default_mode; mode.lflag = 1;
+    if (terminal::valid_mode(mode)) return 16;
+    app_mode = terminal::default_mode; app_mode.vmin = 0; app_mode.vtime = 0;
+    if (read_configured(&output, 1) != 0) return 17;
+    lock(); simulated_byte = 'X'; has_byte = true; unlock();
+    if (read_configured(&output, 1) != 1 || output != 'X') return 18;
     return 0;
 }

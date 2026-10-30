@@ -9,6 +9,7 @@ channel_info channels[2]{};
 terminal::request last_request{};
 bool malformed = false;
 u32 closed = 0;
+terminal::mode mode_value = terminal::default_mode;
 }
 namespace xos::sdk {
 i64 syscall(u64 number, u64 first, u64 second, u64 third) {
@@ -27,7 +28,17 @@ i64 syscall(u64 number, u64 first, u64 second, u64 third) {
         auto& response = *reinterpret_cast<terminal::response*>(second);
         response = {}; response.version = terminal::version; response.size = sizeof(response);
         response.sequence = last_request.sequence; response.result = 1;
-        if (last_request.operation == static_cast<u32>(terminal::operation::read_until)) {
+        if (last_request.operation == static_cast<u32>(terminal::operation::mode_get)) {
+            response.result = 0; response.length = sizeof(mode_value);
+            const auto* bytes = reinterpret_cast<const u8*>(&mode_value);
+            for (u32 i = 0; i < sizeof(mode_value); ++i) response.data[i] = bytes[i];
+        } else if (last_request.operation == static_cast<u32>(terminal::operation::mode_set)) {
+            auto* bytes = reinterpret_cast<u8*>(&mode_value);
+            for (u32 i = 0; i < sizeof(mode_value); ++i) bytes[i] = last_request.data[i];
+            response.result = 0;
+        } else if (last_request.operation == static_cast<u32>(terminal::operation::read_mode)) {
+            response.result = 0;
+        } else if (last_request.operation == static_cast<u32>(terminal::operation::read_until)) {
             response.length = malformed ? 2 : 1; response.data[0] = 'Z';
         }
         return sizeof(response);
@@ -48,7 +59,14 @@ int main() {
     if (terminal::connect_startup(client, &fixture.header) != process_error_denied) return 2;
     fixture.extension.reserved = 10;
     if (terminal::connect_startup(client, &fixture.header) != 0) return 6;
+    terminal::mode selected{};
+    if (terminal::get_mode(client, selected) != 0 || selected.vmin != 1 || selected.vtime != 0) return 7;
+    selected.vmin = 0; selected.vtime = 1;
+    if (terminal::set_mode(client, selected) != 0 || mode_value.vtime != 1) return 8;
+    selected.lflag = 1;
+    if (terminal::set_mode(client, selected) != thread_error_unsupported || mode_value.lflag != 0) return 9;
     char buffer[300]{};
+    if (terminal::read_mode(client, buffer, 1) != 0) return 10;
     if (terminal::read_until(client, buffer, sizeof(buffer), 10) != 1 || buffer[0] != 'Z' ||
         last_request.length != terminal::data_bytes || last_request.deadline_ns != 10) return 3;
     if (terminal::write_until(client, buffer, sizeof(buffer), 20) != 1 ||

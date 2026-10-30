@@ -16,6 +16,7 @@ terminal::request pending_request;
 u32 app_incoming, app_outgoing, app_pending, app_dead;
 u64 app_thread, controller_pid;
 terminal::request pending_app_request;
+terminal::mode app_mode = terminal::default_mode;
 void lock();
 void unlock();
 
@@ -95,6 +96,23 @@ i64 write_until(const u8* input, u32 length, u64 deadline) {
     }
 }
 
+i64 read_configured(u8* output, u32 length) {
+    if (app_mode.vmin == 0 && app_mode.vtime == 0) {
+        lock();
+        const i64 error = __atomic_load_n(&worker_error, __ATOMIC_ACQUIRE);
+        const i64 result = error != 0 ? error : device.read(output, length);
+        unlock(); return result;
+    }
+    u64 deadline = thread_deadline_infinite;
+    if (app_mode.vmin == 0) {
+        const u64 now = thread::clock();
+        const u64 delay = static_cast<u64>(app_mode.vtime) * 100000000ull;
+        deadline = now >= thread_deadline_infinite - delay ? thread_deadline_infinite - 1 : now + delay;
+    }
+    const i64 result = read_until(output, length, deadline);
+    return result == thread_error_timeout && app_mode.vmin == 0 ? 0 : result;
+}
+
 u64 control_worker(void*) {
     while (__atomic_load_n(&stopping, __ATOMIC_ACQUIRE) == 0) {
         while (__atomic_load_n(&request_pending, __ATOMIC_ACQUIRE) != 0 &&
@@ -158,6 +176,7 @@ bool close_app() {
     const i64 joined = thread::join(app_thread, result);
     if (joined != 0) { fail_worker(joined); return false; }
     app_thread = 0; app_incoming = 0; app_outgoing = 0;
+    app_mode = terminal::default_mode;
     __atomic_store_n(&app_pending, 0u, __ATOMIC_RELEASE);
     __atomic_store_n(&app_dead, 0u, __ATOMIC_RELEASE);
     return true;
@@ -257,11 +276,34 @@ extern "C" int xos_user_main(const xos::startup_info*) {
         } else {
             const auto op = static_cast<terminal::operation>(request.operation);
             const bool io_op = op == terminal::operation::read || op == terminal::operation::read_until ||
+                op == terminal::operation::read_mode ||
                 op == terminal::operation::write || op == terminal::operation::write_until;
-            const bool denied = (from_app && !(io_op || op == terminal::operation::cancel)) ||
+            const bool mode_op = op == terminal::operation::mode_get || op == terminal::operation::mode_set;
+            const bool denied = (from_app && !(io_op || mode_op || op == terminal::operation::cancel)) ||
+                (!from_app && mode_op) ||
                 (!from_app && app_thread != 0 && io_op) ||
                 (from_app && __atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) != 0);
             if (denied) response.result = process_error_denied;
+            else if (op == terminal::operation::mode_get) {
+                if (request.length != 0) response.result = process_error_invalid;
+                else {
+                    const auto* bytes = reinterpret_cast<const u8*>(&app_mode);
+                    for (u32 i = 0; i < sizeof(app_mode); ++i) response.data[i] = bytes[i];
+                    response.length = sizeof(app_mode); response.result = 0;
+                }
+            } else if (op == terminal::operation::mode_set) {
+                terminal::mode proposed{};
+                auto* bytes = reinterpret_cast<u8*>(&proposed);
+                if (request.length != sizeof(proposed)) response.result = process_error_invalid;
+                else {
+                    for (u32 i = 0; i < sizeof(proposed); ++i) bytes[i] = request.data[i];
+                    if (!terminal::valid_mode(proposed)) response.result = thread_error_unsupported;
+                    else { app_mode = proposed; response.result = 0; }
+                }
+            } else if (op == terminal::operation::read_mode) {
+                response.result = read_configured(response.data, request.length);
+                if (response.result > 0) response.length = static_cast<u32>(response.result);
+            }
             else if (op == terminal::operation::read_until) {
                 response.result = read_until(response.data, request.length, request.deadline_ns);
                 if (response.result > 0) response.length = static_cast<u32>(response.result);
@@ -288,11 +330,12 @@ extern "C" int xos_user_main(const xos::startup_info*) {
             }
             lock();
             const i64 error = __atomic_load_n(&worker_error, __ATOMIC_ACQUIRE);
-            if (error != 0 && !((op == terminal::operation::read_until ||
+            if (error != 0 && !((op == terminal::operation::read_until || op == terminal::operation::read_mode ||
                                  op == terminal::operation::write_until) && response.result > 0)) {
                 response.result = error; response.length = 0;
             }
-            else if (denied || op == terminal::operation::attach || op == terminal::operation::detach) { }
+            else if (denied || mode_op || op == terminal::operation::read_mode ||
+                     op == terminal::operation::attach || op == terminal::operation::detach) { }
             else if (op == terminal::operation::read_until) { /* already serviced */ }
             else if (op == terminal::operation::write_until) { /* already serviced */ }
             else if (op == terminal::operation::read) {

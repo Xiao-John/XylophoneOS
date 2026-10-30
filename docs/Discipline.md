@@ -105,3 +105,13 @@ agent 从聊天记录猜状态。实现改变时同步相关说明，失败也�
 先读 licensing.md，新增/升级依赖同步 licenses/components.json、来源与实际哈希，
 保留 LICENSE/COPYING/NOTICE 并记录本地修改。SDK/分发材料必须带对应声明，
 make license-audit 检查材料完整性；未完成的逐组件审计明确写出，不假报全绿。
+
+## state.md 与 STATE_L.md
+
+- `docs/state.md` 是粗粒度全局快照：只在整体变动时刻（功能 PR 合入 main、Release、
+  里程碑）由当时的合并者更新一次；内容限于基线、各线一句话状态、能力表与下一步方向，
+  不写行级细节。其余人不修改本文件。
+- 各线活工作记忆写工作区根的 `STATE_L.md`（.gitignore 忽略，永不入提交）：下一步、
+  待办、手头上下文。它是草稿纸，不得引用为证据，丢失不补。
+- 跨线共享的权威记录是编号 work_log 与 PR：行级细节、证据、过程写 work_log，
+  不写 state.md。

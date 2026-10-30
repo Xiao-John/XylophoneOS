@@ -190,16 +190,14 @@ pipe token 或 0–2 的有效内核 stdio route；console 返回 would_block，
 广播；token 单调不复用。底层 read/write 仍可短读写并返回 EAGAIN，新增 libc
 在管道 EAGAIN 后阻塞重试，不把 console 的旧非阻塞语义改成 EOF。
 
-W1 开发中扩展 sys54：第三参数非零时是绝对单调纳秒截止时间，`UINT64_MAX` 为无限；
-在此显式形式下，持有可读 console route 的调用者可等待串口输入，检查与阻塞在同一
-不可抢占内核区间，IRQ 到达时唤醒；管道也接受截止时间。就绪优先于过期，过期返回
-`thread_error_timeout`，close 唤醒本进程 console 等待并返回 denied。可伪唤醒，
-调用者必须重试读取；单核、10ms 时钟量化，不承诺超时精度。参数为零的旧 console
-行为及普通 libc 的 EAGAIN 保持。此扩展尚未客体验收，也不提供前台独占、终端模式、
-文件描述符多源等待、EOF 或 POSIX poll；旧 Escape 取消仍可能消费输入。
+W1 开发中扩展 sys54：对管道第三参数非零时是绝对单调纳秒截止时间，`UINT64_MAX`
+为无限；就绪优先于过期，过期返回 `thread_error_timeout`。可伪唤醒，调用者必须
+重试读取；单核、10ms 时钟量化。console 仍返回 would_block，普通 libc 的 EAGAIN
+保持。原有内核 UART 数据通路因 C28 撤回，console IRQ 等待尚未实现；此扩展尚未
+客体验收，也不提供前台独占、终端模式、多源等待、EOF 或 POSIX poll。
 
 sys80 `sys_stream_lease` 是开发中的独占字节流读取权机制；参数、委派和回收见
-[专项契约](contracts/stream_lease.md)。当前只支持 console stdin，未客体验收；它不
+[专项契约](contracts/stream_lease.md)。C28 迁移期间 claim 返回 unsupported；它不
 提供用户态终端服务、终端模式或 POSIX 作业控制。未显式 claim 时旧读取行为保持。
 
 sys81 `sys_channel` 是开发中的受控单槽 IPC 与等待机制，身份和生命周期见

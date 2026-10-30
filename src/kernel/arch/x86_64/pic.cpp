@@ -38,12 +38,8 @@ void pic_init() {
 }
 
 void pic_input_enable() {
-    out_byte(master_data, static_cast<u8>(in_byte(master_data) & ~u8{0x06}));
-    out_byte(slave_data, static_cast<u8>(in_byte(slave_data) & ~u8{0x10}));
-}
-
-void pic_serial_enable() {
-    out_byte(master_data, static_cast<u8>(in_byte(master_data) & ~u8{0x10}));
+    out_byte(master_data, 0xf8); // PIT, keyboard and slave cascade
+    out_byte(slave_data, 0xef); // IRQ12
 }
 
 void timer_init(u32 hz) {

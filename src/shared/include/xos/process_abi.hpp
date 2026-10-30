@@ -37,7 +37,7 @@ inline constexpr i64 process_error_busy = -11;
 // Atomic readiness wait; arg2=minimum write bytes (0 means 1), read waits
 // require arg2=0. arg3=0 preserves the original pipe/console behavior;
 // otherwise it is an absolute monotonic-nanosecond deadline, with UINT64_MAX
-// denoting infinity. Console input only supports an explicit nonzero deadline.
+// denoting infinity. Console routes remain unsupported by this wait.
 inline constexpr u64 sys_pipe_wait = 54;
 // Opt in via bit63 of the handle on sys11/sys32. Unflagged writes retain
 // the existing nonblocking/short-write ABI; atomic writes are <=4096 bytes.

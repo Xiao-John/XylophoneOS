@@ -167,25 +167,6 @@ void wake_pipe_waiters(u32 pipe_index, bool readers, bool writers) {
     }
 }
 
-void wake_console_waiters(process_record* owner, i64 result) {
-    for (auto& thread : threads) {
-        if (thread.state == thread_state::blocked && thread.wait_kind == thread_wait_kind::console_read &&
-            (owner == nullptr || thread.process == owner)) {
-            ready_with(thread, result);
-        }
-    }
-}
-
-void wake_revoked_console_waiters() {
-    if (!input_lease.active()) { return; }
-    for (auto& thread : threads) {
-        if (thread.state == thread_state::blocked && thread.wait_kind == thread_wait_kind::console_read &&
-            (thread.process == nullptr || thread.process->pid != input_lease.holder())) {
-            ready_with(thread, process_error_denied);
-        }
-    }
-}
-
 void wake_channel_waiters(u32 handle, bool readers, bool writers, i64 result) {
     for (auto& thread : threads) {
         if (thread.state != thread_state::blocked || thread.wait_target != handle) { continue; }
@@ -797,7 +778,7 @@ void mark_reap(process_record* task) {
 void destroy_task(process_record* task) {
     if (task == nullptr || task->state == task_state::free || task == current) { return; }
     release_channels(task->pid);
-    if (input_lease.remove(task->pid)) { wake_revoked_console_waiters(); }
+    (void)input_lease.remove(task->pid);
     reap_pending[task_index(task)] = false;
     const u64 pid = task->pid;
     for (auto& endpoint : endpoints) {
@@ -838,7 +819,7 @@ void finish_task(process_record* task, process_outcome outcome, i64 code,
                   u64 vector = 0, u64 address = 0, u64 instruction = 0) {
     if (task->state == task_state::dead) { return; }
     release_channels(task->pid);
-    if (input_lease.remove(task->pid)) { wake_revoked_console_waiters(); }
+    (void)input_lease.remove(task->pid);
     display_release(task->pid);
     task->closing = true;
     task->state = task_state::dead;
@@ -872,7 +853,6 @@ void finish_task(process_record* task, process_outcome outcome, i64 code,
 }
 
 bool cancel_foreground() {
-    if (input_lease.active()) { return false; }
     if (platform::debug_peek() != 27) { return false; }
     for (auto& parent : threads) {
         if (parent.state != thread_state::blocked || parent.wait_kind != thread_wait_kind::process ||
@@ -1232,7 +1212,7 @@ void expire_waiters() {
         if (thread.state == thread_state::blocked &&
             (thread.wait_kind == thread_wait_kind::word || thread.wait_kind == thread_wait_kind::sleep ||
              thread.wait_kind == thread_wait_kind::pipe_read || thread.wait_kind == thread_wait_kind::pipe_write ||
-             thread.wait_kind == thread_wait_kind::console_read || thread.wait_kind == thread_wait_kind::channel_read ||
+             thread.wait_kind == thread_wait_kind::channel_read ||
              thread.wait_kind == thread_wait_kind::channel_write) &&
             thread_deadline_reached(now, thread.deadline_ns)) {
             ready_with(thread, thread.wait_kind == thread_wait_kind::sleep ? 0 : thread_error_timeout);
@@ -1664,7 +1644,9 @@ void* process_syscall(interrupt_frame* frame) {
         if (action == stream_lease_action::claim) {
             if (third != 0) { break; }
             if (!current->supervisor) { result = process_error_denied; break; }
-            result = input_lease.claim(current->pid) ? 0 : process_error_state;
+            // User-mode UART and a non-kernel terminal cancellation policy
+            // are prerequisites. Do not activate a lease with unsafe semantics.
+            result = thread_error_unsupported;
         } else if (action == stream_lease_action::delegate) {
             if (!input_lease.active() || input_lease.holder() != current->pid) {
                 result = process_error_denied; break;
@@ -1685,7 +1667,6 @@ void* process_syscall(interrupt_frame* frame) {
             if (third != 0) { break; }
             result = input_lease.contains(current->pid) ? static_cast<i64>(input_lease.holder()) : process_error_denied;
         } else { break; }
-        if (result == 0 && action != stream_lease_action::query) { wake_revoked_console_waiters(); }
         break;
     }
     case sys_process_guard: {
@@ -1947,8 +1928,7 @@ void* process_syscall(interrupt_frame* frame) {
             result = process_error_denied;
         } else {
             if (first == 0 && current->stdio[0].console) {
-                wake_console_waiters(current, process_error_denied);
-                if (input_lease.remove(current->pid)) { wake_revoked_console_waiters(); }
+                (void)input_lease.remove(current->pid);
             }
             current->stdio_mask &= ~(1u << first);
             stdio_route_release(current, current->stdio[first]);
@@ -2109,16 +2089,9 @@ void* process_syscall(interrupt_frame* frame) {
                 if (input_lease.active() && input_lease.holder() != current->pid) {
                     result = process_error_denied; break;
                 }
-                if (third == 0) { result = second != 0 && !route.writable
-                    ? process_error_invalid : process_error_would_block; break; }
-                if (route.writable || second != 0) { result = process_error_invalid; break; }
-                if (platform::debug_peek() >= 0) { result = 0; break; }
-                if (thread_deadline_reached(monotonic_ns(), third)) { result = thread_error_timeout; break; }
-                current_thread->wait_kind = thread_wait_kind::console_read;
-                current_thread->deadline_ns = third;
-                current_thread->state = thread_state::blocked;
-                frame->rax = 0;
-                return schedule(frame);
+                result = second != 0 && !route.writable
+                    ? process_error_invalid : process_error_would_block;
+                break;
             }
             pipe_index = route.pipe_index;
             writable = route.writable;
@@ -2224,7 +2197,7 @@ void* process_syscall(interrupt_frame* frame) {
         const bool target_writable = second != 0;
         if (third == process_stdio_close) {
             if (second == 0 && child->stdio[0].valid && child->stdio[0].console &&
-                input_lease.remove(child->pid)) { wake_revoked_console_waiters(); }
+                input_lease.contains(child->pid)) { (void)input_lease.remove(child->pid); }
             child->stdio_mask &= ~(1u << second);
             stdio_route_release(child, child->stdio[second]);
             result = 0;
@@ -2251,7 +2224,7 @@ void* process_syscall(interrupt_frame* frame) {
             ++child->pipe_reference_count;
         }
         if (second == 0 && child->stdio[0].valid && child->stdio[0].console && !replacement.console &&
-            input_lease.remove(child->pid)) { wake_revoked_console_waiters(); }
+            input_lease.contains(child->pid)) { (void)input_lease.remove(child->pid); }
         stdio_route_release(child, child->stdio[second]);
         child->stdio[second] = replacement;
         child->stdio_mask |= 1u << second;
@@ -2412,12 +2385,6 @@ void* process_syscall(interrupt_frame* frame) {
 }
 
 void* input_entry(interrupt_frame* frame) {
-    if (frame->vector == 36) {
-        platform::debug_input_irq();
-        if (platform::debug_peek() >= 0) { wake_console_waiters(nullptr, 0); }
-        pic_eoi(4);
-        return frame;
-    }
     display::input_irq(frame->vector == 33 ? 1 : 12, tick_count * 10000000ull);
     if(display::input_pending()){display_wake(0,0);}
     return frame;
@@ -2622,8 +2589,6 @@ bool tasks_create_default() {
 [[noreturn]] void tasks_enter() {
     pic_init();
     display::input_init();
-    platform::debug_input_enable();
-    pic_serial_enable();
     timer_init(100);
     if (!platform::realtime_clock_init(monotonic_ns())) {
         format::text("[clock] event=realtime unavailable=rtc_invalid\r\n");

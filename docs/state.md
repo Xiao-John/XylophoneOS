@@ -142,6 +142,7 @@ MMIO、DMA、IRQ、撤权等通用机制；停止不可确认时隔离DMA页。�
 本分支新增的内核 UART IRQ 接收与队列不符合该原则，必须迁移到受控用户态驱动，
 不能以调试例外作为交付依据。设备端口授权、IRQ 交付和撤销还需补齐；不得以当前
 构建或既有主线调试串口证据宣称 W1/W2 通过。详见[0114](work_log/0114_w1_main_reconciliation.md)。
+新增内核 UART IRQ 数据通路已撤回，sys80 claim 暂时不可用，见[0115](work_log/0115_w1_c28_irq_withdrawal.md)。
 
 W0 勘查和 W1 [工作契约草案](contracts/terminal_w1.md)已开始；W0 未冻结，W1 未
 实现或验收。终端 ESC、输入所有权、UART 等待与 newlib 多字节缺口见
@@ -161,21 +162,21 @@ locale 探针；它仍未在客体运行，线程 SDK 和终端服务/等待机�
 输入队列的实现及宿主、交叉编译检查见[0083](work_log/0083_w1_queue_and_thread_build.md)；
 它尚未连接 UART、中断或终端服务，不是 W1 客体验收。
 匹配线程 C++/unwind 的多字节候选已构建并交叉链接探针，同样尚未进行客体验证。
-串口 IRQ4 接收及有界队列前期实现已可构建，尚未进行客体测试；终端所有权和等待等
-仍未实现，限制见[0084](work_log/0084_w1_uart_irq.md)。
-硬件 overrun 内核观测计数的构建和限制见[0085](work_log/0085_w1_uart_overrun.md)。
+原串口 IRQ4 接收、有界队列及硬件 overrun 内核观测尝试见[0084](work_log/0084_w1_uart_irq.md)
+和[0085](work_log/0085_w1_uart_overrun.md)；新增内核数据通路已因 C28 撤回，用户态
+驱动和丢失观测仍未实现。
 newlib UTF-8 代理码点输入与 UCS-4 输出的源码缺口已在隔离候选中修补，探针仅交叉
 链接，尚未运行；来源、许可与边界见[0086](work_log/0086_newlib_utf8_surrogates.md)。
 ncurses 6.5 锁定源码已重新取得；使用该新 SDK 的探针仍因终端头缺失而失败，见
 [0087](work_log/0087_ncurses_strict_sdk_probe.md)。
 ncurses 候选源码锁和上游许可材料已登记，探针现在核整个 SDK 树及锁文件；目标库仍
 未构建，详见[0088](work_log/0088_ncurses_source_material.md)。
-sys54 显式截止时间/console IRQ 等待已实现但未客体验证，老行为保持；前台独占及
+sys54 管道显式截止时间已实现但未客体验证，console IRQ 等待已撤回；前台独占及
 模式仍未实现，详见[0089](work_log/0089_explicit_input_wait.md)。
 相关的受限客体测试入口已准备但未运行，范围与未覆盖项见[0090](work_log/0090_wait_acceptance_harness.md)。
-W1 在本分支实现 sys80 独占字节流读取权，契约见[stream_lease](contracts/stream_lease.md)，
-宿主状态测试与构建见[0092](work_log/0092_stream_lease_mechanism.md)；尚未跨分支同步
-或客体验收，用户态终端服务、模式恢复和救援入口仍未实现。
+W1 的 sys80 独占字节流读取权尝试见[0092](work_log/0092_stream_lease_mechanism.md)；
+因 C28 迁移，claim 暂时返回 unsupported，不能启用。用户态终端服务、模式恢复和
+救援入口仍未实现，目标契约见[stream_lease](contracts/stream_lease.md)。
 通用 IPC 通道 sys81 已在本分支实现，会话、等待契约见[channel](contracts/channel.md)，
 构建与未验范围见[0094](work_log/0094_generic_channel.md)；尚未跨分支同步或客体验收。
 

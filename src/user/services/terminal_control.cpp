@@ -17,6 +17,11 @@ void close(control& session) {
     invalidate_channels(session);
     session = {};
 }
+void close(application& app) {
+    if (app.incoming != 0) (void)sdk::channel_close(app.incoming);
+    if (app.outgoing != 0) (void)sdk::channel_close(app.outgoing);
+    app = {};
+}
 
 namespace {
 i64 prepare(u64 child, void* context) {
@@ -116,5 +121,40 @@ i64 write_until(control& session, const void* data, u32 length, u64 deadline_ns)
         invalidate_channels(session); return process_error_state;
     }
     return reply.result;
+}
+
+i64 attach(control& session, application& app, u64 child) {
+    if (session.child == 0 || child == 0 || app.incoming != 0 || app.outgoing != 0 || app.peer != 0)
+        return process_error_invalid;
+    channel_create request{channel_version, sizeof(channel_create), child, session.child,
+                           sizeof(terminal::request), 0};
+    i64 result = sdk::channel_open(request);
+    if (result <= 0) return result < 0 ? result : process_error_state;
+    app.incoming = static_cast<u32>(result);
+    request.sender_pid = session.child; request.receiver_pid = child;
+    request.capacity = sizeof(terminal::response);
+    result = sdk::channel_open(request);
+    if (result <= 0) { close(app); return result < 0 ? result : process_error_state; }
+    app.outgoing = static_cast<u32>(result); app.peer = child;
+    const session_channels channels{app.incoming, app.outgoing, child};
+    terminal::request message{}; terminal::response reply{};
+    message.operation = static_cast<u32>(operation::attach);
+    message.length = sizeof(channels);
+    const auto* bytes = reinterpret_cast<const u8*>(&channels);
+    for (u32 i = 0; i < sizeof(channels); ++i) message.data[i] = bytes[i];
+    result = exchange(session, message, reply);
+    if (result == 0) result = reply.result;
+    if (result != 0) close(app);
+    return result;
+}
+
+i64 detach(control& session, application& app) {
+    if (app.incoming == 0 || app.outgoing == 0 || app.peer == 0) return process_error_state;
+    terminal::request message{}; terminal::response reply{};
+    message.operation = static_cast<u32>(operation::detach);
+    i64 result = exchange(session, message, reply);
+    if (result == 0) result = reply.result;
+    close(app);
+    return result;
 }
 }

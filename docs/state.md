@@ -171,6 +171,8 @@ COM1 显式解除隔离并重新授权的基础已实现，尚无完整服务重
 [0132](work_log/0132_terminal_write_wait.md)。
 Xsh 所需的 supervisor 进程内终端桥接入口已构建但默认未启用，不包括子进程 stdio；
 宿主模拟及限制见[0133](work_log/0133_xsh_terminal_bridge.md)。
+终端服务已有单应用受认证通道的初始接入，尚未连接应用 stdio/termios 或客体验证；
+见[0134](work_log/0134_terminal_application_channel.md)。
 用户态 UART 的 PIO、IRQ 与 COM1 调试通路交接提案见
 [uart_user_driver_proposal](contracts/uart_user_driver_proposal.md)，为早期设计提案，具体
 现状以 PIO/IRQ 契约及上述工作记录为准。

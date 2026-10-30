@@ -15,10 +15,16 @@ std::atomic<unsigned> waits{0};
 bool has_byte = false;
 bool transmit_ready = false;
 xos::u8 simulated_byte = 0;
+xos::channel_info mock_channels[2]{};
 }
 
 namespace xos::sdk {
-i64 syscall(u64 number, u64 first, u64, u64) {
+i64 syscall(u64 number, u64 first, u64 second, u64 third) {
+    if (number == sys_channel && first == static_cast<u64>(channel_action::enumerate)) {
+        if (second >= 2) return thread_error_not_found;
+        *reinterpret_cast<channel_info*>(third) = mock_channels[second];
+        return 0;
+    }
     if (number == sys_wait_word) {
         const auto& request = *reinterpret_cast<const thread_wait_request*>(first);
         auto* address = reinterpret_cast<u32*>(request.address);
@@ -100,5 +106,16 @@ int main() {
     (void)thread::wake(&input_ready, 1);
     writer.join();
     if (result != 1) return 8;
+    controller_pid = 42;
+    mock_channels[0] = {channel_version, sizeof(channel_info), 10, channel_receive, 7, 42};
+    mock_channels[1] = {channel_version, sizeof(channel_info), 11, channel_send, 7, 42};
+    const terminal::session_channels channels{10, 11, 7};
+    if (!authenticated_app_channels(channels)) return 9;
+    mock_channels[1].controller_pid = 41;
+    if (authenticated_app_channels(channels)) return 10;
+    mock_channels[1].controller_pid = 42; mock_channels[1].peer_pid = 8;
+    if (authenticated_app_channels(channels)) return 11;
+    mock_channels[1].peer_pid = 7; mock_channels[1].rights = channel_receive;
+    if (authenticated_app_channels(channels)) return 12;
     return 0;
 }

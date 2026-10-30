@@ -154,6 +154,8 @@ sys83 的受控 IRQ4 事件已在本分支实现，契约见[irq_event](contract
 用户态 COM1 驱动类的初始实现见[0123](work_log/0123_user_uart_driver.md)。
 用户态终端服务、控制客户端及加载器启动前回调的基础已构建，尚未实际启动或接入
 应用会话；限制和证据见[0124](work_log/0124_terminal_handoff_foundation.md)。
+服务接收线程故障现会关闭控制通道以唤醒等待者；仅宿主模拟和构建验证，见
+[0125](work_log/0125_terminal_failure_wakeup.md)。
 用户态 UART 的 PIO、IRQ 与 COM1 调试通路交接提案见
 [uart_user_driver_proposal](contracts/uart_user_driver_proposal.md)，仅设计，尚无授权 ABI。
 

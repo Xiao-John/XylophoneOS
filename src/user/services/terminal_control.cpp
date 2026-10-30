@@ -4,9 +4,16 @@
 #include <xos/thread_abi.hpp>
 
 namespace xos::terminal {
-void close(control& session) {
+namespace {
+void invalidate_channels(control& session) {
     if (session.send_handle != 0) (void)sdk::channel_close(session.send_handle);
     if (session.receive_handle != 0) (void)sdk::channel_close(session.receive_handle);
+    session.send_handle = 0;
+    session.receive_handle = 0;
+}
+}
+void close(control& session) {
+    invalidate_channels(session);
     session = {};
 }
 
@@ -47,13 +54,13 @@ i64 exchange(control& session, request& message, response& reply) {
     message.version = version; message.size = sizeof(message); message.sequence = session.next_sequence++;
     i64 result = sdk::channel_wait(session.send_handle, thread_deadline_infinite);
     if (result == 0) result = sdk::ipc_send(session.send_handle, &message, sizeof(message));
-    if (result != 0) return result;
+    if (result != 0) { invalidate_channels(session); return result; }
     result = sdk::channel_wait(session.receive_handle, thread_deadline_infinite);
-    if (result != 0) return result;
+    if (result != 0) { invalidate_channels(session); return result; }
     result = sdk::ipc_recv(session.receive_handle, &reply, sizeof(reply));
     if (result != static_cast<i64>(sizeof(reply)) || reply.version != version ||
         reply.size != sizeof(reply) || reply.sequence != message.sequence ||
-        reply.length > data_bytes) return process_error_state;
+        reply.length > data_bytes) { invalidate_channels(session); return process_error_state; }
     return 0;
 }
 }

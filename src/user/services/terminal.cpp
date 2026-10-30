@@ -10,6 +10,15 @@ user::uart::driver device;
 u32 lock_word, stopping;
 i64 worker_error;
 u64 device_irq_token;
+u32 control_incoming, control_outgoing;
+
+void fail_worker(i64 error) {
+    __atomic_store_n(&worker_error, error == 0 ? process_error_state : error, __ATOMIC_RELEASE);
+    // Wake both the request loop and a controller waiting for a response. A
+    // response already sent may have been observed; this is not a rollback.
+    (void)sdk::channel_close(control_incoming);
+    (void)sdk::channel_close(control_outgoing);
+}
 
 void lock() {
     while (__atomic_exchange_n(&lock_word, 1u, __ATOMIC_ACQUIRE) != 0) {
@@ -24,14 +33,13 @@ u64 receive_worker(void*) {
     while (__atomic_load_n(&stopping, __ATOMIC_ACQUIRE) == 0) {
         const i64 event = sdk::irq_event(irq_event_action::wait, device_irq_token, thread_deadline_infinite);
         if (event <= 0) {
-            if (__atomic_load_n(&stopping, __ATOMIC_ACQUIRE) == 0)
-                __atomic_store_n(&worker_error, event == 0 ? process_error_state : event, __ATOMIC_RELEASE);
+            if (__atomic_load_n(&stopping, __ATOMIC_ACQUIRE) == 0) fail_worker(event);
             return 0;
         }
         lock();
         const i64 result = device.service_irq(static_cast<u64>(event));
         unlock();
-        if (result != 0) { __atomic_store_n(&worker_error, result, __ATOMIC_RELEASE); return 0; }
+        if (result != 0) { fail_worker(result); return 0; }
     }
     return 0;
 }
@@ -56,6 +64,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     if (controller <= 0 || thread::enable() != 0) return 1;
     u32 incoming = 0, outgoing = 0;
     if (!find_control_channels(static_cast<u64>(controller), incoming, outgoing)) return 2;
+    control_incoming = incoming; control_outgoing = outgoing;
     if (device.start() != 0) return 3;
     device_irq_token = device.token();
     u64 worker = 0;

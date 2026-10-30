@@ -1,0 +1,54 @@
+// SPDX-License-Identifier: Apache-2.0
+#include <xos/sdk.hpp>
+#include <xos/terminal_control.hpp>
+
+using namespace xos;
+namespace {
+u32 next_handle = 10, closed = 0;
+bool fail_grant = false, fail_reply = false;
+terminal::request sent{};
+}
+namespace xos::sdk {
+i64 syscall(u64 number, u64 first, u64 second, u64 third) {
+    if (number == 6) return 1;
+    if (number == sys_channel) {
+        if (first == static_cast<u64>(channel_action::create)) return next_handle++;
+        if (first == static_cast<u64>(channel_action::close)) { ++closed; return 0; }
+        if (first == static_cast<u64>(channel_action::wait)) {
+            return fail_reply && second == 11 ? process_error_state : 0;
+        }
+    }
+    if (number == sys_pio_grant) return fail_grant ? process_error_denied : 0;
+    if (number == 4 && third == sizeof(sent)) {
+        sent = *reinterpret_cast<const terminal::request*>(second); return 0;
+    }
+    if (number == 5 && third == sizeof(terminal::response)) {
+        auto& reply = *reinterpret_cast<terminal::response*>(second);
+        reply = {}; reply.version = terminal::version; reply.size = sizeof(reply);
+        reply.sequence = sent.sequence; reply.result = 0;
+        return sizeof(reply);
+    }
+    return process_error_invalid;
+}
+i64 spawn_file_options(const char*, u32, const char* const*, const spawn_options& options) {
+    const i64 result = options.prepare_child(2, options.prepare_context);
+    return result == 0 ? 2 : result;
+}
+}
+int main() {
+    terminal::control session{};
+    fail_grant = true;
+    if (terminal::start(session, "/terminal") != process_error_denied || closed != 2 || session.child != 0)
+        return 1;
+    fail_grant = false; next_handle = 10;
+    if (terminal::start(session, "/terminal") != 2) return 2;
+    terminal::request request{}; terminal::response reply{};
+    if (terminal::exchange(session, request, reply) != 0 || request.sequence != 1 || reply.sequence != 1)
+        return 3;
+    fail_reply = true;
+    if (terminal::exchange(session, request, reply) != process_error_state || closed != 4 ||
+        session.child != 2 || session.send_handle != 0 || session.receive_handle != 0) return 4;
+    if (terminal::exchange(session, request, reply) != process_error_state) return 5;
+    terminal::close(session);
+    return session.child == 0 ? 0 : 6;
+}

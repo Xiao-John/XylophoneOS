@@ -4,6 +4,8 @@
 
 namespace xos::terminal {
 // Supervisor-only provisional control client. Calls must be serialized.
+// A failed exchange invalidates the channels; if the request was sent, its
+// outcome can be unknown. The child remains available for the caller to reap.
 struct control {
     u32 send_handle = 0, receive_handle = 0;
     u64 child = 0, next_sequence = 1;

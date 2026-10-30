@@ -110,6 +110,12 @@ wait单次消费、满盘和真实块写错误已验证；独立故障注入buil
 音频仅文档；故障包进度以本页FB0节为准。无新ABI，不改变既有主线排期。
 范围、验证与接续见[0079](work_log/0079_fault_bundle_audio_plans.md)。
 
+## Midnight Dock 视觉修整（待审）
+
+基于已审核的标准 Qt 按钮图标修复，Dock 的六个文本导航项增加原生矢量图标；
+真实客体截图与桌面专项回归见 [0111](work_log/0111_aurora_midnight_dock.md)。
+一次旧 Qt 程序退出等待超时的原因仍未知，重跑通过但不抹去失败。
+
 ## E17 / G05 Qt Widgets 与 Aurora Glass
 
 2026-10-29，从 upstream `c39cef1` 的独立 `codex/qt6-e17-widgets` 完成真实 Qt

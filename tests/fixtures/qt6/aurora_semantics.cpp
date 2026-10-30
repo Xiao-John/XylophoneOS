@@ -14,15 +14,15 @@
 #include <type_traits>
 #include <cstdlib>
 Q_IMPORT_PLUGIN(QXosIntegrationPlugin)
-static_assert(!std::is_copy_constructible_v<aurora::Semantics>);
-static_assert(!std::is_copy_assignable_v<aurora::Semantics>);
-static_assert(!std::is_move_constructible_v<aurora::Semantics>);
-static_assert(!std::is_move_assignable_v<aurora::Semantics>);
+static_assert(!std::is_copy_constructible_v<aurora::semantics>);
+static_assert(!std::is_copy_assignable_v<aurora::semantics>);
+static_assert(!std::is_move_constructible_v<aurora::semantics>);
+static_assert(!std::is_move_assignable_v<aurora::semantics>);
 int main(int argc,char **argv) {
-    QApplication app(argc,argv);aurora::initialize(app);aurora::DesktopSurface window;
+    QApplication app(argc,argv);aurora::initialize(app);aurora::desktop_surface window;
     auto *root=new QVBoxLayout(&window);root->setContentsMargins(60,46,60,46);
-    auto *panel=new aurora::GlassPanel(&window);root->addWidget(panel);auto *l=new QVBoxLayout(panel);l->setContentsMargins(28,24,28,24);l->setSpacing(12);
-    l->addWidget(new QLabel("AI0  /  Intent & UI Semantics"));
+    auto *panel=new aurora::glass_panel(&window);root->addWidget(panel);auto *l=new QVBoxLayout(panel);l->setContentsMargins(28,24,28,24);l->setSpacing(12);
+    l->addWidget(new QLabel("AI0  /  Intent & UI semantics"));
     l->addWidget(new QLabel("Observe > Propose > Authorize > Execute > Verify"));
     auto *target=new QLineEdit("original");target->setAccessibleName("Draft title");target->setObjectName("draft-title");target->setMinimumHeight(36);l->addWidget(target);
     auto *password=new QLineEdit("never-export-secret");password->setEchoMode(QLineEdit::Password);password->setObjectName("protected-password");l->addWidget(password);
@@ -33,11 +33,11 @@ int main(int argc,char **argv) {
     auto *proposal=new QLineEdit;proposal->setMinimumHeight(36);proposal->setPlaceholderText("Paste a structured local proposal");l->addWidget(proposal);
     auto *authorize=new QPushButton("Authorize once (local fixture)");authorize->setMinimumHeight(38);l->addWidget(authorize);
     auto *notice=new QLabel("Discovery grants no rights. No model, network or external side effects.");notice->setWordWrap(true);l->addWidget(notice);
-    aurora::Semantics registry;registry.expose(target,"textbox");aurora::QtScene scene(&window);
+    aurora::semantics registry;registry.expose(target,"textbox");aurora::qt_scene scene(&window);
     QObject::connect(authorize,&QPushButton::clicked,[&]{
         QJsonParseError parse;const auto request=QJsonDocument::fromJson(proposal->text().toUtf8(),&parse).object();
         QString error;if(parse.error!=QJsonParseError::NoError || !registry.propose(request,error)){notice->setText("Rejected proposal: "+error);std::printf("SEMANTIC_REJECT %s\n",error.toUtf8().constData());return;}
-        aurora::Semantics::Grant no_grant;
+        aurora::semantics::Grant no_grant;
         const auto denied=registry.execute(request,no_grant);std::printf("SEMANTIC_WITHOUT_GRANT %s\n",denied.toUtf8().constData());
         auto grant=registry.host_authorize(request,10000,error);const auto result=registry.execute(request,grant);
         notice->setText(result);std::printf("SEMANTIC_EXECUTE %s value=%s replay=%s\n",result.toUtf8().constData(),target->text().toUtf8().constData(),registry.execute(request,grant).toUtf8().constData());
@@ -48,7 +48,7 @@ int main(int argc,char **argv) {
     QTimer::singleShot(250,[&]{
         auto make=[&]{const auto snap=registry.observe();const auto e=snap["controls"].toArray()[0].toObject();return QJsonObject{{"version",1},{"epoch",snap["epoch"]},{"id",e["id"]},{"revision",e["revision"]},{"action","set_text"},{"value","local-test"}};};
         auto check=[](bool condition,const char *name){std::printf("SEMANTIC_CHECK %s=%s\n",name,condition?"PASS":"FAIL");if(!condition)std::abort();};
-        QString error;auto p=make();aurora::Semantics::Grant empty;check(registry.execute(p,empty)=="DENIED","no_authority_from_discovery");
+        QString error;auto p=make();aurora::semantics::Grant empty;check(registry.execute(p,empty)=="DENIED","no_authority_from_discovery");
         auto g=registry.host_authorize(p,10000,error);check(registry.execute(p,g)=="VERIFIED_LOCAL","actual_widget_verification");check(registry.execute(p,g)=="DENIED","no_replay");
         auto *growth_parent=new QWidget;
         const auto growth_connection=QObject::connect(target,&QLineEdit::textChanged,&app,[&](const QString &value){
@@ -67,12 +67,12 @@ int main(int argc,char **argv) {
         target->setReadOnly(true);p=make();check(!registry.propose(p,error),"readonly_action_refused");target->setReadOnly(false);
         target->setEchoMode(QLineEdit::Password);p=make();check(!registry.propose(p,error),"password_action_refused");target->setEchoMode(QLineEdit::Normal);
         auto *external=new QPushButton("Fixture transaction",panel);external->setAccessibleName("External effect fixture");external->show();
-        aurora::Semantics external_registry;external_registry.expose(external,"button",true);
+        aurora::semantics external_registry;external_registry.expose(external,"button",true);
         auto snap=external_registry.observe();auto item=snap["controls"].toArray()[0].toObject();
         QJsonObject ext{{"version",1},{"epoch",snap["epoch"]},{"id",item["id"]},{"revision",item["revision"]},{"action","activate"}};
         auto ext_grant=external_registry.host_authorize(ext,10000,error);check(external_registry.execute(ext,ext_grant)=="UNKNOWN","external_unknown");check(external_registry.execute(ext,ext_grant)=="DENIED","unknown_not_retried");
         auto dead=external_registry.host_authorize(ext,10000,error);delete external;check(external_registry.execute(ext,dead)=="DEAD_TARGET","target_lifetime");
-        aurora::Semantics deferred_registry;auto *deferred=new QLineEdit("before",&window);deferred->show();QPointer<QLineEdit> deferred_guard(deferred);
+        aurora::semantics deferred_registry;auto *deferred=new QLineEdit("before",&window);deferred->show();QPointer<QLineEdit> deferred_guard(deferred);
         deferred_registry.expose(deferred,"textbox");auto deferred_snapshot=deferred_registry.observe();auto deferred_control=deferred_snapshot["controls"].toArray()[0].toObject();
         QJsonObject deferred_proposal{{"version",1},{"epoch",deferred_snapshot["epoch"]},{"id",deferred_control["id"]},{"revision",deferred_control["revision"]},{"action","set_text"},{"value","delete-during-callback"}};
         QObject::connect(deferred,&QLineEdit::textChanged,&app,[deferred](const QString &){deferred->deleteLater();},Qt::DirectConnection);
@@ -83,7 +83,7 @@ int main(int argc,char **argv) {
         std::printf("SEMANTIC_DEFERRED result=%s alive=%d value_match=%d\n",deferred_result.toUtf8().constData(),!deferred_guard.isNull(),deferred_guard && deferred_guard->text()=="delete-during-callback");
         check(deferred_observed || deferred_invalid,"deferred_delete_never_claims_unobserved_value");
         if(deferred_guard)QTimer::singleShot(0,&app,[deferred_guard,check]{check(deferred_guard.isNull(),"deferred_delete_after_callback");});
-        aurora::Semantics replacement_registry;auto *old_target=new QLineEdit("old",&window);old_target->show();replacement_registry.expose(old_target,"textbox");
+        aurora::semantics replacement_registry;auto *old_target=new QLineEdit("old",&window);old_target->show();replacement_registry.expose(old_target,"textbox");
         auto old_snapshot=replacement_registry.observe();auto old_control=old_snapshot["controls"].toArray()[0].toObject();
         QJsonObject old_proposal{{"version",1},{"epoch",old_snapshot["epoch"]},{"id",old_control["id"]},{"revision",old_control["revision"]},{"action","set_text"},{"value","replacement-check"}};
         auto old_grant=replacement_registry.host_authorize(old_proposal,10000,error);delete old_target;

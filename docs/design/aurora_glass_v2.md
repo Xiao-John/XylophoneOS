@@ -44,8 +44,8 @@ auto p = aurora::preferences();
 p.scheme = aurora::Scheme::daybreak;
 p.quality = aurora::Quality::balanced;
 aurora::set_preferences(p);              // GUI thread, this process only
-aurora::DesktopSurface surface;
-auto *panel = new aurora::GlassPanel(&surface);
+aurora::desktop_surface surface;
+auto *panel = new aurora::glass_panel(&surface);
 // Standard QPushButton/QLineEdit/QPlainTextEdit reuse the selected native style.
 ```
 
@@ -57,7 +57,7 @@ Neither provides WebView transport or modifies any web document's CSS.
 
 | Capability goal | Current reusable implementation / boundary |
 |---|---|
-| Window / panel / toolbar / sidebar | DesktopSurface + GlassPanel + Qt layouts; one native top-level Surface |
+| Window / panel / toolbar / sidebar | desktop_surface + glass_panel + Qt layouts; one native top-level Surface |
 | Button / field / editor / scroll view | Standard Widgets + Aurora QProxyStyle/QPalette; real editing/focus/selection/scrolling |
 | Tabs / dialog / notification | Standard child controls and application-local panels; no system notification/dialog broker |
 | Menu | Keyboard-accessible in-surface child controls; independent native popup windows remain unsupported |

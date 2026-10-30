@@ -9,13 +9,13 @@
 #include <QtWidgets/QAbstractButton>
 namespace aurora {
 namespace {quint32 instances=0;QByteArray encode(const QJsonObject &o){return QJsonDocument(o).toJson(QJsonDocument::Compact);}}
-Semantics::Semantics():epoch((quint64(QCoreApplication::applicationPid())<<32)|++instances){clock.start();}
-bool Semantics::expose(QWidget *w,const QString &role,bool external) {
+semantics::semantics():epoch((quint64(QCoreApplication::applicationPid())<<32)|++instances){clock.start();}
+bool semantics::expose(QWidget *w,const QString &role,bool external) {
     if(!w || entries.size()>=32 || (role!="textbox" && role!="button"))return false;
     if((role=="textbox" && !qobject_cast<QLineEdit*>(w)) || (role=="button" && !qobject_cast<QAbstractButton*>(w)))return false;
     entries.append({w,role,external,0,{}});return true;
 }
-QJsonObject Semantics::describe(int i) {
+QJsonObject semantics::describe(int i) {
     auto &e=entries[i];QJsonObject state{{"alive",!e.widget.isNull()}};
     if(e.widget){state["enabled"]=e.widget->isEnabled();state["visible"]=e.widget->isVisible();state["focused"]=e.widget->hasFocus();state["name"]=e.widget->accessibleName();
         // Content affects stale-state detection internally, but is never exported.
@@ -27,12 +27,12 @@ QJsonObject Semantics::describe(int i) {
     state["action"]=e.role=="textbox"?(state["readOnly"].toBool() || state["sensitive"].toBool()?"inspect":"set_text"):"activate";state["nameTrust"]="untrusted-content";
     return state;
 }
-QJsonObject Semantics::observe() {
+QJsonObject semantics::observe() {
     QJsonArray controls;for(int i=0;i<entries.size();++i)controls.append(describe(i));
     return {{"version",1},{"scope","application-local-demo"},{"epoch",QString::number(epoch)},
         {"authority","discovery-grants-no-rights"},{"controls",controls}};
 }
-bool Semantics::validate(const QJsonObject &p,QString &error) {
+bool semantics::validate(const QJsonObject &p,QString &error) {
     const QStringList keys={"version","epoch","id","revision","action","value"};
     for(auto it=p.begin();it!=p.end();++it)if(!keys.contains(it.key())){error="UNKNOWN_FIELD";return false;}
     if(p["version"]!=1 || !p["epoch"].isString() || p["epoch"].toString()!=QString::number(epoch)){error="WRONG_SCOPE";return false;}
@@ -51,13 +51,13 @@ bool Semantics::validate(const QJsonObject &p,QString &error) {
     if(e.role=="button" && p.contains("value")){error="BAD_VALUE";return false;}
     error.clear();return true;
 }
-bool Semantics::propose(const QJsonObject &p,QString &error){return validate(p,error);}
-Semantics::Grant Semantics::host_authorize(const QJsonObject &p,int ttl,QString &error) {
+bool semantics::propose(const QJsonObject &p,QString &error){return validate(p,error);}
+semantics::Grant semantics::host_authorize(const QJsonObject &p,int ttl,QString &error) {
     Grant grant;if(ttl<0 || ttl>60000 || !validate(p,error))return grant;
     grant.binding=encode(p);grant.epoch=authorization_epoch;grant.expires=clock.elapsed()+ttl;grant.used=false;return grant;
 }
-void Semantics::revoke(){++authorization_epoch;}
-QString Semantics::execute(const QJsonObject &p,Grant &g) {
+void semantics::revoke(){++authorization_epoch;}
+QString semantics::execute(const QJsonObject &p,Grant &g) {
     if(g.used || g.epoch!=authorization_epoch || clock.elapsed()>=g.expires || g.binding!=encode(p))return "DENIED";
     g.used=true;QString error;if(!validate(p,error))return error;
     const auto index=int(p["id"].toString().toUInt()-1);

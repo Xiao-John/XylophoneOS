@@ -12,7 +12,7 @@ struct RenderInfo {
     bool fallback=false;
 };
 // Application-local background only. No cross-process pixels or device rights.
-class DesktopSurface : public QWidget {
+class desktop_surface : public QWidget {
     QImage background,softened;
     Pointer *pointer;
     int wallpaper=0,cached_wallpaper=-1,cached_key=-1;
@@ -86,7 +86,7 @@ protected:
         return QWidget::eventFilter(object,event);
     }
 public:
-    DesktopSurface():pointer(new Pointer(this)){qApp->installEventFilter(this);setMouseTracking(true);}
+    desktop_surface():pointer(new Pointer(this)){qApp->installEventFilter(this);setMouseTracking(true);}
     void set_cache_budget(qint64 bytes){budget=qMax<qint64>(0,bytes);cache();update();for(auto *w:findChildren<QWidget*>())w->update();}
     void set_wallpaper(int value){wallpaper=value?1:0;cache();update();for(auto *w:findChildren<QWidget*>())w->update();}
     RenderInfo render_info() const {return info;}
@@ -96,8 +96,8 @@ public:
         p.drawImage(widget->rect(),softened,QRect(widget->mapTo(this,QPoint()),widget->size()));return true;
     }
 };
-class GlassPanel : public QWidget {
-    DesktopSurface *surface;
+class glass_panel : public QWidget {
+    desktop_surface *surface;
     bool content;
 protected:
     void paintEvent(QPaintEvent *) override {
@@ -111,6 +111,6 @@ protected:
         if(sampled){p.setPen(QColor(255,255,255,45));p.drawPath(corner(r.adjusted(2,2,-2,-2),t.panel_radius-2));}
     }
 public:
-    explicit GlassPanel(DesktopSurface *parent,bool reading=false):QWidget(parent),surface(parent),content(reading){}
+    explicit glass_panel(desktop_surface *parent,bool reading=false):QWidget(parent),surface(parent),content(reading){}
 };
 }

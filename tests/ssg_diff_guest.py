@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Run the bounded SceneStream regression in a real XOS guest."""
+"""Run the bounded scene_stream regression in a real XOS guest."""
 import argparse
 import hashlib
 import json

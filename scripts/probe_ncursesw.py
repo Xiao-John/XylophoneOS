@@ -39,6 +39,10 @@ def main():
                         help='new private output directory; must not already exist')
     parser.add_argument('--build', action='store_true',
                         help='also attempt target library compilation (still not acceptance)')
+    parser.add_argument('--xopen-source', choices=('700',),
+                        help='explicitly expose the target XSI declarations during this probe')
+    parser.add_argument('--no-sigwinch', action='store_true',
+                        help='disable the unimplemented resize signal handler in this probe')
     args = parser.parse_args()
     lock_hash = digest(LOCK_PATH)
     archive, sdk, work = args.archive.resolve(), args.sdk.resolve(), args.output.resolve()
@@ -82,13 +86,18 @@ def main():
              ('libxos.a', 'libxos_loader.a', 'libc.a', 'libm.a')] + [libgcc, '-Wl,--end-group']
     env = dict(os.environ)
     env.pop('COMPILER_PATH', None)
+    cppflags = ['-isystem', str(sdk / 'include')]
+    if args.xopen_source:
+        cppflags.append('-D_XOPEN_SOURCE=' + args.xopen_source)
     env.update(CC=cc, BUILD_CC=cc_build, CFLAGS=shlex.join(flags),
-               CPPFLAGS=shlex.join(['-isystem', str(sdk / 'include')]),
+               CPPFLAGS=shlex.join(cppflags),
                LDFLAGS=shlex.join(ldflags), LIBS=shlex.join(libs))
     command = [str(source / 'configure'), '--build=' + build_triplet,
                '--host=x86_64-unknown-elf', '--enable-widec', '--without-shared',
                '--without-cxx', '--without-cxx-binding', '--without-ada',
                '--without-progs', '--without-tests', '--without-debug']
+    if args.no_sigwinch:
+        command.append('--disable-sigwinch')
     with (work / 'configure.log').open('w') as log:
         result = subprocess.run(command, cwd=build, env=env, stdout=log, stderr=subprocess.STDOUT)
     build_exit_code = None

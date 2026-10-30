@@ -25,6 +25,7 @@
 #include <sys/time.h>
 #include <sys/times.h>
 #include <sys/wait.h>
+#include <termios.h>
 #include <unistd.h>
 #ifdef XOS_THREADED_RUNTIME
 #include <sys/reent.h>
@@ -621,7 +622,7 @@ extern "C" _READ_WRITE_RETURN_TYPE read(int fd, void* buffer, size_t length) {
     open_object& object = objects[lease.index];
     if (object.kind == object_kind::terminal) {
         const u32 chunk = length > xos::terminal::data_bytes ? xos::terminal::data_bytes : static_cast<u32>(length);
-        const xos::i64 result = xos::terminal::read_until(terminal_client, buffer, chunk, xos::thread_deadline_infinite);
+        const xos::i64 result = xos::terminal::read_mode(terminal_client, buffer, chunk);
         if (result < 0) { errno = result == xos::terminal::interrupted ? EINTR : error_from_kernel(result); return -1; }
         return static_cast<ssize_t>(result);
     }
@@ -1040,6 +1041,79 @@ extern "C" int isatty(int fd) {
     const auto result = xos::sdk::syscall(xos::sys_process_stdio, 0, object.handle);
     if (result != 1) { errno = ENOTTY; return 0; }
     return 1;
+}
+
+extern "C" int tcgetattr(int fd, struct termios* value) {
+    object_lease lease(fd);
+    if (lease.index < 0) { errno = EBADF; return -1; }
+    if (value == nullptr) { errno = EFAULT; return -1; }
+    if (objects[lease.index].kind != object_kind::terminal) { errno = ENOTTY; return -1; }
+    xos::terminal::mode mode{};
+    const xos::i64 result = xos::terminal::get_mode(terminal_client, mode);
+    if (result != 0) { errno = error_from_kernel(result); return -1; }
+    *value = {};
+    value->c_cflag = CS8 | CREAD | CLOCAL;
+    value->c_ispeed = value->c_ospeed = B115200;
+    value->c_cc[VMIN] = static_cast<cc_t>(mode.vmin);
+    value->c_cc[VTIME] = static_cast<cc_t>(mode.vtime);
+    return 0;
+}
+
+extern "C" int tcsetattr(int fd, int action, const struct termios* value) {
+    object_lease lease(fd);
+    if (lease.index < 0) { errno = EBADF; return -1; }
+    if (value == nullptr) { errno = EFAULT; return -1; }
+    if (objects[lease.index].kind != object_kind::terminal) { errno = ENOTTY; return -1; }
+    if (action != TCSANOW && action != TCSADRAIN && action != TCSAFLUSH) { errno = EINVAL; return -1; }
+    if (action != TCSANOW) { errno = ENOTSUP; return -1; }
+    if (value->c_iflag != 0 || value->c_oflag != 0 || value->c_lflag != 0 ||
+        value->c_cflag != (CS8 | CREAD | CLOCAL) ||
+        value->c_ispeed != B115200 || value->c_ospeed != B115200) {
+        errno = ENOTSUP; return -1;
+    }
+    for (u32 i = 0; i < NCCS; ++i) {
+        if (i != VMIN && i != VTIME && value->c_cc[i] != 0) { errno = ENOTSUP; return -1; }
+    }
+    xos::terminal::mode mode = xos::terminal::default_mode;
+    mode.vmin = value->c_cc[VMIN]; mode.vtime = value->c_cc[VTIME];
+    const xos::i64 result = xos::terminal::set_mode(terminal_client, mode);
+    if (result != 0) { errno = error_from_kernel(result); return -1; }
+    return 0;
+}
+
+extern "C" int tcflush(int fd, int queue) {
+    object_lease lease(fd);
+    if (lease.index < 0) { errno = EBADF; return -1; }
+    if (objects[lease.index].kind != object_kind::terminal) { errno = ENOTTY; return -1; }
+    if (queue != TCIFLUSH && queue != TCOFLUSH && queue != TCIOFLUSH) { errno = EINVAL; return -1; }
+    errno = ENOTSUP; return -1;
+}
+extern "C" int tcdrain(int fd) {
+    object_lease lease(fd);
+    if (lease.index < 0) { errno = EBADF; return -1; }
+    if (objects[lease.index].kind != object_kind::terminal) { errno = ENOTTY; return -1; }
+    errno = ENOTSUP; return -1;
+}
+
+extern "C" speed_t cfgetispeed(const struct termios* value) { return value->c_ispeed; }
+extern "C" speed_t cfgetospeed(const struct termios* value) { return value->c_ospeed; }
+extern "C" int cfsetispeed(struct termios* value, speed_t speed) {
+    if (value == nullptr) { errno = EFAULT; return -1; }
+    if (speed != B115200) { errno = EINVAL; return -1; }
+    value->c_ispeed = speed; return 0;
+}
+extern "C" int cfsetospeed(struct termios* value, speed_t speed) {
+    if (value == nullptr) { errno = EFAULT; return -1; }
+    if (speed != B115200) { errno = EINVAL; return -1; }
+    value->c_ospeed = speed; return 0;
+}
+extern "C" void cfmakeraw(struct termios* value) {
+    value->c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL | IXON);
+    value->c_oflag &= ~OPOST;
+    value->c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
+    value->c_cflag &= ~(CSIZE | PARENB);
+    value->c_cflag |= CS8;
+    value->c_cc[VMIN] = 1; value->c_cc[VTIME] = 0;
 }
 
 extern "C" DIR* opendir(const char* path) {

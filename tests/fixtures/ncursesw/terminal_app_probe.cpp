@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #include <xos/spawn.hpp>
 #include <errno.h>
+#include <termios.h>
 #include <unistd.h>
 
 namespace {
@@ -11,6 +12,21 @@ struct marker { xos::u64 magic; xos::u32 version, size; };
 extern "C" int xos_user_main(const xos::startup_info* startup) {
     using namespace xos;
     if (startup == nullptr || !isatty(0) || !isatty(1) || !isatty(2)) return 1;
+    struct termios tty{};
+    if (tcgetattr(0, &tty) != 0 || tty.c_cc[VMIN] != 1 || tty.c_cc[VTIME] != 0) return 9;
+    tty.c_lflag |= ECHO; errno = 0;
+    if (tcsetattr(0, TCSANOW, &tty) != -1 || errno != ENOTSUP) return 10;
+    if (tcgetattr(0, &tty) != 0 || tty.c_lflag != 0) return 11;
+    errno = 0;
+    if (tcsetattr(0, TCSADRAIN, &tty) != -1 || errno != ENOTSUP) return 15;
+    errno = 0;
+    if (tcflush(0, TCIFLUSH) != -1 || errno != ENOTSUP) return 16;
+    tty.c_cc[VMIN] = 0;
+    if (tcsetattr(0, TCSANOW, &tty) != 0) return 12;
+    char empty = 0;
+    if (read(0, &empty, 1) != 0) return 13;
+    tty.c_cc[VMIN] = 1;
+    if (tcsetattr(0, TCSANOW, &tty) != 0) return 14;
     const int duplicate = dup(1);
     if (duplicate < 0 || close(1) != 0) return 2;
     errno = 0;

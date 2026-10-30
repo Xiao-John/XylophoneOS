@@ -30,7 +30,7 @@ supervisor 创建，具有正确的服务端收发方向和同一目标 PID。�
 supervisor 不能通过控制通道直接读取或写入设备；detach、通道关闭或应用退出会结束
 会话。应用必须依次收取应答：为防应用不读应答而阻塞 supervisor，应用应答槽已满时
 服务关闭该会话，不无限等待。应用与控制消息到达次序、发生故障时结果均不可推定。
-应用通道只是试行内部接口，尚无 libc 绑定或可靠的 fork/exec 继承、前台切换语义。
+应用通道只是试行内部接口，尚无可靠的 fork/exec 继承和前台切换语义。
 
 SDK 试行 `terminal_client.hpp` 可按启动者给出的 supervisor 与服务 PID，核对应用端
 两条通道的内核认证控制者、对端和方向后连接；客户端串行处理单个请求，并校验应答
@@ -40,7 +40,7 @@ SDK 试行 `terminal_client.hpp` 可按启动者给出的 supervisor 与服务 P
 `connect_startup` 根据内核枚举到的句柄核对控制者、服务对端和双向通道。只有声明
 `.xos.tty` v1 的目标可由加载器使用该扩展；它不授予通道权。单线程 libc 试行使用
 同一个终端对象承载初始 fd 0/1/2，最后一个引用关闭通道；read/write 使用原始字节
-并返回实际短结果，`isatty` 和 `fstat` 报告字符终端。现阶段没有 termios 模式，
+并返回实际短结果，`isatty` 和 `fstat` 报告字符终端。现阶段仅有受限 termios 模式，
 带该终端对象的 fork/exec 显式返回 ENOTSUP，多线程运行库拒绝该启动扩展；不能把
 它们描述为完整 POSIX 终端或现有 shell 的成功接管。
 
@@ -49,7 +49,13 @@ SDK 试行 `terminal_client.hpp` 可按启动者给出的 supervisor 与服务 P
 `VMIN/VTIME` 为 `(1,0)`、`(0,0)` 或 `(0,1..255)`；其他配置明确返回 unsupported，
 不会静默成功。`read_mode` 分别表示至少一个字节、立即读取、最多等待指定分秒数；
 后两种无数据可返回零，该零值表示本次无数据，不能推为设备 EOF。模式变更先检查
-完整请求再更新，失败不更改状态；这是服务协议，尚不是 POSIX termios 实现。
+完整请求再更新，失败不更改状态。
 
-当前不提供完整应用前台会话、termios、通用 stdio 继承、故障恢复、信号或稳定设备救援；所有
+单线程 libc 现提供试行 `termios.h` 和原始模式映射：`tcgetattr` 查询服务实际模式，
+`tcsetattr(TCSANOW)` 仅接受上述模式和固定 115200 8N1；未支持标志和组合返回
+ENOTSUP，非终端返回 ENOTTY。初始终端 read 使用 `read_mode`，零值可能表示限时或
+非阻塞读取无数据。`TCSADRAIN`、`TCSAFLUSH`、`tcdrain` 和 `tcflush` 目前返回
+ENOTSUP，不代表发送排空或清空已发生；符号速率常量不代表设备支持改变速率。
+
+当前不提供完整应用前台会话、完整 termios、通用 stdio 继承、故障恢复、信号或稳定设备救援；所有
 权限、并发、时限、短写及退出路径均须在相关修改提交后的真实客体测试中验证。

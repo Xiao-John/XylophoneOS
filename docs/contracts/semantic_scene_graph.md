@@ -73,10 +73,18 @@ withheld even when normal text observation is enabled.
 
 Queries can filter visible nodes and role; Notes prioritizes a document-role query after its initial bounded tree export, and Browser uses a body-text/link content query. Filtering avoids formatting every unrelated control; a capped whole-tree export is never treated as complete.
 
-The retained stream keeps only current
-and previous states. Diff returns changed/new nodes and removed IDs, or
-RESET_REQUIRED when history is unavailable. Unchanged observations retain their
-scene version. No periodic observer timer, subscription thread or full-desktop
+The retained stream keeps only current and previous states. A successful diff
+returns changed/new nodes, IDs that left the *query result*, current metadata and
+the `capped` state. `removed` is not proof of object destruction: a node may have
+left a visible-only or other filtered view. Diff returns `RESET_REQUIRED` if
+history is unavailable, query scope differs, or either endpoint is capped; even
+an unchanged capped result cannot certify a complete diff. A fresh bounded snapshot
+may itself remain capped and must not be mistaken for a complete enumeration.
+Publishers use `metadata.queryScope` for all selection and authorization inputs;
+other metadata may change and is included in the diff. Legacy publishers without
+that object reset conservatively if any metadata changes. Malformed or duplicate
+node identities are rejected without advancing history. Unchanged observations
+retain their scene version. No periodic observer timer, subscription thread or full-desktop
 polling is installed. A production bounded subscription API is a future contract,
 not a fake success function.
 

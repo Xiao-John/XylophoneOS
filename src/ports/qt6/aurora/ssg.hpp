@@ -14,6 +14,9 @@ public:
     SceneStream();
     void invalidate();
     QString source_epoch() const;
+    // Optional metadata.queryScope identifies every query/authorization filter;
+    // without it any metadata change requires a fresh snapshot. Node IDs must
+    // be nonempty unique strings. A capped result cannot be diffed as complete.
     QJsonObject publish(const QJsonArray &nodes,const QJsonObject &metadata,bool capped=false);
     QJsonObject diff(quint64 since,const QString &expected_epoch) const;
 };

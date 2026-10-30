@@ -1,0 +1,145 @@
+{
+  "status": "OBSERVED",
+  "qualification": "NOT_RUN",
+  "inputs": {
+    "image": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img",
+      "sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08"
+    },
+    "session": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-p2-pagination/build/ssg-p2-regression/session.elf",
+      "sha256": "c05e6b9fbfcb3376d57178fbab67b88a3a2802afcd5a7d5a1b943c21f057fa48"
+    },
+    "browser": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/build/p2e-browser-final/browser.elf",
+      "sha256": "9e58aa224ae32a68080eda9d95b320a34e42db4872d555a0608197b5509e3285"
+    },
+    "consumer": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/build/p2d-browser/consumer.elf",
+      "sha256": "846e08dd04304884ac0176aee625a676e15026e4f9bd2423b60ef60579016ea6"
+    },
+    "input": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/tests/fixtures/ssg_browser/p2d.html",
+      "sha256": "37fff0e9d875d3196f3d547a4f65e0a329b1466623eac9d2a502554d18c41e0f"
+    },
+    "probe": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/tests/ssg_browser_pages_probe.py",
+      "sha256": "b94ed9d143c720cc02609fc9170b428b23293fc27c1dd020686ae46dac00401e"
+    },
+    "qemu": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+      "sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e"
+    }
+  },
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_p2e_9daixx28/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_g3lxko4j/qmp.sock,server=on,wait=off"
+  ],
+  "baseline": [
+    130279,
+    2,
+    0
+  ],
+  "display": [
+    130235,
+    3,
+    1
+  ],
+  "after": [
+    130235,
+    3,
+    1
+  ],
+  "consumer_done": [
+    "SSG_PAGED_CONSUMER_DONE pages=5 nodes=32 complete=1"
+  ],
+  "frames": [
+    {
+      "file": "01-req.json",
+      "sha256": "2a9eb5bb3192ea6a92c6ce078369f49690a962d242a198d63f51b2971cafc97e",
+      "bytes": 36
+    },
+    {
+      "file": "01-resp.json",
+      "sha256": "3e22f2aab664715efc26157d2a58bc705456af3a34465874fe6025659d951e0b",
+      "bytes": 3724
+    },
+    {
+      "file": "02-req.json",
+      "sha256": "db1fc119f3a8ddcabdb5136e9e863fa6486ffabd83bfdd231e3779f52869576f",
+      "bytes": 101
+    },
+    {
+      "file": "02-resp.json",
+      "sha256": "02d6ee283bb758c2531697f7237ed0771bc5641eff056c861905c521fc64a783",
+      "bytes": 4208
+    },
+    {
+      "file": "03-req.json",
+      "sha256": "f5733169f510212b4236b23e61e7fa497148e647481b3b6c3162415b316c6943",
+      "bytes": 101
+    },
+    {
+      "file": "03-resp.json",
+      "sha256": "a03361daac41f2d1202e459f4bcd511b228eed17b390c5ebefb8614136f54790",
+      "bytes": 3882
+    },
+    {
+      "file": "04-req.json",
+      "sha256": "0890246bbd3a054765a06f911941fd49cfa570531f45b6e761aa2ad6b6021f88",
+      "bytes": 101
+    },
+    {
+      "file": "04-resp.json",
+      "sha256": "337a8322e5be90331455db2b62553abe5d8e40060687cf02463021517c078f47",
+      "bytes": 4097
+    },
+    {
+      "file": "05-req.json",
+      "sha256": "37e5203361a5af626b3ee8b70ff2bf481f4e2b42af8154f82b08e20f07dcc729",
+      "bytes": 101
+    },
+    {
+      "file": "05-resp.json",
+      "sha256": "7b983ead78605112c36d64d2ec156538246bfc2a6b83aba3ec0098db4ef3f6ae",
+      "bytes": 455
+    }
+  ],
+  "page_node_counts": [
+    8,
+    8,
+    8,
+    8,
+    0
+  ]
+}

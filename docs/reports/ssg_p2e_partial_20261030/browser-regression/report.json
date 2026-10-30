@@ -1,0 +1,214 @@
+{
+  "status": "PASSED_SCOPED",
+  "inputs": {
+    "image": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img",
+      "sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08"
+    },
+    "session": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-p2-pagination/build/ssg-p2-regression/session.elf",
+      "sha256": "c05e6b9fbfcb3376d57178fbab67b88a3a2802afcd5a7d5a1b943c21f057fa48"
+    },
+    "consumer": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/build/p2d-browser/consumer.elf",
+      "sha256": "846e08dd04304884ac0176aee625a676e15026e4f9bd2423b60ef60579016ea6"
+    },
+    "notes": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-p2-pagination/build/ssg-p2-regression/notes/notes.elf",
+      "sha256": "05153407b8d46325f2204d90e4bddb522d66bfda73632c0a8b7e4570ea5d4969"
+    },
+    "browser": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/build/p2e-browser-final/browser.elf",
+      "sha256": "9e58aa224ae32a68080eda9d95b320a34e42db4872d555a0608197b5509e3285"
+    }
+  },
+  "checks": [
+    "browser_real_fragment_scroll_reload_and_stale_epoch",
+    "browser_text_scope_denied_by_default",
+    "browser_local_probe_cannot_expand_pipe_text_scope",
+    "display_and_guest_resource_baseline_restored"
+  ],
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ssg_ipc_jhw6a3d3/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos__to88cu6/qmp.sock,server=on,wait=off"
+  ],
+  "baseline_resources": [
+    130279,
+    2,
+    0
+  ],
+  "display_resources": [
+    130235,
+    3,
+    1
+  ],
+  "browser_processes": {
+    "parent_pid": 10,
+    "provider_pid": 12,
+    "consumer_pid": 11,
+    "instance": "ede2495a4e480ced7bafb8b80543425f"
+  },
+  "browser_frames": [
+    {
+      "direction": "REQ",
+      "sequence": 1,
+      "bytes": 68,
+      "sha256": "e57af696e5b28b949d67aa5f887e70d2575d3da4df1b188e153462fa12127316",
+      "file": "browser-01-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 2,
+      "bytes": 68,
+      "sha256": "e57af696e5b28b949d67aa5f887e70d2575d3da4df1b188e153462fa12127316",
+      "file": "browser-02-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 3,
+      "bytes": 129,
+      "sha256": "de45907ddb26af01135f22c4fe8370cb2650bb7fcd0db3f69be4a0f05960a943",
+      "file": "browser-03-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 4,
+      "bytes": 68,
+      "sha256": "e57af696e5b28b949d67aa5f887e70d2575d3da4df1b188e153462fa12127316",
+      "file": "browser-04-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 5,
+      "bytes": 129,
+      "sha256": "ede570a510a4efb26687dc8e4d9f763be51357ac49038213f00ee499f2d750b8",
+      "file": "browser-05-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 6,
+      "bytes": 144,
+      "sha256": "cffd67475e6678eb417746f2fdbbb118d53b41b7361ab1e47c7cd562f82d7d5e",
+      "file": "browser-06-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 7,
+      "bytes": 68,
+      "sha256": "e57af696e5b28b949d67aa5f887e70d2575d3da4df1b188e153462fa12127316",
+      "file": "browser-07-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 8,
+      "bytes": 144,
+      "sha256": "debb3c4b0f2b0d02550a540c7c8accccd58daf66ba35dc7f3c95a81840ac9547",
+      "file": "browser-08-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 9,
+      "bytes": 64,
+      "sha256": "5d39904fa8d5b4dae47886ec6f292f5b387aaf7afa55cd1c7ed54a4c8437f1f7",
+      "file": "browser-09-req.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 1,
+      "bytes": 6875,
+      "sha256": "82d86ef2f29a953c370ef01008d668ff4bde2ef2af7541584b7b017bc7ec2570",
+      "file": "browser-01-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 2,
+      "bytes": 7779,
+      "sha256": "942cced49c6f68f9593839c95e0a6802c600789aeb57a473b293a581bc94bdd4",
+      "file": "browser-02-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 3,
+      "bytes": 7150,
+      "sha256": "fcc8fcab2ba408e919704dd67713cca362064aa4b60e51092bbd77f0ddae1f68",
+      "file": "browser-03-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 4,
+      "bytes": 7700,
+      "sha256": "a83dd69a48c4f3f96c3bc632bbeca2e03adde603f4d8ff469114e05178079b9d",
+      "file": "browser-04-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 5,
+      "bytes": 108,
+      "sha256": "df6a14e56453388d9d0a68f63bb4ead595247807c1964fedd369d2f2ea14f7e9",
+      "file": "browser-05-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 6,
+      "bytes": 108,
+      "sha256": "df6a14e56453388d9d0a68f63bb4ead595247807c1964fedd369d2f2ea14f7e9",
+      "file": "browser-06-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 7,
+      "bytes": 7780,
+      "sha256": "c5be6d8949cb3d3e87a835212baef44cc9ff01bbfc31523ac2055b8ef3ad3c37",
+      "file": "browser-07-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 8,
+      "bytes": 595,
+      "sha256": "d0883a5b02e891194548cc209637d92675c11503b4ade3d887634b510ba090bd",
+      "file": "browser-08-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 9,
+      "bytes": 1753,
+      "sha256": "7a2b6899eeec878eb9aa0bec7bcfccb3a48a98a6c554f2f65f5df1bc26773924",
+      "file": "browser-09-resp.json"
+    }
+  ],
+  "final_resources": [
+    130279,
+    2,
+    0
+  ]
+}

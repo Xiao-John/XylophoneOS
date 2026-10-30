@@ -1,0 +1,127 @@
+{
+  "status": "FAILED",
+  "qualification": "NOT_RUN",
+  "inputs": {
+    "image": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img",
+      "sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08"
+    },
+    "session": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-p2-pagination/build/ssg-p2-regression/session.elf",
+      "sha256": "c05e6b9fbfcb3376d57178fbab67b88a3a2802afcd5a7d5a1b943c21f057fa48"
+    },
+    "browser": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/build/p2d-browser2/browser.elf",
+      "sha256": "1be830755eef18b846994a0ac87682b9e443f47c5aa3c7e7000279a901eb4b64"
+    },
+    "consumer": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/build/p2d-browser/consumer.elf",
+      "sha256": "846e08dd04304884ac0176aee625a676e15026e4f9bd2423b60ef60579016ea6"
+    },
+    "input": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/tests/fixtures/ssg_browser/p2d.html",
+      "sha256": "85ad5796a238eb476ed986827aa46f4fed676b18ac331c8ed4a92bffe329fa58"
+    },
+    "qemu": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+      "sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e"
+    }
+  },
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_p2e_uo4h0jsk/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_unp7pei2/qmp.sock,server=on,wait=off"
+  ],
+  "baseline": [
+    130279,
+    2,
+    0
+  ],
+  "display": [
+    130235,
+    3,
+    1
+  ],
+  "error": "AssertionError(\"p2e-observation-20261030-2/qemu: missing any of (b'SSG_SESSION consumer_wait=',); output=bytearray(b'sc2UsImZyYWdtZW50cyI6W10sImZyYWdt\\\\nSSG_FRAME_PART RESP 5 384 ZW50c0NvbXBsZXRlIjp0cnVlLCJpZCI6IjMzIiwicGFyZW50IjoiOCIsInJvbGUiOiJ0ZXh0Iiwic2NyZWVuT2NjbHVzaW9u\\\\nSSG_FRAME_PART RESP 5 480 IjoiVU5LTk9XTl9OT19DT01QT1NJVE9SIiwic291cmNlIjoibGl0ZWh0bWwtbW9kZWwtYW5kLXJlbmRlci1sYXlvdXQiLCJ0\\\\nSSG_FRAME_PART RESP 5 576 YWciOiIiLCJ0ZXh0IjoiXG4iLCJ0ZXh0UmFuZ2UiOlswLDFdLCJ0ZXh0VHJ1bmNhdGVkIjpmYWxzZSwidmlzaWJpbGl0eSI6\\\\nSSG_FRAME_PART RESP 5 672 Im5vdC1yZW5kZXJlZCIsInZpc2libGVCb3VuZHMiOlswLDAsMCwwXSwidmlzaWJsZUZyYWdtZW50cyI6W119XSwicGFnZVNl\\\\nSSG_FRAME_PART RESP 5 768 cXVlbmNlIjoiNSIsInByb3ZpZGVyUGlkIjoiMTIiLCJxdWVyeSI6IiIsInNvdXJjZUVwb2NoIjoiNTE1Mzk2MDc1NTUiLCJz\\\\nSSG_FRAME_PART RESP 5 864 b3VyY2VJbnN0YW5jZSI6IjhlNGZjNWVkMDdjOWM0NmY3M2VmZWY3YWUxOWVhNWUwIiwic291cmNlUmV2aXNpb24iOiI1Iiwi\\\\nSSG_FRAME_PART RESP 5 960 c3RhdHVzIjoiT0siLCJ2aXNpYmxlT25seSI6ZmFsc2UsInZpc2l0ZWQiOjF9\\\\nSSG_FRAME_END RESP 5\\\\nSSG_PAGED_CONSUMER page=5 nodes=1 visited=1 elapsed_ms=0 complete=1\\\\nSSG_PAGED_CONSUMER_DONE pages=5 nodes=33 complete=1\\\\n')\")",
+  "frames": [
+    {
+      "file": "01-req.json",
+      "sha256": "2a9eb5bb3192ea6a92c6ce078369f49690a962d242a198d63f51b2971cafc97e",
+      "bytes": 36
+    },
+    {
+      "file": "01-resp.json",
+      "sha256": "0dc6d1e48b998f54b71cb789faf89cb90993aa355319eaf16b73f14aa1398391",
+      "bytes": 3610
+    },
+    {
+      "file": "02-req.json",
+      "sha256": "651dded36155f79004111ccd967a52a8445bb042363f40088b3170f386110b23",
+      "bytes": 101
+    },
+    {
+      "file": "02-resp.json",
+      "sha256": "89dbb74adc93255ccb610d140fda11a8b037016ea28fac124d17fd99a00f9108",
+      "bytes": 4094
+    },
+    {
+      "file": "03-req.json",
+      "sha256": "fc9babbf0d9159de95eeeb0df622eb562249af703191bb1b106dd78462860db6",
+      "bytes": 101
+    },
+    {
+      "file": "03-resp.json",
+      "sha256": "b93cb5f78b9867b298d54191a3398c81282d624e1b40ffee44ce3f7c7caee375",
+      "bytes": 3768
+    },
+    {
+      "file": "04-req.json",
+      "sha256": "bc3be883ae08ef12e4d6201b5afcc9f50f5adfce4df5d9db6cd33dbe8ca43329",
+      "bytes": 101
+    },
+    {
+      "file": "04-resp.json",
+      "sha256": "9f875cf7b059d067ea840c6ae437d8a6d8ba5ebda61710edfb66b8f99c56b728",
+      "bytes": 3983
+    },
+    {
+      "file": "05-req.json",
+      "sha256": "c93cf6917ef0d31bac3671423b9576fa77ac1bb35ffe249bb3117b1fb04e260e",
+      "bytes": 101
+    },
+    {
+      "file": "05-resp.json",
+      "sha256": "1678edf126033f2503ea228031a4c9cde4c00cb8112eb2d0b50205574f84b97f",
+      "bytes": 765
+    }
+  ]
+}

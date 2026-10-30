@@ -103,9 +103,12 @@ public:
             auto &f=s.stack.last();
             if(!f.entered){
                 ++visited;f.entered=true;f.child=f.element->children().begin();
-                if(f.depth>18 || scene_ids.size()>=4096){page_session.reset();return {{"status","RESOURCE_LIMIT"}};}
+                if(f.depth>18){page_session.reset();return {{"status","RESOURCE_LIMIT"}};}
                 const auto key=reinterpret_cast<quintptr>(f.element.get());
-                if(!scene_ids.contains(key))scene_ids[key]=next_scene_id++;
+                if(!scene_ids.contains(key)){
+                    if(scene_ids.size()>=4096){page_session.reset();return {{"status","RESOURCE_LIMIT"}};}
+                    scene_ids[key]=next_scene_id++;
+                }
                 f.id=scene_ids[key];const auto *tag=f.element->get_tagName();const auto name=QString::fromUtf8(tag?tag:"");
                 if(!s.query.isEmpty() && name=="head"){s.stack.removeLast();continue;}
                 const bool matches=s.query.isEmpty() || (s.query=="content" && (f.element->is_text() || name=="a")) ||
@@ -135,6 +138,9 @@ public:
         s.token=cursor;
         QJsonObject result{{"status","OK"},{"sourceEpoch",epoch},{"sourceRevision",QString::number(revision)},
             {"query",query},{"visibleOnly",visible},{"pageSequence",QString::number(seq)},{"complete",complete},
+            {"hasData",!nodes.isEmpty()},{"hasNext",!complete},{"sourceValid",true},
+            {"traversalComplete",complete},{"stopReason",complete?"EXHAUSTED":"PAGE_BUDGET"},
+            {"scrollY",verticalScrollBar()->value()},
             {"cursor",cursor},{"nodes",nodes},{"visited",visited},{"elapsedMs",QString::number(timer.elapsed())},
             {"baselineStatus",complete?"CONSUMER_MUST_VALIDATE":"INCOMPLETE"},{"diffStatus","RESET_REQUIRED_NO_PAGED_BASELINE"}};
         if(complete)page_session.reset();return result;

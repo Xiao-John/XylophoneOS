@@ -120,7 +120,7 @@ claimed必须位于对应reserved段，不能与现有接口或其他认领重�
 |---|---|---|
 | files op | wire v2、op1–25；20clone_session、21anonymous、22seal、23/24维护、25truncate | 文件/包管理共用服务，由文件协议负责人整合；不得各自追加同一个next op |
 | display action / operation | v1控制action0–9、request operation1–6 | 显示负责人；Qt通过用户态display_client接入，不另造同名内核接口 |
-| startup/exec | startup1/2/3、.xos.exec/v3身份标记，线程profile另列 | loader/SDK负责人，升级须说明旧二进制准入/拒绝与迁移 |
+| startup/exec | startup1/2/3、.xos.exec/v3身份标记；试行 startup2 flag bit16 与 reserved 承载 terminal send handle，仅限只读 `.xos.tty` v1 opt-in | loader/SDK负责人，升级须说明旧二进制准入/拒绝与迁移；终端扩展尚未客体验收 |
 | boot_info | v1 64字节；显示扩展v2 112字节；payload descriptor独立 | 引导/内核共同登记，不借用对方字段 |
 | endpoint/PID/TID | 内核按生命周期分配的运行时身份 | 不预留静态数字给Qt，不以程序名或客户端自填身份授予权利 |
 | SDK manifest | process_extensions与display_extensions等能力/输入标识 | 普通/线程生成器同步；reserved不登记为supported |

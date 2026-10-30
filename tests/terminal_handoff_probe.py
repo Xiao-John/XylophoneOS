@@ -38,13 +38,15 @@ def main():
             raise SystemExit(f"source differs from build manifest: {name}")
     image = system / "xos-install.iso"
     terminal = system / "user_terminal.image.elf"
-    for path in (image, terminal):
+    application = system / "user_terminal_app_probe.image.elf"
+    for path in (image, terminal, application):
         entry = manifest["artifacts"].get(path.name)
         if not entry or digest(path) != entry["sha256"]:
             raise SystemExit(f"artifact differs from build manifest: {path.name}")
     report = {"status": "failed", "build_id": manifest["build_id"],
               "commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
-              "image_sha256": digest(image), "terminal_sha256": digest(terminal), "checks": []}
+              "image_sha256": digest(image), "terminal_sha256": digest(terminal),
+              "application_sha256": digest(application), "checks": []}
     guest = None
     try:
         with tempfile.TemporaryDirectory(prefix="xos_terminal_probe_") as folder:
@@ -52,6 +54,7 @@ def main():
             create_fat32(disk, 512)
             transfer(disk, "mkdir", "/bin")
             transfer(disk, "import", "/bin/terminal.elf", terminal)
+            transfer(disk, "import", "/bin/tty_app.elf", application)
             guest = Guest(image, "terminal_handoff_probe", work_disk=disk, iso=True)
             guest.expect(b"xos64> ", timeout=30)
             send_bytes(guest, b"run\r")
@@ -63,6 +66,9 @@ def main():
             report["checks"].append("handoff_irq_input_byte")
             guest.expect(b"W1_CANCEL_OK", timeout=30)
             report["checks"].append("pending_read_control_interrupt")
+            guest.expect(b"W1_APP_OK", timeout=30)
+            guest.expect(b"W1_APP_REAPED", timeout=30)
+            report["checks"].append("authenticated_application_start_and_exit")
             guest.expect(b"W1_REAUTHORIZE_OK", timeout=30)
             report["checks"].append("normal_stop_and_explicit_reauthorization")
             report["status"] = "passed"

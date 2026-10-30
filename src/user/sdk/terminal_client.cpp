@@ -31,6 +31,30 @@ i64 connect(client& session, u64 controller_pid, u64 service_pid) {
     return 0;
 }
 
+i64 connect_startup(client& session, const startup_info* startup) {
+    if (startup == nullptr || startup->magic != startup_magic || startup->version != 2 ||
+        startup->size != sizeof(startup_info) || startup->reserved != startup_extension_offset)
+        return process_error_invalid;
+    const auto* extension = reinterpret_cast<const startup_extension*>(
+        reinterpret_cast<const u8*>(startup) + startup_extension_offset);
+    if (extension->magic != startup_extension_magic ||
+        (extension->flags & startup_flag_terminal) == 0 || extension->reserved == 0)
+        return process_error_denied;
+    for (u32 i = 0; i < 32; ++i) {
+        channel_info info{};
+        const i64 result = sdk::channel_get(i, info);
+        if (result == thread_error_not_found) break;
+        if (result != 0 || info.version != channel_version || info.size != sizeof(info))
+            return process_error_state;
+        if (info.handle != extension->reserved || info.rights != channel_send) continue;
+        const i64 connected = connect(session, info.controller_pid, info.peer_pid);
+        if (connected != 0) return connected;
+        if (session.send_handle == extension->reserved) return 0;
+        close(session); return process_error_denied;
+    }
+    return process_error_denied;
+}
+
 namespace {
 i64 exchange(client& session, request& message, response& reply) {
     if (session.send_handle == 0 || session.receive_handle == 0 || session.next_sequence == 0)

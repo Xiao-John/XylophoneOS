@@ -6,6 +6,8 @@ inline constexpr u64 startup_extension_magic = 0x32585445534f5855ull;
 inline constexpr u32 startup_extension_offset = 64;
 inline constexpr u32 startup_page_count = 4;
 inline constexpr u32 startup_environment_max = 64;
+inline constexpr u32 startup_flag_terminal = 1u << 16;
+inline constexpr u64 terminal_image_abi_magic = 0x31595454534f5858ull;
 // startup_info keeps its 48-byte ABI prefix. Version 2 uses reserved=64 to
 // identify this extension inside the mapped startup area; pointers are user VAs.
 struct startup_extension {
@@ -56,6 +58,9 @@ struct spawn_options {
     // either the callback or the subsequent start fails.
     i64 (*prepare_child)(u64 child, void* context) = nullptr;
     void* prepare_context = nullptr;
+    // Optional output filled by prepare_child: application-side send handle.
+    // The loader maps the startup pages only after that callback succeeds.
+    const u32* terminal_send_handle = nullptr;
 };
 i64 spawn_file_options(const char* path, u32 argc, const char* const* argv,
                        const spawn_options& options);

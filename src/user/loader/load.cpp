@@ -45,9 +45,10 @@ bool file_read(void* context, u64 offset, u8* destination, u32 length) {
 
 // Only a CRT declaring the read-only .xos.exec opt-in can restore v3 FDs.
 // Ordinary spawn stays compatible with existing static v1/v2 applications.
-bool exec_abi_supported(elf::read_exact_fn read, void* context, u64 size,
-                        const elf::load_plan& plan) {
-    u8 header[64], section[64], strings[64], name[10], record[16];
+bool image_opt_in(elf::read_exact_fn read, void* context, u64 size,
+                  const elf::load_plan& plan, const char* expected, u32 name_size,
+                  u64 magic, u32 version) {
+    u8 header[64], section[64], strings[64], name[16], record[16];
     auto value = [](const u8* bytes, u32 count) {
         u64 result = 0;
         for (u32 i = 0; i < count; ++i) result |= u64{bytes[i]} << (i * 8);
@@ -63,15 +64,16 @@ bool exec_abi_supported(elf::read_exact_fn read, void* context, u64 size,
     for (u64 i=0;i<count;++i) {
         if (!read(context,offset+i*64,section,64)) return false;
         const u64 label=value(section,4);
-        if (label>string_size || 10>string_size-label || !read(context,string_offset+label,name,10)) continue;
-        const char expected[]=".xos.exec"; bool matches=true;
-        for (u32 j=0;j<10;++j) matches=matches && name[j]==static_cast<u8>(expected[j]);
+        if (name_size > sizeof(name) || label>string_size || name_size>string_size-label ||
+            !read(context,string_offset+label,name,name_size)) continue;
+        bool matches=true;
+        for (u32 j=0;j<name_size;++j) matches=matches && name[j]==static_cast<u8>(expected[j]);
         if (!matches) continue;
         const u64 flags=value(section+8,8), address=value(section+16,8);
         const u64 file=value(section+24,8), bytes=value(section+32,8);
         if (value(section+4,4)!=1 || !(flags&2) || (flags&1) || bytes!=16 ||
-            !range(file,bytes) || !read(context,file,record,16) || value(record,8)!=exec_image_abi_magic ||
-            value(record+8,4)!=3 || value(record+12,4)!=16) return false;
+            !range(file,bytes) || !read(context,file,record,16) || value(record,8)!=magic ||
+            value(record+8,4)!=version || value(record+12,4)!=16) return false;
         for (u32 j=0;j<plan.count;++j) {
             const auto& segment=plan.segments[j];
             if (!(segment.permissions&map_write) && file>=segment.offset &&
@@ -115,13 +117,27 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     if (replacing && options->prepare_child != nullptr) {
         return fail_before_create(process_error_invalid);
     }
+    const bool terminal_startup = options != nullptr && options->terminal_send_handle != nullptr;
+    if (terminal_startup) {
+        if (replacing || options->prepare_child == nullptr) return fail_before_create(process_error_invalid);
+        for (u32 fd = 0; fd < 3; ++fd) {
+            if (options->stdio[fd] != -2 || options->file_handles[fd] != 0 || options->open_paths[fd] != nullptr)
+                return fail_before_create(process_error_invalid);
+        }
+    }
     bool inherits_file = false;
     if (options != nullptr) {
         for (u32 fd=0;fd<3;++fd) inherits_file = inherits_file || options->file_handles[fd] != 0;
     }
     // Pre-B2 static CRTs silently ignore file_handles. Never report successful
     // inheritance into an unadvertised target or reopen its paths as a proxy.
-    if ((replacing || inherits_file) && !exec_abi_supported(read_exact, read_context, size, plan)) {
+    if ((replacing || inherits_file) && !image_opt_in(read_exact, read_context, size, plan,
+                                                      ".xos.exec", 10, exec_image_abi_magic, 3)) {
+        if (diagnostic != nullptr) *diagnostic = {execution::launch_stage::inspect, thread_error_unsupported, elf::error::none};
+        return fail_before_create(thread_error_unsupported);
+    }
+    if (terminal_startup && !image_opt_in(read_exact, read_context, size, plan,
+                                          ".xos.tty", 9, terminal_image_abi_magic, 1)) {
         if (diagnostic != nullptr) *diagnostic = {execution::launch_stage::inspect, thread_error_unsupported, elf::error::none};
         return fail_before_create(thread_error_unsupported);
     }
@@ -232,7 +248,7 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
             result = syscall(sys_process_grant, static_cast<u64>(child), 1);
         }
     }
-    for (u32 index = 0; result >= 0 && index < startup_page_count; ++index) {
+    for (u32 index = 0; !terminal_startup && result >= 0 && index < startup_page_count; ++index) {
         mapping = {startup_address + u64{index} * 4096,
                    reinterpret_cast<u64>(page + index * 4096), 4096, map_read | map_write};
         result = syscall(sys_process_map, static_cast<u64>(child), reinterpret_cast<u64>(&mapping));
@@ -278,6 +294,20 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     }
     if (result >= 0 && options != nullptr && options->prepare_child != nullptr) {
         result = options->prepare_child(static_cast<u64>(child), options->prepare_context);
+    }
+    if (result >= 0 && terminal_startup) {
+        const u32 handle = *options->terminal_send_handle;
+        if (handle == 0) result = process_error_invalid;
+        else {
+            auto* extension = reinterpret_cast<startup_extension*>(page + startup_extension_offset);
+            extension->flags |= startup_flag_terminal;
+            extension->reserved = handle;
+            for (u32 index = 0; result >= 0 && index < startup_page_count; ++index) {
+                mapping = {startup_address + u64{index} * 4096,
+                           reinterpret_cast<u64>(page + index * 4096), 4096, map_read | map_write};
+                result = syscall(sys_process_map, static_cast<u64>(child), reinterpret_cast<u64>(&mapping));
+            }
+        }
     }
     if (result >= 0) {
         process_entry entry{plan.entry, startup_address - 16, startup_address};

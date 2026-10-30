@@ -40,7 +40,14 @@ int main() {
     channels[1] = {channel_version, sizeof(channel_info), 11, channel_receive, 2, 1};
     terminal::client client{};
     if (terminal::connect(client, 9, 2) != process_error_denied || client.send_handle != 0) return 1;
-    if (terminal::connect(client, 1, 2) != 0) return 2;
+    struct startup_fixture { startup_info header; u8 padding[16]; startup_extension extension; } fixture{};
+    static_assert(__builtin_offsetof(startup_fixture, extension) == startup_extension_offset);
+    fixture.header.magic = startup_magic; fixture.header.version = 2; fixture.header.size = sizeof(startup_info);
+    fixture.header.reserved = startup_extension_offset; fixture.extension.magic = startup_extension_magic;
+    fixture.extension.flags = startup_flag_terminal; fixture.extension.reserved = 99;
+    if (terminal::connect_startup(client, &fixture.header) != process_error_denied) return 2;
+    fixture.extension.reserved = 10;
+    if (terminal::connect_startup(client, &fixture.header) != 0) return 6;
     char buffer[300]{};
     if (terminal::read_until(client, buffer, sizeof(buffer), 10) != 1 || buffer[0] != 'Z' ||
         last_request.length != terminal::data_bytes || last_request.deadline_ns != 10) return 3;

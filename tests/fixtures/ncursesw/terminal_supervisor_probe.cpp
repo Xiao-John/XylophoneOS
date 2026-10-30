@@ -8,6 +8,9 @@
 namespace {
 using namespace xos;
 terminal::control session;
+terminal::application app;
+
+i64 prepare_app(u64 child, void*) { return terminal::attach(session, app, child); }
 
 bool transmit(const char* text) {
     for (u32 offset = 0; text[offset] != 0;) {
@@ -54,6 +57,17 @@ extern "C" int xos_user_main(const xos::startup_info*) {
         response.result != terminal::interrupted || terminal::receive(session, response) != 0 ||
         response.sequence != cancel.sequence || response.result != 0) return 6;
     if (!transmit("W1_CANCEL_OK\n")) return 7;
+    sdk::spawn_options options{};
+    for (u32 i = 0; i < 3; ++i) options.stdio[i] = -2;
+    options.prepare_child = prepare_app; options.terminal_send_handle = &app.incoming;
+    const char* argv[] = {"/bin/tty_app.elf"};
+    const i64 child = sdk::spawn_file_options(argv[0], 1, argv, options);
+    if (child <= 0) { terminal::close(app); return 13; }
+    process_status app_status{};
+    if (sdk::wait(static_cast<u64>(child), app_status) != 0 ||
+        app_status.outcome != process_outcome::exited || app_status.code != 0) return 14;
+    if (terminal::detach(session, app) != 0) return 15;
+    if (!transmit("W1_APP_REAPED\n")) return 16;
     if (!stop()) return 8;
     if (sdk::pio_grant(pio_grant_action::query, 0, pio_resource_com1) != 2 ||
         sdk::pio_grant(pio_grant_action::recover, 0, pio_resource_com1) != 0) return 9;

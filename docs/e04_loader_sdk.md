@@ -212,10 +212,20 @@ sys82 `sys_pio_grant` 是开发中的固定设备 PIO 授权；COM1 交接、隔
 sys83 `sys_irq_event` 为受控 IRQ 事件、等待和确认；当前仅 IRQ4、未客体验收，
 详见[专项契约](contracts/irq_event.md)。不读取设备数据，不等于 UART 驱动完成。
 
-`spawn_options.prepare_child` 是用户态加载器的临时准备回调，在映射和文件关闭成功后、
+`spawn_options.prepare_child` 是用户态加载器的临时准备回调，在镜像、栈、TLS 映射及
+文件关闭成功后（终端启动页映射另见下）、
 新子进程运行前调用；不适用于 exec。回调或启动失败时加载器 abort 子进程，调用方
 负责清理自己建立的通道等资源。若回调已成功授予 COM1，后续启动失败仍会隔离设备，
 不保证恢复。该回调和终端控制协议尚未客体验收，不能作为稳定 SDK 资格。
+
+终端启动试行扩展仅供显式 opt-in 的普通 spawn：目标 ELF 须包含只读 ALLOC、16 字节
+`.xos.tty` 标记，magic 为 `terminal_image_abi_magic`、version=1、size=16；三个旧
+stdio 均关闭，且必须提供 prepare 回调与 `terminal_send_handle`。加载器完成其余
+映射和文件关闭后执行回调，回调为 building 子进程授权；非零发送 handle 放入
+startup2 扩展的 flag bit16 和 reserved 字段，再映射启动页，最后启动。失败会 abort
+子进程，调用方仍负责关闭创建的通道。应用用 `connect_startup` 根据内核认证的通道
+信息核对句柄及双方身份；标记不授予权限。暂不支持 exec、fork 或 libc stdio 接线，
+未客体验收。旧镜像无标记时拒绝终端启动，不影响原有非终端启动路径。
 
 SDK 控制台 read/write 的可选弱符号钩子供单个可执行文件自行接入用户态服务；没有
 定义时直接使用旧 syscall。当前 supervisor 编入试验桥接，默认保持旧路径，不为应用

@@ -138,3 +138,12 @@ QtCore 的系统 build48e5e73bcd649f44 和本地输入编辑的 build3200de2c3b8
   本分支 sys80/81 已实现但未验，合并前须核验其他分支分配。
 - 按 Discipline→本页→宪法→专项契约/登记接手；新开发独立分支/PR交付，
   公共 build 排他，localpilot 隔离。
+
+## 正在进行：通道定向验收入口
+
+2026-10-30，主 agent 独占 tests/w1_wait_smoke.py、channel_probe.cpp 与本组文档；
+补齐通道负向探针和可执行入口，无新 ABI、无内核修改。不占用公共 build。
+
+通道入口和负向断言已补齐并交叉链接，见[0113](work_log/0113_channel_acceptance_entry.md)。
+客体未运行；需先完成 W1 相关提交/宪法与 ABI 整合，再新构建并运行。
+本组源码占用已结束，无公共 build 占用。

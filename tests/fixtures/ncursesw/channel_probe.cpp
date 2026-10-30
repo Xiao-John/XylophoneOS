@@ -22,7 +22,9 @@ extern "C" int xos_user_main(const startup_info* startup) {
         const u32 out = first.rights == channel_send ? first.handle : second.handle;
         if (sdk::channel_wait(in, deadline()) != 0) return 3;
         char byte = 0;
-        if (sdk::ipc_recv(in, &byte, 1) != 1 || byte != 'a') return 4;
+        if (sdk::ipc_recv(in, &byte, 0) != process_error_invalid) return 19;
+        // An undersized receive must leave the pending byte available.
+        if (sdk::channel_wait(in, 0) != 0 || sdk::ipc_recv(in, &byte, 1) != 1 || byte != 'a') return 4;
         byte = 'b';
         if (sdk::ipc_send(out, &byte, 1) != 0) return 5;
         if (sdk::channel_wait(in, deadline()) != 0 || sdk::ipc_recv(in, &byte, 1) != 1 || byte != 'c') return 6;
@@ -41,6 +43,18 @@ extern "C" int xos_user_main(const startup_info* startup) {
     if (to_child <= 0 || from_child <= 0) return 9;
     const u32 outgoing = static_cast<u32>(to_child), incoming = static_cast<u32>(from_child);
     if (sdk::channel_wait(incoming, 0) != process_error_would_block) return 10;
+    // Exhaust only this controller's quota; the child remains alive waiting.
+    u32 extra[2]{};
+    for (u32 i = 0; i < 2; ++i) {
+        const i64 handle = sdk::channel_open(request);
+        if (handle <= 0) return 16;
+        extra[i] = static_cast<u32>(handle);
+    }
+    if (sdk::channel_open(request) != process_error_resources) return 17;
+    for (auto handle : extra) {
+        if (sdk::channel_close(handle) != 0 ||
+            sdk::channel_wait(handle, 0) != process_error_denied) return 18;
+    }
     const char first = 'a';
     if (sdk::ipc_send(outgoing, &first, 1) != 0 || sdk::channel_wait(incoming, deadline()) != 0) return 11;
     char response = 0;

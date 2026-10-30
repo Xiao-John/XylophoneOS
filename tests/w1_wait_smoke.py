@@ -26,6 +26,7 @@ def sha(path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--probe', choices=('wait', 'channel'), default='wait')
     parser.add_argument('--system', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
     args = parser.parse_args()
@@ -47,7 +48,7 @@ def main():
     sdk = system / 'sdk'
     sdk_receipt = verify_sdk(sdk, manifest)
     output.mkdir(parents=True)
-    fixture = ROOT / 'tests/fixtures/ncursesw/wait_probe.cpp'
+    fixture = ROOT / ('tests/fixtures/ncursesw/' + args.probe + '_probe.cpp')
     obj, elf = output / 'wait_probe.o', output / 'wait_probe.elf'
     commands = [[tool('g++'), *COMMON_FLAGS, *X86_FLAGS, '-I', str(sdk / 'include'),
                  '-c', str(fixture), '-o', str(obj)],
@@ -56,12 +57,15 @@ def main():
                  '-T', str(sdk / 'user.ld'), str(sdk / 'crt0.o'), str(obj),
                  '-Wl,--start-group', str(sdk / 'lib/libxos_loader.a'),
                  str(sdk / 'lib/libxos.a'), '-Wl,--end-group', '-o', str(elf)]]
-    report = {'status': 'failed', 'revision': revision, 'build_id': manifest['build_id'],
+    report = {'status': 'failed', 'probe': args.probe, 'revision': revision, 'build_id': manifest['build_id'],
               'system_manifest_sha256': sha(system / 'manifest.json'), 'image_sha256': sha(image),
               'sdk_tree_sha256': sdk_receipt['tree_sha256'], 'fixture_sha256': sha(fixture),
               'commands': commands, 'checks': [],
               'not_run': ['foreground_ownership', 'console_concurrent_close', 'failure_recovery',
                           'overflow', 'unicode', 'terminfo', 'ncurses', 'resource_stress']}
+    if args.probe == 'channel':
+        report['not_run'] = ['fork_exec', 'fault_cleanup', 'blocked_waiter_close',
+                             'concurrent_senders', 'resource_stress', 'full_w1_terminal']
     guest = None
     try:
         for cmd in commands:
@@ -71,7 +75,7 @@ def main():
             disk = Path(temporary) / 'disk.img'
             create_fat32(disk, 512)
             transfer(disk, 'mkdir', '/bin')
-            transfer(disk, 'import', '/bin/wait.elf', elf)
+            transfer(disk, 'import', '/bin/' + args.probe + '.elf', elf)
             guest = Guest(image, 'w1_wait', work_disk=disk)
             report['qemu_command'] = guest.command
             guest.expect(b'xos64> ', timeout=40)
@@ -80,18 +84,24 @@ def main():
             command(guest, 'demo keep', b'demo: keep')
             for pid in (1, 3, 4):
                 command(guest, f'kill {pid}', b'kill: accepted')
-            pipe_output = command(guest, 'exec-file /bin/wait.elf', b'W1_PIPE_WAIT_OK', timeout=40)
-            if b'kind=exited code=0' not in pipe_output:
-                raise AssertionError('pipe probe did not exit successfully')
-            report['checks'].append('pipe_timeout_ready_and_close')
-            start = len(guest.output)
-            send_bytes(guest, b'exec-file /bin/wait.elf console\r')
-            guest.expect(b'W1_CONSOLE_WAIT_READY', start=start, timeout=40)
-            send_bytes(guest, b'X')
-            guest.expect(b'W1_CONSOLE_WAIT_OK', start=start, timeout=10)
-            guest.expect(b'kind=exited code=0', start=start, timeout=10)
-            guest.expect(b'sup> ', start=start, timeout=10)
-            report['checks'].append('console_irq_wait_and_legacy_would_block')
+            if args.probe == 'channel':
+                reply = command(guest, 'exec-driver /bin/channel.elf', b'W1_CHANNEL_OK', timeout=40)
+                if b'kind=exited code=0' not in reply:
+                    raise AssertionError('channel probe did not exit successfully')
+                report['checks'].append('channel_bounded_lifecycle_subset')
+            else:
+                pipe_output = command(guest, 'exec-file /bin/wait.elf', b'W1_PIPE_WAIT_OK', timeout=40)
+                if b'kind=exited code=0' not in pipe_output:
+                    raise AssertionError('pipe probe did not exit successfully')
+                report['checks'].append('pipe_timeout_ready_and_close')
+                start = len(guest.output)
+                send_bytes(guest, b'exec-file /bin/wait.elf console\r')
+                guest.expect(b'W1_CONSOLE_WAIT_READY', start=start, timeout=40)
+                send_bytes(guest, b'X')
+                guest.expect(b'W1_CONSOLE_WAIT_OK', start=start, timeout=10)
+                guest.expect(b'kind=exited code=0', start=start, timeout=10)
+                guest.expect(b'sup> ', start=start, timeout=10)
+                report['checks'].append('console_irq_wait_and_legacy_would_block')
             if sha(image) != report['image_sha256'] or verify_sdk(sdk, manifest)['tree_sha256'] != report['sdk_tree_sha256']:
                 raise RuntimeError('system or SDK changed during test')
             if subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=normal'],

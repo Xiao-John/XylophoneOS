@@ -50,6 +50,7 @@ class PipeProvider final : public QObject {
     using Snapshot=std::function<QJsonObject(bool,const QString &,unsigned)>;
     using Diff=std::function<QJsonObject(quint64,const QString &)>;
     Snapshot snapshot_source;Diff diff_source;
+    std::function<QJsonObject(const QJsonObject &)> page_source;
     QString instance;
     QThread *worker=nullptr;
     GuiWatchdog watch;
@@ -60,6 +61,13 @@ class PipeProvider final : public QObject {
         QJsonParseError error{};const auto doc=QJsonDocument::fromJson(bytes,&error);
         if(error.error!=QJsonParseError::NoError || !doc.isObject())return {{"status","BAD_REQUEST"}};
         const auto request=doc.object();const auto op=request.value("op").toString();
+        if(op=="snapshot_begin" || op=="snapshot_next" || op=="snapshot_cancel"){
+            if(!page_source)return {{"status","UNSUPPORTED"}};
+            if(op!="snapshot_begin" && request.value("sourceInstance").toString()!=instance)
+                return {{"status","SOURCE_REPLACED"},{"sourceInstance",instance}};
+            auto result=page_source(request);result["sourceInstance"]=instance;
+            result["providerPid"]=QString::number(xos::sdk::pid());return result;
+        }
         const auto role=request.value("role").toString();const auto visible=request.value("visibleOnly").toBool(false);
         const auto limit=request.contains("maxNodes")?request.value("maxNodes").toInt(-1):96;
         if(role.size()>32 || limit<1 || limit>96 || (op!="snapshot" && op!="diff" && op!="detail"))
@@ -124,8 +132,8 @@ public:
         :snapshot_source([&source](bool visible,const QString &role,unsigned limit){source.set_node_limit(limit);return source.snapshot(visible,role);}),
          diff_source([&source](quint64 version,const QString &epoch){return source.diff(version,epoch);}),
          instance(std::move(source_instance)),watch(this){}
-    PipeProvider(QString source_instance,Snapshot snapshot,Diff diff)
-        :snapshot_source(std::move(snapshot)),diff_source(std::move(diff)),
+    PipeProvider(QString source_instance,Snapshot snapshot,Diff diff,std::function<QJsonObject(const QJsonObject &)> page={})
+        :snapshot_source(std::move(snapshot)),diff_source(std::move(diff)),page_source(std::move(page)),
          instance(std::move(source_instance)),watch(this){}
     void start(){worker=QThread::create([this]{run();});worker->start();}
     void stop(){

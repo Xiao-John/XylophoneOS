@@ -14,6 +14,8 @@
 #include <QtCore/QMap>
 #include <QtCore/QJsonDocument>
 #include <functional>
+#include <memory>
+#include <utility>
 #include <cstdio>
 #include <stdexcept>
 namespace browser {
@@ -28,28 +30,34 @@ class HtmlView final:public QAbstractScrollArea,public litehtml::document_contai
     bool scene_allowed=false;
     QMap<quintptr,quint64> scene_ids;
     quint64 next_scene_id=1;
+    struct PageFrame { litehtml::element::ptr element; quint64 parent; int depth; decltype(std::declval<litehtml::element &>().children().begin()) child; bool entered=false; quint64 id=0; };
+    struct PageSession { QVector<PageFrame> stack; QString query,epoch,token; bool visible=false; unsigned limit=0; quint64 revision=0,sequence=0; QElapsedTimer age; };
+    std::unique_ptr<PageSession> page_session;
+    QTimer page_expiry;
+    quint64 page_revision=1, page_nonce=0;
+    void invalidate_pages(){++page_revision;page_expiry.stop();page_session.reset();}
     static QColor color(litehtml::web_color c){return QColor(c.red,c.green,c.blue,c.alpha);}
     static QRect box(const litehtml::position &r){return QRect(r.x,r.y,r.width,r.height);}
     QString resource(const char *src,const char *base){return resolve(QString::fromUtf8(src),base&&*base?QString::fromUtf8(base):page);}
-    void relayout(){if(!doc||layoutBusy)return;
+    void relayout(){if(!doc||layoutBusy)return;invalidate_pages();
         struct Reset { bool &flag; ~Reset(){flag=false;} } reset{layoutBusy};layoutBusy=true;
         try{doc->render(viewport()->width());verticalScrollBar()->setRange(0,qMin(65536,qMax(0,doc->height()-viewport()->height())));verticalScrollBar()->setPageStep(viewport()->height());}
         catch(const std::exception&){doc.reset();std::printf("BROWSER_LAYOUT_FAILED resource-budget\n");}viewport()->update();}
-    void eventAt(QMouseEvent *event,int kind){if(!doc)return;litehtml::position::vector dirty;int x=int(event->position().x()),y=int(event->position().y());if(kind==0)doc->on_mouse_over(x,y+verticalScrollBar()->value(),x,y,dirty);if(kind==1)doc->on_lbutton_down(x,y+verticalScrollBar()->value(),x,y,dirty);if(kind==2)doc->on_lbutton_up(x,y+verticalScrollBar()->value(),x,y,dirty);if(!dirty.empty())viewport()->update();}
+    void eventAt(QMouseEvent *event,int kind){if(!doc)return;invalidate_pages();litehtml::position::vector dirty;int x=int(event->position().x()),y=int(event->position().y());if(kind==0)doc->on_mouse_over(x,y+verticalScrollBar()->value(),x,y,dirty);if(kind==1)doc->on_lbutton_down(x,y+verticalScrollBar()->value(),x,y,dirty);if(kind==2)doc->on_lbutton_up(x,y+verticalScrollBar()->value(),x,y,dirty);if(!dirty.empty())viewport()->update();}
 protected:
     void paintEvent(QPaintEvent*)override {QPainter p(viewport());p.fillRect(viewport()->rect(),Qt::white);if(!doc)return;painter=&p;clipDepth=0;litehtml::position clip(0,0,viewport()->width(),viewport()->height());doc->draw(0,0,-verticalScrollBar()->value(),&clip);while(clipDepth>0){p.restore();--clipDepth;}painter=nullptr;}
     void resizeEvent(QResizeEvent *event)override{QAbstractScrollArea::resizeEvent(event);relayout();}
     void mouseMoveEvent(QMouseEvent *event)override{eventAt(event,0);}
     void mousePressEvent(QMouseEvent *event)override{if(event->button()==Qt::LeftButton)eventAt(event,1);}
     void mouseReleaseEvent(QMouseEvent *event)override{if(event->button()==Qt::LeftButton)eventAt(event,2);}
-    void leaveEvent(QEvent*)override{if(doc){litehtml::position::vector dirty;doc->on_mouse_leave(dirty);viewport()->update();}}
+    void leaveEvent(QEvent*)override{if(doc){invalidate_pages();litehtml::position::vector dirty;doc->on_mouse_leave(dirty);viewport()->update();}}
     void keyPressEvent(QKeyEvent *e)override{int d=0;if(e->key()==Qt::Key_Down)d=40;else if(e->key()==Qt::Key_Up)d=-40;else if(e->key()==Qt::Key_PageDown)d=viewport()->height()-40;else if(e->key()==Qt::Key_PageUp)d=40-viewport()->height();else if(e->key()==Qt::Key_Home){verticalScrollBar()->setValue(0);return;}else if(e->key()==Qt::Key_End){verticalScrollBar()->setValue(verticalScrollBar()->maximum());return;}else{QAbstractScrollArea::keyPressEvent(e);return;}verticalScrollBar()->setValue(verticalScrollBar()->value()+d);}
 public:
     std::function<void(QString)> navigate;
     std::function<void(QString)> titleChanged;
-    HtmlView(QWidget *parent):QAbstractScrollArea(parent){setFrameShape(QFrame::NoFrame);viewport()->setMouseTracking(true);setFocusPolicy(Qt::StrongFocus);setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);connect(verticalScrollBar(),&QScrollBar::valueChanged,this,[this](int value){viewport()->update();std::printf("BROWSER_SCROLL value=%d max=%d\n",value,verticalScrollBar()->maximum());});}
+    HtmlView(QWidget *parent):QAbstractScrollArea(parent){page_expiry.setSingleShot(true);connect(&page_expiry,&QTimer::timeout,this,[this]{page_session.reset();});setFrameShape(QFrame::NoFrame);viewport()->setMouseTracking(true);setFocusPolicy(Qt::StrongFocus);setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);connect(verticalScrollBar(),&QScrollBar::valueChanged,this,[this](int value){invalidate_pages();viewport()->update();std::printf("BROWSER_SCROLL value=%d max=%d\n",value,verticalScrollBar()->maximum());});}
     bool load(const QString &path,QString &error){QByteArray bytes;if(!read(path,bytes,32768,error)||!html_allowed(bytes,error))return false;
-        doc.reset();scene.invalidate();scene_ids.clear();next_scene_id=1;images.clear();page=path;caption.clear();imports=0;fonts=0;verticalScrollBar()->setValue(0);
+        invalidate_pages();doc.reset();scene.invalidate();scene_ids.clear();next_scene_id=1;images.clear();page=path;caption.clear();imports=0;fonts=0;verticalScrollBar()->setValue(0);
         try{doc=litehtml::document::createFromString(bytes.constData(),this);relayout();if(!doc){error="Layout resource budget failed";return false;}if(doc->height()>65536){doc.reset();error="Layout height budget exceeded";return false;}}
         catch(const std::exception&){layoutBusy=false;doc.reset();error="Engine allocation or resource budget failed";return false;}
         if(!doc){error="Engine did not create document";return false;}
@@ -64,7 +72,73 @@ public:
         std::printf("BROWSER_ANCHOR_UNAVAILABLE outside-viewport-or-not-rendered\n");
     }
     QString current()const{return page;}
-    void allow_scene_observation(bool value){scene_allowed=value;if(!value){scene.invalidate();scene_ids.clear();}}
+    void allow_scene_observation(bool value){invalidate_pages();scene_allowed=value;if(!value){scene.invalidate();scene_ids.clear();}}
+    // One bounded, single-use continuation session per view. The stack contains
+    // only the active DFS path; pages are never published to SceneStream.
+    QJsonObject scene_page(const QJsonObject &request) try {
+        const auto op=request.value("op").toString();
+        if(!scene_allowed){page_session.reset();return {{"status","DENIED"}};}
+        if(!doc){page_session.reset();return {{"status","SEMANTICS_UNAVAILABLE"}};}
+        if(op=="snapshot_begin"){
+            const auto query=request.value("role").toString();
+            const int limit=request.contains("maxNodes")?request.value("maxNodes").toInt(-1):16;
+            if((!query.isEmpty() && query!="content" && query!="text" && query!="link") || limit<1 || limit>16)
+                return {{"status","BAD_QUERY"}};
+            page_session.reset(new PageSession);
+            auto &s=*page_session;s.query=query;s.visible=request.value("visibleOnly").toBool(false);s.limit=unsigned(limit);
+            s.epoch=scene.source_epoch();s.revision=page_revision;s.age.start();page_expiry.start(30000);
+            s.token=s.epoch+":"+QString::number(++page_nonce)+":0";
+            s.stack.append(PageFrame{doc->root(),0,0});
+        }else{
+            if(!page_session || request.value("cursor").toString()!=page_session->token)
+                return {{"status","STALE_CURSOR"}};
+            if(page_session->age.elapsed()>30000 || page_session->revision!=page_revision){page_session.reset();return {{"status","STALE_CURSOR"}};}
+            if(op=="snapshot_cancel"){page_session.reset();return {{"status","CANCELLED"}};}
+            if(op!="snapshot_next")return {{"status","BAD_REQUEST"}};
+            if(request.contains("role") || request.contains("visibleOnly") || request.contains("maxNodes"))return {{"status","BAD_REQUEST"}};
+        }
+        auto &s=*page_session;QElapsedTimer timer;timer.start();QJsonArray nodes;int visited=0;
+        const auto origin=viewport()->mapTo(window(),QPoint());const QRect view_rect(origin,viewport()->size());
+        while(!s.stack.isEmpty() && visited<16 && nodes.size()<int(s.limit) && (visited==0 || timer.elapsed()<=30)){
+            auto &f=s.stack.last();
+            if(!f.entered){
+                ++visited;f.entered=true;f.child=f.element->children().begin();
+                if(f.depth>18 || scene_ids.size()>=4096){page_session.reset();return {{"status","RESOURCE_LIMIT"}};}
+                const auto key=reinterpret_cast<quintptr>(f.element.get());
+                if(!scene_ids.contains(key))scene_ids[key]=next_scene_id++;
+                f.id=scene_ids[key];const auto *tag=f.element->get_tagName();const auto name=QString::fromUtf8(tag?tag:"");
+                if(!s.query.isEmpty() && name=="head"){s.stack.removeLast();continue;}
+                const bool matches=s.query.isEmpty() || (s.query=="content" && (f.element->is_text() || name=="a")) ||
+                    (s.query=="link" && name=="a") || (s.query=="text" && f.element->is_text());
+                if(!matches)continue;
+                litehtml::position::vector boxes;const bool complete=f.element->get_rendering_fragments(boxes,8);QVector<QRect> local;
+                for(const auto &box:boxes)local.append(QRect(box.x,box.y-verticalScrollBar()->value(),box.width,box.height).translated(origin));
+                const auto g=scene_geometry(local,view_rect,complete);const auto b=g.bounds,c=g.visible_bounds;
+                QJsonObject n{{"id",QString::number(f.id)},{"parent",QString::number(f.parent)},{"source","litehtml-model-and-render-layout"},
+                    {"role",f.element->is_text()?"text":name=="a"?"link":"element"},{"tag",name},{"visibility",g.visibility},
+                    {"fragments",g.fragments},{"visibleFragments",g.visible_fragments},{"fragmentsComplete",complete},
+                    {"screenOcclusion","UNKNOWN_NO_COMPOSITOR"},{"bounds",QJsonArray{b.x(),b.y(),b.width(),b.height()}},
+                    {"visibleBounds",QJsonArray{c.x(),c.y(),c.width(),c.height()}},
+                    {"displayNone",f.element->css().get_display()==litehtml::display_none},{"contentTrust","untrusted-document-content"},
+                    {"actionAuthority","READ_ONLY_NO_GRANT"}};
+                if(f.element->is_text()){litehtml::string text;f.element->get_text(text);const auto q=QString::fromUtf8(text.c_str());
+                    if(q.size()>1024){page_session.reset();return {{"status","RESOURCE_LIMIT"}};}n["text"]=q;n["textTruncated"]=false;n["textRange"]=QJsonArray{0,q.size()};}
+                if(name=="a"){n["href"]=QString::fromUtf8(f.element->get_attr("href","")).left(256);n["actions"]=QJsonArray{"inspect","click"};n["execution"]="NOT_IMPLEMENTED";}
+                if(!s.visible || !g.visible_fragments.isEmpty())nodes.append(n);
+            }else if(f.child!=f.element->children().end()){
+                auto child=*f.child++;const auto parent=f.id;const auto depth=f.depth+1;
+                s.stack.append(PageFrame{child,parent,depth});
+            }else s.stack.removeLast();
+        }
+        const bool complete=s.stack.isEmpty();const auto epoch=s.epoch;const auto revision=s.revision;const auto query=s.query;const auto visible=s.visible;
+        const auto seq=++s.sequence;const auto cursor=complete?QString():s.epoch+":"+QString::number(page_nonce)+":"+QString::number(seq);
+        s.token=cursor;
+        QJsonObject result{{"status","OK"},{"sourceEpoch",epoch},{"sourceRevision",QString::number(revision)},
+            {"query",query},{"visibleOnly",visible},{"pageSequence",QString::number(seq)},{"complete",complete},
+            {"cursor",cursor},{"nodes",nodes},{"visited",visited},{"elapsedMs",QString::number(timer.elapsed())},
+            {"baselineStatus",complete?"CONSUMER_MUST_VALIDATE":"INCOMPLETE"},{"diffStatus","RESET_REQUIRED_NO_PAGED_BASELINE"}};
+        if(complete)page_session.reset();return result;
+    }catch(const std::bad_alloc &){page_session.reset();return {{"status","RESOURCE_LIMIT"}};}
     QJsonObject scene_snapshot(const QString &query={},bool visible_only=false,unsigned node_limit=96) try {
         if(!scene_allowed)return {{"status","DENIED"}};
         if(!doc)return {{"status","SEMANTICS_UNAVAILABLE"}};

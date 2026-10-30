@@ -6,6 +6,7 @@
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonParseError>
+#include <QtCore/QSet>
 #include <cstdio>
 using namespace ssg_pipe;
 static void frame_log(const char *direction,unsigned seq,const QByteArray &bytes){
@@ -143,6 +144,25 @@ static int browser_scenario(Client &client){
     check(client.await_eof()==Result::eof,"browser_provider_exit_eof");
     std::printf("SSG_CONSUMER_BROWSER_EXIT failures=%d\n",failures);return failures?1:0;
 }
+static int browser_pages(Client &client){
+    bool transport=false;QSet<QString> ids;QString instance,epoch,revision,cursor;int pages=0,nodes=0;bool done=false;
+    QJsonObject request{{"op","snapshot_begin"},{"maxNodes",8}};
+    for(int i=0;i<1024;++i){
+        auto result=client.request(request,&transport);++pages;
+        if(!transport || result.value("status")!="OK" || result.value("pageSequence").toString()!=QString::number(pages))break;
+        if(pages==1){instance=result.value("sourceInstance").toString();epoch=result.value("sourceEpoch").toString();revision=result.value("sourceRevision").toString();}
+        if(instance.isEmpty() || epoch.isEmpty() || revision.isEmpty() || result.value("sourceInstance")!=instance || result.value("sourceEpoch")!=epoch || result.value("sourceRevision")!=revision)break;
+        bool unique=true;for(const auto value:result.value("nodes").toArray()){const auto n=value.toObject();const auto id=n.value("id").toString();if(id.isEmpty() || ids.contains(id))unique=false;ids.insert(id);++nodes;}
+        if(!unique)break;
+        done=result.value("complete").toBool();const auto next=result.value("cursor").toString();
+        std::printf("SSG_PAGED_CONSUMER page=%d nodes=%d visited=%d elapsed_ms=%s complete=%d\n",pages,int(result.value("nodes").toArray().size()),result.value("visited").toInt(),result.value("elapsedMs").toString().toUtf8().constData(),int(done));
+        if(done){if(!next.isEmpty())done=false;break;}
+        if(next.isEmpty() || next==cursor)break;cursor=next;
+        request={{"op","snapshot_next"},{"sourceInstance",instance},{"cursor",cursor}};
+    }
+    std::printf("SSG_PAGED_CONSUMER_DONE pages=%d nodes=%d complete=%d\n",pages,nodes,int(done));
+    return done && pages>1?0:1;
+}
 static int browser_guard(Client &client){
     const auto first=client.request(query("content"));
     std::printf("SSG_CONSUMER_WAIT_BROWSER_GUARD seconds=8\n");
@@ -163,6 +183,7 @@ int main(int argc,char **argv){
     const QString mode=argc>1?QString::fromUtf8(argv[1]):QStringLiteral("snapshot");
     if(mode=="scenario")return scenario(client);
     if(mode=="browser-scenario")return browser_scenario(client);
+    if(mode=="browser-pages")return browser_pages(client);
     if(mode=="browser-guard")return browser_guard(client);
     if(mode=="truncated"){
         char header[12]={'S','S','G','1'};put32(header+4,32);put32(header+8,1);

@@ -102,7 +102,8 @@ public:
             if(!pipe_instance.isEmpty()){
                 pipe_provider=std::make_unique<aurora::PipeProvider>(pipe_instance,
                     [this](bool visible,const QString &role,unsigned limit){return view->scene_snapshot(role,visible,limit);},
-                    [this](quint64 version,const QString &epoch){return view->scene_diff(version,epoch);});
+                    [this](quint64 version,const QString &epoch){return view->scene_diff(version,epoch);},
+                    [this](const QJsonObject &request){return view->scene_page(request);});
                 pipe_provider->start();
                 std::printf("SSG_PROVIDER_READY pid=%llu instance=%s text=%d kind=browser\n",(unsigned long long)xos::sdk::pid(),pipe_instance.toUtf8().constData(),int(pipe_text));
             }

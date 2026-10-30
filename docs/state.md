@@ -147,6 +147,8 @@ x86 TSS 已准备默认全拒绝的 I/O bitmap，尚无授权/撤权或 guest �
 [0116](work_log/0116_x86_io_bitmap_foundation.md)。
 进程切换和成功 exec 的位图重装基础见[0118](work_log/0118_pio_context_foundation.md)；
 没有用户可用的 PIO 授权，COM1 独占交接仍由本任务继续实现。
+sys82 PIO 设备授权已在本分支认领，边界见[pio_grant](contracts/pio_grant.md)；尚未
+实现、跨分支同步或客体验收。
 用户态 UART 的 PIO、IRQ 与 COM1 调试通路交接提案见
 [uart_user_driver_proposal](contracts/uart_user_driver_proposal.md)，仅设计，尚无授权 ABI。
 

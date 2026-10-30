@@ -1,0 +1,62 @@
+[
+  {
+    "status": "OK",
+    "sourceEpoch": "42949672965",
+    "sceneVersion": "1",
+    "capped": true,
+    "queryDurationNs": "60000000",
+    "diagnostics": null,
+    "kind": "SNAPSHOT",
+    "outputNodes": 12
+  },
+  {
+    "status": "SOURCE_REPLACED",
+    "sourceEpoch": "42949672965",
+    "sceneVersion": "1",
+    "capped": null,
+    "queryDurationNs": null,
+    "diagnostics": null,
+    "kind": "DIFF",
+    "outputNodes": 0
+  },
+  {
+    "status": "OK",
+    "sourceEpoch": "42949672969",
+    "sceneVersion": "1",
+    "capped": true,
+    "queryDurationNs": "60000000",
+    "diagnostics": null,
+    "kind": "SNAPSHOT",
+    "outputNodes": 15
+  },
+  {
+    "status": "SOURCE_REPLACED",
+    "sourceEpoch": "42949672969",
+    "sceneVersion": "1",
+    "capped": null,
+    "queryDurationNs": null,
+    "diagnostics": null,
+    "kind": "DIFF",
+    "outputNodes": 0
+  },
+  {
+    "status": "OK",
+    "sourceEpoch": "42949672969",
+    "sceneVersion": "2",
+    "capped": true,
+    "queryDurationNs": "100000000",
+    "diagnostics": null,
+    "kind": "SNAPSHOT",
+    "outputNodes": 17
+  },
+  {
+    "status": "RESET_REQUIRED",
+    "sourceEpoch": "42949672969",
+    "sceneVersion": "2",
+    "capped": true,
+    "queryDurationNs": null,
+    "diagnostics": null,
+    "kind": "DIFF",
+    "outputNodes": 0
+  }
+]

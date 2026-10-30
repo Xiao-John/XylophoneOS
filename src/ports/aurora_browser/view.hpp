@@ -12,6 +12,7 @@
 #include <QtGui/QKeyEvent>
 #include <QtCore/QTimer>
 #include <QtCore/QMap>
+#include <QtCore/QJsonDocument>
 #include <functional>
 #include <cstdio>
 #include <stdexcept>
@@ -69,21 +70,29 @@ public:
         if(!doc)return {{"status","SEMANTICS_UNAVAILABLE"}};
         if((!query.isEmpty() && query!="content" && query!="link" && query!="text") || node_limit<1 || node_limit>96)
             return {{"status","BAD_QUERY"}};
-        QJsonArray nodes;int visited=0,text_left=8192;bool capped=false;QElapsedTimer timer;timer.start();
+        QJsonArray nodes;int visited=0,text_left=8192,max_depth=0,text_truncated=0;bool capped=false;QElapsedTimer timer;timer.start();
+        QString cap_reason="NONE";qint64 fragment_ms=0;
         const auto origin=viewport()->mapTo(window(),QPoint());
         const QRect view_rect(origin,viewport()->size());
         auto node_id=[&](const litehtml::element::ptr &e){const auto p=reinterpret_cast<quintptr>(e.get());if(!scene_ids.contains(p))scene_ids[p]=next_scene_id++;return scene_ids[p];};
         std::function<void(litehtml::element::ptr,quint64,int)> walk;
         walk=[&](litehtml::element::ptr e,quint64 parent,int depth){
-            if(++visited>96 || nodes.size()>=int(node_limit) || depth>18 || timer.elapsed()>30){capped=true;return;}
+            ++visited;max_depth=qMax(max_depth,depth);
+            if(visited>96)cap_reason="VISITED_NODES";
+            else if(nodes.size()>=int(node_limit))cap_reason="OUTPUT_NODES";
+            else if(depth>18)cap_reason="DEPTH";
+            else if(timer.elapsed()>30)cap_reason="TIME";
+            if(cap_reason!="NONE"){capped=true;return;}
             const auto id=node_id(e);const auto *tag=e->get_tagName();const auto name=QString::fromUtf8(tag?tag:"");
             if(!query.isEmpty() && name=="head")return;
             const bool matches=query.isEmpty() || (query=="content" && (e->is_text() || name=="a")) ||
                 (query=="link" && name=="a") || (query=="text" && e->is_text());
             if(!matches){for(auto &child:e->children()){walk(child,id,depth+1);if(capped)break;}return;}
+            QElapsedTimer fragment_timer;fragment_timer.start();
             litehtml::position::vector boxes;const bool complete=e->get_rendering_fragments(boxes,8);QVector<QRect> local_boxes;
             for(const auto &box:boxes)local_boxes.append(QRect(box.x,box.y-verticalScrollBar()->value(),box.width,box.height).translated(origin));
             const auto geometry=scene_geometry(local_boxes,view_rect,complete);
+            fragment_ms+=fragment_timer.elapsed();
             const auto bounds=geometry.bounds,clipped=geometry.visible_bounds;
             QJsonObject n{{"id",QString::number(id)},{"parent",QString::number(parent)},{"source","litehtml-model-and-render-layout"},
                 {"role",e->is_text()?"text":name=="a"?"link":"element"},{"tag",name},{"visibility",geometry.visibility},
@@ -93,19 +102,34 @@ public:
                 {"visibleBounds",QJsonArray{clipped.x(),clipped.y(),clipped.width(),clipped.height()}},
                 {"displayNone",e->css().get_display()==litehtml::display_none},{"contentTrust","untrusted-document-content"},
                 {"actionAuthority","READ_ONLY_NO_GRANT"}};
-            if(e->is_text()){litehtml::string text;e->get_text(text);const auto q=QString::fromUtf8(text.c_str());const auto value=q.left(qMin(1024,text_left));n["text"]=value;n["textTruncated"]=value.size()!=q.size();n["textRange"]=QJsonArray{0,value.size()};text_left-=value.size();}
+            if(e->is_text()){litehtml::string text;e->get_text(text);const auto q=QString::fromUtf8(text.c_str());const auto value=q.left(qMin(1024,text_left));n["text"]=value;n["textTruncated"]=value.size()!=q.size();if(value.size()!=q.size())++text_truncated;n["textRange"]=QJsonArray{0,value.size()};text_left-=value.size();}
             if(name=="a"){n["href"]=QString::fromUtf8(e->get_attr("href","")).left(256);n["actions"]=QJsonArray{"inspect","click"};n["execution"]="NOT_IMPLEMENTED";}
             if(!visible_only || !geometry.visible_fragments.isEmpty())nodes.append(n);
             for(auto &child:e->children()){walk(child,id,depth+1);if(capped)break;}
         };
         walk(doc->root(),0,0);
+        const auto traversal_ms=timer.elapsed();
         QString hit="NONE";if(auto actual=doc->get_over_element()){const auto key=reinterpret_cast<quintptr>(actual.get());hit=scene_ids.contains(key)?QString::number(scene_ids[key]):"OUTSIDE_SNAPSHOT";}
         const QJsonObject scope{{"provider","litehtml-v0.9-ssg-readonly"},{"document",page},{"query",query},
             {"visibleOnly",visible_only},{"nodeLimit",int(node_limit)}};
+        QElapsedTimer publish_timer;publish_timer.start();
         auto result=scene.publish(nodes,{{"provider","litehtml-v0.9-ssg-readonly"},{"document",page},{"query",query},{"queryScope",scope},{"scrollY",verticalScrollBar()->value()},
             {"viewport",QJsonArray{view_rect.x(),view_rect.y(),view_rect.width(),view_rect.height()}},{"hitNode",hit},
             {"hitSource","actual-engine-mouse-state"},{"iframes","UNSUPPORTED"},{"shadowDOM","UNSUPPORTED"},
             {"forms","UNSUPPORTED"},{"globalScene","BLOCKED"},{"subscriptions","NOT_IMPLEMENTED"}},capped);
+        const auto publish_ms=publish_timer.elapsed();
+        // Diagnostic fields are outside SceneStream's retained state so they do
+        // not cause spurious versions or change the query scope. Millisecond
+        // readings are quantized and per-node fragment samples can round down.
+        result["diagnostics"]=QJsonObject{{"visitedAttempts",visited},{"outputNodes",int(nodes.size())},
+            {"maxDepthAttempted",max_depth},{"depthLimit",18},{"visitedLimit",96},{"outputLimit",int(node_limit)},
+            {"textBudgetUtf16",8192},{"textRemainingUtf16",text_left},{"textNodesTruncated",text_truncated},
+            {"encodedNodesBytes",int(QJsonDocument(nodes).toJson(QJsonDocument::Compact).size())},{"encodedNodesLimitBytes",65536},
+            {"timeLimitMs",30},{"capReason",cap_reason},{"traversalElapsedMs",QString::number(traversal_ms)},
+            {"fragmentElapsedMsSum",QString::number(fragment_ms)},{"publishElapsedMs",QString::number(publish_ms)},
+            {"clockResolution","millisecond-or-coarser; per-node samples may round down"},
+            {"documentMutationDuringQuery","UNKNOWN_NO_INDEPENDENT_REVISION"},
+            {"guiEventLoop","synchronous-query; responsiveness not measured"}};
         result["queryDurationNs"]=QString::number(timer.nsecsElapsed());return result;
     } catch(const std::bad_alloc &) {return {{"status","RESOURCE_LIMIT"}};}
     QJsonObject scene_diff(quint64 since,const QString &epoch)const{return scene.diff(since,epoch);}

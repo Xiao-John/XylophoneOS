@@ -1,0 +1,54 @@
+{
+  "archive": "capture.tar.gz",
+  "archive_sha256": "ba70954a197cd4e7ef0ff2551445c105a55505198da4751e5e8c6781333528b8",
+  "archive_bytes": 61196,
+  "root": "p2d-oracle-01",
+  "entries": [
+    {
+      "path": "browser.receipt.json",
+      "bytes": 276959,
+      "sha256": "9c45fe5dae60ec1546c971f7cfb24d75a19ef5b3718871b26dd8b66a07352674"
+    },
+    {
+      "path": "input.html",
+      "bytes": 424,
+      "sha256": "37fff0e9d875d3196f3d547a4f65e0a329b1466623eac9d2a502554d18c41e0f"
+    },
+    {
+      "path": "link-target.html",
+      "bytes": 93,
+      "sha256": "b1b17e71db2689f74e30c7e8b0f03106022ec79deea569d9e7507a11ea0f30e4"
+    },
+    {
+      "path": "qemu_qemu.log",
+      "bytes": 154,
+      "sha256": "9814a4eb5570be13a40e555530a2cc509d851f62bf711943279dc4268a700862"
+    },
+    {
+      "path": "qemu_serial.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "qmp-events.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "report.json",
+      "bytes": 3758,
+      "sha256": "647ae3e7f493133060a28616c100fbeb1767c832de2646cf1adb68f460cbe31f"
+    },
+    {
+      "path": "serial.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runner.log",
+      "bytes": 656,
+      "sha256": "5693434b9d01e1b0296234302b4cccc6ca8a77d54337eae5cafea26fd49e24eb"
+    }
+  ],
+  "note": "Complete original run files, including exact IPC JSON, raw serial, PNG/PPM, receipt and explicitly reconstructed .wire headers, are preserved inside this archive. Selected JSON/log files are also exposed alongside for review."
+}

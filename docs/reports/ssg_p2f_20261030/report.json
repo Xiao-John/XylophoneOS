@@ -1,0 +1,266 @@
+{
+  "status": "PASSED_SCOPED",
+  "qualification": "A1_STRUCTURE_AND_TEXT_ON_TWO_FIXED_GUEST_INPUTS",
+  "base_commit": "9a739c7052d66dd75c0a0aceb807b0e4aa2fc16f",
+  "implementation_commit": "0a63648d53e4a7491320111f053f8b93882fbdab",
+  "probe_correction_commit": "a81b4fd7ab18ec09e87b311e8fe89cf4464fb63c",
+  "pull_request": "https://github.com/www080327-glitch/XylophoneOS/pull/10",
+  "expected_pr_state": "OPEN_DRAFT_UNMERGED",
+  "cases": [
+    {
+      "run": "p2d-oracle-03",
+      "input_bytes": 424,
+      "input_sha256": "37fff0e9d875d3196f3d547a4f65e0a329b1466623eac9d2a502554d18c41e0f",
+      "nodes": 32,
+      "roles": {
+        "element": 10,
+        "text": 20,
+        "link": 2
+      },
+      "pages": 5,
+      "page_node_counts": [
+        8,
+        8,
+        8,
+        8,
+        0
+      ],
+      "structure_sha256": "5b4e296ce3415005a8482e31c0925d7a7d8a57009462f0a8ac32455785cd78e2",
+      "missing": 0,
+      "extra": 0,
+      "duplicates": 0,
+      "parent_order_text_href_mismatches": 0,
+      "resources_returned": true,
+      "provider_claimed_incomplete_fragments": 0
+    },
+    {
+      "run": "p2f-oracle-01",
+      "input_bytes": 1935,
+      "input_sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f",
+      "nodes": 267,
+      "roles": {
+        "element": 52,
+        "text": 206,
+        "link": 9
+      },
+      "pages": 34,
+      "page_node_counts": [
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        3
+      ],
+      "structure_sha256": "faaf0e1c343187cfb73504d0463484b3963b25c344debe95ffa729394424aef1",
+      "missing": 0,
+      "extra": 0,
+      "duplicates": 0,
+      "parent_order_text_href_mismatches": 0,
+      "resources_returned": true,
+      "provider_claimed_incomplete_fragments": 0
+    }
+  ],
+  "geometry": {
+    "status": "PASSED_SCOPED",
+    "scope": "one visible link after completed paging",
+    "consumer_node_id": "13",
+    "href": "start.html",
+    "node": {
+      "actionAuthority": "READ_ONLY_NO_GRANT",
+      "actions": [
+        "inspect",
+        "click"
+      ],
+      "bounds": [
+        48,
+        318,
+        139,
+        19
+      ],
+      "contentTrust": "untrusted-document-content",
+      "displayNone": false,
+      "execution": "NOT_IMPLEMENTED",
+      "fragments": [
+        [
+          48,
+          318,
+          139,
+          19
+        ]
+      ],
+      "fragmentsComplete": true,
+      "href": "start.html",
+      "id": "13",
+      "parent": "8",
+      "role": "link",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "source": "litehtml-model-and-render-layout",
+      "tag": "a",
+      "visibility": "viewport-visible",
+      "visibleBounds": [
+        48,
+        318,
+        139,
+        19
+      ],
+      "visibleFragments": [
+        [
+          48,
+          318,
+          139,
+          19
+        ]
+      ]
+    },
+    "screen_point": [
+      56,
+      326
+    ],
+    "window_origin": [
+      0,
+      0
+    ],
+    "screen_size": [
+      800,
+      600
+    ],
+    "viewport_in_window": [
+      32,
+      222,
+      722,
+      322
+    ],
+    "loaded_target": "/web/start.html",
+    "input": "QEMU input-send-event to guest PS/2; no synthetic widget call",
+    "rendered_fragments_global": "NOT_QUALIFIED",
+    "screen_occlusion": "NOT_TESTED",
+    "during_paging_interaction": "NOT_TESTED"
+  },
+  "resource_refusal": {
+    "units": "UTF-16 code units per text node",
+    "limit": 1024,
+    "oracle_over_limit_paths": [
+      "0/1/0/0"
+    ],
+    "oracle_over_limit_nodes": [
+      {
+        "path": "0/1/0/0",
+        "ordinal": 5,
+        "utf16_units": 1025
+      }
+    ]
+  },
+  "regressions": {
+    "p1": {
+      "status": "PASSED_SCOPED",
+      "outer_checks": 16,
+      "includes_small_browser": true,
+      "dash": "NOT_RUN"
+    },
+    "legacy_nonpaged_browser": {
+      "status": "PASSED",
+      "outer_checks": 7,
+      "assertions_modified": false,
+      "first_snapshot_still_time_capped": true,
+      "causal_performance_claim": false
+    }
+  },
+  "resource_fields": [
+    "free_pages",
+    "tasks",
+    "completions"
+  ],
+  "system_baseline": [
+    130279,
+    2,
+    0
+  ],
+  "display_service_active": [
+    130235,
+    3,
+    1
+  ],
+  "after_both_children": [
+    130235,
+    3,
+    1
+  ],
+  "full_p1_restored_system_baseline": true,
+  "protected_changes": {
+    "kernel": 0,
+    "public_system_abi": 0,
+    "qpa": 0,
+    "drivers": 0
+  },
+  "source_changed_paths": [
+    "docs/contracts/ssg_p2f_structure_oracle.md",
+    "scripts/build_threading_newlib.py",
+    "scripts/build_threading_sdk.py",
+    "src/ports/aurora_browser/build.py",
+    "src/ports/aurora_browser/main.cpp",
+    "src/ports/aurora_browser/test_structure_oracle.hpp",
+    "src/ports/aurora_browser/view.hpp",
+    "src/user/apps/ssg_consumer.cpp",
+    "tests/fixtures/ssg_browser/p2f.html",
+    "tests/fixtures/ssg_browser/p2f_text_limit.html",
+    "tests/ssg_browser_pages_probe.py",
+    "tests/ssg_browser_structure.py",
+    "tests/ssg_browser_structure_test.py"
+  ],
+  "synthetic_validator_tests": {
+    "count": 52,
+    "status": "PASSED",
+    "scope": "host verifier fault injection, not guest acceptance"
+  },
+  "gates": {
+    "A1_structure_and_text": "PASSED_SCOPED",
+    "A2_single_visible_link": "PASSED_SCOPED",
+    "A_overall": "NOT_QUALIFIED",
+    "B_consumer_computed_diff": "NOT_IMPLEMENTED_NOT_RUN",
+    "C_input_during_paging_and_recovery": "NOT_RUN"
+  },
+  "limits_and_unverified": [
+    "all-node rendered-fragment completeness and global compositor occlusion",
+    "filtered pagination queries, ID-table 4096 boundary, full cursor lifecycle",
+    "single text node limited to 1024 UTF-16 units; 1025-unit case explicitly refused",
+    "modern browser features, multi-provider aggregation and LocalPilot integration",
+    "performance qualification",
+    "GitHub CI success is not asserted"
+  ],
+  "retained_attempts": {
+    "p2d-oracle-01": "QEMU failed to bind sandbox-disallowed QMP Unix socket; empty serial, guest not observed",
+    "p2d-oracle-02": "genuine structure/text and link hit passed; retained before stricter framebuffer-size assertion",
+    "p2d-oracle-03": "fresh final run with actual 800x600 framebuffer bound"
+  },
+  "historical_evidence_rewritten": false,
+  "kernel_and_public_abi_policy": "No new mechanism, syscall, privilege or device interface; no main or dependency merge."
+}

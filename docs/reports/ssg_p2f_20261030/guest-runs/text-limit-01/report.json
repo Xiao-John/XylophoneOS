@@ -1,0 +1,166 @@
+{
+  "status": "PASSED_SCOPED",
+  "qualification": "EXPECTED_RESOURCE_REJECTION",
+  "gate_A_overall": "NOT_QUALIFIED",
+  "gate_B": "NOT_RUN",
+  "gate_C": "NOT_RUN",
+  "inputs": {
+    "image": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/system/xos.img",
+      "sha256": "c1f165e864f2f5cf2571587096b34cc30533f5de50888f2a7fb78848c458f8ba"
+    },
+    "session": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/payloads/session.elf",
+      "sha256": "b087f415acb9dfbc588ddcbacebb40b06745e328d1ced0b75e731f57b5599122"
+    },
+    "browser": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/oracle-browser/browser.elf",
+      "sha256": "abdae8ddd43991b9e1bb4b9f736b07b1f9e00f4a3cd40cfb3649f6664aabb9f6"
+    },
+    "consumer": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/payloads/consumer/ssg-consumer.elf",
+      "sha256": "5d4d1bf9a3908c574ac7160496495ac0809e66ed7b53a5bccd06b4f7b5a64e57"
+    },
+    "input": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/tests/fixtures/ssg_browser/p2f_text_limit.html",
+      "sha256": "8825dc929c4ffefcd3e6fed34d6cada3aeceb7bee869ba3773f053975211912e"
+    },
+    "ssg_browser_pages_probe.py": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/tests/ssg_browser_pages_probe.py",
+      "sha256": "e5380a0db5a0aeae6a5e6be187a73d6bdc915dbead6af877903d5b98e285c605"
+    },
+    "ssg_browser_structure.py": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/tests/ssg_browser_structure.py",
+      "sha256": "d1dda66a4cdc6e0429958539c758632c13d44f41f35a2b6b14fc332299c809e1"
+    },
+    "browser_receipt": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/oracle-browser/browser.receipt.json",
+      "sha256": "9c45fe5dae60ec1546c971f7cfb24d75a19ef5b3718871b26dd8b66a07352674"
+    },
+    "qemu": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/qemu-prefix/bin/qemu-system-x86_64",
+      "sha256": "947e0e30bf1d6e0ef8c4349a3a25803bc363d785bf92d0b4cf3d603c8c9d91e1",
+      "version": "QEMU emulator version 11.1.2"
+    }
+  },
+  "geometry": {
+    "status": "NOT_RUN"
+  },
+  "performance": "NOT_QUALIFIED",
+  "image_format": "floppy",
+  "source_checkout": {
+    "head": "0a63648d53e4a7491320111f053f8b93882fbdab",
+    "tracked_changes": [],
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "binding": "Browser ELF and current Browser source hashes are checked against browser.receipt.json"
+  },
+  "qemu_command": [
+    "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/qemu-prefix/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/tmp/xos_p2f_ldidqckx/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/tmp/xos_g3ua0zhh/qmp.sock,server=on,wait=off"
+  ],
+  "baseline": [
+    130279,
+    2,
+    0
+  ],
+  "display": [
+    130235,
+    3,
+    1
+  ],
+  "guest_command": "exec-driver /bin/session.elf /web/ssg.html browser-pages --browser --text",
+  "after": [
+    130235,
+    3,
+    1
+  ],
+  "page_node_counts": [
+    0
+  ],
+  "text_limit": {
+    "units": "UTF-16 code units per text node",
+    "limit": 1024,
+    "oracle_over_limit_paths": [
+      "0/1/0/0"
+    ],
+    "oracle_over_limit_nodes": [
+      {
+        "path": "0/1/0/0",
+        "ordinal": 5,
+        "utf16_units": 1025
+      }
+    ]
+  },
+  "structure": {
+    "status": "NOT_QUALIFIED",
+    "reason": "input exceeds existing per-text-node limit"
+  },
+  "serial_sha256": "068baba95bbf48a669a8af1244c35c322626508b81d09e2e4d05ceaa36b310cb",
+  "frames": [
+    {
+      "sequence": 1,
+      "direction": "REQ",
+      "bytes": 36,
+      "sha256": "2a9eb5bb3192ea6a92c6ce078369f49690a962d242a198d63f51b2971cafc97e",
+      "begin": 3699,
+      "end": 3819,
+      "file": "01-req.json",
+      "wire_file": "01-req.wire",
+      "wire_sha256": "a4494e39387db22fb93a3efa0c3c1cd25c4c10e290b087dd133b2c059dcc6da7",
+      "wire_provenance": "header reconstructed from validated protocol fields; payload is exact Consumer log bytes"
+    },
+    {
+      "sequence": 1,
+      "direction": "RESP",
+      "bytes": 98,
+      "sha256": "3d77ad8140e970a2e4f646f83214ee39d40cf5268d6b9c83af4a2230e2ac09f3",
+      "begin": 8974,
+      "end": 9208,
+      "file": "01-resp.json",
+      "wire_file": "01-resp.wire",
+      "wire_sha256": "e8c09746c139c2acc58fe98f9c0f8424f4d5804d084086cc210188cf5586cac4",
+      "wire_provenance": "header reconstructed from validated protocol fields; payload is exact Consumer log bytes"
+    }
+  ],
+  "oracles": [
+    {
+      "sequence": 1,
+      "direction": "ORACLE",
+      "bytes": 2345,
+      "sha256": "c3346e670d9b60baf6f9c3491d009a8fd50db70919420e0e85877ec56748fc0c",
+      "begin": 5311,
+      "end": 8885,
+      "file": "oracle-01.json"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+qemu-system-x86_64: -qmp unix:/tmp/xos_eswhft5c/qmp.sock,server=on,wait=off: Failed to bind socket to /tmp/xos_eswhft5c/qmp.sock: Operation not permitted

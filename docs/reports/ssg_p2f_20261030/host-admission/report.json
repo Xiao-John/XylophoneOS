@@ -1,0 +1,6 @@
+{
+  "scope": "HOST_ADMISSION_ONLY; not a guest DOM or Gate A result",
+  "source_sha256": "e2742a15f933fc95fc78d6dcadcba557dac6d01a254575807b20c7d783397881",
+  "check_source_sha256": "5bfdb2a8ab6680fe9e85bffc59c34f45615a413fa325aa76452c158998e33c2b",
+  "check_elf_sha256": "6365f0dce019380422feb112c34cfb4e41cc4b7b3a408eaff37392089ee52146"
+}

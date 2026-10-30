@@ -1,0 +1,72 @@
+{
+  "status": "PASSED_SCOPED",
+  "qualification": "EXPECTED_RESOURCE_REJECTION",
+  "scope": "explicit refusal of an input exceeding the existing per-text-node budget",
+  "input_sha256": "8825dc929c4ffefcd3e6fed34d6cada3aeceb7bee869ba3773f053975211912e",
+  "oracle_structure_sha256": "cec9b55cd39563fa9257b9c00dcd37118214bf86fd06c67166351971c101d082",
+  "request_count": 1,
+  "successful_page_node_counts": [],
+  "received_prefix_nodes": 0,
+  "terminal_status": "RESOURCE_LIMIT",
+  "text_limit": {
+    "units": "UTF-16 code units per text node",
+    "limit": 1024,
+    "oracle_over_limit_paths": [
+      "0/1/0/0"
+    ],
+    "oracle_over_limit_nodes": [
+      {
+        "path": "0/1/0/0",
+        "ordinal": 5,
+        "utf16_units": 1025
+      }
+    ]
+  },
+  "processes": {
+    "parent_pid": 10,
+    "provider_pid": 12,
+    "consumer_pid": 11,
+    "source_instance": "a387f68bc0861b3103d691c75b207dd1",
+    "source_epoch": "51539607555",
+    "source_revision": "5"
+  },
+  "checks": [
+    "independent_before_oracle_bound_to_input_and_source",
+    "oversized_text_observed_in_model",
+    "complete_paired_IPC_frames",
+    "continuation_sources_and_cursors_match",
+    "successful_pages_match_reference_prefix",
+    "explicit_resource_limit_without_nodes",
+    "Consumer_rejects_incomplete_result",
+    "Consumer_and_Provider_exit_codes_match"
+  ],
+  "oracles": [
+    {
+      "sequence": 1,
+      "bytes": 2345,
+      "sha256": "c3346e670d9b60baf6f9c3491d009a8fd50db70919420e0e85877ec56748fc0c",
+      "phase": "before"
+    }
+  ],
+  "frames": [
+    {
+      "direction": "REQ",
+      "sequence": 1,
+      "bytes": 36,
+      "sha256": "2a9eb5bb3192ea6a92c6ce078369f49690a962d242a198d63f51b2971cafc97e"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 1,
+      "bytes": 98,
+      "sha256": "3d77ad8140e970a2e4f646f83214ee39d40cf5268d6b9c83af4a2230e2ac09f3"
+    }
+  ],
+  "structure": {
+    "status": "NOT_QUALIFIED",
+    "reason": "input exceeds existing per-text-node limit"
+  },
+  "gate_A_overall": "NOT_QUALIFIED",
+  "gate_B": "NOT_RUN",
+  "gate_C": "NOT_RUN"
+}

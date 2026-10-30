@@ -1,0 +1,1225 @@
+{
+  "archive": "build-records.tar.gz",
+  "original_file_count": 148,
+  "records": [
+    {
+      "path": ".cache/ssg_p2f/bootstrap_tools.py",
+      "original_bytes": 3231,
+      "exported_bytes": 3231,
+      "original_sha256": "9ef2bb6cfb9ee1c22df6d9f86fe397e2618169b2d85c751ff62f2f5c10af1b8d",
+      "exported_sha256": "9ef2bb6cfb9ee1c22df6d9f86fe397e2618169b2d85c751ff62f2f5c10af1b8d",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/build/binutils/config.log",
+      "original_bytes": 33401,
+      "exported_bytes": 33401,
+      "original_sha256": "0ea74533f127088dd6d9adc8fe1ae551698571538cb38a8d879e1bcdb8743b89",
+      "exported_sha256": "0ea74533f127088dd6d9adc8fe1ae551698571538cb38a8d879e1bcdb8743b89",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/build/gcc/config.log",
+      "original_bytes": 42032,
+      "exported_bytes": 42032,
+      "original_sha256": "4bcf8ad5f3be1b327fe2581be50e939f46cc64cea34c4773693c8e9dfd367555",
+      "exported_sha256": "4bcf8ad5f3be1b327fe2581be50e939f46cc64cea34c4773693c8e9dfd367555",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/build/qemu/build.ninja",
+      "original_bytes": 33554223,
+      "exported_bytes": 33554223,
+      "original_sha256": "59e47dce5988dc79fe6e012f43a4e228d81add127ccf251bc455b4427c185305",
+      "exported_sha256": "59e47dce5988dc79fe6e012f43a4e228d81add127ccf251bc455b4427c185305",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/build/qemu/config-host.mak",
+      "original_bytes": 702,
+      "exported_bytes": 702,
+      "original_sha256": "1c58c63aefcdda8d5dd74105d931625d4703acf191a99ab649a41a31ace353ac",
+      "exported_sha256": "1c58c63aefcdda8d5dd74105d931625d4703acf191a99ab649a41a31ace353ac",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/build/qemu/config.log",
+      "original_bytes": 1635,
+      "exported_bytes": 1635,
+      "original_sha256": "b37916e4c07fd82c372ad8effe09d6bb1e508ee14ee573e38d301bf60b6343a9",
+      "exported_sha256": "b37916e4c07fd82c372ad8effe09d6bb1e508ee14ee573e38d301bf60b6343a9",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/build/qemu/config.status",
+      "original_bytes": 1545,
+      "exported_bytes": 1545,
+      "original_sha256": "725cc54f5e869316f0913680e83d7c3da16266b1a37f03b1117c4e6f5d9503be",
+      "exported_sha256": "725cc54f5e869316f0913680e83d7c3da16266b1a37f03b1117c4e6f5d9503be",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/build_payloads.py",
+      "original_bytes": 2577,
+      "exported_bytes": 2577,
+      "original_sha256": "09e3f125df6f69f3b2c08d82e23355c08f3f590fd21c99c19ff4f8a5c5d1d155",
+      "exported_sha256": "09e3f125df6f69f3b2c08d82e23355c08f3f590fd21c99c19ff4f8a5c5d1d155",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/build_runtime.py",
+      "original_bytes": 2947,
+      "exported_bytes": 2947,
+      "original_sha256": "928178a4fb6c006d0bacc99978886254b5730927a7f23d0f03e1d083bfa29d2b",
+      "exported_sha256": "928178a4fb6c006d0bacc99978886254b5730927a7f23d0f03e1d083bfa29d2b",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/downloads/downloads.json",
+      "original_bytes": 1792,
+      "exported_bytes": 1792,
+      "original_sha256": "9ddb36ad95bee46139ef4b203501cbfa4c7cadede82c83dcdb925a7aa1e98732",
+      "exported_sha256": "9ddb36ad95bee46139ef4b203501cbfa4c7cadede82c83dcdb925a7aa1e98732",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/downloads/qemu-download-verified.json",
+      "original_bytes": 185,
+      "exported_bytes": 185,
+      "original_sha256": "b6ad53ae9219f86cf95154652f9ca78bdf56f0ec37c9ab58396dd8974fe06190",
+      "exported_sha256": "b6ad53ae9219f86cf95154652f9ca78bdf56f0ec37c9ab58396dd8974fe06190",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/downloads/qemu-download.json",
+      "original_bytes": 219,
+      "exported_bytes": 219,
+      "original_sha256": "2df242fc5e58e2e66d52328ac2ca1f81225f05eff0d6aa29b9ba1a185257cc21",
+      "exported_sha256": "2df242fc5e58e2e66d52328ac2ca1f81225f05eff0d6aa29b9ba1a185257cc21",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/downloads/qt-host-downloads.json",
+      "original_bytes": 988,
+      "exported_bytes": 988,
+      "original_sha256": "b4584dedd52206b9e6d842fc0ed5d5ba95edc0eaf8545e92425fc47bb3e1b865",
+      "exported_sha256": "b4584dedd52206b9e6d842fc0ed5d5ba95edc0eaf8545e92425fc47bb3e1b865",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/downloads/qt-online-Updates.xml",
+      "original_bytes": 104891,
+      "exported_bytes": 104891,
+      "original_sha256": "5fee50b836f9f75d538c0e6c66e32693c1c5c47d13c44fbfc9da1c41e05a58f6",
+      "exported_sha256": "5fee50b836f9f75d538c0e6c66e32693c1c5c47d13c44fbfc9da1c41e05a58f6",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/env.sh",
+      "original_bytes": 1255,
+      "exported_bytes": 1255,
+      "original_sha256": "150a4f135fbd128f68363919717926a48b861cb1e03f3b22adfe392912e8e669",
+      "exported_sha256": "150a4f135fbd128f68363919717926a48b861cb1e03f3b22adfe392912e8e669",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/apt-7zip.log",
+      "original_bytes": 1759,
+      "exported_bytes": 1759,
+      "original_sha256": "c650661061247767742d60e95e56de2e10ca7a56f40691eccd3355b498189141",
+      "exported_sha256": "c650661061247767742d60e95e56de2e10ca7a56f40691eccd3355b498189141",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/apt-install.log",
+      "original_bytes": 28585,
+      "exported_bytes": 28585,
+      "original_sha256": "8842c4ce2a35fb7d103925e075d8e681ee86522f3f0df257c25ef29da98bfc7a",
+      "exported_sha256": "8842c4ce2a35fb7d103925e075d8e681ee86522f3f0df257c25ef29da98bfc7a",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/apt-update.log",
+      "original_bytes": 1990,
+      "exported_bytes": 1990,
+      "original_sha256": "d77f82064321dde39a6a6f96f203a41ff867291de9cf83c65fb20228b8520dd0",
+      "exported_sha256": "d77f82064321dde39a6a6f96f203a41ff867291de9cf83c65fb20228b8520dd0",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/binutils-build.log",
+      "original_bytes": 197625,
+      "exported_bytes": 197625,
+      "original_sha256": "cf0b553b1eef63b61226fde87f298c57fa4cdd77bd1332981ea2e3a2935ae526",
+      "exported_sha256": "cf0b553b1eef63b61226fde87f298c57fa4cdd77bd1332981ea2e3a2935ae526",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/binutils-configure.log",
+      "original_bytes": 5165,
+      "exported_bytes": 5165,
+      "original_sha256": "934f430e689b1b69223fdb8c3534aae96dfca4e0332a54ce7d574fa99b6b5ac8",
+      "exported_sha256": "934f430e689b1b69223fdb8c3534aae96dfca4e0332a54ce7d574fa99b6b5ac8",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/binutils-install.log",
+      "original_bytes": 28821,
+      "exported_bytes": 28821,
+      "original_sha256": "36b52034c20449b63331c2e198e1ad3c0dd699fb439495b64df1778ae346346d",
+      "exported_sha256": "36b52034c20449b63331c2e198e1ad3c0dd699fb439495b64df1778ae346346d",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/bootstrap-inputs.json",
+      "original_bytes": 3838,
+      "exported_bytes": 3838,
+      "original_sha256": "cfe0fa5315cde4550631f44cbbd0e6b08d02b8a06c8841dcc600f7d33d7d2e35",
+      "exported_sha256": "cfe0fa5315cde4550631f44cbbd0e6b08d02b8a06c8841dcc600f7d33d7d2e35",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/bootstrap-tools.json",
+      "original_bytes": 3520,
+      "exported_bytes": 3520,
+      "original_sha256": "bdb52862ab53a048844a4fa15398bc4eb9010f38ab8b9198858bc1a1c8d5ea27",
+      "exported_sha256": "bdb52862ab53a048844a4fa15398bc4eb9010f38ab8b9198858bc1a1c8d5ea27",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/current-environment.json",
+      "original_bytes": 4218,
+      "exported_bytes": 4218,
+      "original_sha256": "178a50ddd365cfc91f63caf8145892755c2e9e1d3921bd721585e8e3d24716bc",
+      "exported_sha256": "178a50ddd365cfc91f63caf8145892755c2e9e1d3921bd721585e8e3d24716bc",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/download-binutils-2.47.tar.xz.log",
+      "original_bytes": 476,
+      "exported_bytes": 476,
+      "original_sha256": "8c68cdbbfc30ddc01b75758ab3827e76db08c7e1af4f474dc3921ddd10e75949",
+      "exported_sha256": "8c68cdbbfc30ddc01b75758ab3827e76db08c7e1af4f474dc3921ddd10e75949",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/download-gcc-16.2.0.tar.xz.log",
+      "original_bytes": 792,
+      "exported_bytes": 792,
+      "original_sha256": "92c42e4e5aa77dcb3840b07a8c5a029bf2c853eea97e70751982d9a141c5b44f",
+      "exported_sha256": "92c42e4e5aa77dcb3840b07a8c5a029bf2c853eea97e70751982d9a141c5b44f",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/download-icu-linux-Rhel8.6-x86_64.7z.log",
+      "original_bytes": 555,
+      "exported_bytes": 555,
+      "original_sha256": "0b0feecdf21d350ef865cfb77bf01eb876e181fe66a0143394d3f834b7c6737d",
+      "exported_sha256": "0b0feecdf21d350ef865cfb77bf01eb876e181fe66a0143394d3f834b7c6737d",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/download-nasm-3.02.tar.xz.log",
+      "original_bytes": 475,
+      "exported_bytes": 475,
+      "original_sha256": "ef1849cdf1cd1c865e17ace6687fe3fe27dd10ac64c524885f8cce3176c6918f",
+      "exported_sha256": "ef1849cdf1cd1c865e17ace6687fe3fe27dd10ac64c524885f8cce3176c6918f",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/download-newlib-4.6.0.20260123.tar.gz.log",
+      "original_bytes": 396,
+      "exported_bytes": 396,
+      "original_sha256": "137e570cbc726b53d7f3e080561469a711a3c58b61d6daa95df376c1bd924b52",
+      "exported_sha256": "137e570cbc726b53d7f3e080561469a711a3c58b61d6daa95df376c1bd924b52",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/download-qemu-11.1.2.tar.xz.log",
+      "original_bytes": 475,
+      "exported_bytes": 475,
+      "original_sha256": "8176abe04304a4023dbb7ef6b940372fcccfaea5802f3a384761e0b379a142e6",
+      "exported_sha256": "8176abe04304a4023dbb7ef6b940372fcccfaea5802f3a384761e0b379a142e6",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/download-qtbase-Linux-RHEL_8_10-GCC-Linux-RHEL_8_10-X86_64.7z.log",
+      "original_bytes": 634,
+      "exported_bytes": 634,
+      "original_sha256": "a5490a53166a222d511cb22e03bf85773cfd01769891ec6c1974bd49a6eb57cd",
+      "exported_sha256": "a5490a53166a222d511cb22e03bf85773cfd01769891ec6c1974bd49a6eb57cd",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/download-qtbase-everywhere-src-6.8.3.tar.xz.log",
+      "original_bytes": 713,
+      "exported_bytes": 713,
+      "original_sha256": "a7b24108d8c61f25d5f6d8ef5a51846a2c3508e1b56d077825fa933272e3ba89",
+      "exported_sha256": "a7b24108d8c61f25d5f6d8ef5a51846a2c3508e1b56d077825fa933272e3ba89",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/extract-icu-linux-Rhel8.6-x86_64.7z.log",
+      "original_bytes": 483,
+      "exported_bytes": 483,
+      "original_sha256": "fc79b729104847fb014e4db80d3c43a3e1820cfb5c2a531bef8b5777be6ac49f",
+      "exported_sha256": "fc79b729104847fb014e4db80d3c43a3e1820cfb5c2a531bef8b5777be6ac49f",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/extract-qtbase-Linux-RHEL_8_10-GCC-Linux-RHEL_8_10-X86_64.7z.log",
+      "original_bytes": 552,
+      "exported_bytes": 552,
+      "original_sha256": "91f799b96a25a3f8f1433f7fc19dc7c8fa660dd8deae02175e4f116d1bf5dc17",
+      "exported_sha256": "91f799b96a25a3f8f1433f7fc19dc7c8fa660dd8deae02175e4f116d1bf5dc17",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/fetch-binutils-headers.log",
+      "original_bytes": 1191,
+      "exported_bytes": 1191,
+      "original_sha256": "09572e4ca09bc3f7a02405f1e42f5a940058557ef8b508913fcc80c097ffb11a",
+      "exported_sha256": "09572e4ca09bc3f7a02405f1e42f5a940058557ef8b508913fcc80c097ffb11a",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/fetch-gcc-headers.log",
+      "original_bytes": 1196,
+      "exported_bytes": 1196,
+      "original_sha256": "e4e74c97e0366153027167723882e25ea85859fbedb1955ae56fb8c592cca748",
+      "exported_sha256": "e4e74c97e0366153027167723882e25ea85859fbedb1955ae56fb8c592cca748",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/fetch-nasm-headers.log",
+      "original_bytes": 676,
+      "exported_bytes": 676,
+      "original_sha256": "417cf6b8ee51fd484872d7ef5830388cc3e1eb27835e7be0215a7b5fb728a302",
+      "exported_sha256": "417cf6b8ee51fd484872d7ef5830388cc3e1eb27835e7be0215a7b5fb728a302",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/fetch-newlib-headers.log",
+      "original_bytes": 736,
+      "exported_bytes": 736,
+      "original_sha256": "e362727cc4fc186fc4b560646af22fbb0c9dd919265c897673e9ecb9b6f54beb",
+      "exported_sha256": "e362727cc4fc186fc4b560646af22fbb0c9dd919265c897673e9ecb9b6f54beb",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/fetch-qt-headers.log",
+      "original_bytes": 2535,
+      "exported_bytes": 2535,
+      "original_sha256": "ddc20e7444071b8b8309ffc127517f10238e6a4c27036968634ed48353e36025",
+      "exported_sha256": "ddc20e7444071b8b8309ffc127517f10238e6a4c27036968634ed48353e36025",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/gcc-build.log",
+      "original_bytes": 1774254,
+      "exported_bytes": 1774254,
+      "original_sha256": "39c8983a38c44f3018bf4b93fb47de0e1a7eaf25e92a8be9feb81b387322ca36",
+      "exported_sha256": "39c8983a38c44f3018bf4b93fb47de0e1a7eaf25e92a8be9feb81b387322ca36",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/gcc-configure.log",
+      "original_bytes": 7821,
+      "exported_bytes": 7821,
+      "original_sha256": "5af647ce07e4ff5887fb6fd43aec54a6e49277058b22ef864ab79d083f1aee5f",
+      "exported_sha256": "5af647ce07e4ff5887fb6fd43aec54a6e49277058b22ef864ab79d083f1aee5f",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/gcc-install.log",
+      "original_bytes": 238060,
+      "exported_bytes": 238060,
+      "original_sha256": "ecce501a2f58a12840ecea1f82ad9bdbbadd64f1c20f10f54a6fab42ad3a6bbc",
+      "exported_sha256": "ecce501a2f58a12840ecea1f82ad9bdbbadd64f1c20f10f54a6fab42ad3a6bbc",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/host-qt-icu-layout.json",
+      "original_bytes": 402,
+      "exported_bytes": 402,
+      "original_sha256": "bb970977cf80f6268d080b237627cc9a4ccd4d00eec26c525e58bb71b47d6f30",
+      "exported_sha256": "bb970977cf80f6268d080b237627cc9a4ccd4d00eec26c525e58bb71b47d6f30",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/host-qt-tools.json",
+      "original_bytes": 2103,
+      "exported_bytes": 2103,
+      "original_sha256": "16d83c2cf643f3b6cba016544adc2406d0775e27eef1be38f406103be7a889d1",
+      "exported_sha256": "16d83c2cf643f3b6cba016544adc2406d0775e27eef1be38f406103be7a889d1",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/nasm-build.log",
+      "original_bytes": 58819,
+      "exported_bytes": 58819,
+      "original_sha256": "024ef9d13775d698b4c552e07db15075fa55f6656b17f1092b175a116b699f18",
+      "exported_sha256": "024ef9d13775d698b4c552e07db15075fa55f6656b17f1092b175a116b699f18",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/nasm-configure.log",
+      "original_bytes": 9088,
+      "exported_bytes": 9088,
+      "original_sha256": "baeaf1ce5528213893ce5a0d559fb38af6c4281db6d275c9704eb2a2a428cf6b",
+      "exported_sha256": "baeaf1ce5528213893ce5a0d559fb38af6c4281db6d275c9704eb2a2a428cf6b",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/nasm-install.log",
+      "original_bytes": 545,
+      "exported_bytes": 545,
+      "original_sha256": "3032b7bb45f36a3c5961c2ef7782445763748edaa70f4d7b9ac721d3f317f200",
+      "exported_sha256": "3032b7bb45f36a3c5961c2ef7782445763748edaa70f4d7b9ac721d3f317f200",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/nasm-official-index.html",
+      "original_bytes": 6040,
+      "exported_bytes": 6040,
+      "original_sha256": "29e86cf63bbb6341a695b3dc7e29725846c89fa9dbf884f35ed0f4f7052588de",
+      "exported_sha256": "29e86cf63bbb6341a695b3dc7e29725846c89fa9dbf884f35ed0f4f7052588de",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/nasm-sha.log",
+      "original_bytes": 367,
+      "exported_bytes": 367,
+      "original_sha256": "1a88b46cb9da016c99f2aefcf088adea409d186154ea2013316e777ac123713e",
+      "exported_sha256": "1a88b46cb9da016c99f2aefcf088adea409d186154ea2013316e777ac123713e",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/newlib-build-help.log",
+      "original_bytes": 370,
+      "exported_bytes": 370,
+      "original_sha256": "060351235f88b20ef732d4a98c5f3d4fc5199f7451718f4e89c2f4e9e5a16a88",
+      "exported_sha256": "060351235f88b20ef732d4a98c5f3d4fc5199f7451718f4e89c2f4e9e5a16a88",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/oracle-browser-build.log",
+      "original_bytes": 32471,
+      "exported_bytes": 32471,
+      "original_sha256": "89ef4dc88f5cd136ba76366f827560b11f4e385635d180fc3c9895e8ad5fe1a9",
+      "exported_sha256": "89ef4dc88f5cd136ba76366f827560b11f4e385635d180fc3c9895e8ad5fe1a9",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/payloads-build.json",
+      "original_bytes": 2687,
+      "exported_bytes": 2687,
+      "original_sha256": "fb1a3a907528da6fe9899328e468c95f809855469e3d842b44e8e12e53ed6dc8",
+      "exported_sha256": "fb1a3a907528da6fe9899328e468c95f809855469e3d842b44e8e12e53ed6dc8",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/payloads-build.log",
+      "original_bytes": 52,
+      "exported_bytes": 52,
+      "original_sha256": "2a28ef7b475120bd24f569b4e1368b3bccd07469fbf12dab10c50b656b482f69",
+      "exported_sha256": "2a28ef7b475120bd24f569b4e1368b3bccd07469fbf12dab10c50b656b482f69",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/payloads-verified.json",
+      "original_bytes": 1831,
+      "exported_bytes": 1831,
+      "original_sha256": "f7f077e59beca1ed0b838b3badbcd4ce9ab8000e46dbed4c75cf80f760e0bbe6",
+      "exported_sha256": "f7f077e59beca1ed0b838b3badbcd4ce9ab8000e46dbed4c75cf80f760e0bbe6",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/qemu-build-receipt.json",
+      "original_bytes": 430,
+      "exported_bytes": 430,
+      "original_sha256": "27aa3b2f6585799d9da087e7d81670afba3f26d85b12a9c5f84adbed5078258b",
+      "exported_sha256": "27aa3b2f6585799d9da087e7d81670afba3f26d85b12a9c5f84adbed5078258b",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/qemu-build.log",
+      "original_bytes": 142266,
+      "exported_bytes": 142266,
+      "original_sha256": "cb33e5320dce524952e625924444f6d2df50f1636fb7e1c6a210bb99ac184b0c",
+      "exported_sha256": "cb33e5320dce524952e625924444f6d2df50f1636fb7e1c6a210bb99ac184b0c",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/qemu-built.json",
+      "original_bytes": 235,
+      "exported_bytes": 235,
+      "original_sha256": "1aeec81796b672c164289f3fec3e72781d5bd6bc84c356c8c4d06b79c7999da2",
+      "exported_sha256": "1aeec81796b672c164289f3fec3e72781d5bd6bc84c356c8c4d06b79c7999da2",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/qemu-configure-command.json",
+      "original_bytes": 535,
+      "exported_bytes": 535,
+      "original_sha256": "71c1e59131739ac55da714d0adffc958b668c40986bf7bdb27b81257fdb0c287",
+      "exported_sha256": "71c1e59131739ac55da714d0adffc958b668c40986bf7bdb27b81257fdb0c287",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/qemu-configure.log",
+      "original_bytes": 34840,
+      "exported_bytes": 34840,
+      "original_sha256": "4f2dcf8d1a0a6399b4f39b6351d950564882c9344431f47fd559be5d5c5cf247",
+      "exported_sha256": "4f2dcf8d1a0a6399b4f39b6351d950564882c9344431f47fd559be5d5c5cf247",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/qemu-extraction-exclusions.json",
+      "original_bytes": 154,
+      "exported_bytes": 154,
+      "original_sha256": "90fd0297adcb5de52b668ab9e6920577af498fcd632f1211187b4c062168ae97",
+      "exported_sha256": "90fd0297adcb5de52b668ab9e6920577af498fcd632f1211187b4c062168ae97",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/qemu-firmware-audit.json",
+      "original_bytes": 959,
+      "exported_bytes": 959,
+      "original_sha256": "c6f915e0f3d38cc8ab28308e12f5b58bc6159ebb095e93cb719f7f19695a3282",
+      "exported_sha256": "c6f915e0f3d38cc8ab28308e12f5b58bc6159ebb095e93cb719f7f19695a3282",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/qemu-head.log",
+      "original_bytes": 891,
+      "exported_bytes": 792,
+      "original_sha256": "18f35ab0d1402e494a94cb53b5c484aa2c3addcc02b041d95e6a0eaf4ccbd012",
+      "exported_sha256": "807443de0bd2be45db1980b549654bfe3c3c97bf9456ff21e52bf1f456a6bd08",
+      "byte_identical": false
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/qemu-initial-failure.json",
+      "original_bytes": 236,
+      "exported_bytes": 236,
+      "original_sha256": "f9c51a6c8b045696603e1018b7dbd6fea7e7fb5d133978fdb79bdd8cdc118aa1",
+      "exported_sha256": "f9c51a6c8b045696603e1018b7dbd6fea7e7fb5d133978fdb79bdd8cdc118aa1",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/qemu-install-retry-receipt.json",
+      "original_bytes": 219,
+      "exported_bytes": 219,
+      "original_sha256": "8590b75dc729e3e30c34fd2651494b8dbb53021a57ce66fd76e180d0102eab0b",
+      "exported_sha256": "8590b75dc729e3e30c34fd2651494b8dbb53021a57ce66fd76e180d0102eab0b",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/qemu-install-retry.log",
+      "original_bytes": 111533,
+      "exported_bytes": 111533,
+      "original_sha256": "99c3c47d33f7a7dec6da1c279e561bc3189895adbfb8c526bd41b913c46dd713",
+      "exported_sha256": "99c3c47d33f7a7dec6da1c279e561bc3189895adbfb8c526bd41b913c46dd713",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/qemu-install.log",
+      "original_bytes": 8162,
+      "exported_bytes": 8162,
+      "original_sha256": "28e046cfd93f965ff478c64fd16937c076437f89099858f4234e0b35b01d8f32",
+      "exported_sha256": "28e046cfd93f965ff478c64fd16937c076437f89099858f4234e0b35b01d8f32",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/qemu-redownload.log",
+      "original_bytes": 475,
+      "exported_bytes": 475,
+      "original_sha256": "43fa85cff2fb99bfc5381a5661dae9169269a3cd80079d6060d7881ae0fd8334",
+      "exported_sha256": "43fa85cff2fb99bfc5381a5661dae9169269a3cd80079d6060d7881ae0fd8334",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/qemu-source-integrity-repair.json",
+      "original_bytes": 527,
+      "exported_bytes": 527,
+      "original_sha256": "b9cc4b41a731180ced3f8653927b7d288fc9ab9a9b5e196887037333cba513b8",
+      "exported_sha256": "b9cc4b41a731180ced3f8653927b7d288fc9ab9a9b5e196887037333cba513b8",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/qt-host-package-index.log",
+      "original_bytes": 397,
+      "exported_bytes": 397,
+      "original_sha256": "4db37df3cccce72012539520dcbcaff4a6bedf992325aa8c5fd1e8204ad00c96",
+      "exported_sha256": "4db37df3cccce72012539520dcbcaff4a6bedf992325aa8c5fd1e8204ad00c96",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/qt-prepare-source.log",
+      "original_bytes": 986,
+      "exported_bytes": 986,
+      "original_sha256": "3cabf3ec4f97cc91c2c149549adf0ef7a09638cd223c0a1be36a744f128b6f14",
+      "exported_sha256": "3cabf3ec4f97cc91c2c149549adf0ef7a09638cd223c0a1be36a744f128b6f14",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/qt-target-build.log",
+      "original_bytes": 5946672,
+      "exported_bytes": 5946672,
+      "original_sha256": "348e5ccd842b3fff9565e505f9be1e2e5803f12a400e753d9d0a9262bcdf8d43",
+      "exported_sha256": "348e5ccd842b3fff9565e505f9be1e2e5803f12a400e753d9d0a9262bcdf8d43",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/qt-target-configure.log",
+      "original_bytes": 1806,
+      "exported_bytes": 1806,
+      "original_sha256": "7996b643fd7bd3ead6987d3e73066751ff622d9b7fda6003e500b1dfa69be4a9",
+      "exported_sha256": "7996b643fd7bd3ead6987d3e73066751ff622d9b7fda6003e500b1dfa69be4a9",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/runtime-build.json",
+      "original_bytes": 3596,
+      "exported_bytes": 3596,
+      "original_sha256": "7b5eb97d4b35183d78616830f105f91e18640ae61359a1d5d44933a90acd3492",
+      "exported_sha256": "7b5eb97d4b35183d78616830f105f91e18640ae61359a1d5d44933a90acd3492",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/sdk-build-help.log",
+      "original_bytes": 629,
+      "exported_bytes": 629,
+      "original_sha256": "32ef621004b20182e49199ea6658fd1509ee455ae0e001588397d5664d6dca8f",
+      "exported_sha256": "32ef621004b20182e49199ea6658fd1509ee455ae0e001588397d5664d6dca8f",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/source-commit-equivalence.json",
+      "original_bytes": 224,
+      "exported_bytes": 224,
+      "original_sha256": "e7a9bb1c46fe0f4bd74d42e1858576107213a902e5019d65580004c79291b18b",
+      "exported_sha256": "e7a9bb1c46fe0f4bd74d42e1858576107213a902e5019d65580004c79291b18b",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/source-commit.txt",
+      "original_bytes": 41,
+      "exported_bytes": 41,
+      "original_sha256": "3fcc96f9d412b363010748bb102078e827ed82e9e1131cde0e891c580768c99b",
+      "exported_sha256": "3fcc96f9d412b363010748bb102078e827ed82e9e1131cde0e891c580768c99b",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/system-build.log",
+      "original_bytes": 382,
+      "exported_bytes": 382,
+      "original_sha256": "918994b7a625d5ab6ceae001c5f457a0f63e5f2d9c33362dc8a17295dee0ceec",
+      "exported_sha256": "918994b7a625d5ab6ceae001c5f457a0f63e5f2d9c33362dc8a17295dee0ceec",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/threading-newlib.log",
+      "original_bytes": 83,
+      "exported_bytes": 83,
+      "original_sha256": "00cbc29a0cca60bba30293c112af30a59ca941f2db30ca91901e5bad86959410",
+      "exported_sha256": "00cbc29a0cca60bba30293c112af30a59ca941f2db30ca91901e5bad86959410",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/threading-sdk.log",
+      "original_bytes": 186,
+      "exported_bytes": 186,
+      "original_sha256": "faeae47ece54fe3700d9ddce92a00d6c72680e9e3215e7ae92b7414b222bcb5b",
+      "exported_sha256": "faeae47ece54fe3700d9ddce92a00d6c72680e9e3215e7ae92b7414b222bcb5b",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/tools-built.json",
+      "original_bytes": 1019,
+      "exported_bytes": 1019,
+      "original_sha256": "838a8016393925425683fc784948b6def2b9cca3d36ec8c19ba0985c42b30d29",
+      "exported_sha256": "838a8016393925425683fc784948b6def2b9cca3d36ec8c19ba0985c42b30d29",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/threading_newlib/build/config.log",
+      "original_bytes": 31711,
+      "exported_bytes": 31711,
+      "original_sha256": "8ec068b0ea67b7459e8c8971e66f4cea36c92d913127e972d76f71c1d450ca68",
+      "exported_sha256": "8ec068b0ea67b7459e8c8971e66f4cea36c92d913127e972d76f71c1d450ca68",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/threading_newlib/build/x86_64-elf/newlib/config.log",
+      "original_bytes": 42146,
+      "exported_bytes": 42146,
+      "original_sha256": "9a6e04ea7cf9c1f76986b8d683ff0d9379da8f7e964f0cf1394848090a25b7ca",
+      "exported_sha256": "9a6e04ea7cf9c1f76986b8d683ff0d9379da8f7e964f0cf1394848090a25b7ca",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/threading_newlib/configure.log",
+      "original_bytes": 4672,
+      "exported_bytes": 4672,
+      "original_sha256": "2d9849227d3fc27691aca1590d3a4da0517d8e69dc1665d2f6ea7545dd47adf0",
+      "exported_sha256": "2d9849227d3fc27691aca1590d3a4da0517d8e69dc1665d2f6ea7545dd47adf0",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/threading_newlib/install.log",
+      "original_bytes": 15360,
+      "exported_bytes": 15360,
+      "original_sha256": "8af6b2500b3c4376912cc9768129ddede77dc8558483f5fd0bfb4296b5244f1c",
+      "exported_sha256": "8af6b2500b3c4376912cc9768129ddede77dc8558483f5fd0bfb4296b5244f1c",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/threading_newlib/make.log",
+      "original_bytes": 54371,
+      "exported_bytes": 54371,
+      "original_sha256": "1763547fee2f6d61f730e2d6ca34a7886e8788732f7674f465ca6e94388e5930",
+      "exported_sha256": "1763547fee2f6d61f730e2d6ca34a7886e8788732f7674f465ca6e94388e5930",
+      "byte_identical": true
+    },
+    {
+      "path": ".cache/ssg_p2f/threading_newlib/receipt.json",
+      "original_bytes": 15771,
+      "exported_bytes": 15771,
+      "original_sha256": "a5e5db1bd6d3e6445b4038886fa0e298a8f7324b9264d39d5b781062e80963b7",
+      "exported_sha256": "a5e5db1bd6d3e6445b4038886fa0e298a8f7324b9264d39d5b781062e80963b7",
+      "byte_identical": true
+    },
+    {
+      "path": "build/ssg_p2f/oracle-browser/browser.receipt.json",
+      "original_bytes": 276959,
+      "exported_bytes": 276959,
+      "original_sha256": "9c45fe5dae60ec1546c971f7cfb24d75a19ef5b3718871b26dd8b66a07352674",
+      "exported_sha256": "9c45fe5dae60ec1546c971f7cfb24d75a19ef5b3718871b26dd8b66a07352674",
+      "byte_identical": true
+    },
+    {
+      "path": "build/ssg_p2f/oracle-browser/libXosAurora.receipt.json",
+      "original_bytes": 12085,
+      "exported_bytes": 12085,
+      "original_sha256": "4291b920227bdb098fe2a8ee73f61dfda6711ad88e14cf21eed2d6b829308238",
+      "exported_sha256": "4291b920227bdb098fe2a8ee73f61dfda6711ad88e14cf21eed2d6b829308238",
+      "byte_identical": true
+    },
+    {
+      "path": "build/ssg_p2f/payloads/browser/browser.receipt.json",
+      "original_bytes": 277960,
+      "exported_bytes": 277960,
+      "original_sha256": "8e042c220e5941ad50b496a70f0e5f2e3a66a5d828cfe3f26c9a4a0a6ff690c9",
+      "exported_sha256": "8e042c220e5941ad50b496a70f0e5f2e3a66a5d828cfe3f26c9a4a0a6ff690c9",
+      "byte_identical": true
+    },
+    {
+      "path": "build/ssg_p2f/payloads/browser/libXosAurora.receipt.json",
+      "original_bytes": 12117,
+      "exported_bytes": 12117,
+      "original_sha256": "0eb6207d5aa872c141927e338f4b36b7af8040102b10b7ab7dbc84fbd6b1653c",
+      "exported_sha256": "0eb6207d5aa872c141927e338f4b36b7af8040102b10b7ab7dbc84fbd6b1653c",
+      "byte_identical": true
+    },
+    {
+      "path": "build/ssg_p2f/payloads/build-1.log",
+      "original_bytes": 0,
+      "exported_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true
+    },
+    {
+      "path": "build/ssg_p2f/payloads/build-2.log",
+      "original_bytes": 5852,
+      "exported_bytes": 5852,
+      "original_sha256": "fab6c0b58278d200e0d2bbf44adc8d3b13df84762f25a3912d16a274c546b45a",
+      "exported_sha256": "fab6c0b58278d200e0d2bbf44adc8d3b13df84762f25a3912d16a274c546b45a",
+      "byte_identical": true
+    },
+    {
+      "path": "build/ssg_p2f/payloads/build-3.log",
+      "original_bytes": 32284,
+      "exported_bytes": 32284,
+      "original_sha256": "0e4d62cc0bacdfb656d39dfb6d0634e9418759e589e715f002312edf389d0987",
+      "exported_sha256": "0e4d62cc0bacdfb656d39dfb6d0634e9418759e589e715f002312edf389d0987",
+      "byte_identical": true
+    },
+    {
+      "path": "build/ssg_p2f/payloads/build-4.log",
+      "original_bytes": 32475,
+      "exported_bytes": 32475,
+      "original_sha256": "af0198b56191da580e3c0f41e9b5ccc76b547de4c1ad89c9f3840f2b8f86b563",
+      "exported_sha256": "af0198b56191da580e3c0f41e9b5ccc76b547de4c1ad89c9f3840f2b8f86b563",
+      "byte_identical": true
+    },
+    {
+      "path": "build/ssg_p2f/payloads/consumer/ssg-consumer.receipt.json",
+      "original_bytes": 5225,
+      "exported_bytes": 5225,
+      "original_sha256": "bb36c2b799ac2eeb4067b1ef6ff2c36cf7210c1bf6e756b3d6818a14b16f7c64",
+      "exported_sha256": "bb36c2b799ac2eeb4067b1ef6ff2c36cf7210c1bf6e756b3d6818a14b16f7c64",
+      "byte_identical": true
+    },
+    {
+      "path": "build/ssg_p2f/payloads/manifest.json",
+      "original_bytes": 6230,
+      "exported_bytes": 6230,
+      "original_sha256": "7b5d77202a9610603a87265688eff81ad1e0328a5538bd464d96485f3062f918",
+      "exported_sha256": "7b5d77202a9610603a87265688eff81ad1e0328a5538bd464d96485f3062f918",
+      "byte_identical": true
+    },
+    {
+      "path": "build/ssg_p2f/payloads/notes/libXosAurora.receipt.json",
+      "original_bytes": 12085,
+      "exported_bytes": 12085,
+      "original_sha256": "20a1c322c28b8c6eb47143bd2d28030982e570c3f494290b4545ca5d544dd7e1",
+      "exported_sha256": "20a1c322c28b8c6eb47143bd2d28030982e570c3f494290b4545ca5d544dd7e1",
+      "byte_identical": true
+    },
+    {
+      "path": "build/ssg_p2f/payloads/notes/notes.receipt.json",
+      "original_bytes": 19039,
+      "exported_bytes": 19039,
+      "original_sha256": "284aacc485a3218e87ba403c926328667df0dbc259329c883396c332127019d5",
+      "exported_sha256": "284aacc485a3218e87ba403c926328667df0dbc259329c883396c332127019d5",
+      "byte_identical": true
+    },
+    {
+      "path": "build/ssg_p2f/qt-widgets/CMakeCache.txt",
+      "original_bytes": 154104,
+      "exported_bytes": 154104,
+      "original_sha256": "12bf38a5f63235895deb69b54a5028f4a17c1c9e00f2844b96c58ceb646cca8e",
+      "exported_sha256": "12bf38a5f63235895deb69b54a5028f4a17c1c9e00f2844b96c58ceb646cca8e",
+      "byte_identical": true
+    },
+    {
+      "path": "build/ssg_p2f/qt-widgets/CMakeFiles/rules.ninja",
+      "original_bytes": 16526,
+      "exported_bytes": 16526,
+      "original_sha256": "a948b110958ed254e663f4a9a42c5bd8bf7f4e7360e5cb553d9268ecf918a468",
+      "exported_sha256": "a948b110958ed254e663f4a9a42c5bd8bf7f4e7360e5cb553d9268ecf918a468",
+      "byte_identical": true
+    },
+    {
+      "path": "build/ssg_p2f/qt-widgets/build.ninja",
+      "original_bytes": 3800097,
+      "exported_bytes": 3800097,
+      "original_sha256": "ee2f69f20b87b4405b40f7c967ae769d96aec180ddf5ce703e1fc3b591e15bef",
+      "exported_sha256": "ee2f69f20b87b4405b40f7c967ae769d96aec180ddf5ce703e1fc3b591e15bef",
+      "byte_identical": true
+    },
+    {
+      "path": "build/ssg_p2f/qt-widgets/config.summary",
+      "original_bytes": 6945,
+      "exported_bytes": 6945,
+      "original_sha256": "73d2f6aaecca7d9ce67b76c66b412e907a4be719ff646924a6b3bcafba1e467d",
+      "exported_sha256": "73d2f6aaecca7d9ce67b76c66b412e907a4be719ff646924a6b3bcafba1e467d",
+      "byte_identical": true
+    },
+    {
+      "path": "build/ssg_p2f/sdk/compile.py",
+      "original_bytes": 2121,
+      "exported_bytes": 2121,
+      "original_sha256": "46c1de050d7ae48fab63a36b84144a2997102f3fc08897bfe798cad44302815b",
+      "exported_sha256": "46c1de050d7ae48fab63a36b84144a2997102f3fc08897bfe798cad44302815b",
+      "byte_identical": true
+    },
+    {
+      "path": "build/ssg_p2f/sdk/manifest.json",
+      "original_bytes": 145292,
+      "exported_bytes": 145292,
+      "original_sha256": "5b8a384d3542f6b9d9631f3df7597248babd09b571b1ff2c5309ffbbab466bbe",
+      "exported_sha256": "5b8a384d3542f6b9d9631f3df7597248babd09b571b1ff2c5309ffbbab466bbe",
+      "byte_identical": true
+    },
+    {
+      "path": "build/ssg_p2f/system/compiler_configuration.log",
+      "original_bytes": 746,
+      "exported_bytes": 746,
+      "original_sha256": "fe9d8de2caf2e15e059961cd5ba44025218e863879f1abf8cdcdbc6565122d8d",
+      "exported_sha256": "fe9d8de2caf2e15e059961cd5ba44025218e863879f1abf8cdcdbc6565122d8d",
+      "byte_identical": true
+    },
+    {
+      "path": "build/ssg_p2f/system/kernel_elf.log",
+      "original_bytes": 4370,
+      "exported_bytes": 4370,
+      "original_sha256": "950de2e1f31e78ae57fc917b7d9f3e44843a02a1e4e5799f9ffc4d96345573c0",
+      "exported_sha256": "950de2e1f31e78ae57fc917b7d9f3e44843a02a1e4e5799f9ffc4d96345573c0",
+      "byte_identical": true
+    },
+    {
+      "path": "build/ssg_p2f/system/manifest.json",
+      "original_bytes": 229188,
+      "exported_bytes": 229188,
+      "original_sha256": "9daea813ca8dabdbe488b3d9471e3ef72f12584c10d4ffb027f024d6c36b231b",
+      "exported_sha256": "9daea813ca8dabdbe488b3d9471e3ef72f12584c10d4ffb027f024d6c36b231b",
+      "byte_identical": true
+    },
+    {
+      "path": "build/ssg_p2f/system/sdk/manifest.json",
+      "original_bytes": 2326,
+      "exported_bytes": 2326,
+      "original_sha256": "f993ce70a934ce3591f1b20123a2c2dbd00efb7e72d9ad6ee6ca6a024abbc83c",
+      "exported_sha256": "f993ce70a934ce3591f1b20123a2c2dbd00efb7e72d9ad6ee6ca6a024abbc83c",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/archive.log",
+      "original_bytes": 0,
+      "exported_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/command.log",
+      "original_bytes": 0,
+      "exported_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/cpp_clean_config_change.log",
+      "original_bytes": 10768,
+      "exported_bytes": 10768,
+      "original_sha256": "7d85115ab105329714c25c0b1996ff33725d0708d03a40665dd1b8074f249981",
+      "exported_sha256": "7d85115ab105329714c25c0b1996ff33725d0708d03a40665dd1b8074f249981",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/cpp_configure.log",
+      "original_bytes": 26690,
+      "exported_bytes": 26690,
+      "original_sha256": "5223ba3788512172deea1562650a9bcceb688c2f244d292d298c104d1f4d3796",
+      "exported_sha256": "5223ba3788512172deea1562650a9bcceb688c2f244d292d298c104d1f4d3796",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/cpp_install.log",
+      "original_bytes": 144129,
+      "exported_bytes": 144129,
+      "original_sha256": "883ba3f73ff2904786e8a7f4391c180c1e0b01922009bbfdae1f62ac4346f267",
+      "exported_sha256": "883ba3f73ff2904786e8a7f4391c180c1e0b01922009bbfdae1f62ac4346f267",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/cpp_make.log",
+      "original_bytes": 485898,
+      "exported_bytes": 485898,
+      "original_sha256": "ed5e92d1b9bcf3ac581b0adc6bb3b2f67653d10f915d15c9646e9eeb403f198c",
+      "exported_sha256": "ed5e92d1b9bcf3ac581b0adc6bb3b2f67653d10f915d15c9646e9eeb403f198c",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/cpp_runtime.log",
+      "original_bytes": 0,
+      "exported_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/crt.log",
+      "original_bytes": 0,
+      "exported_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/elf.log",
+      "original_bytes": 0,
+      "exported_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/elf_cases.log",
+      "original_bytes": 0,
+      "exported_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/file_client.log",
+      "original_bytes": 0,
+      "exported_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/gcc_headers_configure.log",
+      "original_bytes": 23676,
+      "exported_bytes": 23676,
+      "original_sha256": "6ed64018c4ba1a8cdf0bc25315f0b8b6db02501e110c3701e15276aa393bc82f",
+      "exported_sha256": "6ed64018c4ba1a8cdf0bc25315f0b8b6db02501e110c3701e15276aa393bc82f",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/gcc_headers_make.log",
+      "original_bytes": 540,
+      "exported_bytes": 540,
+      "original_sha256": "7c42ad1a5aef6882bf64bc583a91644a30d40c110836f48ab588cc22f393d731",
+      "exported_sha256": "7c42ad1a5aef6882bf64bc583a91644a30d40c110836f48ab588cc22f393d731",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/libgcc_archive.log",
+      "original_bytes": 0,
+      "exported_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/libgcc_configure.log",
+      "original_bytes": 3093,
+      "exported_bytes": 3093,
+      "original_sha256": "b80faf6e7d5ef4ea3bbdf4c5aa979e7131c7ea81b8a03dfd57d7d9c0c9907298",
+      "exported_sha256": "b80faf6e7d5ef4ea3bbdf4c5aa979e7131c7ea81b8a03dfd57d7d9c0c9907298",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/libgcc_make.log",
+      "original_bytes": 6816,
+      "exported_bytes": 6816,
+      "original_sha256": "1f3167aa9c7af0cfdd21411035668557a42f1dfa2c91e33f1527628191e82421",
+      "exported_sha256": "1f3167aa9c7af0cfdd21411035668557a42f1dfa2c91e33f1527628191e82421",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/load.log",
+      "original_bytes": 0,
+      "exported_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/main_entry.log",
+      "original_bytes": 0,
+      "exported_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/memory.log",
+      "original_bytes": 0,
+      "exported_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/newlib_locks.log",
+      "original_bytes": 0,
+      "exported_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/newlib_syscalls.log",
+      "original_bytes": 0,
+      "exported_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/pthread.log",
+      "original_bytes": 0,
+      "exported_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/syscall.log",
+      "original_bytes": 0,
+      "exported_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/text.log",
+      "original_bytes": 0,
+      "exported_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/thread_context.log",
+      "original_bytes": 0,
+      "exported_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true
+    },
+    {
+      "path": "build/threading_sdk_logs/tls.log",
+      "original_bytes": 0,
+      "exported_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true
+    },
+    {
+      "path": "config/toolchain.json",
+      "original_bytes": 174,
+      "exported_bytes": 174,
+      "original_sha256": "14accad6a2177180cc16c2eb854083d6aa3310d2b27c358339f191e0f9413700",
+      "exported_sha256": "14accad6a2177180cc16c2eb854083d6aa3310d2b27c358339f191e0f9413700",
+      "byte_identical": true
+    },
+    {
+      "path": "scripts/build.py",
+      "original_bytes": 14498,
+      "exported_bytes": 14498,
+      "original_sha256": "42dec5fcf28f9c0291b80e05e918053f86b4de0d7096c21b427222d548c56494",
+      "exported_sha256": "42dec5fcf28f9c0291b80e05e918053f86b4de0d7096c21b427222d548c56494",
+      "byte_identical": true
+    },
+    {
+      "path": "scripts/build_ssg_p1.py",
+      "original_bytes": 3348,
+      "exported_bytes": 3348,
+      "original_sha256": "7c7b4329d05c7794783274de90cfca967a0d3bf3c94a9170abfd78f7abe79184",
+      "exported_sha256": "7c7b4329d05c7794783274de90cfca967a0d3bf3c94a9170abfd78f7abe79184",
+      "byte_identical": true
+    },
+    {
+      "path": "scripts/build_threading_newlib.py",
+      "original_bytes": 3131,
+      "exported_bytes": 3131,
+      "original_sha256": "d2c976af8f11d66d2b4e0915d2f9c12340ef660ebee45811b905431f97353182",
+      "exported_sha256": "d2c976af8f11d66d2b4e0915d2f9c12340ef660ebee45811b905431f97353182",
+      "byte_identical": true
+    },
+    {
+      "path": "scripts/build_threading_sdk.py",
+      "original_bytes": 15749,
+      "exported_bytes": 15749,
+      "original_sha256": "a93664c2fe69db5a47f0583472bd3c71d543d3505e31905cd6eb62489c23cbae",
+      "exported_sha256": "a93664c2fe69db5a47f0583472bd3c71d543d3505e31905cd6eb62489c23cbae",
+      "byte_identical": true
+    },
+    {
+      "path": "src/ports/aurora_browser/build.py",
+      "original_bytes": 5685,
+      "exported_bytes": 5685,
+      "original_sha256": "b27a1ee19fc3331a9560a3a685887f7c4b2d40719907fed17c80eb7021d7c532",
+      "exported_sha256": "b27a1ee19fc3331a9560a3a685887f7c4b2d40719907fed17c80eb7021d7c532",
+      "byte_identical": true
+    },
+    {
+      "path": "src/ports/aurora_browser/source_lock.json",
+      "original_bytes": 154985,
+      "exported_bytes": 154985,
+      "original_sha256": "5737df122030a880301512a9129a9599be4f1c84a101321329c356033e0070e4",
+      "exported_sha256": "5737df122030a880301512a9129a9599be4f1c84a101321329c356033e0070e4",
+      "byte_identical": true
+    },
+    {
+      "path": "src/ports/binutils/source_lock.json",
+      "original_bytes": 826,
+      "exported_bytes": 826,
+      "original_sha256": "18272072ed9a7f1d9b9ee43a2c022a471f5bc3786eca4e59bd49c3fba3b0136f",
+      "exported_sha256": "18272072ed9a7f1d9b9ee43a2c022a471f5bc3786eca4e59bd49c3fba3b0136f",
+      "byte_identical": true
+    },
+    {
+      "path": "src/ports/gcc/source_lock.json",
+      "original_bytes": 1153,
+      "exported_bytes": 1153,
+      "original_sha256": "e4db97ce304c6d2bafc115bb0575d03b0fe8e09562d0f4871784111fd9a83353",
+      "exported_sha256": "e4db97ce304c6d2bafc115bb0575d03b0fe8e09562d0f4871784111fd9a83353",
+      "byte_identical": true
+    },
+    {
+      "path": "src/ports/qt6/build_fixture.py",
+      "original_bytes": 3708,
+      "exported_bytes": 3708,
+      "original_sha256": "61924cb3751df1a5887790c096e28e44f7f850d17795892ee152fd87c98875d0",
+      "exported_sha256": "61924cb3751df1a5887790c096e28e44f7f850d17795892ee152fd87c98875d0",
+      "byte_identical": true
+    },
+    {
+      "path": "src/ports/qt6/build_widgets_fixture.py",
+      "original_bytes": 4897,
+      "exported_bytes": 4897,
+      "original_sha256": "1a831f3689e4ab6ed9c1efd4c4d067eb5fc08db07a93134fb5aa747f0de34b50",
+      "exported_sha256": "1a831f3689e4ab6ed9c1efd4c4d067eb5fc08db07a93134fb5aa747f0de34b50",
+      "byte_identical": true
+    },
+    {
+      "path": "src/ports/qt6/configure_widgets.py",
+      "original_bytes": 1615,
+      "exported_bytes": 1615,
+      "original_sha256": "1eb128b94a2ac2bbc47beb887a0f3cfb2696f9b69e269cf9ad54561a0c9407f2",
+      "exported_sha256": "1eb128b94a2ac2bbc47beb887a0f3cfb2696f9b69e269cf9ad54561a0c9407f2",
+      "byte_identical": true
+    },
+    {
+      "path": "src/ports/qt6/prepare_source.py",
+      "original_bytes": 3173,
+      "exported_bytes": 3173,
+      "original_sha256": "eb3cd630e1c1fd48126ad1e2e6464e9a47486402a1d0794a4666544ee5969dbb",
+      "exported_sha256": "eb3cd630e1c1fd48126ad1e2e6464e9a47486402a1d0794a4666544ee5969dbb",
+      "byte_identical": true
+    },
+    {
+      "path": "src/ports/qt6/source_lock.json",
+      "original_bytes": 389,
+      "exported_bytes": 389,
+      "original_sha256": "f37d1f82234b71066d59dd704febf86ba59762bce53021ef0ef0774709c6ed04",
+      "exported_sha256": "f37d1f82234b71066d59dd704febf86ba59762bce53021ef0ef0774709c6ed04",
+      "byte_identical": true
+    }
+  ],
+  "derived_members": [
+    {
+      "path": "derived/session-summary.json",
+      "bytes": 1211,
+      "sha256": "2a63c1c6c8fec947403d90727d0015b6347b6695879be6c9b52b2a3c7cb9aa97"
+    },
+    {
+      "path": "derived/build-job-control.patch",
+      "bytes": 3405,
+      "sha256": "1444ada54a89fe3c01a90181cda2286c7b149cc95ba7a8c02b2cf6ffce28fabd"
+    },
+    {
+      "path": "derived/top-level-commands.json",
+      "bytes": 14697,
+      "sha256": "503f0a32fcd3f84075ebd71768ffc62282ffc7f742dce7cab4728804cf217bbd"
+    }
+  ],
+  "excluded": [
+    {
+      "path": ".cache/ssg_p2f/downloads/qemu-11.1.2.truncated.tar.xz",
+      "reason": "large failed archive; size, SHA256 and failure are preserved in qemu-initial-failure.json"
+    },
+    {
+      "path": ".cache/ssg_p2f/logs/qemu-mismatched-source/qemu-11.1.2/pc-bios/edk2-i386-code.fd.bz2",
+      "reason": "binary failed UEFI blob; exact before/after size and hashes are preserved in firmware audit and integrity repair JSON"
+    },
+    {
+      "path": "build/ssg_p2f/system/kernel_disassembly.log",
+      "reason": "large generated disassembly; system manifest and kernel ELF metadata are included"
+    },
+    {
+      "path": "ELFs, disk images, static archives, downloaded source archives, source/build trees",
+      "reason": "not part of the small text evidence export; identities are recorded by hashes"
+    }
+  ]
+}

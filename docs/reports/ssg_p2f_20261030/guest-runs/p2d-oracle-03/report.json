@@ -1,0 +1,395 @@
+{
+  "status": "PASSED_SCOPED",
+  "qualification": "A1_STRUCTURE_AND_TEXT",
+  "gate_A_overall": "NOT_QUALIFIED",
+  "gate_B": "NOT_RUN",
+  "gate_C": "NOT_RUN",
+  "inputs": {
+    "image": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/system/xos.img",
+      "sha256": "c1f165e864f2f5cf2571587096b34cc30533f5de50888f2a7fb78848c458f8ba"
+    },
+    "session": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/payloads/session.elf",
+      "sha256": "b087f415acb9dfbc588ddcbacebb40b06745e328d1ced0b75e731f57b5599122"
+    },
+    "browser": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/oracle-browser/browser.elf",
+      "sha256": "abdae8ddd43991b9e1bb4b9f736b07b1f9e00f4a3cd40cfb3649f6664aabb9f6"
+    },
+    "consumer": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/payloads/consumer/ssg-consumer.elf",
+      "sha256": "5d4d1bf9a3908c574ac7160496495ac0809e66ed7b53a5bccd06b4f7b5a64e57"
+    },
+    "input": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/tests/fixtures/ssg_browser/p2d.html",
+      "sha256": "37fff0e9d875d3196f3d547a4f65e0a329b1466623eac9d2a502554d18c41e0f"
+    },
+    "ssg_browser_pages_probe.py": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/tests/ssg_browser_pages_probe.py",
+      "sha256": "e318037e510edf0b586e55ae10608ff54a80d6e2babdb41bc35054fa3c59b4b3"
+    },
+    "ssg_browser_structure.py": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/tests/ssg_browser_structure.py",
+      "sha256": "d1dda66a4cdc6e0429958539c758632c13d44f41f35a2b6b14fc332299c809e1"
+    },
+    "browser_receipt": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/oracle-browser/browser.receipt.json",
+      "sha256": "9c45fe5dae60ec1546c971f7cfb24d75a19ef5b3718871b26dd8b66a07352674"
+    },
+    "link_target": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f_runs/p2d-oracle-03/link-target.html",
+      "sha256": "b1b17e71db2689f74e30c7e8b0f03106022ec79deea569d9e7507a11ea0f30e4"
+    },
+    "qemu": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/qemu-prefix/bin/qemu-system-x86_64",
+      "sha256": "947e0e30bf1d6e0ef8c4349a3a25803bc363d785bf92d0b4cf3d603c8c9d91e1",
+      "version": "QEMU emulator version 11.1.2"
+    }
+  },
+  "geometry": {
+    "status": "PASSED_SCOPED",
+    "scope": "one visible link after completed paging",
+    "consumer_node_id": "13",
+    "href": "start.html",
+    "node": {
+      "actionAuthority": "READ_ONLY_NO_GRANT",
+      "actions": [
+        "inspect",
+        "click"
+      ],
+      "bounds": [
+        48,
+        318,
+        139,
+        19
+      ],
+      "contentTrust": "untrusted-document-content",
+      "displayNone": false,
+      "execution": "NOT_IMPLEMENTED",
+      "fragments": [
+        [
+          48,
+          318,
+          139,
+          19
+        ]
+      ],
+      "fragmentsComplete": true,
+      "href": "start.html",
+      "id": "13",
+      "parent": "8",
+      "role": "link",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "source": "litehtml-model-and-render-layout",
+      "tag": "a",
+      "visibility": "viewport-visible",
+      "visibleBounds": [
+        48,
+        318,
+        139,
+        19
+      ],
+      "visibleFragments": [
+        [
+          48,
+          318,
+          139,
+          19
+        ]
+      ]
+    },
+    "screen_point": [
+      56,
+      326
+    ],
+    "window_origin": [
+      0,
+      0
+    ],
+    "screen_size": [
+      800,
+      600
+    ],
+    "viewport_in_window": [
+      32,
+      222,
+      722,
+      322
+    ],
+    "loaded_target": "/web/start.html",
+    "input": "QEMU input-send-event to guest PS/2; no synthetic widget call",
+    "rendered_fragments_global": "NOT_QUALIFIED",
+    "screen_occlusion": "NOT_TESTED",
+    "during_paging_interaction": "NOT_TESTED"
+  },
+  "performance": "NOT_QUALIFIED",
+  "image_format": "floppy",
+  "source_checkout": {
+    "head": "a81b4fd7ab18ec09e87b311e8fe89cf4464fb63c",
+    "tracked_changes": [],
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "binding": "Browser ELF and current Browser source hashes are checked against browser.receipt.json"
+  },
+  "qemu_command": [
+    "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/qemu-prefix/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/tmp/xos_p2f_at4fjgr4/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/tmp/xos_ntunj3i7/qmp.sock,server=on,wait=off"
+  ],
+  "baseline": [
+    130279,
+    2,
+    0
+  ],
+  "display": [
+    130235,
+    3,
+    1
+  ],
+  "guest_command": "exec-driver /bin/session.elf /web/ssg.html browser-pages --browser --text",
+  "after": [
+    130235,
+    3,
+    1
+  ],
+  "page_node_counts": [
+    8,
+    8,
+    8,
+    8,
+    0
+  ],
+  "structure": {
+    "status": "PASSED_SCOPED",
+    "qualification": "A1_STRUCTURE_AND_TEXT",
+    "scope": "one fixed loaded liteHTML document; unfiltered full tree; guest IPC capture",
+    "node_count": 32,
+    "page_node_counts": [
+      8,
+      8,
+      8,
+      8,
+      0
+    ],
+    "structure_sha256": "5b4e296ce3415005a8482e31c0925d7a7d8a57009462f0a8ac32455785cd78e2",
+    "canonical_format": "netstring-utf8-v1",
+    "input_sha256": "37fff0e9d875d3196f3d547a4f65e0a329b1466623eac9d2a502554d18c41e0f",
+    "processes": {
+      "parent_pid": 10,
+      "provider_pid": 12,
+      "consumer_pid": 11,
+      "source_instance": "2c8ed27edd5ac0835ba6e486387eccc9",
+      "source_epoch": "51539607555",
+      "source_revision": "5"
+    },
+    "checks": [
+      "independent_before_after_oracles_agree",
+      "input_and_source_bound",
+      "strict_complete_IPC_frames",
+      "contiguous_single_use_continuation",
+      "all_expected_nodes_no_extra_or_duplicate",
+      "unique_root",
+      "parents_precede_children",
+      "parent_relationships_and_sibling_order",
+      "exact_roles_tags_text_and_href",
+      "independent_terminal_count",
+      "Consumer_completion_and_both_child_exits"
+    ],
+    "oracles": [
+      {
+        "sequence": 1,
+        "bytes": 4294,
+        "sha256": "93819ee70cb50446316fe6d9785a9dc6baa808523224cc1811c18e65b3cbe4d1",
+        "phase": "before"
+      },
+      {
+        "sequence": 2,
+        "bytes": 4293,
+        "sha256": "0db4379cd71c9ba8c69814554f53c93677294d718eab42ee14cfcfca251f96e7",
+        "phase": "after"
+      }
+    ],
+    "rendered_fragments": {
+      "status": "NOT_QUALIFIED",
+      "provider_claimed_incomplete_nodes": 0,
+      "nodes_without_boolean_completeness": 0
+    },
+    "viewport_visibility": "NOT_QUALIFIED",
+    "screen_occlusion": "NOT_TESTED",
+    "gate_A_overall": "NOT_QUALIFIED",
+    "gate_B": "NOT_RUN",
+    "gate_C": "NOT_RUN"
+  },
+  "serial_sha256": "3674d171f987eae1c0840cc7af9cc37d45344fc89eb96d2983a22bfa1b7807bc",
+  "frames": [
+    {
+      "sequence": 1,
+      "direction": "REQ",
+      "bytes": 36,
+      "sha256": "2a9eb5bb3192ea6a92c6ce078369f49690a962d242a198d63f51b2971cafc97e",
+      "begin": 3732,
+      "end": 3852,
+      "file": "01-req.json",
+      "wire_file": "01-req.wire",
+      "wire_sha256": "a4494e39387db22fb93a3efa0c3c1cd25c4c10e290b087dd133b2c059dcc6da7",
+      "wire_provenance": "header reconstructed from validated protocol fields; payload is exact Consumer log bytes"
+    },
+    {
+      "sequence": 1,
+      "direction": "RESP",
+      "bytes": 3724,
+      "sha256": "def27400e8edf8c725da821da1eefec765d3ff3931253266496c469f53ff8167",
+      "begin": 11973,
+      "end": 18437,
+      "file": "01-resp.json",
+      "wire_file": "01-resp.wire",
+      "wire_sha256": "d7db56a6eb12b6662dfe55cdde5a8ca4b8cc54ac53983b55213ade6eb31ece82",
+      "wire_provenance": "header reconstructed from validated protocol fields; payload is exact Consumer log bytes"
+    },
+    {
+      "sequence": 2,
+      "direction": "REQ",
+      "bytes": 101,
+      "sha256": "4aace0febbbfcb71aca04d2d5d26060044b9b9f687cf0be593b0915906032fe3",
+      "begin": 18506,
+      "end": 18741,
+      "file": "02-req.json",
+      "wire_file": "02-req.wire",
+      "wire_sha256": "295ebdd3691485ef7e6031f0cd8e0322be2823dea83e728e76e692b0442172b9",
+      "wire_provenance": "header reconstructed from validated protocol fields; payload is exact Consumer log bytes"
+    },
+    {
+      "sequence": 2,
+      "direction": "RESP",
+      "bytes": 4208,
+      "sha256": "0ab740ad50725042499f16aee5d9f917adf5d06da2c4054f9fa9ed1234106504",
+      "begin": 19073,
+      "end": 26377,
+      "file": "02-resp.json",
+      "wire_file": "02-resp.wire",
+      "wire_sha256": "2080fae39e64625897dae0b372b262362ba615a4ddc2e234b5f5f93edb24c09b",
+      "wire_provenance": "header reconstructed from validated protocol fields; payload is exact Consumer log bytes"
+    },
+    {
+      "sequence": 3,
+      "direction": "REQ",
+      "bytes": 101,
+      "sha256": "68b1f5caa73ea03b82cd2404ce98783b091bb77590c3a185dd01a608a07eafda",
+      "begin": 26446,
+      "end": 26681,
+      "file": "03-req.json",
+      "wire_file": "03-req.wire",
+      "wire_sha256": "cc18dce99ae404ebcfa105927f7f5e2d4475d6d9aee1cc4632fd3eaf1d8f5cbc",
+      "wire_provenance": "header reconstructed from validated protocol fields; payload is exact Consumer log bytes"
+    },
+    {
+      "sequence": 3,
+      "direction": "RESP",
+      "bytes": 3882,
+      "sha256": "c101700b723c984e8427b34aa637481d8439cf2a06a2d940324a80398a557ca6",
+      "begin": 26681,
+      "end": 33409,
+      "file": "03-resp.json",
+      "wire_file": "03-resp.wire",
+      "wire_sha256": "2b1cf7f9f51b86fb81d1fa8b379f793b729b47e0a8855c825cd671fa6ca6c940",
+      "wire_provenance": "header reconstructed from validated protocol fields; payload is exact Consumer log bytes"
+    },
+    {
+      "sequence": 4,
+      "direction": "REQ",
+      "bytes": 101,
+      "sha256": "f8fa109d73dff10a3534babfd6d4e9229eecab83437da6d5a727c3bd1db41201",
+      "begin": 33478,
+      "end": 33713,
+      "file": "04-req.json",
+      "wire_file": "04-req.wire",
+      "wire_sha256": "9cc8c8b9acfd852011f2c8a274525c0d3161e6ba8018d12521cec4bf14b55021",
+      "wire_provenance": "header reconstructed from validated protocol fields; payload is exact Consumer log bytes"
+    },
+    {
+      "sequence": 4,
+      "direction": "RESP",
+      "bytes": 4097,
+      "sha256": "3ca0e13aff70e82bd0972102dfa427f8b1e97cde6710f50b6a7503c410c474c5",
+      "begin": 33755,
+      "end": 40855,
+      "file": "04-resp.json",
+      "wire_file": "04-resp.wire",
+      "wire_sha256": "55da66ff006be30011f00c516ab47bfe29e3a7cbdcc65048826a2410ec7435a3",
+      "wire_provenance": "header reconstructed from validated protocol fields; payload is exact Consumer log bytes"
+    },
+    {
+      "sequence": 5,
+      "direction": "REQ",
+      "bytes": 101,
+      "sha256": "f82190929e3098b03ffa7a4b15396e70e791f9fa60ca944b6b386899cf14a0f9",
+      "begin": 40924,
+      "end": 41159,
+      "file": "05-req.json",
+      "wire_file": "05-req.wire",
+      "wire_sha256": "33de00d917952d5135017e10971b9338bb4d071e43285720eccb2b12a0922b97",
+      "wire_provenance": "header reconstructed from validated protocol fields; payload is exact Consumer log bytes"
+    },
+    {
+      "sequence": 5,
+      "direction": "RESP",
+      "bytes": 455,
+      "sha256": "3f09a5fccf319e5511332f31fab26e0fe13d81554cf108495e85f21419be76af",
+      "begin": 47641,
+      "end": 48487,
+      "file": "05-resp.json",
+      "wire_file": "05-resp.wire",
+      "wire_sha256": "66451209d2703fcf6d9afd52552de8d2b944fe9b39f4ddfa3a4798fa61a6513d",
+      "wire_provenance": "header reconstructed from validated protocol fields; payload is exact Consumer log bytes"
+    }
+  ],
+  "oracles": [
+    {
+      "sequence": 1,
+      "direction": "ORACLE",
+      "bytes": 4294,
+      "sha256": "93819ee70cb50446316fe6d9785a9dc6baa808523224cc1811c18e65b3cbe4d1",
+      "begin": 5487,
+      "end": 11973,
+      "file": "oracle-01.json"
+    },
+    {
+      "sequence": 2,
+      "direction": "ORACLE",
+      "bytes": 4293,
+      "sha256": "0db4379cd71c9ba8c69814554f53c93677294d718eab42ee14cfcfca251f96e7",
+      "begin": 41159,
+      "end": 47641,
+      "file": "oracle-02.json"
+    }
+  ]
+}

@@ -1,0 +1,285 @@
+{
+  "schema": "xos-ssg-p2f-build-evidence-v1",
+  "packaged_utc": "2026-10-30T07:24:55.838980+00:00",
+  "source_commit": "0a63648d53e4a7491320111f053f8b93882fbdab",
+  "source_tree": "058657a521988be8f2d5ec8535e70359d5290ed7",
+  "packaging_worktree_head": "a81b4fd7ab18ec09e87b311e8fe89cf4464fb63c",
+  "build_status": "BUILT",
+  "scope": "build evidence only; guest results are maintained by the parent report",
+  "historical_guest_status_note": "Original current-environment.json and payloads-verified.json say NOT_RUN because they were written at the build-to-test handoff; these originals are preserved unchanged.",
+  "parallelism": {
+    "gnu_target_build_jobs": 4,
+    "qemu_build_jobs": 2,
+    "maximum_combined_jobs": 6
+  },
+  "inputs": [
+    {
+      "file": ".cache/ssg_p2f/downloads/gcc-16.2.0.tar.xz",
+      "url": "https://ftpmirror.gnu.org/gnu/gcc/gcc-16.2.0/gcc-16.2.0.tar.xz",
+      "returncode": 0,
+      "sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+      "expected_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+      "verified": true,
+      "validation_basis": "download SHA256 equals existing repository source lock or pinned build-script hash"
+    },
+    {
+      "file": ".cache/ssg_p2f/downloads/binutils-2.47.tar.xz",
+      "url": "https://ftpmirror.gnu.org/gnu/binutils/binutils-2.47.tar.xz",
+      "returncode": 0,
+      "sha256": "154ab23b60070e8f27013c22977f1129425d67d1e8acd6e13010e617811e4cff",
+      "expected_sha256": "154ab23b60070e8f27013c22977f1129425d67d1e8acd6e13010e617811e4cff",
+      "verified": true,
+      "validation_basis": "download SHA256 equals existing repository source lock or pinned build-script hash"
+    },
+    {
+      "file": ".cache/ssg_p2f/downloads/nasm-3.02.tar.xz",
+      "url": "https://www.nasm.us/pub/nasm/releasebuilds/3.02/nasm-3.02.tar.xz",
+      "returncode": 0,
+      "sha256": "87336eba53b4acfe917424ab5d500d2b0054d9f5148d35c2273ccf2cfb712f0d",
+      "expected_sha256": null,
+      "verified": true,
+      "validation_basis": "official HTTPS URL and index, recorded SHA256; expected_sha256 is null and no independent upstream checksum verification is claimed"
+    },
+    {
+      "file": ".cache/ssg_p2f/downloads/newlib-4.6.0.20260123.tar.gz",
+      "url": "https://sourceware.org/pub/newlib/newlib-4.6.0.20260123.tar.gz",
+      "returncode": 0,
+      "sha256": "6ff27e3bf022666f43f7802255be680eeff722ac181b1725d21e2e8318604ee3",
+      "expected_sha256": "6ff27e3bf022666f43f7802255be680eeff722ac181b1725d21e2e8318604ee3",
+      "verified": true,
+      "validation_basis": "download SHA256 equals existing repository source lock or pinned build-script hash"
+    },
+    {
+      "file": ".cache/ssg_p2f/downloads/qtbase-everywhere-src-6.8.3.tar.xz",
+      "url": "https://download.qt.io/archive/qt/6.8/6.8.3/submodules/qtbase-everywhere-src-6.8.3.tar.xz",
+      "returncode": 0,
+      "sha256": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80",
+      "expected_sha256": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80",
+      "verified": true,
+      "validation_basis": "download SHA256 equals existing repository source lock or pinned build-script hash"
+    },
+    {
+      "url": "https://download.qemu.org/qemu-11.1.2.tar.xz",
+      "bytes": 141815216,
+      "sha256": "731b5681e4bb18be313231579b8efd0296c5b015fa36dc533874b639ba838016",
+      "xz_test": "PASSED",
+      "validation_basis": "official HTTPS URL, recorded SHA256 and xz integrity test; no independent upstream signature/checksum verification claimed"
+    },
+    {
+      "url": "https://download.qt.io/online/qtsdkrepository/linux_x64/desktop/qt6_683/qt6_683/qt.qt6.683.linux_gcc_64/6.8.3-0-202503201345qtbase-Linux-RHEL_8_10-GCC-Linux-RHEL_8_10-X86_64.7z",
+      "file": ".cache/ssg_p2f/downloads/qtbase-Linux-RHEL_8_10-GCC-Linux-RHEL_8_10-X86_64.7z",
+      "sha1": "ce7335772903412dc1f70a9d77e9b39d55e6e353",
+      "official_sha1": "ce7335772903412dc1f70a9d77e9b39d55e6e353",
+      "sha256": "d8fe882cae71284a7ca906b70b42840376882fe96f22fce1ba5a7a70ceeec799",
+      "bytes": 25530313,
+      "validation_basis": "official Updates.xml package identity and official per-file SHA1 matched; local SHA256 also recorded"
+    },
+    {
+      "url": "https://download.qt.io/online/qtsdkrepository/linux_x64/desktop/qt6_683/qt6_683/qt.qt6.683.linux_gcc_64/6.8.3-0-202503201345icu-linux-Rhel8.6-x86_64.7z",
+      "file": ".cache/ssg_p2f/downloads/icu-linux-Rhel8.6-x86_64.7z",
+      "sha1": "8c52041c897e4de0bc663821afe2efb39f259aa7",
+      "official_sha1": "8c52041c897e4de0bc663821afe2efb39f259aa7",
+      "sha256": "a2543496e1280c6fa348e0791def5026d5bde9e5749d9fc2244866ab0bee8aed",
+      "bytes": 9660623,
+      "validation_basis": "official Updates.xml package identity and official per-file SHA1 matched; local SHA256 also recorded"
+    }
+  ],
+  "tool_versions": {
+    "nasm": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/prefix/bin/nasm",
+      "sha256": "0f184d013100bc2fdcd39a05c28854fd1bb24df7f25626184c427db86f4a74ef",
+      "version": "NASM version 3.02 compiled on Oct 30 2026"
+    },
+    "x86_64-elf-gcc": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/prefix/bin/x86_64-elf-gcc",
+      "sha256": "5a9a497dbb2b1622d834f65fed71809dafef69e2087a19e6a3ca4c24db6cc5d4",
+      "version": "x86_64-elf-gcc (GCC) 16.2.0"
+    },
+    "x86_64-elf-g++": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/prefix/bin/x86_64-elf-g++",
+      "sha256": "38203e2e8e4714c55d3c7498d3e4509aeabd9a3b2069ec11d28ac6b6f64a710b",
+      "version": "x86_64-elf-g++ (GCC) 16.2.0"
+    },
+    "x86_64-elf-ld": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/prefix/bin/x86_64-elf-ld",
+      "sha256": "67260a9a124fe680722f097ce0d81c5fe3fad58b1cb565e74bdf9b1e2a78bccd",
+      "version": "GNU ld (GNU Binutils) 2.47.20260726"
+    }
+  },
+  "payload_tools": {
+    "x86_64-elf-g++": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/prefix/bin/x86_64-elf-g++",
+      "sha256": "38203e2e8e4714c55d3c7498d3e4509aeabd9a3b2069ec11d28ac6b6f64a710b",
+      "version": "x86_64-elf-g++ (GCC) 16.2.0"
+    },
+    "x86_64-elf-gcc": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/prefix/bin/x86_64-elf-gcc",
+      "sha256": "5a9a497dbb2b1622d834f65fed71809dafef69e2087a19e6a3ca4c24db6cc5d4",
+      "version": "x86_64-elf-gcc (GCC) 16.2.0"
+    },
+    "x86_64-elf-ar": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/prefix/bin/x86_64-elf-ar",
+      "sha256": "11c9ce6a2d0e586f7eba78a57e74c74669ce9548f27578e04cbe0ce954db9ed9",
+      "version": "GNU ar (GNU Binutils) 2.47.20260726"
+    }
+  },
+  "qemu": {
+    "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/qemu-prefix/bin/qemu-system-x86_64",
+    "sha256": "947e0e30bf1d6e0ef8c4349a3a25803bc363d785bf92d0b4cf3d603c8c9d91e1",
+    "version": "QEMU emulator version 11.1.2"
+  },
+  "host_qt": {
+    "tools": {
+      "moc": {
+        "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/host-qt-official/libexec/moc",
+        "sha256": "846426b3183ba5ebf0eaaf1967373417d9398785aa6c51519da0aafaa9fd9d59",
+        "returncode": 0,
+        "stdout": "moc 6.8.3\n",
+        "stderr": ""
+      },
+      "rcc": {
+        "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/host-qt-official/libexec/rcc",
+        "sha256": "00536d71e281a1a9d820d3cf3885fa4192ad0f04e4beaa6c074c0c75a1f6541b",
+        "returncode": 0,
+        "stdout": "rcc 6.8.3\n",
+        "stderr": ""
+      }
+    },
+    "icu_layout_symlinks": [
+      {
+        "symlink": ".cache/ssg_p2f/host-qt-official/lib/libicui18n.so.73.2",
+        "target": "../libicui18n.so.73.2"
+      },
+      {
+        "symlink": ".cache/ssg_p2f/host-qt-official/lib/libicuio.so.73",
+        "target": "../libicuio.so.73"
+      },
+      {
+        "symlink": ".cache/ssg_p2f/host-qt-official/lib/libicuuc.so.73",
+        "target": "../libicuuc.so.73"
+      },
+      {
+        "symlink": ".cache/ssg_p2f/host-qt-official/lib/libicutu.so.73.2",
+        "target": "../libicutu.so.73.2"
+      },
+      {
+        "symlink": ".cache/ssg_p2f/host-qt-official/lib/libicutest.so.73.2",
+        "target": "../libicutest.so.73.2"
+      },
+      {
+        "symlink": ".cache/ssg_p2f/host-qt-official/lib/libicutu.so.73",
+        "target": "../libicutu.so.73"
+      },
+      {
+        "symlink": ".cache/ssg_p2f/host-qt-official/lib/libicudata.so.73",
+        "target": "../libicudata.so.73"
+      },
+      {
+        "symlink": ".cache/ssg_p2f/host-qt-official/lib/libicudata.so.73.2",
+        "target": "../libicudata.so.73.2"
+      },
+      {
+        "symlink": ".cache/ssg_p2f/host-qt-official/lib/libicui18n.so.73",
+        "target": "../libicui18n.so.73"
+      },
+      {
+        "symlink": ".cache/ssg_p2f/host-qt-official/lib/libicuio.so.73.2",
+        "target": "../libicuio.so.73.2"
+      },
+      {
+        "symlink": ".cache/ssg_p2f/host-qt-official/lib/libicuuc.so.73.2",
+        "target": "../libicuuc.so.73.2"
+      },
+      {
+        "symlink": ".cache/ssg_p2f/host-qt-official/lib/libicutest.so.73",
+        "target": "../libicutest.so.73"
+      }
+    ]
+  },
+  "sdk_manifest_sha256": "5b8a384d3542f6b9d9631f3df7597248babd09b571b1ff2c5309ffbbab466bbe",
+  "system": {
+    "build_id": "8a3eac6ae1787d30",
+    "manifest_sha256": "9daea813ca8dabdbe488b3d9471e3ef72f12584c10d4ffb027f024d6c36b231b",
+    "legacy_images_available": true,
+    "xos_img_sha256": "c1f165e864f2f5cf2571587096b34cc30533f5de50888f2a7fb78848c458f8ba"
+  },
+  "artifacts": {
+    "build/ssg_p2f/payloads/session.elf": {
+      "sha256": "b087f415acb9dfbc588ddcbacebb40b06745e328d1ced0b75e731f57b5599122",
+      "bytes": 1413800
+    },
+    "build/ssg_p2f/payloads/consumer/ssg-consumer.elf": {
+      "sha256": "5d4d1bf9a3908c574ac7160496495ac0809e66ed7b53a5bccd06b4f7b5a64e57",
+      "bytes": 12714080
+    },
+    "build/ssg_p2f/payloads/notes/notes.elf": {
+      "sha256": "3ac5a0ea45f395daaaadd9b7c4ad2cd5e33e94408a9369eba99dc31598f500b4",
+      "bytes": 32111696
+    },
+    "build/ssg_p2f/payloads/browser/browser.elf": {
+      "sha256": "3203dc83b5319ec48127eb97fae32ec3bcdc13091ef0e158cbbc275977cf234a",
+      "bytes": 33391416
+    },
+    "build/ssg_p2f/oracle-browser/browser.elf": {
+      "sha256": "abdae8ddd43991b9e1bb4b9f736b07b1f9e00f4a3cd40cfb3649f6664aabb9f6",
+      "bytes": 33618480
+    }
+  },
+  "browser_receipts_rechecked": {
+    "build/ssg_p2f/payloads/browser/browser.receipt.json": {
+      "test_structure_oracle": false,
+      "input_count": 43,
+      "all_inputs_match": true,
+      "all_tools_match": true,
+      "receipt_sha256": "8e042c220e5941ad50b496a70f0e5f2e3a66a5d828cfe3f26c9a4a0a6ff690c9",
+      "elf_sha256": "3203dc83b5319ec48127eb97fae32ec3bcdc13091ef0e158cbbc275977cf234a"
+    },
+    "build/ssg_p2f/oracle-browser/browser.receipt.json": {
+      "test_structure_oracle": true,
+      "input_count": 43,
+      "all_inputs_match": true,
+      "all_tools_match": true,
+      "receipt_sha256": "9c45fe5dae60ec1546c971f7cfb24d75a19ef5b3718871b26dd8b66a07352674",
+      "elf_sha256": "abdae8ddd43991b9e1bb4b9f736b07b1f9e00f4a3cd40cfb3649f6664aabb9f6"
+    }
+  },
+  "qt_static_archives": {
+    "lib/libQt6BundledZLIB.a": "0c7e92f78b23866613839cf0a249f11f3034a01c6ee502e1e7c5dd34cb81ed71",
+    "lib/libQt6BundledHarfbuzz.a": "86440102cd9790e62dbd291e286798899d6a5b576507f602fb790a6d709527d3",
+    "lib/libQt6BundledPcre2.a": "27ab3b3ad82836c9924e4123acdca5fca020563bb9dfa0b740f36f8f1bff999b",
+    "lib/libQt6BundledFreetype.a": "8481797833394fa1d88aa065de41d8b42c91f96fb19dfb4ada37acdc531792aa",
+    "lib/libQt6Gui.a": "a36d8987a022b0a9be73c1786af63de7afce332dbafee2dc472bd9ecebc024ab",
+    "lib/libQt6Core.a": "3fd1f2b3020679c822548609b69a7b99fcf8410b996070f7cfdddbb345f25820",
+    "lib/libQt6Widgets.a": "5e4ce3480628be325f55915c90a18f4a3fc687c900fb607f0db5bdaa75fb62ba"
+  },
+  "session_receipt_note": "post_build_summary_derived_from_existing_payload_manifest",
+  "failure_and_recovery_records": [
+    ".cache/ssg_p2f/logs/nasm-sha.log",
+    ".cache/ssg_p2f/logs/host-qt-icu-layout.json",
+    ".cache/ssg_p2f/logs/qemu-initial-failure.json",
+    ".cache/ssg_p2f/logs/qemu-redownload.log",
+    ".cache/ssg_p2f/downloads/qemu-download-verified.json",
+    ".cache/ssg_p2f/logs/qemu-extraction-exclusions.json",
+    ".cache/ssg_p2f/logs/qemu-install.log",
+    ".cache/ssg_p2f/logs/qemu-firmware-audit.json",
+    ".cache/ssg_p2f/logs/qemu-source-integrity-repair.json",
+    ".cache/ssg_p2f/logs/qemu-install-retry.log",
+    ".cache/ssg_p2f/logs/qemu-install-retry-receipt.json"
+  ],
+  "archive": {
+    "path": "build-records.tar.gz",
+    "bytes": 1301727,
+    "sha256": "4479e50c90029ceba8c82ee4d706550766d1978c115f86ce64d795efbd106356",
+    "members": 151,
+    "uncompressed_member_bytes": 48583634
+  },
+  "redaction_file_count": 1,
+  "limitations": [
+    "Build success is not a guest/ABI qualification.",
+    "Qt compilation emitted warnings; full log is retained.",
+    "No dash adaptation or dash qualification is claimed.",
+    "No large executable, image, source archive or firmware blob is included.",
+    "Original transient extraction exception text was not separately saved; contemporaneous failure JSON and raw download/install logs are retained.",
+    "The cause of the QEMU archive and UEFI-file truncations was not established."
+  ]
+}

@@ -1,0 +1,235 @@
+{
+  "audit_kind": "Independent read-only audit of previously recorded real guest captures",
+  "not_a_new_guest_run": true,
+  "does_not_parse_source_HTML_to_generate_answers": true,
+  "production_validator_imported": false,
+  "auditor_script_sha256": "043ab8fbfc6a9336bd9d087bd4d92c8de0689d3c788d05edbc604942110b6fff",
+  "runs_root": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f_runs",
+  "results": [
+    {
+      "run": "p2d-oracle-02",
+      "input_bytes": 424,
+      "input_sha256": "37fff0e9d875d3196f3d547a4f65e0a329b1466623eac9d2a502554d18c41e0f",
+      "parent_pid": 10,
+      "provider_pid": 12,
+      "consumer_pid": 11,
+      "resources": [
+        [
+          130279,
+          2,
+          0
+        ],
+        [
+          130235,
+          3,
+          1
+        ],
+        [
+          130235,
+          3,
+          1
+        ]
+      ],
+      "input_version_checks": {
+        "image": "MATCH_CURRENT_FILE",
+        "session": "MATCH_CURRENT_FILE",
+        "browser": "MATCH_CURRENT_FILE",
+        "consumer": "MATCH_CURRENT_FILE",
+        "input": "MATCH_CURRENT_FILE",
+        "ssg_browser_pages_probe.py": "MATCH_RECORDED_CLEAN_GIT_BLOB:0a63648d53e4a7491320111f053f8b93882fbdab",
+        "ssg_browser_structure.py": "MATCH_CURRENT_FILE",
+        "browser_receipt": "MATCH_CURRENT_FILE",
+        "link_target": "MATCH_CURRENT_FILE",
+        "qemu": "MATCH_CURRENT_FILE"
+      },
+      "browser_receipt_inputs_checked": 43,
+      "status": "PASSED_SCOPED",
+      "qualification": "INDEPENDENT_AUDIT_OF_RECORDED_A1",
+      "node_count": 32,
+      "page_count": 5,
+      "page_sizes": [
+        8,
+        8,
+        8,
+        8,
+        0
+      ],
+      "structure_sha256": "5b4e296ce3415005a8482e31c0925d7a7d8a57009462f0a8ac32455785cd78e2",
+      "roles": {
+        "element": 10,
+        "text": 20,
+        "link": 2
+      },
+      "link_hit": {
+        "status": "PASSED_SCOPED",
+        "scope": "One recorded link click after paging only",
+        "node_id": "13",
+        "href": "start.html",
+        "point": [
+          56,
+          326
+        ],
+        "actual_screenshot_size": [
+          800,
+          600
+        ],
+        "qmp_records": 21,
+        "global_geometry": "NOT_QUALIFIED",
+        "during_paging_interaction": "NOT_TESTED"
+      },
+      "gate_A_overall": "NOT_QUALIFIED",
+      "gate_B": "NOT_RUN",
+      "gate_C": "NOT_RUN",
+      "performance": "NOT_QUALIFIED"
+    },
+    {
+      "run": "p2f-oracle-01",
+      "input_bytes": 1935,
+      "input_sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f",
+      "parent_pid": 10,
+      "provider_pid": 12,
+      "consumer_pid": 11,
+      "resources": [
+        [
+          130279,
+          2,
+          0
+        ],
+        [
+          130235,
+          3,
+          1
+        ],
+        [
+          130235,
+          3,
+          1
+        ]
+      ],
+      "input_version_checks": {
+        "image": "MATCH_CURRENT_FILE",
+        "session": "MATCH_CURRENT_FILE",
+        "browser": "MATCH_CURRENT_FILE",
+        "consumer": "MATCH_CURRENT_FILE",
+        "input": "MATCH_CURRENT_FILE",
+        "ssg_browser_pages_probe.py": "MATCH_RECORDED_CLEAN_GIT_BLOB:0a63648d53e4a7491320111f053f8b93882fbdab",
+        "ssg_browser_structure.py": "MATCH_CURRENT_FILE",
+        "browser_receipt": "MATCH_CURRENT_FILE",
+        "qemu": "MATCH_CURRENT_FILE"
+      },
+      "browser_receipt_inputs_checked": 43,
+      "status": "PASSED_SCOPED",
+      "qualification": "INDEPENDENT_AUDIT_OF_RECORDED_A1",
+      "node_count": 267,
+      "page_count": 34,
+      "page_sizes": [
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        3
+      ],
+      "structure_sha256": "faaf0e1c343187cfb73504d0463484b3963b25c344debe95ffa729394424aef1",
+      "roles": {
+        "element": 52,
+        "text": 206,
+        "link": 9
+      },
+      "link_hit": {
+        "status": "NOT_RUN",
+        "scope": "No link qualification reported for this capture"
+      },
+      "gate_A_overall": "NOT_QUALIFIED",
+      "gate_B": "NOT_RUN",
+      "gate_C": "NOT_RUN",
+      "performance": "NOT_QUALIFIED"
+    },
+    {
+      "run": "text-limit-01",
+      "input_bytes": 1131,
+      "input_sha256": "8825dc929c4ffefcd3e6fed34d6cada3aeceb7bee869ba3773f053975211912e",
+      "parent_pid": 10,
+      "provider_pid": 12,
+      "consumer_pid": 11,
+      "resources": [
+        [
+          130279,
+          2,
+          0
+        ],
+        [
+          130235,
+          3,
+          1
+        ],
+        [
+          130235,
+          3,
+          1
+        ]
+      ],
+      "input_version_checks": {
+        "image": "MATCH_CURRENT_FILE",
+        "session": "MATCH_CURRENT_FILE",
+        "browser": "MATCH_CURRENT_FILE",
+        "consumer": "MATCH_CURRENT_FILE",
+        "input": "MATCH_CURRENT_FILE",
+        "ssg_browser_pages_probe.py": "MATCH_RECORDED_CLEAN_GIT_BLOB:0a63648d53e4a7491320111f053f8b93882fbdab",
+        "ssg_browser_structure.py": "MATCH_CURRENT_FILE",
+        "browser_receipt": "MATCH_CURRENT_FILE",
+        "qemu": "MATCH_CURRENT_FILE"
+      },
+      "browser_receipt_inputs_checked": 43,
+      "status": "PASSED_SCOPED",
+      "qualification": "INDEPENDENT_AUDIT_OF_RECORDED_RESOURCE_REJECTION",
+      "oracle_node_count": 7,
+      "oversized_text_nodes": [
+        {
+          "path": "0/1/0/0",
+          "ordinal": 5,
+          "utf16_units": 1025
+        }
+      ],
+      "received_nodes": 0,
+      "final_response": "RESOURCE_LIMIT",
+      "structure_completeness": "NOT_QUALIFIED",
+      "gate_A_overall": "NOT_QUALIFIED"
+    },
+    {
+      "run": "p2d-oracle-01",
+      "status": "FAILED_ATTEMPT_PRESERVED",
+      "guest_boot_observed": false,
+      "serial_bytes": 0,
+      "qemu_error": "qemu-system-x86_64: -qmp unix:/tmp/xos_eswhft5c/qmp.sock,server=on,wait=off: Failed to bind socket to /tmp/xos_eswhft5c/qmp.sock: Operation not permitted"
+    }
+  ]
+}

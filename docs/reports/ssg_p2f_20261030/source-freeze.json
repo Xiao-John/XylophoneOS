@@ -1,0 +1,38 @@
+{
+  "base_commit": "9a739c7052d66dd75c0a0aceb807b0e4aa2fc16f",
+  "implementation_commit": "0a63648d53e4a7491320111f053f8b93882fbdab",
+  "implementation_tree": "058657a521988be8f2d5ec8535e70359d5290ed7",
+  "changed_paths": [
+    "docs/contracts/ssg_p2f_structure_oracle.md",
+    "scripts/build_threading_newlib.py",
+    "scripts/build_threading_sdk.py",
+    "src/ports/aurora_browser/build.py",
+    "src/ports/aurora_browser/main.cpp",
+    "src/ports/aurora_browser/test_structure_oracle.hpp",
+    "src/ports/aurora_browser/view.hpp",
+    "src/user/apps/ssg_consumer.cpp",
+    "tests/fixtures/ssg_browser/p2f.html",
+    "tests/fixtures/ssg_browser/p2f_text_limit.html",
+    "tests/ssg_browser_pages_probe.py",
+    "tests/ssg_browser_structure.py",
+    "tests/ssg_browser_structure_test.py"
+  ],
+  "source_sha256": {
+    "docs/contracts/ssg_p2f_structure_oracle.md": "52af22e2937d1db45153472e288c19c227f4e68e1f57b210a45dfc5441becec6",
+    "scripts/build_threading_newlib.py": "d2c976af8f11d66d2b4e0915d2f9c12340ef660ebee45811b905431f97353182",
+    "scripts/build_threading_sdk.py": "a93664c2fe69db5a47f0583472bd3c71d543d3505e31905cd6eb62489c23cbae",
+    "src/ports/aurora_browser/build.py": "b27a1ee19fc3331a9560a3a685887f7c4b2d40719907fed17c80eb7021d7c532",
+    "src/ports/aurora_browser/main.cpp": "dc5232d5c806dde514b1894e4c7750447a1b26b16ff65f7bd1c741aef155ecd9",
+    "src/ports/aurora_browser/test_structure_oracle.hpp": "1d1628ab15561dd7a6e25cdae8ccea0e99d74b13abf6f6242aecab629867b027",
+    "src/ports/aurora_browser/view.hpp": "888c5ba693c8e51795435041dfa03be20f97f80330ab94fe700c288ba7e0fc54",
+    "src/user/apps/ssg_consumer.cpp": "7dca94b937071ed33451a0b123a151929f8685faa43f70154cf5698ecbd6e18f",
+    "tests/fixtures/ssg_browser/p2f.html": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f",
+    "tests/fixtures/ssg_browser/p2f_text_limit.html": "8825dc929c4ffefcd3e6fed34d6cada3aeceb7bee869ba3773f053975211912e",
+    "tests/ssg_browser_pages_probe.py": "e5380a0db5a0aeae6a5e6be187a73d6bdc915dbead6af877903d5b98e285c605",
+    "tests/ssg_browser_structure.py": "d1dda66a4cdc6e0429958539c758632c13d44f41f35a2b6b14fc332299c809e1",
+    "tests/ssg_browser_structure_test.py": "e3dfac946f2f6dbbfb0dd9f38c634c4f6835cd9ddc897d4c4bd9231efd31bacb"
+  },
+  "frozen_original_fixture_sha256": "37fff0e9d875d3196f3d547a4f65e0a329b1466623eac9d2a502554d18c41e0f",
+  "protected_paths_changed": [],
+  "guest_qualification": "NOT_RUN_AT_SOURCE_FREEZE"
+}

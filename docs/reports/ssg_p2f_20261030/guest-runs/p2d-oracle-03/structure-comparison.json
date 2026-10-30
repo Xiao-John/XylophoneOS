@@ -1,0 +1,531 @@
+{
+  "status": "PASSED_SCOPED",
+  "qualification": "A1_STRUCTURE_AND_TEXT",
+  "scope": "one fixed loaded liteHTML document; unfiltered full tree; guest IPC capture",
+  "node_count": 32,
+  "page_node_counts": [
+    8,
+    8,
+    8,
+    8,
+    0
+  ],
+  "structure_sha256": "5b4e296ce3415005a8482e31c0925d7a7d8a57009462f0a8ac32455785cd78e2",
+  "canonical_format": "netstring-utf8-v1",
+  "input_sha256": "37fff0e9d875d3196f3d547a4f65e0a329b1466623eac9d2a502554d18c41e0f",
+  "processes": {
+    "parent_pid": 10,
+    "provider_pid": 12,
+    "consumer_pid": 11,
+    "source_instance": "2c8ed27edd5ac0835ba6e486387eccc9",
+    "source_epoch": "51539607555",
+    "source_revision": "5"
+  },
+  "checks": [
+    "independent_before_after_oracles_agree",
+    "input_and_source_bound",
+    "strict_complete_IPC_frames",
+    "contiguous_single_use_continuation",
+    "all_expected_nodes_no_extra_or_duplicate",
+    "unique_root",
+    "parents_precede_children",
+    "parent_relationships_and_sibling_order",
+    "exact_roles_tags_text_and_href",
+    "independent_terminal_count",
+    "Consumer_completion_and_both_child_exits"
+  ],
+  "comparison": [
+    {
+      "status": "MATCH",
+      "consumerId": "1",
+      "consumerParent": "0",
+      "path": "0",
+      "parentPath": "",
+      "ordinal": 0,
+      "childIndex": 0,
+      "childCount": 2,
+      "tag": "html",
+      "role": "element"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "2",
+      "consumerParent": "1",
+      "path": "0/0",
+      "parentPath": "0",
+      "ordinal": 1,
+      "childIndex": 0,
+      "childCount": 2,
+      "tag": "head",
+      "role": "element"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "3",
+      "consumerParent": "2",
+      "path": "0/0/0",
+      "parentPath": "0/0",
+      "ordinal": 2,
+      "childIndex": 0,
+      "childCount": 3,
+      "tag": "title",
+      "role": "element"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "4",
+      "consumerParent": "3",
+      "path": "0/0/0/0",
+      "parentPath": "0/0/0",
+      "ordinal": 3,
+      "childIndex": 0,
+      "childCount": 0,
+      "tag": "",
+      "role": "text",
+      "text": "SSG"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "5",
+      "consumerParent": "3",
+      "path": "0/0/0/1",
+      "parentPath": "0/0/0",
+      "ordinal": 4,
+      "childIndex": 1,
+      "childCount": 0,
+      "tag": "",
+      "role": "text",
+      "text": " "
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "6",
+      "consumerParent": "3",
+      "path": "0/0/0/2",
+      "parentPath": "0/0/0",
+      "ordinal": 5,
+      "childIndex": 2,
+      "childCount": 0,
+      "tag": "",
+      "role": "text",
+      "text": "fixture"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "7",
+      "consumerParent": "2",
+      "path": "0/0/1",
+      "parentPath": "0/0",
+      "ordinal": 6,
+      "childIndex": 1,
+      "childCount": 0,
+      "tag": "style",
+      "role": "element"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "8",
+      "consumerParent": "1",
+      "path": "0/1",
+      "parentPath": "0",
+      "ordinal": 7,
+      "childIndex": 1,
+      "childCount": 6,
+      "tag": "body",
+      "role": "element"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "9",
+      "consumerParent": "8",
+      "path": "0/1/0",
+      "parentPath": "0/1",
+      "ordinal": 8,
+      "childIndex": 0,
+      "childCount": 3,
+      "tag": "h1",
+      "role": "element"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "10",
+      "consumerParent": "9",
+      "path": "0/1/0/0",
+      "parentPath": "0/1/0",
+      "ordinal": 9,
+      "childIndex": 0,
+      "childCount": 0,
+      "tag": "",
+      "role": "text",
+      "text": "Visible"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "11",
+      "consumerParent": "9",
+      "path": "0/1/0/1",
+      "parentPath": "0/1/0",
+      "ordinal": 10,
+      "childIndex": 1,
+      "childCount": 0,
+      "tag": "",
+      "role": "text",
+      "text": " "
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "12",
+      "consumerParent": "9",
+      "path": "0/1/0/2",
+      "parentPath": "0/1/0",
+      "ordinal": 11,
+      "childIndex": 2,
+      "childCount": 0,
+      "tag": "",
+      "role": "text",
+      "text": "Alpha"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "13",
+      "consumerParent": "8",
+      "path": "0/1/1",
+      "parentPath": "0/1",
+      "ordinal": 12,
+      "childIndex": 1,
+      "childCount": 5,
+      "tag": "a",
+      "role": "link",
+      "href": "start.html"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "14",
+      "consumerParent": "13",
+      "path": "0/1/1/0",
+      "parentPath": "0/1/1",
+      "ordinal": 13,
+      "childIndex": 0,
+      "childCount": 0,
+      "tag": "",
+      "role": "text",
+      "text": "Native"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "15",
+      "consumerParent": "13",
+      "path": "0/1/1/1",
+      "parentPath": "0/1/1",
+      "ordinal": 14,
+      "childIndex": 1,
+      "childCount": 0,
+      "tag": "",
+      "role": "text",
+      "text": " "
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "16",
+      "consumerParent": "13",
+      "path": "0/1/1/2",
+      "parentPath": "0/1/1",
+      "ordinal": 15,
+      "childIndex": 2,
+      "childCount": 0,
+      "tag": "",
+      "role": "text",
+      "text": "link"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "17",
+      "consumerParent": "13",
+      "path": "0/1/1/3",
+      "parentPath": "0/1/1",
+      "ordinal": 16,
+      "childIndex": 3,
+      "childCount": 0,
+      "tag": "",
+      "role": "text",
+      "text": " "
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "18",
+      "consumerParent": "13",
+      "path": "0/1/1/4",
+      "parentPath": "0/1/1",
+      "ordinal": 17,
+      "childIndex": 4,
+      "childCount": 0,
+      "tag": "",
+      "role": "text",
+      "text": "target"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "19",
+      "consumerParent": "8",
+      "path": "0/1/2",
+      "parentPath": "0/1",
+      "ordinal": 18,
+      "childIndex": 2,
+      "childCount": 1,
+      "tag": "div",
+      "role": "element"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "20",
+      "consumerParent": "19",
+      "path": "0/1/2/0",
+      "parentPath": "0/1/2",
+      "ordinal": 19,
+      "childIndex": 0,
+      "childCount": 1,
+      "tag": "p",
+      "role": "element"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "21",
+      "consumerParent": "20",
+      "path": "0/1/2/0/0",
+      "parentPath": "0/1/2/0",
+      "ordinal": 20,
+      "childIndex": 0,
+      "childCount": 0,
+      "tag": "",
+      "role": "text",
+      "text": "HIDDEN_SECRET_FIXTURE"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "22",
+      "consumerParent": "8",
+      "path": "0/1/3",
+      "parentPath": "0/1",
+      "ordinal": 21,
+      "childIndex": 3,
+      "childCount": 0,
+      "tag": "div",
+      "role": "element"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "23",
+      "consumerParent": "8",
+      "path": "0/1/4",
+      "parentPath": "0/1",
+      "ordinal": 22,
+      "childIndex": 4,
+      "childCount": 5,
+      "tag": "p",
+      "role": "element"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "24",
+      "consumerParent": "23",
+      "path": "0/1/4/0",
+      "parentPath": "0/1/4",
+      "ordinal": 23,
+      "childIndex": 0,
+      "childCount": 0,
+      "tag": "",
+      "role": "text",
+      "text": "Below"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "25",
+      "consumerParent": "23",
+      "path": "0/1/4/1",
+      "parentPath": "0/1/4",
+      "ordinal": 24,
+      "childIndex": 1,
+      "childCount": 0,
+      "tag": "",
+      "role": "text",
+      "text": " "
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "26",
+      "consumerParent": "23",
+      "path": "0/1/4/2",
+      "parentPath": "0/1/4",
+      "ordinal": 25,
+      "childIndex": 2,
+      "childCount": 0,
+      "tag": "",
+      "role": "text",
+      "text": "viewport"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "27",
+      "consumerParent": "23",
+      "path": "0/1/4/3",
+      "parentPath": "0/1/4",
+      "ordinal": 26,
+      "childIndex": 3,
+      "childCount": 0,
+      "tag": "",
+      "role": "text",
+      "text": " "
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "28",
+      "consumerParent": "23",
+      "path": "0/1/4/4",
+      "parentPath": "0/1/4",
+      "ordinal": 27,
+      "childIndex": 4,
+      "childCount": 0,
+      "tag": "",
+      "role": "text",
+      "text": "omega"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "29",
+      "consumerParent": "8",
+      "path": "0/1/5",
+      "parentPath": "0/1",
+      "ordinal": 28,
+      "childIndex": 5,
+      "childCount": 3,
+      "tag": "a",
+      "role": "link",
+      "href": "garden.html"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "30",
+      "consumerParent": "29",
+      "path": "0/1/5/0",
+      "parentPath": "0/1/5",
+      "ordinal": 29,
+      "childIndex": 0,
+      "childCount": 0,
+      "tag": "",
+      "role": "text",
+      "text": "Bottom"
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "31",
+      "consumerParent": "29",
+      "path": "0/1/5/1",
+      "parentPath": "0/1/5",
+      "ordinal": 30,
+      "childIndex": 1,
+      "childCount": 0,
+      "tag": "",
+      "role": "text",
+      "text": " "
+    },
+    {
+      "status": "MATCH",
+      "consumerId": "32",
+      "consumerParent": "29",
+      "path": "0/1/5/2",
+      "parentPath": "0/1/5",
+      "ordinal": 31,
+      "childIndex": 2,
+      "childCount": 0,
+      "tag": "",
+      "role": "text",
+      "text": "link"
+    }
+  ],
+  "oracles": [
+    {
+      "sequence": 1,
+      "bytes": 4294,
+      "sha256": "93819ee70cb50446316fe6d9785a9dc6baa808523224cc1811c18e65b3cbe4d1",
+      "phase": "before"
+    },
+    {
+      "sequence": 2,
+      "bytes": 4293,
+      "sha256": "0db4379cd71c9ba8c69814554f53c93677294d718eab42ee14cfcfca251f96e7",
+      "phase": "after"
+    }
+  ],
+  "frames": [
+    {
+      "direction": "REQ",
+      "sequence": 1,
+      "bytes": 36,
+      "sha256": "2a9eb5bb3192ea6a92c6ce078369f49690a962d242a198d63f51b2971cafc97e"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 1,
+      "bytes": 3724,
+      "sha256": "def27400e8edf8c725da821da1eefec765d3ff3931253266496c469f53ff8167"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 2,
+      "bytes": 101,
+      "sha256": "4aace0febbbfcb71aca04d2d5d26060044b9b9f687cf0be593b0915906032fe3"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 2,
+      "bytes": 4208,
+      "sha256": "0ab740ad50725042499f16aee5d9f917adf5d06da2c4054f9fa9ed1234106504"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 3,
+      "bytes": 101,
+      "sha256": "68b1f5caa73ea03b82cd2404ce98783b091bb77590c3a185dd01a608a07eafda"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 3,
+      "bytes": 3882,
+      "sha256": "c101700b723c984e8427b34aa637481d8439cf2a06a2d940324a80398a557ca6"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 4,
+      "bytes": 101,
+      "sha256": "f8fa109d73dff10a3534babfd6d4e9229eecab83437da6d5a727c3bd1db41201"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 4,
+      "bytes": 4097,
+      "sha256": "3ca0e13aff70e82bd0972102dfa427f8b1e97cde6710f50b6a7503c410c474c5"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 5,
+      "bytes": 101,
+      "sha256": "f82190929e3098b03ffa7a4b15396e70e791f9fa60ca944b6b386899cf14a0f9"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 5,
+      "bytes": 455,
+      "sha256": "3f09a5fccf319e5511332f31fab26e0fe13d81554cf108495e85f21419be76af"
+    }
+  ],
+  "rendered_fragments": {
+    "status": "NOT_QUALIFIED",
+    "provider_claimed_incomplete_nodes": 0,
+    "nodes_without_boolean_completeness": 0
+  },
+  "viewport_visibility": "NOT_QUALIFIED",
+  "screen_occlusion": "NOT_TESTED",
+  "gate_A_overall": "NOT_QUALIFIED",
+  "gate_B": "NOT_RUN",
+  "gate_C": "NOT_RUN"
+}

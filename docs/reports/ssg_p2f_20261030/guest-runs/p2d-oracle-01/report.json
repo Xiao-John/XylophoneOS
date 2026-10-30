@@ -1,0 +1,99 @@
+{
+  "status": "FAILED",
+  "qualification": "NOT_RUN",
+  "gate_A_overall": "NOT_QUALIFIED",
+  "gate_B": "NOT_RUN",
+  "gate_C": "NOT_RUN",
+  "inputs": {
+    "image": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/system/xos.img",
+      "sha256": "c1f165e864f2f5cf2571587096b34cc30533f5de50888f2a7fb78848c458f8ba"
+    },
+    "session": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/payloads/session.elf",
+      "sha256": "b087f415acb9dfbc588ddcbacebb40b06745e328d1ced0b75e731f57b5599122"
+    },
+    "browser": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/oracle-browser/browser.elf",
+      "sha256": "abdae8ddd43991b9e1bb4b9f736b07b1f9e00f4a3cd40cfb3649f6664aabb9f6"
+    },
+    "consumer": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/payloads/consumer/ssg-consumer.elf",
+      "sha256": "5d4d1bf9a3908c574ac7160496495ac0809e66ed7b53a5bccd06b4f7b5a64e57"
+    },
+    "input": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/tests/fixtures/ssg_browser/p2d.html",
+      "sha256": "37fff0e9d875d3196f3d547a4f65e0a329b1466623eac9d2a502554d18c41e0f"
+    },
+    "ssg_browser_pages_probe.py": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/tests/ssg_browser_pages_probe.py",
+      "sha256": "e5380a0db5a0aeae6a5e6be187a73d6bdc915dbead6af877903d5b98e285c605"
+    },
+    "ssg_browser_structure.py": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/tests/ssg_browser_structure.py",
+      "sha256": "d1dda66a4cdc6e0429958539c758632c13d44f41f35a2b6b14fc332299c809e1"
+    },
+    "browser_receipt": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/oracle-browser/browser.receipt.json",
+      "sha256": "9c45fe5dae60ec1546c971f7cfb24d75a19ef5b3718871b26dd8b66a07352674"
+    },
+    "link_target": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f_runs/p2d-oracle-01/link-target.html",
+      "sha256": "b1b17e71db2689f74e30c7e8b0f03106022ec79deea569d9e7507a11ea0f30e4"
+    },
+    "qemu": {
+      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/qemu-prefix/bin/qemu-system-x86_64",
+      "sha256": "947e0e30bf1d6e0ef8c4349a3a25803bc363d785bf92d0b4cf3d603c8c9d91e1",
+      "version": "QEMU emulator version 11.1.2"
+    }
+  },
+  "geometry": {
+    "status": "NOT_RUN"
+  },
+  "performance": "NOT_QUALIFIED",
+  "image_format": "floppy",
+  "source_checkout": {
+    "head": "0a63648d53e4a7491320111f053f8b93882fbdab",
+    "tracked_changes": [],
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "binding": "Browser ELF and current Browser source hashes are checked against browser.receipt.json"
+  },
+  "qemu_command": [
+    "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/qemu-prefix/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/tmp/xos_p2f_j9od6v0d/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/tmp/xos_eswhft5c/qmp.sock,server=on,wait=off"
+  ],
+  "error": "AssertionError('ssg_p2f_runs/p2d-oracle-01/qemu: QEMU exited 1')",
+  "serial_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "frames": [],
+  "oracles": []
+}

@@ -1,0 +1,74 @@
+{
+  "archive": "capture.tar.gz",
+  "archive_sha256": "f6ae9c0b82b2c7874d118607d5c233270c1661109bc08ed7e2336030fb2758f8",
+  "archive_bytes": 1192157,
+  "root": "large-regression-01",
+  "entries": [
+    {
+      "path": "bottom.json",
+      "bytes": 17201,
+      "sha256": "cb07784f072401d76cf1d957c6c8783ac499e2367f0a8c021d4f392d5f79a192"
+    },
+    {
+      "path": "browser-dom-first.png",
+      "bytes": 243812,
+      "sha256": "fddf34c7806af1c452324e069265c17ed9400eb8e7d0fde25c9e506e2b64bbfa"
+    },
+    {
+      "path": "browser-dom-first.ppm",
+      "bytes": 1440015,
+      "sha256": "1c594d22eb3639e0beeb359535855d20c26ee5ff3115f9fe117938f7e8498aa1"
+    },
+    {
+      "path": "browser-dom-reload.png",
+      "bytes": 242795,
+      "sha256": "1fa048d4305c3a5fe9a87ca85163f681bbf18993128d5a1e821e310b275673dc"
+    },
+    {
+      "path": "browser-dom-reload.ppm",
+      "bytes": 1440015,
+      "sha256": "123fc8b30e5d3c2f71ee0bc18b54208931f1a2ebec60094adc6801d1e69a4e47"
+    },
+    {
+      "path": "first.json",
+      "bytes": 15636,
+      "sha256": "da5ad85b51be6857c1cb040198648a4887a984753e1413d3c7b1f20cfea8fd57"
+    },
+    {
+      "path": "guest_qemu.log",
+      "bytes": 71,
+      "sha256": "67087e1ea23e66ad135b9ccfbf23b71e5fa19ace380fb1678f873571bd6386c2"
+    },
+    {
+      "path": "guest_serial.log",
+      "bytes": 94534,
+      "sha256": "f8d3a16fd8ba1604804ac8850e47f77f25ad17799dc2cf09e7da22f244ae1f8c"
+    },
+    {
+      "path": "reload-diff.json",
+      "bytes": 105,
+      "sha256": "3681a7419abafe0618968212d863fb894ed22f0f17d4f76dc186351534052844"
+    },
+    {
+      "path": "reload.json",
+      "bytes": 17206,
+      "sha256": "e7fec9cb396e63395fb5df4d0591a77b76e631c6f8e89dd449db8b084c63e5ea"
+    },
+    {
+      "path": "report.json",
+      "bytes": 2186,
+      "sha256": "4b94d8c08887e7ce78d7f5431ee91c04a7e72daa645843bcc3f0c3a150cfd14e"
+    },
+    {
+      "path": "serial.log",
+      "bytes": 94534,
+      "sha256": "f8d3a16fd8ba1604804ac8850e47f77f25ad17799dc2cf09e7da22f244ae1f8c"
+    },
+    {
+      "path": "runner.log",
+      "bytes": 364,
+      "sha256": "cc522a52f2eb7d724810e6241c14381ff068af39ce300aa0dbac12e0bcca110c"
+    }
+  ],
+  "note": "Complete original run files, including exact IPC JSON, raw serial, PNG/PPM, receipt and explicitly reconstructed .wire headers, are preserved inside this archive. Selected JSON/log files are also exposed alongside for review."
+}

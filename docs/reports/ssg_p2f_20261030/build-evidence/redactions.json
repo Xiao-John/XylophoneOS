@@ -1,0 +1,22 @@
+{
+  "method": "Credential-bearing HTTP headers, URL credentials/query fields, token patterns and private-key markers were scanned; only exported copies may change.",
+  "original_files_modified": false,
+  "redacted_files": [
+    {
+      "path": ".cache/ssg_p2f/logs/qemu-head.log",
+      "changes": [
+        {
+          "kind": "response_or_auth_header",
+          "field": "x-77-nzt"
+        },
+        {
+          "kind": "response_or_auth_header",
+          "field": "x-77-nzt-ray"
+        }
+      ],
+      "original_sha256": "18f35ab0d1402e494a94cb53b5c484aa2c3addcc02b041d95e6a0eaf4ccbd012",
+      "exported_sha256": "807443de0bd2be45db1980b549654bfe3c3c97bf9456ff21e52bf1f456a6bd08"
+    }
+  ],
+  "note": "The two x-77-nzt CDN response fields are conservatively redacted; they are not asserted to be account credentials."
+}

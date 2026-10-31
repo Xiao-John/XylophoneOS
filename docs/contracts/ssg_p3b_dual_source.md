@@ -72,9 +72,9 @@ source-scoped Diff distinguishes `CHANGED`, `UNCHANGED`, `REPLACED`,
 using a desktop-wide numeric ID. Observation timestamps and Browser pagination
 session IDs are not by themselves content changes. The result remains a
 comparison of sequential per-source observations, not an atomic desktop event.
-Changing observation scope or presentation yields `UNKNOWN`. Matching Browser
-samples with incomplete fragment geometry also yield `UNKNOWN`; a known change
-may still be reported while coverage remains incomplete.
+Changing observation scope or presentation yields `UNKNOWN`. Browser samples
+with incomplete fragment geometry also yield `UNKNOWN`; an unavailable earlier
+sample cannot by itself establish that a later refusal is a permission change.
 
 ## Bounds and lifecycle
 

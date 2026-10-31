@@ -31,6 +31,9 @@ def check_source_metadata(source):
 
 
 def check_wiring(serial, report, sources):
+    require(report.get('status') == 'OBSERVED_PENDING_INDEPENDENT_VERIFICATION', 'guest runner did not complete successfully')
+    expected_code = 1 if report.get('case') == 'notes-denied' else 0
+    require(report.get('supervisor_exit') == {'kind': 'exited', 'code': expected_code}, 'supervisor exit status was not expected')
     pids = report['processes']
     require(len(set(pids.values())) == 3, 'process roles are not distinct')
     for slot in ('browser', 'notes'):

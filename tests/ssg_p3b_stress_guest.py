@@ -98,7 +98,9 @@ def main():
                     stale = next((line.decode() for line in output.splitlines() if line.startswith(b'P3B_STALE_TOKEN_REFUSED ')), None)
                     reclaimed = [int(x) for x in re.findall(rb'\[task\] event=reclaimed pid=(\d+)', output)]
                     reclaim_order = [slot for pid in reclaimed for slot in ('browser', 'notes') if pid == pids[slot]]
+                    supervisor_exit = {'kind': wait[1].decode(), 'code': int(wait[2])} if wait else None
                     case = {'status': 'OBSERVED_PENDING_INDEPENDENT_VERIFICATION', 'case': 'baseline', 'processes': pids,
+                            'supervisor_exit': supervisor_exit,
                             'inputs': inputs, 'resources_restored': active == after, 'source_exits': exits}
                     (case_dir / 'serial.log').write_bytes(output)
                     (case_dir / 'report.json').write_text(json.dumps(case, indent=2) + '\n')
@@ -109,7 +111,6 @@ def main():
                     clean_exits = len(exits) == 2 and all('reaped=1 cancelled=0 outcome=1 code=0' in line for line in exits)
                     samples = [line.decode() for line in output.splitlines() if line.startswith((b'EDITOR_SAMPLE ', b'BROWSER_SAMPLE '))]
                     has_thread_samples = any(x.startswith('EDITOR_SAMPLE ') for x in samples) and any(x.startswith('BROWSER_SAMPLE ') for x in samples)
-                    supervisor_exit = {'kind': wait[1].decode(), 'code': int(wait[2])} if wait else None
                     shutdown_result = {'elapsed_ns': int(shutdown[1]), 'clean': shutdown[2] == b'1'} if shutdown else None
                     good = (verified and active == after and clean_exits and has_thread_samples and
                             supervisor_exit == {'kind': 'exited', 'code': 0} and shutdown_result is not None and shutdown_result['clean'] and

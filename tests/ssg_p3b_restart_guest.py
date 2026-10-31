@@ -81,7 +81,10 @@ def main():
                 if not identity:
                     raise AssertionError('missing process identities')
                 pids = dict(zip(('supervisor', 'browser', 'notes'), map(int, identity.groups())))
-                case = {'case': 'baseline' if i == 1 else 'old-instance', 'processes': pids,
+                wait = re.search(rb'\[wait\] pid=' + str(pids['supervisor']).encode() + rb' kind=(\w+) code=(-?\d+)', output)
+                supervisor_exit = {'kind': wait[1].decode(), 'code': int(wait[2])} if wait else None
+                case = {'status': 'OBSERVED_PENDING_INDEPENDENT_VERIFICATION', 'case': 'baseline' if i == 1 else 'old-instance', 'processes': pids,
+                        'supervisor_exit': supervisor_exit,
                         'inputs': {name: {'sha256': sha(getattr(a, name))} for name in ('image', 'supervisor', 'browser', 'notes', 'input')},
                         'resources_restored': active == after,
                         'source_exits': [line.decode() for line in output.splitlines() if line.startswith(b'P3B_SOURCE_EXIT ')]}

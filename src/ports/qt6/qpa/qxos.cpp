@@ -262,7 +262,7 @@ public:
 };
 class integration final : public QPlatformIntegration {
     screen *screen_;
-    mutable fonts fonts;
+    mutable ::fonts fonts;
 public:
     integration() {
         xos::display_mode mode{};

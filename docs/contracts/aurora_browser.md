@@ -51,7 +51,12 @@ property grammar intentionally excludes features without corresponding callbacks
 | Process | existing XOS heap/page/4-thread ceiling; one QPA input thread; sampled pages/threads recorded, absolute allocation peak and long stress not measured |
 
 `bad_alloc`/resource-limit exceptions become an engine error; the layout guard is
-reset on every path so later valid navigation can recover. Rejected images are
+reset on every path so later valid navigation can recover. Stylesheet admission
+failures are reported as stylesheet failures, not as engine allocation errors: a
+rejected in-block or linked stylesheet reports `Stylesheet rejected`, the
+linked-stylesheet import cap reports `Stylesheet import quota exceeded`, and only
+genuine allocation/resource-limit failures report
+`Engine allocation or resource budget failed`. Rejected images are
 omitted and logged; pages do not gain device rights. There is no complete fuzz,
 security audit or resource-OOM guarantee for arbitrary hostile Web content. The
 small admission subset is an engineering constraint, not a general HTML sanitizer.
@@ -76,5 +81,13 @@ Evidence, measured scope and failed iterations are in
 
 Navigation loads a candidate view before replacing the current one. If parsing, stylesheet
 loading or initial layout fails, the current page, scroll, address, history and active tab
-remain in place; the status reports the error. This behavior is implemented but its new
-interactive guest regression has not yet been run on the merged input.
+remain in place; the status reports the error. This behavior is implemented
+([0096](../work_log/0096_browser_review_fixes.md)) and its interactive guest regression —
+failed load followed by Back/Forward, scroll restore and tab switches — has actually run
+and PASSED on the 2026-10-30 combined tree
+(`../reports/aurora_g3_review_20261030/combined/browser-negative/report.json`, check
+`failed_engine_load_preserves_page_history_scroll_and_tabs`) and again on the post-#39
+branch tree on 2026-10-31
+([0148](../work_log/0148_c2_c3_debts_and_localpilot_rules.md)). Not measured here: the16-entry
+per-tab history cap and the4-tab cap are implemented but no suite drives16 history
+entries or4 populated tabs, and suites are not re-run after every unrelated merge.

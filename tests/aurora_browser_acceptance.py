@@ -3,7 +3,9 @@
 """Real XOS liteHTML browser: PS/2 navigation, hostile local input and teardown."""
 import argparse,hashlib,json,re,sys,tempfile
 from pathlib import Path
+from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT/'scripts'),str(ROOT/'tests')]
+import boot_smoke
 from boot_smoke import Guest
 from task_smoke import send_bytes,pump
 from process_smoke import command,resources
@@ -11,10 +13,13 @@ from make_work_disk import create_fat32
 from work_disk import transfer
 p=argparse.ArgumentParser()
 for n in ('image','payload','output'):p.add_argument('--'+n,type=Path,required=True)
-p.add_argument('--case',choices=['interactive','negative','lifecycle'],default='interactive');a=p.parse_args();out=a.output.resolve();out.mkdir(parents=True,exist_ok=False)
+p.add_argument('--case',choices=['interactive','negative','lifecycle'],default='interactive')
+# Same backend switch as tests/virtio_gpu_acceptance.py: run the unchanged suites
+# against real VirtIO-GPU2D with VBE disabled, or against the default VBE scanout.
+p.add_argument('--backend',choices=['vbe','virtio'],default='vbe');a=p.parse_args();out=a.output.resolve();out.mkdir(parents=True,exist_ok=False)
 sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest();r=json.loads(a.payload.with_suffix('.receipt.json').read_text());assert sha(a.payload)==r['elf_sha256']
 for n,h in r['inputs'].items():assert sha(n)==h,n
-report={'status':'FAILED','case':a.case,'image_sha256':sha(a.image),'elf_sha256':sha(a.payload),'receipt_sha256':sha(a.payload.with_suffix('.receipt.json')),'source_pages':{str(f.relative_to(ROOT)):sha(f) for f in (ROOT/'src/ports/aurora_browser/pages').iterdir()},'runner_sha256':sha(Path(__file__)),'checks':[]};g=None
+report={'status':'FAILED','case':a.case,'backend':a.backend,'image_sha256':sha(a.image),'elf_sha256':sha(a.payload),'receipt_sha256':sha(a.payload.with_suffix('.receipt.json')),'source_pages':{str(f.relative_to(ROOT)):sha(f) for f in (ROOT/'src/ports/aurora_browser/pages').iterdir()},'runner_sha256':sha(Path(__file__)),'checks':[]};g=None
 pages=ROOT/'src/ports/aurora_browser/pages'
 def mark(name,**kw):report['checks'].append({'name':name,'status':'PASSED',**kw});print(name,'PASSED',flush=True)
 def key(k,d):g.qmp('input-send-event',{'events':[{'type':'key','data':{'down':d,'key':{'type':'qcode','data':k}}}]})
@@ -39,7 +44,15 @@ try:
   for f in pages.iterdir():transfer(disk,'import','/web/'+f.name,f)
   malformed={'broken.html':b'<html><body><p>Unclosed','deep.html':b'<div>'*17+b'x'+b'</div>'*17,'huge.html':b'x'*32769,'script.html':b'<html><body><script>1</script></body></html>','attr.html':b'<html><body><p style\t="width:1e99px">x</p></body></html>','dimension.html':b'<html><body><img src="garden.bmp" width="9999999999"></body></html>','exponent.html':b'<html><head><style>body { width:1e9999px; }</style></head><body>x</body></html>','badexternal.css':b'body { width: 9999%; }','external.html':b'<html><head><link rel="stylesheet" href="badexternal.css"></head><body>x</body></html>','imports.html':b'<html><head>'+b'<link rel="stylesheet" href="theme.css">'*9+b'</head><body>x</body></html>','cycle.css':b'@import "cycle.css";','badcss.html':b'<html><head><style>@import "cycle.css";</style></head><body>test</body></html>','badimage.html':b'<html><body><h1>Bad image stays contained</h1><img src="bad.bmp"></body></html>','bad.bmp':b'BM'+b'\xff'*100}
   for name,data in malformed.items():f=d/name;f.write_bytes(data);transfer(disk,'import','/web/'+name,f)
-  g=Guest(a.image.resolve(),str(out.relative_to(ROOT/'build'))+'/guest',work_disk=disk);report['qemu_command']=g.command;g.expect(b'xos64> ',timeout=45);send_bytes(g,b'run\r');g.expect_supervisor(trace=True);pump(g,1.2);base=resources(g);service_result=command(g,'display-start',b'result=0');service=int(re.search(rb'\[display-start\] pid=(\d+)',service_result)[1]);g.expect(b'[display-service] ready');with_service=resources(g);report['baseline']=base;report['with_service']=with_service
+  original=boot_smoke.qemu_command
+  def guest_command(*args,**kw):
+   cmd=original(*args,**kw)
+   if a.backend=='virtio':cmd[cmd.index('-vga')+1]='none';cmd+=['-device','virtio-gpu-pci,id=vgpu,disable-legacy=on']
+   return cmd
+  with patch.object(boot_smoke,'qemu_command',guest_command):g=Guest(a.image.resolve(),str(out.relative_to(ROOT/'build'))+'/guest',work_disk=disk)
+  report['qemu_command']=g.command;g.expect(b'xos64> ',timeout=45)
+  if a.backend=='virtio':assert b'[display] backend=virtio-gpu-2d' in bytes(g.output) and b'backend=vbe fallback=1' not in bytes(g.output),'virtio backend not selected'
+  send_bytes(g,b'run\r');g.expect_supervisor(trace=True);pump(g,1.2);base=resources(g);service_result=command(g,'display-start',b'result=0');service=int(re.search(rb'\[display-start\] pid=(\d+)',service_result)[1]);g.expect(b'[display-service] ready');with_service=resources(g);report['baseline']=base;report['with_service']=with_service
   def start(background=False):
    b=len(g.output);send_bytes(g,(b'spawn-file' if background else b'exec-file')+b' /bin/aurora.elf\r');g.expect(b'BROWSER_READY',start=b,timeout=90);pump(g,.3);return b
   def finish(b):
@@ -60,7 +73,7 @@ try:
    navigate('/web/reading.html');stroke('end');pump(g,.2)
    before=screenshot('before-failed-load').crop((70,220,730,500))
    before_scroll=int(re.findall(rb'BROWSER_SCROLL value=(\d+)',bytes(g.output)[b:])[-1])
-   navigate('/web/external.html',b'Page error: Engine allocation or resource budget failed')
+   navigate('/web/external.html',b'Page error: Stylesheet rejected')
    after=screenshot('after-failed-load').crop((70,220,730,500))
    assert before.tobytes()==after.tobytes(), 'failed load changed the rendered page'
    sb=len(g.output);chord('alt','left');g.expect(b'BROWSER_LOADED path=/web/start.html',start=sb)
@@ -70,7 +83,7 @@ try:
    sb=len(g.output);chord('ctrl','tab');g.expect(b'BROWSER_TAB active=0',start=sb);g.expect(b'BROWSER_LOADED path=/web/reading.html',start=sb)
    assert int(re.findall(rb'BROWSER_SCROLL value=(\d+)',bytes(g.output)[sb:])[-1])==before_scroll
    mark('failed_engine_load_preserves_page_history_scroll_and_tabs')
-   cases=[('/web/missing.html',b'Page error: Page or resource missing'),('/web/broken.html',b'Page error: Unclosed markup rejected'),('/web/deep.html',b'Page error: HTML nesting budget exceeded'),('/web/huge.html',b'Page error: Resource byte budget exceeded'),('/web/script.html',b'Page error: Unsupported HTML tag: script'),('/web/badcss.html',b'Page error: Stylesheet budget rejected'),('/web/attr.html',b'Page error: Unsupported or excessive HTML attributes'),('/web/dimension.html',b'Page error: Unsupported or excessive HTML attributes'),('/web/exponent.html',b'Page error: Stylesheet budget rejected'),('/web/imports.html',b'Page error: Engine allocation or resource budget failed'),('/web/external.html',b'Page error: Engine allocation or resource budget failed'),('/bin/aurora.elf',b'Blocked: local /web pages only')]
+   cases=[('/web/missing.html',b'Page error: Page or resource missing'),('/web/broken.html',b'Page error: Unclosed markup rejected'),('/web/deep.html',b'Page error: HTML nesting budget exceeded'),('/web/huge.html',b'Page error: Resource byte budget exceeded'),('/web/script.html',b'Page error: Unsupported HTML tag: script'),('/web/badcss.html',b'Page error: Stylesheet rejected'),('/web/attr.html',b'Page error: Unsupported or excessive HTML attributes'),('/web/dimension.html',b'Page error: Unsupported or excessive HTML attributes'),('/web/exponent.html',b'Page error: Stylesheet rejected'),('/web/imports.html',b'Page error: Stylesheet import quota exceeded'),('/web/external.html',b'Page error: Stylesheet rejected'),('/bin/aurora.elf',b'Blocked: local /web pages only')]
    for path,wanted in cases:navigate(path,wanted);mark('reject_'+path.rsplit('/',1)[-1])
    navigate('/web/badimage.html');assert b'BROWSER_RESOURCE_REJECT image' in bytes(g.output)[b:] or b'BROWSER_RESOURCE_REJECT bmp-header' in bytes(g.output)[b:];mark('malformed_image_contained');navigate('/web/start.html');screenshot('error-recovery');mark('valid_navigation_after_rejected_input')
   finish(b);mark('normal_exit_exact_resource_return')

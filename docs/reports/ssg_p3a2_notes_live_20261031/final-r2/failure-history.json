@@ -1,0 +1,53 @@
+{
+  "scope": "Observed attempts in this wave; counts refer to attempts, not distinct root causes.",
+  "attempts": [
+    {
+      "kind": "unsupported_function_key",
+      "failed_attempts": 1,
+      "resolution": "Changed synthetic owner controls to supported Ctrl+digit PS/2 input and reran."
+    },
+    {
+      "kind": "independent_verifier_file_order",
+      "failed_attempts": 1,
+      "resolution": "Sorted frame sequence identifiers and reverified captures."
+    },
+    {
+      "kind": "receipt_builder_missing_import",
+      "failed_attempts": 1,
+      "resolution": "Added the missing Python import and rebuilt receipts."
+    },
+    {
+      "kind": "earlier_uninstrumented_consumer_exit_timeout",
+      "failed_attempts": 2,
+      "resolution": "Both retries completed; the watchdog was subsequently changed to use a joinable native worker."
+    },
+    {
+      "kind": "earlier_lifecycle_diagnostic_timeout",
+      "failed_attempts": 2,
+      "runs": 24,
+      "resolution": "One diagnostic reached the return from main; the precise underlying cause remains unproven."
+    },
+    {
+      "kind": "experimental_raw_thread_link",
+      "failed_attempts": 1,
+      "resolution": "The matched SDK lacked that helper symbol; the tested implementation uses the available joinable pthread API."
+    },
+    {
+      "kind": "intrusive_stdio_exit_instrumentation",
+      "failed_attempts": 12,
+      "runs": 12,
+      "resolution": "An alternative debug probe using direct writes passed 4 of 4; instrumentation changes behavior, so these probes do not prove the underlying cause."
+    }
+  ],
+  "final_build_checks": {
+    "five_guest_cases": "PASSED",
+    "p1_checks_passed": 17,
+    "independent_ancestor_stress_passed": 16,
+    "independent_ancestor_stress_total": 16,
+    "clean_checkout_guest_cases_passed": 5
+  },
+  "limitations": [
+    "No claim that every possible exit race is eliminated.",
+    "Raw logs remain in the local audit directory and are not part of this export."
+  ]
+}

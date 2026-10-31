@@ -53,7 +53,9 @@ native termination. The final build passed all five cases, the full 17-check
 P1 regression, and 16 additional ancestor-protection runs with independent
 verification and resource recovery. This is scoped evidence, not a guarantee
 that all exit races are eliminated. A build-helper edit also initially failed
-on a missing Python import; the import was added and the build rerun.
+on a missing Python import; the import was added and the build rerun. Attempt
+counts and the limits of the diagnostic probes are in
+`final-r2/failure-history.json`.
 
 A separate clean checkout of the watchdog change rebuilt the test Consumer
 and Notes with the documented environment variables and passed all five guest

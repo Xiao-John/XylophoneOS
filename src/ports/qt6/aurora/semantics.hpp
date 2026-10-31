@@ -9,7 +9,7 @@
 namespace aurora {
 // App-local adapter, not an authenticated cross-process transport or OS grant.
 // Only the trusted host creates Grants. Model proposals contain no grant field.
-class Semantics {
+class semantics {
     struct Entry {QPointer<QWidget> widget;QString role;bool external=false;quint64 revision=0;QByteArray state;};
     QVector<Entry> entries;
     quint64 epoch,authorization_epoch=1;
@@ -18,7 +18,7 @@ class Semantics {
     bool validate(const QJsonObject &proposal,QString &error);
 public:
     class Grant {
-        friend class Semantics;
+        friend class semantics;
         QByteArray binding;
         quint64 epoch=0;
         qint64 expires=0;
@@ -32,7 +32,11 @@ public:
             if(this!=&other){binding=std::move(other.binding);epoch=other.epoch;expires=other.expires;used=other.used;other.used=true;}return *this;
         }
     };
-    Semantics();
+    semantics();
+    semantics(const semantics &)=delete;
+    semantics &operator=(const semantics &)=delete;
+    semantics(semantics &&)=delete;
+    semantics &operator=(semantics &&)=delete;
     bool expose(QWidget *widget,const QString &role,bool external_effect=false);
     QJsonObject observe();
     bool propose(const QJsonObject &proposal,QString &error);

@@ -10,7 +10,9 @@
 #include <xos/format.hpp>
 #include <xos/platform.hpp>
 #include "frame.hpp"
-#include "pic.hpp"
+#include <xos/clock.hpp>
+#include "arch/x86_64/interrupt_wait.hpp"
+static_assert(xos::clock::resolution_ns == xos::thread_tick_ns);
 #include "user_blobs.hpp"
 #include "user_images.hpp"
 
@@ -131,7 +133,6 @@ thread_record& main_thread(process_record* process) {
 u32 task_total;
 u32 cursor;
 process_record* current;
-u64 tick_count;
 u64 next_pid = 1;
 endpoint_record endpoints[max_endpoints];
 u64 next_endpoint_handle = 1;
@@ -940,7 +941,7 @@ interrupt_frame* schedule(interrupt_frame* frame) {
     // Interrupts in ring0 never schedule: the idle loop keeps this saved syscall
     // frame and only permits IRQs to advance time. No blocked syscall polls userspace.
     while (next == nullptr) {
-        __asm__ volatile("sti; hlt; cli" : : : "memory");
+        arch::wait_for_interrupt();
         expire_waiters();
         next = pick_ready();
     }
@@ -1069,10 +1070,6 @@ i64 set_heap_break(u64 requested) {
     return static_cast<i64>(requested);
 }
 
-u64 monotonic_ns() {
-    return tick_count > (thread_deadline_infinite - 1) / thread_tick_ns
-        ? thread_deadline_infinite - 1 : tick_count * thread_tick_ns;
-}
 
 bool valid_header(const thread_header& header, u32 size) {
     return header.version == thread_abi_version && header.size == size && header.reserved == 0;
@@ -1171,7 +1168,7 @@ void reap_threads() {
 }
 
 void expire_waiters() {
-    const u64 now = monotonic_ns();
+    const u64 now = clock::monotonic_ns();
     for (auto& thread : threads) {
         if (thread.state == thread_state::blocked &&
             (thread.wait_kind == thread_wait_kind::word || thread.wait_kind == thread_wait_kind::sleep) &&
@@ -1367,10 +1364,10 @@ void* thread_syscall(interrupt_frame* frame) {
         target->detached = true; reap_threads(); result = 0; break;
     }
     case sys_clock_monotonic:
-        result = first == 0 ? static_cast<i64>(monotonic_ns()) : first == 1 ? static_cast<i64>(thread_tick_ns) : process_error_invalid;
+        result = first == 0 ? static_cast<i64>(clock::monotonic_ns()) : first == 1 ? static_cast<i64>(thread_tick_ns) : process_error_invalid;
         break;
     case sys_sleep_until:
-        if (thread_deadline_reached(monotonic_ns(), first)) { result = 0; break; }
+        if (thread_deadline_reached(clock::monotonic_ns(), first)) { result = 0; break; }
         current_thread->deadline_ns = first; current_thread->wait_kind = thread_wait_kind::sleep;
         current_thread->state = thread_state::blocked; frame->rax = 0; return schedule(frame);
     case sys_wait_word: {
@@ -1380,7 +1377,7 @@ void* thread_syscall(interrupt_frame* frame) {
         if (request.address % 4 != 0 || !user_range_ok(request.address, 4, true)) { result = thread_error_address; break; }
         u32 value = 0; copy_from_user(&value, request.address, sizeof(value));
         if (value != request.expected) { result = thread_value_changed; break; }
-        if (thread_deadline_reached(monotonic_ns(), request.deadline_ns)) { result = thread_error_timeout; break; }
+        if (thread_deadline_reached(clock::monotonic_ns(), request.deadline_ns)) { result = thread_error_timeout; break; }
         if (next_wait_order == 0) { result = process_error_resources; break; }
         current_thread->wait_order = next_wait_order++;
         current_thread->wait_target = request.address;
@@ -2228,14 +2225,16 @@ void* process_syscall(interrupt_frame* frame) {
 }
 
 void* input_entry(interrupt_frame* frame) {
-    display::input_irq(frame->vector == 33 ? 1 : 12, tick_count * 10000000ull);
+    display::input_irq(frame->vector == 33 ? 1 : 12, clock::monotonic_ns());
     if(display::input_pending()){display_wake(0,0);}
     return frame;
 }
 
 void* timer_entry(interrupt_frame* frame) {
-    pic_eoi(0);
-    if (tick_count != ~u64{0}) { ++tick_count; }
+    platform::timer_interrupt();
+    // Boot diagnostics may enable IRQ0 before any process has been entered.
+    // They advance the same clock without expiring/scheduling prepared tasks.
+    if (current == nullptr || current_thread == nullptr) { return frame; }
     if (current != nullptr && current_thread != nullptr &&
         current_thread->state == thread_state::running) { ++current->ticks; }
     expire_waiters();
@@ -2283,7 +2282,7 @@ void* syscall_entry(interrupt_frame* frame) {
         result = current != nullptr ? static_cast<i64>(current->pid) : -1;
         break;
     case sys_ticks:
-        result = static_cast<i64>(tick_count);
+        result = static_cast<i64>(clock::ticks());
         break;
     case sys_read: {
         result = stdio_read(current, 0, frame->rdi, frame->rsi, false);
@@ -2328,7 +2327,7 @@ void* syscall_entry(interrupt_frame* frame) {
                                  : random_error_invalid;
         break;
     case sys_clock_realtime:
-        result = frame->rdi == 0 ? platform::realtime_clock_ns(monotonic_ns())
+        result = frame->rdi == 0 ? platform::realtime_clock_ns(clock::monotonic_ns())
                                  : process_error_invalid;
         break;
     case sys_kill: {
@@ -2430,10 +2429,8 @@ bool tasks_create_default() {
 }
 
 [[noreturn]] void tasks_enter() {
-    pic_init();
     display::input_init();
-    timer_init(100);
-    if (!platform::realtime_clock_init(monotonic_ns())) {
+    if (!platform::realtime_clock_init(clock::monotonic_ns())) {
         format::text("[clock] event=realtime unavailable=rtc_invalid\r\n");
     }
     thread_record* first = pick_ready();

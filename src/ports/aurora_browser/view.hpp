@@ -22,7 +22,7 @@ class HtmlView final:public QAbstractScrollArea,public litehtml::document_contai
     QString page,caption;
     int imports=0,fonts=0,clipDepth=0;
     bool layoutBusy=false;
-    aurora::SceneStream scene;
+    aurora::scene_stream scene;
     bool scene_allowed=false;
     QMap<quintptr,quint64> scene_ids;
     quint64 next_scene_id=1;
@@ -95,7 +95,8 @@ public:
         };
         walk(doc->root(),0,0);
         QString hit="NONE";if(auto actual=doc->get_over_element()){const auto key=reinterpret_cast<quintptr>(actual.get());hit=scene_ids.contains(key)?QString::number(scene_ids[key]):"OUTSIDE_SNAPSHOT";}
-        auto result=scene.publish(nodes,{{"provider","litehtml-v0.9-ssg-readonly"},{"document",page},{"query",query},{"scrollY",verticalScrollBar()->value()},
+        const QJsonObject scope{{"provider","litehtml-v0.9-ssg-readonly"},{"document",page},{"query",query}};
+        auto result=scene.publish(nodes,{{"provider","litehtml-v0.9-ssg-readonly"},{"document",page},{"query",query},{"queryScope",scope},{"scrollY",verticalScrollBar()->value()},
             {"viewport",QJsonArray{view_rect.x(),view_rect.y(),view_rect.width(),view_rect.height()}},{"hitNode",hit},
             {"hitSource","actual-engine-mouse-state"},{"iframes","UNSUPPORTED"},{"shadowDOM","UNSUPPORTED"},
             {"forms","UNSUPPORTED"},{"globalScene","BLOCKED"},{"subscriptions","NOT_IMPLEMENTED"}},capped);

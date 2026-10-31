@@ -2,7 +2,7 @@
 #include <xos/display.hpp>
 #include <xos/format.hpp>
 #include "arch/x86_64/io.hpp"
-#include "arch/x86_64/pic.hpp"
+#include "interrupts.hpp"
 namespace xos::display {
 namespace {
 display_event queue[display_event_capacity];
@@ -89,7 +89,7 @@ void input_init(){
     u8 ack=0;
     ok=ok&&data(0xf4)&&response(ack)&&ack==0xfa;
     ok=ok&&mouse_command(0xf6)&&mouse_command(0xf4);
-    if(ok){arch::pic_input_enable();}
+    if(ok){platform::pc::pic_input_enable();}
     input_reset(false);
     format::text(ok?"[input] ps2=ready irq1=enabled irq12=enabled\r\n":
         "[input] ps2=failed irqs=masked\r\n");
@@ -103,6 +103,6 @@ void input_irq(u8 irq,u64 now){
         if((status&0xc0)!=0){packet_index=0;extended=false;continue;}
         if((status&0x20)!=0){mouse(value,now);}else{keyboard(value,now);}
     }
-    arch::pic_eoi(irq);
+    platform::pc::pic_eoi(irq);
 }
 }

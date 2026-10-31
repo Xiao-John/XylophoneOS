@@ -3,17 +3,19 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
+#include <QtCore/QEvent>
+#include <QtCore/QCoreApplication>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QAbstractButton>
 namespace aurora {
 namespace {quint32 instances=0;QByteArray encode(const QJsonObject &o){return QJsonDocument(o).toJson(QJsonDocument::Compact);}}
-Semantics::Semantics():epoch((quint64(QCoreApplication::applicationPid())<<32)|++instances){clock.start();}
-bool Semantics::expose(QWidget *w,const QString &role,bool external) {
+semantics::semantics():epoch((quint64(QCoreApplication::applicationPid())<<32)|++instances){clock.start();}
+bool semantics::expose(QWidget *w,const QString &role,bool external) {
     if(!w || entries.size()>=32 || (role!="textbox" && role!="button"))return false;
     if((role=="textbox" && !qobject_cast<QLineEdit*>(w)) || (role=="button" && !qobject_cast<QAbstractButton*>(w)))return false;
     entries.append({w,role,external,0,{}});return true;
 }
-QJsonObject Semantics::describe(int i) {
+QJsonObject semantics::describe(int i) {
     auto &e=entries[i];QJsonObject state{{"alive",!e.widget.isNull()}};
     if(e.widget){state["enabled"]=e.widget->isEnabled();state["visible"]=e.widget->isVisible();state["focused"]=e.widget->hasFocus();state["name"]=e.widget->accessibleName();
         // Content affects stale-state detection internally, but is never exported.
@@ -25,12 +27,12 @@ QJsonObject Semantics::describe(int i) {
     state["action"]=e.role=="textbox"?(state["readOnly"].toBool() || state["sensitive"].toBool()?"inspect":"set_text"):"activate";state["nameTrust"]="untrusted-content";
     return state;
 }
-QJsonObject Semantics::observe() {
+QJsonObject semantics::observe() {
     QJsonArray controls;for(int i=0;i<entries.size();++i)controls.append(describe(i));
     return {{"version",1},{"scope","application-local-demo"},{"epoch",QString::number(epoch)},
         {"authority","discovery-grants-no-rights"},{"controls",controls}};
 }
-bool Semantics::validate(const QJsonObject &p,QString &error) {
+bool semantics::validate(const QJsonObject &p,QString &error) {
     const QStringList keys={"version","epoch","id","revision","action","value"};
     for(auto it=p.begin();it!=p.end();++it)if(!keys.contains(it.key())){error="UNKNOWN_FIELD";return false;}
     if(p["version"]!=1 || !p["epoch"].isString() || p["epoch"].toString()!=QString::number(epoch)){error="WRONG_SCOPE";return false;}
@@ -49,21 +51,31 @@ bool Semantics::validate(const QJsonObject &p,QString &error) {
     if(e.role=="button" && p.contains("value")){error="BAD_VALUE";return false;}
     error.clear();return true;
 }
-bool Semantics::propose(const QJsonObject &p,QString &error){return validate(p,error);}
-Semantics::Grant Semantics::host_authorize(const QJsonObject &p,int ttl,QString &error) {
+bool semantics::propose(const QJsonObject &p,QString &error){return validate(p,error);}
+semantics::Grant semantics::host_authorize(const QJsonObject &p,int ttl,QString &error) {
     Grant grant;if(ttl<0 || ttl>60000 || !validate(p,error))return grant;
     grant.binding=encode(p);grant.epoch=authorization_epoch;grant.expires=clock.elapsed()+ttl;grant.used=false;return grant;
 }
-void Semantics::revoke(){++authorization_epoch;}
-QString Semantics::execute(const QJsonObject &p,Grant &g) {
+void semantics::revoke(){++authorization_epoch;}
+QString semantics::execute(const QJsonObject &p,Grant &g) {
     if(g.used || g.epoch!=authorization_epoch || clock.elapsed()>=g.expires || g.binding!=encode(p))return "DENIED";
     g.used=true;QString error;if(!validate(p,error))return error;
-    auto &e=entries[p["id"].toString().toUInt()-1];
-    if(auto *line=qobject_cast<QLineEdit*>(e.widget.data())){
+    const auto index=int(p["id"].toString().toUInt()-1);
+    const QPointer<QWidget> target=entries.at(index).widget;
+    const QString role=entries.at(index).role;
+    if(role=="textbox"){
+        auto *line=qobject_cast<QLineEdit*>(target.data());
+        if(!line)return "UNKNOWN";
         const auto expected=p["value"].toString();line->setText(expected);
-        return e.widget && line->text()==expected?"VERIFIED_LOCAL":"UNKNOWN";
+        // A synchronous handler can append entries (reallocating the vector),
+        // destroy the widget, or queue deleteLater(). QPointer protects the
+        // post-dispatch read; deferred deletion remains Qt's event-loop job.
+        // The local value is verified only while the guarded target still lives.
+        if(!target)return "UNKNOWN";
+        auto *current=qobject_cast<QLineEdit*>(target.data());
+        return current && current->text()==expected?"VERIFIED_LOCAL":"UNKNOWN";
     }
-    auto *button=qobject_cast<QAbstractButton*>(e.widget.data());button->click();
+    auto *button=qobject_cast<QAbstractButton*>(target.data());if(!button)return "UNKNOWN";button->click();
     // Signal dispatch cannot prove an external transaction completed. Never replay.
     return "UNKNOWN";
 }

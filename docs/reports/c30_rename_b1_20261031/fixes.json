@@ -1,0 +1,170 @@
+{
+ "summary": "post-rename collisions with upstream inherited names / same-named members; all changes are qualifications only, no identifier renames beyond commit A",
+ "reasons": {
+  "src/ports/qt6/aurora/aurora.hpp": "member vars 'pointer'/'canvas' collide with same-named classes after rename: qualify type positions (aurora::) at decl/ctor/param",
+  "src/ports/qt6/aurora/desktop.hpp": "same member/class collision for 'pointer': qualify type positions",
+  "src/ports/qt6/qpa/qxos.cpp": "injected-class-name collision: inside class 'window', inherited upstream QPlatformWindow::window() calls must be base-qualified; in backing_store, base member 'window()' hides namespace class 'window' so the cast uses ::window* (namespace class in anonymous namespace still reachable via ::)"
+ },
+ "changes": [
+  {
+   "file": "src/ports/qt6/aurora/aurora.hpp",
+   "change": "-",
+   "text": "pointer *pointer;"
+  },
+  {
+   "file": "src/ports/qt6/aurora/aurora.hpp",
+   "change": "+",
+   "text": "aurora::pointer *pointer;"
+  },
+  {
+   "file": "src/ports/qt6/aurora/aurora.hpp",
+   "change": "-",
+   "text": "canvas():pointer(new pointer(this)){qApp->installEventFilter(this);setMouseTracking(true);}"
+  },
+  {
+   "file": "src/ports/qt6/aurora/aurora.hpp",
+   "change": "+",
+   "text": "canvas():pointer(new aurora::pointer(this)){qApp->installEventFilter(this);setMouseTracking(true);}"
+  },
+  {
+   "file": "src/ports/qt6/aurora/aurora.hpp",
+   "change": "-",
+   "text": "canvas *canvas;"
+  },
+  {
+   "file": "src/ports/qt6/aurora/aurora.hpp",
+   "change": "+",
+   "text": "aurora::canvas *canvas;"
+  },
+  {
+   "file": "src/ports/qt6/aurora/aurora.hpp",
+   "change": "-",
+   "text": "panel(canvas *c,qreal r,bool content=false):QWidget(c),canvas(c),radius(r),reading(content){setAttribute(Qt::WA_StyledBackground,false);}"
+  },
+  {
+   "file": "src/ports/qt6/aurora/aurora.hpp",
+   "change": "+",
+   "text": "panel(aurora::canvas *c,qreal r,bool content=false):QWidget(c),canvas(c),radius(r),reading(content){setAttribute(Qt::WA_StyledBackground,false);}"
+  },
+  {
+   "file": "src/ports/qt6/aurora/desktop.hpp",
+   "change": "-",
+   "text": "pointer *pointer;"
+  },
+  {
+   "file": "src/ports/qt6/aurora/desktop.hpp",
+   "change": "+",
+   "text": "aurora::pointer *pointer;"
+  },
+  {
+   "file": "src/ports/qt6/aurora/desktop.hpp",
+   "change": "-",
+   "text": "desktop_surface():pointer(new pointer(this)){qApp->installEventFilter(this);setMouseTracking(true);}"
+  },
+  {
+   "file": "src/ports/qt6/aurora/desktop.hpp",
+   "change": "+",
+   "text": "desktop_surface():pointer(new aurora::pointer(this)){qApp->installEventFilter(this);setMouseTracking(true);}"
+  },
+  {
+   "file": "src/ports/qt6/qpa/qxos.cpp",
+   "change": "-",
+   "text": "Q_ASSERT(QThread::currentThread()==window()->thread());"
+  },
+  {
+   "file": "src/ports/qt6/qpa/qxos.cpp",
+   "change": "+",
+   "text": "Q_ASSERT(QThread::currentThread()==QPlatformWindow::window()->thread());"
+  },
+  {
+   "file": "src/ports/qt6/qpa/qxos.cpp",
+   "change": "-",
+   "text": "if(key.key) WSI::handleKeyEvent(window(),ulong(e.monotonic_ns/1000000),"
+  },
+  {
+   "file": "src/ports/qt6/qpa/qxos.cpp",
+   "change": "+",
+   "text": "if(key.key) WSI::handleKeyEvent(QPlatformWindow::window(),ulong(e.monotonic_ns/1000000),"
+  },
+  {
+   "file": "src/ports/qt6/qpa/qxos.cpp",
+   "change": "-",
+   "text": "if(key.key) WSI::handleKeyEvent(window(),QEvent::KeyRelease,key.key,Qt::NoModifier);"
+  },
+  {
+   "file": "src/ports/qt6/qpa/qxos.cpp",
+   "change": "+",
+   "text": "if(key.key) WSI::handleKeyEvent(QPlatformWindow::window(),QEvent::KeyRelease,key.key,Qt::NoModifier);"
+  },
+  {
+   "file": "src/ports/qt6/qpa/qxos.cpp",
+   "change": "-",
+   "text": "WSI::handleMouseEvent(window(),ulong(e.monotonic_ns/1000000),position,position,mouseButtons,b,"
+  },
+  {
+   "file": "src/ports/qt6/qpa/qxos.cpp",
+   "change": "+",
+   "text": "WSI::handleMouseEvent(QPlatformWindow::window(),ulong(e.monotonic_ns/1000000),position,position,mouseButtons,b,"
+  },
+  {
+   "file": "src/ports/qt6/qpa/qxos.cpp",
+   "change": "-",
+   "text": "WSI::handleMouseEvent(window(),ulong(e.monotonic_ns/1000000),position,position,mouseButtons,Qt::NoButton,QEvent::MouseMove,mods);"
+  },
+  {
+   "file": "src/ports/qt6/qpa/qxos.cpp",
+   "change": "+",
+   "text": "WSI::handleMouseEvent(QPlatformWindow::window(),ulong(e.monotonic_ns/1000000),position,position,mouseButtons,Qt::NoButton,QEvent::MouseMove,mods);"
+  },
+  {
+   "file": "src/ports/qt6/qpa/qxos.cpp",
+   "change": "-",
+   "text": "WSI::handleGeometryChange(window(),full);"
+  },
+  {
+   "file": "src/ports/qt6/qpa/qxos.cpp",
+   "change": "+",
+   "text": "WSI::handleGeometryChange(QPlatformWindow::window(),full);"
+  },
+  {
+   "file": "src/ports/qt6/qpa/qxos.cpp",
+   "change": "-",
+   "text": "WSI::handleFocusWindowChanged(v?window():nullptr);"
+  },
+  {
+   "file": "src/ports/qt6/qpa/qxos.cpp",
+   "change": "-",
+   "text": "WSI::handleExposeEvent(window(),v?QRegion(geometry()):QRegion());"
+  },
+  {
+   "file": "src/ports/qt6/qpa/qxos.cpp",
+   "change": "+",
+   "text": "WSI::handleFocusWindowChanged(v?QPlatformWindow::window():nullptr);"
+  },
+  {
+   "file": "src/ports/qt6/qpa/qxos.cpp",
+   "change": "+",
+   "text": "WSI::handleExposeEvent(QPlatformWindow::window(),v?QRegion(geometry()):QRegion());"
+  },
+  {
+   "file": "src/ports/qt6/qpa/qxos.cpp",
+   "change": "-",
+   "text": "void requestActivateWindow() override { if(visible) WSI::handleFocusWindowChanged(window()); }"
+  },
+  {
+   "file": "src/ports/qt6/qpa/qxos.cpp",
+   "change": "+",
+   "text": "void requestActivateWindow() override { if(visible) WSI::handleFocusWindowChanged(QPlatformWindow::window()); }"
+  },
+  {
+   "file": "src/ports/qt6/qpa/qxos.cpp",
+   "change": "-",
+   "text": "auto *platform=static_cast<window*>(w->handle());"
+  },
+  {
+   "file": "src/ports/qt6/qpa/qxos.cpp",
+   "change": "+",
+   "text": "auto *platform=static_cast<::window*>(w->handle());"
+  }
+ ]
+}

@@ -24,10 +24,16 @@ class HtmlView final:public QAbstractScrollArea,public litehtml::document_contai
     static QColor color(litehtml::web_color c){return QColor(c.red,c.green,c.blue,c.alpha);}
     static QRect box(const litehtml::position &r){return QRect(r.x,r.y,r.width,r.height);}
     QString resource(const char *src,const char *base){return resolve(QString::fromUtf8(src),base&&*base?QString::fromUtf8(base):page);}
+    // Report the first anchor in global coordinates after every layout. The view can
+    // still be unsized while load() runs, so a point printed only there would stay
+    // stale after the resize that follows and would miss where the link is drawn.
+    void log_anchor(){if(!doc)return;auto anchor=doc->root()->select_one("a");if(!anchor)return;
+        auto r=anchor->get_placement();auto p=viewport()->mapToGlobal(QPoint(r.x+qMax(8,r.width/2),r.y+qMax(10,r.height/2)));
+        std::printf("BROWSER_ANCHOR point=%d,%d\n",p.x(),p.y());}
     void relayout(){if(!doc||layoutBusy)return;
         struct Reset { bool &flag; ~Reset(){flag=false;} } reset{layoutBusy};layoutBusy=true;
         try{doc->render(viewport()->width());verticalScrollBar()->setRange(0,qMin(65536,qMax(0,doc->height()-viewport()->height())));verticalScrollBar()->setPageStep(viewport()->height());}
-        catch(const std::exception&){doc.reset();std::printf("BROWSER_LAYOUT_FAILED resource-budget\n");}viewport()->update();}
+        catch(const std::exception&){doc.reset();std::printf("BROWSER_LAYOUT_FAILED resource-budget\n");}viewport()->update();log_anchor();}
     void eventAt(QMouseEvent *event,int kind){if(!doc)return;litehtml::position::vector dirty;int x=int(event->position().x()),y=int(event->position().y());if(kind==0)doc->on_mouse_over(x,y+verticalScrollBar()->value(),x,y,dirty);if(kind==1)doc->on_lbutton_down(x,y+verticalScrollBar()->value(),x,y,dirty);if(kind==2)doc->on_lbutton_up(x,y+verticalScrollBar()->value(),x,y,dirty);if(!dirty.empty())viewport()->update();}
 protected:
     void paintEvent(QPaintEvent*)override {QPainter p(viewport());p.fillRect(viewport()->rect(),Qt::white);if(!doc)return;painter=&p;clipDepth=0;litehtml::position clip(0,0,viewport()->width(),viewport()->height());doc->draw(0,0,-verticalScrollBar()->value(),&clip);while(clipDepth>0){p.restore();--clipDepth;}painter=nullptr;}
@@ -44,10 +50,17 @@ public:
     bool load(const QString &path,QString &error){QByteArray bytes;if(!read(path,bytes,32768,error)||!html_allowed(bytes,error))return false;
         doc.reset();images.clear();page=path;caption.clear();imports=0;fonts=0;verticalScrollBar()->setValue(0);
         try{doc=litehtml::document::createFromString(bytes.constData(),this);relayout();if(!doc){error="Layout resource budget failed";return false;}if(doc->height()>65536){doc.reset();error="Layout height budget exceeded";return false;}}
-        catch(const std::exception&){layoutBusy=false;doc.reset();error="Engine allocation or resource budget failed";return false;}
+        catch(const std::exception &reason){layoutBusy=false;doc.reset();
+            // liteHTML lets the stylesheet callback exceptions escape; report them as
+            // stylesheet admission failures instead of an engine allocation error.
+            const std::string cause=reason.what();
+            if(cause=="stylesheet rejected")error="Stylesheet rejected";
+            else if(cause=="CSS quota")error="Stylesheet import quota exceeded";
+            else error="Engine allocation or resource budget failed";
+            return false;}
         if(!doc){error="Engine did not create document";return false;}
         if(titleChanged)titleChanged(caption.isEmpty()?path.section('/',-1):caption);
-        std::printf("BROWSER_LOADED path=%s bytes=%d width=%d height=%d fonts=%d images=%lld imports=%d\n",page.toUtf8().constData(),int(bytes.size()),doc->width(),doc->height(),fonts,(long long)images.size(),imports);auto anchor=doc->root()->select_one("a");if(anchor){auto r=anchor->get_placement();auto p=viewport()->mapToGlobal(QPoint(r.x+qMax(8,r.width/2),r.y+qMax(10,r.height/2)));std::printf("BROWSER_ANCHOR point=%d,%d\n",p.x(),p.y());}viewport()->update();return true;}
+        std::printf("BROWSER_LOADED path=%s bytes=%d width=%d height=%d fonts=%d images=%lld imports=%d\n",page.toUtf8().constData(),int(bytes.size()),doc->width(),doc->height(),fonts,(long long)images.size(),imports);log_anchor();viewport()->update();return true;}
     QString current()const{return page;}
     litehtml::uint_ptr create_font(const char*,int size,int weight,litehtml::font_style italic,unsigned int decoration,litehtml::font_metrics *fm)override {if(++fonts>128)throw std::runtime_error("font quota");auto *f=new QFont("DejaVu Sans");f->setPixelSize(qBound(6,size,96));f->setWeight(QFont::Weight(qBound(100,weight,900)));f->setItalic(italic==litehtml::font_style_italic);f->setUnderline(decoration&litehtml::font_decoration_underline);f->setStrikeOut(decoration&litehtml::font_decoration_linethrough);QFontMetrics m(*f);if(fm){fm->height=m.height();fm->ascent=m.ascent();fm->descent=m.descent();fm->x_height=m.xHeight();fm->draw_spaces=true;}return reinterpret_cast<litehtml::uint_ptr>(f);}
     void delete_font(litehtml::uint_ptr f)override{delete reinterpret_cast<QFont*>(f);--fonts;}

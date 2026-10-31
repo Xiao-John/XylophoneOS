@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
 #include "content.hpp"
+#include "../qt6/aurora/ssg.hpp"
 #include <litehtml.h>
 #include <QtWidgets/QAbstractScrollArea>
 #include <QtWidgets/QScrollBar>
@@ -21,6 +22,10 @@ class HtmlView final:public QAbstractScrollArea,public litehtml::document_contai
     QString page,caption;
     int imports=0,fonts=0,clipDepth=0;
     bool layoutBusy=false;
+    aurora::scene_stream scene;
+    bool scene_allowed=false;
+    QMap<quintptr,quint64> scene_ids;
+    quint64 next_scene_id=1;
     static QColor color(litehtml::web_color c){return QColor(c.red,c.green,c.blue,c.alpha);}
     static QRect box(const litehtml::position &r){return QRect(r.x,r.y,r.width,r.height);}
     QString resource(const char *src,const char *base){return resolve(QString::fromUtf8(src),base&&*base?QString::fromUtf8(base):page);}
@@ -42,13 +47,62 @@ public:
     std::function<void(QString)> titleChanged;
     HtmlView(QWidget *parent):QAbstractScrollArea(parent){setFrameShape(QFrame::NoFrame);viewport()->setMouseTracking(true);setFocusPolicy(Qt::StrongFocus);setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);connect(verticalScrollBar(),&QScrollBar::valueChanged,this,[this](int value){viewport()->update();std::printf("BROWSER_SCROLL value=%d max=%d\n",value,verticalScrollBar()->maximum());});}
     bool load(const QString &path,QString &error){QByteArray bytes;if(!read(path,bytes,32768,error)||!html_allowed(bytes,error))return false;
-        doc.reset();images.clear();page=path;caption.clear();imports=0;fonts=0;verticalScrollBar()->setValue(0);
+        doc.reset();scene.invalidate();scene_ids.clear();next_scene_id=1;images.clear();page=path;caption.clear();imports=0;fonts=0;verticalScrollBar()->setValue(0);
         try{doc=litehtml::document::createFromString(bytes.constData(),this);relayout();if(!doc){error="Layout resource budget failed";return false;}if(doc->height()>65536){doc.reset();error="Layout height budget exceeded";return false;}}
         catch(const std::exception&){layoutBusy=false;doc.reset();error="Engine allocation or resource budget failed";return false;}
         if(!doc){error="Engine did not create document";return false;}
         if(titleChanged)titleChanged(caption.isEmpty()?path.section('/',-1):caption);
-        std::printf("BROWSER_LOADED path=%s bytes=%d width=%d height=%d fonts=%d images=%lld imports=%d\n",page.toUtf8().constData(),int(bytes.size()),doc->width(),doc->height(),fonts,(long long)images.size(),imports);auto anchor=doc->root()->select_one("a");if(anchor){auto r=anchor->get_placement();auto p=viewport()->mapToGlobal(QPoint(r.x+qMax(8,r.width/2),r.y+qMax(10,r.height/2)));std::printf("BROWSER_ANCHOR point=%d,%d\n",p.x(),p.y());}viewport()->update();return true;}
+        std::printf("BROWSER_LOADED path=%s bytes=%d candidate_width=%d candidate_height=%d fonts=%d images=%lld imports=%d\n",page.toUtf8().constData(),int(bytes.size()),doc->width(),doc->height(),fonts,(long long)images.size(),imports);viewport()->update();return true;}
+    void log_anchor_point(){
+        if(!doc)return;auto anchor=doc->root()->select_one("a");if(!anchor)return;
+        litehtml::position::vector fragments;anchor->get_rendering_fragments(fragments,8);
+        for(const auto &r:fragments){const QRect clip=QRect(r.x,r.y-verticalScrollBar()->value(),r.width,r.height).intersected(viewport()->rect());
+            if(clip.isEmpty())continue;const auto p=viewport()->mapToGlobal(clip.topLeft()+QPoint(qMin(8,clip.width()/2),qMin(10,clip.height()/2)));
+            std::printf("BROWSER_ANCHOR point=%d,%d source=final-render-fragment\n",p.x(),p.y());return;}
+        std::printf("BROWSER_ANCHOR_UNAVAILABLE outside-viewport-or-not-rendered\n");
+    }
     QString current()const{return page;}
+    void allow_scene_observation(bool value){scene_allowed=value;if(!value){scene.invalidate();scene_ids.clear();}}
+    QJsonObject scene_snapshot(const QString &query={}) try {
+        if(!scene_allowed)return {{"status","DENIED"}};
+        if(!doc)return {{"status","SEMANTICS_UNAVAILABLE"}};
+        QJsonArray nodes;int visited=0,text_left=8192;bool capped=false;QElapsedTimer timer;timer.start();
+        const auto origin=viewport()->mapTo(window(),QPoint());
+        const QRect view_rect(origin,viewport()->size());
+        auto node_id=[&](const litehtml::element::ptr &e){const auto p=reinterpret_cast<quintptr>(e.get());if(!scene_ids.contains(p))scene_ids[p]=next_scene_id++;return scene_ids[p];};
+        std::function<void(litehtml::element::ptr,quint64,int)> walk;
+        walk=[&](litehtml::element::ptr e,quint64 parent,int depth){
+            if(++visited>96 || depth>18 || timer.elapsed()>30){capped=true;return;}
+            const auto id=node_id(e);const auto *tag=e->get_tagName();const auto name=QString::fromUtf8(tag?tag:"");
+            if(query=="content" && name=="head")return;
+            if(query=="content" && !e->is_text() && name!="a"){
+                for(auto &child:e->children()){walk(child,id,depth+1);if(capped)break;}return;
+            }
+            litehtml::position::vector boxes;const bool complete=e->get_rendering_fragments(boxes,8);QJsonArray fragments;QRect bounds;
+            for(const auto &box:boxes){const auto local=QRect(box.x,box.y-verticalScrollBar()->value(),box.width,box.height).translated(origin);if(!local.isEmpty()){bounds=bounds.isNull()?local:bounds.united(local);fragments.append(QJsonArray{local.x(),local.y(),local.width(),local.height()});}}
+            const auto clipped=bounds.intersected(view_rect);
+            const QString visibility=bounds.isEmpty()?"not-rendered":clipped.isEmpty()?"scroll-required":clipped==bounds?"viewport-visible":"viewport-partial";
+            QJsonObject n{{"id",QString::number(id)},{"parent",QString::number(parent)},{"source","litehtml-model-and-render-layout"},
+                {"role",e->is_text()?"text":name=="a"?"link":"element"},{"tag",name},{"visibility",visibility},
+                {"fragments",fragments},{"fragmentsComplete",complete},{"screenOcclusion","UNKNOWN_NO_COMPOSITOR"},
+                {"bounds",QJsonArray{bounds.x(),bounds.y(),bounds.width(),bounds.height()}},
+                {"visibleBounds",QJsonArray{clipped.x(),clipped.y(),clipped.width(),clipped.height()}},
+                {"displayNone",e->css().get_display()==litehtml::display_none},{"contentTrust","untrusted-document-content"},
+                {"actionAuthority","READ_ONLY_NO_GRANT"}};
+            if(e->is_text()){litehtml::string text;e->get_text(text);const auto q=QString::fromUtf8(text.c_str());const auto value=q.left(qMin(1024,text_left));n["text"]=value;n["textTruncated"]=value.size()!=q.size();n["textRange"]=QJsonArray{0,value.size()};text_left-=value.size();}
+            if(name=="a"){n["href"]=QString::fromUtf8(e->get_attr("href","")).left(256);n["actions"]=QJsonArray{"inspect","click"};n["execution"]="NOT_IMPLEMENTED";}
+            nodes.append(n);for(auto &child:e->children()){walk(child,id,depth+1);if(capped)break;}
+        };
+        walk(doc->root(),0,0);
+        QString hit="NONE";if(auto actual=doc->get_over_element()){const auto key=reinterpret_cast<quintptr>(actual.get());hit=scene_ids.contains(key)?QString::number(scene_ids[key]):"OUTSIDE_SNAPSHOT";}
+        const QJsonObject scope{{"provider","litehtml-v0.9-ssg-readonly"},{"document",page},{"query",query}};
+        auto result=scene.publish(nodes,{{"provider","litehtml-v0.9-ssg-readonly"},{"document",page},{"query",query},{"queryScope",scope},{"scrollY",verticalScrollBar()->value()},
+            {"viewport",QJsonArray{view_rect.x(),view_rect.y(),view_rect.width(),view_rect.height()}},{"hitNode",hit},
+            {"hitSource","actual-engine-mouse-state"},{"iframes","UNSUPPORTED"},{"shadowDOM","UNSUPPORTED"},
+            {"forms","UNSUPPORTED"},{"globalScene","BLOCKED"},{"subscriptions","NOT_IMPLEMENTED"}},capped);
+        result["queryDurationNs"]=QString::number(timer.nsecsElapsed());return result;
+    } catch(const std::bad_alloc &) {return {{"status","RESOURCE_LIMIT"}};}
+    QJsonObject scene_diff(quint64 since,const QString &epoch)const{return scene.diff(since,epoch);}
     litehtml::uint_ptr create_font(const char*,int size,int weight,litehtml::font_style italic,unsigned int decoration,litehtml::font_metrics *fm)override {if(++fonts>128)throw std::runtime_error("font quota");auto *f=new QFont("DejaVu Sans");f->setPixelSize(qBound(6,size,96));f->setWeight(QFont::Weight(qBound(100,weight,900)));f->setItalic(italic==litehtml::font_style_italic);f->setUnderline(decoration&litehtml::font_decoration_underline);f->setStrikeOut(decoration&litehtml::font_decoration_linethrough);QFontMetrics m(*f);if(fm){fm->height=m.height();fm->ascent=m.ascent();fm->descent=m.descent();fm->x_height=m.xHeight();fm->draw_spaces=true;}return reinterpret_cast<litehtml::uint_ptr>(f);}
     void delete_font(litehtml::uint_ptr f)override{delete reinterpret_cast<QFont*>(f);--fonts;}
     int text_width(const char *s,litehtml::uint_ptr f)override {return QFontMetrics(*reinterpret_cast<QFont*>(f)).horizontalAdvance(QString::fromUtf8(s));}

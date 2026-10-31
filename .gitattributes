@@ -10,3 +10,6 @@ licenses/modern_apps/defusedxml_LICENSE -whitespace
 
 # The pinned liteHTML unified diff preserves upstream tab/blank context bytes.
 src/ports/aurora_browser/patches/*.patch whitespace=-blank-at-eol,-space-before-tab
+
+# Diagnostic unified diffs retain the required leading space on blank context.
+docs/reports/ssg_p3c_engine_neutral_20261031/*.patch whitespace=-blank-at-eol,-space-before-tab

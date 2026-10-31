@@ -9,6 +9,7 @@ import re
 from ssg_p3b_verify import frames, require, check_source_metadata, check_wiring
 from ssg_p3b_dynamic_verify import check_browser, notes_segment, verify_browser_receipt
 from ssg_browser_structure import decode_capture
+from ssg_watch_events import decode_event_records
 
 
 def groups(data, slot, begin):
@@ -48,7 +49,9 @@ def main():
     check_wiring(serial, report, sources[0])
     verify_browser_receipt(out / 'browser.receipt.json', report)
     original = (out / 'synthetic-input.txt').read_text()
-    events = [json.loads(x) for x in re.findall(rb'^P3C_EVENT (\{.*\})\r?$', serial, re.MULTILINE)]
+    event_records = decode_event_records(serial)
+    require(len({record['stream'] for record in event_records}) == 1, 'unexpected watch stream count')
+    events = [record['data'] for record in event_records]
     require(len(events) == 2 * cycle_count, 'missing event')
     namespace_formats = set()
     for index, event in enumerate(events):
@@ -102,11 +105,21 @@ def main():
                 require(raw.get(field) == observed.get(field), 'Browser geometry differs from IPC')
         browser_raw.append(raw_nodes)
 
-    note_groups = groups(f, 'notes', 'snapshot')
-    live_notes = [pair['notes'] for pair in sources if pair['notes']['status'] != 'UNAVAILABLE']
-    require(len(note_groups) == len(live_notes), 'missing Notes captures')
+    note_groups = []
+    pending_capped = 0
+    for group in groups(f, 'notes', 'snapshot'):
+        if group[0][1].get('capped') is True:
+            require(len(group) == 1, 'capped provisional snapshot had range requests')
+            pending_capped += 1
+        else:
+            note_groups.append((pending_capped, group))
+            pending_capped = 0
+    live_notes = [(index, pair['notes']) for index, pair in enumerate(sources) if pair['notes']['status'] != 'UNAVAILABLE']
+    require(pending_capped == 0 and len(note_groups) == len(live_notes), 'missing Notes captures')
+    require(serial.count(b'P3C_NOTES_RETRY reason=CAPPED') == sum(count for count, _ in note_groups), 'capped retry log mismatch')
     texts, revisions = [], []
-    for records, source in zip(note_groups, live_notes):
+    for (retry_count, records), (index, source) in zip(note_groups, live_notes):
+        require(events[2*index+1].get('retry_count', 0) == retry_count, 'event retry count differs from IPC')
         base, node, text, revision, failure = notes_segment(records, report['processes']['notes'])
         if source['status'] == 'OBSERVED_COMPLETE':
             require(failure is None and source['document']['text'] == text and source['revision'] == revision, 'notes transaction or revision mismatch')
@@ -173,6 +186,7 @@ def main():
             require(int(requests) == len(req) and int(written_bytes) == sum(req) and int(read_bytes) == sum(resp), 'IPC counters differ from captured frames')
     result = {'status': 'PASSED_SCOPED', 'case': case, 'cycles': cycle_count, 'events': len(events),
               'namespace_formats': sorted(namespace_formats),
+              'capped_retries': sum(count for count, _ in note_groups),
               'ipc_requests': sum(direction == b'REQ' for _, direction, _ in wire),
               'ipc_bytes_including_frame_headers': sum(int(size) + 12 for _, _, size in wire),
               'elapsed_seconds': report['elapsed_seconds'], 'resource_samples': report['thread_samples'],

@@ -2,6 +2,7 @@
 // Synthetic provider exercises the generic contract, not any WebKit API.
 #include "../../../src/user/ssg/provider_contract.hpp"
 #include "../../../src/user/ssg/watch_service.hpp"
+#include "../../../src/user/ssg/capped_retry.hpp"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QJsonDocument>
 #include <cstdio>
@@ -96,5 +97,22 @@ int main(int argc,char **argv){
     if(saved>=0){dup2(saved,1);close(saved);}
     if(descriptors[0]>=0)close(descriptors[0]);if(descriptors[1]>=0)close(descriptors[1]);
     check("redirected_sink_fails_closed",redirected && !blocked.output_ok && blocked.cycles==0);
+    uint64_t fake_now=0;unsigned attempts=0,retries=0,logged=0;bool budget=false;
+    const auto clock=[&]{return fake_now;};const auto pause=[&](uint64_t until){fake_now=until;};
+    const auto log_retry=[&](unsigned){++logged;};const auto on_budget=[&]{budget=true;};
+    bool retried=retry_capped_observation([&]{return ++attempts<3?observation_attempt::capped:observation_attempt::complete;},
+        clock,pause,log_retry,on_budget,100000000ull,retries);
+    check("capped_retry_recovers",retried && attempts==3 && retries==2 && logged==2 && !budget);
+    fake_now=0;attempts=0;logged=0;budget=false;
+    retried=retry_capped_observation([&]{++attempts;return observation_attempt::capped;},clock,pause,log_retry,on_budget,100000000ull,retries);
+    check("capped_retry_is_bounded",!retried && attempts==3 && retries==2 && logged==2 && !budget);
+    fake_now=0;attempts=0;logged=0;budget=false;
+    retried=retry_capped_observation([&]{++attempts;return observation_attempt::failed;},clock,pause,log_retry,on_budget,100000000ull,retries);
+    check("noncap_failure_is_not_retried",!retried && attempts==1 && retries==0 && logged==0);
+    fake_now=0;attempts=0;logged=0;budget=false;
+    retried=retry_capped_observation([&]{++attempts;return observation_attempt::capped;},clock,pause,log_retry,on_budget,10000000ull,retries);
+    check("capped_retry_respects_deadline",!retried && attempts==1 && retries==0 && budget);
+    auto retry_sample=sample("i1","e1","r1",1);retry_sample.retry_count=2;watch_slot retry_slot("source","i1");
+    check("retry_count_in_event",retry_slot.accept(first,retry_sample).value("retry_count").toInt(-1)==2);
     std::printf("P3C_CONTRACT_DONE checks=%d failures=%d\n",checks,failures);return failures?1:0;
 }

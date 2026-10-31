@@ -28,7 +28,10 @@ diff. It returns a reset when node continuity cannot be established, and does
 not claim complete geometry when fragments are incomplete. The Notes adapter
 reuses the revision-consistent UTF-16 range transaction; a reset, refusal or
 failure discards staged text. Its events contain text-change and length facts,
-not document contents. Unsupported geometry is explicit. The previous payload
+not document contents. A capped Notes snapshot can be retried at most twice
+within the same source deadline; each attempt is a fresh transaction, the
+retry count is reported, and persistent capping remains unknown rather than
+becoming a complete baseline. Unsupported geometry is explicit. The previous payload
 is released on denial, protection, invalidation or unavailability. Previously
 delivered authorized data is historical and cannot be retroactively erased.
 
@@ -47,7 +50,12 @@ sampled. Existing P3B paging, transaction and aggregate size bounds still apply.
 Only the prior and in-progress bounded payloads are retained for each source;
 there is no growing history.
 
-Events are written synchronously and flushed. There is **no event queue**, so
+Events are written synchronously as length- and sequence-checked base64 frame
+records. Each record is at most 256 bytes and uses one console syscall; the
+decoder must reject missing, duplicated, malformed or incomplete records and
+require a new baseline after a gap. This framing addresses interleaved console
+logs on the tested single-CPU guest; the shared console does not authenticate
+which process wrote a record. There is **no event queue**, so
 there is no queue to overflow or silently discard from. An output failure ends
 the stream, marks delivery `UNKNOWN` and requires a reset; a failed output
 channel cannot be relied on to deliver even that final marker. There is no
@@ -56,6 +64,15 @@ local event queue discarded an event; it is not downstream delivery proof. A new
 gap. The polling model can miss intermediate edits between observations, even
 when both endpoint snapshots are complete. Detection latency depends on the
 poll interval and the time to observe both sources.
+
+For each event, the console records are `P3C_EVENT_BEGIN <stream_sequence>
+<payload_bytes> <base64_bytes>`, followed by one or more `P3C_EVENT_PART
+<stream_sequence> <encoded_offset> <base64_chunk>` records and a
+`P3C_EVENT_END <stream_sequence>` record. The stream sequence starts at one for
+each watch and is distinct from the source-local sequence inside the JSON.
+Payloads are at most 8,192 bytes; chunks contain at most 96 base64 characters.
+Other console records may appear between parts. Missing parts, wrong lengths,
+duplicates, or sequence gaps are a broken stream, not an unchanged source.
 
 The current event sink requires a console-backed standard output. A redirected
 pipe or file is rejected before starting the watch because the current libc

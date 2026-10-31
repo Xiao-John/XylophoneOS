@@ -117,7 +117,7 @@ inline void *cancel_after_delay(void *argument){
 }
 #endif
 // A transaction never publishes staged text on reset, refusal or failure.
-inline bool collect_notes(Client &client,NotesBaseline &output,QString &failure,bool inject=false,bool cancel_test=false){
+inline bool collect_notes(Client &client,NotesBaseline &output,QString &failure,bool inject=false,bool cancel_test=false,bool *capped=nullptr){
     constexpr int max_units=131072,max_ranges=512,max_attempts=3,max_text_bytes=524288;
     bool injected=false;
 #ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
@@ -125,13 +125,15 @@ inline bool collect_notes(Client &client,NotesBaseline &output,QString &failure,
 #else
     (void)cancel_test;
 #endif
-    output=NotesBaseline{};
+    output=NotesBaseline{};if(capped)*capped=false;
     for(int attempt=0;attempt<max_attempts;++attempt){
         bool ok=false;const auto base=client.request({{"op","snapshot"},{"role","document"},{"visibleOnly",false},{"maxNodes",96}},&ok);
         if(!ok){failure=client.error();return false;}
         if(base.value("status")!="OK"){failure=base.value("status").toString();return false;}
         const auto nodes=base.value("nodes").toArray();
-        if(base.value("capped").toBool() || nodes.size()!=1 || base.value("sourceInstance").toString().isEmpty() || base.value("sourceEpoch").toString().isEmpty()) {failure="INVALID_SNAPSHOT";return false;}
+        if(base.value("capped").toBool() || nodes.size()!=1 || base.value("sourceInstance").toString().isEmpty() || base.value("sourceEpoch").toString().isEmpty()) {
+            if(capped)*capped=base.value("capped").toBool();
+            failure="INVALID_SNAPSHOT";return false;}
         const auto node=nodes.first().toObject();const auto access=node.value("textStatus").toString();
         if(access=="PROTECTED" || access=="NOT_AUTHORIZED"){failure=access=="PROTECTED"?"PROTECTED":"DENIED";return false;}
         if(node.value("id").toString().isEmpty()){failure="INVALID_NODE";return false;}

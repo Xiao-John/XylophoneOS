@@ -4,6 +4,7 @@
 #include "provider_contract.hpp"
 #include "multi_source.hpp"
 #include "baseline_diff.hpp"
+#include "capped_retry.hpp"
 
 namespace ssg_watch {
 using alive_callback=bool (*)(void *);
@@ -90,14 +91,21 @@ public:
         if(!available()){o.status="UNAVAILABLE";o.failure_reason="SOURCE_EXITED";}
         else {
             client_.begin_observation(budget_ns);ssg_multi::NotesBaseline b;QString failure;
-            const bool ok=ssg_multi::collect_notes(client_,b,failure);
+            const auto deadline=budget_ns>~uint64_t{0}-o.started_ns?~uint64_t{0}:o.started_ns+budget_ns;
+            const bool ok=retry_capped_observation([&]{
+                bool capped=false;
+                if(ssg_multi::collect_notes(client_,b,failure,false,false,&capped))return observation_attempt::complete;
+                return capped?observation_attempt::capped:observation_attempt::failed;
+            },[]{return xos::thread::clock();},[](uint64_t until){xos::thread::sleep_until(until);},
+            [](unsigned count){std::printf("P3C_NOTES_RETRY reason=CAPPED retry=%u\n",count);},
+            [&]{failure="SOURCE_BUDGET";},deadline,o.retry_count);
             if(ok && available()){
                 o.epoch=b.epoch;o.revision=b.revision;o.payload=std::make_shared<notes_payload>(b);
                 o.status="OBSERVED_COMPLETE";o.completeness="REVISION_CONSISTENT_OWNER_ORACLE_REQUIRED";
                 o.freshness="UNVERIFIED_AFTER_OBSERVATION";
             } else {
                 const bool live=available();
-                o.status=!live || !client_.error().isEmpty()?"UNAVAILABLE":(failure=="DENIED" || failure=="PROTECTED")?failure:
+                o.status=!live || !client_.error().isEmpty() || failure=="SOURCE_BUDGET"?"UNAVAILABLE":(failure=="DENIED" || failure=="PROTECTED")?failure:
                          (failure=="RESET_REQUIRED" || failure=="RETRY_BUDGET" || failure=="MIXED_RANGE")?"INVALIDATED":"UNKNOWN";
                 o.failure_reason=failure.isEmpty()?QStringLiteral("COLLECTION_OR_LIVENESS"):failure;
             }

@@ -5,11 +5,14 @@ import json
 from pathlib import Path
 import re
 import sys
+from ssg_watch_events import decode_event_records
 
 out = Path(sys.argv[1])
 report = json.loads((out / 'report.json').read_text())
 serial = (out / 'serial.log').read_bytes()
-events = [json.loads(value) for value in re.findall(rb'^P3C_EVENT (\{.*\})\r?$', serial, re.MULTILINE)]
+event_records = decode_event_records(serial)
+assert len({record['stream'] for record in event_records}) == 1
+events = [record['data'] for record in event_records]
 assert report['ordinary'] and report['status'] == 'OBSERVED_PENDING_INDEPENDENT_VERIFICATION'
 assert report['resources_restored'] and report['supervisor_exit'] == {'kind': 'exited', 'code': 0}
 assert len(events) == 6 and b'P3B_FRAME_' not in serial and b'SSG_ORACLE_' not in serial

@@ -11,6 +11,7 @@
 #include <cstdio>
 #include <cstring>
 #include <pthread.h>
+#include <utility>
 using namespace xos;
 using namespace ssg_multi;
 
@@ -281,14 +282,17 @@ static bool run_watch(Client &bc,Client &nc,Source &b,Source &n,bool hidden_brow
     close_token(test_pipe.read_token);close_token(test_pipe.write_token);
     const bool requested=__atomic_load_n(&input.requested,__ATOMIC_ACQUIRE)!=0;
     const bool control_failed=__atomic_load_n(&input.failed,__ATOMIC_ACQUIRE)!=0;
-    std::printf("P3C_WATCH_STOP reason=%s cycles=%u events=%u dropped=%s resync=%s aggregate=%s elapsed_ns=%llu\n",
-        control_failed?"CONTROL_ERROR":requested?"EXPLICIT_STOP":!outcome.output_ok?"OUTPUT_ERROR":outcome.cycles==cycles?"CYCLE_LIMIT":"DURATION_LIMIT",
-        outcome.cycles,outcome.events,outcome.output_ok?"0":"UNKNOWN",outcome.output_ok?"AS_NEEDED":"RESET_REQUIRED",outcome.partial?"PARTIAL":"OBSERVED_COMPLETE",
-        (unsigned long long)outcome.elapsed_ns);
-    std::printf("P3C_IPC slot=browser requests=%u read_bytes=%llu written_bytes=%llu\n",bc.request_count(),
-        (unsigned long long)bc.bytes_read(),(unsigned long long)bc.bytes_written());
-    std::printf("P3C_IPC slot=notes requests=%u read_bytes=%llu written_bytes=%llu\n",nc.request_count(),
-        (unsigned long long)nc.bytes_read(),(unsigned long long)nc.bytes_written());
+    const char *reason=control_failed?"CONTROL_ERROR":requested?"EXPLICIT_STOP":!outcome.output_ok?"OUTPUT_ERROR":outcome.cycles==cycles?"CYCLE_LIMIT":"DURATION_LIMIT";
+    const auto stop_record=QByteArray("\nP3C_WATCH_STOP reason=")+reason+" cycles="+QByteArray::number(outcome.cycles)+
+        " events="+QByteArray::number(outcome.events)+" dropped="+(outcome.output_ok?"0":"UNKNOWN")+
+        " resync="+(outcome.output_ok?"AS_NEEDED":"RESET_REQUIRED")+" aggregate="+(outcome.partial?"PARTIAL":"OBSERVED_COMPLETE")+
+        " elapsed_ns="+QByteArray::number(outcome.elapsed_ns)+'\n';
+    if(!ssg_watch::write_event_record(stop_record))outcome.output_ok=false;
+    for(const auto &entry:{std::make_pair("browser",&bc),std::make_pair("notes",&nc)}){
+        const auto record=QByteArray("\nP3C_IPC slot=")+entry.first+" requests="+QByteArray::number(entry.second->request_count())+
+            " read_bytes="+QByteArray::number(entry.second->bytes_read())+" written_bytes="+QByteArray::number(entry.second->bytes_written())+'\n';
+        if(!ssg_watch::write_event_record(record))outcome.output_ok=false;
+    }
     return outcome.output_ok && !control_failed;
 }
 int main(int argc,char **argv){
@@ -299,7 +303,7 @@ int main(int argc,char **argv){
     const bool notes_text=app.arguments().contains("--notes-text") && !app.arguments().contains("--notes-denied");
     const bool browser_text=app.arguments().contains("--browser-text") && !app.arguments().contains("--browser-denied");
     const bool watch=app.arguments().contains("--watch");unsigned watch_interval=0,watch_duration=0,watch_cycles=0,watch_timeout=0;
-    if(watch && !isatty(1))return 2;
+    if(watch && (!isatty(1) || sdk::syscall(sys_process_stdio,0,1)!=1))return 2;
     if(watch && (!watch_number(app.arguments(),"--watch-interval",5,1,30,watch_interval) ||
        !watch_number(app.arguments(),"--watch-duration",120,1,3600,watch_duration) ||
        !watch_number(app.arguments(),"--watch-cycles",12,1,1024,watch_cycles) ||
@@ -323,11 +327,15 @@ int main(int argc,char **argv){
     const bool cancel_test=dynamic && std::strcmp(argv[3],"--test-notes-cancel")==0;
     const bool watch_browser_test=dynamic && std::strcmp(argv[3],"--test-watch-browser")==0;
     const bool watch_cancel_test=dynamic && std::strcmp(argv[3],"--test-watch-cancel")==0;
+    const bool watch_capped_test=dynamic && std::strcmp(argv[3],"--test-watch-capped")==0;
+    const bool watch_capped_always_test=dynamic && std::strcmp(argv[3],"--test-watch-capped-always")==0;
     if(timeout_test)notes_fault="--ssg-test-timeout";
     if(truncated_test)notes_fault="--ssg-test-truncated";
     if(cancel_test)notes_fault="--ssg-test-cancel-stall";
     if(watch_cancel_test)notes_fault="--ssg-test-cancel-stall";
-    hidden_notes=!dynamic || browser_exit_test || browser_revoke_test || browser_reload_test || browser_scroll_test || cross_exit_test || pipe_isolation_test || timeout_test || truncated_test || cancel_test || watch_browser_test || watch_cancel_test;
+    if(watch_capped_test)notes_fault="--ssg-test-capped-once";
+    if(watch_capped_always_test)notes_fault="--ssg-test-capped-always";
+    hidden_notes=!dynamic || browser_exit_test || browser_revoke_test || browser_reload_test || browser_scroll_test || cross_exit_test || pipe_isolation_test || timeout_test || truncated_test || cancel_test || watch_browser_test || watch_cancel_test || watch_capped_test || watch_capped_always_test;
     hidden_browser=dynamic && !hidden_notes;
 #endif
     if(!launch(b,"/bin/browser.elf",browser,browser_text,hidden_browser) || !launch(n,"/bin/notes.elf",notes,notes_text,hidden_notes,notes_fault)){

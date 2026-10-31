@@ -23,6 +23,22 @@ public:
     virtual bool observations_ready(unsigned,const observation &,const observation &){return true;}
     virtual bool cycle_complete(unsigned){return true;}
 };
+// Each console write is a bounded single syscall. The leading newline makes
+// each record independently recognizable even among unrelated process logs.
+inline bool write_event_record(const QByteArray &record){
+    if(record.isEmpty() || record.size()>256)return false;
+    return xos::sdk::write(1,record.constData(),unsigned(record.size()))==record.size();
+}
+inline bool emit_event_frame(const QJsonObject &event,unsigned sequence){
+    const auto payload=QJsonDocument(event).toJson(QJsonDocument::Compact);
+    if(payload.isEmpty() || payload.size()>8192 || std::fflush(stdout)!=0)return false;
+    const auto encoded=payload.toBase64();const auto number=QByteArray::number(sequence);
+    if(!write_event_record(QByteArray("\nP3C_EVENT_BEGIN ")+number+' '+QByteArray::number(payload.size())+' '+QByteArray::number(encoded.size())+'\n'))return false;
+    for(int offset=0;offset<encoded.size();offset+=96){
+        if(!write_event_record(QByteArray("\nP3C_EVENT_PART ")+number+' '+QByteArray::number(offset)+' '+encoded.mid(offset,96)+'\n'))return false;
+    }
+    return write_event_record(QByteArray("\nP3C_EVENT_END ")+number+'\n');
+}
 inline void recheck_provider(provider_adapter &provider,observation &o){
     if(!provider.available()){
         o.status="UNAVAILABLE";o.failure_reason="SOURCE_EXITED";o.completeness="NOT_OBSERVED";
@@ -37,14 +53,16 @@ inline watch_outcome run_watch_loop(provider_adapter &first,provider_adapter &se
     watch_outcome result;result.started_ns=xos::thread::clock();
     // Newlib's pipe-backed stdout can block without a deadline. Until an
     // independently bounded sink exists, do not start on redirected stdout.
-    if(!isatty(1)){result.output_ok=false;return result;}
+    if(!isatty(1) || xos::sdk::syscall(xos::sys_process_stdio,0,1)!=1){result.output_ok=false;return result;}
     if(options.interval_seconds<1 || options.interval_seconds>30 || options.duration_seconds<1 || options.duration_seconds>3600 ||
        options.max_cycles<1 || options.max_cycles>1024 || options.source_timeout_seconds<1 || options.source_timeout_seconds>300){
         result.output_ok=false;std::printf("P3C_WATCH_ERROR reason=INVALID_BOUNDS\n");return result;
     }
     const u64 deadline=result.started_ns+u64(options.duration_seconds)*1000000000ull;
-    std::printf("P3C_WATCH_STARTED interval_s=%u duration_s=%u max_cycles=%u source_timeout_s=%u globalAtomicSnapshot=NOT_IMPLEMENTED\n",
-                options.interval_seconds,options.duration_seconds,options.max_cycles,options.source_timeout_seconds);
+    const auto start_record=QByteArray("\nP3C_WATCH_STARTED interval_s=")+QByteArray::number(options.interval_seconds)+
+        " duration_s="+QByteArray::number(options.duration_seconds)+" max_cycles="+QByteArray::number(options.max_cycles)+
+        " source_timeout_s="+QByteArray::number(options.source_timeout_seconds)+" globalAtomicSnapshot=NOT_IMPLEMENTED\n";
+    if(std::fflush(stdout)!=0 || !write_event_record(start_record)){result.output_ok=false;return result;}
     while(result.cycles<options.max_cycles && !control.stopped()){
         auto now=xos::thread::clock();if(now>=deadline)break;
         const u64 first_budget=qMin(u64(options.source_timeout_seconds)*1000000000ull,deadline-now);
@@ -62,13 +80,14 @@ inline watch_outcome run_watch_loop(provider_adapter &first,provider_adapter &se
         const auto a_event=first_slot.accept(first,std::move(a));
         const auto b_event=second_slot.accept(second,std::move(b));
         for(const auto &event:{a_event,b_event}){
-            const auto bytes=QJsonDocument(event).toJson(QJsonDocument::Compact);
-            if(bytes.size()>8192 || std::printf("P3C_EVENT %s\n",bytes.constData())<0 || std::fflush(stdout)!=0){result.output_ok=false;break;}
+            if(!emit_event_frame(event,result.events+1)){result.output_ok=false;break;}
             ++result.events;
         }
         if(!result.output_ok)break;
         ++result.cycles;
-        std::printf("P3C_CYCLE_READY cycle=%u aggregate=%s\n",result.cycles,result.partial?"PARTIAL":"OBSERVED_COMPLETE");
+        const auto cycle_record=QByteArray("\nP3C_CYCLE_READY cycle=")+QByteArray::number(result.cycles)+
+            " aggregate="+(result.partial?"PARTIAL":"OBSERVED_COMPLETE")+'\n';
+        if(!write_event_record(cycle_record)){result.output_ok=false;break;}
         if(!hooks.cycle_complete(result.cycles)){result.output_ok=false;break;}
         if(result.cycles==options.max_cycles)break;
         const u64 next=qMin(deadline,xos::thread::clock()+u64(options.interval_seconds)*1000000000ull);

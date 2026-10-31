@@ -23,7 +23,7 @@ if not out.is_relative_to(root) or out.exists():
 out.mkdir(parents=True)
 PY
 failures=0
-for test_case in revoke protect-document protect-ancestor; do
+for test_case in edit revoke protect-document protect-ancestor; do
     python3 tests/ssg_p3b_guest.py --image "$XOS_IMAGE" --supervisor "$xos_build/supervisor-test/supervisor-test.elf" \
         --browser "$xos_p3b/browser-test/browser.elf" --notes "$xos_p3b/notes-test/notes.elf" \
         --input tests/fixtures/ssg_browser/p2f.html --case "$test_case" --output "$xos_out/$test_case" > "$xos_out/$test_case.run.log" 2>&1

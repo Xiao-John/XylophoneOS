@@ -13,9 +13,10 @@ import tempfile
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / 'scripts'))
+sys.path[:0] = [str(ROOT / 'scripts'), str(ROOT / 'tests')]
 from export_ssg_p3b_evidence import scan_blob, scan_encoded_records
 from ssg_public_paths import portable
+from ssg_watch_events import decode_event_records
 
 
 def digest(data):
@@ -63,6 +64,9 @@ def main():
         scan_blob(data, path.name)
         if path.name.endswith('serial.log'):
             scan_encoded_records(data, path.name)
+            if b'P3C_EVENT_BEGIN ' in data:
+                for record in decode_event_records(data, require_stop=False):
+                    scan_blob(record['payload'], path.name + '-decoded-event.json')
         return raw, data
 
     build_manifest = a.build / 'manifest.json'
@@ -70,7 +74,7 @@ def main():
     (out / 'build-manifest.json').write_bytes(data)
     index['loose_files']['build-manifest.json'] = {'raw_sha256': digest(raw), 'exported_sha256': digest(data)}
     allowed = {'serial.log', 'guest_serial.log', 'report.json', 'summary.json', 'comparison.json', 'diagnostic-inputs.json',
-               'independent-check.json', 'ordinary-check.json', 'cancel-check.json', 'timeout-check.json',
+               'independent-check.json', 'ordinary-check.json', 'cancel-check.json', 'timeout-check.json', 'partial-check.json', 'capped-check.json',
                'synthetic-input.txt', 'browser.receipt.json', 'status.txt'}
     for name in a.cases:
         if '/' in name or name in ('.', '..'):
@@ -79,7 +83,8 @@ def main():
         if folder.parent != root or not folder.is_dir():
             raise ValueError('case is not directly under results root')
         files = sorted(path for path in folder.rglob('*') if path.is_file() and not path.is_symlink() and path.name in allowed
-                       and not (path.name == 'guest_serial.log' and (path.parent / 'serial.log').is_file()))
+                       and not (path.name == 'guest_serial.log' and ((path.parent / 'serial.log').is_file() or
+                                any(path.parent.glob('run-*/serial.log')))))
         if not files:
             raise ValueError('case has no selected evidence: ' + name)
         memory = io.BytesIO()

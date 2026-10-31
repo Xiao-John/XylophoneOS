@@ -14,6 +14,7 @@ struct observation {
     QString status, completeness, freshness, failure_reason;
     QJsonObject capabilities;
     uint64_t started_ns=0, ended_ns=0;
+    unsigned retry_count=0;
     std::shared_ptr<const provider_payload> payload;
 };
 
@@ -111,6 +112,7 @@ public:
             {"observation_end",current.ended_ns>=current.started_ns?QJsonValue(QString::number(current.ended_ns)):QJsonValue(QJsonValue::Null)},
             {"observation_scope",current.scope},{"presentation_state",current.presentation},
             {"capability_set",current.capabilities},{"event_type",kind},
+            {"retry_count",int(current.retry_count)},
             {"completeness",current.completeness},{"freshness",current.freshness},
             {"failure_reason",reason},{"summary",summary},
             {"baseline_state",current.status=="OBSERVED_COMPLETE" && current.payload?"CURRENT_OBSERVATION":"HISTORICAL_OR_ABSENT"}};

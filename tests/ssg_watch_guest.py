@@ -31,7 +31,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     for name in ('image', 'supervisor', 'browser', 'notes', 'input', 'browser-receipt', 'output'):
         p.add_argument('--' + name, type=Path, required=True)
-    p.add_argument('--case', choices=('baseline', 'stop', 'cancel-inflight', 'edit', 'scroll', 'reload', 'revoke',
+    p.add_argument('--case', choices=('baseline', 'stop', 'cancel-inflight', 'cap-retry', 'cap-persistent', 'edit', 'scroll', 'reload', 'revoke',
                                      'protect-document', 'protect-ancestor', 'browser-exit', 'notes-exit', 'notes-timeout'), default='baseline')
     p.add_argument('--ordinary', action='store_true', help='use the non-diagnostic programs for the baseline case')
     a = p.parse_args()
@@ -75,8 +75,9 @@ def main():
             guest.expect(b'[display-service] ready')
             report['active_display'] = resources(guest)
             start = len(guest.output)
-            browser_visible = a.case in ('baseline', 'stop', 'cancel-inflight', 'scroll', 'reload', 'browser-exit', 'notes-timeout')
-            mode = ('--test-watch-cancel' if a.case == 'cancel-inflight' else '--test-notes-timeout' if a.case == 'notes-timeout' else
+            browser_visible = a.case in ('baseline', 'stop', 'cancel-inflight', 'cap-retry', 'cap-persistent', 'scroll', 'reload', 'browser-exit', 'notes-timeout')
+            mode = ('--test-watch-cancel' if a.case == 'cancel-inflight' else '--test-watch-capped' if a.case == 'cap-retry' else
+                    '--test-watch-capped-always' if a.case == 'cap-persistent' else '--test-notes-timeout' if a.case == 'notes-timeout' else
                     '--test-watch-browser' if browser_visible else '--test-watch-notes')
             if a.ordinary:
                 mode = '--notes-hidden'

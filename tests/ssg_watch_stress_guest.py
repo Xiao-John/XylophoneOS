@@ -20,6 +20,7 @@ from make_work_disk import create_fat32
 from process_smoke import command, resources
 from ssg_p3b_guest import fixture, key
 from ssg_public_paths import portable
+from ssg_watch_events import decode_event_records
 from task_smoke import send_bytes
 from work_disk import transfer
 
@@ -109,6 +110,8 @@ def main():
                         raise AssertionError('missing distinct process identities')
                     report['processes'] = dict(zip(('supervisor', 'browser', 'notes'), map(int, ids.groups())))
                     report['source_exits'] = [line.decode() for line in output.splitlines() if line.startswith(b'P3B_SOURCE_EXIT ')]
+                    reclaimed = {int(pid): int(pages) for pid, pages in re.findall(rb'\[task\] event=reclaimed pid=(\d+) pages=(\d+)', output)}
+                    report['reclaimed_pages'] = {slot: reclaimed.get(pid) for slot, pid in report['processes'].items()}
                     wait = re.search(rb'\[wait\] pid=' + str(report['processes']['supervisor']).encode() + rb' kind=(\w+) code=(-?\d+)', output)
                     report['supervisor_exit'] = {'kind': wait[1].decode(), 'code': int(wait[2])} if wait else None
                     report['thread_samples'] = [line.decode() for line in output.splitlines() if line.startswith((b'EDITOR_SAMPLE ', b'BROWSER_SAMPLE '))]
@@ -128,10 +131,19 @@ def main():
                     if checked.returncode:
                         raise AssertionError('independent verifier failed')
                     verified = json.loads((case / 'independent-check.json').read_text())
+                    emitted = [record['data'] for record in decode_event_records(output)]
+                    dropped = re.search(rb'P3C_WATCH_STOP .* dropped=(\d+)', output)
+                    if not dropped:
+                        raise AssertionError('drop counter missing')
                     item.update({'status': verified['status'], 'elapsed_seconds': report['elapsed_seconds'],
-                                 'observations': 6, 'change_events': 2, 'resyncs': 0, 'dropped_events': 0,
+                                 'observations': len(emitted),
+                                 'change_events': sum(event['event_type'] == 'SOURCE_CHANGED' for event in emitted),
+                                 'resyncs': sum(event['event_type'] in ('RESET_REQUIRED', 'SOURCE_REPLACED') for event in emitted),
+                                 'retries': sum(event.get('retry_count', 0) for event in emitted),
+                                 'dropped_events': int(dropped[1]),
                                  'ipc_requests': verified['ipc_requests'], 'ipc_bytes': verified['ipc_bytes_including_frame_headers'],
                                  'source_exits': report['source_exits'], 'resource_samples': report['thread_samples'],
+                                 'reclaimed_pages': report['reclaimed_pages'],
                                  'resources_restored': report['resources_restored']})
                 except Exception as exc:
                     item['error'] = repr(exc)

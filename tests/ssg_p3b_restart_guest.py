@@ -69,6 +69,7 @@ def main():
                 (case_dir / 'synthetic-input.txt').write_text(fixture(), encoding='utf-8')
                 start = len(guest.output)
                 mode = '' if i == 1 else ' --old-instance ' + old_instance
+                mode += ' --browser-text --notes-text'
                 send_bytes(guest, ('exec-driver /bin/multi.elf /web/ssg.html /synthetic.txt' + mode + '\r').encode())
                 guest.expect(b'P3B_BOTH_STARTED', start=start, timeout=150)
                 guest.expect(b'P3B_CAPTURE_COMPLETE', start=start, timeout=360)

@@ -79,7 +79,7 @@ def main():
                 started = time.monotonic()
                 item = {'run': i, 'status': 'FAILED', 'timeout': False}
                 try:
-                    send_bytes(guest, b'exec-driver /bin/multi.elf /web/ssg.html /synthetic.txt\r')
+                    send_bytes(guest, b'exec-driver /bin/multi.elf /web/ssg.html /synthetic.txt --browser-text --notes-text\r')
                     guest.expect(b'P3B_BOTH_STARTED', start=start, timeout=150)
                     guest.expect(b'P3B_CAPTURE_COMPLETE', start=start, timeout=360)
                     key(guest, 'esc')

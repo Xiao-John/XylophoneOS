@@ -32,10 +32,15 @@ def check_source_metadata(source):
 
 def check_wiring(serial, report, sources):
     require(report.get('status') == 'OBSERVED_PENDING_INDEPENDENT_VERIFICATION', 'guest runner did not complete successfully')
-    expected_code = 1 if report.get('case') == 'notes-denied' else 0
+    expected_code = 1 if report.get('case') in ('notes-denied', 'default-denied') else 0
     require(report.get('supervisor_exit') == {'kind': 'exited', 'code': expected_code}, 'supervisor exit status was not expected')
     pids = report['processes']
     require(len(set(pids.values())) == 3, 'process roles are not distinct')
+    case = report.get('case')
+    browser_granted = case not in ('browser-denied', 'default-denied')
+    notes_granted = case not in ('notes-denied', 'default-denied')
+    require(('P3B_SCOPE browser_text=%d notes_text=%d' % (browser_granted, notes_granted)).encode() in serial,
+            'explicit source scope marker missing')
     for slot in ('browser', 'notes'):
         pid = str(pids[slot]).encode()
         supervisor = str(pids['supervisor']).encode()

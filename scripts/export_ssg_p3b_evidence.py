@@ -154,7 +154,7 @@ def main():
         (out / (label + '.tar.gz')).write_bytes(data)
         exported['archives'][label] = {'sha256': sha(data), 'members': len(entries)}
 
-    cases = ('baseline', 'ordinary', 'ordinary-sample', 'ordinary-plain', 'notes-denied', 'browser-denied', 'edit', 'revoke',
+    cases = ('baseline', 'ordinary', 'ordinary-sample', 'ordinary-plain', 'default-denied', 'ordinary-default-denied', 'notes-denied', 'browser-denied', 'edit', 'revoke',
              'protect-document', 'protect-ancestor', 'browser-revoke', 'browser-reload', 'browser-scroll',
              'pipe-isolation', 'notes-exit', 'browser-exit', 'browser-exit-during-notes', 'notes-timeout', 'notes-truncated', 'notes-cancel',
              'restart', 'diff-contract', 'stress')

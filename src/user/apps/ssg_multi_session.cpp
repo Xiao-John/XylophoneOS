@@ -141,8 +141,11 @@ static bool shutdown(Source &a,Source &b){
 int main(int argc,char **argv){
     QCoreApplication app(argc,argv);
     const char *browser=argc>1?argv[1]:"/web/ssg.html",*notes=argc>2?argv[2]:"/synthetic.txt";
-    const bool notes_text=!app.arguments().contains("--notes-denied");
-    const bool browser_text=!app.arguments().contains("--browser-denied");
+    // Each text scope is an independent, explicit session grant. A refusal
+    // takes precedence if contradictory switches are supplied.
+    const bool notes_text=app.arguments().contains("--notes-text") && !app.arguments().contains("--notes-denied");
+    const bool browser_text=app.arguments().contains("--browser-text") && !app.arguments().contains("--browser-denied");
+    std::printf("P3B_SCOPE browser_text=%d notes_text=%d\n",int(browser_text),int(notes_text));
     Source b{"browser"},n{"notes"};
     bool hidden_notes=app.arguments().contains("--notes-hidden"),hidden_browser=false,dynamic=false;
     const char *notes_fault=nullptr;

@@ -8,8 +8,11 @@ only that source's provider ends at spawn, and retains the opposite ends itself.
 One request per source can be in flight; there is no unbounded request queue.
 The source slot is assigned by this wiring, not by a document, request, model, or
 provider-supplied type. The child PID and source fields are consistency checks,
-not grants or authentication. Permission remains an explicit session choice and
-an application-owner decision. Neither source receives the other's pipe ends.
+not grants or authentication. Text access is denied by default for each source;
+the trusted caller must opt in independently using `--browser-text` and
+`--notes-text`, subject to the application owner's decision. An explicit
+`--browser-denied` or `--notes-denied` overrides the corresponding grant.
+Neither source receives the other's pipe ends.
 
 The current display service admits one exclusive Surface. An explicitly requested
 `--notes-hidden` session runs the actual Notes document and widget tree without a

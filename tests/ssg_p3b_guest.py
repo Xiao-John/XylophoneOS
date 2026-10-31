@@ -69,6 +69,8 @@ def main():
         p.add_argument('--' + name, type=Path, required=True)
     p.add_argument('--notes-denied', action='store_true')
     p.add_argument('--browser-denied', action='store_true')
+    p.add_argument('--default-denied', action='store_true', help='grant neither source text access')
+    p.add_argument('--ordinary-default-denied', action='store_true', help='check default denial in the ordinary build')
     p.add_argument('--ordinary', action='store_true', help='exercise non-diagnostic supervisor and Notes with explicit aggregate output')
     p.add_argument('--ordinary-sample', action='store_true', help='exercise two ordinary observations and their per-source Diff')
     p.add_argument('--old-instance', help='test a source instance captured from an earlier session')
@@ -78,10 +80,11 @@ def main():
     out = a.output.resolve()
     relative = out.relative_to(ROOT / 'build')
     out.mkdir(parents=True, exist_ok=False)
-    report = {'status': 'FAILED', 'case': 'notes-denied' if a.notes_denied else 'browser-denied' if a.browser_denied else 'ordinary-sample' if a.ordinary_sample else 'ordinary' if a.ordinary else 'old-instance' if a.old_instance else a.case,
+    report = {'status': 'FAILED', 'case': 'default-denied' if a.default_denied or a.ordinary_default_denied else 'notes-denied' if a.notes_denied else 'browser-denied' if a.browser_denied else 'ordinary-sample' if a.ordinary_sample else 'ordinary' if a.ordinary else 'old-instance' if a.old_instance else a.case,
               'inputs': {name: {'sha256': sha(getattr(a, name))}
                          for name in ('image', 'supervisor', 'browser', 'notes', 'input')},
               'events': [], 'qmp_events': []}
+    report['ordinary_default_denied'] = a.ordinary_default_denied
     report['runner_sha256'] = sha(ROOT / 'tests/ssg_p3b_guest.py')
     browser_receipt = a.browser.with_suffix('.portable.receipt.json')
     if browser_receipt.is_file():
@@ -128,9 +131,13 @@ def main():
             report['active_display'] = resources(guest)
             start = len(guest.output)
             mode = (' --notes-hidden --emit-aggregate --sample-twice --sample-interval 1' if a.ordinary_sample else
+                    ' --notes-hidden --emit-aggregate' if a.ordinary_default_denied else
                     ' --notes-hidden --emit-aggregate' if a.ordinary else ' --notes-denied' if a.notes_denied else
                     ' --browser-denied' if a.browser_denied else (' --old-instance ' + a.old_instance) if a.old_instance else
                     (' --test-' + a.case if a.case != 'baseline' else ''))
+            if not (a.default_denied or a.ordinary_default_denied):
+                if not a.browser_denied: mode += ' --browser-text'
+                if not a.notes_denied: mode += ' --notes-text'
             send_bytes(guest, ('exec-driver /bin/multi.elf /web/ssg.html /synthetic.txt' + mode + '\r').encode())
             guest.expect(b'P3B_BOTH_STARTED', start=start, timeout=150)
             if a.case not in ('baseline', 'notes-timeout', 'notes-truncated', 'notes-cancel', 'pipe-isolation'):
@@ -188,10 +195,10 @@ def main():
             report['shutdown'] = {'elapsed_ns': int(shutdown[1]), 'clean': shutdown[2] == b'1'} if shutdown else None
             report['aggregate'] = next((line.decode() for line in output.splitlines() if line.startswith(b'P3B_AGGREGATE ')), None)
             report['resources_restored'] = report['active_display'] == report['after']
-            expected_code = 1 if a.notes_denied else 0
+            expected_code = 1 if a.notes_denied or a.default_denied or a.ordinary_default_denied else 0
             if report['supervisor_exit'] != {'kind': 'exited', 'code': expected_code}:
                 raise AssertionError('supervisor exit was not the expected result')
-            if b'P3B_AGGREGATE status=AGGREGATE_COMPLETE_OBSERVED browser=1 notes=1' in output and not a.notes_denied and not a.browser_denied:
+            if b'P3B_AGGREGATE status=AGGREGATE_COMPLETE_OBSERVED browser=1 notes=1' in output and not a.notes_denied and not a.browser_denied and not a.default_denied and not a.ordinary_default_denied:
                 if a.case == 'edit' and b'P3B_DIFF browser=UNCHANGED notes=CHANGED' not in output:
                     raise AssertionError('cross-app edit was not isolated')
                 if a.case in ('revoke', 'protect-document', 'protect-ancestor'):
@@ -223,6 +230,8 @@ def main():
             elif b'P3B_AGGREGATE status=AGGREGATE_PARTIAL browser=1 notes=0' in output and a.notes_denied:
                 report['status'] = 'OBSERVED_PENDING_INDEPENDENT_VERIFICATION'
             elif b'P3B_AGGREGATE status=AGGREGATE_PARTIAL browser=0 notes=1' in output and a.browser_denied and b'P3B_BROWSER_DENIAL_RECHECK refused=1 notes_alive=1' in output:
+                report['status'] = 'OBSERVED_PENDING_INDEPENDENT_VERIFICATION'
+            elif b'P3B_AGGREGATE status=AGGREGATE_PARTIAL browser=0 notes=0' in output and (a.default_denied or a.ordinary_default_denied):
                 report['status'] = 'OBSERVED_PENDING_INDEPENDENT_VERIFICATION'
             else:
                 raise AssertionError('aggregate did not have expected status')

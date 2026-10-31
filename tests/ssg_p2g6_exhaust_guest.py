@@ -27,6 +27,8 @@ from work_disk import transfer
 from process_smoke import command, resources
 from task_smoke import send_bytes, pump
 from ssg_browser_structure import decode_capture, validate_capture, validate_resource_rejection
+from ssg_public_paths import portable
+import shutil
 
 p = argparse.ArgumentParser(description=__doc__)
 for name in ('image', 'session', 'browser', 'consumer', 'output', 'input'):
@@ -62,7 +64,25 @@ if image_format == 'auto':
     image_format = 'iso' if inputs['image'].suffix.lower() == '.iso' else 'floppy'
 report['image_format'] = image_format
 g = None
+disk = None
 capture = None
+
+def public_mappings():
+    mappings = [("XOS_IMAGE", inputs["image"]), ("XOS_SESSION_ELF", inputs["session"]),
+                ("XOS_BROWSER_ELF", inputs["browser"]), ("XOS_CONSUMER_ELF", inputs["consumer"]),
+                ("XOS_INPUT", inputs["input"]), ("XOS_TEST_OUT", out),
+                ("XOS_BROWSER_BUILD_DIR", inputs["browser"].parent),
+                ("XOS_WORK_DISK", disk), ("XOS_QMP_SOCKET", g.qmp_path if g else None),
+                ("XOS_QEMU", g.command[0] if g else None), ("XOS_PYTHON", sys.executable),
+                ("XOS_CXX", shutil.which("x86_64-elf-g++")),
+                ("XOS_CC", shutil.which("x86_64-elf-gcc")),
+                ("XOS_AR", shutil.which("x86_64-elf-ar"))]
+    for name in ("XOS_SDK_PREFIX", "XOS_BUILD_DIR", "XOS_QT_SOURCE", "XOS_HOST_QT",
+                 "XOS_BINUTILS", "XOS_BASE_ROOT", "XOS_WORKSPACE", "XOS_TOOLCHAIN_PREFIX",
+                 "XOS_HOST_HOME", "XOS_CODEX_RUNTIME", "XOS_PYTHON_FRAMEWORK"):
+        if os.environ.get(name):
+            mappings.append((name, os.environ[name]))
+    return mappings
 events = []
 
 
@@ -83,8 +103,9 @@ def verify_test_receipt():
         matches = [digest for filename, digest in receipt.get('inputs', {}).items()
                    if filename.endswith('/' + relative)]
         require(matches == [sha((ROOT / relative).read_bytes())], 'Browser receipt source mismatch: ' + relative)
-    (out / 'browser.receipt.json').write_bytes(raw)
-    report['inputs']['browser_receipt'] = {'path': str(path), 'sha256': sha(raw)}
+    public_receipt = (json.dumps(portable(receipt, public_mappings(), strict=True), indent=2) + '\n').encode()
+    (out / 'browser.receipt.json').write_bytes(public_receipt)
+    report['inputs']['browser_receipt'] = {'path': str(out / 'browser.receipt.json'), 'sha256': sha(public_receipt), 'original_sha256': sha(raw)}
     report['source_checkout'] = {
         'head': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
         'tracked_changes': subprocess.check_output(['git', 'diff', '--name-only', 'HEAD'], cwd=ROOT, text=True).splitlines(),
@@ -285,7 +306,8 @@ finally:
             report['status'] = 'FAILED'
             report['frame_error'] = repr(error)
         g.close()
-    (out / 'qmp-events.json').write_text(json.dumps(events, indent=2) + '\n')
-    (out / 'report.json').write_text(json.dumps(report, indent=2, ensure_ascii=False) + '\n')
+    report['qemu_command_kind'] = 'template; the runner creates the work disk and QMP socket'
+    (out / 'qmp-events.json').write_text(json.dumps(portable(events, public_mappings(), strict=True), indent=2) + '\n')
+    (out / 'report.json').write_text(json.dumps(portable(report, public_mappings(), strict=True), indent=2, ensure_ascii=False) + '\n')
 if report['status'] not in ('OBSERVED', 'PASSED_SCOPED'):
     sys.exit(1)

@@ -61,7 +61,7 @@ for x,y in zip(a['nodes'],b['nodes']):
 m=re.search(rb'^SSG_CONSUMER_DIFF_JSON (.+)\r?$',serial,re.M);require(m is not None,'missing diff JSON');actual=json.loads(m.group(1))
 require(actual['status']=='OK' and actual['changes']==expected, 'consumer diff disagrees with independent calculation')
 require(report['after']==report['display'], 'resource counters changed')
-require(hashlib.sha256(Path(report['inputs']['input']['path']).read_bytes()).hexdigest()==report['inputs']['input']['sha256'], 'document hash changed')
+require(hashlib.sha256((out/'input.html').read_bytes()).hexdigest()==report['inputs']['input']['sha256'], 'document hash changed')
 (out/'diff.json').write_text(json.dumps(actual,ensure_ascii=False,indent=2)+'\n')
 (out/'independent-check.json').write_text(json.dumps({'status':'PASSED_SCOPED','pages':[len(segments[0][1]),len(segments[2][1])], 'interrupted_pages':len(failed)-1, 'stale_session':old, 'recovered_session':b['sessionId'],'nodes':[len(a['nodes']),len(b['nodes'])],'scroll':[a['scrollY'],b['scrollY']],'change_counts':dict(Counter(c['kind'] for c in expected)),'identity':'same complete preorder ID/parent/role/tag within one epoch','document_sha256':report['inputs']['input']['sha256'],'resource_counters_match':True},indent=2)+'\n')
 print('independent A/B verification passed')

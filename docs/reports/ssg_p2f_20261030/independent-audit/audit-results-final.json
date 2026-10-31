@@ -4,7 +4,7 @@
   "does_not_parse_source_HTML_to_generate_answers": true,
   "production_validator_imported": false,
   "auditor_script_sha256": "7ead967ca1b4fedf1c196b08cac38082085f7e6fa8c1d8f3fb1ab225e642867f",
-  "runs_root": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f_runs",
+  "runs_root": "${XOS_ROOT}/build/ssg_p2f_runs",
   "results": [
     {
       "run": "p2d-oracle-03",
@@ -233,7 +233,7 @@
       "status": "FAILED_ATTEMPT_PRESERVED",
       "guest_boot_observed": false,
       "serial_bytes": 0,
-      "qemu_error": "qemu-system-x86_64: -qmp unix:/tmp/xos_eswhft5c/qmp.sock,server=on,wait=off: Failed to bind socket to /tmp/xos_eswhft5c/qmp.sock: Operation not permitted"
+      "qemu_error": "qemu-system-x86_64: -qmp unix:${XOS_QMP_SOCKET},server=on,wait=off: Failed to bind socket to ${XOS_QMP_SOCKET}: Operation not permitted"
     }
   ]
 }

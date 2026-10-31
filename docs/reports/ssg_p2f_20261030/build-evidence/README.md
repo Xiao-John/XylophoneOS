@@ -8,13 +8,15 @@ This package records a completed local build of the system, matching threading S
 | --- | --- |
 | `summary.json` | Source identity, official input validation basis, tool binary hashes, system/SDK identities, ELF hashes and final receipt checks |
 | `COMMANDS.md` | Full top-level configure/build/install command index with provenance and return codes |
-| `build-records.tar.gz` | 151 complete records: raw logs, original manifests/receipts, selected build scripts/locks, generated Qt/QEMU command graphs |
+| `build-records.tar.gz` | 151 records: path-sanitized logs and manifest/receipt copies, selected build scripts/locks, generated Qt/QEMU command graphs |
 | `inventory.json` | Every original/exported record's size and SHA-256; explicit exclusions; hashes of derived members |
 | `redactions.json` | Exactly which exported copies changed and why |
 | `SHA256SUMS` | Checksums of all other files in this directory |
 | `package_build_evidence.py` | Packaging procedure; it only reads existing records and writes this directory |
 
-The archive is **1,301,727 bytes** (1.241 MiB). All archive paths are relative, all members are regular files, and no ELF, disk image, static library, downloaded source archive or firmware blob is included. The original local logs were not modified. Archive SHA-256: `4479e50c90029ceba8c82ee4d706550766d1978c115f86ce64d795efbd106356`.
+The exported archive contains 151 records with normalized owner metadata and path-sanitized member content. The local originals were not modified. Exported archive SHA-256: e1abea1cf12d67338ce3c86475963c33cfbd3543f47e43ecfa2f0137209d0af1. The inventory records original and exported member hashes.
+
+The following descriptions refer to historical build records. Exported copies may contain path templates, and their hashes are recorded in the inventory.
 
 ## Evidence map
 
@@ -32,7 +34,7 @@ Archive paths preserve repository-relative locations:
 
 GCC, Binutils, newlib and Qt source SHA-256 values matched the existing repository locks or pinned build-script hashes. Official host Qt 6.8.3 packages were selected from Qt's `Updates.xml`, matched their official per-file SHA-1, and have separately recorded SHA-256 fingerprints. NASM and QEMU came from official HTTPS release URLs and have recorded SHA-256 fingerprints; this package does **not** claim an independently verified upstream SHA-256 or signature for either. QEMU's final archive passed `xz` integrity validation. The original NASM `verified: true` record means successful retrieval/local fingerprinting, not comparison with a missing expected checksum.
 
-Original `current-environment.json` and `payloads-verified.json` contain `guest_validation: NOT_RUN`: those are historical snapshots from the build-to-test handoff, preserved unchanged. They do not override the later guest evidence in the parent report. Compilation and hash checks alone do not qualify the ABI. Qt emitted compiler warnings; its full log is retained. No dash qualification is claimed.
+Original `current-environment.json` and `payloads-verified.json` contain `guest_validation: NOT_RUN`: those are historical snapshots from the build-to-test handoff; paths in exported copies may be templated. They do not override the later guest evidence in the parent report. Compilation and hash checks alone do not qualify the ABI. Qt emitted compiler warnings; its full log is retained. No dash qualification is claimed.
 
 ## Failures and recovery
 
@@ -44,6 +46,6 @@ Original `current-environment.json` and `payloads-verified.json` contain `guest_
 
 ## Redaction and verification
 
-Two QEMU CDN response tracking fields (`x-77-nzt` and `x-77-nzt-ray`) were conservatively replaced with `[REDACTED]` in the exported `qemu-head.log`; they are not asserted to be account credentials. No account authorization header, credential-bearing URL or token pattern was found. `inventory.json` records both the original and exported SHA-256; `redactions.json` records the exact transformations. Original local files remain byte-for-byte unchanged.
+Path templates and normalized archive ownership were added in a later Issue 37 export. Two QEMU CDN response tracking fields (`x-77-nzt` and `x-77-nzt-ray`) were conservatively replaced with `[REDACTED]` in the exported `qemu-head.log`; they are not asserted to be account credentials. No account authorization header, credential-bearing URL or token pattern was found. `inventory.json` records both the original and exported SHA-256; `redactions.json` records the exact transformations. Original local files remain byte-for-byte unchanged.
 
 From this directory, `sha256sum -c SHA256SUMS` verifies the public package. `tar -tzf build-records.tar.gz` lists the copied records. The packaging procedure also reopened the archive and verified every member's bytes against its export inventory.

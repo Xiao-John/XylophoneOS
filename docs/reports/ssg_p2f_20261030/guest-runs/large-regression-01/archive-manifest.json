@@ -1,7 +1,7 @@
 {
   "archive": "capture.tar.gz",
-  "archive_sha256": "f6ae9c0b82b2c7874d118607d5c233270c1661109bc08ed7e2336030fb2758f8",
-  "archive_bytes": 1192157,
+  "archive_sha256": "728b77bf1b88266ffa6c16e8c799cc8d6e6f0f43fde2879a8d994ee97385e5c6",
+  "archive_bytes": 1192116,
   "root": "large-regression-01",
   "entries": [
     {
@@ -56,8 +56,10 @@
     },
     {
       "path": "report.json",
-      "bytes": 2186,
-      "sha256": "4b94d8c08887e7ce78d7f5431ee91c04a7e72daa645843bcc3f0c3a150cfd14e"
+      "bytes": 2087,
+      "sha256": "dec1a3204efe370032fea5c47c942b03b7f701f449c9063294545c6dad7520fc",
+      "original_sha256": "4b94d8c08887e7ce78d7f5431ee91c04a7e72daa645843bcc3f0c3a150cfd14e",
+      "original_bytes": 2186
     },
     {
       "path": "serial.log",
@@ -70,5 +72,6 @@
       "sha256": "cc522a52f2eb7d724810e6241c14381ff068af39ce300aa0dbac12e0bcca110c"
     }
   ],
-  "note": "Complete original run files, including exact IPC JSON, raw serial, PNG/PPM, receipt and explicitly reconstructed .wire headers, are preserved inside this archive. Selected JSON/log files are also exposed alongside for review."
+  "note": "Path-sanitized exported capture; the original archive and changed member hashes are recorded separately. IPC frames and synthetic input bytes are unchanged.",
+  "original_archive_sha256": "f6ae9c0b82b2c7874d118607d5c233270c1661109bc08ed7e2336030fb2758f8"
 }

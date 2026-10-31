@@ -2,23 +2,23 @@
   "status": "PASSED_SCOPED",
   "inputs": {
     "image": {
-      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/system/xos.img",
+      "path": "${XOS_ROOT}/build/ssg_p2f/system/xos.img",
       "sha256": "c1f165e864f2f5cf2571587096b34cc30533f5de50888f2a7fb78848c458f8ba"
     },
     "session": {
-      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/payloads/session.elf",
+      "path": "${XOS_ROOT}/build/ssg_p2f/payloads/session.elf",
       "sha256": "b087f415acb9dfbc588ddcbacebb40b06745e328d1ced0b75e731f57b5599122"
     },
     "consumer": {
-      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/payloads/consumer/ssg-consumer.elf",
+      "path": "${XOS_ROOT}/build/ssg_p2f/payloads/consumer/ssg-consumer.elf",
       "sha256": "5d4d1bf9a3908c574ac7160496495ac0809e66ed7b53a5bccd06b4f7b5a64e57"
     },
     "notes": {
-      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/payloads/notes/notes.elf",
+      "path": "${XOS_ROOT}/build/ssg_p2f/payloads/notes/notes.elf",
       "sha256": "3ac5a0ea45f395daaaadd9b7c4ad2cd5e33e94408a9369eba99dc31598f500b4"
     },
     "browser": {
-      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/payloads/browser/browser.elf",
+      "path": "${XOS_ROOT}/build/ssg_p2f/payloads/browser/browser.elf",
       "sha256": "3203dc83b5319ec48127eb97fae32ec3bcdc13091ef0e158cbbc275977cf234a"
     }
   },
@@ -41,7 +41,7 @@
     "display_and_guest_resource_baseline_restored"
   ],
   "qemu_command": [
-    "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/qemu-prefix/bin/qemu-system-x86_64",
+    "${XOS_ROOT}/.cache/ssg_p2f/qemu-prefix/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -59,7 +59,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_ROOT}/build/ssg_p2f/system/xos.img,format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -70,9 +70,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/tmp/xos_ssg_ipc_ogpaqfx9/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/tmp/xos_cdyvgyug/qmp.sock,server=on,wait=off"
+    "unix:${XOS_QMP_SOCKET},server=on,wait=off"
   ],
   "baseline_resources": [
     130279,

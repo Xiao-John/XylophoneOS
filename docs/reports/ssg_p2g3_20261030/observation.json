@@ -6,35 +6,35 @@
   "gate_C": "NOT_RUN",
   "inputs": {
     "image": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/accepted_system/xos.img",
+      "path": "${XOS_QT_WORKSPACE}/build/qt_e17/accepted_system/xos.img",
       "sha256": "972f3a67012576022b67525da90c654a23b273b82cc0f1619fb6c529805ccd41"
     },
     "session": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/build/p2g3-session.elf",
+      "path": "${XOS_ROOT}/build/p2g3-session.elf",
       "sha256": "6142341d6e79995f45054b1fe06fe5d16e6b05e32a0bd060054e890741f82f6f"
     },
     "browser": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/build/p2g3-browser/browser.elf",
+      "path": "${XOS_ROOT}/build/p2g3-browser/browser.elf",
       "sha256": "fe9f16d9deb2b6e1fc6bf240bee4b53202b0538880db0e93c07448d1ada888e3"
     },
     "consumer": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/build/p2g3-consumer/ssg-consumer.elf",
+      "path": "${XOS_ROOT}/build/p2g3-consumer/ssg-consumer.elf",
       "sha256": "1ffbc965cc2c0ce82ce2112a76c9547b4e18bfbe03a79e174d424f43b4a455ea"
     },
     "input": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/tests/fixtures/ssg_browser/p2f.html",
+      "path": "${XOS_ROOT}/tests/fixtures/ssg_browser/p2f.html",
       "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
     },
     "ssg_browser_pages_probe.py": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/tests/ssg_browser_pages_probe.py",
+      "path": "${XOS_ROOT}/tests/ssg_browser_pages_probe.py",
       "sha256": "e318037e510edf0b586e55ae10608ff54a80d6e2babdb41bc35054fa3c59b4b3"
     },
     "ssg_browser_structure.py": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/tests/ssg_browser_structure.py",
+      "path": "${XOS_ROOT}/tests/ssg_browser_structure.py",
       "sha256": "d1dda66a4cdc6e0429958539c758632c13d44f41f35a2b6b14fc332299c809e1"
     },
     "qemu": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+      "path": "${XOS_RUNTIME_ROOT}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
       "sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
       "version": "QEMU emulator version 11.1.2"
     }
@@ -45,7 +45,7 @@
   "performance": "NOT_QUALIFIED",
   "image_format": "floppy",
   "qemu_command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "${XOS_RUNTIME_ROOT}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -63,7 +63,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/accepted_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_QT_WORKSPACE}/build/qt_e17/accepted_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -74,9 +74,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_p2f_ksnqdcma/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ytd1dz6d/qmp.sock,server=on,wait=off"
+    "unix:${XOS_QMP_SOCKET},server=on,wait=off"
   ],
   "baseline": [
     130297,

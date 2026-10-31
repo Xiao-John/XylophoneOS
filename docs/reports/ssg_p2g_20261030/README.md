@@ -9,7 +9,7 @@ The existing `browser-pages` Consumer now checks source instance, epoch, revisio
 ## Evidence and reproduction
 
 * `consumer-build.log`: cross build of the modified Consumer succeeded using the existing E17 SDK and Qt Widgets target. `build-sha256.txt` records its local ELF hash and relevant source hashes. The ELF is not checked in. Build warnings remain in the log. The build receipt is not a guest test.
-* `continuity-test.log`: compile and run `clang++ -std=c++17 -Wall -Wextra -Werror tests/fixtures/ssg_p2g/page_continuity.cpp -o /tmp/xos-p2g-continuity-test && /tmp/xos-p2g-continuity-test`. It checks the real shared continuity class on the host, including source/revision/sequence/scroll drift, repeated cursor, invalid termination, and post-completion rejection. It is not a guest transport test.
+* `continuity-test.log`: compile and run `clang++ -std=c++17 -Wall -Wextra -Werror tests/fixtures/ssg_p2g/page_continuity.cpp -o ${XOS_TEMP}/be968d3b3d93b062 && ${XOS_TEMP}/c9f714d29bd29953 It checks the real shared continuity class on the host, including source/revision/sequence/scroll drift, repeated cursor, invalid termination, and post-completion rejection. It is not a guest transport test.
 * `structure-validator-test.log`: `python3 tests/ssg_browser_structure_test.py`, 52 host verifier tests passed. These test the existing P2F verifier, not the new Consumer on a guest.
 * `environment.txt`: no QEMU on PATH. Existing P2F build evidence documents a different Linux environment; it explicitly excludes QEMU, ELF and disk images. E17 SDK/Qt was available locally and reused for the cross build. No new QEMU interaction is claimed.
 

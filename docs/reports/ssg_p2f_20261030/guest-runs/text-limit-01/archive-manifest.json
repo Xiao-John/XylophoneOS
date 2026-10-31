@@ -1,7 +1,7 @@
 {
   "archive": "capture.tar.gz",
-  "archive_sha256": "c51a417997a7cbc7a16ef79be3734fe5c4fa8b5a12597abd3f46d23912f2d406",
-  "archive_bytes": 66535,
+  "archive_sha256": "796d6c0d29b30dab341e98bfe8f7ceab6e13f7409af522a8c536d234fa016bc7",
+  "archive_bytes": 66100,
   "root": "text-limit-01",
   "entries": [
     {
@@ -26,8 +26,10 @@
     },
     {
       "path": "browser.receipt.json",
-      "bytes": 276959,
-      "sha256": "9c45fe5dae60ec1546c971f7cfb24d75a19ef5b3718871b26dd8b66a07352674"
+      "bytes": 245155,
+      "sha256": "09a86ba528f2b9b3a6155a4473730c6c18df960ba34fd65082aa7958f6aa7232",
+      "original_sha256": "9c45fe5dae60ec1546c971f7cfb24d75a19ef5b3718871b26dd8b66a07352674",
+      "original_bytes": 276959
     },
     {
       "path": "input.html",
@@ -56,8 +58,10 @@
     },
     {
       "path": "report.json",
-      "bytes": 5338,
-      "sha256": "afe9211c3768d96a3137ded9b965496ca4daab32bb11e997574c02f531d7dbbf"
+      "bytes": 4963,
+      "sha256": "6ec97b10bf842e1aac0f0d9e2410b612a20625365cfb22cd66b742a7d61cd52b",
+      "original_sha256": "afe9211c3768d96a3137ded9b965496ca4daab32bb11e997574c02f531d7dbbf",
+      "original_bytes": 5338
     },
     {
       "path": "resource-rejection.json",
@@ -75,5 +79,6 @@
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
   ],
-  "note": "Complete original run files, including exact IPC JSON, raw serial, PNG/PPM, receipt and explicitly reconstructed .wire headers, are preserved inside this archive. Selected JSON/log files are also exposed alongside for review."
+  "note": "Path-sanitized exported capture; the original archive and changed member hashes are recorded separately. IPC frames and synthetic input bytes are unchanged.",
+  "original_archive_sha256": "c51a417997a7cbc7a16ef79be3734fe5c4fa8b5a12597abd3f46d23912f2d406"
 }

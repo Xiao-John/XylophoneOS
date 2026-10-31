@@ -1,7 +1,7 @@
 {
   "archive": "capture.tar.gz",
-  "archive_sha256": "5b32a87836f6e992701b95d67e185097d237c99ed306fecc80e23be80a52e9a7",
-  "archive_bytes": 336918,
+  "archive_sha256": "562d04e0cb853eac4c3912d4c7c5f08e51dc63e34e21276dd203003ea6fc1804",
+  "archive_bytes": 336563,
   "root": "p2d-oracle-02",
   "entries": [
     {
@@ -106,8 +106,10 @@
     },
     {
       "path": "browser.receipt.json",
-      "bytes": 276959,
-      "sha256": "9c45fe5dae60ec1546c971f7cfb24d75a19ef5b3718871b26dd8b66a07352674"
+      "bytes": 245155,
+      "sha256": "09a86ba528f2b9b3a6155a4473730c6c18df960ba34fd65082aa7958f6aa7232",
+      "original_sha256": "9c45fe5dae60ec1546c971f7cfb24d75a19ef5b3718871b26dd8b66a07352674",
+      "original_bytes": 276959
     },
     {
       "path": "input.html",
@@ -146,13 +148,17 @@
     },
     {
       "path": "qmp-events.json",
-      "bytes": 8092,
-      "sha256": "2598b2bca6015cf7e101c596ae24464ebe842ee7e00c7aea2f9cd580021325e6"
+      "bytes": 8060,
+      "sha256": "1fe0474af7c32e8ce1c6ea482e0d37c2b7719d2150e0b2cef4d5fee3519a46b8",
+      "original_sha256": "2598b2bca6015cf7e101c596ae24464ebe842ee7e00c7aea2f9cd580021325e6",
+      "original_bytes": 8092
     },
     {
       "path": "report.json",
-      "bytes": 12595,
-      "sha256": "2df93d9cf8cd727aebc458ef4365e58193ee4480194cc6e3d9fedfa478b7887a"
+      "bytes": 12188,
+      "sha256": "430893dd568e74373bedd217332343fdd9a8e630741aaba403c193342e95ea96",
+      "original_sha256": "2df93d9cf8cd727aebc458ef4365e58193ee4480194cc6e3d9fedfa478b7887a",
+      "original_bytes": 12595
     },
     {
       "path": "serial.log",
@@ -170,5 +176,6 @@
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
   ],
-  "note": "Complete original run files, including exact IPC JSON, raw serial, PNG/PPM, receipt and explicitly reconstructed .wire headers, are preserved inside this archive. Selected JSON/log files are also exposed alongside for review."
+  "note": "Path-sanitized exported capture; the original archive and changed member hashes are recorded separately. IPC frames and synthetic input bytes are unchanged.",
+  "original_archive_sha256": "5b32a87836f6e992701b95d67e185097d237c99ed306fecc80e23be80a52e9a7"
 }

@@ -3,32 +3,32 @@
   "qualification": "NOT_RUN",
   "inputs": {
     "image": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img",
+      "path": "${XOS_IMAGE}",
       "sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08"
     },
     "session": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-p2-pagination/build/ssg-p2-regression/session.elf",
+      "path": "${XOS_BASE_ROOT}/build/ssg-p2-regression/session.elf",
       "sha256": "c05e6b9fbfcb3376d57178fbab67b88a3a2802afcd5a7d5a1b943c21f057fa48"
     },
     "browser": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/build/p2d-browser2/browser.elf",
+      "path": "${XOS_ROOT}/build/p2d-browser2/browser.elf",
       "sha256": "1be830755eef18b846994a0ac87682b9e443f47c5aa3c7e7000279a901eb4b64"
     },
     "consumer": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/build/p2d-browser/consumer.elf",
+      "path": "${XOS_ROOT}/build/p2d-browser/consumer.elf",
       "sha256": "846e08dd04304884ac0176aee625a676e15026e4f9bd2423b60ef60579016ea6"
     },
     "input": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/tests/fixtures/ssg_browser/p2d.html",
+      "path": "${XOS_ROOT}/tests/fixtures/ssg_browser/p2d.html",
       "sha256": "85ad5796a238eb476ed986827aa46f4fed676b18ac331c8ed4a92bffe329fa58"
     },
     "qemu": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+      "path": "${XOS_RUNTIME_ROOT}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
       "sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e"
     }
   },
   "qemu_command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "${XOS_ROOT}/${XOS_QEMU}",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -46,7 +46,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_IMAGE},format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -57,9 +57,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_p2e_uo4h0jsk/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_unp7pei2/qmp.sock,server=on,wait=off"
+    "unix:${XOS_QMP_SOCKET},server=on,wait=off"
   ],
   "baseline": [
     130279,

@@ -6,7 +6,7 @@
   "packaging_worktree_head": "a81b4fd7ab18ec09e87b311e8fe89cf4464fb63c",
   "build_status": "BUILT",
   "scope": "build evidence only; guest results are maintained by the parent report",
-  "historical_guest_status_note": "Original current-environment.json and payloads-verified.json say NOT_RUN because they were written at the build-to-test handoff; these originals are preserved unchanged.",
+  "historical_guest_status_note": "The original handoff recorded NOT_RUN; exported records have path templates and preserve the recorded statuses.",
   "parallelism": {
     "gnu_target_build_jobs": 4,
     "qemu_build_jobs": 2,
@@ -86,59 +86,59 @@
   ],
   "tool_versions": {
     "nasm": {
-      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/prefix/bin/nasm",
+      "path": "${XOS_ROOT}/.cache/ssg_p2f/prefix/bin/nasm",
       "sha256": "0f184d013100bc2fdcd39a05c28854fd1bb24df7f25626184c427db86f4a74ef",
       "version": "NASM version 3.02 compiled on Oct 30 2026"
     },
     "x86_64-elf-gcc": {
-      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/prefix/bin/x86_64-elf-gcc",
+      "path": "${XOS_ROOT}/.cache/ssg_p2f/prefix/bin/x86_64-elf-gcc",
       "sha256": "5a9a497dbb2b1622d834f65fed71809dafef69e2087a19e6a3ca4c24db6cc5d4",
       "version": "x86_64-elf-gcc (GCC) 16.2.0"
     },
     "x86_64-elf-g++": {
-      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/prefix/bin/x86_64-elf-g++",
+      "path": "${XOS_ROOT}/.cache/ssg_p2f/prefix/bin/x86_64-elf-g++",
       "sha256": "38203e2e8e4714c55d3c7498d3e4509aeabd9a3b2069ec11d28ac6b6f64a710b",
       "version": "x86_64-elf-g++ (GCC) 16.2.0"
     },
     "x86_64-elf-ld": {
-      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/prefix/bin/x86_64-elf-ld",
+      "path": "${XOS_ROOT}/.cache/ssg_p2f/prefix/bin/x86_64-elf-ld",
       "sha256": "67260a9a124fe680722f097ce0d81c5fe3fad58b1cb565e74bdf9b1e2a78bccd",
       "version": "GNU ld (GNU Binutils) 2.47.20260726"
     }
   },
   "payload_tools": {
     "x86_64-elf-g++": {
-      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/prefix/bin/x86_64-elf-g++",
+      "path": "${XOS_ROOT}/.cache/ssg_p2f/prefix/bin/x86_64-elf-g++",
       "sha256": "38203e2e8e4714c55d3c7498d3e4509aeabd9a3b2069ec11d28ac6b6f64a710b",
       "version": "x86_64-elf-g++ (GCC) 16.2.0"
     },
     "x86_64-elf-gcc": {
-      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/prefix/bin/x86_64-elf-gcc",
+      "path": "${XOS_ROOT}/.cache/ssg_p2f/prefix/bin/x86_64-elf-gcc",
       "sha256": "5a9a497dbb2b1622d834f65fed71809dafef69e2087a19e6a3ca4c24db6cc5d4",
       "version": "x86_64-elf-gcc (GCC) 16.2.0"
     },
     "x86_64-elf-ar": {
-      "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/prefix/bin/x86_64-elf-ar",
+      "path": "${XOS_ROOT}/.cache/ssg_p2f/prefix/bin/x86_64-elf-ar",
       "sha256": "11c9ce6a2d0e586f7eba78a57e74c74669ce9548f27578e04cbe0ce954db9ed9",
       "version": "GNU ar (GNU Binutils) 2.47.20260726"
     }
   },
   "qemu": {
-    "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/qemu-prefix/bin/qemu-system-x86_64",
+    "path": "${XOS_ROOT}/.cache/ssg_p2f/qemu-prefix/bin/qemu-system-x86_64",
     "sha256": "947e0e30bf1d6e0ef8c4349a3a25803bc363d785bf92d0b4cf3d603c8c9d91e1",
     "version": "QEMU emulator version 11.1.2"
   },
   "host_qt": {
     "tools": {
       "moc": {
-        "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/host-qt-official/libexec/moc",
+        "path": "${XOS_ROOT}/.cache/ssg_p2f/host-qt-official/libexec/moc",
         "sha256": "846426b3183ba5ebf0eaaf1967373417d9398785aa6c51519da0aafaa9fd9d59",
         "returncode": 0,
         "stdout": "moc 6.8.3\n",
         "stderr": ""
       },
       "rcc": {
-        "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/host-qt-official/libexec/rcc",
+        "path": "${XOS_ROOT}/.cache/ssg_p2f/host-qt-official/libexec/rcc",
         "sha256": "00536d71e281a1a9d820d3cf3885fa4192ad0f04e4beaa6c074c0c75a1f6541b",
         "returncode": 0,
         "stdout": "rcc 6.8.3\n",
@@ -268,10 +268,11 @@
   ],
   "archive": {
     "path": "build-records.tar.gz",
-    "bytes": 1301727,
-    "sha256": "4479e50c90029ceba8c82ee4d706550766d1978c115f86ce64d795efbd106356",
+    "bytes": 1275070,
+    "sha256": "e1abea1cf12d67338ce3c86475963c33cfbd3543f47e43ecfa2f0137209d0af1",
     "members": 151,
-    "uncompressed_member_bytes": 48583634
+    "uncompressed_member_bytes": 45955260,
+    "original_archive_sha256": "4479e50c90029ceba8c82ee4d706550766d1978c115f86ce64d795efbd106356"
   },
   "redaction_file_count": 1,
   "limitations": [
@@ -281,5 +282,6 @@
     "No large executable, image, source archive or firmware blob is included.",
     "Original transient extraction exception text was not separately saved; contemporaneous failure JSON and raw download/install logs are retained.",
     "The cause of the QEMU archive and UEFI-file truncations was not established."
-  ]
+  ],
+  "path_hygiene_modified_members": 63
 }

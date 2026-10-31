@@ -24,7 +24,7 @@
     "browser": "9e58aa224ae32a68080eda9d95b320a34e42db4872d555a0608197b5509e3285"
   },
   "qemu_command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "${XOS_ROOT}/${XOS_QEMU}",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -42,7 +42,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_IMAGE},format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -53,9 +53,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_aurora_platform_ik8671_3/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_e8mev86u/qmp.sock,server=on,wait=off"
+    "unix:${XOS_QMP_SOCKET},server=on,wait=off"
   ],
   "error": "AssertionError()"
 }

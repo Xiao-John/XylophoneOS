@@ -6,6 +6,8 @@ import gzip
 import hashlib
 import io
 import json
+import os
+import sys
 import re
 import shlex
 import subprocess
@@ -15,9 +17,41 @@ import urllib.parse
 OUT = Path(__file__).resolve().parent
 ROOT = OUT.parents[3]
 assert (ROOT / "config/toolchain.json").is_file()
+sys.path[:0] = [str(ROOT / "scripts"), str(ROOT / "tests")]
+from ssg_public_paths import portable
+from check_public_evidence_paths import scan, Budget
+PUBLIC_MAPPINGS = [(name, os.environ.get(name)) for name in (
+    "XOS_SDK_PREFIX", "XOS_BUILD_DIR", "XOS_QT_SOURCE", "XOS_HOST_QT",
+    "XOS_BINUTILS", "XOS_BASE_ROOT", "XOS_WORKSPACE", "XOS_TOOLCHAIN_PREFIX",
+    "XOS_HOST_HOME", "XOS_CODEX_RUNTIME", "XOS_PYTHON_FRAMEWORK", "XOS_PREVIOUS_ROOT")]
+PUBLIC_MAPPINGS.append(("XOS_PYTHON", sys.executable))
+
+def safe_public_bytes(data, name):
+    findings = []
+    scan(data, name, findings, expected=name,
+         budget=Budget([os.environ.get("XOS_PRIVATE_IDENTITY", Path.home().name)]))
+    if findings:
+        raise RuntimeError("Public evidence requires review: " + name + " " +
+                           ",".join(sorted({row["category"] for row in findings})))
+    return data
+
+def shell_template(value):
+    parts = re.split(r'(\$\{XOS_[A-Z0-9_]+\})', str(value))
+    if len(parts) == 1:
+        return shlex.quote(str(value))
+    pieces = []
+    for part in parts:
+        if re.fullmatch(r'\$\{XOS_[A-Z0-9_]+\}', part):
+            pieces.append(part)
+        else:
+            pieces.append(''.join((chr(92) if c in (chr(92), chr(34), chr(96), chr(36)) else '') + c for c in part))
+    return '"' + ''.join(pieces) + '"'
 sha = lambda data: hashlib.sha256(data).hexdigest()
 read_json = lambda name: json.loads((ROOT / name).read_text())
-write_json = lambda name, value: (OUT / name).write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n")
+def write_json(name, value):
+    value = portable(value, PUBLIC_MAPPINGS, strict=True)
+    data = (json.dumps(value, indent=2, ensure_ascii=False) + "\n").encode()
+    (OUT / name).write_bytes(safe_public_bytes(data, name))
 
 selected = set()
 def add(name):
@@ -103,7 +137,10 @@ def sanitize(name, data):
     text = credential.sub(redact_token, text)
     if "-----BEGIN PRIVATE KEY-----" in text or "-----BEGIN RSA PRIVATE KEY-----" in text:
         raise RuntimeError("Private key marker in evidence: " + name)
-    result = text.encode("utf-8")
+    public_text = portable(text, PUBLIC_MAPPINGS, strict=True)
+    if public_text != text:
+        changes.append({"kind": "path_template"})
+    result = safe_public_bytes(public_text.encode("utf-8"), name)
     if changes:
         redactions.append({"path": name, "changes": changes,
                            "original_sha256": sha(data), "exported_sha256": sha(result)})
@@ -163,6 +200,7 @@ for name in sorted(selected):
     inventory.append({"path": name, "original_bytes": len(original), "exported_bytes": len(exported),
                       "original_sha256": sha(original), "exported_sha256": sha(exported),
                       "byte_identical": original == exported})
+session = portable(session, PUBLIC_MAPPINGS, strict=True)
 records["derived/session-summary.json"] = (json.dumps(session, indent=2) + "\n").encode()
 records["derived/build-job-control.patch"] = subprocess.check_output(
     ["git", "diff", "9a739c7052d66dd75c0a0aceb807b0e4aa2fc16f", commit, "--",
@@ -195,7 +233,10 @@ for source in (".cache/ssg_p2f/logs/runtime-build.json", ".cache/ssg_p2f/logs/pa
         command(row["label"], row["command"], str(ROOT), source, row["returncode"])
 for i, argv in enumerate(manifest["commands"], 1):
     command("payload-component-" + str(i), argv, str(ROOT), "build/ssg_p2f/payloads/manifest.json")
+command_rows = portable(command_rows, PUBLIC_MAPPINGS, strict=True)
 records["derived/top-level-commands.json"] = (json.dumps(command_rows, indent=2) + "\n").encode()
+for name, data in records.items():
+    safe_public_bytes(data, name)
 
 archive = OUT / "build-records.tar.gz"
 with archive.open("wb") as destination:
@@ -267,15 +308,15 @@ summary = {
 write_json("summary.json", summary)
 
 lines = ["# Build command record", "", "Commands below are grouped by dependency stage, not a claim that every operation ran sequentially. GCC/Qt used at most 4 jobs, QEMU 2, with at most 6 combined. No guest was run by this packager.", "",
-         "Original absolute paths and argument arrays remain in the archive. `derived/top-level-commands.json` is a readable index of those records. The two reconstructed/retained outer invocations are explicitly labelled; they are not a fabricated command transcript.", "",
-         "```sh", "cd " + shlex.quote(str(ROOT)), "source .cache/ssg_p2f/env.sh", "```", ""]
+         "Paths are environment-variable templates rather than verbatim host paths. `derived/top-level-commands.json` is a readable index of those records. The two reconstructed/retained outer invocations are explicitly labelled; they are not a fabricated command transcript.", "",
+         "```sh", "cd " + shell_template(portable(str(ROOT), PUBLIC_MAPPINGS, strict=True)), "source .cache/ssg_p2f/env.sh", "```", ""]
 for row in command_rows:
     lines.extend(["## " + row["label"], "", "Evidence: `" + row["source"] + "`. Provenance: " + row["provenance"] +
                   (". Recorded return code: `" + str(row["returncode"]) + "`." if "returncode" in row else "."), "",
-                  "```sh", "cd " + shlex.quote(row["cwd"]), shlex.join(row["command"]), "```", ""])
+                  "```sh", "cd " + shell_template(row["cwd"]), " ".join(shell_template(arg) for arg in row["command"]), "```", ""])
 lines.extend(["## Full internal commands", "", "The original system and SDK manifests and all component receipts contain the compile/link argument arrays. `build/ssg_p2f/sdk/compile.py` accompanies the Session command. Qt's `build.ninja`, `CMakeFiles/rules.ninja` and `CMakeCache.txt`, plus QEMU's `build.ninja` and configuration files, preserve generated command details. All configure/build/install stdout/stderr logs are included without truncation.", "",
               "## Preparation records", "", "Official source URLs, hashes, host Qt metadata and extraction logs are under `.cache/ssg_p2f/downloads/` and `.cache/ssg_p2f/logs/` in the archive. The three task-local orchestration scripts and `env.sh` are included. Host package installation logs are preserved; they are not a complete shell-session transcript. The host Qt ICU symlink layout and QEMU source-byte restoration are documented in their original JSON receipts.", ""])
-(OUT / "COMMANDS.md").write_text("\n".join(lines))
+(OUT / "COMMANDS.md").write_bytes(safe_public_bytes("\n".join(lines).encode(), "COMMANDS.md"))
 
 readme = f"""# SSG-P2F build evidence — 2026-10-30
 
@@ -287,7 +328,7 @@ This package records a completed local build of the system, matching threading S
 | --- | --- |
 | `summary.json` | Source identity, official input validation basis, tool binary hashes, system/SDK identities, ELF hashes and final receipt checks |
 | `COMMANDS.md` | Full top-level configure/build/install command index with provenance and return codes |
-| `build-records.tar.gz` | {len(records)} complete records: raw logs, original manifests/receipts, selected build scripts/locks, generated Qt/QEMU command graphs |
+| `build-records.tar.gz` | {len(records)} records: path-sanitized logs and manifest/receipt copies, selected build scripts/locks, generated Qt/QEMU command graphs |
 | `inventory.json` | Every original/exported record's size and SHA-256; explicit exclusions; hashes of derived members |
 | `redactions.json` | Exactly which exported copies changed and why |
 | `SHA256SUMS` | Checksums of all other files in this directory |
@@ -311,7 +352,7 @@ Archive paths preserve repository-relative locations:
 
 GCC, Binutils, newlib and Qt source SHA-256 values matched the existing repository locks or pinned build-script hashes. Official host Qt 6.8.3 packages were selected from Qt's `Updates.xml`, matched their official per-file SHA-1, and have separately recorded SHA-256 fingerprints. NASM and QEMU came from official HTTPS release URLs and have recorded SHA-256 fingerprints; this package does **not** claim an independently verified upstream SHA-256 or signature for either. QEMU's final archive passed `xz` integrity validation. The original NASM `verified: true` record means successful retrieval/local fingerprinting, not comparison with a missing expected checksum.
 
-Original `current-environment.json` and `payloads-verified.json` contain `guest_validation: NOT_RUN`: those are historical snapshots from the build-to-test handoff, preserved unchanged. They do not override the later guest evidence in the parent report. Compilation and hash checks alone do not qualify the ABI. Qt emitted compiler warnings; its full log is retained. No dash qualification is claimed.
+Original `current-environment.json` and `payloads-verified.json` contain `guest_validation: NOT_RUN`: those are historical snapshots from the build-to-test handoff; exported paths may be templated. They do not override the later guest evidence in the parent report. Compilation and hash checks alone do not qualify the ABI. Qt emitted compiler warnings; its full log is retained. No dash qualification is claimed.
 
 ## Failures and recovery
 

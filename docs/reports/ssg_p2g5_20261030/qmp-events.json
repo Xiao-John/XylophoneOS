@@ -2,7 +2,7 @@
   {
     "command": "screendump",
     "arguments": {
-      "filename": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/docs/reports/ssg_p2g5_20261030/run-03/before.ppm"
+      "filename": "${XOS_ROOT}/docs/reports/ssg_p2g5_20261030/run-03/before.ppm"
     },
     "serial_offset": 271403,
     "returned": {}
@@ -48,7 +48,7 @@
   {
     "command": "screendump",
     "arguments": {
-      "filename": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/docs/reports/ssg_p2g5_20261030/run-03/after.ppm"
+      "filename": "${XOS_ROOT}/docs/reports/ssg_p2g5_20261030/run-03/after.ppm"
     },
     "serial_offset": 271538,
     "returned": {}

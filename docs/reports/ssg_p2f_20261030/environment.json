@@ -5,7 +5,7 @@
   "cpu_quota": "800000 100000",
   "memory_limit_bytes": 8589934592,
   "qemu": {
-    "path": "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/qemu-prefix/bin/qemu-system-x86_64",
+    "path": "${XOS_ROOT}/.cache/ssg_p2f/qemu-prefix/bin/qemu-system-x86_64",
     "sha256": "947e0e30bf1d6e0ef8c4349a3a25803bc363d785bf92d0b4cf3d603c8c9d91e1",
     "version": "QEMU emulator version 11.1.2"
   },

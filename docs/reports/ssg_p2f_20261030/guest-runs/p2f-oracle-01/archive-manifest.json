@@ -1,7 +1,7 @@
 {
   "archive": "capture.tar.gz",
-  "archive_sha256": "df07af64784df8ebe86a649729cd8ef76747a8a18dd0f81ace8940199e76b5af",
-  "archive_bytes": 187382,
+  "archive_sha256": "10fa2224292fdf58f0af26d2fff6a2f4efcd9c8c7ad84586f57a2cf5d2d3e3c1",
+  "archive_bytes": 187083,
   "root": "p2f-oracle-01",
   "entries": [
     {
@@ -686,8 +686,10 @@
     },
     {
       "path": "browser.receipt.json",
-      "bytes": 276959,
-      "sha256": "9c45fe5dae60ec1546c971f7cfb24d75a19ef5b3718871b26dd8b66a07352674"
+      "bytes": 245155,
+      "sha256": "09a86ba528f2b9b3a6155a4473730c6c18df960ba34fd65082aa7958f6aa7232",
+      "original_sha256": "9c45fe5dae60ec1546c971f7cfb24d75a19ef5b3718871b26dd8b66a07352674",
+      "original_bytes": 276959
     },
     {
       "path": "input.html",
@@ -721,8 +723,10 @@
     },
     {
       "path": "report.json",
-      "bytes": 39160,
-      "sha256": "9e36f1d1bb177a92e116e7b61b4c02bf508515b9e003b919d3fbdd55482c3eba"
+      "bytes": 38785,
+      "sha256": "1da7bb595b09977ee6f3127e9e09d6193ad398ceae07ebd02d67780143f19ceb",
+      "original_sha256": "9e36f1d1bb177a92e116e7b61b4c02bf508515b9e003b919d3fbdd55482c3eba",
+      "original_bytes": 39160
     },
     {
       "path": "serial.log",
@@ -740,5 +744,6 @@
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
   ],
-  "note": "Complete original run files, including exact IPC JSON, raw serial, PNG/PPM, receipt and explicitly reconstructed .wire headers, are preserved inside this archive. Selected JSON/log files are also exposed alongside for review."
+  "note": "Path-sanitized exported capture; the original archive and changed member hashes are recorded separately. IPC frames and synthetic input bytes are unchanged.",
+  "original_archive_sha256": "df07af64784df8ebe86a649729cd8ef76747a8a18dd0f81ace8940199e76b5af"
 }

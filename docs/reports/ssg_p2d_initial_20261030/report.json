@@ -1,7 +1,7 @@
 {
   "status": "OBSERVED",
   "qemu_command": [
-    "../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "${XOS_QEMU}",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -19,7 +19,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_IMAGE},format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -30,9 +30,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_p2d_25rhtq3k/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_v88h63g9/qmp.sock,server=on,wait=off"
+    "unix:${XOS_QMP_SOCKET},server=on,wait=off"
   ],
   "baseline": [
     130279,

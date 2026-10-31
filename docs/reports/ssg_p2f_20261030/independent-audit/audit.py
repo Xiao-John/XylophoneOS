@@ -11,10 +11,16 @@ import argparse
 import base64
 import hashlib
 import json
+import os
 import re
 import struct
 import subprocess
+import sys
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'scripts'))
+from ssg_public_paths import portable
 
 
 def require(ok, message):
@@ -121,10 +127,16 @@ def adjacency_reconstruction(nodes):
     return normalized
 
 
+def resolve_recorded_path(value):
+    expanded = os.path.expandvars(str(value))
+    require(not re.search(r"\$\{XOS_[A-Z0-9_]+\}", expanded), "Set the XOS path variables before verifying inputs")
+    return Path(expanded)
+
+
 def verify_input_versions(report, source_root):
     versions = {}
     for name, entry in report['inputs'].items():
-        path = Path(entry['path'])
+        path = resolve_recorded_path(entry['path'])
         if path.is_file() and sha(path.read_bytes()) == entry['sha256']:
             versions[name] = 'MATCH_CURRENT_FILE'
             continue
@@ -177,7 +189,7 @@ def common(folder, source_root, expected_client_exit):
     require(receipt['test_structure_oracle'] is True and
             receipt['elf_sha256'] == report['inputs']['browser']['sha256'], 'Browser receipt mismatch')
     for path, expected in receipt['inputs'].items():
-        require(sha(Path(path).read_bytes()) == expected, 'Changed Browser build input: ' + path)
+        require(sha(resolve_recorded_path(path).read_bytes()) == expected, 'Changed Browser build input: ' + path)
     counters = [list(map(int, row)) for row in re.findall(
         rb'\[resources\] free=(\d+) tasks=(\d+) completions=(\d+)', serial)]
     require(counters == [report['baseline'], report['display'], report['after']] and
@@ -370,7 +382,8 @@ def main():
                 'auditor_script_sha256': sha(Path(__file__).read_bytes()),
                 'runs_root': str(args.runs_root.resolve()), 'results': results}
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(document, indent=2, ensure_ascii=False) + '\n')
+    public = portable(document, [('XOS_TEST_OUT', args.runs_root)], strict=True)
+    args.output.write_text(json.dumps(public, indent=2, ensure_ascii=False) + '\n')
     for row in results:
         print(row['run'], row['status'], row.get('node_count', row.get('oracle_node_count', '')))
 

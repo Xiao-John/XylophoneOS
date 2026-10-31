@@ -2,23 +2,23 @@
   "status": "PASSED_SCOPED",
   "inputs": {
     "image": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img",
+      "path": "${XOS_IMAGE}",
       "sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08"
     },
     "session": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-p2-pagination/build/ssg-p2-regression/session.elf",
+      "path": "${XOS_BASE_ROOT}/build/ssg-p2-regression/session.elf",
       "sha256": "c05e6b9fbfcb3376d57178fbab67b88a3a2802afcd5a7d5a1b943c21f057fa48"
     },
     "consumer": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/build/p2d-browser/consumer.elf",
+      "path": "${XOS_ROOT}/build/p2d-browser/consumer.elf",
       "sha256": "846e08dd04304884ac0176aee625a676e15026e4f9bd2423b60ef60579016ea6"
     },
     "notes": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-p2-pagination/build/ssg-p2-regression/notes/notes.elf",
+      "path": "${XOS_BASE_ROOT}/build/ssg-p2-regression/notes/notes.elf",
       "sha256": "05153407b8d46325f2204d90e4bddb522d66bfda73632c0a8b7e4570ea5d4969"
     },
     "browser": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/build/p2e-browser-final/browser.elf",
+      "path": "${XOS_ROOT}/build/p2e-browser-final/browser.elf",
       "sha256": "9e58aa224ae32a68080eda9d95b320a34e42db4872d555a0608197b5509e3285"
     }
   },
@@ -29,7 +29,7 @@
     "display_and_guest_resource_baseline_restored"
   ],
   "qemu_command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-browser-p2d/../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "${XOS_ROOT}/${XOS_QEMU}",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -47,7 +47,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_IMAGE},format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -58,9 +58,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ssg_ipc_jhw6a3d3/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos__to88cu6/qmp.sock,server=on,wait=off"
+    "unix:${XOS_QMP_SOCKET},server=on,wait=off"
   ],
   "baseline_resources": [
     130279,

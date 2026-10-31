@@ -2,7 +2,7 @@
   {
     "command": "screendump",
     "arguments": {
-      "filename": "/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f_runs/p2d-oracle-03/link-before.ppm"
+      "filename": "${XOS_ROOT}/build/ssg_p2f_runs/p2d-oracle-03/link-before.ppm"
     },
     "serial_offset": 48588,
     "returned": {}

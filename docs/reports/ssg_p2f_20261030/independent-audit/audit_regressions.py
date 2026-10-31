@@ -2,13 +2,19 @@
 # SPDX-License-Identifier: Apache-2.0
 """Read-only verification of recorded regressions; does not execute guest tests."""
 from pathlib import Path
+import argparse
 import hashlib
 import json
+import os
 import re
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[4]
-RUNS = ROOT / 'build/ssg_p2f_runs'
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--runs-root', type=Path, default=ROOT / 'build/ssg_p2f_runs')
+parser.add_argument('--output', type=Path, default=Path(__file__).with_name('regression-audit.json'))
+args = parser.parse_args()
+RUNS = args.runs_root
 BASE = '9a739c7052d66dd75c0a0aceb807b0e4aa2fc16f'
 sha = lambda data: hashlib.sha256(data).hexdigest()
 result = {'not_a_new_guest_run': True, 'base_commit_for_assertion_comparison': BASE,
@@ -29,7 +35,9 @@ checks = re.findall(rb'^SSG_CONSUMER_CHECK ([^\r\n=]+)=(PASS|FAIL)\r?$', p1_seri
 assert len(checks) == 25 and all(status == b'PASS' for _, status in checks)
 assert p1['final_resources'] == p1['baseline_resources'] == [130279, 2, 0]
 for entry in p1['inputs'].values():
-    assert sha(Path(entry['path']).read_bytes()) == entry['sha256']
+    expanded = os.path.expandvars(entry['path'])
+    assert not re.search(r'\$\{XOS_[A-Z0-9_]+\}', expanded), 'Set the XOS path variables before checking inputs'
+    assert sha(Path(expanded).read_bytes()) == entry['sha256']
 for entry in p1['frames'] + p1['browser_frames']:
     data = (p1_dir / entry['file']).read_bytes()
     assert sha(data) == entry['sha256'] and len(data) == entry['bytes']
@@ -66,7 +74,7 @@ result['legacy_nonpaged_browser'] = {
     'limitation': 'Current original assertions passed. The first snapshot was still TIME-capped; '
                   'later complete snapshots and scrolling Diff passed. This does not establish '
                   'that the nonpaged 30 ms cap can never truncate a query.'}
-output = Path(__file__).with_name('regression-audit.json')
+output = args.output
 output.write_text(json.dumps(result, indent=2) + '\n')
 print('P1: 16 outer checks, 17 Notes + 8 Browser Consumer checks, PASSED_SCOPED')
 print('Legacy nonpaged Browser: 7 checks, PASSED, original scripts byte-identical to baseline')

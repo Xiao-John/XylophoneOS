@@ -49,7 +49,7 @@
     "browser": "3203dc83b5319ec48127eb97fae32ec3bcdc13091ef0e158cbbc275977cf234a"
   },
   "qemu_command": [
-    "/workspace/scratch/77fc8ad4822d/XylophoneOS/.cache/ssg_p2f/qemu-prefix/bin/qemu-system-x86_64",
+    "${XOS_ROOT}/.cache/ssg_p2f/qemu-prefix/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -67,7 +67,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/workspace/scratch/77fc8ad4822d/XylophoneOS/build/ssg_p2f/system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_ROOT}/build/ssg_p2f/system/xos.img,format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -78,8 +78,8 @@
     "-display",
     "none",
     "-drive",
-    "file=/tmp/xos_aurora_platform_o0xjf_74/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/tmp/xos_ee07ou5o/qmp.sock,server=on,wait=off"
+    "unix:${XOS_QMP_SOCKET},server=on,wait=off"
   ]
 }

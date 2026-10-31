@@ -60,3 +60,27 @@ python3 "$XOS_ROOT/tests/ssg_p3b_verify.py" "$XOS_ROOT/build/p3b-repro-baseline"
 The final run still needs its own source-bound dual-provider and isolation cases,
 same-boot repeated sessions, affected single-source regressions, sanitized
 public evidence, and a fresh scan of actual Git blobs and the PR description.
+
+## Later checkpoint: explicit source grants
+
+This section records another intermediate point, not final acceptance. The
+target programs were rebuilt from clean source
+`59291311956c82baa2afc22a18dab308abfa87f8`; the build manifest SHA-256 was
+`8f1b4b3cd871d12f9cd283d313c2e261f682eac7302e63caf273f78739815368`.
+The denial verifier was strengthened separately in host-only commit `a0449bd`.
+Browser and Notes text access now default to denied and require independent
+`--browser-text` and `--notes-text` session grants. Real guest checks observed
+default denial in the ordinary programs and independently checked the captured
+test-provider responses. The source-bound dual-provider suite recorded 24
+successful steps, including baseline, edit, restrictions, cross-source exit,
+timeout, truncated response, cancellation and same-boot restart.
+
+At this checkpoint a new 48-session stress run had completed 4 passing sessions;
+that count is historical and does not establish its eventual result or imply
+that a process continues after an interrupted turn. Raw local evidence is under
+`build/p3b/v14-*`. Earlier stress runs stopped by the operator after 10/48 and
+19/48 passing sessions are separately preserved and do not count toward this
+build. Affected single-source guest regressions, complete evidence export and
+the final public-index scan had not yet been completed at this checkpoint.
+The reused SDK's full license-material check failed due to a manifest mismatch;
+the old Consumer exit-race root cause remains unresolved.

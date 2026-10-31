@@ -15,6 +15,21 @@ def require(value, message):
         raise AssertionError(message)
 
 
+def check_source_metadata(source):
+    require(source.get('slot') in ('browser', 'notes') and isinstance(source.get('scope'), str) and source['scope'] and
+            isinstance(source.get('presentation'), str) and source['presentation'], 'source scope missing')
+    start, end = source.get('startedMonotonicNs'), source.get('endedMonotonicNs')
+    require(isinstance(start, str) and start.isdigit() and isinstance(end, str) and end.isdigit() and int(start) <= int(end), 'source observation interval missing')
+    require(isinstance(source.get('instance'), str) and re.fullmatch(r'[0-9a-f]{32}', source['instance']), 'source instance missing')
+    if source.get('status') == 'OBSERVED_COMPLETE':
+        expected = 'LOCALLY_COMPLETE_ORACLE_REQUIRED' if source['slot'] == 'browser' else 'REVISION_CONSISTENT_OWNER_ORACLE_REQUIRED'
+        require(source.get('completeness') == expected and isinstance(source.get('epoch'), str) and source['epoch'] and
+                isinstance(source.get('revision'), str) and source['revision'], 'complete source metadata missing')
+    else:
+        require(source.get('completeness') == 'NOT_OBSERVED' and source.get('epoch') is None and source.get('revision') is None and
+                isinstance(source.get('failure'), str) and source['failure'], 'failed source metadata missing or stale')
+
+
 def frames(serial):
     pattern = re.compile(rb'^P3B_FRAME_(BEGIN|PART|END) (browser|notes|aggregate) (REQ|RESP|BASELINE) (\d+)(?: (.*))?$')
     pending, seen, result = {}, set(), []
@@ -61,6 +76,8 @@ def main():
     aggregate = f[('aggregate', 'BASELINE', 0)]
     sources = {s['slot']: s for s in aggregate['sources']}
     require(set(sources) == {'browser', 'notes'}, 'unexpected source slots')
+    for source in sources.values():
+        check_source_metadata(source)
     require(aggregate['semantics'] == 'sequential-per-source-non-atomic' and aggregate['globalAtomicSnapshot'] == 'NOT_IMPLEMENTED', 'snapshot semantics missing')
     pids = report['processes']
     require(len(set(pids.values())) == 3, 'process roles are not distinct')

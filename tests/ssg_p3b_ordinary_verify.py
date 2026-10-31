@@ -5,7 +5,7 @@ import argparse
 import json
 from pathlib import Path
 import re
-from ssg_p3b_verify import frames, require
+from ssg_p3b_verify import frames, require, check_source_metadata
 from ssg_p3b_dynamic_verify import verify_browser_receipt
 from ssg_browser_structure import decode_capture, validate_oracle
 
@@ -28,6 +28,7 @@ for i in range(count):
     aggregate = f[('aggregate', 'BASELINE', i)]
     require(aggregate['status'] == 'AGGREGATE_COMPLETE_OBSERVED' and aggregate['globalAtomicSnapshot'] == 'NOT_IMPLEMENTED', 'aggregate incomplete')
     sources = {v['slot']: v for v in aggregate['sources']}
+    for source in sources.values(): check_source_metadata(source)
     require(sources['notes']['presentation'] == 'hidden-session-no-surface-no-input', 'hidden scope omitted')
     before, after = [x['data'] for x in references[2*i:2*i+2]]
     expected = validate_oracle(before, report['inputs']['input']['sha256'], 'before')

@@ -20,10 +20,22 @@ inline QString source_change(QJsonObject before,QJsonObject after){
     const auto ae=before.value("epoch").toString(),be=after.value("epoch").toString();
     if(ai.isEmpty() || bi.isEmpty() || ae.isEmpty() || be.isEmpty())return "UNKNOWN";
     if(ai!=bi || ae!=be)return "REPLACED";
+    const auto scope=before.value("scope").toString(),presentation=before.value("presentation").toString();
+    if(scope.isEmpty() || presentation.isEmpty() || after.value("scope").toString()!=scope || after.value("presentation").toString()!=presentation)return "UNKNOWN";
+    if(slot=="browser"){
+        if(!before.value("nodes").isArray() || !after.value("nodes").isArray() || before.value("nodes").toArray().isEmpty() || after.value("nodes").toArray().isEmpty() ||
+           !before.value("scrollY").isDouble() || !after.value("scrollY").isDouble())return "UNKNOWN";
+    } else if(slot=="notes"){
+        const auto x=before.value("document").toObject(),y=after.value("document").toObject();
+        if(!x.value("text").isString() || !y.value("text").isString() || before.value("revision").toString().isEmpty() || after.value("revision").toString().isEmpty())return "UNKNOWN";
+    } else return "UNKNOWN";
     for(const auto &key:{"startedMonotonicNs","endedMonotonicNs","session"}){
         before.remove(QLatin1String(key));after.remove(QLatin1String(key));
     }
-    return before==after?"UNCHANGED":"CHANGED";
+    if(before!=after)return "CHANGED";
+    if(slot=="browser")for(const auto value:before.value("nodes").toArray())
+        if(!value.isObject() || value.toObject().value("fragmentsComplete")!=true)return "UNKNOWN";
+    return "UNCHANGED";
 }
 inline QJsonObject aggregate_diff(const QJsonObject &before,const QJsonObject &after){
     const auto old_sources=before.value("sources").toArray(),new_sources=after.value("sources").toArray();

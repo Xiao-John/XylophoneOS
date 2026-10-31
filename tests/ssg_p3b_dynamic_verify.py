@@ -6,7 +6,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
-from ssg_p3b_verify import frames, require
+from ssg_p3b_verify import frames, require, check_source_metadata
 from ssg_browser_structure import decode_capture, validate_oracle, compare_structure
 
 
@@ -114,6 +114,8 @@ def main():
     for agg in aggs:
         require(agg['semantics'] == 'sequential-per-source-non-atomic' and agg['globalAtomicSnapshot'] == 'NOT_IMPLEMENTED', 'aggregate semantics')
     sources = [{s['slot']: s for s in agg['sources']} for agg in aggs]
+    for sample in sources:
+        for source in sample.values(): check_source_metadata(source)
     require(aggs[0]['status'] == 'AGGREGATE_COMPLETE_OBSERVED', 'missing baseline A')
     verify_browser_receipt(a.browser_receipt, report)
     os = decode_capture(serial)['oracles']

@@ -4,7 +4,7 @@
 import argparse
 import json
 from pathlib import Path
-from ssg_p3b_verify import frames, require
+from ssg_p3b_verify import frames, require, check_source_metadata
 from ssg_p3b_dynamic_verify import check_browser, notes_segment, verify_browser_receipt
 from ssg_browser_structure import decode_capture
 
@@ -21,6 +21,8 @@ serial = (out / 'serial.log').read_bytes()
 f = frames(serial)
 a0, a1 = [f[('aggregate', 'BASELINE', i)] for i in (0, 1)]
 s0, s1 = [{v['slot']: v for v in a['sources']} for a in (a0, a1)]
+for sample in (s0, s1):
+    for source in sample.values(): check_source_metadata(source)
 require(a0['status'] == 'AGGREGATE_COMPLETE_OBSERVED' and a1['status'] == 'AGGREGATE_PARTIAL', 'bad aggregate status')
 require(s1['notes']['status'] == 'UNAVAILABLE' and s1['notes']['failure'] == kind and 'document' not in s1['notes'], 'staged data leaked or fault mislabeled')
 require(('SSG_TEST_PROVIDER_FAULT kind=' + kind).encode() in serial and ('P3B_DIFF browser=UNCHANGED notes=' + kind).encode() in serial, 'fault marker missing')

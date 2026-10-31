@@ -50,12 +50,18 @@ static QJsonObject identity(const char *slot,const QString &instance,const QStri
 }
 static QJsonObject unavailable_result(const Source &source,u64 start,u64 end,const QString &status,const QString &failure,bool hidden){
     const bool browser=std::strcmp(source.slot,"browser")==0;
-    return {{"slot",source.slot},{"status",status},{"failure",failure},{"instance",QString::fromLatin1(source.instance)},
+    return {{"slot",source.slot},{"status",status},{"completeness","NOT_OBSERVED"},{"failure",failure},{"instance",QString::fromLatin1(source.instance)},
             {"epoch",QJsonValue(QJsonValue::Null)},{"revision",QJsonValue(QJsonValue::Null)},
             {"scope",browser?"unfiltered-litehtml":"document-range-UTF-16"},
             {"presentation",hidden?(browser?"hidden-test-no-surface-no-input":"hidden-session-no-surface-no-input"):"visible-surface"},
             {"startedMonotonicNs",QString::number(start)},{"endedMonotonicNs",QString::number(end)}};
 }
+static QString client_failure(const Client &client){
+    if(!client.error().isEmpty())return client.error();
+    if(!client.status().isEmpty() && client.status()!="OK")return client.status();
+    return QStringLiteral("COLLECTION_OR_LIVENESS");
+}
+static QString source_failure(const QString &reason){return reason.isEmpty()?QStringLiteral("COLLECTION_OR_LIVENESS"):reason;}
 static QJsonObject browser_result(const ssg_pipe::Baseline &b,u64 start,u64 end,bool hidden){
     QJsonArray nodes;
     for(const auto &n:b.nodes){
@@ -71,13 +77,13 @@ static QJsonObject browser_result(const ssg_pipe::Baseline &b,u64 start,u64 end,
         }
         nodes.append(node);
     }
-    return {{"slot","browser"},{"status","OBSERVED_COMPLETE"},{"instance",QString::fromStdString(b.instance)},{"epoch",QString::fromStdString(b.epoch)},
+    return {{"slot","browser"},{"status","OBSERVED_COMPLETE"},{"completeness","LOCALLY_COMPLETE_ORACLE_REQUIRED"},{"instance",QString::fromStdString(b.instance)},{"epoch",QString::fromStdString(b.epoch)},
             {"revision",QString::fromStdString(b.revision)},{"session",QString::fromStdString(b.session)},{"scope","unfiltered-litehtml"},{"scrollY",b.scroll},
             {"presentation",hidden?"hidden-test-no-surface-no-input":"visible-surface"},
             {"startedMonotonicNs",QString::number(start)},{"endedMonotonicNs",QString::number(end)},{"nodes",nodes}};
 }
 static QJsonObject notes_result(const NotesBaseline &n,u64 start,u64 end,bool hidden){
-    return {{"slot","notes"},{"status","OBSERVED_COMPLETE"},{"instance",n.instance},{"epoch",n.epoch},{"revision",n.revision},
+    return {{"slot","notes"},{"status","OBSERVED_COMPLETE"},{"completeness","REVISION_CONSISTENT_OWNER_ORACLE_REQUIRED"},{"instance",n.instance},{"epoch",n.epoch},{"revision",n.revision},
             {"scope","document-range-UTF-16"},{"presentation",hidden?"hidden-session-no-surface-no-input":"visible-surface"},
             {"startedMonotonicNs",QString::number(start)},{"endedMonotonicNs",QString::number(end)},
             {"document",QJsonObject{{"id",identity("notes",n.instance,n.epoch,n.node)},{"utf16Units",n.units},{"text",n.text}}}};
@@ -147,8 +153,8 @@ int main(int argc,char **argv){
     bool nok=collect_notes(nc,note,failure);const u64 nend=thread::clock();
     const bool browser_alive_after=alive(b),notes_alive_after=alive(n);
     bok=bok && browser_alive && browser_alive_after;nok=nok && notes_alive_before && notes_alive_after;
-    QJsonObject browser_source=bok?browser_result(*collector.committed(),bstart,bend,hidden_browser):unavailable_result(b,bstart,bend,bc.status()=="DENIED"?"DENIED":"UNAVAILABLE",!bc.error().isEmpty()?bc.error():!bc.status().isEmpty()?bc.status():QStringLiteral("COLLECTION_OR_LIVENESS"),hidden_browser);
-    QJsonObject notes_source=nok?notes_result(note,nstart,nend,hidden_notes):unavailable_result(n,nstart,nend,failure=="DENIED"?"DENIED":failure=="PROTECTED"?"PROTECTED":"UNAVAILABLE",failure.isEmpty()?QStringLiteral("COLLECTION_OR_LIVENESS"):failure,hidden_notes);
+    QJsonObject browser_source=bok?browser_result(*collector.committed(),bstart,bend,hidden_browser):unavailable_result(b,bstart,bend,browser_alive_after && bc.status()=="DENIED"?"DENIED":"UNAVAILABLE",client_failure(bc),hidden_browser);
+    QJsonObject notes_source=nok?notes_result(note,nstart,nend,hidden_notes):unavailable_result(n,nstart,nend,notes_alive_after && failure=="DENIED"?"DENIED":notes_alive_after && failure=="PROTECTED"?"PROTECTED":"UNAVAILABLE",source_failure(failure),hidden_notes);
     const QJsonObject aggregate{{"status",bok&&nok?"AGGREGATE_COMPLETE_OBSERVED":"AGGREGATE_PARTIAL"},
         {"semantics","sequential-per-source-non-atomic"},{"globalAtomicSnapshot","NOT_IMPLEMENTED"},{"sources",QJsonArray{browser_source,notes_source}}};
     const auto encoded=QJsonDocument(aggregate).toJson(QJsonDocument::Compact);
@@ -172,8 +178,8 @@ int main(int argc,char **argv){
             const bool browser_ok=collect_baseline(bc,newer) && newer.commit() && alive(b);const u64 be=thread::clock();
             NotesBaseline updated;QString next_failure;const u64 ns=thread::clock();
             const bool notes_ok=collect_notes(nc,updated,next_failure) && alive(n);const u64 ne=thread::clock();
-            const QJsonObject bs_source=browser_ok?browser_result(*newer.committed(),bs,be,hidden_browser):unavailable_result(b,bs,be,bc.status()=="DENIED"?"DENIED":"UNAVAILABLE",bc.error().isEmpty()?bc.status():bc.error(),hidden_browser);
-            const QJsonObject ns_source=notes_ok?notes_result(updated,ns,ne,hidden_notes):unavailable_result(n,ns,ne,next_failure=="DENIED"?"DENIED":next_failure=="PROTECTED"?"PROTECTED":"UNAVAILABLE",next_failure,hidden_notes);
+            const QJsonObject bs_source=browser_ok?browser_result(*newer.committed(),bs,be,hidden_browser):unavailable_result(b,bs,be,bc.status()=="DENIED"?"DENIED":"UNAVAILABLE",client_failure(bc),hidden_browser);
+            const QJsonObject ns_source=notes_ok?notes_result(updated,ns,ne,hidden_notes):unavailable_result(n,ns,ne,next_failure=="DENIED"?"DENIED":next_failure=="PROTECTED"?"PROTECTED":"UNAVAILABLE",source_failure(next_failure),hidden_notes);
             const QJsonObject next{{"status",browser_ok&&notes_ok?"AGGREGATE_COMPLETE_OBSERVED":"AGGREGATE_PARTIAL"},
                 {"semantics","sequential-per-source-non-atomic"},{"globalAtomicSnapshot","NOT_IMPLEMENTED"},{"sources",QJsonArray{bs_source,ns_source}}};
             const auto payload=QJsonDocument(next).toJson(QJsonDocument::Compact);
@@ -212,8 +218,8 @@ int main(int argc,char **argv){
         const bool changed=browser_ok && changes.status==ssg_pipe::DiffStatus::ok && scroll==1 && collector.committed()->scroll!=fresh.committed()->scroll;
         const QJsonObject next{{"status",browser_ok&&notes_ok?"AGGREGATE_COMPLETE_OBSERVED":"AGGREGATE_PARTIAL"},
             {"semantics","sequential-per-source-non-atomic"},{"globalAtomicSnapshot","NOT_IMPLEMENTED"},
-            {"sources",QJsonArray{browser_ok?browser_result(*fresh.committed(),bs,be,hidden_browser):unavailable_result(b,bs,be,"UNAVAILABLE",bc.error(),hidden_browser),
-                                  notes_ok?notes_result(updated,ns,ne,hidden_notes):unavailable_result(n,ns,ne,"UNAVAILABLE",next_failure,hidden_notes)}}};
+            {"sources",QJsonArray{browser_ok?browser_result(*fresh.committed(),bs,be,hidden_browser):unavailable_result(b,bs,be,"UNAVAILABLE",client_failure(bc),hidden_browser),
+                                  notes_ok?notes_result(updated,ns,ne,hidden_notes):unavailable_result(n,ns,ne,"UNAVAILABLE",source_failure(next_failure),hidden_notes)}}};
         const bool captured=capture_next(next);if(captured)log_aggregate_diff(aggregate,next);
         std::printf("P3B_SCROLL before=%d after=%d scroll=%u geometry=%u visibility=%u other=%u notes=%s\n",collector.committed()->scroll,browser_ok?fresh.committed()->scroll:-1,scroll,geometry,visibility,other,unchanged?"UNCHANGED":"UNKNOWN_OR_CHANGED");
         success=changed && unchanged && captured;
@@ -232,8 +238,8 @@ int main(int argc,char **argv){
         const bool unchanged=notes_ok && updated.instance==note.instance && updated.epoch==note.epoch && updated.node==note.node && updated.revision==note.revision && updated.text==note.text;
         const QJsonObject next{{"status",browser_ok&&notes_ok?"AGGREGATE_COMPLETE_OBSERVED":"AGGREGATE_PARTIAL"},
             {"semantics","sequential-per-source-non-atomic"},{"globalAtomicSnapshot","NOT_IMPLEMENTED"},
-            {"sources",QJsonArray{browser_ok?browser_result(*fresh.committed(),bs,be,hidden_browser):unavailable_result(b,bs,be,"UNAVAILABLE",bc.error(),hidden_browser),
-                                  notes_ok?notes_result(updated,ns,ne,hidden_notes):unavailable_result(n,ns,ne,"UNAVAILABLE",next_failure,hidden_notes)}}};
+            {"sources",QJsonArray{browser_ok?browser_result(*fresh.committed(),bs,be,hidden_browser):unavailable_result(b,bs,be,"UNAVAILABLE",client_failure(bc),hidden_browser),
+                                  notes_ok?notes_result(updated,ns,ne,hidden_notes):unavailable_result(n,ns,ne,"UNAVAILABLE",source_failure(next_failure),hidden_notes)}}};
         const bool captured=capture_next(next);if(captured)log_aggregate_diff(aggregate,next);
         std::printf("P3B_DIFF browser=%s notes=%s old_reference=%s\n",replaced?"REPLACED":"UNKNOWN",unchanged?"UNCHANGED":"UNKNOWN_OR_CHANGED",old_ref.value("status").toString().toUtf8().constData());
         success=replaced && unchanged && captured;
@@ -257,7 +263,7 @@ int main(int argc,char **argv){
         const bool notes_unchanged=notes_observed && updated.instance==note.instance && updated.epoch==note.epoch && updated.node==note.node && updated.revision==note.revision && updated.text==note.text;
         const QJsonObject unavailable=unavailable_result(b,bs,be,browser_revoke_test?"DENIED":"UNAVAILABLE",browser_revoke_test?QStringLiteral("DENIED"):bc.error().isEmpty()?QStringLiteral("SOURCE_EXITED"):bc.error(),hidden_browser);
         const QJsonObject next{{"status","AGGREGATE_PARTIAL"},{"semantics","sequential-per-source-non-atomic"},{"globalAtomicSnapshot","NOT_IMPLEMENTED"},
-            {"sources",QJsonArray{unavailable,notes_observed?notes_result(updated,ns,ne,hidden_notes):unavailable_result(n,ns,ne,"UNAVAILABLE",next_failure,hidden_notes)}}};
+            {"sources",QJsonArray{unavailable,notes_observed?notes_result(updated,ns,ne,hidden_notes):unavailable_result(n,ns,ne,"UNAVAILABLE",source_failure(next_failure),hidden_notes)}}};
         const bool captured=capture_next(next);if(captured)log_aggregate_diff(aggregate,next);
         std::printf("P3B_DIFF browser=%s notes=%s retry_refused=%d browser_alive=%d notes_alive=%d\n",browser_revoke_test?(refused?"DENIED":"UNKNOWN"):!browser_still_alive&&!browser_observed?"EXITED":"UNKNOWN",notes_unchanged?"UNCHANGED":"UNKNOWN_OR_CHANGED",int(refused),int(browser_still_alive),int(notes_observed));
         success=captured && notes_unchanged && (browser_revoke_test?browser_still_alive && refused:!browser_still_alive && !browser_observed && b.reaped && b.status.outcome==process_outcome::exited && b.status.code==0);
@@ -295,8 +301,8 @@ int main(int argc,char **argv){
         const bool expected_exit=std::strcmp(argv[3],"--test-notes-exit")==0;
         const QString expected_refusal=std::strcmp(argv[3],"--test-revoke")==0?QStringLiteral("DENIED"):QStringLiteral("PROTECTED");
         const bool expected_denial=!expected_edit && !second_notes && second_failure==expected_refusal && retry_refused && alternate_refused && second_nalive;
-        QJsonObject bs=second_bok?browser_result(*second_browser.committed(),second_bstart,second_bend,hidden_browser):unavailable_result(b,second_bstart,second_bend,"UNAVAILABLE",bc.error(),hidden_browser);
-        QJsonObject ns=second_notes?notes_result(updated,second_nstart,second_nend,hidden_notes):unavailable_result(n,second_nstart,second_nend,(timeout_test || truncated_test || !second_nalive)?QStringLiteral("UNAVAILABLE"):second_failure,second_failure,hidden_notes);
+        QJsonObject bs=second_bok?browser_result(*second_browser.committed(),second_bstart,second_bend,hidden_browser):unavailable_result(b,second_bstart,second_bend,"UNAVAILABLE",client_failure(bc),hidden_browser);
+        QJsonObject ns=second_notes && second_nalive?notes_result(updated,second_nstart,second_nend,hidden_notes):unavailable_result(n,second_nstart,second_nend,(timeout_test || truncated_test || !second_nalive)?QStringLiteral("UNAVAILABLE"):second_failure,source_failure(second_failure),hidden_notes);
         const QJsonObject next{{"status",second_bok&&second_notes&&second_nalive?"AGGREGATE_COMPLETE_OBSERVED":"AGGREGATE_PARTIAL"},
             {"semantics","sequential-per-source-non-atomic"},{"globalAtomicSnapshot","NOT_IMPLEMENTED"},{"sources",QJsonArray{bs,ns}}};
         const bool captured=capture_next(next);if(captured)log_aggregate_diff(aggregate,next);

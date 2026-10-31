@@ -6,7 +6,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
-from ssg_p3b_verify import frames, require
+from ssg_p3b_verify import frames, require, check_source_metadata
 from ssg_p3b_dynamic_verify import notes_segment
 
 p = argparse.ArgumentParser(description=__doc__)
@@ -19,6 +19,7 @@ serial = (out / 'serial.log').read_bytes()
 f = frames(serial)
 aggregate = f[('aggregate', 'BASELINE', 0)]
 sources = {v['slot']: v for v in aggregate['sources']}
+for source in sources.values(): check_source_metadata(source)
 require(aggregate['status'] == 'AGGREGATE_PARTIAL' and sources['browser']['status'] == 'DENIED' and 'nodes' not in sources['browser'], 'browser denial not isolated')
 require(sources['notes']['status'] == 'OBSERVED_COMPLETE', 'Notes lost independent access')
 require(aggregate['semantics'] == 'sequential-per-source-non-atomic' and aggregate['globalAtomicSnapshot'] == 'NOT_IMPLEMENTED', 'wrong snapshot semantics')

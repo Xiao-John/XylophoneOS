@@ -41,7 +41,11 @@ Browser also records its revision and pagination session; Notes records its
 UTF-16 document revision. An epoch or instance change invalidates old references;
 restarting and reconnection are not implemented as transparent recovery.
 Browser data includes the observed scroll position and bounded local geometry;
-these do not establish compositor occlusion or global visibility.
+these do not establish compositor occlusion or global visibility. Browser
+completeness is locally validated traversal and still needs an independent
+oracle for the tested document; Notes completeness is a revision-consistent
+transaction and still needs an owner reference for independent qualification.
+Per-node fragment completeness is retained separately.
 
 The Browser adapter uses `snapshot_begin` / `snapshot_next`, cursors and the
 existing `BaselineCollector`. The Notes adapter uses a document snapshot followed
@@ -65,6 +69,9 @@ source-scoped Diff distinguishes `CHANGED`, `UNCHANGED`, `REPLACED`,
 using a desktop-wide numeric ID. Observation timestamps and Browser pagination
 session IDs are not by themselves content changes. The result remains a
 comparison of sequential per-source observations, not an atomic desktop event.
+Changing observation scope or presentation yields `UNKNOWN`. Matching Browser
+samples with incomplete fragment geometry also yield `UNKNOWN`; a known change
+may still be reported while coverage remains incomplete.
 
 ## Bounds and lifecycle
 

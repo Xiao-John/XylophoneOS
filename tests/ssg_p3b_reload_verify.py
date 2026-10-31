@@ -4,7 +4,7 @@
 import argparse
 import json
 from pathlib import Path
-from ssg_p3b_verify import frames, require
+from ssg_p3b_verify import frames, require, check_source_metadata
 from ssg_p3b_dynamic_verify import check_browser, notes_segment, verify_qmp_key, verify_browser_receipt
 from ssg_browser_structure import decode_capture
 
@@ -20,6 +20,8 @@ verify_qmp_key(report, serial, b'P3B_BROWSER_RELOAD_READY', 'r', b'BROWSER_LOADE
 f = frames(serial)
 a0, a1 = [f[('aggregate', 'BASELINE', i)] for i in (0, 1)]
 s0, s1 = [{v['slot']: v for v in a['sources']} for a in (a0, a1)]
+for sample in (s0, s1):
+    for source in sample.values(): check_source_metadata(source)
 require(a0['status'] == a1['status'] == 'AGGREGATE_COMPLETE_OBSERVED' and a1['globalAtomicSnapshot'] == 'NOT_IMPLEMENTED', 'aggregate state')
 records = {}
 for slot in ('browser', 'notes'):

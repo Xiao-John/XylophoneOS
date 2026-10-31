@@ -1,0 +1,9 @@
+{
+  "case": "protect-ancestor",
+  "runs": 16,
+  "passed": 16,
+  "consumer_sha256": "e166bc0f3159ca74c033e6c16156e75e0db907d8eeea828a82589817ce5875a5",
+  "notes_sha256": "4a5125bdd1d0ea092f633d9e48455507b0c0ae0ad81d5cb35d745fa5afdd7f4d",
+  "independent_verifier_per_run": true,
+  "scope": "QEMU synthetic test; not a general reliability guarantee"
+}

@@ -8,6 +8,10 @@ reconstructed text; full frame capture and the pause used for injection exist
 only in the separately compiled test Consumer. The owner shortcuts and document
 digest exist only in the separately compiled test Notes executable.
 
+`final-r2/` contains the results for the final joinable-watchdog implementation.
+The earlier archives in this directory are retained as evidence from the
+previous implementation and must not be mistaken for final-build results.
+
 | Scenario | Result | Observed behavior |
 | --- | --- | --- |
 | Live edit | `PASSED_SCOPED` | After two old-revision ranges, actual PS/2 input changed the editor. The old request returned `RESET_REQUIRED`; 1,023 staged UTF-16 units were discarded and the new revision was reconstructed exactly. |
@@ -39,9 +43,17 @@ also incorrectly depended on directory iteration order; sorting fixed that
 verifier and the captured runs were rechecked. The unmodified failures and raw
 host logs remain local and are not included here. The first full P1 run timed
 out waiting for Consumer exit after it had received a valid Diff; a standalone
-retry passed all 17 checks. The timing cause is not established. A build-helper
-edit also initially failed on a missing Python import; that import was added and
-the rebuilt test ELFs matched the previously tested hashes.
+retry passed all 17 checks. A clean-checkout ancestor-protection run also
+timed out after both `PROTECTED` responses; its retry passed. Diagnostic runs
+on the previous implementation reproduced two further exit timeouts, including
+one after `main` had returned. The cause of those hangs was not conclusively
+established. Qt's detached worker can report completion before native thread
+cleanup, so the Consumer watchdog now uses a joinable worker and waits for its
+native termination. The final build passed all five cases, the full 17-check
+P1 regression, and 16 additional ancestor-protection runs with independent
+verification and resource recovery. This is scoped evidence, not a guarantee
+that all exit races are eliminated. A build-helper edit also initially failed
+on a missing Python import; the import was added and the build rerun.
 
 ## Reproduction
 
@@ -120,6 +132,7 @@ command templates; its default, legacy receipt contains local paths and must
 remain private. Input and ELF digests can be checked against the named dependencies.
 
 `SHA256SUMS` covers this report and its exported evidence. For each case,
-extract its archive into a fresh directory and run the independent verifier on
-that directory. `provenance.json` records the exact tested hashes; the
-reconstructed, sanitized evidence containers are not the original raw logs.
+extract the corresponding `final-r2/` archive into a fresh directory and run
+the independent verifier on that directory. `final-r2/provenance.json` records
+the final tested hashes; the reconstructed, sanitized evidence containers are
+not the original raw logs.

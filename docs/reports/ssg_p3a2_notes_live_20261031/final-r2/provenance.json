@@ -1,0 +1,301 @@
+{
+  "source_base_head": "dd112182155f960cc82a616740ca1c9ad401d739",
+  "source_sha256": {
+    "src/user/apps/ssg_consumer.cpp": "ee164bc3b0fd972588516ffbf414d8e9f0eb4a24ad1b1b3c1f5d4603766b41ec",
+    "src/user/apps/ssg_session.cpp": "d972bd3c02b3c8db01b6e8c759969c309fd510ab939298d0ad4dcbcefc9b0871",
+    "src/user/ssg/pipe_wire.hpp": "af67a1149c50cc0a909528399eb733bee09630998fa63bf99e1405f2dbc3d958",
+    "src/ports/qt6/aurora/ssg.cpp": "09a7e0013ede2808d33460c621c18ccfff762618a768999ebaf706a25c5d1dfd",
+    "src/ports/qt6/aurora/ssg.hpp": "e2b1496b123983724bfcb538f2bc97b66448c5d3358971f34eb81c316a56a7e2",
+    "src/ports/qt6/aurora/ssg_pipe_provider.hpp": "3ea7718b424668d08e738f9f85a7631cd8c61c9fb71318457aacff97f4c8c7c7",
+    "src/ports/qt6/editor/main.cpp": "fd69bdc1aaf6f0c0ee68c930eb1d30310c7dc4d947a7d095d8e6888e085a1840",
+    "src/ports/qt6/build_fixture.py": "81e2e38cad7402827b956c4cc44d2bd9070896c9d5de4be4e11eecfb9f67abee",
+    "src/ports/qt6/build_widgets_fixture.py": "640b25a80df502d06adab04eec5adaa2ffb56440dd1b4b885a75d91836c2cf92",
+    "tests/fixtures/qt6/notes_live_test.cpp": "115c978c682a8bc997b119066d6aac5387a4491b0596cc31b23ba6c6480babe2",
+    "tests/fixtures/qt6/ssg_consumer_live_test.cpp": "84def032d90257cf30d92984c8e9f47f6c726d74396088adca6ef57c57b48613",
+    "tests/ssg_notes_live_edit_guest.py": "fef86c0b778329d5e21cbae59cd6d7908f1de004abdbac80ffac74c31910b2ff",
+    "tests/ssg_notes_live_verify.py": "b2a419d89d744471f1ba987d717bcb4310db0e8ff4595194b235ee1c2c9f3879",
+    "tests/ssg_notes_live_no_log_guest.py": "3b74327d9ea777bae9adbc0936de79049faac64d68fbae91a4ffa19c8d0e3daa"
+  },
+  "guest_environment": {
+    "qemu_version": "QEMU emulator version 11.1.2",
+    "machine": "pc-i440fx-10.0",
+    "acceleration": "tcg",
+    "architecture": "x86_64",
+    "other_architectures": "NOT_TESTED"
+  },
+  "synthetic_input_sha256": "b27a5b067671db800eea59cf91cf54f606cfeea985043c99879ee698b63fc6cd",
+  "live_inputs": {
+    "image": {
+      "sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08"
+    },
+    "session": {
+      "sha256": "a655bba4e92bbffac7ec636e6032bab3237859661a9071b9a5050a07404a1dcb"
+    },
+    "consumer": {
+      "sha256": "e166bc0f3159ca74c033e6c16156e75e0db907d8eeea828a82589817ce5875a5"
+    },
+    "notes": {
+      "sha256": "4a5125bdd1d0ea092f633d9e48455507b0c0ae0ad81d5cb35d745fa5afdd7f4d"
+    }
+  },
+  "ordinary_mode_inputs": {
+    "image": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+    "session": "a655bba4e92bbffac7ec636e6032bab3237859661a9071b9a5050a07404a1dcb",
+    "consumer": "fd91105032c5d3f5860ba54e146d873e11d8c69a50abc6c3ddb4147a87026e07",
+    "notes": "832a34bf30442acb08f995a902b110f590c95783d0748901050dc362c7125f27"
+  },
+  "p1_checks": 17,
+  "case_archives": [
+    {
+      "archive": "edit.tar.gz",
+      "sha256": "b86934d85982f0cefdf124059179e976921e8f697522c64e623a938bda2ee4cc",
+      "member_count": 34,
+      "members": {
+        "00-text.bin": "fb34699875ec592484f38fbdd942a578282dc8d2dcd5eee70c0abbedb948138e",
+        "01-req.bin": "9c80dd1e9925f57e89bc780f921fb1a5ccaba91ce11405c056cbc1ea544f84fb",
+        "01-resp.bin": "c5053127b3fa80915b52fbf7217da6f5ac9b3747d8cd8491976c0f247de9cde0",
+        "02-req.bin": "4cc0e7222c00e1559fef043336635fed1a6d028c2b9bd4bfa76f00576da73657",
+        "02-resp.bin": "331c368817201bed1cc7a228a28d2be7a39e42a2967f80282e7fabfcb4bb1785",
+        "03-req.bin": "063704a7698f15a157dd28e84814865b11c0bdf4c086637ed49f99db6268534f",
+        "03-resp.bin": "bcf5c4178b484de3b290f1b89a63ecd1983e6d87e6d04bc1baae444592737b95",
+        "04-req.bin": "f5905cf2f7b88120305c2b8a129268ef6af9d1e0a1da2894e492628c95ed8ed4",
+        "04-resp.bin": "ad98201bfa1a8f9f73234a95ca9ee94c32185ba540c8d429699683ba2a800ff2",
+        "05-req.bin": "9c80dd1e9925f57e89bc780f921fb1a5ccaba91ce11405c056cbc1ea544f84fb",
+        "05-resp.bin": "ef467780b6d080516d6dd427f710b1d1c9098cc0938f13e02769a479d371cb46",
+        "06-req.bin": "4cc0e7222c00e1559fef043336635fed1a6d028c2b9bd4bfa76f00576da73657",
+        "06-resp.bin": "8dd5fc8afb7b5f8904be6a0b580c0de2bbd2e27d1de8d2fb2ecaf1ec0129b6dd",
+        "07-req.bin": "14b75b3b7520b059e4a736c401cb5324d32e7301633f039f492abb0db86bb9d6",
+        "07-resp.bin": "e0eb557c7e9b2a6592d44911c510c1b557e222abc398fb4f29add323f135b243",
+        "08-req.bin": "0676a37749b1b1ed08c7af689a5b2eed1eb4fab5575e7bd48879517dac2399dd",
+        "08-resp.bin": "6b39677ef0102423d23355ffc29c467d48d34bf765c27cbff9e76418266a2600",
+        "09-req.bin": "4ea05d9cba23d9ec74bbdb9ff32ad23bae5630e33340b7a91b83fddf156921e1",
+        "09-resp.bin": "ef4ba6170f360d9894694801c9a82811a8931f7e3544a7eeea1e7e8238c97575",
+        "10-req.bin": "0089513d6a9cb30ecb008c7f9cad26476e142613b2e134b872793645948bbbc9",
+        "10-resp.bin": "3eb797970900427b7b82fa8fe01bb95f53c383404804cab53c4ea9a30e7c1e28",
+        "11-req.bin": "545d611e2e8ef3ec096bd23e825d8c239341aa3b382a160db0eaf1e4f8cfc620",
+        "11-resp.bin": "bda4f5433d545400ea1e4a5edf446896d267e6424cdd10b94d47a173ef6afece",
+        "12-req.bin": "b4d70d161b69da5c7fa17849c15719af1e211ee5914a78cfb8bdb11cc3114c54",
+        "12-resp.bin": "4963c63fcea438b221d4e03198095e4c2401ddd4dc80352f1ebddd3e5686d6e4",
+        "13-req.bin": "78c2c1bebb94086c3e67fb78b1dcfd62eaab29a9b9f0e0f0ce25b0eeaec27681",
+        "13-resp.bin": "85bd43088bd981c8cd88a4f684c1a262f990f012acaf152e39132e04cb6a1ec4",
+        "14-req.bin": "6e3e40326f26dd03d62a170399ceb2d995bd24904880e1ac4d0b741558e04c41",
+        "14-resp.bin": "0b2267c30e61c99fffd71597ca1fd5aaa1ba33da1d8d8c138ed0460430a210ee",
+        "independent-check.json": "bb77e70de774b9ed6662b5d6fbaf213e5f218aefd4dfc4c62eeb425084054887",
+        "report.json": "e4e828b6cb8799b256dbb5b249fbe5f570d64a8e4e5e282ee8c4536bb0e098ec",
+        "serial-provenance.json": "e26ba1eb487fa74e0b87c9e06f0fc956e6dd4621adf66283069eb8d175637529",
+        "serial-selected.log": "adc137353479050b4b10ed9b01741c6fffb0b06a12c83dced7fcac203acfc9bc",
+        "synthetic-input.txt": "b27a5b067671db800eea59cf91cf54f606cfeea985043c99879ee698b63fc6cd"
+      }
+    },
+    {
+      "archive": "no-edit.tar.gz",
+      "sha256": "1b74a8e846d31f34d4ec29a86c83cf1c3bbf9fffa18afd2c321d828492836470",
+      "member_count": 26,
+      "members": {
+        "00-text.bin": "b27a5b067671db800eea59cf91cf54f606cfeea985043c99879ee698b63fc6cd",
+        "01-req.bin": "9c80dd1e9925f57e89bc780f921fb1a5ccaba91ce11405c056cbc1ea544f84fb",
+        "01-resp.bin": "5477885b0fe59f55f54fc93411e0e5bb63f3d4564af29580707be56c4c33df38",
+        "02-req.bin": "e8b0bd3a5c5d73e6b431d456d808bcddfa79c6fa555bef3f70a7a22e7f770d0e",
+        "02-resp.bin": "6e3db138c4d889a34a592bb664d929dfebfa50fac1217e1554495cdbe679c707",
+        "03-req.bin": "d5cd1356db0d1500902541d3479d84decf928649dcaf0f6a3142a2fdfa9f47cc",
+        "03-resp.bin": "6f7c02fb70833d2c82162f209536d412fdb5fd57db5852fc73370880fd1f05c1",
+        "04-req.bin": "37ceb6dcf2166158d82e2a80b05a69f43ac5cbefa02fa0906443a5849ceecb43",
+        "04-resp.bin": "51adbdfd1798c3b74e4c12b4ea07861682e2e537a3967b35d8335bc2ebe92107",
+        "05-req.bin": "2584285bdf1f9b3fcb27355a59d45e1b7eb6390874e7b03dd36c6fb758c49a15",
+        "05-resp.bin": "c59e86130f985fd451d952bfa568914d4cb538c65be699288723f5cd9153c4e9",
+        "06-req.bin": "a6b9d29e65fa45633466d164529f02d2fc9f04cffc6a074e9dc814e43aafbbe5",
+        "06-resp.bin": "d0d9328e862e680dcd4b52fcda48337912f9ed7de1c8045995185614cb681254",
+        "07-req.bin": "f17e568c2035eb2543677e0aa849d32e57d9624399a153ce514000228f829eb4",
+        "07-resp.bin": "b1be8d296aa447ff08ccffe125fe0b58c636da8eacf91d05edac260d9439b11e",
+        "08-req.bin": "d137baa2a9afccb2399313969e34f82471abf00738b763cfbf627c3fb1b96091",
+        "08-resp.bin": "7751eb04093d48027de97b09391a53a3956bdf2206c1057ad9670334b9b7f383",
+        "09-req.bin": "aa109261cd8956c6dd3048c011ed849db1cbbe5bb175b4d7e53f7534165ba08c",
+        "09-resp.bin": "f674def0f79cc90624c9f075dda7991d490eec55372840c613abcc4d26709e9a",
+        "10-req.bin": "a0432e45e7705f6eb20635d2698b746980b028a673791e2229659b5351fac2ad",
+        "10-resp.bin": "4df161f4b169702fac15d64d560d19756f374614982969af9ab817416566ac57",
+        "independent-check.json": "229bc251761d767f75828b5554f4278373d424f1ee97ab89dca0343c3d73361e",
+        "report.json": "0afe74168a3003464866753084e028ee654488fd1072c19cf47afb902b189a5c",
+        "serial-provenance.json": "9bb429aea39d84bb265b5017873e9a60c22205b16b9e283f3f2b30a057be1b5e",
+        "serial-selected.log": "e6fb27bf0ecbfba1c6c0bf134af389146bc4efec4d4bfcb77a4e6c2a5fc7f920",
+        "synthetic-input.txt": "b27a5b067671db800eea59cf91cf54f606cfeea985043c99879ee698b63fc6cd"
+      }
+    },
+    {
+      "archive": "revoke.tar.gz",
+      "sha256": "849443491fa709c707268e6ce7bf708c910ff7c1489084e0dd51f3c340b76f57",
+      "member_count": 15,
+      "members": {
+        "01-req.bin": "9c80dd1e9925f57e89bc780f921fb1a5ccaba91ce11405c056cbc1ea544f84fb",
+        "01-resp.bin": "5409b16193dab320f422b71e966b3a0238a49387b927d0b010ee74f0a1278407",
+        "02-req.bin": "033dbac2901138cc77f0c60c2a89a993a63a542a2872d05aea2a972bae52e695",
+        "02-resp.bin": "aaf41f8b21c0705895dbb1d63cdb3facf6246b7b4806831768f1e515a44511a1",
+        "03-req.bin": "d029385198f8844891ddd12f384c95dea36ddd055462c862b6dd8fd2d069abd3",
+        "03-resp.bin": "228412d00169c96aa160677f074efad60b18630576a80af0d03c5129706a80bc",
+        "04-req.bin": "a337d21b98e048bbbf64c3e65ef3cb5dc226e904885412dd3ec10845be310502",
+        "04-resp.bin": "376424c1754b1b89785f7148286df1d82bd0da86675b26af339b971ee3c5b911",
+        "05-req.bin": "033dbac2901138cc77f0c60c2a89a993a63a542a2872d05aea2a972bae52e695",
+        "05-resp.bin": "376424c1754b1b89785f7148286df1d82bd0da86675b26af339b971ee3c5b911",
+        "independent-check.json": "8a832efefe0f6d10fc2a95d8b772b46584181ecfb55e7b48cdeea4aeba40c708",
+        "report.json": "9a6bf1bf346bb878ea15d9de1aeb78109423537e86f67cbbc32ab42145ba0739",
+        "serial-provenance.json": "56ac83c824dc3b9af3a1b74cf0708e875fe49e7b946618cceabde60e6217964f",
+        "serial-selected.log": "e5cb0fa1fc49a6e7193387d6fbddf7258f023bf45c0a3a9df52d553d0d49b5d4",
+        "synthetic-input.txt": "b27a5b067671db800eea59cf91cf54f606cfeea985043c99879ee698b63fc6cd"
+      }
+    },
+    {
+      "archive": "protect-document.tar.gz",
+      "sha256": "d54676f34f1393976f52a42de48c1f79157584208bfcc3175d72a0db5309d95e",
+      "member_count": 15,
+      "members": {
+        "01-req.bin": "9c80dd1e9925f57e89bc780f921fb1a5ccaba91ce11405c056cbc1ea544f84fb",
+        "01-resp.bin": "abe2627b6eaff1aafaf778e625997dc84ccb968c537e20a2d6b998e539cf203d",
+        "02-req.bin": "3cd24af2145d41216f74be70006dc28ccb847140b521b3e925e56c33ce41ebd7",
+        "02-resp.bin": "7213d20ace476fb7329ef7d36ab759c62d78056ab16776f338137b27449d365d",
+        "03-req.bin": "9aa6700d1385c2d0c0338bf798b42ad88936a3e4133cb616b3d12132531116b4",
+        "03-resp.bin": "5584ac3cee271383f4a351f66faa6540f2b374e7f1bca655dbbb656ee75adf14",
+        "04-req.bin": "6c0d9bc55a392403a3f7a25154da32aa3647d59a235c47c33256309a3919e5f4",
+        "04-resp.bin": "8dd37cc624796049dd16314497cf65ed48c241d69a4e41ab60a139448f0c0efe",
+        "05-req.bin": "3cd24af2145d41216f74be70006dc28ccb847140b521b3e925e56c33ce41ebd7",
+        "05-resp.bin": "8dd37cc624796049dd16314497cf65ed48c241d69a4e41ab60a139448f0c0efe",
+        "independent-check.json": "f7874038d290cb9d1024ffd16504a5138eec6e66d73cc79989bdf7208a1a303a",
+        "report.json": "67040d5f620672d5be684c7405156116d58d5ef9fc18aaa36f6a384d3aeec7ad",
+        "serial-provenance.json": "8c49bf3404f64ee755c867412ce8bd71e3d6a742cb410a7738497090e35fd0ae",
+        "serial-selected.log": "24d104801c4d251cd045236dff1accda4635f67d78e4404231b2233503488e24",
+        "synthetic-input.txt": "b27a5b067671db800eea59cf91cf54f606cfeea985043c99879ee698b63fc6cd"
+      }
+    },
+    {
+      "archive": "protect-ancestor.tar.gz",
+      "sha256": "37ed591b8434d46c82db36d5ea8834f2a1fda952fb08e37ca7a6b11daa6fd57b",
+      "member_count": 15,
+      "members": {
+        "01-req.bin": "9c80dd1e9925f57e89bc780f921fb1a5ccaba91ce11405c056cbc1ea544f84fb",
+        "01-resp.bin": "9daa32fbfa4ac3da14531d1ca2b3b45476b051a7845ffab6ea59bbe8d5e1e429",
+        "02-req.bin": "2c8350671094ed5bdd108e6e6059e48e0f9514a9291108c133818c17e956dbba",
+        "02-resp.bin": "1e04c1b7a422a53502da969f8d9943b42469d875c73d62d77ef8f4b29702a69f",
+        "03-req.bin": "078e1049f03ed67cb1c30f3eec2217e967b2fce335402c6c3730e68db66ac40f",
+        "03-resp.bin": "433688b22b38d005623ce68c1a3f3ebb233a2914fb9780d4b3f8a5bd082af8c2",
+        "04-req.bin": "c013edaec113510fa15099602a36cca4f306687dcf633ced619d4dd8b0b1bae0",
+        "04-resp.bin": "66ee49e9e6054edfadfc2d187e27d222f89838840765bc9eaeb4093ff178ad52",
+        "05-req.bin": "2c8350671094ed5bdd108e6e6059e48e0f9514a9291108c133818c17e956dbba",
+        "05-resp.bin": "66ee49e9e6054edfadfc2d187e27d222f89838840765bc9eaeb4093ff178ad52",
+        "independent-check.json": "9b646bf3e49cb597bc64f551cad1684fc09ec325585d46dc68f230687f72213a",
+        "report.json": "ffa4f5d70d63ff52c4695332957f83593d874b16a3f6a6a5fb6483c5194d45c8",
+        "serial-provenance.json": "0d346625bc2ba5a3129f5ec12ea1bfc986d57e99280bc21f7bab646b31b52142",
+        "serial-selected.log": "b9303b48ae10dbd3f42314ee36ce535cdd42859bcb6266925280d45c04b0b02f",
+        "synthetic-input.txt": "b27a5b067671db800eea59cf91cf54f606cfeea985043c99879ee698b63fc6cd"
+      }
+    },
+    {
+      "archive": "ordinary-no-log.tar.gz",
+      "sha256": "121d307f3fe37c28f7c5c11de984248f5768ab82ced0bb3586866c485b19be07",
+      "member_count": 3,
+      "members": {
+        "report.json": "071e3d25a3630ed1d242b6dbdd4ab4931786d2b118fc1d319a700da85bd46e8d",
+        "serial-provenance.json": "274cff2e2e2917a9b83551b4830fcc27d9fb2b1cc3ffdd1bc93ad1bcd05ae408",
+        "serial-selected.log": "62751784a7d41f14f5f78305afc3f5e186a6d031c6da47e24a6d16e8c7efdfa0"
+      }
+    },
+    {
+      "archive": "legacy-range.tar.gz",
+      "sha256": "11e46cbf5e281ed53c4a8f47e06472d9c8bf02f23eb8ff13bf98aa9c62022256",
+      "member_count": 12,
+      "members": {
+        "1-resp.json": "4fcf5caca985c1bfe39929b1edf3178fea913b666a6c0b77283801c54734553e",
+        "2-resp.json": "557af76b36f32856cf235b431b21ecec6a96ce0f543a961d849802462e150168",
+        "3-resp.json": "3bfba76afe0c78c10ad549d57b330feb0088447921d207eb8cf0b8d26a5eff0e",
+        "4-resp.json": "503aec8e0f46a6e69f965ef173f6e79ba5d1b8e609b573cf5b83c12b3bcefa3c",
+        "5-resp.json": "0f27540eaf3bef939460ddbf42aaf50bad9ce24c35adb116d1700768feabe1b5",
+        "6-resp.json": "ceee340e0fc4ffbc6602f97e2244a60fd1f5376314a50f73b5ced72fd5731a11",
+        "7-resp.json": "faed55781f38a0bd8bc87a3ec6909320d403cc5e3084ec196114e6159b975201",
+        "8-resp.json": "83ada6c71c24afdc52829eecf491ff9b10b1bcaf18c7c22b71d81702bfb10541",
+        "9-resp.json": "a26099120e3ba6adacc635fe4a5c50861d82cc00c5753e80dc80435226a5f20a",
+        "report.json": "4a3f3a1200dfca18740768ec9c96e974cc151cfb1e97db8322e53c62886f1fc7",
+        "serial-provenance.json": "3c0fc80f8125dcef239b211012b8764f13dc817f44b54aa266ab22024c0f1ef4",
+        "serial-selected.log": "7d83f11bff941b79d81935e6f35998b51f6a728b41f1c0995d0c16b55ed2ce94"
+      }
+    },
+    {
+      "archive": "qt-boundaries.tar.gz",
+      "sha256": "433f56936a1ba2d9f19afa6aaabd9852f4d1c1bad0b053a16d417570d03b5df7",
+      "member_count": 3,
+      "members": {
+        "report.json": "31a6703c7a65482b1ea2bd661b393e3d5bcd318e97a4936ddb888e4b36283ff2",
+        "serial-provenance.json": "9e7dd8e9f6ffbf417b2c36e93ef3fea6d2e13169c29debd85e2d8d0046aa8ba0",
+        "serial-selected.log": "13aa234b49e5fe443f521d920c6f091365c4322586e7c4002b7c61b8037483e4"
+      }
+    },
+    {
+      "archive": "p1-full.tar.gz",
+      "sha256": "b57dfd41e898e661817867c7692f842e3ccf3e1ce34ef73c3c77d48cd191a620",
+      "member_count": 59,
+      "members": {
+        "01-req.json": "1a0ee9f71f13a1e043b180849874b645e32298b7c617c4b11ad9a747fab7e29e",
+        "01-resp.json": "ee07be4b589cb1b59cac87024ca87ba50a870049da6516611b052ba06c442116",
+        "02-req.json": "3314b38184acd8cd4370ba2e308a7f4ca49755f337e273953db74ecbb6cf0ab2",
+        "02-resp.json": "5cd5dc9160da6baa64767225b200ae4f1364a09cccc6a44f34c4eb9afe702a0a",
+        "03-req.json": "9c80dd1e9925f57e89bc780f921fb1a5ccaba91ce11405c056cbc1ea544f84fb",
+        "03-resp.json": "ba2fc4dc225a9dddf8d38b2e62928f08502019ca5b40497e194f9966add57cb0",
+        "04-req.json": "2526b367932e3c0e17a59ed77291de0ce39b7acdfc6b9c828f9954d5d3007caa",
+        "04-resp.json": "e2759f2a57535efb780f09199d24c9078c58053d827154c64149ffb1122dc1db",
+        "05-req.json": "9c80dd1e9925f57e89bc780f921fb1a5ccaba91ce11405c056cbc1ea544f84fb",
+        "05-resp.json": "49ba0b224da4b8bfbe27f81976ebad368eb315a6ec042d78595aeb82fbefc0ad",
+        "06-req.json": "16748727169ac6abca8a1cc67213de42815de79c00210d0c60b8c5ed8e61af8a",
+        "06-resp.json": "86ed082401bf428612006bc247ff7c3808189ece81f272e7721cccceb5519a26",
+        "07-req.json": "9c08cde0995ddb0d16e390440ce5de88ad3a1dd2fd96e826c0c6738d0ad7da3c",
+        "07-resp.json": "77c7cdad713857909ecb6129d786e99d8ad57a4ed8b7e3c95d5d17d6c7c77673",
+        "08-req.json": "988bebc164e96d3aed05fc2bec9323bc30f597b402da8e78f9be3bb06a0767fd",
+        "08-resp.json": "cad3cbf2e1b8c5b85cef6e05943d7223e2a7da6f955a1e7b6f7c613bb2bfedc2",
+        "09-req.json": "9c80dd1e9925f57e89bc780f921fb1a5ccaba91ce11405c056cbc1ea544f84fb",
+        "09-resp.json": "776118414c14b8012ed640292b049f8cd6d3eb5f052bb4a7e50cfebaac254100",
+        "10-req.json": "ea75c4414eeb5c2646e28e185498180d273eb0653231219f2ce2f3d7b27a2b27",
+        "10-resp.json": "e0bb47071e5c6c344f3fc23b00f7ff96d9a51e56e9500f0ddffb6d566abdd378",
+        "11-req.json": "3a6f2db0870f41822d62f49eee59f499dfdd75a58481685e490e83a473fe52ba",
+        "11-resp.json": "cf94df6b87970909aef57e287ec2f51feb8e10d6dd739bd47d468b89c4aa9274",
+        "12-req.json": "f4d43a5325e126764d524d67a5abc2bc858f99978e5dcf6d7dc8f5b097c4ab8e",
+        "12-resp.json": "3fb2326cff159eeedaacd1f0ccaed0ebac229b4f01a22f5694edb44ff2c2a79a",
+        "13-req.json": "ce68a894badf08ab5566be2944867ef400636dd86c7d95e1c92cc43bd8013a00",
+        "13-resp.json": "92e98d28f087343b29be574ba6f05378f9c781af167303923bccdc0982b441da",
+        "14-req.json": "d2c139a77af13185a17d0f61d44b53634f4158ca7e1b43195e29a6e3ca866ffe",
+        "14-resp.json": "e9fca237da8ee9f68d17529b2f696e5129e0608fafa031ecdb2a4e537ee65ad3",
+        "browser-01-req.json": "e57af696e5b28b949d67aa5f887e70d2575d3da4df1b188e153462fa12127316",
+        "browser-01-resp.json": "30567fce658ac54e04534cefbf2c5c79bb918e3c3f15ff7ef0675847c1cc755c",
+        "browser-02-req.json": "fd21addbd729e7e162d2da8155e41b8bad8c5868d423e8dd8b5f441c00811fe0",
+        "browser-02-resp.json": "b1262eecb1ded04d220ee74e2af61c62908bd482c4acb24140ee64260f00d409",
+        "browser-03-req.json": "e57af696e5b28b949d67aa5f887e70d2575d3da4df1b188e153462fa12127316",
+        "browser-03-resp.json": "739fb06ee437ef2280b37f452963f7b5c9a7af58b196de901ae221e84b093ef9",
+        "browser-04-req.json": "e6c709bb16d96c0daf146a6c403e566499d6f50955e3fea21e729691ddc2fc4d",
+        "browser-04-resp.json": "8d6f4762a971468c3b7f0ce5f2f7c1eeb53e7c2ef031b82421b811a812339974",
+        "browser-05-req.json": "e57af696e5b28b949d67aa5f887e70d2575d3da4df1b188e153462fa12127316",
+        "browser-05-resp.json": "b3cec5fe864e224527310343296fbca4aff3d86a529054f6d1764731769097cc",
+        "browser-06-req.json": "6576c8607265196f93505a5c5480c4492624bc307549c6c3adf6b675ea678be5",
+        "browser-06-resp.json": "b23be2c399cba3e9622836e3104ee5c92d3a685d6962cfc6d7109f6e11567b0f",
+        "browser-07-req.json": "51f9e4a4f5792ef3750c55276b2742910703bf874da29cf907c708eb01d52b33",
+        "browser-07-resp.json": "b23be2c399cba3e9622836e3104ee5c92d3a685d6962cfc6d7109f6e11567b0f",
+        "browser-08-req.json": "e57af696e5b28b949d67aa5f887e70d2575d3da4df1b188e153462fa12127316",
+        "browser-08-resp.json": "511456dc646f6df2c9a6dd50fb9b44ce385c9d53cf175eb602a8a872b9c86678",
+        "browser-09-req.json": "c1ac643c2389d42dc263e6976e6e001a6f33306d6d14b573adc91dd23f738474",
+        "browser-09-resp.json": "2ac94fda04de22eb67a24c33c8550b7ed19208cdc579f9ccd2897c562a8ef5c6",
+        "browser-10-req.json": "5d39904fa8d5b4dae47886ec6f292f5b387aaf7afa55cd1c7ed54a4c8437f1f7",
+        "browser-10-resp.json": "2a76b8f494fb7380849297e018cacee5f36d16d695bec7951772663328cba315",
+        "browser-guard-after.json": "e4bb1a06aef4b2f553a809ecf5a37592f4a0b1b7370beb8b70aaee137813abea",
+        "browser-guard-before.json": "e4bb1a06aef4b2f553a809ecf5a37592f4a0b1b7370beb8b70aaee137813abea",
+        "browser-text-denied-response.json": "3e439512e204f89da4676c90794e17c283de3db76b4a00b605627ca7acaba7f7",
+        "cli-detail-response.json": "fece13d2465ec826471070effcef2dc7d49384e150583d9edc5a5f1ef568ceb5",
+        "cli-diff-response.json": "513cc4a4b2aa515a1d3591622c9bb863755179f7df9968302780fb78f9c042eb",
+        "old-provider-ref-request.json": "16748727169ac6abca8a1cc67213de42815de79c00210d0c60b8c5ed8e61af8a",
+        "old-provider-ref-response.json": "4ac3ae42f9c722a6debe5822795e09e38c384a78340bed59392dbfc5f395ebd3",
+        "report.json": "45ee035e552b4a665fdf3b2934eec232dd66c7b55ed3ddf3717ce511d5fd5b20",
+        "serial-provenance.json": "fc9e6724d0f64af9b45152ed9a52af5a1b63308675988fb7f20c733360caf3e8",
+        "serial-selected.log": "6b8c136530a28a0d54cca8ea7402dfdbc2d992c5af7c626b81c22302d0a6a224",
+        "text-denied-response.json": "6ed4a3cca608056af503f8ce16ee235266a71c6a41f4bf6f4f488311e9046f22"
+      }
+    }
+  ],
+  "lifecycle_stress": "lifecycle-stress.json",
+  "limitations": [
+    "Test-only controls and full frame logging are not in the ordinary build.",
+    "Joinable worker avoids relying on Qt detached-thread completion as native-thread reaping; the earlier exit hang root cause was not conclusively proven.",
+    "A prewired pipe and one synthetic document do not qualify a production broker."
+  ]
+}

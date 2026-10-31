@@ -1,0 +1,41 @@
+{
+  "status": "PASSED",
+  "checkout_head": "c9ff0bce050a6777b5f1777c714f9443a23e3ee4",
+  "checkout_tracked_clean_before_build": true,
+  "method": "documented environment-variable build and real QEMU runs in a detached clean checkout",
+  "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+  "session_sha256": "a655bba4e92bbffac7ec636e6032bab3237859661a9071b9a5050a07404a1dcb",
+  "consumer_sha256": "81a182eb382e7575401b16b0ec5fa3999112510be41156e154196c5c5dcff785",
+  "notes_test_sha256": "32ec0b32b3f209cb7cee2587471516a9d6b8cb7d3bae06445f9ced25a24ca0ce",
+  "cases": [
+    {
+      "case": "edit",
+      "status": "PASSED",
+      "checks_sha256": "bb77e70de774b9ed6662b5d6fbaf213e5f218aefd4dfc4c62eeb425084054887"
+    },
+    {
+      "case": "no-edit",
+      "status": "PASSED",
+      "checks_sha256": "229bc251761d767f75828b5554f4278373d424f1ee97ab89dca0343c3d73361e"
+    },
+    {
+      "case": "revoke",
+      "status": "PASSED",
+      "checks_sha256": "8a832efefe0f6d10fc2a95d8b772b46584181ecfb55e7b48cdeea4aeba40c708"
+    },
+    {
+      "case": "protect-document",
+      "status": "PASSED",
+      "checks_sha256": "f7874038d290cb9d1024ffd16504a5138eec6e66d73cc79989bdf7208a1a303a"
+    },
+    {
+      "case": "protect-ancestor",
+      "status": "PASSED",
+      "checks_sha256": "9b646bf3e49cb597bc64f551cad1684fc09ec325585d46dc68f230687f72213a"
+    }
+  ],
+  "limitations": [
+    "Existing matched SDK, Qt, QEMU, image and Session binaries were reused.",
+    "Only this host and x86-64 TCG configuration were tested."
+  ]
+}

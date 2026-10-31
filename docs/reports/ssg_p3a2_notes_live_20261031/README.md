@@ -55,6 +55,13 @@ verification and resource recovery. This is scoped evidence, not a guarantee
 that all exit races are eliminated. A build-helper edit also initially failed
 on a missing Python import; the import was added and the build rerun.
 
+A separate clean checkout of the watchdog change rebuilt the test Consumer
+and Notes with the documented environment variables and passed all five guest
+cases with independent checks. It reused the existing matched SDK, Qt, image,
+QEMU and Session binary. The rebuilt ELF hashes differed from the first build;
+the evidence establishes behavior on this host, not bit-for-bit reproducible
+builds or portability to another architecture. See `final-r2/clean-checkout/`.
+
 ## Reproduction
 
 These commands are execution entry points, not a verbatim copy of the original

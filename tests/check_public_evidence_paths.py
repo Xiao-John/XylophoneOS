@@ -75,7 +75,7 @@ def finding(findings, location, category):
 def safe_location(name, identities=()):
     raw = os.fsencode(name)
     # A repository or member name can itself contain a private path.
-    if any(pattern.search(raw) for pattern in COMPILED.values()) or any(i.encode() in raw for i in identities):
+    if any(pattern.search(raw) for pattern in COMPILED.values()) or any(i.encode().lower() in raw.lower() for i in identities):
         return 'path-sha256:' + hashlib.sha256(raw).hexdigest()[:20]
     return os.fsdecode(raw)
 
@@ -226,6 +226,8 @@ def git_entries(root, commit=None):
 
 
 def scan_repository(root, source='worktree', base=None, paths=(), commit=None, identities=()):
+    if any(not identity.strip() for identity in identities):
+        raise ValueError('an explicitly supplied identity cannot be empty')
     entries = git_entries(root, commit if source == 'commit' else None)
     if base:
         diff = ['diff', '--name-only', '--diff-filter=ACMRT', '-z']
@@ -337,6 +339,8 @@ def main():
     parser.add_argument('--output', type=Path)
     parser.add_argument('paths', nargs='*')
     args = parser.parse_args()
+    if any(not identity.strip() for identity in args.deny_identity):
+        parser.error('--deny-identity cannot be empty')
     source = 'index' if args.index else 'commit' if args.commit else 'worktree'
     try:
         result = scan_repository(args.root.resolve(), source, args.base, args.paths, args.commit, args.deny_identity)

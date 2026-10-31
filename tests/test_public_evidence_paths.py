@@ -143,6 +143,14 @@ class PublicPathTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 portable('/Users/' + 'example_dev/private', strict=True)
 
+    def test_identity_gate_rejects_empty_and_hides_mixed_case_names(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaises(ValueError):
+                scanner.scan_repository(Path(tmp), identities=[''])
+        location = scanner.safe_location('evidence/' + 'EXAMPLE_DEV/report', ['example_dev'])
+        self.assertTrue(location.startswith('path-sha256:'))
+        self.assertNotIn('EXAMPLE_DEV', location)
+
 
 if __name__ == '__main__':
     unittest.main()

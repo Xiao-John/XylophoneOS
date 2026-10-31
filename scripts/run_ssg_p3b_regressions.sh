@@ -1,7 +1,7 @@
 #!/bin/bash
 # SPDX-License-Identifier: Apache-2.0
 # Run the affected single-source regressions against one P3B build.
-# QEMU, XOS_IMAGE and XOS_DASH_ELF must name the actual local inputs.
+# Set QEMU, XOS_IMAGE, XOS_DASH_ELF and the SDK/Qt receipt input paths.
 set -u
 if [ "$#" -ne 2 ]; then
     printf 'Usage: %s BUILD_DIR OUTPUT_PREFIX\n' "$0" >&2
@@ -10,6 +10,9 @@ fi
 : "${QEMU:?Set QEMU to the QEMU executable}"
 : "${XOS_IMAGE:?Set XOS_IMAGE to the read-only XOS image}"
 : "${XOS_DASH_ELF:?Set XOS_DASH_ELF to the separately built dash executable}"
+: "${XOS_SDK_PREFIX:?Set XOS_SDK_PREFIX to the SDK used by this build}"
+: "${XOS_BUILD_DIR:?Set XOS_BUILD_DIR to the Qt build used by this build}"
+: "${XOS_QT_SOURCE:?Set XOS_QT_SOURCE to the Qt source used by this build}"
 xos_root=$(cd "$(dirname "$0")/.." && pwd)
 cd "$xos_root" || exit 2
 xos_build=$1

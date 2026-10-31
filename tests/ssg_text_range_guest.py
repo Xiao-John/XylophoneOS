@@ -5,6 +5,7 @@ import argparse, base64, hashlib, json, re, sys, tempfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT/'tests'),str(ROOT/'scripts')]
+from ssg_public_paths import portable
 from boot_smoke import Guest
 from make_work_disk import create_fat32
 from work_disk import transfer
@@ -15,7 +16,7 @@ for name in ('image','session','consumer','notes','output'): p.add_argument('--'
 a=p.parse_args(); out=a.output.resolve();out.mkdir(parents=True,exist_ok=False)
 sha=lambda b:hashlib.sha256(b).hexdigest()
 report={'status':'FAILED','inputs':{n:{'path':str(getattr(a,n).resolve()),'sha256':sha(getattr(a,n).read_bytes())} for n in ('image','session','consumer','notes')},'checks':[]}
-g=None
+g=None;disk=None
 try:
  with tempfile.TemporaryDirectory(prefix='xos_ssg_range_') as td:
   tmp=Path(td); disk=tmp/'work.img';create_fat32(disk,512);transfer(disk,'mkdir','/bin')
@@ -44,4 +45,6 @@ try:
 finally:
  if g:
   (out/'serial.log').write_bytes(bytes(g.output));g.close()
- (out/'report.json').write_text(json.dumps(report,indent=2)+'\n')
+ report['qemu_command_kind']='template; the runner creates the work disk and QMP socket'
+ mappings=[('XOS_IMAGE',a.image),('XOS_TEST_OUT',out),('XOS_SESSION_ELF',a.session),('XOS_CONSUMER_ELF',a.consumer),('XOS_NOTES_ELF',a.notes),('XOS_WORK_DISK',disk),('XOS_QMP_SOCKET',g.qmp_path if g else None),('XOS_QEMU',g.command[0] if g else None)]
+ (out/'report.json').write_text(json.dumps(portable(report,mappings,strict=True),indent=2)+'\n')

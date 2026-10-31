@@ -1,0 +1,144 @@
+{
+  "PR9": [
+    {
+      "commit": "13c45217337954d5d9804fee17b5703a65fd39be",
+      "files_scanned": 20,
+      "findings": 137,
+      "classification_counts": {
+        "CONFIRMED_PRIVATE_PATH": 5,
+        "HOST_SPECIFIC_COMMAND": 5,
+        "CONFIRMED_PRIVATE_IDENTITY": 123,
+        "PORTABILITY_ISSUE": 4
+      },
+      "status": "NOT_PUBLIC_READY"
+    },
+    {
+      "commit": "9ffac1de431a9926c9c715056b4b79fcdee2cf67",
+      "files_scanned": 13,
+      "findings": 141,
+      "classification_counts": {
+        "CONFIRMED_PRIVATE_PATH": 7,
+        "HOST_SPECIFIC_COMMAND": 7,
+        "CONFIRMED_PRIVATE_IDENTITY": 121,
+        "PORTABILITY_ISSUE": 6
+      },
+      "status": "NOT_PUBLIC_READY"
+    }
+  ],
+  "PR10": [
+    {
+      "commit": "28d04ff0c3c12f2576f627be826a81f73417692d",
+      "files_scanned": 22,
+      "findings": 11,
+      "classification_counts": {
+        "CONFIRMED_PRIVATE_PATH": 4,
+        "CONFIRMED_PRIVATE_IDENTITY": 4,
+        "HOST_SPECIFIC_COMMAND": 2,
+        "PORTABILITY_ISSUE": 1
+      },
+      "status": "NOT_PUBLIC_READY"
+    },
+    {
+      "commit": "9a739c7052d66dd75c0a0aceb807b0e4aa2fc16f",
+      "files_scanned": 114,
+      "findings": 24,
+      "classification_counts": {
+        "CONFIRMED_PRIVATE_PATH": 7,
+        "CONFIRMED_PRIVATE_IDENTITY": 7,
+        "HOST_SPECIFIC_COMMAND": 5,
+        "PORTABILITY_ISSUE": 5
+      },
+      "status": "NOT_PUBLIC_READY"
+    },
+    {
+      "commit": "0a63648d53e4a7491320111f053f8b93882fbdab",
+      "files_scanned": 13,
+      "findings": 0,
+      "classification_counts": {},
+      "status": "PUBLIC_READY"
+    },
+    {
+      "commit": "a81b4fd7ab18ec09e87b311e8fe89cf4464fb63c",
+      "files_scanned": 1,
+      "findings": 0,
+      "classification_counts": {},
+      "status": "PUBLIC_READY"
+    },
+    {
+      "commit": "56354acd979fc8bbfb6cf18f9a1acf81d1b00e3b",
+      "files_scanned": 95,
+      "findings": 218,
+      "classification_counts": {
+        "PORTABILITY_ISSUE": 157,
+        "HOST_SPECIFIC_COMMAND": 61
+      },
+      "status": "NOT_PUBLIC_READY"
+    },
+    {
+      "commit": "9170bde29fd1ad4130bfc3fd278a4b6c2474d158",
+      "files_scanned": 11,
+      "findings": 3,
+      "classification_counts": {
+        "HOST_SPECIFIC_COMMAND": 1,
+        "CONFIRMED_PRIVATE_PATH": 1,
+        "CONFIRMED_PRIVATE_IDENTITY": 1
+      },
+      "status": "NOT_PUBLIC_READY"
+    },
+    {
+      "commit": "9e75d695653dda266084e96098b847d38f5489fb",
+      "files_scanned": 10,
+      "findings": 301,
+      "classification_counts": {
+        "CONFIRMED_PRIVATE_PATH": 5,
+        "CONFIRMED_PRIVATE_IDENTITY": 291,
+        "HOST_SPECIFIC_COMMAND": 3,
+        "PORTABILITY_ISSUE": 2
+      },
+      "status": "NOT_PUBLIC_READY"
+    },
+    {
+      "commit": "7b2bb2a7d34567bb8ae50b7ed6b5a993e846f487",
+      "files_scanned": 29,
+      "findings": 898,
+      "classification_counts": {
+        "CONFIRMED_PRIVATE_PATH": 16,
+        "HOST_SPECIFIC_COMMAND": 9,
+        "CONFIRMED_PRIVATE_IDENTITY": 868,
+        "PORTABILITY_ISSUE": 5
+      },
+      "status": "NOT_PUBLIC_READY"
+    },
+    {
+      "commit": "9f0006baff0b7df24dadaad152c622efbfcd917c",
+      "files_scanned": 1,
+      "findings": 0,
+      "classification_counts": {},
+      "status": "PUBLIC_READY"
+    },
+    {
+      "commit": "6ea0f6e3253754d075cedf4fcf7cff8596b2ca72",
+      "files_scanned": 32,
+      "findings": 2245,
+      "classification_counts": {
+        "CONFIRMED_PRIVATE_PATH": 21,
+        "CONFIRMED_PRIVATE_IDENTITY": 2203,
+        "PORTABILITY_ISSUE": 8,
+        "HOST_SPECIFIC_COMMAND": 13
+      },
+      "status": "NOT_PUBLIC_READY"
+    },
+    {
+      "commit": "f2d9c7432a8ee9ac4fcf3544a04ad370ea10c916",
+      "files_scanned": 44,
+      "findings": 5118,
+      "classification_counts": {
+        "CONFIRMED_PRIVATE_PATH": 45,
+        "HOST_SPECIFIC_COMMAND": 35,
+        "CONFIRMED_PRIVATE_IDENTITY": 5019,
+        "PORTABILITY_ISSUE": 19
+      },
+      "status": "NOT_PUBLIC_READY"
+    }
+  ]
+}

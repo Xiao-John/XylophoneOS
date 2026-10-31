@@ -4,6 +4,7 @@
 import argparse, hashlib, json, shutil, subprocess, sys
 from pathlib import Path
 
+from ssg_public_paths import portable
 ROOT=Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser(description=__doc__)
 for name in ('sdk','qt-build','qt-source','host-qt','binutils','output'):
@@ -16,10 +17,10 @@ commands=[
     [sys.executable,sdk/'compile.py',ROOT/'src/user/apps/ssg_session.cpp','-o',out/'session.elf'],
     [sys.executable,ROOT/'src/ports/qt6/build_fixture.py','--source',ROOT/'src/user/apps/ssg_consumer.cpp',
      '--qrc',ROOT/'tests/fixtures/qt6/resources.qrc','--sdk',sdk,'--qt-build',qt,'--host-qt',host,
-     '--binutils',binutils,'--output',out/'consumer/ssg-consumer.elf'],
+     '--binutils',binutils,'--portable-receipt','--output',out/'consumer/ssg-consumer.elf'],
     [sys.executable,ROOT/'src/ports/qt6/build_widgets_fixture.py','--source',ROOT/'src/ports/qt6/editor/main.cpp',
      '--sdk',sdk,'--qt-build',qt,'--qt-source',source,'--core-build',qt,'--host-qt',host,
-     '--binutils',binutils,'--output',out/'notes/notes.elf'],
+     '--binutils',binutils,'--portable-receipt','--output',out/'notes/notes.elf'],
     [sys.executable,ROOT/'src/ports/aurora_browser/build.py','--sdk',sdk,'--qt-build',qt,
      '--qt-source',source,'--host-qt',host,'--binutils',binutils,'--output',out/'browser/browser.elf'],
 ]
@@ -32,7 +33,7 @@ inputs=[
     'src/ports/aurora_browser/patches/0001_readonly_render_fragments.patch',
     'src/ports/aurora_browser/source_lock.json','tests/ssg_ipc_guest.py',
 ]
-manifest={'status':'BUILDING','commands':[[str(x) for x in c] for c in commands],
+manifest={'status':'BUILDING','commands_kind':'templates; execution uses the original runtime arguments', 'commands':[[str(x) for x in c] for c in commands],
           'source_sha256':{str(x):sha(ROOT/x) for x in inputs},
           'sdk_manifest_sha256':sha(sdk/'manifest.json'),'qt_cache_sha256':sha(qt/'CMakeCache.txt'),
           'output':str(out),'tools':{}}
@@ -52,4 +53,5 @@ except Exception as e:
     manifest['error']=repr(e)
     raise
 finally:
-    (out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+    mappings=[('XOS_SDK_PREFIX',sdk),('XOS_BUILD_DIR',qt),('XOS_QT_SOURCE',source),('XOS_HOST_QT',host),('XOS_BINUTILS',binutils),('XOS_TEST_OUT',out),('XOS_PYTHON',sys.executable),('XOS_CXX',shutil.which('x86_64-elf-g++')),('XOS_CC',shutil.which('x86_64-elf-gcc')),('XOS_AR',shutil.which('x86_64-elf-ar'))]
+    (out/'manifest.json').write_text(json.dumps(portable(manifest,mappings,strict=True),indent=2)+'\n')

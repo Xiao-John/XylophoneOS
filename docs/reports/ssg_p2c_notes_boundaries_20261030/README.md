@@ -7,3 +7,5 @@ The initial run had 11 passes and 2 failures, retained with its exact fixture, r
 This is **not qualification of PR #9**: cross-process edit/revocation/protection, provider restart, malformed transport input and consumer cursor loop behavior remain to be tested. The existing P1 regression was rerun with the PR #9 artifacts and passed all 17 scoped checks; its report, IPC frames and logs are retained here. Complete Browser P2C acceptance remains a separate requirement. Browser pagination remains unimplemented and the original large-page failure remains in the P2 diagnostic report. No security qualification is implied.
 
 Rebuild using the `commands` in the corrected receipt, then run `tests/ssg_range_boundaries_guest.py` with the image, built payload and a fresh output directory; set `QEMU` to the QEMU executable recorded in the report. Both runs use synthetic text.
+
+Issue #37: reports and the regression archive were redacted; see `docs/reports/issue37_path_hygiene/notes-redactions.json` for original and redacted hashes. The archive was rebuilt and is not byte-identical to the original.

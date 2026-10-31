@@ -1,0 +1,123 @@
+{
+  "rules": "Host private path tokens replaced with ${XOS_REDACTED_PATH}/ plus a deterministic truncated SHA-256 identifier to preserve distinct keys. Untouched archive member bytes retained. Original files kept locally; archive containers rebuilt. No claim of byte identity. Recorded commands are separately converted to explicitly labelled configurable templates. Archive owner names and numeric ownership were normalized; container and metadata bytes changed.",
+  "files": [
+    {
+      "location": "docs/reports/ssg_p2b_notes_range_20261030/p1-regression-report.json",
+      "status": "REDACTED_AND_TEMPLATED_LOCAL",
+      "original_sha256": "297bc6fd647da47ddfd441fc92f4ab54075c2213ae1ea8046c419e44a6479038",
+      "redacted_sha256": "3fdeabcc7cea7c66e0a8af44d2b2f503a3133180628d5ccc4e48b79b74c85acb",
+      "changes": [
+        {
+          "field": "text containing host path"
+        }
+      ]
+    },
+    {
+      "location": "docs/reports/ssg_p2b_notes_range_20261030/report.json",
+      "status": "REDACTED_AND_TEMPLATED_LOCAL",
+      "original_sha256": "93f5f45c2f3aed320df70157bbc75b390aea0a502c9dfd6c53318acbe30a854d",
+      "redacted_sha256": "301033965786298c0a37cd409cb12e6517999f05f67cfb9d9a0dba01d0f006f4",
+      "changes": [
+        {
+          "field": "text containing host path"
+        }
+      ]
+    },
+    {
+      "location": "docs/reports/ssg_p2b_notes_range_20261030/p1-regression-evidence.tar.gz",
+      "status": "REDACTED_AND_TEMPLATED_LOCAL",
+      "original_sha256": "3ce366ca15890a45573101d1e2088e9262873ce39a3f839b2925a8cfef719b60",
+      "redacted_sha256": "8c68bfb329eecb75d4fd4dfa566d4ea517aef3102e55107ad4ee3d5a6512fe97",
+      "changes": [
+        {
+          "member": "./report.json",
+          "original_sha256": "297bc6fd647da47ddfd441fc92f4ab54075c2213ae1ea8046c419e44a6479038",
+          "redacted_sha256": "3fdeabcc7cea7c66e0a8af44d2b2f503a3133180628d5ccc4e48b79b74c85acb",
+          "field": "text containing host path"
+        }
+      ],
+      "archive_metadata": "Owner name and numeric ownership normalized; regular-file contents retained from preceding sanitized export."
+    },
+    {
+      "location": "docs/reports/ssg_p2b_notes_range_20261030/build-manifest.json",
+      "status": "REDACTED_AND_TEMPLATED_LOCAL",
+      "original_sha256": "d4dcbd6d66cb97569a6839224f8d0bebd075a4a91e73250f23238cf2ed60ea0f",
+      "redacted_sha256": "2d01d193a1a0a9aa8376cb6fdaf892ccfee6ed8e229a4d27598a3d5c43d5cc00",
+      "changes": [
+        {
+          "field": "text containing host path"
+        }
+      ]
+    },
+    {
+      "location": "docs/reports/ssg_p2c_notes_boundaries_20261030/corrected-receipt.json",
+      "status": "REDACTED_AND_TEMPLATED_LOCAL",
+      "original_sha256": "0d10d06980d31e0b2d213c58939cc8d19263f7480498ad5df1427d2a04018bb5",
+      "redacted_sha256": "6e31d00253928f474770ee466b6379f57cded180e1526a2e2ee4c6cdec84a403",
+      "changes": [
+        {
+          "field": "text containing host path"
+        }
+      ]
+    },
+    {
+      "location": "docs/reports/ssg_p2c_notes_boundaries_20261030/p1-regression-report.json",
+      "status": "REDACTED_AND_TEMPLATED_LOCAL",
+      "original_sha256": "c16bb6cc1ae6cfb7fb60486d58e22e86d486c6abd18b53704c87d5b74b3aa861",
+      "redacted_sha256": "48bc8eec5649e9b01b1931d63f4d6a42766004ca258fddccbf80ff22bdccd768",
+      "changes": [
+        {
+          "field": "text containing host path"
+        }
+      ]
+    },
+    {
+      "location": "docs/reports/ssg_p2c_notes_boundaries_20261030/initial-report.json",
+      "status": "REDACTED_AND_TEMPLATED_LOCAL",
+      "original_sha256": "2b290ff0f4e0969c911365c5f1fe70d384618c28d45ac51a5383e140b40500f1",
+      "redacted_sha256": "90074fd1c6b927c8067f4511d31a67270391fd0d560a1f949e59e5e1833ffb51",
+      "changes": [
+        {
+          "field": "text containing host path"
+        }
+      ]
+    },
+    {
+      "location": "docs/reports/ssg_p2c_notes_boundaries_20261030/p1-regression-evidence.tar.gz",
+      "status": "REDACTED_AND_TEMPLATED_LOCAL",
+      "original_sha256": "022102d144dc12e756f3cbb1a60a890f223e776e1437b8e5ff43be9236f5a131",
+      "redacted_sha256": "c7747422f46625f50224180c04d80a1fd52522d0daf2e6169a873b6290ef9076",
+      "changes": [
+        {
+          "member": "ssg-p2c-p1-regression/report.json",
+          "original_sha256": "c16bb6cc1ae6cfb7fb60486d58e22e86d486c6abd18b53704c87d5b74b3aa861",
+          "redacted_sha256": "48bc8eec5649e9b01b1931d63f4d6a42766004ca258fddccbf80ff22bdccd768",
+          "field": "text containing host path"
+        }
+      ],
+      "archive_metadata": "Owner name and numeric ownership normalized; regular-file contents retained from preceding sanitized export."
+    },
+    {
+      "location": "docs/reports/ssg_p2c_notes_boundaries_20261030/corrected-report.json",
+      "status": "REDACTED_AND_TEMPLATED_LOCAL",
+      "original_sha256": "8bb09840539bc1a66a082c1eb5e3bec7fdbcb25f3e691bffa90ca60713a7643a",
+      "redacted_sha256": "712bfb42cd760102761ca3a3d5cde8ecad536c43a49a7de2a1b66732aaa21d73",
+      "changes": [
+        {
+          "field": "text containing host path"
+        }
+      ]
+    },
+    {
+      "location": "docs/reports/ssg_p2c_notes_boundaries_20261030/initial-receipt.json",
+      "status": "REDACTED_AND_TEMPLATED_LOCAL",
+      "original_sha256": "3299a5490ead20b13be8fe71f55d630f6d0231c000343898275123cb0c87b0ea",
+      "redacted_sha256": "96a0714e45fb56762e1e5ae5a78dc37cec94b3afc23374e8e6973243081c3cd3",
+      "changes": [
+        {
+          "field": "text containing host path"
+        }
+      ]
+    }
+  ]
+}

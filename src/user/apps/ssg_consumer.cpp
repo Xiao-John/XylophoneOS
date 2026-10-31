@@ -15,11 +15,12 @@ static void frame_log(const char *direction,unsigned seq,const QByteArray &bytes
     std::printf("SSG_FRAME_END %s %u\n",direction,seq);
 }
 class Client {
-    Watchdog watchdog;unsigned sequence=0;QByteArray last_request;
+    Watchdog watchdog;unsigned sequence=0;QByteArray last_request;bool record_frames=true;
 public:
+    void set_frame_logging(bool enabled){record_frames=enabled;}
     QJsonObject request(const QJsonObject &object,bool *transport_ok=nullptr,unsigned hold_seconds=0){
         const unsigned seq=++sequence;const auto bytes=QJsonDocument(object).toJson(QJsonDocument::Compact);
-        last_request=bytes;frame_log("REQ",seq,bytes);auto result=send(bytes,seq,max_request,watchdog);
+        last_request=bytes;if(record_frames)frame_log("REQ",seq,bytes);auto result=send(bytes,seq,max_request,watchdog);
         QByteArray response;unsigned actual=0;
         if(result==Result::ok && hold_seconds){
             std::printf("SSG_CONSUMER_HOLD_READ seconds=%u\n",hold_seconds);
@@ -27,7 +28,7 @@ public:
         }
         if(result==Result::ok)result=receive(response,actual,max_response,watchdog,false);
         if(result!=Result::ok || actual!=seq){std::printf("SSG_CONSUMER_TRANSPORT seq=%u result=%s received=%u\n",seq,name(result),actual);if(transport_ok)*transport_ok=false;return {};}
-        frame_log("RESP",seq,response);QJsonParseError error{};const auto parsed=QJsonDocument::fromJson(response,&error);
+        if(record_frames)frame_log("RESP",seq,response);QJsonParseError error{};const auto parsed=QJsonDocument::fromJson(response,&error);
         if(error.error!=QJsonParseError::NoError || !parsed.isObject()){if(transport_ok)*transport_ok=false;return {};}
         if(transport_ok)*transport_ok=true;return parsed.object();
     }
@@ -153,6 +154,78 @@ static int browser_guard(Client &client){
     if(client.await_eof()!=Result::eof)++failures;
     std::printf("SSG_CONSUMER_BROWSER_GUARD_EXIT failures=%d\n",failures);return failures?1:0;
 }
+// A range read is a bounded transaction. Nothing staged is published until
+// every response has been checked against the same document revision.
+static int text_range_live(Client &client,bool expect_refusal=false){
+    constexpr int max_units=131072, max_pages=512, max_attempts=3;
+    bool injected=false;
+    for(int attempt=0;attempt<max_attempts;++attempt){
+        bool ok=false;const auto base=client.request(query("document"),&ok);
+        const auto nodes=base.value("nodes").toArray();
+        if(!ok || base.value("status")!="OK" || base.value("capped").toBool() || nodes.size()!=1 ||
+           base.value("sourceInstance").toString().isEmpty() || base.value("sourceEpoch").toString().isEmpty()){
+            std::printf("SSG_TEXT_TRANSACTION INVALID snapshot\n");return 1;
+        }
+        const auto node=nodes.first().toObject();
+        if(node.value("id").toString().isEmpty() || node.value("textStatus").toString()=="PROTECTED" || node.value("textStatus").toString()=="NOT_AUTHORIZED"){
+            std::printf("SSG_TEXT_TRANSACTION INVALID authorization\n");return 1;
+        }
+        QJsonObject req{{"op","text_range"},{"sourceInstance",base.value("sourceInstance")},
+            {"sourceEpoch",base.value("sourceEpoch")},{"nodeId",node.value("id")},{"maxLength",512}};
+        QString staged,revision;int offset=0,total=-1;bool reset=false;
+        std::printf("SSG_TEXT_TRANSACTION STAGING attempt=%d\n",attempt+1);
+        for(int page=0;page<max_pages;++page){
+            req["start"]=offset;if(!revision.isEmpty())req["documentRevision"]=revision;
+            const auto part=client.request(req,&ok);const auto status=part.value("status").toString();
+            if(ok && status=="RESET_REQUIRED" && part.value("sourceInstance")==base.value("sourceInstance") &&
+               !revision.isEmpty() && !part.value("documentRevision").toString().isEmpty() && part.value("documentRevision").toString()!=revision){
+                std::printf("SSG_TEXT_TRANSACTION INVALID revision old=%s new=%s\n",revision.toUtf8().constData(),part.value("documentRevision").toString().toUtf8().constData());
+                const int discarded=staged.size();staged.clear();
+                std::printf("SSG_TEXT_TRANSACTION DISCARDED units=%d reason=RESET_REQUIRED\n",discarded);
+                reset=true;break;
+            }
+            if(ok && (status=="DENIED" || status=="PROTECTED")){
+                const int discarded=staged.size();staged.clear();
+                std::printf("SSG_TEXT_TRANSACTION DISCARDED units=%d reason=%s\n",discarded,status.toUtf8().constData());
+                if(!expect_refusal || part.contains("text") || part.value("sourceInstance")!=base.value("sourceInstance"))return 1;
+                // A fresh range request is still subject to the owner's restriction.
+                req["start"]=0;req.remove("documentRevision");
+                const auto retry=client.request(req,&ok);
+                if(!ok || retry.value("status").toString()!=status || retry.contains("text") ||
+                   retry.value("sourceInstance")!=base.value("sourceInstance"))return 1;
+                std::printf("SSG_TEXT_TRANSACTION REFUSAL_CONFIRMED status=%s\n",status.toUtf8().constData());return 0;
+            }
+            if(!ok || status!="OK" || part.value("sourceInstance")!=base.value("sourceInstance") ||
+               part.value("sourceEpoch")!=base.value("sourceEpoch") || part.value("nodeId")!=node.value("id") ||
+               part.value("start").toInt(-1)!=offset || (!revision.isEmpty() && part.value("documentRevision").toString()!=revision)){
+                std::printf("SSG_TEXT_TRANSACTION INVALID status=%s\n",status.toUtf8().constData());return 1;
+            }
+            revision=part.value("documentRevision").toString();
+            if(total<0)total=part.value("documentLength").toInt(-1);
+            const int end=part.value("end").toInt(-1);const auto value=part.value("text").toString();
+            if(revision.isEmpty() || total<0 || total>max_units || total!=part.value("documentLength").toInt(-1) ||
+               end<offset || end>total || (end==offset && end!=total) || value.size()!=end-offset ||
+               part.value("remaining").toInt(-1)!=total-end){std::printf("SSG_TEXT_TRANSACTION INVALID range\n");return 1;}
+            staged+=value;offset=end;
+#ifdef XOS_SSG_TEST_DIAGNOSTICS
+            if(!injected && page==1 && offset<total){
+                injected=true;std::printf("SSG_NOTES_EDIT_INJECTION_READY\n");
+                xos::thread::sleep_until(xos::thread::clock()+8000000000ull);
+            }
+#endif
+            if(offset==total){
+                if(expect_refusal){std::printf("SSG_TEXT_TRANSACTION INVALID expected_refusal\n");return 1;}
+                std::printf("SSG_TEXT_TRANSACTION COMMITTED units=%d revision=%s\n",total,revision.toUtf8().constData());
+#ifdef XOS_SSG_TEST_DIAGNOSTICS
+                frame_log("TEXT",0,staged.toUtf8());
+#endif
+                return 0;
+            }
+        }
+        if(!reset){std::printf("SSG_TEXT_TRANSACTION INVALID budget\n");return 1;}
+    }
+    std::printf("SSG_TEXT_TRANSACTION INVALID retry_budget\n");return 1;
+}
 static void consumer_qt_message(QtMsgType,const QMessageLogContext &,const QString &message){
     std::printf("SSG_CONSUMER_QT %s\n",message.toUtf8().constData());
 }
@@ -197,6 +270,15 @@ int main(int argc,char **argv){
         bool ok=false;const auto result=client.request(req,&ok);display(result);
         return ok && result.value("status")=="OK"?0:1;
     }
+    if(mode=="text-range-live"){
+#ifndef XOS_SSG_TEST_DIAGNOSTICS
+        client.set_frame_logging(false);
+#endif
+        return text_range_live(client);
+    }
+#ifdef XOS_SSG_TEST_DIAGNOSTICS
+    if(mode=="text-range-live-refusal")return text_range_live(client,true);
+#endif
     if(mode=="text-range"){
         bool ok=false;const auto base=client.request(query("document"),&ok);
         const auto nodes=base.value("nodes").toArray();

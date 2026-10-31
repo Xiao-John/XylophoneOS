@@ -24,6 +24,9 @@
 #include <QtWidgets/QScrollBar>
 #include <QtCore/QTimer>
 #include <QtCore/QtPlugin>
+#ifdef XOS_SSG_TEST_CONTROLS
+#include <QtCore/QCryptographicHash>
+#endif
 #include <xos/thread_core.hpp>
 #include <cstdio>
 Q_IMPORT_PLUGIN(QXosIntegrationPlugin)
@@ -171,6 +174,18 @@ public:
             pipe_provider->start();
             std::printf("SSG_PROVIDER_READY pid=%llu instance=%s text=%d\n",(unsigned long long)xos::sdk::pid(),pipe_instance.toUtf8().constData(),int(pipe_text));
         }
+#ifdef XOS_SSG_TEST_CONTROLS
+        // Present only in the separately compiled synthetic-test executable.
+        // These owner-side shortcuts are not exposed through the consumer pipe.
+        auto diagnostic=[this]{const auto value=text->toPlainText();
+            const auto digest=QCryptographicHash::hash(value.toUtf8(),QCryptographicHash::Sha256).toHex();
+            std::printf("SSG_TEST_OWNER_DOCUMENT units=%d sha256=%s\n",value.size(),digest.constData());};
+        connect(text->document(),&QTextDocument::contentsChanged,this,diagnostic);
+        shortcut(QKeySequence(Qt::CTRL|Qt::Key_6),[this]{if(scene){scene->host_allow_observation(false);std::printf("SSG_TEST_OWNER_REVOKED\n");}});
+        shortcut(QKeySequence(Qt::CTRL|Qt::Key_7),[this]{text->setProperty("xosSsgProtected",true);std::printf("SSG_TEST_OWNER_DOCUMENT_PROTECTED\n");});
+        shortcut(QKeySequence(Qt::CTRL|Qt::Key_8),[paper]{paper->setProperty("xosSsgProtected",true);std::printf("SSG_TEST_OWNER_ANCESTOR_PROTECTED\n");});
+        QTimer::singleShot(300,this,diagnostic);
+#endif
         auto *sampler=new QTimer(this);sampler->setInterval(1000);
         connect(sampler,&QTimer::timeout,this,[this]{xos::thread_stats stats{};
             xos::sdk::syscall(xos::sys_thread_stats,reinterpret_cast<xos::u64>(&stats));

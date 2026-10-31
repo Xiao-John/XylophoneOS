@@ -34,15 +34,19 @@ Browser fixture does not qualify large-page pagination. Full static Qt
 distribution and relinking license review is NOT_RUN; do not infer it from prior
 registered-material checks. Test frames and logs contain synthetic text.
 
-To reproduce, use the prepared paths in the P1 report, build with
-`scripts/build_ssg_p1.py` to a fresh output directory, then run:
+The report and archived regression evidence were redacted for Issue #37; see
+`docs/reports/issue37_path_hygiene/notes-redactions.json` for original and
+redacted hashes. The rebuilt archive is not the original byte sequence.
+
+To reproduce with independently prepared artifacts, set `XOS_IMAGE`,
+`XOS_SESSION_ELF`, `XOS_CONSUMER_ELF`, `XOS_NOTES_ELF`, `XOS_TEST_OUT`, and
+`QEMU`, then run:
 
 ```sh
-QEMU=../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64 \
+export XOS_ROOT="$(git rev-parse --show-toplevel)"
 python3 tests/ssg_text_range_guest.py \
-  --image ../XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img \
-  --session build/ssg-p2b-notes-final/session.elf \
-  --consumer build/ssg-p2b-notes-final/consumer/ssg-consumer.elf \
-  --notes build/ssg-p2b-notes-final/notes/notes.elf \
-  --output build/ssg-p2b-notes-new-guest
+  --image "${XOS_IMAGE}" --session "${XOS_SESSION_ELF}" \
+  --consumer "${XOS_CONSUMER_ELF}" --notes "${XOS_NOTES_ELF}" \
+  --output "${XOS_TEST_OUT}"
 ```
+The current harness requires the output directory to be inside `XOS_ROOT/build`.

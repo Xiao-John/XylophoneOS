@@ -2,27 +2,27 @@
   "status": "PASSED_SCOPED",
   "inputs": {
     "image": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img",
+      "path": "${XOS_REDACTED_PATH}/51a25efb27812683",
       "sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08"
     },
     "session": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-p2b-notes/build/ssg-p2b-notes-final/session.elf",
+      "path": "${XOS_REDACTED_PATH}/d7e50ae1df71ecd4",
       "sha256": "a655bba4e92bbffac7ec636e6032bab3237859661a9071b9a5050a07404a1dcb"
     },
     "consumer": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-p2b-notes/build/ssg-p2b-notes-final/consumer/ssg-consumer.elf",
+      "path": "${XOS_REDACTED_PATH}/a52afbfc17d44da0",
       "sha256": "7f5841fca843a9de1551244195832a35407b2252ca0c168906d5f89804158029"
     },
     "notes": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-p2b-notes/build/ssg-p2b-notes-final/notes/notes.elf",
+      "path": "${XOS_REDACTED_PATH}/a2df06c5eb5ef493",
       "sha256": "a049c10079dec138cbf04da8d5e27ce810736a622e5ec6c78cf5c367df2a378c"
     },
     "browser": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-p2b-notes/build/ssg-p2b-notes-final/browser/browser.elf",
+      "path": "${XOS_REDACTED_PATH}/4d3ceb8231594d21",
       "sha256": "410e4b533425a0c2fcbaa3274d802fa2d9c2ebe1e9c2d1a84ed1f2b7aa091a1c"
     },
     "dash": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_frozen/dash.elf",
+      "path": "${XOS_REDACTED_PATH}/6b0d6a4c9552586c",
       "sha256": "d262b8299734d07c27e8d5ac696a3460c82cba4fe56159d3cbdcceee8f703ff9"
     }
   },
@@ -46,7 +46,7 @@
     "display_and_guest_resource_baseline_restored"
   ],
   "qemu_command": [
-    "../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "${XOS_QEMU}",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -64,7 +64,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_IMAGE},format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -75,9 +75,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ssg_ipc_5wi6pzvu/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_h20ie17j/qmp.sock,server=on,wait=off"
+    "unix:${XOS_QMP_SOCKET},server=on,wait=off"
   ],
   "baseline_resources": [
     130279,
@@ -544,5 +544,6 @@
     130279,
     2,
     0
-  ]
+  ],
+  "qemu_command_kind": "historical command template; the test harness creates the work disk and QMP socket"
 }

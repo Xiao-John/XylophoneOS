@@ -215,7 +215,24 @@
   "limitations": [
     "P2F structural replay did not reverify all historical external build inputs.",
     "The earlier P2G4 failure archive is retained as a failure; only run-03 is the accepted replay.",
-    "A mistakenly paired two-baseline run and single-traversal Oracle validator failed as expected; the correctly paired controls were rerun.",
+    "A mistakenly paired two-baseline run and single-traversal Oracle validator failed because the contracts differ; the correctly paired controls were rerun.",
     "These checks do not remove historic Git objects or independently qualify additional Browser scenarios."
+  ],
+  "failure_history": [
+    {
+      "kind": "local_candidate_redactor",
+      "failed_attempts": 2,
+      "resolution": "Fixed a replacement-escape error and preservation of non-UTF8 archive metadata; rebuilt and reverified the candidate."
+    },
+    {
+      "kind": "historical_failure_sample_selected_for_replay",
+      "failed_attempts": 1,
+      "resolution": "The P2G4 checker correctly rejected run-01; the documented final run-03 passed."
+    },
+    {
+      "kind": "two_baseline_run_paired_with_single_traversal_oracle",
+      "failed_attempts": 1,
+      "resolution": "Reran the properly paired P2G4 observation and P2F single-traversal Oracle controls; both passed their scoped checks."
+    }
   ]
 }

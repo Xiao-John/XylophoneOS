@@ -59,6 +59,7 @@ def main():
         ('aggregate', core + ['--source', ROOT / 'src/user/apps/ssg_multi_session.cpp', *core_args, '--output', out / 'aggregate/ssg-multi.elf']),
         ('consumer', core + ['--source', ROOT / 'src/user/apps/ssg_consumer.cpp', *core_args, '--output', out / 'consumer/ssg-consumer.elf']),
         ('consumer-test', core + ['--source', ROOT / 'tests/fixtures/qt6/ssg_consumer_live_test.cpp', *core_args, '--output', out / 'consumer-test/ssg-consumer.elf']),
+        ('aggregate-diff-test', core + ['--source', ROOT / 'tests/fixtures/qt6/ssg_aggregate_diff_test.cpp', *core_args, '--output', out / 'aggregate-diff-test/probe.elf']),
         ('boundaries', widgets + ['--source', ROOT / 'tests/fixtures/qt6/ssg_range_boundaries.cpp', *widgets_args, '--output', out / 'boundaries/probe.elf']),
         ('session', [sys.executable, sdk / 'compile.py', ROOT / 'src/user/apps/ssg_session.cpp', '-o', out / 'session/session.elf']),
     ]
@@ -77,6 +78,8 @@ def main():
                 'sdk_manifest_sha256': sha(sdk / 'manifest.json'), 'qt_cache_sha256': sha(qt / 'CMakeCache.txt'),
                 'tool_versions': {name: subprocess.check_output([str(tool), '--version'], text=True).splitlines()[0]
                                   for name, tool in tools.items()},
+                'tool_sha256': {name: sha(tool) for name, tool in tools.items()},
+                'host_qt_tool_sha256': {name: sha(host / 'libexec' / name) for name in ('moc', 'rcc')},
                 'commands_kind': 'portable templates; original execution logs remain local',
                 'commands': {name: portable([str(x) for x in command], mappings, strict=True) for name, command in jobs},
                 'artifacts': {}}

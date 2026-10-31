@@ -10,6 +10,27 @@ from ssg_p3b_verify import frames, require
 from ssg_browser_structure import decode_capture, validate_oracle, compare_structure
 
 
+def verify_browser_receipt(path, report):
+    receipt = json.loads(path.read_text())
+    require(receipt.get('test_structure_oracle') is True and receipt.get('elf_sha256') == report['inputs']['browser']['sha256'], 'browser receipt mismatch')
+    root = Path(__file__).resolve().parents[1]
+    for name in ('build.py', 'main.cpp', 'view.hpp', 'test_structure_oracle.hpp', 'content.hpp', 'scene_geometry.hpp'):
+        rel = 'src/ports/aurora_browser/' + name
+        require([v for k, v in receipt['inputs'].items() if k.endswith('/' + rel)] == [hashlib.sha256((root / rel).read_bytes()).hexdigest()], 'browser source mismatch')
+
+
+def verify_qmp_key(report, serial, ready, code, observed):
+    ready_at = serial.find(ready)
+    observed_at = serial.find(observed, max(0, ready_at))
+    matches = []
+    for event in report.get('qmp_events', []):
+        for item in (event.get('arguments') or {}).get('events', []):
+            data = item.get('data', {})
+            if item.get('type') == 'key' and data.get('down') is True and data.get('key', {}).get('data') == code:
+                matches.append(event.get('serial_offset'))
+    require(ready_at >= 0 and observed_at > ready_at and any(isinstance(n, int) and ready_at <= n <= observed_at for n in matches), 'QMP/guest input order mismatch')
+
+
 def check_browser(records, oracles, source, report):
     require(len(oracles) == 2, 'missing browser oracle pair')
     before, after = [x['data'] for x in oracles]
@@ -84,18 +105,17 @@ def main():
     serial = (out / 'serial.log').read_bytes()
     require('real_ps2_' + report['case'] in report['events'], 'missing QMP input record')
     require(any(e.get('command') == 'input-send-event' for e in report.get('qmp_events', [])), 'missing QMP events')
+    code, observed = {'edit': ('z', b'EDITOR_CHANGE'), 'revoke': ('6', b'SSG_TEST_OWNER_REVOKED'),
+                      'protect-document': ('7', b'SSG_TEST_OWNER_DOCUMENT_PROTECTED'),
+                      'protect-ancestor': ('8', b'SSG_TEST_OWNER_ANCESTOR_PROTECTED')}[report['case']]
+    verify_qmp_key(report, serial, b'P3B_EDIT_INJECTION_READY', code, observed)
     data = frames(serial)
     aggs = [data[('aggregate', 'BASELINE', i)] for i in (0, 1)]
     for agg in aggs:
         require(agg['semantics'] == 'sequential-per-source-non-atomic' and agg['globalAtomicSnapshot'] == 'NOT_IMPLEMENTED', 'aggregate semantics')
     sources = [{s['slot']: s for s in agg['sources']} for agg in aggs]
     require(aggs[0]['status'] == 'AGGREGATE_COMPLETE_OBSERVED', 'missing baseline A')
-    receipt = json.loads(a.browser_receipt.read_text())
-    require(receipt.get('test_structure_oracle') is True and receipt['elf_sha256'] == report['inputs']['browser']['sha256'], 'browser receipt mismatch')
-    root = Path(__file__).resolve().parents[1]
-    for name in ('build.py', 'main.cpp', 'view.hpp', 'test_structure_oracle.hpp', 'content.hpp', 'scene_geometry.hpp'):
-        rel = 'src/ports/aurora_browser/' + name
-        require([v for k, v in receipt['inputs'].items() if k.endswith('/' + rel)] == [hashlib.sha256((root / rel).read_bytes()).hexdigest()], 'browser source mismatch')
+    verify_browser_receipt(a.browser_receipt, report)
     os = decode_capture(serial)['oracles']
     require(len(os) == 4, 'expected two oracle pairs')
     pairs = {}
@@ -116,7 +136,7 @@ def main():
         require(segments, 'notes has no snapshot')
         segments[-1].append(pair)
     require(len(segments) >= 3, 'missing notes retry or fresh check')
-    decoded = [notes_segment(s, report['processes']['notes']) for s in segments]
+    decoded = [notes_segment(s, report['processes']['notes']) for s in segments[:3]]
     original = (out / 'synthetic-input.txt').read_text()
     base, node, first, revision, failure = decoded[0]
     require(first == original and failure is None, 'baseline A notes mismatch')
@@ -127,6 +147,7 @@ def main():
     require(decoded[1][0]['sourceInstance'] == base['sourceInstance'] and decoded[1][0]['sourceEpoch'] == base['sourceEpoch'] and decoded[1][1]['id'] == node['id'], 'staging source changed')
     require(decoded[1][2] and decoded[1][2] == original[:len(decoded[1][2])], 'missing old-revision staging')
     if report['case'] == 'edit':
+        require(len(segments) == 3, 'unexpected edit transaction sequence')
         require(b'EDITOR_KEY key=90' in serial and b'EDITOR_CHANGE' in serial, 'guest did not receive the edit key')
         require(decoded[1][4] == 'RESET_REQUIRED' and b'P3B_NOTES_DISCARD reason=RESET_REQUIRED' in serial, 'old revision not discarded')
         newer = decoded[-1]
@@ -138,12 +159,25 @@ def main():
         require(b'P3B_DIFF browser=UNCHANGED notes=CHANGED' in serial, 'aggregate diff missing')
     else:
         status = 'DENIED' if report['case'] == 'revoke' else 'PROTECTED'
+        require(len(segments) == 5, 'missing alternative-role or fresh-range probes')
         require(decoded[1][4] == status, 'mid-range refusal missing')
         require(decoded[-1][1].get('textStatus') == ('NOT_AUTHORIZED' if status == 'DENIED' else 'PROTECTED'), 'fresh snapshot bypassed restriction')
         require('text' not in decoded[-1][1], 'fresh restricted snapshot leaked text')
         require(aggs[1]['status'] == 'AGGREGATE_PARTIAL' and sources[1]['notes']['status'] == status and 'document' not in sources[1]['notes'], 'restricted aggregate leaked or claimed completion')
         require(('P3B_DIFF browser=UNCHANGED notes=' + status + ' retry_refused=1').encode() in serial, 'independent source/refusal diff missing')
+        require(('P3B_ALTERNATE_REFUSAL status=' + status + ' no_text=1 label_safe=1 range_refused=1').encode() in serial, 'alternative-role refusal missing')
+        probe_doc = segments[3][0][1]
+        require(len(probe_doc.get('nodes', [])) == 1 and 'text' not in probe_doc['nodes'][0] and probe_doc['nodes'][0].get('textStatus') == ('NOT_AUTHORIZED' if status == 'DENIED' else 'PROTECTED'), 'refreshed document leaked text')
+        require(segments[4][0][0].get('role') == 'label' and segments[4][0][1].get('status') == 'OK', 'alternative role probe missing')
+        require(original[:32] not in json.dumps(segments[4][0][1], ensure_ascii=False), 'alternative role leaked document text')
+        direct_req, direct_resp = segments[4][-1]
+        require(direct_req.get('op') == 'text_range' and direct_resp.get('status') == status and 'text' not in direct_resp, 'fresh range bypassed restriction')
         expected = original
+    changes = re.findall(rb'^P3B_AGGREGATE_DIFF (\{.*\})\r?$', serial, re.MULTILINE)
+    require(len(changes) == 1, 'aggregate Diff missing')
+    changes = json.loads(changes[0])
+    require(changes == {'status': 'OK', 'semantics': 'per-source-non-atomic', 'browser': 'UNCHANGED',
+                        'notes': 'CHANGED' if report['case'] == 'edit' else 'PERMISSION_CHANGED'}, 'aggregate Diff classification')
     digest = hashlib.sha256(expected.encode()).hexdigest().encode()
     units = len(expected.encode('utf-16-le')) // 2
     require(re.search(rb'SSG_TEST_OWNER_DOCUMENT units=' + str(units).encode() + rb' sha256=' + digest + rb'\b', serial), 'owner digest mismatch')

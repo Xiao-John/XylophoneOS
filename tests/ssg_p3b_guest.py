@@ -18,6 +18,7 @@ sys.path[:0] = [str(ROOT / 'tests'), str(ROOT / 'scripts')]
 from boot_smoke import Guest
 from make_work_disk import create_fat32
 from process_smoke import command, resources
+from ssg_public_paths import portable
 from task_smoke import send_bytes, pump
 from work_disk import transfer
 
@@ -69,16 +70,27 @@ def main():
     p.add_argument('--notes-denied', action='store_true')
     p.add_argument('--browser-denied', action='store_true')
     p.add_argument('--ordinary', action='store_true', help='exercise non-diagnostic supervisor and Notes with explicit aggregate output')
-    p.add_argument('--case', choices=('baseline', 'edit', 'revoke', 'protect-document', 'protect-ancestor', 'browser-revoke', 'browser-reload', 'notes-exit', 'browser-exit', 'notes-timeout', 'notes-truncated'), default='baseline')
+    p.add_argument('--ordinary-sample', action='store_true', help='exercise two ordinary observations and their per-source Diff')
+    p.add_argument('--old-instance', help='test a source instance captured from an earlier session')
+    p.add_argument('--case', choices=('baseline', 'edit', 'revoke', 'protect-document', 'protect-ancestor', 'browser-revoke', 'browser-reload', 'browser-scroll', 'notes-exit', 'browser-exit', 'notes-timeout', 'notes-truncated'), default='baseline')
     a = p.parse_args()
     started = time.monotonic()
     out = a.output.resolve()
     relative = out.relative_to(ROOT / 'build')
     out.mkdir(parents=True, exist_ok=False)
-    report = {'status': 'FAILED', 'case': 'notes-denied' if a.notes_denied else 'browser-denied' if a.browser_denied else 'ordinary' if a.ordinary else a.case,
+    report = {'status': 'FAILED', 'case': 'notes-denied' if a.notes_denied else 'browser-denied' if a.browser_denied else 'ordinary-sample' if a.ordinary_sample else 'ordinary' if a.ordinary else 'old-instance' if a.old_instance else a.case,
               'inputs': {name: {'sha256': sha(getattr(a, name))}
                          for name in ('image', 'supervisor', 'browser', 'notes', 'input')},
               'events': [], 'qmp_events': []}
+    report['runner_sha256'] = sha(ROOT / 'tests/ssg_p3b_guest.py')
+    browser_receipt = a.browser.with_suffix('.portable.receipt.json')
+    if browser_receipt.is_file():
+        (out / 'browser.receipt.json').write_bytes(browser_receipt.read_bytes())
+        report['browser_receipt_sha256'] = sha(browser_receipt)
+    if a.old_instance:
+        if not re.fullmatch(r'[0-9a-f]{32}', a.old_instance):
+            p.error('old instance must be 32 lowercase hexadecimal characters')
+        report['old_instance'] = a.old_instance
     note = out / 'synthetic-input.txt'
     note.write_text(fixture(), encoding='utf-8')
     report['synthetic_input_sha256'] = sha(note)
@@ -102,6 +114,10 @@ def main():
                 return original_qmp(name, arguments)
             guest.qmp = record_qmp
             report['qemu_version'] = subprocess.check_output([guest.command[0], '--version'], text=True).splitlines()[0]
+            report['qemu_sha256'] = sha(Path(guest.command[0]))
+            report['qemu_command_template'] = portable(guest.command, [
+                ('XOS_IMAGE', a.image), ('XOS_QEMU', guest.command[0]), ('XOS_WORK_DISK', disk),
+                ('XOS_QMP_SOCKET', guest.qmp_path)], strict=True)
             guest.expect(b'xos64> ', timeout=45)
             send_bytes(guest, b'run\r')
             guest.expect_supervisor(trace=True, timeout=45)
@@ -111,13 +127,16 @@ def main():
             guest.expect(b'[display-service] ready')
             report['active_display'] = resources(guest)
             start = len(guest.output)
-            mode = (' --notes-hidden --emit-aggregate' if a.ordinary else ' --notes-denied' if a.notes_denied else
-                    ' --browser-denied' if a.browser_denied else (' --test-' + a.case if a.case != 'baseline' else ''))
+            mode = (' --notes-hidden --emit-aggregate --sample-twice --sample-interval 1' if a.ordinary_sample else
+                    ' --notes-hidden --emit-aggregate' if a.ordinary else ' --notes-denied' if a.notes_denied else
+                    ' --browser-denied' if a.browser_denied else (' --old-instance ' + a.old_instance) if a.old_instance else
+                    (' --test-' + a.case if a.case != 'baseline' else ''))
             send_bytes(guest, ('exec-driver /bin/multi.elf /web/ssg.html /synthetic.txt' + mode + '\r').encode())
             guest.expect(b'P3B_BOTH_STARTED', start=start, timeout=150)
             if a.case not in ('baseline', 'notes-timeout', 'notes-truncated'):
                 marker = (b'P3B_BROWSER_EXIT_READY' if a.case == 'browser-exit' else
                           b'P3B_BROWSER_REVOKE_READY' if a.case == 'browser-revoke' else
+                          b'P3B_BROWSER_SCROLL_READY' if a.case == 'browser-scroll' else
                           b'P3B_BROWSER_RELOAD_READY' if a.case == 'browser-reload' else b'P3B_EDIT_INJECTION_READY')
                 reached = guest.expect_any((marker, b'P3B_CAPTURE_COMPLETE'), start=start, timeout=300)
                 if reached != marker:
@@ -127,10 +146,11 @@ def main():
                              'protect-ancestor': ('8', b'SSG_TEST_OWNER_ANCESTOR_PROTECTED'),
                              'notes-exit': ('esc', None), 'browser-exit': ('esc', None),
                              'browser-revoke': ('9', b'SSG_TEST_BROWSER_REVOKED'),
-                             'browser-reload': ('r', b'BROWSER_LOADED path=')}
+                             'browser-reload': ('r', b'BROWSER_LOADED path='),
+                             'browser-scroll': ('pgdn', b'BROWSER_SCROLL value=')}
                 code, marker = injection[a.case]
                 input_start = len(guest.output)
-                if a.case in ('edit', 'notes-exit', 'browser-exit'):
+                if a.case in ('edit', 'notes-exit', 'browser-exit', 'browser-scroll'):
                     key(guest, code)
                 else:
                     chord(guest, code)
@@ -163,8 +183,13 @@ def main():
                                         if line.startswith((b'EDITOR_SAMPLE ', b'BROWSER_SAMPLE '))]
             report['pipe_capacity_probe'] = next((line.decode() for line in output.splitlines()
                                                   if line.startswith(b'P3B_PIPE_REUSE ')), 'NOT_AVAILABLE')
+            shutdown = re.search(rb'P3B_SHUTDOWN elapsed_ns=(\d+) clean=([01])', output)
+            report['shutdown'] = {'elapsed_ns': int(shutdown[1]), 'clean': shutdown[2] == b'1'} if shutdown else None
             report['aggregate'] = next((line.decode() for line in output.splitlines() if line.startswith(b'P3B_AGGREGATE ')), None)
             report['resources_restored'] = report['active_display'] == report['after']
+            expected_code = 1 if a.notes_denied else 0
+            if report['supervisor_exit'] != {'kind': 'exited', 'code': expected_code}:
+                raise AssertionError('supervisor exit was not the expected result')
             if b'P3B_AGGREGATE status=AGGREGATE_COMPLETE_OBSERVED browser=1 notes=1' in output and not a.notes_denied and not a.browser_denied:
                 if a.case == 'edit' and b'P3B_DIFF browser=UNCHANGED notes=CHANGED' not in output:
                     raise AssertionError('cross-app edit was not isolated')
@@ -180,6 +205,10 @@ def main():
                     raise AssertionError('Browser revocation was not isolated')
                 if a.case == 'browser-reload' and b'P3B_DIFF browser=REPLACED notes=UNCHANGED old_reference=SOURCE_REPLACED' not in output:
                     raise AssertionError('Browser document replacement was not isolated')
+                if a.case == 'browser-scroll' and not re.search(rb'P3B_SCROLL before=\d+ after=[1-9]\d* scroll=1 .* notes=UNCHANGED', output):
+                    raise AssertionError('Browser scroll was not isolated')
+                if a.old_instance and b'P3B_OLD_INSTANCE status=SOURCE_REPLACED' not in output:
+                    raise AssertionError('old source instance was not refused')
                 if a.case in ('notes-timeout', 'notes-truncated'):
                     failure = b'TIMEOUT' if a.case == 'notes-timeout' else b'TRUNCATED'
                     if b'SSG_TEST_PROVIDER_FAULT kind=' + failure not in output or b'P3B_DIFF browser=UNCHANGED notes=' + failure not in output:

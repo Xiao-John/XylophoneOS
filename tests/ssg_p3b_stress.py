@@ -65,12 +65,14 @@ def main():
             'reaped=1 cancelled=0 outcome=1 code=0' in x for x in report.get('source_exits', []))
         good = (code == 0 and verified and report.get('resources_restored') is True and clean_exits and
                 report.get('supervisor_exit') == {'kind': 'exited', 'code': 0} and
+                (report.get('shutdown') or {}).get('clean') is True and
                 report.get('pipe_capacity_probe') == 'P3B_PIPE_REUSE acquired=4 requested=4')
         item = {'run': i, 'status': 'PASSED' if good else 'FAILED', 'runner_exit': code, 'timeout': timed_out,
                 'elapsed_seconds': round(time.monotonic() - started, 3),
                 'supervisor_exit': report.get('supervisor_exit'), 'source_exits': report.get('source_exits', []),
                 'active_display_resources': report.get('active_display'), 'after_resources': report.get('after'),
                 'thread_samples': report.get('thread_samples', []), 'pipe_capacity_probe': report.get('pipe_capacity_probe'),
+                'shutdown': report.get('shutdown'),
                 'independent_check': 'PASSED' if verified else 'FAILED_OR_NOT_RUN'}
         result['runs'].append(item)
         consecutive_failures = 0 if good else consecutive_failures + 1

@@ -5,7 +5,7 @@ import argparse
 import json
 from pathlib import Path
 from ssg_p3b_verify import frames, require
-from ssg_p3b_dynamic_verify import check_browser, notes_segment
+from ssg_p3b_dynamic_verify import check_browser, notes_segment, verify_qmp_key, verify_browser_receipt
 from ssg_browser_structure import decode_capture
 
 p = argparse.ArgumentParser(description=__doc__)
@@ -13,8 +13,10 @@ p.add_argument('output', type=Path)
 a = p.parse_args()
 out = a.output
 report = json.loads((out / 'report.json').read_text())
+verify_browser_receipt(out / 'browser.receipt.json', report)
 require(report['case'] == 'browser-reload' and 'real_ps2_browser-reload' in report['events'], 'missing reload input')
 serial = (out / 'serial.log').read_bytes()
+verify_qmp_key(report, serial, b'P3B_BROWSER_RELOAD_READY', 'r', b'BROWSER_LOADED path=')
 f = frames(serial)
 a0, a1 = [f[('aggregate', 'BASELINE', i)] for i in (0, 1)]
 s0, s1 = [{v['slot']: v for v in a['sources']} for a in (a0, a1)]
@@ -48,6 +50,8 @@ expected = (out / 'synthetic-input.txt').read_text()
 require(first[2] == second[2] == expected and first[3] == second[3] and first[4] is None and second[4] is None, 'Notes changed during Browser replacement')
 require(s1['notes']['document']['text'] == expected, 'Notes missing from second aggregate')
 require(b'P3B_DIFF browser=REPLACED notes=UNCHANGED old_reference=SOURCE_REPLACED' in serial, 'replacement result missing')
+line = next((x for x in serial.splitlines() if x.startswith(b'P3B_AGGREGATE_DIFF ')), None)
+require(line and json.loads(line.split(b' ', 1)[1]) == {'status': 'OK', 'semantics': 'per-source-non-atomic', 'browser': 'REPLACED', 'notes': 'UNCHANGED'}, 'aggregate Diff mismatch')
 require(report['resources_restored'] and all('reaped=1 cancelled=0 outcome=1 code=0' in line for line in report['source_exits']), 'shutdown/resources')
 result = {'status': 'PASSED_SCOPED', 'case': report['case'], 'browser_nodes_each': [len(old_nodes), len(new_nodes)],
           'old_reference': 'SOURCE_REPLACED', 'resources_restored': True, 'source_exits': report['source_exits']}

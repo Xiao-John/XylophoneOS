@@ -2,6 +2,7 @@
 // Trusted user-space supervisor and read-only dual-source consumer.
 #include "../ssg/multi_source.hpp"
 #include "../ssg/baseline_diff.hpp"
+#include "../ssg/aggregate_diff.hpp"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
@@ -47,6 +48,14 @@ static bool alive(Source &s){
 static QJsonObject identity(const char *slot,const QString &instance,const QString &epoch,const QString &local){
     return {{"slot",slot},{"sourceInstance",instance},{"sourceEpoch",epoch},{"localNodeId",local}};
 }
+static QJsonObject unavailable_result(const Source &source,u64 start,u64 end,const QString &status,const QString &failure,bool hidden){
+    const bool browser=std::strcmp(source.slot,"browser")==0;
+    return {{"slot",source.slot},{"status",status},{"failure",failure},{"instance",QString::fromLatin1(source.instance)},
+            {"epoch",QJsonValue(QJsonValue::Null)},{"revision",QJsonValue(QJsonValue::Null)},
+            {"scope",browser?"unfiltered-litehtml":"document-range-UTF-16"},
+            {"presentation",hidden?(browser?"hidden-test-no-surface-no-input":"hidden-session-no-surface-no-input"):"visible-surface"},
+            {"startedMonotonicNs",QString::number(start)},{"endedMonotonicNs",QString::number(end)}};
+}
 static QJsonObject browser_result(const ssg_pipe::Baseline &b,u64 start,u64 end,bool hidden){
     QJsonArray nodes;
     for(const auto &n:b.nodes){
@@ -54,10 +63,16 @@ static QJsonObject browser_result(const ssg_pipe::Baseline &b,u64 start,u64 end,
                          {"parent",QString::fromStdString(n.parent)},{"role",QString::fromStdString(n.role)},{"tag",QString::fromStdString(n.tag)}};
         if(n.has_text)node["text"]=QString::fromStdString(n.text);
         if(n.has_href)node["href"]=QString::fromStdString(n.href);
+        if(n.geometry_known){
+            const auto array=[](const std::string &value){return QJsonDocument::fromJson(QByteArray::fromStdString(value)).array();};
+            node["bounds"]=array(n.bounds);node["visibleBounds"]=array(n.visible_bounds);
+            node["fragments"]=array(n.fragments);node["visibleFragments"]=array(n.visible_fragments);
+            node["visibility"]=QString::fromStdString(n.visibility);node["fragmentsComplete"]=n.fragments_complete;
+        }
         nodes.append(node);
     }
     return {{"slot","browser"},{"status","OBSERVED_COMPLETE"},{"instance",QString::fromStdString(b.instance)},{"epoch",QString::fromStdString(b.epoch)},
-            {"revision",QString::fromStdString(b.revision)},{"session",QString::fromStdString(b.session)},{"scope","unfiltered-litehtml"},
+            {"revision",QString::fromStdString(b.revision)},{"session",QString::fromStdString(b.session)},{"scope","unfiltered-litehtml"},{"scrollY",b.scroll},
             {"presentation",hidden?"hidden-test-no-surface-no-input":"visible-surface"},
             {"startedMonotonicNs",QString::number(start)},{"endedMonotonicNs",QString::number(end)},{"nodes",nodes}};
 }
@@ -67,10 +82,22 @@ static QJsonObject notes_result(const NotesBaseline &n,u64 start,u64 end,bool hi
             {"startedMonotonicNs",QString::number(start)},{"endedMonotonicNs",QString::number(end)},
             {"document",QJsonObject{{"id",identity("notes",n.instance,n.epoch,n.node)},{"utf16Units",n.units},{"text",n.text}}}};
 }
+static void log_aggregate_diff(const QJsonObject &before,const QJsonObject &after){
+    const auto diff=QJsonDocument(ssg_multi::aggregate_diff(before,after)).toJson(QJsonDocument::Compact);
+    std::printf("P3B_AGGREGATE_DIFF %s\n",diff.constData());
+}
+#ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
+static bool capture_next(const QJsonObject &next){
+    const auto payload=QJsonDocument(next).toJson(QJsonDocument::Compact);
+    if(payload.size()>4*1024*1024){std::printf("P3B_NEXT status=AGGREGATE_PARTIAL reason=RESOURCE_LIMIT\n");return false;}
+    capture("aggregate","BASELINE",1,payload);return true;
+}
+#endif
 static void finish(Source &s){
     close_token(s.output);close_token(s.input);
 }
 static bool shutdown(Source &a,Source &b){
+    const u64 started=thread::clock();
     finish(a);finish(b);
     const u64 until=thread::clock()+20000000000ull;
     while(thread::clock()<until){const bool aa=alive(a),bb=alive(b);if(!aa && !bb)break;thread::sleep_until(thread::clock()+100000000ull);}
@@ -83,6 +110,7 @@ static bool shutdown(Source &a,Source &b){
         std::printf("P3B_SOURCE_EXIT slot=%s reaped=%d cancelled=%d outcome=%u code=%lld\n",s->slot,int(s->reaped),int(cancelled),unsigned(s->status.outcome),(long long)s->status.code);
         if(s->pid>=0 && (cancelled || !s->reaped || s->status.outcome!=process_outcome::exited || s->status.code!=0))clean=false;
     }
+    std::printf("P3B_SHUTDOWN elapsed_ns=%llu clean=%d\n",(unsigned long long)(thread::clock()-started),int(clean));
     return clean;
 }
 int main(int argc,char **argv){
@@ -98,11 +126,12 @@ int main(int argc,char **argv){
     const bool browser_exit_test=dynamic && std::strcmp(argv[3],"--test-browser-exit")==0;
     const bool browser_revoke_test=dynamic && std::strcmp(argv[3],"--test-browser-revoke")==0;
     const bool browser_reload_test=dynamic && std::strcmp(argv[3],"--test-browser-reload")==0;
+    const bool browser_scroll_test=dynamic && std::strcmp(argv[3],"--test-browser-scroll")==0;
     const bool timeout_test=dynamic && std::strcmp(argv[3],"--test-notes-timeout")==0;
     const bool truncated_test=dynamic && std::strcmp(argv[3],"--test-notes-truncated")==0;
     if(timeout_test)notes_fault="--ssg-test-timeout";
     if(truncated_test)notes_fault="--ssg-test-truncated";
-    hidden_notes=!dynamic || browser_exit_test || browser_revoke_test || browser_reload_test || timeout_test || truncated_test;
+    hidden_notes=!dynamic || browser_exit_test || browser_revoke_test || browser_reload_test || browser_scroll_test || timeout_test || truncated_test;
     hidden_browser=dynamic && !hidden_notes;
 #endif
     if(!launch(b,"/bin/browser.elf",browser,browser_text,hidden_browser) || !launch(n,"/bin/notes.elf",notes,notes_text,hidden_notes,notes_fault)){
@@ -118,8 +147,8 @@ int main(int argc,char **argv){
     bool nok=collect_notes(nc,note,failure);const u64 nend=thread::clock();
     const bool browser_alive_after=alive(b),notes_alive_after=alive(n);
     bok=bok && browser_alive && browser_alive_after;nok=nok && notes_alive_before && notes_alive_after;
-    QJsonObject browser_source=bok?browser_result(*collector.committed(),bstart,bend,hidden_browser):QJsonObject{{"slot","browser"},{"status",bc.status()=="DENIED"?"DENIED":"UNAVAILABLE"},{"failure",!bc.error().isEmpty()?bc.error():!bc.status().isEmpty()?bc.status():QStringLiteral("COLLECTION_OR_LIVENESS")}};
-    QJsonObject notes_source=nok?notes_result(note,nstart,nend,hidden_notes):QJsonObject{{"slot","notes"},{"status",failure=="DENIED"?"DENIED":failure=="PROTECTED"?"PROTECTED":"UNAVAILABLE"},{"failure",failure.isEmpty()?QStringLiteral("COLLECTION_OR_LIVENESS"):failure}};
+    QJsonObject browser_source=bok?browser_result(*collector.committed(),bstart,bend,hidden_browser):unavailable_result(b,bstart,bend,bc.status()=="DENIED"?"DENIED":"UNAVAILABLE",!bc.error().isEmpty()?bc.error():!bc.status().isEmpty()?bc.status():QStringLiteral("COLLECTION_OR_LIVENESS"),hidden_browser);
+    QJsonObject notes_source=nok?notes_result(note,nstart,nend,hidden_notes):unavailable_result(n,nstart,nend,failure=="DENIED"?"DENIED":failure=="PROTECTED"?"PROTECTED":"UNAVAILABLE",failure.isEmpty()?QStringLiteral("COLLECTION_OR_LIVENESS"):failure,hidden_notes);
     const QJsonObject aggregate{{"status",bok&&nok?"AGGREGATE_COMPLETE_OBSERVED":"AGGREGATE_PARTIAL"},
         {"semantics","sequential-per-source-non-atomic"},{"globalAtomicSnapshot","NOT_IMPLEMENTED"},{"sources",QJsonArray{browser_source,notes_source}}};
     const auto encoded=QJsonDocument(aggregate).toJson(QJsonDocument::Compact);
@@ -132,14 +161,63 @@ int main(int argc,char **argv){
     if(app.arguments().contains("--emit-aggregate"))emit_frame("aggregate","BASELINE",0,encoded);
 #endif
     bool success=bok&&nok;
+#ifndef XOS_SSG_P3B_TEST_DIAGNOSTICS
+    if(success && app.arguments().contains("--sample-twice")){
+        unsigned seconds=5;const int interval=app.arguments().indexOf("--sample-interval");
+        if(interval>=0){bool valid=false;seconds=interval+1<app.arguments().size()?app.arguments().at(interval+1).toUInt(&valid):0;
+            if(!valid || seconds<1 || seconds>30){std::printf("P3B_SAMPLE INVALID_INTERVAL\n");success=false;}}
+        if(success){
+            thread::sleep_until(thread::clock()+u64(seconds)*1000000000ull);
+            BaselineCollector newer;const u64 bs=thread::clock();
+            const bool browser_ok=collect_baseline(bc,newer) && newer.commit() && alive(b);const u64 be=thread::clock();
+            NotesBaseline updated;QString next_failure;const u64 ns=thread::clock();
+            const bool notes_ok=collect_notes(nc,updated,next_failure) && alive(n);const u64 ne=thread::clock();
+            const QJsonObject bs_source=browser_ok?browser_result(*newer.committed(),bs,be,hidden_browser):unavailable_result(b,bs,be,bc.status()=="DENIED"?"DENIED":"UNAVAILABLE",bc.error().isEmpty()?bc.status():bc.error(),hidden_browser);
+            const QJsonObject ns_source=notes_ok?notes_result(updated,ns,ne,hidden_notes):unavailable_result(n,ns,ne,next_failure=="DENIED"?"DENIED":next_failure=="PROTECTED"?"PROTECTED":"UNAVAILABLE",next_failure,hidden_notes);
+            const QJsonObject next{{"status",browser_ok&&notes_ok?"AGGREGATE_COMPLETE_OBSERVED":"AGGREGATE_PARTIAL"},
+                {"semantics","sequential-per-source-non-atomic"},{"globalAtomicSnapshot","NOT_IMPLEMENTED"},{"sources",QJsonArray{bs_source,ns_source}}};
+            const auto payload=QJsonDocument(next).toJson(QJsonDocument::Compact);
+            if(payload.size()>4*1024*1024){std::printf("P3B_SAMPLE RESOURCE_LIMIT\n");success=false;}
+            else {if(app.arguments().contains("--emit-aggregate"))emit_frame("aggregate","BASELINE",1,payload);log_aggregate_diff(aggregate,next);success=browser_ok&&notes_ok;}
+        }
+    }
+#endif
 #ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
+    const int old_index=app.arguments().indexOf("--old-instance");
+    if(old_index>=0){
+        const auto old=old_index+1<app.arguments().size()?app.arguments().at(old_index+1):QString{};
+        bool transport=false;
+        const auto reference=bc.request({{"op","detail"},{"role","content"},{"sourceInstance",old},{"sourceEpoch","1"},{"sceneVersion","1"},{"nodeId","1"}},&transport);
+        const bool replaced=old.size()==32 && old!=QString::fromLatin1(b.instance) && transport && reference.value("status")=="SOURCE_REPLACED" && !reference.contains("node");
+        std::printf("P3B_OLD_INSTANCE status=%s\n",replaced?"SOURCE_REPLACED":"UNEXPECTED");
+        success=success && replaced;
+    }
     if(!browser_text && !bok && nok && bc.status()=="DENIED"){
         bool transport=false;const auto denied=bc.request({{"op","snapshot_begin"},{"maxNodes",8}},&transport);
         const bool refused=transport && denied.value("status")=="DENIED" && !denied.contains("nodes");
         std::printf("P3B_BROWSER_DENIAL_RECHECK refused=%d notes_alive=%d\n",int(refused),int(alive(n)));
         success=refused && alive(n);
     }
-    if(dynamic && success && browser_reload_test){
+    if(dynamic && success && browser_scroll_test){
+        std::printf("P3B_BROWSER_SCROLL_READY\n");
+        thread::sleep_until(thread::clock()+12000000000ull);
+        BaselineCollector fresh;const u64 bs=thread::clock();
+        const bool browser_ok=collect_baseline(bc,fresh) && fresh.commit() && alive(b);const u64 be=thread::clock();
+        NotesBaseline updated;QString next_failure;const u64 ns=thread::clock();
+        const bool notes_ok=collect_notes(nc,updated,next_failure) && alive(n);const u64 ne=thread::clock();
+        const bool unchanged=notes_ok && updated.instance==note.instance && updated.epoch==note.epoch && updated.node==note.node && updated.revision==note.revision && updated.text==note.text;
+        ssg_pipe::Diff changes;if(browser_ok)changes=ssg_pipe::compare_baselines(*collector.committed(),*fresh.committed());
+        unsigned scroll=0,geometry=0,visibility=0,other=0;
+        for(const auto &change:changes.changes){if(change.kind=="ScrollChanged")++scroll;else if(change.kind=="WindowGeometryChanged")++geometry;else if(change.kind=="VisibilityChanged")++visibility;else ++other;}
+        const bool changed=browser_ok && changes.status==ssg_pipe::DiffStatus::ok && scroll==1 && collector.committed()->scroll!=fresh.committed()->scroll;
+        const QJsonObject next{{"status",browser_ok&&notes_ok?"AGGREGATE_COMPLETE_OBSERVED":"AGGREGATE_PARTIAL"},
+            {"semantics","sequential-per-source-non-atomic"},{"globalAtomicSnapshot","NOT_IMPLEMENTED"},
+            {"sources",QJsonArray{browser_ok?browser_result(*fresh.committed(),bs,be,hidden_browser):unavailable_result(b,bs,be,"UNAVAILABLE",bc.error(),hidden_browser),
+                                  notes_ok?notes_result(updated,ns,ne,hidden_notes):unavailable_result(n,ns,ne,"UNAVAILABLE",next_failure,hidden_notes)}}};
+        const bool captured=capture_next(next);if(captured)log_aggregate_diff(aggregate,next);
+        std::printf("P3B_SCROLL before=%d after=%d scroll=%u geometry=%u visibility=%u other=%u notes=%s\n",collector.committed()->scroll,browser_ok?fresh.committed()->scroll:-1,scroll,geometry,visibility,other,unchanged?"UNCHANGED":"UNKNOWN_OR_CHANGED");
+        success=changed && unchanged && captured;
+    } else if(dynamic && success && browser_reload_test){
         std::printf("P3B_BROWSER_RELOAD_READY\n");
         thread::sleep_until(thread::clock()+12000000000ull);
         const auto &old=*collector.committed();bool transport=false;
@@ -154,38 +232,57 @@ int main(int argc,char **argv){
         const bool unchanged=notes_ok && updated.instance==note.instance && updated.epoch==note.epoch && updated.node==note.node && updated.revision==note.revision && updated.text==note.text;
         const QJsonObject next{{"status",browser_ok&&notes_ok?"AGGREGATE_COMPLETE_OBSERVED":"AGGREGATE_PARTIAL"},
             {"semantics","sequential-per-source-non-atomic"},{"globalAtomicSnapshot","NOT_IMPLEMENTED"},
-            {"sources",QJsonArray{browser_ok?browser_result(*fresh.committed(),bs,be,hidden_browser):QJsonObject{{"slot","browser"},{"status","UNAVAILABLE"}},
-                                  notes_ok?notes_result(updated,ns,ne,hidden_notes):QJsonObject{{"slot","notes"},{"status","UNAVAILABLE"}}}}};
-        capture("aggregate","BASELINE",1,QJsonDocument(next).toJson(QJsonDocument::Compact));
+            {"sources",QJsonArray{browser_ok?browser_result(*fresh.committed(),bs,be,hidden_browser):unavailable_result(b,bs,be,"UNAVAILABLE",bc.error(),hidden_browser),
+                                  notes_ok?notes_result(updated,ns,ne,hidden_notes):unavailable_result(n,ns,ne,"UNAVAILABLE",next_failure,hidden_notes)}}};
+        const bool captured=capture_next(next);if(captured)log_aggregate_diff(aggregate,next);
         std::printf("P3B_DIFF browser=%s notes=%s old_reference=%s\n",replaced?"REPLACED":"UNKNOWN",unchanged?"UNCHANGED":"UNKNOWN_OR_CHANGED",old_ref.value("status").toString().toUtf8().constData());
-        success=replaced && unchanged;
+        success=replaced && unchanged && captured;
     } else if(dynamic && success && (browser_exit_test || browser_revoke_test)){
         std::printf("%s\n",browser_exit_test?"P3B_BROWSER_EXIT_READY":"P3B_BROWSER_REVOKE_READY");
         thread::sleep_until(thread::clock()+12000000000ull);
         const bool browser_still_alive=alive(b);
-        BaselineCollector after_exit;const bool browser_observed=collect_baseline(bc,after_exit);
+        BaselineCollector after_exit;const u64 bs=thread::clock();const bool browser_observed=collect_baseline(bc,after_exit);const u64 be=thread::clock();
         bool refused=false;
         if(browser_revoke_test && !browser_observed && bc.status()=="DENIED"){
             bool transport=false;const auto again=bc.request({{"op","snapshot_begin"},{"maxNodes",8}},&transport);
             refused=transport && again.value("status")=="DENIED" && !again.contains("nodes");
+            const auto &old=*collector.committed();
+            const auto old_ref=bc.request({{"op","detail"},{"role","content"},{"sourceInstance",QString::fromStdString(old.instance)},
+                {"sourceEpoch",QString::fromStdString(old.epoch)},{"sceneVersion","1"},{"nodeId",QString::fromStdString(old.nodes.front().id)}},&transport);
+            refused=refused && transport && old_ref.value("status")=="DENIED" && !old_ref.contains("node") && !old_ref.contains("nodes");
+            std::printf("P3B_BROWSER_OLD_REF_AFTER_REVOKE status=%s\n",old_ref.value("status").toString().toUtf8().constData());
         }
         NotesBaseline updated;QString next_failure;const u64 ns=thread::clock();
         const bool notes_observed=collect_notes(nc,updated,next_failure) && alive(n);const u64 ne=thread::clock();
         const bool notes_unchanged=notes_observed && updated.instance==note.instance && updated.epoch==note.epoch && updated.node==note.node && updated.revision==note.revision && updated.text==note.text;
-        const QJsonObject unavailable{{"slot","browser"},{"status",browser_revoke_test?"DENIED":"UNAVAILABLE"},{"failure",browser_revoke_test?QStringLiteral("DENIED"):bc.error().isEmpty()?QStringLiteral("SOURCE_EXITED"):bc.error()}};
+        const QJsonObject unavailable=unavailable_result(b,bs,be,browser_revoke_test?"DENIED":"UNAVAILABLE",browser_revoke_test?QStringLiteral("DENIED"):bc.error().isEmpty()?QStringLiteral("SOURCE_EXITED"):bc.error(),hidden_browser);
         const QJsonObject next{{"status","AGGREGATE_PARTIAL"},{"semantics","sequential-per-source-non-atomic"},{"globalAtomicSnapshot","NOT_IMPLEMENTED"},
-            {"sources",QJsonArray{unavailable,notes_observed?notes_result(updated,ns,ne,hidden_notes):QJsonObject{{"slot","notes"},{"status","UNAVAILABLE"}}}}};
-        capture("aggregate","BASELINE",1,QJsonDocument(next).toJson(QJsonDocument::Compact));
+            {"sources",QJsonArray{unavailable,notes_observed?notes_result(updated,ns,ne,hidden_notes):unavailable_result(n,ns,ne,"UNAVAILABLE",next_failure,hidden_notes)}}};
+        const bool captured=capture_next(next);if(captured)log_aggregate_diff(aggregate,next);
         std::printf("P3B_DIFF browser=%s notes=%s retry_refused=%d browser_alive=%d notes_alive=%d\n",browser_revoke_test?(refused?"DENIED":"UNKNOWN"):!browser_still_alive&&!browser_observed?"EXITED":"UNKNOWN",notes_unchanged?"UNCHANGED":"UNKNOWN_OR_CHANGED",int(refused),int(browser_still_alive),int(notes_observed));
-        success=notes_unchanged && (browser_revoke_test?browser_still_alive && refused:!browser_still_alive && !browser_observed && b.reaped && b.status.outcome==process_outcome::exited && b.status.code==0);
+        success=captured && notes_unchanged && (browser_revoke_test?browser_still_alive && refused:!browser_still_alive && !browser_observed && b.reaped && b.status.outcome==process_outcome::exited && b.status.code==0);
     } else if(dynamic && success){
         std::printf("P3B_BASELINE_A_COMPLETE\n");
         NotesBaseline updated;QString second_failure;const u64 second_nstart=thread::clock();
         const bool second_notes=collect_notes(nc,updated,second_failure,!timeout_test && !truncated_test);const u64 second_nend=thread::clock();
-        bool retry_refused=false;
+        bool retry_refused=false,alternate_refused=false;
         if(!second_notes && (second_failure=="DENIED" || second_failure=="PROTECTED")){
             NotesBaseline retry;QString retry_failure;
             retry_refused=!collect_notes(nc,retry,retry_failure) && retry_failure==second_failure;
+            bool ok=false;
+            const auto document=nc.request({{"op","snapshot"},{"role","document"},{"visibleOnly",false},{"maxNodes",96}},&ok);
+            const auto nodes=document.value("nodes").toArray();
+            const auto protected_node=nodes.size()==1?nodes.first().toObject():QJsonObject{};
+            const bool no_text=ok && document.value("status")=="OK" && nodes.size()==1 && !protected_node.contains("text") &&
+                protected_node.value("textStatus")== (second_failure=="DENIED"?"NOT_AUTHORIZED":"PROTECTED");
+            const auto other=nc.request({{"op","snapshot"},{"role","label"},{"visibleOnly",false},{"maxNodes",96}},&ok);
+            const auto marker=note.text.left(32).toUtf8();
+            const bool label_safe=ok && other.value("status")=="OK" && !marker.isEmpty() && !QJsonDocument(other).toJson(QJsonDocument::Compact).contains(marker);
+            const auto direct=nc.request({{"op","text_range"},{"sourceInstance",document.value("sourceInstance")},
+                {"sourceEpoch",document.value("sourceEpoch")},{"nodeId",protected_node.value("id")},{"start",0},{"maxLength",512}},&ok);
+            const bool range_refused=ok && direct.value("status").toString()==second_failure && !direct.contains("text");
+            alternate_refused=no_text && label_safe && range_refused;
+            std::printf("P3B_ALTERNATE_REFUSAL status=%s no_text=%d label_safe=%d range_refused=%d\n",second_failure.toUtf8().constData(),int(no_text),int(label_safe),int(range_refused));
         }
         BaselineCollector second_browser;const u64 second_bstart=thread::clock();
         const bool second_bok=collect_baseline(bc,second_browser) && second_browser.commit() && alive(b);const u64 second_bend=thread::clock();
@@ -197,16 +294,16 @@ int main(int argc,char **argv){
         const bool expected_edit=std::strcmp(argv[3],"--test-edit")==0;
         const bool expected_exit=std::strcmp(argv[3],"--test-notes-exit")==0;
         const QString expected_refusal=std::strcmp(argv[3],"--test-revoke")==0?QStringLiteral("DENIED"):QStringLiteral("PROTECTED");
-        const bool expected_denial=!expected_edit && !second_notes && second_failure==expected_refusal && retry_refused && second_nalive;
-        QJsonObject bs=second_bok?browser_result(*second_browser.committed(),second_bstart,second_bend,hidden_browser):QJsonObject{{"slot","browser"},{"status","UNAVAILABLE"}};
-        QJsonObject ns=second_notes?notes_result(updated,second_nstart,second_nend,hidden_notes):QJsonObject{{"slot","notes"},{"status",(timeout_test || truncated_test || !second_nalive)?QStringLiteral("UNAVAILABLE"):second_failure},{"failure",second_failure}};
+        const bool expected_denial=!expected_edit && !second_notes && second_failure==expected_refusal && retry_refused && alternate_refused && second_nalive;
+        QJsonObject bs=second_bok?browser_result(*second_browser.committed(),second_bstart,second_bend,hidden_browser):unavailable_result(b,second_bstart,second_bend,"UNAVAILABLE",bc.error(),hidden_browser);
+        QJsonObject ns=second_notes?notes_result(updated,second_nstart,second_nend,hidden_notes):unavailable_result(n,second_nstart,second_nend,(timeout_test || truncated_test || !second_nalive)?QStringLiteral("UNAVAILABLE"):second_failure,second_failure,hidden_notes);
         const QJsonObject next{{"status",second_bok&&second_notes&&second_nalive?"AGGREGATE_COMPLETE_OBSERVED":"AGGREGATE_PARTIAL"},
             {"semantics","sequential-per-source-non-atomic"},{"globalAtomicSnapshot","NOT_IMPLEMENTED"},{"sources",QJsonArray{bs,ns}}};
-        capture("aggregate","BASELINE",1,QJsonDocument(next).toJson(QJsonDocument::Compact));
+        const bool captured=capture_next(next);if(captured)log_aggregate_diff(aggregate,next);
         std::printf("P3B_DIFF browser=%s notes=%s retry_refused=%d browser_alive=%d notes_alive=%d\n",browser_unchanged?"UNCHANGED":"UNKNOWN_OR_CHANGED",notes_changed?"CHANGED":(timeout_test || truncated_test)?second_failure.toUtf8().constData():!second_nalive?"EXITED":second_failure.toUtf8().constData(),int(retry_refused),int(second_bok),int(second_nalive));
         const bool notes_exited=!second_notes && !second_nalive && n.reaped && n.status.outcome==process_outcome::exited && n.status.code==0;
         const bool fault_observed=!second_notes && ((timeout_test && second_failure=="TIMEOUT") || (truncated_test && second_failure=="TRUNCATED"));
-        success=browser_unchanged && ((timeout_test || truncated_test)?fault_observed:expected_edit?notes_changed:expected_exit?notes_exited:expected_denial);
+        success=captured && browser_unchanged && ((timeout_test || truncated_test)?fault_observed:expected_edit?notes_changed:expected_exit?notes_exited:expected_denial);
     }
 #else
     (void)dynamic;

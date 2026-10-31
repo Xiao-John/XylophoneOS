@@ -1,0 +1,89 @@
+# SSG P3B: two explicitly wired sources
+
+This is a bounded, read-only user-space prototype. It is not a production broker,
+application discovery service, cross-process action interface, or desktop-wide
+permission system. The supervisor must already have authority to start children.
+It creates a separate request pipe and response pipe for each source, transfers
+only that source's provider ends at spawn, and retains the opposite ends itself.
+One request per source can be in flight; there is no unbounded request queue.
+The source slot is assigned by this wiring, not by a document, request, model, or
+provider-supplied type. The child PID and source fields are consistency checks,
+not grants or authentication. Permission remains an explicit session choice and
+an application-owner decision. Neither source receives the other's pipe ends.
+
+The current display service admits one exclusive Surface. An explicitly requested
+`--notes-hidden` session runs the actual Notes document and widget tree without a
+Surface or input route, and ends that hidden session when the observation pipe
+ends. The separately compiled synthetic test Browser can instead be hidden so
+Notes receives real keyboard input. A hidden source is not a visible window and
+cannot receive background PS/2 events. The `presentation` field states this scope.
+No QPA, kernel, system ABI, driver, scheduler, or global permission changes are
+part of this contract.
+
+## Aggregate observation
+
+The output is one finite observation, not a continuously refreshed desktop view.
+A source is sampled over its own monotonic start/end interval. The Browser and
+Notes intervals are sequential; `globalAtomicSnapshot` is `NOT_IMPLEMENTED`.
+`AGGREGATE_COMPLETE_OBSERVED` means both sources completed their individual
+bounded observations. It does not mean the sources were simultaneously current
+at one instant. If a source fails, is unavailable, denied, or protected, the
+aggregate is `AGGREGATE_PARTIAL` and that source does not contain a fabricated
+complete document or node set. A later sample must actually re-observe a source;
+the prototype does not certify a cached historical source as current.
+
+Each Browser node has an identity object containing `slot`, `sourceInstance`,
+`sourceEpoch`, and `localNodeId`. Its `parent` is a local node ID interpreted only
+inside that same source and epoch. Notes uses the same compound identity for its
+document node. The trusted parent generates separate random source instances;
+if randomness fails or the two instances collide, the session fails closed.
+Browser also records its revision and pagination session; Notes records its
+UTF-16 document revision. An epoch or instance change invalidates old references;
+restarting and reconnection are not implemented as transparent recovery.
+Browser data includes the observed scroll position and bounded local geometry;
+these do not establish compositor occlusion or global visibility.
+
+The Browser adapter uses `snapshot_begin` / `snapshot_next`, cursors and the
+existing `BaselineCollector`. The Notes adapter uses a document snapshot followed
+by `text_range` requests, preserving UTF-16 offsets and one document revision.
+A reset, denial, protection, malformed response, timeout or resource failure
+invalidates the in-progress Notes transaction; it cannot publish a mixture of
+versions. A previously delivered authorized observation cannot be retroactively
+undisclosed, but it is not republished as the current restricted document.
+
+The normal supervisor logs status and lifecycle records only. Its explicit
+`--emit-aggregate` option emits the full aggregate, including authorized text,
+to its diagnostic console. Raw IPC frame capture and owner-control shortcuts are
+compiled only into the synthetic test executables. Do not enable such diagnostics
+for real user material.
+
+An ordinary session may request `--sample-twice` with a bounded
+`--sample-interval` of 1–30 seconds. The second observation is collected again
+from both sources rather than promoting the first sample to current state. Its
+source-scoped Diff distinguishes `CHANGED`, `UNCHANGED`, `REPLACED`,
+`INVALIDATED`, `PERMISSION_CHANGED`, and `UNKNOWN`; it does not compare nodes
+using a desktop-wide numeric ID. Observation timestamps and Browser pagination
+session IDs are not by themselves content changes. The result remains a
+comparison of sequential per-source observations, not an atomic desktop event.
+
+## Bounds and lifecycle
+
+- At most two provider slots, each with one in-flight request.
+- A request is at most 4,096 bytes and a response at most 81,920 bytes.
+- Each transfer has a 30-second monotonic deadline; each source client has a
+  300-second session budget. A terminal transport error is not retried forever.
+- Browser collection retains at most 4,096 nodes, 4 MiB of collected node data,
+  1 MiB of node text and 1,024 pages. Notes admits at most 131,072 UTF-16 units,
+  512 ranges, three attempts and 512 KiB of encoded text. An exported aggregate
+  is capped at 4 MiB. Two simultaneous committed Browser baselines occur only
+  in the bounded comparison tests.
+- Parent-owned pipe tokens are closed on session completion. Child exit is
+  polled with a bound; the fallback cancels a still-running child and reports
+  that outcome. A cancelled child or failed reap makes the supervisor fail.
+  The pipe-capacity probe in tests is not an exact system-wide pipe counter.
+
+The prior single-source Consumer's watchdog now uses a joinable native worker;
+that change is retained from the Notes branch. Previous intermittent exit hangs
+and their diagnostic history are not proof of a resolved root cause. Individual
+stress runs can establish only the behavior observed for their actual build and
+inputs.

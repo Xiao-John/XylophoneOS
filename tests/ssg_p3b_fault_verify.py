@@ -5,7 +5,7 @@ import argparse
 import json
 from pathlib import Path
 from ssg_p3b_verify import frames, require
-from ssg_p3b_dynamic_verify import check_browser, notes_segment
+from ssg_p3b_dynamic_verify import check_browser, notes_segment, verify_browser_receipt
 from ssg_browser_structure import decode_capture
 
 p = argparse.ArgumentParser(description=__doc__)
@@ -13,6 +13,7 @@ p.add_argument('output', type=Path)
 a = p.parse_args()
 out = a.output
 report = json.loads((out / 'report.json').read_text())
+verify_browser_receipt(out / 'browser.receipt.json', report)
 case = report['case']
 require(case in ('notes-timeout', 'notes-truncated'), 'wrong fault case')
 kind = 'TIMEOUT' if case == 'notes-timeout' else 'TRUNCATED'
@@ -52,6 +53,8 @@ for request, response in staged[1:]:
     prefix += response['text']; offset = response['end']
 require(expected.startswith(prefix) and offset < len(expected.encode('utf-16-le')) // 2, 'staging was not partial')
 require(report['resources_restored'] and all('reaped=1 cancelled=0 outcome=1 code=0' in line for line in report['source_exits']), 'shutdown/resources')
+line = next((x for x in serial.splitlines() if x.startswith(b'P3B_AGGREGATE_DIFF ')), None)
+require(line and json.loads(line.split(b' ', 1)[1]) == {'status': 'OK', 'semantics': 'per-source-non-atomic', 'browser': 'UNCHANGED', 'notes': 'INVALIDATED'}, 'aggregate Diff mismatch')
 result = {'status': 'PASSED_SCOPED', 'case': case, 'browser_nodes': len(first), 'discarded_utf16_units': offset,
           'resources_restored': True, 'source_exits': report['source_exits']}
 (out / 'independent-check.json').write_text(json.dumps(result, indent=2) + '\n')

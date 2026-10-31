@@ -133,19 +133,23 @@ int main(int argc,char **argv){
     const bool browser_revoke_test=dynamic && std::strcmp(argv[3],"--test-browser-revoke")==0;
     const bool browser_reload_test=dynamic && std::strcmp(argv[3],"--test-browser-reload")==0;
     const bool browser_scroll_test=dynamic && std::strcmp(argv[3],"--test-browser-scroll")==0;
+    const bool pipe_isolation_test=dynamic && std::strcmp(argv[3],"--test-pipe-isolation")==0;
     const bool timeout_test=dynamic && std::strcmp(argv[3],"--test-notes-timeout")==0;
     const bool truncated_test=dynamic && std::strcmp(argv[3],"--test-notes-truncated")==0;
     const bool cancel_test=dynamic && std::strcmp(argv[3],"--test-notes-cancel")==0;
     if(timeout_test)notes_fault="--ssg-test-timeout";
     if(truncated_test)notes_fault="--ssg-test-truncated";
     if(cancel_test)notes_fault="--ssg-test-cancel-stall";
-    hidden_notes=!dynamic || browser_exit_test || browser_revoke_test || browser_reload_test || browser_scroll_test || timeout_test || truncated_test || cancel_test;
+    hidden_notes=!dynamic || browser_exit_test || browser_revoke_test || browser_reload_test || browser_scroll_test || pipe_isolation_test || timeout_test || truncated_test || cancel_test;
     hidden_browser=dynamic && !hidden_notes;
 #endif
     if(!launch(b,"/bin/browser.elf",browser,browser_text,hidden_browser) || !launch(n,"/bin/notes.elf",notes,notes_text,hidden_notes,notes_fault)){
         std::printf("P3B_LAUNCH FAILED\n");shutdown(b,n);return 2;
     }
     if(std::strcmp(b.instance,n.instance)==0){std::printf("P3B_LAUNCH INSTANCE_COLLISION\n");shutdown(b,n);return 2;}
+#ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
+    const u32 old_tokens[4]={b.input,b.output,n.input,n.output};
+#endif
     std::printf("P3B_BOTH_STARTED supervisor=%llu browser=%lld notes=%lld\n",(unsigned long long)sdk::pid(),(long long)b.pid,(long long)n.pid);
     Client bc(b.slot,b.input,b.output,b.instance,b.pid),nc(n.slot,n.input,n.output,n.instance,n.pid);
     BaselineCollector collector;const u64 bstart=thread::clock();
@@ -209,7 +213,28 @@ int main(int argc,char **argv){
         std::printf("P3B_BROWSER_DENIAL_RECHECK refused=%d notes_alive=%d\n",int(refused),int(alive(n)));
         success=refused && alive(n);
     }
-    if(dynamic && success && browser_scroll_test){
+    if(dynamic && success && pipe_isolation_test){
+        bool b_ok=false,n_ok=false;
+        std::printf("P3B_TEST_TOKENS browser_read=%u browser_write=%u notes_read=%u notes_write=%u\n",b.input,b.output,n.input,n.output);
+        const auto browser_probe=bc.request({{"op","test_pipe_isolation"},{"foreignRead",QString::number(n.input)},{"foreignWrite",QString::number(n.output)}},&b_ok);
+        const auto notes_probe=nc.request({{"op","test_pipe_isolation"},{"foreignRead",QString::number(b.input)},{"foreignWrite",QString::number(b.output)}},&n_ok);
+        const bool denied=b_ok && n_ok && browser_probe.value("status")=="OK" && notes_probe.value("status")=="OK" &&
+            browser_probe.value("readDenied")==true && browser_probe.value("writeDenied")==true && notes_probe.value("readDenied")==true && notes_probe.value("writeDenied")==true;
+        BaselineCollector fresh;const u64 bs=thread::clock();
+        const bool browser_ok=collect_baseline(bc,fresh) && fresh.commit() && alive(b);const u64 be=thread::clock();
+        NotesBaseline updated;QString next_failure;const u64 ns=thread::clock();
+        const bool notes_ok=collect_notes(nc,updated,next_failure) && alive(n);const u64 ne=thread::clock();
+        const bool notes_same=notes_ok && updated.instance==note.instance && updated.epoch==note.epoch && updated.node==note.node && updated.revision==note.revision && updated.text==note.text;
+        const auto delta=browser_ok?ssg_pipe::compare_baselines(*collector.committed(),*fresh.committed()):ssg_pipe::Diff{};
+        const bool browser_same=browser_ok && delta.status==ssg_pipe::DiffStatus::ok && delta.changes.empty();
+        const QJsonObject next{{"status",browser_ok&&notes_ok?"AGGREGATE_COMPLETE_OBSERVED":"AGGREGATE_PARTIAL"},
+            {"semantics","sequential-per-source-non-atomic"},{"globalAtomicSnapshot","NOT_IMPLEMENTED"},
+            {"sources",QJsonArray{browser_ok?browser_result(*fresh.committed(),bs,be,hidden_browser):unavailable_result(b,bs,be,"UNAVAILABLE",client_failure(bc),hidden_browser),
+                                  notes_ok?notes_result(updated,ns,ne,hidden_notes):unavailable_result(n,ns,ne,"UNAVAILABLE",source_failure(next_failure),hidden_notes)}}};
+        const bool captured=capture_next(next);if(captured)log_aggregate_diff(aggregate,next);
+        std::printf("P3B_PIPE_CROSS_DENIAL browser=%d notes=%d browser_after=%d notes_after=%d\n",int(b_ok && browser_probe.value("readDenied")==true && browser_probe.value("writeDenied")==true),int(n_ok && notes_probe.value("readDenied")==true && notes_probe.value("writeDenied")==true),int(browser_same),int(notes_same));
+        success=captured && denied && browser_same && notes_same;
+    } else if(dynamic && success && browser_scroll_test){
         std::printf("P3B_BROWSER_SCROLL_READY\n");
         thread::sleep_until(thread::clock()+12000000000ull);
         BaselineCollector fresh;const u64 bs=thread::clock();
@@ -325,9 +350,16 @@ int main(int argc,char **argv){
     // A bounded capacity probe is not an exact global pipe counter.
     pipe_handles probes[4]{};unsigned acquired=0;
     for(;acquired<4;++acquired)if(sdk::syscall(sys_pipe_create,reinterpret_cast<u64>(&probes[acquired]))!=0)break;
+    unsigned denied=0,reused=0;char byte=0;
+    for(unsigned i=0;i<4;++i){
+        for(unsigned j=0;j<acquired;++j)if(old_tokens[i]==probes[j].read_token || old_tokens[i]==probes[j].write_token)++reused;
+        const auto result=sdk::syscall(i%2?sys_pipe_write:sys_pipe_read,old_tokens[i],reinterpret_cast<u64>(&byte),1);
+        if(result==process_error_denied)++denied;
+    }
     for(unsigned i=0;i<acquired;++i){close_token(probes[i].read_token);close_token(probes[i].write_token);}
     std::printf("P3B_PIPE_REUSE acquired=%u requested=4\n",acquired);
-    clean=clean && acquired==4;
+    std::printf("P3B_STALE_TOKEN_REFUSED checked=4 denied=%u reused=%u\n",denied,reused);
+    clean=clean && acquired==4 && denied==4 && reused==0;
 #endif
     return success && clean?0:1;
 }

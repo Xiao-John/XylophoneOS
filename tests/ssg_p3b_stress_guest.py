@@ -95,6 +95,9 @@ def main():
                     wait = re.search(rb'\[wait\] pid=' + str(pids['supervisor']).encode() + rb' kind=(\w+) code=(-?\d+)', output)
                     shutdown = re.search(rb'P3B_SHUTDOWN elapsed_ns=(\d+) clean=([01])', output)
                     probe = next((line.decode() for line in output.splitlines() if line.startswith(b'P3B_PIPE_REUSE ')), None)
+                    stale = next((line.decode() for line in output.splitlines() if line.startswith(b'P3B_STALE_TOKEN_REFUSED ')), None)
+                    reclaimed = [int(x) for x in re.findall(rb'\[task\] event=reclaimed pid=(\d+)', output)]
+                    reclaim_order = [slot for pid in reclaimed for slot in ('browser', 'notes') if pid == pids[slot]]
                     case = {'status': 'OBSERVED_PENDING_INDEPENDENT_VERIFICATION', 'case': 'baseline', 'processes': pids,
                             'inputs': inputs, 'resources_restored': active == after, 'source_exits': exits}
                     (case_dir / 'serial.log').write_bytes(output)
@@ -108,10 +111,14 @@ def main():
                     has_thread_samples = any(x.startswith('EDITOR_SAMPLE ') for x in samples) and any(x.startswith('BROWSER_SAMPLE ') for x in samples)
                     supervisor_exit = {'kind': wait[1].decode(), 'code': int(wait[2])} if wait else None
                     shutdown_result = {'elapsed_ns': int(shutdown[1]), 'clean': shutdown[2] == b'1'} if shutdown else None
-                    good = verified and active == after and clean_exits and has_thread_samples and supervisor_exit == {'kind': 'exited', 'code': 0} and shutdown_result is not None and shutdown_result['clean'] and probe == 'P3B_PIPE_REUSE acquired=4 requested=4'
+                    good = (verified and active == after and clean_exits and has_thread_samples and
+                            supervisor_exit == {'kind': 'exited', 'code': 0} and shutdown_result is not None and shutdown_result['clean'] and
+                            probe == 'P3B_PIPE_REUSE acquired=4 requested=4' and
+                            stale == 'P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0' and sorted(reclaim_order) == ['browser', 'notes'])
                     item.update(status='PASSED' if good else 'FAILED', processes=pids, supervisor_exit=supervisor_exit,
                                 source_exits=exits, before_resources=active, after_resources=after, shutdown=shutdown_result,
-                                pipe_capacity_probe=probe, independent_check='PASSED' if verified else 'FAILED',
+                                pipe_capacity_probe=probe, stale_token_probe=stale, reclaim_order=reclaim_order,
+                                independent_check='PASSED' if verified else 'FAILED',
                                 thread_samples=samples)
                     consecutive_failures = 0 if good else consecutive_failures + 1
                 except Exception as error:

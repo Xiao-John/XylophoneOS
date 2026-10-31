@@ -72,7 +72,7 @@ def main():
     p.add_argument('--ordinary', action='store_true', help='exercise non-diagnostic supervisor and Notes with explicit aggregate output')
     p.add_argument('--ordinary-sample', action='store_true', help='exercise two ordinary observations and their per-source Diff')
     p.add_argument('--old-instance', help='test a source instance captured from an earlier session')
-    p.add_argument('--case', choices=('baseline', 'edit', 'revoke', 'protect-document', 'protect-ancestor', 'browser-revoke', 'browser-reload', 'browser-scroll', 'notes-exit', 'browser-exit', 'notes-timeout', 'notes-truncated', 'notes-cancel'), default='baseline')
+    p.add_argument('--case', choices=('baseline', 'edit', 'revoke', 'protect-document', 'protect-ancestor', 'browser-revoke', 'browser-reload', 'browser-scroll', 'pipe-isolation', 'notes-exit', 'browser-exit', 'notes-timeout', 'notes-truncated', 'notes-cancel'), default='baseline')
     a = p.parse_args()
     started = time.monotonic()
     out = a.output.resolve()
@@ -133,7 +133,7 @@ def main():
                     (' --test-' + a.case if a.case != 'baseline' else ''))
             send_bytes(guest, ('exec-driver /bin/multi.elf /web/ssg.html /synthetic.txt' + mode + '\r').encode())
             guest.expect(b'P3B_BOTH_STARTED', start=start, timeout=150)
-            if a.case not in ('baseline', 'notes-timeout', 'notes-truncated', 'notes-cancel'):
+            if a.case not in ('baseline', 'notes-timeout', 'notes-truncated', 'notes-cancel', 'pipe-isolation'):
                 marker = (b'P3B_BROWSER_EXIT_READY' if a.case == 'browser-exit' else
                           b'P3B_BROWSER_REVOKE_READY' if a.case == 'browser-revoke' else
                           b'P3B_BROWSER_SCROLL_READY' if a.case == 'browser-scroll' else
@@ -207,6 +207,8 @@ def main():
                     raise AssertionError('Browser document replacement was not isolated')
                 if a.case == 'browser-scroll' and not re.search(rb'P3B_SCROLL before=\d+ after=[1-9]\d* scroll=1 .* notes=UNCHANGED', output):
                     raise AssertionError('Browser scroll was not isolated')
+                if a.case == 'pipe-isolation' and b'P3B_PIPE_CROSS_DENIAL browser=1 notes=1 browser_after=1 notes_after=1' not in output:
+                    raise AssertionError('cross-source token isolation failed')
                 if a.old_instance and b'P3B_OLD_INSTANCE status=SOURCE_REPLACED' not in output:
                     raise AssertionError('old source instance was not refused')
                 if a.case in ('notes-timeout', 'notes-truncated', 'notes-cancel'):

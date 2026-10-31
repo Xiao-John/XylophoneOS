@@ -62,6 +62,21 @@ class PipeProvider final : public QObject {
         QJsonParseError error{};const auto doc=QJsonDocument::fromJson(bytes,&error);
         if(error.error!=QJsonParseError::NoError || !doc.isObject())return {{"status","BAD_REQUEST"}};
         const auto request=doc.object();const auto op=request.value("op").toString();
+#if defined(XOS_SSG_TEST_CONTROLS) || defined(XOS_SSG_TEST_ORACLE)
+        // Synthetic-only isolation probe. A numeric token is not a grant; the
+        // kernel must reject an endpoint not held by this provider process.
+        if(op=="test_pipe_isolation"){
+            bool read_ok=false,write_ok=false;
+            const auto read_token=request.value("foreignRead").toString().toUInt(&read_ok);
+            const auto write_token=request.value("foreignWrite").toString().toUInt(&write_ok);
+            if(!read_ok || !write_ok)return {{"status","BAD_REQUEST"}};
+            char byte=0;
+            const auto read=xos::sdk::syscall(xos::sys_pipe_read,read_token,reinterpret_cast<xos::u64>(&byte),1);
+            const auto write=xos::sdk::syscall(xos::sys_pipe_write,write_token,reinterpret_cast<xos::u64>(&byte),1);
+            return {{"status","OK"},{"sourceInstance",instance},{"providerPid",QString::number(xos::sdk::pid())},
+                    {"readDenied",read==xos::process_error_denied},{"writeDenied",write==xos::process_error_denied}};
+        }
+#endif
         if(op=="snapshot_begin" || op=="snapshot_next" || op=="snapshot_cancel"){
             if(!page_source)return {{"status","UNSUPPORTED"}};
             if(op!="snapshot_begin" && request.value("sourceInstance").toString()!=instance)

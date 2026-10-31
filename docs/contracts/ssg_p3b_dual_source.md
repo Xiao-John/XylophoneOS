@@ -59,7 +59,10 @@ The normal supervisor logs status and lifecycle records only. Its explicit
 `--emit-aggregate` option emits the full aggregate, including authorized text,
 to its diagnostic console. Raw IPC frame capture and owner-control shortcuts are
 compiled only into the synthetic test executables. Do not enable such diagnostics
-for real user material.
+for real user material. The synthetic isolation probe passes numeric token
+values to each test Provider and checks that the kernel denies access to the
+other source's parent-held endpoints; numbers are not transferred handles. The
+ordinary Provider does not include this diagnostic operation.
 
 An ordinary session may request `--sample-twice` with a bounded
 `--sample-interval` of 1–30 seconds. The second observation is collected again
@@ -89,12 +92,15 @@ may still be reported while coverage remains incomplete.
 - Browser collection retains at most 4,096 nodes, 4 MiB of collected node data,
   1 MiB of node text and 1,024 pages. Notes admits at most 131,072 UTF-16 units,
   512 ranges, three attempts and 512 KiB of encoded text. An exported aggregate
-  is capped at 4 MiB. Two simultaneous committed Browser baselines occur only
-  in the bounded comparison tests.
+  is capped at 4 MiB; its combined content is bounded by 4,097 source nodes and
+  1.5 MiB of Browser/Notes text. Two simultaneous committed Browser baselines
+  occur only during an explicitly requested bounded two-sample comparison.
 - Parent-owned pipe tokens are closed on session completion. Child exit is
   polled with a bound; the fallback cancels a still-running child and reports
   that outcome. A cancelled child or failed reap makes the supervisor fail.
   The pipe-capacity probe in tests is not an exact system-wide pipe counter.
+  Test sessions also attempt the closed parent tokens after creating new pipes;
+  these checks are scoped to the existing token implementation and tested boot.
 
 The prior single-source Consumer's watchdog now uses a joinable native worker;
 that change is retained from the Notes branch. Previous intermittent exit hangs

@@ -9,6 +9,9 @@ Browser verifiers were replayed against the appropriate sanitized captures.
 The P2F structural and wire checks were replayed separately, without claiming
 that all historical external build inputs were reverified. See
 `browser-validation.json` for the bounded results and fresh QEMU controls.
+Fresh guest runs also covered the P2G4 A/B comparison, P2G5 interruption and
+recovery, and P2G6 exhaustion, reload and cross-document navigation. Their
+independent verifiers passed and resource counters returned to baseline.
 
 Guest report generators now serialize configurable path templates and fail on
 unknown private paths. They still execute the actual configured paths. The P2F

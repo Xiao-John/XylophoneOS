@@ -12,8 +12,8 @@ aurora::initialize(app);
 `initialize()` selects the QProxyStyle, explicit active/inactive/disabled palette
 and bundled DejaVu family. Standard QPushButton, QLineEdit, QPlainTextEdit and
 QLabel use that theme. The actual XOS QPA/font resource must also be linked.
-`aurora.hpp` additionally provides Canvas, Panel, Button and Brand components;
-Canvas/Panel cache their own environment layers, and Button adds limited hover
+`aurora.hpp` additionally provides canvas, panel, button and brand components;
+canvas/panel cache their own environment layers, and button adds limited hover
 transitions and a measured slow-paint fallback. The software pointer belongs to
 that application canvas, not a system compositor.
 

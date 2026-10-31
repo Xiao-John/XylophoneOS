@@ -14,7 +14,7 @@ struct RenderInfo {
 // Application-local background only. No cross-process pixels or device rights.
 class desktop_surface : public QWidget {
     QImage background,softened;
-    Pointer *pointer;
+    aurora::pointer *pointer;
     int wallpaper=0,cached_wallpaper=-1,cached_key=-1;
     qint64 budget=8*1024*1024;
     RenderInfo info;
@@ -86,7 +86,7 @@ protected:
         return QWidget::eventFilter(object,event);
     }
 public:
-    desktop_surface():pointer(new Pointer(this)){qApp->installEventFilter(this);setMouseTracking(true);}
+    desktop_surface():pointer(new aurora::pointer(this)){qApp->installEventFilter(this);setMouseTracking(true);}
     void set_cache_budget(qint64 bytes){budget=qMax<qint64>(0,bytes);cache();update();for(auto *w:findChildren<QWidget*>())w->update();}
     void set_wallpaper(int value){wallpaper=value?1:0;cache();update();for(auto *w:findChildren<QWidget*>())w->update();}
     RenderInfo render_info() const {return info;}

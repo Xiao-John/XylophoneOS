@@ -32,6 +32,7 @@ inline void capture(const char *,const char *,unsigned,const QByteArray &){}
 // system monotonic clock bound each transfer without closing another route.
 class Client {
     const char *slot_;u32 in_,out_;QString instance_;i64 pid_;unsigned sequence_=0;u64 remaining_=source_ns;
+    u64 bytes_read_=0,bytes_written_=0;
     alignas(4) u32 cancelled_=0;
     QString error_,status_;
     struct Charge {
@@ -45,7 +46,7 @@ class Client {
             if(__atomic_load_n(&cancelled_,__ATOMIC_ACQUIRE)){error_="CANCELLED";return false;}
             if(thread::clock()>=until){error_="TIMEOUT";return false;}
             const auto n=sdk::syscall(write?sys_pipe_write:sys_pipe_read,write?out_:in_,reinterpret_cast<u64>(data+done),length-done);
-            if(n>0){done+=unsigned(n);continue;}
+            if(n>0){done+=unsigned(n);if(write)bytes_written_+=u64(n);else bytes_read_+=u64(n);continue;}
             if(n==0 && !write){error_=done?"TRUNCATED":"EOF";return false;}
             if(n!=process_error_would_block){error_="IO_ERROR";return false;}
             thread::sleep_until(thread::clock()+10000000ull);
@@ -58,6 +59,12 @@ public:
     const QString &error()const{return error_;}
     const QString &status()const{return status_;}
     u64 remaining_budget_ns()const{return remaining_;}
+    u64 bytes_read()const{return bytes_read_;}
+    u64 bytes_written()const{return bytes_written_;}
+    unsigned request_count()const{return sequence_;}
+    // A watch transaction gets its own bounded source budget. A terminal wire
+    // error remains terminal: a partially received frame cannot be reused.
+    void begin_observation(u64 budget){remaining_=qMin(source_ns,budget);}
     void cancel(){__atomic_store_n(&cancelled_,1u,__ATOMIC_RELEASE);}
     bool cancelled()const{return __atomic_load_n(&cancelled_,__ATOMIC_ACQUIRE)!=0;}
     QJsonObject request(const QJsonObject &object,bool *ok=nullptr,unsigned =0){

@@ -3,11 +3,14 @@
 #include "../ssg/multi_source.hpp"
 #include "../ssg/baseline_diff.hpp"
 #include "../ssg/aggregate_diff.hpp"
+#include "../ssg/watch_adapters.hpp"
+#include "../ssg/watch_service.hpp"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
 #include <cstdio>
 #include <cstring>
+#include <pthread.h>
 using namespace xos;
 using namespace ssg_multi;
 
@@ -138,6 +141,156 @@ static bool shutdown(Source &a,Source &b){
     std::printf("P3B_SHUTDOWN elapsed_ns=%llu clean=%d\n",(unsigned long long)(thread::clock()-started),int(clean));
     return clean;
 }
+
+static bool watch_alive(void *source){return alive(*static_cast<Source *>(source));}
+
+struct watch_input {
+    ssg_watch::watch_control *control;
+    ssg_watch::provider_adapter *browser,*notes;
+    u32 token=0;
+    alignas(4) unsigned requested=0,failed=0;
+#ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
+    alignas(4) unsigned notes_cycle=0;
+#endif
+};
+static void *watch_input_worker(void *argument){
+    auto &input=*static_cast<watch_input *>(argument);
+    while(!input.control->stopped()){
+        char value=0;const auto result=sdk::syscall(sys_pipe_read,input.token,reinterpret_cast<u64>(&value),1);
+        if(result==1 && value!='S')continue;
+        if(result==1 || result==0){
+            __atomic_store_n(&input.requested,1u,__ATOMIC_RELEASE);
+            input.control->request_stop();input.browser->cancel();input.notes->cancel();return nullptr;
+        }
+        if(result!=process_error_would_block){
+            __atomic_store_n(&input.failed,1u,__ATOMIC_RELEASE);
+            input.control->request_stop();input.browser->cancel();input.notes->cancel();return nullptr;
+        }
+        thread::sleep_until(thread::clock()+10000000ull);
+    }
+    return nullptr;
+}
+#ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
+struct watch_test_sender {watch_input *input;u32 token;};
+static void *watch_test_send_inflight(void *argument){
+    auto &sender=*static_cast<watch_test_sender *>(argument);
+    while(!sender.input->control->stopped() && __atomic_load_n(&sender.input->notes_cycle,__ATOMIC_ACQUIRE)<2)
+        thread::sleep_until(thread::clock()+10000000ull);
+    thread::sleep_until(thread::clock()+1000000000ull);
+    if(!sender.input->control->stopped()){
+        char stop='S';const auto sent=sdk::syscall(sys_pipe_write,sender.token,reinterpret_cast<u64>(&stop),1);
+        std::printf("P3C_TEST_INFLIGHT_CONTROL sent=%d\n",int(sent==1));
+    }
+    return nullptr;
+}
+#endif
+static bool watch_number(const QStringList &args,const char *name,unsigned fallback,unsigned minimum,unsigned maximum,unsigned &value){
+    const int index=args.indexOf(QLatin1String(name));value=fallback;
+    if(index<0)return true;
+    bool valid=false;value=index+1<args.size()?args.at(index+1).toUInt(&valid):0;
+    return valid && value>=minimum && value<=maximum && args.lastIndexOf(QLatin1String(name))==index;
+}
+#ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
+// Test-only owner/IPC evidence remains outside the generic watch scheduler.
+class watch_fixture_hooks final:public ssg_watch::watch_hooks {
+    Client &client_;Source &browser_,&notes_;watch_input &input_;u32 control_writer_;
+    bool hidden_browser_,hidden_notes_,test_control_;QString old_epoch_,old_node_;
+public:
+    watch_fixture_hooks(Client &client,Source &browser,Source &notes,watch_input &input,u32 writer,
+                        bool hidden_browser,bool hidden_notes,bool test_control)
+        :client_(client),browser_(browser),notes_(notes),input_(input),control_writer_(writer),
+         hidden_browser_(hidden_browser),hidden_notes_(hidden_notes),test_control_(test_control){}
+    void observation_started(unsigned slot,unsigned cycle)override{
+        if(slot==1)__atomic_store_n(&input_.notes_cycle,cycle,__ATOMIC_RELEASE);
+    }
+    bool observations_ready(unsigned cycle,const ssg_watch::observation &bo,const ssg_watch::observation &no)override{
+        if(bo.payload){
+            const auto &p=static_cast<const ssg_watch::browser_payload &>(*bo.payload);
+            if(!old_epoch_.isEmpty() && old_epoch_!=bo.epoch && !old_node_.isEmpty()){
+                bool transport=false;
+                const auto response=client_.request({{"op","detail"},{"role","content"},{"sourceInstance",QString::fromLatin1(browser_.instance)},
+                    {"sourceEpoch",old_epoch_},{"sceneVersion","1"},{"nodeId",old_node_}},&transport);
+                const bool refused=transport && response.value("status")=="SOURCE_REPLACED" && !response.contains("node");
+                std::printf("P3C_OLD_REFERENCE status=%s\n",refused?"SOURCE_REPLACED":"UNEXPECTED");
+                if(!refused)return false;
+            }
+            old_epoch_=bo.epoch;old_node_=p.baseline.nodes.empty()?QString{}:QString::fromStdString(p.baseline.nodes.front().id);
+        }
+        auto bs=unavailable_result(browser_,bo.started_ns,bo.ended_ns,bo.status,bo.failure_reason,hidden_browser_);
+        auto ns=unavailable_result(notes_,no.started_ns,no.ended_ns,no.status,no.failure_reason,hidden_notes_);
+        if(bo.payload){const auto &p=static_cast<const ssg_watch::browser_payload &>(*bo.payload);bs=browser_result(p.baseline,bo.started_ns,bo.ended_ns,hidden_browser_);}
+        if(no.payload){const auto &p=static_cast<const ssg_watch::notes_payload &>(*no.payload);ns=notes_result(p.baseline,no.started_ns,no.ended_ns,hidden_notes_);}
+        const QJsonObject aggregate{{"status",bo.payload && no.payload?"AGGREGATE_COMPLETE_OBSERVED":"AGGREGATE_PARTIAL"},
+            {"semantics","sequential-per-source-non-atomic"},{"globalAtomicSnapshot","NOT_IMPLEMENTED"},{"sources",QJsonArray{bs,ns}}};
+        const auto diagnostic=QJsonDocument(aggregate).toJson(QJsonDocument::Compact);
+        if(diagnostic.size()>4*1024*1024)return false;
+        capture("aggregate","BASELINE",cycle,diagnostic);return true;
+    }
+    bool cycle_complete(unsigned cycle)override{
+        if(test_control_ && cycle==2){
+            char stop='S';const auto sent=sdk::syscall(sys_pipe_write,control_writer_,reinterpret_cast<u64>(&stop),1);
+            std::printf("P3C_TEST_CONTROL sent=%d\n",int(sent==1));return sent==1;
+        }
+        return true;
+    }
+};
+#endif
+static bool run_watch(Client &bc,Client &nc,Source &b,Source &n,bool hidden_browser,bool hidden_notes,
+                      unsigned interval,unsigned duration,unsigned cycles,unsigned timeout,bool control_stdin,bool test_control,bool test_inflight){
+    ssg_watch::browser_provider browser(bc,b.instance,hidden_browser,watch_alive,&b);
+    ssg_watch::notes_provider notes(nc,n.instance,hidden_notes,watch_alive,&n);
+    ssg_watch::watch_slot browser_slot("browser",QString::fromLatin1(b.instance));
+    ssg_watch::watch_slot notes_slot("notes",QString::fromLatin1(n.instance));
+    ssg_watch::watch_control control;watch_input input{&control,&browser,&notes};pthread_t worker{};bool worker_started=false;
+    pipe_handles test_pipe{};
+#ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
+    if(test_control || test_inflight){
+        if(sdk::syscall(sys_pipe_create,reinterpret_cast<u64>(&test_pipe))!=0){std::printf("P3C_WATCH_ERROR reason=TEST_PIPE\n");return false;}
+        input.token=test_pipe.read_token;
+    }
+#else
+    (void)test_control;(void)test_inflight;
+#endif
+    if(control_stdin || test_control || test_inflight){
+        if((control_stdin && sdk::syscall(sys_process_stdio,0,0)!=0) || pthread_create(&worker,nullptr,watch_input_worker,&input)!=0){
+            close_token(test_pipe.read_token);close_token(test_pipe.write_token);
+            std::printf("P3C_WATCH_ERROR reason=CONTROL_SETUP\n");return false;
+        }
+        worker_started=true;
+    }
+#ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
+    pthread_t test_sender_thread{};bool test_sender_started=false;watch_test_sender sender{&input,test_pipe.write_token};
+    if(test_inflight){
+        if(pthread_create(&test_sender_thread,nullptr,watch_test_send_inflight,&sender)!=0){
+            control.request_stop();if(worker_started)pthread_join(worker,nullptr);
+            close_token(test_pipe.read_token);close_token(test_pipe.write_token);return false;
+        }
+        test_sender_started=true;
+    }
+#endif
+#ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
+    watch_fixture_hooks hooks(bc,b,n,input,test_pipe.write_token,hidden_browser,hidden_notes,test_control);
+#else
+    ssg_watch::watch_hooks hooks;
+#endif
+    auto outcome=ssg_watch::run_watch_loop(browser,notes,browser_slot,notes_slot,control,{interval,duration,cycles,timeout},hooks);
+    control.request_stop();if(worker_started && pthread_join(worker,nullptr)!=0)outcome.output_ok=false;
+#ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
+    if(test_sender_started && pthread_join(test_sender_thread,nullptr)!=0)outcome.output_ok=false;
+#endif
+    close_token(test_pipe.read_token);close_token(test_pipe.write_token);
+    const bool requested=__atomic_load_n(&input.requested,__ATOMIC_ACQUIRE)!=0;
+    const bool control_failed=__atomic_load_n(&input.failed,__ATOMIC_ACQUIRE)!=0;
+    std::printf("P3C_WATCH_STOP reason=%s cycles=%u events=%u dropped=%s resync=%s aggregate=%s elapsed_ns=%llu\n",
+        control_failed?"CONTROL_ERROR":requested?"EXPLICIT_STOP":!outcome.output_ok?"OUTPUT_ERROR":outcome.cycles==cycles?"CYCLE_LIMIT":"DURATION_LIMIT",
+        outcome.cycles,outcome.events,outcome.output_ok?"0":"UNKNOWN",outcome.output_ok?"AS_NEEDED":"RESET_REQUIRED",outcome.partial?"PARTIAL":"OBSERVED_COMPLETE",
+        (unsigned long long)outcome.elapsed_ns);
+    std::printf("P3C_IPC slot=browser requests=%u read_bytes=%llu written_bytes=%llu\n",bc.request_count(),
+        (unsigned long long)bc.bytes_read(),(unsigned long long)bc.bytes_written());
+    std::printf("P3C_IPC slot=notes requests=%u read_bytes=%llu written_bytes=%llu\n",nc.request_count(),
+        (unsigned long long)nc.bytes_read(),(unsigned long long)nc.bytes_written());
+    return outcome.output_ok && !control_failed;
+}
 int main(int argc,char **argv){
     QCoreApplication app(argc,argv);
     const char *browser=argc>1?argv[1]:"/web/ssg.html",*notes=argc>2?argv[2]:"/synthetic.txt";
@@ -145,6 +298,14 @@ int main(int argc,char **argv){
     // takes precedence if contradictory switches are supplied.
     const bool notes_text=app.arguments().contains("--notes-text") && !app.arguments().contains("--notes-denied");
     const bool browser_text=app.arguments().contains("--browser-text") && !app.arguments().contains("--browser-denied");
+    const bool watch=app.arguments().contains("--watch");unsigned watch_interval=0,watch_duration=0,watch_cycles=0,watch_timeout=0;
+    if(watch && !isatty(1))return 2;
+    if(watch && (!watch_number(app.arguments(),"--watch-interval",5,1,30,watch_interval) ||
+       !watch_number(app.arguments(),"--watch-duration",120,1,3600,watch_duration) ||
+       !watch_number(app.arguments(),"--watch-cycles",12,1,1024,watch_cycles) ||
+       !watch_number(app.arguments(),"--watch-timeout",60,1,300,watch_timeout))){
+        std::printf("P3C_WATCH_ERROR reason=INVALID_BOUNDS\n");return 2;
+    }
     std::printf("P3B_SCOPE browser_text=%d notes_text=%d\n",int(browser_text),int(notes_text));
     Source b{"browser"},n{"notes"};
     bool hidden_notes=app.arguments().contains("--notes-hidden"),hidden_browser=false,dynamic=false;
@@ -160,10 +321,13 @@ int main(int argc,char **argv){
     const bool timeout_test=dynamic && std::strcmp(argv[3],"--test-notes-timeout")==0;
     const bool truncated_test=dynamic && std::strcmp(argv[3],"--test-notes-truncated")==0;
     const bool cancel_test=dynamic && std::strcmp(argv[3],"--test-notes-cancel")==0;
+    const bool watch_browser_test=dynamic && std::strcmp(argv[3],"--test-watch-browser")==0;
+    const bool watch_cancel_test=dynamic && std::strcmp(argv[3],"--test-watch-cancel")==0;
     if(timeout_test)notes_fault="--ssg-test-timeout";
     if(truncated_test)notes_fault="--ssg-test-truncated";
     if(cancel_test)notes_fault="--ssg-test-cancel-stall";
-    hidden_notes=!dynamic || browser_exit_test || browser_revoke_test || browser_reload_test || browser_scroll_test || cross_exit_test || pipe_isolation_test || timeout_test || truncated_test || cancel_test;
+    if(watch_cancel_test)notes_fault="--ssg-test-cancel-stall";
+    hidden_notes=!dynamic || browser_exit_test || browser_revoke_test || browser_reload_test || browser_scroll_test || cross_exit_test || pipe_isolation_test || timeout_test || truncated_test || cancel_test || watch_browser_test || watch_cancel_test;
     hidden_browser=dynamic && !hidden_notes;
 #endif
     if(!launch(b,"/bin/browser.elf",browser,browser_text,hidden_browser) || !launch(n,"/bin/notes.elf",notes,notes_text,hidden_notes,notes_fault)){
@@ -175,6 +339,16 @@ int main(int argc,char **argv){
 #endif
     std::printf("P3B_BOTH_STARTED supervisor=%llu browser=%lld notes=%lld\n",(unsigned long long)sdk::pid(),(long long)b.pid,(long long)n.pid);
     Client bc(b.slot,b.input,b.output,b.instance,b.pid),nc(n.slot,n.input,n.output,n.instance,n.pid);
+    if(watch){
+        bool test_control=false,test_inflight=false;
+#ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
+        test_control=app.arguments().contains("--test-watch-stop-control");
+        test_inflight=watch_cancel_test;
+#endif
+        const bool result=run_watch(bc,nc,b,n,hidden_browser,hidden_notes,watch_interval,watch_duration,watch_cycles,watch_timeout,
+                                    app.arguments().contains("--watch-control-stdin"),test_control,test_inflight);
+        std::printf("P3B_CAPTURE_COMPLETE\n");const bool clean=shutdown(b,n);return result && clean?0:1;
+    }
     BaselineCollector collector;const u64 bstart=thread::clock();
     bool bok=collect_baseline(bc,collector) && collector.commit();const u64 bend=thread::clock();
     const bool browser_alive=alive(b),notes_alive_before=alive(n);

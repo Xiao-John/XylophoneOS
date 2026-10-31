@@ -1,0 +1,47 @@
+--- a/src/ports/qt6/aurora/ssg_pipe_provider.hpp
++++ b/src/ports/qt6/aurora/ssg_pipe_provider.hpp
+@@ -174,7 +174,9 @@
+             }
+ #endif
+         }
++        std::printf("P3C_LIFECYCLE worker_close_begin\n");
+         xos::sdk::close(0);xos::sdk::close(2);
++        std::printf("P3C_LIFECYCLE worker_close_done\n");
+         // A session-only hidden owner has no close button. Its own explicit
+         // launch choice ties its lifetime to this prewired observation pipe.
+         bool quit_hidden=QCoreApplication::arguments().contains("--ssg-session-hidden");
+@@ -183,6 +185,7 @@
+ #endif
+         if(quit_hidden)
+             QMetaObject::invokeMethod(QCoreApplication::instance(),[]{QCoreApplication::quit();},Qt::QueuedConnection);
++        std::printf("P3C_LIFECYCLE worker_return\n");
+     }
+ public:
+     PipeProvider(QtScene &source,QString source_instance)
+@@ -196,11 +199,14 @@
+     void start(){worker=QThread::create([this]{run();});worker->start();}
+     void stop(){
+         if(!worker)return;
++        std::printf("P3C_LIFECYCLE stop_begin\n");
+         __atomic_store_n(&stopping,1u,__ATOMIC_RELEASE);
+         xos::sdk::close(0);xos::sdk::close(2);
+         __atomic_store_n(&mailbox,1u,__ATOMIC_RELEASE);xos::thread::wake(&mailbox);
+-        worker->wait();delete worker;worker=nullptr;
+-    }
+-    ~PipeProvider() override {stop();}
++        std::printf("P3C_LIFECYCLE wait_begin\n");
++        worker->wait();std::printf("P3C_LIFECYCLE wait_done\n");delete worker;worker=nullptr;
++        std::printf("P3C_LIFECYCLE stop_done\n");
++    }
++    ~PipeProvider() override {std::printf("P3C_LIFECYCLE provider_dtor_begin\n");stop();std::printf("P3C_LIFECYCLE provider_dtor_end\n");}
+ };
+ }
+--- a/src/ports/qt6/editor/main.cpp
++++ b/src/ports/qt6/editor/main.cpp
+@@ -235,5 +235,5 @@
+         ))app.setQuitOnLastWindowClosed(false);
+     QFont font(QStringLiteral("DejaVu Sans"));font.setPixelSize(16);app.setFont(font);
+     Editor editor(initial,probe,instance,text_scope);
+-    return app.exec();
++    const int result=app.exec();std::printf("P3C_LIFECYCLE app_exec_return code=%d\n",result);return result;
+ }

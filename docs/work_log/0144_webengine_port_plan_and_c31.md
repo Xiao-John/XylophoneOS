@@ -12,6 +12,7 @@
 - [docs/Discipline.md](../Discipline.md) 工程尺度同步一句（遵循 C30 修订时
   宪法与 Discipline 同步的先例）。
 - 不改：任何源码、ABI、登记；`state.md` 按 #36 后的分工由整合者在合并时更新。
+- 交付：PR #38（`codex/webengine-plan-20261031`，基线 `ca2e372`，首提交 `12af4be`）。
 
 ## 2. 选择与原因
 

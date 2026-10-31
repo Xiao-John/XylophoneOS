@@ -72,7 +72,7 @@ def main():
     p.add_argument('--ordinary', action='store_true', help='exercise non-diagnostic supervisor and Notes with explicit aggregate output')
     p.add_argument('--ordinary-sample', action='store_true', help='exercise two ordinary observations and their per-source Diff')
     p.add_argument('--old-instance', help='test a source instance captured from an earlier session')
-    p.add_argument('--case', choices=('baseline', 'edit', 'revoke', 'protect-document', 'protect-ancestor', 'browser-revoke', 'browser-reload', 'browser-scroll', 'notes-exit', 'browser-exit', 'notes-timeout', 'notes-truncated'), default='baseline')
+    p.add_argument('--case', choices=('baseline', 'edit', 'revoke', 'protect-document', 'protect-ancestor', 'browser-revoke', 'browser-reload', 'browser-scroll', 'notes-exit', 'browser-exit', 'notes-timeout', 'notes-truncated', 'notes-cancel'), default='baseline')
     a = p.parse_args()
     started = time.monotonic()
     out = a.output.resolve()
@@ -133,7 +133,7 @@ def main():
                     (' --test-' + a.case if a.case != 'baseline' else ''))
             send_bytes(guest, ('exec-driver /bin/multi.elf /web/ssg.html /synthetic.txt' + mode + '\r').encode())
             guest.expect(b'P3B_BOTH_STARTED', start=start, timeout=150)
-            if a.case not in ('baseline', 'notes-timeout', 'notes-truncated'):
+            if a.case not in ('baseline', 'notes-timeout', 'notes-truncated', 'notes-cancel'):
                 marker = (b'P3B_BROWSER_EXIT_READY' if a.case == 'browser-exit' else
                           b'P3B_BROWSER_REVOKE_READY' if a.case == 'browser-revoke' else
                           b'P3B_BROWSER_SCROLL_READY' if a.case == 'browser-scroll' else
@@ -209,9 +209,10 @@ def main():
                     raise AssertionError('Browser scroll was not isolated')
                 if a.old_instance and b'P3B_OLD_INSTANCE status=SOURCE_REPLACED' not in output:
                     raise AssertionError('old source instance was not refused')
-                if a.case in ('notes-timeout', 'notes-truncated'):
-                    failure = b'TIMEOUT' if a.case == 'notes-timeout' else b'TRUNCATED'
-                    if b'SSG_TEST_PROVIDER_FAULT kind=' + failure not in output or b'P3B_DIFF browser=UNCHANGED notes=' + failure not in output:
+                if a.case in ('notes-timeout', 'notes-truncated', 'notes-cancel'):
+                    failure = b'TIMEOUT' if a.case == 'notes-timeout' else b'TRUNCATED' if a.case == 'notes-truncated' else b'CANCELLED'
+                    provider_fault = b'CANCEL_STALL' if a.case == 'notes-cancel' else failure
+                    if b'SSG_TEST_PROVIDER_FAULT kind=' + provider_fault not in output or b'P3B_DIFF browser=UNCHANGED notes=' + failure not in output:
                         raise AssertionError('injected transport fault was not isolated')
                 report['status'] = 'OBSERVED_PENDING_INDEPENDENT_VERIFICATION'
             elif b'P3B_AGGREGATE status=AGGREGATE_PARTIAL browser=1 notes=0' in output and a.notes_denied:

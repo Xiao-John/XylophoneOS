@@ -81,6 +81,11 @@ may still be reported while coverage remains incomplete.
   separate 300-second budget charged while its own requests execute. Time spent
   reading the other source does not consume that budget. A terminal transport
   error is not retried forever.
+- A cooperating caller can atomically cancel a client. The transfer loop checks
+  cancellation between nonblocking operations and its bounded sleeps; its
+  controller must then close the affected session routes. The command-line
+  prototype does not provide an interactive cancellation control. A request
+  already committed before cancellation is not retroactively undone.
 - Browser collection retains at most 4,096 nodes, 4 MiB of collected node data,
   1 MiB of node text and 1,024 pages. Notes admits at most 131,072 UTF-16 units,
   512 ranges, three attempts and 512 KiB of encoded text. An exported aggregate

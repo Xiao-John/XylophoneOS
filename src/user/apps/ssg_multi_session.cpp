@@ -135,9 +135,11 @@ int main(int argc,char **argv){
     const bool browser_scroll_test=dynamic && std::strcmp(argv[3],"--test-browser-scroll")==0;
     const bool timeout_test=dynamic && std::strcmp(argv[3],"--test-notes-timeout")==0;
     const bool truncated_test=dynamic && std::strcmp(argv[3],"--test-notes-truncated")==0;
+    const bool cancel_test=dynamic && std::strcmp(argv[3],"--test-notes-cancel")==0;
     if(timeout_test)notes_fault="--ssg-test-timeout";
     if(truncated_test)notes_fault="--ssg-test-truncated";
-    hidden_notes=!dynamic || browser_exit_test || browser_revoke_test || browser_reload_test || browser_scroll_test || timeout_test || truncated_test;
+    if(cancel_test)notes_fault="--ssg-test-cancel-stall";
+    hidden_notes=!dynamic || browser_exit_test || browser_revoke_test || browser_reload_test || browser_scroll_test || timeout_test || truncated_test || cancel_test;
     hidden_browser=dynamic && !hidden_notes;
 #endif
     if(!launch(b,"/bin/browser.elf",browser,browser_text,hidden_browser) || !launch(n,"/bin/notes.elf",notes,notes_text,hidden_notes,notes_fault)){
@@ -273,7 +275,7 @@ int main(int argc,char **argv){
     } else if(dynamic && success){
         std::printf("P3B_BASELINE_A_COMPLETE\n");
         NotesBaseline updated;QString second_failure;const u64 second_nstart=thread::clock();
-        const bool second_notes=collect_notes(nc,updated,second_failure,!timeout_test && !truncated_test);const u64 second_nend=thread::clock();
+        const bool second_notes=collect_notes(nc,updated,second_failure,!timeout_test && !truncated_test && !cancel_test,cancel_test);const u64 second_nend=thread::clock();
         bool retry_refused=false,alternate_refused=false;
         if(!second_notes && (second_failure=="DENIED" || second_failure=="PROTECTED")){
             NotesBaseline retry;QString retry_failure;
@@ -305,14 +307,14 @@ int main(int argc,char **argv){
         const QString expected_refusal=std::strcmp(argv[3],"--test-revoke")==0?QStringLiteral("DENIED"):QStringLiteral("PROTECTED");
         const bool expected_denial=!expected_edit && !second_notes && second_failure==expected_refusal && retry_refused && alternate_refused && second_nalive;
         QJsonObject bs=second_bok?browser_result(*second_browser.committed(),second_bstart,second_bend,hidden_browser):unavailable_result(b,second_bstart,second_bend,"UNAVAILABLE",client_failure(bc),hidden_browser);
-        QJsonObject ns=second_notes && second_nalive?notes_result(updated,second_nstart,second_nend,hidden_notes):unavailable_result(n,second_nstart,second_nend,(timeout_test || truncated_test || !second_nalive)?QStringLiteral("UNAVAILABLE"):second_failure,source_failure(second_failure),hidden_notes);
+        QJsonObject ns=second_notes && second_nalive?notes_result(updated,second_nstart,second_nend,hidden_notes):unavailable_result(n,second_nstart,second_nend,(timeout_test || truncated_test || cancel_test || !second_nalive)?QStringLiteral("UNAVAILABLE"):second_failure,source_failure(second_failure),hidden_notes);
         const QJsonObject next{{"status",second_bok&&second_notes&&second_nalive?"AGGREGATE_COMPLETE_OBSERVED":"AGGREGATE_PARTIAL"},
             {"semantics","sequential-per-source-non-atomic"},{"globalAtomicSnapshot","NOT_IMPLEMENTED"},{"sources",QJsonArray{bs,ns}}};
         const bool captured=capture_next(next);if(captured)log_aggregate_diff(aggregate,next);
-        std::printf("P3B_DIFF browser=%s notes=%s retry_refused=%d browser_alive=%d notes_alive=%d\n",browser_unchanged?"UNCHANGED":"UNKNOWN_OR_CHANGED",notes_changed?"CHANGED":(timeout_test || truncated_test)?second_failure.toUtf8().constData():!second_nalive?"EXITED":second_failure.toUtf8().constData(),int(retry_refused),int(second_bok),int(second_nalive));
+        std::printf("P3B_DIFF browser=%s notes=%s retry_refused=%d browser_alive=%d notes_alive=%d\n",browser_unchanged?"UNCHANGED":"UNKNOWN_OR_CHANGED",notes_changed?"CHANGED":(timeout_test || truncated_test || cancel_test)?second_failure.toUtf8().constData():!second_nalive?"EXITED":second_failure.toUtf8().constData(),int(retry_refused),int(second_bok),int(second_nalive));
         const bool notes_exited=!second_notes && !second_nalive && n.reaped && n.status.outcome==process_outcome::exited && n.status.code==0;
-        const bool fault_observed=!second_notes && ((timeout_test && second_failure=="TIMEOUT") || (truncated_test && second_failure=="TRUNCATED"));
-        success=captured && browser_unchanged && ((timeout_test || truncated_test)?fault_observed:expected_edit?notes_changed:expected_exit?notes_exited:expected_denial);
+        const bool fault_observed=!second_notes && ((timeout_test && second_failure=="TIMEOUT") || (truncated_test && second_failure=="TRUNCATED") || (cancel_test && second_failure=="CANCELLED"));
+        success=captured && browser_unchanged && ((timeout_test || truncated_test || cancel_test)?fault_observed:expected_edit?notes_changed:expected_exit?notes_exited:expected_denial);
     }
 #else
     (void)dynamic;

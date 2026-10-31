@@ -114,6 +114,7 @@ class PipeProvider final : public QObject {
         // Synthetic fault injection is compiled only into the Notes fixture.
         const bool fault_timeout=QCoreApplication::arguments().contains("--ssg-test-timeout");
         const bool fault_truncated=QCoreApplication::arguments().contains("--ssg-test-truncated");
+        const bool fault_cancel=QCoreApplication::arguments().contains("--ssg-test-cancel-stall");
         bool complete_once=false;unsigned after_complete=0;
 #endif
         for(;;){
@@ -127,9 +128,10 @@ class PipeProvider final : public QObject {
             }
             last_sequence=sequence;
 #ifdef XOS_SSG_TEST_CONTROLS
-            if((fault_timeout || fault_truncated) && complete_once && ++after_complete==4){
-                std::printf("SSG_TEST_PROVIDER_FAULT kind=%s\n",fault_timeout?"TIMEOUT":"TRUNCATED");
+            if((fault_timeout || fault_truncated || fault_cancel) && complete_once && ++after_complete==4){
+                std::printf("SSG_TEST_PROVIDER_FAULT kind=%s\n",fault_timeout?"TIMEOUT":fault_cancel?"CANCEL_STALL":"TRUNCATED");
                 if(fault_timeout)xos::thread::sleep_until(xos::thread::clock()+35000000000ull);
+                else if(fault_cancel)xos::thread::sleep_until(xos::thread::clock()+5000000000ull);
                 else {char header[12]={'S','S','G','1'};ssg_pipe::put32(header+4,32);ssg_pipe::put32(header+8,sequence);
                     ssg_pipe::write_all(header,sizeof(header));ssg_pipe::write_all("{}",2);}
                 break;
@@ -150,7 +152,7 @@ class PipeProvider final : public QObject {
             result=ssg_pipe::send(reply,sequence,ssg_pipe::max_response,watch);
             if(result!=ssg_pipe::Result::ok){std::printf("SSG_PROVIDER_END pid=%llu reason=%s\n",(unsigned long long)xos::sdk::pid(),ssg_pipe::name(result));break;}
 #ifdef XOS_SSG_TEST_CONTROLS
-            if((fault_timeout || fault_truncated) && !complete_once){
+            if((fault_timeout || fault_truncated || fault_cancel) && !complete_once){
                 const auto sent=QJsonDocument::fromJson(reply).object();
                 const auto received=QJsonDocument::fromJson(request).object();
                 complete_once=received.value("op")=="text_range" && sent.value("status")=="OK" && sent.value("remaining")==0;

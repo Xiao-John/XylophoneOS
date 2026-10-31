@@ -112,6 +112,13 @@ public:
         auto *newTabKey=new QShortcut(QKeySequence("Ctrl+T"),this);connect(newTabKey,&QShortcut::activated,add,&QPushButton::click);auto *cycleTab=new QShortcut(QKeySequence("Ctrl+Tab"),this);connect(cycleTab,&QShortcut::activated,this,[this]{tabbar->setCurrentIndex((active+1)%tabbar->count());});
         auto *focus=new QShortcut(QKeySequence("Ctrl+L"),this);connect(focus,&QShortcut::activated,this,[this]{address->setFocus();address->selectAll();});
         auto *previous=new QShortcut(QKeySequence("Alt+Left"),this);connect(previous,&QShortcut::activated,this,[this]{travel(-1);});auto *next=new QShortcut(QKeySequence("Alt+Right"),this);connect(next,&QShortcut::activated,this,[this]{travel(1);});auto *refresh=new QShortcut(QKeySequence("Ctrl+R"),this);connect(refresh,&QShortcut::activated,this,[this]{if(index>=0)navigate(history[index],false);});auto *quit=new QShortcut(QKeySequence(Qt::Key_Escape),this);connect(quit,&QShortcut::activated,qApp,&QApplication::quit);
+#ifdef XOS_SSG_TEST_ORACLE
+        // Owner-side control in the separately built synthetic test Browser.
+        // Disable its diagnostic oracle along with observation to avoid leaking
+        // document content after the owner revokes access.
+        auto *revoke=new QShortcut(QKeySequence(Qt::CTRL|Qt::Key_9),this);
+        connect(revoke,&QShortcut::activated,this,[this]{view->allow_scene_observation(false);pipe_text=false;std::printf("SSG_TEST_BROWSER_REVOKED\n");});
+#endif
         if(qApp->arguments().contains("--ssg-probe")){
             auto *ssg=new QShortcut(QKeySequence(Qt::CTRL|Qt::Key_I),this);
             connect(ssg,&QShortcut::activated,this,[this]{dump_scene();});

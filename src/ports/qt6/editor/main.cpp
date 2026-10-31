@@ -195,6 +195,7 @@ public:
         shortcut(QKeySequence(Qt::CTRL|Qt::Key_6),[this]{if(scene){scene->host_allow_observation(false);std::printf("SSG_TEST_OWNER_REVOKED\n");}});
         shortcut(QKeySequence(Qt::CTRL|Qt::Key_7),[this]{text->setProperty("xosSsgProtected",true);std::printf("SSG_TEST_OWNER_DOCUMENT_PROTECTED\n");});
         shortcut(QKeySequence(Qt::CTRL|Qt::Key_8),[paper]{paper->setProperty("xosSsgProtected",true);std::printf("SSG_TEST_OWNER_ANCESTOR_PROTECTED\n");});
+        diagnostic(); // the hidden session can finish before the timer fires
         QTimer::singleShot(300,this,diagnostic);
 #endif
         auto *sampler=new QTimer(this);sampler->setInterval(1000);

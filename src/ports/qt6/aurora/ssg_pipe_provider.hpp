@@ -110,6 +110,12 @@ class PipeProvider final : public QObject {
     }
     void run(){
         unsigned last_sequence=0;
+#ifdef XOS_SSG_TEST_CONTROLS
+        // Synthetic fault injection is compiled only into the Notes fixture.
+        const bool fault_timeout=QCoreApplication::arguments().contains("--ssg-test-timeout");
+        const bool fault_truncated=QCoreApplication::arguments().contains("--ssg-test-truncated");
+        bool complete_once=false;unsigned after_complete=0;
+#endif
         for(;;){
             QByteArray request;unsigned sequence=0;
             auto result=ssg_pipe::receive(request,sequence,ssg_pipe::max_request,watch,true);
@@ -120,6 +126,15 @@ class PipeProvider final : public QObject {
                 continue;
             }
             last_sequence=sequence;
+#ifdef XOS_SSG_TEST_CONTROLS
+            if((fault_timeout || fault_truncated) && complete_once && ++after_complete==4){
+                std::printf("SSG_TEST_PROVIDER_FAULT kind=%s\n",fault_timeout?"TIMEOUT":"TRUNCATED");
+                if(fault_timeout)xos::thread::sleep_until(xos::thread::clock()+35000000000ull);
+                else {char header[12]={'S','S','G','1'};ssg_pipe::put32(header+4,32);ssg_pipe::put32(header+8,sequence);
+                    ssg_pipe::write_all(header,sizeof(header));ssg_pipe::write_all("{}",2);}
+                break;
+            }
+#endif
             __atomic_store_n(&mailbox,0u,__ATOMIC_RELEASE);
             if(!QMetaObject::invokeMethod(this,[this,request]{
                 if(__atomic_load_n(&stopping,__ATOMIC_ACQUIRE))return;
@@ -134,6 +149,13 @@ class PipeProvider final : public QObject {
             if(__atomic_load_n(&stopping,__ATOMIC_ACQUIRE))break;
             result=ssg_pipe::send(reply,sequence,ssg_pipe::max_response,watch);
             if(result!=ssg_pipe::Result::ok){std::printf("SSG_PROVIDER_END pid=%llu reason=%s\n",(unsigned long long)xos::sdk::pid(),ssg_pipe::name(result));break;}
+#ifdef XOS_SSG_TEST_CONTROLS
+            if((fault_timeout || fault_truncated) && !complete_once){
+                const auto sent=QJsonDocument::fromJson(reply).object();
+                const auto received=QJsonDocument::fromJson(request).object();
+                complete_once=received.value("op")=="text_range" && sent.value("status")=="OK" && sent.value("remaining")==0;
+            }
+#endif
         }
         xos::sdk::close(0);xos::sdk::close(2);
         // A session-only hidden owner has no close button. Its own explicit

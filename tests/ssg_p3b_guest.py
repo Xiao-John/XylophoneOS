@@ -10,6 +10,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import time
 import traceback
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -68,8 +69,9 @@ def main():
     p.add_argument('--notes-denied', action='store_true')
     p.add_argument('--browser-denied', action='store_true')
     p.add_argument('--ordinary', action='store_true', help='exercise non-diagnostic supervisor and Notes with explicit aggregate output')
-    p.add_argument('--case', choices=('baseline', 'edit', 'revoke', 'protect-document', 'protect-ancestor', 'notes-exit', 'browser-exit'), default='baseline')
+    p.add_argument('--case', choices=('baseline', 'edit', 'revoke', 'protect-document', 'protect-ancestor', 'browser-revoke', 'browser-reload', 'notes-exit', 'browser-exit', 'notes-timeout', 'notes-truncated'), default='baseline')
     a = p.parse_args()
+    started = time.monotonic()
     out = a.output.resolve()
     relative = out.relative_to(ROOT / 'build')
     out.mkdir(parents=True, exist_ok=False)
@@ -113,20 +115,27 @@ def main():
                     ' --browser-denied' if a.browser_denied else (' --test-' + a.case if a.case != 'baseline' else ''))
             send_bytes(guest, ('exec-driver /bin/multi.elf /web/ssg.html /synthetic.txt' + mode + '\r').encode())
             guest.expect(b'P3B_BOTH_STARTED', start=start, timeout=150)
-            if a.case != 'baseline':
-                marker = b'P3B_BROWSER_EXIT_READY' if a.case == 'browser-exit' else b'P3B_EDIT_INJECTION_READY'
-                guest.expect(marker, start=start, timeout=300)
+            if a.case not in ('baseline', 'notes-timeout', 'notes-truncated'):
+                marker = (b'P3B_BROWSER_EXIT_READY' if a.case == 'browser-exit' else
+                          b'P3B_BROWSER_REVOKE_READY' if a.case == 'browser-revoke' else
+                          b'P3B_BROWSER_RELOAD_READY' if a.case == 'browser-reload' else b'P3B_EDIT_INJECTION_READY')
+                reached = guest.expect_any((marker, b'P3B_CAPTURE_COMPLETE'), start=start, timeout=300)
+                if reached != marker:
+                    raise AssertionError('collection ended before input injection point')
                 injection = {'edit': ('z', b'EDITOR_CHANGE'), 'revoke': ('6', b'SSG_TEST_OWNER_REVOKED'),
                              'protect-document': ('7', b'SSG_TEST_OWNER_DOCUMENT_PROTECTED'),
                              'protect-ancestor': ('8', b'SSG_TEST_OWNER_ANCESTOR_PROTECTED'),
-                             'notes-exit': ('esc', None), 'browser-exit': ('esc', None)}
+                             'notes-exit': ('esc', None), 'browser-exit': ('esc', None),
+                             'browser-revoke': ('9', b'SSG_TEST_BROWSER_REVOKED'),
+                             'browser-reload': ('r', b'BROWSER_LOADED path=')}
                 code, marker = injection[a.case]
+                input_start = len(guest.output)
                 if a.case in ('edit', 'notes-exit', 'browser-exit'):
                     key(guest, code)
                 else:
                     chord(guest, code)
                 if marker:
-                    guest.expect(marker, start=start, timeout=20)
+                    guest.expect(marker, start=input_start, timeout=20)
                 report['events'].append('real_ps2_' + a.case)
             guest.expect(b'P3B_CAPTURE_COMPLETE', start=start, timeout=360)
             report['events'].append('capture_complete')
@@ -148,6 +157,12 @@ def main():
                 raise AssertionError('missing distinct process identities')
             report['processes'] = dict(zip(('supervisor', 'browser', 'notes'), map(int, identities.groups())))
             report['source_exits'] = [line.decode() for line in output.splitlines() if line.startswith(b'P3B_SOURCE_EXIT ')]
+            wait = re.search(rb'\[wait\] pid=' + str(report['processes']['supervisor']).encode() + rb' kind=(\w+) code=(-?\d+)', output)
+            report['supervisor_exit'] = {'kind': wait[1].decode(), 'code': int(wait[2])} if wait else None
+            report['thread_samples'] = [line.decode() for line in output.splitlines()
+                                        if line.startswith((b'EDITOR_SAMPLE ', b'BROWSER_SAMPLE '))]
+            report['pipe_capacity_probe'] = next((line.decode() for line in output.splitlines()
+                                                  if line.startswith(b'P3B_PIPE_REUSE ')), 'NOT_AVAILABLE')
             report['aggregate'] = next((line.decode() for line in output.splitlines() if line.startswith(b'P3B_AGGREGATE ')), None)
             report['resources_restored'] = report['active_display'] == report['after']
             if b'P3B_AGGREGATE status=AGGREGATE_COMPLETE_OBSERVED browser=1 notes=1' in output and not a.notes_denied and not a.browser_denied:
@@ -161,6 +176,14 @@ def main():
                     raise AssertionError('Notes exit was not isolated')
                 if a.case == 'browser-exit' and b'P3B_DIFF browser=EXITED notes=UNCHANGED' not in output:
                     raise AssertionError('Browser exit was not isolated')
+                if a.case == 'browser-revoke' and b'P3B_DIFF browser=DENIED notes=UNCHANGED retry_refused=1' not in output:
+                    raise AssertionError('Browser revocation was not isolated')
+                if a.case == 'browser-reload' and b'P3B_DIFF browser=REPLACED notes=UNCHANGED old_reference=SOURCE_REPLACED' not in output:
+                    raise AssertionError('Browser document replacement was not isolated')
+                if a.case in ('notes-timeout', 'notes-truncated'):
+                    failure = b'TIMEOUT' if a.case == 'notes-timeout' else b'TRUNCATED'
+                    if b'SSG_TEST_PROVIDER_FAULT kind=' + failure not in output or b'P3B_DIFF browser=UNCHANGED notes=' + failure not in output:
+                        raise AssertionError('injected transport fault was not isolated')
                 report['status'] = 'OBSERVED_PENDING_INDEPENDENT_VERIFICATION'
             elif b'P3B_AGGREGATE status=AGGREGATE_PARTIAL browser=1 notes=0' in output and a.notes_denied:
                 report['status'] = 'OBSERVED_PENDING_INDEPENDENT_VERIFICATION'
@@ -172,6 +195,7 @@ def main():
         report['error'] = repr(exc)
         report['traceback'] = traceback.format_exc()
     finally:
+        report['elapsed_seconds'] = round(time.monotonic() - started, 3)
         if guest is not None:
             (out / 'serial.log').write_bytes(guest.output)
             guest.close()

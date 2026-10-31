@@ -170,10 +170,14 @@ def main():
         require(doc['id'] == {'slot': 'notes', 'sourceInstance': snap['sourceInstance'], 'sourceEpoch': snap['sourceEpoch'], 'localNodeId': node['id']}, 'notes global identity mismatch')
         digest = hashlib.sha256(expected.encode()).hexdigest().encode()
         require(re.search(rb'SSG_TEST_OWNER_DOCUMENT units=' + str(offset).encode() + rb' sha256=' + digest + rb'\b', serial) is not None, 'owner document digest mismatch')
-        require(notes['instance'] != browser['instance'] and doc['id'] != browser['nodes'][0]['id'], 'source identity collision')
+        local_collisions = [n['id'] for n in browser['nodes'] if n['id']['localNodeId'] == doc['id']['localNodeId']]
+        require(notes['instance'] != browser['instance'] and local_collisions and all(identity != doc['id'] for identity in local_collisions),
+                'overlapping local node ID was not separated by source namespace')
     require(int(browser['endedMonotonicNs']) <= int(notes.get('startedMonotonicNs', browser['endedMonotonicNs'])), 'observation order mismatch')
     result = {'status': 'PASSED_SCOPED', 'browser_nodes': len(nodes), 'browser_pages': len(br), 'notes_responses': len(nr),
+              'verifier_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
               'notes_utf16_units': offset if report['case'] != 'notes-denied' else None,
+              'overlapping_local_id_namespaced': report['case'] != 'notes-denied',
               'global_atomic_snapshot': 'NOT_IMPLEMENTED', 'oracle': 'independent liteHTML model and synthetic owner digest',
               'resources_restored': report['resources_restored'], 'source_exits': report['source_exits']}
     (out / 'independent-check.json').write_text(json.dumps(result, indent=2) + '\n')

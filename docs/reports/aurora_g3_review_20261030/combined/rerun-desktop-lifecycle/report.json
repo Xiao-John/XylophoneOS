@@ -1,0 +1,108 @@
+{
+  "status": "PASSED",
+  "case": "lifecycle",
+  "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+  "elf_sha256": {
+    "desktop": "b379710575c1eeff7e568fe127a28b20c42fdef29d1304be696204a14f4e5e14",
+    "studio": "a5f137ae718b3909d2873e644b153824246e78f45339c994817ab8169efcdca1",
+    "session": "3cfca03a569300be429b430f064c1b2a6d22edf6b8020b88915c4fb970009f36",
+    "gap": "85bbd0cb81b81710afb44b99fc5a4050aea9e19218ac268927216c2a7ad8013b",
+    "notes": "fec146b437463d0dbb4744d0e541860d567494c8f64abbcccf2e36ab1d189821",
+    "browser": "9c0ba3df97b3712dafb633e8cd449e3fe8f6bf1fdc08f265e66ee02a1d6f9dec",
+    "legacy": "f52b1bb2351e512d836545b52a49b18a479b4c61290b79bed7df8dc04eeddea2"
+  },
+  "checks": [
+    {
+      "name": "real_single_surface_desktop",
+      "status": "PASSED"
+    },
+    {
+      "name": "second_process_EBUSY_and_direct_present_denied",
+      "status": "PASSED"
+    },
+    {
+      "name": "desktop_kill_exact_resources",
+      "status": "PASSED"
+    },
+    {
+      "name": "display_death_fails_closed_serial_survives",
+      "status": "PASSED"
+    },
+    {
+      "name": "desktop_after_service_restart",
+      "status": "PASSED"
+    },
+    {
+      "name": "non_aurora_app_preserved",
+      "status": "PASSED"
+    },
+    {
+      "name": "service_stop_and_file_sync",
+      "status": "PASSED"
+    }
+  ],
+  "screenshots": {
+    "midnight-home": "c4c0650d6872bfbaa55a4f5e9924830d3d561b54b6cbb6be43e24d16f30b2f45",
+    "legacy-no-aurora": "afb769fe58d17c9a6113f57330b1103fc9ef418b9bf54a748c8af641e9b29549"
+  },
+  "latency_host_ms": [],
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_desktop_c56c56_8/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_4ccqz5up/qmp.sock,server=on,wait=off"
+  ],
+  "baseline": [
+    130279,
+    2,
+    0
+  ],
+  "with_service": [
+    130235,
+    3,
+    1
+  ],
+  "sampled_pages": [
+    6730,
+    6731,
+    6731
+  ],
+  "sampled_threads": [
+    3,
+    3,
+    3
+  ],
+  "visual_cache_bytes": [
+    3840000,
+    3840000,
+    3840000
+  ]
+}

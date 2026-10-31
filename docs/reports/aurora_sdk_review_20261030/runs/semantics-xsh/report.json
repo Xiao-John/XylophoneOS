@@ -1,0 +1,234 @@
+{
+  "status": "PASSED",
+  "case": "semantic",
+  "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+  "checks": [
+    {
+      "name": "independent_mock_selects_real_ssg_target",
+      "status": "PASSED",
+      "native_checks": 31
+    },
+    {
+      "name": "query_propose_explicit_fixture_authorize_execute_verify",
+      "status": "PASSED"
+    },
+    {
+      "name": "semantic_app_exact_resource_return",
+      "status": "PASSED"
+    },
+    {
+      "name": "old_process_reference_refused_and_killed_ssg_resources_restored",
+      "status": "PASSED"
+    },
+    {
+      "name": "serial_file_service_and_resource_baseline",
+      "status": "PASSED"
+    }
+  ],
+  "screenshots": {
+    "semantic-authorized-local-result": {
+      "sha256": "55ab417cd646108360eb94522444d6c175070576f8c81b41ef3d4144312e0c71",
+      "png_bytes": 109527,
+      "host_capture_ms": 48.72924997471273
+    }
+  },
+  "runs": [],
+  "elf_sha256": {
+    "semantics": "9139d25b6d6589092c7df4a8243d01e8334cb4d0845691575db431bf9f4cdb2f"
+  },
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_aurora_platform_6z5xwkwf/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_pnzyf9mm/qmp.sock,server=on,wait=off"
+  ],
+  "resources": {
+    "idle_baseline": [
+      130279,
+      2,
+      0
+    ],
+    "display_active": [
+      130235,
+      3,
+      1
+    ],
+    "after_xsh_semantics": [
+      130235,
+      3,
+      1
+    ],
+    "after_old_process_test": [
+      130235,
+      3,
+      1
+    ],
+    "after_cleanup": [
+      130279,
+      2,
+      0
+    ]
+  },
+  "native_checks": [
+    {
+      "name": "no_authority_from_discovery",
+      "status": "PASS"
+    },
+    {
+      "name": "actual_widget_verification",
+      "status": "PASS"
+    },
+    {
+      "name": "no_replay",
+      "status": "PASS"
+    },
+    {
+      "name": "sync_callback_vector_growth_verified",
+      "status": "PASS"
+    },
+    {
+      "name": "revocation",
+      "status": "PASS"
+    },
+    {
+      "name": "expiry",
+      "status": "PASS"
+    },
+    {
+      "name": "stale_state",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_proposal_binding",
+      "status": "PASS"
+    },
+    {
+      "name": "scope",
+      "status": "PASS"
+    },
+    {
+      "name": "model_authorization_rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "readonly_action_refused",
+      "status": "PASS"
+    },
+    {
+      "name": "password_action_refused",
+      "status": "PASS"
+    },
+    {
+      "name": "external_unknown",
+      "status": "PASS"
+    },
+    {
+      "name": "unknown_not_retried",
+      "status": "PASS"
+    },
+    {
+      "name": "target_lifetime",
+      "status": "PASS"
+    },
+    {
+      "name": "deferred_delete_never_claims_unobserved_value",
+      "status": "PASS"
+    },
+    {
+      "name": "replacement_exposed",
+      "status": "PASS"
+    },
+    {
+      "name": "old_grant_does_not_follow_replacement",
+      "status": "PASS"
+    },
+    {
+      "name": "content_redaction",
+      "status": "PASS"
+    },
+    {
+      "name": "ssg_observation_default_denied",
+      "status": "PASS"
+    },
+    {
+      "name": "ssg_password_redaction",
+      "status": "PASS"
+    },
+    {
+      "name": "ssg_hidden_not_visible",
+      "status": "PASS"
+    },
+    {
+      "name": "ssg_local_occlusion",
+      "status": "PASS"
+    },
+    {
+      "name": "ssg_budget_denial",
+      "status": "PASS"
+    },
+    {
+      "name": "ssg_targeted_snapshot_complete",
+      "status": "PASS"
+    },
+    {
+      "name": "ssg_incremental_change",
+      "status": "PASS"
+    },
+    {
+      "name": "ssg_diff_smaller",
+      "status": "PASS"
+    },
+    {
+      "name": "ssg_destroyed_node_removed",
+      "status": "PASS"
+    },
+    {
+      "name": "ssg_revocation",
+      "status": "PASS"
+    },
+    {
+      "name": "ssg_old_epoch_invalid",
+      "status": "PASS"
+    },
+    {
+      "name": "deferred_delete_after_callback",
+      "status": "PASS"
+    }
+  ],
+  "coverage_comparison": {
+    "ssg_json_bytes": 9966,
+    "ax_style_projection_bytes": 745,
+    "ax_style_scope": "projection from Qt metadata, not a qualified XOS AX service",
+    "mock_target_success": "1/1 controlled target",
+    "screenshot_ocr": "NOT_RUN",
+    "cross_process_agent_execution": "BLOCKED / NOT_RUN"
+  }
+}

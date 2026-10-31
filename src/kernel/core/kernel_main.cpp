@@ -115,6 +115,7 @@ extern "C" [[noreturn]] void kernel_main(const xos::boot_info* info,
         xos::format::text("[boot] result=failed reason=tasks_init\r\n");
         xos::arch::halt();
     }
+    xos::platform::interrupts_init();
 
     xos::format::text("[boot] result=ready stage=E04\r\n");
 #if XOS_EASTER_EGGS

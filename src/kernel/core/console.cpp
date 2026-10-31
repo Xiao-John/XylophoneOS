@@ -10,6 +10,9 @@
 #include "build_info.hpp"
 
 namespace xos {
+#if XOS_CLOCK_IRQ_PROBE
+bool clock_irq_probe();
+#endif
 namespace {
 constexpr usize line_capacity = 64;
 char line[line_capacity];
@@ -140,6 +143,10 @@ void execute() {
     else if (equals(line, "alloc")) { command_alloc(); }
     else if (equals(line, "free")) { command_free(); }
     else if (equals(line, "vmtest")) { command_vmtest(); }
+#if XOS_CLOCK_IRQ_PROBE
+    else if (equals(line, "irq-audit")) { format::text(clock_irq_probe()?"irq-audit pass\r\n":"irq-audit FAIL\r\n"); }
+#endif
+
     else if (equals(line, "gpu-quota-test")) {format::text(virtio_gpu::resource_limit_test()?"gpu-quota-test pass\r\n":"gpu-quota-test unavailable_or_failed\r\n");}
     else if (equals(line, "gpu-test")) {format::text(virtio_gpu::self_test()?"gpu-test pass\r\n":"gpu-test unavailable_or_failed\r\n");}
     else if (equals(line, "run")) {

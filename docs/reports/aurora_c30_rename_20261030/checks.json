@@ -1,0 +1,16 @@
+{
+  "host": "macOS arm64, clang++, homebrew qtbase 6.12.0 headers/frameworks",
+  "PASSED": [
+    "compile syntax check 10/10 TUs+fixtures (clang -fsyntax-only, Qt 6.12)",
+    "ssg_diff_integrity built and RUN on host: 13/13 checks incl. new stale_generation_since_resets",
+    "mock_semantic_agent stdin probe: bounded local proposal only",
+    "aurora_scope_audit.py --output: PASSED",
+    "tests/docs_consistency.py: passed 539 links / 66 syscalls / 73 history sources",
+    "tests/abi_doc_consistency.py: PASS, no ABI entries added",
+    "git diff --check: clean (with scoped serial.log waivers)"
+  ],
+  "NOT_RUN": [
+    "guest QEMU suites (aurora_standard_button_guest, aurora_platform_guest, ssg_diff_guest, blur render) \u2014 target Qt build tree and SDK images are on the author host; re-qualification owed for behavior-affecting fixes 3 and 4 and the added case 2"
+  ],
+  "note": "host syntax/functional runs are supplemental; frozen guest evidence remains bound to its original sources and is not rebound"
+}

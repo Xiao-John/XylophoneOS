@@ -10,7 +10,7 @@ Neither the model nor an SSG snapshot grants authority.
 
 | Provider | Native source | Actual observation / unsupported coverage |
 |---|---|---|
-| `QtScene` | Real QObject/QWidget child relations, QLineEdit, QPlainTextEdit, labels, buttons and scrollbars | Parent/object IDs, native class/name, text within explicit scope, enabled/focus/check/selection/scroll state, local geometry and Qt visible region; arbitrary custom painting returns SEMANTICS_UNAVAILABLE |
+| `qt_scene` | Real QObject/QWidget child relations, QLineEdit, QPlainTextEdit, labels, buttons and scrollbars | Parent/object IDs, native class/name, text within explicit scope, enabled/focus/check/selection/scroll state, local geometry and Qt visible region; arbitrary custom painting returns SEMANTICS_UNAVAILABLE |
 | Notes opt-in probe | Its actual live Widgets and QTextDocument/cursor | File-path field, real document prefix/length, selection and scroll; document text is explicitly not all screen-visible |
 | Browser opt-in probe | Real liteHTML DOM/element model, computed display and actual render fragments | Text leaf ranges, element/parent IDs, links, viewport/scroll geometry, actual engine mouse-hit state; no AX-only substitution |
 | Independent example | Standard Widgets + public archive, no copied provider code | Password/hidden control checks, snapshot/diff and local Intent demonstration |
@@ -44,7 +44,7 @@ semantic provider for more precise meaning. Drawing commands alone are not meani
 All provider/Intent calls run on the GUI thread; no thread-safe or cross-process
 call interface is implied. A trusted host must marshal worker proposals as data.
 
-`QtScene` holds a QPointer to its application root and bounded QPointers for node
+`qt_scene` holds a QPointer to its application root and bounded QPointers for node
 identities. Nothing scans another process, maps its heap, reads scanout, obtains
 MMIO/DMA or elevates an application. Default observation is DENIED. The trusted
 application host explicitly enables text scope or revokes it; this API is an
@@ -73,10 +73,18 @@ withheld even when normal text observation is enabled.
 
 Queries can filter visible nodes and role; Notes prioritizes a document-role query after its initial bounded tree export, and Browser uses a body-text/link content query. Filtering avoids formatting every unrelated control; a capped whole-tree export is never treated as complete.
 
-The retained stream keeps only current
-and previous states. Diff returns changed/new nodes and removed IDs, or
-RESET_REQUIRED when history is unavailable. Unchanged observations retain their
-scene version. No periodic observer timer, subscription thread or full-desktop
+The retained stream keeps only current and previous states. A successful diff
+returns changed/new nodes, IDs that left the *query result*, current metadata and
+the `capped` state. `removed` is not proof of object destruction: a node may have
+left a visible-only or other filtered view. Diff returns `RESET_REQUIRED` if
+history is unavailable, query scope differs, or either endpoint is capped; even
+an unchanged capped result cannot certify a complete diff. A fresh bounded snapshot
+may itself remain capped and must not be mistaken for a complete enumeration.
+Publishers use `metadata.queryScope` for all selection and authorization inputs;
+other metadata may change and is included in the diff. Legacy publishers without
+that object reset conservatively if any metadata changes. Malformed or duplicate
+node identities are rejected without advancing history. Unchanged observations
+retain their scene version. No periodic observer timer, subscription thread or full-desktop
 polling is installed. A production bounded subscription API is a future contract,
 not a fake success function.
 
@@ -96,7 +104,7 @@ capability intent; the Notes/Browser providers are **READ_ONLY**. Their cross-pr
 execution, wait_for_state and verify_result transport are **NOT_IMPLEMENTED / NOT_RUN**.
 No consumer may execute a stale coordinate after document replacement.
 
-`Semantics` is a deliberately smaller local Intent adapter for the independent
+`semantics` is a deliberately smaller local Intent adapter for the independent
 fixture. It registers only explicit target Widgets. A deterministic independent
 host mock consumes the *actual guest SSG snapshot*, chooses an admitted textbox
 and emits a proposal. The authorized test harness types that proposal into the
@@ -107,7 +115,7 @@ The trusted host creates a move-only, one-shot Grant bound to the exact proposal
 target/state revision, local authorization epoch and monotonic expiry. No grant
 is serialized to the model. Execute without grant, changed proposal, revoked,
 expired, reused or dead/stale target refuses. Current local set_text verifies the
-real resulting QLineEdit value. Button dispatch returns UNKNOWN because a signal
+real resulting QLineEdit value. button dispatch returns UNKNOWN because a signal
 does not prove an external effect; that grant is consumed and cannot be replayed.
 The test button causes no real external transaction. The host authorization call
 is an adapter seam, not an implementation of user identity or a production policy

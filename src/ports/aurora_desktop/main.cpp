@@ -17,8 +17,8 @@
 #include <functional>
 Q_IMPORT_PLUGIN(QXosIntegrationPlugin)
 namespace {
-class Desktop final : public aurora::DesktopSurface {
-    aurora::GlassPanel *bar, *dock, *card;
+class desktop final : public aurora::desktop_surface {
+    aurora::glass_panel *bar, *dock, *card;
     QStackedWidget *pages;
     QLabel *toast, *heading, *subtitle;
     QList<QPushButton*> controls;
@@ -73,21 +73,21 @@ class Desktop final : public aurora::DesktopSurface {
         update();
     }
 protected:
-    void resizeEvent(QResizeEvent *e) override {DesktopSurface::resizeEvent(e);if(bar)arrange();}
+    void resizeEvent(QResizeEvent *e) override {desktop_surface::resizeEvent(e);if(bar)arrange();}
 public:
-    Desktop(int bits,const QString &last,bool session):bar(nullptr),dock(nullptr),card(nullptr) {
+    desktop(int bits,const QString &last,bool session):bar(nullptr),dock(nullptr),card(nullptr) {
         session_mode=session;elapsed.start();auto p=aurora::preferences();p.scheme=bits&1?aurora::Scheme::daybreak:aurora::Scheme::midnight;
         p.high_contrast=bits&2;p.reduce_transparency=bits&4;p.reduce_motion=bits&8;p.quality=aurora::Quality((bits>>4)&3);p.glass_enabled=!(bits&64);aurora::set_preferences(p);
-        bar=new aurora::GlassPanel(this);auto *top=new QHBoxLayout(bar);top->setContentsMargins(18,6,12,6);
+        bar=new aurora::glass_panel(this);auto *top=new QHBoxLayout(bar);top->setContentsMargins(18,6,12,6);
         auto *brand=new QLabel("X Y L O P H O N E");auto font=brand->font();font.setBold(true);brand->setFont(font);top->addWidget(brand);top->addStretch();
         top->addWidget(new QLabel("Aurora  /  Single-app session"));button("Exit",top,[]{qApp->quit();});
         heading=new QLabel(this);subtitle=new QLabel(this);
-        dock=new aurora::GlassPanel(this);auto *nav=new QBoxLayout(QBoxLayout::LeftToRight,dock);nav->setContentsMargins(10,6,10,6);nav->setSpacing(8);
+        dock=new aurora::glass_panel(this);auto *nav=new QBoxLayout(QBoxLayout::LeftToRight,dock);nav->setContentsMargins(10,6,10,6);nav->setSpacing(8);
         button("Home",nav,[this]{select(0);});button("Apps",nav,[this]{select(1);});
         button("Studio",nav,[this]{select(2);});button("Settings",nav,[this]{select(3);});
         button("Quality",nav,[this]{select(5);});
         button("Hide",nav,[this]{card->hide();notify("Panel hidden. Home restores it.");});
-        card=new aurora::GlassPanel(this);pages=new QStackedWidget(card);
+        card=new aurora::glass_panel(this);pages=new QStackedWidget(card);
         auto *home=new_page();label("YOUR WORKSPACE",home,12);label("Make room for the next idea.",home,24);
         label("A native desktop built around calm materials, clear controls and your own applications.",home);
         home->addStretch();auto *quick=new QHBoxLayout;home->addLayout(quick);
@@ -143,6 +143,6 @@ public:
 }
 int main(int argc,char **argv) {
     QApplication app(argc,argv);aurora::initialize(app);
-    Desktop window(argc>1?std::atoi(argv[1]):16,argc>2?QString::fromUtf8(argv[2]):QString(),argc>2);
+    desktop window(argc>1?std::atoi(argv[1]):16,argc>2?QString::fromUtf8(argv[2]):QString(),argc>2);
     window.setGeometry(app.primaryScreen()->geometry());window.showFullScreen();return app.exec();
 }

@@ -1,0 +1,240 @@
+{
+  "status": "SANITIZED_WORKTREE",
+  "scope": "historical evidence files; originals retained locally; old commits remain in history",
+  "files": [
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/build/apps-build.log.gz",
+      "original_sha256": "4f12c295e8760f568d5fb76a244e758c6f3d2d260c9b9c27746a935b856e8d8f",
+      "sanitized_sha256": "6123275fc1303249d2ce01d0f89d209d95fb41a514bdb033a0975d9d94119b3f",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/build/build-attempt1.log.gz",
+      "original_sha256": "934db24b60d66aad8d81f19e88119082fa1d75bbbbe1476d7f26075766f4e0a6",
+      "sanitized_sha256": "52b694d4f8b86c8d14d63b39cbba6483a530d5894a7b12c89786795a4293d51f",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/build/build-attempt2.log.gz",
+      "original_sha256": "decc2b4535bf7dbbeae7c5313ba8a2d35c8d8d4a20debe4ca5dc8ab303fe6af6",
+      "sanitized_sha256": "9115dc2d855f04f6a77cfb3d6a02fd83087d93ecd66781e41a3d62dc70b8bf3e",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/build/build-attempt3.log.gz",
+      "original_sha256": "decc2b4535bf7dbbeae7c5313ba8a2d35c8d8d4a20debe4ca5dc8ab303fe6af6",
+      "sanitized_sha256": "9115dc2d855f04f6a77cfb3d6a02fd83087d93ecd66781e41a3d62dc70b8bf3e",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/build/build-attempt4.log.gz",
+      "original_sha256": "decc2b4535bf7dbbeae7c5313ba8a2d35c8d8d4a20debe4ca5dc8ab303fe6af6",
+      "sanitized_sha256": "9115dc2d855f04f6a77cfb3d6a02fd83087d93ecd66781e41a3d62dc70b8bf3e",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/build/final-system-build.log.gz",
+      "original_sha256": "823f8f8892be02fd6ad8a346a10746bb9d947a2575784eb9285ef1bdcb4e7359",
+      "sanitized_sha256": "47e59d91f456ab5750c4fb90a9c92451f19f34a94e42bff8d6bf927f94cde00a",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/build/system-build.log.gz",
+      "original_sha256": "70647460dbf5f733c76db1af308a6f0e4e031b7862b6def575f25a331bfebf10",
+      "sanitized_sha256": "7fb1652102b755737546501deb2653cb7413208a506638da8857e5c5e412f24a",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/build/system-v4-build.log.gz",
+      "original_sha256": "afab9f6749e6ed692a2d191b1864be3a379e6620a57d45c52d6de0c39140e64a",
+      "sanitized_sha256": "531edd429d5145104d68aedff52804d3ff3576cc331ab3e868f0af51b897fe62",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/build/system-v5-build.log.gz",
+      "original_sha256": "054ed1b455e10891f7d0b0d390f0b46d4ed54a67abe29f117e4354dd634aa8be",
+      "sanitized_sha256": "e7594e85f81d2ed57839d9227f3e12f3dc295dc2558ce52e15af88e1973ccde7",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/build/v2-build-attempt1.log.gz",
+      "original_sha256": "71c921a66305c2bfc291f0cc67764ac3998649541cbf7322ef6fa1b61816581f",
+      "sanitized_sha256": "6fdff5cf661dbadbc10dc11a6290fca417e1a85a8110fb207082b15d371ff9fd",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/build/v3-apps-build-attempt1.log.gz",
+      "original_sha256": "0489339ccb1222125564fc321b8e5048c1eab08508526ce00164fa556096e969",
+      "sanitized_sha256": "087da9f90320b4cccb6b8772908a2df9b8c96f9069a306e36ac3e55a56c9f84c",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/build/v3-build-attempt1.log.gz",
+      "original_sha256": "0ff6d94e57e2f8e9ed5022e5355435c7ee06f44f53e246facbbaf52c0c6942b2",
+      "sanitized_sha256": "9ee150d594d47413bd9b7e36a6c4eea9323ebea4a4470f54879ef62d901e0129",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/build/v4-apps-build-attempt1.log.gz",
+      "original_sha256": "0c3243ada54fba0e53ed1d883a267eb1f14c3deecbdb6eb05154d62cc7233e33",
+      "sanitized_sha256": "1931c210c8a9b9f1b6c4578ea4b718a722a4a6cfb691190808f5b7cec9005a46",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/build/v4-build-attempt1.log.gz",
+      "original_sha256": "e23d0fa33a95099fc3f88ce2d5492377fdb06b0700dc54cb3c37ac91f8fb9ba3",
+      "sanitized_sha256": "6662cfd11b1c73c71463fc06414ffa79e71ef59db3601890fc3b272ab0f24d52",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/build/v5-apps-build.log.gz",
+      "original_sha256": "a914801346b73048ce5fa05379b4f808170834d49f617299ecaecb36193053db",
+      "sanitized_sha256": "a471104c2dbbe38673acbcc03e4177b76c7abf4217678467dcb3ce882ae619bc",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/build/v5-build.log.gz",
+      "original_sha256": "93a17050d5a280b0a8f78707e373ad0dbb16758183dcea4aa64740652560e346",
+      "sanitized_sha256": "54e98ebbb67a6dab40c9465d677e7caf16161caac56c8572ea687842fbd13b18",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/build/v5-render-update-build.log.gz",
+      "original_sha256": "efadf5bce219e701b4fc9880ebc3e1cc8dabe80a5073c78b473f13e782d64828",
+      "sanitized_sha256": "706e1fcc0717ae7fa3a9a6208ab8970cbe371ef5dc9234172ceb17b1148bf781",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/build/v5-semantic-final-build.log.gz",
+      "original_sha256": "4f354f59bf60296cd03c15ccaffcb2f8568b960f37a1410cac6f035eedafcea9",
+      "sanitized_sha256": "1afb6456fcf0d4655b1ab7674e9da7e46761d8a9918732fd4054894b616471da",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/desktop/demo/report.json",
+      "original_sha256": "29882c861bbda0abe0d46e46a05efcab049f39cd83a39597197394d0029d5e2d",
+      "sanitized_sha256": "458300e18a00275d9fd3065fecd2329a27be212df2067e2f0cb51028a29d0453",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/desktop/interactive/report.json",
+      "original_sha256": "20d5dfffbaed9fb247869858bafc3ad8483d2b13d87d37a2b6b483a720c727ec",
+      "sanitized_sha256": "64ae91eb9d9e07c731d89ea7d017eae57a85ef91d1eeb799a44a4281d3a71316",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/desktop/lifecycle/report.json",
+      "original_sha256": "d7d64de8a9f5190d56165bd3f6f9df91feaf33e4c4a6b356a8064ab561fb9566",
+      "sanitized_sha256": "01d4cd30c54d5fa7fc78d7ffa40dd8e64a981740c94e06e0d71422c21fca73a1",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/desktop/session/report.json",
+      "original_sha256": "08687545b90ff180303dc552b49275b5db228c65e69c9ab5ed4ae70d0be1cda0",
+      "sanitized_sha256": "345a4eda8fb784505dd7ffbbcb8b9013c21834a021bcda477b93bb65a4a4d0b5",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/failures/final-browser/report.json",
+      "original_sha256": "e09f214fab6641fa101e22b47105ff42dff3ff0de6c90b1c2ef1e73753c1970f",
+      "sanitized_sha256": "8aa44a80b53595bd5662e22ffdc70c35cd7d842e1b99f8204336c709a4d98e5f",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/failures/final-notes/report.json",
+      "original_sha256": "e129114471b30c3365ecc9572d1899223c1c64649b885552a33d17f2740740ef",
+      "sanitized_sha256": "aa09d83fa94be50ebe74d7171f0b5cebbb7c496bebb182b649e70b232ae8c107",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/failures/interactive-attempt1/report.json",
+      "original_sha256": "1d43731b69e2cfe3402bdb0c6d0c3b060dee70eaaffcbd494f217149b9f8e3a4",
+      "sanitized_sha256": "f5c6047613396e6dbfb879e778712d48f0f2754630c22793c7e1b99e89bcd7d8",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/failures/qualified-browser-interactive/report.json",
+      "original_sha256": "2e86d029663109446001e2e83523ba007f8365e3ae2d7e6c967e1dfcbf55cf37",
+      "sanitized_sha256": "d02f064845e03ad0d33e3087ce2f7599ee23560307f58e6d1c6af820d4859de8",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/failures/qualified-desktop-session/report.json",
+      "original_sha256": "a8e2a3bfb350a41d6c12df39ae24e797a7e7cb946e87796b3f6746f4095ee513",
+      "sanitized_sha256": "fb7579b81192977afcfce3685cdab1adb3fd90d29043fff0e211d9b8fb7ee5df",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/failures/qualified-semantic/report.json",
+      "original_sha256": "ab3fa965954b7ad1939147701d8c5f0fa9c6618de329aee837d1a5409418617e",
+      "sanitized_sha256": "677abf8ffe81dcc041fa382f0fb6c2fd775d2c4cfd8fd6e98e07a08c067cb14a",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/inputs/browser-browser.receipt.json.gz",
+      "original_sha256": "be8be2d5180c02d0e057ec304ae0bbbf1c93b863dc5095d8a652ecf4dae7d12d",
+      "sanitized_sha256": "98cb10841e33ec5e9b08d3fde7d6a3b8aca27287444c925cabc21c3e730c9313",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/inputs/compositor_gap-v5.receipt.json.gz",
+      "original_sha256": "9cdae73aadc10786031fcddf5804c444ccd84250b38edf43c245eaba71e308c7",
+      "sanitized_sha256": "32f6b4158ff728b5d9c75ee47d09c1dfa966db4e49cd0fc05ad284380ecb7356",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/inputs/desktop-desktop.receipt.json.gz",
+      "original_sha256": "9a45ac8a014efcd31d108980eafd24c788d76d145348a5c1f2c5b156e646f807",
+      "sanitized_sha256": "13a2970315b5345f00b74d0e4c11c0f8d51b137906aea4f30dbf37b15ebdaf1e",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/inputs/legacy-legacy.receipt.json.gz",
+      "original_sha256": "d70b9bfc465e57fdbf137411ec8350781d1cc425bcfa8e7e07f23d1067c832e5",
+      "sanitized_sha256": "d859919248980ccbe5b55ffe9befb1a0024eeebd606e22436eb15cdcc77e1962",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/inputs/notes-notes.receipt.json.gz",
+      "original_sha256": "e9c929541fceb745d96ec3da1523477bd1e1747c75297a15338712e14269bb9a",
+      "sanitized_sha256": "d2db4b473675b9f233f89f4a23bfa4b91b9bee80a8a9e6340fb380896ddfa55c",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/inputs/render-render.receipt.json.gz",
+      "original_sha256": "c84f50dca92586bdd4ea5e8dee22f94a5723ef26619be1722f443dc4948b461e",
+      "sanitized_sha256": "a47a7c8128c1111ed5dc1a75519998796d14246dbd4ce8f12760f2e2dcc8a5f5",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/inputs/sdk-manifest-11.json.gz",
+      "original_sha256": "2e4eab099789a584152e03cba83e6b9bbbad600a688ab8d4a28c7929a3a0aa6c",
+      "sanitized_sha256": "be4f51ba17e886562c2f5e5ce1871d511f21449d202ec48ed5a958ad26203bab",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/inputs/semantics-semantics.receipt.json.gz",
+      "original_sha256": "ba81c2ce2a8023b05e89f462bbb32c710f8c32150d65d40f023fc54e12c17eb0",
+      "sanitized_sha256": "2c7edda3a2edb50f4d269e2c682987fe044885759b61fae29cfc417375f9c707",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/inputs/session-v5.receipt.json.gz",
+      "original_sha256": "29343acc0069ec2babca5b5bbea19ebf4468f4e9f60c25e2b20e6c7e3cabe4a9",
+      "sanitized_sha256": "48dd4ac2b232974ed58abc8d53346aba19d8aa6f9302b05e2918a96f996c9a48",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/inputs/studio-studio.receipt.json.gz",
+      "original_sha256": "1565e06078334f7ce1376ba9994aa27ff4f97c720c3c49cb4f9f940ce371375e",
+      "sanitized_sha256": "37abbfac2fc697033b3cf2de44e8dbc01d1f218edea5062ba624ca13e30d20f7",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/inputs/system-v5-manifest-9.json.gz",
+      "original_sha256": "4887d39156ccb14899b8291f9275b22f77a81351b93fc083cedd6f37ea1c972f",
+      "sanitized_sha256": "104c5fd11349fdbd14770e636e29ce7a3892a86a5c21fa4fc44749aa039e6b7e",
+      "transformation": "private host paths replaced by distinct opaque local-path templates"
+    }
+  ]
+}

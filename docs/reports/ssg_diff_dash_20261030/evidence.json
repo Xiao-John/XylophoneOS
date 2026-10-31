@@ -1,0 +1,9 @@
+{
+  "runner_sha256": "023d8ae6fd3bb6899d1d075839c1cc989321d3efbb13a21ebdbdbb7f64250a23",
+  "files": {
+    "README.md": "fb5bf8968ef228299d250f4479f5b2d86bdb0057c2f959962e6b53a778b575da",
+    "guest_qemu.log.gz": "687f9febce81589770ba046a3476a5c08e9fcb4143037f21f0c72c14b5b2b398",
+    "guest_serial.log.gz": "57ba6bc69e0857753230c898dd6f68dd22508355b6b11e04bfed26dac3ca1e00",
+    "report.json": "34867bda049e5973d3b2766e5bb358491cf197dc1f7340a381f51c2c18206679"
+  }
+}

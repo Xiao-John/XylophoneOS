@@ -20,7 +20,7 @@
     "session": "c1702ac1915b4ae3cc5b05e5bc335c7a2b638d52c8b96daaf65d349ea5de78cc"
   },
   "qemu_command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "${XOS_LOCAL_PATH_94e60e5dbfb4}",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -38,7 +38,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v4/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_LOCAL_PATH_ca11f3d76f85},format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -49,9 +49,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_aurora_platform_jqsxi3r1/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_LOCAL_PATH_67987ac9efe5},format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ainewup2/qmp.sock,server=on,wait=off"
+    "unix:${XOS_LOCAL_PATH_929354c0c5f7},server=on,wait=off"
   ],
   "error": "JSONDecodeError('Unterminated string starting at: line 1 column 3181 (char 3180)')"
 }

@@ -22,7 +22,7 @@ public:
     void wakeUp() override;
     void interrupt() override;
 private:
-    XosWakeGate gate;
+    xos_wake_gate gate;
     QTimerInfoList timers;
     unsigned interrupted = 0;
 };

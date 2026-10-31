@@ -138,6 +138,9 @@ def main():
                     summary.setdefault('stop_reason', 'three consecutive failed runs')
                     break
             summary['status'] = 'PASSED_SCOPED' if len(summary['runs']) == a.count and summary['passed'] == a.count else 'PARTIAL'
+    except KeyboardInterrupt:
+        summary['status'] = 'PARTIAL'
+        summary['stop_reason'] = 'interrupted by operator; completed runs remain recorded'
     except Exception as error:
         summary['status'] = 'PARTIAL'
         summary['error_type'] = type(error).__name__

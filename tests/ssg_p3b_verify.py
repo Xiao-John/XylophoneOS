@@ -23,10 +23,10 @@ def check_source_metadata(source):
     require(isinstance(source.get('instance'), str) and re.fullmatch(r'[0-9a-f]{32}', source['instance']), 'source instance missing')
     if source.get('status') == 'OBSERVED_COMPLETE':
         expected = 'LOCALLY_COMPLETE_ORACLE_REQUIRED' if source['slot'] == 'browser' else 'REVISION_CONSISTENT_OWNER_ORACLE_REQUIRED'
-        require(source.get('completeness') == expected and isinstance(source.get('epoch'), str) and source['epoch'] and
+        require(source.get('completeness') == expected and source.get('freshness') == 'UNVERIFIED_AFTER_OBSERVATION' and isinstance(source.get('epoch'), str) and source['epoch'] and
                 isinstance(source.get('revision'), str) and source['revision'], 'complete source metadata missing')
     else:
-        require(source.get('completeness') == 'NOT_OBSERVED' and source.get('epoch') is None and source.get('revision') is None and
+        require(source.get('completeness') == 'NOT_OBSERVED' and source.get('freshness') == 'NOT_CURRENT' and source.get('epoch') is None and source.get('revision') is None and
                 isinstance(source.get('failure'), str) and source['failure'], 'failed source metadata missing or stale')
 
 

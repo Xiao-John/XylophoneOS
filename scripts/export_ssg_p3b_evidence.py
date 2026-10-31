@@ -132,8 +132,8 @@ def main():
                 continue
             name = file.name
             if (name.endswith('serial.log') or name == 'guest_qemu.log' or
-                name in ('synthetic-input.txt', 'input.html') or
-                name.endswith(('.json', '.wire', '.bin'))):
+                name == 'synthetic-input.txt' or
+                name.endswith(('.json', '.wire', '.bin', '.html', '.png', '.ppm'))):
                 chosen.append(file)
         entries = {}
         memory = io.BytesIO()
@@ -156,7 +156,7 @@ def main():
 
     cases = ('baseline', 'ordinary', 'ordinary-sample', 'ordinary-plain', 'notes-denied', 'browser-denied', 'edit', 'revoke',
              'protect-document', 'protect-ancestor', 'browser-revoke', 'browser-reload', 'browser-scroll',
-             'pipe-isolation', 'notes-exit', 'browser-exit', 'notes-timeout', 'notes-truncated', 'notes-cancel',
+             'pipe-isolation', 'notes-exit', 'browser-exit', 'browser-exit-during-notes', 'notes-timeout', 'notes-truncated', 'notes-cancel',
              'restart', 'diff-contract', 'stress')
     for label in cases:
         archive(label, base / (a.prefix + '-' + label))

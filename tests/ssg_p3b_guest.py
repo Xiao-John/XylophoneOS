@@ -72,7 +72,7 @@ def main():
     p.add_argument('--ordinary', action='store_true', help='exercise non-diagnostic supervisor and Notes with explicit aggregate output')
     p.add_argument('--ordinary-sample', action='store_true', help='exercise two ordinary observations and their per-source Diff')
     p.add_argument('--old-instance', help='test a source instance captured from an earlier session')
-    p.add_argument('--case', choices=('baseline', 'edit', 'revoke', 'protect-document', 'protect-ancestor', 'browser-revoke', 'browser-reload', 'browser-scroll', 'pipe-isolation', 'notes-exit', 'browser-exit', 'notes-timeout', 'notes-truncated', 'notes-cancel'), default='baseline')
+    p.add_argument('--case', choices=('baseline', 'edit', 'revoke', 'protect-document', 'protect-ancestor', 'browser-revoke', 'browser-reload', 'browser-scroll', 'pipe-isolation', 'notes-exit', 'browser-exit', 'browser-exit-during-notes', 'notes-timeout', 'notes-truncated', 'notes-cancel'), default='baseline')
     a = p.parse_args()
     started = time.monotonic()
     out = a.output.resolve()
@@ -145,12 +145,13 @@ def main():
                              'protect-document': ('7', b'SSG_TEST_OWNER_DOCUMENT_PROTECTED'),
                              'protect-ancestor': ('8', b'SSG_TEST_OWNER_ANCESTOR_PROTECTED'),
                              'notes-exit': ('esc', None), 'browser-exit': ('esc', None),
+                             'browser-exit-during-notes': ('esc', None),
                              'browser-revoke': ('9', b'SSG_TEST_BROWSER_REVOKED'),
                              'browser-reload': ('r', b'BROWSER_LOADED path='),
                              'browser-scroll': ('pgdn', b'BROWSER_SCROLL value=')}
                 code, marker = injection[a.case]
                 input_start = len(guest.output)
-                if a.case in ('edit', 'notes-exit', 'browser-exit', 'browser-scroll'):
+                if a.case in ('edit', 'notes-exit', 'browser-exit', 'browser-exit-during-notes', 'browser-scroll'):
                     key(guest, code)
                 else:
                     chord(guest, code)
@@ -160,7 +161,7 @@ def main():
             guest.expect(b'P3B_CAPTURE_COMPLETE', start=start, timeout=360)
             report['events'].append('capture_complete')
             # The edited Notes document must use its real unsaved-change guard.
-            if a.case not in ('notes-exit', 'browser-exit'):
+            if a.case not in ('notes-exit', 'browser-exit', 'browser-exit-during-notes'):
                 key(guest, 'esc')
             if a.case == 'edit':
                 guest.expect(b'EDITOR_UNSAVED_GUARD', start=start, timeout=10)
@@ -201,6 +202,8 @@ def main():
                     raise AssertionError('Notes exit was not isolated')
                 if a.case == 'browser-exit' and b'P3B_DIFF browser=EXITED notes=UNCHANGED' not in output:
                     raise AssertionError('Browser exit was not isolated')
+                if a.case == 'browser-exit-during-notes' and b'P3B_CROSS_EXIT browser=UNAVAILABLE notes=OBSERVED_COMPLETE' not in output:
+                    raise AssertionError('source death during the other read was not isolated')
                 if a.case == 'browser-revoke' and b'P3B_DIFF browser=DENIED notes=UNCHANGED retry_refused=1' not in output:
                     raise AssertionError('Browser revocation was not isolated')
                 if a.case == 'browser-reload' and b'P3B_DIFF browser=REPLACED notes=UNCHANGED old_reference=SOURCE_REPLACED' not in output:

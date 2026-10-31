@@ -25,12 +25,18 @@ part of this contract.
 The output is one finite observation, not a continuously refreshed desktop view.
 A source is sampled over its own monotonic start/end interval. The Browser and
 Notes intervals are sequential; `globalAtomicSnapshot` is `NOT_IMPLEMENTED`.
+Each completed source explicitly says `UNVERIFIED_AFTER_OBSERVATION`; a failed
+source says `NOT_CURRENT`. Neither is a live freshness guarantee.
 `AGGREGATE_COMPLETE_OBSERVED` means both sources completed their individual
 bounded observations. It does not mean the sources were simultaneously current
 at one instant. If a source fails, is unavailable, denied, or protected, the
 aggregate is `AGGREGATE_PARTIAL` and that source does not contain a fabricated
 complete document or node set. A later sample must actually re-observe a source;
 the prototype does not certify a cached historical source as current.
+For a two-source sample, the supervisor rechecks both child processes after
+both reads and suppresses a source that has already exited. This is a bounded
+liveness observation, not an atomic snapshot or a promise that a child cannot
+exit immediately afterward.
 
 Each Browser node has an identity object containing `slot`, `sourceInstance`,
 `sourceEpoch`, and `localNodeId`. Its `parent` is a local node ID interpreted only

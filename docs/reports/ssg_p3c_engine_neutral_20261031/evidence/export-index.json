@@ -1,0 +1,63 @@
+{
+  "scope": "synthetic guest-only data; raw local files remain local",
+  "archives": {
+    "validation": {
+      "sha256": "820470bfbc9b7a85f8507a96968de8513a8f6b57e02a3c826d422f8b98b88999",
+      "members": 68
+    },
+    "compatibility": {
+      "sha256": "96e611e19c32f63da7326786c533d75ed80329d35ef87647bc8c0bf224595098",
+      "members": 26
+    },
+    "capped-faults": {
+      "sha256": "98309d4d6ea234386bdcff4bd92a773804960ab51ff9a00e512a88bd4506e69f",
+      "members": 13
+    },
+    "stress": {
+      "sha256": "b70dd38fc82660f8ee1c5a3629a3912eca73ce7a17ed66cb9e7d4a411f9a474c",
+      "members": 121
+    },
+    "prior-stress": {
+      "sha256": "ff04bfe12280a4258ab13e9890600e7031c99ddbc5c49dc09ad15a0c0b93f376",
+      "members": 121
+    },
+    "failure-watch-shutdown": {
+      "sha256": "eead5fa4222e77961af7c63811de1c403834b58d8113d742501bd287217a7adb",
+      "members": 4
+    },
+    "failure-legacy-shutdown": {
+      "sha256": "2184f57743f24b9652491a503b44b8301621477af0436cb501018538a4d7452a",
+      "members": 4
+    },
+    "failure-event-interleave": {
+      "sha256": "60810eb1a8c269f9d36bd2b1bcc3f9e1a4aa7448a32c0fd108bcbee93db4b459",
+      "members": 5
+    },
+    "diagnostics-original": {
+      "sha256": "fac6b57c84881b0e720f5050b7fa75ce5aa9fdf62d1bf1255429dade7fe16d52",
+      "members": 42
+    },
+    "diagnostics-candidate": {
+      "sha256": "e4d208c7ce37d3c9f7866ff45db5077d3e8cbc18234ed8d47801efb08077f0ed",
+      "members": 42
+    },
+    "regressions": {
+      "sha256": "ca164d687a2123d7da2fb14050df37e1bf6fac42d7b145a2465403d6cd9b1148",
+      "members": 41
+    },
+    "performance": {
+      "sha256": "b7f475ded9d570e9d93bc413444f22b4b33ee8a8d26b297451c91b336e51296b",
+      "members": 11
+    },
+    "performance-initial": {
+      "sha256": "ac728f6cb1aa24e0b6271a902740a492bd0a10e4ae5a14be0a240ad32247c4f4",
+      "members": 11
+    }
+  },
+  "loose_files": {
+    "build-manifest.json": {
+      "raw_sha256": "286a93923dd04ee1dacffc8f462423d4a269be5a86805daa1ad069864ca51ac3",
+      "exported_sha256": "286a93923dd04ee1dacffc8f462423d4a269be5a86805daa1ad069864ca51ac3"
+    }
+  }
+}

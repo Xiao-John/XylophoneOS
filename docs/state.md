@@ -1,5 +1,19 @@
 # XOS 当前状态
 
+## SSG P3C 有界持续观察（Draft，待审）
+
+在尚未合并的 P3B Draft PR #11 上建立独立用户态观察分支；通用调度与来源状态机
+不依赖 Browser 或 Notes 的具体类型，两个真实 Provider 通过原有预接线协议适配。
+真实 QEMU 已完成受控连续编辑、滚动、重载、撤权、保护、来源退出、超时和取消
+复测；事件输出目前仅支持控制台，轮询无法保证捕获两次采样之间的全部变化，
+`globalAtomicSnapshot=NOT_IMPLEMENTED`。WebKit 仍只有上游计划，未声称接入。
+压力中一次截断和一次控制台事件交错促成了有界重试与事件分帧；新构建的完整
+功能及兼容回归已通过；新构建在同一客体启动中的 24 次受控会话全部通过，
+前一构建的 23/24 失败记录仍保留。
+两次先前的 Notes 关闭超时和旧 Consumer 退出问题根因仍未解决；重试和诊断未证明
+修复。SDK 发行材料未完成核对，`DISTRIBUTION_NOT_QUALIFIED`。详见
+[P3C 报告](reports/ssg_p3c_engine_neutral_20261031/README.md)。
+
 ## SSG P3B 双来源原型（Draft，待审）
 
 2026-10-31，在尚未合并的 Browser Draft PR #10 之上建立独立双来源用户态

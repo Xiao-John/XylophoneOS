@@ -1,0 +1,298 @@
+{
+  "status": "PASSED_SCOPED",
+  "checks": [
+    {
+      "name": "validation-baseline",
+      "exit_code": 0
+    },
+    {
+      "name": "validation-edit",
+      "exit_code": 0
+    },
+    {
+      "name": "validation-scroll",
+      "exit_code": 0
+    },
+    {
+      "name": "validation-reload",
+      "exit_code": 0
+    },
+    {
+      "name": "validation-revoke",
+      "exit_code": 0
+    },
+    {
+      "name": "validation-protect-document",
+      "exit_code": 0
+    },
+    {
+      "name": "validation-protect-ancestor",
+      "exit_code": 0
+    },
+    {
+      "name": "validation-browser-exit",
+      "exit_code": 0
+    },
+    {
+      "name": "validation-notes-exit",
+      "exit_code": 0
+    },
+    {
+      "name": "validation-stop",
+      "exit_code": 0
+    },
+    {
+      "name": "validation-timeout",
+      "exit_code": 0
+    },
+    {
+      "name": "validation-cancel",
+      "exit_code": 0
+    },
+    {
+      "name": "validation-ordinary",
+      "exit_code": 0
+    },
+    {
+      "name": "validation-contract",
+      "exit_code": 0
+    },
+    {
+      "name": "capped-cap-retry",
+      "exit_code": 0
+    },
+    {
+      "name": "capped-cap-persistent",
+      "exit_code": 0
+    },
+    {
+      "name": "compatibility-edit",
+      "exit_code": 0
+    },
+    {
+      "name": "compatibility-revoke",
+      "exit_code": 0
+    },
+    {
+      "name": "compatibility-protect-document",
+      "exit_code": 0
+    },
+    {
+      "name": "compatibility-protect-ancestor",
+      "exit_code": 0
+    },
+    {
+      "name": "compatibility-ordinary",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-01",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-02",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-03",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-04",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-05",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-06",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-07",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-08",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-09",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-10",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-11",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-12",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-13",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-14",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-15",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-16",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-17",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-18",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-19",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-20",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-21",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-22",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-23",
+      "exit_code": 0
+    },
+    {
+      "name": "stress-24",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-01",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-02",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-03",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-04",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-05",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-06",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-07",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-08",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-partial",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-10",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-11",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-12",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-13",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-14",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-15",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-16",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-17",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-18",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-19",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-20",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-21",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-22",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-23",
+      "exit_code": 0
+    },
+    {
+      "name": "prior-stress-24",
+      "exit_code": 0
+    },
+    {
+      "name": "performance",
+      "exit_code": 0
+    },
+    {
+      "name": "preserved-shutdown-failures",
+      "exit_code": 0
+    },
+    {
+      "name": "preserved-event-interleaving",
+      "exit_code": 0
+    },
+    {
+      "name": "affected-regression-summary",
+      "exit_code": 0
+    }
+  ],
+  "scope": "host replay of exported synthetic evidence; no guest execution"
+}

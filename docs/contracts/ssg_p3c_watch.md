@@ -31,7 +31,9 @@ failure discards staged text. Its events contain text-change and length facts,
 not document contents. A capped Notes snapshot can be retried at most twice
 within the same source deadline; each attempt is a fresh transaction, the
 retry count is reported, and persistent capping remains unknown rather than
-becoming a complete baseline. Unsupported geometry is explicit. The previous payload
+becoming a complete baseline. For this Notes adapter, the event's `retry_count`
+counts capped snapshot retries, not the separate revision-reset attempts within
+a text-range transaction. Unsupported geometry is explicit. The previous payload
 is released on denial, protection, invalidation or unavailability. Previously
 delivered authorized data is historical and cannot be retroactively erased.
 
@@ -55,7 +57,8 @@ records. Each record is at most 256 bytes and uses one console syscall; the
 decoder must reject missing, duplicated, malformed or incomplete records and
 require a new baseline after a gap. This framing addresses interleaved console
 logs on the tested single-CPU guest; the shared console does not authenticate
-which process wrote a record. There is **no event queue**, so
+which process wrote a record, and framing alone cannot detect every same-length
+corruption. There is **no event queue**, so
 there is no queue to overflow or silently discard from. An output failure ends
 the stream, marks delivery `UNKNOWN` and requires a reset; a failed output
 channel cannot be relied on to deliver even that final marker. There is no
@@ -64,6 +67,8 @@ local event queue discarded an event; it is not downstream delivery proof. A new
 gap. The polling model can miss intermediate edits between observations, even
 when both endpoint snapshots are complete. Detection latency depends on the
 poll interval and the time to observe both sources.
+The stop record's `elapsed_ns` covers the observation loop, not the subsequent
+worker joins or child shutdown; full session wall time is measured separately.
 
 For each event, the console records are `P3C_EVENT_BEGIN <stream_sequence>
 <payload_bytes> <base64_bytes>`, followed by one or more `P3C_EVENT_PART

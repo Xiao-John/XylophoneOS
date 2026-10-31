@@ -82,7 +82,7 @@ def main():
                 start = len(guest.output)
                 started = time.monotonic()
                 report = {'status': 'FAILED', 'case': 'scroll', 'inputs': inputs, 'events': [], 'qmp_events': [], 'active_display': active}
-                item = {'run': index, 'status': 'FAILED', 'latency_upper_seconds': [], 'retries': 0}
+                item = {'run': index, 'status': 'FAILED', 'latency_upper_seconds': [], 'retries': None, 'dropped_events': None}
                 def record_qmp(name, arguments=None):
                     report['qmp_events'].append({'command': name, 'arguments': arguments, 'serial_offset': len(guest.output) - start})
                     return original_qmp(name, arguments)
@@ -148,7 +148,21 @@ def main():
                 except Exception as exc:
                     item['error'] = repr(exc)
                     item['traceback'] = traceback.format_exc()
-                    (case / 'serial.log').write_bytes(bytes(guest.output)[start:])
+                    failed_output = bytes(guest.output)[start:]
+                    (case / 'serial.log').write_bytes(failed_output)
+                    drop_match = re.search(rb'P3C_WATCH_STOP .* dropped=(\d+)', failed_output)
+                    if drop_match:item['dropped_events'] = int(drop_match[1])
+                    try:
+                        partial = [record['data'] for record in decode_event_records(failed_output, require_stop=False)]
+                        item['observations'] = len(partial)
+                        item['change_events'] = sum(event['event_type'] == 'SOURCE_CHANGED' for event in partial)
+                        item['resyncs'] = sum(event['event_type'] in ('RESET_REQUIRED', 'SOURCE_REPLACED') for event in partial)
+                        item['retries'] = sum(event.get('retry_count', 0) for event in partial)
+                        item['event_counts_scope'] = 'complete decoded records; stream may be incomplete'
+                    except (ValueError, json.JSONDecodeError):
+                        item['event_counts_scope'] = 'UNKNOWN: malformed or incomplete event records'
+                    item['source_exits'] = report.get('source_exits')
+                    item['resources_restored'] = report.get('resources_restored')
                     report['elapsed_seconds'] = round(time.monotonic() - started, 3)
                     (case / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
                 finally:

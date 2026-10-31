@@ -1,0 +1,98 @@
+{
+  "scope": "historical failures; raw host logs remain local",
+  "items": [
+    {
+      "case": "exclusive-surface",
+      "observed": "Second visible Qt application exited after display connect returned -16; aggregate correctly remained partial.",
+      "subsequent_action": "Use an explicitly hidden session; no QPA or kernel changes.",
+      "raw_serial_sha256": "2c3a16711d75bd21d3e2300f09bdda87724943410550acc5afaaf1865b63cf4a",
+      "raw_report_sha256": "fa95bce591164b0e287f8d5965fe03a5f422cbddaffec42e91e5322cbf75c8a7"
+    },
+    {
+      "case": "unsaved-edit-shutdown",
+      "observed": "A real edit reached the unsaved-change guard; the first harness did not choose Discard and the Notes child was eventually cancelled.",
+      "subsequent_action": "Use the real PS/2 discard control; rerun exited both children normally.",
+      "raw_serial_sha256": "0746aa6c5c1f02d7b61d940e74e288c7f62fb159bb94000544a64d9d35897dca",
+      "raw_report_sha256": "7b66543e7a846595ae365cb8ec44793a1382e46bdd4756f0a037f2a09936bab5"
+    },
+    {
+      "case": "owner-digest-timing",
+      "observed": "Browser-denied guest behavior was observed, but its independent check failed because hidden Notes exited before its delayed owner digest.",
+      "subsequent_action": "Emit the synthetic owner digest immediately only in a hidden test session; retain the original single delayed digest in visible tests.",
+      "raw_serial_sha256": "0e8897861cd7cf93cc55ba97078e251dc5ebeb3d02b43f44b3033109c96c5644",
+      "raw_verifier_log_sha256": "92dbacea846beed917a7e1eda6a2b923ac31878493e894dc6e8331d38b27827d"
+    },
+    {
+      "case": "prior-consumer-exit-race",
+      "observed": "Earlier single-source runs recorded intermittent exit timeouts; the root cause was not conclusively established.",
+      "subsequent_action": "The Notes branch uses a joinable native watchdog worker; the result remains scoped and does not prove the race eliminated.",
+      "reference": "PR #9, docs/reports/ssg_p3a2_notes_live_20261031/final-r2/failure-history.json"
+    },
+    {
+      "case": "second-sample-liveness-review",
+      "observed": "Static review found the previous two-sample path did not recheck Browser liveness after the Notes transaction; the old 48-run stress was deliberately interrupted after 10 completed passing sessions. No runtime failure was claimed for those ten.",
+      "subsequent_action": "Share a final liveness recheck between ordinary sampling and a real-guest test in which Browser exits during Notes reading; the targeted test returns a partial aggregate.",
+      "interrupted_stress": {
+        "status": "INTERRUPTED_BY_OPERATOR",
+        "completed": 10,
+        "passed": 10,
+        "target": 48,
+        "reason": "Stopped after code review found second-sample cross-source liveness was not rechecked; a corrected build requires a fresh stress run.",
+        "raw_summary_status": "RUNNING",
+        "raw_summary_sha256": "5f3e0880cd9e579602c4528043b76247a70d8c8bfc6150cf489e8519d699a8ba",
+        "raw_serial_sha256": "987878a528cba953ccbe17745de21f844a92fb0ec1baea1a8cd44e529e67678c",
+        "raw_runner_log_sha256": "5fb280a391f9438a30003f00c7bff2a794a250fbbd773b24b8009a324c130e82",
+        "background_qemu": "STOPPED"
+      }
+    },
+    {
+      "case": "fixture-copy-shell-variable",
+      "observed": "An initial local fixture-copy command failed because a zsh special variable shadowed the executable search path before Git ran.",
+      "subsequent_action": "The command was corrected to use a task-specific variable and the intended new fixture was populated; existing worktrees were not modified."
+    },
+    {
+      "case": "license-material-check",
+      "observed": "The threaded Qt SDK receipt has no licenses section, so the first preparation failed. A second check against the reused system SDK failed because its components manifest differs from the current branch (24 versus 32 components).",
+      "subsequent_action": "Preserved both attempts; a separate source-only notice/hash/SPDX check passed 175 registered checks and 43 changed files. Exact reused SDK-copy and archive-member license qualification remain unverified.",
+      "first_log_sha256": "06df4606c8a1960ef9e49f3b7c7d4e8f6bdc54e37e2a08c7d3ce8a45703a2fb7",
+      "second_log_sha256": "b614556b51af06a4a348626e07d2baf629c2043e398a43c88224df4a921f581d",
+      "source_only_result_sha256": "8ed651490ad4681ec4fad4e232120b40fa4737ea0bce3d2999b27ea25c0371ab"
+    },
+    {
+      "case": "implicit-initial-text-scopes",
+      "observed": "Review found the earlier supervisor granted each text scope by default unless explicitly denied; this did not provide separately explicit opt-in at session start.",
+      "subsequent_action": "Default both source text scopes to denied, require independent --browser-text and --notes-text opt-ins, and test default-denied as well as each separately granted scope on a new build.",
+      "interrupted_stress": {
+        "status": "PARTIAL",
+        "completed": 19,
+        "passed": 19,
+        "target": 48,
+        "reason": "Stopped by operator after the initial authorization-default review; corrected build requires a fresh run.",
+        "raw_summary_sha256": "916e6de083d9d2e58b9b6f9d90a7b50435f536abe5442299dbdb6d20c44841a6",
+        "raw_serial_sha256": "f93cc9c02ce5ae29a4fa34137bb186abb36a48a334baa54665e1d019d2023353",
+        "raw_runner_log_sha256": "9477ea0af119b58c0b3fa94b8d14acf20ebf630bcd64d362a4d97c60d1c0ca38",
+        "background_qemu": "STOPPED"
+      }
+    },
+    {
+      "case": "notes-boundaries-initial",
+      "status": "FAILED_BEFORE_GUEST",
+      "reason": "Portable build receipt verification required XOS_BUILD_DIR, but the initial regression wrapper did not require that variable. No guest was started and no boundary result was produced.",
+      "initial_step_log_sha256": "ae7ef5f33e6a3f75039848075fad5a9d49c356662ae550ac6436642c0535ca2c",
+      "initial_wrapper_sha256": "26704f8b67c9d8f111de4e7812b42dee99bb982838d61c42aac5df23718bc0c4",
+      "resolution": "The wrapper now requires the SDK, Qt build and Qt source paths before starting. The unchanged 13-check guest probe was rerun in a new directory and passed 13/13 with resources restored.",
+      "retry_status": "PASSED",
+      "retry_report_sha256": "0e19d4d33d309f81afec97b6e6703273a9fc8bb30bc5f56f366b2e701a855065",
+      "retry_log_sha256": "13db67ca16c8c551d1605e02812089144850e3dfcdbf59a5b61990b772fe1436",
+      "corrected_wrapper_sha256": "388cbfe8bcf2729cae7e7125e93e1d35d5d7aacf40a8ead8b579130a547c5e28",
+      "corrected_wrapper_commit": "8d29888"
+    },
+    {
+      "case": "extra-evidence-scan-directory-argument",
+      "observed": "The public path scanner was initially given a directory as one input; it returned NOT_PUBLIC_READY with unreadable_file and scanned zero files.",
+      "subsequent_action": "Invoke the scanner on each JSON file instead; all selected files were scanned successfully. The final staged-index and PR-body scans are separate.",
+      "first_report_sha256": "b3633196fa590e2ac62c2ddcff4110ba780eb27f2d4d7afc3088307d367e65ad",
+      "retry_report_sha256": "11fedf42cf631eacd47c8e6aeb37641320efe817626560cabbe8e4683affc829"
+    }
+  ]
+}

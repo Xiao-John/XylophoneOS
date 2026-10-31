@@ -1,5 +1,19 @@
 # XOS 当前状态
 
+## SSG P3B 双来源原型（Draft，待审）
+
+2026-10-31，在尚未合并的 Browser Draft PR #10 之上建立独立双来源用户态
+supervisor；Notes 必要能力按需移植。真实 QEMU 中两个独立 Provider 使用各自的
+预接线 Pipe，合成 Browser 267 节点/34 页及 Notes 4,114 UTF-16 单位经独立检查；
+默认分别拒绝文本，显式授权后测试真实编辑、滚动、撤权、退出和故障隔离。48 次
+同启动完整会话通过，Browser、Notes 和 P1 客体回归在 Notes 边界项修正环境变量并
+重跑后通过；首次失败保留。完整证据及边界见 [P3B 报告](reports/ssg_p3b_dual_provider_20261031/README.md)
+和[工作记录 0114](work_log/0114_ssg_p3b_dual_provider.md)。
+
+聚合按来源顺序采集，`globalAtomicSnapshot=NOT_IMPLEMENTED`；单 Surface 环境中
+另一真实进程为无输入隐藏会话。旧 Consumer 退出超时根因仍未解决；复用 SDK 的完整
+许可材料核对未通过，不能授予发行资格。非生产 Broker、全局授权或双可见窗口证明。
+
 2026-10-30：原生[Aurora SDK](work_log/0102_aurora_ui_v2_sdk.md)及[Notes/Browser SSG 接入](work_log/0103_aurora_ssg_consumers.md)已有应用内限定客体证据。
 [SSG-P1](contracts/ssg_p1_pipe.md)另以合法父进程预接线，运行独立消费者和真实
 Notes/Browser 提供者；最终组合与失败证据见[0112](work_log/0112_ssg_p1_cross_process.md)。

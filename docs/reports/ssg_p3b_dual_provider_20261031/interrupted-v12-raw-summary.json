@@ -1,0 +1,526 @@
+{
+  "status": "RUNNING",
+  "scope": "sequential complete synthetic sessions in one XOS boot",
+  "target": 48,
+  "runs": [
+    {
+      "run": 1,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 10,
+        "browser": 11,
+        "notes": 12
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 100000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 17.129
+    },
+    {
+      "run": 2,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 13,
+        "browser": 14,
+        "notes": 15
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 100000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 17.77
+    },
+    {
+      "run": 3,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 16,
+        "browser": 17,
+        "notes": 18
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 100000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 17.882
+    },
+    {
+      "run": 4,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 19,
+        "browser": 20,
+        "notes": 21
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 100000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 17.817
+    },
+    {
+      "run": 5,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 22,
+        "browser": 23,
+        "notes": 24
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 100000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 17.806
+    },
+    {
+      "run": 6,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 25,
+        "browser": 26,
+        "notes": 27
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 100000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 17.788
+    },
+    {
+      "run": 7,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 28,
+        "browser": 29,
+        "notes": 30
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 100000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 17.789
+    },
+    {
+      "run": 8,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 31,
+        "browser": 32,
+        "notes": 33
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 100000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 17.788
+    },
+    {
+      "run": 9,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 34,
+        "browser": 35,
+        "notes": 36
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 200000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 17.978
+    },
+    {
+      "run": 10,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 37,
+        "browser": 38,
+        "notes": 39
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 200000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 19.166
+    }
+  ],
+  "inputs": {
+    "image": {
+      "sha256": "972f3a67012576022b67525da90c654a23b273b82cc0f1619fb6c529805ccd41"
+    },
+    "supervisor": {
+      "sha256": "8c8f6c71c84241d716cf3694054fa94dfd81e1f1b037a270bdbc1ec14b4883a6"
+    },
+    "browser": {
+      "sha256": "0ce4b9e816e6c9625a5e7b4c56476c41407692cb0df7cc35ac51b7a90ccd5be3"
+    },
+    "notes": {
+      "sha256": "1ea93764fa81fce709ed6f9db2326912d7d36c134e32c6df6d5586d18e3a94fe"
+    },
+    "input": {
+      "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+    }
+  },
+  "runner_sha256": "4902e07c23a3c340a8125413cc20354b8e4b9ae1ed209ed2051d64600a068675",
+  "verifier_sha256": "3742408e293ce51d3c9c50661051b3dda1c344ceff2a65159db7f463409f2226",
+  "pipe_counter": "UNAVAILABLE; four-pipe capacity probe is not an exact global counter",
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "qemu_sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
+  "qemu_command_template": [
+    "${XOS_QEMU}",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=${XOS_IMAGE},format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:${XOS_QMP_SOCKET},server=on,wait=off"
+  ],
+  "active_display_resources": [
+    130253,
+    3,
+    1
+  ],
+  "passed": 10
+}

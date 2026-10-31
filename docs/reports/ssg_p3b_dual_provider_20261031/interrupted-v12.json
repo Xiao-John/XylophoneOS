@@ -1,0 +1,12 @@
+{
+  "status": "INTERRUPTED_BY_OPERATOR",
+  "completed": 10,
+  "passed": 10,
+  "target": 48,
+  "reason": "Stopped after code review found second-sample cross-source liveness was not rechecked; a corrected build requires a fresh stress run.",
+  "raw_summary_status": "RUNNING",
+  "raw_summary_sha256": "5f3e0880cd9e579602c4528043b76247a70d8c8bfc6150cf489e8519d699a8ba",
+  "raw_serial_sha256": "987878a528cba953ccbe17745de21f844a92fb0ec1baea1a8cd44e529e67678c",
+  "raw_runner_log_sha256": "5fb280a391f9438a30003f00c7bff2a794a250fbbd773b24b8009a324c130e82",
+  "background_qemu": "STOPPED"
+}

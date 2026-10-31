@@ -1,0 +1,944 @@
+{
+  "status": "PARTIAL",
+  "scope": "sequential complete synthetic sessions in one XOS boot",
+  "target": 48,
+  "runs": [
+    {
+      "run": 1,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 10,
+        "browser": 11,
+        "notes": 12
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 100000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 14.62
+    },
+    {
+      "run": 2,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 13,
+        "browser": 14,
+        "notes": 15
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 100000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 15.31
+    },
+    {
+      "run": 3,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 16,
+        "browser": 17,
+        "notes": 18
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 100000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 15.237
+    },
+    {
+      "run": 4,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 19,
+        "browser": 20,
+        "notes": 21
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 100000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5406 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5406 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 15.385
+    },
+    {
+      "run": 5,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 22,
+        "browser": 23,
+        "notes": 24
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 200000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 15.297
+    },
+    {
+      "run": 6,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 25,
+        "browser": 26,
+        "notes": 27
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 100000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 15.402
+    },
+    {
+      "run": 7,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 28,
+        "browser": 29,
+        "notes": 30
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 100000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 15.629
+    },
+    {
+      "run": 8,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 31,
+        "browser": 32,
+        "notes": 33
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 200000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 15.276
+    },
+    {
+      "run": 9,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 34,
+        "browser": 35,
+        "notes": 36
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 100000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 15.404
+    },
+    {
+      "run": 10,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 37,
+        "browser": 38,
+        "notes": 39
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 100000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 15.286
+    },
+    {
+      "run": 11,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 40,
+        "browser": 41,
+        "notes": 42
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 200000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 15.32
+    },
+    {
+      "run": 12,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 43,
+        "browser": 44,
+        "notes": 45
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 200000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 15.426
+    },
+    {
+      "run": 13,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 46,
+        "browser": 47,
+        "notes": 48
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 200000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 15.342
+    },
+    {
+      "run": 14,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 49,
+        "browser": 50,
+        "notes": 51
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 100000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 15.295
+    },
+    {
+      "run": 15,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 52,
+        "browser": 53,
+        "notes": 54
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 200000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 15.286
+    },
+    {
+      "run": 16,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 55,
+        "browser": 56,
+        "notes": 57
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 200000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 15.179
+    },
+    {
+      "run": 17,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 58,
+        "browser": 59,
+        "notes": 60
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 100000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 15.194
+    },
+    {
+      "run": 18,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 61,
+        "browser": 62,
+        "notes": 63
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 100000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 15.309
+    },
+    {
+      "run": 19,
+      "status": "PASSED",
+      "timeout": false,
+      "processes": {
+        "supervisor": 64,
+        "browser": 65,
+        "notes": 66
+      },
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "before_resources": [
+        130253,
+        3,
+        1
+      ],
+      "after_resources": [
+        130253,
+        3,
+        1
+      ],
+      "shutdown": {
+        "elapsed_ns": 200000000,
+        "clean": true
+      },
+      "pipe_capacity_probe": "P3B_PIPE_REUSE acquired=4 requested=4",
+      "stale_token_probe": "P3B_STALE_TOKEN_REFUSED checked=4 denied=4 reused=0",
+      "reclaim_order": [
+        "notes",
+        "browser"
+      ],
+      "independent_check": "PASSED",
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7375 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5404 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5413 threads=2 scroll=0 cursor=0"
+      ],
+      "elapsed_seconds": 15.279
+    }
+  ],
+  "inputs": {
+    "image": {
+      "sha256": "972f3a67012576022b67525da90c654a23b273b82cc0f1619fb6c529805ccd41"
+    },
+    "supervisor": {
+      "sha256": "2eb68868eb697eb2d704048e3e48583f325259d9bd56d113f0fac0b0a4f691bf"
+    },
+    "browser": {
+      "sha256": "b94440ceef33ce1a1f7edc26c4e832a771cf5a9a4863c6446fb17bb883e75ede"
+    },
+    "notes": {
+      "sha256": "1ea93764fa81fce709ed6f9db2326912d7d36c134e32c6df6d5586d18e3a94fe"
+    },
+    "input": {
+      "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+    }
+  },
+  "runner_sha256": "91c5a3f4d48623ffb9ad14d1f17e88abd4ec0b2e142ae6683fc6bf49127db558",
+  "verifier_sha256": "d553492b62d2c573271910c69146f4eeb374a78def47611c832a4d93bc048f86",
+  "pipe_counter": "UNAVAILABLE; four-pipe capacity probe is not an exact global counter",
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "qemu_sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
+  "qemu_command_template": [
+    "${XOS_QEMU}",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=${XOS_IMAGE},format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:${XOS_QMP_SOCKET},server=on,wait=off"
+  ],
+  "active_display_resources": [
+    130253,
+    3,
+    1
+  ],
+  "passed": 19,
+  "stop_reason": "interrupted by operator; completed runs remain recorded"
+}

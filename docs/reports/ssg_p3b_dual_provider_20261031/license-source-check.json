@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "scope": "registered source notices, listed artifact hashes, component/vendored sources, and changed-source SPDX; excludes exact SDK-copy and archive-member audit",
+  "checks": 175,
+  "changed_source_files": 43,
+  "missing_spdx": [],
+  "errors": []
+}

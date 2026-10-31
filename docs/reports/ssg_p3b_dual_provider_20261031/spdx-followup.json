@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "scope": "SPDX marker presence on changed source files; not a legal or SDK audit",
+  "source_revision": "8d29888feccab8a8c646c5ab5e832ad90a478623",
+  "changed_source_files": 45,
+  "missing_spdx": []
+}

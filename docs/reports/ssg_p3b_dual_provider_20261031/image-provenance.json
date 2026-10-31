@@ -1,0 +1,22 @@
+{
+  "kind": "selected fields from pre-existing system build receipt; original remains local",
+  "original_manifest_sha256": "bf83ff680b6aeb043b1273ef9e1b7fd05dcff7b30ab94a4bf5fd5f6757f50515",
+  "build_id": "3cbbf35c826bb4bb",
+  "version": "0.0.1-1026",
+  "source_sha256": "3cbbf35c826bb4bb6cc8b6e31668724a4e9c5b73340dee7299a29c485b95bd70",
+  "configuration": {
+    "architecture": "x86_64",
+    "platform": "pc",
+    "firmware": "bios",
+    "kernel_base": 1048576,
+    "kernel_max_file_bytes": 8388608,
+    "kernel_max_memory_bytes": 16777216,
+    "easter_eggs": true,
+    "iso_payload_address": 33554432,
+    "iso_payload_max_bytes": 33554432
+  },
+  "image": {
+    "bytes": 1474560,
+    "sha256": "972f3a67012576022b67525da90c654a23b273b82cc0f1619fb6c529805ccd41"
+  }
+}

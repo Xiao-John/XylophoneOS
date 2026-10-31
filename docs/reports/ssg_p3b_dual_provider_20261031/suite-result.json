@@ -1,0 +1,106 @@
+{
+  "status": "PASS",
+  "scope": "P3B synthetic real-guest cases and independent checks; ordinary-plain and ordinary-default-denied are observations only",
+  "target_source_revision": "59291311956c82baa2afc22a18dab308abfa87f8",
+  "test_revision": "a0449bddc1b8067132f131c929708455dc88ff66",
+  "local_runner_sha256": "a9bff478dd217fc7dec5bb957bbbf8e1497048d6915a9877a270ba0999b2df38",
+  "raw_summary_sha256": "60b9c7ee3717e9aea0cc1f9a3e07e3b081d269cf8bb28ccb35d90752e6d72f07",
+  "steps": [
+    {
+      "step": "diff-contract",
+      "exit_code": 0
+    },
+    {
+      "step": "baseline verify",
+      "exit_code": 0
+    },
+    {
+      "step": "ordinary verify",
+      "exit_code": 0
+    },
+    {
+      "step": "ordinary-sample verify",
+      "exit_code": 0
+    },
+    {
+      "step": "ordinary-plain verify",
+      "exit_code": 0
+    },
+    {
+      "step": "default-denied verify",
+      "exit_code": 0
+    },
+    {
+      "step": "ordinary-default-denied verify",
+      "exit_code": 0
+    },
+    {
+      "step": "notes-denied verify",
+      "exit_code": 0
+    },
+    {
+      "step": "browser-denied verify",
+      "exit_code": 0
+    },
+    {
+      "step": "edit verify",
+      "exit_code": 0
+    },
+    {
+      "step": "revoke verify",
+      "exit_code": 0
+    },
+    {
+      "step": "protect-document verify",
+      "exit_code": 0
+    },
+    {
+      "step": "protect-ancestor verify",
+      "exit_code": 0
+    },
+    {
+      "step": "browser-revoke verify",
+      "exit_code": 0
+    },
+    {
+      "step": "browser-reload verify",
+      "exit_code": 0
+    },
+    {
+      "step": "browser-scroll verify",
+      "exit_code": 0
+    },
+    {
+      "step": "pipe-isolation verify",
+      "exit_code": 0
+    },
+    {
+      "step": "notes-exit verify",
+      "exit_code": 0
+    },
+    {
+      "step": "browser-exit verify",
+      "exit_code": 0
+    },
+    {
+      "step": "browser-exit-during-notes verify",
+      "exit_code": 0
+    },
+    {
+      "step": "notes-timeout verify",
+      "exit_code": 0
+    },
+    {
+      "step": "notes-truncated verify",
+      "exit_code": 0
+    },
+    {
+      "step": "notes-cancel verify",
+      "exit_code": 0
+    },
+    {
+      "step": "restart",
+      "exit_code": 0
+    }
+  ]
+}

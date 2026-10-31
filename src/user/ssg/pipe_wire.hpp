@@ -6,6 +6,7 @@
 #include <QtCore/QThread>
 #include <limits>
 #include <cstdio>
+#include <pthread.h>
 
 // Private experiment protocol, not an OS ABI. One request is in flight at a time.
 // stdin (0) is the incoming pipe; stderr (2) is the outgoing pipe; stdout stays
@@ -19,11 +20,15 @@ inline unsigned get32(const char *p){unsigned v=0;for(unsigned i=0;i<4;i++)v|=un
 // sys_pipe_wait has no deadline. This helper waits on the existing monotonic
 // wait-word deadline and closes both local routes on a stalled partial frame.
 // Closing is terminal: it never retries or pretends a partial message succeeded.
-class Watchdog final : public QThread {
+class Watchdog final {
     alignas(4) xos::u32 state=0; // even=idle, odd=armed, reserved=terminal
     xos::u64 deadline=0;
+    pthread_t thread{};
+    bool started=false;
     static constexpr xos::u32 timed_out=0xfffffffeu, stopped=0xffffffffu;
-    void run() override {
+    static void *entry(void *argument){static_cast<Watchdog *>(argument)->run();return nullptr;}
+    // This worker only uses the mechanism-level wait and pipe syscalls.
+    void run() {
         for(;;){
             const auto s=__atomic_load_n(&state,__ATOMIC_ACQUIRE);
             if(s==stopped)return;
@@ -38,8 +43,15 @@ class Watchdog final : public QThread {
         }
     }
 public:
-    Watchdog(){start();if(!isRunning())__atomic_store_n(&state,timed_out,__ATOMIC_RELEASE);}
-    ~Watchdog(){__atomic_store_n(&state,stopped,__ATOMIC_RELEASE);xos::thread::wake(&state);wait();}
+    Watchdog(){started=pthread_create(&thread,nullptr,entry,this)==0;if(!started)__atomic_store_n(&state,timed_out,__ATOMIC_RELEASE);}
+    Watchdog(const Watchdog &)=delete;
+    Watchdog &operator=(const Watchdog &)=delete;
+    ~Watchdog(){
+        __atomic_store_n(&state,stopped,__ATOMIC_RELEASE);xos::thread::wake(&state);
+        // Qt's detached QThread can report finished before native TLS cleanup.
+        // Joining the native worker prevents process exit from racing that cleanup.
+        if(started && pthread_join(thread,nullptr)!=0)xos::sdk::exit(126);
+    }
     bool arm(xos::u64 timeout=io_timeout_ns){
         auto s=__atomic_load_n(&state,__ATOMIC_ACQUIRE);
         if((s&1u) || s>=timed_out-2)return false;

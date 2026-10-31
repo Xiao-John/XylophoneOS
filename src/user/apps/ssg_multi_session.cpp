@@ -1,0 +1,148 @@
+// SPDX-License-Identifier: Apache-2.0
+// Trusted user-space supervisor and read-only dual-source consumer.
+#include "../ssg/multi_source.hpp"
+#include "../ssg/baseline_diff.hpp"
+#include <QtCore/QCoreApplication>
+#include <QtCore/QJsonArray>
+#include <QtCore/QJsonDocument>
+#include <cstdio>
+#include <cstring>
+using namespace xos;
+using namespace ssg_multi;
+
+struct Source {
+    const char *slot;char instance[33]{};u32 input=0,output=0;i64 pid=-1;
+    bool reaped=false;process_status status{};
+};
+static void close_token(u32 &token){if(token){sdk::syscall(sys_pipe_close,token);token=0;}}
+static bool random_instance(char *out){
+    u8 data[16];const char hex[]="0123456789abcdef";
+    if(sdk::syscall(sys_random_bytes,reinterpret_cast<u64>(data),sizeof(data))!=0)return false;
+    for(unsigned i=0;i<sizeof(data);++i){out[i*2]=hex[data[i]>>4];out[i*2+1]=hex[data[i]&15];}
+    out[32]=0;return true;
+}
+static bool launch(Source &s,const char *program,const char *document,bool text,bool hidden_test=false){
+    pipe_handles request{},response{};
+    if(!random_instance(s.instance) || sdk::syscall(sys_pipe_create,reinterpret_cast<u64>(&request))!=0)return false;
+    if(sdk::syscall(sys_pipe_create,reinterpret_cast<u64>(&response))!=0){close_token(request.read_token);close_token(request.write_token);return false;}
+    sdk::spawn_options options{};options.stdio[0]=request.read_token;options.stdio[2]=response.write_token;
+    const char *args[6]={program,document,"--ssg-ipc-provider",s.instance};unsigned count=4;
+    if(text)args[count++]="--ssg-ipc-text";
+    if(hidden_test)args[count++]="--ssg-hidden-test";
+    s.pid=sdk::spawn_file_options(program,count,args,options);
+    close_token(request.read_token);close_token(response.write_token);
+    if(s.pid<0){close_token(request.write_token);close_token(response.read_token);return false;}
+    s.input=response.read_token;s.output=request.write_token;
+    std::printf("P3B_SOURCE slot=%s supervisor=%llu provider=%lld instance=%s channel=independent\n",s.slot,(unsigned long long)sdk::pid(),(long long)s.pid,s.instance);
+    return true;
+}
+static bool alive(Source &s){
+    if(s.pid<0 || s.reaped)return false;
+    const auto result=sdk::syscall(sys_process_wait,u64(s.pid),reinterpret_cast<u64>(&s.status),1);
+    if(result==process_error_would_block)return true;
+    if(result==0)s.reaped=true;
+    return false;
+}
+static QJsonObject identity(const char *slot,const QString &instance,const QString &epoch,const QString &local){
+    return {{"slot",slot},{"sourceInstance",instance},{"sourceEpoch",epoch},{"localNodeId",local}};
+}
+static QJsonObject browser_result(const ssg_pipe::Baseline &b,u64 start,u64 end,bool hidden){
+    QJsonArray nodes;
+    for(const auto &n:b.nodes){
+        QJsonObject node{{"id",identity("browser",QString::fromStdString(b.instance),QString::fromStdString(b.epoch),QString::fromStdString(n.id))},
+                         {"parent",QString::fromStdString(n.parent)},{"role",QString::fromStdString(n.role)},{"tag",QString::fromStdString(n.tag)}};
+        if(n.has_text)node["text"]=QString::fromStdString(n.text);
+        if(n.has_href)node["href"]=QString::fromStdString(n.href);
+        nodes.append(node);
+    }
+    return {{"slot","browser"},{"status","OBSERVED_COMPLETE"},{"instance",QString::fromStdString(b.instance)},{"epoch",QString::fromStdString(b.epoch)},
+            {"revision",QString::fromStdString(b.revision)},{"session",QString::fromStdString(b.session)},{"scope","unfiltered-litehtml"},
+            {"presentation",hidden?"hidden-test-no-surface-no-input":"visible-surface"},
+            {"startedMonotonicNs",QString::number(start)},{"endedMonotonicNs",QString::number(end)},{"nodes",nodes}};
+}
+static QJsonObject notes_result(const NotesBaseline &n,u64 start,u64 end,bool hidden){
+    return {{"slot","notes"},{"status","OBSERVED_COMPLETE"},{"instance",n.instance},{"epoch",n.epoch},{"revision",n.revision},
+            {"scope","document-range-UTF-16"},{"presentation",hidden?"hidden-test-no-surface-no-input":"visible-surface"},
+            {"startedMonotonicNs",QString::number(start)},{"endedMonotonicNs",QString::number(end)},
+            {"document",QJsonObject{{"id",identity("notes",n.instance,n.epoch,n.node)},{"utf16Units",n.units},{"text",n.text}}}};
+}
+static void finish(Source &s){
+    close_token(s.output);close_token(s.input);
+}
+static void shutdown(Source &a,Source &b){
+    finish(a);finish(b);
+    const u64 until=thread::clock()+20000000000ull;
+    while(thread::clock()<until){const bool aa=alive(a),bb=alive(b);if(!aa && !bb)break;thread::sleep_until(thread::clock()+100000000ull);}
+    for(Source *s:{&a,&b}){
+        bool cancelled=false;
+        if(alive(*s)){cancelled=true;sdk::syscall(sys_process_cancel,u64(s->pid));}
+        const u64 limit=thread::clock()+5000000000ull;
+        while(!s->reaped && thread::clock()<limit){if(!alive(*s))break;thread::sleep_until(thread::clock()+100000000ull);}
+        std::printf("P3B_SOURCE_EXIT slot=%s reaped=%d cancelled=%d outcome=%u code=%lld\n",s->slot,int(s->reaped),int(cancelled),unsigned(s->status.outcome),(long long)s->status.code);
+    }
+}
+int main(int argc,char **argv){
+    QCoreApplication app(argc,argv);
+    const char *browser=argc>1?argv[1]:"/web/ssg.html",*notes=argc>2?argv[2]:"/synthetic.txt";
+    const bool notes_text=argc<=3 || std::strcmp(argv[3],"--notes-denied")!=0;
+    Source b{"browser"},n{"notes"};
+    bool hidden_notes=false,hidden_browser=false,dynamic=false;
+#ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
+    dynamic=argc>3 && std::strncmp(argv[3],"--test-",7)==0;
+    hidden_notes=!dynamic;hidden_browser=dynamic;
+#endif
+    if(!launch(b,"/bin/browser.elf",browser,true,hidden_browser) || !launch(n,"/bin/notes.elf",notes,notes_text,hidden_notes)){
+        std::printf("P3B_LAUNCH FAILED\n");shutdown(b,n);return 2;
+    }
+    std::printf("P3B_BOTH_STARTED supervisor=%llu browser=%lld notes=%lld\n",(unsigned long long)sdk::pid(),(long long)b.pid,(long long)n.pid);
+    Client bc(b.slot,b.input,b.output,b.instance,b.pid),nc(n.slot,n.input,n.output,n.instance,n.pid);
+    BaselineCollector collector;const u64 bstart=thread::clock();
+    bool bok=collect_baseline(bc,collector) && collector.commit();const u64 bend=thread::clock();
+    const bool browser_alive=alive(b),notes_alive_before=alive(n);
+    NotesBaseline note;QString failure;const u64 nstart=thread::clock();
+    bool nok=collect_notes(nc,note,failure);const u64 nend=thread::clock();
+    const bool browser_alive_after=alive(b),notes_alive_after=alive(n);
+    bok=bok && browser_alive && browser_alive_after;nok=nok && notes_alive_before && notes_alive_after;
+    QJsonObject browser_source=bok?browser_result(*collector.committed(),bstart,bend,hidden_browser):QJsonObject{{"slot","browser"},{"status","UNAVAILABLE"},{"failure",bc.error().isEmpty()?QStringLiteral("COLLECTION_OR_LIVENESS"):bc.error()}};
+    QJsonObject notes_source=nok?notes_result(note,nstart,nend,hidden_notes):QJsonObject{{"slot","notes"},{"status",failure=="DENIED"?"DENIED":failure=="PROTECTED"?"PROTECTED":"UNAVAILABLE"},{"failure",failure.isEmpty()?QStringLiteral("COLLECTION_OR_LIVENESS"):failure}};
+    const QJsonObject aggregate{{"status",bok&&nok?"AGGREGATE_COMPLETE_OBSERVED":"AGGREGATE_PARTIAL"},
+        {"semantics","sequential-per-source-non-atomic"},{"globalAtomicSnapshot","NOT_IMPLEMENTED"},{"sources",QJsonArray{browser_source,notes_source}}};
+    const auto encoded=QJsonDocument(aggregate).toJson(QJsonDocument::Compact);
+    std::printf("P3B_AGGREGATE status=%s browser=%d notes=%d browser_alive=%d notes_alive=%d bytes=%d semantics=sequential-non-atomic\n",bok&&nok?"AGGREGATE_COMPLETE_OBSERVED":"AGGREGATE_PARTIAL",int(bok),int(nok),int(browser_alive_after),int(notes_alive_after),encoded.size());
+    capture("aggregate","BASELINE",0,encoded);
+    bool success=bok&&nok;
+#ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
+    if(dynamic && success){
+        std::printf("P3B_BASELINE_A_COMPLETE\n");
+        NotesBaseline updated;QString second_failure;const u64 second_nstart=thread::clock();
+        const bool second_notes=collect_notes(nc,updated,second_failure,true);const u64 second_nend=thread::clock();
+        bool retry_refused=false;
+        if(!second_notes && (second_failure=="DENIED" || second_failure=="PROTECTED")){
+            NotesBaseline retry;QString retry_failure;
+            retry_refused=!collect_notes(nc,retry,retry_failure) && retry_failure==second_failure;
+        }
+        BaselineCollector second_browser;const u64 second_bstart=thread::clock();
+        const bool second_bok=collect_baseline(bc,second_browser) && second_browser.commit() && alive(b);const u64 second_bend=thread::clock();
+        const bool second_nalive=alive(n);
+        ssg_pipe::Diff delta;
+        if(second_bok)delta=ssg_pipe::compare_baselines(*collector.committed(),*second_browser.committed());
+        const bool browser_unchanged=second_bok && delta.status==ssg_pipe::DiffStatus::ok && delta.changes.empty();
+        const bool notes_changed=second_notes && second_nalive && note.instance==updated.instance && note.epoch==updated.epoch && note.node==updated.node && note.revision!=updated.revision && note.text!=updated.text;
+        const bool expected_edit=std::strcmp(argv[3],"--test-edit")==0;
+        const QString expected_refusal=std::strcmp(argv[3],"--test-revoke")==0?QStringLiteral("DENIED"):QStringLiteral("PROTECTED");
+        const bool expected_denial=!expected_edit && !second_notes && second_failure==expected_refusal && retry_refused && second_nalive;
+        QJsonObject bs=second_bok?browser_result(*second_browser.committed(),second_bstart,second_bend,hidden_browser):QJsonObject{{"slot","browser"},{"status","UNAVAILABLE"}};
+        QJsonObject ns=second_notes?notes_result(updated,second_nstart,second_nend,hidden_notes):QJsonObject{{"slot","notes"},{"status",second_failure},{"failure",second_failure}};
+        const QJsonObject next{{"status",second_bok&&second_notes&&second_nalive?"AGGREGATE_COMPLETE_OBSERVED":"AGGREGATE_PARTIAL"},
+            {"semantics","sequential-per-source-non-atomic"},{"globalAtomicSnapshot","NOT_IMPLEMENTED"},{"sources",QJsonArray{bs,ns}}};
+        capture("aggregate","BASELINE",1,QJsonDocument(next).toJson(QJsonDocument::Compact));
+        std::printf("P3B_DIFF browser=%s notes=%s retry_refused=%d browser_alive=%d notes_alive=%d\n",browser_unchanged?"UNCHANGED":"UNKNOWN_OR_CHANGED",notes_changed?"CHANGED":second_failure.toUtf8().constData(),int(retry_refused),int(second_bok),int(second_nalive));
+        success=browser_unchanged && (expected_edit?notes_changed:expected_denial);
+    }
+#else
+    (void)dynamic;
+#endif
+    std::printf("P3B_CAPTURE_COMPLETE\n");
+    shutdown(b,n);
+    return success?0:1;
+}

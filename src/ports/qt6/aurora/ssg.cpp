@@ -68,16 +68,54 @@ QJsonObject SceneStream::diff(quint64 since,const QString &expected_epoch) const
     for(auto it=before.begin();it!=before.end();++it)if(!after.contains(it.key()))removed.append(it.key());
     result["status"]="OK";result["changed"]=changed;result["removed"]=removed;result["observedMonotonicNs"]=current["observedMonotonicNs"];return result;
 }
-void QtScene::host_allow_observation(bool read_text){permitted=true;text_permitted=read_text;identities.clear();stream.invalidate();}
-void QtScene::revoke(){permitted=false;identities.clear();stream.invalidate();}
+void QtScene::clear_identities(){for(const auto &entry:identities)QObject::disconnect(entry.connection);identities.clear();}
+QtScene::~QtScene(){clear_identities();}
+void QtScene::host_allow_observation(bool read_text){permitted=true;text_permitted=read_text;clear_identities();stream.invalidate();}
+void QtScene::revoke(){permitted=false;text_permitted=false;clear_identities();stream.invalidate();}
+QJsonObject QtScene::text_range(const QString &epoch,const QString &id,int start,int maximum,const QString &expected) try {
+    if(!permitted || !text_permitted)return {{"status","DENIED"}};
+    if(!root)return {{"status","SOURCE_DESTROYED"}};
+    if(epoch!=stream.source_epoch())return {{"status","SOURCE_REPLACED"}};
+    if(start<0 || maximum<2 || maximum>1024 || (start!=0 && expected.isEmpty()))return {{"status","BAD_QUERY"}};
+    for(const auto &entry:identities){
+        if(QString::number(entry.id)!=id)continue;
+        auto *edit=qobject_cast<QPlainTextEdit*>(entry.widget.data());
+        if(!edit || !entry.document || edit->document()!=entry.document || !entry.revision)
+            return {{"status","STALE_REFERENCE"}};
+        bool in_root=false;
+        for(QWidget *w=edit;w;w=w->parentWidget()){
+            if(w->property("xosSsgProtected").toBool())return {{"status","PROTECTED"}};
+            if(w==root){in_root=true;break;}
+        }
+        if(!in_root)return {{"status","STALE_REFERENCE"}};
+        const QString revision=QString::number(*entry.revision);
+        if(!expected.isEmpty() && expected!=revision)return {{"status","RESET_REQUIRED"},{"documentRevision",revision}};
+        auto *document=entry.document.data();const int length=document->characterCount()-1;
+        if(start>length)return {{"status","OUT_OF_RANGE"},{"documentLength",length}};
+        // Offsets and limits use UTF-16 code units. Never split a surrogate pair.
+        if(start>0 && start<length && document->characterAt(start).isLowSurrogate() && document->characterAt(start-1).isHighSurrogate())
+            return {{"status","INVALID_BOUNDARY"}};
+        int end=start+qMin(length-start,maximum);
+        if(end<length && end>start && document->characterAt(end).isLowSurrogate() && document->characterAt(end-1).isHighSurrogate())--end;
+        QTextCursor cursor(document);cursor.setPosition(start);cursor.setPosition(end,QTextCursor::KeepAnchor);
+        QString value=cursor.selectedText();value.replace(QChar::ParagraphSeparator,'\n');
+        const auto selection=edit->textCursor();
+        return {{"status","OK"},{"sourceEpoch",epoch},{"nodeId",id},{"documentRevision",revision},
+            {"indexUnit","UTF-16-code-unit"},{"textScope","document-range-not-visible-glyphs"},
+            {"documentLength",length},{"start",start},{"end",end},{"remaining",length-end},{"text",value},
+            {"selectionStart",selection.selectionStart()},{"selectionEnd",selection.selectionEnd()},
+            {"scrollY",edit->verticalScrollBar()->value()},{"scrollMax",edit->verticalScrollBar()->maximum()}};
+    }
+    return {{"status","STALE_REFERENCE"}};
+} catch(const std::bad_alloc &) {return {{"status","RESOURCE_LIMIT"}};}
 QJsonObject QtScene::snapshot(bool visible_only,const QString &requested_role) try {
     if(!permitted)return {{"status","DENIED"}};
     if(!root)return {{"status","SOURCE_DESTROYED"}};
     if(!node_limit)return {{"status","RESOURCE_LIMIT"}};
     if(requested_role.size()>32)return {{"status","BAD_QUERY"}};
-    identities.erase(std::remove_if(identities.begin(),identities.end(),[](const Identity &i){return i.widget.isNull();}),identities.end());
+    identities.erase(std::remove_if(identities.begin(),identities.end(),[](const Identity &i){if(i.widget.isNull()){QObject::disconnect(i.connection);return true;}return false;}),identities.end());
     QJsonArray nodes;int text_budget=8192,visited=0;bool capped=false;QElapsedTimer timer;timer.start();
-    auto identity=[&](QWidget *w){for(const auto &i:identities)if(i.widget==w)return i.id;if(identities.size()>=128)return quint64(0);identities.append({w,next_id++});return next_id-1;};
+    auto identity=[&](QWidget *w){for(const auto &i:identities)if(i.widget==w)return i.id;if(identities.size()>=128)return quint64(0);Identity entry{w,next_id++,{}, {}, {}}; if(auto *edit=qobject_cast<QPlainTextEdit*>(w)){entry.document=edit->document();entry.revision=QSharedPointer<quint64>::create(0);auto revision=entry.revision;entry.connection=QObject::connect(edit->document(),&QTextDocument::contentsChanged,edit->document(),[revision]{++*revision;});} identities.append(entry);return next_id-1;};
     std::function<void(QWidget*,quint64,int,bool)> walk;
     walk=[&](QWidget *w,quint64 parent,int depth,bool protected_parent){
         if(++visited>128 || nodes.size()>=int(node_limit) || depth>12 || timer.elapsed()>30){capped=true;return;}

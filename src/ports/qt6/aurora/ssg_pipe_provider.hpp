@@ -51,6 +51,7 @@ class PipeProvider final : public QObject {
     using Diff=std::function<QJsonObject(quint64,const QString &)>;
     Snapshot snapshot_source;Diff diff_source;
     std::function<QJsonObject(const QJsonObject &)> page_source;
+    std::function<QJsonObject(const QString &,const QString &,int,int,const QString &)> range_source;
     QString instance;
     QThread *worker=nullptr;
     GuiWatchdog watch;
@@ -70,10 +71,19 @@ class PipeProvider final : public QObject {
         }
         const auto role=request.value("role").toString();const auto visible=request.value("visibleOnly").toBool(false);
         const auto limit=request.contains("maxNodes")?request.value("maxNodes").toInt(-1):96;
-        if(role.size()>32 || limit<1 || limit>96 || (op!="snapshot" && op!="diff" && op!="detail"))
+        if(role.size()>32 || limit<1 || limit>96 || (op!="snapshot" && op!="diff" && op!="detail" && op!="text_range"))
             return {{"status","BAD_REQUEST"}};
         if(op!="snapshot" && request.value("sourceInstance").toString()!=instance)
             return {{"status","SOURCE_REPLACED"},{"sourceInstance",instance}};
+        if(op=="text_range"){
+            if(!range_source)return {{"status","UNSUPPORTED"}};
+            const auto start=request.value("start"),maximum=request.value("maxLength");
+            if(!start.isDouble() || !maximum.isDouble() || start.toDouble()!=start.toInt(-1) || maximum.toDouble()!=maximum.toInt(-1) ||
+               !request.value("nodeId").isString() || !request.value("sourceEpoch").isString() ||
+               (request.contains("documentRevision") && !request.value("documentRevision").isString()))return {{"status","BAD_REQUEST"}};
+            auto result=range_source(request.value("sourceEpoch").toString(),request.value("nodeId").toString(),start.toInt(),maximum.toInt(),request.value("documentRevision").toString());
+            result["sourceInstance"]=instance;result["providerPid"]=QString::number(xos::sdk::pid());return result;
+        }
         auto snapshot=snapshot_source(visible,role,unsigned(limit));
         snapshot["sourceInstance"]=instance;
         snapshot["providerPid"]=QString::number(xos::sdk::pid());
@@ -126,11 +136,18 @@ class PipeProvider final : public QObject {
             if(result!=ssg_pipe::Result::ok){std::printf("SSG_PROVIDER_END pid=%llu reason=%s\n",(unsigned long long)xos::sdk::pid(),ssg_pipe::name(result));break;}
         }
         xos::sdk::close(0);xos::sdk::close(2);
+#if defined(XOS_SSG_TEST_CONTROLS) || defined(XOS_SSG_TEST_ORACLE)
+        // A hidden synthetic test owner has no close button or input route.
+        // End that test-only process when its explicitly wired peer closes.
+        if(QCoreApplication::arguments().contains("--ssg-hidden-test"))
+            QMetaObject::invokeMethod(QCoreApplication::instance(),[]{QCoreApplication::quit();},Qt::QueuedConnection);
+#endif
     }
 public:
     PipeProvider(QtScene &source,QString source_instance)
         :snapshot_source([&source](bool visible,const QString &role,unsigned limit){source.set_node_limit(limit);return source.snapshot(visible,role);}),
          diff_source([&source](quint64 version,const QString &epoch){return source.diff(version,epoch);}),
+         range_source([&source](const QString &epoch,const QString &id,int start,int maximum,const QString &revision){return source.text_range(epoch,id,start,maximum,revision);}),
          instance(std::move(source_instance)),watch(this){}
     PipeProvider(QString source_instance,Snapshot snapshot,Diff diff,std::function<QJsonObject(const QJsonObject &)> page={})
         :snapshot_source(std::move(snapshot)),diff_source(std::move(diff)),page_source(std::move(page)),

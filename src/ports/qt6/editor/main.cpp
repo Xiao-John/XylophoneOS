@@ -24,6 +24,9 @@
 #include <QtWidgets/QScrollBar>
 #include <QtCore/QTimer>
 #include <QtCore/QtPlugin>
+#ifdef XOS_SSG_TEST_CONTROLS
+#include <QtCore/QCryptographicHash>
+#endif
 #include <xos/thread_core.hpp>
 #include <cstdio>
 Q_IMPORT_PLUGIN(QXosIntegrationPlugin)
@@ -162,7 +165,16 @@ public:
         connect(text,&QPlainTextEdit::selectionChanged,this,[this]{std::printf("EDITOR_SELECTION start=%d end=%d\n",text->textCursor().selectionStart(),text->textCursor().selectionEnd());});
         if(ssg_probe){scene=std::make_unique<aurora::QtScene>(this);scene->host_allow_observation(true);
             shortcut(QKeySequence(Qt::CTRL|Qt::Key_I),[this]{dump_scene();});}
-        setGeometry(QApplication::primaryScreen()->geometry());showFullScreen();
+        setGeometry(QApplication::primaryScreen()->geometry());
+#ifdef XOS_SSG_TEST_CONTROLS
+        // The current display has one exclusive surface. This separate test
+        // executable may keep the actual Notes widget tree hidden for IPC
+        // qualification; it receives no display input in that mode.
+        if(!qApp->arguments().contains("--ssg-hidden-test"))showFullScreen();
+        else std::printf("SSG_TEST_NOTES_HIDDEN no_surface=1 no_input=1\n");
+#else
+        showFullScreen();
+#endif
         if(!initial.isEmpty()) openFile();text->setFocus();
         if(!pipe_instance.isEmpty()){
             if(!scene)scene=std::make_unique<aurora::QtScene>(this);
@@ -171,6 +183,18 @@ public:
             pipe_provider->start();
             std::printf("SSG_PROVIDER_READY pid=%llu instance=%s text=%d\n",(unsigned long long)xos::sdk::pid(),pipe_instance.toUtf8().constData(),int(pipe_text));
         }
+#ifdef XOS_SSG_TEST_CONTROLS
+        // Present only in the separately compiled synthetic-test executable.
+        // These owner-side shortcuts are not exposed through the consumer pipe.
+        auto diagnostic=[this]{const auto value=text->toPlainText();
+            const auto digest=QCryptographicHash::hash(value.toUtf8(),QCryptographicHash::Sha256).toHex();
+            std::printf("SSG_TEST_OWNER_DOCUMENT units=%d sha256=%s\n",value.size(),digest.constData());};
+        connect(text->document(),&QTextDocument::contentsChanged,this,diagnostic);
+        shortcut(QKeySequence(Qt::CTRL|Qt::Key_6),[this]{if(scene){scene->host_allow_observation(false);std::printf("SSG_TEST_OWNER_REVOKED\n");}});
+        shortcut(QKeySequence(Qt::CTRL|Qt::Key_7),[this]{text->setProperty("xosSsgProtected",true);std::printf("SSG_TEST_OWNER_DOCUMENT_PROTECTED\n");});
+        shortcut(QKeySequence(Qt::CTRL|Qt::Key_8),[paper]{paper->setProperty("xosSsgProtected",true);std::printf("SSG_TEST_OWNER_ANCESTOR_PROTECTED\n");});
+        QTimer::singleShot(300,this,diagnostic);
+#endif
         auto *sampler=new QTimer(this);sampler->setInterval(1000);
         connect(sampler,&QTimer::timeout,this,[this]{xos::thread_stats stats{};
             xos::sdk::syscall(xos::sys_thread_stats,reinterpret_cast<xos::u64>(&stats));
@@ -199,6 +223,9 @@ int main(int argc,char **argv) {
         qInstallMessageHandler(ipc_qt_message);
     }
     QApplication app(argc,argv);aurora::initialize(app);
+#ifdef XOS_SSG_TEST_CONTROLS
+    if(app.arguments().contains("--ssg-hidden-test"))app.setQuitOnLastWindowClosed(false);
+#endif
     QFont font(QStringLiteral("DejaVu Sans"));font.setPixelSize(16);app.setFont(font);
     Editor editor(initial,probe,instance,text_scope);
     return app.exec();

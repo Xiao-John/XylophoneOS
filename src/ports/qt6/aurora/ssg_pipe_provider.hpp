@@ -136,12 +136,14 @@ class PipeProvider final : public QObject {
             if(result!=ssg_pipe::Result::ok){std::printf("SSG_PROVIDER_END pid=%llu reason=%s\n",(unsigned long long)xos::sdk::pid(),ssg_pipe::name(result));break;}
         }
         xos::sdk::close(0);xos::sdk::close(2);
+        // A session-only hidden owner has no close button. Its own explicit
+        // launch choice ties its lifetime to this prewired observation pipe.
+        bool quit_hidden=QCoreApplication::arguments().contains("--ssg-session-hidden");
 #if defined(XOS_SSG_TEST_CONTROLS) || defined(XOS_SSG_TEST_ORACLE)
-        // A hidden synthetic test owner has no close button or input route.
-        // End that test-only process when its explicitly wired peer closes.
-        if(QCoreApplication::arguments().contains("--ssg-hidden-test"))
-            QMetaObject::invokeMethod(QCoreApplication::instance(),[]{QCoreApplication::quit();},Qt::QueuedConnection);
+        quit_hidden=quit_hidden || QCoreApplication::arguments().contains("--ssg-hidden-test");
 #endif
+        if(quit_hidden)
+            QMetaObject::invokeMethod(QCoreApplication::instance(),[]{QCoreApplication::quit();},Qt::QueuedConnection);
     }
 public:
     PipeProvider(QtScene &source,QString source_instance)

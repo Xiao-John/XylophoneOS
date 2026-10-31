@@ -66,12 +66,14 @@ def main():
     for name in ('image', 'supervisor', 'browser', 'notes', 'input', 'output'):
         p.add_argument('--' + name, type=Path, required=True)
     p.add_argument('--notes-denied', action='store_true')
-    p.add_argument('--case', choices=('baseline', 'edit', 'revoke', 'protect-document', 'protect-ancestor'), default='baseline')
+    p.add_argument('--browser-denied', action='store_true')
+    p.add_argument('--ordinary', action='store_true', help='exercise non-diagnostic supervisor and Notes with explicit aggregate output')
+    p.add_argument('--case', choices=('baseline', 'edit', 'revoke', 'protect-document', 'protect-ancestor', 'notes-exit', 'browser-exit'), default='baseline')
     a = p.parse_args()
     out = a.output.resolve()
     relative = out.relative_to(ROOT / 'build')
     out.mkdir(parents=True, exist_ok=False)
-    report = {'status': 'FAILED', 'case': 'notes-denied' if a.notes_denied else a.case,
+    report = {'status': 'FAILED', 'case': 'notes-denied' if a.notes_denied else 'browser-denied' if a.browser_denied else 'ordinary' if a.ordinary else a.case,
               'inputs': {name: {'sha256': sha(getattr(a, name))}
                          for name in ('image', 'supervisor', 'browser', 'notes', 'input')},
               'events': [], 'qmp_events': []}
@@ -107,25 +109,30 @@ def main():
             guest.expect(b'[display-service] ready')
             report['active_display'] = resources(guest)
             start = len(guest.output)
-            mode = ' --notes-denied' if a.notes_denied else (' --test-' + a.case if a.case != 'baseline' else '')
+            mode = (' --notes-hidden --emit-aggregate' if a.ordinary else ' --notes-denied' if a.notes_denied else
+                    ' --browser-denied' if a.browser_denied else (' --test-' + a.case if a.case != 'baseline' else ''))
             send_bytes(guest, ('exec-driver /bin/multi.elf /web/ssg.html /synthetic.txt' + mode + '\r').encode())
             guest.expect(b'P3B_BOTH_STARTED', start=start, timeout=150)
             if a.case != 'baseline':
-                guest.expect(b'P3B_EDIT_INJECTION_READY', start=start, timeout=300)
+                marker = b'P3B_BROWSER_EXIT_READY' if a.case == 'browser-exit' else b'P3B_EDIT_INJECTION_READY'
+                guest.expect(marker, start=start, timeout=300)
                 injection = {'edit': ('z', b'EDITOR_CHANGE'), 'revoke': ('6', b'SSG_TEST_OWNER_REVOKED'),
                              'protect-document': ('7', b'SSG_TEST_OWNER_DOCUMENT_PROTECTED'),
-                             'protect-ancestor': ('8', b'SSG_TEST_OWNER_ANCESTOR_PROTECTED')}
+                             'protect-ancestor': ('8', b'SSG_TEST_OWNER_ANCESTOR_PROTECTED'),
+                             'notes-exit': ('esc', None), 'browser-exit': ('esc', None)}
                 code, marker = injection[a.case]
-                if a.case == 'edit':
+                if a.case in ('edit', 'notes-exit', 'browser-exit'):
                     key(guest, code)
                 else:
                     chord(guest, code)
-                guest.expect(marker, start=start, timeout=20)
+                if marker:
+                    guest.expect(marker, start=start, timeout=20)
                 report['events'].append('real_ps2_' + a.case)
             guest.expect(b'P3B_CAPTURE_COMPLETE', start=start, timeout=360)
             report['events'].append('capture_complete')
             # The edited Notes document must use its real unsaved-change guard.
-            key(guest, 'esc')
+            if a.case not in ('notes-exit', 'browser-exit'):
+                key(guest, 'esc')
             if a.case == 'edit':
                 guest.expect(b'EDITOR_UNSAVED_GUARD', start=start, timeout=10)
                 guest.expect(b'EDITOR_POINT discard=', start=start, timeout=10)
@@ -143,15 +150,21 @@ def main():
             report['source_exits'] = [line.decode() for line in output.splitlines() if line.startswith(b'P3B_SOURCE_EXIT ')]
             report['aggregate'] = next((line.decode() for line in output.splitlines() if line.startswith(b'P3B_AGGREGATE ')), None)
             report['resources_restored'] = report['active_display'] == report['after']
-            if b'P3B_AGGREGATE status=AGGREGATE_COMPLETE_OBSERVED browser=1 notes=1' in output and not a.notes_denied:
+            if b'P3B_AGGREGATE status=AGGREGATE_COMPLETE_OBSERVED browser=1 notes=1' in output and not a.notes_denied and not a.browser_denied:
                 if a.case == 'edit' and b'P3B_DIFF browser=UNCHANGED notes=CHANGED' not in output:
                     raise AssertionError('cross-app edit was not isolated')
                 if a.case in ('revoke', 'protect-document', 'protect-ancestor'):
                     wanted = b'DENIED' if a.case == 'revoke' else b'PROTECTED'
                     if b'P3B_DIFF browser=UNCHANGED notes=' + wanted + b' retry_refused=1' not in output:
                         raise AssertionError('restriction or independent browser refresh failed')
+                if a.case == 'notes-exit' and b'P3B_DIFF browser=UNCHANGED notes=EXITED' not in output:
+                    raise AssertionError('Notes exit was not isolated')
+                if a.case == 'browser-exit' and b'P3B_DIFF browser=EXITED notes=UNCHANGED' not in output:
+                    raise AssertionError('Browser exit was not isolated')
                 report['status'] = 'OBSERVED_PENDING_INDEPENDENT_VERIFICATION'
             elif b'P3B_AGGREGATE status=AGGREGATE_PARTIAL browser=1 notes=0' in output and a.notes_denied:
+                report['status'] = 'OBSERVED_PENDING_INDEPENDENT_VERIFICATION'
+            elif b'P3B_AGGREGATE status=AGGREGATE_PARTIAL browser=0 notes=1' in output and a.browser_denied and b'P3B_BROWSER_DENIAL_RECHECK refused=1 notes_alive=1' in output:
                 report['status'] = 'OBSERVED_PENDING_INDEPENDENT_VERIFICATION'
             else:
                 raise AssertionError('aggregate did not have expected status')

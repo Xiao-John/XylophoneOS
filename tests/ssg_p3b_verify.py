@@ -28,7 +28,8 @@ def frames(serial):
         if kind == b'BEGIN':
             require(key not in seen and rest is not None, 'duplicate or incomplete begin')
             length, encoded = map(int, rest.split())
-            require(0 < length <= 4 * 1024 * 1024 and encoded == 4 * ((length + 2) // 3), 'invalid frame bound')
+            maximum = 4 * 1024 * 1024 if key[0] == 'aggregate' else 4096 if key[1] == 'REQ' else 81920
+            require(0 < length <= maximum and encoded == 4 * ((length + 2) // 3), 'invalid frame bound')
             pending[key] = [length, encoded, bytearray()]
             seen.add(key)
         elif kind == b'PART':

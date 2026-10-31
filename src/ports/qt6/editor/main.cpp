@@ -166,15 +166,17 @@ public:
         if(ssg_probe){scene=std::make_unique<aurora::QtScene>(this);scene->host_allow_observation(true);
             shortcut(QKeySequence(Qt::CTRL|Qt::Key_I),[this]{dump_scene();});}
         setGeometry(QApplication::primaryScreen()->geometry());
+        // Explicit session-only observation can keep this real document and
+        // widget tree alive without taking the single exclusive surface.
+        bool hidden_session=!pipe_instance.isEmpty() && qApp->arguments().contains("--ssg-session-hidden");
 #ifdef XOS_SSG_TEST_CONTROLS
         // The current display has one exclusive surface. This separate test
         // executable may keep the actual Notes widget tree hidden for IPC
         // qualification; it receives no display input in that mode.
-        if(!qApp->arguments().contains("--ssg-hidden-test"))showFullScreen();
-        else std::printf("SSG_TEST_NOTES_HIDDEN no_surface=1 no_input=1\n");
-#else
-        showFullScreen();
+        hidden_session=hidden_session || (!pipe_instance.isEmpty() && qApp->arguments().contains("--ssg-hidden-test"));
 #endif
+        if(!hidden_session)showFullScreen();
+        else std::printf("SSG_NOTES_SESSION_HIDDEN no_surface=1 no_input=1\n");
         if(!initial.isEmpty()) openFile();text->setFocus();
         if(!pipe_instance.isEmpty()){
             if(!scene)scene=std::make_unique<aurora::QtScene>(this);
@@ -223,9 +225,11 @@ int main(int argc,char **argv) {
         qInstallMessageHandler(ipc_qt_message);
     }
     QApplication app(argc,argv);aurora::initialize(app);
+    if(!instance.isEmpty() && (app.arguments().contains("--ssg-session-hidden")
 #ifdef XOS_SSG_TEST_CONTROLS
-    if(app.arguments().contains("--ssg-hidden-test"))app.setQuitOnLastWindowClosed(false);
+        || app.arguments().contains("--ssg-hidden-test")
 #endif
+        ))app.setQuitOnLastWindowClosed(false);
     QFont font(QStringLiteral("DejaVu Sans"));font.setPixelSize(16);app.setFont(font);
     Editor editor(initial,probe,instance,text_scope);
     return app.exec();

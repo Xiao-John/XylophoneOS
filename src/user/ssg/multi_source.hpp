@@ -13,13 +13,14 @@ constexpr unsigned max_request=4096, max_response=81920;
 inline void put32(char *p,unsigned n){for(unsigned i=0;i<4;++i)p[i]=char((n>>(i*8))&255);}
 inline unsigned get32(const char *p){unsigned n=0;for(unsigned i=0;i<4;++i)n|=unsigned(static_cast<unsigned char>(p[i]))<<(i*8);return n;}
 
-#ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
-inline void capture(const char *slot,const char *direction,unsigned sequence,const QByteArray &data){
+inline void emit_frame(const char *slot,const char *direction,unsigned sequence,const QByteArray &data){
     const auto encoded=data.toBase64();
     std::printf("P3B_FRAME_BEGIN %s %s %u %d %d\n",slot,direction,sequence,int(data.size()),int(encoded.size()));
     for(int i=0;i<encoded.size();i+=96)std::printf("P3B_FRAME_PART %s %s %u %d %s\n",slot,direction,sequence,i,encoded.mid(i,96).constData());
     std::printf("P3B_FRAME_END %s %s %u\n",slot,direction,sequence);
 }
+#ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
+inline void capture(const char *slot,const char *direction,unsigned sequence,const QByteArray &data){emit_frame(slot,direction,sequence,data);}
 #else
 inline void capture(const char *,const char *,unsigned,const QByteArray &){}
 #endif
@@ -28,7 +29,7 @@ inline void capture(const char *,const char *,unsigned,const QByteArray &){}
 // system monotonic clock bound each transfer without closing another route.
 class Client {
     const char *slot_;u32 in_,out_;QString instance_;i64 pid_;unsigned sequence_=0;u64 deadline_;
-    QString error_;
+    QString error_,status_;
     bool transfer(bool write,char *data,unsigned length,u64 until){
         unsigned done=0;
         while(done<length){
@@ -45,6 +46,7 @@ public:
     Client(const char *slot,u32 input,u32 output,const char *instance,i64 pid)
         :slot_(slot),in_(input),out_(output),instance_(QString::fromLatin1(instance)),pid_(pid),deadline_(thread::clock()+source_ns){}
     const QString &error()const{return error_;}
+    const QString &status()const{return status_;}
     QJsonObject request(const QJsonObject &object,bool *ok=nullptr,unsigned =0){
         if(ok)*ok=false;
         if(!error_.isEmpty())return {};
@@ -57,7 +59,8 @@ public:
         if(!transfer(false,header,12,until))return {};
         const unsigned size=get32(header+4);
         if(QByteArray(header,4)!="SSG1" || get32(header+8)!=seq || size==0 || size>max_response){error_="BAD_FRAME";return {};}
-        QByteArray reply(int(size),'\0');if(!transfer(false,reply.data(),size,until))return {};
+        QByteArray reply(int(size),'\0');
+        if(!transfer(false,reply.data(),size,until)){if(error_=="EOF")error_="TRUNCATED";return {};}
         capture(slot_,"RESP",seq,reply);
         QJsonParseError parse{};const auto document=QJsonDocument::fromJson(reply,&parse);
         if(parse.error!=QJsonParseError::NoError || !document.isObject()){error_="BAD_JSON";return {};}
@@ -67,6 +70,7 @@ public:
         if(result.contains("sourceInstance") && result.value("sourceInstance").toString()!=instance_){error_="INSTANCE_MISMATCH";return {};}
         if(result.contains("providerPid") && result.value("providerPid").toString()!=QString::number(pid_)){error_="PID_MISMATCH";return {};}
         if(result.value("status")=="OK" && (result.value("sourceInstance").toString()!=instance_ || result.value("providerPid").toString()!=QString::number(pid_))){error_="IDENTITY_MISSING";return {};}
+        status_=result.value("status").toString();
         if(ok)*ok=true;return result;
     }
 };

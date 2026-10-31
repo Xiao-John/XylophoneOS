@@ -122,6 +122,9 @@ def main():
     require(first == original and failure is None, 'baseline A notes mismatch')
     doc = sources[0]['notes']['document']
     require(doc['text'] == original and sources[0]['notes']['revision'] == revision, 'baseline A aggregate mismatch')
+    require(doc['id'] == {'slot': 'notes', 'sourceInstance': base['sourceInstance'], 'sourceEpoch': base['sourceEpoch'], 'localNodeId': node['id']}, 'notes namespace mismatch')
+    require(base['sourceInstance'] != a_oracle['sourceInstance'], 'source instances collide')
+    require(decoded[1][0]['sourceInstance'] == base['sourceInstance'] and decoded[1][0]['sourceEpoch'] == base['sourceEpoch'] and decoded[1][1]['id'] == node['id'], 'staging source changed')
     require(decoded[1][2] and decoded[1][2] == original[:len(decoded[1][2])], 'missing old-revision staging')
     if report['case'] == 'edit':
         require(b'EDITOR_KEY key=90' in serial and b'EDITOR_CHANGE' in serial, 'guest did not receive the edit key')
@@ -129,6 +132,7 @@ def main():
         newer = decoded[-1]
         require(newer[4] is None and newer[2] == 'z' + original and newer[3] != revision, 'new revision text mismatch')
         require(sources[1]['notes']['document']['text'] == newer[2] and sources[1]['notes']['revision'] == newer[3], 'baseline B notes mismatch')
+        require(newer[0]['sourceInstance'] == base['sourceInstance'] and newer[0]['sourceEpoch'] == base['sourceEpoch'] and newer[1]['id'] == node['id'], 'new revision belongs to another document')
         require(aggs[1]['status'] == 'AGGREGATE_COMPLETE_OBSERVED', 'baseline B incomplete')
         expected = newer[2]
         require(b'P3B_DIFF browser=UNCHANGED notes=CHANGED' in serial, 'aggregate diff missing')

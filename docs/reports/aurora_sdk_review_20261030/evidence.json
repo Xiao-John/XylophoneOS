@@ -1,0 +1,26 @@
+{
+  "files": {
+    "build/dash-manifest.json": "f581dec6b24f52ea75774ab5d3fa6a77f6adfc4b6a2bce844776528084722c93",
+    "build/semantics.receipt.json": "2b9dcc30219bef8321c284d83981ffc61cc6fe02f7528f3638798392e64b1911",
+    "build/ssgdiff.receipt.json": "a92b91d65455cc8b077e9f1b66fb39883931bb75e6758c00f881e6d6b901aba4",
+    "build/standard.receipt.json": "85a14a3d8a82750ad86cdd15c53ab20977329b78b09d8d6e7bb28d789bec1b0f",
+    "report.json": "538e79970d76db0d98b3c64e00436beb82229680fcc6bccaa4aa80a704180376",
+    "runs/semantics-dash/guest_qemu.log": "bb79d3e1bb93dd78e26952108e711264cf7f4abd91ae69655bddf948b7825052",
+    "runs/semantics-dash/proposal.json": "92845afe90b0a74df02e41857f2ce520fb48a7d2cf527866287419be3d975cdd",
+    "runs/semantics-dash/report.json": "a4812b7fccc6d3e4bfdabe8db5db2792a39e5b27bc7c5353341fa74aeb026c01",
+    "runs/semantics-dash/semantic-authorized-local-result.png": "55ab417cd646108360eb94522444d6c175070576f8c81b41ef3d4144312e0c71",
+    "runs/semantics-dash/serial.log": "4c9dd9fe0ad7242c9cb728417443f5e5bdc87301a969ad2cadc500134d8b017c",
+    "runs/semantics-dash/snapshot.json": "23dafd0cf158feb17486cf9946ac286faacd713009d30a7a4b52c94330f8f6da",
+    "runs/semantics-xsh/guest_qemu.log": "8c4ed8302823cb2e8bf89da5758040a7fa7df2b24efcee5bbaf3687295c6d403",
+    "runs/semantics-xsh/proposal.json": "92845afe90b0a74df02e41857f2ce520fb48a7d2cf527866287419be3d975cdd",
+    "runs/semantics-xsh/report.json": "d18e1bb39469144c365233c4be9c395f62e88818a5af479431b3d40a5fc3ccd6",
+    "runs/semantics-xsh/semantic-authorized-local-result.png": "55ab417cd646108360eb94522444d6c175070576f8c81b41ef3d4144312e0c71",
+    "runs/semantics-xsh/serial.log": "c390b6be1e28249286a7d9c81c22ca3d42aeae02eee49db8da8cbfc71b366128",
+    "runs/semantics-xsh/snapshot.json": "4029ff78b54d36f57e3c572eba0195f31eda8b58d2b8a8327a329224d8a54b74",
+    "runs/ssg-diff/guest_qemu.log": "12ac8c595530bf533abcba0a003d846a59e2db9281c1e4e3de423904fe7232eb",
+    "runs/ssg-diff/report.json": "febfbfa7749ea9422b3571f4efe1f2f5234cf0cef0065abcdb4c4f44bab1213c",
+    "runs/standard-controls/guest_qemu.log": "b5a5cb121026f184197b56f7d4821bdf56506f8b685b75043ec3ee0c543c6cff",
+    "runs/standard-controls/report.json": "1f7b1caadc148944c82467682747b01e2ba75fb15e0342620353f560c3cc699d",
+    "runs/standard-controls/scanout.png": "279b1d0902dfb488da58fad2824e4257a86435244c966a2cba9692cdebe620e4"
+  }
+}

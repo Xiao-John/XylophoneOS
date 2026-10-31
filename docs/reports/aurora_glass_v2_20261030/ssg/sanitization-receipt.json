@@ -1,0 +1,60 @@
+{
+  "status": "SANITIZED_WORKTREE",
+  "scope": "nine historical JSON reports; originals retained locally; old commits remain in history",
+  "files": [
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/ssg/browser-regression-interactive/report.json",
+      "original_sha256": "3eba3423cd1b15db0afc35b7464ca26122ed405286261ba318a198d44ccb53f1",
+      "sanitized_sha256": "4a72b0a45453a36e4fda402eae3941727f6e48d0a3dec455dee17d132fcbf070",
+      "transformation": "host-specific paths replaced with generic local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/ssg/browser-regression-lifecycle/report.json",
+      "original_sha256": "be566290b7a5bb489e01c441749f053c05fa394b4556176dba85228775ad3189",
+      "sanitized_sha256": "f7cd05b47dcc3b88f33ba65932f341afd31b1caa049394ce194b8f79b2930215",
+      "transformation": "host-specific paths replaced with generic local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/ssg/browser-regression-negative/report.json",
+      "original_sha256": "a2bf642552a0373244966ff2523afdac6d6dfd5bd246bbccf06040b00707a366",
+      "sanitized_sha256": "9c2667528b89d0a3bd618c242ee2797ee36daa5f93f174b96f609f203559797f",
+      "transformation": "host-specific paths replaced with generic local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/ssg/browser/report.json",
+      "original_sha256": "97e1133ffa5ec2ee09cbf2f7f28346fad5193bc57490fe12a4c1238bcd753533",
+      "sanitized_sha256": "c5e352324d3497ba561c938dde73d7ddacddbe5eb7baef5793f00b93491ca8a8",
+      "transformation": "host-specific paths replaced with generic local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/ssg/dash/report.json",
+      "original_sha256": "116d6eba0289d861cd1cf7542c44d7e2d592898f53294d1851950dbb02b90ef9",
+      "sanitized_sha256": "777a5ff9c1ad6f596562266923f0dd769e430d22c84ad060c0c5a8bbfe235c74",
+      "transformation": "host-specific paths replaced with generic local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/ssg/notes-regression-interactive/report.json",
+      "original_sha256": "7513c7c350000f094398f4f1a34cce77362c22401b74333f2ffcd6af1ae3e663",
+      "sanitized_sha256": "95555c53cd068fbca3c485cbf09fc8080d93f10eaa6be964b9f0e0531b50e3c0",
+      "transformation": "host-specific paths replaced with generic local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/ssg/notes-regression-lifecycle/report.json",
+      "original_sha256": "7443fe1e9f2d24add867cb80449c9020ab02db75ea94077ce7e5f95a11854ddc",
+      "sanitized_sha256": "cfdeb3dce48ce209fa67dbbaaac122e101f374e8503d55c805bbe9cacf8db733",
+      "transformation": "host-specific paths replaced with generic local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/ssg/notes-regression-no-vga/report.json",
+      "original_sha256": "1e76559f9010a5cc465b68c97a889283775aed1914644b07928cf259863ba18e",
+      "sanitized_sha256": "95fe2c0c8b1ec54387751aa14b3639d5a8e6c446e919dd881283c463acd07759",
+      "transformation": "host-specific paths replaced with generic local-path templates"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/ssg/notes/report.json",
+      "original_sha256": "5dbde3ee5b4a01a1a5536da1426a8585e25b74f383ff1c38418f1397d79528c6",
+      "sanitized_sha256": "53b629afc8c158cac25d4760f4a213f45a4e8275d4bf6acef21889ea9166712b",
+      "transformation": "host-specific paths replaced with generic local-path templates"
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "c30_rename_commit": "a3ae0f0",
+  "fix_commit": "(this commit)",
+  "items": [
+    {
+      "id": 1,
+      "issue": "trailing whitespace in two frozen serial logs",
+      "fix": ".gitattributes whitespace=-blank-at-eol waiver for the two files; frozen bytes untouched",
+      "files": [
+        ".gitattributes"
+      ],
+      "behavior_change": false
+    },
+    {
+      "id": 2,
+      "issue": "stale-generation diff branch untested",
+      "fix": "add stale_generation_since_resets case (previous exists, since != previous.sceneVersion)",
+      "files": [
+        "tests/fixtures/qt6/ssg_diff_integrity.cpp"
+      ],
+      "behavior_change": false
+    },
+    {
+      "id": 3,
+      "issue": "now_ns() published ms resolution as observedMonotonicNs",
+      "fix": "ns-resolution via static base timer nsecsElapsed(); origin is process-local first call instead of system reference",
+      "files": [
+        "src/ports/qt6/aurora/ssg.cpp"
+      ],
+      "behavior_change": true
+    },
+    {
+      "id": 4,
+      "issue": "custom button text palette overridden",
+      "fix": "skip ButtonText override when widget has WA_SetPalette (explicit custom palette)",
+      "files": [
+        "src/ports/qt6/aurora/style.cpp"
+      ],
+      "behavior_change": true
+    },
+    {
+      "id": 5,
+      "issue": "0111 title ambiguity",
+      "fix": "title now says (author re-verification)",
+      "files": [
+        "docs/work_log/0111_aurora_sdk_maintainer_review.md"
+      ],
+      "behavior_change": false
+    },
+    {
+      "id": 8,
+      "issue": "build_aurora.py shutil.which None -> TypeError",
+      "fix": "explicit SystemExit when x86_64-elf-g++/x86_64-elf-ar missing",
+      "files": [
+        "src/ports/qt6/build_aurora.py"
+      ],
+      "behavior_change": false
+    }
+  ]
+}

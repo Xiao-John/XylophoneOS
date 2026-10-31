@@ -12,8 +12,8 @@ aurora::initialize(app);
 `initialize()` selects the QProxyStyle, explicit active/inactive/disabled palette
 and bundled DejaVu family. Standard QPushButton, QLineEdit, QPlainTextEdit and
 QLabel use that theme. The actual XOS QPA/font resource must also be linked.
-`aurora.hpp` additionally provides Canvas, Panel, Button and Brand components;
-Canvas/Panel cache their own environment layers, and Button adds limited hover
+`aurora.hpp` additionally provides canvas, panel, button and brand components;
+canvas/panel cache their own environment layers, and button adds limited hover
 transitions and a measured slow-paint fallback. The software pointer belongs to
 that application canvas, not a system compositor.
 
@@ -43,12 +43,12 @@ composition. Geometry and premeasurement targets: `docs/design/aurora_glass.md`.
 
 `theme.hpp` adds versioned semantic tokens, Midnight/Daybreak preferences,
 contrast/transparency/motion policies, four quality levels and JSON/scoped CSS
-exports. `desktop.hpp` provides application-local DesktopSurface/GlassPanel,
+exports. `desktop.hpp` provides application-local desktop_surface/glass_panel,
 with bounded cached separable blur and an opaque Safe fallback. Disabling glass
 selects ordinary native controls. Existing E17 helpers remain compatible but are
 not silently declared globally migrated.
 
-`ssg.hpp` provides bounded, opt-in QtScene snapshots and SceneStream diffs;
+`ssg.hpp` provides bounded, opt-in qt_scene snapshots and scene_stream diffs;
 `semantics.hpp` is the independent local Intent/grant test adapter. All calls
 must run on the GUI thread. Cross-thread proposals are data to be marshalled by
 the trusted host; these classes are not a thread-safe or cross-process service.

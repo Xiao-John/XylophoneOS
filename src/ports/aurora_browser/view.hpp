@@ -23,7 +23,7 @@ class HtmlView final:public QAbstractScrollArea,public litehtml::document_contai
     QString page,caption;
     int imports=0,fonts=0,clipDepth=0;
     bool layoutBusy=false;
-    aurora::SceneStream scene;
+    aurora::scene_stream scene;
     bool scene_allowed=false;
     QMap<quintptr,quint64> scene_ids;
     quint64 next_scene_id=1;

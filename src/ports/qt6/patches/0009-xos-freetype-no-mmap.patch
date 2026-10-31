@@ -1,0 +1,85 @@
+--- a/src/3rdparty/freetype/builds/unix/ftsystem.c
++++ b/src/3rdparty/freetype/builds/unix/ftsystem.c
+@@ -31,33 +31,8 @@
+ #include <unistd.h>
+ #endif
+ 
+-#include <sys/mman.h>
+-#ifndef MAP_FILE
+-#define MAP_FILE  0x00
+-#endif
+ 
+-#ifdef MUNMAP_USES_VOIDP
+-#define MUNMAP_ARG_CAST  void *
+-#else
+-#define MUNMAP_ARG_CAST  char *
+-#endif
+ 
+-#ifdef NEED_MUNMAP_DECL
+-
+-#ifdef __cplusplus
+-  extern "C"
+-#else
+-  extern
+-#endif
+-  int
+-  munmap( char*  addr,
+-          int    len );
+-
+-#define MUNMAP_ARG_CAST  char *
+-
+-#endif /* NEED_DECLARATION_MUNMAP */
+-
+-
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ 
+@@ -196,30 +171,8 @@
+   /* We use the macro STREAM_FILE for convenience to extract the       */
+   /* system-specific stream handle from a given FreeType stream object */
+ #define STREAM_FILE( stream )  ( (FILE*)stream->descriptor.pointer )
+-
+-
+-  /**************************************************************************
+-   *
+-   * @Function:
+-   *   ft_close_stream_by_munmap
+-   *
+-   * @Description:
+-   *   The function to close a stream which is opened by mmap.
+-   *
+-   * @Input:
+-   *   stream :: A pointer to the stream object.
+-   */
+-  FT_CALLBACK_DEF( void )
+-  ft_close_stream_by_munmap( FT_Stream  stream )
+-  {
+-    munmap( (MUNMAP_ARG_CAST)stream->descriptor.pointer, stream->size );
+ 
+-    stream->descriptor.pointer = NULL;
+-    stream->size               = 0;
+-    stream->base               = NULL;
+-  }
+ 
+-
+   /**************************************************************************
+    *
+    * @Function:
+@@ -307,16 +260,7 @@
+     /* This cast potentially truncates a 64bit to 32bit! */
+     stream->size = (unsigned long)stat_buf.st_size;
+     stream->pos  = 0;
+-    stream->base = (unsigned char *)mmap( NULL,
+-                                          stream->size,
+-                                          PROT_READ,
+-                                          MAP_FILE | MAP_PRIVATE,
+-                                          file,
+-                                          0 );
+-
+-    if ( stream->base != MAP_FAILED )
+-      stream->close = ft_close_stream_by_munmap;
+-    else
++    if ( 1 )
+     {
+       ssize_t  total_read_count;
+ 

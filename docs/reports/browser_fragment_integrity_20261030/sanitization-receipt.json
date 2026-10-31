@@ -1,0 +1,42 @@
+{
+  "status": "SANITIZED_WORKTREE",
+  "scope": "six historical evidence files; originals retained locally; old commits remain in history",
+  "files": [
+    {
+      "path": "docs/reports/browser_fragment_integrity_20261030/browser-build.log.gz",
+      "original_sha256": "efadbc320ec3429ecaf3fa06bbba3b4c39861a7e2782fe0b86ae93173b90c092",
+      "sanitized_sha256": "f13c3389b3758ac74bc04417bf8634d01fffcae2f86692c76a92549920fc1158",
+      "transformation": "private paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/browser_fragment_integrity_20261030/browser.receipt.json.gz",
+      "original_sha256": "a81e7f11eb8560efddc209bb49d3fac2ee5bb26c05a09113c75abf412d8b5682",
+      "sanitized_sha256": "79e3e8a0ccd5d3a0af770d1a1a17d2ae11e6f37dcb9f0c54378b30c9964698d2",
+      "transformation": "private paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/browser_fragment_integrity_20261030/browser/report.json",
+      "original_sha256": "1bf10d30cd0c64360dba3e9c4609d2513fba2963ece13b794ab68c28c50aec9c",
+      "sanitized_sha256": "0a71c5e5bff066ae0a8d4277db464514e3f42485c7041699dc8052bfa247927c",
+      "transformation": "private paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/browser_fragment_integrity_20261030/geometry-build.log.gz",
+      "original_sha256": "ba8e3d77c0ff2f6f2e5bd579b48423ef227a4559e5e52021b774aea98b6de2c8",
+      "sanitized_sha256": "4d9018a0e0bf0111f044302efe47a71bad968aa46d7b9a1ed17d249c0c89e4ee",
+      "transformation": "private paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/browser_fragment_integrity_20261030/geometry.receipt.json.gz",
+      "original_sha256": "ec0a86a71a055c8d40525275623bdf0701be09cbad1e728f65ad51c1c4947e1a",
+      "sanitized_sha256": "9f372bf97dcd6b5ac960bca25e6e35e1baaf218a4b548e08f2d2ae79efd31f4e",
+      "transformation": "private paths replaced by distinct opaque local-path templates"
+    },
+    {
+      "path": "docs/reports/browser_fragment_integrity_20261030/geometry/report.json",
+      "original_sha256": "6453564cce9c4adf3a42aa2a37f395cde5052ef9ab63087641fd70cc70d843b4",
+      "sanitized_sha256": "df84ad2d95354e565f2aac496e9e7586a60ef72cf6e43daaf02c0de2fc0f36d3",
+      "transformation": "private paths replaced by distinct opaque local-path templates"
+    }
+  ]
+}

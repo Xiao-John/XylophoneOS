@@ -61,18 +61,23 @@ try:
   disk=Path(tmp)/'work.img';create_fat32(disk,512)
   for name in ('/bin','/web'):transfer(disk,'mkdir',name)
   for name,f in payloads.items():transfer(disk,'import','/bin/'+name+'.elf',f)
+  if a.dash:
+   transfer(disk,'import','/bin/dash',a.dash);report['dash_sha256']=sha(a.dash)
+   if a.case=='semantic':
+    script=Path(tmp)/'semantic-dash.sh';script.write_text('/bin/semantics.elf\necho SEMANTIC_DASH_STATUS:$?\n');transfer(disk,'import','/semantic-dash.sh',script)
   for f in (ROOT/'src/ports/aurora_browser/pages').iterdir():transfer(disk,'import','/web/'+f.name,f)
   fixtures={'ssg.txt':('Visible note title\n'+''.join(f'Line {i:03d}: native document semantics.\n' for i in range(80))).encode(),
    'ssg.html':b'<html><head><title>SSG fixture</title><style>body { margin:0; padding:16px; background:#f4f7fc; color:#23344e; font-size:16px; } .hidden { display:none; } .spacer { height:700px; }</style></head><body><h1>Visible Alpha</h1><a href="start.html">Native link target</a><div class="hidden"><p>HIDDEN_SECRET_FIXTURE</p></div><div class="spacer"></div><p>Below viewport omega</p><a href="garden.html">Bottom link</a></body></html>',
    'unsupported.html':b'<html><body><canvas>not a semantic model</canvas></body></html>'}
   for name,data in fixtures.items():f=Path(tmp)/name;f.write_bytes(data);transfer(disk,'import',('/web/' if name.endswith('.html') else '/')+name,f)
-  if a.dash:
+  if a.dash and a.case=='dash':
    transfer(disk,'import','/bin/dash',a.dash)
    script=Path(tmp)/'check.sh';script.write_text('/bin/desktop.elf\necho DESKTOP_DASH_STATUS:$?\n/bin/semantics.elf\necho SEMANTIC_DASH_STATUS:$?\n/bin/gap.elf\necho GAP_DASH_STATUS:$?\n/bin/session.elf\necho SESSION_DASH_STATUS:$?\n')
    transfer(disk,'import','/check.sh',script)
   g=Guest(a.image.resolve(),str(out.relative_to(ROOT/'build'))+'/guest',work_disk=disk);report['qemu_command']=g.command
   g.expect(b'xos64> ',timeout=45);send_bytes(g,b'run\r');g.expect_supervisor(trace=True);pump(g,1.3);base=resources(g)
   service_result=command(g,'display-start',b'result=0');service=int(re.search(rb'\[display-start\] pid=(\d+)',service_result)[1]);g.expect(b'[display-service] ready');active=resources(g)
+  report['resources']={'idle_baseline':base,'display_active':active}
   def launch(name,args='',ready=None):
    b=len(g.output);send_bytes(g,f'exec-file /bin/{name}.elf {args}\r'.encode());g.expect(ready or (name.upper()+'_READY').encode(),start=b,timeout=90);pump(g,.4);return b
   def finish(b):stroke('esc');g.expect(b'kind=exited code=0',start=b,timeout=40);g.expect_supervisor(start=b);assert resources(g)==active
@@ -95,21 +100,32 @@ try:
    assert next(x for x in report['runs'] if x['mode']=='budget')['cache_bytes']==0
    mark('budget_denial_safe_fallback_no_cache_rebuild_on_typing')
   elif a.case=='semantic':
-   b=launch('semantics',ready=b'SEMANTIC_READY');data=bytes(g.output)[b:];assert b'=FAIL' not in data
-   checks=re.findall(rb'SEMANTIC_CHECK ([^\r\n]+)=PASS',data);assert len(checks)>=19
+   b=len(g.output);send_bytes(g,b'exec-file /bin/semantics.elf\r')
+   marker=g.expect_any((b'SEMANTIC_READY',b'kind=exited code=1',b'kind=faulted',b'kind=killed'),start=b,timeout=90)
+   if marker!=b'SEMANTIC_READY':raise AssertionError('semantic guest failed before readiness: '+repr(bytes(g.output)[b:]))
+   pump(g,.4);data=bytes(g.output)[b:]
+   native_checks=re.findall(rb'SEMANTIC_CHECK ([^=\r\n]+)=(PASS|FAIL)',data)
+   assert len(native_checks)>=19 and all(status==b'PASS' for _,status in native_checks)
    snapshot_data=latest(b'SSG_AGENT_SNAPSHOT',b);(out/'snapshot.json').write_text(json.dumps(snapshot_data,indent=2)+'\n')
    mock=subprocess.run([sys.executable,ROOT/'tests/mock_semantic_agent.py'],input=json.dumps(snapshot_data),text=True,capture_output=True,check=True)
-   proposal=mock.stdout.strip();(out/'proposal.json').write_text(proposal+'\n');mark('independent_mock_selects_real_ssg_target',native_checks=len(checks))
+   proposal=mock.stdout.strip();(out/'proposal.json').write_text(proposal+'\n');mark('independent_mock_selects_real_ssg_target',native_checks=len(native_checks))
+   report['native_checks']=[{'name':name.decode(),'status':status.decode()} for name,status in native_checks]
    click_xy(*point(rb'SEMANTIC_POINT name=proposal xy=(\d+),(\d+)'));type_text(proposal)
    sb=len(g.output);click_xy(*point(rb'SEMANTIC_POINT name=authorize xy=(\d+),(\d+)'))
    g.expect(b'SEMANTIC_EXECUTE VERIFIED_LOCAL value=mock-agent-verified replay=DENIED',start=sb,timeout=30);g.expect(b'SEMANTIC_WITHOUT_GRANT DENIED',start=sb)
    result=latest(b'SSG_AGENT_RESULT',sb);assert any(n.get('nativeName')=='draft-title' and n.get('text')=='mock-agent-verified' for n in result['nodes'])
-   shot('semantic-authorized-local-result');mark('query_propose_explicit_fixture_authorize_execute_verify');finish(b);mark('semantic_app_exact_resource_return')
+   shot('semantic-authorized-local-result');mark('query_propose_explicit_fixture_authorize_execute_verify');finish(b);report['resources']['after_xsh_semantics']=resources(g);mark('semantic_app_exact_resource_return')
+   if a.dash:
+    start=len(g.output);send_bytes(g,b'exec-driver /bin/dash /semantic-dash.sh\r');g.expect(b'SEMANTIC_READY',start=start,timeout=90);pump(g,.4)
+    data=bytes(g.output)[start:];dash_checks=re.findall(rb'SEMANTIC_CHECK ([^\r\n]+)=PASS',data)
+    assert len(dash_checks)>=19 and b'=FAIL' not in data
+    stroke('esc');g.expect(b'kind=exited code=0',start=start,timeout=40);g.expect_supervisor(start=start);assert resources(g)==active;report['resources']['after_dash_semantics']=resources(g)
+    report['dash_checks']=[name.decode() for name in dash_checks];mark('dash_semantics_lifecycle_and_resource_return',native_checks=len(dash_checks))
    restart=len(g.output);send_bytes(g,b'spawn-file /bin/semantics.elf\r');g.expect(b'SEMANTIC_READY',start=restart,timeout=90);pump(g,.4)
    pid=int(re.search(rb'\[loader\] started pid=(\d+)',bytes(g.output)[restart:])[1])
    click_xy(*point(rb'SEMANTIC_POINT name=proposal xy=(\d+),(\d+)'));type_text(proposal)
    sb=len(g.output);click_xy(*point(rb'SEMANTIC_POINT name=authorize xy=(\d+),(\d+)'));g.expect(b'SEMANTIC_REJECT WRONG_SCOPE',start=sb)
-   command(g,f'kill {pid}',b'kill: accepted');command(g,f'wait {pid}',b'kind=killed');assert resources(g)==active
+   command(g,f'kill {pid}',b'kill: accepted');command(g,f'wait {pid}',b'kind=killed');assert resources(g)==active;report['resources']['after_old_process_test']=resources(g)
    mark('old_process_reference_refused_and_killed_ssg_resources_restored')
    projection=[{k:n[k] for k in ('role','name','enabled') if k in n} for n in snapshot_data['nodes']]
    report['coverage_comparison']={'ssg_json_bytes':len(json.dumps(snapshot_data).encode()),'ax_style_projection_bytes':len(json.dumps(projection).encode()),'ax_style_scope':'projection from Qt metadata, not a qualified XOS AX service','mock_target_success':'1/1 controlled target','screenshot_ocr':'NOT_RUN','cross_process_agent_execution':'BLOCKED / NOT_RUN'}
@@ -151,7 +167,7 @@ try:
   else:
    assert a.dash
    b=len(g.output);send_bytes(g,b'exec-driver /bin/dash /check.sh\r');g.expect(b'DESKTOP_READY',start=b,timeout=90);chord('ctrl','q');g.expect(b'DESKTOP_DASH_STATUS:0',start=b);g.expect(b'SEMANTIC_READY',start=b,timeout=90);stroke('esc');g.expect(b'SEMANTIC_DASH_STATUS:0',start=b);g.expect(b'GAP_DASH_STATUS:0',start=b);g.expect(b'SESSION_START_FAILED error=-1',start=b);g.expect(b'SESSION_DASH_STATUS:1',start=b);g.expect_supervisor(start=b,timeout=40);assert resources(g)==active;mark('dash_real_desktop_and_semantic_elf_lifecycle')
-  command(g,'exec gfxdemo stop',b'kind=exited code=0');command(g,f'wait {service}',b'kind=exited code=0');assert resources(g)==base;command(g,'sync',b'[files] sync=ok');mark('serial_file_service_and_resource_baseline');report['status']='PASSED'
+  command(g,'exec gfxdemo stop',b'kind=exited code=0');command(g,f'wait {service}',b'kind=exited code=0');assert resources(g)==base;report['resources']['after_cleanup']=resources(g);command(g,'sync',b'[files] sync=ok');mark('serial_file_service_and_resource_baseline');report['status']='PASSED'
 except Exception as error:report['error']=repr(error);raise
 finally:
  if g:(out/'serial.log').write_bytes(g.output);g.close()

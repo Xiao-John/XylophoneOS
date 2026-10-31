@@ -1,5 +1,8 @@
 # dash后续路线
 
+普通命令与创建权限继承的下一阶段见[双Shell启动优化计划](shell_launch.md)，尚未实现；
+该计划同时覆盖xsh、SDK和进程机制，不以增加工具名称特例解决。
+
 2026-10-27。dash0.5.13.5的A/B/C受限gate已有证据，xsh保留默认入口。
 当前范围见[Shell实现](../implementation/shell.md)，证据见[主题摘要](../history/shell.md)。
 

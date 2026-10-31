@@ -61,7 +61,9 @@ void set_preferences(const Preferences &value) {
     for (const char *name : {"QWidget","QLabel","QPlainTextEdit","QLineEdit","QPushButton"})
         qApp->setPalette(p,name);
     QFont f(QStringLiteral("DejaVu Sans")); f.setPixelSize(t.font_body); qApp->setFont(f);
-    for (auto *w : QApplication::allWidgets()) { w->setPalette(p); w->update(); }
+    // QApplication propagates its palette to widgets that inherit it. Do not
+    // overwrite a third-party widget's explicitly chosen palette.
+    for (auto *w : QApplication::allWidgets()) w->update();
     std::printf("AURORA_THEME v=2 scheme=%d contrast=%d opaque=%d motion=%d\n",
         int(current.scheme),current.high_contrast,current.reduce_transparency,current.reduce_motion);
 }

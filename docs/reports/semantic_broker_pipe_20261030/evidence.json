@@ -1,0 +1,16 @@
+{
+  "base": "3377dbf35bdb43d850c9a2b8e8076da3be146f3d",
+  "inputs_sha256": {
+    "tests/fixtures/semantic_pipe_probe.cpp": "1fa59a60c9bb5921d1f589764ad319659bdf4d7ac70c130a4658f6850af403fa",
+    "tests/semantic_pipe_guest.py": "c9b25e2f47d00a039d2324889e4e9ad76a7c8e186b1113edd13c51201e8b1b49",
+    "../XylophoneOS-qt6-e17/build/qt_e17/sdk/manifest.json": "24dcc3ba938013c852a12f386ea2f7e16ebcec7cb4bfaff477794530c5d0e4b1",
+    "../XylophoneOS-qt6-e17/build/qt_e17/sdk/compile.py": "46c1de050d7ae48fab63a36b84144a2997102f3fc08897bfe798cad44302815b"
+  },
+  "evidence_sha256": {
+    "README.md": "94498885b11d23c12fb1060eddd3e4d5ad024343cc66d1e4dc8df5384601df97",
+    "build.log.gz": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837",
+    "guest_qemu.log.gz": "20f59231194364b2a55a56cbbb3923ca15c7c06486ac219d67152a9494079178",
+    "guest_serial.log.gz": "2d9046c1483b4020e365b87db982371870c2c6add95489fb9fd092bdc45be6d2",
+    "report.json": "aefdd8f6832c97a6282cd0673a0e1fa6adf72d9966be8fb91e471d5eddf17cb2"
+  }
+}

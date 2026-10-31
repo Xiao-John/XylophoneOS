@@ -115,7 +115,7 @@ The trusted host creates a move-only, one-shot Grant bound to the exact proposal
 target/state revision, local authorization epoch and monotonic expiry. No grant
 is serialized to the model. Execute without grant, changed proposal, revoked,
 expired, reused or dead/stale target refuses. Current local set_text verifies the
-real resulting QLineEdit value. Button dispatch returns UNKNOWN because a signal
+real resulting QLineEdit value. button dispatch returns UNKNOWN because a signal
 does not prove an external effect; that grant is consumed and cannot be replayed.
 The test button causes no real external transaction. The host authorization call
 is an adapter seam, not an implementation of user identity or a production policy

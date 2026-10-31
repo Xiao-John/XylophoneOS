@@ -57,15 +57,15 @@ Neither provides WebView transport or modifies any web document's CSS.
 
 | Capability goal | Current reusable implementation / boundary |
 |---|---|
-| Window / panel / toolbar / sidebar | desktop_surface + glass_panel + Qt layouts; one native top-level Surface |
-| Button / field / editor / scroll view | Standard Widgets + Aurora QProxyStyle/QPalette; real editing/focus/selection/scrolling |
+| window / panel / toolbar / sidebar | desktop_surface + glass_panel + Qt layouts; one native top-level Surface |
+| button / field / editor / scroll view | Standard Widgets + Aurora QProxyStyle/QPalette; real editing/focus/selection/scrolling |
 | Tabs / dialog / notification | Standard child controls and application-local panels; no system notification/dialog broker |
 | Menu | Keyboard-accessible in-surface child controls; independent native popup windows remain unsupported |
 | Theme settings | One process and session parent retain preferences; cross-process live broker is PROPOSED, not implemented |
 | Third-party integration | Optional opt-in; independent Studio links the archive without copying its source |
 | Legacy apps | No opt-in means no global style installation; existing QPA/v1 lifecycle remains |
 
-Legacy E17 Canvas/Panel/Button are application-specific compatibility helpers with
+Legacy E17 canvas/panel/button are application-specific compatibility helpers with
 their original dark artwork; they are not silently declared v2/global-theme migrated.
 Notes/Browser retain those shells this round, with affected functional regressions
 checked separately. Full G3 visual migration and a common settings broker remain work.
@@ -123,6 +123,6 @@ bounded rail/Dock geometry and content insets. Larger-mode and responsive rules
 exist in layout code but need their own actual guest qualification. Check real
 scanout, focus, hover, disabled state, legibility, consistent concentric geometry,
 text clipping, menus and reduced modes. User review decides aesthetic acceptance;
-programmatic assertions establish functional facts only. Screen readers/IME/full
+programmatic assertions establish functional facts only. screen readers/IME/full
 Unicode, global theme negotiation, windows between independent apps, file chooser,
 task switcher and global notifications are not implied by this prototype.

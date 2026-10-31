@@ -20,7 +20,7 @@ from work_disk import transfer
 parser = argparse.ArgumentParser()
 for name in ('image', 'payload', 'output'):
     parser.add_argument('--' + name, type=Path, required=True)
-parser.add_argument('--expected-checks', type=int, default=12)
+parser.add_argument('--expected-checks', type=int, default=13)
 parser.add_argument('--dash', type=Path)
 args = parser.parse_args()
 out = args.output.resolve()

@@ -3,6 +3,8 @@ src/ports/qt6/licenses/ZLIB-LICENSE whitespace=-blank-at-eof
 src/ports/qt6/licenses/Zlib.txt whitespace=-blank-at-eof
 # Unified patch context lines require a leading space, including blank context.
 src/ports/qt6/patches/*.patch whitespace=-blank-at-eol
+# Freeze every modern-app evidence byte; evidence_index.json receipts hash all 138 files.
+docs/reports/modern_apps_20261029/** -text
 # Freeze compatibility CSV bytes exactly; csv.writer emits CRLF and receipts hash it.
 docs/reports/modern_apps_20261029/*_matrix.csv -text whitespace=cr-at-eol
 # Preserve the dependency's original license whitespace verbatim.

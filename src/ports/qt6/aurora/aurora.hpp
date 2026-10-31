@@ -36,7 +36,7 @@ public:explicit pointer(QWidget *p):QWidget(p){setFixedSize(20,26);setAttribute(
 };
 class canvas : public QWidget {
     QImage backdrop,soft;
-    pointer *pointer;
+    aurora::pointer *pointer;
     void cache() {
         QElapsedTimer timer;timer.start();
         backdrop=QImage(size(),QImage::Format_RGB32);backdrop.fill(QColor(9,18,38));
@@ -78,13 +78,13 @@ protected:
         p.setPen(QColor(159,192,220,35));p.drawLine(202,38,202,height()-38);
     }
 public:
-    canvas():pointer(new pointer(this)){qApp->installEventFilter(this);setMouseTracking(true);}
+    canvas():pointer(new aurora::pointer(this)){qApp->installEventFilter(this);setMouseTracking(true);}
     QImage glass(const QWidget *w) const {
         return soft.copy(QRect(w->mapTo(this,QPoint()),w->size()));
     }
 };
 class panel : public QWidget {
-    canvas *canvas;
+    aurora::canvas *canvas;
     QImage cached;
     qreal radius;
     bool reading;
@@ -102,7 +102,7 @@ protected:
         QLinearGradient edge(0,0,width(),height());edge.setColorAt(0,QColor(217,242,255,100));edge.setColorAt(.45,QColor(176,194,237,30));edge.setColorAt(1,QColor(122,215,214,85));p.setPen(QPen(edge,1));p.drawPath(path);
     }
 public:
-    panel(canvas *c,qreal r,bool content=false):QWidget(c),canvas(c),radius(r),reading(content){setAttribute(Qt::WA_StyledBackground,false);}
+    panel(aurora::canvas *c,qreal r,bool content=false):QWidget(c),canvas(c),radius(r),reading(content){setAttribute(Qt::WA_StyledBackground,false);}
 };
 class button final : public QPushButton {
     QTimer transition;

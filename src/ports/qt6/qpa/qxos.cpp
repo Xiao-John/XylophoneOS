@@ -127,7 +127,7 @@ class window final : public QPlatformWindow {
     Qt::MouseButtons mouseButtons;
     QPointF position;
     void deliver(const xos::display_event &e) {
-        Q_ASSERT(QThread::currentThread()==window()->thread());
+        Q_ASSERT(QThread::currentThread()==QPlatformWindow::window()->thread());
         if(stopping.load() || !visible) return;
         if(e.sequence<=sequence) qFatal("XOS QPA: input sequence regression");
         sequence=e.sequence;
@@ -141,12 +141,12 @@ class window final : public QPlatformWindow {
                 if(e.kind==1) held[e.code]=key;
                 else { if(held[e.code].key) key=held[e.code]; held[e.code]={}; }
             }
-            if(key.key) WSI::handleKeyEvent(window(),ulong(e.monotonic_ns/1000000),
+            if(key.key) WSI::handleKeyEvent(QPlatformWindow::window(),ulong(e.monotonic_ns/1000000),
                 e.kind==1?QEvent::KeyPress:QEvent::KeyRelease,key.key,mods,key.text);
         } else if(e.kind==3 || e.kind==4) {
             if(e.kind==4) {
                 for(auto &key:held) {
-                    if(key.key) WSI::handleKeyEvent(window(),QEvent::KeyRelease,key.key,Qt::NoModifier);
+                    if(key.key) WSI::handleKeyEvent(QPlatformWindow::window(),QEvent::KeyRelease,key.key,Qt::NoModifier);
                     key={};
                 }
             }
@@ -155,11 +155,11 @@ class window final : public QPlatformWindow {
             for(Qt::MouseButton b : {Qt::LeftButton,Qt::RightButton,Qt::MiddleButton}) {
                 if(bool(mouseButtons&b)!=bool(next&b)) {
                     if(next&b) mouseButtons|=b; else mouseButtons&=~b;
-                    WSI::handleMouseEvent(window(),ulong(e.monotonic_ns/1000000),position,position,mouseButtons,b,
+                    WSI::handleMouseEvent(QPlatformWindow::window(),ulong(e.monotonic_ns/1000000),position,position,mouseButtons,b,
                         (next&b)?QEvent::MouseButtonPress:QEvent::MouseButtonRelease,mods);
                 }
             }
-            WSI::handleMouseEvent(window(),ulong(e.monotonic_ns/1000000),position,position,mouseButtons,Qt::NoButton,QEvent::MouseMove,mods);
+            WSI::handleMouseEvent(QPlatformWindow::window(),ulong(e.monotonic_ns/1000000),position,position,mouseButtons,Qt::NoButton,QEvent::MouseMove,mods);
         }
     }
     void inputLoop() {
@@ -216,15 +216,15 @@ public:
     void setGeometry(const QRect &) override {
         const auto full=screen()->geometry();
         QPlatformWindow::setGeometry(full);
-        WSI::handleGeometryChange(window(),full);
+        WSI::handleGeometryChange(QPlatformWindow::window(),full);
     }
     void setVisible(bool v) override {
         visible=v;
-        WSI::handleFocusWindowChanged(v?window():nullptr);
-        WSI::handleExposeEvent(window(),v?QRegion(geometry()):QRegion());
+        WSI::handleFocusWindowChanged(v?QPlatformWindow::window():nullptr);
+        WSI::handleExposeEvent(QPlatformWindow::window(),v?QRegion(geometry()):QRegion());
     }
     bool isExposed() const override { return visible; }
-    void requestActivateWindow() override { if(visible) WSI::handleFocusWindowChanged(window()); }
+    void requestActivateWindow() override { if(visible) WSI::handleFocusWindowChanged(QPlatformWindow::window()); }
     xos::i64 present(xos::display_present p) {
         QMutexLocker lock(&transaction);
         return connected?client.present(p):xos::display_unavailable;
@@ -246,7 +246,7 @@ public:
         std::printf("[qpa-flush] same=%d offset=%d,%d rects=%d\n",
             w==window(),offset.x(),offset.y(),region.rectCount());
         if(!offset.isNull() || w!=window()) qFatal("XOS QPA: child/offset flush unsupported");
-        auto *platform=static_cast<window*>(w->handle());
+        auto *platform=static_cast<::window*>(w->handle());
         const QRegion clipped=region.intersected(image.rect());
         for(const QRect &r:clipped) {
             const auto begin=xos::thread::clock();

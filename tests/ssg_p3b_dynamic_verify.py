@@ -6,7 +6,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
-from ssg_p3b_verify import frames, require, check_source_metadata
+from ssg_p3b_verify import frames, require, check_source_metadata, check_wiring
 from ssg_browser_structure import decode_capture, validate_oracle, compare_structure
 
 
@@ -116,6 +116,7 @@ def main():
     sources = [{s['slot']: s for s in agg['sources']} for agg in aggs]
     for sample in sources:
         for source in sample.values(): check_source_metadata(source)
+    check_wiring(serial, report, sources[0])
     require(aggs[0]['status'] == 'AGGREGATE_COMPLETE_OBSERVED', 'missing baseline A')
     verify_browser_receipt(a.browser_receipt, report)
     os = decode_capture(serial)['oracles']

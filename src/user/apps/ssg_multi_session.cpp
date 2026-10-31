@@ -149,6 +149,9 @@ int main(int argc,char **argv){
     BaselineCollector collector;const u64 bstart=thread::clock();
     bool bok=collect_baseline(bc,collector) && collector.commit();const u64 bend=thread::clock();
     const bool browser_alive=alive(b),notes_alive_before=alive(n);
+#ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
+    std::printf("P3B_BUDGET browser_remaining_ns=%llu notes_before_ns=%llu\n",(unsigned long long)bc.remaining_budget_ns(),(unsigned long long)nc.remaining_budget_ns());
+#endif
     NotesBaseline note;QString failure;const u64 nstart=thread::clock();
     bool nok=collect_notes(nc,note,failure);const u64 nend=thread::clock();
     const bool browser_alive_after=alive(b),notes_alive_after=alive(n);

@@ -4,7 +4,7 @@
 import argparse
 import json
 from pathlib import Path
-from ssg_p3b_verify import frames, require, check_source_metadata
+from ssg_p3b_verify import frames, require, check_source_metadata, check_wiring
 from ssg_p3b_dynamic_verify import check_browser, notes_segment, verify_qmp_key, verify_browser_receipt
 from ssg_browser_structure import decode_capture
 
@@ -22,6 +22,7 @@ a0, a1 = [f[('aggregate', 'BASELINE', i)] for i in (0, 1)]
 s0, s1 = [{v['slot']: v for v in a['sources']} for a in (a0, a1)]
 for sample in (s0, s1):
     for source in sample.values(): check_source_metadata(source)
+check_wiring(serial, report, s0)
 require(a0['status'] == 'AGGREGATE_COMPLETE_OBSERVED' and a1['status'] == 'AGGREGATE_PARTIAL', 'invalid aggregate states')
 require(s1['browser']['status'] == 'DENIED' and 'nodes' not in s1['browser'], 'revoked Browser nodes were reused')
 require(s1['notes']['status'] == 'OBSERVED_COMPLETE', 'Notes became unavailable')

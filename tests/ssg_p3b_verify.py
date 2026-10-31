@@ -30,6 +30,18 @@ def check_source_metadata(source):
                 isinstance(source.get('failure'), str) and source['failure'], 'failed source metadata missing or stale')
 
 
+def check_wiring(serial, report, sources):
+    pids = report['processes']
+    require(len(set(pids.values())) == 3, 'process roles are not distinct')
+    for slot in ('browser', 'notes'):
+        pid = str(pids[slot]).encode()
+        supervisor = str(pids['supervisor']).encode()
+        instance = sources[slot]['instance'].encode()
+        require(re.search(rb'\[process\] event=started pid=' + pid + rb' parent=' + supervisor + rb'\b', serial), 'kernel child-start record missing')
+        require(re.search(rb'P3B_SOURCE slot=' + slot.encode() + rb' supervisor=' + supervisor + rb' provider=' + pid + rb' instance=' + instance + rb' channel=independent\b', serial), 'parent wiring record missing')
+        require(re.search(rb'SSG_PROVIDER_READY pid=' + pid + rb' instance=' + instance + rb'\b', serial), 'provider readiness missing')
+
+
 def frames(serial):
     pattern = re.compile(rb'^P3B_FRAME_(BEGIN|PART|END) (browser|notes|aggregate) (REQ|RESP|BASELINE) (\d+)(?: (.*))?$')
     pending, seen, result = {}, set(), []
@@ -72,12 +84,15 @@ def main():
     out = a.output
     report = json.loads((out / 'report.json').read_text())
     serial = (out / 'serial.log').read_bytes()
+    budget = re.search(rb'P3B_BUDGET browser_remaining_ns=(\d+) notes_before_ns=(\d+)', serial)
+    require(budget and 0 < int(budget[1]) < 300000000000 and int(budget[2]) == 300000000000, 'source budgets were not independent')
     f = frames(serial)
     aggregate = f[('aggregate', 'BASELINE', 0)]
     sources = {s['slot']: s for s in aggregate['sources']}
     require(set(sources) == {'browser', 'notes'}, 'unexpected source slots')
     for source in sources.values():
         check_source_metadata(source)
+    check_wiring(serial, report, sources)
     require(aggregate['semantics'] == 'sequential-per-source-non-atomic' and aggregate['globalAtomicSnapshot'] == 'NOT_IMPLEMENTED', 'snapshot semantics missing')
     pids = report['processes']
     require(len(set(pids.values())) == 3, 'process roles are not distinct')

@@ -78,7 +78,9 @@ may still be reported while coverage remains incomplete.
 - At most two provider slots, each with one in-flight request.
 - A request is at most 4,096 bytes and a response at most 81,920 bytes.
 - Each transfer has a 30-second monotonic deadline; each source client has a
-  300-second session budget. A terminal transport error is not retried forever.
+  separate 300-second budget charged while its own requests execute. Time spent
+  reading the other source does not consume that budget. A terminal transport
+  error is not retried forever.
 - Browser collection retains at most 4,096 nodes, 4 MiB of collected node data,
   1 MiB of node text and 1,024 pages. Notes admits at most 131,072 UTF-16 units,
   512 ranges, three attempts and 512 KiB of encoded text. An exported aggregate

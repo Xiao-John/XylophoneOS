@@ -4,7 +4,7 @@
 import argparse
 import json
 from pathlib import Path
-from ssg_p3b_verify import frames, require, check_source_metadata
+from ssg_p3b_verify import frames, require, check_source_metadata, check_wiring
 from ssg_p3b_dynamic_verify import check_browser, notes_segment, verify_browser_receipt
 from ssg_browser_structure import decode_capture
 
@@ -23,6 +23,7 @@ current = f[('aggregate', 'BASELINE', 0)]
 old = {s['slot']: s for s in previous['sources']}['browser']
 now = {s['slot']: s for s in current['sources']}
 for source in now.values(): check_source_metadata(source)
+check_wiring(serial, report, now)
 require(current['status'] == previous['status'] == 'AGGREGATE_COMPLETE_OBSERVED', 'sessions not complete')
 require(report['old_instance'] == old['instance'] and old['instance'] != now['browser']['instance'], 'instance was reused')
 records = {}

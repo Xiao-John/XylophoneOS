@@ -28,8 +28,13 @@ inline void capture(const char *,const char *,unsigned,const QByteArray &){}
 // Parent retains only its own two tokens. A nonblocking syscall and the
 // system monotonic clock bound each transfer without closing another route.
 class Client {
-    const char *slot_;u32 in_,out_;QString instance_;i64 pid_;unsigned sequence_=0;u64 deadline_;
+    const char *slot_;u32 in_,out_;QString instance_;i64 pid_;unsigned sequence_=0;u64 remaining_=source_ns;
     QString error_,status_;
+    struct Charge {
+        Client &client;u64 started;
+        ~Charge(){const auto end=thread::clock();const auto elapsed=end>=started?end-started:client.remaining_;
+            client.remaining_=elapsed>=client.remaining_?0:client.remaining_-elapsed;}
+    };
     bool transfer(bool write,char *data,unsigned length,u64 until){
         unsigned done=0;
         while(done<length){
@@ -44,15 +49,19 @@ class Client {
     }
 public:
     Client(const char *slot,u32 input,u32 output,const char *instance,i64 pid)
-        :slot_(slot),in_(input),out_(output),instance_(QString::fromLatin1(instance)),pid_(pid),deadline_(thread::clock()+source_ns){}
+        :slot_(slot),in_(input),out_(output),instance_(QString::fromLatin1(instance)),pid_(pid){}
     const QString &error()const{return error_;}
     const QString &status()const{return status_;}
+    u64 remaining_budget_ns()const{return remaining_;}
     QJsonObject request(const QJsonObject &object,bool *ok=nullptr,unsigned =0){
         if(ok)*ok=false;
         if(!error_.isEmpty())return {};
         const auto payload=QJsonDocument(object).toJson(QJsonDocument::Compact);
         if(payload.isEmpty() || unsigned(payload.size())>max_request){error_="REQUEST_LIMIT";return {};}
-        const auto now=thread::clock(),until=qMin(deadline_,now+operation_ns);const unsigned seq=++sequence_;
+        const auto now=thread::clock();
+        if(!remaining_){error_="SOURCE_BUDGET";return {};}
+        if(now>~u64{0}-operation_ns){error_="CLOCK_ERROR";return {};}
+        Charge charge{*this,now};const auto until=now+qMin(remaining_,operation_ns);const unsigned seq=++sequence_;
         char header[12]={'S','S','G','1'};put32(header+4,unsigned(payload.size()));put32(header+8,seq);
         capture(slot_,"REQ",seq,payload);
         if(!transfer(true,header,12,until) || !transfer(true,const_cast<char *>(payload.constData()),unsigned(payload.size()),until))return {};

@@ -35,7 +35,19 @@ else:
     require(len(note_requests) == len(note_responses) == 1 and note_requests[0].get('op') == 'snapshot', 'unexpected Notes transaction')
     nodes = note_responses[0].get('nodes', [])
     require(len(nodes) == 1 and nodes[0].get('textStatus') == 'NOT_AUTHORIZED' and 'text' not in nodes[0], 'Notes response exposed text')
-    require((out / 'synthetic-input.txt').read_text() not in json.dumps(note_responses, ensure_ascii=False), 'synthetic document leaked in Notes response')
+    def strings(value):
+        if isinstance(value, str):
+            yield value
+        elif isinstance(value, dict):
+            for item in value.values():
+                yield from strings(item)
+        elif isinstance(value, list):
+            for item in value:
+                yield from strings(item)
+    text = (out / 'synthetic-input.txt').read_text()
+    chunks = [text[i:i+32] for i in range(0, len(text)-31, 32)]
+    require(not any(chunk in value for value in strings(note_responses) for chunk in chunks),
+            'synthetic document fragment leaked in Notes response')
 require(report['resources_restored'] and len(report['source_exits']) == 2 and
         all('reaped=1 cancelled=0 outcome=1 code=0' in line for line in report['source_exits']), 'shutdown/resources')
 result = {'status': 'OBSERVED' if ordinary else 'PASSED_SCOPED',

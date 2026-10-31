@@ -16,6 +16,7 @@ signal = serial.find(b'P3C_TEST_INFLIGHT_CONTROL sent=1')
 discard = serial.find(b'P3B_NOTES_DISCARD reason=CANCELLED')
 stop = serial.find(b'P3C_WATCH_STOP reason=EXPLICIT_STOP cycles=1 events=2 dropped=0')
 assert 0 <= fault < signal < discard < stop
+assert re.search(rb'P3C_WATCH_STOP reason=EXPLICIT_STOP cycles=1 events=2 dropped=0 resync=AS_NEEDED aggregate=PARTIAL', serial)
 match = re.search(rb'P3B_NOTES_DISCARD reason=CANCELLED units=(\d+)', serial)
 assert match and int(match[1]) > 0
 events = [json.loads(value) for value in re.findall(rb'^P3C_EVENT (\{.*\})\r?$', serial, re.MULTILINE)]

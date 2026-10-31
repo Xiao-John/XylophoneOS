@@ -72,6 +72,7 @@ def main():
             active = resources(guest)
             summary['active_display_resources'] = active
             original_qmp = guest.qmp
+            consecutive_failures = 0
             for index in range(1, a.count + 1):
                 case = out / ('run-%02d' % index)
                 case.mkdir()
@@ -144,12 +145,21 @@ def main():
                     summary['elapsed_seconds'] = round(time.monotonic() - started_all, 3)
                     (out / 'summary.json').write_text(json.dumps(summary, indent=2) + '\n')
                     print('STRESS run=%d status=%s elapsed=%s' % (index, item['status'], item.get('elapsed_seconds', report['elapsed_seconds'])), flush=True)
-                if item['status'] != 'PASSED_SCOPED':
-                    break
+                if item['status'] == 'PASSED_SCOPED':
+                    consecutive_failures = 0
+                else:
+                    consecutive_failures += 1
+                    # A contained failure with recovered resources remains a
+                    # failed run, but need not erase the rest of the sample.
+                    # Stop on an unsafe guest state or repeated failures.
+                    if not report.get('resources_restored') or consecutive_failures >= 3:
+                        break
             if len(summary['runs']) == a.count and all(run['status'] == 'PASSED_SCOPED' for run in summary['runs']):
                 summary['status'] = 'PASSED_SCOPED'
             else:
                 summary['status'] = 'FAILED'
+            summary['passed_runs'] = sum(run['status'] == 'PASSED_SCOPED' for run in summary['runs'])
+            summary['failed_runs'] = sum(run['status'] != 'PASSED_SCOPED' for run in summary['runs'])
             latencies = sorted(value for run in summary['runs'] for value in run['latency_upper_seconds'])
             if latencies:
                 summary['latency_upper_seconds'] = {'count': len(latencies), 'min': min(latencies), 'median': statistics.median(latencies),

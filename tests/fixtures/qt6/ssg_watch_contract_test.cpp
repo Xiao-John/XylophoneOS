@@ -9,8 +9,8 @@ using namespace ssg_watch;
 struct test_payload final:provider_payload {int value;explicit test_payload(int v):value(v){}};
 class test_provider final:public provider_adapter {
 public:
-    bool cancelled=false,force_unknown=false;observation next;
-    observation observe(uint64_t)override{return next;}
+    bool cancelled=false,force_unknown=false;observation next;watch_control *stop_control=nullptr;unsigned observations=0,stop_at=0;
+    observation observe(uint64_t)override{if(++observations==stop_at && stop_control)stop_control->request_stop();return next;}
     bool available()override{return true;}
     void cancel()override{cancelled=true;}
     comparison compare(const observation &a,const observation &b)const override{
@@ -85,6 +85,10 @@ int main(int argc,char **argv){
     watch_control stopped;stopped.request_stop();watch_hooks plain_hooks;
     const auto empty=run_watch_loop(first,alternate,first_slot,alternate_slot,stopped,{1,10,3,1},plain_hooks);
     check("stop_before_baseline_is_partial",empty.cycles==0 && empty.partial);
+    test_provider interrupted;interrupted.next=sample("i1","e1","r1",1);watch_control interrupted_control;
+    interrupted.stop_control=&interrupted_control;interrupted.stop_at=2;watch_slot interrupted_slot("source","i1"),other_slot("alternate","i9");
+    const auto interrupted_result=run_watch_loop(interrupted,alternate,interrupted_slot,other_slot,interrupted_control,{1,10,3,1},plain_hooks);
+    check("stop_during_next_cycle_is_partial",interrupted_result.cycles==1 && interrupted_result.partial);
     std::fflush(stdout);int descriptors[2]={-1,-1};const int saved=dup(1);
     const bool redirected=saved>=0 && pipe(descriptors)==0 && dup2(descriptors[1],1)==1;
     watch_control fresh;watch_outcome blocked;

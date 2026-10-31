@@ -18,6 +18,10 @@ The capability set describes what the *adapter* can establish; `SCOPED`,
 Source revision is not a timestamp, identity or authorization. A complete
 source is still `UNVERIFIED_AFTER_OBSERVATION`, and the two observations and
 liveness checks are sequential: `globalAtomicSnapshot=NOT_IMPLEMENTED`.
+An empty event epoch or revision means that value is unknown or unavailable;
+it is not revision zero and must not be interpreted as an observed identity.
+The scope records the adapter's attempted collection, not a grant; denial and
+protection still yield no current payload even when that scope is named.
 
 The Browser adapter reuses its paged collector and existing Browser baseline
 diff. It returns a reset when node continuity cannot be established, and does
@@ -65,7 +69,8 @@ the byte `S` or EOF requests cancellation. The cancellation worker uses the
 existing pipe and thread APIs, cancels outstanding transfers cooperatively, and
 is joined before the source channels are closed. The ordinary shell's console
 is not such a pipe; this is not an interactive shell stop command. The finite
-cycle and duration bounds also stop a watch. A source can exit and its peer can
+cycle and duration bounds also stop a watch. A stop or deadline during an
+incomplete pair marks the final aggregate partial. A source can exit and its peer can
 continue, but the current supervisor does not reconnect or transparently restart
 providers. A future trusted rewire must assign a new source instance and acquire
 a new baseline; `watch_slot::rewire` only supplies the state-machine operation,
@@ -76,7 +81,9 @@ not a restart service.
 `RESET_REQUIRED` are source-local classifications, not a continuous event log
 from the underlying application. An initial baseline is `SOURCE_UNKNOWN` with
 `INITIAL_BASELINE`: the prior state was not observed. A restriction or source
-failure is never recast as unchanged. A newly acquired baseline after an
+failure is never recast as unchanged. `SOURCE_UNCHANGED` covers only the
+adapter's supported and successfully compared fields; it does not assert that
+an unobserved field or the source's own revision did not change. A newly acquired baseline after an
 unavailable, invalid or unknown comparison emits `RESET_REQUIRED`; a new epoch or
 trusted source instance emits `SOURCE_REPLACED` before any ordinary diff.
 

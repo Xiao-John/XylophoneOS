@@ -50,12 +50,12 @@ inline watch_outcome run_watch_loop(provider_adapter &first,provider_adapter &se
         const u64 first_budget=qMin(u64(options.source_timeout_seconds)*1000000000ull,deadline-now);
         std::printf("P3C_OBSERVE_BEGIN slot=%s cycle=%u\n",first_slot.name().toUtf8().constData(),result.cycles+1);
         hooks.observation_started(0,result.cycles+1);
-        auto a=first.observe(first_budget);if(control.stopped())break;
-        now=xos::thread::clock();if(now>=deadline)break;
+        auto a=first.observe(first_budget);if(control.stopped()){result.partial=true;break;}
+        now=xos::thread::clock();if(now>=deadline){result.partial=true;break;}
         const u64 second_budget=qMin(u64(options.source_timeout_seconds)*1000000000ull,deadline-now);
         std::printf("P3C_OBSERVE_BEGIN slot=%s cycle=%u\n",second_slot.name().toUtf8().constData(),result.cycles+1);
         hooks.observation_started(1,result.cycles+1);
-        auto b=second.observe(second_budget);if(control.stopped())break;
+        auto b=second.observe(second_budget);if(control.stopped()){result.partial=true;break;}
         recheck_provider(first,a);recheck_provider(second,b);
         result.partial=!first_slot.complete(a) || !second_slot.complete(b);
         if(!hooks.observations_ready(result.cycles+1,a,b)){result.output_ok=false;break;}

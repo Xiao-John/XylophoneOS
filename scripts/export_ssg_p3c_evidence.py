@@ -5,8 +5,11 @@ import argparse
 import hashlib
 import io
 import json
+import os
 from pathlib import Path
+import shutil
 import tarfile
+import tempfile
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -38,6 +41,16 @@ def main():
     out = a.output.resolve()
     out.mkdir(parents=True, exist_ok=False)
     mappings = [('XOS_P3C_BUILD_DIR', a.build), ('XOS_P3C_RESULTS_DIR', root)]
+    for name in ('XOS_IMAGE', 'XOS_SDK_PREFIX', 'XOS_BUILD_DIR', 'XOS_QT_SOURCE', 'XOS_HOST_QT',
+                 'XOS_BINUTILS', 'XOS_DASH_ELF', 'XOS_P3B_BUILD_DIR'):
+        if os.environ.get(name):
+            mappings.append((name, os.environ[name]))
+    if os.environ.get('QEMU'):
+        mappings.append(('XOS_QEMU', os.environ['QEMU']))
+    mappings.extend([('XOS_TEMP_ROOT', tempfile.gettempdir()), ('XOS_PYTHON', sys.executable)])
+    for name, executable in (('XOS_CXX', 'x86_64-elf-g++'), ('XOS_CC', 'x86_64-elf-gcc'), ('XOS_AR', 'x86_64-elf-ar')):
+        if shutil.which(executable):
+            mappings.append((name, shutil.which(executable)))
     index = {'scope': 'synthetic guest-only data; raw local files remain local', 'archives': {}, 'loose_files': {}}
 
     def transform(path):
@@ -48,7 +61,7 @@ def main():
         else:
             data = raw
         scan_blob(data, path.name)
-        if path.name == 'serial.log':
+        if path.name.endswith('serial.log'):
             scan_encoded_records(data, path.name)
         return raw, data
 
@@ -56,15 +69,17 @@ def main():
     raw, data = transform(build_manifest)
     (out / 'build-manifest.json').write_bytes(data)
     index['loose_files']['build-manifest.json'] = {'raw_sha256': digest(raw), 'exported_sha256': digest(data)}
-    allowed = {'serial.log', 'report.json', 'summary.json', 'comparison.json', 'independent-check.json', 'ordinary-check.json',
-               'cancel-check.json', 'timeout-check.json', 'synthetic-input.txt', 'browser.receipt.json'}
+    allowed = {'serial.log', 'guest_serial.log', 'report.json', 'summary.json', 'comparison.json', 'diagnostic-inputs.json',
+               'independent-check.json', 'ordinary-check.json', 'cancel-check.json', 'timeout-check.json',
+               'synthetic-input.txt', 'browser.receipt.json', 'status.txt'}
     for name in a.cases:
         if '/' in name or name in ('.', '..'):
             raise ValueError('case must be a directory name')
         folder = (root / name).resolve(strict=True)
         if folder.parent != root or not folder.is_dir():
             raise ValueError('case is not directly under results root')
-        files = sorted(path for path in folder.rglob('*') if path.is_file() and not path.is_symlink() and path.name in allowed)
+        files = sorted(path for path in folder.rglob('*') if path.is_file() and not path.is_symlink() and path.name in allowed
+                       and not (path.name == 'guest_serial.log' and (path.parent / 'serial.log').is_file()))
         if not files:
             raise ValueError('case has no selected evidence: ' + name)
         memory = io.BytesIO()

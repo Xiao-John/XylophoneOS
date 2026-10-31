@@ -44,7 +44,7 @@ try:
         report['after'] = resources(guest)
         output = bytes(guest.output)[start:]
         report['checks'] = [{'name': n.decode(), 'status': s.decode()} for n, s in re.findall(rb'P3C_CONTRACT_CHECK ([a-z_]+)=(PASS|FAIL)', output)]
-        if len(report['checks']) == 26 and all(v['status'] == 'PASS' for v in report['checks']) and report['before'] == report['after'] and b'P3C_CONTRACT_DONE checks=26 failures=0' in output and b'kind=exited code=0' in output:
+        if len(report['checks']) == 27 and all(v['status'] == 'PASS' for v in report['checks']) and report['before'] == report['after'] and b'P3C_CONTRACT_DONE checks=27 failures=0' in output and b'kind=exited code=0' in output:
             report['status'] = 'PASSED_SCOPED'
 finally:
     if guest:

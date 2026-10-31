@@ -1,0 +1,123 @@
+{
+  "status": "PASSED",
+  "case": "lifecycle",
+  "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+  "elf_sha256": "1323ae6557896dc94c6886e427be15d6df8dca11131819abf49455b70bdc412f",
+  "receipt_sha256": "65b682152d5ce21f80903489a18e3a9d9f439b319a8c77f7a49f385b7fefa927",
+  "checks": [
+    {
+      "name": "three_widget_create_exit_cycles_resources_exact",
+      "status": "PASSED"
+    },
+    {
+      "name": "killed_editor_reclaims_input_surface_and_heap",
+      "status": "PASSED"
+    },
+    {
+      "name": "display_death_exits_widgets_client_and_serial_survives",
+      "status": "PASSED"
+    },
+    {
+      "name": "display_restart_new_editor_recovers",
+      "status": "PASSED"
+    }
+  ],
+  "qemu_commands": [
+    [
+      "${XOS_LOCAL_PATH}",
+      "-machine",
+      "pc-i440fx-10.0",
+      "-accel",
+      "tcg",
+      "-cpu",
+      "qemu64,+rdrand",
+      "-m",
+      "512M",
+      "-smp",
+      "1",
+      "-nic",
+      "none",
+      "-vga",
+      "std",
+      "-rtc",
+      "base=utc,clock=host",
+      "-drive",
+      "file=${XOS_LOCAL_PATH},format=raw,if=floppy,index=0,readonly=on",
+      "-boot",
+      "order=a,strict=on",
+      "-no-reboot",
+      "-monitor",
+      "none",
+      "-serial",
+      "stdio",
+      "-display",
+      "none",
+      "-drive",
+      "file=${XOS_LOCAL_PATH},format=raw,if=ide,index=0,media=disk,cache=writeback",
+      "-qmp",
+      "unix:${XOS_LOCAL_PATH},server=on,wait=off"
+    ]
+  ],
+  "baseline": [
+    130279,
+    2,
+    0
+  ],
+  "with_service": [
+    130235,
+    3,
+    1
+  ],
+  "measurements": {
+    "sampled_peak_pages": 0,
+    "input_latency_ns": [],
+    "present_ns": [
+      0,
+      10000000,
+      0,
+      10000000,
+      10000000,
+      0,
+      10000000,
+      10000000,
+      0,
+      10000000,
+      0,
+      0,
+      10000000,
+      10000000,
+      0,
+      0,
+      10000000,
+      0
+    ],
+    "visual_cache": [
+      [
+        3840000,
+        120000000
+      ],
+      [
+        3840000,
+        120000000
+      ],
+      [
+        3840000,
+        120000000
+      ],
+      [
+        3840000,
+        120000000
+      ],
+      [
+        3840000,
+        120000000
+      ],
+      [
+        3840000,
+        120000000
+      ]
+    ],
+    "absolute_peak": "NOT_RUN",
+    "clock_resolution_ns": 10000000
+  }
+}

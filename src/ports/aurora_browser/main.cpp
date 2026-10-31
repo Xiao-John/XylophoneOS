@@ -13,9 +13,16 @@
 #include <QtGui/QScreen>
 #include <cstdio>
 #include <xos/thread_core.hpp>
+#include <QtCore/QJsonDocument>
 Q_IMPORT_PLUGIN(QXosIntegrationPlugin)
 class Browser final:public aurora::canvas {
     browser::HtmlView *view;
+    quint64 previous_scene=0;
+    QString previous_epoch;
+    void dump_scene(){view->allow_scene_observation(true);const auto snapshot=view->scene_snapshot("content");
+        std::printf("SSG_BROWSER_SNAPSHOT %s\n",QJsonDocument(snapshot).toJson(QJsonDocument::Compact).constData());
+        std::printf("SSG_BROWSER_DIFF %s\n",QJsonDocument(view->scene_diff(previous_scene,previous_epoch)).toJson(QJsonDocument::Compact).constData());
+        previous_scene=snapshot["sceneVersion"].toString().toULongLong();previous_epoch=snapshot["sourceEpoch"].toString();}
     QLineEdit *address;
     QLabel *status,*title;
     aurora::button *back,*forward;
@@ -51,7 +58,7 @@ class Browser final:public aurora::canvas {
         title->setText(candidate_title+" · Aurora");address->setText("file:"+path);
         if(record){while(history.size()>index+1)history.removeLast();history.append(path);if(history.size()>16)history.removeFirst();index=history.size()-1;}
         tabbar->setTabText(active,title->text().section(" ·",0,0).left(19));updateButtons();message("Local page · liteHTML 0.9 · JavaScript off · network unavailable");view->setFocus();
-        QTimer::singleShot(100,this,[this]{xos::thread_stats stats{};xos::sdk::syscall(xos::sys_thread_stats,reinterpret_cast<xos::u64>(&stats));std::printf("BROWSER_SAMPLE pages=%u threads=%u tab=%d scroll=%d\n",stats.process_user_pages,stats.threads,active,view->verticalScrollBar()->value());});
+        QTimer::singleShot(100,this,[this]{view->log_anchor_point();xos::thread_stats stats{};xos::sdk::syscall(xos::sys_thread_stats,reinterpret_cast<xos::u64>(&stats));std::printf("BROWSER_SAMPLE pages=%u threads=%u tab=%d scroll=%d\n",stats.process_user_pages,stats.threads,active,view->verticalScrollBar()->value());});
         return true;
     }
     void travel(int delta){const int target=index+delta;if(target<0||target>=history.size())return;if(navigate(history[target],false))index=target;updateButtons();}
@@ -78,6 +85,10 @@ public:
         auto *newTabKey=new QShortcut(QKeySequence("Ctrl+T"),this);connect(newTabKey,&QShortcut::activated,add,&QPushButton::click);auto *cycleTab=new QShortcut(QKeySequence("Ctrl+Tab"),this);connect(cycleTab,&QShortcut::activated,this,[this]{tabbar->setCurrentIndex((active+1)%tabbar->count());});
         auto *focus=new QShortcut(QKeySequence("Ctrl+L"),this);connect(focus,&QShortcut::activated,this,[this]{address->setFocus();address->selectAll();});
         auto *previous=new QShortcut(QKeySequence("Alt+Left"),this);connect(previous,&QShortcut::activated,this,[this]{travel(-1);});auto *next=new QShortcut(QKeySequence("Alt+Right"),this);connect(next,&QShortcut::activated,this,[this]{travel(1);});auto *refresh=new QShortcut(QKeySequence("Ctrl+R"),this);connect(refresh,&QShortcut::activated,this,[this]{if(index>=0)navigate(history[index],false);});auto *quit=new QShortcut(QKeySequence(Qt::Key_Escape),this);connect(quit,&QShortcut::activated,qApp,&QApplication::quit);
+        if(qApp->arguments().contains("--ssg-probe")){
+            auto *ssg=new QShortcut(QKeySequence(Qt::CTRL|Qt::Key_I),this);
+            connect(ssg,&QShortcut::activated,this,[this]{dump_scene();});
+        }
         QTimer::singleShot(0,this,[this,bookmark]{navigate("/web/start.html");point("address",address);point("back",back);point("forward",forward);point("page",view);point("tabs",tabbar);point("bookmark",bookmark);std::printf("BROWSER_READY engine=litehtml-0.9 local_only=1 javascript=0\n");});
     }
 };

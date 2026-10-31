@@ -7,6 +7,9 @@ src/ports/qt6/patches/*.patch whitespace=-blank-at-eol
 docs/reports/modern_apps_20261029/*_matrix.csv -text whitespace=cr-at-eol
 # Preserve the dependency's original license whitespace verbatim.
 licenses/modern_apps/defusedxml_LICENSE -whitespace
+
+# The pinned liteHTML unified diff preserves upstream tab/blank context bytes.
+src/ports/aurora_browser/patches/*.patch whitespace=-blank-at-eol,-space-before-tab
 # Frozen serial captures keep their original trailing prompt whitespace.
 docs/reports/aurora_sdk_review_20261030/runs/semantics-dash/serial.log whitespace=-blank-at-eol
 docs/reports/aurora_sdk_review_20261030/runs/semantics-xsh/serial.log whitespace=-blank-at-eol

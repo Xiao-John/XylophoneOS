@@ -1,0 +1,103 @@
+{
+  "status": "PASSED",
+  "image_sha256": "8a7eb73688aebe1846f8849951c77f0489b11e583a632803f4939ebe1ae49b6d",
+  "payload_sha256": "ad1bd173ffa640848b94fa6f43529a456fd574f65b2edfc6c11ce32a3218ea4d",
+  "checks": [
+    {
+      "name": "unpublished_unavailable",
+      "status": "PASS"
+    },
+    {
+      "name": "complete_unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "complete_change_and_real_removal",
+      "status": "PASS"
+    },
+    {
+      "name": "metadata_delivered_with_diff",
+      "status": "PASS"
+    },
+    {
+      "name": "query_scope_change_resets",
+      "status": "PASS"
+    },
+    {
+      "name": "partial_current_resets",
+      "status": "PASS"
+    },
+    {
+      "name": "partial_unchanged_is_not_complete",
+      "status": "PASS"
+    },
+    {
+      "name": "partial_previous_resets",
+      "status": "PASS"
+    },
+    {
+      "name": "duplicate_id_rejected_without_changing_history",
+      "status": "PASS"
+    },
+    {
+      "name": "missing_id_rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "stale_generation_since_resets",
+      "status": "PASS"
+    },
+    {
+      "name": "legacy_metadata_change_conservatively_resets",
+      "status": "PASS"
+    },
+    {
+      "name": "old_epoch_rejected",
+      "status": "PASS"
+    }
+  ],
+  "qemu_command": [
+    "/opt/homebrew/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/private/tmp/xos_b1/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/x6/3clfjww5133fn5kbknq7c_2m0000gn/T/xos_ssg_diff_d2g0wlbv/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/x6/3clfjww5133fn5kbknq7c_2m0000gn/T/xos_aa4ri6zv/qmp.sock,server=on,wait=off"
+  ],
+  "baseline_resources": [
+    130279,
+    2,
+    0
+  ],
+  "after_resources": [
+    130279,
+    2,
+    0
+  ]
+}

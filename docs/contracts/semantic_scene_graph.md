@@ -10,7 +10,7 @@ Neither the model nor an SSG snapshot grants authority.
 
 | Provider | Native source | Actual observation / unsupported coverage |
 |---|---|---|
-| `QtScene` | Real QObject/QWidget child relations, QLineEdit, QPlainTextEdit, labels, buttons and scrollbars | Parent/object IDs, native class/name, text within explicit scope, enabled/focus/check/selection/scroll state, local geometry and Qt visible region; arbitrary custom painting returns SEMANTICS_UNAVAILABLE |
+| `qt_scene` | Real QObject/QWidget child relations, QLineEdit, QPlainTextEdit, labels, buttons and scrollbars | Parent/object IDs, native class/name, text within explicit scope, enabled/focus/check/selection/scroll state, local geometry and Qt visible region; arbitrary custom painting returns SEMANTICS_UNAVAILABLE |
 | Notes opt-in probe | Its actual live Widgets and QTextDocument/cursor | File-path field, real document prefix/length, selection and scroll; document text is explicitly not all screen-visible |
 | Browser opt-in probe | Real liteHTML DOM/element model, computed display and actual render fragments | Text leaf ranges, element/parent IDs, links, viewport/scroll geometry, actual engine mouse-hit state; no AX-only substitution |
 | Independent example | Standard Widgets + public archive, no copied provider code | Password/hidden control checks, snapshot/diff and local Intent demonstration |
@@ -44,7 +44,7 @@ semantic provider for more precise meaning. Drawing commands alone are not meani
 All provider/Intent calls run on the GUI thread; no thread-safe or cross-process
 call interface is implied. A trusted host must marshal worker proposals as data.
 
-`QtScene` holds a QPointer to its application root and bounded QPointers for node
+`qt_scene` holds a QPointer to its application root and bounded QPointers for node
 identities. Nothing scans another process, maps its heap, reads scanout, obtains
 MMIO/DMA or elevates an application. Default observation is DENIED. The trusted
 application host explicitly enables text scope or revokes it; this API is an
@@ -104,7 +104,7 @@ capability intent; the Notes/Browser providers are **READ_ONLY**. Their cross-pr
 execution, wait_for_state and verify_result transport are **NOT_IMPLEMENTED / NOT_RUN**.
 No consumer may execute a stale coordinate after document replacement.
 
-`Semantics` is a deliberately smaller local Intent adapter for the independent
+`semantics` is a deliberately smaller local Intent adapter for the independent
 fixture. It registers only explicit target Widgets. A deterministic independent
 host mock consumes the *actual guest SSG snapshot*, chooses an admitted textbox
 and emits a proposal. The authorized test harness types that proposal into the
@@ -115,7 +115,7 @@ The trusted host creates a move-only, one-shot Grant bound to the exact proposal
 target/state revision, local authorization epoch and monotonic expiry. No grant
 is serialized to the model. Execute without grant, changed proposal, revoked,
 expired, reused or dead/stale target refuses. Current local set_text verifies the
-real resulting QLineEdit value. Button dispatch returns UNKNOWN because a signal
+real resulting QLineEdit value. button dispatch returns UNKNOWN because a signal
 does not prove an external effect; that grant is consumed and cannot be replayed.
 The test button causes no real external transaction. The host authorization call
 is an adapter seam, not an implementation of user identity or a production policy

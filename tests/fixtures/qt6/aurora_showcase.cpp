@@ -12,9 +12,9 @@
 #include <cstdio>
 Q_IMPORT_PLUGIN(QXosIntegrationPlugin)
 int main(int argc,char **argv){
- QApplication app(argc,argv);aurora::initialize(app);aurora::Canvas window;
+ QApplication app(argc,argv);aurora::initialize(app);aurora::canvas window;
  auto *root=new QVBoxLayout(&window);root->setContentsMargins(70,60,70,60);
- auto *panel=new aurora::Panel(&window,28,true);root->addWidget(panel);auto *layout=new QVBoxLayout(panel);layout->setContentsMargins(26,26,26,26);
+ auto *panel=new aurora::panel(&window,28,true);root->addWidget(panel);auto *layout=new QVBoxLayout(panel);layout->setContentsMargins(26,26,26,26);
  layout->addWidget(new QLabel("Xylophone Aurora Glass | Native Widgets style"));
  auto *path=new QLineEdit("A reusable QProxyStyle + QPalette");layout->addWidget(path);
  auto *buttons=new QHBoxLayout;

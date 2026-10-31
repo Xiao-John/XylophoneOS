@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Run the bounded SceneStream regression in a real XOS guest."""
+"""Run the bounded scene_stream regression in a real XOS guest."""
 import argparse
 import hashlib
 import json
@@ -20,7 +20,7 @@ from work_disk import transfer
 parser = argparse.ArgumentParser()
 for name in ('image', 'payload', 'output'):
     parser.add_argument('--' + name, type=Path, required=True)
-parser.add_argument('--expected-checks', type=int, default=12)
+parser.add_argument('--expected-checks', type=int, default=13)
 parser.add_argument('--dash', type=Path)
 args = parser.parse_args()
 out = args.output.resolve()

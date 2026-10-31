@@ -49,3 +49,13 @@ threading SDK and Qt Core/Gui/Widgets archives are rehashed before target builds
 execution receipt helper; no system ABI/layout/opcode changes are made here.
 All target build commands, tool/archive/SDK/ELF/image hashes, screenshots and raw
 logs are frozen. Tests use only dedicated synthetic FAT disks. No Release.
+
+## Traceable authorization erratum — 2026-10-30
+
+The opening authorization statement above was incorrect: permission to continue
+AI-native userland research, design and testing did not authorize a constitutional
+amendment. It must not be read as approval to replace C04 or activate the deferred
+D01/D02 proposals. The current constitution remains the version on upstream main;
+this SDK is an optional userland experiment, and model output grants no authority.
+The original frozen qualification files and historical wording are retained for
+traceability; this erratum corrects their interpretation without rewriting them.

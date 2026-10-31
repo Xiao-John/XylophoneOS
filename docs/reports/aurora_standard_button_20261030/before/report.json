@@ -1,0 +1,64 @@
+{
+  "status": "FAILED",
+  "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+  "payload_sha256": "931e08a7b5bfbc43137442af2a752e10b73a500f36bae9203a7941984ac98c9f",
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_standard_button_4t68pwnv/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_gdjv5813/qmp.sock,server=on,wait=off"
+  ],
+  "baseline_resources": [
+    130279,
+    2,
+    0
+  ],
+  "checks": [
+    {
+      "name": "button_icon",
+      "status": "FAIL"
+    },
+    {
+      "name": "explicit_palette",
+      "status": "FAIL"
+    },
+    {
+      "name": "palette_painted",
+      "status": "FAIL"
+    }
+  ],
+  "screenshot_sha256": "7dd04b156adc3a359b083de149f0460f0b09fbac59aab1eee4849be8e150e70e",
+  "after_resources": [
+    130279,
+    2,
+    0
+  ]
+}

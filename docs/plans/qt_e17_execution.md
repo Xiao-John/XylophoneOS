@@ -36,7 +36,7 @@ E15/E16 的静态库仅在哈希、SDK 和 ABI 一致时复用；上游最新 `m
 
 ### W1：Qt Widgets 子控件与 QPA 正确性
 
-当前 `src/ports/qt6/qpa/qxos.cpp` 只准许**一个独占全屏顶层 Window**，`BackingStore::flush` 对非零 offset 或不同 window 明确拒绝。QPlainTextEdit 内部有 viewport/滚动区域，不能假设 Widgets 自然就能通过。
+当前 `src/ports/qt6/qpa/qxos.cpp` 只准许**一个独占全屏顶层 window**，`backing_store::flush` 对非零 offset 或不同 window 明确拒绝。QPlainTextEdit 内部有 viewport/滚动区域，不能假设 Widgets 自然就能通过。
 
 先做真实最小 `QApplication` + 单顶层 `QWidget` + `QPlainTextEdit` 的 XOS 客体绘制/键鼠探针；确认渲染通过 Qt Widgets 正式路径到顶层 backing store。若 Qt 6.8.3 的 `QWidgetRepaintManager` 实际调用要求 offset/裁剪扩展，先给出局部矩形和多子控件下的最小失败复现，再**只扩展用户态 QPA 的可证明语义**，不可暗改 Display Service 或申请 Qt 专属 syscall。拒绝额外 native 顶层、popup/对话框的路径应可诊断，不得静默黑屏。
 

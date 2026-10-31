@@ -22,3 +22,7 @@ __pycache__/
 
 # Dedicated upstream Seed sources/builds and immutable SDK snapshots
 /.cache/xos_seed/
+# 本线活记忆（Discipline: state.md 与 STATE_L.md），永不入提交
+STATE_L.md
+# 技术债总账（活工作记忆），永不入提交
+docs/tech_debt.md

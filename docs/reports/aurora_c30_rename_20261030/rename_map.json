@@ -1,0 +1,69 @@
+{
+  "from_commit": "3f0d3a0",
+  "to_commit": "a3ae0f0",
+  "pairs": {
+    "DesktopSurface": "desktop_surface",
+    "GlassPanel": "glass_panel",
+    "QtScene": "qt_scene",
+    "SceneStream": "scene_stream",
+    "Semantics": "semantics"
+  },
+  "files": {
+    "docs/contracts/semantic_scene_graph.md": {
+      "sha256_pre": "a350ddb791fbb26259db60ae6e5280194e7900a1d4b538dd11baa799d869046d",
+      "sha256_rename": "a28dc2b9a2dfe35f86607fbaa931ce4299a7771ba5eee02ffdb50b6322a89e7b"
+    },
+    "docs/design/aurora_glass_v2.md": {
+      "sha256_pre": "6ccfc02dd6a8d4509aee903d950e836ebd2f4b1edb73376c0931ef56c6404090",
+      "sha256_rename": "928a6ca22bfac776053a4ceb571b3f4df4cedff72d1a6a99d76a3ae240cca8bb"
+    },
+    "src/ports/qt6/aurora/README.md": {
+      "sha256_pre": "5f861aabcbb8e08c381377629cffbd63d1a5afbfade973edf0824d166c2793dd",
+      "sha256_rename": "2c02fc6628e766563edff71f737b74fb2c40dd8e6ae111ded4f35f4dbffa18c4"
+    },
+    "src/ports/qt6/aurora/desktop.hpp": {
+      "sha256_pre": "6df3fc1b3c6f35fa6986b241993fd3809b063373869e1106ded7f34206f25e81",
+      "sha256_rename": "1655c38ee8b0decd65fdfea29669981c0d44bdada1d5ff5f227e11eaa62b4ea0"
+    },
+    "src/ports/qt6/aurora/semantics.cpp": {
+      "sha256_pre": "976ea802dba991acfb43f55c619f9ae56cacf908ca4baee517af4f053d5d4eb1",
+      "sha256_rename": "80e5ef709e00f78524c0b20ad2a3ecf9d998bdb52f58fed95492b4da0571dd61"
+    },
+    "src/ports/qt6/aurora/semantics.hpp": {
+      "sha256_pre": "64db4ba2abff64533ad7ff4bd4dd01dfdf22dae5828136b78be009473c613643",
+      "sha256_rename": "7b14f4cf5a21c93f044484060eaf49f6364ef5b7e594ee3c293339095f018e2b"
+    },
+    "src/ports/qt6/aurora/ssg.cpp": {
+      "sha256_pre": "4bfcb74c71db5bc8c394f4cbe619e5cf260e8f5aaa01856a3dd9d48f08922be8",
+      "sha256_rename": "39e2ad89221628ea956cdd271f5b6800f2a3b54a63276f451f9dbff80efa9f19"
+    },
+    "src/ports/qt6/aurora/ssg.hpp": {
+      "sha256_pre": "6f506540167153ee511cb443023302a9f542f2f030a87aacffdd775eb832d5b1",
+      "sha256_rename": "f70a177a4aa317072a70cfe29bd4525140f7ecde9a8fa24f49d9b36f0944b842"
+    },
+    "tests/fixtures/qt6/aurora_render_probe.cpp": {
+      "sha256_pre": "454aa3ddc4b4ec22a555282ccf159478fdf7e518dc9550d4bd22da206a775f7f",
+      "sha256_rename": "c266783afa90ae5617c8491b46ccec9936b4a8e018c5dad62bea2df8d0065637"
+    },
+    "tests/fixtures/qt6/aurora_semantics.cpp": {
+      "sha256_pre": "4f969bb41a79a603cdc6545b6423def498d77a31c4829a821ed9ec8a7df9e245",
+      "sha256_rename": "31f766b047a608c9dbaa3340d709086feab9d008e3c4518abcb343092e77c756"
+    },
+    "tests/fixtures/qt6/aurora_standard_button.cpp": {
+      "sha256_pre": "f5219241e9a5e7c52d2e9ac90adddc853b1493d62a06ee3656357a4b36532e52",
+      "sha256_rename": "0af56d2ed04ae801f3dd08210116b76d800f1d6cb2cb12d9f3a6306b107ec267"
+    },
+    "tests/fixtures/qt6/aurora_v2_studio.cpp": {
+      "sha256_pre": "cd56116715095c626e9826a94a26ec3894a6094a16b59506e67559326733ed7f",
+      "sha256_rename": "4b57d33a767ed84803f0b5e3bcdf1337e01cf0156f8b8dc89dfa3df12c6f3379"
+    },
+    "tests/fixtures/qt6/ssg_diff_integrity.cpp": {
+      "sha256_pre": "04bda09635dd9f387a496f732a76b011567e576f59f8ccea84a2721a8c6aa2f2",
+      "sha256_rename": "66a0b67b7bdbec2f720f73ae8f0330bdc869ee515482268d4a2c33c3f69d511d"
+    },
+    "tests/ssg_diff_guest.py": {
+      "sha256_pre": "023d8ae6fd3bb6899d1d075839c1cc989321d3efbb13a21ebdbdbb7f64250a23",
+      "sha256_rename": "5dd45a94dade0108c1ae68d097b515e4c2bdda336e65504be08653ee13a16e96"
+    }
+  }
+}

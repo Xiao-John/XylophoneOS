@@ -1,0 +1,29 @@
+{
+ "map": {
+  "BackingStore": "backing_store",
+  "Brand": "brand",
+  "Button": "button",
+  "Canvas": "canvas",
+  "Editor": "editor",
+  "Fonts": "fonts",
+  "GuiDispatcher": "gui_dispatcher",
+  "Integration": "integration",
+  "NoteHighlight": "note_highlight",
+  "Panel": "panel",
+  "Pointer": "pointer",
+  "Screen": "screen",
+  "Style": "style",
+  "Window": "window",
+  "XosWakeGate": "xos_wake_gate"
+ },
+ "scope": "own code + live docs; excluded: docs/history, docs/work_log, frozen docs/reports, licenses, upstream trees, src/third_party, boot files",
+ "excluded_occurrences_note": "old words remain only in excluded history/upstream text",
+ "upstream_qualified_kept": {
+  "src/ports/qt6/aurora/theme.cpp": [
+   "QPalette::Window",
+   "QPalette::Button (Qt enums, not our classes)"
+  ]
+ },
+ "total_old_identifier_occurrences": 117,
+ "files": 20
+}

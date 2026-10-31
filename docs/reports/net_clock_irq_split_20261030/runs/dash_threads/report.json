@@ -1,0 +1,263 @@
+{
+  "status": "passed",
+  "scope": "C1 blocking pipe readiness and thread lifecycle; mechanism-only runtime",
+  "source_commit": "860405018c3f200b39efbe442147e89a3d2a399e",
+  "source_files": {
+    "tests/fixtures/dash_c1/pipe_threads.cpp": "4a0c381a40c6acaaff1014ec72aedab8b6cf936ca0e58745770fea27d6843c1a",
+    "tests/dash_c1_threads_smoke.py": "55072a3eff306fdf9635655e0c4189e94ba1240e8953bee3c5de75ae8de9b341",
+    "src/user/include/xos/thread_core.hpp": "a9fdf5923eab60d225678a96aacf31599d8d9f45f841ab1ee8de4737e4e8bb7d",
+    "src/user/arch/x86_64/thread_core.cpp": "25e43b0a323994e11c77cd1533f6144a3bc8e788b62499ade4331c1f1f3e0732",
+    "src/shared/include/xos/process_abi.hpp": "303402e2dbb83c291bb91d1908c0a0b4d880108aaf8b9633bb6a9e0fea576424",
+    "src/shared/include/xos/thread_abi.hpp": "2dc12676cebf56d6f16b682e52f35fa14dd21f0a2ea94525115f33bc8d576585",
+    "src/kernel/core/thread_lifecycle.hpp": "aab551cfc80f2d10c0f71dad3b169af411809b78ed20eec67dc584063f57cb12",
+    "src/kernel/arch/x86_64/tasks.cpp": "14bc4cb5e24f3e50b80c656f1a6d0138e5d576242202b660afad931d2e18d443"
+  },
+  "system": {
+    "build_id": "0394a5906b68ae38",
+    "manifest_sha256": "fd25eb6a051431c57f1cbc5df7df8dda557014298eb9274e26fe2acf85883865",
+    "image_sha256": "7cfab457894a4813785533ba9172a1ec461039e45a2a6f018bbc100a393a4782"
+  },
+  "sdk_inputs": {
+    "sdk/manifest.json": "7a5c9a228e55054692b023eb25dc975be7204f8072ee46ac9ca11f5ea2f052ee",
+    "sdk/crt0.o": "c87066edd7a94c72f0cbf6264c38a514ee912d74d6d8d86c2bd0af2a9897b000",
+    "sdk/user.ld": "d7574d234323eb7f2b481d6d99aca931bc236b843462e10cd2ef55b7ee88441b",
+    "sdk/lib/libxos.a": "22257c68ff1eb1838c09806b607fd5d058111122ce1effb48d221002b87d0618",
+    "sdk/lib/libxos_loader.a": "d9d5b399c65dacd98393f86fe3604609ba841d2a0b5dd8439d62e71a28d9009a",
+    "threading_core/libxos_thread_core.a": "8c3b434ee429740493ad31a306864d01768431609b23a9a38414565b1508061e",
+    "sdk/include/xos/abi_types.hpp": "2a417532cbdafc1d7545064ef78fe692b07ab0ec430f44367d779415fdc48478",
+    "sdk/include/xos/display_abi.hpp": "cb68448ca2d8d72622698a1e95441ae665a25e484a8abdcb94f29036378e1622",
+    "sdk/include/xos/display_client.hpp": "93f8349de6efdd765e31747847c512e7e76466930bd84f1b61fe3e6dbb15a395",
+    "sdk/include/xos/elf.hpp": "a80999738ae4985e09b0c05cac5495945794dc7bde11cb83ac9174423d1490f0",
+    "sdk/include/xos/execution.hpp": "6e79be3b2451d2581919fb63781b7abb7830821c7a521f402b6c0ae58a895eb3",
+    "sdk/include/xos/fault_sha256.hpp": "04e28a644eadaf21cc86dd1063456141caccd845d4a338604cd981212357f45d",
+    "sdk/include/xos/file_abi.hpp": "5ffbfe4d3d018401d35f5e03b737cfe75b415a8db2171c2513e07a86c22f0435",
+    "sdk/include/xos/file_client.hpp": "cdce7b2599c7a819f6badaa54d75becaac2b22fa9a42eeb3aa6bdc94abc3b8a8",
+    "sdk/include/xos/file_ui.hpp": "39fa7997ba0cdb8fd6d2b79231a9b926408d06f12bf3238554a715171ea00538",
+    "sdk/include/xos/libc_runtime.hpp": "d2808f67bf4be32d9de8d8003dded9c41ffa5b2169a8a63e1eb2cd93c9401dce",
+    "sdk/include/xos/process_abi.hpp": "303402e2dbb83c291bb91d1908c0a0b4d880108aaf8b9633bb6a9e0fea576424",
+    "sdk/include/xos/runtime_lock.hpp": "047cefb19504110544a94f9053950eb543bc827dace493513be31ccb24be9706",
+    "sdk/include/xos/sdk.hpp": "f147517828424c4ae52515c9aaa84d570465792f50dbf7fb0f4730c6e9d8355b",
+    "sdk/include/xos/spawn.hpp": "9aa935d0eecc18c19147f58a26073d77a80e6afe018c723c89649bcc86166ff8",
+    "sdk/include/xos/text.hpp": "c2c86767d2716c622128bd6023ae19a91a26613526a659449cf8f4ecdff61db2",
+    "sdk/include/xos/thread_abi.hpp": "2dc12676cebf56d6f16b682e52f35fa14dd21f0a2ea94525115f33bc8d576585",
+    "sdk/include/xos/tls.hpp": "c67cb8d2caea4f4da7ed44db61f26fba3ad20bc0f4f53e79d8ae752797d2e6e7"
+  },
+  "tools": {
+    "g++": {
+      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
+      "version": "x86_64-elf-g++ (GCC) 16.2.0"
+    },
+    "as": {
+      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+      "sha256": "530cf6fbe7d857e0d4ebbc52bcc017867fb7af65552a1f842dbcaa5c50db9026",
+      "version": "GNU assembler (GNU Binutils) 2.47.20260726"
+    },
+    "ld": {
+      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "sha256": "92002feac2ed2e5b05ae6fb47a1aab2979b3b46bd861a4439838e6bcb20e7fe5",
+      "version": "GNU ld (GNU Binutils) 2.47.20260726"
+    },
+    "qemu": {
+      "path": "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+      "sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
+      "version": "QEMU emulator version 11.1.2"
+    }
+  },
+  "build_commands": [
+    [
+      "/Users/perry_guo/homebrew/bin/x86_64-elf-g++",
+      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/target_tools/",
+      "-std=c++20",
+      "-ffreestanding",
+      "-nostdinc++",
+      "-fno-exceptions",
+      "-fno-rtti",
+      "-fno-stack-protector",
+      "-fno-threadsafe-statics",
+      "-fno-use-cxa-atexit",
+      "-fno-unwind-tables",
+      "-fno-asynchronous-unwind-tables",
+      "-fno-omit-frame-pointer",
+      "-fno-pic",
+      "-fno-pie",
+      "-g3",
+      "-gdwarf-4",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wconversion",
+      "-Wshadow",
+      "-m64",
+      "-march=x86-64",
+      "-mtune=generic",
+      "-mcmodel=small",
+      "-mno-red-zone",
+      "-ftls-model=local-exec",
+      "-I",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/sdk/include",
+      "-I",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/src/user/include",
+      "-c",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/tests/fixtures/dash_c1/pipe_threads.cpp",
+      "-o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/dash_c1_threads_release_final_evidence/pipe_threads.o"
+    ],
+    [
+      "/Users/perry_guo/homebrew/bin/x86_64-elf-g++",
+      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/target_tools/",
+      "-m64",
+      "-march=x86-64",
+      "-mtune=generic",
+      "-mcmodel=small",
+      "-mno-red-zone",
+      "-mgeneral-regs-only",
+      "-nostdlib",
+      "-static",
+      "-no-pie",
+      "-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
+      "-T",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/sdk/user.ld",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/sdk/crt0.o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/dash_c1_threads_release_final_evidence/pipe_threads.o",
+      "-Wl,--start-group",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/threading_core/libxos_thread_core.a",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/sdk/lib/libxos.a",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/sdk/lib/libxos_loader.a",
+      "-Wl,--end-group",
+      "-o",
+      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/dash_c1_threads_release_final_evidence/pipe_threads.elf"
+    ]
+  ],
+  "runs": [
+    {
+      "iteration": 0,
+      "command": "exec-driver /tests/pipe_threads",
+      "expected_exit": 0,
+      "expected_output": [
+        "C1_THREADS two_empty_read_waiters=ok",
+        "C1_THREADS full_write_wait_read_wake=ok",
+        "C1_THREADS check_enqueue_race_rounds=64 preexisting_readiness=ok",
+        "C1_THREADS close_last_writer_eof=ok close_last_reader_epipe=ok",
+        "C1_THREADS close_wait_token_with_same_direction_alias=ok",
+        "C1_THREADS resources=baseline PASS"
+      ],
+      "expected_resources": [
+        130279,
+        2,
+        0
+      ],
+      "status": "passed",
+      "output": "exec-driver /tests/pipe_threads\n[process] event=started pid=9 parent=7\r\n[process] pid=9 address_space=0x00000000001bb000\r\n[loader] started pid=9 file=/tests/pipe_threads\n[process] event=wait_blocked parent=7 child=9\r\nC1_THREADS two_empty_read_waiters=ok\nC1_THREADS full_write_wait_read_wake=ok\nC1_THREADS check_enqueue_race_rounds=64 preexisting_readiness=ok\nC1_THREADS close_last_writer_eof=ok close_last_reader_epipe=ok\n[task] event=reclaimed pid=10 pages=4\r\n[task] event=reclaimed pid=11 pages=4\r\nC1_THREADS close_wait_token_with_same_direction_alias=ok\nC1_THREADS resources=baseline PASS\n[task] event=reclaimed pid=9 pages=47\r\n[wait] pid=9 kind=exited code=0\nxsh> ",
+      "actual_resources": [
+        130279,
+        2,
+        0
+      ],
+      "actual_exit": 0,
+      "serial_log": {
+        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/dash_c1_threads_release_final_evidence/iteration_0.serial.log",
+        "sha256": "2ee480d98b27e59ff2fa7a8d157a576c557d90c69673c03cbc0f9d8654a912d6"
+      }
+    },
+    {
+      "iteration": 1,
+      "command": "exec-driver /tests/pipe_threads",
+      "expected_exit": 0,
+      "expected_output": [
+        "C1_THREADS two_empty_read_waiters=ok",
+        "C1_THREADS full_write_wait_read_wake=ok",
+        "C1_THREADS check_enqueue_race_rounds=64 preexisting_readiness=ok",
+        "C1_THREADS close_last_writer_eof=ok close_last_reader_epipe=ok",
+        "C1_THREADS close_wait_token_with_same_direction_alias=ok",
+        "C1_THREADS resources=baseline PASS"
+      ],
+      "expected_resources": [
+        130279,
+        2,
+        0
+      ],
+      "status": "passed",
+      "output": "exec-driver /tests/pipe_threads\n[process] event=started pid=12 parent=7\r\n[process] pid=12 address_space=0x00000000001bb000\r\n[loader] started pid=12 file=/tests/pipe_threads\n[process] event=wait_blocked parent=7 child=12\r\nC1_THREADS two_empty_read_waiters=ok\nC1_THREADS full_write_wait_read_wake=ok\nC1_THREADS check_enqueue_race_rounds=64 preexisting_readiness=ok\nC1_THREADS close_last_writer_eof=ok close_last_reader_epipe=ok\n[task] event=reclaimed pid=13 pages=4\r\n[task] event=reclaimed pid=14 pages=4\r\nC1_THREADS close_wait_token_with_same_direction_alias=ok\nC1_THREADS resources=baseline PASS\n[task] event=reclaimed pid=12 pages=47\r\n[wait] pid=12 kind=exited code=0\nxsh> ",
+      "actual_resources": [
+        130279,
+        2,
+        0
+      ],
+      "actual_exit": 0,
+      "serial_log": {
+        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/dash_c1_threads_release_final_evidence/iteration_1.serial.log",
+        "sha256": "b0ae6e456cc56a0a40b07e6c1e11b66d50e8eaecbeb5d8f536a282095f92be29"
+      }
+    }
+  ],
+  "checks": [
+    "C1_THREADS two_empty_read_waiters=ok",
+    "C1_THREADS full_write_wait_read_wake=ok",
+    "C1_THREADS check_enqueue_race_rounds=64 preexisting_readiness=ok",
+    "C1_THREADS close_last_writer_eof=ok close_last_reader_epipe=ok",
+    "C1_THREADS close_wait_token_with_same_direction_alias=ok",
+    "C1_THREADS resources=baseline PASS",
+    "2 runs preserve supervisor resource baseline"
+  ],
+  "not_run": [
+    "pthread_or_newlib_threaded_pipe_io",
+    "SMP",
+    "long_randomized_stress"
+  ],
+  "probe": {
+    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/dash_c1_threads_release_final_evidence/pipe_threads.elf",
+    "sha256": "974fd9fd5738a8c7c193051b4ebfc26308295782c30db2aa6a6cfa9ebfa51004",
+    "bytes": 83672,
+    "object_sha256": "f336e5726b7e0a5144796c03267eecb052723e9581481a44db7d1e7e0ba98e49"
+  },
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_c1_threads_tj_euqiy/boot.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_c1_threads_tj_euqiy/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_bd0hyqe9/qmp.sock,server=on,wait=off"
+  ],
+  "baseline_resources": [
+    130279,
+    2,
+    0
+  ],
+  "final_resources": [
+    130279,
+    2,
+    0
+  ],
+  "serial_log": {
+    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/dash_c1_threads_release_final_evidence/all.serial.log",
+    "sha256": "9604f91c10ecb7be80f3c029d605f714b7997a1bf424d5cceba1bc2d505e58b1"
+  }
+}

@@ -1,0 +1,200 @@
+{
+  "status": "PASSED_SCOPED_CLOCK_IRQ_SPLIT",
+  "date": "2026-10-30",
+  "base_main": "860405018c3f200b39efbe442147e89a3d2a399e",
+  "original_pr20_head": "da1a47c0b8455be82ba90aaf5bea393066839ac4",
+  "code_commit_before_evidence_commit": "486fc7aaa3a4ee2c99b9d664021085c4fddb4c61",
+  "default_build": {
+    "build_id": "0394a5906b68ae38",
+    "manifest": "build/default-manifest.json",
+    "kernel_sha256": "37672f41a3df8439e54f889d694f84acc0b374807d5c412a9712acf0ebb7018d",
+    "install_iso_sha256": "36f191c977231fdc9461842a19f179214151fed8f0c44ffc5cfa38bc6495314d",
+    "xos_img_sha256": "7cfab457894a4813785533ba9172a1ec461039e45a2a6f018bbc100a393a4782",
+    "nic_scope_audit": {
+      "default_clock_irq_probe": false,
+      "audit_clock_irq_probe": true,
+      "default_manifest_network_sources": [],
+      "audit_manifest_network_sources": [],
+      "default_build_has_network_option": false,
+      "changed_network_paths": [],
+      "changed_public_system_abi_paths": [],
+      "changed_kernel_paths": [
+        "src/kernel/arch/x86_64/exceptions.cpp",
+        "src/kernel/arch/x86_64/interrupt_wait.hpp",
+        "src/kernel/arch/x86_64/pic.cpp",
+        "src/kernel/arch/x86_64/pic.hpp",
+        "src/kernel/arch/x86_64/tasks.cpp",
+        "src/kernel/core/clock.cpp",
+        "src/kernel/core/console.cpp",
+        "src/kernel/core/kernel_main.cpp",
+        "src/kernel/include/xos/clock.hpp",
+        "src/kernel/include/xos/platform.hpp",
+        "src/kernel/platform/pc/interrupts.cpp",
+        "src/kernel/platform/pc/interrupts.hpp",
+        "src/kernel/platform/pc/ps2.cpp"
+      ],
+      "default_kernel_network_symbols": []
+    }
+  },
+  "audit_build": {
+    "build_id": "382b6c76a8005576",
+    "clock_irq_probe": true,
+    "manifest": "build/audit-manifest.json",
+    "kernel_sha256": "533574df1533fb732e8ea8e9f9599e1db42d43267f4b497a869ce68824b04680",
+    "install_iso_sha256": "4aa43e081b673580effcf3f6873285435a371bfd2500756d84fa7143214d57fb"
+  },
+  "dash_c3": {
+    "manifest": "build/dash-manifest.json",
+    "elf_sha256": "5ea141bf4d1c3e109c6d9e035c49c49e42a2cb0f4e2627d88a873087306c77b0",
+    "shell_smoke": "passed"
+  },
+  "qemu": {
+    "version": "QEMU emulator version 11.1.2",
+    "machine": "pc-i440fx-10.0",
+    "accelerator": "tcg",
+    "cpu": "qemu64,+rdrand",
+    "memory": "512M",
+    "smp": 1,
+    "nic": "none"
+  },
+  "verification": {
+    "clock_irq_audit": {
+      "status": "PASSED",
+      "boot_ticks_before_scheduler": 3,
+      "checks": [
+        "test_only_kernel_owner_EOI_mask_pre_run_controls",
+        {
+          "clock_syscalls_wait_RTC_run": 0,
+          "first": 68,
+          "last": 81,
+          "RTC_epoch_ns": 1793340932780000000
+        },
+        {
+          "clock_syscalls_wait_RTC_run": 1,
+          "first": 94,
+          "last": 107,
+          "RTC_epoch_ns": 1793340933040000000
+        },
+        {
+          "dash_clock_syscalls_wait_RTC": true,
+          "first": 136,
+          "last": 149,
+          "RTC_epoch_ns": 1793340933460000000
+        }
+      ],
+      "resources_before": [
+        130278,
+        2,
+        0
+      ],
+      "resources_after": [
+        130278,
+        2,
+        0
+      ],
+      "clock_user_elf_sha256": "2872587f46030a003f4260ae6482b63b98ba30c4e94225729976234f0f0e0842",
+      "dash_elf_sha256": "5ea141bf4d1c3e109c6d9e035c49c49e42a2cb0f4e2627d88a873087306c77b0",
+      "report": "runs/clock_irq_audit/report.json"
+    },
+    "kernel_smoke": {
+      "status": "passed",
+      "build_id": "0394a5906b68ae38",
+      "check_count": 18,
+      "checks": [
+        "elf_static_rx_r_rw_no_implicit_runtime_or_simd",
+        "bios_to_cpp_long_mode_bss_data_boot_info",
+        "idt_exception_gates_and_double_fault_ist",
+        "debug_console_memory_report",
+        "easter_egg_banner_and_guo_commands",
+        "e820_physical_page_allocator_bounds_and_double_free",
+        "virtual_map_write_unmap_roundtrip",
+        "live_page_tables_null_guard_and_w_x",
+        "debug_console_halt_reaches_cpu_hlt",
+        "page_fault_panic_reports_rip_and_cr2",
+        "general_protection_panic_with_error_code",
+        "invalid_opcode_panic",
+        "divide_error_panic",
+        "double_fault_panic_on_ist",
+        "unsupported_cpu_rejected_before_kernel",
+        "normalized_boot_info_failure_boundaries",
+        "all_common_cpp_compiles_for_second_isa",
+        "lldb_source_breakpoint_arguments_and_symbolic_stack"
+      ],
+      "report": "runs/kernel_smoke/report.json"
+    },
+    "display_ps2": {
+      "status": "passed",
+      "build_id": "0394a5906b68ae38",
+      "groups": 19,
+      "report": "runs/display_smoke/report.json"
+    },
+    "thread_wait": {
+      "status": "passed",
+      "build_id": "0394a5906b68ae38",
+      "groups": 15,
+      "checks": [
+        "guest_shared_memory_stack_static_tls_fpu_timer_preemption",
+        "guest_version_reserved_bad_output_entry_stack_tls_quota_abort_rollback",
+        "guest_join_value_unique_self_unknown_detach_and_reclaim",
+        "guest_wait_compare_deadline_wake_blocked_and_pinned_heap",
+        "guest_main_thread_exit_last_worker_revokes_pending_reservation",
+        "guest_last_exit_waits_for_peer_preempted_between_begin_exit_and_thread_exit",
+        "guest_worker_inherits_process_authority_and_retains_child_on_thread_exit",
+        "guest_worker_fault_stops_entire_process_and_reclaims",
+        "guest_original_fault_isolation_supervisor_survives",
+        "guest_original_file_service_and_sync",
+        "guest_FIFO_unique_join_claim",
+        "guest_partial_prepare_real_ENOMEM_rollback",
+        "guest_timeout_wake_same_tick_single_completion",
+        "guest_cross_process_same_VA_wait_keys",
+        "guest_kill_removes_blocked_threads_and_wait_records"
+      ],
+      "report": "runs/threading/report.json"
+    },
+    "dash_thread_wait": {
+      "status": "passed",
+      "build_id": "0394a5906b68ae38",
+      "groups": 7,
+      "baseline_resources": [
+        130279,
+        2,
+        0
+      ],
+      "final_resources": [
+        130279,
+        2,
+        0
+      ],
+      "report": "runs/dash_threads/report.json"
+    },
+    "dash_shell": {
+      "status": "passed",
+      "build_id": "0394a5906b68ae38",
+      "checks": [
+        "quotes",
+        "control",
+        "while",
+        "external",
+        "temporary_env",
+        "child_status",
+        "cwd",
+        "missing",
+        "positionals",
+        "reject_background",
+        "command_string",
+        "interactive_returns_to_xshell"
+      ],
+      "report": "runs/dash_shell/report.json"
+    }
+  },
+  "historical_attempts": {
+    "clock_guest_log_directory": "One initial harness attempt failed before QEMU launch because a nested output log directory did not exist; the harness log name was flattened and the final QEMU run passed.",
+    "dash_shell_profile": "The unqualified shell smoke attempt expected foreground pipelines to be rejected. This Dash C3 profile admits them; the profile-matched --isolated run passed."
+  },
+  "remaining_scope": [
+    "QEMU TCG one-CPU only; physical hardware, SMP, IOMMU and long randomized stress were not run.",
+    "No ring-3 VirtIO-Net driver or generic device authorization/MMIO/DMA/IRQ/revocation ABI is implemented by this PR."
+  ],
+  "no_kernel_nic_driver": true,
+  "public_system_abi_changes": 0
+}

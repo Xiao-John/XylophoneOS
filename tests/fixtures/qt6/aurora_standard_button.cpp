@@ -11,7 +11,7 @@
 Q_IMPORT_PLUGIN(QXosIntegrationPlugin)
 
 int main(int argc,char **argv){
-    QApplication app(argc,argv);aurora::initialize(app);aurora::DesktopSurface window;
+    QApplication app(argc,argv);aurora::initialize(app);aurora::desktop_surface window;
     auto *layout=new QVBoxLayout(&window);layout->setContentsMargins(90,90,90,90);
     auto *button=new QPushButton("Icon action");QPixmap icon(24,24);icon.fill(QColor(255,0,255));
     button->setIcon(QIcon(icon));button->setIconSize(QSize(24,24));button->setMinimumHeight(64);layout->addWidget(button);

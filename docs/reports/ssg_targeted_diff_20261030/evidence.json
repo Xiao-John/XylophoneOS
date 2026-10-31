@@ -1,0 +1,22 @@
+{
+  "fixture_sha256": "686cdbabb1613f02a96ff7dd4c977ca41bb4423ead5007e2736cf1ddb2c3d134",
+  "files": {
+    "README.md": "a580e165da892295ca7ce43fb9a5249517fc4d11e3403ffae1c40f301218cea5",
+    "combined-diagnostic-rerun/guest_qemu.log.gz": "571e6024741472562b77b883daa3fa4817a00d1c5b16b61df75c32b162936a94",
+    "combined-diagnostic-rerun/guest_serial.log.gz": "c6455299cf8567f49ae765fa5338816daf67c7ac4dabbd5ce6bea621b6e8d072",
+    "combined-diagnostic-rerun/report.json": "5a870c5e12f947a46027fb0489ed08465de3bf2529fa4f8b1363c568ddea75ad",
+    "combined-diagnostic-rerun/serial.log.gz": "c6455299cf8567f49ae765fa5338816daf67c7ac4dabbd5ce6bea621b6e8d072",
+    "combined-failed/guest_qemu.log.gz": "1bad5b738c183d1a5177bf2f69dd4b6eefe3f5dce28d5720e73f646ee5208a84",
+    "combined-failed/guest_serial.log.gz": "ff98090b1940b9dbc75bd9fe5d5f261f34dfdaea9ebbc8150ccb9a1506a462c2",
+    "combined-failed/report.json": "cdb34b7e086314fc450bb5606fc30ece23f6e671eb1d907065fee351e16a9def",
+    "combined-failed/serial.log.gz": "ff98090b1940b9dbc75bd9fe5d5f261f34dfdaea9ebbc8150ccb9a1506a462c2",
+    "combined-failed.log.gz": "3a1a6d3efc2cbb753ffa0daead1a84c5a147dba25ca7f288bf1766a7e7b96668",
+    "debug-source.cpp.gz": "e1e75c498dc45dd637aa97913e4b283a6b3ea2abe8c28571656eb5b8e0c84107",
+    "targeted-build.log.gz": "5dc6682a30e29a32d35e1d35b134f010f2b077b772dcefeb1a0c01ab79f74ca5",
+    "targeted-receipt.json.gz": "aa3d0d4366f4d370c9d9da7e54f00c2198d9b62bc7e53845ccda831c78b52b96",
+    "targeted-sdk/guest_qemu.log.gz": "a8ff2193d1357df32ceba4cbfefb46f7b0ca9df5fd0ec7c705a903171dc63d74",
+    "targeted-sdk/guest_serial.log.gz": "83e6eb03edece83255a065158f3d5c4f77c99bce38bc4db805675d9edda2e1ae",
+    "targeted-sdk/report.json": "5e329dfc8d7061f6ffc5c4899b930ab2c95e8fdf9edc006e68677ae3b468f776",
+    "targeted-sdk/serial.log.gz": "83e6eb03edece83255a065158f3d5c4f77c99bce38bc4db805675d9edda2e1ae"
+  }
+}

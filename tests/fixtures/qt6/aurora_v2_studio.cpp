@@ -17,9 +17,9 @@ int main(int argc,char **argv) {
     const int bits=argc>1?std::atoi(argv[1]):16;
     auto prefs=aurora::preferences();prefs.scheme=bits&1?aurora::Scheme::daybreak:aurora::Scheme::midnight;
     prefs.high_contrast=bits&2;prefs.reduce_transparency=bits&4;prefs.reduce_motion=bits&8;prefs.quality=aurora::Quality((bits>>4)&3);prefs.glass_enabled=!(bits&64);
-    aurora::set_preferences(prefs);aurora::DesktopSurface window;
+    aurora::set_preferences(prefs);aurora::desktop_surface window;
     auto *root=new QVBoxLayout(&window);root->setContentsMargins(60,56,60,56);
-    auto *panel=new aurora::GlassPanel(&window);root->addWidget(panel);
+    auto *panel=new aurora::glass_panel(&window);root->addWidget(panel);
     auto *l=new QVBoxLayout(panel);l->setContentsMargins(28,24,28,24);l->setSpacing(16);
     l->addWidget(new QLabel("NORTHSTAR  /  Independent SDK Studio"));
     auto *field=new QLineEdit("Shared native controls");field->setMinimumHeight(36);l->addWidget(field);

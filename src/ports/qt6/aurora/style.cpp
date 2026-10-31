@@ -12,9 +12,9 @@
 static void init_aurora_resource() { Q_INIT_RESOURCE(xos_aurora); }
 namespace aurora {
 namespace {
-class Style final : public QProxyStyle {
+class style final : public QProxyStyle {
 public:
-    Style():QProxyStyle(QStyleFactory::create("Fusion")) {setObjectName("Xylophone Aurora Glass");}
+    style():QProxyStyle(QStyleFactory::create("Fusion")) {setObjectName("Xylophone Aurora Glass");}
     void polish(QWidget *w) override {QProxyStyle::polish(w);w->setAttribute(Qt::WA_Hover);w->setMouseTracking(true);}
     void drawControl(ControlElement element,const QStyleOption *option,QPainter *p,const QWidget *w=nullptr) const override {
         if(element!=CE_PushButton){QProxyStyle::drawControl(element,option,p,w);return;}
@@ -34,7 +34,7 @@ public:
         if(b->state&State_HasFocus){p->setPen(QPen(t.focus,2));p->drawPath(corner(r.adjusted(3,3,-3,-3),t.control_radius-3));}
         // Let Qt render the standard label, including icons and mnemonics,
         // while keeping the Aurora panel and its intended foreground color.
-        auto label=*b;label.palette.setColor(QPalette::ButtonText,accent?t.content:t.text);
+        auto label=*b;if(!(w&&w->testAttribute(Qt::WA_SetPalette)))label.palette.setColor(QPalette::ButtonText,accent?t.content:t.text);
         QProxyStyle::drawControl(CE_PushButtonLabel,&label,p,w);p->restore();
     }
     void drawPrimitive(PrimitiveElement element,const QStyleOption *o,QPainter *p,const QWidget *w=nullptr) const override {
@@ -62,6 +62,6 @@ void initialize(QApplication &app) {
 void select_style(QApplication &app,bool glass) {
     const auto name=glass?QStringLiteral("Xylophone Aurora Glass"):QStringLiteral("fusion");
     if(app.style()->objectName().compare(name,Qt::CaseInsensitive)!=0)
-        app.setStyle(glass?static_cast<QStyle*>(new Style):QStyleFactory::create("Fusion"));
+        app.setStyle(glass?static_cast<QStyle*>(new style):QStyleFactory::create("Fusion"));
 }
 }

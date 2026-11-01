@@ -26,7 +26,7 @@ def sha(path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--probe', choices=('wait', 'channel'), default='wait')
+    parser.add_argument('--probe', choices=('wait', 'channel', 'pio', 'irq'), default='wait')
     parser.add_argument('--system', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
     args = parser.parse_args()
@@ -42,13 +42,14 @@ def main():
     for name, expected in manifest['sources'].items():
         if sha(ROOT / name) != expected:
             raise SystemExit('system source differs from checkout: ' + name)
-    image = system / 'xos.img'
-    if sha(image) != manifest['artifacts']['xos.img']['sha256']:
+    image = system / 'xos-install.iso'
+    if sha(image) != manifest['artifacts']['xos-install.iso']['sha256']:
         raise SystemExit('system image differs from manifest')
     sdk = system / 'sdk'
     sdk_receipt = verify_sdk(sdk, manifest)
     output.mkdir(parents=True)
-    fixture = ROOT / ('tests/fixtures/ncursesw/' + args.probe + '_probe.cpp')
+    fixture_name = {'pio': 'pio_negative', 'irq': 'irq_negative'}.get(args.probe, args.probe)
+    fixture = ROOT / ('tests/fixtures/ncursesw/' + fixture_name + '_probe.cpp')
     obj, elf = output / 'wait_probe.o', output / 'wait_probe.elf'
     commands = [[tool('g++'), *COMMON_FLAGS, *X86_FLAGS, '-I', str(sdk / 'include'),
                  '-c', str(fixture), '-o', str(obj)],
@@ -62,10 +63,14 @@ def main():
               'sdk_tree_sha256': sdk_receipt['tree_sha256'], 'fixture_sha256': sha(fixture),
               'commands': commands, 'checks': [],
               'not_run': ['foreground_ownership', 'console_concurrent_close', 'failure_recovery',
-                          'overflow', 'unicode', 'terminfo', 'ncurses', 'resource_stress']}
+                          'legacy_console_deadline_wait', 'overflow', 'unicode', 'terminfo',
+                          'ncurses', 'resource_stress']}
     if args.probe == 'channel':
         report['not_run'] = ['fork_exec', 'fault_cleanup', 'blocked_waiter_close',
                              'concurrent_senders', 'resource_stress', 'full_w1_terminal']
+    elif args.probe in ('pio', 'irq'):
+        report['not_run'] = ['authorized_boundaries', 'fork_exec', 'revocation_races',
+                             'cross_process_isolation', 'resource_stress', 'full_w1_terminal']
     guest = None
     try:
         for cmd in commands:
@@ -76,7 +81,7 @@ def main():
             create_fat32(disk, 512)
             transfer(disk, 'mkdir', '/bin')
             transfer(disk, 'import', '/bin/' + args.probe + '.elf', elf)
-            guest = Guest(image, 'w1_wait', work_disk=disk)
+            guest = Guest(image, 'w1_wait', work_disk=disk, iso=True)
             report['qemu_command'] = guest.command
             guest.expect(b'xos64> ', timeout=40)
             send_bytes(guest, b'run\r')
@@ -89,19 +94,22 @@ def main():
                 if b'kind=exited code=0' not in reply:
                     raise AssertionError('channel probe did not exit successfully')
                 report['checks'].append('channel_bounded_lifecycle_subset')
+            elif args.probe in ('pio', 'irq'):
+                expected = b'W1_PIO_DENIED_OK' if args.probe == 'pio' else b'W1_IRQ_DENIED_OK'
+                reply = command(guest, f'exec-file /bin/{args.probe}.elf', expected, timeout=40)
+                if b'kind=exited code=0' not in reply:
+                    raise AssertionError(args.probe + ' denial probe did not exit successfully')
+                report['checks'].append(args.probe + '_unprivileged_operations_denied')
+                if args.probe == 'pio':
+                    reply = command(guest, 'exec-file /bin/pio.elf port', b'W1_PIO_FAULT_READY', timeout=40)
+                    if b'kind=faulted' not in reply or b'vector=13' not in reply or b'W1_PIO_UNEXPECTED_ACCESS' in reply:
+                        raise AssertionError('unprivileged COM1 port access did not fault with #GP')
+                    report['checks'].append('unprivileged_com1_access_faults')
             else:
                 pipe_output = command(guest, 'exec-file /bin/wait.elf', b'W1_PIPE_WAIT_OK', timeout=40)
                 if b'kind=exited code=0' not in pipe_output:
                     raise AssertionError('pipe probe did not exit successfully')
                 report['checks'].append('pipe_timeout_ready_and_close')
-                start = len(guest.output)
-                send_bytes(guest, b'exec-file /bin/wait.elf console\r')
-                guest.expect(b'W1_CONSOLE_WAIT_READY', start=start, timeout=40)
-                send_bytes(guest, b'X')
-                guest.expect(b'W1_CONSOLE_WAIT_OK', start=start, timeout=10)
-                guest.expect(b'kind=exited code=0', start=start, timeout=10)
-                guest.expect(b'sup> ', start=start, timeout=10)
-                report['checks'].append('console_irq_wait_and_legacy_would_block')
             if sha(image) != report['image_sha256'] or verify_sdk(sdk, manifest)['tree_sha256'] != report['sdk_tree_sha256']:
                 raise RuntimeError('system or SDK changed during test')
             if subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=normal'],

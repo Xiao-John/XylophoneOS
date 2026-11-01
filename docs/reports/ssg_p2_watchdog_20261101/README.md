@@ -9,3 +9,5 @@ geometry, navigation, visibility, rejected Canvas and resource-return test
 passed 7/7 checks. This is a small-fixture Browser result; it does not qualify
 the known large-page pagination failure or prove that all exit races are fixed.
 The corresponding guest serial output is `browser-guest.serial.log.gz`.
+
+The current rebased diagnostic Browser also passed 7/7 small-fixture guest checks; the serial and runner records are included. The large-page result remains FAILED or capped.

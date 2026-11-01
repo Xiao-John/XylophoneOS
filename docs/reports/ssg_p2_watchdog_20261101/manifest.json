@@ -1,7 +1,9 @@
 {
   "version": 1,
   "files": {
-    "README.md": "871cdd74de9bfddb9dd84edb94d11a916d2dd2e803144a9216ba87eeee32aa46",
-    "browser-guest.serial.log.gz": "70f3691895834768fa2a0359e536e7ef019587b1dc1c703cbc380cb32c8e64d3"
+    "README.md": "639f3c0c0e9195adb3b757123324cf96224e985cb4d9da626bc9368c0fcfbc6a",
+    "browser-guest.serial.log.gz": "70f3691895834768fa2a0359e536e7ef019587b1dc1c703cbc380cb32c8e64d3",
+    "current-browser-runner.log.gz": "7220238d579f3e827338293e7992878280dd9f1ba6d0234e30250cc3d7c43690",
+    "current-browser.serial.log.gz": "88acf66f6370224e850f13d059556e8cf877f68c99aecdcd7f62ee4e46a81a2a"
   }
 }

@@ -1,0 +1,18 @@
+exec-driver /tests/pipe_threads
+[process] event=started pid=9 parent=7
+[process] pid=9 address_space=0x00000000001bb000
+[loader] started pid=9 file=/tests/pipe_threads
+[process] event=wait_blocked parent=7 child=9
+C1_THREADS two_empty_read_waiters=ok
+C1_THREADS full_write_wait_read_wake=ok
+C1_THREADS check_enqueue_race_rounds=64 preexisting_readiness=ok
+C1_THREADS close_last_writer_eof=ok close_last_reader_epipe=ok
+[task] event=reclaimed pid=10 pages=4
+[task] event=reclaimed pid=11 pages=4
+C1_THREADS close_wait_token_with_same_direction_alias=ok
+C1_THREADS resources=baseline PASS
+[task] event=reclaimed pid=9 pages=47
+[wait] pid=9 kind=exited code=0
+xsh> stats
+[resources] free=130279 tasks=2 completions=0
+xsh> 

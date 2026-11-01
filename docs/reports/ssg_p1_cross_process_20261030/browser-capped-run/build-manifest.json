@@ -2,65 +2,65 @@
   "status": "BUILT",
   "commands": [
     [
-      "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/sdk/compile.py",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/src/user/apps/ssg_session.cpp",
+      "${XOS_LOCAL_PATH_45f0d387b711}",
+      "${XOS_LOCAL_PATH_7558d9b65a1f}",
+      "${XOS_LOCAL_PATH_60da79a25b14}",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/build/ssg-p1-final-04/session.elf"
+      "${XOS_LOCAL_PATH_c522f9f0d643}"
     ],
     [
-      "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/src/ports/qt6/build_fixture.py",
+      "${XOS_LOCAL_PATH_45f0d387b711}",
+      "${XOS_LOCAL_PATH_6c3f3c0a3fc9}",
       "--source",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/src/user/apps/ssg_consumer.cpp",
+      "${XOS_LOCAL_PATH_c15efeb1ae20}",
       "--qrc",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/tests/fixtures/qt6/resources.qrc",
+      "${XOS_LOCAL_PATH_821ab46874c3}",
       "--sdk",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/sdk",
+      "${XOS_LOCAL_PATH_e7868eca8b9d}",
       "--qt-build",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/widgets",
+      "${XOS_LOCAL_PATH_4969cc463484}",
       "--host-qt",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/host-install",
+      "${XOS_LOCAL_PATH_2fa9b10b00f8}",
       "--binutils",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/.cache/xos_seed/threading_sdk_tools",
+      "${XOS_LOCAL_PATH_a0f1a7db3488}",
       "--output",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/build/ssg-p1-final-04/consumer/ssg-consumer.elf"
+      "${XOS_LOCAL_PATH_09c130c7da1f}"
     ],
     [
-      "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/src/ports/qt6/build_widgets_fixture.py",
+      "${XOS_LOCAL_PATH_45f0d387b711}",
+      "${XOS_LOCAL_PATH_44a16ac43553}",
       "--source",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/src/ports/qt6/editor/main.cpp",
+      "${XOS_LOCAL_PATH_af74f320cda7}",
       "--sdk",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/sdk",
+      "${XOS_LOCAL_PATH_e7868eca8b9d}",
       "--qt-build",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/widgets",
+      "${XOS_LOCAL_PATH_4969cc463484}",
       "--qt-source",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/qtbase",
+      "${XOS_LOCAL_PATH_d40fe03ada37}",
       "--core-build",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/widgets",
+      "${XOS_LOCAL_PATH_4969cc463484}",
       "--host-qt",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/host-install",
+      "${XOS_LOCAL_PATH_2fa9b10b00f8}",
       "--binutils",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/.cache/xos_seed/threading_sdk_tools",
+      "${XOS_LOCAL_PATH_a0f1a7db3488}",
       "--output",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/build/ssg-p1-final-04/notes/notes.elf"
+      "${XOS_LOCAL_PATH_921065c15932}"
     ],
     [
-      "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/src/ports/aurora_browser/build.py",
+      "${XOS_LOCAL_PATH_45f0d387b711}",
+      "${XOS_LOCAL_PATH_a7dfa7cc3c19}",
       "--sdk",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/sdk",
+      "${XOS_LOCAL_PATH_e7868eca8b9d}",
       "--qt-build",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/widgets",
+      "${XOS_LOCAL_PATH_4969cc463484}",
       "--qt-source",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/qtbase",
+      "${XOS_LOCAL_PATH_d40fe03ada37}",
       "--host-qt",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/host-install",
+      "${XOS_LOCAL_PATH_2fa9b10b00f8}",
       "--binutils",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/.cache/xos_seed/threading_sdk_tools",
+      "${XOS_LOCAL_PATH_a0f1a7db3488}",
       "--output",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/build/ssg-p1-final-04/browser/browser.elf"
+      "${XOS_LOCAL_PATH_20a7b04a8c13}"
     ]
   ],
   "source_sha256": {
@@ -82,20 +82,20 @@
   },
   "sdk_manifest_sha256": "24dcc3ba938013c852a12f386ea2f7e16ebcec7cb4bfaff477794530c5d0e4b1",
   "qt_cache_sha256": "406964513c0220090224068428d016bd0a75553da0d976be545dc02c8e8cd465",
-  "output": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-cross-process/build/ssg-p1-final-04",
+  "output": "${XOS_LOCAL_PATH_ce8c773c7e92}",
   "tools": {
     "x86_64-elf-g++": {
-      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "path": "${XOS_LOCAL_PATH_b83bf3f27d41}",
       "sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
       "version": "x86_64-elf-g++ (GCC) 16.2.0"
     },
     "x86_64-elf-gcc": {
-      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+      "path": "${XOS_LOCAL_PATH_ad67adb3804e}",
       "sha256": "078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f",
       "version": "x86_64-elf-gcc (GCC) 16.2.0"
     },
     "x86_64-elf-ar": {
-      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
+      "path": "${XOS_LOCAL_PATH_a7474415be4b}",
       "sha256": "a7e59b3482a0e26d000bd2f4f60f7e8ad1e401909e03ca4c746ba126639087a3",
       "version": "GNU ar (GNU Binutils) 2.47.20260726"
     }

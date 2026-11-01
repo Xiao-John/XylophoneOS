@@ -2,27 +2,27 @@
   "status": "PASSED_SCOPED",
   "inputs": {
     "image": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img",
+      "path": "${XOS_WORKTREE_313E5C73D324}/build/aurora_glass/system-v5/xos.img",
       "sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08"
     },
     "session": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-p2-pagination/build/ssg-p2-regression/session.elf",
+      "path": "${XOS_WORKTREE_3BCADBCA6C5F}/build/ssg-p2-regression/session.elf",
       "sha256": "c05e6b9fbfcb3376d57178fbab67b88a3a2802afcd5a7d5a1b943c21f057fa48"
     },
     "consumer": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-p2-pagination/build/ssg-p2-regression/consumer/ssg-consumer.elf",
+      "path": "${XOS_WORKTREE_3BCADBCA6C5F}/build/ssg-p2-regression/consumer/ssg-consumer.elf",
       "sha256": "790eac8363e77d91ad14d489759ec51ca439e800b67b5022e6a18bf6df45920f"
     },
     "notes": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-p2-pagination/build/ssg-p2-regression/notes/notes.elf",
+      "path": "${XOS_WORKTREE_3BCADBCA6C5F}/build/ssg-p2-regression/notes/notes.elf",
       "sha256": "05153407b8d46325f2204d90e4bddb522d66bfda73632c0a8b7e4570ea5d4969"
     },
     "browser": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-ssg-p2-pagination/build/ssg-p2-regression/browser/browser.elf",
+      "path": "${XOS_WORKTREE_3BCADBCA6C5F}/build/ssg-p2-regression/browser/browser.elf",
       "sha256": "671f4015e4c2034bde3b63e411ad135a4b4771c6d1f54927ae816c814c1c631d"
     },
     "dash": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_frozen/dash.elf",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_frozen/dash.elf",
       "sha256": "d262b8299734d07c27e8d5ac696a3460c82cba4fe56159d3cbdcceee8f703ff9"
     }
   },
@@ -46,7 +46,7 @@
     "display_and_guest_resource_baseline_restored"
   ],
   "qemu_command": [
-    "../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "${XOS_QEMU}",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -64,7 +64,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_WORKTREE_313E5C73D324}/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -75,9 +75,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ssg_ipc_rvpa5sm5/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ssg_ipc_rvpa5sm5/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_rxpq_bq4/qmp.sock,server=on,wait=off"
+    "unix:${XOS_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_rxpq_bq4/qmp.sock,server=on,wait=off"
   ],
   "baseline_resources": [
     130279,

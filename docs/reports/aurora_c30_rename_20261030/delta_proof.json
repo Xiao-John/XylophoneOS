@@ -1,0 +1,47 @@
+{
+  "method": "word-boundary replace of old names with new names in 3f0d3a0 blob; must equal a3ae0f0 blob",
+  "all_identifier_only": true,
+  "exceptions": [],
+  "docs/contracts/semantic_scene_graph.md": {
+    "identifier_only": true
+  },
+  "docs/design/aurora_glass_v2.md": {
+    "identifier_only": true
+  },
+  "src/ports/qt6/aurora/README.md": {
+    "identifier_only": true
+  },
+  "src/ports/qt6/aurora/desktop.hpp": {
+    "identifier_only": true
+  },
+  "src/ports/qt6/aurora/semantics.cpp": {
+    "identifier_only": true
+  },
+  "src/ports/qt6/aurora/semantics.hpp": {
+    "identifier_only": true
+  },
+  "src/ports/qt6/aurora/ssg.cpp": {
+    "identifier_only": true
+  },
+  "src/ports/qt6/aurora/ssg.hpp": {
+    "identifier_only": true
+  },
+  "tests/fixtures/qt6/aurora_render_probe.cpp": {
+    "identifier_only": true
+  },
+  "tests/fixtures/qt6/aurora_semantics.cpp": {
+    "identifier_only": true
+  },
+  "tests/fixtures/qt6/aurora_standard_button.cpp": {
+    "identifier_only": true
+  },
+  "tests/fixtures/qt6/aurora_v2_studio.cpp": {
+    "identifier_only": true
+  },
+  "tests/fixtures/qt6/ssg_diff_integrity.cpp": {
+    "identifier_only": true
+  },
+  "tests/ssg_diff_guest.py": {
+    "identifier_only": true
+  }
+}

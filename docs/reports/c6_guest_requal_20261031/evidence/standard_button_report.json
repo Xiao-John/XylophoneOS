@@ -1,0 +1,64 @@
+{
+  "status": "PASSED",
+  "image_sha256": "8a7eb73688aebe1846f8849951c77f0489b11e583a632803f4939ebe1ae49b6d",
+  "payload_sha256": "161225768bd3a688de527c1ac986a625419b9367e9de2c3f01b1ec117d6e5160",
+  "qemu_command": [
+    "/opt/homebrew/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/private/tmp/xos_b1/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/x6/3clfjww5133fn5kbknq7c_2m0000gn/T/xos_standard_button_82jqr6ny/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/x6/3clfjww5133fn5kbknq7c_2m0000gn/T/xos_vizdcr1c/qmp.sock,server=on,wait=off"
+  ],
+  "baseline_resources": [
+    130279,
+    2,
+    0
+  ],
+  "checks": [
+    {
+      "name": "button_icon",
+      "status": "PASS"
+    },
+    {
+      "name": "explicit_palette",
+      "status": "PASS"
+    },
+    {
+      "name": "palette_painted",
+      "status": "PASS"
+    }
+  ],
+  "screenshot_sha256": "29914c56e6b874af7f4f0e21826fc61a0280df9bed6841b3a5dec91d414f54b0",
+  "after_resources": [
+    130279,
+    2,
+    0
+  ]
+}

@@ -14,12 +14,12 @@
 namespace aurora {
 // One GUI-owned timer supervises the worker's partial frame and blocked write.
 // If the GUI event loop itself is wedged, this cannot enforce a hard deadline.
-class GuiWatchdog {
+class gui_watchdog {
     QObject *owner;QTimer timer;alignas(4) xos::u32 state=0;
     xos::u32 timer_generation=0; // accessed only on the GUI thread
     static constexpr xos::u32 timed_out=0xfffffffeu;
 public:
-    explicit GuiWatchdog(QObject *o):owner(o),timer(o){
+    explicit gui_watchdog(QObject *o):owner(o),timer(o){
         timer.setSingleShot(true);
         QObject::connect(&timer,&QTimer::timeout,owner,[this]{
             auto s=__atomic_load_n(&state,__ATOMIC_ACQUIRE);
@@ -45,14 +45,14 @@ public:
     bool expired()const{return __atomic_load_n(&state,__ATOMIC_ACQUIRE)==timed_out;}
 };
 // Application-owned, opt-in and prewired. The only worker touches bytes;
-// every QtScene call is posted to this object's GUI thread.
-class PipeProvider final : public QObject {
+// every qt_scene call is posted to this object's GUI thread.
+class pipe_provider final : public QObject {
     using Snapshot=std::function<QJsonObject(bool,const QString &,unsigned)>;
     using Diff=std::function<QJsonObject(quint64,const QString &)>;
     Snapshot snapshot_source;Diff diff_source;
     QString instance;
     QThread *worker=nullptr;
-    GuiWatchdog watch;
+    gui_watchdog watch;
     alignas(4) xos::u32 stopping=0, mailbox=0;
     QByteArray reply;
 
@@ -120,11 +120,11 @@ class PipeProvider final : public QObject {
         xos::sdk::close(0);xos::sdk::close(2);
     }
 public:
-    PipeProvider(QtScene &source,QString source_instance)
+    pipe_provider(qt_scene &source,QString source_instance)
         :snapshot_source([&source](bool visible,const QString &role,unsigned limit){source.set_node_limit(limit);return source.snapshot(visible,role);}),
          diff_source([&source](quint64 version,const QString &epoch){return source.diff(version,epoch);}),
          instance(std::move(source_instance)),watch(this){}
-    PipeProvider(QString source_instance,Snapshot snapshot,Diff diff)
+    pipe_provider(QString source_instance,Snapshot snapshot,Diff diff)
         :snapshot_source(std::move(snapshot)),diff_source(std::move(diff)),
          instance(std::move(source_instance)),watch(this){}
     void start(){worker=QThread::create([this]{run();});worker->start();}
@@ -135,6 +135,6 @@ public:
         __atomic_store_n(&mailbox,1u,__ATOMIC_RELEASE);xos::thread::wake(&mailbox);
         worker->wait();delete worker;worker=nullptr;
     }
-    ~PipeProvider() override {stop();}
+    ~pipe_provider() override {stop();}
 };
 }

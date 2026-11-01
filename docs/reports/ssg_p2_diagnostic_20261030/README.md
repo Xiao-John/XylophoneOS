@@ -1,7 +1,14 @@
+> **Evidence version:** This checkout is a path-sanitized derivative of the
+> frozen source evidence, not byte-identical original logs or receipts. The
+> original index and original/export hashes are recorded in
+> [the Issue 37 provenance record](../issue37_path_hygiene/pr47-lineage.json).
+> Historical input hashes in the reports still refer to the original run;
+> configure the named template roots and matching inputs before any reproduction.
+
 # SSG-P2: preliminary large-page diagnosis (incomplete)
 
 This is a diagnostic step, not the SSG-P2 pagination implementation. The
-existing P1 reports, fixtures and raw evidence have not been rewritten.
+original P1 reports and fixtures remain identifiable in their source commits; the current public exports are path-sanitized derivatives.
 The original browser regression and instrumented version both fail at the
 scroll diff assertion; neither is a passing large-page qualification.
 

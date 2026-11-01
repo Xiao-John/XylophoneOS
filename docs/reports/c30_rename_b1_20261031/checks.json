@@ -1,0 +1,21 @@
+{
+  "host": "macOS arm64, clang++ (Apple), homebrew qtbase 6.12.0 headers/frameworks/private, XOS SDK 0.0.1-1026 + threading_sdk headers via -idirafter, Qt 6.12 libexec/moc",
+  "PASSED": [
+    "host syntax check 14/14 rename-dependent TUs+fixtures (clang -fsyntax-only): aurora{blur,semantics,ssg,style,theme}.cpp, editor/main.cpp, qpa/qxos.cpp, runtime{qeventdispatcher_xos,unsupported_posix}.cpp, fixtures{aurora_showcase,widgets_memory,wake_gate_probe,ssg_diff_integrity}, tests/aurora_blur_cases.cpp",
+    "ssg_diff_integrity built and RUN on host: 13/13 checks PASS, failures=0, incl. stale_generation_since_resets (renamed code, clang++ link against homebrew Qt 6.12)",
+    "mock_semantic_agent stdin probes: valid local snapshot -> proposal rc=0; {} -> ValueError rc=1; 70000-byte input -> ValueError 'snapshot budget' (65536 budget enforced)",
+    "tests/docs_consistency.py: passed, local_links 543 / allocated_syscalls 66 / history_sources 73",
+    "tests/abi_doc_consistency.py: PASS, 16 entries unchanged, no ABI added",
+    "git diff --check origin/main..: clean",
+    "delta proof: substitution(old->new) applied to pre-image c47b355 reproduces rename commit ac8160d byte-for-byte for all 20 files (identifier-only)"
+  ],
+  "CONTEXT": [
+    "tests/aurora_scope_audit.py --base c47b355: kernel_source_changes=[], violations=[src/ports/qt6/qpa/qxos.cpp] -- the audit protects app-scope tasks from touching src/ports/qt6/qpa/; THIS task is the C30-mandated rename inside that file itself, covered by the identifier-only proof. Default --base 3377dbf additionally lists main's post-#19 kernel history because the tool diffs from its base, not from the branch fork point."
+  ],
+  "NOT_RUN": [
+    "guest QEMU suites (aurora_standard_button_guest, aurora_platform_guest, ssg_diff_guest, blur render): target Qt build tree and SDK images are not on this host (same author-host limitation as 0112); frozen guest evidence stays bound to pre-rename sources and is extended transitively by delta_proof.json, not rebound",
+    "qxos.moc regeneration: host moc 6.12.0 rejects the IID-identifier Q_PLUGIN_METADATA form that target moc 6.8.3 accepts; an empty placeholder was used so -fsyntax-only can pass -- moc-generated bodies are NOT host-checked; the target build remains authoritative for them",
+    "qmutex_xos.cpp host check: homebrew Qt 6.12 private qmutex_p.h API drift (xosCount/xosMutex no longer match); the file is byte-identical to origin/main and includes no renamed header -- it is not rename-dependent and was excluded from the rename acceptance scope"
+  ],
+  "note": "host syntax/function runs are supplemental; frozen guest evidence remains bound to its original sources and is not rebound (same binding rule as aurora_c30_rename_20261030)"
+}

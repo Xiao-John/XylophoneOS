@@ -24,7 +24,7 @@ class HtmlView final:public QAbstractScrollArea,public litehtml::document_contai
     QString page,caption;
     int imports=0,fonts=0,clipDepth=0;
     bool layoutBusy=false;
-    aurora::SceneStream scene;
+    aurora::scene_stream scene;
     bool scene_allowed=false;
     QMap<quintptr,quint64> scene_ids;
     quint64 next_scene_id=1;
@@ -34,7 +34,7 @@ class HtmlView final:public QAbstractScrollArea,public litehtml::document_contai
     void relayout(){if(!doc||layoutBusy)return;
         struct Reset { bool &flag; ~Reset(){flag=false;} } reset{layoutBusy};layoutBusy=true;
         try{doc->render(viewport()->width());verticalScrollBar()->setRange(0,qMin(65536,qMax(0,doc->height()-viewport()->height())));verticalScrollBar()->setPageStep(viewport()->height());}
-        catch(const std::exception&){doc.reset();std::printf("BROWSER_LAYOUT_FAILED resource-budget\n");}viewport()->update();}
+        catch(const std::exception&){doc.reset();std::printf("BROWSER_LAYOUT_FAILED resource-budget\n");}viewport()->update();log_anchor_point();}
     void eventAt(QMouseEvent *event,int kind){if(!doc)return;litehtml::position::vector dirty;int x=int(event->position().x()),y=int(event->position().y());if(kind==0)doc->on_mouse_over(x,y+verticalScrollBar()->value(),x,y,dirty);if(kind==1)doc->on_lbutton_down(x,y+verticalScrollBar()->value(),x,y,dirty);if(kind==2)doc->on_lbutton_up(x,y+verticalScrollBar()->value(),x,y,dirty);if(!dirty.empty())viewport()->update();}
 protected:
     void paintEvent(QPaintEvent*)override {QPainter p(viewport());p.fillRect(viewport()->rect(),Qt::white);if(!doc)return;painter=&p;clipDepth=0;litehtml::position clip(0,0,viewport()->width(),viewport()->height());doc->draw(0,0,-verticalScrollBar()->value(),&clip);while(clipDepth>0){p.restore();--clipDepth;}painter=nullptr;}
@@ -51,10 +51,17 @@ public:
     bool load(const QString &path,QString &error){QByteArray bytes;if(!read(path,bytes,32768,error)||!html_allowed(bytes,error))return false;
         doc.reset();scene.invalidate();scene_ids.clear();next_scene_id=1;images.clear();page=path;caption.clear();imports=0;fonts=0;verticalScrollBar()->setValue(0);
         try{doc=litehtml::document::createFromString(bytes.constData(),this);relayout();if(!doc){error="Layout resource budget failed";return false;}if(doc->height()>65536){doc.reset();error="Layout height budget exceeded";return false;}}
-        catch(const std::exception&){layoutBusy=false;doc.reset();error="Engine allocation or resource budget failed";return false;}
+        catch(const std::exception &reason){layoutBusy=false;doc.reset();
+            // liteHTML lets the stylesheet callback exceptions escape; report them as
+            // stylesheet admission failures instead of an engine allocation error.
+            const std::string cause=reason.what();
+            if(cause=="stylesheet rejected")error="Stylesheet rejected";
+            else if(cause=="CSS quota")error="Stylesheet import quota exceeded";
+            else error="Engine allocation or resource budget failed";
+            return false;}
         if(!doc){error="Engine did not create document";return false;}
         if(titleChanged)titleChanged(caption.isEmpty()?path.section('/',-1):caption);
-        std::printf("BROWSER_LOADED path=%s bytes=%d candidate_width=%d candidate_height=%d fonts=%d images=%lld imports=%d\n",page.toUtf8().constData(),int(bytes.size()),doc->width(),doc->height(),fonts,(long long)images.size(),imports);viewport()->update();return true;}
+        std::printf("BROWSER_LOADED path=%s bytes=%d candidate_width=%d candidate_height=%d fonts=%d images=%lld imports=%d\n",page.toUtf8().constData(),int(bytes.size()),doc->width(),doc->height(),fonts,(long long)images.size(),imports);log_anchor_point();viewport()->update();return true;}
     void log_anchor_point(){
         if(!doc)return;auto anchor=doc->root()->select_one("a");if(!anchor)return;
         litehtml::position::vector fragments;anchor->get_rendering_fragments(fragments,8);

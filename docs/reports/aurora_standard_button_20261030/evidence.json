@@ -1,0 +1,34 @@
+{
+  "base_sdk": "758dde49d312277135fb2fa51887c2b4a94d6761",
+  "base_system": "3377dbf35bdb43d850c9a2b8e8076da3be146f3d",
+  "inputs_sha256": {
+    "src/ports/qt6/aurora/style.cpp": "ef539ae96d440f5f2614a0371bc17d51dcf0e87b0e642579547ffac4285cb1d4",
+    "src/ports/qt6/aurora/theme.cpp": "2074179d64b2fae3a8eebde73fa6927e61ff47212b60af78dd607a9a9c23a7bc",
+    "tests/fixtures/qt6/aurora_standard_button.cpp": "f5219241e9a5e7c52d2e9ac90adddc853b1493d62a06ee3656357a4b36532e52",
+    "tests/aurora_standard_button_guest.py": "339b86f443625af52b965968aa5a5771dc301a6bacad3fb7024a955d81e88e32",
+    "../XylophoneOS-qt6-e17/build/qt_e17/sdk/manifest.json": "24dcc3ba938013c852a12f386ea2f7e16ebcec7cb4bfaff477794530c5d0e4b1"
+  },
+  "evidence_sha256": {
+    "README.md": "53d46aaa2a0a9c9c4c82d839faa09fcdd8e361548df84bcf50e9879ae7121c11",
+    "before/guest_qemu.log.gz": "a851373faa15f40c3fda8a0b89934d86fe1269cb71a932d52313fb1c64d3d624",
+    "before/guest_serial.log.gz": "be1974d8f3096f0b5ae3442240775150e93f846c24d2109e277d1b5e8e226827",
+    "before/report.json": "2b87afd2e24b536d2953bf016e6699828b8d9a476cad9a9cff90ea9edf259b10",
+    "before/scanout.png": "7dd04b156adc3a359b083de149f0460f0b09fbac59aab1eee4849be8e150e70e",
+    "before/scanout.ppm.gz": "98199a60ec2e16ae52925ef99499b9cfda8485b878a54817af01dbfe9aa223c2",
+    "before-build.log.gz": "f78ef301698a0638454e139f79747dec3033ad90a0f649ff67923ec654247f22",
+    "before-receipt.json.gz": "4c7657179749ca647ca0e076d62667245ed0a45ec1ab13553d7c36928b1c9283",
+    "final/guest_qemu.log.gz": "3e7abe0751f34ebf74a66f6f56f4f3de043f5d43f49541d0d28fc8160e071bc9",
+    "final/guest_serial.log.gz": "fcc4046ca89daebc52527dcfd3144731846f96086dc95c27091b7e596c2467fd",
+    "final/report.json": "5b933f8a25169fd931a29c53cca4e3a3f87e14acf75899f3d20865e48c6de133",
+    "final/scanout.png": "279b1d0902dfb488da58fad2824e4257a86435244c966a2cba9692cdebe620e4",
+    "final/scanout.ppm.gz": "d4b3c4865c11e0c11b6d90cf9ede725626eafae16d36ba46b216ba451f9f8d6c",
+    "final-build.log.gz": "97bc615ed7f9813f0ab95026e1752fcddec2d2e94748f3d8caaf8fb65ea2b537",
+    "final-receipt.json.gz": "57d636fb527547b28915df56f4840948d705e632467866f350d64789aee3c5dd",
+    "initial-fix/guest_qemu.log.gz": "74d04dab3bd7624a6f08049f897cdf21d02bc676eec3a4d4e9c3ca102608e263",
+    "initial-fix/guest_serial.log.gz": "d3e42d05a557b76d6b2464bb9d008343151f162eb6c73c9c48f22228c31eb399",
+    "initial-fix/report.json": "f7de6f25be351c9b62a631c9bca36d6e8e4d1f245d08689176b2ffef6b15e502",
+    "initial-fix/scanout.png": "daa7e43dc297d7a5cd945a99d2e9d8d5ffb535531ba115c2a95141a600938b76",
+    "initial-fix/scanout.ppm.gz": "99e1702589ce00ea72b1cc6099ff06a7b236abe19b567e8fdd7bc0b5dc47da0f",
+    "initial-fix-build.log.gz": "ef3754407fe18ad66e9d544fb97df487cd2e627d33e3df325cca498b7c48b172"
+  }
+}

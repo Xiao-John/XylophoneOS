@@ -94,7 +94,7 @@
         1
       ],
       "qemu_command": [
-        "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+        "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
         "-machine",
         "pc-i440fx-10.0",
         "-accel",
@@ -112,7 +112,7 @@
         "-rtc",
         "base=utc,clock=host",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_default/xos.img,format=raw,if=floppy,index=0,readonly=on",
+        "file=${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_default/xos.img,format=raw,if=floppy,index=0,readonly=on",
         "-boot",
         "order=a,strict=on",
         "-no-reboot",
@@ -123,9 +123,9 @@
         "-display",
         "none",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/gpu_paired/build/temporary_inputs/xos_virtio_pixels_m26nffks/vbe.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "file=${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/gpu_paired/build/temporary_inputs/xos_virtio_pixels_m26nffks/vbe.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
         "-qmp",
-        "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_serjusb0/qmp.sock,server=on,wait=off"
+        "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_serjusb0/qmp.sock,server=on,wait=off"
       ],
       "pixel_sha256": "31af37eda326c732cf093ae7273e4e33edf9bf932f4952b955b62aeb9705dfee",
       "qt_reference_sha256": "2475c71ff6e7d862d3080dde695fd1e10f129d874678fcc7865f5f4acc03769a",
@@ -184,7 +184,7 @@
         1
       ],
       "qemu_command": [
-        "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+        "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
         "-machine",
         "pc-i440fx-10.0",
         "-accel",
@@ -202,7 +202,7 @@
         "-rtc",
         "base=utc,clock=host",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_default/xos.img,format=raw,if=floppy,index=0,readonly=on",
+        "file=${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_default/xos.img,format=raw,if=floppy,index=0,readonly=on",
         "-boot",
         "order=a,strict=on",
         "-no-reboot",
@@ -213,9 +213,9 @@
         "-display",
         "none",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/gpu_paired/build/temporary_inputs/xos_virtio_pixels_m26nffks/virtio.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "file=${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/gpu_paired/build/temporary_inputs/xos_virtio_pixels_m26nffks/virtio.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
         "-qmp",
-        "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_cwrk53l1/qmp.sock,server=on,wait=off",
+        "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_cwrk53l1/qmp.sock,server=on,wait=off",
         "-device",
         "virtio-gpu-pci,id=vgpu,disable-legacy=on"
       ],

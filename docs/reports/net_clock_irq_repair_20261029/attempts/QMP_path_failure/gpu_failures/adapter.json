@@ -1,5 +1,5 @@
 {
-  "original_runner": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/virtio_gpu_fault_profiles.py",
+  "original_runner": "${XOS_WORKTREE_68D576C199CF}/tests/virtio_gpu_fault_profiles.py",
   "original_sha256": "a273590e5f4b21a146f8db3b81a7bc0c7c1cd05c0c9841e894716163f523ea22",
   "executed_sha256": "8ea27ab1e590d58772164874b13a79d78c6a9d25b18c9736ff31400c5bedf78d",
   "adaptations": [

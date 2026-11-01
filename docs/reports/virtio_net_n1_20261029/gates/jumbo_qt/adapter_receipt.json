@@ -6,5 +6,5 @@
     "after actual NIC jumbo fail/reset and run: start Display Service, render Qt pixels, real QMP screenshot/Escape, stop service with exact resources",
     "host packet socket timeout extended for real GUI workload"
   ],
-  "image_manifest": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/build/network/qualified_system/manifest.json"
+  "image_manifest": "${XOS_WORKTREE_68D576C199CF}/build/network/qualified_system/manifest.json"
 }

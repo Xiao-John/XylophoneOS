@@ -1,5 +1,5 @@
 {
-  "original_runner": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/inputs/quota_reclamation.py",
+  "original_runner": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/inputs/quota_reclamation.py",
   "original_sha256": "78ad9b396a1b28a316f6e6fa7e957533c8215f9229bc021b1f5b75023b4d15ee",
   "executed_sha256": "377debe340a00933a24ca8f41df1055b894b777f961bd748b1d270c3931be8d7",
   "adaptations": [

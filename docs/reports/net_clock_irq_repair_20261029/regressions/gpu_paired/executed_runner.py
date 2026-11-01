@@ -4,7 +4,7 @@
 import argparse,hashlib,json,re,subprocess,sys,tempfile,time
 from pathlib import Path
 from unittest.mock import patch
-ROOT=Path('/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/gpu_paired');sys.path[:0]=[str(ROOT/'tests'),str(ROOT/'scripts')]
+ROOT=Path('${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/gpu_paired');sys.path[:0]=[str(ROOT/'tests'),str(ROOT/'scripts')]
 import boot_smoke
 from boot_smoke import Guest
 from task_smoke import send_bytes,pump
@@ -23,7 +23,7 @@ for n,h in receipt['inputs'].items():assert sha(n)==h,n
 sdk=next(Path(n).parent for n in receipt['inputs'] if n.endswith('/sdk/manifest.json'))
 sdk_manifest=json.loads((sdk/'manifest.json').read_text());checked={}
 for n,h in sdk_manifest['inputs'].items():
- if n.startswith(('src/shared/','src/user/')):assert sha(Path('/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17')/n)==h,n;checked[n]=h
+ if n.startswith(('src/shared/','src/user/')):assert sha(Path('${XOS_WORKTREE_C671BDF53659}')/n)==h,n;checked[n]=h
 report={'status':'FAILED','build_id':manifest['build_id'],'image_sha256':sha(image),'elf_sha256':sha(a.qt_payload),'sdk_compatible_inputs':checked,'checks':[],'runs':[]};g=None
 
 def key(k,d):g.qmp('input-send-event',{'events':[{'type':'key','data':{'down':d,'key':{'type':'qcode','data':k}}}]})

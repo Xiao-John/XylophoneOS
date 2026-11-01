@@ -6,7 +6,7 @@
   "checks": [],
   "build_receipt_sha256": "d0609ba70a19956c538195a18f4c9a43458a6b0aa2f806f98c4a3c387fa8a7da",
   "qemu_command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -24,7 +24,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/final_runs/gui_interactive/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/final_runs/gui_interactive/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -35,9 +35,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/final_runs/gui_interactive/build/temporary_inputs/xos_qt_g04_ge8q61a6/test.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/final_runs/gui_interactive/build/temporary_inputs/xos_qt_g04_ge8q61a6/test.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/final_runs/gui_interactive/build/temporary_inputs/xos_ksgwhnb4/qmp.sock,server=on,wait=off"
+    "unix:${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/final_runs/gui_interactive/build/temporary_inputs/xos_ksgwhnb4/qmp.sock,server=on,wait=off"
   ],
   "error": "affected_regression/gui_interactive/guest: QEMU exited 1",
   "measurements": {

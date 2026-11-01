@@ -10,7 +10,7 @@ def job(name,runner,system,extra,expected_report,**kw):
  cmd=[sys.executable,str(AD),'--runner',str(runner),'--system-input',str(system),'--workspace',str(w),*kw.get('adapter',[]),*map(str,extra)]
  jobs.append({'name':name,'command':cmd,'report':str(expected_report),'runner_sha256':sha(runner),'scope':kw.get('scope','full original behavioral assertions on explicit file-ISO'),'expected_failure':kw.get('expected_failure',False)})
 old_report=json.loads((OLD/'docs/reports/virtio_net_n1_20261029/regressions/affected_regression/report.json').read_text())
-old_work='/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/qualified_regression_workspace'
+old_work='${XOS_WORKTREE_1AB624B170CC}/build/network_abi/qualified_regression_workspace'
 for name,row in old_report['tests'].items():
  w=B/'delivery_runs'/name;extra=[str(x).replace(old_work,str(w)) for x in row['command'][4:]]
  result=Path(row['result'].replace(old_work,str(w)))

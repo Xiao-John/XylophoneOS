@@ -6,7 +6,7 @@
   "checks": [],
   "commands": [
     [
-      "/Users/perry_guo/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -34,12 +34,12 @@
       "-mcmodel=small",
       "-mno-red-zone",
       "-mgeneral-regs-only",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/probe_attempt1/sdk/include",
+      "-I${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/probe_attempt1/sdk/include",
       "-c",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/tests/fixtures/clock_irq/clock_user.cpp",
+      "${XOS_WORKTREE_61E12BE2FF84}/tests/fixtures/clock_irq/clock_user.cpp",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/probe_run2/clock.o"
+      "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/probe_run2/clock.o"
     ]
   ],
-  "error": "CalledProcessError(1, ['/Users/perry_guo/homebrew/bin/x86_64-elf-g++', '-std=c++20', '-ffreestanding', '-nostdinc++', '-fno-exceptions', '-fno-rtti', '-fno-stack-protector', '-fno-threadsafe-statics', '-fno-use-cxa-atexit', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables', '-fno-omit-frame-pointer', '-fno-pic', '-fno-pie', '-g3', '-gdwarf-4', '-O2', '-Wall', '-Wextra', '-Werror', '-Wconversion', '-Wshadow', '-m64', '-march=x86-64', '-mtune=generic', '-mcmodel=small', '-mno-red-zone', '-mgeneral-regs-only', '-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/probe_attempt1/sdk/include', '-c', '/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/tests/fixtures/clock_irq/clock_user.cpp', '-o', '/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/probe_run2/clock.o'])"
+  "error": "CalledProcessError(1, ['${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-g++', '-std=c++20', '-ffreestanding', '-nostdinc++', '-fno-exceptions', '-fno-rtti', '-fno-stack-protector', '-fno-threadsafe-statics', '-fno-use-cxa-atexit', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables', '-fno-omit-frame-pointer', '-fno-pic', '-fno-pie', '-g3', '-gdwarf-4', '-O2', '-Wall', '-Wextra', '-Werror', '-Wconversion', '-Wshadow', '-m64', '-march=x86-64', '-mtune=generic', '-mcmodel=small', '-mno-red-zone', '-mgeneral-regs-only', '-I${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/probe_attempt1/sdk/include', '-c', '${XOS_WORKTREE_61E12BE2FF84}/tests/fixtures/clock_irq/clock_user.cpp', '-o', '${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/probe_run2/clock.o'])"
 }

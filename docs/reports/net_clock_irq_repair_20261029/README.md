@@ -1,3 +1,5 @@
+> **Evidence version:** This is a path-sanitized derivative. The original bytes and historical input hashes belong to the source Git commit; old/new file hashes are recorded in the [conversion ledger](../../evidence_exports/issue37_pr20/lineage.json).
+
 # PR20 时钟、IRQ与诊断边界整改
 
 本轮有限整改已完成；PR20保持 **CHANGES_REQUESTED / NOT_MERGE_READY**。

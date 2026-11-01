@@ -7,7 +7,7 @@
   "disk_before_sha256": "db8a640db5af69b76dcf08d527c1dfcf3fa64957b852318349a88d659f432b59",
   "existing_authority": "explicit supervisor spawn/exec delegation via exec-driver; no hardware/device grant",
   "qemu_command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -25,7 +25,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_default/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_default/xos.img,format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -36,9 +36,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_dash_clock/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_dash_clock/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_vorn8trv/qmp.sock,server=on,wait=off"
+    "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_vorn8trv/qmp.sock,server=on,wait=off"
   ],
   "default_image_test_commands_absent": "PASSED",
   "resources_before": [

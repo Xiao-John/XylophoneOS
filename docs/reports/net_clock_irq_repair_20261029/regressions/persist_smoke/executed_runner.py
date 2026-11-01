@@ -6,7 +6,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-ROOT=Path('/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/persist_smoke')
+ROOT=Path('${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/persist_smoke')
 sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "tests"))
 from boot_smoke import Guest

@@ -2,7 +2,7 @@
   "process_smoke": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/process_smoke/build/process_smoke_report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/process_smoke/build/process_smoke_report.json",
     "error": null,
     "expected_failure": false,
     "scope": "original assertions and original supported floppy/ISO inputs"
@@ -10,7 +10,7 @@
   "threading_smoke": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/threading_smoke/build/threading_report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/threading_smoke/build/threading_report.json",
     "error": null,
     "expected_failure": false,
     "scope": "original assertions and original supported floppy/ISO inputs"
@@ -18,7 +18,7 @@
   "display_smoke": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/display_smoke/build/display_acceptance/report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/display_smoke/build/display_acceptance/report.json",
     "error": null,
     "expected_failure": false,
     "scope": "original assertions and original supported floppy/ISO inputs"
@@ -26,7 +26,7 @@
   "threading_pthread_smoke": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/threading_pthread_smoke/build/threading_pthread_report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/threading_pthread_smoke/build/threading_pthread_report.json",
     "error": null,
     "expected_failure": false,
     "scope": "original assertions and original supported floppy/ISO inputs"
@@ -34,7 +34,7 @@
   "threading_cpp_smoke": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/threading_cpp_smoke/build/threading_cpp_report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/threading_cpp_smoke/build/threading_cpp_report.json",
     "error": null,
     "expected_failure": false,
     "scope": "original assertions and original supported floppy/ISO inputs"
@@ -42,7 +42,7 @@
   "file_smoke": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/file_smoke/build/file_smoke_report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/file_smoke/build/file_smoke_report.json",
     "error": null,
     "expected_failure": false,
     "scope": "original assertions and original supported floppy/ISO inputs"
@@ -50,7 +50,7 @@
   "persist_smoke": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/persist_smoke/build/persist_smoke_report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/persist_smoke/build/persist_smoke_report.json",
     "error": null,
     "expected_failure": false,
     "scope": "original assertions and original supported floppy/ISO inputs"
@@ -58,7 +58,7 @@
   "core_smoke": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/core_smoke/build/affected_regression/core_smoke.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/core_smoke/build/affected_regression/core_smoke.json",
     "error": null,
     "expected_failure": false,
     "scope": "original assertions and original supported floppy/ISO inputs"
@@ -66,7 +66,7 @@
   "core_events": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/core_events/build/affected_regression/core_events.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/core_events/build/affected_regression/core_events.json",
     "error": null,
     "expected_failure": false,
     "scope": "original assertions and original supported floppy/ISO inputs"
@@ -74,7 +74,7 @@
   "core_quota": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/core_quota/build/affected_regression/core_quota.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/core_quota/build/affected_regression/core_quota.json",
     "error": null,
     "expected_failure": false,
     "scope": "original assertions and original supported floppy/ISO inputs"
@@ -82,7 +82,7 @@
   "core_abi": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/core_abi/build/affected_regression/core_abi.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/core_abi/build/affected_regression/core_abi.json",
     "error": null,
     "expected_failure": false,
     "scope": "original assertions and original supported floppy/ISO inputs"
@@ -90,7 +90,7 @@
   "core_memory": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/core_memory/build/affected_regression/core_memory.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/core_memory/build/affected_regression/core_memory.json",
     "error": null,
     "expected_failure": false,
     "scope": "original assertions and original supported floppy/ISO inputs"
@@ -98,7 +98,7 @@
   "core_lifecycle": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/core_lifecycle/build/affected_regression/core_lifecycle.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/core_lifecycle/build/affected_regression/core_lifecycle.json",
     "error": null,
     "expected_failure": false,
     "scope": "original assertions and original supported floppy/ISO inputs"
@@ -106,7 +106,7 @@
   "core_fault": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/core_fault/build/affected_regression/core_fault.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/core_fault/build/affected_regression/core_fault.json",
     "error": null,
     "expected_failure": false,
     "scope": "original assertions and original supported floppy/ISO inputs"
@@ -114,7 +114,7 @@
   "core_persist": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/core_persist/build/affected_regression/core_persist.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/core_persist/build/affected_regression/core_persist.json",
     "error": null,
     "expected_failure": false,
     "scope": "original assertions and original supported floppy/ISO inputs"
@@ -122,7 +122,7 @@
   "core_file_errors": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/core_file_errors/build/affected_regression/core_file_errors.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/core_file_errors/build/affected_regression/core_file_errors.json",
     "error": null,
     "expected_failure": false,
     "scope": "original assertions and original supported floppy/ISO inputs"
@@ -130,7 +130,7 @@
   "gui_pixels": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/gui_pixels/build/affected_regression/gui_pixels/report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/gui_pixels/build/affected_regression/gui_pixels/report.json",
     "error": null,
     "expected_failure": false,
     "scope": "original assertions and original supported floppy/ISO inputs"
@@ -138,7 +138,7 @@
   "gui_interactive": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/gui_interactive/build/affected_regression/gui_interactive/report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/gui_interactive/build/affected_regression/gui_interactive/report.json",
     "error": null,
     "expected_failure": false,
     "scope": "original assertions and original supported floppy/ISO inputs"
@@ -146,7 +146,7 @@
   "gui_lifecycle": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/gui_lifecycle/build/affected_regression/gui_lifecycle/report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/gui_lifecycle/build/affected_regression/gui_lifecycle/report.json",
     "error": null,
     "expected_failure": false,
     "scope": "original assertions and original supported floppy/ISO inputs"
@@ -154,7 +154,7 @@
   "widgets_interactive": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/widgets_interactive/build/affected_regression/widgets_interactive/report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/widgets_interactive/build/affected_regression/widgets_interactive/report.json",
     "error": null,
     "expected_failure": false,
     "scope": "original assertions and original supported floppy/ISO inputs"
@@ -162,7 +162,7 @@
   "n1_echo": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/n1_echo/build/results/report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/n1_echo/build/results/report.json",
     "error": null,
     "expected_failure": false,
     "scope": "full original behavioral assertions on explicit file-ISO"
@@ -170,7 +170,7 @@
   "n1_timeout": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/n1_timeout/build/results/report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/n1_timeout/build/results/report.json",
     "error": null,
     "expected_failure": false,
     "scope": "full original behavioral assertions on explicit file-ISO"
@@ -178,7 +178,7 @@
   "n1_overflow": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/n1_overflow/build/results/report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/n1_overflow/build/results/report.json",
     "error": null,
     "expected_failure": false,
     "scope": "full original behavioral assertions on explicit file-ISO"
@@ -186,7 +186,7 @@
   "n1_jumbo": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/n1_jumbo/build/results/report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/n1_jumbo/build/results/report.json",
     "error": null,
     "expected_failure": false,
     "scope": "full original behavioral assertions on explicit file-ISO"
@@ -194,7 +194,7 @@
   "n1_absent": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/n1_absent/build/results/report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/n1_absent/build/results/report.json",
     "error": null,
     "expected_failure": false,
     "scope": "full original behavioral assertions on explicit file-ISO"
@@ -202,7 +202,7 @@
   "n1_echo_gpu": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/n1_echo_gpu/build/results/report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/n1_echo_gpu/build/results/report.json",
     "error": null,
     "expected_failure": false,
     "scope": "full original behavioral assertions on explicit file-ISO"
@@ -210,7 +210,7 @@
   "n1_isolation": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/n1_isolation/build/results/report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/n1_isolation/build/results/report.json",
     "error": null,
     "expected_failure": false,
     "scope": "full original behavioral assertions on explicit file-ISO"
@@ -218,7 +218,7 @@
   "n1_quota": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/n1_quota/build/results/report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/n1_quota/build/results/report.json",
     "error": null,
     "expected_failure": false,
     "scope": "full original behavioral assertions on explicit file-ISO"
@@ -226,7 +226,7 @@
   "n1_jumbo_qt": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/n1_jumbo_qt/build/results/report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/n1_jumbo_qt/build/results/report.json",
     "error": null,
     "expected_failure": false,
     "scope": "full original behavioral assertions on explicit file-ISO"
@@ -234,7 +234,7 @@
   "n1_quota_reclaim": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/n1_quota_reclaim/build/network/qualified_gates/quota_reclaim/report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/n1_quota_reclaim/build/network/qualified_gates/quota_reclaim/report.json",
     "error": null,
     "expected_failure": false,
     "scope": "full original behavioral assertions on explicit file-ISO"
@@ -242,7 +242,7 @@
   "widgets_lifecycle": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/widgets_lifecycle/build/affected_regression/widgets_lifecycle/report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/widgets_lifecycle/build/affected_regression/widgets_lifecycle/report.json",
     "error": null,
     "expected_failure": false,
     "scope": "original assertions and original supported floppy/ISO inputs"
@@ -250,7 +250,7 @@
   "gpu_failures": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/gpu_failures/build/results/report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/gpu_failures/build/results/report.json",
     "error": null,
     "expected_failure": false,
     "scope": "full original behavioral assertions on explicit file-ISO"
@@ -258,7 +258,7 @@
   "browser_interactive": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/browser_interactive/build/results/report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/browser_interactive/build/results/report.json",
     "error": null,
     "expected_failure": false,
     "scope": "full original behavioral assertions on explicit file-ISO"
@@ -266,7 +266,7 @@
   "gpu_paired": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/gpu_paired/build/results/report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/gpu_paired/build/results/report.json",
     "error": null,
     "expected_failure": false,
     "scope": "full original behavioral assertions on explicit file-ISO"
@@ -274,7 +274,7 @@
   "browser_negative": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/browser_negative/build/results/report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/browser_negative/build/results/report.json",
     "error": null,
     "expected_failure": false,
     "scope": "full original behavioral assertions on explicit file-ISO"
@@ -282,7 +282,7 @@
   "browser_lifecycle": {
     "status": "PASSED",
     "returncode": 0,
-    "report": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/browser_lifecycle/build/results/report.json",
+    "report": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/browser_lifecycle/build/results/report.json",
     "error": null,
     "expected_failure": false,
     "scope": "full original behavioral assertions on explicit file-ISO"

@@ -34,7 +34,7 @@
           "sha256": "a491433b379384ac5cfe5bf302739646ab70512c03def0dee351dddff0015324"
         }
       },
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_default"
+      "path": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_default"
     },
     "diagnostic": {
       "build_id": "2ef23d2706818868",
@@ -60,7 +60,7 @@
           "sha256": "6d8f4c225d5aec204bb34446b7c286a150432c8f7cd01545fe4fe9b90c3ed8d3"
         }
       },
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_diagnostic"
+      "path": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_diagnostic"
     },
     "probe": {
       "build_id": "96c3a71ea876dbcf",
@@ -86,7 +86,7 @@
           "sha256": "a2ade5ebbe1247db0b7a24e65dcd058ca445ca564c7101853afc9463a89050b9"
         }
       },
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_probe"
+      "path": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_probe"
     },
     "net_quota": {
       "build_id": "b8fcafc740a43edf",
@@ -112,7 +112,7 @@
           "sha256": "43fd1e627c107912ce23e7d4bdfa8d9ee42023e5d16bb4488608f53c6fd30598"
         }
       },
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_net_quota"
+      "path": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_net_quota"
     },
     "gpu_quota": {
       "build_id": "bb28a785008436fa",
@@ -146,7 +146,7 @@
           "sha256": "cfd47c1ec6797f95fdfe45f13ed8f51223c0c77a0cb64264e74fcce1eb5ec0ac"
         }
       },
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_gpu_quota"
+      "path": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_gpu_quota"
     },
     "gpu_timeout": {
       "build_id": "0178bd56a6018397",
@@ -180,7 +180,7 @@
           "sha256": "405d7926e811b007357587428a9ca4c0cebc59219ef011d6b2e9de1c068ec3c8"
         }
       },
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_gpu_timeout"
+      "path": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_gpu_timeout"
     },
     "combined": {
       "build_id": "288d715bc351e2a2",
@@ -206,7 +206,7 @@
           "sha256": "6be92ef31b254aa2ab9fc58430b8fee1e0eee087cd71f2823cc52c8de1ee7fdc"
         }
       },
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_combined"
+      "path": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_combined"
     }
   },
   "affected_suites": 36,
@@ -228,6 +228,6 @@
   "remaining_review": "CHANGES_REQUESTED: full user-mode driver and device authority acceptance remain outside this no-new-syscall repair",
   "all_final_source_and_artifact_hashes": "PASSED",
   "old_Qt_SDK_artifacts_reverified": 1054,
-  "consumer_source_owner": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17",
+  "consumer_source_owner": "${XOS_WORKTREE_C671BDF53659}",
   "large_artifacts_local_only": true
 }

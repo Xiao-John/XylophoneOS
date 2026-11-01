@@ -1,11 +1,11 @@
 import argparse,contextlib,hashlib,json,os,re,shutil,subprocess,sys,traceback
 from pathlib import Path
 
-BASE=Path('/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net')
+BASE=Path('${XOS_WORKTREE_68D576C199CF}')
 LOCAL=Path(__file__).resolve().parent
 WORK=LOCAL/'qualified_regression_workspace'
 SYSTEM=BASE/'build/network/qualified_system'
-FIX=Path('/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17')
+FIX=Path('${XOS_WORKTREE_C671BDF53659}/build/qt_e17')
 sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
 
 def worker(runner,rest):

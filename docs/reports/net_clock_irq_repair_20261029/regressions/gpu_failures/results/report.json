@@ -18,7 +18,7 @@
         0
       ],
       "qemu_command": [
-        "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+        "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
         "-machine",
         "pc-i440fx-10.0",
         "-accel",
@@ -36,7 +36,7 @@
         "-rtc",
         "base=utc,clock=host",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_default/xos.img,format=raw,if=floppy,index=0,readonly=on",
+        "file=${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_default/xos.img,format=raw,if=floppy,index=0,readonly=on",
         "-boot",
         "order=a,strict=on",
         "-no-reboot",
@@ -47,9 +47,9 @@
         "-display",
         "none",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/gpu_failures/build/temporary_inputs/xos_vgpu_faults_c_fwtdhc/host_quota.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "file=${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/gpu_failures/build/temporary_inputs/xos_vgpu_faults_c_fwtdhc/host_quota.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
         "-qmp",
-        "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_o_q89jl3/qmp.sock,server=on,wait=off",
+        "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_o_q89jl3/qmp.sock,server=on,wait=off",
         "-device",
         "virtio-gpu-pci,id=vgpu,disable-legacy=on,max_hostmem=2097152"
       ]
@@ -69,7 +69,7 @@
         0
       ],
       "qemu_command": [
-        "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+        "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
         "-machine",
         "pc-i440fx-10.0",
         "-accel",
@@ -87,7 +87,7 @@
         "-rtc",
         "base=utc,clock=host",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_default/xos.img,format=raw,if=floppy,index=0,readonly=on",
+        "file=${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_default/xos.img,format=raw,if=floppy,index=0,readonly=on",
         "-boot",
         "order=a,strict=on",
         "-no-reboot",
@@ -98,9 +98,9 @@
         "-display",
         "none",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/gpu_failures/build/temporary_inputs/xos_vgpu_faults_c_fwtdhc/host_init_quota.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "file=${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/gpu_failures/build/temporary_inputs/xos_vgpu_faults_c_fwtdhc/host_init_quota.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
         "-qmp",
-        "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_qr8hz2kz/qmp.sock,server=on,wait=off",
+        "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_qr8hz2kz/qmp.sock,server=on,wait=off",
         "-device",
         "virtio-gpu-pci,id=vgpu,disable-legacy=on,max_hostmem=1048576"
       ]
@@ -120,7 +120,7 @@
         0
       ],
       "qemu_command": [
-        "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+        "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
         "-machine",
         "pc-i440fx-10.0",
         "-accel",
@@ -138,7 +138,7 @@
         "-rtc",
         "base=utc,clock=host",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_gpu_quota/xos.img,format=raw,if=floppy,index=0,readonly=on",
+        "file=${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_gpu_quota/xos.img,format=raw,if=floppy,index=0,readonly=on",
         "-boot",
         "order=a,strict=on",
         "-no-reboot",
@@ -149,9 +149,9 @@
         "-display",
         "none",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/gpu_failures/build/temporary_inputs/xos_vgpu_faults_c_fwtdhc/dma_quota.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "file=${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/gpu_failures/build/temporary_inputs/xos_vgpu_faults_c_fwtdhc/dma_quota.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
         "-qmp",
-        "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_2g0vbxq6/qmp.sock,server=on,wait=off",
+        "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_2g0vbxq6/qmp.sock,server=on,wait=off",
         "-device",
         "virtio-gpu-pci,id=vgpu,disable-legacy=on"
       ]
@@ -171,7 +171,7 @@
         0
       ],
       "qemu_command": [
-        "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+        "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
         "-machine",
         "pc-i440fx-10.0",
         "-accel",
@@ -189,7 +189,7 @@
         "-rtc",
         "base=utc,clock=host",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_gpu_timeout/xos.img,format=raw,if=floppy,index=0,readonly=on",
+        "file=${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_gpu_timeout/xos.img,format=raw,if=floppy,index=0,readonly=on",
         "-boot",
         "order=a,strict=on",
         "-no-reboot",
@@ -200,9 +200,9 @@
         "-display",
         "none",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/gpu_failures/build/temporary_inputs/xos_vgpu_faults_c_fwtdhc/timeout.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "file=${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/gpu_failures/build/temporary_inputs/xos_vgpu_faults_c_fwtdhc/timeout.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
         "-qmp",
-        "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ohb9atnq/qmp.sock,server=on,wait=off",
+        "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ohb9atnq/qmp.sock,server=on,wait=off",
         "-device",
         "virtio-gpu-pci,id=vgpu,disable-legacy=on"
       ]
@@ -222,7 +222,7 @@
         0
       ],
       "qemu_command": [
-        "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+        "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
         "-machine",
         "pc-i440fx-10.0",
         "-accel",
@@ -240,7 +240,7 @@
         "-rtc",
         "base=utc,clock=host",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_default/xos.img,format=raw,if=floppy,index=0,readonly=on",
+        "file=${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_default/xos.img,format=raw,if=floppy,index=0,readonly=on",
         "-boot",
         "order=a,strict=on",
         "-no-reboot",
@@ -251,9 +251,9 @@
         "-display",
         "none",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/gpu_failures/build/temporary_inputs/xos_vgpu_faults_c_fwtdhc/no_device.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "file=${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/gpu_failures/build/temporary_inputs/xos_vgpu_faults_c_fwtdhc/no_device.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
         "-qmp",
-        "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_onjic8a5/qmp.sock,server=on,wait=off"
+        "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_onjic8a5/qmp.sock,server=on,wait=off"
       ]
     }
   ]

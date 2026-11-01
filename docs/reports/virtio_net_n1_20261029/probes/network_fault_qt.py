@@ -5,8 +5,8 @@ import hashlib,json,os,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[4]
 original=ROOT/'tests/virtio_net_acceptance.py';source=original.read_text()
-qt=Path('/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/final_gui/qt_demo.elf')
-access=Path('/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi/build/network_abi/access_fault.elf')
+qt=Path('${XOS_WORKTREE_C671BDF53659}/build/qt_e17/final_gui/qt_demo.elf')
+access=Path('${XOS_WORKTREE_1AB624B170CC}/build/network_abi/access_fault.elf')
 assert qt.is_file() and access.is_file()
 source=source.replace('conn.settimeout(15)','conn.settimeout(120)')
 needle="transfer(disk,'import','/bin/access.elf',a.access_payload)"

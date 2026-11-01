@@ -1,5 +1,5 @@
 {
-  "original_runner": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/file_smoke.py",
+  "original_runner": "${XOS_WORKTREE_68D576C199CF}/tests/file_smoke.py",
   "original_sha256": "5faec8ea079fff973b066eba45e39a6e531843ad5db4c83733c8603615f16778",
   "executed_sha256": "44050c8b77c964d6b2c5b2c509d3354d7b98c1279c11867e97af9a96ea6b08dd",
   "adaptations": [

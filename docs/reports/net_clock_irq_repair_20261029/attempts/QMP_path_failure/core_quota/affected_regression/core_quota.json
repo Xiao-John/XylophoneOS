@@ -3,7 +3,7 @@
   "image_sha256": "ed88e69dd94c032af1bcd609e5ad7f639178728f25873529b31eb6c5412bb704",
   "elf_sha256": "191b8032479f24efc74bf3c7427482eb6e66b46bc4ab53a99d17fd77024d9d8a",
   "qemu_command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -21,7 +21,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/final_runs/core_quota/build/temporary_inputs/xos_qt_sdk_probe_rjwpbytm/boot.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/final_runs/core_quota/build/temporary_inputs/xos_qt_sdk_probe_rjwpbytm/boot.img,format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -32,8 +32,8 @@
     "-display",
     "none",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/final_runs/core_quota/build/temporary_inputs/xos_qt_sdk_probe_rjwpbytm/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/final_runs/core_quota/build/temporary_inputs/xos_qt_sdk_probe_rjwpbytm/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/final_runs/core_quota/build/temporary_inputs/xos_l6rm3p31/qmp.sock,server=on,wait=off"
+    "unix:${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/final_runs/core_quota/build/temporary_inputs/xos_l6rm3p31/qmp.sock,server=on,wait=off"
   ]
 }

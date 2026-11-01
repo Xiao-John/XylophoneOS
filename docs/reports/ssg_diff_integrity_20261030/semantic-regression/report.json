@@ -1,0 +1,81 @@
+{
+  "status": "PASSED",
+  "case": "semantic",
+  "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+  "checks": [
+    {
+      "name": "independent_mock_selects_real_ssg_target",
+      "status": "PASSED",
+      "native_checks": 25
+    },
+    {
+      "name": "query_propose_explicit_fixture_authorize_execute_verify",
+      "status": "PASSED"
+    },
+    {
+      "name": "semantic_app_exact_resource_return",
+      "status": "PASSED"
+    },
+    {
+      "name": "old_process_reference_refused_and_killed_ssg_resources_restored",
+      "status": "PASSED"
+    },
+    {
+      "name": "serial_file_service_and_resource_baseline",
+      "status": "PASSED"
+    }
+  ],
+  "screenshots": {
+    "semantic-authorized-local-result": {
+      "sha256": "8f62e54109a51a114f27c0303ca6d265af2807bd479b45c9ec2ebd4336b75571",
+      "png_bytes": 108623,
+      "host_capture_ms": 37.73116698721424
+    }
+  },
+  "runs": [],
+  "elf_sha256": {
+    "semantics": "79049c16f6460e7302d35bd7c31cfa8213cbb11e0aa41a330d71086023875df6"
+  },
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_aurora_platform_ype38bds/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_t7fi5eq4/qmp.sock,server=on,wait=off"
+  ],
+  "coverage_comparison": {
+    "ssg_json_bytes": 9277,
+    "ax_style_projection_bytes": 695,
+    "ax_style_scope": "projection from Qt metadata, not a qualified XOS AX service",
+    "mock_target_success": "1/1 controlled target",
+    "screenshot_ocr": "NOT_RUN",
+    "cross_process_agent_execution": "BLOCKED / NOT_RUN"
+  }
+}

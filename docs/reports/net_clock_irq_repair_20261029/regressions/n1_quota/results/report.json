@@ -8,7 +8,7 @@
     "net-test\r\n[virtio-net] pci id=1af4:1041 bus=0 slot=3 irq=11 kernel_only=1\r\n[virtio-net] features_queue_or_DMA_failure\r\nnet-test unavailable_or_failed\r\nxos64> "
   ],
   "qemu_command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -26,7 +26,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-cdrom",
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_net_quota/xos-install.iso",
+    "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_net_quota/xos-install.iso",
     "-boot",
     "order=d,strict=on",
     "-no-reboot",
@@ -37,7 +37,7 @@
     "-display",
     "none",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_wmlmvv7y/qmp.sock,server=on,wait=off",
+    "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_wmlmvv7y/qmp.sock,server=on,wait=off",
     "-netdev",
     "socket,id=net,connect=127.0.0.1:64379",
     "-device",

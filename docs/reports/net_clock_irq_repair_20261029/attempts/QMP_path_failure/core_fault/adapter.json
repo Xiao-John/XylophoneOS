@@ -1,5 +1,5 @@
 {
-  "original_runner": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/qt6_fault_probe.py",
+  "original_runner": "${XOS_WORKTREE_68D576C199CF}/tests/qt6_fault_probe.py",
   "original_sha256": "9830709f6a8e0e105da40b107ea68ecabf9c71eeb4dc6eea9975606cc3916d50",
   "executed_sha256": "3a275ca8cc5abed0a93141d8c2d67db5c1e29d70314723369e408aea5748896e",
   "adaptations": [

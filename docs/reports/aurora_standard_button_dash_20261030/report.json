@@ -1,0 +1,79 @@
+{
+  "status": "PASSED",
+  "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+  "payload_sha256": "d6cda4d7b78f568cbc5f751ed933e869bfdeee2b65356648287a990f1eb828db",
+  "dash_sha256": "d262b8299734d07c27e8d5ac696a3460c82cba4fe56159d3cbdcceee8f703ff9",
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_standard_button_lpoe6ccu/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_uevkz_ey/qmp.sock,server=on,wait=off"
+  ],
+  "baseline_resources": [
+    130279,
+    2,
+    0
+  ],
+  "checks": [
+    {
+      "name": "button_icon",
+      "status": "PASS"
+    },
+    {
+      "name": "explicit_palette",
+      "status": "PASS"
+    },
+    {
+      "name": "palette_painted",
+      "status": "PASS"
+    }
+  ],
+  "screenshot_sha256": "279b1d0902dfb488da58fad2824e4257a86435244c966a2cba9692cdebe620e4",
+  "dash_checks": [
+    {
+      "name": "button_icon",
+      "status": "PASS"
+    },
+    {
+      "name": "explicit_palette",
+      "status": "PASS"
+    },
+    {
+      "name": "palette_painted",
+      "status": "PASS"
+    }
+  ],
+  "after_resources": [
+    130279,
+    2,
+    0
+  ]
+}

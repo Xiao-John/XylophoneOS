@@ -3,7 +3,7 @@
 """Real XOS liteHTML browser: PS/2 navigation, hostile local input and teardown."""
 import argparse,hashlib,json,re,sys,tempfile
 from pathlib import Path
-ROOT=Path('/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/final_runs/browser_lifecycle');sys.path[:0]=[str(ROOT/'scripts'),str(ROOT/'tests')]
+ROOT=Path('${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/final_runs/browser_lifecycle');sys.path[:0]=[str(ROOT/'scripts'),str(ROOT/'tests')]
 from boot_smoke import Guest
 from task_smoke import send_bytes,pump
 from process_smoke import command,resources
@@ -14,8 +14,8 @@ for n in ('image','payload','output'):p.add_argument('--'+n,type=Path,required=T
 p.add_argument('--case',choices=['interactive','negative','lifecycle'],default='interactive');a=p.parse_args();out=a.output.resolve();out.mkdir(parents=True,exist_ok=False)
 sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest();r=json.loads(a.payload.with_suffix('.receipt.json').read_text());assert sha(a.payload)==r['elf_sha256']
 for n,h in r['inputs'].items():assert sha(n)==h,n
-report={'status':'FAILED','case':a.case,'image_sha256':sha(a.image),'elf_sha256':sha(a.payload),'receipt_sha256':sha(a.payload.with_suffix('.receipt.json')),'source_pages':{str(f.relative_to(Path('/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser'))):sha(f) for f in (Path('/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser/src/ports/aurora_browser/pages')).iterdir()},'runner_sha256':sha(Path(__file__)),'checks':[]};g=None
-pages=Path('/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser/src/ports/aurora_browser/pages')
+report={'status':'FAILED','case':a.case,'image_sha256':sha(a.image),'elf_sha256':sha(a.payload),'receipt_sha256':sha(a.payload.with_suffix('.receipt.json')),'source_pages':{str(f.relative_to(Path('${XOS_WORKTREE_445F322455D6}'))):sha(f) for f in (Path('${XOS_WORKTREE_445F322455D6}/src/ports/aurora_browser/pages')).iterdir()},'runner_sha256':sha(Path(__file__)),'checks':[]};g=None
+pages=Path('${XOS_WORKTREE_445F322455D6}/src/ports/aurora_browser/pages')
 def mark(name,**kw):report['checks'].append({'name':name,'status':'PASSED',**kw});print(name,'PASSED',flush=True)
 def key(k,d):g.qmp('input-send-event',{'events':[{'type':'key','data':{'down':d,'key':{'type':'qcode','data':k}}}]})
 def stroke(k):key(k,True);key(k,False);pump(g,.025)

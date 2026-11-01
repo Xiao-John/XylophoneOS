@@ -1,5 +1,5 @@
 {
-  "original_runner": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/inputs/aurora_browser_acceptance.py",
+  "original_runner": "${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/inputs/aurora_browser_acceptance.py",
   "original_sha256": "51a34945848be1c5a8efb29e60edd274cbe0d0885944d964c4e9029051133ad0",
   "executed_sha256": "b778802cdf50a7fba255d72ba2367502084750146142a8d7c47116bd6c692743",
   "adaptations": [

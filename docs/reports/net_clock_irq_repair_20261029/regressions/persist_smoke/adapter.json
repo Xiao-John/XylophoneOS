@@ -1,5 +1,5 @@
 {
-  "original_runner": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/persist_smoke.py",
+  "original_runner": "${XOS_WORKTREE_68D576C199CF}/tests/persist_smoke.py",
   "original_sha256": "26074194b80c40c371263f7901ff2cc401182d043d81a0cb01d47178a89872c5",
   "executed_sha256": "4fdc1dbaf763ef555fe7aa69c4b80af30a2bc79fd8c145f8c9a37286380ba5f1",
   "adaptations": [

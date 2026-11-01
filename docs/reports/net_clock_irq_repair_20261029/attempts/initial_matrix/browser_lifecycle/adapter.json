@@ -1,5 +1,5 @@
 {
-  "original_runner": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser/tests/aurora_browser_acceptance.py",
+  "original_runner": "${XOS_WORKTREE_445F322455D6}/tests/aurora_browser_acceptance.py",
   "original_sha256": "57a4e15352e6a8039a0042084136c1635c04bd7db898a383421f31b2ce6fdd14",
   "executed_sha256": "09b3f4ceee839f45448382c9c1854d6f9d8e03bfc20798839d75e052a8818973",
   "adaptations": [

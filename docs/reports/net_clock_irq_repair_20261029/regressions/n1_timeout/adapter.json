@@ -1,5 +1,5 @@
 {
-  "original_runner": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/virtio_net_acceptance.py",
+  "original_runner": "${XOS_WORKTREE_68D576C199CF}/tests/virtio_net_acceptance.py",
   "original_sha256": "4783317934d6e0c39063276cadba8382aa2c2e50c1ea8c646ddc67d48a31e899",
   "executed_sha256": "6ea603de84efd562636d191a6b14601abe00cd78b240141161fa00af4bcfcb62",
   "adaptations": [

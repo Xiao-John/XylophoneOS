@@ -1,5 +1,5 @@
 {
-  "original_runner": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/docs/reports/virtio_net_n1_20261029/gates/jumbo_qt/executed_runner.py",
+  "original_runner": "${XOS_WORKTREE_68D576C199CF}/docs/reports/virtio_net_n1_20261029/gates/jumbo_qt/executed_runner.py",
   "original_sha256": "51023d437983e7eccf7b642da6f28e1d0964757e8e463b1e4441766615f31573",
   "executed_sha256": "3a06573c196bc3bd556957b6534e94d1f942b1f4f9305bfeefa7ce1645bd4876",
   "adaptations": [

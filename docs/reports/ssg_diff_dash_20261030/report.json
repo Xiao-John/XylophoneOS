@@ -1,0 +1,155 @@
+{
+  "status": "PASSED",
+  "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+  "payload_sha256": "817cab8793264ac2d5e325439caba19a58762085d01d14867070ac99329d39bf",
+  "checks": [
+    {
+      "name": "unpublished_unavailable",
+      "status": "PASS"
+    },
+    {
+      "name": "complete_unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "complete_change_and_real_removal",
+      "status": "PASS"
+    },
+    {
+      "name": "metadata_delivered_with_diff",
+      "status": "PASS"
+    },
+    {
+      "name": "query_scope_change_resets",
+      "status": "PASS"
+    },
+    {
+      "name": "partial_current_resets",
+      "status": "PASS"
+    },
+    {
+      "name": "partial_unchanged_is_not_complete",
+      "status": "PASS"
+    },
+    {
+      "name": "partial_previous_resets",
+      "status": "PASS"
+    },
+    {
+      "name": "duplicate_id_rejected_without_changing_history",
+      "status": "PASS"
+    },
+    {
+      "name": "missing_id_rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "legacy_metadata_change_conservatively_resets",
+      "status": "PASS"
+    },
+    {
+      "name": "old_epoch_rejected",
+      "status": "PASS"
+    }
+  ],
+  "dash_sha256": "d262b8299734d07c27e8d5ac696a3460c82cba4fe56159d3cbdcceee8f703ff9",
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ssg_diff_i8yh2n19/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_lmej0v20/qmp.sock,server=on,wait=off"
+  ],
+  "baseline_resources": [
+    130279,
+    2,
+    0
+  ],
+  "after_resources": [
+    130279,
+    2,
+    0
+  ],
+  "dash_checks": [
+    {
+      "name": "unpublished_unavailable",
+      "status": "PASS"
+    },
+    {
+      "name": "complete_unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "complete_change_and_real_removal",
+      "status": "PASS"
+    },
+    {
+      "name": "metadata_delivered_with_diff",
+      "status": "PASS"
+    },
+    {
+      "name": "query_scope_change_resets",
+      "status": "PASS"
+    },
+    {
+      "name": "partial_current_resets",
+      "status": "PASS"
+    },
+    {
+      "name": "partial_unchanged_is_not_complete",
+      "status": "PASS"
+    },
+    {
+      "name": "partial_previous_resets",
+      "status": "PASS"
+    },
+    {
+      "name": "duplicate_id_rejected_without_changing_history",
+      "status": "PASS"
+    },
+    {
+      "name": "missing_id_rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "legacy_metadata_change_conservatively_resets",
+      "status": "PASS"
+    },
+    {
+      "name": "old_epoch_rejected",
+      "status": "PASS"
+    }
+  ],
+  "dash_after_resources": [
+    130279,
+    2,
+    0
+  ]
+}

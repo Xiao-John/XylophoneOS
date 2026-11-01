@@ -1,5 +1,5 @@
 {
-  "original_runner": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/tests/qt6_gui_acceptance.py",
+  "original_runner": "${XOS_WORKTREE_68D576C199CF}/tests/qt6_gui_acceptance.py",
   "original_sha256": "38b762a31dbf2bd8096fc41e666a1c56ada58dde6fe9a1db49cbace35a86c661",
   "executed_sha256": "38ace14b20280bc6207a8ba2cd54131ccd14208358df5c4da545d3c6010c4ec7",
   "adaptations": [

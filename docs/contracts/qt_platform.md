@@ -77,7 +77,7 @@ flush offset 和第二顶层拒绝语义不扩展。QPA 仅补 Home/End/PageUp/P
 Set1 映射和 flush 观测；没有新 syscall 或 display wire 变更。
 
 `libXosAurora.a` 提供 `aurora::initialize(QApplication&)`，选择 QProxyStyle/QPalette
-及标准按钮/文本/输入的深色样式；Canvas/Panel/Button 为可选共享控件。有限低频模糊、
+及标准按钮/文本/输入的深色样式；canvas/panel/button 为可选共享控件。有限低频模糊、
 环境混合和软件指针都在该应用内完成，不是系统合成器、跨应用折射或 GPU 加速。
 QtGui 的图像/绘制线程池可多占一个线程，实测常见为3线程，仍受4线程配额；不是把
 E16 的两个线程结论照搬到 Widgets。正常/kill/fault/服务故障后的进程资源已核对。

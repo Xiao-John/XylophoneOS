@@ -105,7 +105,7 @@
     "net-overflow\r\n[virtio-net] pci id=1af4:1041 bus=0 slot=3 irq=11 kernel_only=1\r\n[virtio-net] ready VERSION_1 MAC MRG_RXBUF single_buffer MTU=1500 RX=16 TX=16 dma_pages=34 INTx=11 level=1 polling_idle=0\r\n[virtio-net] submitted=16 queue_backpressure=AGAIN invalid_lengths=INVALID waiting=HLT\r\n[virtio-net] test rx=16 tx_completed=16 irqs=2 rejected=2 dropped=8 failed=0 live_dma=34 rejected_header=0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000000 0x0000000000000001 0x0000000000000000 \r\n[virtio-net] reset reclaimed=34 before=130215 baseline=130180 after=130214 result=pass\r\nnet-overflow pass\r\nxos64> "
   ],
   "qemu_command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -123,7 +123,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net/build/network/qualified_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_WORKTREE_68D576C199CF}/build/network/qualified_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -134,7 +134,7 @@
     "-display",
     "none",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_iznmjy5f/qmp.sock,server=on,wait=off",
+    "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_iznmjy5f/qmp.sock,server=on,wait=off",
     "-netdev",
     "socket,id=net,connect=127.0.0.1:53276",
     "-device",

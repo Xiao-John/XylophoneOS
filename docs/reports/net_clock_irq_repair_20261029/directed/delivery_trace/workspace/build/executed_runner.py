@@ -4,7 +4,7 @@
 import argparse, hashlib, json, socket, struct, sys, threading, time
 from pathlib import Path
 from unittest.mock import patch
-ROOT=Path('/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_trace/workspace')
+ROOT=Path('${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_trace/workspace')
 sys.path[:0]=[str(ROOT/'tests'),str(ROOT/'scripts')]
 import boot_smoke
 from boot_smoke import Guest
@@ -53,7 +53,7 @@ try:
  if a.access_payload:
   from make_work_disk import create_fat32
   from work_disk import transfer
-  disk=out/'probe_disk.img';create_fat32(disk,512);transfer(disk,'mkdir','/bin');transfer(disk,'import','/bin/access.elf',a.access_payload);transfer(disk,'import','/bin/gui.elf',Path('/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/final_gui/qt_demo.elf'))
+  disk=out/'probe_disk.img';create_fat32(disk,512);transfer(disk,'mkdir','/bin');transfer(disk,'import','/bin/access.elf',a.access_payload);transfer(disk,'import','/bin/gui.elf',Path('${XOS_WORKTREE_C671BDF53659}/build/qt_e17/final_gui/qt_demo.elf'))
   report['access_elf_sha256']=sha(a.access_payload.read_bytes())
  original=boot_smoke.qemu_command
  def command(*args,**kwargs):
@@ -97,7 +97,7 @@ try:
   report['same_boot_Qt_after_network_failure']='PASSED'
   report['Qt_pre_resources']=pre
   report['Qt_with_display_service_resources']=with_service
-  report['Qt_ELF_sha256']=sha(Path('/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/final_gui/qt_demo.elf').read_bytes())
+  report['Qt_ELF_sha256']=sha(Path('${XOS_WORKTREE_C671BDF53659}/build/qt_e17/final_gui/qt_demo.elf').read_bytes())
  if a.access_payload:
   from process_smoke import command,resources
   command(g,'demo quiet',b'demo tasks')

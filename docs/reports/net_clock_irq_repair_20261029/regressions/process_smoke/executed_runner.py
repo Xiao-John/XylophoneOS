@@ -10,7 +10,7 @@ import struct
 import sys
 import time
 
-ROOT=Path('/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/process_smoke')
+ROOT=Path('${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/process_smoke')
 sys.path.insert(0, str(ROOT / "scripts"))
 from boot_smoke import Guest
 from task_smoke import send_bytes, pump

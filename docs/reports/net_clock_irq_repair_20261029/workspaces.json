@@ -1,54 +1,54 @@
 [
   {
-    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS",
+    "worktree": "${XOS_WORKTREE_AD501084EF50}",
     "HEAD": "1699b6c86ee9f48a37647e41f7065d56ee7f56e4",
     "branch": "refs/heads/codex/threading-t0-t2",
     "status": []
   },
   {
-    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser",
+    "worktree": "${XOS_WORKTREE_445F322455D6}",
     "HEAD": "88cdbc01b0e30b2c2b449d9831d057468b9d6a77",
     "branch": "refs/heads/codex/aurora-browser-b1",
     "status": []
   },
   {
-    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net",
+    "worktree": "${XOS_WORKTREE_68D576C199CF}",
     "HEAD": "9b832fa06061b6905d00529a2e0a8445ea389a2a",
     "branch": "refs/heads/codex/browser-net-n1",
     "status": []
   },
   {
-    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3",
+    "worktree": "${XOS_WORKTREE_19282E542E67}",
     "HEAD": "630374e9eff68436a5b22c42d49b1e69fd979c7f",
     "branch": "refs/heads/feature/dash-c1-c3",
     "status": []
   },
   {
-    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-display-e14",
+    "worktree": "${XOS_WORKTREE_5727E1100584}",
     "HEAD": "f84745a9079be23b5ae959fb7bc927837e2a6294",
     "branch": "refs/heads/feature/display-backend-e14",
     "status": []
   },
   {
-    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1",
+    "worktree": "${XOS_WORKTREE_917CF6661DE7}",
     "HEAD": "c152f7f93fb11291eb019d572219c2b4d69743a9",
     "branch": "refs/heads/codex/modern-app-phase1",
     "status": []
   },
   {
-    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-net",
+    "worktree": "${XOS_WORKTREE_FF880C014128}",
     "HEAD": "9a1b16276754ce68a8024b942b5fd46ca4e6210b",
     "branch": "refs/heads/codex/modern2-network-handoff",
     "status": []
   },
   {
-    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-python",
+    "worktree": "${XOS_WORKTREE_50E4DDCC5365}",
     "HEAD": "3b20ec7416d6d2dabcdd976a11e1c34f31ee5332",
     "branch": "refs/heads/codex/python-static-imaging",
     "status": []
   },
   {
-    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime",
+    "worktree": "${XOS_WORKTREE_0537C4C7287C}",
     "HEAD": "1557bbc7341fb672cb41c272130723c651801d1b",
     "branch": "refs/heads/codex/modern2-runtime-probes",
     "status": [
@@ -127,13 +127,13 @@
     ]
   },
   {
-    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-vm",
+    "worktree": "${XOS_WORKTREE_BC1042F459A2}",
     "HEAD": "d1fcc363ba49ebfd62b3293ea05191125d227aed",
     "branch": "refs/heads/codex/px4a-vma-claim",
     "status": []
   },
   {
-    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair",
+    "worktree": "${XOS_WORKTREE_61E12BE2FF84}",
     "HEAD": "fda4d6262cca8e3b07c142a914edbbdcc33b075b",
     "branch": "refs/heads/codex/net-clock-irq-repair",
     "status": [
@@ -152,31 +152,31 @@
     ]
   },
   {
-    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-network-abi",
+    "worktree": "${XOS_WORKTREE_1AB624B170CC}",
     "HEAD": "97947c07853e785530d3c907738a8b45f530986e",
     "branch": "refs/heads/codex/network-device-abi-claim",
     "status": []
   },
   {
-    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15",
+    "worktree": "${XOS_WORKTREE_ED2321C1F627}",
     "HEAD": "d1e108d8f31ffcb1ebf43b40a412af933fb074cd",
     "branch": "refs/heads/codex/qt6-e15",
     "status": []
   },
   {
-    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e16",
+    "worktree": "${XOS_WORKTREE_0A5B86A0FDD3}",
     "HEAD": "aaf70fcfd5b06364ff09c7a87d6239a730fcdd66",
     "branch": "refs/heads/codex/qt6-e16-qpa",
     "status": []
   },
   {
-    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17",
+    "worktree": "${XOS_WORKTREE_C671BDF53659}",
     "HEAD": "66ac0026e4b35bce8fee4cb1d05eb86644835417",
     "branch": "refs/heads/codex/qt6-e17-widgets",
     "status": []
   },
   {
-    "worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d",
+    "worktree": "${XOS_WORKTREE_F422EEF78DDA}",
     "HEAD": "00d7a57f04caba2252487eb5ac790c1fb810be92",
     "branch": "refs/heads/codex/virtio-gpu2d",
     "status": []

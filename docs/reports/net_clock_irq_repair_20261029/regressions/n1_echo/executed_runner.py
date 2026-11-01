@@ -4,7 +4,7 @@
 import argparse, hashlib, json, socket, struct, sys, threading, time
 from pathlib import Path
 from unittest.mock import patch
-ROOT=Path('/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_runs/n1_echo')
+ROOT=Path('${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_runs/n1_echo')
 sys.path[:0]=[str(ROOT/'tests'),str(ROOT/'scripts')]
 import boot_smoke
 from boot_smoke import Guest

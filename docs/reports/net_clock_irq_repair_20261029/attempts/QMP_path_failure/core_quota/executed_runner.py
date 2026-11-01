@@ -12,7 +12,7 @@ import shutil
 import sys
 import tempfile
 
-ROOT=Path('/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/final_runs/core_quota')
+ROOT=Path('${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/final_runs/core_quota')
 sys.path[:0] = [str(ROOT / 'scripts'), str(ROOT / 'tests')]
 from boot_smoke import Guest
 from make_work_disk import create_fat32

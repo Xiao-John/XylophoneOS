@@ -3,7 +3,7 @@
 """Real XOS liteHTML browser: PS/2 navigation, hostile local input and teardown."""
 import argparse,hashlib,json,re,sys,tempfile
 from pathlib import Path
-ROOT=Path('/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/runs/browser_lifecycle');sys.path[:0]=[str(ROOT/'scripts'),str(ROOT/'tests')]
+ROOT=Path('${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/runs/browser_lifecycle');sys.path[:0]=[str(ROOT/'scripts'),str(ROOT/'tests')]
 from boot_smoke import Guest
 from task_smoke import send_bytes,pump
 from process_smoke import command,resources

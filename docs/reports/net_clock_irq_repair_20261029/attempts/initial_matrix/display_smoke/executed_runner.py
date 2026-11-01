@@ -11,7 +11,7 @@ import tempfile
 import time
 from unittest.mock import patch
 
-ROOT=Path('/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/runs/display_smoke')
+ROOT=Path('${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/runs/display_smoke')
 sys.path[:0]=[str(ROOT/'scripts'),str(ROOT/'tests')]
 import boot_smoke
 from boot_smoke import Guest

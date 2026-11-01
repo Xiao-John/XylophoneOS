@@ -4,7 +4,7 @@
 import argparse, hashlib, json, socket, struct, sys, threading, time
 from pathlib import Path
 from unittest.mock import patch
-ROOT=Path('/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_continuity')
+ROOT=Path('${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_continuity')
 sys.path[:0]=[str(ROOT/'tests'),str(ROOT/'scripts')]
 import boot_smoke
 from boot_smoke import Guest
@@ -54,7 +54,7 @@ try:
   from make_work_disk import create_fat32
   from work_disk import transfer
   disk=out/'probe_disk.img';create_fat32(disk,512);transfer(disk,'mkdir','/bin');transfer(disk,'import','/bin/access.elf',a.access_payload)
-  report['access_elf_sha256']=sha(a.access_payload.read_bytes());transfer(disk,'import','/bin/clock',Path('/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_probe_run/clock.elf'));report['clock_elf_sha256']=sha(Path('/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-net-clock-irq-repair/build/clock_irq/delivery_probe_run/clock.elf').read_bytes())
+  report['access_elf_sha256']=sha(a.access_payload.read_bytes());transfer(disk,'import','/bin/clock',Path('${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_probe_run/clock.elf'));report['clock_elf_sha256']=sha(Path('${XOS_WORKTREE_61E12BE2FF84}/build/clock_irq/delivery_probe_run/clock.elf').read_bytes())
  original=boot_smoke.qemu_command
  def command(*args,**kwargs):
   cmd=original(*args,**kwargs)

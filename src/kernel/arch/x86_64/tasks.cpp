@@ -15,6 +15,8 @@
 static_assert(xos::clock::resolution_ns == xos::thread_tick_ns);
 #include "user_blobs.hpp"
 #include "user_images.hpp"
+#include <xos/device_abi.hpp>
+void* device_authorize_syscall(interrupt_frame* frame);
 
 namespace xos {
 extern const u8* boot_payload;
@@ -2257,6 +2259,7 @@ void* syscall_entry(interrupt_frame* frame) {
         frame->rax = static_cast<u64>(process_error_state); return frame;
     }
     if(number==sys_display || number==sys_display_present){return display_syscall(frame);}
+    if(number==sys_device){return device_authorize_syscall(frame);}
     i64 result = sys_error_invalid_argument;
     switch (number) {
     case sys_write: {

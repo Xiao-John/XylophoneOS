@@ -79,6 +79,8 @@ def main():
         raise
     finally:
         if guest:
+            (system / 'terminal_handoff_serial.log').write_bytes(guest.output)
+            report['serial_sha256'] = hashlib.sha256(guest.output).hexdigest()
             guest.close()
         (system / "terminal_handoff_report.json").write_text(json.dumps(report, indent=2) + "\n")
     print(f"PASS {len(report['checks'])} terminal probe groups | build {manifest['build_id']}")

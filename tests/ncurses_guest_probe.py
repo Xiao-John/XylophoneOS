@@ -226,6 +226,7 @@ def main():
     finally:
         if guest:
             report['serial_sha256'] = hashlib.sha256(guest.output).hexdigest()
+            (system / 'ncurses_guest_serial.log').write_bytes(guest.output)
             guest.close()
         (system / 'ncurses_guest_probe_report.json').write_text(json.dumps(report, indent=2) + '\n')
     print(f"PASS {len(report['checks'])} ncurses and locale probe groups | build {manifest['build_id']}")

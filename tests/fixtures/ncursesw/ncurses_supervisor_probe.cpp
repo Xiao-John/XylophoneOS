@@ -30,9 +30,10 @@ bool run(const char* path) {
     process_status status{};
     const i64 waited = sdk::wait(static_cast<u64>(child), status);
     const i64 detached = user::shell_terminal::finish_application();
-    if (waited == 0 && status.outcome == process_outcome::exited && status.code >= 0 && status.code <= 9) {
-        char detail[] = "W2_CHILD_EXIT_0\n";
-        detail[14] = static_cast<char>('0' + status.code);
+    if (waited == 0 && status.outcome == process_outcome::exited && status.code >= 0 && status.code <= 99) {
+        char detail[] = "W2_CHILD_EXIT_00\n";
+        detail[14] = static_cast<char>('0' + status.code / 10);
+        detail[15] = static_cast<char>('0' + status.code % 10);
         (void)transmit(detail);
     }
     return waited == 0 && detached == 0 && status.outcome == process_outcome::exited && status.code == 0;
@@ -53,5 +54,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     if (!transmit("W2_WIDE_OK\n")) return 5;
     if (!run("/bin/reentry.elf")) { (void)transmit("W2_REENTRY_FAILED\n"); return 6; }
     if (!transmit("W2_REENTRY_OK\n")) return 7;
+    if (!run("/bin/locale.elf")) { (void)transmit("W2_LOCALE_FAILED\n"); return 9; }
+    if (!transmit("W2_LOCALE_OK\n")) return 10;
     return user::shell_terminal::stop() == 0 ? 0 : 8;
 }

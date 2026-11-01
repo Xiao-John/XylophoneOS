@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Run the isolated two-consumer ncurses probe after committing all changes."""
+"""Run isolated ncurses and locale probes after committing all changes."""
 import argparse
 import hashlib
 import json
@@ -67,18 +67,20 @@ def main():
     for path in (image, terminal):
         if manifest['artifacts'].get(path.name, {}).get('sha256') != sha(path):
             raise SystemExit(f'system artifact differs from manifest: {path.name}')
-    wide, reentry = consumers / 'wide_screen_probe.elf', consumers / 'reentry_probe.elf'
-    for path in (wide, reentry):
+    wide, reentry, locale = (consumers / name for name in
+                             ('wide_screen_probe.elf', 'reentry_probe.elf', 'wide_locale_probe.elf'))
+    for path in (wide, reentry, locale):
         if apps['artifacts'].get(path.name) != sha(path):
             raise SystemExit(f'consumer differs from receipt: {path.name}')
     entry = terminfo / 'terminfo' / term['entry']
     if term['entry'] != 'x/xterm' or not entry.is_file() or entry.is_symlink() or sha(entry) != term['entry_sha256']:
         raise SystemExit('terminfo data differs from receipt')
-    report = {'status': 'failed', 'scope': 'two bounded ncurses guest probes, not full W1/W2 acceptance',
+    report = {'status': 'failed', 'scope': 'bounded ncurses and locale probes, not full W1/W2 acceptance',
               'commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
               'build_id': manifest['build_id'], 'system_sha256': sha(image), 'terminal_sha256': sha(terminal),
               'sdk_tree_sha256': sdk_receipt['sdk_tree_sha256'], 'ncurses_sha256': target['archive_sha256'],
-              'terminfo_sha256': sha(entry), 'wide_sha256': sha(wide), 'reentry_sha256': sha(reentry), 'checks': []}
+              'terminfo_sha256': sha(entry), 'wide_sha256': sha(wide), 'reentry_sha256': sha(reentry),
+              'locale_sha256': sha(locale), 'checks': []}
     guest = None
     try:
         with tempfile.TemporaryDirectory(prefix='xos_ncurses_probe_') as folder:
@@ -88,7 +90,8 @@ def main():
                          '/usr/local/share/terminfo/x'):
                 transfer(disk, 'mkdir', path)
             for destination, source in (('/bin/terminal.elf', terminal), ('/bin/wide.elf', wide),
-                                        ('/bin/reentry.elf', reentry), ('/usr/local/share/terminfo/x/xterm', entry)):
+                                        ('/bin/reentry.elf', reentry), ('/bin/locale.elf', locale),
+                                        ('/usr/local/share/terminfo/x/xterm', entry)):
                 transfer(disk, 'import', destination, source)
             guest = Guest(image, 'ncurses_guest_probe', work_disk=disk, iso=True)
             guest.expect(b'xos64> ', timeout=30)
@@ -100,17 +103,21 @@ def main():
             if marker != b'W2_INPUT_READY':
                 raise AssertionError('wide consumer failed before input')
             screen = bytes(guest.output)
-            if b'\xe4\xb8\xad' not in screen or not re.search(rb'\x1b\[[0-9;]*31(?:;[0-9]*)?m', screen):
-                raise AssertionError('wide output or red foreground escape missing')
-            send_bytes(guest, b'\x1bOD\xe4\xb8\xad')
+            if b'\xe4\xb8\xad\xcc\x81' not in screen or not re.search(rb'\x1b\[[0-9;]*31(?:;[0-9]*)?m', screen):
+                raise AssertionError('combined wide output or red foreground escape missing')
+            send_bytes(guest, b'\x1bOD\xe4\xb8\xad\x1bOP')
             marker = guest.expect_any((b'W2_WIDE_OK', b'W2_WIDE_FAILED'), timeout=60)
             if marker != b'W2_WIDE_OK':
                 raise AssertionError('wide consumer returned failure')
-            report['checks'].append('wide_window_color_left_key_cjk_input_output')
+            report['checks'].append('wide_window_color_combining_timeout_left_f1_cjk')
             marker = guest.expect_any((b'W2_REENTRY_OK', b'W2_REENTRY_FAILED'), timeout=60)
             if marker != b'W2_REENTRY_OK':
                 raise AssertionError('reentry consumer returned failure')
             report['checks'].append('unknown_terminal_size_and_reentry')
+            marker = guest.expect_any((b'W2_LOCALE_OK', b'W2_LOCALE_FAILED'), timeout=60)
+            if marker != b'W2_LOCALE_OK':
+                raise AssertionError('locale consumer returned failure')
+            report['checks'].append('locale_utf8_fragment_invalid_width_and_roundtrip')
             report['status'] = 'passed_probe'
     except Exception as error:
         report['error'] = str(error)
@@ -120,7 +127,7 @@ def main():
             report['serial_sha256'] = hashlib.sha256(guest.output).hexdigest()
             guest.close()
         (system / 'ncurses_guest_probe_report.json').write_text(json.dumps(report, indent=2) + '\n')
-    print(f"PASS {len(report['checks'])} ncurses probe groups | build {manifest['build_id']}")
+    print(f"PASS {len(report['checks'])} ncurses and locale probe groups | build {manifest['build_id']}")
 
 
 if __name__ == '__main__':

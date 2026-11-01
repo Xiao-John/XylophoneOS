@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Cross-link two independent ncursesw consumers; this is not guest acceptance."""
+"""Cross-link two ncursesw consumers and a locale probe; not guest acceptance."""
 import argparse
 import hashlib
 import json
@@ -45,7 +45,8 @@ def main():
     libgcc = subprocess.check_output([compiler, '-print-libgcc-file-name'], text=True).strip()
     output.mkdir(parents=True)
     sources = [ROOT / 'tests/fixtures/ncursesw/wide_screen_probe.c',
-               ROOT / 'tests/fixtures/ncursesw/reentry_probe.c']
+               ROOT / 'tests/fixtures/ncursesw/reentry_probe.c',
+               ROOT / 'tests/fixtures/ncursesw/wide_locale_probe.c']
     results = {'status': 'failed', 'guest_run': False, 'sdk_tree_sha256': sdk_tree,
                'probe_report_sha256': sha(probe / 'report.json'), 'ncurses_archive_sha256': sha(lib),
                'source_sha256': {str(p.relative_to(ROOT)): sha(p) for p in sources}, 'commands': [], 'artifacts': {}}

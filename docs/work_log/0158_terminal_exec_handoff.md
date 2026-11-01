@@ -23,3 +23,11 @@ replacement 验证内核认证通道并恢复描述符别名。目标必须同�
 最初 libc 检查没有附加盘，进入维护门控而未执行应用；该失败串口 SHA-256
 `e6219df71fb92bdc93a6d1c253e78904baafee765410d007f14ee0692d703c20`。
 现在增加全 CLOEXEC 和仅缺终端标记的目标拒绝探针，须提交后重新构建和验证。
+
+提交 `dfedfc9` 后重建 build `2167a2ab6541b32f`，正常 Xsh 的两组 exec 客体检查
+通过：同 PID、模式和未关闭别名保留，单个/全部 CLOEXEC 关闭；缺失路径和具有
+`.xos.exec` 但无 `.xos.tty` 的目标均被拒绝，旧会话仍可用。ISO SHA-256
+`5e0411445a4615686bcb15fe89bdc2a98e1f9545bf6d3651e63cc8dd3dc0e11d`，串口 SHA-256
+`290fa421f87c62f03e9af6145d5b50af6145479d981f8cdbaf12fdf9bb400b2b`；回执和串口
+位于 `build/w1_terminal_exec_run_dfedfc9/`。fork、线程、在途竞争和组合 SDK 重新构建
+仍未完成；这些受限结果不代表完整 W1/W2 资格。

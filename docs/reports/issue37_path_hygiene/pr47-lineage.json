@@ -3,7 +3,6 @@
   "source_commit": "7121110d971af030a6d1acff5245d7e0b0accf3d",
   "original_index_path": "docs/reports/ssg_p2_diagnostic_20261030/SHA256SUMS",
   "original_index_sha256": "7b64740952236c82dd224e6071189e91f56de1aba5fda1a5beb6cbe8ef69d23f",
-  "original_index_copy": "docs/reports/issue37_path_hygiene/pr47-original-SHA256SUMS",
   "export_index_sha256": "f7bdcedff463d6fb42f1053c1af70b235dec19b76c0c49a1f7b8b630083a2c69",
   "index_entries": 10,
   "changes": [

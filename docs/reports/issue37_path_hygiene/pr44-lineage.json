@@ -3,7 +3,6 @@
   "original_commit": "45f7df28498bb11ed615190a02f6500923e1681b",
   "original_index_path": "docs/reports/browser_fragment_integrity_20261030/evidence.json",
   "original_index_sha256": "df0799c5c80085eccd1a6727e17da57aed23a94a3538c7172dd397535b502670",
-  "original_index_copy": "docs/reports/issue37_path_hygiene/pr44-original-index.json",
   "export_index_path": "docs/reports/browser_fragment_integrity_20261030/evidence.json",
   "export_index_sha256": "513126f28762e02f06144db5f9f95ce0d7c20e0add7fe56bcd1be457b46910bb",
   "scope": "Original index was checked against the original commit. The export index is a new version for the current checkout; it is not the raw evidence index. Historic Git objects are not erased.",

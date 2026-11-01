@@ -3,7 +3,6 @@
   "original_commit": "b1b562258520a5dcdeaa5c5bc19cde9abac99402",
   "original_index_path": "docs/reports/aurora_glass_v2_20261030/evidence_index.json",
   "original_index_sha256": "8e48768d23fe68f250cc0d216768a7f9162f68dd2c4042fb968738f866733391",
-  "original_index_copy": "docs/reports/issue37_path_hygiene/pr41-original-index.json",
   "export_index_path": "docs/reports/aurora_glass_v2_20261030/evidence_index.json",
   "export_index_sha256": "ad6fa47e1fee9d064a5a376c0c80853cb66dd237af0725001cb7488ecda3a18e",
   "scope": "Original index was checked against the original commit. The export index is a new version for the current checkout; it is not the raw evidence index. Historic Git objects are not erased.",

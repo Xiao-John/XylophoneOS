@@ -196,7 +196,7 @@ Xsh 桥接已增加应用建进程时的附加、回收及停止入口，专用 
 见[0147](work_log/0147_ncurses_locale_coverage.md)。
 桥接已实现受限显式服务重连，无应用附加时的故障注入客体检查通过，见
 [0148](work_log/0148_terminal_service_recovery.md)。
-独立 W1 交接客体探针四组通过；应用持有会话时的服务故障探针已构建、待提交后运行，
+独立 W1 交接客体探针四组通过；应用持有会话时的服务故障限定探针通过，
 见[0149](work_log/0149_terminal_handoff_and_fault.md)。
 用户态驱动已试行按 TEMT 确认发送排空，尚未客体验证；见
 [0140](work_log/0140_terminal_drain.md)。

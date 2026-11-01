@@ -23,3 +23,10 @@ Python 编译和 ABI 文档一致性检查通过。文档一致性检查未通�
 `deb2639736c82512f7ee336f7790b4a182fe21c004c04da7b6c8663b3990f993`。
 现增加子进程退出码诊断，须提交后重建重测并修复实际问题。
 前台集成、fork/exec、故障恢复及完整 W1/W2 仍未完成。
+
+提交 `14a17c6` 后重建 build `e51911dfbb5d30b5` 并重测，退出码为 6，
+对应首次 `wget_wch` 未得到 `KEY_LEFT`；串口 SHA-256 为
+`07cce1a3f4a2da1621ff1eaadb89d0f341f0576d3834cdbf7d3bf018dd76c256`。
+目标 ncurses 配置的 `HAVE_SELECT` 为 0，亦未启用 poll；其 `_nc_timed_wait`
+因此缺少这两种等待分支，这是需要优先排查的方向，尚未证明它是唯一原因。
+诊断回执在隔离工作区 `build/w2_ncurses_guest_probe_diagnostic/`。

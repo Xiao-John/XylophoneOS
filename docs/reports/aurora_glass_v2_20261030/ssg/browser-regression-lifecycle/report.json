@@ -1,0 +1,119 @@
+{
+  "status": "PASSED",
+  "case": "lifecycle",
+  "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+  "elf_sha256": "51a55f2c680ef039f7e9ffe145cb325d34688a20aa907323997030b546612a14",
+  "receipt_sha256": "2fa5c6b1ad516fedefff18f745fb4e0361a0c017890eae2a4f15525d6c912f7a",
+  "source_pages": {
+    "src/ports/aurora_browser/pages/theme.css": "0a56ef6865913a9e161672898f8fa2753945e48a094641ee0c18896a03ca2c54",
+    "src/ports/aurora_browser/pages/garden.bmp": "ef846504d0c60f1fbe9731d42edfb0c8cca8763b2928f837753b61c55ca04109",
+    "src/ports/aurora_browser/pages/start.html": "2cd05d76a959980159fcc6d04e4bc8b257e15f3f4d9d6f09cb10a0bfb40ec9c5",
+    "src/ports/aurora_browser/pages/reading.html": "83e35c5316b4cf6c514f625b748a2b786b23e06654d73fe1827ddc16405ea321",
+    "src/ports/aurora_browser/pages/garden.html": "b081c7068cf67947fcaa9f65cf0e70afbdc3971e9261a627a18357e76c420dbd"
+  },
+  "runner_sha256": "d655e2197bdd6dd2892fd60c9ed4fb3df083049a8a75fcddc2c72ce09ce3e947",
+  "checks": [
+    {
+      "name": "real_litehtml_engine_and_aurora_start_page",
+      "status": "PASSED"
+    },
+    {
+      "name": "normal_exit_exact_resource_return",
+      "status": "PASSED"
+    },
+    {
+      "name": "three_launch_exit_cycles_exact_resources",
+      "status": "PASSED"
+    },
+    {
+      "name": "killed_browser_full_resource_return",
+      "status": "PASSED"
+    },
+    {
+      "name": "display_death_browser_fails_closed_serial_survives",
+      "status": "PASSED"
+    },
+    {
+      "name": "new_browser_after_display_restart",
+      "status": "PASSED"
+    },
+    {
+      "name": "file_sync_and_serial_rescue_after_browser",
+      "status": "PASSED"
+    }
+  ],
+  "qemu_command": [
+    "${XOS_LOCAL_PATH}",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=${XOS_LOCAL_PATH},format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_LOCAL_PATH},format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:${XOS_LOCAL_PATH},server=on,wait=off"
+  ],
+  "baseline": [
+    130279,
+    2,
+    0
+  ],
+  "with_service": [
+    130235,
+    3,
+    1
+  ],
+  "screenshots": {
+    "start": "814b4923c87cf56554eca25addcf9a93a7c12a808279c1a3e6299338aaf07ddb"
+  },
+  "measurements": {
+    "sampled_pages": [
+      7153,
+      7153,
+      7153,
+      7153,
+      7153,
+      7153
+    ],
+    "sampled_threads": [
+      3,
+      3,
+      3,
+      3,
+      3,
+      3
+    ],
+    "visual_cache_bytes": [
+      3840000,
+      3840000,
+      3840000,
+      3840000,
+      3840000,
+      3840000
+    ],
+    "absolute_peak": "NOT_RUN"
+  }
+}

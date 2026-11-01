@@ -202,6 +202,8 @@ Xsh 桥接已增加应用建进程时的附加、回收及停止入口，专用 
 见[0150](work_log/0150_xsh_tty_run.md)。
 Xsh 空闲时的终端失效重连及桥接短写处理已实现，受限真实故障注入通过，
 见[0151](work_log/0151_xsh_terminal_recovery.md)。
+ncursesw 组合 SDK 与 xterm 数据候选已生成，独立消费者交叉链接通过；组合产物的客体
+资格待提交后验证，见[0152](work_log/0152_ncurses_sdk_candidate.md)。
 用户态驱动已试行按 TEMT 确认发送排空，尚未客体验证；见
 [0140](work_log/0140_terminal_drain.md)。
 输入清空和 `TCSAFLUSH` 已试行实现，连续输入失败可能已丢弃部分硬件字节，尚未客体验证；

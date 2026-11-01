@@ -85,7 +85,7 @@
       "source": "https://invisible-mirror.net/archives/ncurses/ncurses-6.5.tar.gz",
       "license": "upstream COPYING and per-file notices; member review not completed",
       "notices": ["src/ports/ncurses/upstream/COPYING"],
-      "used_in": ["W0 cross-build probe only; no target distribution"],
+      "used_in": ["ncursesw SDK candidate and bounded guest probes; no target distribution"],
       "artifact_sha256": {
         "src/ports/ncurses/upstream/COPYING": "b2feb54f39529abe226f709a292584fde48a2e5721559fee417d2cdd51cb7cc1",
         "src/ports/ncurses/source_lock.json": "6ce494e41d9a032782b83794c3336725dd41d8b7a9a1263a34e10d5a61d488ee"

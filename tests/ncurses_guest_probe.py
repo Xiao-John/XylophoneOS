@@ -27,6 +27,7 @@ def main():
     for name in ('system', 'sdk-candidate', 'ncurses-probe', 'consumers', 'terminfo'):
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--xsh', action='store_true', help='exercise tty-run in the normal supervisor')
+    parser.add_argument('--composed', type=Path, help='verify consumers linked against this composed SDK candidate')
     args = parser.parse_args()
     system, candidate, probe, consumers, terminfo = [p.resolve(strict=True) for p in
         (args.system, args.sdk_candidate, args.ncurses_probe, args.consumers, args.terminfo)]
@@ -39,6 +40,8 @@ def main():
     target = json.loads((probe / 'report.json').read_text())
     apps = json.loads((consumers / 'report.json').read_text())
     term = json.loads((terminfo / 'receipt.json').read_text())
+    composed = args.composed.resolve(strict=True) if args.composed else None
+    composed_receipt = json.loads((composed / 'receipt.json').read_text()) if composed else None
     lock_path = ROOT / 'src/ports/ncurses/source_lock.json'
     source_lock = json.loads(lock_path.read_text())
     if args.xsh and (manifest.get('ncurses_supervisor_probe') or manifest.get('terminal_supervisor_probe')):
@@ -54,8 +57,8 @@ def main():
         tree_receipt(candidate / 'sdk')[0] != sdk_receipt.get('sdk_tree_sha256') or
         target.get('sdk_tree_sha256') != sdk_receipt.get('sdk_tree_sha256') or
         target.get('archive_valid') is not True or apps.get('status') != 'cross_linked_guest_not_run' or
-        apps.get('sdk_tree_sha256') != sdk_receipt.get('sdk_tree_sha256') or
-        apps.get('probe_report_sha256') != sha(probe / 'report.json') or
+        (not composed and (apps.get('sdk_tree_sha256') != sdk_receipt.get('sdk_tree_sha256') or
+                           apps.get('probe_report_sha256') != sha(probe / 'report.json'))) or
         term.get('status') != 'built_guest_not_run' or
         target.get('source_sha256') != source_lock['archive_sha256'] or
         term.get('source_sha256') != source_lock['archive_sha256'] or
@@ -63,9 +66,20 @@ def main():
         term.get('target_report_sha256') != sha(probe / 'report.json') or
         term.get('target_config_sha256') != sha(probe / 'build/include/ncurses_cfg.h') or
         term.get('target_library_sha256') != target.get('archive_sha256') or
-        apps.get('ncurses_archive_sha256') != target.get('archive_sha256') or
+        (not composed and apps.get('ncurses_archive_sha256') != target.get('archive_sha256')) or
         sha(probe / 'build/lib/libncursesw.a') != target.get('archive_sha256')):
         raise SystemExit('SDK, ncurses, consumer and terminfo receipts do not match')
+    if composed:
+        files = {p.relative_to(composed).as_posix(): sha(p) for p in sorted(composed.rglob('*'))
+                 if p.is_file() and p != composed / 'receipt.json'}
+        digest = hashlib.sha256((json.dumps(files, ensure_ascii=False, sort_keys=True, indent=2) + '\n').encode()).hexdigest()
+        if (any(p.is_symlink() for p in composed.rglob('*')) or
+            composed_receipt.get('status') != 'built_unverified' or files != composed_receipt.get('files') or
+            digest != composed_receipt.get('tree_sha256') or apps.get('candidate_tree_sha256') != digest or
+            composed_receipt.get('base_sdk_tree_sha256') != sdk_receipt['sdk_tree_sha256'] or
+            composed_receipt.get('target_report_sha256') != sha(probe / 'report.json') or
+            composed_receipt.get('terminfo_receipt_sha256') != sha(terminfo / 'receipt.json')):
+            raise SystemExit('composed SDK and consumer receipts do not match')
     image, terminal = system / 'xos-install.iso', system / 'user_terminal.image.elf'
     for path in (image, terminal):
         if manifest['artifacts'].get(path.name, {}).get('sha256') != sha(path):
@@ -75,7 +89,8 @@ def main():
     for path in (wide, reentry, locale, failure):
         if apps['artifacts'].get(path.name) != sha(path):
             raise SystemExit(f'consumer differs from receipt: {path.name}')
-    entry = terminfo / 'terminfo' / term['entry']
+    entry = (composed / 'target/usr/local/share/terminfo/x/xterm' if composed
+             else terminfo / 'terminfo' / term['entry'])
     if term['entry'] != 'x/xterm' or not entry.is_file() or entry.is_symlink() or sha(entry) != term['entry_sha256']:
         raise SystemExit('terminfo data differs from receipt')
     report = {'status': 'failed', 'scope': 'bounded ncurses and locale probes, not full W1/W2 acceptance',
@@ -84,6 +99,8 @@ def main():
               'sdk_tree_sha256': sdk_receipt['sdk_tree_sha256'], 'ncurses_sha256': target['archive_sha256'],
               'terminfo_sha256': sha(entry), 'wide_sha256': sha(wide), 'reentry_sha256': sha(reentry),
               'locale_sha256': sha(locale), 'failure_sha256': sha(failure), 'checks': []}
+    if composed:
+        report['composed_sdk_tree_sha256'] = composed_receipt['tree_sha256']
     guest = None
     try:
         with tempfile.TemporaryDirectory(prefix='xos_ncurses_probe_') as folder:

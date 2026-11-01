@@ -21,6 +21,7 @@ LOCK_PATH = ROOT / 'src/ports/ncurses/source_lock.json'
 LOCK = json.loads(LOCK_PATH.read_text())
 SOURCE_URL = LOCK['source_url']
 SOURCE_SHA256 = LOCK['archive_sha256']
+PUBLIC_HEADERS = ('curses.h', 'term.h', 'termcap.h', 'unctrl.h', 'ncurses_dll.h')
 
 
 def digest(path):
@@ -110,6 +111,7 @@ def main():
     archive_members = []
     required_symbols = {'initscr': False, 'wget_wch': False}
     library = build / 'lib/libncursesw.a'
+    public_headers = {}
     if build_exit_code == 0:
         try:
             archive_members = subprocess.check_output([target_ar, 't', str(library)], text=True).splitlines()
@@ -117,6 +119,12 @@ def main():
             for symbol in required_symbols:
                 required_symbols[symbol] = any(line.split()[-1:] == [symbol] for line in symbols.splitlines())
             archive_valid = bool(archive_members) and all(required_symbols.values())
+            if archive_valid:
+                for name in PUBLIC_HEADERS:
+                    header = build / 'include' / name
+                    if not header.is_file() or header.is_symlink():
+                        raise OSError('missing or symlinked public header: ' + name)
+                    public_headers[name] = digest(header)
         except (OSError, subprocess.CalledProcessError):
             archive_valid = False
     inputs_unchanged = tree_receipt(sdk)[0] == sdk_tree and digest(LOCK_PATH) == lock_hash
@@ -130,6 +138,7 @@ def main():
               'configure_exit_code': result.returncode, 'build_exit_code': build_exit_code,
               'archive_valid': archive_valid, 'archive_member_count': len(archive_members),
               'archive_sha256': digest(library) if archive_valid else None,
+              'public_headers_sha256': public_headers,
               'required_symbols': required_symbols,
               'guest_run': False,
               'note': 'Configure probes do not establish target runtime semantics or a supported port.'}

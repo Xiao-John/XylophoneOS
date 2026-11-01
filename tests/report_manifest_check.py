@@ -17,6 +17,12 @@ from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORTS = ROOT / 'docs' / 'reports'
+# Exact pre-contract index bytes from the original Notes and Browser drafts.
+# This does not exempt paths or other files from public-path scanning.
+legacy_hygiene_indexes = {
+    'ccfd18a5fa3266a2ebeb59dc49421be2bad8bb5bbed85527172c92bae52287b1',
+    '3b388826a5778d00edefe5bd03bd6f84aab404fbbf9cddc483f5f77e27717610',
+}
 
 
 def sha256(path):
@@ -66,12 +72,43 @@ def check_legacy_dock(directory, data):
     return len(actual)
 
 
+def check_legacy_hygiene(directory):
+    index = directory / 'SHA256SUMS'
+    if sha256(index) not in legacy_hygiene_indexes:
+        raise ValueError('unrecognized pre-contract hygiene index')
+    seen = set()
+    for line in index.read_text().splitlines():
+        match = re.fullmatch(r'([0-9a-f]{64})  (.+)', line)
+        if not match or match.group(2) in seen:
+            raise ValueError('malformed or duplicate legacy hygiene entry')
+        digest, name = match.groups()
+        path = PurePosixPath(name)
+        if path.is_absolute() or '..' in path.parts or '\\' in name:
+            raise ValueError('unsafe legacy hygiene path')
+        target = directory / name
+        if target.is_symlink() or not target.is_file() or sha256(target) != digest:
+            raise ValueError('legacy hygiene entry missing or mismatched')
+        seen.add(name)
+    if not seen:
+        raise ValueError('empty legacy hygiene index')
+    return len(seen)
+
+
 def check_reports(reports):
     compliant, grandfathered, legacy_verified, failures = [], [], [], []
     for directory in sorted(p for p in reports.iterdir() if p.is_dir()):
         manifest = directory / 'manifest.json'
+        legacy_hygiene = None
+        if directory.name == 'issue37_path_hygiene' and (directory / 'SHA256SUMS').is_file():
+            try:
+                legacy_hygiene = check_legacy_hygiene(directory)
+            except (OSError, UnicodeError, ValueError) as error:
+                failures.append(f'{directory.name}: {error}')
+                continue
         if not manifest.is_file():
             grandfathered.append(directory.name)
+            if legacy_hygiene is not None:
+                legacy_verified.append({'directory': directory.name, 'scope': 'legacy_index_only', 'members': legacy_hygiene})
             continue
         try:
             data = json.loads(manifest.read_text(), object_pairs_hook=unique_object)
@@ -123,6 +160,9 @@ def check_reports(reports):
             problems.append(f'manifest lists absent file: {relative}')
         if problems:
             failures.extend(f'{directory.name}: {line}' for line in problems)
+        elif legacy_hygiene is not None:
+            grandfathered.append(directory.name)
+            legacy_verified.append({'directory': directory.name, 'scope': 'legacy_index_and_flat_manifest', 'members': legacy_hygiene})
         else:
             compliant.append(directory.name)
     return {'status': 'passed' if not failures else 'failed',

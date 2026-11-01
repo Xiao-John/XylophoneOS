@@ -7,6 +7,7 @@ from pathlib import Path
 import tarfile
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import report_manifest_check as checker
 
@@ -55,6 +56,21 @@ class report_manifest_tests(unittest.TestCase):
     def test_unknown_legacy_shape_is_not_whitelisted(self):
         self.legacy(name='new_unregistered_report')
         self.assertEqual(checker.check_reports(self.root)['status'], 'failed')
+
+    def test_exact_legacy_hygiene_index_is_scoped_and_not_broadly_allowed(self):
+        directory = self.root / 'issue37_path_hygiene'
+        directory.mkdir()
+        (directory / 'README.md').write_bytes(b'legacy')
+        index = (hashlib.sha256(b'legacy').hexdigest() + '  README.md\n').encode()
+        (directory / 'SHA256SUMS').write_bytes(index)
+        index_hash = hashlib.sha256(index).hexdigest()
+        self.assertEqual(checker.check_reports(self.root)['status'], 'failed')
+        with patch.object(checker, 'legacy_hygiene_indexes', {index_hash}):
+            result = checker.check_reports(self.root)
+            self.assertEqual(result['status'], 'passed')
+            self.assertEqual(result['legacy_verified'][0]['scope'], 'legacy_index_only')
+            (directory / 'README.md').write_bytes(b'altered')
+            self.assertEqual(checker.check_reports(self.root)['status'], 'failed')
 
     def test_flat_manifest_rejects_changed_missing_extra_and_unsafe_files(self):
         directory = self.root / 'new_report'

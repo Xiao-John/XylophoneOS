@@ -57,6 +57,17 @@ class verify_evidence_index_tests(unittest.TestCase):
         (self.report / "PACKAGE_SHA256SUMS").write_text(self.sha + "  evidence.txt\n")
         self.assertEqual(verifier.verify(self.root, "report/PACKAGE_SHA256SUMS")["status"], "PASS")
 
+    def test_repository_relative_index_entries(self):
+        (self.report / "SHA256SUMS").write_text(self.sha + "  report/evidence.txt\n")
+        self.assertEqual(verifier.verify(self.root, "report/SHA256SUMS")["status"], "FAIL")
+        self.assertEqual(verifier.verify(self.root, "report/SHA256SUMS", paths_root=".")["status"], "PASS")
+        with self.assertRaises(ValueError):
+            verifier.verify(self.root, "report/SHA256SUMS", paths_root="../outside")
+
+    def test_json_named_sha256sums_is_parsed_as_json(self):
+        index = self.index({"evidence.txt": self.sha}, name="PACKAGE_SHA256SUMS.json")
+        self.assertEqual(verifier.verify(self.root, index)["status"], "PASS")
+
     def test_empty_malformed_and_duplicate_indexes_fail_closed(self):
         for obj in ({}, {"evidence.txt": "bad"}, {"../outside": self.sha},
                     {"/absolute": self.sha}, {"evidence.txt": self.sha.upper()}):
@@ -76,6 +87,17 @@ class verify_evidence_index_tests(unittest.TestCase):
         self.assertEqual(verifier.verify(self.root, index)["status"], "FAIL")
         original = verifier.verify(self.root, index, revision)
         self.assertEqual((original["status"], original["revision"]), ("PASS", revision))
+
+    def test_current_index_can_verify_files_from_historical_commit(self):
+        self.git("init", "-q")
+        self.git("add", "report/evidence.txt")
+        self.git("-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "source")
+        revision = self.git("rev-parse", "HEAD")
+        index = self.index({"evidence.txt": self.sha})
+        (self.report / "evidence.txt").write_bytes(b"changed later\n")
+        self.assertEqual(verifier.verify(self.root, index)["status"], "FAIL")
+        result = verifier.verify(self.root, index, data_revision=revision)
+        self.assertEqual((result["status"], result["data_revision"]), ("PASS", revision))
 
     def test_symlinks_are_rejected(self):
         (self.report / "link.txt").symlink_to("evidence.txt")

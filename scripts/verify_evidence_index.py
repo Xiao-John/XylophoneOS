@@ -5,7 +5,9 @@
 Supported indexes are SHA256SUMS files and JSON objects containing a path map,
 or a map under ``files`` or ``evidence_sha256``. Each value is a SHA-256 string
 or an object with ``sha256`` and optional ``bytes``. Paths are relative to the
-index directory. Missing files and malformed indexes fail.
+index directory unless ``--paths-root`` selects another repository directory.
+``--data-revision`` can check a current index against older Git file bytes.
+Missing files and malformed indexes fail.
 """
 import argparse
 import hashlib
@@ -38,7 +40,7 @@ def no_duplicates(pairs):
 
 
 def parse_index(data, path, field=None):
-    if "SHA256SUMS" in path.name:
+    if "SHA256SUMS" in path.name and path.suffix != ".json":
         if field:
             raise ValueError("--field applies only to JSON indexes")
         entries = {}
@@ -136,16 +138,19 @@ class git_reader:
             raise ValueError("Git object reader failed")
 
 
-def verify(root, index, revision=None, field=None):
+def verify(root, index, revision=None, field=None, paths_root=None, data_revision=None):
     index = safe_path(index)
+    base = safe_path(paths_root) if paths_root is not None else index.parent
     reader = git_reader(root, revision) if revision else checkout_reader(root)
+    data_reader = None
     try:
+        data_reader = git_reader(root, data_revision) if data_revision else reader
         entries = parse_index(reader.read(index), index, field)
         failures = []
         for name, entry in entries.items():
-            target = index.parent / safe_path(name)
+            target = base / safe_path(name)
             try:
-                data = reader.read(target)
+                data = data_reader.read(target)
             except FileNotFoundError:
                 failures.append({"path": name, "status": "MISSING"})
                 continue
@@ -157,10 +162,15 @@ def verify(root, index, revision=None, field=None):
                 failures.append({"path": name, "status": "SIZE_MISMATCH",
                                  "expected": entry["bytes"], "actual": len(data)})
         return {"status": "PASS" if not failures else "FAIL", "index": str(index),
-                "revision": reader.commit if revision else None, "checked": len(entries),
+                "revision": reader.commit if revision else None,
+                "data_revision": data_reader.commit if data_revision else None, "checked": len(entries),
                 "matched": len(entries) - len(failures), "failures": failures}
     finally:
-        reader.close()
+        try:
+            if data_reader is not None and data_reader is not reader:
+                data_reader.close()
+        finally:
+            reader.close()
 
 
 def main():
@@ -168,10 +178,12 @@ def main():
     parser.add_argument("index", help="repository-relative index path")
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--revision", help="verify index and files from this Git commit")
+    parser.add_argument("--data-revision", help="read indexed files from this commit, using the selected index")
     parser.add_argument("--field", help="JSON field containing the path-to-hash map")
+    parser.add_argument("--paths-root", help="repository-relative root for index entries; '.' means repository root")
     args = parser.parse_args()
     try:
-        result = verify(args.root, args.index, args.revision, args.field)
+        result = verify(args.root, args.index, args.revision, args.field, args.paths_root, args.data_revision)
     except (ValueError, OSError, UnicodeError, subprocess.SubprocessError) as exc:
         # Exception strings may contain the contributor's absolute checkout or
         # tool paths. Do not copy those into a report intended for sharing.

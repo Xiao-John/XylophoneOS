@@ -8,7 +8,7 @@ import struct
 from toolchain import COMMON_FLAGS, X86_FLAGS, TARGET, tool
 
 
-def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=False):
+def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=False, ncurses_supervisor_probe=False):
     sdk = build / "sdk"
     if sdk.is_symlink():
         raise SystemExit("Refusing a symlinked SDK output directory")
@@ -91,6 +91,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
         source_path = root / (f"src/user/services/{name}.cpp" if name in ("files", "display", "terminal") else f"src/user/programs/{name}.cpp")
         if name == "supervisor" and terminal_supervisor_probe:
             source_path = root / "tests/fixtures/ncursesw/terminal_supervisor_probe.cpp"
+        if name == "supervisor" and ncurses_supervisor_probe:
+            source_path = root / "tests/fixtures/ncursesw/ncurses_supervisor_probe.cpp"
         if name == "threading_core_probe":
             source_path = root / "tests/fixtures/threading/core_probe.cpp"
         if name == "terminal_app_probe":

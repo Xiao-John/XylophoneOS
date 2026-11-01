@@ -19,7 +19,7 @@ int main(void) {
     if (!screen) return 2;
     int rows = 0, columns = 0;
     getmaxyx(stdscr, rows, columns);
-    int result = rows > 0 && columns > 0 ? 0 : 3;
+    int result = rows == 24 && columns == 80 ? 0 : 3;
     if (endwin() == ERR && !result) result = 4;
     if (refresh() == ERR && !result) result = 5;
     if (endwin() == ERR && !result) result = 6;

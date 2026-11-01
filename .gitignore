@@ -1,6 +1,3 @@
-# LocalPilot 工作区（上游保密中，约一个月后 MIT）
-/localpilot/
-
 # 密钥
 .env
 .env.*

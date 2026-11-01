@@ -11,6 +11,7 @@
 #include <xos/file_client.hpp>
 #include <xos/text.hpp>
 #include "fault_bundle.hpp"
+#include "../services/shell_terminal.hpp"
 
 namespace {
 using namespace xos;
@@ -125,9 +126,14 @@ void display_started(i64 child,i64 result) {
     (void)xos::sdk::write(1,output,used); // one serial write: service startup cannot split this receipt
 }
 
-void result_line(u64 child, bool explicit_wait = false, const fault_bundle::receipt* diagnostic = nullptr) {
+void result_line(u64 child, bool explicit_wait = false, const fault_bundle::receipt* diagnostic = nullptr,
+                 bool terminal_session = false) {
     process_status status{};
     const i64 result = wait(child, status);
+    if (terminal_session && user::shell_terminal::finish_application() != 0) {
+        if (user::shell_terminal::recover("/bin/terminal.elf") <= 0) return;
+        print("xsh: terminal session failed; service restarted\n");
+    }
     if (result < 0) { print("wait: error="); signed_decimal(result); print("\n"); return; }
     if (!verbose_trace) {
         if (status.outcome == process_outcome::exited) {
@@ -212,14 +218,23 @@ bool builtin_named(const char* name) {
     const char* const names[] = {"help", "trace", "type", "ps", "kill", "images", "exec", "spawn",
         "wait", "stats", "primtest", "elftest", "ls", "cat", "stat", "rm", "edit", "filetest",
         "sync", "exec-file", "exec-driver", "exd", "spawn-file", "mkdir", "mv", "demo",
-        "maint-run", "maint-recover", "maint-recover-boot", "maint-status", "diag"};
+        "maint-run", "maint-recover", "maint-recover-boot", "maint-status", "diag", "tty-run"};
     for (const auto* item : names) { if (equal(name, item)) { return true; } }
     return false;
 }
-void launch_file(const char* name, u32 argc, char** argv, u32 spawn_depth, bool background, bool diagnosed = false) {
+void launch_file(const char* name, u32 argc, char** argv, u32 spawn_depth, bool background, bool diagnosed = false,
+                 bool terminal_session = false) {
     const auto candidate = execution::resolve(name, "/usr/bin:/bin:/");
     if (candidate.kind != execution::candidate_kind::executable) {
         candidate_error(name, candidate); return;
+    }
+    if (!terminal_session && user::shell_terminal::active()) {
+        print("xsh: terminal session active; use tty-run for compatible programs\n"); return;
+    }
+    if (terminal_session && !user::shell_terminal::active()) {
+        print("xsh: starting terminal service\n");
+        if (user::shell_terminal::start("/bin/terminal.elf") <= 0 &&
+            user::shell_terminal::recover("/bin/terminal.elf") <= 0) return;
     }
     spawn_options options{};
     fault_bundle::receipt diagnostic_receipt{};
@@ -227,11 +242,24 @@ void launch_file(const char* name, u32 argc, char** argv, u32 spawn_depth, bool 
     options.delegate_spawn_depth = spawn_depth > 1 ? spawn_depth : 0;
     options.environment = kChildPath;
     options.environment_count = 1;
+    const char* terminal_environment[] = {"PATH=/usr/bin:/bin:/", "TERM=xterm",
+        "TERMINFO=/usr/local/share/terminfo", "LINES=24", "COLUMNS=80"};
+    if (terminal_session) {
+        for (u32 fd = 0; fd < 3; ++fd) options.stdio[fd] = -2;
+        options.prepare_child = user::shell_terminal::prepare_application;
+        options.terminal_send_handle = user::shell_terminal::application_send_handle();
+        options.environment = terminal_environment; options.environment_count = 5;
+    }
     execution::launch_diagnostic diagnostic{};
     const i64 child = diagnosed
         ? execution::spawn_file_diagnosed_receipt(candidate.path, argc, argv, options, diagnostic, diagnostic_receipt)
         : execution::spawn_file_diagnosed(candidate.path, argc, argv, options, diagnostic);
     if (child < 0) {
+        if (terminal_session && *options.terminal_send_handle != 0 &&
+            user::shell_terminal::finish_application() != 0)
+            (void)user::shell_terminal::recover("/bin/terminal.elf");
+        else if (terminal_session && !user::shell_terminal::active())
+            (void)user::shell_terminal::recover("/bin/terminal.elf");
         print("xsh: cannot "); print(launch_stage_name(diagnostic.stage)); print(": "); print(candidate.path);
         print(" (error="); signed_decimal(child); print(")\n");
         return;
@@ -242,7 +270,8 @@ void launch_file(const char* name, u32 argc, char** argv, u32 spawn_depth, bool 
     } else if (background) {
         print("xsh: started pid="); decimal(static_cast<u64>(child)); print("\n");
     }
-    if (!background) { result_line(static_cast<u64>(child), false, diagnosed ? &diagnostic_receipt : nullptr); }
+    if (!background) { result_line(static_cast<u64>(child), false, diagnosed ? &diagnostic_receipt : nullptr,
+                                   terminal_session); }
 }
 // Explicit supervisor entry; filenames do not confer maintenance authority.
 void maintenance_run(u32 argc, char** argv, bool recovering, bool boot_image = false) {
@@ -387,6 +416,7 @@ void execute(u32 argc, char** argv) {
         print("Files     ls [path] | cat/stat/rm/edit <file> | mkdir <path> | mv <old> <new> | sync\n"
               "Programs  <command> [args] | exd <command> [args] | type <command>\n"
               "          exec-file | exec-driver (exd) | spawn-file | exec | spawn | wait\n"
+              "          tty-run <terminal-compatible program> [args]\n"
               "Maintain  maint-run <program> [args] | maint-recover <program> [args] | maint-recover-boot | maint-status\n"
               "Shell     dash -i starts dash; exit inside dash returns here\n"
               "Display   display-start | exec gfxdemo [check|fault|hold|stop]\n"
@@ -429,6 +459,9 @@ void execute(u32 argc, char** argv) {
         display_started(child,granted);
         if(child>0 && granted!=0){(void)syscall(10,static_cast<u64>(child));result_line(static_cast<u64>(child));}
     } else if ((equal(argv[0], "exec") || equal(argv[0], "spawn")) && argc >= 2) {
+        if (user::shell_terminal::active()) {
+            print("xsh: legacy image unavailable in terminal session\n"); return;
+        }
         const u32 image = image_named(argv[1]);
         if (image == 0) { print("exec: unknown image\n"); return; }
         const i64 child = spawn(image, argc - 1, argv + 1);
@@ -470,6 +503,8 @@ void execute(u32 argc, char** argv) {
                                    reinterpret_cast<u64>(&gate));
         print("maintenance: owner="); decimal(gate.owner_pid); print(" worker="); decimal(gate.worker_pid);
         print(" error="); signed_decimal(result); print("\n");
+    } else if (equal(argv[0], "tty-run") && argc >= 2) {
+        launch_file(argv[1], argc - 1, argv + 1, 0, false, false, true);
     } else if (equal(argv[0], "diag") && argc >= 2) {
         launch_file(argv[1], argc - 1, argv + 1, 0, false, true);
     } else if ((equal(argv[0], "exec-file") || equal(argv[0], "spawn-file") ||

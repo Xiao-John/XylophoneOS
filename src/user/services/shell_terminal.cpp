@@ -22,6 +22,8 @@ i64 start(const char* path) {
     return result;
 }
 
+bool active() { return current_mode == mode::active; }
+
 i64 prepare_application(u64 child, void*) {
     if (current_mode != mode::active || application.peer != 0) return process_error_state;
     const i64 result = terminal::attach(session, application, child);

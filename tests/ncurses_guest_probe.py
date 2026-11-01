@@ -26,6 +26,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('system', 'sdk-candidate', 'ncurses-probe', 'consumers', 'terminfo'):
         parser.add_argument('--' + name, type=Path, required=True)
+    parser.add_argument('--xsh', action='store_true', help='exercise tty-run in the normal supervisor')
     args = parser.parse_args()
     system, candidate, probe, consumers, terminfo = [p.resolve(strict=True) for p in
         (args.system, args.sdk_candidate, args.ncurses_probe, args.consumers, args.terminfo)]
@@ -40,7 +41,9 @@ def main():
     term = json.loads((terminfo / 'receipt.json').read_text())
     lock_path = ROOT / 'src/ports/ncurses/source_lock.json'
     source_lock = json.loads(lock_path.read_text())
-    if not manifest.get('ncurses_supervisor_probe'):
+    if args.xsh and (manifest.get('ncurses_supervisor_probe') or manifest.get('terminal_supervisor_probe')):
+        raise SystemExit('xsh requires a normal supervisor build')
+    if not args.xsh and not manifest.get('ncurses_supervisor_probe'):
         raise SystemExit('system was not built with --ncurses-supervisor-probe')
     for sources in (manifest['sources'], sdk_receipt['inputs'], apps['source_sha256']):
         for name, expected in sources.items():
@@ -97,6 +100,28 @@ def main():
             guest = Guest(image, 'ncurses_guest_probe', work_disk=disk, iso=True)
             guest.expect(b'xos64> ', timeout=30)
             send_bytes(guest, b'run\r')
+            if args.xsh:
+                guest.expect(b'xsh> ', timeout=45)
+                start = len(guest.output)
+                send_bytes(guest, b'tty-run /bin/wide.elf\r')
+                guest.expect(b'W2_INPUT_READY', start=start, timeout=60)
+                screen = bytes(guest.output[start:])
+                if b'\xe4\xb8\xad\xcc\x81' not in screen or not re.search(rb'\x1b\[[0-9;]*31(?:;[0-9]*)?m', screen):
+                    raise AssertionError('xsh wide screen output missing')
+                send_bytes(guest, b'\x1bOD\xe4\xb8\xad\x1bOP')
+                guest.expect(b'xsh> ', start=start, timeout=60)
+                if any(s in bytes(guest.output[start:]) for s in (b'program exited with status', b'xsh: cannot')):
+                    raise AssertionError('xsh wide consumer failed')
+                report['checks'].append('xsh_terminal_wide_input_output')
+                for program in ('reentry', 'locale'):
+                    start = len(guest.output)
+                    send_bytes(guest, ('tty-run /bin/' + program + '.elf\r').encode())
+                    guest.expect(b'xsh> ', start=start, timeout=60)
+                    if any(s in bytes(guest.output[start:]) for s in (b'program exited with status', b'xsh: cannot')):
+                        raise AssertionError('xsh ' + program + ' consumer failed')
+                    report['checks'].append('xsh_terminal_' + program)
+                report['status'] = 'passed_probe'
+                return
             guest.expect(b'W2_BOOT_READY', timeout=45)
             send_bytes(guest, b'!')
             guest.expect(b'W2_SERVICE_READY', timeout=45)

@@ -198,6 +198,8 @@ Xsh 桥接已增加应用建进程时的附加、回收及停止入口，专用 
 [0148](work_log/0148_terminal_service_recovery.md)。
 独立 W1 交接客体探针四组通过；应用持有会话时的服务故障限定探针通过，
 见[0149](work_log/0149_terminal_handoff_and_fault.md)。
+真实 Xsh 新增显式 `tty-run` 前台入口，保持默认旧启动路径；构建通过，客体验证待提交后执行，
+见[0150](work_log/0150_xsh_tty_run.md)。
 用户态驱动已试行按 TEMT 确认发送排空，尚未客体验证；见
 [0140](work_log/0140_terminal_drain.md)。
 输入清空和 `TCSAFLUSH` 已试行实现，连续输入失败可能已丢弃部分硬件字节，尚未客体验证；

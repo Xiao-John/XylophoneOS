@@ -7,6 +7,7 @@ namespace xos::user::shell_terminal {
 // child is still building; finish_application is required after wait or a
 // failed spawn following a successful prepare.
 i64 start(const char* path);
+bool active();
 i64 prepare_application(u64 child, void* context);
 const u32* application_send_handle();
 i64 finish_application();

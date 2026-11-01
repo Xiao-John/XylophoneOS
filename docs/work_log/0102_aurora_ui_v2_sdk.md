@@ -11,7 +11,7 @@ High/Balanced/Low/Safe/glass-off, procedural cached wallpaper/material, separabl
 premultiplied blur, default 8MiB admission and opaque fallback. Independent Studio,
 render and semantic fixtures consume public headers/archive without theme copies.
 The app-local QtScene/SceneStream and local Intent adapter belong to this native
-SDK; Notes/Browser consumers are a separate review unit (0103).
+SDK; Notes/Browser consumers are a separate review unit (0169; formerly 0103).
 
 Actual gates: SDK render 13 top-level checks with 11 matched runs; 25 native
 semantic assertions plus independent mock/guest verification and old-process

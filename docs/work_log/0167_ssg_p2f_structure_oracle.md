@@ -26,3 +26,5 @@ AI-native/SSG 是用户态研究，本记录不批准项目宪法变更。
 A1 为 PASSED_SCOPED。Gate A 整体仍未资格认定，所有渲染几何和全局遮挡未证明；
 Gate B/C、过滤查询、4096 ID 边界、完整游标生命周期、Notes 安全与 LocalPilot 不在本轮通过范围。
 没有 GitHub CI 通过声称，没有合并操作。
+
+2026-11-01: the current rebased combined source passed the fixed-document A/B Oracle (34 pages / 267 nodes each), one real link click, and two separate Notes range/resource checks. Overall Gate A remains NOT_QUALIFIED; Gates B/C remain NOT_RUN.

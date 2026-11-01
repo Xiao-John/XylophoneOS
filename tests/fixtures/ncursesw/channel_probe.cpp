@@ -19,8 +19,12 @@ extern "C" int xos_user_main(const startup_info* startup) {
         if (sdk::channel_get(0, first) != 0 || sdk::channel_get(1, second) != 0 ||
             first.rights == second.rights || first.peer_pid != second.peer_pid) return 20;
         const u32 out = first.rights == channel_send ? first.handle : second.handle;
+        const u32 in = first.rights == channel_receive ? first.handle : second.handle;
         const char done = 'd';
-        return sdk::ipc_send(out, &done, 1) == 0 ? 0 : 21;
+        char acknowledgment = 0;
+        if (sdk::ipc_send(out, &done, 1) != 0 || sdk::channel_wait(in, deadline()) != 0 ||
+            sdk::ipc_recv(in, &acknowledgment, 1) != 1 || acknowledgment != 'h') return 21;
+        return 0;
     }
     if (startup->argc > 1 && sdk::equal(args[1], "child")) {
         channel_info first{}, second{};
@@ -90,6 +94,8 @@ extern "C" int xos_user_main(const startup_info* startup) {
     const char proceed = 'g';
     if (sdk::ipc_send(outgoing, &proceed, 1) != 0 || sdk::channel_wait(incoming, deadline()) != 0 ||
         sdk::ipc_recv(incoming, &response, 1) != 1 || response != 'd') return 26;
+    const char acknowledged = 'h';
+    if (sdk::ipc_send(outgoing, &acknowledged, 1) != 0) return 27;
     process_status status{};
     if (sdk::wait(child, status) != 0 || status.outcome != process_outcome::exited || status.code != 0) return 14;
     if (sdk::channel_wait(incoming, 0) != process_error_denied) return 15;

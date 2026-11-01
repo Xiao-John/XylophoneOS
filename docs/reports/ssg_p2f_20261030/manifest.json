@@ -17,7 +17,7 @@
     "guest-runs/large-regression-01/report.json": "dec1a3204efe370032fea5c47c942b03b7f701f449c9063294545c6dad7520fc",
     "guest-runs/large-regression-01/runner.log": "cc522a52f2eb7d724810e6241c14381ff068af39ce300aa0dbac12e0bcca110c",
     "guest-runs/large-regression-01/serial.log.gz": "40bb59646e5ba84941cd586893f9bd8cd97949b6bb577b5d2133e87a3165e218",
-    "guest-runs/manifest.json": "a60477c75697e970a7828b56ae9a9b148b74cb342e21d276e0bbf762efe08e3e",
+    "guest-runs/manifest.json": "e8278aeb2e1a7a11a708928ba26ac4417ce46728ae6d3eea8000222c0372e154",
     "guest-runs/p1-regression-01/archive-manifest.json": "cface9f3b043b336ad64508f2871f149027ecc3fc5387e43c62dc284c750886e",
     "guest-runs/p1-regression-01/guest_qemu.log": "bfdb027ebff89ce084ed7d5bdd251bf23e8596378375b5c85e0b6088a1cb1d96",
     "guest-runs/p1-regression-01/manifest.json": "01f64cd8a892b968075a984be1c5e3a923b51164a6bf5f8e93a52351a23b2cb1",

@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 from ssg_public_paths import portable
 
 
-class PublicPathTests(unittest.TestCase):
+class public_path_tests(unittest.TestCase):
     def findings(self, data, expected=''):
         result = []
         scanner.scan(data, 'fixture', result, expected=expected)
@@ -78,7 +78,7 @@ class PublicPathTests(unittest.TestCase):
             item.uname = 'example_dev'
             archive.addfile(item, io.BytesIO())
         findings = []
-        scanner.scan(tar.getvalue(), 'fixture', findings, budget=scanner.Budget(['example_dev']))
+        scanner.scan(tar.getvalue(), 'fixture', findings, budget=scanner.scan_budget(['example_dev']))
         self.assertTrue(any(f['category'] == 'private_identity' and '!metadata' in f['location'] for f in findings))
         encoded = b'{"command":"\\u002fUsers\\u002f' + b'example_dev\\u002fwork"}'
         self.assertIn('macos_home', self.categories(encoded))
@@ -90,9 +90,9 @@ class PublicPathTests(unittest.TestCase):
             with self.subTest(name=name):
                 self.assertTrue(any(f['status'] == 'UNVERIFIED'
                                     for f in self.findings(data, name)))
-        with patch.object(scanner, 'LIMIT', 3):
+        with patch.object(scanner, 'scan_limit', 3):
             self.assertEqual('UNVERIFIED', self.findings(b'four')[0]['status'])
-        with patch.object(scanner, 'MAX_DEPTH', -1):
+        with patch.object(scanner, 'max_depth', -1):
             self.assertEqual('UNVERIFIED', self.findings(b'x')[0]['status'])
 
     def test_system_paths_are_not_personal_and_custom_commands_flagged(self):
@@ -142,6 +142,33 @@ class PublicPathTests(unittest.TestCase):
                              portable(value, [('XOS_WORK_DIR', root)], strict=True))
             with self.assertRaises(ValueError):
                 portable('/Users/' + 'example_dev/private', strict=True)
+
+    def test_commit_delta_scans_committed_changes_and_not_inherited_history(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            def git(*args):
+                return subprocess.check_output(['git', '-C', str(root), *args],
+                                               stderr=subprocess.PIPE, text=True).strip()
+            git('init', '-q')
+            (root / 'old.md').write_bytes(b'/Users/' + b'example_dev/inherited')
+            git('add', 'old.md')
+            git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid',
+                'commit', '-qm', 'baseline')
+            base = git('rev-parse', 'HEAD')
+            (root / 'new.md').write_text('portable evidence\n')
+            git('add', 'new.md')
+            git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid',
+                'commit', '-qm', 'safe evidence')
+            safe = git('rev-parse', 'HEAD')
+            (root / 'new.md').write_bytes(b'/home/' + b'example_dev/uncommitted')
+            result = scanner.scan_repository(root, source='commit', base=base, commit=safe)
+            self.assertEqual(('PUBLIC_READY', 1), (result['status'], result['files_scanned']))
+            git('add', 'new.md')
+            git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid',
+                'commit', '-qm', 'unsafe evidence')
+            unsafe = git('rev-parse', 'HEAD')
+            result = scanner.scan_repository(root, source='commit', base=base, commit=unsafe)
+            self.assertIn('linux_home', {f['category'] for f in result['findings']})
 
     def test_identity_gate_rejects_empty_and_hides_mixed_case_names(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT AND Apache-2.0
+// Historical MIT base; XOS platform interrupt ownership changes are Apache-2.0.
 #pragma once
 #include <xos/types.hpp>
 
@@ -5,6 +7,10 @@
 // firmware interrupt numbers, register names, or device addresses.
 namespace xos::platform {
 void debug_init();
+// Initialize the platform interrupt controller and timer once, leaving IF=0.
+void interrupts_init();
+// IRQ0 time advancement and platform acknowledgement, no scheduling policy.
+void timer_interrupt();
 void debug_graphics(bool active);
 bool debug_write(const char* text);
 i64 debug_write_bytes(const u8* bytes, usize length);

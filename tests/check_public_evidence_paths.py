@@ -21,16 +21,16 @@ import zipfile
 import zlib
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-LIMIT = 256 * 1024 * 1024
-TOTAL_LIMIT = 1024 * 1024 * 1024
-MAX_DEPTH = 6
-MAX_MEMBERS = 20000
+root_path = Path(__file__).resolve().parents[1]
+scan_limit = 256 * 1024 * 1024
+total_limit = 1024 * 1024 * 1024
+max_depth = 6
+max_members = 20000
 
 # Patterns intentionally identify home directories, rather than treating every
 # absolute system path as a private path. Content is scanned as bytes, including
 # binary files. Single quotes are excluded as well as JSON double quotes.
-PATTERNS = {
+patterns = {
     'macos_home': rb'(?i)/us' rb'ers/[^/\\\s"\'\x00<>]+(?:/[^\s"\'\x00<>]*)?',
     'linux_home': rb'/ho' rb'me/[^/\\\s"\'\x00<>]+(?:/[^\s"\'\x00<>]*)?',
     'windows_home': rb'(?i)[a-z]:[\\/]+users[\\/]+[^\\/\s"\'\x00<>]+(?:[\\/][^\s"\'\x00<>]*)?',
@@ -40,8 +40,8 @@ PATTERNS = {
     'framework_python': rb'/Library/Frame' rb'works/Python\.framework/Versions/[^\s"\'\x00<>]+',
     'codex_runtime': rb'/opt/codex/run' rb'times/[^\s"\'\x00<>]+',
 }
-COMPILED = {key: re.compile(value) for key, value in PATTERNS.items()}
-CLASSES = {
+compiled = {key: re.compile(value) for key, value in patterns.items()}
+classifications = {
     'macos_home': 'CONFIRMED_PRIVATE_PATH',
     'linux_home': 'CONFIRMED_PRIVATE_PATH',
     'windows_home': 'CONFIRMED_PRIVATE_PATH',
@@ -58,15 +58,15 @@ CLASSES = {
     'unmerged_index': 'NEEDS_REVIEW',
     'unsupported_git_object': 'NEEDS_REVIEW',
 }
-COMMAND_KEYS = {'qemu_command', 'commands', 'command'}
-ABSOLUTE = re.compile(r'(?<![A-Za-z0-9_$}:])/(?:[A-Za-z0-9_.+@-]+/)+[A-Za-z0-9_.+@%-]*')
-SYSTEM_PATHS = ('/usr/bin/', '/usr/lib/', '/usr/share/', '/usr/include/', '/bin/',
+command_keys = {'qemu_command', 'commands', 'command'}
+absolute_path = re.compile(r'(?<![A-Za-z0-9_$}:])/(?:[A-Za-z0-9_.+@-]+/)+[A-Za-z0-9_.+@%-]*')
+system_paths = ('/usr/bin/', '/usr/lib/', '/usr/share/', '/usr/include/', '/bin/',
                 '/sbin/', '/usr/sbin/', '/lib/', '/lib64/', '/dev/', '/proc/', '/sys/')
 
 
 def finding(findings, location, category):
     findings.append({'location': location, 'category': category,
-                     'classification': CLASSES[category],
+                     'classification': classifications[category],
                      'status': 'UNVERIFIED' if category in {
                          'unscanned_limit', 'unreadable_archive', 'unreadable_file',
                          'unmerged_index', 'unsupported_git_object'} else 'OPEN'})
@@ -75,12 +75,12 @@ def finding(findings, location, category):
 def safe_location(name, identities=()):
     raw = os.fsencode(name)
     # A repository or member name can itself contain a private path.
-    if any(pattern.search(raw) for pattern in COMPILED.values()) or any(i.encode().lower() in raw.lower() for i in identities):
+    if any(pattern.search(raw) for pattern in compiled.values()) or any(i.encode().lower() in raw.lower() for i in identities):
         return 'path-sha256:' + hashlib.sha256(raw).hexdigest()[:20]
     return os.fsdecode(raw)
 
 
-class Budget:
+class scan_budget:
     def __init__(self, identities=()):
         self.bytes = 0
         self.members = 0
@@ -89,20 +89,20 @@ class Budget:
 
     def charge(self, size):
         self.bytes += size
-        return self.bytes <= TOTAL_LIMIT
+        return self.bytes <= total_limit
 
     def member(self):
         self.members += 1
-        return self.members <= MAX_MEMBERS
+        return self.members <= max_members
 
 
 def _commands(value, findings, location):
     if isinstance(value, dict):
         for key, item in value.items():
-            if key in COMMAND_KEYS:
+            if key in command_keys:
                 encoded = json.dumps(item, ensure_ascii=False)
-                for match in ABSOLUTE.finditer(encoded):
-                    if not match.group().startswith(SYSTEM_PATHS):
+                for match in absolute_path.finditer(encoded):
+                    if not match.group().startswith(system_paths):
                         finding(findings, location, 'absolute_command')
                         break
             _commands(item, findings, location)
@@ -113,15 +113,15 @@ def _commands(value, findings, location):
 
 def scan(data, location, findings, depth=0, budget=None, expected=''):
     """Scan a buffer and supported archive members without extracting to disk."""
-    budget = budget or Budget()
-    if depth > MAX_DEPTH or len(data) > LIMIT or not budget.charge(len(data)):
+    budget = budget or scan_budget()
+    if depth > max_depth or len(data) > scan_limit or not budget.charge(len(data)):
         finding(findings, location, 'unscanned_limit')
         return
     variants = [data]
     if b'\0' in data:
         # Covers UTF-16 ASCII path fragments embedded in otherwise binary data.
         variants.append(data.replace(b'\0', b''))
-    for category, pattern in COMPILED.items():
+    for category, pattern in compiled.items():
         if any(pattern.search(value) for value in variants):
             finding(findings, location, category)
     if any(pattern.search(value) for pattern in budget.identities for value in variants):
@@ -132,7 +132,7 @@ def scan(data, location, findings, depth=0, budget=None, expected=''):
         # JSON may encode slashes, drive separators, or Unicode as escapes.
         decoded = json.dumps(document, ensure_ascii=False).replace('\\\\', '\\').encode('utf-8')
         existing = {item['category'] for item in findings if item['location'] == location}
-        for category, pattern in COMPILED.items():
+        for category, pattern in compiled.items():
             if category not in existing and pattern.search(decoded):
                 finding(findings, location, category)
     except (ValueError, UnicodeDecodeError):
@@ -150,7 +150,7 @@ def scan(data, location, findings, depth=0, budget=None, expected=''):
     try:
         if is_gzip:
             with gzip.GzipFile(fileobj=io.BytesIO(data)) as stream:
-                content = stream.read(LIMIT + 1)
+                content = stream.read(scan_limit + 1)
             inner = suffix[:-3] + '.tar' if suffix.endswith('.tgz') else suffix[:-3]
             scan(content, location + '!gzip', findings, depth + 1, budget, inner)
         elif is_zip:
@@ -163,12 +163,12 @@ def scan(data, location, findings, depth=0, budget=None, expected=''):
                     scan(item.filename.encode('utf-8', 'surrogatepass'), loc + '!name', findings, depth + 1, budget)
                     if item.is_dir():
                         continue
-                    if item.file_size > LIMIT:
+                    if item.file_size > scan_limit:
                         finding(findings, loc, 'unscanned_limit')
                         continue
                     # ZIP symlink targets are member data and must be scanned too.
                     with archive.open(item) as stream:
-                        content = stream.read(LIMIT + 1)
+                        content = stream.read(scan_limit + 1)
                     scan(content, loc, findings, depth + 1, budget, item.filename)
         elif is_tar or looks_tar:
             with tarfile.open(fileobj=io.BytesIO(data), mode='r:') as archive:
@@ -184,7 +184,7 @@ def scan(data, location, findings, depth=0, budget=None, expected=''):
                     if item.issym() or item.islnk():
                         scan(item.linkname.encode('utf-8', 'surrogateescape'), loc + '!link', findings, depth + 1, budget)
                     elif item.isfile():
-                        if item.size > LIMIT:
+                        if item.size > scan_limit:
                             finding(findings, loc, 'unscanned_limit')
                             continue
                         stream = archive.extractfile(item)
@@ -192,7 +192,7 @@ def scan(data, location, findings, depth=0, budget=None, expected=''):
                             finding(findings, loc, 'unreadable_archive')
                             continue
                         with stream:
-                            scan(stream.read(LIMIT + 1), loc, findings, depth + 1, budget, item.name)
+                            scan(stream.read(scan_limit + 1), loc, findings, depth + 1, budget, item.name)
                     elif not item.isdir():
                         finding(findings, loc, 'unreadable_archive')
         elif looks_gzip or looks_zip:
@@ -263,14 +263,14 @@ def scan_repository(root, source='worktree', base=None, paths=(), commit=None, i
     try:
         for name in sorted(names):
             location = safe_location(name, identities)
-            scan(os.fsencode(name), location + '!path', findings, budget=Budget(identities))
+            scan(os.fsencode(name), location + '!path', findings, budget=scan_budget(identities))
             if source == 'worktree':
                 path = root / name
                 try:
                     if path.is_symlink():
                         data = os.fsencode(os.readlink(path))
                     elif path.is_file():
-                        if path.stat().st_size > LIMIT:
+                        if path.stat().st_size > scan_limit:
                             finding(findings, location, 'unscanned_limit')
                             continue
                         data = path.read_bytes()
@@ -299,7 +299,7 @@ def scan_repository(root, source='worktree', base=None, paths=(), commit=None, i
                     finding(findings, location, 'unreadable_file')
                     continue
                 size = int(header[2])
-                if size > LIMIT:
+                if size > scan_limit:
                     remaining = size + 1
                     while remaining:
                         chunk = batch.stdout.read(min(remaining, 1024 * 1024))
@@ -315,7 +315,7 @@ def scan_repository(root, source='worktree', base=None, paths=(), commit=None, i
                     continue
             count += 1
             is_link = (root / name).is_symlink() if source == 'worktree' else entries[name][0] == '120000'
-            scan(data, location, findings, expected='' if is_link else name, budget=Budget(identities))
+            scan(data, location, findings, expected='' if is_link else name, budget=scan_budget(identities))
     finally:
         if batch:
             batch.stdin.close()
@@ -332,7 +332,7 @@ def main():
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--index', action='store_true', help='scan actual staged index blobs')
     group.add_argument('--commit', help='scan blobs in this commit')
-    parser.add_argument('--root', type=Path, default=ROOT)
+    parser.add_argument('--root', type=Path, default=root_path)
     parser.add_argument('--base', help='scan only files changed relative to this ref')
     parser.add_argument('--deny-identity', action='append', default=[],
                         help='also fail on this personal identity (repeatable; never written to the report)')

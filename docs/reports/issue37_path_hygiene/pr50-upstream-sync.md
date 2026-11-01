@@ -1,0 +1,5 @@
+# Dual-provider draft: upstream synchronization
+
+This branch integrates Browser pagination dependency `dc773cf8f735852a90b9847e06b65ead9b4f035b` and the current upstream evidence contract. All dual-provider programs cross-built. In a real QEMU guest the baseline was observed and independently verified: Browser 34 pages / 267 nodes, Notes 4,114 UTF-16 units, separate source identities and resource reclamation. The aggregate-diff fixture passed 17 checks; a separate real pipe-isolation case independently verified four foreign-token and four stale-token denials and both source exits. The guest report remains OBSERVED_PENDING_INDEPENDENT_VERIFICATION; the independent results are PASSED_SCOPED. Global atomic snapshot is NOT_IMPLEMENTED. These targeted cases do not requalify every prior stress, fault, lifecycle or production-authorization scenario.
+
+The original P3B evidence index verifies 73/73 files. The latest full P1 dependency run still has an unresolved denied-consumer exit timeout despite a scoped retry passing. Dependencies remain unmerged.

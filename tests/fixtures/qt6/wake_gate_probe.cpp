@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <time.h>
 
-static XosWakeGate gate;
+static xos_wake_gate gate;
 static unsigned stage;
 static unsigned observed_waiting;
 static void *worker(void *) {
@@ -19,7 +19,7 @@ static void *worker(void *) {
     __atomic_store_n(&stage, 2u, __ATOMIC_RELEASE);
     return nullptr;
 }
-struct RaceContext { XosWakeGate *gate; long delay; };
+struct RaceContext { xos_wake_gate *gate; long delay; };
 static void *race_worker(void *raw) {
     auto *ctx = static_cast<RaceContext *>(raw);
     timespec delay{0, ctx->delay};
@@ -45,7 +45,7 @@ int main() {
     if (pthread_join(t, nullptr) != 0 || __atomic_load_n(&stage, __ATOMIC_ACQUIRE) != 2) return 7;
     if (observed_waiting == 0) return 8;
     for (int i = 0; i < 9; ++i) {
-        XosWakeGate local;
+        xos_wake_gate local;
         RaceContext context{&local, long((1 + i % 3) * 10000000)};
         pthread_t racing;
         if (pthread_create(&racing, nullptr, race_worker, &context) != 0) return 9;

@@ -1,0 +1,5 @@
+# P3C watch draft: upstream synchronization
+
+This branch integrates dual-provider dependency `45c5c2b4f3fb9ba295568b70ef78c36140d871a5`. The watch supervisor and engine-neutral contract fixture cross-built. In a real QEMU guest, the contract fixture passed 32 scoped checks. Separate baseline, Notes edit, Browser scroll and explicit stop scenarios each produced structured events and passed independent verification, with resources restored. These targeted runs use the test supervisor and synthetic fixtures; they do not establish full production observation, WebKit integration, global atomic snapshots or physical-hardware behavior.
+
+The previous 24/24 stress result is bound to earlier binaries and was not rerun on this merge. Other fault, cap, revoke, protection and long-run cases are NOT_RUN for the new combination. The latest full P1 dependency run still has an unresolved denied-consumer exit timeout despite a scoped retry passing; older Notes shutdown failures also retain their unresolved root-cause status. The P3C evidence index verifies 25/25 files. Dependencies remain unmerged.

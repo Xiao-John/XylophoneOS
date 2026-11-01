@@ -292,6 +292,132 @@ def _one(serial, pattern, name):
     return matches[0]
 
 
+def latest_ab_nodes(capture):
+    """Select the current B pages, never stale nodes from baseline A."""
+    requests = [x for x in capture['frames'] if x['direction'] == 'REQ']
+    starts = [x['sequence'] for x in requests if x['data'].get('op') == 'snapshot_begin']
+    _require(len(starts) == 2 and len(capture['oracles']) == 4, 'expected two A/B sessions and four Oracles')
+    pages = [x['data'] for x in capture['frames'] if x['direction'] == 'RESP' and x['sequence'] >= starts[1]]
+    _require(pages and pages[-1].get('complete') is True, 'baseline B is incomplete')
+    _require(all(x.get('status') == 'OK' and x.get('sessionId') == pages[0].get('sessionId') and
+                 x.get('scrollY') == pages[0].get('scrollY') for x in pages), 'baseline B changed during paging')
+    return [node for page in pages for node in page.get('nodes', [])]
+
+
+def validate_ab_capture(serial, input_sha256):
+    """Validate two complete A/B paging sessions against four guest oracles."""
+    _string(input_sha256, 'expected input SHA-256', _SHA256)
+    capture = decode_capture(serial)
+    frames, oracles = capture['frames'], capture['oracles']
+    _require(len(oracles) == 4 and [x['sequence'] for x in oracles] == [1, 2, 3, 4],
+             'expected four ordered independent A/B Oracle captures')
+    requests = [x for x in frames if x['direction'] == 'REQ']
+    responses = [x for x in frames if x['direction'] == 'RESP']
+    _require(requests and len(requests) == len(responses), 'unpaired IPC requests/responses')
+    sequence = list(range(1, len(requests) + 1))
+    _require([x['sequence'] for x in requests] == sequence and
+             [x['sequence'] for x in responses] == sequence, 'IPC message sequence is not contiguous')
+    starts = [i for i, x in enumerate(requests) if x['data'].get('op') == 'snapshot_begin']
+    _require(len(starts) == 2 and starts[0] == 0, 'expected exactly two A/B paging sessions')
+    ends = [starts[1], len(requests)]
+    comparisons = []
+    session_ids = []
+    scrolls = []
+    for ordinal, (begin, end) in enumerate(zip(starts, ends)):
+        before_record, after_record = oracles[2 * ordinal:2 * ordinal + 2]
+        before, after = before_record['data'], after_record['data']
+        reference = validate_oracle(before, input_sha256, 'before')
+        validate_oracle(after, input_sha256, 'after')
+        for field in ('document', 'inputSha256', 'sourceInstance', 'providerPid',
+                      'sourceEpoch', 'sourceRevision', 'nodeCount', 'structureSha256', 'nodes'):
+            _require(before[field] == after[field], 'Oracle changed during paging: ' + field)
+        count = end - begin
+        _require(1 <= count <= MAX_PAGES, 'invalid A/B page count')
+        _require(requests[begin]['end'] <= before_record['begin'] < before_record['end'] <= responses[begin]['begin'] and
+                 requests[end - 1]['end'] <= after_record['begin'] < after_record['end'] <= responses[end - 1]['begin'],
+                 'Oracle is not bound to its A/B paging session')
+        first_request = requests[begin]['data']
+        _require(set(first_request) <= {'op', 'maxNodes', 'role', 'visibleOnly'} and
+                 first_request.get('role', '') == '' and first_request.get('visibleOnly', False) is False,
+                 'A/B structure requires an unfiltered full-tree query')
+        limit = _integer(first_request.get('maxNodes', 16), 'requested page node limit', 1, 16)
+        nodes, cursors = [], set()
+        previous_cursor = None
+        first_page = responses[begin]['data']
+        for offset, (request_record, response_record) in enumerate(zip(requests[begin:end], responses[begin:end]), 1):
+            _require(request_record['end'] <= response_record['begin'], 'response precedes request')
+            if offset > 1:
+                _require(responses[begin + offset - 2]['end'] <= request_record['begin'], 'overlapping messages')
+                _require(request_record['data'] == {'op': 'snapshot_next', 'sourceInstance': before['sourceInstance'],
+                                                    'cursor': previous_cursor}, 'continuation request mismatch')
+            page = response_record['data']
+            _require(page.get('status') == 'OK' and page.get('sourceValid') is True and
+                     page.get('query') == '' and page.get('visibleOnly') is False, 'invalid page status or scope')
+            for field in ('sourceInstance', 'providerPid', 'sourceEpoch', 'sourceRevision'):
+                _require(type(page.get(field)) is str and page[field] == before[field], 'Oracle/source mismatch: ' + field)
+            _require(page.get('sessionId') == first_page.get('sessionId') and
+                     page.get('scrollY') == first_page.get('scrollY'), 'session or scroll changed during paging')
+            _require(page.get('pageSequence') == str(offset), 'page sequence mismatch')
+            page_nodes = page.get('nodes')
+            _require(type(page_nodes) is list and len(page_nodes) <= limit, 'page nodes exceed limit')
+            complete = page.get('complete')
+            _require(type(complete) is bool and complete == (offset == count) and
+                     page.get('traversalComplete') is complete and page.get('hasNext') is (not complete) and
+                     page.get('hasData') is bool(page_nodes), 'inconsistent completion flags')
+            _require(page.get('stopReason') == ('EXHAUSTED' if complete else 'PAGE_BUDGET') and
+                     page.get('baselineStatus') == ('CONSUMER_MUST_VALIDATE' if complete else 'INCOMPLETE'),
+                     'invalid continuation or baseline state')
+            cursor = _string(page.get('cursor'), 'page cursor')
+            if complete:
+                _require(cursor == '', 'completed page retains cursor')
+            else:
+                _require(cursor and cursor not in cursors, 'missing or reused cursor')
+                cursors.add(cursor)
+            previous_cursor = cursor
+            nodes.extend(page_nodes)
+            _require(len(nodes) <= MAX_NODES, 'A/B aggregate exceeds node budget')
+        normalized = compare_structure(reference, nodes)
+        session_id = _string(first_page.get('sessionId'), 'A/B session id')
+        _require(session_id and session_id.isdecimal(), 'invalid A/B session id')
+        session_ids.append(session_id)
+        scrolls.append(_integer(first_page.get('scrollY'), 'A/B scroll position'))
+        comparisons.append({'baseline': 'AB'[ordinal], 'pages': count, 'nodes': len(normalized),
+                            'sourceInstance': before['sourceInstance'], 'sourceEpoch': before['sourceEpoch'],
+                            'sourceRevision': before['sourceRevision'], 'structureSha256': before['structureSha256']})
+    _require(comparisons[0]['sourceInstance'] == comparisons[1]['sourceInstance'] and
+             comparisons[0]['sourceEpoch'] == comparisons[1]['sourceEpoch'] and
+             comparisons[0]['structureSha256'] == comparisons[1]['structureSha256'] and
+             session_ids[0] != session_ids[1] and scrolls[0] != scrolls[1], 'A/B identity or scroll mismatch')
+    identity = _one(serial, rb'^SSG_SESSION parent=([1-9][0-9]*) provider=([1-9][0-9]*) consumer=([1-9][0-9]*) instance=([0-9a-f]{32}) text_scope=explicit\r?$', 'authorized session identity')
+    parent, provider, consumer = [int(x) for x in identity.groups()[:3]]
+    _require(len({parent, provider, consumer}) == 3 and str(provider) == oracles[0]['data']['providerPid'] and
+             identity[4].decode() == comparisons[0]['sourceInstance'], 'A/B process identity mismatch')
+    ready = _one(serial, rb'^SSG_PROVIDER_READY pid=([1-9][0-9]*) instance=([0-9a-f]{32}) text=1 kind=browser\r?$', 'authorized Browser provider')
+    _require(int(ready[1]) == provider and ready[2] == identity[4], 'provider identity/scope mismatch')
+    started = _one(serial, rb'^SSG_CONSUMER_START pid=([1-9][0-9]*)\r?$', 'Consumer start')
+    _require(int(started[1]) == consumer, 'Consumer identity mismatch')
+    marker_pattern = (rb'_COMMITTED nodes=([0-9]+) instance=([0-9a-f]{32}) epoch=([0-9]+) '
+                      rb'revision=([0-9]+) session=([0-9]+) scrollY=([0-9]+)\r?$')
+    marker_a = _one(serial, rb'^SSG_BASELINE_A' + marker_pattern, 'baseline A')
+    marker_b = _one(serial, rb'^SSG_BASELINE_B' + marker_pattern, 'baseline B')
+    for i, marker in enumerate((marker_a, marker_b)):
+        actual = (int(marker[1]), marker[2].decode(), marker[3].decode(), marker[4].decode(),
+                  marker[5].decode(), int(marker[6]))
+        expected = (comparisons[i]['nodes'], comparisons[i]['sourceInstance'], comparisons[i]['sourceEpoch'],
+                    comparisons[i]['sourceRevision'], session_ids[i], scrolls[i])
+        _require(actual == expected, 'A/B committed baseline identity or count mismatch')
+    done = _one(serial, rb'^SSG_CONSUMER_DIFF_DONE status=OK\r?$', 'Consumer A/B diff')
+    _require(responses[ends[0] - 1]['end'] <= marker_a.start() < requests[starts[1]]['begin'] and
+             responses[-1]['end'] <= marker_b.start() < done.start(), 'A/B commit ordering mismatch')
+    for child in ('consumer', 'provider'):
+        waited = _one(serial, rb'^SSG_SESSION ' + child.encode() + rb'_wait=(-?[0-9]+) outcome=([0-9]+) code=(-?[0-9]+)\r?$', child + ' exit')
+        _require(tuple(map(int, waited.groups())) == (0, 1, 0) and waited.start() > done.start(), 'child did not exit successfully')
+    _require(b'SSG_CONSUMER_TRANSPORT ' not in serial, 'Consumer recorded a transport error')
+    return {'status': 'PASSED_SCOPED', 'qualification': 'A1_STRUCTURE_AND_TEXT_AB',
+            'scope': 'two completed full-tree paging sessions for one fixed liteHTML document',
+            'input_sha256': input_sha256, 'comparisons': comparisons, 'scrollY': scrolls}
+
+
 def validate_capture(serial, input_sha256):
     """Return a JSON-serializable scoped A1 report or raise ValueError.
 

@@ -1,3 +1,9 @@
+> **Evidence version:** This checkout contains a path-sanitized derivative of
+> the original evidence, not byte-identical raw logs or reports. The
+> current index hashes the files in this checkout. The original index and
+> its source commit are preserved and identified in the
+> [PR 44 provenance record](../issue37_path_hygiene/pr44-lineage.json).
+
 # Browser SSG fragment and query-scope regression
 
 The browser now clips each bounded real engine fragment individually before
@@ -19,7 +25,7 @@ local combination of `b1b56225` plus code changes `8120215`, `3995120` and
   hidden/offscreen text, actual link hit, scroll metadata and reload epoch. It
   also checks that every reported visible fragment is an actual clipped fragment.
 
-Raw serial, actual QEMU commands, source/ELF/image hashes, SDK build receipts,
+Serial output, path-sanitized QEMU command records, source/ELF/image hashes, SDK build receipts,
 JSON snapshots and guest scanout are preserved here. These runs do not establish
 cross-process observation, arbitrary CSS clipping, modern Web support or
 compositor occlusion. Further affected functional/lifecycle gates on the combined

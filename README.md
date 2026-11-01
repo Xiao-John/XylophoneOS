@@ -4,7 +4,7 @@
 目标是能在系统内编辑、保存、编译和运行程序。
 
 开发前读 [开发纪律](docs/Discipline.md)、[当前状态](docs/state.md)、
-[项目宪法与当前登记](docs/xos_plan.md)。`localpilot/` 是独立项目，不参与 XOS 构建。
+[项目宪法与当前登记](docs/xos_plan.md)。
 
 ## 当前发行：0.0.1-1026
 

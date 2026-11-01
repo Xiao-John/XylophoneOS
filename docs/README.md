@@ -24,6 +24,8 @@
 
 ## 按任务阅读
 
+- [双Shell启动优化计划](plans/shell_launch.md)：统一普通命令的创建权限继承，分阶段消除显式exec/driver绕行和工具名特例；尚未实现。
+
 - 基底：[架构/启动](architecture_and_boot.md)、[C++子集](cpp_subset.md)、[工具链](toolchain.md)、
   [用户装载/SDK](e04_loader_sdk.md)、[文件服务](e05_file_service.md)、[libc](e06_libc.md)、[持久盘](e07_persistent_work_disk.md)。
 - 移植：[线程契约](contracts/threading.md)、[Qt协作](contracts/qt_platform.md)、[POSIX](contracts/posix_subset.md)、

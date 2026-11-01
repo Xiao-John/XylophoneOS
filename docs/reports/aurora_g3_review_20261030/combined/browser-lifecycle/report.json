@@ -1,0 +1,119 @@
+{
+  "status": "PASSED",
+  "case": "lifecycle",
+  "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+  "elf_sha256": "9c0ba3df97b3712dafb633e8cd449e3fe8f6bf1fdc08f265e66ee02a1d6f9dec",
+  "receipt_sha256": "bd7a03f76d2d6c705d69ffde2e54922ae70ebbbeb525696570431381de390186",
+  "source_pages": {
+    "src/ports/aurora_browser/pages/theme.css": "0a56ef6865913a9e161672898f8fa2753945e48a094641ee0c18896a03ca2c54",
+    "src/ports/aurora_browser/pages/garden.bmp": "ef846504d0c60f1fbe9731d42edfb0c8cca8763b2928f837753b61c55ca04109",
+    "src/ports/aurora_browser/pages/start.html": "2cd05d76a959980159fcc6d04e4bc8b257e15f3f4d9d6f09cb10a0bfb40ec9c5",
+    "src/ports/aurora_browser/pages/reading.html": "83e35c5316b4cf6c514f625b748a2b786b23e06654d73fe1827ddc16405ea321",
+    "src/ports/aurora_browser/pages/garden.html": "b081c7068cf67947fcaa9f65cf0e70afbdc3971e9261a627a18357e76c420dbd"
+  },
+  "runner_sha256": "d655e2197bdd6dd2892fd60c9ed4fb3df083049a8a75fcddc2c72ce09ce3e947",
+  "checks": [
+    {
+      "name": "real_litehtml_engine_and_aurora_start_page",
+      "status": "PASSED"
+    },
+    {
+      "name": "normal_exit_exact_resource_return",
+      "status": "PASSED"
+    },
+    {
+      "name": "three_launch_exit_cycles_exact_resources",
+      "status": "PASSED"
+    },
+    {
+      "name": "killed_browser_full_resource_return",
+      "status": "PASSED"
+    },
+    {
+      "name": "display_death_browser_fails_closed_serial_survives",
+      "status": "PASSED"
+    },
+    {
+      "name": "new_browser_after_display_restart",
+      "status": "PASSED"
+    },
+    {
+      "name": "file_sync_and_serial_rescue_after_browser",
+      "status": "PASSED"
+    }
+  ],
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_browser_5vn5ooon/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_v4kjguzq/qmp.sock,server=on,wait=off"
+  ],
+  "baseline": [
+    130279,
+    2,
+    0
+  ],
+  "with_service": [
+    130235,
+    3,
+    1
+  ],
+  "screenshots": {
+    "start": "814b4923c87cf56554eca25addcf9a93a7c12a808279c1a3e6299338aaf07ddb"
+  },
+  "measurements": {
+    "sampled_pages": [
+      7151,
+      7151,
+      7152,
+      7151,
+      7152,
+      7152
+    ],
+    "sampled_threads": [
+      3,
+      3,
+      3,
+      3,
+      3,
+      3
+    ],
+    "visual_cache_bytes": [
+      3840000,
+      3840000,
+      3840000,
+      3840000,
+      3840000,
+      3840000
+    ],
+    "absolute_peak": "NOT_RUN"
+  }
+}

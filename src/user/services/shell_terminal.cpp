@@ -9,6 +9,7 @@ namespace {
 enum class mode : u32 { legacy, active, unavailable };
 mode current_mode;
 terminal::control session;
+terminal::application application;
 }
 
 i64 start(const char* path) {
@@ -19,6 +20,38 @@ i64 start(const char* path) {
     const i64 result = terminal::start(session, path);
     if (result > 0) current_mode = mode::active;
     return result;
+}
+
+i64 prepare_application(u64 child, void*) {
+    if (current_mode != mode::active || application.peer != 0) return process_error_state;
+    const i64 result = terminal::attach(session, application, child);
+    // A failed control exchange cannot prove whether the service attached.
+    if (result != 0) current_mode = mode::unavailable;
+    return result;
+}
+
+const u32* application_send_handle() { return &application.incoming; }
+
+i64 finish_application() {
+    if (current_mode != mode::active || application.peer == 0) return process_error_state;
+    const i64 result = terminal::detach(session, application);
+    if (result != 0) current_mode = mode::unavailable;
+    return result;
+}
+
+i64 stop() {
+    if (current_mode != mode::active || application.peer != 0) return process_error_state;
+    current_mode = mode::unavailable;
+    terminal::request message{}; terminal::response response{};
+    message.operation = static_cast<u32>(terminal::operation::stop);
+    i64 result = terminal::exchange(session, message, response);
+    if (result == 0) result = response.result;
+    if (result != 0) return result;
+    process_status status{};
+    result = sdk::wait(session.child, status);
+    terminal::close(session);
+    if (result != 0) return result;
+    return status.outcome == process_outcome::exited && status.code == 0 ? 0 : process_error_state;
 }
 
 extern "C" i64 xos_console_read_hook(u32 handle, void* data, u64 length) {

@@ -190,6 +190,8 @@ Xsh 所需的 supervisor 进程内终端桥接入口已构建但默认未启用�
 重入探针未运行。输入绑定、检查范围和未完成项见[0144](work_log/0144_ncurses_guest_probe.md)。
 试行终端可读等待和单终端读取 `select` 已在提交后通过两个受限 ncurses 客体探针；
 范围和剩余验收见[0145](work_log/0145_terminal_readable_wait.md)。
+Xsh 桥接已增加应用建进程时的附加、回收及停止入口，专用 supervisor 探针改用该入口；
+真实 Xsh 尚未切换，客体重测待执行，见[0146](work_log/0146_shell_application_handoff.md)。
 用户态驱动已试行按 TEMT 确认发送排空，尚未客体验证；见
 [0140](work_log/0140_terminal_drain.md)。
 输入清空和 `TCSAFLUSH` 已试行实现，连续输入失败可能已丢弃部分硬件字节，尚未客体验证；

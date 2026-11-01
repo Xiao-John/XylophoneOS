@@ -8,7 +8,7 @@ using namespace xos;
 namespace {
 u32 raw_calls = 0, length_seen = 0;
 u64 deadline_seen = 0;
-bool timeout = false, fail_start = false;
+bool timeout = false, fail_start = false, fail_detach = false;
 }
 namespace xos::sdk {
 i64 syscall(u64 number, u64, u64, u64) {
@@ -29,6 +29,16 @@ i64 read_until(control&, void*, u32 length, u64 deadline) {
 i64 write_until(control&, const void*, u32 length, u64 deadline) {
     length_seen = length; deadline_seen = deadline; return length > 0 ? 1 : 0;
 }
+i64 attach(control&, application& app, u64 child) {
+    if (child == 0) return process_error_invalid;
+    app.incoming = 12; app.outgoing = 13; app.peer = child; return 0;
+}
+i64 detach(control&, application& app) {
+    app = {};
+    return fail_detach ? process_error_state : 0;
+}
+i64 exchange(control&, request&, response&) { return process_error_state; }
+void close(control& session) { session = {}; }
 }
 int main(int argc, char**) {
     char buffer[300]{};
@@ -47,5 +57,14 @@ int main(int argc, char**) {
     if (sdk::read(0, buffer, 1) != 0 || deadline_seen != 100 + thread_tick_ns) return 4;
     if (sdk::write(3, buffer, 1) != 7 || raw_calls != 3) return 5;
     if (user::shell_terminal::start("/terminal") != process_error_state) return 6;
+    if (user::shell_terminal::prepare_application(42, nullptr) != 0 ||
+        *user::shell_terminal::application_send_handle() != 12 ||
+        user::shell_terminal::prepare_application(43, nullptr) != process_error_state ||
+        user::shell_terminal::finish_application() != 0 ||
+        *user::shell_terminal::application_send_handle() != 0) return 8;
+    if (user::shell_terminal::prepare_application(44, nullptr) != 0) return 9;
+    fail_detach = true;
+    if (user::shell_terminal::finish_application() != process_error_state ||
+        sdk::read(0, buffer, 1) != process_error_state) return 10;
     return 0;
 }

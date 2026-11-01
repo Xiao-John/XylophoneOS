@@ -23,9 +23,9 @@ public:
     QJsonObject diff(quint64 since,const QString &expected_epoch) const;
 };
 class qt_scene {
-    struct Identity {QPointer<QWidget> widget;quint64 id; QPointer<QTextDocument> document; QSharedPointer<quint64> revision; QMetaObject::Connection connection;};
+    struct scene_identity {QPointer<QWidget> widget;quint64 id; QPointer<QTextDocument> document; QSharedPointer<quint64> revision; QMetaObject::Connection connection;};
     QPointer<QWidget> root;
-    QVector<Identity> identities;
+    QVector<scene_identity> identities;
     quint64 next_id=1;
     bool permitted=false,text_permitted=false;
     unsigned node_limit=96;

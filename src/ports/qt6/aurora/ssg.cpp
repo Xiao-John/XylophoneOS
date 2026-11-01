@@ -113,9 +113,9 @@ QJsonObject qt_scene::snapshot(bool visible_only,const QString &requested_role) 
     if(!root)return {{"status","SOURCE_DESTROYED"}};
     if(!node_limit)return {{"status","RESOURCE_LIMIT"}};
     if(requested_role.size()>32)return {{"status","BAD_QUERY"}};
-    identities.erase(std::remove_if(identities.begin(),identities.end(),[](const Identity &i){if(i.widget.isNull()){QObject::disconnect(i.connection);return true;}return false;}),identities.end());
+    identities.erase(std::remove_if(identities.begin(),identities.end(),[](const scene_identity &i){if(i.widget.isNull()){QObject::disconnect(i.connection);return true;}return false;}),identities.end());
     QJsonArray nodes;int text_budget=8192,visited=0;bool capped=false;QElapsedTimer timer;timer.start();
-    auto identity=[&](QWidget *w){for(const auto &i:identities)if(i.widget==w)return i.id;if(identities.size()>=128)return quint64(0);Identity entry{w,next_id++,{}, {}, {}}; if(auto *edit=qobject_cast<QPlainTextEdit*>(w)){entry.document=edit->document();entry.revision=QSharedPointer<quint64>::create(0);auto revision=entry.revision;entry.connection=QObject::connect(edit->document(),&QTextDocument::contentsChanged,edit->document(),[revision]{++*revision;});} identities.append(entry);return next_id-1;};
+    auto identity=[&](QWidget *w){for(const auto &i:identities)if(i.widget==w)return i.id;if(identities.size()>=128)return quint64(0);scene_identity entry{w,next_id++,{}, {}, {}}; if(auto *edit=qobject_cast<QPlainTextEdit*>(w)){entry.document=edit->document();entry.revision=QSharedPointer<quint64>::create(0);auto revision=entry.revision;entry.connection=QObject::connect(edit->document(),&QTextDocument::contentsChanged,edit->document(),[revision]{++*revision;});} identities.append(entry);return next_id-1;};
     std::function<void(QWidget*,quint64,int,bool)> walk;
     walk=[&](QWidget *w,quint64 parent,int depth,bool protected_parent){
         if(++visited>128 || nodes.size()>=int(node_limit) || depth>12 || timer.elapsed()>30){capped=true;return;}

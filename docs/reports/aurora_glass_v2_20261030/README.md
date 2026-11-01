@@ -1,3 +1,9 @@
+> **Evidence version:** This checkout contains a path-sanitized derivative of
+> the original evidence, not byte-identical raw logs or reports. The
+> current index hashes the files in this checkout. The original index and
+> its source commit are preserved and identified in the
+> [PR 41 provenance record](../issue37_path_hygiene/pr41-lineage.json).
+
 # Aurora Glass v2 / G1 / SSG — scoped guest delivery
 
 2026-10-30 · base `3377dbf` · system build `7ccd5871c0c00297`.
@@ -9,11 +15,11 @@ The render gate is the final enhanced 11-run probe, not the superseded intermedi
 - [Notes/Browser SSG and affected regressions](ssg/README.md)
 - [Single-Surface desktop/session](desktop/README.md)
 - [Artifact/source hashes and scope](qualification.json)
-- [Frozen evidence hashes](evidence_index.json)
+- [Sanitized export evidence hashes](evidence_index.json)
 - [Original failed attempts](failures/README.md)
 
 Every screenshot is real QEMU scanout; PNGs are lossless derivatives and original
-PPMs/logs are retained compressed. The actual image SHA-256 is
+PPMs/logs are retained compressed; some logs are path-sanitized derivatives. The actual image SHA-256 is
 `165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08`.
 SDK/Qt archives, target ELFs, build commands and source hashes are bound in inputs/.
 No target ELF, Qt archive, model or private LocalPilot source is published here.

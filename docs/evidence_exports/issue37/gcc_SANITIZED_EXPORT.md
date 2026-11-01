@@ -1,0 +1,1 @@
+The two GCC build evidence JSON files are path-sanitized derivatives. Historical input hashes still identify the original build; source and export hashes are recorded in gcc_lineage.json. Template roots require manual configuration.

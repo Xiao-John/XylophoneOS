@@ -115,7 +115,7 @@
   "provenance": {
     "host_stdcxx_not_used": true,
     "libgcc": "host x86_64-elf libgcc.a with GNU unwinder",
-    "sdk": "/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490",
+    "sdk": "${XOS_HOME_1653253D9751}/Documents/XylophoneOS/.cache/xos_seed/sdk_snapshots/1ba7c52c568725cac63c4a9e603aabd61f30e00db430ca0e5afb4fcfee956490",
     "source": "gcc-16.2.0/libstdc++-v3"
   },
   "runtime_build_flags": [

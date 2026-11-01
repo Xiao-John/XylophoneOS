@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT AND Apache-2.0
+// SPDX-License-Identifier: Apache-2.0
 // PC PIC/PIT initialization and pure interrupt acknowledgment.
 #include "interrupts.hpp"
 #include "arch/x86_64/io.hpp"

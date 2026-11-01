@@ -54,4 +54,4 @@
 - PR #35（C30 命名归属）合入；ncursesw W1 继续；xypm P3 待启动。
 - 发行更新未启动；许可逐成员审计、系统重建/自举、SMP、静态分发均未完成。
 - 按 Discipline → 本页 → 宪法 → 专项契约/登记接手；新开发独立分支/PR 交付，
-  公共 build 排他，localpilot 隔离。
+  公共 build 排他。

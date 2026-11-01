@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: Apache-2.0
 // Deterministic, independent, read-only consumer of the private pipe protocol.
 #include "../ssg/pipe_wire.hpp"
+#include "../ssg/page_continuity.hpp"
+#include "../ssg/baseline_diff.hpp"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonParseError>
+#include <QtCore/QSet>
+#include <QtCore/QVector>
 #include <cstdio>
 using namespace ssg_pipe;
 static void frame_log(const char *direction,unsigned seq,const QByteArray &bytes){
@@ -144,6 +148,179 @@ static int browser_scenario(ssg_client &client){
     check(client.await_eof()==io_result::eof,"browser_provider_exit_eof");
     std::printf("SSG_CONSUMER_BROWSER_EXIT failures=%d\n",failures);return failures?1:0;
 }
+static int browser_pages(ssg_client &client){
+    bool transport=false;QSet<QString> ids;QVector<QString> ancestors;
+    page_continuity continuity;
+    QString instance,epoch,revision,session,cursor;int pages=0,nodes=0;bool done=false;
+    auto decimal_id=[](const QJsonValue &value){
+        if(!value.isString())return false;const auto s=value.toString();
+        if(s.isEmpty() || s=="0" || s.startsWith('0'))return false;
+        for(const auto c:s)if(c<'0' || c>'9')return false;
+        bool ok=false;s.toULongLong(&ok);return ok;
+    };
+    auto exact_bool=[](const QJsonObject &o,const char *key,bool expected){
+        return o.value(key).isBool() && o.value(key).toBool()==expected;
+    };
+    QJsonObject request{{"op","snapshot_begin"},{"maxNodes",8}};
+    for(int i=0;i<1024;++i){
+        auto result=client.request(request,&transport);++pages;
+        if(!transport || result.value("status")!="OK" || result.value("pageSequence").toString()!=QString::number(pages))break;
+        if(pages==1){instance=result.value("sourceInstance").toString();epoch=result.value("sourceEpoch").toString();revision=result.value("sourceRevision").toString();session=result.value("sessionId").toString();}
+        if(instance.isEmpty() || epoch.isEmpty() || revision.isEmpty() || session.isEmpty() || result.value("sourceInstance")!=instance || result.value("sourceEpoch")!=epoch || result.value("sourceRevision")!=revision || result.value("sessionId")!=session)break;
+        if(!result.value("nodes").isArray() || !result.value("complete").isBool() ||
+           result.value("query")!="" || !exact_bool(result,"visibleOnly",false) ||
+           !exact_bool(result,"sourceValid",true) || !result.value("cursor").isString())break;
+        const auto page_nodes=result.value("nodes").toArray();
+        const bool exhausted=result.value("complete").toBool();
+        const auto scroll_value=result.value("scrollY");
+        const int scroll=scroll_value.toInt(-1);
+        if(!scroll_value.isDouble() || scroll_value.toDouble()!=scroll ||
+           !continuity.accept(instance.toStdString(),epoch.toStdString(),revision.toStdString(),
+                              unsigned(pages),scroll,exhausted,result.value("cursor").toString().toStdString()))break;
+        const int visited=result.value("visited").toInt(-1);
+        if(page_nodes.size()>8 || visited<page_nodes.size() || visited>16 ||
+           result.value("visited").toDouble(-1)!=visited || (!exhausted && visited==0) ||
+           !exact_bool(result,"hasData",!page_nodes.isEmpty()) ||
+           !exact_bool(result,"hasNext",!exhausted) ||
+           !exact_bool(result,"traversalComplete",exhausted) ||
+           result.value("stopReason")!=(exhausted?"EXHAUSTED":"PAGE_BUDGET"))break;
+        bool valid=true;
+        for(const auto value:page_nodes){
+            if(!value.isObject()){valid=false;break;}
+            const auto n=value.toObject();const auto id=n.value("id").toString();
+            const auto parent=n.value("parent").toString();
+            if(!decimal_id(n.value("id")) || ids.contains(id) || ids.size()>=4096 ||
+               !n.value("parent").isString() || !n.value("tag").isString() ||
+               n.value("source")!="litehtml-model-and-render-layout") {valid=false;break;}
+            if(ids.isEmpty()){
+                if(parent!="0"){valid=false;break;}
+            }else{
+                // An unfiltered preorder must keep every parent, and cannot
+                // return to a subtree that has already been closed.
+                const auto parent_index=ancestors.lastIndexOf(parent);
+                if(parent_index<0){valid=false;break;}
+                ancestors.resize(parent_index+1);
+            }
+            ancestors.append(id);ids.insert(id);++nodes;
+            const auto role=n.value("role").toString();
+            if(role!="text" && role!="link" && role!="element"){valid=false;break;}
+            if(role=="text"){
+                const auto range=n.value("textRange").toArray();
+                if(!n.value("text").isString() || n.value("text").toString().size()>1024 ||
+                   !exact_bool(n,"textTruncated",false) || range.size()!=2 ||
+                   range[0]!=QJsonValue(0) || range[1]!=QJsonValue(int(n.value("text").toString().size()))) {valid=false;break;}
+            }
+            if(role=="link" && (!n.value("href").isString() || n.value("tag")!="a")){valid=false;break;}
+        }
+        if(!valid)break;
+        done=exhausted;const auto next=result.value("cursor").toString();
+        std::printf("SSG_PAGED_CONSUMER page=%d nodes=%d visited=%d elapsed_ms=%s complete=%d\n",pages,int(page_nodes.size()),visited,result.value("elapsedMs").toString().toUtf8().constData(),int(done));
+        if(done){if(!next.isEmpty())done=false;break;}
+        if(next.isEmpty() || next==cursor)break;cursor=next;
+        request={{"op","snapshot_next"},{"sourceInstance",instance},{"cursor",cursor}};
+    }
+    // Local consistency still cannot discover a missing whole subtree. Only
+    // the independent test Oracle can qualify structure/text completeness.
+    std::printf("SSG_PAGED_CONSUMER_DONE pages=%d nodes=%d complete=%d completeness=ORACLE_REQUIRED\n",pages,nodes,int(done));
+    return done && nodes>0?0:1;
+}
+// This mode is limited to the existing prewired read-only parent/child pipe.
+static bool collect_baseline(ssg_client &client, baseline_collector &collector, bool inject=false, bool *stale=nullptr){
+    if(stale)*stale=false;
+    collector.begin(); bool transport=false; QString cursor,instance; QJsonObject request{{"op","snapshot_begin"},{"maxNodes",8}};
+    for(unsigned seq=1;seq<=baseline_collector::max_pages;++seq){
+        const auto r=client.request(request,&transport);
+        if(transport && r.value("status")=="STALE_CURSOR"){
+            collector.cancel(); if(stale)*stale=true;
+            std::printf("SSG_RECOVERY_STALE discarded=1\n"); return false;
+        }
+        auto exact_bool=[&](const QJsonObject &o,const char *k){return o.value(k).isBool();};
+        if(!transport || r.value("status")!="OK" || r.value("pageSequence").toString()!=QString::number(seq) ||
+           !r.value("nodes").isArray() || !r.value("cursor").isString() || !r.value("query").isString() ||
+           !exact_bool(r,"complete") || !exact_bool(r,"visibleOnly") || !exact_bool(r,"sourceValid") ||
+           !exact_bool(r,"hasNext") || !exact_bool(r,"hasData") || !exact_bool(r,"traversalComplete")) {collector.cancel();return false;}
+        const int scroll=r.value("scrollY").toInt(-1), visited=r.value("visited").toInt(-1);
+        if(!r.value("scrollY").isDouble() || r.value("scrollY").toDouble()!=scroll || !r.value("visited").isDouble() || r.value("visited").toDouble()!=visited || visited<0 ||
+           r.value("stopReason")!=(r.value("complete").toBool()?"EXHAUSTED":"PAGE_BUDGET")){collector.cancel();return false;}
+        baseline_page p; p.instance=r.value("sourceInstance").toString().toStdString();p.epoch=r.value("sourceEpoch").toString().toStdString();
+        p.revision=r.value("sourceRevision").toString().toStdString();p.session=r.value("sessionId").toString().toStdString();
+        p.scope=r.value("query").toString().toStdString();p.request_cursor=cursor.toStdString();p.cursor=r.value("cursor").toString().toStdString();
+        p.sequence=seq;p.scroll=scroll;p.visited=unsigned(visited);p.visible_only=r.value("visibleOnly").toBool();p.complete=r.value("complete").toBool();
+        p.source_valid=r.value("sourceValid").toBool();p.has_next=r.value("hasNext").toBool();p.has_data=r.value("hasData").toBool();p.traversal_complete=r.value("traversalComplete").toBool();
+        for(const auto v:r.value("nodes").toArray()){
+            if(!v.isObject()){collector.cancel();return false;} const auto n=v.toObject();
+            if(!n.value("id").isString() || !n.value("parent").isString() || !n.value("role").isString() || !n.value("tag").isString() || n.value("source")!="litehtml-model-and-render-layout" ||
+               !n.value("visibility").isString() || !n.value("fragmentsComplete").isBool()){collector.cancel();return false;}
+            auto valid_rect=[](const QJsonValue &v){if(!v.isArray() || v.toArray().size()!=4)return false;for(const auto x:v.toArray())if(!x.isDouble())return false;return true;};
+            auto valid_rects=[&](const QJsonValue &v){if(!v.isArray() || v.toArray().size()>8)return false;for(const auto x:v.toArray())if(!valid_rect(x))return false;return true;};
+            if(!valid_rect(n.value("bounds")) || !valid_rect(n.value("visibleBounds")) || !valid_rects(n.value("fragments")) || !valid_rects(n.value("visibleFragments"))){collector.cancel();return false;}
+            baseline_node node;node.id=n.value("id").toString().toStdString();node.parent=n.value("parent").toString().toStdString();node.role=n.value("role").toString().toStdString();node.tag=n.value("tag").toString().toStdString();
+            node.has_text=n.value("text").isString();node.has_href=n.value("href").isString();node.text=n.value("text").toString().toStdString();node.href=n.value("href").toString().toStdString();
+            if(node.has_text && (n.value("textTruncated")!=false || n.value("text").toString().size()>1024 || n.value("textRange").toArray()!=QJsonArray{0,n.value("text").toString().size()})){collector.cancel();return false;}
+            auto array=[&](const char *k){return QJsonDocument(n.value(k).toArray()).toJson(QJsonDocument::Compact).toStdString();};
+            node.fragments=array("fragments");node.visible_fragments=array("visibleFragments");node.bounds=array("bounds");node.visible_bounds=array("visibleBounds");node.visibility=n.value("visibility").toString().toStdString();node.geometry_known=true;node.fragments_complete=n.value("fragmentsComplete").toBool();p.nodes.push_back(node);
+        }
+        if(!collector.accept(p))return false;
+        if(p.complete)return true;
+        if(inject && seq==3){
+            std::printf("SSG_RECOVERY_INJECTION_READY pages=%u session=%s\n",seq,p.session.c_str());
+            xos::thread::sleep_until(xos::thread::clock()+15000000000ull);
+        }
+        cursor=r.value("cursor").toString();instance=r.value("sourceInstance").toString();request={{"op","snapshot_next"},{"sourceInstance",instance},{"cursor",cursor}};
+    }
+    collector.cancel();return false;
+}
+static bool commit_baseline(baseline_collector &c,const char *label){
+    if(!c.commit())return false;const auto &b=*c.committed();
+    std::printf("SSG_BASELINE_%s_COMMITTED nodes=%u instance=%s epoch=%s revision=%s session=%s scrollY=%d\n",label,unsigned(b.nodes.size()),b.instance.c_str(),b.epoch.c_str(),b.revision.c_str(),b.session.c_str(),b.scroll);return true;
+}
+static int browser_pages_diff(ssg_client &client, bool recover=false, bool exhaust=false){
+    baseline_collector a,b;
+    if(!collect_baseline(client,a) || !commit_baseline(a,"A"))return 1;
+    if(recover){
+        bool complete=false;
+        for(unsigned attempt=0;attempt<=2;++attempt){
+            bool stale=false;
+            if(collect_baseline(client,b,exhaust || attempt==0,&stale)){
+                if(attempt==0){b.cancel();std::printf("SSG_RECOVERY_FAILED status=RESET_REQUIRED no_interruption=1\n");return 1;}
+                complete=true;break;
+            }
+            if(!stale){std::printf("SSG_RECOVERY_FAILED status=RESET_REQUIRED\n");return 1;}
+            std::printf("SSG_RECOVERY_LAST_GOOD session=%s nodes=%u\n",a.committed()->session.c_str(),unsigned(a.committed()->nodes.size()));
+        }
+        if(!complete){std::printf("SSG_RECOVERY_FAILED status=RESET_REQUIRED budget=2\n");return 1;}
+    } else {
+        std::printf("SSG_CONSUMER_WAIT_AB_SCROLL seconds=15\n");xos::thread::sleep_until(xos::thread::clock()+15000000000ull);
+        if(!collect_baseline(client,b))return 1;
+    }
+    if(!commit_baseline(b,"B"))return 1;
+    const auto d=compare_baselines(*a.committed(),*b.committed());QJsonArray changes;
+    for(const auto &c:d.changes){QJsonObject item{{"kind",QString::fromStdString(c.kind)},{"id",QString::fromStdString(c.id)}};
+        if(c.kind=="ScrollChanged"){item["before"]=std::stoi(c.before);item["after"]=std::stoi(c.after);}
+        else if(c.kind=="WindowGeometryChanged" || c.kind=="VisibilityChanged"){item["before"]=QJsonDocument::fromJson(QByteArray::fromStdString(c.before)).object();item["after"]=QJsonDocument::fromJson(QByteArray::fromStdString(c.after)).object();}
+        else {item["before"]=QString::fromStdString(c.before);item["after"]=QString::fromStdString(c.after);}changes.append(item);}
+    QJsonObject result{{"status",d.status==diff_status::ok?"OK":d.status==diff_status::resource_limit?"RESOURCE_LIMIT":"RESET_REQUIRED"},{"geometryComplete",d.geometry_complete},{"changes",changes}};
+    std::printf("SSG_CONSUMER_DIFF_JSON %s\n",QJsonDocument(result).toJson(QJsonDocument::Compact).constData());
+    std::printf("SSG_CONSUMER_DIFF_DONE status=%s\n",result.value("status").toString().toUtf8().constData());return d.status==diff_status::ok?0:1;
+}
+static int browser_pages_reload(ssg_client &client){
+    bool transport=false;
+    const auto scene=client.request(query("content"),&transport);
+    if(!transport || scene.value("status")!="OK" || scene.value("nodes").toArray().isEmpty())return 1;
+    baseline_collector a, staging, c;
+    if(!collect_baseline(client,a) || !commit_baseline(a,"A"))return 1;
+    bool stale=false;
+    if(collect_baseline(client,staging,true,&stale) || !stale){std::printf("SSG_RELOAD_FAILED no_stale=1\n");return 1;}
+    auto old_node=reference(scene,"detail","content");
+    old_node["nodeId"]=scene.value("nodes").toArray().first().toObject().value("id");
+    const auto old=client.request(old_node,&transport);
+    if(!transport || old.value("status")!="SOURCE_REPLACED")return 1;
+    std::printf("SSG_RELOAD_OLD_NODE status=SOURCE_REPLACED\n");
+    if(!collect_baseline(client,c) || !commit_baseline(c,"C"))return 1;
+    const auto d=compare_baselines(*a.committed(),*c.committed());
+    std::printf("SSG_RELOAD_DIFF status=%s changes=%u old_session=%s\n",d.status==diff_status::reset_required?"RESET_REQUIRED":"UNEXPECTED",unsigned(d.changes.size()),a.committed()->session.c_str());
+    return d.status==diff_status::reset_required && d.changes.empty()?0:1;
+}
 static int browser_guard(ssg_client &client){
     const auto first=client.request(query("content"));
     std::printf("SSG_CONSUMER_WAIT_BROWSER_GUARD seconds=8\n");
@@ -236,6 +413,11 @@ int main(int argc,char **argv){
     const QString mode=argc>1?QString::fromUtf8(argv[1]):QStringLiteral("snapshot");
     if(mode=="scenario")return scenario(client);
     if(mode=="browser-scenario")return browser_scenario(client);
+    if(mode=="browser-pages")return browser_pages(client);
+    if(mode=="browser-pages-diff")return browser_pages_diff(client);
+    if(mode=="browser-pages-recover")return browser_pages_diff(client,true);
+    if(mode=="browser-pages-retry-exhaust")return browser_pages_diff(client,true,true);
+    if(mode=="browser-pages-reload")return browser_pages_reload(client);
     if(mode=="browser-guard")return browser_guard(client);
     if(mode=="truncated"){
         char header[12]={'S','S','G','1'};put32(header+4,32);put32(header+8,1);

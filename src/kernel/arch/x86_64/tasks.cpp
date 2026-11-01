@@ -15,6 +15,7 @@
 static_assert(xos::clock::resolution_ns == xos::thread_tick_ns);
 #include "user_blobs.hpp"
 #include "user_images.hpp"
+#include <xos/device_abi.hpp>
 
 namespace xos {
 extern const u8* boot_payload;
@@ -282,6 +283,38 @@ bool user_range_ok(u64 address, u64 length, bool write) {
         if (write && !permissions.writable) { return false; }
     }
     return true;
+}
+
+// sys_device (device_authorization_v1) segment 1a: request snapshot and
+// frozen header validation; known operations are transient device_unknown
+// until segments 1b-1e land the grant/map/irq/dma machinery.
+void* device_authorize_syscall(interrupt_frame* frame) {
+    i64 result = device_unknown;
+    const u64 request_address = frame->rdi;
+    do {
+        if (frame->rsi != 0 || frame->rdx != 0) { result = device_invalid; break; }
+        device_request request{};
+        if ((request_address & 7) != 0) { result = device_invalid; break; }
+        if (!user_range_ok(request_address, sizeof(request), false)) { result = device_fault; break; }
+        copy_from_user(&request, request_address, sizeof(request));
+        const u32 operation = static_cast<u32>(request.operation);
+        if (request.version != 1 || request.size != sizeof(request) || request.reserved != 0 ||
+            request.flags != 0 || operation < 1 || operation > 11) { result = device_invalid; break; }
+        if (request.deadline_ns != 0 && request.operation != device_operation::irq_wait) {
+            result = device_invalid; break;
+        }
+        if (request.input_length != 0 &&
+            (request.input_address == 0 || !user_range_ok(request.input_address, request.input_length, false))) {
+            result = device_fault; break;
+        }
+        if (request.output_length != 0 &&
+            (request.output_address == 0 || !user_range_ok(request.output_address, request.output_length, true))) {
+            result = device_fault; break;
+        }
+        result = device_unknown;
+    } while (false);
+    frame->rax = static_cast<u64>(result);
+    return frame;
 }
 
 bool rdrand_supported() {
@@ -2257,6 +2290,7 @@ void* syscall_entry(interrupt_frame* frame) {
         frame->rax = static_cast<u64>(process_error_state); return frame;
     }
     if(number==sys_display || number==sys_display_present){return display_syscall(frame);}
+    if(number==sys_device){return device_authorize_syscall(frame);}
     i64 result = sys_error_invalid_argument;
     switch (number) {
     case sys_write: {

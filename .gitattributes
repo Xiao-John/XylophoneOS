@@ -10,16 +10,6 @@ docs/reports/** -text
 docs/evidence_exports/** -text
 src/ports/gcc/e08_5_abi_build_report.json -text
 src/ports/gcc/e08_5_target_runtime_manifest.json -text
-# Freeze every modern-app evidence byte; evidence_index.json receipts hash all 138 files.
-docs/reports/modern_apps_20261029/** -text
-# Freeze compatibility CSV bytes exactly; csv.writer emits CRLF and receipts hash it.
-docs/reports/modern_apps_20261029/*_matrix.csv -text whitespace=cr-at-eol
-# Preserve the dependency's original license whitespace verbatim.
-licenses/modern_apps/defusedxml_LICENSE -whitespace
-# These frozen guest logs contain mixed line endings and trailing prompt spaces.
-# Preserve their exact bytes so the original evidence indexes remain valid.
-docs/reports/aurora_sdk_review_20261030/runs/**/serial.log -text whitespace=-blank-at-eol,cr-at-eol
-docs/reports/net_clock_irq_split_20261030/runs/**/*.log -text whitespace=-blank-at-eol,cr-at-eol
 # These migrated host documents are referenced by exact-byte conversion ledgers.
 docs/work_log/0063_input_edit_design.md -text
 docs/work_log/0064_input_edit_first_stage.md -text
@@ -31,3 +21,13 @@ docs/work_log/0082_network_device_abi_claim.md -text
 docs/work_log/0096_browser_review_fixes.md -text
 docs/work_log/0099_probe_branch_reconciliation.md -text
 docs/work_log/0144_webengine_port_plan_and_c31.md -text
+# Freeze every modern-app evidence byte; evidence_index.json receipts hash all 138 files.
+docs/reports/modern_apps_20261029/** -text
+# Freeze compatibility CSV bytes exactly; csv.writer emits CRLF and receipts hash it.
+docs/reports/modern_apps_20261029/*_matrix.csv -text whitespace=cr-at-eol
+# Preserve the dependency's original license whitespace verbatim.
+licenses/modern_apps/defusedxml_LICENSE -whitespace
+# These frozen guest logs contain mixed line endings and trailing prompt spaces.
+# Preserve their exact bytes so the original evidence indexes remain valid.
+docs/reports/aurora_sdk_review_20261030/runs/**/serial.log -text whitespace=-blank-at-eol,cr-at-eol
+docs/reports/net_clock_irq_split_20261030/runs/**/*.log -text whitespace=-blank-at-eol,cr-at-eol

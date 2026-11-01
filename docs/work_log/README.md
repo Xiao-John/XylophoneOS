@@ -23,3 +23,7 @@
 本索引不改变任何历史记录内容与文件名，仅登记编号归属；历史上曾有"晚合入方改号"
 方案，因会牵动被冻结清单的哈希级联而按"老人老办法"否决，过程见
 [0154](0154_c4_pivot_c5_rework_evidence_contract.md)。
+
+## 0156 起新增记录
+
+- [0163 — Midnight Dock refinement](0163_aurora_midnight_dock.md)

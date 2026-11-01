@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "files": {
+    "README.md": "b2f9d24ea0ecdee02ca6f154a4f7f4bd5065a31a041b9f4e9477ff0772879701",
+    "daybreak-high-contrast.png": "61d3d47b4cbd568487686e2520f64d04c5d21b5f306b784752c8cb8620bae2a0",
+    "dock-desktop-interactive/report.json": "0ecf96c75caf007475f3ca82f919e7c0b20e33ee7f3c831939433a4815baeb11",
+    "dock-desktop-interactive/serial.log.gz": "c3265cc681717d6536a6795f7fd12619166ccdfb9c7df1d0b0f0f6a164d3611f",
+    "dock-desktop-lifecycle/report.json": "d6ff3beaad914f663ab95f953a8bbb72b4224470482fd6f4b1f9cd7ca202331d",
+    "dock-desktop-lifecycle/serial.log.gz": "aa3365e56672734647902dd12f64008fbe5f4c71ec8151196dc51a75c5f6afe9",
+    "dock-desktop-session/report.json": "75a176573ce22ac701f80aa46b22c8bf2a66d4f903babafd39396233486dd2fb",
+    "dock-desktop-session/serial.log.gz": "0212cb03401234c31b1fc62c52b94113ed3a108c25f8d921768b71ed3eda8edb",
+    "dock-desktop-studio/report.json": "f1dac2422fa36f48c4fe96ce35732952b623d226ee953ec38a9b290daabbaa33",
+    "dock-desktop-studio/serial.log.gz": "11c673945ab0c69d4af7f0d0646335fe84cedb0c447566ce67d9eb999130d6c0",
+    "dock-studio-rerun/report.json": "bcd3b8851fd5fae041b7a9f93e88e5c27f70e8793714aad7471a4be5fadb9a31",
+    "dock-studio-rerun/serial.log.gz": "744f554cf8d2ef198f152036fdfdce66a59ad2d5bfd816a595a0ae7e05cf1473",
+    "midnight-after.png": "3f54e139a344c8eb38c0b6638e2a79a9e175882e7656d4d9daff1c8a3dbd5389",
+    "midnight-before.png": "c4c0650d6872bfbaa55a4f5e9924830d3d561b54b6cbb6be43e24d16f30b2f45",
+    "scanout-comparison.json": "21c422586b2eae14927937a218fa4a6c807b640fba9a94bde9070cb5ffbdd4a6"
+  }
+}

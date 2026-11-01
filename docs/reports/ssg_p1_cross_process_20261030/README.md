@@ -1,7 +1,11 @@
+> **Evidence version:** This is a path-sanitized derivative; the original
+> bytes and original index are identified in [the provenance receipt](../issue37_path_hygiene/pr46-lineage.json).
+> Historical command placeholders require manual configuration.
+
 # SSG-P1: cross-process, prewired, read-only experiment
 
-The qualification JSON and compressed raw guest logs in this directory are the
-source of the results. This is an experiment with one GUI provider and one
+The qualification JSON and compressed guest logs in this directory are the
+source of the results; host paths in some records have been sanitized. This is an experiment with one GUI provider and one
 independent consumer connected by a spawn-authorized parent, not a general
 broker, arbitrary-process discovery, per-message identity, remote revocation or
 production authorization. The console records what the consumer received; the

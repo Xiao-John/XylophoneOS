@@ -29,10 +29,10 @@ namespace {
 using WSI = QWindowSystemInterface;
 // Compose, rather than fork, the qualified E15 dispatcher. QPA owns only the
 // GUI queue drain; all deadlines, posted events and wake words remain in Core.
-class GuiDispatcher final : public QAbstractEventDispatcherV2 {
+class gui_dispatcher final : public QAbstractEventDispatcherV2 {
     QEventDispatcherXos core;
 public:
-    GuiDispatcher() {
+    gui_dispatcher() {
         QObject::connect(&core, &QAbstractEventDispatcher::awake, this, &QAbstractEventDispatcher::awake);
         QObject::connect(&core, &QAbstractEventDispatcher::aboutToBlock, this, &QAbstractEventDispatcher::aboutToBlock);
     }
@@ -52,16 +52,16 @@ public:
     void wakeUp() override { core.wakeUp(); }
     void interrupt() override { core.interrupt(); }
 };
-class Screen final : public QPlatformScreen {
+class screen final : public QPlatformScreen {
     xos::display_mode mode;
 public:
-    explicit Screen(xos::display_mode m) : mode(m) {}
+    explicit screen(xos::display_mode m) : mode(m) {}
     QRect geometry() const override { return {0,0,int(mode.width),int(mode.height)}; }
     int depth() const override { return 32; }
     QImage::Format format() const override { return QImage::Format_RGB32; }
     QString name() const override { return QStringLiteral("XOS Display Service"); }
 };
-class Fonts final : public QFreeTypeFontDatabase {
+class fonts final : public QFreeTypeFontDatabase {
 public:
     void populateFontDatabase() override {
         QFile f(QStringLiteral(":/xos/DejaVuSans.ttf"));
@@ -114,7 +114,7 @@ Key mapKey(xos::u32 code, xos::u32 mods) {
             (mods&6)?QString():QString(QChar::fromLatin1(ch))};
 }
 std::atomic<xos::u64> pauseUntil{0};
-class Window final : public QPlatformWindow {
+class window final : public QPlatformWindow {
     xos::sdk::display_client client;
     QMutex transaction;
     std::atomic<bool> stopping{false};
@@ -127,7 +127,7 @@ class Window final : public QPlatformWindow {
     Qt::MouseButtons mouseButtons;
     QPointF position;
     void deliver(const xos::display_event &e) {
-        Q_ASSERT(QThread::currentThread()==window()->thread());
+        Q_ASSERT(QThread::currentThread()==QPlatformWindow::window()->thread());
         if(stopping.load() || !visible) return;
         if(e.sequence<=sequence) qFatal("XOS QPA: input sequence regression");
         sequence=e.sequence;
@@ -141,12 +141,12 @@ class Window final : public QPlatformWindow {
                 if(e.kind==1) held[e.code]=key;
                 else { if(held[e.code].key) key=held[e.code]; held[e.code]={}; }
             }
-            if(key.key) WSI::handleKeyEvent(window(),ulong(e.monotonic_ns/1000000),
+            if(key.key) WSI::handleKeyEvent(QPlatformWindow::window(),ulong(e.monotonic_ns/1000000),
                 e.kind==1?QEvent::KeyPress:QEvent::KeyRelease,key.key,mods,key.text);
         } else if(e.kind==3 || e.kind==4) {
             if(e.kind==4) {
                 for(auto &key:held) {
-                    if(key.key) WSI::handleKeyEvent(window(),QEvent::KeyRelease,key.key,Qt::NoModifier);
+                    if(key.key) WSI::handleKeyEvent(QPlatformWindow::window(),QEvent::KeyRelease,key.key,Qt::NoModifier);
                     key={};
                 }
             }
@@ -155,11 +155,11 @@ class Window final : public QPlatformWindow {
             for(Qt::MouseButton b : {Qt::LeftButton,Qt::RightButton,Qt::MiddleButton}) {
                 if(bool(mouseButtons&b)!=bool(next&b)) {
                     if(next&b) mouseButtons|=b; else mouseButtons&=~b;
-                    WSI::handleMouseEvent(window(),ulong(e.monotonic_ns/1000000),position,position,mouseButtons,b,
+                    WSI::handleMouseEvent(QPlatformWindow::window(),ulong(e.monotonic_ns/1000000),position,position,mouseButtons,b,
                         (next&b)?QEvent::MouseButtonPress:QEvent::MouseButtonRelease,mods);
                 }
             }
-            WSI::handleMouseEvent(window(),ulong(e.monotonic_ns/1000000),position,position,mouseButtons,Qt::NoButton,QEvent::MouseMove,mods);
+            WSI::handleMouseEvent(QPlatformWindow::window(),ulong(e.monotonic_ns/1000000),position,position,mouseButtons,Qt::NoButton,QEvent::MouseMove,mods);
         }
     }
     void inputLoop() {
@@ -191,20 +191,20 @@ class Window final : public QPlatformWindow {
         std::printf("[qpa] input-thread-exit\n");
     }
 public:
-    explicit Window(QWindow *w) : QPlatformWindow(w) {
+    explicit window(QWindow *w) : QPlatformWindow(w) {
         const auto rc=client.open();
         if(rc) qFatal("XOS QPA: exclusive Surface connect failed (%lld)",(long long)rc);
         connected=true;
         setGeometry(screen()->geometry());
         delivery=std::make_unique<QObject>();
         const int threadResult=pthread_create(&input,nullptr,[](void *arg)->void* {
-            static_cast<Window*>(arg)->inputLoop();return nullptr;
+            static_cast<window*>(arg)->inputLoop();return nullptr;
         },this);
         if(threadResult) qFatal("XOS QPA: input thread resource allocation failed (%d)",threadResult);
         inputStarted=true;
         std::printf("[qpa] surface-created input-thread-start\n");
     }
-    ~Window() override {
+    ~window() override {
         stopping.store(true,std::memory_order_release);
         { QMutexLocker lock(&transaction); if(connected) client.close(); connected=false; }
         // SDK join waits through TLS destruction and kernel stack reclamation.
@@ -216,24 +216,24 @@ public:
     void setGeometry(const QRect &) override {
         const auto full=screen()->geometry();
         QPlatformWindow::setGeometry(full);
-        WSI::handleGeometryChange(window(),full);
+        WSI::handleGeometryChange(QPlatformWindow::window(),full);
     }
     void setVisible(bool v) override {
         visible=v;
-        WSI::handleFocusWindowChanged(v?window():nullptr);
-        WSI::handleExposeEvent(window(),v?QRegion(geometry()):QRegion());
+        WSI::handleFocusWindowChanged(v?QPlatformWindow::window():nullptr);
+        WSI::handleExposeEvent(QPlatformWindow::window(),v?QRegion(geometry()):QRegion());
     }
     bool isExposed() const override { return visible; }
-    void requestActivateWindow() override { if(visible) WSI::handleFocusWindowChanged(window()); }
+    void requestActivateWindow() override { if(visible) WSI::handleFocusWindowChanged(QPlatformWindow::window()); }
     xos::i64 present(xos::display_present p) {
         QMutexLocker lock(&transaction);
         return connected?client.present(p):xos::display_unavailable;
     }
 };
-class BackingStore final : public QPlatformBackingStore {
+class backing_store final : public QPlatformBackingStore {
     QImage image;
 public:
-    explicit BackingStore(QWindow *w):QPlatformBackingStore(w){}
+    explicit backing_store(QWindow *w):QPlatformBackingStore(w){}
     QPaintDevice *paintDevice() override { return &image; }
     void resize(const QSize &s,const QRegion &) override {
         if(s!=window()->screen()->size()) qFatal("XOS QPA: only full-screen backing stores supported");
@@ -246,7 +246,7 @@ public:
         std::printf("[qpa-flush] same=%d offset=%d,%d rects=%d\n",
             w==window(),offset.x(),offset.y(),region.rectCount());
         if(!offset.isNull() || w!=window()) qFatal("XOS QPA: child/offset flush unsupported");
-        auto *platform=static_cast<Window*>(w->handle());
+        auto *platform=static_cast<::window*>(w->handle());
         const QRegion clipped=region.intersected(image.rect());
         for(const QRect &r:clipped) {
             const auto begin=xos::thread::clock();
@@ -260,29 +260,29 @@ public:
         }
     }
 };
-class Integration final : public QPlatformIntegration {
-    Screen *screen_;
-    mutable Fonts fonts;
+class integration final : public QPlatformIntegration {
+    screen *screen_;
+    mutable ::fonts fonts;
 public:
-    Integration() {
+    integration() {
         xos::display_mode mode{};
         const auto rc=xos::sdk::display_control(xos::display_action::mode,reinterpret_cast<xos::u64>(&mode));
         if(rc || mode.version!=1 || mode.size!=sizeof(mode) || mode.format!=xos::display_xrgb8888
             || !mode.width || !mode.height || mode.width>16384 || mode.height>16384
             || mode.stride<xos::u64(mode.width)*4 || mode.bytes<xos::u64(mode.stride)*mode.height)
             qFatal("XOS QPA: unavailable or invalid Display Service mode (%lld)",(long long)rc);
-        screen_=new Screen(mode);
+        screen_=new screen(mode);
         WSI::handleScreenAdded(screen_);
         std::printf("[qpa] initialized Qt=6.8.3 width=%u height=%u stride=%u format=%u\n",mode.width,mode.height,mode.stride,mode.format);
     }
-    ~Integration() override { WSI::handleScreenRemoved(screen_); }
+    ~integration() override { WSI::handleScreenRemoved(screen_); }
     bool hasCapability(Capability c) const override {
         if(c==MultipleWindows || c==NonFullScreenWindows || c==OpenGL || c==RhiBasedRendering || c==ThreadedPixmaps) return false;
         return QPlatformIntegration::hasCapability(c);
     }
-    QPlatformWindow *createPlatformWindow(QWindow *w) const override { return new Window(w); }
-    QPlatformBackingStore *createPlatformBackingStore(QWindow *w) const override { return new BackingStore(w); }
-    QAbstractEventDispatcher *createEventDispatcher() const override { return new GuiDispatcher; }
+    QPlatformWindow *createPlatformWindow(QWindow *w) const override { return new window(w); }
+    QPlatformBackingStore *createPlatformBackingStore(QWindow *w) const override { return new backing_store(w); }
+    QAbstractEventDispatcher *createEventDispatcher() const override { return new gui_dispatcher; }
     QPlatformFontDatabase *fontDatabase() const override { return &fonts; }
 };
 }
@@ -294,7 +294,7 @@ class QXosIntegrationPlugin final : public QPlatformIntegrationPlugin {
     Q_PLUGIN_METADATA(IID QPlatformIntegrationFactoryInterface_iid FILE "xos.json")
 public:
     QPlatformIntegration *create(const QString &key,const QStringList &) override {
-        return key==QStringLiteral("xos")?new Integration:nullptr;
+        return key==QStringLiteral("xos")?new integration:nullptr;
     }
 };
 #include "qxos.moc"

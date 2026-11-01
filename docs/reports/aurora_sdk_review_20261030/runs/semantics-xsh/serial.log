@@ -1,0 +1,2199 @@
+XOS: loading stage_two
+[loader] firmware=bios target=x86_64
+[boot] event=kernel_enter arch=x86_64 build=7ccd5871c0c00297
+[boot] event=boot_info_valid memory_map=complete
+[boot] event=runtime_checked bss=zero data=valid
+[cpu] event=exceptions_ready idt=0x000000000018c0e0 vectors=32 double_fault_ist=1
+[display] state=ready width=800 height=600 stride=3200 physical=0x00000000fd000000 bytes=1920000 cache=uc user_mapping=none
+[display] backend=vbe fallback=1
+[mem] event=initialized usable_kib=523775 managed_kib=524160 pages=131040 free_pages=130597 allocated_pages=1
+[mem] event=window low=0x0000000000100000 high=0x000000001ffe0000
+[vm] event=self_check result=pass address=0x0000000040000000 physical=0x00000000001bb000
+[block] event=ready device=ata sectors=1048576
+[task] event=created pid=1 name=heartbeat
+[task] event=created pid=2 name=spinner
+[task] event=created pid=3 name=receiver
+[task] event=created pid=4 name=sender
+[task] event=created pid=5 name=probe
+[task] event=created pid=6 name=quitter
+[task] event=created pid=7 name=supervisor bootstrap=trusted_segments
+[task] event=created pid=8 name=files bootstrap=trusted_segments
+[task] event=ready count=8
+[boot] result=ready stage=E04
+The underscores made it to 64 bits.
+
+  ================================================
+   XOS 0.0.2 | 64-bit | more checks than excuses
+   Guest star: Guo YePeng (did not panic, yet)
+   "It booted on my machine." - everyone, ever
+  ================================================
+   guo = ceremonial greeting    joke = deterministic
+   help = actual work
+xos64> run
+[sched] event=starting
+[input] ps2=ready irq1=enabled irq12=enabled
+[sched] event=start tasks=8
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+bad handle rejected
+no send right
+[task] event=fault pid=5 vector=14 rip=0x0000000040000060 cr2=0x0000000000100000 result=killed tid=5
+[task] event=reclaimed pid=5 pages=11
+bye
+[task] event=reclaimed pid=6 pages=11
+AAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+AAAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+AAAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+Aping
+bad length
+bad pointer
+tx
+[files] ready hello.elf bytes=9872
+
+Welcome to Xshell | XylophoneOS
+help: commands   dash -i: POSIX shell   trace on: diagnostics
+
+xsh> tAAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+race on
+xsh: trace on
+xsh> AAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+bad length
+AAping
+bad pointer
+tx
+bad length
+bad pointer
+AAAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+AAAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAAping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+AAAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+AAAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+AAAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+AAAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+AAAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+AAAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+AAping
+bad length
+bad pointer
+tx
+[task] event=killed_by_supervisor pid=1
+[task] event=reclaimed pid=1 pages=11
+[task] event=killed_by_supervisor pid=2
+[task] event=reclaimed pid=2 pages=11
+[task] event=killed_by_supervisor pid=3
+[task] event=reclaimed pid=3 pages=11
+[task] event=killed_by_supervisor pid=4
+[task] event=reclaimed pid=4 pages=11
+
+[xsh] demo tasks stopped
+xsh> stats
+[resources] free=130279 tasks=2 completions=0
+xsh> display-start
+[process] event=started pid=9 parent=7
+[process] pid=9 address_space=0x00000000001bb000
+[display-start] pid=9 result=0
+xsh> [display-service] ready file=denied block=denied spawn=denied
+stats
+[resources] free=130235 tasks=3 completions=1
+xsh> exec-file /bin/semantics.elf
+[process] event=started pid=10 parent=7
+[process] pid=10 address_space=0x00000000001e8000
+[loader] started pid=10 file=/bin/semantics.elf
+[process] event=wait_blocked parent=7 child=10
+Detected locale "C" with character encoding "US-ASCII", which is not UTF-8.
+Qt depends on a UTF-8 locale, but has failed to switch to one.
+If this causes problems, reconfigure your locale. See the locale(1) manual
+for more information.
+[qpa] initialized Qt=6.8.3 width=800 height=600 stride=3200 format=1
+AURORA_THEME v=2 scheme=0 contrast=0 opaque=0 motion=0
+[qpa] surface-created input-thread-start
+This plugin does not support propagateSizeHints()
+AURORA_DESKTOP_CACHE bytes=3840000 ns=250000000 wallpaper=0 requested=1 effective=1 fallback=0 budget=8388608 generations=1
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=0 y=0 w=800 h=600 stride=3200 ns=10000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=0 y=0 w=800 h=600 stride=3200 ns=0
+SEMANTIC_CHECK no_authority_from_discovery=PASS
+SEMANTIC_CHECK actual_widget_verification=PASS
+SEMANTIC_CHECK no_replay=PASS
+SEMANTIC_CHECK sync_callback_vector_growth_verified=PASS
+SEMANTIC_CHECK revocation=PASS
+SEMANTIC_CHECK expiry=PASS
+SEMANTIC_CHECK stale_state=PASS
+SEMANTIC_CHECK exact_proposal_binding=PASS
+SEMANTIC_CHECK scope=PASS
+SEMANTIC_CHECK model_authorization_rejected=PASS
+SEMANTIC_CHECK readonly_action_refused=PASS
+SEMANTIC_CHECK password_action_refused=PASS
+SEMANTIC_CHECK external_unknown=PASS
+SEMANTIC_CHECK unknown_not_retried=PASS
+SEMANTIC_CHECK target_lifetime=PASS
+SEMANTIC_DEFERRED result=VERIFIED_LOCAL alive=1 value_match=1
+SEMANTIC_CHECK deferred_delete_never_claims_unobserved_value=PASS
+SEMANTIC_CHECK replacement_exposed=PASS
+SEMANTIC_CHECK old_grant_does_not_follow_replacement=PASS
+SEMANTIC_CHECK content_redaction=PASS
+SEMANTIC_SNAPSHOT {"authority":"discovery-grants-no-rights","controls":[{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":true,"id":"1","name":"Draft title","nameTrust":"untrusted-content","readOnly":false,"revision":"7","role":"textbox","sensitive":false,"visible":true},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"2","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"3","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"4","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"5","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"6","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"7","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"8","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"9","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"10","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"11","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"12","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"13","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"14","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"15","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"16","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"17","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"18","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"19","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"20","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"21","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"22","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"23","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"24","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"25","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"26","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"27","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"28","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"29","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"30","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"31","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"32","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false}],"epoch":"42949672961","scope":"application-local-demo","version":1}
+SEMANTIC_CHECK ssg_observation_default_denied=PASS
+SEMANTIC_CHECK ssg_password_redaction=PASS
+SEMANTIC_CHECK ssg_hidden_not_visible=PASS
+SEMANTIC_CHECK ssg_local_occlusion=PASS
+SEMANTIC_CHECK ssg_budget_denial=PASS
+SEMANTIC_CHECK ssg_targeted_snapshot_complete=PASS
+SEMANTIC_CHECK ssg_incremental_change=PASS
+SEMANTIC_CHECK ssg_diff_smaller=PASS
+SEMANTIC_CHECK ssg_destroyed_node_removed=PASS
+SEMANTIC_CHECK ssg_revocation=PASS
+SEMANTIC_CHECK ssg_old_epoch_invalid=PASS
+SSG_AGENT_SNAPSHOT {"capped":true,"metadata":{"globalScene":"BLOCKED","provider":"qt-widget-v1","queryScope":{"provider":"qt-widget-v1","roleFilter":"","scope":"application-root","textAuthorized":true,"visibleOnly":false},"roleFilter":"","scope":"application-root","subscriptions":"NOT_IMPLEMENTED","textAuthorized":true,"visibleOnly":false},"nodes":[{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[0,0,800,600],"class":"QWidget","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"18","name":"","nativeName":"","parent":"0","role":"custom","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"SEMANTICS_UNAVAILABLE","sensitive":false,"source":"qt-widget","text":"","textTruncated":false,"visibility":"locally-visible","visibleBounds":[0,0,800,600],"visibleFragments":[[0,0,800,317],[0,317,88,32],[328,317,472,32],[0,349,800,251]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[0,0,20,26],"class":"QWidget","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"19","name":"","nativeName":"","parent":"18","role":"custom","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"SEMANTICS_UNAVAILABLE","sensitive":false,"source":"qt-widget","text":"","textTruncated":false,"visibility":"hidden","visibleBounds":[0,0,0,0],"visibleFragments":[]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[60,46,680,508],"class":"QWidget","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"20","name":"","nativeName":"","parent":"18","role":"custom","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"SEMANTICS_UNAVAILABLE","sensitive":false,"source":"qt-widget","text":"","textTruncated":false,"visibility":"locally-visible","visibleBounds":[60,46,680,508],"visibleFragments":[[60,46,680,271],[60,317,28,32],[328,317,412,32],[60,349,680,205]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[88,70,624,69],"class":"QLabel","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"21","name":"","nativeName":"","parent":"20","role":"label","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"AI0  /  Intent & UI Semantics","textTruncated":false,"visibility":"locally-visible","visibleBounds":[88,70,624,69],"visibleFragments":[[88,70,624,69]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[88,151,624,68],"class":"QLabel","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"22","name":"","nativeName":"","parent":"20","role":"label","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"Observe > Propose > Authorize > Execute > Verify","textTruncated":false,"visibility":"locally-visible","visibleBounds":[88,151,624,68],"visibleFragments":[[88,151,624,68]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":["inspect","focus","select","set_text"],"bounds":[88,231,624,36],"class":"QLineEdit","contentTrust":"untrusted-application-content","enabled":true,"focused":true,"fragmentsComplete":true,"id":"23","intentRef":{"epoch":"42949672961","id":"1","revision":"7"},"name":"Draft title","nativeName":"draft-title","parent":"20","readOnly":false,"role":"textbox","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","selectionLength":0,"selectionStart":-1,"semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"original","textTruncated":false,"visibility":"locally-visible","visibleBounds":[88,231,624,36],"visibleFragments":[[88,231,624,36]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[88,279,624,26],"class":"QLineEdit","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"24","name":"","nativeName":"protected-password","parent":"20","role":"textbox","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"native-structure","sensitive":true,"source":"qt-widget","textStatus":"PROTECTED","visibility":"locally-visible","visibleBounds":[88,279,624,26],"visibleFragments":[[88,279,624,26]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[60,46,100,30],"class":"QLabel","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"25","name":"","nativeName":"hidden-label","parent":"20","role":"label","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"hidden text","textTruncated":false,"visibility":"hidden","visibleBounds":[0,0,0,0],"visibleFragments":[]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[88,317,624,34],"class":"QWidget","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"26","name":"","nativeName":"","parent":"20","role":"custom","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"SEMANTICS_UNAVAILABLE","sensitive":false,"source":"qt-widget","text":"","textTruncated":false,"visibility":"locally-visible","visibleBounds":[88,317,624,34],"visibleFragments":[[328,317,384,32],[88,349,624,2]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":["inspect","focus","activate"],"bounds":[88,317,240,32],"checkable":false,"checked":false,"class":"QPushButton","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"27","name":"","nativeName":"covered-button","parent":"26","role":"button","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"Covered fixture","textTruncated":false,"visibility":"locally-occluded-or-clipped","visibleBounds":[0,0,0,0],"visibleFragments":[]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[88,317,240,32],"class":"QLabel","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"28","name":"","nativeName":"","parent":"26","role":"label","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"Opaque overlay fixture","textTruncated":false,"visibility":"locally-visible","visibleBounds":[88,317,240,32],"visibleFragments":[[88,317,240,32]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":["inspect","focus","select","set_text"],"bounds":[88,363,624,36],"class":"QLineEdit","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"29","name":"","nativeName":"","parent":"20","readOnly":false,"role":"textbox","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","selectionLength":0,"selectionStart":-1,"semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"","textTruncated":false,"visibility":"locally-visible","visibleBounds":[88,363,624,36],"visibleFragments":[[88,363,624,36]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":["inspect","focus","activate"],"bounds":[88,411,624,38],"checkable":false,"checked":false,"class":"QPushButton","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"30","name":"","nativeName":"","parent":"20","role":"button","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"Authorize once (local fixture)","textTruncated":false,"visibility":"locally-visible","visibleBounds":[88,411,624,38],"visibleFragments":[[88,411,624,38]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[88,461,624,69],"class":"QLabel","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"31","name":"","nativeName":"","parent":"20","role":"label","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"Discovery grants no rights. No model, network or external side effects.","textTruncated":false,"visibility":"locally-visible","visibleBounds":[88,461,624,69],"visibleFragments":[[88,461,624,69]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":["inspect","focus","select","set_text"],"bounds":[0,0,100,30],"class":"QLineEdit","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"32","name":"","nativeName":"","parent":"18","readOnly":false,"role":"textbox","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","selectionLength":0,"selectionStart":-1,"semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"delete-during-callback","textTruncated":false,"visibility":"locally-visible","visibleBounds":[0,0,100,30],"visibleFragments":[[0,0,100,30]]}],"observedMonotonicNs":"7330000000","queryDurationNs":"60000000","sceneVersion":"1","sourceEpoch":"42949672964","status":"OK","version":1}
+SEMANTIC_POINT name=proposal xy=399,380
+SEMANTIC_POINT name=authorize xy=399,429
+SEMANTIC_READY
+SEMANTIC_CHECK deferred_delete_after_callback=PASS
+[qpa-flush] same=1 offset=0,0 rects=3
+[qpa-frame] x=0 y=0 w=100 h=30 stride=3200 ns=0
+[qpa-frame] x=60 y=46 w=100 h=30 stride=3200 ns=0
+[qpa-frame] x=88 y=231 w=624 h=36 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=142 y=240 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=1 ns=7860000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=7860000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=300 y=200 w=20 h=26 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=142 y=240 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=2 ns=7890000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=7890000000
+[qpa-flush] same=1 offset=0,0 rects=3
+[qpa-frame] x=88 y=70 w=624 h=69 stride=3200 ns=0
+[qpa-frame] x=88 y=151 w=624 h=68 stride=3200 ns=0
+[qpa-frame] x=300 y=219 w=20 h=7 stride=3200 ns=0
+[qpa-input] seq=3 ns=7950000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=7950000000
+[qpa-flush] same=1 offset=0,0 rects=5
+[qpa-frame] x=100 y=0 w=20 h=26 stride=3200 ns=0
+[qpa-frame] x=60 y=46 w=680 h=271 stride=3200 ns=0
+[qpa-frame] x=60 y=317 w=28 h=32 stride=3200 ns=0
+[qpa-frame] x=328 y=317 w=412 h=32 stride=3200 ns=0
+[qpa-frame] x=60 y=349 w=680 h=205 stride=3200 ns=0
+[qpa-input] seq=4 ns=7990000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=7990000000
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=0 y=0 w=120 h=26 stride=3200 ns=0
+[qpa-frame] x=0 y=26 w=100 h=4 stride=3200 ns=0
+[qpa-input] seq=5 ns=8050000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=8050000000
+[qpa-input] seq=6 ns=8100000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=8100000000
+[qpa-input] seq=7 ns=8150000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=8150000000
+[qpa-input] seq=8 ns=8200000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=8200000000
+[qpa-input] seq=9 ns=8260000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=8260000000
+[qpa-input] seq=10 ns=8310000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=8310000000
+[qpa-input] seq=11 ns=8360000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=8360000000
+[qpa-flush] same=1 offset=0,0 rects=5
+[qpa-frame] x=0 y=0 w=100 h=30 stride=3200 ns=0
+[qpa-frame] x=60 y=46 w=680 h=271 stride=3200 ns=10000000
+[qpa-frame] x=60 y=317 w=28 h=32 stride=3200 ns=0
+[qpa-frame] x=328 y=317 w=412 h=32 stride=3200 ns=0
+[qpa-frame] x=60 y=349 w=680 h=205 stride=3200 ns=0
+[qpa-input] seq=12 ns=8400000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=8400000000
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=80 y=80 w=20 h=26 stride=3200 ns=0
+[qpa-frame] x=88 y=151 w=624 h=68 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=142 y=240 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=13 ns=8420000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=8420000000
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=88 y=151 w=624 h=68 stride=3200 ns=10000000
+[qpa-frame] x=88 y=231 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=14 ns=8480000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=8480000000
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=88 y=231 w=624 h=36 stride=3200 ns=0
+[qpa-frame] x=88 y=317 w=624 h=34 stride=3200 ns=0
+[qpa-input] seq=15 ns=8540000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=8540000000
+[qpa-flush] same=1 offset=0,0 rects=3
+[qpa-frame] x=88 y=317 w=624 h=34 stride=3200 ns=0
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=10000000
+[qpa-frame] x=399 y=399 w=20 h=7 stride=3200 ns=0
+[qpa-input] seq=16 ns=8600000000 kind=3 code=0 mods=0 buttons=1 lost=0 gui_ns=8600000000
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=88 y=231 w=624 h=36 stride=3200 ns=0
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=17 ns=8710000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=8710000000
+[qpa-input] seq=18 ns=8820000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=8820000000
+[qpa-input] seq=19 ns=8820000000 kind=1 code=26 mods=1 buttons=0 lost=0 gui_ns=8820000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=20 ns=8820000000 kind=2 code=26 mods=1 buttons=0 lost=0 gui_ns=8830000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=96 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=21 ns=8890000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=8890000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=96 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=22 ns=8890000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=8890000000
+[qpa-input] seq=23 ns=8890000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=8890000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=24 ns=8890000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=8900000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=102 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=25 ns=8950000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=8950000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=102 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=26 ns=8950000000 kind=1 code=47 mods=0 buttons=0 lost=0 gui_ns=8960000000
+[qpa-input] seq=27 ns=8950000000 kind=2 code=47 mods=0 buttons=0 lost=0 gui_ns=8960000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=28 ns=9020000000 kind=1 code=18 mods=0 buttons=0 lost=0 gui_ns=9020000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=29 ns=9020000000 kind=2 code=18 mods=0 buttons=0 lost=0 gui_ns=9020000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=121 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=30 ns=9080000000 kind=1 code=19 mods=0 buttons=0 lost=0 gui_ns=9080000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=31 ns=9080000000 kind=2 code=19 mods=0 buttons=0 lost=0 gui_ns=9080000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=127 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=32 ns=9140000000 kind=1 code=31 mods=0 buttons=0 lost=0 gui_ns=9140000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=33 ns=9140000000 kind=2 code=31 mods=0 buttons=0 lost=0 gui_ns=9140000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=134 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=34 ns=9200000000 kind=1 code=23 mods=0 buttons=0 lost=0 gui_ns=9200000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=35 ns=9200000000 kind=2 code=23 mods=0 buttons=0 lost=0 gui_ns=9210000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=139 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=36 ns=9260000000 kind=1 code=24 mods=0 buttons=0 lost=0 gui_ns=9260000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=37 ns=9260000000 kind=2 code=24 mods=0 buttons=0 lost=0 gui_ns=9270000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=148 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=38 ns=9320000000 kind=1 code=49 mods=0 buttons=0 lost=0 gui_ns=9320000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=39 ns=9320000000 kind=2 code=49 mods=0 buttons=0 lost=0 gui_ns=9330000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=157 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=40 ns=9390000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=9390000000
+[qpa-input] seq=41 ns=9390000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=9390000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=42 ns=9390000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=9390000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=164 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=43 ns=9450000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=9450000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=164 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=44 ns=9450000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=9450000000
+[qpa-input] seq=45 ns=9450000000 kind=1 code=39 mods=1 buttons=0 lost=0 gui_ns=9450000000
+[qpa-input] seq=46 ns=9450000000 kind=2 code=39 mods=1 buttons=0 lost=0 gui_ns=9460000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=169 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=47 ns=9520000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=9520000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=169 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=48 ns=9520000000 kind=1 code=2 mods=0 buttons=0 lost=0 gui_ns=9520000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=49 ns=9520000000 kind=2 code=2 mods=0 buttons=0 lost=0 gui_ns=9530000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=179 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=50 ns=9580000000 kind=1 code=51 mods=0 buttons=0 lost=0 gui_ns=9580000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=51 ns=9580000000 kind=2 code=51 mods=0 buttons=0 lost=0 gui_ns=9590000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=184 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=52 ns=9640000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=9640000000
+[qpa-input] seq=53 ns=9640000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=9640000000
+[qpa-input] seq=54 ns=9640000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=9650000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=190 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=55 ns=9710000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=9710000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=190 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=56 ns=9710000000 kind=1 code=18 mods=0 buttons=0 lost=0 gui_ns=9710000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=57 ns=9710000000 kind=2 code=18 mods=0 buttons=0 lost=0 gui_ns=9720000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=200 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=58 ns=9770000000 kind=1 code=25 mods=0 buttons=0 lost=0 gui_ns=9770000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=10000000
+[qpa-input] seq=59 ns=9770000000 kind=2 code=25 mods=0 buttons=0 lost=0 gui_ns=9780000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=209 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=60 ns=9830000000 kind=1 code=24 mods=0 buttons=0 lost=0 gui_ns=9830000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=61 ns=9830000000 kind=2 code=24 mods=0 buttons=0 lost=0 gui_ns=9840000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=218 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=62 ns=9890000000 kind=1 code=46 mods=0 buttons=0 lost=0 gui_ns=9890000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=63 ns=9890000000 kind=2 code=46 mods=0 buttons=0 lost=0 gui_ns=9900000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=227 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=64 ns=9960000000 kind=1 code=35 mods=0 buttons=0 lost=0 gui_ns=9960000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=65 ns=9960000000 kind=2 code=35 mods=0 buttons=0 lost=0 gui_ns=9960000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=236 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=66 ns=10020000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=10020000000
+[qpa-input] seq=67 ns=10020000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=10020000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=10000000
+[qpa-input] seq=68 ns=10020000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=10030000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=243 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=69 ns=10080000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=10080000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=243 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=70 ns=10080000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=10080000000
+[qpa-input] seq=71 ns=10080000000 kind=1 code=39 mods=1 buttons=0 lost=0 gui_ns=10090000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=72 ns=10080000000 kind=2 code=39 mods=1 buttons=0 lost=0 gui_ns=10090000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=248 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=73 ns=10150000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=10150000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=248 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=74 ns=10150000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=10150000000
+[qpa-input] seq=75 ns=10150000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=10150000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=76 ns=10150000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=10160000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=255 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=77 ns=10210000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=10210000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=255 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=78 ns=10220000000 kind=1 code=5 mods=0 buttons=0 lost=0 gui_ns=10220000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=79 ns=10220000000 kind=2 code=5 mods=0 buttons=0 lost=0 gui_ns=10220000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=264 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=80 ns=10280000000 kind=1 code=3 mods=0 buttons=0 lost=0 gui_ns=10280000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=10000000
+[qpa-input] seq=81 ns=10280000000 kind=2 code=3 mods=0 buttons=0 lost=0 gui_ns=10290000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=274 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=82 ns=10340000000 kind=1 code=10 mods=0 buttons=0 lost=0 gui_ns=10340000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=83 ns=10340000000 kind=2 code=10 mods=0 buttons=0 lost=0 gui_ns=10350000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=284 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=84 ns=10400000000 kind=1 code=5 mods=0 buttons=0 lost=0 gui_ns=10400000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=85 ns=10400000000 kind=2 code=5 mods=0 buttons=0 lost=0 gui_ns=10410000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=293 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=86 ns=10470000000 kind=1 code=10 mods=0 buttons=0 lost=0 gui_ns=10470000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=87 ns=10470000000 kind=2 code=10 mods=0 buttons=0 lost=0 gui_ns=10470000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=303 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=88 ns=10530000000 kind=1 code=7 mods=0 buttons=0 lost=0 gui_ns=10530000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=89 ns=10530000000 kind=2 code=7 mods=0 buttons=0 lost=0 gui_ns=10530000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=312 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=90 ns=10590000000 kind=1 code=8 mods=0 buttons=0 lost=0 gui_ns=10590000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=91 ns=10590000000 kind=2 code=8 mods=0 buttons=0 lost=0 gui_ns=10600000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=322 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=92 ns=10650000000 kind=1 code=3 mods=0 buttons=0 lost=0 gui_ns=10650000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=93 ns=10650000000 kind=2 code=3 mods=0 buttons=0 lost=0 gui_ns=10660000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=331 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=94 ns=10710000000 kind=1 code=10 mods=0 buttons=0 lost=0 gui_ns=10710000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=95 ns=10720000000 kind=2 code=10 mods=0 buttons=0 lost=0 gui_ns=10720000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=341 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=96 ns=10780000000 kind=1 code=7 mods=0 buttons=0 lost=0 gui_ns=10780000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=97 ns=10780000000 kind=2 code=7 mods=0 buttons=0 lost=0 gui_ns=10780000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=350 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=98 ns=10840000000 kind=1 code=2 mods=0 buttons=0 lost=0 gui_ns=10840000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=99 ns=10840000000 kind=2 code=2 mods=0 buttons=0 lost=0 gui_ns=10840000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=360 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=100 ns=10900000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=10900000000
+[qpa-input] seq=101 ns=10900000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=10900000000
+[qpa-input] seq=102 ns=10900000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=10910000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=367 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=103 ns=10970000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=10970000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=367 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=104 ns=10970000000 kind=1 code=51 mods=0 buttons=0 lost=0 gui_ns=10970000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=105 ns=10970000000 kind=2 code=51 mods=0 buttons=0 lost=0 gui_ns=10980000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=371 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=106 ns=11030000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=11030000000
+[qpa-input] seq=107 ns=11030000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=11030000000
+[qpa-input] seq=108 ns=11030000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=11040000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=378 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=109 ns=11100000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=11100000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=378 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=110 ns=11100000000 kind=1 code=23 mods=0 buttons=0 lost=0 gui_ns=11100000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=111 ns=11100000000 kind=2 code=23 mods=0 buttons=0 lost=0 gui_ns=11110000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=382 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=112 ns=11160000000 kind=1 code=32 mods=0 buttons=0 lost=0 gui_ns=11160000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=113 ns=11160000000 kind=2 code=32 mods=0 buttons=0 lost=0 gui_ns=11170000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=392 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=114 ns=11220000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=11220000000
+[qpa-input] seq=115 ns=11230000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=11230000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=116 ns=11230000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=11230000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=399 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=117 ns=11290000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=11290000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=399 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=118 ns=11290000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=11290000000
+[qpa-input] seq=119 ns=11290000000 kind=1 code=39 mods=1 buttons=0 lost=0 gui_ns=11290000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=120 ns=11290000000 kind=2 code=39 mods=1 buttons=0 lost=0 gui_ns=11300000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=404 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=121 ns=11360000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=11360000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=404 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=122 ns=11360000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=11360000000
+[qpa-input] seq=123 ns=11360000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=11360000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=124 ns=11360000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=11370000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=411 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=125 ns=11420000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=11420000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=411 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=126 ns=11420000000 kind=1 code=2 mods=0 buttons=0 lost=0 gui_ns=11430000000
+[qpa-input] seq=127 ns=11420000000 kind=2 code=2 mods=0 buttons=0 lost=0 gui_ns=11430000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=128 ns=11490000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=11490000000
+[qpa-input] seq=129 ns=11490000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=11490000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=130 ns=11490000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=11490000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=427 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=131 ns=11550000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=11550000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=427 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=132 ns=11550000000 kind=1 code=51 mods=0 buttons=0 lost=0 gui_ns=11550000000
+[qpa-input] seq=133 ns=11550000000 kind=2 code=51 mods=0 buttons=0 lost=0 gui_ns=11560000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=432 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=134 ns=11620000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=11620000000
+[qpa-input] seq=135 ns=11620000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=11620000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=136 ns=11620000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=11620000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=439 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=137 ns=11680000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=11680000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=439 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=138 ns=11680000000 kind=1 code=19 mods=0 buttons=0 lost=0 gui_ns=11680000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=139 ns=11680000000 kind=2 code=19 mods=0 buttons=0 lost=0 gui_ns=11690000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=445 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=140 ns=11750000000 kind=1 code=18 mods=0 buttons=0 lost=0 gui_ns=11750000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=141 ns=11750000000 kind=2 code=18 mods=0 buttons=0 lost=0 gui_ns=11750000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=454 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=142 ns=11810000000 kind=1 code=47 mods=0 buttons=0 lost=0 gui_ns=11810000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=143 ns=11810000000 kind=2 code=47 mods=0 buttons=0 lost=0 gui_ns=11810000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=463 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=144 ns=11870000000 kind=1 code=23 mods=0 buttons=0 lost=0 gui_ns=11870000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=145 ns=11870000000 kind=2 code=23 mods=0 buttons=0 lost=0 gui_ns=11880000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=467 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=146 ns=11930000000 kind=1 code=31 mods=0 buttons=0 lost=0 gui_ns=11930000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=147 ns=11930000000 kind=2 code=31 mods=0 buttons=0 lost=0 gui_ns=11940000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=475 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=148 ns=11990000000 kind=1 code=23 mods=0 buttons=0 lost=0 gui_ns=11990000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=149 ns=11990000000 kind=2 code=23 mods=0 buttons=0 lost=0 gui_ns=12000000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=479 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=150 ns=12060000000 kind=1 code=24 mods=0 buttons=0 lost=0 gui_ns=12060000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=151 ns=12060000000 kind=2 code=24 mods=0 buttons=0 lost=0 gui_ns=12060000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=488 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=152 ns=12120000000 kind=1 code=49 mods=0 buttons=0 lost=0 gui_ns=12120000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=153 ns=12120000000 kind=2 code=49 mods=0 buttons=0 lost=0 gui_ns=12120000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=498 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=154 ns=12180000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=12180000000
+[qpa-input] seq=155 ns=12180000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=12180000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=156 ns=12180000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=12190000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=504 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=157 ns=12240000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=12240000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=504 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=158 ns=12250000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=12250000000
+[qpa-input] seq=159 ns=12250000000 kind=1 code=39 mods=1 buttons=0 lost=0 gui_ns=12250000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=160 ns=12250000000 kind=2 code=39 mods=1 buttons=0 lost=0 gui_ns=12250000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=510 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=161 ns=12310000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=12310000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=510 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=162 ns=12310000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=12310000000
+[qpa-input] seq=163 ns=12310000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=12320000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=164 ns=12310000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=12320000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=516 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=165 ns=12380000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=12380000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=516 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=166 ns=12380000000 kind=1 code=8 mods=0 buttons=0 lost=0 gui_ns=12380000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=167 ns=12380000000 kind=2 code=8 mods=0 buttons=0 lost=0 gui_ns=12390000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=526 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=168 ns=12440000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=12440000000
+[qpa-input] seq=169 ns=12450000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=12450000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=170 ns=12450000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=12450000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=533 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=171 ns=12510000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=12510000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=533 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=172 ns=12510000000 kind=1 code=51 mods=0 buttons=0 lost=0 gui_ns=12510000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=173 ns=12510000000 kind=2 code=51 mods=0 buttons=0 lost=0 gui_ns=12520000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=538 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=174 ns=12580000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=12580000000
+[qpa-input] seq=175 ns=12580000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=12580000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=176 ns=12580000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=12580000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=545 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=177 ns=12640000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=12640000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=545 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=178 ns=12640000000 kind=1 code=30 mods=0 buttons=0 lost=0 gui_ns=12640000000
+[qpa-input] seq=179 ns=12640000000 kind=2 code=30 mods=0 buttons=0 lost=0 gui_ns=12650000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=554 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=180 ns=12710000000 kind=1 code=46 mods=0 buttons=0 lost=0 gui_ns=12710000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=181 ns=12710000000 kind=2 code=46 mods=0 buttons=0 lost=0 gui_ns=12710000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=562 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=182 ns=12770000000 kind=1 code=20 mods=0 buttons=0 lost=0 gui_ns=12770000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=183 ns=12770000000 kind=2 code=20 mods=0 buttons=0 lost=0 gui_ns=12780000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=568 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=184 ns=12830000000 kind=1 code=23 mods=0 buttons=0 lost=0 gui_ns=12830000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=185 ns=12830000000 kind=2 code=23 mods=0 buttons=0 lost=0 gui_ns=12840000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=572 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=186 ns=12900000000 kind=1 code=24 mods=0 buttons=0 lost=0 gui_ns=12900000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=187 ns=12900000000 kind=2 code=24 mods=0 buttons=0 lost=0 gui_ns=12900000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=581 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=188 ns=12960000000 kind=1 code=49 mods=0 buttons=0 lost=0 gui_ns=12960000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=189 ns=12960000000 kind=2 code=49 mods=0 buttons=0 lost=0 gui_ns=12970000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=591 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=190 ns=13020000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=13020000000
+[qpa-input] seq=191 ns=13020000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=13020000000
+[qpa-input] seq=192 ns=13020000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=13030000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=598 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=193 ns=13090000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=13090000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=598 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=194 ns=13090000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=13090000000
+[qpa-input] seq=195 ns=13090000000 kind=1 code=39 mods=1 buttons=0 lost=0 gui_ns=13090000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=196 ns=13090000000 kind=2 code=39 mods=1 buttons=0 lost=0 gui_ns=13100000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=603 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=197 ns=13160000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=13160000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=603 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=198 ns=13160000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=13160000000
+[qpa-input] seq=199 ns=13160000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=13160000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=200 ns=13160000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=13170000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=609 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=201 ns=13220000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=13220000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=609 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=202 ns=13220000000 kind=1 code=31 mods=0 buttons=0 lost=0 gui_ns=13230000000
+[qpa-input] seq=203 ns=13230000000 kind=2 code=31 mods=0 buttons=0 lost=0 gui_ns=13230000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=204 ns=13290000000 kind=1 code=18 mods=0 buttons=0 lost=0 gui_ns=13290000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=205 ns=13290000000 kind=2 code=18 mods=0 buttons=0 lost=0 gui_ns=13290000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=626 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=206 ns=13350000000 kind=1 code=20 mods=0 buttons=0 lost=0 gui_ns=13350000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=207 ns=13350000000 kind=2 code=20 mods=0 buttons=0 lost=0 gui_ns=13360000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=632 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=208 ns=13410000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=13410000000
+[qpa-input] seq=209 ns=13410000000 kind=1 code=12 mods=1 buttons=0 lost=0 gui_ns=13410000000
+[qpa-input] seq=210 ns=13410000000 kind=2 code=12 mods=1 buttons=0 lost=0 gui_ns=13420000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=640 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=211 ns=13480000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=13480000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=640 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=212 ns=13480000000 kind=1 code=20 mods=0 buttons=0 lost=0 gui_ns=13480000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=213 ns=13480000000 kind=2 code=20 mods=0 buttons=0 lost=0 gui_ns=13490000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=646 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=214 ns=13540000000 kind=1 code=18 mods=0 buttons=0 lost=0 gui_ns=13540000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=215 ns=13550000000 kind=2 code=18 mods=0 buttons=0 lost=0 gui_ns=13550000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=655 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=216 ns=13610000000 kind=1 code=45 mods=0 buttons=0 lost=0 gui_ns=13610000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=217 ns=13610000000 kind=2 code=45 mods=0 buttons=0 lost=0 gui_ns=13610000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=664 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=218 ns=13670000000 kind=1 code=20 mods=0 buttons=0 lost=0 gui_ns=13670000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=219 ns=13670000000 kind=2 code=20 mods=0 buttons=0 lost=0 gui_ns=13680000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=669 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=220 ns=13730000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=13730000000
+[qpa-input] seq=221 ns=13730000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=13740000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=222 ns=13740000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=13740000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=676 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=223 ns=13800000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=13800000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=676 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=224 ns=13800000000 kind=1 code=51 mods=0 buttons=0 lost=0 gui_ns=13800000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=225 ns=13800000000 kind=2 code=51 mods=0 buttons=0 lost=0 gui_ns=13810000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=681 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=226 ns=13860000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=13860000000
+[qpa-input] seq=227 ns=13860000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=13860000000
+[qpa-input] seq=228 ns=13860000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=13870000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=688 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=229 ns=13930000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=13930000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=688 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=230 ns=13930000000 kind=1 code=47 mods=0 buttons=0 lost=0 gui_ns=13930000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=231 ns=13930000000 kind=2 code=47 mods=0 buttons=0 lost=0 gui_ns=13940000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=697 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=232 ns=13990000000 kind=1 code=30 mods=0 buttons=0 lost=0 gui_ns=13990000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=233 ns=14000000000 kind=2 code=30 mods=0 buttons=0 lost=0 gui_ns=14000000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=234 ns=14060000000 kind=1 code=38 mods=0 buttons=0 lost=0 gui_ns=14060000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=10000000
+[qpa-input] seq=235 ns=14060000000 kind=2 code=38 mods=0 buttons=0 lost=0 gui_ns=14070000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=236 ns=14120000000 kind=1 code=22 mods=0 buttons=0 lost=0 gui_ns=14120000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=237 ns=14120000000 kind=2 code=22 mods=0 buttons=0 lost=0 gui_ns=14130000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=238 ns=14190000000 kind=1 code=18 mods=0 buttons=0 lost=0 gui_ns=14190000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=239 ns=14190000000 kind=2 code=18 mods=0 buttons=0 lost=0 gui_ns=14190000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=240 ns=14250000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=14250000000
+[qpa-input] seq=241 ns=14250000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=14250000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=242 ns=14250000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=14260000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=243 ns=14310000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=14310000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=244 ns=14320000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=14320000000
+[qpa-input] seq=245 ns=14320000000 kind=1 code=39 mods=1 buttons=0 lost=0 gui_ns=14320000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=246 ns=14320000000 kind=2 code=39 mods=1 buttons=0 lost=0 gui_ns=14330000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=247 ns=14380000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=14380000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=248 ns=14380000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=14390000000
+[qpa-input] seq=249 ns=14390000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=14390000000
+[qpa-input] seq=250 ns=14390000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=14390000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=251 ns=14450000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=14450000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=252 ns=14450000000 kind=1 code=50 mods=0 buttons=0 lost=0 gui_ns=14450000000
+[qpa-input] seq=253 ns=14450000000 kind=2 code=50 mods=0 buttons=0 lost=0 gui_ns=14460000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=254 ns=14520000000 kind=1 code=24 mods=0 buttons=0 lost=0 gui_ns=14520000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=255 ns=14520000000 kind=2 code=24 mods=0 buttons=0 lost=0 gui_ns=14520000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=256 ns=14580000000 kind=1 code=46 mods=0 buttons=0 lost=0 gui_ns=14580000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=257 ns=14580000000 kind=2 code=46 mods=0 buttons=0 lost=0 gui_ns=14590000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=258 ns=14640000000 kind=1 code=37 mods=0 buttons=0 lost=0 gui_ns=14640000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=259 ns=14640000000 kind=2 code=37 mods=0 buttons=0 lost=0 gui_ns=14650000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=260 ns=14710000000 kind=1 code=12 mods=0 buttons=0 lost=0 gui_ns=14710000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=261 ns=14710000000 kind=2 code=12 mods=0 buttons=0 lost=0 gui_ns=14710000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=262 ns=14770000000 kind=1 code=30 mods=0 buttons=0 lost=0 gui_ns=14770000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=263 ns=14770000000 kind=2 code=30 mods=0 buttons=0 lost=0 gui_ns=14780000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=264 ns=14840000000 kind=1 code=34 mods=0 buttons=0 lost=0 gui_ns=14840000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=265 ns=14840000000 kind=2 code=34 mods=0 buttons=0 lost=0 gui_ns=14840000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=266 ns=14900000000 kind=1 code=18 mods=0 buttons=0 lost=0 gui_ns=14900000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=267 ns=14900000000 kind=2 code=18 mods=0 buttons=0 lost=0 gui_ns=14910000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=268 ns=14960000000 kind=1 code=49 mods=0 buttons=0 lost=0 gui_ns=14960000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=269 ns=14960000000 kind=2 code=49 mods=0 buttons=0 lost=0 gui_ns=14970000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=270 ns=15030000000 kind=1 code=20 mods=0 buttons=0 lost=0 gui_ns=15030000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=271 ns=15030000000 kind=2 code=20 mods=0 buttons=0 lost=0 gui_ns=15030000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=272 ns=15090000000 kind=1 code=12 mods=0 buttons=0 lost=0 gui_ns=15090000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=273 ns=15090000000 kind=2 code=12 mods=0 buttons=0 lost=0 gui_ns=15100000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=274 ns=15150000000 kind=1 code=47 mods=0 buttons=0 lost=0 gui_ns=15150000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=275 ns=15150000000 kind=2 code=47 mods=0 buttons=0 lost=0 gui_ns=15160000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=276 ns=15220000000 kind=1 code=18 mods=0 buttons=0 lost=0 gui_ns=15220000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=277 ns=15220000000 kind=2 code=18 mods=0 buttons=0 lost=0 gui_ns=15220000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=278 ns=15280000000 kind=1 code=19 mods=0 buttons=0 lost=0 gui_ns=15280000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=10000000
+[qpa-input] seq=279 ns=15280000000 kind=2 code=19 mods=0 buttons=0 lost=0 gui_ns=15290000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=280 ns=15340000000 kind=1 code=23 mods=0 buttons=0 lost=0 gui_ns=15340000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=281 ns=15340000000 kind=2 code=23 mods=0 buttons=0 lost=0 gui_ns=15350000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=282 ns=15400000000 kind=1 code=33 mods=0 buttons=0 lost=0 gui_ns=15400000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=283 ns=15410000000 kind=2 code=33 mods=0 buttons=0 lost=0 gui_ns=15410000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=284 ns=15470000000 kind=1 code=23 mods=0 buttons=0 lost=0 gui_ns=15470000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=285 ns=15470000000 kind=2 code=23 mods=0 buttons=0 lost=0 gui_ns=15470000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=286 ns=15530000000 kind=1 code=18 mods=0 buttons=0 lost=0 gui_ns=15530000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=287 ns=15530000000 kind=2 code=18 mods=0 buttons=0 lost=0 gui_ns=15540000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=288 ns=15600000000 kind=1 code=32 mods=0 buttons=0 lost=0 gui_ns=15600000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=289 ns=15600000000 kind=2 code=32 mods=0 buttons=0 lost=0 gui_ns=15600000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=290 ns=15660000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=15660000000
+[qpa-input] seq=291 ns=15660000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=15660000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=292 ns=15660000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=15670000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=293 ns=15720000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=15720000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=294 ns=15730000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=15730000000
+[qpa-input] seq=295 ns=15730000000 kind=1 code=27 mods=1 buttons=0 lost=0 gui_ns=15730000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=296 ns=15730000000 kind=2 code=27 mods=1 buttons=0 lost=0 gui_ns=15740000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=297 ns=15800000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=15800000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=298 ns=15800000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=15800000000
+[qpa-flush] same=1 offset=0,0 rects=4
+[qpa-frame] x=88 y=279 w=624 h=26 stride=3200 ns=0
+[qpa-frame] x=299 y=305 w=20 h=1 stride=3200 ns=0
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-frame] x=399 y=399 w=20 h=7 stride=3200 ns=0
+[qpa-input] seq=299 ns=15860000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=15860000000
+[qpa-flush] same=1 offset=0,0 rects=3
+[qpa-frame] x=88 y=151 w=624 h=68 stride=3200 ns=0
+[qpa-frame] x=88 y=279 w=624 h=26 stride=3200 ns=0
+[qpa-frame] x=299 y=305 w=20 h=1 stride=3200 ns=0
+[qpa-input] seq=300 ns=15920000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=15920000000
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=88 y=70 w=624 h=69 stride=3200 ns=0
+[qpa-frame] x=88 y=151 w=624 h=68 stride=3200 ns=0
+[qpa-input] seq=301 ns=15980000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=15980000000
+[qpa-flush] same=1 offset=0,0 rects=5
+[qpa-frame] x=0 y=0 w=100 h=30 stride=3200 ns=0
+[qpa-frame] x=60 y=46 w=680 h=271 stride=3200 ns=10000000
+[qpa-frame] x=60 y=317 w=28 h=32 stride=3200 ns=0
+[qpa-frame] x=328 y=317 w=412 h=32 stride=3200 ns=0
+[qpa-frame] x=60 y=349 w=680 h=205 stride=3200 ns=0
+[qpa-input] seq=302 ns=16020000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=16020000000
+[qpa-input] seq=303 ns=16070000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=16070000000
+[qpa-input] seq=304 ns=16120000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=16120000000
+[qpa-input] seq=305 ns=16180000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=16180000000
+[qpa-input] seq=306 ns=16230000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=16230000000
+[qpa-input] seq=307 ns=16280000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=16280000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=308 ns=16330000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=16330000000
+[qpa-flush] same=1 offset=0,0 rects=5
+[qpa-frame] x=0 y=0 w=100 h=30 stride=3200 ns=10000000
+[qpa-frame] x=60 y=46 w=680 h=271 stride=3200 ns=0
+[qpa-frame] x=60 y=317 w=28 h=32 stride=3200 ns=0
+[qpa-frame] x=328 y=317 w=412 h=32 stride=3200 ns=0
+[qpa-frame] x=60 y=349 w=680 h=205 stride=3200 ns=0
+[qpa-input] seq=309 ns=16370000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=16370000000
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=80 y=80 w=20 h=26 stride=3200 ns=0
+[qpa-frame] x=88 y=151 w=624 h=68 stride=3200 ns=0
+[qpa-input] seq=310 ns=16430000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=16430000000
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=88 y=151 w=624 h=68 stride=3200 ns=0
+[qpa-frame] x=88 y=231 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=311 ns=16490000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=16490000000
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=88 y=231 w=624 h=36 stride=3200 ns=0
+[qpa-frame] x=88 y=317 w=624 h=34 stride=3200 ns=0
+[qpa-input] seq=312 ns=16550000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=16550000000
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=88 y=317 w=624 h=34 stride=3200 ns=0
+[qpa-frame] x=399 y=400 w=20 h=26 stride=3200 ns=0
+[qpa-input] seq=313 ns=16610000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=16610000000
+[qpa-flush] same=1 offset=0,0 rects=3
+[qpa-frame] x=399 y=400 w=20 h=11 stride=3200 ns=0
+[qpa-frame] x=88 y=411 w=624 h=38 stride=3200 ns=0
+[qpa-frame] x=399 y=449 w=20 h=6 stride=3200 ns=0
+[qpa-input] seq=314 ns=16670000000 kind=3 code=0 mods=0 buttons=1 lost=0 gui_ns=16670000000
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-frame] x=88 y=411 w=624 h=38 stride=3200 ns=0
+[qpa-input] seq=315 ns=16780000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=16780000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=411 w=624 h=38 stride=3200 ns=0
+SEMANTIC_WITHOUT_GRANT DENIED
+SEMANTIC_EXECUTE VERIFIED_LOCAL value=mock-agent-verified replay=DENIED
+SSG_AGENT_RESULT {"capped":true,"metadata":{"globalScene":"BLOCKED","provider":"qt-widget-v1","queryScope":{"provider":"qt-widget-v1","roleFilter":"","scope":"application-root","textAuthorized":true,"visibleOnly":false},"roleFilter":"","scope":"application-root","subscriptions":"NOT_IMPLEMENTED","textAuthorized":true,"visibleOnly":false},"nodes":[{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[0,0,800,600],"class":"QWidget","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"18","name":"","nativeName":"","parent":"0","role":"custom","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"SEMANTICS_UNAVAILABLE","sensitive":false,"source":"qt-widget","text":"","textTruncated":false,"visibility":"locally-visible","visibleBounds":[0,0,800,600],"visibleFragments":[[0,0,800,317],[0,317,88,32],[328,317,472,32],[0,349,800,251]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[60,46,680,508],"class":"QWidget","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"20","name":"","nativeName":"","parent":"18","role":"custom","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"SEMANTICS_UNAVAILABLE","sensitive":false,"source":"qt-widget","text":"","textTruncated":false,"visibility":"locally-visible","visibleBounds":[60,46,680,508],"visibleFragments":[[60,46,680,271],[60,317,28,32],[328,317,412,32],[60,349,680,205]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[88,70,624,69],"class":"QLabel","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"21","name":"","nativeName":"","parent":"20","role":"label","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"AI0  /  Intent & UI Semantics","textTruncated":false,"visibility":"locally-visible","visibleBounds":[88,70,624,69],"visibleFragments":[[88,70,624,69]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[88,151,624,68],"class":"QLabel","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"22","name":"","nativeName":"","parent":"20","role":"label","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"Observe > Propose > Authorize > Execute > Verify","textTruncated":false,"visibility":"locally-visible","visibleBounds":[88,151,624,68],"visibleFragments":[[88,151,624,68]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":["inspect","focus","select","set_text"],"bounds":[88,231,624,36],"class":"QLineEdit","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"23","name":"Draft title","nativeName":"draft-title","parent":"20","readOnly":false,"role":"textbox","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","selectionLength":0,"selectionStart":-1,"semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"mock-agent-verified","textTruncated":false,"visibility":"locally-visible","visibleBounds":[88,231,624,36],"visibleFragments":[[88,231,624,36]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[88,279,624,26],"class":"QLineEdit","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"24","name":"","nativeName":"protected-password","parent":"20","role":"textbox","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"native-structure","sensitive":true,"source":"qt-widget","textStatus":"PROTECTED","visibility":"locally-visible","visibleBounds":[88,279,624,26],"visibleFragments":[[88,279,624,26]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[60,46,100,30],"class":"QLabel","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"25","name":"","nativeName":"hidden-label","parent":"20","role":"label","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"hidden text","textTruncated":false,"visibility":"hidden","visibleBounds":[0,0,0,0],"visibleFragments":[]}],"observedMonotonicNs":"16930000000","queryDurationNs":"120000000","sceneVersion":"2","sourceEpoch":"42949672964","status":"OK","version":1}
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=88 y=231 w=624 h=36 stride=3200 ns=0
+[qpa-frame] x=88 y=461 w=624 h=69 stride=3200 ns=0
+[qpa-input] seq=316 ns=17630000000 kind=1 code=1 mods=0 buttons=0 lost=0 gui_ns=17630000000
+[qpa] input-thread-exit
+[qpa] surface-destroyed input-thread-joined
+[task] event=reclaimed pid=10 pages=6658
+[wait] pid=10 kind=exited code=0
+xsh> stats
+[resources] free=130235 tasks=3 completions=1
+xsh> stats
+[resources] free=130235 tasks=3 completions=1
+xsh> spawn-file /bin/semantics.elf
+[process] event=started pid=11 parent=7
+[process] pid=11 address_space=0x00000000001e8000
+[loader] started pid=11 file=/bin/semantics.elf
+xsh> Detected locale "C" with character encoding "US-ASCII", which is not UTF-8.
+Qt depends on a UTF-8 locale, but has failed to switch to one.
+If this causes problems, reconfigure your locale. See the locale(1) manual
+for more information.
+[qpa] initialized Qt=6.8.3 width=800 height=600 stride=3200 format=1
+AURORA_THEME v=2 scheme=0 contrast=0 opaque=0 motion=0
+[qpa] surface-created input-thread-start
+This plugin does not support propagateSizeHints()
+AURORA_DESKTOP_CACHE bytes=3840000 ns=270000000 wallpaper=0 requested=1 effective=1 fallback=0 budget=8388608 generations=1
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=0 y=0 w=800 h=600 stride=3200 ns=10000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=0 y=0 w=800 h=600 stride=3200 ns=10000000
+SEMANTIC_CHECK no_authority_from_discovery=PASS
+SEMANTIC_CHECK actual_widget_verification=PASS
+SEMANTIC_CHECK no_replay=PASS
+SEMANTIC_CHECK sync_callback_vector_growth_verified=PASS
+SEMANTIC_CHECK revocation=PASS
+SEMANTIC_CHECK expiry=PASS
+SEMANTIC_CHECK stale_state=PASS
+SEMANTIC_CHECK exact_proposal_binding=PASS
+SEMANTIC_CHECK scope=PASS
+SEMANTIC_CHECK model_authorization_rejected=PASS
+SEMANTIC_CHECK readonly_action_refused=PASS
+SEMANTIC_CHECK password_action_refused=PASS
+SEMANTIC_CHECK external_unknown=PASS
+SEMANTIC_CHECK unknown_not_retried=PASS
+SEMANTIC_CHECK target_lifetime=PASS
+SEMANTIC_DEFERRED result=VERIFIED_LOCAL alive=1 value_match=1
+SEMANTIC_CHECK deferred_delete_never_claims_unobserved_value=PASS
+SEMANTIC_CHECK replacement_exposed=PASS
+SEMANTIC_CHECK old_grant_does_not_follow_replacement=PASS
+SEMANTIC_CHECK content_redaction=PASS
+SEMANTIC_SNAPSHOT {"authority":"discovery-grants-no-rights","controls":[{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":true,"id":"1","name":"Draft title","nameTrust":"untrusted-content","readOnly":false,"revision":"7","role":"textbox","sensitive":false,"visible":true},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"2","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"3","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"4","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"5","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"6","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"7","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"8","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"9","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"10","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"11","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"12","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"13","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"14","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"15","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"16","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"17","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"18","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"19","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"20","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"21","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"22","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"23","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"24","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"25","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"26","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"27","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"28","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"29","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"30","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"31","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false},{"action":"set_text","alive":true,"enabled":true,"externalEffect":false,"focused":false,"id":"32","name":"","nameTrust":"untrusted-content","readOnly":false,"revision":"1","role":"textbox","sensitive":false,"visible":false}],"epoch":"47244640257","scope":"application-local-demo","version":1}
+SEMANTIC_CHECK ssg_observation_default_denied=PASS
+SEMANTIC_CHECK ssg_password_redaction=PASS
+SEMANTIC_CHECK ssg_hidden_not_visible=PASS
+SEMANTIC_CHECK ssg_local_occlusion=PASS
+SEMANTIC_CHECK ssg_budget_denial=PASS
+SEMANTIC_CHECK ssg_targeted_snapshot_complete=PASS
+SEMANTIC_CHECK ssg_incremental_change=PASS
+SEMANTIC_CHECK ssg_diff_smaller=PASS
+SEMANTIC_CHECK ssg_destroyed_node_removed=PASS
+SEMANTIC_CHECK ssg_revocation=PASS
+SEMANTIC_CHECK ssg_old_epoch_invalid=PASS
+SSG_AGENT_SNAPSHOT {"capped":true,"metadata":{"globalScene":"BLOCKED","provider":"qt-widget-v1","queryScope":{"provider":"qt-widget-v1","roleFilter":"","scope":"application-root","textAuthorized":true,"visibleOnly":false},"roleFilter":"","scope":"application-root","subscriptions":"NOT_IMPLEMENTED","textAuthorized":true,"visibleOnly":false},"nodes":[{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[0,0,800,600],"class":"QWidget","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"18","name":"","nativeName":"","parent":"0","role":"custom","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"SEMANTICS_UNAVAILABLE","sensitive":false,"source":"qt-widget","text":"","textTruncated":false,"visibility":"locally-visible","visibleBounds":[0,0,800,600],"visibleFragments":[[0,0,800,317],[0,317,88,32],[328,317,472,32],[0,349,800,251]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[0,0,20,26],"class":"QWidget","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"19","name":"","nativeName":"","parent":"18","role":"custom","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"SEMANTICS_UNAVAILABLE","sensitive":false,"source":"qt-widget","text":"","textTruncated":false,"visibility":"hidden","visibleBounds":[0,0,0,0],"visibleFragments":[]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[60,46,680,508],"class":"QWidget","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"20","name":"","nativeName":"","parent":"18","role":"custom","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"SEMANTICS_UNAVAILABLE","sensitive":false,"source":"qt-widget","text":"","textTruncated":false,"visibility":"locally-visible","visibleBounds":[60,46,680,508],"visibleFragments":[[60,46,680,271],[60,317,28,32],[328,317,412,32],[60,349,680,205]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[88,70,624,69],"class":"QLabel","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"21","name":"","nativeName":"","parent":"20","role":"label","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"AI0  /  Intent & UI Semantics","textTruncated":false,"visibility":"locally-visible","visibleBounds":[88,70,624,69],"visibleFragments":[[88,70,624,69]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[88,151,624,68],"class":"QLabel","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"22","name":"","nativeName":"","parent":"20","role":"label","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"Observe > Propose > Authorize > Execute > Verify","textTruncated":false,"visibility":"locally-visible","visibleBounds":[88,151,624,68],"visibleFragments":[[88,151,624,68]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":["inspect","focus","select","set_text"],"bounds":[88,231,624,36],"class":"QLineEdit","contentTrust":"untrusted-application-content","enabled":true,"focused":true,"fragmentsComplete":true,"id":"23","intentRef":{"epoch":"47244640257","id":"1","revision":"7"},"name":"Draft title","nativeName":"draft-title","parent":"20","readOnly":false,"role":"textbox","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","selectionLength":0,"selectionStart":-1,"semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"original","textTruncated":false,"visibility":"locally-visible","visibleBounds":[88,231,624,36],"visibleFragments":[[88,231,624,36]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[88,279,624,26],"class":"QLineEdit","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"24","name":"","nativeName":"protected-password","parent":"20","role":"textbox","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"native-structure","sensitive":true,"source":"qt-widget","textStatus":"PROTECTED","visibility":"locally-visible","visibleBounds":[88,279,624,26],"visibleFragments":[[88,279,624,26]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[60,46,100,30],"class":"QLabel","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"25","name":"","nativeName":"hidden-label","parent":"20","role":"label","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"hidden text","textTruncated":false,"visibility":"hidden","visibleBounds":[0,0,0,0],"visibleFragments":[]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[88,317,624,34],"class":"QWidget","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"26","name":"","nativeName":"","parent":"20","role":"custom","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"SEMANTICS_UNAVAILABLE","sensitive":false,"source":"qt-widget","text":"","textTruncated":false,"visibility":"locally-visible","visibleBounds":[88,317,624,34],"visibleFragments":[[328,317,384,32],[88,349,624,2]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":["inspect","focus","activate"],"bounds":[88,317,240,32],"checkable":false,"checked":false,"class":"QPushButton","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"27","name":"","nativeName":"covered-button","parent":"26","role":"button","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"Covered fixture","textTruncated":false,"visibility":"locally-occluded-or-clipped","visibleBounds":[0,0,0,0],"visibleFragments":[]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[88,317,240,32],"class":"QLabel","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"28","name":"","nativeName":"","parent":"26","role":"label","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"Opaque overlay fixture","textTruncated":false,"visibility":"locally-visible","visibleBounds":[88,317,240,32],"visibleFragments":[[88,317,240,32]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":["inspect","focus","select","set_text"],"bounds":[88,363,624,36],"class":"QLineEdit","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"29","name":"","nativeName":"","parent":"20","readOnly":false,"role":"textbox","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","selectionLength":0,"selectionStart":-1,"semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"","textTruncated":false,"visibility":"locally-visible","visibleBounds":[88,363,624,36],"visibleFragments":[[88,363,624,36]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":["inspect","focus","activate"],"bounds":[88,411,624,38],"checkable":false,"checked":false,"class":"QPushButton","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"30","name":"","nativeName":"","parent":"20","role":"button","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"Authorize once (local fixture)","textTruncated":false,"visibility":"locally-visible","visibleBounds":[88,411,624,38],"visibleFragments":[[88,411,624,38]]},{"actionAuthority":"NOT_GRANTED_BY_OBSERVATION","actions":[],"bounds":[88,461,624,69],"class":"QLabel","contentTrust":"untrusted-application-content","enabled":true,"focused":false,"fragmentsComplete":true,"id":"31","name":"","nativeName":"","parent":"20","role":"label","screenOcclusion":"UNKNOWN_NO_COMPOSITOR","semantics":"native-structure","sensitive":false,"source":"qt-widget","text":"Discovery grants no rights. No model, network or external side effects.","textTruncated":false,"visibility":"locally-visible","visibleBounds":[88,461,624,69],"visibleFragments":[[88,461,624,69]]}],"observedMonotonicNs":"23810000000","queryDurationNs":"50000000","sceneVersion":"1","sourceEpoch":"47244640260","status":"OK","version":1}
+SEMANTIC_POINT name=proposal xy=399,380
+SEMANTIC_POINT name=authorize xy=399,429
+SEMANTIC_READY
+SEMANTIC_CHECK deferred_delete_after_callback=PASS
+[qpa-flush] same=1 offset=0,0 rects=3
+[qpa-frame] x=0 y=0 w=100 h=30 stride=3200 ns=0
+[qpa-frame] x=60 y=46 w=100 h=30 stride=3200 ns=0
+[qpa-frame] x=88 y=231 w=624 h=36 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=142 y=240 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=318 ns=24320000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=24320000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=300 y=200 w=20 h=26 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=142 y=240 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=319 ns=24350000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=24350000000
+[qpa-flush] same=1 offset=0,0 rects=3
+[qpa-frame] x=88 y=70 w=624 h=69 stride=3200 ns=0
+[qpa-frame] x=88 y=151 w=624 h=68 stride=3200 ns=0
+[qpa-frame] x=300 y=219 w=20 h=7 stride=3200 ns=0
+[qpa-input] seq=320 ns=24410000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=24410000000
+[qpa-flush] same=1 offset=0,0 rects=5
+[qpa-frame] x=100 y=0 w=20 h=26 stride=3200 ns=0
+[qpa-frame] x=60 y=46 w=680 h=271 stride=3200 ns=0
+[qpa-frame] x=60 y=317 w=28 h=32 stride=3200 ns=0
+[qpa-frame] x=328 y=317 w=412 h=32 stride=3200 ns=0
+[qpa-frame] x=60 y=349 w=680 h=205 stride=3200 ns=0
+[qpa-input] seq=321 ns=24450000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=24450000000
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=0 y=0 w=120 h=26 stride=3200 ns=10000000
+[qpa-frame] x=0 y=26 w=100 h=4 stride=3200 ns=0
+[qpa-input] seq=322 ns=24510000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=24510000000
+[qpa-input] seq=323 ns=24560000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=24560000000
+[qpa-input] seq=324 ns=24610000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=24610000000
+[qpa-input] seq=325 ns=24670000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=24670000000
+[qpa-input] seq=326 ns=24720000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=24720000000
+[qpa-input] seq=327 ns=24770000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=24770000000
+[qpa-input] seq=328 ns=24820000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=24820000000
+[qpa-flush] same=1 offset=0,0 rects=5
+[qpa-frame] x=0 y=0 w=100 h=30 stride=3200 ns=0
+[qpa-frame] x=60 y=46 w=680 h=271 stride=3200 ns=0
+[qpa-frame] x=60 y=317 w=28 h=32 stride=3200 ns=0
+[qpa-frame] x=328 y=317 w=412 h=32 stride=3200 ns=0
+[qpa-frame] x=60 y=349 w=680 h=205 stride=3200 ns=0
+[qpa-input] seq=329 ns=24860000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=24860000000
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=80 y=80 w=20 h=26 stride=3200 ns=0
+[qpa-frame] x=88 y=151 w=624 h=68 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=142 y=240 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=330 ns=24880000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=24880000000
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=88 y=151 w=624 h=68 stride=3200 ns=0
+[qpa-frame] x=88 y=231 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=331 ns=24940000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=24940000000
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=88 y=231 w=624 h=36 stride=3200 ns=0
+[qpa-frame] x=88 y=317 w=624 h=34 stride=3200 ns=0
+[qpa-input] seq=332 ns=25000000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=25000000000
+[qpa-flush] same=1 offset=0,0 rects=3
+[qpa-frame] x=88 y=317 w=624 h=34 stride=3200 ns=0
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-frame] x=399 y=399 w=20 h=7 stride=3200 ns=0
+[qpa-input] seq=333 ns=25060000000 kind=3 code=0 mods=0 buttons=1 lost=0 gui_ns=25060000000
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=88 y=231 w=624 h=36 stride=3200 ns=0
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=334 ns=25180000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=25180000000
+[qpa-input] seq=335 ns=25280000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=25280000000
+[qpa-input] seq=336 ns=25280000000 kind=1 code=26 mods=1 buttons=0 lost=0 gui_ns=25280000000
+[qpa-input] seq=337 ns=25280000000 kind=2 code=26 mods=1 buttons=0 lost=0 gui_ns=25290000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=96 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=338 ns=25350000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=25350000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=96 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=339 ns=25350000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=25350000000
+[qpa-input] seq=340 ns=25350000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=25350000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=341 ns=25350000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=25360000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=102 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=342 ns=25410000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=25410000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=102 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=343 ns=25420000000 kind=1 code=47 mods=0 buttons=0 lost=0 gui_ns=25420000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=344 ns=25420000000 kind=2 code=47 mods=0 buttons=0 lost=0 gui_ns=25420000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=111 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=345 ns=25480000000 kind=1 code=18 mods=0 buttons=0 lost=0 gui_ns=25480000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=346 ns=25480000000 kind=2 code=18 mods=0 buttons=0 lost=0 gui_ns=25490000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=121 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=347 ns=25540000000 kind=1 code=19 mods=0 buttons=0 lost=0 gui_ns=25540000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=348 ns=25540000000 kind=2 code=19 mods=0 buttons=0 lost=0 gui_ns=25550000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=127 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=349 ns=25610000000 kind=1 code=31 mods=0 buttons=0 lost=0 gui_ns=25610000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=350 ns=25610000000 kind=2 code=31 mods=0 buttons=0 lost=0 gui_ns=25610000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=134 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=351 ns=25670000000 kind=1 code=23 mods=0 buttons=0 lost=0 gui_ns=25670000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=352 ns=25670000000 kind=2 code=23 mods=0 buttons=0 lost=0 gui_ns=25670000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=139 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=353 ns=25730000000 kind=1 code=24 mods=0 buttons=0 lost=0 gui_ns=25730000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=354 ns=25730000000 kind=2 code=24 mods=0 buttons=0 lost=0 gui_ns=25730000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=148 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=355 ns=25790000000 kind=1 code=49 mods=0 buttons=0 lost=0 gui_ns=25790000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=356 ns=25790000000 kind=2 code=49 mods=0 buttons=0 lost=0 gui_ns=25800000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=157 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=357 ns=25850000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=25850000000
+[qpa-input] seq=358 ns=25850000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=25850000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=359 ns=25850000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=25860000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=164 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=360 ns=25920000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=25920000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=164 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=361 ns=25920000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=25920000000
+[qpa-input] seq=362 ns=25920000000 kind=1 code=39 mods=1 buttons=0 lost=0 gui_ns=25920000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=363 ns=25920000000 kind=2 code=39 mods=1 buttons=0 lost=0 gui_ns=25930000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=169 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=364 ns=25980000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=25980000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=169 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=365 ns=25980000000 kind=1 code=2 mods=0 buttons=0 lost=0 gui_ns=25990000000
+[qpa-input] seq=366 ns=25980000000 kind=2 code=2 mods=0 buttons=0 lost=0 gui_ns=25990000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=367 ns=26050000000 kind=1 code=51 mods=0 buttons=0 lost=0 gui_ns=26050000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=368 ns=26050000000 kind=2 code=51 mods=0 buttons=0 lost=0 gui_ns=26050000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=184 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=369 ns=26110000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=26110000000
+[qpa-input] seq=370 ns=26110000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=26110000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=371 ns=26110000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=26120000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=190 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=372 ns=26170000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=26170000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=190 y=372 w=10 h=19 stride=3200 ns=10000000
+[qpa-input] seq=373 ns=26170000000 kind=1 code=18 mods=0 buttons=0 lost=0 gui_ns=26180000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=374 ns=26170000000 kind=2 code=18 mods=0 buttons=0 lost=0 gui_ns=26180000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=200 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=375 ns=26240000000 kind=1 code=25 mods=0 buttons=0 lost=0 gui_ns=26240000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=376 ns=26240000000 kind=2 code=25 mods=0 buttons=0 lost=0 gui_ns=26240000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=209 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=377 ns=26300000000 kind=1 code=24 mods=0 buttons=0 lost=0 gui_ns=26300000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=10000000
+[qpa-input] seq=378 ns=26300000000 kind=2 code=24 mods=0 buttons=0 lost=0 gui_ns=26310000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=218 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=379 ns=26360000000 kind=1 code=46 mods=0 buttons=0 lost=0 gui_ns=26360000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=380 ns=26360000000 kind=2 code=46 mods=0 buttons=0 lost=0 gui_ns=26370000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=227 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=381 ns=26420000000 kind=1 code=35 mods=0 buttons=0 lost=0 gui_ns=26420000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=382 ns=26420000000 kind=2 code=35 mods=0 buttons=0 lost=0 gui_ns=26430000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=236 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=383 ns=26490000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=26490000000
+[qpa-input] seq=384 ns=26490000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=26490000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=385 ns=26490000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=26490000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=243 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=386 ns=26550000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=26550000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=243 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=387 ns=26550000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=26550000000
+[qpa-input] seq=388 ns=26550000000 kind=1 code=39 mods=1 buttons=0 lost=0 gui_ns=26550000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=389 ns=26550000000 kind=2 code=39 mods=1 buttons=0 lost=0 gui_ns=26560000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=248 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=390 ns=26620000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=26620000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=248 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=391 ns=26620000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=26620000000
+[qpa-input] seq=392 ns=26620000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=26620000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=393 ns=26620000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=26630000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=255 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=394 ns=26680000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=26680000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=255 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=395 ns=26680000000 kind=1 code=5 mods=0 buttons=0 lost=0 gui_ns=26690000000
+[qpa-input] seq=396 ns=26680000000 kind=2 code=5 mods=0 buttons=0 lost=0 gui_ns=26690000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=397 ns=26750000000 kind=1 code=3 mods=0 buttons=0 lost=0 gui_ns=26750000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=398 ns=26750000000 kind=2 code=3 mods=0 buttons=0 lost=0 gui_ns=26750000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=274 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=399 ns=26810000000 kind=1 code=10 mods=0 buttons=0 lost=0 gui_ns=26810000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=400 ns=26810000000 kind=2 code=10 mods=0 buttons=0 lost=0 gui_ns=26810000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=284 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=401 ns=26870000000 kind=1 code=5 mods=0 buttons=0 lost=0 gui_ns=26870000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=402 ns=26870000000 kind=2 code=5 mods=0 buttons=0 lost=0 gui_ns=26880000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=293 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=403 ns=26930000000 kind=1 code=10 mods=0 buttons=0 lost=0 gui_ns=26930000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=404 ns=26930000000 kind=2 code=10 mods=0 buttons=0 lost=0 gui_ns=26940000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=303 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=405 ns=27000000000 kind=1 code=7 mods=0 buttons=0 lost=0 gui_ns=27000000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=406 ns=27000000000 kind=2 code=7 mods=0 buttons=0 lost=0 gui_ns=27000000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=312 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=407 ns=27060000000 kind=1 code=8 mods=0 buttons=0 lost=0 gui_ns=27060000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=408 ns=27060000000 kind=2 code=8 mods=0 buttons=0 lost=0 gui_ns=27060000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=322 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=409 ns=27120000000 kind=1 code=3 mods=0 buttons=0 lost=0 gui_ns=27120000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=410 ns=27120000000 kind=2 code=3 mods=0 buttons=0 lost=0 gui_ns=27120000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=331 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=411 ns=27180000000 kind=1 code=10 mods=0 buttons=0 lost=0 gui_ns=27180000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=412 ns=27180000000 kind=2 code=10 mods=0 buttons=0 lost=0 gui_ns=27190000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=341 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=413 ns=27240000000 kind=1 code=7 mods=0 buttons=0 lost=0 gui_ns=27240000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=414 ns=27240000000 kind=2 code=7 mods=0 buttons=0 lost=0 gui_ns=27250000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=350 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=415 ns=27310000000 kind=1 code=2 mods=0 buttons=0 lost=0 gui_ns=27310000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=416 ns=27310000000 kind=2 code=2 mods=0 buttons=0 lost=0 gui_ns=27310000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=360 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=417 ns=27370000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=27370000000
+[qpa-input] seq=418 ns=27370000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=27370000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=419 ns=27370000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=27380000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=367 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=420 ns=27430000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=27430000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=367 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=421 ns=27430000000 kind=1 code=51 mods=0 buttons=0 lost=0 gui_ns=27440000000
+[qpa-input] seq=422 ns=27430000000 kind=2 code=51 mods=0 buttons=0 lost=0 gui_ns=27440000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=423 ns=27500000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=27500000000
+[qpa-input] seq=424 ns=27500000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=27500000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=425 ns=27500000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=27500000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=378 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=426 ns=27560000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=27560000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=378 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=427 ns=27560000000 kind=1 code=23 mods=0 buttons=0 lost=0 gui_ns=27560000000
+[qpa-input] seq=428 ns=27560000000 kind=2 code=23 mods=0 buttons=0 lost=0 gui_ns=27570000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=382 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=429 ns=27630000000 kind=1 code=32 mods=0 buttons=0 lost=0 gui_ns=27630000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=430 ns=27630000000 kind=2 code=32 mods=0 buttons=0 lost=0 gui_ns=27630000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=392 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=431 ns=27690000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=27690000000
+[qpa-input] seq=432 ns=27690000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=27690000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=433 ns=27690000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=27700000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=399 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=434 ns=27750000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=27750000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=399 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=435 ns=27750000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=27750000000
+[qpa-input] seq=436 ns=27750000000 kind=1 code=39 mods=1 buttons=0 lost=0 gui_ns=27760000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=437 ns=27750000000 kind=2 code=39 mods=1 buttons=0 lost=0 gui_ns=27760000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=404 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=438 ns=27820000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=27820000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=404 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=439 ns=27820000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=27820000000
+[qpa-input] seq=440 ns=27820000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=27820000000
+[qpa-input] seq=441 ns=27820000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=27830000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=411 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=442 ns=27890000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=27890000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=411 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=443 ns=27890000000 kind=1 code=2 mods=0 buttons=0 lost=0 gui_ns=27890000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=444 ns=27890000000 kind=2 code=2 mods=0 buttons=0 lost=0 gui_ns=27900000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=420 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=445 ns=27950000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=27950000000
+[qpa-input] seq=446 ns=27950000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=27950000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=447 ns=27950000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=27960000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=427 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=448 ns=28020000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=28020000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=427 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=449 ns=28020000000 kind=1 code=51 mods=0 buttons=0 lost=0 gui_ns=28020000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=450 ns=28020000000 kind=2 code=51 mods=0 buttons=0 lost=0 gui_ns=28020000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=432 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=451 ns=28080000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=28080000000
+[qpa-input] seq=452 ns=28080000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=28080000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=453 ns=28080000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=28090000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=439 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=454 ns=28150000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=28150000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=439 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=455 ns=28150000000 kind=1 code=19 mods=0 buttons=0 lost=0 gui_ns=28150000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=456 ns=28150000000 kind=2 code=19 mods=0 buttons=0 lost=0 gui_ns=28160000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=445 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=457 ns=28210000000 kind=1 code=18 mods=0 buttons=0 lost=0 gui_ns=28210000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=458 ns=28210000000 kind=2 code=18 mods=0 buttons=0 lost=0 gui_ns=28220000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=454 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=459 ns=28270000000 kind=1 code=47 mods=0 buttons=0 lost=0 gui_ns=28270000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=460 ns=28270000000 kind=2 code=47 mods=0 buttons=0 lost=0 gui_ns=28280000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=463 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=461 ns=28340000000 kind=1 code=23 mods=0 buttons=0 lost=0 gui_ns=28340000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=462 ns=28340000000 kind=2 code=23 mods=0 buttons=0 lost=0 gui_ns=28340000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=467 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=463 ns=28400000000 kind=1 code=31 mods=0 buttons=0 lost=0 gui_ns=28400000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=464 ns=28400000000 kind=2 code=31 mods=0 buttons=0 lost=0 gui_ns=28410000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=475 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=465 ns=28460000000 kind=1 code=23 mods=0 buttons=0 lost=0 gui_ns=28460000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=466 ns=28460000000 kind=2 code=23 mods=0 buttons=0 lost=0 gui_ns=28470000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=479 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=467 ns=28530000000 kind=1 code=24 mods=0 buttons=0 lost=0 gui_ns=28530000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=468 ns=28530000000 kind=2 code=24 mods=0 buttons=0 lost=0 gui_ns=28530000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=488 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=469 ns=28590000000 kind=1 code=49 mods=0 buttons=0 lost=0 gui_ns=28590000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=470 ns=28590000000 kind=2 code=49 mods=0 buttons=0 lost=0 gui_ns=28590000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=498 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=471 ns=28650000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=28650000000
+[qpa-input] seq=472 ns=28650000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=28650000000
+[qpa-input] seq=473 ns=28650000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=28660000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=504 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=474 ns=28720000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=28720000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=504 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=475 ns=28720000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=28720000000
+[qpa-input] seq=476 ns=28720000000 kind=1 code=39 mods=1 buttons=0 lost=0 gui_ns=28720000000
+[qpa-input] seq=477 ns=28720000000 kind=2 code=39 mods=1 buttons=0 lost=0 gui_ns=28730000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=510 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=478 ns=28790000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=28790000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=510 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=479 ns=28790000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=28790000000
+[qpa-input] seq=480 ns=28790000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=28790000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=481 ns=28790000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=28800000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=516 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=482 ns=28850000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=28850000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=516 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=483 ns=28850000000 kind=1 code=8 mods=0 buttons=0 lost=0 gui_ns=28860000000
+[qpa-input] seq=484 ns=28850000000 kind=2 code=8 mods=0 buttons=0 lost=0 gui_ns=28860000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=485 ns=28920000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=28920000000
+[qpa-input] seq=486 ns=28920000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=28920000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=487 ns=28920000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=28920000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=533 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=488 ns=28980000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=28980000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=533 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=489 ns=28980000000 kind=1 code=51 mods=0 buttons=0 lost=0 gui_ns=28980000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=490 ns=28980000000 kind=2 code=51 mods=0 buttons=0 lost=0 gui_ns=28990000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=538 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=491 ns=29050000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=29050000000
+[qpa-input] seq=492 ns=29050000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=29050000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=10000000
+[qpa-input] seq=493 ns=29050000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=29060000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=545 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=494 ns=29110000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=29110000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=545 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=495 ns=29110000000 kind=1 code=30 mods=0 buttons=0 lost=0 gui_ns=29120000000
+[qpa-input] seq=496 ns=29110000000 kind=2 code=30 mods=0 buttons=0 lost=0 gui_ns=29120000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=497 ns=29180000000 kind=1 code=46 mods=0 buttons=0 lost=0 gui_ns=29180000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=498 ns=29180000000 kind=2 code=46 mods=0 buttons=0 lost=0 gui_ns=29180000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=562 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=499 ns=29240000000 kind=1 code=20 mods=0 buttons=0 lost=0 gui_ns=29240000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=500 ns=29240000000 kind=2 code=20 mods=0 buttons=0 lost=0 gui_ns=29240000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=568 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=501 ns=29300000000 kind=1 code=23 mods=0 buttons=0 lost=0 gui_ns=29300000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=502 ns=29300000000 kind=2 code=23 mods=0 buttons=0 lost=0 gui_ns=29310000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=572 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=503 ns=29360000000 kind=1 code=24 mods=0 buttons=0 lost=0 gui_ns=29360000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=504 ns=29360000000 kind=2 code=24 mods=0 buttons=0 lost=0 gui_ns=29370000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=581 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=505 ns=29430000000 kind=1 code=49 mods=0 buttons=0 lost=0 gui_ns=29430000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=506 ns=29430000000 kind=2 code=49 mods=0 buttons=0 lost=0 gui_ns=29430000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=591 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=507 ns=29490000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=29490000000
+[qpa-input] seq=508 ns=29490000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=29490000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=509 ns=29490000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=29500000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=598 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=510 ns=29550000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=29550000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=598 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=511 ns=29550000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=29560000000
+[qpa-input] seq=512 ns=29560000000 kind=1 code=39 mods=1 buttons=0 lost=0 gui_ns=29560000000
+[qpa-input] seq=513 ns=29560000000 kind=2 code=39 mods=1 buttons=0 lost=0 gui_ns=29560000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=514 ns=29620000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=29620000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=603 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=515 ns=29620000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=29620000000
+[qpa-input] seq=516 ns=29620000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=29620000000
+[qpa-input] seq=517 ns=29620000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=29630000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=609 y=372 w=10 h=19 stride=3200 ns=10000000
+[qpa-input] seq=518 ns=29690000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=29690000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=609 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=519 ns=29690000000 kind=1 code=31 mods=0 buttons=0 lost=0 gui_ns=29690000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=520 ns=29690000000 kind=2 code=31 mods=0 buttons=0 lost=0 gui_ns=29700000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=617 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=521 ns=29750000000 kind=1 code=18 mods=0 buttons=0 lost=0 gui_ns=29750000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=522 ns=29760000000 kind=2 code=18 mods=0 buttons=0 lost=0 gui_ns=29760000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=626 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=523 ns=29820000000 kind=1 code=20 mods=0 buttons=0 lost=0 gui_ns=29820000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=524 ns=29820000000 kind=2 code=20 mods=0 buttons=0 lost=0 gui_ns=29820000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=632 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=525 ns=29880000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=29880000000
+[qpa-input] seq=526 ns=29880000000 kind=1 code=12 mods=1 buttons=0 lost=0 gui_ns=29880000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=527 ns=29880000000 kind=2 code=12 mods=1 buttons=0 lost=0 gui_ns=29890000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=640 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=528 ns=29950000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=29950000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=640 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=529 ns=29950000000 kind=1 code=20 mods=0 buttons=0 lost=0 gui_ns=29950000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=530 ns=29950000000 kind=2 code=20 mods=0 buttons=0 lost=0 gui_ns=29960000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=646 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=531 ns=30010000000 kind=1 code=18 mods=0 buttons=0 lost=0 gui_ns=30010000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=532 ns=30010000000 kind=2 code=18 mods=0 buttons=0 lost=0 gui_ns=30020000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=655 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=533 ns=30080000000 kind=1 code=45 mods=0 buttons=0 lost=0 gui_ns=30080000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=534 ns=30080000000 kind=2 code=45 mods=0 buttons=0 lost=0 gui_ns=30080000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=664 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=535 ns=30140000000 kind=1 code=20 mods=0 buttons=0 lost=0 gui_ns=30140000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=536 ns=30140000000 kind=2 code=20 mods=0 buttons=0 lost=0 gui_ns=30150000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=669 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=537 ns=30200000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=30200000000
+[qpa-input] seq=538 ns=30200000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=30200000000
+[qpa-input] seq=539 ns=30200000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=30210000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=676 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=540 ns=30270000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=30270000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=676 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=541 ns=30270000000 kind=1 code=51 mods=0 buttons=0 lost=0 gui_ns=30270000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=542 ns=30270000000 kind=2 code=51 mods=0 buttons=0 lost=0 gui_ns=30280000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=681 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=543 ns=30330000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=30330000000
+[qpa-input] seq=544 ns=30340000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=30340000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=545 ns=30340000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=30340000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=688 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=546 ns=30400000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=30400000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=688 y=372 w=10 h=19 stride=3200 ns=0
+[qpa-input] seq=547 ns=30400000000 kind=1 code=47 mods=0 buttons=0 lost=0 gui_ns=30400000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=548 ns=30400000000 kind=2 code=47 mods=0 buttons=0 lost=0 gui_ns=30410000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=697 y=372 w=10 h=19 stride=3200 ns=10000000
+[qpa-input] seq=549 ns=30470000000 kind=1 code=30 mods=0 buttons=0 lost=0 gui_ns=30470000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=550 ns=30470000000 kind=2 code=30 mods=0 buttons=0 lost=0 gui_ns=30480000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=551 ns=30530000000 kind=1 code=38 mods=0 buttons=0 lost=0 gui_ns=30530000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=552 ns=30530000000 kind=2 code=38 mods=0 buttons=0 lost=0 gui_ns=30540000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=553 ns=30600000000 kind=1 code=22 mods=0 buttons=0 lost=0 gui_ns=30600000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=554 ns=30600000000 kind=2 code=22 mods=0 buttons=0 lost=0 gui_ns=30600000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=555 ns=30660000000 kind=1 code=18 mods=0 buttons=0 lost=0 gui_ns=30660000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=556 ns=30660000000 kind=2 code=18 mods=0 buttons=0 lost=0 gui_ns=30670000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=557 ns=30720000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=30720000000
+[qpa-input] seq=558 ns=30720000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=30720000000
+[qpa-input] seq=559 ns=30720000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=30730000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=560 ns=30790000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=30790000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=561 ns=30790000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=30790000000
+[qpa-input] seq=562 ns=30790000000 kind=1 code=39 mods=1 buttons=0 lost=0 gui_ns=30790000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=563 ns=30790000000 kind=2 code=39 mods=1 buttons=0 lost=0 gui_ns=30800000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=564 ns=30850000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=30850000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=565 ns=30850000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=30860000000
+[qpa-input] seq=566 ns=30860000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=30860000000
+[qpa-input] seq=567 ns=30860000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=30860000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=568 ns=30920000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=30920000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=569 ns=30920000000 kind=1 code=50 mods=0 buttons=0 lost=0 gui_ns=30920000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=570 ns=30920000000 kind=2 code=50 mods=0 buttons=0 lost=0 gui_ns=30930000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=571 ns=30990000000 kind=1 code=24 mods=0 buttons=0 lost=0 gui_ns=30990000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=572 ns=30990000000 kind=2 code=24 mods=0 buttons=0 lost=0 gui_ns=30990000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=10000000
+[qpa-input] seq=573 ns=31050000000 kind=1 code=46 mods=0 buttons=0 lost=0 gui_ns=31050000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=10000000
+[qpa-input] seq=574 ns=31050000000 kind=2 code=46 mods=0 buttons=0 lost=0 gui_ns=31060000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=575 ns=31110000000 kind=1 code=37 mods=0 buttons=0 lost=0 gui_ns=31110000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=576 ns=31110000000 kind=2 code=37 mods=0 buttons=0 lost=0 gui_ns=31120000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=577 ns=31180000000 kind=1 code=12 mods=0 buttons=0 lost=0 gui_ns=31180000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=578 ns=31180000000 kind=2 code=12 mods=0 buttons=0 lost=0 gui_ns=31180000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=579 ns=31240000000 kind=1 code=30 mods=0 buttons=0 lost=0 gui_ns=31240000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=580 ns=31240000000 kind=2 code=30 mods=0 buttons=0 lost=0 gui_ns=31250000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=581 ns=31300000000 kind=1 code=34 mods=0 buttons=0 lost=0 gui_ns=31300000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=582 ns=31300000000 kind=2 code=34 mods=0 buttons=0 lost=0 gui_ns=31310000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=583 ns=31370000000 kind=1 code=18 mods=0 buttons=0 lost=0 gui_ns=31370000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=584 ns=31370000000 kind=2 code=18 mods=0 buttons=0 lost=0 gui_ns=31370000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=585 ns=31430000000 kind=1 code=49 mods=0 buttons=0 lost=0 gui_ns=31430000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=586 ns=31430000000 kind=2 code=49 mods=0 buttons=0 lost=0 gui_ns=31440000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=587 ns=31490000000 kind=1 code=20 mods=0 buttons=0 lost=0 gui_ns=31490000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=588 ns=31490000000 kind=2 code=20 mods=0 buttons=0 lost=0 gui_ns=31500000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=589 ns=31560000000 kind=1 code=12 mods=0 buttons=0 lost=0 gui_ns=31560000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=590 ns=31560000000 kind=2 code=12 mods=0 buttons=0 lost=0 gui_ns=31560000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=591 ns=31620000000 kind=1 code=47 mods=0 buttons=0 lost=0 gui_ns=31620000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=592 ns=31620000000 kind=2 code=47 mods=0 buttons=0 lost=0 gui_ns=31630000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=593 ns=31680000000 kind=1 code=18 mods=0 buttons=0 lost=0 gui_ns=31680000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=594 ns=31690000000 kind=2 code=18 mods=0 buttons=0 lost=0 gui_ns=31690000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=595 ns=31750000000 kind=1 code=19 mods=0 buttons=0 lost=0 gui_ns=31750000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=10000000
+[qpa-input] seq=596 ns=31750000000 kind=2 code=19 mods=0 buttons=0 lost=0 gui_ns=31760000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=597 ns=31810000000 kind=1 code=23 mods=0 buttons=0 lost=0 gui_ns=31810000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=598 ns=31810000000 kind=2 code=23 mods=0 buttons=0 lost=0 gui_ns=31820000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=599 ns=31880000000 kind=1 code=33 mods=0 buttons=0 lost=0 gui_ns=31880000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=600 ns=31880000000 kind=2 code=33 mods=0 buttons=0 lost=0 gui_ns=31880000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=601 ns=31940000000 kind=1 code=23 mods=0 buttons=0 lost=0 gui_ns=31940000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=602 ns=31940000000 kind=2 code=23 mods=0 buttons=0 lost=0 gui_ns=31950000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=603 ns=32000000000 kind=1 code=18 mods=0 buttons=0 lost=0 gui_ns=32000000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=604 ns=32000000000 kind=2 code=18 mods=0 buttons=0 lost=0 gui_ns=32010000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=605 ns=32070000000 kind=1 code=32 mods=0 buttons=0 lost=0 gui_ns=32070000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=10000000
+[qpa-input] seq=606 ns=32070000000 kind=2 code=32 mods=0 buttons=0 lost=0 gui_ns=32080000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=607 ns=32130000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=32130000000
+[qpa-input] seq=608 ns=32130000000 kind=1 code=40 mods=1 buttons=0 lost=0 gui_ns=32140000000
+[qpa-input] seq=609 ns=32130000000 kind=2 code=40 mods=1 buttons=0 lost=0 gui_ns=32140000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=610 ns=32200000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=32200000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=611 ns=32200000000 kind=1 code=42 mods=1 buttons=0 lost=0 gui_ns=32200000000
+[qpa-input] seq=612 ns=32200000000 kind=1 code=27 mods=1 buttons=0 lost=0 gui_ns=32200000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=613 ns=32200000000 kind=2 code=27 mods=1 buttons=0 lost=0 gui_ns=32210000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=614 ns=32270000000 kind=2 code=42 mods=0 buttons=0 lost=0 gui_ns=32270000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=615 ns=32270000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=32270000000
+[qpa-flush] same=1 offset=0,0 rects=4
+[qpa-frame] x=88 y=279 w=624 h=26 stride=3200 ns=0
+[qpa-frame] x=299 y=305 w=20 h=1 stride=3200 ns=0
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-frame] x=399 y=399 w=20 h=7 stride=3200 ns=0
+[qpa-input] seq=616 ns=32330000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=32330000000
+[qpa-flush] same=1 offset=0,0 rects=3
+[qpa-frame] x=88 y=151 w=624 h=68 stride=3200 ns=0
+[qpa-frame] x=88 y=279 w=624 h=26 stride=3200 ns=0
+[qpa-frame] x=299 y=305 w=20 h=1 stride=3200 ns=0
+[qpa-input] seq=617 ns=32390000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=32390000000
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=88 y=70 w=624 h=69 stride=3200 ns=0
+[qpa-frame] x=88 y=151 w=624 h=68 stride=3200 ns=0
+[qpa-input] seq=618 ns=32450000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=32450000000
+[qpa-flush] same=1 offset=0,0 rects=5
+[qpa-frame] x=0 y=0 w=100 h=30 stride=3200 ns=0
+[qpa-frame] x=60 y=46 w=680 h=271 stride=3200 ns=0
+[qpa-frame] x=60 y=317 w=28 h=32 stride=3200 ns=0
+[qpa-frame] x=328 y=317 w=412 h=32 stride=3200 ns=0
+[qpa-frame] x=60 y=349 w=680 h=205 stride=3200 ns=0
+[qpa-input] seq=619 ns=32490000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=32490000000
+[qpa-input] seq=620 ns=32540000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=32540000000
+[qpa-input] seq=621 ns=32600000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=32600000000
+[qpa-input] seq=622 ns=32650000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=32650000000
+[qpa-input] seq=623 ns=32700000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=32700000000
+[qpa-input] seq=624 ns=32750000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=32750000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=703 y=372 w=9 h=19 stride=3200 ns=0
+[qpa-input] seq=625 ns=32800000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=32800000000
+[qpa-flush] same=1 offset=0,0 rects=5
+[qpa-frame] x=0 y=0 w=100 h=30 stride=3200 ns=0
+[qpa-frame] x=60 y=46 w=680 h=271 stride=3200 ns=10000000
+[qpa-frame] x=60 y=317 w=28 h=32 stride=3200 ns=0
+[qpa-frame] x=328 y=317 w=412 h=32 stride=3200 ns=0
+[qpa-frame] x=60 y=349 w=680 h=205 stride=3200 ns=0
+[qpa-input] seq=626 ns=32840000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=32840000000
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=80 y=80 w=20 h=26 stride=3200 ns=0
+[qpa-frame] x=88 y=151 w=624 h=68 stride=3200 ns=0
+[qpa-input] seq=627 ns=32900000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=32900000000
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=88 y=151 w=624 h=68 stride=3200 ns=10000000
+[qpa-frame] x=88 y=231 w=624 h=36 stride=3200 ns=0
+[qpa-input] seq=628 ns=32960000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=32960000000
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=88 y=231 w=624 h=36 stride=3200 ns=0
+[qpa-frame] x=88 y=317 w=624 h=34 stride=3200 ns=0
+[qpa-input] seq=629 ns=33020000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=33020000000
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=88 y=317 w=624 h=34 stride=3200 ns=0
+[qpa-frame] x=399 y=400 w=20 h=26 stride=3200 ns=0
+[qpa-input] seq=630 ns=33080000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=33080000000
+[qpa-flush] same=1 offset=0,0 rects=3
+[qpa-frame] x=399 y=400 w=20 h=11 stride=3200 ns=0
+[qpa-frame] x=88 y=411 w=624 h=38 stride=3200 ns=0
+[qpa-frame] x=399 y=449 w=20 h=6 stride=3200 ns=0
+[qpa-input] seq=631 ns=33140000000 kind=3 code=0 mods=0 buttons=1 lost=0 gui_ns=33140000000
+[qpa-flush] same=1 offset=0,0 rects=2
+[qpa-frame] x=88 y=363 w=624 h=36 stride=3200 ns=0
+[qpa-frame] x=88 y=411 w=624 h=38 stride=3200 ns=10000000
+[qpa-input] seq=632 ns=33250000000 kind=3 code=0 mods=0 buttons=0 lost=0 gui_ns=33250000000
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=411 w=624 h=38 stride=3200 ns=0
+SEMANTIC_REJECT WRONG_SCOPE
+[qpa-flush] same=1 offset=0,0 rects=1
+[qpa-frame] x=88 y=461 w=624 h=69 stride=3200 ns=0
+kill 11
+[task] event=killed_by_supervisor pid=11
+[task] event=reclaimed pid=11 pages=6837
+kill: accepted
+xsh> wait 11
+[wait] pid=11 kind=killed code=-9
+xsh> stats
+[resources] free=130235 tasks=3 completions=1
+xsh> stats
+[resources] free=130235 tasks=3 completions=1
+xsh> exec gfxdemo stop
+[process] event=started pid=12 parent=7
+[process] pid=12 address_space=0x00000000001e8000
+[loader] started pid=12 image=gfxdemo
+[process] event=wait_blocked parent=7 child=12
+[task] event=reclaimed pid=12 pages=516
+[wait] pid=12 kind=exited code=0
+xsh> [display-service] stopped
+[task] event=reclaimed pid=9 pages=44
+wait 9
+[wait] pid=9 kind=exited code=0
+xsh> stats
+[resources] free=130279 tasks=2 completions=0
+xsh> stats
+[resources] free=130279 tasks=2 completions=0
+xsh> sync
+[files] sync=ok
+xsh> 

@@ -1,0 +1,134 @@
+{
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "7121110d971af030a6d1acff5245d7e0b0accf3d",
+  "original_index_path": "docs/reports/ssg_p2_diagnostic_20261030/SHA256SUMS",
+  "original_index_sha256": "7b64740952236c82dd224e6071189e91f56de1aba5fda1a5beb6cbe8ef69d23f",
+  "original_index_copy": "docs/reports/issue37_path_hygiene/pr47-original-SHA256SUMS",
+  "export_index_sha256": "f7bdcedff463d6fb42f1053c1af70b235dec19b76c0c49a1f7b8b630083a2c69",
+  "index_entries": 10,
+  "changes": [
+    {
+      "path": "docs/reports/ssg_p2_diagnostic_20261030/baseline-report.json",
+      "original_sha256": "e692f80c4fff86ae71b1bcc059051c073bfc0d800b7d9fce8e681439356aca47",
+      "export_sha256": "c2883aed770cff878c25b79566a7e039e234dc4ffbcd84fd9245c0940fb4e75d",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/ssg_p2_diagnostic_20261030/instrumented-report.json",
+      "original_sha256": "c41a0d0c9d9e35ac8c4636f764e475036b0cf901b06d610f9ae043c05ebdf385",
+      "export_sha256": "b9ead5ca8b05c901bfcaa2907040fd215f76d52e912896131a83cc41cbcd57c5",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/ssg_p2_diagnostic_20261030/p1-regression-evidence.tar.gz",
+      "original_sha256": "4ad9000d934e47ba941950ea24d36c749b61b7ba8cd6b63dd2c2fcb0edd5c9c8",
+      "export_sha256": "3b84aa9c63474c85584220f8600ebb367768840fe508112a3debc61f2d7a0552",
+      "archive": {
+        "member_count": 56,
+        "original_member_sha256": {
+          "01-req.json": "1a0ee9f71f13a1e043b180849874b645e32298b7c617c4b11ad9a747fab7e29e",
+          "01-resp.json": "ca8782d97d8c1362468cad999932b6f1eb559689a496718dc9b7d612fcb20e93",
+          "02-req.json": "3314b38184acd8cd4370ba2e308a7f4ca49755f337e273953db74ecbb6cf0ab2",
+          "02-resp.json": "5c49683f681e8991b79d19d774e4177749b19f02352734da7a168aad4e80ac89",
+          "03-req.json": "9c80dd1e9925f57e89bc780f921fb1a5ccaba91ce11405c056cbc1ea544f84fb",
+          "03-resp.json": "c08cb69839e7721e1b6aa7dcc7aae4f940d8ce2891f54c2f772236d8b65dc9f2",
+          "04-req.json": "028d6d9b4fa2dcc4a500ba7fbeb607bc06d59a673f318ea3f06e6487b9f17ebd",
+          "04-resp.json": "7ec69219b2ec00b4508f1712e24b6963aac56936d007fc515ab6ffd141bd6744",
+          "05-req.json": "9c80dd1e9925f57e89bc780f921fb1a5ccaba91ce11405c056cbc1ea544f84fb",
+          "05-resp.json": "c9488c22516bfd7590bdfe5205d957cb71d1fcb9eca61774de1d2f295bc46c40",
+          "06-req.json": "ef759ceecf36b8b5fd39c1bef5761f46112b954db7ea8c05ba51ed53d5617cd0",
+          "06-resp.json": "a0196c1a9412644cf85e9abb1faffb22d6d4fce0aa751f8267f9240197b5503e",
+          "07-req.json": "54c3bfc7e9aa945fb1949dd9c955879186f37674cb764ab099fdc99cd60fb8a5",
+          "07-resp.json": "2bc7e4816c70bd5f5a71b2a79a5dbcec3b206a736ab38d7aee62b73b0b99e4e3",
+          "08-req.json": "aff991c515bf3e02c6e26a4d03044098a64900d073c3da5b347b03889173feb5",
+          "08-resp.json": "d994469366a986e982bf3cccd3f426e89fd5e43284268ebc30fcc878f310492c",
+          "09-req.json": "9c80dd1e9925f57e89bc780f921fb1a5ccaba91ce11405c056cbc1ea544f84fb",
+          "09-resp.json": "790b638d05b5bf0e4f4818d2d41af31641de81c45ad9e9980369aaa7e9aadae2",
+          "10-req.json": "0c15e87c74a7db0cc4a468945836c0f1d66e37f85bbb3a8629bd0a0c8bd2431e",
+          "10-resp.json": "d14de0b09b0ab4b6d77e3ca14921a665162c8066575f2d7ebbb15f344ebc2682",
+          "11-req.json": "3a6f2db0870f41822d62f49eee59f499dfdd75a58481685e490e83a473fe52ba",
+          "11-resp.json": "4d07aa078a6148704d099e736181945cb8784a79efe58ad460e3375e21d888ba",
+          "12-req.json": "7030166226ad70693ddb008f8c03640017a908daaffe64bd44db22958d20f566",
+          "12-resp.json": "03d6f74782392632af0d7f83e1e0d75af73510e32e69f96bae3095b34a72235e",
+          "13-req.json": "ce68a894badf08ab5566be2944867ef400636dd86c7d95e1c92cc43bd8013a00",
+          "13-resp.json": "ec2d58c8bc7e5015b5c139a66786db415ffca9064590ddb96bf6978a8c1b1700",
+          "14-req.json": "33c611c77c68ed7e64b4d3fd985ab7b1496dd9bec07a075a8d7439092d906a39",
+          "14-resp.json": "4f0c9c57232563fc7a9ba8d6a06bcf5b86175d6953bcd74b9b0f4a97bac32867",
+          "browser-01-req.json": "e57af696e5b28b949d67aa5f887e70d2575d3da4df1b188e153462fa12127316",
+          "browser-01-resp.json": "9929dfd6328ad3bb1953b83708bc96e79e65c71507a16e580d4bf4775ea5bce0",
+          "browser-02-req.json": "2432da509987d4e3eb7c34627413e25e8645c37e41c796160826659e352dbe0e",
+          "browser-02-resp.json": "d840033fe749f013797d0809545b88271f4a188370e87c6bb12770eb5d774fee",
+          "browser-03-req.json": "e57af696e5b28b949d67aa5f887e70d2575d3da4df1b188e153462fa12127316",
+          "browser-03-resp.json": "f63ae602118aeebcc36645cb5cb95aa0ff708c8e63cf93e355ee01317cf6bf6e",
+          "browser-04-req.json": "516edf1d600e93ec85c4aae61246795608da1d7f929faec3906e594e92e74abb",
+          "browser-04-resp.json": "8bde28fa57397572f00538381257afd7f6f5b978781a943ae31969c5953a61dc",
+          "browser-05-req.json": "3844f26eb4469f6b84f2019854a5d5be46200204083fe5ac43657b088752d1bc",
+          "browser-05-resp.json": "8bde28fa57397572f00538381257afd7f6f5b978781a943ae31969c5953a61dc",
+          "browser-06-req.json": "e57af696e5b28b949d67aa5f887e70d2575d3da4df1b188e153462fa12127316",
+          "browser-06-resp.json": "fa90a2d9bd1d97cd936b6fad2f463f4a7b2d1170963887fb2dc300f14d19cd40",
+          "browser-07-req.json": "e0c37deb9ef12b396cdfdddceefa0f69a534982d15c548599a35943821117085",
+          "browser-07-resp.json": "2990577055ee41f88d03de2db614349285651a373dfda178e45c17591ddfa1a1",
+          "browser-08-req.json": "5d39904fa8d5b4dae47886ec6f292f5b387aaf7afa55cd1c7ed54a4c8437f1f7",
+          "browser-08-resp.json": "089cc24a7fb31143c959975122c1002bd578cde6474c2a975cb5aa277ffc9515",
+          "browser-guard-after.json": "7395c973f14c14a974e1e2e5e6eb847f16309783ba775b0ad0137a86c9eeec6d",
+          "browser-guard-before.json": "7395c973f14c14a974e1e2e5e6eb847f16309783ba775b0ad0137a86c9eeec6d",
+          "browser-text-denied-response.json": "a6f3109a8d4b050b74f95171bb3cfcda1d8b2dd6feec488730d3bb472016df6d",
+          "cli-detail-response.json": "8ec05d78405ac7c144d76957338b18dad6bb3fc2b0f265799787a650d1acccfb",
+          "cli-diff-response.json": "b44dc147d6a457232fd9537c58464301cb010d876c0079758670053decaf6ba6",
+          "guest_qemu.log": "2ba8070ca271b43271f9f411b0bef8f58612927bfd9dc174823f3d577ea164a4",
+          "guest_serial.log": "7e78c095cedc25540893d424e02586229e9d073d5d11928cd6d29be2c24e4d33",
+          "old-provider-ref-request.json": "ef759ceecf36b8b5fd39c1bef5761f46112b954db7ea8c05ba51ed53d5617cd0",
+          "old-provider-ref-response.json": "b66429228e018fa780c102c6a630401c4996856f9664a20f7786cc032ab84b6c",
+          "report.json": "7db716017d24643f1134d0d236cc94eea03919cc1cc64cb52ae64e65cd42f189",
+          "scenario.serial.log": "2b2f827851fb2e466195d3e39a07dbf8015994dfac28bccec5284ce2c91f0ece",
+          "text-denied-response.json": "240252b744dde65fc1850007230ffcd3bdd2a8b45ab83657700b348319c1ed84"
+        },
+        "changed_members": [
+          {
+            "name": "report.json",
+            "original_sha256": "7db716017d24643f1134d0d236cc94eea03919cc1cc64cb52ae64e65cd42f189",
+            "export_sha256": "aff7ebc46a5d9fbd94a274f8f6ec05ac46eb1df027415765ce83e316db9303b6"
+          }
+        ],
+        "unchanged_member_count": 55,
+        "archive_owner_names_redacted": 56
+      }
+    },
+    {
+      "path": "docs/reports/ssg_p2_diagnostic_20261030/p1-regression-report.json",
+      "original_sha256": "7db716017d24643f1134d0d236cc94eea03919cc1cc64cb52ae64e65cd42f189",
+      "export_sha256": "aff7ebc46a5d9fbd94a274f8f6ec05ac46eb1df027415765ce83e316db9303b6",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/ssg_p2_diagnostic_20261030/README.md",
+      "original_sha256": "947a8ebbf89117dacbcc084a127e5b78b65b9b3d7952a54ce8ad6a605cf999e4",
+      "export_sha256": "001857a614a137d8b0607fdff341a52d98c9b474595d1fbb164441b0e6ef292f",
+      "archive": null
+    }
+  ],
+  "template_variables": [
+    {
+      "name": "XOS_QEMU",
+      "purpose": "qemu executable root"
+    },
+    {
+      "name": "XOS_TEMP_6D6821976CD9",
+      "purpose": "temp root"
+    },
+    {
+      "name": "XOS_WORKTREE_19282E542E67",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_313E5C73D324",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_3BCADBCA6C5F",
+      "purpose": "worktree root"
+    }
+  ],
+  "reproduction": "MANUAL_REQUIRED: configure the template roots and obtain matching historical inputs; no replay is claimed.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history."
+}

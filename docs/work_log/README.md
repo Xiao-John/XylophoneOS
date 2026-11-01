@@ -30,5 +30,5 @@
 
 | 编号 | 记录 | 说明 |
 |---|---|---|
-| 0156 | `0156_issue37_guest_review_gate.md` | Issue #37 客体证据复核守门（PR #59，2026-11-01 占号；随该 PR 合并） |
+| 0156 | `0156_issue37_guest_review_gate.md` | Issue #37 客体证据复核守门（PR #59，2026-11-01 占号） |
 | 0157 | `0157_issue37_full_migration.md` | Issue #37 历史路径全量脱敏迁移（本 PR，2026-11-01 占号，原 0150 改号） |

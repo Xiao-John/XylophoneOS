@@ -1,0 +1,85 @@
+{
+  "status": "PASSED",
+  "case": "browser",
+  "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+  "checks": [
+    {
+      "name": "browser_dom_layout_hidden_and_offviewport",
+      "status": "PASSED"
+    },
+    {
+      "name": "ssg_link_geometry_matches_actual_engine_hit",
+      "status": "PASSED"
+    },
+    {
+      "name": "browser_scroll_changes_visibility_with_stable_epoch",
+      "status": "PASSED"
+    },
+    {
+      "name": "reload_invalidates_old_document_references",
+      "status": "PASSED"
+    },
+    {
+      "name": "unsupported_canvas_rejected_no_fabricated_semantics",
+      "status": "PASSED"
+    },
+    {
+      "name": "browser_ssg_exit_exact_resources",
+      "status": "PASSED"
+    },
+    {
+      "name": "serial_file_service_and_resource_baseline",
+      "status": "PASSED"
+    }
+  ],
+  "screenshots": {
+    "browser-dom-first": {
+      "sha256": "ff3d81cbcf64985f7329965ebbf63ac233b8a19909621e69a1f31a0c31cfb59f",
+      "png_bytes": 250043,
+      "host_capture_ms": 47.71429201355204
+    },
+    "browser-dom-reload": {
+      "sha256": "6e26f3aaa2ad8396982260ad6e348b9283f3ae3ddfbf5f005f7ba0a491feaa54",
+      "png_bytes": 249065,
+      "host_capture_ms": 26.25495899701491
+    }
+  },
+  "runs": [],
+  "elf_sha256": {
+    "browser": "51a55f2c680ef039f7e9ffe145cb325d34688a20aa907323997030b546612a14"
+  },
+  "qemu_command": [
+    "${XOS_LOCAL_PATH}",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=${XOS_LOCAL_PATH},format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_LOCAL_PATH},format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:${XOS_LOCAL_PATH},server=on,wait=off"
+  ]
+}

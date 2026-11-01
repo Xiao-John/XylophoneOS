@@ -1,0 +1,32 @@
+name: Public evidence paths
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Test the path and evidence checkers
+        run: |
+          python3 -m unittest discover -s tests -p 'test_public_evidence_paths.py'
+          python3 -m unittest discover -s tests -p 'test_verify_evidence_index.py'
+      - name: Scan proposed file bytes
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -eu
+          base=$(git merge-base "$BASE_SHA" HEAD)
+          if git cat-file -e "$BASE_SHA:tests/check_public_evidence_paths.py" 2>/dev/null; then
+            git show "$BASE_SHA:tests/check_public_evidence_paths.py" > "$RUNNER_TEMP/check_public_evidence_paths.py"
+          else
+            cp tests/check_public_evidence_paths.py "$RUNNER_TEMP/check_public_evidence_paths.py"
+          fi
+          python3 "$RUNNER_TEMP/check_public_evidence_paths.py" --root "$GITHUB_WORKSPACE" --commit HEAD --base "$base"

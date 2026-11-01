@@ -2,9 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 """Verify a report's file hashes in a checkout or one historical Git commit.
 
-Supported indexes are SHA256SUMS files and JSON objects containing a direct
-path-to-SHA-256 map, or a map under ``files`` or ``evidence_sha256``. Paths are
-relative to the index directory. Missing files and malformed indexes fail.
+Supported indexes are SHA256SUMS files and JSON objects containing a path map,
+or a map under ``files`` or ``evidence_sha256``. Each value is a SHA-256 string
+or an object with ``sha256`` and optional ``bytes``. Paths are relative to the
+index directory. Missing files and malformed indexes fail.
 """
 import argparse
 import hashlib
@@ -62,11 +63,17 @@ def parse_index(data, path, field=None):
             entries = obj
     if not isinstance(entries, dict) or not entries:
         raise ValueError("index contains no evidence entries")
-    for name, digest in entries.items():
+    normalized = {}
+    for name, value in entries.items():
         safe_path(name)
+        digest = value.get("sha256") if isinstance(value, dict) else value
         if not isinstance(digest, str) or not digest_pattern.fullmatch(digest):
             raise ValueError("index contains an invalid SHA-256")
-    return entries
+        size = value.get("bytes") if isinstance(value, dict) else None
+        if size is not None and (type(size) is not int or size < 0):
+            raise ValueError("index contains an invalid byte count")
+        normalized[name] = {"sha256": digest, "bytes": size}
+    return normalized
 
 
 class checkout_reader:
@@ -135,7 +142,7 @@ def verify(root, index, revision=None, field=None):
     try:
         entries = parse_index(reader.read(index), index, field)
         failures = []
-        for name, expected in entries.items():
+        for name, entry in entries.items():
             target = index.parent / safe_path(name)
             try:
                 data = reader.read(target)
@@ -143,9 +150,12 @@ def verify(root, index, revision=None, field=None):
                 failures.append({"path": name, "status": "MISSING"})
                 continue
             actual = hashlib.sha256(data).hexdigest()
-            if actual != expected:
+            if actual != entry["sha256"]:
                 failures.append({"path": name, "status": "MISMATCH",
-                                 "expected": expected, "actual": actual})
+                                 "expected": entry["sha256"], "actual": actual})
+            elif entry["bytes"] is not None and len(data) != entry["bytes"]:
+                failures.append({"path": name, "status": "SIZE_MISMATCH",
+                                 "expected": entry["bytes"], "actual": len(data)})
         return {"status": "PASS" if not failures else "FAIL", "index": str(index),
                 "revision": reader.commit if revision else None, "checked": len(entries),
                 "matched": len(entries) - len(failures), "failures": failures}

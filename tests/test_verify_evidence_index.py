@@ -33,9 +33,18 @@ class verify_evidence_index_tests(unittest.TestCase):
 
     def test_valid_json_and_evidence_sha256(self):
         for obj in ({"evidence.txt": self.sha}, {"files": {"evidence.txt": self.sha}},
-                    {"evidence_sha256": {"evidence.txt": self.sha}}):
+                    {"evidence_sha256": {"evidence.txt": self.sha}},
+                    {"files": {"evidence.txt": {"sha256": self.sha, "bytes": len(self.data)}}}):
             result = verifier.verify(self.root, self.index(obj))
             self.assertEqual((result["status"], result["matched"]), ("PASS", 1))
+
+    def test_size_mismatch_and_invalid_size_fail(self):
+        index = self.index({"files": {"evidence.txt": {"sha256": self.sha, "bytes": len(self.data) + 1}}})
+        result = verifier.verify(self.root, index)
+        self.assertEqual(result["failures"][0]["status"], "SIZE_MISMATCH")
+        index = self.index({"files": {"evidence.txt": {"sha256": self.sha, "bytes": True}}})
+        with self.assertRaises(ValueError):
+            verifier.verify(self.root, index)
 
     def test_mismatch_and_missing_do_not_pass(self):
         index = self.index({"evidence.txt": self.sha, "missing.txt": self.sha})

@@ -6,6 +6,7 @@ src/ports/qt6/patches/*.patch whitespace=-blank-at-eol
 # Report indexes bind exact historical bytes, including JSON and text files.
 # Disable checkout and check-in newline conversion for every frozen report.
 docs/reports/** -text
+docs/evidence_exports/issue37_pr47_review/** -text
 docs/evidence_exports/issue37_pr44/** -text
 docs/evidence_exports/issue37_pr40/** -text
 docs/evidence_exports/issue37_pr46_review/** -text

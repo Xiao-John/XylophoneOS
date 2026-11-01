@@ -5,6 +5,8 @@
 
 新增记录：[0162 — SSG-P1 受限跨进程只读原型](0162_ssg_p1_cross_process.md)、[0164 — Browser SSG fragment integrity](0164_browser_ssg_fragments.md)。
 
+新增记录：[0165 — SSG-P2 Browser diagnostic](0165_ssg_p2_diagnostic.md)。
+
 2026-11-01 盘点的重复编号（12 组）：
 
 | 编号 | 两份记录 |

@@ -80,6 +80,13 @@ class evidence_migration_tests(unittest.TestCase):
             migration.verify_index_semantics(json.dumps(old).encode(), json.dumps(new).encode(),
                                              {'original_index_path': 'docs/reports/example/index.json', 'index_field': 'files'})
 
+    def test_host_document_notice_does_not_change_guest_text(self):
+        name = 'docs/work_log/0063_input_edit_design.md'
+        old = b'# History\nUse ' + b'/tm' + b'p/host-root/file\n'
+        expected = migration.expected_export(old, name)
+        self.assertIn(b'${XOS_DOC_TEMP_', expected)
+        self.assertTrue((migration.host_document_notice + expected).endswith(expected))
+
     def test_unlisted_archive_member_change_is_rejected(self):
         def archive(second):
             out = io.BytesIO()

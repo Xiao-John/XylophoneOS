@@ -31,7 +31,21 @@ host_environment_files = {
     'docs/reports/fb12_20261029/system_manifest.json.gz',
     'docs/reports/fb12_dash_20261029/system_manifest.json.gz',
 }
+host_documents = {
+    'docs/reports/pr_8_review.md',
+    'docs/work_log/0063_input_edit_design.md',
+    'docs/work_log/0064_input_edit_first_stage.md',
+    'docs/work_log/0075_ncursesw_preliminary_gaps.md',
+    'docs/work_log/0076_utf8_link_probe.md',
+    'docs/work_log/0077_full_remote_integration.md',
+    'docs/work_log/0080_fb0_fault_bundle.md',
+    'docs/work_log/0082_network_device_abi_claim.md',
+    'docs/work_log/0096_browser_review_fixes.md',
+    'docs/work_log/0099_probe_branch_reconciliation.md',
+    'docs/work_log/0144_webengine_port_plan_and_c31.md',
+}
 host_temp_bytes = re.compile(rb'(?<![A-Za-z0-9_./-])(?:/private/var/fol' rb'ders/|/private/tm' rb'p/|/var/fol' rb'ders/|/tm' rb'p/)[^/\s,;"\'\\]+')
+host_document_temp = re.compile(rb'(?<![A-Za-z0-9_./-])(?:/private/var/fol' rb'ders/|/private/tm' rb'p/|/var/fol' rb'ders/|/tm' rb'p/)[^/\s,;"\'`\\)\]{}<>]+')
 host_workspace_bytes = re.compile(rb'(?<![A-Za-z0-9_./-])/work' rb'space/[^/\s,;"\'\\]+')
 host_runtime_bytes = re.compile(rb'(?<![A-Za-z0-9_./-])/opt/codex/run' rb'times/[^/\s,;"\'\\]+')
 
@@ -124,6 +138,13 @@ def template_reviewed_host_data(data, name):
                 variables[token] = 'reviewed host build temp root'
             return cache[raw]
         data = host_temp_bytes.sub(replace, data)
+    if name in host_documents:
+        def replace_document_temp(match):
+            raw = match.group()
+            token = 'XOS_DOC_TEMP_' + hashlib.sha256(raw).hexdigest()[:12].upper()
+            variables[token] = 'reviewed historical host temp root'
+            return ('${' + token + '}').encode()
+        data = host_document_temp.sub(replace_document_temp, data)
     if name in host_build_json and b'/opt/homebrew' in data:
         data = data.replace(b'/opt/homebrew', b'${XOS_HOMEBREW}')
         variables['XOS_HOMEBREW'] = 'reviewed host toolchain root'

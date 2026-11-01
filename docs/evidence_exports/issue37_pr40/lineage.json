@@ -1,0 +1,54 @@
+{
+  "source_commit": "cca8857762116844d4d13e40d050197c496bcb04",
+  "scope": "removed hashes of sibling report leaves; original receipt retained; external input hashes preserved",
+  "changes": [
+    {
+      "old_sha256": "3b539bc07b02ac55fcbeaf6417a9a9671474db6cc87a9226d7741b42db30143d",
+      "new_sha256": "0ee03a6405afda782065f3de4f657416e49020304f056134a4749c7a30d5b747",
+      "source_path": "docs/reports/aurora_glass_v2_20261030/ssg/ocr-comparison.json",
+      "export_path": "docs/reports/aurora_ssg_consumers_20261101/ocr-comparison.json"
+    },
+    {
+      "old_sha256": "cc201aee218efa021fc132b61e2b7f7a46c0c4e21293c3cc994a5c7d014b7bab",
+      "new_sha256": "d198fea1236e6fe8f3557ee093aa86b510cf11245d829db3b496f68456d14a65",
+      "source_path": "docs/reports/aurora_glass_v2_20261030/ssg/sanitization-receipt.json",
+      "export_path": "docs/reports/aurora_ssg_consumers_20261101/sanitization-receipt.json"
+    },
+    {
+      "old_sha256": "95555c53cd068fbca3c485cbf09fc8080d93f10eaa6be964b9f0e0531b50e3c0",
+      "new_sha256": "da80066055797e66fa633e1d4140fc76581734c57bc7177702d35e9a65155600",
+      "source_path": "docs/reports/aurora_glass_v2_20261030/ssg/notes-regression-interactive/report.json",
+      "export_path": "docs/reports/aurora_ssg_consumers_20261101/notes-regression-interactive/report.json"
+    },
+    {
+      "old_sha256": "f7cd05b47dcc3b88f33ba65932f341afd31b1caa049394ce194b8f79b2930215",
+      "new_sha256": "f2741a09dd8a61e1566fd59771b796d399d375af80e4e42e942d4d23989a6d85",
+      "source_path": "docs/reports/aurora_glass_v2_20261030/ssg/browser-regression-lifecycle/report.json",
+      "export_path": "docs/reports/aurora_ssg_consumers_20261101/browser-regression-lifecycle/report.json"
+    },
+    {
+      "old_sha256": "c5e352324d3497ba561c938dde73d7ddacddbe5eb7baef5793f00b93491ca8a8",
+      "new_sha256": "cdce0995d4c4937411e11da7697db83005e052a1a56febf178629925d853bb18",
+      "source_path": "docs/reports/aurora_glass_v2_20261030/ssg/browser/report.json",
+      "export_path": "docs/reports/aurora_ssg_consumers_20261101/browser/report.json"
+    },
+    {
+      "old_sha256": "4a72b0a45453a36e4fda402eae3941727f6e48d0a3dec455dee17d132fcbf070",
+      "new_sha256": "70068ddc44022c59f7bc700494b164fb833a2adf6a4220a12bb7ffc5eb6d0815",
+      "source_path": "docs/reports/aurora_glass_v2_20261030/ssg/browser-regression-interactive/report.json",
+      "export_path": "docs/reports/aurora_ssg_consumers_20261101/browser-regression-interactive/report.json"
+    },
+    {
+      "old_sha256": "53b629afc8c158cac25d4760f4a213f45a4e8275d4bf6acef21889ea9166712b",
+      "new_sha256": "dab51be069cd623c940e01e389302635036eea5b04a02f14f18cae98ec0abde1",
+      "source_path": "docs/reports/aurora_glass_v2_20261030/ssg/notes/report.json",
+      "export_path": "docs/reports/aurora_ssg_consumers_20261101/notes/report.json"
+    },
+    {
+      "old_sha256": "9c2667528b89d0a3bd618c242ee2797ee36daa5f93f174b96f609f203559797f",
+      "new_sha256": "97de1fa8a830f9c8de1a98516c36e94f928b0efb8d02f4572072a5030aab621c",
+      "source_path": "docs/reports/aurora_glass_v2_20261030/ssg/browser-regression-negative/report.json",
+      "export_path": "docs/reports/aurora_ssg_consumers_20261101/browser-regression-negative/report.json"
+    }
+  ]
+}

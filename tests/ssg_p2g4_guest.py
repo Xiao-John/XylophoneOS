@@ -26,7 +26,7 @@ from make_work_disk import create_fat32
 from work_disk import transfer
 from process_smoke import command, resources
 from task_smoke import send_bytes, pump
-from ssg_browser_structure import decode_capture, validate_capture, validate_resource_rejection
+from ssg_browser_structure import decode_capture, latest_ab_nodes, validate_ab_capture, validate_resource_rejection
 from ssg_public_paths import portable
 import shutil
 
@@ -142,12 +142,11 @@ def test_link_hit():
     # Select from what the independent Consumer actually received. The Oracle
     # provides only the window-to-screen origin, not a fabricated target box.
     observed = decode_capture(bytes(g.output))
-    reference = observed['oracles'][0]['data']
+    nodes = latest_ab_nodes(observed)
+    reference = observed['oracles'][2]['data']
     window_x, window_y = reference['windowOrigin']
     viewport = reference['viewportInWindow']
     vx, vy, vw, vh = viewport
-    nodes = [node for frame in observed['frames'] if frame['direction'] == 'RESP'
-             for node in frame['data'].get('nodes', [])]
     selected = next(node for node in nodes if node.get('role') == 'link'
                     and node.get('fragmentsComplete') is True and node.get('visibleFragments'))
     expected = []
@@ -258,7 +257,7 @@ try:
         require(responses, 'no Consumer-received IPC responses')
         report['page_node_counts'] = [len(r.get('nodes', [])) for r in responses]
         if a.require_oracle:
-            comparison = validate_capture(data, report['inputs']['input']['sha256'])
+            comparison = validate_ab_capture(data, report['inputs']['input']['sha256'])
             (out / 'structure-comparison.json').write_text(json.dumps(comparison, indent=2, ensure_ascii=False) + '\n')
             report['structure'] = {k: v for k, v in comparison.items() if k not in ('comparison', 'frames')}
             report['status'] = comparison['status']

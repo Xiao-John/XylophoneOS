@@ -1,0 +1,85 @@
+{
+  "status": "PASSED",
+  "case": "browser",
+  "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+  "checks": [
+    {
+      "name": "browser_dom_layout_hidden_and_offviewport",
+      "status": "PASSED"
+    },
+    {
+      "name": "ssg_link_geometry_matches_actual_engine_hit",
+      "status": "PASSED"
+    },
+    {
+      "name": "browser_scroll_changes_visibility_with_stable_epoch",
+      "status": "PASSED"
+    },
+    {
+      "name": "reload_invalidates_old_document_references",
+      "status": "PASSED"
+    },
+    {
+      "name": "unsupported_canvas_rejected_no_fabricated_semantics",
+      "status": "PASSED"
+    },
+    {
+      "name": "browser_ssg_exit_exact_resources",
+      "status": "PASSED"
+    },
+    {
+      "name": "serial_file_service_and_resource_baseline",
+      "status": "PASSED"
+    }
+  ],
+  "screenshots": {
+    "browser-dom-first": {
+      "sha256": "ff3d81cbcf64985f7329965ebbf63ac233b8a19909621e69a1f31a0c31cfb59f",
+      "png_bytes": 250043,
+      "host_capture_ms": 43.69762502028607
+    },
+    "browser-dom-reload": {
+      "sha256": "6e26f3aaa2ad8396982260ad6e348b9283f3ae3ddfbf5f005f7ba0a491feaa54",
+      "png_bytes": 249065,
+      "host_capture_ms": 26.093041989952326
+    }
+  },
+  "runs": [],
+  "elf_sha256": {
+    "browser": "9c0ba3df97b3712dafb633e8cd449e3fe8f6bf1fdc08f265e66ee02a1d6f9dec"
+  },
+  "qemu_command": [
+    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_aurora_platform_sa4qix9f/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_0t0rxwim/qmp.sock,server=on,wait=off"
+  ]
+}

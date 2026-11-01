@@ -9,13 +9,13 @@
 #include <QtCore/QtPlugin>
 #include <xos/thread_core.hpp>
 Q_IMPORT_PLUGIN(QXosIntegrationPlugin)
-class MeasuredSurface final : public aurora::DesktopSurface {
+class MeasuredSurface final : public aurora::desktop_surface {
     bool event(QEvent *event) override {
-        if(event->type()!=QEvent::UpdateRequest)return DesktopSurface::event(event);
+        if(event->type()!=QEvent::UpdateRequest)return desktop_surface::event(event);
         // Pinned Qt 6.8.3 QWidget::event -> syncBackingStore -> paintAndFlush.
         // Log only the existing public event; no Qt/QPA/kernel modification.
         const auto begin=xos::thread::clock();std::printf("RENDER_UPDATE_BEGIN\n");
-        const auto result=DesktopSurface::event(event);
+        const auto result=desktop_surface::event(event);
         std::printf("RENDER_UPDATE_END ns=%llu\n",(unsigned long long)(xos::thread::clock()-begin));
         return result;
     }
@@ -27,7 +27,7 @@ int main(int argc,char **argv) {
     if(mode=="off")p.glass_enabled=false;if(mode=="opaque")p.reduce_transparency=true;
     aurora::set_preferences(p);MeasuredSurface window;
     auto *root=new QVBoxLayout(&window);root->setContentsMargins(64,64,64,64);
-    auto *panel=new aurora::GlassPanel(&window);root->addWidget(panel);auto *l=new QVBoxLayout(panel);l->setContentsMargins(28,28,28,28);l->setSpacing(18);
+    auto *panel=new aurora::glass_panel(&window);root->addWidget(panel);auto *l=new QVBoxLayout(panel);l->setContentsMargins(28,28,28,28);l->setSpacing(18);
     l->addWidget(new QLabel("Aurora  /  Matched material scene"));
     l->addWidget(new QLabel("Identical wallpaper, layout and input sequence in each run."));
     auto *field=new QLineEdit;field->setMinimumHeight(40);l->addWidget(field);

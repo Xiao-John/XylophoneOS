@@ -49,7 +49,7 @@
     "browser": "51a55f2c680ef039f7e9ffe145cb325d34688a20aa907323997030b546612a14"
   },
   "qemu_command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "${XOS_LOCAL_PATH}",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -67,7 +67,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_LOCAL_PATH},format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -78,8 +78,8 @@
     "-display",
     "none",
     "-drive",
-    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_aurora_platform_1g5bnkt8/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_LOCAL_PATH},format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_zzwen9lf/qmp.sock,server=on,wait=off"
+    "unix:${XOS_LOCAL_PATH},server=on,wait=off"
   ]
 }

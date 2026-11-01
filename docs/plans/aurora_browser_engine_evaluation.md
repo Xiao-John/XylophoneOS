@@ -31,7 +31,7 @@ The chosen source is tag v0.9, commit
 self-contained source snapshot for this prototype, not a claim to be the newest
 or a security-maintained release. `git archive` preserved the entire exact upstream
 tree (including Gumbo original LICENSE); the archive is not mislabelled an official
-release tarball. XOS patches to the upstream code: none. Integration/admission
+release tarball. XOS patches to the upstream code: none. integration/admission
 code is Apache-2.0; each upstream file is verified before cross compilation.
 The initial official-host codeload retrieval failed TLS; the successful Git fetch
 and exact Git archive supply the actual source provenance instead.

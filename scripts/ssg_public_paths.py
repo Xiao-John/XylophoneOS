@@ -4,14 +4,14 @@ import os
 import re
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-PRIVATE_POSIX = re.compile(r'(?:(?i:/us' r'ers/)|/ho' r'me/|/private/tm' r'p/|/var/fol' r'ders/|/tm' r'p/)[^\s,;"\']+')
-PRIVATE_WINDOWS = re.compile(r'(?i)[a-z]:[\\/]+users[\\/]+[^\s,;"\']+')
+root_path = Path(__file__).resolve().parents[1]
+private_posix = re.compile(r'(?:(?i:/us' r'ers/)|/ho' r'me/|/private/tm' r'p/|/var/fol' r'ders/|/tm' r'p/)[^\s,;"\']+')
+private_windows = re.compile(r'(?i)[a-z]:[\\/]+users[\\/]+[^\s,;"\']+')
 
 def resolve_template(value, mappings=()):
     """Resolve a public receipt path with explicit overrides and environment."""
     values = dict(os.environ)
-    values.setdefault('XOS_ROOT', str(ROOT))
+    values.setdefault('XOS_ROOT', str(root_path))
     values.update({name: str(path) for name, path in mappings if path is not None})
     def substitute(match):
         name = match.group(1)
@@ -42,13 +42,13 @@ def portable(value, mappings=(), *, strict=False):
             # directory while metadata uses the resolved absolute spelling.
             pairs.extend((candidate, '${' + name + '}') for candidate in
                          {str(path), str(Path(path).resolve())} if candidate not in ('', '.','/'))
-    pairs.append((str(ROOT), '${XOS_ROOT}'))
+    pairs.append((str(root_path), '${XOS_ROOT}'))
     for path, replacement in sorted(pairs, key=lambda x: -len(x[0])):
         s = re.sub(re.escape(path) + r'(?=$|[\\/,:;\s])', lambda _: replacement, s)
     # Unknown paths must never silently masquerade as a reproducible command.
-    if strict and (PRIVATE_POSIX.search(s) or PRIVATE_WINDOWS.search(s)):
+    if strict and (private_posix.search(s) or private_windows.search(s)):
         raise ValueError('unmapped host-private path in public serialization')
     # Legacy callers still get a non-executable, explicitly generic redaction.
-    s = PRIVATE_POSIX.sub('${XOS_LOCAL_PATH}', s)
-    s = PRIVATE_WINDOWS.sub('${XOS_LOCAL_PATH}', s)
+    s = private_posix.sub('${XOS_LOCAL_PATH}', s)
+    s = private_windows.sub('${XOS_LOCAL_PATH}', s)
     return s

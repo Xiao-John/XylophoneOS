@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
     QApplication app(argc, argv);
     QWidget root; auto *edit = new QPlainTextEdit(&root);
     edit->setPlainText(QString::fromUtf8("A😀B\nC")); root.show();
-    aurora::QtScene scene(&root); scene.host_allow_observation(true);
+    aurora::qt_scene scene(&root); scene.host_allow_observation(true);
     int failures=0, checks=0;
     auto check=[&](bool value,const char *name){++checks;if(!value)++failures;std::printf("SSG_RANGE_CHECK %s=%s\n",name,value?"PASS":"FAIL");};
     auto snapshot=scene.snapshot(false,"document");

@@ -67,9 +67,9 @@ def main():
     for path in (image, terminal):
         if manifest['artifacts'].get(path.name, {}).get('sha256') != sha(path):
             raise SystemExit(f'system artifact differs from manifest: {path.name}')
-    wide, reentry, locale = (consumers / name for name in
-                             ('wide_screen_probe.elf', 'reentry_probe.elf', 'wide_locale_probe.elf'))
-    for path in (wide, reentry, locale):
+    wide, reentry, locale, failure = (consumers / name for name in
+        ('wide_screen_probe.elf', 'reentry_probe.elf', 'wide_locale_probe.elf', 'terminal_failure_probe.elf'))
+    for path in (wide, reentry, locale, failure):
         if apps['artifacts'].get(path.name) != sha(path):
             raise SystemExit(f'consumer differs from receipt: {path.name}')
     entry = terminfo / 'terminfo' / term['entry']
@@ -80,7 +80,7 @@ def main():
               'build_id': manifest['build_id'], 'system_sha256': sha(image), 'terminal_sha256': sha(terminal),
               'sdk_tree_sha256': sdk_receipt['sdk_tree_sha256'], 'ncurses_sha256': target['archive_sha256'],
               'terminfo_sha256': sha(entry), 'wide_sha256': sha(wide), 'reentry_sha256': sha(reentry),
-              'locale_sha256': sha(locale), 'checks': []}
+              'locale_sha256': sha(locale), 'failure_sha256': sha(failure), 'checks': []}
     guest = None
     try:
         with tempfile.TemporaryDirectory(prefix='xos_ncurses_probe_') as folder:
@@ -91,6 +91,7 @@ def main():
                 transfer(disk, 'mkdir', path)
             for destination, source in (('/bin/terminal.elf', terminal), ('/bin/wide.elf', wide),
                                         ('/bin/reentry.elf', reentry), ('/bin/locale.elf', locale),
+                                        ('/bin/failure.elf', failure),
                                         ('/usr/local/share/terminfo/x/xterm', entry)):
                 transfer(disk, 'import', destination, source)
             guest = Guest(image, 'ncurses_guest_probe', work_disk=disk, iso=True)
@@ -123,6 +124,9 @@ def main():
             if marker != b'W2_RECOVER_APP_OK':
                 raise AssertionError('locale consumer failed after terminal restart')
             report['checks'].append('terminal_kill_reauthorize_and_new_app')
+            guest.expect(b'W1_FAULT_APP_READY', timeout=60)
+            guest.expect(b'W2_FAULT_APP_RECOVER_OK', timeout=60)
+            report['checks'].append('application_read_error_on_terminal_death_and_recovery')
             report['status'] = 'passed_probe'
     except Exception as error:
         report['error'] = str(error)

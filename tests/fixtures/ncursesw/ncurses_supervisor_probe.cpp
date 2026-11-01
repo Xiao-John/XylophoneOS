@@ -59,9 +59,26 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     if (!transmit("W2_LOCALE_OK\n")) return 10;
     if (sdk::syscall(10, static_cast<u64>(terminal_child)) != 0) return 11;
     if (sdk::write(1, "X", 1) >= 0) return 12;
-    if (user::shell_terminal::recover("/bin/terminal.elf") <= 0) return 13;
+    const i64 restarted = user::shell_terminal::recover("/bin/terminal.elf");
+    if (restarted <= 0) return 13;
     if (!transmit("W2_RECOVER_OK\n")) return 14;
     if (!run("/bin/locale.elf")) { (void)transmit("W2_RECOVER_APP_FAILED\n"); return 15; }
     if (!transmit("W2_RECOVER_APP_OK\n")) return 16;
+    sdk::spawn_options options{};
+    for (u32 i = 0; i < 3; ++i) options.stdio[i] = -2;
+    options.prepare_child = user::shell_terminal::prepare_application;
+    options.terminal_send_handle = user::shell_terminal::application_send_handle();
+    const char* args[] = {"/bin/failure.elf"};
+    const i64 fault_app = sdk::spawn_file_options(args[0], 1, args, options);
+    if (fault_app <= 0) return 17;
+    const i64 now = sdk::syscall(sys_clock_monotonic);
+    if (now < 0 || sdk::syscall(sys_sleep_until, static_cast<u64>(now) + 500000000) != 0) return 18;
+    if (sdk::syscall(10, static_cast<u64>(restarted)) != 0) return 19;
+    process_status fault_status{};
+    if (sdk::wait(static_cast<u64>(fault_app), fault_status) != 0 ||
+        fault_status.outcome != process_outcome::exited || fault_status.code != 0) return 20;
+    if (user::shell_terminal::finish_application() == 0) return 21;
+    if (user::shell_terminal::recover("/bin/terminal.elf") <= 0) return 22;
+    if (!transmit("W2_FAULT_APP_RECOVER_OK\n")) return 23;
     return user::shell_terminal::stop() == 0 ? 0 : 8;
 }

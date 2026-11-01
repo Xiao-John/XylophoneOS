@@ -103,20 +103,28 @@ def main():
             if args.xsh:
                 guest.expect(b'xsh> ', timeout=45)
                 start = len(guest.output)
+                send_bytes(guest, b'trace on\r')
+                guest.expect(b'xsh: trace on', start=start, timeout=30)
+                guest.expect(b'xsh> ', start=start, timeout=30)
+                start = len(guest.output)
                 send_bytes(guest, b'tty-run /bin/wide.elf\r')
                 guest.expect(b'W2_INPUT_READY', start=start, timeout=60)
                 screen = bytes(guest.output[start:])
                 if b'\xe4\xb8\xad\xcc\x81' not in screen or not re.search(rb'\x1b\[[0-9;]*31(?:;[0-9]*)?m', screen):
                     raise AssertionError('xsh wide screen output missing')
                 send_bytes(guest, b'\x1bOD\xe4\xb8\xad\x1bOP')
-                guest.expect(b'xsh> ', start=start, timeout=60)
+                guest.expect(b' kind=exited code=0', start=start, timeout=60)
+                marker = guest.output.find(b' kind=exited code=0', start)
+                guest.expect(b'xsh> ', start=marker + len(b' kind=exited code=0'), timeout=60)
                 if any(s in bytes(guest.output[start:]) for s in (b'program exited with status', b'xsh: cannot')):
                     raise AssertionError('xsh wide consumer failed')
                 report['checks'].append('xsh_terminal_wide_input_output')
                 for program in ('reentry', 'locale'):
                     start = len(guest.output)
                     send_bytes(guest, ('tty-run /bin/' + program + '.elf\r').encode())
-                    guest.expect(b'xsh> ', start=start, timeout=60)
+                    guest.expect(b' kind=exited code=0', start=start, timeout=60)
+                    marker = guest.output.find(b' kind=exited code=0', start)
+                    guest.expect(b'xsh> ', start=marker + len(b' kind=exited code=0'), timeout=60)
                     if any(s in bytes(guest.output[start:]) for s in (b'program exited with status', b'xsh: cannot')):
                         raise AssertionError('xsh ' + program + ' consumer failed')
                     report['checks'].append('xsh_terminal_' + program)

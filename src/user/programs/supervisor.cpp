@@ -232,6 +232,10 @@ void launch_file(const char* name, u32 argc, char** argv, u32 spawn_depth, bool 
         print("xsh: terminal session active; use tty-run for compatible programs\n"); return;
     }
     if (terminal_session && !user::shell_terminal::active()) {
+        if (!demo_keep && !demo_quiet) {
+            for (u64 demo = 1; demo <= 4; ++demo) (void)syscall(10, demo);
+            demo_quiet = true;
+        }
         print("xsh: starting terminal service\n");
         if (user::shell_terminal::start("/bin/terminal.elf") <= 0 &&
             user::shell_terminal::recover("/bin/terminal.elf") <= 0) return;

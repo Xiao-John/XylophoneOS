@@ -1,0 +1,99 @@
+{
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "original_index_path": "docs/reports/aurora_standard_button_20261030/evidence.json",
+  "original_index_sha256": "325f474f5991f879f5daef050bf940005829c9308531c794be734c964f4cdf73",
+  "export_index_sha256": "4d281fcba87ef6b6ec20580812ddfc92e92a7aeb66a7c1b95102eb4597db2551",
+  "original_index_entries": 21,
+  "export_index_entries": 21,
+  "index_field": "evidence_sha256",
+  "added_export_document": null,
+  "changes": [
+    {
+      "path": "docs/reports/aurora_standard_button_20261030/before-build.log.gz",
+      "original_sha256": "f78ef301698a0638454e139f79747dec3033ad90a0f649ff67923ec654247f22",
+      "export_sha256": "98a0753594c66969e663c3e54abca1d17c4f609d3e0e37462fe1d849607c5f40"
+    },
+    {
+      "path": "docs/reports/aurora_standard_button_20261030/before-receipt.json.gz",
+      "original_sha256": "4c7657179749ca647ca0e076d62667245ed0a45ec1ab13553d7c36928b1c9283",
+      "export_sha256": "d32bf316e4ead0b28c93546e46f31d49210077caaccefd7f768a39a76bcc191c"
+    },
+    {
+      "path": "docs/reports/aurora_standard_button_20261030/before/report.json",
+      "original_sha256": "2b87afd2e24b536d2953bf016e6699828b8d9a476cad9a9cff90ea9edf259b10",
+      "export_sha256": "b5b16046a2609aca369f1942bb933006e61c034c4abb95a2d7b52ae76598370f"
+    },
+    {
+      "path": "docs/reports/aurora_standard_button_20261030/final-build.log.gz",
+      "original_sha256": "97bc615ed7f9813f0ab95026e1752fcddec2d2e94748f3d8caaf8fb65ea2b537",
+      "export_sha256": "25ca60a16e4b53fdfeba855c793e332f4a133a7a11a6370828dc8f23e8efbd1e"
+    },
+    {
+      "path": "docs/reports/aurora_standard_button_20261030/final-receipt.json.gz",
+      "original_sha256": "57d636fb527547b28915df56f4840948d705e632467866f350d64789aee3c5dd",
+      "export_sha256": "25732e660dd7f95040169ce7dafa63d06a1214a750df9c42c2ca9006e2b55169"
+    },
+    {
+      "path": "docs/reports/aurora_standard_button_20261030/final/report.json",
+      "original_sha256": "5b933f8a25169fd931a29c53cca4e3a3f87e14acf75899f3d20865e48c6de133",
+      "export_sha256": "1340a46d9d3baf2653f2ac0643af190b0097f7d66a1ee7cc19ed8c1106d899af"
+    },
+    {
+      "path": "docs/reports/aurora_standard_button_20261030/initial-fix-build.log.gz",
+      "original_sha256": "ef3754407fe18ad66e9d544fb97df487cd2e627d33e3df325cca498b7c48b172",
+      "export_sha256": "c2b0d1bb2a375997902409b78ae15a20cfb6ec45f3b3c51619332c0df8deb7c9"
+    },
+    {
+      "path": "docs/reports/aurora_standard_button_20261030/initial-fix/report.json",
+      "original_sha256": "f7de6f25be351c9b62a631c9bca36d6e8e4d1f245d08689176b2ffef6b15e502",
+      "export_sha256": "2a6de11b782109a3c2b4a7faeb5d09bd56cadc78f60d9ce78a61159b4b9c3298"
+    },
+    {
+      "path": "docs/reports/aurora_standard_button_20261030/README.md",
+      "original_sha256": "53d46aaa2a0a9c9c4c82d839faa09fcdd8e361548df84bcf50e9879ae7121c11",
+      "export_sha256": "65e1f82edd4041687df2728ca230cea6cf73eee12b822e4fd2f366941f322262"
+    }
+  ],
+  "template_variables": [
+    {
+      "name": "XOS_HOME_8425C912189A",
+      "purpose": "home root"
+    },
+    {
+      "name": "XOS_HOST_TEMP_6D6821976CD9",
+      "purpose": "host_temp root"
+    },
+    {
+      "name": "XOS_TOOLCHAIN_35527FAC2790",
+      "purpose": "toolchain root"
+    },
+    {
+      "name": "XOS_WORKTREE_313E5C73D324",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_6662C05B9328",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_6CB304866608",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_9282C9E77071",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_C671BDF53659",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_ED2321C1F627",
+      "purpose": "worktree root"
+    }
+  ],
+  "reproduction": "MANUAL_REQUIRED: configure template roots and obtain matching historical inputs; no replay is claimed.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history.",
+  "transformation": "Host home/workspace/tool roots and unambiguous host QEMU command paths only; generic guest temporary paths are not globally replaced."
+}

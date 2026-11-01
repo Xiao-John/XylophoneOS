@@ -1,0 +1,16 @@
+{
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "scope": "review applies to these paths at the named Git commit; not a scanner bypass",
+  "files": [
+    {
+      "path": "src/ports/aurora_browser/upstream/litehtml-0.9.tar.gz",
+      "classification": "SYNTHETIC_FIXTURE",
+      "reason": "pinned third-party URL test fixture, not a local home path"
+    },
+    {
+      "path": "tests/seed_diagnostics_cases.py",
+      "classification": "SYNTHETIC_FIXTURE",
+      "reason": "synthetic diagnostic strings, not a contributor home path"
+    }
+  ]
+}

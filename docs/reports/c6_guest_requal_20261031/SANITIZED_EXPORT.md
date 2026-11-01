@@ -1,0 +1,1 @@
+> **Evidence version:** Selected host command paths are templated in this derivative. Original results and input hashes retain their historical meaning. Source and export hashes are in [the Issue 37 lineage](../../evidence_exports/issue37/c6_guest_requal_lineage.json). Matching inputs require manual configuration.

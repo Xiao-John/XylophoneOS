@@ -17,7 +17,7 @@
     }
   ],
   "qemu_command": [
-    "/workspace/xos-env/prefix/bin/qemu-system-x86_64",
+    "${XOS_WORKSPACE_5FD05F4AD6BF}/prefix/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -35,7 +35,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/workspace/fb0-service-fault/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_WORKSPACE_E7FAEDFD5147}/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -46,8 +46,8 @@
     "-display",
     "none",
     "-drive",
-    "file=/tmp/xos_fb0_service_aur0ta91/disk.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_HOST_TEMP_4AE2CA909F17}/disk.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/tmp/xos_mend9do5/qmp.sock,server=on,wait=off"
+    "unix:${XOS_HOST_TEMP_76BA800C1473}/qmp.sock,server=on,wait=off"
   ]
 }

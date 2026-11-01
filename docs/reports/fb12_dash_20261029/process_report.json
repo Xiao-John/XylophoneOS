@@ -18,7 +18,7 @@
   "status": "passed",
   "image_sha256": "99e22253fa6cedefc39651906fdeb0b77d6100ec331f2a084341298d1a641272",
   "command": [
-    "/workspace/xos-env/prefix/bin/qemu-system-x86_64",
+    "${XOS_WORKSPACE_5FD05F4AD6BF}/prefix/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -36,7 +36,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/workspace/XylophoneOS/build/fb12/merged_final3/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_WORKSPACE_411AA84A8699}/build/fb12/merged_final3/xos.img,format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -47,9 +47,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/tmp/xos_fb12_e04_dwkxg0r0/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_HOST_TEMP_82960BAAD96D}/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/tmp/xos_sw2fb53_/qmp.sock,server=on,wait=off"
+    "unix:${XOS_HOST_TEMP_D3C29A6020F4}/qmp.sock,server=on,wait=off"
   ],
   "baseline_resources": [
     130257,

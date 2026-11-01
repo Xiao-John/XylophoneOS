@@ -206,7 +206,7 @@ ncursesw 组合 SDK 与 xterm 数据候选已生成，独立消费者经真实 X
 见[0152](work_log/0152_ncurses_sdk_candidate.md)。
 Xsh 应用重复运行与服务重启前后的受限资源基线比较已通过；见
 [0153](work_log/0153_terminal_resource_baseline.md)。
-通道、PIO 和 IRQ 的负向客体入口已适配安装 ISO，尚待提交后运行；见
+通道、PIO 和 IRQ 的负向客体入口已适配安装 ISO，限定检查通过；见
 [0154](work_log/0154_terminal_access_probes.md)。
 用户态驱动已试行按 TEMT 确认发送排空，尚未客体验证；见
 [0140](work_log/0140_terminal_drain.md)。

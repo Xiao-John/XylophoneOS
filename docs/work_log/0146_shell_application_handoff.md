@@ -14,3 +14,11 @@ src/user/services/shell_terminal.cpp tests/fixtures/ncursesw/shell_terminal_host
 `python3 scripts/build.py --ncurses-supervisor-probe --output-dir
 build/w2_shell_handoff_20261101` 通过，build ID `951214ba9e4bf9ce`。
 相关改动提交后需在干净快照重建并重跑客体；上述构建不能作为客体验收。
+
+提交 `17c6b26` 后从干净快照重建相同 build，并以 0145 的 SDK、ncurses 和 terminfo
+运行双消费者客体探针，两个检查通过。ISO SHA-256
+`890dcb9bfefe2bfb240aa66e8ac556f26eea984e4a1bec43abaecb83efda0d21`，
+串口 SHA-256 `66269a14832c9912e776a5e0d9d98038b6c9536cf5197d55f6e5c56e3a6ff6d5`；
+回执在隔离工作区 `build/w2_shell_handoff_17c6b26/ncurses_guest_probe_report.json`。
+探针证明桥接路径下两次正常附加、应用运行和回收；测试在第二个成功标记后结束，
+不证明服务停止、失败回收、救援或真实 Xsh 的客体行为。

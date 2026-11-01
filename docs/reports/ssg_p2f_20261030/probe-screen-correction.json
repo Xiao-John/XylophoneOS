@@ -1,0 +1,8 @@
+{
+  "parent_commit": "0a63648d53e4a7491320111f053f8b93882fbdab",
+  "commit": "a81b4fd7ab18ec09e87b311e8fe89cf4464fb63c",
+  "changed_file": "tests/ssg_browser_pages_probe.py",
+  "sha256": "e318037e510edf0b586e55ae10608ff54a80d6e2babdb41bc35054fa3c59b4b3",
+  "reason": "Compare link-click coordinates against the actual captured framebuffer dimensions, not a fixed 1024x768 bound. The earlier actual hit at (56,326) was inside its 800x600 screenshot; retain it and rerun under this explicit check.",
+  "browser_and_consumer_sources_changed": false
+}

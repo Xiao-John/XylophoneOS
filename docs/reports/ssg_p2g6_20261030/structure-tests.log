@@ -1,0 +1,57 @@
+test_consumer_counts_and_completion_must_match (__main__.ResourceRejectionTests.test_consumer_counts_and_completion_must_match) ... ok
+test_every_exit_outcome_must_be_unique_and_expected (__main__.ResourceRejectionTests.test_every_exit_outcome_must_be_unique_and_expected) ... ok
+test_explicit_refusal_is_scoped_and_not_A1 (__main__.ResourceRejectionTests.test_explicit_refusal_is_scoped_and_not_A1) ... ok
+test_final_reply_must_explicitly_reject_without_page_fields (__main__.ResourceRejectionTests.test_final_reply_must_explicitly_reject_without_page_fields) ... ok
+test_final_source_fields_are_bound_when_present (__main__.ResourceRejectionTests.test_final_source_fields_are_bound_when_present) ... ok
+test_first_page_refusal_with_no_emitted_nodes (__main__.ResourceRejectionTests.test_first_page_refusal_with_no_emitted_nodes) ... ok
+test_only_complete_bound_before_oracle_is_allowed (__main__.ResourceRejectionTests.test_only_complete_bound_before_oracle_is_allowed) ... ok
+test_plain_success_capture_cannot_be_resource_qualification (__main__.ResourceRejectionTests.test_plain_success_capture_cannot_be_resource_qualification) ... ok
+test_prior_pages_cannot_complete_or_change_scope (__main__.ResourceRejectionTests.test_prior_pages_cannot_complete_or_change_scope) ... ok
+test_refusal_must_occur_near_first_oversized_node (__main__.ResourceRejectionTests.test_refusal_must_occur_near_first_oversized_node) ... ok
+test_requests_and_continuations_are_bound (__main__.ResourceRejectionTests.test_requests_and_continuations_are_bound) ... ok
+test_scope_and_three_process_identities_are_required (__main__.ResourceRejectionTests.test_scope_and_three_process_identities_are_required) ... ok
+test_successful_prefix_is_independently_checked (__main__.ResourceRejectionTests.test_successful_prefix_is_independently_checked) ... ok
+test_transport_failure_is_not_expected_resource_refusal (__main__.ResourceRejectionTests.test_transport_failure_is_not_expected_resource_refusal) ... ok
+test_utf16_budget_and_exact_boundary (__main__.ResourceRejectionTests.test_utf16_budget_and_exact_boundary) ... ok
+test_cannot_reopen_closed_subtree (__main__.StructureValidatorTests.test_cannot_reopen_closed_subtree) ... ok
+test_consumer_rejection_and_unsuccessful_exits (__main__.StructureValidatorTests.test_consumer_rejection_and_unsuccessful_exits) ... ok
+test_cursor_chain_and_reuse (__main__.StructureValidatorTests.test_cursor_chain_and_reuse) ... ok
+test_drop_terminal_page (__main__.StructureValidatorTests.test_drop_terminal_page) ... ok
+test_duplicate_id (__main__.StructureValidatorTests.test_duplicate_id) ... ok
+test_duplicate_or_orphan_or_truncated_frame (__main__.StructureValidatorTests.test_duplicate_or_orphan_or_truncated_frame) ... ok
+test_early_completion (__main__.StructureValidatorTests.test_early_completion) ... ok
+test_exact_node_limit_has_empty_terminal_page (__main__.StructureValidatorTests.test_exact_node_limit_has_empty_terminal_page) ... ok
+test_extra_node (__main__.StructureValidatorTests.test_extra_node) ... ok
+test_false_typed_flags_are_not_booleans (__main__.StructureValidatorTests.test_false_typed_flags_are_not_booleans) ... ok
+test_filtered_or_false_typed_scope_is_rejected (__main__.StructureValidatorTests.test_filtered_or_false_typed_scope_is_rejected) ... ok
+test_historical_provider_claim_without_oracle_is_unqualified (__main__.StructureValidatorTests.test_historical_provider_claim_without_oracle_is_unqualified) ... ok
+test_input_hash_mismatch (__main__.StructureValidatorTests.test_input_hash_mismatch) ... ok
+test_json_duplicate_keys_and_invalid_base64 (__main__.StructureValidatorTests.test_json_duplicate_keys_and_invalid_base64) ... ok
+test_legacy_consumer_completion_cannot_qualify (__main__.StructureValidatorTests.test_legacy_consumer_completion_cannot_qualify) ... ok
+test_missing_exit_or_process_identity (__main__.StructureValidatorTests.test_missing_exit_or_process_identity) ... ok
+test_netstrings_count_utf8_and_preserve_missing_fields (__main__.StructureValidatorTests.test_netstrings_count_utf8_and_preserve_missing_fields) ... ok
+test_omit_whole_subtree_even_with_consistent_completion (__main__.StructureValidatorTests.test_omit_whole_subtree_even_with_consistent_completion) ... ok
+test_one_character_href_change (__main__.StructureValidatorTests.test_one_character_href_change) ... ok
+test_one_character_text_change (__main__.StructureValidatorTests.test_one_character_text_change) ... ok
+test_oracle_cannot_lie_about_children_or_digest (__main__.StructureValidatorTests.test_oracle_cannot_lie_about_children_or_digest) ... ok
+test_oracle_changed_or_truncated (__main__.StructureValidatorTests.test_oracle_changed_or_truncated) ... ok
+test_oracle_missing (__main__.StructureValidatorTests.test_oracle_missing) ... ok
+test_orphan_parent (__main__.StructureValidatorTests.test_orphan_parent) ... ok
+test_parent_must_precede_child (__main__.StructureValidatorTests.test_parent_must_precede_child) ... ok
+test_resource_error_cannot_be_complete (__main__.StructureValidatorTests.test_resource_error_cannot_be_complete) ... ok
+test_scroll_change_and_no_progress_page (__main__.StructureValidatorTests.test_scroll_change_and_no_progress_page) ... ok
+test_second_root (__main__.StructureValidatorTests.test_second_root) ... ok
+test_source_epoch_and_revision_drift (__main__.StructureValidatorTests.test_source_epoch_and_revision_drift) ... ok
+test_sparse_ids_unicode_and_incomplete_geometry_are_scoped (__main__.StructureValidatorTests.test_sparse_ids_unicode_and_incomplete_geometry_are_scoped) ... ok
+test_swap_distinct_sibling_subtrees (__main__.StructureValidatorTests.test_swap_distinct_sibling_subtrees) ... ok
+test_tag_and_role_mismatch (__main__.StructureValidatorTests.test_tag_and_role_mismatch) ... ok
+test_text_truncation_flag (__main__.StructureValidatorTests.test_text_truncation_flag) ... ok
+test_unpaired_frames_and_message_sequence (__main__.StructureValidatorTests.test_unpaired_frames_and_message_sequence) ... ok
+test_utf16_text_range (__main__.StructureValidatorTests.test_utf16_text_range) ... ok
+test_wrong_existing_parent (__main__.StructureValidatorTests.test_wrong_existing_parent) ... ok
+test_wrong_root (__main__.StructureValidatorTests.test_wrong_root) ... ok
+
+----------------------------------------------------------------------
+Ran 52 tests in 0.095s
+
+OK

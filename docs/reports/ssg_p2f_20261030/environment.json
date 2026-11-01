@@ -1,0 +1,20 @@
+{
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "machine": "x86_64",
+  "python": "3.12.14",
+  "cpu_quota": "800000 100000",
+  "memory_limit_bytes": 8589934592,
+  "qemu": {
+    "path": "${XOS_ROOT}/.cache/ssg_p2f/qemu-prefix/bin/qemu-system-x86_64",
+    "sha256": "947e0e30bf1d6e0ef8c4349a3a25803bc363d785bf92d0b4cf3d603c8c9d91e1",
+    "version": "QEMU emulator version 11.1.2"
+  },
+  "guest_profile": {
+    "machine": "pc-i440fx-10.0",
+    "accelerator": "tcg",
+    "vcpus": 1,
+    "ram": "512M",
+    "network": "none"
+  },
+  "performance_qualification": "NOT_QUALIFIED; source build bootstrap and test instrumentation are not a controlled production timing comparison"
+}

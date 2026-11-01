@@ -1,0 +1,7 @@
+browser_dom_layout_hidden_and_offviewport PASSED
+ssg_link_geometry_matches_actual_engine_hit PASSED
+Traceback (most recent call last):
+  File "${XOS_ROOT}/tests/aurora_platform_guest.py", line 144, in <module>
+    navigate('/web/ssg.html');again,_=snapshot(b'BROWSER');assert again['sourceEpoch']!=first['sourceEpoch'];stroke('end');bottom,delta=snapshot(b'BROWSER');assert bottom['sourceEpoch']==again['sourceEpoch'] and delta['status']=='OK'
+                                                                                                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

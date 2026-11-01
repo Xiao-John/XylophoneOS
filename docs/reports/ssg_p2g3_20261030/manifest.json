@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "files": {
+    "README.md": "a4eec2be8f2fa0b28b1467f31596fa5203687423b789f63c20e23cf610f9740e",
+    "browser-build.log.gz": "cc7c57884f1c2a85a5f9b99f97b732890ac111c2e7e8b6367ee6515fb9b8a9db",
+    "consumer-build.log.gz": "ad0adfb6f3eca9d9b11c00ca2d6ab6a23a80b2d67f1512a48bacd330c57e50e2",
+    "observation.json": "f669a1d3a4819f77061ee64fa83c1009afd35106297356a7cea7470354beff04",
+    "session-build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "validator-tests.log": "0760571de95ba6464779566c450b7ffb9a571f60b16fd66a71d16cb3995d7eba"
+  }
+}

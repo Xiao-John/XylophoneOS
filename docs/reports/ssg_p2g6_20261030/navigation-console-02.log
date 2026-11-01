@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "${XOS_ROOT}/tests/ssg_p2g6_navigation_guest.py", line 214, in <module>
+    qmp('input-send-event', {'events': [{'type': 'key', 'data': {'down': down, 'key': {'type': 'qcode', 'data': key}}}]})
+                                                                         ^^^^
+NameError: name 'down' is not defined

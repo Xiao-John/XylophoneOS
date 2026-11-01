@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "files": {
+    "archive-manifest.json": "9aa3ee69f27a711422761c0e576c0ba863b85af6ae4846b210a18cbd9a15696f",
+    "input.html": "37fff0e9d875d3196f3d547a4f65e0a329b1466623eac9d2a502554d18c41e0f",
+    "link-target.html": "b1b17e71db2689f74e30c7e8b0f03106022ec79deea569d9e7507a11ea0f30e4",
+    "oracle-01.json": "cff127acffde0ebde6e3363f8aca789b7feaed961de1d2bddc74f6b12d991a69",
+    "oracle-02.json": "8782f8d33e77aba9dadb9f911ce5d4b0f4a675564a1981b142af30fb13e5b288",
+    "qemu_qemu.log": "d3d9c62e0220f8bf823319ef23d3b03bf2ba854e287ec066af6503f5f82c1d7d",
+    "qmp-events.json": "1fe0474af7c32e8ce1c6ea482e0d37c2b7719d2150e0b2cef4d5fee3519a46b8",
+    "report.json": "a1009695a5567c599deecf81e1dcebae6771f9ad2163bc4cbba250cbb33351bc",
+    "runner.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "serial.log.gz": "c0fb486f275b9a2f77cfc621b3bb7d858fb101e1c875ac56561caa76604ddc2f",
+    "structure-comparison.json": "d3642b250dc36c60633035d2225882c637430f0e68e0c99ed176e96d749f4bcd"
+  }
+}

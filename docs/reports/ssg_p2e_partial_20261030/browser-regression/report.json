@@ -1,0 +1,196 @@
+{
+  "status": "PASSED_SCOPED",
+  "inputs": {
+    "image": {
+      "path": "${XOS_IMAGE}",
+      "sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08"
+    },
+    "session": {
+      "path": "${XOS_BASE_ROOT}/build/ssg-p2-regression/session.elf",
+      "sha256": "c05e6b9fbfcb3376d57178fbab67b88a3a2802afcd5a7d5a1b943c21f057fa48"
+    },
+    "consumer": {
+      "path": "${XOS_ROOT}/build/p2d-browser/consumer.elf",
+      "sha256": "846e08dd04304884ac0176aee625a676e15026e4f9bd2423b60ef60579016ea6"
+    },
+    "notes": {
+      "path": "${XOS_BASE_ROOT}/build/ssg-p2-regression/notes/notes.elf",
+      "sha256": "05153407b8d46325f2204d90e4bddb522d66bfda73632c0a8b7e4570ea5d4969"
+    },
+    "browser": {
+      "path": "${XOS_ROOT}/build/p2e-browser-final/browser.elf",
+      "sha256": "9e58aa224ae32a68080eda9d95b320a34e42db4872d555a0608197b5509e3285"
+    }
+  },
+  "checks": [
+    "browser_real_fragment_scroll_reload_and_stale_epoch",
+    "browser_text_scope_denied_by_default",
+    "browser_local_probe_cannot_expand_pipe_text_scope",
+    "display_and_guest_resource_baseline_restored"
+  ],
+  "qemu_command": [
+    "${XOS_ROOT}/${XOS_QEMU}",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=${XOS_IMAGE},format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:${XOS_QMP_SOCKET},server=on,wait=off"
+  ],
+  "baseline_resources": [
+    130279,
+    2,
+    0
+  ],
+  "display_resources": [
+    130235,
+    3,
+    1
+  ],
+  "browser_processes": {
+    "parent_pid": 10,
+    "provider_pid": 12,
+    "consumer_pid": 11,
+    "instance": "ede2495a4e480ced7bafb8b80543425f"
+  },
+  "browser_frames": [
+    {
+      "direction": "REQ",
+      "sequence": 1,
+      "bytes": 68,
+      "file": "browser-01-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 2,
+      "bytes": 68,
+      "file": "browser-02-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 3,
+      "bytes": 129,
+      "file": "browser-03-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 4,
+      "bytes": 68,
+      "file": "browser-04-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 5,
+      "bytes": 129,
+      "file": "browser-05-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 6,
+      "bytes": 144,
+      "file": "browser-06-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 7,
+      "bytes": 68,
+      "file": "browser-07-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 8,
+      "bytes": 144,
+      "file": "browser-08-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 9,
+      "bytes": 64,
+      "file": "browser-09-req.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 1,
+      "bytes": 6875,
+      "file": "browser-01-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 2,
+      "bytes": 7779,
+      "file": "browser-02-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 3,
+      "bytes": 7150,
+      "file": "browser-03-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 4,
+      "bytes": 7700,
+      "file": "browser-04-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 5,
+      "bytes": 108,
+      "file": "browser-05-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 6,
+      "bytes": 108,
+      "file": "browser-06-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 7,
+      "bytes": 7780,
+      "file": "browser-07-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 8,
+      "bytes": 595,
+      "file": "browser-08-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 9,
+      "bytes": 1753,
+      "file": "browser-09-resp.json"
+    }
+  ],
+  "final_resources": [
+    130279,
+    2,
+    0
+  ]
+}

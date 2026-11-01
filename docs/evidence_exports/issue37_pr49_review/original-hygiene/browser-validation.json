@@ -1,0 +1,576 @@
+{
+  "archive_checks": {
+    "archives": 32,
+    "unchanged_regular_members": 8609,
+    "changed_regular_members": 118,
+    "ipc_frames_and_fixture_inputs": "BYTE_IDENTICAL"
+  },
+  "existing_verifier_replays": [
+    {
+      "case": "p2g4-final",
+      "status": "PASSED",
+      "exit_code": 0
+    },
+    {
+      "case": "p2g5",
+      "exit_code": 0,
+      "status": "PASSED"
+    },
+    {
+      "case": "p2g6-exhaust",
+      "exit_code": 0,
+      "status": "PASSED"
+    },
+    {
+      "case": "p2g6-reload",
+      "exit_code": 0,
+      "status": "PASSED"
+    },
+    {
+      "case": "p2g6-navigation",
+      "exit_code": 0,
+      "status": "PASSED"
+    },
+    {
+      "case": "p2g6-oracle",
+      "exit_code": 0,
+      "status": "PASSED"
+    }
+  ],
+  "p2f_structural_replay": [
+    {
+      "case": "p2d-oracle-02",
+      "status": "STRUCTURE_AND_FRAMES_PASS",
+      "frames_verified": 10,
+      "oracles_verified": 2,
+      "source_binary_reverification": "NOT_RUN_EXTERNAL_INPUTS_REQUIRED"
+    },
+    {
+      "case": "p2f-oracle-01",
+      "status": "STRUCTURE_AND_FRAMES_PASS",
+      "frames_verified": 68,
+      "oracles_verified": 2,
+      "source_binary_reverification": "NOT_RUN_EXTERNAL_INPUTS_REQUIRED"
+    },
+    {
+      "case": "text-limit-01",
+      "status": "RESOURCE_REJECTION_AND_FRAMES_PASS",
+      "frames_verified": 2,
+      "oracles_verified": 1,
+      "source_binary_reverification": "NOT_RUN_EXTERNAL_INPUTS_REQUIRED"
+    }
+  ],
+  "fresh_guest_runs": [
+    {
+      "case": "p2g4-observation",
+      "guest_status": "OBSERVED",
+      "qualification": "NOT_RUN",
+      "frames": 136,
+      "oracles": 0,
+      "qemu_command_template": [
+        "${XOS_QEMU}",
+        "-machine",
+        "pc-i440fx-10.0",
+        "-accel",
+        "tcg",
+        "-cpu",
+        "qemu64,+rdrand",
+        "-m",
+        "512M",
+        "-smp",
+        "1",
+        "-nic",
+        "none",
+        "-vga",
+        "std",
+        "-rtc",
+        "base=utc,clock=host",
+        "-drive",
+        "file=${XOS_IMAGE},format=raw,if=floppy,index=0,readonly=on",
+        "-boot",
+        "order=a,strict=on",
+        "-no-reboot",
+        "-monitor",
+        "none",
+        "-serial",
+        "stdio",
+        "-display",
+        "none",
+        "-drive",
+        "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "-qmp",
+        "unix:${XOS_QMP_SOCKET},server=on,wait=off"
+      ],
+      "inputs": {
+        "image": "972f3a67012576022b67525da90c654a23b273b82cc0f1619fb6c529805ccd41",
+        "session": "6142341d6e79995f45054b1fe06fe5d16e6b05e32a0bd060054e890741f82f6f",
+        "browser": "fe9f16d9deb2b6e1fc6bf240bee4b53202b0538880db0e93c07448d1ada888e3",
+        "consumer": "99401a958dac2705ca7e06382d43f1f6cb4beee79aa12198a0b3cb3cdbf313dc",
+        "input": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f",
+        "ssg_browser_pages_probe.py": "1d00e59650b82a562f4d1f232835722bb4b20ff15e79689f1f6a0dd6dee69c09",
+        "ssg_browser_structure.py": "d1dda66a4cdc6e0429958539c758632c13d44f41f35a2b6b14fc332299c809e1",
+        "qemu": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e"
+      },
+      "resource_before": [
+        130253,
+        3,
+        1
+      ],
+      "resource_after": [
+        130253,
+        3,
+        1
+      ],
+      "public_report_sha256": "02c7498121b74878791aade69c5fb1bf2f8225e0d0b0ae6fc2fcd1d27d254e72",
+      "independent_check": {
+        "status": "PASSED_SCOPED",
+        "pages": [
+          34,
+          34
+        ],
+        "nodes": [
+          267,
+          267
+        ],
+        "scroll": [
+          0,
+          282
+        ],
+        "change_counts": {
+          "ScrollChanged": 1,
+          "WindowGeometryChanged": 219,
+          "VisibilityChanged": 90
+        },
+        "identity": "same complete preorder ID/parent/role/tag within one epoch",
+        "document_sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f",
+        "resource_counters_match": true
+      },
+      "qemu_version": "QEMU emulator version 11.1.2"
+    },
+    {
+      "case": "p2f-oracle",
+      "guest_status": "PASSED_SCOPED",
+      "qualification": "A1_STRUCTURE_AND_TEXT",
+      "frames": 68,
+      "oracles": 2,
+      "qemu_command_template": [
+        "${XOS_QEMU}",
+        "-machine",
+        "pc-i440fx-10.0",
+        "-accel",
+        "tcg",
+        "-cpu",
+        "qemu64,+rdrand",
+        "-m",
+        "512M",
+        "-smp",
+        "1",
+        "-nic",
+        "none",
+        "-vga",
+        "std",
+        "-rtc",
+        "base=utc,clock=host",
+        "-drive",
+        "file=${XOS_IMAGE},format=raw,if=floppy,index=0,readonly=on",
+        "-boot",
+        "order=a,strict=on",
+        "-no-reboot",
+        "-monitor",
+        "none",
+        "-serial",
+        "stdio",
+        "-display",
+        "none",
+        "-drive",
+        "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "-qmp",
+        "unix:${XOS_QMP_SOCKET},server=on,wait=off"
+      ],
+      "inputs": {
+        "image": "972f3a67012576022b67525da90c654a23b273b82cc0f1619fb6c529805ccd41",
+        "session": "6142341d6e79995f45054b1fe06fe5d16e6b05e32a0bd060054e890741f82f6f",
+        "browser": "1e3a24001f4a06cd9490ebe1c1d6e99322159568b5db1427173a63bfcc48cdc0",
+        "consumer": "0189da4b78069f9de915c058d2bd68ea1d402401d314795aa180a0f77d0d5445",
+        "input": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f",
+        "ssg_browser_pages_probe.py": "1d00e59650b82a562f4d1f232835722bb4b20ff15e79689f1f6a0dd6dee69c09",
+        "ssg_browser_structure.py": "d1dda66a4cdc6e0429958539c758632c13d44f41f35a2b6b14fc332299c809e1",
+        "browser_receipt": "baca7c4e763bce390552dd2203948d9eff9f11067782779722f0580b81311244",
+        "qemu": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e"
+      },
+      "resource_before": [
+        130253,
+        3,
+        1
+      ],
+      "resource_after": [
+        130253,
+        3,
+        1
+      ],
+      "public_report_sha256": "9dfb3cf1d70e2774c82cffbf4a4f4f07b636f207fec8e370a216674d0693940a",
+      "qemu_version": "QEMU emulator version 11.1.2"
+    },
+    {
+      "case": "p2g5-recover",
+      "guest_status": "OBSERVED",
+      "qualification": "NOT_RUN",
+      "frames": 144,
+      "oracles": 0,
+      "qemu_command_template": [
+        "${XOS_QEMU}",
+        "-machine",
+        "pc-i440fx-10.0",
+        "-accel",
+        "tcg",
+        "-cpu",
+        "qemu64,+rdrand",
+        "-m",
+        "512M",
+        "-smp",
+        "1",
+        "-nic",
+        "none",
+        "-vga",
+        "std",
+        "-rtc",
+        "base=utc,clock=host",
+        "-drive",
+        "file=${XOS_IMAGE},format=raw,if=floppy,index=0,readonly=on",
+        "-boot",
+        "order=a,strict=on",
+        "-no-reboot",
+        "-monitor",
+        "none",
+        "-serial",
+        "stdio",
+        "-display",
+        "none",
+        "-drive",
+        "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "-qmp",
+        "unix:${XOS_QMP_SOCKET},server=on,wait=off"
+      ],
+      "qemu_version": "QEMU emulator version 11.1.2",
+      "inputs": {
+        "image": "972f3a67012576022b67525da90c654a23b273b82cc0f1619fb6c529805ccd41",
+        "session": "6142341d6e79995f45054b1fe06fe5d16e6b05e32a0bd060054e890741f82f6f",
+        "browser": "fe9f16d9deb2b6e1fc6bf240bee4b53202b0538880db0e93c07448d1ada888e3",
+        "consumer": "57791d6978a8f827ec9850ce7c0d965d9bcb71ba7d0e4899fdff207e7853c42c",
+        "input": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f",
+        "ssg_browser_pages_probe.py": "1d00e59650b82a562f4d1f232835722bb4b20ff15e79689f1f6a0dd6dee69c09",
+        "ssg_browser_structure.py": "d1dda66a4cdc6e0429958539c758632c13d44f41f35a2b6b14fc332299c809e1",
+        "qemu": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e"
+      },
+      "resource_before": [
+        130253,
+        3,
+        1
+      ],
+      "resource_after": [
+        130253,
+        3,
+        1
+      ],
+      "public_report_sha256": "509de1844914fc96bcde919c1b5a74a231fe7c2c263afa40733bd0ffcb8ccbff",
+      "independent_check": {
+        "status": "PASSED_SCOPED",
+        "pages": [
+          34,
+          34
+        ],
+        "interrupted_pages": 3,
+        "stale_session": "2",
+        "recovered_session": "3",
+        "nodes": [
+          267,
+          267
+        ],
+        "scroll": [
+          0,
+          282
+        ],
+        "change_counts": {
+          "ScrollChanged": 1,
+          "WindowGeometryChanged": 219,
+          "VisibilityChanged": 90
+        },
+        "identity": "same complete preorder ID/parent/role/tag within one epoch",
+        "document_sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f",
+        "resource_counters_match": true
+      }
+    },
+    {
+      "case": "p2g6-exhaust",
+      "guest_status": "OBSERVED",
+      "qualification": "NOT_RUN",
+      "frames": 92,
+      "oracles": 0,
+      "qemu_command_template": [
+        "${XOS_QEMU}",
+        "-machine",
+        "pc-i440fx-10.0",
+        "-accel",
+        "tcg",
+        "-cpu",
+        "qemu64,+rdrand",
+        "-m",
+        "512M",
+        "-smp",
+        "1",
+        "-nic",
+        "none",
+        "-vga",
+        "std",
+        "-rtc",
+        "base=utc,clock=host",
+        "-drive",
+        "file=${XOS_IMAGE},format=raw,if=floppy,index=0,readonly=on",
+        "-boot",
+        "order=a,strict=on",
+        "-no-reboot",
+        "-monitor",
+        "none",
+        "-serial",
+        "stdio",
+        "-display",
+        "none",
+        "-drive",
+        "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "-qmp",
+        "unix:${XOS_QMP_SOCKET},server=on,wait=off"
+      ],
+      "qemu_version": "QEMU emulator version 11.1.2",
+      "inputs": {
+        "image": "972f3a67012576022b67525da90c654a23b273b82cc0f1619fb6c529805ccd41",
+        "session": "6142341d6e79995f45054b1fe06fe5d16e6b05e32a0bd060054e890741f82f6f",
+        "browser": "fe9f16d9deb2b6e1fc6bf240bee4b53202b0538880db0e93c07448d1ada888e3",
+        "consumer": "0189da4b78069f9de915c058d2bd68ea1d402401d314795aa180a0f77d0d5445",
+        "input": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f",
+        "ssg_browser_pages_probe.py": "1d00e59650b82a562f4d1f232835722bb4b20ff15e79689f1f6a0dd6dee69c09",
+        "ssg_browser_structure.py": "d1dda66a4cdc6e0429958539c758632c13d44f41f35a2b6b14fc332299c809e1",
+        "qemu": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e"
+      },
+      "resource_before": [
+        130253,
+        3,
+        1
+      ],
+      "resource_after": [
+        130253,
+        3,
+        1
+      ],
+      "public_report_sha256": "bf3930b875f6273a611f8d79d9d161eb56201a75a8af3b87bc5d4cad0ba772a6",
+      "independent_check": {
+        "status": "PASSED_SCOPED",
+        "sessions": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "A_nodes": 267,
+        "attempt_pages": [
+          3,
+          3,
+          3
+        ],
+        "scroll_values": [
+          282,
+          564,
+          846
+        ],
+        "result": "RESET_REQUIRED",
+        "consumer_exit": 1,
+        "provider_exit": 0,
+        "resources_match": true
+      }
+    },
+    {
+      "case": "p2g6-reload",
+      "guest_status": "OBSERVED",
+      "qualification": "NOT_RUN",
+      "frames": 148,
+      "oracles": 0,
+      "qemu_command_template": [
+        "${XOS_QEMU}",
+        "-machine",
+        "pc-i440fx-10.0",
+        "-accel",
+        "tcg",
+        "-cpu",
+        "qemu64,+rdrand",
+        "-m",
+        "512M",
+        "-smp",
+        "1",
+        "-nic",
+        "none",
+        "-vga",
+        "std",
+        "-rtc",
+        "base=utc,clock=host",
+        "-drive",
+        "file=${XOS_IMAGE},format=raw,if=floppy,index=0,readonly=on",
+        "-boot",
+        "order=a,strict=on",
+        "-no-reboot",
+        "-monitor",
+        "none",
+        "-serial",
+        "stdio",
+        "-display",
+        "none",
+        "-drive",
+        "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "-qmp",
+        "unix:${XOS_QMP_SOCKET},server=on,wait=off"
+      ],
+      "qemu_version": "QEMU emulator version 11.1.2",
+      "inputs": {
+        "image": "972f3a67012576022b67525da90c654a23b273b82cc0f1619fb6c529805ccd41",
+        "session": "6142341d6e79995f45054b1fe06fe5d16e6b05e32a0bd060054e890741f82f6f",
+        "browser": "fe9f16d9deb2b6e1fc6bf240bee4b53202b0538880db0e93c07448d1ada888e3",
+        "consumer": "0189da4b78069f9de915c058d2bd68ea1d402401d314795aa180a0f77d0d5445",
+        "input": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f",
+        "ssg_browser_pages_probe.py": "1d00e59650b82a562f4d1f232835722bb4b20ff15e79689f1f6a0dd6dee69c09",
+        "ssg_browser_structure.py": "d1dda66a4cdc6e0429958539c758632c13d44f41f35a2b6b14fc332299c809e1",
+        "qemu": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e"
+      },
+      "resource_before": [
+        130253,
+        3,
+        1
+      ],
+      "resource_after": [
+        130253,
+        3,
+        1
+      ],
+      "public_report_sha256": "9410d9fdd3f393380c15beefa955d423908e0de953943324872769f10b9b8a37",
+      "independent_check": {
+        "status": "PASSED_SCOPED",
+        "old_epoch": "51539607555",
+        "new_epoch": "51539607557",
+        "sessions": [
+          "1",
+          "2",
+          "1"
+        ],
+        "interrupted_pages": 3,
+        "A_nodes": 267,
+        "C_nodes": 267,
+        "old_cursor": "STALE_CURSOR",
+        "old_node": "SOURCE_REPLACED",
+        "diff": "RESET_REQUIRED",
+        "resources_match": true
+      }
+    },
+    {
+      "case": "p2g6-navigation",
+      "guest_status": "OBSERVED",
+      "qualification": "NOT_RUN",
+      "frames": 84,
+      "oracles": 5,
+      "qemu_command_template": [
+        "${XOS_QEMU}",
+        "-machine",
+        "pc-i440fx-10.0",
+        "-accel",
+        "tcg",
+        "-cpu",
+        "qemu64,+rdrand",
+        "-m",
+        "512M",
+        "-smp",
+        "1",
+        "-nic",
+        "none",
+        "-vga",
+        "std",
+        "-rtc",
+        "base=utc,clock=host",
+        "-drive",
+        "file=${XOS_IMAGE},format=raw,if=floppy,index=0,readonly=on",
+        "-boot",
+        "order=a,strict=on",
+        "-no-reboot",
+        "-monitor",
+        "none",
+        "-serial",
+        "stdio",
+        "-display",
+        "none",
+        "-drive",
+        "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "-qmp",
+        "unix:${XOS_QMP_SOCKET},server=on,wait=off"
+      ],
+      "qemu_version": "QEMU emulator version 11.1.2",
+      "inputs": {
+        "image": "972f3a67012576022b67525da90c654a23b273b82cc0f1619fb6c529805ccd41",
+        "session": "6142341d6e79995f45054b1fe06fe5d16e6b05e32a0bd060054e890741f82f6f",
+        "browser": "1e3a24001f4a06cd9490ebe1c1d6e99322159568b5db1427173a63bfcc48cdc0",
+        "consumer": "0189da4b78069f9de915c058d2bd68ea1d402401d314795aa180a0f77d0d5445",
+        "input": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f",
+        "ssg_browser_pages_probe.py": "1d00e59650b82a562f4d1f232835722bb4b20ff15e79689f1f6a0dd6dee69c09",
+        "ssg_browser_structure.py": "d1dda66a4cdc6e0429958539c758632c13d44f41f35a2b6b14fc332299c809e1",
+        "browser_receipt": "baca7c4e763bce390552dd2203948d9eff9f11067782779722f0580b81311244",
+        "link_target": "b1b17e71db2689f74e30c7e8b0f03106022ec79deea569d9e7507a11ea0f30e4",
+        "qemu": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e"
+      },
+      "resource_before": [
+        130253,
+        3,
+        1
+      ],
+      "resource_after": [
+        130253,
+        3,
+        1
+      ],
+      "public_report_sha256": "08dbfdd42d788549b7922c6cdefa706b93ef9fa82ec25ee1d54e85f7cce82183",
+      "independent_check": {
+        "status": "PASSED_SCOPED",
+        "old_epoch": "51539607555",
+        "new_epoch": "51539607557",
+        "sessions": [
+          "1",
+          "2",
+          "1"
+        ],
+        "interrupted_pages": 3,
+        "A_nodes": 267,
+        "C_nodes": 9,
+        "old_cursor": "STALE_CURSOR",
+        "old_node": "SOURCE_REPLACED",
+        "diff": "RESET_REQUIRED",
+        "resources_match": true
+      }
+    }
+  ],
+  "limitations": [
+    "P2F structural replay did not reverify all historical external build inputs.",
+    "The earlier P2G4 failure archive is retained as a failure; only run-03 is the accepted replay.",
+    "A mistakenly paired two-baseline run and single-traversal Oracle validator failed because the contracts differ; the correctly paired controls were rerun.",
+    "These checks do not remove historic Git objects or independently qualify additional Browser scenarios."
+  ],
+  "failure_history": [
+    {
+      "kind": "local_candidate_redactor",
+      "failed_attempts": 2,
+      "resolution": "Fixed a replacement-escape error and preservation of non-UTF8 archive metadata; rebuilt and reverified the candidate."
+    },
+    {
+      "kind": "historical_failure_sample_selected_for_replay",
+      "failed_attempts": 1,
+      "resolution": "The P2G4 checker correctly rejected run-01; the documented final run-03 passed."
+    },
+    {
+      "kind": "two_baseline_run_paired_with_single_traversal_oracle",
+      "failed_attempts": 1,
+      "resolution": "Reran the properly paired P2G4 observation and P2F single-traversal Oracle controls; both passed their scoped checks."
+    }
+  ]
+}

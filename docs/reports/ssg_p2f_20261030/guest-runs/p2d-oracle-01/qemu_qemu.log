@@ -1,0 +1,1 @@
+qemu-system-x86_64: -qmp unix:${XOS_QMP_SOCKET},server=on,wait=off: Failed to bind socket to ${XOS_QMP_SOCKET}: Operation not permitted

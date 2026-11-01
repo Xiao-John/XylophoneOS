@@ -1,0 +1,10 @@
+{
+  "scope": "normal Browser binary exclusion check, not runtime completeness",
+  "elf_sha256": "3203dc83b5319ec48127eb97fae32ec3bcdc13091ef0e158cbbc275977cf234a",
+  "test_structure_oracle": false,
+  "oracle_log_marker_present": false,
+  "oracle_schema_marker_present": false,
+  "elf_class": 2,
+  "elf_machine": 62,
+  "receipt_sha256": "8e042c220e5941ad50b496a70f0e5f2e3a66a5d828cfe3f26c9a4a0a6ff690c9"
+}

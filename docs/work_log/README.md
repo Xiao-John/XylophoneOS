@@ -9,6 +9,8 @@
 
 新增记录：[0166 — Notes range review](0166_ssg_notes_range_review.md)。
 
+新增记录：[0167 — SSG P2F structure Oracle](0167_ssg_p2f_structure_oracle.md)。
+
 2026-11-01 盘点的重复编号（12 组）：
 
 | 编号 | 两份记录 |

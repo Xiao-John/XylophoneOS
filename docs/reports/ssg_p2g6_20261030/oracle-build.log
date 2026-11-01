@@ -1,0 +1,282 @@
+patching file 'include/litehtml/element.h'
+patching file 'src/element.cpp'
+In file included from ${XOS_BUILD_DIR}/include/QtCore/qanystringview.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/text/qstring.h:23,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qstring.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/kernel/qcoreapplication.h:8,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcoreapplication.h:1,
+                 from ${XOS_BUILD_DIR}/include/QtCore/QCoreApplication:1,
+                 from ${XOS_ROOT}/src/ports/qt6/qpa/qxos.cpp:3:
+${XOS_QT_SOURCE}/src/corelib/text/qanystringview.h:30:7: warning: defining 'QAnyStringView', which previously failed to be complete in a SFINAE context [-Wsfinae-incomplete=]
+   30 | class QAnyStringView
+      |       ^~~~~~~~~~~~~~
+In file included from ${XOS_SDK_PREFIX}/cpp/include/unordered_map:44,
+                 from ${XOS_SDK_PREFIX}/cpp/include/functional:80,
+                 from ${XOS_QT_SOURCE}/src/corelib/global/qcomparehelpers.h:27,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcomparehelpers.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/global/qcompare.h:632,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcompare.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/text/qchar.h:8,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qchar.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/text/qstring.h:14:
+${XOS_SDK_PREFIX}/cpp/include/bits/range_access.h:325:24: note: here.  Use '-Wsfinae-incomplete=2' for a diagnostic at that point
+  325 |     -> decltype(__cont.data())
+      |                 ~~~~~~~^~~~
+In file included from ${XOS_BUILD_DIR}/include/QtCore/qregularexpression.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qcborvalue.h:12,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcborvalue.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qjsonvalue.h:7,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qjsonvalue.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qjsonobject.h:7,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qjsonobject.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/plugin/qplugin.h:14,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qplugin.h:1,
+                 from ${XOS_QT_SOURCE}/src/gui/kernel/qplatformintegrationplugin.h:17,
+                 from ${XOS_BUILD_DIR}/include/QtGui/6.8.3/QtGui/qpa/qplatformintegrationplugin.h:1,
+                 from ${XOS_ROOT}/src/ports/qt6/qpa/qxos.cpp:14:
+${XOS_QT_SOURCE}/src/corelib/text/qregularexpression.h:30:21: warning: defining 'QRegularExpression', which previously failed to be complete in a SFINAE context [-Wsfinae-incomplete=]
+   30 | class Q_CORE_EXPORT QRegularExpression
+      |                     ^~~~~~~~~~~~~~~~~~
+${XOS_SDK_PREFIX}/cpp/include/bits/range_access.h:325:24: note: here.  Use '-Wsfinae-incomplete=2' for a diagnostic at that point
+  325 |     -> decltype(__cont.data())
+      |                 ~~~~~~~^~~~
+In file included from ${XOS_BUILD_DIR}/include/QtCore/qanystringview.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/text/qstring.h:23,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qstring.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/kernel/qobject.h:11,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qobject.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/io/qiodevice.h:10,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qiodevice.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/io/qfiledevice.h:7,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qfiledevice.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/io/qfile.h:8,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qfile.h:1,
+                 from ${XOS_BUILD_DIR}/include/QtCore/QFile:1,
+                 from ${XOS_ROOT}/src/ports/aurora_browser/content.hpp:3,
+                 from ${XOS_ROOT}/src/ports/aurora_browser/view.hpp:3,
+                 from ${XOS_ROOT}/src/ports/aurora_browser/main.cpp:2:
+${XOS_QT_SOURCE}/src/corelib/text/qanystringview.h:30:7: warning: defining 'QAnyStringView', which previously failed to be complete in a SFINAE context [-Wsfinae-incomplete=]
+   30 | class QAnyStringView
+      |       ^~~~~~~~~~~~~~
+In file included from ${XOS_SDK_PREFIX}/cpp/include/unordered_map:44,
+                 from ${XOS_SDK_PREFIX}/cpp/include/functional:80,
+                 from ${XOS_QT_SOURCE}/src/corelib/global/qcomparehelpers.h:27,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcomparehelpers.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/global/qcompare.h:632,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcompare.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/global/qnamespace.h:13,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qnamespace.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/kernel/qobjectdefs.h:12,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qobjectdefs.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/kernel/qobject.h:10:
+${XOS_SDK_PREFIX}/cpp/include/bits/range_access.h:325:24: note: here.  Use '-Wsfinae-incomplete=2' for a diagnostic at that point
+  325 |     -> decltype(__cont.data())
+      |                 ~~~~~~~^~~~
+In file included from ${XOS_BUILD_DIR}/include/QtCore/qregularexpression.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qcborvalue.h:12,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcborvalue.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qjsonvalue.h:7,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qjsonvalue.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qjsonarray.h:7,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qjsonarray.h:1,
+                 from ${XOS_BUILD_DIR}/include/QtCore/QJsonArray:1,
+                 from ${XOS_ROOT}/src/ports/aurora_browser/scene_geometry.hpp:3,
+                 from ${XOS_ROOT}/src/ports/aurora_browser/view.hpp:4:
+${XOS_QT_SOURCE}/src/corelib/text/qregularexpression.h:30:21: warning: defining 'QRegularExpression', which previously failed to be complete in a SFINAE context [-Wsfinae-incomplete=]
+   30 | class Q_CORE_EXPORT QRegularExpression
+      |                     ^~~~~~~~~~~~~~~~~~
+${XOS_SDK_PREFIX}/cpp/include/bits/range_access.h:325:24: note: here.  Use '-Wsfinae-incomplete=2' for a diagnostic at that point
+  325 |     -> decltype(__cont.data())
+      |                 ~~~~~~~^~~~
+In file included from ${XOS_BUILD_DIR}/include/QtCore/qanystringview.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/text/qstring.h:23,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qstring.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/kernel/qcoreapplication.h:8,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcoreapplication.h:1,
+                 from ${XOS_QT_SOURCE}/src/widgets/kernel/qapplication.h:8,
+                 from ${XOS_BUILD_DIR}/include/QtWidgets/qapplication.h:1,
+                 from ${XOS_BUILD_DIR}/include/QtWidgets/QApplication:1,
+                 from ${XOS_ROOT}/src/ports/qt6/aurora/style.hpp:3,
+                 from ${XOS_ROOT}/src/ports/qt6/aurora/style.cpp:2:
+${XOS_QT_SOURCE}/src/corelib/text/qanystringview.h:30:7: warning: defining 'QAnyStringView', which previously failed to be complete in a SFINAE context [-Wsfinae-incomplete=]
+   30 | class QAnyStringView
+      |       ^~~~~~~~~~~~~~
+In file included from ${XOS_SDK_PREFIX}/cpp/include/unordered_map:44,
+                 from ${XOS_SDK_PREFIX}/cpp/include/functional:80,
+                 from ${XOS_QT_SOURCE}/src/corelib/global/qcomparehelpers.h:27,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcomparehelpers.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/global/qcompare.h:632,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcompare.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/text/qchar.h:8,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qchar.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/text/qstring.h:14:
+${XOS_SDK_PREFIX}/cpp/include/bits/range_access.h:325:24: note: here.  Use '-Wsfinae-incomplete=2' for a diagnostic at that point
+  325 |     -> decltype(__cont.data())
+      |                 ~~~~~~~^~~~
+In file included from ${XOS_BUILD_DIR}/include/QtCore/qregularexpression.h:1,
+                 from ${XOS_QT_SOURCE}/src/gui/util/qvalidator.h:12,
+                 from ${XOS_BUILD_DIR}/include/QtGui/qvalidator.h:1,
+                 from ${XOS_QT_SOURCE}/src/widgets/widgets/qabstractspinbox.h:9,
+                 from ${XOS_BUILD_DIR}/include/QtWidgets/qabstractspinbox.h:1,
+                 from ${XOS_QT_SOURCE}/src/widgets/styles/qstyleoption.h:11,
+                 from ${XOS_BUILD_DIR}/include/QtWidgets/qstyleoption.h:1,
+                 from ${XOS_BUILD_DIR}/include/QtWidgets/QStyleOptionButton:1,
+                 from ${XOS_ROOT}/src/ports/qt6/aurora/style.cpp:7:
+${XOS_QT_SOURCE}/src/corelib/text/qregularexpression.h:30:21: warning: defining 'QRegularExpression', which previously failed to be complete in a SFINAE context [-Wsfinae-incomplete=]
+   30 | class Q_CORE_EXPORT QRegularExpression
+      |                     ^~~~~~~~~~~~~~~~~~
+${XOS_SDK_PREFIX}/cpp/include/bits/range_access.h:325:24: note: here.  Use '-Wsfinae-incomplete=2' for a diagnostic at that point
+  325 |     -> decltype(__cont.data())
+      |                 ~~~~~~~^~~~
+In file included from ${XOS_BUILD_DIR}/include/QtCore/qanystringview.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/text/qstring.h:23,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qstring.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/tools/qhashfunctions.h:9,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qhashfunctions.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/tools/qlist.h:10,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qlist.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/text/qstringlist.h:5,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qstringlist.h:1,
+                 from ${XOS_QT_SOURCE}/src/gui/painting/qcolor.h:10,
+                 from ${XOS_BUILD_DIR}/include/QtGui/qcolor.h:1,
+                 from ${XOS_BUILD_DIR}/include/QtGui/QColor:1,
+                 from ${XOS_ROOT}/src/ports/qt6/aurora/theme.hpp:3,
+                 from ${XOS_ROOT}/src/ports/qt6/aurora/theme.cpp:2:
+${XOS_QT_SOURCE}/src/corelib/text/qanystringview.h:30:7: warning: defining 'QAnyStringView', which previously failed to be complete in a SFINAE context [-Wsfinae-incomplete=]
+   30 | class QAnyStringView
+      |       ^~~~~~~~~~~~~~
+In file included from ${XOS_SDK_PREFIX}/cpp/include/unordered_map:44,
+                 from ${XOS_SDK_PREFIX}/cpp/include/functional:80,
+                 from ${XOS_QT_SOURCE}/src/corelib/global/qcomparehelpers.h:27,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcomparehelpers.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/global/qcompare.h:632,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcompare.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/global/qnamespace.h:13,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qnamespace.h:1,
+                 from ${XOS_QT_SOURCE}/src/gui/painting/qcolor.h:9:
+${XOS_SDK_PREFIX}/cpp/include/bits/range_access.h:325:24: note: here.  Use '-Wsfinae-incomplete=2' for a diagnostic at that point
+  325 |     -> decltype(__cont.data())
+      |                 ~~~~~~~^~~~
+In file included from ${XOS_BUILD_DIR}/include/QtCore/qregularexpression.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qcborvalue.h:12,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcborvalue.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qjsonvalue.h:7,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qjsonvalue.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qjsondocument.h:8,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qjsondocument.h:1,
+                 from ${XOS_BUILD_DIR}/include/QtCore/QJsonDocument:1,
+                 from ${XOS_ROOT}/src/ports/qt6/aurora/theme.cpp:6:
+${XOS_QT_SOURCE}/src/corelib/text/qregularexpression.h:30:21: warning: defining 'QRegularExpression', which previously failed to be complete in a SFINAE context [-Wsfinae-incomplete=]
+   30 | class Q_CORE_EXPORT QRegularExpression
+      |                     ^~~~~~~~~~~~~~~~~~
+${XOS_SDK_PREFIX}/cpp/include/bits/range_access.h:325:24: note: here.  Use '-Wsfinae-incomplete=2' for a diagnostic at that point
+  325 |     -> decltype(__cont.data())
+      |                 ~~~~~~~^~~~
+In file included from ${XOS_BUILD_DIR}/include/QtCore/qchar.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/text/qstring.h:14,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qstring.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/tools/qhashfunctions.h:9,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qhashfunctions.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/global/qfloat16.h:10,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qfloat16.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/kernel/qmetatype.h:14,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qmetatype.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qcborcommon.h:8,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcborcommon.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qcborvalue.h:8,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcborvalue.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qjsonvalue.h:7,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qjsonvalue.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qjsonobject.h:7,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qjsonobject.h:1,
+                 from ${XOS_BUILD_DIR}/include/QtCore/QJsonObject:1,
+                 from ${XOS_ROOT}/src/ports/qt6/aurora/semantics.hpp:3,
+                 from ${XOS_ROOT}/src/ports/qt6/aurora/semantics.cpp:2:
+${XOS_QT_SOURCE}/src/corelib/text/qchar.h:44:31: warning: defining 'QChar', which previously failed to be complete in a SFINAE context [-Wsfinae-incomplete=]
+   44 | class QT6_ONLY(Q_CORE_EXPORT) QChar {
+      |                               ^~~~~
+In file included from ${XOS_SDK_PREFIX}/cpp/include/unordered_map:44,
+                 from ${XOS_SDK_PREFIX}/cpp/include/functional:80,
+                 from ${XOS_QT_SOURCE}/src/corelib/global/qcomparehelpers.h:27,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcomparehelpers.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/global/qcompare.h:632,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcompare.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/global/qnamespace.h:13,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qnamespace.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/text/qbytearray.h:9,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qbytearray.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qcborvalue.h:7:
+${XOS_SDK_PREFIX}/cpp/include/bits/range_access.h:325:24: note: here.  Use '-Wsfinae-incomplete=2' for a diagnostic at that point
+  325 |     -> decltype(__cont.data())
+      |                 ~~~~~~~^~~~
+In file included from ${XOS_BUILD_DIR}/include/QtCore/qanystringview.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/text/qstring.h:23:
+${XOS_QT_SOURCE}/src/corelib/text/qanystringview.h:30:7: warning: defining 'QAnyStringView', which previously failed to be complete in a SFINAE context [-Wsfinae-incomplete=]
+   30 | class QAnyStringView
+      |       ^~~~~~~~~~~~~~
+${XOS_SDK_PREFIX}/cpp/include/bits/range_access.h:325:24: note: here.  Use '-Wsfinae-incomplete=2' for a diagnostic at that point
+  325 |     -> decltype(__cont.data())
+      |                 ~~~~~~~^~~~
+In file included from ${XOS_BUILD_DIR}/include/QtCore/qregularexpression.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qcborvalue.h:12:
+${XOS_QT_SOURCE}/src/corelib/text/qregularexpression.h:30:21: warning: defining 'QRegularExpression', which previously failed to be complete in a SFINAE context [-Wsfinae-incomplete=]
+   30 | class Q_CORE_EXPORT QRegularExpression
+      |                     ^~~~~~~~~~~~~~~~~~
+${XOS_SDK_PREFIX}/cpp/include/bits/range_access.h:325:24: note: here.  Use '-Wsfinae-incomplete=2' for a diagnostic at that point
+  325 |     -> decltype(__cont.data())
+      |                 ~~~~~~~^~~~
+In file included from ${XOS_BUILD_DIR}/include/QtCore/qchar.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/text/qstring.h:14,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qstring.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/tools/qhashfunctions.h:9,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qhashfunctions.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/global/qfloat16.h:10,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qfloat16.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/kernel/qmetatype.h:14,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qmetatype.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qcborcommon.h:8,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcborcommon.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qcborvalue.h:8,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcborvalue.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qjsonvalue.h:7,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qjsonvalue.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qjsonobject.h:7,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qjsonobject.h:1,
+                 from ${XOS_BUILD_DIR}/include/QtCore/QJsonObject:1,
+                 from ${XOS_ROOT}/src/ports/qt6/aurora/ssg.hpp:3,
+                 from ${XOS_ROOT}/src/ports/qt6/aurora/ssg.cpp:2:
+${XOS_QT_SOURCE}/src/corelib/text/qchar.h:44:31: warning: defining 'QChar', which previously failed to be complete in a SFINAE context [-Wsfinae-incomplete=]
+   44 | class QT6_ONLY(Q_CORE_EXPORT) QChar {
+      |                               ^~~~~
+In file included from ${XOS_SDK_PREFIX}/cpp/include/unordered_map:44,
+                 from ${XOS_SDK_PREFIX}/cpp/include/functional:80,
+                 from ${XOS_QT_SOURCE}/src/corelib/global/qcomparehelpers.h:27,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcomparehelpers.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/global/qcompare.h:632,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcompare.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/global/qnamespace.h:13,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qnamespace.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/text/qbytearray.h:9,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qbytearray.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qcborvalue.h:7:
+${XOS_SDK_PREFIX}/cpp/include/bits/range_access.h:325:24: note: here.  Use '-Wsfinae-incomplete=2' for a diagnostic at that point
+  325 |     -> decltype(__cont.data())
+      |                 ~~~~~~~^~~~
+In file included from ${XOS_BUILD_DIR}/include/QtCore/qanystringview.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/text/qstring.h:23:
+${XOS_QT_SOURCE}/src/corelib/text/qanystringview.h:30:7: warning: defining 'QAnyStringView', which previously failed to be complete in a SFINAE context [-Wsfinae-incomplete=]
+   30 | class QAnyStringView
+      |       ^~~~~~~~~~~~~~
+${XOS_SDK_PREFIX}/cpp/include/bits/range_access.h:325:24: note: here.  Use '-Wsfinae-incomplete=2' for a diagnostic at that point
+  325 |     -> decltype(__cont.data())
+      |                 ~~~~~~~^~~~
+In file included from ${XOS_BUILD_DIR}/include/QtCore/qregularexpression.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qcborvalue.h:12:
+${XOS_QT_SOURCE}/src/corelib/text/qregularexpression.h:30:21: warning: defining 'QRegularExpression', which previously failed to be complete in a SFINAE context [-Wsfinae-incomplete=]
+   30 | class Q_CORE_EXPORT QRegularExpression
+      |                     ^~~~~~~~~~~~~~~~~~
+${XOS_SDK_PREFIX}/cpp/include/bits/range_access.h:325:24: note: here.  Use '-Wsfinae-incomplete=2' for a diagnostic at that point
+  325 |     -> decltype(__cont.data())
+      |                 ~~~~~~~^~~~
+Built reusable Aurora library: ${XOS_ROOT}/build/p2g6-oracle-browser/libXosAurora.a
+Built real XOS Aurora browser ${XOS_ROOT}/build/p2g6-oracle-browser/browser.elf

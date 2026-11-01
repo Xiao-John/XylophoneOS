@@ -1,0 +1,53 @@
+In file included from ${XOS_BUILD_DIR}/include/QtCore/qchar.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/text/qstring.h:14,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qstring.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/kernel/qobject.h:11,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qobject.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/thread/qthread.h:8,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qthread.h:1,
+                 from ${XOS_BUILD_DIR}/include/QtCore/QThread:1,
+                 from ${XOS_ROOT}/src/user/apps/../ssg/pipe_wire.hpp:6,
+                 from ${XOS_ROOT}/src/user/apps/ssg_consumer.cpp:3:
+${XOS_QT_SOURCE}/src/corelib/text/qchar.h:44:31: warning: defining 'QChar', which previously failed to be complete in a SFINAE context [-Wsfinae-incomplete=]
+   44 | class QT6_ONLY(Q_CORE_EXPORT) QChar {
+      |                               ^~~~~
+In file included from ${XOS_SDK_PREFIX}/cpp/include/unordered_map:44,
+                 from ${XOS_SDK_PREFIX}/cpp/include/functional:80,
+                 from ${XOS_QT_SOURCE}/src/corelib/global/qcomparehelpers.h:27,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcomparehelpers.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/global/qcompare.h:632,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcompare.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/global/qnamespace.h:13,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qnamespace.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/text/qbytearray.h:9,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qbytearray.h:1,
+                 from ${XOS_BUILD_DIR}/include/QtCore/QByteArray:1,
+                 from ${XOS_ROOT}/src/user/apps/../ssg/pipe_wire.hpp:5:
+${XOS_SDK_PREFIX}/cpp/include/bits/range_access.h:325:24: note: here.  Use '-Wsfinae-incomplete=2' for a diagnostic at that point
+  325 |     -> decltype(__cont.data())
+      |                 ~~~~~~~^~~~
+In file included from ${XOS_BUILD_DIR}/include/QtCore/qanystringview.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/text/qstring.h:23:
+${XOS_QT_SOURCE}/src/corelib/text/qanystringview.h:30:7: warning: defining 'QAnyStringView', which previously failed to be complete in a SFINAE context [-Wsfinae-incomplete=]
+   30 | class QAnyStringView
+      |       ^~~~~~~~~~~~~~
+${XOS_SDK_PREFIX}/cpp/include/bits/range_access.h:325:24: note: here.  Use '-Wsfinae-incomplete=2' for a diagnostic at that point
+  325 |     -> decltype(__cont.data())
+      |                 ~~~~~~~^~~~
+In file included from ${XOS_BUILD_DIR}/include/QtCore/qregularexpression.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qcborvalue.h:12,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qcborvalue.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qjsonvalue.h:7,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qjsonvalue.h:1,
+                 from ${XOS_QT_SOURCE}/src/corelib/serialization/qjsonarray.h:7,
+                 from ${XOS_BUILD_DIR}/include/QtCore/qjsonarray.h:1,
+                 from ${XOS_BUILD_DIR}/include/QtCore/QJsonArray:1,
+                 from ${XOS_ROOT}/src/user/apps/../ssg/baseline_diff.hpp:4,
+                 from ${XOS_ROOT}/src/user/apps/ssg_consumer.cpp:5:
+${XOS_QT_SOURCE}/src/corelib/text/qregularexpression.h:30:21: warning: defining 'QRegularExpression', which previously failed to be complete in a SFINAE context [-Wsfinae-incomplete=]
+   30 | class Q_CORE_EXPORT QRegularExpression
+      |                     ^~~~~~~~~~~~~~~~~~
+${XOS_SDK_PREFIX}/cpp/include/bits/range_access.h:325:24: note: here.  Use '-Wsfinae-incomplete=2' for a diagnostic at that point
+  325 |     -> decltype(__cont.data())
+      |                 ~~~~~~~^~~~
+Built target fixture: ${XOS_ROOT}/build/p2g4-consumer-02/ssg-consumer.elf

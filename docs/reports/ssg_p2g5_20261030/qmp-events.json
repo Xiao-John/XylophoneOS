@@ -1,0 +1,85 @@
+[
+  {
+    "command": "screendump",
+    "arguments": {
+      "filename": "${XOS_ROOT}/docs/reports/ssg_p2g5_20261030/run-03/before.ppm"
+    },
+    "serial_offset": 271403,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "key",
+          "data": {
+            "down": true,
+            "key": {
+              "type": "qcode",
+              "data": "pgdn"
+            }
+          }
+        }
+      ]
+    },
+    "serial_offset": 271403,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "key",
+          "data": {
+            "down": false,
+            "key": {
+              "type": "qcode",
+              "data": "pgdn"
+            }
+          }
+        }
+      ]
+    },
+    "serial_offset": 271403,
+    "returned": {}
+  },
+  {
+    "command": "screendump",
+    "arguments": {
+      "filename": "${XOS_ROOT}/docs/reports/ssg_p2g5_20261030/run-03/after.ppm"
+    },
+    "serial_offset": 271538,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "key",
+          "data": {
+            "down": true,
+            "key": {
+              "type": "qcode",
+              "data": "esc"
+            }
+          }
+        },
+        {
+          "type": "key",
+          "data": {
+            "down": false,
+            "key": {
+              "type": "qcode",
+              "data": "esc"
+            }
+          }
+        }
+      ]
+    },
+    "serial_offset": 576037,
+    "returned": {}
+  }
+]

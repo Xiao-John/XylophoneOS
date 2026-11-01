@@ -1,0 +1,166 @@
+{
+  "not_a_new_guest_run": true,
+  "base_commit_for_assertion_comparison": "9a739c7052d66dd75c0a0aceb807b0e4aa2fc16f",
+  "auditor_script_sha256": "a813834b584dc1143ccbc69892b577507999fa9a1b00833d8a764c682b0c84ed",
+  "unchanged_tests": {
+    "tests/ssg_ipc_guest.py": "59d97d8d32c314c937b70f441c56a9e3be1ae63b12f816300932cef86d7a34ae",
+    "tests/aurora_platform_guest.py": "2798567d75cd16ca100b719e95dd4a599180231bf3a46e28d4318df02c7208b4"
+  },
+  "p1": {
+    "status": "PASSED_SCOPED",
+    "outer_checks": 16,
+    "Notes_Consumer_checks": 17,
+    "Browser_Consumer_checks": 8,
+    "checks": [
+      "gui_input_remains_responsive_under_pipe_backpressure",
+      "separate_processes_bound_by_parent",
+      "consumer_parsed_live_notes_and_failure_semantics",
+      "recorded_real_keyboard_edit_and_consumer_diff",
+      "both_children_and_pipe_resources_reclaimed",
+      "actual_provider_restart_rejects_old_node_reference",
+      "text_scope_denied_by_default",
+      "standalone_cli_detail_and_diff",
+      "truncated_frame_disconnect_and_cleanup",
+      "oversized_frame_refused_and_cleanup",
+      "consumer_timeout_disconnect_and_cleanup",
+      "provider_partial_frame_timeout_and_cleanup",
+      "browser_real_fragment_scroll_reload_and_stale_epoch",
+      "browser_text_scope_denied_by_default",
+      "browser_local_probe_cannot_expand_pipe_text_scope",
+      "display_and_guest_resource_baseline_restored"
+    ],
+    "serial_sha256": "f3b61122b19eea31fb4bee615dcf64f04589117a4bb6a7d7793ef7f9b660b699",
+    "final_resources": [
+      130279,
+      2,
+      0
+    ]
+  },
+  "legacy_nonpaged_browser": {
+    "status": "PASSED",
+    "outer_checks": 7,
+    "checks": [
+      {
+        "name": "browser_dom_layout_hidden_and_offviewport",
+        "status": "PASSED"
+      },
+      {
+        "name": "ssg_link_geometry_matches_actual_engine_hit",
+        "status": "PASSED"
+      },
+      {
+        "name": "browser_scroll_changes_visibility_with_stable_epoch",
+        "status": "PASSED"
+      },
+      {
+        "name": "reload_invalidates_old_document_references",
+        "status": "PASSED"
+      },
+      {
+        "name": "unsupported_canvas_rejected_no_fabricated_semantics",
+        "status": "PASSED"
+      },
+      {
+        "name": "browser_ssg_exit_exact_resources",
+        "status": "PASSED"
+      },
+      {
+        "name": "serial_file_service_and_resource_baseline",
+        "status": "PASSED"
+      }
+    ],
+    "serial_sha256": "f8d3a16fd8ba1604804ac8850e47f77f25ad17799dc2cf09e7da22f244ae1f8c",
+    "resource_observations": [
+      [
+        130279,
+        2,
+        0
+      ],
+      [
+        130235,
+        3,
+        1
+      ],
+      [
+        130235,
+        3,
+        1
+      ],
+      [
+        130279,
+        2,
+        0
+      ]
+    ],
+    "snapshots": [
+      {
+        "source_epoch": "42949672965",
+        "capped": true,
+        "cap_reason": "TIME",
+        "nodes": 17,
+        "scrollY": 0
+      },
+      {
+        "source_epoch": "42949672969",
+        "capped": false,
+        "cap_reason": "NONE",
+        "nodes": 19,
+        "scrollY": 0
+      },
+      {
+        "source_epoch": "42949672969",
+        "capped": false,
+        "cap_reason": "NONE",
+        "nodes": 19,
+        "scrollY": 579
+      },
+      {
+        "source_epoch": "42949672971",
+        "capped": false,
+        "cap_reason": "NONE",
+        "nodes": 19,
+        "scrollY": 0
+      },
+      {
+        "source_epoch": "42949672971",
+        "capped": false,
+        "cap_reason": "NONE",
+        "nodes": 19,
+        "scrollY": 0
+      }
+    ],
+    "diffs": [
+      {
+        "status": "SOURCE_REPLACED",
+        "capped": null,
+        "changed_nodes": 0,
+        "scrollY": null
+      },
+      {
+        "status": "SOURCE_REPLACED",
+        "capped": null,
+        "changed_nodes": 0,
+        "scrollY": null
+      },
+      {
+        "status": "OK",
+        "capped": false,
+        "changed_nodes": 18,
+        "scrollY": 579
+      },
+      {
+        "status": "SOURCE_REPLACED",
+        "capped": null,
+        "changed_nodes": 0,
+        "scrollY": null
+      },
+      {
+        "status": "OK",
+        "capped": false,
+        "changed_nodes": 0,
+        "scrollY": 0
+      }
+    ],
+    "limitation": "Current original assertions passed. The first snapshot was still TIME-capped; later complete snapshots and scrolling Diff passed. This does not establish that the nonpaged 30 ms cap can never truncate a query."
+  }
+}

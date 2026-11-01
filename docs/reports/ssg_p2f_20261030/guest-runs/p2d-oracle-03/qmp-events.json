@@ -1,0 +1,462 @@
+[
+  {
+    "command": "screendump",
+    "arguments": {
+      "filename": "${XOS_ROOT}/build/ssg_p2f_runs/p2d-oracle-03/link-before.ppm"
+    },
+    "serial_offset": 48588,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "rel",
+          "data": {
+            "axis": "x",
+            "value": -100
+          }
+        },
+        {
+          "type": "rel",
+          "data": {
+            "axis": "y",
+            "value": -100
+          }
+        }
+      ]
+    },
+    "serial_offset": 48588,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "rel",
+          "data": {
+            "axis": "x",
+            "value": -100
+          }
+        },
+        {
+          "type": "rel",
+          "data": {
+            "axis": "y",
+            "value": -100
+          }
+        }
+      ]
+    },
+    "serial_offset": 48984,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "rel",
+          "data": {
+            "axis": "x",
+            "value": -100
+          }
+        },
+        {
+          "type": "rel",
+          "data": {
+            "axis": "y",
+            "value": -100
+          }
+        }
+      ]
+    },
+    "serial_offset": 49301,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "rel",
+          "data": {
+            "axis": "x",
+            "value": -100
+          }
+        },
+        {
+          "type": "rel",
+          "data": {
+            "axis": "y",
+            "value": -100
+          }
+        }
+      ]
+    },
+    "serial_offset": 49578,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "rel",
+          "data": {
+            "axis": "x",
+            "value": -100
+          }
+        },
+        {
+          "type": "rel",
+          "data": {
+            "axis": "y",
+            "value": -100
+          }
+        }
+      ]
+    },
+    "serial_offset": 49800,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "rel",
+          "data": {
+            "axis": "x",
+            "value": -100
+          }
+        },
+        {
+          "type": "rel",
+          "data": {
+            "axis": "y",
+            "value": -100
+          }
+        }
+      ]
+    },
+    "serial_offset": 49888,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "rel",
+          "data": {
+            "axis": "x",
+            "value": -100
+          }
+        },
+        {
+          "type": "rel",
+          "data": {
+            "axis": "y",
+            "value": -100
+          }
+        }
+      ]
+    },
+    "serial_offset": 49976,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "rel",
+          "data": {
+            "axis": "x",
+            "value": -100
+          }
+        },
+        {
+          "type": "rel",
+          "data": {
+            "axis": "y",
+            "value": -100
+          }
+        }
+      ]
+    },
+    "serial_offset": 50064,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "rel",
+          "data": {
+            "axis": "x",
+            "value": -100
+          }
+        },
+        {
+          "type": "rel",
+          "data": {
+            "axis": "y",
+            "value": -100
+          }
+        }
+      ]
+    },
+    "serial_offset": 50152,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "rel",
+          "data": {
+            "axis": "x",
+            "value": -100
+          }
+        },
+        {
+          "type": "rel",
+          "data": {
+            "axis": "y",
+            "value": -100
+          }
+        }
+      ]
+    },
+    "serial_offset": 50240,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "rel",
+          "data": {
+            "axis": "x",
+            "value": -100
+          }
+        },
+        {
+          "type": "rel",
+          "data": {
+            "axis": "y",
+            "value": -100
+          }
+        }
+      ]
+    },
+    "serial_offset": 50329,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "rel",
+          "data": {
+            "axis": "x",
+            "value": -100
+          }
+        },
+        {
+          "type": "rel",
+          "data": {
+            "axis": "y",
+            "value": -100
+          }
+        }
+      ]
+    },
+    "serial_offset": 50418,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "rel",
+          "data": {
+            "axis": "x",
+            "value": 56
+          }
+        },
+        {
+          "type": "rel",
+          "data": {
+            "axis": "y",
+            "value": 80
+          }
+        }
+      ]
+    },
+    "serial_offset": 50507,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "rel",
+          "data": {
+            "axis": "x",
+            "value": 0
+          }
+        },
+        {
+          "type": "rel",
+          "data": {
+            "axis": "y",
+            "value": 80
+          }
+        }
+      ]
+    },
+    "serial_offset": 50731,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "rel",
+          "data": {
+            "axis": "x",
+            "value": 0
+          }
+        },
+        {
+          "type": "rel",
+          "data": {
+            "axis": "y",
+            "value": 80
+          }
+        }
+      ]
+    },
+    "serial_offset": 50858,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "rel",
+          "data": {
+            "axis": "x",
+            "value": 0
+          }
+        },
+        {
+          "type": "rel",
+          "data": {
+            "axis": "y",
+            "value": 80
+          }
+        }
+      ]
+    },
+    "serial_offset": 51136,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "rel",
+          "data": {
+            "axis": "x",
+            "value": 0
+          }
+        },
+        {
+          "type": "rel",
+          "data": {
+            "axis": "y",
+            "value": 6
+          }
+        }
+      ]
+    },
+    "serial_offset": 51523,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "btn",
+          "data": {
+            "button": "left",
+            "down": true
+          }
+        }
+      ]
+    },
+    "serial_offset": 51700,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "btn",
+          "data": {
+            "button": "left",
+            "down": false
+          }
+        }
+      ]
+    },
+    "serial_offset": 51789,
+    "returned": {}
+  },
+  {
+    "command": "input-send-event",
+    "arguments": {
+      "events": [
+        {
+          "type": "key",
+          "data": {
+            "down": true,
+            "key": {
+              "type": "qcode",
+              "data": "esc"
+            }
+          }
+        },
+        {
+          "type": "key",
+          "data": {
+            "down": false,
+            "key": {
+              "type": "qcode",
+              "data": "esc"
+            }
+          }
+        }
+      ]
+    },
+    "serial_offset": 52715,
+    "returned": {}
+  }
+]

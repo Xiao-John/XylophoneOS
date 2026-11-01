@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "${XOS_ROOT}/tests/ssg_browser_pages_probe.py", line 198, in <module>
+    g.expect(b'xos64> ', timeout=45)
+  File "${XOS_ROOT}/tests/boot_smoke.py", line 42, in expect
+    return self.expect_any(alternatives, start=start, timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "${XOS_ROOT}/tests/boot_smoke.py", line 54, in expect_any
+    raise AssertionError(f"{self.name}: QEMU exited {self.process.returncode}")
+AssertionError: ssg_p2f_runs/p2d-oracle-01/qemu: QEMU exited 1

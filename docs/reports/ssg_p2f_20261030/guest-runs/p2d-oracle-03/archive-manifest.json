@@ -1,0 +1,169 @@
+{
+  "archive": "capture.tar.gz",
+  "archive_bytes": 336511,
+  "root": "p2d-oracle-03",
+  "entries": [
+    {
+      "path": "01-req.json",
+      "bytes": 36
+    },
+    {
+      "path": "01-req.wire",
+      "bytes": 48,
+      "sha256": "a4494e39387db22fb93a3efa0c3c1cd25c4c10e290b087dd133b2c059dcc6da7"
+    },
+    {
+      "path": "01-resp.json",
+      "bytes": 3724,
+      "sha256": "def27400e8edf8c725da821da1eefec765d3ff3931253266496c469f53ff8167"
+    },
+    {
+      "path": "01-resp.wire",
+      "bytes": 3736,
+      "sha256": "d7db56a6eb12b6662dfe55cdde5a8ca4b8cc54ac53983b55213ade6eb31ece82"
+    },
+    {
+      "path": "02-req.json",
+      "bytes": 101,
+      "sha256": "4aace0febbbfcb71aca04d2d5d26060044b9b9f687cf0be593b0915906032fe3"
+    },
+    {
+      "path": "02-req.wire",
+      "bytes": 113,
+      "sha256": "295ebdd3691485ef7e6031f0cd8e0322be2823dea83e728e76e692b0442172b9"
+    },
+    {
+      "path": "02-resp.json",
+      "bytes": 4208,
+      "sha256": "0ab740ad50725042499f16aee5d9f917adf5d06da2c4054f9fa9ed1234106504"
+    },
+    {
+      "path": "02-resp.wire",
+      "bytes": 4220,
+      "sha256": "2080fae39e64625897dae0b372b262362ba615a4ddc2e234b5f5f93edb24c09b"
+    },
+    {
+      "path": "03-req.json",
+      "bytes": 101,
+      "sha256": "68b1f5caa73ea03b82cd2404ce98783b091bb77590c3a185dd01a608a07eafda"
+    },
+    {
+      "path": "03-req.wire",
+      "bytes": 113,
+      "sha256": "cc18dce99ae404ebcfa105927f7f5e2d4475d6d9aee1cc4632fd3eaf1d8f5cbc"
+    },
+    {
+      "path": "03-resp.json",
+      "bytes": 3882,
+      "sha256": "c101700b723c984e8427b34aa637481d8439cf2a06a2d940324a80398a557ca6"
+    },
+    {
+      "path": "03-resp.wire",
+      "bytes": 3894,
+      "sha256": "2b1cf7f9f51b86fb81d1fa8b379f793b729b47e0a8855c825cd671fa6ca6c940"
+    },
+    {
+      "path": "04-req.json",
+      "bytes": 101,
+      "sha256": "f8fa109d73dff10a3534babfd6d4e9229eecab83437da6d5a727c3bd1db41201"
+    },
+    {
+      "path": "04-req.wire",
+      "bytes": 113,
+      "sha256": "9cc8c8b9acfd852011f2c8a274525c0d3161e6ba8018d12521cec4bf14b55021"
+    },
+    {
+      "path": "04-resp.json",
+      "bytes": 4097,
+      "sha256": "3ca0e13aff70e82bd0972102dfa427f8b1e97cde6710f50b6a7503c410c474c5"
+    },
+    {
+      "path": "04-resp.wire",
+      "bytes": 4109,
+      "sha256": "55da66ff006be30011f00c516ab47bfe29e3a7cbdcc65048826a2410ec7435a3"
+    },
+    {
+      "path": "05-req.json",
+      "bytes": 101,
+      "sha256": "f82190929e3098b03ffa7a4b15396e70e791f9fa60ca944b6b386899cf14a0f9"
+    },
+    {
+      "path": "05-req.wire",
+      "bytes": 113,
+      "sha256": "33de00d917952d5135017e10971b9338bb4d071e43285720eccb2b12a0922b97"
+    },
+    {
+      "path": "05-resp.json",
+      "bytes": 455,
+      "sha256": "3f09a5fccf319e5511332f31fab26e0fe13d81554cf108495e85f21419be76af"
+    },
+    {
+      "path": "05-resp.wire",
+      "bytes": 467,
+      "sha256": "66451209d2703fcf6d9afd52552de8d2b944fe9b39f4ddfa3a4798fa61a6513d"
+    },
+    {
+      "path": "browser.receipt.json",
+      "bytes": 245155,
+      "sha256": "09a86ba528f2b9b3a6155a4473730c6c18df960ba34fd65082aa7958f6aa7232",
+      "original_sha256": "9c45fe5dae60ec1546c971f7cfb24d75a19ef5b3718871b26dd8b66a07352674",
+      "original_bytes": 276959
+    },
+    {
+      "path": "input.html",
+      "bytes": 424
+    },
+    {
+      "path": "link-before.png",
+      "bytes": 243727
+    },
+    {
+      "path": "link-target.html",
+      "bytes": 93
+    },
+    {
+      "path": "oracle-01.json",
+      "bytes": 4294
+    },
+    {
+      "path": "oracle-02.json",
+      "bytes": 4293
+    },
+    {
+      "path": "qemu_qemu.log",
+      "bytes": 71
+    },
+    {
+      "path": "qemu_serial.log",
+      "bytes": 53146,
+      "sha256": "3674d171f987eae1c0840cc7af9cc37d45344fc89eb96d2983a22bfa1b7807bc"
+    },
+    {
+      "path": "qmp-events.json",
+      "bytes": 8060,
+      "original_sha256": "90e0f00324918dd259c00ea2edb9ad443a966754b6260e3f93004502425daa68",
+      "original_bytes": 8092
+    },
+    {
+      "path": "report.json",
+      "bytes": 12237,
+      "original_sha256": "ec49b3f3827fb77c4c48f8fa63e1cd55bca6ebcd39dbf22bcdd0119a9e9f17f2",
+      "original_bytes": 12644
+    },
+    {
+      "path": "serial.log",
+      "bytes": 53146,
+      "sha256": "3674d171f987eae1c0840cc7af9cc37d45344fc89eb96d2983a22bfa1b7807bc"
+    },
+    {
+      "path": "structure-comparison.json",
+      "bytes": 12029
+    },
+    {
+      "path": "runner.log",
+      "bytes": 0
+    }
+  ],
+  "note": "Path-sanitized exported capture; the original archive and changed member hashes are recorded separately. IPC frames and synthetic input bytes are unchanged.",
+  "original_archive_sha256": "a41a2d7e7eaaab8702111576e7a3efbe1b2a4452702fe7348b57fff6bed9c34a"
+}

@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "files": {
+    "README.md": "daefa40689425646a5730d7e80d0d52b053a652107fdbb4f2279296eeb22fa61",
+    "browser-build-binding.json": "89dd9da43aa220214f9a9445d39138154c0d12132718a98c5e3396e1473c6113",
+    "browser.receipt.json": "891e53712ff9c9dd13e28fe2aad64ff845ae5baf8cac9a32a5022b728aa6939b",
+    "consumer-build-final.log": "54e835472cae1662e0a6faee60a1695eabc5e11933051f7b9e74b587dbc8efe4",
+    "consumer-build.log": "ab8a31b5e7463dd9d2dc952829c237ca1b6de0c1ce38c3c034bd4ce90a729ce8",
+    "consumer.receipt.json": "3791f042a68c8a4b0b69a00d59cc6cd353753ee8ddd386041d1f1fda2b1c1719",
+    "diff-final-console.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "exhaust-console.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "exhaust-final-console.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "navigation-console-02.log": "66e3b15619231104c78fda44d7c84cb5621cc3af1a6d3add018118625e849305",
+    "navigation-console-03.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "navigation-console-04.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "navigation-console.log": "08786ef4b6257885d26766224fc777e950a1a4affd2b30ff7bbdde20d5173b60",
+    "oracle-ab-console.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "oracle-browser.receipt.json": "d6300066474a2b4cc119b0d5be44efa6bb05b923820414fede9353af2911271f",
+    "oracle-build.log": "a29b45dca8f5fc322761d82aa06e679cc80745d7a70f017e689356355259cb8a",
+    "p1-console-02.log": "40b4eb673a253e76b3eaeac683eeb3a9522005a807c53230388a4b2628331c47",
+    "p1-console.log": "febebfaaf3783dcb2e0f2842f8b7a227e984f2dad964179ce65acc1a0b3058a5",
+    "pages-final-console.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "recover-final-console.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reload-final-console.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "structure-tests.log": "f136600c42ef3fb2732f3d0c403aa172312de2dbae108fefaa6d10320c7d7804"
+  }
+}

@@ -30,6 +30,11 @@ bool run(const char* path) {
     process_status status{};
     const i64 waited = sdk::wait(static_cast<u64>(child), status);
     const i64 detached = terminal::detach(session, app);
+    if (waited == 0 && status.outcome == process_outcome::exited && status.code >= 0 && status.code <= 9) {
+        char detail[] = "W2_CHILD_EXIT_0\n";
+        detail[14] = static_cast<char>('0' + status.code);
+        (void)transmit(detail);
+    }
     return waited == 0 && detached == 0 && status.outcome == process_outcome::exited && status.code == 0;
 }
 }

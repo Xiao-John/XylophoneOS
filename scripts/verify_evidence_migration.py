@@ -190,8 +190,9 @@ def run(root, export_revision=None):
                 else:
                     field = ledger.get('index_field')
                     field = None if field in (None, '-') else field
-                    old_result = verify(root, index_path, source_commit, field)
-                    new_result = verify(root, index_path, export_revision, field)
+                    suffix = ledger.get('index_suffix', '')
+                    old_result = verify(root, index_path, source_commit, field, path_suffix=suffix)
+                    new_result = verify(root, index_path, export_revision, field, path_suffix=suffix)
                     require(old_result['status'] == new_result['status'] == 'PASS', 'legacy source/export index mismatch')
                     legacy_indexes += 1
             added = ledger.get('added_export_document')

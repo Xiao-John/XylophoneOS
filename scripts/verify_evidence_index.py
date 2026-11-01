@@ -138,9 +138,11 @@ class git_reader:
             raise ValueError("Git object reader failed")
 
 
-def verify(root, index, revision=None, field=None, paths_root=None, data_revision=None):
+def verify(root, index, revision=None, field=None, paths_root=None, data_revision=None, path_suffix=''):
     index = safe_path(index)
     base = safe_path(paths_root) if paths_root is not None else index.parent
+    if path_suffix and not re.fullmatch(r'\.[A-Za-z0-9_.-]+', path_suffix):
+        raise ValueError('invalid index path suffix')
     reader = git_reader(root, revision) if revision else checkout_reader(root)
     data_reader = None
     try:
@@ -148,7 +150,7 @@ def verify(root, index, revision=None, field=None, paths_root=None, data_revisio
         entries = parse_index(reader.read(index), index, field)
         failures = []
         for name, entry in entries.items():
-            target = base / safe_path(name)
+            target = base / safe_path(name + path_suffix)
             try:
                 data = data_reader.read(target)
             except FileNotFoundError:
@@ -181,9 +183,10 @@ def main():
     parser.add_argument("--data-revision", help="read indexed files from this commit, using the selected index")
     parser.add_argument("--field", help="JSON field containing the path-to-hash map")
     parser.add_argument("--paths-root", help="repository-relative root for index entries; '.' means repository root")
+    parser.add_argument("--path-suffix", default='', help="fixed suffix for legacy index keys, such as .json")
     args = parser.parse_args()
     try:
-        result = verify(args.root, args.index, args.revision, args.field, args.paths_root, args.data_revision)
+        result = verify(args.root, args.index, args.revision, args.field, args.paths_root, args.data_revision, args.path_suffix)
     except (ValueError, OSError, UnicodeError, subprocess.SubprocessError) as exc:
         # Exception strings may contain the contributor's absolute checkout or
         # tool paths. Do not copy those into a report intended for sharing.

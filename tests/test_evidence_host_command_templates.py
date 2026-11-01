@@ -91,6 +91,15 @@ class evidence_host_command_tests(unittest.TestCase):
         changed, _ = template_reviewed_host_data(data, name)
         self.assertEqual(json.loads(changed)['runs'][0]['command'][1], '${XOS_INPUT_ARCHIVE}')
 
+    def test_reviewed_host_environment_is_scoped_to_exact_evidence(self):
+        value = b'/work' + b'space/example/build /opt/codex/run' + b'times/version/bin/python'
+        name = 'docs/reports/fb0_20261029/system_manifest.json.gz'
+        changed, variables = template_reviewed_host_data(value, name)
+        self.assertIn(b'${XOS_WORKSPACE_', changed)
+        self.assertIn(b'${XOS_RUNTIME_', changed)
+        self.assertEqual(len(variables), 2)
+        self.assertEqual(template_reviewed_host_data(value, 'guest/serial.log')[0], value)
+
 
 if __name__ == '__main__':
     unittest.main()

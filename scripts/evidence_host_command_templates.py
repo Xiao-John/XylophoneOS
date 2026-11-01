@@ -24,7 +24,16 @@ host_build_json = {
     'src/ports/gcc/e08_5_abi_build_report.json',
     'docs/reports/daily_utilities_20261028/system_manifest.json.gz',
 }
+host_environment_files = {
+    'docs/reports/fb0_20261029/service_system_manifest.json.gz',
+    'docs/reports/fb0_20261029/system_manifest.json.gz',
+    'docs/reports/fb12_20261029/attempts/mixed_old_build_log.gz',
+    'docs/reports/fb12_20261029/system_manifest.json.gz',
+    'docs/reports/fb12_dash_20261029/system_manifest.json.gz',
+}
 host_temp_bytes = re.compile(rb'(?<![A-Za-z0-9_./-])(?:/private/var/fol' rb'ders/|/private/tm' rb'p/|/var/fol' rb'ders/|/tm' rb'p/)[^/\s,;"\'\\]+')
+host_workspace_bytes = re.compile(rb'(?<![A-Za-z0-9_./-])/work' rb'space/[^/\s,;"\'\\]+')
+host_runtime_bytes = re.compile(rb'(?<![A-Za-z0-9_./-])/opt/codex/run' rb'times/[^/\s,;"\'\\]+')
 
 
 def template_qemu_json(data):
@@ -118,6 +127,17 @@ def template_reviewed_host_data(data, name):
     if name in host_build_json and b'/opt/homebrew' in data:
         data = data.replace(b'/opt/homebrew', b'${XOS_HOMEBREW}')
         variables['XOS_HOMEBREW'] = 'reviewed host toolchain root'
+    if name in host_environment_files:
+        for kind, pattern in (('WORKSPACE', host_workspace_bytes), ('RUNTIME', host_runtime_bytes)):
+            def replace_environment(match):
+                raw = match.group()
+                token = 'XOS_' + kind + '_' + hashlib.sha256(raw).hexdigest()[:12].upper()
+                variables[token] = 'reviewed host environment root'
+                return ('${' + token + '}').encode()
+            data = pattern.sub(replace_environment, data)
+    if name == 'docs/reports/threading_20261025/threading_compile_report.json' and b'<repo>' in data:
+        data = data.replace(b'<repo>', b'${XOS_ROOT}')
+        variables['XOS_ROOT'] = 'reviewed host source root'
     if name == 'docs/reports/dash_c3_20261026/regression_summary.json':
         obj = json.loads(data, object_pairs_hook=no_duplicates)
         value = '../runtime/xos-1024-images.tar.gz'

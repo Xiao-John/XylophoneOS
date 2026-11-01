@@ -16,6 +16,3 @@ licenses/modern_apps/defusedxml_LICENSE -whitespace
 # Preserve their exact bytes so the original evidence indexes remain valid.
 docs/reports/aurora_sdk_review_20261030/runs/**/serial.log -text whitespace=-blank-at-eol,cr-at-eol
 docs/reports/net_clock_irq_split_20261030/runs/**/*.log -text whitespace=-blank-at-eol,cr-at-eol
-
-# The pinned liteHTML unified diff preserves upstream tab/blank context bytes.
-src/ports/aurora_browser/patches/*.patch whitespace=-blank-at-eol,-space-before-tab

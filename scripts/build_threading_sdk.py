@@ -33,7 +33,10 @@ def main():
     parser.add_argument('--gcc-source', type=Path)
     parser.add_argument('--output', type=Path, default=ROOT / 'build/threading_sdk')
     parser.add_argument('--cpp', action='store_true')
+    parser.add_argument('--jobs', type=int, default=8, help='positive parallel build job count (default: 8)')
     args = parser.parse_args()
+    if args.jobs < 1:
+        parser.error('--jobs must be positive')
     prefix = args.newlib_prefix.resolve()
     if args.cpp and args.gcc_source is None:
         parser.error('--gcc-source is required with --cpp')
@@ -182,7 +185,7 @@ def main():
         if not feature_stamp.exists() or feature_stamp.read_text() != feature_sha:
             run(['make', 'clean'], 'cpp_clean_config_change.log', cwd=build, env=env)
             feature_stamp.write_text(feature_sha)
-        run(['make', '-j8'], 'cpp_make.log', cwd=build, env=env)
+        run(['make', '-j' + str(args.jobs)], 'cpp_make.log', cwd=build, env=env)
         feature_stamp.write_text(feature_sha)
         run(['make', 'install'], 'cpp_install.log', cwd=build, env=env)
         compiler_build = work / 'gcc'
@@ -207,7 +210,7 @@ def main():
              '--disable-gcov', '--prefix=' + str(output / 'cpp')],
             'libgcc_configure.log', cwd=unwind_build, env=env)
         members = ['unwind-dw2.o', 'unwind-dw2-fde.o', 'unwind-sjlj.o', 'unwind-c.o', 'emutls.o']
-        run(['make', '-j8', 'gcc_objdir=' + str(compiler_build), *members],
+        run(['make', '-j' + str(args.jobs), 'gcc_objdir=' + str(compiler_build), *members],
             'libgcc_make.log', cwd=unwind_build, env=env)
         libgcc = output / 'cpp/lib/libgcc.a'
         original = Path(subprocess.check_output([cross, '-print-libgcc-file-name'], text=True).strip())

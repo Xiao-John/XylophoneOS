@@ -12,7 +12,7 @@
 
 namespace browser::test {
 // A deliberately simple, bounded reference over the engine's actual document.
-// This code knows nothing about SSG IDs, PageFrame, cursors, filters, budgets,
+// This code knows nothing about SSG IDs, page_frame, cursors, filters, budgets,
 // rendering fragments, or the Provider's completion decision. It is not an IPC
 // operation and is absent from the normal Browser build.
 inline QJsonObject structure_oracle(const litehtml::element::ptr &root) {

@@ -100,6 +100,13 @@ class evidence_host_command_tests(unittest.TestCase):
         self.assertEqual(len(variables), 2)
         self.assertEqual(template_reviewed_host_data(value, 'guest/serial.log')[0], value)
 
+    def test_reviewed_document_template_preserves_markdown_delimiters(self):
+        value = b'`' + b'/tm' + b'p/example` and ' + b'/tm' + b'p/other/file'
+        name = 'docs/work_log/0063_input_edit_design.md'
+        changed, _ = template_reviewed_host_data(value, name)
+        self.assertIn(b'}` and ${XOS_DOC_TEMP_', changed)
+        self.assertEqual(template_reviewed_host_data(value, 'docs/unreviewed.md')[0], value)
+
 
 if __name__ == '__main__':
     unittest.main()

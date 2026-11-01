@@ -1,3 +1,5 @@
+> **路径模板：** 本历史记录中的宿主临时根目录为可配置占位符；原始字节保留在源提交。
+
 # 0080 FB0 应用故障包勘查与格式冻结
 
 2026-10-29，基线 `4322caf`，分支 `codex/fb0-scout`。用户要求完成FB0；本组交付
@@ -70,19 +72,19 @@ source /workspace/xos-env/activate
 cd /workspace/XylophoneOS
 make build
 python3 tests/fb0_probe.py
-mkdir /tmp/xos-fb0-service-fixture
-git archive 4322caf | tar -x -C /tmp/xos-fb0-service-fixture
-patch -p1 -d /tmp/xos-fb0-service-fixture < tests/fixtures/fb0/service_fault.patch
-(cd /tmp/xos-fb0-service-fixture && python3 scripts/build.py)
-python3 tests/fb0_service_exit.py --image /tmp/xos-fb0-service-fixture/build/xos.img \
-  --probe build/fb0/probe.elf --injected-source /tmp/xos-fb0-service-fixture/src/user/services/files.cpp
+mkdir ${XOS_DOC_TEMP_9C7ADD990C55}
+git archive 4322caf | tar -x -C ${XOS_DOC_TEMP_9C7ADD990C55}
+patch -p1 -d ${XOS_DOC_TEMP_9C7ADD990C55} < tests/fixtures/fb0/service_fault.patch
+(cd ${XOS_DOC_TEMP_9C7ADD990C55} && python3 scripts/build.py)
+python3 tests/fb0_service_exit.py --image ${XOS_DOC_TEMP_9C7ADD990C55}/build/xos.img \
+  --probe build/fb0/probe.elf --injected-source ${XOS_DOC_TEMP_9C7ADD990C55}/src/user/services/files.cpp
 clang++ -std=c++20 -Wall -Wextra -Werror -I src/shared/include -I src/user/include \
   tests/fixtures/fb0/file_client_failure.cpp src/user/sdk/file_client.cpp src/user/sdk/text.cpp \
   -o build/fb0/file_client_failure
 build/fb0/file_client_failure
 ```
 
-测试仅操作新建的临时盘。若 `/tmp/xos-fb0-service-fixture` 已存在，选择另一个新目录；
+测试仅操作新建的临时盘。若 `${XOS_DOC_TEMP_9C7ADD990C55}` 已存在，选择另一个新目录；
 不得覆盖或清理其他工作。重建后build ID取决于实际输入；不能将新结果改绑旧冻结回执。
 
 ## 接续

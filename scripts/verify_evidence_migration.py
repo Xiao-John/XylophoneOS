@@ -17,9 +17,10 @@ import tarfile
 from pathlib import Path
 
 from verify_evidence_index import checkout_reader, git_reader, no_duplicates, safe_path, verify
-from evidence_host_command_templates import template_qemu_json, template_reviewed_host_data
+from evidence_host_command_templates import host_documents, template_qemu_json, template_reviewed_host_data
 
 conversion_dir = 'docs/evidence_exports/issue37'
+host_document_notice = ('> **路径模板：** 本历史记录中的宿主临时根目录为可配置占位符；原始字节保留在源提交。\n\n').encode('utf-8')
 patterns = [
     ('WORKTREE', re.compile(rb'(?i)/us' rb'ers/[^/\s"\'\\]+/Documents/ChatGPT/os/[^/\s,;"\'\\]+')),
     ('TOOLCHAIN', re.compile(rb'(?i)/us' rb'ers/[^/\s"\'\\]+/homebrew')),
@@ -217,6 +218,9 @@ def run(root, export_revision=None):
                     members, _ = verify_archive(old, new, info, original_map, export_map)
                     archives_checked += 1
                     members_checked += members
+                elif ledger.get('transformation_kind') == 'REVIEWED_HOST_DOCUMENT':
+                    require(str(path) in host_documents and new == host_document_notice + expected_export(old, str(path)),
+                            'reviewed host document changed beyond its notice and path templates')
                 elif path.name == 'README.md':
                     require(new.endswith(expected_export(old, str(path))), 'README changed beyond path conversion and notice')
                 else:

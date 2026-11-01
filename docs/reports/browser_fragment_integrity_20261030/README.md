@@ -2,7 +2,7 @@
 > the original evidence, not byte-identical raw logs or reports. The
 > current index hashes the files in this checkout. The original index and
 > its source commit are preserved and identified in the
-> [PR 44 provenance record](../issue37_path_hygiene/pr44-lineage.json).
+> [PR 44 provenance record](../../evidence_exports/issue37_pr44/original-pr44-lineage.json).
 
 # Browser SSG fragment and query-scope regression
 

@@ -24,3 +24,11 @@
 桥接因而进入 unavailable，随后无法正常 detach。失败 build `e6254583af2ea08b`，
 串口 SHA-256 `a9cc7be28a89ae9f83e7a643061807269a306143776a5a4dd8b60d8fc48d759a`。
 现禁止该阶段的 supervisor 输出；应用退出状态仍在 detach 后由 trace 输出，需提交后重测。
+
+提交 `2849a28` 后以正常 supervisor 重建 build `737cc1193fd3239a`，真实 Xsh 经
+`tty-run` 依次启动宽字符屏幕、重入和 locale 三个应用，均明确记录 `exited code=0`
+并返回提示符；屏幕探针还验证方向键、F1、中文、组合字符、颜色与超时。ISO SHA-256
+`2bfe61b45a6e625f5f7b8b9db73b468a2033f0c1cb24db79b3488ec3772c4751`，串口 SHA-256
+`3b0d65c4bb9960db8e2afc29e0f953e461a15f10a71fff07c4ee2f9728f59c17`；回执位于隔离
+工作区 `build/w1_xsh_tty_2849a28/ncurses_guest_probe_report.json`。仍不代表旧应用、
+dash、失败救援、取消或完整 W1/W2 通过。

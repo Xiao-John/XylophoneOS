@@ -75,7 +75,7 @@ def main():
         report['not_run'] = ['authorized_boundaries', 'fork_exec', 'revocation_races',
                              'cross_process_isolation', 'resource_stress', 'full_w1_terminal']
     elif args.probe == 'tty_exec':
-        report['not_run'] = ['fork_inheritance', 'threaded_profile', 'all_cloexec',
+        report['not_run'] = ['fork_inheritance', 'threaded_profile',
                              'exec_inflight_races', 'full_w1_terminal']
     guest = None
     try:
@@ -92,6 +92,10 @@ def main():
                 if sha(terminal) != manifest['artifacts'][terminal.name]['sha256']:
                     raise SystemExit('terminal artifact differs from manifest')
                 transfer(disk, 'import', '/bin/terminal.elf', terminal)
+                legacy = system / 'user_libc_hello.image.elf'
+                if sha(legacy) != manifest['artifacts'][legacy.name]['sha256']:
+                    raise SystemExit('legacy artifact differs from manifest')
+                transfer(disk, 'import', '/bin/legacy.elf', legacy)
             guest = Guest(image, 'w1_wait', work_disk=disk, iso=True)
             report['qemu_command'] = guest.command
             guest.expect(b'xos64> ', timeout=40)
@@ -122,6 +126,12 @@ def main():
                 if not before or not after or before.group(1) != after.group(1):
                     raise AssertionError('terminal exec did not preserve process identity')
                 report['checks'].append('terminal_exec_identity_mode_alias_cloexec_and_failed_exec')
+                start = len(guest.output)
+                send_bytes(guest, b'tty-run /bin/ttyexec.elf drop\r')
+                guest.expect(b'TTY_EXEC_DROP_READY', start=start, timeout=60)
+                guest.expect(b'kind=exited code=0', start=start, timeout=60)
+                guest.expect(b'xsh> ', start=start, timeout=60)
+                report['checks'].append('terminal_exec_all_cloexec_closed')
             elif args.probe in ('pio', 'irq'):
                 expected = b'W1_PIO_DENIED_OK' if args.probe == 'pio' else b'W1_IRQ_DENIED_OK'
                 reply = command(guest, f'exec-file /bin/{args.probe}.elf', expected, timeout=40)

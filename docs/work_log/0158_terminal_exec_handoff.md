@@ -12,3 +12,14 @@ replacement 验证内核认证通道并恢复描述符别名。目标必须同�
 常规 build `c7a9a261e8b4ffb5` 通过；其他应用链接策略保持原样，须进行目标回归。
 新增真实 Xsh 终端 exec 探针，覆盖成功同 PID、保留别名、CLOEXEC、模式与失败 exec；
 已交叉编译，客体必须在提交后运行。尚不授予 W1/W2 完整资格。
+
+提交 `1361131` 后，正常 Xsh build `b06bc159557733d1` 的终端 exec 子集通过：
+成功前后均 PID 10，未关闭别名与模式保留，CLOEXEC 别名关闭，缺失路径失败后
+会话仍可用。ISO SHA-256 `19170eb8484c68bcaf7756b8c53031954286746b4b630a9b10201555398756bf`，
+串口 SHA-256 `8f9107b8fdd3674fe4b5e250f589cdfdcdb9d4f6ca020c1b589d236dd2e7a494`，
+证据位于 `build/w1_terminal_exec_run_1361131/`。专用终端交接 build
+`52cc7038dab7fe29` 四组通过；内置 libc_hello 在独立盘上两次执行、输出和退出码
+回归通过，串口 SHA-256 `bdce2c2b405ed5a5da534de60287e985654d403d23c9ef4b131a6b23f26d0700`。
+最初 libc 检查没有附加盘，进入维护门控而未执行应用；该失败串口 SHA-256
+`e6219df71fb92bdc93a6d1c253e78904baafee765410d007f14ee0692d703c20`。
+现在增加全 CLOEXEC 和仅缺终端标记的目标拒绝探针，须提交后重新构建和验证。

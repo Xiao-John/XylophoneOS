@@ -28,6 +28,20 @@ bool message(const char* label) {
 
 extern "C" int xos_user_main(const xos::startup_info* startup) {
     const auto args = reinterpret_cast<const char* const*>(startup->argv);
+    if (startup->argc > 1 && xos::sdk::equal(args[1], "drop-after")) {
+        for (int fd = 0; fd < 3; ++fd) {
+            errno = 0;
+            if (fcntl(fd, F_GETFD) != -1 || errno != EBADF) return 10;
+        }
+        return 0;
+    }
+    if (startup->argc > 1 && xos::sdk::equal(args[1], "drop")) {
+        if (!message("TTY_EXEC_DROP_READY")) return 11;
+        for (int fd = 0; fd < 3; ++fd) if (fcntl(fd, F_SETFD, FD_CLOEXEC) != 0) return 12;
+        char target[] = "/bin/ttyexec.elf", next[] = "drop-after", *next_args[] = {target, next, nullptr};
+        (void)execv(target, next_args);
+        return 13;
+    }
     if (startup->argc > 1 && xos::sdk::equal(args[1], "after")) {
         errno = 0;
         if (fcntl(3, F_GETFD) != -1 || errno != EBADF || !isatty(4) || !isatty(0) || !isatty(1)) return 1;
@@ -43,6 +57,9 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
     char missing[] = "/missing", *missing_args[] = {missing, nullptr};
     errno = 0;
     if (execv(missing, missing_args) != -1 || errno != ENOENT || !isatty(4)) return 7;
+    char legacy[] = "/bin/legacy.elf", *legacy_args[] = {legacy, nullptr};
+    errno = 0;
+    if (execv(legacy, legacy_args) != -1 || errno != ENOTSUP || !isatty(4)) return 14;
     if (!message("TTY_EXEC_BEFORE")) return 8;
     char target[] = "/bin/ttyexec.elf", after[] = "after", *args2[] = {target, after, nullptr};
     (void)execv(target, args2);

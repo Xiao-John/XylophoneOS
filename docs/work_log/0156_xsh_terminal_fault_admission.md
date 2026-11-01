@@ -8,3 +8,11 @@
 无标记系统应用的 ELF 已检查不含 `.xos.tty`；五个独立消费者已用整合后的组合 SDK
 交叉链接。Python 编译通过；以上不是客体结果。提交后必须重建系统并运行真实客体。
 该检查不涵盖 kill、fork/exec、其他应用并发或在途 I/O 的全部故障顺序。
+
+提交 `145c4e7` 后，在整合主线的干净快照构建 `b57cd9a8ca63e044` 并以组合 SDK
+运行真实 Xsh 客体，八组检查通过：无标记应用返回 unsupported；故障应用输出就绪后
+触发 vector 14，shell 回收会话、恢复提示符，free_pages/tasks/completions 回到
+`130086/3/1`，后续服务重启及新应用亦通过。ISO SHA-256
+`7afdc0e085004986736929f79e88d76dfc211b4774e83302fb3004371f3fff89`，串口 SHA-256
+`ed4b77e8e2efea637eedf9c0076d8916bc3fc4c9a3a6a27bafb8ec75f4e63197`；回执与串口位于
+`build/w1_xsh_fault_145c4e7/`。仍不将该受控故障外推为完整 W1/W2 资格。

@@ -47,6 +47,11 @@ sha256"的嵌套引用（近似 DAG），后者在任何字节修订时引发级
   `manifest.json`，叶子互不哈希。
 - `tests/report_manifest_check.py` 对两类目录分别如实报告
   （`compliant` / `grandfathered`），不把 grandfathered 冒充为已覆盖。
+- 旧 Dock 报告的 `manifest.json` 是契约生效前的历史格式；校验器只对该明确目录
+  检查压缩包和逐成员哈希，结果仍列为 `grandfathered`，并标明不覆盖目录全部文件。
+  未登记的新目录不能用旧格式冒充平铺清单。
+- 早于本契约的 `issue37_path_hygiene` 旧索引按其原始索引字节精确识别并逐项
+  校验；即使附加了平铺清单，仍标为 `grandfathered`。这一识别不豁免路径扫描。
 
 ## 6. 边界
 

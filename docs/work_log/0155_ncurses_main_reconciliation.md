@@ -27,3 +27,13 @@ SHA-256 `92a75fae3f31ff88aed584391b11b2872c5cfd1c75fc567df76ab0c8573d4985`。
 Xsh 原串口文件因后续探针复用固定日志名被覆盖，只保留回执摘要，不能当作完整原始
 证据；现更改测试器为每个系统构建目录保存串口，须在新提交后重跑并核对。上述检查
 不覆盖完整 W1/W2，旧工作区脏文件与本地 main 尚未整合。
+
+提交 `5f844f4` 后重新构建并运行：正常 Xsh build `5149edaf5864904a` 六组通过，
+交接 build `44564ceb2663b18a` 四组通过，故障 build `cd6a65798283e278` 五组通过。
+各目录的原始串口分别保存为 `ncurses_guest_serial.log`、`terminal_handoff_serial.log`、
+`ncurses_guest_serial.log`，与各回执的 SHA-256 核对一致，依次为
+`8960e7ef74cf225c631a203303523094d9964c4e1cb9f99cc9d2e32fca812552`、
+`5366c542edb72d9131d88849b20bef9826f7d27db1aa2a2cfcd2ec7573871`、
+`7a0569257b0306ff7c5b2af4135aa012f201ae036506824cabcc33c6a03e1f7a`。
+回执分别位于 `build/w1_main_5f844f4/`、`build/w1_main_handoff_5f844f4/`、
+`build/w1_main_fault_5f844f4/`。clock/IRQ 和负向结果仍仅绑定 `0c6d512` 的镜像。

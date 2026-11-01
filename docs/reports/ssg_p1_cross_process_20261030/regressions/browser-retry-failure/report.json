@@ -1,0 +1,60 @@
+{
+  "status": "FAILED",
+  "case": "browser",
+  "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+  "checks": [
+    {
+      "name": "browser_dom_layout_hidden_and_offviewport",
+      "status": "PASSED"
+    },
+    {
+      "name": "ssg_link_geometry_matches_actual_engine_hit",
+      "status": "PASSED"
+    }
+  ],
+  "screenshots": {
+    "browser-dom-first": {
+      "png_bytes": 250043,
+      "host_capture_ms": 64.24920799327083
+    }
+  },
+  "runs": [],
+  "elf_sha256": {
+    "browser": "548be4a1a3ef17f03a90b15687f29ceb82bfe6f72768fab08c3547cb3a1bcd09"
+  },
+  "qemu_command": [
+    "${XOS_LOCAL_PATH_94e60e5dbfb4}",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=${XOS_LOCAL_PATH_51a25efb2781},format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_LOCAL_PATH_9d63fd435e0f},format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:${XOS_LOCAL_PATH_190c600aa479},server=on,wait=off"
+  ],
+  "error": "AssertionError()"
+}

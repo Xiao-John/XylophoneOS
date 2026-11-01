@@ -1,0 +1,10 @@
+{
+  "partial-snapshot.json": {
+    "status": "OK",
+    "capped": true
+  },
+  "reset-required-diff.json": {
+    "status": "RESET_REQUIRED",
+    "capped": false
+  }
+}

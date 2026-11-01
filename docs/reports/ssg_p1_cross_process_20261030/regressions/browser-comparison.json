@@ -1,0 +1,183 @@
+{
+  "baseline_source": "17e4392; Browser main/view match PR #5, with separately merged Diff fix; frozen receipt inputs were rehashed",
+  "conclusion": "Both candidate attempts and the baseline return capped snapshots and RESET_REQUIRED in the existing larger-page regression on this host/image. This comparison does not establish the underlying performance cause or a passing regression.",
+  "runs": {
+    "candidate_first": {
+      "status": "FAILED",
+      "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+      "browser_elf_sha256": "548be4a1a3ef17f03a90b15687f29ceb82bfe6f72768fab08c3547cb3a1bcd09",
+      "checks": [
+        {
+          "name": "browser_dom_layout_hidden_and_offviewport",
+          "status": "PASSED"
+        },
+        {
+          "name": "ssg_link_geometry_matches_actual_engine_hit",
+          "status": "PASSED"
+        }
+      ],
+      "observations": [
+        {
+          "kind": "SNAPSHOT",
+          "status": "OK",
+          "capped": true,
+          "nodes": 12,
+          "queryDurationNs": "60000000"
+        },
+        {
+          "kind": "DIFF",
+          "status": "SOURCE_REPLACED",
+          "capped": null,
+          "nodes": 0,
+          "queryDurationNs": null
+        },
+        {
+          "kind": "SNAPSHOT",
+          "status": "OK",
+          "capped": true,
+          "nodes": 14,
+          "queryDurationNs": "60000000"
+        },
+        {
+          "kind": "DIFF",
+          "status": "SOURCE_REPLACED",
+          "capped": null,
+          "nodes": 0,
+          "queryDurationNs": null
+        },
+        {
+          "kind": "SNAPSHOT",
+          "status": "OK",
+          "capped": true,
+          "nodes": 16,
+          "queryDurationNs": "100000000"
+        },
+        {
+          "kind": "DIFF",
+          "status": "RESET_REQUIRED",
+          "capped": true,
+          "nodes": 0,
+          "queryDurationNs": null
+        }
+      ]
+    },
+    "candidate_retry": {
+      "status": "FAILED",
+      "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+      "browser_elf_sha256": "548be4a1a3ef17f03a90b15687f29ceb82bfe6f72768fab08c3547cb3a1bcd09",
+      "checks": [
+        {
+          "name": "browser_dom_layout_hidden_and_offviewport",
+          "status": "PASSED"
+        },
+        {
+          "name": "ssg_link_geometry_matches_actual_engine_hit",
+          "status": "PASSED"
+        }
+      ],
+      "observations": [
+        {
+          "kind": "SNAPSHOT",
+          "status": "OK",
+          "capped": true,
+          "nodes": 12,
+          "queryDurationNs": "60000000"
+        },
+        {
+          "kind": "DIFF",
+          "status": "SOURCE_REPLACED",
+          "capped": null,
+          "nodes": 0,
+          "queryDurationNs": null
+        },
+        {
+          "kind": "SNAPSHOT",
+          "status": "OK",
+          "capped": true,
+          "nodes": 14,
+          "queryDurationNs": "60000000"
+        },
+        {
+          "kind": "DIFF",
+          "status": "SOURCE_REPLACED",
+          "capped": null,
+          "nodes": 0,
+          "queryDurationNs": null
+        },
+        {
+          "kind": "SNAPSHOT",
+          "status": "OK",
+          "capped": true,
+          "nodes": 16,
+          "queryDurationNs": "100000000"
+        },
+        {
+          "kind": "DIFF",
+          "status": "RESET_REQUIRED",
+          "capped": true,
+          "nodes": 0,
+          "queryDurationNs": null
+        }
+      ]
+    },
+    "baseline": {
+      "status": "FAILED",
+      "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+      "browser_elf_sha256": "9c0ba3df97b3712dafb633e8cd449e3fe8f6bf1fdc08f265e66ee02a1d6f9dec",
+      "checks": [
+        {
+          "name": "browser_dom_layout_hidden_and_offviewport",
+          "status": "PASSED"
+        },
+        {
+          "name": "ssg_link_geometry_matches_actual_engine_hit",
+          "status": "PASSED"
+        }
+      ],
+      "observations": [
+        {
+          "kind": "SNAPSHOT",
+          "status": "OK",
+          "capped": true,
+          "nodes": 12,
+          "queryDurationNs": "60000000"
+        },
+        {
+          "kind": "DIFF",
+          "status": "SOURCE_REPLACED",
+          "capped": null,
+          "nodes": 0,
+          "queryDurationNs": null
+        },
+        {
+          "kind": "SNAPSHOT",
+          "status": "OK",
+          "capped": true,
+          "nodes": 14,
+          "queryDurationNs": "60000000"
+        },
+        {
+          "kind": "DIFF",
+          "status": "SOURCE_REPLACED",
+          "capped": null,
+          "nodes": 0,
+          "queryDurationNs": null
+        },
+        {
+          "kind": "SNAPSHOT",
+          "status": "OK",
+          "capped": true,
+          "nodes": 16,
+          "queryDurationNs": "100000000"
+        },
+        {
+          "kind": "DIFF",
+          "status": "RESET_REQUIRED",
+          "capped": true,
+          "nodes": 0,
+          "queryDurationNs": null
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,510 @@
+{
+  "status": "PARTIAL",
+  "inputs": {
+    "image": {
+      "path": "${XOS_LOCAL_PATH_51a25efb2781}",
+      "sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08"
+    },
+    "session": {
+      "path": "${XOS_LOCAL_PATH_8afdea1884c8}",
+      "sha256": "05a9d26a20df998457c0781c5048130c3ffc55a7167c749964b1da5eca851f70"
+    },
+    "consumer": {
+      "path": "${XOS_LOCAL_PATH_d99f4c6d3ec9}",
+      "sha256": "a7ab70e30b50ccae4376e9e1e36f9603f0af5d219295e71beb094ad80857bc64"
+    },
+    "notes": {
+      "path": "${XOS_LOCAL_PATH_c1e633de6e54}",
+      "sha256": "01ca9118658f9ea19cab03ce0e6c94d2df41537d05699f9dbc4f1cd181461aa7"
+    },
+    "browser": {
+      "path": "${XOS_LOCAL_PATH_78b7e2202b7c}",
+      "sha256": "548be4a1a3ef17f03a90b15687f29ceb82bfe6f72768fab08c3547cb3a1bcd09"
+    },
+    "dash": {
+      "path": "${XOS_LOCAL_PATH_6b0d6a4c9552}",
+      "sha256": "d262b8299734d07c27e8d5ac696a3460c82cba4fe56159d3cbdcceee8f703ff9"
+    }
+  },
+  "checks": [
+    "gui_input_remains_responsive_under_pipe_backpressure",
+    "separate_processes_bound_by_parent",
+    "consumer_parsed_live_notes_and_failure_semantics",
+    "recorded_real_keyboard_edit_and_consumer_diff",
+    "both_children_and_pipe_resources_reclaimed",
+    "actual_provider_restart_rejects_old_node_reference",
+    "text_scope_denied_by_default",
+    "standalone_cli_detail_and_diff",
+    "truncated_frame_disconnect_and_cleanup",
+    "oversized_frame_refused_and_cleanup",
+    "consumer_timeout_disconnect_and_cleanup",
+    "provider_partial_frame_timeout_and_cleanup",
+    "browser_real_fragment_scroll_reload_and_stale_epoch",
+    "browser_text_scope_denied_by_default",
+    "browser_local_probe_cannot_expand_pipe_text_scope",
+    "dash_without_spawn_delegation_denied",
+    "display_and_guest_resource_baseline_restored"
+  ],
+  "qemu_command": [
+    "${XOS_LOCAL_PATH_94e60e5dbfb4}",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=${XOS_LOCAL_PATH_51a25efb2781},format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_LOCAL_PATH_8e2efd01065e},format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:${XOS_LOCAL_PATH_6277210fea0d},server=on,wait=off"
+  ],
+  "baseline_resources": [
+    130279,
+    2,
+    0
+  ],
+  "display_resources": [
+    130235,
+    3,
+    1
+  ],
+  "guest_command": "exec-driver /bin/session.elf /ssg.txt scenario --text",
+  "processes": {
+    "parent_pid": 10,
+    "provider_pid": 12,
+    "consumer_pid": 11,
+    "instance": "46813c80001569705f12fc17fe14ce66"
+  },
+  "consumer_checks": [
+    {
+      "name": "live_line_edit",
+      "status": "PASS"
+    },
+    {
+      "name": "large_snapshot_crosses_pipe_capacity",
+      "status": "PASS"
+    },
+    {
+      "name": "live_document_snapshot",
+      "status": "PASS"
+    },
+    {
+      "name": "parsed_node_text_geometry",
+      "status": "PASS"
+    },
+    {
+      "name": "live_edit_diff",
+      "status": "PASS"
+    },
+    {
+      "name": "live_edit_snapshot",
+      "status": "PASS"
+    },
+    {
+      "name": "stale_node_version_refused",
+      "status": "PASS"
+    },
+    {
+      "name": "live_node_detail",
+      "status": "PASS"
+    },
+    {
+      "name": "scroll_diff",
+      "status": "PASS"
+    },
+    {
+      "name": "live_scroll_state",
+      "status": "PASS"
+    },
+    {
+      "name": "stale_epoch_refused",
+      "status": "PASS"
+    },
+    {
+      "name": "old_provider_instance_refused",
+      "status": "PASS"
+    },
+    {
+      "name": "changed_scope_requires_snapshot",
+      "status": "PASS"
+    },
+    {
+      "name": "node_limit_reports_truncation",
+      "status": "PASS"
+    },
+    {
+      "name": "truncated_diff_refused",
+      "status": "PASS"
+    },
+    {
+      "name": "replayed_message_refused",
+      "status": "PASS"
+    },
+    {
+      "name": "provider_exit_eof",
+      "status": "PASS"
+    }
+  ],
+  "frames": [
+    {
+      "direction": "REQ",
+      "sequence": 1,
+      "bytes": 68,
+      "file": "01-req.json",
+      "op": "snapshot",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 1,
+      "bytes": 1198,
+      "file": "01-resp.json",
+      "op": null,
+      "status": "OK"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 2,
+      "bytes": 61,
+      "file": "02-req.json",
+      "op": "snapshot",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 2,
+      "bytes": 7481,
+      "file": "02-resp.json",
+      "op": null,
+      "status": "OK"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 3,
+      "bytes": 69,
+      "file": "03-req.json",
+      "op": "snapshot",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 3,
+      "bytes": 2341,
+      "file": "03-resp.json",
+      "op": null,
+      "status": "OK"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 4,
+      "bytes": 130,
+      "file": "04-req.json",
+      "op": "diff",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 4,
+      "bytes": 2364,
+      "file": "04-resp.json",
+      "op": null,
+      "status": "OK"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 5,
+      "bytes": 69,
+      "file": "05-req.json",
+      "op": "snapshot",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 5,
+      "bytes": 2341,
+      "file": "05-resp.json",
+      "op": null,
+      "status": "OK"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 6,
+      "bytes": 146,
+      "file": "06-req.json",
+      "op": "detail",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 6,
+      "bytes": 127,
+      "file": "06-resp.json",
+      "op": null,
+      "status": "STALE_REFERENCE"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 7,
+      "bytes": 146,
+      "file": "07-req.json",
+      "op": "detail",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 7,
+      "bytes": 1888,
+      "file": "07-resp.json",
+      "op": null,
+      "status": "OK"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 8,
+      "bytes": 130,
+      "file": "08-req.json",
+      "op": "diff",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 8,
+      "bytes": 2371,
+      "file": "08-resp.json",
+      "op": null,
+      "status": "OK"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 9,
+      "bytes": 69,
+      "file": "09-req.json",
+      "op": "snapshot",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 9,
+      "bytes": 2348,
+      "file": "09-resp.json",
+      "op": null,
+      "status": "OK"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 10,
+      "bytes": 120,
+      "file": "10-req.json",
+      "op": "diff",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 10,
+      "bytes": 108,
+      "file": "10-resp.json",
+      "op": null,
+      "status": "SOURCE_REPLACED"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 11,
+      "bytes": 100,
+      "file": "11-req.json",
+      "op": "diff",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 11,
+      "bytes": 80,
+      "file": "11-resp.json",
+      "op": null,
+      "status": "SOURCE_REPLACED"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 12,
+      "bytes": 129,
+      "file": "12-req.json",
+      "op": "diff",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 12,
+      "bytes": 546,
+      "file": "12-resp.json",
+      "op": null,
+      "status": "RESET_REQUIRED"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 13,
+      "bytes": 60,
+      "file": "13-req.json",
+      "op": "snapshot",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 13,
+      "bytes": 1071,
+      "file": "13-resp.json",
+      "op": null,
+      "status": "OK"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 14,
+      "bytes": 135,
+      "file": "14-req.json",
+      "op": "diff",
+      "status": null
+    },
+    {
+      "direction": "RESP",
+      "sequence": 14,
+      "bytes": 530,
+      "file": "14-resp.json",
+      "op": null,
+      "status": "RESET_REQUIRED"
+    }
+  ],
+  "browser_processes": {
+    "parent_pid": 37,
+    "provider_pid": 39,
+    "consumer_pid": 38,
+    "instance": "ea0747ea7839f3406b2aac25a5451f10"
+  },
+  "browser_frames": [
+    {
+      "direction": "REQ",
+      "sequence": 1,
+      "bytes": 68,
+      "file": "browser-01-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 2,
+      "bytes": 130,
+      "file": "browser-02-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 3,
+      "bytes": 68,
+      "file": "browser-03-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 4,
+      "bytes": 130,
+      "file": "browser-04-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 5,
+      "bytes": 145,
+      "file": "browser-05-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 6,
+      "bytes": 68,
+      "file": "browser-06-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 7,
+      "bytes": 145,
+      "file": "browser-07-req.json"
+    },
+    {
+      "direction": "REQ",
+      "sequence": 8,
+      "bytes": 64,
+      "file": "browser-08-req.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 1,
+      "bytes": 7209,
+      "file": "browser-01-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 2,
+      "bytes": 7152,
+      "file": "browser-02-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 3,
+      "bytes": 7129,
+      "file": "browser-03-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 4,
+      "bytes": 109,
+      "file": "browser-04-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 5,
+      "bytes": 109,
+      "file": "browser-05-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 6,
+      "bytes": 7209,
+      "file": "browser-06-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 7,
+      "bytes": 596,
+      "file": "browser-07-resp.json"
+    },
+    {
+      "direction": "RESP",
+      "sequence": 8,
+      "bytes": 1186,
+      "file": "browser-08-resp.json"
+    }
+  ],
+  "final_resources": [
+    130279,
+    2,
+    0
+  ],
+  "review_status": {
+    "latest_failed_run": "FAILED_AFTER_13_CHECKS",
+    "serial_log": "latest-failed-13-checks.serial.log.gz",
+    "historical_17_checks": "EARLIER_INPUTS_ONLY",
+    "root_cause": "UNRESOLVED"
+  }
+}

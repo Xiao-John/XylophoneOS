@@ -1,0 +1,22 @@
+diff --git a/src/user/ssg/pipe_wire.hpp b/src/user/ssg/pipe_wire.hpp
+index bf91dbf..b871b0e 100644
+--- a/src/user/ssg/pipe_wire.hpp
++++ b/src/user/ssg/pipe_wire.hpp
+@@ -26,7 +26,7 @@ class Watchdog final : public QThread {
+     void run() override {
+         for(;;){
+             const auto s=__atomic_load_n(&state,__ATOMIC_ACQUIRE);
+-            if(s==stopped)return;
++            if(s==stopped){std::printf("SSG_EXIT_DIAG watchdog_worker_return\n");return;}
+             if(s==timed_out || !(s&1u)){xos::thread::wait(&state,s);continue;}
+             const auto until=__atomic_load_n(&deadline,__ATOMIC_ACQUIRE);
+             if(xos::thread::wait(&state,s,until)==xos::thread_error_timeout){
+@@ -39,7 +39,7 @@ class Watchdog final : public QThread {
+     }
+ public:
+     Watchdog(){start();if(!isRunning())__atomic_store_n(&state,timed_out,__ATOMIC_RELEASE);}
+-    ~Watchdog(){__atomic_store_n(&state,stopped,__ATOMIC_RELEASE);xos::thread::wake(&state);wait();}
++    ~Watchdog(){std::printf("SSG_EXIT_DIAG watchdog_stop_begin\n");__atomic_store_n(&state,stopped,__ATOMIC_RELEASE);const auto wake=xos::thread::wake(&state);std::printf("SSG_EXIT_DIAG watchdog_wake=%lld wait_begin\n",(long long)wake);const bool joined=wait();std::printf("SSG_EXIT_DIAG watchdog_wait_done=%d\n",int(joined));}
+     bool arm(xos::u64 timeout=io_timeout_ns){
+         auto s=__atomic_load_n(&state,__ATOMIC_ACQUIRE);
+         if((s&1u) || s>=timed_out-2)return false;

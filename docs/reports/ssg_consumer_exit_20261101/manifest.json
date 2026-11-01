@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "files": {
+    "pr46-exit-diagnostic.patch": "77f4fde9bcf97d351b69301cc6abd2b209229a2b8f8dbc6ff8aa5de4c15422ca",
+    "pr46-exit-investigation.md": "d8ee606ff3ad77449bbfc643772dac148806190b21da394e468c803686924833",
+    "pr46-instrumented-exit-failure.serial.log.gz": "d0d8c68016d81f1c7ac736aaa20c09618eddef4b9c5ac59ea71546bf607480aa",
+    "pr46-native-watchdog-full.serial.log.gz": "e66664c1ea670c2e17fdd00b1d98ab64b6b1ac37c5e48994f198ba12c5960a36",
+    "pr46-native-watchdog-stress.serial.log.gz": "8d6a80418e23f9515111a7b30da9cf1dafb3655bdca6507134f819bc01b9c572",
+    "pr46-original-exit-failure.serial.log.gz": "1dc07d970a958f61b4ecdc4e442d1029100a2b3b43836c8d7a10a91d6c46841f"
+  }
+}

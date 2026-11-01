@@ -605,7 +605,7 @@
       "used_in": [
         "static local-only Aurora HTML/CSS prototype; actual target engine and parser"
       ],
-      "modifications": "No upstream code patches; XOS QPainter container, read-only content admission, shell and build code Apache-2.0. Exact upstream git archive and per-file hashes in source_lock.json.",
+      "modifications": "XOS read-only render-fragment accessor in patches/0001_readonly_render_fragments.patch; pinned pristine archive/member hashes remain checked, patch applies to a private build copy. No layout/event behavior changes. XOS QPainter container, bounded SSG/content admission, shell and build code Apache-2.0.",
       "distribution_status": "Local guest qualification only; Qt static relinking/source and full binary redistribution review NOT_RUN; no Release."
     },
     {

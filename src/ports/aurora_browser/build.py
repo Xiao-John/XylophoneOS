@@ -18,6 +18,10 @@ if not source.exists():
  with tarfile.open(archive) as tar:tar.extractall(work,filter='data')
 # Source tree manifest rejects edited/mixed extraction as well as stale objects.
 for rel,h in lock['source_sha256'].items():assert sha(source/rel)==h,rel
+# Keep the pinned original pristine; patch a private build copy deterministically.
+pristine=source;source=work/'litehtml-ssg';shutil.copytree(pristine,source,dirs_exist_ok=True)
+patch=here/'patches/0001_readonly_render_fragments.patch'
+run(['patch','-p1','-i',patch,'-d',source])
 cxx=shutil.which('x86_64-elf-g++');cc=shutil.which('x86_64-elf-gcc');ar=shutil.which('x86_64-elf-ar');assert cxx and cc and ar
 base=['-O2','-fPIC','-mno-red-zone','-fno-stack-protector','-ftls-model=local-exec','-D__XOS__','-DXOS_THREADED_RUNTIME','-D_POSIX_C_SOURCE=200809L','-B'+str(binutils)+'/']
 cpp=['-std=c++17','-nostdinc++','-I'+str(sdk/'cpp/include'),'-I'+str(sdk/'cpp/include/x86_64-elf')]
@@ -37,5 +41,5 @@ aurora=work/'libXosAurora.a';run([sys.executable,qtport/'build_aurora.py','--sdk
 archives=[qt/'lib'/('lib'+n+'.a') for n in ('Qt6Widgets','Qt6Gui','Qt6Core','Qt6BundledPcre2','Qt6BundledZLIB','Qt6BundledFreetype','Qt6BundledHarfbuzz')]
 resources=list((qt/'src/gui').glob('CMakeFiles/Gui_resources_*.dir/.rcc/*.o'))+list((qt/'src/widgets').glob('CMakeFiles/Widgets_resources_*.dir/.rcc/*.o'))
 run([cxx,'-B'+str(binutils)+'/','-nostdlib','-static','-no-pie','-Wl,--gc-sections,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096','-T',sdk/'user.ld',sdk/'crt0_posix.o',*appobjs,*resources,'-Wl,--start-group',aurora,engine,*archives,'-Wl,--whole-archive',sdk/'lib/libxos.a','-Wl,--no-whole-archive',sdk/'cpp/lib/libstdc++.a',sdk/'cpp/lib/libsupc++.a',sdk/'lib/libc.a',sdk/'lib/libm.a',sdk/'cpp/lib/libgcc.a','-Wl,--end-group','-o',out])
-inputs=[Path(__file__),here/'source_lock.json',archive,*sorted(here.glob('*.hpp')),here/'main.cpp',font,sdk/'manifest.json',qt/'CMakeCache.txt',qtport/'qpa/qxos.cpp',qtport/'aurora/aurora.hpp',qtport/'aurora/style.cpp',aurora,engine,*archives,*resources,*[sdk/rel for rel in ('user.ld','crt0_posix.o','lib/libxos.a','lib/libc.a','lib/libm.a','cpp/lib/libstdc++.a','cpp/lib/libsupc++.a','cpp/lib/libgcc.a')]]
+inputs=[Path(__file__),here/'source_lock.json',archive,patch,*sorted(here.glob('*.hpp')),here/'main.cpp',font,sdk/'manifest.json',qt/'CMakeCache.txt',qtport/'qpa/qxos.cpp',*sorted((qtport/'aurora').glob('*.hpp')),*sorted((qtport/'aurora').glob('*.cpp')),aurora,engine,*archives,*resources,*[sdk/rel for rel in ('user.ld','crt0_posix.o','lib/libxos.a','lib/libc.a','lib/libm.a','cpp/lib/libstdc++.a','cpp/lib/libsupc++.a','cpp/lib/libgcc.a')]]
 receipt={'commands':commands,'inputs':{str(p):sha(p) for p in inputs},'elf_sha256':sha(out),'engine_archive_sha256':sha(engine),'engine_commit':lock['commit'],'tools':{str(t):{'sha256':sha(Path(t)),'version':subprocess.check_output([t,'--version'],text=True).splitlines()[0]} for t in (cxx,cc,ar)},'source_manifest':lock['source_sha256']};out.with_suffix('.receipt.json').write_text(json.dumps(receipt,indent=2)+'\n');print('Built real XOS Aurora browser',out)

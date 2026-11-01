@@ -1,0 +1,57 @@
+{
+  "status": "PASSED",
+  "case": "dash",
+  "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+  "checks": [
+    {
+      "name": "dash_real_desktop_and_semantic_elf_lifecycle",
+      "status": "PASSED"
+    },
+    {
+      "name": "serial_file_service_and_resource_baseline",
+      "status": "PASSED"
+    }
+  ],
+  "screenshots": {},
+  "runs": [],
+  "elf_sha256": {
+    "desktop": "a4325eea0cff82a91b5bd0bfb54623033908f2a97f015aef28cab8e3d01694fb",
+    "semantics": "4ef35843c6fab0adab633e1dac15d2a994eaaf5a48d3ee6125719bf2a104f9bd",
+    "session": "c1702ac1915b4ae3cc5b05e5bc335c7a2b638d52c8b96daaf65d349ea5de78cc",
+    "gap": "41ba0a63e9f2649315ca4a79a86f5f3b46db540744f088840b776b466e44daa7"
+  },
+  "qemu_command": [
+    "${XOS_LOCAL_PATH}",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=${XOS_LOCAL_PATH},format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_LOCAL_PATH},format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:${XOS_LOCAL_PATH},server=on,wait=off"
+  ]
+}

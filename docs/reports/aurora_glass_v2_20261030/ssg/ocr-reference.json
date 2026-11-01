@@ -1,0 +1,154 @@
+{
+  "actionExecution" : "NOT_RUN",
+  "runs" : [
+    {
+      "hostElapsedNs" : "62540202875",
+      "lines" : [
+        {
+          "confidence" : 1,
+          "normalizedBounds" : [
+            0.039999999588541668,
+            0.91000000004861115,
+            0.19750000000000001,
+            0.023333333333333317
+          ],
+          "text" : "SSG fixture • Aurora"
+        },
+        {
+          "confidence" : 1,
+          "normalizedBounds" : [
+            0.062499999755952371,
+            0.83666666672222223,
+            0.1075,
+            0.023333333333333317
+          ],
+          "text" : "SSG fixture"
+        },
+        {
+          "confidence" : 1,
+          "normalizedBounds" : [
+            0.75249999909375009,
+            0.91333333358333335,
+            0.11749999999999994,
+            0.020000000000000018
+          ],
+          "text" : "LOCAL PREVIEW"
+        },
+        {
+          "confidence" : 1,
+          "normalizedBounds" : [
+            0.89391592942619813,
+            0.90712389338707378,
+            0.052079644203186004,
+            0.027315635681152362
+          ],
+          "text" : "Close"
+        },
+        {
+          "confidence" : 1,
+          "normalizedBounds" : [
+            0.21985676242532079,
+            0.74932736812565359,
+            0.060286474227905257,
+            0.024678597450256357
+          ],
+          "text" : "Home"
+        },
+        {
+          "confidence" : 1,
+          "normalizedBounds" : [
+            0.2974999998671875,
+            0.74333333335677088,
+            0.16999999999999998,
+            0.029999999999999916
+          ],
+          "text" : "file:\/web\/ssg.html"
+        },
+        {
+          "confidence" : 1,
+          "normalizedBounds" : [
+            0.90499999977083334,
+            0.74666666688888883,
+            0.027499999999999969,
+            0.026666666666666727
+          ],
+          "text" : "Go"
+        },
+        {
+          "confidence" : 1,
+          "normalizedBounds" : [
+            0.062499999525000016,
+            0.66000000026666661,
+            0.052499999999999991,
+            0.026666666666666727
+          ],
+          "text" : "Start"
+        },
+        {
+          "confidence" : 1,
+          "normalizedBounds" : [
+            0.15717893662758076,
+            0.65787522917832408,
+            0.080793533325195316,
+            0.029498186111450275
+          ],
+          "text" : "Reading"
+        },
+        {
+          "confidence" : 1,
+          "normalizedBounds" : [
+            0.26474907212057119,
+            0.65947570023588065,
+            0.11287446975708004,
+            0.026292761166890499
+          ],
+          "text" : "CSS garden"
+        },
+        {
+          "confidence" : 1,
+          "normalizedBounds" : [
+            0.39499999987222223,
+            0.66333333335925926,
+            0.12,
+            0.023333333333333317
+          ],
+          "text" : "+ Bookmark"
+        },
+        {
+          "confidence" : 1,
+          "normalizedBounds" : [
+            0.059956197600957779,
+            0.50299400015033258,
+            0.26008760452270507,
+            0.060678666432698591
+          ],
+          "text" : "Visible Alpha"
+        },
+        {
+          "confidence" : 1,
+          "normalizedBounds" : [
+            0.057499999734848491,
+            0.43666666671212118,
+            0.17999999999999999,
+            0.030000000000000027
+          ],
+          "text" : "Native link target"
+        },
+        {
+          "confidence" : 1,
+          "normalizedBounds" : [
+            0.037499999896739168,
+            0.050000000008695533,
+            0.39749999999999996,
+            0.020000000000000018
+          ],
+          "text" : "Local page • liteHTML 0.9 • JavaScript off • network unavailable"
+        }
+      ],
+      "path" : "build\/aurora_glass\/qualified-browser\/browser-dom-first.png",
+      "status" : "OK"
+    }
+  ],
+  "scope" : "HOST_ONLY_VISION_OCR_REFERENCE",
+  "xosOCRPort" : "NOT_IMPLEMENTED"
+}

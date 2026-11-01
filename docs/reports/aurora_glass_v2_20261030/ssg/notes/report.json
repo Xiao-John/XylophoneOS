@@ -1,0 +1,72 @@
+{
+  "status": "PASSED",
+  "case": "notes",
+  "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+  "checks": [
+    {
+      "name": "notes_real_tree_text_and_readonly_query",
+      "status": "PASSED"
+    },
+    {
+      "name": "notes_actual_edit_incremental_diff",
+      "status": "PASSED"
+    },
+    {
+      "name": "notes_selection_scroll_and_document_scope",
+      "status": "PASSED"
+    },
+    {
+      "name": "notes_ssg_exit_exact_resources",
+      "status": "PASSED"
+    },
+    {
+      "name": "serial_file_service_and_resource_baseline",
+      "status": "PASSED"
+    }
+  ],
+  "screenshots": {
+    "notes-scrolled": {
+      "sha256": "3ae3763bd6c5a9ccd45688e8d31356514e0247470aeebc8b4944d9247bf32365",
+      "png_bytes": 368229,
+      "host_capture_ms": 51.36516600032337
+    }
+  },
+  "runs": [],
+  "elf_sha256": {
+    "notes": "1323ae6557896dc94c6886e427be15d6df8dca11131819abf49455b70bdc412f"
+  },
+  "qemu_command": [
+    "${XOS_LOCAL_PATH}",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=${XOS_LOCAL_PATH},format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_LOCAL_PATH},format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:${XOS_LOCAL_PATH},server=on,wait=off"
+  ]
+}

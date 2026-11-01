@@ -153,3 +153,16 @@ SDL的CPU raster后端可复用相同mode/present/input，SDL不是Qt的前置�
 初始化时优先使用内核私有scatter backing和fenced transfer/flush。无GPU/初始化失败
 回退VBE，无受支持设备保留串口；运行期设备失效不承诺透明切换或热插拔恢复。
 这不是3D、Qt绘制/着色器加速、多窗口合成或通用用户MMIO/DMA接口。
+
+## 2026-10-30 Aurora G1 and G2-Scout
+
+The new desktop is an ordinary exclusive v1 client. Its userland session parent
+waits for the shell to exit before launching an independent GUI application, then
+restores the shell when that application ends. A second independent client still
+returns EBUSY; ordinary direct-present remains denied. This is not multiwindow
+composition, shared VRAM, device authorization or shader acceleration.
+
+Fresh app/session/fault/resource evidence: [0104](../work_log/0104_aurora_desktop_shell.md).
+The explicit transport shortfall and proposed ownership/lifecycle are in the
+[compositor proposal](../contracts/aurora_compositor_proposal.md). It allocates no
+ABI and does not waive existing C28 driver debt or PR20's architectural blocker.

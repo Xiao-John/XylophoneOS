@@ -163,7 +163,9 @@ def main():
     try:
         result = verify(args.root, args.index, args.revision, args.field)
     except (ValueError, OSError, UnicodeError, subprocess.SubprocessError) as exc:
-        print(json.dumps({"status": "ERROR", "error": str(exc)}, indent=2))
+        # Exception strings may contain the contributor's absolute checkout or
+        # tool paths. Do not copy those into a report intended for sharing.
+        print(json.dumps({"status": "ERROR", "error_type": type(exc).__name__}, indent=2))
         return 2
     print(json.dumps(result, indent=2))
     return int(result["status"] != "PASS")

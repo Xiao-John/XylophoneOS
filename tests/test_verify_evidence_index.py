@@ -79,6 +79,13 @@ class verify_evidence_index_tests(unittest.TestCase):
         with self.assertRaises(ValueError):
             verifier.verify(self.root, index, "HEAD")
 
+    def test_cli_error_does_not_expose_checkout_path(self):
+        result = subprocess.run([sys.executable, str(Path(verifier.__file__)), "--root", str(self.root),
+                                 "missing/index.json"], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 2)
+        self.assertEqual(json.loads(result.stdout)["status"], "ERROR")
+        self.assertNotIn(str(self.root), result.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

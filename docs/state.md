@@ -204,6 +204,8 @@ Xsh 空闲时的终端失效重连及桥接短写处理已实现，受限真实�
 见[0151](work_log/0151_xsh_terminal_recovery.md)。
 ncursesw 组合 SDK 与 xterm 数据候选已生成，独立消费者经真实 Xsh 的受限客体检查通过；
 见[0152](work_log/0152_ncurses_sdk_candidate.md)。
+Xsh 应用重复运行与服务重启前后的资源比较已加入探针，待提交后客体运行；见
+[0153](work_log/0153_terminal_resource_baseline.md)。
 用户态驱动已试行按 TEMT 确认发送排空，尚未客体验证；见
 [0140](work_log/0140_terminal_drain.md)。
 输入清空和 `TCSAFLUSH` 已试行实现，连续输入失败可能已丢弃部分硬件字节，尚未客体验证；

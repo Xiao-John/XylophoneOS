@@ -136,6 +136,20 @@ def main():
                 if any(s in bytes(guest.output[start:]) for s in (b'program exited with status', b'xsh: cannot')):
                     raise AssertionError('xsh wide consumer failed')
                 report['checks'].append('xsh_terminal_wide_input_output')
+
+                def resources():
+                    start = len(guest.output)
+                    send_bytes(guest, b'stats\r')
+                    guest.expect(b'[resources] free=', start=start, timeout=30)
+                    guest.expect(b'xsh> ', start=start, timeout=30)
+                    match = re.search(rb'\[resources\] free=(\d+) tasks=(\d+) completions=(\d+)',
+                                      bytes(guest.output[start:]))
+                    if not match:
+                        raise AssertionError('incomplete resource report')
+                    return tuple(map(int, match.groups()))
+
+                baseline = resources()
+                report['resources_after_wide'] = baseline
                 for program in ('reentry', 'locale'):
                     start = len(guest.output)
                     send_bytes(guest, ('tty-run /bin/' + program + '.elf\r').encode())
@@ -145,6 +159,11 @@ def main():
                     if any(s in bytes(guest.output[start:]) for s in (b'program exited with status', b'xsh: cannot')):
                         raise AssertionError('xsh ' + program + ' consumer failed')
                     report['checks'].append('xsh_terminal_' + program)
+                after_apps = resources()
+                report['resources_after_apps'] = after_apps
+                if after_apps != baseline:
+                    raise AssertionError(f'resource mismatch after apps: {baseline} -> {after_apps}')
+                report['checks'].append('xsh_repeated_app_resource_baseline')
                 start = len(guest.output)
                 send_bytes(guest, b'ps\r')
                 guest.expect(b'xsh> ', start=start, timeout=30)
@@ -163,6 +182,11 @@ def main():
                 marker = guest.output.find(b' kind=exited code=0', start)
                 guest.expect(b'xsh> ', start=marker + len(b' kind=exited code=0'), timeout=60)
                 report['checks'].append('xsh_service_fault_recovery_and_new_application')
+                after_restart = resources()
+                report['resources_after_restart'] = after_restart
+                if after_restart != baseline:
+                    raise AssertionError(f'resource mismatch after restart: {baseline} -> {after_restart}')
+                report['checks'].append('xsh_restart_resource_baseline')
                 report['status'] = 'passed_probe'
                 return
             guest.expect(b'W2_BOOT_READY', timeout=45)

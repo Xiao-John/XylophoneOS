@@ -25,3 +25,5 @@ followed by normal consumer and provider exits and resource restoration. Its
 serial output is `pr46-native-watchdog-stress.serial.log.gz`; the repeatable
 runner is `tests/ssg_consumer_exit_stress.py`. This is scoped evidence, not a
 claim about other workloads or physical hardware.
+
+On the later snake_case source, a separately rebuilt consumer completed 5/5 denied-exit repetitions with resource restoration. The serial and runner outputs are retained. Overall review status remains PARTIAL; this control does not establish the original root cause.

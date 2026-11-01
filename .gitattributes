@@ -3,15 +3,19 @@ src/ports/qt6/licenses/ZLIB-LICENSE whitespace=-blank-at-eof
 src/ports/qt6/licenses/Zlib.txt whitespace=-blank-at-eof
 # Unified patch context lines require a leading space, including blank context.
 src/ports/qt6/patches/*.patch whitespace=-blank-at-eol
+# Report indexes bind exact historical bytes, including JSON and text files.
+# Disable checkout and check-in newline conversion for every frozen report.
+docs/reports/** -text
 # Freeze every modern-app evidence byte; evidence_index.json receipts hash all 138 files.
 docs/reports/modern_apps_20261029/** -text
 # Freeze compatibility CSV bytes exactly; csv.writer emits CRLF and receipts hash it.
 docs/reports/modern_apps_20261029/*_matrix.csv -text whitespace=cr-at-eol
 # Preserve the dependency's original license whitespace verbatim.
 licenses/modern_apps/defusedxml_LICENSE -whitespace
+# These frozen guest logs contain mixed line endings and trailing prompt spaces.
+# Preserve their exact bytes so the original evidence indexes remain valid.
+docs/reports/aurora_sdk_review_20261030/runs/**/serial.log -text whitespace=-blank-at-eol,cr-at-eol
+docs/reports/net_clock_irq_split_20261030/runs/**/*.log -text whitespace=-blank-at-eol,cr-at-eol
 
 # The pinned liteHTML unified diff preserves upstream tab/blank context bytes.
 src/ports/aurora_browser/patches/*.patch whitespace=-blank-at-eol,-space-before-tab
-# Frozen serial captures keep their original trailing prompt whitespace.
-docs/reports/aurora_sdk_review_20261030/runs/semantics-dash/serial.log whitespace=-blank-at-eol
-docs/reports/aurora_sdk_review_20261030/runs/semantics-xsh/serial.log whitespace=-blank-at-eol

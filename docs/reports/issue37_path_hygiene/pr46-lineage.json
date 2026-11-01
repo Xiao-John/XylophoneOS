@@ -2,7 +2,6 @@
   "status": "DERIVED_SANITIZED_EXPORT",
   "original_commit": "341c258daa6617b7154f71b9b82b03c859b37a9e",
   "original_index_sha256": "2a3eb20c3dac56edd273875a5bd8574800d115b35948d473b03c3f00f71aeb36",
-  "original_index_copy": "docs/reports/issue37_path_hygiene/pr46-original-SHA256SUMS",
   "export_index_sha256": "74f1540fd6c700f1ab1eeb222d34becb4412a486920f5512bb63032168f7814d",
   "entries": 167,
   "changes": [

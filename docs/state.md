@@ -200,7 +200,7 @@ Xsh 桥接已增加应用建进程时的附加、回收及停止入口，专用 
 见[0149](work_log/0149_terminal_handoff_and_fault.md)。
 真实 Xsh 新增显式 `tty-run` 前台入口，保持默认旧启动路径；三个受限应用的客体运行已通过，
 见[0150](work_log/0150_xsh_tty_run.md)。
-Xsh 空闲时的终端失效重连及桥接短写处理已实现，真实故障注入待提交后执行，
+Xsh 空闲时的终端失效重连及桥接短写处理已实现，受限真实故障注入通过，
 见[0151](work_log/0151_xsh_terminal_recovery.md)。
 用户态驱动已试行按 TEMT 确认发送排空，尚未客体验证；见
 [0140](work_log/0140_terminal_drain.md)。

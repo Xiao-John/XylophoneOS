@@ -1,5 +1,7 @@
 # 0066：xypm P2只读计划与部分客体验收
 
+路径说明：下文的 `${XOS_EVIDENCE_ROOT}` 表示当时构建与验收工作区的根目录；命令是可配置模板，输入仍须按记录的哈希核对。原始记录保留在 Git 历史中。
+
 2026-10-27。独立工作区`codex/xypm-p2-p3`，基线655b128。用户要求完成P2验收、
 拆分P3网络依赖并实施可离线部分；本记录是进度交接，P2及P3离线部分均未完成。
 
@@ -20,12 +22,12 @@
 ## 实际证据
 
 GCC/G++ 16.2.0、QEMU 11.1.2、Python 3.12.15；冻结profile
-`xos-x86_64-static-single-b2-v1`和原工作区的已登记single_b2_v1 SDK。实际命令：
+`xos-x86_64-static-single-b2-v1`和原工作区的已登记single_b2_v1 SDK。历史命令的可配置模板：
 
 ```sh
-python3 scripts/build_xypm.py --sdk /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/xypm_sdk/single_b2_v1 --profile config/package/xos_x86_64_static_single_b2_v1.json
+python3 scripts/build_xypm.py --sdk ${XOS_EVIDENCE_ROOT}/.cache/xos_seed/xypm_sdk/single_b2_v1 --profile config/package/xos_x86_64_static_single_b2_v1.json
 python3 scripts/build.py --output-dir build/xypm_p2_p3/remove_plan_system
-python3 tests/package_p2_verify_guest.py --system build/xypm_p2_p3/remove_plan_system --xypm-build .cache/xos_seed/xypm/a985e65ceddde1d1da90/manifest.json --dash-elf /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/dash/8098a3cc28ff4ce74f5b/build/src/dash --dash-sha256 a730086417e2d3f7204824c9dd1f6ac25cac61e3b0fd59747315fcba72e11646 --output build/xypm_p2_p3/qualification
+python3 tests/package_p2_verify_guest.py --system build/xypm_p2_p3/remove_plan_system --xypm-build .cache/xos_seed/xypm/a985e65ceddde1d1da90/manifest.json --dash-elf ${XOS_EVIDENCE_ROOT}/.cache/xos_seed/dash/8098a3cc28ff4ce74f5b/build/src/dash --dash-sha256 a730086417e2d3f7204824c9dd1f6ac25cac61e3b0fd59747315fcba72e11646 --output build/xypm_p2_p3/qualification
 python3 tests/package_p2_maintenance.py --system build/xypm_p2_p3/remove_plan_system --output build/xypm_p2_p3/remove_plan_maintenance
 python3 scripts/license_audit.py --build build/xypm_p2_p3/remove_plan_system
 git diff --check
@@ -76,7 +78,7 @@ worker退出0后再次检查，标记仍在或检查失败则保留准入屏障�
 
 ```sh
 python3 scripts/build.py --output-dir build/xypm_p2_p3/gate_system
-python3 tests/package_p2_verify_guest.py --system build/xypm_p2_p3/gate_system --xypm-build .cache/xos_seed/xypm/0601dc9ae635c0fdbeb4/manifest.json --dash-elf /Users/xylo/Documents/XylophoneOS/.cache/xos_seed/dash/8098a3cc28ff4ce74f5b/build/src/dash --dash-sha256 a730086417e2d3f7204824c9dd1f6ac25cac61e3b0fd59747315fcba72e11646 --output build/xypm_p2_p3/gate_verify
+python3 tests/package_p2_verify_guest.py --system build/xypm_p2_p3/gate_system --xypm-build .cache/xos_seed/xypm/0601dc9ae635c0fdbeb4/manifest.json --dash-elf ${XOS_EVIDENCE_ROOT}/.cache/xos_seed/dash/8098a3cc28ff4ce74f5b/build/src/dash --dash-sha256 a730086417e2d3f7204824c9dd1f6ac25cac61e3b0fd59747315fcba72e11646 --output build/xypm_p2_p3/gate_verify
 python3 tests/package_p2_maintenance.py --system build/xypm_p2_p3/gate_system --output build/xypm_p2_p3/gate_maintenance
 python3 tests/package_p2_persistent_gate.py --system build/xypm_p2_p3/gate_system --output build/xypm_p2_p3/gate_unreadable
 python3 scripts/license_audit.py --build build/xypm_p2_p3/gate_system

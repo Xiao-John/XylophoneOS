@@ -23,3 +23,11 @@
 新系统 build `1ea082222ecb7fd6` 的 `python3 scripts/license_audit.py --build
 build/w2_sdk_composed_20261101` 通过 7 份材料检查，不等于逐成员法律审查。
 该候选状态为 built_unverified；完整 W1/W2、资源、兼容和 PR 仍未完成。
+
+提交 `ca54556` 后在干净快照重建 build `1ea082222ecb7fd6`，以组合 SDK 独立链接的
+消费者及组合包内 terminfo 经正常 Xsh 运行：宽字符、重入、locale 和空闲服务故障
+恢复四组通过。ISO SHA-256
+`c6a4508c9eafa04976ee0ab6bb4e3013ca4536c9d0e90bf213b34c7d9e1c9919`，串口 SHA-256
+`050dabcfcb7eebd2a6f3b09bbbac1d026deb34c9fd7587e24b29309d8807205d`；回执位于隔离
+工作区 `build/w2_sdk_composed_ca54556/ncurses_guest_probe_report.json`。组合 SDK 仍为
+候选而非正式发行，资格只覆盖该回执列明的配置与行为。

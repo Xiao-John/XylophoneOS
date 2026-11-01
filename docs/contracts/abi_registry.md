@@ -12,7 +12,8 @@
 | 67 | 79 | reserved | 内存线：VMA/映射机制；67 的 PX4-A 提案见下表 |
 | 80 | 95 | reserved | 系统底座线：通用等待/信号/进程控制；具体接口尚未设计 |
 | 96 | 111 | reserved | 显示/输入线的后续机制；现有65/66保留 |
-| 112 | 127 | reserved | 设备授权线：通用 MMIO/IRQ/DMA 授权（单入口 `sys_device`）；112 已认领，见下 |
+| 112 | 112 | allocated | 设备授权线 v1 单入口 `sys_device`；实现按[契约](device_authorization_v1.md)§7 分段推进 |
+| 113 | 127 | reserved | 设备授权线：后续机制 |
 | 128 | 65535 | unallocated | 不存在私有试用号；先通过登记PR分配，扩大范围亦须明确登记 |
 
 责任是模块角色，不代表已派出agent或允许同时改公共文件。预留不生成头文件常量、假函数、
@@ -91,6 +92,7 @@
 | 64 | `sys_clock_realtime` | `src/shared/include/xos/process_abi.hpp` |
 | 65 | `sys_display` | `src/shared/include/xos/display_abi.hpp` |
 | 66 | `sys_display_present` | `src/shared/include/xos/display_abi.hpp` |
+| 112 | `sys_device` | `src/shared/include/xos/device_abi.hpp` |
 
 ## 待实施的具体预分配
 
@@ -100,11 +102,6 @@ PX4-A 提议认领如下；本分支未合入前不构成全项目登记，不�
 |---:|---|---|---|---|
 | 67 | `sys_vm` | VM负责人；匿名私有VMA v1 | claimed | 待登记合入后另开；[契约提案](anonymous_vm.md) |
 
-设备授权线认领（2026-11-01）：
-
-| 编号 | 拟用符号 | 责任角色 | 状态 | 实现PR |
-|---:|---|---|---|---|
-| 112 | `sys_device` | 设备授权/内核机制负责人；通用设备授权 v1（QUERY/MMIO_MAP/DMA/IRQ，单入口64字节请求） | claimed | 登记合入后按[契约](device_authorization_v1.md)§7 分步实施；PIO 不属此线（sys82） |
 
 claimed必须位于对应reserved段，不能与现有接口或其他认领重复；不生成源码常量或能力。
 实现PR再将该号从认领表移到逐项分配表，并拆分号段：该号allocated，其余仍reserved。

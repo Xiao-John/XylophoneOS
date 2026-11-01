@@ -1,7 +1,10 @@
 {
   "version": 1,
   "files": {
-    "README.md": "b2f9d24ea0ecdee02ca6f154a4f7f4bd5065a31a041b9f4e9477ff0772879701",
+    "README.md": "633a8d6128f230783752e0d04775e5c280da3b6e465e59aff9c84df5ebe51cad",
+    "current-interactive-results.json": "baec5ec9c3185e4cf43b665caff3aa72e600949a89cd91931c5ae7a28a35eb17",
+    "current-interactive-runner.log.gz": "5a19d83b314defee96f68f1412ec15ec8826d3603f7f3b285bf20dcfa142815a",
+    "current-interactive.serial.log.gz": "9fb0017f6bf5a49517936f09b15980180082fb0243a1294adfa6d051b112f295",
     "daybreak-high-contrast.png": "61d3d47b4cbd568487686e2520f64d04c5d21b5f306b784752c8cb8620bae2a0",
     "dock-desktop-interactive/report.json": "0ecf96c75caf007475f3ca82f919e7c0b20e33ee7f3c831939433a4815baeb11",
     "dock-desktop-interactive/serial.log.gz": "c3265cc681717d6536a6795f7fd12619166ccdfb9c7df1d0b0f0f6a164d3611f",

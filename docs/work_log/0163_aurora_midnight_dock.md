@@ -19,3 +19,5 @@ unknown and remains an intermittent risk. This change does not establish a
 compositor, a global theme service, full accessibility, physical hardware,
 larger displays or final aesthetic approval. After dependency review and any
 upstream base change, rebuild and repeat the affected Desktop gates.
+
+2026-11-01 主线 `72bfacb` 重建后，携带旧 Qt 探针的真实客体交互检查通过 11/11；结果和原始串口记录见上述报告。其他历史套件没有重跑，仍绑定原输入。

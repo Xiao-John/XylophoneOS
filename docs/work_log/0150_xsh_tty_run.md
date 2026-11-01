@@ -18,3 +18,9 @@
 `20699601273ae3e84f1e51097d2c26fc9eac834471b8a87091d7677d1380efac`。现将探针改为
 开启 Xsh trace，要求每个程序明确显示 exited/code=0，再提交后重测；默认演示任务在
 首次交接前停止，避免干扰终端启动。
+
+提交 `6fd7375` 的严格 trace 客体重测失败：宽字符程序完成屏幕交互后未回到提示符。
+源码检查发现 supervisor 在应用独占期间输出 `[loader] started`，控制写被服务拒绝，
+桥接因而进入 unavailable，随后无法正常 detach。失败 build `e6254583af2ea08b`，
+串口 SHA-256 `a9cc7be28a89ae9f83e7a643061807269a306143776a5a4dd8b60d8fc48d759a`。
+现禁止该阶段的 supervisor 输出；应用退出状态仍在 detach 后由 trace 输出，需提交后重测。

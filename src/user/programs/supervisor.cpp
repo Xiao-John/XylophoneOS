@@ -268,7 +268,7 @@ void launch_file(const char* name, u32 argc, char** argv, u32 spawn_depth, bool 
         print(" (error="); signed_decimal(child); print(")\n");
         return;
     }
-    if (verbose_trace) {
+    if (verbose_trace && !terminal_session) {
         print("[loader] started pid="); decimal(static_cast<u64>(child));
         print(" file="); print(candidate.path); print("\n");
     } else if (background) {

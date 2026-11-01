@@ -130,7 +130,7 @@ inline bool html_allowed(const QByteArray &input,QString &error) {
         const bool leaf=name=="img"||name=="link"||name=="br"||name=="hr";
         if(closing){if(stack.isEmpty()||stack.takeLast()!=name){error="Unbalanced markup rejected";return false;}}
         else if(!leaf){stack.append(name);if(stack.size()>16){error="HTML nesting budget exceeded";return false;}}
-        if(name=="style"&&!closing){int stop=lower.indexOf("</style",end+1);if(stop<0 || !css_allowed(input.mid(end+1,stop-end-1))){error="Stylesheet budget rejected";return false;}i=stop;continue;}
+        if(name=="style"&&!closing){int stop=lower.indexOf("</style",end+1);if(stop<0 || !css_allowed(input.mid(end+1,stop-end-1))){error="Stylesheet rejected";return false;}i=stop;continue;}
         // Inline style attributes are omitted from this first admitted subset.
         if(token.contains("style=")||token.contains("style =")){error="Use bounded linked or style-block CSS";return false;}
         i=end+1;

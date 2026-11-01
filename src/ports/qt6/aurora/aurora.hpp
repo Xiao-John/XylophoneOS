@@ -30,13 +30,13 @@ inline QPainterPath corner(QRectF r,qreal radius) {
     p.cubicTo(x,y+.55*a,x,y+.3182*a,x+k,y+k);
     p.cubicTo(x+.3182*a,y,x+.55*a,y,x+a,y);p.closeSubpath();return p;
 }
-class Pointer final : public QWidget {
+class pointer final : public QWidget {
  void paintEvent(QPaintEvent *) override {QPainter p(this);p.setRenderHint(QPainter::Antialiasing);QPainterPath a;a.moveTo(2,2);a.lineTo(2,20);a.lineTo(7,15);a.lineTo(11,23);a.lineTo(14,21);a.lineTo(10,14);a.lineTo(17,14);a.closeSubpath();p.translate(1,1);p.fillPath(a,QColor(0,5,18,110));p.translate(-1,-1);p.setPen(QPen(QColor(16,28,46),1));p.setBrush(QColor(237,245,255));p.drawPath(a);}
-public:explicit Pointer(QWidget *p):QWidget(p){setFixedSize(20,26);setAttribute(Qt::WA_TransparentForMouseEvents);setAttribute(Qt::WA_NoSystemBackground);hide();}
+public:explicit pointer(QWidget *p):QWidget(p){setFixedSize(20,26);setAttribute(Qt::WA_TransparentForMouseEvents);setAttribute(Qt::WA_NoSystemBackground);hide();}
 };
-class Canvas : public QWidget {
+class canvas : public QWidget {
     QImage backdrop,soft;
-    Pointer *pointer;
+    aurora::pointer *pointer;
     void cache() {
         QElapsedTimer timer;timer.start();
         backdrop=QImage(size(),QImage::Format_RGB32);backdrop.fill(QColor(9,18,38));
@@ -78,13 +78,13 @@ protected:
         p.setPen(QColor(159,192,220,35));p.drawLine(202,38,202,height()-38);
     }
 public:
-    Canvas():pointer(new Pointer(this)){qApp->installEventFilter(this);setMouseTracking(true);}
+    canvas():pointer(new aurora::pointer(this)){qApp->installEventFilter(this);setMouseTracking(true);}
     QImage glass(const QWidget *w) const {
         return soft.copy(QRect(w->mapTo(this,QPoint()),w->size()));
     }
 };
-class Panel : public QWidget {
-    Canvas *canvas;
+class panel : public QWidget {
+    aurora::canvas *canvas;
     QImage cached;
     qreal radius;
     bool reading;
@@ -102,9 +102,9 @@ protected:
         QLinearGradient edge(0,0,width(),height());edge.setColorAt(0,QColor(217,242,255,100));edge.setColorAt(.45,QColor(176,194,237,30));edge.setColorAt(1,QColor(122,215,214,85));p.setPen(QPen(edge,1));p.drawPath(path);
     }
 public:
-    Panel(Canvas *c,qreal r,bool content=false):QWidget(c),canvas(c),radius(r),reading(content){setAttribute(Qt::WA_StyledBackground,false);}
+    panel(aurora::canvas *c,qreal r,bool content=false):QWidget(c),canvas(c),radius(r),reading(content){setAttribute(Qt::WA_StyledBackground,false);}
 };
-class Button final : public QPushButton {
+class button final : public QPushButton {
     QTimer transition;
     qreal glow=0,target=0;
     bool primary;
@@ -128,14 +128,14 @@ protected:
         const auto ns=timer.nsecsElapsed();if(ns>35000000 && !reduced){reduced=true;transition.stop();glow=target;std::printf("AURORA_REDUCED_MOTION paint_ns=%lld\n",(long long)ns);}
     }
 public:
-    Button(QString label,bool accent=false):QPushButton(label),primary(accent) {
+    button(QString label,bool accent=false):QPushButton(label),primary(accent) {
         setMinimumHeight(34);setCursor(Qt::PointingHandCursor);transition.setInterval(33);
         connect(&transition,&QTimer::timeout,this,[this]{const auto d=target-glow;if(qAbs(d)<.05){glow=target;transition.stop();}else glow+=d*.45;update();});
     }
 };
-class Brand final : public QWidget {
+class brand final : public QWidget {
 protected:
  void paintEvent(QPaintEvent *) override {QPainter p(this);p.setRenderHint(QPainter::Antialiasing);const QColor c[]={QColor(104,222,212),QColor(122,185,255),QColor(184,151,246),QColor(226,188,210)};const int h[]={14,24,34,20};for(int i=0;i<4;i++){p.setPen(QPen(c[i],4,Qt::SolidLine,Qt::RoundCap));p.drawLine(8+i*8,24-h[i]/2,8+i*8,24+h[i]/2);}p.setPen(QColor(237,242,252));QFont f=font();f.setPixelSize(15);f.setBold(true);p.setFont(f);p.drawText(46,21,"Xylophone");f.setPixelSize(12);f.setBold(false);p.setFont(f);p.setPen(QColor(180,198,222));p.drawText(46,39,"Notes");}
-public:Brand(){setFixedHeight(52);}
+public:brand(){setFixedHeight(52);}
 };
 }

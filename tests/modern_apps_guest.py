@@ -20,6 +20,16 @@ def run(guest,command,timeout=90):
  return re.sub(r'\x1b\[[0-9;]*m','',bytes(guest.output[start:]).decode('utf-8','replace'))
 
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def observed_exit(text):
+ match=re.search(r'kind=exited code=(\d+)',text)
+ return match.group(1) if match else None
+def compatibility(kind,text,marker,expected):
+ # The compatibility state is derived from what the guest actually printed and
+ # returned; a name lookup would report the same status even if the run disagreed.
+ actual=observed_exit(text)
+ if kind=='application':return 'PASSED' if actual=='0' else 'FAILED'
+ if kind=='missing_api':return 'BLOCKED' if marker in text and actual==expected else ('PASSED' if actual=='0' and marker not in text else 'FAILED')
+ return 'PASSED' if marker in text and actual==expected else 'FAILED'
 def treecopy(source,disk,dest,only_py=False):
  for p in sorted(source.rglob('*')):
   rel=p.relative_to(source)
@@ -62,12 +72,12 @@ def main():
   report['qemu_version']=subprocess.check_output([guest.command[0],'--version'],text=True).splitlines()[0]
   guest.expect(b'xos64> ',timeout=30);start=len(guest.output);send_bytes(guest,b'run\r');guest.expect_supervisor(trace=True,start=start,timeout=40);pump(guest,1)
   baseline=resources(guest);report['resources_before']=baseline
-  cases=[('language','language.js','LANGUAGE_OK','0'),('js_exception','exception.js','intentional exception probe','1'),('js_rejection','rejection.js','intentional rejected Promise','1'),('js_interrupt','loop.js','interrupted','1'),('language_after_interrupt','language.js','LANGUAGE_OK','0'),('js_memory_limit','memory.js','out of memory','1'),('js_stack_limit','stack.js','stack overflow','1'),('web_capabilities','web_capabilities.js','"document":"undefined"','0'),('code_actual_iframe','code.js',"'URL' is not defined",'1')]
-  if a.localpilot:cases.append(('localpilot_actual_bundle','localpilot.mjs',"'document' is not defined",'1'))
-  for name,file,marker,exitcode in cases:
+  cases=[('language','language.js','LANGUAGE_OK','0','capability'),('js_exception','exception.js','intentional exception probe','1','capability'),('js_rejection','rejection.js','intentional rejected Promise','1','capability'),('js_interrupt','loop.js','interrupted','1','capability'),('language_after_interrupt','language.js','LANGUAGE_OK','0','capability'),('js_memory_limit','memory.js','out of memory','1','capability'),('js_stack_limit','stack.js','stack overflow','1','capability'),('web_capabilities','web_capabilities.js','"document":"undefined"','0','missing_api'),('code_actual_iframe','code.js',"'URL' is not defined",'1','application')]
+  if a.localpilot:cases.append(('localpilot_actual_bundle','localpilot.mjs',"'document' is not defined",'1','application'))
+  for name,file,marker,exitcode,kind in cases:
    text=run(guest,'jsprobe /work/js/'+file,timeout=180);after=resources(guest)
    (out/(name+'.log')).write_text(text)
-   report['checks'].append({'name':name,'harness_status':'PASSED' if marker in text and 'kind=exited code='+exitcode in text and after==baseline else 'FAILED','compatibility_status':'FAILED' if name in {'code_actual_iframe','localpilot_actual_bundle'} else ('BLOCKED' if name=='web_capabilities' else 'PASSED'),'expected_marker':marker,'expected_exit':exitcode,'resources_after':after})
+   report['checks'].append({'name':name,'harness_status':'PASSED' if marker in text and 'kind=exited code='+exitcode in text and after==baseline else 'FAILED','compatibility_status':compatibility(kind,text,marker,exitcode),'expected_marker':marker,'expected_exit':exitcode,'resources_after':after})
   if a.python_work:
    text=run(guest,'python3 /work/python_probe.py',timeout=240);(out/'python.log').write_text(text)
    report['python_observations']=[json.loads(line.split('COMPAT:',1)[1]) for line in text.splitlines() if line.startswith('COMPAT:')]

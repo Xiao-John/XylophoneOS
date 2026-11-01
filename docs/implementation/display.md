@@ -114,7 +114,7 @@ QEMU=/path/qemu-system-x86_64 python3 scripts/run_qemu.py --iso-file --vga --wor
 
 | 需要 | E14 v1对接 |
 |---|---|
-| Screen geometry | mode.width/height，起点(0,0)，一个全屏主surface；无动态模式变更 |
+| screen geometry | mode.width/height，起点(0,0)，一个全屏主surface；无动态模式变更 |
 | Pixel format / stride | XRGB8888小端B,G,R,X；mode.stride是设备行跨度，buffer可为独立合法stride |
 | Surface ownership | connect独占；第二个client EBUSY；close/退出/成功exec撤销 |
 | Raster backing store | QPlatformBackingStore持有用户RAM，绘制完成后同步present |

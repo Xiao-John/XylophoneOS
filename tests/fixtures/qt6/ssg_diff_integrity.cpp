@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
     auto meta = [](const char *query, int scroll) {
         return QJsonObject{{"queryScope", QJsonObject{{"query", query}}}, {"scrollY", scroll}};
     };
-    aurora::SceneStream stream;
+    aurora::scene_stream stream;
     check(stream.diff(0, "missing")["status"] == "UNAVAILABLE", "unpublished_unavailable");
     const auto a = stream.publish(QJsonArray{node("1", "one"), node("2", "two")}, meta("all", 0));
     const auto epoch = a["sourceEpoch"].toString();
@@ -43,7 +43,11 @@ int main(int argc, char **argv) {
     const auto duplicate = stream.publish(QJsonArray{node("1", "first"), node("1", "second")}, meta("filtered", 1));
     check(duplicate["status"] == "BAD_NODES" && stream.diff(version, epoch)["status"] == "OK", "duplicate_id_rejected_without_changing_history");
     check(stream.publish(QJsonArray{QJsonObject{{"text", "missing id"}}}, meta("filtered", 1))["status"] == "BAD_NODES", "missing_id_rejected");
-    aurora::SceneStream legacy;
+    stream.publish(QJsonArray{node("1", "stale generation")}, meta("filtered", 1));
+    const auto stale = stream.publish(QJsonArray{node("1", "stale generation 2")}, meta("filtered", 1));
+    check(stream.diff(version, epoch)["status"] == "RESET_REQUIRED", "stale_generation_since_resets");
+    version = stale["sceneVersion"].toString().toULongLong();
+    aurora::scene_stream legacy;
     auto old = legacy.publish(QJsonArray{node("1", "one")}, QJsonObject{{"query", "all"}, {"scrollY", 0}});
     legacy.publish(QJsonArray{node("1", "one")}, QJsonObject{{"query", "all"}, {"scrollY", 1}});
     check(legacy.diff(old["sceneVersion"].toString().toULongLong(), old["sourceEpoch"].toString())["status"] == "RESET_REQUIRED", "legacy_metadata_change_conservatively_resets");

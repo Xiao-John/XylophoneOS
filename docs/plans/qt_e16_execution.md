@@ -47,9 +47,9 @@ Gui 构建产生的 Core 不是应用使用的 Core：应用强制检查并链�
 
 ## QPA 与线程生命周期
 
-`qpa/qxos.cpp` 针对冻结 6.8.3 私有 API，实现 Integration、Screen、Window、
-BackingStore、字体数据库以及 GUI 分发器。Screen 读取实际 mode；一个独占全屏
-Surface。BackingStore 只持有普通用户态 QImage RGB32，小端 B/G/R/X；绘制后按
+`qpa/qxos.cpp` 针对冻结 6.8.3 私有 API，实现 integration、screen、window、
+backing_store、字体数据库以及 GUI 分发器。screen 读取实际 mode；一个独占全屏
+Surface。backing_store 只持有普通用户态 QImage RGB32，小端 B/G/R/X；绘制后按
 裁剪后的 QRegion 同步提交 Display Service。设备 stride 与源 stride 分别处理。
 子窗口/非零 flush offset 显式拒绝；第二窗口的 connect 返回真实 -16 后诊断退出。
 
@@ -61,7 +61,7 @@ GUI 主线程。QWindowSystemInterface 的键鼠分发仅发生在 GUI 线程。
 
 销毁先置停止标志，串行 disconnect 撤销 Surface/焦点并唤醒输入等待，然后
 pthread_join 等待 TLS 和内核栈真正回收，最后销毁 QObject 投递目标；旧投递不会
-访问已销毁 Window。服务死亡返回 -19，主循环以 72 退出。故障/kill 由原进程机制回收。
+访问已销毁 window。服务死亡返回 -19，主循环以 72 退出。故障/kill 由原进程机制回收。
 
 首版 QThread 输入实现遇到真实竞态：Qt 6.8.3 的 detached pthread 清理通知可先于
 内核线程退出，QThread::wait 返回后立即采样曾仍有两线程/两栈。失败保留，改用现有

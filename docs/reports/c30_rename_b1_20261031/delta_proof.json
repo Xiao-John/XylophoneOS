@@ -1,0 +1,112 @@
+{
+ "method": "word-boundary old->new substitution applied to pre-image c47b355; per-file byte comparison against rename commit ac8160d; recorded exception: theme.cpp upstream QPalette enums",
+ "all_files_identifier_only": true,
+ "files": 20,
+ "per_file": {
+  "src/ports/aurora_browser/main.cpp": {
+   "substitution_reproduces_rename_commit": true,
+   "rename_commit_is_final": true,
+   "note": "commit A == deterministic substitution of pre-image"
+  },
+  "src/ports/qt6/aurora/README.md": {
+   "substitution_reproduces_rename_commit": true,
+   "rename_commit_is_final": true,
+   "note": "commit A == deterministic substitution of pre-image"
+  },
+  "src/ports/qt6/aurora/aurora.hpp": {
+   "substitution_reproduces_rename_commit": true,
+   "rename_commit_is_final": false,
+   "note": "commit A == deterministic substitution of pre-image"
+  },
+  "src/ports/qt6/aurora/desktop.hpp": {
+   "substitution_reproduces_rename_commit": true,
+   "rename_commit_is_final": false,
+   "note": "commit A == deterministic substitution of pre-image"
+  },
+  "src/ports/qt6/aurora/style.cpp": {
+   "substitution_reproduces_rename_commit": true,
+   "rename_commit_is_final": true,
+   "note": "commit A == deterministic substitution of pre-image"
+  },
+  "src/ports/qt6/aurora/theme.cpp": {
+   "substitution_reproduces_rename_commit": true,
+   "rename_commit_is_final": true,
+   "note": "commit A == deterministic substitution of pre-image"
+  },
+  "src/ports/qt6/editor/main.cpp": {
+   "substitution_reproduces_rename_commit": true,
+   "rename_commit_is_final": true,
+   "note": "commit A == deterministic substitution of pre-image"
+  },
+  "src/ports/qt6/qpa/qxos.cpp": {
+   "substitution_reproduces_rename_commit": true,
+   "rename_commit_is_final": false,
+   "note": "commit A == deterministic substitution of pre-image"
+  },
+  "src/ports/qt6/runtime/qeventdispatcher_xos_p.h": {
+   "substitution_reproduces_rename_commit": true,
+   "rename_commit_is_final": true,
+   "note": "commit A == deterministic substitution of pre-image"
+  },
+  "src/ports/qt6/runtime/wake_gate.hpp": {
+   "substitution_reproduces_rename_commit": true,
+   "rename_commit_is_final": true,
+   "note": "commit A == deterministic substitution of pre-image"
+  },
+  "tests/fixtures/qt6/aurora_showcase.cpp": {
+   "substitution_reproduces_rename_commit": true,
+   "rename_commit_is_final": true,
+   "note": "commit A == deterministic substitution of pre-image"
+  },
+  "tests/fixtures/qt6/wake_gate_probe.cpp": {
+   "substitution_reproduces_rename_commit": true,
+   "rename_commit_is_final": true,
+   "note": "commit A == deterministic substitution of pre-image"
+  },
+  "tests/fixtures/qt6/widgets_memory.cpp": {
+   "substitution_reproduces_rename_commit": true,
+   "rename_commit_is_final": true,
+   "note": "commit A == deterministic substitution of pre-image"
+  },
+  "docs/contracts/qt_platform.md": {
+   "substitution_reproduces_rename_commit": true,
+   "rename_commit_is_final": true,
+   "note": "commit A == deterministic substitution of pre-image"
+  },
+  "docs/contracts/semantic_scene_graph.md": {
+   "substitution_reproduces_rename_commit": true,
+   "rename_commit_is_final": true,
+   "note": "commit A == deterministic substitution of pre-image"
+  },
+  "docs/design/aurora_glass_v2.md": {
+   "substitution_reproduces_rename_commit": true,
+   "rename_commit_is_final": true,
+   "note": "commit A == deterministic substitution of pre-image"
+  },
+  "docs/implementation/display.md": {
+   "substitution_reproduces_rename_commit": true,
+   "rename_commit_is_final": true,
+   "note": "commit A == deterministic substitution of pre-image"
+  },
+  "docs/plans/aurora_browser_engine_evaluation.md": {
+   "substitution_reproduces_rename_commit": true,
+   "rename_commit_is_final": true,
+   "note": "commit A == deterministic substitution of pre-image"
+  },
+  "docs/plans/qt_e16_execution.md": {
+   "substitution_reproduces_rename_commit": true,
+   "rename_commit_is_final": true,
+   "note": "commit A == deterministic substitution of pre-image"
+  },
+  "docs/plans/qt_e17_execution.md": {
+   "substitution_reproduces_rename_commit": true,
+   "rename_commit_is_final": true,
+   "note": "commit A == deterministic substitution of pre-image"
+  }
+ },
+ "files_changed_by_fixes_commit": [
+  "src/ports/qt6/aurora/aurora.hpp",
+  "src/ports/qt6/aurora/desktop.hpp",
+  "src/ports/qt6/qpa/qxos.cpp"
+ ]
+}

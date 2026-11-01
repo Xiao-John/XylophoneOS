@@ -51,7 +51,9 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
 
     sdk_objects = [compile_source(root / name) for name in (
         "src/user/sdk/text.cpp", "src/user/sdk/file_client.cpp", "src/user/sdk/terminal_client.cpp", "src/user/arch/x86_64/syscall.cpp", "src/shared/runtime/memory.cpp")]
-    sdk_objects.extend(compile_source(source, ("-w",)) for source in sorted((root / "src/user/libc").glob("*.cpp")))
+    sdk_objects.extend(compile_source(source, ("-w", "-ffunction-sections", "-fdata-sections")
+                                      if source.name == "newlib_syscalls.cpp" else ("-w",))
+                       for source in sorted((root / "src/user/libc").glob("*.cpp")))
     thread_core = compile_source(root / "src/user/arch/x86_64/thread_core.cpp")
     core_archive = build / "threading_core/libxos_thread_core.a"
     core_archive.parent.mkdir(exist_ok=True)
@@ -109,6 +111,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
         executable = build / f"user_{name}.elf"
         run([tool("g++"), *X86_FLAGS, "-nostdlib", "-static", "-no-pie",
              "-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
+             *(["-Wl,--gc-sections"] if name == "libc_hello" else []),
              "-T", str(sdk / "user.ld"), str(sdk / ("crt0_posix.o" if name in ("runtime_probe", "cpp_runtime_probe", "tls_exit_probe") else "crt0_libc.o" if name in libc_programs else "crt0.o")), main,
              *([str(loader_archive)] if name in ("supervisor", "xos_diag") else []), *fault_objects,
              *([str(core_archive), str(loader_archive)] if name in ("threading_core_probe", "gfxdemo", "terminal") else []),

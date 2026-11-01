@@ -4,6 +4,7 @@
 import argparse
 import hashlib
 import json
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -26,7 +27,7 @@ def sha(path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--probe', choices=('wait', 'channel', 'pio', 'irq'), default='wait')
+    parser.add_argument('--probe', choices=('wait', 'channel', 'pio', 'irq', 'tty_exec'), default='wait')
     parser.add_argument('--system', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
     args = parser.parse_args()
@@ -48,16 +49,18 @@ def main():
     sdk = system / 'sdk'
     sdk_receipt = verify_sdk(sdk, manifest)
     output.mkdir(parents=True)
-    fixture_name = {'pio': 'pio_negative', 'irq': 'irq_negative'}.get(args.probe, args.probe)
+    fixture_name = {'pio': 'pio_negative', 'irq': 'irq_negative', 'tty_exec': 'terminal_exec'}.get(args.probe, args.probe)
     fixture = ROOT / ('tests/fixtures/ncursesw/' + fixture_name + '_probe.cpp')
     obj, elf = output / 'wait_probe.o', output / 'wait_probe.elf'
-    commands = [[tool('g++'), *COMMON_FLAGS, *X86_FLAGS, '-I', str(sdk / 'include'),
+    commands = [[tool('g++'), *COMMON_FLAGS, *X86_FLAGS, *(['-w'] if args.probe == 'tty_exec' else []), '-I', str(sdk / 'include'),
                  '-c', str(fixture), '-o', str(obj)],
                 [tool('g++'), *X86_FLAGS, '-nostdlib', '-static', '-no-pie',
                  '-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096',
-                 '-T', str(sdk / 'user.ld'), str(sdk / 'crt0.o'), str(obj),
+                 '-T', str(sdk / 'user.ld'), str(sdk / ('crt0_libc.o' if args.probe == 'tty_exec' else 'crt0.o')), str(obj),
                  '-Wl,--start-group', str(sdk / 'lib/libxos_loader.a'),
-                 str(sdk / 'lib/libxos.a'), '-Wl,--end-group', '-o', str(elf)]]
+                 str(sdk / 'lib/libxos.a'),
+                 *([str(sdk / 'lib/libc.a'), str(sdk / 'lib/libm.a'), '-lgcc'] if args.probe == 'tty_exec' else []),
+                 '-Wl,--end-group', '-o', str(elf)]]
     report = {'status': 'failed', 'probe': args.probe, 'revision': revision, 'build_id': manifest['build_id'],
               'system_manifest_sha256': sha(system / 'manifest.json'), 'image_sha256': sha(image),
               'sdk_tree_sha256': sdk_receipt['tree_sha256'], 'fixture_sha256': sha(fixture),
@@ -71,6 +74,9 @@ def main():
     elif args.probe in ('pio', 'irq'):
         report['not_run'] = ['authorized_boundaries', 'fork_exec', 'revocation_races',
                              'cross_process_isolation', 'resource_stress', 'full_w1_terminal']
+    elif args.probe == 'tty_exec':
+        report['not_run'] = ['fork_inheritance', 'threaded_profile', 'all_cloexec',
+                             'exec_inflight_races', 'full_w1_terminal']
     guest = None
     try:
         for cmd in commands:
@@ -80,21 +86,42 @@ def main():
             disk = Path(temporary) / 'disk.img'
             create_fat32(disk, 512)
             transfer(disk, 'mkdir', '/bin')
-            transfer(disk, 'import', '/bin/' + args.probe + '.elf', elf)
+            transfer(disk, 'import', '/bin/' + ('ttyexec' if args.probe == 'tty_exec' else args.probe) + '.elf', elf)
+            if args.probe == 'tty_exec':
+                terminal = system / 'user_terminal.image.elf'
+                if sha(terminal) != manifest['artifacts'][terminal.name]['sha256']:
+                    raise SystemExit('terminal artifact differs from manifest')
+                transfer(disk, 'import', '/bin/terminal.elf', terminal)
             guest = Guest(image, 'w1_wait', work_disk=disk, iso=True)
             report['qemu_command'] = guest.command
             guest.expect(b'xos64> ', timeout=40)
             send_bytes(guest, b'run\r')
             guest.expect_supervisor(trace=True, timeout=40)
-            command(guest, 'demo keep', b'demo: keep')
-            for pid in (1, 3, 4):
-                command(guest, f'kill {pid}', b'kill: accepted')
+            if args.probe == 'tty_exec':
+                command(guest, 'demo quiet', b'demo tasks')
+            else:
+                command(guest, 'demo keep', b'demo: keep')
+                for pid in (1, 3, 4):
+                    command(guest, f'kill {pid}', b'kill: accepted')
             if args.probe == 'channel':
                 reply = command(guest, 'exec-driver /bin/channel.elf', b'W1_CHANNEL_OK', timeout=40)
                 if b'kind=exited code=0' not in reply:
                     raise AssertionError('channel probe did not exit successfully')
                 report['checks'].append('channel_bounded_lifecycle_subset')
                 report['checks'].append('explicit_exec_preserve_and_failed_duplicate_unchanged')
+            elif args.probe == 'tty_exec':
+                start = len(guest.output)
+                send_bytes(guest, b'tty-run /bin/ttyexec.elf\r')
+                guest.expect(b'TTY_EXEC_BEFORE pid=', start=start, timeout=60)
+                guest.expect(b'TTY_EXEC_AFTER pid=', start=start, timeout=60)
+                guest.expect(b'kind=exited code=0', start=start, timeout=60)
+                guest.expect(b'xsh> ', start=start, timeout=60)
+                data = bytes(guest.output[start:])
+                before = re.search(rb'TTY_EXEC_BEFORE pid=(\d+)', data)
+                after = re.search(rb'TTY_EXEC_AFTER pid=(\d+)', data)
+                if not before or not after or before.group(1) != after.group(1):
+                    raise AssertionError('terminal exec did not preserve process identity')
+                report['checks'].append('terminal_exec_identity_mode_alias_cloexec_and_failed_exec')
             elif args.probe in ('pio', 'irq'):
                 expected = b'W1_PIO_DENIED_OK' if args.probe == 'pio' else b'W1_IRQ_DENIED_OK'
                 reply = command(guest, f'exec-file /bin/{args.probe}.elf', expected, timeout=40)

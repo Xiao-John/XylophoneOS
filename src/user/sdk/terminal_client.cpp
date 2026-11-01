@@ -32,7 +32,7 @@ i64 connect(client& session, u64 controller_pid, u64 service_pid) {
 }
 
 i64 connect_startup(client& session, const startup_info* startup) {
-    if (startup == nullptr || startup->magic != startup_magic || startup->version != 2 ||
+    if (startup == nullptr || startup->magic != startup_magic || (startup->version != 2 && startup->version != 3) ||
         startup->size != sizeof(startup_info) || startup->reserved != startup_extension_offset)
         return process_error_invalid;
     const auto* extension = reinterpret_cast<const startup_extension*>(
@@ -49,7 +49,17 @@ i64 connect_startup(client& session, const startup_info* startup) {
         if (info.handle != extension->reserved || info.rights != channel_send) continue;
         const i64 connected = connect(session, info.controller_pid, info.peer_pid);
         if (connected != 0) return connected;
-        if (session.send_handle == extension->reserved) return 0;
+        if (session.send_handle == extension->reserved) {
+            if (startup->version == 3) {
+                const auto* state = reinterpret_cast<const startup_terminal_exec_extension*>(
+                    reinterpret_cast<const u8*>(startup) + startup_terminal_exec_offset);
+                if (state->magic != startup_terminal_exec_magic || state->next_sequence == 0) {
+                    close(session); return process_error_state;
+                }
+                session.next_sequence = state->next_sequence;
+            }
+            return 0;
+        }
         close(session); return process_error_denied;
     }
     return process_error_denied;

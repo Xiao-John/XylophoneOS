@@ -80,5 +80,19 @@ int main() {
     malformed = true;
     if (terminal::read_until(client, buffer, 1, 30) != process_error_state || closed != 2 ||
         client.send_handle != 0 || client.receive_handle != 0) return 5;
+    struct exec_fixture {
+        startup_info header; u8 padding[16]; startup_extension extension;
+        startup_exec_extension exec; startup_terminal_exec_extension terminal_exec;
+    } replacement{};
+    static_assert(__builtin_offsetof(exec_fixture, terminal_exec) == startup_terminal_exec_offset);
+    replacement.header.magic = startup_magic; replacement.header.version = 3;
+    replacement.header.size = sizeof(startup_info); replacement.header.reserved = startup_extension_offset;
+    replacement.extension.magic = startup_extension_magic;
+    replacement.extension.flags = startup_flag_terminal; replacement.extension.reserved = 10;
+    replacement.terminal_exec = {startup_terminal_exec_magic, 42};
+    malformed = false;
+    if (terminal::connect_startup(client, &replacement.header) != 0 || client.next_sequence != 42 ||
+        terminal::get_mode(client, selected) != 0 || last_request.sequence != 42) return 11;
+    terminal::close(client);
     return 0;
 }

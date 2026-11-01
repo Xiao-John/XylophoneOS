@@ -438,7 +438,8 @@ static int restore_exec_descriptors(const xos::startup_info* startup) {
     for (auto& object : objects) object = open_object{};
     for (u32 i = 0; i < extension->count; ++i) {
         const auto& item = list[i];
-        if (item.object >= object_count || item.kind < 1 || item.kind > 4 || item.reserved ||
+        if (item.object >= object_count || item.kind < 1 || item.kind > 5 || item.reserved ||
+            (item.kind == static_cast<u32>(object_kind::terminal) && terminal_client.send_handle == 0) ||
             (item.fd != 0xffffffffu && item.fd >= fd_count)) { errno = EINVAL; return -1; }
         if (item.fd == 0xffffffffu) continue;
         if (valid_fd(static_cast<int>(item.fd))) { errno = EINVAL; return -1; }
@@ -457,6 +458,7 @@ static int restore_exec_descriptors(const xos::startup_info* startup) {
         const auto& item = list[i];
         if (item.fd != 0xffffffffu) continue;
         if (objects[item.object].kind != object_kind::none) { errno = EINVAL; return -1; }
+        if (item.kind == static_cast<u32>(object_kind::terminal)) { errno = EINVAL; return -1; }
         xos::i64 result;
         const auto kind = static_cast<object_kind>(item.kind);
         if (kind == object_kind::file) result = file_client.close(item.handle);
@@ -497,17 +499,20 @@ extern "C" int xos_libc_init(const xos::startup_info* startup) {
 #ifdef XOS_THREADED_RUNTIME
         errno = ENOTSUP; return -1;
 #else
-        if (startup->version != 2 || (extension->flags & 7u) != 7u ||
-            (extension->flags & (7u << 8)) != 0 || extension->open_paths[0] != 0 ||
-            extension->open_paths[1] != 0 || extension->open_paths[2] != 0) {
+        if ((startup->version != 2 && startup->version != 3) ||
+            (startup->version == 2 && ((extension->flags & 7u) != 7u ||
+             (extension->flags & (7u << 8)) != 0 || extension->open_paths[0] != 0 ||
+             extension->open_paths[1] != 0 || extension->open_paths[2] != 0))) {
             errno = EINVAL; return -1;
         }
         const xos::i64 connected = xos::terminal::connect_startup(terminal_client, startup);
         if (connected != 0) { errno = error_from_kernel(connected); return -1; }
-        const int object = alloc_object(object_kind::terminal, 0, O_RDWR);
-        if (object < 0) { xos::terminal::close(terminal_client); errno = EMFILE; return -1; }
-        objects[object].references = 3;
-        for (int fd = 0; fd < 3; ++fd) descriptors[fd] = {static_cast<signed char>(object), false};
+        if (startup->version == 2) {
+            const int object = alloc_object(object_kind::terminal, 0, O_RDWR);
+            if (object < 0) { xos::terminal::close(terminal_client); errno = EMFILE; return -1; }
+            objects[object].references = 3;
+            for (int fd = 0; fd < 3; ++fd) descriptors[fd] = {static_cast<signed char>(object), false};
+        }
 #endif
     }
     for (int fd = 0; fd < 3; ++fd) {
@@ -1557,7 +1562,6 @@ static int exec_image(const char* path, char* const argv[], char* const envp[], 
     errno = ENOTSUP; return -1;
 #else
     if (!runtime_ready || !path || !argv) { errno = EINVAL; return -1; }
-    if (has_terminal_descriptor()) { errno = ENOTSUP; return -1; }
     char normalized[max_path], cwd[max_path];
     if (!normalize_path(path, normalized)) { errno = ENAMETOOLONG; return -1; }
     { runtime_guard guard(cwd_lock); memcpy(cwd, current_directory, max_path); }
@@ -1591,10 +1595,22 @@ static int exec_image(const char* path, char* const argv[], char* const envp[], 
         }
         for (u32 index = 0; index < object_count; ++index) {
             const auto& object = objects[index];
-            if (object.kind == object_kind::none || kept[index]) continue;
+            if (object.kind == object_kind::none || kept[index] || object.kind == object_kind::terminal) continue;
             if (count == fd_count) { errno = EMFILE; return -1; }
             entries[count++] = {0xffffffffu, index, static_cast<u32>(object.kind), object.handle, object.flags & ~O_CLOEXEC, 0};
         }
+    }
+    const u32 terminal_channels[] = {terminal_client.send_handle, terminal_client.receive_handle};
+    bool terminal_kept = false;
+    for (u32 index = 0; index < object_count; ++index)
+        if (kept[index] && objects[index].kind == object_kind::terminal) terminal_kept = true;
+    if (terminal_kept) {
+        if (terminal_channels[0] == 0 || terminal_channels[1] == 0 || terminal_client.next_sequence == 0) {
+            errno = EIO; return -1;
+        }
+        options.exec_channel_count = 2; options.exec_channels = terminal_channels;
+        options.exec_terminal_send_handle = terminal_channels[0];
+        options.exec_terminal_next_sequence = terminal_client.next_sequence;
     }
     options.descriptor_count = count; options.descriptors = entries;
     xos::execution::launch_diagnostic diagnostic{};

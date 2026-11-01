@@ -29,6 +29,10 @@ enum class startup_fd_kind : u32 { kernel = 1, file = 2, pipe_read = 3, pipe_wri
 struct startup_descriptor { u32 fd, object, kind, handle, flags, reserved; };
 struct startup_exec_extension { u64 magic, descriptors; u32 count, reserved; };
 static_assert(sizeof(startup_descriptor) == 24 && sizeof(startup_exec_extension) == 24);
+inline constexpr u64 startup_terminal_exec_magic = 0x33595454534f5858ull;
+inline constexpr u32 startup_terminal_exec_offset = startup_exec_offset + sizeof(startup_exec_extension);
+struct startup_terminal_exec_extension { u64 magic, next_sequence; };
+static_assert(startup_terminal_exec_offset + sizeof(startup_terminal_exec_extension) == 192);
 namespace sdk {
 struct spawn_options {
     u32 environment_count = 0;
@@ -56,6 +60,8 @@ struct spawn_options {
     // Explicit quiescent generic channels to retain across replacement.
     u32 exec_channel_count = 0;
     const u32* exec_channels = nullptr;
+    u32 exec_terminal_send_handle = 0;
+    u64 exec_terminal_next_sequence = 0;
     // Runs after the image is mapped but before the child becomes runnable.
     // The caller owns cleanup of any resources created by this callback if
     // either the callback or the subsequent start fails.

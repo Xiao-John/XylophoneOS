@@ -33,7 +33,7 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
     if (fork() != -1 || errno != ENOTSUP) return 5;
     char executable[] = "/missing", *arguments[] = {executable, nullptr};
     errno = 0;
-    if (execv(executable, arguments) != -1 || errno != ENOTSUP) return 6;
+    if (execv(executable, arguments) != -1 || errno != ENOENT) return 6;
     const char ready[] = "W1_APP_READY\n";
     for (u32 i = 0; i < sizeof(ready) - 1; ++i)
         if (write(duplicate, ready + i, 1) != 1) return 7;

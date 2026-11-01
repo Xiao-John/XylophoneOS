@@ -122,6 +122,13 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
         return fail_before_create(process_error_invalid);
     }
     const bool terminal_startup = options != nullptr && options->terminal_send_handle != nullptr;
+    const bool terminal_exec = options != nullptr && options->exec_terminal_send_handle != 0;
+    if (terminal_exec && (!replacing || options->exec_channel_count != 2 ||
+        options->exec_terminal_next_sequence == 0 ||
+        (options->exec_channels[0] != options->exec_terminal_send_handle &&
+         options->exec_channels[1] != options->exec_terminal_send_handle))) {
+        return fail_before_create(process_error_invalid);
+    }
     if (terminal_startup) {
         if (replacing || options->prepare_child == nullptr) return fail_before_create(process_error_invalid);
         for (u32 fd = 0; fd < 3; ++fd) {
@@ -140,7 +147,7 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
         if (diagnostic != nullptr) *diagnostic = {execution::launch_stage::inspect, thread_error_unsupported, elf::error::none};
         return fail_before_create(thread_error_unsupported);
     }
-    if (terminal_startup && !image_opt_in(read_exact, read_context, size, plan,
+    if ((terminal_startup || terminal_exec) && !image_opt_in(read_exact, read_context, size, plan,
                                           ".xos.tty", 9, terminal_image_abi_magic, 1)) {
         if (diagnostic != nullptr) *diagnostic = {execution::launch_stage::inspect, thread_error_unsupported, elf::error::none};
         return fail_before_create(thread_error_unsupported);
@@ -181,6 +188,12 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
         auto* extension = reinterpret_cast<startup_extension*>(page + startup_extension_offset);
         extension->magic = startup_extension_magic;
         extension->environment_count = env_count;
+        if (terminal_exec) {
+            extension->flags |= startup_flag_terminal;
+            extension->reserved = options->exec_terminal_send_handle;
+            auto* state = reinterpret_cast<startup_terminal_exec_extension*>(page + startup_terminal_exec_offset);
+            *state = {startup_terminal_exec_magic, options->exec_terminal_next_sequence};
+        }
         for (u32 fd = 0; fd < 3; ++fd) {
             if (options->stdio[fd] == -2) { extension->flags |= 1u << fd; }
             if (options->file_handles[fd] != 0) { extension->flags |= 1u << (8 + fd); }

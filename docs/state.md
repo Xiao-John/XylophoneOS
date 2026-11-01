@@ -22,6 +22,7 @@
 | 时钟/IRQ 统一（C29） | #33 已合，统一时基落地 | [0112](work_log/0112_clock_irq_split.md) |
 | VirtIO-Net N1 / PR #20 | 保持 RC 未合并：要求拆分，驱动留实验分支 | PR #20 分支内记录（0084/0101） |
 | N2 用户态网络 | BLOCKED，待设备授权原语登记与实施 | [0097](work_log/0097_network_time_domains.md) |
+| Notes SSG 范围读取 / PR #48 | 草稿；仅记录既有客体边界和实时编辑的限定证据，未合并 | [0166](work_log/0166_ssg_notes_range_review.md) |
 | 浏览器 B0/B1 | 已合（本地 HTML/CSS 子集）；B2 网络 BLOCKED | [0083](work_log/0083_aurora_browser_offline.md)、[0096](work_log/0096_browser_review_fixes.md) |
 | Aurora UI v2 SDK | #29 已合（含 C30 改名与评审修复） | [0102](work_log/0102_aurora_ui_v2_sdk.md)、[0112](work_log/0112_aurora_c30_rename_and_fixes.md) |
 | Semantic Broker / 时间语义 / G3 复核 | #30/#31/#32 已合（勘查与限定模型） | [0108](work_log/0108_semantic_pipe_probe.md)、[0109](work_log/0109_temporal_semantics.md)、[0110](work_log/0110_aurora_g3_review.md) |

@@ -1,0 +1,104 @@
+{
+  "status": "FAILED",
+  "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+  "payload_sha256": "ba0b20de140732ca8fdb1a76e93301529d0b5347b3c8c952a82858e06c3f32d3",
+  "checks": [
+    {
+      "name": "surrogate_end_not_split",
+      "status": "PASS"
+    },
+    {
+      "name": "surrogate_start_rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "surrogate_pair_whole",
+      "status": "PASS"
+    },
+    {
+      "name": "last_page",
+      "status": "PASS"
+    },
+    {
+      "name": "out_of_range",
+      "status": "PASS"
+    },
+    {
+      "name": "invalid_lengths_and_offset",
+      "status": "PASS"
+    },
+    {
+      "name": "missing_revision_rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "edit_invalidates_revision",
+      "status": "PASS"
+    },
+    {
+      "name": "protection_rechecked",
+      "status": "PASS"
+    },
+    {
+      "name": "replacement_invalidates_reference",
+      "status": "FAIL"
+    },
+    {
+      "name": "revocation_rechecked",
+      "status": "PASS"
+    },
+    {
+      "name": "empty_document",
+      "status": "FAIL"
+    },
+    {
+      "name": "deleted_widget_invalidates_reference",
+      "status": "PASS"
+    }
+  ],
+  "qemu_command": [
+    "${XOS_QEMU}",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=${XOS_IMAGE},format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:${XOS_QMP_SOCKET},server=on,wait=off"
+  ],
+  "resources_before": [
+    130235,
+    3,
+    1
+  ],
+  "resources_after": [
+    130235,
+    3,
+    1
+  ],
+  "qemu_command_kind": "historical command template; the test harness creates the work disk and QMP socket"
+}

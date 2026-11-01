@@ -1,0 +1,110 @@
+{
+  "status": "BUILT",
+  "commands": [
+    [
+      "${XOS_PYTHON}",
+      "${XOS_SDK_PREFIX}/compile.py",
+      "${XOS_ROOT}/src/user/apps/ssg_session.cpp",
+      "-o",
+      "${XOS_TEST_OUT}/session.elf"
+    ],
+    [
+      "${XOS_PYTHON}",
+      "${XOS_ROOT}/src/ports/qt6/build_fixture.py",
+      "--source",
+      "${XOS_ROOT}/src/user/apps/ssg_consumer.cpp",
+      "--qrc",
+      "${XOS_ROOT}/tests/fixtures/qt6/resources.qrc",
+      "--sdk",
+      "${XOS_SDK_PREFIX}",
+      "--qt-build",
+      "${XOS_BUILD_DIR}",
+      "--host-qt",
+      "${XOS_HOST_QT}",
+      "--binutils",
+      "${XOS_BINUTILS}",
+      "--output",
+      "${XOS_TEST_OUT}/consumer/ssg-consumer.elf"
+    ],
+    [
+      "${XOS_PYTHON}",
+      "${XOS_ROOT}/src/ports/qt6/build_widgets_fixture.py",
+      "--source",
+      "${XOS_ROOT}/src/ports/qt6/editor/main.cpp",
+      "--sdk",
+      "${XOS_SDK_PREFIX}",
+      "--qt-build",
+      "${XOS_BUILD_DIR}",
+      "--qt-source",
+      "${XOS_QT_SOURCE}",
+      "--core-build",
+      "${XOS_BUILD_DIR}",
+      "--host-qt",
+      "${XOS_HOST_QT}",
+      "--binutils",
+      "${XOS_BINUTILS}",
+      "--output",
+      "${XOS_TEST_OUT}/notes/notes.elf"
+    ],
+    [
+      "${XOS_PYTHON}",
+      "${XOS_ROOT}/src/ports/aurora_browser/build.py",
+      "--sdk",
+      "${XOS_SDK_PREFIX}",
+      "--qt-build",
+      "${XOS_BUILD_DIR}",
+      "--qt-source",
+      "${XOS_QT_SOURCE}",
+      "--host-qt",
+      "${XOS_HOST_QT}",
+      "--binutils",
+      "${XOS_BINUTILS}",
+      "--output",
+      "${XOS_TEST_OUT}/browser/browser.elf"
+    ]
+  ],
+  "source_sha256": {
+    "scripts/build_ssg_p1.py": "7c7b4329d05c7794783274de90cfca967a0d3bf3c94a9170abfd78f7abe79184",
+    "src/user/apps/ssg_session.cpp": "d972bd3c02b3c8db01b6e8c759969c309fd510ab939298d0ad4dcbcefc9b0871",
+    "src/user/apps/ssg_consumer.cpp": "20650b0f0aa5beac4da0bce890c45ebea9e17c9e219a04b864598a0334388695",
+    "src/user/ssg/pipe_wire.hpp": "862470393d5e7c9a8392cb89ae782dec7a13a715c38d845e101ea12a623aa450",
+    "src/ports/qt6/aurora/ssg_pipe_provider.hpp": "3ea7718b424668d08e738f9f85a7631cd8c61c9fb71318457aacff97f4c8c7c7",
+    "src/ports/qt6/aurora/ssg.cpp": "09a7e0013ede2808d33460c621c18ccfff762618a768999ebaf706a25c5d1dfd",
+    "src/ports/qt6/aurora/ssg.hpp": "e2b1496b123983724bfcb538f2bc97b66448c5d3358971f34eb81c316a56a7e2",
+    "src/ports/qt6/editor/main.cpp": "fccdec346d7efae1f2a83200138446461edaf3e9af4c706f2a8c04d171dfdf52",
+    "src/ports/aurora_browser/main.cpp": "4e30b6f54d232b0c78fd9566c8ba5be770baef44b641aac13673239c6e3ec79e",
+    "src/ports/aurora_browser/view.hpp": "9c4ee7ca39b155b4b600a63791de1f0de69d0b2c8ee84e6b7f670c81ede91821",
+    "src/ports/aurora_browser/scene_geometry.hpp": "46ceb67c37427115f3201ab685dd380e16386c9871ccbf13b0d35d24a4743da8",
+    "src/ports/aurora_browser/content.hpp": "e2742a15f933fc95fc78d6dcadcba557dac6d01a254575807b20c7d783397881",
+    "src/ports/aurora_browser/patches/0001_readonly_render_fragments.patch": "2559951b2b94baf50a2947c8e50d1d717ff1a1a9c7011d3ce2d9ac59da04c4be",
+    "src/ports/aurora_browser/source_lock.json": "5737df122030a880301512a9129a9599be4f1c84a101321329c356033e0070e4",
+    "tests/ssg_ipc_guest.py": "59d97d8d32c314c937b70f441c56a9e3be1ae63b12f816300932cef86d7a34ae"
+  },
+  "sdk_manifest_sha256": "24dcc3ba938013c852a12f386ea2f7e16ebcec7cb4bfaff477794530c5d0e4b1",
+  "qt_cache_sha256": "406964513c0220090224068428d016bd0a75553da0d976be545dc02c8e8cd465",
+  "output": "${XOS_REDACTED_PATH}/1dc88deb03988c87",
+  "tools": {
+    "x86_64-elf-g++": {
+      "path": "${XOS_REDACTED_PATH}/b83bf3f27d41c1c4",
+      "sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
+      "version": "x86_64-elf-g++ (GCC) 16.2.0"
+    },
+    "x86_64-elf-gcc": {
+      "path": "${XOS_REDACTED_PATH}/ad67adb3804ee11a",
+      "sha256": "078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f",
+      "version": "x86_64-elf-gcc (GCC) 16.2.0"
+    },
+    "x86_64-elf-ar": {
+      "path": "${XOS_REDACTED_PATH}/a7474415be4ba2e0",
+      "sha256": "a7e59b3482a0e26d000bd2f4f60f7e8ad1e401909e03ca4c746ba126639087a3",
+      "version": "GNU ar (GNU Binutils) 2.47.20260726"
+    }
+  },
+  "artifacts": {
+    "session.elf": "a655bba4e92bbffac7ec636e6032bab3237859661a9071b9a5050a07404a1dcb",
+    "consumer/ssg-consumer.elf": "7f5841fca843a9de1551244195832a35407b2252ca0c168906d5f89804158029",
+    "notes/notes.elf": "a049c10079dec138cbf04da8d5e27ce810736a622e5ec6c78cf5c367df2a378c",
+    "browser/browser.elf": "410e4b533425a0c2fcbaa3274d802fa2d9c2ebe1e9c2d1a84ed1f2b7aa091a1c"
+  },
+  "commands_kind": "historical command templates; variables must be configured; not a verbatim transcript"
+}

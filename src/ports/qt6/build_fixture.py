@@ -7,11 +7,16 @@ import json
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import xml.etree.ElementTree as ET
+ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / 'scripts'))
+from ssg_public_paths import portable
 
 p = argparse.ArgumentParser(description=__doc__)
 for name in ('source', 'qrc', 'sdk', 'qt_build', 'host_qt', 'binutils', 'output'):
     p.add_argument('--' + name.replace('_', '-'), type=Path, required=True)
+p.add_argument('--portable-receipt', action='store_true', help='write a public path-template receipt; default receipt is local-only')
 a = p.parse_args()
 source, qrc, sdk, qt, host, binutils, out = [getattr(a, n).resolve() for n in
     ('source', 'qrc', 'sdk', 'qt_build', 'host_qt', 'binutils', 'output')]
@@ -63,5 +68,10 @@ for element in ET.parse(qrc).iter('file'):
 receipt = {'resource_files': resource_files, 'source': str(source), 'source_sha256': sha(source), 'qrc_sha256': sha(qrc),
            'sdk_manifest_sha256': sha(sdk/'manifest.json'), 'qtcore_sha256': sha(qt/'lib/libQt6Core.a'),
            'elf_sha256': sha(out), 'commands': commands}
+mappings = [('XOS_SDK_PREFIX',sdk),('XOS_BUILD_DIR',qt),('XOS_HOST_QT',host),
+            ('XOS_BINUTILS',binutils),('XOS_ARTIFACT_DIR',out.parent),('XOS_CXX',cxx)]
+if a.portable_receipt:
+    receipt['commands_kind'] = 'templates; execution uses the original runtime arguments'
+    receipt = portable(receipt,mappings,strict=True)
 out.with_suffix('.receipt.json').write_text(json.dumps(receipt, indent=2)+'\n')
 print('Built target fixture:', out)

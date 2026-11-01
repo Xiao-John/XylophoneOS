@@ -7,6 +7,8 @@
 
 新增记录：[0165 — SSG-P2 Browser diagnostic](0165_ssg_p2_diagnostic.md)。
 
+新增记录：[0166 — Notes range review](0166_ssg_notes_range_review.md)。
+
 2026-11-01 盘点的重复编号（12 组）：
 
 | 编号 | 两份记录 |

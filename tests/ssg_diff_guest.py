@@ -11,6 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / 'tests'), str(ROOT / 'scripts')]
+from ssg_public_paths import portable, resolve_template
 from boot_smoke import Guest
 from make_work_disk import create_fat32
 from process_smoke import command, resources
@@ -29,10 +30,11 @@ sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
 receipt = json.loads(args.payload.with_suffix('.receipt.json').read_text())
 assert sha(args.payload) == receipt['elf_sha256']
 for name, digest in receipt['inputs'].items():
-    assert sha(Path(name)) == digest, name
+    assert sha(resolve_template(name, [('XOS_ARTIFACT_DIR', args.payload.resolve().parent)])) == digest, name
 report = {'status': 'FAILED', 'image_sha256': sha(args.image),
           'payload_sha256': sha(args.payload), 'checks': []}
 guest = None
+disk = None
 try:
     with tempfile.TemporaryDirectory(prefix='xos_ssg_diff_') as tmp:
         disk = Path(tmp) / 'work.img'
@@ -85,6 +87,8 @@ except Exception as error:
 finally:
     if guest:
         guest.close()
-    (out / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
+    report['qemu_command_kind'] = 'template; the runner creates the work disk and QMP socket'
+    mappings = [('XOS_IMAGE',args.image),('XOS_TEST_OUT',out),('XOS_DIFF_TEST_ELF',args.payload),('XOS_DASH_ELF',args.dash),('XOS_WORK_DISK',disk),('XOS_QMP_SOCKET',guest.qmp_path if guest else None),('XOS_QEMU',guest.command[0] if guest else None)]
+    (out / 'report.json').write_text(json.dumps(portable(report,mappings,strict=True), indent=2) + '\n')
 print(report['status'], len(report['checks']), 'checks')
 sys.exit(0 if report['status'] == 'PASSED' else 1)

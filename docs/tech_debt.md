@@ -39,6 +39,12 @@
 | C5 | work_log 撞号（**索引化清偿，本 PR 交付**；历史文件不动） | 采用"老人老办法"：不改任何历史文件名、零级联——新增 `docs/work_log/README.md` 编号索引，登记全部 12 组历史重复（含本轮扩围发现的 8 组未登记：0062/0063/0064/0065/0066/0073/0082/0088）并声明"自 0149 起编号唯一、新记录不得复用"；此前 4 组改号方案（0150–0153）因会把 5 个冻结清单拖入修改集、触发守门扫描器与级联螺旋而被否决回滚，过程记于 0154 |
 | —（制度新增，非债） | 证据完整性契约 | [evidence_integrity.md](./contracts/evidence_integrity.md)：git commit 为唯一信任根；新报告目录平铺 `manifest.json` 根清单、叶子互不哈希、修改只动两处；存量老人老办法；`tests/report_manifest_check.py` 如实报 compliant/grandfathered |
 
+## 五、例外登记（C26）
+
+| 登记号 | 例外内容 | 必要性 | 范围 | 负责人 | 退出条件 | 确认 |
+|---|---|---|---|---|---|---|
+| C26-2026-11-01-01 | 冻结证据就地脱敏（"不移动改写"的例外） | 守门扫描在主线冻结件中实测 442 条个人路径 findings（含 27 处真实 macos_home），隐私与第三方复核障碍（Issue #37） | `docs/reports/` 下本 PR 所改 586 个文件的路径替换（35 份 old_sha→new_sha 账本，`verify_evidence_migration.py` 字节级可复现）+ 17 个冻结目录新增 `SANITIZED_EXPORT.md` 指针（仅指针，不改其账本） | www080327-glitch（Issue #37 线） | ① 全树分类 OPEN 清零；② `check_public_evidence_paths` 转 PUBLIC_READY；③ 迁移后冻结件仅允许机械替换与本例外登记范围内的操作 | 用户已确认（2026-11-01，PR #60 评审线程） |
+
 ## 四、功能/范围债（state.md 快照口径，细目在各 work_log）
 
 | # | 线 | 缺口 |

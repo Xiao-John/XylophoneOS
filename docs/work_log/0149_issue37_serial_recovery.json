@@ -1,0 +1,57 @@
+{
+  "status": "RAW_BYTES_RESTORED",
+  "previous_commit": "0a91a2bb1eabd6977f1001ac8bd7781a88fae225",
+  "method": "Original local bytes matched the unchanged evidence indexes; each normalized base blob equals the original with CRLF converted to LF. Git attributes now disable text conversion for these captures.",
+  "files": [
+    {
+      "path": "docs/reports/net_clock_irq_split_20261030/runs/clock_irq_audit/serial.log",
+      "original_sha256": "c98ae154d59c93040ab4220535d99e7bbcba948414e073faadf1d88bbf963714",
+      "previous_normalized_sha256": "76c56945d6b3cce1babb8c016e233898ce6f2b9899350f1dd87b5483cc6d3d04"
+    },
+    {
+      "path": "docs/reports/net_clock_irq_split_20261030/runs/dash_shell/serial.log",
+      "original_sha256": "09e8369f26446b0a02380f406b16bbbeb581218b9292aed93b2d82317c5f3130",
+      "previous_normalized_sha256": "72069695e14f1a6cd19b953dfd980d7846d08713c580851f8434f92cddb50ea9"
+    },
+    {
+      "path": "docs/reports/net_clock_irq_split_20261030/runs/dash_threads/all_serial.log",
+      "original_sha256": "9604f91c10ecb7be80f3c029d605f714b7997a1bf424d5cceba1bc2d505e58b1",
+      "previous_normalized_sha256": "c8cd505a1b2717c0b06ad9fb443fc7f9be7c73ce61384d0db907f95d5dfe62be"
+    },
+    {
+      "path": "docs/reports/net_clock_irq_split_20261030/runs/dash_threads/iteration_0_serial.log",
+      "original_sha256": "2ee480d98b27e59ff2fa7a8d157a576c557d90c69673c03cbc0f9d8654a912d6",
+      "previous_normalized_sha256": "1c3e4ddf5e619de65d932505d6c20012989e4a6de8ffd10fcea627470ac07786"
+    },
+    {
+      "path": "docs/reports/net_clock_irq_split_20261030/runs/dash_threads/iteration_1_serial.log",
+      "original_sha256": "b0ae6e456cc56a0a40b07e6c1e11b66d50e8eaecbeb5d8f536a282095f92be29",
+      "previous_normalized_sha256": "18f41828d949d92d5946234205f8a47e0ec53b4896b4326cfc902c8040ea9cb7"
+    },
+    {
+      "path": "docs/reports/net_clock_irq_split_20261030/runs/display_smoke/main_serial.log",
+      "original_sha256": "3f6981b91c08321b512f07db8f029471c939a56afeeeb5a82e6ae7bfc162ef08",
+      "previous_normalized_sha256": "058a824d42d0afb77198ba430e5a2111ed8bfd355cf30d6ac1cfd3f1ad2f2840"
+    },
+    {
+      "path": "docs/reports/net_clock_irq_split_20261030/runs/kernel_smoke/serial.log",
+      "original_sha256": "88bcd0cc30b8f9760879b31d35699fbb1a5a357adb35b282157f9d9255b61481",
+      "previous_normalized_sha256": "61cd7af98cadb6f2471c5ec49bac0c7f4e300886f7477012bd64a29afb9f6fc6"
+    },
+    {
+      "path": "docs/reports/net_clock_irq_split_20261030/runs/threading/serial.log",
+      "original_sha256": "576dfd1fbfe963004d5d09d654f8f245c8133aedc59aa4d3a55ad3f5216df2ae",
+      "previous_normalized_sha256": "39a854b0e0c27957393c38d6f11b77bde166280834017b6e8928ec55377e3e1e"
+    },
+    {
+      "path": "docs/reports/aurora_sdk_review_20261030/runs/semantics-dash/serial.log",
+      "original_sha256": "4c9dd9fe0ad7242c9cb728417443f5e5bdc87301a969ad2cadc500134d8b017c",
+      "previous_normalized_sha256": "6da6de9a44dc40c4048802f709ae09e024cbf1b7a87696e8967195cb9c098676"
+    },
+    {
+      "path": "docs/reports/aurora_sdk_review_20261030/runs/semantics-xsh/serial.log",
+      "original_sha256": "c390b6be1e28249286a7d9c81c22ca3d42aeae02eee49db8da8cbfc71b366128",
+      "previous_normalized_sha256": "34e7e11c6e46e322c07cea778c4e69e396bfe70384fb389f530fe2841bfa5a33"
+    }
+  ]
+}

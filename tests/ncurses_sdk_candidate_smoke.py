@@ -40,7 +40,8 @@ def main():
     sdk = candidate / 'sdk'
     libgcc = subprocess.check_output([cc, '-print-libgcc-file-name'], text=True).strip()
     output.mkdir(parents=True)
-    names = ('wide_screen_probe', 'reentry_probe', 'wide_locale_probe', 'terminal_failure_probe')
+    names = ('wide_screen_probe', 'reentry_probe', 'wide_locale_probe', 'terminal_failure_probe',
+             'terminal_crash_probe')
     sources = [ROOT / 'tests/fixtures/ncursesw' / (name + '.c') for name in names]
     results = {'status': 'failed', 'candidate_tree_sha256': receipt['tree_sha256'], 'artifacts': {},
                'source_sha256': {str(p.relative_to(ROOT)): sha(p) for p in sources}}

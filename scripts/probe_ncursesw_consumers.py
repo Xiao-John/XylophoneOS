@@ -47,7 +47,8 @@ def main():
     sources = [ROOT / 'tests/fixtures/ncursesw/wide_screen_probe.c',
                ROOT / 'tests/fixtures/ncursesw/reentry_probe.c',
                ROOT / 'tests/fixtures/ncursesw/wide_locale_probe.c',
-               ROOT / 'tests/fixtures/ncursesw/terminal_failure_probe.c']
+               ROOT / 'tests/fixtures/ncursesw/terminal_failure_probe.c',
+               ROOT / 'tests/fixtures/ncursesw/terminal_crash_probe.c']
     results = {'status': 'failed', 'guest_run': False, 'sdk_tree_sha256': sdk_tree,
                'probe_report_sha256': sha(probe / 'report.json'), 'ncurses_archive_sha256': sha(lib),
                'source_sha256': {str(p.relative_to(ROOT)): sha(p) for p in sources}, 'commands': [], 'artifacts': {}}

@@ -80,13 +80,15 @@ def main():
             composed_receipt.get('target_report_sha256') != sha(probe / 'report.json') or
             composed_receipt.get('terminfo_receipt_sha256') != sha(terminfo / 'receipt.json')):
             raise SystemExit('composed SDK and consumer receipts do not match')
-    image, terminal = system / 'xos-install.iso', system / 'user_terminal.image.elf'
-    for path in (image, terminal):
+    image, terminal, legacy = (system / name for name in
+                               ('xos-install.iso', 'user_terminal.image.elf', 'user_hello.image.elf'))
+    for path in (image, terminal, legacy):
         if manifest['artifacts'].get(path.name, {}).get('sha256') != sha(path):
             raise SystemExit(f'system artifact differs from manifest: {path.name}')
-    wide, reentry, locale, failure = (consumers / name for name in
-        ('wide_screen_probe.elf', 'reentry_probe.elf', 'wide_locale_probe.elf', 'terminal_failure_probe.elf'))
-    for path in (wide, reentry, locale, failure):
+    wide, reentry, locale, failure, crash = (consumers / name for name in
+        ('wide_screen_probe.elf', 'reentry_probe.elf', 'wide_locale_probe.elf', 'terminal_failure_probe.elf',
+         'terminal_crash_probe.elf'))
+    for path in (wide, reentry, locale, failure, crash):
         if apps['artifacts'].get(path.name) != sha(path):
             raise SystemExit(f'consumer differs from receipt: {path.name}')
     entry = (composed / 'target/usr/local/share/terminfo/x/xterm' if composed
@@ -98,7 +100,8 @@ def main():
               'build_id': manifest['build_id'], 'system_sha256': sha(image), 'terminal_sha256': sha(terminal),
               'sdk_tree_sha256': sdk_receipt['sdk_tree_sha256'], 'ncurses_sha256': target['archive_sha256'],
               'terminfo_sha256': sha(entry), 'wide_sha256': sha(wide), 'reentry_sha256': sha(reentry),
-              'locale_sha256': sha(locale), 'failure_sha256': sha(failure), 'checks': []}
+              'locale_sha256': sha(locale), 'failure_sha256': sha(failure), 'crash_sha256': sha(crash),
+              'legacy_sha256': sha(legacy), 'checks': []}
     if composed:
         report['composed_sdk_tree_sha256'] = composed_receipt['tree_sha256']
     guest = None
@@ -111,7 +114,8 @@ def main():
                 transfer(disk, 'mkdir', path)
             for destination, source in (('/bin/terminal.elf', terminal), ('/bin/wide.elf', wide),
                                         ('/bin/reentry.elf', reentry), ('/bin/locale.elf', locale),
-                                        ('/bin/failure.elf', failure),
+                                        ('/bin/failure.elf', failure), ('/bin/crash.elf', crash),
+                                        ('/bin/legacy.elf', legacy),
                                         ('/usr/local/share/terminfo/x/xterm', entry)):
                 transfer(disk, 'import', destination, source)
             guest = Guest(image, 'ncurses_guest_probe', work_disk=disk, iso=True)
@@ -164,6 +168,22 @@ def main():
                 if after_apps != baseline:
                     raise AssertionError(f'resource mismatch after apps: {baseline} -> {after_apps}')
                 report['checks'].append('xsh_repeated_app_resource_baseline')
+                start = len(guest.output)
+                send_bytes(guest, b'tty-run /bin/legacy.elf\r')
+                guest.expect(b'xsh: cannot validate executable:', start=start, timeout=30)
+                guest.expect(b'error=-18', start=start, timeout=30)
+                guest.expect(b'xsh> ', start=start, timeout=30)
+                report['checks'].append('xsh_rejects_unmarked_terminal_program')
+                start = len(guest.output)
+                send_bytes(guest, b'tty-run /bin/crash.elf\r')
+                guest.expect(b'W1_CRASH_READY', start=start, timeout=60)
+                guest.expect(b' kind=faulted', start=start, timeout=60)
+                guest.expect(b' vector=14', start=start, timeout=60)
+                marker = guest.output.find(b' vector=14', start)
+                guest.expect(b'xsh> ', start=marker + len(b' vector=14'), timeout=60)
+                if resources() != baseline:
+                    raise AssertionError('resource mismatch after terminal application fault')
+                report['checks'].append('xsh_faulted_app_detached_and_resources_recovered')
                 start = len(guest.output)
                 send_bytes(guest, b'ps\r')
                 guest.expect(b'xsh> ', start=start, timeout=30)

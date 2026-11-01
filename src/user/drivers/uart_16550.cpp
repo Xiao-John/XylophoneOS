@@ -70,6 +70,8 @@ i64 driver::service_irq(u64 sequence) {
     return sdk::irq_event(irq_event_action::ack, irq_token_, sequence);
 }
 
+i64 driver::readable() const { return started_ ? (length_ != 0 ? 1 : 0) : process_error_state; }
+
 i64 driver::read(u8* output, u32 limit) {
     if (!started_) return process_error_state;
     if (output == nullptr && limit != 0) return process_error_invalid;

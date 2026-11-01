@@ -135,6 +135,15 @@ i64 read_mode(client& session, void* data, u32 length) {
     return reply.result;
 }
 
+i64 wait_readable(client& session, u64 deadline_ns) {
+    request message{}; response reply{};
+    message.operation = static_cast<u32>(operation::wait_readable); message.deadline_ns = deadline_ns;
+    const i64 result = exchange(session, message, reply);
+    if (result != 0) return result;
+    if (reply.length != 0 || reply.result > 1) { close(session); return process_error_state; }
+    return reply.result;
+}
+
 i64 read_until(client& session, void* data, u32 length, u64 deadline_ns) {
     if (data == nullptr && length != 0) return process_error_invalid;
     if (length > data_bytes) length = data_bytes;

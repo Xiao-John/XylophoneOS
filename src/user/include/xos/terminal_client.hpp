@@ -19,6 +19,7 @@ i64 flush_input(client& session);
 // May return zero for an empty nonblocking/timed read, not EOF.
 i64 read_mode(client& session, void* data, u32 length);
 i64 read_until(client& session, void* data, u32 length, u64 deadline_ns);
+i64 wait_readable(client& session, u64 deadline_ns);
 i64 write_until(client& session, const void* data, u32 length, u64 deadline_ns);
 void close(client& session);
 }

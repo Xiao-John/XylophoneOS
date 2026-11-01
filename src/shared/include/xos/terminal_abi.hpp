@@ -5,7 +5,7 @@
 namespace xos::terminal {
 // User-space service protocol, not a kernel syscall or POSIX termios ABI.
 inline constexpr u32 version = 2, data_bytes = 256;
-enum class operation : u32 { read = 1, write = 2, statistics = 3, stop = 4, read_until = 5, cancel = 6, write_until = 7, attach = 8, detach = 9, mode_get = 10, mode_set = 11, read_mode = 12, drain = 13, flush_input = 14 };
+enum class operation : u32 { read = 1, write = 2, statistics = 3, stop = 4, read_until = 5, cancel = 6, write_until = 7, attach = 8, detach = 9, mode_get = 10, mode_set = 11, read_mode = 12, drain = 13, flush_input = 14, wait_readable = 15 };
 enum class mode_action : u32 { now = 0, drain = 1, drain_flush_input = 2 };
 inline constexpr i64 interrupted = -19;
 // Initial noncanonical, no-echo 115200 8N1 profile. Nonzero flags are not

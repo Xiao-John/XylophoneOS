@@ -51,6 +51,7 @@ i64 create(u64&, entry_function, void*, u64, bool) { return process_error_resour
 namespace xos::user::uart {
 i64 driver::start() { return 0; }
 i64 driver::service_irq(u64) { return 0; }
+i64 driver::readable() const { return has_byte ? 1 : 0; }
 i64 driver::read(u8* output, u32 length) {
     if (length == 0 || !has_byte) return 0;
     *output = simulated_byte; has_byte = false; return 1;
@@ -139,5 +140,9 @@ int main() {
     __atomic_store_n(&request_pending, 1u, __ATOMIC_RELEASE);
     if (drain_output() != terminal::interrupted) return 20;
     __atomic_store_n(&request_pending, 0u, __ATOMIC_RELEASE);
+    if (wait_readable(0) != thread_error_timeout) return 21;
+    lock(); simulated_byte = 'Q'; has_byte = true; unlock();
+    if (wait_readable(0) != 1 || wait_readable(0) != 1 ||
+        read_until(&output, 1, 0) != 1 || output != 'Q') return 22;
     return 0;
 }

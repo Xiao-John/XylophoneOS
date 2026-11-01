@@ -613,6 +613,13 @@ extern "C" int _open(const char* path, int flags, int) { return open(path, flags
 
 extern "C" int close(int fd) { return close_fd(fd); }
 
+extern "C" xos::i64 xos_libc_terminal_wait_readable(int fd, u64 deadline) {
+    object_lease lease(fd);
+    if (lease.index < 0) return xos::process_error_invalid;
+    if (objects[lease.index].kind != object_kind::terminal) return xos::thread_error_unsupported;
+    return xos::terminal::wait_readable(terminal_client, deadline);
+}
+
 extern "C" _READ_WRITE_RETURN_TYPE read(int fd, void* buffer, size_t length) {
     object_lease lease(fd);
     if (lease.index < 0) { errno = EBADF; return -1; }

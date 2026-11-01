@@ -77,6 +77,22 @@ i64 read_until(u8* output, u32 length, u64 deadline) {
     }
 }
 
+i64 wait_readable(u64 deadline) {
+    for (;;) {
+        lock();
+        const i64 error = __atomic_load_n(&worker_error, __ATOMIC_ACQUIRE);
+        const i64 result = error != 0 ? error :
+            (__atomic_load_n(&request_pending, __ATOMIC_ACQUIRE) != 0 ||
+             __atomic_load_n(&app_pending, __ATOMIC_ACQUIRE) != 0 ||
+             __atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) != 0) ? terminal::interrupted : device.readable();
+        if (result != 0) { unlock(); return result; }
+        __atomic_store_n(&input_ready, 0u, __ATOMIC_RELEASE);
+        unlock();
+        const i64 waited = thread::wait(&input_ready, 0, deadline);
+        if (waited != 0 && waited != thread_value_changed) return waited;
+    }
+}
+
 i64 write_until(const u8* input, u32 length, u64 deadline) {
     for (;;) {
         lock();
@@ -298,7 +314,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
         } else {
             const auto op = static_cast<terminal::operation>(request.operation);
             const bool io_op = op == terminal::operation::read || op == terminal::operation::read_until ||
-                op == terminal::operation::read_mode ||
+                op == terminal::operation::read_mode || op == terminal::operation::wait_readable ||
                 op == terminal::operation::write || op == terminal::operation::write_until;
             const bool mode_op = op == terminal::operation::mode_get || op == terminal::operation::mode_set ||
                 op == terminal::operation::drain || op == terminal::operation::flush_input;
@@ -334,6 +350,8 @@ extern "C" int xos_user_main(const xos::startup_info*) {
             } else if (op == terminal::operation::flush_input) {
                 if (request.length != 0) response.result = process_error_invalid;
                 else { lock(); response.result = device.flush_input(); unlock(); }
+            } else if (op == terminal::operation::wait_readable) {
+                response.result = request.length == 0 ? wait_readable(request.deadline_ns) : process_error_invalid;
             } else if (op == terminal::operation::read_mode) {
                 response.result = read_configured(response.data, request.length);
                 if (response.result > 0) response.length = static_cast<u32>(response.result);
@@ -368,7 +386,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
                                  op == terminal::operation::write_until) && response.result > 0)) {
                 response.result = error; response.length = 0;
             }
-            else if (denied || mode_op || op == terminal::operation::read_mode ||
+            else if (denied || mode_op || op == terminal::operation::read_mode || op == terminal::operation::wait_readable ||
                      op == terminal::operation::attach || op == terminal::operation::detach) { }
             else if (op == terminal::operation::read_until) { /* already serviced */ }
             else if (op == terminal::operation::write_until) { /* already serviced */ }

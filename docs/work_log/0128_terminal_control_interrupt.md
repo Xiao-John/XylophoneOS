@@ -1,5 +1,7 @@
 # 0128：终端读取的控制中断
 
+原记录中的机器临时目录已替换为 `${XOS_SCRATCH}` 路径模板；哈希和结果未改。
+
 2026-10-30。服务增加独立控制接收线程与一个有界 mailbox，主线程在等待输入时也能
 观察到新请求或控制端退出；新请求中断当前读取并按请求顺序返回应答。控制失败唤醒
 读取，正常停止时关闭控制通道、唤醒 mailbox 等待者，并 join 控制与 IRQ 线程。
@@ -8,7 +10,7 @@
 
 `c++ -std=c++20 -Wall -Wextra -Werror -I src/shared/include -I src/user/include
 src/user/services/terminal_control.cpp tests/fixtures/ncursesw/terminal_control_host.cpp
--o /tmp/xos_terminal_control_host && /tmp/xos_terminal_control_host` 通过。宿主模拟
+-o ${XOS_SCRATCH}/xos_terminal_control_host && ${XOS_SCRATCH}/xos_terminal_control_host` 通过。宿主模拟
 覆盖两个未决请求、顺序应答和额度，未运行服务线程或设备。一次中间运行发现失效会话
 被误报 busy，已修正并重跑通过。
 `python3 scripts/build.py --output-dir build/w1_terminal_cancel_v2_20261030` 通过，

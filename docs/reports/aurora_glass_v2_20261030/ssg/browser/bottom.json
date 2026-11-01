@@ -1,0 +1,764 @@
+{
+  "capped": false,
+  "metadata": {
+    "document": "/web/ssg.html",
+    "forms": "UNSUPPORTED",
+    "globalScene": "BLOCKED",
+    "hitNode": "NONE",
+    "hitSource": "actual-engine-mouse-state",
+    "iframes": "UNSUPPORTED",
+    "provider": "litehtml-v0.9-ssg-readonly",
+    "query": "content",
+    "scrollY": 579,
+    "shadowDOM": "UNSUPPORTED",
+    "subscriptions": "NOT_IMPLEMENTED",
+    "viewport": [
+      32,
+      222,
+      722,
+      322
+    ]
+  },
+  "nodes": [
+    {
+      "actionAuthority": "READ_ONLY_NO_GRANT",
+      "bounds": [
+        48,
+        -320,
+        105,
+        38
+      ],
+      "contentTrust": "untrusted-document-content",
+      "displayNone": false,
+      "fragments": [
+        [
+          48,
+          -320,
+          105,
+          38
+        ]
+      ],
+      "fragmentsComplete": true,
+      "id": "5",
+      "parent": "4",
+      "role": "text",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "source": "litehtml-model-and-render-layout",
+      "tag": "",
+      "text": "Visible",
+      "textRange": [
+        0,
+        7
+      ],
+      "textTruncated": false,
+      "visibility": "scroll-required",
+      "visibleBounds": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "actionAuthority": "READ_ONLY_NO_GRANT",
+      "bounds": [
+        153,
+        -320,
+        10,
+        38
+      ],
+      "contentTrust": "untrusted-document-content",
+      "displayNone": false,
+      "fragments": [
+        [
+          153,
+          -320,
+          10,
+          38
+        ]
+      ],
+      "fragmentsComplete": true,
+      "id": "6",
+      "parent": "4",
+      "role": "text",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "source": "litehtml-model-and-render-layout",
+      "tag": "",
+      "text": " ",
+      "textRange": [
+        0,
+        1
+      ],
+      "textTruncated": false,
+      "visibility": "scroll-required",
+      "visibleBounds": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "actionAuthority": "READ_ONLY_NO_GRANT",
+      "bounds": [
+        163,
+        -320,
+        91,
+        38
+      ],
+      "contentTrust": "untrusted-document-content",
+      "displayNone": false,
+      "fragments": [
+        [
+          163,
+          -320,
+          91,
+          38
+        ]
+      ],
+      "fragmentsComplete": true,
+      "id": "7",
+      "parent": "4",
+      "role": "text",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "source": "litehtml-model-and-render-layout",
+      "tag": "",
+      "text": "Alpha",
+      "textRange": [
+        0,
+        5
+      ],
+      "textTruncated": false,
+      "visibility": "scroll-required",
+      "visibleBounds": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "actionAuthority": "READ_ONLY_NO_GRANT",
+      "actions": [
+        "inspect",
+        "click"
+      ],
+      "bounds": [
+        48,
+        -261,
+        139,
+        19
+      ],
+      "contentTrust": "untrusted-document-content",
+      "displayNone": false,
+      "execution": "NOT_IMPLEMENTED",
+      "fragments": [
+        [
+          48,
+          -261,
+          139,
+          19
+        ]
+      ],
+      "fragmentsComplete": true,
+      "href": "start.html",
+      "id": "8",
+      "parent": "3",
+      "role": "link",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "source": "litehtml-model-and-render-layout",
+      "tag": "a",
+      "visibility": "scroll-required",
+      "visibleBounds": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "actionAuthority": "READ_ONLY_NO_GRANT",
+      "bounds": [
+        48,
+        -261,
+        52,
+        19
+      ],
+      "contentTrust": "untrusted-document-content",
+      "displayNone": false,
+      "fragments": [
+        [
+          48,
+          -261,
+          52,
+          19
+        ]
+      ],
+      "fragmentsComplete": true,
+      "id": "9",
+      "parent": "8",
+      "role": "text",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "source": "litehtml-model-and-render-layout",
+      "tag": "",
+      "text": "Native",
+      "textRange": [
+        0,
+        6
+      ],
+      "textTruncated": false,
+      "visibility": "scroll-required",
+      "visibleBounds": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "actionAuthority": "READ_ONLY_NO_GRANT",
+      "bounds": [
+        100,
+        -261,
+        5,
+        19
+      ],
+      "contentTrust": "untrusted-document-content",
+      "displayNone": false,
+      "fragments": [
+        [
+          100,
+          -261,
+          5,
+          19
+        ]
+      ],
+      "fragmentsComplete": true,
+      "id": "10",
+      "parent": "8",
+      "role": "text",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "source": "litehtml-model-and-render-layout",
+      "tag": "",
+      "text": " ",
+      "textRange": [
+        0,
+        1
+      ],
+      "textTruncated": false,
+      "visibility": "scroll-required",
+      "visibleBounds": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "actionAuthority": "READ_ONLY_NO_GRANT",
+      "bounds": [
+        105,
+        -261,
+        28,
+        19
+      ],
+      "contentTrust": "untrusted-document-content",
+      "displayNone": false,
+      "fragments": [
+        [
+          105,
+          -261,
+          28,
+          19
+        ]
+      ],
+      "fragmentsComplete": true,
+      "id": "11",
+      "parent": "8",
+      "role": "text",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "source": "litehtml-model-and-render-layout",
+      "tag": "",
+      "text": "link",
+      "textRange": [
+        0,
+        4
+      ],
+      "textTruncated": false,
+      "visibility": "scroll-required",
+      "visibleBounds": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "actionAuthority": "READ_ONLY_NO_GRANT",
+      "bounds": [
+        133,
+        -261,
+        5,
+        19
+      ],
+      "contentTrust": "untrusted-document-content",
+      "displayNone": false,
+      "fragments": [
+        [
+          133,
+          -261,
+          5,
+          19
+        ]
+      ],
+      "fragmentsComplete": true,
+      "id": "12",
+      "parent": "8",
+      "role": "text",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "source": "litehtml-model-and-render-layout",
+      "tag": "",
+      "text": " ",
+      "textRange": [
+        0,
+        1
+      ],
+      "textTruncated": false,
+      "visibility": "scroll-required",
+      "visibleBounds": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "actionAuthority": "READ_ONLY_NO_GRANT",
+      "bounds": [
+        138,
+        -261,
+        49,
+        19
+      ],
+      "contentTrust": "untrusted-document-content",
+      "displayNone": false,
+      "fragments": [
+        [
+          138,
+          -261,
+          49,
+          19
+        ]
+      ],
+      "fragmentsComplete": true,
+      "id": "13",
+      "parent": "8",
+      "role": "text",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "source": "litehtml-model-and-render-layout",
+      "tag": "",
+      "text": "target",
+      "textRange": [
+        0,
+        6
+      ],
+      "textTruncated": false,
+      "visibility": "scroll-required",
+      "visibleBounds": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "actionAuthority": "READ_ONLY_NO_GRANT",
+      "bounds": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "contentTrust": "untrusted-document-content",
+      "displayNone": false,
+      "fragments": [],
+      "fragmentsComplete": true,
+      "id": "16",
+      "parent": "15",
+      "role": "text",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "source": "litehtml-model-and-render-layout",
+      "tag": "",
+      "text": "HIDDEN_SECRET_FIXTURE",
+      "textRange": [
+        0,
+        21
+      ],
+      "textTruncated": false,
+      "visibility": "not-rendered",
+      "visibleBounds": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "actionAuthority": "READ_ONLY_NO_GRANT",
+      "bounds": [
+        48,
+        474,
+        48,
+        19
+      ],
+      "contentTrust": "untrusted-document-content",
+      "displayNone": false,
+      "fragments": [
+        [
+          48,
+          474,
+          48,
+          19
+        ]
+      ],
+      "fragmentsComplete": true,
+      "id": "19",
+      "parent": "18",
+      "role": "text",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "source": "litehtml-model-and-render-layout",
+      "tag": "",
+      "text": "Below",
+      "textRange": [
+        0,
+        5
+      ],
+      "textTruncated": false,
+      "visibility": "viewport-visible",
+      "visibleBounds": [
+        48,
+        474,
+        48,
+        19
+      ]
+    },
+    {
+      "actionAuthority": "READ_ONLY_NO_GRANT",
+      "bounds": [
+        96,
+        474,
+        5,
+        19
+      ],
+      "contentTrust": "untrusted-document-content",
+      "displayNone": false,
+      "fragments": [
+        [
+          96,
+          474,
+          5,
+          19
+        ]
+      ],
+      "fragmentsComplete": true,
+      "id": "20",
+      "parent": "18",
+      "role": "text",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "source": "litehtml-model-and-render-layout",
+      "tag": "",
+      "text": " ",
+      "textRange": [
+        0,
+        1
+      ],
+      "textTruncated": false,
+      "visibility": "viewport-visible",
+      "visibleBounds": [
+        96,
+        474,
+        5,
+        19
+      ]
+    },
+    {
+      "actionAuthority": "READ_ONLY_NO_GRANT",
+      "bounds": [
+        101,
+        474,
+        70,
+        19
+      ],
+      "contentTrust": "untrusted-document-content",
+      "displayNone": false,
+      "fragments": [
+        [
+          101,
+          474,
+          70,
+          19
+        ]
+      ],
+      "fragmentsComplete": true,
+      "id": "21",
+      "parent": "18",
+      "role": "text",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "source": "litehtml-model-and-render-layout",
+      "tag": "",
+      "text": "viewport",
+      "textRange": [
+        0,
+        8
+      ],
+      "textTruncated": false,
+      "visibility": "viewport-visible",
+      "visibleBounds": [
+        101,
+        474,
+        70,
+        19
+      ]
+    },
+    {
+      "actionAuthority": "READ_ONLY_NO_GRANT",
+      "bounds": [
+        171,
+        474,
+        5,
+        19
+      ],
+      "contentTrust": "untrusted-document-content",
+      "displayNone": false,
+      "fragments": [
+        [
+          171,
+          474,
+          5,
+          19
+        ]
+      ],
+      "fragmentsComplete": true,
+      "id": "22",
+      "parent": "18",
+      "role": "text",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "source": "litehtml-model-and-render-layout",
+      "tag": "",
+      "text": " ",
+      "textRange": [
+        0,
+        1
+      ],
+      "textTruncated": false,
+      "visibility": "viewport-visible",
+      "visibleBounds": [
+        171,
+        474,
+        5,
+        19
+      ]
+    },
+    {
+      "actionAuthority": "READ_ONLY_NO_GRANT",
+      "bounds": [
+        176,
+        474,
+        55,
+        19
+      ],
+      "contentTrust": "untrusted-document-content",
+      "displayNone": false,
+      "fragments": [
+        [
+          176,
+          474,
+          55,
+          19
+        ]
+      ],
+      "fragmentsComplete": true,
+      "id": "23",
+      "parent": "18",
+      "role": "text",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "source": "litehtml-model-and-render-layout",
+      "tag": "",
+      "text": "omega",
+      "textRange": [
+        0,
+        5
+      ],
+      "textTruncated": false,
+      "visibility": "viewport-visible",
+      "visibleBounds": [
+        176,
+        474,
+        55,
+        19
+      ]
+    },
+    {
+      "actionAuthority": "READ_ONLY_NO_GRANT",
+      "actions": [
+        "inspect",
+        "click"
+      ],
+      "bounds": [
+        48,
+        509,
+        92,
+        19
+      ],
+      "contentTrust": "untrusted-document-content",
+      "displayNone": false,
+      "execution": "NOT_IMPLEMENTED",
+      "fragments": [
+        [
+          48,
+          509,
+          92,
+          19
+        ]
+      ],
+      "fragmentsComplete": true,
+      "href": "garden.html",
+      "id": "24",
+      "parent": "3",
+      "role": "link",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "source": "litehtml-model-and-render-layout",
+      "tag": "a",
+      "visibility": "viewport-visible",
+      "visibleBounds": [
+        48,
+        509,
+        92,
+        19
+      ]
+    },
+    {
+      "actionAuthority": "READ_ONLY_NO_GRANT",
+      "bounds": [
+        48,
+        509,
+        59,
+        19
+      ],
+      "contentTrust": "untrusted-document-content",
+      "displayNone": false,
+      "fragments": [
+        [
+          48,
+          509,
+          59,
+          19
+        ]
+      ],
+      "fragmentsComplete": true,
+      "id": "25",
+      "parent": "24",
+      "role": "text",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "source": "litehtml-model-and-render-layout",
+      "tag": "",
+      "text": "Bottom",
+      "textRange": [
+        0,
+        6
+      ],
+      "textTruncated": false,
+      "visibility": "viewport-visible",
+      "visibleBounds": [
+        48,
+        509,
+        59,
+        19
+      ]
+    },
+    {
+      "actionAuthority": "READ_ONLY_NO_GRANT",
+      "bounds": [
+        107,
+        509,
+        5,
+        19
+      ],
+      "contentTrust": "untrusted-document-content",
+      "displayNone": false,
+      "fragments": [
+        [
+          107,
+          509,
+          5,
+          19
+        ]
+      ],
+      "fragmentsComplete": true,
+      "id": "26",
+      "parent": "24",
+      "role": "text",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "source": "litehtml-model-and-render-layout",
+      "tag": "",
+      "text": " ",
+      "textRange": [
+        0,
+        1
+      ],
+      "textTruncated": false,
+      "visibility": "viewport-visible",
+      "visibleBounds": [
+        107,
+        509,
+        5,
+        19
+      ]
+    },
+    {
+      "actionAuthority": "READ_ONLY_NO_GRANT",
+      "bounds": [
+        112,
+        509,
+        28,
+        19
+      ],
+      "contentTrust": "untrusted-document-content",
+      "displayNone": false,
+      "fragments": [
+        [
+          112,
+          509,
+          28,
+          19
+        ]
+      ],
+      "fragmentsComplete": true,
+      "id": "27",
+      "parent": "24",
+      "role": "text",
+      "screenOcclusion": "UNKNOWN_NO_COMPOSITOR",
+      "source": "litehtml-model-and-render-layout",
+      "tag": "",
+      "text": "link",
+      "textRange": [
+        0,
+        4
+      ],
+      "textTruncated": false,
+      "visibility": "viewport-visible",
+      "visibleBounds": [
+        112,
+        509,
+        28,
+        19
+      ]
+    }
+  ],
+  "observedMonotonicNs": "13910000000",
+  "queryDurationNs": "80000000",
+  "sceneVersion": "2",
+  "sourceEpoch": "42949672969",
+  "status": "OK",
+  "version": 1
+}

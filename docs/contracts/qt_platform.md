@@ -77,7 +77,7 @@ flush offset 和第二顶层拒绝语义不扩展。QPA 仅补 Home/End/PageUp/P
 Set1 映射和 flush 观测；没有新 syscall 或 display wire 变更。
 
 `libXosAurora.a` 提供 `aurora::initialize(QApplication&)`，选择 QProxyStyle/QPalette
-及标准按钮/文本/输入的深色样式；Canvas/Panel/Button 为可选共享控件。有限低频模糊、
+及标准按钮/文本/输入的深色样式；canvas/panel/button 为可选共享控件。有限低频模糊、
 环境混合和软件指针都在该应用内完成，不是系统合成器、跨应用折射或 GPU 加速。
 QtGui 的图像/绘制线程池可多占一个线程，实测常见为3线程，仍受4线程配额；不是把
 E16 的两个线程结论照搬到 Widgets。正常/kill/fault/服务故障后的进程资源已核对。
@@ -91,3 +91,19 @@ precommit 错误保留原目标；commit/final sync 错误为 UNKNOWN，保留�
 G05/Aurora 仅对冻结夹具和已声明范围通过；静态分发/完整许可/重链接、绝对峰值、
 CPU、长期压力、完整 Unicode 字体、IME/剪贴板、QML/Quick 均没有继承资格。
 复现见 [E17 实施](../plans/qt_e17_implementation.md)。
+
+## 2026-10-30 Aurora v2 / application-local SSG
+
+The opt-in static Aurora library now has tokens v2, native materials, accessibility
+and quality fallback, independent standard-Widgets consumers and an app-local
+SSG/Intent prototype. See [SDK work log](../work_log/0102_aurora_ui_v2_sdk.md),
+[SSG contract](semantic_scene_graph.md) and [consumer qualification](../work_log/0103_aurora_ssg_consumers.md).
+No QtCore/Gui/QPA source, system ABI or kernel file changed. Legacy non-Aurora
+Widgets remain byte-identical to the archived E17 probe and run on the new image.
+The E17 dark Canvas/Panel consumers have not acquired global live theme migration.
+
+The single-Surface desktop/session is a separate userland consumer, not a new
+QPA window transport: [G1](../work_log/0104_aurora_desktop_shell.md). Native popup
+windows, cross-process themes/SSG, window composition and modern WebView remain
+explicitly unavailable/proposed. The proposed transport requires independent
+review before implementation; no new number/opcode is allocated.

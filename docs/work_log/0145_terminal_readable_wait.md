@@ -1,5 +1,7 @@
 # 终端可读等待与受限 select
 
+原记录中的机器临时目录已替换为 `${XOS_SCRATCH}` 路径模板；哈希和结果未改。
+
 0144 的客体探针在首次方向键读取返回失败。ncurses 目标配置此前既没有 select
 也没有 poll，定时等待无可用实现；本组增加不消费输入的终端服务可读等待及
 单终端读取描述符的 libc select。该子集对其余组合明确返回错误，不宣称通用多路复用。
@@ -8,9 +10,9 @@
 
 `c++ -std=c++20 -Wall -Wextra -Werror -pthread -I src/shared/include
 -I src/user/include tests/fixtures/ncursesw/terminal_service_host.cpp -o
-/tmp/xos_terminal_service_select_host && /tmp/xos_terminal_service_select_host` 通过，
+${XOS_SCRATCH}/xos_terminal_service_select_host && ${XOS_SCRATCH}/xos_terminal_service_select_host` 通过，
 覆盖空队列超时及反复检查不消耗已有字节，属宿主模拟。SDK 候选
-`/tmp/xos_select_utf8_sdk_v2_20261101` 树 SHA-256
+`${XOS_SCRATCH}/xos_select_utf8_sdk_v2_20261101` 树 SHA-256
 `212b0e17e366f0589cb9609516d621984f0947e22d528f2dd4b0b374737e426b`，
 仍为 built_unverified。第一次系统构建因把 select 放入已有 libc 大对象而使
 `libc_hello` 超出镜像限制失败；将其拆为独立归档成员后专用构建通过，

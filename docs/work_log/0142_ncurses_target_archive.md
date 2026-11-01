@@ -1,5 +1,7 @@
 # 0142：ncurses 目标归档修正与严格 UTF-8 链接探针
 
+原记录中的机器临时目录已替换为 `${XOS_SCRATCH}` 路径模板；哈希和结果未改。
+
 2026-10-30。复核发现 0139 的 make 虽退出 0，宿主 `ar/ranlib` 却把目标 ELF
 归档处理成 96 字节的空索引；其中没有 ncurses 成员。0139 已更正，不再把该结果当作
 有效库。`probe_ncursesw.py` 现显式使用 `x86_64-elf-ar`、`x86_64-elf-ranlib`，
@@ -8,20 +10,20 @@
 
 以锁定 newlib 源包及代理码点补丁重新建立隔离候选，命令为
 `python3 scripts/build_utf8_newlib.py --archive .cache/xos_seed/threading_sources/newlib-4.6.0.20260123.tar.gz
---output /tmp/xos_utf8_newlib_20261030b --jobs 8`；single libc SHA-256
+--output ${XOS_SCRATCH}/xos_utf8_newlib_20261030b --jobs 8`；single libc SHA-256
 `72d0b3edb95065bd14ae465f4192185dc22046ce8e7d6a779a98e64a55194400`，threaded libc
 SHA-256 `866f73a97e529311e7fe2fac337a269d3601b194ce491c17f5ce46817d72d112`。
 `python3 scripts/build_utf8_sdk_candidate.py --newlib-prefix
-/tmp/xos_utf8_newlib_20261030b/single/prefix --output /tmp/xos_utf8_sdk_20261030b`
+${XOS_SCRATCH}/xos_utf8_newlib_20261030b/single/prefix --output ${XOS_SCRATCH}/xos_utf8_sdk_20261030b`
 通过，SDK 树 SHA-256 `a49320f272ad4f15e86e4f2566ba5b05d43e63a82d92500dcf755d0c6ca7e9b8`，
 标记 built_unverified；线程候选没有在本组构建成 SDK 或运行。
 
 `python3 scripts/probe_ncursesw.py --archive .cache/xos_seed/ncurses_sources/ncurses-6.5.tar.gz
---sdk /tmp/xos_utf8_sdk_20261030b/sdk --output /tmp/xos_ncurses_strict_target_ar_v2_20261030
+--sdk ${XOS_SCRATCH}/xos_utf8_sdk_20261030b/sdk --output ${XOS_SCRATCH}/xos_ncurses_strict_target_ar_v2_20261030
 --xopen-source 700 --no-sigwinch --build` 通过，目标 `libncursesw.a` 含 162 个成员，
 两个必需符号存在，SHA-256 `9b9be4270344e47f48f5314ee97481e3cd7757a7faf493e5b3b08c1c87f2c2de`。
-`python3 scripts/probe_ncursesw_consumers.py --probe /tmp/xos_ncurses_strict_target_ar_v2_20261030
---sdk /tmp/xos_utf8_sdk_20261030b/sdk --output /tmp/xos_ncurses_consumers_v5_20261030`
+`python3 scripts/probe_ncursesw_consumers.py --probe ${XOS_SCRATCH}/xos_ncurses_strict_target_ar_v2_20261030
+--sdk ${XOS_SCRATCH}/xos_utf8_sdk_20261030b/sdk --output ${XOS_SCRATCH}/xos_ncurses_consumers_v5_20261030`
 交叉链接两个独立应用：窗格、颜色、方向键和中文输入输出探针 ELF SHA-256
 `26725590372fd6238b135e8964a40a1eecbc3d7e178a295aabd24d59356c539f`；未知终端、尺寸和
 重复进入退出探针 ELF SHA-256 `749ac7860f6117bd5ff234e7bb62946d78c32161b1096a2a932ec85e0ba1bc31`。

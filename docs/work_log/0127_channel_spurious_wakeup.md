@@ -1,5 +1,7 @@
 # 0127：通道伪唤醒处理
 
+原记录中的机器临时目录已替换为 `${XOS_SCRATCH}` 路径模板；哈希和结果未改。
+
 2026-10-30。核对终端读取取消时发现 sys81 契约允许伪唤醒，而终端服务和控制客户端
 原先等待一次就发送或接收，可能将 full/empty 误认成致命故障。新增 SDK 辅助循环，
 使用原绝对截止时间重新等待，仅对对应 full/empty 重试，其余错误返回；终端两端改用
@@ -7,7 +9,7 @@
 
 `c++ -std=c++20 -Wall -Wextra -Werror -I src/shared/include -I src/user/include
 src/user/services/terminal_control.cpp tests/fixtures/ncursesw/terminal_control_host.cpp
--o /tmp/xos_terminal_control_host && /tmp/xos_terminal_control_host` 通过；宿主模拟
+-o ${XOS_SCRATCH}/xos_terminal_control_host && ${XOS_SCRATCH}/xos_terminal_control_host` 通过；宿主模拟
 分别注入一次 full 和 empty，验证重试及既有失败清理，不代表内核实际唤醒资格。
 `python3 scripts/build.py --output-dir build/w1_terminal_channel_retry_v2_20261030`
 通过，build ID `7b48d314ca07ba9f`，terminal ELF SHA-256

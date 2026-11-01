@@ -1,13 +1,15 @@
 # ncurses 与 locale 客体覆盖扩展
 
+原记录中的机器临时目录已替换为 `${XOS_SCRATCH}` 路径模板；哈希和结果未改。
+
 在既有双消费者之外加入独立 locale 应用，检查 UTF-8 分片、非法序列、代理码点、
 ASCII/组合字符/CJK 宽度及非 BMP 往返；屏幕消费者增加组合字符输出、空输入超时和
 F1，保留左方向键、中文和颜色。专用 supervisor 输出两位数退出码以定位失败。
 匹配 xterm terminfo 的左键和 F1 序列经同源 `infocmp` 确认为 `ESC O D`、`ESC O P`。
 
-三个应用使用 `/tmp/xos_select_utf8_sdk_v3_20261101` 和
-`/tmp/xos_ncurses_select_v3_20261101` 交叉链接，输出
-`/tmp/xos_ncurses_extended_consumers_20261101`；专用系统构建
+三个应用使用 `${XOS_SCRATCH}/xos_select_utf8_sdk_v3_20261101` 和
+`${XOS_SCRATCH}/xos_ncurses_select_v3_20261101` 交叉链接，输出
+`${XOS_SCRATCH}/xos_ncurses_extended_consumers_20261101`；专用系统构建
 `python3 scripts/build.py --ncurses-supervisor-probe --output-dir
 build/w2_extended_20261101` 通过，build ID `19b1949e763eb693`。Python 编译和
 差异空白检查通过。这些只是构建证据，相关修改提交后须重新运行真实客体。

@@ -1,5 +1,7 @@
 # 0126：终端有限截止时间读取
 
+原记录中的机器临时目录已替换为 `${XOS_SCRATCH}` 路径模板；哈希和结果未改。
+
 2026-10-30。内部终端控制协议升级到 version 2，在非阻塞 read 之外增加 read_until，
 使用绝对单调纳秒截止时间；空队列等到输入或返回线程 timeout，零长度立即返回，
 无限截止时间当前明确拒绝。收包线程在驱动锁内入队并设置等待字，读取端在同一锁
@@ -11,7 +13,7 @@ build ID `b19bfd0774d94a09`，terminal ELF SHA-256
 `a4b38a2b3c0765e3100f3e273e20059c66a7d98a8054f9783b3683e4db216d1c`。
 `c++ -std=c++20 -Wall -Wextra -Werror -I src/shared/include -I src/user/include
 src/user/services/terminal_control.cpp tests/fixtures/ncursesw/terminal_control_host.cpp
--o /tmp/xos_terminal_control_host && /tmp/xos_terminal_control_host` 和
+-o ${XOS_SCRATCH}/xos_terminal_control_host && ${XOS_SCRATCH}/xos_terminal_control_host` 和
 `git diff --check` 通过；宿主模拟只覆盖控制客户端，未运行读取线程或真实设备。
 
 服务仍串行处理控制请求，等待期间不能处理下一请求，控制端失效不直接中断该读取，

@@ -1,5 +1,7 @@
 # 0082：单线程多字节 SDK 候选
 
+原记录中的机器临时目录已替换为 `${XOS_SCRATCH}` 路径模板；哈希和结果未改。
+
 2026-10-29。W1 在 `codex/ncursesw_w1` 上接续，分支快进到更新后的 main `39083f9`。
 本次完成可重建的隔离 SDK 候选，不改变既有 SDK 或已经冻结的证据；W1 未完成。
 
@@ -11,8 +13,8 @@
 旧 `/tmp` 候选已不存在，本次重新执行：
 
 ```text
-python3 scripts/build_utf8_newlib.py --archive .cache/xos_seed/threading_sources/newlib-4.6.0.20260123.tar.gz --output /tmp/xos_w1_newlib_20261029 --jobs 8
-python3 scripts/build_utf8_sdk_candidate.py --newlib-prefix /tmp/xos_w1_newlib_20261029/single/prefix --output /tmp/xos_w1_utf8_sdk_20261029
+python3 scripts/build_utf8_newlib.py --archive .cache/xos_seed/threading_sources/newlib-4.6.0.20260123.tar.gz --output ${XOS_SCRATCH}/xos_w1_newlib_20261029 --jobs 8
+python3 scripts/build_utf8_sdk_candidate.py --newlib-prefix ${XOS_SCRATCH}/xos_w1_newlib_20261029/single/prefix --output ${XOS_SCRATCH}/xos_w1_utf8_sdk_20261029
 ```
 
 单线程候选 SDK 构建成功，树 SHA256 为
@@ -22,7 +24,7 @@ CRT、头和静态库交叉链接 `tests/fixtures/ncursesw/wide_locale_probe.c` 
 guest、UTF-8 行为、线程兼容与完整 SDK 资格均未验收。临时目录可重建，不作为唯一源码。
 
 线程候选的 newlib 构建完成。为避免覆盖共享日志，线程 SDK 构建器增加可选 `--logs-dir`；
-执行 `python3 scripts/build_threading_sdk.py --newlib-prefix /tmp/xos_w1_newlib_20261029/threaded/prefix --output build/w1_utf8_threaded_20261029 --logs-dir build/w1_utf8_threaded_logs_20261029` 成功。
+执行 `python3 scripts/build_threading_sdk.py --newlib-prefix ${XOS_SCRATCH}/xos_w1_newlib_20261029/threaded/prefix --output build/w1_utf8_threaded_20261029 --logs-dir build/w1_utf8_threaded_logs_20261029` 成功。
 其 manifest SHA256 为 `b946d06aeea4ca2318e44b4f3831281083b58bfeb2b911c047484f245b02ce72`。
 直接用该非 C++ SDK 的 `libxos.a` 全归档链接同一探针失败：线程对象要求
 `__gxx_personality_v0`。需要构建匹配的线程 C++/unwind 运行库并重新链接；不能用其他

@@ -6,12 +6,12 @@
 // concurrently. A coalescing bit avoids counter wraparound: the owner clears it
 // before checking work, and the kernel atomically compares zero before sleeping.
 // The owner must exclude and join all wake callers before destroying this gate.
-class XosWakeGate {
+class xos_wake_gate {
     alignas(4) xos::u32 pending_ = 0;
 public:
-    XosWakeGate() = default;
-    XosWakeGate(const XosWakeGate&) = delete;
-    XosWakeGate& operator=(const XosWakeGate&) = delete;
+    xos_wake_gate() = default;
+    xos_wake_gate(const xos_wake_gate&) = delete;
+    xos_wake_gate& operator=(const xos_wake_gate&) = delete;
     bool take() { return __atomic_exchange_n(&pending_, 0u, __ATOMIC_ACQUIRE) != 0; }
     bool pending() const { return __atomic_load_n(&pending_, __ATOMIC_ACQUIRE) != 0; }
     xos::i64 wake() {

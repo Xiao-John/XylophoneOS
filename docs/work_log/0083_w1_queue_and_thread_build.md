@@ -1,5 +1,7 @@
 # 0083：W1 输入队列与线程构建隔离
 
+原记录中的机器临时目录已替换为 `${XOS_SCRATCH}` 路径模板；哈希和结果未改。
+
 2026-10-29。新增有界字节队列 `src/kernel/include/xos/byte_queue.hpp`：满队列保留已接收
 字节、丢弃新字节并饱和计数；调用方须串行化所有操作与生产中断。当前没有接到串口、
 中断、等待或用户接口，不能据此宣称终端输入已经实现。
@@ -16,8 +18,8 @@ FIFO 顺序检查通过；同一源码以 x86_64-elf 交叉编译通过。未运
 以匹配的多字节 threaded newlib 和 GCC 16.2.0 源码执行：
 
 ```text
-python3 scripts/build_threading_sdk.py --newlib-prefix /tmp/xos_w1_newlib_20261029/threaded/prefix --gcc-source .cache/xos_seed/gcc/source/gcc-16.2.0 --output build/w1_utf8_threaded_cpp_20261029 --logs-dir build/w1_utf8_threaded_cpp_logs_20261029 --cpp-work-dir /tmp/xos_w1_threaded_cpp_work_20261029 --cpp
-python3 build/w1_utf8_threaded_cpp_20261029/compile.py --c tests/fixtures/ncursesw/wide_locale_probe.c -o /tmp/xos_w1_utf8_threaded_cpp_probe.elf
+python3 scripts/build_threading_sdk.py --newlib-prefix ${XOS_SCRATCH}/xos_w1_newlib_20261029/threaded/prefix --gcc-source .cache/xos_seed/gcc/source/gcc-16.2.0 --output build/w1_utf8_threaded_cpp_20261029 --logs-dir build/w1_utf8_threaded_cpp_logs_20261029 --cpp-work-dir ${XOS_SCRATCH}/xos_w1_threaded_cpp_work_20261029 --cpp
+python3 build/w1_utf8_threaded_cpp_20261029/compile.py --c tests/fixtures/ncursesw/wide_locale_probe.c -o ${XOS_SCRATCH}/xos_w1_utf8_threaded_cpp_probe.elf
 ```
 
 两步成功，线程候选 manifest SHA256 为

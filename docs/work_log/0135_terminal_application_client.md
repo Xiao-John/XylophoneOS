@@ -1,5 +1,7 @@
 # 0135：应用终端客户端基础
 
+原记录中的机器临时目录已替换为 `${XOS_SCRATCH}` 路径模板；哈希和结果未改。
+
 2026-10-30。增加 SDK 单请求应用客户端，显式接受启动者提供的 supervisor 和服务
 PID，并枚举通道、核对内核认证的控制者/对端/方向；不存在、重复或不匹配时拒绝。
 读写最多 256 字节并保留短结果，验证响应序号及长度，非零请求不把零响应误作 EOF；
@@ -8,7 +10,7 @@ PID，并枚举通道、核对内核认证的控制者/对端/方向；不存在
 
 `c++ -std=c++20 -Wall -Wextra -Werror -I src/shared/include -I src/user/include
 src/user/sdk/terminal_client.cpp tests/fixtures/ncursesw/terminal_client_host.cpp
--o /tmp/xos_terminal_client_host && /tmp/xos_terminal_client_host` 通过；模拟覆盖身份
+-o ${XOS_SCRATCH}/xos_terminal_client_host && ${XOS_SCRATCH}/xos_terminal_client_host` 通过；模拟覆盖身份
 不匹配、有效连接、读写短结果和错误长度关闭。`python3 scripts/build.py --output-dir
 build/w1_terminal_client_20261030` 通过，build ID `eddf8404f54af210`。
 构建早于本记录文档更新；`git diff --check` 通过。未运行客体。

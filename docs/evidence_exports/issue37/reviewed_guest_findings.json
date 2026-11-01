@@ -1,0 +1,255 @@
+{
+  "version": 1,
+  "records": [
+    {
+      "path": "docs/reports/dash_c1_20261026/dash_b_acceptance_report.json",
+      "ledger": "dash_c1_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "absolute_command": 1
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/dash_c1_20261026/dash_c1_final_report.json",
+      "ledger": "dash_c1_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "absolute_command": 1
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/dash_c1_20261026/dash_c1_pthread_report.json",
+      "ledger": "dash_c1_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "absolute_command": 3
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/dash_c1_20261026/dash_c1_threads_report.json",
+      "ledger": "dash_c1_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "absolute_command": 3
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/dash_c2_20261026/dash_b_acceptance_report.json",
+      "ledger": "dash_c2_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "absolute_command": 1
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/dash_c2_20261026/dash_c1_pthread_report.json",
+      "ledger": "dash_c2_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "absolute_command": 3
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/dash_c2_20261026/dash_c1_report.json",
+      "ledger": "dash_c2_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "absolute_command": 1
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/dash_c2_20261026/dash_c1_threads_report.json",
+      "ledger": "dash_c2_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "absolute_command": 3
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/dash_c2_20261026/dash_c2_final_report.json",
+      "ledger": "dash_c2_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "private_temp": 1,
+        "absolute_command": 28
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/dash_c2_20261026/dash_c2_oom_report.json",
+      "ledger": "dash_c2_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "private_temp": 1,
+        "absolute_command": 2
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/dash_b_acceptance_report.json",
+      "ledger": "dash_c3_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "absolute_command": 1
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/dash_c1_pthread_report.json",
+      "ledger": "dash_c3_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "absolute_command": 3
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/dash_c1_report.json",
+      "ledger": "dash_c3_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "absolute_command": 1
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/dash_c1_threads_report.json",
+      "ledger": "dash_c3_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "absolute_command": 3
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/dash_c2_report.json",
+      "ledger": "dash_c3_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "private_temp": 1,
+        "absolute_command": 28
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/dash_c3_exec_report.json",
+      "ledger": "dash_c3_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "absolute_command": 1
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/dash_c3_report.json",
+      "ledger": "dash_c3_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "private_temp": 1,
+        "absolute_command": 60
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/dash_c3_report.raw.json",
+      "ledger": "dash_c3_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "private_temp": 1,
+        "absolute_command": 60
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/modern2_runtime_20261029/guest/report.json",
+      "ledger": "modern2_runtime_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "absolute_command": 14
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/modern2_runtime_20261029/iterations/completion_check_guest/report.json",
+      "ledger": "modern2_runtime_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "absolute_command": 11
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/modern2_runtime_20261029/iterations/initial_guest/report.json",
+      "ledger": "modern2_runtime_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "absolute_command": 11
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/modern2_runtime_20261029/iterations/pre_review_guest/report.json",
+      "ledger": "modern2_runtime_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "absolute_command": 11
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/net_clock_irq_split_20261030/runs/dash_threads/report.json",
+      "ledger": "net_clock_irq_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "absolute_command": 2
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/qt_e15_qualified_20261028/qualified-dash-c1.json",
+      "ledger": "qt_e15_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "absolute_command": 1
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/qt_e15_qualified_20261028/qualified-dash-c2.json",
+      "ledger": "qt_e15_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "private_temp": 1,
+        "absolute_command": 28
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/qt_e15_qualified_20261028/qualified-dash-c3-exec.json",
+      "ledger": "qt_e15_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "absolute_command": 1
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    },
+    {
+      "path": "docs/reports/qt_e15_qualified_20261028/qualified-dash-c3.json",
+      "ledger": "qt_e15_lineage.json",
+      "classification": "GUEST_TEST_DATA",
+      "findings": {
+        "private_temp": 1,
+        "absolute_command": 60
+      },
+      "reason": "Guest command paths or preserved synthetic test input/output; validated against the original Git source."
+    }
+  ]
+}

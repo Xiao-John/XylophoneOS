@@ -1,3 +1,5 @@
+> **Evidence version:** This checkout is a path-sanitized derivative, not byte-identical raw evidence. Original and exported hashes are recorded in [the Issue 37 lineage](../../evidence_exports/issue37/modern2_python_lineage.json). Historical input hashes still identify the original run; template roots require manual configuration.
+
 # Python 静态 Pillow：真实核心能力与并发阻塞
 
 2026-10-29。**单线程静态 Pillow 核心在 xsh/dash 真实客体通过。Pillow threaded use 为 UNSUPPORTED / BLOCKED。**

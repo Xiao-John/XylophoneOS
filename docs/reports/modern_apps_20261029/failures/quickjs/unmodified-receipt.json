@@ -53,12 +53,12 @@
       "-D_GNU_SOURCE",
       "-DXOS_THREADED_RUNTIME",
       "-DCONFIG_VERSION=\"2025-09-13\"",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/sources/quickjs-2025-09-13",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/include",
+      "-I${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/sources/quickjs-2025-09-13",
+      "-I${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/threading_sdk/include",
       "-c",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/sources/quickjs-2025-09-13/quickjs.c",
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/sources/quickjs-2025-09-13/quickjs.c",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/quickjs.o"
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/quickjs.o"
     ]
   ],
   "error": "command failed: 1"

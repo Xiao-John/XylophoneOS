@@ -1,0 +1,42 @@
+{
+  "original_index_path": "docs/reports/threading_20261025/qualification.json",
+  "original_index_sha256": "4072b9b387cac100b544b2dc4a6ec146ce7787216dc29f2d67453bb69f5a767b",
+  "export_index_sha256": "1ba1655fbb54aa4f31215a2ebf6aa1f7bd7a98d7ce50b17300c8b5a863f09270",
+  "index_field": "reports",
+  "index_suffix": ".json",
+  "index_entries": 11,
+  "changes": [
+    {
+      "path": "docs/reports/threading_20261025/libc_smoke_report.json",
+      "original_sha256": "ff5810432dd16b2f8a2833e33a292c652c32ca88c6bc31853246333193d54166",
+      "export_sha256": "577c1de76b42484ad7713d7f88a9b830a36bb25c6b2f4ba8e675994d01f8640f"
+    },
+    {
+      "path": "docs/reports/threading_20261025/process_smoke_report.json",
+      "original_sha256": "1e881f1ace463511151b2266834747e45b3befb615762fcf1e36fbec0a103296",
+      "export_sha256": "0299fb928f84635e14b0a8605d10957242051d1dc9bbf067afdc05d5d39a0b78"
+    },
+    {
+      "path": "docs/reports/threading_20261025/task_smoke_report.json",
+      "original_sha256": "fe7c71ff525d0f280816e4ff909af3e3119b0af332479e3896df858bb7b9050e",
+      "export_sha256": "4663974162941050b9f5b3030af61613dc3a5938ffec14a8f2f1e617f2879131"
+    },
+    {
+      "path": "docs/reports/threading_20261025/threading_compile_report.json",
+      "original_sha256": "2a91d3924a6a29b47ab31898db047dac04b2cf0ca7fbe1a93990333f69c9a6a6",
+      "export_sha256": "4f02a80301a9a88fe59b2c8bf7775edb27cb2e5ec01f98dbb43b70dcbf8b7dc7"
+    },
+    {
+      "path": "docs/reports/threading_20261025/threading_final_suite_attempt1.log",
+      "original_sha256": "ce1eee528a15c98264138d877d453cc8a70740806a015380d5a1c6ee0c633015",
+      "export_sha256": "fa0a3855e37c2972f216cce21ca93cc0b622f73d041e5a4a24e2d43275d5bb11"
+    }
+  ],
+  "added_export_document": "docs/reports/threading_20261025/SANITIZED_EXPORT.md",
+  "added_export_document_sha256": "95b315e5022f36ad23eeb05e12ae52fbc54db77c9e82856f4d232f2918398d03",
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "transformation": "Only reviewed host command/tool paths are templated; guest test data remains unchanged.",
+  "reproduction": "MANUAL_REQUIRED: configure matching template roots and historical inputs; no replay is claimed.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history."
+}

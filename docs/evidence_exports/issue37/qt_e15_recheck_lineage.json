@@ -1,0 +1,161 @@
+{
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "original_index_path": "docs/reports/qt_e15_recheck_20261028/PACKAGE_SHA256SUMS",
+  "original_index_sha256": "60b680b988628d6c42e46635753a0ccb1fb06b3f39fda0834dae306ed3e186fe",
+  "export_index_sha256": "d90b12a1364e515e2b51bda7f282aba3c0c9aae1b40bcdbcec95335bcc75b8d3",
+  "index_entries": 64,
+  "changes": [
+    {
+      "path": "docs/reports/qt_e15_recheck_20261028/abi.json",
+      "original_sha256": "f13652412df7dcc3bb29ded6909957eaa2d85bac5d638bc2138b8105a3c7df93",
+      "export_sha256": "fd8d21043dad161ebbba1df7dca988e5992f614a17a0bfa6b952e41e82ebbae3",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/qt_e15_recheck_20261028/core_lifecycle.receipt.json",
+      "original_sha256": "5f6d48af5187bd9c9117e971533165b22ef0628f871f0a1b44d51c8641d23faa",
+      "export_sha256": "b60d49e75b4132e5e7cb15f729559ed72118842780626dbbb8a2823438c04b93",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/qt_e15_recheck_20261028/events.json",
+      "original_sha256": "77bfa0214a884ed0174d0a9ac8fdefd12b303fd0b488d33ade0dd5e6a00257cd",
+      "export_sha256": "a8ef408a86586d2fd3daf2d80f22f2f12e51532629ac2af95e17eace2052f213",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/qt_e15_recheck_20261028/fault.json",
+      "original_sha256": "bf33f9c0832b3178adab58a2c8ffa6301c071823ff8a639bc48d4b78595e2260",
+      "export_sha256": "35d9490b29f193a24d94bfbbfa7d9243b6af21f381a9fcf28cedc642383edec4",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/qt_e15_recheck_20261028/file-errors.json",
+      "original_sha256": "8bd6000c388eb48a69c2d4b40727aa423d2e54ecc0cdcc3732975a0d879c18d9",
+      "export_sha256": "977545e75550dcfb9dbdc85fcc13b2637d0c7bf256597824350a9453c4c48331",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/qt_e15_recheck_20261028/file_smoke_report.json",
+      "original_sha256": "5e1fc747df81d43ec2d85a2995203a3b5e18e4a061c93a11eebd281095ace55b",
+      "export_sha256": "078866c5a7b1f5aa273c1f51d3a21c191ef431a4025fc59c49f2e0cbba56167c",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/qt_e15_recheck_20261028/interrupt.json",
+      "original_sha256": "87318a51da8b5db006e477b9f05360d147a7dc273d1995c688a6dcb060f22488",
+      "export_sha256": "7eec0d3286a81a83e84605befadea149d83ff8334222db1cca70050b79297dbf",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/qt_e15_recheck_20261028/lifecycle-1.json",
+      "original_sha256": "a74772dc218466f17d0f4b9dd8e93bfd0c9eaeb627a69ec6e9fd353fed55d55b",
+      "export_sha256": "ebc04768df22e981835a1d615c0d64d509f1763c70d82fe65c593286a2b82e6f",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/qt_e15_recheck_20261028/lifecycle-2.json",
+      "original_sha256": "166f51a233e952e9a2aa1df5726d9cc6c7fca96e5177863ef21bc23ffc75f47b",
+      "export_sha256": "f8adef424ab52aaa4f8c083112ff9955400de8904c73aff0b5f7fb1b6eeece81",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/qt_e15_recheck_20261028/lifecycle-3.json",
+      "original_sha256": "7e8b9ac9b2148cbf4d22d72b2e76c78eb630b5d505572467e4b557b209771c02",
+      "export_sha256": "e1aadeef891a12994360e8b936f80d6ae7000b8baf7e1e8513bd3fe8f7798a7d",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/qt_e15_recheck_20261028/lifecycle-v2-build.log.gz",
+      "original_sha256": "100455e8e7a65b9ed494ac579b4b2c37819abb111f2e7089f58fc8a7e405652d",
+      "export_sha256": "6bfe2213a41599ac7603cbd1f8e41f136e7f53768b71b7feb804ac908e638659",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/qt_e15_recheck_20261028/memory.json",
+      "original_sha256": "927cca4d80d1cff7b52817ac175b6c2dcdfe08e4693c0a86ad801e8c2e855556",
+      "export_sha256": "4338fdea193b4fc5d11f041a5e6beba29706147e622a692059175428ef51df60",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/qt_e15_recheck_20261028/mutex.json",
+      "original_sha256": "47f990cf4ffa2973a8b316dd3347205aa7b033dfdeab53e7cd44b829fb9b2f52",
+      "export_sha256": "eb46a790313aa25bd504b7c5abc1538339d0cc752117be9f4843e063426ca3d9",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/qt_e15_recheck_20261028/persist.json",
+      "original_sha256": "bcd2fa969d2b79f247db60d0b29230318094d92caaf246d7e765e40c25fcd4d9",
+      "export_sha256": "709d65e03e8a65201b07b252ff7c8129eddb99690e7a215a94f6c71d3a724eca",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/qt_e15_recheck_20261028/quota.json",
+      "original_sha256": "40c006058eace924de84d8abbc2031fb403ee0d808043c2e8870b5879cd012ec",
+      "export_sha256": "072ccac042c82e755951b6945bc80aab8ab3141736e95d3af3c9400057f0fbd6",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/qt_e15_recheck_20261028/recheck.json",
+      "original_sha256": "561e5cc35e519881f88f3fb12a206f1dbaa8d690b6a5adeab7f59192c9f4f5a9",
+      "export_sha256": "bf134aa5a71901ddf20e0b3c5d29fe57b63c6921e2b9b577f3e2b84c8639245e",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/qt_e15_recheck_20261028/smoke-1.json",
+      "original_sha256": "8c77f68843de7a7b68abf0ab8f6cd6c196f5b34491fd480c0ccfccef9dead3a5",
+      "export_sha256": "261a82487fa4a11000ed3179f7c8aa34834dffa333ba8d8b81f2d71fc06da3b7",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/qt_e15_recheck_20261028/smoke-2.json",
+      "original_sha256": "e70566c27f3e5772c4dae6628762c6012b9ec4bf779cfd50661d2ad67f424843",
+      "export_sha256": "7eb68b18e0266078efe8c31354f361a961fc80be9e350e618f4e41e31100d9dd",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/qt_e15_recheck_20261028/smoke-3.json",
+      "original_sha256": "86625285ad121a0b6a1db2a45c667dd3e9ffdd0219687e216a472142c8f30e1d",
+      "export_sha256": "5c5b0e424abe76ed40c40debd44053c7e5ff4598b21a16e1da06936bb79575f1",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/qt_e15_recheck_20261028/wake.json",
+      "original_sha256": "d15f151197ac4bfe2c1618739fd8b656fceba1ec4cb937c86fd7cd442a4fcec9",
+      "export_sha256": "bd4bb6cd14f1cb5110c4ddb89d838c8ad3b7c5e97bebfdd9fe1b749f1c779dcb",
+      "archive": null
+    },
+    {
+      "path": "docs/reports/qt_e15_recheck_20261028/README.md",
+      "original_sha256": "2dd12ec7645d277106f0c75273935ca8a5421c3b644519d60237a4d968862f4a",
+      "export_sha256": "7fde632891f638dcd739b48a78470c52a34964a03349722e2b5a56310330b97c",
+      "archive": null
+    }
+  ],
+  "template_variables": [
+    {
+      "name": "XOS_HOST_TEMP_6D6821976CD9",
+      "purpose": "host_temp root"
+    },
+    {
+      "name": "XOS_PYTHON_68FDBC484049",
+      "purpose": "python root"
+    },
+    {
+      "name": "XOS_TOOLCHAIN_35527FAC2790",
+      "purpose": "toolchain root"
+    },
+    {
+      "name": "XOS_WORKTREE_9282C9E77071",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_ED2321C1F627",
+      "purpose": "worktree root"
+    }
+  ],
+  "reproduction": "MANUAL_REQUIRED: configure the template roots and obtain matching historical inputs; no replay is claimed.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history.",
+  "transformation": "Host home/workspace/tool roots and unambiguous host QEMU command paths only; generic guest temporary paths are not globally replaced."
+}

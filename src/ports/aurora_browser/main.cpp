@@ -13,12 +13,19 @@
 #include <QtGui/QScreen>
 #include <cstdio>
 #include <xos/thread_core.hpp>
+#include <QtCore/QJsonDocument>
 Q_IMPORT_PLUGIN(QXosIntegrationPlugin)
-class Browser final:public aurora::Canvas {
+class Browser final:public aurora::canvas {
     browser::HtmlView *view;
+    quint64 previous_scene=0;
+    QString previous_epoch;
+    void dump_scene(){view->allow_scene_observation(true);const auto snapshot=view->scene_snapshot("content");
+        std::printf("SSG_BROWSER_SNAPSHOT %s\n",QJsonDocument(snapshot).toJson(QJsonDocument::Compact).constData());
+        std::printf("SSG_BROWSER_DIFF %s\n",QJsonDocument(view->scene_diff(previous_scene,previous_epoch)).toJson(QJsonDocument::Compact).constData());
+        previous_scene=snapshot["sceneVersion"].toString().toULongLong();previous_epoch=snapshot["sourceEpoch"].toString();}
     QLineEdit *address;
     QLabel *status,*title;
-    aurora::Button *back,*forward;
+    aurora::button *back,*forward;
     QStringList history;int index=-1;
     struct Tab{QStringList history;int index=-1,scroll=0;};
     Tab states[4];int active=0;QTabBar *tabbar;bool switching=false;
@@ -51,7 +58,7 @@ class Browser final:public aurora::Canvas {
         title->setText(candidate_title+" · Aurora");address->setText("file:"+path);
         if(record){while(history.size()>index+1)history.removeLast();history.append(path);if(history.size()>16)history.removeFirst();index=history.size()-1;}
         tabbar->setTabText(active,title->text().section(" ·",0,0).left(19));updateButtons();message("Local page · liteHTML 0.9 · JavaScript off · network unavailable");view->setFocus();
-        QTimer::singleShot(100,this,[this]{xos::thread_stats stats{};xos::sdk::syscall(xos::sys_thread_stats,reinterpret_cast<xos::u64>(&stats));std::printf("BROWSER_SAMPLE pages=%u threads=%u tab=%d scroll=%d\n",stats.process_user_pages,stats.threads,active,view->verticalScrollBar()->value());});
+        QTimer::singleShot(100,this,[this]{view->log_anchor_point();xos::thread_stats stats{};xos::sdk::syscall(xos::sys_thread_stats,reinterpret_cast<xos::u64>(&stats));std::printf("BROWSER_SAMPLE pages=%u threads=%u tab=%d scroll=%d\n",stats.process_user_pages,stats.threads,active,view->verticalScrollBar()->value());});
         return true;
     }
     void travel(int delta){const int target=index+delta;if(target<0||target>=history.size())return;if(navigate(history[target],false))index=target;updateButtons();}
@@ -61,16 +68,16 @@ public:
         auto *layout=new QVBoxLayout(this);layout->setContentsMargins(32,30,32,26);layout->setSpacing(10);
         auto *tabs=new QHBoxLayout;title=new QLabel("Aurora / Start");title->setStyleSheet("color:#eef5ff;font-size:16px;font-weight:600;");tabs->addWidget(title,1);
         auto *newTab=new QLabel("LOCAL PREVIEW");newTab->setStyleSheet("color:#91cfdc;font-size:11px;");tabs->addWidget(newTab);
-        auto *exit=new aurora::Button("Close");exit->setFixedSize(64,34);tabs->addWidget(exit);connect(exit,&QPushButton::clicked,qApp,&QApplication::quit);layout->addLayout(tabs);
-        auto *tabrow=new QHBoxLayout;tabbar=new QTabBar;tabbar->setExpanding(false);tabbar->setDrawBase(false);tabbar->setStyleSheet("QTabBar::tab { background:#233751; color:#b9cfe7; padding:7px 17px; margin-right:5px; border:1px solid #456381; border-radius:10px; } QTabBar::tab:selected { background:#46617e; color:white; }");tabbar->addTab("Start");tabrow->addWidget(tabbar);auto *add=new aurora::Button("+");add->setFixedSize(32,30);tabrow->addWidget(add);tabrow->addStretch();layout->addLayout(tabrow);
+        auto *exit=new aurora::button("Close");exit->setFixedSize(64,34);tabs->addWidget(exit);connect(exit,&QPushButton::clicked,qApp,&QApplication::quit);layout->addLayout(tabs);
+        auto *tabrow=new QHBoxLayout;tabbar=new QTabBar;tabbar->setExpanding(false);tabbar->setDrawBase(false);tabbar->setStyleSheet("QTabBar::tab { background:#233751; color:#b9cfe7; padding:7px 17px; margin-right:5px; border:1px solid #456381; border-radius:10px; } QTabBar::tab:selected { background:#46617e; color:white; }");tabbar->addTab("Start");tabrow->addWidget(tabbar);auto *add=new aurora::button("+");add->setFixedSize(32,30);tabrow->addWidget(add);tabrow->addStretch();layout->addLayout(tabrow);
         connect(tabbar,&QTabBar::currentChanged,this,[this](int target){switchTab(target);});connect(add,&QPushButton::clicked,this,[this]{if(tabbar->count()>=4){message("Tab limit: 4");return;}switching=true;int n=tabbar->addTab("New page");switching=false;tabbar->setCurrentIndex(n);});
-        auto *toolbar=new aurora::Panel(this,23);auto *tools=new QHBoxLayout(toolbar);tools->setContentsMargins(10,8,10,8);tools->setSpacing(7);
-        back=new aurora::Button("‹");forward=new aurora::Button("›");auto *reload=new aurora::Button("↻");auto *home=new aurora::Button("Home");
+        auto *toolbar=new aurora::panel(this,23);auto *tools=new QHBoxLayout(toolbar);tools->setContentsMargins(10,8,10,8);tools->setSpacing(7);
+        back=new aurora::button("‹");forward=new aurora::button("›");auto *reload=new aurora::button("↻");auto *home=new aurora::button("Home");
         for(auto *button:{back,forward,reload}){button->setFixedSize(36,34);tools->addWidget(button);}home->setFixedWidth(58);tools->addWidget(home);
-        address=new QLineEdit;address->setMinimumHeight(34);address->setPlaceholderText("file:/web/start.html");tools->addWidget(address,1);auto *go=new aurora::Button("Go",true);go->setFixedWidth(45);tools->addWidget(go);layout->addWidget(toolbar);
+        address=new QLineEdit;address->setMinimumHeight(34);address->setPlaceholderText("file:/web/start.html");tools->addWidget(address,1);auto *go=new aurora::button("Go",true);go->setFixedWidth(45);tools->addWidget(go);layout->addWidget(toolbar);
         bookmarkRow=new QWidget;auto *marks=new QHBoxLayout(bookmarkRow);marks->setContentsMargins(0,0,0,0);marks->setSpacing(8);
-        for(const auto &entry:{qMakePair(QString("Start"),QString("/web/start.html")),qMakePair(QString("Reading"),QString("/web/reading.html")),qMakePair(QString("CSS garden"),QString("/web/garden.html"))}){auto *button=new aurora::Button(entry.first);button->setMinimumHeight(28);marks->addWidget(button);connect(button,&QPushButton::clicked,this,[this,entry]{navigate(entry.second);});}
-        auto *sessionRow=new QWidget;auto *sessionMarks=new QHBoxLayout(sessionRow);sessionMarks->setContentsMargins(0,0,0,0);sessionMarks->setSpacing(8);sessionMarks->addStretch();sessionRow->hide();auto *bookmark=new aurora::Button("+ Bookmark");marks->addWidget(bookmark);marks->addStretch();connect(bookmark,&QPushButton::clicked,this,[this,sessionMarks,sessionRow]{if(index<0||bookmarks.contains(history[index]))return;if(bookmarks.size()>=4){message("Session bookmark limit: 4");return;}auto path=history[index];bookmarks.append(path);auto *button=new aurora::Button(path.section('/',-1).left(10));button->setFixedWidth(116);sessionMarks->insertWidget(sessionMarks->count()-1,button);sessionRow->show();std::printf("BROWSER_BOOKMARK_ADDED path=%s count=%lld\n",path.toUtf8().constData(),(long long)bookmarks.size());connect(button,&QPushButton::clicked,this,[this,path]{navigate(path);});message("Bookmark added for this session");});layout->addWidget(bookmarkRow);layout->addWidget(sessionRow);
+        for(const auto &entry:{qMakePair(QString("Start"),QString("/web/start.html")),qMakePair(QString("Reading"),QString("/web/reading.html")),qMakePair(QString("CSS garden"),QString("/web/garden.html"))}){auto *button=new aurora::button(entry.first);button->setMinimumHeight(28);marks->addWidget(button);connect(button,&QPushButton::clicked,this,[this,entry]{navigate(entry.second);});}
+        auto *sessionRow=new QWidget;auto *sessionMarks=new QHBoxLayout(sessionRow);sessionMarks->setContentsMargins(0,0,0,0);sessionMarks->setSpacing(8);sessionMarks->addStretch();sessionRow->hide();auto *bookmark=new aurora::button("+ Bookmark");marks->addWidget(bookmark);marks->addStretch();connect(bookmark,&QPushButton::clicked,this,[this,sessionMarks,sessionRow]{if(index<0||bookmarks.contains(history[index]))return;if(bookmarks.size()>=4){message("Session bookmark limit: 4");return;}auto path=history[index];bookmarks.append(path);auto *button=new aurora::button(path.section('/',-1).left(10));button->setFixedWidth(116);sessionMarks->insertWidget(sessionMarks->count()-1,button);sessionRow->show();std::printf("BROWSER_BOOKMARK_ADDED path=%s count=%lld\n",path.toUtf8().constData(),(long long)bookmarks.size());connect(button,&QPushButton::clicked,this,[this,path]{navigate(path);});message("Bookmark added for this session");});layout->addWidget(bookmarkRow);layout->addWidget(sessionRow);
         view=new browser::HtmlView(this);view->setObjectName("page");layout->addWidget(view,1);
         status=new QLabel;status->setStyleSheet("color:#c0d0e5;font-size:10px;");status->setMinimumHeight(20);layout->addWidget(status);
         connect(back,&QPushButton::clicked,this,[this]{travel(-1);});connect(forward,&QPushButton::clicked,this,[this]{travel(1);});connect(reload,&QPushButton::clicked,this,[this]{if(index>=0)navigate(history[index],false);});connect(home,&QPushButton::clicked,this,[this]{navigate("/web/start.html");});connect(go,&QPushButton::clicked,this,[this]{navigate(address->text());});connect(address,&QLineEdit::returnPressed,this,[this]{navigate(address->text());});
@@ -78,6 +85,10 @@ public:
         auto *newTabKey=new QShortcut(QKeySequence("Ctrl+T"),this);connect(newTabKey,&QShortcut::activated,add,&QPushButton::click);auto *cycleTab=new QShortcut(QKeySequence("Ctrl+Tab"),this);connect(cycleTab,&QShortcut::activated,this,[this]{tabbar->setCurrentIndex((active+1)%tabbar->count());});
         auto *focus=new QShortcut(QKeySequence("Ctrl+L"),this);connect(focus,&QShortcut::activated,this,[this]{address->setFocus();address->selectAll();});
         auto *previous=new QShortcut(QKeySequence("Alt+Left"),this);connect(previous,&QShortcut::activated,this,[this]{travel(-1);});auto *next=new QShortcut(QKeySequence("Alt+Right"),this);connect(next,&QShortcut::activated,this,[this]{travel(1);});auto *refresh=new QShortcut(QKeySequence("Ctrl+R"),this);connect(refresh,&QShortcut::activated,this,[this]{if(index>=0)navigate(history[index],false);});auto *quit=new QShortcut(QKeySequence(Qt::Key_Escape),this);connect(quit,&QShortcut::activated,qApp,&QApplication::quit);
+        if(qApp->arguments().contains("--ssg-probe")){
+            auto *ssg=new QShortcut(QKeySequence(Qt::CTRL|Qt::Key_I),this);
+            connect(ssg,&QShortcut::activated,this,[this]{dump_scene();});
+        }
         QTimer::singleShot(0,this,[this,bookmark]{navigate("/web/start.html");point("address",address);point("back",back);point("forward",forward);point("page",view);point("tabs",tabbar);point("bookmark",bookmark);std::printf("BROWSER_READY engine=litehtml-0.9 local_only=1 javascript=0\n");});
     }
 };

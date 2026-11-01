@@ -1,5 +1,7 @@
 # 0125：终端服务故障唤醒
 
+原记录中的机器临时目录已替换为 `${XOS_SCRATCH}` 路径模板；哈希和结果未改。
+
 2026-10-30。接收线程等待 IRQ 或处理事件失败时，记录错误并关闭两条控制通道，
 唤醒等待请求的服务线程和可能等待应答的 supervisor。控制客户端在传输失败或应答
 格式错误后关闭并失效通道，保留 child PID 供调用方等待；请求发出后的失败不证明
@@ -7,7 +9,7 @@
 
 `c++ -std=c++20 -Wall -Wextra -Werror -I src/shared/include -I src/user/include
 src/user/services/terminal_control.cpp tests/fixtures/ncursesw/terminal_control_host.cpp
--o /tmp/xos_terminal_control_host && /tmp/xos_terminal_control_host` 通过；该宿主模拟
+-o ${XOS_SCRATCH}/xos_terminal_control_host && ${XOS_SCRATCH}/xos_terminal_control_host` 通过；该宿主模拟
 覆盖授权失败清理、正常请求、应答等待失败后的会话失效，不覆盖真实内核和 IRQ。
 `python3 scripts/build.py --output-dir build/w1_terminal_failure_20261030` 通过，
 构建 ID `9e2aa1443e744145`，terminal ELF SHA-256

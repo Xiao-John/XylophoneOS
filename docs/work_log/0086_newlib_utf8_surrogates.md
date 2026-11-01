@@ -1,5 +1,7 @@
 # 0086：newlib UTF-8 代理码点
 
+原记录中的机器临时目录已替换为 `${XOS_SCRATCH}` 路径模板；哈希和结果未改。
+
 2026-10-29。检查 newlib 4.6.0.20260123 源码发现：UTF-8 三字节解码路径检查
 overlong 和续字节，但未排除 U+D800–U+DFFF；`wchar_t` 为 UCS-4 时编码路径也会为
 代理码点生成三字节输出。两者与 XOS UTF-8 输入/输出的 Unicode 标量值边界不符。
@@ -12,11 +14,11 @@ overlong 和续字节，但未排除 U+D800–U+DFFF；`wchar_t` 为 UCS-4 时�
 构建器回执记录补丁、命令及工具；宽字符探针增加 overlong、代理码点、超范围、分片
 代理码点和 UCS-4 输出拒绝断言，尚未执行。
 
-`python3 scripts/build_utf8_newlib.py --archive .cache/xos_seed/threading_sources/newlib-4.6.0.20260123.tar.gz --output /tmp/xos_w1_newlib_strict_20261029 --jobs 8`
+`python3 scripts/build_utf8_newlib.py --archive .cache/xos_seed/threading_sources/newlib-4.6.0.20260123.tar.gz --output ${XOS_SCRATCH}/xos_w1_newlib_strict_20261029 --jobs 8`
 完成单线程与线程候选；libc SHA256 分别为
 `75359f4594a01db330f3d7a1512ecb0ae60a6f94085f374ab459fa18787933bb` 和
 `f7a4854017f9cfbaff90aa974c91c34185cbbf8f9438f5a140efe892ee5920c2`。
-`python3 scripts/build_utf8_sdk_candidate.py --newlib-prefix /tmp/xos_w1_newlib_strict_20261029/single/prefix --output /tmp/xos_w1_utf8_strict_sdk_20261029`
+`python3 scripts/build_utf8_sdk_candidate.py --newlib-prefix ${XOS_SCRATCH}/xos_w1_newlib_strict_20261029/single/prefix --output ${XOS_SCRATCH}/xos_w1_utf8_strict_sdk_20261029`
 构建成功，候选 SDK 树 SHA256 `db96154268cc796ef180ec621019f3cd1c89ba0b43bb041ec1b00a7e82c69b27`；
 使用其 CRT 和静态库交叉链接探针得到 ELF SHA256
 `d184db272ef1ba84728a34818d385ea79214a94442546c37bd8bb132d77f0ae0`。

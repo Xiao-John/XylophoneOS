@@ -1,0 +1,1 @@
+> **Evidence version:** The files in this directory are a path-sanitized derivative. Original input hashes in historical qualification records still refer to the original run. The original commit and both sets of hashes are in [the lineage](../../evidence_exports/issue37/qt_e16_lineage.json). Matching source inputs and template roots require manual configuration.

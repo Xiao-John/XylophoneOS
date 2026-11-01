@@ -1,0 +1,32 @@
+{
+  "changes": [
+    {
+      "path": "docs/reports/c6_guest_requal_20261031/evidence/render_report.json",
+      "original_sha256": "b8a2b994c79e0a873c627473b5ae32d076addac40fe6f762b79ef4229b963601",
+      "export_sha256": "579be91649d0e3988f8033309f085855c5e5c4953f37a134b1beeacbffe87989"
+    },
+    {
+      "path": "docs/reports/c6_guest_requal_20261031/evidence/semantic_report.json",
+      "original_sha256": "b48e49bd5ca5c40c4aaa0c3f386714d589a4c2f4f052498f39bbb939519d0c8f",
+      "export_sha256": "828f4af565dff3a89017fa391968f3b4107b531e8e7e3163a37898208eba6cc2"
+    },
+    {
+      "path": "docs/reports/c6_guest_requal_20261031/evidence/ssg_diff_report.json",
+      "original_sha256": "fa6a86e9a8471fd1782dfdcc25546f7ee7c2c97167897c0cfaa90ef2f5207fca",
+      "export_sha256": "367b37bba49702dd912426fe5358c00efab30b677200171606d4b146f5532496"
+    },
+    {
+      "path": "docs/reports/c6_guest_requal_20261031/evidence/standard_button_report.json",
+      "original_sha256": "dbaa84fbaafa25bdc2310a6a0294fdc1d218cb03ea581ddda67a8322b85b6934",
+      "export_sha256": "833939950f13e8a87648fb5fe365ccedcba7453c8eb4eb2c5a0d93d57831be97"
+    }
+  ],
+  "added_export_document": "docs/reports/c6_guest_requal_20261031/SANITIZED_EXPORT.md",
+  "added_export_document_sha256": "9ec27e3dadac03ca0a0f795ce62cac898e19d9fdccab3836054a0e80f3a776bb",
+  "index_scope": "No prior full-file index is claimed; original Git bytes remain the trust root.",
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "transformation": "Only reviewed host command/tool paths are templated; guest test data remains unchanged.",
+  "reproduction": "MANUAL_REQUIRED: configure matching template roots and historical inputs; no replay is claimed.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history."
+}

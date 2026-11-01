@@ -35,6 +35,8 @@ def main():
                         help="build a dedicated test supervisor; requires an isolated output directory")
     parser.add_argument("--ncurses-supervisor-probe", action="store_true",
                         help="build a dedicated ncurses test supervisor; requires an isolated output directory")
+    parser.add_argument("--clock-irq-probe", action="store_true",
+                        help="link a test-only generic clock/IRQ audit command, excluded from default images")
     parser.add_argument("--gpu-dma-page-limit", type=int, default=512,
                         help="kernel VirtIO-GPU DMA page budget; low values are explicit fault profiles")
     parser.add_argument("--gpu-poll-limit", type=int, default=10000000,
@@ -89,13 +91,13 @@ def main():
     source_digest = sha256(json.dumps({"sources": source_hashes, "capacity_probe": args.capacity_probe,
                                       "terminal_supervisor_probe": args.terminal_supervisor_probe,
                                       "ncurses_supervisor_probe": args.ncurses_supervisor_probe,
-                                      "virtio_gpu": gpu_config}, sort_keys=True).encode())
+                                      "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config}, sort_keys=True).encode())
     build_id = source_digest[:16]
     eggs = int(TARGET["easter_eggs"])
     (BUILD / "build_info.inc").write_text(
         f'%define xos_build_id "{build_id}"\n%define xos_easter_eggs {eggs}\n')
     (BUILD / "build_info.hpp").write_text(
-        f'#define XOS_BUILD_ID "{build_id}"\n#define XOS_EASTER_EGGS {eggs}\n#define XOS_CAPACITY_PROBE {int(args.capacity_probe)}\n')
+        f'#define XOS_BUILD_ID "{build_id}"\n#define XOS_EASTER_EGGS {eggs}\n#define XOS_CAPACITY_PROBE {int(args.capacity_probe)}\n#define XOS_CLOCK_IRQ_PROBE {int(args.clock_irq_probe)}\n')
     commands = []
 
     def run(command):
@@ -123,6 +125,8 @@ def main():
     for folder in ("core", "arch/x86_64", "platform/pc"):
         cpp_sources.extend(sorted((ROOT / "src/kernel" / folder).glob("*.cpp")))
     cpp_sources.extend(sorted((ROOT / "src/shared/runtime").glob("*.cpp")))
+    if args.clock_irq_probe:
+        cpp_sources.append(ROOT / "tests/kernel/clock_irq_probe.cpp")
     for source in cpp_sources:
         obj = BUILD / (str(source.relative_to(ROOT)).replace("/", "_") + ".o")
         gpu_flags = ["-DXOS_VGPU_DMA_PAGE_LIMIT=" + str(args.gpu_dma_page_limit),
@@ -267,7 +271,7 @@ def main():
         "version": (ROOT / "VERSION").read_text().strip(), "source_sha256": source_digest,
         "capacity_probe": args.capacity_probe, "terminal_supervisor_probe": args.terminal_supervisor_probe,
         "ncurses_supervisor_probe": args.ncurses_supervisor_probe,
-        "virtio_gpu": gpu_config, "legacy_images_available": legacy_available,
+        "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config, "legacy_images_available": legacy_available,
         "sources": source_hashes,
         "sdk_directories": [p.relative_to(BUILD / "sdk").as_posix()
                             for p in sorted((BUILD / "sdk").rglob("*")) if p.is_dir()],

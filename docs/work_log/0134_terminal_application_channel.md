@@ -1,5 +1,7 @@
 # 0134：单应用终端通道基础
 
+原记录中的机器临时目录已替换为 `${XOS_SCRATCH}` 路径模板；哈希和结果未改。
+
 2026-10-30。supervisor 控制客户端可创建服务与一个直接受控子进程之间的两条通道，
 发送 attach 并在失败时清理；detach 会关闭并清理。服务端通过 `channel_get` 核对
 内核认证的控制者、对端、方向与 handle，增加一个有界应用接收线程和 mailbox。
@@ -11,8 +13,8 @@ detach。结果未知、并发与单个未决应答的边界见
 宿主服务模拟验证正确认证通道通过、不同控制者/对端/方向被拒绝，并重跑已有输入、
 写等待测试；控制客户端模拟验证 attach/detach 和句柄清理。执行命令分别为：
 `c++ -std=c++20 -Wall -Wextra -Werror -pthread -I src/shared/include -I src/user/include
-tests/fixtures/ncursesw/terminal_service_host.cpp -o /tmp/xos_terminal_service_host &&
-/tmp/xos_terminal_service_host`，以及 0125 所记的控制客户端宿主编译运行命令。
+tests/fixtures/ncursesw/terminal_service_host.cpp -o ${XOS_SCRATCH}/xos_terminal_service_host &&
+${XOS_SCRATCH}/xos_terminal_service_host`，以及 0125 所记的控制客户端宿主编译运行命令。
 `python3 scripts/build.py --terminal-supervisor-probe --output-dir
 build/w1_terminal_app_session_v4_20261030` 通过，build ID `6a216eefb8f94595`，
 terminal ELF SHA-256 `8a997ff0297a8d3b29de4f5ee7ce8a7462c76f08e69f6d1a5c21309b906b710a`；

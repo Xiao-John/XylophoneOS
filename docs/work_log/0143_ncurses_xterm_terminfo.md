@@ -1,5 +1,7 @@
 # 0143：匹配 ncurses 6.5 的 xterm terminfo 候选
 
+原记录中的机器临时目录已替换为 `${XOS_SCRATCH}` 路径模板；哈希和结果未改。
+
 2026-10-31。新增 `scripts/build_ncursesw_terminfo.py`：校验锁定源码和上游声明，
 独立构建同版本宿主 `tic` 与 `infocmp`，绑定已验证的目标库报告及配置，然后仅生成
 `xterm` 数据。工具检查两个宿主程序版本、二进制 terminfo magic、数据文件、颜色、
@@ -14,7 +16,7 @@
 
 命令：`python3 scripts/build_ncursesw_terminfo.py --archive
 .cache/xos_seed/ncurses_sources/ncurses-6.5.tar.gz --target-probe
-/tmp/xos_ncurses_strict_target_ar_v2_20261030 --output /tmp/xos_ncurses_terminfo_v2_20261031
+${XOS_SCRATCH}/xos_ncurses_strict_target_ar_v2_20261030 --output ${XOS_SCRATCH}/xos_ncurses_terminfo_v2_20261031
 --jobs 4`。`tic` 与 `infocmp` 均为 `ncurses 6.5.20240427`，生成 `x/xterm` 3977 字节，
 宿主工具链为 Apple clang 21.0.0 和 GNU Make 3.81；
 magic `0x011a`，SHA-256 `588f74f5a9a0500697a23f8074e22ab683346bd2f62db17324ffc77f223fe1f9`；

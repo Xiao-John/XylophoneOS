@@ -8,6 +8,7 @@ namespace xos::user::shell_terminal {
 // failed spawn following a successful prepare.
 i64 start(const char* path);
 bool active();
+bool needs_recovery();
 i64 prepare_application(u64 child, void* context);
 const u32* application_send_handle();
 i64 finish_application();

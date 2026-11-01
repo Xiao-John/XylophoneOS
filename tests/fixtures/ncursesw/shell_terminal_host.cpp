@@ -59,7 +59,7 @@ int main(int argc, char**) {
     if (sdk::write(1, buffer, sizeof(buffer)) != 7 || sdk::read(0, buffer, 1) != 7 || raw_calls != 2)
         return 1;
     if (user::shell_terminal::start("/terminal") != 1) return 2;
-    if (sdk::write(1, buffer, sizeof(buffer)) != 1 || length_seen != terminal::data_bytes ||
+    if (sdk::write(1, buffer, sizeof(buffer)) != static_cast<i64>(sizeof(buffer)) || length_seen != 1 ||
         deadline_seen != thread_deadline_infinite) return 3;
     timeout = true;
     if (sdk::read(0, buffer, 1) != 0 || deadline_seen != 100 + thread_tick_ns) return 4;

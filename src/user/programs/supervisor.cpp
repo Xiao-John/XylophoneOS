@@ -10,6 +10,7 @@
 #include <xos/file_abi.hpp>
 #include <xos/file_client.hpp>
 #include <xos/text.hpp>
+#include <xos/thread_abi.hpp>
 #include "fault_bundle.hpp"
 #include "../services/shell_terminal.hpp"
 
@@ -611,6 +612,18 @@ extern "C" int xos_user_main(const xos::startup_info*) {
             char byte;
             const auto got = xos::sdk::read(0, &byte, 1);
             if (got <= 0) {
+                if (got < 0 && user::shell_terminal::needs_recovery()) {
+                    if (user::shell_terminal::recover("/bin/terminal.elf") > 0) {
+                        used = cursor = pending_size = escape_state = sequence_size = 0;
+                        overflow = invalid = false; line[0] = 0;
+                        print("\nxsh: terminal service restarted; input discarded\nxsh> ");
+                    } else {
+                        const i64 now = syscall(sys_clock_monotonic);
+                        if (now >= 0) (void)syscall(sys_sleep_until, static_cast<u64>(now) + 100000000ull);
+                        else yield();
+                    }
+                    continue;
+                }
                 if (escape_state != 0 && ticks() - escape_tick >= 20) {
                     if (escape_state == 1) { escape_state = 0; }
                     else { escape_state = 3; invalid = true; }

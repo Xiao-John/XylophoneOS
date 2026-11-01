@@ -128,6 +128,24 @@ def main():
                     if any(s in bytes(guest.output[start:]) for s in (b'program exited with status', b'xsh: cannot')):
                         raise AssertionError('xsh ' + program + ' consumer failed')
                     report['checks'].append('xsh_terminal_' + program)
+                start = len(guest.output)
+                send_bytes(guest, b'ps\r')
+                guest.expect(b'xsh> ', start=start, timeout=30)
+                processes = bytes(guest.output[start:])
+                match = re.search(rb'pid=(\d+) name=/bin/termin\s', processes)
+                if not match:
+                    raise AssertionError('terminal service not found in xsh process list')
+                start = len(guest.output)
+                send_bytes(guest, b'kill ' + match.group(1) + b'\r')
+                guest.expect(b'xsh: terminal service restarted; input discarded', start=start, timeout=60)
+                marker = guest.output.find(b'input discarded', start)
+                guest.expect(b'xsh> ', start=marker, timeout=30)
+                start = len(guest.output)
+                send_bytes(guest, b'tty-run /bin/locale.elf\r')
+                guest.expect(b' kind=exited code=0', start=start, timeout=60)
+                marker = guest.output.find(b' kind=exited code=0', start)
+                guest.expect(b'xsh> ', start=marker + len(b' kind=exited code=0'), timeout=60)
+                report['checks'].append('xsh_service_fault_recovery_and_new_application')
                 report['status'] = 'passed_probe'
                 return
             guest.expect(b'W2_BOOT_READY', timeout=45)

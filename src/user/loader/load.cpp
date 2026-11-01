@@ -114,6 +114,10 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
         return error;
     };
     const bool replacing = options != nullptr && options->replace_image;
+    if (options != nullptr && (options->exec_channel_count > exec_preserve_channels_max ||
+        (options->exec_channel_count != 0 && (!replacing || options->exec_channels == nullptr)))) {
+        return fail_before_create(process_error_invalid);
+    }
     if (replacing && options->prepare_child != nullptr) {
         return fail_before_create(process_error_invalid);
     }
@@ -311,8 +315,18 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     }
     if (result >= 0) {
         process_entry entry{plan.entry, startup_address - 16, startup_address};
+        process_exec_channel_entry extended{};
+        u64 commit_flags = replacing ? options->exec_depth_mode : 0;
+        const void* entry_pointer = &entry;
+        if (replacing && options->exec_channel_count != 0) {
+            extended.entry = entry; extended.version = 1; extended.size = sizeof(extended);
+            extended.count = options->exec_channel_count;
+            for (u32 i = 0; i < extended.count; ++i) extended.channels[i] = options->exec_channels[i];
+            commit_flags |= exec_preserve_channels_flag;
+            entry_pointer = &extended;
+        }
         result = syscall(replacing ? sys_process_exec_commit : sys_process_start, static_cast<u64>(child),
-                         reinterpret_cast<u64>(&entry), replacing ? options->exec_depth_mode : 0);
+                         reinterpret_cast<u64>(entry_pointer), commit_flags);
         if (result < 0 && diagnostic != nullptr) {
             *diagnostic = {execution::launch_stage::start, result, elf::error::none};
         }

@@ -217,10 +217,13 @@ void close_channel(endpoint_record& endpoint) {
     endpoint = endpoint_record{};
 }
 
-void release_channels(u64 pid) {
+void release_channels(u64 pid, const u32* preserved = nullptr, u32 count = 0) {
     for (auto& endpoint : endpoints) {
         if (endpoint.used && endpoint.generic_channel &&
             (endpoint.owner_pid == pid || endpoint.sender_pid == pid || endpoint.receiver_pid == pid)) {
+            bool keep = false;
+            for (u32 i = 0; i < count; ++i) if (preserved[i] == endpoint.handle) keep = true;
+            if (keep) continue;
             close_channel(endpoint);
         }
     }
@@ -1864,16 +1867,39 @@ void* process_syscall(interrupt_frame* frame) {
         // identity remain intact. Every fallible check precedes the first
         // state/queue mutation below.
         result = process_error_invalid;
-        if (!user_range_ok(second, sizeof(process_entry), false)) { break; }
         process_entry entry{};
-        copy_from_user(&entry, second, sizeof(entry));
+        process_exec_channel_entry extended{};
+        const bool preserve_channels = (third & exec_preserve_channels_flag) != 0;
+        const u64 depth_mode = third & ~exec_preserve_channels_flag;
+        if (preserve_channels) {
+            if (!user_range_ok(second, sizeof(extended), false)) { break; }
+            copy_from_user(&extended, second, sizeof(extended));
+            if (extended.version != 1 || extended.size != sizeof(extended) ||
+                extended.count == 0 || extended.count > exec_preserve_channels_max || extended.reserved != 0) break;
+            bool channels_valid = true;
+            for (u32 i = 0; i < extended.count; ++i) {
+                endpoint_record* endpoint = endpoint_for(extended.channels[i]);
+                if (endpoint == nullptr || !endpoint->generic_channel || endpoint->pending ||
+                    (endpoint->sender_pid != current->pid && endpoint->receiver_pid != current->pid)) {
+                    channels_valid = false; break;
+                }
+                bool duplicate = false;
+                for (u32 j = 0; j < i; ++j) if (extended.channels[j] == extended.channels[i]) duplicate = true;
+                if (duplicate) { channels_valid = false; break; }
+            }
+            if (!channels_valid) break;
+            entry = extended.entry;
+        } else {
+            if (!user_range_ok(second, sizeof(entry), false)) { break; }
+            copy_from_user(&entry, second, sizeof(entry));
+        }
         if (!valid_process_entry(stage, entry)) { break; }
         u32 depth = current->spawn_depth;
-        if (third != 0) {
-            if (third - 1 > process_max_spawn_depth || third - 1 >= current->spawn_depth) {
+        if (depth_mode != 0) {
+            if (depth_mode - 1 > process_max_spawn_depth || depth_mode - 1 >= current->spawn_depth) {
                 result = process_error_delegation; break;
             }
-            depth = static_cast<u32>(third - 1);
+            depth = static_cast<u32>(depth_mode - 1);
         }
         endpoint_record* request = endpoint_for(current->session_request_handle);
         endpoint_record* response = endpoint_for(current->session_response_handle);
@@ -1889,7 +1915,7 @@ void* process_syscall(interrupt_frame* frame) {
         }
         if (next_endpoint_handle > 0xfffffffeull) { result = process_error_resources; break; }
         quarantine_com1(current);
-        release_channels(current->pid);
+        release_channels(current->pid, extended.channels, preserve_channels ? extended.count : 0);
         display_release(current->pid);
         const u64 old_space = current->cr3;
         const u32 old_pages = current->user_pages;

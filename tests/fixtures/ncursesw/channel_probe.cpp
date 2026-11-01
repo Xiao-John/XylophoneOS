@@ -3,12 +3,25 @@
 #include <xos/thread_abi.hpp>
 using namespace xos;
 
+namespace {
+struct exec_marker { u64 magic; u32 version, size; };
+[[gnu::section(".xos.exec"), gnu::used]] const exec_marker marker{exec_image_abi_magic, 3, sizeof(exec_marker)};
+}
+
 static u64 deadline() {
     return static_cast<u64>(sdk::syscall(sys_clock_monotonic)) + 3000000000ull;
 }
 
 extern "C" int xos_user_main(const startup_info* startup) {
     const auto args = reinterpret_cast<const char* const*>(startup->argv);
+    if (startup->argc > 1 && sdk::equal(args[1], "replaced")) {
+        channel_info first{}, second{};
+        if (sdk::channel_get(0, first) != 0 || sdk::channel_get(1, second) != 0 ||
+            first.rights == second.rights || first.peer_pid != second.peer_pid) return 20;
+        const u32 out = first.rights == channel_send ? first.handle : second.handle;
+        const char done = 'd';
+        return sdk::ipc_send(out, &done, 1) == 0 ? 0 : 21;
+    }
     if (startup->argc > 1 && sdk::equal(args[1], "child")) {
         channel_info first{}, second{};
         const u64 until = sdk::ticks() + 300;
@@ -28,7 +41,19 @@ extern "C" int xos_user_main(const startup_info* startup) {
         byte = 'b';
         if (sdk::ipc_send(out, &byte, 1) != 0) return 5;
         if (sdk::channel_wait(in, deadline()) != 0 || sdk::ipc_recv(in, &byte, 1) != 1 || byte != 'c') return 6;
-        return 0;
+        sdk::spawn_options options{};
+        options.replace_image = true;
+        const char* replacement[] = {"channel", "replaced"};
+        const u32 bad[] = {in, in};
+        options.exec_channel_count = 2; options.exec_channels = bad;
+        if (sdk::spawn_file_options("/bin/channel.elf", 2, replacement, options) != process_error_invalid) return 22;
+        const char failed = 'f';
+        if (sdk::ipc_send(out, &failed, 1) != 0 || sdk::channel_wait(in, deadline()) != 0 ||
+            sdk::ipc_recv(in, &byte, 1) != 1 || byte != 'g') return 23;
+        const u32 kept[] = {in, out};
+        options.exec_channels = kept;
+        (void)sdk::spawn_file_options("/bin/channel.elf", 2, replacement, options);
+        return 24; // successful exec does not return
     }
     channel_create invalid{channel_version, sizeof(channel_create), sdk::pid(), ~u64{0}, 1, 0};
     if (sdk::channel_open(invalid) != process_error_denied) return 7;
@@ -61,6 +86,10 @@ extern "C" int xos_user_main(const startup_info* startup) {
     if (sdk::ipc_recv(incoming, &response, 1) != 1 || response != 'b') return 12;
     const char last = 'c';
     if (sdk::ipc_send(outgoing, &last, 1) != 0) return 13;
+    if (sdk::channel_wait(incoming, deadline()) != 0 || sdk::ipc_recv(incoming, &response, 1) != 1 || response != 'f') return 25;
+    const char proceed = 'g';
+    if (sdk::ipc_send(outgoing, &proceed, 1) != 0 || sdk::channel_wait(incoming, deadline()) != 0 ||
+        sdk::ipc_recv(incoming, &response, 1) != 1 || response != 'd') return 26;
     process_status status{};
     if (sdk::wait(child, status) != 0 || status.outcome != process_outcome::exited || status.code != 0) return 14;
     if (sdk::channel_wait(incoming, 0) != process_error_denied) return 15;

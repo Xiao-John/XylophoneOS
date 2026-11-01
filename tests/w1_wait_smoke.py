@@ -66,7 +66,7 @@ def main():
                           'legacy_console_deadline_wait', 'overflow', 'unicode', 'terminfo',
                           'ncurses', 'resource_stress']}
     if args.probe == 'channel':
-        report['not_run'] = ['fork_exec', 'fault_cleanup', 'blocked_waiter_close',
+        report['not_run'] = ['fork', 'fault_cleanup', 'blocked_waiter_close',
                              'concurrent_senders', 'resource_stress', 'full_w1_terminal']
     elif args.probe in ('pio', 'irq'):
         report['not_run'] = ['authorized_boundaries', 'fork_exec', 'revocation_races',
@@ -94,6 +94,7 @@ def main():
                 if b'kind=exited code=0' not in reply:
                     raise AssertionError('channel probe did not exit successfully')
                 report['checks'].append('channel_bounded_lifecycle_subset')
+                report['checks'].append('explicit_exec_preserve_and_failed_duplicate_unchanged')
             elif args.probe in ('pio', 'irq'):
                 expected = b'W1_PIO_DENIED_OK' if args.probe == 'pio' else b'W1_IRQ_DENIED_OK'
                 reply = command(guest, f'exec-file /bin/{args.probe}.elf', expected, timeout=40)

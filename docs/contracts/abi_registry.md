@@ -23,6 +23,9 @@
 
 ## syscall逐项登记
 
+sys60 试行 bit32 扩展 entry 可显式保留通用通道，布局见 `process_exec_channel_entry`
+和 [通道契约](channel.md)；默认 ABI 不变，尚未客体验证。
+
 数值来源分别为内核基础syscall头与共享ABI头；此表锁定当前分配，自动检查捕获重号、漏项、
 新增占用预留段而未登记，以及源码与本表偏移。allocated不等于完整POSIX或应用资格。
 

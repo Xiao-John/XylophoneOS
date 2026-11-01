@@ -50,6 +50,9 @@ inline constexpr u64 sys_process_fork_files = 59;
 // then commit(entry, depth_mode): 0 retains depth; n>0 requests depth n-1,
 // which must be strictly smaller than current authority.
 inline constexpr u64 sys_process_exec_commit = 60, sys_process_exec_prepare = 61;
+// Explicit generic-channel inheritance on exec; absent flag keeps legacy close-all.
+inline constexpr u64 exec_preserve_channels_flag = u64{1} << 32;
+inline constexpr u32 exec_preserve_channels_max = 4;
 // Exclusive byte-stream read authority. fd currently identifies console input.
 inline constexpr u64 sys_stream_lease = 80;
 enum class stream_lease_action : u64 { claim = 0, delegate = 1, reclaim = 2, query = 3 };
@@ -114,6 +117,12 @@ struct image_info { u64 size; char name[16]; };
 struct image_read_request { u64 offset; u64 destination; u64 length; };
 struct process_page { u64 address; u64 source; u32 length; u32 permissions; };
 struct process_entry { u64 entry; u64 stack; u64 startup; };
+struct process_exec_channel_entry {
+    process_entry entry;
+    u32 version, size, count, reserved;
+    u32 channels[exec_preserve_channels_max];
+};
+static_assert(sizeof(process_exec_channel_entry) == 56);
 struct startup_info {
     u64 magic;
     u32 version;

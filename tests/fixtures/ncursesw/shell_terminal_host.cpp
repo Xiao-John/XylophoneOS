@@ -9,10 +9,18 @@ namespace {
 u32 raw_calls = 0, length_seen = 0;
 u64 deadline_seen = 0;
 bool timeout = false, fail_start = false, fail_detach = false;
+bool recovery_test = false, completion_ready = false;
+u32 recover_calls = 0;
 }
 namespace xos::sdk {
-i64 syscall(u64 number, u64, u64, u64) {
+i64 syscall(u64 number, u64 first, u64, u64) {
     if (number == sys_clock_monotonic) return 100;
+    if (recovery_test && number == sys_process_wait)
+        return completion_ready ? 0 : process_error_would_block;
+    if (recovery_test && number == sys_pio_grant) {
+        if (first == static_cast<u64>(pio_grant_action::query)) return 2;
+        if (first == static_cast<u64>(pio_grant_action::recover)) { ++recover_calls; return 0; }
+    }
     ++raw_calls;
     return 7;
 }
@@ -66,5 +74,10 @@ int main(int argc, char**) {
     fail_detach = true;
     if (user::shell_terminal::finish_application() != process_error_state ||
         sdk::read(0, buffer, 1) != process_error_state) return 10;
+    recovery_test = true;
+    if (user::shell_terminal::recover("/terminal") != process_error_would_block || recover_calls != 0) return 11;
+    completion_ready = true;
+    if (user::shell_terminal::recover("/terminal") != 1 || recover_calls != 1 ||
+        sdk::write(1, buffer, 1) != 1) return 12;
     return 0;
 }

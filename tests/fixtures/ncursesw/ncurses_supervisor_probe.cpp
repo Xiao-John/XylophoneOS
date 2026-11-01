@@ -48,7 +48,8 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     char trigger = 0;
     while (sdk::read(0, &trigger, 1) != 1) sdk::yield();
     if (trigger != '!') return 1;
-    if (user::shell_terminal::start("/bin/terminal.elf") <= 0) return 2;
+    const i64 terminal_child = user::shell_terminal::start("/bin/terminal.elf");
+    if (terminal_child <= 0) return 2;
     if (!transmit("W2_SERVICE_READY\n")) return 3;
     if (!run("/bin/wide.elf")) { (void)transmit("W2_WIDE_FAILED\n"); return 4; }
     if (!transmit("W2_WIDE_OK\n")) return 5;
@@ -56,5 +57,11 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     if (!transmit("W2_REENTRY_OK\n")) return 7;
     if (!run("/bin/locale.elf")) { (void)transmit("W2_LOCALE_FAILED\n"); return 9; }
     if (!transmit("W2_LOCALE_OK\n")) return 10;
+    if (sdk::syscall(10, static_cast<u64>(terminal_child)) != 0) return 11;
+    if (sdk::write(1, "X", 1) >= 0) return 12;
+    if (user::shell_terminal::recover("/bin/terminal.elf") <= 0) return 13;
+    if (!transmit("W2_RECOVER_OK\n")) return 14;
+    if (!run("/bin/locale.elf")) { (void)transmit("W2_RECOVER_APP_FAILED\n"); return 15; }
+    if (!transmit("W2_RECOVER_APP_OK\n")) return 16;
     return user::shell_terminal::stop() == 0 ? 0 : 8;
 }

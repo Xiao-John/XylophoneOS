@@ -11,4 +11,7 @@ i64 prepare_application(u64 child, void* context);
 const u32* application_send_handle();
 i64 finish_application();
 i64 stop();
+// Restart only after a failed bridge has no attached application and its
+// service completion is ready. Never replays an uncertain I/O request.
+i64 recover(const char* path);
 }

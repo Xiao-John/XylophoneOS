@@ -49,9 +49,30 @@ i64 stop() {
     if (result != 0) return result;
     process_status status{};
     result = sdk::wait(session.child, status);
-    terminal::close(session);
     if (result != 0) return result;
+    terminal::close(session);
     return status.outcome == process_outcome::exited && status.code == 0 ? 0 : process_error_state;
+}
+
+i64 recover(const char* path) {
+    if (current_mode != mode::unavailable || path == nullptr || application.peer != 0)
+        return process_error_state;
+    if (session.child != 0) {
+        process_status status{};
+        const i64 reaped = sdk::syscall(sys_process_wait, session.child, reinterpret_cast<u64>(&status), 1);
+        if (reaped != 0) return reaped;
+        terminal::close(session);
+    }
+    const i64 state = sdk::pio_grant(pio_grant_action::query, 0, pio_resource_com1);
+    if (state < 0) return state;
+    if (state == 1) return process_error_busy;
+    if (state == 2) {
+        const i64 reset = sdk::pio_grant(pio_grant_action::recover, 0, pio_resource_com1);
+        if (reset != 0) return reset;
+    } else if (state != 0) return process_error_state;
+    const i64 result = terminal::start(session, path);
+    if (result > 0) current_mode = mode::active;
+    return result;
 }
 
 extern "C" i64 xos_console_read_hook(u32 handle, void* data, u64 length) {
@@ -66,6 +87,7 @@ extern "C" i64 xos_console_read_hook(u32 handle, void* data, u64 length) {
     const u32 amount = length > terminal::data_bytes ? terminal::data_bytes : static_cast<u32>(length);
     const i64 result = terminal::read_until(session, data, amount, deadline);
     // Existing Xsh treats a zero read as an idle poll, not as EOF.
+    if (result < 0 && result != thread_error_timeout) current_mode = mode::unavailable;
     return result == thread_error_timeout ? 0 : result;
 }
 
@@ -74,6 +96,8 @@ extern "C" i64 xos_console_write_hook(u32 handle, const void* data, u64 length) 
         return sdk::syscall(sys_handle_write, handle, reinterpret_cast<u64>(data), length);
     if (current_mode != mode::active) return process_error_state;
     const u32 amount = length > terminal::data_bytes ? terminal::data_bytes : static_cast<u32>(length);
-    return terminal::write_until(session, data, amount, thread_deadline_infinite);
+    const i64 result = terminal::write_until(session, data, amount, thread_deadline_infinite);
+    if (result < 0) current_mode = mode::unavailable;
+    return result;
 }
 }

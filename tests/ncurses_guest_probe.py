@@ -118,6 +118,11 @@ def main():
             if marker != b'W2_LOCALE_OK':
                 raise AssertionError('locale consumer returned failure')
             report['checks'].append('locale_utf8_fragment_invalid_width_and_roundtrip')
+            guest.expect(b'W2_RECOVER_OK', timeout=60)
+            marker = guest.expect_any((b'W2_RECOVER_APP_OK', b'W2_RECOVER_APP_FAILED'), timeout=60)
+            if marker != b'W2_RECOVER_APP_OK':
+                raise AssertionError('locale consumer failed after terminal restart')
+            report['checks'].append('terminal_kill_reauthorize_and_new_app')
             report['status'] = 'passed_probe'
     except Exception as error:
         report['error'] = str(error)

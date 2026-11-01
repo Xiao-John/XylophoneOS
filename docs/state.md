@@ -194,6 +194,8 @@ Xsh 桥接已增加应用建进程时的附加、回收及停止入口，专用 
 两个 ncurses 探针通过；真实 Xsh 尚未切换，见[0146](work_log/0146_shell_application_handoff.md)。
 扩展的 UTF-8、组合字符、功能键和限时读取探针已在提交后客体通过；
 见[0147](work_log/0147_ncurses_locale_coverage.md)。
+桥接已实现受限显式服务重连，故障注入客体检查尚待提交后运行，见
+[0148](work_log/0148_terminal_service_recovery.md)。
 用户态驱动已试行按 TEMT 确认发送排空，尚未客体验证；见
 [0140](work_log/0140_terminal_drain.md)。
 输入清空和 `TCSAFLUSH` 已试行实现，连续输入失败可能已丢弃部分硬件字节，尚未客体验证；

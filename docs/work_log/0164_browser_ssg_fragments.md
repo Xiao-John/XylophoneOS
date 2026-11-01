@@ -20,3 +20,5 @@ The original SSG work log linked to a combined qualification file introduced
 only by the later Desktop PR, so the SSG branch's standalone docs check failed.
 Its frozen SSG evidence link now points to the report present on that branch;
 the later combined index remains in the Desktop review unit.
+
+2026-11-01 主线 72bfacb 及 #40 的审查导出上重新构建，Browser 七项客体检查通过；此前的几何结果仍绑定原输入。

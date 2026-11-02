@@ -55,6 +55,14 @@ extern "C" int xos_user_main(const startup_info* startup) {
         if (sdk::ipc_send(out, &byte, 1) != 0 ||
             sdk::syscall(sys_sleep_until, static_cast<u64>(sdk::syscall(sys_clock_monotonic)) + 100000000ull) != 0 ||
             sdk::channel_close(extra.handle) != 0) return 35;
+        // The second spare channel is now ordinal 2. Its sender closes it
+        // only after acknowledging the parent's single-channel wait request.
+        if (sdk::channel_wait(in, deadline()) != 0 || sdk::ipc_recv(in, &byte, 1) != 1 || byte != 's' ||
+            sdk::channel_get(2, extra) != 0 || extra.rights != channel_send) return 65;
+        byte = 'r';
+        if (sdk::ipc_send(out, &byte, 1) != 0 ||
+            sdk::syscall(sys_sleep_until, static_cast<u64>(sdk::syscall(sys_clock_monotonic)) + 100000000ull) != 0 ||
+            sdk::channel_close(extra.handle) != 0) return 66;
         if (sdk::channel_wait(in, deadline()) != 0 || sdk::ipc_recv(in, &byte, 1) != 1 || byte != 'p') return 38;
         channel_info derived_send{}, derived_receive{};
         if (sdk::channel_get(2, derived_send) != 0 || sdk::channel_get(3, derived_receive) != 0 ||
@@ -145,8 +153,12 @@ extern "C" int xos_user_main(const startup_info* startup) {
         sdk::ipc_recv(incoming, &response, 1) != 1 || response != 'r') return 36;
     if (sdk::channel_wait_many(many, deadline()) != 0 ||
         sdk::channel_wait_many(many, 0) != process_error_denied) return 37;
-    if (sdk::channel_wait(extra[0], 0) != process_error_denied || sdk::channel_close(extra[1]) != 0 ||
-        sdk::channel_wait(extra[1], 0) != process_error_denied) return 18;
+    if (sdk::channel_wait(extra[0], 0) != process_error_denied) return 18;
+    const char single_wait_request = 's';
+    if (sdk::ipc_send(outgoing, &single_wait_request, 1) != 0 || sdk::channel_wait(incoming, deadline()) != 0 ||
+        sdk::ipc_recv(incoming, &response, 1) != 1 || response != 'r') return 67;
+    if (sdk::channel_wait(extra[1], deadline()) != 0 ||
+        sdk::channel_wait(extra[1], 0) != process_error_denied) return 68;
     const i64 forked = sdk::syscall(sys_process_fork_prepare);
     if (forked <= 0) return 41;
     channel_fork_pair rejected{channel_version, sizeof(channel_fork_pair), static_cast<u64>(forked),

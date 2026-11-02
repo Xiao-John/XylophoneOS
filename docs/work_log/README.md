@@ -40,3 +40,4 @@
 | 0175 | `0175_ncurses_member_provenance.md` | ncursesw 目标归档成员来源筛查（2026-11-02） |
 | 0176 | `0176_terminfo_lineage.md` | xterm terminfo 来源链与交付说明（2026-11-02） |
 | 0177 | `0177_terminal_capacity_repetition.md` | 终端 fork 容量回滚重复验证（2026-11-02） |
+| 0178 | `0178_channel_single_wait_close.md` | 单通道等待中的对端关闭（2026-11-02） |

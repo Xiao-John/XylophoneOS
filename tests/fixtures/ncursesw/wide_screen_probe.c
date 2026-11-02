@@ -23,6 +23,16 @@ int main(void) {
     WINDOW* pane = result ? 0 : newwin(3, 20, 1, 1);
     if (!result && (!pane || setcchar(&character, text, A_NORMAL, 1, 0) == ERR ||
                     mvwadd_wch(pane, 1, 1, &character) == ERR || wrefresh(pane) == ERR)) result = 5;
+    if (!result && (wmove(pane, 3, 0) != ERR || wmove(pane, 0, 20) != ERR ||
+                    mvwaddstr(pane, 0, 0, "W2_LOCAL_CELL") == ERR ||
+                    wnoutrefresh(pane) == ERR || doupdate() == ERR)) result = 13;
+    cchar_t readback;
+    wchar_t readback_text[CCHARW_MAX];
+    attr_t attributes = 0;
+    short color = 0;
+    if (!result && (mvwin_wch(pane, 1, 1, &readback) == ERR ||
+                    getcchar(&readback, readback_text, &attributes, &color, 0) == ERR ||
+                    readback_text[0] != 0x4e2d || readback_text[1] != 0x0301 || color != 1)) result = 14;
     wint_t key = 0;
     if (!result) {
         wtimeout(stdscr, 20);
@@ -36,6 +46,12 @@ int main(void) {
         else offset += (size_t)written;
     }
     if (!result && (wget_wch(stdscr, &key) != KEY_CODE_YES || key != KEY_LEFT)) result = 6;
+    const char utf8_ready[] = "W2_UTF8_READY\n";
+    for (size_t offset = 0; !result && offset < sizeof(utf8_ready) - 1;) {
+        const ssize_t written = write(2, utf8_ready + offset, sizeof(utf8_ready) - 1 - offset);
+        if (written <= 0) result = 15;
+        else offset += (size_t)written;
+    }
     if (!result && (wget_wch(stdscr, &key) != OK || key != 0x4e2d)) result = 8;
     if (!result && (wget_wch(stdscr, &key) != KEY_CODE_YES || key != KEY_F(1))) result = 12;
     if (pane && delwin(pane) == ERR && !result) result = 9;

@@ -8,6 +8,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / 'scripts'), str(ROOT / 'tests')]
@@ -131,15 +132,21 @@ def main():
                 send_bytes(guest, b'tty-run /bin/wide.elf\r')
                 guest.expect(b'W2_INPUT_READY', start=start, timeout=60)
                 screen = bytes(guest.output[start:])
-                if b'\xe4\xb8\xad\xcc\x81' not in screen or not re.search(rb'\x1b\[[0-9;]*31(?:;[0-9]*)?m', screen):
+                if (b'\xe4\xb8\xad\xcc\x81' not in screen or b'W2_LOCAL_CELL' not in screen or
+                        not re.search(rb'\x1b\[[0-9;]*31(?:;[0-9]*)?m', screen)):
                     raise AssertionError('xsh wide screen output missing')
-                send_bytes(guest, b'\x1bOD\xe4\xb8\xad\x1bOP')
+                send_bytes(guest, b'\x1bOD')
+                guest.expect(b'W2_UTF8_READY', start=start, timeout=30)
+                send_bytes(guest, b'\xe4')
+                time.sleep(0.05)
+                send_bytes(guest, b'\xb8\xad\x1bOP')
                 guest.expect(b' kind=exited code=0', start=start, timeout=60)
                 marker = guest.output.find(b' kind=exited code=0', start)
                 guest.expect(b'xsh> ', start=marker + len(b' kind=exited code=0'), timeout=60)
                 if any(s in bytes(guest.output[start:]) for s in (b'program exited with status', b'xsh: cannot')):
                     raise AssertionError('xsh wide consumer failed')
                 report['checks'].append('xsh_terminal_wide_input_output')
+                report['checks'].append('xsh_split_utf8_and_window_bounds_local_refresh')
 
                 def resources():
                     start = len(guest.output)
@@ -218,7 +225,11 @@ def main():
             screen = bytes(guest.output)
             if b'\xe4\xb8\xad\xcc\x81' not in screen or not re.search(rb'\x1b\[[0-9;]*31(?:;[0-9]*)?m', screen):
                 raise AssertionError('combined wide output or red foreground escape missing')
-            send_bytes(guest, b'\x1bOD\xe4\xb8\xad\x1bOP')
+            send_bytes(guest, b'\x1bOD')
+            guest.expect(b'W2_UTF8_READY', timeout=30)
+            send_bytes(guest, b'\xe4')
+            time.sleep(0.05)
+            send_bytes(guest, b'\xb8\xad\x1bOP')
             marker = guest.expect_any((b'W2_WIDE_OK', b'W2_WIDE_FAILED'), timeout=60)
             if marker != b'W2_WIDE_OK':
                 raise AssertionError('wide consumer returned failure')

@@ -20,6 +20,9 @@ int main(void) {
     int rows = 0, columns = 0;
     getmaxyx(stdscr, rows, columns);
     int result = rows == 24 && columns == 80 ? 0 : 3;
+    WINDOW* oversized = newwin(rows + 1, columns, 0, 0);
+    if (oversized) { delwin(oversized); if (!result) result = 8; }
+    if ((wmove(stdscr, rows, 0) != ERR || wmove(stdscr, 0, columns) != ERR) && !result) result = 9;
     if (endwin() == ERR && !result) result = 4;
     if (refresh() == ERR && !result) result = 5;
     if (endwin() == ERR && !result) result = 6;

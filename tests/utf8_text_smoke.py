@@ -94,7 +94,7 @@ def main():
             def check(name, passed, **extra):
                 report["checks"].append({"name": name, "passed": passed, **extra})
 
-            text = send("你好\r".encode(), b"cannot read program")
+            text = send("你好\r".encode(), b"not found")
             check("utf8-echo-and-argv", "你好".encode() in text and b"\xe4\xbd\xa0" in text)
 
             backspace = b"ab" + "é".encode() + b"\x7f" + b"c\r"

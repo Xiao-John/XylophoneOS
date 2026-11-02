@@ -18,7 +18,7 @@ struct application_session { u32 incoming, outgoing; u64 peer; };
 // slots are reserved for authenticated descendants; they are not enabled yet.
 constexpr u32 max_app_sessions = 3;
 application_session apps[max_app_sessions];
-u32 app_pending, app_dead;
+u32 app_pending, app_dead, pending_app_slot;
 u64 app_thread, controller_pid;
 terminal::request pending_app_request;
 terminal::mode app_mode = terminal::default_mode;
@@ -181,6 +181,7 @@ u64 control_worker(void*) {
 }
 
 u64 app_worker(void*) {
+    u32 next_slot = 0;
     while (__atomic_load_n(&stopping, __ATOMIC_ACQUIRE) == 0 &&
            __atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) == 0) {
         while (__atomic_load_n(&app_pending, __ATOMIC_ACQUIRE) != 0 &&
@@ -189,19 +190,55 @@ u64 app_worker(void*) {
             (void)thread::wait(&app_pending, 1);
         if (__atomic_load_n(&stopping, __ATOMIC_ACQUIRE) != 0 ||
             __atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) != 0) break;
-        terminal::request request{};
-        const channel_wait_many_request wait{channel_version, sizeof(channel_wait_many_request),
-                                             1, 0, {apps[0].incoming, 0, 0, 0}};
+        channel_wait_many_request wait{channel_version, sizeof(channel_wait_many_request), 0, 0, {0, 0, 0, 0}};
+        u32 slots[max_app_sessions]{};
+        lock();
+        for (u32 offset = 0; offset < max_app_sessions; ++offset) {
+            const u32 index = (next_slot + offset) % max_app_sessions;
+            if (apps[index].incoming == 0) continue;
+            slots[wait.count] = index;
+            wait.handles[wait.count++] = apps[index].incoming;
+        }
+        unlock();
+        if (wait.count == 0) break;
         const i64 ready = sdk::channel_wait_many(wait, thread_deadline_infinite);
         // A wake is only a hint, including on endpoint closure. Recheck the
         // full set before consuming; a closed endpoint fails that recheck.
         if (ready == 0) continue;
-        if (ready < 0) break;
-        const i64 received = sdk::ipc_recv(apps[0].incoming, &request, sizeof(request));
+        if (ready < 0) {
+            bool root_closed = false;
+            for (u32 i = 0; i < wait.count; ++i) {
+                if (sdk::channel_wait(wait.handles[i], 0) != process_error_denied) continue;
+                lock();
+                const u32 index = slots[i];
+                if (apps[index].incoming == wait.handles[i]) {
+                    if (index == 0) root_closed = true;
+                    else {
+                        (void)sdk::channel_close(apps[index].outgoing);
+                        apps[index] = {};
+                    }
+                }
+                unlock();
+            }
+            if (root_closed) break;
+            if (ready != process_error_denied) break;
+            continue;
+        }
+        u32 chosen = 0;
+        while (chosen < wait.count && (static_cast<u64>(ready) & (u64{1} << chosen)) == 0) ++chosen;
+        if (chosen == wait.count) break;
+        terminal::request request{};
+        const i64 received = sdk::ipc_recv(wait.handles[chosen], &request, sizeof(request));
         if (received == sdk::ipc_error_empty) continue;
-        if (received != static_cast<i64>(sizeof(request))) break;
+        if (received != static_cast<i64>(sizeof(request))) {
+            // Recheck the set on a close racing with receive.
+            if (sdk::channel_wait(wait.handles[chosen], 0) == process_error_denied) continue;
+            break;
+        }
         lock();
         pending_app_request = request;
+        pending_app_slot = slots[chosen];
+        next_slot = (slots[chosen] + 1) % max_app_sessions;
         __atomic_store_n(&app_pending, 1u, __ATOMIC_RELEASE);
         __atomic_store_n(&input_ready, 1u, __ATOMIC_RELEASE);
         unlock();
@@ -218,14 +255,19 @@ u64 app_worker(void*) {
 bool close_app() {
     if (app_thread == 0) return true;
     __atomic_store_n(&app_dead, 1u, __ATOMIC_RELEASE);
-    (void)sdk::channel_close(apps[0].incoming);
-    (void)sdk::channel_close(apps[0].outgoing);
+    lock();
+    for (auto& app : apps) {
+        if (app.incoming != 0) (void)sdk::channel_close(app.incoming);
+        if (app.outgoing != 0) (void)sdk::channel_close(app.outgoing);
+    }
+    unlock();
     __atomic_store_n(&app_pending, 0u, __ATOMIC_RELEASE);
     (void)thread::wake(&app_pending, 1);
     u64 result = 0;
     const i64 joined = thread::join(app_thread, result);
     if (joined != 0) { fail_worker(joined); return false; }
-    app_thread = 0; apps[0] = {};
+    app_thread = 0;
+    for (auto& app : apps) app = {};
     app_mode = terminal::default_mode;
     __atomic_store_n(&app_pending, 0u, __ATOMIC_RELEASE);
     __atomic_store_n(&app_dead, 0u, __ATOMIC_RELEASE);
@@ -249,7 +291,7 @@ bool authenticated_app_channels(const terminal::session_channels& requested) {
     return incoming && outgoing;
 }
 
-bool next_request(terminal::request& request, bool& from_app) {
+bool next_request(terminal::request& request, bool& from_app, u32& reply_channel) {
     for (;;) {
         lock();
         if (__atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) != 0) { unlock(); return false; }
@@ -264,6 +306,7 @@ bool next_request(terminal::request& request, bool& from_app) {
         if (__atomic_load_n(&app_pending, __ATOMIC_ACQUIRE) != 0) {
             request = pending_app_request;
             from_app = true;
+            reply_channel = apps[pending_app_slot].outgoing;
             __atomic_store_n(&app_pending, 0u, __ATOMIC_RELEASE);
             unlock();
             (void)thread::wake(&app_pending, 1);
@@ -314,7 +357,8 @@ extern "C" int xos_user_main(const xos::startup_info*) {
         if (__atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) != 0 && !close_app()) break;
         terminal::request request{};
         bool from_app = false;
-        if (!next_request(request, from_app)) {
+        u32 app_reply_channel = 0;
+        if (!next_request(request, from_app, app_reply_channel)) {
             if (__atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) != 0 && close_app()) continue;
             break;
         }
@@ -419,7 +463,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
             response.breaks = stats.breaks;
             unlock();
         }
-        const u32 reply_channel = from_app ? apps[0].outgoing : outgoing;
+        const u32 reply_channel = from_app ? app_reply_channel : outgoing;
         // An untrusted app must not hold the service forever by refusing to
         // receive a response. App clients use one outstanding request.
         const u64 reply_deadline = from_app ? 0 : thread_deadline_infinite;

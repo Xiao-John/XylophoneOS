@@ -13,7 +13,12 @@ i64 worker_error;
 u64 device_irq_token;
 u32 control_incoming, control_outgoing;
 terminal::request pending_request;
-u32 app_incoming, app_outgoing, app_pending, app_dead;
+struct application_session { u32 incoming, outgoing; u64 peer; };
+// The initial supervisor-attached application occupies slot zero. Additional
+// slots are reserved for authenticated descendants; they are not enabled yet.
+constexpr u32 max_app_sessions = 3;
+application_session apps[max_app_sessions];
+u32 app_pending, app_dead;
 u64 app_thread, controller_pid;
 terminal::request pending_app_request;
 terminal::mode app_mode = terminal::default_mode;
@@ -186,13 +191,13 @@ u64 app_worker(void*) {
             __atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) != 0) break;
         terminal::request request{};
         const channel_wait_many_request wait{channel_version, sizeof(channel_wait_many_request),
-                                             1, 0, {app_incoming, 0, 0, 0}};
+                                             1, 0, {apps[0].incoming, 0, 0, 0}};
         const i64 ready = sdk::channel_wait_many(wait, thread_deadline_infinite);
         // A wake is only a hint, including on endpoint closure. Recheck the
         // full set before consuming; a closed endpoint fails that recheck.
         if (ready == 0) continue;
         if (ready < 0) break;
-        const i64 received = sdk::ipc_recv(app_incoming, &request, sizeof(request));
+        const i64 received = sdk::ipc_recv(apps[0].incoming, &request, sizeof(request));
         if (received == sdk::ipc_error_empty) continue;
         if (received != static_cast<i64>(sizeof(request))) break;
         lock();
@@ -213,14 +218,14 @@ u64 app_worker(void*) {
 bool close_app() {
     if (app_thread == 0) return true;
     __atomic_store_n(&app_dead, 1u, __ATOMIC_RELEASE);
-    (void)sdk::channel_close(app_incoming);
-    (void)sdk::channel_close(app_outgoing);
+    (void)sdk::channel_close(apps[0].incoming);
+    (void)sdk::channel_close(apps[0].outgoing);
     __atomic_store_n(&app_pending, 0u, __ATOMIC_RELEASE);
     (void)thread::wake(&app_pending, 1);
     u64 result = 0;
     const i64 joined = thread::join(app_thread, result);
     if (joined != 0) { fail_worker(joined); return false; }
-    app_thread = 0; app_incoming = 0; app_outgoing = 0;
+    app_thread = 0; apps[0] = {};
     app_mode = terminal::default_mode;
     __atomic_store_n(&app_pending, 0u, __ATOMIC_RELEASE);
     __atomic_store_n(&app_dead, 0u, __ATOMIC_RELEASE);
@@ -378,10 +383,10 @@ extern "C" int xos_user_main(const xos::startup_info*) {
                     if (app_thread != 0) response.result = process_error_busy;
                     else if (!authenticated_app_channels(channels)) response.result = process_error_denied;
                     else {
-                        app_incoming = channels.incoming; app_outgoing = channels.outgoing;
+                        apps[0] = {channels.incoming, channels.outgoing, channels.peer_pid};
                         __atomic_store_n(&app_dead, 0u, __ATOMIC_RELEASE);
                         response.result = thread::create(app_thread, app_worker, nullptr);
-                        if (response.result != 0) { app_incoming = app_outgoing = 0; app_thread = 0; }
+                        if (response.result != 0) { apps[0] = {}; app_thread = 0; }
                     }
                 }
             } else if (op == terminal::operation::detach) {
@@ -414,7 +419,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
             response.breaks = stats.breaks;
             unlock();
         }
-        const u32 reply_channel = from_app ? app_outgoing : outgoing;
+        const u32 reply_channel = from_app ? apps[0].outgoing : outgoing;
         // An untrusted app must not hold the service forever by refusing to
         // receive a response. App clients use one outstanding request.
         const u64 reply_deadline = from_app ? 0 : thread_deadline_infinite;

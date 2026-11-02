@@ -13,6 +13,32 @@ static u64 deadline() {
     return static_cast<u64>(sdk::syscall(sys_clock_monotonic)) + 3000000000ull;
 }
 
+// sys_tasklist exposes process state. The protocol below ensures that after
+// the second handshake the parent has no other blocking operation pending.
+static bool process_waiting(u64 pid) {
+    char buffer[768]{};
+    const i64 length = sdk::syscall(9, reinterpret_cast<u64>(buffer), sizeof(buffer));
+    if (length <= 0 || length > static_cast<i64>(sizeof(buffer))) return false;
+    char digits[24]{};
+    u32 count = 0;
+    do { digits[count++] = static_cast<char>('0' + pid % 10); pid /= 10; } while (pid != 0);
+    for (u32 i = 0; i + 4 + count < static_cast<u32>(length); ++i) {
+        if (buffer[i] != 'p' || buffer[i + 1] != 'i' || buffer[i + 2] != 'd' || buffer[i + 3] != '=') continue;
+        bool match = true;
+        for (u32 j = 0; j < count; ++j) if (buffer[i + 4 + j] != digits[count - 1 - j]) match = false;
+        u32 at = i + 4 + count;
+        if (!match || buffer[at] != ' ') continue;
+        while (at + 8 < static_cast<u32>(length) && buffer[at] != '\n') {
+            if (buffer[at] == ' ' && buffer[at + 1] == 's' && buffer[at + 2] == 't' &&
+                buffer[at + 3] == 'a' && buffer[at + 4] == 't' && buffer[at + 5] == 'e' &&
+                buffer[at + 6] == '=' && buffer[at + 7] == 'W') return true;
+            ++at;
+        }
+        return false;
+    }
+    return false;
+}
+
 extern "C" int xos_user_main(const startup_info* startup) {
     const auto args = reinterpret_cast<const char* const*>(startup->argv);
     if (startup->argc > 1 && sdk::equal(args[1], "replaced")) {
@@ -60,9 +86,14 @@ extern "C" int xos_user_main(const startup_info* startup) {
         if (sdk::channel_wait(in, deadline()) != 0 || sdk::ipc_recv(in, &byte, 1) != 1 || byte != 's' ||
             sdk::channel_get(2, extra) != 0 || extra.rights != channel_send) return 65;
         byte = 'r';
-        if (sdk::ipc_send(out, &byte, 1) != 0 ||
-            sdk::syscall(sys_sleep_until, static_cast<u64>(sdk::syscall(sys_clock_monotonic)) + 100000000ull) != 0 ||
-            sdk::channel_close(extra.handle) != 0) return 66;
+        if (sdk::ipc_send(out, &byte, 1) != 0 || sdk::channel_wait(in, deadline()) != 0 ||
+            sdk::ipc_recv(in, &byte, 1) != 1 || byte != 'w') return 66;
+        const u64 wait_until = deadline();
+        while (!process_waiting(first.peer_pid)) {
+            if (static_cast<u64>(sdk::syscall(sys_clock_monotonic)) >= wait_until) return 69;
+            sdk::yield();
+        }
+        if (sdk::channel_close(extra.handle) != 0) return 70;
         if (sdk::channel_wait(in, deadline()) != 0 || sdk::ipc_recv(in, &byte, 1) != 1 || byte != 'p') return 38;
         channel_info derived_send{}, derived_receive{};
         if (sdk::channel_get(2, derived_send) != 0 || sdk::channel_get(3, derived_receive) != 0 ||
@@ -157,6 +188,8 @@ extern "C" int xos_user_main(const startup_info* startup) {
     const char single_wait_request = 's';
     if (sdk::ipc_send(outgoing, &single_wait_request, 1) != 0 || sdk::channel_wait(incoming, deadline()) != 0 ||
         sdk::ipc_recv(incoming, &response, 1) != 1 || response != 'r') return 67;
+    const char entering_wait = 'w';
+    if (sdk::ipc_send(outgoing, &entering_wait, 1) != 0) return 71;
     if (sdk::channel_wait(extra[1], deadline()) != process_error_denied ||
         sdk::channel_wait(extra[1], 0) != process_error_denied) return 68;
     const i64 forked = sdk::syscall(sys_process_fork_prepare);

@@ -62,8 +62,11 @@ inline constexpr u64 sys_irq_event = 83;
 enum class irq_event_action : u64 { bind = 0, wait = 1, ack = 2, close = 3 };
 enum class pio_grant_action : u64 { grant = 0, revoke = 1, query = 2, controller = 3, recover = 4 };
 inline constexpr u64 pio_resource_com1 = 1;
-enum class channel_action : u64 { create = 0, enumerate = 1, close = 2, wait = 3 };
+enum class channel_action : u64 { create = 0, enumerate = 1, close = 2, wait = 3, wait_many = 4 };
 inline constexpr u32 channel_version = 1, channel_send = 1, channel_receive = 2;
+inline constexpr u32 channel_wait_many_max = 4;
+struct channel_wait_many_request { u32 version, size, count, reserved; u32 handles[channel_wait_many_max]; };
+static_assert(sizeof(channel_wait_many_request) == 32);
 struct channel_create {
     u32 version, size;
     u64 sender_pid, receiver_pid;

@@ -113,6 +113,7 @@ def main():
                     raise AssertionError('channel probe did not exit successfully')
                 report['checks'].append('channel_bounded_lifecycle_subset')
                 report['checks'].append('explicit_exec_preserve_and_failed_duplicate_unchanged')
+                report['checks'].append('channel_wait_many_validation_timeout_and_wakeup')
             elif args.probe == 'tty_exec':
                 start = len(guest.output)
                 send_bytes(guest, b'tty-run /bin/ttyexec.elf\r')

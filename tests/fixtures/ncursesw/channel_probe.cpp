@@ -80,14 +80,28 @@ extern "C" int xos_user_main(const startup_info* startup) {
         extra[i] = static_cast<u32>(handle);
     }
     if (sdk::channel_open(request) != process_error_resources) return 17;
+    channel_wait_many_request many{channel_version, sizeof(channel_wait_many_request), 2, 0,
+                                   {incoming, extra[0], 0, 0}};
+    if (sdk::channel_wait_many(many, 0) != process_error_would_block) return 28;
+    const u64 timeout = static_cast<u64>(sdk::syscall(sys_clock_monotonic)) + 30000000ull;
+    if (sdk::channel_wait_many(many, timeout) != thread_error_timeout) return 29;
+    many.handles[1] = incoming;
+    if (sdk::channel_wait_many(many, 0) != process_error_invalid) return 30;
+    many.handles[0] = outgoing; many.handles[1] = 0xffffffffu;
+    if (sdk::channel_wait_many(many, 0) != process_error_denied) return 31;
+    many.handles[0] = incoming; many.handles[1] = extra[0];
+    const char first = 'a';
+    if (sdk::ipc_send(outgoing, &first, 1) != 0) return 11;
+    i64 ready = 0;
+    const u64 until = deadline();
+    do { ready = sdk::channel_wait_many(many, until); } while (ready == 0);
+    if (ready != 1) return 32;
+    char response = 0;
+    if (sdk::ipc_recv(incoming, &response, 1) != 1 || response != 'b') return 12;
     for (auto handle : extra) {
         if (sdk::channel_close(handle) != 0 ||
             sdk::channel_wait(handle, 0) != process_error_denied) return 18;
     }
-    const char first = 'a';
-    if (sdk::ipc_send(outgoing, &first, 1) != 0 || sdk::channel_wait(incoming, deadline()) != 0) return 11;
-    char response = 0;
-    if (sdk::ipc_recv(incoming, &response, 1) != 1 || response != 'b') return 12;
     const char last = 'c';
     if (sdk::ipc_send(outgoing, &last, 1) != 0) return 13;
     if (sdk::channel_wait(incoming, deadline()) != 0 || sdk::ipc_recv(incoming, &response, 1) != 1 || response != 'f') return 25;

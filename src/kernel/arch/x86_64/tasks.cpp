@@ -125,6 +125,7 @@ struct thread_record : thread_lifetime {
     u64 entry;
     u64 argument;
     u64 initial_stack;
+    u32 wait_channels[channel_wait_many_max], wait_channel_count;
     alignas(16) u8 fpu_state[512];
 };
 process_record tasks[8];
@@ -204,7 +205,14 @@ void wake_pipe_waiters(u32 pipe_index, bool readers, bool writers) {
 
 void wake_channel_waiters(u32 handle, bool readers, bool writers, i64 result) {
     for (auto& thread : threads) {
-        if (thread.state != thread_state::blocked || thread.wait_target != handle) { continue; }
+        if (thread.state != thread_state::blocked) { continue; }
+        if (thread.wait_kind == thread_wait_kind::channel_many) {
+            for (u32 i = 0; i < thread.wait_channel_count; ++i) {
+                if (thread.wait_channels[i] == handle) { ready_with(thread, 0); break; }
+            }
+            continue;
+        }
+        if (thread.wait_target != handle) { continue; }
         if ((readers && thread.wait_kind == thread_wait_kind::channel_read) ||
             (writers && thread.wait_kind == thread_wait_kind::channel_write)) {
             ready_with(thread, result);
@@ -1199,6 +1207,7 @@ void ready_with(thread_record& thread, i64 result) {
     saved->rax = static_cast<u64>(result);
     thread.wait_kind = thread_wait_kind::none;
     thread.wait_target = 0;
+    thread.wait_channel_count = 0;
     thread.state = thread_state::ready;
 }
 
@@ -1254,7 +1263,8 @@ void expire_waiters() {
             (thread.wait_kind == thread_wait_kind::word || thread.wait_kind == thread_wait_kind::sleep ||
              thread.wait_kind == thread_wait_kind::pipe_read || thread.wait_kind == thread_wait_kind::pipe_write ||
              thread.wait_kind == thread_wait_kind::channel_read ||
-             thread.wait_kind == thread_wait_kind::channel_write || thread.wait_kind == thread_wait_kind::irq_event) &&
+             thread.wait_kind == thread_wait_kind::channel_write || thread.wait_kind == thread_wait_kind::channel_many ||
+             thread.wait_kind == thread_wait_kind::irq_event) &&
             thread_deadline_reached(now, thread.deadline_ns)) {
             ready_with(thread, thread.wait_kind == thread_wait_kind::sleep ? 0 : thread_error_timeout);
         }
@@ -1747,6 +1757,35 @@ void* process_syscall(interrupt_frame* frame) {
                 (endpoint->owner_pid != current->pid && endpoint->sender_pid != current->pid &&
                  endpoint->receiver_pid != current->pid)) { result = process_error_denied; break; }
             close_channel(*endpoint); result = 0;
+        } else if (action == channel_action::wait_many) {
+            if (!user_range_ok(second, sizeof(channel_wait_many_request), false)) break;
+            channel_wait_many_request request{};
+            copy_from_user(&request, second, sizeof(request));
+            if (request.version != channel_version || request.size != sizeof(request) || request.reserved != 0 ||
+                request.count == 0 || request.count > channel_wait_many_max) break;
+            u32 ready = 0;
+            bool valid = true;
+            for (u32 i = 0; i < request.count; ++i) {
+                endpoint_record* endpoint = endpoint_for(request.handles[i]);
+                if (endpoint == nullptr || !endpoint->generic_channel ||
+                    (endpoint->sender_pid != current->pid && endpoint->receiver_pid != current->pid)) {
+                    result = process_error_denied; valid = false; break;
+                }
+                for (u32 j = 0; j < i; ++j) if (request.handles[j] == request.handles[i]) valid = false;
+                if (!valid) { result = process_error_invalid; break; }
+                const bool sender = endpoint->sender_pid == current->pid;
+                if (sender ? !endpoint->pending : endpoint->pending) ready |= 1u << i;
+            }
+            if (!valid) break;
+            if (ready != 0) { result = static_cast<i64>(ready); break; }
+            if (third == 0) { result = process_error_would_block; break; }
+            if (thread_deadline_reached(clock::monotonic_ns(), third)) { result = thread_error_timeout; break; }
+            for (u32 i = 0; i < request.count; ++i) current_thread->wait_channels[i] = request.handles[i];
+            current_thread->wait_channel_count = request.count;
+            current_thread->wait_kind = thread_wait_kind::channel_many;
+            current_thread->deadline_ns = third;
+            current_thread->state = thread_state::blocked;
+            frame->rax = 0; return schedule(frame);
         } else if (action == channel_action::wait) {
             endpoint_record* endpoint = endpoint_for(second);
             if (endpoint == nullptr || !endpoint->generic_channel ||

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 #include <xos/sdk.hpp>
+#include <xos/file_client.hpp>
 #include <xos/thread_abi.hpp>
 using namespace xos;
 
@@ -63,8 +64,19 @@ extern "C" int xos_user_main(const startup_info* startup) {
             derived_send.rights == derived_receive.rights) return 39;
         byte = 'v';
         if (sdk::ipc_send(out, &byte, 1) != 0 || sdk::channel_wait(in, deadline()) != 0 ||
+            sdk::ipc_recv(in, &byte, 1) != 1 || byte != 't') return 40;
+        if (sdk::channel_get(2, derived_send) != 0 || sdk::channel_get(3, derived_receive) != 0 ||
+            derived_send.peer_pid != derived_receive.peer_pid || derived_send.peer_pid == first.peer_pid ||
+            derived_send.rights == derived_receive.rights) return 51;
+        const u32 child_in = derived_send.rights == channel_receive ? derived_send.handle : derived_receive.handle;
+        const u32 child_out = derived_send.rights == channel_send ? derived_send.handle : derived_receive.handle;
+        byte = 'v';
+        if (sdk::ipc_send(out, &byte, 1) != 0 || sdk::channel_wait(child_in, deadline()) != 0 ||
+            sdk::ipc_recv(child_in, &byte, 1) != 1 || byte != 'x') return 52;
+        byte = 'y';
+        if (sdk::ipc_send(child_out, &byte, 1) != 0 || sdk::channel_wait(in, deadline()) != 0 ||
             sdk::ipc_recv(in, &byte, 1) != 1 || byte != 'c' ||
-            sdk::channel_get(2, extra) != thread_error_not_found) return 40;
+            sdk::channel_get(2, extra) != thread_error_not_found) return 53;
         sdk::spawn_options options{};
         options.replace_image = true;
         const char* replacement[] = {"channel", "replaced"};
@@ -152,6 +164,36 @@ extern "C" int xos_user_main(const startup_info* startup) {
     if (sdk::ipc_send(outgoing, &inspect, 1) != 0 || sdk::channel_wait(incoming, deadline()) != 0 ||
         sdk::ipc_recv(incoming, &response, 1) != 1 || response != 'v') return 44;
     if (sdk::syscall(sys_process_abort, static_cast<u64>(forked)) != 0) return 45;
+    const i64 running_child = sdk::syscall(sys_process_fork_prepare);
+    if (running_child == 0) {
+        channel_info a{}, b{};
+        if (sdk::channel_get(0, a) != 0 || sdk::channel_get(1, b) != 0 ||
+            a.peer_pid != b.peer_pid || a.rights == b.rights) return 54;
+        const u32 send = a.rights == channel_send ? a.handle : b.handle;
+        const u32 receive = a.rights == channel_receive ? a.handle : b.handle;
+        char value = 'x';
+        if (sdk::ipc_send(send, &value, 1) != 0 || sdk::channel_wait(receive, deadline()) != 0 ||
+            sdk::ipc_recv(receive, &value, 1) != 1 || value != 'y') return 55;
+        return 0;
+    }
+    if (running_child < 0) return 56;
+    channel_fork_pair running_pair{channel_version, sizeof(channel_fork_pair), static_cast<u64>(running_child),
+                                   outgoing, incoming, 0, 0};
+    if (sdk::channel_fork(running_pair) != 0) return 57;
+    const char inspect_running = 't';
+    if (sdk::ipc_send(outgoing, &inspect_running, 1) != 0 || sdk::channel_wait(incoming, deadline()) != 0 ||
+        sdk::ipc_recv(incoming, &response, 1) != 1 || response != 'v') return 58;
+    file::Client files{};
+    if (!files.init()) return 59;
+    i64 cloned = static_cast<i64>(file::status::would_block);
+    for (u32 attempt = 0; attempt < 128 && cloned == static_cast<i64>(file::status::would_block); ++attempt) {
+        cloned = files.clone_session(static_cast<u64>(running_child));
+        if (cloned == static_cast<i64>(file::status::would_block)) sdk::yield();
+    }
+    if (cloned != 0 || sdk::syscall(sys_process_fork_commit, static_cast<u64>(running_child)) != 0) return 60;
+    process_status child_status{};
+    if (sdk::wait(static_cast<u64>(running_child), child_status) != 0 ||
+        child_status.outcome != process_outcome::exited || child_status.code != 0) return 61;
     const char last = 'c';
     if (sdk::ipc_send(outgoing, &last, 1) != 0) return 13;
     if (sdk::channel_wait(incoming, deadline()) != 0 || sdk::ipc_recv(incoming, &response, 1) != 1 || response != 'f') return 25;

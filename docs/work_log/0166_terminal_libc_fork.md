@@ -46,4 +46,11 @@ build ID `c21a53fe45667563`，系统 manifest SHA-256
 
 探针进一步比较 prepare/abort 和 libc fork 失败前后的进程数、线程数、保留与结果数、
 空闲页及当前进程用户页和内核栈页；不比较会随调度变化的等待线程数，也不将这些
-计数冒充端点池统计。新增断言须提交后重建并运行客体。
+计数冒充端点池统计。提交 `a06472a1a36cf2d24a5db1db864c2e69ea445bcd` 后重建，
+客体结果 `passed_subset`：两次失败前后上述计数一致，释放子进程后可再次 fork。
+build ID `3c9cb4b19247dc93`，系统 manifest SHA-256
+`aef701e1bfce4b6dc9f38fcfd078d8ff9d6625574741147f2f10bfef88961d71`，镜像 SHA-256
+`477793e9936d4933448c6783b947c40d2fe6c7617718c13d450bb278c703cc03`，SDK 树 SHA-256
+`11c4484c68a50b4f4b4ca9b1d6696c8cb5e0d8caf3db36c4d56d6931d0e7a467`，串口 SHA-256
+`42ee31b5f1c519b611aac53c614715a5644be076098329e51c9085bb12d286e0`；报告位于
+`build/w1_fork_rollback_run_a06472a/`。其他错误位置、并发和故障仍须验证。

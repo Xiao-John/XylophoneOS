@@ -38,6 +38,28 @@ bool same_resources(const xos::thread_stats& a, const xos::thread_stats& b) {
 
 extern "C" int xos_user_main(const xos::startup_info* startup) {
     const auto args = reinterpret_cast<const char* const*>(startup->argv);
+    if (startup->argc > 1 && xos::sdk::equal(args[1], "fork-exec")) {
+        if (dup(1) != 3 || dup(1) != 4 || fcntl(3, F_SETFD, FD_CLOEXEC) != 0) return 58;
+        struct termios tty{};
+        if (tcgetattr(0, &tty) != 0) return 59;
+        tty.c_cc[VMIN] = 0; tty.c_cc[VTIME] = 1;
+        if (tcsetattr(0, TCSANOW, &tty) != 0) return 60;
+        const pid_t child = fork();
+        if (child == 0) {
+            char missing[] = "/missing", *missing_args[] = {missing, nullptr};
+            errno = 0;
+            if (execv(missing, missing_args) != -1 || errno != ENOENT || !isatty(4) ||
+                !message("TTY_FORK_EXEC_BEFORE")) _exit(61);
+            char target[] = "/bin/ttyexec.elf", after[] = "after", *next[] = {target, after, nullptr};
+            (void)execv(target, next);
+            _exit(62);
+        }
+        int status = 0;
+        if (child < 0 || waitpid(child, &status, 0) != child || !WIFEXITED(status) || WEXITSTATUS(status) != 0 ||
+            fcntl(3, F_GETFD) != FD_CLOEXEC || !isatty(4) || tcgetattr(0, &tty) != 0 || tty.c_cc[VTIME] != 1)
+            return 63;
+        return message("TTY_FORK_EXEC_PARENT") ? 0 : 64;
+    }
     if (startup->argc > 1 && xos::sdk::equal(args[1], "malformed-child")) {
         int release[2]{};
         if (pipe(release) != 0) return 54;

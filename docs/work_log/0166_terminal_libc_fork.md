@@ -71,3 +71,8 @@ build ID `3c9cb4b19247dc93`，系统 manifest SHA-256
 SDK 树 SHA-256 `e8520c6a4628e3ecdce0388e0e476c419bbce8d1e08996a5272e8e9fe29edf38`，
 串口 SHA-256 `fd2b9e7f16e5fa91521a069ca5ac7c092d476b7052a6d59887d5c973ef91d613`；
 报告位于 `build/w1_fork_close_run_c1bed30/`。这仍不覆盖并发读写的全部交错或压力。
+
+增加 fork 后 exec 的正常 Xsh 探针：父进程持有两个终端别名并设置 CLOEXEC 和
+模式；子进程先验证失败 exec 后会话可用，再成功替换自身镜像；新镜像检查别名、
+CLOEXEC 和共享模式，runner 比对子进程前后 PID，父进程再核对自身会话和描述符。
+该新增检查须提交后重新构建并在客体执行，不推断在途请求竞争或多线程 fork。

@@ -44,6 +44,16 @@ extern "C" int xos_user_main(const startup_info* startup) {
         if (sdk::channel_wait(in, 0) != 0 || sdk::ipc_recv(in, &byte, 1) != 1 || byte != 'a') return 4;
         byte = 'b';
         if (sdk::ipc_send(out, &byte, 1) != 0) return 5;
+        // Give the parent a bounded interval to enter wait_many, then close
+        // one of the two receive endpoints in that wait set.
+        if (sdk::channel_wait(in, deadline()) != 0 || sdk::ipc_recv(in, &byte, 1) != 1 || byte != 'k') return 33;
+        channel_info extra{};
+        if (sdk::channel_get(2, extra) != 0 || extra.rights != channel_send ||
+            extra.peer_pid != first.peer_pid || extra.controller_pid != first.controller_pid) return 34;
+        byte = 'r';
+        if (sdk::ipc_send(out, &byte, 1) != 0 ||
+            sdk::syscall(sys_sleep_until, static_cast<u64>(sdk::syscall(sys_clock_monotonic)) + 100000000ull) != 0 ||
+            sdk::channel_close(extra.handle) != 0) return 35;
         if (sdk::channel_wait(in, deadline()) != 0 || sdk::ipc_recv(in, &byte, 1) != 1 || byte != 'c') return 6;
         sdk::spawn_options options{};
         options.replace_image = true;
@@ -98,10 +108,13 @@ extern "C" int xos_user_main(const startup_info* startup) {
     if (ready != 1) return 32;
     char response = 0;
     if (sdk::ipc_recv(incoming, &response, 1) != 1 || response != 'b') return 12;
-    for (auto handle : extra) {
-        if (sdk::channel_close(handle) != 0 ||
-            sdk::channel_wait(handle, 0) != process_error_denied) return 18;
-    }
+    const char close_request = 'k';
+    if (sdk::ipc_send(outgoing, &close_request, 1) != 0 || sdk::channel_wait(incoming, deadline()) != 0 ||
+        sdk::ipc_recv(incoming, &response, 1) != 1 || response != 'r') return 36;
+    if (sdk::channel_wait_many(many, deadline()) != 0 ||
+        sdk::channel_wait_many(many, 0) != process_error_denied) return 37;
+    if (sdk::channel_wait(extra[0], 0) != process_error_denied || sdk::channel_close(extra[1]) != 0 ||
+        sdk::channel_wait(extra[1], 0) != process_error_denied) return 18;
     const char last = 'c';
     if (sdk::ipc_send(outgoing, &last, 1) != 0) return 13;
     if (sdk::channel_wait(incoming, deadline()) != 0 || sdk::ipc_recv(incoming, &response, 1) != 1 || response != 'f') return 25;

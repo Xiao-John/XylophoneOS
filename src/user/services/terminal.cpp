@@ -268,6 +268,22 @@ u64 app_worker(void*) {
         if (received != static_cast<i64>(sizeof(request))) {
             // Recheck the set on a close racing with receive.
             if (sdk::channel_wait(wait.handles[chosen], 0) == process_error_denied) continue;
+            // A malformed child message cannot tear down its parent or other
+            // children. Only the root session controls the whole foreground.
+            if (received > 0 && slots[chosen] != 0) {
+                lock();
+                auto& bad = apps[slots[chosen]];
+                if (bad.incoming == wait.handles[chosen]) {
+                    (void)sdk::channel_close(bad.incoming);
+                    (void)sdk::channel_close(bad.outgoing);
+                    bad = {};
+                    __atomic_store_n(&app_change, 1u, __ATOMIC_RELEASE);
+                    __atomic_store_n(&input_ready, 1u, __ATOMIC_RELEASE);
+                }
+                unlock();
+                (void)thread::wake(&input_ready, 1);
+                continue;
+            }
             break;
         }
         lock();

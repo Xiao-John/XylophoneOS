@@ -38,6 +38,28 @@ bool same_resources(const xos::thread_stats& a, const xos::thread_stats& b) {
 
 extern "C" int xos_user_main(const xos::startup_info* startup) {
     const auto args = reinterpret_cast<const char* const*>(startup->argv);
+    if (startup->argc > 1 && xos::sdk::equal(args[1], "malformed-child")) {
+        const pid_t child = fork();
+        if (child == 0) {
+            xos::channel_info first{}, second{};
+            if (xos::sdk::channel_get(0, first) != 0 || xos::sdk::channel_get(1, second) != 0 ||
+                first.rights == second.rights || first.peer_pid != second.peer_pid) _exit(48);
+            const xos::u32 send = first.rights == xos::channel_send ? first.handle : second.handle;
+            const xos::u32 receive = first.rights == xos::channel_receive ? first.handle : second.handle;
+            const char malformed = 'x';
+            if (xos::sdk::ipc_send(send, &malformed, 1) != 0) _exit(49);
+            const xos::i64 now = xos::sdk::syscall(xos::sys_clock_monotonic);
+            if (now < 0) _exit(50);
+            const xos::i64 closed = xos::sdk::channel_wait(receive, static_cast<xos::u64>(now) + 3000000000ull);
+            if (closed >= 0 || closed == xos::thread_error_timeout) _exit(51);
+            _exit(0);
+        }
+        int status = 0;
+        struct termios mode{};
+        if (child < 0 || waitpid(child, &status, 0) != child || !WIFEXITED(status) || WEXITSTATUS(status) != 0 ||
+            !isatty(0) || tcgetattr(0, &mode) != 0) return 52;
+        return message("TTY_BAD_CHILD_ISOLATED") ? 0 : 53;
+    }
     const bool interrupt_write = startup->argc > 1 && xos::sdk::equal(args[1], "interrupt");
     const bool interrupt_close = startup->argc > 1 && xos::sdk::equal(args[1], "interrupt-close");
     if (interrupt_write || interrupt_close) {

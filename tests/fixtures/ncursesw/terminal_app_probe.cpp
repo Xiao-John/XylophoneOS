@@ -1,5 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 #include <xos/spawn.hpp>
+#include <xos/sdk.hpp>
+#include <xos/file_client.hpp>
+#include <xos/terminal_client.hpp>
+#include <xos/thread_abi.hpp>
 #include <errno.h>
 #include <termios.h>
 #include <unistd.h>
@@ -12,6 +16,41 @@ struct marker { xos::u64 magic; xos::u32 version, size; };
 extern "C" int xos_user_main(const xos::startup_info* startup) {
     using namespace xos;
     if (startup == nullptr || !isatty(0) || !isatty(1) || !isatty(2)) return 1;
+    terminal::client parent{};
+    if (terminal::connect_startup(parent, startup) != 0) return 19;
+    const i64 child_pid = sdk::syscall(sys_process_fork_prepare);
+    if (child_pid == 0) {
+        terminal::client child{};
+        if (terminal::connect(child, parent.controller_pid, parent.service_pid) != 0) return 20;
+        const char text[] = "W1_FORK_CHILD\n";
+        u32 offset = 0;
+        while (offset < sizeof(text) - 1) {
+            const i64 written = terminal::write_until(child, text + offset,
+                static_cast<u32>(sizeof(text) - 1 - offset), thread_deadline_infinite);
+            if (written <= 0) return 21;
+            offset += static_cast<u32>(written);
+        }
+        return 0;
+    }
+    if (child_pid < 0) return 22;
+    channel_fork_pair pair{channel_version, sizeof(channel_fork_pair), static_cast<u64>(child_pid),
+                           parent.send_handle, parent.receive_handle, 0, 0};
+    if (sdk::channel_fork(pair) != 0 || terminal::register_fork(parent, pair) != 0) {
+        (void)sdk::syscall(sys_process_abort, static_cast<u64>(child_pid)); return 23;
+    }
+    file::Client files{};
+    if (!files.init()) { (void)sdk::syscall(sys_process_abort, static_cast<u64>(child_pid)); return 24; }
+    i64 cloned = static_cast<i64>(file::status::would_block);
+    for (u32 attempt = 0; attempt < 128 && cloned == static_cast<i64>(file::status::would_block); ++attempt) {
+        cloned = files.clone_session(static_cast<u64>(child_pid));
+        if (cloned == static_cast<i64>(file::status::would_block)) sdk::yield();
+    }
+    if (cloned != 0 || sdk::syscall(sys_process_fork_commit, static_cast<u64>(child_pid)) != 0) {
+        (void)sdk::syscall(sys_process_abort, static_cast<u64>(child_pid)); return 25;
+    }
+    process_status child_status{};
+    if (sdk::wait(static_cast<u64>(child_pid), child_status) != 0 ||
+        child_status.outcome != process_outcome::exited || child_status.code != 0) return 26;
     struct termios tty{};
     if (tcgetattr(0, &tty) != 0 || tty.c_cc[VMIN] != 1 || tty.c_cc[VTIME] != 0) return 9;
     tty.c_lflag |= ECHO; errno = 0;

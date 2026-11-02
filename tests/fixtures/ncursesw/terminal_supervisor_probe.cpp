@@ -59,6 +59,8 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     if (!transmit("W1_CANCEL_OK\n")) return 7;
     sdk::spawn_options options{};
     for (u32 i = 0; i < 3; ++i) options.stdio[i] = -2;
+    // Dedicated probe grants bounded process creation for the fork-session test.
+    options.grant_spawn = true;
     options.prepare_child = prepare_app; options.terminal_send_handle = &app.incoming;
     const char* argv[] = {"/bin/tty_app.elf"};
     const i64 child = sdk::spawn_file_options(argv[0], 1, argv, options);

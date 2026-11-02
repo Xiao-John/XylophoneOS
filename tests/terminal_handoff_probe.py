@@ -66,6 +66,8 @@ def main():
             report["checks"].append("handoff_irq_input_byte")
             guest.expect(b"W1_CANCEL_OK", timeout=30)
             report["checks"].append("pending_read_control_interrupt")
+            guest.expect(b"W1_FORK_CHILD", timeout=30)
+            report["checks"].append("authenticated_fork_child_terminal_write_and_exit")
             guest.expect(b"W1_APP_READY", timeout=30)
             send_bytes(guest, b"A")
             guest.expect(b"W1_APP_OK", timeout=30)

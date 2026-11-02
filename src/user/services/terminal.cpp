@@ -18,7 +18,8 @@ struct application_session { u32 incoming, outgoing; u64 peer; };
 // slots are reserved for authenticated descendants; they are not enabled yet.
 constexpr u32 max_app_sessions = 3;
 application_session apps[max_app_sessions];
-u32 app_pending, app_dead, pending_app_slot;
+u32 app_pending, app_dead, app_change, pending_app_reply;
+i64 pending_app_admission;
 u64 app_thread, controller_pid;
 terminal::request pending_app_request;
 terminal::mode app_mode = terminal::default_mode;
@@ -70,7 +71,8 @@ i64 read_until(u8* output, u32 length, u64 deadline) {
         const i64 result = error != 0 ? error :
             length != 0 && (__atomic_load_n(&request_pending, __ATOMIC_ACQUIRE) != 0 ||
                             __atomic_load_n(&app_pending, __ATOMIC_ACQUIRE) != 0 ||
-                            __atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) != 0) ? terminal::interrupted :
+                            __atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) != 0 ||
+                            __atomic_load_n(&app_change, __ATOMIC_ACQUIRE) != 0) ? terminal::interrupted :
             device.read(output, length);
         if (result != 0 || length == 0) { unlock(); return result; }
         // Reset while holding the same lock used by the IRQ worker. If the
@@ -89,7 +91,8 @@ i64 wait_readable(u64 deadline) {
         const i64 result = error != 0 ? error :
             (__atomic_load_n(&request_pending, __ATOMIC_ACQUIRE) != 0 ||
              __atomic_load_n(&app_pending, __ATOMIC_ACQUIRE) != 0 ||
-             __atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) != 0) ? terminal::interrupted : device.readable();
+             __atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) != 0 ||
+             __atomic_load_n(&app_change, __ATOMIC_ACQUIRE) != 0) ? terminal::interrupted : device.readable();
         if (result != 0) { unlock(); return result; }
         __atomic_store_n(&input_ready, 0u, __ATOMIC_RELEASE);
         unlock();
@@ -105,7 +108,8 @@ i64 write_until(const u8* input, u32 length, u64 deadline) {
         const i64 result = error != 0 ? error :
             length != 0 && (__atomic_load_n(&request_pending, __ATOMIC_ACQUIRE) != 0 ||
                             __atomic_load_n(&app_pending, __ATOMIC_ACQUIRE) != 0 ||
-                            __atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) != 0) ? terminal::interrupted :
+                            __atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) != 0 ||
+                            __atomic_load_n(&app_change, __ATOMIC_ACQUIRE) != 0) ? terminal::interrupted :
             device.write(input, length);
         if (result != 0 || length == 0) { unlock(); return result; }
         __atomic_store_n(&input_ready, 0u, __ATOMIC_RELEASE);
@@ -140,7 +144,8 @@ i64 drain_output() {
         const i64 error = __atomic_load_n(&worker_error, __ATOMIC_ACQUIRE);
         const bool interrupted = __atomic_load_n(&request_pending, __ATOMIC_ACQUIRE) != 0 ||
             __atomic_load_n(&app_pending, __ATOMIC_ACQUIRE) != 0 ||
-            __atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) != 0;
+            __atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) != 0 ||
+            __atomic_load_n(&app_change, __ATOMIC_ACQUIRE) != 0;
         const i64 empty = error != 0 ? error : interrupted ? terminal::interrupted : device.transmitter_empty();
         unlock();
         if (empty < 0) return empty;
@@ -180,6 +185,33 @@ u64 control_worker(void*) {
     return 0;
 }
 
+// Called by the receiver while holding lock, before publishing the request.
+// The worker therefore cannot sleep on the old set after acknowledging it.
+i64 admit_fork(u32 source, const terminal::request& request) {
+    if (request.version != terminal::version || request.size != sizeof(request) ||
+        request.sequence == 0 || request.length != sizeof(terminal::session_channels) ||
+        request.deadline_ns != 0 || source >= max_app_sessions || apps[source].incoming == 0 ||
+        __atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) != 0) return process_error_invalid;
+    terminal::session_channels channels{};
+    auto* bytes = reinterpret_cast<u8*>(&channels);
+    for (u32 i = 0; i < sizeof(channels); ++i) bytes[i] = request.data[i];
+    const channel_fork_verification verify{channel_version, sizeof(channel_fork_verification),
+        apps[source].incoming, apps[source].outgoing, channels.incoming, channels.outgoing, channels.peer_pid};
+    const i64 verified = sdk::channel_verify_fork(verify);
+    if (verified != 0) return verified;
+    for (u32 i = 0; i < max_app_sessions; ++i) {
+        if (apps[i].peer == channels.peer_pid || apps[i].incoming == channels.incoming ||
+            apps[i].outgoing == channels.outgoing) return process_error_state;
+    }
+    for (u32 i = 1; i < max_app_sessions; ++i) {
+        if (apps[i].incoming == 0) {
+            apps[i] = {channels.incoming, channels.outgoing, channels.peer_pid};
+            return 0;
+        }
+    }
+    return process_error_resources;
+}
+
 u64 app_worker(void*) {
     u32 next_slot = 0;
     while (__atomic_load_n(&stopping, __ATOMIC_ACQUIRE) == 0 &&
@@ -216,9 +248,12 @@ u64 app_worker(void*) {
                     else {
                         (void)sdk::channel_close(apps[index].outgoing);
                         apps[index] = {};
+                        __atomic_store_n(&app_change, 1u, __ATOMIC_RELEASE);
+                        __atomic_store_n(&input_ready, 1u, __ATOMIC_RELEASE);
                     }
                 }
                 unlock();
+                (void)thread::wake(&input_ready, 1);
             }
             if (root_closed) break;
             if (ready != process_error_denied) break;
@@ -236,8 +271,15 @@ u64 app_worker(void*) {
             break;
         }
         lock();
+        if (apps[slots[chosen]].incoming != wait.handles[chosen] ||
+            __atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) != 0) {
+            unlock();
+            continue;
+        }
+        pending_app_admission = request.operation == static_cast<u32>(terminal::operation::fork_attach)
+            ? admit_fork(slots[chosen], request) : 0;
         pending_app_request = request;
-        pending_app_slot = slots[chosen];
+        pending_app_reply = apps[slots[chosen]].outgoing;
         next_slot = (slots[chosen] + 1) % max_app_sessions;
         __atomic_store_n(&app_pending, 1u, __ATOMIC_RELEASE);
         __atomic_store_n(&input_ready, 1u, __ATOMIC_RELEASE);
@@ -271,7 +313,28 @@ bool close_app() {
     app_mode = terminal::default_mode;
     __atomic_store_n(&app_pending, 0u, __ATOMIC_RELEASE);
     __atomic_store_n(&app_dead, 0u, __ATOMIC_RELEASE);
+    __atomic_store_n(&app_change, 0u, __ATOMIC_RELEASE);
     return true;
+}
+
+bool drop_failed_reply(u32 handle) {
+    lock();
+    for (u32 i = 0; i < max_app_sessions; ++i) {
+        if (apps[i].outgoing != handle || handle == 0) continue;
+        if (i == 0) { unlock(); return close_app(); }
+        (void)sdk::channel_close(apps[i].incoming);
+        (void)sdk::channel_close(apps[i].outgoing);
+        apps[i] = {};
+        __atomic_store_n(&app_change, 1u, __ATOMIC_RELEASE);
+        __atomic_store_n(&input_ready, 1u, __ATOMIC_RELEASE);
+        unlock();
+        (void)thread::wake(&input_ready, 1);
+        return true;
+    }
+    // The receiver may already have removed the closed child. Handles never
+    // repeat, so a missing old reply handle cannot name a new session.
+    unlock();
+    return handle != 0;
 }
 
 bool authenticated_app_channels(const terminal::session_channels& requested) {
@@ -291,13 +354,14 @@ bool authenticated_app_channels(const terminal::session_channels& requested) {
     return incoming && outgoing;
 }
 
-bool next_request(terminal::request& request, bool& from_app, u32& reply_channel) {
+bool next_request(terminal::request& request, bool& from_app, u32& reply_channel, i64& admission) {
     for (;;) {
         lock();
         if (__atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) != 0) { unlock(); return false; }
         if (__atomic_load_n(&request_pending, __ATOMIC_ACQUIRE) != 0) {
             request = pending_request;
             from_app = false;
+            __atomic_store_n(&app_change, 0u, __ATOMIC_RELEASE);
             __atomic_store_n(&request_pending, 0u, __ATOMIC_RELEASE);
             unlock();
             (void)thread::wake(&request_pending, 1);
@@ -306,7 +370,9 @@ bool next_request(terminal::request& request, bool& from_app, u32& reply_channel
         if (__atomic_load_n(&app_pending, __ATOMIC_ACQUIRE) != 0) {
             request = pending_app_request;
             from_app = true;
-            reply_channel = apps[pending_app_slot].outgoing;
+            reply_channel = pending_app_reply;
+            admission = pending_app_admission;
+            __atomic_store_n(&app_change, 0u, __ATOMIC_RELEASE);
             __atomic_store_n(&app_pending, 0u, __ATOMIC_RELEASE);
             unlock();
             (void)thread::wake(&app_pending, 1);
@@ -358,7 +424,8 @@ extern "C" int xos_user_main(const xos::startup_info*) {
         terminal::request request{};
         bool from_app = false;
         u32 app_reply_channel = 0;
-        if (!next_request(request, from_app, app_reply_channel)) {
+        i64 app_admission = 0;
+        if (!next_request(request, from_app, app_reply_channel, app_admission)) {
             if (__atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) != 0 && close_app()) continue;
             break;
         }
@@ -374,11 +441,14 @@ extern "C" int xos_user_main(const xos::startup_info*) {
                 op == terminal::operation::write || op == terminal::operation::write_until;
             const bool mode_op = op == terminal::operation::mode_get || op == terminal::operation::mode_set ||
                 op == terminal::operation::drain || op == terminal::operation::flush_input;
-            const bool denied = (from_app && !(io_op || mode_op || op == terminal::operation::cancel)) ||
+            const bool denied = (from_app && !(io_op || mode_op || op == terminal::operation::cancel ||
+                                              op == terminal::operation::fork_attach)) ||
                 (!from_app && mode_op) ||
+                (!from_app && op == terminal::operation::fork_attach) ||
                 (!from_app && app_thread != 0 && io_op) ||
                 (from_app && __atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) != 0);
             if (denied) response.result = process_error_denied;
+            else if (op == terminal::operation::fork_attach) response.result = app_admission;
             else if (op == terminal::operation::mode_get) {
                 if (request.length != 0) response.result = process_error_invalid;
                 else {
@@ -443,6 +513,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
                 response.result = error; response.length = 0;
             }
             else if (denied || mode_op || op == terminal::operation::read_mode || op == terminal::operation::wait_readable ||
+                     op == terminal::operation::fork_attach ||
                      op == terminal::operation::attach || op == terminal::operation::detach) { }
             else if (op == terminal::operation::read_until) { /* already serviced */ }
             else if (op == terminal::operation::write_until) { /* already serviced */ }
@@ -468,7 +539,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
         // receive a response. App clients use one outstanding request.
         const u64 reply_deadline = from_app ? 0 : thread_deadline_infinite;
         if (sdk::channel_send_wait(reply_channel, &response, sizeof(response), reply_deadline) != 0) {
-            if (from_app && close_app()) continue;
+            if (from_app && drop_failed_reply(reply_channel)) continue;
             break;
         }
     }

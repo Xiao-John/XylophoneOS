@@ -82,6 +82,23 @@ i64 exchange(client& session, request& message, response& reply) {
 }
 }
 
+i64 register_fork(client& session, const channel_fork_pair& pair) {
+    if (pair.version != channel_version || pair.size != sizeof(pair) || pair.child_pid == 0 ||
+        pair.source_send != session.send_handle || pair.source_receive != session.receive_handle ||
+        pair.child_send == 0 || pair.child_receive == 0 || pair.child_send == pair.child_receive)
+        return process_error_invalid;
+    const session_channels channels{pair.child_send, pair.child_receive, pair.child_pid};
+    request message{}; response reply{};
+    message.operation = static_cast<u32>(operation::fork_attach);
+    message.length = sizeof(channels);
+    const auto* bytes = reinterpret_cast<const u8*>(&channels);
+    for (u32 i = 0; i < sizeof(channels); ++i) message.data[i] = bytes[i];
+    const i64 result = exchange(session, message, reply);
+    if (result != 0) return result;
+    if (reply.result > 0 || reply.length != 0) { close(session); return process_error_state; }
+    return reply.result;
+}
+
 i64 get_mode(client& session, mode& value) {
     request message{}; response reply{};
     message.operation = static_cast<u32>(operation::mode_get);

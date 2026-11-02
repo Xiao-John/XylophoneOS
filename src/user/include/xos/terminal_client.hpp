@@ -12,6 +12,10 @@ struct client {
 };
 i64 connect(client& session, u64 controller_pid, u64 service_pid);
 i64 connect_startup(client& session, const startup_info* startup);
+// Register a kernel-derived pair before committing the corresponding fork.
+// On any error the caller must abort the unstarted child; transport failure
+// may mean the service already processed the request.
+i64 register_fork(client& session, const channel_fork_pair& pair);
 i64 get_mode(client& session, mode& value);
 i64 set_mode(client& session, const mode& value, mode_action action = mode_action::now);
 i64 drain(client& session);

@@ -18,10 +18,20 @@ bool transmitter_idle = true;
 unsigned sleeps = 0;
 xos::u8 simulated_byte = 0;
 xos::channel_info mock_channels[2]{};
+xos::channel_fork_verification expected_fork{};
 }
 
 namespace xos::sdk {
 i64 syscall(u64 number, u64 first, u64 second, u64 third) {
+    if (number == sys_channel && first == static_cast<u64>(channel_action::verify_fork_pair)) {
+        const auto& value = *reinterpret_cast<const channel_fork_verification*>(second);
+        return value.version == expected_fork.version && value.size == expected_fork.size &&
+               value.source_incoming == expected_fork.source_incoming &&
+               value.source_outgoing == expected_fork.source_outgoing &&
+               value.child_incoming == expected_fork.child_incoming &&
+               value.child_outgoing == expected_fork.child_outgoing && value.child_pid == expected_fork.child_pid
+            ? 0 : process_error_denied;
+    }
     if (number == sys_channel && first == static_cast<u64>(channel_action::enumerate)) {
         if (second >= 2) return thread_error_not_found;
         *reinterpret_cast<channel_info*>(third) = mock_channels[second];
@@ -144,5 +154,20 @@ int main() {
     lock(); simulated_byte = 'Q'; has_byte = true; unlock();
     if (wait_readable(0) != 1 || wait_readable(0) != 1 ||
         read_until(&output, 1, 0) != 1 || output != 'Q') return 22;
+    apps[0] = {10, 11, 7};
+    expected_fork = {channel_version, sizeof(channel_fork_verification), 10, 11, 12, 13, 8};
+    terminal::request admission{};
+    admission.version = terminal::version; admission.size = sizeof(admission);
+    admission.operation = static_cast<u32>(terminal::operation::fork_attach);
+    admission.sequence = 1; admission.length = sizeof(terminal::session_channels);
+    const terminal::session_channels child{12, 13, 8};
+    const auto* child_bytes = reinterpret_cast<const u8*>(&child);
+    for (u32 i = 0; i < sizeof(child); ++i) admission.data[i] = child_bytes[i];
+    if (admit_fork(0, admission) != 0 || apps[1].incoming != 12 || apps[1].peer != 8) return 23;
+    if (admit_fork(0, admission) != process_error_state) return 24;
+    admission.data[0] = 99;
+    if (admit_fork(0, admission) != process_error_denied || apps[2].incoming != 0) return 25;
+    admission.length = 0;
+    if (admit_fork(0, admission) != process_error_invalid) return 26;
     return 0;
 }

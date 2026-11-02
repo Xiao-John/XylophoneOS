@@ -40,6 +40,8 @@ i64 syscall(u64 number, u64 first, u64 second, u64 third) {
             response.result = 0;
         } else if (last_request.operation == static_cast<u32>(terminal::operation::flush_input)) {
             response.result = 0;
+        } else if (last_request.operation == static_cast<u32>(terminal::operation::fork_attach)) {
+            response.result = 0;
         } else if (last_request.operation == static_cast<u32>(terminal::operation::read_mode)) {
             response.result = 0;
         } else if (last_request.operation == static_cast<u32>(terminal::operation::read_until)) {
@@ -63,6 +65,14 @@ int main() {
     if (terminal::connect_startup(client, &fixture.header) != process_error_denied) return 2;
     fixture.extension.reserved = 10;
     if (terminal::connect_startup(client, &fixture.header) != 0) return 6;
+    channel_fork_pair pair{channel_version, sizeof(channel_fork_pair), 8, 10, 11, 12, 13};
+    if (terminal::register_fork(client, pair) != 0 ||
+        last_request.operation != static_cast<u32>(terminal::operation::fork_attach) ||
+        last_request.length != sizeof(terminal::session_channels)) return 12;
+    const auto* fork_data = reinterpret_cast<const terminal::session_channels*>(last_request.data);
+    if (fork_data->incoming != 12 || fork_data->outgoing != 13 || fork_data->peer_pid != 8) return 13;
+    pair.source_send = 99;
+    if (terminal::register_fork(client, pair) != process_error_invalid) return 14;
     terminal::mode selected{};
     if (terminal::get_mode(client, selected) != 0 || selected.vmin != 1 || selected.vtime != 0) return 7;
     selected.vmin = 0; selected.vtime = 1;

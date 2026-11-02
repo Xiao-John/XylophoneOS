@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #include <xos/sdk.hpp>
 #include <xos/spawn.hpp>
+#include <xos/thread_abi.hpp>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -24,6 +25,14 @@ bool message(const char* label) {
         sent += static_cast<int>(result);
     }
     return true;
+}
+bool resources(xos::thread_stats& stats) {
+    return xos::sdk::syscall(xos::sys_thread_stats, reinterpret_cast<xos::u64>(&stats)) == 0;
+}
+bool same_resources(const xos::thread_stats& a, const xos::thread_stats& b) {
+    return a.processes == b.processes && a.threads == b.threads && a.reserved == b.reserved &&
+           a.results == b.results && a.free_pages == b.free_pages &&
+           a.process_user_pages == b.process_user_pages && a.process_kernel_stack_pages == b.process_kernel_stack_pages;
 }
 }
 
@@ -51,6 +60,8 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
         xos::channel_info first{}, second{};
         if (xos::sdk::channel_get(0, first) != 0 || xos::sdk::channel_get(1, second) != 0 ||
             first.rights == second.rights || first.peer_pid != second.peer_pid) return 33;
+        xos::thread_stats before{}, after{};
+        if (!resources(before)) return 36;
         const xos::i64 staged = xos::sdk::syscall(xos::sys_process_fork_prepare);
         if (staged <= 0) return 34;
         xos::channel_fork_pair pair{xos::channel_version, sizeof(xos::channel_fork_pair),
@@ -59,11 +70,13 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
         if (xos::sdk::channel_fork(pair) != xos::process_error_resources || pair.child_send != 0 ||
             pair.child_receive != 0 || xos::sdk::syscall(xos::sys_process_abort, static_cast<xos::u64>(staged)) != 0)
             return 35;
+        if (!resources(after) || !same_resources(before, after)) return 37;
         errno = 0;
         const pid_t excess = fork();
         if (excess == 0) _exit(0);
         if (excess > 0) { int ignored = 0; (void)waitpid(excess, &ignored, 0); return 25; }
         if (errno != ENOMEM || !isatty(0)) return 26;
+        if (!resources(after) || !same_resources(before, after)) return 38;
         struct termios mode{};
         if (tcgetattr(0, &mode) != 0) return 27;
         const char release_bytes[] = {'x', 'x'};

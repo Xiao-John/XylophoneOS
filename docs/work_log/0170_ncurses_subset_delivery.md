@@ -11,3 +11,17 @@ profile；新增 `scripts/freeze_ncursesw_subset.py` 检查干净提交、正常
 其他终端、动态尺寸、线程 profile 或许可证逐成员审计资格。脚本不修改源 SDK、系统
 或测试报告。提交后须重建匹配输入、运行客体并测试冻结及不匹配拒绝；不能用旧报告
 缺失的字段或仅靠宿主链接来产生该回执。
+
+提交 `f5349b4ce3585bdf23ccf6e85b734da627223f65` 后重建系统、用已核验输入的
+组合 SDK 重新链接消费者并运行正常 Xsh 客体，`passed_probe`；首次冻结结果
+`guest_verified_subset`，树 SHA-256
+`6df50da0d883a048d204bd4ce471fd29dff3ae78c9c090ab7be7218283b8d9e3`。单独复制并修改
+消费者 ELF 后冻结被拒绝，提示 artifact 不匹配。该次系统 build ID
+`f0bfbcad84220a0b`，manifest SHA-256
+`64d0a1eaffdc4051ea06e83459260552c1806cbf2219448b7744ccbc562fdf44`，串口 SHA-256
+`8af22f3e063e14f467e6f2765858d43c8dbae31e4a168b37baec850fe93bddc5`；报告及首次
+冻结分别位于 `build/w2_freeze_system_f5349b4/` 和 `build/w2_frozen_subset_f5349b4/`。
+
+复核发现首次冻结未一并携带底层 SDK、目标库和 terminfo 的输入回执，也未携带系统
+镜像及终端 ELF。冻结工具现要求并复制这些材料，逐项验证其哈希；更改提交后须按
+新命令重建、重新运行客体并再次测试冻结与拒绝，不能把首次冻结当作新版本结果。

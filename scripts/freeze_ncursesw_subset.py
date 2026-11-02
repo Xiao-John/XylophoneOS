@@ -35,14 +35,14 @@ def require(condition, message):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ('system', 'candidate', 'consumers', 'output'):
+    for name in ('system', 'candidate', 'consumers', 'sdk-candidate', 'ncurses-probe', 'terminfo', 'output'):
         parser.add_argument('--' + name, type=Path, required=True)
     args = parser.parse_args()
-    system, candidate, consumers = (p.resolve(strict=True) for p in
-                                    (args.system, args.candidate, args.consumers))
+    system, candidate, consumers, sdk_candidate, probe, terminfo = (p.resolve(strict=True) for p in
+        (args.system, args.candidate, args.consumers, args.sdk_candidate, args.ncurses_probe, args.terminfo))
     output = args.output.resolve()
     require(output.is_relative_to(ROOT / 'build') and not output.exists() and
-            not any(output.is_relative_to(p) for p in (system, candidate, consumers)),
+            not any(output.is_relative_to(p) for p in (system, candidate, consumers, sdk_candidate, probe, terminfo)),
             'output must be a new isolated build subdirectory')
     require(not subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT, text=True).strip(),
             'commit all changes before freezing')
@@ -52,6 +52,9 @@ def main():
     serial_path = system / 'ncurses_guest_serial.log'
     candidate_path = candidate / 'receipt.json'
     consumer_path = consumers / 'report.json'
+    sdk_path = sdk_candidate / 'receipt.json'
+    ncurses_path = probe / 'report.json'
+    terminfo_path = terminfo / 'receipt.json'
     manifest, guest, receipt, apps = (json.loads(p.read_text()) for p in
                                       (manifest_path, guest_path, candidate_path, consumer_path))
     require(guest.get('status') == 'passed_probe' and guest.get('commit') == commit and
@@ -81,6 +84,11 @@ def main():
             digest == receipt.get('tree_sha256') == guest.get('composed_sdk_tree_sha256') and
             guest.get('composed_receipt_sha256') == sha(candidate_path) and
             guest.get('consumers_report_sha256') == sha(consumer_path) and
+            guest.get('sdk_receipt_sha256') == sha(sdk_path) and
+            guest.get('ncurses_report_sha256') == sha(ncurses_path) and
+            guest.get('terminfo_receipt_sha256') == sha(terminfo_path) and
+            receipt.get('target_report_sha256') == sha(ncurses_path) and
+            receipt.get('terminfo_receipt_sha256') == sha(terminfo_path) and
             apps.get('candidate_tree_sha256') == digest and apps.get('status') == 'cross_linked_guest_not_run' and
             guest.get('ncurses_sha256') == sha(candidate / 'sdk/lib/libncursesw.a') and
             guest.get('terminfo_sha256') == sha(candidate / 'target/usr/local/share/terminfo/x/xterm'),
@@ -94,7 +102,11 @@ def main():
     evidence = output / 'evidence'
     evidence.mkdir()
     for source, name in ((manifest_path, 'system_manifest.json'), (guest_path, 'guest_report.json'),
-                         (serial_path, 'serial.log'), (consumer_path, 'consumers_report.json')):
+                         (serial_path, 'serial.log'), (consumer_path, 'consumers_report.json'),
+                         (sdk_path, 'sdk_receipt.json'), (ncurses_path, 'ncurses_report.json'),
+                         (terminfo_path, 'terminfo_receipt.json'),
+                         (system / 'xos-install.iso', 'xos-install.iso'),
+                         (system / 'user_terminal.image.elf', 'terminal.elf')):
         shutil.copyfile(source, evidence / name)
     for name in ARTIFACTS:
         shutil.copyfile(consumers / name, evidence / name)
@@ -104,6 +116,11 @@ def main():
             sha(copied / 'receipt.json') == sha(candidate_path) and
             sha(evidence / 'system_manifest.json') == guest['system_manifest_sha256'] and
             sha(evidence / 'consumers_report.json') == guest['consumers_report_sha256'] and
+            sha(evidence / 'sdk_receipt.json') == guest['sdk_receipt_sha256'] and
+            sha(evidence / 'ncurses_report.json') == guest['ncurses_report_sha256'] and
+            sha(evidence / 'terminfo_receipt.json') == guest['terminfo_receipt_sha256'] and
+            sha(evidence / 'xos-install.iso') == guest['system_sha256'] and
+            sha(evidence / 'terminal.elf') == guest['terminal_sha256'] and
             all(sha(evidence / name) == guest[field] for name, field in ARTIFACTS.items()) and
             sha(evidence / 'serial.log') == guest['serial_sha256'] and
             sha(evidence / 'guest_report.json') == sha(guest_path), 'inputs changed during freeze')

@@ -7,5 +7,13 @@
 
 新增探针覆盖未提交子代的派生、原申请者不能冒用子端、重复申请失败、对端枚举到
 独立身份，以及 abort 后对端不再枚举到派生端点。常规构建与探针交叉编译已通过；
-须在提交后重建并运行客体。此机制不实现对端同意、终端服务多路仲裁、libc fork
-交接或 W1/W2 资格；仍需拒绝矩阵、fork commit、退出/故障及资源压力验证。
+提交 `d805c9d00b355c06f59c1285b43287ff67b90a89` 后重建并运行客体，结果为
+`passed_subset`，包含上述身份、重复和 abort 检查。build ID `969bf64ef98004e9`，
+系统 manifest SHA-256 `ede34a5df46ade118f24fd4f11d294129c0ea679f5c4e28f0ccf4c25ff4516b0`，
+镜像 SHA-256 `071e0485e685df99963523fb1f07de11dca28a7fab0f90b617213d888a824d2b`，
+SDK 树 SHA-256 `d17ac7ba730084c1b1c46d49c0bb3cbeb1a1d84cfed39f9c983554a9f85b9aa0`，
+串口 SHA-256 `ca0a367b8f781c5b7b22562d7f11ad18ffc19b230e2d0c72d0f060d6d1837693`；
+报告位于 `build/w1_fork_pair_run_d805c9d/`。
+
+此机制不实现对端同意、终端服务多路仲裁、libc fork 交接或 W1/W2 资格；仍需
+拒绝矩阵、fork commit、退出/故障及资源压力验证。

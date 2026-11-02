@@ -157,7 +157,7 @@ extern "C" int xos_user_main(const startup_info* startup) {
     const char single_wait_request = 's';
     if (sdk::ipc_send(outgoing, &single_wait_request, 1) != 0 || sdk::channel_wait(incoming, deadline()) != 0 ||
         sdk::ipc_recv(incoming, &response, 1) != 1 || response != 'r') return 67;
-    if (sdk::channel_wait(extra[1], deadline()) != 0 ||
+    if (sdk::channel_wait(extra[1], deadline()) != process_error_denied ||
         sdk::channel_wait(extra[1], 0) != process_error_denied) return 68;
     const i64 forked = sdk::syscall(sys_process_fork_prepare);
     if (forked <= 0) return 41;

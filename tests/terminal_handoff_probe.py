@@ -93,6 +93,7 @@ def main():
             report['checks'].append('authorized_pio_fork_and_exec_revocation')
             report['checks'].append('authorized_pio_explicit_revoke_then_fault')
             report['checks'].append('authorized_pio_multithread_switch_and_revoke')
+            report['checks'].append('authorized_irq_empty_timeout_ack_and_close')
             guest.expect(b"W1_READ_READY", timeout=45)
             send_bytes(guest, b"R")
             guest.expect(b"W1_READ_OK", timeout=30)

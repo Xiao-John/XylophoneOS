@@ -32,6 +32,27 @@ extern "C" int xos_user_main(const startup_info* startup) {
         return 4;
     }
     if (sdk::pio_grant(pio_grant_action::controller, 0, pio_resource_com1) <= 0) return 2;
+    if (sdk::equal(args[1], "irq_empty")) {
+        // Disable UART interrupt causes before binding; this test only checks
+        // an empty IRQ source, not delivery of a real device interrupt.
+        const u8 disabled = 0;
+        __asm__ volatile("outb %0, %1" : : "a"(disabled), "Nd"(static_cast<u16>(0x3f9)));
+        const i64 token = sdk::irq_event(irq_event_action::bind, pio_resource_com1);
+        if (token <= 0 || sdk::irq_event(irq_event_action::bind, pio_resource_com1) != process_error_state)
+            return 17;
+        const u64 handle = static_cast<u64>(token);
+        if (sdk::irq_event(irq_event_action::wait, handle, 0) != process_error_would_block ||
+            sdk::irq_event(irq_event_action::ack, handle, 1) != process_error_state ||
+            sdk::irq_event(irq_event_action::wait, handle + 1, 0) != process_error_denied) return 18;
+        const i64 now = sdk::syscall(sys_clock_monotonic);
+        if (now < 0 || sdk::irq_event(irq_event_action::wait, handle,
+                static_cast<u64>(now) + 30000000ull) != thread_error_timeout) return 19;
+        if (sdk::irq_event(irq_event_action::close, handle) != 0 ||
+            sdk::irq_event(irq_event_action::wait, handle, 0) != process_error_denied ||
+            sdk::irq_event(irq_event_action::ack, handle, 1) != process_error_denied ||
+            sdk::irq_event(irq_event_action::bind, pio_resource_com1) != process_error_state) return 20;
+        return 0;
+    }
     if (sdk::equal(args[1], "revoke") || sdk::equal(args[1], "revoke_thread")) {
         const bool threaded = sdk::equal(args[1], "revoke_thread");
         channel_info first{}, second{};

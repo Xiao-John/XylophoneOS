@@ -3,11 +3,24 @@
 #include <xos/sdk.hpp>
 #include <xos/file_client.hpp>
 #include <xos/channel_io.hpp>
+#include <xos/thread_core.hpp>
 using namespace xos;
 
 namespace {
 struct exec_marker { u64 magic; u32 version, size; };
 [[gnu::section(".xos.exec"), gnu::used]] const exec_marker marker{exec_image_abi_magic, 3, sizeof(exec_marker)};
+u32 phase;
+u64 pio_worker(void*) {
+    u8 value = 0;
+    __asm__ volatile("inb %1, %0" : "=a"(value) : "Nd"(static_cast<u16>(0x3fd)));
+    __atomic_store_n(&phase, 1u, __ATOMIC_RELEASE);
+    (void)thread::wake(&phase, 1);
+    while (__atomic_load_n(&phase, __ATOMIC_ACQUIRE) == 1)
+        (void)thread::wait(&phase, 1);
+    // The supervisor has revoked the whole process before waking this worker.
+    __asm__ volatile("inb %1, %0" : "=a"(value) : "Nd"(static_cast<u16>(0x3fd)));
+    return 14;
+}
 }
 
 extern "C" int xos_user_main(const startup_info* startup) {
@@ -19,12 +32,19 @@ extern "C" int xos_user_main(const startup_info* startup) {
         return 4;
     }
     if (sdk::pio_grant(pio_grant_action::controller, 0, pio_resource_com1) <= 0) return 2;
-    if (sdk::equal(args[1], "revoke")) {
+    if (sdk::equal(args[1], "revoke") || sdk::equal(args[1], "revoke_thread")) {
+        const bool threaded = sdk::equal(args[1], "revoke_thread");
         channel_info first{}, second{};
         if (sdk::channel_get(0, first) != 0 || sdk::channel_get(1, second) != 0 ||
             first.rights == second.rights || first.peer_pid != second.peer_pid) return 11;
         const u32 send = first.rights == channel_send ? first.handle : second.handle;
         const u32 receive = first.rights == channel_receive ? first.handle : second.handle;
+        u64 worker = 0;
+        if (threaded) {
+            if (thread::create(worker, pio_worker, nullptr) != 0) return 15;
+            while (__atomic_load_n(&phase, __ATOMIC_ACQUIRE) == 0)
+                (void)thread::wait(&phase, 0);
+        }
         u8 value = 0;
         __asm__ volatile("inb %1, %0" : "=a"(value) : "Nd"(static_cast<u16>(0x3fd)));
         char byte = 'r';
@@ -32,6 +52,13 @@ extern "C" int xos_user_main(const startup_info* startup) {
             sdk::channel_receive_wait(receive, &byte, 1, thread_deadline_infinite) != 1 || byte != 'g' ||
             sdk::pio_grant(pio_grant_action::controller, 0, pio_resource_com1) != process_error_denied)
             return 12;
+        if (threaded) {
+            __atomic_store_n(&phase, 2u, __ATOMIC_RELEASE);
+            (void)thread::wake(&phase, 1);
+            u64 result = 0;
+            (void)thread::join(worker, result);
+            return 16; // the worker must fault the process before returning
+        }
         __asm__ volatile("inb %1, %0" : "=a"(value) : "Nd"(static_cast<u16>(0x3fd)));
         return 13; // revoked access must fault
     }

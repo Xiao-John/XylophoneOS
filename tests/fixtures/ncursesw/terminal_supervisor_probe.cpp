@@ -32,7 +32,7 @@ bool pio_boundary(const char* mode, bool fault) {
     sdk::spawn_options options{};
     for (u32 i = 0; i < 3; ++i) options.stdio[i] = -2;
     options.grant_spawn = true;
-    pio_context state{sdk::equal(mode, "revoke"), 0, 0};
+    pio_context state{sdk::equal(mode, "revoke") || sdk::equal(mode, "revoke_thread"), 0, 0};
     options.prepare_child = prepare_pio; options.prepare_context = &state;
     const char* argv[] = {"/bin/pio_auth.elf", mode};
     const i64 child = sdk::spawn_file_options(argv[0], 2, argv, options);
@@ -84,7 +84,8 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     if (!pio_boundary("inside", false) || !pio_boundary("below", true) ||
         !pio_boundary("above", true) || !pio_boundary("cross", true) ||
         !pio_boundary("fork", false) || !pio_boundary("badexec", false) ||
-        !pio_boundary("exec", true) || !pio_boundary("revoke", true)) return 17;
+        !pio_boundary("exec", true) || !pio_boundary("revoke", true) ||
+        !pio_boundary("revoke_thread", true)) return 17;
     if (terminal::start(session, "/bin/terminal.elf") <= 0) return 2;
     if (!transmit("W1_PIO_BOUNDS_OK\n")) return 18;
     if (!transmit("W1_READ_READY\n")) return 3;

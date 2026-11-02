@@ -52,24 +52,30 @@ def main():
     sdk = system / 'sdk'
     sdk_receipt = verify_sdk(sdk, manifest)
     fixture = ROOT / 'tests/fixtures/ncursesw/pio_authorized_probe.cpp'
+    core_source = ROOT / 'src/user/arch/x86_64/thread_core.cpp'
     report['sdk_tree_sha256'] = sdk_receipt['tree_sha256']
     report['pio_fixture_sha256'] = digest(fixture)
+    report['thread_core_source_sha256'] = digest(core_source)
     guest = None
     try:
         with tempfile.TemporaryDirectory(prefix="xos_terminal_probe_") as folder:
             obj = Path(folder) / 'pio_authorized.o'
+            core = Path(folder) / 'thread_core.o'
             pio = Path(folder) / 'pio_authorized.elf'
             commands = [
-                [tool('g++'), *COMMON_FLAGS, *X86_FLAGS, '-I', str(sdk / 'include'), '-c', str(fixture), '-o', str(obj)],
+                [tool('g++'), *COMMON_FLAGS, *X86_FLAGS, '-I', str(sdk / 'include'), '-I', str(ROOT / 'src/user/include'),
+                 '-c', str(fixture), '-o', str(obj)],
+                [tool('g++'), *COMMON_FLAGS, *X86_FLAGS, '-I', str(sdk / 'include'), '-I', str(ROOT / 'src/user/include'),
+                 '-c', str(core_source), '-o', str(core)],
                 [tool('g++'), *X86_FLAGS, '-nostdlib', '-static', '-no-pie',
                  '-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096',
-                 '-T', str(sdk / 'user.ld'), str(sdk / 'crt0.o'), str(obj), '-Wl,--start-group',
+                 '-T', str(sdk / 'user.ld'), str(sdk / 'crt0.o'), str(obj), str(core), '-Wl,--start-group',
                  str(sdk / 'lib/libxos_loader.a'), str(sdk / 'lib/libxos.a'), '-Wl,--end-group', '-o', str(pio)],
             ]
             for cmd in commands:
                 subprocess.run(cmd, check=True)
-            if digest(fixture) != report['pio_fixture_sha256']:
-                raise RuntimeError('PIO fixture changed while compiling')
+            if digest(fixture) != report['pio_fixture_sha256'] or digest(core_source) != report['thread_core_source_sha256']:
+                raise RuntimeError('PIO fixture or thread core changed while compiling')
             report['pio_elf_sha256'] = digest(pio)
             disk = Path(folder) / "work.img"
             create_fat32(disk, 512)
@@ -86,6 +92,7 @@ def main():
             report['checks'].append('authorized_pio_inside_and_boundary_faults')
             report['checks'].append('authorized_pio_fork_and_exec_revocation')
             report['checks'].append('authorized_pio_explicit_revoke_then_fault')
+            report['checks'].append('authorized_pio_multithread_switch_and_revoke')
             guest.expect(b"W1_READ_READY", timeout=45)
             send_bytes(guest, b"R")
             guest.expect(b"W1_READ_OK", timeout=30)

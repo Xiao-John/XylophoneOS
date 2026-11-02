@@ -37,3 +37,4 @@
 | 0169 | `0169_device_authorization_a2_registration.md` | 设备授权原语 A2 登记（本 PR，2026-11-01 占号） |
 | 0170 | `0170_device_authorization_step1a.md` | 设备授权实施段 1a（本 PR，2026-11-01 占号） |
 | 0174 | `0174_terminal_width_alignment.md` | 终端字符宽度对齐探查及验证计划（2026-11-02） |
+| 0175 | `0175_ncurses_member_provenance.md` | ncursesw 目标归档成员来源筛查（2026-11-02） |

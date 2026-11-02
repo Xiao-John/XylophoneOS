@@ -185,8 +185,15 @@ u64 app_worker(void*) {
         if (__atomic_load_n(&stopping, __ATOMIC_ACQUIRE) != 0 ||
             __atomic_load_n(&app_dead, __ATOMIC_ACQUIRE) != 0) break;
         terminal::request request{};
-        const i64 received = sdk::channel_receive_wait(app_incoming, &request, sizeof(request),
-                                                        thread_deadline_infinite);
+        const channel_wait_many_request wait{channel_version, sizeof(channel_wait_many_request),
+                                             1, 0, {app_incoming, 0, 0, 0}};
+        const i64 ready = sdk::channel_wait_many(wait, thread_deadline_infinite);
+        // A wake is only a hint, including on endpoint closure. Recheck the
+        // full set before consuming; a closed endpoint fails that recheck.
+        if (ready == 0) continue;
+        if (ready < 0) break;
+        const i64 received = sdk::ipc_recv(app_incoming, &request, sizeof(request));
+        if (received == sdk::ipc_error_empty) continue;
         if (received != static_cast<i64>(sizeof(request))) break;
         lock();
         pending_app_request = request;

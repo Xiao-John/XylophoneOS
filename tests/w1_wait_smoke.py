@@ -27,7 +27,7 @@ def sha(path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--probe', choices=('wait', 'channel', 'pio', 'irq', 'tty_exec'), default='wait')
+    parser.add_argument('--probe', choices=('wait', 'channel', 'pio', 'irq', 'tty_exec', 'device'), default='wait')
     parser.add_argument('--system', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
     args = parser.parse_args()
@@ -51,15 +51,18 @@ def main():
     output.mkdir(parents=True)
     fixture_name = {'pio': 'pio_negative', 'irq': 'irq_negative', 'tty_exec': 'terminal_exec'}.get(args.probe, args.probe)
     fixture = ROOT / ('tests/fixtures/ncursesw/' + fixture_name + '_probe.cpp')
+    if args.probe == 'device':
+        fixture = ROOT / 'tests/fixtures/device_abi_probe.cpp'
     obj, elf = output / 'wait_probe.o', output / 'wait_probe.elf'
     commands = [[tool('g++'), *COMMON_FLAGS, *X86_FLAGS, *(['-w'] if args.probe == 'tty_exec' else []), '-I', str(sdk / 'include'),
                  '-c', str(fixture), '-o', str(obj)],
                 [tool('g++'), *X86_FLAGS, '-nostdlib', '-static', '-no-pie',
                  '-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096',
-                 '-T', str(sdk / 'user.ld'), str(sdk / ('crt0_libc.o' if args.probe == 'tty_exec' else 'crt0.o')), str(obj),
+                 '-T', str(sdk / 'user.ld'), str(sdk / ('crt0_libc.o' if args.probe == 'tty_exec' else
+                                                        'crt0_posix.o' if args.probe == 'device' else 'crt0.o')), str(obj),
                  '-Wl,--start-group', str(sdk / 'lib/libxos_loader.a'),
                  str(sdk / 'lib/libxos.a'),
-                 *([str(sdk / 'lib/libc.a'), str(sdk / 'lib/libm.a'), '-lgcc'] if args.probe == 'tty_exec' else []),
+                 *([str(sdk / 'lib/libc.a'), str(sdk / 'lib/libm.a'), '-lgcc'] if args.probe in ('tty_exec', 'device') else []),
                  '-Wl,--end-group', '-o', str(elf)]]
     report = {'status': 'failed', 'probe': args.probe, 'revision': revision, 'build_id': manifest['build_id'],
               'system_manifest_sha256': sha(system / 'manifest.json'), 'image_sha256': sha(image),
@@ -77,6 +80,8 @@ def main():
     elif args.probe == 'tty_exec':
         report['not_run'] = ['fork_inheritance_stress_and_failure', 'threaded_profile',
                              'exec_inflight_races', 'full_w1_terminal']
+    elif args.probe == 'device':
+        report['not_run'] = ['device_grant', 'device_map', 'device_irq', 'device_dma', 'full_w1_terminal']
     guest = None
     try:
         for cmd in commands:
@@ -171,6 +176,11 @@ def main():
                 guest.expect(b'kind=exited code=0', start=start, timeout=60)
                 guest.expect(b'xsh> ', start=start, timeout=60)
                 report['checks'].append('terminal_malformed_child_parent_and_sibling_isolation')
+            elif args.probe == 'device':
+                reply = command(guest, 'exec-file /bin/device.elf', b'DEVICE_ABI_PROBE ok', timeout=40)
+                if b'kind=exited code=0' not in reply or b'DEVICE_ABI_PROBE_FAIL' in reply:
+                    raise AssertionError('device ABI probe did not pass')
+                report['checks'].append('device_abi_header_validation_and_unimplemented_grant')
             elif args.probe in ('pio', 'irq'):
                 expected = b'W1_PIO_DENIED_OK' if args.probe == 'pio' else b'W1_IRQ_DENIED_OK'
                 reply = command(guest, f'exec-file /bin/{args.probe}.elf', expected, timeout=40)

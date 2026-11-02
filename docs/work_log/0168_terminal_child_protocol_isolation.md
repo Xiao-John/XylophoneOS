@@ -17,5 +17,12 @@ build ID `5462f3bfbe605014`，系统 manifest SHA-256
 `build/w1_bad_child_run_c1c5dfd/`。这不覆盖恶意消息的全部种类、并发交错或完整 W1/W2。
 
 进一步让另一个已登记的子进程保持存活，等短消息子进程被撤销并回收后，验证该
-兄弟进程仍能查询模式和输出，父进程随后仍能查询模式。该新断言须提交后客体运行，
-不外推至任意在途操作或所有交错。
+兄弟进程仍能查询模式和输出，父进程随后仍能查询模式。提交
+`27a57e5a6fb6307f1dda38425c8ef1279437efed` 后重建的正常 Xsh 客体结果
+`passed_subset`，该兄弟隔离断言和既有 fork/exec 子集通过。build ID
+`44f61f56659660fe`，系统 manifest SHA-256
+`0db34b2cc5269215b05245737bf95caac9577153d2e5ae7aab3eda4313b9e8b7`，镜像 SHA-256
+`78dafa56df4a800f200ce6e2913f9269221eed19d280a1f0defffdd8f9d57721`，SDK 树 SHA-256
+`20087342ff21014cc6fd305c8f8dcec793d958c9f4f55478882e73043ac3be44`，串口 SHA-256
+`0ae8d1b637d1e20d6da6711a733cbab8781b7f546699439cd54b4686219bf501`；报告位于
+`build/w1_sibling_run_27a57e5/`。不外推至任意在途操作或所有交错。

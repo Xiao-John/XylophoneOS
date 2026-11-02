@@ -43,3 +43,12 @@ build ID `ad34fe2aaff86731`，系统 manifest SHA-256
 结束整个应用会话。关闭会话时在锁内关闭记录中的端点，避免与接收线程的记录修改
 竞争。当前没有入口创建派生会话，仍是单应用；这些多项路径尚未客体验证，尤其
 待处理消息与端点关闭、槽位复用及回复失败的交错必须在开放登记前解决。
+
+提交 `ff553663dbdb4bf5b9b6956ff2c54091e319e78b` 后重建，正常 Xsh 单应用
+exec 客体探针 `passed_subset`，覆盖模式、别名、CLOEXEC 和失败 exec；多项等待集合
+因尚无派生会话入口而未运行。build ID `b9a1ad37c5bd2271`，系统 manifest SHA-256
+`10cca97ce6f527b28a680d0e42c22f703495eb496437aaa13eb4a667aea3679a`，镜像 SHA-256
+`0defffcc9a9973e5459b2c577371f6d29677e7096bd5391f918034525ac8411a`，SDK 树 SHA-256
+`1f6554305e33c41697dc11a87f35a9ff63559c2142e3f5fd67307c10e8da915a`，串口 SHA-256
+`f3e7a74fcd152a473caf633a3eb47d847db113e67907dc7ddc5d9287fd7ccfff`；报告位于
+`build/w1_waitset_run_ff55366/`。这不构成多会话或完整 W1 资格。

@@ -25,3 +25,15 @@ profile；新增 `scripts/freeze_ncursesw_subset.py` 检查干净提交、正常
 复核发现首次冻结未一并携带底层 SDK、目标库和 terminfo 的输入回执，也未携带系统
 镜像及终端 ELF。冻结工具现要求并复制这些材料，逐项验证其哈希；更改提交后须按
 新命令重建、重新运行客体并再次测试冻结与拒绝，不能把首次冻结当作新版本结果。
+
+提交 `28d8c7563e226e5e53a7b39c28b9d6283a237924` 后重建正常 Xsh 系统、重新链接
+消费者并核验现有 SDK 源码输入；客体 `passed_probe`，新版冻结成功，包含底层回执、
+系统镜像、终端 ELF、消费者与串口。结果 `guest_verified_subset`，树 SHA-256
+`db7c6f28a34d19190999ab28f1ac76799ce0d7022d9f49c772eb265f374b641c`，位于
+`build/w2_frozen_subset_28d8c75/`。系统 build ID `b2334a2f12a28c80`，manifest SHA-256
+`216a8d508b7945747680e1c9754a52f90b6a4a43afee9fbef10b1b0ec4a9a59b`，镜像 SHA-256
+`9a96839c012488b2aaa36c77c5221f199347be09e3b07e2ffc1bd9767541ac12`，组合 SDK 树
+SHA-256 `038491cd8cefcc77551b681b3954e20983d979f7d1d32a4df7bf982bf0fd27d0`，
+串口 SHA-256 `b5b20a3b57ffb17f8133221d40ee147c81514cb86165e75cdaf2b808f2b63e65`。
+修改消费者 ELF、修改 terminfo 回执及传入旧提交客体报告均被拒绝。回执仍不声称
+完整 W1/W2；后续源码或系统组合变化需重新运行并绑定。

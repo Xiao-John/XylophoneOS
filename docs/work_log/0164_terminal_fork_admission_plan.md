@@ -28,3 +28,12 @@
 拟分阶段实施：先保持单应用行为并整理会话记录；再实现有界接收与撤销并保持旧协议
 回归；最后增加登记事务、libc fork 交接和权限/故障/资源探针。每阶段提交后使用
 匹配系统与 SDK 运行客体检查，不能以宿主模拟或局部通过替代 W1/W2 完整验收。
+
+首阶段提交 `7a4967275955ba7798d72bae7be9debebb09d6c8` 后重建并执行正常 Xsh
+终端 exec 客体探针，结果 `passed_subset`，覆盖模式、别名、CLOEXEC 及失败 exec。
+build ID `ad34fe2aaff86731`，系统 manifest SHA-256
+`17301406dc861e87e4d72befbbb69f3bcd0aa50063cf8ccbc406184f93ae8d67`，镜像 SHA-256
+`e9a87b8d319723bf0665f4b3ea4bb436db3d46b306f762f4aab5a853ff3c5663`，SDK 树 SHA-256
+`e78bef9510de6768e9b8993e32c7c1dc3601c0f213b2ff5b8cd3f578ae90f3ee`，串口 SHA-256
+`ad2029f55f3563736f8b35b4008b2a713fee430aa0c79d8a12c65bc7501c0046`；报告位于
+`build/w1_session_record_run_7a49672/`。未验证 fork、多会话、线程 profile 或完整 W1。

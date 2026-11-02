@@ -32,6 +32,33 @@ extern "C" int xos_user_main(const startup_info* startup) {
         return 4;
     }
     if (sdk::pio_grant(pio_grant_action::controller, 0, pio_resource_com1) <= 0) return 2;
+    if (sdk::equal(args[1], "irq_delivery")) {
+        const u8 line_control = 3, modem_control = 0x0b;
+        __asm__ volatile("outb %0, %1" : : "a"(line_control), "Nd"(static_cast<u16>(0x3fb)));
+        u8 ier = 0;
+        __asm__ volatile("outb %0, %1" : : "a"(ier), "Nd"(static_cast<u16>(0x3f9)));
+        __asm__ volatile("outb %0, %1" : : "a"(modem_control), "Nd"(static_cast<u16>(0x3fc)));
+        const i64 token = sdk::irq_event(irq_event_action::bind, pio_resource_com1);
+        if (token <= 0) return 21;
+        ier = 2; // 16550 THRE interrupt, only enabled during this probe
+        __asm__ volatile("outb %0, %1" : : "a"(ier), "Nd"(static_cast<u16>(0x3f9)));
+        const i64 now = sdk::syscall(sys_clock_monotonic);
+        if (now < 0) return 22;
+        const u64 handle = static_cast<u64>(token);
+        const i64 sequence = sdk::irq_event(irq_event_action::wait, handle,
+                                            static_cast<u64>(now) + 3000000000ull);
+        if (sequence <= 0 || sdk::irq_event(irq_event_action::wait, handle, 0) != sequence ||
+            sdk::irq_event(irq_event_action::ack, handle, static_cast<u64>(sequence) + 1) != process_error_state)
+            return 23;
+        // Remove the device interrupt cause before acknowledging the event.
+        ier = 0;
+        __asm__ volatile("outb %0, %1" : : "a"(ier), "Nd"(static_cast<u16>(0x3f9)));
+        if (sdk::irq_event(irq_event_action::ack, handle, static_cast<u64>(sequence)) != 0 ||
+            sdk::irq_event(irq_event_action::ack, handle, static_cast<u64>(sequence)) != process_error_state ||
+            sdk::irq_event(irq_event_action::wait, handle, 0) != process_error_would_block ||
+            sdk::irq_event(irq_event_action::close, handle) != 0) return 24;
+        return 0;
+    }
     if (sdk::equal(args[1], "irq_empty")) {
         // Disable UART interrupt causes before binding; this test only checks
         // an empty IRQ source, not delivery of a real device interrupt.

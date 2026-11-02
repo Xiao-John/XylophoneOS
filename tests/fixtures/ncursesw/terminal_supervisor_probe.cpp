@@ -85,7 +85,8 @@ extern "C" int xos_user_main(const xos::startup_info*) {
         !pio_boundary("above", true) || !pio_boundary("cross", true) ||
         !pio_boundary("fork", false) || !pio_boundary("badexec", false) ||
         !pio_boundary("exec", true) || !pio_boundary("revoke", true) ||
-        !pio_boundary("revoke_thread", true) || !pio_boundary("irq_empty", false)) return 17;
+        !pio_boundary("revoke_thread", true) || !pio_boundary("irq_empty", false) ||
+        !pio_boundary("irq_delivery", false)) return 17;
     if (terminal::start(session, "/bin/terminal.elf") <= 0) return 2;
     if (!transmit("W1_PIO_BOUNDS_OK\n")) return 18;
     if (!transmit("W1_READ_READY\n")) return 3;

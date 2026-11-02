@@ -25,5 +25,11 @@ UART 中断原因，再绑定 IRQ4，检查重复绑定、立即空等待、未�
 `build/w1_irq_delivery_83919fe/`。这只覆盖一次受控中断，不推断所有到达/撤权竞争。
 
 进一步增加阻塞等待者关闭检查：工作线程进入 IRQ wait 后，主线程通过线程统计确认
-其确实已阻塞，再关闭 token 并 join，要求等待者收到 denied。新增检查提交后须在
-客体执行；不将关闭单一等待者外推到所有撤权竞争。
+其确实已阻塞，再关闭 token 并 join，要求等待者收到 denied。提交
+`9b2ee279dca9bd45bf2ed4f78d980a5548cf7daf` 后重建的专用客体通过此项及既有 IRQ、
+PIO 和终端交接子集。build ID `d0ac4b8288b53334`，系统 manifest SHA-256
+`2ee28c96290e1c6c036264f64ea67808855c259dad15063bc81b9f02974156d0`，镜像 SHA-256
+`0b66948ab770b3ac5917fa8b83742d31163fc5fd032d23d167514fd6cca83b57`，SDK 树 SHA-256
+`19fc9a369a9b80887b5b9d72687ac75809ae78459f13d626b6ef67daad9673f4`，串口 SHA-256
+`8ead76e4a016e7ce0986e91cc7437f940aa496fad40581ca6babebaa1c82f43e`；报告位于
+`build/w1_irq_wait_close_9b2ee27/`。不将关闭单一等待者外推到所有撤权竞争。

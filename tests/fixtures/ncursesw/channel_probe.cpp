@@ -127,6 +127,18 @@ extern "C" int xos_user_main(const startup_info* startup) {
         sdk::channel_wait(extra[1], 0) != process_error_denied) return 18;
     const i64 forked = sdk::syscall(sys_process_fork_prepare);
     if (forked <= 0) return 41;
+    channel_fork_pair rejected{channel_version, sizeof(channel_fork_pair), static_cast<u64>(forked),
+                               incoming, outgoing, 0, 0};
+    if (sdk::channel_fork(rejected) != process_error_denied || rejected.child_send != 0 ||
+        rejected.child_receive != 0) return 46;
+    rejected = {channel_version, sizeof(channel_fork_pair), child, outgoing, incoming, 0, 0};
+    if (sdk::channel_fork(rejected) != process_error_denied) return 47;
+    rejected = {channel_version, sizeof(channel_fork_pair), static_cast<u64>(forked), outgoing, outgoing, 0, 0};
+    if (sdk::channel_fork(rejected) != process_error_invalid) return 48;
+    rejected = {channel_version, sizeof(channel_fork_pair), static_cast<u64>(forked), outgoing, incoming, 1, 0};
+    if (sdk::channel_fork(rejected) != process_error_invalid) return 49;
+    rejected = {channel_version, sizeof(channel_fork_pair), static_cast<u64>(forked), outgoing, 0xffffffffu, 0, 0};
+    if (sdk::channel_fork(rejected) != process_error_denied) return 50;
     channel_fork_pair pair{channel_version, sizeof(channel_fork_pair), static_cast<u64>(forked),
                            outgoing, incoming, 0, 0};
     if (sdk::channel_fork(pair) != 0 || pair.child_send == 0 || pair.child_receive == 0 ||

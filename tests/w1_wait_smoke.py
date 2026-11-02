@@ -116,6 +116,7 @@ def main():
                 report['checks'].append('channel_wait_many_validation_timeout_and_wakeup')
                 report['checks'].append('channel_wait_many_blocked_peer_close_and_revalidation')
                 report['checks'].append('channel_fork_pair_identity_duplicate_and_abort')
+                report['checks'].append('channel_fork_pair_invalid_direction_child_and_request')
             elif args.probe == 'tty_exec':
                 start = len(guest.output)
                 send_bytes(guest, b'tty-run /bin/ttyexec.elf\r')

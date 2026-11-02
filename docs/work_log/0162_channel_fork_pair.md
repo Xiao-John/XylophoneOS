@@ -37,5 +37,14 @@ SHA-256 `fb780555ace2028e45ce51f60320bc5157437a4d11e8f1665547fd410543e975`，
 串口 SHA-256 `4d7e23346fbc242d7c4e09d446a7dbf9254611d7ec0485945c163b02f308b3c2`。
 报告位于 `build/w1_fork_commit_run_349bd8e/`。这不验证终端服务登记或完整进程交互。
 
-终端服务现将唯一应用的接收等待改用 `wait_many`，对伪唤醒重新检查；这是扩展
-等待集合的准备，仍只有一个应用会话，必须提交后重新进行客体交互和退出回归。
+终端服务将唯一应用的接收等待改用 `wait_many`，对伪唤醒重新检查；这是扩展
+等待集合的准备，仍只有一个应用会话。提交 `d3e882baf18020856d2acd760b8dd9388cd771a6`
+后重建系统及组合 SDK，在正常 Xsh 客体中既有宽字符、重入、locale、应用故障、
+服务重启和资源基线探针 `passed_probe`，exec 模式、别名和 CLOEXEC 探针
+`passed_subset`。build ID `8e3e087444bcacca`，镜像 SHA-256
+`86caa357975e192018d8f9ee44ddd15e808b1677748fc86202a73c167b8d80f7`，组合 SDK 树
+SHA-256 `aab7b56459094f2f95752d46a17ee9f2deb42307692e7a4883b3f0b31c3ca1f9`，
+ncurses 客体串口 SHA-256 `36047062be63edf5d10b5599af0aa90242009c1c00012c279d2d750f7192a017`，
+exec 串口 SHA-256 `40010b2b8e7ae840065cd9eee8f94dd5e2dca700e5a487f8f6dbb59f65c5e1e6`。
+报告分别位于 `build/w1_terminal_many_d3e882b/` 和 `build/w1_terminal_many_run_d3e882b/`。
+这些是单应用受限回归，不证明多会话或 W1/W2 完整资格。

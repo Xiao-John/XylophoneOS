@@ -16,6 +16,7 @@ i64 prepare_pio(u64 child, void*) { return sdk::pio_grant(pio_grant_action::gran
 bool pio_boundary(const char* mode, bool fault) {
     sdk::spawn_options options{};
     for (u32 i = 0; i < 3; ++i) options.stdio[i] = -2;
+    options.grant_spawn = true;
     options.prepare_child = prepare_pio;
     const char* argv[] = {"/bin/pio_auth.elf", mode};
     const i64 child = sdk::spawn_file_options(argv[0], 2, argv, options);
@@ -57,7 +58,9 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     while (sdk::read(0, &trigger, 1) != 1) sdk::yield();
     if (trigger != '!') return 1;
     if (!pio_boundary("inside", false) || !pio_boundary("below", true) ||
-        !pio_boundary("above", true) || !pio_boundary("cross", true)) return 17;
+        !pio_boundary("above", true) || !pio_boundary("cross", true) ||
+        !pio_boundary("fork", false) || !pio_boundary("badexec", false) ||
+        !pio_boundary("exec", true)) return 17;
     if (terminal::start(session, "/bin/terminal.elf") <= 0) return 2;
     if (!transmit("W1_PIO_BOUNDS_OK\n")) return 18;
     if (!transmit("W1_READ_READY\n")) return 3;

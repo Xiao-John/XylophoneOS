@@ -84,6 +84,7 @@ def main():
             send_bytes(guest, b"!")
             guest.expect(b"W1_PIO_BOUNDS_OK", timeout=60)
             report['checks'].append('authorized_pio_inside_and_boundary_faults')
+            report['checks'].append('authorized_pio_fork_and_exec_revocation')
             guest.expect(b"W1_READ_READY", timeout=45)
             send_bytes(guest, b"R")
             guest.expect(b"W1_READ_OK", timeout=30)

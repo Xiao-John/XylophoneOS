@@ -10,3 +10,16 @@
 runner 在提交后的匹配系统 SDK 中编译独立目标 ELF，记录 fixture、SDK 与 ELF 哈希，
 用独立测试盘执行；不将宿主编译当作客体验收。此范围不验证 fork/exec 权限撤销、
 多线程切换、IRQ 应答竞争或完整 W1，须另行覆盖。
+
+提交 `cc4639a14dc4f3c83537c52b2c0d5fd7b30c5f98` 后重建并在专用客体执行，窗口内
+读取成功，低/高越界和 16 位跨界均触发 #GP，后续终端交接与 fork 子集通过。
+build ID `545f56cc8e7beec4`，系统 manifest SHA-256
+`eac97182fb47db9e253aa7137a9c53f6f2ff6ef75534580e2aa2b3a4d438b793`，镜像 SHA-256
+`0103a9618fb2cac8115cfc6aed27b676a8eb4d4afa1f64dcb239526ca53c3632`，SDK 树 SHA-256
+`911d361a116a1bf4ea1f743cbb1d6e88d773163106dd482bf75aed0a44a73ef7`，串口 SHA-256
+`5438a879f96e5b001febc2987abd48640185c70572c6462083f8dcc640499493`；报告位于
+`build/w1_pio_bounds_cc4639a/`。
+
+扩展专用探针：授权者 fork 后子进程访问 COM1 应 #GP 而父进程权限保留；失败 exec
+后原权限保留，成功 exec 后原权限失效且访问应 #GP。此组新增断言须提交后重新构建
+并客体执行；仍不涵盖主动撤权竞争或多线程切换。

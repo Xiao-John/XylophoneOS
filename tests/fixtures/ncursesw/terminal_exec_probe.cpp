@@ -39,6 +39,19 @@ bool same_resources(const xos::thread_stats& a, const xos::thread_stats& b) {
 extern "C" int xos_user_main(const xos::startup_info* startup) {
     const auto args = reinterpret_cast<const char* const*>(startup->argv);
     if (startup->argc > 1 && xos::sdk::equal(args[1], "malformed-child")) {
+        int release[2]{};
+        if (pipe(release) != 0) return 54;
+        const pid_t sibling = fork();
+        if (sibling == 0) {
+            char signal = 0;
+            struct termios mode{};
+            const char marker[] = "TTY_HEALTHY_SIBLING\n";
+            if (read(release[0], &signal, 1) != 1 || signal != 's' ||
+                tcgetattr(0, &mode) != 0 || write(1, marker, sizeof(marker) - 1) != sizeof(marker) - 1)
+                _exit(55);
+            _exit(0);
+        }
+        if (sibling < 0) return 56;
         const pid_t child = fork();
         if (child == 0) {
             xos::channel_info first{}, second{};
@@ -58,6 +71,9 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
         struct termios mode{};
         if (child < 0 || waitpid(child, &status, 0) != child || !WIFEXITED(status) || WEXITSTATUS(status) != 0 ||
             !isatty(0) || tcgetattr(0, &mode) != 0) return 52;
+        const char signal = 's';
+        if (write(release[1], &signal, 1) != 1 || waitpid(sibling, &status, 0) != sibling ||
+            !WIFEXITED(status) || WEXITSTATUS(status) != 0 || tcgetattr(0, &mode) != 0) return 57;
         return message("TTY_BAD_CHILD_ISOLATED") ? 0 : 53;
     }
     const bool interrupt_write = startup->argc > 1 && xos::sdk::equal(args[1], "interrupt");

@@ -1736,6 +1736,53 @@ void* process_syscall(interrupt_frame* frame) {
             if (handle == 0) { result = process_error_resources; break; }
             endpoint_for(handle)->generic_channel = true;
             result = static_cast<i64>(handle);
+        } else if (action == channel_action::fork_pair) {
+            if (third != 0 || !user_range_ok(second, sizeof(channel_fork_pair), false) ||
+                !user_range_ok(second, sizeof(channel_fork_pair), true)) break;
+            channel_fork_pair request{};
+            copy_from_user(&request, second, sizeof(request));
+            if (request.version != channel_version || request.size != sizeof(request) ||
+                request.child_send != 0 || request.child_receive != 0 ||
+                request.source_send == request.source_receive) break;
+            endpoint_record* send = endpoint_for(request.source_send);
+            endpoint_record* receive = endpoint_for(request.source_receive);
+            process_record* child = owned_process(request.child_pid);
+            if (child == nullptr || child->state != task_state::building || !child->fork_pending ||
+                child->fork_source != current->pid || child->parent != current->pid ||
+                completion_for(current->pid, child->pid) == nullptr || send == nullptr || receive == nullptr ||
+                !send->generic_channel || !receive->generic_channel || send->sender_pid != current->pid ||
+                receive->receiver_pid != current->pid || send->receiver_pid != receive->sender_pid ||
+                send->owner_pid != receive->owner_pid || send->pending || receive->pending) {
+                result = process_error_denied; break;
+            }
+            const u64 peer = send->receiver_pid;
+            process_record* peer_task = task_by_pid(peer);
+            process_record* owner = task_by_pid(send->owner_pid);
+            if (peer_task == nullptr || peer_task->closing || peer_task->state == task_state::dead ||
+                owner == nullptr || owner->closing || owner->state == task_state::dead) {
+                result = process_error_state; break;
+            }
+            u32 free_count = 0, owned = 0;
+            bool duplicate = false;
+            for (const auto& endpoint : endpoints) {
+                if (!endpoint.used) { ++free_count; continue; }
+                if (!endpoint.generic_channel) continue;
+                if (endpoint.owner_pid == send->owner_pid) ++owned;
+                if ((endpoint.sender_pid == child->pid && endpoint.receiver_pid == peer) ||
+                    (endpoint.receiver_pid == child->pid && endpoint.sender_pid == peer)) duplicate = true;
+            }
+            if (duplicate) { result = process_error_state; break; }
+            if (owned > 6 || free_count < 2 || next_endpoint_handle > 0xfffffffeull) {
+                result = process_error_resources; break;
+            }
+            request.child_send = endpoint_attach(peer, child->pid, send->owner_pid, send->capacity);
+            request.child_receive = endpoint_attach(child->pid, peer, send->owner_pid, receive->capacity);
+            // Free slots and handle space were reserved by checks in this
+            // non-preemptible kernel section; both allocations must succeed.
+            endpoint_for(request.child_send)->generic_channel = true;
+            endpoint_for(request.child_receive)->generic_channel = true;
+            copy_to_user(second, &request, sizeof(request));
+            result = 0;
         } else if (action == channel_action::enumerate) {
             if (second >= max_endpoints || !user_range_ok(third, sizeof(channel_info), true)) { break; }
             u64 ordinal = 0;

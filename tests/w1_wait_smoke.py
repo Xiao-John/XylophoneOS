@@ -69,7 +69,7 @@ def main():
                           'legacy_console_deadline_wait', 'overflow', 'unicode', 'terminfo',
                           'ncurses', 'resource_stress']}
     if args.probe == 'channel':
-        report['not_run'] = ['fork', 'fault_cleanup', 'single_channel_blocked_waiter_close',
+        report['not_run'] = ['fork_commit', 'fork_pair_security_matrix', 'fault_cleanup', 'single_channel_blocked_waiter_close',
                              'concurrent_senders', 'resource_stress', 'full_w1_terminal']
     elif args.probe in ('pio', 'irq'):
         report['not_run'] = ['authorized_boundaries', 'fork_exec', 'revocation_races',
@@ -115,6 +115,7 @@ def main():
                 report['checks'].append('explicit_exec_preserve_and_failed_duplicate_unchanged')
                 report['checks'].append('channel_wait_many_validation_timeout_and_wakeup')
                 report['checks'].append('channel_wait_many_blocked_peer_close_and_revalidation')
+                report['checks'].append('channel_fork_pair_identity_duplicate_and_abort')
             elif args.probe == 'tty_exec':
                 start = len(guest.output)
                 send_bytes(guest, b'tty-run /bin/ttyexec.elf\r')

@@ -54,7 +54,17 @@ extern "C" int xos_user_main(const startup_info* startup) {
         if (sdk::ipc_send(out, &byte, 1) != 0 ||
             sdk::syscall(sys_sleep_until, static_cast<u64>(sdk::syscall(sys_clock_monotonic)) + 100000000ull) != 0 ||
             sdk::channel_close(extra.handle) != 0) return 35;
-        if (sdk::channel_wait(in, deadline()) != 0 || sdk::ipc_recv(in, &byte, 1) != 1 || byte != 'c') return 6;
+        if (sdk::channel_wait(in, deadline()) != 0 || sdk::ipc_recv(in, &byte, 1) != 1 || byte != 'p') return 38;
+        channel_info derived_send{}, derived_receive{};
+        if (sdk::channel_get(2, derived_send) != 0 || sdk::channel_get(3, derived_receive) != 0 ||
+            derived_send.peer_pid == first.peer_pid || derived_send.peer_pid != derived_receive.peer_pid ||
+            derived_send.controller_pid != first.controller_pid ||
+            derived_receive.controller_pid != first.controller_pid ||
+            derived_send.rights == derived_receive.rights) return 39;
+        byte = 'v';
+        if (sdk::ipc_send(out, &byte, 1) != 0 || sdk::channel_wait(in, deadline()) != 0 ||
+            sdk::ipc_recv(in, &byte, 1) != 1 || byte != 'c' ||
+            sdk::channel_get(2, extra) != thread_error_not_found) return 40;
         sdk::spawn_options options{};
         options.replace_image = true;
         const char* replacement[] = {"channel", "replaced"};
@@ -115,6 +125,21 @@ extern "C" int xos_user_main(const startup_info* startup) {
         sdk::channel_wait_many(many, 0) != process_error_denied) return 37;
     if (sdk::channel_wait(extra[0], 0) != process_error_denied || sdk::channel_close(extra[1]) != 0 ||
         sdk::channel_wait(extra[1], 0) != process_error_denied) return 18;
+    const i64 forked = sdk::syscall(sys_process_fork_prepare);
+    if (forked <= 0) return 41;
+    channel_fork_pair pair{channel_version, sizeof(channel_fork_pair), static_cast<u64>(forked),
+                           outgoing, incoming, 0, 0};
+    if (sdk::channel_fork(pair) != 0 || pair.child_send == 0 || pair.child_receive == 0 ||
+        pair.child_send == pair.child_receive || sdk::channel_wait(pair.child_send, 0) != process_error_denied)
+        return 42;
+    channel_fork_pair duplicate{channel_version, sizeof(channel_fork_pair), static_cast<u64>(forked),
+                                outgoing, incoming, 0, 0};
+    if (sdk::channel_fork(duplicate) != process_error_state || duplicate.child_send != 0 ||
+        duplicate.child_receive != 0) return 43;
+    const char inspect = 'p';
+    if (sdk::ipc_send(outgoing, &inspect, 1) != 0 || sdk::channel_wait(incoming, deadline()) != 0 ||
+        sdk::ipc_recv(incoming, &response, 1) != 1 || response != 'v') return 44;
+    if (sdk::syscall(sys_process_abort, static_cast<u64>(forked)) != 0) return 45;
     const char last = 'c';
     if (sdk::ipc_send(outgoing, &last, 1) != 0) return 13;
     if (sdk::channel_wait(incoming, deadline()) != 0 || sdk::ipc_recv(incoming, &response, 1) != 1 || response != 'f') return 25;

@@ -27,6 +27,8 @@ sys60 试行 bit32 扩展 entry 可显式保留通用通道，布局见 `process
 和 [通道契约](channel.md)；默认 ABI 不变，尚未客体验证。
 sys81 试行 action 4 对最多四个通用端点做原子检查与等待，布局见
 `channel_wait_many_request` 和同一契约；尚未客体验证。
+sys81 action 5 试行派生 fork 子进程双向通道，结构为 `channel_fork_pair`；
+身份、额度和生命周期见同一契约，尚未客体验证。
 
 数值来源分别为内核基础syscall头与共享ABI头；此表锁定当前分配，自动检查捕获重号、漏项、
 新增占用预留段而未登记，以及源码与本表偏移。allocated不等于完整POSIX或应用资格。

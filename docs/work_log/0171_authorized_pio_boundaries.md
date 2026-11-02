@@ -48,5 +48,12 @@ build ID `3983726c8710d469`，系统 manifest SHA-256
 增加单核多线程探针：授权进程的工作线程先读 COM1 并通知主线程，主线程在一次
 线程切换后也读 COM1；supervisor 撤权后，主线程唤醒原工作线程，其再次访问应
 触发 #GP。探针使用无 libc 的机制线程核心，runner 从匹配源码编译并记录哈希。
-该检查验证一个线程切换及撤权后的线程访问顺序，不覆盖 SMP 或全部交错；新增
-断言须提交后重建并客体运行。
+该检查验证一个线程切换及撤权后的线程访问顺序，不覆盖 SMP 或全部交错。提交
+`6d557320b9e7595180da81548b9afab5cc2429fa` 后重建的专用客体通过该检查及既有
+PIO/fork/exec/终端交接子集；build ID `0c5789a68c601257`，系统 manifest SHA-256
+`6f4f058666a848f9fc64b1edf628a5af45892e1a366cbe6ea19edc0e3f6d679e`，镜像 SHA-256
+`056ef9795d6084d1fc8d21e24e000e6d6c3e823cb26391e3219a6bdf91012b5d`，SDK 树 SHA-256
+`4d185c9d1c052a065476f8f940d212414b70c373f86f0fff746f45a43269f53a`，PIO ELF SHA-256
+`dd4076533faae777d116d38392854e09f67b1f5b34400bf584f7b8dd5b6b0c47`，串口 SHA-256
+`257859d2f5661646e4c0dc5cb5ae2179316b088465b0d17e00ef81371b734c28`；报告位于
+`build/w1_pio_threads_6d55732/`。

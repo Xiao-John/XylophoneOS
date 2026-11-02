@@ -145,6 +145,12 @@ def main():
                 guest.expect(b'kind=exited code=0', start=start, timeout=60)
                 guest.expect(b'xsh> ', start=start, timeout=60)
                 report['checks'].append('terminal_fork_alias_shared_mode_and_child_exit')
+                start = len(guest.output)
+                send_bytes(guest, b'tty-run /bin/ttyexec.elf capacity\r')
+                guest.expect(b'TTY_FORK_CAP_OK', start=start, timeout=90)
+                guest.expect(b'kind=exited code=0', start=start, timeout=60)
+                guest.expect(b'xsh> ', start=start, timeout=60)
+                report['checks'].append('terminal_fork_capacity_failure_and_recovery')
             elif args.probe in ('pio', 'irq'):
                 expected = b'W1_PIO_DENIED_OK' if args.probe == 'pio' else b'W1_IRQ_DENIED_OK'
                 reply = command(guest, f'exec-file /bin/{args.probe}.elf', expected, timeout=40)

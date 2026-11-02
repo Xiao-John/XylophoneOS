@@ -29,6 +29,43 @@ bool message(const char* label) {
 
 extern "C" int xos_user_main(const xos::startup_info* startup) {
     const auto args = reinterpret_cast<const char* const*>(startup->argv);
+    if (startup->argc > 1 && xos::sdk::equal(args[1], "capacity")) {
+        int ready[2]{}, release[2]{};
+        if (pipe(ready) != 0 || pipe(release) != 0) return 21;
+        pid_t children[2]{};
+        for (unsigned i = 0; i < 2; ++i) {
+            children[i] = fork();
+            if (children[i] == 0) {
+                char byte = 'r';
+                if (write(ready[1], &byte, 1) != 1 || read(release[0], &byte, 1) != 1) _exit(22);
+                _exit(0);
+            }
+            if (children[i] < 0) return 23;
+        }
+        for (unsigned i = 0; i < 2; ++i) {
+            char byte = 0;
+            if (read(ready[0], &byte, 1) != 1 || byte != 'r') return 24;
+        }
+        errno = 0;
+        const pid_t excess = fork();
+        if (excess == 0) _exit(0);
+        if (excess > 0) { int ignored = 0; (void)waitpid(excess, &ignored, 0); return 25; }
+        if (errno != ENOMEM || !isatty(0)) return 26;
+        struct termios mode{};
+        if (tcgetattr(0, &mode) != 0) return 27;
+        const char release_bytes[] = {'x', 'x'};
+        if (write(release[1], release_bytes, sizeof(release_bytes)) != sizeof(release_bytes)) return 28;
+        for (const auto child : children) {
+            int status = 0;
+            if (waitpid(child, &status, 0) != child || !WIFEXITED(status) || WEXITSTATUS(status) != 0) return 29;
+        }
+        const pid_t recovered = fork();
+        if (recovered == 0) _exit(isatty(1) ? 0 : 30);
+        int status = 0;
+        if (recovered < 0 || waitpid(recovered, &status, 0) != recovered ||
+            !WIFEXITED(status) || WEXITSTATUS(status) != 0) return 31;
+        return message("TTY_FORK_CAP_OK") ? 0 : 32;
+    }
     if (startup->argc > 1 && xos::sdk::equal(args[1], "fork")) {
         const int duplicate = dup(1);
         if (duplicate < 0) return 15;

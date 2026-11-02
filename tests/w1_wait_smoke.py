@@ -189,6 +189,33 @@ def main():
                 guest.expect(b'kind=exited code=0', start=start, timeout=60)
                 guest.expect(b'xsh> ', start=start, timeout=60)
                 report['checks'].append('terminal_malformed_child_parent_and_sibling_isolation')
+                # Repeat actual quota exhaustion and recovery in the same guest,
+                # checking the system baseline after each completed session.
+                def tty_resources():
+                    mark = len(guest.output)
+                    send_bytes(guest, b'stats\r')
+                    guest.expect(b'[resources] free=', start=mark, timeout=30)
+                    guest.expect(b'xsh> ', start=mark, timeout=30)
+                    match = re.search(rb'\[resources\] free=(\d+) tasks=(\d+) completions=(\d+)',
+                                      bytes(guest.output[mark:]))
+                    if not match:
+                        raise AssertionError('missing terminal resource counters')
+                    return tuple(map(int, match.groups()))
+
+                baseline = tty_resources()
+                observed = []
+                for _ in range(8):
+                    mark = len(guest.output)
+                    send_bytes(guest, b'tty-run /bin/ttyexec.elf capacity\r')
+                    guest.expect(b'TTY_FORK_CAP_OK', start=mark, timeout=90)
+                    guest.expect(b'kind=exited code=0', start=mark, timeout=60)
+                    guest.expect(b'xsh> ', start=mark, timeout=60)
+                    observed.append(tty_resources())
+                    if observed[-1] != baseline:
+                        raise AssertionError(f'terminal resource baseline changed: {baseline} -> {observed[-1]}')
+                report['capacity_baseline'] = baseline
+                report['capacity_after_iterations'] = observed
+                report['checks'].append('terminal_fork_capacity_eight_recoveries_resource_baseline')
             elif args.probe == 'device':
                 reply = command(guest, 'exec-file /bin/device.elf', b'DEVICE_ABI_PROBE ok', timeout=40)
                 if b'kind=exited code=0' not in reply or b'DEVICE_ABI_PROBE_FAIL' in reply:

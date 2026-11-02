@@ -62,6 +62,16 @@ extern "C" int xos_user_main(const startup_info* startup) {
             derived_send.controller_pid != first.controller_pid ||
             derived_receive.controller_pid != first.controller_pid ||
             derived_send.rights == derived_receive.rights) return 39;
+        const u32 derived_in = derived_send.rights == channel_receive ? derived_send.handle : derived_receive.handle;
+        const u32 derived_out = derived_send.rights == channel_send ? derived_send.handle : derived_receive.handle;
+        channel_fork_verification verification{channel_version, sizeof(channel_fork_verification),
+                                               in, out, derived_in, derived_out, derived_send.peer_pid};
+        if (sdk::channel_verify_fork(verification) != 0) return 62;
+        verification.child_incoming = derived_out;
+        if (sdk::channel_verify_fork(verification) != process_error_denied) return 63;
+        verification.child_incoming = derived_in;
+        verification.child_pid = first.peer_pid;
+        if (sdk::channel_verify_fork(verification) != process_error_denied) return 64;
         byte = 'v';
         if (sdk::ipc_send(out, &byte, 1) != 0 || sdk::channel_wait(in, deadline()) != 0 ||
             sdk::ipc_recv(in, &byte, 1) != 1 || byte != 't') return 40;

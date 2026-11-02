@@ -117,6 +117,7 @@ def main():
                 report['checks'].append('channel_wait_many_blocked_peer_close_and_revalidation')
                 report['checks'].append('channel_fork_pair_identity_duplicate_and_abort')
                 report['checks'].append('channel_fork_pair_invalid_direction_child_and_request')
+                report['checks'].append('channel_fork_pair_peer_provenance_validation')
                 report['checks'].append('channel_fork_pair_commit_child_io_and_exit_cleanup')
             elif args.probe == 'tty_exec':
                 start = len(guest.output)

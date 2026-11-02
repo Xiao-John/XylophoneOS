@@ -106,6 +106,7 @@ completion_record completions[16];
 struct endpoint_record {
     bool used;
     u32 handle;
+    u32 derived_from;
     u64 receiver_pid;
     u64 sender_pid;
     u64 owner_pid;
@@ -1781,7 +1782,34 @@ void* process_syscall(interrupt_frame* frame) {
             // non-preemptible kernel section; both allocations must succeed.
             endpoint_for(request.child_send)->generic_channel = true;
             endpoint_for(request.child_receive)->generic_channel = true;
+            endpoint_for(request.child_send)->derived_from = request.source_send;
+            endpoint_for(request.child_receive)->derived_from = request.source_receive;
             copy_to_user(second, &request, sizeof(request));
+            result = 0;
+        } else if (action == channel_action::verify_fork_pair) {
+            if (third != 0 || !user_range_ok(second, sizeof(channel_fork_verification), false)) break;
+            channel_fork_verification request{};
+            copy_from_user(&request, second, sizeof(request));
+            if (request.version != channel_version || request.size != sizeof(request)) break;
+            endpoint_record* source_in = endpoint_for(request.source_incoming);
+            endpoint_record* source_out = endpoint_for(request.source_outgoing);
+            endpoint_record* child_in = endpoint_for(request.child_incoming);
+            endpoint_record* child_out = endpoint_for(request.child_outgoing);
+            process_record* child = task_by_pid(request.child_pid);
+            if (source_in == nullptr || source_out == nullptr || child_in == nullptr || child_out == nullptr ||
+                child == nullptr || child->state != task_state::building || !child->fork_pending ||
+                !source_in->generic_channel || !source_out->generic_channel ||
+                !child_in->generic_channel || !child_out->generic_channel ||
+                source_in->receiver_pid != current->pid || source_out->sender_pid != current->pid ||
+                child_in->receiver_pid != current->pid || child_out->sender_pid != current->pid ||
+                source_in->sender_pid != source_out->receiver_pid ||
+                child->parent != source_in->sender_pid || child->fork_source != child->parent ||
+                child_in->sender_pid != child->pid || child_out->receiver_pid != child->pid ||
+                source_in->owner_pid != source_out->owner_pid ||
+                child_in->owner_pid != source_in->owner_pid || child_out->owner_pid != source_in->owner_pid ||
+                child_in->derived_from != source_in->handle || child_out->derived_from != source_out->handle) {
+                result = process_error_denied; break;
+            }
             result = 0;
         } else if (action == channel_action::enumerate) {
             if (second >= max_endpoints || !user_range_ok(third, sizeof(channel_info), true)) { break; }

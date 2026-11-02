@@ -48,6 +48,9 @@ inline i64 channel_wait_many(const channel_wait_many_request& request, u64 deadl
 inline i64 channel_fork(channel_fork_pair& request) {
     return syscall(sys_channel, static_cast<u64>(channel_action::fork_pair), reinterpret_cast<u64>(&request));
 }
+inline i64 channel_verify_fork(const channel_fork_verification& request) {
+    return syscall(sys_channel, static_cast<u64>(channel_action::verify_fork_pair), reinterpret_cast<u64>(&request));
+}
 inline i64 ipc_send(u32 handle, const void* data, u64 length) {
     return syscall(4, handle, reinterpret_cast<u64>(data), length);
 }

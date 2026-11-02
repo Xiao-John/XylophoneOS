@@ -18,5 +18,11 @@ SDK 树 SHA-256 `d17ac7ba730084c1b1c46d49c0bb3cbeb1a1d84cfed39f9c983554a9f85b9aa
 此机制不实现对端同意、终端服务多路仲裁、libc fork 交接或 W1/W2 资格；仍需
 拒绝矩阵、fork commit、退出/故障及资源压力验证。
 
-后续探针增加反向端点、非待提交子进程、重复源句柄、非零输出字段及无效句柄的
-拒绝检查；这些新增断言在提交并重新执行客体前不计为通过，亦不构成完整拒绝矩阵。
+提交 `8a8cff2dcd6dac01499c5a105e0c96da921cf341` 后重建，客体 `passed_subset`，
+增加验证反向端点、非待提交子进程、重复源句柄、非零输出字段及无效句柄被拒绝。
+build ID `8195e116df8c760b`，系统 manifest SHA-256
+`2c2a5380005d4acb41fb5afc521bc3434283ea301f38fc5d9dfbed18fad1c6c8`，镜像
+SHA-256 `c29958901f7bf55b83295ad509a7dca54ba32fc3ed924baab2188c707dbfaeaa`，
+SDK 树 SHA-256 `98b404991f20dab2cf5d7336a73228f47e9e04262f7813c056df9d1c1ad8134b`，
+串口 SHA-256 `9f10ce32d02b1d91068fd8a47a9c3e0f3584748eddf7b57c97118b9d4fb03f55`；
+报告位于 `build/w1_fork_denial_run_8a8cff2/`。这些断言不构成完整拒绝矩阵。

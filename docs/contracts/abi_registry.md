@@ -16,10 +16,12 @@
 | 83 | 83 | allocated | 受控 IRQ 事件；实现未验 |
 | 84 | 95 | reserved | 系统底座线：通用等待/信号/进程控制；具体接口尚未登记 |
 | 96 | 111 | reserved | 显示/输入线的后续机制；现有65/66保留 |
-| 112 | 65535 | unallocated | 不存在私有试用号；先通过登记PR分配，扩大范围亦须明确登记 |
+| 112 | 112 | allocated | 设备授权线 v1 单入口 `sys_device`；实现按[契约](device_authorization_v1.md)§7 分段推进 |
+| 113 | 127 | reserved | 设备授权线：后续机制 |
+| 128 | 65535 | unallocated | 不存在私有试用号；先通过登记PR分配，扩大范围亦须明确登记 |
 
 责任是模块角色，不代表已派出agent或允许同时改公共文件。预留不生成头文件常量、假函数、
-成功桩或能力声明，也不保证未来一个需求一定需要新syscall。112以上未分配，不暗示ABI只允许16位。
+成功桩或能力声明，也不保证未来一个需求一定需要新syscall。128以上未分配，不暗示ABI只允许16位。
 
 ## syscall逐项登记
 
@@ -107,6 +109,7 @@ action 6 由对端验证派生通道来源，结构为 `channel_fork_verificatio
 | 81 | `sys_channel` | `src/shared/include/xos/process_abi.hpp` |
 | 82 | `sys_pio_grant` | `src/shared/include/xos/process_abi.hpp` |
 | 83 | `sys_irq_event` | `src/shared/include/xos/process_abi.hpp` |
+| 112 | `sys_device` | `src/shared/include/xos/device_abi.hpp` |
 
 ## 待实施的具体预分配
 
@@ -118,6 +121,7 @@ PX4-A 提议认领如下；本分支未合入前不构成全项目登记，不�
 | 编号 | 拟用符号 | 责任角色 | 状态 | 实现PR |
 |---:|---|---|---|---|
 | 67 | `sys_vm` | VM负责人；匿名私有VMA v1 | claimed | 待登记合入后另开；[契约提案](anonymous_vm.md) |
+
 
 claimed必须位于对应reserved段，不能与现有接口或其他认领重复；不生成源码常量或能力。
 实现PR再将该号从认领表移到逐项分配表，并拆分号段：该号allocated，其余仍reserved。

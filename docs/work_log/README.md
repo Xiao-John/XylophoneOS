@@ -1,5 +1,7 @@
 # work_log 编号索引
 
+新增记录：[0168 — Threading build parallelism](0168_threading_build_jobs.md)。
+
 历史存在重复编号（同号两份，主题不同）；本索引消歧可追溯性。**自 0149 起编号全局唯一，
 新工作记录不得复用任何已有编号**（0149 起的占用见目录内文件名，主题后缀即消歧）。
 
@@ -32,3 +34,5 @@
 |---|---|---|
 | 0156 | `0156_issue37_guest_review_gate.md` | Issue #37 客体证据复核守门（PR #59，2026-11-01 占号） |
 | 0157 | `0157_issue37_full_migration.md` | Issue #37 历史路径全量脱敏迁移（本 PR，2026-11-01 占号，原 0150 改号） |
+| 0169 | `0169_device_authorization_a2_registration.md` | 设备授权原语 A2 登记（本 PR，2026-11-01 占号） |
+| 0170 | `0170_device_authorization_step1a.md` | 设备授权实施段 1a（本 PR，2026-11-01 占号） |

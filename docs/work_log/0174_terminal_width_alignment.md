@@ -21,4 +21,16 @@ U+05B0 计算为 1 列、U+231A 为 1 列，而本项目锁定的 newlib 数据�
 实施记录：区间从锁定源码提取到独立头文件，保留 `wcwidth.c` 中的许可声明；
 xypm 的源包和缓存键均纳入该头文件。`tests/unicode_width_consistency.py` 对压缩包
 和表先校验 SHA-256，再将宿主编译的实际宽度函数与上游表对所有有效可打印码点逐一
-比较，结果通过。这只是宿主数据一致性检查，不是客体验收；新客体案例尚待提交后运行。
+比较，结果通过。这只是宿主数据一致性检查，不是客体验收。
+
+提交 `6f2be7dfb60222c66bf3ebb2ee9082e1f45b2ed4` 后从源码重建，系统 build ID
+`67dafd3f9ce172b0`。U0/U1 客体测试通过，包括 U+05B0 零列退格、U+231A 双列
+退格及既有 UTF-8 检查；报告为 `build/utf8_text_report.json`。同提交 W1 的 tty_exec、
+channel、wait、device、pio、irq 分别取得 `passed_subset`，不能推断报告列出的未运行
+竞争和压力项通过。重建后的 ncursesw 组合 SDK 及两个独立消费者在正常 Xsh 下取得
+`passed_probe`，并冻结为 `guest_verified_subset`，位于
+`build/w2_width_frozen_6f2be7d/`，树 SHA-256
+`2adad2f07d82751e710986ad340089de4166fc9156f47e24e5f57cdc08a6cca9`；串口 SHA-256
+`4465db440db8e9fd90081f50bea70e4ec55a28cc849545704438518a559cf40c`。xypm 使用已登记
+SDK 的重新打包成功，尚未就此包执行客体测试。许可证材料核查通过，newlib/ncurses
+逐成员许可审查尚未完成；以上均不构成完整 W1/W2 验收。

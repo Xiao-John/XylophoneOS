@@ -36,3 +36,4 @@
 | 0157 | `0157_issue37_full_migration.md` | Issue #37 历史路径全量脱敏迁移（本 PR，2026-11-01 占号，原 0150 改号） |
 | 0169 | `0169_device_authorization_a2_registration.md` | 设备授权原语 A2 登记（本 PR，2026-11-01 占号） |
 | 0170 | `0170_device_authorization_step1a.md` | 设备授权实施段 1a（本 PR，2026-11-01 占号） |
+| 0174 | `0174_terminal_width_alignment.md` | 终端字符宽度对齐探查及验证计划（2026-11-02） |

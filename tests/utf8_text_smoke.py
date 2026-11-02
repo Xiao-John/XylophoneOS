@@ -107,6 +107,16 @@ def main():
             check("wide-backspace", b"xsh: abcd: not found" in text and
                   b"\b \b\b \b" in text)
 
+            combining = b"ab" + "\u05b0".encode() + b"\x7f" + b"cd\r"
+            text = send(combining, b"not found")
+            check("combining-backspace-zero-columns", b"xsh: abcd: not found" in text and
+                  b"\b \b" not in text)
+
+            watch = b"ab" + "\u231a".encode() + b"\x7f" + b"cd\r"
+            text = send(watch, b"not found")
+            check("newlib-wide-backspace", b"xsh: abcd: not found" in text and
+                  b"\b \b\b \b" in text)
+
             text = send(b"\xff\r", b"xsh: invalid UTF-8 input")
             check("invalid-sequence", b"xsh: invalid UTF-8 input" in text)
 

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
 #include <xos/abi_types.hpp>
+#include <xos/unicode_width_data.hpp>
 
 // Byte-oriented UTF-8 helpers for the interactive text channel. This is not a
 // locale implementation: it validates and decodes UTF-8 so line editors can
@@ -68,27 +69,24 @@ inline bool valid(const char* data, u32 length) {
     return true;
 }
 
-inline bool in_range(u32 value, u32 first, u32 last) {
-    return value >= first && value <= last;
+// Match newlib wcwidth in the ordinary UTF-8 width mode for valid printable
+// scalars. The interactive channel rejects C0/C1 controls separately.
+template <u32 N>
+inline bool width_contains(u32 codepoint, const width_data::interval (&table)[N]) {
+    u32 first = 0, last = N;
+    while (first < last) {
+        const u32 middle = first + (last - first) / 2;
+        if (codepoint < table[middle].first) { last = middle; }
+        else if (codepoint > table[middle].last) { first = middle + 1; }
+        else { return true; }
+    }
+    return false;
 }
 
 inline u32 width(u32 codepoint) {
-    if (in_range(codepoint, 0x0300, 0x036f) || in_range(codepoint, 0x1ab0, 0x1aff) ||
-        in_range(codepoint, 0x1dc0, 0x1dff) || in_range(codepoint, 0x20d0, 0x20ff) ||
-        in_range(codepoint, 0xfe20, 0xfe2f)) {
-        return 0;
-    }
-    if (in_range(codepoint, 0x1100, 0x115f) || in_range(codepoint, 0x2329, 0x232a) ||
-        in_range(codepoint, 0x2e80, 0x303e) || in_range(codepoint, 0x3041, 0x33ff) ||
-        in_range(codepoint, 0x3400, 0x4dbf) || in_range(codepoint, 0x4e00, 0x9fff) ||
-        in_range(codepoint, 0xa000, 0xa4cf) || in_range(codepoint, 0xa960, 0xa97f) ||
-        in_range(codepoint, 0xac00, 0xd7a3) || in_range(codepoint, 0xf900, 0xfaff) ||
-        in_range(codepoint, 0xfe10, 0xfe19) || in_range(codepoint, 0xfe30, 0xfe6f) ||
-        in_range(codepoint, 0xff00, 0xff60) || in_range(codepoint, 0xffe0, 0xffe6) ||
-        in_range(codepoint, 0x1b000, 0x1b2ff) || in_range(codepoint, 0x1f300, 0x1f64f) ||
-        in_range(codepoint, 0x1f900, 0x1f9ff) || in_range(codepoint, 0x20000, 0x3fffd)) {
-        return 2;
-    }
+    if (codepoint == 0) { return 0; }
+    if (width_contains(codepoint, width_data::combining)) { return 0; }
+    if (width_contains(codepoint, width_data::wide)) { return 2; }
     return 1;
 }
 

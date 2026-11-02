@@ -30,6 +30,7 @@ int main(void) {
     errno = 0;
     if (mbrtowc(&character, "\xff", 1, &state) != (size_t)-1 || errno != EILSEQ) return 8;
     if (wcwidth(L'A') != 1 || wcwidth(0x0301) != 0 || wcwidth(0x4e2d) != 2) return 9;
+    if (wcwidth(0x05b0) != 0 || wcwidth(0x231a) != 2) return 20;
     const char *invalid[] = {"\xc0\x80", "\xed\xa0\x80", "\xed\xbf\xbf", "\xf4\x90\x80\x80"};
     const size_t invalid_length[] = {2, 3, 3, 4};
     for (size_t i = 0; i < sizeof(invalid) / sizeof(invalid[0]); ++i) {

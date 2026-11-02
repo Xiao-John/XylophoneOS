@@ -61,7 +61,8 @@
         "src/third_party/newlib/COPYING.NEWLIB": "f3afe48e4bc6ed8466a42e9dacb6be1d8f9cbf5aac15cb8e474a5ccde8b40ef6",
         "src/third_party/newlib/x86_64-elf/lib/libc.a": "283fa07ad205c80af92e955a91da027435d8a8a90cb7e27933f57925cc5baa22",
         "src/third_party/newlib/x86_64-elf/lib/libm.a": "4cfdd6324f6776d025923ee369fad51236a9ee5730c8143a6b3b03b963eefd80",
-        "src/ports/newlib/patches/0001-reject-utf8-surrogates.patch": "786dcff849e2c16fb02383a2e0cc7185bd963b378ef276b93bd15bda32c8291f"
+        "src/ports/newlib/patches/0001-reject-utf8-surrogates.patch": "786dcff849e2c16fb02383a2e0cc7185bd963b378ef276b93bd15bda32c8291f",
+        "src/user/include/xos/unicode_width_data.hpp": "9e57137d6b1f67774805219b2170d3ef4638b180401ed18ac89fa3610cdb5c11"
       },
       "threading_profile": {
         "source_archive_sha256": "6ff27e3bf022666f43f7802255be680eeff722ac181b1725d21e2e8318604ee3",
@@ -76,7 +77,11 @@
         "patch": "src/ports/newlib/patches/0001-reject-utf8-surrogates.patch",
         "modifications": "XOS candidate rejects UTF-8 encodings of surrogate code points and rejects surrogate output on UCS-4 wchar_t; upstream source notices retained",
         "status": "candidate_not_guest_qualified"
-      }
+      },
+      "source_files": {
+        "src/user/include/xos/unicode_width_data.hpp": "LicenseRef-newlib-wcwidth"
+      },
+      "width_data": "combining.t and wide.t from the locked newlib source archive; wcwidth.c permission notice retained in header; Unicode version unspecified"
     },
     {
       "name": "ncurses",
@@ -84,8 +89,12 @@
       "path": "src/ports/ncurses",
       "source": "https://invisible-mirror.net/archives/ncurses/ncurses-6.5.tar.gz",
       "license": "upstream COPYING and per-file notices; member review not completed",
-      "notices": ["src/ports/ncurses/upstream/COPYING"],
-      "used_in": ["ncursesw SDK candidate and bounded guest probes; no target distribution"],
+      "notices": [
+        "src/ports/ncurses/upstream/COPYING"
+      ],
+      "used_in": [
+        "ncursesw SDK candidate and bounded guest probes; no target distribution"
+      ],
       "artifact_sha256": {
         "src/ports/ncurses/upstream/COPYING": "b2feb54f39529abe226f709a292584fde48a2e5721559fee417d2cdd51cb7cc1",
         "src/ports/ncurses/source_lock.json": "6ce494e41d9a032782b83794c3336725dd41d8b7a9a1263a34e10d5a61d488ee"

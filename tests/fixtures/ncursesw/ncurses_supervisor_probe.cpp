@@ -68,6 +68,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     for (u32 i = 0; i < 3; ++i) options.stdio[i] = -2;
     options.prepare_child = user::shell_terminal::prepare_application;
     options.terminal_send_handle = user::shell_terminal::application_send_handle();
+    options.grant_spawn = true;
     const char* args[] = {"/bin/failure.elf"};
     const i64 fault_app = sdk::spawn_file_options(args[0], 1, args, options);
     if (fault_app <= 0) return 17;

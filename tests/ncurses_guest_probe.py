@@ -249,7 +249,7 @@ def main():
             report['checks'].append('terminal_kill_reauthorize_and_new_app')
             guest.expect(b'W1_FAULT_APP_READY', timeout=60)
             guest.expect(b'W2_FAULT_APP_RECOVER_OK', timeout=60)
-            report['checks'].append('application_read_error_on_terminal_death_and_recovery')
+            report['checks'].append('parent_child_terminal_error_on_service_death_and_recovery')
             report['status'] = 'passed_probe'
     except Exception as error:
         report['error'] = str(error)

@@ -95,6 +95,7 @@ def main():
             report['checks'].append('authorized_pio_multithread_switch_and_revoke')
             report['checks'].append('authorized_irq_empty_timeout_ack_and_close')
             report['checks'].append('authorized_irq_delivery_sequence_and_duplicate_ack')
+            report['checks'].append('authorized_irq_blocked_waiter_close')
             guest.expect(b"W1_READ_READY", timeout=45)
             send_bytes(guest, b"R")
             guest.expect(b"W1_READ_OK", timeout=30)

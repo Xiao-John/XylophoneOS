@@ -10,6 +10,12 @@ namespace {
 struct exec_marker { u64 magic; u32 version, size; };
 [[gnu::section(".xos.exec"), gnu::used]] const exec_marker marker{exec_image_abi_magic, 3, sizeof(exec_marker)};
 u32 phase;
+u64 waiting_irq;
+u64 irq_waiter(void*) {
+    __atomic_store_n(&phase, 1u, __ATOMIC_RELEASE);
+    (void)thread::wake(&phase, 1);
+    return static_cast<u64>(sdk::irq_event(irq_event_action::wait, waiting_irq, thread_deadline_infinite));
+}
 u64 pio_worker(void*) {
     u8 value = 0;
     __asm__ volatile("inb %1, %0" : "=a"(value) : "Nd"(static_cast<u16>(0x3fd)));
@@ -32,6 +38,32 @@ extern "C" int xos_user_main(const startup_info* startup) {
         return 4;
     }
     if (sdk::pio_grant(pio_grant_action::controller, 0, pio_resource_com1) <= 0) return 2;
+    if (sdk::equal(args[1], "irq_wait_close")) {
+        const u8 line_control = 3, disabled = 0;
+        __asm__ volatile("outb %0, %1" : : "a"(line_control), "Nd"(static_cast<u16>(0x3fb)));
+        __asm__ volatile("outb %0, %1" : : "a"(disabled), "Nd"(static_cast<u16>(0x3f9)));
+        const i64 token = sdk::irq_event(irq_event_action::bind, pio_resource_com1);
+        if (token <= 0) return 25;
+        waiting_irq = static_cast<u64>(token);
+        u64 worker = 0;
+        if (thread::create(worker, irq_waiter, nullptr) != 0) return 26;
+        while (__atomic_load_n(&phase, __ATOMIC_ACQUIRE) == 0) (void)thread::wait(&phase, 0);
+        const i64 now = sdk::syscall(sys_clock_monotonic);
+        if (now < 0) return 27;
+        const u64 deadline = static_cast<u64>(now) + 3000000000ull;
+        for (;;) {
+            thread_stats stats{};
+            if (sdk::syscall(sys_thread_stats, reinterpret_cast<u64>(&stats)) != 0) return 28;
+            if (stats.waiting != 0) break;
+            if (sdk::syscall(sys_clock_monotonic) >= static_cast<i64>(deadline)) return 29;
+            sdk::yield();
+        }
+        if (sdk::irq_event(irq_event_action::close, waiting_irq) != 0) return 30;
+        u64 result = 0;
+        if (thread::join(worker, result) != 0 || result != static_cast<u64>(process_error_denied) ||
+            sdk::irq_event(irq_event_action::wait, waiting_irq, 0) != process_error_denied) return 31;
+        return 0;
+    }
     if (sdk::equal(args[1], "irq_delivery")) {
         const u8 line_control = 3, modem_control = 0x0b;
         __asm__ volatile("outb %0, %1" : : "a"(line_control), "Nd"(static_cast<u16>(0x3fb)));

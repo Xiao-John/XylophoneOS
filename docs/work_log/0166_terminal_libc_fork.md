@@ -63,5 +63,11 @@ build ID `3c9cb4b19247dc93`，系统 manifest SHA-256
 `e1df0fce9a5c03b531011ec0984d13a457b0f2929c249c81f31d102aefa2d912`，SDK 树 SHA-256
 `68a9c8dddc26328cd3d5230634bc0ae2caa78d26602e697fd057968b005d6245`，串口 SHA-256
 `282b030051f21205cf62a6017f70918fd41a7d4b399c848aa42ceaa8d20cc706`；报告位于
-`build/w1_fork_interrupt_run_362454d/`。另增加子进程不写入而直接退出、验证端点关闭
-唤醒父读取的探针，该新检查须提交后在客体运行。
+`build/w1_fork_interrupt_run_362454d/`。提交
+`c1bed30735b526b989f095edd8c3612163d8ab30` 后重建，子进程不写入而直接退出时，
+端点关闭唤醒父读取并返回 EINTR 的客体子集也通过；build ID `aece30c8b29acc0f`，
+系统 manifest SHA-256 `478fa5e45a95d509b9bb7974f5c0ede22481d1b53588c9b86f601028c55afd51`，
+镜像 SHA-256 `d60be1c3770a0f7f652a3bfeca8c69cb9a6cc3188dc53bba5539b75f197f6e29`，
+SDK 树 SHA-256 `e8520c6a4628e3ecdce0388e0e476c419bbce8d1e08996a5272e8e9fe29edf38`，
+串口 SHA-256 `fd2b9e7f16e5fa91521a069ca5ac7c092d476b7052a6d59887d5c973ef91d613`；
+报告位于 `build/w1_fork_close_run_c1bed30/`。这仍不覆盖并发读写的全部交错或压力。

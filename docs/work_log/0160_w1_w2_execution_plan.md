@@ -55,3 +55,22 @@
 
 上面是执行顺序而非验收声明；具体 fork 授权和服务多路协议必须先完成详细设计和
 资源核算，核对失败路径后再编码。任何新发现均先补充方案并验证，再进入下一步。
+
+## 当前整合分支的重新绑定
+
+以提交 `bb2e7ff1c9bf9200401cd63a3b919be13097ced1` 重建系统、锁定 newlib 的
+单线程 UTF-8 SDK、ncursesw 目标库和同源 terminfo，组合 SDK 后从该包独立链接
+消费者，在正常 Xsh 的独立客体中运行。系统 build ID `86cbfb6a1f3d76ea`，安装
+镜像 SHA-256 `f526976cd1683f8f81bcabe1c1c806a0d2db829e9b1717fa03cfeab5a27acf73`，
+组合 SDK 树 SHA-256 `3955084d7b829add20097a55446fe182637fa495bed9f5f76e99bace4ed8c375`，
+ncursesw 库 SHA-256 `b0de6ab5b3f28d021a5605d7b317b9672775f36b4ce7ed4dd7bb63fa5aa2fd48`，
+terminfo SHA-256 `588f74f5a9a0500697a23f8074e22ab683346bd2f62db17324ffc77f223fe1f9`。
+`ncurses_guest_probe.py --xsh --composed` 结果 `passed_probe`，覆盖宽字符交互、
+重复进入、locale、未标记程序拒绝、应用故障、服务重启及资源基线；串口 SHA-256
+`7d78b741b4f59526fe8044d1a40b0c4e6586238e634a6e42ea3ab99fceca3b36`，报告和串口
+位于 `build/w1w2_system_bb2e7ff/`。同系统 `w1_wait_smoke.py --probe tty_exec`
+结果 `passed_subset`，覆盖同 PID、模式、别名、CLOEXEC 和失败 exec，报告位于
+`build/w1w2_exec_bb2e7ff/`。
+
+这些是现有探针的局部证据：fork、线程、在途竞争及完整 W1/W2 仍不在其覆盖内；
+W2 各项要求仍须逐项核对探针实际断言。后续代码或组合输入变更后必须重新绑定。

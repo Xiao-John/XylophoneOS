@@ -18,3 +18,10 @@ completions)` 都为 `(130091, 3, 1)`。报告 SHA-256
 SHA-256 `2887d2a06a2b70f910c776499c9330fc4eea9f725b6123539b1313b188cb67f9`，
 均位于 `build/w1_capacity_guest_df750ce/`。复核发现原报告未自动绑定探针脚本与串口
 哈希，现补充这两个字段并在测试结束前重验探针输入；更改后仍需提交并重新运行。
+
+提交 `72d616557ffb36bd8052163afe82eaac30dd6490` 后重新构建，系统 build ID
+`b3b160bc351f3928`；八轮仍全部通过，基线及每轮快照均为 `(130091, 3, 1)`。
+报告位于 `build/w1_capacity_guest_72d6165/report.json`，其中绑定探针脚本、fixture、
+系统、SDK 和串口；串口 SHA-256
+`246fa304acb51af081366088a030ddb68be2fd56d549508eccda0754bc948c3e`。此结果仍为
+`passed_subset`，不覆盖线程及 exec 在途竞争等未运行范围。

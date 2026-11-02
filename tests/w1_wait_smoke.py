@@ -75,7 +75,7 @@ def main():
         report['not_run'] = ['authorized_boundaries', 'fork_exec', 'revocation_races',
                              'cross_process_isolation', 'resource_stress', 'full_w1_terminal']
     elif args.probe == 'tty_exec':
-        report['not_run'] = ['fork_inheritance', 'threaded_profile',
+        report['not_run'] = ['fork_inheritance_stress_and_failure', 'threaded_profile',
                              'exec_inflight_races', 'full_w1_terminal']
     guest = None
     try:
@@ -138,6 +138,13 @@ def main():
                 guest.expect(b'kind=exited code=0', start=start, timeout=60)
                 guest.expect(b'xsh> ', start=start, timeout=60)
                 report['checks'].append('terminal_exec_all_cloexec_closed')
+                start = len(guest.output)
+                send_bytes(guest, b'tty-run /bin/ttyexec.elf fork\r')
+                guest.expect(b'TTY_FORK_CHILD', start=start, timeout=60)
+                guest.expect(b'TTY_FORK_PARENT', start=start, timeout=60)
+                guest.expect(b'kind=exited code=0', start=start, timeout=60)
+                guest.expect(b'xsh> ', start=start, timeout=60)
+                report['checks'].append('terminal_fork_alias_shared_mode_and_child_exit')
             elif args.probe in ('pio', 'irq'):
                 expected = b'W1_PIO_DENIED_OK' if args.probe == 'pio' else b'W1_IRQ_DENIED_OK'
                 reply = command(guest, f'exec-file /bin/{args.probe}.elf', expected, timeout=40)

@@ -509,7 +509,7 @@ void execute(u32 argc, char** argv) {
         print("maintenance: owner="); decimal(gate.owner_pid); print(" worker="); decimal(gate.worker_pid);
         print(" error="); signed_decimal(result); print("\n");
     } else if (equal(argv[0], "tty-run") && argc >= 2) {
-        launch_file(argv[1], argc - 1, argv + 1, 0, false, false, true);
+        launch_file(argv[1], argc - 1, argv + 1, 1, false, false, true);
     } else if (equal(argv[0], "diag") && argc >= 2) {
         launch_file(argv[1], argc - 1, argv + 1, 0, false, true);
     } else if ((equal(argv[0], "exec-file") || equal(argv[0], "spawn-file") ||

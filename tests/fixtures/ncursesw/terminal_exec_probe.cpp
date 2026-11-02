@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
 namespace {
 struct marker { xos::u64 magic; xos::u32 version, size; };
@@ -28,6 +29,26 @@ bool message(const char* label) {
 
 extern "C" int xos_user_main(const xos::startup_info* startup) {
     const auto args = reinterpret_cast<const char* const*>(startup->argv);
+    if (startup->argc > 1 && xos::sdk::equal(args[1], "fork")) {
+        const int duplicate = dup(1);
+        if (duplicate < 0) return 15;
+        struct termios tty{};
+        if (tcgetattr(0, &tty) != 0) return 16;
+        tty.c_cc[VMIN] = 0; tty.c_cc[VTIME] = 1;
+        if (tcsetattr(0, TCSANOW, &tty) != 0) return 17;
+        const pid_t child = fork();
+        if (child == 0) {
+            struct termios child_mode{};
+            const char text[] = "TTY_FORK_CHILD\n";
+            if (!isatty(duplicate) || tcgetattr(0, &child_mode) != 0 || child_mode.c_cc[VTIME] != 1 ||
+                write(duplicate, text, sizeof(text) - 1) != sizeof(text) - 1) _exit(18);
+            _exit(0);
+        }
+        int status = 0;
+        if (child < 0 || waitpid(child, &status, 0) != child || !WIFEXITED(status) || WEXITSTATUS(status) != 0 ||
+            !isatty(duplicate) || tcgetattr(0, &tty) != 0 || tty.c_cc[VTIME] != 1) return 19;
+        return message("TTY_FORK_PARENT") ? 0 : 20;
+    }
     if (startup->argc > 1 && xos::sdk::equal(args[1], "drop-after")) {
         for (int fd = 0; fd < 3; ++fd) {
             errno = 0;

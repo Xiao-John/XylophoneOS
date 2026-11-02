@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <termios.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
 namespace {
 struct marker { xos::u64 magic; xos::u32 version, size; };
@@ -68,8 +69,16 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
     if (tcsetattr(0, TCSANOW, &tty) != 0) return 14;
     const int duplicate = dup(1);
     if (duplicate < 0 || close(1) != 0) return 2;
-    errno = 0;
-    if (fork() != -1 || errno != ENOTSUP) return 5;
+    const pid_t posix_child = fork();
+    if (posix_child == 0) {
+        const char marker[] = "W1_LIBC_FORK\n";
+        if (!isatty(duplicate) || write(duplicate, marker, sizeof(marker) - 1) != sizeof(marker) - 1)
+            _exit(27);
+        _exit(0);
+    }
+    int status = 0;
+    if (posix_child < 0 || waitpid(posix_child, &status, 0) != posix_child ||
+        !WIFEXITED(status) || WEXITSTATUS(status) != 0) return 5;
     char executable[] = "/missing", *arguments[] = {executable, nullptr};
     errno = 0;
     if (execv(executable, arguments) != -1 || errno != ENOENT) return 6;

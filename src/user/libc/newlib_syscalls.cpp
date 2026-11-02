@@ -1536,10 +1536,33 @@ extern "C" int fork(void) {
     errno = ENOTSUP; return -1;
 #else
     if (!runtime_ready) { errno = EIO; return -1; }
-    if (has_terminal_descriptor()) { errno = ENOTSUP; return -1; }
+    const bool terminal_inherited = has_terminal_descriptor();
     const auto child = xos::sdk::syscall(xos::sys_process_fork_prepare);
-    if (child == 0) { return 0; }
+    if (child == 0) {
+        if (terminal_inherited) {
+            // The copied parent tokens are not authorized for this PID. The
+            // parent's committed transaction registered a distinct pair.
+            const u64 controller = terminal_client.controller_pid;
+            const u64 service = terminal_client.service_pid;
+            terminal_client = {};
+            // If the service died after commit, fork still succeeded; later
+            // terminal operations observe the unavailable client as an error.
+            (void)xos::terminal::connect(terminal_client, controller, service);
+        }
+        return 0;
+    }
     if (child < 0) { errno = error_from_kernel(child); return -1; }
+    if (terminal_inherited) {
+        xos::channel_fork_pair pair{xos::channel_version, sizeof(xos::channel_fork_pair),
+            static_cast<u64>(child), terminal_client.send_handle, terminal_client.receive_handle, 0, 0};
+        xos::i64 result = xos::sdk::channel_fork(pair);
+        if (result == 0) result = xos::terminal::register_fork(terminal_client, pair);
+        if (result != 0) {
+            (void)xos::sdk::syscall(xos::sys_process_abort, static_cast<u64>(child));
+            errno = result == xos::terminal::interrupted ? EINTR : error_from_kernel(result);
+            return -1;
+        }
+    }
     xos::i64 cloned = static_cast<xos::i64>(xos::file::status::would_block);
     for (unsigned attempt = 0; attempt < 128 &&
          cloned == static_cast<xos::i64>(xos::file::status::would_block); ++attempt) {

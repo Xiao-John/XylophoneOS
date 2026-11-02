@@ -68,6 +68,8 @@ def main():
             report["checks"].append("pending_read_control_interrupt")
             guest.expect(b"W1_FORK_CHILD", timeout=30)
             report["checks"].append("authenticated_fork_child_terminal_write_and_exit")
+            guest.expect(b"W1_LIBC_FORK", timeout=30)
+            report["checks"].append("single_thread_libc_fork_terminal_alias")
             guest.expect(b"W1_APP_READY", timeout=30)
             send_bytes(guest, b"A")
             guest.expect(b"W1_APP_OK", timeout=30)

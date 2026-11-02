@@ -90,14 +90,16 @@
       "source": "https://invisible-mirror.net/archives/ncurses/ncurses-6.5.tar.gz",
       "license": "upstream COPYING and per-file notices; member review not completed",
       "notices": [
-        "src/ports/ncurses/upstream/COPYING"
+        "src/ports/ncurses/upstream/COPYING",
+        "src/ports/ncurses/upstream/terminfo-source-notice.txt"
       ],
       "used_in": [
         "ncursesw SDK candidate and bounded guest probes; no target distribution"
       ],
       "artifact_sha256": {
         "src/ports/ncurses/upstream/COPYING": "b2feb54f39529abe226f709a292584fde48a2e5721559fee417d2cdd51cb7cc1",
-        "src/ports/ncurses/source_lock.json": "6ce494e41d9a032782b83794c3336725dd41d8b7a9a1263a34e10d5a61d488ee"
+        "src/ports/ncurses/source_lock.json": "6ce494e41d9a032782b83794c3336725dd41d8b7a9a1263a34e10d5a61d488ee",
+        "src/ports/ncurses/upstream/terminfo-source-notice.txt": "41d9c0d38bb763a20b3ee9c0ca98eabaede6d8303352a6aea10c72563f66f20a"
       },
       "source_archive_sha256": "136d91bc269a9a5785e5f9e980bc76ab57428f604ce3e5a5a90cebc767971cc6",
       "archive_member_license_audit": "not_completed"

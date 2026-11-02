@@ -40,6 +40,13 @@ def main():
     lock_path = ROOT / 'src/ports/ncurses/source_lock.json'
     lock = json.loads(lock_path.read_text())
     notice = ROOT / 'src/ports/ncurses' / lock['notice']
+    term_notice = ROOT / 'src/ports/ncurses/upstream/terminfo-source-notice.txt'
+    term_source = terminfo / 'ncurses-6.5/misc/terminfo.src'
+    notice_end = b'#------------------------------------------------------------------------------\n#\n#\tVersion 10.2.1'
+    source_bytes = term_source.read_bytes()
+    check(notice_end in source_bytes and term_notice.read_bytes() ==
+          source_bytes.split(notice_end, 1)[0] + b'#------------------------------------------------------------------------------\n',
+          'terminfo source notice differs from upstream header')
     library = probe / 'build/lib/libncursesw.a'
     entry = terminfo / 'terminfo/x/xterm'
     sdk_hash, _ = tree_receipt(sdk)
@@ -66,7 +73,8 @@ def main():
           term.get('target_report_sha256') == sha(probe / 'report.json') and
           term.get('target_config_sha256') == sha(probe / 'build/include/ncurses_cfg.h') and
           term.get('target_library_sha256') == sha(library) and not entry.is_symlink() and
-          term.get('entry_sha256') == sha(entry), 'terminfo inputs do not match')
+          term.get('entry_sha256') == sha(entry) and term.get('terminfo_source_sha256') == sha(term_source) and
+          term_source.read_bytes().startswith(term_notice.read_bytes()), 'terminfo inputs do not match')
     output.mkdir(parents=True)
     shutil.copytree(sdk, output / 'sdk')
     include = output / 'sdk/include/ncursesw'
@@ -77,12 +85,14 @@ def main():
     license_dir = output / 'sdk/licenses/ncurses'
     license_dir.mkdir()
     shutil.copyfile(notice, license_dir / 'COPYING')
+    shutil.copyfile(term_notice, license_dir / 'terminfo-source-notice.txt')
     shutil.copyfile(lock_path, license_dir / 'source_lock.json')
     target_dir = output / 'target/usr/local/share/terminfo/x'
     target_dir.mkdir(parents=True)
     shutil.copyfile(entry, target_dir / 'xterm')
     check(tree_receipt(sdk)[0] == sdk_hash and sha(library) == target['archive_sha256'] and
-          sha(entry) == term['entry_sha256'] and
+          sha(entry) == term['entry_sha256'] and sha(term_source) == term['terminfo_source_sha256'] and
+          term_source.read_bytes().startswith(term_notice.read_bytes()) and
           all(sha(probe / 'build/include' / n) == headers[n] for n in PUBLIC_HEADERS),
           'inputs changed during composition')
     digest, files = tree_receipt(output)

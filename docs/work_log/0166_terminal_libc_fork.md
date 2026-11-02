@@ -32,5 +32,14 @@ build ID `d5fdd59f2d2bec4b`，系统 manifest SHA-256
 `3598709c8f9b882f31561d2f835ba45cf9ab70d9f985b7f073456ee3b1b3ce6f`，SDK 树 SHA-256
 `de65f9e1f738b0cc168c961862a6d53fbe783b5dc622e9d8cbcbb4c269e050da`，串口 SHA-256
 `0aaf26b1c760aac4a3627fdd0a65cd1f3b4fb77f8b6b17030ca0d730ac3ed220`，报告位于
-`build/w1_fork_cap_run_179c668/`。此结果未区分哪个资源先耗尽；后续增加先单独 prepare、
-核对通道对派生明确返回资源不足并 abort 的断言，提交后须重新执行客体。
+`build/w1_fork_cap_run_179c668/`。此结果未区分哪个资源先耗尽。
+
+提交 `40ed6684c96315e6e064795e99fb869178df4dd8` 后重建，新增断言在两个子会话
+仍存活时先单独 prepare 成功，随后通道对派生明确返回资源不足且输出保持零，再 abort；
+其后的 libc fork 失败、父会话可用及回收后重新 fork 均通过。结果 `passed_subset`，
+build ID `c21a53fe45667563`，系统 manifest SHA-256
+`5fd00b882ac021099b88272056b20a3212b34bc346797e48a28f8355c22d7812`，镜像 SHA-256
+`d7a1c460833596c5464feebcd583edda58e263fc03b0f38071705941c99a4c3c`，SDK 树 SHA-256
+`1ad9c3c62992ff537202f7df5c60d1854e36232b4f06d4fd2e8ac54401040eab`，串口 SHA-256
+`f3db96367f85f429214b09d60089297cd3b592b210664228a7b4c0309283a085`；报告位于
+`build/w1_fork_quota_run_40ed668/`。本项不证明其他故障路径或完整资源压力。

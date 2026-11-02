@@ -16,3 +16,14 @@ SDK 组合过程现将锁定源码 `terminfo.src` 的上游来源说明一并放
 这补充可复核的来源信息，并不决定数据许可证。提交后需要重新建立 SDK 和独立消费者、
 运行组合客体与冻结验证；历史报告不对新交付包生效。49 个条目的逐项历史来源、其他
 传递文件、newlib 成员以及实际发行法律要求仍待审查。
+
+提交 `335b2f03988769c541f759ba12bf5ee69893c8a0` 后重建系统及组合 SDK：系统 build
+ID `7ad95c4f8b516671`，组合 SDK 树 SHA-256
+`e4a480d0e4083be3e4f839133275a6eb92f27daa72194819030aaca18937497c`。正常 Xsh 客体
+`passed_probe`，串口 SHA-256
+`d150c03b34989ba9cd5a91bb174259a078699ac43a7fe4bfe70e7aeffd4838b2`；冻结结果
+`guest_verified_subset` 位于 `build/w2_lineage_frozen_335b2f0/`，树 SHA-256
+`6f32ecbe209501b825250396988a99ac328d7c8f411d5ab308210dc8c0d32cb7`。重建后的
+tty_exec 和 channel 客体各为 `passed_subset`；目标库的 162 成员来源筛查及材料哈希
+检查通过。将测试用副本的 terminfo 源说明改坏后，组合步骤在创建输出前拒绝。所有
+结果均只覆盖相应报告列出的子集，不能提升为完整 W1/W2 或许可审查通过。

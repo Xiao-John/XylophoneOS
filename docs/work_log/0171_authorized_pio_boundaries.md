@@ -21,5 +21,13 @@ build ID `545f56cc8e7beec4`，系统 manifest SHA-256
 `build/w1_pio_bounds_cc4639a/`。
 
 扩展专用探针：授权者 fork 后子进程访问 COM1 应 #GP 而父进程权限保留；失败 exec
-后原权限保留，成功 exec 后原权限失效且访问应 #GP。此组新增断言须提交后重新构建
-并客体执行；仍不涵盖主动撤权竞争或多线程切换。
+后原权限保留，成功 exec 后原权限失效且访问应 #GP。提交
+`a0600484f373269ae2824455496a3c9fdc794684` 后重建的专用客体检查通过，亦重新通过
+窗口内外、跨界、后续终端交接及 fork 子集。build ID `3d971bcdae986aa0`，系统
+manifest SHA-256 `c04a046baafd285423562820bc933fcd77c5b76219809c59e548018b034dd5c3`，
+镜像 SHA-256 `0bd1553e929883020cb15becd7ada1c1725c7a9d2964759291cb73718c43b6e8`，
+SDK 树 SHA-256 `3cb3c0e668d60b6a54149fdf0b5f9d74d8a7a5042fb29dad8998bf25c09d22d7`，
+PIO ELF SHA-256 `74d01d32839463bc49d23d31bd998107344cffc47a0c05736c5265917a719afe`，
+串口 SHA-256 `7d4bf4b2a3043810dfa3a0e3d6459f4f6d5ed2676ade858861682d98bfc3ea64`；
+报告位于 `build/w1_pio_lifecycle_a060048/`。仍不涵盖主动撤权竞争或多线程切换，
+亦不能将这组结果视为完整 W1 资格。

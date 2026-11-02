@@ -98,6 +98,13 @@ def main():
         raise SystemExit('terminfo data differs from receipt')
     report = {'status': 'failed', 'scope': 'bounded ncurses and locale probes, not full W1/W2 acceptance',
               'commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
+              'profile': 'xsh-xterm-24x80-single' if args.xsh else 'test-supervisor-xterm-24x80-single',
+              'system_manifest_sha256': sha(system / 'manifest.json'),
+              'sdk_receipt_sha256': sha(candidate / 'receipt.json'),
+              'ncurses_report_sha256': sha(probe / 'report.json'),
+              'consumers_report_sha256': sha(consumers / 'report.json'),
+              'terminfo_receipt_sha256': sha(terminfo / 'receipt.json'),
+              'probe_source_sha256': sha(Path(__file__).resolve()),
               'build_id': manifest['build_id'], 'system_sha256': sha(image), 'terminal_sha256': sha(terminal),
               'sdk_tree_sha256': sdk_receipt['sdk_tree_sha256'], 'ncurses_sha256': target['archive_sha256'],
               'terminfo_sha256': sha(entry), 'wide_sha256': sha(wide), 'reentry_sha256': sha(reentry),
@@ -105,6 +112,7 @@ def main():
               'legacy_sha256': sha(legacy), 'checks': []}
     if composed:
         report['composed_sdk_tree_sha256'] = composed_receipt['tree_sha256']
+        report['composed_receipt_sha256'] = sha(composed / 'receipt.json')
     guest = None
     try:
         with tempfile.TemporaryDirectory(prefix='xos_ncurses_probe_') as folder:

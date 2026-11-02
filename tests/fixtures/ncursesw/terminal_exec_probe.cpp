@@ -38,6 +38,31 @@ bool same_resources(const xos::thread_stats& a, const xos::thread_stats& b) {
 
 extern "C" int xos_user_main(const xos::startup_info* startup) {
     const auto args = reinterpret_cast<const char* const*>(startup->argv);
+    if (startup->argc > 1 && xos::sdk::equal(args[1], "interrupt")) {
+        int ready[2]{};
+        if (pipe(ready) != 0) return 39;
+        const pid_t child = fork();
+        if (child == 0) {
+            const char signal = 'r';
+            if (write(ready[1], &signal, 1) != 1) _exit(40);
+            const xos::i64 now = xos::sdk::syscall(xos::sys_clock_monotonic);
+            if (now < 0 || xos::sdk::syscall(xos::sys_sleep_until,
+                    static_cast<xos::u64>(now) + 200000000ull) != 0) _exit(41);
+            const char text[] = "TTY_CHILD_INTERRUPT\n";
+            if (write(1, text, sizeof(text) - 1) != sizeof(text) - 1) _exit(42);
+            _exit(0);
+        }
+        if (child < 0) return 43;
+        char signal = 0;
+        if (read(ready[0], &signal, 1) != 1 || signal != 'r') return 44;
+        errno = 0;
+        char input = 0;
+        if (read(0, &input, 1) != -1 || errno != EINTR) return 45;
+        int status = 0;
+        if (waitpid(child, &status, 0) != child || !WIFEXITED(status) || WEXITSTATUS(status) != 0 ||
+            !isatty(0)) return 46;
+        return message("TTY_PARENT_INTERRUPTED") ? 0 : 47;
+    }
     if (startup->argc > 1 && xos::sdk::equal(args[1], "capacity")) {
         int ready[2]{}, release[2]{};
         if (pipe(ready) != 0 || pipe(release) != 0) return 21;

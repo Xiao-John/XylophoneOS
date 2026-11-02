@@ -4,6 +4,7 @@
 #include <xos/file_ui.hpp>
 #include <xos/terminal_control.hpp>
 #include <xos/thread_abi.hpp>
+#include <xos/channel_io.hpp>
 
 namespace {
 using namespace xos;
@@ -11,16 +12,39 @@ terminal::control session;
 terminal::application app;
 
 i64 prepare_app(u64 child, void*) { return terminal::attach(session, app, child); }
-i64 prepare_pio(u64 child, void*) { return sdk::pio_grant(pio_grant_action::grant, child, pio_resource_com1); }
+struct pio_context { bool revoke; u32 ready, go; };
+i64 prepare_pio(u64 child, void* context) {
+    auto& state = *static_cast<pio_context*>(context);
+    if (state.revoke) {
+        channel_create request{channel_version, sizeof(channel_create), child, sdk::pid(), 1, 0};
+        i64 result = sdk::channel_open(request);
+        if (result <= 0) return result < 0 ? result : process_error_state;
+        state.ready = static_cast<u32>(result);
+        request.sender_pid = sdk::pid(); request.receiver_pid = child;
+        result = sdk::channel_open(request);
+        if (result <= 0) { (void)sdk::channel_close(state.ready); return result < 0 ? result : process_error_state; }
+        state.go = static_cast<u32>(result);
+    }
+    return sdk::pio_grant(pio_grant_action::grant, child, pio_resource_com1);
+}
 
 bool pio_boundary(const char* mode, bool fault) {
     sdk::spawn_options options{};
     for (u32 i = 0; i < 3; ++i) options.stdio[i] = -2;
     options.grant_spawn = true;
-    options.prepare_child = prepare_pio;
+    pio_context state{sdk::equal(mode, "revoke"), 0, 0};
+    options.prepare_child = prepare_pio; options.prepare_context = &state;
     const char* argv[] = {"/bin/pio_auth.elf", mode};
     const i64 child = sdk::spawn_file_options(argv[0], 2, argv, options);
     if (child <= 0) return false;
+    if (state.revoke) {
+        char byte = 0;
+        if (sdk::channel_receive_wait(state.ready, &byte, 1, thread_deadline_infinite) != 1 || byte != 'r' ||
+            sdk::pio_grant(pio_grant_action::revoke, static_cast<u64>(child), pio_resource_com1) != 0 ||
+            sdk::pio_grant(pio_grant_action::query, 0, pio_resource_com1) != 2) return false;
+        byte = 'g';
+        if (sdk::channel_send_wait(state.go, &byte, 1, thread_deadline_infinite) != 0) return false;
+    }
     process_status status{};
     if (sdk::wait(static_cast<u64>(child), status) != 0) return false;
     if (fault ? status.outcome != process_outcome::faulted || status.vector != 13
@@ -60,7 +84,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     if (!pio_boundary("inside", false) || !pio_boundary("below", true) ||
         !pio_boundary("above", true) || !pio_boundary("cross", true) ||
         !pio_boundary("fork", false) || !pio_boundary("badexec", false) ||
-        !pio_boundary("exec", true)) return 17;
+        !pio_boundary("exec", true) || !pio_boundary("revoke", true)) return 17;
     if (terminal::start(session, "/bin/terminal.elf") <= 0) return 2;
     if (!transmit("W1_PIO_BOUNDS_OK\n")) return 18;
     if (!transmit("W1_READ_READY\n")) return 3;

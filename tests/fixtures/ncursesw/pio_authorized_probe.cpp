@@ -2,6 +2,7 @@
 // Runs only under the dedicated supervisor's explicit COM1 grant.
 #include <xos/sdk.hpp>
 #include <xos/file_client.hpp>
+#include <xos/channel_io.hpp>
 using namespace xos;
 
 namespace {
@@ -18,6 +19,22 @@ extern "C" int xos_user_main(const startup_info* startup) {
         return 4;
     }
     if (sdk::pio_grant(pio_grant_action::controller, 0, pio_resource_com1) <= 0) return 2;
+    if (sdk::equal(args[1], "revoke")) {
+        channel_info first{}, second{};
+        if (sdk::channel_get(0, first) != 0 || sdk::channel_get(1, second) != 0 ||
+            first.rights == second.rights || first.peer_pid != second.peer_pid) return 11;
+        const u32 send = first.rights == channel_send ? first.handle : second.handle;
+        const u32 receive = first.rights == channel_receive ? first.handle : second.handle;
+        u8 value = 0;
+        __asm__ volatile("inb %1, %0" : "=a"(value) : "Nd"(static_cast<u16>(0x3fd)));
+        char byte = 'r';
+        if (sdk::channel_send_wait(send, &byte, 1, thread_deadline_infinite) != 0 ||
+            sdk::channel_receive_wait(receive, &byte, 1, thread_deadline_infinite) != 1 || byte != 'g' ||
+            sdk::pio_grant(pio_grant_action::controller, 0, pio_resource_com1) != process_error_denied)
+            return 12;
+        __asm__ volatile("inb %1, %0" : "=a"(value) : "Nd"(static_cast<u16>(0x3fd)));
+        return 13; // revoked access must fault
+    }
     if (sdk::equal(args[1], "exec") || sdk::equal(args[1], "badexec")) {
         const bool missing = sdk::equal(args[1], "badexec");
         sdk::spawn_options options{}; options.replace_image = true;

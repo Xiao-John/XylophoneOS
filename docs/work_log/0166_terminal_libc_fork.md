@@ -75,4 +75,11 @@ SDK 树 SHA-256 `e8520c6a4628e3ecdce0388e0e476c419bbce8d1e08996a5272e8e9fe29edf3
 增加 fork 后 exec 的正常 Xsh 探针：父进程持有两个终端别名并设置 CLOEXEC 和
 模式；子进程先验证失败 exec 后会话可用，再成功替换自身镜像；新镜像检查别名、
 CLOEXEC 和共享模式，runner 比对子进程前后 PID，父进程再核对自身会话和描述符。
-该新增检查须提交后重新构建并在客体执行，不推断在途请求竞争或多线程 fork。
+提交 `42bb4db8328dbec3d5bb73a861614416879a6c03` 后重建并在正常 Xsh 客体执行，
+该子集通过，子进程 PID 替换前后相同，父子描述符和模式检查通过。build ID
+`13cc473adb4d7bea`，系统 manifest SHA-256
+`66046965490a74e5d0b5454a753fa5a7c5eefdf00f44ff40d91e4a5e4d560186`，镜像 SHA-256
+`a521f7b054c8526f6c8ddde26f6a02e356021c4232b313cf92554193f2b9d8f5`，SDK 树 SHA-256
+`9a01f3b3b664134e8dd43fd84035ef42924480bc41d8ead945d027cbc45f741d`，串口 SHA-256
+`4fcb0be854b17d2d44e088b82413143ea0b7bac280e12378d3a6cc96995071b6`；报告位于
+`build/w1_fork_exec_run_42bb4db/`。不推断在途请求竞争或多线程 fork。

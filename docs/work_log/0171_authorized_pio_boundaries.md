@@ -36,4 +36,11 @@ PIO ELF SHA-256 `74d01d32839463bc49d23d31bd998107344cffc47a0c05736c5265917a719af
 supervisor；supervisor 撤权、确认隔离后再发送继续消息。进程恢复运行时应看到
 controller 查询被拒绝且下一次 COM1 读取触发 #GP，随后 supervisor 回收并重新
 授权终端。该检查验证一次明确的撤权后调度顺序，不证明所有在途 I/O 竞争或 SMP；
-修改须先提交，再重建运行客体。
+提交 `fd8d478d8affe1fbd33fa0b48c98085b81c97ac2` 后重建的专用客体检查通过；
+build ID `3983726c8710d469`，系统 manifest SHA-256
+`e4720b24dcfe6e1ebeb5470b1cadbfbbfe95b63b96b738a0dac1953e20f7db37`，镜像 SHA-256
+`94a82f76cff948f6beef2756ddc699f56db1453b6aed19af5c143da1d613bb68`，SDK 树 SHA-256
+`00d2eac7acaf1f718d8fb2f8acdabd09cf3de0a24faaf80d6b20b3509ed2d87e`，PIO ELF SHA-256
+`303ecc85c8e295a2dfcfe2057d536906aa55f9a7d60f7a32139b7fb2241cbb33`，串口 SHA-256
+`62424b20b4e3474d1d1a2bb2803713415f0e09ecef3f7a07fdc9143c0271bc0e`；报告位于
+`build/w1_pio_revoke_fd8d478/`。

@@ -67,6 +67,7 @@ def main():
     report = {'status': 'failed', 'probe': args.probe, 'revision': revision, 'build_id': manifest['build_id'],
               'system_manifest_sha256': sha(system / 'manifest.json'), 'image_sha256': sha(image),
               'sdk_tree_sha256': sdk_receipt['tree_sha256'], 'fixture_sha256': sha(fixture),
+              'probe_script_sha256': sha(Path(__file__)),
               'commands': commands, 'checks': [],
               'not_run': ['foreground_ownership', 'console_concurrent_close', 'failure_recovery',
                           'legacy_console_deadline_wait', 'overflow', 'unicode', 'terminfo',
@@ -239,6 +240,8 @@ def main():
                 report['checks'].append('pipe_timeout_ready_and_close')
             if sha(image) != report['image_sha256'] or verify_sdk(sdk, manifest)['tree_sha256'] != report['sdk_tree_sha256']:
                 raise RuntimeError('system or SDK changed during test')
+            if sha(fixture) != report['fixture_sha256'] or sha(Path(__file__)) != report['probe_script_sha256']:
+                raise RuntimeError('probe inputs changed during test')
             if subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=normal'],
                                        cwd=ROOT, text=True).strip():
                 raise RuntimeError('checkout changed during test')
@@ -251,6 +254,7 @@ def main():
     finally:
         if guest is not None:
             (output / 'serial.log').write_bytes(guest.output)
+            report['serial_sha256'] = sha(output / 'serial.log')
             guest.close()
         (output / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report, indent=2))

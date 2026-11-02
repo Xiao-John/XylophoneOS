@@ -46,6 +46,19 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
             char byte = 0;
             if (read(ready[0], &byte, 1) != 1 || byte != 'r') return 24;
         }
+        // Verify the specific failure point, rather than attributing any
+        // earlier process or memory exhaustion to the channel quota.
+        xos::channel_info first{}, second{};
+        if (xos::sdk::channel_get(0, first) != 0 || xos::sdk::channel_get(1, second) != 0 ||
+            first.rights == second.rights || first.peer_pid != second.peer_pid) return 33;
+        const xos::i64 staged = xos::sdk::syscall(xos::sys_process_fork_prepare);
+        if (staged <= 0) return 34;
+        xos::channel_fork_pair pair{xos::channel_version, sizeof(xos::channel_fork_pair),
+            static_cast<xos::u64>(staged), first.rights == xos::channel_send ? first.handle : second.handle,
+            first.rights == xos::channel_receive ? first.handle : second.handle, 0, 0};
+        if (xos::sdk::channel_fork(pair) != xos::process_error_resources || pair.child_send != 0 ||
+            pair.child_receive != 0 || xos::sdk::syscall(xos::sys_process_abort, static_cast<xos::u64>(staged)) != 0)
+            return 35;
         errno = 0;
         const pid_t excess = fork();
         if (excess == 0) _exit(0);

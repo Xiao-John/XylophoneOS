@@ -26,5 +26,11 @@ exec、fork 描述符别名、共享模式及子进程退出探针 `passed_subse
 不能把一次成功路径作为完整 W1/W2 资格。
 
 增加容量与回收探针：两个子进程以管道同步保持会话，第三次 fork 应因容量不足
-失败，父进程终端仍可查询；释放并回收子进程后再 fork 应成功。该定向检查不假定
-具体是哪个全局资源先耗尽，不替代分项资源计数或异常回滚测试，须提交后客体运行。
+失败，父进程终端仍可查询；释放并回收子进程后再 fork 应成功。提交
+`179c66826614ba7e12cbdcbd9aa0a9543c9d82d8` 后，正常 Xsh 客体该子集通过；
+build ID `d5fdd59f2d2bec4b`，系统 manifest SHA-256
+`3598709c8f9b882f31561d2f835ba45cf9ab70d9f985b7f073456ee3b1b3ce6f`，SDK 树 SHA-256
+`de65f9e1f738b0cc168c961862a6d53fbe783b5dc622e9d8cbcbb4c269e050da`，串口 SHA-256
+`0aaf26b1c760aac4a3627fdd0a65cd1f3b4fb77f8b6b17030ca0d730ac3ed220`，报告位于
+`build/w1_fork_cap_run_179c668/`。此结果未区分哪个资源先耗尽；后续增加先单独 prepare、
+核对通道对派生明确返回资源不足并 abort 的断言，提交后须重新执行客体。

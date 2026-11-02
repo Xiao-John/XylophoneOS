@@ -12,8 +12,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "scripts"), str(ROOT / "tests")]
 from boot_smoke import Guest
 from make_work_disk import create_fat32
+from sdk_receipt import verify_sdk
 from work_disk import transfer
 from task_smoke import send_bytes
+from toolchain import COMMON_FLAGS, X86_FLAGS, tool
 
 
 def digest(path):
@@ -47,19 +49,41 @@ def main():
               "commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
               "image_sha256": digest(image), "terminal_sha256": digest(terminal),
               "application_sha256": digest(application), "checks": []}
+    sdk = system / 'sdk'
+    sdk_receipt = verify_sdk(sdk, manifest)
+    fixture = ROOT / 'tests/fixtures/ncursesw/pio_authorized_probe.cpp'
+    report['sdk_tree_sha256'] = sdk_receipt['tree_sha256']
+    report['pio_fixture_sha256'] = digest(fixture)
     guest = None
     try:
         with tempfile.TemporaryDirectory(prefix="xos_terminal_probe_") as folder:
+            obj = Path(folder) / 'pio_authorized.o'
+            pio = Path(folder) / 'pio_authorized.elf'
+            commands = [
+                [tool('g++'), *COMMON_FLAGS, *X86_FLAGS, '-I', str(sdk / 'include'), '-c', str(fixture), '-o', str(obj)],
+                [tool('g++'), *X86_FLAGS, '-nostdlib', '-static', '-no-pie',
+                 '-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096',
+                 '-T', str(sdk / 'user.ld'), str(sdk / 'crt0.o'), str(obj), '-Wl,--start-group',
+                 str(sdk / 'lib/libxos_loader.a'), str(sdk / 'lib/libxos.a'), '-Wl,--end-group', '-o', str(pio)],
+            ]
+            for cmd in commands:
+                subprocess.run(cmd, check=True)
+            if digest(fixture) != report['pio_fixture_sha256']:
+                raise RuntimeError('PIO fixture changed while compiling')
+            report['pio_elf_sha256'] = digest(pio)
             disk = Path(folder) / "work.img"
             create_fat32(disk, 512)
             transfer(disk, "mkdir", "/bin")
             transfer(disk, "import", "/bin/terminal.elf", terminal)
             transfer(disk, "import", "/bin/tty_app.elf", application)
+            transfer(disk, "import", "/bin/pio_auth.elf", pio)
             guest = Guest(image, "terminal_handoff_probe", work_disk=disk, iso=True)
             guest.expect(b"xos64> ", timeout=30)
             send_bytes(guest, b"run\r")
             guest.expect(b"W1_BOOT_READY", timeout=45)
             send_bytes(guest, b"!")
+            guest.expect(b"W1_PIO_BOUNDS_OK", timeout=60)
+            report['checks'].append('authorized_pio_inside_and_boundary_faults')
             guest.expect(b"W1_READ_READY", timeout=45)
             send_bytes(guest, b"R")
             guest.expect(b"W1_READ_OK", timeout=30)

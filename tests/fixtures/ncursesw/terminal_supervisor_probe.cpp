@@ -11,6 +11,22 @@ terminal::control session;
 terminal::application app;
 
 i64 prepare_app(u64 child, void*) { return terminal::attach(session, app, child); }
+i64 prepare_pio(u64 child, void*) { return sdk::pio_grant(pio_grant_action::grant, child, pio_resource_com1); }
+
+bool pio_boundary(const char* mode, bool fault) {
+    sdk::spawn_options options{};
+    for (u32 i = 0; i < 3; ++i) options.stdio[i] = -2;
+    options.prepare_child = prepare_pio;
+    const char* argv[] = {"/bin/pio_auth.elf", mode};
+    const i64 child = sdk::spawn_file_options(argv[0], 2, argv, options);
+    if (child <= 0) return false;
+    process_status status{};
+    if (sdk::wait(static_cast<u64>(child), status) != 0) return false;
+    if (fault ? status.outcome != process_outcome::faulted || status.vector != 13
+              : status.outcome != process_outcome::exited || status.code != 0) return false;
+    return sdk::pio_grant(pio_grant_action::query, 0, pio_resource_com1) == 2 &&
+           sdk::pio_grant(pio_grant_action::recover, 0, pio_resource_com1) == 0;
+}
 
 bool transmit(const char* text) {
     for (u32 offset = 0; text[offset] != 0;) {
@@ -40,7 +56,10 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     char trigger = 0;
     while (sdk::read(0, &trigger, 1) != 1) sdk::yield();
     if (trigger != '!') return 1;
+    if (!pio_boundary("inside", false) || !pio_boundary("below", true) ||
+        !pio_boundary("above", true) || !pio_boundary("cross", true)) return 17;
     if (terminal::start(session, "/bin/terminal.elf") <= 0) return 2;
+    if (!transmit("W1_PIO_BOUNDS_OK\n")) return 18;
     if (!transmit("W1_READ_READY\n")) return 3;
     terminal::request request{}; terminal::response response{};
     request.operation = static_cast<u32>(terminal::operation::read_until);

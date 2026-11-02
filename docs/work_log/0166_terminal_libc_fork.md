@@ -9,5 +9,18 @@
 普通 Xsh 的 `tty-run` 授予现有一级进程创建权限以允许该事务；这一权限同时允许
 现有受限 spawn，fork 深度、全局进程数及终端会话上限仍分别生效，非完整作业控制。
 专用探针与正常 Xsh 探针分别增加 libc fork、描述符别名、共享模式和子进程写入；
-常规专用构建已通过，改动提交后须重新构建并执行客体。失败回滚、权限、并发和
-资源压力仍需单独覆盖，不能把一次成功路径作为完整 W1/W2 资格。
+提交 `6b880b7e695eefc8172e3ee63a45732b3a0f1196` 后重建两种系统：正常 Xsh 的
+exec、fork 描述符别名、共享模式及子进程退出探针 `passed_subset`，build ID
+`2b20caeaf078d3fe`，镜像 SHA-256
+`33d1f6ef5a065bbdd69822f265c7a40174f9825b3934d86d71e42f553a8ddcfd`，SDK 树 SHA-256
+`a1d7f11da45f847e760633e920cc810fdf07cec80057cbbde78f2c667b3b5061`，串口 SHA-256
+`73fe1efcb789b1a0b73f6f8d73fd6b8c8dfea90cb05e6f3743f6b21ac7828488`，报告位于
+`build/w1_libc_fork_normal_run_6b880b7/`。
+
+专用 supervisor 的原有设备交接及 libc fork 别名写入探针通过，build ID
+`1ae1259d3e03b9fa`，系统 manifest SHA-256
+`01f1ca7e2569e1737ea076dbbdf2cfa78392cf518038ae3a82a9dc644dee66d5`，镜像 SHA-256
+`e0093afec1f65320e55d1f0c303385f0c10b631d8a17aa77476255203d1a7b42`，串口 SHA-256
+`79739289379ec6d056b0bf51f30ac1806b8a326cbeba77e595f2f13c73387331`，报告位于
+`build/w1_libc_fork_special_6b880b7/`。失败回滚、权限、并发和资源压力仍需单独覆盖，
+不能把一次成功路径作为完整 W1/W2 资格。

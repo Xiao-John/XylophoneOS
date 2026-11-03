@@ -138,17 +138,35 @@ try:
    for name,value in [('first',first),('changed',changed),('scrolled',scrolled)]: (out/(name+'.json')).write_text(json.dumps(value,indent=2)+'\n')
    shot('notes-scrolled');stroke('esc');g.expect(b'EDITOR_UNSAVED_GUARD',start=b);pump(g,.3);click_xy(*point(rb'EDITOR_POINT discard=(\d+),(\d+)'));g.expect(b'kind=exited code=0',start=b);g.expect_supervisor(start=b);assert resources(g)==active;mark('notes_ssg_exit_exact_resources')
   elif a.case=='browser':
+   def verify_fragment_clipping(snapshot):
+    if not any('visibleFragments' in node for node in snapshot['nodes']):
+     return  # Legacy providers have no per-fragment clipping output.
+    vx,vy,vw,vh=snapshot['metadata']['viewport']
+    for node in snapshot['nodes']:
+     expected=[]
+     for x,y,w,h in node['fragments']:
+      left,top=max(x,vx),max(y,vy)
+      right,bottom=min(x+w,vx+vw),min(y+h,vy+vh)
+      if left<right and top<bottom:expected.append([left,top,right-left,bottom-top])
+     assert node['visibleFragments']==expected,node['id']
    b=launch('browser','--ssg-probe',b'BROWSER_READY')
    def navigate(path,expected=None):
     sb=len(g.output);chord('ctrl','l');type_text(path);stroke('ret');g.expect(expected or b'BROWSER_LOADED path='+path.encode(),start=sb,timeout=30);pump(g,.3)
    navigate('/web/ssg.html');first,_=snapshot(b'BROWSER');assert first['status']=='OK'
    texts=[n for n in first['nodes'] if n.get('role')=='text'];assert 'Visible' in ''.join(n.get('text','') for n in texts)
    hidden=[n for n in texts if 'HIDDEN_SECRET' in n.get('text','')];assert hidden and all(n['visibility']=='not-rendered' for n in hidden)
-   assert any(n['visibility']=='scroll-required' for n in first['nodes']);mark('browser_dom_layout_hidden_and_offviewport')
+   assert any(n['visibility']=='scroll-required' for n in first['nodes']);verify_fragment_clipping(first);mark('browser_dom_layout_hidden_and_offviewport')
    link=next(n for n in first['nodes'] if n.get('href')=='start.html');assert link['fragments'] and link['visibility'].startswith('viewport')
    x,y,w,h=link['fragments'][0];shot('browser-dom-first');click_xy(x+min(8,w//2),y+min(8,h//2));g.expect(b'BROWSER_LOADED path=/web/start.html',start=b);mark('ssg_link_geometry_matches_actual_engine_hit')
-   navigate('/web/ssg.html');again,_=snapshot(b'BROWSER');assert again['sourceEpoch']!=first['sourceEpoch'];stroke('end');bottom,delta=snapshot(b'BROWSER');assert bottom['sourceEpoch']==again['sourceEpoch'] and delta['status']=='OK'
-   assert any(n.get('text','').find('Below')>=0 and n['visibility'].startswith('viewport') for n in bottom['nodes']);mark('browser_scroll_changes_visibility_with_stable_epoch')
+   navigate('/web/ssg.html');again,_=snapshot(b'BROWSER');assert again['sourceEpoch']!=first['sourceEpoch'];stroke('end');bottom,delta=snapshot(b'BROWSER');assert bottom['sourceEpoch']==again['sourceEpoch']
+   assert bottom['metadata']['queryScope']==again['metadata']['queryScope']
+   assert bottom['metadata']['scrollY']>again['metadata']['scrollY']
+   # The SDK must not infer removals from an incomplete traversal.
+   capped=again['capped'] or bottom['capped']
+   assert delta['status']==('RESET_REQUIRED' if capped else 'OK'),delta['status']
+   if capped:assert 'removed' not in delta and 'changed' not in delta
+   verify_fragment_clipping(bottom)
+   assert any(n.get('text','').find('Below')>=0 and n['visibility'].startswith('viewport') for n in bottom['nodes']);mark('browser_scroll_changes_visibility_with_stable_epoch',diff_status=delta['status'],capped=capped)
    sb=len(g.output);chord('ctrl','r');g.expect(b'BROWSER_LOADED path=/web/ssg.html',start=sb);reload,diff=snapshot(b'BROWSER');assert reload['sourceEpoch']!=bottom['sourceEpoch'] and diff['status']=='SOURCE_REPLACED';mark('reload_invalidates_old_document_references')
    navigate('/web/unsupported.html',b'Unsupported HTML tag');retained,_=snapshot(b'BROWSER');assert retained['sourceEpoch']==reload['sourceEpoch'];mark('unsupported_canvas_rejected_no_fabricated_semantics')
    for name,value in [('first',first),('bottom',bottom),('reload',reload),('reload-diff',diff)]: (out/(name+'.json')).write_text(json.dumps(value,indent=2)+'\n')

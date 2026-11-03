@@ -1,0 +1,38 @@
+{
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "source_entries": 4,
+  "export_entries": 5,
+  "index_scope": "No prior full-file index is claimed. Original bytes are available at source_commit; this conversion record lists changed paths and old/new hashes.",
+  "added_export_document": "docs/reports/network_device_gap_20261029/SANITIZED_EXPORT.md",
+  "changes": [
+    {
+      "path": "docs/reports/network_device_gap_20261029/guest-report.json",
+      "original_sha256": "3ed20eae97ec07e44d7d487cbd4c9f0bb6af5b91b463c700562d8824e2ebdd39",
+      "export_sha256": "55df67a6ccd7a09ec1cdc13fd24417961f4fab695e2e11673defe67ab5519635"
+    },
+    {
+      "path": "docs/reports/network_device_gap_20261029/inputs.json",
+      "original_sha256": "51f7ce796beda9e44a122c5858057a0ffc029f4751bc7bb7c6981010226816b5",
+      "export_sha256": "ed0e3bb86f3c04a665dac40fd8eebe007a2bc44ea3457f5b0a8d325e4b2efde4"
+    }
+  ],
+  "template_variables": [
+    {
+      "name": "XOS_HOST_TEMP_6D6821976CD9",
+      "purpose": "host_temp root"
+    },
+    {
+      "name": "XOS_WORKTREE_68D576C199CF",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_9282C9E77071",
+      "purpose": "worktree root"
+    }
+  ],
+  "reproduction": "MANUAL_REQUIRED: configure template roots and obtain matching historical inputs; no replay is claimed.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history.",
+  "added_export_document_sha256": "e721a7a1915f04e32d326e536fbd75e092af791055ff09d1972435adaed9d5db",
+  "transformation": "Host home/workspace/tool roots and unambiguous host QEMU command paths only; generic guest temporary paths are not globally replaced."
+}

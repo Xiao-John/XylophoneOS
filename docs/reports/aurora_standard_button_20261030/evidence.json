@@ -9,26 +9,26 @@
     "../XylophoneOS-qt6-e17/build/qt_e17/sdk/manifest.json": "24dcc3ba938013c852a12f386ea2f7e16ebcec7cb4bfaff477794530c5d0e4b1"
   },
   "evidence_sha256": {
-    "README.md": "53d46aaa2a0a9c9c4c82d839faa09fcdd8e361548df84bcf50e9879ae7121c11",
+    "README.md": "65e1f82edd4041687df2728ca230cea6cf73eee12b822e4fd2f366941f322262",
     "before/guest_qemu.log.gz": "a851373faa15f40c3fda8a0b89934d86fe1269cb71a932d52313fb1c64d3d624",
     "before/guest_serial.log.gz": "be1974d8f3096f0b5ae3442240775150e93f846c24d2109e277d1b5e8e226827",
-    "before/report.json": "2b87afd2e24b536d2953bf016e6699828b8d9a476cad9a9cff90ea9edf259b10",
+    "before/report.json": "b5b16046a2609aca369f1942bb933006e61c034c4abb95a2d7b52ae76598370f",
     "before/scanout.png": "7dd04b156adc3a359b083de149f0460f0b09fbac59aab1eee4849be8e150e70e",
     "before/scanout.ppm.gz": "98199a60ec2e16ae52925ef99499b9cfda8485b878a54817af01dbfe9aa223c2",
-    "before-build.log.gz": "f78ef301698a0638454e139f79747dec3033ad90a0f649ff67923ec654247f22",
-    "before-receipt.json.gz": "4c7657179749ca647ca0e076d62667245ed0a45ec1ab13553d7c36928b1c9283",
+    "before-build.log.gz": "98a0753594c66969e663c3e54abca1d17c4f609d3e0e37462fe1d849607c5f40",
+    "before-receipt.json.gz": "d32bf316e4ead0b28c93546e46f31d49210077caaccefd7f768a39a76bcc191c",
     "final/guest_qemu.log.gz": "3e7abe0751f34ebf74a66f6f56f4f3de043f5d43f49541d0d28fc8160e071bc9",
     "final/guest_serial.log.gz": "fcc4046ca89daebc52527dcfd3144731846f96086dc95c27091b7e596c2467fd",
-    "final/report.json": "5b933f8a25169fd931a29c53cca4e3a3f87e14acf75899f3d20865e48c6de133",
+    "final/report.json": "1340a46d9d3baf2653f2ac0643af190b0097f7d66a1ee7cc19ed8c1106d899af",
     "final/scanout.png": "279b1d0902dfb488da58fad2824e4257a86435244c966a2cba9692cdebe620e4",
     "final/scanout.ppm.gz": "d4b3c4865c11e0c11b6d90cf9ede725626eafae16d36ba46b216ba451f9f8d6c",
-    "final-build.log.gz": "97bc615ed7f9813f0ab95026e1752fcddec2d2e94748f3d8caaf8fb65ea2b537",
-    "final-receipt.json.gz": "57d636fb527547b28915df56f4840948d705e632467866f350d64789aee3c5dd",
+    "final-build.log.gz": "25ca60a16e4b53fdfeba855c793e332f4a133a7a11a6370828dc8f23e8efbd1e",
+    "final-receipt.json.gz": "25732e660dd7f95040169ce7dafa63d06a1214a750df9c42c2ca9006e2b55169",
     "initial-fix/guest_qemu.log.gz": "74d04dab3bd7624a6f08049f897cdf21d02bc676eec3a4d4e9c3ca102608e263",
     "initial-fix/guest_serial.log.gz": "d3e42d05a557b76d6b2464bb9d008343151f162eb6c73c9c48f22228c31eb399",
-    "initial-fix/report.json": "f7de6f25be351c9b62a631c9bca36d6e8e4d1f245d08689176b2ffef6b15e502",
+    "initial-fix/report.json": "2a6de11b782109a3c2b4a7faeb5d09bd56cadc78f60d9ce78a61159b4b9c3298",
     "initial-fix/scanout.png": "daa7e43dc297d7a5cd945a99d2e9d8d5ffb535531ba115c2a95141a600938b76",
     "initial-fix/scanout.ppm.gz": "99e1702589ce00ea72b1cc6099ff06a7b236abe19b567e8fdd7bc0b5dc47da0f",
-    "initial-fix-build.log.gz": "ef3754407fe18ad66e9d544fb97df487cd2e627d33e3df325cca498b7c48b172"
+    "initial-fix-build.log.gz": "c2b0d1bb2a375997902409b78ae15a20cfb6ec45f3b3c51619332c0df8deb7c9"
   }
 }

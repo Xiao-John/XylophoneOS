@@ -2,12 +2,27 @@
 src/ports/qt6/licenses/ZLIB-LICENSE whitespace=-blank-at-eof
 src/ports/qt6/licenses/Zlib.txt whitespace=-blank-at-eof
 # Unified patch context lines require a leading space, including blank context.
-src/ports/qt6/patches/*.patch whitespace=-blank-at-eol
+src/ports/qt6/patches/*.patch whitespace=-blank-at-eol,-blank-at-eof
+# Unified patch context preserves upstream tab indentation after its prefix.
+src/ports/newlib/patches/*.patch whitespace=-space-before-tab
 # Report indexes bind exact historical bytes, including JSON and text files.
 # Disable checkout and check-in newline conversion for every frozen report.
 docs/reports/** -text
-docs/evidence_exports/issue37_pr40/** -text
-docs/evidence_exports/issue37_pr44/** -text
+# Conversion ledgers and the two GCC build receipts are also byte-indexed.
+docs/evidence_exports/** -text
+src/ports/gcc/e08_5_abi_build_report.json -text
+src/ports/gcc/e08_5_target_runtime_manifest.json -text
+# These migrated host documents are referenced by exact-byte conversion ledgers.
+docs/work_log/0063_input_edit_design.md -text
+docs/work_log/0064_input_edit_first_stage.md -text
+docs/work_log/0075_ncursesw_preliminary_gaps.md -text
+docs/work_log/0076_utf8_link_probe.md -text
+docs/work_log/0077_full_remote_integration.md -text
+docs/work_log/0080_fb0_fault_bundle.md -text
+docs/work_log/0082_network_device_abi_claim.md -text
+docs/work_log/0096_browser_review_fixes.md -text
+docs/work_log/0099_probe_branch_reconciliation.md -text
+docs/work_log/0144_webengine_port_plan_and_c31.md -text
 # Freeze every modern-app evidence byte; evidence_index.json receipts hash all 138 files.
 docs/reports/modern_apps_20261029/** -text
 # Freeze compatibility CSV bytes exactly; csv.writer emits CRLF and receipts hash it.

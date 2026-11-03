@@ -15,7 +15,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--archive', type=Path, required=True)
     parser.add_argument('--output', type=Path, default=ROOT / '.cache/xos_seed/threading_newlib')
+    parser.add_argument('--jobs', type=int, default=8, help='positive parallel build job count (default: 8)')
     args = parser.parse_args()
+    if args.jobs < 1:
+        parser.error('--jobs must be positive')
     if hashlib.sha256(args.archive.read_bytes()).hexdigest() != SOURCE_SHA256:
         raise SystemExit('newlib source archive SHA256 differs from the frozen input')
     work = args.output.resolve()
@@ -48,7 +51,7 @@ def main():
          '--enable-newlib-global-stdio-streams', '--disable-newlib-io-long-double',
          '--disable-newlib-io-long-long', '--disable-newlib-io-c99-formats',
          '--disable-newlib-io-pos-args'], 'configure.log', build)
-    run(['make', '-j8'], 'make.log', build)
+    run(['make', '-j' + str(args.jobs)], 'make.log', build)
     run(['make', 'install'], 'install.log', build)
     artifacts = {str(p.relative_to(prefix)): hashlib.sha256(p.read_bytes()).hexdigest()
                  for p in prefix.rglob('*') if p.is_file()}

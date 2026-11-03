@@ -1,0 +1,9 @@
+{
+  "name": "ncurses",
+  "version": "6.5",
+  "source_url": "https://invisible-mirror.net/archives/ncurses/ncurses-6.5.tar.gz",
+  "archive_sha256": "136d91bc269a9a5785e5f9e980bc76ab57428f604ce3e5a5a90cebc767971cc6",
+  "notice": "upstream/COPYING",
+  "notice_sha256": "b2feb54f39529abe226f709a292584fde48a2e5721559fee417d2cdd51cb7cc1",
+  "status": "source_candidate_not_ported"
+}

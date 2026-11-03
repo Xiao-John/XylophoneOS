@@ -1,6 +1,6 @@
 {
   "status": "PASSED_rejection_probe",
-  "candidate_worktree": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-browser-net",
+  "candidate_worktree": "${XOS_WORKTREE_68D576C199CF}",
   "candidate_branch": "codex/browser-net-n1",
   "system_build_id": "67883ca24e9dcdae",
   "image": {

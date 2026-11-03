@@ -1,0 +1,137 @@
+{
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "source_entries": 29,
+  "export_entries": 30,
+  "index_scope": "No prior full-file index is claimed. Original bytes are available at source_commit; this conversion record lists changed paths and old/new hashes.",
+  "added_export_document": "docs/reports/qt_e15_continuation_20261028/SANITIZED_EXPORT.md",
+  "changes": [
+    {
+      "path": "docs/reports/qt_e15_continuation_20261028/core-events-guest3.json",
+      "original_sha256": "13c103d52df85332327e39b8c05b3847e3a269dfe5aeda5504f2c59aa3fe8074",
+      "export_sha256": "b3f3ee4efe5a5f203c2f94435cfdd68daa864b2941dab0f1cdb663db8e3bdcf0"
+    },
+    {
+      "path": "docs/reports/qt_e15_continuation_20261028/core-fault-guest1.json",
+      "original_sha256": "8dc7e4b06a1bd07ee3a3daa6a69b1b86b0cc57fd862341d767cb5121439f0522",
+      "export_sha256": "026db26c4b153c8570437ca578ab667fb8659cff3a9bf5d99423aa65e69dd593"
+    },
+    {
+      "path": "docs/reports/qt_e15_continuation_20261028/core-file-errors2.json",
+      "original_sha256": "78f50474636b2dacdad3a50df891f0d331252ebab4b8c58fd3da7ee2e3cd068b",
+      "export_sha256": "de792a448d221d14f251ebc35e57c89097fcc14dd957299086b52bf4206f7812"
+    },
+    {
+      "path": "docs/reports/qt_e15_continuation_20261028/core-persist-guest1.json",
+      "original_sha256": "85656fffdb19d66de2d3093fec4bbbeff01e46c06194844332fc91ef39bb49ef",
+      "export_sha256": "8d2bd278d5deba2d076fc1c3ded6a89d698876c1bb201d418d1ec3c46cc70f6d"
+    },
+    {
+      "path": "docs/reports/qt_e15_continuation_20261028/core-quota-guest1.json",
+      "original_sha256": "4567ad658752c1fb9fea8ff485004460c1ae30aef421910678890e60381e9f37",
+      "export_sha256": "a215b21d9eaac25713b7bd2fd88744f23675b63aa061e73b3d731a516925d88f"
+    },
+    {
+      "path": "docs/reports/qt_e15_continuation_20261028/qt-smoke-attempt2.log.gz",
+      "original_sha256": "0e870ab8f78d2b0f56ae63b86e4c78fbf5c308c0fef693ba698cb67cbd511e9a",
+      "export_sha256": "0c4b3e11a2b2e463b08f1ba7f1f7abcb7b2ee12ed54c3d6b9640ecfe716c55b1"
+    },
+    {
+      "path": "docs/reports/qt_e15_continuation_20261028/qt-smoke-attempt3.log.gz",
+      "original_sha256": "3ed5779120ec9b7d1a719accaa5d7e525fc1e5dcd251d2a5cc7f4f568b8ac15c",
+      "export_sha256": "a33acee2f3ac0892b92d733344bf6fa63febcd0f6b46f40d0cd7b4838af9d2e7"
+    },
+    {
+      "path": "docs/reports/qt_e15_continuation_20261028/target-build-10.log.gz",
+      "original_sha256": "7af8d7dc9bf8e0466ec1b2d568b9e8fae490899587adf22811f7ad4779e41dbd",
+      "export_sha256": "76d7085e93e93ea65985b28ae6acbefdc3f1cbe91b639b0cd739d15635f7e75d"
+    },
+    {
+      "path": "docs/reports/qt_e15_continuation_20261028/target-build-12.log.gz",
+      "original_sha256": "eadd7cf31d3db9dcdd3f3735091acd4e152375bd3a7f598dd795c280586d1eb4",
+      "export_sha256": "6a19b6f30fef29227f38c12a9862d94d90c2f6cc597a32a3ea50935d1d01c72d"
+    },
+    {
+      "path": "docs/reports/qt_e15_continuation_20261028/target-build-14.log.gz",
+      "original_sha256": "4de145ad12a0d43ccb1fe3f938b961f288c1cbb80ef4e871a68dbdca9ee101a2",
+      "export_sha256": "2277403b012c9554cb4819c8f09b9ca7425edd7cb9b2da3dea08bdfad0b9bedf"
+    },
+    {
+      "path": "docs/reports/qt_e15_continuation_20261028/target-build-16.log.gz",
+      "original_sha256": "f0391f6d830f72743a6aef0c02770ed493f3fce58157cfc72c0bbb5c0a2cdc46",
+      "export_sha256": "120a5e515cef7bc6f21811e5dbc8f5698e7701a701cb975e20f5844d29a0d1d0"
+    },
+    {
+      "path": "docs/reports/qt_e15_continuation_20261028/target-build-17.log.gz",
+      "original_sha256": "f09e0af22babc77fd68921e00258a7bdfccd961741dc671c4dd4e82624e42eb8",
+      "export_sha256": "883de7ebdd7b3f7cd1592f35aa2901b0042b35b278b47f7bc653c61890d5f39f"
+    },
+    {
+      "path": "docs/reports/qt_e15_continuation_20261028/target-build-18.log.gz",
+      "original_sha256": "4ac279234f02cab55379ebb340d460b133937ed18e79912979127e708873e6c8",
+      "export_sha256": "e33d43051ca12eb529661ea98508176ef053a873b0d1d720b66bbaef63a10180"
+    },
+    {
+      "path": "docs/reports/qt_e15_continuation_20261028/target-build-19.log.gz",
+      "original_sha256": "5e12c2e5e45ccd927411831916c3cf872fc3a64482a0ddca7698df3797527cee",
+      "export_sha256": "7c0d4397d0e98b3cdd1119706f1bc7e49f2c8d8ea098650e9029885040d326e3"
+    },
+    {
+      "path": "docs/reports/qt_e15_continuation_20261028/target-build-20.log.gz",
+      "original_sha256": "f1255e4e71776ccb0a84243a5efb287c47c7211d390ca3949dd97ff0f7b5f12b",
+      "export_sha256": "36bca06d10fb0c2962f84dab27fdadb9c04defa29544892b4717b5424aefe9c4"
+    },
+    {
+      "path": "docs/reports/qt_e15_continuation_20261028/target-build-21.log.gz",
+      "original_sha256": "179765cd2153e6c12903cda8de7fa0c880d384b01356337f8693c5ed7d110cea",
+      "export_sha256": "73d169322f83263cd00c8c8aba3ad8719f65d0638c9814de1408fb02f167f2c4"
+    },
+    {
+      "path": "docs/reports/qt_e15_continuation_20261028/target-build-22.log.gz",
+      "original_sha256": "b8c42b972a40644e7bbe92028772c726ee13886fa49a6f44c03c1ec0ce48b4c1",
+      "export_sha256": "3ccf708acedc04e1b86a551a141fb7dcc5662b0453352f7fefbe49b32dc2a297"
+    },
+    {
+      "path": "docs/reports/qt_e15_continuation_20261028/target-build-23.log.gz",
+      "original_sha256": "716268eaf704ff7cd6a011cb09a22c26da696f8438e00c1fb537bfbcd96cbfbc",
+      "export_sha256": "a4cfb9977afbe503d0289954d12dcf88ba8c7bdf968229e2595c06db27290d8c"
+    },
+    {
+      "path": "docs/reports/qt_e15_continuation_20261028/target-build-6.log.gz",
+      "original_sha256": "217e8eb0bb700c18288a37560dbdcea3a80a4a89862216d6cf19950b5614b38a",
+      "export_sha256": "8b63470544ed57634f6d8f921c4bd45009ede4c62e2c6bde99e8c6e0759bb85d"
+    },
+    {
+      "path": "docs/reports/qt_e15_continuation_20261028/target-build-8.log.gz",
+      "original_sha256": "0f5a47b45d068d4a141f089d217589dc712c0f1d3265a53ff1b5cbeb614efaa0",
+      "export_sha256": "ecd8e2fb1ff7ea97ce3a3005bda301b804e015da80170f93bcf7a329e80bcace"
+    },
+    {
+      "path": "docs/reports/qt_e15_continuation_20261028/wake-gate-guest4.json",
+      "original_sha256": "efd47207c6482cab2034980e9a7c657023bcb659368a19065a8761cae8317eb6",
+      "export_sha256": "4fda1b09c1038f097d73c13828244bcaadf9387934db2754d0a560e78b95c62a"
+    }
+  ],
+  "template_variables": [
+    {
+      "name": "XOS_HOST_TEMP_6D6821976CD9",
+      "purpose": "host_temp root"
+    },
+    {
+      "name": "XOS_TOOLCHAIN_35527FAC2790",
+      "purpose": "toolchain root"
+    },
+    {
+      "name": "XOS_WORKTREE_9282C9E77071",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_ED2321C1F627",
+      "purpose": "worktree root"
+    }
+  ],
+  "reproduction": "MANUAL_REQUIRED: configure template roots and obtain matching historical inputs; no replay is claimed.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history.",
+  "added_export_document_sha256": "bc0b2a20573409350dc5f94e04450441e2337ac94a6b22e2ea01a859a5d83d0c",
+  "transformation": "Host home/workspace/tool roots and unambiguous host QEMU command paths only; generic guest temporary paths are not globally replaced."
+}

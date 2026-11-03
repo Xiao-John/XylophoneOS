@@ -1,3 +1,5 @@
+> **Evidence version:** This checkout is a path-sanitized derivative, not byte-identical raw evidence. Original and exported hashes are recorded in [the Issue 37 lineage](../../evidence_exports/issue37/modern2_runtime_lineage.json). Historical input hashes still identify the original run; template roots require manual configuration.
+
 # Modern Platform Phase 2：运行时阻塞探针
 
 2026-10-29，独立`codex/modern2-runtime-probes`，基于fetch后的upstream

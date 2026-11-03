@@ -6,7 +6,7 @@
   "xos_sha256": "77e3ba2e18bed6619815fe74a227e943ed7ae8561da78c1ff861ca838e40c53d",
   "sdk_manifest_sha256": "1c8fb8574baffc66d3a9c39662b4ccc06d8eda73400b70beabe27e155e8d0012",
   "dash_sha256": "650d0492f6e319815672f619209dfa4bc8debb13a5552249b0b4d8b3e4a1962e",
-  "artifacts": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c2_evidence/1517e0fe505643a189338a755265eb61",
+  "artifacts": "${XOS_WORKTREE_19282E542E67}/build/dash_c2_evidence/1517e0fe505643a189338a755265eb61",
   "only_fork_oom": true,
   "fork_oom_mib": 254,
   "commands": [
@@ -223,17 +223,17 @@
   ],
   "tools": {
     "x86_64-elf-gcc": {
-      "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-gcc",
       "sha256": "078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f",
       "version": "x86_64-elf-gcc (GCC) 16.2.0"
     },
     "x86_64-elf-g++": {
-      "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-g++",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-g++",
       "sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
       "version": "x86_64-elf-g++ (GCC) 16.2.0"
     },
     "nasm": {
-      "path": "/Users/perry_guo/homebrew/bin/nasm",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/bin/nasm",
       "sha256": "5d22db7ed80aee4eb0e1cb5ff8a87e40294012f6ddf943601556922d5128b725",
       "version": "NASM version 3.02 compiled on Jun 29 2026"
     },
@@ -243,7 +243,7 @@
       "version": "Apple clang version 21.0.0 (clang-2100.3.34.2)"
     },
     "qemu": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+      "path": "${XOS_WORKTREE_19282E542E67}/../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
       "sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
       "version": "QEMU emulator version 11.1.2"
     }
@@ -338,7 +338,7 @@
     }
   },
   "qemu_command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "${XOS_WORKTREE_19282E542E67}/../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -352,7 +352,7 @@
     "-nic",
     "none",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_WORKTREE_19282E542E67}/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -363,9 +363,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_c2_5qwyvqfe/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_c2_5qwyvqfe/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_7zednkcs/qmp.sock,server=on,wait=off"
+    "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_7zednkcs/qmp.sock,server=on,wait=off"
   ],
   "baseline_resources": [
     129832,

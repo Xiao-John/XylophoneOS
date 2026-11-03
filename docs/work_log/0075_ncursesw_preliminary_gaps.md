@@ -1,3 +1,5 @@
+> **路径模板：** 本历史记录中的宿主临时根目录为可配置占位符；原始字节保留在源提交。
+
 # 0075：ncursesw 前期缺口处理
 
 2026-10-28。用户要求开始处理前期缺口；W1 尚未完成。遵循先提交相关改动再验收，
@@ -10,7 +12,7 @@
   分别构建 `--enable-newlib-mb` 的 single/threaded；threaded 保留 retargetable locking、
   `__DYNAMIC_REENT__` 及匹配现有线程 SDK 构建器的 profile receipt。构建器不覆盖 vendored
   库或 SDK；最终脚本 SHA256 `36cc6eb378c4efd4c5633706b20d729e923fc7999e286706f4b7c185681dc7d9`。
-- 实际命令：`python3 scripts/build_utf8_newlib.py --archive .cache/xos_seed/threading_sources/newlib-4.6.0.20260123.tar.gz --output /tmp/xos_newlib_utf8_receipted_20261028 --jobs 8`。
+- 实际命令：`python3 scripts/build_utf8_newlib.py --archive .cache/xos_seed/threading_sources/newlib-4.6.0.20260123.tar.gz --output ${XOS_DOC_TEMP_54C09703AC9B} --jobs 8`。
   两种 profile 构建完成，输出头文件 `_MB_CAPABLE=1`；threaded 还启用 retargetable locking。
   single libc SHA256 `74c3494bda2e62e78998296cd54167c2e061873c4385574d66b3344c634c0f34`；
   threaded libc SHA256 `615c11d3247e0bb8931a48528147b288db6078055fff10e795a8f25464d2bc7e`。
@@ -20,7 +22,7 @@
   SHA256 `136d91bc269a9a5785e5f9e980bc76ab57428f604ce3e5a5a90cebc767971cc6`，在必须
   新建的隔离目录针对显式 SDK 记录 configure/可选编译结果，不触碰 SDK。正式引入与逐成员
   许可审计未完成，探针源码锁不等于已选择发行版本。
-- 实际命令：`python3 scripts/probe_ncursesw.py --archive /tmp/xos_ncurses_6_5_scout.tar.gz --sdk build/input_edit_final/sdk --output /tmp/xos_ncursesw_probe_final_20261028 --build`。
+- 实际命令：`python3 scripts/probe_ncursesw.py --archive ${XOS_DOC_TEMP_A393A397BD2D} --sdk build/input_edit_final/sdk --output ${XOS_DOC_TEMP_B69F28D88E5A} --build`。
   configure 退出 0，但目标库编译退出 2：生成的 `term.h` 回退包含缺失的 `sgtty.h`；配置
   未检测到 `termios.h`、`sys/ioctl.h`。这份旧 SDK 是依赖探针输入，不是当前组合资格；
   日志和 report 留在该私有目录。configure 成功不能冒充 ncurses 移植成功。

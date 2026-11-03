@@ -148,6 +148,10 @@ def main():
                 send_bytes(guest, b'\xe4')
                 time.sleep(0.05)
                 send_bytes(guest, b'\xb8\xad\x1bOP')
+                guest.expect(b'W2_INVALID_READY', start=start, timeout=30)
+                send_bytes(guest, b'\xffA')
+                guest.expect(b'W2_INVALID_RECOVERY_READY', start=start, timeout=30)
+                send_bytes(guest, b'B')
                 guest.expect(b' kind=exited code=0', start=start, timeout=60)
                 marker = guest.output.find(b' kind=exited code=0', start)
                 guest.expect(b'xsh> ', start=marker + len(b' kind=exited code=0'), timeout=60)
@@ -155,6 +159,7 @@ def main():
                     raise AssertionError('xsh wide consumer failed')
                 report['checks'].append('xsh_terminal_wide_input_output')
                 report['checks'].append('xsh_split_utf8_and_window_bounds_local_refresh')
+                report['checks'].append('xsh_invalid_utf8_timeout_and_next_input_recovery')
 
                 def resources():
                     start = len(guest.output)
@@ -238,10 +243,15 @@ def main():
             send_bytes(guest, b'\xe4')
             time.sleep(0.05)
             send_bytes(guest, b'\xb8\xad\x1bOP')
+            guest.expect(b'W2_INVALID_READY', timeout=30)
+            send_bytes(guest, b'\xffA')
+            guest.expect(b'W2_INVALID_RECOVERY_READY', timeout=30)
+            send_bytes(guest, b'B')
             marker = guest.expect_any((b'W2_WIDE_OK', b'W2_WIDE_FAILED'), timeout=60)
             if marker != b'W2_WIDE_OK':
                 raise AssertionError('wide consumer returned failure')
             report['checks'].append('wide_window_color_combining_timeout_left_f1_cjk')
+            report['checks'].append('invalid_utf8_timeout_and_next_input_recovery')
             marker = guest.expect_any((b'W2_REENTRY_OK', b'W2_REENTRY_FAILED'), timeout=60)
             if marker != b'W2_REENTRY_OK':
                 raise AssertionError('reentry consumer returned failure')

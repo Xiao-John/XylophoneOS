@@ -12,6 +12,15 @@ __attribute__((section(".xos.tty"), used)) static const struct xos_tty_marker ma
     0x31595454534f5858ULL, 1, sizeof(struct xos_tty_marker)
 };
 
+static int notify(const char *text, size_t length) {
+    for (size_t offset = 0; offset < length;) {
+        ssize_t count = write(2, text + offset, length - offset);
+        if (count <= 0) return -1;
+        offset += (size_t)count;
+    }
+    return 0;
+}
+
 int main(void) {
     if (!setlocale(LC_CTYPE, "C.UTF-8")) return 1;
     if (!initscr()) return 2;
@@ -54,6 +63,15 @@ int main(void) {
     }
     if (!result && (wget_wch(stdscr, &key) != OK || key != 0x4e2d)) result = 8;
     if (!result && (wget_wch(stdscr, &key) != KEY_CODE_YES || key != KEY_F(1))) result = 12;
+    if (!result) {
+        const char invalid_ready[] = "W2_INVALID_READY\n";
+        const char recovery_ready[] = "W2_INVALID_RECOVERY_READY\n";
+        wtimeout(stdscr, 1000);
+        if (notify(invalid_ready, sizeof(invalid_ready) - 1) != 0 || wget_wch(stdscr, &key) != ERR)
+            result = 16;
+        if (!result && (notify(recovery_ready, sizeof(recovery_ready) - 1) != 0 ||
+                        wget_wch(stdscr, &key) != OK || key != L'B')) result = 17;
+    }
     if (pane && delwin(pane) == ERR && !result) result = 9;
     if (endwin() == ERR && !result) result = 7;
     return result;

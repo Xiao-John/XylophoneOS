@@ -42,3 +42,4 @@
 | 0177 | `0177_terminal_capacity_repetition.md` | 终端 fork 容量回滚重复验证（2026-11-02） |
 | 0178 | `0178_channel_single_wait_close.md` | 单通道等待中的对端关闭（2026-11-02） |
 | 0179 | `0179_screen_host_probe.md` | GNU Screen 宿主终端探针（2026-11-03） |
+| 0180 | `0180_ncurses_invalid_input.md` | ncurses 宽字符非法输入及恢复（2026-11-03） |

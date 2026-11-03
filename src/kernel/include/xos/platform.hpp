@@ -11,12 +11,20 @@ void debug_init();
 void interrupts_init();
 // IRQ0 time advancement and platform acknowledgement, no scheduling policy.
 void timer_interrupt();
+// Interrupt-controller mechanisms; do not advance time or access devices.
+void irq_mask(u8 irq);
+void irq_unmask(u8 irq);
+void irq_acknowledge(u8 irq);
 void debug_graphics(bool active);
 bool debug_write(const char* text);
 i64 debug_write_bytes(const u8* bytes, usize length);
 // Returns one received byte, or -1 when the input is empty. Polling only.
 int debug_read();
 int debug_peek();
+// Irreversibly detach COM1 from the legacy debug console for this boot.
+// Fails while a received byte is pending; never consumes it.
+bool debug_detach_serial();
+bool debug_serial_attached();
 // PC wall clock: snapshot UTC RTC at boot, then advance it from monotonic ticks.
 bool realtime_clock_init(u64 monotonic_ns);
 i64 realtime_clock_ns(u64 monotonic_ns);

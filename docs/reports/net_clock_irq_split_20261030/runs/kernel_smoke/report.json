@@ -24,7 +24,7 @@
   "image_sha256": "7cfab457894a4813785533ba9172a1ec461039e45a2a6f018bbc100a393a4782",
   "qemu": "QEMU emulator version 11.1.2",
   "command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -42,7 +42,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_WORKTREE_D39D1408E55B}/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -53,7 +53,7 @@
     "-display",
     "none",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_e3x25h9i/qmp.sock,server=on,wait=off"
+    "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_e3x25h9i/qmp.sock,server=on,wait=off"
   ],
   "verification_clang": "Apple clang version 21.0.0 (clang-2100.3.34.2)",
   "lldb": "lldb-2103.0.34.103"

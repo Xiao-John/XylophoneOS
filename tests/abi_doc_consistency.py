@@ -13,7 +13,7 @@ def main():
     headers={'process':(ROOT/'src/shared/include/xos/process_abi.hpp').read_text(),
              'file':(ROOT/'src/shared/include/xos/file_abi.hpp').read_text(),
              'display':(ROOT/'src/shared/include/xos/display_abi.hpp').read_text()}
-    names=['sys_pipe_wait','sys_process_guard','sys_random_bytes','sys_clock_realtime','sys_display','sys_display_present','clone_session','anonymous','anonymous_seal','maintenance_acquire','maintenance_release','truncate']
+    names=['sys_pipe_wait','sys_stream_lease','sys_channel','sys_pio_grant','sys_irq_event','sys_process_guard','sys_random_bytes','sys_clock_realtime','sys_display','sys_display_present','clone_session','anonymous','anonymous_seal','maintenance_acquire','maintenance_release','truncate']
     actual={}
     for name in names:
         source=headers['display' if name.startswith('sys_display') else 'process' if name.startswith('sys_') else 'file']
@@ -21,7 +21,7 @@ def main():
         documented=re.findall(r'\|\s*`'+name+r'`\s*\|\s*(\d+)\s*\|',section)
         assert documented==[str(value)],(name,value,documented)
         actual[name]=value
-    assert len({actual[n] for n in names if n.startswith('sys_')})==6
+    assert len({actual[n] for n in names if n.startswith('sys_')})==10
     assert len({actual[n] for n in names if not n.startswith('sys_')})==6
     numbers={}
     for path in (ROOT/'src/shared/include/xos').glob('*abi.hpp'):

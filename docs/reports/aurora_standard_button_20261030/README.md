@@ -1,3 +1,5 @@
+> **Evidence version:** This checkout is a path-sanitized derivative, not byte-identical raw evidence. Original and exported hashes are recorded in [the Issue 37 lineage](../../evidence_exports/issue37/aurora_standard_button_lineage.json). Historical input hashes still identify the original run; template roots require manual configuration.
+
 # Standard Qt button and explicit palette regression
 
 SDK base `758dde49d312277135fb2fa51887c2b4a94d6761`; real XOS guest image

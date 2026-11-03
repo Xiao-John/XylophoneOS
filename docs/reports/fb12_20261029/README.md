@@ -1,3 +1,5 @@
+> **Evidence version:** Selected host command paths are templated in this derivative. Original input hashes retain their historical meaning; [source and export lineage](../../evidence_exports/issue37/fb12_lineage.json).
+
 # FB1/FB2 受限验收证据
 
 本组正常系统build `32fe73250f191e04`，冻结输入和文件摘要见 `qualification.json`。

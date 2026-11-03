@@ -26,7 +26,7 @@
   ],
   "commands": [
     [
-      "/Users/perry_guo/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -54,16 +54,16 @@
       "-mcmodel=small",
       "-mno-red-zone",
       "-mgeneral-regs-only",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/src/user/include",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/src/shared/include",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/audit/sdk/include",
+      "-I${XOS_WORKTREE_D39D1408E55B}/src/user/include",
+      "-I${XOS_WORKTREE_D39D1408E55B}/src/shared/include",
+      "-I${XOS_WORKTREE_D39D1408E55B}/build/clock_irq_split/audit/sdk/include",
       "-c",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/tests/fixtures/clock_irq/clock_user.cpp",
+      "${XOS_WORKTREE_D39D1408E55B}/tests/fixtures/clock_irq/clock_user.cpp",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/clock_irq_guest_release_final/clock.o"
+      "${XOS_WORKTREE_D39D1408E55B}/build/clock_irq_split/clock_irq_guest_release_final/clock.o"
     ],
     [
-      "/Users/perry_guo/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-g++",
       "-m64",
       "-march=x86-64",
       "-mtune=generic",
@@ -75,12 +75,12 @@
       "-no-pie",
       "-Wl,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096",
       "-T",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/audit/sdk/user.ld",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/audit/sdk/crt0.o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/clock_irq_guest_release_final/clock.o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/audit/sdk/lib/libxos.a",
+      "${XOS_WORKTREE_D39D1408E55B}/build/clock_irq_split/audit/sdk/user.ld",
+      "${XOS_WORKTREE_D39D1408E55B}/build/clock_irq_split/audit/sdk/crt0.o",
+      "${XOS_WORKTREE_D39D1408E55B}/build/clock_irq_split/clock_irq_guest_release_final/clock.o",
+      "${XOS_WORKTREE_D39D1408E55B}/build/clock_irq_split/audit/sdk/lib/libxos.a",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/clock_irq_guest_release_final/clock.elf"
+      "${XOS_WORKTREE_D39D1408E55B}/build/clock_irq_split/clock_irq_guest_release_final/clock.elf"
     ]
   ],
   "elf_sha256": "2872587f46030a003f4260ae6482b63b98ba30c4e94225729976234f0f0e0842",
@@ -90,7 +90,7 @@
   "disk_before_sha256": "fc8bd3d1f9b5ac3d8857ce794811c7f18f62813a4f482231313048a779f19679",
   "host_wall_before_ns": 1793340932132849000,
   "qemu_command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -108,7 +108,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-cdrom",
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/audit/xos-install.iso",
+    "${XOS_WORKTREE_D39D1408E55B}/build/clock_irq_split/audit/xos-install.iso",
     "-boot",
     "order=d,strict=on",
     "-no-reboot",
@@ -119,9 +119,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/clock_irq_guest_release_final/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_WORKTREE_D39D1408E55B}/build/clock_irq_split/clock_irq_guest_release_final/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_sgy8fm2k/qmp.sock,server=on,wait=off"
+    "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_sgy8fm2k/qmp.sock,server=on,wait=off"
   ],
   "boot_ticks": 3,
   "resources_before": [

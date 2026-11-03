@@ -5,7 +5,7 @@
   "pr29_original_head": "758dde49d312277135fb2fa51887c2b4a94d6761",
   "code_head_before_evidence_commit": "645d3e9fccb7edc7af6cf4882a82c9d3f7b95508",
   "system_image": {
-    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-glass/build/aurora_glass/system-v5/xos.img",
+    "path": "${XOS_WORKTREE_313E5C73D324}/build/aurora_glass/system-v5/xos.img",
     "sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08"
   },
   "qemu": {

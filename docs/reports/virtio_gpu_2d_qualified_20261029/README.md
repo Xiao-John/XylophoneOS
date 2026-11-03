@@ -1,3 +1,5 @@
+> **Evidence version:** This checkout is a path-sanitized derivative, not byte-identical raw evidence. Original and exported hashes are recorded in [the Issue 37 lineage](../../evidence_exports/issue37/virtio_gpu2d_lineage.json). Historical input hashes still identify the original run; template roots require manual configuration.
+
 # VirtIO-GPU 2D — final restricted QEMU evidence
 
 [Qualification](qualification.json) · [scope/reproduction](../../work_log/0081_virtio_gpu_2d_qualification.md).

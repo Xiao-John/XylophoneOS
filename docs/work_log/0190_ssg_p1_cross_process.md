@@ -1,4 +1,4 @@
-# 0162 — SSG-P1 受限跨进程只读原型
+# 0190 — SSG-P1 受限跨进程只读原型
 
 2026-10-30。独立 `codex/ssg-cross-process-20261030` 工作树；从 Browser 可见性
 修复 `45f7df2` 起步，保留原提交并合入 SDK Diff 修复分支 `8197004`。上游 main
@@ -72,3 +72,5 @@ Broker、全局合成器遮挡、精确可见字形、所有未标记的敏感�
 SSG 专属 syscall，不复制 Linux 接口。LocalPilot 未来仅为普通消费者，本轮未修改
 正式安装、代理配置或其它项目。无 `src/kernel/`、公共系统 ABI、QPA 或设备驱动
 源码改动，不处理 PR #20 的驱动整改；未合并 main 或发布产品。
+
+2026-11-03: system and all P1 targets rebuilt on main `48882c9` and the updated #44 layer. The full guest suite passed 17/17 in this run; the historical exit timeout remains retained and its root cause is unresolved. [Round 2 evidence](../reports/ssg_p1_round2_20261103/README.md).

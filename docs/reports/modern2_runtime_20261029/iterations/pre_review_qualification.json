@@ -3,77 +3,77 @@
   "build_id": "e885d9593cc29d63",
   "upstream_commit": "aaec2e9d8ffe61ce1d523cd56852d36cde3edd07",
   "artifacts": {
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/final_system/xos.img": {
+    "${XOS_WORKTREE_0537C4C7287C}/build/modern2_runtime/final_system/xos.img": {
       "sha256": "ee60476c228d39bc96b2db5d9e5260a6537f894ea02a7f9199884892b9431273",
       "bytes": 1474560
     },
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern_apps/quickjs/js_probe.elf": {
+    "${XOS_WORKTREE_0537C4C7287C}/build/modern_apps/quickjs/js_probe.elf": {
       "sha256": "6e1f31b7c92de0bcadf44ccabdd92668296d13f505b01d854914a94043d34ff3",
       "bytes": 6048072
     },
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/final_guest/jsprobe": {
+    "${XOS_WORKTREE_0537C4C7287C}/build/modern2_runtime/final_guest/jsprobe": {
       "sha256": "d517dc9aeb2d0030b8f0011ee7f1c075862ea1c447e8fd62547a6939e4cc06ce",
       "bytes": 1177880
     },
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/final_guest/work.img": {
+    "${XOS_WORKTREE_0537C4C7287C}/build/modern2_runtime/final_guest/work.img": {
       "sha256": "6b15bf9129876cd771664acc7ec1aecfd4cb1cedadb47ed655af417e2c5c1a33",
       "bytes": 536870912
     },
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/guest1/work.img": {
+    "${XOS_WORKTREE_0537C4C7287C}/build/modern2_runtime/guest1/work.img": {
       "sha256": "6b15bf9129876cd771664acc7ec1aecfd4cb1cedadb47ed655af417e2c5c1a33",
       "bytes": 536870912
     },
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/manifest.json": {
+    "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/threading_sdk/manifest.json": {
       "sha256": "a203fbda0b9d984d60e3271c33418d3b796f77060b3cba4661bc0be2eb4117b7",
       "bytes": 143152
     },
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/lib/libxos.a": {
+    "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/threading_sdk/lib/libxos.a": {
       "sha256": "f3224b113d8db94fa999b3b5b4fbc8922a9f39037fe5f47a9b5feff174d89372",
       "bytes": 792494
     },
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/lib/libc.a": {
+    "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/threading_sdk/lib/libc.a": {
       "sha256": "d252bb6f1e37133f5e62e3c6a6b6fef337a75e2c22f7b101d63eea5a0fbd9e28",
       "bytes": 7111170
     },
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/lib/libm.a": {
+    "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/threading_sdk/lib/libm.a": {
       "sha256": "13aeae4af35f92a2666d204601e61ac7d36f573815eb3493c041506c074ebd1a",
       "bytes": 2906142
     },
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/user.ld": {
+    "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/threading_sdk/user.ld": {
       "sha256": "f7b4334b0504720b0c9cf6e84ad21ab791c95721d0f9fa2ffa25fb730854d119",
       "bytes": 2023
     },
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/crt0_posix.o": {
+    "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/threading_sdk/crt0_posix.o": {
       "sha256": "68dbd965575e8460f17b6c0630c2678134fec6958b18fc33d0f1fddc2ebd0e0f",
       "bytes": 1984
     },
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/threading_sdk/cpp/lib/libgcc.a": {
+    "${XOS_WORKTREE_19282E542E67}/build/threading_sdk/cpp/lib/libgcc.a": {
       "sha256": "b8ad185745e6d12861435f1fcebde33dd3ab142f82ae49ec651e10649bf6224e",
       "bytes": 1828256
     },
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/threading_sdk/cpp/lib/libsupc++.a": {
+    "${XOS_WORKTREE_19282E542E67}/build/threading_sdk/cpp/lib/libsupc++.a": {
       "sha256": "3f1d0a2da3e01fedc1231e7185e0f64900fa36d53b146af08f37d818f8a509be",
       "bytes": 1644338
     }
   },
   "tools": {
     "x86_64-elf-gcc": {
-      "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-gcc",
       "sha256": "078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f",
       "version": "x86_64-elf-gcc (GCC) 16.2.0"
     },
     "x86_64-elf-ld": {
-      "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-ld",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-ld",
       "sha256": "92002feac2ed2e5b05ae6fb47a1aab2979b3b46bd861a4439838e6bcb20e7fe5",
       "version": "GNU ld (GNU Binutils) 2.47.20260726"
     },
     "x86_64-elf-strip": {
-      "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-strip",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-strip",
       "sha256": "11763c5485c8cb9ff5257348ba5e54aaaadb8adc9592551e14a566b78c7ae43e",
       "version": "GNU strip (GNU Binutils) 2.47.20260726"
     },
     "nasm": {
-      "path": "/Users/perry_guo/homebrew/bin/nasm",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/bin/nasm",
       "sha256": "5d22db7ed80aee4eb0e1cb5ff8a87e40294012f6ddf943601556922d5128b725",
       "version": "NASM version 3.02 compiled on Jun 29 2026"
     }

@@ -37,7 +37,7 @@
     "semantics": "299bf20e6d8cd473a0d064033a2ecf21c82485797c934eea500f79278157f51f"
   },
   "qemu_command": [
-    "/opt/homebrew/bin/qemu-system-x86_64",
+    "${XOS_HOMEBREW}/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -55,7 +55,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/private/tmp/xos_b1/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_HOST_TEMP_05BC702BF5FF}/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -66,9 +66,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/var/folders/x6/3clfjww5133fn5kbknq7c_2m0000gn/T/xos_aurora_platform_7oy5o34f/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_HOST_TEMP_DF08A5AF28FD}/3clfjww5133fn5kbknq7c_2m0000gn/T/xos_aurora_platform_7oy5o34f/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/x6/3clfjww5133fn5kbknq7c_2m0000gn/T/xos_y7bw12n1/qmp.sock,server=on,wait=off"
+    "unix:${XOS_HOST_TEMP_DF08A5AF28FD}/3clfjww5133fn5kbknq7c_2m0000gn/T/xos_y7bw12n1/qmp.sock,server=on,wait=off"
   ],
   "resources": {
     "idle_baseline": [

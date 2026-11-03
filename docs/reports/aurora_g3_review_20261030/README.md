@@ -1,3 +1,5 @@
+> **Evidence version:** The combined evidence is a path-sanitized derivative; historical input hashes still identify the original run. Original and exported hashes are in [the Issue 37 lineage](../../evidence_exports/issue37/aurora_g3_lineage.json). Template roots require manual configuration.
+
 # Aurora SDK / SSG / Desktop review
 
 2026-10-30, upstream and fork fetched before review. Upstream `main` is

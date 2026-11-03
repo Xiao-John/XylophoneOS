@@ -4,17 +4,20 @@
 #include <xos/display.hpp>
 #include <xos/thread_abi.hpp>
 #include "../../core/thread_lifecycle.hpp"
+#include "../../core/stream_lease.hpp"
 #include <xos/block.hpp>
 #include <xos/syscall.hpp>
 #include <xos/memory.hpp>
 #include <xos/format.hpp>
 #include <xos/platform.hpp>
 #include "frame.hpp"
+#include "interrupt_entry.hpp"
 #include <xos/clock.hpp>
 #include "arch/x86_64/interrupt_wait.hpp"
 static_assert(xos::clock::resolution_ns == xos::thread_tick_ns);
 #include "user_blobs.hpp"
 #include "user_images.hpp"
+#include <xos/device_abi.hpp>
 
 namespace xos {
 extern const u8* boot_payload;
@@ -58,6 +61,9 @@ struct process_record {
     u64 cr3;
     u64 pid;
     u64 ticks;
+    // Reserved for a future kernel-authenticated device grant. No current
+    // syscall assigns these fields; zero means all port I/O is denied.
+    u32 io_window_first, io_window_length;
     task_state state;
     char name[12];
     u32 send_handle;
@@ -101,11 +107,13 @@ completion_record completions[16];
 struct endpoint_record {
     bool used;
     u32 handle;
+    u32 derived_from;
     u64 receiver_pid;
     u64 sender_pid;
     u64 owner_pid;
     u32 capacity;
     bool session_response;
+    bool generic_channel;
     bool pending;
     u32 length;
     u8 data[file_message_bytes];
@@ -119,6 +127,7 @@ struct thread_record : thread_lifetime {
     u64 entry;
     u64 argument;
     u64 initial_stack;
+    u32 wait_channels[channel_wait_many_max], wait_channel_count;
     alignas(16) u8 fpu_state[512];
 };
 process_record tasks[8];
@@ -144,8 +153,39 @@ u8 block_buffer[4096];
 alignas(16) u8 fpu_template[512];
 bool process_trace_enabled = true;
 process_guard_info admission_guard{};
-
+stream_lease input_lease{};
+u64 pio_com1_owner, pio_com1_controller;
+bool pio_com1_quarantined;
+u64 irq_owner, irq_token, irq_next_token = 1, irq_sequence;
+bool irq_pending, irq_quarantined;
 void ready_with(thread_record& thread, i64 result);
+
+void wake_irq_waiters(i64 result) {
+    for (auto& thread : threads) {
+        if (thread.state == thread_state::blocked && thread.wait_kind == thread_wait_kind::irq_event &&
+            thread.wait_target == irq_token) { ready_with(thread, result); }
+    }
+}
+
+void release_irq() {
+    if (irq_token == 0) { return; }
+    platform::irq_mask(4);
+    wake_irq_waiters(process_error_denied);
+    irq_owner = irq_token = 0;
+    irq_pending = false;
+    irq_quarantined = true;
+}
+
+void quarantine_com1(process_record* task) {
+    if (task == nullptr || pio_com1_owner != task->pid) { return; }
+    platform::irq_mask(4);
+    release_irq();
+    task->io_window_first = task->io_window_length = 0;
+    pio_com1_owner = 0;
+    pio_com1_controller = 0;
+    pio_com1_quarantined = true;
+}
+
 bool display_endpoint(u64 handle);
 void display_wake(u64 handle,i64 result);
 void display_release(u64 pid);
@@ -161,6 +201,40 @@ void wake_pipe_waiters(u32 pipe_index, bool readers, bool writers) {
         if ((readers && thread.wait_kind == thread_wait_kind::pipe_read) ||
             (writers && thread.wait_kind == thread_wait_kind::pipe_write)) {
             ready_with(thread, 0);
+        }
+    }
+}
+
+void wake_channel_waiters(u32 handle, bool readers, bool writers, i64 result) {
+    for (auto& thread : threads) {
+        if (thread.state != thread_state::blocked) { continue; }
+        if (thread.wait_kind == thread_wait_kind::channel_many) {
+            for (u32 i = 0; i < thread.wait_channel_count; ++i) {
+                if (thread.wait_channels[i] == handle) { ready_with(thread, 0); break; }
+            }
+            continue;
+        }
+        if (thread.wait_target != handle) { continue; }
+        if ((readers && thread.wait_kind == thread_wait_kind::channel_read) ||
+            (writers && thread.wait_kind == thread_wait_kind::channel_write)) {
+            ready_with(thread, result);
+        }
+    }
+}
+
+void close_channel(endpoint_record& endpoint) {
+    wake_channel_waiters(endpoint.handle, true, true, sys_error_invalid_handle);
+    endpoint = endpoint_record{};
+}
+
+void release_channels(u64 pid, const u32* preserved = nullptr, u32 count = 0) {
+    for (auto& endpoint : endpoints) {
+        if (endpoint.used && endpoint.generic_channel &&
+            (endpoint.owner_pid == pid || endpoint.sender_pid == pid || endpoint.receiver_pid == pid)) {
+            bool keep = false;
+            for (u32 i = 0; i < count; ++i) if (preserved[i] == endpoint.handle) keep = true;
+            if (keep) continue;
+            close_channel(endpoint);
         }
     }
 }
@@ -282,6 +356,38 @@ bool user_range_ok(u64 address, u64 length, bool write) {
         if (write && !permissions.writable) { return false; }
     }
     return true;
+}
+
+// sys_device (device_authorization_v1) segment 1a: request snapshot and
+// frozen header validation; known operations are transient device_unknown
+// until segments 1b-1e land the grant/map/irq/dma machinery.
+void* device_authorize_syscall(interrupt_frame* frame) {
+    i64 result = device_unknown;
+    const u64 request_address = frame->rdi;
+    do {
+        if (frame->rsi != 0 || frame->rdx != 0) { result = device_invalid; break; }
+        device_request request{};
+        if ((request_address & 7) != 0) { result = device_invalid; break; }
+        if (!user_range_ok(request_address, sizeof(request), false)) { result = device_fault; break; }
+        copy_from_user(&request, request_address, sizeof(request));
+        const u32 operation = static_cast<u32>(request.operation);
+        if (request.version != 1 || request.size != sizeof(request) || request.reserved != 0 ||
+            request.flags != 0 || operation < 1 || operation > 11) { result = device_invalid; break; }
+        if (request.deadline_ns != 0 && request.operation != device_operation::irq_wait) {
+            result = device_invalid; break;
+        }
+        if (request.input_length != 0 &&
+            (request.input_address == 0 || !user_range_ok(request.input_address, request.input_length, false))) {
+            result = device_fault; break;
+        }
+        if (request.output_length != 0 &&
+            (request.output_address == 0 || !user_range_ok(request.output_address, request.output_length, true))) {
+            result = device_fault; break;
+        }
+        result = device_unknown;
+    } while (false);
+    frame->rax = static_cast<u64>(result);
+    return frame;
 }
 
 bool rdrand_supported() {
@@ -607,7 +713,8 @@ i64 ipc_send(u64 handle, u64 address, u64 length) {
     endpoint_record* endpoint = endpoint_for(handle);
     if (endpoint == nullptr || current == nullptr || endpoint->sender_pid != current->pid ||
         (current->send_handle != handle &&
-         !(current->block_access && endpoint->session_response) && !display_endpoint(handle))) {
+         !(current->block_access && endpoint->session_response) && !display_endpoint(handle) &&
+         !endpoint->generic_channel)) {
         return sys_error_invalid_handle;
     }
     if (endpoint->receiver_pid == current->pid || length == 0 || length > endpoint->capacity) {
@@ -622,6 +729,7 @@ i64 ipc_send(u64 handle, u64 address, u64 length) {
     copy_from_user(endpoint->data, address, length);
     endpoint->length = static_cast<u32>(length);
     endpoint->pending = true;
+    if (endpoint->generic_channel) { wake_channel_waiters(endpoint->handle, true, false, 0); }
     if(handle==display_response_handle){display_delivered=false;display_presented=false;}
     if(display_endpoint(handle)){display_wake(handle,0);}
     return 0;
@@ -630,7 +738,8 @@ i64 ipc_send(u64 handle, u64 address, u64 length) {
 i64 ipc_recv(u64 handle, u64 address, u64 length) {
     endpoint_record* endpoint = endpoint_for(handle);
     if (endpoint == nullptr || current == nullptr || endpoint->receiver_pid != current->pid ||
-        (current->recv_handle != handle && !current->block_access && !display_endpoint(handle))) {
+        (current->recv_handle != handle && !current->block_access && !display_endpoint(handle) &&
+         !endpoint->generic_channel)) {
         return sys_error_invalid_handle;
     }
     if (!user_range_ok(address, length, true)) { return sys_error_invalid_argument; }
@@ -639,6 +748,7 @@ i64 ipc_recv(u64 handle, u64 address, u64 length) {
     copy_to_user(address, endpoint->data, endpoint->length);
     const u32 length_received = endpoint->length;
     endpoint->pending = false;
+    if (endpoint->generic_channel) { wake_channel_waiters(endpoint->handle, false, true, 0); }
     if(handle==display_request_handle){display_delivered=true;display_presented=false;}
     else {endpoint->length = 0;}
     return static_cast<i64>(length_received);
@@ -697,6 +807,8 @@ i64 stdio_read(process_record* task, u32 fd, u64 address, u64 length,
     if (length == 0) { return 0; }
     const stdio_route& route = task->stdio[fd];
     if (!route.console) { return pipe_read_from(route.pipe_index, address, length); }
+    if (!platform::debug_serial_attached()) { return process_error_denied; }
+    if (input_lease.active() && input_lease.holder() != task->pid) { return process_error_denied; }
     if (!user_range_ok(address, 1, true)) { return process_error_invalid; }
     const int value = platform::debug_read();
     if (value < 0) { return console_empty_is_error ? process_error_would_block : 0; }
@@ -746,6 +858,9 @@ void mark_reap(process_record* task) {
 // This always runs on a different process's kernel stack. Shared pages have one owner.
 void destroy_task(process_record* task) {
     if (task == nullptr || task->state == task_state::free || task == current) { return; }
+    quarantine_com1(task);
+    release_channels(task->pid);
+    (void)input_lease.remove(task->pid);
     reap_pending[task_index(task)] = false;
     const u64 pid = task->pid;
     for (auto& endpoint : endpoints) {
@@ -785,6 +900,9 @@ completion_record* completion_for(u64 parent, u64 pid) {
 void finish_task(process_record* task, process_outcome outcome, i64 code,
                   u64 vector = 0, u64 address = 0, u64 instruction = 0) {
     if (task->state == task_state::dead) { return; }
+    quarantine_com1(task);
+    release_channels(task->pid);
+    (void)input_lease.remove(task->pid);
     display_release(task->pid);
     task->closing = true;
     task->state = task_state::dead;
@@ -910,6 +1028,10 @@ void switch_to(thread_record* thread) {
     current = thread->process;
     current->state = task_state::running;
     thread->state = thread_state::running;
+    if (!set_user_io_window(current->io_window_first, current->io_window_length)) {
+        format::text("[sched] event=invalid_io_window result=halt\r\n");
+        halt();
+    }
     set_kernel_stack(thread->kernel_stack_top);
     load_address_space(current->cr3);
     set_thread_pointer(thread->thread_pointer);
@@ -1119,6 +1241,7 @@ void ready_with(thread_record& thread, i64 result) {
     saved->rax = static_cast<u64>(result);
     thread.wait_kind = thread_wait_kind::none;
     thread.wait_target = 0;
+    thread.wait_channel_count = 0;
     thread.state = thread_state::ready;
 }
 
@@ -1171,7 +1294,11 @@ void expire_waiters() {
     const u64 now = clock::monotonic_ns();
     for (auto& thread : threads) {
         if (thread.state == thread_state::blocked &&
-            (thread.wait_kind == thread_wait_kind::word || thread.wait_kind == thread_wait_kind::sleep) &&
+            (thread.wait_kind == thread_wait_kind::word || thread.wait_kind == thread_wait_kind::sleep ||
+             thread.wait_kind == thread_wait_kind::pipe_read || thread.wait_kind == thread_wait_kind::pipe_write ||
+             thread.wait_kind == thread_wait_kind::channel_read ||
+             thread.wait_kind == thread_wait_kind::channel_write || thread.wait_kind == thread_wait_kind::channel_many ||
+             thread.wait_kind == thread_wait_kind::irq_event) &&
             thread_deadline_reached(now, thread.deadline_ns)) {
             ready_with(thread, thread.wait_kind == thread_wait_kind::sleep ? 0 : thread_error_timeout);
         }
@@ -1527,6 +1654,298 @@ void* process_syscall(interrupt_frame* frame) {
     i64 result = process_error_invalid;
     const u64 first = frame->rdi, second = frame->rsi, third = frame->rdx;
     switch (frame->rax) {
+    case sys_irq_event: {
+        const auto action = static_cast<irq_event_action>(first);
+        if (action == irq_event_action::bind) {
+            if (second != pio_resource_com1 || third != 0) { break; }
+            if (current->pid != pio_com1_owner) { result = process_error_denied; break; }
+            if (irq_token != 0 || irq_quarantined || irq_next_token > 0x7fffffffffffffffull) {
+                result = process_error_state; break;
+            }
+            irq_owner = current->pid;
+            irq_token = irq_next_token++;
+            irq_sequence = 0;
+            irq_pending = false;
+            platform::irq_unmask(4);
+            result = static_cast<i64>(irq_token);
+        } else {
+            if (irq_token == 0 || second != irq_token || current->pid != irq_owner) {
+                result = process_error_denied; break;
+            }
+            if (action == irq_event_action::wait) {
+                if (irq_pending) { result = static_cast<i64>(irq_sequence); break; }
+                if (third == 0) { result = process_error_would_block; break; }
+                if (thread_deadline_reached(clock::monotonic_ns(), third)) { result = thread_error_timeout; break; }
+                current_thread->wait_kind = thread_wait_kind::irq_event;
+                current_thread->wait_target = irq_token;
+                current_thread->deadline_ns = third;
+                current_thread->state = thread_state::blocked;
+                frame->rax = 0; return schedule(frame);
+            }
+            if (action == irq_event_action::ack) {
+                if (!irq_pending || third != irq_sequence) { result = process_error_state; break; }
+                irq_pending = false;
+                platform::irq_unmask(4);
+                result = 0;
+            } else if (action == irq_event_action::close) {
+                if (third != 0) { break; }
+                release_irq(); result = 0;
+            }
+        }
+        break;
+    }
+    case sys_pio_grant: {
+        if (third != pio_resource_com1) { break; }
+        const auto action = static_cast<pio_grant_action>(first);
+        if (action == pio_grant_action::controller) {
+            if (second != 0) { break; }
+            result = current->pid == pio_com1_owner && pio_com1_controller != 0
+                ? static_cast<i64>(pio_com1_controller) : process_error_denied;
+            break;
+        }
+        if (!current->supervisor) { result = process_error_denied; break; }
+        if (action == pio_grant_action::query) {
+            if (second != 0) { break; }
+            result = pio_com1_quarantined ? 2 : pio_com1_owner != 0 ? 1 : 0;
+        } else if (action == pio_grant_action::grant) {
+            process_record* target = owned_process(second);
+            if (target == nullptr || target->state != task_state::building || target->replacement_pending ||
+                target->fork_pending || target->io_window_length != 0) {
+                result = process_error_denied; break;
+            }
+            if (pio_com1_owner != 0 || pio_com1_quarantined) { result = process_error_state; break; }
+            if (platform::debug_serial_attached() && !platform::debug_detach_serial()) {
+                result = process_error_busy; break;
+            }
+            platform::irq_mask(4);
+            target->io_window_first = 0x3f8;
+            target->io_window_length = 8;
+            pio_com1_owner = target->pid;
+            pio_com1_controller = current->pid;
+            result = 0;
+        } else if (action == pio_grant_action::recover) {
+            if (second != 0) { break; }
+            // COM1 has no DMA and IRQ4 is exclusively routed. Reset only the
+            // kernel's access/interrupt bookkeeping; the next user driver must
+            // reinitialize the device and cannot infer prior I/O results.
+            if (!pio_com1_quarantined || pio_com1_owner != 0 || irq_owner != 0 || irq_token != 0 ||
+                platform::debug_serial_attached()) { result = process_error_state; break; }
+            platform::irq_mask(4);
+            irq_quarantined = false;
+            pio_com1_quarantined = false;
+            result = 0;
+        } else if (action == pio_grant_action::revoke) {
+            process_record* target = task_by_pid(second);
+            if (target == nullptr || target->parent != current->pid || target->pid != pio_com1_owner) {
+                result = process_error_denied; break;
+            }
+            quarantine_com1(target); result = 0;
+        }
+        break;
+    }
+    case sys_channel: {
+        const auto action = static_cast<channel_action>(first);
+        if (action == channel_action::create) {
+            if (third != 0 || !user_range_ok(second, sizeof(channel_create), false)) { break; }
+            channel_create request{};
+            copy_from_user(&request, second, sizeof(request));
+            if (request.version != channel_version || request.size != sizeof(request) || request.reserved != 0 ||
+                request.capacity == 0 || request.capacity > file_message_bytes ||
+                request.sender_pid == request.receiver_pid) { break; }
+            process_record* sender = task_by_pid(request.sender_pid);
+            process_record* receiver = task_by_pid(request.receiver_pid);
+            auto controlled = [](const process_record* task) {
+                return task != nullptr && task->state != task_state::dead && !task->closing &&
+                    !task->replacement_pending &&
+                    (task == current || (task->parent == current->pid &&
+                     completion_for(current->pid, task->pid) != nullptr));
+            };
+            if (!controlled(sender) || !controlled(receiver)) { result = process_error_denied; break; }
+            u32 owned = 0;
+            for (const auto& endpoint : endpoints) {
+                if (endpoint.used && endpoint.generic_channel && endpoint.owner_pid == current->pid) { ++owned; }
+            }
+            if (owned >= 4) { result = process_error_resources; break; }
+            const u32 handle = endpoint_attach(receiver->pid, sender->pid, current->pid, request.capacity);
+            if (handle == 0) { result = process_error_resources; break; }
+            endpoint_for(handle)->generic_channel = true;
+            result = static_cast<i64>(handle);
+        } else if (action == channel_action::fork_pair) {
+            if (third != 0 || !user_range_ok(second, sizeof(channel_fork_pair), false) ||
+                !user_range_ok(second, sizeof(channel_fork_pair), true)) break;
+            channel_fork_pair request{};
+            copy_from_user(&request, second, sizeof(request));
+            if (request.version != channel_version || request.size != sizeof(request) ||
+                request.child_send != 0 || request.child_receive != 0 ||
+                request.source_send == request.source_receive) break;
+            endpoint_record* send = endpoint_for(request.source_send);
+            endpoint_record* receive = endpoint_for(request.source_receive);
+            process_record* child = owned_process(request.child_pid);
+            if (child == nullptr || child->state != task_state::building || !child->fork_pending ||
+                child->fork_source != current->pid || child->parent != current->pid ||
+                completion_for(current->pid, child->pid) == nullptr || send == nullptr || receive == nullptr ||
+                !send->generic_channel || !receive->generic_channel || send->sender_pid != current->pid ||
+                receive->receiver_pid != current->pid || send->receiver_pid != receive->sender_pid ||
+                send->owner_pid != receive->owner_pid || send->pending || receive->pending) {
+                result = process_error_denied; break;
+            }
+            const u64 peer = send->receiver_pid;
+            process_record* peer_task = task_by_pid(peer);
+            process_record* owner = task_by_pid(send->owner_pid);
+            if (peer_task == nullptr || peer_task->closing || peer_task->state == task_state::dead ||
+                owner == nullptr || owner->closing || owner->state == task_state::dead) {
+                result = process_error_state; break;
+            }
+            u32 free_count = 0, owned = 0;
+            bool duplicate = false;
+            for (const auto& endpoint : endpoints) {
+                if (!endpoint.used) { ++free_count; continue; }
+                if (!endpoint.generic_channel) continue;
+                if (endpoint.owner_pid == send->owner_pid) ++owned;
+                if ((endpoint.sender_pid == child->pid && endpoint.receiver_pid == peer) ||
+                    (endpoint.receiver_pid == child->pid && endpoint.sender_pid == peer)) duplicate = true;
+            }
+            if (duplicate) { result = process_error_state; break; }
+            if (owned > 6 || free_count < 2 || next_endpoint_handle > 0xfffffffeull) {
+                result = process_error_resources; break;
+            }
+            request.child_send = endpoint_attach(peer, child->pid, send->owner_pid, send->capacity);
+            request.child_receive = endpoint_attach(child->pid, peer, send->owner_pid, receive->capacity);
+            // Free slots and handle space were reserved by checks in this
+            // non-preemptible kernel section; both allocations must succeed.
+            endpoint_for(request.child_send)->generic_channel = true;
+            endpoint_for(request.child_receive)->generic_channel = true;
+            endpoint_for(request.child_send)->derived_from = request.source_send;
+            endpoint_for(request.child_receive)->derived_from = request.source_receive;
+            copy_to_user(second, &request, sizeof(request));
+            result = 0;
+        } else if (action == channel_action::verify_fork_pair) {
+            if (third != 0 || !user_range_ok(second, sizeof(channel_fork_verification), false)) break;
+            channel_fork_verification request{};
+            copy_from_user(&request, second, sizeof(request));
+            if (request.version != channel_version || request.size != sizeof(request)) break;
+            endpoint_record* source_in = endpoint_for(request.source_incoming);
+            endpoint_record* source_out = endpoint_for(request.source_outgoing);
+            endpoint_record* child_in = endpoint_for(request.child_incoming);
+            endpoint_record* child_out = endpoint_for(request.child_outgoing);
+            process_record* child = task_by_pid(request.child_pid);
+            if (source_in == nullptr || source_out == nullptr || child_in == nullptr || child_out == nullptr ||
+                child == nullptr || child->state != task_state::building || !child->fork_pending ||
+                !source_in->generic_channel || !source_out->generic_channel ||
+                !child_in->generic_channel || !child_out->generic_channel ||
+                source_in->receiver_pid != current->pid || source_out->sender_pid != current->pid ||
+                child_in->receiver_pid != current->pid || child_out->sender_pid != current->pid ||
+                source_in->sender_pid != source_out->receiver_pid ||
+                child->parent != source_in->sender_pid || child->fork_source != child->parent ||
+                child_in->sender_pid != child->pid || child_out->receiver_pid != child->pid ||
+                source_in->owner_pid != source_out->owner_pid ||
+                child_in->owner_pid != source_in->owner_pid || child_out->owner_pid != source_in->owner_pid ||
+                child_in->derived_from != source_in->handle || child_out->derived_from != source_out->handle) {
+                result = process_error_denied; break;
+            }
+            result = 0;
+        } else if (action == channel_action::enumerate) {
+            if (second >= max_endpoints || !user_range_ok(third, sizeof(channel_info), true)) { break; }
+            u64 ordinal = 0;
+            result = thread_error_not_found;
+            for (const auto& endpoint : endpoints) {
+                if (!endpoint.used || !endpoint.generic_channel ||
+                    (endpoint.sender_pid != current->pid && endpoint.receiver_pid != current->pid)) { continue; }
+                if (ordinal++ != second) { continue; }
+                const bool sender = endpoint.sender_pid == current->pid;
+                const channel_info info{channel_version, sizeof(channel_info), endpoint.handle,
+                    sender ? channel_send : channel_receive,
+                    sender ? endpoint.receiver_pid : endpoint.sender_pid, endpoint.owner_pid};
+                copy_to_user(third, &info, sizeof(info)); result = 0; break;
+            }
+        } else if (action == channel_action::close) {
+            if (third != 0) { break; }
+            endpoint_record* endpoint = endpoint_for(second);
+            if (endpoint == nullptr || !endpoint->generic_channel ||
+                (endpoint->owner_pid != current->pid && endpoint->sender_pid != current->pid &&
+                 endpoint->receiver_pid != current->pid)) { result = process_error_denied; break; }
+            close_channel(*endpoint); result = 0;
+        } else if (action == channel_action::wait_many) {
+            if (!user_range_ok(second, sizeof(channel_wait_many_request), false)) break;
+            channel_wait_many_request request{};
+            copy_from_user(&request, second, sizeof(request));
+            if (request.version != channel_version || request.size != sizeof(request) || request.reserved != 0 ||
+                request.count == 0 || request.count > channel_wait_many_max) break;
+            u32 ready = 0;
+            bool valid = true;
+            for (u32 i = 0; i < request.count; ++i) {
+                endpoint_record* endpoint = endpoint_for(request.handles[i]);
+                if (endpoint == nullptr || !endpoint->generic_channel ||
+                    (endpoint->sender_pid != current->pid && endpoint->receiver_pid != current->pid)) {
+                    result = process_error_denied; valid = false; break;
+                }
+                for (u32 j = 0; j < i; ++j) if (request.handles[j] == request.handles[i]) valid = false;
+                if (!valid) { result = process_error_invalid; break; }
+                const bool sender = endpoint->sender_pid == current->pid;
+                if (sender ? !endpoint->pending : endpoint->pending) ready |= 1u << i;
+            }
+            if (!valid) break;
+            if (ready != 0) { result = static_cast<i64>(ready); break; }
+            if (third == 0) { result = process_error_would_block; break; }
+            if (thread_deadline_reached(clock::monotonic_ns(), third)) { result = thread_error_timeout; break; }
+            for (u32 i = 0; i < request.count; ++i) current_thread->wait_channels[i] = request.handles[i];
+            current_thread->wait_channel_count = request.count;
+            current_thread->wait_kind = thread_wait_kind::channel_many;
+            current_thread->deadline_ns = third;
+            current_thread->state = thread_state::blocked;
+            frame->rax = 0; return schedule(frame);
+        } else if (action == channel_action::wait) {
+            endpoint_record* endpoint = endpoint_for(second);
+            if (endpoint == nullptr || !endpoint->generic_channel ||
+                (endpoint->sender_pid != current->pid && endpoint->receiver_pid != current->pid)) {
+                result = process_error_denied; break;
+            }
+            const bool sender = endpoint->sender_pid == current->pid;
+            if (sender ? !endpoint->pending : endpoint->pending) { result = 0; break; }
+            if (third == 0) { result = process_error_would_block; break; }
+            if (thread_deadline_reached(clock::monotonic_ns(), third)) { result = thread_error_timeout; break; }
+            current_thread->wait_kind = sender ? thread_wait_kind::channel_write : thread_wait_kind::channel_read;
+            current_thread->wait_target = endpoint->handle;
+            current_thread->deadline_ns = third;
+            current_thread->state = thread_state::blocked;
+            frame->rax = 0; return schedule(frame);
+        }
+        break;
+    }
+    case sys_stream_lease: {
+        if (first != 0 || (current->stdio_mask & 1u) == 0 ||
+            !current->stdio[0].valid || !current->stdio[0].console || current->stdio[0].writable) {
+            result = process_error_denied; break;
+        }
+        const auto action = static_cast<stream_lease_action>(second);
+        if (action == stream_lease_action::claim) {
+            if (third != 0) { break; }
+            if (!current->supervisor) { result = process_error_denied; break; }
+            // User-mode UART and a non-kernel terminal cancellation policy
+            // are prerequisites. Do not activate a lease with unsafe semantics.
+            result = thread_error_unsupported;
+        } else if (action == stream_lease_action::delegate) {
+            if (!input_lease.active() || input_lease.holder() != current->pid) {
+                result = process_error_denied; break;
+            }
+            process_record* child = task_by_pid(third);
+            if (child == nullptr || child->parent != current->pid || completion_for(current->pid, third) == nullptr ||
+                child->state == task_state::dead || child->replacement_pending ||
+                (child->stdio_mask & 1u) == 0 || !child->stdio[0].valid ||
+                !child->stdio[0].console || child->stdio[0].writable) {
+                result = process_error_denied; break;
+            }
+            result = input_lease.delegate(current->pid, child->pid) ? 0 : process_error_state;
+        } else if (action == stream_lease_action::reclaim) {
+            if (third != 0) { break; }
+            if (!input_lease.contains(current->pid)) { result = process_error_denied; break; }
+            result = input_lease.reclaim(current->pid) ? 0 : process_error_state;
+        } else if (action == stream_lease_action::query) {
+            if (third != 0) { break; }
+            result = input_lease.contains(current->pid) ? static_cast<i64>(input_lease.holder()) : process_error_denied;
+        } else { break; }
+        break;
+    }
     case sys_process_guard: {
         if (third != 0) { break; }
         const auto action = static_cast<process_guard_action>(first);
@@ -1595,16 +2014,39 @@ void* process_syscall(interrupt_frame* frame) {
         // identity remain intact. Every fallible check precedes the first
         // state/queue mutation below.
         result = process_error_invalid;
-        if (!user_range_ok(second, sizeof(process_entry), false)) { break; }
         process_entry entry{};
-        copy_from_user(&entry, second, sizeof(entry));
+        process_exec_channel_entry extended{};
+        const bool preserve_channels = (third & exec_preserve_channels_flag) != 0;
+        const u64 depth_mode = third & ~exec_preserve_channels_flag;
+        if (preserve_channels) {
+            if (!user_range_ok(second, sizeof(extended), false)) { break; }
+            copy_from_user(&extended, second, sizeof(extended));
+            if (extended.version != 1 || extended.size != sizeof(extended) ||
+                extended.count == 0 || extended.count > exec_preserve_channels_max || extended.reserved != 0) break;
+            bool channels_valid = true;
+            for (u32 i = 0; i < extended.count; ++i) {
+                endpoint_record* endpoint = endpoint_for(extended.channels[i]);
+                if (endpoint == nullptr || !endpoint->generic_channel || endpoint->pending ||
+                    (endpoint->sender_pid != current->pid && endpoint->receiver_pid != current->pid)) {
+                    channels_valid = false; break;
+                }
+                bool duplicate = false;
+                for (u32 j = 0; j < i; ++j) if (extended.channels[j] == extended.channels[i]) duplicate = true;
+                if (duplicate) { channels_valid = false; break; }
+            }
+            if (!channels_valid) break;
+            entry = extended.entry;
+        } else {
+            if (!user_range_ok(second, sizeof(entry), false)) { break; }
+            copy_from_user(&entry, second, sizeof(entry));
+        }
         if (!valid_process_entry(stage, entry)) { break; }
         u32 depth = current->spawn_depth;
-        if (third != 0) {
-            if (third - 1 > process_max_spawn_depth || third - 1 >= current->spawn_depth) {
+        if (depth_mode != 0) {
+            if (depth_mode - 1 > process_max_spawn_depth || depth_mode - 1 >= current->spawn_depth) {
                 result = process_error_delegation; break;
             }
-            depth = static_cast<u32>(third - 1);
+            depth = static_cast<u32>(depth_mode - 1);
         }
         endpoint_record* request = endpoint_for(current->session_request_handle);
         endpoint_record* response = endpoint_for(current->session_response_handle);
@@ -1619,6 +2061,8 @@ void* process_syscall(interrupt_frame* frame) {
             result = process_error_state; break;
         }
         if (next_endpoint_handle > 0xfffffffeull) { result = process_error_resources; break; }
+        quarantine_com1(current);
+        release_channels(current->pid, extended.channels, preserve_channels ? extended.count : 0);
         display_release(current->pid);
         const u64 old_space = current->cr3;
         const u32 old_pages = current->user_pages;
@@ -1644,6 +2088,8 @@ void* process_syscall(interrupt_frame* frame) {
         current->send_handle = current->session_request_handle = request->handle;
         current->recv_handle = current->session_response_handle = response->handle;
         current->cr3 = stage->cr3;
+        current->io_window_first = current->io_window_length = 0;
+        (void)set_user_io_window(0, 0);
         current->user_pages = stage->user_pages;
         current->entry = entry.entry;
         current->initial_stack = entry.stack;
@@ -1784,6 +2230,9 @@ void* process_syscall(interrupt_frame* frame) {
         if (first > 2 || (current->stdio_mask & (1u << first)) == 0) {
             result = process_error_denied;
         } else {
+            if (first == 0 && current->stdio[0].console) {
+                (void)input_lease.remove(current->pid);
+            }
             current->stdio_mask &= ~(1u << first);
             stdio_route_release(current, current->stdio[first]);
             result = 0;
@@ -1932,15 +2381,21 @@ void* process_syscall(interrupt_frame* frame) {
         result = 0; break;
     }
     case sys_pipe_wait: {
-        if (second > process_pipe_bytes || third != 0) { result = process_error_invalid; break; }
+        if (second > process_pipe_bytes) { result = process_error_invalid; break; }
         u32 pipe_index = process_max_pipes;
         bool writable = false;
         if (first < 3) {
             if ((current->stdio_mask & (1u << first)) == 0 ||
                 !current->stdio[first].valid) { result = process_error_denied; break; }
             const auto& route = current->stdio[first];
-            if (route.console) { result = second != 0 && !route.writable
-                ? process_error_invalid : process_error_would_block; break; }
+            if (route.console) {
+                if (input_lease.active() && input_lease.holder() != current->pid) {
+                    result = process_error_denied; break;
+                }
+                result = second != 0 && !route.writable
+                    ? process_error_invalid : process_error_would_block;
+                break;
+            }
             pipe_index = route.pipe_index;
             writable = route.writable;
         } else {
@@ -1958,10 +2413,14 @@ void* process_syscall(interrupt_frame* frame) {
             ? pipe.reader_references == 0 || process_pipe_bytes - pipe.length >= (second == 0 ? 1 : second)
             : pipe.writer_references == 0 || pipe.length != 0;
         if (ready) { result = 0; break; }
+        if (third != 0 && thread_deadline_reached(clock::monotonic_ns(), third)) {
+            result = thread_error_timeout; break;
+        }
         // Check and sleep in one non-preemptible kernel critical section.
         // A subsequent read/write rechecks the pipe and its own user buffer.
         current_thread->wait_kind = writable ? thread_wait_kind::pipe_write : thread_wait_kind::pipe_read;
         current_thread->wait_target = pipe_index;
+        current_thread->deadline_ns = third == 0 ? thread_deadline_infinite : third;
         current_thread->state = thread_state::blocked;
         frame->rax = 0;
         return schedule(frame);
@@ -2040,6 +2499,8 @@ void* process_syscall(interrupt_frame* frame) {
         stdio_route replacement{};
         const bool target_writable = second != 0;
         if (third == process_stdio_close) {
+            if (second == 0 && child->stdio[0].valid && child->stdio[0].console &&
+                input_lease.contains(child->pid)) { (void)input_lease.remove(child->pid); }
             child->stdio_mask &= ~(1u << second);
             stdio_route_release(child, child->stdio[second]);
             result = 0;
@@ -2065,6 +2526,8 @@ void* process_syscall(interrupt_frame* frame) {
             pipe_retain(reference->pipe_index, reference->writable);
             ++child->pipe_reference_count;
         }
+        if (second == 0 && child->stdio[0].valid && child->stdio[0].console && !replacement.console &&
+            input_lease.contains(child->pid)) { (void)input_lease.remove(child->pid); }
         stdio_route_release(child, child->stdio[second]);
         child->stdio[second] = replacement;
         child->stdio_mask |= 1u << second;
@@ -2225,6 +2688,15 @@ void* process_syscall(interrupt_frame* frame) {
 }
 
 void* input_entry(interrupt_frame* frame) {
+    if (frame->vector == 36) {
+        platform::irq_mask(4);
+        platform::irq_acknowledge(4);
+        if (irq_token != 0 && !irq_pending) {
+            if (irq_sequence == 0x7fffffffffffffffull) { release_irq(); }
+            else { irq_pending = true; ++irq_sequence; wake_irq_waiters(static_cast<i64>(irq_sequence)); }
+        }
+        return frame;
+    }
     display::input_irq(frame->vector == 33 ? 1 : 12, clock::monotonic_ns());
     if(display::input_pending()){display_wake(0,0);}
     return frame;
@@ -2257,6 +2729,7 @@ void* syscall_entry(interrupt_frame* frame) {
         frame->rax = static_cast<u64>(process_error_state); return frame;
     }
     if(number==sys_display || number==sys_display_present){return display_syscall(frame);}
+    if(number==sys_device){return device_authorize_syscall(frame);}
     i64 result = sys_error_invalid_argument;
     switch (number) {
     case sys_write: {

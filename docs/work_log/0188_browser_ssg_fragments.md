@@ -1,4 +1,4 @@
-# 0164 — Browser SSG fragment integrity
+# 0188 — Browser SSG fragment integrity
 
 2026-10-30. On SSG parent `a4c61619`, replace visibility inferred from a union
 rectangle with individually clipped real liteHTML render fragments. The bounded

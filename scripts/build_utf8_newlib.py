@@ -16,6 +16,7 @@ VERSION = '4.6.0.20260123'
 SOURCE_NAME = f'newlib-{VERSION}'
 SOURCE_URL = f'https://sourceware.org/pub/newlib/{SOURCE_NAME}.tar.gz'
 SOURCE_SHA256 = '6ff27e3bf022666f43f7802255be680eeff722ac181b1725d21e2e8318604ee3'
+PATCH = ROOT / 'src/ports/newlib/patches/0001-reject-utf8-surrogates.patch'
 
 
 def digest(path):
@@ -37,7 +38,7 @@ def main():
     work = args.output.resolve()
     if work.exists() or work.is_relative_to(ROOT / 'src') or work.is_relative_to(ROOT / 'localpilot'):
         raise SystemExit('output must be a new private directory outside src and localpilot')
-    required = ['x86_64-elf-gcc', 'x86_64-elf-as', 'x86_64-elf-ld', 'make']
+    required = ['x86_64-elf-gcc', 'x86_64-elf-as', 'x86_64-elf-ld', 'make', 'patch']
     selected = {name: shutil.which(name) for name in required}
     if any(path is None for path in selected.values()):
         raise SystemExit(f'missing build tool: {selected}')
@@ -46,7 +47,7 @@ def main():
                 for name, path in selected.items()}
     receipt = {'status': 'building', 'source_url': SOURCE_URL, 'source_sha256': SOURCE_SHA256,
                'script_sha256': digest(Path(__file__)), 'tools': selected, 'tool_versions': versions,
-               'commands': [], 'profiles': {},
+               'commands': [], 'profiles': {}, 'patch_sha256': digest(PATCH),
                'note': 'Build candidate only; no XOS runtime or UTF-8 acceptance.'}
     receipt_path = work / 'receipt.json'
     try:
@@ -55,6 +56,11 @@ def main():
         source = work / SOURCE_NAME
         if not (source / 'configure').is_file():
             raise RuntimeError('archive does not contain expected configure script')
+        patch_command = [selected['patch'], '-p1', '--batch', '-i', str(PATCH)]
+        receipt['commands'].append({'profile': 'all', 'argv': patch_command, 'cwd': str(source),
+                                    'log': str(work / 'patch.log')})
+        with (work / 'patch.log').open('w') as output:
+            subprocess.run(patch_command, cwd=source, stdout=output, stderr=subprocess.STDOUT, check=True)
         tools = work / 'target_tools'
         tools.mkdir()
         for name in ('as', 'ld'):
@@ -102,6 +108,7 @@ def main():
             (profile_dir / 'receipt.json').write_text(json.dumps({
                 'status': 'built_unverified', 'source_sha256': SOURCE_SHA256,
                 'profile': profile, 'script_sha256': receipt['script_sha256'],
+                'patch_sha256': receipt['patch_sha256'],
                 'environment': profile_info['environment'],
                 'commands': [item for item in receipt['commands'] if item['profile'] == profile],
                 'artifacts': profile_info['artifacts']}, indent=2) + '\n')

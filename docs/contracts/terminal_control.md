@@ -70,6 +70,8 @@ ENOTSUP，非终端返回 ENOTTY。初始终端 read 使用 `read_mode`，零值
 超过一次 256 字节工作限额时返回 busy，部分硬件数据可能已经丢弃，不能伪称回滚；
 错误时模式不变。之后到达的数据不属于清空前输入。`TCOFLUSH`、`TCIOFLUSH` 仍
 返回 ENOTSUP；符号速率常量不代表设备支持改变速率。专用应用的受限客体路径调用过 `TCSADRAIN`、`tcdrain`、`TCIFLUSH` 和 `TCSAFLUSH`，见[交接探针](../work_log/0149_terminal_handoff_and_fault.md)及其对应 fixture；这不证明 FIFO 满载、忙返回后的字节集合、物理串口时序或所有中断交错。
+已排队单字节的 `TCIFLUSH`、`TCSAFLUSH`、模式更新及后续新字节读取另有
+[客体检查](../work_log/0186_terminal_input_flush_guest.md)，其不覆盖连续输入竞争。
 
 试行 `wait_readable` 对应用会话以绝对单调截止时间等待输入队列非空，不消费字节；
 超时、控制中断和服务错误分别返回错误。单线程 libc `select` 当前只支持一个终端

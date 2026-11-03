@@ -10,3 +10,14 @@
 序列、键序列交错或无损保留 `A`。QEMU 驱动在正常 Xsh 和专用 supervisor 两种路径
 均执行该握手；受限冻结工具新增此项为必需检查。提交之后须从匹配输入重新构建并
 在客体运行，若行为与预期不同应记录失败并调查，不能只以交叉编译通过。
+
+提交 `d7368c16eb6c75327f555cfa165cc95a9f70d1ca` 后重新构建系统与消费者，并核验
+组合 SDK、库和数据的来源输入：正常 Xsh（build ID `6f9caf0ccc615943`）和专用
+supervisor（build ID `9fc3d63a6d057f5b`）均为 `passed_probe`，新增非法输入后的
+超时及下一字符恢复检查通过。两次串口 SHA-256 分别为
+`0e6766c355a9be028dce0dc877f0e779966dc99a8bda1b2b5f86d23fadfa086f` 和
+`a2f91d8635562cfcc767a4c9b74f262dec361f43e210dd96339588038e5c1e37`，报告分别位于
+`build/w2_invalid_system_d7368c1/` 和 `build/w2_invalid_special_d7368c1/`。前者还通过
+GNU Screen 的受限宿主检查。冻结结果 `guest_verified_subset` 树 SHA-256
+`940fc45f12bd902b999bc1fd59d7b093d9257973072f59480d6ddb418e0abead`；从报告移除
+新增检查后冻结被拒绝。以上不表示完整 W1/W2、无损恢复或其他非法字节组合已通过。

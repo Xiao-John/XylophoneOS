@@ -46,3 +46,4 @@
 | 0181 | `0181_terminfo_missing_recovery.md` | 缺失 xterm 数据与恢复（2026-11-03） |
 | 0182 | `0182_combining_input.md` | 组合字符输入探针（2026-11-03） |
 | 0183 | `0183_screen_evidence_freeze.md` | 宿主终端证据进入受限交付（2026-11-03） |
+| 0184 | `0184_terminal_contract_reconciliation.md` | 终端契约与客体证据对齐（2026-11-03） |

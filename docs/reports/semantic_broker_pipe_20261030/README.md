@@ -1,3 +1,5 @@
+> **Evidence version:** This checkout is a path-sanitized derivative, not byte-identical raw evidence. Original and exported hashes are recorded in [the Issue 37 lineage](../../evidence_exports/issue37/semantic_broker_pipe_lineage.json). Historical input hashes still identify the original run; template roots require manual configuration.
+
 # Scoped semantic transport experiment
 
 Base `3377dbf35bdb43d850c9a2b8e8076da3be146f3d`. The image SHA-256 is

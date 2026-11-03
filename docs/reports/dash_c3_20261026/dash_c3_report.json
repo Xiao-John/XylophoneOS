@@ -19,70 +19,70 @@
     "nasm": "NASM version 3.02 compiled on Jun 29 2026",
     "executables": {
       "gcc": {
-        "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
         "sha256": "078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f"
       },
       "g++": {
-        "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
         "sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9"
       },
       "as": {
-        "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+        "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
         "sha256": "530cf6fbe7d857e0d4ebbc52bcc017867fb7af65552a1f842dbcaa5c50db9026"
       },
       "ld": {
-        "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+        "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
         "sha256": "92002feac2ed2e5b05ae6fb47a1aab2979b3b46bd861a4439838e6bcb20e7fe5"
       },
       "objcopy": {
-        "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+        "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
         "sha256": "d9faf61c8148cae44ddfef8a8c914a8d7f715671681ac425592403cf96ce8332"
       },
       "nm": {
-        "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-nm",
+        "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-nm",
         "sha256": "67a991de16c444ad6a163505be9d7f76b955cee417ae1032832369ec5e928b6c"
       },
       "ar": {
-        "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
+        "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
         "sha256": "a7e59b3482a0e26d000bd2f4f60f7e8ad1e401909e03ca4c746ba126639087a3"
       },
       "cc1": {
-        "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1",
+        "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1",
         "sha256": "93d7ebd594188225ab181fe3790f42ffe2acaa848d5706070477ac7d65acc7a7"
       },
       "cc1plus": {
-        "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1plus",
+        "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1plus",
         "sha256": "f3cb4a8d630d3b20d961e329506f51e1c33a2cc4cebc45c80ec523bd138d17eb"
       },
       "nasm": {
-        "path": "/Users/perry_guo/homebrew/Cellar/nasm/3.02/bin/nasm",
+        "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/nasm/3.02/bin/nasm",
         "sha256": "5d22db7ed80aee4eb0e1cb5ff8a87e40294012f6ddf943601556922d5128b725"
       }
     }
   },
   "make_build_tools": {
     "cc": {
-      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
       "sha256": "078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f",
       "version": "x86_64-elf-gcc (GCC) 16.2.0"
     },
     "cxx": {
-      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
       "sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
       "version": "x86_64-elf-g++ (GCC) 16.2.0"
     },
     "as": {
-      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
       "sha256": "530cf6fbe7d857e0d4ebbc52bcc017867fb7af65552a1f842dbcaa5c50db9026",
       "version": "GNU assembler (GNU Binutils) 2.47.20260726"
     },
     "ld": {
-      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
       "sha256": "92002feac2ed2e5b05ae6fb47a1aab2979b3b46bd861a4439838e6bcb20e7fe5",
       "version": "GNU ld (GNU Binutils) 2.47.20260726"
     },
     "libgcc": {
-      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/lib/gcc/x86_64-elf/16.2.0/libgcc.a",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-gcc/16.2.0/lib/gcc/x86_64-elf/16.2.0/libgcc.a",
       "sha256": "1d1755feabef4fbe34527df8f94f44e67f3fc2ce3b1d58dbf824ec858c994dfa"
     }
   },
@@ -1225,12 +1225,12 @@
           "patch",
           "-p1",
           "-i",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/src/ports/make/patches/0001_xos_always_build.patch"
+          "${XOS_WORKTREE_19282E542E67}/src/ports/make/patches/0001_xos_always_build.patch"
         ],
         [
-          "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+          "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
           "-std=c11",
-          "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/target_tools/",
+          "-B${XOS_WORKTREE_19282E542E67}/build/target_tools/",
           "-O2",
           "-mno-red-zone",
           "-fno-pie",
@@ -1239,18 +1239,18 @@
           "-ffunction-sections",
           "-fdata-sections",
           "-isystem",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/sdk/include",
+          "${XOS_WORKTREE_19282E542E67}/build/sdk/include",
           "-I",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/make/552ade4ee885e9281f9c/source",
+          "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/make/552ade4ee885e9281f9c/source",
           "-c",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/make/552ade4ee885e9281f9c/source/main.c",
+          "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/make/552ade4ee885e9281f9c/source/main.c",
           "-o",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/make/552ade4ee885e9281f9c/main.c.o"
+          "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/make/552ade4ee885e9281f9c/main.c.o"
         ],
         [
-          "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+          "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
           "-std=c11",
-          "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/target_tools/",
+          "-B${XOS_WORKTREE_19282E542E67}/build/target_tools/",
           "-O2",
           "-mno-red-zone",
           "-fno-pie",
@@ -1259,18 +1259,18 @@
           "-ffunction-sections",
           "-fdata-sections",
           "-isystem",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/sdk/include",
+          "${XOS_WORKTREE_19282E542E67}/build/sdk/include",
           "-I",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/make/552ade4ee885e9281f9c/source",
+          "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/make/552ade4ee885e9281f9c/source",
           "-c",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/make/552ade4ee885e9281f9c/source/parser.c",
+          "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/make/552ade4ee885e9281f9c/source/parser.c",
           "-o",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/make/552ade4ee885e9281f9c/parser.c.o"
+          "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/make/552ade4ee885e9281f9c/parser.c.o"
         ],
         [
-          "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+          "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
           "-std=c11",
-          "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/target_tools/",
+          "-B${XOS_WORKTREE_19282E542E67}/build/target_tools/",
           "-O2",
           "-mno-red-zone",
           "-fno-pie",
@@ -1279,18 +1279,18 @@
           "-ffunction-sections",
           "-fdata-sections",
           "-isystem",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/sdk/include",
+          "${XOS_WORKTREE_19282E542E67}/build/sdk/include",
           "-I",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/make/552ade4ee885e9281f9c/source",
+          "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/make/552ade4ee885e9281f9c/source",
           "-c",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/make/552ade4ee885e9281f9c/source/rules.c",
+          "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/make/552ade4ee885e9281f9c/source/rules.c",
           "-o",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/make/552ade4ee885e9281f9c/rules.c.o"
+          "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/make/552ade4ee885e9281f9c/rules.c.o"
         ],
         [
-          "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+          "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
           "-std=c11",
-          "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/target_tools/",
+          "-B${XOS_WORKTREE_19282E542E67}/build/target_tools/",
           "-O2",
           "-mno-red-zone",
           "-fno-pie",
@@ -1299,18 +1299,18 @@
           "-ffunction-sections",
           "-fdata-sections",
           "-isystem",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/sdk/include",
+          "${XOS_WORKTREE_19282E542E67}/build/sdk/include",
           "-I",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/make/552ade4ee885e9281f9c/source",
+          "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/make/552ade4ee885e9281f9c/source",
           "-c",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/make/552ade4ee885e9281f9c/source/defaults.c",
+          "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/make/552ade4ee885e9281f9c/source/defaults.c",
           "-o",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/make/552ade4ee885e9281f9c/defaults.c.o"
+          "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/make/552ade4ee885e9281f9c/defaults.c.o"
         ],
         [
-          "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+          "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
           "-std=c++17",
-          "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/target_tools/",
+          "-B${XOS_WORKTREE_19282E542E67}/build/target_tools/",
           "-O2",
           "-mno-red-zone",
           "-fno-pie",
@@ -1319,40 +1319,40 @@
           "-ffunction-sections",
           "-fdata-sections",
           "-isystem",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/sdk/include",
+          "${XOS_WORKTREE_19282E542E67}/build/sdk/include",
           "-I",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/make/552ade4ee885e9281f9c/source",
+          "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/make/552ade4ee885e9281f9c/source",
           "-fno-exceptions",
           "-fno-rtti",
           "-c",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/src/ports/make/posix_xos.cpp",
+          "${XOS_WORKTREE_19282E542E67}/src/ports/make/posix_xos.cpp",
           "-o",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/make/552ade4ee885e9281f9c/posix_xos.o"
+          "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/make/552ade4ee885e9281f9c/posix_xos.o"
         ],
         [
-          "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
-          "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/target_tools/",
+          "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+          "-B${XOS_WORKTREE_19282E542E67}/build/target_tools/",
           "-nostdlib",
           "-static",
           "-no-pie",
           "-Wl,--gc-sections,--build-id=none,-z,noexecstack,-z,max-page-size=4096",
           "-T",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/sdk/user.ld",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/sdk/crt0_posix.o",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/make/552ade4ee885e9281f9c/main.c.o",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/make/552ade4ee885e9281f9c/parser.c.o",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/make/552ade4ee885e9281f9c/rules.c.o",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/make/552ade4ee885e9281f9c/defaults.c.o",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/make/552ade4ee885e9281f9c/posix_xos.o",
+          "${XOS_WORKTREE_19282E542E67}/build/sdk/user.ld",
+          "${XOS_WORKTREE_19282E542E67}/build/sdk/crt0_posix.o",
+          "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/make/552ade4ee885e9281f9c/main.c.o",
+          "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/make/552ade4ee885e9281f9c/parser.c.o",
+          "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/make/552ade4ee885e9281f9c/rules.c.o",
+          "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/make/552ade4ee885e9281f9c/defaults.c.o",
+          "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/make/552ade4ee885e9281f9c/posix_xos.o",
           "-Wl,--start-group",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/sdk/lib/libxos.a",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/sdk/lib/libxos_loader.a",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/sdk/lib/libc.a",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/sdk/lib/libm.a",
-          "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/lib/gcc/x86_64-elf/16.2.0/libgcc.a",
+          "${XOS_WORKTREE_19282E542E67}/build/sdk/lib/libxos.a",
+          "${XOS_WORKTREE_19282E542E67}/build/sdk/lib/libxos_loader.a",
+          "${XOS_WORKTREE_19282E542E67}/build/sdk/lib/libc.a",
+          "${XOS_WORKTREE_19282E542E67}/build/sdk/lib/libm.a",
+          "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-gcc/16.2.0/lib/gcc/x86_64-elf/16.2.0/libgcc.a",
           "-Wl,--end-group",
           "-o",
-          "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/make/552ade4ee885e9281f9c/make"
+          "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/make/552ade4ee885e9281f9c/make"
         ]
       ]
     },
@@ -1492,152 +1492,152 @@
   },
   "exports": {
     "/out/c3_legacy_spawn.stdout": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/legacy_spawn.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/legacy_spawn.guest",
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     "/out/c3_legacy_exec.stdout": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/legacy_exec_rejected.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/legacy_exec_rejected.guest",
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     "/out/c3_direct_script.stdout": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/direct_posix_script.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/direct_posix_script.guest",
       "bytes": 285,
       "sha256": "9fb6487d1feca736a83a331dbde8a6434974872d2e772c80196fd38cfad349c4"
     },
     "/out/c3_wrong_script.stdout": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/unsupported_shebang.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/unsupported_shebang.guest",
       "bytes": 57,
       "sha256": "ef47cf3260b47f58bf16f8828b6a3445f55e329578888e7317a37b5a8af7838d"
     },
     "/out/c3_here_quoted.stdout": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_quoted.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_quoted.guest",
       "bytes": 54,
       "sha256": "43885d3f3bbdb3a3b6e0146f0a3309590a7095d062a8d991a72a6372e6c9b3fa"
     },
     "/out/c3_here_expanded.stdout": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_expanded.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_expanded.guest",
       "bytes": 62,
       "sha256": "4ba828b79aa55fede933fd68c2a671a906b606f4b1ee74cae71694f4cad1d99c"
     },
     "/out/c3_here_strip_tabs.stdout": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_strip_tabs.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_strip_tabs.guest",
       "bytes": 21,
       "sha256": "bf16e8e16c9ffd5d89adf2dcbb8639f2c49e7e81500e89b66d81c9c0453b9e73"
     },
     "/out/c3_here_sealed_read_only.stdout": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_sealed_read_only.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_sealed_read_only.guest",
       "bytes": 58,
       "sha256": "cd329e47790b3cd040b23b095db3637fb6e6d6ac4e58666eefe2562ced5fca26"
     },
     "/out/c3_here_empty.stdout": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_empty.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_empty.guest",
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     "/out/c3_here_multiple.stdout": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_multiple.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_multiple.guest",
       "bytes": 14,
       "sha256": "7efe796cf986a8417d31d5e4c809027e7301d0cc658a849e81a650f9b1f5375d"
     },
     "/out/c3_here_builtin_restore.stdout": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_builtin_restore.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_builtin_restore.guest",
       "bytes": 40,
       "sha256": "e3f51d35c47bbc8ca1a4240a86319fc30a99eb631612cf370a71abb0c1303dd8"
     },
     "/out/c3_here_pipeline_source.stdout": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_pipeline_source.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_pipeline_source.guest",
       "bytes": 18,
       "sha256": "c5cfd7f6b2acb5eb96fd0ff6a7b8329384f53ffaa5519673e318094d51f0667f"
     },
     "/out/c3_here_pipeline_override.stdout": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_pipeline_override.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_pipeline_override.guest",
       "bytes": 20,
       "sha256": "99ed853e7cda7f22d7f846c37174514f22e6124e01b071e4093207aac3b5e778"
     },
     "/out/c3_here_command_substitution.stdout": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_command_substitution.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_command_substitution.guest",
       "bytes": 33,
       "sha256": "16c084fddaea0c898cde410b852b38b3e35335623c63bc442b869b5bc06c5f0c"
     },
     "/out/c3_here_redirection_failure_cleanup.stdout": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_redirection_failure_cleanup.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_redirection_failure_cleanup.guest",
       "bytes": 19,
       "sha256": "ffd3514271837420c7475008d39392bae5034ad93a03f9a944c73fd22005123a"
     },
     "/out/c3_here_large.stdout": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_large.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/here_large.guest",
       "bytes": 65573,
       "sha256": "718a8b1fd963ef3229a5c61c9198e1416d96e853207e22c1b0335f7492789431"
     },
     "/src/c3demo/main.c": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/main.c.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/main.c.guest",
       "bytes": 244,
       "sha256": "cb69566a8d1a56bb3a26168499c43b2a460466b4224758cd644bdbe7a289faed"
     },
     "/src/c3demo/generated.h": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/generated.h.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/generated.h.guest",
       "bytes": 69,
       "sha256": "c72fa0aee742f35ecca4dea91da826a47cbfafe34e1fdb5c90eb1c67310cf551"
     },
     "/src/c3demo/generated.c": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/generated.c.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/generated.c.guest",
       "bytes": 106,
       "sha256": "9c3bd67e07716f9bec06245f575c77820c0e31d70430c792237d7dae3a3a557b"
     },
     "/out/c3demo/build_count.txt": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/build_count.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/build_count.guest",
       "bytes": 169,
       "sha256": "8055ba90199b73c9e200b70b93de4bb4740fbfa37ec638085c08021c4424a849"
     },
     "/out/c3_macros.txt": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/macros.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/macros.guest",
       "bytes": 32,
       "sha256": "7b32716d63e864dbef54ac19dcb1b85f2830d1d36bba95314e72ec24854a5bfd"
     },
     "/out/c3_diamond.txt": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/diamond.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/diamond.guest",
       "bytes": 18,
       "sha256": "fc9d1bb853404eed06d84f33879007cc211df28113de39e12e852e9fae27dfa3"
     },
     "/out/c3_ignored.txt": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/ignored.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/ignored.guest",
       "bytes": 17,
       "sha256": "f243b32cb5fa22e1cb41218fa1a7e54d8c469d85c8d8e2af5672ceb2ab772764"
     },
     "/out/c3_prefix_ignored.txt": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/prefix_ignored.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/prefix_ignored.guest",
       "bytes": 17,
       "sha256": "39cea1ebd3c51b1ea210ac1498a2edd7f9e4bfc6158d2edbb86f4e696c931dee"
     },
     "/out/c3_kept.txt": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/kept.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/kept.guest",
       "bytes": 17,
       "sha256": "5a15b0ec24f4e5065e9bd323590df4569c3c68734a2359db11cfca91cc64089d"
     },
     "/out/c3_keep.txt": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/keep.guest",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/keep.guest",
       "bytes": 4,
       "sha256": "6ca7ea2feefc88ecb5ed6356ed963f47dc9137f82526fdd25d618ea626d0803f"
     },
     "/out/make": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/guest_self_built_make.elf",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/guest_self_built_make.elf",
       "bytes": 910432,
       "sha256": "9ef76509c7e2fe6738f58738076b9e855f228168eb45d543d6eff624eb251be7"
     },
     "/out/c3demo/c.elf": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/c_demo.elf",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/c_demo.elf",
       "bytes": 613544,
       "sha256": "551cf6da0f383db7c17e443da97d5ec43109f919c4067e32484b6f30500f143a"
     },
     "/out/c3demo/cpp.elf": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/cpp_demo.elf",
+      "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec/cpp_demo.elf",
       "bytes": 943512,
       "sha256": "8c6a03beee6de9f2dd15418a2726439e4c9c78e59ac8d9b2c5a506afdd68f14b"
     }
   },
-  "artifacts": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec",
+  "artifacts": "${XOS_WORKTREE_19282E542E67}/build/dash_c3_evidence/978eaced12bc4ee28e5baa5d747d2cec",
   "not_run": [
     "C3_exec_identity_and_failure_atomicity_qualified_by_separate_runner",
     "SMP",
@@ -1645,7 +1645,7 @@
   ],
   "disk_input": {
     "mode": "released_private_copy",
-    "release_archive": "/Users/perry_guo/Documents/ChatGPT/os/runtime/xos-1024-images.tar.gz",
+    "release_archive": "${XOS_WORKTREE_9282C9E77071}/xos-1024-images.tar.gz",
     "release_archive_sha256": "a800969aaed03c601b8eb5029da8df1f4faecc5fa7f66ede28482aa65c7be25a",
     "member": "xylophoneos_revival_0.0.1-1024_images/work_disk.img",
     "initial_disk_bytes": 2147483648,
@@ -1854,7 +1854,7 @@
     }
   },
   "qemu_command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "${XOS_WORKTREE_19282E542E67}/${XOS_QEMU}",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -1868,7 +1868,7 @@
     "-nic",
     "none",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_WORKTREE_19282E542E67}/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -1879,9 +1879,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_c3_thnipf5n/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_c3_thnipf5n/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_zmzuajcx/qmp.sock,server=on,wait=off"
+    "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_zmzuajcx/qmp.sock,server=on,wait=off"
   ],
   "qemu_version": "QEMU emulator version 11.1.2",
   "baseline_resources": [

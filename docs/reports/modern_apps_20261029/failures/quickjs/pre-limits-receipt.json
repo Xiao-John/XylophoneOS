@@ -41,8 +41,8 @@
   },
   "sdk_manifest_sha256": "a203fbda0b9d984d60e3271c33418d3b796f77060b3cba4661bc0be2eb4117b7",
   "runtime_libraries": {
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/threading_sdk/cpp/lib/libsupc++.a": "3f1d0a2da3e01fedc1231e7185e0f64900fa36d53b146af08f37d818f8a509be",
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/threading_sdk/cpp/lib/libgcc.a": "b8ad185745e6d12861435f1fcebde33dd3ab142f82ae49ec651e10649bf6224e"
+    "${XOS_WORKTREE_19282E542E67}/build/threading_sdk/cpp/lib/libsupc++.a": "3f1d0a2da3e01fedc1231e7185e0f64900fa36d53b146af08f37d818f8a509be",
+    "${XOS_WORKTREE_19282E542E67}/build/threading_sdk/cpp/lib/libgcc.a": "b8ad185745e6d12861435f1fcebde33dd3ab142f82ae49ec651e10649bf6224e"
   },
   "commands": [
     [
@@ -59,12 +59,12 @@
       "-D__xos__=1",
       "-DXOS_THREADED_RUNTIME",
       "-DCONFIG_VERSION=\"2025-09-13\"",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/source",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/include",
+      "-I${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/source",
+      "-I${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/threading_sdk/include",
       "-c",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/source/quickjs.c",
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/source/quickjs.c",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/quickjs.o"
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/quickjs.o"
     ],
     [
       "x86_64-elf-gcc",
@@ -80,12 +80,12 @@
       "-D__xos__=1",
       "-DXOS_THREADED_RUNTIME",
       "-DCONFIG_VERSION=\"2025-09-13\"",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/source",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/include",
+      "-I${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/source",
+      "-I${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/threading_sdk/include",
       "-c",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/source/dtoa.c",
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/source/dtoa.c",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/dtoa.o"
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/dtoa.o"
     ],
     [
       "x86_64-elf-gcc",
@@ -101,12 +101,12 @@
       "-D__xos__=1",
       "-DXOS_THREADED_RUNTIME",
       "-DCONFIG_VERSION=\"2025-09-13\"",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/source",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/include",
+      "-I${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/source",
+      "-I${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/threading_sdk/include",
       "-c",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/source/libregexp.c",
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/source/libregexp.c",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/libregexp.o"
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/libregexp.o"
     ],
     [
       "x86_64-elf-gcc",
@@ -122,12 +122,12 @@
       "-D__xos__=1",
       "-DXOS_THREADED_RUNTIME",
       "-DCONFIG_VERSION=\"2025-09-13\"",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/source",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/include",
+      "-I${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/source",
+      "-I${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/threading_sdk/include",
       "-c",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/source/libunicode.c",
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/source/libunicode.c",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/libunicode.o"
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/libunicode.o"
     ],
     [
       "x86_64-elf-gcc",
@@ -143,12 +143,12 @@
       "-D__xos__=1",
       "-DXOS_THREADED_RUNTIME",
       "-DCONFIG_VERSION=\"2025-09-13\"",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/source",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/include",
+      "-I${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/source",
+      "-I${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/threading_sdk/include",
       "-c",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/source/cutils.c",
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/source/cutils.c",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/cutils.o"
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/cutils.o"
     ],
     [
       "x86_64-elf-gcc",
@@ -164,12 +164,12 @@
       "-D__xos__=1",
       "-DXOS_THREADED_RUNTIME",
       "-DCONFIG_VERSION=\"2025-09-13\"",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/source",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/include",
+      "-I${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/source",
+      "-I${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/threading_sdk/include",
       "-c",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/tests/fixtures/modern_apps/js_runner.c",
+      "${XOS_WORKTREE_917CF6661DE7}/tests/fixtures/modern_apps/js_runner.c",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/js_runner.o"
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/js_runner.o"
     ],
     [
       "x86_64-elf-gcc",
@@ -178,26 +178,26 @@
       "-no-pie",
       "-Wl,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096",
       "-T",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/user.ld",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/crt0_posix.o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/quickjs.o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/dtoa.o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/libregexp.o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/libunicode.o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/cutils.o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/js_runner.o",
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/threading_sdk/user.ld",
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/threading_sdk/crt0_posix.o",
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/quickjs.o",
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/dtoa.o",
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/libregexp.o",
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/libunicode.o",
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/cutils.o",
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/js_runner.o",
       "-Wl,--start-group",
       "-Wl,--whole-archive",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/lib/libxos.a",
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/threading_sdk/lib/libxos.a",
       "-Wl,--no-whole-archive",
-      "-L/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/threading_sdk/lib",
+      "-L${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/threading_sdk/lib",
       "-lc",
       "-lm",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/threading_sdk/cpp/lib/libsupc++.a",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/threading_sdk/cpp/lib/libgcc.a",
+      "${XOS_WORKTREE_19282E542E67}/build/threading_sdk/cpp/lib/libsupc++.a",
+      "${XOS_WORKTREE_19282E542E67}/build/threading_sdk/cpp/lib/libgcc.a",
       "-Wl,--end-group",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/js_probe.elf"
+      "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/js_probe.elf"
     ]
   ],
   "elf_sha256": "03dfc0a6a130aa26f94ee1886794cc49e0b7133646c0a9335887577a177d2cec",

@@ -57,24 +57,24 @@
     "value.h": "c438ee9d765ff8a952413fcf8ed720a6b5914765114ff5e1f573823bba7632d4"
   },
   "configuration": {
-    "system": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build",
-    "dash_manifest": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/dash/2b36a1eafa719d3fc2f1/manifest.json",
+    "system": "${XOS_WORKTREE_19282E542E67}/build",
+    "dash_manifest": "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/dash/2b36a1eafa719d3fc2f1/manifest.json",
     "dash_manifest_sha256": "e418090ecbe358db53728bb5a1c8e0c33aabac5a00094f8af50682b54337b25b",
-    "sbase_manifest": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/sbase/f314353bb03a02412bdf/manifest.json",
+    "sbase_manifest": "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/sbase/f314353bb03a02412bdf/manifest.json",
     "sbase_manifest_sha256": "77ffd144d339a498c0605619a76521a4bb48d9415ce7be7c1d815b571b098ff5",
-    "release_images": "/Users/perry_guo/Documents/ChatGPT/os/runtime/xos-1024-images.tar.gz",
+    "release_images": "${XOS_WORKTREE_9282C9E77071}/xos-1024-images.tar.gz",
     "release_archive_sha256_expected": "a800969aaed03c601b8eb5029da8df1f4faecc5fa7f66ede28482aa65c7be25a"
   },
   "disk_input": {
     "mode": "released_private_copy",
-    "release_archive": "/Users/perry_guo/Documents/ChatGPT/os/runtime/xos-1024-images.tar.gz",
+    "release_archive": "${XOS_WORKTREE_9282C9E77071}/xos-1024-images.tar.gz",
     "release_archive_sha256": "a800969aaed03c601b8eb5029da8df1f4faecc5fa7f66ede28482aa65c7be25a",
     "member": "xylophoneos_revival_0.0.1-1024_images/work_disk.img",
     "initial_disk_bytes": 2147483648,
     "initial_disk_sha256": "79b38a3abd0b44f38a34cccde17b2330882627f54dd80b597ca5dfee78be45a4"
   },
   "qemu_command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "${XOS_WORKTREE_19282E542E67}/${XOS_QEMU}",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -99,9 +99,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_b_p8u7db79/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_b_p8u7db79/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_fnka2v7n/qmp.sock,server=on,wait=off"
+    "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_fnka2v7n/qmp.sock,server=on,wait=off"
   ],
   "qemu_version": "QEMU emulator version 11.1.2",
   "baseline_resources": [

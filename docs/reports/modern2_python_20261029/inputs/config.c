@@ -1,4 +1,4 @@
-/* Generated automatically from /Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-python/.cache/xos_seed/cpython/d2d064e8db8332bc7d91/source/Modules/config.c.in by makesetup. */
+/* Generated automatically from ${XOS_WORKTREE_50E4DDCC5365}/.cache/xos_seed/cpython/d2d064e8db8332bc7d91/source/Modules/config.c.in by makesetup. */
 /* Module configuration */
 
 /* !!! !!! !!! This file is edited by the makesetup script !!! !!! !!! */

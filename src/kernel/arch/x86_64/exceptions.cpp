@@ -5,6 +5,7 @@
 #include <xos/task.hpp>
 #include "frame.hpp"
 #include "interrupt_entry.hpp"
+#include "io_bitmap.hpp"
 
 namespace xos::arch {
 extern "C" {
@@ -12,6 +13,7 @@ extern const u64 exception_stub_table[32];
 extern u8 kernel_stack_top[];
 extern void irq0_stub();
 extern void irq1_stub();
+extern void irq4_stub();
 extern void irq12_stub();
 extern void syscall_stub();
 void gdt_load(const void* pointer);
@@ -77,7 +79,9 @@ struct [[gnu::packed]] descriptor_pointer {
 };
 
 alignas(16) gdt_table gdt;
-alignas(16) task_state_segment tss;
+struct tss_with_bitmap { task_state_segment state; io_bitmap ports; };
+static_assert(__builtin_offsetof(tss_with_bitmap, ports) == sizeof(task_state_segment));
+alignas(16) tss_with_bitmap tss;
 alignas(16) idt_entry idt[256];
 descriptor_pointer gdt_pointer;
 descriptor_pointer idt_pointer;
@@ -103,7 +107,7 @@ void fill_data_entry(gdt_entry& entry, u8 access, bool flat) {
 }
 
 void fill_tss_entry(tss_entry& entry, u64 base) {
-    const u64 limit = sizeof(task_state_segment) - 1;
+    const u64 limit = __builtin_offsetof(tss_with_bitmap, ports) + sizeof(io_bitmap) - 1;
     entry.limit_low = static_cast<u16>(limit & 0xffff);
     entry.base_low = static_cast<u16>(base & 0xffff);
     entry.base_middle = static_cast<u8>((base >> 16) & 0xff);
@@ -133,15 +137,16 @@ u64 read_cr2() {
 
 void exceptions_init() {
     gdt = gdt_table{};
-    tss = task_state_segment{};
+    tss.state = task_state_segment{};
+    tss.ports.deny_all();
     fill_code_entry(gdt.code, 0x9a);
     fill_data_entry(gdt.data, 0x92, true);
     fill_code_entry(gdt.user_code, 0xfa);
     fill_data_entry(gdt.user_data, 0xf2, true);
-    tss.rsp0 = reinterpret_cast<u64>(kernel_stack_top);
-    tss.ist[0] = reinterpret_cast<u64>(double_fault_stack) + sizeof(double_fault_stack);
-    tss.ist[1] = reinterpret_cast<u64>(nmi_stack) + sizeof(nmi_stack);
-    tss.io_map_base = static_cast<u16>(sizeof(task_state_segment));
+    tss.state.rsp0 = reinterpret_cast<u64>(kernel_stack_top);
+    tss.state.ist[0] = reinterpret_cast<u64>(double_fault_stack) + sizeof(double_fault_stack);
+    tss.state.ist[1] = reinterpret_cast<u64>(nmi_stack) + sizeof(nmi_stack);
+    tss.state.io_map_base = static_cast<u16>(__builtin_offsetof(tss_with_bitmap, ports));
     fill_tss_entry(gdt.tss, reinterpret_cast<u64>(&tss));
 
     gdt_pointer.limit = static_cast<u16>(sizeof(gdt_table) - 1);
@@ -160,6 +165,7 @@ void exceptions_init() {
     }
     fill_gate(idt[32], reinterpret_cast<u64>(&irq0_stub), 0x08, 0, 0x8e);
     fill_gate(idt[33], reinterpret_cast<u64>(&irq1_stub), 0x08, 0, 0x8e);
+    fill_gate(idt[36], reinterpret_cast<u64>(&irq4_stub), 0x08, 0, 0x8e);
     fill_gate(idt[44], reinterpret_cast<u64>(&irq12_stub), 0x08, 0, 0x8e);
     fill_gate(idt[128], reinterpret_cast<u64>(&syscall_stub), 0x08, 0, 0xee);
 
@@ -169,7 +175,13 @@ void exceptions_init() {
 }
 
 void set_kernel_stack(u64 top) {
-    tss.rsp0 = top;
+    tss.state.rsp0 = top;
+}
+
+bool set_user_io_window(u32 first, u32 length) {
+    tss.ports.deny_all();
+    if (length == 0) { return first == 0; }
+    return tss.ports.set_range(first, length, true);
 }
 
 u64 exception_idt_address() {
@@ -182,7 +194,7 @@ extern "C" void* interrupt_dispatch(void* raw_frame) {
     const xos::u32 vector = static_cast<xos::u32>(frame->vector);
     if (vector == 128) { return xos::arch::syscall_entry(frame); }
     if (vector == 32) { return xos::arch::timer_entry(frame); }
-    if (vector == 33 || vector == 44) { return xos::arch::input_entry(frame); }
+    if (vector == 33 || vector == 36 || vector == 44) { return xos::arch::input_entry(frame); }
     if (vector < 32) {
         if ((frame->cs & 3) == 3) { return xos::arch::user_fault(frame); }
         xos::fault_info info{};

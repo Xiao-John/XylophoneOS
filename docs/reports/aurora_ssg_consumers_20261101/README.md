@@ -2,6 +2,14 @@
 
 # Application-local SSG and regressions
 
+This export records historical guest runs. Synchronizing with upstream main
+`48882c927ed26a3edc4a901954d0e613e88bbecb` did not rerun or requalify
+those builds. The [conversion ledger](../../evidence_exports/issue37_pr40/lineage.json)
+binds the changed leaves to their source commit. The root manifest indexes the
+export bytes and each suite has its own complete manifest. The original location
+was incorporated by #41; accepting the separate export as the requested
+manifest location remains a maintainer decision.
+
 Notes: live Qt tree, bounded document text, actual selection/scroll, read-only
 queries, edit diffs and exact exit cleanup. Its initial whole-tree query may hit
 the 30ms cap; document-role queries avoid unrelated controls. Text is a document

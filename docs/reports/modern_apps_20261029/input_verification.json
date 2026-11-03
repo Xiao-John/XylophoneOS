@@ -11,15 +11,15 @@
   "sdk_note": "own SDK rebuilt from verified newlib; C++ runtime imported unchanged and verified from frozen sibling SDK; not rebuilt",
   "tools": {
     "x86_64-elf-gcc": {
-      "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-gcc",
       "version": "x86_64-elf-gcc (GCC) 16.2.0"
     },
     "x86_64-elf-ld": {
-      "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-ld",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-ld",
       "version": "GNU ld (GNU Binutils) 2.47.20260726"
     },
     "nasm": {
-      "path": "/Users/perry_guo/homebrew/bin/nasm",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/bin/nasm",
       "version": "NASM version 3.02 compiled on Jun 29 2026"
     },
     "node": {

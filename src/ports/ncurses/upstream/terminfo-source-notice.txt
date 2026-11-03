@@ -1,0 +1,39 @@
+######## TERMINAL TYPE DESCRIPTIONS SOURCE FILE
+#
+# This version of terminfo.src is distributed with ncurses and is maintained
+# by Thomas E. Dickey (TD).
+#
+# Report bugs and new terminal descriptions to
+#	bug-ncurses@gnu.org
+#
+#	$Revision: 1.1143 $
+#	$Date: 2024/03/09 20:01:40 $
+#
+# The original header is preserved below for reference.  It is noted that there
+# is a "newer" version which differs in some cosmetic details (but actually
+# stopped updates several years ago); we have decided to not change the header
+# unless there is also a change in content.
+#
+# To further muddy the waters, it is noted that changes to this file as part of
+# maintenance of ncurses (since 1996) are generally conceded to be copyright
+# under the ncurses MIT-style license.  That was the effect of the agreement
+# which the principal authors of ncurses made in 1998.  However, since much of
+# the file itself is of unknown authorship (and the disclaimer below makes it
+# obvious that Raymond cannot or will not convey rights over those parts),
+# there is no explicit copyright notice on the file itself.
+#
+# It would also be a nuisance to split the file into unknown/known authorship
+# and move pieces as they are maintained, since many of the maintenance changes
+# have been small corrections to Raymond's translations to/from termcap format,
+# correcting the data but not the accompanying annotations.
+#
+# In any case, note that almost half of this file is not data but annotations
+# which reflect creative effort.  Furthermore, the structure of entries to
+# reuse common chunks also is creative (and subject to copyright).  Finally,
+# some portions of the data are derivative work under a compatible MIT-style
+# license from xterm.
+#
+#------------------------------------------------------------------------------
+# https://invisible-island.net/ncurses/ncurses.faq.html#terminfo_copying
+# https://invisible-island.net/personal/copyrights.html#removing_notes
+#------------------------------------------------------------------------------

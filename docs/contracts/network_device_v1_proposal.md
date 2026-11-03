@@ -1,4 +1,7 @@
-# 通用设备授权机制设计提案（未登记、未实现）
+# 通用设备授权机制设计提案（已由 [device_authorization_v1](device_authorization_v1.md) 登记吸收）
+
+> 2026-11-01：本提案已完成 C20 论证并登记为 `device_authorization_v1.md`（认领 sys_device=112）。
+> 提案保留为设计依据与推导记录；两者冲突时以已登记契约为准。
 
 2026-10-29。**PROPOSED / IMPLEMENTATION BLOCKED**。本页替代旧 `sys_net_device`
 帧代理提案：撤回112认领，不分配任何编号、不定义共享头常量、不声明SDK能力。

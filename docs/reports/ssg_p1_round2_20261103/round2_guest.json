@@ -1,0 +1,124 @@
+{
+  "source_commit": "c9883657eb7962e64468cce72f266b488a4e4740",
+  "runner_sha256": "59d97d8d32c314c937b70f441c56a9e3be1ae63b12f816300932cef86d7a34ae",
+  "target_sha256": {
+    "session": "cb27f67afe164192158102d3b218871a860e10ee3379ecf0f7d99601bee3d49b",
+    "consumer": "c80b9666084e4d2d8643386c7133196705624cedbdb50f8a7365ec9e69503ef0",
+    "notes": "76a773993c32859c7fc37d93f650cd4bf4cd22e7c31b99f7871136f1340e30a6",
+    "browser": "d6d8c1dbb3dc1b23d0f08db601b22d801fac4c86e02b26941515b7fe869e700d",
+    "dash": "d262b8299734d07c27e8d5ac696a3460c82cba4fe56159d3cbdcceee8f703ff9",
+    "image": "5136749d1b4a09c9bbf41f011164e34ab57ea963eb80cc9cb3b677cf34f0b36f"
+  },
+  "build_source_sha256": {
+    "scripts/build_ssg_p1.py": "7c7b4329d05c7794783274de90cfca967a0d3bf3c94a9170abfd78f7abe79184",
+    "src/user/apps/ssg_session.cpp": "d972bd3c02b3c8db01b6e8c759969c309fd510ab939298d0ad4dcbcefc9b0871",
+    "src/user/apps/ssg_consumer.cpp": "c7ef795c5398660b103fd099cd7a868d17c935cfdb89c56a91e3e7b864317292",
+    "src/user/ssg/pipe_wire.hpp": "4935b6e16d57ce1e6dc0e38a68a387aa3a6fb92dcbe9342c1ba58ceeb4ee5566",
+    "src/ports/qt6/aurora/ssg_pipe_provider.hpp": "f9ff80d1ae55cad084b32350108ad0657ffb30cb175f4cde2a6d02ac65b63ac8",
+    "src/ports/qt6/aurora/ssg.cpp": "91526eb73a764fb6e8c69f4108b4c9af05acac8a0d29879de4bba3b5faf4ac09",
+    "src/ports/qt6/aurora/ssg.hpp": "f70a177a4aa317072a70cfe29bd4525140f7ecde9a8fa24f49d9b36f0944b842",
+    "src/ports/qt6/editor/main.cpp": "c242ee61bffaddfd498c0d3f3918cd8d24b8f220d811b7e1bd44860460ac5d08",
+    "src/ports/aurora_browser/main.cpp": "7be969db3fd34bfd3dad1011203575d65cdcdccbc0f6863baa4a17d00858b786",
+    "src/ports/aurora_browser/view.hpp": "ee40c7f58071f47216f55dfdfe43a66e863250c360f2dcf049044f4c2b765cdf",
+    "src/ports/aurora_browser/scene_geometry.hpp": "8ad47279b30cabadb83f21ed342864cffc431ddc44e7e34d5221ba74355b900f",
+    "src/ports/aurora_browser/content.hpp": "9660ed516161a4a7eaf21f923a025daf326906c9b134602e4af81fea119a092d",
+    "src/ports/aurora_browser/patches/0001_readonly_render_fragments.patch": "2559951b2b94baf50a2947c8e50d1d717ff1a1a9c7011d3ce2d9ac59da04c4be",
+    "src/ports/aurora_browser/source_lock.json": "19fbd007a01c6d339ed76e3fd188b24177c11a6638546dd5b2769615e41a8700",
+    "tests/ssg_ipc_guest.py": "59d97d8d32c314c937b70f441c56a9e3be1ae63b12f816300932cef86d7a34ae"
+  },
+  "status": "PASSED_SCOPED",
+  "checks": [
+    "gui_input_remains_responsive_under_pipe_backpressure",
+    "separate_processes_bound_by_parent",
+    "consumer_parsed_live_notes_and_failure_semantics",
+    "recorded_real_keyboard_edit_and_consumer_diff",
+    "both_children_and_pipe_resources_reclaimed",
+    "actual_provider_restart_rejects_old_node_reference",
+    "text_scope_denied_by_default",
+    "standalone_cli_detail_and_diff",
+    "truncated_frame_disconnect_and_cleanup",
+    "oversized_frame_refused_and_cleanup",
+    "consumer_timeout_disconnect_and_cleanup",
+    "provider_partial_frame_timeout_and_cleanup",
+    "browser_real_fragment_scroll_reload_and_stale_epoch",
+    "browser_text_scope_denied_by_default",
+    "browser_local_probe_cannot_expand_pipe_text_scope",
+    "dash_without_spawn_delegation_denied",
+    "display_and_guest_resource_baseline_restored"
+  ],
+  "consumer_checks": [
+    {
+      "name": "live_line_edit",
+      "status": "PASS"
+    },
+    {
+      "name": "large_snapshot_crosses_pipe_capacity",
+      "status": "PASS"
+    },
+    {
+      "name": "live_document_snapshot",
+      "status": "PASS"
+    },
+    {
+      "name": "parsed_node_text_geometry",
+      "status": "PASS"
+    },
+    {
+      "name": "live_edit_diff",
+      "status": "PASS"
+    },
+    {
+      "name": "live_edit_snapshot",
+      "status": "PASS"
+    },
+    {
+      "name": "stale_node_version_refused",
+      "status": "PASS"
+    },
+    {
+      "name": "live_node_detail",
+      "status": "PASS"
+    },
+    {
+      "name": "scroll_diff",
+      "status": "PASS"
+    },
+    {
+      "name": "live_scroll_state",
+      "status": "PASS"
+    },
+    {
+      "name": "stale_epoch_refused",
+      "status": "PASS"
+    },
+    {
+      "name": "old_provider_instance_refused",
+      "status": "PASS"
+    },
+    {
+      "name": "changed_scope_requires_snapshot",
+      "status": "PASS"
+    },
+    {
+      "name": "node_limit_reports_truncation",
+      "status": "PASS"
+    },
+    {
+      "name": "truncated_diff_refused",
+      "status": "PASS"
+    },
+    {
+      "name": "replayed_message_refused",
+      "status": "PASS"
+    },
+    {
+      "name": "provider_exit_eof",
+      "status": "PASS"
+    }
+  ],
+  "final_resources": [
+    130275,
+    2,
+    0
+  ]
+}

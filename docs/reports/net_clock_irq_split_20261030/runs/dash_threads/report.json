@@ -44,30 +44,30 @@
   },
   "tools": {
     "g++": {
-      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
       "sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
       "version": "x86_64-elf-g++ (GCC) 16.2.0"
     },
     "as": {
-      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
       "sha256": "530cf6fbe7d857e0d4ebbc52bcc017867fb7af65552a1f842dbcaa5c50db9026",
       "version": "GNU assembler (GNU Binutils) 2.47.20260726"
     },
     "ld": {
-      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
       "sha256": "92002feac2ed2e5b05ae6fb47a1aab2979b3b46bd861a4439838e6bcb20e7fe5",
       "version": "GNU ld (GNU Binutils) 2.47.20260726"
     },
     "qemu": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+      "path": "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
       "sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
       "version": "QEMU emulator version 11.1.2"
     }
   },
   "build_commands": [
     [
-      "/Users/perry_guo/homebrew/bin/x86_64-elf-g++",
-      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/target_tools/",
+      "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-g++",
+      "-B${XOS_WORKTREE_D39D1408E55B}/build/target_tools/",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -96,17 +96,17 @@
       "-mno-red-zone",
       "-ftls-model=local-exec",
       "-I",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/sdk/include",
+      "${XOS_WORKTREE_D39D1408E55B}/build/sdk/include",
       "-I",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/src/user/include",
+      "${XOS_WORKTREE_D39D1408E55B}/src/user/include",
       "-c",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/tests/fixtures/dash_c1/pipe_threads.cpp",
+      "${XOS_WORKTREE_D39D1408E55B}/tests/fixtures/dash_c1/pipe_threads.cpp",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/dash_c1_threads_release_final_evidence/pipe_threads.o"
+      "${XOS_WORKTREE_D39D1408E55B}/build/clock_irq_split/dash_c1_threads_release_final_evidence/pipe_threads.o"
     ],
     [
-      "/Users/perry_guo/homebrew/bin/x86_64-elf-g++",
-      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/target_tools/",
+      "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-g++",
+      "-B${XOS_WORKTREE_D39D1408E55B}/build/target_tools/",
       "-m64",
       "-march=x86-64",
       "-mtune=generic",
@@ -118,16 +118,16 @@
       "-no-pie",
       "-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
       "-T",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/sdk/user.ld",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/sdk/crt0.o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/dash_c1_threads_release_final_evidence/pipe_threads.o",
+      "${XOS_WORKTREE_D39D1408E55B}/build/sdk/user.ld",
+      "${XOS_WORKTREE_D39D1408E55B}/build/sdk/crt0.o",
+      "${XOS_WORKTREE_D39D1408E55B}/build/clock_irq_split/dash_c1_threads_release_final_evidence/pipe_threads.o",
       "-Wl,--start-group",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/threading_core/libxos_thread_core.a",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/sdk/lib/libxos.a",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/sdk/lib/libxos_loader.a",
+      "${XOS_WORKTREE_D39D1408E55B}/build/threading_core/libxos_thread_core.a",
+      "${XOS_WORKTREE_D39D1408E55B}/build/sdk/lib/libxos.a",
+      "${XOS_WORKTREE_D39D1408E55B}/build/sdk/lib/libxos_loader.a",
       "-Wl,--end-group",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/dash_c1_threads_release_final_evidence/pipe_threads.elf"
+      "${XOS_WORKTREE_D39D1408E55B}/build/clock_irq_split/dash_c1_threads_release_final_evidence/pipe_threads.elf"
     ]
   ],
   "runs": [
@@ -157,7 +157,7 @@
       ],
       "actual_exit": 0,
       "serial_log": {
-        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/dash_c1_threads_release_final_evidence/iteration_0.serial.log",
+        "path": "${XOS_WORKTREE_D39D1408E55B}/build/clock_irq_split/dash_c1_threads_release_final_evidence/iteration_0.serial.log",
         "sha256": "2ee480d98b27e59ff2fa7a8d157a576c557d90c69673c03cbc0f9d8654a912d6"
       }
     },
@@ -187,7 +187,7 @@
       ],
       "actual_exit": 0,
       "serial_log": {
-        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/dash_c1_threads_release_final_evidence/iteration_1.serial.log",
+        "path": "${XOS_WORKTREE_D39D1408E55B}/build/clock_irq_split/dash_c1_threads_release_final_evidence/iteration_1.serial.log",
         "sha256": "b0ae6e456cc56a0a40b07e6c1e11b66d50e8eaecbeb5d8f536a282095f92be29"
       }
     }
@@ -207,13 +207,13 @@
     "long_randomized_stress"
   ],
   "probe": {
-    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/dash_c1_threads_release_final_evidence/pipe_threads.elf",
+    "path": "${XOS_WORKTREE_D39D1408E55B}/build/clock_irq_split/dash_c1_threads_release_final_evidence/pipe_threads.elf",
     "sha256": "974fd9fd5738a8c7c193051b4ebfc26308295782c30db2aa6a6cfa9ebfa51004",
     "bytes": 83672,
     "object_sha256": "f336e5726b7e0a5144796c03267eecb052723e9581481a44db7d1e7e0ba98e49"
   },
   "qemu_command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -231,7 +231,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_c1_threads_tj_euqiy/boot.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_c1_threads_tj_euqiy/boot.img,format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -242,9 +242,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_c1_threads_tj_euqiy/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_c1_threads_tj_euqiy/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_bd0hyqe9/qmp.sock,server=on,wait=off"
+    "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_bd0hyqe9/qmp.sock,server=on,wait=off"
   ],
   "baseline_resources": [
     130279,
@@ -257,7 +257,7 @@
     0
   ],
   "serial_log": {
-    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-clock-irq-split/build/clock_irq_split/dash_c1_threads_release_final_evidence/all.serial.log",
+    "path": "${XOS_WORKTREE_D39D1408E55B}/build/clock_irq_split/dash_c1_threads_release_final_evidence/all.serial.log",
     "sha256": "9604f91c10ecb7be80f3c029d605f714b7997a1bf424d5cceba1bc2d505e58b1"
   }
 }

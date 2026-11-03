@@ -1,0 +1,168 @@
+{
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "source_entries": 91,
+  "export_entries": 92,
+  "index_scope": "No prior full-file index is claimed. Original bytes are available at source_commit; this conversion record lists changed paths and old/new hashes.",
+  "added_export_document": "docs/reports/aurora_browser_20261029/SANITIZED_EXPORT.md",
+  "changes": [
+    {
+      "path": "docs/reports/aurora_browser_20261029/browser.receipt.json",
+      "original_sha256": "5c772f99432bff3923d71a6e698a75d2c94b29645d21d9b6af760c64508e5d2a",
+      "export_sha256": "00a43940971c86d7474c10e4bf6b967eb591f60f53de33743366bd8dd039318d"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/final-interactive/report.json",
+      "original_sha256": "d1ede1a5ec53103fa7a6b1926ce4cca6c8fc858498bfb509909f94d42120b409",
+      "export_sha256": "2b354a5a687204f68119affab7ff3e4b80a72e4ed888e45efb7c530325c9d2db"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/final-lifecycle/report.json",
+      "original_sha256": "820a19ee5f3cffd7ee78abce338e97cc07be1f55bc9a5ec5e79750df9e556d5f",
+      "export_sha256": "3edb7e06b78f5687145cebcb1755c92870100dc9adbfd575b3d79d893c81f6da"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/final-negative/report.json",
+      "original_sha256": "81836fd8e42331a36d1c7fb0f6e93253f09ee615c6c78817c4433aaeca0d3899",
+      "export_sha256": "96f4d5c6e3e3d2ecadb9db810addeb7924669925206a898e5c8bc65a0c7eeb4e"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/final-no-display/report.json",
+      "original_sha256": "152eb0920d4f42cf99b2219c200bcd7ed797135934770da0158d5f235077b6f5",
+      "export_sha256": "efc5a92d7868b9105f243090596bdf053303f80ab7eb39bb142232390a3427f1"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/final-virtio/backend_execution.json",
+      "original_sha256": "429a91b4cf24005c839cc7636c1cd7a84c2152b0e3578df2b94873746d762a7c",
+      "export_sha256": "6b469bfad19d1133a0a3aac199b334eabb97fadcd48c2ddc2315fbcab1198c1d"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/final-virtio/report.json",
+      "original_sha256": "36b37caee68741d0c78e45761b7c8b4a2ed9b4a69206e8dbebd744867c8e6325",
+      "export_sha256": "760d40c80dfe9b9b85bcb4bb0881e8f77853049802b69434b6908ad2211fcbd4"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/iterations/build-attempt1.log.gz",
+      "original_sha256": "922df29be9ebbf590f2ee9dc6c65f5d005704ab3af88aa7fa538aabd445e8d1c",
+      "export_sha256": "8f781b5af7c39be86441cf61a1c16dc894f3e3a2191f17298995830f48b72892"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/iterations/build-attempt2.log.gz",
+      "original_sha256": "9f82635272f5c93e844d1cd8d91072eb2f496108dc393c004ea8f2ca569e69e6",
+      "export_sha256": "486e9e2b447ef40c35adaf7a197a10769afd5b7135a9020217f2730beb97f431"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/iterations/build-attempt3.log.gz",
+      "original_sha256": "424231a9592df0e549eb4af00ab054d38a683cc700f6fbc2f65dbc57e84f4ba4",
+      "export_sha256": "aa974bdf557ebf7035721ada5cca835d6096131543b7609760087cbcf6a14d70"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/iterations/build-attempt4.log.gz",
+      "original_sha256": "4e9ec8ab1c8badd6216589ac14c0f3990b00d3659fd66e5071466dd2fb09e501",
+      "export_sha256": "981a5da335109be204d396c19a0ef49810bb525d9aef523efa5914704b28df10"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/iterations/build-attempt5.log.gz",
+      "original_sha256": "4e9ec8ab1c8badd6216589ac14c0f3990b00d3659fd66e5071466dd2fb09e501",
+      "export_sha256": "981a5da335109be204d396c19a0ef49810bb525d9aef523efa5914704b28df10"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/iterations/build-attempt6.log.gz",
+      "original_sha256": "4e9ec8ab1c8badd6216589ac14c0f3990b00d3659fd66e5071466dd2fb09e501",
+      "export_sha256": "981a5da335109be204d396c19a0ef49810bb525d9aef523efa5914704b28df10"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/iterations/build-attempt7.log.gz",
+      "original_sha256": "4e9ec8ab1c8badd6216589ac14c0f3990b00d3659fd66e5071466dd2fb09e501",
+      "export_sha256": "981a5da335109be204d396c19a0ef49810bb525d9aef523efa5914704b28df10"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/iterations/build-attempt8.log.gz",
+      "original_sha256": "4e9ec8ab1c8badd6216589ac14c0f3990b00d3659fd66e5071466dd2fb09e501",
+      "export_sha256": "981a5da335109be204d396c19a0ef49810bb525d9aef523efa5914704b28df10"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/iterations/first-interactive/report.json",
+      "original_sha256": "7aae18ffb0378ea5f83d431845f3bbaacd21ad2d7976546fe90388e5fc2b3539",
+      "export_sha256": "df3669a477f7130a118d302d64ae12f5f649f207115feb72c89583e7b1b5e33b"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/iterations/interaction-v2/report.json",
+      "original_sha256": "e54026eba7b36a54ee4527b1bf7844e8aba3cdc7cb3babec5d9d1be80dae1ad2",
+      "export_sha256": "4247cf28365311f360b7df3c3252697f6db9ab7637ca48175d349b6e6d8ae4c5"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/iterations/interaction-v2/runner.log.gz",
+      "original_sha256": "523f4fc8a5840b0edd36f339036eac3129ac000de77eb1cdac296545725c9207",
+      "export_sha256": "06dd93202d9f84bf6e04c171dab8f2313da551c9b037a91468b6e3814f7f5f80"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/iterations/interaction-v3/report.json",
+      "original_sha256": "bbd8afa18fd3136002a3f8672b55c400c24ced462ab1e554d88cd026091a8d30",
+      "export_sha256": "411b8ddb04273dfe2a88033b7116b7dbdb05e7566f4a8b410c6520ea4a6eab3c"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/iterations/negative-v2/report.json",
+      "original_sha256": "bb7aaa0333e2f3405dcf4bc27804dad2ac39a6ce04efa4415866a8be6e4e4b7c",
+      "export_sha256": "efea172eeb21203b1a6a9b9ca3cc851a751ad9dac42a932c99ae7fbf9aa0233e"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/iterations/styled-interactive/report.json",
+      "original_sha256": "9dbed2c33a54295cc1125957f3333abe2bed3712cd4d0c2c7404a4eae47690f9",
+      "export_sha256": "fd9174e80bbdeacddf249847afe78ad6481b83d71cefcfe1e5589c7a5a11da0e"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/qualification.json",
+      "original_sha256": "d9fdde5d8474a2904d0ca28e23cae0243ea421746e932fc681b09d577888dd03",
+      "export_sha256": "4a08cef6555aceccaa6654c22087ba6abca8bc0d82a200dd679c68a280d2e9b8"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/system-build.log.gz",
+      "original_sha256": "42923aeabbb8b88ea3019dca42233dcbbd9628fc788a4e9bd55e81da4a0346e1",
+      "export_sha256": "f6d2fbe4e78ad256630f269c1dbe3e934b8f9bd4ace6faa98b93e467bcaf204a"
+    },
+    {
+      "path": "docs/reports/aurora_browser_20261029/system.manifest.json",
+      "original_sha256": "229dfcf41601e37e375617fd9b0c4327aed6971350fa4b934abb5f014f2957ba",
+      "export_sha256": "324a354008af5c86624b3d7329759fd87ef0a06ac98315ccd8f7b69709546312"
+    }
+  ],
+  "template_variables": [
+    {
+      "name": "XOS_HOST_TEMP_6D6821976CD9",
+      "purpose": "host_temp root"
+    },
+    {
+      "name": "XOS_PYTHON_68FDBC484049",
+      "purpose": "python root"
+    },
+    {
+      "name": "XOS_TOOLCHAIN_35527FAC2790",
+      "purpose": "toolchain root"
+    },
+    {
+      "name": "XOS_WORKTREE_445F322455D6",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_596D9D238863",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_9282C9E77071",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_C671BDF53659",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_ED2321C1F627",
+      "purpose": "worktree root"
+    }
+  ],
+  "reproduction": "MANUAL_REQUIRED: configure template roots and obtain matching historical inputs; no replay is claimed.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history.",
+  "added_export_document_sha256": "a80f457252ceae5a9369e7cbcb7cdb08f68d3bccd275e74b5ecd1b168960453b",
+  "transformation": "Host home/workspace/tool roots and unambiguous host QEMU command paths only; generic guest temporary paths are not globally replaced."
+}

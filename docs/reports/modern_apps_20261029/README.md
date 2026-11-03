@@ -1,3 +1,5 @@
+> **Evidence version:** This checkout is a path-sanitized derivative, not byte-identical raw evidence. Original and exported hashes are recorded in [the Issue 37 lineage](../../evidence_exports/issue37/modern_apps_lineage.json). Historical input hashes still identify the original run; template roots require manual configuration.
+
 # 现代应用兼容平台第一阶段：冻结证据
 
 2026-10-29。主线输入upstream `39083f9`，独立分支`codex/modern-app-phase1`。
@@ -85,7 +87,7 @@ python3 scripts/modern_apps_native_probe.py \
 python3 scripts/modern_apps_localpilot_audit.py \
   --source ../localpilot-source-audit-20261029 --output build/modern_apps/reproduce-lp-audit.json
 
-QEMU=/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64 \
+QEMU=${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64 \
 python3 tests/modern_apps_guest.py \
   --python-work .cache/xos_seed/cpython/a8201ed0a683f05afdf3 \
   --localpilot ../localpilot-source-audit-20261029 \

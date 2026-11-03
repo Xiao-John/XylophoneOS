@@ -12,6 +12,10 @@
 | 接口 | 当前编号 |
 |---|---:|
 | `sys_pipe_wait` | 54 |
+| `sys_stream_lease` | 80 |
+| `sys_channel` | 81 |
+| `sys_pio_grant` | 82 |
+| `sys_irq_event` | 83 |
 | `sys_process_guard` | 62 |
 | `sys_random_bytes` | 63 |
 | `sys_clock_realtime` | 64 |
@@ -187,6 +191,54 @@ pipe token 或 0–2 的有效内核 stdio route；console 返回 would_block，
 必须重试 I/O 并重新验证 token。每次 close 和数据流动唤醒等待者，slot 回收前
 广播；token 单调不复用。底层 read/write 仍可短读写并返回 EAGAIN，新增 libc
 在管道 EAGAIN 后阻塞重试，不把 console 的旧非阻塞语义改成 EOF。
+
+W1 开发中扩展 sys54：对管道第三参数非零时是绝对单调纳秒截止时间，`UINT64_MAX`
+为无限；就绪优先于过期，过期返回 `thread_error_timeout`。可伪唤醒，调用者必须
+重试读取；单核、10ms 时钟量化。console 仍返回 would_block，普通 libc 的 EAGAIN
+保持。原有内核 UART 数据通路因 C28 撤回，console IRQ 等待尚未实现；此扩展尚未
+客体验收，也不提供前台独占、终端模式、多源等待、EOF 或 POSIX poll。
+
+sys80 `sys_stream_lease` 是开发中的独占字节流读取权机制；参数、委派和回收见
+[专项契约](contracts/stream_lease.md)。C28 迁移期间 claim 返回 unsupported；它不
+提供用户态终端服务、终端模式或 POSIX 作业控制。未显式 claim 时旧读取行为保持。
+
+sys81 `sys_channel` 是开发中的受控单槽 IPC 与等待机制，身份和生命周期见
+[专项契约](contracts/channel.md)；当前未客体验收，不等于用户态终端服务完成。
+试行 `channel_fork` 根据既有双向通道为未运行的直接 fork 子进程派生独立通道对；
+它不等于对端已登记该子进程，申请失败不应提交 fork。
+试行 `wait_many` 只等待调用者有参与权的至多四个通道；立即就绪返回位掩码，
+事件唤醒可伪唤醒并须重查。它不是任意 fd 的 poll，尚未客体验证。
+sys60 试行可显式保留调用者参与的少量空通道；不设置标志时仍关闭全部通道。
+扩展 entry 的校验、故障与在途消息责任见同一契约；不是隐式保留终端会话，
+单线程终端 libc 试行通过该机制交接描述符和下一个请求序号，目标须同时声明
+`.xos.exec` v3 与 `.xos.tty` v1；尚未取得客体资格。
+
+sys82 `sys_pio_grant` 是开发中的固定设备 PIO 授权；COM1 交接、隔离及显式
+重新授权边界见
+[专项契约](contracts/pio_grant.md)，尚未客体验收，不等于 IRQ 或用户态终端资格。
+
+sys83 `sys_irq_event` 为受控 IRQ 事件、等待和确认；当前仅 IRQ4、未客体验收，
+详见[专项契约](contracts/irq_event.md)。不读取设备数据，不等于 UART 驱动完成。
+
+`spawn_options.prepare_child` 是用户态加载器的临时准备回调，在镜像、栈、TLS 映射及
+文件关闭成功后（终端启动页映射另见下）、
+新子进程运行前调用；不适用于 exec。回调或启动失败时加载器 abort 子进程，调用方
+负责清理自己建立的通道等资源。若回调已成功授予 COM1，后续启动失败仍会隔离设备，
+不保证恢复。该回调和终端控制协议尚未客体验收，不能作为稳定 SDK 资格。
+
+终端启动试行扩展仅供显式 opt-in 的普通 spawn：目标 ELF 须包含只读 ALLOC、16 字节
+`.xos.tty` 标记，magic 为 `terminal_image_abi_magic`、version=1、size=16；三个旧
+stdio 均关闭，且必须提供 prepare 回调与 `terminal_send_handle`。加载器完成其余
+映射和文件关闭后执行回调，回调为 building 子进程授权；非零发送 handle 放入
+startup2 扩展的 flag bit16 和 reserved 字段，再映射启动页，最后启动。失败会 abort
+子进程，调用方仍负责关闭创建的通道。应用用 `connect_startup` 根据内核认证的通道
+信息核对句柄及双方身份；标记不授予权限。单线程 libc 初始 fd 0/1/2 可接该客户端，
+但带终端描述符的 exec/fork 及多线程 libc 暂时明确拒绝；目前仅支持受限原始模式，
+未客体验收。旧镜像无标记时拒绝终端启动，不影响原有非终端启动路径。
+
+SDK 控制台 read/write 的可选弱符号钩子供单个可执行文件自行接入用户态服务；没有
+定义时直接使用旧 syscall。当前 supervisor 编入试验桥接，默认保持旧路径，不为应用
+授予终端权，也不改变子进程 stdio；该钩子尚未客体验收或冻结。
 
 sys55 `sys_process_foreground(&request,active,0)`：request 为48字节固定宽度
 `process_foreground{version=1,size=48,count,reserved=0,pids[4]}`；未使用 PID 必须0。

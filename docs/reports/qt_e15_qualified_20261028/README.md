@@ -1,3 +1,10 @@
+> **Evidence version:** This checkout is a path-sanitized derivative of the
+> frozen source evidence, not byte-identical original logs or receipts. The
+> original index and original/export hashes are recorded in
+> [the Issue 37 provenance record](../../evidence_exports/issue37/qt_e15_lineage.json).
+> Historical input hashes in the qualification still refer to the original run;
+> configure the named template roots and matching inputs before any reproduction.
+
 # E15 QtCore 6.8.3 scoped qualification
 
 The implementation and guest evidence are indexed by [qualification.json](qualification.json)

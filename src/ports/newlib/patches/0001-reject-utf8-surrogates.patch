@@ -1,0 +1,29 @@
+--- a/newlib/libc/stdlib/mbtowc_r.c
++++ b/newlib/libc/stdlib/mbtowc_r.c
+@@ -604,8 +604,9 @@
+       if (n < 2)
+ 	return -2;
+       ch = (state->__count == 1) ? t[i++] : state->__value.__wchb[1];
+-      if (state->__value.__wchb[0] == 0xe0 && ch < 0xa0)
++      if ((state->__value.__wchb[0] == 0xe0 && ch < 0xa0)
++          || (state->__value.__wchb[0] == 0xed && ch >= 0xa0))
+ 	{
+-	  /* overlong UTF-8 sequence */
++	  /* overlong UTF-8 sequence or surrogate code point */
+ 	  _REENT_ERRNO(r) = EILSEQ;
+ 	  return -1;
+ 	}
+--- a/newlib/libc/stdlib/wctomb_r.c
++++ b/newlib/libc/stdlib/wctomb_r.c
+@@ -82,6 +82,11 @@
+     }
+   if (wchar >= 0x800 && wchar <= 0xffff)
+     {
++      if (sizeof (wchar_t) != 2 && wchar >= 0xd800 && wchar <= 0xdfff)
++        {
++          _REENT_ERRNO(r) = EILSEQ;
++          return -1;
++        }
+       /* No UTF-16 surrogate handling in UCS-4 */
+       if (sizeof (wchar_t) == 2 && wchar >= 0xd800 && wchar <= 0xdfff)
+ 	{

@@ -85,3 +85,4 @@
 | 0186 | `0186_terminal_input_flush_guest.md` | 已排队输入的清空与新输入（2026-11-03） |
 | 0187 | `0187_w1_final_acceptance.md` | W1/ncurses 最终验收（组合源码重建 + 全量客体门槛，PR #66，2026-11-03） |
 | 0188 | `0188_d7_license_two_leaves.md` | D7 许可两叶 + 发版前小更改与 README/版本更新（2026-11-03 占号） |
+| 0189 | `0189_d7_license_full_closure.md` | D7 许可面收口（Qt 文本/§4d0 材料/补丁标注、GCC 运行库映射、发版中止）（2026-11-03 占号） |

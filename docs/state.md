@@ -34,7 +34,7 @@
 | Pillow 静态成像 | 核心受限通过；线程 BLOCKED（`_malloc_r` vector14 未解） | [0088](work_log/0088_cpython_static_pillow.md) |
 | PX4-A 匿名 VM | 仅设计认领，未实施 | [0098](work_log/0098_vm_time_domains.md) |
 | 终端 / ncursesw W1 | 最终验收全 gate 通过并合入（#66）：W0 冻结、4 系统、15 项交接探针、`freeze_ncursesw_subset` 12 项 | [0187](work_log/0187_w1_final_acceptance.md)、[0074](work_log/0074_ncursesw_w1_scout.md) |
-| 许可两叶（D7） | 逐成员审计与静态分发审查本轮交付（newlib 成员映射、GNU Seed 分发审查、Qt 静态分发审查） | [0188](work_log/0188_d7_license_two_leaves.md) |
+| 许可两叶（D7） | 许可面收口进行中（0188 交付 newlib 1053/1053、GNU Seed、Qt 静态分发审查；0189 补 Qt 文本/§4d0 材料/补丁标注、GCC 运行库 397/407、Qt 逐成员映射）；发版流程中止 | [0188](work_log/0188_d7_license_two_leaves.md)、[0189](work_log/0189_d7_license_full_closure.md) |
 | 日常工具 / UTF-8 / xypm / 游戏 | 已整合；xypm P3 未完成；游戏线工作区已建未开工 | [0069](work_log/0069_daily_utilities.md)、[0068](work_log/0068_utf8_filenames.md)、[0066](work_log/0066_xypm_p2_validation.md) |
 
 ## 当前能力与证据（慢变量）
@@ -50,14 +50,15 @@
 | xypm | P2原生验证、事务和启动恢复已实现；限定范围内验收通过 | [包计划](plans/packages.md)、[0066](work_log/0066_xypm_p2_validation.md)；P2验收范围和局限见记录；P3未完成 |
 | 审计/整合 | A01–A04修复与PR3兼容已交付PR4 | [整合摘要](history/delivery_audit.md)，组合build76a2e4380f64fb2e，7定向组通过；非旧全量重验 |
 | POSIX/Qt | PX0子集文档已有；QtCore 6.8.3 G01/G03 与 QtGui/QPA G04 受限客体功能通过 | [PX路线](plans/posix.md)、[E16资格](reports/qt_e16_qualified_20261028/qualification.json)；Widgets/G05 已受限客体验证，见0078；QML/Quick 未实现，绝对峰值未验 |
-| 许可 | 材料检查通过；newlib 成员→源码映射、GNU Seed 分发审查、Qt 静态分发审查本轮交付 | [许可证管理](licensing.md)、[0188](work_log/0188_d7_license_two_leaves.md)；材料检查不等于逐成员法律意见 |
+| 许可 | 材料检查通过；newlib 1053/1053、GCC 运行库 397/407 成员映射、GNU Seed 分发审查、Qt 静态分发审查与收口材料（文本/§4d0/补丁标注）已交付 | [许可证管理](licensing.md)、[0188](work_log/0188_d7_license_two_leaves.md)、[0189](work_log/0189_d7_license_full_closure.md)；均为映射/材料审查，**非法务意见**，Qt 静态再分发资格未授予 |
 
 每项资格只对其冻结输入成立。旧源/SDK/镜像不改绑；许可材料通过不代表逐成员审计完成。
 
 ## 下一步
 
-- 0.0.2-1103 待发布：按 [发行准备](releases/next_release.md) 选新版本目录、冻结系统/SDK/
-  源码提交、按实际变更选定向 gate、生成源码材料与许可声明；未发布前 1026 是唯一可下载发行。
+- **0.0.2-1103 发版流程已中止**（2026-11-03 用户裁定：先完成 D7 收口再发）：版本号已定、
+  dash/install ISO 已按新版重建，但未冻结打包、未打 tag、未传资产；1026 仍是唯一可下载
+  发行。收口后按 [发行准备](releases/next_release.md) 重新走完四步再发。
 - 设备授权原语段 1b（grant 表）→ 显示迁移纵向切片 → ps2/ata（依赖 sys82 对齐）；
   N2 网络接其后。PR #20 按 RC 拆分要求仍挂账。
 - 系统重建/自举（D6）尚未开始；QML/Quick 移植为独立功能线，未立项。

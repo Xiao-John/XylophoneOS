@@ -87,8 +87,10 @@ Seed 已经公开分发**——0.0.1-1024 与 0.0.1-1026 的 images 工作盘携
 
 因此分发义务**已被触发且大部分履行**，残余缺口按该报告跟踪：1024 包内无
 `third_party_notices`；客体 `/usr/share/licenses/` 无 GNU 条目；根 `NOTICE` 缺 GNU
-组件条目；GFDL 手册页随工具分发但未登记为组件；静态归档逐成员追溯
-（GCC 运行库 407 成员、newlib 1053 成员）仍 NOT_RUN。
+组件条目；GFDL 手册页随工具分发但未登记为组件。静态归档逐成员追溯已于 2026-11-03
+交付：newlib **1053/1053**（[newlib 映射](reports/newlib_member_license_20261103/)）、
+GCC 运行库 **397/407**（10 个真歧义未解析，见
+[GCC 运行库映射](reports/gcc_runtime_member_license_20261103/)），均为声明提取而非法律意见。
 
 上游原包、XOS补丁和构建脚本共同定义对应源码，工具manifest保留实际输入/输出哈希。
 自研移植新增内容Apache-2.0，补丁引用的GNU上下文及修改后的上游文件保留适用GNU条款。
@@ -161,7 +163,8 @@ E16 新增 QtGui、FreeType 2.13.3、HarfBuzz 10.4.0、DejaVu 2.37、MD4C 0.5.2 
 Qt raster/region 的上游声明，原文与来源路径保留在 `src/ports/qt6/licenses/gui`，哈希在
 `licenses/components.json`。原版 DejaVuSans.ttf 从锁定 QtBase archive 提取并嵌入资源。
 0008 还补入 HarfBuzz 静态符号闭包遗漏的上游 graph 源文件。功能测试、材料完整性检查
-不授予静态再分发资格；逐成员、安全审查、重链接/对应源码与完整分发材料仍 NOT_RUN。
+不授予静态再分发资格；逐成员许可映射、对应源码/重链接材料与补丁修改标注已于
+2026-11-03 交付（见下节），**Qt 安全审查与打包后清单核验仍 NOT_RUN**。
 
 ## Qt 静态分发审查（2026-11-03）
 
@@ -186,3 +189,34 @@ D7 两叶之一，报告与逐项对照表见
   可重链接对象打包 ③GPLv3 §5(b)/LGPLv3 §2 修改显著标注 ④0.0.2 冻结打包后清单核验
   ⑤`make license-audit` ⑥商业许可核验 ⑦Qt 安全审查 ⑧上游 37 份文本与实际链接成员的完整
   对应。未授予"可随包分发 Qt 静态库"资格；上述任一项仍为 NOT_RUN 时不得声称完成。
+
+## 开放项登记与归档成员来源契约（2026-11-03）
+
+**单一开放项登记处**：`licenses/open_items.json`。许可范围内任何未闭合项必须带状态
+（`open` / `deferred` / `not_applicable`）、证据、退出条件登记在此；
+`scripts/license_audit.py` 从它**派生** `not_completed` 并硬校验——证据缺失、状态非法、
+`open` 却无退出条件、或证据报告目录缺平铺 `manifest.json`，审计直接失败。
+审计输出的未闭合项与登记处逐字一致，**不会再出现"报告里还有 NOT_RUN、审计却打印全绿"**。
+
+**归档成员来源契约**：[archive_member_provenance](contracts/archive_member_provenance.md)。
+从下一次各组件重建起，进入"已验收/拟分发"状态的静态归档必须在创建它的同一次构建里
+产出 `member_manifest.json`（成员 → 源文件 sha → 声明类别，一手记录、禁用推导冒充）；
+届时逐成员审计改为"读清单 + 跑校验器"，三份考古脚本合并为一个共享实现。
+本契约**不追溯**既有归档：newlib 1053/1053、GCC 397/407 为**推导映射**；Qt 1522/1522
+属对象字节一致的一手记录（但非契约产出的 `member_manifest.json`）。三者残余缺口均在
+开放项登记处逐条挂账。
+
+### Qt 收口补记（2026-11-03 第二轮）
+
+上节 8 项 NOT_RUN 中本轮已闭：**①逐成员许可映射**（[qt_member_license_20261103](reports/qt_member_license_20261103/)：
+1522/1522 全解、字节同一 100%、0 未映射 0 歧义）、**②§4d0 对应源码与可重链接交付物**
+（`src/ports/qt6/REDISTRIBUTION.md` + `redistribution_manifest.json`）、**③补丁修改显著标注**
+（`src/ports/qt6/patches/MODIFICATIONS.md`，10 补丁/21 上游文件）、**⑤license-audit**（本轮
+重跑 PASS）、**⑧上游 37 份文本对应表**（12 命中/25 未命中逐份注明；上一版 9/28 含 HPND
+误报，已随词窗口搜索移除而更正）；**缺口①**（SDK 输入内
+无 Qt 文本）由补入 `LicenseRef-Qt-Commercial.txt` 与 `Qt-GPL-exception-1.0.txt` 关闭
+（QtBase notices 11→13，`copy_notices()` 随包携带）。
+
+仍**未闭**：④打包核验（deferred 至真正打包 Qt 时）、⑥商业核验（N/A，无材料）、
+⑦安全审查（deferred，不属 D7）、以及新登记的"262 个仅版权/无声明成员的成员→文本覆盖"
+（open）。全部逐条见 `licenses/open_items.json`；**发行资格仍 NOT_GRANTED**。

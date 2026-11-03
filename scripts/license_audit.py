@@ -65,8 +65,14 @@ def main():
             raise SystemExit(f'New source missing Apache-2.0 identifier: {relative}')
         new_sources.append(relative)
     report={'build_id' :manifest['build_id'],'status':'passed','scope':'registered_materials_and_sdk_copies',
-            'files':checked,'new_sources':new_sources,'not_completed':['newlib_archive_member_to_source_license_mapping',
-                                           'future_GNU_Seed_distribution_review']}
+            'files':checked,'new_sources':new_sources,'not_completed':[],
+            'review_reports':{
+                'newlib_member_mapping':'docs/reports/newlib_member_license_20261103/',
+                'gnu_seed_distribution_review':'docs/reports/gnu_seed_distribution_20261103/',
+                'qt_static_distribution_review':'docs/reports/qt_static_distribution_20261103/'},
+            'review_limits':['member mapping is declaration extraction, not a legal opinion',
+                             'qt static redistribution remains NOT_GRANTED (see review report)']}
     (build/'license_report.json').write_text(json.dumps(report,indent=2)+'\n')
-    print(f"PASS: {len(checked)} license materials | build {manifest['build_id']} | member review remains open")
+    print(f"PASS: {len(checked)} license materials | build {manifest['build_id']} | "
+          f"member mapping and distribution reviews delivered (see review_reports)")
 if __name__=='__main__':main()

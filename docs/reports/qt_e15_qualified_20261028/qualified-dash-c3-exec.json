@@ -2,7 +2,7 @@
   "status": "passed",
   "phase": "C3 exec",
   "run_id": "ffb9ceec03d64601b8d3586cc09f5c55",
-  "artifacts": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55",
+  "artifacts": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55",
   "source_commit": "b090d4532ff5aa19ec5290da16863154c7d08860",
   "sources": {
     "tests/dash_c3_exec_smoke.py": "a1d25c0932b491ad364ba03fcabf2cfa0dedb9032ff035b327f2ec9891f8e4fd",
@@ -16,40 +16,40 @@
   },
   "tools": {
     "gcc": {
-      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
       "sha256": "078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f",
       "version": "x86_64-elf-gcc (GCC) 16.2.0"
     },
     "g++": {
-      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
       "sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
       "version": "x86_64-elf-g++ (GCC) 16.2.0"
     },
     "as": {
-      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
       "sha256": "530cf6fbe7d857e0d4ebbc52bcc017867fb7af65552a1f842dbcaa5c50db9026",
       "version": "GNU assembler (GNU Binutils) 2.47.20260726"
     },
     "ld": {
-      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
       "sha256": "92002feac2ed2e5b05ae6fb47a1aab2979b3b46bd861a4439838e6bcb20e7fe5",
       "version": "GNU ld (GNU Binutils) 2.47.20260726"
     },
     "objcopy": {
-      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
       "sha256": "d9faf61c8148cae44ddfef8a8c914a8d7f715671681ac425592403cf96ce8332",
       "version": "GNU objcopy (GNU Binutils) 2.47.20260726"
     },
     "qemu": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+      "path": "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
       "sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
       "version": "QEMU emulator version 11.1.2"
     }
   },
   "build_commands": [
     [
-      "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
-      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/target_tools/",
+      "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-gcc",
+      "-B${XOS_WORKTREE_ED2321C1F627}/build/target_tools/",
       "-std=gnu11",
       "-O2",
       "-g",
@@ -58,36 +58,36 @@
       "-fno-pic",
       "-fno-stack-protector",
       "-ftls-model=local-exec",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/include",
+      "-I${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified_system/sdk/include",
       "-c",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/fixture_sources/source.c",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/fixture_sources/source.c",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/source.o"
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/source.o"
     ],
     [
-      "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
-      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/target_tools/",
+      "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-gcc",
+      "-B${XOS_WORKTREE_ED2321C1F627}/build/target_tools/",
       "-nostdlib",
       "-static",
       "-no-pie",
       "-Wl,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096",
       "-T",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/single_probe.ld",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/crt0_posix.o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/source.o",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/single_probe.ld",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified_system/sdk/crt0_posix.o",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/source.o",
       "-Wl,--start-group",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libxos.a",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libxos_loader.a",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libc.a",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libm.a",
-      "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/../lib/gcc/x86_64-elf/16.2.0/libgcc.a",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified_system/sdk/lib/libxos.a",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified_system/sdk/lib/libxos_loader.a",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified_system/sdk/lib/libc.a",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified_system/sdk/lib/libm.a",
+      "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-gcc/16.2.0/bin/../lib/gcc/x86_64-elf/16.2.0/libgcc.a",
       "-Wl,--end-group",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/source.elf"
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/source.elf"
     ],
     [
-      "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
-      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/target_tools/",
+      "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-gcc",
+      "-B${XOS_WORKTREE_ED2321C1F627}/build/target_tools/",
       "-std=gnu11",
       "-O2",
       "-g",
@@ -96,42 +96,42 @@
       "-fno-pic",
       "-fno-stack-protector",
       "-ftls-model=local-exec",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/include",
+      "-I${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified_system/sdk/include",
       "-c",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/fixture_sources/target.c",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/fixture_sources/target.c",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/target.o"
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/target.o"
     ],
     [
-      "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
-      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/target_tools/",
+      "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-gcc",
+      "-B${XOS_WORKTREE_ED2321C1F627}/build/target_tools/",
       "-nostdlib",
       "-static",
       "-no-pie",
       "-Wl,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096",
       "-T",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/single_probe.ld",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/crt0_posix.o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/target.o",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/single_probe.ld",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified_system/sdk/crt0_posix.o",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/target.o",
       "-Wl,--start-group",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libxos.a",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libxos_loader.a",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libc.a",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libm.a",
-      "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/../lib/gcc/x86_64-elf/16.2.0/libgcc.a",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified_system/sdk/lib/libxos.a",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified_system/sdk/lib/libxos_loader.a",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified_system/sdk/lib/libc.a",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified_system/sdk/lib/libm.a",
+      "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-gcc/16.2.0/bin/../lib/gcc/x86_64-elf/16.2.0/libgcc.a",
       "-Wl,--end-group",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/target.elf"
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/target.elf"
     ],
     [
-      "/Users/perry_guo/homebrew/bin/x86_64-elf-objcopy",
+      "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-objcopy",
       "--remove-section=.xos.exec",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/target.elf",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/legacy_target.elf"
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/target.elf",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/legacy_target.elf"
     ],
     [
-      "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
-      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/target_tools/",
+      "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-gcc",
+      "-B${XOS_WORKTREE_ED2321C1F627}/build/target_tools/",
       "-std=gnu11",
       "-O2",
       "-g",
@@ -140,37 +140,37 @@
       "-fno-pic",
       "-fno-stack-protector",
       "-ftls-model=local-exec",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/include",
+      "-I${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified_system/sdk/include",
       "-DC3_HUGE_TARGET",
       "-c",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/fixture_sources/target.c",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/fixture_sources/target.c",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/huge_target.o"
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/huge_target.o"
     ],
     [
-      "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
-      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/target_tools/",
+      "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-gcc",
+      "-B${XOS_WORKTREE_ED2321C1F627}/build/target_tools/",
       "-nostdlib",
       "-static",
       "-no-pie",
       "-Wl,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096",
       "-T",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/single_probe.ld",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/crt0_posix.o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/huge_target.o",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/single_probe.ld",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified_system/sdk/crt0_posix.o",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/huge_target.o",
       "-Wl,--start-group",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libxos.a",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libxos_loader.a",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libc.a",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified_system/sdk/lib/libm.a",
-      "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/../lib/gcc/x86_64-elf/16.2.0/libgcc.a",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified_system/sdk/lib/libxos.a",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified_system/sdk/lib/libxos_loader.a",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified_system/sdk/lib/libc.a",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified_system/sdk/lib/libm.a",
+      "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-gcc/16.2.0/bin/../lib/gcc/x86_64-elf/16.2.0/libgcc.a",
       "-Wl,--end-group",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/huge_target.elf"
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/huge_target.elf"
     ],
     [
-      "/Users/perry_guo/homebrew/bin/x86_64-elf-gcc",
-      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/target_tools/",
+      "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-gcc",
+      "-B${XOS_WORKTREE_ED2321C1F627}/build/target_tools/",
       "-std=gnu11",
       "-O2",
       "-g",
@@ -179,36 +179,36 @@
       "-fno-pic",
       "-fno-stack-protector",
       "-ftls-model=local-exec",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/include",
+      "-I${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/frozen_sdk/include",
       "-DXOS_THREADED_RUNTIME",
       "-c",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/fixture_sources/source.c",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/fixture_sources/source.c",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/threaded_source.o"
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/threaded_source.o"
     ],
     [
-      "/Users/perry_guo/homebrew/bin/x86_64-elf-g++",
-      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/target_tools/",
+      "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-g++",
+      "-B${XOS_WORKTREE_ED2321C1F627}/build/target_tools/",
       "-nostdlib",
       "-static",
       "-no-pie",
       "-Wl,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096",
       "-T",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/threaded_probe.ld",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/crt0_posix.o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/threaded_source.o",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/threaded_probe.ld",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/frozen_sdk/crt0_posix.o",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/threaded_source.o",
       "-Wl,--start-group",
       "-Wl,--whole-archive",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/lib/libxos.a",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/frozen_sdk/lib/libxos.a",
       "-Wl,--no-whole-archive",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/cpp/lib/libstdc++.a",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/cpp/lib/libsupc++.a",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/lib/libc.a",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/lib/libm.a",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk/cpp/lib/libgcc.a",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/frozen_sdk/cpp/lib/libstdc++.a",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/frozen_sdk/cpp/lib/libsupc++.a",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/frozen_sdk/lib/libc.a",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/frozen_sdk/lib/libm.a",
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/frozen_sdk/cpp/lib/libgcc.a",
       "-Wl,--end-group",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/threaded_source.elf"
+      "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/threaded_source.elf"
     ]
   ],
   "commands": [
@@ -234,7 +234,7 @@
       ],
       "actual_code": 37,
       "serial_log": {
-        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/execve.serial.log",
+        "path": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/execve.serial.log",
         "sha256": "47acc092ac1cc9aa932d8a31cd837286ba08110ce50ab062d5f741954bd472b4"
       }
     },
@@ -260,7 +260,7 @@
       ],
       "actual_code": 37,
       "serial_log": {
-        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/execv.serial.log",
+        "path": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/execv.serial.log",
         "sha256": "5419379662f39a834bc7a2e022b6a324107dbf32d385ca8fb078574745a67c9c"
       }
     },
@@ -286,7 +286,7 @@
       ],
       "actual_code": 37,
       "serial_log": {
-        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/execvp.serial.log",
+        "path": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/execvp.serial.log",
         "sha256": "044fbabf05568b387f7b9471738c52a8600259e0b2c8f1bc70af8881e997f270"
       }
     },
@@ -312,7 +312,7 @@
       ],
       "actual_code": 37,
       "serial_log": {
-        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/_execve.serial.log",
+        "path": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/_execve.serial.log",
         "sha256": "d438350233a490791a108e1fcfd700dfe26c0357c87f57702b85f7535f67a098"
       }
     },
@@ -338,7 +338,7 @@
       ],
       "actual_code": 37,
       "serial_log": {
-        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/authority.serial.log",
+        "path": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/authority.serial.log",
         "sha256": "19b18afaabbeea4f09f28a965065179065117cb6b2422c17460e2634a4d1ffe6"
       }
     },
@@ -364,7 +364,7 @@
       ],
       "actual_code": 37,
       "serial_log": {
-        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/long_arg.serial.log",
+        "path": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/long_arg.serial.log",
         "sha256": "676576338e9cfeb3c5e414b86a03ee2a840e521ac9826ef743a995205f5b3176"
       }
     },
@@ -407,7 +407,7 @@
       ],
       "actual_code": 0,
       "serial_log": {
-        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/missing.serial.log",
+        "path": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/missing.serial.log",
         "sha256": "0aa6457ca8d80d0101b14405580e5265501570151d86fd08d8e872f578cbfc1f"
       }
     },
@@ -450,7 +450,7 @@
       ],
       "actual_code": 0,
       "serial_log": {
-        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/invalid.serial.log",
+        "path": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/invalid.serial.log",
         "sha256": "507813cf90ffd55af823b9dc344b150f1a98299ba850861f978b35a997f5f350"
       }
     },
@@ -493,7 +493,7 @@
       ],
       "actual_code": 0,
       "serial_log": {
-        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/legacy.serial.log",
+        "path": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/legacy.serial.log",
         "sha256": "f920b8c2bf024ee6b56d7fc8870e5d6ba86fcadbe3d55773c3666ee279e0756b"
       }
     },
@@ -536,7 +536,7 @@
       ],
       "actual_code": 0,
       "serial_log": {
-        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/path_invalid.serial.log",
+        "path": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/path_invalid.serial.log",
         "sha256": "ed0e2615a16d06523cd13545df709dcf5899a753e6e6d7d619e428291b2008a6"
       }
     },
@@ -579,7 +579,7 @@
       ],
       "actual_code": 0,
       "serial_log": {
-        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/path_legacy.serial.log",
+        "path": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/path_legacy.serial.log",
         "sha256": "5db9b6240a887d7cb3ac4e2f8aee5baf9919dd66ef95f783352d3af27ef046ce"
       }
     },
@@ -622,7 +622,7 @@
       ],
       "actual_code": 0,
       "serial_log": {
-        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/raw.serial.log",
+        "path": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/raw.serial.log",
         "sha256": "8d100badfeef60aa61835949ac87e782625d9516720342d084d45fe2a8c1546c"
       }
     },
@@ -665,7 +665,7 @@
       ],
       "actual_code": 0,
       "serial_log": {
-        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/quota.serial.log",
+        "path": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/quota.serial.log",
         "sha256": "5de036de3df555515b7e8d8b8b86c948e96d4dd965709e9a723be8f1c16ee8d1"
       }
     },
@@ -709,7 +709,7 @@
       ],
       "actual_code": 0,
       "serial_log": {
-        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/oom.serial.log",
+        "path": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/oom.serial.log",
         "sha256": "9519ddffa7760f9f9c4ffbb59d87b96fa40b8bd1f5289b952456bd9f46592faf"
       }
     },
@@ -1025,7 +1025,7 @@
       "sha256": "e8cb2ffa725cc78c7df7111b91d676e8d71b69cbebb3342feb0b52a2d8a00c17",
       "bytes": 805008,
       "object_sha256": "c961ccc49c2db40a268e9edd2d511d9ad7ad28c3fab94fe94ff8054b698f08df",
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/source.elf",
+      "path": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/source.elf",
       "exec_abi_marker": {
         "section": ".xos.exec",
         "address": 1073841936,
@@ -1042,7 +1042,7 @@
       "sha256": "ff595fa2950915f6ae4008543aac2df6dfea36a86219451c50d46d1ca67b3e29",
       "bytes": 789056,
       "object_sha256": "8797e85f4674b0a815f843f2384db86520c566ee5c9227b20fe9a699357395dd",
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/target.elf",
+      "path": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/target.elf",
       "exec_abi_marker": {
         "section": ".xos.exec",
         "address": 1073836544,
@@ -1059,7 +1059,7 @@
       "sha256": "097afd4e3eb4225892b5dd8d9db4f41b949d7c9df38c9d866f1353ed7e921f67",
       "bytes": 537600,
       "object_sha256": "b1a096f1d69267a2596a87236816e7b85297ec67280fb17bb31142cf7c4fe495",
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/huge_target.elf",
+      "path": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/huge_target.elf",
       "exec_abi_marker": {
         "section": ".xos.exec",
         "address": 1073791768,
@@ -1076,11 +1076,11 @@
       "sha256": "e3b9a58cdb3bdec7315f1e20af5f6bd9b3aedf481303a3e2b785b719cba3fc4c",
       "bytes": 1341712,
       "object_sha256": "968dafc9b579a0154b34c8021393b85112f9e3e48d0b8ee0bb5a7f9927d6ddb4",
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/threaded_source.elf"
+      "path": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/threaded_source.elf"
     }
   },
   "legacy_fixture": {
-    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/legacy_target.elf",
+    "path": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/legacy_target.elf",
     "sha256": "e004765ab1b4b720698bb09437e9d9daf3d18f74032d7a695719a0a099817f20",
     "derived_from_sha256": "ff595fa2950915f6ae4008543aac2df6dfea36a86219451c50d46d1ca67b3e29",
     "transformation": "objcopy --remove-section=.xos.exec; current target code with exec opt-in removed",
@@ -1095,7 +1095,7 @@
     "expected": "first candidate ENOEXEC/ENOTSUP returns without executing the second candidate"
   },
   "qemu_command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -1113,7 +1113,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_c3_exec_18ihpbfo/boot.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_c3_exec_18ihpbfo/boot.img,format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -1124,9 +1124,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_c3_exec_18ihpbfo/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_c3_exec_18ihpbfo/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_rrx2mtza/qmp.sock,server=on,wait=off"
+    "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_rrx2mtza/qmp.sock,server=on,wait=off"
   ],
   "baseline_resources": [
     130322,
@@ -1139,7 +1139,7 @@
     0
   ],
   "serial_log": {
-    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/all.serial.log",
+    "path": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/qualified-dash-c3-exec/ffb9ceec03d64601b8d3586cc09f5c55/all.serial.log",
     "sha256": "b597fb01d627e77ff6309e743abdf382c66d7befe0885a128b3e79bb58bc90e8"
   }
 }

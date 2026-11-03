@@ -34,8 +34,10 @@ inline constexpr i64 realtime_error_io = -5;
 enum class process_guard_action : u64 { query = 0, begin = 1, end = 2, rearm = 3 };
 struct process_guard_info { u64 owner_pid; u64 worker_pid; };
 inline constexpr i64 process_error_busy = -11;
-// C1/C3: atomic readiness wait; arg2=minimum write bytes (0 means 1),
-// read waits require arg2=0; arg3=0. Minimum never exceeds the 4096-byte pipe.
+// Atomic readiness wait; arg2=minimum write bytes (0 means 1), read waits
+// require arg2=0. arg3=0 preserves the original pipe/console behavior;
+// otherwise it is an absolute monotonic-nanosecond deadline, with UINT64_MAX
+// denoting infinity. Console routes remain unsupported by this wait.
 inline constexpr u64 sys_pipe_wait = 54;
 // Opt in via bit63 of the handle on sys11/sys32. Unflagged writes retain
 // the existing nonblocking/short-write ABI; atomic writes are <=4096 bytes.
@@ -48,6 +50,46 @@ inline constexpr u64 sys_process_fork_files = 59;
 // then commit(entry, depth_mode): 0 retains depth; n>0 requests depth n-1,
 // which must be strictly smaller than current authority.
 inline constexpr u64 sys_process_exec_commit = 60, sys_process_exec_prepare = 61;
+// Explicit generic-channel inheritance on exec; absent flag keeps legacy close-all.
+inline constexpr u64 exec_preserve_channels_flag = u64{1} << 32;
+inline constexpr u32 exec_preserve_channels_max = 4;
+// Exclusive byte-stream read authority. fd currently identifies console input.
+inline constexpr u64 sys_stream_lease = 80;
+enum class stream_lease_action : u64 { claim = 0, delegate = 1, reclaim = 2, query = 3 };
+inline constexpr u64 sys_channel = 81;
+inline constexpr u64 sys_pio_grant = 82;
+inline constexpr u64 sys_irq_event = 83;
+enum class irq_event_action : u64 { bind = 0, wait = 1, ack = 2, close = 3 };
+enum class pio_grant_action : u64 { grant = 0, revoke = 1, query = 2, controller = 3, recover = 4 };
+inline constexpr u64 pio_resource_com1 = 1;
+enum class channel_action : u64 { create = 0, enumerate = 1, close = 2, wait = 3, wait_many = 4, fork_pair = 5, verify_fork_pair = 6 };
+inline constexpr u32 channel_version = 1, channel_send = 1, channel_receive = 2;
+inline constexpr u32 channel_wait_many_max = 4;
+struct channel_wait_many_request { u32 version, size, count, reserved; u32 handles[channel_wait_many_max]; };
+static_assert(sizeof(channel_wait_many_request) == 32);
+struct channel_create {
+    u32 version, size;
+    u64 sender_pid, receiver_pid;
+    u32 capacity, reserved;
+};
+struct channel_info {
+    u32 version, size, handle, rights;
+    u64 peer_pid, controller_pid;
+};
+struct channel_fork_pair {
+    u32 version, size;
+    u64 child_pid;
+    u32 source_send, source_receive;
+    u32 child_send, child_receive;
+};
+static_assert(sizeof(channel_fork_pair) == 32);
+struct channel_fork_verification {
+    u32 version, size;
+    u32 source_incoming, source_outgoing, child_incoming, child_outgoing;
+    u64 child_pid;
+};
+static_assert(sizeof(channel_fork_verification) == 32);
+static_assert(sizeof(channel_create) == 32 && sizeof(channel_info) == 32);
 inline constexpr u32 process_fork_depth_max = 3;
 inline constexpr u32 process_pipeline_max = 4;
 struct process_foreground {
@@ -91,6 +133,12 @@ struct image_info { u64 size; char name[16]; };
 struct image_read_request { u64 offset; u64 destination; u64 length; };
 struct process_page { u64 address; u64 source; u32 length; u32 permissions; };
 struct process_entry { u64 entry; u64 stack; u64 startup; };
+struct process_exec_channel_entry {
+    process_entry entry;
+    u32 version, size, count, reserved;
+    u32 channels[exec_preserve_channels_max];
+};
+static_assert(sizeof(process_exec_channel_entry) == 56);
 struct startup_info {
     u64 magic;
     u32 version;

@@ -10,30 +10,30 @@
   },
   "tools": {
     "g++": {
-      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
       "sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
       "version": "x86_64-elf-g++ (GCC) 16.2.0"
     },
     "as": {
-      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
       "sha256": "530cf6fbe7d857e0d4ebbc52bcc017867fb7af65552a1f842dbcaa5c50db9026",
       "version": "GNU assembler (GNU Binutils) 2.47.20260726"
     },
     "ld": {
-      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
       "sha256": "92002feac2ed2e5b05ae6fb47a1aab2979b3b46bd861a4439838e6bcb20e7fe5",
       "version": "GNU ld (GNU Binutils) 2.47.20260726"
     },
     "qemu": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+      "path": "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
       "sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
       "version": "QEMU emulator version 11.1.2"
     }
   },
   "build_commands": [
     [
-      "/Users/perry_guo/homebrew/bin/x86_64-elf-g++",
-      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/target_tools/",
+      "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-g++",
+      "-B${XOS_WORKTREE_19282E542E67}/build/target_tools/",
       "-std=c++20",
       "-O2",
       "-g",
@@ -44,37 +44,37 @@
       "-ftls-model=local-exec",
       "-D_POSIX_C_SOURCE=200809L",
       "-DXOS_THREADED_RUNTIME",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/threading_sdk/cpp/include",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/threading_sdk/cpp/include/x86_64-elf",
-      "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/threading_sdk/include",
+      "-I${XOS_WORKTREE_19282E542E67}/build/threading_sdk/cpp/include",
+      "-I${XOS_WORKTREE_19282E542E67}/build/threading_sdk/cpp/include/x86_64-elf",
+      "-I${XOS_WORKTREE_19282E542E67}/build/threading_sdk/include",
       "-c",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/tests/fixtures/dash_c1/pipe_pthread.cpp",
+      "${XOS_WORKTREE_19282E542E67}/tests/fixtures/dash_c1/pipe_pthread.cpp",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c1_pthread_evidence/pipe_pthread.o"
+      "${XOS_WORKTREE_19282E542E67}/build/dash_c1_pthread_evidence/pipe_pthread.o"
     ],
     [
-      "/Users/perry_guo/homebrew/bin/x86_64-elf-g++",
-      "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/target_tools/",
+      "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-g++",
+      "-B${XOS_WORKTREE_19282E542E67}/build/target_tools/",
       "-nostdlib",
       "-static",
       "-no-pie",
       "-Wl,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096",
       "-T",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/threading_sdk/user.ld",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/threading_sdk/crt0_posix.o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c1_pthread_evidence/pipe_pthread.o",
+      "${XOS_WORKTREE_19282E542E67}/build/threading_sdk/user.ld",
+      "${XOS_WORKTREE_19282E542E67}/build/threading_sdk/crt0_posix.o",
+      "${XOS_WORKTREE_19282E542E67}/build/dash_c1_pthread_evidence/pipe_pthread.o",
       "-Wl,--start-group",
       "-Wl,--whole-archive",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/threading_sdk/lib/libxos.a",
+      "${XOS_WORKTREE_19282E542E67}/build/threading_sdk/lib/libxos.a",
       "-Wl,--no-whole-archive",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/threading_sdk/cpp/lib/libstdc++.a",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/threading_sdk/cpp/lib/libsupc++.a",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/threading_sdk/lib/libc.a",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/threading_sdk/lib/libm.a",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/threading_sdk/cpp/lib/libgcc.a",
+      "${XOS_WORKTREE_19282E542E67}/build/threading_sdk/cpp/lib/libstdc++.a",
+      "${XOS_WORKTREE_19282E542E67}/build/threading_sdk/cpp/lib/libsupc++.a",
+      "${XOS_WORKTREE_19282E542E67}/build/threading_sdk/lib/libc.a",
+      "${XOS_WORKTREE_19282E542E67}/build/threading_sdk/lib/libm.a",
+      "${XOS_WORKTREE_19282E542E67}/build/threading_sdk/cpp/lib/libgcc.a",
       "-Wl,--end-group",
       "-o",
-      "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c1_pthread_evidence/pipe_pthread.elf"
+      "${XOS_WORKTREE_19282E542E67}/build/dash_c1_pthread_evidence/pipe_pthread.elf"
     ]
   ],
   "runs": [
@@ -182,7 +182,7 @@
       ],
       "actual_exit": 0,
       "serial_log": {
-        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c1_pthread_evidence/iteration_0.serial.log",
+        "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c1_pthread_evidence/iteration_0.serial.log",
         "sha256": "808615eb4cddd4a4e2927c2654f4fca59d875aa182efca3400357ec629b7d8cb"
       }
     },
@@ -290,7 +290,7 @@
       ],
       "actual_exit": 0,
       "serial_log": {
-        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c1_pthread_evidence/iteration_1.serial.log",
+        "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c1_pthread_evidence/iteration_1.serial.log",
         "sha256": "a5d07d22de07dad2cd21e982eeb86c9ae0d23344fad6506448620aff75a8e0f7"
       }
     },
@@ -398,7 +398,7 @@
       ],
       "actual_exit": 0,
       "serial_log": {
-        "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c1_pthread_evidence/iteration_2.serial.log",
+        "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c1_pthread_evidence/iteration_2.serial.log",
         "sha256": "6083227915d73870efcfbba58c0dde5401d791e041935a2da57c33b059246f0e"
       }
     }
@@ -1538,13 +1538,13 @@
     "src/user/arch/x86_64/start.asm": "d8c55444805785830b9a6db34c3ae0e75c7de4866839f84fec393a1f4306fa9b"
   },
   "probe": {
-    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c1_pthread_evidence/pipe_pthread.elf",
+    "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c1_pthread_evidence/pipe_pthread.elf",
     "bytes": 1314472,
     "sha256": "2b4d002124d81827c1e47f71dc9369ab6cbc3ce20e337bbb5fada6b55f72e070",
     "object_sha256": "e415bf14be24da7b9a3b15c79589838621bcb94c4f1f6f0dd2ae929caf3c3516"
   },
   "qemu_command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/../runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "${XOS_WORKTREE_19282E542E67}/${XOS_QEMU}",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -1558,7 +1558,7 @@
     "-nic",
     "none",
     "-drive",
-    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_c1_pthread_b42io6ce/boot.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_c1_pthread_b42io6ce/boot.img,format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -1569,9 +1569,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_c1_pthread_b42io6ce/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_c1_pthread_b42io6ce/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_hzskrf3q/qmp.sock,server=on,wait=off"
+    "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_hzskrf3q/qmp.sock,server=on,wait=off"
   ],
   "baseline_resources": [
     129832,
@@ -1584,7 +1584,7 @@
     0
   ],
   "serial_log": {
-    "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/build/dash_c1_pthread_evidence/all.serial.log",
+    "path": "${XOS_WORKTREE_19282E542E67}/build/dash_c1_pthread_evidence/all.serial.log",
     "sha256": "986779b83103345f609e942de1e8df9b73c825dce0e2e022c3535cd1b5dbb0ae"
   }
 }

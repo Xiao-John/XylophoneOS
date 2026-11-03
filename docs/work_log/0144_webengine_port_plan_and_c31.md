@@ -1,3 +1,5 @@
+> **路径模板：** 本历史记录中的宿主临时根目录为可配置占位符；原始字节保留在源提交。
+
 # 0144 WebKit 浏览器底座计划落档与 C31 修订
 
 2026-10-31 · 纯文档组：移植计划落档 + 宪法 v1.6。无实现、无构建、无客体测试。
@@ -29,7 +31,7 @@
 - `x86_64-elf-g++ --version` → `x86_64-elf-g++ (GCC) 16.2.0`（/opt/homebrew/bin）；
   newlib `4.6.0.20260123`（scripts/user_build.py:201）。
 - WebKit tags API 核实（见上）。
-- 工作区：`git worktree add /tmp/xos_webengine -b codex/webengine-plan-20261031 origin/main`
+- 工作区：`git worktree add ${XOS_DOC_TEMP_941F479FE687} -b codex/webengine-plan-20261031 origin/main`
   （基线 `ca2e372`；主线工作树在另一在途线上，未触碰）。
 - `python3 tests/docs_consistency.py` →
   `{"status": "passed", "local_links": 539, "allocated_syscalls": 66, "history_sources": 73}`

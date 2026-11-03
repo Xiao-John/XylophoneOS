@@ -1,0 +1,40 @@
+{
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "original_index_path": "docs/reports/ssg_diff_dash_20261030/evidence.json",
+  "original_index_sha256": "9c98a768d8da09a3edcfcd07c965346fff795280aa71c5397b69e10c09737595",
+  "export_index_sha256": "41dc259e97fc24e076484631312dfc75a866b4caf87576d0e87319ca30b332dd",
+  "original_index_entries": 4,
+  "export_index_entries": 4,
+  "index_field": "files",
+  "added_export_document": null,
+  "changes": [
+    {
+      "path": "docs/reports/ssg_diff_dash_20261030/report.json",
+      "original_sha256": "34867bda049e5973d3b2766e5bb358491cf197dc1f7340a381f51c2c18206679",
+      "export_sha256": "ff19455d3953d6f3d980cdfa758ef43f63239de3bd22f96abc4df61c04d666f9"
+    },
+    {
+      "path": "docs/reports/ssg_diff_dash_20261030/README.md",
+      "original_sha256": "fb5bf8968ef228299d250f4479f5b2d86bdb0057c2f959962e6b53a778b575da",
+      "export_sha256": "abc64b58420c9e04ea0089595d77dbf3f8d079d144e7581b5e010bad18a5f4a8"
+    }
+  ],
+  "template_variables": [
+    {
+      "name": "XOS_HOST_TEMP_6D6821976CD9",
+      "purpose": "host_temp root"
+    },
+    {
+      "name": "XOS_WORKTREE_313E5C73D324",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_9282C9E77071",
+      "purpose": "worktree root"
+    }
+  ],
+  "reproduction": "MANUAL_REQUIRED: configure template roots and obtain matching historical inputs; no replay is claimed.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history.",
+  "transformation": "Host home/workspace/tool roots and unambiguous host QEMU command paths only; generic guest temporary paths are not globally replaced."
+}

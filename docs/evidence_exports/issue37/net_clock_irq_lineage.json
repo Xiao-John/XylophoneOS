@@ -1,0 +1,73 @@
+{
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "original_index_path": "docs/reports/net_clock_irq_split_20261030/evidence.json",
+  "original_index_sha256": "95b1979511135f9513d36c5cb6a0e27a52834e7885acd6a600d864295ee0f200",
+  "export_index_sha256": "6fb82156a26813355671444c628eb7765491e39e26deb33665663696538c43b6",
+  "original_index_entries": 27,
+  "export_index_entries": 28,
+  "index_field": "files",
+  "added_export_document": "docs/reports/net_clock_irq_split_20261030/SANITIZED_EXPORT.md",
+  "changes": [
+    {
+      "path": "docs/reports/net_clock_irq_split_20261030/build/audit-manifest.json",
+      "original_sha256": "0d53895c9945b1cd38fab4872a222e7ae42d83fa2e0510dd818376b05347e9c1",
+      "export_sha256": "ae4114c29b337accd184209d263fb5f80b6a4826ca601c2c89cbb81494407f11"
+    },
+    {
+      "path": "docs/reports/net_clock_irq_split_20261030/build/dash-manifest.json",
+      "original_sha256": "e569026ba549c87ba3d1eb95ace852993e353e4f8a5afa5ae9fda62be3a88082",
+      "export_sha256": "3f7b6c273fa3301204b1b461097279f81cec37e4ab4be826e0bce4d1cd57abae"
+    },
+    {
+      "path": "docs/reports/net_clock_irq_split_20261030/build/default-manifest.json",
+      "original_sha256": "4af2a2a14d9f9c7480298cd1bb77e19ec92b6d722d3f9fa37922bc8e4370c6a1",
+      "export_sha256": "78557c61ad7a10ce36b80bea01eaed59ff6939e741a95f75d52e66fc81dff2ad"
+    },
+    {
+      "path": "docs/reports/net_clock_irq_split_20261030/runs/clock_irq_audit/report.json",
+      "original_sha256": "3278f87afbdf8c254adec63207ded33f6f57278117a6f3f0f8ba04600ba84468",
+      "export_sha256": "f7560adc55ba5c89e4f7b063ac3a3d7efec2ee7c7e05a607dbfcf216deba1679"
+    },
+    {
+      "path": "docs/reports/net_clock_irq_split_20261030/runs/dash_threads/report.json",
+      "original_sha256": "1d9dbedc2ec40da594b9569ce4c1fbe16a0c80fe5ac670a14418feea1aabb3e6",
+      "export_sha256": "e98ad6c158e1d4a56b74ef9f806b94e5af0401281c9cd7ffcb9fc8bf84eaaaef"
+    },
+    {
+      "path": "docs/reports/net_clock_irq_split_20261030/runs/kernel_smoke/report.json",
+      "original_sha256": "500ec3a0b37cc0dd1174ac45722c1afad13b391959df907f03ea9e0aa2bf53a2",
+      "export_sha256": "672ebf0fdc7066ff3298f660da532a6222ac4ffd2a186ca63a464e42b5874dcb"
+    }
+  ],
+  "template_variables": [
+    {
+      "name": "XOS_HOST_TEMP_6D6821976CD9",
+      "purpose": "host_temp root"
+    },
+    {
+      "name": "XOS_PYTHON_68FDBC484049",
+      "purpose": "python root"
+    },
+    {
+      "name": "XOS_TOOLCHAIN_35527FAC2790",
+      "purpose": "toolchain root"
+    },
+    {
+      "name": "XOS_WORKTREE_3AA9BA4140F8",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_9282C9E77071",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_D39D1408E55B",
+      "purpose": "worktree root"
+    }
+  ],
+  "reproduction": "MANUAL_REQUIRED: configure template roots and obtain matching historical inputs; no replay is claimed.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history.",
+  "added_export_document_sha256": "1d1c7659485c8bcfbd96d755c8490e0560db5e767f2b55ca1a7c2fc5d8cf1eae",
+  "transformation": "Host home/workspace/tool roots and unambiguous host QEMU command paths only; generic guest temporary paths are not globally replaced."
+}

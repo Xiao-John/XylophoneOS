@@ -1,1 +1,1 @@
-Built experimental threading SDK: /Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/frozen_sdk
+Built experimental threading SDK: ${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/frozen_sdk

@@ -10,3 +10,11 @@
 xterm 控制序列或键盘映射，也不将许可和完整 W1/W2 提升为已验收。提交后须基于
 当前源码重新构建系统并取得绑定的客体和 Screen 结果，验证冻结成功，且对缺失或
 篡改 Screen 材料的副本拒绝冻结；旧冻结树保持原有边界，不得改绑。
+
+提交 `e93f630` 后重新构建系统（build ID `76f558e4da02bae2`），在校验过来源输入
+的组合 SDK 与消费者上运行 QEMU 和 Screen，客体为 `passed_probe`，Screen 为
+`passed_subset`。冻结树 `build/w2_screen_evidence_frozen_e93f630/` 的状态为
+`guest_verified_subset`，包含 208 个文件，树 SHA-256
+`c1ac94c38a0b7969a569985494e1bb250351a82b6f58abcba154d4fac424ab4f`；新增三份宿主
+材料已包含在树中。单独复制系统证据后，删除硬拷贝或篡改 PTY 数据都会在创建冻结
+输出前被拒绝。源客体及 Screen 回执位于 `build/w2_screen_evidence_system_e93f630/`。

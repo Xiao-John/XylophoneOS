@@ -14,6 +14,6 @@ dash 本轮 NOT_RUN：探针使用旧窄SDK启动入口，未制作真实 startu
 主工作区正整合其他提交，未修改；此结果不改绑整合后基线。sys80/81尚未交付主线，
 本结果不替代公共ABI登记合入。存量/本地驱动架构合规也没有由本探针认证。
 
-证据：report.json、serial.log.gz、system_manifest.json.gz、build.log.gz；
+证据：report.json、serial.log.gz、system_manifest.json、build.log.gz；
 checksums.json记录最初四项。大镜像和SDK保存在本验收worktree忽略build目录。
 后续本组文档提交不改变此处冻结的源码提交。原日志保留，不重写已验输入。

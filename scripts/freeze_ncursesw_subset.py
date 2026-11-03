@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CHECKS = frozenset({
     'xsh_terminal_wide_input_output', 'xsh_split_utf8_and_window_bounds_local_refresh',
     'xsh_invalid_utf8_timeout_and_next_input_recovery',
+    'xsh_split_combining_character_input',
     'xsh_missing_terminfo_failure_and_restoration',
     'xsh_terminal_reentry', 'xsh_terminal_locale', 'xsh_repeated_app_resource_baseline',
     'xsh_rejects_unmarked_terminal_program', 'xsh_faulted_app_detached_and_resources_recovered',

@@ -71,6 +71,10 @@ int main(void) {
             result = 16;
         if (!result && (notify(recovery_ready, sizeof(recovery_ready) - 1) != 0 ||
                         wget_wch(stdscr, &key) != OK || key != L'B')) result = 17;
+        const char combining_ready[] = "W2_COMBINING_READY\n";
+        if (!result && (notify(combining_ready, sizeof(combining_ready) - 1) != 0 ||
+                        wget_wch(stdscr, &key) != OK || key != L'a' ||
+                        wget_wch(stdscr, &key) != OK || key != 0x0301)) result = 18;
     }
     if (pane && delwin(pane) == ERR && !result) result = 9;
     if (endwin() == ERR && !result) result = 7;

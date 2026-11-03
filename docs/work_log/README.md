@@ -44,3 +44,4 @@
 | 0179 | `0179_screen_host_probe.md` | GNU Screen 宿主终端探针（2026-11-03） |
 | 0180 | `0180_ncurses_invalid_input.md` | ncurses 宽字符非法输入及恢复（2026-11-03） |
 | 0181 | `0181_terminfo_missing_recovery.md` | 缺失 xterm 数据与恢复（2026-11-03） |
+| 0182 | `0182_combining_input.md` | 组合字符输入探针（2026-11-03） |

@@ -74,7 +74,6 @@ def main():
                           'ncurses', 'resource_stress']}
     if args.probe == 'channel':
         report['not_run'] = ['fork_pair_security_matrix', 'fault_cleanup',
-                             'single_channel_sender_waiter_close',
                              'concurrent_senders', 'resource_stress', 'full_w1_terminal']
     elif args.probe in ('pio', 'irq'):
         report['not_run'] = ['authorized_boundaries', 'fork_exec', 'revocation_races',
@@ -123,6 +122,7 @@ def main():
                 report['checks'].append('channel_wait_many_validation_timeout_and_wakeup')
                 report['checks'].append('channel_wait_many_blocked_peer_close_and_revalidation')
                 report['checks'].append('channel_single_receiver_blocked_peer_close_and_revalidation')
+                report['checks'].append('channel_single_sender_blocked_peer_close_and_revalidation')
                 report['checks'].append('channel_fork_pair_identity_duplicate_and_abort')
                 report['checks'].append('channel_fork_pair_invalid_direction_child_and_request')
                 report['checks'].append('channel_fork_pair_peer_provenance_validation')

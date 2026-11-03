@@ -94,6 +94,19 @@ extern "C" int xos_user_main(const startup_info* startup) {
             sdk::yield();
         }
         if (sdk::channel_close(extra.handle) != 0) return 70;
+        // The parent creates a parent-to-child spare and fills its one-slot
+        // queue. Close only after observing the parent blocked waiting to send.
+        if (sdk::channel_wait(in, deadline()) != 0 || sdk::ipc_recv(in, &byte, 1) != 1 || byte != 'u' ||
+            sdk::channel_get(2, extra) != 0 || extra.rights != channel_receive) return 72;
+        byte = 'r';
+        if (sdk::ipc_send(out, &byte, 1) != 0 || sdk::channel_wait(in, deadline()) != 0 ||
+            sdk::ipc_recv(in, &byte, 1) != 1 || byte != 'w') return 73;
+        const u64 send_wait_until = deadline();
+        while (!process_waiting(first.peer_pid)) {
+            if (static_cast<u64>(sdk::syscall(sys_clock_monotonic)) >= send_wait_until) return 74;
+            sdk::yield();
+        }
+        if (sdk::channel_close(extra.handle) != 0) return 75;
         if (sdk::channel_wait(in, deadline()) != 0 || sdk::ipc_recv(in, &byte, 1) != 1 || byte != 'p') return 38;
         channel_info derived_send{}, derived_receive{};
         if (sdk::channel_get(2, derived_send) != 0 || sdk::channel_get(3, derived_receive) != 0 ||
@@ -192,6 +205,18 @@ extern "C" int xos_user_main(const startup_info* startup) {
     if (sdk::ipc_send(outgoing, &entering_wait, 1) != 0) return 71;
     if (sdk::channel_wait(extra[1], deadline()) != process_error_denied ||
         sdk::channel_wait(extra[1], 0) != process_error_denied) return 68;
+    request.sender_pid = sdk::pid(); request.receiver_pid = child;
+    const i64 spare_send = sdk::channel_open(request);
+    if (spare_send <= 0) return 76;
+    const char prepare_send_wait = 'u';
+    if (sdk::ipc_send(outgoing, &prepare_send_wait, 1) != 0 || sdk::channel_wait(incoming, deadline()) != 0 ||
+        sdk::ipc_recv(incoming, &response, 1) != 1 || response != 'r') return 77;
+    const char queued = 'q';
+    if (sdk::ipc_send(static_cast<u32>(spare_send), &queued, 1) != 0 ||
+        sdk::channel_wait(static_cast<u32>(spare_send), 0) != process_error_would_block ||
+        sdk::ipc_send(outgoing, &entering_wait, 1) != 0) return 78;
+    if (sdk::channel_wait(static_cast<u32>(spare_send), deadline()) != process_error_denied ||
+        sdk::channel_wait(static_cast<u32>(spare_send), 0) != process_error_denied) return 79;
     const i64 forked = sdk::syscall(sys_process_fork_prepare);
     if (forked <= 0) return 41;
     channel_fork_pair rejected{channel_version, sizeof(channel_fork_pair), static_cast<u64>(forked),

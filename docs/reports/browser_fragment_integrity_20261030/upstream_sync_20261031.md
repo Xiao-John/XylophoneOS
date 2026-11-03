@@ -1,6 +1,6 @@
 # Upstream synchronization of Browser fragment observation
 
-Current review base: upstream main `48882c927ed26a3edc4a901954d0e613e88bbecb`, with the independent SSG review export from upstream PR #40. Earlier synchronization records below describe their historical inputs.
+Current review base: upstream main `72bfacb1d84918fe5ba380ae408b31edbd8a3a32`, with the independent SSG review export from upstream PR #40. Earlier synchronization records below describe their historical inputs.
 
 The branch merged the synchronized SSG consumer branch `59b14da7f2b466a663fdabe86f7467f799c2fd40`, which includes upstream main `8ec04891f18d2c7bfa8629f25e2d1fd39233712f`. This retains the Browser fragment implementation and the upstream snake_case API.
 

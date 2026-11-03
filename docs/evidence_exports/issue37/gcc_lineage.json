@@ -1,0 +1,34 @@
+{
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "source_entries": 2,
+  "export_entries": 3,
+  "index_scope": "No prior full-file index is claimed. Original bytes are available at source_commit; this conversion record lists changed paths and old/new hashes.",
+  "added_export_document": "docs/evidence_exports/issue37/gcc_SANITIZED_EXPORT.md",
+  "changes": [
+    {
+      "path": "src/ports/gcc/e08_5_abi_build_report.json",
+      "original_sha256": "65f46bb55aaca35007daa185607b4450b37495dc11055a57e76a451c76133b30",
+      "export_sha256": "9daf0c746858b4bb04a3b87b35665356ae858ded24ff78c3a5ee54397d44dfd9"
+    },
+    {
+      "path": "src/ports/gcc/e08_5_target_runtime_manifest.json",
+      "original_sha256": "538baa523869bda07455c79c0d406a69bfbc8442469d96a5b28e2741df9c689e",
+      "export_sha256": "96998d8109423f033559f28b67845b44a0bf822b3179dffa20bd56cc8e06a151"
+    }
+  ],
+  "template_variables": [
+    {
+      "name": "XOS_HOMEBREW",
+      "purpose": "reviewed host toolchain root root"
+    },
+    {
+      "name": "XOS_HOME_1653253D9751",
+      "purpose": "home root"
+    }
+  ],
+  "reproduction": "MANUAL_REQUIRED: configure template roots and obtain matching historical inputs; no replay is claimed.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history.",
+  "added_export_document_sha256": "301e74b7db9e1c990899a6c3204b34ce7dcbe82c6e1b7098a498235db6c1ea62",
+  "transformation": "Host home/workspace/tool roots and unambiguous host QEMU command paths only; generic guest temporary paths are not globally replaced."
+}

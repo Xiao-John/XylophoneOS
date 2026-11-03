@@ -8,6 +8,7 @@ usize row;
 usize column;
 int pending_input = -1;
 bool graphics_active;
+bool serial_attached = true;
 auto* const text_buffer = reinterpret_cast<volatile u16*>(0xb8000);
 void vga_char(char value) {
     if (graphics_active) { return; }
@@ -40,11 +41,18 @@ void debug_init() {
     }
 }
 int debug_peek() {
+    if (!serial_attached) { return -1; }
     if (pending_input < 0 && (arch::in_byte(uart + 5) & 1) != 0) {
         pending_input = static_cast<int>(arch::in_byte(uart));
     }
     return pending_input;
 }
+bool debug_detach_serial() {
+    if (!serial_attached || pending_input >= 0 || (arch::in_byte(uart + 5) & 1) != 0) { return false; }
+    serial_attached = false;
+    return true;
+}
+bool debug_serial_attached() { return serial_attached; }
 int debug_read() {
     const int value = debug_peek();
     pending_input = -1;
@@ -57,6 +65,10 @@ bool debug_write(const char* text) {
     return debug_write_bytes(reinterpret_cast<const u8*>(text), length) == static_cast<i64>(length);
 }
 i64 debug_write_bytes(const u8* bytes, usize length) {
+    if (!serial_attached) {
+        for (usize i = 0; i < length; ++i) { vga_char(static_cast<char>(bytes[i])); }
+        return 0; // No serial byte was written; do not claim success.
+    }
     usize sent = 0;
     for (; sent < length; ++sent) {
         const char value = static_cast<char>(bytes[sent]);

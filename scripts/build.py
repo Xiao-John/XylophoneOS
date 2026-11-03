@@ -31,6 +31,10 @@ def main():
     parser.add_argument("--output-dir", type=Path, default=BUILD)
     parser.add_argument("--capacity-probe", action="store_true",
                         help="link a verified 5 MiB read-only section for the ISO capacity gate")
+    parser.add_argument("--terminal-supervisor-probe", action="store_true",
+                        help="build a dedicated test supervisor; requires an isolated output directory")
+    parser.add_argument("--ncurses-supervisor-probe", action="store_true",
+                        help="build a dedicated ncurses test supervisor; requires an isolated output directory")
     parser.add_argument("--clock-irq-probe", action="store_true",
                         help="link a test-only generic clock/IRQ audit command, excluded from default images")
     parser.add_argument("--gpu-dma-page-limit", type=int, default=512,
@@ -44,6 +48,10 @@ def main():
     BUILD = args.output_dir.resolve()
     if BUILD != ROOT / "build" and ROOT / "build" not in BUILD.parents:
         raise SystemExit("output directory must be build/ or one of its subdirectories")
+    if args.terminal_supervisor_probe and args.ncurses_supervisor_probe:
+        parser.error("select at most one test supervisor")
+    if (args.terminal_supervisor_probe or args.ncurses_supervisor_probe) and BUILD == ROOT / "build":
+        parser.error("terminal supervisor probe requires an isolated build subdirectory")
     if args.clean:
         # One fixed generated directory only. Never walk or clean the workspace.
         if BUILD.is_symlink():
@@ -80,7 +88,10 @@ def main():
         sources.extend(p for p in sorted((ROOT / folder).rglob("*"))
                        if p.suffix in (".asm", ".s", ".sh", ".inc", ".py", ".cpp", ".hpp", ".c", ".h", ".ld", ".json", ".lldb"))
     source_hashes = {str(p.relative_to(ROOT)): sha256(p.read_bytes()) for p in sources}
-    source_digest = sha256(json.dumps({"sources": source_hashes, "capacity_probe": args.capacity_probe, "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config}, sort_keys=True).encode())
+    source_digest = sha256(json.dumps({"sources": source_hashes, "capacity_probe": args.capacity_probe,
+                                      "terminal_supervisor_probe": args.terminal_supervisor_probe,
+                                      "ncurses_supervisor_probe": args.ncurses_supervisor_probe,
+                                      "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config}, sort_keys=True).encode())
     build_id = source_digest[:16]
     eggs = int(TARGET["easter_eggs"])
     (BUILD / "build_info.inc").write_text(
@@ -93,7 +104,8 @@ def main():
         commands.append(command)
         subprocess.run(command, check=True)
 
-    user_artifacts = build_users(ROOT, BUILD, nasm, run, build_id)
+    user_artifacts = build_users(ROOT, BUILD, nasm, run, build_id, args.terminal_supervisor_probe,
+                                 args.ncurses_supervisor_probe)
     user_programs = ("heartbeat", "spinner", "receiver", "sender", "probe", "quitter")
     header = ["#pragma once", "#include <xos/types.hpp>", "namespace xos::user_blobs {"]
     for name in user_programs:
@@ -257,7 +269,9 @@ def main():
     manifest = {
         "build_id": build_id,
         "version": (ROOT / "VERSION").read_text().strip(), "source_sha256": source_digest,
-        "capacity_probe": args.capacity_probe, "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config, "legacy_images_available": legacy_available,
+        "capacity_probe": args.capacity_probe, "terminal_supervisor_probe": args.terminal_supervisor_probe,
+        "ncurses_supervisor_probe": args.ncurses_supervisor_probe,
+        "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config, "legacy_images_available": legacy_available,
         "sources": source_hashes,
         "sdk_directories": [p.relative_to(BUILD / "sdk").as_posix()
                             for p in sorted((BUILD / "sdk").rglob("*")) if p.is_dir()],

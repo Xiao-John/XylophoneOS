@@ -1,0 +1,49 @@
+{
+  "original_index_path": "docs/reports/fb0_20261029/qualification.json",
+  "original_index_sha256": "111617352960daaf011fbd046c49e36a37007c2ab8baa13f68c44d71afdfab8d",
+  "export_index_sha256": "5ec9eabd3591581d7c72b1985619ef9a944824c6e3f6d427c3026adc4a71ea02",
+  "index_field": "files",
+  "index_entries": 15,
+  "changes": [
+    {
+      "path": "docs/reports/fb0_20261029/file_report.json",
+      "original_sha256": "53ef8e9ed19a388c8e72ac81767788ef0fadfcbf687f57acebde867b290c779d",
+      "export_sha256": "5a07c6baef4e6324270776a7928c618894dda2f699241198e41903fdef32f874"
+    },
+    {
+      "path": "docs/reports/fb0_20261029/guest_report.json",
+      "original_sha256": "e451aa88ee0c668d7df4ba647cb29b49694ee799650908eed3ca4ed7b089c7c7",
+      "export_sha256": "265f604ba37f518535fdb5544db42185d99f93d683b253d3b9c6f74b7cf100b2"
+    },
+    {
+      "path": "docs/reports/fb0_20261029/process_report.json",
+      "original_sha256": "e71fef2778bc620cf9059fde6cd9d84d397465eae5de73c61c4ad36a830d61df",
+      "export_sha256": "3516ad593a27b00127f98805ba118c29fb31b798b0a9c19eb304a38448c4cc11"
+    },
+    {
+      "path": "docs/reports/fb0_20261029/service_exit_report.json",
+      "original_sha256": "f6b12a085a13b7cc429250262551dc4d2cf1836a3be2f05c50611a61eabc4db5",
+      "export_sha256": "e73b994dead13e453170fe434e41a554ef4fb2870ab0199985238de088f35f40"
+    },
+    {
+      "path": "docs/reports/fb0_20261029/service_system_manifest.json.gz",
+      "original_sha256": "90ac35b2a9bb8646e1ff7aca6e06aa878e0b7da8a78a80205997e7a969c50d68",
+      "export_sha256": "d2b2335a757ca4c8e2562c5efdd3b5200a24f1679bce87860fa92b24be7f8c54"
+    },
+    {
+      "path": "docs/reports/fb0_20261029/system_manifest.json.gz",
+      "original_sha256": "3e874a08a9b4f1ff24ab1bb1c1ab977035706c68c79ca42641c2be659faedaa2",
+      "export_sha256": "95f21197d5578474b39e1f23b74812e374b9aa41020ebc5ce2d623cc0fe6f44e"
+    },
+    {
+      "path": "docs/reports/fb0_20261029/README.md",
+      "original_sha256": "533b47414bc1fbd9b13f0c677548d41c8ce848293828f5f209c7d37111896295",
+      "export_sha256": "b7e64354aa2c22620d9d54750a154b000c2c42f6afb8a120bc591710a0de041b"
+    }
+  ],
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "transformation": "Only reviewed host command/tool paths are templated; guest test data remains unchanged.",
+  "reproduction": "MANUAL_REQUIRED: configure matching template roots and historical inputs; no replay is claimed.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history."
+}

@@ -68,6 +68,13 @@ class verify_evidence_index_tests(unittest.TestCase):
         index = self.index({"evidence.txt": self.sha}, name="PACKAGE_SHA256SUMS.json")
         self.assertEqual(verifier.verify(self.root, index)["status"], "PASS")
 
+    def test_legacy_index_can_name_json_files_without_suffix(self):
+        index = self.index({"reports": {"evidence": {"sha256": self.sha}}})
+        (self.report / 'evidence.json').write_bytes(self.data)
+        self.assertEqual(verifier.verify(self.root, index, field='reports', path_suffix='.json')['status'], 'PASS')
+        with self.assertRaises(ValueError):
+            verifier.verify(self.root, index, field='reports', path_suffix='/outside')
+
     def test_empty_malformed_and_duplicate_indexes_fail_closed(self):
         for obj in ({}, {"evidence.txt": "bad"}, {"../outside": self.sha},
                     {"/absolute": self.sha}, {"evidence.txt": self.sha.upper()}):

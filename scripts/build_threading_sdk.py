@@ -32,8 +32,15 @@ def main():
     parser.add_argument('--newlib-prefix', required=True, type=Path)
     parser.add_argument('--gcc-source', type=Path)
     parser.add_argument('--output', type=Path, default=ROOT / 'build/threading_sdk')
+    parser.add_argument('--logs-dir', type=Path, default=ROOT / 'build/threading_sdk_logs')
+    parser.add_argument('--cpp-work-dir', type=Path, default=ROOT / '.cache/xos_seed/threading_cpp')
     parser.add_argument('--cpp', action='store_true')
+    parser.add_argument('--jobs', type=int, default=8, help='positive parallel build job count (default: 8)')
     args = parser.parse_args()
+    if args.cpp_work_dir != ROOT / '.cache/xos_seed/threading_cpp' and args.cpp_work_dir.exists():
+        parser.error('a custom --cpp-work-dir must not already exist')
+    if args.jobs < 1:
+        parser.error('--jobs must be positive')
     prefix = args.newlib_prefix.resolve()
     if args.cpp and args.gcc_source is None:
         parser.error('--gcc-source is required with --cpp')
@@ -67,7 +74,9 @@ def main():
     if output.is_symlink():
         raise SystemExit('Refusing a symlinked SDK output directory')
     output.mkdir(parents=True, exist_ok=True)
-    logs = ROOT / 'build/threading_sdk_logs'
+    logs = args.logs_dir.resolve()
+    if logs != ROOT / 'build' and ROOT / 'build' not in logs.parents:
+        raise SystemExit('logs directory must be build/ or one of its subdirectories')
     logs.mkdir(exist_ok=True)
     commands = []
     def run(command, name, cwd=None, env=None):
@@ -122,6 +131,7 @@ def main():
              '-I' + str(output / 'include')]
     sources = [*sorted((ROOT / 'src/user/libc').glob('*.cpp')),
                ROOT / 'src/user/sdk/file_client.cpp', ROOT / 'src/user/sdk/text.cpp',
+               ROOT / 'src/user/sdk/terminal_client.cpp',
                ROOT / 'src/user/arch/x86_64/syscall.cpp', ROOT / 'src/user/arch/x86_64/tls.cpp',
                ROOT / 'src/shared/runtime/memory.cpp',
                *sorted((ROOT / 'src/user/loader').glob('*.cpp')),
@@ -140,7 +150,9 @@ def main():
     run(['x86_64-elf-ar', 'rcsD', str(archive), *map(str, compiled)], 'archive.log')
     # Keep the C++ configuration in a private, separate target runtime build.
     if args.cpp:
-        work = ROOT / '.cache/xos_seed/threading_cpp'
+        work = args.cpp_work_dir.resolve()
+        if work == ROOT or work.is_relative_to(ROOT / 'src') or work.is_relative_to(ROOT / 'localpilot'):
+            raise SystemExit('C++ build directory must not be a source directory')
         build = work / 'libstdcxx_build'
         (work / 'libgcc').mkdir(parents=True, exist_ok=True)
         shutil.copyfile(gcc / 'libgcc/gthr-posix.h', work / 'libgcc/gthr-default.h')
@@ -182,7 +194,7 @@ def main():
         if not feature_stamp.exists() or feature_stamp.read_text() != feature_sha:
             run(['make', 'clean'], 'cpp_clean_config_change.log', cwd=build, env=env)
             feature_stamp.write_text(feature_sha)
-        run(['make', '-j8'], 'cpp_make.log', cwd=build, env=env)
+        run(['make', '-j' + str(args.jobs)], 'cpp_make.log', cwd=build, env=env)
         feature_stamp.write_text(feature_sha)
         run(['make', 'install'], 'cpp_install.log', cwd=build, env=env)
         compiler_build = work / 'gcc'
@@ -207,7 +219,7 @@ def main():
              '--disable-gcov', '--prefix=' + str(output / 'cpp')],
             'libgcc_configure.log', cwd=unwind_build, env=env)
         members = ['unwind-dw2.o', 'unwind-dw2-fde.o', 'unwind-sjlj.o', 'unwind-c.o', 'emutls.o']
-        run(['make', '-j8', 'gcc_objdir=' + str(compiler_build), *members],
+        run(['make', '-j' + str(args.jobs), 'gcc_objdir=' + str(compiler_build), *members],
             'libgcc_make.log', cwd=unwind_build, env=env)
         libgcc = output / 'cpp/lib/libgcc.a'
         original = Path(subprocess.check_output([cross, '-print-libgcc-file-name'], text=True).strip())
@@ -226,7 +238,13 @@ def main():
                'process_extensions': {'syscalls': list(range(54,62)), 'file_operations': [20,21,22],
                    'startup_versions': [1,2,3], 'exec_image_abi': 3, 'exec_marker': '.xos.exec',
                    'fork_supported': False, 'exec_supported': False, 'fd_count': 32,
-                   'pipe_atomic_bytes': 4096, 'pipe_wait_write_minimum': True, 'pipe_atomic_flag': '0x8000000000000000'},
+                   'pipe_atomic_bytes': 4096, 'pipe_wait_write_minimum': True,
+                   'pipe_wait_deadline': 'implemented_unqualified',
+                   'stream_lease': {'syscall': 80, 'status': 'claim_unsupported'},
+                   'channel': {'syscall': 81, 'status': 'implemented_unqualified'},
+                   'pio_grant': {'syscall': 82, 'status': 'implemented_unqualified'},
+                   'irq_event': {'syscall': 83, 'status': 'implemented_unqualified'},
+                   'pipe_atomic_flag': '0x8000000000000000'},
                'qualification': 'not_run', 'commands': commands,
                'inputs': initial_inputs,
                'newlib_build_receipt_sha256': sha(prefix.parent / 'receipt.json'),

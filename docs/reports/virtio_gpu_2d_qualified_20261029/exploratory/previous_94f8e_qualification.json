@@ -19,17 +19,17 @@
   },
   "consumers": {
     "qt_gui": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/final_gui/qt_demo.elf",
+      "path": "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/final_gui/qt_demo.elf",
       "sha256": "998637cb1426315b06f780762a4e3bf8dfe2e024c3c6bed87ed5a32a6c7077ec",
       "bytes": 20968424
     },
     "aurora_notes": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_editor/notes.elf",
+      "path": "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_editor/notes.elf",
       "sha256": "68134ab2f3755dd3a405457521add8e2f1a6f01b89d5a54db70f5d9c276b0581",
       "bytes": 31961352
     },
     "access_fault": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/access_fault.elf",
+      "path": "${XOS_WORKTREE_F422EEF78DDA}/build/virtio_gpu/access_fault.elf",
       "sha256": "a0854b915b7aba6b7db2d22c54b147225896f61c9551f722037fa0f44b82f6c0",
       "bytes": 1335240
     }
@@ -57,7 +57,7 @@
         1
       ],
       "qemu_command": [
-        "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+        "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
         "-machine",
         "pc-i440fx-10.0",
         "-accel",
@@ -75,7 +75,7 @@
         "-rtc",
         "base=utc,clock=host",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/integrated_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+        "file=${XOS_WORKTREE_F422EEF78DDA}/build/virtio_gpu/integrated_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
         "-boot",
         "order=a,strict=on",
         "-no-reboot",
@@ -86,9 +86,9 @@
         "-display",
         "none",
         "-drive",
-        "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_virtio_pixels_iz51fpb6/vbe.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "file=${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_virtio_pixels_iz51fpb6/vbe.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
         "-qmp",
-        "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ufx5m0ev/qmp.sock,server=on,wait=off"
+        "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ufx5m0ev/qmp.sock,server=on,wait=off"
       ],
       "pixel_sha256": "31af37eda326c732cf093ae7273e4e33edf9bf932f4952b955b62aeb9705dfee",
       "qt_reference_sha256": "2475c71ff6e7d862d3080dde695fd1e10f129d874678fcc7865f5f4acc03769a",
@@ -146,7 +146,7 @@
         1
       ],
       "qemu_command": [
-        "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+        "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
         "-machine",
         "pc-i440fx-10.0",
         "-accel",
@@ -164,7 +164,7 @@
         "-rtc",
         "base=utc,clock=host",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/integrated_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+        "file=${XOS_WORKTREE_F422EEF78DDA}/build/virtio_gpu/integrated_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
         "-boot",
         "order=a,strict=on",
         "-no-reboot",
@@ -175,9 +175,9 @@
         "-display",
         "none",
         "-drive",
-        "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_virtio_pixels_iz51fpb6/virtio.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "file=${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_virtio_pixels_iz51fpb6/virtio.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
         "-qmp",
-        "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_jjinzm0c/qmp.sock,server=on,wait=off",
+        "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_jjinzm0c/qmp.sock,server=on,wait=off",
         "-device",
         "virtio-gpu-pci,id=vgpu,disable-legacy=on"
       ],
@@ -270,17 +270,17 @@
   "dependencies": "No external driver code/library added; original Apache-2.0 implementation of published VirtIO layouts; historical MIT notices retained.",
   "tools": {
     "g++": {
-      "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-g++",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-g++",
       "sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
       "version": "x86_64-elf-g++ (GCC) 16.2.0"
     },
     "qemu": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+      "path": "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
       "sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
       "version": "QEMU emulator version 11.1.2"
     },
     "nasm": {
-      "path": "/Users/perry_guo/homebrew/bin/nasm",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/bin/nasm",
       "sha256": "5d22db7ed80aee4eb0e1cb5ff8a87e40294012f6ddf943601556922d5128b725",
       "version": "NASM version 3.02 compiled on Jun 29 2026"
     }

@@ -1,0 +1,1 @@
+> **Evidence version:** Files containing host paths in this directory are path-sanitized derivatives. Historical input hashes remain bound to the original run. The source commit and original/export hashes are in [the Issue 37 lineage](../../evidence_exports/issue37/qt_e15_continuation_lineage.json). Template roots require manual configuration.

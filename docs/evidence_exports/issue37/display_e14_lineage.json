@@ -1,0 +1,61 @@
+{
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "original_index_path": "docs/reports/display_e14_20261026/qualification.json",
+  "original_index_sha256": "3ce7218f1535d3ec139ec1cd146a8bf061aaf8d56fd572175fb468d88c57e903",
+  "export_index_sha256": "4679c5bac50557e0408aedb460dac49b358daa7d8f669f0cf476ddaaabb95ddd",
+  "original_index_entries": 35,
+  "export_index_entries": 36,
+  "index_field": "evidence_sha256",
+  "added_export_document": "docs/reports/display_e14_20261026/SANITIZED_EXPORT.md",
+  "changes": [
+    {
+      "path": "docs/reports/display_e14_20261026/failures/display_regression_attempt1.json",
+      "original_sha256": "4a251134ad7c564acc9ac2be3cb13ee7a27754de08ffdeb87b5f8132c35761e8",
+      "export_sha256": "4cb531bb20ad0a1bcdd2c0f18e9ab15b31fbd0eab7ee28ea4b3b5dba75418914"
+    },
+    {
+      "path": "docs/reports/display_e14_20261026/file_smoke_report.json",
+      "original_sha256": "ace428fb9c9a012eea43c6dd044683545c260c7f99dcbbd156170d56c781ea7e",
+      "export_sha256": "4d41ef8f80ef877000a335b9133787bf2e3ebc79987c6c9d9143923417a581ec"
+    },
+    {
+      "path": "docs/reports/display_e14_20261026/kernel_smoke_report.json",
+      "original_sha256": "46f1be82e31815b0423dd9b3119e071c6d7f8f1ec83b247fcd797d5299f7f2ab",
+      "export_sha256": "365ff3df244674b76b3b773db9809beb8b697a8e1af5785ba6841e4625d19fcc"
+    },
+    {
+      "path": "docs/reports/display_e14_20261026/libc_smoke_report.json",
+      "original_sha256": "5ca86b996f7b7ff8ae3711f41bec3e096cce39843c1c133ae4cb79ad66397231",
+      "export_sha256": "9ca4cd71da13f1637ff5ae9a771b971c6f9e210b7b0132b710e3c13d54c9b37d"
+    },
+    {
+      "path": "docs/reports/display_e14_20261026/process_smoke_report.json",
+      "original_sha256": "5dd22399475ceecde1a41b066a88ecbcb1145076c577f4a09906716bd67624ce",
+      "export_sha256": "e7947846be9f2b36b4367581e9323507ad5c00bad1f2dfd3795fe0aa0f670d9c"
+    },
+    {
+      "path": "docs/reports/display_e14_20261026/regression.json",
+      "original_sha256": "9b4034cfae47a3363867d427f9460a93ccf59252a80a7591e50b01d50277c57a",
+      "export_sha256": "fa28795f19ad525208db3b42cbd0a69e1518d15c8f51db17bbb64eb286e6450d"
+    }
+  ],
+  "template_variables": [
+    {
+      "name": "XOS_HOST_TEMP_6D6821976CD9",
+      "purpose": "host_temp root"
+    },
+    {
+      "name": "XOS_WORKTREE_5727E1100584",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_9282C9E77071",
+      "purpose": "worktree root"
+    }
+  ],
+  "reproduction": "MANUAL_REQUIRED: configure template roots and obtain matching historical inputs; no replay is claimed.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history.",
+  "added_export_document_sha256": "e58f497d264041c92131d104ed02c1984016a887384064c0ad677a7fcb432092",
+  "transformation": "Host home/workspace/tool roots and unambiguous host QEMU command paths only; generic guest temporary paths are not globally replaced."
+}

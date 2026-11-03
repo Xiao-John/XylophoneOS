@@ -1,0 +1,64 @@
+{
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "source_entries": 11,
+  "export_entries": 12,
+  "index_scope": "No prior full-file index is claimed. Original bytes are available at source_commit; this conversion record lists changed paths and old/new hashes.",
+  "added_export_document": "docs/reports/browser_http_20261029/SANITIZED_EXPORT.md",
+  "changes": [
+    {
+      "path": "docs/reports/browser_http_20261029/current-main-guest-report.json",
+      "original_sha256": "611a4cb264858bf74f366652c1b033954dc691559632ff7a370c7f3c3561caa4",
+      "export_sha256": "5fdbbd5835bb2576a2a89f30dad2614acafa9d16985281dcfbd1b952af26295a"
+    },
+    {
+      "path": "docs/reports/browser_http_20261029/guest-report.json",
+      "original_sha256": "5d6f4dae416b87231c0ecd3c531f361528ec07156f1565579ff64b040cf0a56c",
+      "export_sha256": "ee7cdc9c37232f246e0a83a52bc1aed306068d2b8ff0cdc1293bfb0cea5b7769"
+    },
+    {
+      "path": "docs/reports/browser_http_20261029/host-report.json",
+      "original_sha256": "7c79ab0f37d0adfcc9ad7cc45d337273d995ba477dd13d6c1c83a2677b43da05",
+      "export_sha256": "5759c496c8fbf388c41e15b78db43369b489ae888744790bd7d356dcb263624b"
+    },
+    {
+      "path": "docs/reports/browser_http_20261029/target-build.json",
+      "original_sha256": "2ceb7439ceabf0c814329bb402b581e8852520595ae97f12a0e3b59d04ba7fb7",
+      "export_sha256": "bcabce84a3227a9d3790bf881ed6deb51d9c662fb6dd04d5b39716ce54ec1cb0"
+    }
+  ],
+  "template_variables": [
+    {
+      "name": "XOS_HOST_TEMP_6D6821976CD9",
+      "purpose": "host_temp root"
+    },
+    {
+      "name": "XOS_PYTHON_68FDBC484049",
+      "purpose": "python root"
+    },
+    {
+      "name": "XOS_TOOLCHAIN_35527FAC2790",
+      "purpose": "toolchain root"
+    },
+    {
+      "name": "XOS_WORKTREE_445F322455D6",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_9282C9E77071",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_C671BDF53659",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_F422EEF78DDA",
+      "purpose": "worktree root"
+    }
+  ],
+  "reproduction": "MANUAL_REQUIRED: configure template roots and obtain matching historical inputs; no replay is claimed.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history.",
+  "added_export_document_sha256": "5732ec0832d6f0e78acc715ca68c2fac8d445a802c895ac5afd2086efd4150e7",
+  "transformation": "Host home/workspace/tool roots and unambiguous host QEMU command paths only; generic guest temporary paths are not globally replaced."
+}

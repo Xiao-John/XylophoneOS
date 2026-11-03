@@ -27,61 +27,61 @@
   "HTTPS": "NOT_RUN",
   "artifacts": [
     {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/final-system/xos.img",
+      "path": "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/final-system/xos.img",
       "bytes": 1474560,
       "sha256": "5cc2cee133439e67def5c2c5ea2d4da9f6fb06cfcf7bb36d903b4a3699df95a8",
       "retention": "local; not a release asset"
     },
     {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/final-system/xos-install.iso",
+      "path": "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/final-system/xos-install.iso",
       "bytes": 565248,
       "sha256": "09da93636ee82d0fb6a58438e0e4b197f1dc4cb28d5ca8a004dca275789e95e3",
       "retention": "local; not a release asset"
     },
     {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/final-system/kernel.elf",
+      "path": "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/final-system/kernel.elf",
       "bytes": 1502696,
       "sha256": "5499a6a8042ac66010fd4e04d5c8be9f67a9bc2e3e8602e1e21b232417805b16",
       "retention": "local; not a release asset"
     },
     {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/quickjs/js_probe.elf",
+      "path": "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/quickjs/js_probe.elf",
       "bytes": 6048016,
       "sha256": "7c7ec9c5ffbe0a32193ba90b554f2c21641748d3e7f7deb4e3d7321da290b449",
       "retention": "local; not a release asset"
     },
     {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/final-guest-01/js_probe",
+      "path": "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/final-guest-01/js_probe",
       "bytes": 1177880,
       "sha256": "db70b2ff3a6f2a4b9b2588ae19702cd9b03572c15738c883a3d8b35659227f11",
       "retention": "local; not a release asset"
     },
     {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/.cache/xos_seed/cpython/a8201ed0a683f05afdf3/target_build/python.exe",
+      "path": "${XOS_WORKTREE_917CF6661DE7}/.cache/xos_seed/cpython/a8201ed0a683f05afdf3/target_build/python.exe",
       "bytes": 45651448,
       "sha256": "f43e60580829ff0c928485ea9092d7a88944dcd7aaa5b3aaf08b2dfdf062084d",
       "retention": "local; not a release asset"
     },
     {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/.cache/xos_seed/cpython/a8201ed0a683f05afdf3/stage_py1/usr/bin/python3",
+      "path": "${XOS_WORKTREE_917CF6661DE7}/.cache/xos_seed/cpython/a8201ed0a683f05afdf3/stage_py1/usr/bin/python3",
       "bytes": 9281920,
       "sha256": "051f897ab9007dae8bc86f845571377c3cde25542c8b7bade0b6c892994b4af4",
       "retention": "local; not a release asset"
     },
     {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/final-guest-01/work.img",
+      "path": "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/final-guest-01/work.img",
       "bytes": 2147483648,
       "sha256": "64f7f84eace18fd46ca36ab1e1390e6e480a27f4a4b564a0e9f9b67b1caa9aeb",
       "retention": "local; not a release asset"
     },
     {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/localpilot-wheel/localpilot_agent_service-5.0.0b20+channels.1-py3-none-any.whl",
+      "path": "${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/localpilot-wheel/localpilot_agent_service-5.0.0b20+channels.1-py3-none-any.whl",
       "bytes": 567734,
       "sha256": "7db91d1ed21a964197d2661cba97c256e0ee69cbe2eb91ed2d043aea30667b09",
       "retention": "local; not a release asset"
     },
     {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+      "path": "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
       "bytes": 25855552,
       "sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
       "retention": "external existing test tool"

@@ -1,0 +1,119 @@
+{
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "original_index_path": "docs/reports/ssg_diff_integrity_20261030/evidence.json",
+  "original_index_sha256": "7d551864740bbba07eb6e9480366a07fb3de610070eb3aff9beaa19f3e387451",
+  "export_index_sha256": "36d1af5aff249622ad862b171bb8fd7014086046fff318b1ebfbd7d809c1cd5e",
+  "original_index_entries": 24,
+  "export_index_entries": 24,
+  "index_field": "evidence_sha256",
+  "added_export_document": null,
+  "changes": [
+    {
+      "path": "docs/reports/ssg_diff_integrity_20261030/after-fault-build.log.gz",
+      "original_sha256": "a069df44146471b0c54d12f387b10b378901a3375eee75062257ee5d27dd684e",
+      "export_sha256": "d0a0c30bfc1f18a1428c9383cfffaf922d1d1882684f617b83fb3e5371498609"
+    },
+    {
+      "path": "docs/reports/ssg_diff_integrity_20261030/before-build.log.gz",
+      "original_sha256": "803cc33d1d9dc5c5c3170123ec8c636a442008fed510dbb1a7296cd800e7fbe0",
+      "export_sha256": "dfa149f1013f1909bf4a0a5d6d5cae5cbbce0c12b6fb3c363ee35535e058b842"
+    },
+    {
+      "path": "docs/reports/ssg_diff_integrity_20261030/before-receipt.json.gz",
+      "original_sha256": "bf39ee940963b52466bc2841ee0d466ef6b9c3c2bb1c59ce0dcb128e66579d93",
+      "export_sha256": "84569a21e045a7f4b42435c687b2043b1e7856c923105f68f62ed68a3b7fe765"
+    },
+    {
+      "path": "docs/reports/ssg_diff_integrity_20261030/before/report.json",
+      "original_sha256": "5dad5022e26a4da824e980e4ea6e424a7db97803dee370d458b6ad0af58a31d6",
+      "export_sha256": "b10e99671690c82845dff22ebbae97ede072f08dba3b4fb1a054980e95dc2fbf"
+    },
+    {
+      "path": "docs/reports/ssg_diff_integrity_20261030/final-build.log.gz",
+      "original_sha256": "9182dd3c443df3e2b3f437ab656cae6a96d9778ac629e42c95bfa5f9927af1d6",
+      "export_sha256": "a2a66fbc67ffac01d095a1366fed3fc8340494ec72d9c1193f3f1b4a4445563f"
+    },
+    {
+      "path": "docs/reports/ssg_diff_integrity_20261030/final-receipt.json.gz",
+      "original_sha256": "0a17de99fa50ac68cff754864f3c0448bdf0ee96e68609aa81a391eaed5abcce",
+      "export_sha256": "e5bb8d983de349f48619a3e29192ec45601b605b2daa5744631e0f743b63f446"
+    },
+    {
+      "path": "docs/reports/ssg_diff_integrity_20261030/final/report.json",
+      "original_sha256": "5e11888eb7b444cd004256c9a3df3bac1b562d42224627d9370e0e5590c21d6f",
+      "export_sha256": "d45ffda0ebfaecb6b4f855eb1d1bd0fd006c3ade04dbf3842eea60134eecbe90"
+    },
+    {
+      "path": "docs/reports/ssg_diff_integrity_20261030/first-fix-fault/report.json",
+      "original_sha256": "8acefbdf585fe7657da319ae9213d01a71e2b6735c09b19e155263d9cd0e4901",
+      "export_sha256": "e8645b327c5b510139a569e53464d8e8c2f57de13cbbb92d020c47539d3ee7c6"
+    },
+    {
+      "path": "docs/reports/ssg_diff_integrity_20261030/initial-harness-failure/report.json",
+      "original_sha256": "7ffda4465f7841eba442ac09f5f7de832e5a44d606df839b2ac0005f6851787e",
+      "export_sha256": "ba7cce71516a14d0ad520b04cfb39d14b92f7bfcb61a8d0151fc0da2cda843cd"
+    },
+    {
+      "path": "docs/reports/ssg_diff_integrity_20261030/semantic-build.log.gz",
+      "original_sha256": "22824dfafd8893f05914de5d30c4ea792556caa3da841807d0c9fe9df0475ad0",
+      "export_sha256": "81fb66d87c8cc79ae6c0740e07d7c88805bc3857c1c7981bcadb0449a9bbba43"
+    },
+    {
+      "path": "docs/reports/ssg_diff_integrity_20261030/semantic-receipt.json.gz",
+      "original_sha256": "d0567112c656be9b4cb9bb2a291b82b3381b3b3c9b8a9b77e20158d2119ad8fa",
+      "export_sha256": "07b7134df7e14cf01600e762dd5d7d1d502c30b2d723ed83f1d15c1d14645e06"
+    },
+    {
+      "path": "docs/reports/ssg_diff_integrity_20261030/semantic-regression/report.json",
+      "original_sha256": "7305bbfa4acff2e03e066f07dc3cf5af4091fa03642e33c1c0024bed32ca5b34",
+      "export_sha256": "891bd626688e004ad3d35a4b78597171c531082c582d33a312f68ff3e75fc840"
+    },
+    {
+      "path": "docs/reports/ssg_diff_integrity_20261030/README.md",
+      "original_sha256": "08593325f155e412aecfb82ed8fbe283e818edeb4df78c0ed38cca39b79a1b45",
+      "export_sha256": "6109fb191adf89994959d63b8a5fc67b4ae2916cdeb126a5b1bc1fef7fb56a3e"
+    }
+  ],
+  "template_variables": [
+    {
+      "name": "XOS_HOME_8425C912189A",
+      "purpose": "home root"
+    },
+    {
+      "name": "XOS_HOST_TEMP_6D6821976CD9",
+      "purpose": "host_temp root"
+    },
+    {
+      "name": "XOS_TOOLCHAIN_35527FAC2790",
+      "purpose": "toolchain root"
+    },
+    {
+      "name": "XOS_WORKTREE_28A15AF9F3BC",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_313E5C73D324",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_9282C9E77071",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_BDB57DD09221",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_C671BDF53659",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_ED2321C1F627",
+      "purpose": "worktree root"
+    }
+  ],
+  "reproduction": "MANUAL_REQUIRED: configure template roots and obtain matching historical inputs; no replay is claimed.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history.",
+  "transformation": "Host home/workspace/tool roots and unambiguous host QEMU command paths only; generic guest temporary paths are not globally replaced."
+}

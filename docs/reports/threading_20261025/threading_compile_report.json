@@ -17,14 +17,14 @@
       "-fno-exceptions",
       "-fno-rtti",
       "-DXOS_THREADED_RUNTIME",
-      "-I<repo>/build/threading_sdk/include",
-      "-I<repo>/src/user/include",
-      "-I<repo>/src/shared/include",
-      "-I<repo>/src/kernel/core",
+      "-I${XOS_ROOT}/build/threading_sdk/include",
+      "-I${XOS_ROOT}/src/user/include",
+      "-I${XOS_ROOT}/src/shared/include",
+      "-I${XOS_ROOT}/src/kernel/core",
       "-c",
-      "<repo>/build/threading_common_compile.cpp",
+      "${XOS_ROOT}/build/threading_common_compile.cpp",
       "-o",
-      "<repo>/build/threading_aarch64_threading_common_compile.o"
+      "${XOS_ROOT}/build/threading_aarch64_threading_common_compile.o"
     ],
     [
       "/usr/bin/clang++",
@@ -35,14 +35,14 @@
       "-fno-exceptions",
       "-fno-rtti",
       "-DXOS_THREADED_RUNTIME",
-      "-I<repo>/build/threading_sdk/include",
-      "-I<repo>/src/user/include",
-      "-I<repo>/src/shared/include",
-      "-I<repo>/src/kernel/core",
+      "-I${XOS_ROOT}/build/threading_sdk/include",
+      "-I${XOS_ROOT}/src/user/include",
+      "-I${XOS_ROOT}/src/shared/include",
+      "-I${XOS_ROOT}/src/kernel/core",
       "-c",
-      "<repo>/src/user/threading/pthread.cpp",
+      "${XOS_ROOT}/src/user/threading/pthread.cpp",
       "-o",
-      "<repo>/build/threading_aarch64_pthread.o"
+      "${XOS_ROOT}/build/threading_aarch64_pthread.o"
     ],
     [
       "/usr/bin/clang++",
@@ -53,14 +53,14 @@
       "-fno-exceptions",
       "-fno-rtti",
       "-DXOS_THREADED_RUNTIME",
-      "-I<repo>/build/threading_sdk/include",
-      "-I<repo>/src/user/include",
-      "-I<repo>/src/shared/include",
-      "-I<repo>/src/kernel/core",
+      "-I${XOS_ROOT}/build/threading_sdk/include",
+      "-I${XOS_ROOT}/src/user/include",
+      "-I${XOS_ROOT}/src/shared/include",
+      "-I${XOS_ROOT}/src/kernel/core",
       "-c",
-      "<repo>/src/user/threading/newlib_locks.cpp",
+      "${XOS_ROOT}/src/user/threading/newlib_locks.cpp",
       "-o",
-      "<repo>/build/threading_aarch64_newlib_locks.o"
+      "${XOS_ROOT}/build/threading_aarch64_newlib_locks.o"
     ]
   ]
 }

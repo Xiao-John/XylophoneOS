@@ -9,7 +9,7 @@
   "fixture_sha256": "66c7cf8d4d7934685cf9a201308f94ee606a8c779b767de62c9a1c3a09bde90c",
   "commands": [
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -45,7 +45,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/guest/wait_probe.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-m64",
       "-march=x86-64",
       "-mtune=generic",
@@ -81,7 +81,7 @@
   ],
   "elf_sha256": "06b7225144cd30a2fb2c81215b5870a22905d6aa01aaf1cbc87ae1b771214f9d",
   "qemu_command": [
-    "/opt/homebrew/bin/qemu-system-x86_64",
+    "${XOS_TOOLCHAIN}/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -110,8 +110,8 @@
     "-display",
     "none",
     "-drive",
-    "file=/var/folders/x6/3clfjww5133fn5kbknq7c_2m0000gn/T/xos_w1_wait_pryjq7qc/disk.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_TMPDIR}/xos_w1_wait_pryjq7qc/disk.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/x6/3clfjww5133fn5kbknq7c_2m0000gn/T/xos_zh3x3a01/qmp.sock,server=on,wait=off"
+    "unix:${XOS_TMPDIR}/xos_zh3x3a01/qmp.sock,server=on,wait=off"
   ]
 }

@@ -70,7 +70,7 @@ def main():
         disk = tmp / "utf8.img"
         create_fat32(disk, 2048)
         transfer(disk, "mkdir", "/tmp")
-        transfer(disk, "import", "/tmp/argv_utf8.elf", probe)
+        transfer(disk, "import", "/argv_utf8.elf", probe)
 
         guest = Guest(args.image, "utf8_text", work_disk=disk)
         try:
@@ -120,7 +120,7 @@ def main():
             text = send(b"\xff\r", b"xsh: invalid UTF-8 input")
             check("invalid-sequence", b"xsh: invalid UTF-8 input" in text)
 
-            text = send("/tmp/argv_utf8.elf 中文测试\r".encode(), "arg1=中文测试".encode(), timeout=60)
+            text = send("/argv_utf8.elf 中文测试\r".encode(), "arg1=中文测试".encode(), timeout=60)
             check("utf8-argv", "arg1=中文测试".encode() in text)
 
             text = send(b"a" * 2100 + b"\r", b"xsh: input line too long", timeout=60)

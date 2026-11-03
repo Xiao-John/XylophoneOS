@@ -695,43 +695,43 @@
     "nasm": "NASM version 3.02 compiled on Jun 29 2026",
     "executables": {
       "gcc": {
-        "path": "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "path": "${XOS_TOOLCHAIN}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
         "sha256": "078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f"
       },
       "g++": {
-        "path": "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "path": "${XOS_TOOLCHAIN}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
         "sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9"
       },
       "as": {
-        "path": "/opt/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+        "path": "${XOS_TOOLCHAIN}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
         "sha256": "61fd25605f17a290815123ff1eeb4fc6ef78a524f8cd5e95f4ae9767b0d3b05c"
       },
       "ld": {
-        "path": "/opt/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+        "path": "${XOS_TOOLCHAIN}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
         "sha256": "d0adfd06bc0e46fbc1c739caf55db5dcc98ca377692697f944f26671135527ab"
       },
       "objcopy": {
-        "path": "/opt/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+        "path": "${XOS_TOOLCHAIN}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
         "sha256": "9d97b69af734fd8bc78ef88ffe2d623b050233d5c74a0cfed798b203f807484c"
       },
       "nm": {
-        "path": "/opt/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-nm",
+        "path": "${XOS_TOOLCHAIN}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-nm",
         "sha256": "a7eebf858a985c75e1ca9ec669cf6b46b4ec5abb616b61e31c245d6ddf08286e"
       },
       "ar": {
-        "path": "/opt/homebrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
+        "path": "${XOS_TOOLCHAIN}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
         "sha256": "3b91d5228f03db4ac45253a46a5452289593a185c13460da01c408a0fa0844ac"
       },
       "cc1": {
-        "path": "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1",
+        "path": "${XOS_TOOLCHAIN}/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1",
         "sha256": "ac8edcabeb79e97837066066d46d6a6a03b7eab40204fcdef3edd128de4fccb0"
       },
       "cc1plus": {
-        "path": "/opt/homebrew/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1plus",
+        "path": "${XOS_TOOLCHAIN}/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1plus",
         "sha256": "13085889a10fdcfd9cd55b3cadb802b8866fe3d1875dcdb2e3abdfb028e0b8a5"
       },
       "nasm": {
-        "path": "/opt/homebrew/Cellar/nasm/3.02/bin/nasm",
+        "path": "${XOS_TOOLCHAIN}/Cellar/nasm/3.02/bin/nasm",
         "sha256": "5d22db7ed80aee4eb0e1cb5ff8a87e40294012f6ddf943601556922d5128b725"
       }
     }
@@ -758,7 +758,7 @@
   },
   "commands": [
     [
-      "/opt/homebrew/bin/nasm",
+      "${XOS_TOOLCHAIN}/bin/nasm",
       "-f",
       "elf64",
       "-g",
@@ -769,7 +769,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/src/user/arch/x86_64/start.asm"
     ],
     [
-      "/opt/homebrew/bin/nasm",
+      "${XOS_TOOLCHAIN}/bin/nasm",
       "-f",
       "elf64",
       "-g",
@@ -781,7 +781,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/src/user/arch/x86_64/start.asm"
     ],
     [
-      "/opt/homebrew/bin/nasm",
+      "${XOS_TOOLCHAIN}/bin/nasm",
       "-f",
       "elf64",
       "-g",
@@ -793,7 +793,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/src/user/arch/x86_64/start.asm"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -834,7 +834,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_sdk_text.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -875,7 +875,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_sdk_file_client.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -916,7 +916,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_arch_x86_64_syscall.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -957,7 +957,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_shared_runtime_memory.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -999,7 +999,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_libc_cpp_runtime.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -1041,7 +1041,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_libc_main_entry.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -1083,7 +1083,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_libc_newlib_syscalls.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -1124,13 +1124,13 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_arch_x86_64_thread_core.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-ar",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-ar",
       "rcsD",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/threading_core/libxos_thread_core.a",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_arch_x86_64_thread_core.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -1171,7 +1171,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_third_party_fatfs_ff.c.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -1212,7 +1212,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_services_fatfs_diskio.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -1253,7 +1253,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_services_fatfs_unicode.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -1294,7 +1294,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_services_file_ui.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-ar",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-ar",
       "rcsD",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/sdk/lib/libxos.a",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_sdk_text.cpp.o",
@@ -1306,7 +1306,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_libc_newlib_syscalls.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -1347,7 +1347,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_loader_elf.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -1388,7 +1388,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_loader_load.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -1429,7 +1429,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_loader_elf_cases.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -1470,7 +1470,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_loader_command.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -1511,7 +1511,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_arch_x86_64_tls.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-ar",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-ar",
       "rcsD",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/sdk/lib/libxos_loader.a",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_loader_elf.cpp.o",
@@ -1521,7 +1521,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_arch_x86_64_tls.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -1562,7 +1562,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_programs_supervisor.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-m64",
       "-march=x86-64",
       "-mtune=generic",
@@ -1584,13 +1584,13 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_supervisor.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-objcopy",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-objcopy",
       "--strip-debug",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_supervisor.elf",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_supervisor.image.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -1631,7 +1631,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_services_files.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-m64",
       "-march=x86-64",
       "-mtune=generic",
@@ -1654,13 +1654,13 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_files.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-objcopy",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-objcopy",
       "--strip-debug",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_files.elf",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_files.image.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -1701,7 +1701,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_programs_demo.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-m64",
       "-march=x86-64",
       "-mtune=generic",
@@ -1721,13 +1721,13 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_demo.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-objcopy",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-objcopy",
       "--strip-debug",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_demo.elf",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_demo.image.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -1768,7 +1768,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_programs_fault.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -1809,7 +1809,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_arch_x86_64_fault_test.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-m64",
       "-march=x86-64",
       "-mtune=generic",
@@ -1830,13 +1830,13 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_fault.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-objcopy",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-objcopy",
       "--strip-debug",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_fault.elf",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_fault.image.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -1877,7 +1877,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_programs_spin.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-m64",
       "-march=x86-64",
       "-mtune=generic",
@@ -1897,13 +1897,13 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_spin.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-objcopy",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-objcopy",
       "--strip-debug",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_spin.elf",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_spin.image.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -1944,7 +1944,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_programs_slow.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-m64",
       "-march=x86-64",
       "-mtune=generic",
@@ -1964,13 +1964,13 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_slow.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-objcopy",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-objcopy",
       "--strip-debug",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_slow.elf",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_slow.image.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -2011,7 +2011,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_programs_echo.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-m64",
       "-march=x86-64",
       "-mtune=generic",
@@ -2031,13 +2031,13 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_echo.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-objcopy",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-objcopy",
       "--strip-debug",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_echo.elf",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_echo.image.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -2078,7 +2078,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_programs_hello.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-m64",
       "-march=x86-64",
       "-mtune=generic",
@@ -2098,13 +2098,13 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_hello.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-objcopy",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-objcopy",
       "--strip-debug",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_hello.elf",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_hello.image.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -2146,7 +2146,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_programs_libc_hello.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-m64",
       "-march=x86-64",
       "-mtune=generic",
@@ -2174,13 +2174,13 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_libc_hello.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-objcopy",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-objcopy",
       "--strip-debug",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_libc_hello.elf",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_libc_hello.image.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -2221,7 +2221,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_programs_e08_probe.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-m64",
       "-march=x86-64",
       "-mtune=generic",
@@ -2241,13 +2241,13 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_e08_probe.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-objcopy",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-objcopy",
       "--strip-debug",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_e08_probe.elf",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_e08_probe.image.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -2289,7 +2289,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_programs_runtime_probe.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-m64",
       "-march=x86-64",
       "-mtune=generic",
@@ -2317,13 +2317,13 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_runtime_probe.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-objcopy",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-objcopy",
       "--strip-debug",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_runtime_probe.elf",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_runtime_probe.image.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -2370,7 +2370,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_programs_cpp_runtime_probe.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-m64",
       "-march=x86-64",
       "-mtune=generic",
@@ -2398,13 +2398,13 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_cpp_runtime_probe.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-objcopy",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-objcopy",
       "--strip-debug",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_cpp_runtime_probe.elf",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_cpp_runtime_probe.image.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -2451,7 +2451,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_programs_tls_exit_probe.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-m64",
       "-march=x86-64",
       "-mtune=generic",
@@ -2479,13 +2479,13 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_tls_exit_probe.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-objcopy",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-objcopy",
       "--strip-debug",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_tls_exit_probe.elf",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_tls_exit_probe.image.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -2526,7 +2526,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/tests_fixtures_threading_core_probe.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-m64",
       "-march=x86-64",
       "-mtune=generic",
@@ -2548,13 +2548,13 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_threading_core_probe.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-objcopy",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-objcopy",
       "--strip-debug",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_threading_core_probe.elf",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_threading_core_probe.image.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -2595,7 +2595,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_services_display.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-m64",
       "-march=x86-64",
       "-mtune=generic",
@@ -2615,13 +2615,13 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_display.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-objcopy",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-objcopy",
       "--strip-debug",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_display.elf",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_display.image.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -2662,7 +2662,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_programs_gfxdemo.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-m64",
       "-march=x86-64",
       "-mtune=generic",
@@ -2684,13 +2684,13 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_gfxdemo.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-objcopy",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-objcopy",
       "--strip-debug",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_gfxdemo.elf",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_gfxdemo.image.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -2731,7 +2731,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_user_programs_xypm_recover.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-m64",
       "-march=x86-64",
       "-mtune=generic",
@@ -2751,13 +2751,13 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_xypm_recover.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-objcopy",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-objcopy",
       "--strip-debug",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_xypm_recover.elf",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_xypm_recover.image.elf"
     ],
     [
-      "/opt/homebrew/bin/nasm",
+      "${XOS_TOOLCHAIN}/bin/nasm",
       "-f",
       "bin",
       "-Wall",
@@ -2768,7 +2768,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_heartbeat.bin"
     ],
     [
-      "/opt/homebrew/bin/nasm",
+      "${XOS_TOOLCHAIN}/bin/nasm",
       "-f",
       "bin",
       "-Wall",
@@ -2779,7 +2779,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_spinner.bin"
     ],
     [
-      "/opt/homebrew/bin/nasm",
+      "${XOS_TOOLCHAIN}/bin/nasm",
       "-f",
       "bin",
       "-Wall",
@@ -2790,7 +2790,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_receiver.bin"
     ],
     [
-      "/opt/homebrew/bin/nasm",
+      "${XOS_TOOLCHAIN}/bin/nasm",
       "-f",
       "bin",
       "-Wall",
@@ -2801,7 +2801,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_sender.bin"
     ],
     [
-      "/opt/homebrew/bin/nasm",
+      "${XOS_TOOLCHAIN}/bin/nasm",
       "-f",
       "bin",
       "-Wall",
@@ -2812,7 +2812,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_probe.bin"
     ],
     [
-      "/opt/homebrew/bin/nasm",
+      "${XOS_TOOLCHAIN}/bin/nasm",
       "-f",
       "bin",
       "-Wall",
@@ -2823,7 +2823,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/user_quitter.bin"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -2866,7 +2866,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_kernel_core_boot_info.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -2909,7 +2909,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_kernel_core_console.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -2952,7 +2952,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_kernel_core_kernel_main.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -2995,7 +2995,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_kernel_core_memory.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -3038,7 +3038,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_kernel_core_panic.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -3081,7 +3081,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_kernel_core_self_check.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -3124,7 +3124,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_kernel_arch_x86_64_cpu.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -3167,7 +3167,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_kernel_arch_x86_64_exceptions.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -3210,7 +3210,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_kernel_arch_x86_64_paging.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -3253,7 +3253,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_kernel_arch_x86_64_pic.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -3296,7 +3296,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_kernel_arch_x86_64_tasks.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -3339,7 +3339,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_kernel_platform_pc_ata.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -3382,7 +3382,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_kernel_platform_pc_debug_console.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -3425,7 +3425,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_kernel_platform_pc_display.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -3468,7 +3468,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_kernel_platform_pc_pci.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -3511,7 +3511,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_kernel_platform_pc_ps2.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -3554,7 +3554,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_kernel_platform_pc_rtc.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -3599,7 +3599,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_kernel_platform_pc_virtio_gpu.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-ffreestanding",
       "-nostdinc++",
@@ -3642,7 +3642,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/src_shared_runtime_memory.cpp.o"
     ],
     [
-      "/opt/homebrew/bin/nasm",
+      "${XOS_TOOLCHAIN}/bin/nasm",
       "-f",
       "elf64",
       "-g",
@@ -3656,7 +3656,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/kernel_entry.o"
     ],
     [
-      "/opt/homebrew/bin/nasm",
+      "${XOS_TOOLCHAIN}/bin/nasm",
       "-f",
       "elf64",
       "-g",
@@ -3671,7 +3671,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/kernel_interrupts.o"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-g++",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
       "-m64",
       "-march=x86-64",
       "-mtune=generic",
@@ -3710,14 +3710,14 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/kernel.elf"
     ],
     [
-      "/opt/homebrew/bin/x86_64-elf-objcopy",
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-objcopy",
       "-O",
       "binary",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/kernel.elf",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/kernel.bin"
     ],
     [
-      "/opt/homebrew/bin/nasm",
+      "${XOS_TOOLCHAIN}/bin/nasm",
       "-f",
       "bin",
       "-Wall",
@@ -3735,7 +3735,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/src/boot/x86/boot_sector.asm"
     ],
     [
-      "/opt/homebrew/bin/nasm",
+      "${XOS_TOOLCHAIN}/bin/nasm",
       "-f",
       "bin",
       "-Wall",
@@ -3753,7 +3753,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/src/boot/x86/stage_two.asm"
     ],
     [
-      "/opt/homebrew/bin/nasm",
+      "${XOS_TOOLCHAIN}/bin/nasm",
       "-f",
       "bin",
       "-Wall",
@@ -3771,7 +3771,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/src/boot/x86/kernel_loader.asm"
     ],
     [
-      "/opt/homebrew/bin/nasm",
+      "${XOS_TOOLCHAIN}/bin/nasm",
       "-f",
       "bin",
       "-Wall",
@@ -3789,7 +3789,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/src/boot/x86/boot_sector_iso.asm"
     ],
     [
-      "/opt/homebrew/bin/nasm",
+      "${XOS_TOOLCHAIN}/bin/nasm",
       "-f",
       "bin",
       "-Wall",
@@ -3807,7 +3807,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/src/boot/x86/kernel_loader_iso.asm"
     ],
     [
-      "/opt/homebrew/bin/nasm",
+      "${XOS_TOOLCHAIN}/bin/nasm",
       "-f",
       "bin",
       "-Wall",
@@ -3825,7 +3825,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/src/boot/x86/kernel_loader_iso_file.asm"
     ],
     [
-      "/opt/homebrew/opt/python@3.12/bin/python3.12",
+      "${XOS_TOOLCHAIN}/opt/python@3.12/bin/python3.12",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/scripts/make_iso.py",
       "--boot",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/boot_sector_iso.bin",
@@ -3837,7 +3837,7 @@
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/xos.iso"
     ],
     [
-      "/opt/homebrew/opt/python@3.12/bin/python3.12",
+      "${XOS_TOOLCHAIN}/opt/python@3.12/bin/python3.12",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/scripts/make_iso.py",
       "--boot",
       "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/boot_sector_iso.bin",

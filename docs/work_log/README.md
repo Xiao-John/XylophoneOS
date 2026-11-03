@@ -48,3 +48,4 @@
 | 0183 | `0183_screen_evidence_freeze.md` | 宿主终端证据进入受限交付（2026-11-03） |
 | 0184 | `0184_terminal_contract_reconciliation.md` | 终端契约与客体证据对齐（2026-11-03） |
 | 0185 | `0185_terminal_select_contract.md` | 单终端 select 的直接客体检查（2026-11-03） |
+| 0186 | `0186_terminal_input_flush_guest.md` | 已排队输入的清空与新输入（2026-11-03） |

@@ -14,6 +14,19 @@ namespace {
 struct marker { xos::u64 magic; xos::u32 version, size; };
 [[gnu::section(".xos.tty"), gnu::used]] const marker terminal_marker{
     xos::terminal_image_abi_magic, 1, sizeof(marker)};
+bool announce(int fd, const char* message) {
+    for (xos::u32 i = 0; message[i] != '\0'; ++i)
+        if (write(fd, message + i, 1) != 1) return false;
+    return true;
+}
+int terminal_ready(long seconds) {
+    fd_set readable{};
+    FD_ZERO(&readable); FD_SET(0, &readable);
+    timeval timeout{seconds, 0};
+    const int count = select(1, &readable, nullptr, nullptr, &timeout);
+    if (count == 0 && !FD_ISSET(0, &readable)) return 0;
+    return count == 1 && FD_ISSET(0, &readable) ? 1 : -1;
+}
 }
 extern "C" int xos_user_main(const xos::startup_info* startup) {
     using namespace xos;
@@ -113,6 +126,18 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
     const char select_ok[] = "W1_SELECT_OK\n";
     for (u32 i = 0; i < sizeof(select_ok) - 1; ++i)
         if (write(duplicate, select_ok + i, 1) != 1) return 35;
+    if (!announce(duplicate, "W1_FLUSH_QUEUE_READY\n") || terminal_ready(2) != 1 ||
+        tcflush(0, TCIFLUSH) != 0 || terminal_ready(0) != 0 ||
+        !announce(duplicate, "W1_FLUSH_FRESH_READY\n") || terminal_ready(2) != 1 ||
+        read(0, &input, 1) != 1 || input != 'F') return 36;
+    if (!announce(duplicate, "W1_TCSA_QUEUE_READY\n") || terminal_ready(2) != 1) return 37;
+    tty.c_cc[VMIN] = 0; tty.c_cc[VTIME] = 1;
+    if (tcsetattr(0, TCSAFLUSH, &tty) != 0 || tcgetattr(0, &tty) != 0 ||
+        tty.c_cc[VMIN] != 0 || tty.c_cc[VTIME] != 1 || terminal_ready(0) != 0 ||
+        !announce(duplicate, "W1_TCSA_FRESH_READY\n") || terminal_ready(2) != 1 ||
+        read(0, &input, 1) != 1 || input != 'N') return 38;
+    tty.c_cc[VMIN] = 1; tty.c_cc[VTIME] = 0;
+    if (tcsetattr(0, TCSANOW, &tty) != 0 || !announce(duplicate, "W1_FLUSH_OK\n")) return 39;
     const char message[] = "W1_APP_OK\n";
     for (u32 i = 0; i < sizeof(message) - 1; ++i)
         if (write(duplicate, message + i, 1) != 1) return 3;

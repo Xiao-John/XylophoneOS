@@ -227,6 +227,32 @@ def main():
                 if after_restart != baseline:
                     raise AssertionError(f'resource mismatch after restart: {baseline} -> {after_restart}')
                 report['checks'].append('xsh_restart_resource_baseline')
+                # Move the actual xterm entry aside in this private test disk;
+                # unlike an unknown TERM name this tests an absent database
+                # for the otherwise supported profile.
+                term_path = '/usr/local/share/terminfo/x/xterm'
+                saved_path = '/usr/local/share/terminfo/x/xterm.bak'
+                start = len(guest.output)
+                send_bytes(guest, f'mv {term_path} {saved_path}\r'.encode())
+                guest.expect(b'[files] renamed', start=start, timeout=30)
+                guest.expect(b'xsh> ', start=start, timeout=30)
+                start = len(guest.output)
+                send_bytes(guest, b'tty-run /bin/reentry.elf\r')
+                guest.expect(b' kind=exited code=2', start=start, timeout=60)
+                guest.expect(b'xsh> ', start=start, timeout=60)
+                if resources() != baseline:
+                    raise AssertionError('resource mismatch after missing terminfo failure')
+                start = len(guest.output)
+                send_bytes(guest, f'mv {saved_path} {term_path}\r'.encode())
+                guest.expect(b'[files] renamed', start=start, timeout=30)
+                guest.expect(b'xsh> ', start=start, timeout=30)
+                start = len(guest.output)
+                send_bytes(guest, b'tty-run /bin/reentry.elf\r')
+                guest.expect(b' kind=exited code=0', start=start, timeout=60)
+                guest.expect(b'xsh> ', start=start, timeout=60)
+                if resources() != baseline:
+                    raise AssertionError('resource mismatch after terminfo restoration')
+                report['checks'].append('xsh_missing_terminfo_failure_and_restoration')
                 report['status'] = 'passed_probe'
                 return
             guest.expect(b'W2_BOOT_READY', timeout=45)

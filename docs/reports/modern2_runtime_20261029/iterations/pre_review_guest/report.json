@@ -20,8 +20,8 @@
   "strip_command": [
     "x86_64-elf-strip",
     "-o",
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/final_guest/jsprobe",
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern_apps/quickjs/js_probe.elf"
+    "${XOS_WORKTREE_0537C4C7287C}/build/modern2_runtime/final_guest/jsprobe",
+    "${XOS_WORKTREE_0537C4C7287C}/build/modern_apps/quickjs/js_probe.elf"
   ],
   "checks": [
     {
@@ -169,7 +169,7 @@
     }
   ],
   "qemu_command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -187,7 +187,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/final_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_WORKTREE_0537C4C7287C}/build/modern2_runtime/final_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -198,9 +198,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-runtime/build/modern2_runtime/final_guest/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_WORKTREE_0537C4C7287C}/build/modern2_runtime/final_guest/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ltjjrfz_/qmp.sock,server=on,wait=off"
+    "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ltjjrfz_/qmp.sock,server=on,wait=off"
   ],
   "qemu_version": "QEMU emulator version 11.1.2",
   "resources_before": [

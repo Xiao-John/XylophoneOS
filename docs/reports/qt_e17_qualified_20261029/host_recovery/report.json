@@ -8,14 +8,14 @@
     "-std=c++17",
     "-O1",
     "-w",
-    "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/src/third_party/fatfs",
-    "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/src/user/include",
-    "-I/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/src/shared/include",
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/tests/fixtures/recovery/recovery_faults.cpp",
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/src/third_party/fatfs/ff.c",
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/src/user/services/fatfs_unicode.cpp",
+    "-I${XOS_WORKTREE_C671BDF53659}/src/third_party/fatfs",
+    "-I${XOS_WORKTREE_C671BDF53659}/src/user/include",
+    "-I${XOS_WORKTREE_C671BDF53659}/src/shared/include",
+    "${XOS_WORKTREE_C671BDF53659}/tests/fixtures/recovery/recovery_faults.cpp",
+    "${XOS_WORKTREE_C671BDF53659}/src/third_party/fatfs/ff.c",
+    "${XOS_WORKTREE_C671BDF53659}/src/user/services/fatfs_unicode.cpp",
     "-o",
-    "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/audit_01/recovery/recovery_faults"
+    "${XOS_WORKTREE_C671BDF53659}/build/audit_01/recovery/recovery_faults"
   ],
   "sources": {
     "src/user/services/files.cpp": "f3e1810f53b0165609c96ed03a684683e0c23783742e670d949e772fcdf5992f",

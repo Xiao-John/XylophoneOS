@@ -70,7 +70,7 @@ def main():
         disk = tmp / "utf8.img"
         create_fat32(disk, 2048)
         transfer(disk, "mkdir", "/tmp")
-        transfer(disk, "import", "/tmp/argv_utf8.elf", probe)
+        transfer(disk, "import", "/argv_utf8.elf", probe)
 
         guest = Guest(args.image, "utf8_text", work_disk=disk)
         try:
@@ -94,7 +94,7 @@ def main():
             def check(name, passed, **extra):
                 report["checks"].append({"name": name, "passed": passed, **extra})
 
-            text = send("你好\r".encode(), b"cannot read program")
+            text = send("你好\r".encode(), b"not found")
             check("utf8-echo-and-argv", "你好".encode() in text and b"\xe4\xbd\xa0" in text)
 
             backspace = b"ab" + "é".encode() + b"\x7f" + b"c\r"
@@ -107,10 +107,20 @@ def main():
             check("wide-backspace", b"xsh: abcd: not found" in text and
                   b"\b \b\b \b" in text)
 
+            combining = b"ab" + "\u05b0".encode() + b"\x7f" + b"cd\r"
+            text = send(combining, b"not found")
+            check("combining-backspace-zero-columns", b"xsh: abcd: not found" in text and
+                  b"\b \b" not in text)
+
+            watch = b"ab" + "\u231a".encode() + b"\x7f" + b"cd\r"
+            text = send(watch, b"not found")
+            check("newlib-wide-backspace", b"xsh: abcd: not found" in text and
+                  b"\b \b\b \b" in text)
+
             text = send(b"\xff\r", b"xsh: invalid UTF-8 input")
             check("invalid-sequence", b"xsh: invalid UTF-8 input" in text)
 
-            text = send("/tmp/argv_utf8.elf 中文测试\r".encode(), "arg1=中文测试".encode(), timeout=60)
+            text = send("/argv_utf8.elf 中文测试\r".encode(), "arg1=中文测试".encode(), timeout=60)
             check("utf8-argv", "arg1=中文测试".encode() in text)
 
             text = send(b"a" * 2100 + b"\r", b"xsh: input line too long", timeout=60)

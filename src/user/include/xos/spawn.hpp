@@ -6,6 +6,8 @@ inline constexpr u64 startup_extension_magic = 0x32585445534f5855ull;
 inline constexpr u32 startup_extension_offset = 64;
 inline constexpr u32 startup_page_count = 4;
 inline constexpr u32 startup_environment_max = 64;
+inline constexpr u32 startup_flag_terminal = 1u << 16;
+inline constexpr u64 terminal_image_abi_magic = 0x31595454534f5858ull;
 // startup_info keeps its 48-byte ABI prefix. Version 2 uses reserved=64 to
 // identify this extension inside the mapped startup area; pointers are user VAs.
 struct startup_extension {
@@ -27,6 +29,10 @@ enum class startup_fd_kind : u32 { kernel = 1, file = 2, pipe_read = 3, pipe_wri
 struct startup_descriptor { u32 fd, object, kind, handle, flags, reserved; };
 struct startup_exec_extension { u64 magic, descriptors; u32 count, reserved; };
 static_assert(sizeof(startup_descriptor) == 24 && sizeof(startup_exec_extension) == 24);
+inline constexpr u64 startup_terminal_exec_magic = 0x33595454534f5858ull;
+inline constexpr u32 startup_terminal_exec_offset = startup_exec_offset + sizeof(startup_exec_extension);
+struct startup_terminal_exec_extension { u64 magic, next_sequence; };
+static_assert(startup_terminal_exec_offset + sizeof(startup_terminal_exec_extension) == 192);
 namespace sdk {
 struct spawn_options {
     u32 environment_count = 0;
@@ -51,6 +57,19 @@ struct spawn_options {
     u32 exec_depth_mode = 0;
     u32 descriptor_count = 0;
     const startup_descriptor* descriptors = nullptr;
+    // Explicit quiescent generic channels to retain across replacement.
+    u32 exec_channel_count = 0;
+    const u32* exec_channels = nullptr;
+    u32 exec_terminal_send_handle = 0;
+    u64 exec_terminal_next_sequence = 0;
+    // Runs after the image is mapped but before the child becomes runnable.
+    // The caller owns cleanup of any resources created by this callback if
+    // either the callback or the subsequent start fails.
+    i64 (*prepare_child)(u64 child, void* context) = nullptr;
+    void* prepare_context = nullptr;
+    // Optional output filled by prepare_child: application-side send handle.
+    // The loader maps the startup pages only after that callback succeeds.
+    const u32* terminal_send_handle = nullptr;
 };
 i64 spawn_file_options(const char* path, u32 argc, const char* const* argv,
                        const spawn_options& options);

@@ -1,0 +1,63 @@
+{
+  "source_commit": "4377bfc7d860932a822fbec77d4743d4ae8ec592",
+  "runner_sha256": "505001d997c43ba9dd5c0a3515d002dc30467f8a246162e6c7ab915944481694",
+  "runs": [
+    {
+      "status": "FAILED",
+      "image_sha256": "ae8719b2209bd5f34a20e095da8ba6b6d9d8f84d0d3b5e558f52af1cab85ca22",
+      "elf_sha256": {
+        "browser": "f314e6821217df6c689f48c684b50ba357ba4ba542f9304dda44810107a4567e"
+      },
+      "checks": [
+        {
+          "name": "browser_dom_layout_hidden_and_offviewport",
+          "status": "PASSED"
+        },
+        {
+          "name": "ssg_link_geometry_matches_actual_engine_hit",
+          "status": "PASSED"
+        }
+      ],
+      "failure": "The previous runner required OK even when the Browser snapshot was capped. The guest returned RESET_REQUIRED at the same document epoch after scrolling."
+    },
+    {
+      "status": "PASSED",
+      "image_sha256": "ae8719b2209bd5f34a20e095da8ba6b6d9d8f84d0d3b5e558f52af1cab85ca22",
+      "elf_sha256": {
+        "browser": "f314e6821217df6c689f48c684b50ba357ba4ba542f9304dda44810107a4567e"
+      },
+      "checks": [
+        {
+          "name": "browser_dom_layout_hidden_and_offviewport",
+          "status": "PASSED"
+        },
+        {
+          "name": "ssg_link_geometry_matches_actual_engine_hit",
+          "status": "PASSED"
+        },
+        {
+          "name": "browser_scroll_changes_visibility_with_stable_epoch",
+          "status": "PASSED",
+          "diff_status": "RESET_REQUIRED",
+          "capped": true
+        },
+        {
+          "name": "reload_invalidates_old_document_references",
+          "status": "PASSED"
+        },
+        {
+          "name": "unsupported_canvas_rejected_no_fabricated_semantics",
+          "status": "PASSED"
+        },
+        {
+          "name": "browser_ssg_exit_exact_resources",
+          "status": "PASSED"
+        },
+        {
+          "name": "serial_file_service_and_resource_baseline",
+          "status": "PASSED"
+        }
+      ]
+    }
+  ]
+}

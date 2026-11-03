@@ -1,0 +1,27 @@
+{
+  "changes": [
+    {
+      "path": "docs/reports/fb12_dash_20261029/file_report.json",
+      "original_sha256": "cc9c29439e55798372a78d080e53652d3f7ecf19ad156ff650d785844da36530",
+      "export_sha256": "c32459676d4743d5beba5f6146e65f13ad84e19eb65e35b5305bffb84208cf92"
+    },
+    {
+      "path": "docs/reports/fb12_dash_20261029/process_report.json",
+      "original_sha256": "4de5efa01631bebfd717277c6f6426dc971c534cc751faa008399151e3ea544e",
+      "export_sha256": "5ce3cfa57403d0a613582835975f8e6bbb20131985501751552f2850592a61f9"
+    },
+    {
+      "path": "docs/reports/fb12_dash_20261029/system_manifest.json.gz",
+      "original_sha256": "c5c5b47bbfe1c868ba99f447b6b41e6c7bc92c29536587cbd02df8f2dd1fa91a",
+      "export_sha256": "4e1c8456d03e955984543191c7c81b8b2a7ac87f2b97f6699275f914072894af"
+    }
+  ],
+  "added_export_document": "docs/reports/fb12_dash_20261029/SANITIZED_EXPORT.md",
+  "added_export_document_sha256": "f09e2db314673a45f175178b99e66e501928aa320f6862f76547299f4fff4046",
+  "index_scope": "No prior full-file index is claimed; original Git bytes remain the trust root.",
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "transformation": "Only reviewed host command/tool paths are templated; guest test data remains unchanged.",
+  "reproduction": "MANUAL_REQUIRED: configure matching template roots and historical inputs; no replay is claimed.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history."
+}

@@ -1,3 +1,5 @@
+> **路径模板：** 本历史记录中的宿主临时根目录为可配置占位符；原始字节保留在源提交。
+
 # Aurora Browser PR #19 审查修复
 
 2026-10-29。以 PR #19 head `88cdbc01b0e30b2c2b449d9831d057468b9d6a77`
@@ -11,7 +13,7 @@
 - `tests/aurora_browser_acceptance.py --case negative` 加入外部 CSS 加载失败后的页面
   图像、历史、滚动和 tab 切换交互检查。候选与旧页面同时存在，瞬时峰值内存尚未测。
 
-执行：`python3 tests/browser_http_test.py --output /tmp/xos-pr19-http-final`，宿主
+执行：`python3 tests/browser_http_test.py --output ${XOS_DOC_TEMP_5CDCABE30EC9}`，宿主
 clang ASan/UBSan，208 checks 和 4096 malformed vectors 通过；产物及编译器版本见该
 目录 report.json。`python3 -m py_compile tests/aurora_browser_acceptance.py
  tests/browser_http_test.py` 与 `git diff --check` 通过。

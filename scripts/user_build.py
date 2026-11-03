@@ -8,7 +8,7 @@ import struct
 from toolchain import COMMON_FLAGS, X86_FLAGS, TARGET, tool
 
 
-def build_users(root, build, nasm, run, build_id):
+def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=False, ncurses_supervisor_probe=False):
     sdk = build / "sdk"
     if sdk.is_symlink():
         raise SystemExit("Refusing a symlinked SDK output directory")
@@ -50,8 +50,10 @@ def build_users(root, build, nasm, run, build_id):
         return str(obj)
 
     sdk_objects = [compile_source(root / name) for name in (
-        "src/user/sdk/text.cpp", "src/user/sdk/file_client.cpp", "src/user/arch/x86_64/syscall.cpp", "src/shared/runtime/memory.cpp")]
-    sdk_objects.extend(compile_source(source, ("-w",)) for source in sorted((root / "src/user/libc").glob("*.cpp")))
+        "src/user/sdk/text.cpp", "src/user/sdk/file_client.cpp", "src/user/sdk/terminal_client.cpp", "src/user/arch/x86_64/syscall.cpp", "src/shared/runtime/memory.cpp")]
+    sdk_objects.extend(compile_source(source, ("-w", "-ffunction-sections", "-fdata-sections")
+                                      if source.name == "newlib_syscalls.cpp" else ("-w",))
+                       for source in sorted((root / "src/user/libc").glob("*.cpp")))
     thread_core = compile_source(root / "src/user/arch/x86_64/thread_core.cpp")
     core_archive = build / "threading_core/libxos_thread_core.a"
     core_archive.parent.mkdir(exist_ok=True)
@@ -68,6 +70,8 @@ def build_users(root, build, nasm, run, build_id):
                      compile_fatfs(root / "src/user/services/fatfs_diskio.cpp"),
                      compile_fatfs(root / "src/user/services/fatfs_unicode.cpp")]
     file_ui_object = compile_source(root / "src/user/services/file_ui.cpp")
+    terminal_control_object = compile_source(root / "src/user/services/terminal_control.cpp")
+    shell_terminal_object = compile_source(root / "src/user/services/shell_terminal.cpp")
     archive = sdk / "lib/libxos.a"
     if archive.exists():
         archive.unlink()
@@ -77,18 +81,24 @@ def build_users(root, build, nasm, run, build_id):
     loader_objects.append(compile_source(root / "src/user/arch/x86_64/tls.cpp"))
     loader_archive = sdk / "lib/libxos_loader.a"
     run([tool("ar"), "rcsD", str(loader_archive), *loader_objects])
-    names = ("supervisor", "files", "demo", "fault", "spin", "slow", "echo", "hello", "libc_hello", "e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "display", "gfxdemo", "xypm_recover", "xos_diag")
+    names = ("supervisor", "files", "demo", "fault", "spin", "slow", "echo", "hello", "libc_hello", "e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "display", "gfxdemo", "xypm_recover", "xos_diag", "terminal", "terminal_app_probe")
     bootstrap_names = ("supervisor", "files")
-    libc_programs = ("libc_hello", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "xos_diag")
-    disk_programs = ("e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "xos_diag")
+    libc_programs = ("libc_hello", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "xos_diag", "terminal_app_probe")
+    disk_programs = ("e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "xos_diag", "terminal", "terminal_app_probe")
     metadata = []
     header = ["#pragma once", "#include <xos/types.hpp>", "namespace xos::user_images {",
               "struct segment { u64 address, offset, files, memory; u32 permissions; };",
               "struct module { const char* name; const u8* bytes; u64 size; };"]
     for name in names:
-        source_path = root / (f"src/user/services/{name}.cpp" if name in ("files", "display") else f"src/user/programs/{name}.cpp")
+        source_path = root / (f"src/user/services/{name}.cpp" if name in ("files", "display", "terminal") else f"src/user/programs/{name}.cpp")
+        if name == "supervisor" and terminal_supervisor_probe:
+            source_path = root / "tests/fixtures/ncursesw/terminal_supervisor_probe.cpp"
+        if name == "supervisor" and ncurses_supervisor_probe:
+            source_path = root / "tests/fixtures/ncursesw/ncurses_supervisor_probe.cpp"
         if name == "threading_core_probe":
             source_path = root / "tests/fixtures/threading/core_probe.cpp"
+        if name == "terminal_app_probe":
+            source_path = root / "tests/fixtures/ncursesw/terminal_app_probe.cpp"
         extra_flags = ("-w",) if name in libc_programs else ()
         if name in ("cpp_runtime_probe", "tls_exit_probe"):
             extra_flags += ("-fuse-cxa-atexit", "-ftls-model=local-exec",
@@ -101,10 +111,13 @@ def build_users(root, build, nasm, run, build_id):
         executable = build / f"user_{name}.elf"
         run([tool("g++"), *X86_FLAGS, "-nostdlib", "-static", "-no-pie",
              "-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
+             *(["-Wl,--gc-sections"] if name == "libc_hello" else []),
              "-T", str(sdk / "user.ld"), str(sdk / ("crt0_posix.o" if name in ("runtime_probe", "cpp_runtime_probe", "tls_exit_probe") else "crt0_libc.o" if name in libc_programs else "crt0.o")), main,
              *([str(loader_archive)] if name in ("supervisor", "xos_diag") else []), *fault_objects,
-             *([str(core_archive), str(loader_archive)] if name in ("threading_core_probe", "gfxdemo") else []),
-             *([file_ui_object] if name == "supervisor" else []),
+             *([str(core_archive), str(loader_archive)] if name in ("threading_core_probe", "gfxdemo", "terminal") else []),
+             *([compile_source(root / "src/user/drivers/uart_16550.cpp")] if name == "terminal" else []),
+             *([file_ui_object, terminal_control_object, shell_terminal_object] if name == "supervisor" else []),
+             *([str(loader_archive)] if name == "supervisor" else []),
              *([*fatfs_objects] if name == "files" else []),
              *(["-Wl,--start-group", str(archive), str(loader_archive), "-L", str(sdk / "lib"),
                 "-lc", "-lm", "-lgcc", "-Wl,--end-group"]
@@ -177,7 +190,12 @@ def build_users(root, build, nasm, run, build_id):
             "fork_supported": True, "exec_supported": True, "single_main_thread_only": True,
             "max_fork_depth": 3, "replacement_reservations": 1, "fd_count": 32, "spawn_argument_bytes": 255,
             "exec_argument_bytes": 4095, "startup_bytes": 16384, "pipe_atomic_bytes": 4096,
-            "pipe_wait_write_minimum": True, "pipe_atomic_flag": "0x8000000000000000"},
+            "pipe_wait_write_minimum": True, "pipe_wait_deadline": "implemented_unqualified",
+            "stream_lease": {"syscall": 80, "status": "claim_unsupported"},
+            "channel": {"syscall": 81, "status": "implemented_unqualified"},
+            "pio_grant": {"syscall": 82, "status": "implemented_unqualified"},
+            "irq_event": {"syscall": 83, "status": "implemented_unqualified"},
+            "pipe_atomic_flag": "0x8000000000000000"},
         "licenses": {
             str(path.relative_to(sdk)): sha256(path)
             for path in [sdk / "LICENSE", sdk / "NOTICE", *sorted((sdk / "licenses").glob("*"))]

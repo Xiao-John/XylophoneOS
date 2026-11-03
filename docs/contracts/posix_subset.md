@@ -45,7 +45,7 @@
 | 线程 | accepted_subset：T0–T2声明的创建/退出、TLS、mutex/cond/once/TSS；cancel/atfork等仍unsupported | 补线程接口缺口与进程交互；[线程契约](threading.md) |
 | 时间 | accepted_subset：单调时钟与等待；墙钟/时区PY3 B2 accepted_subset（0058），仅其声明范围 | 复用0058冻结证据，另核CPU时间、信号定时器与时钟跳变；[PY3](../plans/cpython_extensions.md) |
 | 映射 | unsupported：mmap/munmap为ENOSYS；mprotect/共享映射无资格 | VMA、匿名映射与保护、文件与共享映射分期 |
-| TTY/信号 | unsupported：没有已验的异步POSIX信号/控制终端/作业控制契约 | 监督Escape取消不冒称SIGINT；先补内核机制和用户态终端服务 |
+| TTY/信号 | 单线程受限终端模式、select及交接已有定向客体证据；完整控制终端、作业控制和异步POSIX信号仍unsupported | 范围和未验证项见[终端控制契约](terminal_control.md)；监督Escape取消不冒称SIGINT |
 | 网络/IPC | socket族无已验兼容契约；现有能力IPC不等于POSIX IPC | Unix域/网络socket、命名共享内存、sem/MQ分别列清单和标准选项，不互相替代 |
 | 文本/locale | accepted_subset：UTF-8文本与argv通道；路径U2未完成，完整locale未审计 | 先核字节路径和C/POSIX locale，再按应用需要扩展；UTF-8显示不等于locale合规 |
 | 工具/构建 | accepted_subset：若干基础工具和受限Make | 逐命令核选项/输出/退出状态；[Make范围](../implementation/make.md)，GNU扩展不充当POSIX要求 |

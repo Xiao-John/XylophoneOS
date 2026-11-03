@@ -10,7 +10,11 @@
 | 0 | 0 | reserved | 既有空位，禁止擅自使用 |
 | 1 | 66 | allocated | 现有分配，逐项见下表；不重新编号 |
 | 67 | 79 | reserved | 内存线：VMA/映射机制；67 的 PX4-A 提案见下表 |
-| 80 | 95 | reserved | 系统底座线：通用等待/信号/进程控制；具体接口尚未设计 |
+| 80 | 80 | allocated | 通用字节流授权；实现未验 |
+| 81 | 81 | allocated | 通用受控 IPC；实现未验 |
+| 82 | 82 | allocated | 受控设备 PIO；实现未验 |
+| 83 | 83 | allocated | 受控 IRQ 事件；实现未验 |
+| 84 | 95 | reserved | 系统底座线：通用等待/信号/进程控制；具体接口尚未登记 |
 | 96 | 111 | reserved | 显示/输入线的后续机制；现有65/66保留 |
 | 112 | 112 | allocated | 设备授权线 v1 单入口 `sys_device`；实现按[契约](device_authorization_v1.md)§7 分段推进 |
 | 113 | 127 | reserved | 设备授权线：后续机制 |
@@ -20,6 +24,15 @@
 成功桩或能力声明，也不保证未来一个需求一定需要新syscall。128以上未分配，不暗示ABI只允许16位。
 
 ## syscall逐项登记
+
+sys60 试行 bit32 扩展 entry 可显式保留通用通道，布局见 `process_exec_channel_entry`
+和 [通道契约](channel.md)；默认 ABI 不变，尚未客体验证。
+sys81 试行 action 4 对最多四个通用端点做原子检查与等待，布局见
+`channel_wait_many_request` 和同一契约；尚未客体验证。
+sys81 action 5 试行派生 fork 子进程双向通道，结构为 `channel_fork_pair`；
+身份、额度和生命周期见同一契约，尚未客体验证。
+action 6 由对端验证派生通道来源，结构为 `channel_fork_verification`；
+见同一契约，尚未客体验证。
 
 数值来源分别为内核基础syscall头与共享ABI头；此表锁定当前分配，自动检查捕获重号、漏项、
 新增占用预留段而未登记，以及源码与本表偏移。allocated不等于完整POSIX或应用资格。
@@ -92,9 +105,16 @@
 | 64 | `sys_clock_realtime` | `src/shared/include/xos/process_abi.hpp` |
 | 65 | `sys_display` | `src/shared/include/xos/display_abi.hpp` |
 | 66 | `sys_display_present` | `src/shared/include/xos/display_abi.hpp` |
+| 80 | `sys_stream_lease` | `src/shared/include/xos/process_abi.hpp` |
+| 81 | `sys_channel` | `src/shared/include/xos/process_abi.hpp` |
+| 82 | `sys_pio_grant` | `src/shared/include/xos/process_abi.hpp` |
+| 83 | `sys_irq_event` | `src/shared/include/xos/process_abi.hpp` |
 | 112 | `sys_device` | `src/shared/include/xos/device_abi.hpp` |
 
 ## 待实施的具体预分配
+
+sys54 的管道显式截止时间扩展已实现但尚未客体验证；console 等待因 C28 撤回，详见
+`e04_loader_sdk.md`；原第三参数为零时的行为保持。
 
 PX4-A 提议认领如下；本分支未合入前不构成全项目登记，不生成源码常量或能力：
 
@@ -113,7 +133,7 @@ claimed必须位于对应reserved段，不能与现有接口或其他认领重�
 |---|---|---|
 | files op | wire v2、op1–25；20clone_session、21anonymous、22seal、23/24维护、25truncate | 文件/包管理共用服务，由文件协议负责人整合；不得各自追加同一个next op |
 | display action / operation | v1控制action0–9、request operation1–6 | 显示负责人；Qt通过用户态display_client接入，不另造同名内核接口 |
-| startup/exec | startup1/2/3、.xos.exec/v3身份标记，线程profile另列 | loader/SDK负责人，升级须说明旧二进制准入/拒绝与迁移 |
+| startup/exec | startup1/2/3、.xos.exec/v3身份标记；试行 startup2 flag bit16 与 reserved 承载 terminal send handle，仅限只读 `.xos.tty` v1 opt-in | loader/SDK负责人，升级须说明旧二进制准入/拒绝与迁移；终端扩展尚未客体验收 |
 | boot_info | v1 64字节；显示扩展v2 112字节；payload descriptor独立 | 引导/内核共同登记，不借用对方字段 |
 | endpoint/PID/TID | 内核按生命周期分配的运行时身份 | 不预留静态数字给Qt，不以程序名或客户端自填身份授予权利 |
 | SDK manifest | process_extensions与display_extensions等能力/输入标识 | 普通/线程生成器同步；reserved不登记为supported |

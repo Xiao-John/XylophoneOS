@@ -8,13 +8,49 @@
 namespace xos::sdk {
 i64 syscall(u64 number, u64 first = 0, u64 second = 0, u64 third = 0);
 u16 target_elf_machine();
+// Optional per-executable console mediation; absent in ordinary applications.
+extern "C" i64 xos_console_write_hook(u32, const void*, u64) __attribute__((weak));
+extern "C" i64 xos_console_read_hook(u32, void*, u64) __attribute__((weak));
 inline i64 write(u32 handle, const void* data, u64 length) {
+    if ((handle == 1 || handle == 2) && xos_console_write_hook)
+        return xos_console_write_hook(handle, data, length);
     return syscall(sys_handle_write, handle, reinterpret_cast<u64>(data), length);
 }
 inline i64 read(u32 handle, void* data, u64 length) {
+    if (handle == 0 && xos_console_read_hook) return xos_console_read_hook(handle, data, length);
     return syscall(sys_handle_read, handle, reinterpret_cast<u64>(data), length);
 }
 inline i64 close(u32 handle) { return syscall(sys_handle_close, handle); }
+inline i64 stream_lease(u32 handle, stream_lease_action action, u64 target = 0) {
+    return syscall(sys_stream_lease, handle, static_cast<u64>(action), target);
+}
+inline i64 pio_grant(pio_grant_action action, u64 target, u64 resource) {
+    return syscall(sys_pio_grant, static_cast<u64>(action), target, resource);
+}
+inline i64 irq_event(irq_event_action action, u64 value, u64 argument = 0) {
+    return syscall(sys_irq_event, static_cast<u64>(action), value, argument);
+}
+inline i64 channel_open(const channel_create& request) {
+    return syscall(sys_channel, static_cast<u64>(channel_action::create), reinterpret_cast<u64>(&request));
+}
+inline i64 channel_get(u32 index, channel_info& info) {
+    return syscall(sys_channel, static_cast<u64>(channel_action::enumerate), index, reinterpret_cast<u64>(&info));
+}
+inline i64 channel_close(u32 handle) {
+    return syscall(sys_channel, static_cast<u64>(channel_action::close), handle);
+}
+inline i64 channel_wait(u32 handle, u64 deadline) {
+    return syscall(sys_channel, static_cast<u64>(channel_action::wait), handle, deadline);
+}
+inline i64 channel_wait_many(const channel_wait_many_request& request, u64 deadline) {
+    return syscall(sys_channel, static_cast<u64>(channel_action::wait_many), reinterpret_cast<u64>(&request), deadline);
+}
+inline i64 channel_fork(channel_fork_pair& request) {
+    return syscall(sys_channel, static_cast<u64>(channel_action::fork_pair), reinterpret_cast<u64>(&request));
+}
+inline i64 channel_verify_fork(const channel_fork_verification& request) {
+    return syscall(sys_channel, static_cast<u64>(channel_action::verify_fork_pair), reinterpret_cast<u64>(&request));
+}
 inline i64 ipc_send(u32 handle, const void* data, u64 length) {
     return syscall(4, handle, reinterpret_cast<u64>(data), length);
 }

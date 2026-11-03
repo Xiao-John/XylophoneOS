@@ -2,7 +2,9 @@
 src/ports/qt6/licenses/ZLIB-LICENSE whitespace=-blank-at-eof
 src/ports/qt6/licenses/Zlib.txt whitespace=-blank-at-eof
 # Unified patch context lines require a leading space, including blank context.
-src/ports/qt6/patches/*.patch whitespace=-blank-at-eol
+src/ports/qt6/patches/*.patch whitespace=-blank-at-eol,-blank-at-eof
+# Unified patch context preserves upstream tab indentation after its prefix.
+src/ports/newlib/patches/*.patch whitespace=-space-before-tab
 # Report indexes bind exact historical bytes, including JSON and text files.
 # Disable checkout and check-in newline conversion for every frozen report.
 docs/reports/** -text

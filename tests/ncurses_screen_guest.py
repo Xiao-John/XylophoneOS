@@ -31,10 +31,17 @@ class ScreenOutput(bytearray):
         self.screen = screen
 
     def extend(self, data):
+        previous = len(self)
         super().extend(data)
+        marker = b'W2_LOCAL_CELL'
+        position = self.find(marker, max(0, previous - len(marker) + 1))
+        boundary = position + len(marker) - previous if position >= 0 and self.screen.captured is None else -1
         offset = 0
         while offset < len(data):
-            offset += os.write(self.screen.pipe, data[offset:])
+            limit = boundary if boundary > offset else len(data)
+            offset += os.write(self.screen.pipe, data[offset:limit])
+            if offset == boundary:
+                self.screen.captured = self.screen.capture()
 
 
 class Screen:
@@ -59,6 +66,7 @@ class Screen:
         os.close(slave)
         self.pipe = os.open(self.fifo, os.O_RDWR)
         self.stream = bytearray()
+        self.captured = None
         self.stop = threading.Event()
         self.thread = threading.Thread(target=self._drain, daemon=True)
         self.thread.start()
@@ -103,20 +111,14 @@ def main():
         raise SystemExit('screen probe requires --xsh and --composed')
     screen = Screen()
     original_guest = guest_probe.Guest
-    snapshots = []
     class ScreenGuest(original_guest):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             self.output = ScreenOutput(screen)
-        def expect_any(self, expected_values, **kwargs):
-            result = super().expect_any(expected_values, **kwargs)
-            if result == b'W2_INPUT_READY' and not snapshots:
-                snapshots.append(screen.capture())
-            return result
     guest_probe.Guest = ScreenGuest
     try:
         guest_probe.main()
-        if len(snapshots) != 1:
+        if screen.captured is None:
             raise AssertionError('wide-screen snapshot not captured')
         if b'\xe4\xb8\xad' not in screen.stream or b'\xcc\x81' not in screen.stream:
             raise AssertionError('Screen output lacks the Chinese or combining UTF-8 bytes')
@@ -124,7 +126,7 @@ def main():
         serial = system / 'ncurses_guest_serial.log'
         hardcopy = system / 'ncurses_screen_hardcopy.bin'
         outer = system / 'ncurses_screen_outer_pty.bin'
-        hardcopy.write_bytes(snapshots[0])
+        hardcopy.write_bytes(screen.captured)
         outer.write_bytes(screen.stream)
         result = {'status': 'passed_subset', 'profile': 'GNU Screen attached 24x80, xterm serial subset',
                   'screen_version': subprocess.run(['screen', '-v'], capture_output=True, text=True).stdout.strip(),

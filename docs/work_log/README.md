@@ -45,3 +45,4 @@
 | 0180 | `0180_ncurses_invalid_input.md` | ncurses 宽字符非法输入及恢复（2026-11-03） |
 | 0181 | `0181_terminfo_missing_recovery.md` | 缺失 xterm 数据与恢复（2026-11-03） |
 | 0182 | `0182_combining_input.md` | 组合字符输入探针（2026-11-03） |
+| 0183 | `0183_screen_evidence_freeze.md` | 宿主终端证据进入受限交付（2026-11-03） |

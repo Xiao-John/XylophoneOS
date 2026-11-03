@@ -58,8 +58,28 @@ def main():
     sdk_path = sdk_candidate / 'receipt.json'
     ncurses_path = probe / 'report.json'
     terminfo_path = terminfo / 'receipt.json'
+    screen_path = system / 'ncurses_screen_report.json'
+    screen_hardcopy = system / 'ncurses_screen_hardcopy.bin'
+    screen_outer = system / 'ncurses_screen_outer_pty.bin'
+    screen_probe = ROOT / 'tests/ncurses_screen_guest.py'
     manifest, guest, receipt, apps = (json.loads(p.read_text()) for p in
                                       (manifest_path, guest_path, candidate_path, consumer_path))
+    require(screen_path.is_file() and screen_hardcopy.is_file() and screen_outer.is_file(),
+            'host Screen evidence is missing')
+    screen = json.loads(screen_path.read_text())
+    require(screen.get('status') == 'passed_subset' and
+            screen.get('profile') == 'GNU Screen attached 24x80, xterm serial subset' and
+            {'screen_window_ascii_hardcopy', 'screen_outer_pty_cjk_and_combining_bytes'}.issubset(
+                set(screen.get('checks', []))) and
+            screen.get('guest_report_sha256') == sha(guest_path) and
+            screen.get('serial_sha256') == sha(serial_path) and
+            screen.get('probe_script_sha256') == sha(screen_probe) and
+            screen.get('hardcopy_sha256') == sha(screen_hardcopy) and
+            screen.get('outer_pty_sha256') == sha(screen_outer) and
+            b'W2_LOCAL_CELL' in screen_hardcopy.read_bytes() and
+            b'\xe4\xb8\xad' in screen_outer.read_bytes() and b'\xcc\x81' in screen_outer.read_bytes() and
+            bool(screen.get('screen_version')) and bool(screen.get('screen_binary_sha256')),
+            'host Screen evidence does not match')
     require(guest.get('status') == 'passed_probe' and guest.get('commit') == commit and
             guest.get('profile') == 'xsh-xterm-24x80-single' and
             CHECKS.issubset(set(guest.get('checks', []))), 'guest result does not meet the subset gate')
@@ -108,6 +128,8 @@ def main():
                          (serial_path, 'serial.log'), (consumer_path, 'consumers_report.json'),
                          (sdk_path, 'sdk_receipt.json'), (ncurses_path, 'ncurses_report.json'),
                          (terminfo_path, 'terminfo_receipt.json'),
+                         (screen_path, 'screen_report.json'), (screen_hardcopy, 'screen_hardcopy.bin'),
+                         (screen_outer, 'screen_outer_pty.bin'),
                          (system / 'xos-install.iso', 'xos-install.iso'),
                          (system / 'user_terminal.image.elf', 'terminal.elf')):
         shutil.copyfile(source, evidence / name)
@@ -122,6 +144,9 @@ def main():
             sha(evidence / 'sdk_receipt.json') == guest['sdk_receipt_sha256'] and
             sha(evidence / 'ncurses_report.json') == guest['ncurses_report_sha256'] and
             sha(evidence / 'terminfo_receipt.json') == guest['terminfo_receipt_sha256'] and
+            sha(evidence / 'screen_report.json') == sha(screen_path) and
+            sha(evidence / 'screen_hardcopy.bin') == screen['hardcopy_sha256'] and
+            sha(evidence / 'screen_outer_pty.bin') == screen['outer_pty_sha256'] and
             sha(evidence / 'xos-install.iso') == guest['system_sha256'] and
             sha(evidence / 'terminal.elf') == guest['terminal_sha256'] and
             all(sha(evidence / name) == guest[field] for name, field in ARTIFACTS.items()) and

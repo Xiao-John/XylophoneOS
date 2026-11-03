@@ -16,6 +16,7 @@
 | 自研 XOS/SDK/工具/测试 | 系统、SDK 和宿主工具 | Apache-2.0 新贡献；保留历史 MIT 基线 |
 | FatFs R0.16 w/patch 2 | files 服务、显式离线安装器 | 原作者 ChaN 的原许可；保留源文件声明及 licenses/fatfs.txt；记录本地修改 |
 | newlib 4.6.0.20260123 | SDK 头、libc.a/libm.a、libc_hello | 多来源、逐组件条款；保留 COPYING.NEWLIB 和头文件内声明，不能统一标成 LGPL 或 Apache |
+| ncurses 6.5 | 宽字符终端库及 SDK 候选，受限客体探针 | 固定原包摘要并保留 COPYING；逐成员与静态分发审查未完成，不授予发行资格 |
 | QtBase 6.8.3、PCRE2、zlib、double-conversion、SHA3 | 受限 QtCore 功能验收 | 来源锁定与许可材料见 `src/ports/qt6`；逐成员、静态重链接与分发审查尚未完成 |
 | GCC/Binutils/NASM/QEMU | 当前为宿主构建/测试工具 | 安装工具不随本 SDK 打包；未来分发 Seed/运行库时另登记实际 GPL/LGPL/例外和对应源码材料 |
 | GNU Binutils Seed 2.47 | 已在 XOS 验收的静态工具 | 原 GNU 条款；src/ports/binutils 保留源包锁定哈希、许可、移植补丁及构建方法，实际构建清单绑定SDK和工具 |

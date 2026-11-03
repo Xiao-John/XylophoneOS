@@ -1,0 +1,193 @@
+{
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "original_index_path": "docs/reports/modern2_runtime_20261029/checksums.json",
+  "original_index_sha256": "fa88c40fc53c0e85ae0ede9f9e4e33e3c7f3f3c7571af6b6b120db6f68a7c8b0",
+  "export_index_sha256": "79adce2a7aec95d986aaa7c70340f817f2978f52ea1639af7d01949c6099b3fd",
+  "original_index_entries": 91,
+  "export_index_entries": 91,
+  "index_field": "-",
+  "added_export_document": null,
+  "changes": [
+    {
+      "path": "docs/reports/modern2_runtime_20261029/build/system_build.log.gz",
+      "original_sha256": "4c170c287e9b7a805d88bd24d48339c2d3853492b349abc698c93711c534a988",
+      "export_sha256": "ce5fd7756afeb746b5ee352debdc511c9e56da07a869c01f05153d44896f9a67"
+    },
+    {
+      "path": "docs/reports/modern2_runtime_20261029/guest/report.json",
+      "original_sha256": "80a6a7f959c7073ef18b754463734f22aa48a08a6e0187e4317e5f01824bd2fd",
+      "export_sha256": "06ef2e61c91ebd9227cf6aec6598db787809950b3bbde04d0d4ffa7e27777912"
+    },
+    {
+      "path": "docs/reports/modern2_runtime_20261029/inputs/output_reuse_rejected.log",
+      "original_sha256": "881617232a8cb36f399b2a7d3de3b794046495d54878e3123aac794adde13ee1",
+      "export_sha256": "85fef1660add1659e26a2fc74c0ee3d678bed7d61aceefdbe84d3b4b54bf1654"
+    },
+    {
+      "path": "docs/reports/modern2_runtime_20261029/inputs/quickjs_receipt.json.gz",
+      "original_sha256": "decc272d04186b422f29ac7c1a71d0d22b6fe0f62fe62d425f6e1ae6c6c7aec7",
+      "export_sha256": "6c6932489cfdc37260b86d53cf75f0511510de606d32e94fb6417d104b4865cf"
+    },
+    {
+      "path": "docs/reports/modern2_runtime_20261029/inputs/system_manifest.json.gz",
+      "original_sha256": "57fffdc666848ff1cfb205f3eb6899fabf8043de0ccdc9cbd79327d571b9a49f",
+      "export_sha256": "057d7bc82c7ade3efb9684b3f0e1e65a9012c7126adb551536fdeaf3308384c1"
+    },
+    {
+      "path": "docs/reports/modern2_runtime_20261029/inputs/threading_sdk_manifest.json.gz",
+      "original_sha256": "d147ff1f393beb25e4d396631cca1f620645a6b9adf0eac170beb4159e61cdc2",
+      "export_sha256": "4a691ee67e5394d61e14f607b36b6e46d9242b61a332055d3af0ba4ffb8258f5"
+    },
+    {
+      "path": "docs/reports/modern2_runtime_20261029/iterations/completion_check_guest/report.json",
+      "original_sha256": "236172733bbb3b5588dafc98d29610e307366e16630c6a2341aac87800d63ef6",
+      "export_sha256": "98aa7ac212af6acdbce606851e362565394dedbaa14997d82dc68b6e1e237480"
+    },
+    {
+      "path": "docs/reports/modern2_runtime_20261029/iterations/completion_check_system_build.log.gz",
+      "original_sha256": "e8f92129ce62a0e8dcdd60e481dc8016ddbd0aa12e63f00e78f35cce76973b6b",
+      "export_sha256": "6cd4335d01e55200362469e8ddf41f1e5f4747e45b75a93aa11d334f23629117"
+    },
+    {
+      "path": "docs/reports/modern2_runtime_20261029/iterations/completion_check_system_manifest.json.gz",
+      "original_sha256": "5f8502249ae16bf139e51203af89742fae1747875e51b70f4a80fa06e0ebef0c",
+      "export_sha256": "d60a67cae08caf41d8568707c6da71bcdf192e2d83c22cfc88f866527e9f0e94"
+    },
+    {
+      "path": "docs/reports/modern2_runtime_20261029/iterations/initial_guest/report.json",
+      "original_sha256": "db8641101af6c46a754d5232749dd7dd1025911efdc49af0f590845f354df229",
+      "export_sha256": "6a1fe9bf23cb5e1830708d9fe5d09a1953be49651810ad34298fc059858cb8b8"
+    },
+    {
+      "path": "docs/reports/modern2_runtime_20261029/iterations/pre_review_build/initial_system_build.log.gz",
+      "original_sha256": "6be2cd6a2da73b1ecb761f7a7b16d4ab7f76d9c05b6d4a3473b9d943f8786dd7",
+      "export_sha256": "fd70e09e5e7fc08cf07807c0210fc39e5c132f54dc0c2e69bfd8da79842c3302"
+    },
+    {
+      "path": "docs/reports/modern2_runtime_20261029/iterations/pre_review_build/system_build.log.gz",
+      "original_sha256": "df14547a1ed73f22a55f42f56e98b362f23536c2550d75472b70d80c3d643627",
+      "export_sha256": "258e2f5a7c414921eab266fa1a94ff7bb1fec3a792da02f64e094252150f9f10"
+    },
+    {
+      "path": "docs/reports/modern2_runtime_20261029/iterations/pre_review_guest/report.json",
+      "original_sha256": "a3bad982e0bf94f198880e551d5ae01f27924a6341d2d4c2cd06204adb55b4eb",
+      "export_sha256": "0708d7f58aebdfea106ff82dd3fabd0a8feaecf0c87818f5032424e088f40a47"
+    },
+    {
+      "path": "docs/reports/modern2_runtime_20261029/iterations/pre_review_qualification.json",
+      "original_sha256": "4bd8c830da473860d1d7c5656a7951d72d656972d37912d1616604fda2e92130",
+      "export_sha256": "b6c4a41735d10082a637678549cf95da616737013825445e786f962cab7dca38"
+    },
+    {
+      "path": "docs/reports/modern2_runtime_20261029/iterations/pre_review_quickjs_receipt.json.gz",
+      "original_sha256": "0bb79b61b372e96558b69c296a74a27ec8ddc512fbcc4cf7b13fa0959246185b",
+      "export_sha256": "6f2a1f6d3b6be21f4642fdf1a65cba8e21b99eca3b114e765a571c64c7bb2497"
+    },
+    {
+      "path": "docs/reports/modern2_runtime_20261029/iterations/pre_review_system_manifest.json.gz",
+      "original_sha256": "9b0ae57d6210e7fac6f47e11d08b0610af1b7d02463dee8efcb736c61471aafe",
+      "export_sha256": "1f81dc56188e101a98d53cdb364e9a28f2ab39d248458a9cb992cf2de6132b89"
+    },
+    {
+      "path": "docs/reports/modern2_runtime_20261029/qualification.json",
+      "original_sha256": "1dfca4e93bc15f0a2185be459dd395a033b3c889c76addc7cc03954e636166ae",
+      "export_sha256": "8aa3e3f0e1e10dc9a0ffccfc4d5cdfd8779d0e74446cde4b290640e7d3e0d4b8"
+    },
+    {
+      "path": "docs/reports/modern2_runtime_20261029/workspaces.json",
+      "original_sha256": "c54f63aa60c3e7f98f5ae677d0bd054dbdd88af709ea187ae138806bc555f4f6",
+      "export_sha256": "12be9db329fc974158437a7b92fa6ff81bb1f6c2e32530058dad6c0da76b7c77"
+    },
+    {
+      "path": "docs/reports/modern2_runtime_20261029/README.md",
+      "original_sha256": "76678c3d93682b2d89d707dbee40da112d3cf2181bc43896d255a1575015ff21",
+      "export_sha256": "93f3c1d206b5f9f89d5a20e65e152f00853d4e3f78de974cf3f0018f77f9f960"
+    }
+  ],
+  "template_variables": [
+    {
+      "name": "XOS_HOST_TEMP_6D6821976CD9",
+      "purpose": "host_temp root"
+    },
+    {
+      "name": "XOS_PYTHON_68FDBC484049",
+      "purpose": "python root"
+    },
+    {
+      "name": "XOS_TOOLCHAIN_35527FAC2790",
+      "purpose": "toolchain root"
+    },
+    {
+      "name": "XOS_WORKTREE_0537C4C7287C",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_0A5B86A0FDD3",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_19282E542E67",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_1AB624B170CC",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_3557AFC38F61",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_445F322455D6",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_50E4DDCC5365",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_5727E1100584",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_68D576C199CF",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_917CF6661DE7",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_9282C9E77071",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_AD501084EF50",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_BC1042F459A2",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_C671BDF53659",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_ED2321C1F627",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_F422EEF78DDA",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_FF880C014128",
+      "purpose": "worktree root"
+    }
+  ],
+  "reproduction": "MANUAL_REQUIRED: configure template roots and obtain matching historical inputs; no replay is claimed.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history.",
+  "transformation": "Host home/workspace/tool roots and unambiguous host QEMU command paths only; generic guest temporary paths are not globally replaced."
+}

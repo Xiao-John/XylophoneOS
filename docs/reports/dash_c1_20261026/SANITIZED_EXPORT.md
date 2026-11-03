@@ -1,0 +1,1 @@
+> **Evidence version:** This is a path-sanitized derivative. Report index hashes identify the exported report files; other historical input and raw hashes retain their original meaning. Source commit and both versions are documented in [the Issue 37 lineage](../../evidence_exports/issue37/dash_c1_lineage.json). Template roots require manual configuration.

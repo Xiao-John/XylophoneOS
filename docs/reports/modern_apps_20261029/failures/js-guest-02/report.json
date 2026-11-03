@@ -80,7 +80,7 @@
   ],
   "disk_before_sha256": "85e31ccf5d2a205538477f18ecd64f1988e8a13149e962f64b82664de3f4f0e2",
   "qemu_command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -109,9 +109,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/js-guest-02/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/js-guest-02/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_b5gtzoj5/qmp.sock,server=on,wait=off"
+    "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_b5gtzoj5/qmp.sock,server=on,wait=off"
   ],
   "qemu_version": "QEMU emulator version 11.1.2",
   "resources_before": [

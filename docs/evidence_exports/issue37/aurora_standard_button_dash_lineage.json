@@ -1,0 +1,40 @@
+{
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "original_index_path": "docs/reports/aurora_standard_button_dash_20261030/evidence.json",
+  "original_index_sha256": "1a83d0bab7fe95bbc7032ed96d618b4b123cbbccd091f97ba440b695e3884967",
+  "export_index_sha256": "0858dbfad04aa0780471570ef218f13761016ae6052f6193c8f41420668e21a3",
+  "original_index_entries": 4,
+  "export_index_entries": 4,
+  "index_field": "files",
+  "added_export_document": null,
+  "changes": [
+    {
+      "path": "docs/reports/aurora_standard_button_dash_20261030/report.json",
+      "original_sha256": "e89b61a623a384369bf6dd3555b7ba0766b14a9d6650db3489485a2aec8acdbb",
+      "export_sha256": "a4e2ce7a2eb8b698888f17069c29be1663ba8f6bad08a7a95f1b18a42c98b3bd"
+    },
+    {
+      "path": "docs/reports/aurora_standard_button_dash_20261030/README.md",
+      "original_sha256": "1a4e9b52c32bfec3bb3acecf9a921d9e007a4d7688d6b9a60067dfa667e39fe6",
+      "export_sha256": "e2fde860e6e60b27b68982032f78d642bd479790b862ee3dd1ea59fa5cf1f701"
+    }
+  ],
+  "template_variables": [
+    {
+      "name": "XOS_HOST_TEMP_6D6821976CD9",
+      "purpose": "host_temp root"
+    },
+    {
+      "name": "XOS_WORKTREE_313E5C73D324",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_9282C9E77071",
+      "purpose": "worktree root"
+    }
+  ],
+  "reproduction": "MANUAL_REQUIRED: configure template roots and obtain matching historical inputs; no replay is claimed.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history.",
+  "transformation": "Host home/workspace/tool roots and unambiguous host QEMU command paths only; generic guest temporary paths are not globally replaced."
+}

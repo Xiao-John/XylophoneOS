@@ -15,6 +15,7 @@ SECTIONS {
     . = ALIGN(4096);
     .rodata : { *(.rodata .rodata.*) } :rodata
     .xos.exec : ALIGN(8) { KEEP(*(.xos.exec)) } :rodata
+    .xos.tty : ALIGN(8) { KEEP(*(.xos.tty)) } :rodata
     .eh_frame : ALIGN(8) {
         __eh_frame_start = .;
         KEEP(*(.eh_frame))

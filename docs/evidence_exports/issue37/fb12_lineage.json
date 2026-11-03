@@ -1,0 +1,39 @@
+{
+  "original_index_path": "docs/reports/fb12_20261029/qualification.json",
+  "original_index_sha256": "99ba4d66f9954d553dc8f4e8e70cec321bd2021d85af8e1cd0cbc8fdd897c4f3",
+  "export_index_sha256": "a5489c75b1d377263bd312294f218efc22fccb35803e4b3e09e44d5d287174f4",
+  "index_field": "files",
+  "index_entries": 21,
+  "changes": [
+    {
+      "path": "docs/reports/fb12_20261029/attempts/mixed_old_build_log.gz",
+      "original_sha256": "35e389d7e3b07d31cc309dc3a3e76c70392eb6859af281aa911e54a89e4665c6",
+      "export_sha256": "873ff43ba58b7c7c1b241e37a6ffb174637d89c125ff9600094699fceb4da7cb"
+    },
+    {
+      "path": "docs/reports/fb12_20261029/file_report.json",
+      "original_sha256": "038cfb0a82e69a2ad637231969af0209091a819d7da8a3f9160474588d5402ed",
+      "export_sha256": "0ccab7352107747c7e70660f70a55b13d63ac762873ac99b0277692635dba33b"
+    },
+    {
+      "path": "docs/reports/fb12_20261029/process_report.json",
+      "original_sha256": "9ff88553e629d89adddbb63d541da95182c22cae18b416fa753818dac7e11ca5",
+      "export_sha256": "9a1f87f1b759e0934770ae5adc59027e56058091c9bb1586545344a63ebccc1e"
+    },
+    {
+      "path": "docs/reports/fb12_20261029/system_manifest.json.gz",
+      "original_sha256": "6c8cad423df0fc6e10709678543303fe726495c5bdfeffea746d97f440e3b3ad",
+      "export_sha256": "82428b6dd223b28a5ef8d9de1475490dde23fc90ff80b0fadf808d88fb7cc796"
+    },
+    {
+      "path": "docs/reports/fb12_20261029/README.md",
+      "original_sha256": "1a3710ee7e4d32e75fe3c4ff58b17ffa718ae9487cf027bf5150ce80050353b6",
+      "export_sha256": "d7948d585c5f557c1ba94b4e1ea270a86313c84bb34a81b3bc4aec16fd38cfaa"
+    }
+  ],
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "transformation": "Only reviewed host command/tool paths are templated; guest test data remains unchanged.",
+  "reproduction": "MANUAL_REQUIRED: configure matching template roots and historical inputs; no replay is claimed.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history."
+}

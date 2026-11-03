@@ -1,0 +1,1 @@
+> **Evidence version:** This is a path-sanitized derivative. Original input hashes still identify the original run. The source commit and both sets of hashes are in [the Issue 37 lineage](../../evidence_exports/issue37/display_e14_lineage.json). Template roots require manual configuration.

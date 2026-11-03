@@ -7,7 +7,7 @@
   ],
   "status": "passed",
   "command": [
-    "<home>/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "${XOS_QEMU}",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -21,7 +21,7 @@
     "-nic",
     "none",
     "-drive",
-    "file=<repo>/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_ROOT}/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -32,6 +32,6 @@
     "-display",
     "none",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_d0pffs2v/qmp.sock,server=on,wait=off"
+    "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_d0pffs2v/qmp.sock,server=on,wait=off"
   ]
 }

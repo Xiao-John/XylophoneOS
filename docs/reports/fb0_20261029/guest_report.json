@@ -38,7 +38,7 @@
   "sha_fixture_sha256": "04e28a644eadaf21cc86dd1063456141caccd845d4a338604cd981212357f45d",
   "elf_sha256": "8c19130faf3f9d8d610e36228912dbb1fecf8974e9147ce34d24f2fb14526ed5",
   "qemu_command": [
-    "/workspace/xos-env/prefix/bin/qemu-system-x86_64",
+    "${XOS_WORKSPACE_5FD05F4AD6BF}/prefix/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -56,7 +56,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=/workspace/XylophoneOS/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_WORKSPACE_411AA84A8699}/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -67,9 +67,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/tmp/xos_fb0_t2s_vcr8/disk.img,format=raw,if=ide,index=0,media=disk,cache=writeback,id=workdisk,node-name=workraw,werror=report,rerror=report",
+    "file=${XOS_HOST_TEMP_ED848E74CE55}/disk.img,format=raw,if=ide,index=0,media=disk,cache=writeback,id=workdisk,node-name=workraw,werror=report,rerror=report",
     "-qmp",
-    "unix:/tmp/xos_u4houmrh/qmp.sock,server=on,wait=off"
+    "unix:${XOS_HOST_TEMP_AE088B54E677}/qmp.sock,server=on,wait=off"
   ],
   "service_discovery": "ps\npid=2 name=spinner state=r ticks=482\npid=7 name=supervisor state=R ticks=0\npid=8 name=files state=r ticks=0\nxsh> "
 }

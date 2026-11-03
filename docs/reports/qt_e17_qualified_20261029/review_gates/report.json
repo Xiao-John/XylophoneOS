@@ -7,14 +7,14 @@
       "checks": 7,
       "error": null,
       "command": [
-        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/tests/qt6_widgets_acceptance.py",
+        "${XOS_PYTHON_68FDBC484049}/bin/python3",
+        "${XOS_WORKTREE_C671BDF53659}/tests/qt6_widgets_acceptance.py",
         "--image",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_system/xos.img",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_system/xos.img",
         "--payload",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_editor/notes.elf",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_editor/notes.elf",
         "--output",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_gates/g05_interactive",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_gates/g05_interactive",
         "--case",
         "interactive"
       ]
@@ -24,14 +24,14 @@
       "checks": 4,
       "error": null,
       "command": [
-        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/tests/qt6_widgets_acceptance.py",
+        "${XOS_PYTHON_68FDBC484049}/bin/python3",
+        "${XOS_WORKTREE_C671BDF53659}/tests/qt6_widgets_acceptance.py",
         "--image",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_system/xos.img",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_system/xos.img",
         "--payload",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_editor/notes.elf",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_editor/notes.elf",
         "--output",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_gates/g05_lifecycle",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_gates/g05_lifecycle",
         "--case",
         "lifecycle"
       ]
@@ -41,14 +41,14 @@
       "checks": 1,
       "error": null,
       "command": [
-        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/tests/qt6_widgets_acceptance.py",
+        "${XOS_PYTHON_68FDBC484049}/bin/python3",
+        "${XOS_WORKTREE_C671BDF53659}/tests/qt6_widgets_acceptance.py",
         "--image",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_system/xos.img",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_system/xos.img",
         "--payload",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_editor/notes.elf",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_editor/notes.elf",
         "--output",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_gates/g05_no_vga",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_gates/g05_no_vga",
         "--case",
         "no-vga"
       ]
@@ -58,14 +58,14 @@
       "checks": 5,
       "error": null,
       "command": [
-        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/tests/qt6_aurora_acceptance.py",
+        "${XOS_PYTHON_68FDBC484049}/bin/python3",
+        "${XOS_WORKTREE_C671BDF53659}/tests/qt6_aurora_acceptance.py",
         "--image",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_system/xos.img",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_system/xos.img",
         "--payload",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/final_showcase/aurora_showcase.elf",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/final_showcase/aurora_showcase.elf",
         "--output",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_gates/aurora"
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_gates/aurora"
       ]
     },
     "widget_probe": {
@@ -73,14 +73,14 @@
       "checks": 0,
       "error": null,
       "command": [
-        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/tests/qt6_widgets_probe.py",
+        "${XOS_PYTHON_68FDBC484049}/bin/python3",
+        "${XOS_WORKTREE_C671BDF53659}/tests/qt6_widgets_probe.py",
         "--image",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_system/xos.img",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_system/xos.img",
         "--payload",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/final_probe/widgets_probe.elf",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/final_probe/widgets_probe.elf",
         "--output",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_gates/widget_probe"
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_gates/widget_probe"
       ]
     },
     "save": {
@@ -88,14 +88,14 @@
       "checks": 10,
       "error": null,
       "command": [
-        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/tests/qt6_save_acceptance.py",
+        "${XOS_PYTHON_68FDBC484049}/bin/python3",
+        "${XOS_WORKTREE_C671BDF53659}/tests/qt6_save_acceptance.py",
         "--image",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_system/xos.img",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_system/xos.img",
         "--payload",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/final_save/save_failures.elf",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/final_save/save_failures.elf",
         "--output",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_gates/save"
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_gates/save"
       ]
     },
     "editor_errors": {
@@ -103,14 +103,14 @@
       "checks": 2,
       "error": null,
       "command": [
-        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/tests/qt6_editor_errors.py",
+        "${XOS_PYTHON_68FDBC484049}/bin/python3",
+        "${XOS_WORKTREE_C671BDF53659}/tests/qt6_editor_errors.py",
         "--image",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_system/xos.img",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_system/xos.img",
         "--payload",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_editor/notes.elf",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_editor/notes.elf",
         "--output",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_gates/editor_errors"
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_gates/editor_errors"
       ]
     },
     "resources": {
@@ -118,14 +118,14 @@
       "checks": 4,
       "error": null,
       "command": [
-        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/tests/qt6_widgets_resources.py",
+        "${XOS_PYTHON_68FDBC484049}/bin/python3",
+        "${XOS_WORKTREE_C671BDF53659}/tests/qt6_widgets_resources.py",
         "--image",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_system/xos.img",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_system/xos.img",
         "--payload",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/final_resources/widgets_resources.elf",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/final_resources/widgets_resources.elf",
         "--output",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_gates/resources"
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_gates/resources"
       ]
     },
     "g04_pixels": {
@@ -133,14 +133,14 @@
       "checks": 1,
       "error": null,
       "command": [
-        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/tests/qt6_gui_acceptance.py",
+        "${XOS_PYTHON_68FDBC484049}/bin/python3",
+        "${XOS_WORKTREE_C671BDF53659}/tests/qt6_gui_acceptance.py",
         "--image",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_system/xos.img",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_system/xos.img",
         "--payload",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/final_gui/qt_demo.elf",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/final_gui/qt_demo.elf",
         "--output",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_gates/g04_pixels",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_gates/g04_pixels",
         "--case",
         "pixels"
       ]
@@ -150,14 +150,14 @@
       "checks": 3,
       "error": null,
       "command": [
-        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/tests/qt6_gui_acceptance.py",
+        "${XOS_PYTHON_68FDBC484049}/bin/python3",
+        "${XOS_WORKTREE_C671BDF53659}/tests/qt6_gui_acceptance.py",
         "--image",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_system/xos.img",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_system/xos.img",
         "--payload",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/final_gui/qt_demo.elf",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/final_gui/qt_demo.elf",
         "--output",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_gates/g04_interactive",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_gates/g04_interactive",
         "--case",
         "interactive"
       ]
@@ -167,14 +167,14 @@
       "checks": 12,
       "error": null,
       "command": [
-        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/tests/qt6_gui_acceptance.py",
+        "${XOS_PYTHON_68FDBC484049}/bin/python3",
+        "${XOS_WORKTREE_C671BDF53659}/tests/qt6_gui_acceptance.py",
         "--image",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_system/xos.img",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_system/xos.img",
         "--payload",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/final_gui/qt_demo.elf",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/final_gui/qt_demo.elf",
         "--output",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_gates/g04_lifecycle",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_gates/g04_lifecycle",
         "--case",
         "lifecycle"
       ]
@@ -184,14 +184,14 @@
       "checks": 1,
       "error": null,
       "command": [
-        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/tests/qt6_gui_acceptance.py",
+        "${XOS_PYTHON_68FDBC484049}/bin/python3",
+        "${XOS_WORKTREE_C671BDF53659}/tests/qt6_gui_acceptance.py",
         "--image",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_system/xos.img",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_system/xos.img",
         "--payload",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/final_gui/qt_demo.elf",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/final_gui/qt_demo.elf",
         "--output",
-        "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_gates/g04_no-vga",
+        "${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_gates/g04_no-vga",
         "--case",
         "no-vga"
       ]

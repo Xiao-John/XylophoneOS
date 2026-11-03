@@ -1,7 +1,7 @@
 {
   "command": [
-    "/Users/perry_guo/homebrew/bin/x86_64-elf-g++",
-    "-B/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-aurora-browser/build/browser_http_host/target_tools/",
+    "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-g++",
+    "-B${XOS_WORKTREE_445F322455D6}/build/browser_http_host/target_tools/",
     "-std=c++17",
     "-O2",
     "-fstack-usage",

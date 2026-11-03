@@ -1,3 +1,5 @@
+> **路径模板：** 本历史记录中的宿主临时根目录为可配置占位符；原始字节保留在源提交。
+
 # 0082 网络设备机制认领（仅设计登记）
 
 2026-10-29，基于重新fetch的upstream `39083f9968d84b5679c86a74a6c8394033c0d915`。
@@ -28,4 +30,4 @@ JS、静态产品发行许可在本登记PR均NOT_RUN。合入前公开设备接
 候选请求布局、逐设备权利、MMIO、DMA、IRQ、撤销及quarantine供维护者审查，编号和
 完整数值另登记；不得把本设计视作实现授权。内核不管理VirtIO队列或代理帧。旧探针报告
 保持原字节和原输入；没有新客体、SDK、镜像或新运行资格。本修订执行 `python3 tests/docs_consistency.py`、`python3 tests/abi_doc_consistency.py
---output-dir /tmp/xos_pr18_abi_audit` 与 `git diff --check` 均通过；所有新架构guest gates为NOT_RUN。
+--output-dir ${XOS_DOC_TEMP_D2AB114B369E}` 与 `git diff --check` 均通过；所有新架构guest gates为NOT_RUN。

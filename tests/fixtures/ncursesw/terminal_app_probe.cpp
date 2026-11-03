@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <termios.h>
 #include <unistd.h>
+#include <sys/select.h>
 #include <sys/wait.h>
 
 namespace {
@@ -67,6 +68,23 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
     if (read(0, &empty, 1) != 0) return 13;
     tty.c_cc[VMIN] = 1;
     if (tcsetattr(0, TCSANOW, &tty) != 0) return 14;
+    fd_set selected{};
+    struct timeval instant{0, 0};
+    FD_ZERO(&selected); FD_SET(0, &selected);
+    if (select(1, &selected, nullptr, nullptr, &instant) != 0 || FD_ISSET(0, &selected)) return 28;
+    FD_ZERO(&selected); FD_SET(0, &selected);
+    struct timeval invalid_time{0, 1000000};
+    errno = 0;
+    if (select(1, &selected, nullptr, nullptr, &invalid_time) != -1 || errno != EINVAL) return 29;
+    FD_ZERO(&selected); FD_SET(0, &selected); FD_SET(1, &selected);
+    errno = 0;
+    if (select(2, &selected, nullptr, nullptr, &instant) != -1 || errno != ENOTSUP) return 30;
+    FD_ZERO(&selected); FD_SET(1, &selected);
+    errno = 0;
+    if (select(2, nullptr, &selected, nullptr, &instant) != -1 || errno != ENOTSUP) return 31;
+    FD_ZERO(&selected); FD_SET(31, &selected);
+    errno = 0;
+    if (select(32, &selected, nullptr, nullptr, &instant) != -1 || errno != EBADF) return 32;
     const int duplicate = dup(1);
     if (duplicate < 0 || close(1) != 0) return 2;
     const pid_t posix_child = fork();
@@ -85,8 +103,16 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
     const char ready[] = "W1_APP_READY\n";
     for (u32 i = 0; i < sizeof(ready) - 1; ++i)
         if (write(duplicate, ready + i, 1) != 1) return 7;
+    FD_ZERO(&selected); FD_SET(0, &selected);
+    struct timeval wait_time{2, 0};
+    if (select(1, &selected, nullptr, nullptr, &wait_time) != 1 || !FD_ISSET(0, &selected)) return 33;
+    FD_ZERO(&selected); FD_SET(0, &selected); instant = {0, 0};
+    if (select(1, &selected, nullptr, nullptr, &instant) != 1 || !FD_ISSET(0, &selected)) return 34;
     char input = 0;
     if (read(0, &input, 1) != 1 || input != 'A') return 8;
+    const char select_ok[] = "W1_SELECT_OK\n";
+    for (u32 i = 0; i < sizeof(select_ok) - 1; ++i)
+        if (write(duplicate, select_ok + i, 1) != 1) return 35;
     const char message[] = "W1_APP_OK\n";
     for (u32 i = 0; i < sizeof(message) - 1; ++i)
         if (write(duplicate, message + i, 1) != 1) return 3;

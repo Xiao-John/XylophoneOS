@@ -108,6 +108,8 @@ def main():
             report["checks"].append("single_thread_libc_fork_terminal_alias")
             guest.expect(b"W1_APP_READY", timeout=30)
             send_bytes(guest, b"A")
+            guest.expect(b"W1_SELECT_OK", timeout=30)
+            report['checks'].append('single_terminal_select_timeout_errors_and_nonconsuming_ready')
             guest.expect(b"W1_APP_OK", timeout=30)
             guest.expect(b"W1_APP_REAPED", timeout=30)
             report["checks"].append("authenticated_application_start_and_exit")

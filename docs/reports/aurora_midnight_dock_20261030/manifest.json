@@ -1,7 +1,7 @@
 {
   "version": 1,
   "files": {
-    "README.md": "633a8d6128f230783752e0d04775e5c280da3b6e465e59aff9c84df5ebe51cad",
+    "README.md": "9c6dc7c7b8e89af68bd7e99e963b6925e06b20e34a4ac629b6ae0bd45c20a262",
     "current-interactive-results.json": "baec5ec9c3185e4cf43b665caff3aa72e600949a89cd91931c5ae7a28a35eb17",
     "current-interactive-runner.log.gz": "5a19d83b314defee96f68f1412ec15ec8826d3603f7f3b285bf20dcfa142815a",
     "current-interactive.serial.log.gz": "9fb0017f6bf5a49517936f09b15980180082fb0243a1294adfa6d051b112f295",
@@ -93,6 +93,8 @@
     "dock-studio-rerun.log.gz": "3e1ae6d3cfdfacde3081ac6f48ccf6192d078e017f0ee40abf486bfa6a7a996e",
     "midnight-after.png": "3f54e139a344c8eb38c0b6638e2a79a9e175882e7656d4d9daff1c8a3dbd5389",
     "midnight-before.png": "c4c0650d6872bfbaa55a4f5e9924830d3d561b54b6cbb6be43e24d16f30b2f45",
-    "scanout-comparison.json": "21c422586b2eae14927937a218fa4a6c807b640fba9a94bde9070cb5ffbdd4a6"
+    "scanout-comparison.json": "21c422586b2eae14927937a218fa4a6c807b640fba9a94bde9070cb5ffbdd4a6",
+    "round2_interactive.json": "1a44ba1bc4aa994480294bf0b78789f1a3269d8d2cd708ee00b51ea5a797e985",
+    "round2_interactive.serial.log.gz": "4a38afed2ae0b352610caf39502a7162ac858072ec5f3ffce8ee7ef0e2c2030f"
   }
 }

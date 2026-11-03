@@ -38,11 +38,11 @@
       "-mno-red-zone",
       "-mgeneral-regs-only",
       "-I",
-      "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/sdk/include",
+      "${XOS_XOS_ROOT}/build/channel_qualification_20261030/system/sdk/include",
       "-c",
-      "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/tests/fixtures/ncursesw/channel_probe.cpp",
+      "${XOS_XOS_ROOT}/tests/fixtures/ncursesw/channel_probe.cpp",
       "-o",
-      "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/guest/wait_probe.o"
+      "${XOS_XOS_ROOT}/build/channel_qualification_20261030/guest/wait_probe.o"
     ],
     [
       "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
@@ -57,15 +57,15 @@
       "-no-pie",
       "-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
       "-T",
-      "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/sdk/user.ld",
-      "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/sdk/crt0.o",
-      "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/guest/wait_probe.o",
+      "${XOS_XOS_ROOT}/build/channel_qualification_20261030/system/sdk/user.ld",
+      "${XOS_XOS_ROOT}/build/channel_qualification_20261030/system/sdk/crt0.o",
+      "${XOS_XOS_ROOT}/build/channel_qualification_20261030/guest/wait_probe.o",
       "-Wl,--start-group",
-      "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/sdk/lib/libxos_loader.a",
-      "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/sdk/lib/libxos.a",
+      "${XOS_XOS_ROOT}/build/channel_qualification_20261030/system/sdk/lib/libxos_loader.a",
+      "${XOS_XOS_ROOT}/build/channel_qualification_20261030/system/sdk/lib/libxos.a",
       "-Wl,--end-group",
       "-o",
-      "<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/guest/wait_probe.elf"
+      "${XOS_XOS_ROOT}/build/channel_qualification_20261030/guest/wait_probe.elf"
     ]
   ],
   "checks": [
@@ -99,7 +99,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-drive",
-    "file=<author-home>/.codex/worktrees/channel_guest_vm_plan/XylophoneOS/build/channel_qualification_20261030/system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_XOS_ROOT}/build/channel_qualification_20261030/system/xos.img,format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",

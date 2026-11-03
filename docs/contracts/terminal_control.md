@@ -74,7 +74,7 @@ ENOTSUP，非终端返回 ENOTTY。初始终端 read 使用 `read_mode`，零值
 试行 `wait_readable` 对应用会话以绝对单调截止时间等待输入队列非空，不消费字节；
 超时、控制中断和服务错误分别返回错误。单线程 libc `select` 当前只支持一个终端
 读取描述符；写入、异常、多个或无描述符以及其他对象均返回 ENOTSUP，非法描述符
-返回 EBADF。它不是通用多源等待；ncurses 的方向键及限时读取已有[客体集成证据](../work_log/0145_terminal_readable_wait.md)，不证明所有 select 参数和竞争。
+返回 EBADF。它不是通用多源等待；ncurses 的方向键及限时读取已有[客体集成证据](../work_log/0145_terminal_readable_wait.md)，空队列、就绪不消费输入和部分错误参数已有[直接客体检查](../work_log/0185_terminal_select_contract.md)，不证明所有 select 参数和竞争。
 
 supervisor 桥接试行显式重连：桥接失败后只在没有附加应用、旧服务完成结果可用时
 非阻塞回收；COM1 已隔离则请求受限 recover，资源已空闲则尝试重新启动服务，仍被

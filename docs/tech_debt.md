@@ -55,8 +55,9 @@
 | D4 | Pillow 线程 | **BLOCKED**：dash worker newlib `_malloc_r` vector14 未解 |
 | D5 | 现代应用 | Web 能力/应用化 BLOCKED |
 | D6 | 平台 | 系统重建/自举未验、SMP 未验、绝对峰值未测 |
-| D7 | Qt | 逐成员许可审计与静态分发审查**本轮交付**（0188：newlib 成员→源码映射 1053/1053、GNU Seed 分发审查、Qt 静态分发审查）；三者均为映射/材料审查、**非法务意见**，Qt 静态再分发资格未授予、字节级逐成员溯源 NOT_RUN。剩余=QML/Quick 未实现（未立项，功能线不阻塞发版） |
+| D7 | Qt | **许可面收口**（0189）：Qt 2 份上游文本入库登记（11→13）、LGPLv3 §4d0 对应源码/可重链接交付物成文（`src/ports/qt6/REDISTRIBUTION.md`+manifest）、10 补丁修改标注（`patches/MODIFICATIONS.md`）、GCC 运行库逐成员 **397/407**、Qt 逐成员映射见 `docs/reports/qt_member_license_20261103/`；newlib 1053/1053（0188）。**均为映射/材料审查、非法务意见，Qt 静态再分发资格仍 NOT_GRANTED**；全部残余（GCC 10 个未解析、Qt 残项、打包核验、安全审查、商业 N/A）逐条登记于 `licenses/open_items.json`。剩余=QML/Quick 未实现（未立项，功能线不阻塞发版） |
 | D8 | 工具/发行 | ISO 通用载荷/空盘安装、日常工具逐命令资格、非 ASCII 大小写折叠、完整游戏流程、公开分发未验 |
 | D9 | 音频 | AU0–AU5 仅文档 |
 | D10 | 发行 | 0.0.2-1103 已定版（`VERSION` 已更新）但**未发布**，资产仍绑 1026 旧 build；冻结/打包/上传按 `docs/releases/next_release.md` 执行 |
 | D11 | 启动/恢复门 | **无盘启动**时 files 客户端返回 `io`，supervisor 恢复门按 fail-closed 常开，xsh 仅剩白名单命令可用（`d6363f8`，2026-10-27 引入）。本轮经用户裁决只给 `task`/`process`/`libc` 三个 smoke 测试补挂临时工作盘绕开；"无盘（io）是否应视为无标记而放行"属设计语义，待按宪法原则裁决后再改门 |
+| D12 | 构建/证据 | **归档成员来源实现债**：`docs/contracts/archive_member_provenance.md` 已立（下次重建起产出 `member_manifest.json`），但三份考古脚本（newlib/GCC/Qt）尚未抽成共享校验器 `scripts/archive_member_map.py`。退出条件=契约生效的首次重建同时落地共享实现，此后逐成员审计只读清单+跑校验 |

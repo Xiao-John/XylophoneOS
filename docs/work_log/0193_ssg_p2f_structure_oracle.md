@@ -28,3 +28,5 @@ Gate B/C、过滤查询、4096 ID 边界、完整游标生命周期、Notes 安�
 没有 GitHub CI 通过声称，没有合并操作。
 
 2026-11-01: the current rebased combined source passed the fixed-document A/B Oracle (34 pages / 267 nodes each), one real link click, and two separate Notes range/resource checks. Overall Gate A remains NOT_QUALIFIED; Gates B/C remain NOT_RUN.
+
+2026-11-03: [current fixed-document Oracle run](../reports/ssg_pagination_round2_20261103/README.md) passed after rebuilding on main `48882c9` and current #48. Gate A remains unqualified; Gates B/C were not run.

@@ -13,7 +13,7 @@
 
 新增记录：[0193 — SSG P2F structure Oracle](0193_ssg_p2f_structure_oracle.md)。
 
-新增记录：[0169 — Application-local SSG](0194_aurora_ssg_consumers.md)（原 0103）。
+新增记录：[0194 — Application-local SSG](0194_aurora_ssg_consumers.md)（原 0103）。
 
 2026-11-01 盘点的重复编号（12 组）：
 

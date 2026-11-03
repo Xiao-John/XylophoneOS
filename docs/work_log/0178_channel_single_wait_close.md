@@ -31,3 +31,10 @@
 `f19510be76c4d92edd7ed6afcb916a764bc9b1fd0448066d62850d7648ee465c`，报告位于
 `build/w1_observed_close_guest_940182a/`。接下来以同样的二次握手和任务状态观察验证
 队列已满时发送端的单通道等待；在新提交及客体验证前，不宣称发送端通过。
+
+提交 `f6b035cb9e73bb2e04d93ccc33714f67961a200b` 后重建，系统 build ID
+`2033fc9b88bd4a6f`。客体 `passed_subset` 同时包含接收端空队列与发送端满队列的
+观察式阻塞关闭：分别在观察父进程等待后关闭对应端点，验证错误返回和失效句柄重验。
+报告位于 `build/w1_sender_close_guest_f6b035c/report.json`，串口 SHA-256
+`f4cf1efa7739accccb38b97782c8a97e03218df13298fb88a4448b91fba39a00`。该结果不
+覆盖多线程、多核、其他调度组合或故障注入。

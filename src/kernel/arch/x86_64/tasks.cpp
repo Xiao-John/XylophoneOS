@@ -2068,7 +2068,7 @@ void* process_syscall(interrupt_frame* frame) {
         const u32 old_pages = current->user_pages;
         const u32 old_depth = current->spawn_depth;
         const auto& staged_thread = main_thread(stage);
-        // The new Client starts a fresh request-ID sequence. Re-key the same
+        // The new client starts a fresh request-ID sequence. Re-key the same
         // two session slots so a pending/late old-image reply cannot match it.
         // PID and files-service open descriptions survive; opaque IPC tokens
         // do not. No fallible step follows the first queue replacement.

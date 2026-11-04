@@ -5,7 +5,7 @@
 
 namespace xos::execution {
 namespace {
-file::Client client;
+file::client client;
 bool client_ready;
 
 bool file_read(void* context, u64 offset, u8* destination, u32 length) {

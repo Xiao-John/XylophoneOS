@@ -20,7 +20,7 @@ for name,info in manifest['artifacts'].items():
  if hashlib.sha256((ROOT/'build'/name).read_bytes()).hexdigest()!=info['sha256']:raise SystemExit('artifact mismatch: '+name)
 obj=out/'probe.o';elf=out/'probe.elf'
 subprocess.run([tool('g++'),*COMMON_FLAGS,*X86_FLAGS,'-I',str(sdk/'include'),'-c',str(src),'-o',str(obj)],check=True)
-subprocess.run([tool('g++'),*X86_FLAGS,'-nostdlib','-static','-no-pie','-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096','-T',str(sdk/'user.ld'),'-Wl,--wrap=_ZN3xos4file6Client4openEPKcjRjS4_S4_',str(sdk/'crt0.o'),str(obj),'-Wl,--start-group',str(sdk/'lib/libxos_loader.a'),str(sdk/'lib/libxos.a'),'-Wl,--end-group','-o',str(elf)],check=True)
+subprocess.run([tool('g++'),*X86_FLAGS,'-nostdlib','-static','-no-pie','-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096','-T',str(sdk/'user.ld'),'-Wl,--wrap=_ZN3xos4file6client4openEPKcjRjS4_S4_',str(sdk/'crt0.o'),str(obj),'-Wl,--start-group',str(sdk/'lib/libxos_loader.a'),str(sdk/'lib/libxos.a'),'-Wl,--end-group','-o',str(elf)],check=True)
 report={'status':'failed','checks':[],'not_run':['file_service_process_death','power_loss','kernel_panic','fault_snapshot','production_report_writer'],'build_id':manifest['build_id'],'fixture_sha256':hashlib.sha256(src.read_bytes()).hexdigest(),'sha_fixture_sha256':hashlib.sha256((src.parent/'sha256.hpp').read_bytes()).hexdigest(),'elf_sha256':hashlib.sha256(elf.read_bytes()).hexdigest()};g=None
 try:
  with tempfile.TemporaryDirectory(prefix='xos_fb0_') as tmp:

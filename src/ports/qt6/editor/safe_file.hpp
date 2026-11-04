@@ -25,7 +25,7 @@ inline SaveResult save(const QString &path,const QByteArray &bytes) {
     const auto name=path.toUtf8();
     if(!path.startsWith('/') || name.size()>=xos::file::max_name || name.contains('\0'))
         return {false,false,QStringLiteral("Use an absolute path shorter than 256 UTF-8 bytes")};
-    xos::file::Client client{};
+    xos::file::client client{};
     if(!client.init()) return {false,false,QStringLiteral("File service unavailable")};
     xos::u32 size=0,version=0,handle=0;
     auto rc=client.stat(name.constData(),size,version);

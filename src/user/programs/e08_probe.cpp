@@ -6,7 +6,7 @@ using namespace xos;
 // Loaded from disk, never embedded in the kernel. Volatile forces real reads.
 volatile const u8 payload[262144] = {90};
 u8 bss_probe[2*1024*1024];
-file::Client client;
+file::client client;
 u8 chunk[3000];
 int failure(u32 stage) {
     sdk::print("[e08] FAILED stage="); sdk::decimal(stage); sdk::print("\n"); return 1;

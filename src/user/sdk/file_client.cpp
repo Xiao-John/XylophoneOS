@@ -17,7 +17,7 @@ u32 fallback_request_id;
 i64 status_value(status code) { return static_cast<i64>(code); }
 }
 
-bool Client::init() {
+bool client::init() {
     session_guard guard;
     send_handle_ = 0;
     recv_handle_ = 0;
@@ -29,10 +29,10 @@ bool Client::init() {
     return true;
 }
 
-i64 Client::call(op operation) {
+i64 client::call(op operation) {
     const u64 caller = sdk::pid();
     if (owner_pid_ != caller) {
-        // A fork copies arbitrary Client objects, including loader and
+        // A fork copies arbitrary client objects, including loader and
         // application instances. Rebind endpoints without clearing the
         // request that this operation has already prepared.
         u32 send = 0, receive = 0;
@@ -68,7 +68,7 @@ i64 Client::call(op operation) {
     return status_value(status::would_block);
 }
 
-i64 Client::set_path(const char* path, char* target, u32& length) {
+i64 client::set_path(const char* path, char* target, u32& length) {
     if (path == nullptr) { return status_value(status::invalid); }
     length = 0;
     while (length < max_name && path[length] != '\0') {
@@ -85,13 +85,13 @@ i64 Client::set_path(const char* path, char* target, u32& length) {
     return 0;
 }
 
-i64 Client::ping() {
+i64 client::ping() {
     session_guard guard;
     request_ = request{};
     return call(op::ping);
 }
 
-i64 Client::list(const char* path, entry* entries, u32 capacity, u32& count, u32& cursor) {
+i64 client::list(const char* path, entry* entries, u32 capacity, u32& count, u32& cursor) {
     session_guard guard;
     count = 0;
     if (entries == nullptr || capacity == 0) {
@@ -143,7 +143,7 @@ i64 Client::list(const char* path, entry* entries, u32 capacity, u32& count, u32
     return 0;
 }
 
-i64 Client::list(entry* entries, u32 capacity, u32& count) {
+i64 client::list(entry* entries, u32 capacity, u32& count) {
     session_guard guard;
     count = 0;
     if (entries == nullptr || capacity == 0) { return status_value(status::invalid); }
@@ -158,7 +158,7 @@ i64 Client::list(entry* entries, u32 capacity, u32& count) {
     return 0;
 }
 
-i64 Client::stat(const char* path, u32& size, u32& version) {
+i64 client::stat(const char* path, u32& size, u32& version) {
     session_guard guard;
     u32 attributes = 0;
     const i64 result = stat_info(path, size, attributes);
@@ -168,13 +168,13 @@ i64 Client::stat(const char* path, u32& size, u32& version) {
     return 0;
 }
 
-i64 Client::stat_info(const char* path, u32& size, u32& attributes) {
+i64 client::stat_info(const char* path, u32& size, u32& attributes) {
     session_guard guard;
     u32 identity = 0;
     return stat_info(path, size, attributes, identity);
 }
 
-i64 Client::stat_info(const char* path, u32& size, u32& attributes, u32& identity) {
+i64 client::stat_info(const char* path, u32& size, u32& attributes, u32& identity) {
     session_guard guard;
     request_ = request{};
     u32 path_length = 0;
@@ -189,7 +189,7 @@ i64 Client::stat_info(const char* path, u32& size, u32& attributes, u32& identit
     return 0;
 }
 
-i64 Client::anonymous(u32& handle) {
+i64 client::anonymous(u32& handle) {
     session_guard guard;
     request_ = request{};
     const i64 result = call(op::anonymous);
@@ -199,14 +199,14 @@ i64 Client::anonymous(u32& handle) {
     return 0;
 }
 
-i64 Client::seal_anonymous(u32 handle) {
+i64 client::seal_anonymous(u32 handle) {
     session_guard guard;
     request_ = request{};
     request_.handle = handle;
     return call(op::anonymous_seal);
 }
 
-i64 Client::open(const char* path, u32 flags, u32& handle, u32& size, u32& version) {
+i64 client::open(const char* path, u32 flags, u32& handle, u32& size, u32& version) {
     session_guard guard;
     request_ = request{};
     u32 path_length = 0;
@@ -222,13 +222,13 @@ i64 Client::open(const char* path, u32 flags, u32& handle, u32& size, u32& versi
     return 0;
 }
 
-i64 Client::fstat(u32 handle, u32& size, u32& attributes) {
+i64 client::fstat(u32 handle, u32& size, u32& attributes) {
     session_guard guard;
     u32 identity = 0;
     return fstat(handle, size, attributes, identity);
 }
 
-i64 Client::fstat(u32 handle, u32& size, u32& attributes, u32& identity) {
+i64 client::fstat(u32 handle, u32& size, u32& attributes, u32& identity) {
     session_guard guard;
     request_ = request{};
     request_.handle = handle;
@@ -240,7 +240,7 @@ i64 Client::fstat(u32 handle, u32& size, u32& attributes, u32& identity) {
     return 0;
 }
 
-i64 Client::read(u32 handle, void* data, u32 length) {
+i64 client::read(u32 handle, void* data, u32 length) {
     session_guard guard;
     if ((data == nullptr && length != 0) || length > sizeof(request_.data)) {
         return status_value(status::invalid);
@@ -259,7 +259,7 @@ i64 Client::read(u32 handle, void* data, u32 length) {
     return static_cast<i64>(received);
 }
 
-i64 Client::write(u32 handle, const void* data, u32 length) {
+i64 client::write(u32 handle, const void* data, u32 length) {
     session_guard guard;
     if ((data == nullptr && length != 0) || length > sizeof(request_.data)) {
         return status_value(status::invalid);
@@ -275,11 +275,11 @@ i64 Client::write(u32 handle, const void* data, u32 length) {
     return static_cast<i64>(response_.value);
 }
 
-i64 Client::seek(u32 handle, u32 offset) {
+i64 client::seek(u32 handle, u32 offset) {
     return seek(handle, static_cast<i64>(offset), seek_set);
 }
 
-i64 Client::seek(u32 handle, i64 offset, u32 origin) {
+i64 client::seek(u32 handle, i64 offset, u32 origin) {
     session_guard guard;
     request_ = request{};
     request_.handle = handle;
@@ -289,7 +289,7 @@ i64 Client::seek(u32 handle, i64 offset, u32 origin) {
     return result == 0 ? static_cast<i64>(response_.value) : result;
 }
 
-i64 Client::truncate(u32 handle, u32 size) {
+i64 client::truncate(u32 handle, u32 size) {
     session_guard guard;
     if (size > fat32_max_file_bytes) { return status_value(status::no_space); }
     request_ = request{};
@@ -298,7 +298,7 @@ i64 Client::truncate(u32 handle, u32 size) {
     return call(op::truncate);
 }
 
-i64 Client::transfer(u32 handle, u64 target_pid, u32& target_handle) {
+i64 client::transfer(u32 handle, u64 target_pid, u32& target_handle) {
     session_guard guard;
     request_ = request{};
     request_.handle = handle;
@@ -308,21 +308,21 @@ i64 Client::transfer(u32 handle, u64 target_pid, u32& target_handle) {
     return result;
 }
 
-i64 Client::clone_session(u64 child_pid) {
+i64 client::clone_session(u64 child_pid) {
     session_guard guard;
     request_ = request{};
     request_.offset = child_pid;
     return call(op::clone_session);
 }
 
-i64 Client::close(u32 handle) {
+i64 client::close(u32 handle) {
     session_guard guard;
     request_ = request{};
     request_.handle = handle;
     return call(op::close);
 }
 
-i64 Client::begin_replace(const char* path, u32 length) {
+i64 client::begin_replace(const char* path, u32 length) {
     session_guard guard;
     if (length > fat32_max_file_bytes) { return status_value(status::no_space); }
     request_ = request{};
@@ -334,7 +334,7 @@ i64 Client::begin_replace(const char* path, u32 length) {
     return call(op::replace_begin);
 }
 
-i64 Client::chunk_replace(u32 offset, const void* data, u32 length) {
+i64 client::chunk_replace(u32 offset, const void* data, u32 length) {
     session_guard guard;
     if ((data == nullptr && length != 0) || length > sizeof(request_.data) ||
         offset > fat32_max_file_bytes || length > fat32_max_file_bytes - offset) {
@@ -348,19 +348,19 @@ i64 Client::chunk_replace(u32 offset, const void* data, u32 length) {
     return call(op::replace_chunk);
 }
 
-i64 Client::commit_replace() {
+i64 client::commit_replace() {
     session_guard guard;
     request_ = request{};
     return call(op::replace_commit);
 }
 
-i64 Client::abort_replace() {
+i64 client::abort_replace() {
     session_guard guard;
     request_ = request{};
     return call(op::replace_abort);
 }
 
-i64 Client::replace(const char* path, const void* data, u32 length) {
+i64 client::replace(const char* path, const void* data, u32 length) {
     session_guard guard;
     if (data == nullptr && length != 0) { return status_value(status::invalid); }
     const i64 started = begin_replace(path, length);
@@ -379,7 +379,7 @@ i64 Client::replace(const char* path, const void* data, u32 length) {
     return committed;
 }
 
-i64 Client::read_all(const char* path, void* data, u32 capacity, u32& length) {
+i64 client::read_all(const char* path, void* data, u32 capacity, u32& length) {
     session_guard guard;
     length = 0;
     u32 size = 0;
@@ -417,7 +417,7 @@ i64 Client::read_all(const char* path, void* data, u32 capacity, u32& length) {
     return 0;
 }
 
-i64 Client::remove(const char* path) {
+i64 client::remove(const char* path) {
     session_guard guard;
     request_ = request{};
     u32 path_length = 0;
@@ -427,7 +427,7 @@ i64 Client::remove(const char* path) {
     return call(op::remove);
 }
 
-i64 Client::mkdir(const char* path) {
+i64 client::mkdir(const char* path) {
     session_guard guard;
     request_ = request{};
     u32 path_length = 0;
@@ -437,7 +437,7 @@ i64 Client::mkdir(const char* path) {
     return call(op::mkdir);
 }
 
-i64 Client::rename(const char* old_path, const char* new_path) {
+i64 client::rename(const char* old_path, const char* new_path) {
     session_guard guard;
     request_ = request{};
     u32 old_length = 0;
@@ -454,7 +454,7 @@ i64 Client::rename(const char* old_path, const char* new_path) {
     return call(op::rename);
 }
 
-i64 Client::block_bench(u32 length) {
+i64 client::block_bench(u32 length) {
     session_guard guard;
     if (length == 0 || length > max_block_bench_bytes) {
         return status_value(status::invalid);
@@ -465,17 +465,17 @@ i64 Client::block_bench(u32 length) {
     return result == 0 ? static_cast<i64>(response_.value) : result;
 }
 
-i64 Client::sync() {
+i64 client::sync() {
     session_guard guard;
     request_ = request{};
     return call(op::sync);
 }
-i64 Client::maintenance_acquire() {
+i64 client::maintenance_acquire() {
     session_guard guard;
     request_ = request{};
     return call(op::maintenance_acquire);
 }
-i64 Client::maintenance_release() {
+i64 client::maintenance_release() {
     session_guard guard;
     request_ = request{};
     return call(op::maintenance_release);

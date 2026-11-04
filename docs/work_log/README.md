@@ -1,6 +1,6 @@
 # work_log 编号索引
 
-新增记录：[0197 — SSG P3C engine-neutral watch](0197_ssg_p3c_engine_neutral_watch.md)。
+新增记录：[0198 — 技术债清偿 C30/C7/C4](0198_tech_debt_c30_c7_c4.md)。
 
 历史存在重复编号（同号多份，主题不同）；本索引消歧可追溯性。编号唯一性规则：
 **0149 之后仍发生过同号占号（见下表 0144 及以后各组），因此"自 0149 起全局唯一"
@@ -94,3 +94,4 @@
 | 0195 | `0195_ssg_p2f_structure_oracle.md` | SSG P2F structure Oracle（PR #49） |
 | 0196 | `0196_ssg_p3b_dual_provider.md` | SSG P3B 双 Provider 聚合与隔离（PR #50） |
 | 0197 | `0197_ssg_p3c_engine_neutral_watch.md` | SSG P3C engine-neutral watch（PR #51） |
+| 0198 | `0198_tech_debt_c30_c7_c4.md` | 技术债清偿：file_client 改名、C7 去重、C4 放掉 |

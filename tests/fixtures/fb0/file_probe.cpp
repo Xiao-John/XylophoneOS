@@ -2,11 +2,11 @@
 #include <xos/sdk.hpp>
 #include <xos/file_client.hpp>
 #include "sha256.hpp"
-static xos::file::Client files;
+static xos::file::client files;
 static unsigned char data[1024];
-extern "C" xos::i64 real_open(xos::file::Client*,const char*,xos::u32,xos::u32&,xos::u32&,xos::u32&) asm("__real__ZN3xos4file6Client4openEPKcjRjS4_S4_");
-extern "C" xos::i64 wrapped_open(xos::file::Client*,const char*,xos::u32,xos::u32&,xos::u32&,xos::u32&) asm("__wrap__ZN3xos4file6Client4openEPKcjRjS4_S4_");
-extern "C" xos::i64 wrapped_open(xos::file::Client* c,const char* path,xos::u32 flags,xos::u32& h,xos::u32& size,xos::u32& version){
+extern "C" xos::i64 real_open(xos::file::client*,const char*,xos::u32,xos::u32&,xos::u32&,xos::u32&) asm("__real__ZN3xos4file6client4openEPKcjRjS4_S4_");
+extern "C" xos::i64 wrapped_open(xos::file::client*,const char*,xos::u32,xos::u32&,xos::u32&,xos::u32&) asm("__wrap__ZN3xos4file6client4openEPKcjRjS4_S4_");
+extern "C" xos::i64 wrapped_open(xos::file::client* c,const char* path,xos::u32 flags,xos::u32& h,xos::u32& size,xos::u32& version){
  const auto result=real_open(c,path,flags,h,size,version);
  if(result==0 && xos::sdk::equal(path,"/bin/fault.elf")){
   sha256 hash;xos::u32 total=0;

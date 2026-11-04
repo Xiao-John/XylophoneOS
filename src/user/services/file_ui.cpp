@@ -10,7 +10,7 @@ namespace {
 using namespace xos;
 using namespace xos::sdk;
 
-file::Client client;
+file::client client;
 u8 image_buffer[24576];
 u8 dash_buffer[file::request_data_size];
 u8 editor_buffer[8192];

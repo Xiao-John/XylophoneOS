@@ -11,7 +11,7 @@ struct entry {
     bool directory;
 };
 
-class Client {
+class client {
 public:
     bool init();
     i64 ping();

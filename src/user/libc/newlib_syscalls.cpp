@@ -87,7 +87,7 @@ struct action_set {
 };
 struct pipe_handles { u32 read_token; u32 write_token; };
 
-xos::file::Client file_client;
+xos::file::client file_client;
 xos::terminal::client terminal_client;
 bool runtime_ready;
 char current_directory[max_path] = "/";

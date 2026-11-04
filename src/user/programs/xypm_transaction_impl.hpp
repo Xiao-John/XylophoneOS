@@ -16,7 +16,7 @@ directory created[max_directories]{};
 package_view packages[64]{};
 char db_data[metadata_limit+1], index_data[metadata_limit+1];
 size_t item_count,created_count,package_count,db_length,index_length;
-xos::file::Client files;
+xos::file::client files;
 FILE* held_package;
 unsigned char io_buffer[2048];
 #ifdef XYP_TEST_FAULTS

@@ -33,10 +33,6 @@
     }
   ],
   "screenshots": {
-    "browser-dom-first": {
-      "png_bytes": 250043,
-      "host_capture_ms": 47.71429201355204
-    },
     "browser-dom-reload": {
       "png_bytes": 249065,
       "host_capture_ms": 26.25495899701491

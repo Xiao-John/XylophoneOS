@@ -6,7 +6,7 @@ extern "C" int xos_user_main(const startup_info* startup) {
     const char* const* argv = reinterpret_cast<const char* const*>(startup->argv);
     const char* mode = startup->argc > 1 ? argv[1] : "normal";
     if (sdk::equal(mode, "normal")) { sdk::print("GATE_NORMAL\n"); return 0; }
-    file::Client files;
+    file::client files;
     if (!files.init() || files.maintenance_acquire() != 0) { sdk::print("GATE_FAIL acquire\n"); return 1; }
     if (sdk::equal(mode, "keep")) { sdk::print("GATE_KEEP\n"); return 0; }
     if (sdk::equal(mode, "mark")) {

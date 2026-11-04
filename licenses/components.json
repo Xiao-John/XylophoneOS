@@ -771,6 +771,20 @@
       "artifact_sha256": {
         "src/ports/cpython/pillow/LICENSE": "17f240ae101143707e5e7303a5d800450d9ccc7475b463cedb555cefdb3c6ece"
       }
+    },
+    {
+      "name": "GFDL manual pages (GNU Seed tools)",
+      "version": "GFDL 1.3 (as shipped with GCC 16.2.0 docs)",
+      "path": "src/ports/gcc",
+      "source": "gcc-16.2.0/gcc/doc/include/fdl.texi (pinned archive sha256 e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e)",
+      "license": "GFDL-1.3",
+      "notices": [
+        "licenses/GFDL-1.3.texi"
+      ],
+      "used_in": [
+        "man7/GFDL.7 and related manual pages on the seed work disk"
+      ],
+      "modifications": "none; text extracted byte-identical from the pinned GCC source archive"
     }
   ]
 }

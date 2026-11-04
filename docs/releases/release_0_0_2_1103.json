@@ -1,0 +1,49 @@
+{
+  "version": "0.0.2-1103",
+  "tag_name": "v0.0.2-1103",
+  "tag_commit": "071330f3b196d357c4a823f1719793b449513b86",
+  "source_commit": "071330f3b196d357c4a823f1719793b449513b86",
+  "system_build_id": "8356e45af316fc93",
+  "release_smoke": "11/11 passed (package_smoke_report.json)",
+  "license_audit": "PASS, 0 open items",
+  "qt_asset": "included (user directive 2026-11-04); B4 25/25 PASS, B5 PASS_WITH_LIMITS",
+  "html_url": "https://github.com/Xiao-John/XylophoneOS/releases/tag/v0.0.2-1103",
+  "release_id": "RE_kwDOVU8IlM4Z30C_",
+  "published_at": "2026-11-04T14:59:27Z",
+  "draft": false,
+  "prerelease": false,
+  "assets": [
+    {
+      "name": "CHECKSUMS.sha256",
+      "sha256": "e683c807b53bc462eed3f8c2316e1e6be139551ec334cbc97ee1138f8d3f30d2",
+      "bytes": 793
+    },
+    {
+      "name": "release_manifest.json",
+      "sha256": "1f8b51ee3b538eafc4d7c4a9309f6e7afd0f43b0e025ef80154d3dd72b815eb8",
+      "bytes": 583248
+    },
+    {
+      "name": "xylophoneos_revival_0.0.2-1103_images.tar.gz",
+      "sha256": "1de27573ca7119b72df27a3d8a4ff55097e699d86c21a319c7b76bd2d7e4da60",
+      "bytes": 94700769
+    },
+    {
+      "name": "xylophoneos_revival_0.0.2-1103_sdk.tar.gz",
+      "sha256": "929d6070f016f8315e7aa6d18c7bca545182facb730f3760bf1becacf9c80ec4",
+      "bytes": 9523779
+    },
+    {
+      "name": "xylophoneos_revival_0.0.2-1103_qt6_static.tar.gz",
+      "sha256": "744a5260cfab63cdf8392ad9178773c516c349b127905e6181f0c5ff8612455f",
+      "bytes": 84592003
+    },
+    {
+      "name": "xos-0.0.2-1103-sources.tar.gz",
+      "sha256": "cb6dbbfe20d73657fa4e0c5c082903b654a7d76be7b8ef0d54049851878bbd60",
+      "bytes": 375131248
+    }
+  ],
+  "source_archive_sha256": "cb6dbbfe20d73657fa4e0c5c082903b654a7d76be7b8ef0d54049851878bbd60",
+  "notes": "sources archive built from tag commit; system build from 6fe330ce; packaging evidence work_log 0202/0203"
+}

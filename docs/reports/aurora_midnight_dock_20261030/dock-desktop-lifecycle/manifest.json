@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "files": {
+    "guest_qemu.log.gz": "4b87e4e4cb800b469f1c1d9a1ca1956e7fc06fcbf575ed37c27fcab03cbb3567",
+    "guest_serial.log.gz": "aa3365e56672734647902dd12f64008fbe5f4c71ec8151196dc51a75c5f6afe9",
+    "legacy-no-aurora.png": "c184f04636cf3675c3dd7b1163dbc6e1a171722b4690cd8cf41df2b180126d74",
+    "legacy-no-aurora.ppm.gz": "6a140a24ddddd0db8f76a1c61d54f29e6aeaf0f1b527329f201d265b4508d483",
+    "midnight-home.png": "3f54e139a344c8eb38c0b6638e2a79a9e175882e7656d4d9daff1c8a3dbd5389",
+    "midnight-home.ppm.gz": "7f23c47d9e32cd206df5b75332538138806369b1b94abfd7b43f35adf980393c",
+    "report.json": "d6ff3beaad914f663ab95f953a8bbb72b4224470482fd6f4b1f9cd7ca202331d",
+    "serial.log.gz": "aa3365e56672734647902dd12f64008fbe5f4c71ec8151196dc51a75c5f6afe9"
+  }
+}

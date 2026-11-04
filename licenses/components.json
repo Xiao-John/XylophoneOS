@@ -136,7 +136,7 @@
         "XOS-hosted static Seed on explicit test work disk"
       ],
       "modifications": "XOS port patches/config and exact source/build/SDK provenance retained by scripts/build_binutils.py",
-      "distribution_status": "local_only; public_release_and_corresponding_source_bundle_review_not_completed"
+      "distribution_status": "shipped_in_0.0.1-1024_and_0.0.1-1026_work_disk; corresponding_source_bundle_published_in_those_releases; member_license_review_not_completed; see docs/reports/gnu_seed_distribution_20261103/"
     },
     {
       "name": "bundled zlib",
@@ -178,7 +178,7 @@
         "target application static libstdc++/libsupc++ and GNU libgcc; E08-5 facilities tested separately"
       ],
       "modifications": "Source lock, port patches and original/derived Seed manifests retain build and static link provenance. Patch 0007 repairs lrealpath fallback. Target runtime keeps exceptions/RTTI and uses SDK-provided TLS exit entry; independently derived libraries remove GNU fallback member with _GLIBCXX_HAVE___CXA_THREAD_ATEXIT=1. Original/derived manifests bind inputs separately.",
-      "distribution_status": "local_only; corresponding_source_bundle_and_member_license_review_not_completed",
+      "distribution_status": "shipped_in_0.0.1-1024_and_0.0.1-1026_work_disk_and_sdk; corresponding_source_bundle_published_in_those_releases; member_license_review_not_completed; see docs/reports/gnu_seed_distribution_20261103/",
       "source_archive_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
       "target_runtime_source_manifest": "src/ports/gcc/e08_5_target_runtime_manifest.json",
       "frontend_source_manifest": "src/ports/gcc/e08_5_gxx_manifest.json",
@@ -211,7 +211,7 @@
         "XOS-hosted static GCC C Seed; compiler host closure only, not accepted E08-5 target runtime"
       ],
       "modifications": "Source lock, port patches and original/derived Seed manifests retain build and static link provenance. Patch 0007 repairs lrealpath fallback.",
-      "distribution_status": "local_only; corresponding_source_bundle_and_member_license_review_not_completed",
+      "distribution_status": "full_source_shipped_in_0.0.1-1024_and_0.0.1-1026_corresponding_source_bundle; linkage_into_shipped_seed_binaries_inferred_from_build_method_not_member_verified; member_license_review_not_completed; see docs/reports/gnu_seed_distribution_20261103/",
       "source_archive_sha512": "3b684c9bcb9ede2b7e54d0ba4c9764bfa17c20d4f3000017c553b6f1e135b536949580ff37341680c25dc236cfe0ba1db8cfdfe619ce013656189ef0871b89f8"
     },
     {
@@ -232,7 +232,7 @@
         "XOS-hosted static GCC C Seed; compiler host closure only, not accepted E08-5 target runtime"
       ],
       "modifications": "Source lock, port patches and original/derived Seed manifests retain build and static link provenance. Patch 0007 repairs lrealpath fallback.",
-      "distribution_status": "local_only; corresponding_source_bundle_and_member_license_review_not_completed",
+      "distribution_status": "full_source_shipped_in_0.0.1-1024_and_0.0.1-1026_corresponding_source_bundle; linkage_into_shipped_seed_binaries_inferred_from_build_method_not_member_verified; member_license_review_not_completed; see docs/reports/gnu_seed_distribution_20261103/",
       "source_archive_sha512": "0176e50808dcc07afbf5bc3e38bf9b7b21918e5f194aa0bfd860d99b00c470630aef149776c4be814a61c44269c3a5b9a4b0b1c0fcd4c9feb1459d8466452da8"
     },
     {
@@ -251,7 +251,7 @@
         "XOS-hosted static GCC C Seed; compiler host closure only, not accepted E08-5 target runtime"
       ],
       "modifications": "Source lock, port patches and original/derived Seed manifests retain build and static link provenance. Patch 0007 repairs lrealpath fallback.",
-      "distribution_status": "local_only; corresponding_source_bundle_and_member_license_review_not_completed",
+      "distribution_status": "full_source_shipped_in_0.0.1-1024_and_0.0.1-1026_corresponding_source_bundle; linkage_into_shipped_seed_binaries_inferred_from_build_method_not_member_verified; member_license_review_not_completed; see docs/reports/gnu_seed_distribution_20261103/",
       "source_archive_sha512": "4bab4ef6076f8c5dfdc99d810b51108ced61ea2942ba0c1c932d624360a5473df20d32b300fc76f2ba4aa2a97e1f275c9fd494a1ba9f07c4cb2ad7ceaeb1ae97"
     },
     {
@@ -275,7 +275,7 @@
       "name": "sbase",
       "version": "c546c3a5724c81cee9a11d816a38ccdf17472129",
       "path": "src/ports/sbase",
-      "source": "https://git.suckless.org/sbase",
+      "source": "https://git.suckless.org/sbase/commit/c546c3a5724c81cee9a11d816a38ccdf17472129.html",
       "license": "MIT",
       "notices": [
         "src/ports/sbase/upstream/LICENSE"
@@ -342,7 +342,7 @@
       "name": "idna (CPython PY3 A3)",
       "version": "3.20",
       "path": "src/ports/cpython/idna_lock.json",
-      "source": "https://pypi.org/project/idna/3.20/",
+      "source": "https://files.pythonhosted.org/packages/58/a2/bb081bab032533a855d44de1d56f8e8426114ff1ba5d1f07a438a0a654f8/idna-3.20-py3-none-any.whl",
       "license": "BSD-3-Clause",
       "notices": [
         "src/ports/cpython/upstream/idna-LICENSE.md"
@@ -362,7 +362,7 @@
       "name": "sbase Make",
       "version": "c546c3a5724c81cee9a11d816a38ccdf17472129",
       "path": "src/ports/make",
-      "source": "https://git.suckless.org/sbase",
+      "source": "https://git.suckless.org/sbase/commit/c546c3a5724c81cee9a11d816a38ccdf17472129.html",
       "license": "MIT for retained upstream; Apache-2.0 for independent XOS backend and build code",
       "notices": [
         "src/ports/make/upstream/LICENSE"
@@ -418,7 +418,7 @@
       "name": "tzdata (CPython PY3 B2)",
       "version": "2026.5",
       "path": "src/ports/cpython",
-      "source": "https://pypi.org/project/tzdata/2026.5/",
+      "source": "https://files.pythonhosted.org/packages/94/21/1e5995a1c920cce14e4bffae20c665ec10e7ed03ab25e006cd741092b718/tzdata-2026.5-py2.py3-none-any.whl",
       "source_archive_sha256": "b683bd1b6659ddcd810ff02ad09ba821d4bf1065072805063eb35c49617905ac",
       "license": "Apache-2.0",
       "notices": [
@@ -526,8 +526,10 @@
         "src/ports/qt6/licenses/GPL-3.0-only.txt",
         "src/ports/qt6/licenses/LGPL-3.0-only.txt",
         "src/ports/qt6/licenses/LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception.txt",
+        "src/ports/qt6/licenses/LicenseRef-Qt-Commercial.txt",
         "src/ports/qt6/licenses/PCRE2-LICENCE-SLJIT",
         "src/ports/qt6/licenses/PCRE2-LICENCE.md",
+        "src/ports/qt6/licenses/Qt-GPL-exception-1.0.txt",
         "src/ports/qt6/licenses/SHA3-BRG-ENDIAN-LICENSE",
         "src/ports/qt6/licenses/SHA3-CC0-LICENSE",
         "src/ports/qt6/licenses/ZLIB-LICENSE",
@@ -543,8 +545,10 @@
         "src/ports/qt6/licenses/GPL-3.0-only.txt": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
         "src/ports/qt6/licenses/LGPL-3.0-only.txt": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768",
         "src/ports/qt6/licenses/LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception.txt": "0526625fcc746a42d3f19a0ab357d3dc8479fdbe3bfd168825498f50215c7a63",
+        "src/ports/qt6/licenses/LicenseRef-Qt-Commercial.txt": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700",
         "src/ports/qt6/licenses/PCRE2-LICENCE-SLJIT": "5f216505c0f6ea3273caec89e766eef93cdeb7bbb0c429f9360116d7c938feeb",
         "src/ports/qt6/licenses/PCRE2-LICENCE.md": "9cf7ac6976099a1d856826d3ef1b093bd6b84489dc6100628ac79e740cf9885a",
+        "src/ports/qt6/licenses/Qt-GPL-exception-1.0.txt": "40678d338ce53cd93f8b22b281a2ecbcaa3ee65ce60b25ffb0c462b0530846b2",
         "src/ports/qt6/licenses/SHA3-BRG-ENDIAN-LICENSE": "2fed6f252ca4a7e813811de3cd3cd08183edd4138bdee909410ef6eee394e82c",
         "src/ports/qt6/licenses/SHA3-CC0-LICENSE": "1f2786e2c5befeb4dcba6638db6528bf96ef5d2cf24bc85ab5a81ef00abef59d",
         "src/ports/qt6/licenses/ZLIB-LICENSE": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080",
@@ -664,7 +668,7 @@
       "name": "psutil compatibility probe",
       "version": "7.1.3",
       "path": "tests/fixtures/modern_apps",
-      "source": "https://pypi.org/project/psutil/7.1.3/",
+      "source": "https://files.pythonhosted.org/packages/e1/88/bdd0a41e5857d5d703287598cbf08dad90aed56774ea52ae071bae9071b6/psutil-7.1.3.tar.gz",
       "license": "BSD-3-Clause",
       "notices": [
         "licenses/modern_apps/psutil_LICENSE"
@@ -682,7 +686,7 @@
       "name": "Pillow compatibility probe",
       "version": "11.3.0",
       "path": "tests/fixtures/modern_apps",
-      "source": "https://pypi.org/project/Pillow/11.3.0/",
+      "source": "https://files.pythonhosted.org/packages/f3/0d/d0d6dea55cd152ce3d6767bb38a8fc10e33796ba4ba210cbab9354b6d238/pillow-11.3.0.tar.gz",
       "license": "HPND",
       "notices": [
         "licenses/modern_apps/pillow_LICENSE"
@@ -737,7 +741,7 @@
       "name": "defusedxml compatibility probe",
       "version": "0.7.1",
       "path": "tests/fixtures/modern_apps",
-      "source": "https://pypi.org/project/defusedxml/",
+      "source": "https://files.pythonhosted.org/packages/07/6c/aa3f2f849e01cb6a001cd8554a88d4c77c5c1a31c95bdf1cf9301e6d9ef4/defusedxml-0.7.1-py2.py3-none-any.whl",
       "license": "PSF-2.0",
       "notices": [
         "licenses/modern_apps/defusedxml_LICENSE"
@@ -745,7 +749,7 @@
       "used_in": [
         "isolated modern application compatibility probes only; not default image application"
       ],
-      "modifications": "QuickJS: two explicit source adaptations in quickjs_xos.patch; other inspected sources unchanged",
+      "modifications": "No upstream source changes: the pinned 0.7.1 wheel is used exactly as downloaded; the XOS-authored Apache-2.0 probe tests/fixtures/modern_apps/python_probe.py imports defusedxml.ElementTree.fromstring and DefusedXmlException only to parse valid XML and assert entity expansion is rejected; upstream license text kept verbatim",
       "artifact_sha256": {
         "licenses/modern_apps/defusedxml_LICENSE": "b80ce9da8c42a1f91079627fbbe2bf27210ae108a0ffe5f077d5b08e076c24c8"
       },

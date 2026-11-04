@@ -1,0 +1,152 @@
+{
+  "status": "PASS_AFTER_TARGETED_RETRY",
+  "scope": "affected single-source Browser, Notes and P1 real-guest regressions on the v14 combination; dash is an explicitly supplied earlier-built executable",
+  "initial_runner_sha256": "26704f8b67c9d8f111de4e7812b42dee99bb982838d61c42aac5df23718bc0c4",
+  "corrected_runner_sha256": "388cbfe8bcf2729cae7e7125e93e1d35d5d7aacf40a8ead8b579130a547c5e28",
+  "raw_summary_sha256": "fef3ad9af712b7c9e75a849cd024f1adf9fdb5e351e1650955472686e469bca7",
+  "raw_step_log_sha256": {
+    "v14-reg-exhaust-ssg_p2g6_exhaust_verify.py.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "v14-reg-exhaust.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "v14-reg-navigation-ssg_p2g6_navigation_verify.py.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "v14-reg-navigation.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "v14-reg-notes-boundaries-retry.log": "13db67ca16c8c551d1605e02812089144850e3dfcdbf59a5b61990b772fe1436",
+    "v14-reg-notes-boundaries.log": "ae7ef5f33e6a3f75039848075fad5a9d49c356662ae550ac6436642c0535ca2c",
+    "v14-reg-notes-edit-verify.log": "bb77e70de774b9ed6662b5d6fbaf213e5f218aefd4dfc4c62eeb425084054887",
+    "v14-reg-notes-edit.log": "079a3dfb853baf937b9f7e152638838a857e647783c4d8bc8fe6f0611cb45d0a",
+    "v14-reg-notes-no-edit-verify.log": "229bc251761d767f75828b5554f4278373d424f1ee97ab89dca0343c3d73361e",
+    "v14-reg-notes-no-edit.log": "0f6af32d202c3fda5a063deab9a90486a94270533fa44be84d82d324ed856ffe",
+    "v14-reg-notes-no-log.log": "945e979857a00aeaae461be449d6470c978d71fdd37495dd6df7d6c47f8b6662",
+    "v14-reg-notes-protect-ancestor-verify.log": "9b646bf3e49cb597bc64f551cad1684fc09ec325585d46dc68f230687f72213a",
+    "v14-reg-notes-protect-ancestor.log": "d84a1d7f70de65955a780666ca89fcd1593ee1f450df0a57683e46800b3a0590",
+    "v14-reg-notes-protect-document-verify.log": "f7874038d290cb9d1024ffd16504a5138eec6e66d73cc79989bdf7208a1a303a",
+    "v14-reg-notes-protect-document.log": "0fd514d483e7b41490d26baeace34d0421b8eb70df7fe4e5b535e00d04a0ee0c",
+    "v14-reg-notes-range.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "v14-reg-notes-revoke-verify.log": "8a832efefe0f6d10fc2a95d8b772b46584181ecfb55e7b48cdeea4aeba40c708",
+    "v14-reg-notes-revoke.log": "7832efabba93f7acedba1cdb4737eb59475a88813eb1ca266a32f8d181936334",
+    "v14-reg-p1.log": "b48e98a613542f6eeabab1cff51592aacff3226011f32b7fb1954705694ee1b5",
+    "v14-reg-pages-oracle.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "v14-reg-recovery-ssg_p2g5_verify.py.log": "c96e85944869ea9c545342f912b0023379e4c8964a70643260be67caffe8b91f",
+    "v14-reg-recovery-ssg_p2g6_oracle_verify.py.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "v14-reg-recovery.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "v14-reg-reload-ssg_p2g6_reload_verify.py.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "v14-reg-reload.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "v14-reg-scroll-diff-ssg_p2g4_verify.py.log": "c96e85944869ea9c545342f912b0023379e4c8964a70643260be67caffe8b91f",
+    "v14-reg-scroll-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "steps": [
+    {
+      "step": "pages-oracle guest",
+      "exit_code": 0
+    },
+    {
+      "step": "scroll-diff guest",
+      "exit_code": 0
+    },
+    {
+      "step": "scroll-diff ssg_p2g4_verify.py",
+      "exit_code": 0
+    },
+    {
+      "step": "recovery guest",
+      "exit_code": 0
+    },
+    {
+      "step": "recovery ssg_p2g5_verify.py",
+      "exit_code": 0
+    },
+    {
+      "step": "recovery ssg_p2g6_oracle_verify.py",
+      "exit_code": 0
+    },
+    {
+      "step": "exhaust guest",
+      "exit_code": 0
+    },
+    {
+      "step": "exhaust ssg_p2g6_exhaust_verify.py",
+      "exit_code": 0
+    },
+    {
+      "step": "reload guest",
+      "exit_code": 0
+    },
+    {
+      "step": "reload ssg_p2g6_reload_verify.py",
+      "exit_code": 0
+    },
+    {
+      "step": "navigation guest",
+      "exit_code": 0
+    },
+    {
+      "step": "navigation ssg_p2g6_navigation_verify.py",
+      "exit_code": 0
+    },
+    {
+      "step": "notes-range",
+      "exit_code": 0
+    },
+    {
+      "step": "notes-boundaries",
+      "exit_code": 1
+    },
+    {
+      "step": "notes-edit guest",
+      "exit_code": 0
+    },
+    {
+      "step": "notes-edit independent",
+      "exit_code": 0
+    },
+    {
+      "step": "notes-no-edit guest",
+      "exit_code": 0
+    },
+    {
+      "step": "notes-no-edit independent",
+      "exit_code": 0
+    },
+    {
+      "step": "notes-revoke guest",
+      "exit_code": 0
+    },
+    {
+      "step": "notes-revoke independent",
+      "exit_code": 0
+    },
+    {
+      "step": "notes-protect-document guest",
+      "exit_code": 0
+    },
+    {
+      "step": "notes-protect-document independent",
+      "exit_code": 0
+    },
+    {
+      "step": "notes-protect-ancestor guest",
+      "exit_code": 0
+    },
+    {
+      "step": "notes-protect-ancestor independent",
+      "exit_code": 0
+    },
+    {
+      "step": "notes-no-log",
+      "exit_code": 0
+    },
+    {
+      "step": "p1",
+      "exit_code": 0
+    },
+    {
+      "step": "regression_failures",
+      "exit_code": 1
+    }
+  ],
+  "boundary_retry": {
+    "status": "PASSED",
+    "checks": 13,
+    "report_sha256": "0e19d4d33d309f81afec97b6e6703273a9fc8bb30bc5f56f366b2e701a855065"
+  },
+  "initial_failure": "notes-boundaries failed before guest startup because XOS_BUILD_DIR was missing; preserved separately"
+}

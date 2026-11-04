@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "archives_and_manifests": 44,
+  "loose_files": 11,
+  "serial_payloads": "byte-identical to recorded raw hashes",
+  "independent_replay": [
+    "baseline",
+    "edit",
+    "browser-exit-during-notes",
+    "pipe-isolation",
+    "notes-cancel",
+    "browser-scroll",
+    "default-denied",
+    "ordinary-default-denied",
+    "reg-scroll-diff",
+    "reg-recovery",
+    "reg-exhaust",
+    "reg-reload",
+    "reg-navigation",
+    "reg-notes-edit",
+    "reg-notes-no-edit",
+    "reg-notes-revoke",
+    "reg-notes-protect-document",
+    "reg-notes-protect-ancestor",
+    "restart-both-sessions",
+    "reg-recovery-oracle",
+    "stress-48-runs"
+  ],
+  "scope": "selected exported cases and every exported stress run when present"
+}

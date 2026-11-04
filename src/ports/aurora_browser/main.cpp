@@ -116,6 +116,13 @@ public:
             auto *ssg=new QShortcut(QKeySequence(Qt::CTRL|Qt::Key_I),this);
             connect(ssg,&QShortcut::activated,this,[this]{dump_scene();});
         }
+#ifdef XOS_SSG_TEST_ORACLE
+        // Owner-side control in the separately built synthetic test Browser.
+        // Disable its diagnostic oracle along with observation to avoid leaking
+        // document content after the owner revokes access.
+        auto *revoke=new QShortcut(QKeySequence(Qt::CTRL|Qt::Key_9),this);
+        connect(revoke,&QShortcut::activated,this,[this]{view->allow_scene_observation(false);pipe_text=false;std::printf("SSG_TEST_BROWSER_REVOKED\n");});
+#endif
         QTimer::singleShot(0,this,[this,bookmark,initial]{
             navigate(initial.isEmpty()?QStringLiteral("/web/start.html"):initial);
             if(!pipe_instance.isEmpty()){
@@ -152,5 +159,15 @@ int main(int argc,char **argv){
         for(const auto c:instance)if(!((c>='0' && c<='9') || (c>='a' && c<='f')))return 2;
         qInstallMessageHandler(ipc_qt_message);
     }
-    QApplication app(argc,argv);aurora::initialize(app);Browser browser(initial,instance,text_scope);browser.show();return app.exec();
+    QApplication app(argc,argv);aurora::initialize(app);
+#ifdef XOS_SSG_TEST_ORACLE
+    const bool hidden=app.arguments().contains("--ssg-hidden-test");
+    if(hidden)app.setQuitOnLastWindowClosed(false);
+#else
+    const bool hidden=false;
+#endif
+    Browser browser(initial,instance,text_scope);
+    if(!hidden)browser.show();
+    else std::printf("SSG_TEST_BROWSER_HIDDEN no_surface=1 no_input=1\n");
+    return app.exec();
 }

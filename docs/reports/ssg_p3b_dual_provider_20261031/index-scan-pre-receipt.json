@@ -1,0 +1,8 @@
+{
+  "status": "PUBLIC_READY",
+  "source": "index",
+  "base": "refs/remotes/fork/p3b-browser-input",
+  "files_selected": 120,
+  "files_scanned": 120,
+  "findings": []
+}

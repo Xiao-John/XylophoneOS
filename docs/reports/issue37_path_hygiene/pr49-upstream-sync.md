@@ -1,0 +1,7 @@
+# Browser A/B pagination draft: upstream synchronization
+
+This branch integrates the P2 diagnostic dependency `051e5fa65459885158fad2038d9882115566ceac`. The normal programs and separate test-only Browser oracle cross-built. In a real QEMU guest, two unfiltered A/B paging sessions each produced 34 pages and 267 nodes; each matched independent before/after liteHTML structure references. A separate host verifier reconstructed the two baselines from received IPC frames and matched the Consumer diff. A Consumer-selected link from the current B baseline was clicked through guest PS/2 and navigated to the expected unique target. This fixed synthetic fixture is `tests/fixtures/ssg_browser/p2g4_unique_link.html`, SHA-256 `764ab8ffcc8ed01693cd063509101ef086122170c4d04f2cec8aa36db7022ad6`. The result is scoped; it does not qualify general rendering, production authorization, WebKit, occlusion or input during paging.
+
+Two earlier attempts are retained locally: the first used a single-session validator on a two-session capture; the second mixed A/B nodes while selecting the link and rejected an ambiguous target. The validator now checks four ordered Oracles and the link selector uses the current B session; the fixture supplies a unique navigation target. Synthetic validator tests passed 5/5 and the existing structure tests passed 52/52.
+
+The latest full P1 dependency run still has an unresolved denied-consumer exit timeout, despite a focused retry passing. Dependencies remain unmerged.

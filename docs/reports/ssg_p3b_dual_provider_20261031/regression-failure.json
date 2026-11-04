@@ -1,0 +1,13 @@
+{
+  "case": "notes-boundaries-initial",
+  "status": "FAILED_BEFORE_GUEST",
+  "reason": "Portable build receipt verification required XOS_BUILD_DIR, but the initial regression wrapper did not require that variable. No guest was started and no boundary result was produced.",
+  "initial_step_log_sha256": "ae7ef5f33e6a3f75039848075fad5a9d49c356662ae550ac6436642c0535ca2c",
+  "initial_wrapper_sha256": "26704f8b67c9d8f111de4e7812b42dee99bb982838d61c42aac5df23718bc0c4",
+  "resolution": "The wrapper now requires the SDK, Qt build and Qt source paths before starting. The unchanged 13-check guest probe was rerun in a new directory and passed 13/13 with resources restored.",
+  "retry_status": "PASSED",
+  "retry_report_sha256": "0e19d4d33d309f81afec97b6e6703273a9fc8bb30bc5f56f366b2e701a855065",
+  "retry_log_sha256": "13db67ca16c8c551d1605e02812089144850e3dfcdbf59a5b61990b772fe1436",
+  "corrected_wrapper_sha256": "388cbfe8bcf2729cae7e7125e93e1d35d5d7aacf40a8ead8b579130a547c5e28",
+  "corrected_wrapper_commit": "8d29888"
+}

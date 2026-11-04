@@ -1,6 +1,6 @@
 # XOS 当前状态（全局快照）
 
-2026-11-03 · 快照。按 [Discipline](Discipline.md) 的 state.md 规则，本文件只在整体变动
+2026-11-04 · 快照。按 [Discipline](Discipline.md) 的 state.md 规则，本文件只在整体变动
 时刻（功能 PR 合入 main、Release、里程碑）由当时的合并者更新；行级细节与证据见各
 [work_log](work_log/)，本线活记忆写工作区根的 `STATE_L.md`（不入 git）。历史明细见
 [work_log](work_log/) 与 [history](history/)，原则裁决见
@@ -34,7 +34,8 @@
 | Pillow 静态成像 | 核心受限通过；线程 BLOCKED（`_malloc_r` vector14 未解） | [0088](work_log/0088_cpython_static_pillow.md) |
 | PX4-A 匿名 VM | 仅设计认领，未实施 | [0098](work_log/0098_vm_time_domains.md) |
 | 终端 / ncursesw W1 | 最终验收全 gate 通过并合入（#66）：W0 冻结、4 系统、15 项交接探针、`freeze_ncursesw_subset` 12 项 | [0187](work_log/0187_w1_final_acceptance.md)、[0074](work_log/0074_ncursesw_w1_scout.md) |
-| 许可两叶（D7） | 许可面收口进行中（0188 交付 newlib 1053/1053、GNU Seed、Qt 静态分发审查；0189 补 Qt 文本/§4d0 材料/补丁标注、GCC 运行库 397/407、Qt 逐成员映射）；发版流程中止 | [0188](work_log/0188_d7_license_two_leaves.md)、[0189](work_log/0189_d7_license_full_closure.md) |
+| 许可两叶（D7） | #67/#68 已合入（0188/0189：newlib 1053/1053、GNU Seed、Qt 静态分发审查、Qt 文本/§4d0、GCC 397/407、逐成员映射）；`licenses/open_items.json` 闸门生效（3 open/3 deferred/2 N/A）；发版仍中止 | [0188](work_log/0188_d7_license_two_leaves.md)、[0189](work_log/0189_d7_license_full_closure.md) |
+| SSG 批次 / Aurora Dock | 2026-11-04 按依赖序合入 #45（Dock 图标）、#40（SSG consumers 派生证据）、#44→#49（Browser/Notes SSG 栈）、#50（P3B 双 Provider 聚合，C30 改名与全量 manifest 收口）；**#51 未动**（BLOCKED 挂账） | work_log 0190–0196；合并战役报告见 `build/pr_review_40_51/` |
 | 日常工具 / UTF-8 / xypm / 游戏 | 已整合；xypm P3 未完成；游戏线工作区已建未开工 | [0069](work_log/0069_daily_utilities.md)、[0068](work_log/0068_utf8_filenames.md)、[0066](work_log/0066_xypm_p2_validation.md) |
 
 ## 当前能力与证据（慢变量）
@@ -56,6 +57,11 @@
 
 ## 下一步
 
+- **下次 release 须包含 Qt**（用户指令 2026-11-04）：触发 `open_items.json` 的 Qt 打包核验
+  与安全审查两个 deferred 关口（打包前/分发前必须完成或经用户裁定）；Qt 静态再分发资格
+  当前仍 NOT_GRANTED，E16 distribution 仍 NOT_RUN。
+- **PR #51 未合并**（用户指示保持不动）：BLOCKED（9 冲突、CHANGES_REQUESTED 未回应、
+  13 新报告缺 manifest、C30 违规）——进入合并队列前须先清障。
 - **0.0.2-1103 发版流程已中止**（2026-11-03 用户裁定：先完成 D7 收口再发）：版本号已定、
   dash/install ISO 已按新版重建，但未冻结打包、未打 tag、未传资产；1026 仍是唯一可下载
   发行。收口后按 [发行准备](releases/next_release.md) 重新走完四步再发。

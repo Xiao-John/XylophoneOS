@@ -11,6 +11,10 @@ ROOT=Path(__file__).resolve().parents[1]
 VERSION=(ROOT/'VERSION').read_text().strip()
 OUT=ROOT/'build/releases'/VERSION
 
+def sha_bytes(data):
+    return hashlib.sha256(data).hexdigest()
+
+
 def sha(path):
     h=hashlib.sha256()
     with Path(path).open('rb') as f:
@@ -29,8 +33,20 @@ def main():
         records.append({'path':relative,'sha256':digest,'bytes':target.stat().st_size,'role':role})
     old=ROOT/'build/releases/0.0.1-1024'
     old_release=json.loads((old/'release_manifest.json').read_text())
-    if sha(ROOT/'build/cpp_bundle/seed_manifest.json')!=old_release['seed_manifest_sha256']:
-        raise ValueError('GNU Seed changed; regenerate full matching overlays instead of reusing correspondence material')
+    current_seed_sha=sha(ROOT/'build/cpp_bundle/seed_manifest.json')
+    if current_seed_sha!=old_release['seed_manifest_sha256']:
+        # License-only install_files additions (guest /usr/share/licenses/*) do not
+        # change GNU tool/source bytes; correspondence material remains valid iff
+        # stripping those entries reproduces the recorded 1024 seed manifest sha.
+        import copy as _copy
+        _seed=json.loads((ROOT/'build/cpp_bundle/seed_manifest.json').read_text())
+        _stripped=_copy.deepcopy(_seed)
+        _stripped['install_files']=[e for e in _stripped['install_files']
+                                    if not e['guest_path'].startswith('/usr/share/licenses/')]
+        _stripped_sha=sha_bytes((__import__('json').dumps(_stripped,indent=2)+'\n').encode())
+        if _stripped_sha!=old_release['seed_manifest_sha256']:
+            raise ValueError('GNU Seed changed; regenerate full matching overlays instead of reusing correspondence material')
+        print('seed_manifest: license-only install_files additions confirmed; GNU correspondence reused')
     checks={name:digest for digest,name in [line.split(maxsplit=1) for line in (old/'public_CHECKSUMS.sha256').read_text().splitlines() if line.strip()]}
     for name in ('xos-0.0.1-1024-gnu-sources.tar.gz','xos-0.0.1-1024-gnu-source-supplement-gxx-lrealpath.tar.gz'):
         copy(old/'sources'/name,'unchanged_gnu_correspondence/'+name,checks[name],role='verbatim corresponding source for unchanged GNU Seed')

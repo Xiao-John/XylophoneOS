@@ -8,11 +8,13 @@ import re
 import shutil
 import struct
 import sys
+import tempfile
 import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from boot_smoke import Guest
+from make_work_disk import make_image
 from task_smoke import send_bytes, pump
 from kernel_smoke import run_logged
 from toolchain import COMMON_FLAGS, tool
@@ -63,6 +65,7 @@ def main():
     report = {"build_id": manifest["build_id"], "checks": checks, "status": "failed"}
     report["image_sha256"] = manifest["artifacts"]["xos.img"]["sha256"]
     guest = None
+    temporary = None
     try:
         for name, digest in manifest["sources"].items():
             if hashlib.sha256((ROOT / name).read_bytes()).hexdigest() != digest:
@@ -91,7 +94,13 @@ def main():
                                   f"user_{name}_disassembly.log")
             if re.search(r"\b(?:[xyz]mm\d+|mm[0-7]|fld\w*|fst\w*|fxsave\w*|xsave\w*)\b", assembly):
                 raise AssertionError(f"Unsupported FP/SIMD in legacy SDK output: {name}")
-        guest = Guest(build / "xos.img", "process_smoke")
+        # The supervisor recovery gate fails closed unless the marker stat returns
+        # a definite not_found; without a work disk the files client returns io and
+        # the gate blocks supervisor commands. Attach a fresh disk like other tests.
+        temporary = tempfile.TemporaryDirectory(prefix="xos_e04_")
+        disk = Path(temporary.name) / "work.img"
+        disk.write_bytes(make_image())
+        guest = Guest(build / "xos.img", "process_smoke", work_disk=disk)
         report["command"] = guest.command
         guest.expect(b"xos64> ", timeout=20)
         start = len(guest.output)
@@ -223,6 +232,8 @@ def main():
     finally:
         if guest is not None:
             guest.close()
+        if temporary is not None:
+            temporary.cleanup()
         (build / "process_smoke_report.json").write_text(json.dumps(report, indent=2) + "\n")
 
 

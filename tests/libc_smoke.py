@@ -1,12 +1,14 @@
 """E06: newlib libc printf/malloc/string/exit through the XOS SDK."""
 import json
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "tests"))
 from boot_smoke import Guest
+from make_work_disk import make_image
 from task_smoke import send_bytes, pump
 
 
@@ -23,7 +25,13 @@ def main():
     manifest = json.loads((build / "manifest.json").read_text())
     checks = []
     report = {"build_id": manifest["build_id"], "checks": checks, "status": "failed"}
-    guest = Guest(build / "xos.img", "libc_smoke")
+    # The supervisor recovery gate fails closed unless the marker stat returns a
+    # definite not_found; without a work disk the files client returns io and the
+    # gate blocks supervisor commands. Attach a fresh disk like the other tests.
+    temporary = tempfile.TemporaryDirectory(prefix="xos_e06_")
+    disk = Path(temporary.name) / "work.img"
+    disk.write_bytes(make_image())
+    guest = Guest(build / "xos.img", "libc_smoke", work_disk=disk)
     report["command"] = guest.command
     try:
         guest.expect(b"xos64> ", timeout=20)
@@ -56,6 +64,7 @@ def main():
         raise
     finally:
         guest.close()
+        temporary.cleanup()
         (build / "libc_smoke_report.json").write_text(json.dumps(report, indent=2) + "\n")
 
 

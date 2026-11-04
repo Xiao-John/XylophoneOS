@@ -21,7 +21,6 @@
   "note": "The two x-77-nzt CDN response fields are conservatively redacted; they are not asserted to be account credentials.",
   "path_hygiene": {
     "archive_original_sha256": "4479e50c90029ceba8c82ee4d706550766d1978c115f86ce64d795efbd106356",
-    "archive_redacted_sha256": "e1abea1cf12d67338ce3c86475963c33cfbd3543f47e43ecfa2f0137209d0af1",
     "changed_members": [
       {
         "member": ".cache/ssg_p2f/build/binutils/config.log",

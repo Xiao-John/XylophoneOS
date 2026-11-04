@@ -1,7 +1,7 @@
 > **Evidence version:** This checkout is a path-sanitized derivative of the
 > frozen source evidence, not byte-identical original logs or receipts. The
 > original index and original/export hashes are recorded in
-> [the Issue 37 provenance record](../issue37_path_hygiene/pr47-lineage.json).
+> [the Issue 37 provenance record](../../evidence_exports/issue37_pr47_review/original-pr47-lineage.json).
 > Historical input hashes in the reports still refer to the original run;
 > configure the named template roots and matching inputs before any reproduction.
 
@@ -59,7 +59,7 @@ transport is prewired and does not provide independent per-message identity or
 remote revocation. The clock check is not a hard deadline on an individual node.
 The uninstrumented failure cannot be conclusively attributed to the time cap
 without its own instrumentation. The rebuilt candidate subsequently passed the same 17 scoped P1 guest checks;
-see `p1-regression-report.json` and `p1-regression-evidence.tar.gz`. These
+see `p1-regression-report.json` and `../../evidence_exports/issue37_pr47_review/original-p1-regression-evidence.tar.gz`. These
 checks cover the original small Browser fixture, not the failing large page.
 
 The image-source worktree's registered-material/SDK-copy audit reports seven

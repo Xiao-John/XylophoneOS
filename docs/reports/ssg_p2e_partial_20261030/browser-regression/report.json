@@ -83,126 +83,108 @@
       "direction": "REQ",
       "sequence": 1,
       "bytes": 68,
-      "sha256": "e57af696e5b28b949d67aa5f887e70d2575d3da4df1b188e153462fa12127316",
       "file": "browser-01-req.json"
     },
     {
       "direction": "REQ",
       "sequence": 2,
       "bytes": 68,
-      "sha256": "e57af696e5b28b949d67aa5f887e70d2575d3da4df1b188e153462fa12127316",
       "file": "browser-02-req.json"
     },
     {
       "direction": "REQ",
       "sequence": 3,
       "bytes": 129,
-      "sha256": "de45907ddb26af01135f22c4fe8370cb2650bb7fcd0db3f69be4a0f05960a943",
       "file": "browser-03-req.json"
     },
     {
       "direction": "REQ",
       "sequence": 4,
       "bytes": 68,
-      "sha256": "e57af696e5b28b949d67aa5f887e70d2575d3da4df1b188e153462fa12127316",
       "file": "browser-04-req.json"
     },
     {
       "direction": "REQ",
       "sequence": 5,
       "bytes": 129,
-      "sha256": "ede570a510a4efb26687dc8e4d9f763be51357ac49038213f00ee499f2d750b8",
       "file": "browser-05-req.json"
     },
     {
       "direction": "REQ",
       "sequence": 6,
       "bytes": 144,
-      "sha256": "cffd67475e6678eb417746f2fdbbb118d53b41b7361ab1e47c7cd562f82d7d5e",
       "file": "browser-06-req.json"
     },
     {
       "direction": "REQ",
       "sequence": 7,
       "bytes": 68,
-      "sha256": "e57af696e5b28b949d67aa5f887e70d2575d3da4df1b188e153462fa12127316",
       "file": "browser-07-req.json"
     },
     {
       "direction": "REQ",
       "sequence": 8,
       "bytes": 144,
-      "sha256": "debb3c4b0f2b0d02550a540c7c8accccd58daf66ba35dc7f3c95a81840ac9547",
       "file": "browser-08-req.json"
     },
     {
       "direction": "REQ",
       "sequence": 9,
       "bytes": 64,
-      "sha256": "5d39904fa8d5b4dae47886ec6f292f5b387aaf7afa55cd1c7ed54a4c8437f1f7",
       "file": "browser-09-req.json"
     },
     {
       "direction": "RESP",
       "sequence": 1,
       "bytes": 6875,
-      "sha256": "82d86ef2f29a953c370ef01008d668ff4bde2ef2af7541584b7b017bc7ec2570",
       "file": "browser-01-resp.json"
     },
     {
       "direction": "RESP",
       "sequence": 2,
       "bytes": 7779,
-      "sha256": "942cced49c6f68f9593839c95e0a6802c600789aeb57a473b293a581bc94bdd4",
       "file": "browser-02-resp.json"
     },
     {
       "direction": "RESP",
       "sequence": 3,
       "bytes": 7150,
-      "sha256": "fcc8fcab2ba408e919704dd67713cca362064aa4b60e51092bbd77f0ddae1f68",
       "file": "browser-03-resp.json"
     },
     {
       "direction": "RESP",
       "sequence": 4,
       "bytes": 7700,
-      "sha256": "a83dd69a48c4f3f96c3bc632bbeca2e03adde603f4d8ff469114e05178079b9d",
       "file": "browser-04-resp.json"
     },
     {
       "direction": "RESP",
       "sequence": 5,
       "bytes": 108,
-      "sha256": "df6a14e56453388d9d0a68f63bb4ead595247807c1964fedd369d2f2ea14f7e9",
       "file": "browser-05-resp.json"
     },
     {
       "direction": "RESP",
       "sequence": 6,
       "bytes": 108,
-      "sha256": "df6a14e56453388d9d0a68f63bb4ead595247807c1964fedd369d2f2ea14f7e9",
       "file": "browser-06-resp.json"
     },
     {
       "direction": "RESP",
       "sequence": 7,
       "bytes": 7780,
-      "sha256": "c5be6d8949cb3d3e87a835212baef44cc9ff01bbfc31523ac2055b8ef3ad3c37",
       "file": "browser-07-resp.json"
     },
     {
       "direction": "RESP",
       "sequence": 8,
       "bytes": 595,
-      "sha256": "d0883a5b02e891194548cc209637d92675c11503b4ade3d887634b510ba090bd",
       "file": "browser-08-resp.json"
     },
     {
       "direction": "RESP",
       "sequence": 9,
       "bytes": 1753,
-      "sha256": "7a2b6899eeec878eb9aa0bec7bcfccb3a48a98a6c554f2f65f5df1bc26773924",
       "file": "browser-09-resp.json"
     }
   ],

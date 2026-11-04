@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "files": {
+    "edit-independent-check.json": "bb77e70de774b9ed6662b5d6fbaf213e5f218aefd4dfc4c62eeb425084054887",
+    "no-edit-independent-check.json": "229bc251761d767f75828b5554f4278373d424f1ee97ab89dca0343c3d73361e",
+    "protect-ancestor-independent-check.json": "9b646bf3e49cb597bc64f551cad1684fc09ec325585d46dc68f230687f72213a",
+    "protect-document-independent-check.json": "f7874038d290cb9d1024ffd16504a5138eec6e66d73cc79989bdf7208a1a303a",
+    "result.json": "b21a791bb545847d2a715e3a97fece3855a5f0d0d458717a3612e1c3ffde2fd4",
+    "revoke-independent-check.json": "8a832efefe0f6d10fc2a95d8b772b46584181ecfb55e7b48cdeea4aeba40c708"
+  }
+}

@@ -1,3 +1,5 @@
+> Historical archives and indexes for this report are retained under `docs/evidence_exports/issue37_pr49_review/original/ssg_p2g5_20261030/`; the current flat manifest covers the derivative.
+
 # P2G-5: interrupted paging and bounded recovery
 
 **P2G5_INTERRUPTED_PAGING_RECOVERY = PASSED_SCOPED. Gate B overall remains NOT_QUALIFIED.** This is the restricted prewired Browser/Consumer pipe, not a production Broker or an authorization claim.

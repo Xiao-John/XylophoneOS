@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "files": {
+    "browser-dom-first.png": "ff3d81cbcf64985f7329965ebbf63ac233b8a19909621e69a1f31a0c31cfb59f",
+    "guest_qemu.log.gz": "b00ee357fd4879eb17ae9164cd26ff13b4b5550f780c05ce20ab85a3554fefe8",
+    "guest_serial.log.gz": "da6c2ab651ddfaf1683c505819761a8deacdfd2391f309a0ae20525e703876f7",
+    "report.json": "96f7dd84dbc6a6778d6ceaf10679a8d97ca4cc2012c08149ca639242c81d72c7"
+  }
+}

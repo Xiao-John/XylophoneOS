@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "files": {
+    "README.md": "d4977b837c5f9181cdebf566090ac6220dbea67d2417937d157fc1bf2bee80d0",
+    "boundary.serial.log.gz": "cae14f176fd2a6b7ac3781d2e7cf1447818f8867e5ca5d03885feaa846592498",
+    "edit.serial.log.gz": "a254ba39f98629ac3885bb77b9e99c044db1889e8f13e5436b1a68ed7d6af2d0",
+    "no-edit.serial.log.gz": "f290362bec0ea2ca368d070e78f5315967b2f7714b7847f8f59c5698143c1729",
+    "ordinary-no-log.serial.log.gz": "79d4b4788287727e5629e017d6fad719a74d60637da9c6d46fa3c1f43b0efa34",
+    "protect-ancestor.serial.log.gz": "6789af0ccb7d2be94ac720351abfb69c523d9b81d282815cd6649b87d6c08d05",
+    "protect-document.serial.log.gz": "e5f065e39f3b5304c0b7bbd02f2a7acaaf564201ca402752eaeb58d7b1280ffe",
+    "range.serial.log.gz": "3e859c08e40fc7577fc5dc23b27563c304cdf49c2ff44f168544b65caaae82a9",
+    "revoke.serial.log.gz": "93d046169d18210b1a4f197e48f68c5e5e3e7f84d862f2421ac3f1342abf02a7",
+    "round2_guest.json": "71f21fce12b997ced407c2e180bb1b5752baf91c829a7b6abfa0109673709fa7"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "files": {
+    "baseline-build-receipt.json.gz": "79e3e8a0ccd5d3a0af770d1a1a17d2ae11e6f37dcb9f0c54378b30c9964698d2",
+    "browser-dom-first.png": "ff3d81cbcf64985f7329965ebbf63ac233b8a19909621e69a1f31a0c31cfb59f",
+    "guest_qemu.log.gz": "227b7139541901fae31eb5133e97d7181ea3dcfc804e3ccb9089c94da5711145",
+    "guest_serial.log.gz": "3685eea3fb348e192516aafb05bbb96c27c275021d8f26de9b6594d38b12a583",
+    "report.json": "5e98e73387f4415bfce7c51c3100a18772a31320ac4e3fd9a30740c7cd752616"
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "source_commit": "57bd747cef4f591006e7ed2326e083e837fa76af",
+  "scope": "flatten report references and record latest observed failure",
+  "changes": [
+    {
+      "path": "docs/reports/ssg_p1_cross_process_20261030/wire-manifest.json",
+      "original_sha256": "11a8db5ab2bdef883f6738cb721aa9bc33a0418374f4ace4a84ef1511129beca",
+      "export_sha256": "26d35bc38a250a2ddd227fa50327d1037242ff8159d3c76e1c5f87ad1369bc6b"
+    },
+    {
+      "path": "docs/reports/ssg_p1_cross_process_20261030/qualification.json",
+      "original_sha256": "74fe67ce28a460c0e7141dc1328114b6b09666640b87f66a7f1e148c4e2009ba",
+      "export_sha256": "1805f73a8a59fa2cab3e26b80758ff9a32c39c555808c09671241ef4946291e9"
+    },
+    {
+      "path": "docs/reports/ssg_p1_cross_process_20261030/latest-failed-13-checks.serial.log.gz",
+      "status": "ADDED",
+      "export_sha256": "1dc07d970a958f61b4ecdc4e442d1029100a2b3b43836c8d7a10a91d6c46841f"
+    },
+    {
+      "path": "docs/reports/ssg_p1_cross_process_20261030/README.md",
+      "original_sha256": "81d2fd26d17508f92726472aaf36f868fd1d43b3ad5d1fe5389789d0952d96fc",
+      "export_sha256": "cca60d40372a84d25609465886ef8ef1ecd29752f835e7cf291594c5c90d1a0d"
+    },
+    {
+      "path": "docs/reports/ssg_p1_cross_process_20261030/browser-capped-run/evidence.json",
+      "original_sha256": "1f9797420e2cdb23ffe8bf845bd837dc92d077446354fafa49031e74a084b03f",
+      "export_sha256": "a2aec3637990ab46e7adc1bffb6f589672bcb82f6495a0856db275693f4e496b"
+    },
+    {
+      "path": "docs/reports/ssg_p1_cross_process_20261030/browser-capped-run/report.json",
+      "original_sha256": "b9e9ff4542b0467fe0c6087c16e93ecefe174b036d8ce0b85efebb8b1322d15a",
+      "export_sha256": "07ae123bdedb4ddda7a4dc2b209cf5e1d29a214ea1ea6b8573602a81218945a1"
+    },
+    {
+      "path": "docs/reports/ssg_p1_cross_process_20261030/protected-fixture/report.json",
+      "original_sha256": "29fb10e534f6a782b93843f5223a4bffb997182723bf250db44c975b34fae46e",
+      "export_sha256": "64785a25cc935d8de5766dba0b20fff8cf5b78164a7292504341333b75a2bd4a"
+    },
+    {
+      "path": "docs/reports/ssg_p1_cross_process_20261030/regressions/browser-retry-failure/report.json",
+      "original_sha256": "5ed2459c5d2daefa6bc9143bfa662754ba87ce32713cbce774fa6673c4b9f74a",
+      "export_sha256": "6db76d7fd14aeccdb9d5b4d1b2eac1349414c87e93beef8e2ef9868ecc0575cb"
+    },
+    {
+      "path": "docs/reports/ssg_p1_cross_process_20261030/regressions/browser-baseline-failure/report.json",
+      "original_sha256": "b894b9f1a8ac867face4d7a00f5fca64acfaf990234c658095fbc8379a1c3c16",
+      "export_sha256": "5e98e73387f4415bfce7c51c3100a18772a31320ac4e3fd9a30740c7cd752616"
+    },
+    {
+      "path": "docs/reports/ssg_p1_cross_process_20261030/regressions/browser-first-failure/report.json",
+      "original_sha256": "fdaf2f79db9aa1400672de4d313406637808a2e292083aace98b3680aea2d239",
+      "export_sha256": "96f7dd84dbc6a6778d6ceaf10679a8d97ca4cc2012c08149ca639242c81d72c7"
+    },
+    {
+      "path": "docs/reports/ssg_p1_cross_process_20261030/regressions/notes-local/report.json",
+      "original_sha256": "638b2bfe98c7ee59bdd4859bb54ad4445037e04b489cddc9b350a693c473bf29",
+      "export_sha256": "954ee32347cdfa4d1a4c7d992a8b227a75eb3e0015b0a86262b38f84cac4c772"
+    }
+  ]
+}

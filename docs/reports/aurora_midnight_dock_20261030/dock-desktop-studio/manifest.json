@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "files": {
+    "guest_qemu.log.gz": "0eb2030d3d24e0f4897bc9df79c8e4ee64bf282830fbd1cfb19073f11cfe2798",
+    "guest_serial.log.gz": "11c673945ab0c69d4af7f0d0646335fe84cedb0c447566ce67d9eb999130d6c0",
+    "independent-menu.png": "7f453a0055cb802b7d0a44ff0a43b88e8a02b51092600af953ff4e71870426b0",
+    "independent-menu.ppm.gz": "5ef3762546f8d2bee29c9290c211996526b8518f61cbd46269e04274ad337212",
+    "independent-studio-dark.png": "a654a4e4bf6a4941f31abe5be8f7d46a08ff2608c4571d73d0b8113a9317c442",
+    "independent-studio-dark.ppm.gz": "368cf266d821a1f7a48b26080a651fcbf72c123d7c65ed4669e729b86a34074f",
+    "independent-studio-light.png": "fcb81d483ab6ae1c22d216e07b02523bf2915b074d6f5eb8cc0bfcfed8a7023d",
+    "independent-studio-light.ppm.gz": "eaddb67424218de6ba19ac3e1210d02f31b8c38064fd0ee29c05e6221a155542",
+    "legacy-no-aurora.png": "afb769fe58d17c9a6113f57330b1103fc9ef418b9bf54a748c8af641e9b29549",
+    "legacy-no-aurora.ppm.gz": "2208d3205169d9412ba0503384f2340d9db34ecbf9e436e9988ecb1d25cabab8",
+    "report.json": "f1dac2422fa36f48c4fe96ce35732952b623d226ee953ec38a9b290daabbaa33",
+    "serial.log.gz": "11c673945ab0c69d4af7f0d0646335fe84cedb0c447566ce67d9eb999130d6c0"
+  }
+}

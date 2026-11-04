@@ -1,3 +1,5 @@
+> **Evidence version:** This checkout is a path-sanitized derivative, not byte-identical raw evidence. Original and exported hashes are recorded in [the Issue 37 lineage](../../evidence_exports/issue37/ssg_targeted_diff_lineage.json). Historical input hashes still identify the original run; template roots require manual configuration.
+
 # Targeted SSG fixture after combined-run failure
 
 An integration run of the original whole-tree fixture failed the

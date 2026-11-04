@@ -8,7 +8,7 @@
     "offline_exact_bytes_after_sync"
   ],
   "command": [
-    "/opt/homebrew/bin/qemu-system-x86_64",
+    "${XOS_HOMEBREW}/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -37,8 +37,8 @@
     "-display",
     "none",
     "-drive",
-    "file=/var/folders/x6/3clfjww5133fn5kbknq7c_2m0000gn/T/xos_f1_editor_h0swnunh/disk.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_HOST_TEMP_DF08A5AF28FD}/3clfjww5133fn5kbknq7c_2m0000gn/T/xos_f1_editor_h0swnunh/disk.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/x6/3clfjww5133fn5kbknq7c_2m0000gn/T/xos_mv4lm0i0/qmp.sock,server=on,wait=off"
+    "unix:${XOS_HOST_TEMP_DF08A5AF28FD}/3clfjww5133fn5kbknq7c_2m0000gn/T/xos_mv4lm0i0/qmp.sock,server=on,wait=off"
   ]
 }

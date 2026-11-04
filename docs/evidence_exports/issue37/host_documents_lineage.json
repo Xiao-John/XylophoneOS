@@ -1,0 +1,130 @@
+{
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "transformation_kind": "REVIEWED_HOST_DOCUMENT",
+  "changes": [
+    {
+      "path": "docs/reports/pr_8_review.md",
+      "original_sha256": "df76a232a907fa97575e952666800666e738eeeb86736b6d2881661a5e61ff88",
+      "export_sha256": "07859e714d5d9f6e1769fd834515827263f61850d01448f51ef25e3f2810a7b1"
+    },
+    {
+      "path": "docs/work_log/0063_input_edit_design.md",
+      "original_sha256": "8d3e9cb06aa094b7f69e802302d8c4f4a101c41f87bdd1363c505275de3f8ee2",
+      "export_sha256": "449baa27e47da3047cd7cbb8dd85bc9e46dcb9a3a8b693091fb15dc01466527b"
+    },
+    {
+      "path": "docs/work_log/0064_input_edit_first_stage.md",
+      "original_sha256": "d5748b0ce60140efda6b7be193151231b5d6b0de3775fd5b7a53a63b3ebd7835",
+      "export_sha256": "fe90209efed9495c4ea049e0e2de2c363928d4dbb45b546b1148ab686a67fc71"
+    },
+    {
+      "path": "docs/work_log/0075_ncursesw_preliminary_gaps.md",
+      "original_sha256": "9de729959c5e5e655e1aefc8103e5d987088798b269708fb1c81d9f7d4084109",
+      "export_sha256": "d049e1b18269d466074544d234e60c008dd58f5bd84b9e36246fee03e2a14bef"
+    },
+    {
+      "path": "docs/work_log/0076_utf8_link_probe.md",
+      "original_sha256": "676f577cf889dcd434ab10423371d421cecda8d7be0a16af043c9a19892bf0da",
+      "export_sha256": "8b6192d248c160c805c8e982400d59e0686137604538c12da19ec3312a42eb79"
+    },
+    {
+      "path": "docs/work_log/0077_full_remote_integration.md",
+      "original_sha256": "82c58aa03c76655106d9f2b32bf404a8010fdb1713a79ef8590e4e97caa9d79a",
+      "export_sha256": "0ad8615c9f79954adfe9b9e726cffb97769d1bfa7f49708dccc332ccd7588212"
+    },
+    {
+      "path": "docs/work_log/0080_fb0_fault_bundle.md",
+      "original_sha256": "0a929968c155c14ff49420109d4cde741f6459aaecd0bf0a3a1abf4631ada24c",
+      "export_sha256": "42088a3c43c6ae3392ab2cdbda11f8edf092747ab34cd1e479a7efcd3fda46fc"
+    },
+    {
+      "path": "docs/work_log/0082_network_device_abi_claim.md",
+      "original_sha256": "61e8afdf5fde06f425dbfc471cf4745922d26149170199b4ab2a511ecdfea0a6",
+      "export_sha256": "0fddcb2b471576f7bc3b6605fb8295c6cc4e0bd5815545cc7f21faab9f98304f"
+    },
+    {
+      "path": "docs/work_log/0096_browser_review_fixes.md",
+      "original_sha256": "f6e8d49a1992cfc1419724713c40dd9a0d13d657971407ba00a6ede86a6f5b4b",
+      "export_sha256": "ca5c896c1afb400e690782cff72db852201f572c0cb226f381257105fd4deb03"
+    },
+    {
+      "path": "docs/work_log/0099_probe_branch_reconciliation.md",
+      "original_sha256": "ddac4fd709790addb089431539fdb94356b5320b831e9ca5345101e3be4d6a9c",
+      "export_sha256": "26ab4dddd8de67e587f8576ffc5c62f66aa286dc2bc35258e0cf32df76925d90"
+    },
+    {
+      "path": "docs/work_log/0144_webengine_port_plan_and_c31.md",
+      "original_sha256": "37a4d06fa895d2f4b68beb41813b5c40a020a2ea4016396c42b9cbd53f582392",
+      "export_sha256": "c3ce78988f8063ee572a96cd721d9851d8fe3bfeacc84a214304fba3de39a8c5"
+    }
+  ],
+  "template_variables": [
+    {
+      "name": "XOS_DOC_TEMP_127B03566B63",
+      "purpose": "reviewed historical host temp root"
+    },
+    {
+      "name": "XOS_DOC_TEMP_17854E3700E7",
+      "purpose": "reviewed historical host temp root"
+    },
+    {
+      "name": "XOS_DOC_TEMP_3EDB213D70DB",
+      "purpose": "reviewed historical host temp root"
+    },
+    {
+      "name": "XOS_DOC_TEMP_54C09703AC9B",
+      "purpose": "reviewed historical host temp root"
+    },
+    {
+      "name": "XOS_DOC_TEMP_566B868479DA",
+      "purpose": "reviewed historical host temp root"
+    },
+    {
+      "name": "XOS_DOC_TEMP_5CDCABE30EC9",
+      "purpose": "reviewed historical host temp root"
+    },
+    {
+      "name": "XOS_DOC_TEMP_941F479FE687",
+      "purpose": "reviewed historical host temp root"
+    },
+    {
+      "name": "XOS_DOC_TEMP_9C7ADD990C55",
+      "purpose": "reviewed historical host temp root"
+    },
+    {
+      "name": "XOS_DOC_TEMP_A393A397BD2D",
+      "purpose": "reviewed historical host temp root"
+    },
+    {
+      "name": "XOS_DOC_TEMP_AD5913E4CE8F",
+      "purpose": "reviewed historical host temp root"
+    },
+    {
+      "name": "XOS_DOC_TEMP_AF144222560D",
+      "purpose": "reviewed historical host temp root"
+    },
+    {
+      "name": "XOS_DOC_TEMP_B69F28D88E5A",
+      "purpose": "reviewed historical host temp root"
+    },
+    {
+      "name": "XOS_DOC_TEMP_C2B7CF937C25",
+      "purpose": "reviewed historical host temp root"
+    },
+    {
+      "name": "XOS_DOC_TEMP_D2AB114B369E",
+      "purpose": "reviewed historical host temp root"
+    },
+    {
+      "name": "XOS_DOC_TEMP_F6EAA4369A07",
+      "purpose": "reviewed historical host temp root"
+    },
+    {
+      "name": "XOS_DOC_TEMP_FE1A923752B5",
+      "purpose": "reviewed historical host temp root"
+    }
+  ],
+  "reproduction": "MANUAL_REQUIRED: configure template roots and matching historical inputs.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history."
+}

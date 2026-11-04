@@ -1,0 +1,440 @@
+{
+  "source_commit": "0f3a65ef43449e0a62dd2d6bcef9ec2f1fb24f38",
+  "runner_sha256": {
+    "ssg_text_range_guest.py": "e88f67408d998809243a3fa5d8e94ed5fa23d15ce7ae71a2f31708a2888fd8ec",
+    "ssg_range_boundaries_guest.py": "f1d424c99b422783eac082b19fc3045f4edda94c61dcdba738a22fc01008565f",
+    "ssg_notes_live_no_log_guest.py": "3b74327d9ea777bae9adbc0936de79049faac64d68fbae91a4ffa19c8d0e3daa",
+    "ssg_notes_live_edit_guest.py": "fef86c0b778329d5e21cbae59cd6d7908f1de004abdbac80ffac74c31910b2ff",
+    "ssg_notes_live_verify.py": "b2a419d89d744471f1ba987d717bcb4310db0e8ff4595194b235ee1c2c9f3879"
+  },
+  "runs": {
+    "range": {
+      "status": "PASSED",
+      "checks": [
+        "long_unicode_range_exact_reconstruction",
+        "provider_consumer_resources_reclaimed"
+      ],
+      "inputs": {
+        "image": "78edeb51799bee436780a8efbb49194266bf7ce216a162dea54a6d883f8eadfc",
+        "session": "46984d0ae0bd3c2cb1e6714bf82d4bfa35c06a94e9adb67b7f9b8c745bc38bc2",
+        "consumer": "ccf692e68770a554faa12296a035858b60b9c24c7e11cf3e21e74eda90e223a3",
+        "notes": "04e42736d34831d2f980b16a817e319d4567cc674d31aaa1cd2af7e746c1816d"
+      },
+      "pages": [
+        {
+          "start": 0,
+          "end": 512,
+          "revision": "0"
+        },
+        {
+          "start": 512,
+          "end": 1024,
+          "revision": "0"
+        },
+        {
+          "start": 1024,
+          "end": 1536,
+          "revision": "0"
+        },
+        {
+          "start": 1536,
+          "end": 2048,
+          "revision": "0"
+        },
+        {
+          "start": 2048,
+          "end": 2560,
+          "revision": "0"
+        },
+        {
+          "start": 2560,
+          "end": 3072,
+          "revision": "0"
+        },
+        {
+          "start": 3072,
+          "end": 3584,
+          "revision": "0"
+        },
+        {
+          "start": 3584,
+          "end": 3623,
+          "revision": "0"
+        }
+      ],
+      "resources_before": [
+        130231,
+        3,
+        1
+      ],
+      "resources_after": [
+        130231,
+        3,
+        1
+      ]
+    },
+    "boundary": {
+      "status": "PASSED",
+      "checks": [
+        {
+          "name": "surrogate_end_not_split",
+          "status": "PASS"
+        },
+        {
+          "name": "surrogate_start_rejected",
+          "status": "PASS"
+        },
+        {
+          "name": "surrogate_pair_whole",
+          "status": "PASS"
+        },
+        {
+          "name": "last_page",
+          "status": "PASS"
+        },
+        {
+          "name": "out_of_range",
+          "status": "PASS"
+        },
+        {
+          "name": "invalid_lengths_and_offset",
+          "status": "PASS"
+        },
+        {
+          "name": "missing_revision_rejected",
+          "status": "PASS"
+        },
+        {
+          "name": "edit_invalidates_revision",
+          "status": "PASS"
+        },
+        {
+          "name": "protection_rechecked",
+          "status": "PASS"
+        },
+        {
+          "name": "replacement_invalidates_reference",
+          "status": "PASS"
+        },
+        {
+          "name": "revocation_rechecked",
+          "status": "PASS"
+        },
+        {
+          "name": "empty_document",
+          "status": "PASS"
+        },
+        {
+          "name": "deleted_widget_invalidates_reference",
+          "status": "PASS"
+        }
+      ],
+      "image_sha256": "78edeb51799bee436780a8efbb49194266bf7ce216a162dea54a6d883f8eadfc",
+      "payload_sha256": "df69aceef81d7dcbcc0a6de6aeeb5a96ba4e39a477b979e8585eff3737223e0f",
+      "resources_before": [
+        130231,
+        3,
+        1
+      ],
+      "resources_after": [
+        130231,
+        3,
+        1
+      ]
+    },
+    "ordinary-no-log": {
+      "status": "PASSED",
+      "checks": [
+        "no_frame_log",
+        "no_synthetic_document_text_in_log",
+        "no_reset_without_edit",
+        "resource_baseline_restored"
+      ],
+      "inputs": {
+        "image": "78edeb51799bee436780a8efbb49194266bf7ce216a162dea54a6d883f8eadfc",
+        "session": "46984d0ae0bd3c2cb1e6714bf82d4bfa35c06a94e9adb67b7f9b8c745bc38bc2",
+        "consumer": "ccf692e68770a554faa12296a035858b60b9c24c7e11cf3e21e74eda90e223a3",
+        "notes": "04e42736d34831d2f980b16a817e319d4567cc674d31aaa1cd2af7e746c1816d"
+      },
+      "resources_before": [
+        130231,
+        3,
+        1
+      ],
+      "resources_after": [
+        130231,
+        3,
+        1
+      ]
+    },
+    "edit": {
+      "status": "GUEST_RUN_CAPTURED",
+      "checks": [
+        "distinct_processes",
+        "actual_pipe_frames",
+        "resource_baseline_restored"
+      ],
+      "inputs": {
+        "image": "78edeb51799bee436780a8efbb49194266bf7ce216a162dea54a6d883f8eadfc",
+        "session": "46984d0ae0bd3c2cb1e6714bf82d4bfa35c06a94e9adb67b7f9b8c745bc38bc2",
+        "consumer": "a2a150134c803cb5b4678929b4caf2207da417354f30f177d061e6b61a03f758",
+        "notes": "c0643ae7ee4a1afefe3fc908d8136d403d5e5b85978429e54f1b1771dfdfa665"
+      },
+      "events": [
+        "two_ranges_received_and_injection_ready",
+        "qmp_key_z",
+        "EDITOR_CHANGE"
+      ],
+      "resources_before": [
+        130231,
+        3,
+        1
+      ],
+      "resources_after": [
+        130231,
+        3,
+        1
+      ],
+      "independent_verification": {
+        "case": "edit",
+        "status": "PASSED",
+        "input_sha256": "b27a5b067671db800eea59cf91cf54f606cfeea985043c99879ee698b63fc6cd",
+        "initial_revision": "0",
+        "initial_pages_utf16": [
+          [
+            0,
+            511
+          ],
+          [
+            511,
+            1023
+          ]
+        ],
+        "initial_staged_utf16_units": 1023,
+        "resources_restored": true,
+        "provider_pid": 12,
+        "consumer_pid": 11,
+        "reset_count": 1,
+        "final_revision": "1",
+        "owner_digest_matches": true,
+        "final_utf16_units": 4115,
+        "final_sha256": "fb34699875ec592484f38fbdd942a578282dc8d2dcd5eee70c0abbedb948138e",
+        "final_pages": 9,
+        "no_mixed_revision": true
+      }
+    },
+    "no-edit": {
+      "status": "GUEST_RUN_CAPTURED",
+      "checks": [
+        "distinct_processes",
+        "actual_pipe_frames",
+        "resource_baseline_restored"
+      ],
+      "inputs": {
+        "image": "78edeb51799bee436780a8efbb49194266bf7ce216a162dea54a6d883f8eadfc",
+        "session": "46984d0ae0bd3c2cb1e6714bf82d4bfa35c06a94e9adb67b7f9b8c745bc38bc2",
+        "consumer": "a2a150134c803cb5b4678929b4caf2207da417354f30f177d061e6b61a03f758",
+        "notes": "c0643ae7ee4a1afefe3fc908d8136d403d5e5b85978429e54f1b1771dfdfa665"
+      },
+      "events": [
+        "two_ranges_received_and_injection_ready"
+      ],
+      "resources_before": [
+        130231,
+        3,
+        1
+      ],
+      "resources_after": [
+        130231,
+        3,
+        1
+      ],
+      "independent_verification": {
+        "case": "no-edit",
+        "status": "PASSED",
+        "input_sha256": "b27a5b067671db800eea59cf91cf54f606cfeea985043c99879ee698b63fc6cd",
+        "initial_revision": "0",
+        "initial_pages_utf16": [
+          [
+            0,
+            511
+          ],
+          [
+            511,
+            1023
+          ]
+        ],
+        "initial_staged_utf16_units": 1023,
+        "resources_restored": true,
+        "provider_pid": 12,
+        "consumer_pid": 11,
+        "reset_count": 0,
+        "final_revision": "0",
+        "owner_digest_matches": true,
+        "final_utf16_units": 4114,
+        "final_sha256": "b27a5b067671db800eea59cf91cf54f606cfeea985043c99879ee698b63fc6cd",
+        "final_pages": 9,
+        "no_mixed_revision": true
+      }
+    },
+    "revoke": {
+      "status": "GUEST_RUN_CAPTURED",
+      "checks": [
+        "distinct_processes",
+        "actual_pipe_frames",
+        "resource_baseline_restored"
+      ],
+      "inputs": {
+        "image": "78edeb51799bee436780a8efbb49194266bf7ce216a162dea54a6d883f8eadfc",
+        "session": "46984d0ae0bd3c2cb1e6714bf82d4bfa35c06a94e9adb67b7f9b8c745bc38bc2",
+        "consumer": "a2a150134c803cb5b4678929b4caf2207da417354f30f177d061e6b61a03f758",
+        "notes": "c0643ae7ee4a1afefe3fc908d8136d403d5e5b85978429e54f1b1771dfdfa665"
+      },
+      "events": [
+        "two_ranges_received_and_injection_ready",
+        "qmp_ctrl_6",
+        "SSG_TEST_OWNER_REVOKED"
+      ],
+      "resources_before": [
+        130231,
+        3,
+        1
+      ],
+      "resources_after": [
+        130231,
+        3,
+        1
+      ],
+      "independent_verification": {
+        "case": "revoke",
+        "status": "PASSED",
+        "input_sha256": "b27a5b067671db800eea59cf91cf54f606cfeea985043c99879ee698b63fc6cd",
+        "initial_revision": "0",
+        "initial_pages_utf16": [
+          [
+            0,
+            511
+          ],
+          [
+            511,
+            1023
+          ]
+        ],
+        "initial_staged_utf16_units": 1023,
+        "resources_restored": true,
+        "provider_pid": 12,
+        "consumer_pid": 11,
+        "refusal": "DENIED",
+        "refusal_responses": 2,
+        "post_restriction_text_returned": false,
+        "staging_committed": false
+      }
+    },
+    "protect-document": {
+      "status": "GUEST_RUN_CAPTURED",
+      "checks": [
+        "distinct_processes",
+        "actual_pipe_frames",
+        "resource_baseline_restored"
+      ],
+      "inputs": {
+        "image": "78edeb51799bee436780a8efbb49194266bf7ce216a162dea54a6d883f8eadfc",
+        "session": "46984d0ae0bd3c2cb1e6714bf82d4bfa35c06a94e9adb67b7f9b8c745bc38bc2",
+        "consumer": "a2a150134c803cb5b4678929b4caf2207da417354f30f177d061e6b61a03f758",
+        "notes": "c0643ae7ee4a1afefe3fc908d8136d403d5e5b85978429e54f1b1771dfdfa665"
+      },
+      "events": [
+        "two_ranges_received_and_injection_ready",
+        "qmp_ctrl_7",
+        "SSG_TEST_OWNER_DOCUMENT_PROTECTED"
+      ],
+      "resources_before": [
+        130231,
+        3,
+        1
+      ],
+      "resources_after": [
+        130231,
+        3,
+        1
+      ],
+      "independent_verification": {
+        "case": "protect-document",
+        "status": "PASSED",
+        "input_sha256": "b27a5b067671db800eea59cf91cf54f606cfeea985043c99879ee698b63fc6cd",
+        "initial_revision": "0",
+        "initial_pages_utf16": [
+          [
+            0,
+            511
+          ],
+          [
+            511,
+            1023
+          ]
+        ],
+        "initial_staged_utf16_units": 1023,
+        "resources_restored": true,
+        "provider_pid": 12,
+        "consumer_pid": 11,
+        "refusal": "PROTECTED",
+        "refusal_responses": 2,
+        "post_restriction_text_returned": false,
+        "staging_committed": false
+      }
+    },
+    "protect-ancestor": {
+      "status": "GUEST_RUN_CAPTURED",
+      "checks": [
+        "distinct_processes",
+        "actual_pipe_frames",
+        "resource_baseline_restored"
+      ],
+      "inputs": {
+        "image": "78edeb51799bee436780a8efbb49194266bf7ce216a162dea54a6d883f8eadfc",
+        "session": "46984d0ae0bd3c2cb1e6714bf82d4bfa35c06a94e9adb67b7f9b8c745bc38bc2",
+        "consumer": "a2a150134c803cb5b4678929b4caf2207da417354f30f177d061e6b61a03f758",
+        "notes": "c0643ae7ee4a1afefe3fc908d8136d403d5e5b85978429e54f1b1771dfdfa665"
+      },
+      "events": [
+        "two_ranges_received_and_injection_ready",
+        "qmp_ctrl_8",
+        "SSG_TEST_OWNER_ANCESTOR_PROTECTED"
+      ],
+      "resources_before": [
+        130231,
+        3,
+        1
+      ],
+      "resources_after": [
+        130231,
+        3,
+        1
+      ],
+      "independent_verification": {
+        "case": "protect-ancestor",
+        "status": "PASSED",
+        "input_sha256": "b27a5b067671db800eea59cf91cf54f606cfeea985043c99879ee698b63fc6cd",
+        "initial_revision": "0",
+        "initial_pages_utf16": [
+          [
+            0,
+            511
+          ],
+          [
+            511,
+            1023
+          ]
+        ],
+        "initial_staged_utf16_units": 1023,
+        "resources_restored": true,
+        "provider_pid": 12,
+        "consumer_pid": 11,
+        "refusal": "PROTECTED",
+        "refusal_responses": 2,
+        "post_restriction_text_returned": false,
+        "staging_committed": false
+      }
+    }
+  }
+}

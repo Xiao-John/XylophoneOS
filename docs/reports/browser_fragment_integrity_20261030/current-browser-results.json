@@ -1,0 +1,34 @@
+{
+  "status": "PASSED",
+  "case": "browser",
+  "checks": [
+    {
+      "name": "browser_dom_layout_hidden_and_offviewport",
+      "status": "PASSED"
+    },
+    {
+      "name": "ssg_link_geometry_matches_actual_engine_hit",
+      "status": "PASSED"
+    },
+    {
+      "name": "browser_scroll_changes_visibility_with_stable_epoch",
+      "status": "PASSED"
+    },
+    {
+      "name": "reload_invalidates_old_document_references",
+      "status": "PASSED"
+    },
+    {
+      "name": "unsupported_canvas_rejected_no_fabricated_semantics",
+      "status": "PASSED"
+    },
+    {
+      "name": "browser_ssg_exit_exact_resources",
+      "status": "PASSED"
+    },
+    {
+      "name": "serial_file_service_and_resource_baseline",
+      "status": "PASSED"
+    }
+  ]
+}

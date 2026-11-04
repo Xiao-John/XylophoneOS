@@ -57,7 +57,7 @@ transaction and still needs an owner reference for independent qualification.
 Per-node fragment completeness is retained separately.
 
 The Browser adapter uses `snapshot_begin` / `snapshot_next`, cursors and the
-existing `BaselineCollector`. The Notes adapter uses a document snapshot followed
+existing `baseline_collector`. The Notes adapter uses a document snapshot followed
 by `text_range` requests, preserving UTF-16 offsets and one document revision.
 A reset, denial, protection, malformed response, timeout or resource failure
 invalidates the in-progress Notes transaction; it cannot publish a mixture of

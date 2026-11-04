@@ -193,8 +193,8 @@ public:
             std::printf("SSG_TEST_OWNER_DOCUMENT units=%d sha256=%s\n",value.size(),digest.constData());};
         connect(text->document(),&QTextDocument::contentsChanged,this,diagnostic);
         shortcut(QKeySequence(Qt::CTRL|Qt::Key_6),[this]{if(scene){scene->host_allow_observation(false);std::printf("SSG_TEST_OWNER_REVOKED\n");}});
-        shortcut(QKeySequence(Qt::CTRL|Qt::Key_7),[this]{text->setProperty("xosSsgProtected",true);std::printf("SSG_TEST_OWNER_DOCUMENT_PROTECTED\n");});
-        shortcut(QKeySequence(Qt::CTRL|Qt::Key_8),[paper]{paper->setProperty("xosSsgProtected",true);std::printf("SSG_TEST_OWNER_ANCESTOR_PROTECTED\n");});
+        shortcut(QKeySequence(Qt::CTRL|Qt::Key_7),[this]{text->setProperty("xos_ssg_protected",true);std::printf("SSG_TEST_OWNER_DOCUMENT_PROTECTED\n");});
+        shortcut(QKeySequence(Qt::CTRL|Qt::Key_8),[paper]{paper->setProperty("xos_ssg_protected",true);std::printf("SSG_TEST_OWNER_ANCESTOR_PROTECTED\n");});
         // A hidden session can finish before the timer fires; the visible
         // fixture retains its original single delayed diagnostic.
         if(qApp->arguments().contains("--ssg-session-hidden") || qApp->arguments().contains("--ssg-hidden-test"))diagnostic();
@@ -228,12 +228,13 @@ int main(int argc,char **argv) {
         qInstallMessageHandler(ipc_qt_message);
     }
     QApplication app(argc,argv);aurora::initialize(app);
+    QFont font(QStringLiteral("DejaVu Sans"));font.setPixelSize(16);app.setFont(font);
+    editor window(initial,probe,instance,text_scope);
+
     if(!instance.isEmpty() && (app.arguments().contains("--ssg-session-hidden")
 #ifdef XOS_SSG_TEST_CONTROLS
         || app.arguments().contains("--ssg-hidden-test")
 #endif
         ))app.setQuitOnLastWindowClosed(false);
-    QFont font(QStringLiteral("DejaVu Sans"));font.setPixelSize(16);app.setFont(font);
-    editor window(initial,probe,instance,text_scope);
     return app.exec();
 }

@@ -1,0 +1,82 @@
+{
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "source_entries": 12,
+  "export_entries": 13,
+  "index_scope": "No prior full-file index is claimed. Original bytes are available at source_commit; this conversion record lists changed paths and old/new hashes.",
+  "added_export_document": "docs/reports/qt_e15_preflight_20261028/SANITIZED_EXPORT.md",
+  "changes": [
+    {
+      "path": "docs/reports/qt_e15_preflight_20261028/host-build-retry-2.log.gz",
+      "original_sha256": "a41578add641b9e7c8e0e8de6ec3c13a164bfae08f76e9e857a817c8defa04c7",
+      "export_sha256": "df0e5cc3078a9b1f93b5b3e58fe2356c3ef319940020e36fc2080e598f1f5928"
+    },
+    {
+      "path": "docs/reports/qt_e15_preflight_20261028/host-build-retry.log.gz",
+      "original_sha256": "b4125220d608784f944ad94b29c1724a7b32841aa1fc95855a6ca94eabd05db1",
+      "export_sha256": "ca09d41f83fe8c1864dae7a2a183aeba564e0ea8d565e52b5c0366f2dbdaf7ca"
+    },
+    {
+      "path": "docs/reports/qt_e15_preflight_20261028/host-build.log.gz",
+      "original_sha256": "92e7088bbc363fa2005659e84de5c76e2b86911956f5b6cc0e06715a8cf2b39e",
+      "export_sha256": "7b9bcf0dab9de4fe3f59e396069e8a02ff0741a8aee44321c5257de1397d957c"
+    },
+    {
+      "path": "docs/reports/qt_e15_preflight_20261028/sdk_guest.json",
+      "original_sha256": "b732c5e853c54a26701c2980780a9edc5059c929d89bfec619c461f7e498444a",
+      "export_sha256": "bc85011f299edf58c7c9d662d7e628f029483a8ed1abb1bbe98370c0cfd04954"
+    },
+    {
+      "path": "docs/reports/qt_e15_preflight_20261028/target-build-1.log.gz",
+      "original_sha256": "f23007e17bdda865e5ef63b3bd0cba93600a37037e7c0f6336a49a02e8aa1789",
+      "export_sha256": "5a4f9dd0b02989fbb7449d990f2fb4987bc4019bfa68ca212afb77162276f271"
+    },
+    {
+      "path": "docs/reports/qt_e15_preflight_20261028/target-build-2.log.gz",
+      "original_sha256": "2ab9d442629a4508e49f15552a40997cf27a38a559fb28c2f0e81923dedde290",
+      "export_sha256": "a4a96c4287f560e7099f5174bc3c4eb1018f08676b396119801226be5de62d31"
+    },
+    {
+      "path": "docs/reports/qt_e15_preflight_20261028/target-build-3.log.gz",
+      "original_sha256": "f21611486f74f710b03d0679409d89b33cbbe09925d38921812c758eb8870167",
+      "export_sha256": "4effd8b137fa72f20c4cbbce72e69b35f3d76da75c9f2b242620fba9704d6e49"
+    },
+    {
+      "path": "docs/reports/qt_e15_preflight_20261028/target-build-4.log.gz",
+      "original_sha256": "ad994904cc2aea888d2bc753c9dc49bc0d9f31d1c6a91efcf18de7a30a7b9f77",
+      "export_sha256": "050b4f94134eb90784ef4759fcc22f5b5acad1a77a02afbc157808f502e9dbf5"
+    },
+    {
+      "path": "docs/reports/qt_e15_preflight_20261028/target-configure-4.log.gz",
+      "original_sha256": "01e40d143025e46222f2e5775628732c68b017360e866133375e7bf0b02cc390",
+      "export_sha256": "ea87b87d40994aa07a96f24005a6a048fada8dfca5e77b0b59b607ebbb53a8f2"
+    },
+    {
+      "path": "docs/reports/qt_e15_preflight_20261028/target-configure-9.log.gz",
+      "original_sha256": "328ab9845aae8f1ea6d47cf874d45e2a592626f44072f04ea3342ae305e91311",
+      "export_sha256": "f782590238d1cc4adc979f53e9c26a7873e7893ab10b58b5854d7e892d3c732b"
+    }
+  ],
+  "template_variables": [
+    {
+      "name": "XOS_HOST_TEMP_6D6821976CD9",
+      "purpose": "host_temp root"
+    },
+    {
+      "name": "XOS_TOOLCHAIN_35527FAC2790",
+      "purpose": "toolchain root"
+    },
+    {
+      "name": "XOS_WORKTREE_9282C9E77071",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_ED2321C1F627",
+      "purpose": "worktree root"
+    }
+  ],
+  "reproduction": "MANUAL_REQUIRED: configure template roots and obtain matching historical inputs; no replay is claimed.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history.",
+  "added_export_document_sha256": "c1b336fd147faffbd53bdeb49aa93af0ce378307fd7f46352176ad185356da6c",
+  "transformation": "Host home/workspace/tool roots and unambiguous host QEMU command paths only; generic guest temporary paths are not globally replaced."
+}

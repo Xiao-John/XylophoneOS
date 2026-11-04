@@ -6,7 +6,7 @@
 #include <QtCore/QVector>
 
 namespace browser {
-struct SceneGeometry {
+struct scene_geometry_result {
     QRect bounds, visible_bounds;
     QJsonArray fragments, visible_fragments;
     QString visibility;
@@ -14,8 +14,8 @@ struct SceneGeometry {
 
 // The input is the engine's bounded fragment set in window coordinates. A
 // union rectangle alone can span the viewport even when no fragment enters it.
-inline SceneGeometry scene_geometry(const QVector<QRect> &boxes, const QRect &viewport, bool complete) {
-    SceneGeometry result;
+inline scene_geometry_result scene_geometry(const QVector<QRect> &boxes, const QRect &viewport, bool complete) {
+    scene_geometry_result result;
     bool all_inside = true;
     for(const auto &box:boxes){
         if(box.isEmpty())continue;

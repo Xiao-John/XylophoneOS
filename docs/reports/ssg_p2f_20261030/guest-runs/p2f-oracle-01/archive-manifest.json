@@ -1,13 +1,11 @@
 {
   "archive": "capture.tar.gz",
-  "archive_sha256": "10fa2224292fdf58f0af26d2fff6a2f4efcd9c8c7ad84586f57a2cf5d2d3e3c1",
   "archive_bytes": 187083,
   "root": "p2f-oracle-01",
   "entries": [
     {
       "path": "01-req.json",
-      "bytes": 36,
-      "sha256": "2a9eb5bb3192ea6a92c6ce078369f49690a962d242a198d63f51b2971cafc97e"
+      "bytes": 36
     },
     {
       "path": "01-req.wire",
@@ -693,23 +691,19 @@
     },
     {
       "path": "input.html",
-      "bytes": 1935,
-      "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+      "bytes": 1935
     },
     {
       "path": "oracle-01.json",
-      "bytes": 33408,
-      "sha256": "be36a9a6f9ae9c643174bbfaa2229542db67587e62f1d55a76c3e13b973a2f90"
+      "bytes": 33408
     },
     {
       "path": "oracle-02.json",
-      "bytes": 33407,
-      "sha256": "4db3d59229f8959d76fbb54a205393a598be5f0a12f28f817b984341e432018b"
+      "bytes": 33407
     },
     {
       "path": "qemu_qemu.log",
-      "bytes": 71,
-      "sha256": "f0c9efc71fd76ebfb3dbd387b4d9feb1f4c4c29a08966e5adec0a6675c05a6ad"
+      "bytes": 71
     },
     {
       "path": "qemu_serial.log",
@@ -718,13 +712,11 @@
     },
     {
       "path": "qmp-events.json",
-      "bytes": 543,
-      "sha256": "b2c790efa38831ec3a97b1ee00e2541177a3626c3e27d4a98703d240fd199ade"
+      "bytes": 543
     },
     {
       "path": "report.json",
       "bytes": 38785,
-      "sha256": "1da7bb595b09977ee6f3127e9e09d6193ad398ceae07ebd02d67780143f19ceb",
       "original_sha256": "9e36f1d1bb177a92e116e7b61b4c02bf508515b9e003b919d3fbdd55482c3eba",
       "original_bytes": 39160
     },
@@ -735,13 +727,11 @@
     },
     {
       "path": "structure-comparison.json",
-      "bytes": 87312,
-      "sha256": "c5a29887e73c258c13e01da6dcc63a9d85e377894c84ab6d75724c3a9e9b79f5"
+      "bytes": 87312
     },
     {
       "path": "runner.log",
-      "bytes": 0,
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      "bytes": 0
     }
   ],
   "note": "Path-sanitized exported capture; the original archive and changed member hashes are recorded separately. IPC frames and synthetic input bytes are unchanged.",

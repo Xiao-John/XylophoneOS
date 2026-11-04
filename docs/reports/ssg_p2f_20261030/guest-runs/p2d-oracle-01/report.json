@@ -22,8 +22,7 @@
       "sha256": "5d4d1bf9a3908c574ac7160496495ac0809e66ed7b53a5bccd06b4f7b5a64e57"
     },
     "input": {
-      "path": "${XOS_ROOT}/tests/fixtures/ssg_browser/p2d.html",
-      "sha256": "37fff0e9d875d3196f3d547a4f65e0a329b1466623eac9d2a502554d18c41e0f"
+      "path": "${XOS_ROOT}/tests/fixtures/ssg_browser/p2d.html"
     },
     "ssg_browser_pages_probe.py": {
       "path": "${XOS_ROOT}/tests/ssg_browser_pages_probe.py",
@@ -38,8 +37,7 @@
       "sha256": "9c45fe5dae60ec1546c971f7cfb24d75a19ef5b3718871b26dd8b66a07352674"
     },
     "link_target": {
-      "path": "${XOS_ROOT}/build/ssg_p2f_runs/p2d-oracle-01/link-target.html",
-      "sha256": "b1b17e71db2689f74e30c7e8b0f03106022ec79deea569d9e7507a11ea0f30e4"
+      "path": "${XOS_ROOT}/build/ssg_p2f_runs/p2d-oracle-01/link-target.html"
     },
     "qemu": {
       "path": "${XOS_ROOT}/.cache/ssg_p2f/qemu-prefix/bin/qemu-system-x86_64",
@@ -55,7 +53,6 @@
   "source_checkout": {
     "head": "0a63648d53e4a7491320111f053f8b93882fbdab",
     "tracked_changes": [],
-    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "binding": "Browser ELF and current Browser source hashes are checked against browser.receipt.json"
   },
   "qemu_command": [
@@ -93,7 +90,6 @@
     "unix:${XOS_QMP_SOCKET},server=on,wait=off"
   ],
   "error": "AssertionError('ssg_p2f_runs/p2d-oracle-01/qemu: QEMU exited 1')",
-  "serial_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "frames": [],
   "oracles": []
 }

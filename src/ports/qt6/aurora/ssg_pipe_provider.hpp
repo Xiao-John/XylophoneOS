@@ -47,11 +47,11 @@ public:
 // Application-owned, opt-in and prewired. The only worker touches bytes;
 // every qt_scene call is posted to this object's GUI thread.
 class pipe_provider final : public QObject {
-    using Snapshot=std::function<QJsonObject(bool,const QString &,unsigned)>;
-    using Diff=std::function<QJsonObject(quint64,const QString &)>;
-    Snapshot snapshot_source;Diff diff_source;
-    std::function<QJsonObject(const QJsonObject &)> page_source;
+    using snapshot_fn=std::function<QJsonObject(bool,const QString &,unsigned)>;
+    using diff_fn=std::function<QJsonObject(quint64,const QString &)>;
+    snapshot_fn snapshot_source;diff_fn diff_source;
     std::function<QJsonObject(const QString &,const QString &,int,int,const QString &)> range_source;
+    std::function<QJsonObject(const QJsonObject &)> page_source;
     QString instance;
     QThread *worker=nullptr;
     gui_watchdog watch;
@@ -135,10 +135,10 @@ class pipe_provider final : public QObject {
         for(;;){
             QByteArray request;unsigned sequence=0;
             auto result=ssg_pipe::receive(request,sequence,ssg_pipe::max_request,watch,true);
-            if(result!=ssg_pipe::Result::ok){std::printf("SSG_PROVIDER_END pid=%llu reason=%s\n",(unsigned long long)xos::sdk::pid(),ssg_pipe::name(result));break;}
+            if(result!=ssg_pipe::io_result::ok){std::printf("SSG_PROVIDER_END pid=%llu reason=%s\n",(unsigned long long)xos::sdk::pid(),ssg_pipe::name(result));break;}
             if(sequence==0 || sequence<=last_sequence){
                 result=ssg_pipe::send(QByteArray("{\"status\":\"STALE_MESSAGE\"}"),sequence,ssg_pipe::max_response,watch);
-                if(result!=ssg_pipe::Result::ok)break;
+                if(result!=ssg_pipe::io_result::ok)break;
                 continue;
             }
             last_sequence=sequence;
@@ -165,7 +165,7 @@ class pipe_provider final : public QObject {
                 xos::thread::wait(&mailbox,0);
             if(__atomic_load_n(&stopping,__ATOMIC_ACQUIRE))break;
             result=ssg_pipe::send(reply,sequence,ssg_pipe::max_response,watch);
-            if(result!=ssg_pipe::Result::ok){std::printf("SSG_PROVIDER_END pid=%llu reason=%s\n",(unsigned long long)xos::sdk::pid(),ssg_pipe::name(result));break;}
+            if(result!=ssg_pipe::io_result::ok){std::printf("SSG_PROVIDER_END pid=%llu reason=%s\n",(unsigned long long)xos::sdk::pid(),ssg_pipe::name(result));break;}
 #ifdef XOS_SSG_TEST_CONTROLS
             if((fault_timeout || fault_truncated || fault_cancel) && !complete_once){
                 const auto sent=QJsonDocument::fromJson(reply).object();
@@ -190,7 +190,7 @@ public:
          diff_source([&source](quint64 version,const QString &epoch){return source.diff(version,epoch);}),
          range_source([&source](const QString &epoch,const QString &id,int start,int maximum,const QString &revision){return source.text_range(epoch,id,start,maximum,revision);}),
          instance(std::move(source_instance)),watch(this){}
-    pipe_provider(QString source_instance,Snapshot snapshot,Diff diff,std::function<QJsonObject(const QJsonObject &)> page={})
+    pipe_provider(QString source_instance,snapshot_fn snapshot,diff_fn diff,std::function<QJsonObject(const QJsonObject &)> page={})
         :snapshot_source(std::move(snapshot)),diff_source(std::move(diff)),page_source(std::move(page)),
          instance(std::move(source_instance)),watch(this){}
     void start(){worker=QThread::create([this]{run();});worker->start();}

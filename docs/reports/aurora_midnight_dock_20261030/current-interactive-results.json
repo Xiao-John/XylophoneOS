@@ -1,0 +1,51 @@
+{
+  "status": "PASSED",
+  "case": "interactive",
+  "checks": [
+    {
+      "name": "real_single_surface_desktop",
+      "status": "PASSED"
+    },
+    {
+      "name": "two_distinct_native_designs",
+      "status": "PASSED"
+    },
+    {
+      "name": "setting_highContrast",
+      "status": "PASSED"
+    },
+    {
+      "name": "setting_reduceTransparency",
+      "status": "PASSED"
+    },
+    {
+      "name": "setting_reduceMotion",
+      "status": "PASSED"
+    },
+    {
+      "name": "hide_restore_panel",
+      "status": "PASSED"
+    },
+    {
+      "name": "real_menu_notification_text_and_keyboard",
+      "status": "PASSED"
+    },
+    {
+      "name": "desktop_exit_exact_resources",
+      "status": "PASSED"
+    },
+    {
+      "name": "display_released_after_desktop",
+      "status": "PASSED"
+    },
+    {
+      "name": "non_aurora_app_preserved",
+      "status": "PASSED"
+    },
+    {
+      "name": "service_stop_and_file_sync",
+      "status": "PASSED"
+    }
+  ],
+  "scope": "current-main rebased Dock build and separately supplied legacy Qt fixture"
+}

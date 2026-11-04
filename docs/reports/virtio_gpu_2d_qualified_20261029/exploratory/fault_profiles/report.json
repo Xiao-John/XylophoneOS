@@ -16,7 +16,7 @@
         0
       ],
       "qemu_command": [
-        "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+        "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
         "-machine",
         "pc-i440fx-10.0",
         "-accel",
@@ -34,7 +34,7 @@
         "-rtc",
         "base=utc,clock=host",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/qualified/xos.img,format=raw,if=floppy,index=0,readonly=on",
+        "file=${XOS_WORKTREE_F422EEF78DDA}/build/virtio_gpu/qualified/xos.img,format=raw,if=floppy,index=0,readonly=on",
         "-boot",
         "order=a,strict=on",
         "-no-reboot",
@@ -45,9 +45,9 @@
         "-display",
         "none",
         "-drive",
-        "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_vgpu_faults_3ipsbhgn/host_quota.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "file=${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_vgpu_faults_3ipsbhgn/host_quota.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
         "-qmp",
-        "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_a2ba6l1k/qmp.sock,server=on,wait=off",
+        "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_a2ba6l1k/qmp.sock,server=on,wait=off",
         "-device",
         "virtio-gpu-pci,id=vgpu,disable-legacy=on,max_hostmem=2097152"
       ]
@@ -67,7 +67,7 @@
         0
       ],
       "qemu_command": [
-        "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+        "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
         "-machine",
         "pc-i440fx-10.0",
         "-accel",
@@ -85,7 +85,7 @@
         "-rtc",
         "base=utc,clock=host",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/qualified/xos.img,format=raw,if=floppy,index=0,readonly=on",
+        "file=${XOS_WORKTREE_F422EEF78DDA}/build/virtio_gpu/qualified/xos.img,format=raw,if=floppy,index=0,readonly=on",
         "-boot",
         "order=a,strict=on",
         "-no-reboot",
@@ -96,9 +96,9 @@
         "-display",
         "none",
         "-drive",
-        "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_vgpu_faults_3ipsbhgn/host_init_quota.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "file=${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_vgpu_faults_3ipsbhgn/host_init_quota.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
         "-qmp",
-        "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_z2_qp_jr/qmp.sock,server=on,wait=off",
+        "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_z2_qp_jr/qmp.sock,server=on,wait=off",
         "-device",
         "virtio-gpu-pci,id=vgpu,disable-legacy=on,max_hostmem=1048576"
       ]
@@ -118,7 +118,7 @@
         0
       ],
       "qemu_command": [
-        "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+        "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
         "-machine",
         "pc-i440fx-10.0",
         "-accel",
@@ -136,7 +136,7 @@
         "-rtc",
         "base=utc,clock=host",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/dma_quota/xos.img,format=raw,if=floppy,index=0,readonly=on",
+        "file=${XOS_WORKTREE_F422EEF78DDA}/build/virtio_gpu/dma_quota/xos.img,format=raw,if=floppy,index=0,readonly=on",
         "-boot",
         "order=a,strict=on",
         "-no-reboot",
@@ -147,9 +147,9 @@
         "-display",
         "none",
         "-drive",
-        "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_vgpu_faults_3ipsbhgn/dma_quota.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "file=${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_vgpu_faults_3ipsbhgn/dma_quota.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
         "-qmp",
-        "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_qvp94l8r/qmp.sock,server=on,wait=off",
+        "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_qvp94l8r/qmp.sock,server=on,wait=off",
         "-device",
         "virtio-gpu-pci,id=vgpu,disable-legacy=on"
       ]
@@ -169,7 +169,7 @@
         0
       ],
       "qemu_command": [
-        "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+        "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
         "-machine",
         "pc-i440fx-10.0",
         "-accel",
@@ -187,7 +187,7 @@
         "-rtc",
         "base=utc,clock=host",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/timeout/xos.img,format=raw,if=floppy,index=0,readonly=on",
+        "file=${XOS_WORKTREE_F422EEF78DDA}/build/virtio_gpu/timeout/xos.img,format=raw,if=floppy,index=0,readonly=on",
         "-boot",
         "order=a,strict=on",
         "-no-reboot",
@@ -198,9 +198,9 @@
         "-display",
         "none",
         "-drive",
-        "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_vgpu_faults_3ipsbhgn/timeout.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "file=${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_vgpu_faults_3ipsbhgn/timeout.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
         "-qmp",
-        "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_asyl4bb7/qmp.sock,server=on,wait=off",
+        "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_asyl4bb7/qmp.sock,server=on,wait=off",
         "-device",
         "virtio-gpu-pci,id=vgpu,disable-legacy=on"
       ]
@@ -220,7 +220,7 @@
         0
       ],
       "qemu_command": [
-        "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+        "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
         "-machine",
         "pc-i440fx-10.0",
         "-accel",
@@ -238,7 +238,7 @@
         "-rtc",
         "base=utc,clock=host",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-virtio-gpu2d/build/virtio_gpu/qualified/xos.img,format=raw,if=floppy,index=0,readonly=on",
+        "file=${XOS_WORKTREE_F422EEF78DDA}/build/virtio_gpu/qualified/xos.img,format=raw,if=floppy,index=0,readonly=on",
         "-boot",
         "order=a,strict=on",
         "-no-reboot",
@@ -249,9 +249,9 @@
         "-display",
         "none",
         "-drive",
-        "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_vgpu_faults_3ipsbhgn/no_device.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "file=${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_vgpu_faults_3ipsbhgn/no_device.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
         "-qmp",
-        "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_8mnhhvw6/qmp.sock,server=on,wait=off"
+        "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_8mnhhvw6/qmp.sock,server=on,wait=off"
       ]
     }
   ]

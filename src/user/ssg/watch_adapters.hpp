@@ -14,12 +14,12 @@ struct browser_payload final:provider_payload {
     explicit browser_payload(const ssg_pipe::Baseline &value):baseline(value){}
 };
 struct notes_payload final:provider_payload {
-    ssg_multi::NotesBaseline baseline;
-    explicit notes_payload(const ssg_multi::NotesBaseline &value):baseline(value){}
+    ssg_multi::notes_baseline baseline;
+    explicit notes_payload(const ssg_multi::notes_baseline &value):baseline(value){}
 };
 
 class browser_provider final:public provider_adapter {
-    ssg_multi::Client &client_;QString instance_;bool hidden_;alive_callback alive_;void *source_;
+    ssg_multi::multi_source_client &client_;QString instance_;bool hidden_;alive_callback alive_;void *source_;
     observation blank()const{
         observation o;o.slot="browser";o.instance=instance_;o.scope="unfiltered-litehtml";
         o.presentation=hidden_?"hidden-test-no-surface-no-input":"visible-surface";
@@ -28,7 +28,7 @@ class browser_provider final:public provider_adapter {
         return o;
     }
 public:
-    browser_provider(ssg_multi::Client &client,const char *instance,bool hidden,alive_callback alive,void *source)
+    browser_provider(ssg_multi::multi_source_client &client,const char *instance,bool hidden,alive_callback alive,void *source)
         :client_(client),instance_(QString::fromLatin1(instance)),hidden_(hidden),alive_(alive),source_(source){}
     bool available()override{return alive_(source_);}
     void cancel()override{client_.cancel();}
@@ -36,7 +36,7 @@ public:
         auto o=blank();o.started_ns=xos::thread::clock();
         if(!available()){o.status="UNAVAILABLE";o.failure_reason="SOURCE_EXITED";}
         else {
-            client_.begin_observation(budget_ns);ssg_pipe::BaselineCollector collector;
+            client_.begin_observation(budget_ns);ssg_pipe::baseline_collector collector;
             const bool ok=collect_baseline(client_,collector) && collector.commit();
             if(ok && available()){
                 const auto &b=*collector.committed();o.epoch=QString::fromStdString(b.epoch);o.revision=QString::fromStdString(b.revision);
@@ -57,7 +57,7 @@ public:
         const auto &a=static_cast<const browser_payload &>(*before.payload).baseline;
         const auto &b=static_cast<const browser_payload &>(*after.payload).baseline;
         const auto diff=ssg_pipe::compare_baselines(a,b);
-        if(diff.status!=ssg_pipe::DiffStatus::ok)return {"RESET_REQUIRED",{{"reason","BROWSER_DIFF_RESET"}}};
+        if(diff.status!=ssg_pipe::diff_status::ok)return {"RESET_REQUIRED",{{"reason","BROWSER_DIFF_RESET"}}};
         if(!diff.geometry_complete)return {"SOURCE_UNKNOWN",{{"reason","INCOMPLETE_GEOMETRY"}}};
         int scroll=0,geometry=0,visibility=0,other=0;
         for(const auto &change:diff.changes){
@@ -73,7 +73,7 @@ public:
 };
 
 class notes_provider final:public provider_adapter {
-    ssg_multi::Client &client_;QString instance_;bool hidden_;alive_callback alive_;void *source_;
+    ssg_multi::multi_source_client &client_;QString instance_;bool hidden_;alive_callback alive_;void *source_;
     observation blank()const{
         observation o;o.slot="notes";o.instance=instance_;o.scope="document-range-UTF-16";
         o.presentation=hidden_?"hidden-session-no-surface-no-input":"visible-surface";
@@ -82,7 +82,7 @@ class notes_provider final:public provider_adapter {
         return o;
     }
 public:
-    notes_provider(ssg_multi::Client &client,const char *instance,bool hidden,alive_callback alive,void *source)
+    notes_provider(ssg_multi::multi_source_client &client,const char *instance,bool hidden,alive_callback alive,void *source)
         :client_(client),instance_(QString::fromLatin1(instance)),hidden_(hidden),alive_(alive),source_(source){}
     bool available()override{return alive_(source_);}
     void cancel()override{client_.cancel();}
@@ -90,7 +90,7 @@ public:
         auto o=blank();o.started_ns=xos::thread::clock();
         if(!available()){o.status="UNAVAILABLE";o.failure_reason="SOURCE_EXITED";}
         else {
-            client_.begin_observation(budget_ns);ssg_multi::NotesBaseline b;QString failure;
+            client_.begin_observation(budget_ns);ssg_multi::notes_baseline b;QString failure;
             const auto deadline=budget_ns>~uint64_t{0}-o.started_ns?~uint64_t{0}:o.started_ns+budget_ns;
             const bool ok=retry_capped_observation([&]{
                 bool capped=false;

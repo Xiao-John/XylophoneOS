@@ -1,0 +1,25 @@
+{
+  "source_commit": "29f78f3572dd121571f8844c192074dca97bcfb6",
+  "changes": [
+    {
+      "path": "docs/reports/browser_fragment_integrity_20261030/evidence.json",
+      "original_sha256": "513126f28762e02f06144db5f9f95ce0d7c20e0add7fe56bcd1be457b46910bb",
+      "export_sha256": "2bed8626c8017a5f25ee7348bc4c959ae03a1312e503a7527c1cf70455879dc2"
+    },
+    {
+      "path": "docs/reports/browser_fragment_integrity_20261030/upstream_sync_20261031.md",
+      "original_sha256": "ea4017f822c8b023ebec0aefee0a375ab23eef99117a58d0dce2eb58b2035c56",
+      "export_sha256": "f1eb66c920834ec9752a2d67b85771650bcd3985a7107e0145a8a3b6747f8187"
+    },
+    {
+      "path": "docs/reports/browser_fragment_integrity_20261030/sanitization-receipt.json",
+      "original_sha256": "6c79bc320167d28fd3009fe1d9bb706f9e03fbd28883d2850a29858dcd090857",
+      "export_sha256": "8f06e66e25605a8e84d5f583d221f4263b21d1d8edda9b2f248b0146932cb81b"
+    },
+    {
+      "path": "docs/reports/browser_fragment_integrity_20261030/browser/report.json",
+      "original_sha256": "0a71c5e5bff066ae0a8d4277db464514e3f42485c7041699dc8052bfa247927c",
+      "export_sha256": "534bdeb865936a974e85ce285ab1548bca9b262b3e42b8d3771a1a01cf236290"
+    }
+  ]
+}

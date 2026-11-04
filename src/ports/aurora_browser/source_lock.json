@@ -5,7 +5,7 @@
   "archive": "upstream/litehtml-0.9.tar.gz",
   "archive_creation": "git archive --format=tar.gz --prefix=litehtml-0.9/ 6ca1ab0419e770e6d35a1ef690238773a1dafcee",
   "archive_sha256": "bb3a2730d744c7201711307e49bb6058c0f1d3c5bf2d63368ff92e6774e6fcab",
-  "patches": [],
+  "patches": ["patches/0001_readonly_render_fragments.patch"],
   "license": "BSD-3-Clause; bundled Gumbo Apache-2.0",
   "source_sha256": {
     ".github/FUNDING.yml": "d31a9dfdc9ced7b3d1d560ce147557ac78916d24217e18ad1f9937a2778335f3",

@@ -166,7 +166,6 @@
       "direction": "REQ",
       "sequence": 1,
       "bytes": 68,
-      "sha256": "1a0ee9f71f13a1e043b180849874b645e32298b7c617c4b11ad9a747fab7e29e",
       "file": "01-req.json",
       "op": "snapshot",
       "status": null
@@ -184,7 +183,6 @@
       "direction": "REQ",
       "sequence": 2,
       "bytes": 61,
-      "sha256": "3314b38184acd8cd4370ba2e308a7f4ca49755f337e273953db74ecbb6cf0ab2",
       "file": "02-req.json",
       "op": "snapshot",
       "status": null
@@ -202,7 +200,6 @@
       "direction": "REQ",
       "sequence": 3,
       "bytes": 69,
-      "sha256": "9c80dd1e9925f57e89bc780f921fb1a5ccaba91ce11405c056cbc1ea544f84fb",
       "file": "03-req.json",
       "op": "snapshot",
       "status": null
@@ -238,7 +235,6 @@
       "direction": "REQ",
       "sequence": 5,
       "bytes": 69,
-      "sha256": "9c80dd1e9925f57e89bc780f921fb1a5ccaba91ce11405c056cbc1ea544f84fb",
       "file": "05-req.json",
       "op": "snapshot",
       "status": null
@@ -310,7 +306,6 @@
       "direction": "REQ",
       "sequence": 9,
       "bytes": 69,
-      "sha256": "9c80dd1e9925f57e89bc780f921fb1a5ccaba91ce11405c056cbc1ea544f84fb",
       "file": "09-req.json",
       "op": "snapshot",
       "status": null
@@ -346,7 +341,6 @@
       "direction": "REQ",
       "sequence": 11,
       "bytes": 100,
-      "sha256": "3a6f2db0870f41822d62f49eee59f499dfdd75a58481685e490e83a473fe52ba",
       "file": "11-req.json",
       "op": "diff",
       "status": null
@@ -382,7 +376,6 @@
       "direction": "REQ",
       "sequence": 13,
       "bytes": 60,
-      "sha256": "ce68a894badf08ab5566be2944867ef400636dd86c7d95e1c92cc43bd8013a00",
       "file": "13-req.json",
       "op": "snapshot",
       "status": null

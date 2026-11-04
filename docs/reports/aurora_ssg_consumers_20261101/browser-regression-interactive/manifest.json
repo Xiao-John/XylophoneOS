@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "files": {
+    "garden.png": "5df42d94fa90cc23dce81130b8c1ab7887d74908ce7da98193032b98f7852701",
+    "garden.ppm.gz": "a199af1fb98d4d330bcb3148fc2fd733fc1469cbfbcdb1dc6e9eee3476e6e6ac",
+    "guest_qemu.log.gz": "e08310de09270e4cd5b6483d1a90e2a8710f50ff58fcc7d475c0679c87b26455",
+    "guest_serial.log.gz": "43a6409fa1a8f76928431e1d5372de3bdf08a413fba2ba50173ae854be4a442b",
+    "reading-end.png": "5ed4855f55b70b084ce58896e742d1871bd1ca8e51ab597a74d399159bf726a3",
+    "reading-end.ppm.gz": "451dbc1026b653c5fb3417108c712269977f94b37e9de6aafd13bd8739ac47ae",
+    "reading-top.png": "447e76b063c4cbbd9c89252057d88adaee9497fbb8867f277a7ed05dbc5c0cfe",
+    "reading-top.ppm.gz": "8890718bf7ab25719850fe490d1b786962ecf1dce9a76088bf312b84705d786f",
+    "report.json": "70068ddc44022c59f7bc700494b164fb833a2adf6a4220a12bb7ffc5eb6d0815",
+    "serial.log.gz": "43a6409fa1a8f76928431e1d5372de3bdf08a413fba2ba50173ae854be4a442b",
+    "start.png": "814b4923c87cf56554eca25addcf9a93a7c12a808279c1a3e6299338aaf07ddb",
+    "start.ppm.gz": "fa93d430527e11ddea93a4238a1656081b946b793928686cb7d2833727d2e2b4",
+    "tabs.png": "1af8e31d3204aad1eb4821fd8895b8f96c3019bf520446346e50693fd0d2e425",
+    "tabs.ppm.gz": "402d25b31d095c39c1ddb3273a464999b54eedba41b1f31dcce49c5577a4891f"
+  }
+}

@@ -14,7 +14,7 @@ This package records a completed local build of the system, matching threading S
 | `SHA256SUMS` | Checksums of all other files in this directory |
 | `package_build_evidence.py` | Packaging procedure; it only reads existing records and writes this directory |
 
-The exported archive contains 151 records with normalized owner metadata and path-sanitized member content. The local originals were not modified. Exported archive SHA-256: e1abea1cf12d67338ce3c86475963c33cfbd3543f47e43ecfa2f0137209d0af1. The inventory records original and exported member hashes.
+The exported archive contains 151 records with normalized owner metadata and path-sanitized member content. The local originals were not modified. Exported archive SHA-256: [see flat manifest]. The inventory records original and exported member hashes.
 
 The following descriptions refer to historical build records. Exported copies may contain path templates, and their hashes are recorded in the inventory.
 

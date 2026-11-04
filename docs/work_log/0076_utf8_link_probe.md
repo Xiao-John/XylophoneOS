@@ -1,3 +1,5 @@
+> **路径模板：** 本历史记录中的宿主临时根目录为可配置占位符；原始字节保留在源提交。
+
 # 0076：多字节 libc 目标链接探针
 
 2026-10-28。继续 W1 前期缺口，不改变系统 SDK 或既有资格；没有做客体验收。
@@ -12,7 +14,7 @@
   包含该结构；因此不能只把候选 libc 替换到用旧头构建的 SDK 中。先前一次直接混链
   虽能链接，但不能证明兼容，不用于资格。第一次重编因上游 `dirent.h` 覆盖 XOS 的
   头而失败；按现有 SDK 生成顺序将 XOS 头置于上游之前后成功。
-- 命令：`python3 scripts/probe_utf8_link.py --newlib-prefix /tmp/xos_newlib_utf8_receipted_20261028/single/prefix --sdk build/input_edit_final/sdk --output /tmp/xos_w1_locale_link_final_20261028`。
+- 命令：`python3 scripts/probe_utf8_link.py --newlib-prefix ${XOS_DOC_TEMP_54C09703AC9B}/single/prefix --sdk build/input_edit_final/sdk --output ${XOS_DOC_TEMP_3EDB213D70DB}`。
   编译/链接退出 0，ELF SHA256 `cdecab0204d6c43f63fea21e218915735459b048053511dcc319d3cf39aa733d`；
   输入旧 SDK 树 SHA256 `b33f5203b794e07417d554605b5749bcc45099702500fffb4371c21403df8c76`。
   临时回执位于上述输出目录，临时文件可重建。该 SDK 属于旧组合，不是当前系统验收。

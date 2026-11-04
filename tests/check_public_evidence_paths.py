@@ -59,7 +59,9 @@ classifications = {
     'unsupported_git_object': 'NEEDS_REVIEW',
 }
 command_keys = {'qemu_command', 'commands', 'command'}
-absolute_path = re.compile(r'(?<![A-Za-z0-9_$}:])/(?:[A-Za-z0-9_.+@-]+/)+[A-Za-z0-9_.+@%-]*')
+absolute_path = re.compile(r'(?<![A-Za-z0-9_$}])/(?:[A-Za-z0-9_.+@-]+/)+[A-Za-z0-9_.+@%-]*')
+template_path = re.compile(r'\$\{XOS_[A-Z0-9_]+\}(?:/[A-Za-z0-9_.+@%~-]+)*')
+url_pattern = re.compile(r'(?i)\bhttps?://[^\s"\\]+')
 system_paths = ('/usr/bin/', '/usr/lib/', '/usr/share/', '/usr/include/', '/bin/',
                 '/sbin/', '/usr/sbin/', '/lib/', '/lib64/', '/dev/', '/proc/', '/sys/')
 
@@ -101,6 +103,11 @@ def _commands(value, findings, location):
         for key, item in value.items():
             if key in command_keys:
                 encoded = json.dumps(item, ensure_ascii=False)
+                # Paths rooted in an explicit template are configurable. Strip
+                # only that token and its path components before the separate
+                # absolute-command check; private-path byte scanning still runs.
+                encoded = template_path.sub('${XOS_TEMPLATE}', encoded)
+                encoded = url_pattern.sub('${URL}', encoded)
                 for match in absolute_path.finditer(encoded):
                     if not match.group().startswith(system_paths):
                         finding(findings, location, 'absolute_command')

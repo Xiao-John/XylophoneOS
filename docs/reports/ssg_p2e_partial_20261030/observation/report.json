@@ -19,8 +19,7 @@
       "sha256": "846e08dd04304884ac0176aee625a676e15026e4f9bd2423b60ef60579016ea6"
     },
     "input": {
-      "path": "${XOS_ROOT}/tests/fixtures/ssg_browser/p2d.html",
-      "sha256": "37fff0e9d875d3196f3d547a4f65e0a329b1466623eac9d2a502554d18c41e0f"
+      "path": "${XOS_ROOT}/tests/fixtures/ssg_browser/p2d.html"
     },
     "probe": {
       "path": "${XOS_ROOT}/tests/ssg_browser_pages_probe.py",
@@ -86,52 +85,42 @@
   "frames": [
     {
       "file": "01-req.json",
-      "sha256": "2a9eb5bb3192ea6a92c6ce078369f49690a962d242a198d63f51b2971cafc97e",
       "bytes": 36
     },
     {
       "file": "01-resp.json",
-      "sha256": "3e22f2aab664715efc26157d2a58bc705456af3a34465874fe6025659d951e0b",
       "bytes": 3724
     },
     {
       "file": "02-req.json",
-      "sha256": "db1fc119f3a8ddcabdb5136e9e863fa6486ffabd83bfdd231e3779f52869576f",
       "bytes": 101
     },
     {
       "file": "02-resp.json",
-      "sha256": "02d6ee283bb758c2531697f7237ed0771bc5641eff056c861905c521fc64a783",
       "bytes": 4208
     },
     {
       "file": "03-req.json",
-      "sha256": "f5733169f510212b4236b23e61e7fa497148e647481b3b6c3162415b316c6943",
       "bytes": 101
     },
     {
       "file": "03-resp.json",
-      "sha256": "a03361daac41f2d1202e459f4bcd511b228eed17b390c5ebefb8614136f54790",
       "bytes": 3882
     },
     {
       "file": "04-req.json",
-      "sha256": "0890246bbd3a054765a06f911941fd49cfa570531f45b6e761aa2ad6b6021f88",
       "bytes": 101
     },
     {
       "file": "04-resp.json",
-      "sha256": "337a8322e5be90331455db2b62553abe5d8e40060687cf02463021517c078f47",
       "bytes": 4097
     },
     {
       "file": "05-req.json",
-      "sha256": "37e5203361a5af626b3ee8b70ff2bf481f4e2b42af8154f82b08e20f07dcc729",
       "bytes": 101
     },
     {
       "file": "05-resp.json",
-      "sha256": "7b983ead78605112c36d64d2ec156538246bfc2a6b83aba3ec0098db4ef3f6ae",
       "bytes": 455
     }
   ],

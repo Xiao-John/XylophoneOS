@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "files": {
+    "archive-manifest.json": "cface9f3b043b336ad64508f2871f149027ecc3fc5387e43c62dc284c750886e",
+    "guest_qemu.log": "bfdb027ebff89ce084ed7d5bdd251bf23e8596378375b5c85e0b6088a1cb1d96",
+    "report.json": "73b01f9415b51586636b80a9a0e927fc4b6197abd0621bc4ef15b4e1e86556c8",
+    "runner.log": "a1b6f3d7be7137266e619bf7ac1175daa8af0e6ddf01215ebd53266082a44e61"
+  }
+}

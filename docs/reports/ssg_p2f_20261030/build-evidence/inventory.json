@@ -806,8 +806,6 @@
       "path": "build/ssg_p2f/payloads/build-1.log",
       "original_bytes": 0,
       "exported_bytes": 0,
-      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "byte_identical": true
     },
     {
@@ -976,16 +974,12 @@
       "path": "build/threading_sdk_logs/archive.log",
       "original_bytes": 0,
       "exported_bytes": 0,
-      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "byte_identical": true
     },
     {
       "path": "build/threading_sdk_logs/command.log",
       "original_bytes": 0,
       "exported_bytes": 0,
-      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "byte_identical": true
     },
     {
@@ -1032,40 +1026,30 @@
       "path": "build/threading_sdk_logs/cpp_runtime.log",
       "original_bytes": 0,
       "exported_bytes": 0,
-      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "byte_identical": true
     },
     {
       "path": "build/threading_sdk_logs/crt.log",
       "original_bytes": 0,
       "exported_bytes": 0,
-      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "byte_identical": true
     },
     {
       "path": "build/threading_sdk_logs/elf.log",
       "original_bytes": 0,
       "exported_bytes": 0,
-      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "byte_identical": true
     },
     {
       "path": "build/threading_sdk_logs/elf_cases.log",
       "original_bytes": 0,
       "exported_bytes": 0,
-      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "byte_identical": true
     },
     {
       "path": "build/threading_sdk_logs/file_client.log",
       "original_bytes": 0,
       "exported_bytes": 0,
-      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "byte_identical": true
     },
     {
@@ -1092,8 +1076,6 @@
       "path": "build/threading_sdk_logs/libgcc_archive.log",
       "original_bytes": 0,
       "exported_bytes": 0,
-      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "byte_identical": true
     },
     {
@@ -1120,80 +1102,60 @@
       "path": "build/threading_sdk_logs/load.log",
       "original_bytes": 0,
       "exported_bytes": 0,
-      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "byte_identical": true
     },
     {
       "path": "build/threading_sdk_logs/main_entry.log",
       "original_bytes": 0,
       "exported_bytes": 0,
-      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "byte_identical": true
     },
     {
       "path": "build/threading_sdk_logs/memory.log",
       "original_bytes": 0,
       "exported_bytes": 0,
-      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "byte_identical": true
     },
     {
       "path": "build/threading_sdk_logs/newlib_locks.log",
       "original_bytes": 0,
       "exported_bytes": 0,
-      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "byte_identical": true
     },
     {
       "path": "build/threading_sdk_logs/newlib_syscalls.log",
       "original_bytes": 0,
       "exported_bytes": 0,
-      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "byte_identical": true
     },
     {
       "path": "build/threading_sdk_logs/pthread.log",
       "original_bytes": 0,
       "exported_bytes": 0,
-      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "byte_identical": true
     },
     {
       "path": "build/threading_sdk_logs/syscall.log",
       "original_bytes": 0,
       "exported_bytes": 0,
-      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "byte_identical": true
     },
     {
       "path": "build/threading_sdk_logs/text.log",
       "original_bytes": 0,
       "exported_bytes": 0,
-      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "byte_identical": true
     },
     {
       "path": "build/threading_sdk_logs/thread_context.log",
       "original_bytes": 0,
       "exported_bytes": 0,
-      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "byte_identical": true
     },
     {
       "path": "build/threading_sdk_logs/tls.log",
       "original_bytes": 0,
       "exported_bytes": 0,
-      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "exported_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "byte_identical": true
     },
     {

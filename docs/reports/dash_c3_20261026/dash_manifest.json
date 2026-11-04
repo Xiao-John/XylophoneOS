@@ -190,7 +190,7 @@
   "debug_sha256": "225c2bc69b8816247f07d8631d24eaddcd3f0d811b36c19a9104cb75cffc7d73",
   "load_segments_unchanged": true,
   "objcopy": {
-    "path": "/Users/perry_guo/homebrew/bin/x86_64-elf-objcopy",
+    "path": "${XOS_TOOLCHAIN_35527FAC2790}/bin/x86_64-elf-objcopy",
     "sha256": "d9faf61c8148cae44ddfef8a8c914a8d7f715671681ac425592403cf96ce8332",
     "version": "GNU objcopy (GNU Binutils) 2.47.20260726"
   }

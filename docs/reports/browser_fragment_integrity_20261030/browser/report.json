@@ -34,12 +34,10 @@
   ],
   "screenshots": {
     "browser-dom-first": {
-      "sha256": "ff3d81cbcf64985f7329965ebbf63ac233b8a19909621e69a1f31a0c31cfb59f",
       "png_bytes": 250043,
       "host_capture_ms": 43.69762502028607
     },
     "browser-dom-reload": {
-      "sha256": "6e26f3aaa2ad8396982260ad6e348b9283f3ae3ddfbf5f005f7ba0a491feaa54",
       "png_bytes": 249065,
       "host_capture_ms": 26.093041989952326
     }

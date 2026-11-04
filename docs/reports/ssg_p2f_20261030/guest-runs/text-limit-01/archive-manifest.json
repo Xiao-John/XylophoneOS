@@ -1,13 +1,11 @@
 {
   "archive": "capture.tar.gz",
-  "archive_sha256": "796d6c0d29b30dab341e98bfe8f7ceab6e13f7409af522a8c536d234fa016bc7",
   "archive_bytes": 66100,
   "root": "text-limit-01",
   "entries": [
     {
       "path": "01-req.json",
-      "bytes": 36,
-      "sha256": "2a9eb5bb3192ea6a92c6ce078369f49690a962d242a198d63f51b2971cafc97e"
+      "bytes": 36
     },
     {
       "path": "01-req.wire",
@@ -33,18 +31,15 @@
     },
     {
       "path": "input.html",
-      "bytes": 1131,
-      "sha256": "8825dc929c4ffefcd3e6fed34d6cada3aeceb7bee869ba3773f053975211912e"
+      "bytes": 1131
     },
     {
       "path": "oracle-01.json",
-      "bytes": 2345,
-      "sha256": "c3346e670d9b60baf6f9c3491d009a8fd50db70919420e0e85877ec56748fc0c"
+      "bytes": 2345
     },
     {
       "path": "qemu_qemu.log",
-      "bytes": 71,
-      "sha256": "654ff389fd3710b02ff8838b05ead2baa9584c5fa6f96b2dbc217a581f786e7b"
+      "bytes": 71
     },
     {
       "path": "qemu_serial.log",
@@ -53,20 +48,17 @@
     },
     {
       "path": "qmp-events.json",
-      "bytes": 541,
-      "sha256": "b92baaa72455e137ec98a17db309ef55f31fa563c3e4649a4fc986e775a34ee6"
+      "bytes": 541
     },
     {
       "path": "report.json",
       "bytes": 4963,
-      "sha256": "6ec97b10bf842e1aac0f0d9e2410b612a20625365cfb22cd66b742a7d61cd52b",
       "original_sha256": "afe9211c3768d96a3137ded9b965496ca4daab32bb11e997574c02f531d7dbbf",
       "original_bytes": 5338
     },
     {
       "path": "resource-rejection.json",
-      "bytes": 2068,
-      "sha256": "50ed47b20c7dbef27a723d526d9d93a9bd96926b9a26ef7815a7722eaee85fe3"
+      "bytes": 2068
     },
     {
       "path": "serial.log",
@@ -75,8 +67,7 @@
     },
     {
       "path": "runner.log",
-      "bytes": 0,
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      "bytes": 0
     }
   ],
   "note": "Path-sanitized exported capture; the original archive and changed member hashes are recorded separately. IPC frames and synthetic input bytes are unchanged.",

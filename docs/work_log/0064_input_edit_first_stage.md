@@ -1,3 +1,5 @@
+> **路径模板：** 本历史记录中的宿主临时根目录为可配置占位符；原始字节保留在源提交。
+
 # 0064：多语言设计与输入编辑第一档
 
 2026-10-27。用户提高 UTF-8 输入与文件优先级，要求单列多语言设计并直接开始第一档。
@@ -22,8 +24,8 @@ UTF-8 码点输入。主 agent 负责共享文档、最终构建与检查。未�
   与本次不对应，按报告中的镜像 SHA256 与上方 manifest 绑定，不采用其 build_id。
 - `python3 tests/xsh_ui_smoke.py --system-dir build/input_edit_final --output-dir build/input_edit_final/xsh_ui`：11 项通过。
 - `python3 scripts/license_audit.py --build build/input_edit_final`：7 份材料通过，逐成员审计未完成。
-- `python3 tests/docs_consistency.py --output-dir /tmp/xos_multilingual_docs_check`、
-  `python3 tests/abi_doc_consistency.py --output-dir /tmp/xos_multilingual_abi_check` 与
+- `python3 tests/docs_consistency.py --output-dir ${XOS_DOC_TEMP_AF144222560D}`、
+  `python3 tests/abi_doc_consistency.py --output-dir ${XOS_DOC_TEMP_566B868479DA}` 与
   `git diff --check`：通过。
 
 先前构建 `2c517ff4b33c694e` 期间 supervisor 源码又有更新；其结果不作为最终组合资格。

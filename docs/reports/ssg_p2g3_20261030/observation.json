@@ -22,8 +22,7 @@
       "sha256": "1ffbc965cc2c0ce82ce2112a76c9547b4e18bfbe03a79e174d424f43b4a455ea"
     },
     "input": {
-      "path": "${XOS_ROOT}/tests/fixtures/ssg_browser/p2f.html",
-      "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+      "path": "${XOS_ROOT}/tests/fixtures/ssg_browser/p2f.html"
     },
     "ssg_browser_pages_probe.py": {
       "path": "${XOS_ROOT}/tests/ssg_browser_pages_probe.py",
@@ -136,7 +135,6 @@
       "sequence": 1,
       "direction": "REQ",
       "bytes": 36,
-      "sha256": "2a9eb5bb3192ea6a92c6ce078369f49690a962d242a198d63f51b2971cafc97e",
       "begin": 3989,
       "end": 4109,
       "file": "01-req.json",

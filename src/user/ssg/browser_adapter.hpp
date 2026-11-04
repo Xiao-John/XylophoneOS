@@ -7,16 +7,16 @@
 #include <QtCore/QJsonObject>
 #include <xos/thread_core.hpp>
 #include <cstdio>
-using ssg_pipe::BaselineCollector;
-using ssg_pipe::BaselinePage;
-using ssg_pipe::BaselineNode;
+using ssg_pipe::baseline_collector;
+using ssg_pipe::baseline_page;
+using ssg_pipe::baseline_node;
 
 // This mode is limited to the existing prewired read-only parent/child pipe.
-template<class Client>
-static bool collect_baseline(Client &client, BaselineCollector &collector, bool inject=false, bool *stale=nullptr){
+template<class client_type>
+static bool collect_baseline(client_type &client, baseline_collector &collector, bool inject=false, bool *stale=nullptr){
     if(stale)*stale=false;
     collector.begin(); bool transport=false; QString cursor,instance; QJsonObject request{{"op","snapshot_begin"},{"maxNodes",8}};
-    for(unsigned seq=1;seq<=BaselineCollector::max_pages;++seq){
+    for(unsigned seq=1;seq<=baseline_collector::max_pages;++seq){
         const auto r=client.request(request,&transport);
         if(transport && r.value("status")=="STALE_CURSOR"){
             collector.cancel(); if(stale)*stale=true;
@@ -30,7 +30,7 @@ static bool collect_baseline(Client &client, BaselineCollector &collector, bool 
         const int scroll=r.value("scrollY").toInt(-1), visited=r.value("visited").toInt(-1);
         if(!r.value("scrollY").isDouble() || r.value("scrollY").toDouble()!=scroll || !r.value("visited").isDouble() || r.value("visited").toDouble()!=visited || visited<0 ||
            r.value("stopReason")!=(r.value("complete").toBool()?"EXHAUSTED":"PAGE_BUDGET")){collector.cancel();return false;}
-        BaselinePage p; p.instance=r.value("sourceInstance").toString().toStdString();p.epoch=r.value("sourceEpoch").toString().toStdString();
+        baseline_page p; p.instance=r.value("sourceInstance").toString().toStdString();p.epoch=r.value("sourceEpoch").toString().toStdString();
         p.revision=r.value("sourceRevision").toString().toStdString();p.session=r.value("sessionId").toString().toStdString();
         p.scope=r.value("query").toString().toStdString();p.request_cursor=cursor.toStdString();p.cursor=r.value("cursor").toString().toStdString();
         p.sequence=seq;p.scroll=scroll;p.visited=unsigned(visited);p.visible_only=r.value("visibleOnly").toBool();p.complete=r.value("complete").toBool();
@@ -42,7 +42,7 @@ static bool collect_baseline(Client &client, BaselineCollector &collector, bool 
             auto valid_rect=[](const QJsonValue &v){if(!v.isArray() || v.toArray().size()!=4)return false;for(const auto x:v.toArray())if(!x.isDouble())return false;return true;};
             auto valid_rects=[&](const QJsonValue &v){if(!v.isArray() || v.toArray().size()>8)return false;for(const auto x:v.toArray())if(!valid_rect(x))return false;return true;};
             if(!valid_rect(n.value("bounds")) || !valid_rect(n.value("visibleBounds")) || !valid_rects(n.value("fragments")) || !valid_rects(n.value("visibleFragments"))){collector.cancel();return false;}
-            BaselineNode node;node.id=n.value("id").toString().toStdString();node.parent=n.value("parent").toString().toStdString();node.role=n.value("role").toString().toStdString();node.tag=n.value("tag").toString().toStdString();
+            baseline_node node;node.id=n.value("id").toString().toStdString();node.parent=n.value("parent").toString().toStdString();node.role=n.value("role").toString().toStdString();node.tag=n.value("tag").toString().toStdString();
             node.has_text=n.value("text").isString();node.has_href=n.value("href").isString();node.text=n.value("text").toString().toStdString();node.href=n.value("href").toString().toStdString();
             if(node.has_text && (n.value("textTruncated")!=false || n.value("text").toString().size()>1024 || n.value("textRange").toArray()!=QJsonArray{0,n.value("text").toString().size()})){collector.cancel();return false;}
             auto array=[&](const char *k){return QJsonDocument(n.value(k).toArray()).toJson(QJsonDocument::Compact).toStdString();};

@@ -36,7 +36,7 @@ metadata with `NOT_AUTHORIZED` for text; Browser's current text-bearing provider
 returns `DENIED`. With it, text is authorized only within this cooperating
 provider's application/document scope. `QtScene` continues to withhold password
 QLineEdit values and selections even with normal text enabled. A trusted Qt
-application can also set `xosSsgProtected=true` on a widget; its subtree then
+application can also set `xos_ssg_protected=true` on a widget; its subtree then
 withholds text, accessible/object names and widget-specific values, including
 for role-filtered queries. This is an application-supplied classification, not
 an independent security boundary. Do not infer that unmarked protected or

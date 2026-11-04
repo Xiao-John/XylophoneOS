@@ -22,8 +22,7 @@
       "sha256": "5d4d1bf9a3908c574ac7160496495ac0809e66ed7b53a5bccd06b4f7b5a64e57"
     },
     "input": {
-      "path": "${XOS_ROOT}/tests/fixtures/ssg_browser/p2f_text_limit.html",
-      "sha256": "8825dc929c4ffefcd3e6fed34d6cada3aeceb7bee869ba3773f053975211912e"
+      "path": "${XOS_ROOT}/tests/fixtures/ssg_browser/p2f_text_limit.html"
     },
     "ssg_browser_pages_probe.py": {
       "path": "${XOS_ROOT}/tests/ssg_browser_pages_probe.py",
@@ -51,7 +50,6 @@
   "source_checkout": {
     "head": "0a63648d53e4a7491320111f053f8b93882fbdab",
     "tracked_changes": [],
-    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "binding": "Browser ELF and current Browser source hashes are checked against browser.receipt.json"
   },
   "qemu_command": [
@@ -131,7 +129,6 @@
       "sequence": 1,
       "direction": "REQ",
       "bytes": 36,
-      "sha256": "2a9eb5bb3192ea6a92c6ce078369f49690a962d242a198d63f51b2971cafc97e",
       "begin": 3699,
       "end": 3819,
       "file": "01-req.json",
@@ -157,7 +154,6 @@
       "sequence": 1,
       "direction": "ORACLE",
       "bytes": 2345,
-      "sha256": "c3346e670d9b60baf6f9c3491d009a8fd50db70919420e0e85877ec56748fc0c",
       "begin": 5311,
       "end": 8885,
       "file": "oracle-01.json"

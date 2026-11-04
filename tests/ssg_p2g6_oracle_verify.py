@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """Independently compare both completed recover-run baselines with the liteHTML model."""
 import argparse,hashlib,json,sys
 import os as os_module

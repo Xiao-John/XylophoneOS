@@ -30,9 +30,9 @@ int main(int argc, char **argv) {
     check(scene.text_range(epoch,id,1,2,{})["status"]=="BAD_QUERY","missing_revision_rejected");
     edit->insertPlainText("X");
     check(scene.text_range(epoch,id,1,2,revision)["status"]=="RESET_REQUIRED","edit_invalidates_revision");
-    edit->setProperty("xosSsgProtected",true);
+    edit->setProperty("xos_ssg_protected",true);
     check(scene.text_range(epoch,id,0,2,{})["status"]=="PROTECTED","protection_rechecked");
-    edit->setProperty("xosSsgProtected",false);
+    edit->setProperty("xos_ssg_protected",false);
     auto *replacement=new QTextDocument(edit); replacement->setDocumentLayout(new QPlainTextDocumentLayout(replacement)); edit->setDocument(replacement);
     check(scene.text_range(epoch,id,0,2,{})["status"]=="STALE_REFERENCE","replacement_invalidates_reference");
     scene.revoke();

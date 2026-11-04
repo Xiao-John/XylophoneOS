@@ -2810,7 +2810,7 @@
   },
   "phase": "PY1",
   "sdk_build_id": null,
-  "source_work": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-dash-c1-c3/.cache/xos_seed/cpython/ecc4693a8cc1b3e783cb",
+  "source_work": "${XOS_WORKTREE_19282E542E67}/.cache/xos_seed/cpython/ecc4693a8cc1b3e783cb",
   "status": "staged_not_guest_tested",
   "version": "3.14.9"
 }

@@ -15,7 +15,7 @@
 using namespace xos;
 using namespace ssg_multi;
 
-struct Source {
+struct session_source {
     const char *slot;char instance[33]{};u32 input=0,output=0;i64 pid=-1;
     bool reaped=false;process_status status{};
 };
@@ -26,7 +26,7 @@ static bool random_instance(char *out){
     for(unsigned i=0;i<sizeof(data);++i){out[i*2]=hex[data[i]>>4];out[i*2+1]=hex[data[i]&15];}
     out[32]=0;return true;
 }
-static bool launch(Source &s,const char *program,const char *document,bool text,bool hidden_test=false,const char *fault=nullptr){
+static bool launch(session_source &s,const char *program,const char *document,bool text,bool hidden_test=false,const char *fault=nullptr){
     pipe_handles request{},response{};
     if(!random_instance(s.instance) || sdk::syscall(sys_pipe_create,reinterpret_cast<u64>(&request))!=0)return false;
     if(sdk::syscall(sys_pipe_create,reinterpret_cast<u64>(&response))!=0){close_token(request.read_token);close_token(request.write_token);return false;}
@@ -42,7 +42,7 @@ static bool launch(Source &s,const char *program,const char *document,bool text,
     std::printf("P3B_SOURCE slot=%s supervisor=%llu provider=%lld instance=%s channel=independent\n",s.slot,(unsigned long long)sdk::pid(),(long long)s.pid,s.instance);
     return true;
 }
-static bool alive(Source &s){
+static bool alive(session_source &s){
     if(s.pid<0 || s.reaped)return false;
     const auto result=sdk::syscall(sys_process_wait,u64(s.pid),reinterpret_cast<u64>(&s.status),1);
     if(result==process_error_would_block)return true;
@@ -52,7 +52,7 @@ static bool alive(Source &s){
 static QJsonObject identity(const char *slot,const QString &instance,const QString &epoch,const QString &local){
     return {{"slot",slot},{"sourceInstance",instance},{"sourceEpoch",epoch},{"localNodeId",local}};
 }
-static QJsonObject unavailable_result(const Source &source,u64 start,u64 end,const QString &status,const QString &failure,bool hidden){
+static QJsonObject unavailable_result(const session_source &source,u64 start,u64 end,const QString &status,const QString &failure,bool hidden){
     const bool browser=std::strcmp(source.slot,"browser")==0;
     return {{"slot",source.slot},{"status",status},{"completeness","NOT_OBSERVED"},{"freshness","NOT_CURRENT"},{"failure",failure},{"instance",QString::fromLatin1(source.instance)},
             {"epoch",QJsonValue(QJsonValue::Null)},{"revision",QJsonValue(QJsonValue::Null)},
@@ -60,7 +60,7 @@ static QJsonObject unavailable_result(const Source &source,u64 start,u64 end,con
             {"presentation",hidden?(browser?"hidden-test-no-surface-no-input":"hidden-session-no-surface-no-input"):"visible-surface"},
             {"startedMonotonicNs",QString::number(start)},{"endedMonotonicNs",QString::number(end)}};
 }
-static QString client_failure(const Client &client){
+static QString client_failure(const multi_source_client &client){
     if(!client.error().isEmpty())return client.error();
     if(!client.status().isEmpty() && client.status()!="OK")return client.status();
     return QStringLiteral("COLLECTION_OR_LIVENESS");
@@ -86,20 +86,20 @@ static QJsonObject browser_result(const ssg_pipe::Baseline &b,u64 start,u64 end,
             {"presentation",hidden?"hidden-test-no-surface-no-input":"visible-surface"},
             {"startedMonotonicNs",QString::number(start)},{"endedMonotonicNs",QString::number(end)},{"nodes",nodes}};
 }
-static QJsonObject notes_result(const NotesBaseline &n,u64 start,u64 end,bool hidden){
+static QJsonObject notes_result(const notes_baseline &n,u64 start,u64 end,bool hidden){
     return {{"slot","notes"},{"status","OBSERVED_COMPLETE"},{"completeness","REVISION_CONSISTENT_OWNER_ORACLE_REQUIRED"},{"freshness","UNVERIFIED_AFTER_OBSERVATION"},{"instance",n.instance},{"epoch",n.epoch},{"revision",n.revision},
             {"scope","document-range-UTF-16"},{"presentation",hidden?"hidden-session-no-surface-no-input":"visible-surface"},
             {"startedMonotonicNs",QString::number(start)},{"endedMonotonicNs",QString::number(end)},
             {"document",QJsonObject{{"id",identity("notes",n.instance,n.epoch,n.node)},{"utf16Units",n.units},{"text",n.text}}}};
 }
-struct PairObservation {QJsonObject aggregate;bool browser_ok=false,notes_ok=false;};
+struct pair_observation {QJsonObject aggregate;bool browser_ok=false,notes_ok=false;};
 // Recheck both processes after both sequential transactions. A source that
 // exited while its peer was being read cannot be republished as current.
-static PairObservation collect_pair(Client &bc,Client &nc,Source &b,Source &n,bool hidden_browser,bool hidden_notes,bool inject_note=false){
-    BaselineCollector browser;const u64 bs=thread::clock();
+static pair_observation collect_pair(multi_source_client &bc,multi_source_client &nc,session_source &b,session_source &n,bool hidden_browser,bool hidden_notes,bool inject_note=false){
+    baseline_collector browser;const u64 bs=thread::clock();
     bool browser_ok=collect_baseline(bc,browser) && browser.commit();const u64 be=thread::clock();
     const bool browser_before=alive(b),notes_before=alive(n);
-    NotesBaseline note;QString failure;const u64 ns=thread::clock();
+    notes_baseline note;QString failure;const u64 ns=thread::clock();
     bool notes_ok=collect_notes(nc,note,failure,inject_note);const u64 ne=thread::clock();
     const bool browser_after=alive(b),notes_after=alive(n);
     browser_ok=browser_ok && browser_before && browser_after;notes_ok=notes_ok && notes_before && notes_after;
@@ -122,16 +122,16 @@ static bool capture_next(const QJsonObject &next){
     capture("aggregate","BASELINE",1,payload);return true;
 }
 #endif
-static void finish(Source &s){
+static void finish(session_source &s){
     close_token(s.output);close_token(s.input);
 }
-static bool shutdown(Source &a,Source &b){
+static bool shutdown(session_source &a,session_source &b){
     const u64 started=thread::clock();
     finish(a);finish(b);
     const u64 until=thread::clock()+20000000000ull;
     while(thread::clock()<until){const bool aa=alive(a),bb=alive(b);if(!aa && !bb)break;thread::sleep_until(thread::clock()+100000000ull);}
     bool clean=true;
-    for(Source *s:{&a,&b}){
+    for(session_source *s:{&a,&b}){
         bool cancelled=false;
         if(alive(*s)){cancelled=true;sdk::syscall(sys_process_cancel,u64(s->pid));}
         const u64 limit=thread::clock()+5000000000ull;
@@ -143,7 +143,7 @@ static bool shutdown(Source &a,Source &b){
     return clean;
 }
 
-static bool watch_alive(void *source){return alive(*static_cast<Source *>(source));}
+static bool watch_alive(void *source){return alive(*static_cast<session_source *>(source));}
 
 struct watch_input {
     ssg_watch::watch_control *control;
@@ -194,10 +194,10 @@ static bool watch_number(const QStringList &args,const char *name,unsigned fallb
 #ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
 // Test-only owner/IPC evidence remains outside the generic watch scheduler.
 class watch_fixture_hooks final:public ssg_watch::watch_hooks {
-    Client &client_;Source &browser_,&notes_;watch_input &input_;u32 control_writer_;
+    multi_source_client &client_;session_source &browser_,&notes_;watch_input &input_;u32 control_writer_;
     bool hidden_browser_,hidden_notes_,test_control_;QString old_epoch_,old_node_;
 public:
-    watch_fixture_hooks(Client &client,Source &browser,Source &notes,watch_input &input,u32 writer,
+    watch_fixture_hooks(multi_source_client &client,session_source &browser,session_source &notes,watch_input &input,u32 writer,
                         bool hidden_browser,bool hidden_notes,bool test_control)
         :client_(client),browser_(browser),notes_(notes),input_(input),control_writer_(writer),
          hidden_browser_(hidden_browser),hidden_notes_(hidden_notes),test_control_(test_control){}
@@ -236,7 +236,7 @@ public:
     }
 };
 #endif
-static bool run_watch(Client &bc,Client &nc,Source &b,Source &n,bool hidden_browser,bool hidden_notes,
+static bool run_watch(multi_source_client &bc,multi_source_client &nc,session_source &b,session_source &n,bool hidden_browser,bool hidden_notes,
                       unsigned interval,unsigned duration,unsigned cycles,unsigned timeout,bool control_stdin,bool test_control,bool test_inflight){
     ssg_watch::browser_provider browser(bc,b.instance,hidden_browser,watch_alive,&b);
     ssg_watch::notes_provider notes(nc,n.instance,hidden_notes,watch_alive,&n);
@@ -311,7 +311,7 @@ int main(int argc,char **argv){
         std::printf("P3C_WATCH_ERROR reason=INVALID_BOUNDS\n");return 2;
     }
     std::printf("P3B_SCOPE browser_text=%d notes_text=%d\n",int(browser_text),int(notes_text));
-    Source b{"browser"},n{"notes"};
+    session_source b{"browser"},n{"notes"};
     bool hidden_notes=app.arguments().contains("--notes-hidden"),hidden_browser=false,dynamic=false;
     const char *notes_fault=nullptr;
 #ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
@@ -346,7 +346,7 @@ int main(int argc,char **argv){
     const u32 old_tokens[4]={b.input,b.output,n.input,n.output};
 #endif
     std::printf("P3B_BOTH_STARTED supervisor=%llu browser=%lld notes=%lld\n",(unsigned long long)sdk::pid(),(long long)b.pid,(long long)n.pid);
-    Client bc(b.slot,b.input,b.output,b.instance,b.pid),nc(n.slot,n.input,n.output,n.instance,n.pid);
+    multi_source_client bc(b.slot,b.input,b.output,b.instance,b.pid),nc(n.slot,n.input,n.output,n.instance,n.pid);
     if(watch){
         bool test_control=false,test_inflight=false;
 #ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
@@ -357,13 +357,13 @@ int main(int argc,char **argv){
                                     app.arguments().contains("--watch-control-stdin"),test_control,test_inflight);
         std::printf("P3B_CAPTURE_COMPLETE\n");const bool clean=shutdown(b,n);return result && clean?0:1;
     }
-    BaselineCollector collector;const u64 bstart=thread::clock();
+    baseline_collector collector;const u64 bstart=thread::clock();
     bool bok=collect_baseline(bc,collector) && collector.commit();const u64 bend=thread::clock();
     const bool browser_alive=alive(b),notes_alive_before=alive(n);
 #ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
     std::printf("P3B_BUDGET browser_remaining_ns=%llu notes_before_ns=%llu\n",(unsigned long long)bc.remaining_budget_ns(),(unsigned long long)nc.remaining_budget_ns());
 #endif
-    NotesBaseline note;QString failure;const u64 nstart=thread::clock();
+    notes_baseline note;QString failure;const u64 nstart=thread::clock();
     bool nok=collect_notes(nc,note,failure);const u64 nend=thread::clock();
     const bool browser_alive_after=alive(b),notes_alive_after=alive(n);
     bok=bok && browser_alive && browser_alive_after;nok=nok && notes_alive_before && notes_alive_after;
@@ -427,14 +427,14 @@ int main(int argc,char **argv){
         const auto notes_probe=nc.request({{"op","test_pipe_isolation"},{"foreignRead",QString::number(b.input)},{"foreignWrite",QString::number(b.output)}},&n_ok);
         const bool denied=b_ok && n_ok && browser_probe.value("status")=="OK" && notes_probe.value("status")=="OK" &&
             browser_probe.value("readDenied")==true && browser_probe.value("writeDenied")==true && notes_probe.value("readDenied")==true && notes_probe.value("writeDenied")==true;
-        BaselineCollector fresh;const u64 bs=thread::clock();
+        baseline_collector fresh;const u64 bs=thread::clock();
         bool browser_ok=collect_baseline(bc,fresh) && fresh.commit() && alive(b);const u64 be=thread::clock();
-        NotesBaseline updated;QString next_failure;const u64 ns=thread::clock();
+        notes_baseline updated;QString next_failure;const u64 ns=thread::clock();
         bool notes_ok=collect_notes(nc,updated,next_failure) && alive(n);const u64 ne=thread::clock();
         browser_ok=browser_ok && alive(b);notes_ok=notes_ok && alive(n);
         const bool notes_same=notes_ok && updated.instance==note.instance && updated.epoch==note.epoch && updated.node==note.node && updated.revision==note.revision && updated.text==note.text;
         const auto delta=browser_ok?ssg_pipe::compare_baselines(*collector.committed(),*fresh.committed()):ssg_pipe::Diff{};
-        const bool browser_same=browser_ok && delta.status==ssg_pipe::DiffStatus::ok && delta.changes.empty();
+        const bool browser_same=browser_ok && delta.status==ssg_pipe::diff_status::ok && delta.changes.empty();
         const QJsonObject next{{"status",browser_ok&&notes_ok?"AGGREGATE_COMPLETE_OBSERVED":"AGGREGATE_PARTIAL"},
             {"semantics","sequential-per-source-non-atomic"},{"globalAtomicSnapshot","NOT_IMPLEMENTED"},
             {"sources",QJsonArray{browser_ok?browser_result(*fresh.committed(),bs,be,hidden_browser):unavailable_result(b,bs,be,"UNAVAILABLE",client_failure(bc),hidden_browser),
@@ -445,16 +445,16 @@ int main(int argc,char **argv){
     } else if(dynamic && success && browser_scroll_test){
         std::printf("P3B_BROWSER_SCROLL_READY\n");
         thread::sleep_until(thread::clock()+12000000000ull);
-        BaselineCollector fresh;const u64 bs=thread::clock();
+        baseline_collector fresh;const u64 bs=thread::clock();
         bool browser_ok=collect_baseline(bc,fresh) && fresh.commit() && alive(b);const u64 be=thread::clock();
-        NotesBaseline updated;QString next_failure;const u64 ns=thread::clock();
+        notes_baseline updated;QString next_failure;const u64 ns=thread::clock();
         bool notes_ok=collect_notes(nc,updated,next_failure) && alive(n);const u64 ne=thread::clock();
         browser_ok=browser_ok && alive(b);notes_ok=notes_ok && alive(n);
         const bool unchanged=notes_ok && updated.instance==note.instance && updated.epoch==note.epoch && updated.node==note.node && updated.revision==note.revision && updated.text==note.text;
         ssg_pipe::Diff changes;if(browser_ok)changes=ssg_pipe::compare_baselines(*collector.committed(),*fresh.committed());
         unsigned scroll=0,geometry=0,visibility=0,other=0;
         for(const auto &change:changes.changes){if(change.kind=="ScrollChanged")++scroll;else if(change.kind=="WindowGeometryChanged")++geometry;else if(change.kind=="VisibilityChanged")++visibility;else ++other;}
-        const bool changed=browser_ok && changes.status==ssg_pipe::DiffStatus::ok && scroll==1 && collector.committed()->scroll!=fresh.committed()->scroll;
+        const bool changed=browser_ok && changes.status==ssg_pipe::diff_status::ok && scroll==1 && collector.committed()->scroll!=fresh.committed()->scroll;
         const QJsonObject next{{"status",browser_ok&&notes_ok?"AGGREGATE_COMPLETE_OBSERVED":"AGGREGATE_PARTIAL"},
             {"semantics","sequential-per-source-non-atomic"},{"globalAtomicSnapshot","NOT_IMPLEMENTED"},
             {"sources",QJsonArray{browser_ok?browser_result(*fresh.committed(),bs,be,hidden_browser):unavailable_result(b,bs,be,"UNAVAILABLE",client_failure(bc),hidden_browser),
@@ -468,13 +468,13 @@ int main(int argc,char **argv){
         const auto &old=*collector.committed();bool transport=false;
         const auto old_ref=bc.request({{"op","detail"},{"role","content"},{"sourceInstance",QString::fromStdString(old.instance)},
             {"sourceEpoch",QString::fromStdString(old.epoch)},{"sceneVersion","1"},{"nodeId",QString::fromStdString(old.nodes.front().id)}},&transport);
-        BaselineCollector fresh;const u64 bs=thread::clock();
+        baseline_collector fresh;const u64 bs=thread::clock();
         bool browser_ok=collect_baseline(bc,fresh) && fresh.commit() && alive(b);const u64 be=thread::clock();
-        NotesBaseline updated;QString next_failure;const u64 ns=thread::clock();
+        notes_baseline updated;QString next_failure;const u64 ns=thread::clock();
         bool notes_ok=collect_notes(nc,updated,next_failure) && alive(n);const u64 ne=thread::clock();
         browser_ok=browser_ok && alive(b);notes_ok=notes_ok && alive(n);
         const bool replaced=browser_ok && old.instance==fresh.committed()->instance && old.epoch!=fresh.committed()->epoch &&
-            ssg_pipe::compare_baselines(old,*fresh.committed()).status==ssg_pipe::DiffStatus::reset_required && transport && old_ref.value("status")=="SOURCE_REPLACED";
+            ssg_pipe::compare_baselines(old,*fresh.committed()).status==ssg_pipe::diff_status::reset_required && transport && old_ref.value("status")=="SOURCE_REPLACED";
         const bool unchanged=notes_ok && updated.instance==note.instance && updated.epoch==note.epoch && updated.node==note.node && updated.revision==note.revision && updated.text==note.text;
         const QJsonObject next{{"status",browser_ok&&notes_ok?"AGGREGATE_COMPLETE_OBSERVED":"AGGREGATE_PARTIAL"},
             {"semantics","sequential-per-source-non-atomic"},{"globalAtomicSnapshot","NOT_IMPLEMENTED"},
@@ -487,7 +487,7 @@ int main(int argc,char **argv){
         std::printf("%s\n",browser_exit_test?"P3B_BROWSER_EXIT_READY":"P3B_BROWSER_REVOKE_READY");
         thread::sleep_until(thread::clock()+12000000000ull);
         const bool browser_still_alive=alive(b);
-        BaselineCollector after_exit;const u64 bs=thread::clock();const bool browser_observed=collect_baseline(bc,after_exit);const u64 be=thread::clock();
+        baseline_collector after_exit;const u64 bs=thread::clock();const bool browser_observed=collect_baseline(bc,after_exit);const u64 be=thread::clock();
         bool refused=false;
         if(browser_revoke_test && !browser_observed && bc.status()=="DENIED"){
             bool transport=false;const auto again=bc.request({{"op","snapshot_begin"},{"maxNodes",8}},&transport);
@@ -498,7 +498,7 @@ int main(int argc,char **argv){
             refused=refused && transport && old_ref.value("status")=="DENIED" && !old_ref.contains("node") && !old_ref.contains("nodes");
             std::printf("P3B_BROWSER_OLD_REF_AFTER_REVOKE status=%s\n",old_ref.value("status").toString().toUtf8().constData());
         }
-        NotesBaseline updated;QString next_failure;const u64 ns=thread::clock();
+        notes_baseline updated;QString next_failure;const u64 ns=thread::clock();
         bool notes_observed=collect_notes(nc,updated,next_failure) && alive(n);const u64 ne=thread::clock();
         const bool browser_alive_final=alive(b);notes_observed=notes_observed && alive(n);
         const bool notes_unchanged=notes_observed && updated.instance==note.instance && updated.epoch==note.epoch && updated.node==note.node && updated.revision==note.revision && updated.text==note.text;
@@ -511,11 +511,11 @@ int main(int argc,char **argv){
         success=captured && notes_unchanged && (browser_revoke_test?revoked:!browser_still_alive && !browser_observed && b.reaped && b.status.outcome==process_outcome::exited && b.status.code==0);
     } else if(dynamic && success){
         std::printf("P3B_BASELINE_A_COMPLETE\n");
-        NotesBaseline updated;QString second_failure;const u64 second_nstart=thread::clock();
+        notes_baseline updated;QString second_failure;const u64 second_nstart=thread::clock();
         const bool second_notes=collect_notes(nc,updated,second_failure,!timeout_test && !truncated_test && !cancel_test,cancel_test);const u64 second_nend=thread::clock();
         bool retry_refused=false,alternate_refused=false;
         if(!second_notes && (second_failure=="DENIED" || second_failure=="PROTECTED")){
-            NotesBaseline retry;QString retry_failure;
+            notes_baseline retry;QString retry_failure;
             retry_refused=!collect_notes(nc,retry,retry_failure) && retry_failure==second_failure;
             bool ok=false;
             const auto document=nc.request({{"op","snapshot"},{"role","document"},{"visibleOnly",false},{"maxNodes",96}},&ok);
@@ -532,13 +532,13 @@ int main(int argc,char **argv){
             alternate_refused=no_text && label_safe && range_refused;
             std::printf("P3B_ALTERNATE_REFUSAL status=%s no_text=%d label_safe=%d range_refused=%d\n",second_failure.toUtf8().constData(),int(no_text),int(label_safe),int(range_refused));
         }
-        BaselineCollector second_browser;const u64 second_bstart=thread::clock();
+        baseline_collector second_browser;const u64 second_bstart=thread::clock();
         bool second_bok=collect_baseline(bc,second_browser) && second_browser.commit() && alive(b);const u64 second_bend=thread::clock();
         const bool second_nalive=alive(n);
         second_bok=second_bok && alive(b);
         ssg_pipe::Diff delta;
         if(second_bok)delta=ssg_pipe::compare_baselines(*collector.committed(),*second_browser.committed());
-        const bool browser_unchanged=second_bok && delta.status==ssg_pipe::DiffStatus::ok && delta.changes.empty();
+        const bool browser_unchanged=second_bok && delta.status==ssg_pipe::diff_status::ok && delta.changes.empty();
         const bool notes_changed=second_notes && second_nalive && note.instance==updated.instance && note.epoch==updated.epoch && note.node==updated.node && note.revision!=updated.revision && note.text!=updated.text;
         const bool expected_edit=std::strcmp(argv[3],"--test-edit")==0;
         const bool expected_exit=std::strcmp(argv[3],"--test-notes-exit")==0;

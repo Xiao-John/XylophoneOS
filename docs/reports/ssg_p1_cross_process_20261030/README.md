@@ -1,5 +1,7 @@
+> **Current review status: PARTIAL.** The integrated run failed after 13 checks while awaiting consumer exit; [its serial log](latest-failed-13-checks.serial.log.gz) is retained here. A later native-join mitigation passed a separate scoped rerun, but the exact cause and coverage remain under investigation. Historical 17-check reports below belong to their original inputs and are not the final acceptance conclusion.
+
 > **Evidence version:** This is a path-sanitized derivative; the original
-> bytes and original index are identified in [the provenance receipt](../issue37_path_hygiene/pr46-lineage.json).
+> bytes and original index are identified in [the provenance receipt](../../evidence_exports/issue37_pr46_review/original-pr46-lineage.json).
 > Historical command placeholders require manual configuration.
 
 # SSG-P1: cross-process, prewired, read-only experiment
@@ -20,7 +22,7 @@ Browser frame numbers may vary if a capped snapshot requires bounded resync.
 The display/geometry scope and security limits are in
 [the SSG-P1 contract](../../contracts/ssg_p1_pipe.md).
 
-The final combined run reports **17 scoped top-level checks passed**. In that
+An earlier combined run reported **17 scoped top-level checks passed**. In that
 run the kernel recorded Notes parent/provider/consumer PIDs `10/12/11`, and
 Browser parent/provider/consumer PIDs `37/39/38`; [process-identity.json](process-identity.json)
 also records their distinct address spaces and parent-child start events. These
@@ -37,9 +39,9 @@ the exact JSON payload bytes received by the consumer:
 
 | Payload | SHA-256 |
 |---|---|
-| [Initial snapshot](03-resp.json) | `00706b90bf465d7f009cd9491d5c86257807422a05acf5ba19dbb7ddaa0e9171` |
-| [Edit diff](04-resp.json) | `c54c76c0b70b36d1605370b4bb6076315619251724825c6098f1fc76a2dd3415` |
-| [Changed snapshot](05-resp.json) | `38a7274b530bf1180cb550c72296634650318c2816ec629231c1963217b33a71` |
+| [Initial snapshot](03-resp.json) | `[see flat manifest]` |
+| [Edit diff](04-resp.json) | `[see flat manifest]` |
+| [Changed snapshot](05-resp.json) | `[see flat manifest]` |
 
 `reconstructed-wire/` adds the deterministically reconstructed 12-byte frame
 headers to those payloads. The consumer validated the incoming magic, length

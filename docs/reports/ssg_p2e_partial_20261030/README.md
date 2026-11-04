@@ -1,3 +1,5 @@
+> Historical archives and indexes for this report are retained under `docs/evidence_exports/issue37_pr49_review/original/ssg_p2e_partial_20261030/`; the current flat manifest covers the derivative.
+
 # P2E partial progress — NOT QUALIFIED
 
 The original P2D evidence remains unchanged. This directory records separate

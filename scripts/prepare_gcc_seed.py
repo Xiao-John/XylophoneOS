@@ -153,7 +153,6 @@ def main():
         ('src/ports/gcc/upstream/GMP-COPYINGv3', '/usr/share/licenses/gmp/COPYINGv3'),
         ('src/ports/gcc/upstream/MPFR-COPYING.LESSER', '/usr/share/licenses/mpfr/COPYING.LESSER'),
         ('src/ports/gcc/upstream/MPC-COPYING.LESSER', '/usr/share/licenses/mpc/COPYING.LESSER'),
-        ('src/ports/binutils/upstream/zlib-LICENSE', '/usr/share/licenses/zlib/LICENSE'),
         ('licenses/GFDL-1.3.texi', '/usr/share/licenses/gfdl/GFDL'),
     ]
     for relative, guest in license_texts:

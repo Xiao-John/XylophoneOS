@@ -49,8 +49,8 @@ extern "C" void xos_file_session_unlock() {
 
 namespace { xos::u32 next_file_request_id; }
 extern "C" xos::u32 xos_file_request_id() {
-    // All Client instances share one process session. Never reuse an ID after
-    // a timeout or Client::init, so a late response cannot satisfy a new call.
+    // All client instances share one process session. Never reuse an ID after
+    // a timeout or client::init, so a late response cannot satisfy a new call.
     if (next_file_request_id == 0xffffffffu) { return 0; }
     return ++next_file_request_id;
 }

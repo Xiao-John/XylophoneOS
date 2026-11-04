@@ -26,7 +26,7 @@ bool persistent_recovery_gate;
 // The transaction directory is a durable recovery marker. Only a definite
 // not-found result permits ordinary startup or release of the admission guard.
 i64 persistent_marker_status(const char* path) {
-    file::Client files;
+    file::client files;
     if (!files.init()) { return static_cast<i64>(file::status::io); }
     u32 size = 0, attributes = 0;
     return files.stat_info(path, size, attributes);
@@ -283,7 +283,7 @@ void maintenance_run(u32 argc, char** argv, bool recovering, bool boot_image = f
     process_guard_info gate{};
     if (syscall(sys_process_guard, static_cast<u64>(process_guard_action::query),
                 reinterpret_cast<u64>(&gate)) != 0) { print("maintenance: unavailable\n"); return; }
-    file::Client files;
+    file::client files;
     if (!files.init()) { print("maintenance: files unavailable\n"); return; }
     i64 result;
     if (recovering) {

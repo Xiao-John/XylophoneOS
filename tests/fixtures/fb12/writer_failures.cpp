@@ -12,14 +12,14 @@ i64 syscall(u64 number,u64 first,u64,u64){
 void print(const char* text,u32){if(std::strstr(text,"[fault-bundle] saved"))++saved;}
 }
 namespace xos::file {
-bool Client::init(){return true;}
-i64 Client::mkdir(const char* path){return std::strcmp(path,"/FAULTS")==0?static_cast<i64>(status::exists):0;}
-i64 Client::list(const char*,entry*,u32,u32& count,u32& cursor){count=0;cursor=0;return 0;}
-i64 Client::open(const char*,u32,u32& h,u32& size,u32& version){h=static_cast<u32>(++writes);size=version=0;return 0;}
-i64 Client::write(u32,const void*,u32 length){if(scenario==1)return 0;if(scenario==7&&length>1)return static_cast<i64>(length/2);return static_cast<i64>(length);}
-i64 Client::close(u32){++closes;return scenario==2?-7:0;}
-i64 Client::sync(){++syncs;if(scenario==3&&syncs==1)return -8;if(scenario==5&&syncs==3)return -7;return 0;}
-i64 Client::rename(const char*,const char*){++renames;return scenario==4?-7:0;}
+bool client::init(){return true;}
+i64 client::mkdir(const char* path){return std::strcmp(path,"/FAULTS")==0?static_cast<i64>(status::exists):0;}
+i64 client::list(const char*,entry*,u32,u32& count,u32& cursor){count=0;cursor=0;return 0;}
+i64 client::open(const char*,u32,u32& h,u32& size,u32& version){h=static_cast<u32>(++writes);size=version=0;return 0;}
+i64 client::write(u32,const void*,u32 length){if(scenario==1)return 0;if(scenario==7&&length>1)return static_cast<i64>(length/2);return static_cast<i64>(length);}
+i64 client::close(u32){++closes;return scenario==2?-7:0;}
+i64 client::sync(){++syncs;if(scenario==3&&syncs==1)return -8;if(scenario==5&&syncs==3)return -7;return 0;}
+i64 client::rename(const char*,const char*){++renames;return scenario==4?-7:0;}
 }
 int main(){
  xos::process_status st{1,xos::process_outcome::faulted,7,0,14,0x100000,0x400000bf};fault_bundle::receipt image{};image.size=123;

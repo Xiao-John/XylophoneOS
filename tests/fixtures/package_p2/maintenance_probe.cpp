@@ -3,7 +3,7 @@
 #include <xos/file_client.hpp>
 using namespace xos;
 namespace {
-file::Client files;
+file::client files;
 int bad(int code) { sdk::print("P2_PROBE_FAIL=");sdk::decimal(static_cast<u64>(code));sdk::print("\n");return code; }
 }
 extern "C" int xos_user_main(const startup_info* startup) {

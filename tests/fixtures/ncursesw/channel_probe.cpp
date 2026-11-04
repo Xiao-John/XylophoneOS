@@ -263,7 +263,7 @@ extern "C" int xos_user_main(const startup_info* startup) {
     const char inspect_running = 't';
     if (sdk::ipc_send(outgoing, &inspect_running, 1) != 0 || sdk::channel_wait(incoming, deadline()) != 0 ||
         sdk::ipc_recv(incoming, &response, 1) != 1 || response != 'v') return 58;
-    file::Client files{};
+    file::client files{};
     if (!files.init()) return 59;
     i64 cloned = static_cast<i64>(file::status::would_block);
     for (u32 attempt = 0; attempt < 128 && cloned == static_cast<i64>(file::status::would_block); ++attempt) {

@@ -8,7 +8,7 @@
 
 int main() {
     using namespace xos;
-    file::Client client{};
+    file::client client{};
     u32 handle=0, transferred=0;
     int begin[2],done[2],status=0;
     if(!client.init()||client.anonymous(handle)!=0||client.write(handle,"abc",3)!=3||

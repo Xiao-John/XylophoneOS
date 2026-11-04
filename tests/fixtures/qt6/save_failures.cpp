@@ -5,25 +5,25 @@
 #include <QtCore/QSaveFile>
 #include <xos/thread_core.hpp>
 #include <cstring>
-using Client=xos::file::Client;
+using client=xos::file::client;
 static QByteArray mode;
-extern "C" xos::i64 real_close(Client*,xos::u32) asm("__real__ZN3xos4file6Client5closeEj");
-extern "C" xos::i64 wrap_close(Client *c,xos::u32 h) asm("__wrap__ZN3xos4file6Client5closeEj");
-extern "C" xos::i64 wrap_close(Client *c,xos::u32 h){const auto rc=real_close(c,h);if(mode=="close"){mode.clear();return -7;}return rc;}
-extern "C" xos::i64 real_sync(Client*) asm("__real__ZN3xos4file6Client4syncEv");
-extern "C" xos::i64 wrap_sync(Client*) asm("__wrap__ZN3xos4file6Client4syncEv");
-extern "C" xos::i64 wrap_sync(Client *c){if(mode=="sync"){mode.clear();return -7;}return real_sync(c);}
-extern "C" xos::i64 real_chunk(Client*,xos::u32,const void*,xos::u32) asm("__real__ZN3xos4file6Client13chunk_replaceEjPKvj");
-extern "C" xos::i64 wrap_chunk(Client*,xos::u32,const void*,xos::u32) asm("__wrap__ZN3xos4file6Client13chunk_replaceEjPKvj");
-extern "C" xos::i64 wrap_chunk(Client *c,xos::u32 offset,const void *data,xos::u32 n){
+extern "C" xos::i64 real_close(client*,xos::u32) asm("__real__ZN3xos4file6client5closeEj");
+extern "C" xos::i64 wrap_close(client *c,xos::u32 h) asm("__wrap__ZN3xos4file6client5closeEj");
+extern "C" xos::i64 wrap_close(client *c,xos::u32 h){const auto rc=real_close(c,h);if(mode=="close"){mode.clear();return -7;}return rc;}
+extern "C" xos::i64 real_sync(client*) asm("__real__ZN3xos4file6client4syncEv");
+extern "C" xos::i64 wrap_sync(client*) asm("__wrap__ZN3xos4file6client4syncEv");
+extern "C" xos::i64 wrap_sync(client *c){if(mode=="sync"){mode.clear();return -7;}return real_sync(c);}
+extern "C" xos::i64 real_chunk(client*,xos::u32,const void*,xos::u32) asm("__real__ZN3xos4file6client13chunk_replaceEjPKvj");
+extern "C" xos::i64 wrap_chunk(client*,xos::u32,const void*,xos::u32) asm("__wrap__ZN3xos4file6client13chunk_replaceEjPKvj");
+extern "C" xos::i64 wrap_chunk(client *c,xos::u32 offset,const void *data,xos::u32 n){
  if(mode=="short"){mode.clear();const auto rc=real_chunk(c,offset,data,n/2);return rc?rc:-4;}
  const auto rc=real_chunk(c,offset,data,n);
  if(mode=="hold"){std::printf("SAVE_HOLD_STAGED\n");xos::thread::sleep_until(xos::thread::clock()+30000000000ull);}
  return rc;
 }
-extern "C" xos::i64 real_commit(Client*) asm("__real__ZN3xos4file6Client14commit_replaceEv");
-extern "C" xos::i64 wrap_commit(Client*) asm("__wrap__ZN3xos4file6Client14commit_replaceEv");
-extern "C" xos::i64 wrap_commit(Client *c){const auto rc=real_commit(c);if(mode=="commit-unknown"){mode.clear();return -7;}return rc;}
+extern "C" xos::i64 real_commit(client*) asm("__real__ZN3xos4file6client14commit_replaceEv");
+extern "C" xos::i64 wrap_commit(client*) asm("__wrap__ZN3xos4file6client14commit_replaceEv");
+extern "C" xos::i64 wrap_commit(client *c){const auto rc=real_commit(c);if(mode=="commit-unknown"){mode.clear();return -7;}return rc;}
 int main(int argc,char **argv){
  QCoreApplication app(argc,argv);if(argc<3)return 2;
  const QByteArray requested=argv[1];mode.clear();const QString path=QString::fromUtf8(argv[2]);

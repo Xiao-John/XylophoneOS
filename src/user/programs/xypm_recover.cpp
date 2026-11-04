@@ -8,7 +8,7 @@
 using namespace xos;
 namespace {
 using namespace xypm_journal;
-file::Client files;
+file::client files;
 #ifdef XYP_RECOVERY_TEST
 u32 recovery_fault_after,recovery_checkpoint_count;
 void recovery_checkpoint(){++recovery_checkpoint_count;if(recovery_fault_after==recovery_checkpoint_count){sdk::print("xypm-recover-test: injected=");sdk::decimal(recovery_checkpoint_count);sdk::print("\n");(void)files.sync();sdk::exit(70);}}

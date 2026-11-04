@@ -11,7 +11,7 @@ maint-recover-boot
 
 只有监督任务和files服务仍存活时才允许`maint-run`，有后台或构造中应用返回busy，
 不自动杀掉用户程序。会话只允许监督创建一个worker，且不授予其构造子进程的能力。
-worker必须调用`file::Client::maintenance_acquire()`才能写文件；名字、路径、
+worker必须调用`file::client::maintenance_acquire()`才能写文件；名字、路径、
 包名及放进`/usr/bin`都不会授予维护权。正常应用不能直接取得控制权或释放写租约。
 
 worker正常退出0后，监督等files收回所有打开实例/单文件staging、同步块设备，

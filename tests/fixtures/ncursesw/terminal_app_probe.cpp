@@ -53,7 +53,7 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
     if (sdk::channel_fork(pair) != 0 || terminal::register_fork(parent, pair) != 0) {
         (void)sdk::syscall(sys_process_abort, static_cast<u64>(child_pid)); return 23;
     }
-    file::Client files{};
+    file::client files{};
     if (!files.init()) { (void)sdk::syscall(sys_process_abort, static_cast<u64>(child_pid)); return 24; }
     i64 cloned = static_cast<i64>(file::status::would_block);
     for (u32 attempt = 0; attempt < 128 && cloned == static_cast<i64>(file::status::would_block); ++attempt) {

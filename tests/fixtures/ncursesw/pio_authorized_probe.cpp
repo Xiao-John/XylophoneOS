@@ -161,7 +161,7 @@ extern "C" int xos_user_main(const startup_info* startup) {
             return 6;
         }
         if (child < 0) return 7;
-        file::Client files{};
+        file::client files{};
         if (!files.init()) return 8;
         i64 cloned = static_cast<i64>(file::status::would_block);
         for (u32 attempt = 0; attempt < 128 && cloned == static_cast<i64>(file::status::would_block); ++attempt) {

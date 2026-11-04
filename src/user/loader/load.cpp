@@ -15,7 +15,7 @@ namespace {
 u8 image_buffer[131072];
 alignas(16) u8 startup_page[startup_page_count * 4096];
 alignas(16) u8 page_buffer[4096];
-file::Client file_client;
+file::client file_client;
 bool file_client_ready;
 
 bool buffer_read(void* context, u64 offset, u8* destination, u32 length) {
@@ -25,7 +25,7 @@ bool buffer_read(void* context, u64 offset, u8* destination, u32 length) {
     return true;
 }
 
-struct opened_file { file::Client* client; u32 handle; };
+struct opened_file { file::client* client; u32 handle; };
 bool file_read(void* context, u64 offset, u8* destination, u32 length) {
     auto& source = *static_cast<opened_file*>(context);
     if (offset > 0xffffffffu || source.client->seek(source.handle, static_cast<u32>(offset)) < 0) {

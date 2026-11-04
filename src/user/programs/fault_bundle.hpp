@@ -8,7 +8,7 @@
 namespace fault_bundle {
 using namespace xos;
 using receipt = execution::image_receipt;
-static file::Client client;
+static file::client client;
 static file::entry entry_buffer[4];
 struct buffer {
  char data[2048]{}; u32 used=0; bool valid=true;

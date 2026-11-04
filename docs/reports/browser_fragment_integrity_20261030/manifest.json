@@ -8,11 +8,10 @@
     "browser/first.json.gz": "5eaabcead0fc7102217f2d6ace0c88991030f22a76defc896586fd2cdc0727be",
     "browser/guest_qemu.log.gz": "c7f97c0a02ac8ee08f603b32a27b503174b5d9ad0dc2836c63e01604c1f4cbf8",
     "browser/guest_serial.log.gz": "99a3876ae3aa7e97af5e6cc4fd5db5142e0873107a441ef90074e6577ef7932c",
-    "browser/manifest.json": "5e28ecb2edf0351530bb13c9dd594c029c99e123998e87b6517d22e20b892e9a",
+    "browser/manifest.json": "85934b04b81f63f6b049dc63a351eea9b5c1397095cb5b68e6ae421a1a2bdc18",
     "browser/reload-diff.json.gz": "b1ad69a603253a0e1ff7a9a01ab86fc696add46d7376047c9d6a1d93b1636bcb",
     "browser/reload.json.gz": "28ccbec48a00df341700a1078d9fd9fd334180bb12b1ab31985299b7a6e49aab",
     "browser/report.json": "534bdeb865936a974e85ce285ab1548bca9b262b3e42b8d3771a1a01cf236290",
-    "browser/serial.log.gz": "99a3876ae3aa7e97af5e6cc4fd5db5142e0873107a441ef90074e6577ef7932c",
     "browser-build.log.gz": "f13c3389b3758ac74bc04417bf8634d01fffcae2f86692c76a92549920fc1158",
     "browser.receipt.json.gz": "79e3e8a0ccd5d3a0af770d1a1a17d2ae11e6f37dcb9f0c54378b30c9964698d2",
     "current-browser-results.json": "b89069a4c0c5283db971b363d6eaf6154405f34d8430b9813d0ddb972f5383cb",
@@ -25,8 +24,8 @@
     "geometry/report.json": "df84ad2d95354e565f2aac496e9e7586a60ef72cf6e43daaf02c0de2fc0f36d3",
     "geometry-build.log.gz": "4d9018a0e0bf0111f044302efe47a71bad968aa46d7b9a1ed17d249c0c89e4ee",
     "geometry.receipt.json.gz": "9f372bf97dcd6b5ac960bca25e6e35e1baaf218a4b548e08f2d2ae79efd31f4e",
+    "round2_guest.json": "998d69f105e3fcf510637ad09455d1cb39338d26675175c4d9ce63c30b510b08",
     "sanitization-receipt.json": "8f06e66e25605a8e84d5f583d221f4263b21d1d8edda9b2f248b0146932cb81b",
-    "upstream_sync_20261031.md": "f1eb66c920834ec9752a2d67b85771650bcd3985a7107e0145a8a3b6747f8187",
-    "round2_guest.json": "998d69f105e3fcf510637ad09455d1cb39338d26675175c4d9ce63c30b510b08"
+    "upstream_sync_20261031.md": "f1eb66c920834ec9752a2d67b85771650bcd3985a7107e0145a8a3b6747f8187"
   }
 }

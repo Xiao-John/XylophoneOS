@@ -19,6 +19,8 @@
 | **D2 ncursesw W0/W1**（2026-11-03） | [PR #66](https://github.com/Xiao-John/XylophoneOS/pull/66) 已合并：W0 终验冻结（12 项 `xsh_*` gate，`build/w1_final_acceptance/frozen/`）、W1 最终验收全 gate 通过（4 系统 + 15 项终端交接探针 + 宽字符一致性 + 客体探针）；0187 记账 |
 | **SSG 批次 work_log 撞号**（2026-11-04） | PR #40/#44–#51 合并战役中统一让号 **0190–0197** 并逐 PR 重建 `work_log/README.md` 索引；历史 0103 改名按 C5 撤销；#47 漏插 0193 行补回 |
 | **SSG 批次承载面 C30**（2026-11-04） | #50/#51 合并时清零 `Baseline*`/`Client`/`NotesBaseline`/`PairObservation`/`Source`/`DiffStatus`/`xosSsgProtected` 等（对齐主线 snake_case 类型），watch 层 `watch_adapters` 一并改名 |
+| **C30-存量-01 file_client**（2026-11-04） | `xos::file::Client`→`xos::file::client`（27 文件；mangled `file6Client`→`file6client` 同步 fb0/save_failures asm 与 `--wrap`；冻结报告历史符号不改）；0198 记账 |
+| **C7 证据冗余**（2026-11-04） | 按 §4 语义修订：删 consumers 侧同 sha `browser-dom-first.png`（保留 bfi 血统引用侧）+ 两目录 `serial.log.gz` 双份；4 份 manifest 重生成；`browser-dom-reload.png` 同 sha 与全仓 serial 双写惯例属范围外观察；0198 记账 |
 
 ## 一、架构债（宪法裁定的整改义务）
 
@@ -32,19 +34,15 @@
 
 ## 二、命名债（C30）
 
-（B1 已合并，B2 经用户裁决豁免；SSG 批次承载面 C30 已于 #50/#51 合并时清零。）
-
-| # | 债项 | 退出条件 |
-|---|---|---|
-| C30-存量-01 | `src/user/include/xos/file_client.hpp` 的 `class Client`（main 存量，非本批次引入；审查 #50 时发现） | 改为 snake_case 并同步全部引用；或按上游强制兼容例外成文豁免 |
+（无未清偿项：B1 已合并，B2 经用户裁决豁免；SSG 批次承载面 C30 已于 #50/#51 合并时清零；C30-存量-01 `file_client` 已于 2026-11-04 清偿，见 0198。）
 
 ## 三、验收/证据债
 
 | # | 债项 | 内容 |
 |---|---|---|
-| C4 | 冻结回执泄露宿主绝对路径（**已并入 Issue #37 线，本债转由该线跟踪**） | 处置以 [PR #56](https://github.com/Xiao-John/XylophoneOS/pull/56) 为准：10 份混合换行串口恢复原始字节（索引不重写，独立复核 10/10）、入库守卫扫描器 + 索引校验器、冻结报告 `-text` 泛化、work_log 命令模板化。全量字节脱敏尝试已停止并整体回滚，工具与说明留档 `perry_host_path_scrub_20261031`（NOT_COMPLETED/SUPERSEDED，新契约首个 compliant 目录）。残余历史暴露 = Issue #37 的 open 边界（git 对象已发布，需维护者评审的迁移），如实登记不宣称关闭 |
+| C4 | 冻结回执泄露宿主绝对路径（**已放掉**，2026-11-04 用户裁决） | 用户关闭 Issue #37 并裁决放掉：现版本无真隐私路径即可。全树 `CONFIRMED_PRIVATE_PATH` 仅 3 条且均已复核在案：`tests/seed_diagnostics_cases.py` 与 `litehtml-0.9.tar.gz` 归档成员由 `reviewed_synthetic_paths.json` 登记 `SYNTHETIC_FIXTURE`（合成诊断串/上游打包残留，扫描器不绕过、findings 如实保留）；我方源码无真实贡献者路径。absolute_command/private_temp 类为可移植性/证据保真范畴非隐私债。历史处置（PR #56 守卫扫描器等）继续有效 |
 | C5 | work_log 撞号（**索引化清偿，本 PR 交付**；历史文件不动） | 采用"老人老办法"：不改任何历史文件名、零级联——新增 `docs/work_log/README.md` 编号索引，登记全部 12 组历史重复（含本轮扩围发现的 8 组未登记：0062/0063/0064/0065/0066/0073/0082/0088）并声明"自 0149 起编号唯一、新记录不得复用"；此前 4 组改号方案（0150–0153）因会把 5 个冻结清单拖入修改集、触发守门扫描器与级联螺旋而被否决回滚，过程记于 0154 |
-| C7 | SSG 批次证据冗余豁免残留（#44 阻塞 3，2026-11-04 豁免合入） | `aurora_ssg_consumers_20261101/browser/` 与 `browser_fragment_integrity_20261030/browser/` 的 `browser-dom-first.png` 跨目录同 sha；两目录内 `serial.log.gz==guest_serial.log.gz`（主线旧惯例先例 `631f85cc`）。**豁免≠去重完成**；清理需按 evidence_integrity §4 做语义修订记录（`report.json` 引用须一并处置） |
+| C7 | SSG 批次证据冗余（**已清偿**，2026-11-04 按 §4 落地） | 已删 consumers 侧同 sha `browser-dom-first.png`（bfi 血统引用侧保留）与两目录 `serial.log.gz` 双份，4 份 manifest 重生成，`report_manifest_check` passed；语义修订记录见 0198。范围外观察：`browser-dom-reload.png` 同 sha、全仓 serial 双写历史惯例（含冻结件）——未立债 |
 | —（制度新增，非债） | 证据完整性契约 | [evidence_integrity.md](./contracts/evidence_integrity.md)：git commit 为唯一信任根；新报告目录平铺 `manifest.json` 根清单、叶子互不哈希、修改只动两处；存量老人老办法；`tests/report_manifest_check.py` 如实报 compliant/grandfathered |
 
 ## 五、例外登记（C26）

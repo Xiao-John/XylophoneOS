@@ -1,6 +1,6 @@
 # XOS 当前状态（全局快照）
 
-2026-11-04 · 快照。按 [Discipline](Discipline.md) 的 state.md 规则，本文件只在整体变动
+2026-11-04 · 快照（发版后更新）。按 [Discipline](Discipline.md) 的 state.md 规则，本文件只在整体变动
 时刻（功能 PR 合入 main、Release、里程碑）由当时的合并者更新；行级细节与证据见各
 [work_log](work_log/)，本线活记忆写工作区根的 `STATE_L.md`（不入 git）。历史明细见
 [work_log](work_log/) 与 [history](history/)，原则裁决见
@@ -8,10 +8,11 @@
 
 ## 基线
 
-- 已发布资产仍是 0.0.1-1026（源码 db5b46c / build 7a4668477d7323de），
-  smoke 11/11、许可材料 7 份。[回执](releases/release_0_0_1_1026.json)
-  下一版号已定为 **0.0.2-1103**（`VERSION` 已更新，未发布：冻结/打包/上传
-  按 [发行准备](releases/next_release.md) 执行）。
+- **0.0.2-1103 已发布**（2026-11-04，tag `v0.0.2-1103` → `071330f3`）：
+  build `8356e45af316fc93`，release_smoke **11/11**，license_audit **0 open**，
+  含 **Qt 静态资产**（用户指令）。[回执](releases/release_0_0_2_1103.json)、
+  [发行说明](releases/0.0.2-1103.md)、[playbook](releases/playbook.md)。
+  0.0.1-1026 仍可下载（历史）。流程脚本：`scripts/release_pipeline.sh`。
 - 宪法 xos_plan v1.7：C28 驱动纯洁性、C29 时间域、C30 命名归属、C31 建设基础
   而非制造已经完成的假象；v1.7 删除 localpilot 隔离表述（`localpilot/` 已移出主
   工作区）。
@@ -42,7 +43,7 @@
 
 | 面 | 实际状态 | 证据入口/边界 |
 |---|---|---|
-| 发行 | 1026已发布，源码db5b46c/build7a4668477d7323de；smoke11/11、许可材料7份；0.0.2-1103 已定版待发 | [不可变回执](releases/release_0_0_1_1026.json)、[发行准备](releases/next_release.md) |
+| 发行 | **0.0.2-1103 已发布**（含 Qt 资产；smoke 11/11、audit 0 open）；1026 历史可下载 | [回执](releases/release_0_0_2_1103.json)、[playbook](releases/playbook.md) |
 | 核心/工具链 | E01–E08受限功能；原生GCC/G++开发已验，post5 P1仍partial | [E01–E07](history/e01_e07.md)、[E08](e08.md)；系统重建/自举未验（D6） |
 | 线程 | T0–T2、T3-PY与PY2专项已有证据 | [线程资格](reports/threading_20261025/qualification.json)；Qt QThread受限实测，SMP未验 |
 | Shell / 终端 | dash C1–C3受限通过，xsh保留默认；终端服务交接与 ncursesw 宽字符客体验收通过 | [C3资格](reports/dash_c3_20261026/qualification.json)，build2f7160b7d6633ee6；无完整信号/作业控制；[0187](work_log/0187_w1_final_acceptance.md) |
@@ -62,9 +63,8 @@
   当前仍 NOT_GRANTED，E16 distribution 仍 NOT_RUN。
 - **PR #51 未合并**（用户指示保持不动）：BLOCKED（9 冲突、CHANGES_REQUESTED 未回应、
   13 新报告缺 manifest、C30 违规）——进入合并队列前须先清障。
-- **0.0.2-1103 发版流程已中止**（2026-11-03 用户裁定：先完成 D7 收口再发）：版本号已定、
-  dash/install ISO 已按新版重建，但未冻结打包、未打 tag、未传资产；1026 仍是唯一可下载
-  发行。收口后按 [发行准备](releases/next_release.md) 重新走完四步再发。
+- **0.0.2-1103 已于 2026-11-04 发布**（D7 收口 + open 清零 + Qt 门槛后按用户令执行）；
+  下次发版按 [playbook](releases/playbook.md) / `scripts/release_pipeline.sh`。
 - 设备授权原语段 1b（grant 表）→ 显示迁移纵向切片 → ps2/ata（依赖 sys82 对齐）；
   N2 网络接其后。PR #20 按 RC 拆分要求仍挂账。
 - 系统重建/自举（D6）尚未开始；QML/Quick 移植为独立功能线，未立项。

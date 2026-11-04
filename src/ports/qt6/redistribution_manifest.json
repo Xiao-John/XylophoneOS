@@ -1,0 +1,410 @@
+{
+ "format_version": 1,
+ "purpose": "LGPLv3 section 4d0/6 and GPLv3 section 5(b) corresponding-source and relinking deliverable specification for XOS static Qt; engineering checklist, not a legal opinion",
+ "component": {
+  "name": "qtbase",
+  "version": "6.8.3",
+  "tag": "v6.8.3",
+  "tag_commit": "c07c2d5a527a644d36e7853d55132ae38921682f",
+  "source_url": "https://download.qt.io/archive/qt/6.8/6.8.3/submodules/qtbase-everywhere-src-6.8.3.tar.xz",
+  "source_archive_sha256": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80",
+  "source_tree_local": ".cache/xos_seed/qt6/qtbase-6.8.3"
+ },
+ "build_recipe": {
+  "configure_scripts": {
+   "src/ports/qt6/configure_widgets.py": "1eb128b94a2ac2bbc47beb887a0f3cfb2696f9b69e269cf9ad54561a0c9407f2",
+   "src/ports/qt6/configure_gui.py": "87764c752ff45bbf84867e0da6309a276a501c12d9a891ba5c8c9cf267ae9088",
+   "src/ports/qt6/configure_target.py": "8b215556bf4901a500c784a0fcaaa2cf539cd05a30b1398d64ec748e23720961",
+   "src/ports/qt6/xos_toolchain.cmake": "f432819a0596a95c8ce6913b57d99dd32baa3924395c47336a793d400e6d2afa"
+  },
+  "disabled_features_explicit": [
+   "concurrent",
+   "cups",
+   "dbus",
+   "directfb",
+   "dlopen",
+   "egl",
+   "eglfs",
+   "evdev",
+   "filedialog",
+   "filesystemwatcher",
+   "fontconfig",
+   "futimens",
+   "gif",
+   "icu",
+   "integrityfb",
+   "intelcet",
+   "jpeg",
+   "libinput",
+   "library",
+   "linuxfb",
+   "memmem",
+   "memrchr",
+   "network",
+   "opengl",
+   "pdf",
+   "png",
+   "poll_poll",
+   "poll_pollts",
+   "poll_ppoll",
+   "poll_select",
+   "process",
+   "processenvironment",
+   "sessionmanager",
+   "sharedmemory",
+   "sql",
+   "stack_clash_protection",
+   "stack_protector",
+   "system_freetype",
+   "system_harfbuzz",
+   "systemsemaphore",
+   "testlib",
+   "tslib",
+   "vkkhrdisplay",
+   "vnc",
+   "vulkan",
+   "xcb",
+   "xcb_xlib",
+   "xml"
+  ],
+  "disabled_features_explicit_count": 48,
+  "shared_libraries": "OFF",
+  "qpa_platforms": "xos",
+  "qpa_default_platform": "xos",
+  "target_mkspec": "xos-g++",
+  "cmake_cache_feature_off_total": 199,
+  "note": "48 is the explicit configure_widgets.py off list; 199 is the CMakeCache FEATURE_* = OFF total for the widgets2 tree"
+ },
+ "patches": [
+  {
+   "path": "src/ports/qt6/patches/0001-xos-platform-detection.patch",
+   "sha256": "fbce5274742c204e1aae33f2784dd2af4173171783d4b8ca253fc7e81263f9aa",
+   "files_touched": [
+    "src/corelib/global/qsystemdetection.h"
+   ],
+   "lines_added": 2,
+   "lines_removed": 0
+  },
+  {
+   "path": "src/ports/qt6/patches/0002-xos-event-dispatcher-selection.patch",
+   "sha256": "cdec41ec6eeefe15dfb71593c3025ea536e15aff1d0838885d506afbc380b2f7",
+   "files_touched": [
+    "src/corelib/CMakeLists.txt",
+    "src/corelib/configure.cmake",
+    "src/corelib/kernel/qcore_unix.cpp",
+    "src/corelib/kernel/qcoreapplication.cpp",
+    "src/corelib/thread/qmutex.cpp",
+    "src/corelib/thread/qmutex_p.h",
+    "src/corelib/thread/qthread_unix.cpp"
+   ],
+   "lines_added": 48,
+   "lines_removed": 11
+  },
+  {
+   "path": "src/ports/qt6/patches/0003-xos-system-info.patch",
+   "sha256": "0f21850057360b30c959dc2dce2346e4fa5f28fb3e3b86fb0ab6f70cba8d1435",
+   "files_touched": [
+    "src/corelib/global/qsysinfo.cpp"
+   ],
+   "lines_added": 16,
+   "lines_removed": 4
+  },
+  {
+   "path": "src/ports/qt6/patches/0004-xos-environment.patch",
+   "sha256": "738455a0da869c08209a3a9d533121ad123340d5adce8265acaa568c46b9ab81",
+   "files_touched": [
+    "src/corelib/global/qtenvironmentvariables.cpp"
+   ],
+   "lines_added": 2,
+   "lines_removed": 2
+  },
+  {
+   "path": "src/ports/qt6/patches/0005-xos-no-mmap.patch",
+   "sha256": "5263f0c2be9eac37fd83f851661e25c5fd31c67bfa2a34936b4ce51dd3cf4ece",
+   "files_touched": [
+    "src/corelib/io/qfsfileengine_unix.cpp",
+    "src/corelib/io/qresource.cpp",
+    "src/corelib/kernel/qtranslator.cpp"
+   ],
+   "lines_added": 22,
+   "lines_removed": 3
+  },
+  {
+   "path": "src/ports/qt6/patches/0006-xos-sha3-endian.patch",
+   "sha256": "38c46c7e3d310104c0d81686df877dda94770f2ad5259bbf025595a5bc328580",
+   "files_touched": [
+    "src/3rdparty/sha3/brg_endian.h"
+   ],
+   "lines_added": 2,
+   "lines_removed": 0
+  },
+  {
+   "path": "src/ports/qt6/patches/0007-xos-filesystem.patch",
+   "sha256": "4e4bc852cb32fac245603c3338019fe53793855c139b47e1fc8267b5712fb63c",
+   "files_touched": [
+    "src/corelib/io/qfilesystemengine_unix.cpp",
+    "src/corelib/io/qstandardpaths_unix.cpp"
+   ],
+   "lines_added": 22,
+   "lines_removed": 1
+  },
+  {
+   "path": "src/ports/qt6/patches/0008-xos-gui-platform.patch",
+   "sha256": "04f5d45d8d97e334bed40d6f042099b6387f014e9356faee0c996b1ba6339d11",
+   "files_touched": [
+    "src/3rdparty/freetype/CMakeLists.txt",
+    "src/3rdparty/harfbuzz-ng/CMakeLists.txt",
+    "src/gui/CMakeLists.txt"
+   ],
+   "lines_added": 14,
+   "lines_removed": 8
+  },
+  {
+   "path": "src/ports/qt6/patches/0009-xos-freetype-no-mmap.patch",
+   "sha256": "2551ba2f64fbd5c3b875ec1232a9861b300b63109e4b08bfdfb596ba7ec67967",
+   "files_touched": [
+    "src/3rdparty/freetype/builds/unix/ftsystem.c"
+   ],
+   "lines_added": 1,
+   "lines_removed": 57
+  },
+  {
+   "path": "src/ports/qt6/patches/0010-xos-host-arm64-acle.patch",
+   "sha256": "3d667d1ae8d77008a147c691db9837022f2ef0b6d4d5cff865826d613987a442",
+   "files_touched": [
+    "src/corelib/thread/qyieldcpu.h"
+   ],
+   "lines_added": 4,
+   "lines_removed": 0
+  }
+ ],
+ "patched_upstream_files": [
+  "src/3rdparty/freetype/CMakeLists.txt",
+  "src/3rdparty/freetype/builds/unix/ftsystem.c",
+  "src/3rdparty/harfbuzz-ng/CMakeLists.txt",
+  "src/3rdparty/sha3/brg_endian.h",
+  "src/corelib/CMakeLists.txt",
+  "src/corelib/configure.cmake",
+  "src/corelib/global/qsysinfo.cpp",
+  "src/corelib/global/qsystemdetection.h",
+  "src/corelib/global/qtenvironmentvariables.cpp",
+  "src/corelib/io/qfilesystemengine_unix.cpp",
+  "src/corelib/io/qfsfileengine_unix.cpp",
+  "src/corelib/io/qresource.cpp",
+  "src/corelib/io/qstandardpaths_unix.cpp",
+  "src/corelib/kernel/qcore_unix.cpp",
+  "src/corelib/kernel/qcoreapplication.cpp",
+  "src/corelib/kernel/qtranslator.cpp",
+  "src/corelib/thread/qmutex.cpp",
+  "src/corelib/thread/qmutex_p.h",
+  "src/corelib/thread/qthread_unix.cpp",
+  "src/corelib/thread/qyieldcpu.h",
+  "src/gui/CMakeLists.txt"
+ ],
+ "license_texts": [
+  {
+   "path": "src/ports/qt6/licenses/DOUBLE-CONVERSION-LICENSE",
+   "sha256": "4af93c12062c58058378de2397dc1c92bbff9ddfb1d583a01c84127557ce97ca"
+  },
+  {
+   "path": "src/ports/qt6/licenses/GPL-2.0-only.txt",
+   "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+  },
+  {
+   "path": "src/ports/qt6/licenses/GPL-3.0-only.txt",
+   "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+  },
+  {
+   "path": "src/ports/qt6/licenses/LGPL-3.0-only.txt",
+   "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+  },
+  {
+   "path": "src/ports/qt6/licenses/LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception.txt",
+   "sha256": "0526625fcc746a42d3f19a0ab357d3dc8479fdbe3bfd168825498f50215c7a63"
+  },
+  {
+   "path": "src/ports/qt6/licenses/LicenseRef-Qt-Commercial.txt",
+   "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700"
+  },
+  {
+   "path": "src/ports/qt6/licenses/PCRE2-LICENCE-SLJIT",
+   "sha256": "5f216505c0f6ea3273caec89e766eef93cdeb7bbb0c429f9360116d7c938feeb"
+  },
+  {
+   "path": "src/ports/qt6/licenses/PCRE2-LICENCE.md",
+   "sha256": "9cf7ac6976099a1d856826d3ef1b093bd6b84489dc6100628ac79e740cf9885a"
+  },
+  {
+   "path": "src/ports/qt6/licenses/Qt-GPL-exception-1.0.txt",
+   "sha256": "40678d338ce53cd93f8b22b281a2ecbcaa3ee65ce60b25ffb0c462b0530846b2"
+  },
+  {
+   "path": "src/ports/qt6/licenses/SHA3-BRG-ENDIAN-LICENSE",
+   "sha256": "2fed6f252ca4a7e813811de3cd3cd08183edd4138bdee909410ef6eee394e82c"
+  },
+  {
+   "path": "src/ports/qt6/licenses/SHA3-CC0-LICENSE",
+   "sha256": "1f2786e2c5befeb4dcba6638db6528bf96ef5d2cf24bc85ab5a81ef00abef59d"
+  },
+  {
+   "path": "src/ports/qt6/licenses/ZLIB-LICENSE",
+   "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+  },
+  {
+   "path": "src/ports/qt6/licenses/Zlib.txt",
+   "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+  }
+ ],
+ "static_outputs": {
+  "widgets": {
+   "root": "build/qt6_b1_20261031/widgets",
+   "libraries": [
+    {
+     "path": "build/qt6_b1_20261031/widgets/lib/libQt6BundledFreetype.a",
+     "sha256": "ea1d0a9b637ab3b4b0362241a303d86771bcaa746bf5c35189866951a71d3643",
+     "members": 42,
+     "library": "libQt6BundledFreetype.a"
+    },
+    {
+     "path": "build/qt6_b1_20261031/widgets/lib/libQt6BundledHarfbuzz.a",
+     "sha256": "adf2c971af6f459caa67591c13b9664681faa7dad14c6da1fecb23a23ea8f3db",
+     "members": 62,
+     "library": "libQt6BundledHarfbuzz.a"
+    },
+    {
+     "path": "build/qt6_b1_20261031/widgets/lib/libQt6BundledPcre2.a",
+     "sha256": "456e0a2a747079c4251ec387130a990deecc4f6fdc35ed2de52852b5228755a6",
+     "members": 28,
+     "library": "libQt6BundledPcre2.a"
+    },
+    {
+     "path": "build/qt6_b1_20261031/widgets/lib/libQt6BundledZLIB.a",
+     "sha256": "cf023e998fb25cb4914c074165f32ca19725a745830f7640bde3136f99af9543",
+     "members": 15,
+     "library": "libQt6BundledZLIB.a"
+    },
+    {
+     "path": "build/qt6_b1_20261031/widgets/lib/libQt6Core.a",
+     "sha256": "29fbacd8b34b9a4f271b2f4e7bc98cad75f6aabc86d0daf268717d0e6092e53c",
+     "members": 221,
+     "library": "libQt6Core.a"
+    },
+    {
+     "path": "build/qt6_b1_20261031/widgets/lib/libQt6DeviceDiscoverySupport.a",
+     "sha256": "58ba8f91e0a9eb20c417ae2fea3a328e09828ea3ec9efe555b4c5a5605c6cfaf",
+     "members": 2,
+     "library": "libQt6DeviceDiscoverySupport.a"
+    },
+    {
+     "path": "build/qt6_b1_20261031/widgets/lib/libQt6ExampleIcons.a",
+     "sha256": "71d5be3e9100f6ddfada6fd16c8b4a694bb5e19efa3c363e726defbfe4dd2700",
+     "members": 2,
+     "library": "libQt6ExampleIcons.a"
+    },
+    {
+     "path": "build/qt6_b1_20261031/widgets/lib/libQt6FbSupport.a",
+     "sha256": "12ad3ee4847826fd2a6a9b7611b11517f59b3176adcc87867f7e7269c894cf64",
+     "members": 6,
+     "library": "libQt6FbSupport.a"
+    },
+    {
+     "path": "build/qt6_b1_20261031/widgets/lib/libQt6Gui.a",
+     "sha256": "d27294fb4a0f69f425980a0ffda70c0f6415ffac83b12feeb2d4daa348233040",
+     "members": 216,
+     "library": "libQt6Gui.a"
+    },
+    {
+     "path": "build/qt6_b1_20261031/widgets/lib/libQt6Widgets.a",
+     "sha256": "688392dbd2d815c18e4f5bcc5d0ba1494bceb82788a80add7c191a5c6da465c6",
+     "members": 172,
+     "library": "libQt6Widgets.a"
+    }
+   ],
+   "library_count": 10,
+   "member_count": 766
+  },
+  "widgets2": {
+   "root": "build/qt6_b1_20261031/widgets2",
+   "libraries": [
+    {
+     "path": "build/qt6_b1_20261031/widgets2/lib/libQt6BundledFreetype.a",
+     "sha256": "3d151390d1fc635f79e247322d67a63529d1bff3c1fcefd26893c6b328cb6d6b",
+     "members": 42,
+     "library": "libQt6BundledFreetype.a"
+    },
+    {
+     "path": "build/qt6_b1_20261031/widgets2/lib/libQt6BundledHarfbuzz.a",
+     "sha256": "e90cb2f3fdcd1874a1a9c50c9f56f8a77195b07bae729008a53f382977de4596",
+     "members": 62,
+     "library": "libQt6BundledHarfbuzz.a"
+    },
+    {
+     "path": "build/qt6_b1_20261031/widgets2/lib/libQt6BundledPcre2.a",
+     "sha256": "4f1ad105b9b3d005f6e1fd9bcef6d07e3009c469083038ccd46f88ae6033a2dc",
+     "members": 28,
+     "library": "libQt6BundledPcre2.a"
+    },
+    {
+     "path": "build/qt6_b1_20261031/widgets2/lib/libQt6BundledZLIB.a",
+     "sha256": "dc019e7adf6405e2bc7ebc713cf89327380f10009e4f44a8dae03f2a24642dfc",
+     "members": 15,
+     "library": "libQt6BundledZLIB.a"
+    },
+    {
+     "path": "build/qt6_b1_20261031/widgets2/lib/libQt6Core.a",
+     "sha256": "bd37a8136eb95535254ad7a40ede333a29b653d4f88918f416b54227b8064a10",
+     "members": 221,
+     "library": "libQt6Core.a"
+    },
+    {
+     "path": "build/qt6_b1_20261031/widgets2/lib/libQt6Gui.a",
+     "sha256": "10d02bd4d92fa22808adb6e23d2c1be04183d5aa08d6c30a8e2fb41145ec3473",
+     "members": 216,
+     "library": "libQt6Gui.a"
+    },
+    {
+     "path": "build/qt6_b1_20261031/widgets2/lib/libQt6Widgets.a",
+     "sha256": "1184ef65e1ab08156b178e61c1d2b17e0d314fc97b74e74949e74efdcbb5c5d2",
+     "members": 172,
+     "library": "libQt6Widgets.a"
+    }
+   ],
+   "library_count": 7,
+   "member_count": 756
+  }
+ },
+ "relink_steps": [
+  "ship the locked qtbase source archive, the 10 patches, the configure scripts and xos_toolchain.cmake listed above",
+  "ship the built static libraries (or their object members) with this manifest and the target runtime provenance",
+  "recipient rebuilds Qt with: python3 src/ports/qt6/configure_widgets.py --source <src> --build <build> --sdk <sdk> --binutils <binutils> --host-qt <hostqt> then ninja -C <build>",
+  "recipient relinks their application objects against libQt6Widgets.a libQt6Gui.a libQt6Core.a plus bundled static libs, using -static -no-pie -nostdlib and the include paths recorded by the build manifest (authoritative command form: src/ports/qt6/build_widgets_fixture.py)",
+  "ship the 13 registered Qt license texts with the binaries and keep the modification notice (src/ports/qt6/patches/MODIFICATIONS.md)"
+ ],
+ "not_done": [
+  {
+   "item": "packaging verification of the shipped Qt bundle",
+   "status": "NOT_RUN",
+   "when": "at release packaging time"
+  },
+  {
+   "item": "commercial license verification",
+   "status": "N/A",
+   "reason": "no commercial authorization material exists in this repository"
+  },
+  {
+   "item": "Qt security review",
+   "status": "OUT_OF_SCOPE",
+   "reason": "tracked separately from the D7 license closure"
+  },
+  {
+   "item": "member-to-source license mapping of the static archives",
+   "status": "see docs/reports/qt_member_license_20261103/"
+  },
+  {
+   "item": "redistribution of Qt binaries",
+   "status": "NOT_GRANTED",
+   "reason": "qualification requires the packaging verification above; XOS does not ship Qt binaries in 0.0.2-1103"
+  }
+ ],
+ "distribution_status": "XOS 0.0.2-1103 ships no Qt binaries; obligations are not triggered until Qt binaries are distributed"
+}

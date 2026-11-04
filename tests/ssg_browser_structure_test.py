@@ -144,7 +144,7 @@ def encode_rejection(data):
     return result
 
 
-class StructureValidatorTests(unittest.TestCase):
+class structure_validator_tests(unittest.TestCase):
     def reject(self, data, fragment=None):
         with self.assertRaisesRegex(ValueError, fragment or '.'):
             validate_capture(encode_capture(data) if type(data) is dict else data, INPUT_SHA)
@@ -384,13 +384,13 @@ class StructureValidatorTests(unittest.TestCase):
         self.reject(gzip.decompress(path.read_bytes()), 'two ordered')
 
 
-class ResourceRejectionTests(unittest.TestCase):
+class resource_rejection_tests(unittest.TestCase):
     def reject(self, data, fragment=None):
         serial = encode_rejection(data) if type(data) is dict else data
         with self.assertRaisesRegex(ValueError, fragment or '.'):
             validate_resource_rejection(serial, INPUT_SHA)
 
-    def test_explicit_refusal_is_scoped_and_not_A1(self):
+    def test_explicit_refusal_is_scoped_and_not_a1(self):
         result = validate_resource_rejection(encode_rejection(resource_fixture()), INPUT_SHA)
         self.assertEqual(result['qualification'], 'EXPECTED_RESOURCE_REJECTION')
         self.assertEqual(result['structure']['status'], 'NOT_QUALIFIED')

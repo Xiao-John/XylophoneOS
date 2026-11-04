@@ -20,13 +20,13 @@ inline unsigned get32(const char *p){unsigned v=0;for(unsigned i=0;i<4;i++)v|=un
 // sys_pipe_wait has no deadline. This helper waits on the existing monotonic
 // wait-word deadline and closes both local routes on a stalled partial frame.
 // Closing is terminal: it never retries or pretends a partial message succeeded.
-class Watchdog final {
+class pipe_watchdog final {
     alignas(4) xos::u32 state=0; // even=idle, odd=armed, reserved=terminal
     xos::u64 deadline=0;
     pthread_t thread{};
     bool started=false;
     static constexpr xos::u32 timed_out=0xfffffffeu, stopped=0xffffffffu;
-    static void *entry(void *argument){static_cast<Watchdog *>(argument)->run();return nullptr;}
+    static void *entry(void *argument){static_cast<pipe_watchdog *>(argument)->run();return nullptr;}
     // This worker only uses the mechanism-level wait and pipe syscalls.
     void run() {
         for(;;){
@@ -43,10 +43,10 @@ class Watchdog final {
         }
     }
 public:
-    Watchdog(){started=pthread_create(&thread,nullptr,entry,this)==0;if(!started)__atomic_store_n(&state,timed_out,__ATOMIC_RELEASE);}
-    Watchdog(const Watchdog &)=delete;
-    Watchdog &operator=(const Watchdog &)=delete;
-    ~Watchdog(){
+    pipe_watchdog(){started=pthread_create(&thread,nullptr,entry,this)==0;if(!started)__atomic_store_n(&state,timed_out,__ATOMIC_RELEASE);}
+    pipe_watchdog(const pipe_watchdog &)=delete;
+    pipe_watchdog &operator=(const pipe_watchdog &)=delete;
+    ~pipe_watchdog(){
         __atomic_store_n(&state,stopped,__ATOMIC_RELEASE);xos::thread::wake(&state);
         // Qt's detached QThread can report finished before native TLS cleanup.
         // Joining the native worker prevents process exit from racing that cleanup.
@@ -70,53 +70,53 @@ public:
     bool expired() const{return __atomic_load_n(&state,__ATOMIC_ACQUIRE)==timed_out;}
 };
 
-enum class Result { ok, eof, truncated, bad_frame, limit, io_error, timeout };
-inline const char *name(Result r){switch(r){case Result::ok:return "OK";case Result::eof:return "EOF";case Result::truncated:return "TRUNCATED";case Result::bad_frame:return "BAD_FRAME";case Result::limit:return "LIMIT";case Result::timeout:return "TIMEOUT";default:return "IO_ERROR";}}
-inline Result read_exact(char *p,unsigned length,bool initial=false){
+enum class io_result { ok, eof, truncated, bad_frame, limit, io_error, timeout };
+inline const char *name(io_result r){switch(r){case io_result::ok:return "OK";case io_result::eof:return "EOF";case io_result::truncated:return "TRUNCATED";case io_result::bad_frame:return "BAD_FRAME";case io_result::limit:return "LIMIT";case io_result::timeout:return "TIMEOUT";default:return "IO_ERROR";}}
+inline io_result read_exact(char *p,unsigned length,bool initial=false){
     unsigned n=0;
     while(n<length){
         const auto r=xos::sdk::read(0,p+n,length-n);
         if(r>0){n+=unsigned(r);continue;}
-        if(r==0)return n==0&&initial?Result::eof:Result::truncated;
-        if(r!=xos::process_error_would_block)return Result::io_error;
-        if(xos::sdk::syscall(xos::sys_pipe_wait,0)<0)return Result::io_error;
+        if(r==0)return n==0&&initial?io_result::eof:io_result::truncated;
+        if(r!=xos::process_error_would_block)return io_result::io_error;
+        if(xos::sdk::syscall(xos::sys_pipe_wait,0)<0)return io_result::io_error;
     }
-    return Result::ok;
+    return io_result::ok;
 }
-inline Result write_all(const char *p,unsigned length){
+inline io_result write_all(const char *p,unsigned length){
     unsigned n=0;bool logged_backpressure=false;
     while(n<length){
         const auto r=xos::sdk::write(2,p+n,length-n);
         if(r>0){n+=unsigned(r);continue;}
-        if(r!=xos::process_error_would_block)return Result::io_error;
+        if(r!=xos::process_error_would_block)return io_result::io_error;
         if(!logged_backpressure){std::printf("SSG_PIPE_BACKPRESSURE pid=%llu remaining=%u\n",(unsigned long long)xos::sdk::pid(),length-n);logged_backpressure=true;}
-        if(xos::sdk::syscall(xos::sys_pipe_wait,2,1)<0)return Result::io_error;
+        if(xos::sdk::syscall(xos::sys_pipe_wait,2,1)<0)return io_result::io_error;
     }
-    return Result::ok;
+    return io_result::ok;
 }
-template<class Timer>
-inline Result receive(QByteArray &body,unsigned &sequence,unsigned maximum,Timer &watch,bool idle_allowed){
+template<class timer_type>
+inline io_result receive(QByteArray &body,unsigned &sequence,unsigned maximum,timer_type &watch,bool idle_allowed){
     char header[12];
     // An idle provider is allowed to block indefinitely until the first byte.
-    if(!idle_allowed && !watch.arm())return Result::timeout;
+    if(!idle_allowed && !watch.arm())return io_result::timeout;
     auto r=read_exact(header,1,true);
-    if(r!=Result::ok){if(!idle_allowed&&!watch.disarm()&&watch.expired())return Result::timeout;return r;}
-    if(idle_allowed && !watch.arm())return Result::timeout;
+    if(r!=io_result::ok){if(!idle_allowed&&!watch.disarm()&&watch.expired())return io_result::timeout;return r;}
+    if(idle_allowed && !watch.arm())return io_result::timeout;
     r=read_exact(header+1,11);
-    if(r==Result::ok && QByteArray(header,4)!="SSG1")r=Result::bad_frame;
+    if(r==io_result::ok && QByteArray(header,4)!="SSG1")r=io_result::bad_frame;
     unsigned size=0;
-    if(r==Result::ok){size=get32(header+4);sequence=get32(header+8);if(!size || size>maximum)r=Result::limit;}
-    if(r==Result::ok){body.resize(int(size));r=read_exact(body.data(),size);}
-    if(!watch.disarm() && watch.expired())return Result::timeout;
+    if(r==io_result::ok){size=get32(header+4);sequence=get32(header+8);if(!size || size>maximum)r=io_result::limit;}
+    if(r==io_result::ok){body.resize(int(size));r=read_exact(body.data(),size);}
+    if(!watch.disarm() && watch.expired())return io_result::timeout;
     return r;
 }
-template<class Timer>
-inline Result send(const QByteArray &body,unsigned sequence,unsigned maximum,Timer &watch){
-    if(body.isEmpty() || unsigned(body.size())>maximum)return Result::limit;
-    if(!watch.arm())return Result::timeout;
+template<class timer_type>
+inline io_result send(const QByteArray &body,unsigned sequence,unsigned maximum,timer_type &watch){
+    if(body.isEmpty() || unsigned(body.size())>maximum)return io_result::limit;
+    if(!watch.arm())return io_result::timeout;
     char header[12]={'S','S','G','1'};put32(header+4,unsigned(body.size()));put32(header+8,sequence);
-    auto r=write_all(header,sizeof(header));if(r==Result::ok)r=write_all(body.constData(),unsigned(body.size()));
-    if(!watch.disarm() && watch.expired())return Result::timeout;
+    auto r=write_all(header,sizeof(header));if(r==io_result::ok)r=write_all(body.constData(),unsigned(body.size()));
+    if(!watch.disarm() && watch.expired())return io_result::timeout;
     return r;
 }
 }

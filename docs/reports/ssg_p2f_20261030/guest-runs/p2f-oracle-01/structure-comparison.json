@@ -41,7 +41,6 @@
   ],
   "structure_sha256": "faaf0e1c343187cfb73504d0463484b3963b25c344debe95ffa729394424aef1",
   "canonical_format": "netstring-utf8-v1",
-  "input_sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f",
   "processes": {
     "parent_pid": 10,
     "provider_pid": 12,
@@ -3488,13 +3487,11 @@
     {
       "sequence": 1,
       "bytes": 33408,
-      "sha256": "be36a9a6f9ae9c643174bbfaa2229542db67587e62f1d55a76c3e13b973a2f90",
       "phase": "before"
     },
     {
       "sequence": 2,
       "bytes": 33407,
-      "sha256": "4db3d59229f8959d76fbb54a205393a598be5f0a12f28f817b984341e432018b",
       "phase": "after"
     }
   ],
@@ -3502,8 +3499,7 @@
     {
       "direction": "REQ",
       "sequence": 1,
-      "bytes": 36,
-      "sha256": "2a9eb5bb3192ea6a92c6ce078369f49690a962d242a198d63f51b2971cafc97e"
+      "bytes": 36
     },
     {
       "direction": "RESP",

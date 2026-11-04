@@ -9,6 +9,32 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def sha(path): return hashlib.sha256(path.read_bytes()).hexdigest()
 
+def load_open_items():
+    """Single register of open license items; the audit output derives from it."""
+    data=json.loads((ROOT/'licenses/open_items.json').read_text())
+    if data.get('version')!=1 or not isinstance(data.get('items'),list):
+        raise SystemExit('licenses/open_items.json: expected version 1 with items[]')
+    statuses=set(data.get('statuses',{}))
+    listing=[]
+    for item in data['items']:
+        ident=item.get('id','<no id>')
+        for field in ('id','status','scope','summary','evidence'):
+            if not item.get(field):raise SystemExit(f'open_items: {ident} missing {field}')
+        if item['status'] not in statuses:
+            raise SystemExit(f'open_items: {ident} has unknown status {item["status"]!r}')
+        if item['status']=='open' and not item.get('exit_condition'):
+            raise SystemExit(f'open_items: {ident} is open but has no exit_condition')
+        if item['status']=='deferred' and not (item.get('trigger') or item.get('exit_condition')):
+            raise SystemExit(f'open_items: {ident} is deferred but names no trigger')
+        if item['status']=='not_applicable' and not item.get('reason'):
+            raise SystemExit(f'open_items: {ident} is not_applicable but has no reason')
+        evidence=ROOT/item['evidence']
+        if not evidence.exists():raise SystemExit(f'open_items: {ident} evidence missing: {item["evidence"]}')
+        if evidence.is_dir() and item['evidence'].startswith('docs/reports/') and not (evidence/'manifest.json').is_file():
+            raise SystemExit(f'open_items: {ident} evidence lacks flat manifest.json: {item["evidence"]}')
+        listing.append({k:item[k] for k in ('id','status','scope','evidence')})
+    return listing
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--build',type=Path,default=ROOT/'build')
@@ -64,9 +90,21 @@ def main():
         if 'SPDX-License-Identifier: Apache-2.0' not in (ROOT/relative).read_text():
             raise SystemExit(f'New source missing Apache-2.0 identifier: {relative}')
         new_sources.append(relative)
+    listing=load_open_items()
+    active=[item['id'] for item in listing if item['status']=='open']
     report={'build_id' :manifest['build_id'],'status':'passed','scope':'registered_materials_and_sdk_copies',
-            'files':checked,'new_sources':new_sources,'not_completed':['newlib_archive_member_to_source_license_mapping',
-                                           'future_GNU_Seed_distribution_review']}
+            'files':checked,'new_sources':new_sources,'not_completed':active,
+            'open_items':listing,
+            'open_items_register':'licenses/open_items.json',
+            'review_reports':{
+                'newlib_member_mapping':'docs/reports/newlib_member_license_20261103/',
+                'gnu_seed_distribution_review':'docs/reports/gnu_seed_distribution_20261103/',
+                'qt_static_distribution_review':'docs/reports/qt_static_distribution_20261103/'},
+            'review_limits':['member mapping is declaration extraction, not a legal opinion',
+                             'qt static redistribution remains NOT_GRANTED (see review report)',
+                             'archive member provenance is derived until docs/contracts/archive_member_provenance.md takes effect']}
     (build/'license_report.json').write_text(json.dumps(report,indent=2)+'\n')
-    print(f"PASS: {len(checked)} license materials | build {manifest['build_id']} | member review remains open")
+    print(f"PASS: {len(checked)} license materials | build {manifest['build_id']} | "
+          f"open license items: {len(active)} -> {', '.join(active) if active else 'none'} "
+          f"(register: licenses/open_items.json)")
 if __name__=='__main__':main()

@@ -32,4 +32,6 @@ scripts/build_threading_sdk.py另建线程/可选C++ SDK。第三方应用使用
 初版printf/malloc/string/exit和FXSAVE检查见[E01–E07](history/e01_e07.md)；原生C/C++、
 线程、CPython与SDK身份绑定各自保留冻结证据。当前程序可运行不等于newlib全部接口合规。
 newlib包含多来源许可；声明/组件清单见[许可管理](licensing.md)。材料检查与预构建库逐成员
-归属审计分开，后者未完成的部分继续明确保留，不以libc文件名推定单一LGPL授权。
+归属审计分开：成员→源文件→声明类别的映射见
+[newlib 成员许可映射](reports/newlib_member_license_20261103/)（1053/1053 全覆盖），
+它不是逐成员法律意见，也不以libc文件名推定单一LGPL授权。

@@ -30,12 +30,12 @@ inline void capture(const char *,const char *,unsigned,const QByteArray &){}
 
 // Parent retains only its own two tokens. A nonblocking syscall and the
 // system monotonic clock bound each transfer without closing another route.
-class Client {
+class multi_source_client {
     const char *slot_;u32 in_,out_;QString instance_;i64 pid_;unsigned sequence_=0;u64 remaining_=source_ns;
     alignas(4) u32 cancelled_=0;
     QString error_,status_;
     struct Charge {
-        Client &client;u64 started;
+        multi_source_client &client;u64 started;
         ~Charge(){const auto end=thread::clock();const auto elapsed=end>=started?end-started:client.remaining_;
             client.remaining_=elapsed>=client.remaining_?0:client.remaining_-elapsed;}
     };
@@ -53,7 +53,7 @@ class Client {
         return true;
     }
 public:
-    Client(const char *slot,u32 input,u32 output,const char *instance,i64 pid)
+    multi_source_client(const char *slot,u32 input,u32 output,const char *instance,i64 pid)
         :slot_(slot),in_(input),out_(output),instance_(QString::fromLatin1(instance)),pid_(pid){}
     const QString &error()const{return error_;}
     const QString &status()const{return status_;}
@@ -94,7 +94,7 @@ public:
     }
 };
 
-struct NotesBaseline {
+struct notes_baseline {
     QString instance,epoch,node,revision,text;
     int units=0;
 };
@@ -106,11 +106,11 @@ struct CancelWorker {
 inline void *cancel_after_delay(void *argument){
     xos::thread::sleep_until(xos::thread::clock()+1000000000ull);
     std::printf("P3B_CANCEL_WORKER requested_ns=%llu\n",(unsigned long long)xos::thread::clock());
-    static_cast<Client *>(argument)->cancel();return nullptr;
+    static_cast<multi_source_client *>(argument)->cancel();return nullptr;
 }
 #endif
 // A transaction never publishes staged text on reset, refusal or failure.
-inline bool collect_notes(Client &client,NotesBaseline &output,QString &failure,bool inject=false,bool cancel_test=false){
+inline bool collect_notes(multi_source_client &client,notes_baseline &output,QString &failure,bool inject=false,bool cancel_test=false){
     constexpr int max_units=131072,max_ranges=512,max_attempts=3,max_text_bytes=524288;
     bool injected=false;
 #ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
@@ -118,7 +118,7 @@ inline bool collect_notes(Client &client,NotesBaseline &output,QString &failure,
 #else
     (void)cancel_test;
 #endif
-    output=NotesBaseline{};
+    output=notes_baseline{};
     for(int attempt=0;attempt<max_attempts;++attempt){
         bool ok=false;const auto base=client.request({{"op","snapshot"},{"role","document"},{"visibleOnly",false},{"maxNodes",96}},&ok);
         if(!ok){failure=client.error();return false;}

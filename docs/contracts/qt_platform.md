@@ -101,3 +101,9 @@ SSG/Intent prototype. See [SDK work log](../work_log/0102_aurora_ui_v2_sdk.md),
 No QtCore/Gui/QPA source, system ABI or kernel file changed. Legacy non-Aurora
 Widgets remain byte-identical to the archived E17 probe and run on the new image.
 The E17 dark Canvas/Panel consumers have not acquired global live theme migration.
+
+The single-Surface desktop/session is a separate userland consumer, not a new
+QPA window transport: [G1](../work_log/0104_aurora_desktop_shell.md). Native popup
+windows, cross-process themes/SSG, window composition and modern WebView remain
+explicitly unavailable/proposed. The proposed transport requires independent
+review before implementation; no new number/opcode is allocated.

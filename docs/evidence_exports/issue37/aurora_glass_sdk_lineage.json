@@ -1,0 +1,52 @@
+{
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "source_entries": 53,
+  "export_entries": 54,
+  "index_scope": "No prior full-file index is claimed. Original bytes are available at source_commit; this conversion record lists changed paths and old/new hashes.",
+  "added_export_document": "docs/reports/aurora_glass_v2_20261030/SANITIZED_EXPORT.md",
+  "changes": [
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/sdk/legacy_binary_comparison.json",
+      "original_sha256": "d29f930f711ff32f6a387a3256016bceadf045ec6c4ea91823bffa0c7761d799",
+      "export_sha256": "9b11043bfce272284fcfd02095f3c787e2684a54726202a86ef51daeb1a017d0"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/sdk/render/report.json",
+      "original_sha256": "c125c3d38a26519c07d3060e7f690f938ef4d3922de5ea82044d1bde503ea024",
+      "export_sha256": "aa6ddc14d6281d12d8e3171bd2b7ffe6f278c96ff59ee4408c323dc5ebf74013"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/sdk/semantic/report.json",
+      "original_sha256": "1e17ef0d7713d24c34faad1bd6097f99455cc93e7a5b2e777635967f69581c8a",
+      "export_sha256": "0beb5f9c27532fe696a693c4d2bdf496781ff71eb83b090115852cf50eb250ee"
+    },
+    {
+      "path": "docs/reports/aurora_glass_v2_20261030/sdk/studio/report.json",
+      "original_sha256": "ff4f0261754b14c3695ab49f04ecd63595624352bb32e4be08bd557524296f67",
+      "export_sha256": "e673f3709362a598632d8e024fc048e249c0b3f8c1a966ec141e9972ee496249"
+    }
+  ],
+  "template_variables": [
+    {
+      "name": "XOS_HOST_TEMP_6D6821976CD9",
+      "purpose": "host_temp root"
+    },
+    {
+      "name": "XOS_WORKTREE_313E5C73D324",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_9282C9E77071",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_C671BDF53659",
+      "purpose": "worktree root"
+    }
+  ],
+  "reproduction": "MANUAL_REQUIRED: configure template roots and obtain matching historical inputs; no replay is claimed.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history.",
+  "added_export_document_sha256": "eaca96c9be354fa898cfcde6bc7803dc2b1b8860275842041ef44b50ddde6456",
+  "transformation": "Host home/workspace/tool roots and unambiguous host QEMU command paths only; generic guest temporary paths are not globally replaced."
+}

@@ -1,3 +1,5 @@
+> Historical archives and indexes for this report are retained under `docs/evidence_exports/issue37_pr49_review/original/ssg_p2g_20261030/`; the current flat manifest covers the derivative.
+
 # P2G partial: Consumer pagination continuity
 
 **Gate B NOT_QUALIFIED.** This delivery is a partial implementation, not a new guest acceptance run. B1 and B3 new complete A/B baselines, B2 real scroll, B4 independent Consumer Diff, B5 changed-content control, all requested guest fault cases, resource recovery and affected guest regressions remain NOT_RUN or NOT_IMPLEMENTED. There are no new A/B frames, screenshots, reference comparisons, or scroll evidence here. P2F A1 remains limited to its two fixed inputs; overall Gate A is still NOT_QUALIFIED. The pre-existing nonpaged first TIME truncation remains unresolved.

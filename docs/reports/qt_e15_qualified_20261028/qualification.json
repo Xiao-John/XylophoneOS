@@ -109,37 +109,37 @@
   },
   "tools": {
     "target_gxx": {
-      "path": "/Users/perry_guo/homebrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
       "sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
       "version": "x86_64-elf-g++ (GCC) 16.2.0"
     },
     "nasm": {
-      "path": "/Users/perry_guo/homebrew/Cellar/nasm/3.02/bin/nasm",
+      "path": "${XOS_TOOLCHAIN_35527FAC2790}/Cellar/nasm/3.02/bin/nasm",
       "sha256": "5d22db7ed80aee4eb0e1cb5ff8a87e40294012f6ddf943601556922d5128b725",
       "version": "NASM version 3.02 compiled on Jun 29 2026"
     },
     "qemu": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+      "path": "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
       "sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
       "version": "QEMU emulator version 11.1.2"
     },
     "cmake": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/.cache/qt-host-tools/bin/cmake",
+      "path": "${XOS_WORKTREE_ED2321C1F627}/.cache/qt-host-tools/bin/cmake",
       "sha256": "fa8ab06aca06b06030a579b77365061c6e504783b57b2dc810d51ff8ab80be7c",
       "version": "cmake version 4.4.4"
     },
     "ninja": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/.cache/qt-host-tools/bin/ninja",
+      "path": "${XOS_WORKTREE_ED2321C1F627}/.cache/qt-host-tools/bin/ninja",
       "sha256": "78db38d68dde4904f4a7a9cae2dfd0ef47f5f00e2ec88462b0f24d85ac610586",
       "version": "1.13.2.git.kitware.jobserver-pipe-1"
     },
     "moc": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/host-install/libexec/moc",
+      "path": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/host-install/libexec/moc",
       "sha256": "6ab35b238fef41dab4dc4c425f92710cc76dc099d4bc54ba29c9152e332c2793",
       "version": "moc 6.8.3"
     },
     "rcc": {
-      "path": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e15/build/qt_e15/host-install/libexec/rcc",
+      "path": "${XOS_WORKTREE_ED2321C1F627}/build/qt_e15/host-install/libexec/rcc",
       "sha256": "63c711e483fa2b6bf1f478add86ff5e8235302b2a119bb0d7b7e4b68bc1cacff",
       "version": "rcc 6.8.3"
     }

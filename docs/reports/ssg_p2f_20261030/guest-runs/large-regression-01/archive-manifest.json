@@ -1,6 +1,5 @@
 {
   "archive": "capture.tar.gz",
-  "archive_sha256": "728b77bf1b88266ffa6c16e8c799cc8d6e6f0f43fde2879a8d994ee97385e5c6",
   "archive_bytes": 1192116,
   "root": "large-regression-01",
   "entries": [
@@ -36,8 +35,7 @@
     },
     {
       "path": "guest_qemu.log",
-      "bytes": 71,
-      "sha256": "67087e1ea23e66ad135b9ccfbf23b71e5fa19ace380fb1678f873571bd6386c2"
+      "bytes": 71
     },
     {
       "path": "guest_serial.log",
@@ -57,7 +55,6 @@
     {
       "path": "report.json",
       "bytes": 2087,
-      "sha256": "dec1a3204efe370032fea5c47c942b03b7f701f449c9063294545c6dad7520fc",
       "original_sha256": "4b94d8c08887e7ce78d7f5431ee91c04a7e72daa645843bcc3f0c3a150cfd14e",
       "original_bytes": 2186
     },
@@ -68,8 +65,7 @@
     },
     {
       "path": "runner.log",
-      "bytes": 364,
-      "sha256": "cc522a52f2eb7d724810e6241c14381ff068af39ce300aa0dbac12e0bcca110c"
+      "bytes": 364
     }
   ],
   "note": "Path-sanitized exported capture; the original archive and changed member hashes are recorded separately. IPC frames and synthetic input bytes are unchanged.",

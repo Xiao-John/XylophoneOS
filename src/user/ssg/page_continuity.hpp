@@ -5,7 +5,7 @@
 #include <string>
 
 namespace ssg_pipe {
-class PageContinuity {
+class page_continuity {
     std::string instance_, epoch_, revision_;
     std::set<std::string> cursors_;
     int scroll_ = 0;

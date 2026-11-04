@@ -13,7 +13,7 @@
         1
       ],
       "qemu_command": [
-        "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+        "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
         "-machine",
         "pc-i440fx-10.0",
         "-accel",
@@ -31,7 +31,7 @@
         "-rtc",
         "base=utc,clock=host",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+        "file=${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
         "-boot",
         "order=a,strict=on",
         "-no-reboot",
@@ -42,9 +42,9 @@
         "-display",
         "none",
         "-drive",
-        "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_editor_errors_01hwh5z2/readonly.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "file=${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_editor_errors_01hwh5z2/readonly.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
         "-qmp",
-        "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ae2puval/qmp.sock,server=on,wait=off"
+        "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ae2puval/qmp.sock,server=on,wait=off"
       ]
     },
     {
@@ -57,7 +57,7 @@
         1
       ],
       "qemu_command": [
-        "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+        "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
         "-machine",
         "pc-i440fx-10.0",
         "-accel",
@@ -75,7 +75,7 @@
         "-rtc",
         "base=utc,clock=host",
         "-drive",
-        "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-qt6-e17/build/qt_e17/review_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+        "file=${XOS_WORKTREE_C671BDF53659}/build/qt_e17/review_system/xos.img,format=raw,if=floppy,index=0,readonly=on",
         "-boot",
         "order=a,strict=on",
         "-no-reboot",
@@ -86,9 +86,9 @@
         "-display",
         "none",
         "-drive",
-        "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_editor_errors_01hwh5z2/full.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "file=${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_editor_errors_01hwh5z2/full.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
         "-qmp",
-        "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos__wf72qch/qmp.sock,server=on,wait=off"
+        "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos__wf72qch/qmp.sock,server=on,wait=off"
       ]
     }
   ]

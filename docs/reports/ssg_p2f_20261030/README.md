@@ -1,3 +1,5 @@
+> Historical archives and indexes for this report are retained under `docs/evidence_exports/issue37_pr49_review/original/ssg_p2f_20261030/`; the current flat manifest covers the derivative.
+
 # SSG-P2F：Browser 分页结构与文本完整性
 
 ## 本轮结论
@@ -73,9 +75,9 @@ Consumer 现在检查精确分页标志、唯一 ID、唯一根、父先于子�
 
 | 项目 | SHA-256 |
 |---|---|
-| P2D 输入 | `37fff0e9d875d3196f3d547a4f65e0a329b1466623eac9d2a502554d18c41e0f` |
+| P2D 输入 | `[see flat manifest]` |
 | P2D 规范化结构 | `5b4e296ce3415005a8482e31c0925d7a7d8a57009462f0a8ac32455785cd78e2` |
-| P2F 输入 | `e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f` |
+| P2F 输入 | `[see flat manifest]` |
 | P2F 规范化结构 | `faaf0e1c343187cfb73504d0463484b3963b25c344debe95ffa729394424aef1` |
 
 逐节点结果：[P2D 最终对照](guest-runs/p2d-oracle-03/structure-comparison.json)、

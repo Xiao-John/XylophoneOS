@@ -1,3 +1,5 @@
+> **Evidence version:** This checkout is a path-sanitized derivative, not byte-identical raw evidence. Original and exported hashes are recorded in [the Issue 37 lineage](../../evidence_exports/issue37/qt_e17_lineage.json). Historical input hashes still identify the original run; template roots require manual configuration.
+
 # E17 / Aurora restricted guest qualification
 
 Entry point: [qualification.json](qualification.json), [implementation and scope](../../work_log/0078_qt_e17_aurora_qualification.md).

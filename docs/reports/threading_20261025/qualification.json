@@ -134,7 +134,7 @@
       "original_local_sha256": "5aea08f3830539ba08ffa48a32a1317d54c7564bf23228dab60af7caeba38e72"
     },
     "threading_compile_report": {
-      "sha256": "2a91d3924a6a29b47ab31898db047dac04b2cf0ca7fbe1a93990333f69c9a6a6",
+      "sha256": "4f02a80301a9a88fe59b2c8bf7775edb27cb2e5ec01f98dbb43b70dcbf8b7dc7",
       "checks": [
         "SDK artifact/source SHA256 consistency",
         "AArch64 common lifecycle/pthread/lock compile only"
@@ -142,7 +142,7 @@
       "original_local_sha256": "2bab5f77608073eeb32624a1bac7e092ce3a5860a82143e0fcb2683af1e455e3"
     },
     "process_smoke_report": {
-      "sha256": "1e881f1ace463511151b2266834747e45b3befb615762fcf1e36fbec0a103296",
+      "sha256": "0299fb928f84635e14b0a8605d10957242051d1dc9bbf067afdc05d5d39a0b78",
       "checks": [
         "elf_boundary_cases_truncations_and_mutations_under_sanitizers",
         "loader_and_sdk_common_code_second_isa_compile",
@@ -172,7 +172,7 @@
       "original_local_sha256": "f6f7016cb598baa185836e1cf8e29702e7fe2867aba4bbdb9c469f12ee96b2eb"
     },
     "task_smoke_report": {
-      "sha256": "fe7c71ff525d0f280816e4ff909af3e3119b0af332479e3896df858bb7b9050e",
+      "sha256": "4663974162941050b9f5b3030af61613dc3a5938ffec14a8f2f1e617f2879131",
       "checks": [
         "ring3_tasks_and_timer_started",
         "timer_preemption_keeps_heartbeat_alive",
@@ -190,7 +190,7 @@
       "original_local_sha256": "3439ae5b05ee9a5a3102d26e829dfb889b2d2c3d169c25abc931991fde90755d"
     },
     "libc_smoke_report": {
-      "sha256": "ff5810432dd16b2f8a2833e33a292c652c32ca88c6bc31853246333193d54166",
+      "sha256": "577c1de76b42484ad7713d7f88a9b830a36bb25c6b2f4ba8e675994d01f8640f",
       "checks": [
         "libc_program_is_in_image_catalog",
         "newlib_printf_malloc_string_and_exit",

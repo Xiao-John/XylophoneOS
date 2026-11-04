@@ -1,0 +1,95 @@
+{
+  "status": "PASSED",
+  "case": "lifecycle",
+  "checks": [
+    {
+      "name": "real_single_surface_desktop",
+      "status": "PASSED"
+    },
+    {
+      "name": "second_process_EBUSY_and_direct_present_denied",
+      "status": "PASSED"
+    },
+    {
+      "name": "desktop_kill_exact_resources",
+      "status": "PASSED"
+    },
+    {
+      "name": "display_death_fails_closed_serial_survives",
+      "status": "PASSED"
+    },
+    {
+      "name": "desktop_after_service_restart",
+      "status": "PASSED"
+    },
+    {
+      "name": "non_aurora_app_preserved",
+      "status": "PASSED"
+    },
+    {
+      "name": "service_stop_and_file_sync",
+      "status": "PASSED"
+    }
+  ],
+  "screenshots": {},
+  "latency_host_ms": [],
+  "qemu_command": [
+    "${XOS_LOCAL_PATH_0939715e8e41}",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=${XOS_LOCAL_PATH_51a25efb2781},format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_LOCAL_PATH_24157bf4bb9c},format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:${XOS_LOCAL_PATH_a5dfe776ccf9},server=on,wait=off"
+  ],
+  "baseline": [
+    130279,
+    2,
+    0
+  ],
+  "with_service": [
+    130235,
+    3,
+    1
+  ],
+  "sampled_pages": [
+    6735,
+    6735,
+    6735
+  ],
+  "sampled_threads": [
+    3,
+    3,
+    3
+  ],
+  "visual_cache_bytes": [
+    3840000,
+    3840000,
+    3840000
+  ]
+}

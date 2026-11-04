@@ -14,7 +14,6 @@
   ],
   "screenshots": {
     "browser-dom-first": {
-      "sha256": "ff3d81cbcf64985f7329965ebbf63ac233b8a19909621e69a1f31a0c31cfb59f",
       "png_bytes": 250043,
       "host_capture_ms": 68.84483300382271
     }

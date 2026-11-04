@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "files": {
+    "archive-manifest.json": "f5c43a5e6ee501ecd7a9e9562dda91a80cfca13a65a71cfc5992d20bcc210c5b",
+    "guest_qemu.log": "67087e1ea23e66ad135b9ccfbf23b71e5fa19ace380fb1678f873571bd6386c2",
+    "report.json": "dec1a3204efe370032fea5c47c942b03b7f701f449c9063294545c6dad7520fc",
+    "runner.log": "cc522a52f2eb7d724810e6241c14381ff068af39ce300aa0dbac12e0bcca110c",
+    "serial.log.gz": "40bb59646e5ba84941cd586893f9bd8cd97949b6bb577b5d2133e87a3165e218"
+  }
+}

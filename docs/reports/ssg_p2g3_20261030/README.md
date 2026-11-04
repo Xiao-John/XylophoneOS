@@ -1,3 +1,5 @@
+> Historical archives and indexes for this report are retained under `docs/evidence_exports/issue37_pr49_review/original/ssg_p2g3_20261030/`; the current flat manifest covers the derivative.
+
 # SSG P2G-3 — incomplete checkpoint
 
 Gate B: **NOT_QUALIFIED**. This is not the requested A/B Diff delivery.

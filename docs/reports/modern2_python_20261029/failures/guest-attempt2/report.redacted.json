@@ -54,7 +54,7 @@
   "image_sha256": "5b90053e7ce05974b0efe4cdad154089601b6bcd3c9f154abe0f04fe00157549",
   "dash_sha256": "d262b8299734d07c27e8d5ac696a3460c82cba4fe56159d3cbdcceee8f703ff9",
   "probe_sha256": "8490d1fff19cdddc45650fba4007dd956c43d64dba6433dbf877947c6a87589e",
-  "work": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-python/.cache/xos_seed/cpython/d2d064e8db8332bc7d91",
+  "work": "${XOS_WORKTREE_50E4DDCC5365}/.cache/xos_seed/cpython/d2d064e8db8332bc7d91",
   "scope": "static Pillow core; not full Python/LocalPilot/API qualification",
   "stage": {
     "dependencies": {
@@ -3425,7 +3425,7 @@
     },
     "phase": "PY1",
     "sdk_build_id": null,
-    "source_work": "/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-python/.cache/xos_seed/cpython/d2d064e8db8332bc7d91",
+    "source_work": "${XOS_WORKTREE_50E4DDCC5365}/.cache/xos_seed/cpython/d2d064e8db8332bc7d91",
     "static_extensions": [
       "zlib",
       "_sqlite3",
@@ -3438,7 +3438,7 @@
   "extra_probe_sha256": "f8fcfdc12557ddc2245529eb96b390437b13764b787be44b0dd20df87830385c",
   "disk_before_sha256": "3255f196937a0e290781ddfffecd1187a1ec4e7eca74d2649b3f7ef67347d3d3",
   "qemu_command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
+    "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/Cellar/qemu/11.1.2/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -3467,9 +3467,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern2-python/build/modern2-python/guest-attempt2/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_WORKTREE_50E4DDCC5365}/build/modern2-python/guest-attempt2/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ate615qj/qmp.sock,server=on,wait=off"
+    "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_ate615qj/qmp.sock,server=on,wait=off"
   ],
   "qemu_version": "QEMU emulator version 11.1.2",
   "resources_before": [

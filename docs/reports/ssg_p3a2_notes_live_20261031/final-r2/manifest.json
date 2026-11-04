@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "files": {
+    "clean-checkout/edit-independent-check.json": "bb77e70de774b9ed6662b5d6fbaf213e5f218aefd4dfc4c62eeb425084054887",
+    "clean-checkout/manifest.json": "780719aa54e8304b4a48161921a62375063b17c80f0562cf2ecc3934fc64b722",
+    "clean-checkout/no-edit-independent-check.json": "229bc251761d767f75828b5554f4278373d424f1ee97ab89dca0343c3d73361e",
+    "clean-checkout/protect-ancestor-independent-check.json": "9b646bf3e49cb597bc64f551cad1684fc09ec325585d46dc68f230687f72213a",
+    "clean-checkout/protect-document-independent-check.json": "f7874038d290cb9d1024ffd16504a5138eec6e66d73cc79989bdf7208a1a303a",
+    "clean-checkout/result.json": "b21a791bb545847d2a715e3a97fece3855a5f0d0d458717a3612e1c3ffde2fd4",
+    "clean-checkout/revoke-independent-check.json": "8a832efefe0f6d10fc2a95d8b772b46584181ecfb55e7b48cdeea4aeba40c708",
+    "consumer-ordinary.receipt.json": "a3829dfa98d662560fa04d31ec0b6309ae0c0780b7a41e7b406048287ed70b58",
+    "consumer-test.receipt.json": "e0a1cc6393f1f43cfe56335e67939b0f25f63dc54e1ebc71841a6382100c2e7f",
+    "failure-history.json": "5e0fa98092c54b9da5b3fd522f238eb24c035055d20de0aebd62233fff75bc94",
+    "lifecycle-stress.json": "f3e05f6b1dbdec9de4281cf3b0c56e0c3b2097f53b5fabb0a51f8c9ecf55bb8e",
+    "notes-ordinary.receipt.json": "f90c31feb751d9c3b7cdf3c86312ccb17dc1f1f6c7fe76021e2a0cf80e2f9a66",
+    "notes-test.receipt.json": "40c0ae38c7c3e54b79244012e0f271528f4819503d0f5440c9718138c5292b2c",
+    "provenance.json": "eb8a1be630e2874528200666b6a068dd58c06a92e971a6e3ef5656a0a47d14d8"
+  }
+}

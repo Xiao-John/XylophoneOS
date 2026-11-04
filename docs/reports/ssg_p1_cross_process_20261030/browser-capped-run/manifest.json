@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "files": {
+    "build-manifest.json": "e7b35f8062b3b50e82c63180a73eabeae3c6693c190be6ef48f3b9af51e49e7b",
+    "evidence.json": "a2aec3637990ab46e7adc1bffb6f589672bcb82f6495a0856db275693f4e496b",
+    "guest_qemu.log.gz": "93f3c3169b8d9c26e8e5f60c2877040e4b80f8360ec83e2d2b51d25432c29e08",
+    "guest_serial.log.gz": "17ccbc07d3129ee73a17f464afba908d61e6268d9ec654dae7a28aee112f0a26",
+    "partial-snapshot.json": "1e0a9c825c0fc99fd5d29d871307a7c97c231e24644ce280180236adfc940e2b",
+    "report.json": "07ae123bdedb4ddda7a4dc2b209cf5e1d29a214ea1ea6b8573602a81218945a1",
+    "reset-required-diff.json": "a65bb4a68fe634111865dd1660ed577bd38580300c28c1257abecc01be544dc9"
+  }
+}

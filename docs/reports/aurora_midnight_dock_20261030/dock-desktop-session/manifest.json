@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "files": {
+    "guest_qemu.log.gz": "2a604bf9512348e369b2ab99d74b105694e35e47a6f39af0c51bcb38b917faa4",
+    "guest_serial.log.gz": "0212cb03401234c31b1fc62c52b94113ed3a108c25f8d921768b71ed3eda8edb",
+    "launched-1.png": "c4ad4c89c7013d6a1ca5346494f9e9f8539cfd33d5455b34b1a78861bc76fd5b",
+    "launched-1.ppm.gz": "c8ad9d704869f1fafd1826a5d9739b96354561524e0d71da189cae2245dc499d",
+    "launched-2.png": "814b4923c87cf56554eca25addcf9a93a7c12a808279c1a3e6299338aaf07ddb",
+    "launched-2.ppm.gz": "fa93d430527e11ddea93a4238a1656081b946b793928686cb7d2833727d2e2b4",
+    "launched-3.png": "a654a4e4bf6a4941f31abe5be8f7d46a08ff2608c4571d73d0b8113a9317c442",
+    "launched-3.ppm.gz": "368cf266d821a1f7a48b26080a651fcbf72c123d7c65ed4669e729b86a34074f",
+    "legacy-no-aurora.png": "afb769fe58d17c9a6113f57330b1103fc9ef418b9bf54a748c8af641e9b29549",
+    "legacy-no-aurora.ppm.gz": "2208d3205169d9412ba0503384f2340d9db34ecbf9e436e9988ecb1d25cabab8",
+    "report.json": "75a176573ce22ac701f80aa46b22c8bf2a66d4f903babafd39396233486dd2fb",
+    "serial.log.gz": "0212cb03401234c31b1fc62c52b94113ed3a108c25f8d921768b71ed3eda8edb"
+  }
+}

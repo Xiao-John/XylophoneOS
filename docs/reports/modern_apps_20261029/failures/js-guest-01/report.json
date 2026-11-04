@@ -7,7 +7,7 @@
   "checks": [],
   "disk_before_sha256": "3cb64007d42285aba3f257523a09e17f9975c25785dc42bf0d2b6ee7ce82cada",
   "qemu_command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-private/qemu/11.1.2/bin/qemu-system-x86_64",
+    "${XOS_WORKTREE_9282C9E77071}/qemu-private/qemu/11.1.2/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -36,10 +36,10 @@
     "-display",
     "none",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-modern-app-phase1/build/modern_apps/js-guest-01/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_WORKTREE_917CF6661DE7}/build/modern_apps/js-guest-01/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_y8rh3h8w/qmp.sock,server=on,wait=off"
+    "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_y8rh3h8w/qmp.sock,server=on,wait=off"
   ],
-  "error": "CalledProcessError(-6, ['/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-private/qemu/11.1.2/bin/qemu-system-x86_64', '--version'])",
+  "error": "CalledProcessError(-6, ['${XOS_WORKTREE_9282C9E77071}/qemu-private/qemu/11.1.2/bin/qemu-system-x86_64', '--version'])",
   "disk_after_sha256": "3cb64007d42285aba3f257523a09e17f9975c25785dc42bf0d2b6ee7ce82cada"
 }

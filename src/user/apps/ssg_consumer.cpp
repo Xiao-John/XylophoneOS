@@ -3,7 +3,6 @@
 #include "../ssg/pipe_wire.hpp"
 #include "../ssg/page_continuity.hpp"
 #include "../ssg/baseline_diff.hpp"
-#include "../ssg/browser_adapter.hpp"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
@@ -19,31 +18,31 @@ static void frame_log(const char *direction,unsigned seq,const QByteArray &bytes
     for(int i=0;i<encoded.size();i+=96){const auto chunk=encoded.mid(i,96);std::printf("SSG_FRAME_PART %s %u %d %s\n",direction,seq,i,chunk.constData());}
     std::printf("SSG_FRAME_END %s %u\n",direction,seq);
 }
-class Client {
-    Watchdog watchdog;unsigned sequence=0;QByteArray last_request;bool record_frames=true;
+class ssg_client {
+    pipe_watchdog watchdog;unsigned sequence=0;QByteArray last_request;bool record_frames=true;
 public:
     void set_frame_logging(bool enabled){record_frames=enabled;}
     QJsonObject request(const QJsonObject &object,bool *transport_ok=nullptr,unsigned hold_seconds=0){
         const unsigned seq=++sequence;const auto bytes=QJsonDocument(object).toJson(QJsonDocument::Compact);
         last_request=bytes;if(record_frames)frame_log("REQ",seq,bytes);auto result=send(bytes,seq,max_request,watchdog);
         QByteArray response;unsigned actual=0;
-        if(result==Result::ok && hold_seconds){
+        if(result==io_result::ok && hold_seconds){
             std::printf("SSG_CONSUMER_HOLD_READ seconds=%u\n",hold_seconds);
             xos::thread::sleep_until(xos::thread::clock()+xos::u64(hold_seconds)*1000000000ull);
         }
-        if(result==Result::ok)result=receive(response,actual,max_response,watchdog,false);
-        if(result!=Result::ok || actual!=seq){std::printf("SSG_CONSUMER_TRANSPORT seq=%u result=%s received=%u\n",seq,name(result),actual);if(transport_ok)*transport_ok=false;return {};}
+        if(result==io_result::ok)result=receive(response,actual,max_response,watchdog,false);
+        if(result!=io_result::ok || actual!=seq){std::printf("SSG_CONSUMER_TRANSPORT seq=%u result=%s received=%u\n",seq,name(result),actual);if(transport_ok)*transport_ok=false;return {};}
         if(record_frames)frame_log("RESP",seq,response);QJsonParseError error{};const auto parsed=QJsonDocument::fromJson(response,&error);
         if(error.error!=QJsonParseError::NoError || !parsed.isObject()){if(transport_ok)*transport_ok=false;return {};}
         if(transport_ok)*transport_ok=true;return parsed.object();
     }
-    Result await_eof(){QByteArray response;unsigned seq=0;return receive(response,seq,max_response,watchdog,false);}
+    io_result await_eof(){QByteArray response;unsigned seq=0;return receive(response,seq,max_response,watchdog,false);}
     bool replay_last(){
         auto result=send(last_request,sequence,max_request,watchdog);QByteArray response;unsigned received=0;
-        if(result==Result::ok)result=receive(response,received,max_response,watchdog,false);
+        if(result==io_result::ok)result=receive(response,received,max_response,watchdog,false);
         const auto status=QJsonDocument::fromJson(response).object().value("status").toString();
         std::printf("SSG_REPLAY seq=%u status=%s\n",sequence,status.toUtf8().constData());
-        return result==Result::ok && received==sequence && status=="STALE_MESSAGE";
+        return result==io_result::ok && received==sequence && status=="STALE_MESSAGE";
     }
 };
 static QJsonObject query(QString role={},bool visible=false,int limit=96){return {{"op","snapshot"},{"role",role},{"visibleOnly",visible},{"maxNodes",limit}};}
@@ -60,7 +59,7 @@ static void display(const QJsonObject &object){
         const auto text=QJsonDocument(shown).toJson(QJsonDocument::Compact);
         std::printf("SSG_NODE id=%s role=%s native=%s visibility=%s bounds=%s text=%s textStatus=%s textScope=%s\n",n.value("id").toString().toUtf8().constData(),n.value("role").toString().toUtf8().constData(),n.value("nativeName").toString().toUtf8().constData(),n.value("visibility").toString().toUtf8().constData(),bounds.constData(),text.constData(),n.value("textStatus").toString().toUtf8().constData(),n.value("textScope").toString().toUtf8().constData());}
 }
-static int scenario(Client &client){
+static int scenario(ssg_client &client){
     int failures=0;auto check=[&](bool ok,const char *name){std::printf("SSG_CONSUMER_CHECK %s=%s\n",name,ok?"PASS":"FAIL");if(!ok)++failures;};
     bool transport=false;
     auto field=client.request(query("textbox"),&transport);check(transport && field.value("status")=="OK" && !field.value("nodes").toArray().isEmpty(),"live_line_edit");display(field);
@@ -95,10 +94,10 @@ static int scenario(Client &client){
     auto capped_diff=reference(capped,"diff",{});capped_diff["maxNodes"]=1;check(client.request(capped_diff).value("status")=="RESET_REQUIRED","truncated_diff_refused");
     check(client.replay_last(),"replayed_message_refused");
     std::printf("SSG_CONSUMER_DONE failures=%d waiting_for_provider_exit=1\n",failures);
-    const auto eof=client.await_eof();check(eof==Result::eof,"provider_exit_eof");
+    const auto eof=client.await_eof();check(eof==io_result::eof,"provider_exit_eof");
     std::printf("SSG_CONSUMER_EXIT failures=%d\n",failures);return failures?1:0;
 }
-static int browser_scenario(Client &client){
+static int browser_scenario(ssg_client &client){
     int failures=0;auto check=[&](bool ok,const char *name){std::printf("SSG_CONSUMER_CHECK %s=%s\n",name,ok?"PASS":"FAIL");if(!ok)++failures;};
     bool transport=false;
     auto complete_snapshot=[&]{
@@ -146,12 +145,12 @@ static int browser_scenario(Client &client){
     auto links=client.request(query("link",true),&transport);
     check(transport && links.value("status")=="OK" && !links.value("nodes").toArray().isEmpty(),"browser_visible_link_query");
     std::printf("SSG_CONSUMER_BROWSER_DONE failures=%d waiting_for_provider_exit=1\n",failures);
-    check(client.await_eof()==Result::eof,"browser_provider_exit_eof");
+    check(client.await_eof()==io_result::eof,"browser_provider_exit_eof");
     std::printf("SSG_CONSUMER_BROWSER_EXIT failures=%d\n",failures);return failures?1:0;
 }
-static int browser_pages(Client &client){
+static int browser_pages(ssg_client &client){
     bool transport=false;QSet<QString> ids;QVector<QString> ancestors;
-    PageContinuity continuity;
+    page_continuity continuity;
     QString instance,epoch,revision,session,cursor;int pages=0,nodes=0;bool done=false;
     auto decimal_id=[](const QJsonValue &value){
         if(!value.isString())return false;const auto s=value.toString();
@@ -225,12 +224,58 @@ static int browser_pages(Client &client){
     std::printf("SSG_PAGED_CONSUMER_DONE pages=%d nodes=%d complete=%d completeness=ORACLE_REQUIRED\n",pages,nodes,int(done));
     return done && nodes>0?0:1;
 }
-static bool commit_baseline(BaselineCollector &c,const char *label){
+// This mode is limited to the existing prewired read-only parent/child pipe.
+static bool collect_baseline(ssg_client &client, baseline_collector &collector, bool inject=false, bool *stale=nullptr){
+    if(stale)*stale=false;
+    collector.begin(); bool transport=false; QString cursor,instance; QJsonObject request{{"op","snapshot_begin"},{"maxNodes",8}};
+    for(unsigned seq=1;seq<=baseline_collector::max_pages;++seq){
+        const auto r=client.request(request,&transport);
+        if(transport && r.value("status")=="STALE_CURSOR"){
+            collector.cancel(); if(stale)*stale=true;
+            std::printf("SSG_RECOVERY_STALE discarded=1\n"); return false;
+        }
+        auto exact_bool=[&](const QJsonObject &o,const char *k){return o.value(k).isBool();};
+        if(!transport || r.value("status")!="OK" || r.value("pageSequence").toString()!=QString::number(seq) ||
+           !r.value("nodes").isArray() || !r.value("cursor").isString() || !r.value("query").isString() ||
+           !exact_bool(r,"complete") || !exact_bool(r,"visibleOnly") || !exact_bool(r,"sourceValid") ||
+           !exact_bool(r,"hasNext") || !exact_bool(r,"hasData") || !exact_bool(r,"traversalComplete")) {collector.cancel();return false;}
+        const int scroll=r.value("scrollY").toInt(-1), visited=r.value("visited").toInt(-1);
+        if(!r.value("scrollY").isDouble() || r.value("scrollY").toDouble()!=scroll || !r.value("visited").isDouble() || r.value("visited").toDouble()!=visited || visited<0 ||
+           r.value("stopReason")!=(r.value("complete").toBool()?"EXHAUSTED":"PAGE_BUDGET")){collector.cancel();return false;}
+        baseline_page p; p.instance=r.value("sourceInstance").toString().toStdString();p.epoch=r.value("sourceEpoch").toString().toStdString();
+        p.revision=r.value("sourceRevision").toString().toStdString();p.session=r.value("sessionId").toString().toStdString();
+        p.scope=r.value("query").toString().toStdString();p.request_cursor=cursor.toStdString();p.cursor=r.value("cursor").toString().toStdString();
+        p.sequence=seq;p.scroll=scroll;p.visited=unsigned(visited);p.visible_only=r.value("visibleOnly").toBool();p.complete=r.value("complete").toBool();
+        p.source_valid=r.value("sourceValid").toBool();p.has_next=r.value("hasNext").toBool();p.has_data=r.value("hasData").toBool();p.traversal_complete=r.value("traversalComplete").toBool();
+        for(const auto v:r.value("nodes").toArray()){
+            if(!v.isObject()){collector.cancel();return false;} const auto n=v.toObject();
+            if(!n.value("id").isString() || !n.value("parent").isString() || !n.value("role").isString() || !n.value("tag").isString() || n.value("source")!="litehtml-model-and-render-layout" ||
+               !n.value("visibility").isString() || !n.value("fragmentsComplete").isBool()){collector.cancel();return false;}
+            auto valid_rect=[](const QJsonValue &v){if(!v.isArray() || v.toArray().size()!=4)return false;for(const auto x:v.toArray())if(!x.isDouble())return false;return true;};
+            auto valid_rects=[&](const QJsonValue &v){if(!v.isArray() || v.toArray().size()>8)return false;for(const auto x:v.toArray())if(!valid_rect(x))return false;return true;};
+            if(!valid_rect(n.value("bounds")) || !valid_rect(n.value("visibleBounds")) || !valid_rects(n.value("fragments")) || !valid_rects(n.value("visibleFragments"))){collector.cancel();return false;}
+            baseline_node node;node.id=n.value("id").toString().toStdString();node.parent=n.value("parent").toString().toStdString();node.role=n.value("role").toString().toStdString();node.tag=n.value("tag").toString().toStdString();
+            node.has_text=n.value("text").isString();node.has_href=n.value("href").isString();node.text=n.value("text").toString().toStdString();node.href=n.value("href").toString().toStdString();
+            if(node.has_text && (n.value("textTruncated")!=false || n.value("text").toString().size()>1024 || n.value("textRange").toArray()!=QJsonArray{0,n.value("text").toString().size()})){collector.cancel();return false;}
+            auto array=[&](const char *k){return QJsonDocument(n.value(k).toArray()).toJson(QJsonDocument::Compact).toStdString();};
+            node.fragments=array("fragments");node.visible_fragments=array("visibleFragments");node.bounds=array("bounds");node.visible_bounds=array("visibleBounds");node.visibility=n.value("visibility").toString().toStdString();node.geometry_known=true;node.fragments_complete=n.value("fragmentsComplete").toBool();p.nodes.push_back(node);
+        }
+        if(!collector.accept(p))return false;
+        if(p.complete)return true;
+        if(inject && seq==3){
+            std::printf("SSG_RECOVERY_INJECTION_READY pages=%u session=%s\n",seq,p.session.c_str());
+            xos::thread::sleep_until(xos::thread::clock()+15000000000ull);
+        }
+        cursor=r.value("cursor").toString();instance=r.value("sourceInstance").toString();request={{"op","snapshot_next"},{"sourceInstance",instance},{"cursor",cursor}};
+    }
+    collector.cancel();return false;
+}
+static bool commit_baseline(baseline_collector &c,const char *label){
     if(!c.commit())return false;const auto &b=*c.committed();
     std::printf("SSG_BASELINE_%s_COMMITTED nodes=%u instance=%s epoch=%s revision=%s session=%s scrollY=%d\n",label,unsigned(b.nodes.size()),b.instance.c_str(),b.epoch.c_str(),b.revision.c_str(),b.session.c_str(),b.scroll);return true;
 }
-static int browser_pages_diff(Client &client, bool recover=false, bool exhaust=false){
-    BaselineCollector a,b;
+static int browser_pages_diff(ssg_client &client, bool recover=false, bool exhaust=false){
+    baseline_collector a,b;
     if(!collect_baseline(client,a) || !commit_baseline(a,"A"))return 1;
     if(recover){
         bool complete=false;
@@ -254,15 +299,15 @@ static int browser_pages_diff(Client &client, bool recover=false, bool exhaust=f
         if(c.kind=="ScrollChanged"){item["before"]=std::stoi(c.before);item["after"]=std::stoi(c.after);}
         else if(c.kind=="WindowGeometryChanged" || c.kind=="VisibilityChanged"){item["before"]=QJsonDocument::fromJson(QByteArray::fromStdString(c.before)).object();item["after"]=QJsonDocument::fromJson(QByteArray::fromStdString(c.after)).object();}
         else {item["before"]=QString::fromStdString(c.before);item["after"]=QString::fromStdString(c.after);}changes.append(item);}
-    QJsonObject result{{"status",d.status==DiffStatus::ok?"OK":d.status==DiffStatus::resource_limit?"RESOURCE_LIMIT":"RESET_REQUIRED"},{"geometryComplete",d.geometry_complete},{"changes",changes}};
+    QJsonObject result{{"status",d.status==diff_status::ok?"OK":d.status==diff_status::resource_limit?"RESOURCE_LIMIT":"RESET_REQUIRED"},{"geometryComplete",d.geometry_complete},{"changes",changes}};
     std::printf("SSG_CONSUMER_DIFF_JSON %s\n",QJsonDocument(result).toJson(QJsonDocument::Compact).constData());
-    std::printf("SSG_CONSUMER_DIFF_DONE status=%s\n",result.value("status").toString().toUtf8().constData());return d.status==DiffStatus::ok?0:1;
+    std::printf("SSG_CONSUMER_DIFF_DONE status=%s\n",result.value("status").toString().toUtf8().constData());return d.status==diff_status::ok?0:1;
 }
-static int browser_pages_reload(Client &client){
+static int browser_pages_reload(ssg_client &client){
     bool transport=false;
     const auto scene=client.request(query("content"),&transport);
     if(!transport || scene.value("status")!="OK" || scene.value("nodes").toArray().isEmpty())return 1;
-    BaselineCollector a, staging, c;
+    baseline_collector a, staging, c;
     if(!collect_baseline(client,a) || !commit_baseline(a,"A"))return 1;
     bool stale=false;
     if(collect_baseline(client,staging,true,&stale) || !stale){std::printf("SSG_RELOAD_FAILED no_stale=1\n");return 1;}
@@ -273,22 +318,22 @@ static int browser_pages_reload(Client &client){
     std::printf("SSG_RELOAD_OLD_NODE status=SOURCE_REPLACED\n");
     if(!collect_baseline(client,c) || !commit_baseline(c,"C"))return 1;
     const auto d=compare_baselines(*a.committed(),*c.committed());
-    std::printf("SSG_RELOAD_DIFF status=%s changes=%u old_session=%s\n",d.status==DiffStatus::reset_required?"RESET_REQUIRED":"UNEXPECTED",unsigned(d.changes.size()),a.committed()->session.c_str());
-    return d.status==DiffStatus::reset_required && d.changes.empty()?0:1;
+    std::printf("SSG_RELOAD_DIFF status=%s changes=%u old_session=%s\n",d.status==diff_status::reset_required?"RESET_REQUIRED":"UNEXPECTED",unsigned(d.changes.size()),a.committed()->session.c_str());
+    return d.status==diff_status::reset_required && d.changes.empty()?0:1;
 }
-static int browser_guard(Client &client){
+static int browser_guard(ssg_client &client){
     const auto first=client.request(query("content"));
     std::printf("SSG_CONSUMER_WAIT_BROWSER_GUARD seconds=8\n");
     xos::thread::sleep_until(xos::thread::clock()+8000000000ull);
     const auto second=client.request(query("content"));
     int failures=first.value("status")=="DENIED" && second.value("status")=="DENIED"?0:1;
     std::printf("SSG_CONSUMER_BROWSER_GUARD_DONE failures=%d\n",failures);
-    if(client.await_eof()!=Result::eof)++failures;
+    if(client.await_eof()!=io_result::eof)++failures;
     std::printf("SSG_CONSUMER_BROWSER_GUARD_EXIT failures=%d\n",failures);return failures?1:0;
 }
 // A range read is a bounded transaction. Nothing staged is published until
 // every response has been checked against the same document revision.
-static int text_range_live(Client &client,bool expect_refusal=false){
+static int text_range_live(ssg_client &client,bool expect_refusal=false){
     constexpr int max_units=131072, max_pages=512, max_attempts=3;
     bool injected=false;
     for(int attempt=0;attempt<max_attempts;++attempt){
@@ -364,7 +409,7 @@ static void consumer_qt_message(QtMsgType,const QMessageLogContext &,const QStri
 int main(int argc,char **argv){
     qInstallMessageHandler(consumer_qt_message);
     if(xos::sdk::syscall(xos::sys_process_stdio,0,0)!=0 || xos::sdk::syscall(xos::sys_process_stdio,0,2)!=0){std::printf("SSG_CONSUMER_BAD_WIRING\n");return 2;}
-    QCoreApplication app(argc,argv);std::printf("SSG_CONSUMER_START pid=%llu\n",(unsigned long long)xos::sdk::pid());Client client;
+    QCoreApplication app(argc,argv);std::printf("SSG_CONSUMER_START pid=%llu\n",(unsigned long long)xos::sdk::pid());ssg_client client;
     const QString mode=argc>1?QString::fromUtf8(argv[1]):QStringLiteral("snapshot");
     if(mode=="scenario")return scenario(client);
     if(mode=="browser-scenario")return browser_scenario(client);
@@ -376,29 +421,29 @@ int main(int argc,char **argv){
     if(mode=="browser-guard")return browser_guard(client);
     if(mode=="truncated"){
         char header[12]={'S','S','G','1'};put32(header+4,32);put32(header+8,1);
-        const bool wrote=write_all(header,12)==Result::ok && write_all("{}",2)==Result::ok;
+        const bool wrote=write_all(header,12)==io_result::ok && write_all("{}",2)==io_result::ok;
         xos::sdk::close(2);const auto result=client.await_eof();
         std::printf("SSG_CONSUMER_FAULT truncated_sent=%d result=%s\n",int(wrote),name(result));
-        return wrote && result==Result::eof?0:1;
+        return wrote && result==io_result::eof?0:1;
     }
     if(mode=="oversize"){
         char header[12]={'S','S','G','1'};put32(header+4,max_request+1);put32(header+8,1);
-        const bool wrote=write_all(header,12)==Result::ok;
+        const bool wrote=write_all(header,12)==io_result::ok;
         const auto result=client.await_eof();
         std::printf("SSG_CONSUMER_FAULT oversized_header=%d result=%s\n",int(wrote),name(result));
-        return wrote && result==Result::eof?0:1;
+        return wrote && result==io_result::eof?0:1;
     }
     if(mode=="partial-timeout"){
         char header[12]={'S','S','G','1'};put32(header+4,32);put32(header+8,1);
-        const bool wrote=write_all(header,12)==Result::ok && write_all("{}",2)==Result::ok;
+        const bool wrote=write_all(header,12)==io_result::ok && write_all("{}",2)==io_result::ok;
         xos::thread::sleep_until(xos::thread::clock()+37000000000ull);
         const auto result=client.await_eof();
         std::printf("SSG_CONSUMER_FAULT partial_sent=%d result=%s\n",int(wrote),name(result));
-        return wrote && result==Result::eof?0:1;
+        return wrote && result==io_result::eof?0:1;
     }
     if(mode=="timeout"){
         const auto result=client.await_eof();std::printf("SSG_CONSUMER_FAULT idle_result=%s\n",name(result));
-        return result==Result::timeout?0:1;
+        return result==io_result::timeout?0:1;
     }
     if((mode=="ref-diff" && argc>=6) || (mode=="ref-detail" && argc>=7)){
         QJsonObject req{{"op",mode=="ref-diff"?"diff":"detail"},{"sourceInstance",argv[2]},

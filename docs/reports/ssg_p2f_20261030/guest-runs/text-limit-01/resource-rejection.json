@@ -2,7 +2,6 @@
   "status": "PASSED_SCOPED",
   "qualification": "EXPECTED_RESOURCE_REJECTION",
   "scope": "explicit refusal of an input exceeding the existing per-text-node budget",
-  "input_sha256": "8825dc929c4ffefcd3e6fed34d6cada3aeceb7bee869ba3773f053975211912e",
   "oracle_structure_sha256": "cec9b55cd39563fa9257b9c00dcd37118214bf86fd06c67166351971c101d082",
   "request_count": 1,
   "successful_page_node_counts": [],
@@ -44,7 +43,6 @@
     {
       "sequence": 1,
       "bytes": 2345,
-      "sha256": "c3346e670d9b60baf6f9c3491d009a8fd50db70919420e0e85877ec56748fc0c",
       "phase": "before"
     }
   ],
@@ -52,8 +50,7 @@
     {
       "direction": "REQ",
       "sequence": 1,
-      "bytes": 36,
-      "sha256": "2a9eb5bb3192ea6a92c6ce078369f49690a962d242a198d63f51b2971cafc97e"
+      "bytes": 36
     },
     {
       "direction": "RESP",

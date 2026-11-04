@@ -1,0 +1,122 @@
+{
+  "status": "DERIVED_SANITIZED_EXPORT",
+  "source_commit": "4f61c04462c10761ece8c09d4c50d992e357e061",
+  "original_index_path": "docs/reports/dash_c3_20261026/qualification.json",
+  "original_index_sha256": "1c92b89f6a365103d322f29e7773f4ef9f57c95cd1c41e3e13d080e1cb22f382",
+  "export_index_sha256": "563a5c5c6632eb58d40f04cb4463aa5d755a29f29efd48ed21c3c400d6f5e94f",
+  "index_entries": 22,
+  "index_field": "reports",
+  "added_export_document": "docs/reports/dash_c3_20261026/SANITIZED_EXPORT.md",
+  "changes": [
+    {
+      "path": "docs/reports/dash_c3_20261026/dash_b2_acceptance_report.json",
+      "original_sha256": "151fa77bb1aa3fc527bb59012679048c41b27495b831f9de4c46535f1c2ee603",
+      "export_sha256": "b4e0c3e3e6a0d00af3143df09623b9e858470d482c913c8c8d3e142f20bd9375"
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/dash_b_acceptance_report.json",
+      "original_sha256": "f0677ac3a255165467aa25c2bd92fcbae17dab4d2c5ad8b33b2673b498010680",
+      "export_sha256": "66c89ae83c1a5b2f559b778a7cef4e45edb8ed222ff28532fc2b2d86620ccbd2"
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/dash_c1_pthread_report.json",
+      "original_sha256": "e3b792dcaf09738ab4de34a440a6dd796b144c4a28f55bb90e9e665d2bd77e5b",
+      "export_sha256": "787751d61bda792221fd47139ec5266c124f27791b7c6d582055b447ea2df2a7"
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/dash_c1_report.json",
+      "original_sha256": "82a4a5040bc047cb730e6809f6a17603d10d4a69e2f798744b92aca725420436",
+      "export_sha256": "ac76006ff77fb4cc666be46e7f6a517dbebe45add011d797c24a4a5c5f0147fb"
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/dash_c1_threads_report.json",
+      "original_sha256": "ddfa11497e96031f847ca789497da373fc39c268bb8633da099ffb5ffb2a7d2d",
+      "export_sha256": "a4addb4d6eeab638d9f2c3db0d254ef79fdfbd26d15880c85ce0a4bc3e661671"
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/dash_c2_report.json",
+      "original_sha256": "883099bf8970670dd5ae70e89ec6770114326e6a592cf5c507f3019903c2e61f",
+      "export_sha256": "e1253b99ac7e4ad6e4b3129a4da7eb4be417634fac3f4411aa406f02ceaff136"
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/dash_c3_exec_report.json",
+      "original_sha256": "310cd81591c2abf3668624e1e85ad7dc9687fb38fe8112186f61f790f2ea8cea",
+      "export_sha256": "45ba49077518aa0aa955e7bdc5ecd1e146353b0a9c0e1e1a97e2d88cdc8373a0"
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/dash_c3_report.json",
+      "original_sha256": "31d4028e46fbde0dd0d246a2bf8dfe74fa39f0849bb6bebfe9e7e55a7953020b",
+      "export_sha256": "46c907c1e97442fdf83a78dde047af3b2f7bb08c7d507440d494b070ea8dad59"
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/dash_c3_report.raw.json",
+      "original_sha256": "cee914a2dd0a8380b047cffc173ff770da286cfdd213e071d8a88b85dacd9cc3",
+      "export_sha256": "d9d39ebf73b1068903b783b0f9035066a134406d23edf3eb43ff152fe8b51241"
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/dash_manifest.json",
+      "original_sha256": "134b99fc840af9df13a3b1a5b250e8a73fa0864505e392d7e5bed3aaa5764231",
+      "export_sha256": "bf7509eedb22e9bc64d90a78502504dd203c6b03729f2772e5a7a30490b02234"
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/file_smoke_report.json",
+      "original_sha256": "fdd746c677bf964301b38e78b990e1017f44b747f4c14ba7e11a6736d11d9351",
+      "export_sha256": "bf0788d7b078740d018d520d170404abfab7d0102540c0e95fa2cf2665a8484b"
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/libc_smoke_report.json",
+      "original_sha256": "9779726bcd27ce10097f90997e43a4b588bdceabf1a8b34c83a497b7ebeca2cf",
+      "export_sha256": "9c7060df199896fbf37e91015a39d6d36a51324a5eb4b915f88679ebbaf8211c"
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/make_manifest.json",
+      "original_sha256": "dc3abac0a42e64641818b2b2839a8560b5e5b06852d075d635093d940ceb71f9",
+      "export_sha256": "e309a97b317bad29561271926b2b3939e984f82fa4b4a65876ee27c5cbaced8b"
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/pipe_atomic_report.json",
+      "original_sha256": "9407d222ef319caa92a82aa15e8a75742a9bd5a8fe3467b5e4222b038cf96582",
+      "export_sha256": "5860146e97acd4cf21cf2cc30ba3590a5b7aa3cb50c0f47959862d4895d638a7"
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/process_smoke_report.json",
+      "original_sha256": "06d605e5e8d4fe7149edb95a8c8e1ec6cc95d7c377249ad841bed3173ba24efd",
+      "export_sha256": "66f4e362d0dbfb31557ced534b45b0643660a3a83ce05d3a10272f9d10eefefd"
+    },
+    {
+      "path": "docs/reports/dash_c3_20261026/regression_summary.json",
+      "original_sha256": "b6dca523534a4a2f02f840063bd1a1b4414d559d24c67d3e97705de35dfbab75",
+      "export_sha256": "f4359afc05a586eb7d279d1d36399160746dfc858d254546248cd9f2b155228f"
+    }
+  ],
+  "template_variables": [
+    {
+      "name": "XOS_HOST_TEMP_6D6821976CD9",
+      "purpose": "host_temp root"
+    },
+    {
+      "name": "XOS_INPUT_ARCHIVE",
+      "purpose": "reviewed host input archive root"
+    },
+    {
+      "name": "XOS_QEMU",
+      "purpose": "qemu root"
+    },
+    {
+      "name": "XOS_TOOLCHAIN_35527FAC2790",
+      "purpose": "toolchain root"
+    },
+    {
+      "name": "XOS_WORKTREE_19282E542E67",
+      "purpose": "worktree root"
+    },
+    {
+      "name": "XOS_WORKTREE_9282C9E77071",
+      "purpose": "worktree root"
+    }
+  ],
+  "reproduction": "MANUAL_REQUIRED: configure template roots and obtain matching historical inputs; no replay is claimed.",
+  "history": "Original bytes remain in the source Git commit; this derivative does not erase published history.",
+  "added_export_document_sha256": "7abdb0dc672d69b02a1fe947a88039c8c268b9c038ba1805adda1a587487dc92",
+  "transformation": "Host home/workspace/tool roots and unambiguous host QEMU command paths only; generic guest temporary paths are not globally replaced."
+}

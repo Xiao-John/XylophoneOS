@@ -12,11 +12,11 @@
 
 namespace browser::test {
 // A deliberately simple, bounded reference over the engine's actual document.
-// This code knows nothing about SSG IDs, PageFrame, cursors, filters, budgets,
+// This code knows nothing about SSG IDs, page_frame, cursors, filters, budgets,
 // rendering fragments, or the Provider's completion decision. It is not an IPC
 // operation and is absent from the normal Browser build.
 inline QJsonObject structure_oracle(const litehtml::element::ptr &root) {
-    struct Limit {};
+    struct oracle_limit {};
     constexpr int max_nodes = 4096, max_depth = 32, max_value_bytes = 262144;
     QJsonArray nodes;
     int value_bytes = 0;
@@ -26,7 +26,7 @@ inline QJsonObject structure_oracle(const litehtml::element::ptr &root) {
         visit = [&](const litehtml::element::ptr &element, const QString &path,
                     const QString &parent, int child_index, int depth) {
             if (!element || nodes.size() >= max_nodes || depth > max_depth ||
-                element->children().size() > unsigned(max_nodes)) throw Limit{};
+                element->children().size() > unsigned(max_nodes)) throw oracle_limit{};
             const char *tag = element->get_tagName();
             const QString name = QString::fromUtf8(tag ? tag : "");
             QJsonObject record{{"path", path}, {"parentPath", parent},
@@ -45,7 +45,7 @@ inline QJsonObject structure_oracle(const litehtml::element::ptr &root) {
                 value_bytes += value.toUtf8().size();
                 record["href"] = value;
             }
-            if (value_bytes > max_value_bytes) throw Limit{};
+            if (value_bytes > max_value_bytes) throw oracle_limit{};
             nodes.append(record);
             int index = 0;
             // A native recursive preorder, independent of the production DFS
@@ -86,7 +86,7 @@ inline QJsonObject structure_oracle(const litehtml::element::ptr &root) {
             {"nodeCount", int(nodes.size())}, {"nodes", nodes},
             {"limits", QJsonObject{{"nodes", max_nodes}, {"depth", max_depth},
                                    {"valueUtf8Bytes", max_value_bytes}}}};
-    } catch (const Limit &) {
+    } catch (const oracle_limit &) {
         return {{"schema", "xos-litehtml-structure-oracle-v1"},
                 {"status", "ORACLE_RESOURCE_LIMIT"}};
     } catch (const std::bad_alloc &) {

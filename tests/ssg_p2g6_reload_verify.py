@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """Check paging and identity boundary against actual guest IPC and input."""
 import json, re, sys
 from pathlib import Path

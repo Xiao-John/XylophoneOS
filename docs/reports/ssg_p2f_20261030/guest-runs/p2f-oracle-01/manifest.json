@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "files": {
+    "archive-manifest.json": "11eaa6d76ba9421985be13719281a229442ee6ef1f6898ee41e266d454bf8d4a",
+    "input.html": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f",
+    "oracle-01.json": "638f11f0060c8d110dd587342c7fe042adc8f9a5b475e73f90a0c94f2bb689fe",
+    "oracle-02.json": "6148a6622bb25595d867995c2a8995600cea7a56d68ca6434c753de53c3aa4d0",
+    "qemu_qemu.log": "f0c9efc71fd76ebfb3dbd387b4d9feb1f4c4c29a08966e5adec0a6675c05a6ad",
+    "qmp-events.json": "b2c790efa38831ec3a97b1ee00e2541177a3626c3e27d4a98703d240fd199ade",
+    "report.json": "1448c8526a0555ede2b8913c24ce85aaefef7f4d8e6b33cae3892f2477aa5d23",
+    "runner.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "serial.log.gz": "482c4932ca5c3a4b6a7eb8d19c237083080be2d5d315fd42a3a5e78be874491e",
+    "structure-comparison.json": "29c8c00073465a40e7c6062ad16d5b1e5f9423598424692aeffcc2faa795f841"
+  }
+}

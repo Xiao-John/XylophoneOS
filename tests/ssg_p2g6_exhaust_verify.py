@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """Validate real guest retry exhaustion from captured IPC and PS/2 event ordering."""
 import json, re, sys
 from pathlib import Path

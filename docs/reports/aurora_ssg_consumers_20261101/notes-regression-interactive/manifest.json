@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "files": {
+    "aurora-open.png": "eed298f39c3dca2d5a06096a409a18bea142464c7b44e0945dc6787e8ae94466",
+    "aurora-open.ppm.gz": "6e1cb875d9b2b9a5f29d5187b720be2a7ce100505185dee3460ec0e81440d6b2",
+    "final.serial.log.gz": "b9313a1be3b0ccc61c43325847f4b5be81fbe708e5fac102c09535a9592f43ad",
+    "first.serial.log.gz": "0a52379fa7aecb20d10cdf9838a65d9f2c15781e98c4effab855947c39ac3a71",
+    "guest_qemu.log.gz": "0ffbd7398223696afbba22e60322c3f9d5f0f316ce81a1046db0407122480caf",
+    "guest_serial.log.gz": "0a52379fa7aecb20d10cdf9838a65d9f2c15781e98c4effab855947c39ac3a71",
+    "long-scroll.png": "e01e6e0c67fe3eb46ad4cd16189b7faa3f35de5f07c479cacf33735dc9d681f6",
+    "long-scroll.ppm.gz": "d9e9bf2abb464c06a79cc8034b03512b9ad80b250b35362896e1327801559a0a",
+    "reboot_qemu.log.gz": "0ffbd7398223696afbba22e60322c3f9d5f0f316ce81a1046db0407122480caf",
+    "reboot_serial.log.gz": "b9313a1be3b0ccc61c43325847f4b5be81fbe708e5fac102c09535a9592f43ad",
+    "report.json": "da80066055797e66fa633e1d4140fc76581734c57bc7177702d35e9a65155600",
+    "selection.png": "e74f83c14cc511185b12345a9247934d8959af82419c80ee604e60789dba8001",
+    "selection.ppm.gz": "a8c715578901f00b4c1fe359e062e318a7a4b14dd1741d0c151f0a85c1bae4e6",
+    "unsaved.png": "61c6a9310bf5552245722c58ce53106309dc8ba6df7dfe51b5beecbc9e5ba525",
+    "unsaved.ppm.gz": "a342110f85900e331eb0eeefb665853dcf713d76fbf09de304f153459202bb7b"
+  }
+}

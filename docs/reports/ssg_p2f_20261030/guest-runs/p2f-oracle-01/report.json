@@ -22,8 +22,7 @@
       "sha256": "5d4d1bf9a3908c574ac7160496495ac0809e66ed7b53a5bccd06b4f7b5a64e57"
     },
     "input": {
-      "path": "${XOS_ROOT}/tests/fixtures/ssg_browser/p2f.html",
-      "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+      "path": "${XOS_ROOT}/tests/fixtures/ssg_browser/p2f.html"
     },
     "ssg_browser_pages_probe.py": {
       "path": "${XOS_ROOT}/tests/ssg_browser_pages_probe.py",
@@ -51,7 +50,6 @@
   "source_checkout": {
     "head": "0a63648d53e4a7491320111f053f8b93882fbdab",
     "tracked_changes": [],
-    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "binding": "Browser ELF and current Browser source hashes are checked against browser.receipt.json"
   },
   "qemu_command": [
@@ -183,7 +181,6 @@
     ],
     "structure_sha256": "faaf0e1c343187cfb73504d0463484b3963b25c344debe95ffa729394424aef1",
     "canonical_format": "netstring-utf8-v1",
-    "input_sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f",
     "processes": {
       "parent_pid": 10,
       "provider_pid": 12,
@@ -209,13 +206,11 @@
       {
         "sequence": 1,
         "bytes": 33408,
-        "sha256": "be36a9a6f9ae9c643174bbfaa2229542db67587e62f1d55a76c3e13b973a2f90",
         "phase": "before"
       },
       {
         "sequence": 2,
         "bytes": 33407,
-        "sha256": "4db3d59229f8959d76fbb54a205393a598be5f0a12f28f817b984341e432018b",
         "phase": "after"
       }
     ],
@@ -236,7 +231,6 @@
       "sequence": 1,
       "direction": "REQ",
       "bytes": 36,
-      "sha256": "2a9eb5bb3192ea6a92c6ce078369f49690a962d242a198d63f51b2971cafc97e",
       "begin": 3708,
       "end": 3828,
       "file": "01-req.json",
@@ -1054,7 +1048,6 @@
       "sequence": 1,
       "direction": "ORACLE",
       "bytes": 33408,
-      "sha256": "be36a9a6f9ae9c643174bbfaa2229542db67587e62f1d55a76c3e13b973a2f90",
       "begin": 5542,
       "end": 55873,
       "file": "oracle-01.json"
@@ -1063,7 +1056,6 @@
       "sequence": 2,
       "direction": "ORACLE",
       "bytes": 33407,
-      "sha256": "4db3d59229f8959d76fbb54a205393a598be5f0a12f28f817b984341e432018b",
       "begin": 297817,
       "end": 348148,
       "file": "oracle-02.json"

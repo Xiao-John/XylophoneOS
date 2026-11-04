@@ -81,7 +81,7 @@
         "python3",
         "tests/threading_native_toolchain.py",
         "--release-images",
-        "/Users/perry_guo/Documents/ChatGPT/os/runtime/xos-1024-images.tar.gz"
+        "${XOS_WORKTREE_9282C9E77071}/xos-1024-images.tar.gz"
       ]
     }
   ],

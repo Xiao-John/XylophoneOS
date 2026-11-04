@@ -1,13 +1,11 @@
 {
   "archive": "capture.tar.gz",
-  "archive_sha256": "13071fe0073feb81a883694205070ae5efa1d066f2cb1669c2a83a7df5c1f94d",
   "archive_bytes": 336511,
   "root": "p2d-oracle-03",
   "entries": [
     {
       "path": "01-req.json",
-      "bytes": 36,
-      "sha256": "2a9eb5bb3192ea6a92c6ce078369f49690a962d242a198d63f51b2971cafc97e"
+      "bytes": 36
     },
     {
       "path": "01-req.wire",
@@ -113,33 +111,27 @@
     },
     {
       "path": "input.html",
-      "bytes": 424,
-      "sha256": "37fff0e9d875d3196f3d547a4f65e0a329b1466623eac9d2a502554d18c41e0f"
+      "bytes": 424
     },
     {
       "path": "link-before.png",
-      "bytes": 243727,
-      "sha256": "130b08dfb083fb4085a0949c85d79a53b2fb259cfa4238b6dd9b2d92361f63e1"
+      "bytes": 243727
     },
     {
       "path": "link-target.html",
-      "bytes": 93,
-      "sha256": "b1b17e71db2689f74e30c7e8b0f03106022ec79deea569d9e7507a11ea0f30e4"
+      "bytes": 93
     },
     {
       "path": "oracle-01.json",
-      "bytes": 4294,
-      "sha256": "93819ee70cb50446316fe6d9785a9dc6baa808523224cc1811c18e65b3cbe4d1"
+      "bytes": 4294
     },
     {
       "path": "oracle-02.json",
-      "bytes": 4293,
-      "sha256": "0db4379cd71c9ba8c69814554f53c93677294d718eab42ee14cfcfca251f96e7"
+      "bytes": 4293
     },
     {
       "path": "qemu_qemu.log",
-      "bytes": 71,
-      "sha256": "3ed561274ab7142343abbe1009a5d853b20ee76996a3ab514ba2cadcc289c8d1"
+      "bytes": 71
     },
     {
       "path": "qemu_serial.log",
@@ -149,14 +141,12 @@
     {
       "path": "qmp-events.json",
       "bytes": 8060,
-      "sha256": "b8b315b80e0db3b3b591afa59d45a55d5b33c9b0e562f7a70b43989f75feb4fe",
       "original_sha256": "90e0f00324918dd259c00ea2edb9ad443a966754b6260e3f93004502425daa68",
       "original_bytes": 8092
     },
     {
       "path": "report.json",
       "bytes": 12237,
-      "sha256": "31d3e54b91be6461f6f77bff5be06ae69f7dcb25ccc0cbf99a37b34618bcf4b2",
       "original_sha256": "ec49b3f3827fb77c4c48f8fa63e1cd55bca6ebcd39dbf22bcdd0119a9e9f17f2",
       "original_bytes": 12644
     },
@@ -167,13 +157,11 @@
     },
     {
       "path": "structure-comparison.json",
-      "bytes": 12029,
-      "sha256": "127b2f0f42bb0604c2bad823edd816f7be150962a8c72b01dd287d072f8f90a2"
+      "bytes": 12029
     },
     {
       "path": "runner.log",
-      "bytes": 0,
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      "bytes": 0
     }
   ],
   "note": "Path-sanitized exported capture; the original archive and changed member hashes are recorded separately. IPC frames and synthetic input bytes are unchanged.",

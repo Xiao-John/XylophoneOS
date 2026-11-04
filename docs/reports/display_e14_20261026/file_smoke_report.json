@@ -12,7 +12,7 @@
   ],
   "status": "passed",
   "command": [
-    "/Users/perry_guo/Documents/ChatGPT/os/runtime/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
+    "${XOS_WORKTREE_9282C9E77071}/qemu-prefix/opt/qemu/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -28,7 +28,7 @@
     "-vga",
     "std",
     "-drive",
-    "file=/Users/perry_guo/Documents/ChatGPT/os/XylophoneOS-display-e14/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "file=${XOS_WORKTREE_5727E1100584}/build/xos.img,format=raw,if=floppy,index=0,readonly=on",
     "-boot",
     "order=a,strict=on",
     "-no-reboot",
@@ -39,9 +39,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_e05_3wlck0mc/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_e05_3wlck0mc/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_99wye0wk/qmp.sock,server=on,wait=off"
+    "unix:${XOS_HOST_TEMP_6D6821976CD9}/g1vj7l516656nxhgql13ssxw0000gn/T/xos_99wye0wk/qmp.sock,server=on,wait=off"
   ],
   "image_sha256": "45c852501fe821a5ee33cc781afef643206a7d2662ee41440607061a6c00c999"
 }

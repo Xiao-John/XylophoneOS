@@ -10,3 +10,11 @@
 
 今后新增决定归入唯一权威位置：原则修订进入宪法第一部分；事实进入登记；接口细节进入
 专项契约。工作记录只链接最终规则，不再复制整段历史讨论。相同ID不能在不同文件各有解释。
+
+
+2026-10-30 unique owning documents: the user's AI-native direction is recorded in
+C04/v1.5; Aurora's optional userland design/quality policy is in
+[design v2](design/aurora_glass_v2.md), app-local structured observation and local
+Intent limits in [SSG](contracts/semantic_scene_graph.md), and unimplemented
+transport proposals in [G2-Scout](contracts/aurora_compositor_proposal.md).
+These references do not register or implement a system ABI.

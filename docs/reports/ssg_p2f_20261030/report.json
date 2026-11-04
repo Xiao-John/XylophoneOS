@@ -10,7 +10,6 @@
     {
       "run": "p2d-oracle-03",
       "input_bytes": 424,
-      "input_sha256": "37fff0e9d875d3196f3d547a4f65e0a329b1466623eac9d2a502554d18c41e0f",
       "nodes": 32,
       "roles": {
         "element": 10,
@@ -36,7 +35,6 @@
     {
       "run": "p2f-oracle-01",
       "input_bytes": 1935,
-      "input_sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f",
       "nodes": 267,
       "roles": {
         "element": 52,

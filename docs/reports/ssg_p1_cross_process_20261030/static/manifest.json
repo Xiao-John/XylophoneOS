@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "files": {
+    "abi_doc_report.json": "1162dba6053963c9d37eba9fc050109b338c2e86356d920e7b36303a2b88e907",
+    "architecture-audit.json": "9ffd944fc68a0b09aa66d28cfbfa6406b185f0fd40e84bd752baed478d5cf37e",
+    "docs_report.json": "348f884451cae13b70ddb46b39bf84fc37163952734772796ffbc2f1971be4f1",
+    "image_license_report.json": "0b72de7ffb7fd567ac005fdc52f2dec64ca23d38ebcbe98b49029e8b03af0696",
+    "license-audit-image.log": "bfdb5aaff47d36b73c26c6978e7156c23e479040c4a1ba7a59da76fc20a1c2fe",
+    "license-audit-ssg-tree-failed.log": "d3bcba8b871a45a1d66485b7e1ddd1a65df9fd4b6168e69f0be371c4c1fe17b5",
+    "source-spdx.json": "8145798f6959aaec5f79a1be3d0446929894faadd4558c2b675f61363d5b0261"
+  }
+}

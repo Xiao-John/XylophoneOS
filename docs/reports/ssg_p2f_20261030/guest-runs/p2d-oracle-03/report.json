@@ -22,8 +22,7 @@
       "sha256": "5d4d1bf9a3908c574ac7160496495ac0809e66ed7b53a5bccd06b4f7b5a64e57"
     },
     "input": {
-      "path": "${XOS_ROOT}/tests/fixtures/ssg_browser/p2d.html",
-      "sha256": "37fff0e9d875d3196f3d547a4f65e0a329b1466623eac9d2a502554d18c41e0f"
+      "path": "${XOS_ROOT}/tests/fixtures/ssg_browser/p2d.html"
     },
     "ssg_browser_pages_probe.py": {
       "path": "${XOS_ROOT}/tests/ssg_browser_pages_probe.py",
@@ -38,8 +37,7 @@
       "sha256": "9c45fe5dae60ec1546c971f7cfb24d75a19ef5b3718871b26dd8b66a07352674"
     },
     "link_target": {
-      "path": "${XOS_ROOT}/build/ssg_p2f_runs/p2d-oracle-03/link-target.html",
-      "sha256": "b1b17e71db2689f74e30c7e8b0f03106022ec79deea569d9e7507a11ea0f30e4"
+      "path": "${XOS_ROOT}/build/ssg_p2f_runs/p2d-oracle-03/link-target.html"
     },
     "qemu": {
       "path": "${XOS_ROOT}/.cache/ssg_p2f/qemu-prefix/bin/qemu-system-x86_64",
@@ -128,7 +126,6 @@
   "source_checkout": {
     "head": "a81b4fd7ab18ec09e87b311e8fe89cf4464fb63c",
     "tracked_changes": [],
-    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "binding": "Browser ELF and current Browser source hashes are checked against browser.receipt.json"
   },
   "qemu_command": [
@@ -202,7 +199,6 @@
     ],
     "structure_sha256": "5b4e296ce3415005a8482e31c0925d7a7d8a57009462f0a8ac32455785cd78e2",
     "canonical_format": "netstring-utf8-v1",
-    "input_sha256": "37fff0e9d875d3196f3d547a4f65e0a329b1466623eac9d2a502554d18c41e0f",
     "processes": {
       "parent_pid": 10,
       "provider_pid": 12,
@@ -228,13 +224,11 @@
       {
         "sequence": 1,
         "bytes": 4294,
-        "sha256": "93819ee70cb50446316fe6d9785a9dc6baa808523224cc1811c18e65b3cbe4d1",
         "phase": "before"
       },
       {
         "sequence": 2,
         "bytes": 4293,
-        "sha256": "0db4379cd71c9ba8c69814554f53c93677294d718eab42ee14cfcfca251f96e7",
         "phase": "after"
       }
     ],
@@ -255,7 +249,6 @@
       "sequence": 1,
       "direction": "REQ",
       "bytes": 36,
-      "sha256": "2a9eb5bb3192ea6a92c6ce078369f49690a962d242a198d63f51b2971cafc97e",
       "begin": 3732,
       "end": 3852,
       "file": "01-req.json",
@@ -377,7 +370,6 @@
       "sequence": 1,
       "direction": "ORACLE",
       "bytes": 4294,
-      "sha256": "93819ee70cb50446316fe6d9785a9dc6baa808523224cc1811c18e65b3cbe4d1",
       "begin": 5487,
       "end": 11973,
       "file": "oracle-01.json"
@@ -386,7 +378,6 @@
       "sequence": 2,
       "direction": "ORACLE",
       "bytes": 4293,
-      "sha256": "0db4379cd71c9ba8c69814554f53c93677294d718eab42ee14cfcfca251f96e7",
       "begin": 41159,
       "end": 47641,
       "file": "oracle-02.json"

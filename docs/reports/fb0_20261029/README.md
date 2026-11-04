@@ -1,3 +1,5 @@
+> **Evidence version:** Selected host command paths are templated in this derivative. Original input hashes retain their historical meaning; [source and export lineage](../../evidence_exports/issue37/fb0_lineage.json).
+
 # FB0 冻结证据
 
 本目录绑定正常系统 build `6c2e83dfaa2737bb` 和独立故障注入系统 build

@@ -1,3 +1,5 @@
+> Historical archives and indexes for this report are retained under `docs/evidence_exports/issue37_pr49_review/original/ssg_p2d_initial_20261030/`; the current flat manifest covers the derivative.
+
 # Browser P2D: preliminary experiment — NOT QUALIFIED
 
 The unchanged #8 frozen browser fixture was loaded by the actual XOS Browser;

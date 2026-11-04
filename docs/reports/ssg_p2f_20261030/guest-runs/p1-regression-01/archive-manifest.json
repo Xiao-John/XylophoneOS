@@ -1,13 +1,11 @@
 {
   "archive": "capture.tar.gz",
-  "archive_sha256": "026e113729abee1a13b36c91f476ba937c6eeaa4aa72ee6dbfb7f46c16bc3c9a",
   "archive_bytes": 53827,
   "root": "p1-regression-01",
   "entries": [
     {
       "path": "01-req.json",
-      "bytes": 68,
-      "sha256": "1a0ee9f71f13a1e043b180849874b645e32298b7c617c4b11ad9a747fab7e29e"
+      "bytes": 68
     },
     {
       "path": "01-resp.json",
@@ -16,8 +14,7 @@
     },
     {
       "path": "02-req.json",
-      "bytes": 61,
-      "sha256": "3314b38184acd8cd4370ba2e308a7f4ca49755f337e273953db74ecbb6cf0ab2"
+      "bytes": 61
     },
     {
       "path": "02-resp.json",
@@ -26,8 +23,7 @@
     },
     {
       "path": "03-req.json",
-      "bytes": 69,
-      "sha256": "9c80dd1e9925f57e89bc780f921fb1a5ccaba91ce11405c056cbc1ea544f84fb"
+      "bytes": 69
     },
     {
       "path": "03-resp.json",
@@ -46,8 +42,7 @@
     },
     {
       "path": "05-req.json",
-      "bytes": 69,
-      "sha256": "9c80dd1e9925f57e89bc780f921fb1a5ccaba91ce11405c056cbc1ea544f84fb"
+      "bytes": 69
     },
     {
       "path": "05-resp.json",
@@ -86,8 +81,7 @@
     },
     {
       "path": "09-req.json",
-      "bytes": 69,
-      "sha256": "9c80dd1e9925f57e89bc780f921fb1a5ccaba91ce11405c056cbc1ea544f84fb"
+      "bytes": 69
     },
     {
       "path": "09-resp.json",
@@ -106,8 +100,7 @@
     },
     {
       "path": "11-req.json",
-      "bytes": 100,
-      "sha256": "3a6f2db0870f41822d62f49eee59f499dfdd75a58481685e490e83a473fe52ba"
+      "bytes": 100
     },
     {
       "path": "11-resp.json",
@@ -126,8 +119,7 @@
     },
     {
       "path": "13-req.json",
-      "bytes": 60,
-      "sha256": "ce68a894badf08ab5566be2944867ef400636dd86c7d95e1c92cc43bd8013a00"
+      "bytes": 60
     },
     {
       "path": "13-resp.json",
@@ -146,8 +138,7 @@
     },
     {
       "path": "browser-01-req.json",
-      "bytes": 68,
-      "sha256": "e57af696e5b28b949d67aa5f887e70d2575d3da4df1b188e153462fa12127316"
+      "bytes": 68
     },
     {
       "path": "browser-01-resp.json",
@@ -166,8 +157,7 @@
     },
     {
       "path": "browser-03-req.json",
-      "bytes": 68,
-      "sha256": "e57af696e5b28b949d67aa5f887e70d2575d3da4df1b188e153462fa12127316"
+      "bytes": 68
     },
     {
       "path": "browser-03-resp.json",
@@ -196,8 +186,7 @@
     },
     {
       "path": "browser-06-req.json",
-      "bytes": 68,
-      "sha256": "e57af696e5b28b949d67aa5f887e70d2575d3da4df1b188e153462fa12127316"
+      "bytes": 68
     },
     {
       "path": "browser-06-resp.json",
@@ -216,8 +205,7 @@
     },
     {
       "path": "browser-08-req.json",
-      "bytes": 64,
-      "sha256": "5d39904fa8d5b4dae47886ec6f292f5b387aaf7afa55cd1c7ed54a4c8437f1f7"
+      "bytes": 64
     },
     {
       "path": "browser-08-resp.json",
@@ -251,8 +239,7 @@
     },
     {
       "path": "guest_qemu.log",
-      "bytes": 71,
-      "sha256": "bfdb027ebff89ce084ed7d5bdd251bf23e8596378375b5c85e0b6088a1cb1d96"
+      "bytes": 71
     },
     {
       "path": "guest_serial.log",
@@ -272,7 +259,6 @@
     {
       "path": "report.json",
       "bytes": 14221,
-      "sha256": "af84657be9317ee33e6af3193cfc8ca830946ad2e76476a5e1a9feaad4d6b3cd",
       "original_sha256": "e25fcf1c61ed406771eda816e7626894ab2c2960c577d0239efbf11d546a66d9",
       "original_bytes": 14472
     },
@@ -288,8 +274,7 @@
     },
     {
       "path": "runner.log",
-      "bytes": 773,
-      "sha256": "a1b6f3d7be7137266e619bf7ac1175daa8af0e6ddf01215ebd53266082a44e61"
+      "bytes": 773
     }
   ],
   "note": "Path-sanitized exported capture; the original archive and changed member hashes are recorded separately. IPC frames and synthetic input bytes are unchanged.",

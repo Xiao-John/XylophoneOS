@@ -26,7 +26,7 @@ int main(int argc,char **argv) {
     l->addWidget(new QLabel("Observe > Propose > Authorize > Execute > Verify"));
     auto *target=new QLineEdit("original");target->setAccessibleName("Draft title");target->setObjectName("draft-title");target->setMinimumHeight(36);l->addWidget(target);
     auto *password=new QLineEdit("never-export-secret");password->setEchoMode(QLineEdit::Password);password->setObjectName("protected-password");l->addWidget(password);
-    auto *protected_parent=new QWidget(panel);protected_parent->setProperty("xosSsgProtected",true);protected_parent->hide();
+    auto *protected_parent=new QWidget(panel);protected_parent->setProperty("xos_ssg_protected",true);protected_parent->hide();
     auto *protected_label=new QLabel("protected-subtree-secret",protected_parent);
     protected_label->setObjectName("protected-subtree-secret");protected_label->setAccessibleName("protected-subtree-secret");
     auto *hidden=new QLabel("hidden text",panel);hidden->setObjectName("hidden-label");hidden->hide();

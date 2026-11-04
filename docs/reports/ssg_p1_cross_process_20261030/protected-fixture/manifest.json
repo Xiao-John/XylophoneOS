@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "files": {
+    "build-receipt.json.gz": "63bd4a40a0f96b8b67b38ce930e82fc09b60340ca3b52d32ba38765dc1945a32",
+    "build.log.gz": "bfef0b434c6cfab212fd62027bfdad900ac23f633ff71c8da1ed03229f729646",
+    "guest_qemu.log.gz": "af9dcafeb617796449fdab23f0e96f66ee8d8a5c771eccc9ba0f8e8e0177c2db",
+    "guest_serial.log.gz": "b343d72dd4f2dde2a01af296d0370402b03be225a8c7dc3f663481800b9dfa2a",
+    "report.json": "64785a25cc935d8de5766dba0b20fff8cf5b78164a7292504341333b75a2bd4a",
+    "semantic-authorized-local-result.png": "8f62e54109a51a114f27c0303ca6d265af2807bd479b45c9ec2ebd4336b75571"
+  }
+}

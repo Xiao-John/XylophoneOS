@@ -2,7 +2,7 @@
 > the original evidence, not byte-identical raw logs or reports. The
 > current index hashes the files in this checkout. The original index and
 > its source commit are preserved and identified in the
-> [PR 44 provenance record](../issue37_path_hygiene/pr44-lineage.json).
+> [PR 44 provenance record](../../evidence_exports/issue37_pr44/original-pr44-lineage.json).
 
 # Browser SSG fragment and query-scope regression
 
@@ -30,3 +30,11 @@ JSON snapshots and guest scanout are preserved here. These runs do not establish
 cross-process observation, arbitrary CSS clipping, modern Web support or
 compositor occlusion. Further affected functional/lifecycle gates on the combined
 source are recorded separately, not inherited from the old 15-suite report.
+
+Round 2 rebuilt the system and Browser with main `48882c9` and the updated
+#40 layer. The first guest attempt reached 2/7 before the old runner rejected
+the SDK's required reset for a capped snapshot. The same ELF and image passed
+7/7 with the contract-aware runner, including independently checked clipping,
+stable scroll scope, reset without inferred removals, reload and resource return.
+[Both outcomes](round2_guest.json) are tied to their image and ELF hashes.
+The historical 6/6 geometry fixture was not rerun.

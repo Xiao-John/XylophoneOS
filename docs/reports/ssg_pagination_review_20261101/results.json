@@ -1,0 +1,24 @@
+{
+  "pagination_status": "PASSED_SCOPED",
+  "qualification": "A1_STRUCTURE_AND_TEXT_AB",
+  "baselines": [
+    {
+      "name": "A",
+      "pages": 34,
+      "nodes": 267
+    },
+    {
+      "name": "B",
+      "pages": 34,
+      "nodes": 267
+    }
+  ],
+  "gate_A": "NOT_QUALIFIED",
+  "gate_B": "NOT_RUN",
+  "gate_C": "NOT_RUN",
+  "notes_status": "PASSED",
+  "notes_checks": [
+    "long_unicode_range_exact_reconstruction",
+    "provider_consumer_resources_reclaimed"
+  ]
+}

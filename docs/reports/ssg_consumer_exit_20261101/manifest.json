@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "files": {
+    "pr46-exit-diagnostic.patch": "77f4fde9bcf97d351b69301cc6abd2b209229a2b8f8dbc6ff8aa5de4c15422ca",
+    "pr46-exit-investigation.md": "4930a97a74f61b746574a5dc509745e59f4c739db7428abf30e68320208151d7",
+    "pr46-instrumented-exit-failure.serial.log.gz": "d0d8c68016d81f1c7ac736aaa20c09618eddef4b9c5ac59ea71546bf607480aa",
+    "pr46-native-watchdog-full.serial.log.gz": "e66664c1ea670c2e17fdd00b1d98ab64b6b1ac37c5e48994f198ba12c5960a36",
+    "pr46-native-watchdog-stress.serial.log.gz": "8d6a80418e23f9515111a7b30da9cf1dafb3655bdca6507134f819bc01b9c572",
+    "pr46-original-exit-failure.serial.log.gz": "1dc07d970a958f61b4ecdc4e442d1029100a2b3b43836c8d7a10a91d6c46841f",
+    "snake-case-exit-stress-runner.log.gz": "77f6d9a09ac81fa71343c644f8d47b6f06bb9da456053530e8ad7a71a8521b91",
+    "snake-case-exit-stress.serial.log.gz": "1aaf7088cb67597448758eea258326988dc0273edb7105340e98f54566e6ac68"
+  }
+}

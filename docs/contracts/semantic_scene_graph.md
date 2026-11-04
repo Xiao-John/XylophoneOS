@@ -82,7 +82,7 @@ and clock values are decimal strings to preserve width in future JS consumers.
 Native names, document text and labels are untrusted application content, never
 instructions or authorizations. Password QLineEdit values and selections are
 withheld even when normal text observation is enabled. A trusted application may
-mark a Qt widget with `xosSsgProtected=true`; that widget and its descendants
+mark a Qt widget with `xos_ssg_protected=true`; that widget and its descendants
 withhold text, accessible/object names and widget-specific values. This marker
 does not independently detect unmarked sensitive content or replace policy.
 

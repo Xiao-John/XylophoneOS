@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "files": {
+    "archive-manifest.json": "ba2cf3def297b3281685b38f6ca5eed090c86510c56a33b5fcdf4d5c93f6d95f",
+    "input.html": "8825dc929c4ffefcd3e6fed34d6cada3aeceb7bee869ba3773f053975211912e",
+    "oracle-01.json": "95269230abc5318232596f8b1b584a9cc404a307b57a76e358d323af296b29e9",
+    "qemu_qemu.log": "654ff389fd3710b02ff8838b05ead2baa9584c5fa6f96b2dbc217a581f786e7b",
+    "qmp-events.json": "b92baaa72455e137ec98a17db309ef55f31fa563c3e4649a4fc986e775a34ee6",
+    "report.json": "cf6595f2723bbb6cada3d1b26a0ad6857263a70dfaf2f2ad34d5717ece8dea52",
+    "resource-rejection.json": "a784ef43c3d9813061e660b359ae1b5ab02298276ef277a6946b0e141baa46e0",
+    "runner.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "serial.log.gz": "7f8a8c9baa1d3b05ad92ab4e4d501893cff004e7e726391ae72dea9aab3830b8"
+  }
+}

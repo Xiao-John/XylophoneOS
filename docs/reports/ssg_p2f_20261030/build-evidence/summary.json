@@ -269,7 +269,6 @@
   "archive": {
     "path": "build-records.tar.gz",
     "bytes": 1275070,
-    "sha256": "e1abea1cf12d67338ce3c86475963c33cfbd3543f47e43ecfa2f0137209d0af1",
     "members": 151,
     "uncompressed_member_bytes": 45955260,
     "original_archive_sha256": "4479e50c90029ceba8c82ee4d706550766d1978c115f86ce64d795efbd106356"

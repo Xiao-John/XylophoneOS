@@ -1,0 +1,27 @@
+{
+  "case": "no-edit",
+  "status": "PASSED",
+  "input_sha256": "b27a5b067671db800eea59cf91cf54f606cfeea985043c99879ee698b63fc6cd",
+  "initial_revision": "0",
+  "initial_pages_utf16": [
+    [
+      0,
+      511
+    ],
+    [
+      511,
+      1023
+    ]
+  ],
+  "initial_staged_utf16_units": 1023,
+  "resources_restored": true,
+  "provider_pid": 12,
+  "consumer_pid": 11,
+  "reset_count": 0,
+  "final_revision": "0",
+  "owner_digest_matches": true,
+  "final_utf16_units": 4114,
+  "final_sha256": "b27a5b067671db800eea59cf91cf54f606cfeea985043c99879ee698b63fc6cd",
+  "final_pages": 9,
+  "no_mixed_revision": true
+}

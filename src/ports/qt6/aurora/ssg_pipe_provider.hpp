@@ -1,0 +1,140 @@
+// SPDX-License-Identifier: Apache-2.0
+#pragma once
+#include "ssg.hpp"
+#include "../../../user/ssg/pipe_wire.hpp"
+#include <QtCore/QCoreApplication>
+#include <QtCore/QJsonDocument>
+#include <QtCore/QJsonParseError>
+#include <QtCore/QMetaObject>
+#include <QtCore/QThread>
+#include <QtCore/QTimer>
+#include <cstdio>
+#include <functional>
+
+namespace aurora {
+// One GUI-owned timer supervises the worker's partial frame and blocked write.
+// If the GUI event loop itself is wedged, this cannot enforce a hard deadline.
+class gui_watchdog {
+    QObject *owner;QTimer timer;alignas(4) xos::u32 state=0;
+    xos::u32 timer_generation=0; // accessed only on the GUI thread
+    static constexpr xos::u32 timed_out=0xfffffffeu;
+public:
+    explicit gui_watchdog(QObject *o):owner(o),timer(o){
+        timer.setSingleShot(true);
+        QObject::connect(&timer,&QTimer::timeout,owner,[this]{
+            auto s=__atomic_load_n(&state,__ATOMIC_ACQUIRE);
+            if((s&1u) && s==timer_generation && __atomic_compare_exchange_n(&state,&s,timed_out,false,__ATOMIC_ACQ_REL,__ATOMIC_ACQUIRE)){
+                xos::sdk::close(0);xos::sdk::close(2);
+            }
+        });
+    }
+    bool arm(){
+        auto s=__atomic_load_n(&state,__ATOMIC_ACQUIRE);
+        if((s&1u) || s>=timed_out-2)return false;
+        if(!__atomic_compare_exchange_n(&state,&s,s+1,false,__ATOMIC_ACQ_REL,__ATOMIC_ACQUIRE))return false;
+        const auto expected=s+1;
+        return QMetaObject::invokeMethod(owner,[this,expected]{if(__atomic_load_n(&state,__ATOMIC_ACQUIRE)==expected){timer_generation=expected;timer.start(int(ssg_pipe::io_timeout_ns/1000000ull));}},Qt::QueuedConnection);
+    }
+    bool disarm(){
+        auto s=__atomic_load_n(&state,__ATOMIC_ACQUIRE);
+        if(!(s&1u))return false;
+        if(!__atomic_compare_exchange_n(&state,&s,s+1,false,__ATOMIC_ACQ_REL,__ATOMIC_ACQUIRE))return false;
+        QMetaObject::invokeMethod(owner,[this]{if(!(__atomic_load_n(&state,__ATOMIC_ACQUIRE)&1u))timer.stop();},Qt::QueuedConnection);
+        return true;
+    }
+    bool expired()const{return __atomic_load_n(&state,__ATOMIC_ACQUIRE)==timed_out;}
+};
+// Application-owned, opt-in and prewired. The only worker touches bytes;
+// every qt_scene call is posted to this object's GUI thread.
+class pipe_provider final : public QObject {
+    using snapshot_fn=std::function<QJsonObject(bool,const QString &,unsigned)>;
+    using diff_fn=std::function<QJsonObject(quint64,const QString &)>;
+    snapshot_fn snapshot_source;diff_fn diff_source;
+    QString instance;
+    QThread *worker=nullptr;
+    gui_watchdog watch;
+    alignas(4) xos::u32 stopping=0, mailbox=0;
+    QByteArray reply;
+
+    QJsonObject execute(const QByteArray &bytes){
+        QJsonParseError error{};const auto doc=QJsonDocument::fromJson(bytes,&error);
+        if(error.error!=QJsonParseError::NoError || !doc.isObject())return {{"status","BAD_REQUEST"}};
+        const auto request=doc.object();const auto op=request.value("op").toString();
+        const auto role=request.value("role").toString();const auto visible=request.value("visibleOnly").toBool(false);
+        const auto limit=request.contains("maxNodes")?request.value("maxNodes").toInt(-1):96;
+        if(role.size()>32 || limit<1 || limit>96 || (op!="snapshot" && op!="diff" && op!="detail"))
+            return {{"status","BAD_REQUEST"}};
+        if(op!="snapshot" && request.value("sourceInstance").toString()!=instance)
+            return {{"status","SOURCE_REPLACED"},{"sourceInstance",instance}};
+        auto snapshot=snapshot_source(visible,role,unsigned(limit));
+        snapshot["sourceInstance"]=instance;
+        snapshot["providerPid"]=QString::number(xos::sdk::pid());
+        if(snapshot.value("status").toString()!="OK" || op=="snapshot")return snapshot;
+        const auto epoch=request.value("sourceEpoch").toString();
+        if(epoch!=snapshot.value("sourceEpoch").toString())
+            return {{"status","SOURCE_REPLACED"},{"sourceInstance",instance},{"sourceEpoch",snapshot.value("sourceEpoch")}};
+        bool ok=false;const auto version=request.value("sceneVersion").toString().toULongLong(&ok);
+        if(!ok)return {{"status","BAD_REQUEST"}};
+        if(op=="diff"){
+            auto result=diff_source(version,epoch);result["sourceInstance"]=instance;
+            result["providerPid"]=QString::number(xos::sdk::pid());return result;
+        }
+        if(request.value("nodeId").toString().isEmpty())return {{"status","BAD_REQUEST"}};
+        if(version!=snapshot.value("sceneVersion").toString().toULongLong())
+            return {{"status","STALE_REFERENCE"},{"sourceInstance",instance},{"sourceEpoch",epoch},{"sceneVersion",snapshot.value("sceneVersion")}};
+        for(const auto value:snapshot.value("nodes").toArray()){
+            const auto node=value.toObject();
+            if(node.value("id").toString()==request.value("nodeId").toString())
+                return {{"status","OK"},{"sourceInstance",instance},{"sourceEpoch",epoch},{"sceneVersion",snapshot.value("sceneVersion")},{"node",node}};
+        }
+        return {{"status",snapshot.value("capped").toBool()?"NOT_FOUND_OR_INCOMPLETE":"NOT_FOUND"},
+                {"sourceInstance",instance},{"sourceEpoch",epoch},{"sceneVersion",snapshot.value("sceneVersion")}};
+    }
+    void run(){
+        unsigned last_sequence=0;
+        for(;;){
+            QByteArray request;unsigned sequence=0;
+            auto result=ssg_pipe::receive(request,sequence,ssg_pipe::max_request,watch,true);
+            if(result!=ssg_pipe::io_result::ok){std::printf("SSG_PROVIDER_END pid=%llu reason=%s\n",(unsigned long long)xos::sdk::pid(),ssg_pipe::name(result));break;}
+            if(sequence==0 || sequence<=last_sequence){
+                result=ssg_pipe::send(QByteArray("{\"status\":\"STALE_MESSAGE\"}"),sequence,ssg_pipe::max_response,watch);
+                if(result!=ssg_pipe::io_result::ok)break;
+                continue;
+            }
+            last_sequence=sequence;
+            __atomic_store_n(&mailbox,0u,__ATOMIC_RELEASE);
+            if(!QMetaObject::invokeMethod(this,[this,request]{
+                if(__atomic_load_n(&stopping,__ATOMIC_ACQUIRE))return;
+                auto response=QJsonDocument(execute(request)).toJson(QJsonDocument::Compact);
+                if(unsigned(response.size())>ssg_pipe::max_response)
+                    response=QJsonDocument(QJsonObject{{"status","RESOURCE_LIMIT"}}).toJson(QJsonDocument::Compact);
+                reply=std::move(response);
+                __atomic_store_n(&mailbox,1u,__ATOMIC_RELEASE);xos::thread::wake(&mailbox);
+            },Qt::QueuedConnection))break;
+            while(!__atomic_load_n(&mailbox,__ATOMIC_ACQUIRE) && !__atomic_load_n(&stopping,__ATOMIC_ACQUIRE))
+                xos::thread::wait(&mailbox,0);
+            if(__atomic_load_n(&stopping,__ATOMIC_ACQUIRE))break;
+            result=ssg_pipe::send(reply,sequence,ssg_pipe::max_response,watch);
+            if(result!=ssg_pipe::io_result::ok){std::printf("SSG_PROVIDER_END pid=%llu reason=%s\n",(unsigned long long)xos::sdk::pid(),ssg_pipe::name(result));break;}
+        }
+        xos::sdk::close(0);xos::sdk::close(2);
+    }
+public:
+    pipe_provider(qt_scene &source,QString source_instance)
+        :snapshot_source([&source](bool visible,const QString &role,unsigned limit){source.set_node_limit(limit);return source.snapshot(visible,role);}),
+         diff_source([&source](quint64 version,const QString &epoch){return source.diff(version,epoch);}),
+         instance(std::move(source_instance)),watch(this){}
+    pipe_provider(QString source_instance,snapshot_fn snapshot,diff_fn diff)
+        :snapshot_source(std::move(snapshot)),diff_source(std::move(diff)),
+         instance(std::move(source_instance)),watch(this){}
+    void start(){worker=QThread::create([this]{run();});worker->start();}
+    void stop(){
+        if(!worker)return;
+        __atomic_store_n(&stopping,1u,__ATOMIC_RELEASE);
+        xos::sdk::close(0);xos::sdk::close(2);
+        __atomic_store_n(&mailbox,1u,__ATOMIC_RELEASE);xos::thread::wake(&mailbox);
+        worker->wait();delete worker;worker=nullptr;
+    }
+    ~pipe_provider() override {stop();}
+};
+}

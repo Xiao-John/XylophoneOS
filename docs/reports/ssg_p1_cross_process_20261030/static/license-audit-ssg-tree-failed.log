@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "${XOS_LOCAL_PATH_db541acf9421}", line 72, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "${XOS_LOCAL_PATH_db541acf9421}", line 64, in main
+    if 'SPDX-License-Identifier: Apache-2.0' not in (ROOT/relative).read_text():
+                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "${XOS_LOCAL_PATH_41975eae58f1}", line 787, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "${XOS_LOCAL_PATH_41975eae58f1}", line 771, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '${XOS_LOCAL_PATH_f069b05a740f}'

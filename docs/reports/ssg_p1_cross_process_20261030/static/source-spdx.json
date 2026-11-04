@@ -1,0 +1,23 @@
+{
+  "status": "PASSED_SPDX_ONLY",
+  "files": {
+    "src/ports/aurora_browser/main.cpp": "4e30b6f54d232b0c78fd9566c8ba5be770baef44b641aac13673239c6e3ec79e",
+    "src/ports/aurora_browser/view.hpp": "c5e32600bbb0f63676c5c85fae93527d3bc3a38dcc4e1a404211866e0768a918",
+    "src/ports/qt6/aurora/ssg.cpp": "43bb59d6dde779749aa87fbfec6026c82e360c5f94210e576e82d6b1135da054",
+    "src/ports/qt6/editor/main.cpp": "fccdec346d7efae1f2a83200138446461edaf3e9af4c706f2a8c04d171dfdf52",
+    "src/ports/qt6/aurora/ssg_pipe_provider.hpp": "99f6765c9e961a418e9bd41ecd9470948757418d1ea538683ff0ab0bdef9956a",
+    "src/user/apps/ssg_session.cpp": "d972bd3c02b3c8db01b6e8c759969c309fd510ab939298d0ad4dcbcefc9b0871",
+    "src/user/apps/ssg_consumer.cpp": "4dbc1f3c44c88ea91ec2ad02bbff1da8e708ce7c0f2ce47104a397dba1367d66",
+    "src/user/ssg/pipe_wire.hpp": "862470393d5e7c9a8392cb89ae782dec7a13a715c38d845e101ea12a623aa450",
+    "tests/fixtures/qt6/aurora_semantics.cpp": "69d9b7b8dc60fa5229bb647aec20e3f50dc43782077345a96eb08496d2ae254b",
+    "tests/fixtures/semantic_pipe_probe.cpp": "1fa59a60c9bb5921d1f589764ad319659bdf4d7ac70c130a4658f6850af403fa",
+    "tests/semantic_pipe_guest.py": "c9b25e2f47d00a039d2324889e4e9ad76a7c8e186b1113edd13c51201e8b1b49",
+    "tests/ssg_ipc_guest.py": "59d97d8d32c314c937b70f441c56a9e3be1ae63b12f816300932cef86d7a34ae",
+    "scripts/build_ssg_p1.py": "7c7b4329d05c7794783274de90cfca967a0d3bf3c94a9170abfd78f7abe79184"
+  },
+  "image_source_manifest_differences": [
+    "tests/aurora_platform_guest.py",
+    "tests/fixtures/qt6/aurora_render_probe.cpp"
+  ],
+  "license_audit_scope": "image-source worktree registered materials, not whole static distribution; SSG-tree run failed due to absent Desktop source"
+}

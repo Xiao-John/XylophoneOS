@@ -1,0 +1,266 @@
+[
+  {
+    "file": "reconstructed-wire/notes-01-req.ssg",
+    "bytes": 80,
+    "body_file": "01-req.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-01-resp.ssg",
+    "bytes": 1210,
+    "body_file": "01-resp.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-02-req.ssg",
+    "bytes": 73,
+    "body_file": "02-req.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-02-resp.ssg",
+    "bytes": 7493,
+    "body_file": "02-resp.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-03-req.ssg",
+    "bytes": 81,
+    "body_file": "03-req.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-03-resp.ssg",
+    "bytes": 2353,
+    "body_file": "03-resp.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-04-req.ssg",
+    "bytes": 142,
+    "body_file": "04-req.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-04-resp.ssg",
+    "bytes": 2376,
+    "body_file": "04-resp.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-05-req.ssg",
+    "bytes": 81,
+    "body_file": "05-req.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-05-resp.ssg",
+    "bytes": 2353,
+    "body_file": "05-resp.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-06-req.ssg",
+    "bytes": 158,
+    "body_file": "06-req.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-06-resp.ssg",
+    "bytes": 139,
+    "body_file": "06-resp.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-07-req.ssg",
+    "bytes": 158,
+    "body_file": "07-req.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-07-resp.ssg",
+    "bytes": 1900,
+    "body_file": "07-resp.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-08-req.ssg",
+    "bytes": 142,
+    "body_file": "08-req.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-08-resp.ssg",
+    "bytes": 2383,
+    "body_file": "08-resp.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-09-req.ssg",
+    "bytes": 81,
+    "body_file": "09-req.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-09-resp.ssg",
+    "bytes": 2360,
+    "body_file": "09-resp.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-10-req.ssg",
+    "bytes": 132,
+    "body_file": "10-req.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-10-resp.ssg",
+    "bytes": 120,
+    "body_file": "10-resp.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-11-req.ssg",
+    "bytes": 112,
+    "body_file": "11-req.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-11-resp.ssg",
+    "bytes": 92,
+    "body_file": "11-resp.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-12-req.ssg",
+    "bytes": 141,
+    "body_file": "12-req.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-12-resp.ssg",
+    "bytes": 558,
+    "body_file": "12-resp.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-13-req.ssg",
+    "bytes": 72,
+    "body_file": "13-req.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-13-resp.ssg",
+    "bytes": 1083,
+    "body_file": "13-resp.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-14-req.ssg",
+    "bytes": 147,
+    "body_file": "14-req.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/notes-14-resp.ssg",
+    "bytes": 542,
+    "body_file": "14-resp.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/browser-01-req.ssg",
+    "bytes": 80,
+    "body_file": "browser-01-req.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/browser-02-req.ssg",
+    "bytes": 142,
+    "body_file": "browser-02-req.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/browser-03-req.ssg",
+    "bytes": 80,
+    "body_file": "browser-03-req.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/browser-04-req.ssg",
+    "bytes": 142,
+    "body_file": "browser-04-req.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/browser-05-req.ssg",
+    "bytes": 157,
+    "body_file": "browser-05-req.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/browser-06-req.ssg",
+    "bytes": 80,
+    "body_file": "browser-06-req.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/browser-07-req.ssg",
+    "bytes": 157,
+    "body_file": "browser-07-req.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/browser-08-req.ssg",
+    "bytes": 76,
+    "body_file": "browser-08-req.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/browser-01-resp.ssg",
+    "bytes": 7221,
+    "body_file": "browser-01-resp.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/browser-02-resp.ssg",
+    "bytes": 7164,
+    "body_file": "browser-02-resp.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/browser-03-resp.ssg",
+    "bytes": 7141,
+    "body_file": "browser-03-resp.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/browser-04-resp.ssg",
+    "bytes": 121,
+    "body_file": "browser-04-resp.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/browser-05-resp.ssg",
+    "bytes": 121,
+    "body_file": "browser-05-resp.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/browser-06-resp.ssg",
+    "bytes": 7221,
+    "body_file": "browser-06-resp.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/browser-07-resp.ssg",
+    "bytes": 608,
+    "body_file": "browser-07-resp.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  },
+  {
+    "file": "reconstructed-wire/browser-08-resp.ssg",
+    "bytes": 1198,
+    "body_file": "browser-08-resp.json",
+    "header": "reconstructed from validated magic, length and sequence"
+  }
+]

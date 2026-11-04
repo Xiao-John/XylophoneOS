@@ -1,0 +1,112 @@
+{
+  "status": "PASSED",
+  "inputs": {
+    "image": {
+      "path": "${XOS_REDACTED_PATH}/51a25efb27812683",
+      "sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08"
+    },
+    "session": {
+      "path": "${XOS_REDACTED_PATH}/d7e50ae1df71ecd4",
+      "sha256": "a655bba4e92bbffac7ec636e6032bab3237859661a9071b9a5050a07404a1dcb"
+    },
+    "consumer": {
+      "path": "${XOS_REDACTED_PATH}/a52afbfc17d44da0",
+      "sha256": "7f5841fca843a9de1551244195832a35407b2252ca0c168906d5f89804158029"
+    },
+    "notes": {
+      "path": "${XOS_REDACTED_PATH}/a2df06c5eb5ef493",
+      "sha256": "a049c10079dec138cbf04da8d5e27ce810736a622e5ec6c78cf5c367df2a378c"
+    }
+  },
+  "checks": [
+    "long_unicode_range_exact_reconstruction",
+    "provider_consumer_resources_reclaimed"
+  ],
+  "qemu_command": [
+    "${XOS_QEMU}",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=${XOS_IMAGE},format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:${XOS_QMP_SOCKET},server=on,wait=off"
+  ],
+  "pages": [
+    {
+      "start": 0,
+      "end": 512,
+      "revision": "0"
+    },
+    {
+      "start": 512,
+      "end": 1024,
+      "revision": "0"
+    },
+    {
+      "start": 1024,
+      "end": 1536,
+      "revision": "0"
+    },
+    {
+      "start": 1536,
+      "end": 2048,
+      "revision": "0"
+    },
+    {
+      "start": 2048,
+      "end": 2560,
+      "revision": "0"
+    },
+    {
+      "start": 2560,
+      "end": 3072,
+      "revision": "0"
+    },
+    {
+      "start": 3072,
+      "end": 3584,
+      "revision": "0"
+    },
+    {
+      "start": 3584,
+      "end": 3623,
+      "revision": "0"
+    }
+  ],
+  "resources_before": [
+    130235,
+    3,
+    1
+  ],
+  "resources_after": [
+    130235,
+    3,
+    1
+  ],
+  "qemu_command_kind": "historical command template; the test harness creates the work disk and QMP socket"
+}

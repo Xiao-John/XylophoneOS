@@ -1,0 +1,32 @@
+{
+  "status": "FAIL",
+  "direct_input_bundle": "official v0.0.2-1103 SDK and Qt6 static asset; no SDK or Qt code overlay",
+  "attempts": [
+    {
+      "name": "repository helper with official SDK/Qt package view",
+      "result": "FAIL",
+      "evidence": "Browser compilation stopped at <string> because the helper omitted the release SDK nested C++ include path"
+    },
+    {
+      "name": "official SDK with only the nested C++ include path added",
+      "result": "FAIL",
+      "evidence": "Browser compilation stopped because std::mutex is not declared; official c++config.h explicitly undefines _GLIBCXX_HAS_GTHREADS"
+    },
+    {
+      "name": "P4A Supervisor/Subscriber compile using unmodified release SDK and Qt headers",
+      "result": "FAIL",
+      "evidence": "Qt package wrappers reference unavailable build/source paths; after test-only relocation the official SDK lacks xos/thread_core.hpp and threaded POSIX declarations/runtime"
+    },
+    {
+      "name": "P4A link using unmodified release runtime and Qt static libraries",
+      "result": "FAIL",
+      "evidence": "QtCore undefined pthread_* and std::condition_variable symbols; the release SDK libxos.a also requires the separately packaged libxos_loader.a omitted by the existing P4A helper"
+    }
+  ],
+  "positive_api_check": {
+    "official_sdk_has_xos_file_client_lowercase": true,
+    "official_sdk_libxos_has_matching_lowercase_object": true,
+    "old_file_client_compatibility_overlay_required": false
+  },
+  "limitations": "A separate compatibility build passed using official Qt target archives and the official lowercase file client, but supplied the current thread runtime and generated Qt header/config sidecars. It is not reported as direct compatibility."
+}

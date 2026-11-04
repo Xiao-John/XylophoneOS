@@ -350,7 +350,7 @@ public:
 static bool run_watch(multi_source_client &bc,multi_source_client &nc,session_source &b,session_source &n,bool hidden_browser,bool hidden_notes,
                       unsigned interval,unsigned duration,unsigned cycles,unsigned timeout,bool control_stdin,bool test_control,bool test_inflight,
                       bool subscriber_mode,bool pause_subscriber,bool corrupt_subscriber_first,
-                      bool wrong_ack_sequence,bool duplicate_ack){
+                      bool wrong_ack_sequence,bool duplicate_ack,bool close_before_first_event){
     ssg_watch::browser_provider browser(bc,b.instance,hidden_browser,watch_alive,&b);
     ssg_watch::notes_provider notes(nc,n.instance,hidden_notes,watch_alive,&n);
     ssg_watch::watch_slot browser_slot("browser",QString::fromLatin1(b.instance));
@@ -399,6 +399,20 @@ static bool run_watch(multi_source_client &bc,multi_source_client &nc,session_so
             std::printf("P4A_SUBSCRIBER_ERROR reason=LAUNCH_FAILED\n");return false;
         }
         subscriber_sink.bind(subscriber.event_write,subscriber.ack_read,pause_subscriber,corrupt_subscriber_first);sink=&subscriber_sink;
+#ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
+        if(close_before_first_event){
+            close_token(subscriber.event_write);
+            const bool subscriber_clean=stop_subscriber(subscriber);
+            std::printf("P4A_PREMATURE_EOF_TEST before_initial=1 events_attempted=0 acknowledgements=%u subscriber_clean=%d\n",
+                        subscriber_sink.acknowledgements(),int(subscriber_clean));
+            control.request_stop();if(worker_started)pthread_join(worker,nullptr);
+            if(test_sender_started)pthread_join(test_sender_thread,nullptr);
+            close_token(test_pipe.read_token);close_token(test_pipe.write_token);
+            return false;
+        }
+#else
+        (void)close_before_first_event;
+#endif
     }
     auto outcome=ssg_watch::run_watch_loop(browser,notes,browser_slot,notes_slot,control,
                                             {interval,duration,cycles,timeout},hooks,sink);
@@ -445,8 +459,13 @@ int main(int argc,char **argv){
     const bool watch_subscriber_corrupt=app.arguments().contains("--watch-subscriber-corrupt-first");
     const bool watch_subscriber_wrong_ack=app.arguments().contains("--watch-subscriber-wrong-ack");
     const bool watch_subscriber_duplicate_ack=app.arguments().contains("--watch-subscriber-duplicate-ack");
+#ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
+    const bool watch_subscriber_close_before_first=app.arguments().contains("--watch-subscriber-close-before-first-event");
+#else
+    const bool watch_subscriber_close_before_first=false;
+#endif
     if((watch_subscriber_pause || watch_subscriber_corrupt || watch_subscriber_wrong_ack ||
-        watch_subscriber_duplicate_ack) && !watch_subscriber)return 2;
+        watch_subscriber_duplicate_ack || watch_subscriber_close_before_first) && !watch_subscriber)return 2;
     if(watch_subscriber_wrong_ack && watch_subscriber_duplicate_ack)return 2;
     unsigned watch_interval=0,watch_duration=0,watch_cycles=0,watch_timeout=0;
     if(watch && (!isatty(1) || sdk::syscall(sys_process_stdio,0,1)!=1))return 2;
@@ -509,7 +528,8 @@ int main(int argc,char **argv){
         const bool result=run_watch(bc,nc,b,n,hidden_browser,hidden_notes,watch_interval,watch_duration,watch_cycles,watch_timeout,
                                     app.arguments().contains("--watch-control-stdin"),test_control,test_inflight,
                                     watch_subscriber,watch_subscriber_pause,watch_subscriber_corrupt,
-                                    watch_subscriber_wrong_ack,watch_subscriber_duplicate_ack);
+                                    watch_subscriber_wrong_ack,watch_subscriber_duplicate_ack,
+                                    watch_subscriber_close_before_first);
         std::printf("P3B_CAPTURE_COMPLETE\n");bool clean=shutdown(b,n);
 #ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
         if(watch_subscriber){

@@ -115,7 +115,10 @@ def verify(directory):
     scenario = report.get('scenario')
     tx_frames = decode_frames(serial, 'TX')
     rx_frames = decode_frames(serial, 'RX')
-    if not tx_frames or set(tx_frames) != set(rx_frames):
+    if scenario == 'premature-eof':
+        if tx_frames or rx_frames:
+            raise ValueError('premature EOF scenario published a frame')
+    elif not tx_frames or set(tx_frames) != set(rx_frames):
         raise ValueError('sender/receiver frame sets differ')
     sequences = sorted(tx_frames)
     if sequences != list(range(1, len(sequences) + 1)):
@@ -176,6 +179,31 @@ def verify(directory):
         match = re.fullmatch(r'P4A_SUBSCRIBER_COMMIT stream=(\d+) slot=(browser|notes) state=([A-Z_]+) commit=IN_MEMORY_READ_ONLY_STATE ack=PENDING', line)
         if match:
             commit_logs.add(int(match.group(1)))
+
+    if scenario == 'premature-eof':
+        if send_logs or receive_logs or ack_logs or rejected_ack_logs or commit_logs:
+            raise ValueError('incomplete subscription sent, received, committed, or acknowledged an event')
+        required = (
+            'P4A_SUBSCRIBER_STOP reason=PREMATURE_EOF browser_events=0 notes_events=0 events=0 acks_sent=0',
+            'P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=5 clean=0',
+            'P4A_PREMATURE_EOF_TEST before_initial=1 events_attempted=0 acknowledgements=0 subscriber_clean=0',
+        )
+        if any(line not in serial for line in required):
+            raise ValueError('Subscriber or Supervisor did not reject the incomplete subscription')
+        if report.get('supervisor_exit') != {'kind': 'exited', 'code': 1}:
+            raise ValueError('Supervisor reported the incomplete subscription as successful')
+        if not report.get('resources_restored'):
+            raise ValueError('resources were not restored after premature EOF')
+        source_exits = [line for line in serial if line.startswith('P3B_SOURCE_EXIT ')]
+        if len(source_exits) != 2 or any('reaped=1 cancelled=0 outcome=1 code=0' not in line for line in source_exits):
+            raise ValueError('Provider children did not exit cleanly')
+        if not any(line.startswith('P3B_SHUTDOWN ') and 'clean=1' in line for line in serial):
+            raise ValueError('Provider shutdown was not clean')
+        result = {'status': 'PASSED_SCOPED', 'events': [], 'processes': report['processes'],
+                  'resources_restored': True, 'incomplete_subscription_rejected': True}
+        (directory / 'independent_check.json').write_text(json.dumps(result, indent=2) + '\n')
+        print('P4A_INDEPENDENT_AUDIT PASSED_SCOPED premature_eof=REJECTED')
+        return result
 
     if scenario == 'corrupt-frame':
         if (set(send_logs) != set(sequences) or receive_logs or commit_logs or ack_logs or
@@ -362,11 +390,15 @@ def verify(directory):
         expected_subscriber = {
             'backpressure': 'P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=4 clean=0',
             'corrupt-frame': 'P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=3 clean=0',
-            'wrong-ack': 'P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1',
+            'wrong-ack': 'P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=5 clean=0',
             'duplicate-ack': 'P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=4 clean=0',
         }[scenario]
         if not any(line.startswith(expected_subscriber) for line in serial):
             raise ValueError('fault-case Subscriber lifecycle was not observed')
+        if scenario == 'wrong-ack' and not any(
+                line == 'P4A_SUBSCRIBER_STOP reason=PREMATURE_EOF browser_events=1 notes_events=0 events=1 acks_sent=1'
+                for line in serial):
+            raise ValueError('wrong ACK ended before the second source received an initial state')
         if report.get('supervisor_exit') != {'kind': 'exited', 'code': 1}:
             raise ValueError('delivery failure was reported as successful')
         if scenario == 'backpressure' and (ack_logs or not any(line.startswith('P4A_SUBSCRIBER_ACK status=UNKNOWN stream=1') for line in serial)):

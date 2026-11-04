@@ -98,6 +98,14 @@ int run(const QString &browser_instance,const QString &notes_instance,unsigned d
         char header_bytes[header_size]{};
         const auto header_read=read_exact(header_bytes,sizeof(header_bytes),session_deadline,true);
         if(header_read==read_state::eof){
+            // A clean close requires an initial accepted state from both prewired sources.
+            const unsigned browser_events=state.source(browser_slot).local_sequence;
+            const unsigned notes_events=state.source(notes_slot).local_sequence;
+            if(browser_events==0 || notes_events==0){
+                log_line("P4A_SUBSCRIBER_STOP reason=PREMATURE_EOF browser_events=%u notes_events=%u events=%u acks_sent=%u\n",
+                         browser_events,notes_events,received,acks_sent);
+                return 5;
+            }
             log_line("P4A_SUBSCRIBER_STOP reason=SUPERVISOR_CLOSED events=%u acks_sent=%u\n",received,acks_sent);
             return 0;
         }

@@ -102,6 +102,11 @@ values and observes new Browser and Notes baselines. The values are collision
 resistant consistency identifiers, not credentials, peer authentication, or
 permission grants. Provider-provided JSON IDs are not used to authorize access.
 
+End-of-stream is clean only after each prewired source has published at least
+one validated initial state. EOF while either source slot is still unset is a
+failed subscription; the Subscriber exits nonzero and the Supervisor must not
+report normal completion.
+
 The session's Browser and Notes observations are sequential; they do not form
 an atomic desktop snapshot. `globalAtomicSnapshot=NOT_IMPLEMENTED`. A provider
 exit yields `UNAVAILABLE` for that source while the other slot continues. The

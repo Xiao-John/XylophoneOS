@@ -23,7 +23,8 @@ from work_disk import transfer
 
 cases = ('first', 'notes-edit', 'browser-scroll', 'notes-revoke',
          'protect-document', 'protect-ancestor', 'browser-exit', 'notes-exit',
-         'backpressure', 'corrupt-frame', 'stop', 'cancel-inflight', 'wrong-ack', 'duplicate-ack')
+         'backpressure', 'corrupt-frame', 'stop', 'cancel-inflight', 'wrong-ack', 'duplicate-ack',
+         'premature-eof')
 
 
 def sha(path):
@@ -85,13 +86,13 @@ def main():
             guest.expect(b'[display-service] ready', timeout=30)
             report['before'] = resources(guest)
 
-            cycles = 3 if args.case not in ('first', 'backpressure', 'corrupt-frame', 'wrong-ack', 'duplicate-ack') else 1
+            cycles = 3 if args.case not in ('first', 'backpressure', 'corrupt-frame', 'wrong-ack', 'duplicate-ack', 'premature-eof') else 1
             if args.case == 'cancel-inflight':
                 mode = '--test-watch-cancel'
             else:
                 mode = '--test-watch-browser' if args.case in (
                     'first', 'browser-scroll', 'browser-exit', 'backpressure', 'corrupt-frame',
-                    'wrong-ack', 'duplicate-ack') else '--test-watch-notes'
+                    'wrong-ack', 'duplicate-ack', 'premature-eof') else '--test-watch-notes'
             duration = 120 if args.case == 'backpressure' else 240
             command_line = (
                 'exec-driver /bin/multi.elf /web/ssg.html /synthetic.txt ' + mode +
@@ -102,6 +103,7 @@ def main():
                 (' --watch-subscriber-corrupt-first' if args.case == 'corrupt-frame' else '') +
                 (' --watch-subscriber-wrong-ack' if args.case == 'wrong-ack' else '') +
                 (' --watch-subscriber-duplicate-ack' if args.case == 'duplicate-ack' else '') +
+                (' --watch-subscriber-close-before-first-event' if args.case == 'premature-eof' else '') +
                 (' --test-watch-stop-control' if args.case == 'stop' else '') + '\r'
             )
             start = len(guest.output)
@@ -130,7 +132,13 @@ def main():
                 report['events'].append({'cycle': index, 'key': value,
                                          'control': control_key, 'serial_offset': offset})
 
-            if args.case == 'backpressure':
+            if args.case == 'premature-eof':
+                guest.expect(b'P4A_SUBSCRIBER_STOP reason=PREMATURE_EOF browser_events=0 notes_events=0 events=0 acks_sent=0', start=start, timeout=30)
+                guest.expect(b'P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=5 clean=0', start=start, timeout=30)
+                guest.expect(b'P4A_PREMATURE_EOF_TEST before_initial=1 events_attempted=0 acknowledgements=0 subscriber_clean=0', start=start, timeout=30)
+                guest.expect(b'P3B_CAPTURE_COMPLETE', start=start, timeout=30)
+                key(guest, 'esc')
+            elif args.case == 'backpressure':
                 guest.expect(b'P4A_BACKPRESSURE_PROBE result=WOULD_BLOCK frame_bytes=4096 atomic=1', start=start, timeout=20)
                 guest.expect(b'P4A_RECEIVE stream=1 slot=browser ', start=start, timeout=30)
                 guest.expect(b'P4A_SUBSCRIBER_ACK status=UNKNOWN stream=1', start=start, timeout=20)
@@ -150,8 +158,8 @@ def main():
                 guest.expect(b'P4A_ACK_HEADER stream=1', start=start, timeout=30)
                 guest.expect(b'ack_stream=2', start=start, timeout=20)
                 guest.expect(b'P4A_WATCH_STOP reason=OUTPUT_ERROR cycles=0 events=0 attempted=1 acks=0 delivery=UNKNOWN resync=RESET_REQUIRED', start=start, timeout=20)
-                guest.expect(b'P4A_SUBSCRIBER_STOP reason=SUPERVISOR_CLOSED events=1 acks_sent=1', start=start, timeout=20)
-                guest.expect(b'P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1', start=start, timeout=20)
+                guest.expect(b'P4A_SUBSCRIBER_STOP reason=PREMATURE_EOF browser_events=1 notes_events=0 events=1 acks_sent=1', start=start, timeout=20)
+                guest.expect(b'P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=5 clean=0', start=start, timeout=20)
                 guest.expect(b'P3B_CAPTURE_COMPLETE', start=start, timeout=30)
                 key(guest, 'esc')
             elif args.case == 'duplicate-ack':
@@ -191,7 +199,7 @@ def main():
                         guest.expect(b'EDITOR_POINT discard=', start=start, timeout=20)
                         match = list(re.finditer(rb'EDITOR_POINT discard=(\d+),(\d+)', bytes(guest.output)[start:]))[-1]
                         click(guest, int(match[1]), int(match[2]))
-            if args.case not in ('backpressure', 'corrupt-frame', 'wrong-ack', 'duplicate-ack'):
+            if args.case not in ('backpressure', 'corrupt-frame', 'wrong-ack', 'duplicate-ack', 'premature-eof'):
                 guest.expect(b'P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1', start=start, timeout=20)
             guest.expect_supervisor(start=start, timeout=60)
             report['after'] = resources(guest)
@@ -243,7 +251,7 @@ def main():
             if report['supervisor_exit']:
                 report['supervisor_exit'] = {'kind': report['supervisor_exit'][1].decode(),
                                              'code': int(report['supervisor_exit'][2])}
-            expected_exit = {'kind': 'exited', 'code': 1} if args.case in ('backpressure', 'corrupt-frame', 'wrong-ack', 'duplicate-ack') else {'kind': 'exited', 'code': 0}
+            expected_exit = {'kind': 'exited', 'code': 1} if args.case in ('backpressure', 'corrupt-frame', 'wrong-ack', 'duplicate-ack', 'premature-eof') else {'kind': 'exited', 'code': 0}
             if report['supervisor_exit'] != expected_exit:
                 raise AssertionError('supervisor exit did not match the scenario')
             report['resources_restored'] = report['before'] == report['after']

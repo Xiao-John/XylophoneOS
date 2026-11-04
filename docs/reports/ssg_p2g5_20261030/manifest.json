@@ -2,6 +2,7 @@
   "version": 1,
   "files": {
     "README.md": "c30ce256d26dbf38f610e96f41206f3dd2d33de5cc278f3f394042ce1ae6e40f",
+    "SHA256SUMS": "37c1c2a09988560f242604106bd1e0b0db34ddc5f51a9cdf1a7ff531b48ed285",
     "baseline-A.json": "fe5170939ae467258bba24d8c38abf92d00d9227f9d519d12083c345acb4a3f2",
     "baseline-B.json": "28c04056e0f447e5d8f55fa19b96d3c78bc44ab0df50c2fbfd3d8f13f751d575",
     "collector-test.log": "42f2633b7c8a2d64e59e1b3634367ed7ffc8dc4a2f0e69f628e7078ace50de00",
@@ -11,16 +12,22 @@
     "diff.json": "ee70428f1e2c25a0a8f9a4918a056890f9680660523b738b7f6ff7cc4b7ec303",
     "independent-check.json": "c38b8f56e3adc3e65db9648395f43817be4ab98c1e88d098c92d2d6e4540c317",
     "p1-console.log": "40b4eb673a253e76b3eaeac683eeb3a9522005a807c53230388a4b2628331c47",
+    "p1-regression.tar.gz": "023f75495420c2200326ec1a216955e136bd5d8f3ec83f9bf8908c6e36401265",
     "p2g4-console.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "p2g4-regression.tar.gz": "661cc36ba4ace718d92e4a36a62c57363fea82098c0d51aac4b1ffcfcb1aaadd",
     "pages-console.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "pages-regression.tar.gz": "c5544885a6870bfefffc46a644d5a9d1f4bf34dccb7728b182ea5d0485192293",
     "qmp-events.json": "4d5bf39b9dd4cd08328f248362572e1f93f5015a8111a07e59d42049de3afb29",
     "reload-console.log": "38bc9ad884681ad9d774445426976a5d8cba489c660ee12b873dc012c061d551",
+    "reload-control.tar.gz": "a0e234e3f46b87ba983777fed710f0dbbe973012ee4289638ce59acff7ec2bdb",
     "report.json": "67cbbe8fa2b0afbde7134fd7d4f253f044b47b6337567f0c74af9d34411f7252",
     "run-01/manifest.json": "c94afaf0311c0b9e211563f3925786c7da8c9e2f6cd0ac7e122def4b53dc40fa",
     "run-01/report.json": "7d6b8af8df3d18e35bab416f8c71e87be3f6f2fd44cba712db7d6a2ab9fdd03a",
     "run-01-console.log": "ff2e5d6ee2083664a693a7f302cc7b933053164858049cadea403c408a9fc46e",
     "run-02-console.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "run-02.tar.gz": "892c30888292f0bb6e996849fdf208ff05a9dbefb422f92b9e90c3207ee51dd3",
     "run-03-console.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "run-03.tar.gz": "b70190ac9c88cd42dcfa767d853cb6810fa4c8482ca40cc797ce3e43dff943eb",
     "structure-tests.log": "4401483c32a7067c31aaf34fed7678e176ed53eb683f3c4cd9855947a6507fb8"
   }
 }

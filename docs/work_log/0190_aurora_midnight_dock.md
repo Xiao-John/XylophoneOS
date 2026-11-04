@@ -1,4 +1,4 @@
-# 0189 — Midnight Dock refinement
+# 0190 — Midnight Dock refinement
 
 2026-10-30. Independent Desktop follow-up at `b1b56225`. Six text navigation
 buttons gain theme-colored, native vector glyphs, rebuilt only when settings

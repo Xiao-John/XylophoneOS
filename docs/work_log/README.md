@@ -98,3 +98,4 @@
 | 0199 | `0199_gnu_notice_gfdl.md` | GNU NOTICE/GFDL 组件登记与客体许可装盘（关闭 gnu_notice_coverage_gaps） |
 | 0200 | `0200_gcc_member_manual_rulings.md` | GCC 运行库 10 未映射成员人工裁定（关闭 gcc_runtime_member_mapping_unresolved） |
 | 0201 | `0201_qt_text_coverage.md` | Qt 262 成员文本覆盖核对（关闭 qt_license_text_member_coverage） |
+| 0202 | `0202_ssg_p4a_read_only_subscription.md` | SSG P4A 真实跨进程只读订阅、双 Pipe ACK、来源状态与 QEMU 验收（2026-11-04，占号） |

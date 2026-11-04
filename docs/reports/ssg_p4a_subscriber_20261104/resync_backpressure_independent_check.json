@@ -1,0 +1,23 @@
+{
+  "status": "PASSED_SCOPED",
+  "failed_session": {
+    "scenario": "backpressure",
+    "event_count": 1,
+    "delivery": "UNKNOWN",
+    "resync": "RESET_REQUIRED",
+    "source_instances": {
+      "browser": "42b51b39c0d16f965c194c2d3ae95788",
+      "notes": "667aa8d5ae2051438f15fbc76991f137"
+    }
+  },
+  "new_session": {
+    "event_count": 2,
+    "source_instances": {
+      "browser": "a146d1f2805ae176aa3041cb63273cdf",
+      "notes": "d05f417263906d50c79edc3d53c820e8"
+    },
+    "initial_baselines_acknowledged": true
+  },
+  "replay": "NONE",
+  "semantics": "a new session obtains a fresh baseline; no transparent replay"
+}

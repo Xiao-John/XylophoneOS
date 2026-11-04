@@ -1,0 +1,57 @@
+{
+  "status": "PASSED_SCOPED",
+  "events": [
+    {
+      "stream_sequence": 1,
+      "slot": "browser",
+      "source_instance": "6c3ecbdc47beb652461bab207dae4be3",
+      "source_epoch": "47244640259",
+      "source_sequence": 1,
+      "event_type": "SOURCE_UNKNOWN",
+      "consumer_state": "OBSERVED",
+      "frame_bytes": 852,
+      "source_revision_before": "",
+      "source_revision_after": "5",
+      "observation_scope": "unfiltered-litehtml",
+      "baseline_state": "CURRENT_OBSERVATION",
+      "completeness": "LOCALLY_COMPLETE_ORACLE_REQUIRED",
+      "freshness": "UNVERIFIED_AFTER_OBSERVATION",
+      "failure_reason": "INITIAL_BASELINE",
+      "summary": {},
+      "frame_sha256": "df08a99e228b82c55909df9321c3d8a33fe1ff843db5a84497bf6d2c0fbae5ca",
+      "acknowledged": true,
+      "committed": true,
+      "checksum_valid": true
+    },
+    {
+      "stream_sequence": 2,
+      "slot": "notes",
+      "source_instance": "6fe26574aefcd642005fdd507ab8e731",
+      "source_epoch": "51539607554",
+      "source_sequence": 1,
+      "event_type": "SOURCE_UNKNOWN",
+      "consumer_state": "OBSERVED",
+      "frame_bytes": 911,
+      "source_revision_before": "",
+      "source_revision_after": "0",
+      "observation_scope": "document-range-UTF-16",
+      "baseline_state": "CURRENT_OBSERVATION",
+      "completeness": "REVISION_CONSISTENT_OWNER_ORACLE_REQUIRED",
+      "freshness": "UNVERIFIED_AFTER_OBSERVATION",
+      "failure_reason": "INITIAL_BASELINE",
+      "summary": {},
+      "frame_sha256": "38510a31acc2e0990d7d8514869045d84f91a8bfaf95805c5881e9a0f8e6a02a",
+      "acknowledged": true,
+      "committed": true,
+      "checksum_valid": true
+    }
+  ],
+  "processes": {
+    "supervisor": 10,
+    "browser": 11,
+    "notes": 12,
+    "subscriber": 13
+  },
+  "resources_restored": true,
+  "semantics": "per-source sequential observations; globalAtomicSnapshot=NOT_IMPLEMENTED"
+}

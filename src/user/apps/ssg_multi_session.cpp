@@ -5,6 +5,7 @@
 #include "../ssg/aggregate_diff.hpp"
 #include "../ssg/watch_adapters.hpp"
 #include "../ssg/watch_service.hpp"
+#include "../ssg/pipe_event_sink.hpp"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
@@ -66,7 +67,7 @@ static QString client_failure(const multi_source_client &client){
     return QStringLiteral("COLLECTION_OR_LIVENESS");
 }
 static QString source_failure(const QString &reason){return reason.isEmpty()?QStringLiteral("COLLECTION_OR_LIVENESS"):reason;}
-static QJsonObject browser_result(const ssg_pipe::Baseline &b,u64 start,u64 end,bool hidden){
+static QJsonObject browser_result(const ssg_pipe::baseline &b,u64 start,u64 end,bool hidden){
     QJsonArray nodes;
     for(const auto &n:b.nodes){
         QJsonObject node{{"id",identity("browser",QString::fromStdString(b.instance),QString::fromStdString(b.epoch),QString::fromStdString(n.id))},
@@ -142,6 +143,116 @@ static bool shutdown(session_source &a,session_source &b){
     std::printf("P3B_SHUTDOWN elapsed_ns=%llu clean=%d\n",(unsigned long long)(thread::clock()-started),int(clean));
     return clean;
 }
+
+struct subscriber_session {
+    u32 event_write=0,ack_read=0;
+    i64 pid=-1;
+    bool reaped=false;
+    process_status status{};
+};
+
+static bool launch_subscriber(subscriber_session &subscriber,const session_source &browser,
+                              const session_source &notes,unsigned duration,bool pause_reader,
+                              bool wrong_ack_sequence,bool duplicate_ack){
+    pipe_handles events{},acks{};
+    if(sdk::syscall(sys_pipe_create,reinterpret_cast<u64>(&events))!=0)return false;
+    if(sdk::syscall(sys_pipe_create,reinterpret_cast<u64>(&acks))!=0){
+        close_token(events.read_token);close_token(events.write_token);return false;
+    }
+    char duration_text[8]{};std::snprintf(duration_text,sizeof(duration_text),"%u",duration);
+    sdk::spawn_options options{};options.stdio[0]=events.read_token;options.stdio[1]=acks.write_token;
+    const char *arguments[8]={"/bin/ssg_subscriber.elf",browser.instance,notes.instance,duration_text,
+                              nullptr,nullptr,nullptr,nullptr};
+    unsigned count=4;
+    if(pause_reader)arguments[count++]="--test-pause-reader";
+#ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
+    arguments[count++]="--test-capture-frame";
+#endif
+    if(wrong_ack_sequence)arguments[count++]="--test-wrong-ack-sequence";
+    if(duplicate_ack)arguments[count++]="--test-duplicate-ack";
+    subscriber.pid=sdk::spawn_file_options(arguments[0],count,arguments,options);
+    close_token(events.read_token);close_token(acks.write_token);
+    if(subscriber.pid<0){close_token(events.write_token);close_token(acks.read_token);return false;}
+    subscriber.event_write=events.write_token;subscriber.ack_read=acks.read_token;
+    std::printf("P4A_SUBSCRIBER_STARTED supervisor=%llu subscriber=%lld event_pipe=dedicated ack_pipe=dedicated browser_instance=%s notes_instance=%s\n",
+                (unsigned long long)sdk::pid(),(long long)subscriber.pid,browser.instance,notes.instance);
+    return true;
+}
+
+static bool subscriber_alive(subscriber_session &subscriber){
+    if(subscriber.pid<0 || subscriber.reaped)return false;
+    const auto result=sdk::syscall(sys_process_wait,u64(subscriber.pid),reinterpret_cast<u64>(&subscriber.status),1);
+    if(result==process_error_would_block)return true;
+    if(result==0)subscriber.reaped=true;
+    return false;
+}
+
+static bool stop_subscriber(subscriber_session &subscriber){
+    close_token(subscriber.event_write);close_token(subscriber.ack_read);
+    const u64 deadline=thread::clock()+5000000000ull;
+    while(thread::clock()<deadline && subscriber_alive(subscriber))
+        thread::sleep_until(qMin(deadline,thread::clock()+100000000ull));
+    bool cancelled=false;
+    if(subscriber_alive(subscriber)){
+        cancelled=true;(void)sdk::syscall(sys_process_cancel,u64(subscriber.pid));
+        const u64 cancel_deadline=thread::clock()+5000000000ull;
+        while(thread::clock()<cancel_deadline && !subscriber.reaped){
+            if(!subscriber_alive(subscriber))break;
+            thread::sleep_until(qMin(cancel_deadline,thread::clock()+100000000ull));
+        }
+    }
+    const bool clean=subscriber.reaped && !cancelled &&
+        subscriber.status.outcome==process_outcome::exited && subscriber.status.code==0;
+    std::printf("P4A_SUBSCRIBER_EXIT reaped=%d cancelled=%d outcome=%u code=%lld clean=%d\n",
+                int(subscriber.reaped),int(cancelled),unsigned(subscriber.status.outcome),
+                (long long)subscriber.status.code,int(clean));
+    return clean;
+}
+
+#ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
+static bool pipe_capacity_sample(unsigned &acquired){
+    pipe_handles handles[process_max_pipes]{};acquired=0;bool closed=true;
+    for(;acquired<process_max_pipes;++acquired){
+        if(sdk::syscall(sys_pipe_create,reinterpret_cast<u64>(&handles[acquired]))!=0)break;
+    }
+    for(unsigned i=0;i<acquired;++i){
+        if(sdk::syscall(sys_pipe_close,handles[i].read_token)!=0)closed=false;
+        if(sdk::syscall(sys_pipe_close,handles[i].write_token)!=0)closed=false;
+    }
+    return closed;
+}
+
+static bool pipe_reuse_probe(const u32 old_tokens[4]){
+    pipe_handles probes[4]{};unsigned acquired=0;
+    for(;acquired<4;++acquired)
+        if(sdk::syscall(sys_pipe_create,reinterpret_cast<u64>(&probes[acquired]))!=0)break;
+    unsigned denied=0,reused=0;char byte=0;
+    for(unsigned i=0;i<4;++i){
+        for(unsigned j=0;j<acquired;++j)
+            if(old_tokens[i]==probes[j].read_token || old_tokens[i]==probes[j].write_token)++reused;
+        const auto result=sdk::syscall(i%2?sys_pipe_write:sys_pipe_read,old_tokens[i],reinterpret_cast<u64>(&byte),1);
+        if(result==process_error_denied)++denied;
+    }
+    for(unsigned i=0;i<acquired;++i){
+        if(sdk::syscall(sys_pipe_close,probes[i].read_token)!=0)reused++;
+        if(sdk::syscall(sys_pipe_close,probes[i].write_token)!=0)reused++;
+    }
+    std::printf("P3B_PIPE_REUSE acquired=%u requested=4\n",acquired);
+    std::printf("P3B_STALE_TOKEN_REFUSED checked=4 denied=%u reused=%u\n",denied,reused);
+    return acquired==4 && denied==4 && reused==0;
+}
+
+static void log_thread_stats(const char *phase){
+    thread_stats stats{};
+    const auto result=sdk::syscall(sys_thread_stats,reinterpret_cast<u64>(&stats));
+    if(result!=0){
+        std::printf("P4A_THREAD_STATS phase=%s status=UNAVAILABLE error=%lld\n",phase,(long long)result);return;
+    }
+    std::printf("P4A_THREAD_STATS phase=%s status=OBSERVED processes=%u threads=%u waiting=%u results=%u free_pages=%u process_user_pages=%u process_kernel_stack_pages=%u\n",
+                phase,stats.processes,stats.threads,stats.waiting,stats.results,stats.free_pages,
+                stats.process_user_pages,stats.process_kernel_stack_pages);
+}
+#endif
 
 static bool watch_alive(void *source){return alive(*static_cast<session_source *>(source));}
 
@@ -237,7 +348,9 @@ public:
 };
 #endif
 static bool run_watch(multi_source_client &bc,multi_source_client &nc,session_source &b,session_source &n,bool hidden_browser,bool hidden_notes,
-                      unsigned interval,unsigned duration,unsigned cycles,unsigned timeout,bool control_stdin,bool test_control,bool test_inflight){
+                      unsigned interval,unsigned duration,unsigned cycles,unsigned timeout,bool control_stdin,bool test_control,bool test_inflight,
+                      bool subscriber_mode,bool pause_subscriber,bool corrupt_subscriber_first,
+                      bool wrong_ack_sequence,bool duplicate_ack){
     ssg_watch::browser_provider browser(bc,b.instance,hidden_browser,watch_alive,&b);
     ssg_watch::notes_provider notes(nc,n.instance,hidden_notes,watch_alive,&n);
     ssg_watch::watch_slot browser_slot("browser",QString::fromLatin1(b.instance));
@@ -274,26 +387,50 @@ static bool run_watch(multi_source_client &bc,multi_source_client &nc,session_so
 #else
     ssg_watch::watch_hooks hooks;
 #endif
-    auto outcome=ssg_watch::run_watch_loop(browser,notes,browser_slot,notes_slot,control,{interval,duration,cycles,timeout},hooks);
+    subscriber_session subscriber{};ssg_subscription::pipe_event_sink subscriber_sink(0,0);
+    ssg_watch::event_sink *sink=nullptr;
+    if(subscriber_mode){
+        if(!launch_subscriber(subscriber,b,n,duration,pause_subscriber,wrong_ack_sequence,duplicate_ack)){
+            control.request_stop();if(worker_started)pthread_join(worker,nullptr);
+#ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
+            if(test_sender_started)pthread_join(test_sender_thread,nullptr);
+#endif
+            close_token(test_pipe.read_token);close_token(test_pipe.write_token);
+            std::printf("P4A_SUBSCRIBER_ERROR reason=LAUNCH_FAILED\n");return false;
+        }
+        subscriber_sink.bind(subscriber.event_write,subscriber.ack_read,pause_subscriber,corrupt_subscriber_first);sink=&subscriber_sink;
+    }
+    auto outcome=ssg_watch::run_watch_loop(browser,notes,browser_slot,notes_slot,control,
+                                            {interval,duration,cycles,timeout},hooks,sink);
     control.request_stop();if(worker_started && pthread_join(worker,nullptr)!=0)outcome.output_ok=false;
 #ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
     if(test_sender_started && pthread_join(test_sender_thread,nullptr)!=0)outcome.output_ok=false;
 #endif
     close_token(test_pipe.read_token);close_token(test_pipe.write_token);
+    const bool subscriber_clean=subscriber_mode?stop_subscriber(subscriber):true;
     const bool requested=__atomic_load_n(&input.requested,__ATOMIC_ACQUIRE)!=0;
     const bool control_failed=__atomic_load_n(&input.failed,__ATOMIC_ACQUIRE)!=0;
     const char *reason=control_failed?"CONTROL_ERROR":requested?"EXPLICIT_STOP":!outcome.output_ok?"OUTPUT_ERROR":outcome.cycles==cycles?"CYCLE_LIMIT":"DURATION_LIMIT";
-    const auto stop_record=QByteArray("\nP3C_WATCH_STOP reason=")+reason+" cycles="+QByteArray::number(outcome.cycles)+
-        " events="+QByteArray::number(outcome.events)+" dropped="+(outcome.output_ok?"0":"UNKNOWN")+
-        " resync="+(outcome.output_ok?"AS_NEEDED":"RESET_REQUIRED")+" aggregate="+(outcome.partial?"PARTIAL":"OBSERVED_COMPLETE")+
-        " elapsed_ns="+QByteArray::number(outcome.elapsed_ns)+'\n';
-    if(!ssg_watch::write_event_record(stop_record))outcome.output_ok=false;
+    if(subscriber_mode){
+        const char *delivery=outcome.delivery_unknown?"UNKNOWN":
+            outcome.failure=="SUBSCRIBER_REJECTED_EVENT"?"REJECTED":outcome.output_ok?"ACKED":"FAILED";
+        std::printf("P4A_WATCH_STOP reason=%s cycles=%u events=%u attempted=%u acks=%u delivery=%s resync=%s aggregate=%s elapsed_ns=%llu failure=%s\n",
+                    reason,outcome.cycles,outcome.events,outcome.events_attempted,subscriber_sink.acknowledgements(),delivery,
+                    outcome.resync_required?"RESET_REQUIRED":"AS_NEEDED",outcome.partial?"PARTIAL":"OBSERVED_COMPLETE",
+                    (unsigned long long)outcome.elapsed_ns,outcome.failure.toUtf8().constData());
+    }else{
+        const auto stop_record=QByteArray("\nP3C_WATCH_STOP reason=")+reason+" cycles="+QByteArray::number(outcome.cycles)+
+            " events="+QByteArray::number(outcome.events)+" dropped="+(outcome.output_ok?"0":"UNKNOWN")+
+            " resync="+(outcome.output_ok?"AS_NEEDED":"RESET_REQUIRED")+" aggregate="+(outcome.partial?"PARTIAL":"OBSERVED_COMPLETE")+
+            " elapsed_ns="+QByteArray::number(outcome.elapsed_ns)+'\n';
+        if(!ssg_watch::write_event_record(stop_record))outcome.output_ok=false;
+    }
     for(const auto &entry:{std::make_pair("browser",&bc),std::make_pair("notes",&nc)}){
         const auto record=QByteArray("\nP3C_IPC slot=")+entry.first+" requests="+QByteArray::number(entry.second->request_count())+
             " read_bytes="+QByteArray::number(entry.second->bytes_read())+" written_bytes="+QByteArray::number(entry.second->bytes_written())+'\n';
         if(!ssg_watch::write_event_record(record))outcome.output_ok=false;
     }
-    return outcome.output_ok && !control_failed;
+    return outcome.output_ok && !control_failed && subscriber_clean;
 }
 int main(int argc,char **argv){
     QCoreApplication app(argc,argv);
@@ -302,7 +439,16 @@ int main(int argc,char **argv){
     // takes precedence if contradictory switches are supplied.
     const bool notes_text=app.arguments().contains("--notes-text") && !app.arguments().contains("--notes-denied");
     const bool browser_text=app.arguments().contains("--browser-text") && !app.arguments().contains("--browser-denied");
-    const bool watch=app.arguments().contains("--watch");unsigned watch_interval=0,watch_duration=0,watch_cycles=0,watch_timeout=0;
+    const bool watch=app.arguments().contains("--watch");
+    const bool watch_subscriber=app.arguments().contains("--watch-subscriber");
+    const bool watch_subscriber_pause=app.arguments().contains("--watch-subscriber-pause");
+    const bool watch_subscriber_corrupt=app.arguments().contains("--watch-subscriber-corrupt-first");
+    const bool watch_subscriber_wrong_ack=app.arguments().contains("--watch-subscriber-wrong-ack");
+    const bool watch_subscriber_duplicate_ack=app.arguments().contains("--watch-subscriber-duplicate-ack");
+    if((watch_subscriber_pause || watch_subscriber_corrupt || watch_subscriber_wrong_ack ||
+        watch_subscriber_duplicate_ack) && !watch_subscriber)return 2;
+    if(watch_subscriber_wrong_ack && watch_subscriber_duplicate_ack)return 2;
+    unsigned watch_interval=0,watch_duration=0,watch_cycles=0,watch_timeout=0;
     if(watch && (!isatty(1) || sdk::syscall(sys_process_stdio,0,1)!=1))return 2;
     if(watch && (!watch_number(app.arguments(),"--watch-interval",5,1,30,watch_interval) ||
        !watch_number(app.arguments(),"--watch-duration",120,1,3600,watch_duration) ||
@@ -312,6 +458,13 @@ int main(int argc,char **argv){
     }
     std::printf("P3B_SCOPE browser_text=%d notes_text=%d\n",int(browser_text),int(notes_text));
     session_source b{"browser"},n{"notes"};
+#ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
+    unsigned p4a_pipe_capacity_before=0;
+    if(watch_subscriber && !pipe_capacity_sample(p4a_pipe_capacity_before)){
+        std::printf("P4A_PIPE_RESOURCE_ERROR stage=BEFORE\n");return 2;
+    }
+    if(watch_subscriber)log_thread_stats("before");
+#endif
     bool hidden_notes=app.arguments().contains("--notes-hidden"),hidden_browser=false,dynamic=false;
     const char *notes_fault=nullptr;
 #ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
@@ -354,8 +507,23 @@ int main(int argc,char **argv){
         test_inflight=watch_cancel_test;
 #endif
         const bool result=run_watch(bc,nc,b,n,hidden_browser,hidden_notes,watch_interval,watch_duration,watch_cycles,watch_timeout,
-                                    app.arguments().contains("--watch-control-stdin"),test_control,test_inflight);
-        std::printf("P3B_CAPTURE_COMPLETE\n");const bool clean=shutdown(b,n);return result && clean?0:1;
+                                    app.arguments().contains("--watch-control-stdin"),test_control,test_inflight,
+                                    watch_subscriber,watch_subscriber_pause,watch_subscriber_corrupt,
+                                    watch_subscriber_wrong_ack,watch_subscriber_duplicate_ack);
+        std::printf("P3B_CAPTURE_COMPLETE\n");bool clean=shutdown(b,n);
+#ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
+        if(watch_subscriber){
+            unsigned p4a_pipe_capacity_after=0;
+            const bool sampled=pipe_capacity_sample(p4a_pipe_capacity_after);
+            const bool balanced=sampled && p4a_pipe_capacity_after==p4a_pipe_capacity_before;
+            std::printf("P4A_PIPE_REUSE before=%u after=%u sampled=%d balanced=%d\n",
+                        p4a_pipe_capacity_before,p4a_pipe_capacity_after,int(sampled),int(balanced));
+            clean=clean && balanced;
+            log_thread_stats("after");
+        }
+        clean=pipe_reuse_probe(old_tokens) && clean;
+#endif
+        return result && clean?0:1;
     }
     baseline_collector collector;const u64 bstart=thread::clock();
     bool bok=collect_baseline(bc,collector) && collector.commit();const u64 bend=thread::clock();
@@ -433,7 +601,7 @@ int main(int argc,char **argv){
         bool notes_ok=collect_notes(nc,updated,next_failure) && alive(n);const u64 ne=thread::clock();
         browser_ok=browser_ok && alive(b);notes_ok=notes_ok && alive(n);
         const bool notes_same=notes_ok && updated.instance==note.instance && updated.epoch==note.epoch && updated.node==note.node && updated.revision==note.revision && updated.text==note.text;
-        const auto delta=browser_ok?ssg_pipe::compare_baselines(*collector.committed(),*fresh.committed()):ssg_pipe::Diff{};
+        const auto delta=browser_ok?ssg_pipe::compare_baselines(*collector.committed(),*fresh.committed()):ssg_pipe::baseline_diff_result{};
         const bool browser_same=browser_ok && delta.status==ssg_pipe::diff_status::ok && delta.changes.empty();
         const QJsonObject next{{"status",browser_ok&&notes_ok?"AGGREGATE_COMPLETE_OBSERVED":"AGGREGATE_PARTIAL"},
             {"semantics","sequential-per-source-non-atomic"},{"globalAtomicSnapshot","NOT_IMPLEMENTED"},
@@ -451,7 +619,7 @@ int main(int argc,char **argv){
         bool notes_ok=collect_notes(nc,updated,next_failure) && alive(n);const u64 ne=thread::clock();
         browser_ok=browser_ok && alive(b);notes_ok=notes_ok && alive(n);
         const bool unchanged=notes_ok && updated.instance==note.instance && updated.epoch==note.epoch && updated.node==note.node && updated.revision==note.revision && updated.text==note.text;
-        ssg_pipe::Diff changes;if(browser_ok)changes=ssg_pipe::compare_baselines(*collector.committed(),*fresh.committed());
+        ssg_pipe::baseline_diff_result changes;if(browser_ok)changes=ssg_pipe::compare_baselines(*collector.committed(),*fresh.committed());
         unsigned scroll=0,geometry=0,visibility=0,other=0;
         for(const auto &change:changes.changes){if(change.kind=="ScrollChanged")++scroll;else if(change.kind=="WindowGeometryChanged")++geometry;else if(change.kind=="VisibilityChanged")++visibility;else ++other;}
         const bool changed=browser_ok && changes.status==ssg_pipe::diff_status::ok && scroll==1 && collector.committed()->scroll!=fresh.committed()->scroll;
@@ -536,7 +704,7 @@ int main(int argc,char **argv){
         bool second_bok=collect_baseline(bc,second_browser) && second_browser.commit() && alive(b);const u64 second_bend=thread::clock();
         const bool second_nalive=alive(n);
         second_bok=second_bok && alive(b);
-        ssg_pipe::Diff delta;
+        ssg_pipe::baseline_diff_result delta;
         if(second_bok)delta=ssg_pipe::compare_baselines(*collector.committed(),*second_browser.committed());
         const bool browser_unchanged=second_bok && delta.status==ssg_pipe::diff_status::ok && delta.changes.empty();
         const bool notes_changed=second_notes && second_nalive && note.instance==updated.instance && note.epoch==updated.epoch && note.node==updated.node && note.revision!=updated.revision && note.text!=updated.text;
@@ -561,18 +729,7 @@ int main(int argc,char **argv){
     bool clean=shutdown(b,n);
 #ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
     // A bounded capacity probe is not an exact global pipe counter.
-    pipe_handles probes[4]{};unsigned acquired=0;
-    for(;acquired<4;++acquired)if(sdk::syscall(sys_pipe_create,reinterpret_cast<u64>(&probes[acquired]))!=0)break;
-    unsigned denied=0,reused=0;char byte=0;
-    for(unsigned i=0;i<4;++i){
-        for(unsigned j=0;j<acquired;++j)if(old_tokens[i]==probes[j].read_token || old_tokens[i]==probes[j].write_token)++reused;
-        const auto result=sdk::syscall(i%2?sys_pipe_write:sys_pipe_read,old_tokens[i],reinterpret_cast<u64>(&byte),1);
-        if(result==process_error_denied)++denied;
-    }
-    for(unsigned i=0;i<acquired;++i){close_token(probes[i].read_token);close_token(probes[i].write_token);}
-    std::printf("P3B_PIPE_REUSE acquired=%u requested=4\n",acquired);
-    std::printf("P3B_STALE_TOKEN_REFUSED checked=4 denied=%u reused=%u\n",denied,reused);
-    clean=clean && acquired==4 && denied==4 && reused==0;
+    clean=pipe_reuse_probe(old_tokens) && clean;
 #endif
     return success && clean?0:1;
 }

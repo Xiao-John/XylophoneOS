@@ -1,0 +1,52 @@
+{
+  "initial_attempts_preserved": [
+    {
+      "case": "current-main C30 compatibility build",
+      "result": "FAILED",
+      "cause": "P3C Watch retained the old Baseline/Diff type spellings after the upstream C30 rename",
+      "resolution": "updated Watch adapter and supervisor references to baseline and baseline_diff_result"
+    },
+    {
+      "case": "Notes cross-build with the previously built Qt E17 SDK",
+      "result": "FAILED",
+      "cause": "that SDK header still declared file::Client while current main uses file::client",
+      "resolution": "created an isolated derived SDK overlay with the current-main file_client object; no external Qt build was modified"
+    },
+    {
+      "case": "first QEMU boot of the new optical image",
+      "result": "FAILED",
+      "cause": "the Guest helper treated the .iso as a floppy and produced no serial output",
+      "resolution": "Guest runner now selects CD boot for .iso images"
+    },
+    {
+      "case": "first ACK route",
+      "result": "FAILED",
+      "cause": "Qt startup diagnostic text on stderr was written into the ACK Pipe",
+      "resolution": "ACK uses stdout fd 1; diagnostics remain on stderr fd 2; the Subscriber does not start a Qt application object"
+    },
+    {
+      "case": "initial full-Pipe timing calibration",
+      "result": "WOULD_BLOCK observed but ACK arrived before deadline",
+      "resolution": "test pause extended to ten seconds; final run shows the Supervisor timeout and UNKNOWN"
+    },
+    {
+      "case": "first Subscriber state test",
+      "result": "state assertions passed but the Guest wrapper matched a different summary phrase",
+      "resolution": "corrected the summary pattern; final state Guest test passes 25 checks"
+    },
+    {
+      "case": "first thread/page return assertion",
+      "result": "FAILED",
+      "cause": "the live Supervisor allocator retained a per-process high-water allocation during the watch",
+      "resolution": "report in-process page deltas and verify global counters after Supervisor exit"
+    },
+    {
+      "case": "first duplicate-ACK harness attempt",
+      "result": "FAILED_TEST_EXPECTATION",
+      "cause": "the Subscriber successfully wrote a duplicate ACK before the Supervisor rejected its stale sequence",
+      "resolution": "corrected the Guest assertion; the corrected duplicate-ACK rerun and final validation both pass"
+    }
+  ],
+  "failed_attempts_are_retained": true,
+  "no_failure_logs_were_deleted": true
+}

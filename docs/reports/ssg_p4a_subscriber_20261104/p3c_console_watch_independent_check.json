@@ -1,0 +1,8 @@
+{
+  "status": "OBSERVED",
+  "scope": "ordinary binaries, no raw IPC oracle",
+  "cycles": 3,
+  "events": 6,
+  "resources_restored": true,
+  "global_atomic_snapshot": "NOT_IMPLEMENTED"
+}

@@ -1,0 +1,35 @@
+{
+  "status": "PASSED_SCOPED",
+  "events": [
+    {
+      "stream_sequence": 1,
+      "slot": "browser",
+      "source_instance": "3738751ff972725d9138759aede61cd8",
+      "source_epoch": "47244640259",
+      "source_sequence": 1,
+      "event_type": "SOURCE_UNKNOWN",
+      "consumer_state": "RESET_REQUIRED",
+      "frame_bytes": 852,
+      "source_revision_before": "",
+      "source_revision_after": "5",
+      "observation_scope": "unfiltered-litehtml",
+      "baseline_state": "CURRENT_OBSERVATION",
+      "completeness": "LOCALLY_COMPLETE_ORACLE_REQUIRED",
+      "freshness": "UNVERIFIED_AFTER_OBSERVATION",
+      "failure_reason": "INITIAL_BASELINE",
+      "summary": {},
+      "frame_sha256": "909bd6c6d9f68f7b420d6d333aa940bfb6d216ab0a08ff637c9a613eb8c691c2",
+      "acknowledged": false,
+      "committed": false,
+      "checksum_valid": false
+    }
+  ],
+  "processes": {
+    "supervisor": 10,
+    "browser": 11,
+    "notes": 12,
+    "subscriber": 13
+  },
+  "resources_restored": true,
+  "semantics": "per-source sequential observations; globalAtomicSnapshot=NOT_IMPLEMENTED"
+}

@@ -285,3 +285,15 @@ python3 tests/report_manifest_check.py     # 本目录应出现在 compliant 列
 | 构建树 `.d` 文件 | 936（全在 `*_autogen`，与归档成员名交集 0） |
 | 商业许可判定 | **N/A（无材料）** |
 | 未运行 | 打包核验、安全审查、商业核验（N/A）、法律意见 |
+
+
+## 262 成员文本覆盖（2026-11-04，关闭 open 项）
+
+[text_coverage.json](text_coverage.json)：`other_copyright` 232 + `no_declaration` 30
+= **262/262 覆盖**。242 个按 `component_license_ids`（freetype FTL/GPL-2.0-only、
+harfbuzz MIT、zlib Zlib、pcre2 LicenseRef-BSD-3…-PCRE2-Exception）归到 Qt
+`LICENSES/<id>.txt`（sha256 自 qtbase-6.8.3-gui LICENSES 钉定）；20 个 AUTOMOC/RCC
+生成件按 Qt 组件 SPDX 表达式
+（`LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only`）
+对应四份文本整体覆盖。工程覆盖记录，**非再分发资格**（资格仍 NOT_GRANTED，
+待打包核验与安全审查关口）。

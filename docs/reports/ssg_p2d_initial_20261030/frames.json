@@ -1,0 +1,42 @@
+[
+  {
+    "file": "frames/01-req.json",
+    "bytes": 36
+  },
+  {
+    "file": "frames/01-resp.json",
+    "bytes": 3610
+  },
+  {
+    "file": "frames/02-req.json",
+    "bytes": 101
+  },
+  {
+    "file": "frames/02-resp.json",
+    "bytes": 4094
+  },
+  {
+    "file": "frames/03-req.json",
+    "bytes": 101
+  },
+  {
+    "file": "frames/03-resp.json",
+    "bytes": 3768
+  },
+  {
+    "file": "frames/04-req.json",
+    "bytes": 101
+  },
+  {
+    "file": "frames/04-resp.json",
+    "bytes": 3983
+  },
+  {
+    "file": "frames/05-req.json",
+    "bytes": 101
+  },
+  {
+    "file": "frames/05-resp.json",
+    "bytes": 342
+  }
+]

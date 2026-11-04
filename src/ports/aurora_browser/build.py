@@ -6,6 +6,7 @@ from pathlib import Path
 here=Path(__file__).resolve().parent;root=here.parents[2];qtport=root/'src/ports/qt6'
 p=argparse.ArgumentParser(description=__doc__)
 for name in ('sdk','qt-build','qt-source','host-qt','binutils','output'):p.add_argument('--'+name,type=Path,required=True)
+p.add_argument('--test-structure-oracle',action='store_true',help='Explicit test-only recursive liteHTML reference; absent from normal builds')
 a=p.parse_args();sdk,qt,qs,host,binutils,out=[getattr(a,k).resolve() for k in ('sdk','qt_build','qt_source','host_qt','binutils','output')]
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest();commands=[]
 def run(cmd):
@@ -33,6 +34,7 @@ engine=work/'liblitehtml.a';run([ar,'rcs',engine,*objs])
 qrc=work/'fonts.qrc';font=qs/'src/3rdparty/wasm/DejaVuSans.ttf';qrc.write_text('<RCC><qresource prefix="/xos"><file alias="DejaVuSans.ttf">'+str(font)+'</file></qresource></RCC>')
 run([host/'libexec/rcc','--name','xos_fonts',qrc,'-o',work/'fonts.cpp'])
 flags=[*base,*cpp,'-I'+str(sdk/'include'),*incs,'-DQT_CORE_LIB','-DQT_GUI_LIB','-DQT_WIDGETS_LIB','-DQT_NO_DEBUG','-DQT_STATICPLUGIN',*['-I'+str(qt/'include'/p) for p in ('','QtCore','QtGui','QtWidgets','QtCore/6.8.3','QtCore/6.8.3/QtCore','QtGui/6.8.3','QtGui/6.8.3/QtGui')],'-I'+str(qtport/'runtime'),'-I'+str(work)]
+if a.test_structure_oracle:flags.append('-DXOS_SSG_TEST_ORACLE')
 run([host/'libexec/moc',*[f for f in flags if f.startswith(('-I','-D'))],qtport/'qpa/qxos.cpp','-o',work/'qxos.moc'])
 appobjs=[]
 for name,src in [('qxos',qtport/'qpa/qxos.cpp'),('fonts',work/'fonts.cpp'),('browser',here/'main.cpp')]:
@@ -42,4 +44,4 @@ archives=[qt/'lib'/('lib'+n+'.a') for n in ('Qt6Widgets','Qt6Gui','Qt6Core','Qt6
 resources=list((qt/'src/gui').glob('CMakeFiles/Gui_resources_*.dir/.rcc/*.o'))+list((qt/'src/widgets').glob('CMakeFiles/Widgets_resources_*.dir/.rcc/*.o'))
 run([cxx,'-B'+str(binutils)+'/','-nostdlib','-static','-no-pie','-Wl,--gc-sections,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096','-T',sdk/'user.ld',sdk/'crt0_posix.o',*appobjs,*resources,'-Wl,--start-group',aurora,engine,*archives,'-Wl,--whole-archive',sdk/'lib/libxos.a','-Wl,--no-whole-archive',sdk/'cpp/lib/libstdc++.a',sdk/'cpp/lib/libsupc++.a',sdk/'lib/libc.a',sdk/'lib/libm.a',sdk/'cpp/lib/libgcc.a','-Wl,--end-group','-o',out])
 inputs=[Path(__file__),here/'source_lock.json',archive,patch,*sorted(here.glob('*.hpp')),here/'main.cpp',font,sdk/'manifest.json',qt/'CMakeCache.txt',qtport/'qpa/qxos.cpp',*sorted((qtport/'aurora').glob('*.hpp')),*sorted((qtport/'aurora').glob('*.cpp')),aurora,engine,*archives,*resources,*[sdk/rel for rel in ('user.ld','crt0_posix.o','lib/libxos.a','lib/libc.a','lib/libm.a','cpp/lib/libstdc++.a','cpp/lib/libsupc++.a','cpp/lib/libgcc.a')]]
-receipt={'commands':commands,'inputs':{str(p):sha(p) for p in inputs},'elf_sha256':sha(out),'engine_archive_sha256':sha(engine),'engine_commit':lock['commit'],'tools':{str(t):{'sha256':sha(Path(t)),'version':subprocess.check_output([t,'--version'],text=True).splitlines()[0]} for t in (cxx,cc,ar)},'source_manifest':lock['source_sha256']};out.with_suffix('.receipt.json').write_text(json.dumps(receipt,indent=2)+'\n');print('Built real XOS Aurora browser',out)
+receipt={'commands':commands,'inputs':{str(p):sha(p) for p in inputs},'test_structure_oracle':a.test_structure_oracle,'elf_sha256':sha(out),'engine_archive_sha256':sha(engine),'engine_commit':lock['commit'],'tools':{str(t):{'sha256':sha(Path(t)),'version':subprocess.check_output([t,'--version'],text=True).splitlines()[0]} for t in (cxx,cc,ar)},'source_manifest':lock['source_sha256']};out.with_suffix('.receipt.json').write_text(json.dumps(receipt,indent=2)+'\n');print('Built real XOS Aurora browser',out)

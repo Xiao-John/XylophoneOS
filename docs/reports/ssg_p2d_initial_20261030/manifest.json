@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "files": {
+    "README.md": "059f49e89d59718084debddba6ff513e5dedb38dce645abf0f0d64ea3b36e095",
+    "browser-build.log.gz": "42eed63888909dd4e558c783478f7b4dd71dabe80745deb51215c981616eded4",
+    "consumer-build.log.gz": "ccf4bf8c8c3fbcdbf8342157210b7b12cac262648e182a2e3085cb31a10f7695",
+    "frames/01-req.json": "2a9eb5bb3192ea6a92c6ce078369f49690a962d242a198d63f51b2971cafc97e",
+    "frames/01-resp.json": "c060de195aa6d873eec26df863e5eca2e039e35049ffa3ea1558839a10de7168",
+    "frames/02-req.json": "7735977d446d0c9cea8981d34ca5d410089ea857b6db8489f9f453ba31fcd24a",
+    "frames/02-resp.json": "fb01ece1db4b704384fc5b88603a14f67cc88239127b252ab01d7c35d036de56",
+    "frames/03-req.json": "80c09dbaee7910034ee8b4e78edd4aaf7e8d8fcf89e82a24c242bbaacc45eab5",
+    "frames/03-resp.json": "6cea3a4aaf535abd431a0812f0cdf1e79b3a740bcb4963584bdb03dced8d05b4",
+    "frames/04-req.json": "e3d5d3eed719058fcb0b3e979d3307a5011e5e39655895539d3ea9ed8126b148",
+    "frames/04-resp.json": "e2c59bb396d0fe477c8bb410fcb8322f2e042a4cc376debc766e4e348550eeed",
+    "frames/05-req.json": "9e3eda87b54d05d5b4c999b481a8e9686126c26e0b6e65f77b0b2ccb949ee76d",
+    "frames/05-resp.json": "ac3c5f195703d05ec127cf2244a6b187941daf9c02ae4756eb585b9d4fb4303d",
+    "frames/manifest.json": "c1ba70f55cd5c39722228c141d763b4973f6e375dfbaaa62d34aef5ceacb3cf0",
+    "frames.json": "4f8c7494d484654e0e38f76093fd3bf0f5617c0fd89f0840230aef675d944ef0",
+    "initial-build-failed.log.gz": "3df5ffe2d1492eff9bfcbafd98cafe531e9c87d37c865beb71a95d8825731b40",
+    "report.json": "4efbf68cf7a808ae361086e4670078b4552a69a0458666f0370fe4eb3d33d887",
+    "serial.log.gz": "c88afa05e3c88c649706dc22cf6a9fc7e815e4848bfdab77219f9eed08329877"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "archive": "capture.tar.gz",
+  "archive_bytes": 60736,
+  "root": "p2d-oracle-01",
+  "entries": [
+    {
+      "path": "browser.receipt.json",
+      "bytes": 245155,
+      "sha256": "09a86ba528f2b9b3a6155a4473730c6c18df960ba34fd65082aa7958f6aa7232",
+      "original_sha256": "9c45fe5dae60ec1546c971f7cfb24d75a19ef5b3718871b26dd8b66a07352674",
+      "original_bytes": 276959
+    },
+    {
+      "path": "input.html",
+      "bytes": 424
+    },
+    {
+      "path": "link-target.html",
+      "bytes": 93
+    },
+    {
+      "path": "qemu_qemu.log",
+      "bytes": 136,
+      "original_sha256": "9814a4eb5570be13a40e555530a2cc509d851f62bf711943279dc4268a700862",
+      "original_bytes": 154
+    },
+    {
+      "path": "qemu_serial.log",
+      "bytes": 0
+    },
+    {
+      "path": "qmp-events.json",
+      "bytes": 3
+    },
+    {
+      "path": "report.json",
+      "bytes": 3351,
+      "original_sha256": "647ae3e7f493133060a28616c100fbeb1767c832de2646cf1adb68f460cbe31f",
+      "original_bytes": 3758
+    },
+    {
+      "path": "serial.log",
+      "bytes": 0
+    },
+    {
+      "path": "runner.log",
+      "bytes": 560,
+      "original_sha256": "5693434b9d01e1b0296234302b4cccc6ca8a77d54337eae5cafea26fd49e24eb",
+      "original_bytes": 656
+    }
+  ],
+  "note": "Path-sanitized exported capture; the original archive and changed member hashes are recorded separately. IPC frames and synthetic input bytes are unchanged.",
+  "original_archive_sha256": "ba70954a197cd4e7ef0ff2551445c105a55505198da4751e5e8c6781333528b8"
+}

@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "${XOS_ROOT}/tests/ssg_ipc_guest.py", line 57, in <module>
+    g=Guest(a.image.resolve(),str(out.relative_to(ROOT/'build'))+'/guest',work_disk=disk);report['qemu_command']=g.command
+                                  ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "${XOS_PYTHON_FRAMEWORK}/lib/python3.14/pathlib/__init__.py", line 490, in relative_to
+    raise ValueError(f"{str(self)!r} is not in the subpath of {str(other)!r}")
+ValueError: '${XOS_ROOT}/docs/reports/ssg_p2g6_20261030/p1-final' is not in the subpath of '${XOS_ROOT}/build'

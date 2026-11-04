@@ -1,0 +1,3 @@
+ADMISSION path=tests/fixtures/ssg_browser/p2d.html bytes=424 accepted=1 error=
+ADMISSION path=tests/fixtures/ssg_browser/p2f.html bytes=1935 accepted=1 error=
+ADMISSION path=tests/fixtures/ssg_browser/p2f_text_limit.html bytes=1131 accepted=1 error=

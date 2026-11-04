@@ -1,6 +1,6 @@
 # work_log 编号索引
 
-新增记录：[0194 — Notes range review](0194_ssg_notes_range_review.md)。
+新增记录：[0195 — SSG P2F structure Oracle](0195_ssg_p2f_structure_oracle.md)。
 
 历史存在重复编号（同号多份，主题不同）；本索引消歧可追溯性。编号唯一性规则：
 **0149 之后仍发生过同号占号（见下表 0144 及以后各组），因此"自 0149 起全局唯一"
@@ -91,3 +91,4 @@
 | 0192 | `0192_ssg_p1_cross_process.md` | SSG-P1 cross-process prototype（PR #46） |
 | 0193 | `0193_ssg_p2_diagnostic.md` | SSG-P2 Browser diagnostic（PR #47） |
 | 0194 | `0194_ssg_notes_range_review.md` | Notes range review（PR #48） |
+| 0195 | `0195_ssg_p2f_structure_oracle.md` | SSG P2F structure Oracle（PR #49） |

@@ -1,0 +1,37 @@
+{
+  "execution": "serial after all background builds finish",
+  "normal_browser": "build/ssg_p2f/payloads/browser/browser.elf",
+  "test_browser": "build/ssg_p2f/oracle-browser/browser.elf",
+  "image": "build/ssg_p2f/system/xos.img",
+  "cases": [
+    {
+      "name": "p2d-oracle",
+      "fixture": "tests/fixtures/ssg_browser/p2d.html",
+      "require_oracle": true,
+      "link_hit_after_paging": true
+    },
+    {
+      "name": "p2f-oracle",
+      "fixture": "tests/fixtures/ssg_browser/p2f.html",
+      "require_oracle": true,
+      "link_hit_after_paging": false
+    },
+    {
+      "name": "text-limit",
+      "fixture": "tests/fixtures/ssg_browser/p2f_text_limit.html",
+      "expect_resource_limit": true
+    },
+    {
+      "name": "p1-regression",
+      "entrypoint": "tests/ssg_ipc_guest.py",
+      "includes_small_browser": true,
+      "modified_assertions": false
+    },
+    {
+      "name": "large-regression",
+      "entrypoint": "tests/aurora_platform_guest.py --case browser",
+      "scope": "legacy nonpaged 424-byte P2D page",
+      "modified_assertions": false
+    }
+  ]
+}

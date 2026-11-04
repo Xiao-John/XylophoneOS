@@ -1,0 +1,55 @@
+{
+  "status": "OBSERVED",
+  "qemu_command": [
+    "${XOS_QEMU}",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=${XOS_IMAGE},format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:${XOS_QMP_SOCKET},server=on,wait=off"
+  ],
+  "baseline": [
+    130279,
+    2,
+    0
+  ],
+  "display": [
+    130235,
+    3,
+    1
+  ],
+  "consumer_done": [
+    "SSG_PAGED_CONSUMER_DONE pages=5 nodes=32 complete=1"
+  ],
+  "after": [
+    130235,
+    3,
+    1
+  ]
+}

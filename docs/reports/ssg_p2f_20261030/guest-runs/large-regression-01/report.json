@@ -1,0 +1,85 @@
+{
+  "status": "PASSED",
+  "case": "browser",
+  "image_sha256": "c1f165e864f2f5cf2571587096b34cc30533f5de50888f2a7fb78848c458f8ba",
+  "checks": [
+    {
+      "name": "browser_dom_layout_hidden_and_offviewport",
+      "status": "PASSED"
+    },
+    {
+      "name": "ssg_link_geometry_matches_actual_engine_hit",
+      "status": "PASSED"
+    },
+    {
+      "name": "browser_scroll_changes_visibility_with_stable_epoch",
+      "status": "PASSED"
+    },
+    {
+      "name": "reload_invalidates_old_document_references",
+      "status": "PASSED"
+    },
+    {
+      "name": "unsupported_canvas_rejected_no_fabricated_semantics",
+      "status": "PASSED"
+    },
+    {
+      "name": "browser_ssg_exit_exact_resources",
+      "status": "PASSED"
+    },
+    {
+      "name": "serial_file_service_and_resource_baseline",
+      "status": "PASSED"
+    }
+  ],
+  "screenshots": {
+    "browser-dom-first": {
+      "sha256": "fddf34c7806af1c452324e069265c17ed9400eb8e7d0fde25c9e506e2b64bbfa",
+      "png_bytes": 243812,
+      "host_capture_ms": 122.52725200005443
+    },
+    "browser-dom-reload": {
+      "sha256": "1fa048d4305c3a5fe9a87ca85163f681bbf18993128d5a1e821e310b275673dc",
+      "png_bytes": 242795,
+      "host_capture_ms": 85.58755100011695
+    }
+  },
+  "runs": [],
+  "elf_sha256": {
+    "browser": "3203dc83b5319ec48127eb97fae32ec3bcdc13091ef0e158cbbc275977cf234a"
+  },
+  "qemu_command": [
+    "${XOS_ROOT}/.cache/ssg_p2f/qemu-prefix/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=${XOS_ROOT}/build/ssg_p2f/system/xos.img,format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:${XOS_QMP_SOCKET},server=on,wait=off"
+  ]
+}

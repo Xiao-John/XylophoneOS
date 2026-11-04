@@ -1,6 +1,6 @@
 # work_log 编号索引
 
-新增记录：[0201 — Qt 262 成员文本覆盖](0201_qt_text_coverage.md)。
+新增记录：[0202 — 发版 0.0.2-1103 前置 A/B](0202_release_prep_ab.md)。
 
 历史存在重复编号（同号多份，主题不同）；本索引消歧可追溯性。编号唯一性规则：
 **0149 之后仍发生过同号占号（见下表 0144 及以后各组），因此"自 0149 起全局唯一"
@@ -98,3 +98,4 @@
 | 0199 | `0199_gnu_notice_gfdl.md` | GNU NOTICE/GFDL 组件登记与客体许可装盘（关闭 gnu_notice_coverage_gaps） |
 | 0200 | `0200_gcc_member_manual_rulings.md` | GCC 运行库 10 未映射成员人工裁定（关闭 gcc_runtime_member_mapping_unresolved） |
 | 0201 | `0201_qt_text_coverage.md` | Qt 262 成员文本覆盖核对（关闭 qt_license_text_member_coverage） |
+| 0202 | `0202_release_prep_ab.md` | 发版前置 A/B：清障构建 + Qt 打包核验与安全审查 |

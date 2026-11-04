@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "date": "2026-11-04",
+  "scope": "qt_static_redistribution_packaging_verification (release gate B4)",
+  "checks": [
+    {
+      "name": "source_archive_present",
+      "status": "PASS",
+      "detail": "['${XOS_XOS_ROOT}/.cache/xos_seed/qt6/qtbase-everywhere-src-6.8.3.tar.xz']"
+    },
+    {
+      "name": "source_archive_sha256",
+      "status": "PASS",
+      "detail": "56001b905601bb90… vs pinned 56001b905601bb90…"
+    },
+    {
+      "name": "static_lib:libQt6BundledFreetype.a",
+      "status": "PASS",
+      "detail": "build/qt6_b1_20261031/widgets/lib/libQt6BundledFreetype.a"
+    },
+    {
+      "name": "static_lib:libQt6BundledHarfbuzz.a",
+      "status": "PASS",
+      "detail": "build/qt6_b1_20261031/widgets/lib/libQt6BundledHarfbuzz.a"
+    },
+    {
+      "name": "static_lib:libQt6BundledPcre2.a",
+      "status": "PASS",
+      "detail": "build/qt6_b1_20261031/widgets/lib/libQt6BundledPcre2.a"
+    },
+    {
+      "name": "static_lib:libQt6BundledZLIB.a",
+      "status": "PASS",
+      "detail": "build/qt6_b1_20261031/widgets/lib/libQt6BundledZLIB.a"
+    },
+    {
+      "name": "static_lib:libQt6Core.a",
+      "status": "PASS",
+      "detail": "build/qt6_b1_20261031/widgets/lib/libQt6Core.a"
+    },
+    {
+      "name": "static_lib:libQt6DeviceDiscoverySupport.a",
+      "status": "PASS",
+      "detail": "build/qt6_b1_20261031/widgets/lib/libQt6DeviceDiscoverySupport.a"
+    },
+    {
+      "name": "static_lib:libQt6ExampleIcons.a",
+      "status": "PASS",
+      "detail": "build/qt6_b1_20261031/widgets/lib/libQt6ExampleIcons.a"
+    },
+    {
+      "name": "static_lib:libQt6FbSupport.a",
+      "status": "PASS",
+      "detail": "build/qt6_b1_20261031/widgets/lib/libQt6FbSupport.a"
+    },
+    {
+      "name": "static_lib:libQt6Gui.a",
+      "status": "PASS",
+      "detail": "build/qt6_b1_20261031/widgets/lib/libQt6Gui.a"
+    },
+    {
+      "name": "static_lib:libQt6Widgets.a",
+      "status": "PASS",
+      "detail": "build/qt6_b1_20261031/widgets/lib/libQt6Widgets.a"
+    },
+    {
+      "name": "static_lib:libQt6BundledFreetype.a",
+      "status": "PASS",
+      "detail": "build/qt6_b1_20261031/widgets2/lib/libQt6BundledFreetype.a"
+    },
+    {
+      "name": "static_lib:libQt6BundledHarfbuzz.a",
+      "status": "PASS",
+      "detail": "build/qt6_b1_20261031/widgets2/lib/libQt6BundledHarfbuzz.a"
+    },
+    {
+      "name": "static_lib:libQt6BundledPcre2.a",
+      "status": "PASS",
+      "detail": "build/qt6_b1_20261031/widgets2/lib/libQt6BundledPcre2.a"
+    },
+    {
+      "name": "static_lib:libQt6BundledZLIB.a",
+      "status": "PASS",
+      "detail": "build/qt6_b1_20261031/widgets2/lib/libQt6BundledZLIB.a"
+    },
+    {
+      "name": "static_lib:libQt6Core.a",
+      "status": "PASS",
+      "detail": "build/qt6_b1_20261031/widgets2/lib/libQt6Core.a"
+    },
+    {
+      "name": "static_lib:libQt6Gui.a",
+      "status": "PASS",
+      "detail": "build/qt6_b1_20261031/widgets2/lib/libQt6Gui.a"
+    },
+    {
+      "name": "static_lib:libQt6Widgets.a",
+      "status": "PASS",
+      "detail": "build/qt6_b1_20261031/widgets2/lib/libQt6Widgets.a"
+    },
+    {
+      "name": "patches_present",
+      "status": "PASS",
+      "detail": "10/10 patches verified"
+    },
+    {
+      "name": "qt_license_texts_registered",
+      "status": "PASS",
+      "detail": "34 notice files across 3 Qt components"
+    },
+    {
+      "name": "recipe:configure_widgets.py",
+      "status": "PASS",
+      "detail": "src/ports/qt6/configure_widgets.py"
+    },
+    {
+      "name": "recipe:configure_gui.py",
+      "status": "PASS",
+      "detail": "src/ports/qt6/configure_gui.py"
+    },
+    {
+      "name": "recipe:configure_target.py",
+      "status": "PASS",
+      "detail": "src/ports/qt6/configure_target.py"
+    },
+    {
+      "name": "recipe:xos_toolchain.cmake",
+      "status": "PASS",
+      "detail": "src/ports/qt6/xos_toolchain.cmake"
+    }
+  ],
+  "status": "PASS",
+  "summary": {
+    "pass": 25,
+    "fail": 0
+  },
+  "gate": "qt_static_redistribution_packaging_verification (release gate B4) — executed 2026-11-04 against qt6_b1_202611031 artifacts + repo materials"
+}

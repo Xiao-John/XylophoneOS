@@ -86,3 +86,14 @@ python3 tests/report_manifest_check.py    # 本目录应出现在 compliant 列�
 | 分发归档路径 | `.cache/xos_seed/gcc/relinks/target_runtime_v5_receipt/lib/` |
 | 源码根 | `.cache/xos_seed/gcc/source/gcc-16.2.0` |
 | 未运行 | 完整构建、字节级逐成员溯源、反汇编、法律意见 |
+
+
+## 人工裁定（2026-11-04，关闭 open 项）
+
+自动化 pass 的 10 个 `unmapped` 成员已逐个人工裁定并记录于
+[manual_rulings.json](manual_rulings.json)：9 个由构建日志 `ln -s`/`-c` 行或
+Makefile 对象规则钉到唯一源；`floatunsitf.o` 在两个同名候选间按目标 FP 配置裁定
+为 `libgcc/floatunsitf.c`（许可类别对两候选相同，字节级 pin 留待下次重建
+member_manifest）。全部 10 个 declaration_category 裁定为
+`gcc_runtime_exception`（libgcc/libstdc++ 运行库统一条款）。
+本节为证据型工程裁定，非法务意见。

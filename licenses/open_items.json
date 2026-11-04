@@ -9,12 +9,12 @@
   "items": [
     {
       "id": "gcc_runtime_member_mapping_unresolved",
-      "status": "open",
+      "status": "not_applicable",
       "scope": "D7/GNU Seed O5",
       "summary": "GCC 运行库逐成员映射 397/407，10 个成员因候选多于一个或构建记录缺失而无归属结论",
       "evidence": "docs/reports/gcc_runtime_member_license_20261103/",
-      "exit_condition": "10 个成员全部解析或逐个人工裁定并记录；或下一次 GCC 重建按 archive_member_provenance 契约产出 member_manifest.json 后复核",
-      "owner": "许可线"
+      "owner": "许可线",
+      "reason": "已按退出条件第一路径清偿（2026-11-04，0200）：10 个成员逐个人工裁定并记录于 docs/reports/gcc_runtime_member_license_20261103/manual_rulings.json——9 个由构建日志/Makefile 规则钉到唯一源，floatunsitf.o 按目标 FP 配置裁定（字节级 pin 留待下次重建 member_manifest）；全部 declaration_category=gcc_runtime_exception。自动化 findings.json 保持原样（历史 pass 记录）。"
     },
     {
       "id": "qt_license_text_member_coverage",

@@ -1,7 +1,8 @@
 {
- "version": 1,
- "files": {
-  "README.md": "713ce27855a0f17aa7dfade0e6b235094555a7d66051a87ac7b3e2af77bef4a6",
-  "findings.json": "b1a0103a724effb50da585a91f6d635c8101b812678123a51c7cf3a650bdabbe"
- }
+  "version": 1,
+  "files": {
+    "README.md": "2094af0ca155d511f5bc7686c3052305eb6c31210622f2f6bee0bdb09bf355a6",
+    "findings.json": "b1a0103a724effb50da585a91f6d635c8101b812678123a51c7cf3a650bdabbe",
+    "manual_rulings.json": "3657b88a25ba000935d6689167b0464e45d9af916105b0d2c2092e7b7938aa64"
+  }
 }

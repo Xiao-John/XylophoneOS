@@ -61,3 +61,4 @@
 | D10 | 发行 | 0.0.2-1103 已定版（`VERSION` 已更新）但**未发布**，资产仍绑 1026 旧 build；冻结/打包/上传按 `docs/releases/next_release.md` 执行 |
 | D11 | 启动/恢复门 | **无盘启动**时 files 客户端返回 `io`，supervisor 恢复门按 fail-closed 常开，xsh 仅剩白名单命令可用（`d6363f8`，2026-10-27 引入）。本轮经用户裁决只给 `task`/`process`/`libc` 三个 smoke 测试补挂临时工作盘绕开；"无盘（io）是否应视为无标记而放行"属设计语义，待按宪法原则裁决后再改门 |
 | D12 | 构建/证据 | **归档成员来源实现债**：`docs/contracts/archive_member_provenance.md` 已立（下次重建起产出 `member_manifest.json`），但三份考古脚本（newlib/GCC/Qt）尚未抽成共享校验器 `scripts/archive_member_map.py`。退出条件=契约生效的首次重建同时落地共享实现，此后逐成员审计只读清单+跑校验 |
+| D13 | Aurora Desktop | Studio 首跑间歇超时：同一二进制重跑通过、根因未明（PR #45 证据如实保留）；退出条件=定位根因或给出稳定复现/豁免判据 |

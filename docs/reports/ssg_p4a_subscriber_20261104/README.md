@@ -9,6 +9,20 @@ process, the independent Subscriber, received source events over a dedicated
 Pipe and returned a separate ACK Pipe. No kernel, syscall, system ABI, driver,
 QPA, or scheduler changes were made.
 
+Upstream `main` advanced to `071330f3b196d357c4a823f1719793b449513b86` while
+the longer validation was running. The PR branch now merges that upstream
+release-preparation delta; inspection found no kernel, shared ABI, or
+user-runtime source changes in it. The full scenario/stress suite is bound to
+the earlier `6fe330c` image, and a post-sync first-subscription smoke also
+passed on system build ID `f8eb0815098ae436`; its report is included.
+The post-sync system image and smoke are summarized in
+`latest_main_system_summary.json` and `latest_main_first_subscription_report.json`.
+The full `docs_consistency` check on that merged main currently fails because
+`docs/releases/next_release.md` links twice to the absent
+`docs/releases/playbook.md`. The target is absent from upstream `main`; the
+release documentation is outside this P4A change. The P4A report manifest,
+public-path, C30 and SPDX checks pass.
+
 ## Acceptance matrix
 
 | Gate | Result | Scope |
@@ -25,7 +39,7 @@ QPA, or scheduler changes were made.
 | `P4A_RESYNC` | `PASSED_SCOPED` | Corrupt or uncertain delivery is not replayed; a new session receives new source instances and fresh baselines |
 | `P4A_GUEST_STRESS` | `PASSED_SCOPED` | 12/12 complete first-subscription runs |
 | `P4A_P3C_COMPATIBILITY` | `PASS` | P3C contract probe and ordinary three-cycle Console Watch both rerun |
-| `P4A_PUBLIC_EVIDENCE_SCAN` | `PASS` | Flat manifest, public-path, source, SPDX and documentation checks |
+| `P4A_PUBLIC_EVIDENCE_SCAN` | `FAIL` | P4A manifest, public-path, source, C30 and SPDX checks pass; repo-wide `docs_consistency` fails on two missing upstream release-playbook links |
 | `P4A_PRODUCTION_BROKER` | `NOT_IMPLEMENTED` | This remains an explicitly prewired prototype |
 | `P4A_LOCALPILOT_END_TO_END` | `NOT_RUN` | No production LocalPilot or Permission Gateway integration |
 

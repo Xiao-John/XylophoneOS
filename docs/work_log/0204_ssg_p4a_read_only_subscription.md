@@ -3,6 +3,13 @@
 2026-11-04 · Branch `codex/ssg_p4a_subscriber_20261104` · base
 `6fe330ce2dd9441d72da611c1f87b80dad8e3b03` (freshly fetched upstream main).
 
+During the long validation, upstream main advanced to
+`071330f3b196d357c4a823f1719793b449513b86`. The PR branch now merges that
+release-preparation delta; inspection found no kernel, shared ABI, or
+user-runtime source changes in the delta. The full matrix remains bound to its
+`6fe330c` system image, and an additional first-subscription QEMU smoke passed
+on the post-sync system image (`f8eb0815098ae436`).
+
 ## Scope and result
 
 Implemented the next userland slice after P3C: a separate read-only XOS
@@ -85,7 +92,7 @@ refactor.
 | `P4A_RESYNC` | `PASSED_SCOPED` — new instances and fresh baselines, no replay |
 | `P4A_GUEST_STRESS` | `PASSED_SCOPED` — 12/12 |
 | `P4A_P3C_COMPATIBILITY` | `PASS` |
-| `P4A_PUBLIC_EVIDENCE_SCAN` | `PASS` |
+| `P4A_PUBLIC_EVIDENCE_SCAN` | `FAIL` — P4A manifest, public-path, source, C30 and SPDX checks pass; repo-wide `docs_consistency` finds two links to an absent upstream `docs/releases/playbook.md` |
 | `P4A_PRODUCTION_BROKER` | `NOT_IMPLEMENTED` |
 | `P4A_LOCALPILOT_END_TO_END` | `NOT_RUN` |
 
@@ -108,6 +115,17 @@ now accepts either a successful local write or a broken ACK Pipe; the corrected
 duplicate-ACK scenario and final 12-run suite both passed. Other bring-up
 iterations and their corrections are listed in `test_iteration_notes.json`;
 none of those failure records were deleted.
+
+After C30-lowercasing a local verifier constant, a post-sync audit initially
+raised a Python variable-shadowing exception despite the Guest pass. The
+decoded header field was renamed, and the corrected independent verifier was
+run over all saved scenarios, resync records, and stress logs; all passed.
+
+The repo-wide `docs_consistency` run on merged upstream `071330f3` fails on
+two links from `docs/releases/next_release.md` to the absent
+`docs/releases/playbook.md`. The referenced file is absent from upstream
+`main`; the P4A branch leaves that unrelated release documentation unchanged.
+The P4A flat manifest, public-path, C30 and SPDX checks pass.
 
 The prototype is one-client and explicitly prewired. It provides no
 application discovery, peer authentication, durable replay, transparent

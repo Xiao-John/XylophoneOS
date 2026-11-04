@@ -9,7 +9,7 @@ from pathlib import Path
 import re
 import struct
 
-header_size = 28
+frame_header_size = 28
 max_frame_size = 4096
 event_fields = {
     'slot', 'identity_namespace', 'source_instance', 'source_epoch',
@@ -224,13 +224,13 @@ def verify(directory):
         rx = rx_frames[sequence]
         if tx != rx:
             raise ValueError(f'frame bytes differ for stream {sequence}')
-        if len(tx) < header_size or len(tx) > max_frame_size:
+        if len(tx) < frame_header_size or len(tx) > max_frame_size:
             raise ValueError(f'frame size invalid for stream {sequence}')
-        magic, version, header_size, kind, flags, wire_sequence, payload_size, checksum, slot_id, reserved = struct.unpack(
-            '<4sHHHHIIIHH', tx[:header_size])
-        if (magic, version, header_size, kind, flags, wire_sequence, reserved) != (b'SGEV', 1, header_size, 1, 0, sequence, 0):
+        magic, version, declared_header_size, kind, flags, wire_sequence, payload_size, checksum, slot_id, reserved = struct.unpack(
+            '<4sHHHHIIIHH', tx[:frame_header_size])
+        if (magic, version, declared_header_size, kind, flags, wire_sequence, reserved) != (b'SGEV', 1, frame_header_size, 1, 0, sequence, 0):
             raise ValueError(f'frame header invalid for stream {sequence}')
-        payload = tx[header_size:]
+        payload = tx[frame_header_size:]
         if payload_size != len(payload):
             raise ValueError(f'frame payload length invalid for stream {sequence}')
         checksum_valid = payload_checksum(payload) == checksum

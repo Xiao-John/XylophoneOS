@@ -59,6 +59,10 @@ def main():
     build_manifest = json.loads((build / 'manifest.json').read_text())
     if build_manifest.get('status') != 'BUILT':
         raise SystemExit('P4A build manifest is not BUILT')
+    if build_manifest.get('base_commit') != final_summary.get('base_commit'):
+        raise SystemExit('P4A build and validation base commits differ')
+    if system_manifest.get('build_id') != final_summary.get('system_build_id'):
+        raise SystemExit('P4A system build does not match validation summary')
     output = root / 'docs/reports' / report_name
     if output.exists():
         if not args.refresh or not (output / 'manifest.json').is_file():
@@ -80,7 +84,7 @@ def main():
         artifacts[name] = {'bytes': item['bytes'], 'sha256': item['sha256']}
     system_summary = {
         'status': 'BUILT',
-        'base_commit': subprocess.check_output(['git', 'rev-parse', 'origin/main'], cwd=root, text=True).strip(),
+        'base_commit': final_summary['base_commit'],
         'build_id': system_manifest['build_id'],
         'version': system_manifest['version'],
         'source_digest': system_manifest['source_sha256'],
@@ -190,6 +194,15 @@ def main():
             {'case': 'first duplicate-ACK harness attempt', 'result': 'FAILED_TEST_EXPECTATION',
              'cause': 'the Subscriber successfully wrote a duplicate ACK before the Supervisor rejected its stale sequence',
              'resolution': 'corrected the Guest assertion; the corrected duplicate-ACK rerun and final validation both pass'},
+            {'case': 'host independent verifier after C30 variable normalization', 'result': 'FAILED_VERIFIER_EXCEPTION',
+             'cause': 'the normalized frame_header_size constant was shadowed by a decoded header local',
+             'resolution': 'renamed the decoded field and reran every saved scenario, resync, and stress frame audit; all pass'},
+            {'case': 'upstream main advanced during the long run', 'result': 'SYNCED',
+             'cause': 'main advanced from 6fe330c to 071330f3 with release-preparation changes',
+             'resolution': 'merged latest main without touching P4A runtime sources and boot-tested the post-sync system image'},
+            {'case': 'repo-wide docs consistency after main 071 sync', 'result': 'FAILED_UPSTREAM_DOCUMENT_LINKS',
+             'cause': 'docs/releases/next_release.md has two links to docs/releases/playbook.md, which is absent from upstream main',
+             'resolution': 'confirmed the missing target on upstream main; left unrelated release documentation unchanged and retained passing P4A manifest, path, C30 and SPDX checks'},
         ],
         'failed_attempts_are_retained': True,
         'no_failure_logs_were_deleted': True,

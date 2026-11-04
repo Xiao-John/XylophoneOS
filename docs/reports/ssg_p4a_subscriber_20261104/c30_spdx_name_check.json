@@ -196,7 +196,7 @@
         "decode_frames",
         "event_fields",
         "expected_consumer_state",
-        "header_size",
+        "frame_header_size",
         "main",
         "max_frame_size",
         "payload_checksum",

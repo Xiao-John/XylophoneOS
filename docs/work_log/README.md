@@ -1,6 +1,6 @@
 # work_log 编号索引
 
-新增记录：[0190 — Midnight Dock refinement](0190_aurora_midnight_dock.md)。
+新增记录：[0191 — Browser SSG fragment integrity](0191_browser_ssg_fragments.md)。
 
 历史存在重复编号（同号多份，主题不同）；本索引消歧可追溯性。编号唯一性规则：
 **0149 之后仍发生过同号占号（见下表 0144 及以后各组），因此"自 0149 起全局唯一"
@@ -87,3 +87,4 @@
 | 0188 | `0188_d7_license_two_leaves.md` | D7 许可两叶 + 发版前小更改与 README/版本更新（2026-11-03 占号） |
 | 0189 | `0189_d7_license_full_closure.md` | D7 许可面收口（Qt 文本/§4d0 材料/补丁标注、GCC 运行库映射、发版中止）（2026-11-03 占号） |
 | 0190 | [Midnight Dock refinement](0190_aurora_midnight_dock.md) | Dock guest qualification (PR #45) |
+| 0191 | `0191_browser_ssg_fragments.md` | Browser SSG fragment integrity（PR #44） |

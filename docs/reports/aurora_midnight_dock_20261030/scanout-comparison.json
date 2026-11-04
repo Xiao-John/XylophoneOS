@@ -1,0 +1,36 @@
+{
+  "status": "PASSED",
+  "checks": [
+    {
+      "name": "home",
+      "changed_pixels": 416,
+      "status": "PASS"
+    },
+    {
+      "name": "apps",
+      "changed_pixels": 421,
+      "status": "PASS"
+    },
+    {
+      "name": "studio",
+      "changed_pixels": 510,
+      "status": "PASS"
+    },
+    {
+      "name": "settings",
+      "changed_pixels": 575,
+      "status": "PASS"
+    },
+    {
+      "name": "quality",
+      "changed_pixels": 499,
+      "status": "PASS"
+    },
+    {
+      "name": "hide",
+      "changed_pixels": 328,
+      "status": "PASS"
+    }
+  ],
+  "scope": "fixed 800x600 Midnight Dock; screenshot difference, not a semantic or visual-quality rating"
+}

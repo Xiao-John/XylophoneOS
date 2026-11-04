@@ -1,0 +1,100 @@
+{
+  "status": "PASSED",
+  "case": "session",
+  "checks": [
+    {
+      "name": "independent_application_handoff_1",
+      "status": "PASSED"
+    },
+    {
+      "name": "independent_application_handoff_2",
+      "status": "PASSED"
+    },
+    {
+      "name": "independent_application_handoff_3",
+      "status": "PASSED"
+    },
+    {
+      "name": "session_exit_exact_resources",
+      "status": "PASSED"
+    },
+    {
+      "name": "non_aurora_app_preserved",
+      "status": "PASSED"
+    },
+    {
+      "name": "service_stop_and_file_sync",
+      "status": "PASSED"
+    }
+  ],
+  "screenshots": {},
+  "latency_host_ms": [
+    5973.68,
+    5711.13,
+    1199.52,
+    5814.06
+  ],
+  "qemu_command": [
+    "${XOS_LOCAL_PATH_0939715e8e41}",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=${XOS_LOCAL_PATH_51a25efb2781},format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_LOCAL_PATH_78045a95f645},format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:${XOS_LOCAL_PATH_f8c3f0f25085},server=on,wait=off"
+  ],
+  "baseline": [
+    130279,
+    2,
+    0
+  ],
+  "with_service": [
+    130235,
+    3,
+    1
+  ],
+  "sampled_pages": [
+    6735,
+    6739,
+    6739,
+    6741
+  ],
+  "sampled_threads": [
+    3,
+    3,
+    3,
+    3
+  ],
+  "visual_cache_bytes": [
+    3840000,
+    3840000,
+    3840000,
+    3840000,
+    3840000
+  ]
+}

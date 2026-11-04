@@ -1,0 +1,205 @@
+{
+  "report": "gnu_seed_distribution_review",
+  "date": "2026-11-03",
+  "branch": "codex/ncursesw_w1",
+  "not_completed_item": "future_GNU_Seed_distribution_review",
+  "scope_note": "材料与发布流水线审查加义务清单；不是逐成员法律意见，不是法律兼容性认证。只写本报告目录，未修改任何登记文件。",
+  "components": [
+    {
+      "name": "GCC",
+      "version": "16.2.0",
+      "role": "XOS-hosted C Seed plus g++/cc1plus host closure",
+      "source_lock": {"file": "src/ports/gcc/source_lock.json", "algorithm": "sha256", "value": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e"},
+      "license_materials": ["src/ports/gcc/upstream/GCC-COPYING", "src/ports/gcc/upstream/GCC-COPYING.RUNTIME", "src/ports/gcc/upstream/GCC-COPYING3", "src/ports/gcc/upstream/GCC-COPYING3.LIB"],
+      "build_entry": ["scripts/build_gcc.py", "scripts/prepare_gcc_seed.py", "scripts/relink_gcc_seed.py", "scripts/seed_preflight.py"],
+      "patches": 8,
+      "registered_in": "licenses/components.json (GNU GCC Seed and compiler host C++ runtime)"
+    },
+    {
+      "name": "GNU Binutils",
+      "version": "2.47",
+      "role": "static XOS-hosted assembler/linker/archive tools",
+      "source_lock": {"file": "src/ports/binutils/source_lock.json", "algorithm": "sha256", "value": "154ab23b60070e8f27013c22977f1129425d67d1e8acd6e13010e617811e4cff"},
+      "license_materials": ["src/ports/binutils/upstream/COPYING", "src/ports/binutils/upstream/COPYING.LIB", "src/ports/binutils/upstream/COPYING3", "src/ports/binutils/upstream/COPYING3.LIB", "src/ports/binutils/upstream/zlib-LICENSE"],
+      "build_entry": ["scripts/build_binutils.py"],
+      "patches": 6,
+      "registered_in": "licenses/components.json (GNU Binutils Seed)"
+    },
+    {
+      "name": "bundled zlib",
+      "version": "1.3.1",
+      "role": "statically linked inside GNU Binutils Seed",
+      "source_lock": {"file": "src/ports/binutils/source_lock.json", "algorithm": "inherited from binutils archive", "value": "154ab23b60070e8f27013c22977f1129425d67d1e8acd6e13010e617811e4cff"},
+      "license_materials": ["src/ports/binutils/upstream/zlib-LICENSE"],
+      "build_entry": ["scripts/build_binutils.py"],
+      "patches": 0,
+      "registered_in": "licenses/components.json (bundled zlib)"
+    },
+    {
+      "name": "GMP",
+      "version": "6.3.0",
+      "role": "GCC build dependency, extracted into the GCC source tree",
+      "source_lock": {"file": "src/ports/gcc/source_lock.json", "algorithm": "sha512", "value": "3b684c9bcb9ede2b7e54d0ba4c9764bfa17c20d4f3000017c553b6f1e135b536949580ff37341680c25dc236cfe0ba1db8cfdfe619ce013656189ef0871b89f8"},
+      "license_materials": ["src/ports/gcc/upstream/GMP-COPYING", "src/ports/gcc/upstream/GMP-COPYINGv2", "src/ports/gcc/upstream/GMP-COPYINGv3", "src/ports/gcc/upstream/GMP-COPYING.LESSERv3"],
+      "build_entry": ["scripts/build_gcc.py (dependency_tree)"],
+      "patches": 0,
+      "registered_in": "licenses/components.json (GMP)"
+    },
+    {
+      "name": "MPFR",
+      "version": "4.2.2",
+      "role": "GCC build dependency, extracted into the GCC source tree",
+      "source_lock": {"file": "src/ports/gcc/source_lock.json", "algorithm": "sha512", "value": "0176e50808dcc07afbf5bc3e38bf9b7b21918e5f194aa0bfd860d99b00c470630aef149776c4be814a61c44269c3a5b9a4b0b1c0fcd4c9feb1459d8466452da8"},
+      "license_materials": ["src/ports/gcc/upstream/MPFR-COPYING", "src/ports/gcc/upstream/MPFR-COPYING.LESSER"],
+      "build_entry": ["scripts/build_gcc.py (dependency_tree)"],
+      "patches": 0,
+      "registered_in": "licenses/components.json (MPFR)"
+    },
+    {
+      "name": "MPC",
+      "version": "1.3.1",
+      "role": "GCC build dependency, extracted into the GCC source tree",
+      "source_lock": {"file": "src/ports/gcc/source_lock.json", "algorithm": "sha512", "value": "4bab4ef6076f8c5dfdc99d810b51108ced61ea2942ba0c1c932d624360a5473df20d32b300fc76f2ba4aa2a97e1f275c9fd494a1ba9f07c4cb2ad7ceaeb1ae97"},
+      "license_materials": ["src/ports/gcc/upstream/MPC-COPYING.LESSER"],
+      "build_entry": ["scripts/build_gcc.py (dependency_tree)"],
+      "patches": 0,
+      "registered_in": "licenses/components.json (MPC)"
+    },
+    {
+      "name": "newlib",
+      "version": "4.6.0.20260123",
+      "role": "SDK libc.a, libm.a and headers",
+      "source_lock": {"file": "licenses/components.json", "algorithm": "sha256", "value": "6ff27e3bf022666f43f7802255be680eeff722ac181b1725d21e2e8318604ee3", "note": "no upstream digest lock in the repository; observational value recorded by the project and by the 1024 source bundle"},
+      "license_materials": ["src/third_party/newlib/COPYING.NEWLIB"],
+      "build_entry": ["scripts/build_newlib.sh", "scripts/build_utf8_newlib.py", "scripts/build_threading_newlib.py"],
+      "patches": 1,
+      "registered_in": "licenses/components.json (newlib)",
+      "member_mapping": "owned by the sibling newlib member leaf; 395 archive members unmapped at this date"
+    },
+    {
+      "name": "GCC target runtime archives",
+      "version": "16.2.0 target build",
+      "role": "libgcc.a, libstdc++.a, libsupc++.a shipped in the release SDK and work disk",
+      "source_lock": {"file": ".cache/xos_seed/gcc/relinks/target_runtime_v5_receipt/manifest.json", "algorithm": "sha256", "value": {"lib/libgcc.a": "1d1755feabef4fbe34527df8f94f44e67f3fc2ce3b1d58dbf824ec858c994dfa", "lib/libstdc++.a": "18da9426a66094ae07d1d2c360c133847d2323553293927f91cac671ad11256d", "lib/libsupc++.a": "2e3ae7ef93e4e4f02816cb6e5af71febf9a8c6b728fb309c11911076695bfe76"}, "note": "ignored cache; the same manifest ships as target_runtime_provenance.json in the 1026 SDK"},
+      "license_materials": ["src/ports/gcc/upstream/GCC-COPYING.RUNTIME", "src/ports/gcc/upstream/GCC-COPYING3.LIB"],
+      "build_entry": ["scripts/relink_gcc_seed.py", "config/release_cpp_runtime_v5.json"],
+      "patches": 8,
+      "registered_in": "licenses/components.json (GNU GCC Seed and compiler host C++ runtime)",
+      "stale_parallel_manifest": "src/ports/gcc/e08_5_target_runtime_manifest.json records libstdc++ 8bba188c15fefbdad794816cca8544864f87033a2939011bb7763023b1e6e9ec, which is not the distributed archive"
+    }
+  ],
+  "license_categories_gnu_related": [
+    "GPL-3.0-or-later (gcc/g++/cc1/collect2, as/ld and other tool executables)",
+    "GPL-3.0-or-later WITH GCC Runtime Library Exception (libgcc, libstdc++, libsupc++, crtbegin/crtend)",
+    "LGPL-3.0-or-later (MPFR, MPC)",
+    "dual LGPL-3.0-or-later / GPL (GMP)",
+    "Zlib (bundled zlib 1.3.1 inside GNU Binutils)",
+    "per-file multi-license including Linux-only LGPL sections (newlib COPYING.NEWLIB)",
+    "GFDL (manual pages shipped with the tools, for example man7/GFDL.7)",
+    "Apache-2.0 (XOS-authored port patches and build scripts; upstream context keeps its own terms)"
+  ],
+  "distribution_matrix": {
+    "0.0.1-1024": {
+      "published": "2026-10-24",
+      "assets": 8,
+      "gcc_seed_tools_on_work_disk": "shipped",
+      "binutils_seed_tools_on_work_disk": "shipped",
+      "gcc_runtime_on_work_disk": "shipped",
+      "gcc_runtime_in_sdk": "not shipped (no cpp/ directory in the packaged SDK)",
+      "newlib_libc_libm": "shipped",
+      "gmp_mpfr_mpc": "shipped inside the tool binaries (inferred from in-tree static build; member-level disassembly NOT_RUN)",
+      "corresponding_source_bundle": "shipped as xos-0.0.1-1024-gnu-sources.tar.gz (176472043 bytes) plus the gxx-lrealpath supplement (179934 bytes)",
+      "license_texts_in_package": "partial: LICENSE, NOTICE, COPYING.NEWLIB and licenses/ at package root; GNU COPYING texts only inside the source bundle; no third_party_notices",
+      "local_byte_verification": "images, sdk, gnu-sources and supplement all MATCH public_CHECKSUMS.sha256"
+    },
+    "0.0.1-1026": {
+      "published": "2026-10-26",
+      "assets": 5,
+      "gcc_seed_tools_on_work_disk": "shipped",
+      "binutils_seed_tools_on_work_disk": "shipped",
+      "gcc_runtime_on_work_disk": "shipped",
+      "gcc_runtime_in_sdk": "shipped (cpp/lib/libgcc.a, libstdc++.a, libsupc++.a plus target_runtime_provenance.json)",
+      "newlib_libc_libm": "shipped",
+      "gmp_mpfr_mpc": "shipped inside the tool binaries (inferred; NOT_RUN for member-level proof)",
+      "corresponding_source_bundle": "shipped as xos-0.0.1-1026-sources.tar.gz (206421996 bytes) containing unchanged_gnu_correspondence copies of both 1024 GNU bundles",
+      "license_texts_in_package": "yes: third_party_notices with 27 files (17 GNU-related) in both images and SDK packages",
+      "local_byte_verification": "images, sdk and sources all MATCH the release receipt digests"
+    },
+    "0.0.2-1103": {
+      "published": false,
+      "packaging_executed": false,
+      "release_directory_exists": false,
+      "gcc_seed_tools_on_work_disk": "will ship per scripts/package_release.py (seed install_files plus sysroot files); packaging not run, final answer decided at freeze",
+      "binutils_seed_tools_on_work_disk": "will ship per scripts/package_release.py",
+      "gcc_runtime_on_work_disk": "will ship per scripts/package_release.py",
+      "gcc_runtime_in_sdk": "will ship per scripts/package_release.py lines 190-194",
+      "newlib_libc_libm": "will ship",
+      "gmp_mpfr_mpc": "will ship transitively inside the tool binaries",
+      "corresponding_source_bundle": "not executed yet; scripts/package_release_materials.py gate compares build/cpp_bundle/seed_manifest.json sha256 327e2cb0f548dfb721b9ca968c2d3ec84f01e7633b0b3e9d5207bf3c7b5ea448 with the 1024 record and it matches, so the 1024 correspondence material would be reused; a changed Seed aborts the script and forces regeneration",
+      "license_texts_in_package": "will ship per copy_notices() driven by licenses/components.json notices"
+    },
+    "cache_not_distributed": ".cache/xos_seed/ is ignored by .gitignore and is never published as an asset; selected contents (archives, source-tree overlays, manifests, build logs, relink receipt) are copied into the source bundles and SDK provenance instead"
+  },
+  "direct_work_disk_inspection": {
+    "target": "build/releases/0.0.1-1026/xylophoneos_revival_0.0.1-1026_images/work_disk.img",
+    "method": "read-only FAT32 directory walk, no export and no image modification",
+    "found": [
+      "/usr/bin x86_64-elf-gcc, x86_64-elf-gcc-16.2.0, x86_64-elf-g++, x86_64-elf-cpp, x86_64-elf-gcc-ar/nm/ranlib, x86_64-elf-gcov/gcov-dump, x86_64-elf-as, as, x86_64-elf-ld, x86_64-elf-ar, x86_64-elf-ranlib, x86_64-elf-strip, x86_64-elf-nm",
+      "/usr/libexec/gcc/x86_64-elf/16.2.0 cc1 (47587544 bytes), cc1plus (50529152 bytes), collect2 (2688000 bytes)",
+      "/sysroot/lib libgcc.a, libstdc++.a, libsupc++.a, libc.a, libm.a",
+      "/usr/share/man/man7 GPL.7, GFDL.7, fsf-funding.7",
+      "/usr/share/licenses only cpython, zlib and python_idna; no GNU entry"
+    ],
+    "release_manifest_seed_guest_files": 170,
+    "release_manifest_total_guest_files": {"0.0.1-1024": 1210, "0.0.1-1026": 1778}
+  },
+  "numbers": {
+    "gnu_source_components": 6,
+    "gcc_runtime_archives": 3,
+    "newlib_archives": 2,
+    "license_categories_gnu_related": 8,
+    "source_locks_present": 5,
+    "source_locks_missing": 1,
+    "port_patches": {"gcc": 8, "binutils": 6, "newlib": 1, "total": 15},
+    "license_texts_in_repository": {"src/ports/gcc/upstream": 11, "src/ports/binutils/upstream": 5, "src/third_party/newlib/COPYING.NEWLIB": 1, "total": 17},
+    "unmapped_archive_members": {"libgcc.a": 147, "libstdc++.a": 196, "libsupc++.a": 64, "gcc_runtime_total": 407, "libc.a": 627, "libm.a": 426, "newlib_total": 1053, "count_method": "AR header parse excluding the '/' symbol table and '//' long-name table entries", "correction_note": "initial draft values 144/125/49/318/199/196/395 were incorrect and were corrected by the integrator against the same AR parse"},
+    "published_releases": 2,
+    "published_assets_verified_locally": 7,
+    "published_asset_hash_mismatches": 0,
+    "third_party_notices_in_1026_packages": 27,
+    "third_party_notices_gnu_related": 17,
+    "seed_manifest_sha256_unchanged_since_1024": "327e2cb0f548dfb721b9ca968c2d3ec84f01e7633b0b3e9d5207bf3c7b5ea448"
+  },
+  "obligations": [
+    {"id": "O1", "text": "corresponding source in the preferred form for modification: locked upstream archives, every XOS patch, build scripts and configure options, and the actual source-tree overlays", "status": "fulfilled for 1024 and 1026; must be regenerated when the Seed changes (script gate exists)"},
+    {"id": "O2", "text": "deliver source and binaries in the same release with checksums", "status": "fulfilled for 1024 and 1026; redo for 0.0.2 per docs/releases/next_release.md item 4"},
+    {"id": "O3", "text": "carry the GCC Runtime Library Exception text with libgcc/libstdc++/libsupc++/crt", "status": "present in the repository and in 1026 packages; missing in 1024 packages and on the guest at /usr/share/licenses"},
+    {"id": "O4", "text": "NOTICE and copyright attribution for GNU components in release material", "status": "gap: root NOTICE covers only FatFs and newlib; no GNU entries in the release copy"},
+    {"id": "O5", "text": "per-member static archive provenance (member to source license)", "status": "NOT_RUN: 407 GCC runtime members and 1053 newlib members unmapped"},
+    {"id": "O6", "text": "state that the compiler license does not extend to programs it compiles", "status": "principle present in docs/licensing.md section 6; not stated in release copy"},
+    {"id": "O7", "text": "keep GMP dual terms, MPFR/MPC LGPL texts and bundled zlib notice with the binaries", "status": "texts present; shipped in 1026 packages, absent from 1024 packages"},
+    {"id": "O8", "text": "record GFDL manual pages shipped with the tools", "status": "gap: not registered as a component entry"},
+    {"id": "O9", "text": "bind build records and provenance manifests with hashes; template host paths in exported evidence", "status": "present in source bundles and SDK; manifests contain historical host absolute paths that must stay templated"},
+    {"id": "O10", "text": "legal review and member-level conclusions", "status": "NOT_RUN: this report is a materials and pipeline review, not a legal opinion"}
+  ],
+  "register_conflicts": [
+    "docs/licensing.md states the Seed has never been publicly released, which contradicts the published 0.0.1-1024 and 0.0.1-1026 assets",
+    "licenses/components.json marks GCC Seed, Binutils Seed, GMP, MPFR and MPC distribution_status as local_only, same contradiction",
+    "src/ports/gcc/e08_5_target_runtime_manifest.json records a libstdc++ hash that differs from the distributed archive"
+  ],
+  "conclusion": {
+    "review_level_closable": true,
+    "rationale": "inventory complete, per-item distribution status determined with byte-level evidence, obligations list explicit and mapped against existing material, gaps named",
+    "premise_correction": "the item must not be closed as not-distributing therefore no obligations: GNU Seed tools and GCC runtime archives were already publicly shipped in 0.0.1-1024 and 0.0.1-1026 with corresponding source bundles, so obligations were triggered and are largely met; 0.0.2-1103 packaging triggers them again",
+    "residual_risks": ["stale registers in docs/licensing.md and licenses/components.json", "member-level mapping NOT_RUN", "notice coverage uneven across 1024 and 1026 and on the guest", "0.0.2 not packaged yet", "two runtime manifests coexist", "GMP/MPFR/MPC static linkage inferred, not proven per member", "no legal opinion"],
+    "script_edit_out_of_scope": "out of scope for this leaf; executed afterwards by the integrator in the same PR: scripts/license_audit.py now ships an empty not_completed list and references the three review reports instead"
+  },
+  "not_run": [
+    "python3 scripts/build.py (full build prohibited for this subagent)",
+    "0.0.2-1103 freeze, packaging, upload",
+    "scripts/license_audit.py (would rewrite build/license_report.json)",
+    "member-level disassembly of distributed binaries",
+    "per-member license mapping",
+    "legal review"
+  ]
+}

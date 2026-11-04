@@ -1,0 +1,123 @@
+{
+  "status": "PASSED",
+  "case": "interactive",
+  "checks": [
+    {
+      "name": "real_single_surface_desktop",
+      "status": "PASSED"
+    },
+    {
+      "name": "two_distinct_native_designs",
+      "status": "PASSED"
+    },
+    {
+      "name": "setting_highContrast",
+      "status": "PASSED"
+    },
+    {
+      "name": "setting_reduceTransparency",
+      "status": "PASSED"
+    },
+    {
+      "name": "setting_reduceMotion",
+      "status": "PASSED"
+    },
+    {
+      "name": "hide_restore_panel",
+      "status": "PASSED"
+    },
+    {
+      "name": "real_menu_notification_text_and_keyboard",
+      "status": "PASSED"
+    },
+    {
+      "name": "desktop_exit_exact_resources",
+      "status": "PASSED"
+    },
+    {
+      "name": "display_released_after_desktop",
+      "status": "PASSED"
+    },
+    {
+      "name": "non_aurora_app_preserved",
+      "status": "PASSED"
+    },
+    {
+      "name": "service_stop_and_file_sync",
+      "status": "PASSED"
+    }
+  ],
+  "screenshots": {},
+  "latency_host_ms": [
+    1175.51,
+    1219.82,
+    1097.66,
+    1101.0,
+    1198.27,
+    1327.61,
+    1006.94,
+    1257.05,
+    973.08,
+    1083.67,
+    1214.76,
+    1221.19,
+    1229.34
+  ],
+  "qemu_command": [
+    "${XOS_LOCAL_PATH_0939715e8e41}",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=${XOS_LOCAL_PATH_51a25efb2781},format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_LOCAL_PATH_7b756a2d342c},format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:${XOS_LOCAL_PATH_62ff904cb68f},server=on,wait=off"
+  ],
+  "baseline": [
+    130279,
+    2,
+    0
+  ],
+  "with_service": [
+    130235,
+    3,
+    1
+  ],
+  "sampled_pages": [
+    6735
+  ],
+  "sampled_threads": [
+    3
+  ],
+  "visual_cache_bytes": [
+    3840000,
+    3840000,
+    1920000,
+    1920000,
+    1920000
+  ]
+}

@@ -21,6 +21,11 @@
 | 主题 | 说明 | 文档 |
 |---|---|---|
 | 用户态程序开发上手 | 从零写 hello：宿主 `compile.py` 编译、导入工作盘、`make run` → `xsh>` 运行，含日志位置与常见错误 | [getting_started](userland/getting_started.md) |
+| 客体内编译 | `edit` → `exec-driver gcc` → `exec-file` → `sync` 全链与宿主路径对比 | [in_guest_build](userland/in_guest_build.md) |
+| XPK 包化应用开发 | 宿主 `xos_app.py` init/build/check/pack、profile/SDK 树哈希绑定、`xypm` 安装查询与维护事务 | [xpk_packages](userland/xpk_packages.md) |
+| dash 脚本 | 发行盘如何获得 dash、写/跑 `.sh`、与 xsh 内建分工、C1–C3 资格边界 | [dash](userland/dash.md) |
+| Qt 图形界面开发 | 宿主交叉编译静态 Qt 应用（qt6_static 资产 + fixture 链接法）；E16/E17 受限资格；客体内无 Qt | [qt_development](userland/qt_development.md) |
+| 客体 Python | 脚本/SQLite/线程/离线小包可用；无 GUI、无 pip | [python](userland/python.md) |
 
 ## 内核控制台命令索引
 

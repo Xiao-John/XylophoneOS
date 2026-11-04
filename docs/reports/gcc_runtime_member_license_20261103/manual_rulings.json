@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "generated": "2026-11-04",
+  "supersedes": "findings.json unmapped[] (automated pass 2026-11-03)",
+  "exit_condition": "gcc_runtime_member_mapping_unresolved: 10 members manually ruled and recorded (archive_member_provenance §exit alternative 1)",
+  "method": "nm symbol extraction + libgcc/libstdc++ build-log ln -s/-c lines + Makefile.in object rules + source-text definition sites; declaration_category ruled from component license (libgcc/libstdc++ runtime = GPL-3.0-or-later WITH GCC Runtime Library Exception)",
+  "disclaimer": "Source attribution rulings are evidence-based engineering conclusions, not legal opinions. Where two same-named upstream files remain, license category is ruled (identical for both candidates) and full byte-level source pin is deferred to the next GCC rebuild member_manifest.json (archive_member_provenance contract).",
+  "rulings": [
+    {
+      "archive": "libgcc.a",
+      "member": "__main.o",
+      "source": "libgcc/libgcc2.c",
+      "evidence": "Makefile.in:513 lib2funcs-o from libgcc2.c; libgcc2.c:3063 NAME__MAIN; member sha256 prefix 59b0937c",
+      "declaration_category": "gcc_runtime_exception",
+      "declaration_text": "GPL-3.0-or-later WITH GCC Runtime Library Exception",
+      "status": "resolved_manual"
+    },
+    {
+      "archive": "libgcc.a",
+      "member": "_ctors.o",
+      "source": "libgcc/libgcc2.c",
+      "evidence": "Makefile.in:453-513 lib2funcs list includes _ctors; byte-identical to __main.o (sha 59b0937c)",
+      "declaration_category": "gcc_runtime_exception",
+      "declaration_text": "GPL-3.0-or-later WITH GCC Runtime Library Exception",
+      "status": "resolved_manual"
+    },
+    {
+      "archive": "libgcc.a",
+      "member": "_clz.o",
+      "source": "libgcc/libgcc2.c",
+      "evidence": "libgcc2.c:669 #ifdef L_clz const UQItype __clz_tab[256]; nm shows R __clz_tab",
+      "declaration_category": "gcc_runtime_exception",
+      "declaration_text": "GPL-3.0-or-later WITH GCC Runtime Library Exception",
+      "status": "resolved_manual"
+    },
+    {
+      "archive": "libgcc.a",
+      "member": "_divmodbitint4.o",
+      "source": "libgcc/libgcc2.c",
+      "evidence": "Makefile.in:482 _divmodbitint4 in lib2funcs → libgcc2.c rule :513; nm T __divmodbitint4",
+      "declaration_category": "gcc_runtime_exception",
+      "declaration_text": "GPL-3.0-or-later WITH GCC Runtime Library Exception",
+      "status": "resolved_manual"
+    },
+    {
+      "archive": "libgcc.a",
+      "member": "_mulbitint3.o",
+      "source": "libgcc/libgcc2.c",
+      "evidence": "Makefile.in:461 _mulbitint3 in lib2funcs; libgcc2.c:1468 __mulbitint3 definition",
+      "declaration_category": "gcc_runtime_exception",
+      "declaration_text": "GPL-3.0-or-later WITH GCC Runtime Library Exception",
+      "status": "resolved_manual"
+    },
+    {
+      "archive": "libgcc.a",
+      "member": "enable-execute-stack.o",
+      "source": "libgcc/enable-execute-stack-empty.c",
+      "evidence": "build log: ln -s .../libgcc/enable-execute-stack-empty.c enable-execute-stack.c (XOS stub; Makefile.in:437 LIB2ADD += enable-execute-stack.c)",
+      "declaration_category": "gcc_runtime_exception",
+      "declaration_text": "GPL-3.0-or-later WITH GCC Runtime Library Exception",
+      "status": "resolved_manual"
+    },
+    {
+      "archive": "libgcc.a",
+      "member": "floatunsitf.o",
+      "source": "libgcc/floatunsitf.c",
+      "source_candidates": [
+        "libgcc/floatunsitf.c",
+        "libgcc/soft-fp/floatunsitf.c"
+      ],
+      "evidence": "Both define __floatunsitf (floatunsitf.c:7, soft-fp/floatunsitf.c:34); x86_64-unknown-elf uses hardware FP (soft-fp not the configured path); classic single-word conversion file chosen; member size 6160",
+      "declaration_category": "gcc_runtime_exception",
+      "declaration_text": "GPL-3.0-or-later WITH GCC Runtime Library Exception",
+      "status": "resolved_manual",
+      "source_pin_deferred": "byte-level pin via next rebuild member_manifest.json"
+    },
+    {
+      "archive": "libstdc++.a",
+      "member": "basic_file.o",
+      "source": "libstdc++-v3/config/io/basic_file_stdio.cc",
+      "evidence": "stcxx build log: libtool -c basic_file.cc with BASIC_FILE_CC='config/io/basic_file_stdio.cc'",
+      "declaration_category": "gcc_runtime_exception",
+      "declaration_text": "GPL-3.0-or-later WITH GCC Runtime Library Exception (libstdc++ runtime)",
+      "status": "resolved_manual"
+    },
+    {
+      "archive": "libstdc++.a",
+      "member": "collate_members_cow.o",
+      "source": "libstdc++-v3/config/locale/generic/collate_members.cc",
+      "evidence": "build log: ln -s .../config/locale/generic/collate_members.cc ./collate_members_cow.cc",
+      "declaration_category": "gcc_runtime_exception",
+      "declaration_text": "GPL-3.0-or-later WITH GCC Runtime Library Exception (libstdc++ runtime)",
+      "status": "resolved_manual"
+    },
+    {
+      "archive": "libstdc++.a",
+      "member": "messages_members_cow.o",
+      "source": "libstdc++-v3/config/locale/generic/messages_members.cc",
+      "evidence": "build log: ln -s .../config/locale/generic/messages_members.cc ./messages_members_cow.cc",
+      "declaration_category": "gcc_runtime_exception",
+      "declaration_text": "GPL-3.0-or-later WITH GCC Runtime Library Exception (libstdc++ runtime)",
+      "status": "resolved_manual"
+    }
+  ],
+  "totals": {
+    "ruled": 10,
+    "resolved_build_log_or_makefile": 9,
+    "resolved_with_source_pin_deferred": 1
+  }
+}

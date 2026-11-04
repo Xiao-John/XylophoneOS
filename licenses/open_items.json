@@ -18,12 +18,12 @@
     },
     {
       "id": "qt_license_text_member_coverage",
-      "status": "open",
+      "status": "not_applicable",
       "scope": "D7/Qt 静态审查 NOT_RUN ⑧（①逐成员映射已闭：1522/1522）",
       "summary": "37 份上游文本的『文本→成员』对应表已产出（12 命中、25 未命中并注明原因；上一版 9/28 含 HPND 误报已更正）；但 262 个仅版权/无声明成员（other_copyright 232 + no_declaration 30）尚未逐一枚举到具体上游文本",
       "evidence": "docs/reports/qt_member_license_20261103/",
-      "exit_condition": "262 个成员按类别完成『成员→上游文本』覆盖核对并记录；或证明其条款由 COPYING/SPDX 表达式整体覆盖",
-      "owner": "许可线"
+      "owner": "许可线",
+      "reason": "已按退出条件清偿（2026-11-04，0201）：262 成员（other_copyright 232 + no_declaration 30）全部完成『成员→上游文本』覆盖核对并记录于 docs/reports/qt_member_license_20261103/text_coverage.json——242 个经 component_license_ids 归到 LICENSES 文本（sha 钉定），20 个 AUTOMOC/RCC 生成件按 Qt 组件 SPDX 表达式四文本整体覆盖。覆盖记录≠再分发资格；资格仍 NOT_GRANTED，待打包核验与安全审查关口。"
     },
     {
       "id": "qt_static_redistribution_packaging_verification",

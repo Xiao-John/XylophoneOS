@@ -1,0 +1,6051 @@
+{
+  "version": 1,
+  "generated": "2026-11-04",
+  "exit_condition": "qt_license_text_member_coverage: 262/262 covered — 242 via component_license_ids -> LICENSES text (sha-pinned), 20 AUTOMOC/RCC via Qt component SPDX expression texts (sha-pinned). Engineering record, not a legal opinion; redistribution eligibility remains NOT_GRANTED pending packaging/security gates.",
+  "method": "component_license_ids from object_record mapping -> Qt LICENSES/<id>.txt sha-pinned from qtbase-6.8.3-gui; generated members inherit Qt component SPDX expression.",
+  "disclaimer": "Engineering coverage record, not a legal opinion.",
+  "scope": {
+    "members": 262,
+    "other_copyright": 232,
+    "no_declaration": 30
+  },
+  "license_ids_used": {
+    "FTL": 84,
+    "GPL-2.0-only": 84,
+    "MIT": 126,
+    "LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception": 2,
+    "Zlib": 30
+  },
+  "methods": {
+    "component_attribution_to_LICENSES_text": 242,
+    "generated_by_moc_rcc_inherits_qt_component_spdx_expression": 20
+  },
+  "covered_count": 262,
+  "uncovered": [],
+  "members": [
+    {
+      "member": "autofit.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftbase.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftbbox.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftbdf.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftbitmap.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftcid.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftfstype.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftgasp.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftglyph.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftgxval.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftinit.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftmm.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftotval.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftpatent.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftpfr.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftstroke.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftsynth.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "fttype1.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftwinfnt.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "bdf.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftbzip2.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftcache.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "cff.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "type1cid.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftgzip.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftlzw.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "pcf.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "pfr.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "psaux.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "pshinter.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "psnames.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "raster.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "sdf.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "sfnt.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "smooth.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "svg.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "truetype.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "type1.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "type42.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "winfnt.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftdebug.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftsystem.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-dummy.cc.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-aat-layout.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-aat-map.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-blob.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-buffer.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-buffer-serialize.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-buffer-verify.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-draw.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-face.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-face-builder.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-fallback-shape.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-font.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-map.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-number.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-outline.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-paint.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-paint-extents.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-set.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-shape.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-shape-plan.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-shaper.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-style.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-subset.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-subset-cff-common.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-subset-cff1.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-subset-cff2.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-subset-input.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-subset-instancer-iup.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-subset-instancer-solver.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-subset-plan.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-subset-serialize.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-unicode.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-cff1-table.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-cff2-table.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-color.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-face.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-font.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-layout.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-map.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-math.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-meta.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-metrics.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-name.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shape.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shape-fallback.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shape-normalize.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-arabic.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-default.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-hangul.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-hebrew.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-indic-table.cc.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-indic.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-khmer.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-myanmar.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-syllabic.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-thai.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-use.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-vowel-constraints.cc.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-tag.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-var.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "VARC.cc.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "gsubgpos-context.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "pcre2_chartables.c.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [
+        "LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception.txt",
+          "sha256": "0526625fcc746a42d3f19a0ab357d3dc8479fdbe3bfd168825498f50215c7a63"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "adler32.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "compress.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "crc32.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "deflate.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "gzclose.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "gzlib.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "gzread.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "gzwrite.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "infback.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "inffast.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "inflate.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "inftrees.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "trees.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "uncompr.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "zutil.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "mocs_compilation.cpp.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [],
+      "generated": true,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "LicenseRef-Qt-Commercial",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LicenseRef-Qt-Commercial.txt",
+          "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700"
+        },
+        {
+          "license_id": "LGPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LGPL-3.0-only.txt",
+          "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        },
+        {
+          "license_id": "GPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-3.0-only.txt",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+        }
+      ],
+      "coverage_methods": [
+        "generated_by_moc_rcc_inherits_qt_component_spdx_expression"
+      ],
+      "status": "covered",
+      "note": "AUTOMOC/RCC generated from Qt sources; terms follow Qt component SPDX expression (LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only)"
+    },
+    {
+      "member": "mocs_compilation.cpp.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [],
+      "generated": true,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "LicenseRef-Qt-Commercial",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LicenseRef-Qt-Commercial.txt",
+          "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700"
+        },
+        {
+          "license_id": "LGPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LGPL-3.0-only.txt",
+          "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        },
+        {
+          "license_id": "GPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-3.0-only.txt",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+        }
+      ],
+      "coverage_methods": [
+        "generated_by_moc_rcc_inherits_qt_component_spdx_expression"
+      ],
+      "status": "covered",
+      "note": "AUTOMOC/RCC generated from Qt sources; terms follow Qt component SPDX expression (LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only)"
+    },
+    {
+      "member": "mocs_compilation.cpp.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [],
+      "generated": true,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "LicenseRef-Qt-Commercial",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LicenseRef-Qt-Commercial.txt",
+          "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700"
+        },
+        {
+          "license_id": "LGPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LGPL-3.0-only.txt",
+          "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        },
+        {
+          "license_id": "GPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-3.0-only.txt",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+        }
+      ],
+      "coverage_methods": [
+        "generated_by_moc_rcc_inherits_qt_component_spdx_expression"
+      ],
+      "status": "covered",
+      "note": "AUTOMOC/RCC generated from Qt sources; terms follow Qt component SPDX expression (LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only)"
+    },
+    {
+      "member": "qrc_example_icons.cpp.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [],
+      "generated": true,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "LicenseRef-Qt-Commercial",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LicenseRef-Qt-Commercial.txt",
+          "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700"
+        },
+        {
+          "license_id": "LGPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LGPL-3.0-only.txt",
+          "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        },
+        {
+          "license_id": "GPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-3.0-only.txt",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+        }
+      ],
+      "coverage_methods": [
+        "generated_by_moc_rcc_inherits_qt_component_spdx_expression"
+      ],
+      "status": "covered",
+      "note": "AUTOMOC/RCC generated from Qt sources; terms follow Qt component SPDX expression (LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only)"
+    },
+    {
+      "member": "mocs_compilation.cpp.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [],
+      "generated": true,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "LicenseRef-Qt-Commercial",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LicenseRef-Qt-Commercial.txt",
+          "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700"
+        },
+        {
+          "license_id": "LGPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LGPL-3.0-only.txt",
+          "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        },
+        {
+          "license_id": "GPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-3.0-only.txt",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+        }
+      ],
+      "coverage_methods": [
+        "generated_by_moc_rcc_inherits_qt_component_spdx_expression"
+      ],
+      "status": "covered",
+      "note": "AUTOMOC/RCC generated from Qt sources; terms follow Qt component SPDX expression (LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only)"
+    },
+    {
+      "member": "mocs_compilation.cpp.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [],
+      "generated": true,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "LicenseRef-Qt-Commercial",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LicenseRef-Qt-Commercial.txt",
+          "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700"
+        },
+        {
+          "license_id": "LGPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LGPL-3.0-only.txt",
+          "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        },
+        {
+          "license_id": "GPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-3.0-only.txt",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+        }
+      ],
+      "coverage_methods": [
+        "generated_by_moc_rcc_inherits_qt_component_spdx_expression"
+      ],
+      "status": "covered",
+      "note": "AUTOMOC/RCC generated from Qt sources; terms follow Qt component SPDX expression (LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only)"
+    },
+    {
+      "member": "qrc_gui_shaders.cpp.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [],
+      "generated": true,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "LicenseRef-Qt-Commercial",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LicenseRef-Qt-Commercial.txt",
+          "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700"
+        },
+        {
+          "license_id": "LGPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LGPL-3.0-only.txt",
+          "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        },
+        {
+          "license_id": "GPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-3.0-only.txt",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+        }
+      ],
+      "coverage_methods": [
+        "generated_by_moc_rcc_inherits_qt_component_spdx_expression"
+      ],
+      "status": "covered",
+      "note": "AUTOMOC/RCC generated from Qt sources; terms follow Qt component SPDX expression (LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only)"
+    },
+    {
+      "member": "md4c.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "mocs_compilation.cpp.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [],
+      "generated": true,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "LicenseRef-Qt-Commercial",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LicenseRef-Qt-Commercial.txt",
+          "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700"
+        },
+        {
+          "license_id": "LGPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LGPL-3.0-only.txt",
+          "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        },
+        {
+          "license_id": "GPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-3.0-only.txt",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+        }
+      ],
+      "coverage_methods": [
+        "generated_by_moc_rcc_inherits_qt_component_spdx_expression"
+      ],
+      "status": "covered",
+      "note": "AUTOMOC/RCC generated from Qt sources; terms follow Qt component SPDX expression (LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only)"
+    },
+    {
+      "member": "qrc_qstyle.cpp.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [],
+      "generated": true,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "LicenseRef-Qt-Commercial",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LicenseRef-Qt-Commercial.txt",
+          "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700"
+        },
+        {
+          "license_id": "LGPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LGPL-3.0-only.txt",
+          "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        },
+        {
+          "license_id": "GPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-3.0-only.txt",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+        }
+      ],
+      "coverage_methods": [
+        "generated_by_moc_rcc_inherits_qt_component_spdx_expression"
+      ],
+      "status": "covered",
+      "note": "AUTOMOC/RCC generated from Qt sources; terms follow Qt component SPDX expression (LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only)"
+    },
+    {
+      "member": "qrc_qstyle1.cpp.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [],
+      "generated": true,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "LicenseRef-Qt-Commercial",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LicenseRef-Qt-Commercial.txt",
+          "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700"
+        },
+        {
+          "license_id": "LGPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LGPL-3.0-only.txt",
+          "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        },
+        {
+          "license_id": "GPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-3.0-only.txt",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+        }
+      ],
+      "coverage_methods": [
+        "generated_by_moc_rcc_inherits_qt_component_spdx_expression"
+      ],
+      "status": "covered",
+      "note": "AUTOMOC/RCC generated from Qt sources; terms follow Qt component SPDX expression (LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only)"
+    },
+    {
+      "member": "qrc_qstyle_fusion.cpp.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [],
+      "generated": true,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "LicenseRef-Qt-Commercial",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LicenseRef-Qt-Commercial.txt",
+          "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700"
+        },
+        {
+          "license_id": "LGPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LGPL-3.0-only.txt",
+          "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        },
+        {
+          "license_id": "GPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-3.0-only.txt",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+        }
+      ],
+      "coverage_methods": [
+        "generated_by_moc_rcc_inherits_qt_component_spdx_expression"
+      ],
+      "status": "covered",
+      "note": "AUTOMOC/RCC generated from Qt sources; terms follow Qt component SPDX expression (LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only)"
+    },
+    {
+      "member": "qrc_qmessagebox.cpp.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [],
+      "generated": true,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "LicenseRef-Qt-Commercial",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LicenseRef-Qt-Commercial.txt",
+          "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700"
+        },
+        {
+          "license_id": "LGPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LGPL-3.0-only.txt",
+          "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        },
+        {
+          "license_id": "GPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-3.0-only.txt",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+        }
+      ],
+      "coverage_methods": [
+        "generated_by_moc_rcc_inherits_qt_component_spdx_expression"
+      ],
+      "status": "covered",
+      "note": "AUTOMOC/RCC generated from Qt sources; terms follow Qt component SPDX expression (LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only)"
+    },
+    {
+      "member": "autofit.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftbase.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftbbox.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftbdf.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftbitmap.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftcid.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftfstype.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftgasp.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftglyph.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftgxval.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftinit.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftmm.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftotval.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftpatent.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftpfr.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftstroke.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftsynth.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "fttype1.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftwinfnt.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "bdf.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftbzip2.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftcache.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "cff.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "type1cid.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftgzip.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftlzw.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "pcf.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "pfr.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "psaux.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "pshinter.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "psnames.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "raster.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "sdf.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "sfnt.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "smooth.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "svg.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "truetype.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "type1.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "type42.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "winfnt.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftdebug.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "ftsystem.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "FTL",
+        "GPL-2.0-only"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "FTL",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/FTL.txt",
+          "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-dummy.cc.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-aat-layout.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-aat-map.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-blob.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-buffer.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-buffer-serialize.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-buffer-verify.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-draw.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-face.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-face-builder.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-fallback-shape.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-font.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-map.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-number.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-outline.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-paint.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-paint-extents.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-set.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-shape.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-shape-plan.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-shaper.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-style.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-subset.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-subset-cff-common.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-subset-cff1.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-subset-cff2.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-subset-input.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-subset-instancer-iup.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-subset-instancer-solver.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-subset-plan.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-subset-serialize.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-unicode.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-cff1-table.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-cff2-table.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-color.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-face.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-font.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-layout.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-map.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-math.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-meta.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-metrics.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-name.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shape.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shape-fallback.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shape-normalize.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-arabic.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-default.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-hangul.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-hebrew.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-indic-table.cc.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-indic.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-khmer.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-myanmar.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-syllabic.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-thai.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-use.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-shaper-vowel-constraints.cc.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-tag.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "hb-ot-var.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "VARC.cc.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "gsubgpos-context.cc.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "pcre2_chartables.c.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [
+        "LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception.txt",
+          "sha256": "0526625fcc746a42d3f19a0ab357d3dc8479fdbe3bfd168825498f50215c7a63"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "adler32.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "compress.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "crc32.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "deflate.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "gzclose.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "gzlib.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "gzread.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "gzwrite.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "infback.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "inffast.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "inflate.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "inftrees.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "trees.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "uncompr.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "zutil.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "Zlib"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "Zlib",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/Zlib.txt",
+          "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "mocs_compilation.cpp.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [],
+      "generated": true,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "LicenseRef-Qt-Commercial",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LicenseRef-Qt-Commercial.txt",
+          "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700"
+        },
+        {
+          "license_id": "LGPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LGPL-3.0-only.txt",
+          "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        },
+        {
+          "license_id": "GPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-3.0-only.txt",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+        }
+      ],
+      "coverage_methods": [
+        "generated_by_moc_rcc_inherits_qt_component_spdx_expression"
+      ],
+      "status": "covered",
+      "note": "AUTOMOC/RCC generated from Qt sources; terms follow Qt component SPDX expression (LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only)"
+    },
+    {
+      "member": "mocs_compilation.cpp.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [],
+      "generated": true,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "LicenseRef-Qt-Commercial",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LicenseRef-Qt-Commercial.txt",
+          "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700"
+        },
+        {
+          "license_id": "LGPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LGPL-3.0-only.txt",
+          "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        },
+        {
+          "license_id": "GPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-3.0-only.txt",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+        }
+      ],
+      "coverage_methods": [
+        "generated_by_moc_rcc_inherits_qt_component_spdx_expression"
+      ],
+      "status": "covered",
+      "note": "AUTOMOC/RCC generated from Qt sources; terms follow Qt component SPDX expression (LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only)"
+    },
+    {
+      "member": "qrc_gui_shaders.cpp.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [],
+      "generated": true,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "LicenseRef-Qt-Commercial",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LicenseRef-Qt-Commercial.txt",
+          "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700"
+        },
+        {
+          "license_id": "LGPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LGPL-3.0-only.txt",
+          "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        },
+        {
+          "license_id": "GPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-3.0-only.txt",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+        }
+      ],
+      "coverage_methods": [
+        "generated_by_moc_rcc_inherits_qt_component_spdx_expression"
+      ],
+      "status": "covered",
+      "note": "AUTOMOC/RCC generated from Qt sources; terms follow Qt component SPDX expression (LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only)"
+    },
+    {
+      "member": "md4c.c.o",
+      "declaration_category": "other_copyright",
+      "component_license_ids": [
+        "MIT"
+      ],
+      "generated": false,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "MIT",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/MIT.txt",
+          "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc"
+        }
+      ],
+      "coverage_methods": [
+        "component_attribution_to_LICENSES_text"
+      ],
+      "status": "covered"
+    },
+    {
+      "member": "mocs_compilation.cpp.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [],
+      "generated": true,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "LicenseRef-Qt-Commercial",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LicenseRef-Qt-Commercial.txt",
+          "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700"
+        },
+        {
+          "license_id": "LGPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LGPL-3.0-only.txt",
+          "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        },
+        {
+          "license_id": "GPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-3.0-only.txt",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+        }
+      ],
+      "coverage_methods": [
+        "generated_by_moc_rcc_inherits_qt_component_spdx_expression"
+      ],
+      "status": "covered",
+      "note": "AUTOMOC/RCC generated from Qt sources; terms follow Qt component SPDX expression (LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only)"
+    },
+    {
+      "member": "qrc_qstyle.cpp.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [],
+      "generated": true,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "LicenseRef-Qt-Commercial",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LicenseRef-Qt-Commercial.txt",
+          "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700"
+        },
+        {
+          "license_id": "LGPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LGPL-3.0-only.txt",
+          "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        },
+        {
+          "license_id": "GPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-3.0-only.txt",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+        }
+      ],
+      "coverage_methods": [
+        "generated_by_moc_rcc_inherits_qt_component_spdx_expression"
+      ],
+      "status": "covered",
+      "note": "AUTOMOC/RCC generated from Qt sources; terms follow Qt component SPDX expression (LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only)"
+    },
+    {
+      "member": "qrc_qstyle1.cpp.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [],
+      "generated": true,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "LicenseRef-Qt-Commercial",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LicenseRef-Qt-Commercial.txt",
+          "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700"
+        },
+        {
+          "license_id": "LGPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LGPL-3.0-only.txt",
+          "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        },
+        {
+          "license_id": "GPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-3.0-only.txt",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+        }
+      ],
+      "coverage_methods": [
+        "generated_by_moc_rcc_inherits_qt_component_spdx_expression"
+      ],
+      "status": "covered",
+      "note": "AUTOMOC/RCC generated from Qt sources; terms follow Qt component SPDX expression (LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only)"
+    },
+    {
+      "member": "qrc_qstyle_fusion.cpp.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [],
+      "generated": true,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "LicenseRef-Qt-Commercial",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LicenseRef-Qt-Commercial.txt",
+          "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700"
+        },
+        {
+          "license_id": "LGPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LGPL-3.0-only.txt",
+          "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        },
+        {
+          "license_id": "GPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-3.0-only.txt",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+        }
+      ],
+      "coverage_methods": [
+        "generated_by_moc_rcc_inherits_qt_component_spdx_expression"
+      ],
+      "status": "covered",
+      "note": "AUTOMOC/RCC generated from Qt sources; terms follow Qt component SPDX expression (LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only)"
+    },
+    {
+      "member": "qrc_qmessagebox.cpp.o",
+      "declaration_category": "no_declaration",
+      "component_license_ids": [],
+      "generated": true,
+      "byte_identical_object": true,
+      "covered_by_texts": [
+        {
+          "license_id": "LicenseRef-Qt-Commercial",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LicenseRef-Qt-Commercial.txt",
+          "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700"
+        },
+        {
+          "license_id": "LGPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/LGPL-3.0-only.txt",
+          "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+        },
+        {
+          "license_id": "GPL-2.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-2.0-only.txt",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        },
+        {
+          "license_id": "GPL-3.0-only",
+          "text": ".cache/xos_seed/qt6/qtbase-6.8.3-gui/LICENSES/GPL-3.0-only.txt",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+        }
+      ],
+      "coverage_methods": [
+        "generated_by_moc_rcc_inherits_qt_component_spdx_expression"
+      ],
+      "status": "covered",
+      "note": "AUTOMOC/RCC generated from Qt sources; terms follow Qt component SPDX expression (LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only)"
+    }
+  ]
+}

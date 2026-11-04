@@ -1,6 +1,6 @@
 # work_log 编号索引
 
-新增记录：[0198 — 技术债清偿 C30/C7/C4](0198_tech_debt_c30_c7_c4.md)。
+新增记录：[0199 — GNU NOTICE/GFDL/客体许可清偿](0199_gnu_notice_gfdl.md)。
 
 历史存在重复编号（同号多份，主题不同）；本索引消歧可追溯性。编号唯一性规则：
 **0149 之后仍发生过同号占号（见下表 0144 及以后各组），因此"自 0149 起全局唯一"
@@ -95,3 +95,4 @@
 | 0196 | `0196_ssg_p3b_dual_provider.md` | SSG P3B 双 Provider 聚合与隔离（PR #50） |
 | 0197 | `0197_ssg_p3c_engine_neutral_watch.md` | SSG P3C engine-neutral watch（PR #51） |
 | 0198 | `0198_tech_debt_c30_c7_c4.md` | 技术债清偿：file_client 改名、C7 去重、C4 放掉 |
+| 0199 | `0199_gnu_notice_gfdl.md` | GNU NOTICE/GFDL 组件登记与客体许可装盘（关闭 gnu_notice_coverage_gaps） |

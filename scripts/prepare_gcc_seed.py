@@ -141,6 +141,23 @@ def main():
     specs = out / 'specs'
     specs.write_text(specs_text)
     seed['install_files'].append(item(specs, '/usr/lib/gcc/x86_64-elf/16.2.0/specs'))
+
+    # Ship GNU license texts to the guest so /usr/share/licenses carries the
+    # Seed components (O3/O4/O8 of the GNU Seed distribution review).
+    license_texts = [
+        ('src/ports/gcc/upstream/GCC-COPYING', '/usr/share/licenses/gcc/COPYING'),
+        ('src/ports/gcc/upstream/GCC-COPYING3', '/usr/share/licenses/gcc/COPYING3'),
+        ('src/ports/gcc/upstream/GCC-COPYING.RUNTIME', '/usr/share/licenses/gcc/COPYING.RUNTIME'),
+        ('src/ports/binutils/upstream/COPYING', '/usr/share/licenses/binutils/COPYING'),
+        ('src/ports/gcc/upstream/GMP-COPYING.LESSERv3', '/usr/share/licenses/gmp/COPYING.LESSERv3'),
+        ('src/ports/gcc/upstream/GMP-COPYINGv3', '/usr/share/licenses/gmp/COPYINGv3'),
+        ('src/ports/gcc/upstream/MPFR-COPYING.LESSER', '/usr/share/licenses/mpfr/COPYING.LESSER'),
+        ('src/ports/gcc/upstream/MPC-COPYING.LESSER', '/usr/share/licenses/mpc/COPYING.LESSER'),
+        ('src/ports/binutils/upstream/zlib-LICENSE', '/usr/share/licenses/zlib/LICENSE'),
+        ('licenses/GFDL-1.3.texi', '/usr/share/licenses/gfdl/GFDL'),
+    ]
+    for relative, guest in license_texts:
+        seed['install_files'].append(item(ROOT / relative, guest))
     files = []
     for path in sorted((sdk / 'include').rglob('*')):
         if path.is_symlink():

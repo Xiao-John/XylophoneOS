@@ -13,5 +13,20 @@ ChaN; see licenses/fatfs.txt and src/third_party/fatfs. newlib consists of
 multiple components; see src/third_party/newlib/COPYING.NEWLIB and per-file
 notices. XOS's default license does not relicense either component.
 
+GNU components distributed with the XOS tool seed retain their own terms:
+GCC 16.2.0 and the GCC target runtime libraries (libgcc, libstdc++, libsupc++)
+are GPL-3.0-or-later with the GCC Runtime Library Exception (see
+src/ports/gcc/upstream/GCC-COPYING, GCC-COPYING.RUNTIME, GCC-COPYING3,
+GCC-COPYING3.LIB); GNU Binutils 2.47 is GPL-3.0-or-later (see
+src/ports/binutils/upstream/COPYING and COPYING3); GMP 6.3.0 is dual-licensed
+LGPLv3/GPLv3 (GMP-COPYING.LESSERv3, GMP-COPYINGv3); MPFR 4.2.2 and MPC 1.3.1
+are LGPL-3.0-or-later (MPFR-COPYING.LESSER, MPC-COPYING.LESSER); the zlib
+bundled inside Binutils is Zlib (src/ports/binutils/upstream/zlib-LICENSE).
+The GNU Free Documentation License text for the GFDL manual pages shipped with
+the seed tools is licenses/GFDL-1.3.texi (extracted byte-identical from the
+pinned gcc-16.2.0 source archive). Corresponding source packages, patches, and
+build records ship with each release. XOS's default license does not relicense
+any GNU component.
+
 The separate localpilot project and externally installed build tools are
 outside the scope of XOS's self-authored license.

@@ -1,0 +1,11 @@
+{
+  "source_commit": "50224327e5016ad48df74454e8ff1723ad069de9",
+  "scope": "flat diagnostic report; historical index and archive retained outside reports",
+  "changes": [
+    {
+      "path": "docs/reports/ssg_p2_diagnostic_20261030/README.md",
+      "original_sha256": "001857a614a137d8b0607fdff341a52d98c9b474595d1fbb164441b0e6ef292f",
+      "export_sha256": "782ed189b306dfd3b3fabd004910e22b0d1587d0fd39c81696e2f66e044ef66d"
+    }
+  ]
+}

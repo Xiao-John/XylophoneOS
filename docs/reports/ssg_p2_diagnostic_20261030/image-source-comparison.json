@@ -1,0 +1,72 @@
+{
+  "build_id": "7ccd5871c0c00297",
+  "image_sha256": "165686bb0de0b0b2f33645ede2cf10c2badb25ea363f3ef57ed74641503b0b08",
+  "manifest_sha256": "19ef6d7a3a404362f1331a6985b9f05680b5c639adb80a34c0d0cfab6c14d123",
+  "source_count": 725,
+  "comparisons": {
+    "image_source": [
+      {
+        "path": "tests/aurora_platform_guest.py",
+        "status": "DIFFERENT"
+      },
+      {
+        "path": "tests/fixtures/qt6/aurora_render_probe.cpp",
+        "status": "DIFFERENT"
+      }
+    ],
+    "stacked_source": [
+      {
+        "path": "src/ports/aurora_browser/main.cpp",
+        "status": "DIFFERENT"
+      },
+      {
+        "path": "src/ports/aurora_browser/view.hpp",
+        "status": "DIFFERENT"
+      },
+      {
+        "path": "src/ports/aurora_desktop/build.py",
+        "status": "MISSING"
+      },
+      {
+        "path": "src/ports/aurora_desktop/main.cpp",
+        "status": "MISSING"
+      },
+      {
+        "path": "src/ports/aurora_desktop/session.cpp",
+        "status": "MISSING"
+      },
+      {
+        "path": "src/ports/qt6/aurora/ssg.cpp",
+        "status": "DIFFERENT"
+      },
+      {
+        "path": "src/ports/qt6/aurora/ssg.hpp",
+        "status": "DIFFERENT"
+      },
+      {
+        "path": "src/ports/qt6/editor/main.cpp",
+        "status": "DIFFERENT"
+      },
+      {
+        "path": "tests/aurora_desktop_guest.py",
+        "status": "MISSING"
+      },
+      {
+        "path": "tests/aurora_platform_guest.py",
+        "status": "DIFFERENT"
+      },
+      {
+        "path": "tests/fixtures/qt6/aurora_render_probe.cpp",
+        "status": "DIFFERENT"
+      },
+      {
+        "path": "tests/fixtures/qt6/aurora_semantics.cpp",
+        "status": "DIFFERENT"
+      },
+      {
+        "path": "tests/fixtures/qt6/compositor_gap.cpp",
+        "status": "MISSING"
+      }
+    ]
+  }
+}

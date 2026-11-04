@@ -1,0 +1,119 @@
+{
+  "source_commit": "57dfc31b2ba966002d4b8e015cd0368743063fec",
+  "runner_sha256": "505001d997c43ba9dd5c0a3515d002dc30467f8a246162e6c7ab915944481694",
+  "scope": "Local Browser guest contract; no large-page qualification or full P1 rerun.",
+  "status": "PASSED",
+  "image_sha256": "44908627fb6a4821ec797b05e1632e6c4a0aa5e7b92ad745b4e762285a55e895",
+  "elf_sha256": {
+    "browser": "e1fe76ea9325aae69c1118b5fe6e3e3f5ade86278aa508fad5ed1fa5311a10d1"
+  },
+  "checks": [
+    {
+      "name": "browser_dom_layout_hidden_and_offviewport",
+      "status": "PASSED"
+    },
+    {
+      "name": "ssg_link_geometry_matches_actual_engine_hit",
+      "status": "PASSED"
+    },
+    {
+      "name": "browser_scroll_changes_visibility_with_stable_epoch",
+      "status": "PASSED",
+      "diff_status": "RESET_REQUIRED",
+      "capped": true
+    },
+    {
+      "name": "reload_invalidates_old_document_references",
+      "status": "PASSED"
+    },
+    {
+      "name": "unsupported_canvas_rejected_no_fabricated_semantics",
+      "status": "PASSED"
+    },
+    {
+      "name": "browser_ssg_exit_exact_resources",
+      "status": "PASSED"
+    },
+    {
+      "name": "serial_file_service_and_resource_baseline",
+      "status": "PASSED"
+    }
+  ],
+  "observations": {
+    "first": {
+      "capped": true,
+      "nodes": 11,
+      "diagnostics": {
+        "capReason": "TIME",
+        "clockResolution": "millisecond-or-coarser; per-node samples may round down",
+        "depthLimit": 18,
+        "documentMutationDuringQuery": "UNKNOWN_NO_INDEPENDENT_REVISION",
+        "encodedNodesBytes": 5155,
+        "encodedNodesLimitBytes": 65536,
+        "fragmentElapsedMsSum": "0",
+        "guiEventLoop": "synchronous-query; responsiveness not measured",
+        "maxDepthAttempted": 4,
+        "outputLimit": 96,
+        "outputNodes": 11,
+        "publishElapsedMs": "20",
+        "textBudgetUtf16": 8192,
+        "textNodesTruncated": 0,
+        "textRemainingUtf16": 8135,
+        "timeLimitMs": 30,
+        "traversalElapsedMs": "40",
+        "visitedAttempts": 20,
+        "visitedLimit": 96
+      }
+    },
+    "bottom": {
+      "capped": true,
+      "nodes": 15,
+      "diagnostics": {
+        "capReason": "TIME",
+        "clockResolution": "millisecond-or-coarser; per-node samples may round down",
+        "depthLimit": 18,
+        "documentMutationDuringQuery": "UNKNOWN_NO_INDEPENDENT_REVISION",
+        "encodedNodesBytes": 6878,
+        "encodedNodesLimitBytes": 65536,
+        "fragmentElapsedMsSum": "0",
+        "guiEventLoop": "synchronous-query; responsiveness not measured",
+        "maxDepthAttempted": 4,
+        "outputLimit": 96,
+        "outputNodes": 15,
+        "publishElapsedMs": "50",
+        "textBudgetUtf16": 8192,
+        "textNodesTruncated": 0,
+        "textRemainingUtf16": 8120,
+        "timeLimitMs": 30,
+        "traversalElapsedMs": "40",
+        "visitedAttempts": 24,
+        "visitedLimit": 96
+      }
+    },
+    "reload": {
+      "capped": false,
+      "nodes": 19,
+      "diagnostics": {
+        "capReason": "NONE",
+        "clockResolution": "millisecond-or-coarser; per-node samples may round down",
+        "depthLimit": 18,
+        "documentMutationDuringQuery": "UNKNOWN_NO_INDEPENDENT_REVISION",
+        "encodedNodesBytes": 8792,
+        "encodedNodesLimitBytes": 65536,
+        "fragmentElapsedMsSum": "0",
+        "guiEventLoop": "synchronous-query; responsiveness not measured",
+        "maxDepthAttempted": 4,
+        "outputLimit": 96,
+        "outputNodes": 19,
+        "publishElapsedMs": "20",
+        "textBudgetUtf16": 8192,
+        "textNodesTruncated": 0,
+        "textRemainingUtf16": 8109,
+        "timeLimitMs": 30,
+        "traversalElapsedMs": "40",
+        "visitedAttempts": 27,
+        "visitedLimit": 96
+      }
+    }
+  }
+}

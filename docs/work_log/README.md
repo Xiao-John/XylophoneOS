@@ -1,6 +1,6 @@
 # work_log 编号索引
 
-新增记录：[0192 — SSG-P1 cross-process prototype](0192_ssg_p1_cross_process.md)。
+新增记录：[0193 — SSG-P2 Browser diagnostic](0193_ssg_p2_diagnostic.md)。
 
 历史存在重复编号（同号多份，主题不同）；本索引消歧可追溯性。编号唯一性规则：
 **0149 之后仍发生过同号占号（见下表 0144 及以后各组），因此"自 0149 起全局唯一"

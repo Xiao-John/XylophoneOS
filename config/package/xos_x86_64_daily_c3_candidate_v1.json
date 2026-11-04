@@ -9,9 +9,23 @@
   "startup_version": 3,
   "compiler_version": "16.2.0",
   "layout": "e08_static_tls_main_stack_128k_c3_stdio",
-  "features": ["stdio", "heap", "file_io", "directories", "static_tls", "stdio_transfer"],
-  "sdk_tree_sha256": ["95540279559a9b1e6e408ebb63785d22397ae52e9b0dd28af82b1409e20903ab"],
-  "verified_system_builds": ["0babbb11032c9197"],
+  "features": [
+    "stdio",
+    "heap",
+    "file_io",
+    "directories",
+    "static_tls",
+    "stdio_transfer"
+  ],
+  "sdk_tree_sha256": [
+    "95540279559a9b1e6e408ebb63785d22397ae52e9b0dd28af82b1409e20903ab",
+    "5c2f5f9b217e159ab62d2ba8d6e15aecf8e1ad20c562d973d76bcbdb43567097"
+  ],
+  "verified_system_builds": [
+    "0babbb11032c9197",
+    "8356e45af316fc93"
+  ],
   "scope": "candidate only; single-thread SDK and bounded DU1/DU2 smoke, not release or full POSIX qualification",
-  "evidence": "docs/work_log/0069_daily_utilities.md"
+  "evidence": "docs/work_log/0069_daily_utilities.md",
+  "admitted_builds_note": "candidate profile admits listed builds/sdk trees; release 0.0.2-1103 uses 8356e45af316fc93 + e4440efc…"
 }

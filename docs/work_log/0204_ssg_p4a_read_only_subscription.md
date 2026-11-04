@@ -1,4 +1,4 @@
-# 0202 — SSG P4A read-only subscription
+# 0204 — SSG P4A read-only subscription
 
 2026-11-04 · Branch `codex/ssg_p4a_subscriber_20261104` · base
 `6fe330ce2dd9441d72da611c1f87b80dad8e3b03` (freshly fetched upstream main).

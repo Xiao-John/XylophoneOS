@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "date": "2026-11-04",
+  "gate": "qt_static_redistribution_security_review (release gate B5)",
+  "scope": "Supply-chain and build-config security review of the static Qt 6.8.3 deliverable set for XOS 0.0.2-1103. NOT a full pentest, NOT an upstream Qt security audit, NOT a runtime vulnerability scan.",
+  "checks": [
+    {
+      "name": "source_archive_pin",
+      "status": "PASS",
+      "detail": "qtbase-everywhere-src-6.8.3.tar.xz sha256=56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80 matches source_lock/redistribution_manifest pin 56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80"
+    },
+    {
+      "name": "source_url_official",
+      "status": "PASS",
+      "detail": "https://download.qt.io/archive/qt/6.8/6.8.3/submodules/qtbase-everywhere-src-6.8.3.tar.xz"
+    },
+    {
+      "name": "patch_inventory",
+      "status": "PASS",
+      "detail": "10 patches; MODIFICATIONS.md present=True; suspicious_payload_patterns=none"
+    },
+    {
+      "name": "build_isolation",
+      "status": "PASS",
+      "detail": "configure disables 48 explicit features incl. network/opengl/dlopen/eglfs/fontconfig/icu (see redistribution_manifest.build_recipe.disabled_features_explicit)"
+    },
+    {
+      "name": "static_only",
+      "status": "PASS",
+      "detail": "BUILD_SHARED_LIBS=OFF; no runtime plugin loading path in XOS QPA (mkspec xos-g++); deliverables are .a archives"
+    },
+    {
+      "name": "no_host_runtime_coupling",
+      "status": "PASS",
+      "detail": "XOS target uses custom mkspec/xos_toolchain.cmake; no host Qt libs linked into guest binaries"
+    },
+    {
+      "name": "license_texts_present",
+      "status": "PASS",
+      "detail": "13 Qt notice texts registered in licenses/components.json (incl. LicenseRef-Qt-Commercial, Qt-GPL-exception-1.0)"
+    },
+    {
+      "name": "member_license_mapping",
+      "status": "PASS_WITH_LIMIT",
+      "detail": "1522/1522 object_record mapping + 262/262 text coverage (0201); engineering mapping, not legal audit"
+    },
+    {
+      "name": "known_cve_scan",
+      "status": "NOT_RUN",
+      "detail": "Offline environment; upstream Qt 6.8.3 CVE feed not fetched this session. Qt 6.8.3 is a current stable release; recommend re-checking upstream security advisories at packaging time if network allows"
+    },
+    {
+      "name": "runtime_pentest_fuzz",
+      "status": "NOT_RUN",
+      "detail": "Out of scope for this gate; functional qualification is E16/E17 (scoped)"
+    }
+  ],
+  "limitations": [
+    "No dynamic analysis, fuzzing, or exploit attempt against Qt code.",
+    "No verification of Qt upstream's own security process.",
+    "CVE check NOT_RUN (offline); residual risk accepted by release owner or to be re-checked when network available.",
+    "Static linking does not remove memory-safety risk in Qt code itself."
+  ],
+  "conclusion": "PASS_WITH_LIMITS for release gate purposes: supply chain pinned, build isolated and static-only, patches inventoried without suspicious payloads, license texts and member mappings present. Residual: CVE feed NOT_RUN and no runtime pentest — recorded as release-owner acceptance items, not hidden."
+}

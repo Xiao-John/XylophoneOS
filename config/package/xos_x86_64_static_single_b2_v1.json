@@ -19,13 +19,17 @@
   "runtime_model": "single",
   "scope": "frozen single B2 runtime + frozen single C++ archives; no pthread/thread-safe SDK claim",
   "sdk_tree_sha256": [
-    "e0fa2330a1c38c162f40857609ef88f97673d66e080069018ac26b85d4a5f110"
+    "e0fa2330a1c38c162f40857609ef88f97673d66e080069018ac26b85d4a5f110",
+    "5c2f5f9b217e159ab62d2ba8d6e15aecf8e1ad20c562d973d76bcbdb43567097",
+    "551fa547a32931af159707b70319b263a9785b55ffea6903c1b858607eb3e20a",
+    "74399778e6c5a7fd0c823865991344b1447f4d5ed0d0cf912599bf822aabd21c"
   ],
   "source_single_sdk_tree_sha256": "1602f676c0c154ba3248bee29f41bb221001aa83ea3550c48b12087afcd0cb72",
   "startup_version": 2,
   "syscall_abi": 1,
   "verified_system_builds": [
-    "911184be3f3c99f6"
+    "911184be3f3c99f6",
+    "8356e45af316fc93"
   ],
   "word_bits": 64
 }

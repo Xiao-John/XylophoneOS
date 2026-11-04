@@ -113,7 +113,8 @@ def main():
     entries = list(seed['install_files']) + list(sysroot['files'])
     if a.cpython_stage:
         stage_manifest=json.loads(a.cpython_stage.read_text())
-        stage_root=a.cpython_stage.parent/'stage_py3'
+        # Stage directory name mirrors the manifest stem (stage_py3 / stage_py3_b).
+        stage_root=a.cpython_stage.parent/a.cpython_stage.stem.replace('_manifest','')
         for item in stage_manifest['files']:
             source=stage_root/item['path'].lstrip('/')
             if sha(source)!=item['sha256']:raise ValueError('CPython stage changed: '+item['path'])

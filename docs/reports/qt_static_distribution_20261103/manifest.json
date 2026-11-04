@@ -1,6 +1,8 @@
 {
- "version": 1,
- "files": {
-  "README.md": "262190a697aebea99191f221153bc8db3f3ddcf0a7ef688e28641e2216eb5601"
- }
+  "version": 1,
+  "files": {
+    "README.md": "262190a697aebea99191f221153bc8db3f3ddcf0a7ef688e28641e2216eb5601",
+    "packaging_verification_20261104.json": "32593ae33448e29dcbad2b37b2cd3a8838f868c2ba9e7895694ec5485be7808a",
+    "security_review_20261104.json": "4eaf0d0a3e627c8f007601367cc8fb5e7d5ef2558a381292686018befe2ae630"
+  }
 }

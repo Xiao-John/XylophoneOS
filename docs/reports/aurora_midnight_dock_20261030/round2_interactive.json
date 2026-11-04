@@ -1,0 +1,59 @@
+{
+  "source_commit": "36b8a3f1c242fbf88c3db7765cbbc46906617852",
+  "runner_sha256": "8c17d1c316c302ab72ce7e9ecd46aa4e10b949b32bc11c351a4a2ce4ca0c6180",
+  "status": "PASSED",
+  "image_sha256": "f7dd1de173ff5ad2277f7f9deb34883e71e8f4b7a70a0c7616b782d69d2bbebf",
+  "elf_sha256": {
+    "desktop": "5ca97ddc939affeeb0f6dc421b0865a1afeff66fe082bd6292439aec4eb952e2",
+    "studio": "c9bd4b1aea6b1db437a9c6b89c1701086102e9d8f4695eed24cf795ea6270526",
+    "session": "8dbc32051e919bf0051e6e39b8abc4de19a3a19111a59dd9b776d980be72bf81",
+    "gap": "367b04c91656f7be029407e95b025777286c322407610006dab210ea23038e11",
+    "legacy": "e8873ed56ddb0a2c3097cc0885c6454b3e59d87568362bfd41ae6f8299b6cd7c"
+  },
+  "checks": [
+    {
+      "name": "real_single_surface_desktop",
+      "status": "PASSED"
+    },
+    {
+      "name": "two_distinct_native_designs",
+      "status": "PASSED"
+    },
+    {
+      "name": "setting_highContrast",
+      "status": "PASSED"
+    },
+    {
+      "name": "setting_reduceTransparency",
+      "status": "PASSED"
+    },
+    {
+      "name": "setting_reduceMotion",
+      "status": "PASSED"
+    },
+    {
+      "name": "hide_restore_panel",
+      "status": "PASSED"
+    },
+    {
+      "name": "real_menu_notification_text_and_keyboard",
+      "status": "PASSED"
+    },
+    {
+      "name": "desktop_exit_exact_resources",
+      "status": "PASSED"
+    },
+    {
+      "name": "display_released_after_desktop",
+      "status": "PASSED"
+    },
+    {
+      "name": "non_aurora_app_preserved",
+      "status": "PASSED"
+    },
+    {
+      "name": "service_stop_and_file_sync",
+      "status": "PASSED"
+    }
+  ]
+}

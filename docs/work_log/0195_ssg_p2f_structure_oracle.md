@@ -1,4 +1,4 @@
-# 0193 — SSG-P2F 独立结构与文本验收
+# 0195 — SSG-P2F 独立结构与文本验收
 
 继续 fork Draft PR #10，基线 `9a739c7`。实现提交 `0a63648`，宿主点击尺寸修正 `a81b4fd`。
 本轮只推进 Gate A 的 A1，不合并 main 或依赖，不修改 kernel、公共系统 ABI、QPA、驱动。
@@ -30,3 +30,10 @@ Gate B/C、过滤查询、4096 ID 边界、完整游标生命周期、Notes 安�
 2026-11-01: the current rebased combined source passed the fixed-document A/B Oracle (34 pages / 267 nodes each), one real link click, and two separate Notes range/resource checks. Overall Gate A remains NOT_QUALIFIED; Gates B/C remain NOT_RUN.
 
 2026-11-03: [current fixed-document Oracle run](../reports/ssg_pagination_round2_20261103/README.md) passed after rebuilding on main `48882c9` and current #48. Gate A remains unqualified; Gates B/C were not run.
+
+
+## 维护者合并记录（2026-11-04）
+
+- 编号 0193→0195（main 已占 0193_ssg_p2_diagnostic；全局唯一规则让号）。
+- 对历史文件 `0103_aurora_ssg_consumers` 的改名按 C5「历史文件不改名、零级联」撤销，引用已回退。
+- `0102` 中误指的 `0169`（实为设备授权/终端 fork 记录）已回退为 `0103`。

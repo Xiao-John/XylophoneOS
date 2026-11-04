@@ -1,4 +1,4 @@
-# 0194 Application-local SSG in Notes and Browser
+# 0103 Application-local SSG in Notes and Browser
 
 2026-10-30. **PASSED_SCOPED_READONLY_PROTOTYPE**. No cross-process scene/action
 transport or production authority is implemented. Model output never grants rights.

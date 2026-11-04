@@ -97,7 +97,7 @@ CPU、长期压力、完整 Unicode 字体、IME/剪贴板、QML/Quick 均没有
 The opt-in static Aurora library now has tokens v2, native materials, accessibility
 and quality fallback, independent standard-Widgets consumers and an app-local
 SSG/Intent prototype. See [SDK work log](../work_log/0102_aurora_ui_v2_sdk.md),
-[SSG contract](semantic_scene_graph.md) and [consumer qualification](../work_log/0194_aurora_ssg_consumers.md).
+[SSG contract](semantic_scene_graph.md) and [consumer qualification](../work_log/0103_aurora_ssg_consumers.md).
 No QtCore/Gui/QPA source, system ABI or kernel file changed. Legacy non-Aurora
 Widgets remain byte-identical to the archived E17 probe and run on the new image.
 The E17 dark Canvas/Panel consumers have not acquired global live theme migration.

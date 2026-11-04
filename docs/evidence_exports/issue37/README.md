@@ -39,3 +39,6 @@ The migration addresses 540 files that contained confirmed personal home paths o
 - [fb12 dash lineage](fb12_dash_lineage.json)
 - [threading lineage](threading_lineage.json)
 - [Reviewed host documents lineage](host_documents_lineage.json)
+
+PR #40 independent export unit (self-contained flat manifest in `issue37_pr40/`):
+- [PR #40 sanitization export (lineage + receipt)](../issue37_pr40/lineage.json)

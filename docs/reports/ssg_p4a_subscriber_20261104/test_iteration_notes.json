@@ -60,9 +60,9 @@
     },
     {
       "case": "repo-wide docs consistency after main 071 sync",
-      "result": "FAILED_UPSTREAM_DOCUMENT_LINKS",
+      "result": "FAILED_THEN_RESOLVED",
       "cause": "docs/releases/next_release.md has two links to docs/releases/playbook.md, which is absent from upstream main",
-      "resolution": "confirmed the missing target on upstream main; left unrelated release documentation unchanged and retained passing P4A manifest, path, C30 and SPDX checks"
+      "resolution": "upstream 59ac60db added the linked playbook; reran docs_consistency on latest main and it passed"
     }
   ],
   "failed_attempts_are_retained": true,

@@ -17,11 +17,12 @@ the earlier `6fe330c` image, and a post-sync first-subscription smoke also
 passed on system build ID `f8eb0815098ae436`; its report is included.
 The post-sync system image and smoke are summarized in
 `latest_main_system_summary.json` and `latest_main_first_subscription_report.json`.
-The full `docs_consistency` check on that merged main currently fails because
-`docs/releases/next_release.md` links twice to the absent
-`docs/releases/playbook.md`. The target is absent from upstream `main`; the
-release documentation is outside this P4A change. The P4A report manifest,
-public-path, C30 and SPDX checks pass.
+Upstream then advanced to `59ac60db7f68fa0f9b13b56025df8549f1a72c5e` (#77).
+Its delta from `071330f3` adds release and usage documentation only, including
+the linked `docs/releases/playbook.md`; no runtime source changed. The
+`docs_consistency` check passes on the latest main. The full P4A matrix remains
+bound to the `6fe330c` image; the separate first-subscription smoke is bound to
+`071330f3`, whose runtime is unchanged in `59ac60db`.
 
 ## Acceptance matrix
 
@@ -39,7 +40,7 @@ public-path, C30 and SPDX checks pass.
 | `P4A_RESYNC` | `PASSED_SCOPED` | Corrupt or uncertain delivery is not replayed; a new session receives new source instances and fresh baselines |
 | `P4A_GUEST_STRESS` | `PASSED_SCOPED` | 12/12 complete first-subscription runs |
 | `P4A_P3C_COMPATIBILITY` | `PASS` | P3C contract probe and ordinary three-cycle Console Watch both rerun |
-| `P4A_PUBLIC_EVIDENCE_SCAN` | `FAIL` | P4A manifest, public-path, source, C30 and SPDX checks pass; repo-wide `docs_consistency` fails on two missing upstream release-playbook links |
+| `P4A_PUBLIC_EVIDENCE_SCAN` | `PASS` | Flat manifest, public-path, source, C30/SPDX and repo-wide `docs_consistency` checks pass on upstream `59ac60db` |
 | `P4A_PRODUCTION_BROKER` | `NOT_IMPLEMENTED` | This remains an explicitly prewired prototype |
 | `P4A_LOCALPILOT_END_TO_END` | `NOT_RUN` | No production LocalPilot or Permission Gateway integration |
 

@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "files": {
+    "after-failed-load.png": "045aa2379ef1fc2123465ccf271db820da02956ce1190986da9fc370c7ecafa3",
+    "after-failed-load.ppm.gz": "a035edf321310fd2eb9f3c4d49571b797e08d18e6688151b1b11dc2511f3abe8",
+    "before-failed-load.png": "5ed4855f55b70b084ce58896e742d1871bd1ca8e51ab597a74d399159bf726a3",
+    "before-failed-load.ppm.gz": "451dbc1026b653c5fb3417108c712269977f94b37e9de6aafd13bd8739ac47ae",
+    "error-recovery.png": "4efe4b996c825941e8203341580ef458d8e7875f403fef431e57d8e3595247c3",
+    "error-recovery.ppm.gz": "0bc3973aedd3080c375eaf51f9f579bf129fa317fc93ea0f3a84af1b730f6dc1",
+    "guest_qemu.log.gz": "22ad1e8363e67ecd3a79a213aa0963eb6a6550c562e3def9c882d5b1d8dfe5ca",
+    "guest_serial.log.gz": "d027720facee36ced2876e5a94c13f6b14451e6654b2d93b115f3dfcdc7ab3a1",
+    "report.json": "97de1fa8a830f9c8de1a98516c36e94f928b0efb8d02f4572072a5030aab621c",
+    "serial.log.gz": "d027720facee36ced2876e5a94c13f6b14451e6654b2d93b115f3dfcdc7ab3a1",
+    "start.png": "814b4923c87cf56554eca25addcf9a93a7c12a808279c1a3e6299338aaf07ddb",
+    "start.ppm.gz": "fa93d430527e11ddea93a4238a1656081b946b793928686cb7d2833727d2e2b4"
+  }
+}

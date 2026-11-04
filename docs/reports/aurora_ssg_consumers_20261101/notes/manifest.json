@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "files": {
+    "changed.json": "47b9d3f360c1edb16e192ace5ff44aeed371edfb4878b83dc201db46db45acc8",
+    "first.json": "36e197702abb93396f663f3d4d56b28643b4baa5914797e8d62ae119e895497e",
+    "guest_qemu.log.gz": "4ba4ec51e202960d1333ca37b4d239401f9a615965e8ce041157db39710527cd",
+    "guest_serial.log.gz": "d6f4d16fbc012ddfc46f8d706a9623a97553a0aa3ae83c2c2f29329f761bef25",
+    "notes-scrolled.png": "3ae3763bd6c5a9ccd45688e8d31356514e0247470aeebc8b4944d9247bf32365",
+    "notes-scrolled.ppm.gz": "18be0283dd6ec591378f893b93167a60e6a9f2f34cc5b2b17de894e456f6af35",
+    "report.json": "dab51be069cd623c940e01e389302635036eea5b04a02f14f18cae98ec0abde1",
+    "scrolled.json": "b10d6a2eb52a868e66e1aad5340c399d9b8f4b7f98e8daa0bb3cdae0283c0beb",
+    "serial.log.gz": "d6f4d16fbc012ddfc46f8d706a9623a97553a0aa3ae83c2c2f29329f761bef25"
+  }
+}

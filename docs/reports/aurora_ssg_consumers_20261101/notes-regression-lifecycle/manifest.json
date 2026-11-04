@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "files": {
+    "final.serial.log.gz": "305c07f00b328074cbcbc2ddf6b14fbe8e457c05ce6f1f5ff9d8b9b88188d414",
+    "guest_qemu.log.gz": "ece2ea08eb3525eb9f03fa192ff79ed49cb54173356bab42a2c97eaa0ea0096d",
+    "guest_serial.log.gz": "305c07f00b328074cbcbc2ddf6b14fbe8e457c05ce6f1f5ff9d8b9b88188d414",
+    "report.json": "cfdeb3dce48ce209fa67dbbaaac122e101f374e8503d55c805bbe9cacf8db733"
+  }
+}

@@ -1,0 +1,43 @@
+--- a/src/ports/qt6/aurora/ssg_pipe_provider.hpp
++++ b/src/ports/qt6/aurora/ssg_pipe_provider.hpp
+@@ -56,7 +56,7 @@
+     QThread *worker=nullptr;
+     GuiWatchdog watch;
+     alignas(4) xos::u32 stopping=0, mailbox=0;
+-    QByteArray reply;
++    QByteArray reply;bool test_cap_once=false;
+ 
+     QJsonObject execute(const QByteArray &bytes){
+         QJsonParseError error{};const auto doc=QJsonDocument::fromJson(bytes,&error);
+@@ -155,7 +155,14 @@
+             __atomic_store_n(&mailbox,0u,__ATOMIC_RELEASE);
+             if(!QMetaObject::invokeMethod(this,[this,request]{
+                 if(__atomic_load_n(&stopping,__ATOMIC_ACQUIRE))return;
+-                auto response=QJsonDocument(execute(request)).toJson(QJsonDocument::Compact);
++                auto object=execute(request);
++                const auto parsed=QJsonDocument::fromJson(request).object();
++                if((QCoreApplication::arguments().contains("--ssg-test-capped-always") ||
++                    (QCoreApplication::arguments().contains("--ssg-test-capped-once") && !test_cap_once)) &&
++                   parsed.value("op")=="snapshot" && parsed.value("role")=="document" && object.value("status")=="OK"){
++                    test_cap_once=true;object["capped"]=true;std::printf("P3C_TEST_CAPPED injected=1\n");
++                }
++                auto response=QJsonDocument(object).toJson(QJsonDocument::Compact);
+                 if(unsigned(response.size())>ssg_pipe::max_response)
+                     response=QJsonDocument(QJsonObject{{"status","RESOURCE_LIMIT"}}).toJson(QJsonDocument::Compact);
+                 reply=std::move(response);
+--- a/src/ports/qt6/editor/main.cpp
++++ b/src/ports/qt6/editor/main.cpp
+@@ -186,6 +186,13 @@
+             std::printf("SSG_PROVIDER_READY pid=%llu instance=%s text=%d\n",(unsigned long long)xos::sdk::pid(),pipe_instance.toUtf8().constData(),int(pipe_text));
+         }
+ #ifdef XOS_SSG_TEST_CONTROLS
++        if(qApp->arguments().contains("--ssg-test-capped-once") || qApp->arguments().contains("--ssg-test-capped-always")){
++            auto *noise=new QTimer(this);auto remaining=std::make_shared<int>(1200);
++            connect(noise,&QTimer::timeout,this,[noise,remaining]{
++                const auto text=QByteArray(80,'N');std::printf("P3C_TEST_NOISE %s\n",text.constData());
++                if(--*remaining<=0)noise->stop();
++            });noise->setInterval(5);noise->start();
++        }
+         // Present only in the separately compiled synthetic-test executable.
+         // These owner-side shortcuts are not exposed through the consumer pipe.
+         auto diagnostic=[this]{const auto value=text->toPlainText();

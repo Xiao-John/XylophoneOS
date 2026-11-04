@@ -32,6 +32,7 @@ inline void capture(const char *,const char *,unsigned,const QByteArray &){}
 // system monotonic clock bound each transfer without closing another route.
 class multi_source_client {
     const char *slot_;u32 in_,out_;QString instance_;i64 pid_;unsigned sequence_=0;u64 remaining_=source_ns;
+    u64 bytes_read_=0,bytes_written_=0;
     alignas(4) u32 cancelled_=0;
     QString error_,status_;
     struct Charge {
@@ -45,7 +46,7 @@ class multi_source_client {
             if(__atomic_load_n(&cancelled_,__ATOMIC_ACQUIRE)){error_="CANCELLED";return false;}
             if(thread::clock()>=until){error_="TIMEOUT";return false;}
             const auto n=sdk::syscall(write?sys_pipe_write:sys_pipe_read,write?out_:in_,reinterpret_cast<u64>(data+done),length-done);
-            if(n>0){done+=unsigned(n);continue;}
+            if(n>0){done+=unsigned(n);if(write)bytes_written_+=u64(n);else bytes_read_+=u64(n);continue;}
             if(n==0 && !write){error_=done?"TRUNCATED":"EOF";return false;}
             if(n!=process_error_would_block){error_="IO_ERROR";return false;}
             thread::sleep_until(thread::clock()+10000000ull);
@@ -58,6 +59,12 @@ public:
     const QString &error()const{return error_;}
     const QString &status()const{return status_;}
     u64 remaining_budget_ns()const{return remaining_;}
+    u64 bytes_read()const{return bytes_read_;}
+    u64 bytes_written()const{return bytes_written_;}
+    unsigned request_count()const{return sequence_;}
+    // A watch transaction gets its own bounded source budget. A terminal wire
+    // error remains terminal: a partially received frame cannot be reused.
+    void begin_observation(u64 budget){remaining_=qMin(source_ns,budget);}
     void cancel(){__atomic_store_n(&cancelled_,1u,__ATOMIC_RELEASE);}
     bool cancelled()const{return __atomic_load_n(&cancelled_,__ATOMIC_ACQUIRE)!=0;}
     QJsonObject request(const QJsonObject &object,bool *ok=nullptr,unsigned =0){
@@ -110,7 +117,7 @@ inline void *cancel_after_delay(void *argument){
 }
 #endif
 // A transaction never publishes staged text on reset, refusal or failure.
-inline bool collect_notes(multi_source_client &client,notes_baseline &output,QString &failure,bool inject=false,bool cancel_test=false){
+inline bool collect_notes(multi_source_client &client,notes_baseline &output,QString &failure,bool inject=false,bool cancel_test=false,bool *capped=nullptr){
     constexpr int max_units=131072,max_ranges=512,max_attempts=3,max_text_bytes=524288;
     bool injected=false;
 #ifdef XOS_SSG_P3B_TEST_DIAGNOSTICS
@@ -118,13 +125,15 @@ inline bool collect_notes(multi_source_client &client,notes_baseline &output,QSt
 #else
     (void)cancel_test;
 #endif
-    output=notes_baseline{};
+    output=notes_baseline{};if(capped)*capped=false;
     for(int attempt=0;attempt<max_attempts;++attempt){
         bool ok=false;const auto base=client.request({{"op","snapshot"},{"role","document"},{"visibleOnly",false},{"maxNodes",96}},&ok);
         if(!ok){failure=client.error();return false;}
         if(base.value("status")!="OK"){failure=base.value("status").toString();return false;}
         const auto nodes=base.value("nodes").toArray();
-        if(base.value("capped").toBool() || nodes.size()!=1 || base.value("sourceInstance").toString().isEmpty() || base.value("sourceEpoch").toString().isEmpty()) {failure="INVALID_SNAPSHOT";return false;}
+        if(base.value("capped").toBool() || nodes.size()!=1 || base.value("sourceInstance").toString().isEmpty() || base.value("sourceEpoch").toString().isEmpty()) {
+            if(capped)*capped=base.value("capped").toBool();
+            failure="INVALID_SNAPSHOT";return false;}
         const auto node=nodes.first().toObject();const auto access=node.value("textStatus").toString();
         if(access=="PROTECTED" || access=="NOT_AUTHORIZED"){failure=access=="PROTECTED"?"PROTECTED":"DENIED";return false;}
         if(node.value("id").toString().isEmpty()){failure="INVALID_NODE";return false;}

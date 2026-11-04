@@ -1,6 +1,6 @@
 # work_log 编号索引
 
-新增记录：[0196 — SSG P3B 双 Provider 聚合与隔离](0196_ssg_p3b_dual_provider.md)。
+新增记录：[0197 — SSG P3C engine-neutral watch](0197_ssg_p3c_engine_neutral_watch.md)。
 
 历史存在重复编号（同号多份，主题不同）；本索引消歧可追溯性。编号唯一性规则：
 **0149 之后仍发生过同号占号（见下表 0144 及以后各组），因此"自 0149 起全局唯一"
@@ -93,3 +93,4 @@
 | 0194 | `0194_ssg_notes_range_review.md` | Notes range review（PR #48） |
 | 0195 | `0195_ssg_p2f_structure_oracle.md` | SSG P2F structure Oracle（PR #49） |
 | 0196 | `0196_ssg_p3b_dual_provider.md` | SSG P3B 双 Provider 聚合与隔离（PR #50） |
+| 0197 | `0197_ssg_p3c_engine_neutral_watch.md` | SSG P3C engine-neutral watch（PR #51） |

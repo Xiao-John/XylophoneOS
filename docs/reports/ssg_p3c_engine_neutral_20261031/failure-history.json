@@ -1,0 +1,92 @@
+{
+  "status": "PRESERVED",
+  "exit_race_root_cause": "UNRESOLVED",
+  "events": [
+    {
+      "case": "watch-revoke-shutdown",
+      "result": "FAILED",
+      "observation": "After the owner revoke and three observation cycles, both provider workers logged EOF. The test sent Escape. Browser exited normally; Notes was cancelled after the 20-second shutdown bound, outcome killed, code -9. The supervisor exited 1; the sampled resource count was restored. The trigger and exact blocking location are not established, and this is not proof of the cause of the earlier single-source Consumer timeout.",
+      "serial_sha256": "d4e6af508e7e639e91ee682b457cbd27bc216400d2bcb77416ffb8cef1025786",
+      "report_sha256": "f45c67d2abdff63aa2d19b08f214cc795f827bb67b19651b8a037deda2f7dee5",
+      "inputs_manifest_sha256": "13435cbfe4e91b3d565646b9db703a9f59eaf4fd3a08f4de0d8a566ddbea0a37",
+      "retry": {
+        "status": "PASSED_SCOPED",
+        "serial_sha256": "1c8b17036a533c80770863381d33bae1d94b3724f02bd2cfec843abfebc00a55",
+        "note": "fresh guest retry; earlier failed run retained"
+      }
+    },
+    {
+      "case": "validation-wrapper",
+      "result": "FAILED_AFTER_GUEST_TIMEOUT_CASE",
+      "observation": "On Bash 3.2 the empty-array expansion in the host wrapper aborted before invoking the timeout verifier. The guest case itself completed and its independent verifier then passed separately. The wrapper was changed to explicit branches; the complete later target suite returned zero failures."
+    },
+    {
+      "case": "regression-preflight",
+      "result": "FAILED_BEFORE_GUEST",
+      "observation": "The summary log name matched the fresh-output prefix guard. A new distinct prefix was used; the full affected regression subsequently returned zero failures."
+    },
+    {
+      "case": "public-export-preflight",
+      "result": "BLOCKED_BEFORE_PUBLICATION",
+      "observation": "Strict serialization detected unmapped local paths in a P1 report. Environment-variable mappings were added and the same selected regression evidence was rescanned successfully. No failed export was published."
+    },
+    {
+      "case": "exploratory-namespace-checks",
+      "result": "FAILED_VERIFICATION",
+      "observation": "Two exploratory captures used the previous string namespace while the verifier had just been changed to require the newer form. Their assertion failures were kept locally. The current structured form is independently required in the final validation."
+    },
+    {
+      "case": "p3b-compatibility-protect-document-shutdown",
+      "result": "FAILED",
+      "observation": "The legacy P3B mode logged document protection, fresh-range and alternate-role refusal, followed by EOF for both provider workers. Notes was killed after the 20-second shutdown bound; the supervisor exited 1 and sampled resources recovered. This demonstrates another Notes shutdown failure outside watch mode; it does not establish a common root cause with the older Consumer race.",
+      "serial_sha256": "5573aa1e941a28aad82eb1567e195832ea51635a448fb3983b2419b6e0e18a4d",
+      "report_sha256": "c72d88d1ead1a5db3499fa19355a8de00e0c4d774e7d9e44490f46d99df10a8e",
+      "retry": {
+        "status": "PASSED_SCOPED",
+        "serial_sha256": "2655a1c0beaec5bb7142da3e9a3ed916050ac4787ae8f9dfa747fcc32eb86cd6",
+        "note": "fresh guest retry; earlier failed run retained"
+      }
+    },
+    {
+      "case": "watch-stress-run-09",
+      "result": "FAILED_INCOMPLETE_INITIAL_OBSERVATION",
+      "observation": "The initial Notes snapshot returned capped=true and queryDurationNs=50000000. The provider has a 30 ms traversal condition among several reasons for capping, but the response does not identify which condition fired. The watch emitted SOURCE_UNKNOWN with INVALID_SNAPSHOT, recovered on the next cycle with RESET_REQUIRED, and did not misreport the source as unchanged. The verifier correctly rejected the session as a complete baseline. Both providers and supervisor exited normally and sampled resources were restored.",
+      "serial_sha256": "ce942efdfa6e184237c349157c1dea42c9ac4006caf0d4b632d7bcfe441961f8",
+      "report_sha256": "75c8ed85bef7d467f7850414248929ae420a393cbab32c691f6bc6b77e46ca20",
+      "follow_up": "The later retry build passed one-shot and persistent capped fault tests; full validation and a new stress run remain separate. This original r7 session remains failed."
+    },
+    {
+      "case": "capped-retry-event-interleaving",
+      "result": "FAILED_VERIFICATION",
+      "observation": "The one-shot capped-fault guest run completed, but the first long P3C event JSON line was interrupted by concurrent Notes console output. The independent verifier could not parse all six event records. This exposed a shared-console framing bug; the original raw capture is retained locally and the event transport is being changed to bounded atomic records.",
+      "serial_sha256": "88138c416f97bef3837ee0c3bcda869776f07616fc1f0edad33482a2f836fc64",
+      "report_sha256": "8c427c7afa536bf2e12b2815fbe86c59c173925e9d4d73026f1793683134de80",
+      "follow_up": {
+        "status": "PASSED_SCOPED",
+        "observation": "The later framed build decoded all events while two synthetic console-noise records appeared between frame parts; the capped transaction was retried once. The old corrupt event remains a failed run.",
+        "serial_sha256": "d74c28ca16af306fd3d445b5d21affe11e86265b65de62dd9cd878ed1aa5dad4",
+        "check_sha256": "cde8eac8a7a886eb297d484bcab375c8e41df7d2eec1ef09aade4495ddacd4b1"
+      }
+    },
+    {
+      "case": "performance-outer-wrapper",
+      "result": "FAILED_AFTER_COMPARISON",
+      "observation": "The guest cases and comparison file completed, but the outer zsh command attempted to assign its read-only status variable and exited 1. The underlying comparison is preserved; a fresh wrapper retry is required.",
+      "comparison_sha256": "0d0673694d041559596fe71d847772a3b4815219751df7e70ae1fd85e6370011",
+      "retry": {
+        "exit_code": 0,
+        "comparison_status": "PARTIAL",
+        "comparison_sha256": "14dbd8a44870b3e3cb378c9c0075e75b7ebd91dc23a213a293068509280679a1",
+        "note": "fresh guest inputs; earlier wrapper failure retained"
+      }
+    }
+  ],
+  "diagnostic_patch_sha256": "d71040ec7d16c333dfa8189a65f9f094a83fbc7b0a506100a1044f13340935a5",
+  "diagnostic_status": "8/8 instrumented synthetic repeats completed with normal exits; the original failure did not recur and the cause is unresolved",
+  "native_join_candidate": {
+    "status": "UNADOPTED_INCONCLUSIVE",
+    "patch_sha256": "7bcec6090d4485df238328e77290352d2a0ff60687ef925ffab02f72ffdf13d2",
+    "observation": "8/8 candidate repeats and 8/8 instrumented original repeats exited normally. Neither reproduced the failure; no causal fix is established."
+  },
+  "target_build_relation": "The only changed target source inputs from r6 to r7 were the generic watch service and its synthetic contract fixture. The Notes provider, supervisor shutdown code and reused provider binaries were unchanged; this does not establish a common root cause."
+}

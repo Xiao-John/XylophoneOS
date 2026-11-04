@@ -1,0 +1,27 @@
+--- a/src/ports/qt6/aurora/ssg_pipe_provider.hpp
++++ b/src/ports/qt6/aurora/ssg_pipe_provider.hpp
+@@ -56,7 +56,7 @@
+     QThread *worker=nullptr;
+     GuiWatchdog watch;
+     alignas(4) xos::u32 stopping=0, mailbox=0;
+-    QByteArray reply;
++    QByteArray reply;bool test_cap_once=false;
+ 
+     QJsonObject execute(const QByteArray &bytes){
+         QJsonParseError error{};const auto doc=QJsonDocument::fromJson(bytes,&error);
+@@ -155,7 +155,14 @@
+             __atomic_store_n(&mailbox,0u,__ATOMIC_RELEASE);
+             if(!QMetaObject::invokeMethod(this,[this,request]{
+                 if(__atomic_load_n(&stopping,__ATOMIC_ACQUIRE))return;
+-                auto response=QJsonDocument(execute(request)).toJson(QJsonDocument::Compact);
++                auto object=execute(request);
++                const auto parsed=QJsonDocument::fromJson(request).object();
++                if((QCoreApplication::arguments().contains("--ssg-test-capped-always") ||
++                    (QCoreApplication::arguments().contains("--ssg-test-capped-once") && !test_cap_once)) &&
++                   parsed.value("op")=="snapshot" && parsed.value("role")=="document" && object.value("status")=="OK"){
++                    test_cap_once=true;object["capped"]=true;std::printf("P3C_TEST_CAPPED injected=1\n");
++                }
++                auto response=QJsonDocument(object).toJson(QJsonDocument::Compact);
+                 if(unsigned(response.size())>ssg_pipe::max_response)
+                     response=QJsonDocument(QJsonObject{{"status","RESOURCE_LIMIT"}}).toJson(QJsonDocument::Compact);
+                 reply=std::move(response);

@@ -1,0 +1,54 @@
+{
+  "validation_sources_at_start": {
+    "scripts/make_work_disk.py": "253258bc57e2c3ca69bfe6499688661e6d040b305157efd06628ab67405bfb71",
+    "scripts/run_ssg_p3c_validation.sh": "6381aa06d8d27377af048cd14d51b88096dae6b32235b0870057351b7f6e518e",
+    "scripts/ssg_public_paths.py": "a11b22f16ea8d1563f722efb02b7a4363cca6e879a0638f9c692755f9049a4b3",
+    "scripts/work_disk.py": "ce8c75d47451fe0016d7d7bf40e34b5317a149e4fc57c873ad575f9ccf11ad06",
+    "tests/boot_smoke.py": "2cce697d9f9e97e918a764349897a2f52bc5d5ed5368cef49c7f46058efc3393",
+    "tests/process_smoke.py": "9b77ae9f404f7357689d69fe4de032f17240de8ce6945ae3f20404bddaf254b0",
+    "tests/ssg_browser_structure.py": "d1dda66a4cdc6e0429958539c758632c13d44f41f35a2b6b14fc332299c809e1",
+    "tests/ssg_p3b_dynamic_verify.py": "af0512aa0703d9a7aeeb4f189fdc029d874e4148db9c4f9bf5ede75ebe9bf52e",
+    "tests/ssg_p3b_guest.py": "51147c0cc54c3b613f0b7c6b37d25d0bc1a51c3c41656e7d7847294d5f5adb13",
+    "tests/ssg_p3b_verify.py": "6e787f5e4b8686389e2ef412780e0247b5d36d76662de53bd90e9e59ef8d52a4",
+    "tests/ssg_watch_cancel_verify.py": "6df6c22c8fdca19bc64c677acc8f0f3eb7b57cab5097087cca4f0fc2e7a1a605",
+    "tests/ssg_watch_capped_verify.py": "454ffa9706e6045e2e4b6b8be9dc2a1ed74d542646720adfbd901e8ea69481cc",
+    "tests/ssg_watch_contract_guest.py": "e089fbaa662596de9fd3aecc9c7e06b7637f4da0b346070449b29327b2149e77",
+    "tests/ssg_watch_events.py": "a01b1c877c5eeda9c09e3620f1f15c35bc85448d70ce92616027140d777c63f8",
+    "tests/ssg_watch_events_test.py": "3068357e63f2a192faad74ac781ba764a1dec3974d4db28647fa54679d8e0ae9",
+    "tests/ssg_watch_guest.py": "d76857ae55c8bce204184debbff47f4e06626675c142d145a35bf30dd47a0757",
+    "tests/ssg_watch_incomplete_verify.py": "45d9ba632c90df0238c07eb534b7b16c072565ecc67e48fabf0708aae6b1c14b",
+    "tests/ssg_watch_nondiagnostic_verify.py": "6bfdfb166a9e2e4909cd7df550075e623d17be34f4a9a21729e18963a809c89b",
+    "tests/ssg_watch_perf_compare.py": "bed53ce4ac3d3b702c5b5d77e9448bd62b8fa156ddb768764f91194e287b1dc5",
+    "tests/ssg_watch_stress_guest.py": "df038c2d2102f2465d6f3459e1f6fb493067dc9e74483a1cf5d5ce5fe85fbaa0",
+    "tests/ssg_watch_timeout_verify.py": "796e9fb43bfc54daa4f930294306d811dc9c00d49c2cf70bb9f4f131e1c2e0f5",
+    "tests/ssg_watch_verify.py": "3c35284e33ba365ce3fb43c39c378fdfd0f9bc374fe01f1dc939c96d1900279a",
+    "tests/task_smoke.py": "f80466a8c0b64ec3f88bba127f7c47cd054ef322859f3d53c3330e6fe0ded57f"
+  },
+  "validation_snapshot_changes": [
+    "tests/ssg_watch_stress_guest.py (not used by validation; changed before the isolated stress run)"
+  ],
+  "additional_sources": {
+    "scripts/run_ssg_p3c_compatibility.sh": "c9c05621bf2a20e05bc3e1b731e37b0ab59cbf1a2609faea2a4e4ee558814512",
+    "scripts/run_ssg_p3c_performance.sh": "e6c398287557dc8bbdf378bbf083b707f89e649d697306bed4a6809f44813fe7",
+    "scripts/run_ssg_p3b_regressions.sh": "388cbfe8bcf2729cae7e7125e93e1d35d5d7aacf40a8ead8b579130a547c5e28",
+    "tests/ssg_p3b_scroll_verify.py": "d83528bd55a4a3e6b3da6551242800c81b78c11bf82285aa9539143f42e44790",
+    "tests/ssg_p3b_ordinary_verify.py": "738ad200524f89de9fcd4cf28df13ae5851a03db24d806db54fb85ecd8ccbc1a",
+    "tests/ssg_ipc_guest.py": "59d97d8d32c314c937b70f441c56a9e3be1ae63b12f816300932cef86d7a34ae",
+    "scripts/replay_ssg_p3c_evidence.py": "e47b0c8b4064412d0bbd14893802ec602dbf1bce5980089a5332d6444fc4c104"
+  },
+  "stress_runner_sha256": "225d7b3b1392b57281e482f04f9c7bb092757a11d5f5a7a869ea7af559f6c6db",
+  "stress_verifier_sha256": "3c35284e33ba365ce3fb43c39c378fdfd0f9bc374fe01f1dc939c96d1900279a",
+  "prior_stress_runner_sha256": "038db4852c2ced379346d1e332f732b0f483964c3d0398d024a88974cd53278e",
+  "prior_stress_verifier_sha256": "be56acdd0732dc6eb269fd7e070392805fb5b5449c787c4a7de27722b06bfb87",
+  "prior_verifier_commit": "3852fed5c8404aab12d590e83ca64a0a1b51638e",
+  "capped_noise_fixture": {
+    "scope": "test-only synthetic capped responses and bounded concurrent console noise in a real Notes process",
+    "sha256": {
+      "src/ports/qt6/aurora/ssg_pipe_provider.hpp": "4931f8ecf256cf8d3fc8dd823157c4f8ab316fecd4e6c243715d995b16a984a2",
+      "src/ports/qt6/editor/main.cpp": "aa3311d060c23a41216c71fe9c50021672cf576e755d950f91fab45842a4664e",
+      "tests/fixtures/qt6/notes_live_test.cpp": "d566f84261ddd3acdaac4475630325946c9d6301d292cb2d4d382a32af4dd704"
+    },
+    "elf_sha256": "1bd7203204652ae8e4ea09256798acba5480e28dc43f9b0d5cd114cafe1814f6"
+  },
+  "note": "Target source and ELF hashes are in evidence/build-manifest.json. Historical failures retain their own report and serial hashes."
+}

@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "scope": "changed source files only; SPDX marker presence and forbidden-path check, not distribution qualification",
+  "source_files_checked": 26,
+  "missing_spdx": [],
+  "forbidden_paths": [],
+  "distribution": "NOT_QUALIFIED"
+}

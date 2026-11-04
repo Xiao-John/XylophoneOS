@@ -36,3 +36,6 @@ docs/reports/net_clock_irq_split_20261030/runs/**/*.log -text whitespace=-blank-
 
 # The pinned liteHTML unified diff preserves upstream tab/blank context bytes.
 src/ports/aurora_browser/patches/*.patch whitespace=-blank-at-eol,-space-before-tab
+
+# Diagnostic unified diffs retain the required leading space on blank context.
+docs/reports/ssg_p3c_engine_neutral_20261031/*.patch whitespace=-blank-at-eol,-space-before-tab

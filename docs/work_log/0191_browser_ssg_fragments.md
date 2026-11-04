@@ -1,4 +1,4 @@
-# 0188 — Browser SSG fragment integrity
+# 0191 — Browser SSG fragment integrity
 
 2026-10-30. On SSG parent `a4c61619`, replace visibility inferred from a union
 rectangle with individually clipped real liteHTML render fragments. The bounded
@@ -22,3 +22,14 @@ Its frozen SSG evidence link now points to the report present on that branch;
 the later combined index remains in the Desktop review unit.
 
 2026-11-01 主线 72bfacb 及 #40 的审查导出上重新构建，Browser 七项客体检查通过；此前的几何结果仍绑定原输入。
+
+
+## 维护者合并记录（2026-11-04）
+
+- 编号 0188→0191（main 已占 0188/0189/0190；按 README「自 0188 起全局唯一」规则让号）。
+- 评审阻塞 3 的去重子项按**豁免**处理：`browser-dom-first.png` 与主线
+  `aurora_ssg_consumers_20261101/browser/` 同 sha 属跨目录冗余，但被本套
+  `browser/report.json` 引用且列入 manifest，删除构成证据语义修订
+  （evidence_integrity §4 需另行工作记录）；`serial.log.gz == guest_serial.log.gz`
+  为主线系统性旧惯例（先例 `631f85cc`）。豁免不等于去重已完成；如需清理，
+  另开任务按契约做语义修订记录。

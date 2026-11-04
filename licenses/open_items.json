@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "policy": "单一开放项登记处（D7 收口 A 项）。许可范围内任何未闭合项必须登记在此，带状态、证据与退出条件；scripts/license_audit.py 从本文件派生 not_completed 并做硬校验：证据缺失、状态非法、open 却无退出条件、或证据目录缺平铺 manifest.json，审计直接失败。禁止出现'报告里还有 NOT_RUN、审计却打印全绿'的情况——审计输出的未闭合项与本文件逐字一致。",
+  "statuses": {
+    "open": "未闭合，必须有退出条件",
+    "deferred": "已裁定推迟到特定触发点（写明触发点）",
+    "not_applicable": "不可执行或不适用（写明理由，不得当作'通过'）"
+  },
+  "items": [
+    {
+      "id": "gcc_runtime_member_mapping_unresolved",
+      "status": "open",
+      "scope": "D7/GNU Seed O5",
+      "summary": "GCC 运行库逐成员映射 397/407，10 个成员因候选多于一个或构建记录缺失而无归属结论",
+      "evidence": "docs/reports/gcc_runtime_member_license_20261103/",
+      "exit_condition": "10 个成员全部解析或逐个人工裁定并记录；或下一次 GCC 重建按 archive_member_provenance 契约产出 member_manifest.json 后复核",
+      "owner": "许可线"
+    },
+    {
+      "id": "qt_license_text_member_coverage",
+      "status": "open",
+      "scope": "D7/Qt 静态审查 NOT_RUN ⑧（①逐成员映射已闭：1522/1522）",
+      "summary": "37 份上游文本的『文本→成员』对应表已产出（12 命中、25 未命中并注明原因；上一版 9/28 含 HPND 误报已更正）；但 262 个仅版权/无声明成员（other_copyright 232 + no_declaration 30）尚未逐一枚举到具体上游文本",
+      "evidence": "docs/reports/qt_member_license_20261103/",
+      "exit_condition": "262 个成员按类别完成『成员→上游文本』覆盖核对并记录；或证明其条款由 COPYING/SPDX 表达式整体覆盖",
+      "owner": "许可线"
+    },
+    {
+      "id": "qt_static_redistribution_packaging_verification",
+      "status": "deferred",
+      "scope": "D7/Qt 静态审查 NOT_RUN ④",
+      "summary": "Qt 静态再分发的随包清单与哈希核验只有在真正打包 Qt 二进制时才能执行；在此之前资格 NOT_GRANTED",
+      "evidence": "docs/reports/qt_static_distribution_20261103/",
+      "trigger": "任何一次把 Qt 头/库/应用放进发行资产的打包动作之前",
+      "exit_condition": "打包时按 src/ports/qt6/REDISTRIBUTION.md 的交付物规格逐项核验并留证",
+      "owner": "发行线"
+    },
+    {
+      "id": "qt_static_redistribution_security_review",
+      "status": "deferred",
+      "scope": "Qt 静态审查 NOT_RUN ⑦（不属 D7 许可面）",
+      "summary": "Qt 静态分发所需的安全审查未做",
+      "evidence": "docs/reports/qt_static_distribution_20261103/",
+      "trigger": "分发 Qt 二进制之前",
+      "exit_condition": "安全审查完成并记录",
+      "owner": "另行立项"
+    },
+    {
+      "id": "qt_commercial_license_verification",
+      "status": "not_applicable",
+      "scope": "Qt 静态审查 NOT_RUN ⑥",
+      "summary": "仓库没有任何 Qt 商业授权材料，无法执行核验；不得记为通过",
+      "evidence": "docs/reports/qt_static_distribution_20261103/",
+      "reason": "无材料可核；若未来取得商业授权则转为 open",
+      "owner": "许可线"
+    },
+    {
+      "id": "byte_level_member_provenance",
+      "status": "deferred",
+      "scope": "归档成员来源",
+      "summary": "Qt 侧已达字节级（1522/1522 成员与构建对象逐字节一致）；newlib 依赖记录可复算；GCC 运行库仍为推导（397/407，无全量字节/一手记录）",
+      "evidence": "docs/contracts/archive_member_provenance.md",
+      "trigger": "下一次各组件重建时按契约产出 member_manifest.json",
+      "exit_condition": "契约生效后，归档与构建清单逐成员一致即视为溯源完成",
+      "owner": "构建线"
+    },
+    {
+      "id": "gnu_notice_coverage_gaps",
+      "status": "open",
+      "scope": "GNU Seed 分发义务 O3/O4/O8",
+      "summary": "根 NOTICE 缺 GNU 组件条目；客体 /usr/share/licenses/ 无 GNU 条目；GFDL 手册页随工具分发但未登记为组件",
+      "evidence": "docs/reports/gnu_seed_distribution_20261103/",
+      "exit_condition": "根 NOTICE 补齐 GNU 条目、GFDL 手册页登记为组件；客体目录覆盖在下一次发行打包时核验",
+      "owner": "发行线"
+    },
+    {
+      "id": "gnu_1024_notice_historical_gap",
+      "status": "not_applicable",
+      "scope": "GNU Seed 分发义务 O3/O7（历史）",
+      "summary": "0.0.1-1024 已发布包内无 third_party_notices、无 GNU 文本；已发布资产不可回改",
+      "evidence": "docs/reports/gnu_seed_distribution_20261103/",
+      "reason": "历史事实，按老人老办法登记不修；1026 起已随包携带",
+      "owner": "许可线"
+    }
+  ]
+}

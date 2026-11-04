@@ -1,0 +1,2937 @@
+{
+  "archives": {
+    "libgcc.a": {
+      "member_count": 147,
+      "members": [
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "__gcc_bcmp.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "unmapped",
+          "member": "__main.o/",
+          "resolution": "ambiguous_stem_text:c++tools/server.cc|contrib/gthr_supp_vxw_5x.c|contrib/paranoia.cc|contrib/reghunt/examples/28970.c",
+          "source": null
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "_absvdi2.o/",
+          "resolution": "symbol_lookup",
+          "source": "gcc/config/gcn/gcn.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_absvsi2.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "_addvdi3.o/",
+          "resolution": "symbol_lookup",
+          "source": "gcc/config/gcn/gcn.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_addvsi3.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_ashldi3.o/",
+          "resolution": "stem_text_search",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_ashrdi3.o/",
+          "resolution": "stem_text_search",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_bswapdi2.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_bswapsi2.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_clear_cache.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "_clrsbdi2.o/",
+          "resolution": "symbol_lookup",
+          "source": "gcc/config/gcn/gcn.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_clrsbsi2.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/config/avr/lib2funcs.c"
+        },
+        {
+          "declaration_category": "unmapped",
+          "member": "_clz.o/",
+          "resolution": "ambiguous_stem_text:gcc/bitmap.cc|gcc/c/c-parser.cc|gcc/config/i386/clzerointrin.h|gcc/config/i386/i386-builtins.cc",
+          "source": null
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_clzdi2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/config/nds32/lib2csrc-mculib/_clzdi2.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_clzsi2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/config/nds32/lib2csrc-mculib/_clzsi2.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_cmpdi2.o/",
+          "resolution": "stem_text_search",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "unmapped",
+          "member": "_ctors.o/",
+          "resolution": "ambiguous_stem_text:gcc/ada/adaint.c|gcc/ada/adaint.h|gcc/ada/gcc-interface/decl.cc|gcc/ada/gcc-interface/trans.cc",
+          "source": null
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "_ctzdi2.o/",
+          "resolution": "symbol_lookup",
+          "source": "gcc/config/gcn/gcn.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_ctzsi2.o/",
+          "resolution": "stem_text_search",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_divdc3.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/libgcc2.h"
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "_divdi3.o/",
+          "resolution": "symbol_lookup",
+          "source": "gcc/config/gcn/gcn.cc"
+        },
+        {
+          "declaration_category": "no_declaration",
+          "member": "_divhc3.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/config/i386/_divhc3.c"
+        },
+        {
+          "declaration_category": "unmapped",
+          "member": "_divmodbitint4.o",
+          "resolution": "ambiguous_symbol:gcc/internal-fn.cc|libgcc/libgcc2.c|libgcc/libgcc2.h|libgcc/soft-fp/bitint.h",
+          "source": null
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "_divmoddi4.o/",
+          "resolution": "symbol_lookup",
+          "source": "gcc/config/i386/i386.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_divsc3.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/libgcc2.h"
+        },
+        {
+          "declaration_category": "no_declaration",
+          "member": "_divtc3.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/config/i386/64/_divtc3.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_divxc3.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/libgcc2.h"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_eprintf.o/",
+          "resolution": "stem_text_search",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "_ffsdi2.o/",
+          "resolution": "symbol_lookup",
+          "source": "gcc/config/gcn/gcn.cc"
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "_ffssi2.o/",
+          "resolution": "symbol_lookup",
+          "source": "gcc/config/mmix/mmix.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_fixdfdi.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/config/s390/32/_fixdfdi.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_fixsfdi.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/config/s390/32/_fixsfdi.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_fixunsdfdi.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/config/s390/32/_fixunsdfdi.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "_fixunsdfsi.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/soft-fp/fixunsdfdi.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_fixunssfdi.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/config/s390/32/_fixunssfdi.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "_fixunssfsi.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/soft-fp/fixunssfdi.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_fixunsxfdi.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/config/ia64/lib1funcs.S"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_fixunsxfsi.o/",
+          "resolution": "stem_text_search",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_fixxfdi.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/config/ia64/lib1funcs.S"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "_floatdidf.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/soft-fp/floattidf.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "_floatdisf.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/soft-fp/floattisf.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_floatdixf.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/config/ia64/lib1funcs.S"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "_floatundidf.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/soft-fp/floatuntidf.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "_floatundisf.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/soft-fp/floatuntisf.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_floatundixf.o/",
+          "resolution": "stem_text_search",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_lshrdi3.o/",
+          "resolution": "stem_text_search",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "_moddi3.o/",
+          "resolution": "symbol_lookup",
+          "source": "gcc/config/gcn/gcn.cc"
+        },
+        {
+          "declaration_category": "unmapped",
+          "member": "_mulbitint3.o/",
+          "resolution": "ambiguous_symbol:gcc/internal-fn.cc|libgcc/libgcc2.c|libgcc/libgcc2.h|libgcc/soft-fp/bitint.h",
+          "source": null
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_muldc3.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/libgcc2.h"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_muldi3.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/config/riscv/multi3.c"
+        },
+        {
+          "declaration_category": "no_declaration",
+          "member": "_mulhc3.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/config/i386/_mulhc3.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_mulsc3.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/libgcc2.h"
+        },
+        {
+          "declaration_category": "no_declaration",
+          "member": "_multc3.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/config/i386/64/_multc3.c"
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "_mulvdi3.o/",
+          "resolution": "symbol_lookup",
+          "source": "gcc/config/gcn/gcn.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_mulvsi3.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_mulxc3.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/libgcc2.h"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_negdi2.o/",
+          "resolution": "stem_text_search",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "_negvdi2.o/",
+          "resolution": "symbol_lookup",
+          "source": "gcc/config/gcn/gcn.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_negvsi2.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "_paritydi2.o/",
+          "resolution": "symbol_lookup",
+          "source": "gcc/config/gcn/gcn.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_paritysi2.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/config/avr/lib1funcs.S"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_popcount_tab.o/",
+          "resolution": "stem_text_search",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "_popcountdi2.o/",
+          "resolution": "symbol_lookup",
+          "source": "gcc/config/gcn/gcn.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_popcountsi2.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/config/avr/lib1funcs.S"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_powidf2.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_powisf2.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "no_declaration",
+          "member": "_powitf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/config/i386/64/_powitf2.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_powixf2.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "_subvdi3.o/",
+          "resolution": "symbol_lookup",
+          "source": "gcc/config/gcn/gcn.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_subvsi3.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_trampoline.o/",
+          "resolution": "stem_text_search",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_ucmpdi2.o/",
+          "resolution": "stem_text_search",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "_udiv_w_sdiv.o/",
+          "resolution": "symbol_lookup",
+          "source": "libgcc/libgcc2.c"
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "_udivdi3.o/",
+          "resolution": "symbol_lookup",
+          "source": "gcc/config/gcn/gcn.cc"
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "_udivmoddi4.o/",
+          "resolution": "symbol_lookup",
+          "source": "gcc/config/i386/i386.cc"
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "_umoddi3.o/",
+          "resolution": "symbol_lookup",
+          "source": "gcc/config/gcn/gcn.cc"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "addtf3.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/addtf3.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "cpuinfo.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/config/i386/cpuinfo.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "divtf3.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/divtf3.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "emutls.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/emutls.c"
+        },
+        {
+          "declaration_category": "unmapped",
+          "member": "enable-execute-stack.o",
+          "resolution": "ambiguous_symbol:gcc/config/alpha/alpha.cc|gcc/config/i386/i386.cc|gcc/config/pa/pa.cc|gcc/config/sol2.h",
+          "source": null
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "eqhf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/eqhf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "eqtf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/eqtf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "extendbfsf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/extendbfsf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "extenddftf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/extenddftf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "extendhfdf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/extendhfdf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "extendhfsf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/extendhfsf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "extendhftf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/extendhftf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "extendhfxf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/extendhfxf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "extendsfdf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/extendsfdf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "extendsftf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/extendsftf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "extendxftf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/extendxftf2.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "fixdfbitint.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/fixdfbitint.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "fixhfti.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/fixhfti.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "fixsfbitint.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/fixsfbitint.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "fixtfbitint.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/fixtfbitint.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "fixtfdi.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/fixtfdi.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "fixtfsi.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/fixtfsi.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "fixtfti.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/fixtfti.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "fixunshfti.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/fixunshfti.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "fixunstfdi.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/fixunstfdi.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "fixunstfsi.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/fixunstfsi.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "fixunstfti.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/fixunstfti.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "fixxfbitint.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/fixxfbitint.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "floatbitintbf.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/floatbitintbf.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "floatbitintdf.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/floatbitintdf.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "floatbitinthf.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/floatbitinthf.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "floatbitintsf.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/floatbitintsf.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "floatbitinttf.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/floatbitinttf.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "floatbitintxf.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/floatbitintxf.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "floatditf.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/floatditf.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "floatsitf.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/floatsitf.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "floattibf.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/floattibf.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "floattihf.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/floattihf.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "floattitf.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/floattitf.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "floatunditf.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/floatunditf.c"
+        },
+        {
+          "declaration_category": "unmapped",
+          "member": "floatunsitf.o/",
+          "resolution": "ambiguous_stem:libgcc/floatunsitf.c|libgcc/soft-fp/floatunsitf.c",
+          "source": null
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "floatuntibf.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/floatuntibf.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "floatuntihf.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/floatuntihf.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "floatuntitf.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/floatuntitf.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "getf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/getf2.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "hardcfr.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/hardcfr.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "letf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/letf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "multf3.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/multf3.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "negtf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/negtf2.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "sfp-exceptions.o",
+          "resolution": "exact_stem",
+          "source": "libgcc/config/i386/sfp-exceptions.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "strub.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/strub.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "subtf3.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/subtf3.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "truncdfbf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/truncdfbf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "truncdfhf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/truncdfhf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "truncdfsf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/truncdfsf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "trunchfbf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/trunchfbf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "truncsfbf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/truncsfbf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "truncsfhf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/truncsfhf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "trunctfbf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/trunctfbf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "trunctfdf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/trunctfdf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "trunctfhf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/trunctfhf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "trunctfsf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/trunctfsf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "trunctfxf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/trunctfxf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "truncxfbf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/truncxfbf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "truncxfhf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/truncxfhf2.c"
+        },
+        {
+          "declaration_category": "other_copyright",
+          "declaration_text": "Copyright (",
+          "member": "unordtf2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/soft-fp/unordtf2.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "unwind-c.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/unwind-c.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "unwind-dw2-fde.o",
+          "resolution": "exact_stem",
+          "source": "libgcc/unwind-dw2-fde.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "unwind-dw2.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/unwind-dw2.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "unwind-sjlj.o/",
+          "resolution": "exact_stem",
+          "source": "libgcc/unwind-sjlj.c"
+        }
+      ],
+      "path": ".cache/xos_seed/gcc/relinks/target_runtime_v5_receipt/lib/libgcc.a",
+      "resolved": 140
+    },
+    "libstdc++.a": {
+      "member_count": 196,
+      "members": [
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "allocator-inst.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/allocator-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "array_type_info.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/array_type_info.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "assert_fail.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/assert_fail.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "atexit_arm.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/atexit_arm.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "atomic.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++20/atomic.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "atomicity.o/",
+          "resolution": "exact_stem",
+          "source": "libstdc++-v3/include/ext/atomicity.h"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "bad_alloc.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/bad_alloc.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "bad_array_length.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/bad_array_length.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "bad_array_new.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/bad_array_new.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "bad_cast.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/bad_cast.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "bad_typeid.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/bad_typeid.cc"
+        },
+        {
+          "declaration_category": "unmapped",
+          "member": "basic_file.o/",
+          "resolution": "ambiguous_stem_text:gcc/cp/std-name-hint.h|libgcc/config/i386/gthr-win32.h|libstdc++-v3/include/ext/enc_filebuf.h|libstdc++-v3/include/ext/stdio_filebuf.h",
+          "source": null
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "bitmap_allocator.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/bitmap_allocator.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "c++locale.o/",
+          "resolution": "symbol_lookup",
+          "source": "libstdc++-v3/config/locale/generic/c_locale.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "chrono.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/chrono.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "class_type_info.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/class_type_info.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "clock.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++20/clock.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "codecvt.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/codecvt.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "codecvt_members.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/config/locale/generic/codecvt_members.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "collate_members.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/config/locale/generic/collate_members.cc"
+        },
+        {
+          "declaration_category": "unmapped",
+          "member": "collate_members_cow.o",
+          "resolution": "ambiguous_symbol:libstdc++-v3/config/locale/dragonfly/collate_members.cc|libstdc++-v3/config/locale/generic/collate_members.cc|libstdc++-v3/config/locale/gnu/collate_members.cc|libstdc++-v3/include/bits/regex.h",
+          "source": null
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "compatibility-atomic-c++0x.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/compatibility-atomic-c++0x.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "compatibility-c++0x.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/compatibility-c++0x.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "compatibility-chrono.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/compatibility-chrono.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "compatibility-condvar.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/compatibility-condvar.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "compatibility-debug_list-2.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/compatibility-debug_list-2.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "compatibility-debug_list.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/compatibility-debug_list.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "compatibility-thread-c++0x.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/compatibility-thread-c++0x.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "compatibility.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/compatibility.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "complex_io.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/complex_io.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "concept-inst.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/concept-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "condition_variable.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/condition_variable.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "cow-fs_dir.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++17/cow-fs_dir.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "cow-fs_ops.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++17/cow-fs_ops.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "cow-fs_path.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++17/cow-fs_path.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "cow-fstream-inst.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/cow-fstream-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "cow-istream-string.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/cow-istream-string.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "cow-locale_init.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/cow-locale_init.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "cow-shim_facets.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/cow-shim_facets.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "cow-sstream-inst.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/cow-sstream-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "cow-stdexcept.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/cow-stdexcept.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "cow-string-inst.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/cow-string-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "cow-string-io-inst.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/cow-string-io-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "cow-system_error.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/cow-system_error.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "cow-wstring-inst.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/cow-wstring-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "cow-wstring-io-inst.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/cow-wstring-io-inst.cc"
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "cp-demangle.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/../libiberty/cp-demangle.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "ctype.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/ctype.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "ctype_configure_char.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/config/os/newlib/ctype_configure_char.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "ctype_members.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/config/locale/newlib/ctype_members.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "cxx11-hash_tr1.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/cxx11-hash_tr1.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "cxx11-ios_failure.o",
+          "resolution": "exact_stem",
+          "source": "libstdc++-v3/src/c++11/cxx11-ios_failure.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "cxx11-locale-inst.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/cxx11-locale-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "cxx11-shim_facets.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/cxx11-shim_facets.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "cxx11-stdexcept.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/cxx11-stdexcept.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "cxx11-wlocale-inst.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/cxx11-wlocale-inst.cc"
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "debug.o/",
+          "resolution": "dependency_file",
+          "source": "gcc/debug.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_op.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_op.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_opa.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_opa.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_opant.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_opant.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_opnt.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_opnt.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_ops.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_ops.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_opsa.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_opsa.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_opv.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_opv.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_opva.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_opva.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_opvant.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_opvant.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_opvnt.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_opvnt.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_opvs.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_opvs.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_opvsa.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_opvsa.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "dyncast.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/dyncast.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_alloc.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_alloc.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_arm.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_arm.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_aux_runtime.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_aux_runtime.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_call.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_call.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_catch.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_catch.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_exception.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_exception.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_globals.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_globals.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_personality.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_personality.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_ptr.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_ptr.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_term_handler.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_term_handler.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_terminate.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_terminate.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_throw.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_throw.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_tm.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_tm.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_type.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_type.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_unex_handler.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_unex_handler.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "enum_type_info.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/enum_type_info.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "ext-inst.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/ext-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "ext11-inst.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/ext11-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "floating_from_chars.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++17/floating_from_chars.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "floating_to_chars.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++17/floating_to_chars.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "format-inst.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++20/format-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "format.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++20/format.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "fs_dir.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++17/fs_dir.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "fs_ops.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++17/fs_ops.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "fs_path.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++17/fs_path.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "fstream-inst.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/fstream-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "functexcept.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/functexcept.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "function_type_info.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/function_type_info.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "functional.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/functional.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "fundamental_type_info.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/fundamental_type_info.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "futex.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/futex.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "future.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/future.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "globals_io.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/globals_io.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "guard.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/guard.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "guard_error.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/guard_error.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "hash_bytes.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/hash_bytes.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "hash_c++0x.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/hash_c++0x.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "hash_tr1.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/hash_tr1.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "hashtable_c++0x.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/hashtable_c++0x.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "hashtable_tr1.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/hashtable_tr1.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "ios-inst.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/ios-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "ios.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/ios.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "ios_errcat.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/ios_errcat.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "ios_failure.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/ios_failure.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "ios_init.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/ios_init.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "ios_locale.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/ios_locale.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "iostream-inst.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/iostream-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "istream-inst.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/istream-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "istream-string.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/istream-string.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "istream.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/istream.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "limits.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/limits.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "list-aux-2.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/list-aux-2.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "list-aux.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/list-aux.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "list.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/list.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "list_associated-2.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/list_associated-2.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "list_associated.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/list_associated.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "locale-inst.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/locale-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "locale.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/locale.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "locale_facets.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/locale_facets.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "locale_init.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/locale_init.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "localename.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/localename.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "lt1-codecvt.o/",
+          "resolution": "build_log_libtool_alias",
+          "source": "libstdc++-v3/src/c++98/codecvt.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "lt2-cow-string-inst.o",
+          "resolution": "build_log_libtool_alias",
+          "source": "libstdc++-v3/src/c++11/cow-string-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "lt3-ostream-inst.o",
+          "resolution": "build_log_libtool_alias",
+          "source": "libstdc++-v3/src/c++11/ostream-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "lt4-string-inst.o",
+          "resolution": "build_log_libtool_alias",
+          "source": "libstdc++-v3/src/c++11/string-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "lt5-cow-string-inst.o",
+          "resolution": "build_log_libtool_alias",
+          "source": "libstdc++-v3/src/c++11/cow-string-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "lt6-sstream-inst.o",
+          "resolution": "build_log_libtool_alias",
+          "source": "libstdc++-v3/src/c++11/sstream-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "lt7-string-inst.o",
+          "resolution": "build_log_libtool_alias",
+          "source": "libstdc++-v3/src/c++11/string-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "math_stubs_float.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/math_stubs_float.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "math_stubs_long_double.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/math_stubs_long_double.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "memory_resource.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++17/memory_resource.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "messages_members.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/config/locale/generic/messages_members.cc"
+        },
+        {
+          "declaration_category": "unmapped",
+          "member": "messages_members_cow.o",
+          "resolution": "ambiguous_symbol:libstdc++-v3/config/locale/generic/messages_members.cc|libstdc++-v3/config/locale/generic/messages_members.h|libstdc++-v3/config/locale/gnu/messages_members.cc|libstdc++-v3/config/locale/gnu/messages_members.h",
+          "source": null
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "misc-inst.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/misc-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "monetary_members.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/config/locale/generic/monetary_members.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "monetary_members_cow.o",
+          "resolution": "symbol_lookup",
+          "source": "libstdc++-v3/src/c++11/cxx11-shim_facets.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "mt_allocator.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/mt_allocator.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "mutex.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/mutex.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "nested_exception.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/nested_exception.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "new_handler.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/new_handler.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "new_op.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/new_op.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "new_opa.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/new_opa.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "new_opant.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/new_opant.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "new_opnt.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/new_opnt.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "new_opv.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/new_opv.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "new_opva.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/new_opva.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "new_opvant.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/new_opvant.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "new_opvnt.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/new_opvnt.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "numeric_members.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/config/locale/generic/numeric_members.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "numeric_members_cow.o",
+          "resolution": "symbol_lookup",
+          "source": "libstdc++-v3/src/c++11/locale_init.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "ostream-inst.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/ostream-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "parallel_settings.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/parallel_settings.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "pbase_type_info.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/pbase_type_info.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "placeholders.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/placeholders.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "pmem_type_info.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/pmem_type_info.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "pointer_type_info.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/pointer_type_info.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "pool_allocator.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/pool_allocator.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "pure.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/pure.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "random.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/random.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "regex.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/regex.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "shared_ptr.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/shared_ptr.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "si_class_type_info.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/si_class_type_info.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "snprintf_lite.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/snprintf_lite.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "sso_string.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/sso_string.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "sstream-inst.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/sstream-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "stdexcept.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/stdexcept.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "streambuf-inst.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/streambuf-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "streambuf.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/streambuf.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "string-inst.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/string-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "string-io-inst.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/string-io-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "strstream.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/strstream.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "syncbuf.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++20/syncbuf.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "system_error.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/system_error.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "thread.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/thread.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "time_members.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/config/locale/generic/time_members.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "tinfo.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/tinfo.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "tinfo2.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/tinfo2.cc"
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "tree.o/",
+          "resolution": "dependency_file",
+          "source": "gcc/tree.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "tzdb.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++20/tzdb.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "valarray.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++98/valarray.cc"
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "vec.o/",
+          "resolution": "dependency_file",
+          "source": "gcc/vec.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "vmi_class_type_info.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/vmi_class_type_info.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "vterminate.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/vterminate.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "wlocale-inst.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/wlocale-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "wstring-inst.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/wstring-inst.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "wstring-io-inst.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/src/c++11/wstring-io-inst.cc"
+        }
+      ],
+      "path": ".cache/xos_seed/gcc/relinks/target_runtime_v5_receipt/lib/libstdc++.a",
+      "resolved": 193
+    },
+    "libsupc++.a": {
+      "member_count": 64,
+      "members": [
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "array_type_info.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/array_type_info.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "atexit_arm.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/atexit_arm.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "atomicity.o/",
+          "resolution": "exact_stem",
+          "source": "libstdc++-v3/include/ext/atomicity.h"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "bad_alloc.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/bad_alloc.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "bad_array_length.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/bad_array_length.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "bad_array_new.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/bad_array_new.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "bad_cast.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/bad_cast.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "bad_typeid.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/bad_typeid.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "class_type_info.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/class_type_info.cc"
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "cp-demangle.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/../libiberty/cp-demangle.c"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_op.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_op.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_opa.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_opa.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_opant.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_opant.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_opnt.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_opnt.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_ops.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_ops.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_opsa.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_opsa.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_opv.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_opv.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_opva.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_opva.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_opvant.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_opvant.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_opvnt.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_opvnt.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_opvs.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_opvs.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "del_opvsa.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/del_opvsa.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "dyncast.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/dyncast.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_alloc.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_alloc.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_arm.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_arm.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_aux_runtime.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_aux_runtime.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_call.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_call.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_catch.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_catch.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_exception.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_exception.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_globals.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_globals.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_personality.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_personality.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_ptr.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_ptr.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_term_handler.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_term_handler.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_terminate.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_terminate.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_throw.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_throw.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_tm.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_tm.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_type.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_type.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "eh_unex_handler.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/eh_unex_handler.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "enum_type_info.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/enum_type_info.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "function_type_info.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/function_type_info.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "fundamental_type_info.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/fundamental_type_info.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "guard.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/guard.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "guard_error.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/guard_error.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "hash_bytes.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/hash_bytes.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "nested_exception.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/nested_exception.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "new_handler.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/new_handler.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "new_op.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/new_op.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "new_opa.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/new_opa.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "new_opant.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/new_opant.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "new_opnt.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/new_opnt.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "new_opv.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/new_opv.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "new_opva.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/new_opva.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "new_opvant.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/new_opvant.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "new_opvnt.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/new_opvnt.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "pbase_type_info.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/pbase_type_info.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "pmem_type_info.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/pmem_type_info.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "pointer_type_info.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/pointer_type_info.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "pure.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/pure.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "si_class_type_info.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/si_class_type_info.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "tinfo.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/tinfo.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "tinfo2.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/tinfo2.cc"
+        },
+        {
+          "declaration_category": "gpl",
+          "declaration_text": "GNU General Public License",
+          "member": "vec.o/",
+          "resolution": "dependency_file",
+          "source": "gcc/vec.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "vmi_class_type_info.o",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/vmi_class_type_info.cc"
+        },
+        {
+          "declaration_category": "gcc_runtime_exception",
+          "declaration_text": "GCC Runtime Library Exception",
+          "member": "vterminate.o/",
+          "resolution": "build_log",
+          "source": "libstdc++-v3/libsupc++/vterminate.cc"
+        }
+      ],
+      "path": ".cache/xos_seed/gcc/relinks/target_runtime_v5_receipt/lib/libsupc++.a",
+      "resolved": 64
+    }
+  },
+  "declaration_categories": {
+    "gcc_runtime_exception": 314,
+    "gpl": 23,
+    "no_declaration": 5,
+    "other_copyright": 55
+  },
+  "disclaimer": "Declaration extraction and source attribution, not a per-member legal opinion; GCC Runtime Library Exception and per-file terms are recorded from the sources that were matched.",
+  "generated_by": "scripts/gcc_runtime_member_license_map.py",
+  "source_tree": ".cache/xos_seed/gcc/source/gcc-16.2.0",
+  "totals": {
+    "members": 407,
+    "resolution_tiers": {
+      "ambiguous_stem": 1,
+      "ambiguous_stem_text": 4,
+      "ambiguous_symbol": 5,
+      "build_log": 240,
+      "build_log_libtool_alias": 7,
+      "dependency_file": 4,
+      "exact_stem": 82,
+      "stem_text_search": 12,
+      "symbol_lookup": 52
+    },
+    "resolved": 397,
+    "unmapped": 10
+  },
+  "unmapped": [
+    {
+      "archive": "libgcc.a",
+      "member": "__main.o/",
+      "resolution": "ambiguous_stem_text:c++tools/server.cc|contrib/gthr_supp_vxw_5x.c|contrib/paranoia.cc|contrib/reghunt/examples/28970.c"
+    },
+    {
+      "archive": "libgcc.a",
+      "member": "_clz.o/",
+      "resolution": "ambiguous_stem_text:gcc/bitmap.cc|gcc/c/c-parser.cc|gcc/config/i386/clzerointrin.h|gcc/config/i386/i386-builtins.cc"
+    },
+    {
+      "archive": "libgcc.a",
+      "member": "_ctors.o/",
+      "resolution": "ambiguous_stem_text:gcc/ada/adaint.c|gcc/ada/adaint.h|gcc/ada/gcc-interface/decl.cc|gcc/ada/gcc-interface/trans.cc"
+    },
+    {
+      "archive": "libgcc.a",
+      "member": "_divmodbitint4.o",
+      "resolution": "ambiguous_symbol:gcc/internal-fn.cc|libgcc/libgcc2.c|libgcc/libgcc2.h|libgcc/soft-fp/bitint.h"
+    },
+    {
+      "archive": "libgcc.a",
+      "member": "_mulbitint3.o/",
+      "resolution": "ambiguous_symbol:gcc/internal-fn.cc|libgcc/libgcc2.c|libgcc/libgcc2.h|libgcc/soft-fp/bitint.h"
+    },
+    {
+      "archive": "libgcc.a",
+      "member": "enable-execute-stack.o",
+      "resolution": "ambiguous_symbol:gcc/config/alpha/alpha.cc|gcc/config/i386/i386.cc|gcc/config/pa/pa.cc|gcc/config/sol2.h"
+    },
+    {
+      "archive": "libgcc.a",
+      "member": "floatunsitf.o/",
+      "resolution": "ambiguous_stem:libgcc/floatunsitf.c|libgcc/soft-fp/floatunsitf.c"
+    },
+    {
+      "archive": "libstdc++.a",
+      "member": "basic_file.o/",
+      "resolution": "ambiguous_stem_text:gcc/cp/std-name-hint.h|libgcc/config/i386/gthr-win32.h|libstdc++-v3/include/ext/enc_filebuf.h|libstdc++-v3/include/ext/stdio_filebuf.h"
+    },
+    {
+      "archive": "libstdc++.a",
+      "member": "collate_members_cow.o",
+      "resolution": "ambiguous_symbol:libstdc++-v3/config/locale/dragonfly/collate_members.cc|libstdc++-v3/config/locale/generic/collate_members.cc|libstdc++-v3/config/locale/gnu/collate_members.cc|libstdc++-v3/include/bits/regex.h"
+    },
+    {
+      "archive": "libstdc++.a",
+      "member": "messages_members_cow.o",
+      "resolution": "ambiguous_symbol:libstdc++-v3/config/locale/generic/messages_members.cc|libstdc++-v3/config/locale/generic/messages_members.h|libstdc++-v3/config/locale/gnu/messages_members.cc|libstdc++-v3/config/locale/gnu/messages_members.h"
+    }
+  ],
+  "version": 1
+}

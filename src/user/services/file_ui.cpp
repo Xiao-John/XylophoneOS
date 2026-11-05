@@ -304,6 +304,18 @@ void install_boot_dash() {
         print("[files] dash payload too large\n");
         return;
     }
+    // XOSBND1 container (docs/contracts/xos_bundle_v1.md): never write it as dash.
+    // Full member install is DU4; until then refuse loudly instead of corrupting /usr/bin/dash.
+    if (size >= 8) {
+        u8 magic[8] = {};
+        const i64 got = syscall(sys_boot_payload, 0, reinterpret_cast<u64>(magic), 8);
+        if (got == 8 &&
+            magic[0] == 'X' && magic[1] == 'O' && magic[2] == 'S' && magic[3] == 'B' &&
+            magic[4] == 'N' && magic[5] == 'D' && magic[6] == '1' && magic[7] == 0) {
+            print("[files] boot payload is XOSBND1 bundle; not installing as dash\n");
+            return;
+        }
+    }
     u32 existing = 0;
     u32 version = 0;
     if (client.stat("/usr/bin/dash", existing, version) == 0) { return; }

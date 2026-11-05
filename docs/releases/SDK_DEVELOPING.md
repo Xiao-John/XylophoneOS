@@ -43,11 +43,11 @@ SDK=/path/to/..._sdk
 python3 "$SDK/tools/adopt_sdk.py" -o "$PWD/xos_sdk_profile.json"
 PROFILE="$PWD/xos_sdk_profile.json"
 
-python3 "$SDK/tools/xos_app.py" --profile "$PROFILE" init /tmp/demo --id demo.hello --language cpp
-python3 "$SDK/tools/xos_app.py" --profile "$PROFILE" build /tmp/demo --sdk "$SDK"
-python3 "$SDK/tools/xos_app.py" --profile "$PROFILE" check /tmp/demo --sdk "$SDK"
-python3 "$SDK/tools/xos_app.py" --profile "$PROFILE" pack /tmp/demo --sdk "$SDK" -o /tmp/demo/hello.xpk
-python3 "$SDK/tools/xypm.py" inspect /tmp/demo/hello.xpk
+python3 "$SDK/tools/xos_app.py" --profile "$PROFILE" init ./demo --id demo.hello --language cpp
+python3 "$SDK/tools/xos_app.py" --profile "$PROFILE" build ./demo --sdk "$SDK"
+python3 "$SDK/tools/xos_app.py" --profile "$PROFILE" check ./demo --sdk "$SDK"
+python3 "$SDK/tools/xos_app.py" --profile "$PROFILE" pack ./demo --sdk "$SDK" -o ./demo/hello.xpk
+python3 "$SDK/tools/xypm.py" inspect ./demo/hello.xpk
 ```
 
 客体安装与查询（`xsh>`）：

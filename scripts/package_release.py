@@ -253,7 +253,7 @@ def stage_dev_kit(sdk_dir):
     shutil.copyfile(ROOT / 'docs/releases/SDK_DEVELOPING.md', sdk_dir / 'DEVELOPING.md')
     tools = sdk_dir / 'tools'
     tools.mkdir(exist_ok=True)
-    for name in ('xos_app.py', 'xypm_format.py', 'xypm.py'):
+    for name in ('xos_app.py', 'xypm_format.py', 'xypm.py', 'xypm_image.py'):
         shutil.copyfile(ROOT / 'scripts' / name, tools / name)
     shutil.copyfile(ROOT / 'scripts/sdk_adopt_profile.py', tools / 'adopt_sdk.py')
     cfg = sdk_dir / 'config' / 'package'

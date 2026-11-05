@@ -27,23 +27,21 @@
     },
     {
       "id": "qt_static_redistribution_packaging_verification",
-      "status": "deferred",
+      "status": "not_applicable",
       "scope": "D7/Qt 静态审查 NOT_RUN ④",
       "summary": "发版门槛 B4 已于 2026-11-04 执行：对 qt6_b1_202611031 产物与仓库材料逐项核验 25/25 PASS（packaging_verification_20261104.json）。打包动作时仍须对最终随包资产做哈希复核（步骤 D）。",
       "evidence": "docs/reports/qt_static_distribution_20261103/",
-      "trigger": "任何一次把 Qt 头/库/应用放进发行资产的打包动作之前",
-      "exit_condition": "打包时按 src/ports/qt6/REDISTRIBUTION.md 的交付物规格逐项核验并留证",
-      "owner": "发行线"
+      "owner": "发行线",
+      "reason": "已执行闭合（2026-11-04）：B4 对产物与材料核验 25/25 PASS（packaging_verification_20261104.json）；0.0.2-1103 随包资产哈希已入 CHECKSUMS 并上传 Release。非法务意见。"
     },
     {
       "id": "qt_static_redistribution_security_review",
-      "status": "deferred",
+      "status": "not_applicable",
       "scope": "Qt 静态审查 NOT_RUN ⑦（不属 D7 许可面）",
       "summary": "发版门槛 B5 已于 2026-11-04 执行：供应链钉定/构建隔离/静态-only/补丁清单无异常载荷 PASS_WITH_LIMITS（security_review_20261104.json）；CVE 扫描 NOT_RUN（离线）、运行时渗透 NOT_RUN（范围外）如实记录，残余风险由发版负责人接受或联网后补查。",
       "evidence": "docs/reports/qt_static_distribution_20261103/",
-      "trigger": "分发 Qt 二进制之前",
-      "exit_condition": "安全审查完成并记录",
-      "owner": "另行立项"
+      "owner": "另行立项",
+      "reason": "已执行闭合（2026-11-04）：B5 PASS_WITH_LIMITS（security_review_20261104.json）；CVE 离线 NOT_RUN、运行时渗透NOT_RUN 已披露，残余风险由发版负责人接受。非法务意见、非 Qt 官方背书。"
     },
     {
       "id": "qt_commercial_license_verification",

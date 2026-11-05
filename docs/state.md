@@ -52,15 +52,14 @@
 | xypm | P2原生验证、事务和启动恢复已实现；限定范围内验收通过 | [包计划](plans/packages.md)、[0066](work_log/0066_xypm_p2_validation.md)；P2验收范围和局限见记录；P3未完成 |
 | 审计/整合 | A01–A04修复与PR3兼容已交付PR4 | [整合摘要](history/delivery_audit.md)，组合build76a2e4380f64fb2e，7定向组通过；非旧全量重验 |
 | POSIX/Qt | PX0子集文档已有；QtCore 6.8.3 G01/G03 与 QtGui/QPA G04 受限客体功能通过 | [PX路线](plans/posix.md)、[E16资格](reports/qt_e16_qualified_20261028/qualification.json)；Widgets/G05 已受限客体验证，见0078；QML/Quick 未实现，绝对峰值未验 |
-| 许可 | 材料检查通过；newlib 1053/1053、GCC 运行库 397/407 成员映射、GNU Seed 分发审查、Qt 静态分发审查与收口材料（文本/§4d0/补丁标注）已交付 | [许可证管理](licensing.md)、[0188](work_log/0188_d7_license_two_leaves.md)、[0189](work_log/0189_d7_license_full_closure.md)；均为映射/材料审查，**非法务意见**，Qt 静态再分发资格未授予 |
+| 许可 | 材料检查通过；newlib 1053/1053、GCC 运行库 397/407 成员映射、GNU Seed 分发审查、Qt 静态分发审查与收口材料（文本/§4d0/补丁标注）已交付 | [许可证管理](licensing.md)、[0188](work_log/0188_d7_license_two_leaves.md)、[0189](work_log/0189_d7_license_full_closure.md)；均为映射/材料审查，**非法务意见**，Qt 静态交付物已按 B4/B5 门槛随 0.0.2-1103 分发（非法务意见） |
 
 每项资格只对其冻结输入成立。旧源/SDK/镜像不改绑；许可材料通过不代表逐成员审计完成。
 
 ## 下一步
 
-- **下次 release 须包含 Qt**（用户指令 2026-11-04）：触发 `open_items.json` 的 Qt 打包核验
-  与安全审查两个 deferred 关口（打包前/分发前必须完成或经用户裁定）；Qt 静态再分发资格
-  当前仍 NOT_GRANTED，E16 distribution 仍 NOT_RUN。
+- **Qt 随 0.0.2-1103 已发行**（用户指令 2026-11-04）：B4 打包核验 25/25、B5 安全审查
+  PASS_WITH_LIMITS 已执行并闭合；非法务意见，商业路径 N/A，QML/Quick 未实现。
 - **PR #51 未合并**（用户指示保持不动）：BLOCKED（9 冲突、CHANGES_REQUESTED 未回应、
   13 新报告缺 manifest、C30 违规）——进入合并队列前须先清障。
 - **0.0.2-1103 已于 2026-11-04 发布**（D7 收口 + open 清零 + Qt 门槛后按用户令执行）；

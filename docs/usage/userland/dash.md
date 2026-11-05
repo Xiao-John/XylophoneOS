@@ -131,3 +131,11 @@ C3 报告的 `not_run_or_unsupported` 明确列出：完整 POSIX 与 GNU Make�
   [C3 资格报告](../../reports/dash_c3_20261026/qualification.json)、
   [dash 路线](../../plans/dash.md)、[xsh](../../xsh.md)
 - 索引：[命令使用手册](../index.md)
+
+## 相关工具：xos-diag（可选）
+
+`xos-diag` 是独立诊断程序（构建产物 `user_xos_diag.image.elf`），**默认不装入发行工作盘**。
+需要时从源码构建产物安装到客体 `/usr/bin/xos-diag`，再在 dash 中
+`(exec xos-diag /path/to/program)` 启动并诊断直接子进程（见
+`docs/implementation/fb12_fault_bundle.md`）。裸调用 `xos-diag` 而未安装会得到
+`not found`（127），属预期。

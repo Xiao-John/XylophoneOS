@@ -89,7 +89,11 @@ def output_for(project, value):
 
 def build(project, sdk, profile):
     project, value = project_load(project)
-    require(value['target_profile'] == profile['id'], 'project target profile mismatch')
+    require(value['target_profile'] == profile['id'],
+            'project target_profile mismatch: project has %r, profile is %r; '
+            'set target_profile in xos_app.json to the profile id, or re-init with '
+            '--profile <adopted.json> from tools/adopt_sdk.py' %
+            (value['target_profile'], profile['id']))
     require(set(value['required_features']) <= set(profile['features']), 'required feature unavailable')
     sdk = Path(sdk).resolve(strict=True)
     bound = sdk_check(sdk, profile)

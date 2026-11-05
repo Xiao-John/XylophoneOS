@@ -37,6 +37,13 @@ Hello from XOS C!
 
 ## 2. XPK 包化应用（推荐交付形态）
 
+**顺序必须是：先 `adopt_sdk`，再带同一 `--profile` 做 `init`。**  
+`init` 会把 `target_profile` 写成所用 profile 的 `id`（`adopt_sdk` 默认为
+`xos-x86_64-sdk-local`）。若先用默认 profile `init` 再换 profile `build`，会得到
+`project target_profile mismatch`——把 `xos_app.json` 里的 `target_profile` 改成
+当前 profile 的 `id`，或删掉工程后用 `--profile` 重新 `init`。
+
+
 ```sh
 SDK=/path/to/..._sdk
 # 一次性：生成绑定当前 SDK 树的 profile（写到 SDK 外，避免改变树哈希）

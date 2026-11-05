@@ -17,7 +17,7 @@
 | FatFs R0.16 w/patch 2 | files 服务、显式离线安装器 | 原作者 ChaN 的原许可；保留源文件声明及 licenses/fatfs.txt；记录本地修改 |
 | newlib 4.6.0.20260123 | SDK 头、libc.a/libm.a、libc_hello | 多来源、逐组件条款；保留 COPYING.NEWLIB 和头文件内声明，不能统一标成 LGPL 或 Apache |
 | ncurses 6.5 | 宽字符终端库及 SDK 候选，受限客体探针 | 固定原包摘要并保留 COPYING；逐成员与静态分发审查未完成，不授予发行资格 |
-| QtBase 6.8.3、PCRE2、zlib、double-conversion、SHA3 | 受限 QtCore 功能验收 | 来源锁定与许可材料见 `src/ports/qt6`；逐成员、静态重链接与分发审查尚未完成 |
+| QtBase 6.8.3、PCRE2、zlib、double-conversion、SHA3 | 已随 0.0.2-1103 `qt6_static` 资产分发；E16/E17 受限验收 | 来源锁定、13 文本、1522 成员映射、262 文本覆盖、B4/B5 门槛见 `src/ports/qt6/REDISTRIBUTION.md`；非法务意见 |
 | GCC/Binutils/NASM/QEMU | 构建/测试工具；GCC/Binutils Seed 另随工作盘 | NASM/QEMU 仅宿主、不随发行；GCC/Binutils Seed 与 GCC 运行库**已随 0.0.1-1024/1026 发行**（工作盘/SDK），GPL/LGPL/例外与对应源码材料登记见[分发审查](reports/gnu_seed_distribution_20261103/) |
 | GNU Binutils Seed 2.47 | 已在 XOS 验收的静态工具 | 原 GNU 条款；src/ports/binutils 保留源包锁定哈希、许可、移植补丁及构建方法，实际构建清单绑定SDK和工具；已随 0.0.1-1024/1026 工作盘分发，对应源码包随发行 |
 | Binutils 捆绑 zlib 1.3.1 | Seed 内部静态库 | Zlib 原许可保留，不是 XOS 自研 Apache 代码，不依赖宿主动态 zlib |
@@ -181,14 +181,14 @@ D7 两叶之一，报告与逐项对照表见
   （`LicenseRef-Qt-Commercial.txt`、`Qt-GPL-exception-1.0.txt`）。
 - **构建事实**：`BUILD_SHARED_LIBS=OFF` 静态、`QT_QPA_PLATFORMS=xos`、关闭特性 48 项、
   源仅 qtbase、无 qml/quick；widgets 静态归档 17 个 `.a`（766 + 756 成员）。
-- **对 0.0.2 的判定**：`build/sdk` 无 Qt 头/库，1026 冻结清单 Qt 命中 0，包内
-  `third_party_notices` 无 qt6 条目 → **Qt 二进制不随本版分发，静态分发义务本版不触发**；
-  `copy_notices()` 机制会把 29 份文本带入 0.0.2，但实际打包核验 **NOT_RUN**。
-- **结论：审查已交付，发行资格未取得。** 已满足 1 项（无限制性条款）、缺口 3 项、
-  不适用 3 项、**NOT_RUN 8 项**：①逐成员许可映射（766/756 成员）②LGPLv3 §4d0 对应源码与
-  可重链接对象打包 ③GPLv3 §5(b)/LGPLv3 §2 修改显著标注 ④0.0.2 冻结打包后清单核验
-  ⑤`make license-audit` ⑥商业许可核验 ⑦Qt 安全审查 ⑧上游 37 份文本与实际链接成员的完整
-  对应。未授予"可随包分发 Qt 静态库"资格；上述任一项仍为 NOT_RUN 时不得声称完成。
+- **对 0.0.2-1103 的判定（2026-11-04 更新）**：按用户指令，**Qt 静态交付物已随
+  0.0.2-1103 发行**（`qt6_static` 资产：17 静态库、头、配方、10 补丁、13 份许可文本、
+  qtbase 源包）。门槛已执行：**打包核验 25/25 PASS**、**安全审查 PASS_WITH_LIMITS**
+  （CVE 扫描离线 NOT_RUN 已披露）；`license_audit` PASS 0 open。
+  E16/E17 为受限功能资格，不等于完整 POSIX 或 QML/Quick。
+- **结论（现行）**：许可材料与工程门槛已交付并随本版分发；**非法务意见**；
+  商业路径 N/A；逐成员映射/文本覆盖为工程记录。法律兼容性结论与 Qt 官方安全背书
+  不在本仓库声明范围内。
 
 ## 开放项登记与归档成员来源契约（2026-11-03）
 
@@ -217,6 +217,8 @@ D7 两叶之一，报告与逐项对照表见
 无 Qt 文本）由补入 `LicenseRef-Qt-Commercial.txt` 与 `Qt-GPL-exception-1.0.txt` 关闭
 （QtBase notices 11→13，`copy_notices()` 随包携带）。
 
-仍**未闭**：④打包核验（deferred 至真正打包 Qt 时）、⑥商业核验（N/A，无材料）、
-⑦安全审查（deferred，不属 D7）、以及新登记的"262 个仅版权/无声明成员的成员→文本覆盖"
-（open）。全部逐条见 `licenses/open_items.json`；**发行资格仍 NOT_GRANTED**。
+**2026-11-04 更新**：④打包核验（B4 25/25，`packaging_verification_20261104.json`）
+与⑦安全审查（B5 PASS_WITH_LIMITS，`security_review_20261104.json`）已执行并闭合；
+⑧262 成员文本覆盖已闭合（0201）。⑥商业核验维持 N/A（无材料）。开放项状态见
+`licenses/open_items.json`；Qt 静态交付物已按上述门槛随 0.0.2-1103 分发，
+**仍不构成法律意见或 Qt 官方资格背书**。

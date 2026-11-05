@@ -129,6 +129,16 @@ def owners(db):
     return result
 
 
+def profile_file_for(profile_id):
+    for path in sorted((ROOT / 'config/package').glob('*.json')):
+        try:
+            if load_json(path).get('id') == profile_id:
+                return path.relative_to(ROOT).as_posix()
+        except (OSError, ValueError, KeyError, TypeError):
+            continue
+    return None
+
+
 def load_db(disk, profile):
     # Refuse parallel ownership databases left by pre-rename development images.
     for old_name in ('xpm', 'xpkg'):
@@ -144,7 +154,14 @@ def load_db(disk, profile):
     require(not info['directory'] and info['size']<=1<<20,'invalid xypm database size/type')
     db=load_json(disk.export(DB_PATH))
     fields(db,('format_version','target_profile','packages','created_directories','index_sha256'))
-    require(type(db['format_version']) is int and db['format_version']==1 and db['target_profile']==profile['id'],'database profile/version mismatch')
+    require(type(db['format_version']) is int and db['format_version']==1,
+            'database version mismatch: image=%r' % db['format_version'])
+    if db['target_profile'] != profile['id']:
+        hint = profile_file_for(db['target_profile'])
+        raise ValueError('database profile mismatch: image=%r selected=%r; use %s; '
+                         'local profiles are development-only and incompatible with a release image'
+                         % (db['target_profile'], profile['id'],
+                            hint if hint else 'a matching profile'))
     require(type(db['packages']) is dict and len(db['packages'])<=MAX_PACKAGES,'invalid package database')
     require(type(db['created_directories']) is list and len(db['created_directories'])<=MAX_OWNED_FILES*4,'invalid directory ownership')
     for path in db['created_directories']:

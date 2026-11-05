@@ -111,6 +111,15 @@ profile 文件本身与 [packages 计划](../../plans/packages.md)为准。**换
 `scripts/prepare_xypm_sdk.py` 展示了 B2 组合 SDK 的冻结方式（只接受与资格
 输入完全一致的树哈希，不匹配即失败），能否复用以该脚本 `--help` 与实际回执为准。
 
+安装到 0.0.2-1103 发行盘时，用 b2 profile 绑定当前 SDK 树：
+
+```sh
+python3 tools/adopt_sdk.py --base-profile config/package/xos_x86_64_static_single_b2_v1.json -o ../xos_sdk_b2.json
+```
+
+不要用 `xos-x86_64-sdk-local` 安装到该盘；事务会拒绝并提示 b2 配置。local profile
+仅用于开发/宿主自测。
+
 ### 复杂包与工具包
 
 - 预置 stage 树（多程序、非模板结构）：`xypm.py pack --root <stage>

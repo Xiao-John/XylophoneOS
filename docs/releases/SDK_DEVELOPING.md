@@ -40,17 +40,17 @@ Hello from XOS C!
 ## 2. XPK 包化应用（推荐交付形态）
 
 **顺序必须是：先 `adopt_sdk`，再带同一 `--profile` 做 `init`。**  
-`init` 会把 `target_profile` 写成所用 profile 的 `id`（`adopt_sdk` 默认为
-`xos-x86_64-sdk-local`）。若先用默认 profile `init` 再换 profile `build`，会得到
-`project target_profile mismatch`——把 `xos_app.json` 里的 `target_profile` 改成
-当前 profile 的 `id`，或删掉工程后用 `--profile` 重新 `init`。
-
+`init` 会把 `target_profile` 写成所用 profile 的 `id`。发行工作盘 0.0.2-1103
+的数据库 profile 是 `xos-x86_64-static-single-b2-v1`，因此要安装到该盘时，必须
+先用 **b2 base** 生成绑定当前 SDK 树的 profile：
 
 ```sh
 SDK=/path/to/..._sdk
-# 一次性：生成绑定当前 SDK 树的 profile（写到 SDK 外，避免改变树哈希）
-python3 "$SDK/tools/adopt_sdk.py" -o "$PWD/xos_sdk_profile.json"
-PROFILE="$PWD/xos_sdk_profile.json"
+# 0.0.2-1103 发行工作盘：b2 profile（id 保持 b2，树哈希绑定当前 SDK）
+python3 "$SDK/tools/adopt_sdk.py" \
+  --base-profile config/package/xos_x86_64_static_single_b2_v1.json \
+  -o "$PWD/xos_sdk_b2.json"
+PROFILE="$PWD/xos_sdk_b2.json"
 
 python3 "$SDK/tools/xos_app.py" --profile "$PROFILE" init ./demo --id demo.hello --language cpp
 python3 "$SDK/tools/xos_app.py" --profile "$PROFILE" build ./demo --sdk "$SDK"
@@ -58,6 +58,11 @@ python3 "$SDK/tools/xos_app.py" --profile "$PROFILE" check ./demo --sdk "$SDK"
 python3 "$SDK/tools/xos_app.py" --profile "$PROFILE" pack ./demo --sdk "$SDK" -o ./demo/hello.xpk
 python3 "$SDK/tools/xypm.py" inspect ./demo/hello.xpk
 ```
+
+若省略 `--base-profile`，`adopt_sdk.py` 仍生成开发用的
+`xos-x86_64-sdk-local` profile。**local profile 不能安装到 b2 发行盘**：
+数据库 profile 不匹配时会被拒绝并提示需要 `config/package/xos_x86_64_static_single_b2_v1.json`。
+不要通过修改数据库或放宽 profile 检查来绕过。
 
 客体安装与查询（`xsh>`）：
 
@@ -69,7 +74,7 @@ xypm info demo.hello
 字段规则、profile 绑定与维护事务：`docs/usage/userland/xpk_packages.md`。
 
 也可从示例工程起步：复制 `examples/xpk_hello` 后改 `id`/源码，再执行 build/check/pack
-（`target_profile` 须等于你所用 profile 的 `id`，`adopt_sdk.py` 默认写 `xos-x86_64-sdk-local`）。
+（`target_profile` 须等于你所用 profile 的 `id`）。
 
 ## 3. dash 与客体 Python
 

@@ -199,6 +199,7 @@ def main():
     for folder in (image_dir,sdk_dir):
         copy_notices(folder)
         shutil.copyfile(notes,folder/'README.md')
+    stage_dev_kit(sdk_dir)
     if verify_sdk(out/'sdk',system) != sdk_input:
         raise ValueError('SDK changed while packaging')
     if verify_runtime(target,json.loads((ROOT/'config/release_cpp_runtime_v5.json').read_text())) != runtime_input:
@@ -232,6 +233,57 @@ def main():
     (out/'release_manifest.json').write_text(json.dumps(release,indent=2)+'\n')
     archive(image_dir,out/(PREFIX+'_images.tar.gz'))
     archive(sdk_dir,out/(PREFIX+'_sdk.tar.gz'))
+
+
+
+def stage_dev_kit(sdk_dir):
+    """Attach host-side docs, XPK tools, profiles and a sample project to the packaged SDK."""
+    import shutil
+    docs = sdk_dir / 'docs'
+    (docs / 'usage').mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(ROOT / 'docs/usage/index.md', docs / 'usage/index.md')
+    userland = ROOT / 'docs/usage/userland'
+    if userland.is_dir():
+        shutil.copytree(userland, docs / 'usage/userland', dirs_exist_ok=True)
+    (docs / 'releases').mkdir(parents=True, exist_ok=True)
+    for name in ('playbook.md', 'SDK_DEVELOPING.md'):
+        src = ROOT / 'docs/releases' / name
+        if src.is_file():
+            shutil.copyfile(src, docs / 'releases' / name)
+    shutil.copyfile(ROOT / 'docs/releases/SDK_DEVELOPING.md', sdk_dir / 'DEVELOPING.md')
+    tools = sdk_dir / 'tools'
+    tools.mkdir(exist_ok=True)
+    for name in ('xos_app.py', 'xypm_format.py', 'xypm.py'):
+        shutil.copyfile(ROOT / 'scripts' / name, tools / name)
+    shutil.copyfile(ROOT / 'scripts/sdk_adopt_profile.py', tools / 'adopt_sdk.py')
+    cfg = sdk_dir / 'config' / 'package'
+    cfg.mkdir(parents=True, exist_ok=True)
+    for src in sorted((ROOT / 'config/package').glob('*.json')):
+        shutil.copyfile(src, cfg / src.name)
+    sample = sdk_dir / 'examples' / 'xpk_hello'
+    (sample / 'src').mkdir(parents=True, exist_ok=True)
+    (sample / 'src' / 'main.cpp').write_text(
+        '// SPDX-License-Identifier: Apache-2.0\n'
+        '#include <cstdio>\n#include <string>\n'
+        'int main() { std::puts("Hello from XOS package: xos.hello"); return 0; }\n')
+    shutil.copyfile(sdk_dir / 'LICENSE', sample / 'LICENSE')
+    app = {
+        'format_version': 1, 'id': 'xos.hello', 'upstream_version': '0.1.0', 'revision': 0,
+        'target_profile': 'xos-x86_64-sdk-local', 'language': 'cpp',
+        'sources': ['src/main.cpp'],
+        'required_features': ['stdio', 'cxx_runtime'],
+        'runtime_dependencies': [],
+        'files': [
+            {'source': 'build/hello.elf', 'path': 'usr/bin/hello', 'role': 'executable'},
+            {'source': 'LICENSE', 'path': 'usr/share/licenses/xos.hello/LICENSE', 'role': 'data'},
+            {'source': 'src/main.cpp', 'path': 'usr/share/xos.hello/source/main.cpp', 'role': 'data'},
+        ],
+        'licenses': ['usr/share/licenses/xos.hello/LICENSE'],
+    }
+    import hashlib as _hashlib
+    (sample / 'xos_app.json').write_text(
+        json.dumps(app, indent=2, ensure_ascii=False, sort_keys=True) + '\n')
+    (sample / '.gitignore').write_text('build/\ndist/\n')
 
 
 COMPILE_SCRIPT = '''# SPDX-License-Identifier: Apache-2.0

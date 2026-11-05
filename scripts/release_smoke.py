@@ -80,6 +80,18 @@ def check_xypm_install(sdk, images, folder, report):
     subprocess.run([sys.executable, str(tool), 'install', '--profile', str(profile_path),
                     '--image', str(image), '--output-image', str(installed), '--offline', str(package)],
                    check=True, stdout=subprocess.DEVNULL)
+    local_profile = folder / 'xypm_probe_local.json'
+    local = dict(profile)
+    local['id'] = 'xos-x86_64-sdk-local'
+    local_profile.write_text(json.dumps(local, indent=2) + '\n')
+    denied = subprocess.run(
+        [sys.executable, str(tool), 'install', '--profile', str(local_profile),
+         '--image', str(image), '--output-image', str(folder / 'xypm_probe_local.img'),
+         '--offline', str(package)], capture_output=True, text=True)
+    require(denied.returncode != 0 and 'xos_x86_64_static_single_b2_v1.json' in
+            (denied.stdout + denied.stderr), 'local profile was not rejected with a b2 hint')
+    require(not (folder / 'xypm_probe_local.img').exists(), 'rejected local install produced an image')
+    report['checks'].append('sdk_xypm_rejects_local_profile_on_release_image')
     query = json.loads(subprocess.check_output(
         [sys.executable, str(tool), 'list', '--profile', str(profile_path), '--image', str(installed)],
         text=True))

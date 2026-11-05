@@ -60,5 +60,5 @@ Workspace: `build/xypm_blind_investigation/`, `build/xypm_p0/`.
 
 ## Next
 
-P1: profile `--id`/`--base-profile`, b2-bound quickstart, actionable DB-profile
-mismatch diagnostics. Then rebuild the SDK asset and run the full release smoke.
+P1 was delivered in [0210](0210_xypm_profile_alignment.md). The remaining release step is
+to rebuild the SDK asset and run the full release smoke.

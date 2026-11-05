@@ -3,6 +3,8 @@
 
 本目录是**开箱可用的用户态开发包**：交叉编译 ELF、打 XPK 包、查文档。
 需要 `x86_64-elf-g++`（16.2.0）在 `PATH`；宿主 Python 3.10+。
+宿主 `xypm install/upgrade/remove` 首次运行还会用 `clang++` 或 `c++` 编译内置的
+FatFs 后端；不需要 XOS 源码检出。
 
 ## 目录导览
 

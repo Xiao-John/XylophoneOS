@@ -27,7 +27,11 @@ def host_tool():
     headers = sorted((ROOT/'src/third_party/fatfs').glob('*.h'))
     snapshots = {p.name: p.read_bytes() for p in sources + headers}
     digest = hashlib.sha256(canonical({n: hashlib.sha256(b).hexdigest() for n,b in snapshots.items()})).hexdigest()
-    folder = ROOT/'.cache/xos_seed/xypm_host'/digest
+    # Keep the compiled helper outside the SDK tree.  xos_app binds profiles to a
+    # hash of the SDK tree; a cache written under SDK/.cache would silently
+    # invalidate that profile after the first xypm command.
+    cache = Path(tempfile.gettempdir()) / ('xos_xypm_host_%d' % getattr(os, 'getuid', lambda: 0)())
+    folder = cache / digest
     folder.mkdir(parents=True, exist_ok=True)
     output = folder/'xypm_disk_host'
     if not output.exists():

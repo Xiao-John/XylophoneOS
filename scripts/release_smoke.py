@@ -16,6 +16,27 @@ from xypm_format import require,sha_file
 from release_launcher import build_command
 from sdk_receipt import verify_sdk, verify_packaged_sdk, verify_copied_inputs
 
+def check_sdk_devkit(sdk, metadata, binding, report):
+    """The packaged SDK must run its own XYPm host backend without a source checkout."""
+    tools = sdk / 'tools'
+    for name in ('xos_app.py', 'xypm_format.py', 'xypm.py', 'xypm_image.py', 'adopt_sdk.py'):
+        require((tools / name).is_file(), 'SDK devkit tool missing: ' + name)
+    for name in ('scripts/xypm_disk_host.cpp', 'src/user/services/fatfs_unicode.cpp',
+                 'src/third_party/fatfs/ff.c', 'src/third_party/fatfs/ff.h',
+                 'src/third_party/fatfs/ffconf.h', 'src/third_party/fatfs/ff_string.h',
+                 'src/third_party/fatfs/diskio.h'):
+        require((sdk / name).is_file(), 'SDK xypm host source missing: ' + name)
+    probe = ('import xos_app, xypm, xypm_format, xypm_image; '
+             'print(xypm_image.host_tool())')
+    output = subprocess.check_output([sys.executable, '-c', probe], cwd=tools, text=True).strip()
+    require(Path(output).is_file(), 'SDK xypm host tool was not produced')
+    require(not Path(output).resolve().is_relative_to(sdk.resolve()),
+            'SDK xypm host cache was written inside the SDK tree')
+    after = verify_packaged_sdk(sdk, metadata)
+    require(after['tree_sha256'] == binding['tree_sha256'],
+            'SDK tree changed after xypm host backend build')
+    report['checks'].append('sdk_devkit_tools_and_xypm_host_backend')
+
 def main():
     version=(ROOT/'VERSION').read_text().strip();release=ROOT/'build/releases'/version
     images=release/('xylophoneos_revival_'+version+'_images');sdk=release/('xylophoneos_revival_'+version+'_sdk')
@@ -28,6 +49,7 @@ def main():
     report={'status':'failed','version':version,'build_id':metadata['system_build_id'],'checks':[],'sdk_input':input_binding,'sdk_packaged_tree_sha256':sdk_binding['tree_sha256']}
     guest=None
     try:
+        check_sdk_devkit(sdk,metadata,sdk_binding,report)
         with tempfile.TemporaryDirectory(prefix='xos_release_') as folder:
             folder=Path(folder);disk=folder/'work.img'
             subprocess.run(['cp','-c',str(images/'work_disk.img'),str(disk)],check=True)

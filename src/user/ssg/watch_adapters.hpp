@@ -10,8 +10,8 @@ namespace ssg_watch {
 using alive_callback=bool (*)(void *);
 
 struct browser_payload final:provider_payload {
-    ssg_pipe::Baseline baseline;
-    explicit browser_payload(const ssg_pipe::Baseline &value):baseline(value){}
+    ssg_pipe::baseline baseline;
+    explicit browser_payload(const ssg_pipe::baseline &value):baseline(value){}
 };
 struct notes_payload final:provider_payload {
     ssg_multi::notes_baseline baseline;

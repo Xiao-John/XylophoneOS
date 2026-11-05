@@ -1,0 +1,12 @@
+{
+  "status": "PREPARED",
+  "source_sdk_manifest_sha256": "24dcc3ba938013c852a12f386ea2f7e16ebcec7cb4bfaff477794530c5d0e4b1",
+  "source_system_manifest_sha256": "77a8cc24063cb2e7b47e6a8bc868ec8e4f1231a1527c241883fc8efa45993bb4",
+  "derived_sdk_manifest_sha256": "da9d97ad0ec876204e9bb0dc73dd61a8ff73111a6b1604baff1e0d623a6654a8",
+  "derived_libxos_sha256": "d9e1e2be9682e6eb82ea913e42be6f832aa4badda6e29a86d5c13caca3133a60",
+  "qt_cache_source_sha256": "406964513c0220090224068428d016bd0a75553da0d976be545dc02c8e8cd465",
+  "qt_cache_overlay_sha256": "403a55cd89364eb5bab5ab67147d6d4873d40ece7791f5287d63387193904ed0",
+  "compiler_version": "x86_64-elf-g++ (GCC) 16.2.0",
+  "archive_member": "objects/src_user_sdk_file_client_p4a.cpp.o",
+  "semantics": "local build overlay; no installed SDK or Qt artifact changed"
+}

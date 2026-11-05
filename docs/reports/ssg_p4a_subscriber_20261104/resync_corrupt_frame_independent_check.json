@@ -1,0 +1,23 @@
+{
+  "status": "PASSED_SCOPED",
+  "failed_session": {
+    "scenario": "corrupt-frame",
+    "event_count": 1,
+    "delivery": "REJECTED",
+    "resync": "RESET_REQUIRED",
+    "source_instances": {
+      "browser": "3738751ff972725d9138759aede61cd8",
+      "notes": "c03a37930b71d8c557a80c616c705a51"
+    }
+  },
+  "new_session": {
+    "event_count": 2,
+    "source_instances": {
+      "browser": "707496117b718e9f662d24f96cc25350",
+      "notes": "48a3f53167e4e31be616270615a5827f"
+    },
+    "initial_baselines_acknowledged": true
+  },
+  "replay": "NONE",
+  "semantics": "a new session obtains a fresh baseline; no transparent replay"
+}

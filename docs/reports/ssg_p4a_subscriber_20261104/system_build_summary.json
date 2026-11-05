@@ -1,0 +1,56 @@
+{
+  "status": "BUILT",
+  "base_commit": "6fe330ce2dd9441d72da611c1f87b80dad8e3b03",
+  "build_id": "a9639522f20f8f74",
+  "version": "0.0.2-1103",
+  "source_digest": "a9639522f20f8f74c0c336a93da11a601b182ee7a9a8f3a50c6edbe1abf9ae69",
+  "toolchain": {
+    "target": "x86_64-elf",
+    "gcc": "16.2.0",
+    "binutils_release": "2.47",
+    "binutils": "2.47.20260726",
+    "nasm": "3.02",
+    "qemu": "11.1.2",
+    "cpp_standard": "c++20"
+  },
+  "tool_versions": {
+    "gcc": "16.2.0",
+    "g++": "16.2.0",
+    "target": "x86_64-elf",
+    "ld": "GNU ld (GNU Binutils) 2.47.20260726",
+    "nasm": "NASM version 3.02 compiled on Jun 29 2026"
+  },
+  "kernel_layout": {
+    "kernel_load_address": 1048576,
+    "kernel_memory_end": 1814528,
+    "kernel_rodata_start": 1130496,
+    "kernel_data_start": 1560576,
+    "kernel_file_bytes": 512080,
+    "kernel_disk_sectors": 1001,
+    "iso_kernel_max_file_bytes": 8388608,
+    "iso_payload_address": 33554432,
+    "iso_payload_max_bytes": 33554432
+  },
+  "artifacts": {
+    "kernel.elf": {
+      "bytes": 1567824,
+      "sha256": "426f60fd20b9b0477363b38cd81fede57f15e48b851a7c61d7447c0a96fbf035"
+    },
+    "kernel.bin": {
+      "bytes": 512080,
+      "sha256": "14771a5ad1262d364473b998c090972e847a6f8311f37a928060fb9a2847b085"
+    },
+    "xos.iso": {
+      "bytes": 575488,
+      "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+    },
+    "xos.img": {
+      "bytes": 1474560,
+      "sha256": "8bf45852c88b0077cdd647a18383dfa435fa0ccab5a1fbdb99b06f00407591c3"
+    },
+    "xos-install.iso": {
+      "bytes": 577536,
+      "sha256": "2d32ba2c505868222dd9fb0f6a7428fb05fc937ea51c2f4440918571fe7c893b"
+    }
+  }
+}

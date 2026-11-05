@@ -1,6 +1,9 @@
 # work_log 编号索引
 
-新增记录：[0204 — 0.0.2-1103 发布与 playbook](0204_release_publish.md)。
+新增记录：[0203 — 发版 D 步打包与 release_smoke 11/11](0203_release_packaging.md)、
+[0204 — 0.0.2-1103 发布与 playbook](0204_release_publish.md)、
+[0205 — SSG P4A 只读订阅](0205_ssg_p4a_read_only_subscription.md)、
+[0206 — P4A-R1 Release 兼容性复验](0206_ssg_p4a_release_compatibility_r1.md)。
 
 历史存在重复编号（同号多份，主题不同）；本索引消歧可追溯性。编号唯一性规则：
 **0149 之后仍发生过同号占号（见下表 0144 及以后各组），因此"自 0149 起全局唯一"
@@ -101,3 +104,5 @@
 | 0202 | `0202_release_prep_ab.md` | 发版前置 A/B：清障构建 + Qt 打包核验与安全审查 |
 | 0203 | `0203_release_packaging.md` | 0.0.2-1103 打包：cpython/daily/idna/make/xypm 装配与 release_smoke 11/11 |
 | 0204 | `0204_release_publish.md` | 0.0.2-1103 发布（tag/release/回执）+ playbook + release_pipeline.sh |
+| 0205 | `0205_ssg_p4a_read_only_subscription.md` | SSG P4A 真实跨进程只读订阅、双 Pipe ACK、来源状态与 QEMU 验收（2026-11-04） |
+| 0206 | `0206_ssg_p4a_release_compatibility_r1.md` | P4A-R1 官方发行资产、SDK/Qt 兼容性、真实 QEMU 与提前 EOF 复验（2026-11-05） |

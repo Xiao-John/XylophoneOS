@@ -1,0 +1,40 @@
+{
+  "matrix_build_source_commit": "a7c7db01f2b61e7828876841b34c30087d4d09d9",
+  "final_rebuild_source_commit": "a7c7db01f2b61e7828876841b34c30087d4d09d9",
+  "matrix_build_status": "BUILT",
+  "final_rebuild_status": "BUILT",
+  "source_hashes_changed": {
+    "src/user/apps/ssg_subscriber.cpp": {
+      "matrix": "c9486c679069299e4f467ca780037691cbd32f7307b92b9246be8fc043bc92bf",
+      "final_rebuild": "cb4331377834b4de325d486c8de753a9042443a1162f8e5c79354428d796e74c"
+    }
+  },
+  "artifact_hashes_changed": {
+    "browser-test/browser.elf": {
+      "matrix": "a3c4aa85cf7a538dd15403d4c68d9a12484a1ba21177af7dd60eb1ec4683f445",
+      "final_rebuild": "8bfe3fdb0afa432b7072ce1caa2602701832e6157d5615b010dac2b9f72f80fd"
+    },
+    "browser-test/browser.portable.receipt.json": {
+      "matrix": "6ff30d5290e2608cea7a301adc42ca09fbdd6a9d6b164637bbf8b2dd2675aeda",
+      "final_rebuild": "502a4d2eaa37d315b2874854213199540d8cceca44ffed9d4844d85f30798a33"
+    },
+    "browser/browser.elf": {
+      "matrix": "bf8a5895597f3ad03282547a1e4611b689bbef7b0a8194e5d2125a58051092c7",
+      "final_rebuild": "9bc18e99aeb39ab848722d1a8d1dcff6b6c2fd56e10e2c527e77d0e835e5246d"
+    },
+    "browser/browser.portable.receipt.json": {
+      "matrix": "603e9bb7307031f79258fdf3f3488b81dc8b8f91832ec39ae4a2c098dcaac6e0",
+      "final_rebuild": "237e722a3382a48139367496feef2129735696389e062c400aecd06c811935bb"
+    }
+  },
+  "source_change_note": "The only source hash difference is a comment documenting the complete-source EOF condition in ssg_subscriber.cpp.",
+  "artifact_change_note": "Supervisor, Subscriber, Notes, and test fixture ELF hashes are identical. The two Browser ELFs and their receipts differ; the generated Browser binaries embed their distinct output paths.",
+  "tested_final_rebuild_guest_runs": [
+    "first",
+    "premature-eof"
+  ],
+  "final_rebuild_guest_results": {
+    "first": "PASSED_SCOPED independent frame audit",
+    "premature-eof": "PASSED_SCOPED independent lifecycle audit"
+  }
+}

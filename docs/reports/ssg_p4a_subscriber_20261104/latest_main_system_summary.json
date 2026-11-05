@@ -1,0 +1,43 @@
+{
+  "status": "PASSED_SCOPED",
+  "scope": "post-sync first-subscription smoke only",
+  "origin_main_commit": "071330f3b196d357c4a823f1719793b449513b86",
+  "branch_head": "97e53b4d77875a9db7a4e5fc73c34e6ab2dbc73c",
+  "p4a_app_build_base": "6fe330ce2dd9441d72da611c1f87b80dad8e3b03",
+  "previous_main_commit": "6fe330ce2dd9441d72da611c1f87b80dad8e3b03",
+  "upstream_delta_changed_runtime_source": false,
+  "upstream_runtime_source_paths": [],
+  "system_build_id": "f8eb0815098ae436",
+  "system_kernel_layout": {
+    "kernel_load_address": 1048576,
+    "kernel_memory_end": 1814528,
+    "kernel_rodata_start": 1130496,
+    "kernel_data_start": 1560576,
+    "kernel_file_bytes": 512080,
+    "kernel_disk_sectors": 1001,
+    "iso_kernel_max_file_bytes": 8388608,
+    "iso_payload_address": 33554432,
+    "iso_payload_max_bytes": 33554432
+  },
+  "system_artifacts": {
+    "kernel.bin": {
+      "bytes": 512080,
+      "sha256": "ff36bbcb31e6369763966d91a48f8ea83162e13df66426fdac67174cc703da5a"
+    },
+    "xos.iso": {
+      "bytes": 575488,
+      "sha256": "e2e9f2fd6572163b854c96917a19233c2aebbcf602a16b7b138e0d32c0308ab4"
+    },
+    "xos.img": {
+      "bytes": 1474560,
+      "sha256": "5a4bb3f795c048459750f9ce21eb343c42c4f787f3513c4da67ca0d886622961"
+    },
+    "xos-install.iso": {
+      "bytes": 577536,
+      "sha256": "fb75e462420fe90c780c50be0a030b7f8b2115c4466b9c5e38813a3bbedf5e87"
+    }
+  },
+  "guest_report": "latest_main_first_subscription_report.json",
+  "frame_audit": "latest_main_first_subscription_independent_check.json",
+  "reconciliation": "full 12-run matrix remains bound to the pre-advance main image; upstream delta contains no kernel/shared/user C++/C/assembly changes"
+}

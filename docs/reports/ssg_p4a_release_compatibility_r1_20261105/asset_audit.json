@@ -1,0 +1,104 @@
+{
+  "status": "PARTIAL",
+  "tag_commit": "071330f3b196d357c4a823f1719793b449513b86",
+  "system_build_id": "8356e45af316fc93",
+  "system_source_commit": "6fe330ce (release notes/work log provenance)",
+  "pr76_head": "a7c7db01f2b61e7828876841b34c30087d4d09d9",
+  "pr76_base": "59ac60db7f68fa0f9b13b56025df8549f1a72c5e",
+  "release_api": {
+    "repository": "Xiao-John/XylophoneOS",
+    "release_id": 434061503,
+    "tag": "v0.0.2-1103",
+    "published_at": "2026-11-04T14:59:27Z",
+    "current_attachment_count": 5,
+    "attachments": [
+      {
+        "name": "xylophoneos_revival_0.0.2-1103_sdk.tar.gz",
+        "github_asset_id": 709870776,
+        "github_updated_at": "2026-11-04T14:52:22Z",
+        "github_size": 9523779,
+        "github_sha256": "929d6070f016f8315e7aa6d18c7bca545182facb730f3760bf1becacf9c80ec4",
+        "download_size": 9523779,
+        "download_sha256": "929d6070f016f8315e7aa6d18c7bca545182facb730f3760bf1becacf9c80ec4",
+        "size_match": true,
+        "sha256_match": true
+      },
+      {
+        "name": "xylophoneos_revival_0.0.2-1103_images.tar.gz",
+        "github_asset_id": 709870777,
+        "github_updated_at": "2026-11-04T14:58:57Z",
+        "github_size": 94700769,
+        "github_sha256": "1de27573ca7119b72df27a3d8a4ff55097e699d86c21a319c7b76bd2d7e4da60",
+        "download_size": 94700769,
+        "download_sha256": "1de27573ca7119b72df27a3d8a4ff55097e699d86c21a319c7b76bd2d7e4da60",
+        "size_match": true,
+        "sha256_match": true
+      },
+      {
+        "name": "xylophoneos_revival_0.0.2-1103_qt6_static.tar.gz",
+        "github_asset_id": 709870795,
+        "github_updated_at": "2026-11-04T14:58:21Z",
+        "github_size": 84592003,
+        "github_sha256": "744a5260cfab63cdf8392ad9178773c516c349b127905e6181f0c5ff8612455f",
+        "download_size": 84592003,
+        "download_sha256": "744a5260cfab63cdf8392ad9178773c516c349b127905e6181f0c5ff8612455f",
+        "size_match": true,
+        "sha256_match": true
+      },
+      {
+        "name": "release_manifest.json",
+        "github_asset_id": 709870800,
+        "github_updated_at": "2026-11-04T14:51:34Z",
+        "github_size": 583248,
+        "github_sha256": "1f8b51ee3b538eafc4d7c4a9309f6e7afd0f43b0e025ef80154d3dd72b815eb8",
+        "download_size": 583248,
+        "download_sha256": "1f8b51ee3b538eafc4d7c4a9309f6e7afd0f43b0e025ef80154d3dd72b815eb8",
+        "size_match": true,
+        "sha256_match": true
+      },
+      {
+        "name": "CHECKSUMS.sha256",
+        "github_asset_id": 710057155,
+        "github_updated_at": "2026-11-04T15:56:26Z",
+        "github_size": 793,
+        "github_sha256": "4e1adf5d8e3ce3c877f41708a2257c29ce434e211c416647de014aeac06b0cd7",
+        "download_size": 793,
+        "download_sha256": "4e1adf5d8e3ce3c877f41708a2257c29ce434e211c416647de014aeac06b0cd7",
+        "size_match": true,
+        "sha256_match": true
+      }
+    ]
+  },
+  "available_attachment_downloads_all_match_api": true,
+  "current_checksumm_file_sha256": "4e1adf5d8e3ce3c877f41708a2257c29ce434e211c416647de014aeac06b0cd7",
+  "receipt_checksumm_file_sha256": "e683c807b53bc462eed3f8c2316e1e6be139551ec334cbc97ee1138f8d3f30d2",
+  "receipt_checksumm_file_bytes": 793,
+  "checksumm_file_lines": [
+    "1de27573ca7119b72df27a3d8a4ff55097e699d86c21a319c7b76bd2d7e4da60  xylophoneos_revival_0.0.2-1103_images.tar.gz",
+    "929d6070f016f8315e7aa6d18c7bca545182facb730f3760bf1becacf9c80ec4  xylophoneos_revival_0.0.2-1103_sdk.tar.gz",
+    "744a5260cfab63cdf8392ad9178773c516c349b127905e6181f0c5ff8612455f  xylophoneos_revival_0.0.2-1103_qt6_static.tar.gz",
+    "ccde1b85e391cc7f1cadaca8a661ae89213658184044ae94cbf465e50f23129e  sources/xos-0.0.2-1103-sources.tar.gz",
+    "1f8b51ee3b538eafc4d7c4a9309f6e7afd0f43b0e025ef80154d3dd72b815eb8  release_manifest.json",
+    "4f75a09641608daf70817917f7ddc840baa87bed78cd6e89fbaf62c0dbb670f3  system_manifest.json",
+    "fcbc9d7a9dddecde6ad58d77c250c4a0a8fc1f603e92e86ca765164511c02532  install_manifest.json",
+    "7dec203a916b587881a1f10cce9d44fe78d867c4ff1a4c5160f1079414417848  package_smoke_report.json"
+  ],
+  "sources_archive": {
+    "current_github_attachment_present": false,
+    "checksumm_path": "sources/xos-0.0.2-1103-sources.tar.gz",
+    "checksumm_sha256": "ccde1b85e391cc7f1cadaca8a661ae89213658184044ae94cbf465e50f23129e",
+    "receipt_sha256": "cb6dbbfe20d73657fa4e0c5c082903b654a7d76be7b8ef0d54049851878bbd60",
+    "receipt_bytes": 375131248,
+    "next_release_table_claim": [
+      " `sources/xos-0.0.2-1103-sources.tar.gz` ",
+      " `a103a48145432406…` "
+    ],
+    "previously_observed_bytes": 375151685,
+    "previously_observed_bytes_basis": "user-provided observation in this task; current Release API has no source asset to recompute it",
+    "current_downloaded_sha256": null,
+    "current_downloaded_bytes": null,
+    "status": "NOT_REPRODUCIBLE_CURRENT_RELEASE_HAS_NO_ATTACHMENT"
+  },
+  "release_manifest_sha256_matches_receipt": true,
+  "source_archive_history_conclusion": "Current API and checksum content show a post-publication checksum update and a missing source attachment; available evidence cannot distinguish repackaging, deletion, or a stale receipt."
+}

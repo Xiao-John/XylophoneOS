@@ -1,0 +1,157 @@
+{
+  "status": "PASSED_SCOPED",
+  "inputs": {
+    "image_sha256": "1c51cb7627f0628990897fb21e4fe3ca5715fc70c913b0aa51aa0c0631e9b748",
+    "payload_sha256": "2a0004f89e7db4301821e54b4a8122773033710e820f1fb3a77efac568cee93d"
+  },
+  "checks": [
+    {
+      "name": "initial_browser_baseline",
+      "status": "PASS"
+    },
+    {
+      "name": "initial_notes_baseline",
+      "status": "PASS"
+    },
+    {
+      "name": "contiguous_source_change",
+      "status": "PASS"
+    },
+    {
+      "name": "duplicate_stream_sequence_resets_state",
+      "status": "PASS"
+    },
+    {
+      "name": "stream_sequence_gap_resets_state",
+      "status": "PASS"
+    },
+    {
+      "name": "source_sequence_gap_rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "wrong_header_source_rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "source_instance_replacement_requires_new_session",
+      "status": "PASS"
+    },
+    {
+      "name": "epoch_change_requires_replacement_event",
+      "status": "PASS"
+    },
+    {
+      "name": "explicit_epoch_replacement_rebaselines",
+      "status": "PASS"
+    },
+    {
+      "name": "stale_revision_change_rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "denial_clears_current_summary",
+      "status": "PASS"
+    },
+    {
+      "name": "protection_clears_current_summary",
+      "status": "PASS"
+    },
+    {
+      "name": "provider_exit_invalidates_current_summary",
+      "status": "PASS"
+    },
+    {
+      "name": "unexpected_content_field_rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "oversized_summary_rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "unknown_event_type_rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "wire_event_encode",
+      "status": "PASS"
+    },
+    {
+      "name": "wire_event_decode_and_checksum",
+      "status": "PASS"
+    },
+    {
+      "name": "unknown_protocol_version_rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "invalid_source_slot_rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "oversized_frame_length_rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "wire_checksum_damage_rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "atomic_pipe_frame_exact_capacity",
+      "status": "PASS"
+    },
+    {
+      "name": "ack_sequence_and_status_frame",
+      "status": "PASS"
+    }
+  ],
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "qemu_sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
+  "qemu_command_template": [
+    "${XOS_QEMU}",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=${XOS_IMAGE},format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:${XOS_QMP_SOCKET},server=on,wait=off"
+  ],
+  "before": [
+    130275,
+    2,
+    0
+  ],
+  "after": [
+    130275,
+    2,
+    0
+  ],
+  "test_summary": "P4A_STATE_TEST_DONE checks=25 failures=0",
+  "resources_restored": true
+}

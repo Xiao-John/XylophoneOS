@@ -1,0 +1,12 @@
+{
+  "status": "PASSED_SCOPED",
+  "events": [],
+  "processes": {
+    "supervisor": 10,
+    "browser": 11,
+    "notes": 12,
+    "subscriber": 13
+  },
+  "resources_restored": true,
+  "incomplete_subscription_rejected": true
+}

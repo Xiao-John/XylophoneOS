@@ -51,6 +51,15 @@ adopt_sdk.py --base-profile config/package/xos_x86_64_static_single_b2_v1.json \
 - release gate `sdk_xypm_rejects_local_profile_on_release_image`: passed;
 - release gate `sdk_xypm_install_query_remove`: passed.
 
+## Diagnostics tests
+
+`tests/xypm_profile_errors.py` covers the b2/local package-profile mismatch message,
+the config-path hint, a missing hint, and the separate feature mismatch.  It passes:
+
+```text
+Ran 3 tests ... OK
+```
+
 ## Not run
 
 - Full release rebuild / asset replacement.

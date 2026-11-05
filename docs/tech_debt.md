@@ -68,3 +68,16 @@
 | D12 | 构建/证据 | **归档成员来源实现债**：`docs/contracts/archive_member_provenance.md` 已立（下次重建起产出 `member_manifest.json`），但三份考古脚本（newlib/GCC/Qt）尚未抽成共享校验器 `scripts/archive_member_map.py`。退出条件=契约生效的首次重建同时落地共享实现，此后逐成员审计只读清单+跑校验 |
 | D13 | Aurora Desktop | Studio 首跑间歇超时：同一二进制重跑通过、根因未明（PR #45 证据如实保留）；退出条件=定位根因或给出稳定复现/豁免判据 |
 | D14 | SSG P3B/P3C | **竞态与限定验收挂账**（#50/#51 合并时按披露接受，不阻塞合入）：`EXIT_RACE_ROOT_CAUSE=UNRESOLVED`（consumer-exit timeout ×2、Notes shutdown 竞态根因未明）；早期 stress **23/24** 不回溯升级；P3C 仅 scoped requalification（32 contract checks + 独立 guest verifier，旧构建 24/24 stress 未在合入 head 重跑）；`globalAtomicSnapshot=NOT_IMPLEMENTED`、`DISTRIBUTION_NOT_QUALIFIED`。退出条件=定位竞态根因或给出豁免判据 + 在合入后 main head 重跑完整 stress 并留证 |
+
+## 六、盲测遗留（2026-11-05，0.0.2-1103 第三方盲测）
+
+| 编号 | 分类 | 债项 | 证据 / 退出条件 |
+|---|---|---|---|
+| BT-01 | BUG/UX | 嵌套 dash 的 fork 拒绝：直接由 `xsh>` 启动的 dash 可 fork；dash 内再启动 dash 后，命令替换报 `fork: Not owner`。公开文档未说明嵌套 shell 不继承构造权。 | 盲测 `qemu_session.log`；退出条件=明确这是权限边界并写入 dash 文档，或修复为可预期的错误/降级。 |
+| BT-02 | UX | `diag` 无参数时报 `xsh: diag: not found`，没有 usage；`diag` 是 builtin，错误会误导。 | 盲测 `qemu_session.log`；退出条件=无参数打印 `Usage: diag <program> [args]` 并返回明确状态，补 usage 文档。 |
+| BT-03 | DOC/UX | `/bin` 在 PATH 和部分示例中出现，但发行工作盘没有 `/bin`；`ls /bin` 报 `[files] list error=-1`。 | 盲测 `ls /bin`、`echo $PATH`；退出条件=建立 `/bin`、移除 PATH 中不存在的项，或同步修改所有示例。 |
+| BT-04 | UX | CPython 每次启动打印 `Could not find platform dependent libraries <exec_prefix>`；核心功能可用但首次使用者会误判安装损坏。 | 盲测 Python 多文件项目；退出条件=设置正确的 exec_prefix/移除该警告，或在公开文档解释。 |
+| BT-05 | DOC/可发现性 | `xos-diag` 默认不装入发行工作盘，公开入口和 `dash` 内都没有可执行文件；当前文档要求从构建产物手工安装。盲测 K 因此无法完成。 | `docs/usage/userland/dash.md`、客体 `/usr/bin`；退出条件=把 `xos-diag` 纳入发行载荷，或提供正式、可审计的安装包并在 README 指向。 |
+| BT-06 | 语义限制 | `clock()` 修复为单调墙钟（首次调用起，1000 Hz）；XOS 当前没有 per-process CPU accounting，因此 `clock()` 不是严格的进程 CPU 时间。 | `src/user/libc/newlib_syscalls.cpp`；退出条件=引入进程 CPU tick 统计并把 `_times` 改为真实 user/system time。 |
+| BT-07 | 发行 | `v0.0.2-1103` 已发布的 SDK 资产早于 P0/P1 XYPm 修复；磁盘上的源码/新构建 SDK 与下载资产不一致。 | PR #85 / XYPm 调查；退出条件=重新打包 SDK、更新校验清单，或发后续 patch release。 |
+| BT-08 | UX/诊断 | `-ftime-report` 的 guest clock 曾输出约 516 年、百分比超过 100%；本次已修 `_times`，但既有发布编译器二进制不会因源码修复自动更新。 | `build/cpp_link_investigation/session.log`；退出条件=重建并发布编译器/SDK 后复测。 |

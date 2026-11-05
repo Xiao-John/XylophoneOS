@@ -1748,6 +1748,25 @@ extern "C" [[noreturn]] void _exit(int code) {
 }
 extern "C" int _getpid() { return static_cast<int>(xos::sdk::pid()); }
 extern "C" int _kill(int, int) { errno = ENOSYS; return -1; }
-extern "C" clock_t _times(struct tms*) { errno = ENOSYS; return static_cast<clock_t>(-1); }
+extern "C" clock_t _times(struct tms* result) {
+    if (result == nullptr) { errno = EFAULT; return static_cast<clock_t>(-1); }
+    static u64 clock_origin_ns;
+    static bool clock_origin_set;
+    const xos::i64 now_ns = xos::sdk::syscall(xos::sys_clock_monotonic, 0);
+    if (now_ns < 0) { errno = EIO; return static_cast<clock_t>(-1); }
+    if (!clock_origin_set) { clock_origin_ns = static_cast<u64>(now_ns); clock_origin_set = true; }
+    const u64 elapsed_ns = static_cast<u64>(now_ns) >= clock_origin_ns
+        ? static_cast<u64>(now_ns) - clock_origin_ns : 0;
+    // newlib's x86_64 CLOCKS_PER_SEC is 1000.  This is monotonic wall time since
+    // the first clock/times call, not per-thread CPU accounting (XOS has no such
+    // ABI yet); it is still the best available value and keeps clock() finite.
+    const clock_t ticks = static_cast<clock_t>(elapsed_ns / 1000000ull);
+    result->tms_utime = ticks;
+    result->tms_stime = 0;
+    result->tms_cutime = 0;
+    result->tms_cstime = 0;
+    return ticks;
+}
+extern "C" clock_t times(struct tms* result) { return _times(result); }
 extern "C" int getpid() { return _getpid(); }
 extern "C" int kill(int pid, int sig) { return _kill(pid, sig); }

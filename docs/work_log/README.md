@@ -105,3 +105,4 @@
 | 0208 | `0208_sl0_shell_launch_contract.md` | SL0：双 Shell 启动/权限继承契约与双轨兼容表冻结 |
 | 0209 | `0209_xypm_sdk_host_backend.md` | XYPm SDK host backend 随包、缓存移出 SDK、profile 哈希稳定与 release smoke 门 |
 | 0210 | `0210_xypm_profile_alignment.md` | XYPm b2 profile 对齐；local profile 对发行盘明确拒绝 |
+| 0211 | `0211_cpp_link_clock_harness.md` | C++ 链接误判、guest `_times` 修复、串口驱动 partial flush、盲测技术债 |

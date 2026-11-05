@@ -60,7 +60,7 @@ ustar 归档：首个成员是 `manifest.json`，其余为 `payload/<路径>` �
 
 ```sh
 SDK="$PWD/build/releases/0.0.1-1024/xylophoneos_revival_0.0.1-1024_sdk"
-PROJECT=/tmp/xos_hello_friend
+PROJECT=./xos_hello_friend
 python3 scripts/xos_app.py init "$PROJECT" --id friends.hello_friend --language cpp
 python3 scripts/xos_app.py build "$PROJECT" --sdk "$SDK"
 python3 scripts/xos_app.py check "$PROJECT" --sdk "$SDK"

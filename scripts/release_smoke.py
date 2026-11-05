@@ -16,6 +16,84 @@ from xypm_format import require,sha_file
 from release_launcher import build_command
 from sdk_receipt import verify_sdk, verify_packaged_sdk, verify_copied_inputs
 
+def check_sdk_devkit(sdk, metadata, binding, report):
+    """The packaged SDK must run its own XYPm host backend without a source checkout."""
+    tools = sdk / 'tools'
+    for name in ('xos_app.py', 'xypm_format.py', 'xypm.py', 'xypm_image.py', 'adopt_sdk.py'):
+        require((tools / name).is_file(), 'SDK devkit tool missing: ' + name)
+    for name in ('scripts/xypm_disk_host.cpp', 'src/user/services/fatfs_unicode.cpp',
+                 'src/third_party/fatfs/ff.c', 'src/third_party/fatfs/ff.h',
+                 'src/third_party/fatfs/ffconf.h', 'src/third_party/fatfs/ff_string.h',
+                 'src/third_party/fatfs/diskio.h'):
+        require((sdk / name).is_file(), 'SDK xypm host source missing: ' + name)
+    probe = ('import xos_app, xypm, xypm_format, xypm_image; '
+             'print(xypm_image.host_tool())')
+    output = subprocess.check_output([sys.executable, '-c', probe], cwd=tools, text=True).strip()
+    require(Path(output).is_file(), 'SDK xypm host tool was not produced')
+    require(not Path(output).resolve().is_relative_to(sdk.resolve()),
+            'SDK xypm host cache was written inside the SDK tree')
+    after = verify_packaged_sdk(sdk, metadata)
+    require(after['tree_sha256'] == binding['tree_sha256'],
+            'SDK tree changed after xypm host backend build')
+    report['checks'].append('sdk_devkit_tools_and_xypm_host_backend')
+
+
+def check_xypm_install(sdk, images, folder, report):
+    """Install/query/remove a tiny package using only the packaged SDK tools."""
+    tool = sdk / 'tools/xypm.py'
+    profile_path = sdk / 'config/package/xos_x86_64_static_single_b2_v1.json'
+    profile = json.loads(profile_path.read_text())
+    package_id = 'blind.probe'
+    root = folder / 'xypm_probe_root'
+    files = []
+
+    def add(relative, data, role='data'):
+        path = root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(data if isinstance(data, bytes) else data.encode())
+        files.append({'path': relative, 'type': 'file', 'size': path.stat().st_size,
+                      'sha256': hashlib.sha256(path.read_bytes()).hexdigest(), 'role': role})
+
+    license_path = 'usr/share/licenses/' + package_id + '/LICENSE'
+    receipt_path = 'usr/share/' + package_id + '/build_receipt.json'
+    add('usr/share/' + package_id + '/payload.txt', 'xypm release smoke\n')
+    add(license_path, 'Apache-2.0 release-smoke fixture\n')
+    receipt = {'app': package_id, 'status': 'release_smoke_fixture'}
+    add(receipt_path, json.dumps(receipt, sort_keys=True) + '\n')
+    manifest = {
+        'format_version': 1, 'id': package_id, 'upstream_version': '0.0.1', 'revision': 0,
+        'target_profile': profile['id'], 'required_features': [], 'runtime_dependencies': [],
+        'licenses': [license_path], 'files': sorted(files, key=lambda item: item['path']),
+        'build_receipt': {'path': receipt_path,
+                          'sha256': hashlib.sha256((root / receipt_path).read_bytes()).hexdigest()},
+        'source': 'release_smoke.py',
+    }
+    manifest_path = folder / 'xypm_probe_manifest.json'
+    manifest_path.write_text(json.dumps(manifest, indent=2) + '\n')
+    package = folder / 'xypm_probe.xpk'
+    subprocess.run([sys.executable, str(tool), 'pack', '--profile', str(profile_path),
+                    '--root', str(root), '--manifest', str(manifest_path), '-o', str(package)],
+                   check=True, stdout=subprocess.DEVNULL)
+    image = folder / 'xypm_probe.img'
+    subprocess.run(['cp', '-c', str(images / 'work_disk.img'), str(image)], check=True)
+    installed = folder / 'xypm_probe_installed.img'
+    subprocess.run([sys.executable, str(tool), 'install', '--profile', str(profile_path),
+                    '--image', str(image), '--output-image', str(installed), '--offline', str(package)],
+                   check=True, stdout=subprocess.DEVNULL)
+    query = json.loads(subprocess.check_output(
+        [sys.executable, str(tool), 'list', '--profile', str(profile_path), '--image', str(installed)],
+        text=True))
+    require(any(item['id'] == package_id for item in query['packages']), 'xypm install query missed probe')
+    removed = folder / 'xypm_probe_removed.img'
+    subprocess.run([sys.executable, str(tool), 'remove', '--profile', str(profile_path),
+                    '--image', str(installed), '--output-image', str(removed), '--offline', package_id],
+                   check=True, stdout=subprocess.DEVNULL)
+    query = json.loads(subprocess.check_output(
+        [sys.executable, str(tool), 'list', '--profile', str(profile_path), '--image', str(removed)],
+        text=True))
+    require(not any(item['id'] == package_id for item in query['packages']), 'xypm remove left probe')
+    report['checks'].append('sdk_xypm_install_query_remove')
+
 def main():
     version=(ROOT/'VERSION').read_text().strip();release=ROOT/'build/releases'/version
     images=release/('xylophoneos_revival_'+version+'_images');sdk=release/('xylophoneos_revival_'+version+'_sdk')
@@ -28,8 +106,10 @@ def main():
     report={'status':'failed','version':version,'build_id':metadata['system_build_id'],'checks':[],'sdk_input':input_binding,'sdk_packaged_tree_sha256':sdk_binding['tree_sha256']}
     guest=None
     try:
+        check_sdk_devkit(sdk,metadata,sdk_binding,report)
         with tempfile.TemporaryDirectory(prefix='xos_release_') as folder:
             folder=Path(folder);disk=folder/'work.img'
+            check_xypm_install(sdk,images,folder,report)
             subprocess.run(['cp','-c',str(images/'work_disk.img'),str(disk)],check=True)
             with Disk(disk,folder,True) as backend:require(backend.info('/usr/bin/dash') is None,'dash preinstalled on release work disk')
             report['checks'].append('fresh_work_disk_has_no_dash')

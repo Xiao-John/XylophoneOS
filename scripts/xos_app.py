@@ -21,9 +21,14 @@ def tree_receipt(root):
     root = Path(root).resolve(strict=True)
     result = {}
     for path in sorted(root.rglob('*')):
+        relative = path.relative_to(root)
         require(not path.is_symlink(), 'SDK symlinks unsupported: ' + str(path))
+        # Local Python/host-tool caches are not SDK inputs.  Importing tools or
+        # running xypm must not invalidate the profile that binds this tree.
+        if '__pycache__' in relative.parts or relative.suffix == '.pyc' or relative.parts[0] == '.cache':
+            continue
         if path.is_file():
-            result[path.relative_to(root).as_posix()] = sha_file(path)
+            result[relative.as_posix()] = sha_file(path)
     return hashlib.sha256(canonical(result)).hexdigest(), result
 
 

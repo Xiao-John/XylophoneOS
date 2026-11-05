@@ -256,6 +256,19 @@ def stage_dev_kit(sdk_dir):
     for name in ('xos_app.py', 'xypm_format.py', 'xypm.py', 'xypm_image.py'):
         shutil.copyfile(ROOT / 'scripts' / name, tools / name)
     shutil.copyfile(ROOT / 'scripts/sdk_adopt_profile.py', tools / 'adopt_sdk.py')
+    # xypm_image compiles its private FatFs host backend on first use.  Keep the
+    # relative source layout it expects inside the SDK so offline install works
+    # without the XOS source checkout.
+    host_sources = [
+        ROOT / 'scripts/xypm_disk_host.cpp',
+        ROOT / 'src/user/services/fatfs_unicode.cpp',
+        ROOT / 'src/third_party/fatfs/ff.c',
+        *sorted((ROOT / 'src/third_party/fatfs').glob('*.h')),
+    ]
+    for source in host_sources:
+        destination = sdk_dir / source.relative_to(ROOT)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, destination)
     cfg = sdk_dir / 'config' / 'package'
     cfg.mkdir(parents=True, exist_ok=True)
     for src in sorted((ROOT / 'config/package').glob('*.json')):

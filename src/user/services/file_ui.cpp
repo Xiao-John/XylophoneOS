@@ -2,6 +2,7 @@
 // Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/file_ui.hpp>
 #include <xos/file_client.hpp>
+#include <xos/fault_sha256.hpp>
 #include <xos/sdk.hpp>
 #include <xos/text.hpp>
 
@@ -297,50 +298,273 @@ void run_editor(const char* name) {
 }
 }
 
-void install_boot_dash() {
-    const i64 size = syscall(sys_boot_payload, 0, 0, 0);
-    if (size <= 0) { return; }
-    if (static_cast<u64>(size) > 32ull * 1024 * 1024) {
-        print("[files] dash payload too large\n");
-        return;
+// --- XOSBND1 boot bundle (docs/contracts/xos_bundle_v1.md) ---
+constexpr u32 bundle_header_size = 64;
+constexpr u32 bundle_entry_size = 64;
+constexpr u32 bundle_max_members = 16;
+struct bundle_entry {
+    u32 type;
+    u32 name_off;
+    u32 name_len;
+    u32 reserved;
+    u64 data_off;
+    u64 data_len;
+    u8 sha256[32];
+};
+
+bool boot_payload_is_bundle(u64 size) {
+    if (size < 8) { return false; }
+    u8 magic[8] = {};
+    if (syscall(sys_boot_payload, 0, reinterpret_cast<u64>(magic), 8) != 8) { return false; }
+    return magic[0]=='X' && magic[1]=='O' && magic[2]=='S' && magic[3]=='B' &&
+           magic[4]=='N' && magic[5]=='D' && magic[6]=='1' && magic[7]==0;
+}
+
+bool read_payload(u64 offset, void* dst, u32 length) {
+    u8* out = static_cast<u8*>(dst);
+    u32 done = 0;
+    while (done < length) {
+        u32 chunk = length - done;
+        if (chunk > sizeof(dash_buffer)) { chunk = sizeof(dash_buffer); }
+        const i64 got = syscall(sys_boot_payload, offset + done,
+                                reinterpret_cast<u64>(dash_buffer), chunk);
+        if (got != static_cast<i64>(chunk)) { return false; }
+        for (u32 i = 0; i < chunk; ++i) { out[done + i] = dash_buffer[i]; }
+        done += chunk;
     }
-    // XOSBND1 container (docs/contracts/xos_bundle_v1.md): never write it as dash.
-    // Full member install is DU4; until then refuse loudly instead of corrupting /usr/bin/dash.
-    if (size >= 8) {
-        u8 magic[8] = {};
-        const i64 got = syscall(sys_boot_payload, 0, reinterpret_cast<u64>(magic), 8);
-        if (got == 8 &&
-            magic[0] == 'X' && magic[1] == 'O' && magic[2] == 'S' && magic[3] == 'B' &&
-            magic[4] == 'N' && magic[5] == 'D' && magic[6] == '1' && magic[7] == 0) {
-            print("[files] boot payload is XOSBND1 bundle; not installing as dash\n");
-            return;
-        }
-    }
+    return true;
+}
+
+// Write one member to an absolute path; refuses overwrite of a different existing file.
+// base is the member's data_off inside the boot payload (0 for legacy whole-payload ELF).
+bool install_member_file(const char* path, u64 length, const u8 want_sha[32], u64 base) {
     u32 existing = 0;
     u32 version = 0;
-    if (client.stat("/usr/bin/dash", existing, version) == 0) { return; }
-    (void)client.mkdir("/usr");
-    (void)client.mkdir("/usr/bin");
-    i64 result = client.begin_replace("/usr/bin/dash", static_cast<u32>(size));
-    if (result != 0) { error_line("dash-stage", result); return; }
-    u32 offset = 0;
-    while (offset < static_cast<u32>(size)) {
-        u32 count = static_cast<u32>(size) - offset;
+    const i64 st = client.stat(path, existing, version);
+    if (st == 0) {
+        if (existing != length) {
+            print("[files] bundle conflict: "); print(path); print(" size\n");
+            return false;
+        }
+        if (want_sha == nullptr) {
+            print("[files] already present: "); print(path); print("\n");
+            return true;
+        }
+        sha256 hash;
+        u64 offset = 0;
+        u8 got[32];
+        while (offset < length) {
+            u32 count = static_cast<u32>(length - offset);
+            if (count > sizeof(dash_buffer)) { count = sizeof(dash_buffer); }
+            if (!read_payload(base + offset, dash_buffer, count)) { return false; }
+            hash.update(dash_buffer, count);
+            offset += count;
+        }
+        hash.finish(got);
+        for (u32 i = 0; i < 32; ++i) {
+            if (got[i] != want_sha[i]) {
+                print("[files] bundle conflict: "); print(path); print(" digest\n");
+                return false;
+            }
+        }
+        print("[files] bundle already present: "); print(path); print("\n");
+        return true;
+    }
+    if (st != static_cast<i64>(file::status::not_found)) {
+        error_line("bundle-stat", st);
+        return false;
+    }
+    i64 result = client.begin_replace(path, static_cast<u32>(length));
+    if (result != 0) { error_line("bundle-stage", result); return false; }
+    sha256 hash;
+    u64 offset = 0;
+    while (offset < length) {
+        u32 count = static_cast<u32>(length - offset);
         if (count > sizeof(dash_buffer)) { count = sizeof(dash_buffer); }
-        const i64 copied = syscall(sys_boot_payload, offset,
-                                   reinterpret_cast<u64>(dash_buffer), count);
-        if (copied != static_cast<i64>(count)) { result = -1; break; }
-        result = client.chunk_replace(offset, dash_buffer, count);
+        if (!read_payload(base + offset, dash_buffer, count)) {
+            (void)client.abort_replace();
+            return false;
+        }
+        hash.update(dash_buffer, count);
+        result = client.chunk_replace(static_cast<u32>(offset), dash_buffer, count);
         if (result != 0) { break; }
         offset += count;
+    }
+    u8 got[32];
+    hash.finish(got);
+    if (result == 0 && want_sha != nullptr) {
+        for (u32 i = 0; i < 32; ++i) {
+            if (got[i] != want_sha[i]) {
+                print("[files] bundle digest mismatch: "); print(path); print("\n");
+                result = -1;
+                break;
+            }
+        }
     }
     if (result == 0) { result = client.commit_replace(); }
     if (result != 0) {
         (void)client.abort_replace();
-        error_line("dash-install", result);
+        error_line("bundle-write", result);
+        return false;
+    }
+    if (want_sha == nullptr) {
+        // Legacy raw-ELF install path: keep the historical probe string.
+        print("[files] dash installed bytes=");
+        decimal(static_cast<u32>(length));
+        print("\n");
+    } else {
+        print("[files] bundle installed: ");
+        print(path);
+        print("\n");
+    }
+    return true;
+}
+
+void install_boot_payload() {
+    const i64 size = syscall(sys_boot_payload, 0, 0, 0);
+    if (size <= 0) { return; }
+    if (static_cast<u64>(size) > 32ull * 1024 * 1024) {
+        print("[files] boot payload too large\n");
         return;
     }
-    print("[files] dash installed bytes="); decimal(static_cast<u32>(size)); print("\n");
+    if (!boot_payload_is_bundle(static_cast<u64>(size))) {
+        // Legacy raw dash ELF path (unchanged behavior).
+        u32 existing = 0;
+        u32 version = 0;
+        if (client.stat("/usr/bin/dash", existing, version) == 0) { return; }
+        (void)client.mkdir("/usr");
+        (void)client.mkdir("/usr/bin");
+        if (!install_member_file("/usr/bin/dash", static_cast<u64>(size), nullptr, 0)) {
+            // install_member_file with nullptr sha skips digest check for legacy ELF
+            return;
+        }
+        return;
+    }
+
+    u8 header[bundle_header_size];
+    if (!read_payload(0, header, bundle_header_size)) {
+        print("[files] bundle header read failed\n");
+        return;
+    }
+    const u32 bundle_version = *reinterpret_cast<const u32*>(header + 8);
+    const u32 count = *reinterpret_cast<const u32*>(header + 12);
+    const u64 total = *reinterpret_cast<const u64*>(header + 16);
+    const u32 names_bytes = *reinterpret_cast<const u32*>(header + 24);
+    if (bundle_version != 1 || count < 1 || count > bundle_max_members ||
+        total != static_cast<u64>(size) || names_bytes > 2048) {
+        print("[files] bundle header rejected\n");
+        return;
+    }
+    for (u32 i = 0; i < 4; ++i) {
+        if (header[28 + i] != 0) { print("[files] bundle reserved\n"); return; }
+    }
+    const u64 entries_off = bundle_header_size;
+    const u64 entries_end = entries_off + bundle_entry_size * count;
+    const u64 names_off = entries_end;
+    const u64 names_end = names_off + names_bytes;
+    if (names_end > total) { print("[files] bundle truncated\n"); return; }
+    u8 names_buf[2048];
+    if (names_bytes && !read_payload(names_off, names_buf, names_bytes)) {
+        print("[files] bundle names read failed\n");
+        return;
+    }
+    bundle_entry entries[bundle_max_members];
+    u8 raw[bundle_entry_size];
+    u32 dash_count = 0;
+    u32 xypm_count = 0;
+    u32 daily_count = 0;
+    for (u32 i = 0; i < count; ++i) {
+        if (!read_payload(entries_off + bundle_entry_size * i, raw, bundle_entry_size)) {
+            print("[files] bundle entries read failed\n");
+            return;
+        }
+        bundle_entry& e = entries[i];
+        e.type = *reinterpret_cast<const u32*>(raw + 0);
+        e.name_off = *reinterpret_cast<const u32*>(raw + 4);
+        e.name_len = *reinterpret_cast<const u32*>(raw + 8);
+        e.reserved = *reinterpret_cast<const u32*>(raw + 12);
+        e.data_off = *reinterpret_cast<const u64*>(raw + 16);
+        e.data_len = *reinterpret_cast<const u64*>(raw + 24);
+        for (u32 b = 0; b < 32; ++b) { e.sha256[b] = raw[32 + b]; }
+        if (e.reserved != 0 || e.name_len < 1 || e.name_len > 127 ||
+            e.name_off + e.name_len > names_bytes ||
+            e.data_len < 1 || e.data_off < names_end || e.data_off + e.data_len > total ||
+            (e.data_off & 3u) != 0 || e.type < 1 || e.type > 4) {
+            print("[files] bundle entry rejected\n");
+            return;
+        }
+        if (e.type == 1) { ++dash_count; }
+        if (e.type == 2) { ++xypm_count; }
+        if (e.type == 3) { ++daily_count; }
+    }
+    if (dash_count != 1 || xypm_count > 1 || daily_count > 1) {
+        print("[files] bundle member roles rejected\n");
+        return;
+    }
+    // Non-overlap: sort data spans by offset (count <= 16).
+    for (u32 i = 1; i < count; ++i) {
+        bundle_entry key = entries[i];
+        u32 j = i;
+        while (j > 0 && entries[j - 1].data_off > key.data_off) {
+            entries[j] = entries[j - 1];
+            --j;
+        }
+        entries[j] = key;
+    }
+    for (u32 i = 1; i < count; ++i) {
+        if (entries[i].data_off < entries[i - 1].data_off + entries[i - 1].data_len) {
+            print("[files] bundle overlap\n");
+            return;
+        }
+    }
+
+    (void)client.mkdir("/var");
+    (void)client.mkdir("/var/cache");
+    (void)client.mkdir("/var/cache/xypm");
+    (void)client.mkdir("/var/cache/xypm/incoming");
+
+    for (u32 i = 0; i < count; ++i) {
+        const bundle_entry& e = entries[i];
+        char name[128];
+        for (u32 n = 0; n < e.name_len && n + 1 < sizeof(name); ++n) {
+            name[n] = static_cast<char>(names_buf[e.name_off + n]);
+        }
+        name[e.name_len < sizeof(name) ? e.name_len : sizeof(name) - 1] = 0;
+        // ASCII / printable / no slash already enforced by generator; double-check slash.
+        bool bad = false;
+        for (const char* c = name; *c; ++c) {
+            if (*c == '/' || static_cast<u8>(*c) < 0x20 || static_cast<u8>(*c) > 0x7e) {
+                bad = true;
+            }
+        }
+        if (bad || name[0] == 0) { print("[files] bundle bad name\n"); return; }
+
+        if (e.type == 1) {
+            u32 existing = 0;
+            u32 version = 0;
+            if (client.stat("/usr/bin/dash", existing, version) != 0) {
+                (void)client.mkdir("/usr");
+                (void)client.mkdir("/usr/bin");
+            }
+            if (!install_member_file("/usr/bin/dash", e.data_len, e.sha256, e.data_off)) { return; }
+        } else {
+            char path[256];
+            const char* prefix = "/var/cache/xypm/incoming/";
+            u32 pi = 0;
+            while (prefix[pi]) { path[pi] = prefix[pi]; ++pi; }
+            for (u32 n = 0; name[n] && pi + 1 < sizeof(path); ++n) { path[pi++] = name[n]; }
+            path[pi] = 0;
+            if (!install_member_file(path, e.data_len, e.sha256, e.data_off)) { return; }
+        }
+    }
+    print("[files] XOSBND1 bundle processed members=");
+    decimal(count);
+    print("\n");
+}
+
+void install_boot_dash() {
+    // Keep the historical name for callers; dispatch to payload installer.
+    install_boot_payload();
 }
 
 void init() {

@@ -15,7 +15,7 @@
   "assets": [
     {
       "name": "CHECKSUMS.sha256",
-      "sha256": "309c7ad6bd09c80ab2b177c05041fb5fa2f17ac0bfb82207808c0febe4e82bf4",
+      "sha256": "2b386ec05de13b66787666a08e3582c4a856a19868119b482f522435727834f8",
       "bytes": 793
     },
     {
@@ -30,8 +30,8 @@
     },
     {
       "name": "xylophoneos_revival_0.0.2-1103_sdk.tar.gz",
-      "sha256": "b97251c00fb0889df8bee2f04456b210457bbd4b1464232db2342de360788463",
-      "bytes": 9577925
+      "sha256": "9c591f8b7ce55c8a7b87035f4bbf8d2c9be279579a77663252af313b2beec9eb",
+      "bytes": 7879038
     },
     {
       "name": "xylophoneos_revival_0.0.2-1103_qt6_static.tar.gz",
@@ -49,5 +49,6 @@
   "source_archive_bytes": 375151685,
   "tag_commit_note": "git tag v0.0.2-1103 remains at 071330f3 (pre-docs); sources/CHECKSUMS refreshed from 59ac60db including full docs set for developer handoff",
   "docs_refresh": "2026-11-04: sources+CHECKSUMS re-cut from 59ac60db (playbook, release_pipeline, userland usage set, receipt, state); sdk devkit repackaged with full docs/tools; assets re-uploaded",
-  "sdk_devkit": "packaged SDK includes DEVELOPING.md, docs/usage (XPK/dash/Python/Qt), tools/{xos_app,xypm,adopt_sdk}.py, config/package profiles, examples/xpk_hello; release_smoke 11/11; end-to-end XPK pack verified"
+  "sdk_devkit": "packaged SDK includes DEVELOPING.md, docs/usage (XPK/dash/Python/Qt), tools/{xos_app,xypm,adopt_sdk}.py, config/package profiles, examples/xpk_hello; release_smoke 11/11; end-to-end XPK pack verified",
+  "final_note": "2026-11-04 final: sources from 59ac60db (full docs); SDK repackaged with devkit; /tmp examples scrubbed; all six assets uploaded; smoke 11/11; XPK e2e verified"
 }

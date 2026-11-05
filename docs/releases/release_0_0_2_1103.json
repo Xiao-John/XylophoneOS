@@ -1,8 +1,8 @@
 {
   "version": "0.0.2-1103",
   "tag_name": "v0.0.2-1103",
-  "tag_commit": "071330f3b196d357c4a823f1719793b449513b86",
-  "source_commit": "071330f3b196d357c4a823f1719793b449513b86",
+  "tag_commit": "59ac60db7f68fa0f9b13b56025df8549f1a72c5e",
+  "source_commit": "59ac60db7f68fa0f9b13b56025df8549f1a72c5e",
   "system_build_id": "8356e45af316fc93",
   "release_smoke": "11/11 passed (package_smoke_report.json)",
   "license_audit": "PASS, 0 open items",
@@ -15,23 +15,23 @@
   "assets": [
     {
       "name": "CHECKSUMS.sha256",
-      "sha256": "e683c807b53bc462eed3f8c2316e1e6be139551ec334cbc97ee1138f8d3f30d2",
+      "sha256": "309c7ad6bd09c80ab2b177c05041fb5fa2f17ac0bfb82207808c0febe4e82bf4",
       "bytes": 793
     },
     {
       "name": "release_manifest.json",
-      "sha256": "1f8b51ee3b538eafc4d7c4a9309f6e7afd0f43b0e025ef80154d3dd72b815eb8",
-      "bytes": 583248
+      "sha256": "8288138e416394f69111ca48c939f4d19f8cf6289c24e46973073648159e2bfe",
+      "bytes": 586129
     },
     {
       "name": "xylophoneos_revival_0.0.2-1103_images.tar.gz",
-      "sha256": "1de27573ca7119b72df27a3d8a4ff55097e699d86c21a319c7b76bd2d7e4da60",
-      "bytes": 94700769
+      "sha256": "b9ecfd3ee35db53fce681210df2cad6836f6855c9a4ffe8cff3764d7454d1e19",
+      "bytes": 94702785
     },
     {
       "name": "xylophoneos_revival_0.0.2-1103_sdk.tar.gz",
-      "sha256": "929d6070f016f8315e7aa6d18c7bca545182facb730f3760bf1becacf9c80ec4",
-      "bytes": 9523779
+      "sha256": "b97251c00fb0889df8bee2f04456b210457bbd4b1464232db2342de360788463",
+      "bytes": 9577925
     },
     {
       "name": "xylophoneos_revival_0.0.2-1103_qt6_static.tar.gz",
@@ -40,10 +40,14 @@
     },
     {
       "name": "xos-0.0.2-1103-sources.tar.gz",
-      "sha256": "cb6dbbfe20d73657fa4e0c5c082903b654a7d76be7b8ef0d54049851878bbd60",
-      "bytes": 375131248
+      "sha256": "ccde1b85e391cc7f1cadaca8a661ae89213658184044ae94cbf465e50f23129e",
+      "bytes": 375151685
     }
   ],
-  "source_archive_sha256": "cb6dbbfe20d73657fa4e0c5c082903b654a7d76be7b8ef0d54049851878bbd60",
-  "notes": "sources archive built from tag commit; system build from 6fe330ce; packaging evidence work_log 0202/0203"
+  "source_archive_sha256": "ccde1b85e391cc7f1cadaca8a661ae89213658184044ae94cbf465e50f23129e",
+  "notes": "sources archive built from tag commit; system build from 6fe330ce; packaging evidence work_log 0202/0203",
+  "source_archive_bytes": 375151685,
+  "tag_commit_note": "git tag v0.0.2-1103 remains at 071330f3 (pre-docs); sources/CHECKSUMS refreshed from 59ac60db including full docs set for developer handoff",
+  "docs_refresh": "2026-11-04: sources+CHECKSUMS re-cut from 59ac60db (playbook, release_pipeline, userland usage set, receipt, state); sdk devkit repackaged with full docs/tools; assets re-uploaded",
+  "sdk_devkit": "packaged SDK includes DEVELOPING.md, docs/usage (XPK/dash/Python/Qt), tools/{xos_app,xypm,adopt_sdk}.py, config/package profiles, examples/xpk_hello; release_smoke 11/11; end-to-end XPK pack verified"
 }

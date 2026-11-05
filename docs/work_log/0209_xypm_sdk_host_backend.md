@@ -28,7 +28,9 @@ tree hash and produced `SDK snapshot not registered for profile`.
   tree receipt, so `verify_packaged_sdk` remains stable after a host-tool build.
 - `scripts/release_smoke.py`: added `sdk_devkit_tools_and_xypm_host_backend` gate:
   required tools and backend sources exist, `xypm_image` imports and builds the
-  host tool outside the SDK, and the packaged tree hash is unchanged.
+  host tool outside the SDK, and the packaged tree hash is unchanged.  Also added
+  `sdk_xypm_install_query_remove`: a generated probe XPK is installed, queried and
+  removed on a copy of the release work disk using the b2 profile.
 - `docs/releases/SDK_DEVELOPING.md`: documented the host `clang++`/`c++`
   requirement for the offline transaction backend.
 

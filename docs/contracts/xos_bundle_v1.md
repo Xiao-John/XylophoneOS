@@ -62,9 +62,10 @@
 | 2 | `bootstrap_xypm` | 0..1 | 合法 `.xpk`（ustar 子集，见 packages.md P0 v1） |
 | 3 | `daily_tools_xpk` | 0..1 | 合法 `.xpk` |
 | 4 | `auxiliary_xpk` | 0..N | 合法 `.xpk`；首版允许但生成器默认不产出 |
+| 5 | `tool_elf` | 0..N | 合法 ELF64，装入 `/usr/bin/<name>`（如 bootstrap `xypm`）；名称唯一 |
 
 - `type=1` 缺失、或 `type∈{2,3}` 重复出现 → 拒绝。
-- 数据魔数校验：type1 前 4 字节 `7f 45 4c 46`；type≥2 前 5 字节 `ustar` 出现在
+- 数据魔数校验：type1/type5 前 4 字节 `7f 45 4c 46`；type∈{2,3,4} 前 5 字节 `ustar` 出现在
   偏移 257 的 ustar 标志（或按 xpk v1 规则校验 tar header checksum）。
   校验失败 → 拒绝，**不得**把整个容器当 dash 执行。
 

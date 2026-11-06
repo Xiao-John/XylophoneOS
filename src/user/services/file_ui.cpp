@@ -16,6 +16,10 @@ u8 image_buffer[24576];
 u8 dash_buffer[file::request_data_size];
 u8 editor_buffer[8192];
 u32 editor_length;
+constexpr u32 max_staged_packages = 8;
+char staged_packages[max_staged_packages][160];
+u32 staged_package_count = 0;
+const char* bundle_marker_path = "/var/cache/xypm/du4_bundle.installed";
 
 void print_bytes(const u8* data, u32 length) {
     u32 offset = 0;
@@ -489,13 +493,14 @@ void install_boot_payload() {
         if (e.reserved != 0 || e.name_len < 1 || e.name_len > 127 ||
             e.name_off + e.name_len > names_bytes ||
             e.data_len < 1 || e.data_off < names_end || e.data_off + e.data_len > total ||
-            (e.data_off & 3u) != 0 || e.type < 1 || e.type > 4) {
+            (e.data_off & 3u) != 0 || e.type < 1 || e.type > 5) {
             print("[files] bundle entry rejected\n");
             return;
         }
         if (e.type == 1) { ++dash_count; }
         if (e.type == 2) { ++xypm_count; }
         if (e.type == 3) { ++daily_count; }
+        if (e.type == 5 && e.name_len == 0) { print("[files] bundle bad tool name\n"); return; }
     }
     if (dash_count != 1 || xypm_count > 1 || daily_count > 1) {
         print("[files] bundle member roles rejected\n");
@@ -539,6 +544,37 @@ void install_boot_payload() {
         }
         if (bad || name[0] == 0) { print("[files] bundle bad name\n"); return; }
 
+        char path[256];
+        const char* prefix;
+        if (e.type == 1) {
+            prefix = "/usr/bin/dash";
+            path[0] = 0;
+        } else if (e.type == 5) {
+            prefix = "/usr/bin/";
+            u32 pi = 0;
+            while (prefix[pi]) { path[pi] = prefix[pi]; ++pi; }
+            for (u32 n = 0; name[n] && pi + 1 < sizeof(path); ++n) { path[pi++] = name[n]; }
+            path[pi] = 0;
+            prefix = path;
+            (void)client.mkdir("/usr");
+            (void)client.mkdir("/usr/bin");
+        } else {
+            prefix = "/var/cache/xypm/incoming/";
+            u32 pi = 0;
+            while (prefix[pi]) { path[pi] = prefix[pi]; ++pi; }
+            for (u32 n = 0; name[n] && pi + 1 < sizeof(path); ++n) { path[pi++] = name[n]; }
+            path[pi] = 0;
+            prefix = path;
+            if (staged_package_count < max_staged_packages) {
+                u32 n = 0;
+                while (path[n] && n + 1 < sizeof(staged_packages[0])) {
+                    staged_packages[staged_package_count][n] = path[n];
+                    ++n;
+                }
+                staged_packages[staged_package_count][n] = 0;
+                ++staged_package_count;
+            }
+        }
         if (e.type == 1) {
             u32 existing = 0;
             u32 version = 0;
@@ -548,13 +584,7 @@ void install_boot_payload() {
             }
             if (!install_member_file("/usr/bin/dash", e.data_len, e.sha256, e.data_off)) { return; }
         } else {
-            char path[256];
-            const char* prefix = "/var/cache/xypm/incoming/";
-            u32 pi = 0;
-            while (prefix[pi]) { path[pi] = prefix[pi]; ++pi; }
-            for (u32 n = 0; name[n] && pi + 1 < sizeof(path); ++n) { path[pi++] = name[n]; }
-            path[pi] = 0;
-            if (!install_member_file(path, e.data_len, e.sha256, e.data_off)) { return; }
+            if (!install_member_file(prefix, e.data_len, e.sha256, e.data_off)) { return; }
         }
     }
     print("[files] XOSBND1 bundle processed members=");
@@ -565,6 +595,23 @@ void install_boot_payload() {
 void install_boot_dash() {
     // Keep the historical name for callers; dispatch to payload installer.
     install_boot_payload();
+}
+
+u32 staged_count() { return staged_package_count; }
+const char* staged_path(u32 index) {
+    if (index >= staged_package_count) { return nullptr; }
+    return staged_packages[index];
+}
+bool bundle_marker_present() {
+    u32 existing = 0;
+    u32 version = 0;
+    return client.stat(bundle_marker_path, existing, version) == 0;
+}
+bool bundle_marker_write() {
+    static const char body[] = "ok\n";
+    const i64 r = client.replace(bundle_marker_path, body, 3);
+    if (r == 0) { (void)client.sync(); }
+    return r == 0;
 }
 
 void init() {

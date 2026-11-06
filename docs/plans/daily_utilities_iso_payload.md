@@ -1,6 +1,6 @@
 # 日常工具 DU4：通用 ISO 安装载荷设计
 
-2026-10-28 设计；**2026-11-05 前期交付**：容器字节布局已按 [xos_bundle_v1](../contracts/xos_bundle_v1.md) 冻结，宿主生成器 `scripts/xos_bundle.py` + `tests/test_xos_bundle.py`（13/13）已入库，`install_boot_dash` 已能识别 XOSBND1 并拒绝误写为 dash。**第二片（0208）**：`build_install_iso --member` 已可产 XOSBND1 载荷 ISO，客体抽取 dash+XPK 的 E2E（`tests/iso_bundle_install.py`）6/6 通过。**仍未做**：P2 自动安装、重复启动/失败矩阵、daily 大包容量组合验收。目标、项目边界和完整验收见
+2026-10-28 设计；**2026-11-05 前期交付**：容器字节布局已按 [xos_bundle_v1](../contracts/xos_bundle_v1.md) 冻结，宿主生成器 `scripts/xos_bundle.py` + `tests/test_xos_bundle.py`（13/13）已入库，`install_boot_dash` 已能识别 XOSBND1 并拒绝误写为 dash。**第二片（0208）**：`build_install_iso --member` 已可产 XOSBND1 载荷 ISO，客体抽取 dash+XPK 的 E2E（`tests/iso_bundle_install.py`）6/6 通过。**第三片（0209）**：type5 工具 ELF、supervisor 自动 `xypm install`（demo quiet + marker 幂等）、失败/重启/daily 容量/P2 安装矩阵测试全部通过（reject 11、reboot 8、daily 7、p2 9）。DU4 正文交付完成；发行级客体矩阵与授权措辞仍按契约边界如实标注。目标、项目边界和完整验收见
 日常工具设计；已运行的包与 P2 组合证据见[0069](../work_log/0069_daily_utilities.md)。
 
 ## 问题和约束

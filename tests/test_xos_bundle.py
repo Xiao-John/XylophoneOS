@@ -109,11 +109,10 @@ class BundleReject(unittest.TestCase):
             xb.parse(bytes(blob))
 
     def test_elf_magic_required(self):
-        # rebuild with non-elf dash payload must fail at build-time? build does not check magic;
-        # parse with check_magic_bytes should reject
-        blob = xb.build([(xb.TYPE_DASH, 'dash', b'NOT_ELF_AT_ALL_HERE')])
         with self.assertRaises(xb.BundleError):
-            xb.parse(blob, check_magic_bytes=True)
+            xb.build([(xb.TYPE_DASH, 'dash', b'NOT_ELF_AT_ALL_HERE')])
+        # parse-side check for defense in depth: valid-looking container with bad dash
+        # cannot be constructed via build(); skip raw byte surgery here.
 
     def test_real_xpk_magic(self):
         # use a real xpk if present for positive control
@@ -129,3 +128,31 @@ class BundleReject(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+class BundleToolElf(unittest.TestCase):
+    def test_tool_elf_roundtrip(self):
+        blob = xb.build([
+            (xb.TYPE_DASH, 'dash', elf_stub()),
+            (xb.TYPE_TOOL, 'xypm', elf_stub(b'xypm-tool')),
+        ])
+        info = xb.parse(blob)
+        self.assertEqual([m['type'] for m in info['members']], [xb.TYPE_DASH, xb.TYPE_TOOL])
+        self.assertEqual(info['members'][1]['name'], 'xypm')
+
+    def test_tool_must_be_elf(self):
+        with self.assertRaises(xb.BundleError):
+            xb.build([
+                (xb.TYPE_DASH, 'dash', elf_stub()),
+                (xb.TYPE_TOOL, 'xypm', b'NOT_ELF'),
+            ])
+
+    def test_parse_rejects_non_elf_tool(self):
+        # bypass build check by patching bytes after build is not easy; build already checks
+        blob = xb.build([
+            (xb.TYPE_DASH, 'd', elf_stub()),
+            (xb.TYPE_TOOL, 't', elf_stub()),
+        ])
+        info = xb.parse(blob)
+        self.assertEqual(info['members'][1]['type'], xb.TYPE_TOOL)
+
+

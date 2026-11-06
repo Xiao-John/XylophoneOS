@@ -279,18 +279,18 @@ void launch_file(const char* name, u32 argc, char** argv, u32 spawn_depth, bool 
                                    terminal_session); }
 }
 // Explicit supervisor entry; filenames do not confer maintenance authority.
-void maintenance_run(u32 argc, char** argv, bool recovering, bool boot_image = false) {
+bool maintenance_run(u32 argc, char** argv, bool recovering, bool boot_image = false) {
     process_guard_info gate{};
     if (syscall(sys_process_guard, static_cast<u64>(process_guard_action::query),
-                reinterpret_cast<u64>(&gate)) != 0) { print("maintenance: unavailable\n"); return; }
+                reinterpret_cast<u64>(&gate)) != 0) { print("maintenance: unavailable\n"); return false; }
     file::client files;
-    if (!files.init()) { print("maintenance: files unavailable\n"); return; }
+    if (!files.init()) { print("maintenance: files unavailable\n"); return false; }
     i64 result;
     if (recovering) {
         if (gate.owner_pid == 0 && persistent_recovery_gate) {
             result = syscall(sys_process_guard, static_cast<u64>(process_guard_action::begin));
         } else {
-            if (gate.owner_pid != pid()) { print("maintenance: no retained session\n"); return; }
+            if (gate.owner_pid != pid()) { print("maintenance: no retained session\n"); return false; }
             // Releasing only the file lease leaves the kernel admission barrier up.
             result = files.maintenance_release();
             if (result == 0) { result = syscall(sys_process_guard, static_cast<u64>(process_guard_action::rearm)); }
@@ -299,7 +299,7 @@ void maintenance_run(u32 argc, char** argv, bool recovering, bool boot_image = f
         result = syscall(sys_process_guard, static_cast<u64>(process_guard_action::begin));
     }
     if (result != 0) {
-        print("maintenance: busy or denied error="); signed_decimal(result); print("\n"); return;
+        print("maintenance: busy or denied error="); signed_decimal(result); print("\n"); return false;
     }
     i64 child = -1;
     if (boot_image) {
@@ -321,7 +321,7 @@ void maintenance_run(u32 argc, char** argv, bool recovering, bool boot_image = f
     const bool completed = child > 0 && wait(static_cast<u64>(child), outcome) == 0;
     const bool success = completed && outcome.outcome == process_outcome::exited && outcome.code == 0;
     if (!success && (child > 0 || recovering)) {
-        print("maintenance: retained; run maint-recover with a recovery tool\n"); return;
+        print("maintenance: retained; run maint-recover with a recovery tool\n"); return false;
     }
     if (!marker_is_absent()) {
         persistent_recovery_gate = true;
@@ -336,15 +336,16 @@ void maintenance_run(u32 argc, char** argv, bool recovering, bool boot_image = f
             process_status recovery_outcome{};
             const bool cleaned = recovery_child > 0 && wait(static_cast<u64>(recovery_child), recovery_outcome) == 0 &&
                 recovery_outcome.outcome == process_outcome::exited && recovery_outcome.code == 0;
-            if (!cleaned) { print("maintenance: retained; automatic recovery failed\n"); return; }
+            if (!cleaned) { print("maintenance: retained; automatic recovery failed\n"); return false; }
         }
-        if (!marker_is_absent()) { print("maintenance: retained; persistent recovery is required\n"); return; }
+        if (!marker_is_absent()) { print("maintenance: retained; persistent recovery is required\n"); return false; }
     }
     result = files.maintenance_release();
     if (result == 0) { result = syscall(sys_process_guard, static_cast<u64>(process_guard_action::end)); }
     if (result != 0) { print("maintenance: retained; cleanup error="); signed_decimal(result); print("\n"); }
     else { persistent_recovery_gate = false; if (child > 0) { print("maintenance: completed\n"); }
         else { print("maintenance: program unavailable; session closed\n"); } }
+    return success;
 }
 void show_stats() {
     const auto state = stats();
@@ -565,9 +566,29 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     process_guard_info startup_gate{};
     const i64 gate_query = syscall(sys_process_guard, static_cast<u64>(process_guard_action::query),
                                    reinterpret_cast<u64>(&startup_gate));
-    if (!persistent_recovery_gate || (gate_query == 0 && startup_gate.owner_pid == pid())) { ui::init(); }
+    const bool ui_ran = !persistent_recovery_gate ||
+                        (gate_query == 0 && startup_gate.owner_pid == pid());
+    if (ui_ran) { ui::init(); }
     print("\nWelcome to Xshell | XylophoneOS\n"
           "help: commands   dash -i: POSIX shell   trace on: diagnostics\n\n");
+    // DU4: one-shot P2 install after demos are quieted so process_guard can begin.
+    if (ui_ran && ui::staged_count() > 0 && !ui::bundle_marker_present()) {
+        if (!demo_keep && !demo_quiet) {
+            for (u64 demo = 1; demo <= 4; ++demo) { (void)syscall(10, demo); }
+            demo_quiet = true;
+        }
+        bool all_ok = true;
+        for (u32 i = 0; i < ui::staged_count(); ++i) {
+            const char* path = ui::staged_path(i);
+            if (path == nullptr) { all_ok = false; continue; }
+            char program[] = "xypm";
+            char action[] = "install";
+            char* args[] = {program, action, const_cast<char*>(path)};
+            if (!maintenance_run(3, args, false)) { all_ok = false; }
+        }
+        if (all_ok) { (void)ui::bundle_marker_write(); print("[files] bundle packages installed\n"); }
+        else { print("[files] bundle package install incomplete; will retry next boot\n"); }
+    }
     bool last_cr = false;
     for (;;) {
         print("xsh> ");

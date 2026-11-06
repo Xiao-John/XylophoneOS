@@ -21,6 +21,7 @@ TYPE_DASH = 1
 TYPE_XYPm = 2
 TYPE_DAILY = 3
 TYPE_AUX = 4
+TYPE_TOOL = 5
 
 
 class BundleError(ValueError):
@@ -53,6 +54,8 @@ def build(members, total_align=4) -> bytes:
             raise BundleError(f'duplicate name: {name}')
         if len(data) < 1:
             raise BundleError(f'empty data: {name}')
+        if typ in (TYPE_DASH, TYPE_TOOL) and data[:4] != b'\x7fELF':
+            raise BundleError(f'type {typ} is not ELF: {name}')
         name_spans[name] = (len(names), len(raw))
         names += raw
     if len(names) > MAX_NAMES:
@@ -140,7 +143,7 @@ def parse(blob: bytes, *, check_hashes=True, check_magic_bytes=True) -> dict:
         digest = blob[entries_off + i * ENTRY_SIZE + 32:entries_off + i * ENTRY_SIZE + 64]
         if reserved != 0:
             raise BundleError(f'entry {i} reserved must be 0')
-        if typ not in (TYPE_DASH, TYPE_XYPm, TYPE_DAILY, TYPE_AUX):
+        if typ not in (TYPE_DASH, TYPE_XYPm, TYPE_DAILY, TYPE_AUX, TYPE_TOOL):
             raise BundleError(f'unknown type {typ}')
         if not (1 <= nlen <= MAX_NAME) or noff + nlen > names_bytes:
             raise BundleError(f'entry {i} name out of range')
@@ -189,9 +192,9 @@ def parse(blob: bytes, *, check_hashes=True, check_magic_bytes=True) -> dict:
         if check_hashes and _sha256(data) != m['sha256']:
             raise BundleError(f"sha256 mismatch: {m['name']}")
         if check_magic_bytes:
-            if m['type'] == TYPE_DASH:
+            if m['type'] in (TYPE_DASH, TYPE_TOOL):
                 if data[:4] != b'\x7fELF':
-                    raise BundleError('dash_elf is not ELF')
+                    raise BundleError(f"type {m['type']} is not ELF: {m['name']}")
             else:
                 # xpk v1: POSIX ustar magic at offset 257 of the first header
                 if len(data) < 263 or data[257:263] != b'ustar\x00':

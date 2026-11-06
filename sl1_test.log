@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/Users/xylo/Documents/XylophoneOS/.wt-sl1/tests/shell_launch_sl1.py", line 115, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/Users/xylo/Documents/XylophoneOS/.wt-sl1/tests/shell_launch_sl1.py", line 82, in main
+    result = command(guest, "exec-driver /sl1_probe.elf", b"SL1_PROBE_PASS", timeout=60)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/xylo/Documents/XylophoneOS/.wt-sl1/tests/process_smoke.py", line 26, in command
+    guest.expect(expected, start=start, timeout=timeout)
+  File "/Users/xylo/Documents/XylophoneOS/.wt-sl1/tests/boot_smoke.py", line 42, in expect
+    return self.expect_any(alternatives, start=start, timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/xylo/Documents/XylophoneOS/.wt-sl1/tests/boot_smoke.py", line 58, in expect_any
+    raise AssertionError(f"{self.name}: missing any of {expected_values!r}; output={self.output[-1000:]!r}")
+AssertionError: sl1probe: missing any of (b'SL1_PROBE_PASS',); output=bytearray(b'y_supervisor pid=4\r\n[task] event=reclaimed pid=4 pages=11\r\nkill: accepted\nxsh> exec-driver /sl1_probe.elf\n[process] event=started pid=9 parent=7\r\n[process] pid=9 address_space=0x00000000001bc000\r\n[loader] started pid=9 file=/sl1_probe.elf\n[process] event=wait_blocked parent=7 child=9\r\nSL1_OWN_QUERY=1\n[sl1] spawn_file_impl path=/sl1_probe.elf\n[process] event=started pid=10 parent=9\r\n[process] pid=10 address_space=0x0000000000363000\r\nSL1_T1_SET=0\nSL1_T1_QUERY=1\n[process] event=wait_blocked parent=9 child=10\r\nSL1_CHILD_STAT=0\nSL1_CHILD_SIZE=248176\nSL1_CHILD_OPEN=0\n[sl1] spawn_file_impl path=/sl1_probe.elf\n[sl1] pre_start_fail err=-1\nSL1_CHILD_QUERY=1\nSL1_CHILD_SPAWN=-1\nSL1_T1_CHILD_FAIL\n[task] event=reclaimed pid=11 pages=4\r\n[task] event=reclaimed pid=10 pages=91\r\nSL1_T1_WAIT=0\nSL1_T1_CODE=1\nSL1_T1_FAIL\n[task] event=reclaimed pid=9 pages=91\r\n[wait] pid=9 kind=exited code=11\nxsh> [task] event=killed_by_supervisor pid=2\r\n[task] event=reclaimed pid=2 pages=11\r\n\n[xsh] demo tasks stopped\nxsh> ')

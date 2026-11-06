@@ -14,7 +14,8 @@
 | 81 | 81 | allocated | 通用受控 IPC；实现未验 |
 | 82 | 82 | allocated | 受控设备 PIO；实现未验 |
 | 83 | 83 | allocated | 受控 IRQ 事件；实现未验 |
-| 84 | 95 | reserved | 系统底座线：通用等待/信号/进程控制；具体接口尚未登记 |
+| 84 | 84 | allocated | SL1 创建能力：`sys_process_authority`（shell_launch 契约） |
+| 85 | 95 | reserved | 系统底座线：通用等待/信号/进程控制；其余接口尚未登记 |
 | 96 | 111 | reserved | 显示/输入线的后续机制；现有65/66保留 |
 | 112 | 112 | allocated | 设备授权线 v1 单入口 `sys_device`；实现按[契约](device_authorization_v1.md)§7 分段推进 |
 | 113 | 127 | reserved | 设备授权线：后续机制 |
@@ -109,6 +110,7 @@ action 6 由对端验证派生通道来源，结构为 `channel_fork_verificatio
 | 81 | `sys_channel` | `src/shared/include/xos/process_abi.hpp` |
 | 82 | `sys_pio_grant` | `src/shared/include/xos/process_abi.hpp` |
 | 83 | `sys_irq_event` | `src/shared/include/xos/process_abi.hpp` |
+| 84 | `sys_process_authority` | `src/shared/include/xos/process_abi.hpp` |
 | 112 | `sys_device` | `src/shared/include/xos/device_abi.hpp` |
 
 ## 待实施的具体预分配

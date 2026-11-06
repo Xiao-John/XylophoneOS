@@ -1,0 +1,4 @@
+python3 scripts/build.py
+ISO /Users/xylo/Documents/XylophoneOS/.wt-sl1/build/xos.iso sectors=281 boot_sectors=1011 boot_bytes=517200 kernel_bytes=512080
+ISO /Users/xylo/Documents/XylophoneOS/.wt-sl1/build/xos-install.iso sectors=282 boot_sectors=10 boot_bytes=5120 kernel_bytes=0
+Built xos-install.iso + real_mode.img | 3bc28dfee9662df4 | kernel 512080 bytes | legacy=True

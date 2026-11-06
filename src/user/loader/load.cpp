@@ -231,6 +231,7 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     const u64 name_length = name_size > 11 ? 11 : name_size;
     const i64 child = syscall(replacing ? sys_process_exec_prepare : sys_process_create, options == nullptr ? 7u : 0u, reinterpret_cast<u64>(name), name_length);
     if (child < 0) {
+        print("[sl1] create_fail err="); signed_decimal(child); print("\n");
         if (diagnostic != nullptr) { *diagnostic = {execution::launch_stage::create, child, elf::error::none}; }
         if (close_file) { (void)file_client.close(file_handle); }
         return child;
@@ -326,6 +327,9 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
             }
         }
     }
+    if (result < 0) {
+        print("[sl1] pre_start_fail err="); signed_decimal(result); print("\n");
+    }
     if (result >= 0) {
         process_entry entry{plan.entry, startup_address - 16, startup_address};
         process_exec_channel_entry extended{};
@@ -340,6 +344,9 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
         }
         result = syscall(replacing ? sys_process_exec_commit : sys_process_start, static_cast<u64>(child),
                          reinterpret_cast<u64>(entry_pointer), commit_flags);
+        if (result < 0) {
+            print("[sl1] start_fail err="); signed_decimal(result); print("\n");
+        }
         if (result < 0 && diagnostic != nullptr) {
             *diagnostic = {execution::launch_stage::start, result, elf::error::none};
         }
@@ -365,6 +372,7 @@ i64 spawn_buffer(const char* name, const u8* bytes, u64 size, u32 argc,
 }
 
 i64 spawn_file_impl(const char* path, u32 argc, const char* const* argv, const spawn_options* options) {
+    print("[sl1] spawn_file_impl path="); print(path); print("\n");
     if (path == nullptr || argc == 0 || argc > process_max_args || argv == nullptr) {
         return process_error_invalid;
     }
@@ -374,8 +382,12 @@ i64 spawn_file_impl(const char* path, u32 argc, const char* const* argv, const s
     }
     u32 handle = 0, size = 0, version = 0;
     const i64 opened = file_client.open(path, file::read_only, handle, size, version);
-    (void)version; // The held read-only handle pins the opened version until close.
-    if (opened < 0) { return opened; }
+    (void)version; // The held read-only handle pins the opened version until close;
+    if (opened < 0) {
+        print("[sl1] spawn_open_fail path="); print(path); print(" err=");
+        signed_decimal(opened); print("\n");
+        return opened;
+    }
     opened_file source{&file_client, handle};
     return spawn_reader(path, size, file_read, &source, argc, argv, true, handle, options);
 }

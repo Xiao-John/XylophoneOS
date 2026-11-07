@@ -5,7 +5,10 @@
 `owned_process` 允许 `can_create` 父进程操作自有 building 子进程（map/start）；
 grant/delegate 同步写入 `can_create`；authority clear 同时清深度（完整削减）；
 fork/exec 复制 `can_create`。客体探针 `tests/shell_launch_sl1.py` **7/7 PASS**，
-boot/process/task 回归全绿。SL2 双 Shell 接入未实现。
+boot/process/task 回归全绿。SL2 已实现（2026-11-07）：xsh 普通命令/tty-run 走 inherit-create（去 dash/make 名称深度特判）；
+dash `jobs_xos` 去 gcc/make 名称分支，统一 `posix_spawn` 继承 `can_create`；
+exec-file/exec-driver 历史入口保留。探针 `tests/shell_launch_sl2.py` **4/4 PASS**
+（裸命令继承、改名同权、exec-file 受限、dash 继承）。SL3 诊断/工具迁移未实现。
 来源计划：[shell_launch](../plans/shell_launch.md)。勘查基线：main `8d186fd8`
 （含 DU4 #82）。本契约不修订宪法、不分配新 ABI 号；按 C20/C22/C27 审查。
 实现前先读 [ABI 登记](abi_registry.md) 与 [进程 ABI](../implementation) 相关源码。

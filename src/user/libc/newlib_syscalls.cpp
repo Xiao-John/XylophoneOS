@@ -1371,6 +1371,12 @@ extern "C" int posix_spawnattr_setschedpolicy(posix_spawnattr_t*, int) { return 
 extern "C" int posix_spawnattr_setsigdefault(posix_spawnattr_t*, const sigset_t*) { return ENOTSUP; }
 extern "C" int posix_spawnattr_setsigmask(posix_spawnattr_t*, const sigset_t*) { return ENOTSUP; }
 
+// SL2: ordinary spawn inherits identity-carried create authority (shell_launch §3).
+static xos::i64 inherit_create_prepare(xos::u64 child, void*) {
+    return xos::sdk::syscall(xos::sys_process_authority, child,
+                             static_cast<xos::u64>(xos::process_authority_mode::copy_from_caller));
+}
+
 static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
                                   const posix_spawn_file_actions_t* actions,
                                   const posix_spawnattr_t* attributes,
@@ -1444,6 +1450,9 @@ static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
     if (error != 0) { return error; }
     xos::sdk::spawn_options options{};
     options.delegate_spawn_depth = delegate_spawn_depth;
+    // SL2 common contract: child inherits caller's can_create unless a legacy
+    // grant/delegate below also applies (both may run; copy is idempotent).
+    options.prepare_child = inherit_create_prepare;
     options.working_directory = working_directory;
     char environment_bytes[16384];
     const char* environment_vector[xos::startup_environment_max + 1]{};

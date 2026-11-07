@@ -201,6 +201,12 @@ int run_main() {
 
 extern "C" int xos_user_main(const xos::startup_info* info) {
     const auto argv = reinterpret_cast<const char* const*>(info->argv);
+    if (info->argc > 1 && xos::sdk::equal(argv[1], "query")) {
+        // SL2: report inherited authority only; used by shell_launch_sl1/sl2 tests.
+        number("SL1_OWN_QUERY=", query_can(xos::sdk::pid()));
+        line("SL1_QUERY_OK");
+        return 0;
+    }
     if (info->argc > 1 && xos::sdk::equal(argv[1], "can_ok")) {
         return child_main("can_ok");
     }

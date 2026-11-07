@@ -1,6 +1,6 @@
 # work_log 编号索引
 
-新增记录：[0216 — SL1 创建能力机制与探针](0216_sl1_create_authority.md)。
+新增记录：[0217 — SL2 双 Shell 接入与名称特判退役](0217_sl2_shell接入.md)。
 
 历史存在重复编号（同号多份，主题不同）；本索引消歧可追溯性。编号唯一性规则：
 **0149 之后仍发生过同号占号（见下表 0144 及以后各组），因此"自 0149 起全局唯一"
@@ -111,3 +111,4 @@
 | 0214 | `0214_bundle_installer_hardening.md` | 第三轮 bug-hunting：XOSBND1 填充/类型/名称校验、客体安装器魔法与目标摘要、host 工具缓存加固 |
 | 0215 | `0215_s2_bug_hunt_fixes.md` | Season-2：安装预检/marker 身份/幂等 ensure、rename 恢复、readdir 点项、ISO/缓存加固 |
 | 0216 | `0216_sl1_create_authority.md` | SL1：can_create/sys_process_authority(84) 与客体探针 7/7 |
+| 0217 | `0217_sl2_shell接入.md` | SL2：xsh/dash 继承创建权，去名称特判，探针 4/4 |

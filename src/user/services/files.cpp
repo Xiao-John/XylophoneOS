@@ -14,6 +14,7 @@ using namespace xos::file;
 constexpr char temp_name[] = "XOSTMP.TMP";
 constexpr char backup_name[] = "XOSBAK.TMP";
 constexpr char journal_name[] = "XOSJRNL.TMP";
+constexpr char journal_temp_name[] = "XOSJRNT.TMP";
 constexpr u32 disk_slack_clusters = 2;
 // Eight-character FAT names avoid a second, unreserved short-name alias.
 constexpr u32 anonymous_serial_limit = 100000;
@@ -179,12 +180,31 @@ bool same_path_object(const char* left, const char* right) {
     return ak.sector != 0 && same_identity_key(ak, bk);
 }
 
+enum class path_relation { same, different, error };
+
+// Identity comparison with an explicit error state: an I/O failure must not
+// be reported as "same object" by callers that then skip the real operation.
+path_relation compare_path_objects(const char* left, const char* right) {
+    if (names_equal(left, right)) { return path_relation::same; }
+    FILINFO a{}, b{};
+    const FRESULT ar = f_stat(left, &a), br = f_stat(right, &b);
+    if ((ar != FR_OK && ar != FR_NO_FILE && ar != FR_NO_PATH) ||
+        (br != FR_OK && br != FR_NO_FILE && br != FR_NO_PATH)) {
+        return path_relation::error;
+    }
+    if (ar != FR_OK || br != FR_OK) { return path_relation::different; }
+    const auto ak = identity_key(a), bk = identity_key(b);
+    if (ak.sector == 0 || bk.sector == 0) { return path_relation::error; }
+    return same_identity_key(ak, bk) ? path_relation::same : path_relation::different;
+}
+
 // True when `target` names an entry below the directory described by
 // `source`. Comparison uses the on-disk directory entry identity, so FAT long
-// name / short alias spelling differences cannot hide a descendant.
-bool directory_is_ancestor(const FILINFO& source, const char* target) {
+// name / short alias spelling differences cannot hide a descendant. Returns
+// -1 on an I/O error so the caller can fail closed instead of continuing.
+int directory_is_ancestor(const FILINFO& source, const char* target) {
     const file_identity_key source_key = identity_key(source);
-    if (source_key.sector == 0) { return false; }
+    if (source_key.sector == 0) { return -1; }
     const u32 target_length = text_length(target, max_name);
     u32 cut = target_length;
     while (cut > 0) {
@@ -195,11 +215,15 @@ bool directory_is_ancestor(const FILINFO& source, const char* target) {
         char ancestor[max_name]{};
         for (u32 i = 0; i < ancestor_length; ++i) { ancestor[i] = target[i]; }
         FILINFO info{};
-        if (f_stat(ancestor, &info) == FR_OK &&
-            same_identity_key(identity_key(info), source_key)) { return true; }
+        const FRESULT result = f_stat(ancestor, &info);
+        if (result == FR_OK) {
+            if (same_identity_key(identity_key(info), source_key)) { return 1; }
+        } else if (result != FR_NO_FILE && result != FR_NO_PATH) {
+            return -1;
+        }
         cut = ancestor_length;
     }
-    return false;
+    return 0;
 }
 
 bool reserved_component(const char* begin, u32 length) {
@@ -209,7 +233,7 @@ bool reserved_component(const char* begin, u32 length) {
         upper(begin[2]) == 'S' && begin[length - 4] == '.' &&
         upper(begin[length - 3]) == 'T' && upper(begin[length - 2]) == 'M' &&
         upper(begin[length - 1]) == 'P') { return true; }
-    const char* reserved[] = {temp_name, backup_name, journal_name};
+    const char* reserved[] = {temp_name, backup_name, journal_name, journal_temp_name};
     for (const char* name : reserved) {
         u32 i = 0;
         while (i < length && name[i] != '\0' && upper(begin[i]) == upper(name[i])) { ++i; }
@@ -413,14 +437,29 @@ bool remove_if_present(const char* path) {
 }
 
 bool write_journal(const char* path) {
+    // Publish a complete journal by rename; a short write must not leave a
+    // truncated marker that makes the next boot fail closed forever.
+    (void)remove_if_present(journal_temp_name);
     FIL file{};
-    if (f_open(&file, journal_name, FA_CREATE_ALWAYS | FA_WRITE) != FR_OK) { return false; }
+    if (f_open(&file, journal_temp_name, FA_CREATE_ALWAYS | FA_WRITE) != FR_OK) { return false; }
     const UINT length = static_cast<UINT>(text_length(path, max_name) + 1);
     UINT written = 0;
     FRESULT result = f_write(&file, path, length, &written);
     if (result == FR_OK) { result = f_sync(&file); }
     const FRESULT closed = f_close(&file);
-    return result == FR_OK && closed == FR_OK && written == length;
+    if (result != FR_OK || closed != FR_OK || written != length) {
+        (void)remove_if_present(journal_temp_name);
+        return false;
+    }
+    if (f_rename(journal_temp_name, journal_name) != FR_OK) {
+        (void)remove_if_present(journal_temp_name);
+        return false;
+    }
+    if (disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK) {
+        (void)remove_if_present(journal_name);
+        return false;
+    }
+    return true;
 }
 
 bool read_journal(char* path) {
@@ -439,7 +478,8 @@ bool missing(FRESULT result) { return result == FR_NO_FILE || result == FR_NO_PA
 // flush error, try to restore the marker; never reopen the service after failure.
 bool finish_recovery(const char* path) {
     if (disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK ||
-        !remove_if_present(temp_name) || !remove_if_present(backup_name) ||
+        !remove_if_present(temp_name) || !remove_if_present(journal_temp_name) ||
+        !remove_if_present(backup_name) ||
         disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK) { return false; }
     if (f_unlink(journal_name) != FR_OK) { return false; }
     if (disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK) {
@@ -453,7 +493,8 @@ void recover() {
     FILINFO journal_info{};
     const FRESULT journal_result = f_stat(journal_name, &journal_info);
     if (missing(journal_result)) {
-        if (!remove_if_present(temp_name) || disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK) {
+        if (!remove_if_present(temp_name) || !remove_if_present(journal_temp_name) ||
+            disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK) {
             recovery_failed = true;
         }
         return;
@@ -936,7 +977,14 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         // would otherwise expose whatever the reused clusters contained.
         const u32 size = static_cast<u32>(f_size(&description->file));
         const status grown = grow_with_zeros(*description, size, position);
-        if (grown != status::ok) { reply(out, in, grown); break; }
+        if (grown != status::ok) {
+            // The caller sees the write fail; undo any zero-fill that already
+            // extended the file so the failed write is not observable.
+            if (seek_description(*description, size) == status::ok) {
+                if (f_truncate(&description->file) != FR_OK) { recovery_failed = true; }
+            } else { recovery_failed = true; }
+            reply(out, in, grown); break;
+        }
         const status seek = seek_description(*description, position);
         if (seek != status::ok) { reply(out, in, seek); break; }
         UINT written = 0;
@@ -1240,7 +1288,10 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             !normalize_path(reinterpret_cast<const char*>(in.data), in.length, new_path, false)) {
             reply(out, in, status::invalid); break;
         }
-        if (staging_active) { reply(out, in, status::busy); break; }
+        if (staging_active &&
+            (same_path_object(staging_path, old_path) || same_path_object(staging_path, new_path))) {
+            reply(out, in, status::busy); break;
+        }
         for (const auto& owner_session : sessions) {
             if (any_open(owner_session, old_path) || any_open(owner_session, new_path)) {
                 reply(out, in, status::busy); return;
@@ -1250,12 +1301,21 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         const FRESULT old_stat = f_stat(old_path, &old_info);
         if (old_stat != FR_OK) { reply(out, in, from_fr(old_stat)); break; }
         const bool old_is_directory = (old_info.fattrib & AM_DIR) != 0;
-        if (same_path_object(old_path, new_path)) {
-            // Case/alias change of the same directory entry: nothing to move.
+        const path_relation relation = compare_path_objects(old_path, new_path);
+        if (relation == path_relation::error) { reply(out, in, status::io); break; }
+        if (relation == path_relation::same) {
+            // Exact same spelling is a no-op. A case-only spelling change must
+            // reach FatFs, which updates the directory entry's stored case.
+            if (!names_equal(old_path, new_path)) {
+                const FRESULT renamed = f_rename(old_path, new_path);
+                if (renamed != FR_OK) { reply(out, in, from_fr(renamed)); break; }
+            }
             reply(out, in, status::ok); break;
         }
-        if (old_is_directory && directory_is_ancestor(old_info, new_path)) {
-            reply(out, in, status::invalid); break;
+        if (old_is_directory) {
+            const int ancestor = directory_is_ancestor(old_info, new_path);
+            if (ancestor < 0) { reply(out, in, status::io); break; }
+            if (ancestor > 0) { reply(out, in, status::invalid); break; }
         }
         FILINFO new_info{};
         const FRESULT new_stat = f_stat(new_path, &new_info);
@@ -1289,8 +1349,13 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             }
             renamed = f_rename(old_path, new_path);
             if (renamed != FR_OK) {
-                if (f_rename(backup_name, new_path) != FR_OK) { recovery_failed = true; }
-                (void)f_unlink(journal_name);
+                if (f_rename(backup_name, new_path) != FR_OK) {
+                    // Keep journal and backup so boot recovery can restore the
+                    // old target. Deleting the journal here would strand it.
+                    recovery_failed = true;
+                } else {
+                    (void)f_unlink(journal_name);
+                }
                 reply(out, in, from_fr(renamed)); break;
             }
             if (disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK || !finish_recovery(new_path)) {

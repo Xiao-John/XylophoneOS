@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Guest acceptance for POSIX path resolution, file offsets and spawn actions.
 #include <errno.h>
+#include <dirent.h>
 #include <fcntl.h>
 #include <spawn.h>
 #include <stdio.h>
@@ -192,6 +193,29 @@ int main(int argc, char** argv) {
         if (error == 0) { (void)waitpid(child, nullptr, 0); }
         posix_spawn_file_actions_destroy(&ordered);
         close(extra);
+    }
+
+    // readdir yields the synthetic "." and ".." entries.
+    DIR* dir = opendir("/case");
+    check(dir != NULL, "readdir open");
+    if (dir != NULL) {
+        struct dirent* first = readdir(dir);
+        char first_name[8] = {0};
+        unsigned char first_type = 0;
+        if (first != NULL) {
+            snprintf(first_name, sizeof(first_name), "%s", first->d_name);
+            first_type = first->d_type;
+        }
+        struct dirent* second = readdir(dir);
+        char second_name[8] = {0};
+        unsigned char second_type = 0;
+        if (second != NULL) {
+            snprintf(second_name, sizeof(second_name), "%s", second->d_name);
+            second_type = second->d_type;
+        }
+        check(strcmp(first_name, ".") == 0 && first_type == DT_DIR, "readdir dot");
+        check(strcmp(second_name, "..") == 0 && second_type == DT_DIR, "readdir dotdot");
+        closedir(dir);
     }
 
     // posix_spawnp must accept a 255-character candidate when PATH already

@@ -47,15 +47,24 @@ def main():
     dash = info["members"][dash_index]
     name_off = struct.unpack_from("<I", good, 64 + 64 * dash_index + 4)[0]
     name_case[64 + 64 * len(info["members"]) + name_off] = 0x5c
-    cases.append(("bad-name", bytes(name_case), b"[files] bundle bad name"))
+    cases.append(("bad-name", bytes(name_case), b"[files] bundle bad name", None))
     reserved_case = bytearray(good)
     reserved_case[32] = 1
-    cases.append(("reserved1", bytes(reserved_case), b"[files] bundle reserved"))
+    cases.append(("reserved1", bytes(reserved_case), b"[files] bundle reserved", None))
     magic_case = bytearray(good)
     magic_case[dash["data_off"]] = 0
-    cases.append(("bad-magic", bytes(magic_case), b"[files] bundle magic rejected"))
+    cases.append(("bad-magic", bytes(magic_case), b"[files] bundle magic rejected", None))
+    # A payload that is neither a container nor an ELF must not become dash.
+    legacy_case = bytearray(good)
+    legacy_case[0] = ord("Y")
+    cases.append(("non-elf-legacy", bytes(legacy_case), b"[files] boot payload is not ELF", "/usr/bin/dash"))
+    # A bad digest on a later member must be rejected before dash is written.
+    later_case = bytearray(good)
+    later_case[64 + 64 * 1 + 32] ^= 0xFF
+    cases.append(("later-digest", bytes(later_case),
+                  b"[files] bundle digest mismatch: /var/cache/xypm/incoming/", "/usr/bin/dash"))
 
-    for label, blob, marker in cases:
+    for label, blob, marker, absent in cases:
         image = bytearray(base)
         image[offset:offset + len(blob)] = blob
         with tempfile.TemporaryDirectory(prefix="xos_bundle_reject_") as folder:
@@ -75,6 +84,13 @@ def main():
                 window = bytes(guest.output[start:])
                 if b"XOSBND1 bundle processed" in window:
                     raise AssertionError(f"{label}: malformed bundle processed")
+                if absent is not None:
+                    begin = len(guest.output)
+                    send_bytes(guest, b"stat " + absent.encode() + b"\r")
+                    guest.expect(b"error=", start=begin, timeout=20)
+                    pump(guest, 0.3)
+                    if b"size=" in bytes(guest.output[begin:]):
+                        raise AssertionError(f"{label}: {absent} was installed")
                 report["checks"].append({"name": label, "passed": True})
             finally:
                 guest.close()

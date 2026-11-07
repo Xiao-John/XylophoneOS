@@ -2,11 +2,47 @@
 """Explicit OFFLINE file transfer to a regular XOS disk image. Never run with QEMU open."""
 import argparse
 import hashlib
+import os
 from pathlib import Path
 import shutil
+import stat
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
+
+def _uid():
+    return getattr(os, 'getuid', lambda: 0)()
+
+
+def _sha256_file(path):
+    digest = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(1 << 20), b''):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def _trusted_regular(path):
+    try:
+        info = path.lstat()
+    except OSError:
+        return False
+    return (stat.S_ISREG(info.st_mode) and info.st_uid == _uid() and
+            (info.st_mode & 0o022) == 0)
+
+
+def _cache_valid(output, stamp, source_digest):
+    """A cached binary is valid only if the stamp matches sources AND bytes."""
+    if not (_trusted_regular(output) and _trusted_regular(stamp)):
+        return False
+    try:
+        fields = stamp.read_text().split()
+    except OSError:
+        return False
+    if len(fields) != 2 or fields[0] != source_digest:
+        return False
+    return _sha256_file(output) == fields[1]
+
 
 def host_tool():
     sources = [ROOT / 'scripts/work_disk_host.cpp', ROOT / 'src/third_party/fatfs/ff.c',
@@ -15,12 +51,16 @@ def host_tool():
     digest = hashlib.sha256(b''.join(p.read_bytes() for p in sources + sorted(headers))).hexdigest()
     output = ROOT / 'build/work_disk_host'
     stamp = output.with_suffix('.sha256')
-    if not output.exists() or not stamp.exists() or stamp.read_text() != digest:
+    if not _cache_valid(output, stamp, digest):
         output.parent.mkdir(exist_ok=True)
+        temporary = output.with_name(output.name + '.%d.tmp' % os.getpid())
         subprocess.run([shutil.which('clang++') or 'c++', '-std=c++17', '-O2', '-w',
                         '-I', str(ROOT / 'src/third_party/fatfs'), *map(str, sources),
-                        '-o', str(output)], check=True)
-        stamp.write_text(digest)
+                        '-o', str(temporary)], check=True)
+        os.replace(temporary, output)
+        stamp_tmp = stamp.with_name(stamp.name + '.%d.tmp' % os.getpid())
+        stamp_tmp.write_text(digest + '\n' + _sha256_file(output) + '\n')
+        os.replace(stamp_tmp, stamp)
     return output
 
 def transfer(image, operation, path, source=None):

@@ -342,9 +342,13 @@ bool maintenance_run(u32 argc, char** argv, bool recovering, bool boot_image = f
     }
     result = files.maintenance_release();
     if (result == 0) { result = syscall(sys_process_guard, static_cast<u64>(process_guard_action::end)); }
-    if (result != 0) { print("maintenance: retained; cleanup error="); signed_decimal(result); print("\n"); }
-    else { persistent_recovery_gate = false; if (child > 0) { print("maintenance: completed\n"); }
-        else { print("maintenance: program unavailable; session closed\n"); } }
+    if (result != 0) {
+        print("maintenance: retained; cleanup error="); signed_decimal(result); print("\n");
+        return false;
+    }
+    persistent_recovery_gate = false;
+    if (child > 0) { print("maintenance: completed\n"); }
+    else { print("maintenance: program unavailable; session closed\n"); }
     return success;
 }
 void show_stats() {
@@ -572,7 +576,8 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     print("\nWelcome to Xshell | XylophoneOS\n"
           "help: commands   dash -i: POSIX shell   trace on: diagnostics\n\n");
     // DU4: one-shot P2 install after demos are quieted so process_guard can begin.
-    if (ui_ran && ui::staged_count() > 0 && !ui::bundle_marker_present()) {
+    if (ui_ran && ui::bundle_install_ok() && ui::staged_count() > 0 &&
+        !ui::bundle_marker_present()) {
         if (!demo_keep && !demo_quiet) {
             for (u64 demo = 1; demo <= 4; ++demo) { (void)syscall(10, demo); }
             demo_quiet = true;
@@ -582,12 +587,19 @@ extern "C" int xos_user_main(const xos::startup_info*) {
             const char* path = ui::staged_path(i);
             if (path == nullptr) { all_ok = false; continue; }
             char program[] = "xypm";
-            char action[] = "install";
+            // ensure is idempotent: an already-installed identical package is
+            // a success, so a partial first boot can finish on retry.
+            char action[] = "ensure";
             char* args[] = {program, action, const_cast<char*>(path)};
             if (!maintenance_run(3, args, false)) { all_ok = false; }
         }
-        if (all_ok) { (void)ui::bundle_marker_write(); print("[files] bundle packages installed\n"); }
-        else { print("[files] bundle package install incomplete; will retry next boot\n"); }
+        if (all_ok && ui::bundle_marker_write()) {
+            print("[files] bundle packages installed\n");
+        } else if (all_ok) {
+            print("[files] bundle marker write failed; will retry next boot\n");
+        } else {
+            print("[files] bundle package install incomplete; will retry next boot\n");
+        }
     }
     bool last_cr = false;
     for (;;) {

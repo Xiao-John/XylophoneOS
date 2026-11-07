@@ -164,6 +164,7 @@ def parse(blob: bytes, *, check_hashes=True, check_magic_bytes=True) -> dict:
     members = []
     types = []
     spans = []
+    name_spans = []
     for i in range(count):
         typ, noff, nlen, reserved, doff, dlen = struct.unpack_from(
             '<IIIIQQ', blob, entries_off + i * ENTRY_SIZE)
@@ -196,6 +197,17 @@ def parse(blob: bytes, *, check_hashes=True, check_magic_bytes=True) -> dict:
         })
         types.append(typ)
         spans.append((doff, doff + dlen))
+        name_spans.append((noff, nlen))
+
+    # The name region is a compact concatenation: intervals must exactly
+    # partition [0, names_bytes), with no overlap or unused trailing bytes.
+    cursor = 0
+    for start, length in sorted(name_spans):
+        if start != cursor:
+            raise BundleError('name region is not compact')
+        cursor += length
+    if cursor != names_bytes:
+        raise BundleError('name region has unused bytes')
 
     # Padding and every inter-member/trailing gap must be zero. Overlap alone
     # does not cover those bytes, which no member digest authenticates.
@@ -282,6 +294,9 @@ def main() -> int:
                     print(f'  type={m["type"]} {m["name"]} len={m["data_len"]} sha={m["sha256"].hex()[:16]}…')
     except BundleError as e:
         print(f'REJECT: {e}', file=sys.stderr)
+        return 1
+    except (OSError, json.JSONDecodeError, KeyError, TypeError, ValueError) as e:
+        print(f'REJECT: invalid manifest: {e}', file=sys.stderr)
         return 1
     return 0
 

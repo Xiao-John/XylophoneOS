@@ -124,7 +124,15 @@ int run(const char* operation,const char* target,unsigned injected=0,const char*
     if(!recovery_abi||std::strcmp(recovery_abi,"1")!=0){std::fputs("xypm: compatible immutable recovery image required\n",stderr);return 3;}
     held_package=nullptr;xypm_native::verified_package package{};bool removing=std::strcmp(operation,"remove")==0;
     if(removing){if(!xypm_native::identifier(target)||plan_remove(target,true)!=0)return 3;}
-    else if(plan_package(operation,target,&held_package,&package,true,expected_sha)!=0)return 3;
+    else {
+        const int planned=plan_package(operation,target,&held_package,&package,true,expected_sha);
+        if(planned==1){
+            if(held_package){std::fclose(held_package);held_package=nullptr;}
+            std::printf("xypm: ensure %s already installed\n",xypm_native::field(package.manifest,"id")->text);
+            return 0;
+        }
+        if(planned!=0)return 3;
+    }
     const char* id=removing?target:xypm_native::field(package.manifest,"id")->text;
     jmp_buf recovery;xypm_native::error_target=&recovery;
     if(setjmp(recovery)!=0){xypm_native::error_target=nullptr;if(held_package){std::fclose(held_package);held_package=nullptr;}std::fprintf(stderr,"xypm: transaction stopped: %s; recovery may be required\n",xypm_native::last_error);return 3;}

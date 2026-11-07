@@ -17,6 +17,18 @@ int write_fault_after = -1;   // >= 0: short-write this many bytes then error.
 int write_short_by = -1;      // >= 0: report success but write fewer bytes.
 int read_fault_after = -1;    // >= 0: read this many bytes then error.
 
+int rename_fault_nth = -1;
+int rename_fault_nth2 = -1;
+int rename_calls = 0;
+
+FRESULT injected_rename(const char* old_path, const char* new_path) {
+    ++rename_calls;
+    if (rename_calls == rename_fault_nth || rename_calls == rename_fault_nth2) {
+        return FR_DISK_ERR;
+    }
+    return f_rename(old_path, new_path);
+}
+
 FRESULT injected_read(FIL* file, void* buffer, UINT length, UINT* got) {
     if (read_fault_after >= 0) {
         const UINT partial = static_cast<UINT>(read_fault_after);
@@ -47,9 +59,11 @@ FRESULT injected_write(FIL* file, const void* buffer, UINT length, UINT* written
 
 #define f_read injected_read
 #define f_write injected_write
+#define f_rename injected_rename
 #include "../../../src/user/services/files.cpp"
 #undef f_read
 #undef f_write
+#undef f_rename
 
 namespace xos::sdk { i64 syscall(u64, u64, u64, u64) { return 0; } }
 
@@ -323,6 +337,66 @@ int main(int argc, char** argv) {
     require(fstat_handle(client, opened.handle).value == 4, "growth rollback size");
     require(close_handle(client, opened.handle).status_code == static_cast<i32>(status::ok), "rollback close");
     require(read_file("rollback.txt") == "0123", "growth rollback content");
+    ++checks;
+
+    // 12. Case-only rename updates the stored FAT name instead of no-op.
+    reset_media();
+    seed_file("Case.txt", "x", 1);
+    require(rename_path(client, "Case.txt", "case.txt").status_code == static_cast<i32>(status::ok),
+            "case rename");
+    FILINFO case_info{};
+    require(f_stat("case.txt", &case_info) == FR_OK &&
+            std::strcmp(case_info.fname, "case.txt") == 0, "case rename spelling");
+    ++checks;
+
+    // 13. A failed gap fill must not leave the file extended.
+    reset_media();
+    seed_file("gaproll.txt", "0123", 4);
+    opened = open_path(client, "gaproll.txt", xos::file::read_write);
+    require(opened.status_code == static_cast<i32>(status::ok), "gap open");
+    require(seek_handle(client, opened.handle, 1024, xos::file::seek_set).value == 1024, "gap seek");
+    write_short_by = 512;
+    require(write_handle(client, opened.handle, "Z", 1).status_code == static_cast<i32>(status::no_space),
+            "gap short write");
+    require(fstat_handle(client, opened.handle).value == 4, "gap rollback size");
+    require(close_handle(client, opened.handle).status_code == static_cast<i32>(status::ok), "gap close");
+    require(read_file("gaproll.txt") == "0123", "gap rollback content");
+    ++checks;
+
+    // 14. A short journal write must not publish a truncated marker.
+    reset_media();
+    seed_file("jsrc.txt", "new", 3);
+    seed_file("jdst.txt", "old", 3);
+    write_short_by = 512;
+    require(rename_path(client, "jsrc.txt", "jdst.txt").status_code == static_cast<i32>(status::io),
+            "journal short write");
+    require(read_file("jsrc.txt") == "new" && read_file("jdst.txt") == "old", "journal unchanged files");
+    require(read_file(journal_name) == "<absent>" && read_file(journal_temp_name) == "<absent>",
+            "journal cleaned");
+    ++checks;
+
+    // 15. If restoring the backup also fails, keep the journal so boot
+    //     recovery can restore the old target instead of stranding XOSBAK.TMP.
+    reset_media();
+    seed_file("rsrc.txt", "new", 3);
+    seed_file("rdst.txt", "old", 3);
+    rename_calls = 0;
+    rename_fault_nth = 3;
+    rename_fault_nth2 = 4;
+    require(rename_path(client, "rsrc.txt", "rdst.txt").status_code == static_cast<i32>(status::io),
+            "rename double failure");
+    require(recovery_failed, "rename double failure gate");
+    require(read_file(journal_name).rfind("rdst.txt", 0) == 0, "journal retained");
+    require(read_file(backup_name) == "old", "backup retained");
+    require(read_file("rdst.txt") == "<absent>", "target absent before recovery");
+    rename_fault_nth = -1;
+    rename_fault_nth2 = -1;
+    recovery_failed = false;  // simulate a fresh service process
+    recover();
+    require(!recovery_failed, "rename recovery gate");
+    require(read_file("rdst.txt") == "old", "rename recovered target");
+    require(read_file(journal_name) == "<absent>" && read_file(backup_name) == "<absent>",
+            "rename recovery cleanup");
     ++checks;
 
     std::printf("FILE_SEMANTICS_CASES_PASSED=%d\n", checks);

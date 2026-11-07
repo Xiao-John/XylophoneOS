@@ -187,7 +187,13 @@ int plan_package(const char* operation,const char* path,FILE** held=nullptr,xypm
     jmp_buf recovery;xypm_native::error_target=&recovery;
     if(setjmp(recovery)!=0){xypm_native::error_target=nullptr;if(source)std::fclose(source);std::fprintf(stderr,"xypm: plan rejected: %s\n",xypm_native::last_error);return 3;}
     size_t count=load_installed_database();auto* manifest=package.manifest;const char* id=xypm_native::field(manifest,"id")->text;installed_record* prior=find_installed(id,count);
-    bool upgrade=std::strcmp(operation,"upgrade")==0;xypm_native::require((upgrade&&prior)||(!upgrade&&!prior),upgrade?"package is not installed; choose install":"package already installed; choose upgrade");
+    const bool ensure=std::strcmp(operation,"ensure")==0;
+    if(ensure&&prior&&std::strcmp(prior->sha,package.digest)==0){
+        if(verified)*verified=package;if(held)*held=source;
+        if(!quiet)std::printf("Already installed: %s\n",id);
+        return 1;
+    }
+    bool upgrade=std::strcmp(operation,"upgrade")==0||(ensure&&prior);xypm_native::require((upgrade&&prior)||(!upgrade&&!prior),upgrade?"package is not installed; choose install":"package already installed; choose upgrade");
     xypm_native::require(prior||count<64,"installed package limit exceeded");
     validate_planned_dependencies(id,manifest,package.digest,count);
     validate_planned_cycles(id,manifest,count,prior==nullptr);
@@ -223,7 +229,7 @@ int plan_remove(const char* id,bool quiet=false){
 int main(int argc,char** argv) {
     if (argc==2&&!std::strcmp(argv[1],"--version")) {std::puts("xypm 0.3 (P2 transactions)");return 0;}
     if (argc==1 || (argc==2&&!std::strcmp(argv[1],"--help"))) {
-        std::puts("xypm list | info <package-id> | verify <package.xpk> [sha256]\nxypm plan install|upgrade <package.xpk> | remove <package-id>\nxypm install|upgrade <package.xpk> [--sha256 <digest>] | remove <package-id> | recover (maintenance only)");return 0;
+        std::puts("xypm list | info <package-id> | verify <package.xpk> [sha256]\nxypm plan install|upgrade <package.xpk> | remove <package-id>\nxypm install|upgrade|ensure <package.xpk> [--sha256 <digest>] | remove <package-id> | recover (maintenance only)");return 0;
     }
     if (argc==2&&!std::strcmp(argv[1],"list")) return query(nullptr);
     if (argc==3&&!std::strcmp(argv[1],"info")&&identifier(argv[2])) return query(argv[2]);
@@ -234,7 +240,7 @@ int main(int argc,char** argv) {
     if(argc==5&&!std::strcmp(argv[3],"--fault-after")&&(!std::strcmp(argv[1],"install")||!std::strcmp(argv[1],"upgrade")||!std::strcmp(argv[1],"remove"))){char* end=nullptr;unsigned long step=std::strtoul(argv[4],&end,10);if(end&&*end==0&&step>0&&step<=100000)return transaction::run(argv[1],argv[2],static_cast<unsigned>(step));}
 #endif
     if(argc==5&&(!std::strcmp(argv[1],"install")||!std::strcmp(argv[1],"upgrade"))&&!std::strcmp(argv[3],"--sha256"))return transaction::run(argv[1],argv[2],0,argv[4]);
-    if(argc==3&&(!std::strcmp(argv[1],"install")||!std::strcmp(argv[1],"upgrade")||!std::strcmp(argv[1],"remove")))return transaction::run(argv[1],argv[2]);
+    if(argc==3&&(!std::strcmp(argv[1],"install")||!std::strcmp(argv[1],"upgrade")||!std::strcmp(argv[1],"ensure")||!std::strcmp(argv[1],"remove")))return transaction::run(argv[1],argv[2]);
     if(argc==2&&!std::strcmp(argv[1],"recover"))return xypm_recover_run()==0?0:3;
     std::fputs("xypm: unsupported command or arguments; use --help\n",stderr);return 2;
 }

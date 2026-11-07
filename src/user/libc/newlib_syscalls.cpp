@@ -65,6 +65,8 @@ struct fd_slot { signed char object; bool close_on_exec; };
 struct directory_state {
     bool active;
     bool eof;
+    bool dot_returned;
+    bool dotdot_returned;
     char path[max_path];
     xos::file::entry entries[16];
     u32 count;
@@ -1237,6 +1239,16 @@ extern "C" struct dirent* readdir(DIR* directory) {
     runtime_guard guard(directory_lock);
     directory_state* state = get_directory(directory);
     if (state == nullptr) { errno = EBADF; return nullptr; }
+    // POSIX requires the synthetic "." and ".." entries before real ones.
+    if (!state->dot_returned || !state->dotdot_returned) {
+        memset(&state->current, 0, sizeof(state->current));
+        const char* name = state->dot_returned ? ".." : ".";
+        memcpy(state->current.d_name, name, strlen(name) + 1);
+        state->current.d_type = DT_DIR;
+        if (!state->dot_returned) { state->dot_returned = true; }
+        else { state->dotdot_returned = true; }
+        return &state->current;
+    }
     while (state->position >= state->count && !state->eof) {
         state->count = 0;
         xos::i64 result = file_client.list(state->path, state->entries, 16,
@@ -1266,6 +1278,7 @@ extern "C" void rewinddir(DIR* directory) {
     directory_state* state = get_directory(directory);
     if (state == nullptr) { errno = EBADF; return; }
     state->cursor = 0; state->position = 0; state->count = 0; state->eof = false;
+    state->dot_returned = false; state->dotdot_returned = false;
 }
 
 extern "C" int posix_spawn_file_actions_init(posix_spawn_file_actions_t* output) {

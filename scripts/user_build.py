@@ -102,6 +102,10 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
         if name == "terminal_app_probe":
             source_path = root / "tests/fixtures/ncursesw/terminal_app_probe.cpp"
         extra_flags = ("-w",) if name in libc_programs else ()
+        if name == "supervisor":
+            # Keep the embedded supervisor inside the legacy 512 KiB image
+            # budget after the bundle installer additions.
+            extra_flags += ("-Os",)
         if name in ("cpp_runtime_probe", "tls_exit_probe"):
             extra_flags += ("-fuse-cxa-atexit", "-ftls-model=local-exec",
                             "-funwind-tables", "-fasynchronous-unwind-tables",

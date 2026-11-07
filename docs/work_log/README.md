@@ -109,3 +109,4 @@
 | 0212 | `0212_file_service_found_bug_fixes.md` | 文件服务 found_bug 15 项修复：逻辑偏移、零填充、rename 替换、路径解析、spawn 动作、transfer 授权 |
 | 0213 | `0213_second_bug_hunt_fixes.md` | 第二轮 bug-hunting：spawnp/路径 255 字符边界、JSON INT64_MIN、diskio 64 位回绕、erase_last 注释 |
 | 0214 | `0214_bundle_installer_hardening.md` | 第三轮 bug-hunting：XOSBND1 填充/类型/名称校验、客体安装器魔法与目标摘要、host 工具缓存加固 |
+| 0215 | `0215_s2_bug_hunt_fixes.md` | Season-2：安装预检/marker 身份/幂等 ensure、rename 恢复、readdir 点项、ISO/缓存加固 |

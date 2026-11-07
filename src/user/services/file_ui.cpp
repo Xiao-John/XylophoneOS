@@ -16,9 +16,10 @@ u8 image_buffer[24576];
 u8 dash_buffer[file::request_data_size];
 u8 editor_buffer[8192];
 u32 editor_length;
-constexpr u32 max_staged_packages = 8;
+constexpr u32 max_staged_packages = 16;
 char staged_packages[max_staged_packages][160];
 u32 staged_package_count = 0;
+bool boot_payload_installed = false;
 const char* bundle_marker_path = "/var/cache/xypm/du4_bundle.installed";
 
 void print_bytes(const u8* data, u32 length) {
@@ -414,6 +415,47 @@ bool payload_is_zero(u64 offset, u64 length) {
     return true;
 }
 
+bool payload_digest(u8 digest[32]) {
+    const i64 size = syscall(sys_boot_payload, 0, 0, 0);
+    if (size <= 0) { return false; }
+    sha256 hash;
+    u64 offset = 0;
+    while (offset < static_cast<u64>(size)) {
+        u32 chunk = static_cast<u32>(static_cast<u64>(size) - offset);
+        if (chunk > sizeof(dash_buffer)) { chunk = sizeof(dash_buffer); }
+        if (!read_payload(offset, dash_buffer, chunk)) { return false; }
+        hash.update(dash_buffer, chunk);
+        offset += chunk;
+    }
+    hash.finish(digest);
+    return true;
+}
+
+void digest_text(const u8 digest[32], char output[65]) {
+    static const char digits[] = "0123456789abcdef";
+    for (u32 i = 0; i < 32; ++i) {
+        output[i * 2] = digits[digest[i] >> 4];
+        output[i * 2 + 1] = digits[digest[i] & 0x0f];
+    }
+    output[64] = '\0';
+}
+
+bool member_digest_ok(const bundle_entry& entry) {
+    sha256 hash;
+    u64 offset = 0;
+    while (offset < entry.data_len) {
+        u32 chunk = static_cast<u32>(entry.data_len - offset);
+        if (chunk > sizeof(dash_buffer)) { chunk = sizeof(dash_buffer); }
+        if (!read_payload(entry.data_off + offset, dash_buffer, chunk)) { return false; }
+        hash.update(dash_buffer, chunk);
+        offset += chunk;
+    }
+    u8 got[32];
+    hash.finish(got);
+    for (u32 i = 0; i < 32; ++i) { if (got[i] != entry.sha256[i]) { return false; } }
+    return true;
+}
+
 // Write one member to an absolute path; refuses overwrite of a different existing file.
 // base is the member's data_off inside the boot payload (0 for legacy whole-payload ELF).
 bool install_member_file(const char* path, u64 length, const u8 want_sha[32], u64 base) {
@@ -520,23 +562,34 @@ bool install_member_file(const char* path, u64 length, const u8 want_sha[32], u6
 }
 
 void install_boot_payload() {
+    boot_payload_installed = false;
     const i64 size = syscall(sys_boot_payload, 0, 0, 0);
-    if (size <= 0) { return; }
+    if (size <= 0) { boot_payload_installed = true; return; }
     if (static_cast<u64>(size) > 32ull * 1024 * 1024) {
         print("[files] boot payload too large\n");
         return;
     }
     if (!boot_payload_is_bundle(static_cast<u64>(size))) {
-        // Legacy raw dash ELF path (unchanged behavior).
+        // Only a real ELF may take the legacy raw-dash path; any other bytes
+        // would otherwise be persisted as /usr/bin/dash unverified.
+        u8 magic[4]{};
+        if (static_cast<u64>(size) < sizeof(magic) || !read_payload(0, magic, sizeof(magic)) ||
+            magic[0] != 0x7f || magic[1] != 'E' || magic[2] != 'L' || magic[3] != 'F') {
+            print("[files] boot payload is not ELF\n");
+            return;
+        }
         u32 existing = 0;
         u32 version = 0;
-        if (client.stat("/usr/bin/dash", existing, version) == 0) { return; }
+        if (client.stat("/usr/bin/dash", existing, version) == 0) {
+            boot_payload_installed = true;
+            return;
+        }
         (void)client.mkdir("/usr");
         (void)client.mkdir("/usr/bin");
         if (!install_member_file("/usr/bin/dash", static_cast<u64>(size), nullptr, 0)) {
-            // install_member_file with nullptr sha skips digest check for legacy ELF
             return;
         }
+        boot_payload_installed = true;
         return;
     }
 
@@ -598,7 +651,11 @@ void install_boot_payload() {
         char* member_name = member_names[i];
         u32 name_used = 0;
         while (name_used < e.name_len && name_used + 1 < 128) {
-            member_name[name_used] = static_cast<char>(names_buf[e.name_off + name_used]);
+            const u8 byte = names_buf[e.name_off + name_used];
+            // Reject embedded NUL explicitly; C-string validation would silently
+            // truncate the declared name and accept a different install target.
+            if (byte == 0) { print("[files] bundle bad name\n"); return; }
+            member_name[name_used] = static_cast<char>(byte);
             ++name_used;
         }
         member_name[name_used] = 0;
@@ -653,9 +710,33 @@ void install_boot_payload() {
         print("[files] bundle non-zero padding\n");
         return;
     }
+    u32 package_count = 0;
     for (u32 i = 0; i < count; ++i) {
         if (!member_magic_ok(entries[i])) {
             print("[files] bundle magic rejected\n");
+            return;
+        }
+        if (entries[i].type >= 2 && entries[i].type <= 4) { ++package_count; }
+    }
+    if (package_count > max_staged_packages) {
+        print("[files] bundle package count rejected\n");
+        return;
+    }
+    // Verify every member digest before any disk mutation: a bad later member
+    // must not leave an earlier member committed.
+    for (u32 i = 0; i < count; ++i) {
+        if (!member_digest_ok(entries[i])) {
+            print("[files] bundle digest mismatch: ");
+            if (entries[i].type == 1) {
+                print("/usr/bin/dash");
+            } else if (entries[i].type == 5) {
+                print("/usr/bin/");
+                print(member_names[i]);
+            } else {
+                print("/var/cache/xypm/incoming/");
+                print(member_names[i]);
+            }
+            print("\n");
             return;
         }
     }
@@ -690,15 +771,6 @@ void install_boot_payload() {
             for (u32 n = 0; name[n] && pi + 1 < sizeof(path); ++n) { path[pi++] = name[n]; }
             path[pi] = 0;
             prefix = path;
-            if (staged_package_count < max_staged_packages) {
-                u32 n = 0;
-                while (path[n] && n + 1 < sizeof(staged_packages[0])) {
-                    staged_packages[staged_package_count][n] = path[n];
-                    ++n;
-                }
-                staged_packages[staged_package_count][n] = 0;
-                ++staged_package_count;
-            }
         }
         if (e.type == 1) {
             u32 existing = 0;
@@ -710,8 +782,22 @@ void install_boot_payload() {
             if (!install_member_file("/usr/bin/dash", e.data_len, e.sha256, e.data_off)) { return; }
         } else {
             if (!install_member_file(prefix, e.data_len, e.sha256, e.data_off)) { return; }
+            // Register only after the member is durably in place: a failed
+            // install must not leave a stale path for the supervisor.
+            if (e.type >= 2 && e.type <= 4) {
+                if (staged_package_count >= max_staged_packages) {
+                    print("[files] bundle staging full\n");
+                    return;
+                }
+                char* slot = staged_packages[staged_package_count];
+                u32 n = 0;
+                while (path[n] && n + 1 < sizeof(staged_packages[0])) { slot[n] = path[n]; ++n; }
+                slot[n] = 0;
+                ++staged_package_count;
+            }
         }
     }
+    boot_payload_installed = true;
     print("[files] XOSBND1 bundle processed members=");
     decimal(count);
     print("\n");
@@ -728,16 +814,36 @@ const char* staged_path(u32 index) {
     return staged_packages[index];
 }
 bool bundle_marker_present() {
+    // The marker binds the completed install to this exact boot payload, so a
+    // later ISO with different packages is not silently skipped.
     u32 existing = 0;
     u32 version = 0;
-    return client.stat(bundle_marker_path, existing, version) == 0;
+    if (client.stat(bundle_marker_path, existing, version) != 0 || existing != 65) {
+        return false;
+    }
+    char stored[66]{};
+    u32 length = 0;
+    if (client.read_all(bundle_marker_path, stored, sizeof(stored), length) != 0 ||
+        length != 65 || stored[64] != '\n') {
+        return false;
+    }
+    u8 digest[32];
+    char expected[65];
+    if (!payload_digest(digest)) { return false; }
+    digest_text(digest, expected);
+    for (u32 i = 0; i < 64; ++i) { if (stored[i] != expected[i]) { return false; } }
+    return true;
 }
 bool bundle_marker_write() {
-    static const char body[] = "ok\n";
-    const i64 r = client.replace(bundle_marker_path, body, 3);
-    if (r == 0) { (void)client.sync(); }
-    return r == 0;
+    u8 digest[32];
+    if (!payload_digest(digest)) { return false; }
+    char body[65];
+    digest_text(digest, body);
+    body[64] = '\n';
+    const i64 r = client.replace(bundle_marker_path, body, sizeof(body));
+    return r == 0 && client.sync() == 0;
 }
+bool bundle_install_ok() { return boot_payload_installed; }
 
 void init() {
     if (!client.init()) {

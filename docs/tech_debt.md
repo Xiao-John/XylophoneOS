@@ -93,3 +93,4 @@
 | FS-05 | 性能 | libc 路径解析对每个中间分量发一次 `stat` RPC，无缓存；深路径的 `open/stat` 会比原先多若干次 IPC。 | `src/user/libc/newlib_syscalls.cpp` `resolve_path_from`；退出条件=确认开销不可接受时加 cwd 相对缓存或服务端逐分量解析。 |
 | FS-07 | 性能 | `ftruncate`/写越界必须真实写零才能避免泄露旧簇；扩大到大文件时成本与新增长度线性，FAT 没有可安全使用的稀疏表示。 | `src/user/services/files.cpp` `zero_fill`；退出条件=确认大文件场景实际需要后，评估按簇清零或专用格式化路径。 |
 | FS-06 | 授权边界 | 句柄转移现在要求内核认证的 `parent_pid` 等于调用者；父进程仍可向自己的子进程注入并耗尽其 `max_open`，这是创建者权限内的行为，未引入显式接受令牌。 | `src/kernel/arch/x86_64/tasks.cpp` `sys_file_session`、`src/user/services/files.cpp` `op::transfer`；退出条件=需要更强隔离时引入目标接受/能力令牌。 |
+| FS-08 | 语义 | libc 的 cwd 以文本路径保存，不绑定目录 inode：`chdir("/a")` 后若 `/a` 被 rename，相对路径会按旧名解析（POSIX 应跟随重命名目录）；若 `/a` 被删除并重建，则相对操作会落到新目录，构成路径劫持语义。 | `src/user/libc/newlib_syscalls.cpp` `resolve_path`/`chdir`；退出条件=按目录 identity 解析相对路径，或由服务端提供 cwd 句柄并在 rename/remove 时维护存活会话。 |

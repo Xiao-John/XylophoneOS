@@ -201,6 +201,19 @@ class BundlePaddingAndNames(unittest.TestCase):
             xb.build([(xb.TYPE_DASH, 'dash_elf', elf_stub()),
                       (xb.TYPE_TOOL, 'dash', elf_stub())])
 
+    def test_parse_rejects_non_compact_names(self):
+        blob = bytearray(xb.build([
+            (xb.TYPE_DASH, 'AAA', elf_stub()),
+            (xb.TYPE_AUX, 'BBB', xpk_stub()),
+        ]))
+        info = xb.parse(bytes(blob), check_hashes=False)
+        self.assertEqual([m['name'] for m in info['members']], ['AAA', 'BBB'])
+        # Point the second entry at offset 1: ranges overlap and do not
+        # partition the name region.
+        struct.pack_into('<I', blob, 64 + 64 + 4, 1)
+        with self.assertRaises(xb.BundleError):
+            xb.parse(bytes(blob))
+
     def test_parse_rejects_backslash_name(self):
         blob = bytearray(xb.build([(xb.TYPE_DASH, 'dash', elf_stub())]))
         info = xb.parse(bytes(blob), check_hashes=False)
@@ -211,6 +224,22 @@ class BundlePaddingAndNames(unittest.TestCase):
 
 
 class BundleCli(unittest.TestCase):
+    def test_invalid_manifest_is_rejected_without_traceback(self):
+        import subprocess
+        import tempfile
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            manifest = root / 'bad.json'
+            manifest.write_text('{bad json')
+            run = subprocess.run([
+                sys.executable,
+                str(Path(__file__).resolve().parents[1] / 'scripts/xos_bundle.py'),
+                'build', '--manifest', str(manifest), '-o', str(root / 'out.bnd'),
+            ], capture_output=True, text=True)
+            self.assertNotEqual(run.returncode, 0)
+            self.assertNotIn('Traceback', run.stderr)
+            self.assertIn('REJECT:', run.stderr)
+
     def test_failed_build_leaves_no_output(self):
         import json
         import subprocess

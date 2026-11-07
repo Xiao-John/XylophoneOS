@@ -750,8 +750,12 @@ void filetest() {
     char short_read[10]{};
     if (client.read(h1, short_read, 10) != 5) { print("[filetest] failed stage=1h\n"); return; }
     if (client.read(h1, short_read, 10) != 0) { print("[filetest] failed stage=1i\n"); return; }
-    if (client.seek(h1, 99) != 5 || client.read(h1, short_read, 1) != 0) {
+    if (client.seek(h1, 99) != 99 || client.read(h1, short_read, 1) != 0) {
         print("[filetest] failed stage=seek_eof\n"); return;
+    }
+    // Positioning past EOF must not extend the file.
+    if (client.fstat(h1, size, version) != 0 || size != 5) {
+        print("[filetest] failed stage=seek_size\n"); return;
     }
     if (client.close(h1) != 0 || client.close(h2) != 0) { print("[filetest] failed stage=1j\n"); return; }
     ok = ok && client.open("t1", file::read_write, h1, size, version) == 0;

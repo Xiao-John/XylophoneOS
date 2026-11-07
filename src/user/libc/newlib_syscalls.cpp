@@ -180,52 +180,85 @@ bool copy_string(const char* source, char* target, u32 capacity) {
     return true;
 }
 
-bool normalize_path(const char* path, char* output) {
-    runtime_guard guard(cwd_lock);
-    if (path == nullptr || output == nullptr) { return false; }
-    char joined[max_path * 2];
+bool valid_path_byte(u8 c) {
+    return c >= 0x20 && c != 0x7f && c != ':' && c != '\\' && c != '*' && c != '?' &&
+           c != '"' && c != '<' && c != '>' && c != '|';
+}
+
+// Resolve `path` against an absolute base directory. Every intermediate
+// component is checked with the file service and must be a directory: a
+// lexical ".." is only collapsed after its preceding component has been
+// resolved, so "missing/../target" and "file/../target" fail instead of
+// silently reaching "target". Returns 0 or a positive errno.
+int resolve_path_from(const char* base, const char* path, char* output, bool& trailing_slash) {
+    if (base == nullptr || path == nullptr || output == nullptr) { return EINVAL; }
+    if (path[0] == '\0') { return ENOENT; }
+    u32 length = 0;
+    while (path[length] != '\0') {
+        if (length >= max_path * 2) { return ENAMETOOLONG; }
+        ++length;
+    }
+    trailing_slash = length > 1 && path[length - 1] == '/';
     u32 used = 0;
-    if (path[0] != '/') {
-        for (u32 i = 0; current_directory[i] != '\0'; ++i) {
-            if (used + 1 >= sizeof(joined)) { return false; }
-            joined[used++] = current_directory[i];
+    if (path[0] == '/') {
+        output[used++] = '/';
+    } else {
+        while (base[used] != '\0') {
+            if (used + 1 >= max_path) { return ENAMETOOLONG; }
+            output[used] = base[used];
+            ++used;
         }
-        if (used == 0 || joined[used - 1] != '/') { joined[used++] = '/'; }
+        if (used == 0 || output[0] != '/') { return EINVAL; }
     }
-    for (u32 i = 0; path[i] != '\0'; ++i) {
-        const u8 c = static_cast<u8>(path[i]);
-        if (c < 0x20 || c == 0x7f || c == ':') { return false; }
-        if (used + 1 >= sizeof(joined)) { return false; }
-        joined[used++] = path[i];
-    }
-    if (used == 0) { joined[used++] = '/'; }
-    joined[used] = '\0';
-    if (!xos::text::valid(joined, used)) { return false; }
-    u32 out = 0;
-    output[out++] = '/';
-    u32 i = 0;
-    while (i < used) {
-        while (i < used && joined[i] == '/') { ++i; }
-        const u32 start = i;
-        while (i < used && joined[i] != '/') { ++i; }
-        const u32 length = i - start;
-        if (length == 0 || (length == 1 && joined[start] == '.')) { continue; }
-        if (length == 2 && joined[start] == '.' && joined[start + 1] == '.') {
-            if (out > 1) {
-                while (out > 1 && output[out - 1] != '/') { --out; }
-                if (out > 1) { --out; }
+    u32 index = path[0] == '/' ? 1 : 0;
+    while (index < length) {
+        while (index < length && path[index] == '/') { ++index; }
+        const u32 start = index;
+        while (index < length && path[index] != '/') { ++index; }
+        const u32 component = index - start;
+        if (component == 0 || (component == 1 && path[start] == '.')) { continue; }
+        if (component == 2 && path[start] == '.' && path[start + 1] == '.') {
+            if (used > 1) {
+                u32 cut = used;
+                while (cut > 1 && output[cut - 1] != '/') { --cut; }
+                used = cut > 1 ? cut - 1 : 1;
             }
             continue;
         }
-        if (out > 1) {
-            if (out + 1 >= max_path) { return false; }
-            output[out++] = '/';
+        for (u32 i = 0; i < component; ++i) {
+            if (!valid_path_byte(static_cast<u8>(path[start + i]))) { return EINVAL; }
         }
-        if (out + length >= max_path) { return false; }
-        for (u32 j = 0; j < length; ++j) { output[out++] = joined[start + j]; }
+        if (path[start + component - 1] == '.' || path[start + component - 1] == ' ') {
+            return EINVAL;
+        }
+        const u32 separator = used > 1 ? 1 : 0;
+        if (used + separator + component + 1 >= max_path) { return ENAMETOOLONG; }
+        if (separator != 0) { output[used++] = '/'; }
+        for (u32 i = 0; i < component; ++i) { output[used++] = path[start + i]; }
+        // Remaining components (including "..") require this one to be a
+        // directory. The final component is checked by the operation itself.
+        u32 lookahead = index;
+        while (lookahead < length && path[lookahead] == '/') { ++lookahead; }
+        if (lookahead < length) {
+            output[used] = '\0';
+            u32 size = 0, attributes = 0;
+            const xos::i64 result = file_client.stat_info(output, size, attributes);
+            if (result != 0) { return error_from_file(result); }
+            if ((attributes & xos::file::stat_is_directory) == 0) { return ENOTDIR; }
+        }
     }
-    output[out] = '\0';
-    return true;
+    output[used] = '\0';
+    if (!xos::text::valid(output, used)) { return EINVAL; }
+    return 0;
+}
+
+int resolve_path(const char* path, char* output, bool& trailing_slash) {
+    char base[max_path];
+    {
+        runtime_guard guard(cwd_lock);
+        memcpy(base, current_directory, max_path);
+    }
+    return resolve_path_from(base, path, output, trailing_slash);
 }
 
 // argv/environment are byte strings; filesystem paths use UTF-8.
@@ -344,14 +377,24 @@ int open_flags_to_file(int flags, u32& translated) {
 
 int open_normalized(const char* path, int flags) {
     char normalized[max_path];
-    if (!normalize_path(path, normalized)) { errno = ENAMETOOLONG; return -1; }
+    bool trailing_slash = false;
+    const int resolved = resolve_path(path, normalized, trailing_slash);
+    if (resolved != 0) { errno = resolved; return -1; }
+    if (trailing_slash) {
+        // "name/" only names a directory; opening it is never valid.
+        u32 size = 0, attributes = 0;
+        const xos::i64 status = file_client.stat_info(normalized, size, attributes);
+        errno = status != 0 ? error_from_file(status)
+                            : ((attributes & xos::file::stat_is_directory) != 0 ? EISDIR : ENOTDIR);
+        return -1;
+    }
     u32 translated = 0;
     const int error = open_flags_to_file(flags, translated);
     if (error != 0) { errno = error; return -1; }
     int fd;
     {
         runtime_guard guard(fd_table_lock);
-        fd = alloc_fd();
+        fd = alloc_fd(0);
         if (fd < 0) { errno = EMFILE; return -1; }
         descriptors[fd].object = -2;
     }
@@ -746,10 +789,15 @@ extern "C" off_t lseek(int fd, off_t offset, int whence) {
 extern "C" int stat(const char* path, struct stat* status) {
     if (status == nullptr) { errno = EFAULT; return -1; }
     char normalized[max_path];
-    if (!normalize_path(path, normalized)) { errno = ENAMETOOLONG; return -1; }
+    bool trailing_slash = false;
+    const int resolved = resolve_path(path, normalized, trailing_slash);
+    if (resolved != 0) { errno = resolved; return -1; }
     u32 size = 0, attributes = 0, identity = 0;
     const xos::i64 result = file_client.stat_info(normalized, size, attributes, identity);
     if (result != 0) { errno = error_from_file(result); return -1; }
+    if (trailing_slash && (attributes & xos::file::stat_is_directory) == 0) {
+        errno = ENOTDIR; return -1;
+    }
     fill_stat(status, size, (attributes & xos::file::stat_is_directory) != 0, identity);
     return 0;
 }
@@ -762,7 +810,9 @@ extern "C" int access(const char* path, int mode) {
     // not a stored POSIX mode bit. Pin and validate the same bytes as the loader.
     if ((mode & X_OK) != 0 && !S_ISDIR(status.st_mode)) {
         char normalized[max_path];
-        if (!normalize_path(path, normalized)) { errno = ENAMETOOLONG; return -1; }
+        bool trailing_slash = false;
+        const int resolved = resolve_path(path, normalized, trailing_slash);
+        if (resolved != 0) { errno = resolved; return -1; }
         u32 handle = 0, size = 0, version = 0;
         const xos::i64 opened = file_client.open(normalized, xos::file::read_only, handle, size, version);
         if (opened < 0) { errno = error_from_file(opened); return -1; }
@@ -859,12 +909,16 @@ extern "C" int fstat(int fd, struct stat* status) {
 
 extern "C" int unlink(const char* path) {
     char normalized[max_path];
-    if (!normalize_path(path, normalized)) { errno = ENAMETOOLONG; return -1; }
+    bool trailing_slash = false;
+    const int resolved = resolve_path(path, normalized, trailing_slash);
+    if (resolved != 0) { errno = resolved; return -1; }
     u32 size = 0, attributes = 0;
     const xos::i64 stat_result = file_client.stat_info(normalized, size, attributes);
     (void)size;
     if (stat_result != 0) { errno = error_from_file(stat_result); return -1; }
     if ((attributes & xos::file::stat_is_directory) != 0) { errno = EISDIR; return -1; }
+    // "name/" requires a directory; it must never delete a plain file.
+    if (trailing_slash) { errno = ENOTDIR; return -1; }
     const xos::i64 result = file_client.remove(normalized);
     if (result != 0) { errno = error_from_file(result); return -1; }
     return 0;
@@ -873,7 +927,9 @@ extern "C" int _unlink(const char* path) { return unlink(path); }
 
 extern "C" int rmdir(const char* path) {
     char normalized[max_path];
-    if (!normalize_path(path, normalized)) { errno = ENAMETOOLONG; return -1; }
+    bool trailing_slash = false;
+    const int resolved = resolve_path(path, normalized, trailing_slash);
+    if (resolved != 0) { errno = resolved; return -1; }
     u32 size = 0, attributes = 0;
     const xos::i64 stat_result = file_client.stat_info(normalized, size, attributes);
     (void)size;
@@ -888,8 +944,23 @@ extern "C" int rmdir(const char* path) {
 
 extern "C" int rename(const char* old_path, const char* new_path) {
     char old_normalized[max_path], new_normalized[max_path];
-    if (!normalize_path(old_path, old_normalized) || !normalize_path(new_path, new_normalized)) {
-        errno = ENAMETOOLONG; return -1;
+    bool old_trailing = false, new_trailing = false;
+    const int old_resolved = resolve_path(old_path, old_normalized, old_trailing);
+    if (old_resolved != 0) { errno = old_resolved; return -1; }
+    const int new_resolved = resolve_path(new_path, new_normalized, new_trailing);
+    if (new_resolved != 0) { errno = new_resolved; return -1; }
+    if (old_trailing) {
+        // A trailing slash on the source requires a directory.
+        u32 size = 0, attributes = 0;
+        const xos::i64 status = file_client.stat_info(old_normalized, size, attributes);
+        if (status != 0) { errno = error_from_file(status); return -1; }
+        if ((attributes & xos::file::stat_is_directory) == 0) { errno = ENOTDIR; return -1; }
+    }
+    if (new_trailing) {
+        u32 size = 0, attributes = 0;
+        const xos::i64 status = file_client.stat_info(new_normalized, size, attributes);
+        if (status != 0) { errno = error_from_file(status); return -1; }
+        if ((attributes & xos::file::stat_is_directory) == 0) { errno = ENOTDIR; return -1; }
     }
     const xos::i64 result = file_client.rename(old_normalized, new_normalized);
     if (result != 0) { errno = error_from_file(result); return -1; }
@@ -899,7 +970,9 @@ extern "C" int _rename(const char* old_path, const char* new_path) { return rena
 
 extern "C" int mkdir(const char* path, mode_t) {
     char normalized[max_path];
-    if (!normalize_path(path, normalized)) { errno = ENAMETOOLONG; return -1; }
+    bool trailing_slash = false;
+    const int resolved = resolve_path(path, normalized, trailing_slash);
+    if (resolved != 0) { errno = resolved; return -1; }
     const xos::i64 result = file_client.mkdir(normalized);
     if (result != 0) { errno = error_from_file(result); return -1; }
     return 0;
@@ -923,7 +996,9 @@ extern "C" char* getcwd(char* buffer, size_t size) {
 
 extern "C" int chdir(const char* path) {
     char normalized[max_path];
-    if (!normalize_path(path, normalized)) { errno = ENAMETOOLONG; return -1; }
+    bool trailing_slash = false;
+    const int resolved = resolve_path(path, normalized, trailing_slash);
+    if (resolved != 0) { errno = resolved; return -1; }
     u32 size = 0, attributes = 0;
     const xos::i64 result = file_client.stat_info(normalized, size, attributes);
     (void)size;
@@ -1015,7 +1090,7 @@ extern "C" int fcntl(int fd, int command, ...) {
 extern "C" int pipe(int output[2]) {
     runtime_guard guard(fd_table_lock);
     if (output == nullptr) { errno = EFAULT; return -1; }
-    const int read_fd = alloc_fd();
+    const int read_fd = alloc_fd(0);
     if (read_fd < 0) { errno = EMFILE; return -1; }
     int write_fd = -1;
     for (int fd = read_fd + 1; fd < fd_count; ++fd) {
@@ -1137,7 +1212,9 @@ extern "C" void cfmakeraw(struct termios* value) {
 extern "C" DIR* opendir(const char* path) {
     runtime_guard guard(directory_lock);
     char normalized[max_path];
-    if (!normalize_path(path, normalized)) { errno = ENAMETOOLONG; return nullptr; }
+    bool trailing_slash = false;
+    const int resolved = resolve_path(path, normalized, trailing_slash);
+    if (resolved != 0) { errno = resolved; return nullptr; }
     u32 size = 0, attributes = 0;
     const xos::i64 stat_result = file_client.stat_info(normalized, size, attributes);
     (void)size;
@@ -1218,24 +1295,21 @@ extern "C" int posix_spawn_file_actions_addopen(posix_spawn_file_actions_t* opaq
                                                     int flags, mode_t) {
     if (fd < 0 || fd >= 3) { return ENOTSUP; }
     spawn_action action{}; action.kind = action_kind::open; action.first = fd; action.flags = flags;
-    char normalized[max_path];
-    if (!normalize_path(path, normalized) || !copy_string(normalized, action.path, max_path)) { return ENAMETOOLONG; }
     u32 translated = 0;
     const int error = open_flags_to_file(flags, translated);
     if (error != 0) { return error; }
+    // Keep the path unresolved: a relative path belongs to the working
+    // directory in effect when posix_spawn runs, not when it was registered.
+    if (!copy_string(path, action.path, max_path)) { return ENAMETOOLONG; }
     return append_action(opaque, action);
 }
 
 extern "C" int posix_spawn_file_actions_addclose(posix_spawn_file_actions_t* opaque, int fd) {
     if (fd < 0 || fd >= fd_count) { return ENOTSUP; }
-    // Non-stdio descriptors are never inherited by the current process ABI.
-    if (fd >= 3) {
-        if (!valid_fd(fd)) { return EBADF; }
-        action_set* set = nullptr;
-        const int error = spawn_action_set(opaque, set);
-        return error;
-    }
     spawn_action action{}; action.kind = action_kind::close; action.first = fd;
+    if (fd >= 3 && !valid_fd(fd)) { return EBADF; }
+    // Close actions for non-stdio descriptors still matter as ordering steps:
+    // a later dup2 may use the closed descriptor as its source.
     return append_action(opaque, action);
 }
 
@@ -1288,6 +1362,9 @@ static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
                                   char* const argv[], char* const envp[],
                                   u32 delegate_spawn_depth) {
     runtime_guard spawn_guard(spawn_lock);
+    if (path == nullptr || argv == nullptr) { return EINVAL; }
+    char working_directory[max_path];
+    { runtime_guard guard(cwd_lock); memcpy(working_directory, current_directory, max_path); }
     struct spawn_snapshot {
         fd_slot fds[fd_count];
         open_object open[object_count + action_count]{};
@@ -1317,12 +1394,15 @@ static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
                 if (!used) { (void)file_client.close(open[previous].handle); open[previous] = open_object{}; }
             }
         }
-        int open_action(const spawn_action& action) {
+        int open_action(const spawn_action& action, const char* base) {
             int index = object_count;
             while (index < object_count + action_count && open[index].kind != object_kind::none) { ++index; }
             if (index == object_count + action_count) { return EMFILE; }
             char path[max_path];
-            if (!normalize_path(action.path, path)) { return ENAMETOOLONG; }
+            bool trailing_slash = false;
+            const int resolved = resolve_path_from(base, action.path, path, trailing_slash);
+            if (resolved != 0) { return resolved; }
+            if (trailing_slash) { return ENOTDIR; }
             u32 flags = 0, handle = 0, size = 0, version = 0;
             const int translated = open_flags_to_file(action.flags, flags);
             if (translated != 0) { return translated; }
@@ -1337,11 +1417,11 @@ static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
         }
         bool valid(int fd) { return fd >= 0 && fd < fd_count && fds[fd].object >= 0; }
     } snapshot;
-    if (path == nullptr || argv == nullptr) { return EINVAL; }
-    char working_directory[max_path];
-    { runtime_guard guard(cwd_lock); memcpy(working_directory, current_directory, max_path); }
     char normalized_path[max_path];
-    if (!normalize_path(path, normalized_path)) { return ENAMETOOLONG; }
+    bool path_trailing = false;
+    const int path_resolved = resolve_path_from(working_directory, path, normalized_path, path_trailing);
+    if (path_resolved != 0) { return path_resolved; }
+    if (path_trailing) { return ENOTDIR; }
     if (attributes != nullptr && *attributes != nullptr &&
         reinterpret_cast<const __posix_spawnattr*>(*attributes)->flags != 0) { return ENOTSUP; }
     action_set* set = nullptr;
@@ -1390,7 +1470,7 @@ static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
         for (u32 i = 0; i < set->count; ++i) {
             const spawn_action& action = set->actions[i];
             if (action.kind == action_kind::open) {
-                const int error = snapshot.open_action(action);
+                const int error = snapshot.open_action(action, working_directory);
                 if (error != 0) { return error; }
             } else if (action.kind == action_kind::close) {
                 if (!snapshot.valid(action.first)) { return EBADF; }
@@ -1586,8 +1666,13 @@ static int exec_image(const char* path, char* const argv[], char* const envp[], 
 #else
     if (!runtime_ready || !path || !argv) { errno = EINVAL; return -1; }
     char normalized[max_path], cwd[max_path];
-    if (!normalize_path(path, normalized)) { errno = ENAMETOOLONG; return -1; }
-    { runtime_guard guard(cwd_lock); memcpy(cwd, current_directory, max_path); }
+    bool trailing_slash = false;
+    {
+        runtime_guard guard(cwd_lock); memcpy(cwd, current_directory, max_path);
+    }
+    const int resolved = resolve_path_from(cwd, path, normalized, trailing_slash);
+    if (resolved != 0) { errno = resolved; return -1; }
+    if (trailing_slash) { errno = ENOTDIR; return -1; }
     xos::sdk::spawn_options options{};
     options.replace_image = true; options.exec_depth_mode = depth_mode;
     options.working_directory = cwd;

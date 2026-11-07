@@ -2545,6 +2545,7 @@ void* process_syscall(interrupt_frame* frame) {
         if (client.state != task_state::free && client.state != task_state::dead &&
             client.session_request_handle != 0 && client.session_response_handle != 0) {
             info.pid = client.pid;
+            info.parent_pid = client.parent;
             info.request_handle = client.session_request_handle;
             info.response_handle = client.session_response_handle;
         }

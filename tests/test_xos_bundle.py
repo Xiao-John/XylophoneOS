@@ -126,9 +126,6 @@ class BundleReject(unittest.TestCase):
         self.skipTest('no idna xpk on disk')
 
 
-if __name__ == '__main__':
-    unittest.main()
-
 class BundleToolElf(unittest.TestCase):
     def test_tool_elf_roundtrip(self):
         blob = xb.build([
@@ -155,4 +152,87 @@ class BundleToolElf(unittest.TestCase):
         info = xb.parse(blob)
         self.assertEqual(info['members'][1]['type'], xb.TYPE_TOOL)
 
+class BundlePaddingAndNames(unittest.TestCase):
+    def test_nonzero_inter_member_padding(self):
+        blob = bytearray(xb.build([
+            (xb.TYPE_DASH, 'dash', elf_stub(b'x')),
+            (xb.TYPE_XYPm, 'x.xpk', xpk_stub()),
+        ]))
+        info = xb.parse(bytes(blob), check_hashes=False)
+        first, second = sorted(info['members'], key=lambda m: m['data_off'])[:2]
+        gap = first['data_off'] + first['data_len']
+        self.assertLess(gap, second['data_off'])
+        blob[gap] = 0xAA
+        with self.assertRaises(xb.BundleError):
+            xb.parse(bytes(blob))
 
+    def test_nonzero_trailing_padding(self):
+        blob = bytearray(xb.build([
+            (xb.TYPE_DASH, 'dash', elf_stub(b'x')),
+            (xb.TYPE_XYPm, 'x.xpk', xpk_stub()),
+        ]))
+        info = xb.parse(bytes(blob), check_hashes=False)
+        last = max(info['members'], key=lambda m: m['data_off'])
+        self.assertLess(last['data_off'] + last['data_len'], len(blob))
+        blob[-1] = 0xBB
+        with self.assertRaises(xb.BundleError):
+            xb.parse(bytes(blob))
+
+    def test_build_rejects_unknown_type(self):
+        for typ in (0, 6, 99, True):
+            with self.assertRaises(xb.BundleError):
+                xb.build([(xb.TYPE_DASH, 'dash', elf_stub()), (typ, 'x', xpk_stub())])
+
+    def test_name_must_be_single_fat_filename(self):
+        for name in ('.', '..', '..\\..\\etc', 'a\\b', 'a:b', 'CON', 'A.',
+                     'A ', 'a*b'):
+            with self.assertRaises(xb.BundleError, msg=name):
+                xb.build([(xb.TYPE_DASH, 'dash', elf_stub()),
+                          (xb.TYPE_AUX, name, xpk_stub())])
+
+    def test_case_insensitive_duplicate_names(self):
+        with self.assertRaises(xb.BundleError):
+            xb.build([(xb.TYPE_DASH, 'dash', elf_stub()),
+                      (xb.TYPE_TOOL, 'Foo', elf_stub()),
+                      (xb.TYPE_TOOL, 'foo', elf_stub())])
+
+    def test_tool_name_collides_with_dash_target(self):
+        with self.assertRaises(xb.BundleError):
+            xb.build([(xb.TYPE_DASH, 'dash_elf', elf_stub()),
+                      (xb.TYPE_TOOL, 'dash', elf_stub())])
+
+    def test_parse_rejects_backslash_name(self):
+        blob = bytearray(xb.build([(xb.TYPE_DASH, 'dash', elf_stub())]))
+        info = xb.parse(bytes(blob), check_hashes=False)
+        name_off = 64 + 4
+        blob[name_off] = 0x5c
+        with self.assertRaises(xb.BundleError):
+            xb.parse(bytes(blob))
+
+
+class BundleCli(unittest.TestCase):
+    def test_failed_build_leaves_no_output(self):
+        import json
+        import subprocess
+        import tempfile
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            elf = root / 'dash.elf'
+            elf.write_bytes(elf_stub())
+            output = root / 'out.bnd'
+            manifest = root / 'manifest.json'
+            manifest.write_text(json.dumps([
+                {'type': 1, 'name': 'dash', 'path': str(elf)},
+                {'type': 6, 'name': 'bad', 'path': str(elf)},
+            ]))
+            run = subprocess.run([
+                sys.executable,
+                str(Path(__file__).resolve().parents[1] / 'scripts/xos_bundle.py'),
+                'build', '--manifest', str(manifest), '-o', str(output),
+            ], capture_output=True, text=True)
+            self.assertNotEqual(run.returncode, 0)
+            self.assertFalse(output.exists())
+
+
+if __name__ == '__main__':
+    unittest.main()

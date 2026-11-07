@@ -69,7 +69,9 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
     fatfs_objects = [compile_fatfs(root / "src/third_party/fatfs/ff.c"),
                      compile_fatfs(root / "src/user/services/fatfs_diskio.cpp"),
                      compile_fatfs(root / "src/user/services/fatfs_unicode.cpp")]
-    file_ui_object = compile_source(root / "src/user/services/file_ui.cpp")
+    # The bundle installer grew this translation unit past the legacy image
+    # budget; optimise for size so both xos.img and the ISO path stay available.
+    file_ui_object = compile_source(root / "src/user/services/file_ui.cpp", ("-Os",))
     terminal_control_object = compile_source(root / "src/user/services/terminal_control.cpp")
     shell_terminal_object = compile_source(root / "src/user/services/shell_terminal.cpp")
     archive = sdk / "lib/libxos.a"

@@ -339,6 +339,81 @@ bool read_payload(u64 offset, void* dst, u32 length) {
     return true;
 }
 
+char bundle_upper(char value) {
+    return value >= 'a' && value <= 'z' ? static_cast<char>(value - 'a' + 'A') : value;
+}
+
+bool bundle_name_equal(const char* left, const char* right) {
+    u32 i = 0;
+    while (left[i] != '\0' && right[i] != '\0') {
+        if (bundle_upper(left[i]) != bundle_upper(right[i])) { return false; }
+        ++i;
+    }
+    return left[i] == '\0' && right[i] == '\0';
+}
+
+// A member name is one FAT filename: type 5 installs it under /usr/bin, and
+// type 2/3/4 stage it under incoming. Backslash and the FAT metacharacters are
+// therefore path separators/illegal, not merely diagnostics.
+bool valid_bundle_name(const char* name) {
+    u32 length = 0;
+    while (name[length] != '\0') {
+        if (length >= 127) { return false; }
+        ++length;
+    }
+    if (length == 0) { return false; }
+    for (u32 i = 0; i < length; ++i) {
+        const u8 c = static_cast<u8>(name[i]);
+        if (c < 0x20 || c > 0x7e) { return false; }
+        if (c == '/' || c == '\\' || c == ':' || c == '*' || c == '?' ||
+            c == '"' || c == '<' || c == '>' || c == '|') { return false; }
+    }
+    if ((length == 1 && name[0] == '.') ||
+        (length == 2 && name[0] == '.' && name[1] == '.')) { return false; }
+    if (name[length - 1] == '.' || name[length - 1] == ' ') { return false; }
+    u32 base_length = 0;
+    while (base_length < length && name[base_length] != '.') { ++base_length; }
+    const char b0 = bundle_upper(name[0]);
+    if (base_length == 3) {
+        const char b1 = bundle_upper(name[1]), b2 = bundle_upper(name[2]);
+        if ((b0=='C'&&b1=='O'&&b2=='N') || (b0=='P'&&b1=='R'&&b2=='N') ||
+            (b0=='A'&&b1=='U'&&b2=='X') || (b0=='N'&&b1=='U'&&b2=='L')) { return false; }
+    }
+    if (base_length == 4) {
+        const char b1 = bundle_upper(name[1]), b2 = bundle_upper(name[2]);
+        const char b3 = name[3];
+        if (b0=='C' && b1=='O' && b2=='M' && b3 >= '1' && b3 <= '9') { return false; }
+        if (b0=='L' && b1=='P' && b2=='T' && b3 >= '1' && b3 <= '9') { return false; }
+    }
+    return true;
+}
+
+bool member_magic_ok(const bundle_entry& entry) {
+    u8 magic[6]{};
+    if (entry.type == 1 || entry.type == 5) {
+        if (entry.data_len < 4) { return false; }
+        if (!read_payload(entry.data_off, magic, 4)) { return false; }
+        return magic[0] == 0x7f && magic[1] == 'E' && magic[2] == 'L' && magic[3] == 'F';
+    }
+    if (entry.data_len < 263) { return false; }
+    if (!read_payload(entry.data_off + 257, magic, 6)) { return false; }
+    return magic[0] == 'u' && magic[1] == 's' && magic[2] == 't' &&
+           magic[3] == 'a' && magic[4] == 'r' && magic[5] == 0;
+}
+
+bool payload_is_zero(u64 offset, u64 length) {
+    u8 scratch[512];
+    while (length != 0) {
+        const u32 chunk = length > sizeof(scratch) ? static_cast<u32>(sizeof(scratch))
+                                                   : static_cast<u32>(length);
+        if (!read_payload(offset, scratch, chunk)) { return false; }
+        for (u32 i = 0; i < chunk; ++i) { if (scratch[i] != 0) { return false; } }
+        offset += chunk;
+        length -= chunk;
+    }
+    return true;
+}
+
 // Write one member to an absolute path; refuses overwrite of a different existing file.
 // base is the member's data_off inside the boot payload (0 for legacy whole-payload ELF).
 bool install_member_file(const char* path, u64 length, const u8 want_sha[32], u64 base) {
@@ -354,16 +429,36 @@ bool install_member_file(const char* path, u64 length, const u8 want_sha[32], u6
             print("[files] already present: "); print(path); print("\n");
             return true;
         }
+        // Hash the file that is actually on disk, not the boot-payload copy:
+        // comparing the payload with its own digest would accept any same-size
+        // replacement silently.
+        u32 handle = 0;
+        u32 opened_size = 0;
+        u32 opened_version = 0;
+        const i64 opened = client.open(path, xos::file::read_only, handle,
+                                       opened_size, opened_version);
+        if (opened != 0 || opened_size != length) {
+            if (opened == 0) { (void)client.close(handle); }
+            print("[files] bundle conflict: "); print(path); print(" digest\n");
+            return false;
+        }
         sha256 hash;
         u64 offset = 0;
-        u8 got[32];
+        bool read_ok = true;
         while (offset < length) {
             u32 count = static_cast<u32>(length - offset);
             if (count > sizeof(dash_buffer)) { count = sizeof(dash_buffer); }
-            if (!read_payload(base + offset, dash_buffer, count)) { return false; }
-            hash.update(dash_buffer, count);
-            offset += count;
+            const i64 got_bytes = client.read(handle, dash_buffer, count);
+            if (got_bytes <= 0) { read_ok = false; break; }
+            hash.update(dash_buffer, static_cast<u32>(got_bytes));
+            offset += static_cast<u64>(got_bytes);
         }
+        (void)client.close(handle);
+        if (!read_ok || offset != length) {
+            print("[files] bundle conflict: "); print(path); print(" digest\n");
+            return false;
+        }
+        u8 got[32];
         hash.finish(got);
         for (u32 i = 0; i < 32; ++i) {
             if (got[i] != want_sha[i]) {
@@ -459,8 +554,8 @@ void install_boot_payload() {
         print("[files] bundle header rejected\n");
         return;
     }
-    for (u32 i = 0; i < 4; ++i) {
-        if (header[28 + i] != 0) { print("[files] bundle reserved\n"); return; }
+    for (u32 i = 28; i < bundle_header_size; ++i) {
+        if (header[i] != 0) { print("[files] bundle reserved\n"); return; }
     }
     const u64 entries_off = bundle_header_size;
     const u64 entries_end = entries_off + bundle_entry_size * count;
@@ -473,6 +568,7 @@ void install_boot_payload() {
         return;
     }
     bundle_entry entries[bundle_max_members];
+    char member_names[bundle_max_members][128];
     u8 raw[bundle_entry_size];
     u32 dash_count = 0;
     u32 xypm_count = 0;
@@ -490,35 +586,76 @@ void install_boot_payload() {
         e.data_off = *reinterpret_cast<const u64*>(raw + 16);
         e.data_len = *reinterpret_cast<const u64*>(raw + 24);
         for (u32 b = 0; b < 32; ++b) { e.sha256[b] = raw[32 + b]; }
+        // Range checks use subtraction so a wrapped sum cannot pass them.
         if (e.reserved != 0 || e.name_len < 1 || e.name_len > 127 ||
-            e.name_off + e.name_len > names_bytes ||
-            e.data_len < 1 || e.data_off < names_end || e.data_off + e.data_len > total ||
+            e.name_off > names_bytes || e.name_len > names_bytes - e.name_off ||
+            e.data_len < 1 || e.data_off < names_end ||
+            e.data_off > total || e.data_len > total - e.data_off ||
             (e.data_off & 3u) != 0 || e.type < 1 || e.type > 5) {
             print("[files] bundle entry rejected\n");
             return;
         }
+        char* member_name = member_names[i];
+        u32 name_used = 0;
+        while (name_used < e.name_len && name_used + 1 < 128) {
+            member_name[name_used] = static_cast<char>(names_buf[e.name_off + name_used]);
+            ++name_used;
+        }
+        member_name[name_used] = 0;
+        if (!valid_bundle_name(member_name)) { print("[files] bundle bad name\n"); return; }
+        if (e.type == 5 && bundle_name_equal(member_name, "dash")) {
+            print("[files] bundle bad tool name\n");
+            return;
+        }
+        for (u32 j = 0; j < i; ++j) {
+            if (bundle_name_equal(member_names[j], member_name)) {
+                print("[files] bundle duplicate name\n");
+                return;
+            }
+        }
         if (e.type == 1) { ++dash_count; }
         if (e.type == 2) { ++xypm_count; }
         if (e.type == 3) { ++daily_count; }
-        if (e.type == 5 && e.name_len == 0) { print("[files] bundle bad tool name\n"); return; }
     }
     if (dash_count != 1 || xypm_count > 1 || daily_count > 1) {
         print("[files] bundle member roles rejected\n");
         return;
     }
-    // Non-overlap: sort data spans by offset (count <= 16).
+    // Sort data spans and their names together (count <= 16).
     for (u32 i = 1; i < count; ++i) {
         bundle_entry key = entries[i];
+        char key_name[128];
+        for (u32 n = 0; n < 128; ++n) { key_name[n] = member_names[i][n]; }
         u32 j = i;
         while (j > 0 && entries[j - 1].data_off > key.data_off) {
             entries[j] = entries[j - 1];
+            for (u32 n = 0; n < 128; ++n) { member_names[j][n] = member_names[j - 1][n]; }
             --j;
         }
         entries[j] = key;
+        for (u32 n = 0; n < 128; ++n) { member_names[j][n] = key_name[n]; }
     }
-    for (u32 i = 1; i < count; ++i) {
-        if (entries[i].data_off < entries[i - 1].data_off + entries[i - 1].data_len) {
+    // Contract: overlap, every gap and the tail must be zero and no member may
+    // escape its declared bytes. Check before touching the work disk.
+    u64 cursor = names_end;
+    for (u32 i = 0; i < count; ++i) {
+        if (entries[i].data_off < cursor) {
             print("[files] bundle overlap\n");
+            return;
+        }
+        if (!payload_is_zero(cursor, entries[i].data_off - cursor)) {
+            print("[files] bundle non-zero padding\n");
+            return;
+        }
+        cursor = entries[i].data_off + entries[i].data_len;
+    }
+    if (cursor > total || !payload_is_zero(cursor, total - cursor)) {
+        print("[files] bundle non-zero padding\n");
+        return;
+    }
+    for (u32 i = 0; i < count; ++i) {
+        if (!member_magic_ok(entries[i])) {
+            print("[files] bundle magic rejected\n");
             return;
         }
     }
@@ -530,19 +667,7 @@ void install_boot_payload() {
 
     for (u32 i = 0; i < count; ++i) {
         const bundle_entry& e = entries[i];
-        char name[128];
-        for (u32 n = 0; n < e.name_len && n + 1 < sizeof(name); ++n) {
-            name[n] = static_cast<char>(names_buf[e.name_off + n]);
-        }
-        name[e.name_len < sizeof(name) ? e.name_len : sizeof(name) - 1] = 0;
-        // ASCII / printable / no slash already enforced by generator; double-check slash.
-        bool bad = false;
-        for (const char* c = name; *c; ++c) {
-            if (*c == '/' || static_cast<u8>(*c) < 0x20 || static_cast<u8>(*c) > 0x7e) {
-                bad = true;
-            }
-        }
-        if (bad || name[0] == 0) { print("[files] bundle bad name\n"); return; }
+        const char* name = member_names[i];
 
         char path[256];
         const char* prefix;

@@ -28,16 +28,17 @@ extern "C" DSTATUS disk_initialize(BYTE pdrv) {
 }
 
 extern "C" DRESULT disk_read(BYTE pdrv, BYTE* buffer, LBA_t sector, UINT count) {
-    if (pdrv != 0 || buffer == nullptr || count == 0 || sector + count > g_sectors) {
+    if (pdrv != 0 || buffer == nullptr || count == 0 ||
+        static_cast<u64>(sector) + count > g_sectors) {
         return RES_PARERR;
     }
-    UINT offset = 0;
+    u64 offset = 0;
     while (offset < count) {
-        UINT chunk = count - offset;
-        if (chunk > 8) { chunk = 8; }
+        const UINT remaining = static_cast<UINT>(count - offset);
+        const UINT chunk = remaining > 8 ? 8 : remaining;
         const xos::i64 result = xos::sdk::syscall(
-            xos::sys_block_read, sector + offset,
-            reinterpret_cast<xos::u64>(buffer + static_cast<xos::u64>(offset) * 512), chunk);
+            xos::sys_block_read, static_cast<xos::u64>(sector) + offset,
+            reinterpret_cast<xos::u64>(buffer + offset * 512), chunk);
         if (result != 0) {
             return result == xos::block_error_no_device ? RES_NOTRDY : RES_ERROR;
         }
@@ -47,16 +48,17 @@ extern "C" DRESULT disk_read(BYTE pdrv, BYTE* buffer, LBA_t sector, UINT count) 
 }
 
 extern "C" DRESULT disk_write(BYTE pdrv, const BYTE* buffer, LBA_t sector, UINT count) {
-    if (pdrv != 0 || buffer == nullptr || count == 0 || sector + count > g_sectors) {
+    if (pdrv != 0 || buffer == nullptr || count == 0 ||
+        static_cast<u64>(sector) + count > g_sectors) {
         return RES_PARERR;
     }
-    UINT offset = 0;
+    u64 offset = 0;
     while (offset < count) {
-        UINT chunk = count - offset;
-        if (chunk > 8) { chunk = 8; }
+        const UINT remaining = static_cast<UINT>(count - offset);
+        const UINT chunk = remaining > 8 ? 8 : remaining;
         const xos::i64 result = xos::sdk::syscall(
-            xos::sys_block_write, sector + offset,
-            reinterpret_cast<xos::u64>(buffer + static_cast<xos::u64>(offset) * 512), chunk);
+            xos::sys_block_write, static_cast<xos::u64>(sector) + offset,
+            reinterpret_cast<xos::u64>(buffer + offset * 512), chunk);
         if (result != 0) {
             return result == xos::block_error_no_device ? RES_NOTRDY : RES_ERROR;
         }
@@ -74,7 +76,10 @@ extern "C" DRESULT disk_ioctl(BYTE pdrv, BYTE command, void* buffer) {
     }
     case GET_SECTOR_COUNT:
         if (buffer == nullptr) { return RES_PARERR; }
-        *static_cast<LBA_t*>(buffer) = static_cast<LBA_t>(g_sectors);
+        // FF_LBA64=0 makes LBA_t 32-bit; report the addressable maximum
+        // rather than silently wrapping a larger device's sector count.
+        *static_cast<LBA_t*>(buffer) = g_sectors > 0xffffffffu
+            ? 0xffffffffu : static_cast<LBA_t>(g_sectors);
         return RES_OK;
     case GET_SECTOR_SIZE:
         if (buffer == nullptr) { return RES_PARERR; }

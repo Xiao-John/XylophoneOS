@@ -32,13 +32,33 @@ def _sha256(data: bytes) -> bytes:
     return hashlib.sha256(data).digest()
 
 
+_VALID_TYPES = (TYPE_DASH, TYPE_XYPm, TYPE_DAILY, TYPE_AUX, TYPE_TOOL)
+_FORBIDDEN_NAME_BYTES = frozenset(b'\\/:*?"<>|')
+_RESERVED_BASES = frozenset(
+    ['CON', 'PRN', 'AUX', 'NUL'] +
+    [f'COM{i}' for i in range(1, 10)] + [f'LPT{i}' for i in range(1, 10)])
+
+
 def _check_name(name: str) -> bytes:
-    raw = name.encode('utf-8')
+    """Validate the name as one FAT filename (install name for type 5)."""
+    if not isinstance(name, str):
+        raise BundleError(f'name must be a string: {name!r}')
+    try:
+        raw = name.encode('ascii')
+    except UnicodeEncodeError as e:
+        raise BundleError(f'name must be ASCII: {name!r}') from e
     if not (1 <= len(raw) <= MAX_NAME):
         raise BundleError(f'name length out of range: {name!r}')
     for b in raw:
-        if b < 0x20 or b > 0x7e or b in (0x2f,):
+        if b < 0x20 or b > 0x7e or b in _FORBIDDEN_NAME_BYTES:
             raise BundleError(f'invalid name byte in {name!r}')
+    text = raw.decode('ascii')
+    if text in ('.', '..'):
+        raise BundleError(f'reserved name: {name!r}')
+    if text[-1] in ' .':
+        raise BundleError(f'name may not end in dot or space: {name!r}')
+    if text.split('.', 1)[0].upper() in _RESERVED_BASES:
+        raise BundleError(f'DOS reserved name: {name!r}')
     return raw
 
 
@@ -48,14 +68,21 @@ def build(members, total_align=4) -> bytes:
         raise BundleError('member_count out of range')
     names = bytearray()
     name_spans = {}
+    folded_names = set()
     for typ, name, data in members:
+        if type(typ) is not int or typ not in _VALID_TYPES:
+            raise BundleError(f'unknown type {typ!r}')
         raw = _check_name(name)
-        if name in name_spans:
-            raise BundleError(f'duplicate name: {name}')
+        folded = name.upper()
+        if folded in folded_names:
+            raise BundleError(f'duplicate name (case-insensitive): {name}')
+        if typ == TYPE_TOOL and folded == 'DASH':
+            raise BundleError('type 5 name collides with type 1 target: dash')
         if len(data) < 1:
             raise BundleError(f'empty data: {name}')
         if typ in (TYPE_DASH, TYPE_TOOL) and data[:4] != b'\x7fELF':
             raise BundleError(f'type {typ} is not ELF: {name}')
+        folded_names.add(folded)
         name_spans[name] = (len(names), len(raw))
         names += raw
     if len(names) > MAX_NAMES:
@@ -148,12 +175,14 @@ def parse(blob: bytes, *, check_hashes=True, check_magic_bytes=True) -> dict:
         if not (1 <= nlen <= MAX_NAME) or noff + nlen > names_bytes:
             raise BundleError(f'entry {i} name out of range')
         name = names_blob[noff:noff + nlen]
-        if any(b < 0x20 or b > 0x7e or b == 0x2f for b in name):
-            raise BundleError(f'entry {i} invalid name bytes')
         try:
             name_s = name.decode('ascii')
         except UnicodeDecodeError as e:
             raise BundleError(f'entry {i} name not ascii') from e
+        try:
+            _check_name(name_s)
+        except BundleError as e:
+            raise BundleError(f'entry {i} {e}') from e
         if dlen < 1 or doff + dlen > total or doff < names_end:
             raise BundleError(f'entry {i} data range invalid')
         if doff % 4 != 0:
@@ -168,15 +197,18 @@ def parse(blob: bytes, *, check_hashes=True, check_magic_bytes=True) -> dict:
         types.append(typ)
         spans.append((doff, doff + dlen))
 
-    # zero padding between names_end and first data_off
-    first_data = min(s[0] for s in spans)
-    if any(b != 0 for b in blob[names_end:first_data]):
-        raise BundleError('non-zero alignment padding')
-    # overlap
+    # Padding and every inter-member/trailing gap must be zero. Overlap alone
+    # does not cover those bytes, which no member digest authenticates.
     spans_sorted = sorted(spans)
-    for a, b in zip(spans_sorted, spans_sorted[1:]):
-        if b[0] < a[1]:
+    cursor = names_end
+    for start, end in spans_sorted:
+        if start < cursor:
             raise BundleError('member data regions overlap')
+        if any(b != 0 for b in blob[cursor:start]):
+            raise BundleError('non-zero alignment padding')
+        cursor = end
+    if any(b != 0 for b in blob[cursor:]):
+        raise BundleError('non-zero trailing padding')
 
     if types.count(TYPE_DASH) != 1:
         raise BundleError('exactly one dash_elf required')
@@ -185,9 +217,12 @@ def parse(blob: bytes, *, check_hashes=True, check_magic_bytes=True) -> dict:
 
     seen_names = set()
     for m in members:
-        if m['name'] in seen_names:
-            raise BundleError('duplicate member name')
-        seen_names.add(m['name'])
+        folded = m['name'].upper()
+        if folded in seen_names:
+            raise BundleError('duplicate member name (case-insensitive)')
+        if m['type'] == TYPE_TOOL and folded == 'DASH':
+            raise BundleError('type 5 name collides with type 1 target: dash')
+        seen_names.add(folded)
         data = blob[m['data_off']:m['data_off'] + m['data_len']]
         if check_hashes and _sha256(data) != m['sha256']:
             raise BundleError(f"sha256 mismatch: {m['name']}")
@@ -227,8 +262,9 @@ def main() -> int:
                 data = Path(item['path']).read_bytes()
                 members.append((int(item['type']), item['name'], data))
             blob = build(members)
-            args.output.write_bytes(blob)
+            # Self-check before writing so a failed build keeps no half product.
             info = parse(blob)
+            args.output.write_bytes(blob)
             print(json.dumps({
                 'output': str(args.output), 'bytes': len(blob),
                 'members': [{'type': m['type'], 'name': m['name'],

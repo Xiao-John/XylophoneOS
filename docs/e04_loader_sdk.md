@@ -114,6 +114,8 @@ profile另建且绑定运行库。示例及链接步骤统一见[快速开始](f
 sys_file_session=27 是 files 专属的可信会话枚举；普通程序通过 ipc_handles 获得
 自己的文件端点对。任务结束清理端点，服务按真实 PID 清理文件句柄/staging。
 端点 token 单调不复用。文件协议升级为 v2；细节及界限见 e08.md。
+`file_session_info` 另含内核填写的 `parent_pid`（创建者）：files 只允许父进程把
+句柄转移给尚未启动的子进程，调用方自报的目标 PID 不再构成授权。
 
 0021用户库增量：SDK v5的__cxa_thread_atexit/强exit提供单用户线程的正常TLS析构，
 不改ELF装载/内核ABI；main-return/显式exit的LIFO、TLS先于global/fini已客体验证。

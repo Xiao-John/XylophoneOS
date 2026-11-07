@@ -106,3 +106,6 @@
 | 0209 | `0209_xypm_sdk_host_backend.md` | XYPm SDK host backend 随包、缓存移出 SDK、profile 哈希稳定与 release smoke 门 |
 | 0210 | `0210_xypm_profile_alignment.md` | XYPm b2 profile 对齐；local profile 对发行盘明确拒绝 |
 | 0211 | `0211_cpp_link_clock_harness.md` | C++ 链接误判、guest `_times` 修复、串口驱动 partial flush、盲测技术债 |
+| 0212 | `0212_file_service_found_bug_fixes.md` | 文件服务 found_bug 15 项修复：逻辑偏移、零填充、rename 替换、路径解析、spawn 动作、transfer 授权 |
+| 0213 | `0213_second_bug_hunt_fixes.md` | 第二轮 bug-hunting：spawnp/路径 255 字符边界、JSON INT64_MIN、diskio 64 位回绕、erase_last 注释 |
+| 0214 | `0214_bundle_installer_hardening.md` | 第三轮 bug-hunting：XOSBND1 填充/类型/名称校验、客体安装器魔法与目标摘要、host 工具缓存加固 |

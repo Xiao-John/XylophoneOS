@@ -160,10 +160,12 @@ struct process_status {
     u64 instruction;
 };
 struct process_stats { u32 free_pages; u32 tasks; u32 completions; u32 reserved; };
-struct file_session_info { u64 pid; u32 request_handle; u32 response_handle; };
+// parent_pid is kernel-authenticated creator identity; the files service uses
+// it to authorize handle transfer instead of trusting a caller-supplied PID.
+struct file_session_info { u64 pid; u64 parent_pid; u32 request_handle; u32 response_handle; };
 struct pipe_handles { u32 read_token; u32 write_token; };
 static_assert(sizeof(process_page) == 24 && sizeof(process_entry) == 24);
 static_assert(sizeof(startup_info) == 48 && sizeof(process_status) == 48);
-static_assert(sizeof(file_session_info) == 16);
+static_assert(sizeof(file_session_info) == 24);
 static_assert(sizeof(pipe_handles) == 8);
 }

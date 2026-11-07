@@ -34,10 +34,14 @@ struct open_description {
     FIL file;
     char path[max_name];
     u32 flags;
+    // POSIX file offset. Kept here instead of relying on FIL.fptr so seeking
+    // past EOF never expands the file and truncation preserves the offset.
+    u32 position;
 };
 
 struct client_session {
     u64 pid;
+    u64 parent_pid;
     u32 request_handle;
     u32 response_handle;
     open_record opens[max_open];
@@ -175,6 +179,29 @@ bool same_path_object(const char* left, const char* right) {
     return ak.sector != 0 && same_identity_key(ak, bk);
 }
 
+// True when `target` names an entry below the directory described by
+// `source`. Comparison uses the on-disk directory entry identity, so FAT long
+// name / short alias spelling differences cannot hide a descendant.
+bool directory_is_ancestor(const FILINFO& source, const char* target) {
+    const file_identity_key source_key = identity_key(source);
+    if (source_key.sector == 0) { return false; }
+    const u32 target_length = text_length(target, max_name);
+    u32 cut = target_length;
+    while (cut > 0) {
+        while (cut > 0 && target[cut - 1] != '/') { --cut; }
+        if (cut == 0) { break; }
+        const u32 ancestor_length = cut - 1;
+        if (ancestor_length == 0) { break; }
+        char ancestor[max_name]{};
+        for (u32 i = 0; i < ancestor_length; ++i) { ancestor[i] = target[i]; }
+        FILINFO info{};
+        if (f_stat(ancestor, &info) == FR_OK &&
+            same_identity_key(identity_key(info), source_key)) { return true; }
+        cut = ancestor_length;
+    }
+    return false;
+}
+
 bool reserved_component(const char* begin, u32 length) {
     // Match the namespace already reserved by the offline disk-transfer API.
     // It includes anonymous backing names and denies normal path operations.
@@ -255,6 +282,34 @@ status from_fr(FRESULT result) {
     case FR_MKFS_ABORTED: return status::no_space;
     default: return status::io;
     }
+}
+
+status seek_description(open_description& description, u32 position) {
+    return from_fr(f_lseek(&description.file, static_cast<FSIZE_t>(position)));
+}
+
+// Write zeros at the current end of file. FatFs extends a file when f_lseek
+// moves past EOF, but the newly allocated clusters are not cleared, so every
+// extension must go through real zero bytes instead of a bare seek.
+status zero_fill(open_description& description, u32 count) {
+    static const u8 zeros[512] = {};
+    while (count != 0) {
+        const UINT chunk = count > sizeof(zeros) ? static_cast<UINT>(sizeof(zeros))
+                                                 : static_cast<UINT>(count);
+        UINT written = 0;
+        const FRESULT result = f_write(&description.file, zeros, chunk, &written);
+        if (result != FR_OK) { return from_fr(result); }
+        if (written != chunk) { return status::no_space; }
+        count -= written;
+    }
+    return status::ok;
+}
+
+status grow_with_zeros(open_description& description, u32 from, u32 to) {
+    if (to <= from) { return status::ok; }
+    const status seek = seek_description(description, from);
+    if (seek != status::ok) { return seek; }
+    return zero_fill(description, to - from);
 }
 
 bool any_open(const client_session&, const char* path) {
@@ -543,6 +598,7 @@ status clone_session(client_session& source, u64 child_pid) {
         if (additions[index] > 0xffffffffu - descriptions[index].references) { return status::full; }
     }
     target->pid = child_pid;
+    target->parent_pid = child_info.parent_pid;
     target->request_handle = child_info.request_handle;
     target->response_handle = child_info.response_handle;
     for (u32 index = 0; index < max_open; ++index) {
@@ -777,27 +833,39 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         if (stat_result != FR_OK && stat_result != FR_NO_FILE) {
             reply(out, in, from_fr(stat_result)); break;
         }
+        // O_TRUNC/O_APPEND without O_CREAT must not create the file.
+        if (stat_result == FR_NO_FILE && (options & (open_create | open_exclusive)) == 0) {
+            reply(out, in, status::not_found); break;
+        }
         u32 handle = 0;
         if (!next_handle(session_index, handle)) { reply(out, in, status::full); break; }
         BYTE mode = FA_OPEN_EXISTING;
         if ((access & read_only) != 0) { mode |= FA_READ; }
         if ((access & write_only) != 0) { mode |= FA_WRITE; }
         if ((options & open_exclusive) != 0) { mode |= FA_CREATE_NEW; }
-        else if ((options & open_truncate) != 0) { mode |= FA_CREATE_ALWAYS; }
-        else if ((options & open_append) != 0) { mode |= FA_OPEN_APPEND; }
+        else if ((options & open_create) != 0 && (options & open_truncate) != 0) { mode |= FA_CREATE_ALWAYS; }
         else if ((options & open_create) != 0) { mode |= FA_OPEN_ALWAYS; }
         open_description& description = descriptions[description_slot];
         description = open_description{};
         const FRESULT result = f_open(&description.file, path, mode);
         if (result != FR_OK) { reply(out, in, from_fr(result)); break; }
-        if ((options & open_append) != 0) {
-            const FRESULT seek_result = f_lseek(&description.file, f_size(&description.file));
-            if (seek_result != FR_OK) {
+        if ((options & open_truncate) != 0 && (options & open_create) == 0) {
+            // FA_OPEN_EXISTING honored the no-create contract; truncate only
+            // now that the file is known to exist.
+            FRESULT truncate_result = f_lseek(&description.file, 0);
+            if (truncate_result == FR_OK) { truncate_result = f_truncate(&description.file); }
+            // Commit the cached directory entry so other opens observe the
+            // truncated length without waiting for this handle to close.
+            if (truncate_result == FR_OK) { truncate_result = f_sync(&description.file); }
+            if (truncate_result != FR_OK) {
                 (void)f_close(&description.file);
                 description = open_description{};
-                reply(out, in, from_fr(seek_result));
+                reply(out, in, from_fr(truncate_result));
                 break;
             }
+        }
+        if ((options & open_append) != 0 && (options & open_truncate) == 0) {
+            description.position = static_cast<u32>(f_size(&description.file));
         }
         description.used = true;
         description.references = 1;
@@ -829,13 +897,26 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         open_description* description = description_for(item);
         if (description == nullptr) { reply(out, in, status::bad_handle); break; }
         if ((description->flags & read_only) == 0) { reply(out, in, status::invalid); break; }
-        const UINT wanted = in.length > sizeof(out.data)
-                                ? static_cast<UINT>(sizeof(out.data))
-                                : static_cast<UINT>(in.length);
+        const u32 size = static_cast<u32>(f_size(&description->file));
+        if (description->position >= size) {
+            reply(out, in, status::ok);
+            out.length = 0;
+            out.value = 0;
+            break;
+        }
+        UINT wanted = in.length > sizeof(out.data)
+                          ? static_cast<UINT>(sizeof(out.data))
+                          : static_cast<UINT>(in.length);
+        const u32 remaining = size - description->position;
+        if (wanted > remaining) { wanted = remaining; }
+        const status seek = seek_description(*description, description->position);
+        if (seek != status::ok) { reply(out, in, seek); break; }
+        // reply() clears the buffer, so acknowledge before f_read fills data.
         reply(out, in, status::ok);
         UINT read = 0;
         const FRESULT result = f_read(&description->file, out.data, wanted, &read);
-        if (result != FR_OK) { reply(out, in, from_fr(result)); break; }
+        if (result != FR_OK && read == 0) { reply(out, in, from_fr(result)); break; }
+        description->position += read;
         out.length = read;
         out.value = read;
         break;
@@ -845,16 +926,23 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         open_description* description = description_for(item);
         if (description == nullptr) { reply(out, in, status::bad_handle); break; }
         if ((description->flags & write_only) == 0) { reply(out, in, status::invalid); break; }
+        u32 position = description->position;
         if ((description->flags & open_append) != 0) {
-            const FRESULT seek_result = f_lseek(&description->file, f_size(&description->file));
-            if (seek_result != FR_OK) { reply(out, in, from_fr(seek_result)); break; }
+            position = static_cast<u32>(f_size(&description->file));
         }
-        const FSIZE_t position = f_tell(&description->file);
         if (position > fat32_max_file_bytes || in.length > sizeof(in.data) ||
             in.length > fat32_max_file_bytes - position) { reply(out, in, status::no_space); break; }
+        // A write past EOF leaves a hole that must read back as zeros; FatFs
+        // would otherwise expose whatever the reused clusters contained.
+        const u32 size = static_cast<u32>(f_size(&description->file));
+        const status grown = grow_with_zeros(*description, size, position);
+        if (grown != status::ok) { reply(out, in, grown); break; }
+        const status seek = seek_description(*description, position);
+        if (seek != status::ok) { reply(out, in, seek); break; }
         UINT written = 0;
         const FRESULT result = f_write(&description->file, in.data, in.length, &written);
-        if (result != FR_OK) { reply(out, in, from_fr(result)); break; }
+        description->position = position + written;
+        if (result != FR_OK && written == 0) { reply(out, in, from_fr(result)); break; }
         reply(out, in, status::ok);
         out.value = written;
         break;
@@ -865,7 +953,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         if (description == nullptr) { reply(out, in, status::bad_handle); break; }
         const i64 displacement = static_cast<i64>(in.offset);
         i64 base = 0;
-        if (in.flags == seek_current) { base = static_cast<i64>(f_tell(&description->file)); }
+        if (in.flags == seek_current) { base = static_cast<i64>(description->position); }
         else if (in.flags == seek_end) { base = static_cast<i64>(f_size(&description->file)); }
         else if (in.flags != seek_set) { reply(out, in, status::invalid); break; }
         if ((displacement < 0 && displacement < -base) ||
@@ -874,10 +962,10 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         }
         const i64 target = base + displacement;
         if (target < 0 || target > fat32_max_file_bytes) { reply(out, in, status::invalid); break; }
-        const FRESULT result = f_lseek(&description->file, static_cast<FSIZE_t>(target));
-        if (result != FR_OK) { reply(out, in, from_fr(result)); break; }
+        // Positioning is logical only: it must not change the file length.
+        description->position = static_cast<u32>(target);
         reply(out, in, status::ok);
-        out.value = f_tell(&description->file);
+        out.value = description->position;
         break;
     }
     case op::truncate: {
@@ -888,10 +976,28 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             in.flags != 0 || in.length != 0 || in.name_length != 0) {
             reply(out, in, status::invalid); break;
         }
-        const FRESULT seek_result = f_lseek(&description->file, static_cast<FSIZE_t>(in.offset));
-        if (seek_result != FR_OK) { reply(out, in, from_fr(seek_result)); break; }
-        const FRESULT truncate_result = f_truncate(&description->file);
-        reply(out, in, from_fr(truncate_result));
+        const u32 target = static_cast<u32>(in.offset);
+        const u32 current = static_cast<u32>(f_size(&description->file));
+        if (target > current) {
+            const status grown = grow_with_zeros(*description, current, target);
+            if (grown != status::ok) {
+                // Do not report success for a partial extension: restore the
+                // original length before returning the real failure.
+                if (seek_description(*description, current) == status::ok) {
+                    if (f_truncate(&description->file) != FR_OK) { recovery_failed = true; }
+                } else { recovery_failed = true; }
+                reply(out, in, grown); break;
+            }
+        } else if (target < current) {
+            const status seek = seek_description(*description, target);
+            if (seek != status::ok) { reply(out, in, seek); break; }
+            const FRESULT truncate_result = f_truncate(&description->file);
+            if (truncate_result != FR_OK) { reply(out, in, from_fr(truncate_result)); break; }
+        }
+        const FRESULT synced = f_sync(&description->file);
+        if (synced != FR_OK) { reply(out, in, from_fr(synced)); break; }
+        // ftruncate never changes the file offset.
+        reply(out, in, status::ok);
         break;
     }
     case op::close: {
@@ -912,6 +1018,12 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             if (sessions[i].pid == in.offset) { target = &sessions[i]; target_index = i; break; }
         }
         if (target == nullptr) { reply(out, in, status::would_block); break; }
+        // A caller-supplied PID is not transfer authority: only the process
+        // that created the target may inject handles. The kernel supplies the
+        // authenticated parent, so an unrelated session cannot fill the quota.
+        if (target->parent_pid == 0 || target->parent_pid != session.pid) {
+            reply(out, in, status::invalid); break;
+        }
         u32 slot = max_open;
         for (u32 i = 0; i < max_open; ++i) {
             if (!target->opens[i].used) { slot = i; break; }
@@ -1128,9 +1240,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             !normalize_path(reinterpret_cast<const char*>(in.data), in.length, new_path, false)) {
             reply(out, in, status::invalid); break;
         }
-        if (staging_active && (same_path_object(staging_path, old_path) || same_path_object(staging_path, new_path))) {
-            reply(out, in, status::busy); break;
-        }
+        if (staging_active) { reply(out, in, status::busy); break; }
         for (const auto& owner_session : sessions) {
             if (any_open(owner_session, old_path) || any_open(owner_session, new_path)) {
                 reply(out, in, status::busy); return;
@@ -1139,13 +1249,62 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         FILINFO old_info{};
         const FRESULT old_stat = f_stat(old_path, &old_info);
         if (old_stat != FR_OK) { reply(out, in, from_fr(old_stat)); break; }
+        const bool old_is_directory = (old_info.fattrib & AM_DIR) != 0;
+        if (same_path_object(old_path, new_path)) {
+            // Case/alias change of the same directory entry: nothing to move.
+            reply(out, in, status::ok); break;
+        }
+        if (old_is_directory && directory_is_ancestor(old_info, new_path)) {
+            reply(out, in, status::invalid); break;
+        }
+        FILINFO new_info{};
+        const FRESULT new_stat = f_stat(new_path, &new_info);
+        if (new_stat != FR_OK && !missing(new_stat)) { reply(out, in, from_fr(new_stat)); break; }
+        const bool target_exists = new_stat == FR_OK;
+        if (target_exists) {
+            if (same_identity_key(identity_key(old_info), identity_key(new_info))) {
+                reply(out, in, status::ok); break;
+            }
+            // Replacing a directory is outside this service's supported POSIX
+            // subset; report it instead of silently moving the tree.
+            if (old_is_directory || (new_info.fattrib & AM_DIR) != 0) {
+                reply(out, in, status::exists); break;
+            }
+        }
         u16 inode = 0;
         if (!identity_for_info(old_info, inode)) { reply(out, in, status::full); break; }
-        const FRESULT renamed = f_rename(old_path, new_path);
-        if (renamed != FR_OK) { reply(out, in, from_fr(renamed)); break; }
-        FILINFO new_info{};
-        if (f_stat(new_path, &new_info) != FR_OK ||
-            !move_identity(identity_key(old_info), identity_key(new_info), inode)) {
+        FRESULT renamed = FR_OK;
+        if (target_exists) {
+            // Journal + backup make the replacement recoverable: a crash before
+            // the final rename restores the old target on the next boot.
+            if (!write_journal(new_path)) { reply(out, in, status::io); break; }
+            FILINFO backup_info{};
+            if (f_stat(backup_name, &backup_info) != FR_NO_FILE) {
+                (void)f_unlink(journal_name);
+                reply(out, in, status::busy); break;
+            }
+            if (f_rename(new_path, backup_name) != FR_OK) {
+                (void)f_unlink(journal_name);
+                reply(out, in, status::io); break;
+            }
+            renamed = f_rename(old_path, new_path);
+            if (renamed != FR_OK) {
+                if (f_rename(backup_name, new_path) != FR_OK) { recovery_failed = true; }
+                (void)f_unlink(journal_name);
+                reply(out, in, from_fr(renamed)); break;
+            }
+            if (disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK || !finish_recovery(new_path)) {
+                recovery_failed = true;
+                reply(out, in, status::io); break;
+            }
+            (void)forget_identity(identity_key(new_info));
+        } else {
+            renamed = f_rename(old_path, new_path);
+            if (renamed != FR_OK) { reply(out, in, from_fr(renamed)); break; }
+        }
+        FILINFO committed_info{};
+        if (f_stat(new_path, &committed_info) != FR_OK ||
+            !move_identity(identity_key(old_info), identity_key(committed_info), inode)) {
             reply(out, in, status::io);
             break;
         }
@@ -1181,6 +1340,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
                 session = client_session{};
                 session.pid = info.pid;
             }
+            session.parent_pid = info.parent_pid;
             session.request_handle = info.request_handle;
             session.response_handle = info.response_handle;
             request& in = request_buffer;

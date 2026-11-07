@@ -81,3 +81,15 @@
 | BT-06 | 语义限制 | `clock()` 修复为单调墙钟（首次调用起，1000 Hz）；XOS 当前没有 per-process CPU accounting，因此 `clock()` 不是严格的进程 CPU 时间。 | `src/user/libc/newlib_syscalls.cpp`；退出条件=引入进程 CPU tick 统计并把 `_times` 改为真实 user/system time。 |
 | BT-07 | 发行 | `v0.0.2-1103` 已发布的 SDK 资产早于 P0/P1 XYPm 修复；磁盘上的源码/新构建 SDK 与下载资产不一致。 | PR #85 / XYPm 调查；退出条件=重新打包 SDK、更新校验清单，或发后续 patch release。 |
 | BT-08 | UX/诊断 | `-ftime-report` 的 guest clock 曾输出约 516 年、百分比超过 100%；本次已修 `_times`，但既有发布编译器二进制不会因源码修复自动更新。 | `build/cpp_link_investigation/session.log`；退出条件=重建并发布编译器/SDK 后复测。 |
+
+## 七、文件服务 POSIX 子集债（2026-11-07，found_bug 修复过程中确认）
+
+| 编号 | 分类 | 债项 | 证据 / 退出条件 |
+|---|---|---|---|
+| FS-01 | 语义 | 同一文件已有写打开时，再 `open`（读或写）返回 `busy`：FatFs `FF_FS_LOCK=32` 用它防止两个 `FIL` 的目录项互相覆盖。POSIX 允许同一文件多个打开；当前只有 `dup`/fork 共享描述。 | `src/third_party/fatfs/ffconf.h`、`tests/fixtures/file_posix/file_posix.c`；退出条件=按 inode 共享描述或实现多 `FIL` 的目录项协调后放开锁。 |
+| FS-02 | 语义 | `rename` 只替换普通文件；目录→已存在空目录、目录跨父目录替换均不支持（返回 EEXIST），目录移入自身后代已明确拒绝。 | `src/user/services/files.cpp` `op::rename`；退出条件=按 POSIX 目录替换语义实现并覆盖短名别名测试。 |
+| FS-03 | 验证 | `ftruncate` 扩大与满盘路径只用注入短写验证了“返回 no_space 并回滚长度”，未在真实满盘介质上端到端复现；回滚本身是 best effort，失败会置 recovery gate。 | `tests/file_semantics.py` 第 11 组；退出条件=专用近满 FAT 镜像客体测试。 |
+| FS-04 | 语义 | 有打开实例的文件不能 `unlink`/`rename`（返回 `busy`）；POSIX 允许删除已打开文件并延迟释放。 | `src/user/services/files.cpp` `op::remove`/`op::rename`；退出条件=引用计数 + 延迟删除。 |
+| FS-05 | 性能 | libc 路径解析对每个中间分量发一次 `stat` RPC，无缓存；深路径的 `open/stat` 会比原先多若干次 IPC。 | `src/user/libc/newlib_syscalls.cpp` `resolve_path_from`；退出条件=确认开销不可接受时加 cwd 相对缓存或服务端逐分量解析。 |
+| FS-07 | 性能 | `ftruncate`/写越界必须真实写零才能避免泄露旧簇；扩大到大文件时成本与新增长度线性，FAT 没有可安全使用的稀疏表示。 | `src/user/services/files.cpp` `zero_fill`；退出条件=确认大文件场景实际需要后，评估按簇清零或专用格式化路径。 |
+| FS-06 | 授权边界 | 句柄转移现在要求内核认证的 `parent_pid` 等于调用者；父进程仍可向自己的子进程注入并耗尽其 `max_open`，这是创建者权限内的行为，未引入显式接受令牌。 | `src/kernel/arch/x86_64/tasks.cpp` `sys_file_session`、`src/user/services/files.cpp` `op::transfer`；退出条件=需要更强隔离时引入目标接受/能力令牌。 |

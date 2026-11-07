@@ -95,8 +95,10 @@ struct erase_result {
     u32 columns;
 };
 
-// Drop the last complete code point. A trailing incomplete sequence and any
-// trailing invalid bytes are removed without erasing a cell.
+// Drop the last complete code point. A trailing incomplete sequence is removed
+// without erasing a cell. A trailing invalid byte is treated as one displayed
+// cell because input channels that echo invalid bytes have already occupied a
+// column; channels that suppress invalid bytes must not call this path.
 inline erase_result erase_last(const char* data, u32 length) {
     u32 index = 0;
     u32 last_start = 0;

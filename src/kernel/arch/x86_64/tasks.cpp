@@ -1084,7 +1084,9 @@ process_record* owned_process(u64 handle) {
     if (current == nullptr) { return nullptr; }
     for (auto& task : tasks) {
         if (task.state != task_state::free && task.pid == handle && task.parent == current->pid) {
-            if (current->supervisor || current->spawn_depth != 0 ||
+            // SL1: a parent holding identity-carried create authority may operate
+            // on its own building children even when legacy spawn_depth is 0.
+            if (current->supervisor || current->spawn_depth != 0 || current->can_create ||
                 (task.state == task_state::building && task.replacement_pending)) { return &task; }
             return nullptr;
         }
@@ -2277,12 +2279,6 @@ void* process_syscall(interrupt_frame* frame) {
             result = process_error_busy; break;
         }
         if (!current->supervisor && current->spawn_depth == 0 && !current->can_create) {
-            if (process_trace_enabled) {
-                format::text("[sl1] create_denied pid="); format::decimal(current->pid);
-                format::text(" depth="); format::decimal(current->spawn_depth);
-                format::text(" can_create="); format::decimal(current->can_create ? 1 : 0);
-                format::text("\r\n");
-            }
             result = process_error_denied; break;
         }
         if (first > 7 || (first & ~u64{current->stdio_mask}) != 0 || third > 11 ||

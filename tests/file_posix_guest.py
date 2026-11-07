@@ -56,6 +56,7 @@ def main():
                 "open_and_pipe_reuse_lowest_descriptors",
                 "spawn_open_uses_spawn_time_cwd",
                 "spawn_close_then_dup2_fails",
+                "spawnp_trailing_slash_path_boundary",
                 "resources_restored",
             ])
             command(guest, "sync", b"[files] sync=ok")

@@ -232,7 +232,9 @@ int resolve_path_from(const char* base, const char* path, char* output, bool& tr
             return EINVAL;
         }
         const u32 separator = used > 1 ? 1 : 0;
-        if (used + separator + component + 1 >= max_path) { return ENAMETOOLONG; }
+        // Room for the separator, component and trailing NUL; exactly
+        // max_path bytes (255 characters) is a valid path.
+        if (used + separator + component + 1 > max_path) { return ENAMETOOLONG; }
         if (separator != 0) { output[used++] = '/'; }
         for (u32 i = 0; i < component; ++i) { output[used++] = path[start + i]; }
         // Remaining components (including "..") require this one to be a
@@ -1575,9 +1577,11 @@ extern "C" int posix_spawnp(pid_t* output_pid, const char* path,
         } else {
             for (u32 i = start; i < end; ++i) { candidate[used++] = path_value[i]; }
         }
-        if (used + 1 + strlen(path) < max_path) {
-            if (candidate[used - 1] != '/') { candidate[used++] = '/'; }
-            for (u32 i = 0; path[i] != '\0'; ++i) { candidate[used++] = path[i]; }
+        const u32 separator = used > 0 && candidate[used - 1] != '/' ? 1u : 0u;
+        const u32 name_length = static_cast<u32>(strlen(path));
+        if (used + separator + name_length + 1 <= max_path) {
+            if (separator != 0) { candidate[used++] = '/'; }
+            for (u32 i = 0; i < name_length; ++i) { candidate[used++] = path[i]; }
             candidate[used] = '\0';
             struct stat status{};
             if (stat(candidate, &status) == 0 && S_ISREG(status.st_mode)) {

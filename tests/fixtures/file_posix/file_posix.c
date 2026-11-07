@@ -194,6 +194,25 @@ int main(int argc, char** argv) {
         close(extra);
     }
 
+    // posix_spawnp must accept a 255-character candidate when PATH already
+    // ends in '/': no separator byte is needed, only the trailing NUL.
+    char long_name[250];
+    memset(long_name, 'a', 249);
+    long_name[249] = 0;
+    char long_path[300];
+    snprintf(long_path, sizeof(long_path), "/case/%s", long_name);
+    const int long_fd = open(long_path, O_CREAT | O_WRONLY, 0644);
+    check(long_fd >= 0, "long name create");
+    if (long_fd >= 0) { close(long_fd); }
+    char* spawnp_argv[] = {long_name, 0};
+    char* spawnp_envp[] = {(char*)"PATH=/case/", 0};
+    pid_t spawnp_child = 0;
+    errno = 0;
+    const int spawnp_error = posix_spawnp(&spawnp_child, long_name, 0, 0,
+                                          spawnp_argv, spawnp_envp);
+    check(spawnp_error == ENOEXEC, "spawnp trailing-slash PATH boundary");
+    if (spawnp_error == 0) { (void)waitpid(spawnp_child, 0, 0); }
+
     if (failures != 0) { return 1; }
     printf("FILE_POSIX_OK\n");
     fflush(stdout);

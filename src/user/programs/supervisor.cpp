@@ -541,7 +541,8 @@ void execute(u32 argc, char** argv) {
     } else if (equal(argv[0], "tty-run") && argc >= 2) {
         launch_file(argv[1], argc - 1, argv + 1, 0, false, false, true, true);
     } else if (equal(argv[0], "diag") && argc >= 2) {
-        launch_file(argv[1], argc - 1, argv + 1, 0, false, true);
+        // Diagnosed target uses the common inherit-create contract (SL3).
+        launch_file(argv[1], argc - 1, argv + 1, 0, false, true, false, true);
     } else if ((equal(argv[0], "exec-file") || equal(argv[0], "spawn-file") ||
                 equal(argv[0], "exec-driver") || equal(argv[0], "exd")) && argc >= 2) {
         const bool driver = equal(argv[0], "exec-driver") || equal(argv[0], "exd");

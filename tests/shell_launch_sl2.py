@@ -106,6 +106,11 @@ def main() -> int:
             assert b"SL1_OWN_QUERY=1" in r, r
             report["checks"].append("dash_posix_spawn_inherits_create")
 
+            # 5) old SDK boundary: exec-driver still grants legacy create (compat table).
+            r = command(guest, "exec-driver /bin/sl2_probe query", b"SL1_QUERY_OK", timeout=45)
+            assert b"SL1_OWN_QUERY=1" in r, r
+            report["checks"].append("exec_driver_legacy_grant_still_works")
+
             report["status"] = "passed"
     except Exception as error:
         report["error"] = str(error)

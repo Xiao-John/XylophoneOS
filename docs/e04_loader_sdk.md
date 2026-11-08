@@ -146,9 +146,11 @@ second=目标用户地址，third=长度；third=0且second=0时返回payload总
 payload来自ISO的`DASH.ELF`，上限1 MiB，不授予普通任务；`/usr/bin/dash`已存在
 时安装器不覆盖。旧syscall编号不变。
 
-`spawn_options.delegate_spawn_depth`由用户态启动策略显式设置。Xsh对裸`dash`设为2，dash的
-固定GNU driver profile经xos_posix_spawn_driver给gcc/g++设为1。内核仍只检查调用者、
-直接子任务归属、building状态和深度，不识别文件名、PATH、ELF工具身份或GCC。
+`spawn_options.delegate_spawn_depth`仍由用户态启动策略显式设置（旧轨兼容）。
+SL2 起 xsh 裸命令与 dash `posix_spawn` 走共同 **inherit-create**（`sys_process_authority`
+copy_from_caller），不再按 dash/make/gcc 名称授予深度；内核仍只检查调用者、
+直接子任务归属、building 状态、深度与 `can_create`，不识别文件名、PATH、ELF工具身份或GCC。
+历史 `xos_posix_spawn_driver/make`、`xos_execve_driver/make` 仍导出但双 Shell 已不调用。
 最终客体验收覆盖旧一层兼容、无权委派回滚、dash→GCC/G++→子工具链和资源复原；
 不因此声称任意进程树、fork、collect2或完整POSIX授权。
 

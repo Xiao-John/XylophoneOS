@@ -30,3 +30,5 @@ reg_*.log
 sl1_test.log
 build_dash.log
 build_sl2*.log
+build_sl3*.log
+sl3_test.log

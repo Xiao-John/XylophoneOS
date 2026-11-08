@@ -1557,13 +1557,6 @@ extern "C" int posix_spawn(pid_t* output_pid, const char* path,
     return posix_spawn_with_depth(output_pid, path, actions, attributes, argv, envp, 0);
 }
 
-extern "C" int xos_posix_spawn_driver(pid_t* output_pid, const char* path,
-                                        const posix_spawn_file_actions_t* actions,
-                                        const posix_spawnattr_t* attributes,
-                                        char* const argv[], char* const envp[]) {
-    return posix_spawn_with_depth(output_pid, path, actions, attributes, argv, envp, 1);
-}
-
 extern "C" int posix_spawnp(pid_t* output_pid, const char* path,
                               const posix_spawn_file_actions_t* actions,
                               const posix_spawnattr_t* attributes,
@@ -1764,17 +1757,6 @@ extern "C" int execve(const char* path, char* const argv[], char* const envp[]) 
 }
 extern "C" int _execve(const char* path, char* const argv[], char* const envp[]) { return execve(path, argv, envp); }
 extern "C" int execv(const char* path, char* const argv[]) { return execve(path, argv, environ); }
-extern "C" int xos_execve_driver(const char* path, char* const argv[], char* const envp[]) {
-    return exec_image(path, argv, envp, 2); // require/decrease to GNU depth one
-}
-extern "C" int xos_execve_make(const char* path, char* const argv[], char* const envp[]) {
-    return exec_image(path, argv, envp, 3); // require/decrease to Make depth two
-}
-extern "C" int xos_posix_spawn_make(pid_t* pid, const char* path,
-    const posix_spawn_file_actions_t* actions, const posix_spawnattr_t* attributes,
-    char* const argv[], char* const envp[]) {
-    return posix_spawn_with_depth(pid, path, actions, attributes, argv, envp, 2);
-}
 extern "C" int execvp(const char* path, char* const argv[]) {
     if (!path || !*path) { errno = ENOENT; return -1; }
     if (strchr(path, '/')) return execve(path, argv, environ);

@@ -20,11 +20,11 @@ xsh> diag /bin/fault.elf
 路径、命令行、环境、内存、栈、TID和通用寄存器默认不进入包。该入口不自动覆盖其他
 父进程的子进程或无父进程的服务。初始化、装载、哈希和服务故障均保持原错误，不伪报成功。
 
-dash 可通过独立程序 `xos-diag` 显式启动和诊断直接子进程：将系统构建产物
-`user_xos_diag.image.elf` 安装到工作盘 `/usr/bin/xos-diag`，以具有启动权限的
-`exec-driver /usr/bin/dash ...` 启动 dash，然后运行 `(exec xos-diag /bin/fault.elf)`。
-子shell中的 `exec` 保留已有启动权限，诊断结束后主shell继续；普通外部命令不继承该
-权限，故不能直接运行 `xos-diag`。
+dash 可通过独立程序 `xos-diag` 启动和诊断直接子进程：将系统构建产物
+`user_xos_diag.image.elf` 安装到工作盘 `/usr/bin/xos-diag`。SL3 起 **普通裸调用**
+即可（xsh 与 dash 直接 `xos-diag /bin/fault.elf`），子进程按共同契约继承创建权，
+诊断结束后回到原 Shell；无需 `(exec …)` 或 `exec-driver`。历史入口
+`(exec xos-diag …)` / `exec-driver` 仍兼容。
 程序返回目标正常退出码的低8位；故障或取消返回128，找不到程序返回127，启动失败
 返回126，等待失败返回125。目标使用固定 PATH 环境；目标自身继续启动的子进程不自动
 收集。该独立入口不提供通用 POSIX 重定向、当前目录及环境继承保证。

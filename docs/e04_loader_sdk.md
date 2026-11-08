@@ -4,7 +4,7 @@
 架构原则见xos_plan.md；ABI登记见[全表](contracts/abi_registry.md)，源码/回执见对应主题历史。
 原始E04与后续各次记录可按history/source_index.json恢复，不覆盖旧SDK或冻结报告。
 
-## 当前ABI速查（0054）
+## 当前ABI速查（0086）
 
 共享头是数值来源；下表由`tests/abi_doc_consistency.py`核对，仅对当前说明生效。
 冻结工作记录中的旧编号保留历史，不作为新程序编码依据。
@@ -21,6 +21,9 @@
 | `sys_clock_realtime` | 64 |
 | `sys_display` | 65 |
 | `sys_display_present` | 66 |
+| `sys_ipc_endpoint` | 84 |
+| `sys_ipc_wait` | 85 |
+| `sys_ipc_name` | 86 |
 | `clone_session` | 20 |
 | `anonymous` | 21 |
 | `anonymous_seal` | 22 |
@@ -259,6 +262,26 @@ sys34 的 PID=0 分支只查询自己的 stdio route，第二参数fd、第三�
 libc FD表锁不跨管道等待；在途 I/O pin住对象，普通 close 不中断该在途 I/O；
 直接raw close唤醒后，raw等待者再次I/O必须重新验证权限。F_SETFL对未实现的
 O_NONBLOCK等位明确ENOTSUP，writer F_GETFL报告O_WRONLY。未增加异步信号递送。
+
+## 通用 IPC channel
+
+sys84 `sys_ipc_endpoint(create, peer_pid, &channel)` 创建双向 channel；peer_pid=0 表示
+调用进程的直接父进程。返回的本地
+结构为 `{send, receive}`；传给 peer 的句柄顺序为 `{receive, send}`。每个方向是一个
+固定 4096 字节、单条 outstanding 消息的 endpoint，发送和接收仍使用 sys4/sys5。
+sys85 `sys_ipc_wait(endpoint, mode, 0)` 等待 receive 有消息或 send 可写；try 模式
+分别非阻塞探测并返回 would_block。调用方在
+唤醒后仍需重试 I/O。只有创建者可用 sys84 `revoke, endpoint, 0` 撤销整条 channel；
+创建者或 peer 退出也会撤销并唤醒等待者。内核按绑定的 PID 检查每次操作，不相信消息
+中的身份字段。直连 channel 句柄可通过应用握手传递；sys86 的 name-connect/accept
+会自动把反向句柄交给注册服务。channel 句柄泄露给其他 PID 不会授予读写权。
+channel 创建者可 revoke；任一参与方可 close 整个 channel。
+
+sys86 提供最多 8 个固定 31 字符 ASCII 服务名（`[a-z0-9._-]`）的
+register/unregister/connect/accept；待 accept 队列最多保留 16 个连接。
+服务进程发布名称，客户端 connect 时内核创建双向 channel 并将服务侧反向句柄自动放入
+accept 队列；`ipc_name_accept()` 等待并收取 channel，`ipc_name_try_accept()` 用于轮询。
+名称属于注册进程，进程退出自动注销；名称不是访问权限，channel 仍按 peer PID 校验。
 
 
 ## C2 单线程完整复制fork

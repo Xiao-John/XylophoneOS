@@ -46,6 +46,7 @@ inline constexpr u64 sys_process_foreground = 55, sys_process_cancel = 56;
 // C2: unstarted eager-copy child, authenticated files clone, then commit.
 inline constexpr u64 sys_process_fork_prepare = 57, sys_process_fork_commit = 58;
 inline constexpr u64 sys_process_fork_files = 59;
+inline constexpr u64 sys_ipc_endpoint = 84, sys_ipc_wait = 85, sys_ipc_name = 86;
 // C3: prepare an unstarted replacement (same signature as create, mask=0),
 // then commit(entry, depth_mode): 0 retains depth; n>0 requests depth n-1,
 // which must be strictly smaller than current authority.
@@ -164,8 +165,15 @@ struct process_stats { u32 free_pages; u32 tasks; u32 completions; u32 reserved;
 // it to authorize handle transfer instead of trusting a caller-supplied PID.
 struct file_session_info { u64 pid; u64 parent_pid; u32 request_handle; u32 response_handle; };
 struct pipe_handles { u32 read_token; u32 write_token; };
+enum class ipc_endpoint_action : u64 { create = 0, revoke = 1, query_peer = 2, close = 3 };
+enum class ipc_wait_mode : u64 { receive = 0, send = 1, try_receive = 2, try_send = 3 };
+enum class ipc_name_action : u64 { publish = 0, unpublish = 1, connect = 2, accept = 3, wait_accept = 4 };
+struct ipc_channel { u32 send; u32 receive; };
+inline constexpr i64 ipc_error_full = -4, ipc_error_broken = -7;
+inline constexpr i64 ipc_error_name_not_found = -2;
 static_assert(sizeof(process_page) == 24 && sizeof(process_entry) == 24);
 static_assert(sizeof(startup_info) == 48 && sizeof(process_status) == 48);
 static_assert(sizeof(file_session_info) == 24);
 static_assert(sizeof(pipe_handles) == 8);
+static_assert(sizeof(ipc_channel) == 8);
 }

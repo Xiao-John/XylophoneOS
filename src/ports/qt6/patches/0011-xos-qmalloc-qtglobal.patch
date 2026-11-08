@@ -1,0 +1,9 @@
+--- a/src/corelib/global/qmalloc.cpp
++++ b/src/corelib/global/qmalloc.cpp
+@@ -3,6 +3,7 @@
+ #include "qmalloc.h"
+ #include "qplatformdefs.h"
++#include <QtCore/qglobal.h>
+ 
+ #include <stdlib.h>
+ #include <string.h>

@@ -76,8 +76,16 @@ def main():
         if link.is_symlink():
             link.unlink()
         elif link.exists():
-            raise SystemExit(f"Refusing to overwrite a non-symlink target tool: {link}")
-        link.symlink_to(Path(tool(name)).resolve())
+            if not link.is_file() or not os.path.samefile(link, Path(tool(name)).resolve()):
+                raise SystemExit(f"Refusing to overwrite an unrelated target tool: {link}")
+            continue
+        target = Path(tool(name)).resolve()
+        try:
+            link.symlink_to(target)
+        except OSError as error:
+            if os.name != "nt" or getattr(error, "winerror", None) != 1314:
+                raise
+            os.link(target, link)
     os.environ["COMPILER_PATH"] = str(target_tools)
     versions = audit()
     if (TARGET["architecture"], TARGET["platform"], TARGET["firmware"]) != ("x86_64", "pc", "bios"):
@@ -128,12 +136,14 @@ def main():
     if args.clock_irq_probe:
         cpp_sources.append(ROOT / "tests/kernel/clock_irq_probe.cpp")
     for source in cpp_sources:
-        obj = BUILD / (str(source.relative_to(ROOT)).replace("/", "_") + ".o")
+        object_name = str(source.relative_to(ROOT)).replace("\\", "_").replace("/", "_")
+        obj = BUILD / (object_name + ".o")
         gpu_flags = ["-DXOS_VGPU_DMA_PAGE_LIMIT=" + str(args.gpu_dma_page_limit),
                      "-DXOS_VGPU_POLL_LIMIT=" + str(args.gpu_poll_limit)] if source.name == "virtio_gpu.cpp" else []
         run([tool("g++"), *COMMON_FLAGS, *X86_FLAGS, *gpu_flags,
              "-I", str(ROOT / "src/kernel/include"), "-I", str(ROOT / "src/kernel"),
              "-I", str(ROOT / "src/shared/include"),
+             "-I", str(source.parent),
              "-I", str(BUILD), "-ffile-prefix-map=" + str(ROOT) + "=.",
              "-c", str(source), "-o", str(obj)])
         objects.append(str(obj))

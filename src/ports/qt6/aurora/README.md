@@ -34,6 +34,16 @@ The wallpaper is generated for this task; source, conversion and hashes are in
 `assets/provenance.json`. Code is Apache-2.0. Qt/dependency/font notices remain in
 `../licenses/`; complete static-distribution/member/relink review is NOT_RUN.
 
+## Aurora Desktop (GUI-Desktop rewrite)
+
+The desktop now directly ports Background, Docker, Status, ApplicationBrowser
+and WindowEdge from GUI-Desktop. The old approximate shell has been replaced.
+The older opt-in Glass library below remains for its existing consumers; the
+new desktop does not initialize that theme.
+
+See [desktop build, launch, design mapping and test instructions](shell/README.md).
+The canonical frame is `shell/windowedge.h`; `window_edge.hpp` forwards to it.
+
 This is cached low-frequency blur, color absorption, highlights, shadows and
 application-local alpha composition. It does not implement Apple's Liquid Glass,
 real-time refraction, cross-application sampling, 3D acceleration or multi-window

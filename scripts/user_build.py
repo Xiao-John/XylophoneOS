@@ -41,11 +41,13 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
              "-o", str(sdk / crt_name), str(root / "src/user/arch/x86_64/start.asm")])
 
     def compile_source(source, extra=()):
-        obj = build / (str(source.relative_to(root)).replace("/", "_") + ".o")
+        object_name = str(source.relative_to(root)).replace("\\", "_").replace("/", "_")
+        obj = build / (object_name + ".o")
         isa_flags = [flag for flag in X86_FLAGS if source.name != "core_probe.cpp" or flag != "-mgeneral-regs-only"]
         run([tool("g++"), *COMMON_FLAGS, *isa_flags, "-I", str(sdk / "include"),
              "-I", str(root / "src/third_party/fatfs"),
              "-I", str(root / "src/user/include"),
+             "-I", str(source.parent),
              *extra, "-ffile-prefix-map=" + str(root) + "=.", "-c", str(source), "-o", str(obj)])
         return str(obj)
 
@@ -59,7 +61,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
     core_archive.parent.mkdir(exist_ok=True)
     run([tool("ar"), "rcsD", str(core_archive), thread_core])
     def compile_fatfs(source):
-        obj = build / (str(source.relative_to(root)).replace("/", "_") + ".o")
+        object_name = str(source.relative_to(root)).replace("\\", "_").replace("/", "_")
+        obj = build / (object_name + ".o")
         run([tool("g++"), *COMMON_FLAGS, *X86_FLAGS, "-Os", "-w",
              "-I", str(sdk / "include"), "-I", str(root / "src/third_party/fatfs"),
              "-ffile-prefix-map=" + str(root) + "=.",
@@ -74,6 +77,9 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
     file_ui_object = compile_source(root / "src/user/services/file_ui.cpp", ("-Os",))
     terminal_control_object = compile_source(root / "src/user/services/terminal_control.cpp")
     shell_terminal_object = compile_source(root / "src/user/services/shell_terminal.cpp")
+    interactium_objects = [compile_source(root / "src/user/interactium" / name)
+                          for name in ("window_manager.cpp", "service.cpp", "dispatcher.cpp",
+                                       "service_loop.cpp", "ipc_transport.cpp")]
     archive = sdk / "lib/libxos.a"
     if archive.exists():
         archive.unlink()
@@ -83,7 +89,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
     loader_objects.append(compile_source(root / "src/user/arch/x86_64/tls.cpp"))
     loader_archive = sdk / "lib/libxos_loader.a"
     run([tool("ar"), "rcsD", str(loader_archive), *loader_objects])
-    names = ("supervisor", "files", "demo", "fault", "spin", "slow", "echo", "hello", "libc_hello", "e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "display", "gfxdemo", "xypm_recover", "xos_diag", "terminal", "terminal_app_probe")
+    names = ("supervisor", "files", "demo", "fault", "spin", "slow", "echo", "hello", "ipc_probe", "libc_hello", "e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "display", "gfxdemo", "interactium", "interactiumd", "ic_client", "xypm_recover", "xos_diag", "terminal", "terminal_app_probe")
     bootstrap_names = ("supervisor", "files")
     libc_programs = ("libc_hello", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "xos_diag", "terminal_app_probe")
     disk_programs = ("e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "xos_diag", "terminal", "terminal_app_probe")
@@ -92,7 +98,12 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
               "struct segment { u64 address, offset, files, memory; u32 permissions; };",
               "struct module { const char* name; const u8* bytes; u64 size; };"]
     for name in names:
-        source_path = root / (f"src/user/services/{name}.cpp" if name in ("files", "display", "terminal") else f"src/user/programs/{name}.cpp")
+        source_path = root / (f"src/user/services/{name}.cpp" if name in ("files", "display", "terminal") else
+                              "src/user/programs/interactium_demo.cpp" if name == "interactium" else
+                              "src/user/programs/interactium_service.cpp" if name == "interactiumd" else
+                              "src/user/programs/interactium_client.cpp" if name == "ic_client" else
+                              "src/user/programs/ipc_endpoint_probe.cpp" if name == "ipc_probe" else
+                              f"src/user/programs/{name}.cpp")
         if name == "supervisor" and terminal_supervisor_probe:
             source_path = root / "tests/fixtures/ncursesw/terminal_supervisor_probe.cpp"
         if name == "supervisor" and ncurses_supervisor_probe:
@@ -124,6 +135,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
              *([compile_source(root / "src/user/drivers/uart_16550.cpp")] if name == "terminal" else []),
              *([file_ui_object, terminal_control_object, shell_terminal_object] if name == "supervisor" else []),
              *([str(loader_archive)] if name == "supervisor" else []),
+             *([*interactium_objects] if name in ("interactium", "interactiumd") else []),
              *([*fatfs_objects] if name == "files" else []),
              *(["-Wl,--start-group", str(archive), str(loader_archive), "-L", str(sdk / "lib"),
                 "-lc", "-lm", "-lgcc", "-Wl,--end-group"]
@@ -191,7 +203,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
         "display_extensions": {"version": 1, "syscalls": [65, 66], "pixel_format": "XRGB8888", "surface_count": 1},
         "diagnostic_extensions": {"fault_bundle_format": 1, "loader_receipt": "sha256-held-instance",
                                   "diagnostic_shell_command": "diag"},
-        "process_extensions": {"syscalls": list(range(54, 62)), "file_operations": [20, 21, 22],
+        "process_extensions": {"syscalls": [*range(54, 62), *range(80, 87)], "file_operations": [20, 21, 22],
             "startup_versions": [1, 2, 3], "exec_image_abi": 3, "exec_marker": ".xos.exec",
             "fork_supported": True, "exec_supported": True, "single_main_thread_only": True,
             "max_fork_depth": 3, "replacement_reservations": 1, "fd_count": 32, "spawn_argument_bytes": 255,

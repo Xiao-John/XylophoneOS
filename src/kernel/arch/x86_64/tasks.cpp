@@ -34,8 +34,8 @@ constexpr u64 user_data_address = 0x40010000ull;
 constexpr u64 user_stack_top = 0x40020000ull;
 constexpr u64 user_stack_bottom = user_stack_top - 4 * page_size;
 constexpr u64 user_limit = process_user_end;
-// E03's receiver, the supervisor/files bootstrap pair, and eight task pairs.
-constexpr u32 max_endpoints = 21;
+// E03 receiver, supervisor/files bootstrap channels, and bounded generic IPC.
+constexpr u32 max_endpoints = 37;
 constexpr u32 file_session_count = 8;
 constexpr u32 default_message_bytes = 64;
 constexpr u32 file_message_bytes = 4096;
@@ -114,9 +114,19 @@ struct endpoint_record {
     u32 capacity;
     bool session_response;
     bool generic_channel;
+    bool generic;
+    u32 channel_id;
     bool pending;
     u32 length;
     u8 data[file_message_bytes];
+};
+struct ipc_name_record { bool used; u64 owner_pid; char name[32]; };
+struct ipc_connection_record {
+    bool used;
+    u64 service_pid;
+    u64 client_pid;
+    u32 channel_id;
+    ipc_channel service_channel;
 };
 
 struct thread_record : thread_lifetime {
@@ -145,6 +155,8 @@ process_record* current;
 u64 next_pid = 1;
 endpoint_record endpoints[max_endpoints];
 u64 next_endpoint_handle = 1;
+ipc_name_record ipc_names[8];
+ipc_connection_record ipc_connections[16];
 u64 files_pid;
 pipe_object pipes[process_max_pipes];
 u64 next_pipe_token = process_pipe_token_min;
@@ -188,6 +200,8 @@ void quarantine_com1(process_record* task) {
 
 bool display_endpoint(u64 handle);
 void display_wake(u64 handle,i64 result);
+void wake_ipc_waiters(u32 handle, i64 result,
+                      thread_wait_kind kind = thread_wait_kind::none);
 void display_release(u64 pid);
 extern u64 display_service_pid;
 extern u32 display_request_handle,display_response_handle;
@@ -696,11 +710,97 @@ endpoint_record* endpoint_for(u64 handle) {
     return nullptr;
 }
 
+void wake_ipc_waiters(u32 handle, i64 result, thread_wait_kind kind) {
+    for (auto& thread : threads) {
+        if (thread.state == thread_state::blocked && thread.wait_target == handle &&
+            (thread.wait_kind == thread_wait_kind::ipc_receive ||
+             thread.wait_kind == thread_wait_kind::ipc_send) &&
+            (kind == thread_wait_kind::none || thread.wait_kind == kind)) {
+            ready_with(thread, result);
+        }
+    }
+}
+
+void revoke_ipc_channel(u32 channel_id, i64 wake_result) {
+    for (auto& connection : ipc_connections) {
+        if (connection.used && connection.channel_id == channel_id) {
+            connection = ipc_connection_record{};
+        }
+    }
+    for (auto& endpoint : endpoints) {
+        if (!endpoint.used || !endpoint.generic || endpoint.channel_id != channel_id) { continue; }
+        wake_ipc_waiters(endpoint.handle, wake_result);
+        endpoint = endpoint_record{};
+    }
+}
+
 process_record* task_by_pid(u64 pid) {
     for (auto& task : tasks) {
         if (task.state != task_state::free && task.pid == pid) { return &task; }
     }
     return nullptr;
+}
+
+bool copy_ipc_name(u64 address, char (&name)[32]) {
+    if (address == 0) return false;
+    for (u32 i = 0; i < sizeof(name); ++i) {
+        if (address > process_user_end - 1 - i || !user_range_ok(address + i, 1, false)) return false;
+        copy_from_user(&name[i], address + i, 1);
+        const char value = name[i];
+        if (value == '\0') return i != 0;
+        if (!((value >= 'a' && value <= 'z') || (value >= '0' && value <= '9') ||
+              value == '-' || value == '_' || value == '.')) return false;
+    }
+    return false;
+}
+
+ipc_name_record* find_ipc_name(const char* name) {
+    for (auto& entry : ipc_names) {
+        if (!entry.used) continue;
+        u32 i = 0;
+        while (name[i] != '\0' && entry.name[i] == name[i]) ++i;
+        if (name[i] == '\0' && entry.name[i] == '\0') return &entry;
+    }
+    return nullptr;
+}
+
+bool ipc_service_published(u64 pid) {
+    for (const auto& entry : ipc_names) if (entry.used && entry.owner_pid == pid) return true;
+    return false;
+}
+
+bool create_generic_channel(u64 sender_pid, u64 receiver_pid, u64 owner_pid,
+                            ipc_channel& sender_channel, ipc_channel& receiver_channel) {
+    if (sender_pid == 0 || receiver_pid == 0 || sender_pid == receiver_pid ||
+        next_endpoint_handle > 0xfffffffeull) return false;
+    u32 free_count = 0;
+    for (const auto& endpoint : endpoints) if (!endpoint.used) ++free_count;
+    if (free_count < 2) return false;
+    const u32 request = endpoint_attach(receiver_pid, sender_pid, owner_pid, file_message_bytes);
+    const u32 response = endpoint_attach(sender_pid, receiver_pid, owner_pid, file_message_bytes);
+    if (request == 0 || response == 0) {
+        if (auto* endpoint = endpoint_for(request)) *endpoint = endpoint_record{};
+        if (auto* endpoint = endpoint_for(response)) *endpoint = endpoint_record{};
+        return false;
+    }
+    auto* request_endpoint = endpoint_for(request);
+    auto* response_endpoint = endpoint_for(response);
+    request_endpoint->generic = true;
+    request_endpoint->channel_id = request;
+    response_endpoint->generic = true;
+    response_endpoint->channel_id = request;
+    sender_channel = {request, response};
+    receiver_channel = {response, request};
+    return true;
+}
+
+void wake_ipc_acceptors(u64 service_pid, i64 result) {
+    for (auto& thread : threads) {
+        if (thread.state == thread_state::blocked && thread.process != nullptr &&
+            thread.process->pid == service_pid && thread.wait_kind == thread_wait_kind::ipc_accept) {
+            ready_with(thread, result);
+        }
+    }
 }
 
 bool files_service_live() {
@@ -714,7 +814,7 @@ i64 ipc_send(u64 handle, u64 address, u64 length) {
     if (endpoint == nullptr || current == nullptr || endpoint->sender_pid != current->pid ||
         (current->send_handle != handle &&
          !(current->block_access && endpoint->session_response) && !display_endpoint(handle) &&
-         !endpoint->generic_channel)) {
+         !endpoint->generic_channel && !endpoint->generic)) {
         return sys_error_invalid_handle;
     }
     if (endpoint->receiver_pid == current->pid || length == 0 || length > endpoint->capacity) {
@@ -722,7 +822,10 @@ i64 ipc_send(u64 handle, u64 address, u64 length) {
     }
     process_record* receiver = task_by_pid(endpoint->receiver_pid);
     if (receiver == nullptr || receiver->state == task_state::dead ||
-        receiver->state == task_state::building) { return sys_error_invalid_handle; }
+        receiver->state == task_state::building ||
+        ((endpoint->generic_channel || endpoint->generic) && receiver->closing)) {
+        return (endpoint->generic_channel || endpoint->generic) ? pipe_error_broken : sys_error_invalid_handle;
+    }
     if (endpoint->pending || (handle==display_request_handle && display_delivered)) { return sys_error_full; }
     if (handle==display_response_handle && !display_delivered) {return sys_error_invalid_argument;}
     if (!user_range_ok(address, length, false)) { return sys_error_invalid_argument; }
@@ -730,6 +833,7 @@ i64 ipc_send(u64 handle, u64 address, u64 length) {
     endpoint->length = static_cast<u32>(length);
     endpoint->pending = true;
     if (endpoint->generic_channel) { wake_channel_waiters(endpoint->handle, true, false, 0); }
+    if (endpoint->generic) { wake_ipc_waiters(endpoint->handle, 0, thread_wait_kind::ipc_receive); }
     if(handle==display_response_handle){display_delivered=false;display_presented=false;}
     if(display_endpoint(handle)){display_wake(handle,0);}
     return 0;
@@ -739,16 +843,23 @@ i64 ipc_recv(u64 handle, u64 address, u64 length) {
     endpoint_record* endpoint = endpoint_for(handle);
     if (endpoint == nullptr || current == nullptr || endpoint->receiver_pid != current->pid ||
         (current->recv_handle != handle && !current->block_access && !display_endpoint(handle) &&
-         !endpoint->generic_channel)) {
+         !endpoint->generic_channel && !endpoint->generic)) {
         return sys_error_invalid_handle;
     }
     if (!user_range_ok(address, length, true)) { return sys_error_invalid_argument; }
+    if (endpoint->generic && !endpoint->pending) {
+        const process_record* sender = task_by_pid(endpoint->sender_pid);
+        if (sender == nullptr || sender->state == task_state::dead || sender->closing) {
+            return pipe_error_broken;
+        }
+    }
     if (!endpoint->pending) { return sys_error_empty; }
     if (length < endpoint->length) { return sys_error_invalid_argument; }
     copy_to_user(address, endpoint->data, endpoint->length);
     const u32 length_received = endpoint->length;
     endpoint->pending = false;
     if (endpoint->generic_channel) { wake_channel_waiters(endpoint->handle, false, true, 0); }
+    if (endpoint->generic) { wake_ipc_waiters(endpoint->handle, 0, thread_wait_kind::ipc_send); }
     if(handle==display_request_handle){display_delivered=true;display_presented=false;}
     else {endpoint->length = 0;}
     return static_cast<i64>(length_received);
@@ -863,9 +974,21 @@ void destroy_task(process_record* task) {
     (void)input_lease.remove(task->pid);
     reap_pending[task_index(task)] = false;
     const u64 pid = task->pid;
+    for (auto& entry : ipc_names) {
+        if (entry.used && entry.owner_pid == pid) entry = ipc_name_record{};
+    }
+    wake_ipc_acceptors(pid, pipe_error_broken);
+    for (auto& connection : ipc_connections) {
+        if (!connection.used || (connection.service_pid != pid && connection.client_pid != pid)) continue;
+        const u32 channel_id = connection.channel_id;
+        revoke_ipc_channel(channel_id, pipe_error_broken);
+        connection = ipc_connection_record{};
+    }
     for (auto& endpoint : endpoints) {
-        if (endpoint.used && (endpoint.owner_pid == pid || endpoint.receiver_pid == pid ||
-                              endpoint.sender_pid == pid)) { endpoint = endpoint_record{}; }
+        if (!endpoint.used || (endpoint.owner_pid != pid && endpoint.receiver_pid != pid &&
+                               endpoint.sender_pid != pid)) { continue; }
+        if (endpoint.generic) { revoke_ipc_channel(endpoint.channel_id, pipe_error_broken); }
+        else { endpoint = endpoint_record{}; }
     }
     task_pipe_release_all(task);
     u64 freed = 0;
@@ -2647,6 +2770,180 @@ void* process_syscall(interrupt_frame* frame) {
         copy_to_user(first, values, sizeof(values)); result = 0;
         break;
     }
+    case sys_ipc_endpoint: {
+        const auto action = static_cast<ipc_endpoint_action>(first);
+        if (action == ipc_endpoint_action::create) {
+            process_record* peer = task_by_pid(second == 0 ? current->parent : second);
+            if (peer == nullptr || peer == current || peer->state == task_state::building ||
+                peer->state == task_state::dead || peer->closing ||
+                !user_range_ok(third, sizeof(ipc_channel), true)) {
+                result = process_error_invalid; break;
+            }
+            ipc_channel channel{}, peer_channel{};
+            if (!create_generic_channel(current->pid, peer->pid, current->pid,
+                                        channel, peer_channel)) {
+                result = process_error_resources; break;
+            }
+            (void)peer_channel;
+            copy_to_user(third, &channel, sizeof(channel));
+            result = 0;
+            break;
+        }
+        if (action == ipc_endpoint_action::revoke && third == 0) {
+            auto* endpoint = endpoint_for(second);
+            if (endpoint == nullptr || !endpoint->generic || endpoint->owner_pid != current->pid) {
+                result = process_error_denied; break;
+            }
+            revoke_ipc_channel(endpoint->channel_id, pipe_error_broken);
+            result = 0;
+            break;
+        }
+        if (action == ipc_endpoint_action::close && third == 0) {
+            auto* endpoint = endpoint_for(second);
+            if (endpoint == nullptr || !endpoint->generic ||
+                (endpoint->sender_pid != current->pid && endpoint->receiver_pid != current->pid)) {
+                result = process_error_denied; break;
+            }
+            revoke_ipc_channel(endpoint->channel_id, pipe_error_broken);
+            result = 0;
+            break;
+        }
+        if (action == ipc_endpoint_action::query_peer &&
+            user_range_ok(third, sizeof(u64), true)) {
+            const auto* endpoint = endpoint_for(second);
+            if (endpoint == nullptr || !endpoint->generic) { result = process_error_denied; break; }
+            u64 peer = 0;
+            if (endpoint->sender_pid == current->pid) peer = endpoint->receiver_pid;
+            else if (endpoint->receiver_pid == current->pid) peer = endpoint->sender_pid;
+            else { result = process_error_denied; break; }
+            copy_to_user(third, &peer, sizeof(peer));
+            result = 0;
+            break;
+        }
+        break;
+    }
+    case sys_ipc_wait: {
+        if (third != 0 || second > static_cast<u64>(ipc_wait_mode::try_send)) { break; }
+        auto* endpoint = endpoint_for(first);
+        if (endpoint == nullptr || !endpoint->generic) { result = process_error_denied; break; }
+        const auto mode = static_cast<ipc_wait_mode>(second);
+        const bool receiving = mode == ipc_wait_mode::receive || mode == ipc_wait_mode::try_receive;
+        const bool nonblocking = mode == ipc_wait_mode::try_receive || mode == ipc_wait_mode::try_send;
+        if ((receiving && endpoint->receiver_pid != current->pid) ||
+            (!receiving && endpoint->sender_pid != current->pid)) {
+            result = process_error_denied; break;
+        }
+        const process_record* peer = task_by_pid(receiving ? endpoint->sender_pid : endpoint->receiver_pid);
+        if (peer == nullptr || peer->state == task_state::dead || peer->closing) {
+            result = pipe_error_broken; break;
+        }
+        if ((receiving && endpoint->pending) || (!receiving && !endpoint->pending)) {
+            result = 0; break;
+        }
+        if (nonblocking) { result = process_error_would_block; break; }
+        current_thread->wait_kind = receiving ? thread_wait_kind::ipc_receive : thread_wait_kind::ipc_send;
+        current_thread->wait_target = endpoint->handle;
+        current_thread->state = thread_state::blocked;
+        frame->rax = 0;
+        return schedule(frame);
+    }
+    case sys_ipc_name: {
+        const auto action = static_cast<ipc_name_action>(first);
+        if (action == ipc_name_action::publish || action == ipc_name_action::unpublish ||
+            action == ipc_name_action::connect) {
+            if (action != ipc_name_action::connect && third != 0) { break; }
+            char name[32]{};
+            if (!copy_ipc_name(second, name)) { result = process_error_invalid; break; }
+            auto* entry = find_ipc_name(name);
+            if (action == ipc_name_action::publish) {
+                if (entry != nullptr) {
+                    result = entry->owner_pid == current->pid ? 0 : process_error_busy;
+                    break;
+                }
+                if (current->closing) { result = process_error_state; break; }
+                for (auto& slot : ipc_names) {
+                    if (!slot.used) {
+                        slot.used = true;
+                        slot.owner_pid = current->pid;
+                        for (u32 i = 0; i < sizeof(slot.name); ++i) slot.name[i] = name[i];
+                        result = 0;
+                        break;
+                    }
+                }
+                if (result == sys_error_invalid_argument) result = process_error_resources;
+                break;
+            }
+            if (action == ipc_name_action::unpublish) {
+                if (entry == nullptr || entry->owner_pid != current->pid) {
+                    result = process_error_denied; break;
+                }
+                *entry = ipc_name_record{};
+                if (!ipc_service_published(current->pid)) {
+                    wake_ipc_acceptors(current->pid, pipe_error_broken);
+                    for (auto& connection : ipc_connections) {
+                        if (connection.used && connection.service_pid == current->pid) {
+                            revoke_ipc_channel(connection.channel_id, pipe_error_broken);
+                        }
+                    }
+                }
+                result = 0;
+                break;
+            }
+            if (!user_range_ok(third, sizeof(ipc_channel), true)) { break; }
+            if (entry == nullptr) { result = ipc_error_name_not_found; break; }
+            process_record* server = task_by_pid(entry->owner_pid);
+            if (server == nullptr || server == current || server->state == task_state::dead ||
+                server->state == task_state::building || server->closing) {
+                result = ipc_error_name_not_found; break;
+            }
+            ipc_connection_record* slot = nullptr;
+            for (auto& connection : ipc_connections) {
+                if (!connection.used) { slot = &connection; break; }
+            }
+            if (slot == nullptr) { result = process_error_resources; break; }
+            ipc_channel client_channel{}, service_channel{};
+            if (!create_generic_channel(current->pid, server->pid, current->pid,
+                                        client_channel, service_channel)) {
+                result = process_error_resources; break;
+            }
+            slot->used = true;
+            slot->service_pid = server->pid;
+            slot->client_pid = current->pid;
+            slot->channel_id = client_channel.send;
+            slot->service_channel = service_channel;
+            copy_to_user(third, &client_channel, sizeof(client_channel));
+            wake_ipc_acceptors(server->pid, 0);
+            result = 0;
+            break;
+        }
+        if (action == ipc_name_action::accept) {
+            if (third != 0 || !user_range_ok(second, sizeof(ipc_channel), true)) { break; }
+            if (!ipc_service_published(current->pid)) { result = process_error_denied; break; }
+            for (auto& connection : ipc_connections) {
+                if (!connection.used || connection.service_pid != current->pid) continue;
+                copy_to_user(second, &connection.service_channel, sizeof(ipc_channel));
+                connection = ipc_connection_record{};
+                result = 0;
+                break;
+            }
+            if (result == sys_error_invalid_argument) result = process_error_would_block;
+            break;
+        }
+        if (action == ipc_name_action::wait_accept && second == 0 && third == 0) {
+            if (!ipc_service_published(current->pid)) { result = process_error_denied; break; }
+            bool pending = false;
+            for (const auto& connection : ipc_connections) {
+                pending |= connection.used && connection.service_pid == current->pid;
+            }
+            if (pending) { result = 0; break; }
+            current_thread->wait_kind = thread_wait_kind::ipc_accept;
+            current_thread->wait_target = current->pid;
+            current_thread->state = thread_state::blocked;
+            frame->rax = 0;
+            return schedule(frame);
+        }
+        break;
+    }
     case sys_block_read:
     case sys_block_write: {
         if (current == nullptr || !current->block_access) { result = block_error_denied; break; }
@@ -2722,7 +3019,8 @@ void* syscall_entry(interrupt_frame* frame) {
     const u64 number = frame->rax;
     if(current->pid==display_service_pid &&
        (number==sys_process_create || number==sys_process_exec_prepare || number==sys_process_fork_prepare ||
-        number==sys_process_delegate || number==sys_process_grant)) {
+        number==sys_process_delegate || number==sys_process_grant ||
+        number==sys_ipc_endpoint || number==sys_ipc_wait || number==sys_ipc_name)) {
         frame->rax=static_cast<u64>(display_denied);return frame;
     }
     if (number >= sys_thread_prepare && number <= sys_thread_profile) { return thread_syscall(frame); }

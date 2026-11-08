@@ -8,3 +8,4 @@ here=Path(__file__).resolve().parent
 if len(sys.argv)!=3:raise SystemExit('usage: prepare_gui_source.py LOCKED_ARCHIVE NEW_DIRECTORY')
 subprocess.run([sys.executable,here/'prepare_source.py',*sys.argv[1:]],check=True)
 subprocess.run(['patch','-p1','-i',str(here/'patches/0008-xos-gui-platform.patch')],cwd=Path(sys.argv[2]),check=True)
+subprocess.run(['patch','-p1','-i',str(here/'patches/0011-xos-qmalloc-qtglobal.patch')],cwd=Path(sys.argv[2]),check=True)

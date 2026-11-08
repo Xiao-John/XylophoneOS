@@ -429,7 +429,7 @@ void execute(u32 argc, char** argv) {
               "          tty-run <terminal-compatible program> [args]\n"
               "Maintain  maint-run <program> [args] | maint-recover <program> [args] | maint-recover-boot | maint-status\n"
               "Shell     dash -i starts dash; exit inside dash returns here\n"
-              "Display   display-start | exec gfxdemo [check|fault|hold|stop]\n"
+              "Display   display-start | interactium-start | exec gfxdemo [check|fault|hold|stop]\n"
               "Debug     diag <program> [args] | trace on/off | ps | kill <pid> | stats | images | primtest | elftest | filetest\n"
               "Search    /usr/bin:/bin:/; paths containing '/' are used directly\n");
     } else if (equal(argv[0], "trace")) {
@@ -468,6 +468,21 @@ void execute(u32 argc, char** argv) {
         const i64 granted=child>0?display_control(display_action::grant_service,static_cast<u64>(child)):child;
         display_started(child,granted);
         if(child>0 && granted!=0){(void)syscall(10,static_cast<u64>(child));result_line(static_cast<u64>(child));}
+    } else if (equal(argv[0], "interactium-start") && argc == 1) {
+        const char* display_args[]={"display","normal"};
+        const i64 display_pid=spawn(image_named("display"),2,display_args);
+        const i64 granted=display_pid>0?display_control(display_action::grant_service,
+                                                          static_cast<u64>(display_pid)):display_pid;
+        display_started(display_pid,granted);
+        if(display_pid>0 && granted!=0){
+            (void)syscall(10,static_cast<u64>(display_pid));
+            result_line(static_cast<u64>(display_pid));
+            return;
+        }
+        const char* args[]={"interactiumd"};
+        const i64 child=spawn(image_named("interactiumd"),1,args);
+        print("[interactium-start] pid=");signed_decimal(child);print(" display=");
+        signed_decimal(display_pid);print("\n");
     } else if ((equal(argv[0], "exec") || equal(argv[0], "spawn")) && argc >= 2) {
         if (user::shell_terminal::active()) {
             print("xsh: legacy image unavailable in terminal session\n"); return;

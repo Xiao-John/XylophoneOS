@@ -18,6 +18,7 @@ public:
     i32 receive(u8* buffer, u32 capacity, u32& size) override;
     i32 send(const u8* buffer, u32 size) override;
     bool closed() const override;
+    bool reply_drained() const override;
     void close() override;
 };
 

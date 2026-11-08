@@ -12,6 +12,12 @@ loop_result service_loop::step() {
         closed_ = true;
         return loop_result::session_closed;
     }
+    if (closing_) {
+        if (!transport_->reply_drained()) return loop_result::again;
+        transport_->close();
+        closed_ = true;
+        return loop_result::session_closed;
+    }
 
     u8 request[max_wire_message]{};
     u8 response[max_wire_message]{};
@@ -37,8 +43,8 @@ loop_result service_loop::step() {
         return loop_result::transport_error;
     }
     if (!dispatcher_.connected()) {
-        closed_ = true;
-        return loop_result::session_closed;
+        closing_ = true;
+        return loop_result::progressed;
     }
     return dispatched == 0 ? loop_result::progressed : loop_result::protocol_error;
 }

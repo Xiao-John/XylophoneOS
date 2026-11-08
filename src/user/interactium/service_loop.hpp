@@ -23,6 +23,7 @@ class service_loop {
     service* service_ = nullptr;
     session_transport* transport_ = nullptr;
     bool closed_ = false;
+    bool closing_ = false;
 
 public:
     service_loop(service& service, session_transport& transport)
@@ -33,6 +34,7 @@ public:
         dispatcher_.bind(*service_, transport.authenticated_owner());
         transport_ = &transport;
         closed_ = false;
+        closing_ = false;
     }
     loop_result step();
     bool connected() const { return dispatcher_.connected(); }

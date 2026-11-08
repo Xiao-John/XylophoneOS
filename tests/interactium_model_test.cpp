@@ -137,6 +137,7 @@ int main() {
                   message_type::write_tile, object, tile_request, sizeof(tile_request));
     assert(client_one.dispatch(request, request_size, response, sizeof(response), response_size) == 0);
     assert(reply_status(response) == 0);
+    assert(protocol_surfaces[0].pixels[0] == 0xff101820);
     alignas(8) u8 commit_bytes[sizeof(commit_payload) + sizeof(dirty_rect)]{};
     const commit_payload commit{1, 1, 0};
     const dirty_rect dirty{0, 0, 300, 200};
@@ -146,5 +147,20 @@ int main() {
                   message_type::commit_frame, object, commit_bytes, sizeof(commit_bytes));
     assert(client_one.dispatch(request, request_size, response, sizeof(response), response_size) == 0);
     assert(reply_status(response) == 0);
+    assert(protocol_surfaces[0].pixels[0] == 0xffff0000);
+    const frame_payload cancelled_frame{2, 300, 200, 1200, pixel_format::argb8888_premultiplied, 240000};
+    request_bytes(request, request_size, 6, client_one.session().value,
+                  message_type::begin_frame, object, &cancelled_frame, sizeof(cancelled_frame));
+    assert(client_one.dispatch(request, request_size, response, sizeof(response), response_size) == 0);
+    tile_payload cancelled_tile{2, 0, 0, 1, 1, 0, 4, 0};
+    std::memcpy(tile_request, &cancelled_tile, sizeof(cancelled_tile));
+    std::memset(tile_request + sizeof(cancelled_tile), 0, 4);
+    request_bytes(request, request_size, 7, client_one.session().value,
+                  message_type::write_tile, object, tile_request, sizeof(tile_request));
+    assert(client_one.dispatch(request, request_size, response, sizeof(response), response_size) == 0);
+    request_bytes(request, request_size, 8, client_one.session().value,
+                  message_type::cancel_frame, object, nullptr, 0);
+    assert(client_one.dispatch(request, request_size, response, sizeof(response), response_size) == 0);
+    assert(reply_status(response) == 0 && protocol_surfaces[0].pixels[0] == 0xffff0000);
     return 0;
 }

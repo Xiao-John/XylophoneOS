@@ -14,6 +14,7 @@ inline constexpr u32 surface_pixels = surface_stride * 600;
 struct surface_buffer {
     window_id id{};
     u32 pixels[surface_pixels]{};
+    u32 pending_pixels[surface_pixels]{};
 };
 
 struct session_token { u64 value = 0; };
@@ -47,6 +48,7 @@ public:
     bool configure_window(session_token token, window_id id, const configure_payload& request);
     bool focus_window(session_token token, window_id id);
     bool accept_frame(session_token token, window_id id, u64 frame_serial);
+    bool begin_frame(session_token token, window_id id);
     bool write_tile(session_token token, window_id id, const tile_payload& tile,
                     const u8* pixels, u32 length);
     bool queue_input(const display_event& event);

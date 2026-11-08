@@ -17,6 +17,7 @@ public:
     virtual i32 receive(u8* buffer, u32 capacity, u32& size) = 0;
     virtual i32 send(const u8* buffer, u32 size) = 0;
     virtual bool closed() const = 0;
+    virtual bool reply_drained() const = 0;
     virtual void close() {}
 };
 

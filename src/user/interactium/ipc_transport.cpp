@@ -35,6 +35,10 @@ bool ipc_session_transport::closed() const {
     return sdk::ipc_endpoint_peer(channel_.receive, peer) != 0 || peer == 0;
 }
 
+bool ipc_session_transport::reply_drained() const {
+    return sdk::ipc_wait(channel_.send, ipc_wait_mode::try_send) == 0;
+}
+
 void ipc_session_transport::close() {
     if (channel_.send != 0) (void)sdk::ipc_channel_close(channel_.send);
     channel_ = {};

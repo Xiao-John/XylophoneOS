@@ -87,8 +87,23 @@ bool service::focus_window(session_token token, window_id id) {
 bool service::accept_frame(session_token token, window_id id, u64 frame_serial) {
     const auto* item = find(token);
     if (!item || !manager_.accept_frame(id, item->owner, frame_serial)) return false;
+    if (surfaces_) for (u32 i = 0; i < surface_capacity; ++i)
+        if (surfaces_[i].id == id)
+            for (u32 p = 0; p < surface_pixels; ++p) surfaces_[i].pixels[p] = surfaces_[i].pending_pixels[p];
     damaged_ = true;
     return true;
+}
+
+bool service::begin_frame(session_token token, window_id id) {
+    const auto* item = find(token);
+    const auto* window = manager_.get(id);
+    if (!item || !window || window->owner != item->owner || !surfaces_) return false;
+    for (u32 i = 0; i < surface_capacity; ++i) {
+        if (surfaces_[i].id != id) continue;
+        for (u32 p = 0; p < surface_pixels; ++p) surfaces_[i].pending_pixels[p] = surfaces_[i].pixels[p];
+        return true;
+    }
+    return false;
 }
 
 bool service::write_tile(session_token token, window_id id, const tile_payload& tile,
@@ -108,7 +123,7 @@ bool service::write_tile(session_token token, window_id id, const tile_payload& 
             const u32 source = (row * tile.width + column) * 4;
             const u32 pixel = u32(pixels[source]) | (u32(pixels[source + 1]) << 8) |
                               (u32(pixels[source + 2]) << 16) | (u32(pixels[source + 3]) << 24);
-            surface->pixels[(tile.y + row) * surface_stride + tile.x + column] = pixel;
+            surface->pending_pixels[(tile.y + row) * surface_stride + tile.x + column] = pixel;
         }
     }
     return true;

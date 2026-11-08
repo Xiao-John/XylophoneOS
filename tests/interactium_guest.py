@@ -52,7 +52,7 @@ def main():
     image = parser.parse_args().image.resolve()
     if not image.is_file():
         raise SystemExit(f"{image} missing; run scripts/build.py first")
-    os.environ.setdefault("QEMU", str(Path("C:/msys64/ucrt64/bin/qemu-system-x86_64.exe")))
+    os.environ.setdefault("QEMU", "qemu-system-x86_64")
     with socket.socket() as reservation:
         reservation.bind(("127.0.0.1", 0))
         qmp_port = reservation.getsockname()[1]
@@ -121,7 +121,7 @@ def main():
         guest.qmp_file = guest.qmp_socket.makefile("rwb", buffering=0)
         json.loads(guest.qmp_file.readline())
         qmp_command(guest, "qmp_capabilities")
-        ppm_for_qemu = subprocess.check_output(["cygpath", "-w", str(ppm)], text=True).strip()
+        ppm_for_qemu = subprocess.check_output(["cygpath", "-w", str(ppm)], text=True).strip() if os.name == "nt" else str(ppm)
         qmp_command(guest, "screendump", {"filename": ppm_for_qemu})
         ppm_bytes = ppm.read_bytes()
         ppm_header = b"P6\n800 600\n255\n"
@@ -148,7 +148,7 @@ def main():
             pump(guest, 0.12)
         dragged_ppm = ROOT / "build/interactium_demo_dragged.ppm"
         dragged_png = ROOT / "build/interactium_demo_dragged.png"
-        dragged_ppm_for_qemu = subprocess.check_output(["cygpath", "-w", str(dragged_ppm)], text=True).strip()
+        dragged_ppm_for_qemu = subprocess.check_output(["cygpath", "-w", str(dragged_ppm)], text=True).strip() if os.name == "nt" else str(dragged_ppm)
         qmp_command(guest, "screendump", {"filename": dragged_ppm_for_qemu})
         dragged = dragged_ppm.read_bytes()[len(ppm_header):]
         def dragged_pixel(x, y):

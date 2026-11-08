@@ -151,6 +151,7 @@ i32 protocol_dispatcher::dispatch(const u8* request, u32 request_size, u8* respo
             frame.width > 800 || frame.height > 600 || frame.stride < frame.width * 4u ||
             frame.bytes > max_frame_bytes || frame.bytes < u64(frame.stride) * frame.height ||
             frame.format != pixel_format::argb8888_premultiplied) break;
+        if (!service_->begin_frame(session_, object)) { result = static_cast<i64>(dispatch_result::denied); break; }
         frame_ = {true, object, frame.frame_serial, frame.width, frame.height,
                   frame.stride, frame.bytes};
         result = 0;

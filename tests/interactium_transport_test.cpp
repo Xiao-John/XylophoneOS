@@ -15,12 +15,15 @@ class fake_transport final : public session_transport {
     u32 outgoing_size_[4]{};
     u32 outgoing_count_ = 0;
     bool closed_ = false;
+    bool drained_ = false;
 
 public:
     explicit fake_transport(u64 owner) : owner_(owner) {}
     u64 authenticated_owner() const override { return owner_; }
     bool closed() const override { return closed_; }
-    void close() { closed_ = true; }
+    bool reply_drained() const override { return drained_; }
+    void drain_reply() { drained_ = true; }
+    void close() override { closed_ = true; }
     void push(const u8* message, u32 size) {
         assert(incoming_count_ < 4 && size <= max_wire_message);
         std::memcpy(incoming_[incoming_count_], message, size);
@@ -96,8 +99,11 @@ int main() {
 
     message(request, request_size, 3, first_session, message_type::disconnect, 0);
     first.push(request, request_size);
-    assert(first_loop.step() == loop_result::session_closed);
+    assert(first_loop.step() == loop_result::progressed);
     assert(status(first.reply(2)) == 0 && !first_loop.connected());
+    assert(first_loop.step() == loop_result::again && !first.closed());
+    first.drain_reply();
+    assert(first_loop.step() == loop_result::session_closed && first.closed());
     assert(second_loop.connected());
 
     fake_transport dropped(501);

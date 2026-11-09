@@ -81,9 +81,7 @@ ring3 用户任务、每任务地址空间、PIT 抢占、IPC、用户故障隔�
 - CPython 没有安全熵、墙钟、socket/TLS、fork/subprocess 等完整 POSIX 能力。
 - xypm P2 写入事务/P3 仓库仍未完整交付；签名不等于沙箱。
 - 旧全量压力与部分历史回归未在本发行重跑；未跑项不会被写成通过。
-- Qt 6.8.3 静态库**已随 0.0.2-1103 发行**（`qt6_static` 资产）：许可材料、逐成员映射、
-  文本覆盖、打包核验 25/25、安全审查 PASS_WITH_LIMITS 已交付；E16/E17 为受限功能资格。
-  非法务意见；商业路径 N/A；QML/Quick 未实现。见 [REDISTRIBUTION](src/ports/qt6/REDISTRIBUTION.md)
+- Qt 6.8.3 静态库**已随 0.0.2-1103 发行**（`qt6_static` 资产）；QML/Quick 未实现。见 [REDISTRIBUTION](src/ports/qt6/REDISTRIBUTION.md)
   与 [许可证管理](docs/licensing.md)。
 
 ## 文档与许可

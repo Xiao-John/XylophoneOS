@@ -86,7 +86,7 @@ Python when updating PATH so MSYS Python is not selected accidentally.
 $Python = (Get-Command python).Source
 $env:PATH = "$PWD/build/qt_enabled/cross/bin;C:/msys64/ucrt64/bin;C:/msys64/usr/bin;" + $env:PATH
 & $Python src/ports/qt6/aurora/build_desktop.py --sdk build/interactium_aurora/current_thread_sdk --qt-build build/interactium_aurora/qt_widgets_build2 --core-build build/interactium_aurora/qt_widgets_build2 --qt-source build/interactium_aurora/qt_widgets_source --host-qt build/qt_enabled/host_qt --binutils build/interactium_aurora/system5/target_tools --generated-qt-build build/interactium_aurora/qt_widgets_build2 --output build/aurora_desktop_rewrite/AURORA_DESKTOP.ELF
-$env:NASM = 'C:/Users/d2015/AppData/Local/bin/NASM/nasm.exe'
+$env:NASM = '<configure-local-path>'
 & $Python scripts/build.py --output-dir build/aurora_desktop_rewrite/system
 ```
 

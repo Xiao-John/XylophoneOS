@@ -567,10 +567,10 @@ bool add_user_page(process_record* task, u64 address, const u8* bytes, u32 size,
         return false;
     }
     u64 physical = 0;
-    if (allocate_page(&physical) != memory_result::none) { return false; }
+    if (allocate_user_page(&physical) != memory_result::none) { return false; }
     if (size != 0) { copy_bytes(reinterpret_cast<u8*>(physical) + offset, bytes, size); }
     if (!map_user(task->cr3, address, physical, permissions)) {
-        (void)release_page(physical); return false;
+        (void)release_user_page(physical); return false;
     }
     ++task->user_pages;
     return true;
@@ -1279,9 +1279,9 @@ i64 set_heap_break(u64 requested) {
         u64 address = old_end;
         for (; address < new_end; address += page_size) {
             u64 physical = 0;
-            if (allocate_page(&physical) != memory_result::none) { break; }
+            if (allocate_user_page(&physical) != memory_result::none) { break; }
             if (map_page_in(current->cr3, address, physical, {true, false, true}) != memory_result::none) {
-                (void)release_page(physical);
+                (void)release_user_page(physical);
                 break;
             }
             ++current->user_pages;
@@ -1290,7 +1290,7 @@ i64 set_heap_break(u64 requested) {
             for (u64 rollback = old_end; rollback < address; rollback += page_size) {
                 u64 physical = 0;
                 if (unmap_page_in(current->cr3, rollback, &physical) == memory_result::none) {
-                    (void)release_page(physical);
+                    (void)release_user_page(physical);
                     if (current->user_pages != 0) { --current->user_pages; }
                 }
             }
@@ -1307,7 +1307,7 @@ i64 set_heap_break(u64 requested) {
         for (u64 address = new_end; address < old_end; address += page_size) {
             u64 physical = 0;
             if (unmap_page_in(current->cr3, address, &physical) != memory_result::none ||
-                release_page(physical) != memory_result::none) { return process_error_state; }
+                release_user_page(physical) != memory_result::none) { return process_error_state; }
             if (current->user_pages != 0) { --current->user_pages; }
         }
     }
@@ -1353,7 +1353,7 @@ void release_thread_range(thread_record& thread, u64 begin, u64 end) {
     for (u64 address = begin; address < end; address += page_size) {
         u64 physical = 0;
         if (unmap_page_in(thread.process->cr3, address, &physical) == memory_result::none) {
-            (void)release_page(physical);
+            (void)release_user_page(physical);
             if (thread.process->user_pages != 0) { --thread.process->user_pages; }
         }
     }

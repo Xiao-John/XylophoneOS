@@ -1,6 +1,6 @@
 # 虚拟内存与 COW fork 实施路线
 
-2026-10-30。设计规划，未实施、未验收；不修改宪法，不开放多线程 fork。
+2026-11-09。VM0受限底座已实现并定向验证，见[VM0工作记录](../work_log/0201_vm0_page_ownership.md)；VM1及后续仍为计划。不修改宪法，不开放多线程 fork。
 现有匿名 VM 契约仍为主依据：
 [已合入的 PX4-A 提案](https://github.com/Xiao-John/XylophoneOS/blob/d57ff0e4674d297c6d4e1e20e3ba16a76dec3d57/docs/contracts/anonymous_vm.md)。
 该登记认领 sys67，不表示实现；当前 W1 分支尚未整合该登记，实施前先同步。
@@ -33,7 +33,7 @@ NONE 但保留内容的已提交页不能因 PTE 不 present 被遗失。每进�
 
 | 阶段 | 实施内容 | 验收出口 |
 |---|---|---|
-| VM0 所有权底座 | 用户页对象/引用管理；全用户地址图遍历；core/arch边界；逻辑写权限与硬件写权限分离；统计方案 | 旧 E04/fork/exec/堆/线程定向回归，注入失败精确回收；仍使用 eager-copy |
+| VM0 所有权底座（受限通过） | 用户页对象/引用管理；全用户地址图遍历；core/arch边界；逻辑写权限与硬件写权限分离；统计方案 | 旧 E04/fork/exec/堆/线程定向回归，注入失败精确回收；仍使用 eager-copy |
 | VM1 匿名保留 | 按既有 sys67 wire、16–32TiB arena/256片段及预算实现 reserve/unmap；稀疏元数据，不按保留字节分配页表 | V1/V3 的保留、溢出、碰撞、分裂、洞、退出与页表计数 |
 | VM2 提交与保护 | commit/protect/NONE/decommit、W^X、跨页 copyin/out；32页有界续体；pin 与进程关闭仲裁 | V2/V4/V5；真实 fault、事务回滚、等待输出 pin、kill 清理，不能以宿主测试代替 |
 | VM3 生命周期与 SDK | eager fork 复制全部 VMA及隐藏提交页；exec原子替换；两类SDK与libc子集；不提前公布 supported | V6/V7，完成既有 V1–V7 后认领受限匿名VM |

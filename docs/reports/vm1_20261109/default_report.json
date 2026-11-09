@@ -1,0 +1,49 @@
+{
+  "status": "passed",
+  "build_id": "9ebeaecdb6056692",
+  "image_sha256": "2740ccf70e86dc236d36ba64f5ccc34c996ab7cfdf630e559fdb57ca5848e69d",
+  "probe_sha256": "0b4ce70accac32dde82ed61a45cb64762c0602eaa6f9567804aaa49eef96bb81",
+  "checks": [
+    "guest_disabled_0",
+    "guest_disabled_1"
+  ],
+  "qemu_command": [
+    "${XOS_TOOLCHAIN}/prefix/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_ROOT}/build/vm1/final_default6/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_LOCAL_PATH},format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:${XOS_LOCAL_PATH},server=on,wait=off"
+  ],
+  "baseline": [
+    130100,
+    3,
+    0
+  ]
+}

@@ -11,6 +11,8 @@ void debug_init();
 void interrupts_init();
 // IRQ0 time advancement and platform acknowledgement, no scheduling policy.
 void timer_interrupt();
+// Best-effort, idempotent safety stop for the PC Speaker output gate.
+void pc_speaker_stop();
 // Interrupt-controller mechanisms; do not advance time or access devices.
 void irq_mask(u8 irq);
 void irq_unmask(u8 irq);

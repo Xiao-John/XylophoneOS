@@ -46,6 +46,7 @@ constexpr u32 file_session_count = 8;
 constexpr u32 default_message_bytes = 64;
 constexpr u32 file_message_bytes = 4096;
 constexpr u32 kernel_stack_bytes = 4096;
+constexpr u64 pc_speaker_lease_ns = 2000000000ull;
 constexpr u32 user_code_selector = 0x2b;
 constexpr u32 user_data_selector = 0x33;
 
@@ -67,9 +68,12 @@ struct process_record {
     u64 cr3;
     u64 pid;
     u64 ticks;
-    // Reserved for a future kernel-authenticated device grant. No current
-    // syscall assigns these fields; zero means all port I/O is denied.
+    // Fixed, kernel-authenticated device grants loaded into the TSS bitmap.
     u32 io_window_first, io_window_length;
+    bool pc_speaker_io;
+    bool pc_speaker_controller;
+    bool pc_speaker_lease_started;
+    u64 pc_speaker_deadline_ns;
     task_state state;
     char name[12];
     u32 send_handle;
@@ -231,6 +235,8 @@ process_guard_info admission_guard{};
 stream_lease input_lease{};
 u64 pio_com1_owner, pio_com1_controller;
 bool pio_com1_quarantined;
+u64 pio_speaker_owner, pio_speaker_controller;
+u64 pio_speaker_delegated_controller;
 u64 irq_owner, irq_token, irq_next_token = 1, irq_sequence;
 bool irq_pending, irq_quarantined;
 void ready_with(thread_record& thread, i64 result);
@@ -241,6 +247,9 @@ void wake_irq_waiters(i64 result) {
             thread.wait_target == irq_token) { ready_with(thread, result); }
     }
 }
+process_record* task_by_pid(u64 pid);
+void finish_task(process_record* task, process_outcome outcome, i64 code,
+                 u64 vector = 0, u64 address = 0, u64 instruction = 0);
 
 void release_irq() {
     if (irq_token == 0) { return; }
@@ -259,6 +268,42 @@ void quarantine_com1(process_record* task) {
     pio_com1_owner = 0;
     pio_com1_controller = 0;
     pio_com1_quarantined = true;
+}
+
+void release_pc_speaker(process_record* task) {
+    if (task == nullptr || pio_speaker_owner != task->pid) { return; }
+    platform::pc_speaker_stop();
+    task->pc_speaker_io = false;
+    task->pc_speaker_lease_started = false;
+    task->pc_speaker_deadline_ns = 0;
+    pio_speaker_owner = 0;
+    pio_speaker_controller = 0;
+    if (task == current) {
+        if (!set_user_io_permissions(task->io_window_first, task->io_window_length, false)) {
+            format::text("[sched] event=invalid_io_permissions result=halt\r\n");
+            halt();
+        }
+    }
+}
+
+void revoke_pc_speaker_controller(process_record* task) {
+    if (task == nullptr || pio_speaker_delegated_controller != task->pid) { return; }
+    if (pio_speaker_owner != 0 && pio_speaker_controller == task->pid) {
+        process_record* owner = task_by_pid(pio_speaker_owner);
+        release_pc_speaker(owner);
+        if (owner != nullptr && owner != task && owner->state != task_state::dead)
+            finish_task(owner, process_outcome::killed, -9);
+    }
+    task->pc_speaker_controller = false;
+    pio_speaker_delegated_controller = 0;
+}
+
+void expire_pc_speaker_lease() {
+    if (pio_speaker_owner == 0) { return; }
+    process_record* owner = task_by_pid(pio_speaker_owner);
+    if (owner == nullptr || !owner->pc_speaker_lease_started ||
+        clock::monotonic_ns() < owner->pc_speaker_deadline_ns) { return; }
+    release_pc_speaker(owner);
 }
 
 bool display_endpoint(u64 handle);
@@ -1035,6 +1080,8 @@ void mark_reap(process_record* task) {
 // This always runs on a different process's kernel stack. Shared pages have one owner.
 void destroy_task(process_record* task) {
     if (task == nullptr || task->state == task_state::free || task == current || task->continuation.active()) { return; }
+    release_pc_speaker(task);
+    revoke_pc_speaker_controller(task);
     quarantine_com1(task);
     release_channels(task->pid);
     (void)input_lease.remove(task->pid);
@@ -1090,8 +1137,10 @@ completion_record* completion_for(u64 parent, u64 pid) {
 }
 
 void finish_task(process_record* task, process_outcome outcome, i64 code,
-                  u64 vector = 0, u64 address = 0, u64 instruction = 0) {
+                  u64 vector, u64 address, u64 instruction) {
     if (task->state == task_state::dead) { return; }
+    release_pc_speaker(task);
+    revoke_pc_speaker_controller(task);
     if (task->continuation.active()) {
         if (!task->continuation.cancelled) {
             task->deferred_outcome=outcome; task->deferred_code=code;
@@ -1239,8 +1288,15 @@ void switch_to(thread_record* thread) {
     current = thread->process;
     current->state = task_state::running;
     thread->state = thread_state::running;
-    if (!set_user_io_window(current->io_window_first, current->io_window_length)) {
-        format::text("[sched] event=invalid_io_window result=halt\r\n");
+    if (current->pc_speaker_io && !current->pc_speaker_lease_started) {
+        const u64 now = clock::monotonic_ns();
+        current->pc_speaker_lease_started = true;
+        current->pc_speaker_deadline_ns = now > ~u64{0} - pc_speaker_lease_ns
+            ? ~u64{0} : now + pc_speaker_lease_ns;
+    }
+    if (!set_user_io_permissions(current->io_window_first, current->io_window_length,
+                                 current->pc_speaker_io)) {
+        format::text("[sched] event=invalid_io_permissions result=halt\r\n");
         halt();
     }
     set_kernel_stack(thread->kernel_stack_top);
@@ -1940,6 +1996,75 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_pio_grant: {
+        if (third == pio_resource_pc_speaker) {
+            const auto speaker_action = static_cast<pio_grant_action>(first);
+            if (speaker_action == pio_grant_action::delegate) {
+                if (!current->supervisor) { result = process_error_denied; break; }
+                process_record* target = owned_process(second);
+                if (target == nullptr || target->state != task_state::building ||
+                    target->replacement_pending || target->fork_pending || target->pc_speaker_controller) {
+                    result = process_error_denied; break;
+                }
+                if (pio_speaker_delegated_controller != 0 || pio_speaker_owner != 0) {
+                    result = process_error_state; break;
+                }
+                target->pc_speaker_controller = true;
+                pio_speaker_delegated_controller = target->pid;
+                result = 0;
+                break;
+            }
+            if (speaker_action == pio_grant_action::release) {
+                if (second != 0 || current->pid != pio_speaker_owner) {
+                    result = process_error_denied; break;
+                }
+                release_pc_speaker(current); result = 0;
+                break;
+            }
+            if (speaker_action == pio_grant_action::controller) {
+                if (second != 0) { break; }
+                result = current->pid == pio_speaker_owner && pio_speaker_controller != 0
+                    ? static_cast<i64>(pio_speaker_controller) : process_error_denied;
+                break;
+            }
+            if (speaker_action == pio_grant_action::query) {
+                if (second != 0) { break; }
+                if (!current->supervisor && current->pid != pio_speaker_delegated_controller) {
+                    result = process_error_denied; break;
+                }
+                result = pio_speaker_owner != 0 ? 1 : 0;
+            } else if (speaker_action == pio_grant_action::grant) {
+                if (!current->supervisor && current->pid != pio_speaker_delegated_controller) {
+                    result = process_error_denied; break;
+                }
+                process_record* target = owned_process(second);
+                if (target == nullptr || target->state != task_state::building ||
+                    target->replacement_pending || target->fork_pending || target->pc_speaker_io ||
+                    target->pc_speaker_controller) {
+                    result = process_error_denied; break;
+                }
+                if (pio_speaker_owner != 0) { result = process_error_state; break; }
+                target->pc_speaker_io = true;
+                target->pc_speaker_lease_started = false;
+                target->pc_speaker_deadline_ns = 0;
+                pio_speaker_owner = target->pid;
+                pio_speaker_controller = current->pid;
+                result = 0;
+            } else if (speaker_action == pio_grant_action::revoke) {
+                process_record* target = task_by_pid(second);
+                if (target != nullptr && target->pid == pio_speaker_delegated_controller &&
+                    current->supervisor && target->parent == current->pid) {
+                    revoke_pc_speaker_controller(target);
+                    result = 0; break;
+                }
+                if ((!current->supervisor && current->pid != pio_speaker_delegated_controller) ||
+                    target == nullptr || target->parent != current->pid ||
+                    target->pid != pio_speaker_owner || pio_speaker_controller != current->pid) {
+                    result = process_error_denied; break;
+                }
+                release_pc_speaker(target); result = 0;
+            }
+            break;
+        }
         if (third != pio_resource_com1) { break; }
         const auto action = static_cast<pio_grant_action>(first);
         if (action == pio_grant_action::controller) {
@@ -2309,6 +2434,8 @@ void* process_syscall(interrupt_frame* frame) {
             result = process_error_state; break;
         }
         if (next_endpoint_handle > 0xfffffffeull) { result = process_error_resources; break; }
+        release_pc_speaker(current);
+        revoke_pc_speaker_controller(current);
         quarantine_com1(current);
         release_channels(current->pid, extended.channels, preserve_channels ? extended.count : 0);
         display_release(current->pid);
@@ -2337,7 +2464,7 @@ void* process_syscall(interrupt_frame* frame) {
         current->recv_handle = current->session_response_handle = response->handle;
         current->cr3 = stage->cr3;
         current->io_window_first = current->io_window_length = 0;
-        (void)set_user_io_window(0, 0);
+        (void)set_user_io_permissions(0, 0, false);
         current->user_pages = stage->user_pages;
         current->entry = entry.entry;
         current->initial_stack = entry.stack;
@@ -3131,6 +3258,7 @@ void* input_entry(interrupt_frame* frame) {
 
 void* timer_entry(interrupt_frame* frame) {
     platform::timer_interrupt();
+    expire_pc_speaker_lease();
     // Boot diagnostics may enable IRQ0 before any process has been entered.
     // They advance the same clock without expiring/scheduling prepared tasks.
     if (current == nullptr || current_thread == nullptr) { return frame; }

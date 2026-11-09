@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT AND Apache-2.0
 // Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/sdk.hpp>
+#include <xos/audio_client.hpp>
 #include <xos/display_client.hpp>
 #include <xos/elf.hpp>
 #include <xos/execution.hpp>
@@ -22,6 +23,8 @@ bool demo_keep;
 bool demo_quiet;
 bool verbose_trace;
 bool persistent_recovery_gate;
+xos::audio::client audio_session;
+u64 audio_service_pid, audio_retry_after_ns;
 
 // The transaction directory is a durable recovery marker. Only a definite
 // not-found result permits ordinary startup or release of the admission guard.
@@ -170,6 +173,156 @@ u32 image_named(const char* name) {
     }
     return 0;
 }
+
+i64 delegate_audio_controller(u64 child, void*) {
+    return xos::sdk::pio_grant(xos::pio_grant_action::delegate, child,
+                               xos::pio_resource_pc_speaker);
+}
+
+i64 start_audio_service() {
+    const u32 image = image_named("audio_service");
+    if (image == 0) return process_error_resources;
+    const char* arguments[] = {"audio_service"};
+    spawn_options options{};
+    for (u32 i = 0; i < 3; ++i) options.stdio[i] = -2;
+    options.delegate_spawn_depth = 2;
+    options.prepare_child = delegate_audio_controller;
+    const i64 child = xos::sdk::spawn_image_options(image, 1, arguments, options);
+    if (child > 0) {
+        audio_service_pid = static_cast<u64>(child);
+        audio_retry_after_ns = 0;
+    }
+    return child;
+}
+
+i64 ensure_audio_service(bool force = false) {
+    if (audio_service_pid != 0) {
+        process_status status{};
+        const i64 waited = syscall(sys_process_wait, audio_service_pid,
+                                   reinterpret_cast<u64>(&status), 1);
+        if (waited == process_error_would_block) return 0;
+        if (waited == 0) audio_service_pid = 0;
+        else return waited;
+        const i64 now = syscall(sys_clock_monotonic);
+        if (now >= 0 && static_cast<u64>(now) <= thread_deadline_infinite - 1000000000ull)
+            audio_retry_after_ns = static_cast<u64>(now) + 1000000000ull;
+    }
+    if (!force && audio_retry_after_ns != 0) {
+        const i64 now = syscall(sys_clock_monotonic);
+        if (now >= 0 && static_cast<u64>(now) < audio_retry_after_ns) return process_error_would_block;
+    }
+    const i64 started = start_audio_service();
+    if (started < 0) {
+        const i64 now = syscall(sys_clock_monotonic);
+        if (now >= 0 && static_cast<u64>(now) <= thread_deadline_infinite - 1000000000ull)
+            audio_retry_after_ns = static_cast<u64>(now) + 1000000000ull;
+    }
+    return started;
+}
+
+void print_audio_state(xos::audio::job_state state) {
+    using xos::audio::job_state;
+    switch (state) {
+    case job_state::none: print("none"); break;
+    case job_state::accepted: print("accepted"); break;
+    case job_state::playing: print("playing"); break;
+    case job_state::completed: print("completed"); break;
+    case job_state::cancelled: print("cancelled"); break;
+    case job_state::expired: print("expired"); break;
+    case job_state::device_lost: print("device_lost"); break;
+    }
+}
+
+i64 connect_audio_client() {
+    if (audio_session.connected()) return 0;
+    return audio_session.connect();
+}
+
+void submit_audio(const xos::audio::note* notes, u32 count) {
+    i64 result = connect_audio_client();
+    if (result != 0) {
+        print("audio: service unavailable (error="); signed_decimal(result); print(")\n");
+        return;
+    }
+    u64 job = 0;
+    result = audio_session.submit(notes, count, job);
+    if (result != 0) {
+        print("audio: request rejected (error="); signed_decimal(result); print(")\n");
+        return;
+    }
+    print("audio: accepted job="); decimal(job); print("\n");
+}
+
+bool parse_melody(const char* data, u32 length, xos::audio::note* output, u32& count) {
+    count = 0;
+    u32 position = 0;
+    while (position < length) {
+        if (count == xos::audio::max_notes) return false;
+        auto parse_unsigned = [&](u32& value) {
+            const u32 start = position;
+            value = 0;
+            while (position < length && data[position] >= '0' && data[position] <= '9') {
+                const u32 digit = static_cast<u32>(data[position++] - '0');
+                if (value > (0xffffffffu - digit) / 10) return false;
+                value = value * 10 + digit;
+            }
+            return position != start;
+        };
+        xos::audio::note item{};
+        if (!parse_unsigned(item.frequency_hz)) return false;
+        if (position >= length || (data[position] != ' ' && data[position] != '\t')) return false;
+        while (position < length && (data[position] == ' ' || data[position] == '\t')) ++position;
+        if (!parse_unsigned(item.duration_ms)) return false;
+        while (position < length && (data[position] == ' ' || data[position] == '\t')) ++position;
+        if (position < length && data[position] == '\r') ++position;
+        if (position < length && data[position] != '\n') return false;
+        if (position < length) ++position;
+        output[count++] = item;
+    }
+    return xos::audio::validate_sequence(output, count) == 0;
+}
+
+void audio_job_command(u32 argc, char** argv) {
+    using namespace xos::audio;
+    if (argc == 2 && equal(argv[1], "close")) {
+        const i64 result = audio_session.close();
+        print(result == 0 ? "audio: session closed\n" : "audio: close error=");
+        if (result != 0) { signed_decimal(result); print("\n"); }
+        return;
+    }
+    if (argc == 3 && (equal(argv[1], "status") || equal(argv[1], "cancel"))) {
+        const u64 job = number(argv[2]);
+        if (job == 0) { print("Usage: audio status|cancel <job>\n"); return; }
+        i64 result = connect_audio_client();
+        response reply{};
+        if (result == 0) result = equal(argv[1], "status")
+            ? audio_session.status(job, reply) : audio_session.cancel(job, reply);
+        if (result != 0) {
+            print("audio: result unknown or unavailable (error="); signed_decimal(result); print(")\n");
+            return;
+        }
+        print("audio: job="); decimal(job); print(" state=");
+        print_audio_state(static_cast<job_state>(reply.state));
+        print(" notes="); decimal(reply.completed_notes); print("\n");
+        return;
+    }
+    print("Usage: audio status|cancel <job> | audio close\n");
+}
+
+void melody_command(const char* path) {
+    char contents[2048]{};
+    u32 length = 0;
+    file::client files;
+    if (!files.init()) { print("melody: files service unavailable\n"); return; }
+    const i64 loaded = files.read_all(path, contents, sizeof(contents), length);
+    if (loaded != 0) { print("melody: cannot read file (error="); signed_decimal(loaded); print(")\n"); return; }
+    xos::audio::note notes[xos::audio::max_notes]{};
+    u32 count = 0;
+    if (!parse_melody(contents, length, notes, count)) {
+        print("melody: invalid sequence\n"); return;
+    }
+    submit_audio(notes, count);
+}
 void image_list() {
     for (u32 id = 1; id < 32; ++id) {
         image_info info{};
@@ -219,7 +372,8 @@ bool builtin_named(const char* name) {
     const char* const names[] = {"help", "trace", "type", "ps", "kill", "images", "exec", "spawn",
         "wait", "stats", "primtest", "elftest", "ls", "cat", "stat", "rm", "edit", "filetest",
         "sync", "exec-file", "exec-driver", "exd", "spawn-file", "mkdir", "mv", "demo",
-        "maint-run", "maint-recover", "maint-recover-boot", "maint-status", "diag", "tty-run"};
+        "maint-run", "maint-recover", "maint-recover-boot", "maint-status", "diag", "tty-run",
+        "tone", "melody", "audio"};
     for (const auto* item : names) { if (equal(name, item)) { return true; } }
     return false;
 }
@@ -429,6 +583,8 @@ void execute(u32 argc, char** argv) {
               "          tty-run <terminal-compatible program> [args]\n"
               "Maintain  maint-run <program> [args] | maint-recover <program> [args] | maint-recover-boot | maint-status\n"
               "Shell     dash -i starts dash; exit inside dash returns here\n"
+              "Audio     tone <Hz> <ms> | melody <file> | audio status|cancel <job> | audio close\n"
+              "          audio start|restart manages the user-mode audio service\n"
               "Display   display-start | interactium-start | exec gfxdemo [check|fault|hold|stop]\n"
               "Debug     diag <program> [args] | trace on/off | ps | kill <pid> | stats | images | primtest | elftest | filetest\n"
               "Search    /usr/bin:/bin:/; paths containing '/' are used directly\n");
@@ -528,6 +684,37 @@ void execute(u32 argc, char** argv) {
                                    reinterpret_cast<u64>(&gate));
         print("maintenance: owner="); decimal(gate.owner_pid); print(" worker="); decimal(gate.worker_pid);
         print(" error="); signed_decimal(result); print("\n");
+    } else if (equal(argv[0], "tone") && argc == 3) {
+        const u64 frequency = number(argv[1]), duration = number(argv[2]);
+        if (frequency < audio::min_frequency_hz || frequency > audio::max_frequency_hz ||
+            duration < audio::min_note_ms || duration > audio::max_note_ms) {
+            print("Usage: tone <40..5000 Hz> <10..2000 ms>\n"); return;
+        }
+        const audio::note item{static_cast<u32>(frequency), static_cast<u32>(duration)};
+        submit_audio(&item, 1);
+    } else if (equal(argv[0], "melody") && argc == 2) {
+        melody_command(argv[1]);
+    } else if (equal(argv[0], "audio") && argc == 2 && equal(argv[1], "start")) {
+        const i64 result = ensure_audio_service(true);
+        if (result == 0) { print("audio: service running\n"); }
+        else { print("audio: service start failed (error="); signed_decimal(result); print(")\n"); }
+    } else if (equal(argv[0], "audio") && argc == 2 && equal(argv[1], "restart")) {
+        (void)audio_session.close();
+        if (audio_service_pid != 0) {
+            const u64 old_pid = audio_service_pid;
+            const i64 killed = syscall(sys_process_cancel, old_pid);
+            if (killed == 0) {
+                process_status status{};
+                (void)syscall(sys_process_wait, old_pid, reinterpret_cast<u64>(&status), 1);
+            }
+            audio_service_pid = 0;
+        }
+        audio_retry_after_ns = 0;
+        const i64 result = ensure_audio_service(true);
+        if (result == 0) { print("audio: service restarted; reconnect for a new session\n"); }
+        else { print("audio: restart failed (error="); signed_decimal(result); print(")\n"); }
+    } else if (equal(argv[0], "audio") && argc >= 2) {
+        audio_job_command(argc, argv);
     } else if (equal(argv[0], "tty-run") && argc >= 2) {
         launch_file(argv[1], argc - 1, argv + 1, 1, false, false, true);
     } else if (equal(argv[0], "diag") && argc >= 2) {
@@ -590,6 +777,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     if (ui_ran) { ui::init(); }
     print("\nWelcome to Xshell | XylophoneOS\n"
           "help: commands   dash -i: POSIX shell   trace on: diagnostics\n\n");
+    (void)ensure_audio_service();
     // DU4: one-shot P2 install after demos are quieted so process_guard can begin.
     if (ui_ran && ui::bundle_install_ok() && ui::staged_count() > 0 &&
         !ui::bundle_marker_present()) {
@@ -685,6 +873,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
                     demo_quiet = true;
                     if (killed) { print(verbose_trace ? "\n[xsh] demo tasks stopped\nxsh> " : "\nxsh> "); }
                 }
+                (void)ensure_audio_service();
                 yield();
                 continue;
             }

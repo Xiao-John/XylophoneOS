@@ -114,5 +114,9 @@
 | 0217 | `0217_vm1_anonymous_reservations.md` | VM1：稀疏匿名保留与解除的独立客体资格 |
 | 0218 | `0218_vm2_foundation.md` | VM2：有界续体与等待 pin 的基底 |
 | 0219 | `0219_webengine_m0_preliminary_audit.md` | WebKit M0 前期审计：本地地基事实、待测面与未验收声明 |
+| 0220 | `0220_audio_output_au0.md` | Audio output AU0：PC Speaker 到 QEMU WAV 勘查 |
+| 0221 | `0221_audio_output_au1.md` | Audio output AU1：受限扬声器 PIO 租约与强制静音（客体验收待工具链） |
+| 0222 | `0222_audio_output_au2.md` | Audio output AU2：用户态单音服务、旋律命令与服务恢复（客体验收待工具链） |
 
-编号续用：0216 的历史重复已登记在上表，新记录自 **0220** 起继续唯一，不得再复用 0216–0219。
+音频记录在 #96 合入时由 0217–0219 改为 0220–0222：0217/0218 已被 VM1/VM2 占用，
+0219 已由 WebEngine M0 审计占用。新记录自 **0223** 起继续唯一，不得复用 0216–0222。

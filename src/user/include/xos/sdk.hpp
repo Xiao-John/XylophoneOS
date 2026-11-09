@@ -122,6 +122,10 @@ bool equal(const char* left, const char* right);
 i64 spawn(u32 image, u32 argc, const char* const* argv);
 i64 spawn_buffer(const char* name, const u8* bytes, u64 size, u32 argc,
                  const char* const* argv);
+i64 spawn_buffer_options(const char* name, const u8* bytes, u64 size, u32 argc,
+                         const char* const* argv, const spawn_options& options);
+i64 spawn_image_options(u32 image, u32 argc, const char* const* argv,
+                         const spawn_options& options);
 i64 spawn_file(const char* path, u32 argc, const char* const* argv);
 inline i64 wait(u64 child, process_status& status) {
     return syscall(sys_process_wait, child, reinterpret_cast<u64>(&status));

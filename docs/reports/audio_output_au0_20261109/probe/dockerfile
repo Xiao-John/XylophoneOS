@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: Apache-2.0
+FROM debian@sha256:e276677157e13bc51ea5b8651f54ad28883f503cc37b3e3af2c4b6cc2f4efe7b
+ARG qemu_deb_version=1:11.1.3+ds-1
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    qemu-system-x86=${qemu_deb_version} nasm python3 \
+    && rm -rf /var/lib/apt/lists/*
+CMD ["qemu-system-x86_64", "--version"]

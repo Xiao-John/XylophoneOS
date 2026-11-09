@@ -12,7 +12,7 @@
 | 67 | 79 | reserved | 内存线：VMA/映射机制；67 的 PX4-A 提案见下表 |
 | 80 | 80 | allocated | 通用字节流授权；实现未验 |
 | 81 | 81 | allocated | 通用受控 IPC；实现未验 |
-| 82 | 82 | allocated | 受控设备 PIO；实现未验 |
+| 82 | 82 | allocated | 受控设备 PIO；COM1 与 PC Speaker 资源见契约，未客体验收 |
 | 83 | 83 | allocated | 受控 IRQ 事件；实现未验 |
 | 84 | 86 | allocated | Interactium IPC channel readiness and service-name registration/connection |
 | 87 | 95 | reserved | 系统底座线：通用等待/信号/进程控制；具体接口尚未登记 |

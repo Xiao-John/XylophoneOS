@@ -178,10 +178,12 @@ void set_kernel_stack(u64 top) {
     tss.state.rsp0 = top;
 }
 
-bool set_user_io_window(u32 first, u32 length) {
+bool set_user_io_permissions(u32 first, u32 length, bool pc_speaker) {
     tss.ports.deny_all();
-    if (length == 0) { return first == 0; }
-    return tss.ports.set_range(first, length, true);
+    if (length != 0 && !tss.ports.set_range(first, length, true)) { return false; }
+    if (length == 0 && first != 0) { return false; }
+    if (pc_speaker && !tss.ports.allow_pc_speaker()) { return false; }
+    return true;
 }
 
 u64 exception_idt_address() {

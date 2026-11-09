@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
-#include <xos/types.hpp>
+#include <xos/abi_types.hpp>
 
 namespace xos::audio {
 inline constexpr u32 protocol_version = 1;

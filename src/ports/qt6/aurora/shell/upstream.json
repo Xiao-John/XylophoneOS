@@ -1,0 +1,15 @@
+{
+  "source": "C:\\Users\\d2015\\Documents\\CodeRubbish\\Qt\\ui\\GUI-Desktop",
+  "sha256": {
+    "background.cpp": "9e5349ef2a05b5eed687ab89055507172f5179868bbc640fbfceddfa5780e100",
+    "background.h": "f8b3325c75e18dfd0295bf3411e98aad7b7d928e7e519c7e8dcf4aef8a9d082d",
+    "docker.cpp": "c0efeebbcf16aebb29128547382af3c2645d05384717a32ece14c0382081103c",
+    "docker.h": "55b679cc05d4d8c2fdbefb5a8a79dc52b99804f790e80685353111e08fa3613f",
+    "applicationbrowser.cpp": "8506d936d0d5dbe672f97f64a58e23da01c9acebc5f80b03c1d67123474da865",
+    "applicationbrowser.h": "afb6e175807f2e8c6936dba18ed2eeb8369c7c9c7819fa8c6d2f1462b273e68e",
+    "windowedge.cpp": "b54fab548ce02cab8e07e07162a7f8e0f497afbb140dca4b0542e7e7affdd934",
+    "windowedge.h": "de6c390f975e5c99faee95e6d29af95a83e58f236837b8b61e32c481143e59a1",
+    "status.cpp": "189a904c44853135af082feab983427bc89b27fe8f08d009fecd4d9a1453e7d3",
+    "status.h": "ded8d57e1ddf2ff667b8bfca9acb1454a91a44ffb86f01a377db4dd54133f679"
+  }
+}

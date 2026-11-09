@@ -89,7 +89,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
     loader_objects.append(compile_source(root / "src/user/arch/x86_64/tls.cpp"))
     loader_archive = sdk / "lib/libxos_loader.a"
     run([tool("ar"), "rcsD", str(loader_archive), *loader_objects])
-    names = ("supervisor", "files", "demo", "fault", "spin", "slow", "echo", "hello", "ipc_probe", "libc_hello", "e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "display", "gfxdemo", "interactium", "interactiumd", "ic_client", "xypm_recover", "xos_diag", "terminal", "terminal_app_probe")
+    names = ("supervisor", "files", "demo", "fault", "spin", "slow", "echo", "hello", "ipc_probe", "libc_hello", "e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "display", "gfxdemo", "interactium", "interactiumd", "ic_client", "xypm_recover", "xos_diag", "terminal", "terminal_app_probe", "audio_service", "audio_tone")
     bootstrap_names = ("supervisor", "files")
     libc_programs = ("libc_hello", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "xos_diag", "terminal_app_probe")
     disk_programs = ("e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "xos_diag", "terminal", "terminal_app_probe")
@@ -133,8 +133,10 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
              *([str(loader_archive)] if name in ("supervisor", "xos_diag") else []), *fault_objects,
              *([str(core_archive), str(loader_archive)] if name in ("threading_core_probe", "gfxdemo", "terminal") else []),
              *([compile_source(root / "src/user/drivers/uart_16550.cpp")] if name == "terminal" else []),
+                     *([compile_source(root / "src/user/drivers/pc_speaker.cpp")] if name == "audio_tone" else []),
              *([file_ui_object, terminal_control_object, shell_terminal_object] if name == "supervisor" else []),
              *([str(loader_archive)] if name == "supervisor" else []),
+                     *([str(loader_archive)] if name == "audio_service" else []),
              *([*interactium_objects] if name in ("interactium", "interactiumd") else []),
              *([*fatfs_objects] if name == "files" else []),
              *(["-Wl,--start-group", str(archive), str(loader_archive), "-L", str(sdk / "lib"),

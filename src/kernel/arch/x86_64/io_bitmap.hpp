@@ -22,6 +22,9 @@ struct io_bitmap {
         }
         return true;
     }
+    bool allow_pc_speaker() {
+        return set_range(0x42, 2, true) && set_range(0x61, 1, true);
+    }
     bool allowed(u32 port) const {
         return port < port_count && (data[port / 8] & static_cast<u8>(1u << (port % 8))) == 0;
     }

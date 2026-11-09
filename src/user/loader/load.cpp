@@ -364,6 +364,15 @@ i64 spawn_buffer(const char* name, const u8* bytes, u64 size, u32 argc,
                         false, 0);
 }
 
+i64 spawn_buffer_options(const char* name, const u8* bytes, u64 size, u32 argc,
+                         const char* const* argv, const spawn_options& options) {
+    if (name == nullptr || bytes == nullptr || size == 0 || size > sizeof(image_buffer)) {
+        return process_error_invalid;
+    }
+    return spawn_reader(name, size, buffer_read, const_cast<u8*>(bytes), argc, argv,
+                        false, 0, &options);
+}
+
 i64 spawn_file_impl(const char* path, u32 argc, const char* const* argv, const spawn_options* options) {
     if (path == nullptr || argc == 0 || argc > process_max_args || argv == nullptr) {
         return process_error_invalid;
@@ -453,6 +462,22 @@ i64 spawn(u32 image, u32 argc, const char* const* argv) {
     // The boot-module path remains bounded by the legacy 128 KiB bootstrap
     // staging area. File-backed ELF uses spawn_file and has no image-size cap.
     return spawn_buffer(image_metadata.name, image_buffer, image_metadata.size, argc, argv);
+}
+
+i64 spawn_image_options(u32 image, u32 argc, const char* const* argv,
+                        const spawn_options& options) {
+    if (argc == 0 || argc > process_max_args || argv == nullptr) { return process_error_invalid; }
+    image_info image_metadata{};
+    i64 result = syscall(sys_image_info, image, reinterpret_cast<u64>(&image_metadata));
+    if (result < 0) { return result; }
+    if (image_metadata.size > sizeof(image_buffer)) { return process_error_resources; }
+    image_read_request read_request{0, reinterpret_cast<u64>(image_buffer), image_metadata.size};
+    result = syscall(sys_image_read, image, reinterpret_cast<u64>(&read_request));
+    if (result != static_cast<i64>(image_metadata.size)) {
+        return result < 0 ? result : process_error_invalid;
+    }
+    return spawn_buffer_options(image_metadata.name, image_buffer, image_metadata.size,
+                                argc, argv, options);
 }
 }
 

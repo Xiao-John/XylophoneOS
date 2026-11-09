@@ -36,6 +36,25 @@ def main():
                 raise AssertionError(f"{label}: duplicate/invalid name accepted")
             if "duplicate ISO file name" not in run.stderr and "invalid ISO file name" not in run.stderr:
                 raise AssertionError(f"{label}: unexpected error {run.stderr!r}")
+        # name + ';1' must fit the single-byte record length fields: 220 ok, 221 not
+        boundary = "n" * 220
+        output = folder / "boundary.iso"
+        run = subprocess.run(base + ["--output", str(output),
+                                     "--file", f"{boundary}={first}"],
+                             capture_output=True, text=True)
+        if run.returncode != 0 or not output.exists():
+            raise AssertionError(f"boundary: 220-char name rejected: {run.stderr!r}")
+        too_long = "n" * 221
+        output = folder / "too_long.iso"
+        run = subprocess.run(base + ["--output", str(output),
+                                     "--file", f"{too_long}={first}"],
+                             capture_output=True, text=True)
+        if run.returncode == 0 or output.exists():
+            raise AssertionError("too-long: 221-char name accepted")
+        if "Traceback" in run.stderr:
+            raise AssertionError(f"too-long: traceback leaked: {run.stderr!r}")
+        if "ISO file name too long" not in run.stderr:
+            raise AssertionError(f"too-long: unexpected error {run.stderr!r}")
     print("ISO_NAME_CASES_OK")
 
 

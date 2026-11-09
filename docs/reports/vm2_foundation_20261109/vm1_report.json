@@ -1,0 +1,50 @@
+{
+  "status": "passed",
+  "build_id": "191de8c84bdf1b58",
+  "image_sha256": "d7ddf990eaeb2913e9c71174e5bb8777013314ec5874ed93e09871d3650e49ca",
+  "probe_sha256": "68b9a6a689553e2ec8b4aba34b56b50fb75f4ea31d0009cf526c68dd097dd7e2",
+  "checks": [
+    "guest_sparse_4t_fragment_split_and_reuse_0",
+    "guest_sparse_4t_fragment_split_and_reuse_1",
+    "reserved_none_causes_page_fault_and_reclaims"
+  ],
+  "qemu_command": [
+    "${XOS_TOOLCHAIN}/prefix/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_ROOT}/build/vm2/foundation_final6/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_LOCAL_PATH},format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:${XOS_LOCAL_PATH},server=on,wait=off"
+  ],
+  "baseline": [
+    130025,
+    3,
+    0
+  ]
+}

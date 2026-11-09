@@ -5,6 +5,8 @@
 #include <xos/thread_abi.hpp>
 #include "../../core/thread_lifecycle.hpp"
 #include "../../core/stream_lease.hpp"
+#include "../../core/vm_pin.hpp"
+#include "../../core/vm_continuation.hpp"
 #include <xos/block.hpp>
 #include <xos/syscall.hpp>
 #include <xos/memory.hpp>
@@ -103,6 +105,10 @@ struct process_record {
     // Private, never-runnable image constructor for exec. It owns pages and a
     // temporary kernel stack, but no completion, file session, or pipe routes.
     bool replacement_pending;
+    vm_continuation continuation;
+    process_outcome deferred_outcome;
+    i64 deferred_code;
+    u64 deferred_vector, deferred_address, deferred_instruction;
 };
 
 struct completion_record { bool used; bool ready; u64 parent; process_status status; };
@@ -142,14 +148,64 @@ struct thread_record : thread_lifetime {
     u64 argument;
     u64 initial_stack;
     u32 wait_channels[channel_wait_many_max], wait_channel_count;
+    vm_pin user_pin;
     alignas(16) u8 fpu_state[512];
 };
 process_record tasks[8];
 #if XOS_VM1_PROBE
 anonymous_vm::reservations vm1_probe_regions[8];
+struct vm2_probe_state {
+    u64 pages[4096];
+    u32 target, count, fail_after;
+    bool prepare_reported, publish_reported, rollback_reported;
+    i64 error;
+    const u64* process_ticks;
+    u64 initial_ticks;
+};
+vm2_probe_state vm2_probe_states[8];
+vm_step vm2_probe_step(void* opaque, vm_phase phase, u32 budget, i64& result) {
+    auto& state = *static_cast<vm2_probe_state*>(opaque);
+    if (*state.process_ticks != state.initial_ticks) { state.error=process_error_state; }
+    if (phase == vm_phase::preparing) {
+        if (!state.prepare_reported) { format::text("[vm2-probe] preparing\r\n"); state.prepare_reported=true; }
+        while (budget-- && state.count < state.target) {
+            if (state.fail_after && state.count == state.fail_after) {
+                state.error=process_error_resources; result=state.error; return vm_step::failed;
+            }
+            u64 physical=0;
+            if (allocate_user_page(&physical) != memory_result::none) { state.error=process_error_resources; result=state.error; return vm_step::failed; }
+            state.pages[state.count++]=physical;
+        }
+        return state.count==state.target ? vm_step::prepared : vm_step::again;
+    }
+    if (phase == vm_phase::publishing || phase == vm_phase::rolling_back) {
+        if (phase == vm_phase::publishing && !state.publish_reported) {
+            format::text("[vm2-probe] publishing\r\n"); state.publish_reported=true;
+        }
+        if (phase == vm_phase::rolling_back && !state.rollback_reported) {
+            format::text("[vm2-probe] rolling_back\r\n"); state.rollback_reported=true;
+        }
+        while (budget-- && state.count) {
+            if (release_user_page(state.pages[--state.count]) != memory_result::none) { halt(); }
+        }
+        if (!state.count) { result=state.error; return vm_step::finished; }
+        return vm_step::again;
+    }
+    halt();
+}
+
 #endif
 thread_record threads[thread_max_total];
 thread_record* current_thread;
+u64 next_vm_continuation_generation = 1;
+[[maybe_unused]] bool begin_vm_continuation(process_record& owner, thread_record& thread,
+                                             void* context, vm_step_function step) {
+    if (thread.process != &owner || thread.state != thread_state::running || owner.closing ||
+        !next_vm_continuation_generation ||
+        !owner.continuation.begin(thread.tid, next_vm_continuation_generation, context, step)) return false;
+    ++next_vm_continuation_generation;
+    return true;
+}
 u64 next_tid = 1;
 u64 next_wait_order = 1;
 thread_record& main_thread(process_record* process) {
@@ -978,7 +1034,7 @@ void mark_reap(process_record* task) {
 
 // This always runs on a different process's kernel stack. Shared pages have one owner.
 void destroy_task(process_record* task) {
-    if (task == nullptr || task->state == task_state::free || task == current) { return; }
+    if (task == nullptr || task->state == task_state::free || task == current || task->continuation.active()) { return; }
     quarantine_com1(task);
     release_channels(task->pid);
     (void)input_lease.remove(task->pid);
@@ -1036,6 +1092,21 @@ completion_record* completion_for(u64 parent, u64 pid) {
 void finish_task(process_record* task, process_outcome outcome, i64 code,
                   u64 vector = 0, u64 address = 0, u64 instruction = 0) {
     if (task->state == task_state::dead) { return; }
+    if (task->continuation.active()) {
+        if (!task->continuation.cancelled) {
+            task->deferred_outcome=outcome; task->deferred_code=code;
+            task->deferred_vector=vector; task->deferred_address=address; task->deferred_instruction=instruction;
+            task->closing=true; task->continuation.cancel();
+            // Preserve the existing process-tree cancellation semantics even
+            // when this task needs multiple batches to release its resources.
+            for (auto& child : tasks) {
+                if (child.state != task_state::free && child.parent == task->pid) {
+                    finish_task(&child, process_outcome::killed, -9);
+                }
+            }
+        }
+        return;
+    }
     quarantine_com1(task);
     release_channels(task->pid);
     (void)input_lease.remove(task->pid);
@@ -1045,6 +1116,7 @@ void finish_task(process_record* task, process_outcome outcome, i64 code,
     for (auto& thread : threads) {
         if (thread.process == task && thread.state != thread_state::free) {
             thread.state = thread_state::dead;
+            thread.user_pin.clear();
             thread.wait_kind = thread_wait_kind::none;
         }
     }
@@ -1136,6 +1208,7 @@ void deliver_wait(thread_record* thread, interrupt_frame* frame) {
         *item = completion_record{};
         frame->rax = 0;
     } else { frame->rax = static_cast<u64>(process_error_invalid); }
+    thread->user_pin.clear();
     thread->wait_kind = thread_wait_kind::none;
     thread->wait_target = 0;
 }
@@ -1146,6 +1219,8 @@ thread_record* pick_ready() {
         thread_record& thread = threads[index];
         if (thread.process == nullptr || thread.process->state == task_state::building ||
             thread.process->state == task_state::dead) { continue; }
+        if (thread.process->continuation.active() &&
+            thread.tid != thread.process->continuation.owner_tid) { continue; }
         if (thread.state == thread_state::ready || thread.state == thread_state::fresh) {
             cursor = (index + 1) % thread_max_total;
             return &thread;
@@ -1195,20 +1270,55 @@ interrupt_frame* schedule(interrupt_frame* frame) {
         if (frame != nullptr) { current_thread->kernel_rsp = reinterpret_cast<u64>(frame); }
         fpu_save(current_thread->fpu_state);
     }
-    thread_record* next = pick_ready();
-    // Interrupts in ring0 never schedule: the idle loop keeps this saved syscall
-    // frame and only permits IRQs to advance time. No blocked syscall polls userspace.
-    while (next == nullptr) {
-        arch::wait_for_interrupt();
-        expire_waiters();
-        next = pick_ready();
+    for (;;) {
+        thread_record* next = pick_ready();
+        while (next == nullptr) {
+            arch::wait_for_interrupt(); expire_waiters(); next = pick_ready();
+        }
+        interrupt_frame* next_frame = next->state == thread_state::fresh
+            ? make_initial_frame(next) : reinterpret_cast<interrupt_frame*>(next->kernel_rsp);
+        switch_to(next);
+        auto& continuation = next->process->continuation;
+        if (continuation.active()) {
+            i64 result = 0;
+            const auto step_result = continuation.step(continuation.context, continuation.phase,
+                                                        vm_continuation_batch, result);
+            if (step_result == vm_step::prepared && continuation.phase == vm_phase::preparing) {
+                continuation.phase = vm_phase::publishing;
+            } else if (step_result == vm_step::failed && continuation.phase == vm_phase::preparing) {
+                continuation.failure = result;
+                continuation.phase = vm_phase::rolling_back;
+            } else if (step_result == vm_step::finished) {
+                const bool cancelled = continuation.cancelled;
+                if (continuation.phase == vm_phase::rolling_back && !cancelled) result=continuation.failure;
+                continuation.clear();
+                if (cancelled) {
+                    auto* owner = next->process;
+                    finish_task(owner, owner->deferred_outcome, owner->deferred_code,
+                                owner->deferred_vector, owner->deferred_address, owner->deferred_instruction);
+                    continue;
+                }
+                next_frame->rax = static_cast<u64>(result);
+                fpu_restore(next->fpu_state); deliver_wait(next, next_frame); return next_frame;
+            } else if (step_result != vm_step::again) {
+                format::text("[vm] continuation invariant failure\r\n"); halt();
+            }
+            next->state = thread_state::ready;
+            // If no other process can run, allow the unified clock and wakeups
+            // to progress instead of spinning through all remaining batches.
+            bool other = false;
+            for (const auto& peer : threads) {
+                if (peer.process && peer.process != next->process &&
+                    peer.process->state != task_state::dead && peer.process->state != task_state::building &&
+                    (!peer.process->continuation.active() ||
+                     peer.tid == peer.process->continuation.owner_tid) &&
+                    (peer.state == thread_state::ready || peer.state == thread_state::fresh)) { other=true; break; }
+            }
+            if (!other) { arch::wait_for_interrupt(); expire_waiters(); }
+            continue;
+        }
+        fpu_restore(next->fpu_state); deliver_wait(next, next_frame); return next_frame;
     }
-    interrupt_frame* next_frame = next->state == thread_state::fresh
-        ? make_initial_frame(next) : reinterpret_cast<interrupt_frame*>(next->kernel_rsp);
-    switch_to(next);
-    fpu_restore(next->fpu_state);
-    deliver_wait(next, next_frame);
-    return next_frame;
 }
 
 process_record* owned_process(u64 handle) {
@@ -1352,12 +1462,8 @@ thread_record* thread_by_id(u64 tid) {
 // word/result buffer. On this single CPU every caller holds the interrupt gate.
 bool pinned_range(process_record* process, u64 begin, u64 end) {
     for (const auto& thread : threads) {
-        if (thread.process != process || thread.state != thread_state::blocked) { continue; }
-        u64 address = 0, bytes = 0;
-        if (thread.wait_kind == thread_wait_kind::word) { address = thread.wait_target; bytes = 4; }
-        if (thread.wait_kind == thread_wait_kind::process) { address = thread.wait_buffer; bytes = sizeof(process_status); }
-        if (thread.wait_kind == thread_wait_kind::join) { address = thread.wait_buffer; bytes = sizeof(u64); }
-        if (bytes != 0 && address < end && address + bytes > begin) { return true; }
+        if (thread.process == process && thread.state != thread_state::free &&
+            thread.state != thread_state::dead && thread.user_pin.overlaps(begin, end)) return true;
     }
     return false;
 }
@@ -1375,6 +1481,7 @@ void release_thread_range(thread_record& thread, u64 begin, u64 end) {
 void ready_with(thread_record& thread, i64 result) {
     auto* saved = reinterpret_cast<interrupt_frame*>(thread.kernel_rsp);
     saved->rax = static_cast<u64>(result);
+    thread.user_pin.clear();
     thread.wait_kind = thread_wait_kind::none;
     thread.wait_target = 0;
     thread.wait_channel_count = 0;
@@ -1614,6 +1721,7 @@ void* thread_syscall(interrupt_frame* frame) {
         if (target->reaped) {
             copy_to_user(second, &target->result, sizeof(u64)); *target = thread_record{}; result = 0; break;
         }
+        if (!current_thread->user_pin.set(second, sizeof(u64))) { result = thread_error_busy; break; }
         target->joiner = current_thread->tid;
         current_thread->wait_target = first; current_thread->wait_buffer = second;
         current_thread->wait_kind = thread_wait_kind::join;
@@ -1642,6 +1750,7 @@ void* thread_syscall(interrupt_frame* frame) {
         if (value != request.expected) { result = thread_value_changed; break; }
         if (thread_deadline_reached(clock::monotonic_ns(), request.deadline_ns)) { result = thread_error_timeout; break; }
         if (next_wait_order == 0) { result = process_error_resources; break; }
+        if (!current_thread->user_pin.set(request.address, sizeof(u32))) { result = thread_error_busy; break; }
         current_thread->wait_order = next_wait_order++;
         current_thread->wait_target = request.address;
         current_thread->deadline_ns = request.deadline_ns;
@@ -2764,6 +2873,7 @@ void* process_syscall(interrupt_frame* frame) {
                     waiter.wait_target == first) { result = thread_error_busy; break; }
             }
             if (result == thread_error_busy) { break; }
+            if (!current_thread->user_pin.set(second, sizeof(process_status))) { result = thread_error_busy; break; }
             current_thread->wait_target = first; current_thread->wait_buffer = second;
             current_thread->wait_kind = thread_wait_kind::process;
             current_thread->state = thread_state::blocked; frame->rax = 0;
@@ -3122,11 +3232,50 @@ void* syscall_entry(interrupt_frame* frame) {
         if (frame->rsi || frame->rdx) { result = anonymous_vm::invalid; break; }
         anonymous_vm::request request{};
         copy_from_user(&request, frame->rdi, sizeof(request));
+        // Exercise a genuine ready-but-not-yet-delivered process wait pin.
+        if (request.operation == 0xfffd && request.version == 1 && request.size == sizeof(request) &&
+            !request.flags && request.address && request.length && !request.alignment &&
+            !request.protection && !request.reserved0 && !request.reserved1 && !request.reserved2) {
+            auto* child = owned_process(request.address);
+            const u64 address = request.length;
+            if (!child || child->state == task_state::building || child->state == task_state::dead ||
+                child->continuation.active() ||
+                !user_range_ok(address, sizeof(process_status), true)) { result=process_error_invalid; break; }
+            const u64 first_page = address & ~(page_size-1);
+            const u64 last_page = (address+sizeof(process_status)-1) & ~(page_size-1);
+            const bool before = pinned_range(current, first_page, first_page+page_size) &&
+                                pinned_range(current, last_page, last_page+page_size);
+            finish_task(child, process_outcome::killed, -9);
+            destroy_task(child);
+            bool waiter_ready = false;
+            for (const auto& thread : threads) {
+                if (thread.process == current && thread.state == thread_state::ready &&
+                    thread.wait_kind == thread_wait_kind::process && thread.wait_target == request.address) waiter_ready=true;
+            }
+            const bool after = pinned_range(current, first_page, first_page+page_size) &&
+                               pinned_range(current, last_page, last_page+page_size);
+            result = before && waiter_ready && after ? 0 : process_error_state; break;
+        }
         // Private test diagnostic, deliberately absent from the public wire.
         if (request.operation == 0xffff && request.version == 1 && request.size == sizeof(request) &&
             !request.flags && !request.address && !request.length && !request.alignment &&
             !request.protection && !request.reserved0 && !request.reserved1 && !request.reserved2) {
             result = memory_status().free_pages; break;
+        }
+        if (request.operation == 0xfffe && request.version == 1 && request.size == sizeof(request) &&
+            request.flags <= 1 && request.address > 0 && request.address <= 4096 &&
+            ((!request.flags && !request.length) || (request.flags == 1 && request.length > 0 && request.length < request.address)) &&
+            !request.alignment && !request.protection && !request.reserved0 && !request.reserved1 && !request.reserved2) {
+            if (current->closing || current->continuation.active()) { result=process_error_state; break; }
+            auto& state=vm2_probe_states[static_cast<u32>(current - tasks)];
+            state.target=static_cast<u32>(request.address); state.count=0; state.error=0;
+            state.fail_after=static_cast<u32>(request.length);
+            state.process_ticks=&current->ticks; state.initial_ticks=current->ticks;
+            state.prepare_reported=false; state.publish_reported=false; state.rollback_reported=false;
+            if (!begin_vm_continuation(*current, *current_thread, &state, vm2_probe_step)) {
+                result=process_error_state; break;
+            }
+            frame->rax=0; return schedule(frame);
         }
         result = vm1_probe_regions[static_cast<u32>(current - tasks)].apply(request, current->closing);
         break;

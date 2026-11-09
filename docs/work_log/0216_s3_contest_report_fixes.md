@@ -82,6 +82,9 @@ python3 tests/bundle_installer_reject.py   PASS: 6 cases（bad-name/reserved1/ba
                                             non-elf-legacy/later-digest/name-overlap）
 python3 tests/iso_bundle_install.py        passed（正常安装正路径，防 C 误伤合法容器）
 python3 tests/file_smoke.py                PASS: 8 E05 checks | build dd5537bfe75ee995
+python3 tests/file_recovery_guest.py      passed（5 项：orphan/rollback/
+                                            rollback_idempotent_second_boot/committed/corrupt，
+                                            期望修正后）
 python3 scripts/build.py                   OK（全量构建两次：修复后 + 基线对照）
 ```
 
@@ -91,15 +94,23 @@ idna 测试夹具：`build/idna-3.20.xpk` 原缺失，按 `src/ports/cpython/idn
 
 ## 失败 / 未运行 / 既有问题
 
-- **`file_recovery_guest.py` corrupt 模式失败——既有问题，与本组修复无关（已实证）**：
-  期望 `mkdir /blocked` → `error=-7`，实际被 supervisor 门禁拦截
-  （`maintenance: persistent recovery required; command blocked`，supervisor.cpp:423，
-  门禁由 d6363f83 引入）。failed-closed 下三个 xypm marker stat 返回 `io` → 门禁开启，
-  而 `mkdir` 不在白名单，该期望与当前门禁设计矛盾。**用基线（HEAD 无本组改动）
-  重建 `4bd9c9e9b18f68bc`（= 0215 证据 build）复跑，同断言、同输出同样失败**；
-  0215 记录的 "file_recovery_guest passed" 应是在遗留 `build/audit_01/system` 旧镜像上
-  取得（当前 `scripts/` 已无构建该路径的入口）。未修：改测试期望还是改门禁白名单
-  属契约裁决，不在本组 11 项范围内。
+- ~~`file_recovery_guest.py` corrupt 模式失败~~ **已裁决并修复（本组第二笔提交）**：
+  原失败 = 期望 `mkdir /blocked` → `error=-7`，实际被 supervisor 门禁拦截
+  （`maintenance: persistent recovery required; command blocked`，supervisor.cpp:423）。
+  考古：测试最后更新 `a265061e`（2026-10-27 10:50），门禁由 `d6363f83` 同日 19:34
+  才引入且此后未变——**门禁比该测试期望晚 9 小时**，改坏后一直无人发现
+  （0215 的 "passed" 实为遗留 `build/audit_01/system` 旧镜像，当前 `scripts/` 已无
+  构建该路径的入口；基线 `4bd9c9e9b18f68bc` 复跑同断言同输出失败已实证）。
+  **裁决：修测试不修门禁**——门禁拦截变更命令是更新且有独立测试覆盖的契约
+  （`package_p2_persistent_gate.py` 明确断言 `mkdir /out/blocked → command blocked`，
+  P2 线 0066 起在案），且 failed-closed 下"读 marker 得 io → 保守关闭变更命令"
+  与全项目 fail-closed 哲学一致；反向放开会在状态未知时放行变更，更弱。
+  修复：corrupt 模式 `mkdir` 期望改为 `command blocked`，failed-closed 保证仍由
+  两层覆盖——客体 `stat target.txt → error=-7`（stat 在白名单内直达服务）+
+  宿主侧 `backend.info('/blocked') is None`（目录从未被创建）。
+  复跑：`python3 tests/file_recovery_guest.py --system build` → **passed**，
+  5 项（orphan/rollback/rollback_idempotent_second_boot/committed/corrupt）。
+  全仓过期期望仅此一处（`fb0_probe` 的 `save error=-7` 场景门禁未开启，无冲突）。
 - 未运行：`make smoke` 全套、真实满盘客体镜像注入（宿主用例 17 用注入模拟满盘）、
   E 的 seek-失败路径无独立注入用例（与 grow-失败共用同一 `undo_failed_write`，
   逻辑同源）、`xypm ensure` 客体故障注入。
@@ -111,7 +122,7 @@ idna 测试夹具：`build/idna-3.20.xpk` 原缺失，按 `src/ports/cpython/idn
 
 ## 下一位 agent 可直接执行的下一步
 
-- 裁决并修复 `file_recovery_guest` corrupt 用例与 supervisor 门禁的矛盾
-  （改测试期望为 blocked，或门禁放行 `mkdir`——需先定契约，见上）。
+- ~~裁决并修复 `file_recovery_guest` corrupt 用例与 supervisor 门禁的矛盾~~
+  已完成（见"失败/未运行"节：修测试侧，复跑 passed）。
 - 0215 遗留照旧：真实共享 `/tmp` 跨用户攻击、真实满盘、完整 make smoke 未跑。
 - 不要误认：QML/Quick、N2 网络、PR #51/#20 挂账均与本组无关，状态未变。

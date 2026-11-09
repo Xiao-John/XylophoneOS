@@ -34,8 +34,13 @@ def main():
                 guest.expect(b'xos64> ',timeout=40);send_bytes(guest,b'run\r');guest.expect_supervisor(timeout=40);pump(guest,1.5)
                 baseline=resources(guest)
                 if mode=='corrupt':
+                    # The service fails closed (stat reaches EIO), and the
+                    # supervisor gate also fires because marker stats return
+                    # io, so mutating commands never reach the service — see
+                    # package_p2_persistent_gate.py for the gate contract.
+                    # /blocked is still verified absent host-side below.
                     command(guest,'stat target.txt',b'error=-7')
-                    command(guest,'mkdir /blocked',b'error=-7')
+                    command(guest,'mkdir /blocked',b'command blocked')
                 else:
                     command(guest,'cat target.txt',b'old bytes' if mode=='rollback' else b'new bytes')
                     command(guest,'sync',b'[files] sync=ok')

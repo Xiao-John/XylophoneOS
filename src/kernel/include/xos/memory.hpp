@@ -38,17 +38,27 @@ void memory_init(const boot_info& info, const memory_region* regions);
 memory_stats memory_status();
 memory_result allocate_page(u64* physical);
 memory_result release_page(u64 physical);
+// User data-page references are separate from page-table/kernel allocations.
+memory_result allocate_user_page(u64* physical);
+memory_result retain_user_page(u64 physical);
+memory_result release_user_page(u64 physical);
+u32 user_page_references(u64 physical);
+struct user_page_stats { u32 unique_pages; u32 references; };
+user_page_stats user_pages_status();
 
 // Current kernel address space only. Intermediate tables are allocated on
 // demand and never reclaimed; unmap_page frees neither tables nor physical RAM.
 memory_result map_page(u64 virtual_address, u64 physical, page_permissions permissions);
 memory_result unmap_page(u64 virtual_address);
 memory_result query_page(u64 virtual_address, u64* physical, page_permissions* permissions);
+memory_result query_logical_write_in(u64 address_space, u64 virtual_address, bool* result);
 
 memory_result map_device_page(u64 virtual_address, u64 physical);
 // Separate kernel-only PCI UC aperture; not an extension of the VBE mapping.
 memory_result map_pci_device_page(u64 virtual_address, u64 physical);
 
+// Kernel boot self-check only; -1 disables deterministic allocation failure.
+void memory_self_test_fail_after(i64 count);
 bool memory_self_check();
 const char* memory_result_name(memory_result result);
 
@@ -60,7 +70,7 @@ memory_result map_page_in(u64 address_space, u64 virtual_address, u64 physical,
 memory_result unmap_page_in(u64 address_space, u64 virtual_address, u64* physical);
 memory_result query_page_in(u64 address_space, u64 virtual_address, u64* physical,
                             page_permissions* permissions);
-// Eager-copy the E04 user window (0x40000000..0x80000000) into an empty
+// Eager-copy the canonical lower user address map into an empty
 // constructed address space, preserving effective user/RW/X permissions.
 // Enumerates present page tables rather than probing every possible VA. On
 // failure, copied_pages counts the pages already owned by destination; the

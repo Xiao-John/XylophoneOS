@@ -11,6 +11,10 @@ constexpr u32 bitmap_words = max_pages / 64;
 // pages handed out at least once, so a double free cannot release firmware RAM.
 u64 used_bitmap[bitmap_words];
 u64 allocated_bitmap[bitmap_words];
+u32 user_references[max_pages];
+u32 unique_user_pages;
+u32 total_user_references;
+i64 self_test_allocations = -1;
 u32 managed_pages;
 u32 free_page_count;
 u32 allocated_page_count;
@@ -38,6 +42,8 @@ void memory_init(const boot_info& info, const memory_region* regions) {
         used_bitmap[i] = ~u64{0};
         allocated_bitmap[i] = 0;
     }
+    for (u32 i = 0; i < max_pages; ++i) { user_references[i] = 0; }
+    unique_user_pages = 0; total_user_references = 0;
     managed_pages = 0;
     free_page_count = 0;
     allocated_page_count = 0;
@@ -120,6 +126,8 @@ memory_stats memory_status() {
 
 memory_result allocate_page(u64* physical) {
     if (physical == nullptr) { return memory_result::invalid; }
+    if (self_test_allocations == 0) { return memory_result::out_of_memory; }
+    if (self_test_allocations > 0) { --self_test_allocations; }
     const u32 first = static_cast<u32>(first_allocatable / page_size);
     if (managed_pages <= first) { return memory_result::out_of_memory; }
     const u32 start = next_alloc_hint < first || next_alloc_hint >= managed_pages
@@ -149,7 +157,7 @@ memory_result release_page(u64 physical) {
         return memory_result::invalid;
     }
     const u32 page = static_cast<u32>(physical / page_size);
-    if (!bit_test(allocated_bitmap, page)) { return memory_result::invalid; }
+    if (!bit_test(allocated_bitmap, page) || user_references[page] != 0) { return memory_result::invalid; }
     bit_clear(allocated_bitmap, page);
     bit_clear(used_bitmap, page);
     ++free_page_count;
@@ -158,6 +166,38 @@ memory_result release_page(u64 physical) {
     if (page < next_alloc_hint) { next_alloc_hint = page < first ? first : page; }
     return memory_result::none;
 }
+
+void memory_self_test_fail_after(i64 count) { self_test_allocations = count; }
+memory_result allocate_user_page(u64* physical) {
+    const auto result = allocate_page(physical);
+    if (result != memory_result::none) { return result; }
+    user_references[*physical / page_size] = 1;
+    ++unique_user_pages; ++total_user_references;
+    return memory_result::none;
+}
+u32 user_page_references(u64 physical) {
+    if (physical % page_size != 0 || physical >= managed_high) { return 0; }
+    return user_references[physical / page_size];
+}
+memory_result retain_user_page(u64 physical) {
+    const auto references = user_page_references(physical);
+    if (references == 0 || references == ~u32{0} || total_user_references == ~u32{0}) {
+        return memory_result::invalid;
+    }
+    ++user_references[physical / page_size]; ++total_user_references;
+    return memory_result::none;
+}
+memory_result release_user_page(u64 physical) {
+    const auto references = user_page_references(physical);
+    if (references == 0) { return memory_result::invalid; }
+    --user_references[physical / page_size]; --total_user_references;
+    if (references == 1) {
+        --unique_user_pages;
+        return release_page(physical);
+    }
+    return memory_result::none;
+}
+user_page_stats user_pages_status() { return {unique_user_pages, total_user_references}; }
 
 const char* memory_result_name(memory_result result) {
     switch (result) {

@@ -219,13 +219,13 @@ sys60 试行可显式保留调用者参与的少量空通道；不设置标志�
 `.xos.exec` v3 与 `.xos.tty` v1；尚未取得客体资格。
 
 sys82 `sys_pio_grant` 是开发中的固定设备 PIO 授权；COM1 交接/隔离及 PC Speaker
-端口范围、2 秒静音租约、主动 release 见[专项契约](contracts/pio_grant.md)。这两类
+端口范围、2.5 秒静音租约、主动 release 见[专项契约](contracts/pio_grant.md)。这两类
 资源尚未客体验收，不等于 IRQ 或用户态终端资格。
 
 AU2 音频客户端复用 sys86 命名 IPC 和普通 channel wait/send/receive；共享 wire 布局及
 SDK client 分别位于 `audio_abi.hpp` 与 `audio_client.hpp`，完整版本、限额、job 状态、
 授权链和失败语义见[单音服务协议](contracts/audio_service.md)。supervisor 只委派
-controller 权限给服务；客户端不获 PIO，每个音符由有 2 秒租约的隔离 worker 执行。
+controller 权限给服务；客户端不获 PIO，每个音符由有 2.5 秒租约的隔离 worker 执行。
 代码已实现但未完成目标交叉构建和客体验收。
 
 sys83 `sys_irq_event` 为受控 IRQ 事件、等待和确认；当前仅 IRQ4、未客体验收，

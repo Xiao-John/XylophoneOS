@@ -23,7 +23,10 @@ Display Service -> VBE or VirtIO-GPU
   Qt pointers or client virtual addresses.
 - `src/user/interactium/window_manager.hpp/.cpp` implements the first fixed-capacity
   window table: create/destroy, owner checks, geometry, visibility, z-order, focus, hit
-  testing, and frame sequencing.
+  testing, and frame sequencing. The table has a slot for every session slot and
+  `create` enforces the per-session window quota, so one client cannot starve the
+  others. When the focused window closes, hides, or its session disconnects, focus
+  moves to the topmost remaining visible window instead of going dark.
 - `src/user/interactium/dispatcher.hpp/.cpp` validates byte messages before forwarding
   them to the service. It checks version, length, sequence number, session identity,
   frame dimensions, tile bounds, and dirty regions.
@@ -46,13 +49,18 @@ Display Service -> VBE or VirtIO-GPU
 - `interactiumd` is the sole Display Service client. It maintains a fixed-capacity set
   of server-side pixel surfaces, accepts `BEGIN_FRAME -> WRITE_TILE -> COMMIT_FRAME`,
   composites with CPU source-over blending, and presents the result. Input is routed
-  to the owner of the hit window or focused window. QPA clients no longer open Display
-  v1 directly.
+  to the owner of the hit window or focused window. A pointer crossing to another
+  window also reaches the previously hit window so that window can observe the leave,
+  and a key release stays with the window that took the press. When the shared input
+  queue overflows, the affected window is told through a `resync` carrying the lost
+  count, mirroring the display queue's own recovery event. QPA clients no longer open
+  Display v1 directly.
 - `src/ports/qt6/qpa/qxos.cpp` connects to Interactium through the name service. Each
   QPA window maps to a window ID, and the backing store packs dirty regions into tiles
   no larger than the endpoint capacity. Each top-level window has its own ID, pixel
   surface, lifecycle, and input polling thread. Mouse input is routed by hit testing;
-  keyboard input is routed to the focused window. Qt child widgets are still drawn in
+  keyboard presses go to the focused window while releases return to the window that
+  took the press. Qt child widgets are still drawn in
   their parent window's backing store.
 - `compositor` provides z-order and CPU source-over composition. The standalone
   `interactium` demo remains available for model and input verification without Qt.
@@ -106,8 +114,11 @@ cover two authenticated clients, handshake, window creation, and disconnect clea
 
 ## First-Version Limits
 
-Each session supports at most 8 windows. The initial profile uses CPU source-over
-composition, 800x600, one outstanding frame, and a bounded number of dirty rectangles.
+Each session supports at most 8 windows. Pixel storage is a separate first-version
+budget: the service owns `surface_capacity` (8) surfaces, so at most eight windows hold
+drawable pixels concurrently regardless of how many windows exist. The initial profile
+uses CPU source-over composition, 800x600, one outstanding frame, and a bounded number
+of dirty rectangles.
 Use the controlled-copy path `BEGIN_FRAME -> WRITE_TILE -> COMMIT_FRAME` first, then
 design shared buffers based on measurements.
 

@@ -24,6 +24,8 @@ static_assert(xos::clock::resolution_ns == xos::thread_tick_ns);
 #include "user_blobs.hpp"
 #include "user_images.hpp"
 #include <xos/device_abi.hpp>
+// Shared audio protocol bounds the PC speaker lease defined below.
+#include <xos/audio_abi.hpp>
 
 namespace xos {
 extern const u8* boot_payload;
@@ -46,7 +48,9 @@ constexpr u32 file_session_count = 8;
 constexpr u32 default_message_bytes = 64;
 constexpr u32 file_message_bytes = 4096;
 constexpr u32 kernel_stack_bytes = 4096;
-constexpr u64 pc_speaker_lease_ns = 2000000000ull;
+// Must outlast the longest legal note (audio::max_note_ms) plus worker
+// startup and scheduling delay, otherwise a max-length note expires first.
+constexpr u64 pc_speaker_lease_ns = u64{audio::max_note_ms} * 1000000ull + 500000000ull;
 constexpr u32 user_code_selector = 0x2b;
 constexpr u32 user_data_selector = 0x33;
 

@@ -15,6 +15,37 @@ class client {
         channel_ = {};
         open_ = false;
     }
+    // Named service endpoints are marked generic, not generic_channel, so the
+    // sys81 wait branch denies them. Poll the sys85 readiness check instead and
+    // sleep in bounded ticks so the absolute deadline and disconnects survive.
+    static i64 endpoint_wait(u32 handle, ipc_wait_mode mode, u64 deadline) {
+        for (;;) {
+            const i64 ready = sdk::ipc_wait(handle, mode);
+            if (ready != process_error_would_block) return ready;
+            const i64 current = sdk::syscall(sys_clock_monotonic);
+            if (current < 0) return current;
+            if (static_cast<u64>(current) >= deadline) return thread_error_timeout;
+            u64 wake_at = static_cast<u64>(current) + thread_tick_ns;
+            if (wake_at > deadline) wake_at = deadline;
+            (void)sdk::syscall(sys_sleep_until, wake_at);
+        }
+    }
+    static i64 send_request(u32 handle, const void* data, u64 length, u64 deadline) {
+        for (;;) {
+            const i64 ready = endpoint_wait(handle, ipc_wait_mode::try_send, deadline);
+            if (ready != 0) return ready;
+            const i64 sent = sdk::ipc_send(handle, data, length);
+            if (sent != sdk::ipc_error_full) return sent;
+        }
+    }
+    static i64 receive_reply(u32 handle, void* data, u64 length, u64 deadline) {
+        for (;;) {
+            const i64 ready = endpoint_wait(handle, ipc_wait_mode::try_receive, deadline);
+            if (ready != 0) return ready;
+            const i64 received = sdk::ipc_recv(handle, data, length);
+            if (received != sdk::ipc_error_empty) return received;
+        }
+    }
     i64 exchange(request& message, response& reply) {
         if (!open_) return process_error_state;
         const i64 now_value = sdk::syscall(sys_clock_monotonic);
@@ -23,11 +54,16 @@ class client {
             invalidate(); return now_value < 0 ? now_value : thread_error_timeout;
         }
         const u64 deadline = static_cast<u64>(now_value) + 1000000000ull;
-        const i64 sent = sdk::channel_send_wait(channel_.send, &message, sizeof(message),
-                                                deadline);
+        // The service rejects requests whose version/size/reserved header does
+        // not match the wire struct, so every operation fills it right here.
+        message.version = protocol_version;
+        message.size = sizeof(message);
+        message.reserved = 0;
+        const i64 sent = send_request(channel_.send, &message, sizeof(message),
+                                      deadline);
         if (sent != 0) { invalidate(); return sent; }
-        const i64 received = sdk::channel_receive_wait(channel_.receive, &reply, sizeof(reply),
-                                                      deadline);
+        const i64 received = receive_reply(channel_.receive, &reply, sizeof(reply),
+                                           deadline);
         if (received != static_cast<i64>(sizeof(reply))) {
             invalidate(); return received < 0 ? received : process_error_state;
         }

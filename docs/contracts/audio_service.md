@@ -12,7 +12,7 @@ syscall、设备号或设备协议编号。协议头在 `src/shared/include/xos/
   PID 保留一个 session，最多 8 个不同 client PID。client 不获得 PIO。
 - 服务为每个 tone 创建无 spawn 委派权的子进程，并由 controller 将固定 Speaker PIO
   授予该 building 子进程。worker 仅持有 `0x42`、`0x43`、`0x61`，单次租约
-  上限 2,000 ms。服务本身无 Speaker PIO；worker 每个音符后退出或主动 release。
+  上限 2,500 ms（最长音符 2,000 ms + 500 ms 调度余量）。服务本身无 Speaker PIO；worker 每个音符后退出或主动 release。
 - 任一时刻整个系统最多一个活动序列；竞争提交返回 `process_error_busy`，不排队。
   请求者退出时 IPC 端点失效，服务取消该 session 的活动序列。服务退出、被杀或故障时，
   内核撤销 controller、终止子 worker 并静音；supervisor 自动重启服务。重启不恢复旧

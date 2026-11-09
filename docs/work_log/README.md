@@ -110,3 +110,9 @@
 | 0213 | `0213_second_bug_hunt_fixes.md` | 第二轮 bug-hunting：spawnp/路径 255 字符边界、JSON INT64_MIN、diskio 64 位回绕、erase_last 注释 |
 | 0214 | `0214_bundle_installer_hardening.md` | 第三轮 bug-hunting：XOSBND1 填充/类型/名称校验、客体安装器魔法与目标摘要、host 工具缓存加固 |
 | 0215 | `0215_s2_bug_hunt_fixes.md` | Season-2：安装预检/marker 身份/幂等 ensure、rename 恢复、readdir 点项、ISO/缓存加固 |
+| 0216 | `0216_interactium_review_fixes.md` / `0216_s3_contest_report_fixes.md` | 两份同号：Interactium 评审修复（文档宿主路径、帧暂存、断连通道回收）与 Season-3 报告修复（大小写 rename、写失败回滚与恢复、bundle 名称区、脚本边界）；由 #90 与 #94 并行合入造成，按主题后缀消歧 |
+| 0217 | `0217_vm1_anonymous_reservations.md` | VM1：稀疏匿名保留与解除的独立客体资格 |
+| 0218 | `0218_vm2_foundation.md` | VM2：有界续体与等待 pin 的基底 |
+| 0219 | `0219_webengine_m0_preliminary_audit.md` | WebKit M0 前期审计：本地地基事实、待测面与未验收声明 |
+
+编号续用：0216 的历史重复已登记在上表，新记录自 **0220** 起继续唯一，不得再复用 0216–0219。

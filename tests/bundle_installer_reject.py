@@ -63,6 +63,12 @@ def main():
     later_case[64 + 64 * 1 + 32] ^= 0xFF
     cases.append(("later-digest", bytes(later_case),
                   b"[files] bundle digest mismatch: /var/cache/xypm/incoming/", "/usr/bin/dash"))
+    # Name spans must compactly partition the name region: the second member
+    # starting inside the first's bytes is rejected before anything is written.
+    overlap_case = bytearray(good)
+    struct.pack_into("<I", overlap_case, 64 + 64 * 1 + 4, 3)
+    cases.append(("name-overlap", bytes(overlap_case),
+                  b"[files] bundle names not compact", "/usr/bin/dash"))
 
     for label, blob, marker, absent in cases:
         image = bytearray(base)

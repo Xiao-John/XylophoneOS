@@ -21,6 +21,9 @@ def both32(value):
 
 def record(extent, size, flags, name):
     body = bytearray(33 + len(name))
+    # length fields are single bytes; refuse records that cannot be encoded
+    if len(body) > 255 or len(name) > 255:
+        raise SystemExit(f'ISO directory record too long: {name!r}')
     body[0] = len(body)
     body[1] = 0
     body[2:10] = both32(extent)
@@ -79,6 +82,9 @@ def main():
             name.encode('ascii')
         except UnicodeEncodeError as error:
             raise SystemExit(f'ISO file name must be ASCII: {name!r}') from error
+        # record() stores name + ';1' in single-byte length fields
+        if len(name) > 220:
+            raise SystemExit(f'ISO file name too long: {name!r}')
         folded = name.upper()
         if folded in seen:
             raise SystemExit(f'duplicate ISO file name: {name!r}')

@@ -37,7 +37,8 @@ def _cache_valid(output, stamp, source_digest):
         return False
     try:
         fields = stamp.read_text().split()
-    except OSError:
+    except (OSError, ValueError):
+        # unreadable or non-UTF-8 stamp bytes invalidate the cache
         return False
     if len(fields) != 2 or fields[0] != source_digest:
         return False
@@ -67,6 +68,9 @@ def transfer(image, operation, path, source=None):
     image = Path(image)
     if image.is_symlink() or not image.is_file():
         raise ValueError('Expected an existing regular image, not a symlink or device')
+    # FatFs IsSeparator treats '\' as a path separator, so it can never be literal
+    if '\\' in path:
+        raise ValueError('Backslash is a path separator; use /')
     if not path.startswith('/') or any(x in ('.', '..') for x in path.split('/')):
         raise ValueError('Use an absolute guest path without dot components')
     try:

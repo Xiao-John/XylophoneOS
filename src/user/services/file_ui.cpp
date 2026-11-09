@@ -674,6 +674,40 @@ void install_boot_payload() {
         if (e.type == 2) { ++xypm_count; }
         if (e.type == 3) { ++daily_count; }
     }
+    // Mirror the host verifier (scripts/xos_bundle.py): the name region must
+    // be a compact concatenation, so spans may not overlap or leave gaps or
+    // unused tail bytes. count >= 1 is enforced above, so the first span
+    // must start at 0.
+    u32 name_start[bundle_max_members];
+    u32 name_span_len[bundle_max_members];
+    for (u32 i = 0; i < count; ++i) {
+        name_start[i] = entries[i].name_off;
+        name_span_len[i] = entries[i].name_len;
+    }
+    for (u32 i = 1; i < count; ++i) {
+        const u32 start = name_start[i];
+        const u32 length = name_span_len[i];
+        u32 j = i;
+        while (j > 0 && name_start[j - 1] > start) {
+            name_start[j] = name_start[j - 1];
+            name_span_len[j] = name_span_len[j - 1];
+            --j;
+        }
+        name_start[j] = start;
+        name_span_len[j] = length;
+    }
+    u32 names_cursor = 0;
+    for (u32 i = 0; i < count; ++i) {
+        if (name_start[i] != names_cursor) {
+            print("[files] bundle names not compact\n");
+            return;
+        }
+        names_cursor += name_span_len[i];
+    }
+    if (names_cursor != names_bytes) {
+        print("[files] bundle names unused\n");
+        return;
+    }
     if (dash_count != 1 || xypm_count > 1 || daily_count > 1) {
         print("[files] bundle member roles rejected\n");
         return;

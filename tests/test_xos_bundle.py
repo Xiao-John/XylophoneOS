@@ -214,6 +214,17 @@ class BundlePaddingAndNames(unittest.TestCase):
         with self.assertRaises(xb.BundleError):
             xb.parse(bytes(blob))
 
+    def test_parse_rejects_unused_name_tail(self):
+        blob = bytearray(xb.build([
+            (xb.TYPE_DASH, 'AAA', elf_stub()),
+            (xb.TYPE_AUX, 'BBB', xpk_stub()),
+        ]))
+        # Shorten the last name by one: spans stay in range but leave one
+        # trailing byte of the name region unused.
+        struct.pack_into('<I', blob, 64 + 64 + 8, 2)
+        with self.assertRaises(xb.BundleError):
+            xb.parse(bytes(blob))
+
     def test_parse_rejects_backslash_name(self):
         blob = bytearray(xb.build([(xb.TYPE_DASH, 'dash', elf_stub())]))
         info = xb.parse(bytes(blob), check_hashes=False)

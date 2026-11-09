@@ -15,6 +15,9 @@
 // before the macro redirect so their own calls reach real FatFs.
 int write_fault_after = -1;   // >= 0: short-write this many bytes then error.
 int write_short_by = -1;      // >= 0: report success but write fewer bytes.
+int write_fail_nth = -1;      // >= 0: the Nth armed f_write reports a
+                              // zero-byte FR_OK short write (disk full).
+int write_calls = 0;
 int read_fault_after = -1;    // >= 0: read this many bytes then error.
 
 int rename_fault_nth = -1;
@@ -41,6 +44,12 @@ FRESULT injected_read(FIL* file, void* buffer, UINT length, UINT* got) {
 }
 
 FRESULT injected_write(FIL* file, const void* buffer, UINT length, UINT* written) {
+    if (write_fail_nth >= 0 && ++write_calls == write_fail_nth) {
+        // Model a full medium: FatFs reports FR_OK with zero bytes written.
+        write_fail_nth = -1;
+        *written = 0;
+        return FR_OK;
+    }
     if (write_fault_after >= 0) {
         const UINT partial = static_cast<UINT>(write_fault_after);
         write_fault_after = -1;
@@ -340,13 +349,26 @@ int main(int argc, char** argv) {
     ++checks;
 
     // 12. Case-only rename updates the stored FAT name instead of no-op.
+    //     f_stat backfills the requested spelling, so only a directory read
+    //     proves the stored dirent actually changed.
     reset_media();
     seed_file("Case.txt", "x", 1);
     require(rename_path(client, "Case.txt", "case.txt").status_code == static_cast<i32>(status::ok),
             "case rename");
-    FILINFO case_info{};
-    require(f_stat("case.txt", &case_info) == FR_OK &&
-            std::strcmp(case_info.fname, "case.txt") == 0, "case rename spelling");
+    DIR case_dir{};
+    FILINFO case_entry{};
+    bool saw_new_spelling = false;
+    bool saw_old_spelling = false;
+    require(f_opendir(&case_dir, "/") == FR_OK, "case rename opendir");
+    for (;;) {
+        const FRESULT listed = f_readdir(&case_dir, &case_entry);
+        require(listed == FR_OK, "case rename readdir");
+        if (case_entry.fname[0] == '\0') { break; }
+        if (std::strcmp(case_entry.fname, "case.txt") == 0) { saw_new_spelling = true; }
+        if (std::strcmp(case_entry.fname, "Case.txt") == 0) { saw_old_spelling = true; }
+    }
+    f_closedir(&case_dir);
+    require(saw_new_spelling && !saw_old_spelling, "case rename stored dirent");
     ++checks;
 
     // 13. A failed gap fill must not leave the file extended.
@@ -397,6 +419,40 @@ int main(int argc, char** argv) {
     require(read_file("rdst.txt") == "old", "rename recovered target");
     require(read_file(journal_name) == "<absent>" && read_file(backup_name) == "<absent>",
             "rename recovery cleanup");
+    ++checks;
+
+    // 16. A zero-byte write past EOF is a POSIX no-op: no extension and no
+    //     offset change, even though the handle logically sits past EOF.
+    reset_media();
+    seed_file("zero.txt", "01", 2);
+    opened = open_path(client, "zero.txt", xos::file::read_write);
+    require(opened.status_code == static_cast<i32>(status::ok), "zero write open");
+    require(seek_handle(client, opened.handle, 9, xos::file::seek_set).value == 9, "zero write seek");
+    require(write_handle(client, opened.handle, "", 0).status_code == static_cast<i32>(status::ok),
+            "zero write ok");
+    require(fstat_handle(client, opened.handle).value == 2, "zero write no extend");
+    require(close_handle(client, opened.handle).status_code == static_cast<i32>(status::ok),
+            "zero write close");
+    require(read_file("zero.txt") == "01", "zero write content");
+    ++checks;
+
+    // 17. When the hole fill succeeds but the data write then reports zero
+    //     bytes (full medium), the service must report no_space and undo the
+    //     extension instead of leaving a longer file behind.
+    reset_media();
+    seed_file("fullhole.txt", "0123", 4);
+    opened = open_path(client, "fullhole.txt", xos::file::read_write);
+    require(opened.status_code == static_cast<i32>(status::ok), "fullhole open");
+    require(seek_handle(client, opened.handle, 1024, xos::file::seek_set).value == 1024, "fullhole seek");
+    write_calls = 0;
+    write_fail_nth = 3;  // grow_with_zeros writes 512+508 zero bytes first.
+    require(write_handle(client, opened.handle, "Z", 1).status_code ==
+            static_cast<i32>(status::no_space), "fullhole zero-byte write");
+    require(fstat_handle(client, opened.handle).value == 4, "fullhole rollback size");
+    require(close_handle(client, opened.handle).status_code == static_cast<i32>(status::ok),
+            "fullhole close");
+    write_fail_nth = -1;
+    require(read_file("fullhole.txt") == "0123", "fullhole rollback content");
     ++checks;
 
     std::printf("FILE_SEMANTICS_CASES_PASSED=%d\n", checks);

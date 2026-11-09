@@ -41,6 +41,7 @@ def main():
                         help="kernel VirtIO-GPU DMA page budget; low values are explicit fault profiles")
     parser.add_argument("--gpu-poll-limit", type=int, default=10000000,
                         help="bounded VirtIO-GPU completion polls; zero is an explicit timeout profile")
+    parser.add_argument("--vm1-probe", action="store_true", help="enable isolated VM1 test-only syscall 67")
     args = parser.parse_args()
     if not 1 <= args.gpu_dma_page_limit <= 4096 or not 0 <= args.gpu_poll_limit <= 100000000:
         parser.error("invalid VirtIO-GPU diagnostic budget")
@@ -48,6 +49,8 @@ def main():
     BUILD = args.output_dir.resolve()
     if BUILD != ROOT / "build" and ROOT / "build" not in BUILD.parents:
         raise SystemExit("output directory must be build/ or one of its subdirectories")
+    if args.vm1_probe and BUILD == ROOT / "build":
+        parser.error("VM1 probe requires an isolated build subdirectory")
     if args.terminal_supervisor_probe and args.ncurses_supervisor_probe:
         parser.error("select at most one test supervisor")
     if (args.terminal_supervisor_probe or args.ncurses_supervisor_probe) and BUILD == ROOT / "build":
@@ -99,13 +102,13 @@ def main():
     source_digest = sha256(json.dumps({"sources": source_hashes, "capacity_probe": args.capacity_probe,
                                       "terminal_supervisor_probe": args.terminal_supervisor_probe,
                                       "ncurses_supervisor_probe": args.ncurses_supervisor_probe,
-                                      "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config}, sort_keys=True).encode())
+                                      "clock_irq_probe": args.clock_irq_probe, "vm1_probe": args.vm1_probe, "virtio_gpu": gpu_config}, sort_keys=True).encode())
     build_id = source_digest[:16]
     eggs = int(TARGET["easter_eggs"])
     (BUILD / "build_info.inc").write_text(
         f'%define xos_build_id "{build_id}"\n%define xos_easter_eggs {eggs}\n')
     (BUILD / "build_info.hpp").write_text(
-        f'#define XOS_BUILD_ID "{build_id}"\n#define XOS_EASTER_EGGS {eggs}\n#define XOS_CAPACITY_PROBE {int(args.capacity_probe)}\n#define XOS_CLOCK_IRQ_PROBE {int(args.clock_irq_probe)}\n')
+        f'#define XOS_BUILD_ID "{build_id}"\n#define XOS_EASTER_EGGS {eggs}\n#define XOS_CAPACITY_PROBE {int(args.capacity_probe)}\n#define XOS_CLOCK_IRQ_PROBE {int(args.clock_irq_probe)}\n#define XOS_VM1_PROBE {int(args.vm1_probe)}\n')
     commands = []
 
     def run(command):
@@ -279,7 +282,7 @@ def main():
     manifest = {
         "build_id": build_id,
         "version": (ROOT / "VERSION").read_text().strip(), "source_sha256": source_digest,
-        "capacity_probe": args.capacity_probe, "terminal_supervisor_probe": args.terminal_supervisor_probe,
+        "vm1_probe": args.vm1_probe, "capacity_probe": args.capacity_probe, "terminal_supervisor_probe": args.terminal_supervisor_probe,
         "ncurses_supervisor_probe": args.ncurses_supervisor_probe,
         "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config, "legacy_images_available": legacy_available,
         "sources": source_hashes,

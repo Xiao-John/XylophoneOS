@@ -11,6 +11,10 @@
 #include <xos/format.hpp>
 #include <xos/platform.hpp>
 #include "frame.hpp"
+#include "build_info.hpp"
+#if XOS_VM1_PROBE
+#include "../../core/anonymous_reservations.hpp"
+#endif
 #include "interrupt_entry.hpp"
 #include <xos/clock.hpp>
 #include "arch/x86_64/interrupt_wait.hpp"
@@ -141,6 +145,9 @@ struct thread_record : thread_lifetime {
     alignas(16) u8 fpu_state[512];
 };
 process_record tasks[8];
+#if XOS_VM1_PROBE
+anonymous_vm::reservations vm1_probe_regions[8];
+#endif
 thread_record threads[thread_max_total];
 thread_record* current_thread;
 u64 next_tid = 1;
@@ -531,6 +538,9 @@ process_record* prepare_task(const char* name) {
     if (task == nullptr || next_pid == 0 || next_pid > 0x7fffffffffffffff ||
         next_tid == 0 || next_tid > 0x7fffffffffffffff) { return nullptr; }
     *task = process_record{};
+#if XOS_VM1_PROBE
+    vm1_probe_regions[static_cast<u32>(task - tasks)].clear();
+#endif
     task->pid = next_pid++;
     copy_name(task->name, name);
     task->cr3 = create_address_space();
@@ -999,6 +1009,9 @@ void destroy_task(process_record* task) {
         thread = thread_record{};
     }
     if (task->cr3 != 0) { freed += destroy_address_space(task->cr3); }
+#if XOS_VM1_PROBE
+    vm1_probe_regions[static_cast<u32>(task - tasks)].clear();
+#endif
     *task = process_record{};
     if (task_total > 0) { --task_total; }
     if (process_trace_enabled) {
@@ -2096,6 +2109,9 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_process_exec_prepare: {
+#if XOS_VM1_PROBE
+        if (vm1_probe_regions[static_cast<u32>(current - tasks)].count()) { result = process_error_state; break; }
+#endif
         if (admission_guard.owner_pid != 0) { result = process_error_busy; break; }
         if (first != 0 || third > 11 ||
             (third != 0 && !user_range_ok(second, third, false))) { break; }
@@ -2266,6 +2282,9 @@ void* process_syscall(interrupt_frame* frame) {
         return frame;
     }
     case sys_process_fork_prepare:
+#if XOS_VM1_PROBE
+        if (vm1_probe_regions[static_cast<u32>(current - tasks)].count()) { result = process_error_state; break; }
+#endif
         if (admission_guard.owner_pid != 0) { result = process_error_busy; break; }
         if (first == 0 && second == 0 && third == 0) { result = prepare_fork(frame); }
         break;
@@ -3094,6 +3113,25 @@ void* syscall_entry(interrupt_frame* frame) {
         }
         break;
     }
+#if XOS_VM1_PROBE
+    case 67: {
+        // Dedicated probe image only: never exported in default SDK/manifest.
+        if ((frame->rdi & 7) || !user_range_ok(frame->rdi, sizeof(anonymous_vm::request), false)) {
+            result = -2; break;
+        }
+        if (frame->rsi || frame->rdx) { result = anonymous_vm::invalid; break; }
+        anonymous_vm::request request{};
+        copy_from_user(&request, frame->rdi, sizeof(request));
+        // Private test diagnostic, deliberately absent from the public wire.
+        if (request.operation == 0xffff && request.version == 1 && request.size == sizeof(request) &&
+            !request.flags && !request.address && !request.length && !request.alignment &&
+            !request.protection && !request.reserved0 && !request.reserved1 && !request.reserved2) {
+            result = memory_status().free_pages; break;
+        }
+        result = vm1_probe_regions[static_cast<u32>(current - tasks)].apply(request, current->closing);
+        break;
+    }
+#endif
     case sys_random_bytes:
         result = frame->rdx == 0 ? random_bytes(frame->rdi, frame->rsi)
                                  : random_error_invalid;

@@ -12,7 +12,7 @@
   ],
   "status": "passed",
   "command": [
-    "/workspace/xos-env/prefix/bin/qemu-system-x86_64",
+    "${XOS_TOOLCHAIN}/prefix/bin/qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -30,7 +30,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-cdrom",
-    "/workspace/XylophoneOS/build/vm0/regression_final/xos.img",
+    "${XOS_ROOT}/build/vm0/regression_final/xos.img",
     "-boot",
     "order=d,strict=on",
     "-no-reboot",
@@ -41,9 +41,9 @@
     "-display",
     "none",
     "-drive",
-    "file=/tmp/xos_e05_sgrr2htj/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_LOCAL_PATH},format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-qmp",
-    "unix:/tmp/xos_tyvvers2/qmp.sock,server=on,wait=off"
+    "unix:${XOS_LOCAL_PATH},server=on,wait=off"
   ],
   "image_sha256": "8d3e382ddb13bc41f5fbfe588c5cdcd3723e5f344cc57359b499934483230d6b"
 }

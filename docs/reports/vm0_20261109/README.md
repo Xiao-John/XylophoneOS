@@ -19,3 +19,11 @@
 
 VM0不提供匿名reserve/commit、COW、真实多线程fork或SMP。逻辑写权限当前存于arch
 页表软件标记，相关逻辑接口供内核调用，尚无VMA；未来隐藏提交页必须由VM1–3另行处理。
+
+公开JSON和系统清单是路径替换后的派生版本，原件保留在本地构建目录；
+`${XOS_GUEST_ROOT}`代表客体根目录，`${XOS_ROOT}`和`${XOS_TOOLCHAIN}`代表宿主路径。
+原始文件SHA-256：
+- `manifest.json`：`0bc8bbd11484b421286d40ace102ed382e4d38dadc27299ecf5b9a6b9dcec150`
+- `final_dash_c2_report.json`：`9c802f3ccdc6d84491dfe72bae2d213f1e71937a0c1044eeef7df0396295c483`
+- `process_smoke_report.json`：`3cb25d9a25eb82c59373930148157581f5d399e73c2a0af7ef88939decaf2b9a`
+- `file_smoke_report.json`：`b5c395dc52602943a893bde066c2acae209de16525717ab103d1bb2ced3d37c3`

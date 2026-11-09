@@ -98,7 +98,7 @@ through QMP, and saves initial and post-drag screenshots under `build/`.
 The model test can be compiled on a Windows host with the repository's MSYS2 compiler:
 
 ```text
-C:/msys64/usr/bin/bash.exe -lc 'cd /c/Users/d2015/Documents/CodeRubbish/XylophoneOS; export PATH=/ucrt64/bin:/usr/bin:$PATH; g++ -std=c++17 -Wall -Wextra -pedantic -Isrc/shared/include -Isrc/user/include tests/interactium_model_test.cpp src/user/interactium/window_manager.cpp src/user/interactium/service.cpp src/user/interactium/dispatcher.cpp -o build/interactium_model_test.exe && ./build/interactium_model_test.exe'
+C:/msys64/usr/bin/bash.exe -lc 'cd ${XOS_ROOT_MSYS} export PATH=/ucrt64/bin:/usr/bin:$PATH; g++ -std=c++17 -Wall -Wextra -pedantic -Isrc/shared/include -Isrc/user/include tests/interactium_model_test.cpp src/user/interactium/window_manager.cpp src/user/interactium/service.cpp src/user/interactium/dispatcher.cpp -o build/interactium_model_test.exe && ./build/interactium_model_test.exe'
 ```
 
 Transport-chain memory-queue tests are in `tests/interactium_transport_test.cpp`. They

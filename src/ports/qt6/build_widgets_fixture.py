@@ -85,9 +85,6 @@ overlay=out.parent/'qt_header_overlay'
 shutil.copytree(qt/'include',overlay,dirs_exist_ok=True)
 overlay_headers=[]
 overlay_targets=[]
-source_prefix='/Users/xylo/Documents/XylophoneOS/.cache/xos_seed/qt6/qtbase-6.8.3-gui/src/'
-generated_prefix='/Users/xylo/Documents/XylophoneOS/build/qt6_b1_20261031/widgets/src/'
-generated_prefix2='/Users/xylo/Documents/XylophoneOS/build/qt6_b1_20261031/widgets2/src/'
 generated_root=(a.generated_qt_build.resolve() if a.generated_qt_build else qt)/'src'
 absolute_forwarder=re.compile(r'^#include "([A-Za-z]:/[^"\r\n]+)"',re.M)
 for header in (qt/'include').rglob('*'):
@@ -146,11 +143,13 @@ for header in (qt/'include').rglob('*'):
             else:
                 candidate=None
             if candidate is not None: continue
-    match=re.search(r'^#include "('+re.escape(source_prefix)+'|'+re.escape(generated_prefix)+'|'+re.escape(generated_prefix2)+r')([^"]+)"',contents,re.M)
+    # Recognize historical Qt source/build layouts without binding a host home.
+    match=re.search(r'^#include "[^"\r\n]*/(qtbase-6\.8\.3-gui|widgets2?)/src/([^"\r\n]+)"',contents,re.M)
     if not match: continue
-    root=qs/'src' if match.group(1)==source_prefix else generated_root
+    root=(qs/'src' if match.group(1)=='qtbase-6.8.3-gui' else generated_root).resolve()
     target=(root/match.group(2)).resolve()
-    if not target.is_file(): raise SystemExit('Qt forwarded header target missing: '+str(target))
+    if not target.is_relative_to(root) or not target.is_file():
+        raise SystemExit('Qt forwarded header target missing or outside source root')
     destination=overlay/header.relative_to(qt/'include')
     destination.parent.mkdir(parents=True,exist_ok=True)
     relative_target=Path(os.path.relpath(target,destination.parent)).as_posix()

@@ -5,6 +5,13 @@
 ``--index`` scans Git's actual stage-zero blobs, never the working-tree files.
 ``--base REF`` selects the candidate delta against REF; deletions are excluded.
 Findings omit matched bytes and archive member names so reports are safe to share.
+
+Finding statuses form three markers:
+  OPEN        confirmed host-private path; must be fixed before publication.
+  UNVERIFIED  content could not be scanned; absence of findings is not proven.
+  DOUBTFUL    ambiguous on purpose (bare temp-directory segments collide with
+              XOS guest paths); listed for a human double check, never blocks.
+Overall status stays binary: any non-DOUBTFUL finding means NOT_PUBLIC_READY.
 """
 import argparse
 import gzip
@@ -34,7 +41,11 @@ patterns = {
     'macos_home': rb'(?i)/us' rb'ers/[^/\\\s"\'\x00<>]+(?:/[^\s"\'\x00<>]*)?',
     'linux_home': rb'/ho' rb'me/[^/\\\s"\'\x00<>]+(?:/[^\s"\'\x00<>]*)?',
     'windows_home': rb'(?i)[a-z]:[\\/]+users[\\/]+[^\\/\s"\'\x00<>]+(?:[\\/][^\s"\'\x00<>]*)?',
-    'private_temp': rb'(?i)(?:/private/tm' rb'p/|/var/fol' rb'ders/|/tm' rb'p/)[^/\s"\'\x00<>]+',
+    'private_temp': rb'(?i)(?:/private/tm' rb'p/|/var/fol' rb'ders/)[^/\s"\'\x00<>]+',
+    # A bare temp-directory segment is genuinely ambiguous: the XOS guest uses
+    # the same name for its own temporary tree, so report it as DOUBTFUL
+    # instead of OPEN. The lookbehind keeps host-private matches single-counted.
+    'ambiguous_tmp': rb'(?i)(?<!private)/tm' rb'p/[^/\s"\'\x00<>]+',
     'local_file_uri': rb'(?i)file://(?:localhost)?/(?:users|home|private/tmp|var/folders|tmp)/[^\s"\'\x00<>]+',
     'workspace_scratch': rb'/work' rb'space/scratch/[^\s"\'\x00<>]+',
     'framework_python': rb'/Library/Frame' rb'works/Python\.framework/Versions/[^\s"\'\x00<>]+',
@@ -46,6 +57,7 @@ classifications = {
     'linux_home': 'CONFIRMED_PRIVATE_PATH',
     'windows_home': 'CONFIRMED_PRIVATE_PATH',
     'private_temp': 'HOST_SPECIFIC_COMMAND',
+    'ambiguous_tmp': 'NEEDS_REVIEW',
     'local_file_uri': 'NEEDS_REVIEW',
     'private_identity': 'CONFIRMED_PRIVATE_IDENTITY',
     'workspace_scratch': 'PORTABILITY_ISSUE',
@@ -67,11 +79,18 @@ system_paths = ('/usr/bin/', '/usr/lib/', '/usr/share/', '/usr/include/', '/bin/
 
 
 def finding(findings, location, category):
+    if category == 'ambiguous_tmp':
+        # Ambiguous with guest-visible paths: keep it visible for a human
+        # double check, but never let it block publication on its own.
+        status = 'DOUBTFUL'
+    elif category in {'unscanned_limit', 'unreadable_archive', 'unreadable_file',
+                      'unmerged_index', 'unsupported_git_object'}:
+        status = 'UNVERIFIED'
+    else:
+        status = 'OPEN'
     findings.append({'location': location, 'category': category,
                      'classification': classifications[category],
-                     'status': 'UNVERIFIED' if category in {
-                         'unscanned_limit', 'unreadable_archive', 'unreadable_file',
-                         'unmerged_index', 'unsupported_git_object'} else 'OPEN'})
+                     'status': status})
 
 
 def safe_location(name, identities=()):
@@ -329,7 +348,8 @@ def scan_repository(root, source='worktree', base=None, paths=(), commit=None, i
             batch.stdout.close()
             if batch.wait() != 0:
                 finding(findings, 'git-cat-file', 'unreadable_file')
-    return {'status': 'PUBLIC_READY' if not findings else 'NOT_PUBLIC_READY',
+    blocking = [item for item in findings if item['status'] != 'DOUBTFUL']
+    return {'status': 'PUBLIC_READY' if not blocking else 'NOT_PUBLIC_READY',
             'source': source, 'base': base, 'files_selected': len(names),
             'files_scanned': count, 'findings': findings}
 

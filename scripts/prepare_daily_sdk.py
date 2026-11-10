@@ -26,7 +26,7 @@ def main():
         registered = load_json(ROOT/'config/package/xos_x86_64_static_single_b2_v1.json')
         cpp_hash = tree_receipt(cpp)[0]
         require(cpp_hash in registered['sdk_tree_sha256'], 'C++ SDK is not registered B2 snapshot')
-        require(manifest['artifacts']['xos.img']['sha256'] == sha_file(system/'xos.img'), 'system image changed')
+        require(manifest['artifacts']['xos-install.iso']['sha256'] == sha_file(system/'xos-install.iso'), 'system install ISO changed')
         output = args.output_dir.resolve()
         output.mkdir(parents=True, exist_ok=False)
         sdk = output/'sdk'; shutil.copytree(source, sdk)
@@ -47,7 +47,7 @@ def main():
                    'evidence':'docs/work_log/0069_daily_utilities.md'}
         (output/'profile.json').write_bytes(canonical(profile))
         receipt = {'status':'prepared_not_qualified', 'system_build_id':manifest['build_id'],
-                   'image_sha256':sha_file(system/'xos.img'), 'system_sdk_tree':tree_receipt(source)[0],
+                   'image_sha256':sha_file(system/'xos-install.iso'), 'system_sdk_tree':tree_receipt(source)[0],
                    'cpp_sdk_tree':cpp_hash, 'composed_sdk_tree':digest,
                    'profile_sha256':sha_file(output/'profile.json'), 'builder_sha256':sha_file(__file__)}
         (output/'lineage.json').write_bytes(canonical(receipt))

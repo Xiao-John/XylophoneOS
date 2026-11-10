@@ -60,8 +60,9 @@ bootstrap supervisor。普通任务即使有driver构造权也不能改全局日
 
 ## 使用与验证
 
-普通make build/run重建并使用当前代码。本轮统一构建输出是build/xsh_ui，保留
-共享build/xos.img及已发布0.0.1-1024镜像。dash本身沿用已验收的A版ELF；安装到
+普通make build/run重建并使用当前代码。本轮统一构建输出是build/xsh_ui，共享
+系统镜像与已发布0.0.1-1024镜像保持不变（共享镜像现为file-backed的
+build/xos-install.iso，legacy软盘/嵌入式镜像已废除）。dash本身沿用已验收的A版ELF；安装到
 工作盘的操作必须在QEMU关闭时显式执行，不能覆盖现有文件。
 
 对应gate：

@@ -31,7 +31,7 @@ def main():
     build = ROOT / 'build'
     system = json.loads((build / 'manifest.json').read_text())
     report = {'status': 'failed', 'build_id': system['build_id'],
-              'xos_sha256': sha(build / 'xos.img'), 'case_sha256': sha(args.case_image),
+              'xos_sha256': sha(build / 'xos-install.iso'), 'case_sha256': sha(args.case_image),
               'commands': [], 'checks': []}
     guest = None
     report_path = build / ('file_position_regression_report.json' if args.position_only

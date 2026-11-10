@@ -146,7 +146,7 @@ def main():
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args(); out = args.output.resolve(); out.mkdir(parents=True, exist_ok=True)
     system = args.system.resolve(); system_manifest = load_json(system/'manifest.json')
-    image = system/'xos.img'; require(sha_file(image) == system_manifest['artifacts']['xos.img']['sha256'], 'system image mismatch')
+    image = system/'xos-install.iso'; require(sha_file(image) == system_manifest['artifacts']['xos-install.iso']['sha256'], 'system image mismatch')
     build = load_json(args.xypm_build); elf = Path(build['elf']); profile = load_json(args.profile)
     report = {'status': 'failed', 'system_build_id': system_manifest['build_id'], 'image_sha256': sha_file(image),
               'xypm_elf_sha256': sha_file(elf), 'xypm_package_sha256': build['sha256'],
@@ -183,7 +183,7 @@ def main():
                 for name, path in plan_cases:
                     backend.command('import', '/out/'+name+'.xpk', path)
             boot = folder/'boot.img'; shutil.copyfile(image, boot)
-            guest = Guest(boot, 'package_p2_verify', work_disk=disk)
+            guest = Guest(boot, 'package_p2_verify', work_disk=disk, iso=True)
             guest.expect(b'xos64> ', timeout=40); send_bytes(guest, b'run\r')
             guest.expect_supervisor(trace=True, timeout=40); pump(guest, 1.5)
             baseline = resources(guest); report['baseline'] = baseline
@@ -216,7 +216,7 @@ def main():
                     host_ok = False
                 require(host_ok == (name == 'dep_good'), 'host plan expectation differs: '+name)
                 report['cases'].append({'name': name, 'sha256': sha_file(path), 'host': host_ok})
-            guest = Guest(boot, 'package_p2_installed', work_disk=installed)
+            guest = Guest(boot, 'package_p2_installed', work_disk=installed, iso=True)
             guest.expect(b'xos64> ', timeout=40); send_bytes(guest, b'run\r')
             guest.expect_supervisor(trace=True, timeout=40); pump(guest, 1.5)
             baseline = resources(guest)
@@ -247,7 +247,7 @@ def main():
                     require(b'Package verified: friends.p2' in backend.export('/out/dash_ok.txt').read_bytes(), 'dash redirected stdout missing')
                     require(b'payload hash mismatch' in backend.export('/out/dash_error.txt').read_bytes(), 'dash redirected stderr missing')
                 report['checks'].append('dash_redirected_results')
-            guest = Guest(boot, 'package_p2_reverse_dependency', work_disk=folder/'dep_good.img')
+            guest = Guest(boot, 'package_p2_reverse_dependency', work_disk=folder/'dep_good.img', iso=True)
             guest.expect(b'xos64> ', timeout=40); send_bytes(guest, b'run\r')
             guest.expect_supervisor(trace=True, timeout=40); pump(guest, 1.5)
             baseline = resources(guest)
@@ -271,7 +271,7 @@ def main():
                 raise AssertionError('host accepted dependency cycle')
             except PackageError:
                 pass
-            guest = Guest(boot, 'package_p2_cycle', work_disk=cycle_disk)
+            guest = Guest(boot, 'package_p2_cycle', work_disk=cycle_disk, iso=True)
             guest.expect(b'xos64> ', timeout=40); send_bytes(guest, b'run\r')
             guest.expect_supervisor(trace=True, timeout=40); pump(guest, 1.5)
             baseline = resources(guest)
@@ -288,7 +288,7 @@ def main():
                 raise AssertionError('host accepted modified managed file')
             except PackageError:
                 pass
-            guest = Guest(boot, 'package_p2_modified', work_disk=installed)
+            guest = Guest(boot, 'package_p2_modified', work_disk=installed, iso=True)
             guest.expect(b'xos64> ', timeout=40); send_bytes(guest, b'run\r')
             guest.expect_supervisor(trace=True, timeout=40); pump(guest, 1.5)
             baseline = resources(guest)
@@ -307,7 +307,7 @@ def main():
                 raise AssertionError('host accepted corrupt index')
             except PackageError:
                 pass
-            guest = Guest(boot, 'package_p2_corrupt_db', work_disk=installed)
+            guest = Guest(boot, 'package_p2_corrupt_db', work_disk=installed, iso=True)
             guest.expect(b'xos64> ', timeout=40); send_bytes(guest, b'run\r')
             guest.expect_supervisor(trace=True, timeout=40); pump(guest, 1.5)
             baseline = resources(guest)

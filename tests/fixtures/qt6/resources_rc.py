@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # Resource object code (Python 3)
 # Created by: object code
 # Created by: The Resource Compiler for Qt version 6.11.1

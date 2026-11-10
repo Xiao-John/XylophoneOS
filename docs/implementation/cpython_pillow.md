@@ -43,7 +43,7 @@ CPython `Modules/Setup` 只接受 C 标识符，因此使用 `_imaging` 生成�
 QEMU=/absolute/qemu-system-x86_64 \
 python3 tests/pillow_static_guest.py \
   --work .cache/xos_seed/cpython/BUILD_FINGERPRINT \
-  --image build/NEW-system/xos.img \
+  --image build/NEW-system/xos-install.iso \
   --dash /absolute/verified-dash-ELF \
   --output build/NEW-guest
 ```

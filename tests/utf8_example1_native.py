@@ -63,7 +63,7 @@ def main():
     report = {
         "gate": "U0/U1 native UTF-8 example",
         "build_id": system["build_id"],
-        "xos_image_sha256": sha256(ROOT / "build/xos.img"),
+        "xos_image_sha256": sha256(ROOT / "build/xos-install.iso"),
         "seed_manifest_sha256": sha256(seed_path),
         "source_sha256": sha256(SOURCE),
         "expected_sha256": hashlib.sha256(EXPECTED).hexdigest(),

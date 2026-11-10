@@ -35,7 +35,7 @@ def main():
     parser.add_argument('--output',type=Path,default=ROOT/'build/package_p2')
     args=parser.parse_args();system=args.system.resolve();out=args.output.resolve();out.mkdir(parents=True,exist_ok=True)
     manifest=json.loads((system/'manifest.json').read_text())
-    image=system/'xos.img';require(sha_file(image)==manifest['artifacts']['xos.img']['sha256'],'system image mismatch')
+    image=system/'xos-install.iso';require(sha_file(image)==manifest['artifacts']['xos-install.iso']['sha256'],'system image mismatch')
     probe=out/'maintenance_probe.elf';build_probe(system/'sdk',probe)
     report={'status':'failed','system_build_id':manifest['build_id'],'image_sha256':sha_file(image),
         'probe_sha256':sha_file(probe),'checks':[],
@@ -47,7 +47,7 @@ def main():
             with Disk(disk,folder) as backend:
                 backend.command('mkdir','/out');backend.command('import','/out/p2_probe',probe)
             boot=folder/'boot.img';shutil.copyfile(image,boot)
-            guest=Guest(boot,'package_p2',work_disk=disk)
+            guest=Guest(boot,'package_p2',work_disk=disk,iso=True)
             guest.expect(b'xos64> ',timeout=40);send_bytes(guest,b'run\r');guest.expect_supervisor(trace=True,timeout=40);pump(guest,1.5)
             baseline=resources(guest);report['baseline']=baseline
             def command(line,expected,stable=True):

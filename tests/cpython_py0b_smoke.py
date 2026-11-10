@@ -85,7 +85,7 @@ def run(guest, command, timeout=120):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--work", type=Path)
-    parser.add_argument("--image", type=Path, default=ROOT / "build/xos.img")
+    parser.add_argument("--image", type=Path, default=ROOT / "build/xos-install.iso")
     args = parser.parse_args()
     work, build_report = (args.work, None) if args.work else latest_work()
     if build_report is None:
@@ -130,7 +130,7 @@ def main():
             source.write_text(text)
             transfer(disk, "import", f"/tmp/{name}", source)
 
-        guest = Guest(args.image, "cpython_py0b", work_disk=disk)
+        guest = Guest(args.image, "cpython_py0b", work_disk=disk, iso=True)
         try:
             guest.expect(b"xos64> ", timeout=30)
             start = len(guest.output)

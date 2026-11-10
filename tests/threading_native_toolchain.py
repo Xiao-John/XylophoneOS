@@ -27,20 +27,20 @@ def main():
     guest=None
     try:
         with tempfile.TemporaryDirectory(prefix='xos_thread_native_') as folder:
-            temp=Path(folder);disk=temp/'candidate.img';image=temp/'boot.img'
+            temp=Path(folder);disk=temp/'candidate.img';image=temp/'boot.iso'
             with tarfile.open(args.release_images) as archive:
                 members=[m for m in archive if m.isfile() and m.name.endswith('/work_disk.img')]
                 assert len(members)==1
                 with archive.extractfile(members[0]) as source,disk.open('wb') as output:
                     shutil.copyfileobj(source,output)
-            shutil.copyfile(build/'xos.img',image)
+            shutil.copyfile(build/'xos-install.iso',image)
             inputs={
                 'thread_c.c':b'#include <stdio.h>\nint main(void){puts("[legacy] native GCC C=ok");return 0;}\n',
                 'thread_cpp.cpp':b'#include <string>\n#include <cstdio>\nint main(){std::string s("[legacy] native G++ C++=ok");std::puts(s.c_str());return 0;}\n',
                 'thread_bad.c':b'int main(void) { this is not C; }\n'}
             for name,data in inputs.items():
                 path=temp/name;path.write_bytes(data);transfer(disk,'import','/src/'+name,path)
-            guest=Guest(image,'threading_native',work_disk=disk)
+            guest=Guest(image,'threading_native',iso=True,work_disk=disk)
             guest.expect(b'xos64> ',timeout=30);send_bytes(guest,b'run\r')
             guest.expect_supervisor(trace=True,timeout=30);pump(guest,1.5)
             baseline=resources(guest);report['resource_baseline']=baseline

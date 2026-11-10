@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Exercise the deployed Aurora desktop through real QEMU PS/2 input and QMP.
 
 Works on Windows as well as POSIX: serial output uses a reader thread, not

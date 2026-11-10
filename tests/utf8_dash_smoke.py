@@ -29,7 +29,7 @@ def sha256(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dash", type=Path, required=True)
-    parser.add_argument("--image", type=Path, default=ROOT / "build/xos.img")
+    parser.add_argument("--image", type=Path, default=ROOT / "build/xos-install.iso")
     parser.add_argument("--report", type=Path,
                         default=ROOT / "build/utf8_dash_report.json")
     args = parser.parse_args()
@@ -48,7 +48,7 @@ def main():
         for path in ("/usr", "/usr/bin", "/tmp"):
             transfer(disk, "mkdir", path)
         transfer(disk, "import", "/usr/bin/dash", args.dash)
-        guest = Guest(args.image, "utf8_dash", work_disk=disk)
+        guest = Guest(args.image, "utf8_dash", iso=True, work_disk=disk)
         try:
             guest.expect(b"xos64> ", timeout=30)
             start = len(guest.output)

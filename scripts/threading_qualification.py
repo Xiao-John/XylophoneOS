@@ -37,7 +37,7 @@ def main():
         assert sha(ROOT/path)==digest,'stale system source '+path
     qemu=Path(shutil.which(os.environ.get('QEMU','qemu-system-x86_64'))).resolve()
     result={'status':'passed_scoped_T0_T1_T2','base_commit':'9c896df90c2d589989b5888a495108b36959c684',
-            'kernel_build_id':kernel['build_id'],'boot_image_sha256':sha(BUILD/'xos.img'),
+            'kernel_build_id':kernel['build_id'],'boot_image_sha256':sha(BUILD/'xos-install.iso'),
             'kernel_elf_sha256':sha(BUILD/'kernel.elf'),'kernel_binary_bytes':(BUILD/'kernel.bin').stat().st_size,
             'sdk_manifest_sha256':sha(sdk_path),'probe_manifest_sha256':sha(BUILD/'threading_probe_manifest.json'),
             'source_profile':sdk['profile'],

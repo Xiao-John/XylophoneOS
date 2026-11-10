@@ -63,7 +63,7 @@ def main():
     manifest = json.loads((build / "manifest.json").read_text())
     checks = []
     report = {"build_id": manifest["build_id"], "checks": checks, "status": "failed"}
-    report["image_sha256"] = manifest["artifacts"]["xos.img"]["sha256"]
+    report["image_sha256"] = manifest["artifacts"]["xos-install.iso"]["sha256"]
     guest = None
     temporary = None
     try:
@@ -100,7 +100,7 @@ def main():
         temporary = tempfile.TemporaryDirectory(prefix="xos_e04_")
         disk = Path(temporary.name) / "work.img"
         disk.write_bytes(make_image())
-        guest = Guest(build / "xos.img", "process_smoke", work_disk=disk)
+        guest = Guest(build / "xos-install.iso", "process_smoke", work_disk=disk, iso=True)
         report["command"] = guest.command
         guest.expect(b"xos64> ", timeout=20)
         start = len(guest.output)

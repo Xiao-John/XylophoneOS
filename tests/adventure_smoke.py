@@ -98,7 +98,7 @@ def main():
     system = json.loads((ROOT / "build/manifest.json").read_text())
     report = {"gate": "ADV0 in-XOS build + Chinese output",
               "build_id": system["build_id"],
-              "xos_image_sha256": sha256(ROOT / "build/xos.img"),
+              "xos_image_sha256": sha256(ROOT / "build/xos-install.iso"),
               "checks": [], "status": "failed"}
     with tempfile.TemporaryDirectory(prefix="xos_adventure_") as folder:
         folder = Path(folder)
@@ -153,7 +153,7 @@ def main():
         dash = latest(".cache/xos_seed/dash/*/build/src/dash")
         transfer(disk, "import", "/usr/bin/dash", dash)
 
-        guest = Guest(ROOT / "build/xos.img", "adventure", work_disk=disk)
+        guest = Guest(ROOT / "build/xos-install.iso", "adventure", work_disk=disk, iso=True)
         try:
             guest.expect(b"xos64> ", timeout=30)
             start = len(guest.output)

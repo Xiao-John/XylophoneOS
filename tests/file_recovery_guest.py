@@ -14,8 +14,8 @@ from xypm_format import sha_file
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--system',type=Path,default=ROOT/'build/audit_01/system');args=parser.parse_args()
     out=ROOT/'build/audit_01/recovery_guest';out.mkdir(parents=True,exist_ok=True)
-    system=json.loads((args.system/'manifest.json').read_text());image=args.system/'xos.img'
-    assert sha_file(image)==system['artifacts']['xos.img']['sha256']
+    system=json.loads((args.system/'manifest.json').read_text());image=args.system/'xos-install.iso'
+    assert sha_file(image)==system['artifacts']['xos-install.iso']['sha256']
     report={'status':'failed','build_id':system['build_id'],'image_sha256':sha_file(image),'checks':[]}
     guest=None
     try:
@@ -30,7 +30,7 @@ def main():
                 with Disk(disk,temp) as backend:
                     for i,(path,body) in enumerate(inputs.items()):
                         source=temp/(mode+str(i));source.write_bytes(body);backend.command('import','/'+path,source)
-                guest=Guest(image,'recovery_'+mode,work_disk=disk)
+                guest=Guest(image,'recovery_'+mode,work_disk=disk,iso=True)
                 guest.expect(b'xos64> ',timeout=40);send_bytes(guest,b'run\r');guest.expect_supervisor(timeout=40);pump(guest,1.5)
                 baseline=resources(guest)
                 if mode=='corrupt':
@@ -55,7 +55,7 @@ def main():
                         assert backend.export('/target.txt').read_bytes()==(b'old bytes' if mode=='rollback' else b'new bytes')
                 report['checks'].append({'name':mode,'passed':True,'resources':baseline})
                 if mode=='rollback':
-                    guest=Guest(image,'recovery_reboot',work_disk=disk)
+                    guest=Guest(image,'recovery_reboot',work_disk=disk,iso=True)
                     guest.expect(b'xos64> ',timeout=40);send_bytes(guest,b'run\r');guest.expect_supervisor(timeout=40);pump(guest,1.5)
                     command(guest,'cat target.txt',b'old bytes');guest.close();guest=None
                     report['checks'].append({'name':'rollback_idempotent_second_boot','passed':True})

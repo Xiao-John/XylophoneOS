@@ -20,7 +20,7 @@ from task_smoke import pump, send_bytes
 from work_disk import transfer
 
 DEFAULT_WORK = ROOT / ".cache/xos_seed/cpython/0739062ab231f71676c8"
-DEFAULT_IMAGE = ROOT / "build/cpython_py3_b2/system/xos.img"
+DEFAULT_IMAGE = ROOT / "build/cpython_py3_b2/system/xos-install.iso"
 FIXTURE = ROOT / "tests/fixtures/cpython_py3_b2/timezone_probe.py"
 
 
@@ -53,7 +53,7 @@ def main():
             transfer(disk, "mkdir", "/work")
             transfer(disk, "mkdir", "/work/py3b2")
             transfer(disk, "import", "/work/py3b2/timezone_probe.py", FIXTURE)
-            guest = Guest(image, "py3_b2_realtime_tz", cpu="qemu64,+rdrand", work_disk=disk)
+            guest = Guest(image, "py3_b2_realtime_tz", cpu="qemu64,+rdrand", work_disk=disk, iso=True)
             guest.expect(b"xos64> ", timeout=30)
             start = len(guest.output)
             send_bytes(guest, b"run\r")

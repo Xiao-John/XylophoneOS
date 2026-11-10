@@ -24,7 +24,7 @@ from package_p2_verify_guest import fixtures,make_archive
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--system',type=Path,required=True);parser.add_argument('--xypm-build',type=Path,required=True);parser.add_argument('--profile',type=Path,default=ROOT/'config/package/xos_x86_64_static_single_b2_v1.json');parser.add_argument('--output',type=Path,required=True)
     args=parser.parse_args();system=args.system.resolve();out=args.output.resolve();out.mkdir(parents=True,exist_ok=True)
-    system_info=load_json(system/'manifest.json');image=system/'xos.img';require(sha_file(image)==system_info['artifacts']['xos.img']['sha256'],'system image mismatch')
+    system_info=load_json(system/'manifest.json');image=system/'xos-install.iso';require(sha_file(image)==system_info['artifacts']['xos-install.iso']['sha256'],'system image mismatch')
     build=load_json(args.xypm_build);elf=Path(build['elf']);profile=load_json(args.profile)
     report={'status':'failed','system_build_id':system_info['build_id'],'image_sha256':sha_file(image),'xypm_elf_sha256':sha_file(elf),'xypm_package_sha256':build['sha256'],'test_sha256':sha_file(Path(__file__)),'checks':[],'not_run':['stepwise_fault_injection','power_loss','sector_tearing']};guest=None
     try:
@@ -40,7 +40,7 @@ def main():
                 sentinel=root/'sentinel';sentinel.write_bytes(b'user data');backend.command('import','/out/sentinel',sentinel)
             boot=root/'boot.img';shutil.copyfile(image,boot)
             def start():
-                g=Guest(boot,'package_p2_transactions',work_disk=disk);g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=40);pump(g,1.5);return g
+                g=Guest(boot,'package_p2_transactions',work_disk=disk,iso=True);g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=40);pump(g,1.5);return g
             guest=start();baseline=resources(guest);report['baseline']=baseline
             def command(line,expected,timeout=300):
                 begin=len(guest.output);send_bytes(guest,line.encode()+b'\r');guest.expect(expected,start=begin,timeout=timeout);guest.expect_supervisor(start=begin,timeout=timeout);data=bytes(guest.output)[begin:];require(resources(guest)==baseline,'resources drift after '+line);return data

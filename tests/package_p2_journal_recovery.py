@@ -39,7 +39,7 @@ def journal_bytes(rows, directories):
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--system',type=Path,required=True);parser.add_argument('--output',type=Path,required=True)
     args=parser.parse_args();system=args.system.resolve();out=args.output.resolve();out.mkdir(parents=True,exist_ok=True)
-    manifest=json.loads((system/'manifest.json').read_text());image=system/'xos.img';require(sha_file(image)==manifest['artifacts']['xos.img']['sha256'],'system image mismatch')
+    manifest=json.loads((system/'manifest.json').read_text());image=system/'xos-install.iso';require(sha_file(image)==manifest['artifacts']['xos-install.iso']['sha256'],'system image mismatch')
     report={'status':'failed','system_build_id':manifest['build_id'],'image_sha256':sha_file(image),'test_sha256':sha_file(Path(__file__)),
             'checks':[],'not_run':['actual_xypm_transaction_producer','power_loss','sector_tearing']};guest=None
     try:
@@ -79,7 +79,7 @@ def main():
                     if case=='committed':backend.command('import','/var/lib/xypm/txdata/committed',temp_file('commit',commit))
                     if case=='corrupt_commit':backend.command('import','/var/lib/xypm/txdata/committed',temp_file('commit',commit[:-1]+bytes([commit[-1]^1])))
                     if case in ('commit_moved','commit_orphan'):backend.command('import','/var/lib/xypm/transaction_commit',temp_file('commit',commit))
-                guest=Guest(boot,'package_p2_recover_'+case,work_disk=disk);guest.expect(b'xos64> ',timeout=40);send_bytes(guest,b'run\r');guest.expect_supervisor(trace=True,timeout=40);pump(guest,1.5)
+                guest=Guest(boot,'package_p2_recover_'+case,work_disk=disk,iso=True);guest.expect(b'xos64> ',timeout=40);send_bytes(guest,b'run\r');guest.expect_supervisor(trace=True,timeout=40);pump(guest,1.5)
                 baseline=resources(guest);start=len(guest.output);send_bytes(guest,b'maint-recover-boot\r');guest.expect_supervisor(start=start,timeout=120)
                 output=bytes(guest.output)[start:];require(resources(guest)==baseline,'resource drift in '+case)
                 success=case in ('rollback','partial_rollback','committed','commit_moved','commit_orphan','unpublished')

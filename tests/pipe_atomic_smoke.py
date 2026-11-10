@@ -44,10 +44,10 @@ def main():
     try:
         sdk=args.system/'sdk';manifest_path=args.system/'manifest.json'
         manifest=json.loads(manifest_path.read_text());sdk_manifest=json.loads((sdk/'manifest.json').read_text())
-        image=args.system/'xos.img'
+        image=args.system/'xos-install.iso'
         report.update(system_build_id=manifest['build_id'],system_manifest_sha256=sha(manifest_path),
                       xos_sha256=sha(image),sdk_manifest_sha256=sha(sdk/'manifest.json'))
-        if sha(image)!=manifest['artifacts']['xos.img']['sha256'] or sdk_manifest['build_id']!=manifest['build_id']:
+        if sha(image)!=manifest['artifacts']['xos-install.iso']['sha256'] or sdk_manifest['build_id']!=manifest['build_id']:
             raise AssertionError('kernel/SDK receipt mismatch')
         source=ROOT/'tests/fixtures/dash_c1/pipe_atomic.c'
         for path in (source,Path(__file__).resolve(),ROOT/'src/kernel/arch/x86_64/tasks.cpp',
@@ -81,7 +81,7 @@ def main():
             folder=Path(folder_name);disk=folder/'work.img';private=folder/'boot.img'
             shutil.copyfile(image,private);create_fat32(disk,512)
             transfer(disk,'mkdir','/tests');transfer(disk,'import','/tests/pipe_atomic',elf)
-            guest=Guest(private,'pipe_atomic_'+run_id[:12],work_disk=disk)
+            guest=Guest(private,'pipe_atomic_'+run_id[:12],work_disk=disk,iso=True)
             report['qemu_command']=guest.command;qemu=Path(guest.command[0])
             report['tools']['qemu']={'path':str(qemu.resolve()),'sha256':sha(qemu),
                 'version':subprocess.check_output([str(qemu),'--version'],text=True).splitlines()[0]}

@@ -66,11 +66,11 @@ def main():
         if expected != actual:
             raise SystemExit(f"Build does not include current {source}; rebuild before testing")
 
-    system_image = build / "xos.img"
+    system_image = build / "xos-install.iso"
     system_hash = hashlib.sha256(system_image.read_bytes()).hexdigest()
-    expected_system_hash = manifest.get("artifacts", {}).get("xos.img", {}).get("sha256")
+    expected_system_hash = manifest.get("artifacts", {}).get("xos-install.iso", {}).get("sha256")
     if expected_system_hash != system_hash:
-        raise SystemExit("build/xos.img does not match build/manifest.json")
+        raise SystemExit("build/xos-install.iso does not match build/manifest.json")
     probe_hash = hashlib.sha256(image.read_bytes()).hexdigest()
     expected_probe_hash = manifest.get("artifacts", {}).get(image.name, {}).get("sha256")
     if expected_probe_hash != probe_hash:

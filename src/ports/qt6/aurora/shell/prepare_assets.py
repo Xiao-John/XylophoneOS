@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Compile the preserved GUI-Desktop artwork (host dependency: PySide6)."""
 from pathlib import Path
 import hashlib

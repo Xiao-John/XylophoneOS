@@ -34,8 +34,8 @@ def main():
     parser.add_argument('--system', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args(); system = args.system.resolve(); out = args.output.resolve(); out.mkdir(parents=True, exist_ok=True)
-    manifest = json.loads((system/'manifest.json').read_text()); image = system/'xos.img'
-    require(sha_file(image) == manifest['artifacts']['xos.img']['sha256'], 'system image mismatch')
+    manifest = json.loads((system/'manifest.json').read_text()); image = system/'xos-install.iso'
+    require(sha_file(image) == manifest['artifacts']['xos-install.iso']['sha256'], 'system image mismatch')
     probe = out/'gate_probe.elf'; build_probe(system/'sdk', probe)
     report = {'status': 'failed', 'system_build_id': manifest['build_id'], 'image_sha256': sha_file(image),
               'probe_sha256': sha_file(probe), 'test_sha256': sha_file(Path(__file__)), 'checks': [],
@@ -52,7 +52,7 @@ def main():
                 backend.command('import', '/out/sentinel', sentinel)
             boot = folder/'boot.img'; shutil.copyfile(image, boot)
             def start(work_disk=disk):
-                g = Guest(boot, 'package_p2_persistent_gate', work_disk=work_disk)
+                g = Guest(boot, 'package_p2_persistent_gate', work_disk=work_disk, iso=True)
                 g.expect(b'xos64> ', timeout=40); send_bytes(g, b'run\r')
                 g.expect_supervisor(trace=True, timeout=40); pump(g, 1.5)
                 return g

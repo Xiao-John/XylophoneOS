@@ -21,7 +21,7 @@ from work_disk import transfer
 
 
 FIXTURE = ROOT / "tests/fixtures/cpython_py3_b4/compression_probe.py"
-DEFAULT_IMAGE = ROOT / "build/iso_capacity/normal/xos.img"
+DEFAULT_IMAGE = ROOT / "build/iso_capacity/normal/xos-install.iso"
 DEFAULT_REPORT = ROOT / ".cache/xos_seed/cpython/compression/guest_report.json"
 
 
@@ -80,7 +80,7 @@ def main():
         transfer(disk, "mkdir", "/work/py3b4")
         transfer(disk, "import", "/work/py3b4/compression_probe.py", FIXTURE)
 
-        guest = Guest(image, "cpython_py3_b4", work_disk=disk)
+        guest = Guest(image, "cpython_py3_b4", work_disk=disk, iso=True)
         try:
             guest.expect(b"xos64> ", timeout=30)
             start = len(guest.output)

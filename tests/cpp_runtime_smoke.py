@@ -101,7 +101,7 @@ def main():
             raise SystemExit(f"Build does not include current {source_name}; rebuild before testing")
     report = {
         "build_id": manifest["build_id"],
-        "system_image_sha256": manifest["artifacts"]["xos.img"]["sha256"],
+        "system_image_sha256": manifest["artifacts"]["xos-install.iso"]["sha256"],
         "probe_sha256": hashlib.sha256(image.read_bytes()).hexdigest(),
         "pt_tls": check_tls_program_header(image),
         "checks": [],

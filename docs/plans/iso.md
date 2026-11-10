@@ -39,7 +39,7 @@
 ## A 阶段拆分
 
 - **A0（已通过）**：独立探针用 ATAPI PIO 读 CD 的 PVD，证明客体侧可以不依赖
-  BIOS 读 ISO。没有改现有 `xos.iso` 启动路径。
+  BIOS 读 ISO。没有改当时的嵌入式 ISO 启动路径（该 legacy 路径现已废除）。
 - **A1（已通过）**：最小 ISO9660 单层目录查找，读出 `KERNEL.BIN`、`DASH.ELF`；
   支持多扇区文件（测试用 2100/5000 字节）。
 - **A2（已通过）**：loader 从 ISO 读 `KERNEL.BIN` 并直接装入 1 MiB；
@@ -55,7 +55,7 @@
 - 独立 `tests/fixtures/cd_probe/` 启动镜像，经 QEMU `-cdrom` 启动；
 - ATAPI PIO 读取 ISO 的 PVD（LBA 16），串口打印 `CD001`；
 - 失败时打印 status/error，不静默继续；
-- 不修改 `xos.iso`、boot sector、loader 或 kernel 的现有路径。
+- 不修改嵌入式 ISO、boot sector、loader 或 kernel 的既有路径（嵌入式 ISO 已随 legacy 废除）。
 
 证据：`tests/cd_atapi_probe.py` 构建临时 ISO 并启动，串口输出
 `CDTEST ok: CD001`；报告 `build/cd_atapi_report.json`，ISO SHA256

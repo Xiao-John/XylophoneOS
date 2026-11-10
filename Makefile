@@ -36,14 +36,12 @@ run_file: build
 run_install: install-iso
 	$(PYTHON) scripts/run_qemu.py --install-iso
 
-run_iso: build
-	$(PYTHON) scripts/run_qemu.py --iso
-
+# Target name kept for user habits; now boots xos-install.iso (legacy floppy removed).
 run_floppy: build
 	$(PYTHON) scripts/run_qemu.py
 
 run_vga: build
-	$(PYTHON) scripts/run_qemu.py --iso --vga
+	$(PYTHON) scripts/run_qemu.py --iso-file --vga
 
 run_real_mode: build
 	$(PYTHON) scripts/run_qemu.py --real-mode

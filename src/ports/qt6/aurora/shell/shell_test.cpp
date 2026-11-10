@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 #include "background.h"
 #include "docker.h"
 #include "windowedge.h"

@@ -67,7 +67,7 @@ def main():
         for name, artifact in manifest["artifacts"].items():
             if hashlib.sha256((build / name).read_bytes()).hexdigest() != artifact["sha256"]:
                 raise AssertionError(f"Artifact changed: {name}")
-        report["image_sha256"] = manifest["artifacts"]["xos.img"]["sha256"]
+        report["image_sha256"] = manifest["artifacts"]["xos-install.iso"]["sha256"]
 
         # Check the linked result, rather than relying solely on compiler flags.
         elf = (build / "kernel.elf").read_bytes()
@@ -96,14 +96,14 @@ def main():
         checks.append("elf_static_rx_r_rw_no_implicit_runtime_or_simd")
 
         from run_qemu import qemu_command
-        qemu_version = subprocess.check_output([qemu_command(build / "xos.img")[0], "--version"],
+        qemu_version = subprocess.check_output([qemu_command(build / "xos-install.iso")[0], "--version"],
                                                text=True).splitlines()[0]
         if qemu_version != "QEMU emulator version " + LOCK["qemu"]:
             raise AssertionError(f"Unpinned QEMU: {qemu_version}")
         report["qemu"] = qemu_version
 
         symbols = manifest["symbols"]
-        guest = Guest(build / "xos.img", "kernel_smoke")
+        guest = Guest(build / "xos-install.iso", "kernel_smoke")
         report["command"] = guest.command
         try:
             guest.expect(b"arch=x86_64 build=" + manifest["build_id"].encode())
@@ -181,7 +181,13 @@ def main():
             guest.qmp("pmemsave", {"val": 0x1000, "size": 0x5000,
                                    "filename": str(build / "bootstrap_page_tables.bin")})
             tables = (build / "bootstrap_page_tables.bin").read_bytes()
-            leaves = struct.unpack_from("<1024Q", tables, 0x3000)
+            # The ISO loader keeps PML4/PDPT/PD at 0x1000-0x3000 (read above for
+            # the PDE walk) and its leaf tables at page_table_base 0x10000; the
+            # first two cover VA 0-4 MiB where the kernel image lives.
+            guest.qmp("pmemsave", {"val": 0x10000, "size": 0x2000,
+                                   "filename": str(build / "bootstrap_leaf_tables.bin")})
+            leaves = struct.unpack("<1024Q",
+                                   (build / "bootstrap_leaf_tables.bin").read_bytes())
             if leaves[0] & 1:
                 raise AssertionError("Null page mapped")
             for value in leaves:
@@ -235,7 +241,7 @@ def main():
         finally:
             guest.close()
 
-        guest = Guest(build / "xos.img", "pf")
+        guest = Guest(build / "xos-install.iso", "pf")
         try:
             panic_output = expect_panic(guest, b"pf", 14, "page_fault")
             if b"cr2=0x00000000dead0000" not in panic_output:
@@ -247,7 +253,7 @@ def main():
         finally:
             guest.close()
 
-        guest = Guest(build / "xos.img", "gp")
+        guest = Guest(build / "xos-install.iso", "gp")
         try:
             panic_output = expect_panic(guest, b"gp", 13, "general_protection")
             if b"error=0x0000000000000182" not in panic_output:
@@ -257,7 +263,7 @@ def main():
         finally:
             guest.close()
 
-        guest = Guest(build / "xos.img", "ud")
+        guest = Guest(build / "xos-install.iso", "ud")
         try:
             (build / "fault_ud.log").write_bytes(
                 expect_panic(guest, b"ud", 6, "invalid_opcode"))
@@ -265,7 +271,7 @@ def main():
         finally:
             guest.close()
 
-        guest = Guest(build / "xos.img", "div")
+        guest = Guest(build / "xos-install.iso", "div")
         try:
             (build / "fault_div.log").write_bytes(
                 expect_panic(guest, b"div", 0, "divide_error"))
@@ -273,7 +279,7 @@ def main():
         finally:
             guest.close()
 
-        guest = Guest(build / "xos.img", "df")
+        guest = Guest(build / "xos-install.iso", "df")
         try:
             (build / "fault_df.log").write_bytes(
                 expect_panic(guest, b"df", 8, "double_fault"))
@@ -281,7 +287,7 @@ def main():
         finally:
             guest.close()
 
-        guest = Guest(build / "xos.img", "no_nx", cpu="qemu64,-nx")
+        guest = Guest(build / "xos-install.iso", "no_nx", cpu="qemu64,-nx")
         try:
             guest.expect(b"BOOT_ERROR: cpu_requires_long_mode_nx_pae")
             registers = guest.qmp("human-monitor-command", {"command-line": "info registers"})
@@ -314,7 +320,7 @@ def main():
         with socket.socket() as reservation:
             reservation.bind(("127.0.0.1", 0))
             port = reservation.getsockname()[1]
-        guest = Guest(build / "xos.img", "symbol_debug", debug_port=port)
+        guest = Guest(build / "xos-install.iso", "symbol_debug", debug_port=port)
         try:
             deadline = time.monotonic() + 5
             while not Path(guest.qmp_path).exists() and time.monotonic() < deadline:

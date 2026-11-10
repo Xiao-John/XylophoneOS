@@ -26,7 +26,7 @@ def main():
     args=parser.parse_args();system=args.system.resolve();dash=json.loads(args.dash_manifest.read_text())
     metadata=json.loads((system/'manifest.json').read_text());binary=ROOT/dash['elf']
     assert sha_file(binary)==dash['sha256']
-    report={'status':'failed','system_build_id':metadata['build_id'],'image_sha256':sha_file(system/'xos.img'),
+    report={'status':'failed','system_build_id':metadata['build_id'],'image_sha256':sha_file(system/'xos-install.iso'),
             'dash_sha256':dash['sha256'],'checks':[],'not_run':['full_threaded_newlib_CXX_SDK_requalification','B2_full_native_compiler_chain']}
     if args.iso_only:
         previous=json.loads((system/'merge_report.json').read_text())
@@ -72,7 +72,7 @@ def main():
      return 0;
     }''')
                 probe=folder/'spawn';build_probe(source,probe,system/'sdk');transfer('import','/out/spawn',probe)
-                guest=Guest(system/'xos.img','thread_merge',work_disk=disk)
+                guest=Guest(system/'xos-install.iso','thread_merge',iso=True,work_disk=disk)
                 guest.expect(b'xos64> ',timeout=40);send_bytes(guest,b'run\r');guest.expect_supervisor(trace=True,timeout=40);pump(guest,1.5)
                 baseline=resources(guest);report['baseline']=baseline
                 for mode,marker in [('core',b'shared stack tls fpu preempt prepare rollback join detach wait timeout pins=ok'),

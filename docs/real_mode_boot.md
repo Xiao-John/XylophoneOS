@@ -1,7 +1,8 @@
 # 16 位启动原型
 
 本文记录保留的 `build/real_mode.img` 实模式输入输出练习，使用 `make run_real_mode`。
-0002 起，默认 `build/xos.img` 已通过独立的 `kernel_loader.asm` 进入 x86-64 C++ 内核；
+0002 起，主线由独立的 `kernel_loader` 装载 ELF 进入 x86-64 C++ 内核；legacy
+裸盘/软盘镜像已废除，当前常规引导产物是 file-backed 的 `build/xos-install.iso`。
 该主线见 `architecture_and_boot.md`，不要将本文的旧练习限制当作整个系统的状态。
 
 ## 启动与地址布局
@@ -27,8 +28,9 @@
 提供 VGA 文本输出。所有命令仍在同一个实模式地址空间内执行。
 
 `XOS2` 只防止明显装载错误，不是校验和、签名、安全启动或完整格式验证。
-`xos.img` 的软盘布局仍保留为兼容路径；`make run` 默认改用 El Torito ISO。
-两者都不支持分区、任意 CHS 或 UEFI。
+本文的 `real_mode.img` 是唯一保留的软盘布局路径；`make run` 默认启动 file-backed
+El Torito install ISO，legacy 软盘/嵌入式内核镜像已废除。两者都不支持分区、
+任意 CHS 或 UEFI。
 没有 A20 设置、E820 内存图、GDT、页表、异常接管、保护隔离或用户态。
 当前 BIOS/QEMU 的 A20 状态不是 XOS 已实现的机制。
 

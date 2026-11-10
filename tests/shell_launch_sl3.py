@@ -26,7 +26,7 @@ def main() -> int:
     diag_elf = system / "user_xos_diag.image.elf"
     fault_elf = system / "user_fault.image.elf"
     hello_elf = system / "user_hello.image.elf"
-    for path in (diag_elf, fault_elf, hello_elf, system / "xos.img"):
+    for path in (diag_elf, fault_elf, hello_elf, system / "xos-install.iso"):
         if not path.is_file():
             raise SystemExit(f"missing build artifact: {path}")
     dash_candidates = list((ROOT / ".cache/xos_seed/dash").glob("*/build/src/dash.runtime"))
@@ -78,7 +78,7 @@ def main() -> int:
                 return cmd
 
             with patch.object(boot_smoke, "qemu_command", qemu):
-                guest = Guest(system / "xos.img", "sl3diag", work_disk=disk)
+                guest = Guest(system / "xos-install.iso", "sl3diag", work_disk=disk, iso=True)
             report["qemu_command"] = guest.command
             guest.expect(b"xos64> ", timeout=30)
             send_bytes(guest, b"run\r")

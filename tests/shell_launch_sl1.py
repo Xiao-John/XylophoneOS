@@ -66,7 +66,7 @@ def main() -> int:
                 return cmd
 
             with patch.object(boot_smoke, "qemu_command", qemu):
-                guest = Guest(ROOT / "build/xos.img", "sl1probe", work_disk=disk)
+                guest = Guest(ROOT / "build/xos-install.iso", "sl1probe", work_disk=disk, iso=True)
             report["qemu_command"] = guest.command
             guest.expect(b"xos64> ", timeout=30)
             send_bytes(guest, b"run\r")

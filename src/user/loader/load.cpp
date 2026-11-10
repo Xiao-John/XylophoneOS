@@ -340,6 +340,8 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
         }
         result = syscall(replacing ? sys_process_exec_commit : sys_process_start, static_cast<u64>(child),
                          reinterpret_cast<u64>(entry_pointer), commit_flags);
+        if (result < 0) {
+        }
         if (result < 0 && diagnostic != nullptr) {
             *diagnostic = {execution::launch_stage::start, result, elf::error::none};
         }
@@ -383,7 +385,7 @@ i64 spawn_file_impl(const char* path, u32 argc, const char* const* argv, const s
     }
     u32 handle = 0, size = 0, version = 0;
     const i64 opened = file_client.open(path, file::read_only, handle, size, version);
-    (void)version; // The held read-only handle pins the opened version until close.
+    (void)version; // The held read-only handle pins the opened version until close;
     if (opened < 0) { return opened; }
     opened_file source{&file_client, handle};
     return spawn_reader(path, size, file_read, &source, argc, argv, true, handle, options);

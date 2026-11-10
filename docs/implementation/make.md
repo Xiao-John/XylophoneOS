@@ -36,9 +36,9 @@ XOS 当前没有可用于 Make 的真实修改时间。这个 profile 要求显�
 完整 GNU Make 函数或任意外部 Shell 兼容保证。
 
 当前进程总数、fork 深度、256 字节单参数和环境大小仍受 XOS ABI 限制；过长
-recipe 或耗尽进程资源会明确失败。Make 需要受限构造深度 2，recipe Dash 保留
-该深度，然后可将深度 1 委派给 GNU driver。此权限由启动方的明确 profile 授予，
-Make 不自行提升权限。
+recipe 或耗尽进程资源会明确失败。SL2 起 Make 经普通 `fork→execve` 启动 recipe
+Dash，创建权由共同 inherit-create 契约继承（不再依赖启动方 depth-2 profile 或
+`xos_posix_spawn_make` 名称特判）；Make 不自行提升权限。
 
 ## 待执行的客体例子
 

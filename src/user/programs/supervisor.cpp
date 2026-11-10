@@ -377,8 +377,29 @@ bool builtin_named(const char* name) {
     for (const auto* item : names) { if (equal(name, item)) { return true; } }
     return false;
 }
+// SL2 authority modes for launch_file:
+//  spawn_depth: legacy grant(1)/delegate(>1) — kept for exec-driver compat.
+//  inherit_create: copy caller's can_create onto the child (common contract).
+//  Ordinary bare commands and tty-run use inherit_create; exec-file uses neither;
+//  exec-driver keeps the historical grant.
+namespace {
+struct launch_prepare_ctx {
+    bool terminal;
+};
+xos::i64 launch_prepare_child(xos::u64 child, void* context) {
+    const i64 auth = syscall(sys_process_authority, child,
+                             static_cast<u64>(process_authority_mode::copy_from_caller));
+    if (auth != 0) { return auth; }
+    auto* ctx = static_cast<launch_prepare_ctx*>(context);
+    if (ctx != nullptr && ctx->terminal) {
+        return user::shell_terminal::prepare_application(child, nullptr);
+    }
+    return 0;
+}
+}  // namespace
+
 void launch_file(const char* name, u32 argc, char** argv, u32 spawn_depth, bool background, bool diagnosed = false,
-                 bool terminal_session = false) {
+                 bool terminal_session = false, bool inherit_create = false) {
     const auto candidate = execution::resolve(name, "/usr/bin:/bin:/");
     if (candidate.kind != execution::candidate_kind::executable) {
         candidate_error(name, candidate); return;
@@ -403,11 +424,15 @@ void launch_file(const char* name, u32 argc, char** argv, u32 spawn_depth, bool 
     options.environment_count = 1;
     const char* terminal_environment[] = {"PATH=/usr/bin:/bin:/", "TERM=xterm",
         "TERMINFO=/usr/local/share/terminfo", "LINES=24", "COLUMNS=80"};
+    launch_prepare_ctx prepare_ctx{terminal_session};
     if (terminal_session) {
         for (u32 fd = 0; fd < 3; ++fd) options.stdio[fd] = -2;
-        options.prepare_child = user::shell_terminal::prepare_application;
         options.terminal_send_handle = user::shell_terminal::application_send_handle();
         options.environment = terminal_environment; options.environment_count = 5;
+    }
+    if (inherit_create || terminal_session) {
+        options.prepare_child = launch_prepare_child;
+        options.prepare_context = &prepare_ctx;
     }
     execution::launch_diagnostic diagnostic{};
     const i64 child = diagnosed
@@ -716,9 +741,10 @@ void execute(u32 argc, char** argv) {
     } else if (equal(argv[0], "audio") && argc >= 2) {
         audio_job_command(argc, argv);
     } else if (equal(argv[0], "tty-run") && argc >= 2) {
-        launch_file(argv[1], argc - 1, argv + 1, 1, false, false, true);
+        launch_file(argv[1], argc - 1, argv + 1, 0, false, false, true, true);
     } else if (equal(argv[0], "diag") && argc >= 2) {
-        launch_file(argv[1], argc - 1, argv + 1, 0, false, true);
+        // Diagnosed target uses the common inherit-create contract (SL3).
+        launch_file(argv[1], argc - 1, argv + 1, 0, false, true, false, true);
     } else if ((equal(argv[0], "exec-file") || equal(argv[0], "spawn-file") ||
                 equal(argv[0], "exec-driver") || equal(argv[0], "exd")) && argc >= 2) {
         const bool driver = equal(argv[0], "exec-driver") || equal(argv[0], "exd");
@@ -751,12 +777,9 @@ void execute(u32 argc, char** argv) {
         print(checked == 24 && before.free_pages == after.free_pages ? " result=pass resources=stable\n"
                                                                     : " result=FAILED\n");
     } else {
-        // dash is the explicitly configured development shell; make is the
-        // pinned explicit -B build tool. Both may delegate smaller construction
-        // depths to the other and to GNU compiler drivers. Other bare commands
-        // retain the legacy direct-child construction authority.
-        const bool development_tool = equal(argv[0], "dash") || equal(argv[0], "make");
-        launch_file(argv[0], argc, argv, development_tool ? 3u : 1u, false);
+        // SL2: every bare command uses the common inherit-create contract;
+        // no name-based depth grants (shell_launch contract §4).
+        launch_file(argv[0], argc, argv, 0, false, false, false, true);
     }
 }
 }

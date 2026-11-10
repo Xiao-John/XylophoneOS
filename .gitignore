@@ -27,3 +27,10 @@ __pycache__/
 STATE_L.md
 # 本地 git worktree（独立检出，永不入提交）
 /.wt-*/
+build_sl1*.log
+reg_*.log
+sl1_test.log
+build_dash.log
+build_sl2*.log
+build_sl3*.log
+sl3_test.log

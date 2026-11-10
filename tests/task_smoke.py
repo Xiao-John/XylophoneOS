@@ -42,7 +42,7 @@ def main():
     temporary = tempfile.TemporaryDirectory(prefix="xos_e03_")
     disk = Path(temporary.name) / "work.img"
     disk.write_bytes(make_image())
-    guest = Guest(build / "xos.img", "task_smoke", work_disk=disk)
+    guest = Guest(build / "xos-install.iso", "task_smoke", iso=True, work_disk=disk)
     report["command"] = guest.command
     try:
         guest.expect(b"xos64> ", timeout=20)

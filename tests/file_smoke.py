@@ -39,7 +39,7 @@ def main():
     temporary = tempfile.TemporaryDirectory(prefix="xos_e05_")
     disk = Path(temporary.name) / "work.img"
     disk.write_bytes(make_image())
-    guest = Guest(build / "xos.img", "file_smoke", work_disk=disk)
+    guest = Guest(build / "xos-install.iso", "file_smoke", work_disk=disk, iso=True)
     report["command"] = guest.command
     try:
         for name, digest in manifest["sources"].items():
@@ -48,7 +48,7 @@ def main():
         for name, info in manifest["artifacts"].items():
             if hashlib.sha256((build / name).read_bytes()).hexdigest() != info["sha256"]:
                 raise AssertionError(f"Artifact mismatch: {name}")
-        report["image_sha256"] = manifest["artifacts"]["xos.img"]["sha256"]
+        report["image_sha256"] = manifest["artifacts"]["xos-install.iso"]["sha256"]
         guest.expect(b"xos64> ", timeout=20)
         start = len(guest.output)
         send_bytes(guest, b"run\r")

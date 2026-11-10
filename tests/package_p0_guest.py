@@ -25,9 +25,9 @@ def main():
     system=args.system_dir.resolve(); artifacts=args.artifacts.resolve()
     profile=load_json(DEFAULT_PROFILE)
     metadata=load_json(system/'system_manifest.json')
-    image=system/'xos.img'
+    image=system/'xos-install.iso'
     require(metadata['build_id'] in profile['verified_system_builds'],'system not registered for profile')
-    require(sha_file(image)==metadata['artifacts']['xos.img']['sha256'],'image differs from receipt')
+    require(sha_file(image)==metadata['artifacts']['xos-install.iso']['sha256'],'image differs from receipt')
     helper=ROOT/'build/work_disk_host'
     require(helper.is_file(),'existing work_disk_host required; this runner never rebuilds shared tools')
     report={'status':'failed','scope':'P0 payload transfer via existing bridge; no package installation DB',
@@ -54,7 +54,7 @@ def main():
             for path in sorted(stage.rglob('*')):
                 if path.is_file():
                     subprocess.run([str(helper),str(disk),'import','/'+path.relative_to(stage).as_posix(),str(path)],check=True,stdout=subprocess.DEVNULL)
-            guest=Guest(image,'package_p0_guest',work_disk=disk)
+            guest=Guest(image,'package_p0_guest',work_disk=disk,iso=True)
             guest.expect(b'xos64> ',timeout=40);send_bytes(guest,b'run\r')
             guest.expect_supervisor(timeout=40);pump(guest,2)
             def command(line):

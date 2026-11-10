@@ -26,8 +26,8 @@ def main():
     try:
         with tempfile.TemporaryDirectory(prefix="xos_threading_") as folder:
             private = Path(folder)
-            image, disk = private / "boot.img", private / "work.img"
-            shutil.copyfile(build / "xos.img", image)
+            image, disk = private / "boot.iso", private / "work.img"
+            shutil.copyfile(build / "xos-install.iso", image)
             report["image_sha256"] = hashlib.sha256(image.read_bytes()).hexdigest()
             probe = build / "user_threading_core_probe.image.elf"
             report["probe_sha256"] = hashlib.sha256(probe.read_bytes()).hexdigest()
@@ -35,7 +35,7 @@ def main():
             transfer(disk, "mkdir", "/bin")
             transfer(disk, "import", "/bin/threading.elf", probe)
             transfer(disk, "import", "/bin/child.elf", build/"user_demo.image.elf")
-            guest = Guest(image, "threading", work_disk=disk)
+            guest = Guest(image, "threading", iso=True, work_disk=disk)
             guest.expect(b"xos64> ", timeout=30)
             send_bytes(guest, b"run\r")
             guest.expect_supervisor(trace=True, timeout=30)

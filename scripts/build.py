@@ -203,7 +203,7 @@ def main():
     }
     (BUILD / "kernel_layout.inc").write_text("".join(
         f"%define {name} {value}\n" for name, value in layout.items()))
-    for name in ("boot_sector", "stage_two", "kernel_loader"):
+    for name in ("boot_sector", "stage_two"):
         run([
             # bin + ORG resolves absolute references for 16/32-bit mode transitions.
             nasm, "-f", "bin", "-Wall", "-Wno-reloc-abs-word",
@@ -227,35 +227,18 @@ def main():
     boot = (BUILD / "boot_sector.bin").read_bytes()
     if len(boot) != SECTOR_SIZE or boot[-2:] != b"\x55\xaa":
         raise SystemExit("Invalid boot sector size/signature")
-    legacy_available = len(raw_kernel) <= 512 * 1024 and symbols["kernel_end"] <= 0x400000
-    legacy_stages = [("stage_two", "real_mode.img")]
-    if legacy_available:
-        legacy_stages.append(("kernel_loader", "xos.img"))
-    for stage_name, image_name in legacy_stages:
-        stage = (BUILD / f"{stage_name}.bin").read_bytes()
-        if not 6 <= len(stage) <= STAGE_TWO_SECTORS * SECTOR_SIZE:
-            raise SystemExit(f"{stage_name} must fit in the 16-sector window")
-        if stage[0] != 0xeb or stage[2:6] != b"XOS2":
-            raise SystemExit(f"Invalid {stage_name} entry/header")
-        image = bytearray(IMAGE_SIZE)
-        image[:SECTOR_SIZE] = boot
-        image[SECTOR_SIZE:SECTOR_SIZE + len(stage)] = stage
-        if image_name == "xos.img":
-            offset = (1 + STAGE_TWO_SECTORS) * SECTOR_SIZE
-            image[offset:offset + len(raw_kernel)] = raw_kernel
-        temporary = BUILD / (image_name + ".tmp")
-        temporary.write_bytes(image)
-        temporary.replace(BUILD / image_name)
-    if legacy_available:
-        run([sys.executable, str(ROOT / "scripts/make_iso.py"),
-             "--boot", str(BUILD / "boot_sector_iso.bin"),
-             "--loader", str(BUILD / "kernel_loader_iso.bin"),
-             "--kernel", str(BUILD / "kernel.bin"),
-             "--output", str(BUILD / "xos.iso")])
-    else:
-        # Never leave a stale small-kernel legacy image beside a large ISO build.
-        for name in ("xos.img", "xos.iso"):
-            (BUILD / name).unlink(missing_ok=True)
+    # Retained 16-bit exercise image: boot sector plus stage two only.
+    stage = (BUILD / "stage_two.bin").read_bytes()
+    if not 6 <= len(stage) <= STAGE_TWO_SECTORS * SECTOR_SIZE:
+        raise SystemExit("stage_two must fit in the 16-sector window")
+    if stage[0] != 0xeb or stage[2:6] != b"XOS2":
+        raise SystemExit("Invalid stage_two entry/header")
+    image = bytearray(IMAGE_SIZE)
+    image[:SECTOR_SIZE] = boot
+    image[SECTOR_SIZE:SECTOR_SIZE + len(stage)] = stage
+    temporary = BUILD / "real_mode.img.tmp"
+    temporary.write_bytes(image)
+    temporary.replace(BUILD / "real_mode.img")
     empty = BUILD / "empty.bin"
     empty.write_bytes(b"")
     run([sys.executable, str(ROOT / "scripts/make_iso.py"),
@@ -272,11 +255,9 @@ def main():
         result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                 text=True, check=True)
         (BUILD / name).write_text(result.stdout)
-    artifact_names = ["boot_sector.bin", "stage_two.bin", "kernel_loader.bin", "kernel.elf",
+    artifact_names = ["boot_sector.bin", "stage_two.bin", "kernel.elf",
                       "kernel.bin", "boot_sector_iso.bin", "kernel_loader_iso.bin", "kernel_loader_iso_file.bin",
                       "xos-install.iso", "real_mode.img", *user_artifacts]
-    if legacy_available:
-        artifact_names.extend(("xos.img", "xos.iso"))
     artifact_names.extend(str(path.relative_to(BUILD)) for path in sorted((BUILD / "sdk").rglob("*"))
                           if path.is_file())
     manifest = {
@@ -284,7 +265,7 @@ def main():
         "version": (ROOT / "VERSION").read_text().strip(), "source_sha256": source_digest,
         "vm1_probe": args.vm1_probe, "capacity_probe": args.capacity_probe, "terminal_supervisor_probe": args.terminal_supervisor_probe,
         "ncurses_supervisor_probe": args.ncurses_supervisor_probe,
-        "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config, "legacy_images_available": legacy_available,
+        "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config,
         "sources": source_hashes,
         "sdk_directories": [p.relative_to(BUILD / "sdk").as_posix()
                             for p in sorted((BUILD / "sdk").rglob("*")) if p.is_dir()],
@@ -298,7 +279,7 @@ def main():
         },
     }
     (BUILD / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
-    print(f"Built xos-install.iso + real_mode.img | {build_id} | kernel {len(raw_kernel)} bytes | legacy={legacy_available}")
+    print(f"Built xos-install.iso + real_mode.img | {build_id} | kernel {len(raw_kernel)} bytes")
 
 
 if __name__ == "__main__":

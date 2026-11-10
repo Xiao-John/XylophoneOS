@@ -72,8 +72,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
     fatfs_objects = [compile_fatfs(root / "src/third_party/fatfs/ff.c"),
                      compile_fatfs(root / "src/user/services/fatfs_diskio.cpp"),
                      compile_fatfs(root / "src/user/services/fatfs_unicode.cpp")]
-    # The bundle installer grew this translation unit past the legacy image
-    # budget; optimise for size so both xos.img and the ISO path stay available.
+    # The bundle installer grew this translation unit; keep -Os so the
+    # file-backed install ISO stays within its size budget.
     file_ui_object = compile_source(root / "src/user/services/file_ui.cpp", ("-Os",))
     terminal_control_object = compile_source(root / "src/user/services/terminal_control.cpp")
     shell_terminal_object = compile_source(root / "src/user/services/shell_terminal.cpp")
@@ -114,8 +114,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
             source_path = root / "tests/fixtures/ncursesw/terminal_app_probe.cpp"
         extra_flags = ("-w",) if name in libc_programs else ()
         if name == "supervisor":
-            # Keep the embedded supervisor inside the legacy 512 KiB image
-            # budget after the bundle installer additions.
+            # Keep the embedded supervisor compact after the bundle installer
+            # additions.
             extra_flags += ("-Os",)
         if name in ("cpp_runtime_probe", "tls_exit_probe"):
             extra_flags += ("-fuse-cxa-atexit", "-ftls-model=local-exec",

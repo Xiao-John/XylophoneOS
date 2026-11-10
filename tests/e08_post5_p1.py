@@ -42,7 +42,7 @@ def main():
     sdk = verify_current_sdk(sdk_manifest, ROOT / 'build')
     system = json.loads((ROOT / 'build/manifest.json').read_text())
     report = {'schema_version': 1, 'gate': 'E08-post5-P1', 'status': 'failed',
-              'build_id': system['build_id'], 'xos_sha256': sha(ROOT / 'build/xos.img'),
+              'build_id': system['build_id'], 'xos_sha256': sha(ROOT / 'build/xos-install.iso'),
               'seed_manifest_sha256': sha(a.seed_manifest), 'sdk_manifest_sha256': sha(sdk_manifest),
               'sdk_files_sha256': sdk, 'levels': sorted(levels), 'checks': [],
               'commands': [], 'resource_samples': [], 'outputs': {}}

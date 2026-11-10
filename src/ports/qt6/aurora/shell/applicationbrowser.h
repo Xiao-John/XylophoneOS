@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 #ifndef APPLICATIONBROWSER_H
 #define APPLICATIONBROWSER_H
 

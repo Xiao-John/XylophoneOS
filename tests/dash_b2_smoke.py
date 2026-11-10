@@ -53,7 +53,7 @@ def main():
     dash = json.loads(args.dash_manifest.read_text())
     sbase = json.loads(args.sbase_manifest.read_text())
     report = {'status': 'failed', 'system_build_id': system['build_id'],
-              'xos_sha256': sha(args.system/'xos.img'), 'dash_sha256': dash['sha256'],
+              'xos_sha256': sha(args.system/'xos-install.iso'), 'dash_sha256': dash['sha256'],
               'checks': [], 'fixtures': {}, 'configuration': {
                   'system': str(args.system.resolve()),
                   'dash_manifest': str(args.dash_manifest.resolve()),
@@ -64,7 +64,7 @@ def main():
                   'release_archive_sha256_expected': ARCHIVE_SHA256 if args.release_images else None}}
     guest = None
     try:
-        if report['xos_sha256'] != system['artifacts']['xos.img']['sha256']:
+        if report['xos_sha256'] != system['artifacts']['xos-install.iso']['sha256']:
             raise AssertionError('system image does not match manifest')
         dash_elf = ROOT/dash['elf']
         if sha(dash_elf) != dash['sha256']:
@@ -108,7 +108,7 @@ def main():
             transfer(disk, 'import', '/out/spin', spin_probe)
             report['probes'] = {'stdio_probe': sha(stdio_probe), 'spin': sha(spin_probe)}
 
-            guest = Guest(args.system/'xos.img', 'dash_b2', work_disk=disk)
+            guest = Guest(args.system/'xos-install.iso', 'dash_b2', work_disk=disk, iso=True)
             report['qemu_command'] = guest.command
             report['qemu_version'] = subprocess.check_output([guest.command[0], '--version'], text=True).splitlines()[0]
             guest.expect(b'xos64> ', timeout=40)

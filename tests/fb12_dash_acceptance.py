@@ -37,7 +37,7 @@ try:
         for name, line in (('normal', '(exec /usr/bin/xos-diag /bin/hello.elf); echo NORMAL:$?'), ('fault', '(exec /usr/bin/xos-diag /bin/fault.elf); echo FAULT:$?'), ('missing', '(exec /usr/bin/xos-diag /bin/missing); echo MISSING:$?')):
             script = tmp / (name + '.sh'); script.write_text(line + '\n')
             transfer(disk, 'import', '/bin/' + name + '.sh', script)
-        guest = Guest(a.system/'xos.img', str(a.output.relative_to(ROOT/'build')) + '/dash', work_disk=disk, cpu='qemu64,+rdrand')
+        guest = Guest(a.system/'xos-install.iso', str(a.output.relative_to(ROOT/'build')) + '/dash', work_disk=disk, cpu='qemu64,+rdrand', iso=True)
         guest.expect(b'xos64> ', timeout=45); send_bytes(guest, b'run\r'); guest.expect_supervisor(trace=True, timeout=45)
         command(guest, 'demo keep', b'demo: keep')
         for pid in (1, 3, 4): command(guest, f'kill {pid}', b'kill: accepted')

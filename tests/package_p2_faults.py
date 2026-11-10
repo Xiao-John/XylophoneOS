@@ -42,7 +42,7 @@ def sparse_copy(source,dest):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--system',type=Path,required=True);parser.add_argument('--fault-build',type=Path,required=True);parser.add_argument('--profile',type=Path,default=ROOT/'config/package/xos_x86_64_static_single_b2_v1.json');parser.add_argument('--output',type=Path,required=True);parser.add_argument('--operation',choices=('install','upgrade','remove','all'),default='all');args=parser.parse_args()
-    system=args.system.resolve();out=args.output.resolve();out.mkdir(parents=True,exist_ok=True);manifest=load_json(system/'manifest.json');image=system/'xos.img';require(sha_file(image)==manifest['artifacts']['xos.img']['sha256'],'system image mismatch');build=load_json(args.fault_build);elf=Path(build['elf']);profile=load_json(args.profile)
+    system=args.system.resolve();out=args.output.resolve();out.mkdir(parents=True,exist_ok=True);manifest=load_json(system/'manifest.json');image=system/'xos-install.iso';require(sha_file(image)==manifest['artifacts']['xos-install.iso']['sha256'],'system image mismatch');build=load_json(args.fault_build);elf=Path(build['elf']);profile=load_json(args.profile)
     report={'status':'failed','system_build_id':manifest['build_id'],'image_sha256':sha_file(image),'fault_elf_sha256':sha_file(elf),'test_sha256':sha_file(Path(__file__)),'operations':{},'not_run':['power_loss','sector_tearing']};guest=None
     try:
         with tempfile.TemporaryDirectory(prefix='xypm_p2_faults_') as temp:
@@ -58,7 +58,7 @@ def main():
             installed=root/'installed.img';transact(source,installed,profile,'install',package=v1)
             boot=root/'boot.img';shutil.copyfile(image,boot)
             def start(disk):
-                g=Guest(boot,'package_p2_faults',work_disk=disk);g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=40);pump(g,1.0)
+                g=Guest(boot,'package_p2_faults',work_disk=disk,iso=True);g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=40);pump(g,1.0)
                 if b'maintenance: persistent recovery required' not in g.output:
                     begin=len(g.output);send_bytes(g,b'demo quiet\r');g.expect_any((b'demo tasks stopped',b'demo tasks already stopped'),start=begin,timeout=40);g.expect_supervisor(start=begin,timeout=40)
                 return g

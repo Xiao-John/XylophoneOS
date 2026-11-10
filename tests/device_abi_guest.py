@@ -44,7 +44,7 @@ def build(folder, sdk):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--image", type=Path, default=ROOT / "build/xos.img")
+    parser.add_argument("--image", type=Path, default=ROOT / "build/xos-install.iso")
     parser.add_argument("--output", type=Path, default=ROOT / "build/device_abi_1a")
     parser.add_argument("--sdk", type=Path, default=ROOT / "build/threading_sdk",
                         help="version-matched threading SDK (scripts/build_threading_sdk.py output)")
@@ -62,7 +62,7 @@ def main():
                   "image_sha256": sha256(a.image), "elf_sha256": sha256(elf),
                   "source_sha256": source_sha, "abi_header_sha256": header_sha,
                   "checks": [], "not_run": ["grant_machinery", "map", "irq", "dma"]}
-        guest = Guest(a.image, "device_abi_1a", work_disk=disk)
+        guest = Guest(a.image, "device_abi_1a", work_disk=disk, iso=True)
         try:
             guest.expect(b"xos64> ", timeout=30)
             send_bytes(guest, b"run\r")

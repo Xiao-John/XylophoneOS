@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 #ifndef BACKGROUND_H
 #define BACKGROUND_H
 

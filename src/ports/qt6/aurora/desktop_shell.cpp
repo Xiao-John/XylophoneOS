@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Aurora shell: design components hosted by the Interactium Qt platform.
 #include "shell/background.h"
 #include <QApplication>

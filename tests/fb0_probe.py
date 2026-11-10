@@ -32,7 +32,7 @@ try:
    for i,v in enumerate(cmd):
     if v.startswith('file='+str(disk)+','):cmd[i]=v+',id=workdisk,node-name=workraw,werror=report,rerror=report'
    return cmd
-  with patch.object(boot_smoke,'qemu_command',qemu):g=Guest(ROOT/'build/xos.img','fb0/guest',work_disk=disk)
+  with patch.object(boot_smoke,'qemu_command',qemu):g=Guest(ROOT/'build/xos-install.iso','fb0/guest',work_disk=disk,iso=True)
   report['qemu_command']=g.command
   g.expect(b'xos64> ',timeout=30);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=30);command(g,'demo keep',b'demo: keep');
   for pid in (1,3,4):command(g,f'kill {pid}',b'kill: accepted')

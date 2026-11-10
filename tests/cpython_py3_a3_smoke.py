@@ -26,7 +26,7 @@ from xypm_image import Disk as XypmDisk
 WHEEL = ROOT / ".cache/xos_seed/cpython/packages/idna-3.20-py3-none-any.whl"
 LOCK = ROOT / "src/ports/cpython/idna_lock.json"
 PROFILE = ROOT / "config/package/xos_x86_64_static_single_b2_v1.json"
-IMAGE = ROOT / "build/iso_capacity/normal/xos.img"
+IMAGE = ROOT / "build/iso_capacity/normal/xos-install.iso"
 DEFAULT_WORK = ROOT / ".cache/xos_seed/cpython/2b6c1342ebe6fb8c22dc"
 PROBE = ROOT / "tests/fixtures/cpython_py3_a3/idna_probe.py"
 
@@ -79,7 +79,7 @@ def main():
         require_unchanged = sha_file(source) == source_hash
         verified = invoke(ROOT / "scripts/xypm.py", "verify-installed", "--image", installed, "--profile", PROFILE)
         disk = installed
-        guest = Guest(image, "cpython_py3_a3", work_disk=disk)
+        guest = Guest(image, "cpython_py3_a3", work_disk=disk, iso=True)
         try:
             guest.expect(b"xos64> ", timeout=30)
             start = len(guest.output)

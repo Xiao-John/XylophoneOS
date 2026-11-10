@@ -39,15 +39,13 @@ dash。
 ## 从源码构建
 
 ```sh
-make build        # kernel、xos.img、file-backed/install ISO、SDK 与 manifest
+make build        # kernel、file-backed ISO（xos-install.iso）、SDK 与 manifest
 make dash         # 构建 dash
 make install-iso  # 构建带 dash payload 的 install ISO
 make license-audit
 make smoke        # 串行跑既有回归与许可材料检查
 make run          # 启动 install ISO（需要已有工作盘）
 make run_file     # 启动无 dash payload 的 file-backed ISO
-make run_iso      # 旧嵌入 kernel ISO，仅兼容
-make run_floppy   # 旧 1.44 MiB 软盘路径，仅兼容
 make disk         # 新建 FAT32 工作盘；dash 由 install ISO 安装
 make clean        # 只删除 build/（含验证产物）
 ```

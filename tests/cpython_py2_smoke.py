@@ -39,7 +39,7 @@ def expect_after(guest, marker, start, timeout=20):
 
 
 def boot(image, disk, name):
-    guest = Guest(image, name, work_disk=disk)
+    guest = Guest(image, name, work_disk=disk, iso=True)
     guest.expect(b"xos64> ", timeout=30)
     start = len(guest.output)
     send_bytes(guest, b"run\r")
@@ -56,7 +56,7 @@ def reclaimed_pages(data):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--work", type=Path, required=True)
-    parser.add_argument("--image", type=Path, default=ROOT / "build/xos.img")
+    parser.add_argument("--image", type=Path, default=ROOT / "build/xos-install.iso")
     args = parser.parse_args()
     work = args.work.resolve(strict=True)
     stage, stage_manifest = stage_cpython(work)
@@ -77,7 +77,7 @@ def main():
     try:
         with tempfile.TemporaryDirectory(prefix="xos_cpython_py2_") as folder:
             temporary = Path(folder)
-            image = temporary / "xos.img"
+            image = temporary / "xos-install.iso"
             disk = temporary / "work.img"
             shutil.copyfile(args.image, image)
             create_fat32(disk, 2048)

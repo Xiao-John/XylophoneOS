@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Build Aurora using the same SDK/Qt arguments as build_widgets_fixture.py."""
 from pathlib import Path
 import subprocess

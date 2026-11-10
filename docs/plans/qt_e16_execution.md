@@ -81,7 +81,7 @@ Set1 键映射支持英文、Shift/Ctrl/Alt/Caps、方向键、press/release；�
 
 ```sh
 QEMU=/absolute/qemu-system-x86_64 python3 tests/qt6_gui_acceptance.py \
-  --image build/qt_e16/NEW_SYSTEM/xos.img --payload "$NEW_APP_DIR/qt_demo.elf" \
+  --image build/qt_e16/NEW_SYSTEM/xos-install.iso --payload "$NEW_APP_DIR/qt_demo.elf" \
   --case pixels --output build/qt_e16/NEW_PIXELS
 ```
 

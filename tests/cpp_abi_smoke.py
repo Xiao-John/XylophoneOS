@@ -166,8 +166,8 @@ def main() -> int:
 
                     build_dir = ROOT / "build"
                     os_manifest = json.loads((build_dir / "manifest.json").read_text(encoding="utf-8"))
-                    image_path = build_dir / "xos.img"
-                    image_info = os_manifest.get("artifacts", {}).get("xos.img", {})
+                    image_path = build_dir / "xos-install.iso"
+                    image_info = os_manifest.get("artifacts", {}).get("xos-install.iso", {})
                     image_hash = hashlib.sha256(image_path.read_bytes()).hexdigest()
                     if image_hash != image_info.get("sha256"):
                         raise AssertionError("current XOS image does not match build/manifest.json")

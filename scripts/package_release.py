@@ -90,8 +90,8 @@ def main():
     if ROOT/'build/releases' not in out.parents:
         p.error('use a dedicated build/releases directory')
     system = json.loads((out/'system_manifest.json').read_text())
-    if sha(out/'xos.img') != system['artifacts']['xos.img']['sha256']:
-        p.error('frozen boot image differs from accepted manifest')
+    if sha(out/'xos-install.iso') != system['artifacts']['xos-install.iso']['sha256']:
+        p.error('frozen install ISO differs from accepted manifest')
     sdk_input = verify_sdk(out/'sdk', system)
     target = ROOT/'.cache/xos_seed/gcc/relinks/target_runtime_v5_receipt'
     runtime_input = verify_runtime(target, json.loads((ROOT/'config/release_cpp_runtime_v5.json').read_text()))
@@ -181,9 +181,8 @@ def main():
     for name, body in examples.items():
         path = image_dir/'examples'/name; path.write_text('/* SPDX-License-Identifier: Apache-2.0 */\n'+body)
         transfer('import','/src/'+name,path)
-    shutil.copyfile(out/'xos.img',image_dir/'xos.img')
-    if (out/'xos.iso').is_file():
-        shutil.copyfile(out/'xos.iso',image_dir/'xos.iso')
+    # xos-install.iso is the only regular boot product; legacy floppy/embedded images are gone.
+    shutil.copyfile(out/'xos-install.iso',image_dir/'xos-install.iso')
     shutil.copyfile(out/'xos-install-dash.iso',image_dir/'xos-install-dash.iso')
     shutil.copyfile(out/'install_manifest.json',image_dir/'install_manifest.json')
     shutil.copyfile(ROOT/'scripts/release_launcher.py',image_dir/'launch.py')
@@ -214,7 +213,7 @@ def main():
     sdk_binding={'input':sdk_input,'runtime':runtime_input,
                  'packaged':tree_receipt(sdk_dir,exclude=('release.json',))}
     release = {'name':'XylophoneOS Revival version '+VERSION,'version':VERSION,
-               'system_build_id':system['build_id'],'sdk_binding':sdk_binding,'xos_sha256':sha(out/'xos.img'),
+               'system_build_id':system['build_id'],'sdk_binding':sdk_binding,'xos_sha256':sha(out/'xos-install.iso'),
                'seed_manifest_sha256':sha(ROOT/'build/cpp_bundle/seed_manifest.json'),
                'sysroot_manifest_sha256':sha(ROOT/'build/cpp_bundle/sysroot_manifest.json'),
                'install_iso_sha256':sha(out/'xos-install-dash.iso'),

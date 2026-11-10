@@ -21,7 +21,7 @@ from task_smoke import pump, send_bytes
 from work_disk import transfer
 
 DEFAULT_WORK = ROOT / ".cache/xos_seed/cpython/0739062ab231f71676c8"
-DEFAULT_IMAGE = ROOT / "build/cpython_py3_b1/system/xos.img"
+DEFAULT_IMAGE = ROOT / "build/cpython_py3_b1/system/xos-install.iso"
 FIXTURE = ROOT / "tests/fixtures/cpython_py3_b1/entropy_probe.py"
 NATIVE_FIXTURE = ROOT / "tests/fixtures/cpython_py3_b1/getentropy_probe.cpp"
 DEFAULT_SDK = ROOT / "build/cpython_py3_b1/threading_sdk"
@@ -40,7 +40,7 @@ def install_stage(disk, stage):
 
 
 def check_guest(image, disk, name, cpu, argument, marker, native_argument, native_marker):
-    guest = Guest(image, name, cpu=cpu, work_disk=disk)
+    guest = Guest(image, name, cpu=cpu, work_disk=disk, iso=True)
     try:
         guest.expect(b"xos64> ", timeout=30)
         start = len(guest.output)

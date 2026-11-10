@@ -26,8 +26,8 @@ def main():
     parser.add_argument('--demo-package',type=Path,default=ROOT/'build/package_p1/demo_cpp.xpk')
     parser.add_argument('--output',type=Path,default=ROOT/'build/package_p1')
     args=parser.parse_args();out=args.output.resolve();out.mkdir(parents=True,exist_ok=True)
-    metadata=load_json(args.system/'manifest.json');image=args.system/'xos.img'
-    require(sha_file(image)==metadata['artifacts']['xos.img']['sha256'],'system image hash mismatch')
+    metadata=load_json(args.system/'manifest.json');image=args.system/'xos-install.iso'
+    require(sha_file(image)==metadata['artifacts']['xos-install.iso']['sha256'],'system image hash mismatch')
     dash=load_json(args.dash_manifest);dash_elf=ROOT/dash['elf'];require(sha_file(dash_elf)==dash['sha256'],'dash hash mismatch')
     build=load_json(args.xypm_build);require(sha_file(build['package'])==build['sha256'],'xypm package differs from build')
     profile=load_json(args.profile)
@@ -74,7 +74,7 @@ xypm --version
             boot=folder/'boot.img';boot.write_bytes(image.read_bytes())
             require(sha_file(boot)==report['image_sha256'],'boot snapshot changed')
             def start(disk):
-                g=Guest(boot,'package_p1_guest',work_disk=disk)
+                g=Guest(boot,'package_p1_guest',work_disk=disk,iso=True)
                 g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=40);pump(g,1.5)
                 return g
             guest=start(both);baseline=resources(guest);report['baseline']=baseline

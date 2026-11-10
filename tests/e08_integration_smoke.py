@@ -66,7 +66,7 @@ def cli() -> argparse.Namespace:
     parser.add_argument("--language", choices=("c", "cpp", "all"), default="all")
     parser.add_argument("--run-guest", action="store_true", help="create a temporary disk and run XOS; default only preflights")
     parser.add_argument("--guest-sysroot-root", default="/sysroot")
-    parser.add_argument("--image", type=Path, default=ROOT / "build/xos.img")
+    parser.add_argument("--image", type=Path, default=ROOT / "build/xos-install.iso")
     parser.add_argument("--system-manifest", type=Path, default=ROOT / "build/manifest.json")
     parser.add_argument("--report", type=Path, help="explicit JSON report path; stdout if omitted")
     for language in LANGUAGES:
@@ -162,7 +162,7 @@ def source_inputs(disk: Path, language: str) -> tuple[dict[str, str], dict[str, 
 
 
 def boot_guest(image: Path, disk: Path, name: str) -> Guest:
-    guest = Guest(image, name, work_disk=disk)
+    guest = Guest(image, name, work_disk=disk, iso=True)
     guest.expect(b"xos64> ", timeout=25)
     start = len(guest.output)
     send_bytes(guest, b"run\r")
@@ -318,7 +318,7 @@ def main() -> int:
         system_manifest = read_json(args.system_manifest)
         image = args.image.resolve(strict=True)
         image_hash = sha(image)
-        recorded_image_hash = system_manifest.get("artifacts", {}).get("xos.img", {}).get("sha256")
+        recorded_image_hash = system_manifest.get("artifacts", {}).get("xos-install.iso", {}).get("sha256")
         if recorded_image_hash != image_hash:
             raise ValueError("XOS image hash does not match the explicit system manifest")
         report.update({"guest_execution": "running", "image": str(image),

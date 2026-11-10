@@ -82,13 +82,13 @@ def main():
     system = json.loads((args.system/'manifest.json').read_text())
     dash = json.loads(args.dash_manifest.read_text())
     report = {'status': 'failed', 'phase': 'C2', 'source_commit': subprocess.check_output(['git','rev-parse','HEAD'], cwd=ROOT, text=True).strip(),
-              'system_build_id': system['build_id'], 'xos_sha256': sha(args.system/'xos.img'),
+              'system_build_id': system['build_id'], 'xos_sha256': sha(args.system/'xos-install.iso'),
               'sdk_manifest_sha256': sha(args.system/'sdk/manifest.json'), 'dash_sha256': dash['sha256'],
               'artifacts': str(args.artifacts), 'only_fork_oom': args.only_fork_oom, 'fork_oom_mib': args.fork_oom_mib, 'commands': [], 'checks': [], 'host_reference': {}, 'side_effects': {},
               'not_run': ['SMP', 'long_randomized_stress', 'C3_here_document_exec_and_make'], 'tools': {}}
     guest = None
     try:
-        assert report['xos_sha256'] == system['artifacts']['xos.img']['sha256'], 'system image mismatch'
+        assert report['xos_sha256'] == system['artifacts']['xos-install.iso']['sha256'], 'system image mismatch'
         sdk_manifest = json.loads((args.system/'sdk/manifest.json').read_text())
         if sdk_manifest['build_id'] != system['build_id']: raise AssertionError('system SDK build ID mismatch')
         dash_elf = ROOT/dash['elf']
@@ -150,7 +150,7 @@ def main():
             report['host_reference']['fork_probe'] = {'actual_exit':native_result.returncode,'stdout':native_result.stdout.decode(),
                 'stderr':native_result.stderr.decode(),'file_sha256':sha(native_file)}
 
-            guest = Guest(args.system/'xos.img','dash_c2',work_disk=disk)
+            guest = Guest(args.system/'xos-install.iso','dash_c2',work_disk=disk,iso=True)
             report['qemu_command'] = guest.command
             report['tools']['qemu'] = {'path':guest.command[0],'sha256':sha(guest.command[0]),
                 'version':subprocess.check_output([guest.command[0],'--version'],text=True).splitlines()[0]}

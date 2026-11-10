@@ -53,10 +53,10 @@ def main():
     try:
         manifest = json.loads(manifest_path.read_text())
         sdk_manifest = json.loads((sdk/'manifest.json').read_text())
-        image = args.system/'xos.img'
+        image = args.system/'xos-install.iso'
         report['system'] = {'build_id': manifest['build_id'], 'manifest_sha256': sha(manifest_path),
                             'image_sha256': sha(image)}
-        if report['system']['image_sha256'] != manifest['artifacts']['xos.img']['sha256']:
+        if report['system']['image_sha256'] != manifest['artifacts']['xos-install.iso']['sha256']:
             raise AssertionError('system image differs from its build manifest')
         if sdk_manifest['build_id'] != manifest['build_id']:
             raise AssertionError('SDK and kernel belong to different builds')
@@ -107,7 +107,7 @@ def main():
             create_fat32(disk, 512)
             transfer(disk, 'mkdir', '/tests')
             transfer(disk, 'import', '/tests/pipe_threads', probe)
-            guest = Guest(private_image, 'dash_c1_threads', work_disk=disk)
+            guest = Guest(private_image, 'dash_c1_threads', work_disk=disk, iso=True)
             report['qemu_command'] = guest.command
             qemu = Path(guest.command[0])
             report['tools']['qemu'] = {'path': str(qemu.resolve()), 'sha256': sha(qemu),

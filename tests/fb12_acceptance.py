@@ -28,7 +28,7 @@ try:
   tmp=Path(temp);disk=tmp/'work.img';create_fat32(disk,512);transfer(disk,'mkdir','/bin');transfer(disk,'import','/bin/fault.elf',run);transfer(disk,'import','/bin/hello.elf',system/'user_hello.image.elf');transfer(disk,'import','/bin/fcases.elf',fixture_elf)
   def boot(name,cpu='qemu64,+rdrand'):
    global g
-   g=Guest(system/'xos.img',str(out.relative_to(ROOT/'build'))+'/'+name,work_disk=disk,cpu=cpu);g.expect(b'xos64> ',timeout=45);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=45)
+   g=Guest(system/'xos-install.iso',str(out.relative_to(ROOT/'build'))+'/'+name,work_disk=disk,cpu=cpu,iso=True);g.expect(b'xos64> ',timeout=45);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=45)
    command(g,'demo keep',b'demo: keep')
    for pid in (1,3,4):command(g,f'kill {pid}',b'kill: accepted')
    pump(g,.3)

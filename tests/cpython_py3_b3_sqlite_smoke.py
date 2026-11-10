@@ -22,12 +22,12 @@ from work_disk import transfer
 
 
 FIXTURE = ROOT / "tests/fixtures/cpython_py3_b3/sqlite_probe.py"
-DEFAULT_IMAGE = ROOT / "build/xos.img"
+DEFAULT_IMAGE = ROOT / "build/xos-install.iso"
 OUTPUT_DIR = ROOT / ".cache/xos_seed/cpython/sqlite"
 
 
 def boot(image, disk, name):
-    guest = Guest(image, name, work_disk=disk)
+    guest = Guest(image, name, work_disk=disk, iso=True)
     guest.expect(b"xos64> ", timeout=30)
     start = len(guest.output)
     send_bytes(guest, b"run\r")
@@ -65,7 +65,7 @@ def main():
     try:
         with tempfile.TemporaryDirectory(prefix="xos_cpython_py3_b3_") as folder:
             temporary = Path(folder)
-            private_image = temporary / "xos.img"
+            private_image = temporary / "xos-install.iso"
             disk = temporary / "work.img"
             shutil.copyfile(image, private_image)
             create_fat32(disk, 2048)

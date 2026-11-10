@@ -67,7 +67,7 @@ def main():
     report["disk_bytes"] = disk.stat().st_size
     guest = None
     try:
-        guest = Guest(build / "xos.img", "full_disk_boot", work_disk=disk)
+        guest = Guest(build / "xos-install.iso", "full_disk_boot", work_disk=disk, iso=True)
         guest.expect(b"xos64> ", timeout=20)
         start = len(guest.output)
         send_bytes(guest, b"run\r")

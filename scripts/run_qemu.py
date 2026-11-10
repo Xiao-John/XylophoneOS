@@ -52,17 +52,19 @@ def main():
     parser.add_argument("--real-mode", action="store_true", help="run the original 16-bit exercise")
     parser.add_argument("--debug-port", type=int, help="pause at reset and listen on loopback for LLDB/GDB")
     parser.add_argument("--work-disk", type=Path, help="existing FAT16/FAT32 work disk image")
-    parser.add_argument("--image", type=Path, help="explicit boot image; combine with --iso-file for an ISO")
-    parser.add_argument("--iso", action="store_true", help="boot the embedded-kernel build/xos.iso")
+    parser.add_argument("--image", type=Path,
+                        help="explicit boot image; .iso files boot with -cdrom, others as floppy")
     parser.add_argument("--iso-file", action="store_true", help="boot the file-backed build/xos-install.iso")
     parser.add_argument("--install-iso", action="store_true", help="boot build/xos-install-dash.iso")
     args = parser.parse_args()
-    image = args.image.resolve() if args.image else ROOT / "build" / ("real_mode.img" if args.real_mode else
-                              "xos-install-dash.iso" if args.install_iso else
-                              "xos-install.iso" if args.iso_file else
-                              "xos.iso" if args.iso else "xos.img")
+    image = args.image.resolve() if args.image else ROOT / "build" / (
+        "real_mode.img" if args.real_mode else
+        "xos-install-dash.iso" if args.install_iso else
+        "xos-install.iso")
     if not image.is_file():
         raise SystemExit("Run make build first")
+    # .iso images boot via -cdrom; raw images (real_mode.img) keep the floppy path.
+    iso_boot = image.suffix.lower() == ".iso"
     work_disk = args.work_disk
     if work_disk is None and not args.real_mode:
         work_disk = ROOT / "work_disk.img"
@@ -74,7 +76,7 @@ def main():
         subprocess.run(qemu_command(image, vga=args.vga, display=args.display,
                                     debug_port=args.debug_port,
                                     work_disk=None if args.real_mode else work_disk,
-                                    iso=args.iso or args.iso_file or args.install_iso), check=True)
+                                    iso=iso_boot), check=True)
     except KeyboardInterrupt:
         pass
 

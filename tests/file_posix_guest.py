@@ -23,7 +23,7 @@ def main():
     system = json.loads((ROOT / "build/manifest.json").read_text())
     sdk = ROOT / "build/sdk"
     report = {"status": "failed", "build_id": system["build_id"],
-              "image_sha256": sha(ROOT / "build/xos.img"), "checks": []}
+              "image_sha256": sha(ROOT / "build/xos-install.iso"), "checks": []}
     guest = None
     try:
         with tempfile.TemporaryDirectory(prefix="xos_file_posix_") as folder:

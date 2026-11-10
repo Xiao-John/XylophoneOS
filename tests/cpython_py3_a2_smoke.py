@@ -21,7 +21,7 @@ from work_disk import transfer
 
 FIXTURE = ROOT / "tests/fixtures/cpython_py3_a2/zlib_probe.py"
 DEFAULT_WORK = ROOT / ".cache/xos_seed/cpython/2b6c1342ebe6fb8c22dc"
-DEFAULT_IMAGE = ROOT / "build/iso_capacity/normal/xos.img"
+DEFAULT_IMAGE = ROOT / "build/iso_capacity/normal/xos-install.iso"
 
 
 def install_stage(disk, stage):
@@ -68,7 +68,7 @@ def main():
         transfer(disk, "mkdir", "/work/py3a2")
         transfer(disk, "import", "/work/py3a2/zlib_probe.py", FIXTURE)
 
-        guest = Guest(image, "cpython_py3_a2", work_disk=disk)
+        guest = Guest(image, "cpython_py3_a2", work_disk=disk, iso=True)
         try:
             guest.expect(b"xos64> ", timeout=30)
             start = len(guest.output)

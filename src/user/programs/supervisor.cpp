@@ -182,12 +182,20 @@ i64 delegate_audio_controller(u64 child, void*) {
 i64 start_audio_service() {
     const u32 image = image_named("audio_service");
     if (image == 0) return process_error_resources;
-    const char* arguments[] = {"audio_service"};
+    const u32 tone = image_named("audio_tone");
+    if (tone == 0) return process_error_resources;
+    // The service runs without supervisor rights and cannot enumerate the
+    // image catalog (sys_image_info is supervisor-only); hand it the tone
+    // image id as argv[1] instead of granting privilege.
+    char tone_arg[4] = {};
+    tone_arg[0] = static_cast<char>('0' + (tone / 10) % 10);
+    tone_arg[1] = static_cast<char>('0' + tone % 10);
+    const char* arguments[] = {"audio_service", tone_arg};
     spawn_options options{};
     for (u32 i = 0; i < 3; ++i) options.stdio[i] = -2;
     options.delegate_spawn_depth = 2;
     options.prepare_child = delegate_audio_controller;
-    const i64 child = xos::sdk::spawn_image_options(image, 1, arguments, options);
+    const i64 child = xos::sdk::spawn_image_options(image, 2, arguments, options);
     if (child > 0) {
         audio_service_pid = static_cast<u64>(child);
         audio_retry_after_ns = 0;

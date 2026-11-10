@@ -87,17 +87,49 @@ make smoke                      全绿（基线断裂的套件首次完整跑通
 
 ## 失败 / 未运行 / 本组发现的既有问题
 
-- **`tests/dash_c1_smoke.py` 失败——既有问题，与本组迁移无关（已实证）**：
-  首条命令 `exec-file /out/probe raw` 退出 **62**（`pipe_probe.c:84` 对 `sys_pipe_wait`
-  返回 -2 的期望未满足），随后 supervisor 出现 92 次瞬生瞬灭 spawn 洪流占满超时窗口。
-  证明链：① `case sys_pipe_wait` 处理器与探针 fixture 在 `fdadfe77..c82bd8aa`
-  区间**零改动**（diff 为空），本分支未动任何内核/用户态源码，迁移只改了引导介质；
-  ② 最后通过证据 = `docs/reports/dash_c1_20261026`（25 项含 raw 全过，10-26），
-  漂移发生在 10-26→fdadfe77 之间（#66–#89 期间），且 `docs/contracts/abi_registry.md`
-  自己标注“sys54 的管道显式截止时间扩展已实现但**尚未客体验证**”；③ 基线因
-  `xos.img` 缺失本就无法运行 dash_c1，属迁移后才显形的潜伏问题。
-  spawn 洪流根因本轮未诊断（in-guest 异常，随 raw 失败出现）。移交 shell/等待语义线
-  （sys54 契约裁决 + 洪流定位）。
+- **`tests/dash_c1_smoke.py`（续，2026-11-10 调查更新）**：
+  1. **契约之罪已修**（第一被告，见 issue #99）：根因 = #66（`48882c92`，11-03）
+     把 `sys_pipe_wait` 的 `third` 从“必须为 0 否则 -2”改为显式截止时间(ns)，探针
+     仍按 10-26 旧契约断言。已将 `pipe_probe.c:84` 改写为新契约三断言（reader 索要
+     size→-2；就绪 writer 携带截止→0；空 reader 过期截止→-13——后者补上 #66 登记
+     欠缺的截止时间客体验收）。重跑：**`raw` 及其后 11 条命令全过**，死于第 13 条。
+  2. **spawn 洪流已归案**（第二被告，卷宗 issue #104）：内核 `event=started` 加桩
+     实测 = `name=audio_servi`（audio_service），parent=7，约每秒 1 只、全程 ~93 只。
+     根因链：audio_service 非 supervisor（`supervisor=true` 仅自举创建）→ 启动时
+     `sys_image_info` 遭内核 supervisor 门禁拒绝（id=1 即 denied）→ `tone_image=0`
+     → `xos_user_main` 恒 `return 10`（毫秒级退出，outcome=1 code=10 实测 84 次）→
+     `ensure_audio_service` 按 1s 退避永续重生。audio_tone 在镜像目录第 15 项、
+     `image_info.name[16]` 无截断——纯权限门禁问题；AU 线“客体验收待工具链”
+     故从未显形。**该洪流不打 `[wait]` 行、不污染测试断言，非超时元凶**。
+  3. **closed_stdin 已修，向量锁定**（第三被告）：手法复原同前（fd0 空闲 → `pipe()`
+     读端落户 fd0 → 恢复循环 `close(0)` 误杀 → `dup2(0,0)` EBADF → `pipeline: stdin`）。
+     **向量 = `750c0ff8`（2026-11-07，files POSIX 语义修复）**：该提交把 `pipe()` 的
+     `alloc_fd()`（默认 `minimum=3`，永不碰 stdio 槽）改为 `alloc_fd(0)`，stdin 关闭后
+     读端即可占位 fd0。源证链：dash 源在 8624c389..c82bd8aa 区间仅 README 变动、
+     `alloc_fd(int minimum = 3)` 新旧实现相同、其余 fd 相关提交时间与失败窗口吻合
+     （SL1/SL2 嫌疑排除——其 dash 改动只在 S4 分支，不在失败的本分支）。
+     **修复 = 恢复 `pipe()` 调 `alloc_fd()`**（stdio 槽 0-2 保留给 shell 的
+     save/restore 契约；`open()` 的 `alloc_fd(0)` 保留 `750c0ff8` 的 POSIX 语义不动）。
+  4. **builtin_later 潜伏案（修复 C1 后暴露的第 16 条）与门禁复原**：期望
+     `spin | printf` 被拒（exit2、`C1 pipeline requires external commands`、已起子进程
+     被清），实际 printf 内建被执行且 dash 挂死。取证：该消息**从未进入 git**
+     （`git log -S` 全历史仅命中报告/测试/README），10-26 的门禁出自当时未提交的本地
+     WIP——测试固化了从未入库的行为。**修复 = 在 `admission_xos.c` 的 `xos_evalpipe`
+     else 分支（forkshell 之前）复原门禁**：NCMD 阶段 `find_command` 命中
+     CMDBUILTIN/CMDFUNCTION 即 `sh_error("C1 pipeline requires external commands")`，
+     longjmp 路径经 `xos_pipeline_finish(1)` 清理已起子进程（`build_dash.py` 会把
+     admission 追加进种子 eval.c，故该文件即真源）。
+  5. **audio 暴毙已修（按批准的诉求方向）**：`start_audio_service` 先
+     `image_named("audio_tone")` 解析 id 并作为 argv[1] 传入（id 缺失则不 spawn，
+     坏构建不再产生洪流）；`audio_service` 解析 argv[1]，失败才回退枚举
+     （非 supervisor 枚举必败）。**AU 线欠账移交**：「客体验收待工具链」的客体
+     端到端验收（tone 提交/状态/取消）仍归 AU 线，本修复只消除启动即死。
+  6. **C1 全绿（诉求 3 完成）**：`dash_c1_smoke` **23/23 全部通过**——
+     build `6442f33a782cb06c`、dash 种子 `77740fbe32ce67ec2356`（admission 变更后重建）、
+     报告 `build/dash_c1_report.json`（含25项 checks 与资源基线守恒
+     `[130003,3,1]` 前后一致、audio 无重生）。`builtin_later` 输出与 10-26 原始
+     通过记录逐字一致。运行命令：
+     `python3 tests/dash_c1_smoke.py --system build --dash-manifest .cache/xos_seed/dash/77740fbe32ce67ec2356/manifest.json`
 - **未运行（环境）**：dash_b/dash_c3（发版级资格测试，需 make/sbase/release 发行物，
   worktree `.cache` 无种子）；cpython_*、gcc_seed、threading_*（需大体积种子下载）；
   Qt6/aurora/ssg 家族（需私有系统构建与 Qt 资产）；iso_capacity_smoke（需 capacity
@@ -107,8 +139,9 @@ make smoke                      全绿（基线断裂的套件首次完整跑通
 
 ## 下一位 agent 可直接执行的下一步
 
-- 裁决 sys54（`sys_pipe_wait`）契约：更新 `pipe_probe.c` 期望以匹配截止时间扩展，
-  或核对扩展是否破坏了旧契约；并定位 supervisor spawn 洪流（dash_c1 raw 失败伴随现象）。
+- ~~契约裁决 / spawn 定位 / closed_stdin 向量 / C1 重跑~~ 均已完成（见上：四诉求执行
+  记录）。剩余移交：① AU 线补 audio 客体验收（tone 提交/状态/取消端到端）；
+  ② issue #99 已并案关闭、#104 记录执行结果。
 - 种子/发行物齐备的环境里跑 dash/cpython/threading/gcc 家族与发版流水线，补全迁移证据。
 - 本分支与 `codex/bug_hunting_s4_fixes`（0223，本地 `9206ab7e`）均未推送——按用户
   指令暂缓 PR，待指示后一并交付。

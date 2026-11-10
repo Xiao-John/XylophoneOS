@@ -46,6 +46,49 @@ bool user_rollback_check() {
         users_before.unique_pages == users_after.unique_pages && users_before.references == users_after.references;
 }
 
+bool vm_page_check() {
+    constexpr u64 address=0x100000000000ull;
+    const auto baseline=memory_status();
+    const auto user_baseline=user_pages_status();
+    for (i64 fail=0;fail<3;++fail) {
+        const u64 space=arch::create_address_space();
+        if (!space) return false;
+        const auto before=memory_status();
+        memory_self_test_fail_after(fail);
+        const auto result=vm_prepare_page_in(space,address);
+        memory_self_test_fail_after(-1);
+        const auto after=memory_status();
+        (void)arch::destroy_address_space(space);
+        if (result!=memory_result::out_of_memory || before.free_pages!=after.free_pages ||
+            before.allocated_pages!=after.allocated_pages) return false;
+    }
+    const u64 space=arch::create_address_space();
+    if (!space) return false;
+    u64 physical=0, found=0; vm_page_protection protection{}; page_permissions hardware{};
+    bool owned=false, installed=false;
+    bool ok=allocate_user_page(&physical)==memory_result::none;
+    if (ok) { owned=true; *reinterpret_cast<u64*>(physical)=check_pattern; }
+    if (ok) ok=vm_prepare_page_in(space,address)==memory_result::none;
+    if (ok) { installed=vm_install_page_in(space,address,physical,vm_page_protection::none)==memory_result::none; ok=installed; }
+    if (ok) ok=vm_lookup_page_in(space,address,&found,&protection)==memory_result::none &&
+        found==physical && protection==vm_page_protection::none &&
+        query_page_in(space,address,&found,&hardware)==memory_result::not_mapped &&
+        map_page_in(space,address,physical,{true,false,true})==memory_result::already_mapped;
+    if (ok) ok=vm_protect_page_in(space,address,vm_page_protection::read_write)==memory_result::none &&
+        query_page_in(space,address,&found,&hardware)==memory_result::none && hardware.user &&
+        hardware.writable && !hardware.executable && *reinterpret_cast<u64*>(found)==check_pattern;
+    if (ok) ok=vm_protect_page_in(space,address,vm_page_protection::read_execute)==memory_result::none &&
+        query_page_in(space,address,&found,&hardware)==memory_result::none && !hardware.writable && hardware.executable;
+    if (ok) ok=vm_protect_page_in(space,address,vm_page_protection::none)==memory_result::none &&
+        vm_remove_page_in(space,address,&found)==memory_result::none && found==physical;
+    if (ok) { installed=false; ok=release_user_page(physical)==memory_result::none; owned=false; }
+    if (!installed && owned) (void)release_user_page(physical);
+    (void)arch::destroy_address_space(space);
+    const auto after=memory_status(); const auto users=user_pages_status();
+    return ok && baseline.free_pages==after.free_pages && baseline.allocated_pages==after.allocated_pages &&
+        user_baseline.unique_pages==users.unique_pages && user_baseline.references==users.references;
+}
+
 bool user_ownership_check() {
     const auto before = memory_status();
     const auto ubefore = user_pages_status();
@@ -115,6 +158,7 @@ bool memory_self_check() {
     }
     if (!user_ownership_check()) { report("fail", "user_ownership"); return false; }
     if (!user_rollback_check()) { report("fail", "user_rollback"); return false; }
+    if (!vm_page_check()) { report("fail", "vm_page"); return false; }
     format::text("[vm] event=self_check result=pass address=");
     format::hex(check_virtual);
     format::text(" physical=");

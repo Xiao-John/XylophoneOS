@@ -47,11 +47,19 @@ def main():
             assert b'pins=ok' in thread and resources(guest)==baseline
             report['checks'].append('thread_wait_word_pin_and_release')
             pin=command(guest,'exec-driver /bin/vm2pin.elf',b'kind=exited code=0',timeout=120)
-            assert b'VM2_READY_CROSS_PAGE_PIN_PASS' in pin and resources(guest)==baseline
+            assert b'VM2_READY_CROSS_PAGE_PIN_PASS' in pin and b'VM2_PIN_TIMEOUT_WAKE_PASS' in pin and b'VM2_PIN_TIMEOUT_WAKE_RACE_PASS' in pin and resources(guest)==baseline
             report['checks'].append('ready_process_wait_pin_covers_both_pages_until_copyout')
+            start=len(guest.output)
+            spawned=command(guest,'spawn-file /bin/vm2pin.elf closing',b'[loader] started pid=',timeout=90)
+            match=re.search(rb'\[loader\] started pid=(\d+)',spawned);assert match,spawned[-1000:]
+            pid=int(match.group(1));guest.expect(b'VM2_PIN_CLOSING_READY',start=start,timeout=90)
+            command(guest,'kill '+str(pid),b'kill: accepted',timeout=90)
+            command(guest,'wait '+str(pid),b'kind=killed',timeout=120)
+            assert resources(guest)==baseline
+            report['checks'].append('kill_process_with_pinned_anonymous_wait_word')
             peers=command(guest,'exec-file /bin/vm2threads.elf',b'kind=exited code=0',timeout=120)
-            assert b'VM2_PEER_FROZEN_PASS' in peers and resources(guest)==baseline
-            report['checks'].append('same_process_peer_frozen_during_transaction')
+            assert b'VM2_PEER_FROZEN_PASS' in peers and b'VM2_CONCURRENT_VM_PASS' in peers and resources(guest)==baseline
+            report['checks'].append('same_process_peer_frozen_and_concurrent_vm_transactions')
             result=command(guest,'exec-file /bin/vm2.elf',b'kind=exited code=0',timeout=120)
             assert b'VM2_PROBE_COMPLETE' in result and b'[vm2-probe] publishing' in result
             assert resources(guest)==baseline

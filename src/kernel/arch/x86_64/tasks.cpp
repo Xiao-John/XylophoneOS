@@ -166,6 +166,8 @@ struct thread_record : thread_lifetime {
 process_record tasks[8];
 #if XOS_VM1_PROBE
 anonymous_vm::reservations vm1_probe_regions[8];
+struct vm2_failure_injection { i64 page=-1, table=-1; bool trace=false; };
+vm2_failure_injection vm2_failures[8];
 struct vm2_probe_state {
     u64 pages[4096];
     u32 target, count, fail_after;
@@ -472,8 +474,10 @@ void copy_to_user(u64 destination, const void* source, u64 length) {
 
 bool user_range_ok(u64 address, u64 length, bool write) {
     if (length == 0) { return true; }
-    if (address < user_base || address >= user_limit) { return false; }
-    if (length > user_limit - address) { return false; }
+    const bool low = address >= user_base && address < user_limit && length <= user_limit-address;
+    const bool arena = address >= 0x100000000000ull && address < 0x200000000000ull &&
+                       length <= 0x200000000000ull-address;
+    if (!low && !arena) { return false; }
     const u64 first = address & ~(page_size - 1);
     const u64 last = (address + length - 1) & ~(page_size - 1);
     for (u64 page = first; page <= last; page += page_size) {
@@ -649,6 +653,7 @@ process_record* prepare_task(const char* name) {
     *task = process_record{};
 #if XOS_VM1_PROBE
     vm1_probe_regions[static_cast<u32>(task - tasks)].clear();
+    vm2_failures[static_cast<u32>(task - tasks)] = vm2_failure_injection{};
 #endif
     task->pid = next_pid++;
     copy_name(task->name, name);
@@ -864,7 +869,7 @@ process_record* task_by_pid(u64 pid) {
 bool copy_ipc_name(u64 address, char (&name)[32]) {
     if (address == 0) return false;
     for (u32 i = 0; i < sizeof(name); ++i) {
-        if (address > process_user_end - 1 - i || !user_range_ok(address + i, 1, false)) return false;
+        if (address > ~u64{0} - i || !user_range_ok(address + i, 1, false)) return false;
         copy_from_user(&name[i], address + i, 1);
         const char value = name[i];
         if (value == '\0') return i != 0;
@@ -1123,6 +1128,7 @@ void destroy_task(process_record* task) {
     if (task->cr3 != 0) { freed += destroy_address_space(task->cr3); }
 #if XOS_VM1_PROBE
     vm1_probe_regions[static_cast<u32>(task - tasks)].clear();
+    vm2_failures[static_cast<u32>(task - tasks)] = vm2_failure_injection{};
 #endif
     *task = process_record{};
     if (task_total > 0) { --task_total; }
@@ -1534,6 +1540,135 @@ bool pinned_range(process_record* process, u64 begin, u64 end) {
     }
     return false;
 }
+
+#if XOS_VM1_PROBE
+// VM2 page work is staged outside the 4 KiB kernel stack. The owning process
+// is frozen by vm_continuation while these records are live.
+struct vm2_page_transaction {
+    process_record* owner;
+    u64 address, end, scan;
+    u32 operation, protection, pages, cursor, prepared, staged_count;
+    bool allocation_pass, rollback_started, trace, staging_reported, publish_reported;
+    i64 fail_page, fail_table;
+    u64 staged[4096];
+    u64 committed[4096];
+    anonymous_vm::reservations regions;
+};
+vm2_page_transaction vm2_page_transactions[8];
+vm_step vm2_page_step(void* opaque, vm_phase phase, u32 budget, i64& result) {
+    auto& tx=*static_cast<vm2_page_transaction*>(opaque);
+    auto& owner=*tx.owner;
+    const auto requested=static_cast<vm_page_protection>(tx.protection);
+    if (phase==vm_phase::preparing && tx.operation==5) {
+        while (budget-- && tx.scan<tx.end) {
+            const u64 address=tx.scan; bool found=false;
+            if (vm_scan_page_in(owner.cr3,&tx.scan,tx.end,&found)!=memory_result::none) {
+                result=anonymous_vm::invalid; return vm_step::failed;
+            }
+            if (found) {
+                if (tx.staged_count==4096) { result=anonymous_vm::resources; return vm_step::failed; }
+                tx.committed[tx.staged_count++]=address;
+            }
+        }
+        if (tx.scan==tx.end) { tx.cursor=0; return vm_step::prepared; }
+        return vm_step::again;
+    }
+    if (phase==vm_phase::preparing) {
+        // Check all existing pages and pins before allocating, preserving error precedence.
+        while (budget-- && tx.cursor<tx.pages) {
+            const u32 index=tx.cursor;
+            const u64 address=tx.address+u64{index}*page_size;
+            u64 physical=0; vm_page_protection old{};
+            const auto lookup=vm_lookup_page_in(owner.cr3,address,&physical,&old);
+            if (lookup!=memory_result::none && lookup!=memory_result::not_mapped) {
+                result=anonymous_vm::invalid; return vm_step::failed;
+            }
+            const bool exists=lookup==memory_result::none;
+            if (!tx.allocation_pass) {
+                if (tx.operation==2 && exists && old!=requested) {
+                    result=anonymous_vm::invalid; return vm_step::failed;
+                }
+                if (exists && (tx.operation==4 || (tx.operation==3 &&
+                    (static_cast<u32>(old) & ~tx.protection))) &&
+                    pinned_range(&owner,address,address+page_size)) {
+                    result=-5; return vm_step::failed;
+                }
+            } else {
+                tx.staged[index]=0;
+                if (!exists && (tx.operation==2 || (tx.operation==3 && tx.protection!=0))) {
+                    if (owner.user_pages>=process_max_pages || tx.staged_count>=process_max_pages-owner.user_pages ||
+                        (tx.fail_page>=0 && static_cast<i64>(tx.staged_count)==tx.fail_page) ||
+                        allocate_user_page(&physical)!=memory_result::none) {
+                        result=anonymous_vm::resources; return vm_step::failed;
+                    }
+                    if (tx.fail_table>=0) memory_self_test_fail_after(tx.fail_table);
+                    const auto table_result=vm_prepare_page_in(owner.cr3,address);
+                    if (tx.fail_table>=0) { memory_self_test_fail_after(-1); tx.fail_table=-1; }
+                    if (table_result!=memory_result::none) {
+                        (void)release_user_page(physical); vm_prune_empty_page_tables_in(owner.cr3,address);
+                        result=anonymous_vm::resources; return vm_step::failed;
+                    }
+                    tx.staged[index]=physical; ++tx.staged_count;
+                    if (tx.trace && !tx.staging_reported && tx.staged_count==64) {
+                        format::text("[vm2-pages] staging\r\n"); tx.staging_reported=true;
+                    }
+                }
+                tx.prepared=index+1;
+            }
+            ++tx.cursor;
+        }
+        if (tx.cursor==tx.pages) {
+            tx.cursor=0;
+            if (!tx.allocation_pass) { tx.allocation_pass=true; return vm_step::again; }
+            return vm_step::prepared;
+        }
+        return vm_step::again;
+    }
+    if (phase==vm_phase::rolling_back) {
+        if (!tx.rollback_started) { tx.cursor=0; tx.rollback_started=true; }
+        while (budget-- && tx.cursor<tx.prepared) {
+            const u32 index=tx.cursor++;
+            if (tx.staged[index]) {
+                (void)release_user_page(tx.staged[index]);
+                vm_prune_empty_page_tables_in(owner.cr3,tx.address+u64{index}*page_size);
+                tx.staged[index]=0;
+            }
+        }
+        if (tx.cursor==tx.prepared) { result=0; return vm_step::finished; }
+        return vm_step::again;
+    }
+    if (phase==vm_phase::publishing) {
+        if (tx.trace && !tx.publish_reported) {
+            format::text("[vm2-pages] publishing\r\n"); tx.publish_reported=true;
+        }
+        const u32 count=tx.operation==5 ? tx.staged_count : tx.pages;
+        while (budget-- && tx.cursor<count) {
+            const u32 index=tx.cursor++;
+            const u64 address=tx.operation==5 ? tx.committed[index] : tx.address+u64{index}*page_size;
+            u64 physical=0; vm_page_protection old{};
+            const auto lookup=vm_lookup_page_in(owner.cr3,address,&physical,&old);
+            if (tx.operation!=5 && tx.staged[index]) {
+                if (lookup!=memory_result::not_mapped || vm_install_page_in(owner.cr3,address,tx.staged[index],requested)!=memory_result::none) halt();
+                tx.staged[index]=0; ++owner.user_pages;
+            } else if (lookup==memory_result::none) {
+                if (tx.operation==4 || tx.operation==5) {
+                    if (vm_remove_page_in(owner.cr3,address,&physical)!=memory_result::none ||
+                        release_user_page(physical)!=memory_result::none || !owner.user_pages) halt();
+                    --owner.user_pages;
+                } else if (tx.operation==3 && old!=requested) {
+                    if (vm_protect_page_in(owner.cr3,address,requested)!=memory_result::none) halt();
+                }
+            } else if (lookup!=memory_result::not_mapped || tx.operation==5) halt();
+        }
+        if (tx.cursor==count) {
+            if (tx.operation==5) vm1_probe_regions[static_cast<u32>(&owner-tasks)]=tx.regions;
+            result=0; return vm_step::finished;
+        }
+        return vm_step::again;
+    }
+    halt();
+}
+#endif
 
 void release_thread_range(thread_record& thread, u64 begin, u64 end) {
     for (u64 address = begin; address < end; address += page_size) {
@@ -3447,6 +3582,21 @@ void* syscall_entry(interrupt_frame* frame) {
                                pinned_range(current, last_page, last_page+page_size);
             result = before && waiter_ready && after ? 0 : process_error_state; break;
         }
+        if (request.operation==0xfffb && request.version==1 && request.size==sizeof(request) &&
+            !request.flags && !request.address && !request.length && !request.alignment &&
+            !request.protection && !request.reserved0 && !request.reserved1 && !request.reserved2) {
+            vm2_failures[static_cast<u32>(current-tasks)].trace=true; result=0; break;
+        }
+        // Probe-only scoped allocation failure. The global allocator hook is
+        // active only inside one non-yielding page-table preparation call.
+        if (request.operation==0xfffc && request.version==1 && request.size==sizeof(request) &&
+            request.flags<=1 && request.address<=4096 && !request.length && !request.alignment &&
+            !request.protection && !request.reserved0 && !request.reserved1 && !request.reserved2) {
+            auto& injection=vm2_failures[static_cast<u32>(current-tasks)];
+            injection.page=request.flags==0 ? static_cast<i64>(request.address) : -1;
+            injection.table=request.flags==1 ? static_cast<i64>(request.address) : -1;
+            result=0; break;
+        }
         // Private test diagnostic, deliberately absent from the public wire.
         if (request.operation == 0xffff && request.version == 1 && request.size == sizeof(request) &&
             !request.flags && !request.address && !request.length && !request.alignment &&
@@ -3466,6 +3616,38 @@ void* syscall_entry(interrupt_frame* frame) {
             if (!begin_vm_continuation(*current, *current_thread, &state, vm2_probe_step)) {
                 result=process_error_state; break;
             }
+            frame->rax=0; return schedule(frame);
+        }
+        if (request.operation>=2 && request.operation<=5) {
+            if (request.version!=1 || request.size!=sizeof(request) || request.flags || request.alignment ||
+                request.reserved0 || request.reserved1 || request.reserved2 || !request.length ||
+                (request.address % page_size) || (request.length % page_size) ||
+                request.address<anonymous_vm::arena_begin || request.address>=anonymous_vm::arena_end ||
+                request.length>anonymous_vm::arena_end-request.address) { result=anonymous_vm::invalid; break; }
+            if ((request.protection & 6)==6) { result=-3; break; }
+            if ((request.protection!=0 && request.protection!=1 && request.protection!=3 && request.protection!=5) ||
+                (request.operation==2 && !request.protection) ||
+                (request.operation>=4 && request.protection)) { result=anonymous_vm::invalid; break; }
+            if (current->closing || current->continuation.active()) { result=anonymous_vm::closing; break; }
+            const u32 slot=static_cast<u32>(current-tasks);
+            auto& regions=vm1_probe_regions[slot];
+            if (request.operation!=5 && !regions.contains(request.address,request.length)) { result=-6; break; }
+            if (request.operation==5 && pinned_range(current,request.address,request.address+request.length)) { result=-5; break; }
+            if (request.operation!=5 && request.length/page_size>4096) { result=anonymous_vm::resources; break; }
+            auto& tx=vm2_page_transactions[slot];
+            tx.owner=current; tx.address=request.address; tx.end=request.address+request.length; tx.scan=tx.address;
+            tx.operation=request.operation; tx.protection=request.protection;
+            tx.pages=request.operation==5 ? 0 : static_cast<u32>(request.length/page_size);
+            tx.cursor=0; tx.prepared=0; tx.staged_count=0; tx.allocation_pass=false; tx.rollback_started=false;
+            tx.fail_page=vm2_failures[slot].page; tx.fail_table=vm2_failures[slot].table;
+            tx.trace=vm2_failures[slot].trace; tx.staging_reported=false; tx.publish_reported=false;
+            vm2_failures[slot]=vm2_failure_injection{};
+            if (request.operation==5) {
+                tx.regions=regions;
+                result=tx.regions.unmap(request.address,request.length);
+                if (result) break;
+            }
+            if (!begin_vm_continuation(*current,*current_thread,&tx,vm2_page_step)) { result=anonymous_vm::closing; break; }
             frame->rax=0; return schedule(frame);
         }
         result = vm1_probe_regions[static_cast<u32>(current - tasks)].apply(request, current->closing);

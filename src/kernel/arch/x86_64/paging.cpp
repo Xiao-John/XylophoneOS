@@ -10,6 +10,7 @@ constexpr u64 user = 1ull << 2;
 constexpr u64 huge = 1ull << 7;
 // Software-owned logical write intent; independent of hardware RW.
 constexpr u64 logical_writable = 1ull << 9;
+constexpr u64 vm_hidden = 1ull << 10;
 constexpr u64 no_execute = 1ull << 63;
 constexpr u64 address_mask = 0x000ffffffffff000ull;
 
@@ -69,7 +70,7 @@ memory_result map_page_in(u64 address_space, u64 virtual_address, u64 physical,
     u64* pt = ensure_table(pd, index_of(virtual_address, 21), permissions.user, &result);
     if (pt == nullptr) { return result; }
     u64& leaf = pt[index_of(virtual_address, 12)];
-    if ((leaf & present) != 0) { return memory_result::already_mapped; }
+    if ((leaf & (present | vm_hidden)) != 0) { return memory_result::already_mapped; }
     leaf = physical | present | (permissions.writable ? (writable | logical_writable) : 0) |
            (permissions.user ? user : 0) | (permissions.executable ? 0 : no_execute);
     invalidate(virtual_address);
@@ -205,6 +206,141 @@ memory_result query_page(u64 virtual_address, u64* physical, page_permissions* p
     return query_page_in(read_cr3(), virtual_address, physical, permissions);
 }
 
+namespace {
+constexpr u64 vm_begin = 0x100000000000ull, vm_end = 0x200000000000ull;
+bool valid_vm_location(u64 space, u64 address) {
+    return space && !(space % page_size) && space < max_managed_phys &&
+           !(address % page_size) && address >= vm_begin && address < vm_end;
+}
+bool empty_table(const u64* entries) {
+    for (u32 i=0;i<512;++i) if (entries[i] != 0) return false;
+    return true;
+}
+u64* vm_leaf(u64 space, u64 address) {
+    const u64 e4=table(space)[index_of(address,39)];
+    if ((e4 & (present | user | writable)) != (present | user | writable) || (e4 & huge)) return nullptr;
+    const u64 e3=table(e4)[index_of(address,30)];
+    if ((e3 & (present | user | writable)) != (present | user | writable) || (e3 & huge)) return nullptr;
+    const u64 e2=table(e3)[index_of(address,21)];
+    if ((e2 & (present | user | writable)) != (present | user | writable) || (e2 & huge)) return nullptr;
+    return &table(e2)[index_of(address,12)];
+}
+bool valid_protection(vm_page_protection value) {
+    return value==vm_page_protection::none || value==vm_page_protection::read ||
+           value==vm_page_protection::read_write || value==vm_page_protection::read_execute;
+}
+u64 vm_entry(u64 physical, vm_page_protection protection) {
+    if (protection==vm_page_protection::none) return physical | vm_hidden | user | no_execute;
+    return physical | present | user |
+        (protection==vm_page_protection::read_write ? writable | logical_writable : 0) |
+        (protection==vm_page_protection::read_execute ? 0 : no_execute);
+}
+}
+void vm_prune_empty_page_tables_in(u64 space, u64 address) {
+    if (!valid_vm_location(space,address)) return;
+    u64* pml4=table(space); u64& e4=pml4[index_of(address,39)];
+    if ((e4 & (present | user | writable)) != (present | user | writable) || (e4 & huge)) return;
+    u64* pdpt=table(e4); u64& e3=pdpt[index_of(address,30)];
+    if ((e3 & (present | user | writable)) == (present | user | writable) && !(e3 & huge)) {
+        u64* pd=table(e3); u64& e2=pd[index_of(address,21)];
+        if ((e2 & (present | user | writable)) == (present | user | writable) &&
+            !(e2 & huge) && empty_table(table(e2))) {
+            const u64 physical=e2 & address_mask; e2=0; (void)release_page(physical);
+        }
+        if (empty_table(pd)) {
+            const u64 physical=e3 & address_mask; e3=0; (void)release_page(physical);
+        }
+    }
+    if (empty_table(pdpt)) {
+        const u64 physical=e4 & address_mask; e4=0; (void)release_page(physical);
+    }
+}
+memory_result vm_scan_page_in(u64 space, u64* cursor, u64 end, bool* found) {
+    if (!cursor || !found || !valid_vm_location(space,*cursor) || end<=*cursor ||
+        end>0x200000000000ull || (end % page_size)) return memory_result::invalid;
+    const u64 address=*cursor;
+    *found=false;
+    u64* entries=table(space);
+    const u32 shifts[]={39,30,21};
+    for (u32 i=0;i<3;++i) {
+        const u64 entry=entries[index_of(address,shifts[i])];
+        if (!(entry & present)) {
+            const u64 next=(address | ((u64{1} << shifts[i])-1))+1;
+            *cursor=next<end ? next : end;
+            return memory_result::none;
+        }
+        if ((entry & (user | writable)) != (user | writable) || (entry & huge))
+            return memory_result::invalid;
+        entries=table(entry);
+    }
+    const u64 leaf=entries[index_of(address,12)];
+    if (leaf & (present | vm_hidden)) {
+        u64 physical=0; vm_page_protection protection{};
+        if (vm_lookup_page_in(space,address,&physical,&protection)!=memory_result::none)
+            return memory_result::invalid;
+        *found=true;
+    }
+    *cursor=address+page_size;
+    return memory_result::none;
+}
+memory_result vm_prepare_page_in(u64 space,u64 address) {
+    if (!valid_vm_location(space,address)) return memory_result::invalid;
+    memory_result result=memory_result::none;
+    u64* root=table(space);
+    const u64 prior4=root[index_of(address,39)];
+    if ((prior4 & present) && (prior4 & (user | writable)) != (user | writable)) return memory_result::invalid;
+    u64* pdpt=ensure_table(root,index_of(address,39),true,&result);
+    if (!pdpt) return result;
+    const u64 prior3=pdpt[index_of(address,30)];
+    if ((prior3 & present) && (prior3 & (user | writable)) != (user | writable)) return memory_result::invalid;
+    u64* pd=ensure_table(pdpt,index_of(address,30),true,&result);
+    if (!pd) { vm_prune_empty_page_tables_in(space,address); return result; }
+    const u64 prior2=pd[index_of(address,21)];
+    if ((prior2 & present) && (prior2 & (user | writable)) != (user | writable)) return memory_result::invalid;
+    u64* pt=ensure_table(pd,index_of(address,21),true,&result);
+    if (!pt) { vm_prune_empty_page_tables_in(space,address); return result; }
+    return vm_leaf(space,address) ? memory_result::none : memory_result::invalid;
+}
+memory_result vm_lookup_page_in(u64 space,u64 address,u64* physical,vm_page_protection* protection) {
+    if (!valid_vm_location(space,address) || !physical || !protection) return memory_result::invalid;
+    const u64* leaf=vm_leaf(space,address);
+    if (!leaf || !(*leaf & (present | vm_hidden))) return memory_result::not_mapped;
+    const u64 entry=*leaf;
+    if ((entry & (present | vm_hidden)) == (present | vm_hidden) ||
+        !(entry & user) || !user_page_references(entry & address_mask)) return memory_result::invalid;
+    *physical=entry & address_mask;
+    *protection=(entry & vm_hidden) ? vm_page_protection::none :
+        (entry & writable) ? vm_page_protection::read_write :
+        !(entry & no_execute) ? vm_page_protection::read_execute : vm_page_protection::read;
+    return memory_result::none;
+}
+memory_result vm_install_page_in(u64 space,u64 address,u64 physical,vm_page_protection protection) {
+    if (!valid_vm_location(space,address) || !valid_protection(protection) || !user_page_references(physical)) return memory_result::invalid;
+    u64* leaf=vm_leaf(space,address);
+    if (!leaf) return memory_result::not_mapped;
+    if (*leaf) return memory_result::already_mapped;
+    *leaf=vm_entry(physical,protection); if (read_cr3()==space) invalidate(address);
+    return memory_result::none;
+}
+memory_result vm_protect_page_in(u64 space,u64 address,vm_page_protection protection) {
+    if (!valid_protection(protection)) return memory_result::invalid;
+    u64 physical=0; vm_page_protection old{};
+    const auto result=vm_lookup_page_in(space,address,&physical,&old);
+    if (result!=memory_result::none) return result;
+    *vm_leaf(space,address)=vm_entry(physical,protection);
+    if (read_cr3()==space) invalidate(address);
+    return memory_result::none;
+}
+memory_result vm_remove_page_in(u64 space,u64 address,u64* physical) {
+    vm_page_protection old{}; u64 page_physical=0;
+    const auto result=vm_lookup_page_in(space,address,&page_physical,&old);
+    if (result!=memory_result::none) return result;
+    *vm_leaf(space,address)=0; if (read_cr3()==space) invalidate(address);
+    if (physical) *physical=page_physical;
+    vm_prune_empty_page_tables_in(space,address);
+    return memory_result::none;
+}
+
 memory_result copy_user_pages_in(u64 source, u64 destination, u32 page_limit,
                                  u32* copied_pages) {
     if (copied_pages == nullptr) { return memory_result::invalid; }
@@ -322,7 +458,7 @@ u64 destroy_address_space(u64 address_space) {
                 if (!(e2 & present) || (e2 & huge)) continue;
                 u64* pt = table(e2);
                 for (u32 l1 = 0; l1 < 512; ++l1) {
-                    if (pt[l1] & present) {
+                    if (pt[l1] & (present | vm_hidden)) {
                         const u64 physical = pt[l1] & address_mask;
                         const bool last_reference = user_page_references(physical) == 1;
                         if (release_user_page(physical) == memory_result::none && last_reference) ++freed;

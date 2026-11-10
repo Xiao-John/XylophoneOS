@@ -6,10 +6,12 @@
 
 namespace xos::interactium {
 
-inline constexpr u32 max_sessions = 4;
+// Pixel storage is a separate first-version rendering budget from the window
+// quota: only this many windows hold drawable surfaces at once.
 inline constexpr u32 surface_capacity = max_windows_per_session;
 inline constexpr u32 surface_stride = 800;
 inline constexpr u32 surface_pixels = surface_stride * 600;
+inline constexpr u32 pressed_key_capacity = 16;
 
 struct surface_buffer {
     window_id id{};
@@ -34,9 +36,34 @@ class service {
     u32 input_count_ = 0;
     u32 mouse_buttons_ = 0;
     bool damaged_ = false;
+    // Input state the router keeps so recovered or redirected events stay
+    // consistent with what each client window last observed.
+    window_id pointer_target_{};
+    i32 last_pointer_x_ = -1000000;
+    i32 last_pointer_y_ = -1000000;
+    u32 last_modifiers_ = 0;
+    u32 pending_lost_[window_table_capacity]{};
+    u64 next_sequence_[window_table_capacity]{};
+    struct pressed_key { u32 code = 0; window_id target{}; bool used = false; };
+    pressed_key pressed_[pressed_key_capacity]{};
+    u32 pressed_next_ = 0;
 
     const session* find(session_token token) const;
     session* find(session_token token);
+    u32 window_slot(window_id id) const;
+    u64 assign_sequence(window_id target, u64 preferred);
+    void record_loss(window_id target, u32 count);
+    void evict_oldest();
+    bool put_input(window_id target, const input_payload& payload);
+    bool enqueue_event(window_id target, const display_event& source);
+    input_payload make_resync(u32 lost, window_id target);
+    void flush_pending_resyncs();
+    void purge_input(window_id target);
+    void reset_window_state(window_id id);
+    void release_window(window_id id, u32 slot);
+    void note_key_press(window_id target, u32 code);
+    window_id take_press_target(u32 code);
+    void send_pointer_leave(const display_event& source, window_id old_target);
 
 public:
     explicit service(surface_buffer* surfaces = nullptr) : compositor_(manager_), surfaces_(surfaces) {}

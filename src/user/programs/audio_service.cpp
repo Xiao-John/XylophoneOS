@@ -34,6 +34,26 @@ i64 monotonic_now(u64& value) {
     return 0;
 }
 
+// Closing an endpoint revokes the mailbox together with an unread reply, so
+// a teardown waits (bounded) until the peer drains the reply first.
+constexpr u64 reply_drain_ns = 4 * thread_tick_ns;
+
+bool wait_reply_consumed(const session& item) {
+    if (item.channel.send == 0) return false;
+    u64 now = 0;
+    if (monotonic_now(now) != 0 || now > thread_deadline_infinite - reply_drain_ns) return false;
+    const u64 deadline = now + reply_drain_ns;
+    for (;;) {
+        // try_send reports 0 once the reply was read, would_block while it
+        // is still queued, and a fatal error once the endpoint is gone.
+        const i64 ready = sdk::ipc_wait(item.channel.send, ipc_wait_mode::try_send);
+        if (ready != process_error_would_block) return ready == 0;
+        if (monotonic_now(now) != 0 || now >= deadline) return false;
+        const u64 next = now + thread_tick_ns;
+        (void)sdk::syscall(sys_sleep_until, next < deadline ? next : deadline);
+    }
+}
+
 void close_session(session& item) {
     if (item.channel.send != 0) (void)sdk::ipc_channel_close(item.channel.send);
     if (item.channel.receive != 0) (void)sdk::ipc_channel_close(item.channel.receive);
@@ -53,8 +73,13 @@ bool send_response(session& item, job_state state, i64 result = 0, u64 job_id = 
     reply.max_sequence_ms = max_sequence_ms;
     reply.min_frequency_hz = min_frequency_hz;
     reply.max_frequency_hz = max_frequency_hz;
-    return sdk::ipc_send(item.channel.send, &reply, sizeof(reply)) ==
-        static_cast<i64>(sizeof(reply));
+    // ipc_send reports success as 0; a full mailbox only means the previous
+    // reply is still unread, so wait for the peer and retry once.
+    i64 sent = sdk::ipc_send(item.channel.send, &reply, sizeof(reply));
+    if (sent == sdk::ipc_error_full && wait_reply_consumed(item)) {
+        sent = sdk::ipc_send(item.channel.send, &reply, sizeof(reply));
+    }
+    return sent == 0;
 }
 
 bool unused_notes_are_zero(const request& message, u32 first) {
@@ -176,6 +201,8 @@ void handle_request(session& item, bool overflow) {
     reply.min_frequency_hz = min_frequency_hz;
     reply.max_frequency_hz = max_frequency_hz;
     auto respond = [&]() {
+        // Only an unreachable peer (or one that never drains its mailbox)
+        // ends the session; a successfully queued reply keeps it.
         if (!send_response(item, static_cast<job_state>(reply.state), reply.result,
                            reply.job_id, reply.completed_notes)) disconnect_session(item, overflow);
     };
@@ -187,7 +214,10 @@ void handle_request(session& item, bool overflow) {
     if (overflow) {
         reply.result = process_error_busy;
         respond();
-        if (item.used) close_session(item);
+        if (item.used) {
+            wait_reply_consumed(item); // closing would revoke an unread reply
+            close_session(item);
+        }
         return;
     }
     if (operation_value == operation::capabilities) {
@@ -246,7 +276,10 @@ void handle_request(session& item, bool overflow) {
             cancel_current_job(job_state::cancelled, pipe_error_broken);
         reply.result = 0;
         respond();
-        if (item.used) close_session(item);
+        if (item.used) {
+            wait_reply_consumed(item); // closing would revoke an unread reply
+            close_session(item);
+        }
         return;
     }
     reply.result = process_error_invalid;

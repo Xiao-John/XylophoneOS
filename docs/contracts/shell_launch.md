@@ -1,6 +1,21 @@
 # 双 Shell 普通命令启动与权限继承契约（SL0 冻结）
 
-2026-11-05 · 状态：**SL0 冻结**（契约与兼容表生效；机制实现属 SL1+，未实现）。
+2026-11-05 · 状态：**SL0 冻结；SL1 已实现**（2026-11-06）：
+`can_create` 与 `spawn_depth` 分离、`sys_process_authority`=87 已分配并实现（并行占号 84 与已合入的 Interactium IPC 撞号，按登记改列 87）；
+`owned_process` 允许 `can_create` 父进程操作自有 building 子进程（map/start）；
+grant/delegate 同步写入 `can_create`；authority clear 同时清深度（完整削减）；
+fork/exec 复制 `can_create`。客体探针 `tests/shell_launch_sl1.py` **7/7 PASS**，
+boot/process/task 回归全绿。SL2 已实现（2026-11-07）：xsh 普通命令/tty-run 走 inherit-create（去 dash/make 名称深度特判）；
+dash `jobs_xos` 去 gcc/make 名称分支，统一 `posix_spawn` 继承 `can_create`；
+exec-file/exec-driver 历史入口保留。探针 `tests/shell_launch_sl2.py` **5/5 PASS**
+（裸命令继承、改名同权、exec-file 受限、dash 继承、exec-driver 旧轨仍授予权）。
+SL3 部分实现（2026-11-08）：xos-diag 普通裸调用（xsh/dash）+ 目标 inherit-create、
+xsh `diag` builtin 走共同契约；深度专用包装器 `xos_posix_spawn_driver/make`、
+`xos_execve_driver/make` 已从 newlib 移除（双 Shell 自 SL2 起无调用方）。
+探针 `tests/shell_launch_sl3.py` **8/8 PASS**。Make 最小 C 工程客体验收
+`tests/shell_launch_sl3_make.py` 因 **GCC seed 缓存缺失** 标 **not_run**
+（`build/shell_launch_sl3_make/report.json`）；SL3 退出条件中的该项与
+环境/目录/FD 矩阵全量仍待 seed 恢复后补跑。
 来源计划：[shell_launch](../plans/shell_launch.md)。勘查基线：main `8d186fd8`
 （含 DU4 #82）。本契约不修订宪法、不分配新 ABI 号；按 C20/C22/C27 审查。
 实现前先读 [ABI 登记](abi_registry.md) 与 [进程 ABI](../implementation) 相关源码。

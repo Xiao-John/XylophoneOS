@@ -70,6 +70,17 @@ memory_result map_page_in(u64 address_space, u64 virtual_address, u64 physical,
 memory_result unmap_page_in(u64 address_space, u64 virtual_address, u64* physical);
 memory_result query_page_in(u64 address_space, u64 virtual_address, u64* physical,
                             page_permissions* permissions);
+// VM2 internal page-table primitives. A hidden committed page owns its user
+// page reference but has no present user mapping. Callers own serialization.
+enum class vm_page_protection : u8 { none = 0, read = 1, read_write = 3, read_execute = 5 };
+memory_result vm_prepare_page_in(u64 space, u64 address);
+memory_result vm_lookup_page_in(u64 space, u64 address, u64* physical, vm_page_protection* protection);
+memory_result vm_install_page_in(u64 space, u64 address, u64 physical, vm_page_protection protection);
+memory_result vm_protect_page_in(u64 space, u64 address, vm_page_protection protection);
+memory_result vm_remove_page_in(u64 space, u64 address, u64* physical);
+void vm_prune_empty_page_tables_in(u64 space, u64 address);
+// Advance over one sparse page-table entry; found is a committed page.
+memory_result vm_scan_page_in(u64 space, u64* cursor, u64 end, bool* found);
 // Eager-copy the canonical lower user address map into an empty
 // constructed address space, preserving effective user/RW/X permissions.
 // Enumerates present page tables rather than probing every possible VA. On

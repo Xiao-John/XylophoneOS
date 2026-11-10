@@ -6,6 +6,17 @@
 using namespace xos;
 using namespace xos::sdk;
 
+namespace {
+
+// SL3 common contract: the diagnosed target inherits this process's create
+// authority so ordinary toolchains under diagnosis can spawn helpers.
+i64 inherit_create_prepare(u64 child, void*) {
+    return syscall(sys_process_authority, child,
+                   static_cast<u64>(process_authority_mode::copy_from_caller));
+}
+
+}  // namespace
+
 extern "C" int xos_user_main(const startup_info* startup) {
     const auto argv = reinterpret_cast<const char* const*>(startup->argv);
     if (startup->argc < 2) { print("usage: xos-diag PROGRAM [ARG...]\n", 2); return 2; }
@@ -16,6 +27,7 @@ extern "C" int xos_user_main(const startup_info* startup) {
     const char* const environment[] = {"PATH=/usr/bin:/bin:/", nullptr};
     spawn_options options{};
     options.environment = environment; options.environment_count = 1;
+    options.prepare_child = inherit_create_prepare;
     execution::launch_diagnostic diagnostic{};
     execution::image_receipt receipt{};
     const auto child = execution::spawn_file_diagnosed_receipt(candidate.path, startup->argc - 1,

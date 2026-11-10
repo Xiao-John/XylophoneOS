@@ -5,6 +5,11 @@
 
 namespace xos::interactium {
 
+// Client sessions the service accepts. The shared window table covers every
+// session slot times the per-session window quota from the protocol ABI.
+inline constexpr u32 max_sessions = 4;
+inline constexpr u32 window_table_capacity = max_sessions * max_windows_per_session;
+
 struct window_id {
     u64 value = 0;
     constexpr bool valid() const { return value != 0; }
@@ -34,14 +39,17 @@ struct hit_result {
 
 // Fixed-capacity registry for the first service profile. It keeps policy and
 // identity separate from pixel storage, so the transport can evolve later.
+// Slots are shared by all sessions, but create() enforces the per-session
+// window quota, so one client cannot starve the others.
 class window_manager {
-    window_state windows_[max_windows_per_session]{};
+    window_state windows_[window_table_capacity]{};
     u64 next_id_ = 1;
     u32 next_z_ = 1;
     window_id focused_{};
 
     window_state* find_mut(window_id id);
     const window_state* find(window_id id) const;
+    void refocus_top();
 
 public:
     window_id create(u64 owner, const create_window_payload& request);
@@ -71,7 +79,7 @@ struct surface_view {
 // Display Service submission are intentionally separate from window policy.
 class compositor {
     window_manager* manager_ = nullptr;
-    composition_item items_[max_windows_per_session]{};
+    composition_item items_[window_table_capacity]{};
     u32 count_ = 0;
 
 public:

@@ -51,7 +51,9 @@ ELF 解析与装载策略放用户态，内核只提供带所有者和生命周�
 
 ## 一组任务完成后的交接
 
-每组完成时必须更新 `state.md`，并新增一份 `work_log/NNNN_主题.md`，至少写清：
+每组完成时必须更新 `state.md`，并新增一份 work_log 记录（文件名按
+[work_log/README.md](work_log/README.md) 的编号方案：2026-11-10 起新记录为
+`<8位id>_<slug>.md`，此前为顺序 `NNNN_主题.md`），至少写清：
 
 1. 任务范围、已完成行为和修改文件。
 2. 本组选择与原因；原则修订进入宪法，接口进入专项契约，分配/事实进入登记；decisions只作入口。
@@ -67,7 +69,10 @@ agent 从聊天记录猜状态。实现改变时同步相关说明，失败也�
 
 公开提交不得加入个人主目录或机器专属命令路径。提交前可用
 `python3 tests/check_public_evidence_paths.py --index --base origin/main` 检查暂存的
-新增与修改文件；扫描未覆盖的格式和无法读取的归档不算通过。检查针对当前差异，
+新增与修改文件；扫描未覆盖的格式和无法读取的归档不算通过。结果分三种标记：
+`OPEN`（确认的宿主私有路径，必须修复）、`UNVERIFIED`（未能扫描，不算通过）、
+`DOUBTFUL`（存疑：如裸临时目录段与客体同名路径的歧义，需人工 double check，不阻断）。
+检查针对当前差异，
 不表示基础分支和 Git 历史已清理。发布证据前还须用
 `python3 scripts/verify_evidence_index.py "${XOS_EVIDENCE_INDEX}"` 核对文件哈希；
 若核对历史原件，增加 `--revision "${XOS_EVIDENCE_COMMIT}"`。

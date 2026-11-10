@@ -48,6 +48,15 @@ public:
     u32 count() const { return count_; }
     u64 bytes() const { return bytes_; }
     region at(u32 index) const { return index < count_ ? regions_[index] : region{}; }
+    bool contains(u64 begin, u64 length) const {
+        if (!interval(begin, length)) return false;
+        const u64 end=begin+length;
+        for (u32 i=0;i<count_;++i) {
+            if (regions_[i].begin > begin) return false;
+            if (regions_[i].end > begin) return regions_[i].end >= end;
+        }
+        return false;
+    }
     void clear() { count_=0; bytes_=0; }
     i64 reserve(u64 hint, u64 length, u64 alignment, bool exact) {
         if (!valid_reserve(hint,length,alignment,exact)) return invalid;

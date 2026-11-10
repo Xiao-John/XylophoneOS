@@ -1,6 +1,6 @@
 # work_log 编号索引
 
-新增记录：[0209 — DU4 P2 自动安装](0209_du4_p2_autinstall.md)。
+新增记录：[0218 — SL3：xos-diag 普通调用与深度包装器退役](0218_sl3_diag_tools.md)。
 
 历史存在重复编号（同号多份，主题不同）；本索引消歧可追溯性。编号唯一性规则：
 **0149 之后仍发生过同号占号（见下表 0144 及以后各组），因此"自 0149 起全局唯一"
@@ -111,8 +111,11 @@
 | 0214 | `0214_bundle_installer_hardening.md` | 第三轮 bug-hunting：XOSBND1 填充/类型/名称校验、客体安装器魔法与目标摘要、host 工具缓存加固 |
 | 0215 | `0215_s2_bug_hunt_fixes.md` | Season-2：安装预检/marker 身份/幂等 ensure、rename 恢复、readdir 点项、ISO/缓存加固 |
 | 0216 | `0216_interactium_review_fixes.md` / `0216_s3_contest_report_fixes.md` | 两份同号：Interactium 评审修复（文档宿主路径、帧暂存、断连通道回收）与 Season-3 报告修复（大小写 rename、写失败回滚与恢复、bundle 名称区、脚本边界）；由 #90 与 #94 并行合入造成，按主题后缀消歧 |
+| 0216 | `0216_sl1_create_authority.md` | SL1：can_create/sys_process_authority(87) 与客体探针 7/7 |
 | 0217 | `0217_vm1_anonymous_reservations.md` | VM1：稀疏匿名保留与解除的独立客体资格 |
+| 0217 | `0217_sl2_shell接入.md` | SL2：xsh/dash 继承创建权，去名称特判，探针 4/4 |
 | 0218 | `0218_vm2_foundation.md` | VM2：有界续体与等待 pin 的基底 |
+| 0218 | `0218_sl3_diag_tools.md` | SL3：xos-diag 裸调用 8/8、深度包装器移除；Make 因 seed 缺失 not_run |
 | 0219 | `0219_webengine_m0_preliminary_audit.md` | WebKit M0 前期审计：本地地基事实、待测面与未验收声明 |
 | 0220 | `0220_audio_output_au0.md` | Audio output AU0：PC Speaker 到 QEMU WAV 勘查 |
 | 0221 | `0221_audio_output_au1.md` | Audio output AU1：受限扬声器 PIO 租约与强制静音（客体验收待工具链） |
@@ -120,3 +123,21 @@
 
 音频记录在 #96 合入时由 0217–0219 改为 0220–0222：0217/0218 已被 VM1/VM2 占用，
 0219 已由 WebEngine M0 审计占用。新记录自 **0223** 起继续唯一，不得复用 0216–0222。
+
+## 编号方案（2026-11-10 起）：标题种子编号，顺序号停用
+
+顺序占号在并行线之间反复冲突（0216 即 #90/#94 并行撞号）。自本规则起**新 worklog
+不再占顺序号**，改用以标题为种子的 8 位十六进制伪随机编号：
+
+```bash
+python3 scripts/work_log_id.py "标题"           # 输出 id / 文件名 / 引用格式
+python3 scripts/work_log_id.py "标题" --create   # 落草稿文件（自带冲突检查）
+```
+
+- 算法 `sha256(归一化标题)[:8]`；生成时对照**目录内已有文件名首段**（含全部旧顺序号）
+  查重，冲突自动加盐重哈希，绝不覆盖已有文件。
+- 文件名为 `<8位id>_<slug>.md`（标题无 ASCII 词时为 `<8位id>.md`）；正文与引用处
+  使用完整 8 位 id。
+- **存量顺序编号与其引用格式一律不动**；引用旧记录仍按 `0216`、`0222` 等现有标准。
+- 上文"自 0188 起全局唯一 / 自 0223 起继续唯一"仅陈述当时的顺序号规则；新记录
+  以本节为准。

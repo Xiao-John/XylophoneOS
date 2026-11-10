@@ -24,6 +24,8 @@ static_assert(xos::clock::resolution_ns == xos::thread_tick_ns);
 #include "user_blobs.hpp"
 #include "user_images.hpp"
 #include <xos/device_abi.hpp>
+// Shared audio protocol bounds the PC speaker lease defined below.
+#include <xos/audio_abi.hpp>
 
 namespace xos {
 extern const u8* boot_payload;
@@ -46,7 +48,9 @@ constexpr u32 file_session_count = 8;
 constexpr u32 default_message_bytes = 64;
 constexpr u32 file_message_bytes = 4096;
 constexpr u32 kernel_stack_bytes = 4096;
-constexpr u64 pc_speaker_lease_ns = 2000000000ull;
+// Must outlast the longest legal note (audio::max_note_ms) plus worker
+// startup and scheduling delay, otherwise a max-length note expires first.
+constexpr u64 pc_speaker_lease_ns = u64{audio::max_note_ms} * 1000000ull + 500000000ull;
 constexpr u32 user_code_selector = 0x2b;
 constexpr u32 user_data_selector = 0x33;
 
@@ -83,6 +87,10 @@ struct process_record {
     bool supervisor;
     bool block_access;
     u32 spawn_depth;
+    // SL1 identity-carried create authority (shell_launch contract §3).
+    // Separate from spawn_depth: set only via sys_process_authority on a
+    // building child; copied by fork and exec; never increased by the child.
+    bool can_create;
     i32 exit_code;
     u64 parent;
     u64 entry;
@@ -158,6 +166,8 @@ struct thread_record : thread_lifetime {
 process_record tasks[8];
 #if XOS_VM1_PROBE
 anonymous_vm::reservations vm1_probe_regions[8];
+struct vm2_failure_injection { i64 page=-1, table=-1; bool trace=false; };
+vm2_failure_injection vm2_failures[8];
 struct vm2_probe_state {
     u64 pages[4096];
     u32 target, count, fail_after;
@@ -464,8 +474,10 @@ void copy_to_user(u64 destination, const void* source, u64 length) {
 
 bool user_range_ok(u64 address, u64 length, bool write) {
     if (length == 0) { return true; }
-    if (address < user_base || address >= user_limit) { return false; }
-    if (length > user_limit - address) { return false; }
+    const bool low = address >= user_base && address < user_limit && length <= user_limit-address;
+    const bool arena = address >= 0x100000000000ull && address < 0x200000000000ull &&
+                       length <= 0x200000000000ull-address;
+    if (!low && !arena) { return false; }
     const u64 first = address & ~(page_size - 1);
     const u64 last = (address + length - 1) & ~(page_size - 1);
     for (u64 page = first; page <= last; page += page_size) {
@@ -641,6 +653,7 @@ process_record* prepare_task(const char* name) {
     *task = process_record{};
 #if XOS_VM1_PROBE
     vm1_probe_regions[static_cast<u32>(task - tasks)].clear();
+    vm2_failures[static_cast<u32>(task - tasks)] = vm2_failure_injection{};
 #endif
     task->pid = next_pid++;
     copy_name(task->name, name);
@@ -752,6 +765,7 @@ process_record* create_supervisor() {
     task->initial_stack = process_stack_top - 16;
     main_thread(task).stack_top = process_stack_top;
     task->supervisor = true;
+    task->can_create = true;
     task->state = task_state::fresh;
     format::text("[task] event=created pid="); format::decimal(task->pid);
     format::text(" name=supervisor bootstrap=trusted_segments\r\n");
@@ -855,7 +869,7 @@ process_record* task_by_pid(u64 pid) {
 bool copy_ipc_name(u64 address, char (&name)[32]) {
     if (address == 0) return false;
     for (u32 i = 0; i < sizeof(name); ++i) {
-        if (address > process_user_end - 1 - i || !user_range_ok(address + i, 1, false)) return false;
+        if (address > ~u64{0} - i || !user_range_ok(address + i, 1, false)) return false;
         copy_from_user(&name[i], address + i, 1);
         const char value = name[i];
         if (value == '\0') return i != 0;
@@ -1114,6 +1128,7 @@ void destroy_task(process_record* task) {
     if (task->cr3 != 0) { freed += destroy_address_space(task->cr3); }
 #if XOS_VM1_PROBE
     vm1_probe_regions[static_cast<u32>(task - tasks)].clear();
+    vm2_failures[static_cast<u32>(task - tasks)] = vm2_failure_injection{};
 #endif
     *task = process_record{};
     if (task_total > 0) { --task_total; }
@@ -1381,7 +1396,9 @@ process_record* owned_process(u64 handle) {
     if (current == nullptr) { return nullptr; }
     for (auto& task : tasks) {
         if (task.state != task_state::free && task.pid == handle && task.parent == current->pid) {
-            if (current->supervisor || current->spawn_depth != 0 ||
+            // SL1: a parent holding identity-carried create authority may operate
+            // on its own building children even when legacy spawn_depth is 0.
+            if (current->supervisor || current->spawn_depth != 0 || current->can_create ||
                 (task.state == task_state::building && task.replacement_pending)) { return &task; }
             return nullptr;
         }
@@ -1523,6 +1540,135 @@ bool pinned_range(process_record* process, u64 begin, u64 end) {
     }
     return false;
 }
+
+#if XOS_VM1_PROBE
+// VM2 page work is staged outside the 4 KiB kernel stack. The owning process
+// is frozen by vm_continuation while these records are live.
+struct vm2_page_transaction {
+    process_record* owner;
+    u64 address, end, scan;
+    u32 operation, protection, pages, cursor, prepared, staged_count;
+    bool allocation_pass, rollback_started, trace, staging_reported, publish_reported;
+    i64 fail_page, fail_table;
+    u64 staged[4096];
+    u64 committed[4096];
+    anonymous_vm::reservations regions;
+};
+vm2_page_transaction vm2_page_transactions[8];
+vm_step vm2_page_step(void* opaque, vm_phase phase, u32 budget, i64& result) {
+    auto& tx=*static_cast<vm2_page_transaction*>(opaque);
+    auto& owner=*tx.owner;
+    const auto requested=static_cast<vm_page_protection>(tx.protection);
+    if (phase==vm_phase::preparing && tx.operation==5) {
+        while (budget-- && tx.scan<tx.end) {
+            const u64 address=tx.scan; bool found=false;
+            if (vm_scan_page_in(owner.cr3,&tx.scan,tx.end,&found)!=memory_result::none) {
+                result=anonymous_vm::invalid; return vm_step::failed;
+            }
+            if (found) {
+                if (tx.staged_count==4096) { result=anonymous_vm::resources; return vm_step::failed; }
+                tx.committed[tx.staged_count++]=address;
+            }
+        }
+        if (tx.scan==tx.end) { tx.cursor=0; return vm_step::prepared; }
+        return vm_step::again;
+    }
+    if (phase==vm_phase::preparing) {
+        // Check all existing pages and pins before allocating, preserving error precedence.
+        while (budget-- && tx.cursor<tx.pages) {
+            const u32 index=tx.cursor;
+            const u64 address=tx.address+u64{index}*page_size;
+            u64 physical=0; vm_page_protection old{};
+            const auto lookup=vm_lookup_page_in(owner.cr3,address,&physical,&old);
+            if (lookup!=memory_result::none && lookup!=memory_result::not_mapped) {
+                result=anonymous_vm::invalid; return vm_step::failed;
+            }
+            const bool exists=lookup==memory_result::none;
+            if (!tx.allocation_pass) {
+                if (tx.operation==2 && exists && old!=requested) {
+                    result=anonymous_vm::invalid; return vm_step::failed;
+                }
+                if (exists && (tx.operation==4 || (tx.operation==3 &&
+                    (static_cast<u32>(old) & ~tx.protection))) &&
+                    pinned_range(&owner,address,address+page_size)) {
+                    result=-5; return vm_step::failed;
+                }
+            } else {
+                tx.staged[index]=0;
+                if (!exists && (tx.operation==2 || (tx.operation==3 && tx.protection!=0))) {
+                    if (owner.user_pages>=process_max_pages || tx.staged_count>=process_max_pages-owner.user_pages ||
+                        (tx.fail_page>=0 && static_cast<i64>(tx.staged_count)==tx.fail_page) ||
+                        allocate_user_page(&physical)!=memory_result::none) {
+                        result=anonymous_vm::resources; return vm_step::failed;
+                    }
+                    if (tx.fail_table>=0) memory_self_test_fail_after(tx.fail_table);
+                    const auto table_result=vm_prepare_page_in(owner.cr3,address);
+                    if (tx.fail_table>=0) { memory_self_test_fail_after(-1); tx.fail_table=-1; }
+                    if (table_result!=memory_result::none) {
+                        (void)release_user_page(physical); vm_prune_empty_page_tables_in(owner.cr3,address);
+                        result=anonymous_vm::resources; return vm_step::failed;
+                    }
+                    tx.staged[index]=physical; ++tx.staged_count;
+                    if (tx.trace && !tx.staging_reported && tx.staged_count==64) {
+                        format::text("[vm2-pages] staging\r\n"); tx.staging_reported=true;
+                    }
+                }
+                tx.prepared=index+1;
+            }
+            ++tx.cursor;
+        }
+        if (tx.cursor==tx.pages) {
+            tx.cursor=0;
+            if (!tx.allocation_pass) { tx.allocation_pass=true; return vm_step::again; }
+            return vm_step::prepared;
+        }
+        return vm_step::again;
+    }
+    if (phase==vm_phase::rolling_back) {
+        if (!tx.rollback_started) { tx.cursor=0; tx.rollback_started=true; }
+        while (budget-- && tx.cursor<tx.prepared) {
+            const u32 index=tx.cursor++;
+            if (tx.staged[index]) {
+                (void)release_user_page(tx.staged[index]);
+                vm_prune_empty_page_tables_in(owner.cr3,tx.address+u64{index}*page_size);
+                tx.staged[index]=0;
+            }
+        }
+        if (tx.cursor==tx.prepared) { result=0; return vm_step::finished; }
+        return vm_step::again;
+    }
+    if (phase==vm_phase::publishing) {
+        if (tx.trace && !tx.publish_reported) {
+            format::text("[vm2-pages] publishing\r\n"); tx.publish_reported=true;
+        }
+        const u32 count=tx.operation==5 ? tx.staged_count : tx.pages;
+        while (budget-- && tx.cursor<count) {
+            const u32 index=tx.cursor++;
+            const u64 address=tx.operation==5 ? tx.committed[index] : tx.address+u64{index}*page_size;
+            u64 physical=0; vm_page_protection old{};
+            const auto lookup=vm_lookup_page_in(owner.cr3,address,&physical,&old);
+            if (tx.operation!=5 && tx.staged[index]) {
+                if (lookup!=memory_result::not_mapped || vm_install_page_in(owner.cr3,address,tx.staged[index],requested)!=memory_result::none) halt();
+                tx.staged[index]=0; ++owner.user_pages;
+            } else if (lookup==memory_result::none) {
+                if (tx.operation==4 || tx.operation==5) {
+                    if (vm_remove_page_in(owner.cr3,address,&physical)!=memory_result::none ||
+                        release_user_page(physical)!=memory_result::none || !owner.user_pages) halt();
+                    --owner.user_pages;
+                } else if (tx.operation==3 && old!=requested) {
+                    if (vm_protect_page_in(owner.cr3,address,requested)!=memory_result::none) halt();
+                }
+            } else if (lookup!=memory_result::not_mapped || tx.operation==5) halt();
+        }
+        if (tx.cursor==count) {
+            if (tx.operation==5) vm1_probe_regions[static_cast<u32>(&owner-tasks)]=tx.regions;
+            result=0; return vm_step::finished;
+        }
+        return vm_step::again;
+    }
+    halt();
+}
+#endif
 
 void release_thread_range(thread_record& thread, u64 begin, u64 end) {
     for (u64 address = begin; address < end; address += page_size) {
@@ -1863,7 +2009,7 @@ i64 prepare_fork(interrupt_frame* frame) {
             return thread_error_unsupported;
         }
     }
-    if (current->spawn_depth == 0) { return process_error_denied; }
+    if (current->spawn_depth == 0 && !current->can_create) { return process_error_denied; }
     if (current->closing || current_thread->leaving) { return process_error_state; }
     if (current->fork_depth >= process_fork_depth_max || !files_service_live()) {
         return process_error_resources;
@@ -1879,6 +2025,7 @@ i64 prepare_fork(interrupt_frame* frame) {
     if (child == nullptr) { return process_error_resources; }
     child->parent = current->pid;
     child->spawn_depth = current->spawn_depth;
+    child->can_create = current->can_create;
     child->fork_source = current->pid;
     child->fork_depth = current->fork_depth + 1;
     child->fork_pending = true;
@@ -2364,6 +2511,7 @@ void* process_syscall(interrupt_frame* frame) {
         process_record* stage = prepare_task(name);
         if (stage == nullptr) { result = process_error_resources; break; }
         stage->parent = current->pid;
+        stage->can_create = current->can_create;
         stage->replacement_pending = true;
         stage->stdio_mask = 0;
         for (auto& route : stage->stdio) { route = stdio_route{}; }
@@ -2647,7 +2795,9 @@ void* process_syscall(interrupt_frame* frame) {
             (current->pid != admission_guard.owner_pid || admission_guard.worker_pid != 0)) {
             result = process_error_busy; break;
         }
-        if (!current->supervisor && current->spawn_depth == 0) { result = process_error_denied; break; }
+        if (!current->supervisor && current->spawn_depth == 0 && !current->can_create) {
+            result = process_error_denied; break;
+        }
         if (first > 7 || (first & ~u64{current->stdio_mask}) != 0 || third > 11 ||
             (third != 0 && !user_range_ok(second, third, false))) { break; }
         if (!files_service_live()) { result = process_error_resources; break; }
@@ -2695,6 +2845,7 @@ void* process_syscall(interrupt_frame* frame) {
             result = process_error_state; break;
         }
         task->spawn_depth = second != 0 ? 1 : 0;
+        task->can_create = second != 0;
         result = 0;
         break;
     }
@@ -2712,6 +2863,53 @@ void* process_syscall(interrupt_frame* frame) {
             result = process_error_state; break;
         }
         task->spawn_depth = static_cast<u32>(second);
+        task->can_create = second != 0;
+        result = 0;
+        break;
+    }
+    case sys_process_authority: {
+        // SL1: identity-carried create authority on a building child (or query).
+        // mode 0 clear, 1 set, 2 copy from caller, 3 query (result = 0/1).
+        if (admission_guard.owner_pid != 0) { result = process_error_denied; break; }
+        const auto mode = static_cast<process_authority_mode>(second);
+        if (second > static_cast<u64>(process_authority_mode::query)) {
+            result = process_error_invalid; break;
+        }
+        process_record* task = nullptr;
+        if (first == current->pid) {
+            task = current;  // self-query
+        } else {
+            task = owned_process(first);
+        }
+        if (task == nullptr) { result = process_error_denied; break; }
+        const bool is_parent = task->parent == current->pid;
+        if (mode == process_authority_mode::query) {
+            // Self, parent, or supervisor may query.
+            if (task != current && !is_parent && !current->supervisor) {
+                result = process_error_denied; break;
+            }
+            result = task->can_create ? 1 : 0;
+            break;
+        }
+        if (task->state != task_state::building || task->replacement_pending) {
+            result = process_error_state; break;
+        }
+        if (!current->supervisor && !is_parent) {
+            result = process_error_denied; break;
+        }
+        if (mode == process_authority_mode::clear) {
+            // Full reduction: drop new-track authority and legacy depth so the
+            // child cannot create through either track (shell_launch §3).
+            task->can_create = false;
+            task->spawn_depth = 0;
+            result = 0;
+            break;
+        }
+        // set / copy_from_caller: caller must already hold create authority.
+        if (!current->supervisor && !current->can_create) {
+            result = process_error_denied; break;
+        }
+        task->can_create = true;
         result = 0;
         break;
     }
@@ -3384,6 +3582,21 @@ void* syscall_entry(interrupt_frame* frame) {
                                pinned_range(current, last_page, last_page+page_size);
             result = before && waiter_ready && after ? 0 : process_error_state; break;
         }
+        if (request.operation==0xfffb && request.version==1 && request.size==sizeof(request) &&
+            !request.flags && !request.address && !request.length && !request.alignment &&
+            !request.protection && !request.reserved0 && !request.reserved1 && !request.reserved2) {
+            vm2_failures[static_cast<u32>(current-tasks)].trace=true; result=0; break;
+        }
+        // Probe-only scoped allocation failure. The global allocator hook is
+        // active only inside one non-yielding page-table preparation call.
+        if (request.operation==0xfffc && request.version==1 && request.size==sizeof(request) &&
+            request.flags<=1 && request.address<=4096 && !request.length && !request.alignment &&
+            !request.protection && !request.reserved0 && !request.reserved1 && !request.reserved2) {
+            auto& injection=vm2_failures[static_cast<u32>(current-tasks)];
+            injection.page=request.flags==0 ? static_cast<i64>(request.address) : -1;
+            injection.table=request.flags==1 ? static_cast<i64>(request.address) : -1;
+            result=0; break;
+        }
         // Private test diagnostic, deliberately absent from the public wire.
         if (request.operation == 0xffff && request.version == 1 && request.size == sizeof(request) &&
             !request.flags && !request.address && !request.length && !request.alignment &&
@@ -3403,6 +3616,38 @@ void* syscall_entry(interrupt_frame* frame) {
             if (!begin_vm_continuation(*current, *current_thread, &state, vm2_probe_step)) {
                 result=process_error_state; break;
             }
+            frame->rax=0; return schedule(frame);
+        }
+        if (request.operation>=2 && request.operation<=5) {
+            if (request.version!=1 || request.size!=sizeof(request) || request.flags || request.alignment ||
+                request.reserved0 || request.reserved1 || request.reserved2 || !request.length ||
+                (request.address % page_size) || (request.length % page_size) ||
+                request.address<anonymous_vm::arena_begin || request.address>=anonymous_vm::arena_end ||
+                request.length>anonymous_vm::arena_end-request.address) { result=anonymous_vm::invalid; break; }
+            if ((request.protection & 6)==6) { result=-3; break; }
+            if ((request.protection!=0 && request.protection!=1 && request.protection!=3 && request.protection!=5) ||
+                (request.operation==2 && !request.protection) ||
+                (request.operation>=4 && request.protection)) { result=anonymous_vm::invalid; break; }
+            if (current->closing || current->continuation.active()) { result=anonymous_vm::closing; break; }
+            const u32 slot=static_cast<u32>(current-tasks);
+            auto& regions=vm1_probe_regions[slot];
+            if (request.operation!=5 && !regions.contains(request.address,request.length)) { result=-6; break; }
+            if (request.operation==5 && pinned_range(current,request.address,request.address+request.length)) { result=-5; break; }
+            if (request.operation!=5 && request.length/page_size>4096) { result=anonymous_vm::resources; break; }
+            auto& tx=vm2_page_transactions[slot];
+            tx.owner=current; tx.address=request.address; tx.end=request.address+request.length; tx.scan=tx.address;
+            tx.operation=request.operation; tx.protection=request.protection;
+            tx.pages=request.operation==5 ? 0 : static_cast<u32>(request.length/page_size);
+            tx.cursor=0; tx.prepared=0; tx.staged_count=0; tx.allocation_pass=false; tx.rollback_started=false;
+            tx.fail_page=vm2_failures[slot].page; tx.fail_table=vm2_failures[slot].table;
+            tx.trace=vm2_failures[slot].trace; tx.staging_reported=false; tx.publish_reported=false;
+            vm2_failures[slot]=vm2_failure_injection{};
+            if (request.operation==5) {
+                tx.regions=regions;
+                result=tx.regions.unmap(request.address,request.length);
+                if (result) break;
+            }
+            if (!begin_vm_continuation(*current,*current_thread,&tx,vm2_page_step)) { result=anonymous_vm::closing; break; }
             frame->rax=0; return schedule(frame);
         }
         result = vm1_probe_regions[static_cast<u32>(current - tasks)].apply(request, current->closing);

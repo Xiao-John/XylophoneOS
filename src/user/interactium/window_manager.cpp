@@ -3,7 +3,18 @@
 
 namespace xos::interactium {
 
+namespace {
+u32 owner_window_count(const window_state* windows, u32 capacity, u64 owner) {
+    u32 count = 0;
+    for (u32 i = 0; i < capacity; ++i)
+        if (windows[i].id.valid() && windows[i].owner == owner) ++count;
+    return count;
+}
+}
+
+// Slots are zero-initialized, so an invalid id must never match an empty slot.
 window_state* window_manager::find_mut(window_id id) {
+    if (!id.valid()) return nullptr;
     for (auto& window : windows_) {
         if (window.id == id) return &window;
     }
@@ -11,16 +22,33 @@ window_state* window_manager::find_mut(window_id id) {
 }
 
 const window_state* window_manager::find(window_id id) const {
+    if (!id.valid()) return nullptr;
     for (const auto& window : windows_) {
         if (window.id == id) return &window;
     }
     return nullptr;
 }
 
+void window_manager::refocus_top() {
+    for (auto& window : windows_) window.focused = false;
+    focused_ = {};
+    const window_state* best = nullptr;
+    for (const auto& window : windows_) {
+        if (!window.id.valid() || !window.visible) continue;
+        if (!best || window.z_order > best->z_order) best = &window;
+    }
+    if (!best) return;
+    focused_ = best->id;
+    if (auto* focused_window = find_mut(best->id)) focused_window->focused = true;
+}
+
 window_id window_manager::create(u64 owner, const create_window_payload& request) {
     if (owner == 0 || request.width == 0 || request.height == 0 ||
         request.width > 800 || request.height > 600 ||
         request.role > window_role::overlay || request.reserved != 0) return {};
+    // Each session gets its own window quota; table slots are shared.
+    if (owner_window_count(windows_, window_table_capacity, owner) >= max_windows_per_session)
+        return {};
     for (auto& window : windows_) {
         if (!window.id.valid()) {
             window = {};
@@ -43,8 +71,10 @@ window_id window_manager::create(u64 owner, const create_window_payload& request
 bool window_manager::destroy(window_id id, u64 owner) {
     auto* window = find_mut(id);
     if (!window || window->owner != owner) return false;
-    if (focused_ == id) focused_ = {};
+    const bool lost_focus = focused_ == id;
     *window = {};
+    // Keyboard input needs a new owner as soon as the focused window is gone.
+    if (lost_focus) refocus_top();
     return true;
 }
 
@@ -64,7 +94,8 @@ bool window_manager::set_visible(window_id id, u64 owner, bool visible) {
     auto* window = find_mut(id);
     if (!window || window->owner != owner) return false;
     window->visible = visible;
-    if (!visible && focused_ == id) focused_ = {};
+    // Hiding the focused window also hands keyboard input to someone else.
+    if (!visible && focused_ == id) refocus_top();
     return true;
 }
 
@@ -88,18 +119,20 @@ bool window_manager::accept_frame(window_id id, u64 owner, u64 frame_serial) {
 u32 window_manager::destroy_owner(u64 owner) {
     if (owner == 0) return 0;
     u32 count = 0;
+    bool lost_focus = false;
     for (auto& window : windows_) {
         if (window.id.valid() && window.owner == owner) {
-            if (focused_ == window.id) focused_ = {};
+            lost_focus |= focused_ == window.id;
             window = {};
             ++count;
         }
     }
+    if (lost_focus) refocus_top();
     return count;
 }
 
 const window_state* window_manager::at(u32 index) const {
-    return index < max_windows_per_session ? &windows_[index] : nullptr;
+    return index < window_table_capacity ? &windows_[index] : nullptr;
 }
 
 hit_result window_manager::hit_test(i32 x, i32 y) const {
@@ -116,7 +149,7 @@ hit_result window_manager::hit_test(i32 x, i32 y) const {
 
 u32 compositor::rebuild() {
     count_ = 0;
-    for (u32 i = 0; i < max_windows_per_session; ++i) {
+    for (u32 i = 0; i < window_table_capacity; ++i) {
         const auto* window = manager_->at(i);
         if (!window || !window->id.valid() || !window->visible) continue;
         u32 position = count_;

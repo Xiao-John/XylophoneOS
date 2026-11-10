@@ -88,7 +88,7 @@ AU0 冻结的具体归属、等待路径和静音 hook 已在 AU1 按
 AU2 的冻结协议见[用户态单音服务协议](../contracts/audio_service.md)。实现复用 sys86
 `xos-audio` 命名 IPC、普通 `channel_io` 与 sys82 resource2 controller delegation；不新增
 syscall。bootstrap supervisor 启动单一用户态服务；服务本身无 PIO，按每个音符创建一个
-直接子 worker 并取得最多 2 秒 PIO lease。worker 完成后 gate 由 release/退出回收，服务可
+直接子 worker 并取得最多 2.5 秒 PIO lease。worker 完成后 gate 由 release/退出回收，服务可
 继续受理旋律的下一个音符。额外序列返回 busy。
 
 序列限制冻结为 1–64 项、10–2,000 ms 每项、时长合计最多 10 秒，40–5,000 Hz，0 Hz 为
@@ -105,7 +105,7 @@ playing、completed、cancelled、expired、device_lost。cancel 只作用于当
 Shell 提供异步 `tone <Hz> <ms>`、`melody <file>`、`audio status/cancel <job>`、
 `audio close` 与 `audio restart`。melody 采用有界纯文本行格式并一次完整读取校验。
 没有全局百分比音量、混音、服务持久历史或 WAV 播放。请求频率由用户态 helper 计算 PIT
-divisor；内核只保证每个 worker 的固定 PIO 范围与 2 秒 watchdog。
+divisor；内核只保证每个 worker 的固定 PIO 范围与 2.5 秒 watchdog。
 
 取消轮询当前按系统 10 ms tick 睡眠，无忙等；该设计的 TCG 取消延迟/调度抖动还没有客体
 测量，不承诺硬实时。具体 wire fields、文件语法、权限和失败结果以协议文档为准。

@@ -1,6 +1,6 @@
 # work_log 编号索引
 
-新增记录：[0209 — DU4 P2 自动安装](0209_du4_p2_autinstall.md)。
+新增记录：[0218 — SL3：xos-diag 普通调用与深度包装器退役](0218_sl3_diag_tools.md)。
 
 历史存在重复编号（同号多份，主题不同）；本索引消歧可追溯性。编号唯一性规则：
 **0149 之后仍发生过同号占号（见下表 0144 及以后各组），因此"自 0149 起全局唯一"
@@ -111,8 +111,11 @@
 | 0214 | `0214_bundle_installer_hardening.md` | 第三轮 bug-hunting：XOSBND1 填充/类型/名称校验、客体安装器魔法与目标摘要、host 工具缓存加固 |
 | 0215 | `0215_s2_bug_hunt_fixes.md` | Season-2：安装预检/marker 身份/幂等 ensure、rename 恢复、readdir 点项、ISO/缓存加固 |
 | 0216 | `0216_interactium_review_fixes.md` / `0216_s3_contest_report_fixes.md` | 两份同号：Interactium 评审修复（文档宿主路径、帧暂存、断连通道回收）与 Season-3 报告修复（大小写 rename、写失败回滚与恢复、bundle 名称区、脚本边界）；由 #90 与 #94 并行合入造成，按主题后缀消歧 |
+| 0216 | `0216_sl1_create_authority.md` | SL1：can_create/sys_process_authority(87) 与客体探针 7/7 |
 | 0217 | `0217_vm1_anonymous_reservations.md` | VM1：稀疏匿名保留与解除的独立客体资格 |
+| 0217 | `0217_sl2_shell接入.md` | SL2：xsh/dash 继承创建权，去名称特判，探针 4/4 |
 | 0218 | `0218_vm2_foundation.md` | VM2：有界续体与等待 pin 的基底 |
+| 0218 | `0218_sl3_diag_tools.md` | SL3：xos-diag 裸调用 8/8、深度包装器移除；Make 因 seed 缺失 not_run |
 | 0219 | `0219_webengine_m0_preliminary_audit.md` | WebKit M0 前期审计：本地地基事实、待测面与未验收声明 |
 | 0220 | `0220_audio_output_au0.md` | Audio output AU0：PC Speaker 到 QEMU WAV 勘查 |
 | 0221 | `0221_audio_output_au1.md` | Audio output AU1：受限扬声器 PIO 租约与强制静音（客体验收待工具链） |

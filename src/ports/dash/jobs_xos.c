@@ -131,17 +131,6 @@ int forkshell(struct job *job, union node *node, int mode) {
     return child;
 }
 
-static int xos_is_gnu_driver(const char *path) {
-    const char *name = strrchr(path, '/');
-    name = name ? name + 1 : path;
-    return !strcmp(name, "x86_64-elf-gcc") || !strcmp(name, "x86_64-elf-g++") ||
-           !strcmp(name, "gcc") || !strcmp(name, "g++");
-}
-
-static int xos_is_make(const char *path) {
-    const char *name = strrchr(path, '/'); name = name ? name + 1 : path;
-    return !strcmp(name, "make");
-}
 int xos_shell_script(const char *path) {
     char data[256]; int fd = open(path, O_RDONLY | O_CLOEXEC); ssize_t n; unsigned i;
     if (fd < 0) return 0;
@@ -162,15 +151,14 @@ int xos_shell_script(const char *path) {
     return 1;
 }
 int xos_shell_execve(const char *path, char *const argv[], char *const envp[]) {
-    if (xos_is_gnu_driver(path)) return xos_execve_driver(path, argv, envp);
-    if (xos_is_make(path)) return xos_execve_make(path, argv, envp);
+    // SL2: no name-based authorization; create authority is inherited via
+    // the common spawn/exec contract (shell_launch §4). Legacy driver/make
+    // execve helpers remain exported for compatibility but are unused here.
     return execve(path, argv, envp);
 }
 static int xos_spawn(pid_t *child, const char *path, char **argv, char **envp) {
-    int error = xos_is_gnu_driver(path)
-        ? xos_posix_spawn_driver(child, path, NULL, NULL, argv, envp)
-        : xos_is_make(path) ? xos_posix_spawn_make(child, path, NULL, NULL, argv, envp)
-        : posix_spawn(child, path, NULL, NULL, argv, envp);
+    // SL2: single ordinary spawn path; inherit-create covers gcc/make/dash alike.
+    int error = posix_spawn(child, path, NULL, NULL, argv, envp);
     if (error == ENOEXEC && xos_shell_script(path)) {
         char *script[65]; unsigned argc = 0;
         script[0] = "/usr/bin/dash"; script[1] = (char *)path;

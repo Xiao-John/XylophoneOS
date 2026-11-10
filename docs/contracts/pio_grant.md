@@ -47,7 +47,8 @@ building 子进程。它不给目标 PIO 权限；该 controller 不可再委派
 请求内容均不授予设备权利。controller 只能启动一个活动扬声器 worker；worker 退出、
 release 或租约到期后，controller 可以为下一个音符创建新的短时 worker。
 
-每个 PIO 所有者首次进入用户态时启动单调时钟租约，最长 2,000 ms。租约不可续期，精度
+每个 PIO 所有者首次进入用户态时启动单调时钟租约，最长 2,500 ms（覆盖最长合法音符
+2,000 ms 加 500 ms 启动/调度余量，随 `audio_abi.hpp` 的 `max_note_ms` 同步）。租约不可续期，精度
 受当前 100 Hz 调度 tick 限制，静音延迟上限一个 tick（10 ms）。因此 AU1 的短租约可用于
 AU2 的每音符 worker，而不会给常驻服务持续 PIO。无权调用返回 denied，第二个活动所有者
 返回 state error；query=0 表示可授权，1 表示已有活动所有者。真实 supervisor 或唯一
@@ -63,7 +64,7 @@ controller 可查询状态；当前 PIO 所有者可用 `controller=3` 查询其
 （PIT2 gate 与 Speaker data enable）并保留其余位。无 UART 等待或繁忙延迟。
 
 用户态音频服务对固定设备资源负责音高与时长预校验；内核不解析音符或旋律。直接 PIO
-访问本身允许 worker 选择任意 PIT2 控制字，因此安全边界是“每个 worker 最多 2 秒后强制
+访问本身允许 worker 选择任意 PIT2 控制字，因此安全边界是“每个 worker 最多 2.5 秒后强制
 静音”，不是频率白名单或声学音量限制。PC Speaker stop 是 best-effort；平台/CPU 已无法执行内核代码、
 硬件卡死或外部电路故障时无法保证静音。
 

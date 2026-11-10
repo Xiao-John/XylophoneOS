@@ -60,6 +60,11 @@ enum class stream_lease_action : u64 { claim = 0, delegate = 1, reclaim = 2, que
 inline constexpr u64 sys_channel = 81;
 inline constexpr u64 sys_pio_grant = 82;
 inline constexpr u64 sys_irq_event = 83;
+// SL1 shell_launch: identity-carried create authority, separate from
+// legacy spawn_depth delegation (contracts/shell_launch.md §3).
+// mode: 0 clear, 1 set, 2 copy from caller, 3 query (returns 0/1 in result).
+inline constexpr u64 sys_process_authority = 87;
+enum class process_authority_mode : u64 { clear = 0, set = 1, copy_from_caller = 2, query = 3 };
 enum class irq_event_action : u64 { bind = 0, wait = 1, ack = 2, close = 3 };
 enum class pio_grant_action : u64 { grant = 0, revoke = 1, query = 2, controller = 3, recover = 4, release = 5, delegate = 6 };
 inline constexpr u64 pio_resource_com1 = 1;

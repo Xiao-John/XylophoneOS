@@ -24,6 +24,8 @@ static_assert(xos::clock::resolution_ns == xos::thread_tick_ns);
 #include "user_blobs.hpp"
 #include "user_images.hpp"
 #include <xos/device_abi.hpp>
+// Shared audio protocol bounds the PC speaker lease defined below.
+#include <xos/audio_abi.hpp>
 
 namespace xos {
 extern const u8* boot_payload;
@@ -46,7 +48,9 @@ constexpr u32 file_session_count = 8;
 constexpr u32 default_message_bytes = 64;
 constexpr u32 file_message_bytes = 4096;
 constexpr u32 kernel_stack_bytes = 4096;
-constexpr u64 pc_speaker_lease_ns = 2000000000ull;
+// Must outlast the longest legal note (audio::max_note_ms) plus worker
+// startup and scheduling delay, otherwise a max-length note expires first.
+constexpr u64 pc_speaker_lease_ns = u64{audio::max_note_ms} * 1000000ull + 500000000ull;
 constexpr u32 user_code_selector = 0x2b;
 constexpr u32 user_data_selector = 0x33;
 
@@ -83,6 +87,10 @@ struct process_record {
     bool supervisor;
     bool block_access;
     u32 spawn_depth;
+    // SL1 identity-carried create authority (shell_launch contract §3).
+    // Separate from spawn_depth: set only via sys_process_authority on a
+    // building child; copied by fork and exec; never increased by the child.
+    bool can_create;
     i32 exit_code;
     u64 parent;
     u64 entry;
@@ -752,6 +760,7 @@ process_record* create_supervisor() {
     task->initial_stack = process_stack_top - 16;
     main_thread(task).stack_top = process_stack_top;
     task->supervisor = true;
+    task->can_create = true;
     task->state = task_state::fresh;
     format::text("[task] event=created pid="); format::decimal(task->pid);
     format::text(" name=supervisor bootstrap=trusted_segments\r\n");
@@ -1381,7 +1390,9 @@ process_record* owned_process(u64 handle) {
     if (current == nullptr) { return nullptr; }
     for (auto& task : tasks) {
         if (task.state != task_state::free && task.pid == handle && task.parent == current->pid) {
-            if (current->supervisor || current->spawn_depth != 0 ||
+            // SL1: a parent holding identity-carried create authority may operate
+            // on its own building children even when legacy spawn_depth is 0.
+            if (current->supervisor || current->spawn_depth != 0 || current->can_create ||
                 (task.state == task_state::building && task.replacement_pending)) { return &task; }
             return nullptr;
         }
@@ -1863,7 +1874,7 @@ i64 prepare_fork(interrupt_frame* frame) {
             return thread_error_unsupported;
         }
     }
-    if (current->spawn_depth == 0) { return process_error_denied; }
+    if (current->spawn_depth == 0 && !current->can_create) { return process_error_denied; }
     if (current->closing || current_thread->leaving) { return process_error_state; }
     if (current->fork_depth >= process_fork_depth_max || !files_service_live()) {
         return process_error_resources;
@@ -1879,6 +1890,7 @@ i64 prepare_fork(interrupt_frame* frame) {
     if (child == nullptr) { return process_error_resources; }
     child->parent = current->pid;
     child->spawn_depth = current->spawn_depth;
+    child->can_create = current->can_create;
     child->fork_source = current->pid;
     child->fork_depth = current->fork_depth + 1;
     child->fork_pending = true;
@@ -2364,6 +2376,7 @@ void* process_syscall(interrupt_frame* frame) {
         process_record* stage = prepare_task(name);
         if (stage == nullptr) { result = process_error_resources; break; }
         stage->parent = current->pid;
+        stage->can_create = current->can_create;
         stage->replacement_pending = true;
         stage->stdio_mask = 0;
         for (auto& route : stage->stdio) { route = stdio_route{}; }
@@ -2647,7 +2660,9 @@ void* process_syscall(interrupt_frame* frame) {
             (current->pid != admission_guard.owner_pid || admission_guard.worker_pid != 0)) {
             result = process_error_busy; break;
         }
-        if (!current->supervisor && current->spawn_depth == 0) { result = process_error_denied; break; }
+        if (!current->supervisor && current->spawn_depth == 0 && !current->can_create) {
+            result = process_error_denied; break;
+        }
         if (first > 7 || (first & ~u64{current->stdio_mask}) != 0 || third > 11 ||
             (third != 0 && !user_range_ok(second, third, false))) { break; }
         if (!files_service_live()) { result = process_error_resources; break; }
@@ -2695,6 +2710,7 @@ void* process_syscall(interrupt_frame* frame) {
             result = process_error_state; break;
         }
         task->spawn_depth = second != 0 ? 1 : 0;
+        task->can_create = second != 0;
         result = 0;
         break;
     }
@@ -2712,6 +2728,53 @@ void* process_syscall(interrupt_frame* frame) {
             result = process_error_state; break;
         }
         task->spawn_depth = static_cast<u32>(second);
+        task->can_create = second != 0;
+        result = 0;
+        break;
+    }
+    case sys_process_authority: {
+        // SL1: identity-carried create authority on a building child (or query).
+        // mode 0 clear, 1 set, 2 copy from caller, 3 query (result = 0/1).
+        if (admission_guard.owner_pid != 0) { result = process_error_denied; break; }
+        const auto mode = static_cast<process_authority_mode>(second);
+        if (second > static_cast<u64>(process_authority_mode::query)) {
+            result = process_error_invalid; break;
+        }
+        process_record* task = nullptr;
+        if (first == current->pid) {
+            task = current;  // self-query
+        } else {
+            task = owned_process(first);
+        }
+        if (task == nullptr) { result = process_error_denied; break; }
+        const bool is_parent = task->parent == current->pid;
+        if (mode == process_authority_mode::query) {
+            // Self, parent, or supervisor may query.
+            if (task != current && !is_parent && !current->supervisor) {
+                result = process_error_denied; break;
+            }
+            result = task->can_create ? 1 : 0;
+            break;
+        }
+        if (task->state != task_state::building || task->replacement_pending) {
+            result = process_error_state; break;
+        }
+        if (!current->supervisor && !is_parent) {
+            result = process_error_denied; break;
+        }
+        if (mode == process_authority_mode::clear) {
+            // Full reduction: drop new-track authority and legacy depth so the
+            // child cannot create through either track (shell_launch §3).
+            task->can_create = false;
+            task->spawn_depth = 0;
+            result = 0;
+            break;
+        }
+        // set / copy_from_caller: caller must already hold create authority.
+        if (!current->supervisor && !current->can_create) {
+            result = process_error_denied; break;
+        }
+        task->can_create = true;
         result = 0;
         break;
     }

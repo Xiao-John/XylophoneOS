@@ -146,7 +146,7 @@ bool equal(const char* left, const char* right) {
     return *left == *right;
 }
 
-i64 spawn_image_options(u32, u32, const char* const*, const spawn_options&) { return -1; }
+i64 spawn_file_options(const char*, u32, const char* const*, const spawn_options&) { return -1; }
 }
 
 namespace {

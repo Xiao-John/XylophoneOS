@@ -179,11 +179,35 @@ i64 delegate_audio_controller(u64 child, void*) {
                                xos::pio_resource_pc_speaker);
 }
 
+// audio_service runs without supervisor rights and cannot read the image
+// catalog (sys_image_info/sys_image_read are supervisor-only), so publish
+// the tone worker image as a regular file the service spawns with
+// spawn_file. No privilege is granted; the 16 KiB bound fails loudly
+// instead of spawning from a stale copy (the current image is ~9.5 KiB).
+i64 publish_tone_worker(u32 tone) {
+    image_info info{};
+    i64 result = sdk::syscall(sys_image_info, tone, reinterpret_cast<u64>(&info));
+    if (result < 0) return result;
+    if (info.size == 0 || info.size > 16384) return process_error_resources;
+    static u8 worker_image[16384];
+    image_read_request request{0, reinterpret_cast<u64>(worker_image), info.size};
+    result = sdk::syscall(sys_image_read, tone, reinterpret_cast<u64>(&request));
+    if (result != static_cast<i64>(info.size)) return result < 0 ? result : process_error_invalid;
+    file::client files;
+    if (!files.init()) return static_cast<i64>(file::status::io);
+    // replace() chunks past the single-request payload cap, creates the
+    // target when missing, and commits atomically (the plain write() call
+    // rejects anything larger than one request as invalid).
+    return files.replace(audio::worker_image_path, worker_image, static_cast<u32>(info.size));
+}
+
 i64 start_audio_service() {
     const u32 image = image_named("audio_service");
     if (image == 0) return process_error_resources;
     const u32 tone = image_named("audio_tone");
     if (tone == 0) return process_error_resources;
+    const i64 published = publish_tone_worker(tone);
+    if (published != 0) return published;
     // The service runs without supervisor rights and cannot enumerate the
     // image catalog (sys_image_info is supervisor-only); hand it the tone
     // image id as argv[1] instead of granting privilege.

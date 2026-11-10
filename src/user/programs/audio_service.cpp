@@ -303,7 +303,7 @@ bool start_tone_worker(u32 frequency, u32 duration_ms, u64& child_pid) {
     sdk::spawn_options options{};
     for (u32 i = 0; i < 3; ++i) options.stdio[i] = -2;
     options.prepare_child = prepare_tone_worker;
-    const i64 result = sdk::spawn_image_options(tone_image, 3, argv, options);
+    const i64 result = sdk::spawn_file_options(worker_image_path, 3, argv, options);
     if (result <= 0) return false;
     child_pid = static_cast<u64>(result);
     return true;

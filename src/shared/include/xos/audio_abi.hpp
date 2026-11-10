@@ -6,6 +6,10 @@ namespace xos::audio {
 inline constexpr u32 protocol_version = 1;
 inline constexpr u32 max_notes = 64;
 inline constexpr u32 max_sessions = 8;
+// The supervisor publishes the tone worker image here so audio_service can
+// spawn it with spawn_file: the service has no sys_image_info privilege and
+// must not gain one (issue #104).
+inline constexpr char worker_image_path[] = "/tone_worker.img";
 inline constexpr u32 min_frequency_hz = 40;
 inline constexpr u32 max_frequency_hz = 5000;
 inline constexpr u32 min_note_ms = 10;

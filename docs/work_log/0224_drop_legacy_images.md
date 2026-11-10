@@ -101,13 +101,35 @@ make smoke                      全绿（基线断裂的套件首次完整跑通
      `ensure_audio_service` 按 1s 退避永续重生。audio_tone 在镜像目录第 15 项、
      `image_info.name[16]` 无截断——纯权限门禁问题；AU 线“客体验收待工具链”
      故从未显形。**该洪流不打 `[wait]` 行、不污染测试断言，非超时元凶**。
-  3. **closed_stdin 断点未结**（第三被告，现为 C1 唯一阻塞）：手法已逐环复原——
-     `exec 0<&-` 后 fd0 空闲 → 阶段 A `pipe()` 把读端分配到 fd0 → 收尾恢复循环按
-     “原 stdin 关闭”执行 `close(0)` 误杀读端 → `previous=0`（已死）→ 阶段 B
-     `dup2(0,0)` 因 `valid_fd(0)=false` 报 EBADF → `pipeline: stdin` → dash 退 2。
-     但同手法在 10-26 通过了 25 项中的本项（`dash_c1_20261026` 在案），回归向量
-     未锁定；嫌疑按序：SL1/SL2 换 dash 种子（`source_lock` 改 → `e6e55c3a`→`902bb64e`）、
-     `xos_profile.h`/`jobs_xos.c` SL2 改动、newlib spawn/execve hunk。
+  3. **closed_stdin 已修，向量锁定**（第三被告）：手法复原同前（fd0 空闲 → `pipe()`
+     读端落户 fd0 → 恢复循环 `close(0)` 误杀 → `dup2(0,0)` EBADF → `pipeline: stdin`）。
+     **向量 = `750c0ff8`（2026-11-07，files POSIX 语义修复）**：该提交把 `pipe()` 的
+     `alloc_fd()`（默认 `minimum=3`，永不碰 stdio 槽）改为 `alloc_fd(0)`，stdin 关闭后
+     读端即可占位 fd0。源证链：dash 源在 8624c389..c82bd8aa 区间仅 README 变动、
+     `alloc_fd(int minimum = 3)` 新旧实现相同、其余 fd 相关提交时间与失败窗口吻合
+     （SL1/SL2 嫌疑排除——其 dash 改动只在 S4 分支，不在失败的本分支）。
+     **修复 = 恢复 `pipe()` 调 `alloc_fd()`**（stdio 槽 0-2 保留给 shell 的
+     save/restore 契约；`open()` 的 `alloc_fd(0)` 保留 `750c0ff8` 的 POSIX 语义不动）。
+  4. **builtin_later 潜伏案（修复 C1 后暴露的第 16 条）与门禁复原**：期望
+     `spin | printf` 被拒（exit2、`C1 pipeline requires external commands`、已起子进程
+     被清），实际 printf 内建被执行且 dash 挂死。取证：该消息**从未进入 git**
+     （`git log -S` 全历史仅命中报告/测试/README），10-26 的门禁出自当时未提交的本地
+     WIP——测试固化了从未入库的行为。**修复 = 在 `admission_xos.c` 的 `xos_evalpipe`
+     else 分支（forkshell 之前）复原门禁**：NCMD 阶段 `find_command` 命中
+     CMDBUILTIN/CMDFUNCTION 即 `sh_error("C1 pipeline requires external commands")`，
+     longjmp 路径经 `xos_pipeline_finish(1)` 清理已起子进程（`build_dash.py` 会把
+     admission 追加进种子 eval.c，故该文件即真源）。
+  5. **audio 暴毙已修（按批准的诉求方向）**：`start_audio_service` 先
+     `image_named("audio_tone")` 解析 id 并作为 argv[1] 传入（id 缺失则不 spawn，
+     坏构建不再产生洪流）；`audio_service` 解析 argv[1]，失败才回退枚举
+     （非 supervisor 枚举必败）。**AU 线欠账移交**：「客体验收待工具链」的客体
+     端到端验收（tone 提交/状态/取消）仍归 AU 线，本修复只消除启动即死。
+  6. **C1 全绿（诉求 3 完成）**：`dash_c1_smoke` **23/23 全部通过**——
+     build `6442f33a782cb06c`、dash 种子 `77740fbe32ce67ec2356`（admission 变更后重建）、
+     报告 `build/dash_c1_report.json`（含25项 checks 与资源基线守恒
+     `[130003,3,1]` 前后一致、audio 无重生）。`builtin_later` 输出与 10-26 原始
+     通过记录逐字一致。运行命令：
+     `python3 tests/dash_c1_smoke.py --system build --dash-manifest .cache/xos_seed/dash/77740fbe32ce67ec2356/manifest.json`
 - **未运行（环境）**：dash_b/dash_c3（发版级资格测试，需 make/sbase/release 发行物，
   worktree `.cache` 无种子）；cpython_*、gcc_seed、threading_*（需大体积种子下载）；
   Qt6/aurora/ssg 家族（需私有系统构建与 Qt 资产）；iso_capacity_smoke（需 capacity
@@ -117,11 +139,9 @@ make smoke                      全绿（基线断裂的套件首次完整跑通
 
 ## 下一位 agent 可直接执行的下一步
 
-- ~~裁决 sys54 契约 / 定位 spawn 洪流~~ 已完成（见上：契约已修、洪流归案 audio_service）。
-  待办：① closed_stdin 回归向量二分（用 10-26 种子 `e6e55c3a` 重建 dash 对比，
-  或先审 SL2 对 `jobs_xos`/`xos_profile` 的 fd 影响）；② audio_service 修复属 AU 线
-  设计裁决（建议：由 supervisor 在 spawn 时传入 audio_tone 镜像 id，绕开 supervisor
-  专属的 `sys_image_info`，而非给服务提权）；③ 两者修毕重跑 dash_c1 全 14 条刷新 C1 证据。
+- ~~契约裁决 / spawn 定位 / closed_stdin 向量 / C1 重跑~~ 均已完成（见上：四诉求执行
+  记录）。剩余移交：① AU 线补 audio 客体验收（tone 提交/状态/取消端到端）；
+  ② issue #99 已并案关闭、#104 记录执行结果。
 - 种子/发行物齐备的环境里跑 dash/cpython/threading/gcc 家族与发版流水线，补全迁移证据。
 - 本分支与 `codex/bug_hunting_s4_fixes`（0223，本地 `9206ab7e`）均未推送——按用户
   指令暂缓 PR，待指示后一并交付。

@@ -331,15 +331,30 @@ void sleep_one_tick() {
 }
 }
 
-extern "C" int xos_user_main(const xos::startup_info*) {
+extern "C" int xos_user_main(const xos::startup_info* startup) {
     using namespace xos;
     using namespace xos::audio;
-    for (u32 id = 1; id < 32; ++id) {
-        image_info info{};
-        if (sdk::syscall(sys_image_info, id, reinterpret_cast<u64>(&info)) < 0) break;
-        if (sdk::equal(info.name, "audio_tone")) { tone_image = id; break; }
+    u32 tone = 0;
+    const auto* argv = reinterpret_cast<const char* const*>(startup->argv);
+    if (startup->argc >= 2 && argv != nullptr && argv[1] != nullptr) {
+        const char* text = argv[1];
+        bool valid = *text != '\0';
+        for (; valid && *text != '\0'; ++text) {
+            if (*text < '0' || *text > '9') { valid = false; break; }
+            tone = tone * 10 + static_cast<u32>(*text - '0');
+        }
+        if (!valid || tone == 0 || tone > 31) tone = 0;
     }
-    if (tone_image == 0 || sdk::ipc_name_publish(service_name) != 0) return 10;
+    if (tone == 0) {
+        // Fallback for privileged callers; a plain spawn cannot enumerate.
+        for (u32 id = 1; id < 32; ++id) {
+            image_info info{};
+            if (sdk::syscall(sys_image_info, id, reinterpret_cast<u64>(&info)) < 0) break;
+            if (sdk::equal(info.name, "audio_tone")) { tone = id; break; }
+        }
+    }
+    if (tone == 0 || sdk::ipc_name_publish(service_name) != 0) return 10;
+    tone_image = tone;
     for (;;) {
         reap_worker();
         advance_playback();

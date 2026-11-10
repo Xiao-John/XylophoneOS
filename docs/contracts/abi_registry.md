@@ -117,7 +117,7 @@ action 6 由对端验证派生通道来源，结构为 `channel_fork_verificatio
 
 ## 待实施的具体预分配
 
-sys54 的管道显式截止时间扩展已实现但尚未客体验证；console 等待因 C28 撤回，详见
+sys54 的管道显式截止时间扩展已由 dash_c1 `pipe_probe` raw 模式客体验收（过期截止返回 thread_error_timeout(-13)，2026-11-10 C1 23/23 全绿）；console 等待因 C28 撤回，详见
 `e04_loader_sdk.md`；原第三参数为零时的行为保持。
 
 PX4-A 提议认领如下；本分支未合入前不构成全项目登记，不生成源码常量或能力：

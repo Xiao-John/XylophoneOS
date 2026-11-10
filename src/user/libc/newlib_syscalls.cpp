@@ -1094,7 +1094,10 @@ extern "C" int fcntl(int fd, int command, ...) {
 extern "C" int pipe(int output[2]) {
     runtime_guard guard(fd_table_lock);
     if (output == nullptr) { errno = EFAULT; return -1; }
-    const int read_fd = alloc_fd(0);
+    // Keep pipes out of the stdio slots (0-2): shells save/restore those
+    // around pipelines, and a pipe landing on a closed stdin would be killed
+    // by the restore (750c0ff8 regressed this to alloc_fd(0)).
+    const int read_fd = alloc_fd();
     if (read_fd < 0) { errno = EMFILE; return -1; }
     int write_fd = -1;
     for (int fd = read_fd + 1; fd < fd_count; ++fd) {

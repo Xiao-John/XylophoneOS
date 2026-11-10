@@ -87,17 +87,27 @@ make smoke                      全绿（基线断裂的套件首次完整跑通
 
 ## 失败 / 未运行 / 本组发现的既有问题
 
-- **`tests/dash_c1_smoke.py` 失败——既有问题，与本组迁移无关（已实证）**：
-  首条命令 `exec-file /out/probe raw` 退出 **62**（`pipe_probe.c:84` 对 `sys_pipe_wait`
-  返回 -2 的期望未满足），随后 supervisor 出现 92 次瞬生瞬灭 spawn 洪流占满超时窗口。
-  证明链：① `case sys_pipe_wait` 处理器与探针 fixture 在 `fdadfe77..c82bd8aa`
-  区间**零改动**（diff 为空），本分支未动任何内核/用户态源码，迁移只改了引导介质；
-  ② 最后通过证据 = `docs/reports/dash_c1_20261026`（25 项含 raw 全过，10-26），
-  漂移发生在 10-26→fdadfe77 之间（#66–#89 期间），且 `docs/contracts/abi_registry.md`
-  自己标注“sys54 的管道显式截止时间扩展已实现但**尚未客体验证**”；③ 基线因
-  `xos.img` 缺失本就无法运行 dash_c1，属迁移后才显形的潜伏问题。
-  spawn 洪流根因本轮未诊断（in-guest 异常，随 raw 失败出现）。移交 shell/等待语义线
-  （sys54 契约裁决 + 洪流定位）。
+- **`tests/dash_c1_smoke.py`（续，2026-11-10 调查更新）**：
+  1. **契约之罪已修**（第一被告，见 issue #99）：根因 = #66（`48882c92`，11-03）
+     把 `sys_pipe_wait` 的 `third` 从“必须为 0 否则 -2”改为显式截止时间(ns)，探针
+     仍按 10-26 旧契约断言。已将 `pipe_probe.c:84` 改写为新契约三断言（reader 索要
+     size→-2；就绪 writer 携带截止→0；空 reader 过期截止→-13——后者补上 #66 登记
+     欠缺的截止时间客体验收）。重跑：**`raw` 及其后 11 条命令全过**，死于第 13 条。
+  2. **spawn 洪流已归案**（第二被告，卷宗 issue #104）：内核 `event=started` 加桩
+     实测 = `name=audio_servi`（audio_service），parent=7，约每秒 1 只、全程 ~93 只。
+     根因链：audio_service 非 supervisor（`supervisor=true` 仅自举创建）→ 启动时
+     `sys_image_info` 遭内核 supervisor 门禁拒绝（id=1 即 denied）→ `tone_image=0`
+     → `xos_user_main` 恒 `return 10`（毫秒级退出，outcome=1 code=10 实测 84 次）→
+     `ensure_audio_service` 按 1s 退避永续重生。audio_tone 在镜像目录第 15 项、
+     `image_info.name[16]` 无截断——纯权限门禁问题；AU 线“客体验收待工具链”
+     故从未显形。**该洪流不打 `[wait]` 行、不污染测试断言，非超时元凶**。
+  3. **closed_stdin 断点未结**（第三被告，现为 C1 唯一阻塞）：手法已逐环复原——
+     `exec 0<&-` 后 fd0 空闲 → 阶段 A `pipe()` 把读端分配到 fd0 → 收尾恢复循环按
+     “原 stdin 关闭”执行 `close(0)` 误杀读端 → `previous=0`（已死）→ 阶段 B
+     `dup2(0,0)` 因 `valid_fd(0)=false` 报 EBADF → `pipeline: stdin` → dash 退 2。
+     但同手法在 10-26 通过了 25 项中的本项（`dash_c1_20261026` 在案），回归向量
+     未锁定；嫌疑按序：SL1/SL2 换 dash 种子（`source_lock` 改 → `e6e55c3a`→`902bb64e`）、
+     `xos_profile.h`/`jobs_xos.c` SL2 改动、newlib spawn/execve hunk。
 - **未运行（环境）**：dash_b/dash_c3（发版级资格测试，需 make/sbase/release 发行物，
   worktree `.cache` 无种子）；cpython_*、gcc_seed、threading_*（需大体积种子下载）；
   Qt6/aurora/ssg 家族（需私有系统构建与 Qt 资产）；iso_capacity_smoke（需 capacity
@@ -107,8 +117,11 @@ make smoke                      全绿（基线断裂的套件首次完整跑通
 
 ## 下一位 agent 可直接执行的下一步
 
-- 裁决 sys54（`sys_pipe_wait`）契约：更新 `pipe_probe.c` 期望以匹配截止时间扩展，
-  或核对扩展是否破坏了旧契约；并定位 supervisor spawn 洪流（dash_c1 raw 失败伴随现象）。
+- ~~裁决 sys54 契约 / 定位 spawn 洪流~~ 已完成（见上：契约已修、洪流归案 audio_service）。
+  待办：① closed_stdin 回归向量二分（用 10-26 种子 `e6e55c3a` 重建 dash 对比，
+  或先审 SL2 对 `jobs_xos`/`xos_profile` 的 fd 影响）；② audio_service 修复属 AU 线
+  设计裁决（建议：由 supervisor 在 spawn 时传入 audio_tone 镜像 id，绕开 supervisor
+  专属的 `sys_image_info`，而非给服务提权）；③ 两者修毕重跑 dash_c1 全 14 条刷新 C1 证据。
 - 种子/发行物齐备的环境里跑 dash/cpython/threading/gcc 家族与发版流水线，补全迁移证据。
 - 本分支与 `codex/bug_hunting_s4_fixes`（0223，本地 `9206ab7e`）均未推送——按用户
   指令暂缓 PR，待指示后一并交付。

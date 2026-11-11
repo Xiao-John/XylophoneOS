@@ -6,8 +6,8 @@
 namespace ssg_watch {
 enum class observation_attempt { complete, capped, failed };
 
-template<class Attempt,class Now,class Pause,class OnRetry,class OnBudget>
-bool retry_capped_observation(Attempt attempt,Now now,Pause pause,OnRetry on_retry,OnBudget on_budget,
+template<class attempt_fn,class now_fn,class pause_fn,class on_retry_fn,class on_budget_fn>
+bool retry_capped_observation(attempt_fn attempt,now_fn now,pause_fn pause,on_retry_fn on_retry,on_budget_fn on_budget,
                               uint64_t deadline,unsigned &retries){
     constexpr unsigned max_attempts=3;
     constexpr uint64_t retry_pause_ns=10000000ull;

@@ -1,12 +1,11 @@
 # IPC v1：稳定接口与实现契约
 
-2026-11-11，**IP1 ABI 已在分支登记；IP2 内核实现未开始，SDK 仍 unsupported**。
+2026-11-11，**IP1 已合入；IP2 内核路径正在实现，未经 guest qualification 的 feature 与 SDK 仍 unsupported**。
 路线见 [IPC 计划](../plans/ipc_sel4.md)；现行 [通道契约](channel.md)、
 [Interactium](interactium.md)、[线程](threading.md)与[ABI 登记](abi_registry.md)
 继续有效。IP1 的固定 ABI 位于 `src/shared/include/xos/ipc_v1_abi.hpp`，syscall 88
-列入 ABI 登记；sys88 目前只实现返回零 supported feature 的查询，SDK `ipc_v1.hpp` 只封装
-该查询，不含 endpoint call/receive/reply 后端或客体资格。
-ABI 登记仅在本阶段 PR 合入后成为主线事实。
+列入 ABI 登记；IP2 分支加入 endpoint/call/receive/reply/reply_receive 内核路径和 SDK
+封装，sys88 feature query 仍返回 supported mask 零，等待真实客体资格完成后才更新 SDK manifest。
 
 ## 目标与约束
 
@@ -28,12 +27,12 @@ C20–C25、C28–C29 生效；不扩大设备权限、不修改现有进程与�
 ## 使用方先可依赖什么
 
 IP0 冻结逻辑语义；IP1 冻结下列 x86-64 v1 ABI 数字、结构布局、限额、错误和 feature
-命名。注册不提供可链接 SDK 或运行时能力。`ipc_open`/`ipc_call` 等逻辑名仍是概念接口，
+命名。注册不提供已验的运行时能力。`ipc_open` 等逻辑名仍是概念接口，
 不得当作当前头文件符号。普通与线程 SDK manifest 都须输出
 `ipc_v1: {abi_version: 1, syscall: 88, status: "registered_unsupported", features: []}`；
 编译期有 ABI 头不代表运行时可用。IP2/后续阶段只有在真实后端、双 manifest 与客体资格
-完成后才能变更为 supported。除 feature query 外，syscall 88 的 endpoint 操作返回
-`unsupported`。
+完成后才能变更为 supported。IP2 分支包含端点与同步 RPC 内核实现，但在真实 guest qualification
+前，SDK manifest 与 feature query 均保持 unsupported/零 supported features。
 
 能力分组：`endpoint_call_v1`（受控端点、短消息 call/receive/reply）、
 `deadline_v1`（统一单调绝对期限）、`notification_v1`（通知）、`wait_set_v1`
@@ -60,15 +59,18 @@ IP0 冻结逻辑语义；IP1 冻结下列 x86-64 v1 ABI 数字、结构布局、
 | `endpoint_create` | 1 | `ipc_v1_endpoint_create` | 48 | 创建 endpoint，调用者指定非零初始权利子集 |
 | `endpoint_delegate` | 2 | `ipc_v1_endpoint_delegate` | 72 | 向存活目标 PID 派生新 handle，权利只能缩减并设置 badge |
 | `endpoint_close` | 3 | `ipc_v1_endpoint_close` | 40 | manage 权利持有者关闭 endpoint |
-| `call` | 4 | `ipc_v1_call` | 88 | 快照请求 payload 并同步等待 reply |
+| `call` | 4 | `ipc_v1_call` | 88 | 快照请求 payload 并同步等待 reply，返回 reply label |
 | `receive` | 5 | `ipc_v1_receive` | 88 | 接收请求并返回内核生成的一次性 reply token |
 | `reply` | 6 | `ipc_v1_reply` | 64 | 使用接收端持有的 token 回复一次 |
 | `reply_receive` | 7 | `ipc_v1_reply_receive` | 120 | 先 reply 后 receive，输出部分成功标志 |
 
 每个请求以 16 字节 `ipc_v1_header {u32 version, u32 size, u64 reserved}` 起始。字段顺序、
 宽度、大小断言由 `ipc_v1_abi.hpp` 固定；SDK manifest 只登记 feature，不复制结构布局。
+`ipc_v1_call` 的 offset 72 是 `reply_label_out`，offset 80 为单个零保留字；该 IP1 ABI
+澄清保持 88 字节请求大小不变，修复了逻辑 reply label 与线布局之间的遗漏。
 用户 buffer 为 64 位地址；null 只允许用于长度为零的 payload。Call 的输入区和 reply 输出区
-完整验证后才可排队；receive 的输出区完整验证后才可交付。receive 缓冲不足返回所需长度，
+完整验证后才可排队；receive 的输出区完整验证后才可交付。结构输出区不得与对应 payload 输出区重叠。
+receive 缓冲不足返回所需长度，
 保留请求且不产生 badge/token。Call 的 reply buffer 在等待开始前完整验证；reply 大于其
 capacity 时，`buffer_too_small` 返回 server，token 仍归 server 持有以便同一 holder 重试较短回复。
 
@@ -223,8 +225,9 @@ Interactium、音频；旧路径退役需单独的调用清单、ABI 兼容方�
 
 ## IP2 与后续验收待项
 
-IP1 已冻结本页的 syscall 88 ABI、布局、错误、额度、生命周期与 feature 分组；合入前仍须
-经本阶段 PR review。IP2 实施须逐项兑现相同的原子性、权限、buffer-too-small、deadline/
+IP1 已冻结并合入本页的 syscall 88 ABI、布局、错误、额度、生命周期与 feature 分组。IP2
+分支正在落地后端，尚未完成真实 guest qualification；故 feature mask 和两个 SDK manifest
+仍保持 unsupported。启用前须逐项兑现相同的原子性、权限、buffer-too-small、deadline/
 delivery/reply 竞争、handle/token 撤销和 `reply_receive` 部分成功语义；如果内核资源布局
 无法满足所登记额度，应在支持任何 feature 前另行修订 ABI。实际 endpoint fairness 只要求
 endpoint 内 FIFO，不宣称跨 endpoint 公平。fork 不继承、成功 exec 撤销 IPC v1 handles；

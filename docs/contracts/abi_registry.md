@@ -16,7 +16,7 @@
 | 83 | 83 | allocated | 受控 IRQ 事件；实现未验 |
 | 84 | 86 | allocated | Interactium IPC channel readiness and service-name registration/connection |
 | 87 | 87 | allocated | SL1 创建能力：`sys_process_authority`（shell_launch 契约；并行占号 84 与 Interactium 撞号，按已合入登记改列 87） |
-| 88 | 88 | allocated | 通用 IPC v1；ABI 已登记、IP2 内核实现未开始 |
+| 88 | 88 | allocated | 通用 IPC v1；IP2 内核实现进行中，SDK/feature 未经客体资格仍 unsupported |
 | 89 | 95 | reserved | 系统底座线：通用等待/信号/进程控制；其余接口尚未登记 |
 | 96 | 111 | reserved | 显示/输入线的后续机制；现有65/66保留 |
 | 112 | 112 | allocated | 设备授权线 v1 单入口 `sys_device`；实现按[契约](device_authorization_v1.md)§7 分段推进 |

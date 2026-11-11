@@ -3,9 +3,9 @@
 2026-11-10。用户要求先明确应用与内核可并行工作的边界，暂不启动 VM3。规范见
 [IPC v1 契约](../contracts/ipc_v1.md)。计划原始基线为 `d708790`；VM2 #102 已在其后合入，
 本路线仍不要求 VM3 才能开展接口设计、参考模型和小消息实现。
-2026-11-11：IP1 ABI 与参考模型已在独立分支完成源码，待本阶段 PR 合入。syscall 88
-已分配、线布局与错误冻结；内核只实现 supported mask 为空的 feature query，endpoint
-操作仍 unsupported。两个 SDK manifest 显式标 unsupported，不能把参考模型当成产品后端。
+2026-11-11：IP1 ABI 与参考模型已由 PR #107 合入。`codex/ipc-ip2` 正在加入 x86-64
+单核 endpoint/RPC 慢路径和 SDK wrappers；feature query 暂仍返回 supported mask 零，普通与
+线程 SDK manifest 显式标 unsupported，直至客体验收完成。模型和语法检查不能替代产品资格。
 
 ## 当前事实与问题
 

@@ -44,6 +44,11 @@ def main():
      pump(guest,.3)
     assert samples[-1]==baseline,samples
     report['checks'].append(name+'_libc_fork_mapping')
+   for mode in ('none','readonly','rwexec'):
+    output=command(guest,'exec-file /bin/vm3.elf '+mode,b'kind=faulted',timeout=120)
+    assert ('VM3_FAULT_'+mode.upper()).encode() in output and b'vector=14' in output,output[-2000:]
+    assert resources(guest)==baseline
+    report['checks'].append('actual_user_fault_'+mode)
    report['status']='passed'
  finally:
   if guest:(out/'guest.serial.log').write_bytes(guest.output);guest.close()

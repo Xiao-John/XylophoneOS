@@ -240,6 +240,10 @@ def target_environment(sdk, build_python, bridge, zlib_prefix=None):
         LIBS=shlex.join(libraries),
         CONFIG_SITE=str(PORT / "config/xos_config.site"),
         PYTHON_FOR_BUILD=str(build_python),
+        # Host pkg-config metadata must not advertise host libraries to the
+        # cross compiler; target dependencies are passed explicitly above.
+        PKG_CONFIG_PATH="",
+        PKG_CONFIG_LIBDIR=os.devnull,
     )
     return env
 

@@ -436,62 +436,16 @@ memory_result copy_user_pages_batch(u64 source, u64 destination, u32 page_limit,
 }
 memory_result copy_user_pages_in(u64 source, u64 destination, u32 page_limit,
                                  u32* copied_pages) {
-    if (copied_pages == nullptr) { return memory_result::invalid; }
-    *copied_pages = 0;
-    if (source == 0 || destination == 0 || source == destination ||
-        source % page_size != 0 || destination % page_size != 0 ||
-        source >= max_managed_phys || destination >= max_managed_phys) {
-        return memory_result::invalid;
-    }
-    // Walk the entire canonical lower half. The first PDPT entry is the
-    // shared supervisor identity map, never a process-owned mapping.
-    const u64* root = table(source);
-    for (u32 l4 = 0; l4 < 256; ++l4) {
-        const u64 e4 = root[l4];
-        if (!(e4 & present)) continue;
-        if (e4 & huge) return memory_result::invalid;
-        const u64* pdpt = table(e4);
-        for (u32 l3 = 0; l3 < 512; ++l3) {
-            if (l4 == 0 && l3 == 0) continue;
-            const u64 e3 = pdpt[l3];
-            if (!(e3 & present)) continue;
-            if (e3 & huge) return memory_result::invalid;
-            const u64* pd = table(e3);
-            for (u32 l2 = 0; l2 < 512; ++l2) {
-                const u64 e2 = pd[l2];
-                if (!(e2 & present)) continue;
-                if (e2 & huge) return memory_result::invalid;
-                const u64* pt = table(e2);
-                for (u32 l1 = 0; l1 < 512; ++l1) {
-                    const u64 leaf = pt[l1];
-                    if (!(leaf & present)) continue;
-                    const page_permissions perms{
-                        (leaf & e2 & e3 & e4 & writable) != 0,
-                        ((leaf | e2 | e3 | e4) & no_execute) == 0,
-                        (leaf & e2 & e3 & e4 & user) != 0};
-                    const u64 source_physical = leaf & address_mask;
-                    if (!perms.user || user_page_references(source_physical) == 0)
-                        return memory_result::invalid;
-                    if (*copied_pages >= page_limit) return memory_result::out_of_memory;
-                    u64 physical = 0;
-                    const auto allocated = allocate_user_page(&physical);
-                    if (allocated != memory_result::none) return allocated;
-                    auto* output = reinterpret_cast<u64*>(physical);
-                    const auto* input = reinterpret_cast<const u64*>(source_physical);
-                    for (u32 word = 0; word < page_size / sizeof(u64); ++word) output[word] = input[word];
-                    const u64 address = (u64{l4} << 39) | (u64{l3} << 30) |
-                                        (u64{l2} << 21) | (u64{l1} << 12);
-                    const auto mapped = map_page_in(destination, address, physical, perms);
-                    if (mapped != memory_result::none) {
-                        (void)release_user_page(physical); return mapped;
-                    }
-                    ++*copied_pages;
-                }
-            }
-        }
+    if (!copied_pages) return memory_result::invalid;
+    *copied_pages=0;
+    u64 cursor=0x40000000ull;
+    while (cursor!=(u64{1}<<47)) {
+        const auto result=copy_user_pages_batch(source,destination,page_limit,copied_pages,&cursor,32);
+        if (result!=memory_result::none) return result;
     }
     return memory_result::none;
 }
+
 }
 
 namespace xos::arch {

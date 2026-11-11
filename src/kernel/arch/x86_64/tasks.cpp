@@ -3591,7 +3591,7 @@ void* syscall_entry(interrupt_frame* frame) {
         }
         break;
     }
-    case 67: {
+    case sys_vm: {
         // Public anonymous VM request; diagnostic operations are probe-only.
         if ((frame->rdi & 7) || !user_range_ok(frame->rdi, sizeof(anonymous_vm::request), false)) {
             result = -2; break;

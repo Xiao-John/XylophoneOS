@@ -34,9 +34,9 @@ def main():
    pump(guest,.3);baseline=resources(guest);result['baseline']=baseline
    for i in range(2):
     output=command(guest,'exec-file /bin/vm1.elf',b'kind=exited code=0',timeout=90)
-    assert (b'VM1_DISABLED_PASS' if a.expect_disabled else b'VM1_GUEST_PASS') in output and b'VM1_FAIL' not in output,output[-1500:]
+    assert (b'VM1_PUBLIC_PASS' if a.expect_disabled else b'VM1_GUEST_PASS') in output and b'VM1_FAIL' not in output,output[-1500:]
     assert resources(guest)==baseline
-    result['checks'].append(('guest_disabled_' if a.expect_disabled else 'guest_sparse_4t_fragment_split_and_reuse_')+str(i))
+    result['checks'].append(('public_vm_private_diagnostics_disabled_' if a.expect_disabled else 'guest_sparse_4t_fragment_split_and_reuse_')+str(i))
    if not a.expect_disabled:
     fault=command(guest,'exec-file /bin/vm1.elf fault',b'kind=faulted',timeout=90)
     assert b'VM1_RESERVED_READ' in fault and b'vector=14' in fault, fault[-1500:]

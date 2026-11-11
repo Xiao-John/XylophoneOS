@@ -16,6 +16,8 @@ from toolchain import COMMON_FLAGS, X86_FLAGS, tool
 def sha(path): return hashlib.sha256(path.read_bytes()).hexdigest()
 def main():
  p=argparse.ArgumentParser();p.add_argument('--system',required=True,type=Path);p.add_argument('--output',required=True,type=Path);p.add_argument('--expect-disabled',action='store_true');p.add_argument('--sweep',action='store_true');p.add_argument('--icount',action='store_true');a=p.parse_args()
+ if a.expect_disabled:
+  p.error('page fault injection requires the probe image; use vm1_acceptance.py --expect-disabled for the public image')
  if a.icount:
   assert a.sweep, '--icount is intended only for the allocation sweep'
   qemu_command=boot_smoke.qemu_command

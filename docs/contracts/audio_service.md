@@ -18,6 +18,32 @@ syscall、设备号或设备协议编号。协议头在 `src/shared/include/xos/
   内核撤销 controller、终止子 worker 并静音；supervisor 自动重启服务。重启不恢复旧
   session/job，也不自动重播。
 
+## worker 镜像交接
+
+`/tone_worker.img` 没有 ACL，任何进程都能替换它，因此文件本身不是信任根；信任根是
+supervisor 与服务之间经 `argv[2]` 绑定的 SHA-256。相关常量在
+`src/shared/include/xos/audio_abi.hpp`：`worker_image_path`、`worker_image_limit`
+（16 KiB）、`worker_digest_hex_length`（64）。
+
+- **发布**：supervisor 从内嵌可信镜像读出 worker ELF，对**将要写出的缓冲**算 SHA-256，
+  把 64 位十六进制摘要作为 `argv[2]` 传给 `audio_service`
+  （`argv = {audio_service, tone_id, digest}`，spawn `argc=3`），再用 `replace()` 写入
+  `/tone_worker.img`。摘要与落盘字节同源，不另行读回。服务没有 `sys_image_info`
+  权限，也不因本交接获得该权限。
+- **准入**：服务解析 `argv[2]`；`argc < 3`、长度不是 64、含非十六进制字符或尾随
+  字符一律判为"无摘要"，与 `tone == 0` 守卫同风格 `return 10` 拒绝启动。没有摘要就
+  没有钉住镜像的依据，服务不得带着未验证的 worker 运行。
+- **逐次校验**：每个音符 spawn 前重新 `file::client::read_all(worker_image_path, …)`，
+  容量 `worker_image_limit`；读失败、空文件或超限（`read_all` 对超限返回 `no_space`）
+  都使本音符失败，job 以 `device_lost` 结束而**服务不退出**，下一次 spawn 重新读取。
+  字节不跨音符缓存——缓存会重新打开替换窗口。
+- **验证后从内存 spawn**：读到的字节当场算 SHA-256 与 `argv[2]` 比对，不一致即拒绝
+  （同样 `device_lost`，服务存活）；一致才 `spawn_buffer_options("audio_tone", bytes, …)`，
+  不再二次查路径，检查与 exec 之间没有 TOCTOU。进程名固定为 `audio_tone`——以路径作名
+  会得到 11 字节截断的 `/tone_worker`。
+- worker 自身的 argv 仍为 `{audio_tone, frequency_hz, duration_ms}`（`argc=3`），与
+  服务的 `argv[2]` 摘要无关；worker 不读该文件，也不获得文件系统授权。
+
 ## Wire 格式与约束
 
 IPC 单条消息上限 4,096 字节。v1 request 固定 544 字节：`version=1`、`size=544`、

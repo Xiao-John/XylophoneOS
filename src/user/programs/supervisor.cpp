@@ -5,6 +5,7 @@
 #include <xos/display_client.hpp>
 #include <xos/elf.hpp>
 #include <xos/execution.hpp>
+#include <xos/fault_sha256.hpp>
 #include <string.h>
 #include <unistd.h>
 #include <xos/file_ui.hpp>
@@ -181,18 +182,27 @@ i64 delegate_audio_controller(u64 child, void*) {
 
 // audio_service runs without supervisor rights and cannot read the image
 // catalog (sys_image_info/sys_image_read are supervisor-only), so publish
-// the tone worker image as a regular file the service spawns with
-// spawn_file. No privilege is granted; the 16 KiB bound fails loudly
-// instead of spawning from a stale copy (the current image is ~9.5 KiB).
-i64 publish_tone_worker(u32 tone) {
+// the tone worker image as a regular file the service reads back before
+// spawning. No privilege is granted; the 16 KiB bound fails loudly instead
+// of spawning from a stale copy (the current image is ~9.5 KiB). The file
+// carries no ACL, so the digest published in argv[2] is what lets the
+// service refuse a substituted image (issue G-1).
+i64 publish_tone_worker(u32 tone, char digest_text[audio::worker_digest_hex_length + 1]) {
     image_info info{};
     i64 result = sdk::syscall(sys_image_info, tone, reinterpret_cast<u64>(&info));
     if (result < 0) return result;
-    if (info.size == 0 || info.size > 16384) return process_error_resources;
-    static u8 worker_image[16384];
+    if (info.size == 0 || info.size > audio::worker_image_limit) return process_error_resources;
+    static u8 worker_image[audio::worker_image_limit];
     image_read_request request{0, reinterpret_cast<u64>(worker_image), info.size};
     result = sdk::syscall(sys_image_read, tone, reinterpret_cast<u64>(&request));
     if (result != static_cast<i64>(info.size)) return result < 0 ? result : process_error_invalid;
+    // Digest of the exact bytes handed to the service: whatever ends up at
+    // worker_image_path must hash to this value or the service refuses it.
+    sha256 hash;
+    hash.update(worker_image, static_cast<xos::usize>(info.size));
+    u8 digest[32];
+    hash.finish(digest);
+    hex_digest(digest, digest_text);
     file::client files;
     if (!files.init()) return static_cast<i64>(file::status::io);
     // replace() chunks past the single-request payload cap, creates the
@@ -206,20 +216,22 @@ i64 start_audio_service() {
     if (image == 0) return process_error_resources;
     const u32 tone = image_named("audio_tone");
     if (tone == 0) return process_error_resources;
-    const i64 published = publish_tone_worker(tone);
+    char worker_digest[audio::worker_digest_hex_length + 1] = {};
+    const i64 published = publish_tone_worker(tone, worker_digest);
     if (published != 0) return published;
     // The service runs without supervisor rights and cannot enumerate the
     // image catalog (sys_image_info is supervisor-only); hand it the tone
-    // image id as argv[1] instead of granting privilege.
+    // image id as argv[1] and the published worker digest as argv[2]
+    // instead of granting privilege.
     char tone_arg[4] = {};
     tone_arg[0] = static_cast<char>('0' + (tone / 10) % 10);
     tone_arg[1] = static_cast<char>('0' + tone % 10);
-    const char* arguments[] = {"audio_service", tone_arg};
+    const char* arguments[] = {"audio_service", tone_arg, worker_digest};
     spawn_options options{};
     for (u32 i = 0; i < 3; ++i) options.stdio[i] = -2;
     options.delegate_spawn_depth = 2;
     options.prepare_child = delegate_audio_controller;
-    const i64 child = xos::sdk::spawn_image_options(image, 2, arguments, options);
+    const i64 child = xos::sdk::spawn_image_options(image, 3, arguments, options);
     if (child > 0) {
         audio_service_pid = static_cast<u64>(child);
         audio_retry_after_ns = 0;

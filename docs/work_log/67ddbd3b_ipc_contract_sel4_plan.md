@@ -3,7 +3,7 @@
 2026-11-10。按标题生成工作记录编号。应用户要求先设计应用/服务与内核可并行推进的
 高性能 IPC，暂不开展 VM3。基线 main `d708790`；VM2 #102 为独立 PR，不以其为主线事实。
 
-新增 [IPC v1 提案](../contracts/ipc_v1_proposal.md)和 [实施计划](../plans/ipc_sel4.md)：
+新增 [IPC v1 提案](../contracts/ipc_v1.md)和 [实施计划](../plans/ipc_sel4.md)：
 区分现有单槽异步 IPC 与候选同步 endpoint；定义认证 badge、一次性 reply、deadline、
 取消/结果未知、wait、通知、授权、迁移和阶段验收；以 feature 协商让应用可依契约
 设计，同时禁止把模型或缺失后端冒充 SDK supported。暂不登记 syscall、发布 ABI、修改

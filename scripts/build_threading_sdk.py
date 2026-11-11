@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+from ipc_v1_manifest import ipc_v1_manifest_entry
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -301,6 +302,7 @@ def main():
         raise SystemExit('SDK inputs changed during the build; retry with a stable source snapshot')
     receipt = {'profile': 'xos-threading-v1-experimental', 'abi': 1, 'thread_abi': 1,
                'display_extensions': {'version': 1, 'syscalls': [65, 66], 'pixel_format': 'XRGB8888', 'surface_count': 1},
+               'ipc_v1': ipc_v1_manifest_entry(),
                'process_extensions': {'syscalls': [*range(54,62),80,81,82], 'file_operations': [20,21,22],
                    'startup_versions': [1,2,3], 'exec_image_abi': 3, 'exec_marker': '.xos.exec',
                    'fork_supported': False, 'exec_supported': False, 'fd_count': 32,

@@ -9,7 +9,8 @@
 |---:|---:|---|---|
 | 0 | 0 | reserved | 既有空位，禁止擅自使用 |
 | 1 | 66 | allocated | 现有分配，逐项见下表；不重新编号 |
-| 67 | 79 | reserved | 内存线：VMA/映射机制；67 的 PX4-A 提案见下表 |
+| 67 | 67 | allocated | 匿名虚拟内存 v1；VM3 恢复中，资格待验 |
+| 68 | 79 | reserved | 内存线：VMA/映射机制 |
 | 80 | 80 | allocated | 通用字节流授权；实现未验 |
 | 81 | 81 | allocated | 通用受控 IPC；实现未验 |
 | 82 | 82 | allocated | 受控设备 PIO；COM1 与 PC Speaker 资源见契约，未客体验收 |
@@ -107,6 +108,7 @@ action 6 由对端验证派生通道来源，结构为 `channel_fork_verificatio
 | 64 | `sys_clock_realtime` | `src/shared/include/xos/process_abi.hpp` |
 | 65 | `sys_display` | `src/shared/include/xos/display_abi.hpp` |
 | 66 | `sys_display_present` | `src/shared/include/xos/display_abi.hpp` |
+| 67 | `sys_vm` | `src/shared/include/xos/vm_abi.hpp` |
 | 80 | `sys_stream_lease` | `src/shared/include/xos/process_abi.hpp` |
 | 81 | `sys_channel` | `src/shared/include/xos/process_abi.hpp` |
 | 82 | `sys_pio_grant` | `src/shared/include/xos/process_abi.hpp` |
@@ -126,7 +128,7 @@ PX4-A 提议认领如下；本分支未合入前不构成全项目登记，不�
 
 | 编号 | 拟用符号 | 责任角色 | 状态 | 实现PR |
 |---:|---|---|---|---|
-| 67 | `sys_vm` | VM负责人；匿名私有VMA v1 | claimed | 待登记合入后另开；[契约提案](anonymous_vm.md) |
+| 67 | `sys_vm` | VM负责人；匿名私有VMA v1 | allocated | 实施中，资格待验；[契约](anonymous_vm.md) |
 
 
 claimed必须位于对应reserved段，不能与现有接口或其他认领重复；不生成源码常量或能力。

@@ -14,9 +14,7 @@
 #include <xos/platform.hpp>
 #include "frame.hpp"
 #include "build_info.hpp"
-#if XOS_VM1_PROBE
 #include "../../core/anonymous_reservations.hpp"
-#endif
 #include "interrupt_entry.hpp"
 #include <xos/clock.hpp>
 #include "arch/x86_64/interrupt_wait.hpp"
@@ -164,10 +162,24 @@ struct thread_record : thread_lifetime {
     alignas(16) u8 fpu_state[512];
 };
 process_record tasks[8];
-#if XOS_VM1_PROBE
+struct fork_copy_transaction {
+    process_record* owner=nullptr;
+    process_record* child=nullptr;
+    interrupt_frame* frame=nullptr;
+    u64 copy_cursor=0, release_cursor=0;
+    u32 released=0;
+    i64 fail_after=-1;
+};
+fork_copy_transaction fork_copies[8];
+bool fork_child_staged(const process_record* task) {
+    for (const auto& tx : fork_copies)
+        if (tx.child==task && tx.owner && tx.owner->continuation.active()) return true;
+    return false;
+}
 anonymous_vm::reservations vm1_probe_regions[8];
-struct vm2_failure_injection { i64 page=-1, table=-1; bool trace=false; };
+struct vm2_failure_injection { i64 page=-1, table=-1, fork=-1; bool trace=false; };
 vm2_failure_injection vm2_failures[8];
+#if XOS_VM1_PROBE
 struct vm2_probe_state {
     u64 pages[4096];
     u32 target, count, fail_after;
@@ -651,10 +663,8 @@ process_record* prepare_task(const char* name) {
     if (task == nullptr || next_pid == 0 || next_pid > 0x7fffffffffffffff ||
         next_tid == 0 || next_tid > 0x7fffffffffffffff) { return nullptr; }
     *task = process_record{};
-#if XOS_VM1_PROBE
     vm1_probe_regions[static_cast<u32>(task - tasks)].clear();
     vm2_failures[static_cast<u32>(task - tasks)] = vm2_failure_injection{};
-#endif
     task->pid = next_pid++;
     copy_name(task->name, name);
     task->cr3 = create_address_space();
@@ -1093,7 +1103,8 @@ void mark_reap(process_record* task) {
 
 // This always runs on a different process's kernel stack. Shared pages have one owner.
 void destroy_task(process_record* task) {
-    if (task == nullptr || task->state == task_state::free || task == current || task->continuation.active()) { return; }
+    if (task == nullptr || task->state == task_state::free || task == current || task->continuation.active() ||
+        fork_child_staged(task)) { return; }
     release_pc_speaker(task);
     revoke_pc_speaker_controller(task);
     quarantine_com1(task);
@@ -1126,10 +1137,8 @@ void destroy_task(process_record* task) {
         thread = thread_record{};
     }
     if (task->cr3 != 0) { freed += destroy_address_space(task->cr3); }
-#if XOS_VM1_PROBE
     vm1_probe_regions[static_cast<u32>(task - tasks)].clear();
     vm2_failures[static_cast<u32>(task - tasks)] = vm2_failure_injection{};
-#endif
     *task = process_record{};
     if (task_total > 0) { --task_total; }
     if (process_trace_enabled) {
@@ -1541,7 +1550,6 @@ bool pinned_range(process_record* process, u64 begin, u64 end) {
     return false;
 }
 
-#if XOS_VM1_PROBE
 // VM2 page work is staged outside the 4 KiB kernel stack. The owning process
 // is frozen by vm_continuation while these records are live.
 struct vm2_page_transaction {
@@ -1668,7 +1676,6 @@ vm_step vm2_page_step(void* opaque, vm_phase phase, u32 budget, i64& result) {
     }
     halt();
 }
-#endif
 
 void release_thread_range(thread_record& thread, u64 begin, u64 end) {
     for (u64 address = begin; address < end; address += page_size) {
@@ -1994,52 +2001,19 @@ void* thread_syscall(interrupt_frame* frame) {
     frame->rax = static_cast<u64>(result); return frame;
 }
 
-// Prepare a private address-space snapshot while the single-core kernel cannot
-// be preempted. No child context becomes runnable until fork_commit; every
-// fallible allocation precedes completion-record publication.
-i64 prepare_fork(interrupt_frame* frame) {
-    if (current == nullptr || current->supervisor || current->block_access) {
-        return process_error_denied;
-    }
-    if (current->threads_enabled || current_thread != &main_thread(current) ||
-        !current_thread->main) { return thread_error_unsupported; }
-    for (const auto& peer : threads) {
-        if (peer.process == current && &peer != current_thread &&
-            peer.state != thread_state::free && peer.state != thread_state::dead) {
-            return thread_error_unsupported;
-        }
-    }
-    if (current->spawn_depth == 0 && !current->can_create) { return process_error_denied; }
-    if (current->closing || current_thread->leaving) { return process_error_state; }
-    if (current->fork_depth >= process_fork_depth_max || !files_service_live()) {
-        return process_error_resources;
-    }
-    completion_record* completion = nullptr;
-    for (auto& item : completions) { if (!item.used) { completion = &item; break; } }
-    u32 free_endpoints = 0;
-    for (const auto& endpoint : endpoints) { if (!endpoint.used) { ++free_endpoints; } }
-    if (completion == nullptr || free_endpoints < 2 || next_endpoint_handle > 0xfffffffeull) {
-        return process_error_resources;
-    }
-    process_record* child = prepare_task(current->name);
-    if (child == nullptr) { return process_error_resources; }
-    child->parent = current->pid;
-    child->spawn_depth = current->spawn_depth;
-    child->can_create = current->can_create;
-    child->fork_source = current->pid;
-    child->fork_depth = current->fork_depth + 1;
-    child->fork_pending = true;
-    child->heap_break = current->heap_break;
-    child->entry = current->entry;
-    child->initial_stack = current->initial_stack;
-    child->startup = current->startup;
-    if (copy_user_pages_in(current->cr3, child->cr3, process_max_pages,
-                           &child->user_pages) != memory_result::none ||
-        child->user_pages != current->user_pages) {
-        destroy_task(child); return process_error_resources;
-    }
+// Fork snapshots run in bounded batches while peer threads remain frozen.
+constexpr i64 fork_async_result = (-0x7fffffffffffffffLL);
+i64 finish_fork_copy(fork_copy_transaction& tx) {
+    auto* child=tx.child;auto* frame=tx.frame;
+    if (!child || child->state!=task_state::building || !files_service_live()) return process_error_state;
+    completion_record* completion=nullptr;
+    for(auto& item:completions) if(!item.used) { completion=&item;break; }
+    u32 free_endpoints=0;
+    for(const auto& endpoint:endpoints) if(!endpoint.used) ++free_endpoints;
+    if(!completion || free_endpoints<2 || next_endpoint_handle>0xfffffffeull) return process_error_resources;
+    vm1_probe_regions[static_cast<u32>(child-tasks)]=vm1_probe_regions[static_cast<u32>(current-tasks)];
     if (!inherit_stdio(child, current, current->stdio_mask)) {
-        destroy_task(child); return process_error_resources;
+        return process_error_resources;
     }
     // libc's copied FD table contains these exact tokens. Retain the underlying
     // objects under the new PID; global monotonic tokens are still authorized
@@ -2049,21 +2023,21 @@ i64 prepare_fork(interrupt_frame* frame) {
         if (!reference.used) { continue; }
         if (child->pipe_reference_count >= process_max_pipe_refs ||
             reference.pipe_index >= process_max_pipes || !pipes[reference.pipe_index].used) {
-            destroy_task(child); return process_error_resources;
+            return process_error_resources;
         }
         child->pipe_references[index] = reference;
         pipe_retain(reference.pipe_index, reference.writable);
         ++child->pipe_reference_count;
     }
     if (child->pipe_reference_count != current->pipe_reference_count) {
-        destroy_task(child); return process_error_state;
+        return process_error_state;
     }
     child->session_request_handle = endpoint_attach(files_pid, child->pid, child->pid,
         file_message_bytes);
     child->session_response_handle = endpoint_attach(child->pid, files_pid, child->pid,
         file_message_bytes, true);
     if (child->session_request_handle == 0 || child->session_response_handle == 0) {
-        destroy_task(child); return process_error_resources;
+        return process_error_resources;
     }
     child->send_handle = child->session_request_handle;
     child->recv_handle = child->session_response_handle;
@@ -2073,9 +2047,6 @@ i64 prepare_fork(interrupt_frame* frame) {
     thread.tls_begin = current_thread->tls_begin;
     thread.tls_end = current_thread->tls_end;
     thread.thread_pointer = current_thread->thread_pointer;
-    // The running thread's saved FPU image can predate this syscall. Snapshot
-    // the actual registers now rather than copying the last scheduling image.
-    fpu_save(current_thread->fpu_state);
     copy_bytes(thread.fpu_state, current_thread->fpu_state, sizeof(thread.fpu_state));
     auto* child_frame = reinterpret_cast<interrupt_frame*>(thread.kernel_stack_top - sizeof(interrupt_frame));
     *child_frame = *frame;
@@ -2093,7 +2064,79 @@ i64 prepare_fork(interrupt_frame* frame) {
         format::text(" depth="); format::decimal(child->fork_depth);
         format::text(" pages="); format::decimal(child->user_pages); format::text("\r\n");
     }
-    return static_cast<i64>(child->pid);
+    const i64 pid=static_cast<i64>(child->pid);
+    tx.child=nullptr;tx.owner=nullptr;return pid;
+}
+vm_step fork_copy_step(void* opaque,vm_phase phase,u32 budget,i64& result) {
+    auto& tx=*static_cast<fork_copy_transaction*>(opaque);
+    if (!tx.owner || !tx.child) halt();
+    auto* child=tx.child;
+    // One leaf can also allocate or release up to three page-table pages.
+    const u32 work = budget >= 4 ? budget / 4 : 1;
+    if (phase==vm_phase::preparing) {
+        if(child->state!=task_state::building) { result=process_error_state;return vm_step::failed; }
+#if XOS_VM1_PROBE
+        if (tx.owner->user_pages > 256 && tx.copy_cursor == 0x40000000ull)
+            format::text("[vm3-fork] preparing\r\n");
+        if(tx.fail_after>=0) memory_self_test_fail_after(tx.fail_after);
+#endif
+        const auto copied=copy_user_pages_batch(tx.owner->cr3,child->cr3,process_max_pages,
+                                                 &child->user_pages,&tx.copy_cursor,work);
+#if XOS_VM1_PROBE
+        if(tx.fail_after>=0) { tx.fail_after=memory_self_test_remaining();memory_self_test_fail_after(-1); }
+#endif
+        if(copied!=memory_result::none) { result=process_error_resources;return vm_step::failed; }
+        if(tx.copy_cursor!=(u64{1}<<47))return vm_step::again;
+        if(child->user_pages!=tx.owner->user_pages) { result=process_error_resources;return vm_step::failed; }
+        result=finish_fork_copy(tx);
+        return result>0 ? vm_step::finished : vm_step::failed;
+    }
+    if(phase==vm_phase::rolling_back) {
+#if XOS_VM1_PROBE
+        if (tx.owner->user_pages > 256 && tx.release_cursor == 0x40000000ull)
+            format::text("[vm3-fork] rolling_back\r\n");
+#endif
+        if(release_user_pages_batch(child->cr3,&tx.release_cursor,&tx.released,work)!=memory_result::none) halt();
+        if(tx.release_cursor!=(u64{1}<<47))return vm_step::again;
+        if(tx.released!=child->user_pages)halt();
+        child->user_pages=0;tx.child=nullptr;tx.owner=nullptr;destroy_task(child);
+        result=0;return vm_step::finished;
+    }
+    halt();
+}
+i64 prepare_fork(interrupt_frame* frame) {
+    if (current == nullptr || current->supervisor || current->block_access) return process_error_denied;
+    if (current->threads_enabled || current_thread != &main_thread(current) || !current_thread->main)
+        return thread_error_unsupported;
+    for (const auto& peer : threads) {
+        if (peer.process == current && &peer != current_thread &&
+            peer.state != thread_state::free && peer.state != thread_state::dead) return thread_error_unsupported;
+    }
+    if (current->spawn_depth == 0 && !current->can_create) return process_error_denied;
+    if (current->closing || current_thread->leaving) return process_error_state;
+    if (current->fork_depth >= process_fork_depth_max || !files_service_live()) return process_error_resources;
+    u32 free_endpoints=0;bool free_completion=false;
+    for(const auto& item:completions) if(!item.used) { free_completion=true;break; }
+    for(const auto& endpoint:endpoints) if(!endpoint.used) ++free_endpoints;
+    if(!free_completion || free_endpoints<2 || next_endpoint_handle>0xfffffffeull) return process_error_resources;
+    process_record* child=prepare_task(current->name);
+    if(!child)return process_error_resources;
+    child->parent=current->pid;child->spawn_depth=current->spawn_depth;child->can_create=current->can_create;
+    child->fork_source=current->pid;child->fork_depth=current->fork_depth+1;child->fork_pending=true;
+    child->heap_break=current->heap_break;child->entry=current->entry;
+    child->initial_stack=current->initial_stack;child->startup=current->startup;
+    auto& tx=fork_copies[static_cast<u32>(current-tasks)];
+    tx.owner=current;tx.child=child;tx.frame=frame;
+    tx.copy_cursor=0x40000000ull;tx.release_cursor=0x40000000ull;tx.released=0;tx.fail_after=-1;
+#if XOS_VM1_PROBE
+    tx.fail_after=vm2_failures[static_cast<u32>(current-tasks)].fork;
+    vm2_failures[static_cast<u32>(current-tasks)].fork=-1;
+#endif
+    fpu_save(current_thread->fpu_state);
+    if(!begin_vm_continuation(*current,*current_thread,&tx,fork_copy_step)) {
+        tx.owner=nullptr;tx.child=nullptr;destroy_task(child);return process_error_state;
+    }
+    return fork_async_result;
 }
 
 #include "display_tasks.inc"
@@ -2490,9 +2533,6 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_process_exec_prepare: {
-#if XOS_VM1_PROBE
-        if (vm1_probe_regions[static_cast<u32>(current - tasks)].count()) { result = process_error_state; break; }
-#endif
         if (admission_guard.owner_pid != 0) { result = process_error_busy; break; }
         if (first != 0 || third > 11 ||
             (third != 0 && !user_range_ok(second, third, false))) { break; }
@@ -2646,6 +2686,8 @@ void* process_syscall(interrupt_frame* frame) {
         // slots, stdio/pipe references, fork depth, and its active kernel stack.
         stage->cr3 = old_space;
         stage->user_pages = old_pages;
+        vm1_probe_regions[static_cast<u32>(stage - tasks)] = vm1_probe_regions[static_cast<u32>(current - tasks)];
+        vm1_probe_regions[static_cast<u32>(current - tasks)].clear();
         load_address_space(current->cr3);
         set_thread_pointer(current_thread->thread_pointer);
         if (process_trace_enabled) {
@@ -2666,11 +2708,11 @@ void* process_syscall(interrupt_frame* frame) {
         return frame;
     }
     case sys_process_fork_prepare:
-#if XOS_VM1_PROBE
-        if (vm1_probe_regions[static_cast<u32>(current - tasks)].count()) { result = process_error_state; break; }
-#endif
         if (admission_guard.owner_pid != 0) { result = process_error_busy; break; }
-        if (first == 0 && second == 0 && third == 0) { result = prepare_fork(frame); }
+        if (first == 0 && second == 0 && third == 0) {
+            result = prepare_fork(frame);
+            if(result==fork_async_result) { frame->rax=0;return schedule(frame); }
+        }
         break;
     case sys_process_fork_commit: {
         if (admission_guard.owner_pid != 0) { result = process_error_busy; break; }
@@ -3549,15 +3591,15 @@ void* syscall_entry(interrupt_frame* frame) {
         }
         break;
     }
-#if XOS_VM1_PROBE
     case 67: {
-        // Dedicated probe image only: never exported in default SDK/manifest.
+        // Public anonymous VM request; diagnostic operations are probe-only.
         if ((frame->rdi & 7) || !user_range_ok(frame->rdi, sizeof(anonymous_vm::request), false)) {
             result = -2; break;
         }
         if (frame->rsi || frame->rdx) { result = anonymous_vm::invalid; break; }
         anonymous_vm::request request{};
         copy_from_user(&request, frame->rdi, sizeof(request));
+#if XOS_VM1_PROBE
         // Exercise a genuine ready-but-not-yet-delivered process wait pin.
         if (request.operation == 0xfffd && request.version == 1 && request.size == sizeof(request) &&
             !request.flags && request.address && request.length && !request.alignment &&
@@ -3618,6 +3660,12 @@ void* syscall_entry(interrupt_frame* frame) {
             }
             frame->rax=0; return schedule(frame);
         }
+        if (request.operation==0xfffa && request.version==1 && request.size==sizeof(request) &&
+            !request.flags && request.address<=65536 && !request.length && !request.alignment &&
+            !request.protection && !request.reserved0 && !request.reserved1 && !request.reserved2) {
+            vm2_failures[static_cast<u32>(current-tasks)].fork=static_cast<i64>(request.address); result=0; break;
+        }
+#endif
         if (request.operation>=2 && request.operation<=5) {
             if (request.version!=1 || request.size!=sizeof(request) || request.flags || request.alignment ||
                 request.reserved0 || request.reserved1 || request.reserved2 || !request.length ||
@@ -3653,7 +3701,6 @@ void* syscall_entry(interrupt_frame* frame) {
         result = vm1_probe_regions[static_cast<u32>(current - tasks)].apply(request, current->closing);
         break;
     }
-#endif
     case sys_random_bytes:
         result = frame->rdx == 0 ? random_bytes(frame->rdi, frame->rsi)
                                  : random_error_invalid;

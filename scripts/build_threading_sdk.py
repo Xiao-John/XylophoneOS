@@ -114,6 +114,7 @@ def main():
         shutil.copytree(ROOT / folder, output / 'include/xos', dirs_exist_ok=True)
     for header in (ROOT / 'src/user/include').glob('*.h'):
         shutil.copyfile(header, output / 'include' / header.name)
+    shutil.copytree(ROOT / 'src/user/include/sys', output / 'include/sys', dirs_exist_ok=True)
     shutil.copytree(ROOT / 'src/user/threading/include', output / 'include', dirs_exist_ok=True)
     with (output / 'include/newlib.h').open('a') as header:
         header.write('\n/* XOS E13-T profile: matching archives use __getreent. */\n#define __DYNAMIC_REENT__ 1\n')
@@ -300,6 +301,7 @@ def main():
     if final_inputs != initial_inputs:
         raise SystemExit('SDK inputs changed during the build; retry with a stable source snapshot')
     receipt = {'profile': 'xos-threading-v1-experimental', 'abi': 1, 'thread_abi': 1,
+               'vm_extensions': {'version': 1, 'syscall': 67, 'status': 'implemented_unqualified'},
                'display_extensions': {'version': 1, 'syscalls': [65, 66], 'pixel_format': 'XRGB8888', 'surface_count': 1},
                'process_extensions': {'syscalls': [*range(54,62),80,81,82], 'file_operations': [20,21,22],
                    'startup_versions': [1,2,3], 'exec_image_abi': 3, 'exec_marker': '.xos.exec',

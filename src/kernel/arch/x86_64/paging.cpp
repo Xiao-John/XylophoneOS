@@ -341,6 +341,99 @@ memory_result vm_remove_page_in(u64 space,u64 address,u64* physical) {
     return memory_result::none;
 }
 
+memory_result release_user_pages_batch(u64 space,u64* cursor,u32* released_pages,u32 budget) {
+    constexpr u64 end=u64{1}<<47;
+    if (!space || space%page_size || space>=max_managed_phys || !cursor || !released_pages ||
+        *cursor<0x40000000ull || *cursor>end || *cursor%page_size || !budget)
+        return memory_result::invalid;
+    while (budget-- && *cursor<end) {
+        const u64 address=*cursor;
+        u64* root=table(space); u64& e4=root[index_of(address,39)];
+        if (!(e4 & present)) { *cursor=(address|((u64{1}<<39)-1))+1; continue; }
+        if ((e4 & (user|writable))!=(user|writable) || (e4 & huge)) return memory_result::invalid;
+        u64* pdpt=table(e4); u64& e3=pdpt[index_of(address,30)];
+        if (!(e3 & present)) { *cursor=(address|((u64{1}<<30)-1))+1; continue; }
+        if ((e3 & (user|writable))!=(user|writable) || (e3 & huge)) return memory_result::invalid;
+        u64* pd=table(e3); u64& e2=pd[index_of(address,21)];
+        if (!(e2 & present)) { *cursor=(address|((u64{1}<<21)-1))+1; continue; }
+        if ((e2 & (user|writable))!=(user|writable) || (e2 & huge)) return memory_result::invalid;
+        u64* pt=table(e2);u64& leaf=pt[index_of(address,12)];
+        if (leaf & (present|vm_hidden)) {
+            if ((leaf & (present|vm_hidden))==(present|vm_hidden) || !(leaf & user) ||
+                !user_page_references(leaf & address_mask)) return memory_result::invalid;
+            const u64 physical=leaf & address_mask;
+            leaf=0;if(read_cr3()==space)invalidate(address);
+            if(release_user_page(physical)!=memory_result::none)return memory_result::invalid;
+            ++*released_pages;
+        }
+        *cursor+=page_size;
+        if (empty_table(pt)) {
+            const u64 physical=e2 & address_mask;e2=0;(void)release_page(physical);
+            if (empty_table(pd)) {
+                const u64 parent=e3 & address_mask;e3=0;(void)release_page(parent);
+                if (empty_table(pdpt)) {
+                    const u64 grandparent=e4 & address_mask;e4=0;(void)release_page(grandparent);
+                }
+            }
+        }
+    }
+    return memory_result::none;
+}
+memory_result copy_user_pages_batch(u64 source, u64 destination, u32 page_limit,
+                                    u32* copied_pages, u64* cursor, u32 budget) {
+    constexpr u64 end=u64{1}<<47;
+    if (!copied_pages || !cursor || !source || !destination || source==destination ||
+        source%page_size || destination%page_size || source>=max_managed_phys ||
+        destination>=max_managed_phys || *cursor<0x40000000ull || *cursor>end ||
+        (*cursor%page_size) || !budget) return memory_result::invalid;
+    while (budget-- && *cursor<end) {
+        const u64 address=*cursor;
+        const u64* entries=table(source);
+        const u32 shifts[]={39,30,21};
+        u64 parents=present|writable|user;
+        bool skip=false;
+        for (u32 i=0;i<3;++i) {
+            const u64 entry=entries[index_of(address,shifts[i])];
+            if (!(entry & present)) {
+                const u64 next=(address | ((u64{1}<<shifts[i])-1))+1;
+                *cursor=next<end ? next : end; skip=true; break;
+            }
+            if (entry & huge) return memory_result::invalid;
+            parents &= entry;
+            entries=table(entry);
+        }
+        if (skip) continue;
+        const u64 leaf=entries[index_of(address,12)];
+        if (!(leaf & (present|vm_hidden))) { *cursor+=page_size; continue; }
+        const bool hidden=(leaf & vm_hidden)!=0;
+        if ((hidden && (leaf & present)) || !(leaf & parents & user) ||
+            !user_page_references(leaf & address_mask)) return memory_result::invalid;
+        if (*copied_pages>=page_limit) return memory_result::out_of_memory;
+        u64 physical=0;
+        const auto allocated=allocate_user_page(&physical);
+        if (allocated!=memory_result::none) return allocated;
+        auto* output=reinterpret_cast<u64*>(physical);
+        const auto* input=reinterpret_cast<const u64*>(leaf & address_mask);
+        for (u32 word=0;word<page_size/sizeof(u64);++word) output[word]=input[word];
+        memory_result mapped;
+        if (hidden) {
+            mapped=vm_prepare_page_in(destination,address);
+            if (mapped==memory_result::none)
+                mapped=vm_install_page_in(destination,address,physical,vm_page_protection::none);
+            if (mapped!=memory_result::none) vm_prune_empty_page_tables_in(destination,address);
+        } else {
+            const u64 e4=table(source)[index_of(address,39)];
+            const u64 e3=table(e4)[index_of(address,30)];
+            const u64 e2=table(e3)[index_of(address,21)];
+            const page_permissions perms{(leaf & parents & writable)!=0,
+                ((leaf|e2|e3|e4) & no_execute)==0,true};
+            mapped=map_page_in(destination,address,physical,perms);
+        }
+        if (mapped!=memory_result::none) { (void)release_user_page(physical); return mapped; }
+        ++*copied_pages; *cursor+=page_size;
+    }
+    return memory_result::none;
+}
 memory_result copy_user_pages_in(u64 source, u64 destination, u32 page_limit,
                                  u32* copied_pages) {
     if (copied_pages == nullptr) { return memory_result::invalid; }

@@ -8,6 +8,7 @@
 #include <xos/execution.hpp>
 #include <xos/libc_runtime.hpp>
 #include <xos/sdk.hpp>
+#include <xos/vm.hpp>
 #include <xos/spawn.hpp>
 #include <xos/terminal_client.hpp>
 #include <xos/text.hpp>
@@ -21,6 +22,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/times.h>
@@ -1811,8 +1813,74 @@ extern "C" int xos_open_anonymous(void) {
     return fd;
 }
 extern "C" int vfork(void) { errno = ENOSYS; return -1; }
-extern "C" void* mmap(void*, size_t, int, int, int, off_t) { errno = ENOSYS; return reinterpret_cast<void*>(-1); }
-extern "C" int munmap(void*, size_t) { errno = ENOSYS; return -1; }
+namespace {
+int vm_errno(xos::i64 result) {
+    switch (result) {
+    case xos::vm_error_invalid: return EINVAL;
+    case xos::vm_error_address: return EFAULT;
+    case xos::vm_error_denied: return EACCES;
+    case xos::vm_error_resources: case xos::vm_error_unmapped: return ENOMEM;
+    case xos::vm_error_busy: return EBUSY;
+    case xos::vm_error_collision: return EEXIST;
+    case xos::vm_error_closing: return ESRCH;
+    default: return EIO;
+    }
+}
+bool vm_rounded_length(size_t length, u64& rounded) {
+    if (!length || length > ~u64{0} - (xos::vm_page_size - 1)) return false;
+    rounded = (static_cast<u64>(length) + xos::vm_page_size - 1) & ~(xos::vm_page_size - 1);
+    return true;
+}
+int vm_protection_value(int protection, xos::vm_protection& result) {
+    if ((protection & ~(PROT_READ|PROT_WRITE|PROT_EXEC)) != 0) return EINVAL;
+    if ((protection & (PROT_WRITE|PROT_EXEC)) == (PROT_WRITE|PROT_EXEC)) return EACCES;
+    if (protection != PROT_NONE && protection != PROT_READ &&
+        protection != (PROT_READ|PROT_WRITE) && protection != (PROT_READ|PROT_EXEC)) return ENOTSUP;
+    result=static_cast<xos::vm_protection>(protection); return 0;
+}
+bool vm_anonymous_range(u64 address, u64 length) {
+    return address >= xos::vm_arena_begin && address < xos::vm_arena_end &&
+           length <= xos::vm_arena_end - address;
+}
+}
+extern "C" void* mmap(void* address, size_t length, int protection, int flags, int fd, off_t offset) {
+    u64 rounded=0;
+    if (!vm_rounded_length(length,rounded)) { errno=EINVAL; return MAP_FAILED; }
+    if ((flags & ~(MAP_PRIVATE|MAP_ANONYMOUS|MAP_FIXED_NOREPLACE)) ||
+        (flags & (MAP_PRIVATE|MAP_ANONYMOUS)) != (MAP_PRIVATE|MAP_ANONYMOUS) || fd!=-1 || offset!=0) {
+        errno=ENOTSUP; return MAP_FAILED;
+    }
+    xos::vm_protection p{};
+    const int error=vm_protection_value(protection,p);
+    if (error) { errno=error; return MAP_FAILED; }
+    if (p!=xos::vm_protection::none) { errno=ENOTSUP; return MAP_FAILED; }
+    const auto result=xos::sdk::vm_reserve(reinterpret_cast<u64>(address),rounded,xos::vm_page_size,
+                                            (flags&MAP_FIXED_NOREPLACE)!=0);
+    if (result<0) { errno=vm_errno(result); return MAP_FAILED; }
+    return reinterpret_cast<void*>(static_cast<u64>(result));
+}
+extern "C" int mprotect(void* address, size_t length, int protection) {
+    u64 rounded=0;
+    if (reinterpret_cast<u64>(address)%xos::vm_page_size || !vm_rounded_length(length,rounded)) {
+        errno=EINVAL; return -1;
+    }
+    if (!vm_anonymous_range(reinterpret_cast<u64>(address),rounded)) { errno=ENOTSUP; return -1; }
+    xos::vm_protection p{};const int error=vm_protection_value(protection,p);
+    if (error) { errno=error; return -1; }
+    const auto result=xos::sdk::vm_change(xos::vm_operation::protect,reinterpret_cast<u64>(address),rounded,p);
+    if (result<0) { errno=vm_errno(result); return -1; }
+    return 0;
+}
+extern "C" int munmap(void* address, size_t length) {
+    u64 rounded=0;
+    if (reinterpret_cast<u64>(address)%xos::vm_page_size || !vm_rounded_length(length,rounded)) {
+        errno=EINVAL; return -1;
+    }
+    if (!vm_anonymous_range(reinterpret_cast<u64>(address),rounded)) { errno=ENOTSUP; return -1; }
+    const auto result=xos::sdk::vm_change(xos::vm_operation::unmap,reinterpret_cast<u64>(address),rounded);
+    if (result<0) { errno=vm_errno(result); return -1; }
+    return 0;
+}
 
 extern "C" _READ_WRITE_RETURN_TYPE _write(int fd, const void* data, size_t length) {
     if (length > static_cast<size_t>(INT_MAX)) { length = static_cast<size_t>(INT_MAX); }

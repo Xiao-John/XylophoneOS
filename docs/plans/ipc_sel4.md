@@ -78,9 +78,9 @@ seL4 的官方 [IPC](https://docs.sel4.systems/Tutorials/ipc.html) 和
 
 ## 立即可执行的下一步
 
-1. IP1 合入后启动 IP2：实现 sys88 的认证 endpoint、受界 call/receive/reply 与期限慢路径；
-   每个 feature 仅在客体资格后标记 supported。
-2. 基于现有镜像建立无侵入 IPC 与 pipe 测量，覆盖端点数量、消息大小和服务会话；
-   先收基线与误差，不设未经测量的百分比承诺。
-3. 将参考模型扩展为 IP2 的故障/竞争 oracle；所有测试结果明确区分模拟与客体实现。
-   迁移服务前逐条审计旧语义，选择独立纵向切片，不改 VM3 的工作状态。
+1. IP2 内核路径等待维护者完成真实客体验收；期间不得开启 endpoint/deadline feature。
+2. IP3 notification 和 wait set x86-64 慢路径已实现，覆盖有权利检查、deadline、最多 8 个
+   source、关闭事件、endpoint readiness 互操作和进程退出撤销。首版 wait set 只接 IPC v1
+   endpoint readiness 与 notification；IRQ/process-exit/channel wait_many 不混入。
+3. 维护者执行客体验收；在验收前保持 notification/wait_set feature 和 manifests
+   unsupported。服务迁移与测量仍待运行后端资格后开展。

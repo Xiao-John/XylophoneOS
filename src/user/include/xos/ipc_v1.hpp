@@ -60,6 +60,55 @@ inline i64 endpoint_close(u64 handle) {
     return invoke(ipc_v1_action::endpoint_close, request);
 }
 
+inline i64 notification_create(u32 rights, u64& handle) {
+    ipc_v1_object_create request{}; request.rights = rights;
+    const i64 result = invoke(ipc_v1_action::notification_create, request);
+    handle = result == 0 ? request.handle_out : 0; return result;
+}
+inline i64 notification_delegate(u64 handle, u64 target_pid, u64 badge, u32 rights, u64& output) {
+    ipc_v1_object_delegate request{}; request.handle=handle; request.target_pid=target_pid;
+    request.badge=badge; request.rights=rights;
+    const i64 result=invoke(ipc_v1_action::notification_delegate, request);
+    output=result == 0 ? request.handle_out : 0; return result;
+}
+inline i64 notification_signal(u64 handle) {
+    ipc_v1_notification_signal request{}; request.handle=handle;
+    return invoke(ipc_v1_action::notification_signal, request);
+}
+inline i64 notification_close(u64 handle) {
+    ipc_v1_object_close request{}; request.handle = handle;
+    return invoke(ipc_v1_action::notification_close, request);
+}
+inline i64 notification_wait(u64 handle, u64 deadline_ns, u64& bits) {
+    ipc_v1_notification_wait request{}; request.handle=handle; request.deadline_ns=deadline_ns;
+    const i64 result=invoke(ipc_v1_action::notification_wait, request);
+    bits=result == 0 ? request.bits_out : 0; return result;
+}
+inline i64 wait_set_create(u32 rights, u64& handle) {
+    ipc_v1_object_create request{}; request.rights=rights;
+    const i64 result=invoke(ipc_v1_action::wait_set_create, request);
+    handle=result == 0 ? request.handle_out : 0; return result;
+}
+inline i64 wait_set_delegate(u64 handle, u64 target_pid, u64 badge, u32 rights, u64& output) {
+    ipc_v1_object_delegate request{}; request.handle=handle; request.target_pid=target_pid;
+    request.badge=badge; request.rights=rights;
+    const i64 result=invoke(ipc_v1_action::wait_set_delegate, request);
+    output=result == 0 ? request.handle_out : 0; return result;
+}
+inline i64 wait_set_close(u64 handle) {
+    ipc_v1_object_close request{}; request.handle=handle;
+    return invoke(ipc_v1_action::wait_set_close, request);
+}
+inline i64 wait_set_add(ipc_v1_wait_set_add& request) {
+    request.source_id_out=0; return invoke(ipc_v1_action::wait_set_add, request);
+}
+inline i64 wait_set_remove(ipc_v1_wait_set_remove& request) {
+    return invoke(ipc_v1_action::wait_set_remove, request);
+}
+inline i64 wait_set_wait(ipc_v1_wait_set_wait& request) {
+    request.count_out=0; return invoke(ipc_v1_action::wait_set_wait, request);
+}
+
 inline i64 call(ipc_v1_call& request) {
     request.reply_length_out = request.phase_out = 0;
     request.reply_label_out = 0;

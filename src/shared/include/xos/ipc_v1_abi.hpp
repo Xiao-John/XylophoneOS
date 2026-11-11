@@ -24,8 +24,32 @@ enum class ipc_v1_action : u64 {
     call = 4,
     receive = 5,
     reply = 6,
-    reply_receive = 7
+    reply_receive = 7,
+    notification_create = 8,
+    notification_delegate = 9,
+    notification_signal = 10,
+    notification_wait = 11,
+    wait_set_create = 12,
+    wait_set_delegate = 13,
+    wait_set_add = 14,
+    wait_set_remove = 15,
+    wait_set_wait = 16,
+    notification_close = 17,
+    wait_set_close = 18
 };
+
+inline constexpr u32 ipc_v1_max_notifications_system = 32;
+inline constexpr u32 ipc_v1_max_wait_sets_system = 32;
+inline constexpr u32 ipc_v1_max_wait_set_sources = 8;
+
+enum class ipc_v1_notification_right : u32 {
+    signal = 1u << 0, wait = 1u << 1, manage = 1u << 2, delegate = 1u << 3
+};
+inline constexpr u32 ipc_v1_notification_right_all = 0x0fu;
+enum class ipc_v1_wait_set_right : u32 { wait = 1u << 0, manage = 1u << 1, delegate = 1u << 2 };
+inline constexpr u32 ipc_v1_wait_set_right_all = 0x07u;
+enum class ipc_v1_wait_source : u32 { endpoint = 1, notification = 2 };
+enum class ipc_v1_wait_event_kind : u32 { endpoint_ready = 1, notification = 2, closed = 3 };
 
 enum class ipc_v1_right : u32 {
     call = 1u << 0,
@@ -75,6 +99,31 @@ struct ipc_v1_header {
     u32 version;
     u32 size;
     u64 reserved;
+};
+
+struct ipc_v1_object_create {
+    ipc_v1_header header; u32 rights; u32 flags; u64 handle_out; u64 reserved[2];
+};
+struct ipc_v1_object_delegate {
+    ipc_v1_header header; u64 handle; u64 target_pid; u64 badge;
+    u32 rights; u32 flags; u64 handle_out; u64 reserved[2];
+};
+struct ipc_v1_notification_signal { ipc_v1_header header; u64 handle; u64 reserved[2]; };
+struct ipc_v1_object_close { ipc_v1_header header; u64 handle; u64 reserved[2]; };
+struct ipc_v1_notification_wait {
+    ipc_v1_header header; u64 handle; u64 deadline_ns; u64 bits_out; u64 reserved[2];
+};
+struct ipc_v1_wait_set_add {
+    ipc_v1_header header; u64 wait_set_handle; u64 source_handle;
+    u32 source_kind; u32 flags; u32 source_id_out; u32 reserved32; u64 reserved[2];
+};
+struct ipc_v1_wait_set_remove {
+    ipc_v1_header header; u64 wait_set_handle; u32 source_id; u32 reserved32; u64 reserved[2];
+};
+struct ipc_v1_wait_event { u32 source_id; u32 kind; u64 value; };
+struct ipc_v1_wait_set_wait {
+    ipc_v1_header header; u64 handle; u64 deadline_ns; u64 events;
+    u32 capacity; u32 count_out; u64 reserved[2];
 };
 
 struct ipc_v1_feature_query {
@@ -180,6 +229,11 @@ static_assert(sizeof(ipc_v1_call) == 88);
 static_assert(sizeof(ipc_v1_receive) == 88);
 static_assert(sizeof(ipc_v1_reply) == 64);
 static_assert(sizeof(ipc_v1_reply_receive) == 120);
+static_assert(sizeof(ipc_v1_object_create) == 48 && sizeof(ipc_v1_object_delegate) == 72);
+static_assert(sizeof(ipc_v1_notification_signal) == 40 && sizeof(ipc_v1_notification_wait) == 56);
+static_assert(sizeof(ipc_v1_object_close) == 40);
+static_assert(sizeof(ipc_v1_wait_set_add) == 64 && sizeof(ipc_v1_wait_set_remove) == 48);
+static_assert(sizeof(ipc_v1_wait_event) == 16 && sizeof(ipc_v1_wait_set_wait) == 64);
 static_assert(__builtin_offsetof(ipc_v1_header, reserved) == 8);
 static_assert(__builtin_offsetof(ipc_v1_feature_query, known_features) == 16 &&
               __builtin_offsetof(ipc_v1_feature_query, max_message_bytes) == 32 &&

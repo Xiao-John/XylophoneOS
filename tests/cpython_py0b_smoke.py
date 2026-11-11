@@ -76,7 +76,7 @@ def run(guest, command, timeout=120):
     send_bytes(guest, command.encode() + b"\r")
     guest.expect(b"kind=exited code=", start=start, timeout=timeout)
     exited = guest.output.find(b"kind=exited code=", start)
-    guest.expect(b"sup> ", start=exited, timeout=30)
+    guest.expect(b"xsh> ", start=exited, timeout=30)
     pump(guest, 0.2)
     text = bytes(guest.output[start:]).decode("utf-8", "replace")
     return ANSI.sub("", text)

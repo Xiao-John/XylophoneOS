@@ -72,7 +72,7 @@ def main():
         guest.expect(b"xos64> ", timeout=45)
         start = len(guest.output)
         send_bytes(guest, b"run\r\n")
-        guest.expect_any((b"sup> ", b"xsh> "), start=start, timeout=15)
+        guest.expect(b"xsh> ", start=start, timeout=15)
         guest.expect(b"[input] ps2=ready", start=start, timeout=15)
 
         start = len(guest.output)
@@ -81,17 +81,17 @@ def main():
             guest.expect(b"IPC_ENDPOINT_PASS", start=start, timeout=15)
         except AssertionError as error:
             raise AssertionError(bytes(guest.output[start:]).decode("utf-8", "replace")) from error
-        guest.expect_any((b"sup> ", b"xsh> "), start=start, timeout=15)
+        guest.expect(b"xsh> ", start=start, timeout=15)
 
         start = len(guest.output)
         send_bytes(guest, b"demo quiet\r\n")
         guest.expect(b"[sup] demo tasks stopped", start=start, timeout=15)
-        guest.expect_any((b"sup> ", b"xsh> "), start=start, timeout=15)
+        guest.expect(b"xsh> ", start=start, timeout=15)
 
         start = len(guest.output)
         send_bytes(guest, b"interactium-start\r\n")
         guest.expect(b"[interactium-service] ready", start=start, timeout=15)
-        guest.expect_any((b"sup> ", b"xsh> "), start=start, timeout=15)
+        guest.expect(b"xsh> ", start=start, timeout=15)
         service_output = bytes(guest.output[start:])
         service_match = re.search(rb"\[interactium-start\] pid=(\d+)", service_output)
         assert service_match is not None, service_output.decode("utf-8", "replace")
@@ -101,15 +101,15 @@ def main():
             start = len(guest.output)
             send_bytes(guest, b"exec ic_client\r\n")
             guest.expect(b"INTERACTIUM_CLIENT_PASS", start=start, timeout=20)
-            guest.expect_any((b"sup> ", b"xsh> "), start=start, timeout=20)
+            guest.expect(b"xsh> ", start=start, timeout=20)
         start = len(guest.output)
         send_bytes(guest, f"kill {service_pid}\r\n".encode())
         guest.expect(b"kill: accepted", start=start, timeout=15)
-        guest.expect_any((b"sup> ", b"xsh> "), start=start, timeout=15)
+        guest.expect(b"xsh> ", start=start, timeout=15)
         start = len(guest.output)
         send_bytes(guest, b"exec ic_client\r\n")
         guest.expect(b"xsh: program exited with status 20", start=start, timeout=15)
-        guest.expect_any((b"sup> ", b"xsh> "), start=start, timeout=15)
+        guest.expect(b"xsh> ", start=start, timeout=15)
 
         start = len(guest.output)
         send_bytes(guest, b"exec interactium\r\n")
@@ -163,7 +163,7 @@ def main():
             {"type": "key", "data": {"down": False, "key": {"type": "qcode", "data": "q"}}},
         ]})
         guest.expect(b"[interactium-demo] closed", start=start, timeout=15)
-        guest.expect_any((b"sup> ", b"xsh> "), start=start, timeout=15)
+        guest.expect(b"xsh> ", start=start, timeout=15)
         print(f"Interactium guest passed; screenshot={screenshot}")
     finally:
         guest.close()

@@ -32,7 +32,7 @@ def execute(g,args='',timeout=60):
     start=len(g.output)
     send_bytes(g,('exec-file /bin/e08_probe.elf'+(' '+args if args else '')+'\r').encode())
     g.expect(b'kind=exited code=',start=start,timeout=timeout)
-    g.expect(b'sup> ',start=start,timeout=timeout)
+    g.expect(b'xsh> ',start=start,timeout=timeout)
     output=bytes(g.output[start:])
     if b'kind=exited code=0' not in output: raise AssertionError(output[-1200:])
     return output
@@ -76,7 +76,7 @@ def main():
                 g.expect(b'[e08] bench-done',start=mark,timeout=120)
                 elapsed=time.monotonic()-file_start
                 g.expect(b'kind=exited code=0',start=mark,timeout=15)
-                g.expect(b'sup> ',start=mark,timeout=15)
+                g.expect(b'xsh> ',start=mark,timeout=15)
                 bench=bytes(g.output[mark:])
                 if f'bench-done bytes={payload.stat().st_size} hash={expected}'.encode() not in bench:
                     raise AssertionError('guest throughput payload corrupted')
@@ -94,7 +94,7 @@ def main():
                     start=len(g.output)
                     send_bytes(g,b'spawn-file /bin/e08_probe.elf abandon\r')
                     g.expect(b'[e08] abandoned-ready',start=start,timeout=30)
-                    g.expect(b'sup> ',start=start,timeout=15)
+                    g.expect(b'xsh> ',start=start,timeout=15)
                     launched=bytes(g.output[start:])
                     pid=int(re.search(rb'\[loader\] started pid=(\d+)',launched).group(1))
                     # Parent and child issue RPC against independent response queues.
@@ -105,7 +105,7 @@ def main():
                     send_bytes(g,b'new contents\r:w\r')
                     g.expect(b'[files] save error=-5',start=edit_start,timeout=15)
                     g.expect(b'[edit] buffer retained',start=edit_start,timeout=15)
-                    send_bytes(g,b':q!\r');g.expect(b'sup> ',start=edit_start,timeout=15)
+                    send_bytes(g,b':q!\r');g.expect(b'xsh> ',start=edit_start,timeout=15)
                     command(g,f'kill {pid}',b'kill: accepted')
                     command(g,f'wait {pid}',b'kind=killed code=-9')
                     execute(g)
@@ -118,7 +118,7 @@ def main():
                     g.expect(b'[e08] abandoned-ready',start=start,timeout=30)
                     send_bytes(g,b'\x1b')
                     g.expect(b'kind=killed code=-27',start=start,timeout=15)
-                    g.expect(b'sup> ',start=start,timeout=15)
+                    g.expect(b'xsh> ',start=start,timeout=15)
                     execute(g)
                     if resources(g)!=before: raise AssertionError('cancelled session leaked pages')
                     report['checks'].append('killed_client_open_and_staging_reclaimed_on_slot_reuse')

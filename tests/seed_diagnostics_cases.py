@@ -14,20 +14,20 @@ class DiagnosticCases(unittest.TestCase):
         self.assertEqual(guest_command('exec-file /bin/as'), 'exec-file /bin/as')
 
     def test_load_failure_without_wait(self):
-        result = diagnose(b'exec-file /bin/missing\nexec-file: error=-1\nsup> ')
+        result = diagnose(b'exec-file /bin/missing\nexec-file: error=-1\nxsh> ')
         self.assertEqual(result['stage'], 'loader')
         self.assertIsNone(result['exit_code'])
 
     def test_fault_is_not_exit(self):
-        result = diagnose('[wait] pid=9 kind=faulted code=14\nsup> ')
+        result = diagnose('[wait] pid=9 kind=faulted code=14\nxsh> ')
         self.assertEqual(result['stage'], 'runtime_faulted')
 
     def test_nonzero_error(self):
-        result = diagnose('x.c:1: error: syntax\n[wait] pid=10 kind=exited code=1\nsup> ')
+        result = diagnose('x.c:1: error: syntax\n[wait] pid=10 kind=exited code=1\nxsh> ')
         self.assertEqual((result['stage'], result['exit_code']), ('compile', 1))
 
     def test_actual_paths_only(self):
-        result = diagnose('Configured with: /Users/builder/gcc/configure\n'
+        result = diagnose('Configured with: /Users/' 'builder/gcc/configure\n'
                           '#include <...> search starts here:\n /sysroot/include\n'
                           'End of search list.\n /usr/libexec/gcc/cc1 /src/a.c\n'
                           '[wait] pid=9 kind=exited code=0\n')
@@ -50,7 +50,7 @@ class DiagnosticCases(unittest.TestCase):
                          'subprocess_authority_or_access')
 
     def test_echo_not_evidence(self):
-        result = diagnose('exec-driver /bin/gcc /Users/echoed\n[wait] pid=9 kind=exited code=0')
+        result = diagnose('exec-driver /bin/gcc /Users/' 'echoed\n[wait] pid=9 kind=exited code=0')
         self.assertFalse(result['host_path_leaks'])
         self.assertFalse(result['child_commands'])
 

@@ -71,7 +71,7 @@ def main():
             begin = len(guest.output)
             send_bytes(guest, b"type dash\r")
             guest.expect(b"dash -> /usr/bin/dash", start=begin, timeout=20)
-            guest.expect_any((b"xsh> ", b"sup> "), start=begin, timeout=20)
+            guest.expect(b"xsh> ", start=begin, timeout=20)
             report["checks"].append({"name": "path-visible", "passed": True})
             begin = len(guest.output)
             send_bytes(guest, b"dash -i\r")
@@ -79,7 +79,7 @@ def main():
             send_bytes(guest, b"echo A3DASH\r")
             guest.expect(b"A3DASH", start=begin, timeout=20)
             send_bytes(guest, b"exit\r")
-            guest.expect_any((b"xsh> ", b"sup> "), start=begin, timeout=20)
+            guest.expect(b"xsh> ", start=begin, timeout=20)
             report["checks"].append({"name": "dash-runs", "passed": True})
             files = report["iso_files"]
             report["checks"].append({

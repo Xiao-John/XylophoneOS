@@ -53,7 +53,7 @@ def command(guest, line, expected, timeout=15):
     start = len(guest.output)
     send_bytes(guest, line.encode() + b"\r")
     guest.expect(expected, start=start, timeout=timeout)
-    guest.expect(b"sup> ", start=start, timeout=timeout)
+    guest.expect(b"xsh> ", start=start, timeout=timeout)
 
 
 def main():
@@ -88,11 +88,11 @@ def main():
         guest.expect(b"[edit] buffer retained", start=start, timeout=10)
         guest.expect(b"| ", start=start, timeout=10)
         send_bytes(guest, b":q!\r")
-        guest.expect(b"sup> ", start=start, timeout=10)
+        guest.expect(b"xsh> ", start=start, timeout=10)
         cat_start = len(guest.output)
         send_bytes(guest, b"cat note.txt\r")
         guest.expect(b"old", start=cat_start, timeout=12)
-        guest.expect(b"sup> ", start=cat_start, timeout=12)
+        guest.expect(b"xsh> ", start=cat_start, timeout=12)
         cat = bytes(guest.output)[cat_start:]
         if b"replacement" in cat:
             raise AssertionError(f"full-disk save changed old content: {cat[-500:]!r}")

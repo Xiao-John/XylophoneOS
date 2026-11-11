@@ -15,7 +15,7 @@ from make_work_disk import create_fat32
 from task_smoke import pump, send_bytes
 from work_disk import transfer
 
-PROMPTS = (b"xsh> ", b"sup> ")
+PROMPTS = (b"xsh> ",)
 
 
 def sha256(path):

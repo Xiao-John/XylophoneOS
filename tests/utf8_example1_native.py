@@ -35,7 +35,7 @@ def run(guest, line, timeout=240):
     send_bytes(guest, line.encode() + b"\r")
     guest.expect(b"kind=exited code=", start=start, timeout=timeout)
     exited = guest.output.find(b"kind=exited code=", start)
-    guest.expect_any((b"xsh> ", b"sup> "), start=exited, timeout=30)
+    guest.expect(b"xsh> ", start=exited, timeout=30)
     pump(guest, 0.3)
     return bytes(guest.output[start:])
 

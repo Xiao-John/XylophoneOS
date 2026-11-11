@@ -18,7 +18,7 @@ def command(guest, line, expected, timeout=15):
     start = len(guest.output)
     send_bytes(guest, line.encode() + b"\r")
     guest.expect(expected, start=start, timeout=timeout)
-    guest.expect(b"sup> ", start=start, timeout=timeout)
+    guest.expect(b"xsh> ", start=start, timeout=timeout)
     return bytes(guest.output)[start:]
 
 
@@ -34,7 +34,7 @@ def edit_lines(guest, name, lines, *, expect_new=False, expect_loaded=None):
         guest.expect(b"| ", start=line_start, timeout=10)
     send_bytes(guest, b":wq\r")
     guest.expect(b"[edit] saved ", start=start, timeout=12)
-    guest.expect(b"sup> ", start=start, timeout=12)
+    guest.expect(b"xsh> ", start=start, timeout=12)
 
 
 def boot(disk, name):
@@ -87,7 +87,7 @@ def main():
         send_bytes(guest, b"exec-file hello.elf\r")
         guest.expect(b"hello from file", start=start, timeout=15)
         guest.expect(b"kind=exited code=0", start=start, timeout=15)
-        guest.expect(b"sup> ", start=start, timeout=15)
+        guest.expect(b"xsh> ", start=start, timeout=15)
         checks.append("second_boot_executes_persisted_elf")
 
         # E08 removes the old four-file cap; keep persistence regression and

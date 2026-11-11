@@ -77,7 +77,7 @@ def build_in_guest(folder, guest, report):
     send_bytes(guest, b"dash /src/open-adventure/build.sh\r")
     guest.expect(b"kind=exited code=", start=start, timeout=600)
     exited = guest.output.find(b"kind=exited code=", start)
-    guest.expect_any((b"xsh> ", b"sup> "), start=exited, timeout=60)
+    guest.expect(b"xsh> ", start=exited, timeout=60)
     build_output = bytes(guest.output[start:])
     report["checks"].append({"name": "in-xos-build",
                              "passed": b"kind=exited code=0" in build_output,
@@ -176,7 +176,7 @@ def main():
                 send_bytes(guest, command)
                 pump(guest, 1.5)
             game_output = bytes(guest.output[start:])
-            guest.expect_any((b"xsh> ", b"sup> "), start=start, timeout=120)
+            guest.expect(b"xsh> ", start=start, timeout=120)
             text = game_output.decode("utf-8", "replace")
             required = ("欢迎来到冒险", "你站在一条小路的尽头", "你得了32分",
                         "你显然还是个新手", "再得14分")

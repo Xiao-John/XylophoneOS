@@ -193,7 +193,7 @@ def edit_source(guest: Guest, language: str, baseline: tuple[int, ...], report: 
     save_start = len(guest.output)
     send_bytes(guest, b":wq\r")
     guest.expect(b"[edit] saved " + path.encode("ascii"), start=save_start, timeout=15)
-    guest.expect(b"sup> ", start=save_start, timeout=15)
+    guest.expect(b"xsh> ", start=save_start, timeout=15)
     after = resources(guest)
     if before != baseline or after != baseline:
         raise AssertionError(f"editor operation changed resources: before={before}, after={after}, baseline={baseline}")
@@ -208,7 +208,7 @@ def run_guest_command(guest: Guest, language: str, line: str, compiler_paths: tu
                       require_marker: bytes | None = None) -> bytes:
     supervisor_line = guest_command(line, compiler_paths)
     start_time = time.monotonic()
-    output = command(guest, supervisor_line, b"sup> ", timeout=timeout)
+    output = command(guest, supervisor_line, b"xsh> ", timeout=timeout)
     match = re.search(rb"kind=exited code=(-?\d+)", output)
     if match is None or int(match.group(1)) != 0:
         raise AssertionError(f"{supervisor_line} did not exit successfully: {output[-2500:]!r}")

@@ -57,7 +57,7 @@ make clean        # 只删除 build/（含验证产物）
 
 BIOS 启动后进入 x86-64 C++ 内核：E820 物理页管理、异常处理、串口控制台、
 ring3 用户任务、每任务地址空间、PIT 抢占、IPC、用户故障隔离、资源回收，
-以及用户态 `sup> ` 监督终端。输入 `run` 启动演示任务，随后由 supervisor 接管。
+以及用户态 `xsh> ` 监督终端。输入 `run` 启动演示任务，随后由 supervisor 接管。
 
 - supervisor：`ps`、`kill`、`images`、`exec`、`spawn`、`wait`、`stats`、
   `elftest` 等；文件命令 `ls`、`cat`、`stat`、`rm`、`edit`、`sync`、

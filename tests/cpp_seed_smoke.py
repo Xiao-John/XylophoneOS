@@ -116,7 +116,7 @@ def main():
             def run(line, expected=0, contains=None, timeout=240):
                 started = time.monotonic()
                 supervisor_line = guest_command(line, (gxx,))
-                output = command(guest, supervisor_line, b'sup> ', timeout=timeout)
+                output = command(guest, supervisor_line, b'xsh> ', timeout=timeout)
                 diagnostic_result = diagnose(output, supervisor_line)
                 match = re.search(rb'kind=exited code=(-?\d+)', output)
                 current = resources(guest)
@@ -168,7 +168,7 @@ def main():
                 start = len(guest.output)
                 send_bytes(guest, f'spawn-file /out/cpp_tls_worker.elf {value}\r'.encode())
                 guest.expect(b'[loader] started pid=', start=start, timeout=30)
-                guest.expect(b'sup> ', start=start, timeout=30)
+                guest.expect(b'xsh> ', start=start, timeout=30)
                 output = bytes(guest.output[start:])
                 match = re.search(rb'\[loader\] started pid=(\d+)', output)
                 if match is None:
@@ -187,7 +187,7 @@ def main():
             report['tls_worker_pids'] = pids
             list_start = len(guest.output)
             send_bytes(guest, b'ls /tmp\r')
-            guest.expect(b'sup> ', start=list_start, timeout=20)
+            guest.expect(b'xsh> ', start=list_start, timeout=20)
             tmp_listing = bytes(guest.output[list_start:])
             report['tls_tmp_listing'] = tmp_listing.decode(errors='replace')
             if b'tls_worker_4.ready' in tmp_listing or b'tls_worker_7.ready' in tmp_listing:

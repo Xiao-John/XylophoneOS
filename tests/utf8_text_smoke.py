@@ -18,7 +18,7 @@ from task_smoke import pump, send_bytes
 from work_disk import transfer
 
 ARGV_SOURCE = ROOT / "tests/fixtures/utf8/argv_utf8.cpp"
-PROMPTS = (b"xsh> ", b"sup> ")
+PROMPTS = (b"xsh> ",)
 
 
 def sha256(path):

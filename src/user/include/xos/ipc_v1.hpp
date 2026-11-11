@@ -4,6 +4,15 @@
 #include <xos/sdk.hpp>
 
 namespace xos::ipc_v1 {
+template<class T>
+inline i64 invoke(ipc_v1_action action, T& request) {
+    request.header.version = ipc_v1_version;
+    request.header.size = sizeof(request);
+    request.header.reserved = 0;
+    return sdk::syscall(sys_ipc_v1, static_cast<u64>(action),
+                       reinterpret_cast<u64>(&request), 0);
+}
+
 inline i64 query_features(ipc_v1_feature_query& output) {
     output = {};
     output.header.version = ipc_v1_version;
@@ -25,6 +34,47 @@ inline i64 query_features(ipc_v1_feature_query& output) {
         return static_cast<i64>(ipc_v1_error::state);
     }
     return 0;
+}
+
+inline i64 endpoint_create(u32 rights, u64& handle) {
+    ipc_v1_endpoint_create request{};
+    request.rights = rights;
+    const i64 result = invoke(ipc_v1_action::endpoint_create, request);
+    handle = result == 0 ? request.handle_out : 0;
+    return result;
+}
+
+inline i64 endpoint_delegate(u64 handle, u64 target_pid, u64 badge, u32 rights,
+                             u64& delegated_handle) {
+    ipc_v1_endpoint_delegate request{};
+    request.handle = handle; request.target_pid = target_pid;
+    request.badge = badge; request.rights = rights;
+    const i64 result = invoke(ipc_v1_action::endpoint_delegate, request);
+    delegated_handle = result == 0 ? request.handle_out : 0;
+    return result;
+}
+
+inline i64 endpoint_close(u64 handle) {
+    ipc_v1_endpoint_close request{};
+    request.handle = handle;
+    return invoke(ipc_v1_action::endpoint_close, request);
+}
+
+inline i64 call(ipc_v1_call& request) {
+    request.reply_length_out = request.phase_out = 0;
+    request.reply_label_out = 0;
+    return invoke(ipc_v1_action::call, request);
+}
+inline i64 receive(ipc_v1_receive& request) {
+    request.message_length_out = 0;
+    request.label_out = request.badge_out = request.reply_token_out = 0;
+    return invoke(ipc_v1_action::receive, request);
+}
+inline i64 reply(ipc_v1_reply& request) { return invoke(ipc_v1_action::reply, request); }
+inline i64 reply_receive(ipc_v1_reply_receive& request) {
+    request.reply_consumed_out = request.receive_length_out = 0;
+    request.label_out = request.badge_out = request.next_reply_token_out = 0;
+    return invoke(ipc_v1_action::reply_receive, request);
 }
 
 inline bool supports(ipc_v1_feature feature, const ipc_v1_feature_query& query) {

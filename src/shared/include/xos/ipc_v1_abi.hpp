@@ -3,9 +3,8 @@
 #include <xos/abi_types.hpp>
 
 namespace xos {
-// IP1 registers the stable ABI. The kernel entry is intentionally not
-// implemented until IP2; SDK manifests must therefore leave every feature
-// unsupported for now.
+// IPC v1 stable ABI. Runtime support is separately gated by guest qualification
+// and is advertised only by SDK profiles whose feature matrix has passed.
 inline constexpr u64 sys_ipc_v1 = 88;
 inline constexpr u32 ipc_v1_version = 1;
 inline constexpr u32 ipc_v1_max_message_bytes = 256;
@@ -127,7 +126,8 @@ struct ipc_v1_call {
     u32 reply_capacity;
     u32 reply_length_out;
     u32 phase_out;
-    u64 reserved[2];
+    u64 reply_label_out;
+    u64 reserved;
 };
 
 struct ipc_v1_receive {
@@ -187,7 +187,9 @@ static_assert(__builtin_offsetof(ipc_v1_feature_query, known_features) == 16 &&
 static_assert(__builtin_offsetof(ipc_v1_endpoint_create, handle_out) == 24);
 static_assert(__builtin_offsetof(ipc_v1_endpoint_delegate, handle_out) == 48);
 static_assert(__builtin_offsetof(ipc_v1_call, send_buffer) == 40 &&
-              __builtin_offsetof(ipc_v1_call, phase_out) == 68);
+              __builtin_offsetof(ipc_v1_call, phase_out) == 68 &&
+              __builtin_offsetof(ipc_v1_call, reply_label_out) == 72 &&
+              __builtin_offsetof(ipc_v1_call, reserved) == 80);
 static_assert(__builtin_offsetof(ipc_v1_receive, label_out) == 48 &&
               __builtin_offsetof(ipc_v1_receive, reply_token_out) == 64);
 static_assert(__builtin_offsetof(ipc_v1_reply, buffer) == 32 &&

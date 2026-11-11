@@ -6,9 +6,11 @@
 开发前读 [开发纪律](docs/Discipline.md)、[当前状态](docs/state.md)、
 [项目宪法与当前登记](docs/xos_plan.md)。
 
-## 当前发行：0.0.1-1026
+## 当前发行：0.0.2-1103
 
-[XylophoneOS Revival version 0.0.1-1026](https://github.com/Xiao-John/XylophoneOS/releases/tag/v0.0.1-1026)
+[XylophoneOS Revival version 0.0.2-1103](https://github.com/Xiao-John/XylophoneOS/releases/tag/v0.0.2-1103)
+
+含 **Qt 6.8.3 静态工具链资产**（`…_qt6_static.tar.gz`）与完整用户态 SDK 开发包。
 
 下载 images 包和 SDK，安装 Python 3 与 QEMU 后：
 
@@ -25,31 +27,25 @@ dash。
 - 64 位内核、多任务、进程隔离、单核多线程与用户态 supervisor/files。
 - 可启动 install ISO；FAT32 工作盘、目录、编辑、保存和重启恢复。
 - xsh 与 dash：流水线、子 Shell、命令替换、Here-document、exec 和 Make。
-- 原生 GCC / G++、GNU Binutils、Make；XOS 内编译运行 C / C++。
+- 原生 `x86_64-elf-gcc` / `x86_64-elf-g++`、GNU Binutils、Make（命令带 `x86_64-elf-` 前缀）；XOS 内编译运行 C / C++。
 - CPython 3.14：交互终端、线程、JSON、zlib / gzip / ZIP 和离线 Python 包。
 - xypm 离线包管理与独立 C / C++ SDK。
 
-发行说明见 [0.0.1-1026](docs/releases/0.0.1-1026.md)，构建与验收证据见
+发行说明见 [0.0.2-1103](docs/releases/0.0.2-1103.md)，构建与验收证据见
 [docs/project_overview.md](docs/project_overview.md)。
-上一次发行 [0.0.1-1024](docs/releases/0.0.1-1024.md) 保留为历史版本。
-
-下一版本号已定为 **0.0.2-1103**（`VERSION` 已更新，构建与安装盘随之携带该版本），
-尚未发布：冻结、打包与上传仍按
-[发行准备](docs/releases/next_release.md) 逐项执行，未发布前 1026 仍是唯一可下载
-发行。
+历史版本：[0.0.1-1026](docs/releases/0.0.1-1026.md)、[0.0.1-1024](docs/releases/0.0.1-1024.md)。
+发版流程见 [playbook](docs/releases/playbook.md)。
 
 ## 从源码构建
 
 ```sh
-make build        # kernel、xos.img、file-backed/install ISO、SDK 与 manifest
+make build        # kernel、file-backed ISO（xos-install.iso）、SDK 与 manifest
 make dash         # 构建 dash
 make install-iso  # 构建带 dash payload 的 install ISO
 make license-audit
 make smoke        # 串行跑既有回归与许可材料检查
 make run          # 启动 install ISO（需要已有工作盘）
 make run_file     # 启动无 dash payload 的 file-backed ISO
-make run_iso      # 旧嵌入 kernel ISO，仅兼容
-make run_floppy   # 旧 1.44 MiB 软盘路径，仅兼容
 make disk         # 新建 FAT32 工作盘；dash 由 install ISO 安装
 make clean        # 只删除 build/（含验证产物）
 ```
@@ -83,8 +79,8 @@ ring3 用户任务、每任务地址空间、PIT 抢占、IPC、用户故障隔�
 - CPython 没有安全熵、墙钟、socket/TLS、fork/subprocess 等完整 POSIX 能力。
 - xypm P2 写入事务/P3 仓库仍未完整交付；签名不等于沙箱。
 - 旧全量压力与部分历史回归未在本发行重跑；未跑项不会被写成通过。
-- Qt 已按受限客体功能验收（QtCore/QtGui/QPA，单全屏 raster），未取得发行资格；
-  QML/Quick 未实现。见 [Qt 评估](docs/plans/qt.md) 与 [许可证管理](docs/licensing.md)。
+- Qt 6.8.3 静态库**已随 0.0.2-1103 发行**（`qt6_static` 资产）；QML/Quick 未实现。见 [REDISTRIBUTION](src/ports/qt6/REDISTRIBUTION.md)
+  与 [许可证管理](docs/licensing.md)。
 
 ## 文档与许可
 

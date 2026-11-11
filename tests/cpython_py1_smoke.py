@@ -36,7 +36,7 @@ def install_stage(disk, stage):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--work", type=Path)
-    parser.add_argument("--image", type=Path, default=ROOT / "build/xos.img")
+    parser.add_argument("--image", type=Path, default=ROOT / "build/xos-install.iso")
     args = parser.parse_args()
     work = (args.work or accepted_work()).resolve(strict=True)
     stage, stage_manifest = stage_cpython(work)
@@ -71,7 +71,7 @@ def main():
         )
         transfer(disk, "import", "/work/py1/byte_probe.py", byte_probe)
 
-        guest = Guest(args.image, "cpython_py1", work_disk=disk)
+        guest = Guest(args.image, "cpython_py1", work_disk=disk, iso=True)
         try:
             guest.expect(b"xos64> ", timeout=30)
             start = len(guest.output)

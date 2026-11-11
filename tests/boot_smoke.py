@@ -18,7 +18,11 @@ from run_qemu import MACHINE, qemu_command
 
 
 class Guest:
-    def __init__(self, image, name, *, cpu="qemu64,+rdrand", debug_port=None, work_disk=None, iso=False):
+    def __init__(self, image, name, *, cpu="qemu64,+rdrand", debug_port=None, work_disk=None, iso=None):
+        # Boot medium follows the image suffix unless the caller overrides:
+        # .iso files need -cdrom, everything else (real_mode.img) stays floppy.
+        if iso is None:
+            iso = str(image).lower().endswith(".iso")
         self.name = name
         self.output = bytearray()
         self.temp = tempfile.TemporaryDirectory(prefix="xos_")

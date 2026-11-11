@@ -54,6 +54,8 @@ subprocess.run(['patch', '-p1', '-i', str(here / 'patches/0009-xos-freetype-no-m
                cwd=a.destination, check=True)
 subprocess.run(['patch', '-p1', '-i', str(here / 'patches/0010-xos-host-arm64-acle.patch')],
                cwd=a.destination, check=True)
+subprocess.run(['patch', '-p1', '-i', str(here / 'patches/0011-xos-qmalloc-qtglobal.patch')],
+               cwd=a.destination, check=True)
 shutil.copytree(here / 'mkspecs/xos-g++', a.destination / 'mkspecs/xos-g++')
 for name in ('qeventdispatcher_xos.cpp', 'qeventdispatcher_xos_p.h', 'wake_gate.hpp'):
     shutil.copyfile(here / 'runtime' / name, a.destination / 'src/corelib/kernel' / name)

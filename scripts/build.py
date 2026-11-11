@@ -41,6 +41,7 @@ def main():
                         help="kernel VirtIO-GPU DMA page budget; low values are explicit fault profiles")
     parser.add_argument("--gpu-poll-limit", type=int, default=10000000,
                         help="bounded VirtIO-GPU completion polls; zero is an explicit timeout profile")
+    parser.add_argument("--vm1-probe", action="store_true", help="enable isolated VM1 test-only syscall 67")
     args = parser.parse_args()
     if not 1 <= args.gpu_dma_page_limit <= 4096 or not 0 <= args.gpu_poll_limit <= 100000000:
         parser.error("invalid VirtIO-GPU diagnostic budget")
@@ -48,6 +49,8 @@ def main():
     BUILD = args.output_dir.resolve()
     if BUILD != ROOT / "build" and ROOT / "build" not in BUILD.parents:
         raise SystemExit("output directory must be build/ or one of its subdirectories")
+    if args.vm1_probe and BUILD == ROOT / "build":
+        parser.error("VM1 probe requires an isolated build subdirectory")
     if args.terminal_supervisor_probe and args.ncurses_supervisor_probe:
         parser.error("select at most one test supervisor")
     if (args.terminal_supervisor_probe or args.ncurses_supervisor_probe) and BUILD == ROOT / "build":
@@ -76,8 +79,16 @@ def main():
         if link.is_symlink():
             link.unlink()
         elif link.exists():
-            raise SystemExit(f"Refusing to overwrite a non-symlink target tool: {link}")
-        link.symlink_to(Path(tool(name)).resolve())
+            if not link.is_file() or not os.path.samefile(link, Path(tool(name)).resolve()):
+                raise SystemExit(f"Refusing to overwrite an unrelated target tool: {link}")
+            continue
+        target = Path(tool(name)).resolve()
+        try:
+            link.symlink_to(target)
+        except OSError as error:
+            if os.name != "nt" or getattr(error, "winerror", None) != 1314:
+                raise
+            os.link(target, link)
     os.environ["COMPILER_PATH"] = str(target_tools)
     versions = audit()
     if (TARGET["architecture"], TARGET["platform"], TARGET["firmware"]) != ("x86_64", "pc", "bios"):
@@ -91,13 +102,13 @@ def main():
     source_digest = sha256(json.dumps({"sources": source_hashes, "capacity_probe": args.capacity_probe,
                                       "terminal_supervisor_probe": args.terminal_supervisor_probe,
                                       "ncurses_supervisor_probe": args.ncurses_supervisor_probe,
-                                      "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config}, sort_keys=True).encode())
+                                      "clock_irq_probe": args.clock_irq_probe, "vm1_probe": args.vm1_probe, "virtio_gpu": gpu_config}, sort_keys=True).encode())
     build_id = source_digest[:16]
     eggs = int(TARGET["easter_eggs"])
     (BUILD / "build_info.inc").write_text(
         f'%define xos_build_id "{build_id}"\n%define xos_easter_eggs {eggs}\n')
     (BUILD / "build_info.hpp").write_text(
-        f'#define XOS_BUILD_ID "{build_id}"\n#define XOS_EASTER_EGGS {eggs}\n#define XOS_CAPACITY_PROBE {int(args.capacity_probe)}\n#define XOS_CLOCK_IRQ_PROBE {int(args.clock_irq_probe)}\n')
+        f'#define XOS_BUILD_ID "{build_id}"\n#define XOS_EASTER_EGGS {eggs}\n#define XOS_CAPACITY_PROBE {int(args.capacity_probe)}\n#define XOS_CLOCK_IRQ_PROBE {int(args.clock_irq_probe)}\n#define XOS_VM1_PROBE {int(args.vm1_probe)}\n')
     commands = []
 
     def run(command):
@@ -128,12 +139,14 @@ def main():
     if args.clock_irq_probe:
         cpp_sources.append(ROOT / "tests/kernel/clock_irq_probe.cpp")
     for source in cpp_sources:
-        obj = BUILD / (str(source.relative_to(ROOT)).replace("/", "_") + ".o")
+        object_name = str(source.relative_to(ROOT)).replace("\\", "_").replace("/", "_")
+        obj = BUILD / (object_name + ".o")
         gpu_flags = ["-DXOS_VGPU_DMA_PAGE_LIMIT=" + str(args.gpu_dma_page_limit),
                      "-DXOS_VGPU_POLL_LIMIT=" + str(args.gpu_poll_limit)] if source.name == "virtio_gpu.cpp" else []
         run([tool("g++"), *COMMON_FLAGS, *X86_FLAGS, *gpu_flags,
              "-I", str(ROOT / "src/kernel/include"), "-I", str(ROOT / "src/kernel"),
              "-I", str(ROOT / "src/shared/include"),
+             "-I", str(source.parent),
              "-I", str(BUILD), "-ffile-prefix-map=" + str(ROOT) + "=.",
              "-c", str(source), "-o", str(obj)])
         objects.append(str(obj))
@@ -190,7 +203,7 @@ def main():
     }
     (BUILD / "kernel_layout.inc").write_text("".join(
         f"%define {name} {value}\n" for name, value in layout.items()))
-    for name in ("boot_sector", "stage_two", "kernel_loader"):
+    for name in ("boot_sector", "stage_two"):
         run([
             # bin + ORG resolves absolute references for 16/32-bit mode transitions.
             nasm, "-f", "bin", "-Wall", "-Wno-reloc-abs-word",
@@ -214,35 +227,18 @@ def main():
     boot = (BUILD / "boot_sector.bin").read_bytes()
     if len(boot) != SECTOR_SIZE or boot[-2:] != b"\x55\xaa":
         raise SystemExit("Invalid boot sector size/signature")
-    legacy_available = len(raw_kernel) <= 512 * 1024 and symbols["kernel_end"] <= 0x400000
-    legacy_stages = [("stage_two", "real_mode.img")]
-    if legacy_available:
-        legacy_stages.append(("kernel_loader", "xos.img"))
-    for stage_name, image_name in legacy_stages:
-        stage = (BUILD / f"{stage_name}.bin").read_bytes()
-        if not 6 <= len(stage) <= STAGE_TWO_SECTORS * SECTOR_SIZE:
-            raise SystemExit(f"{stage_name} must fit in the 16-sector window")
-        if stage[0] != 0xeb or stage[2:6] != b"XOS2":
-            raise SystemExit(f"Invalid {stage_name} entry/header")
-        image = bytearray(IMAGE_SIZE)
-        image[:SECTOR_SIZE] = boot
-        image[SECTOR_SIZE:SECTOR_SIZE + len(stage)] = stage
-        if image_name == "xos.img":
-            offset = (1 + STAGE_TWO_SECTORS) * SECTOR_SIZE
-            image[offset:offset + len(raw_kernel)] = raw_kernel
-        temporary = BUILD / (image_name + ".tmp")
-        temporary.write_bytes(image)
-        temporary.replace(BUILD / image_name)
-    if legacy_available:
-        run([sys.executable, str(ROOT / "scripts/make_iso.py"),
-             "--boot", str(BUILD / "boot_sector_iso.bin"),
-             "--loader", str(BUILD / "kernel_loader_iso.bin"),
-             "--kernel", str(BUILD / "kernel.bin"),
-             "--output", str(BUILD / "xos.iso")])
-    else:
-        # Never leave a stale small-kernel legacy image beside a large ISO build.
-        for name in ("xos.img", "xos.iso"):
-            (BUILD / name).unlink(missing_ok=True)
+    # Retained 16-bit exercise image: boot sector plus stage two only.
+    stage = (BUILD / "stage_two.bin").read_bytes()
+    if not 6 <= len(stage) <= STAGE_TWO_SECTORS * SECTOR_SIZE:
+        raise SystemExit("stage_two must fit in the 16-sector window")
+    if stage[0] != 0xeb or stage[2:6] != b"XOS2":
+        raise SystemExit("Invalid stage_two entry/header")
+    image = bytearray(IMAGE_SIZE)
+    image[:SECTOR_SIZE] = boot
+    image[SECTOR_SIZE:SECTOR_SIZE + len(stage)] = stage
+    temporary = BUILD / "real_mode.img.tmp"
+    temporary.write_bytes(image)
+    temporary.replace(BUILD / "real_mode.img")
     empty = BUILD / "empty.bin"
     empty.write_bytes(b"")
     run([sys.executable, str(ROOT / "scripts/make_iso.py"),
@@ -259,19 +255,17 @@ def main():
         result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                 text=True, check=True)
         (BUILD / name).write_text(result.stdout)
-    artifact_names = ["boot_sector.bin", "stage_two.bin", "kernel_loader.bin", "kernel.elf",
+    artifact_names = ["boot_sector.bin", "stage_two.bin", "kernel.elf",
                       "kernel.bin", "boot_sector_iso.bin", "kernel_loader_iso.bin", "kernel_loader_iso_file.bin",
                       "xos-install.iso", "real_mode.img", *user_artifacts]
-    if legacy_available:
-        artifact_names.extend(("xos.img", "xos.iso"))
     artifact_names.extend(str(path.relative_to(BUILD)) for path in sorted((BUILD / "sdk").rglob("*"))
                           if path.is_file())
     manifest = {
         "build_id": build_id,
         "version": (ROOT / "VERSION").read_text().strip(), "source_sha256": source_digest,
-        "capacity_probe": args.capacity_probe, "terminal_supervisor_probe": args.terminal_supervisor_probe,
+        "vm1_probe": args.vm1_probe, "capacity_probe": args.capacity_probe, "terminal_supervisor_probe": args.terminal_supervisor_probe,
         "ncurses_supervisor_probe": args.ncurses_supervisor_probe,
-        "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config, "legacy_images_available": legacy_available,
+        "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config,
         "sources": source_hashes,
         "sdk_directories": [p.relative_to(BUILD / "sdk").as_posix()
                             for p in sorted((BUILD / "sdk").rglob("*")) if p.is_dir()],
@@ -285,7 +279,7 @@ def main():
         },
     }
     (BUILD / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
-    print(f"Built xos-install.iso + real_mode.img | {build_id} | kernel {len(raw_kernel)} bytes | legacy={legacy_available}")
+    print(f"Built xos-install.iso + real_mode.img | {build_id} | kernel {len(raw_kernel)} bytes")
 
 
 if __name__ == "__main__":

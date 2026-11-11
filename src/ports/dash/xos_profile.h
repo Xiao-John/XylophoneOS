@@ -25,11 +25,5 @@ int xos_open_anonymous(void);
 int xos_seal_anonymous(int);
 int xos_shell_execve(const char *, char *const[], char *const[]);
 int xos_shell_script(const char *);
-int xos_execve_driver(const char *, char *const[], char *const[]);
-int xos_execve_make(const char *, char *const[], char *const[]);
-int xos_posix_spawn_make(pid_t *, const char *, const posix_spawn_file_actions_t *,
-                        const posix_spawnattr_t *, char *const[], char *const[]);
 void xos_check_tree(union node *);
-int xos_posix_spawn_driver(pid_t *, const char *, const posix_spawn_file_actions_t *,
-                           const posix_spawnattr_t *, char *const[], char *const[]);
 #endif

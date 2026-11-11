@@ -51,11 +51,25 @@ def audit():
         raise SystemExit("NASM version differs from config/toolchain.json")
     executables = {name: tool(name) for name in ("gcc", "g++", "as", "ld", "objcopy", "nm", "ar")}
     for name in ("cc1", "cc1plus"):
-        executables[name] = output([compiler, "-print-prog-name=" + name])
+        configured = output([compiler, "-print-prog-name=" + name])
+        if os.name == "nt" and configured.startswith("/"):
+            cygpath = shutil.which("cygpath")
+            if cygpath:
+                configured = output([cygpath, "-w", configured])
+        executables[name] = configured
     for name in ("as", "ld"):
         configured = output([compiler, "-print-prog-name=" + name])
+        if os.name == "nt" and configured.startswith("/"):
+            cygpath = shutil.which("cygpath")
+            if cygpath:
+                configured = output([cygpath, "-w", configured])
         resolved = shutil.which(configured)
-        if resolved is None or Path(resolved).resolve() != Path(executables[name]).resolve():
+        if resolved is None and Path(configured).is_file():
+            resolved = str(Path(configured).resolve())
+        same_tool = (resolved is not None and
+                     hashlib.sha256(Path(resolved).read_bytes()).digest() ==
+                     hashlib.sha256(Path(executables[name]).read_bytes()).digest())
+        if not same_tool:
             raise SystemExit(f"Compiler's configured {name} differs from selected cross tools")
     executables["nasm"] = shutil.which(os.environ.get("NASM", "nasm"))
     versions["executables"] = {

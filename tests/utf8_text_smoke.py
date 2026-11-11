@@ -50,7 +50,7 @@ def compile_argv(output):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--image", type=Path, default=ROOT / "build/xos.img")
+    parser.add_argument("--image", type=Path, default=ROOT / "build/xos-install.iso")
     parser.add_argument("--report", type=Path,
                         default=ROOT / "build/utf8_text_report.json")
     args = parser.parse_args()
@@ -72,7 +72,7 @@ def main():
         transfer(disk, "mkdir", "/tmp")
         transfer(disk, "import", "/argv_utf8.elf", probe)
 
-        guest = Guest(args.image, "utf8_text", work_disk=disk)
+        guest = Guest(args.image, "utf8_text", iso=True, work_disk=disk)
         try:
             guest.expect(b"xos64> ", timeout=30)
             start = len(guest.output)

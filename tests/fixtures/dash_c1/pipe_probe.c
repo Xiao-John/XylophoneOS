@@ -81,7 +81,15 @@ static int raw_checks(void) {
     for (int round = 0; round < 20; ++round) {
         if (call(30, (unsigned long)&pair, 0, 0)) return 60;
         if (stale && call(54, stale, 0, 0) != -1) return 61;
-        if (call(54, pair.reader, 1, 0) != -2 || call(54, pair.writer, 0, 1) != -2) return 62;
+        // sys54(handle, size, deadline): size is a readiness threshold and a
+        // nonzero third is a deadline (0 = infinite) since the deadline
+        // extension. A reader may not ask for a size (-2); a ready writer
+        // returns 0 without consulting the deadline; an empty reader with an
+        // already-expired deadline returns thread_error_timeout (-13) instead
+        // of blocking. The old contract rejected every nonzero third with -2.
+        if (call(54, pair.reader, 1, 0) != -2 ||
+            call(54, pair.writer, 0, 1) != 0 ||
+            call(54, pair.reader, 0, 1) != -13) return 62;
         if (call(54, 12345, 0, 0) != -1 || call(54, 0, 0, 0) != -3) return 63;
         if (call(54, pair.writer, 0, 0)) return 64;
         if (call(31, pair.reader, (unsigned long)block, 1) != -3) return 65;

@@ -16,7 +16,21 @@ from verify_evidence_index import git_reader, no_duplicates, safe_path
 from verify_evidence_migration import conversion_dir, expected_export, run as verify_migration
 
 guest_prefixes = ('/tests/', '/out/', '/src/', '/missing/', '/work/')
-reviewable_categories = {'absolute_command', 'private_temp'}
+reviewable_categories = {'absolute_command', 'private_temp', 'ambiguous_tmp'}
+
+
+def temporary_category(text):
+    """Category a temporary-path match falls into, or None.
+
+    Host-private locations stay private_temp; bare segments are ambiguous
+    with guest paths and arrive as ambiguous_tmp (the checker marks them
+    DOUBTFUL) - both are reviewable only as exact guest fixture data.
+    """
+    if scanner.compiled['private_temp'].search(text):
+        return 'private_temp'
+    if scanner.compiled['ambiguous_tmp'].search(text):
+        return 'ambiguous_tmp'
+    return None
 
 
 def require(condition, message):
@@ -38,7 +52,7 @@ def inspect_guest_data(current, original):
                 source_keys[converted] = key
             require(value.keys() == source_keys.keys(), 'guest fixture keys changed')
             for key, item in value.items():
-                require(not scanner.compiled['private_temp'].search(key.encode()), 'temporary path in JSON key')
+                require(temporary_category(key.encode()) is None, 'temporary path in JSON key')
                 walk(item, source[source_keys[key]], path + (key,), in_command or key in scanner.command_keys)
         elif isinstance(value, list):
             require(len(value) == len(source), 'guest fixture list changed')
@@ -46,11 +60,12 @@ def inspect_guest_data(current, original):
                 walk(item, source[i], path + (i,), in_command)
         elif isinstance(value, str):
             labels = tuple(x for x in path if isinstance(x, str))
-            if scanner.compiled['private_temp'].search(value.encode()):
+            category = temporary_category(value.encode())
+            if category is not None:
                 require(labels and labels[0] == 'host_reference' and labels[-1] in ('input', 'stderr'),
                         'temporary path is not a reviewed test input/output')
                 require(value == source, 'guest temporary-path data changed')
-                observed['private_temp'] += 1
+                observed[category] += 1
             if in_command:
                 text = scanner.url_pattern.sub('${URL}', scanner.template_path.sub('${XOS_TEMPLATE}', json.dumps(value, ensure_ascii=False)))
                 matches = [m.group() for m in scanner.absolute_path.finditer(text)

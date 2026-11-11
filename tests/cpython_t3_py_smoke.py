@@ -27,7 +27,7 @@ FIXTURES = ROOT / "tests/fixtures/cpython_t3_py"
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--work", type=Path, required=True)
-    parser.add_argument("--image", type=Path, default=ROOT / "build/xos.img")
+    parser.add_argument("--image", type=Path, default=ROOT / "build/xos-install.iso")
     args = parser.parse_args()
     work = args.work.resolve(strict=True)
     stage, stage_manifest = stage_cpython(work)
@@ -51,7 +51,7 @@ def main():
     try:
         with tempfile.TemporaryDirectory(prefix="xos_cpython_t3_py_") as folder:
             temporary = Path(folder)
-            image = temporary / "xos.img"
+            image = temporary / "xos-install.iso"
             disk = temporary / "work.img"
             shutil.copyfile(args.image, image)
             create_fat32(disk, 2048)
@@ -64,7 +64,7 @@ def main():
             payload.write_bytes(b"XOS!" + bytes(256 * 1024 - 8) + b"T3PY")
             transfer(disk, "import", "/work/t3_py/io_payload.bin", payload)
 
-            guest = Guest(image, "cpython_t3_py", work_disk=disk)
+            guest = Guest(image, "cpython_t3_py", work_disk=disk, iso=True)
             guest.expect(b"xos64> ", timeout=30)
             start = len(guest.output)
             send_bytes(guest, b"run\r")

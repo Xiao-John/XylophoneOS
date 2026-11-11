@@ -18,7 +18,7 @@ from process_smoke import command,resources
 
 
 def boot(disk,name):
-    g=Guest(ROOT/'build/xos.img',name,work_disk=disk)
+    g=Guest(ROOT/'build/xos-install.iso',name,iso=True,work_disk=disk)
     g.expect(b'xos64> ',timeout=25)
     start=len(g.output)
     send_bytes(g,b'run\r')

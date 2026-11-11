@@ -4,7 +4,7 @@
 架构原则见xos_plan.md；ABI登记见[全表](contracts/abi_registry.md)，源码/回执见对应主题历史。
 原始E04与后续各次记录可按history/source_index.json恢复，不覆盖旧SDK或冻结报告。
 
-## 当前ABI速查（0054）
+## 当前ABI速查（0086）
 
 共享头是数值来源；下表由`tests/abi_doc_consistency.py`核对，仅对当前说明生效。
 冻结工作记录中的旧编号保留历史，不作为新程序编码依据。
@@ -21,6 +21,9 @@
 | `sys_clock_realtime` | 64 |
 | `sys_display` | 65 |
 | `sys_display_present` | 66 |
+| `sys_ipc_endpoint` | 84 |
+| `sys_ipc_wait` | 85 |
+| `sys_ipc_name` | 86 |
 | `clone_session` | 20 |
 | `anonymous` | 21 |
 | `anonymous_seal` | 22 |
@@ -114,6 +117,8 @@ profile另建且绑定运行库。示例及链接步骤统一见[快速开始](f
 sys_file_session=27 是 files 专属的可信会话枚举；普通程序通过 ipc_handles 获得
 自己的文件端点对。任务结束清理端点，服务按真实 PID 清理文件句柄/staging。
 端点 token 单调不复用。文件协议升级为 v2；细节及界限见 e08.md。
+`file_session_info` 另含内核填写的 `parent_pid`（创建者）：files 只允许父进程把
+句柄转移给尚未启动的子进程，调用方自报的目标 PID 不再构成授权。
 
 0021用户库增量：SDK v5的__cxa_thread_atexit/强exit提供单用户线程的正常TLS析构，
 不改ELF装载/内核ABI；main-return/显式exit的LIFO、TLS先于global/fini已客体验证。
@@ -144,9 +149,11 @@ second=目标用户地址，third=长度；third=0且second=0时返回payload总
 payload来自ISO的`DASH.ELF`，上限1 MiB，不授予普通任务；`/usr/bin/dash`已存在
 时安装器不覆盖。旧syscall编号不变。
 
-`spawn_options.delegate_spawn_depth`由用户态启动策略显式设置。Xsh对裸`dash`设为2，dash的
-固定GNU driver profile经xos_posix_spawn_driver给gcc/g++设为1。内核仍只检查调用者、
-直接子任务归属、building状态和深度，不识别文件名、PATH、ELF工具身份或GCC。
+`spawn_options.delegate_spawn_depth`仍由用户态启动策略显式设置（旧轨兼容）。
+SL2 起 xsh 裸命令与 dash `posix_spawn` 走共同 **inherit-create**（`sys_process_authority`
+copy_from_caller），不再按 dash/make/gcc 名称授予深度；内核仍只检查调用者、
+直接子任务归属、building 状态、深度与 `can_create`，不识别文件名、PATH、ELF工具身份或GCC。
+历史 `xos_posix_spawn_driver/make`、`xos_execve_driver/make` 仍导出但双 Shell 已不调用。
 最终客体验收覆盖旧一层兼容、无权委派回滚、dash→GCC/G++→子工具链和资源复原；
 不因此声称任意进程树、fork、collect2或完整POSIX授权。
 
@@ -213,9 +220,21 @@ sys60 试行可显式保留调用者参与的少量空通道；不设置标志�
 单线程终端 libc 试行通过该机制交接描述符和下一个请求序号，目标须同时声明
 `.xos.exec` v3 与 `.xos.tty` v1；尚未取得客体资格。
 
-sys82 `sys_pio_grant` 是开发中的固定设备 PIO 授权；COM1 交接、隔离及显式
-重新授权边界见
-[专项契约](contracts/pio_grant.md)，尚未客体验收，不等于 IRQ 或用户态终端资格。
+sys88 `sys_ipc_v1` 的 action、固定结构、错误和 capability feature 位由
+[IPC v1 契约](contracts/ipc_v1.md)与 `ipc_v1_abi.hpp` 登记。IP1 提供返回空 supported
+feature set 的 runtime query，以及 SDK `ipc_v1.hpp` 查询 helper；endpoint call/reply 后端
+尚未实现。普通 SDK 与实验线程 SDK manifest 均声明
+`registered_unsupported`、空 feature 列表；不得将该登记称作可运行 IPC 能力。
+
+sys82 `sys_pio_grant` 是开发中的固定设备 PIO 授权；COM1 交接/隔离及 PC Speaker
+端口范围、2.5 秒静音租约、主动 release 见[专项契约](contracts/pio_grant.md)。这两类
+资源尚未客体验收，不等于 IRQ 或用户态终端资格。
+
+AU2 音频客户端复用 sys86 命名 IPC 和普通 channel wait/send/receive；共享 wire 布局及
+SDK client 分别位于 `audio_abi.hpp` 与 `audio_client.hpp`，完整版本、限额、job 状态、
+授权链和失败语义见[单音服务协议](contracts/audio_service.md)。supervisor 只委派
+controller 权限给服务；客户端不获 PIO，每个音符由有 2.5 秒租约的隔离 worker 执行。
+代码已实现但未完成目标交叉构建和客体验收。
 
 sys83 `sys_irq_event` 为受控 IRQ 事件、等待和确认；当前仅 IRQ4、未客体验收，
 详见[专项契约](contracts/irq_event.md)。不读取设备数据，不等于 UART 驱动完成。
@@ -257,6 +276,26 @@ sys34 的 PID=0 分支只查询自己的 stdio route，第二参数fd、第三�
 libc FD表锁不跨管道等待；在途 I/O pin住对象，普通 close 不中断该在途 I/O；
 直接raw close唤醒后，raw等待者再次I/O必须重新验证权限。F_SETFL对未实现的
 O_NONBLOCK等位明确ENOTSUP，writer F_GETFL报告O_WRONLY。未增加异步信号递送。
+
+## 通用 IPC channel
+
+sys84 `sys_ipc_endpoint(create, peer_pid, &channel)` 创建双向 channel；peer_pid=0 表示
+调用进程的直接父进程。返回的本地
+结构为 `{send, receive}`；传给 peer 的句柄顺序为 `{receive, send}`。每个方向是一个
+固定 4096 字节、单条 outstanding 消息的 endpoint，发送和接收仍使用 sys4/sys5。
+sys85 `sys_ipc_wait(endpoint, mode, 0)` 等待 receive 有消息或 send 可写；try 模式
+分别非阻塞探测并返回 would_block。调用方在
+唤醒后仍需重试 I/O。只有创建者可用 sys84 `revoke, endpoint, 0` 撤销整条 channel；
+创建者或 peer 退出也会撤销并唤醒等待者。内核按绑定的 PID 检查每次操作，不相信消息
+中的身份字段。直连 channel 句柄可通过应用握手传递；sys86 的 name-connect/accept
+会自动把反向句柄交给注册服务。channel 句柄泄露给其他 PID 不会授予读写权。
+channel 创建者可 revoke；任一参与方可 close 整个 channel。
+
+sys86 提供最多 8 个固定 31 字符 ASCII 服务名（`[a-z0-9._-]`）的
+register/unregister/connect/accept；待 accept 队列最多保留 16 个连接。
+服务进程发布名称，客户端 connect 时内核创建双向 channel 并将服务侧反向句柄自动放入
+accept 队列；`ipc_name_accept()` 等待并收取 channel，`ipc_name_try_accept()` 用于轮询。
+名称属于注册进程，进程退出自动注销；名称不是访问权限，channel 仍按 peer PID 校验。
 
 
 ## C2 单线程完整复制fork

@@ -27,6 +27,9 @@ def main():
     parser.add_argument("--output", type=Path)
     parser.add_argument("--manifest", type=Path)
     parser.add_argument("--build-dir", type=Path, default=ROOT / "build")
+    parser.add_argument("--member", action="append", default=[],
+                        metavar="TYPE:NAME=PATH",
+                        help="XOSBND1 member; TYPE 2=xypm 3=daily 4=aux (dash is always type 1)")
     args = parser.parse_args()
     build = args.build_dir.resolve()
     args.output = args.output or build / "xos-install-dash.iso"
@@ -48,6 +51,22 @@ def main():
         raise SystemExit("kernel exceeds the qualified ISO file budget")
     if not 0 < dash.stat().st_size <= configuration["iso_payload_max_bytes"]:
         raise SystemExit("dash payload exceeds the qualified ISO payload budget")
+    bundle_members = None
+    if args.member:
+        import xos_bundle
+        bundle_members = [(xos_bundle.TYPE_DASH, "dash", dash.read_bytes())]
+        for spec in args.member:
+            try:
+                type_s, rest = spec.split(":", 1)
+                name, path_s = rest.split("=", 1)
+                bundle_members.append((int(type_s), name, Path(path_s).read_bytes()))
+            except ValueError as exc:
+                raise SystemExit(f"bad --member {spec!r}: {exc}")
+        bundle_path = build / "xos_boot_bundle.bin"
+        bundle_path.write_bytes(xos_bundle.build(bundle_members))
+        if bundle_path.stat().st_size > configuration["iso_payload_max_bytes"]:
+            raise SystemExit("bundle exceeds the qualified ISO payload budget")
+        dash = bundle_path
     for name, path in (("kernel.bin", kernel), ("boot_sector_iso.bin", boot), ("kernel_loader_iso_file.bin", loader)):
         expected = system["artifacts"].get(name)
         if expected is not None and sha256(path) != expected["sha256"]:
@@ -60,6 +79,19 @@ def main():
         "dash_sha256": sha256(dash),
         "dash_bytes": dash.stat().st_size,
     }
+    if bundle_members is not None:
+        import xos_bundle as _xb
+        info = _xb.parse(dash.read_bytes())
+        metadata["boot_bundle"] = {
+            "format": "XOSBND1",
+            "container_sha256": sha256(dash),
+            "container_bytes": dash.stat().st_size,
+            "members": [
+                {"type": m["type"], "name": m["name"],
+                 "data_len": m["data_len"], "sha256": m["sha256"].hex()}
+                for m in info["members"]
+            ],
+        }
     args.manifest.parent.mkdir(parents=True, exist_ok=True)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.manifest.write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n")

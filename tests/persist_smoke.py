@@ -38,7 +38,7 @@ def edit_lines(guest, name, lines, *, expect_new=False, expect_loaded=None):
 
 
 def boot(disk, name):
-    guest = Guest(ROOT / "build/xos.img", name, work_disk=disk)
+    guest = Guest(ROOT / "build/xos-install.iso", name, work_disk=disk, iso=True)
     guest.expect(b"xos64> ", timeout=20)
     start = len(guest.output)
     send_bytes(guest, b"run\r")

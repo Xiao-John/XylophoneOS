@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+from ipc_v1_manifest import ipc_v1_manifest_entry
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -83,6 +84,22 @@ def main():
         commands.append([str(s) for s in command])
         with (logs / name).open('w') as log:
             subprocess.run(command, cwd=cwd, env=env, check=True, stdout=log, stderr=subprocess.STDOUT)
+    def configure_command(script, *arguments):
+        command = [str(script), *arguments]
+        if os.name == 'nt':
+            bash = shutil.which('bash')
+            cygpath = shutil.which('cygpath')
+            if not bash or not cygpath:
+                raise SystemExit('MSYS Bash and cygpath are required to run GCC configure scripts on Windows')
+            def posix_path(value):
+                return subprocess.check_output([cygpath, '-u', str(value)], text=True).strip()
+            command = [bash, posix_path(script), *arguments]
+            for index, argument in enumerate(command):
+                for option in ('--prefix=', '--with-gxx-include-dir='):
+                    if argument.startswith(option):
+                        command[index] = option + posix_path(argument[len(option):])
+                        break
+        return command
     cross = shutil.which('x86_64-elf-g++')
     assert subprocess.check_output([cross, '-dumpfullversion'], text=True).strip() == '16.2.0'
     newlib = prefix / 'x86_64-elf'
@@ -128,7 +145,7 @@ def main():
     flags = ['-B' + str(sdk_tools) + '/', '-std=c++20' , '-O2', '-g', '-ffreestanding', '-fno-rtti', '-fno-stack-protector',
              '-fno-pic', '-fno-pie', '-mno-red-zone', '-march=x86-64', '-mcmodel=small',
              '-ftls-model=local-exec', '-DXOS_THREADED_RUNTIME', '-nostdinc++',
-             '-I' + str(output / 'include')]
+             '-I' + str(output / 'include'), '-I' + str(ROOT / 'src/user/threading')]
     sources = [*sorted((ROOT / 'src/user/libc').glob('*.cpp')),
                ROOT / 'src/user/sdk/file_client.cpp', ROOT / 'src/user/sdk/text.cpp',
                ROOT / 'src/user/sdk/terminal_client.cpp',
@@ -140,6 +157,7 @@ def main():
     compiled = []
     for source in sources:
         target = objects / (str(source.relative_to(ROOT)).replace('/', '_') + '.o')
+        target.parent.mkdir(parents=True, exist_ok=True)
         # pthread_once must unwind its in-progress marker if an initializer throws.
         extra = ['-fexceptions', '-funwind-tables'] if source.name == 'pthread.cpp' else ['-fno-exceptions']
         run([cross, *flags, *extra, '-c', str(source), '-o', str(target)], source.stem + '.log')
@@ -165,17 +183,22 @@ def main():
             if not (target_tools / name).exists():
                 (target_tools / name).symlink_to(shutil.which('x86_64-elf-' + name))
         binutils = str(target_tools.resolve()) + '/'
+        if os.name == 'nt':
+            binutils = subprocess.check_output([shutil.which('cygpath'), '-u', binutils], text=True).strip() + '/'
+        include_dir = str(output / 'include')
+        if os.name == 'nt':
+            include_dir = subprocess.check_output([shutil.which('cygpath'), '-u', include_dir], text=True).strip()
         env.update(CC='x86_64-elf-gcc -B' + binutils,
                    CXX='x86_64-elf-g++ -B' + binutils,
                    AR='x86_64-elf-ar', RANLIB='x86_64-elf-ranlib',
-                   CFLAGS='-O2 -g -mno-red-zone -I' + str(output / 'include'),
-                   CXXFLAGS='-O2 -g -mno-red-zone -fno-pie -fno-pic -D__XOS_NO_WALL_CLOCK__ -I' + str(output / 'include'),
+                   CFLAGS='-O2 -g -mno-red-zone -I' + include_dir,
+                   CXXFLAGS='-O2 -g -mno-red-zone -fno-pie -fno-pic -D__XOS_NO_WALL_CLOCK__ -I' + include_dir,
                    gcc_cv_target_thread_file='posix', ac_cv_func_fcntl='yes', ac_cv_func_getexecname='no', ac_cv_func___cxa_thread_atexit='yes')
-        run([str(gcc / 'libstdc++-v3/configure'), '--host=x86_64-elf',
+        run(configure_command(gcc / 'libstdc++-v3/configure', '--host=x86_64-elf',
              '--prefix=' + str(output / 'cpp'), '--with-gxx-include-dir=' + str(output / 'cpp/include'),
              '--disable-multilib', '--disable-shared', '--disable-nls', '--with-newlib',
              '--disable-libstdcxx-pch', '--enable-libstdcxx-threads=yes',
-             '--disable-libstdcxx-backtrace', '--disable-libstdcxx-filesystem-ts'],
+             '--disable-libstdcxx-backtrace', '--disable-libstdcxx-filesystem-ts'),
             'cpp_configure.log', cwd=build, env=env)
         # Bare-metal newlib defaults do not discover XOS-provided functions.
         # These are actual SDK implementations, qualified by the guest gates.
@@ -194,19 +217,59 @@ def main():
         if not feature_stamp.exists() or feature_stamp.read_text() != feature_sha:
             run(['make', 'clean'], 'cpp_clean_config_change.log', cwd=build, env=env)
             feature_stamp.write_text(feature_sha)
-        run(['make', '-j' + str(args.jobs)], 'cpp_make.log', cwd=build, env=env)
+        # GCC's optional libstdc++exp aggregate archive makes GNU libtool pass
+        # absolute MSYS paths to ar as member names. Skip that unused extension
+        # library; Qt and the SDK link the standard and support runtimes below.
+        src_makefile = build / 'src/Makefile'
+        src_make = src_makefile.read_text()
+        experimental_subdir = '$(filesystem_dir) $(backtrace_dir) $(experimental_dir)'
+        if experimental_subdir not in src_make:
+            raise SystemExit('libstdc++ src Makefile no longer has the expected subdirectory list')
+        src_makefile.write_text(src_make.replace(
+            experimental_subdir, '$(filesystem_dir) $(backtrace_dir)', 1))
+        # Keep libtool's intermediate archive extraction on the MSYS ar. The
+        # native target ar is still used for the final XOS runtime archives.
+        run(['make', '-j' + str(args.jobs), 'AR=ar', 'RANLIB=ranlib'],
+            'cpp_make.log', cwd=build, env=env)
         feature_stamp.write_text(feature_sha)
-        run(['make', 'install'], 'cpp_install.log', cwd=build, env=env)
+        run(['make', 'install', 'AR=ar', 'RANLIB=ranlib'],
+            'cpp_install.log', cwd=build, env=env)
         compiler_build = work / 'gcc'
         compiler_build.mkdir(exist_ok=True)
         native = os.environ.copy()
         native.pop('COMPILER_PATH', None)
-        run([str(gcc / 'gcc/configure'), '--target=x86_64-elf', '--disable-multilib',
-             '--disable-nls', '--enable-languages=c,c++', '--enable-threads=posix'],
-            'gcc_headers_configure.log', cwd=compiler_build, env=native)
-        # Generate configuration only; the installed compiler supplies codegen.
-        run(['make', '-o', 'specs', '-o', 'xgcc', 'libgcc.mvars', 'tconfig.h'],
-            'gcc_headers_make.log', cwd=compiler_build, env=native)
+        # Generate the target configuration headers required by libgcc.  The
+        # standalone libgcc build includes tm.h from gcc_objdir; generating
+        # only tconfig.h leaves unwind-dw2.c and emutls.c unable to compile.
+        # Keep the generated headers in this private objdir rather than
+        # modifying the checked-out GCC source tree.
+        # Reuse the headers produced by the already-built cross compiler when
+        # available.  Re-running GCC's generator makefiles in this small
+        # directory pulls in build-tree libiberty targets that are not part of
+        # the SDK and fails before producing the headers.
+        generated_gcc = ROOT / 'build/qt_enabled/gcc_build/gcc'
+        required_gcc_headers = ('tm.h', 'tm_p.h', 'tconfig.h', 'libgcc.mvars')
+        if not all((generated_gcc / name).is_file() for name in required_gcc_headers):
+            run(configure_command(gcc / 'gcc/configure', '--target=x86_64-elf', '--disable-multilib',
+                 '--disable-nls', '--enable-languages=c,c++', '--enable-threads=posix'),
+                'gcc_headers_configure.log', cwd=compiler_build, env=native)
+        for header in ('tm.h', 'tm_p.h', 'tconfig.h'):
+            source_header = generated_gcc / header
+            if source_header.is_file():
+                shutil.copyfile(source_header, compiler_build / header)
+        mvars = compiler_build / 'libgcc.mvars'
+        source_mvars = generated_gcc / 'libgcc.mvars'
+        if source_mvars.is_file():
+            shutil.copyfile(source_mvars, mvars)
+        else:
+            # This fallback is only needed when no completed cross-GCC build
+            # is available; avoid rebuilding generator programs on MSYS.
+            run(['make', '-o', 'specs', '-o', 'xgcc.exe', 'libgcc.mvars'],
+                'gcc_headers_make.log', cwd=compiler_build, env=native)
+        for header in ('tm.h', 'tm_p.h', 'tconfig.h'):
+            path = compiler_build / header
+            if not path.is_file():
+                raise SystemExit(f'GCC target configuration header was not generated: {path}')
         plugin = Path(subprocess.check_output([cross, '-print-file-name=plugin'], text=True).strip()) / 'include'
         for header in plugin.rglob('*'):
             target = compiler_build / header.relative_to(plugin)
@@ -215,14 +278,18 @@ def main():
                 shutil.copyfile(header, target)
         unwind_build = work / 'libgcc_build'
         unwind_build.mkdir(exist_ok=True)
-        run([str(gcc / 'libgcc/configure'), '--host=x86_64-elf', '--disable-shared',
-             '--disable-gcov', '--prefix=' + str(output / 'cpp')],
+        run(configure_command(gcc / 'libgcc/configure', '--host=x86_64-elf', '--disable-shared',
+             '--disable-gcov', '--prefix=' + str(output / 'cpp')),
             'libgcc_configure.log', cwd=unwind_build, env=env)
         members = ['unwind-dw2.o', 'unwind-dw2-fde.o', 'unwind-sjlj.o', 'unwind-c.o', 'emutls.o']
         run(['make', '-j' + str(args.jobs), 'gcc_objdir=' + str(compiler_build), *members],
             'libgcc_make.log', cwd=unwind_build, env=env)
         libgcc = output / 'cpp/lib/libgcc.a'
-        original = Path(subprocess.check_output([cross, '-print-libgcc-file-name'], text=True).strip())
+        original_name = subprocess.check_output([cross, '-print-libgcc-file-name'], text=True).strip()
+        if os.name == 'nt':
+            original_name = subprocess.check_output(
+                [shutil.which('cygpath'), '-w', original_name], text=True).strip()
+        original = Path(original_name)
         shutil.copyfile(original, libgcc)
         run(['x86_64-elf-ar', 'rcsD', str(libgcc), *[str(unwind_build / name) for name in members]], 'libgcc_archive.log')
         for name in ['COPYING3', 'COPYING.RUNTIME']:
@@ -235,7 +302,8 @@ def main():
         raise SystemExit('SDK inputs changed during the build; retry with a stable source snapshot')
     receipt = {'profile': 'xos-threading-v1-experimental', 'abi': 1, 'thread_abi': 1,
                'display_extensions': {'version': 1, 'syscalls': [65, 66], 'pixel_format': 'XRGB8888', 'surface_count': 1},
-               'process_extensions': {'syscalls': list(range(54,62)), 'file_operations': [20,21,22],
+               'ipc_v1': ipc_v1_manifest_entry(),
+               'process_extensions': {'syscalls': [*range(54,62),80,81,82], 'file_operations': [20,21,22],
                    'startup_versions': [1,2,3], 'exec_image_abi': 3, 'exec_marker': '.xos.exec',
                    'fork_supported': False, 'exec_supported': False, 'fd_count': 32,
                    'pipe_atomic_bytes': 4096, 'pipe_wait_write_minimum': True,

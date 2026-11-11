@@ -44,7 +44,7 @@ def main():
 
     report = {
         'stage': 'E08-3 stress', 'status': 'failed', 'started': time.strftime('%Y-%m-%dT%H:%M:%S%z'),
-        'build_id': system['build_id'], 'xos_sha256': system['artifacts']['xos.img']['sha256'],
+        'build_id': system['build_id'], 'xos_sha256': system['artifacts']['xos-install.iso']['sha256'],
         'seed_manifest': str(seed_path.relative_to(ROOT)), 'seed_manifest_sha256': sha(seed_path),
         'seed_build': seed.get('build_id'), 'levels': {}, 'commands': [], 'checks': [],
         'resource_samples': [], 'failures': [],

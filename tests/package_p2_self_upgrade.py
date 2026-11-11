@@ -20,7 +20,7 @@ from package_p2_faults import sparse_copy
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--system',type=Path,required=True);parser.add_argument('--build',type=Path,required=True);parser.add_argument('--fault-build',type=Path,required=True);parser.add_argument('--profile',type=Path,default=ROOT/'config/package/xos_x86_64_static_single_b2_v1.json');parser.add_argument('--output',type=Path,required=True);args=parser.parse_args()
-    system=args.system.resolve();out=args.output.resolve();out.mkdir(parents=True,exist_ok=True);system_info=load_json(system/'manifest.json');image=system/'xos.img';require(sha_file(image)==system_info['artifacts']['xos.img']['sha256'],'system image mismatch');normal=load_json(args.build);fault=load_json(args.fault_build);profile=load_json(args.profile)
+    system=args.system.resolve();out=args.output.resolve();out.mkdir(parents=True,exist_ok=True);system_info=load_json(system/'manifest.json');image=system/'xos-install.iso';require(sha_file(image)==system_info['artifacts']['xos-install.iso']['sha256'],'system image mismatch');normal=load_json(args.build);fault=load_json(args.fault_build);profile=load_json(args.profile)
     report={'status':'failed','system_build_id':system_info['build_id'],'image_sha256':sha_file(image),'normal_package_sha256':normal['sha256'],'fault_package_sha256':fault['sha256'],'test_sha256':sha_file(Path(__file__)),'checks':[],'not_run':['power_loss','sector_tearing']};guest=None
     try:
         with tempfile.TemporaryDirectory(prefix='xypm_self_upgrade_') as temp:
@@ -31,7 +31,7 @@ def main():
             base=root/'base.img';transact(source,base,profile,'install',package=fault['package'])
             boot=root/'boot.img';shutil.copyfile(image,boot)
             def start(disk):
-                g=Guest(boot,'package_p2_self_upgrade',work_disk=disk);g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=40);pump(g,1.0)
+                g=Guest(boot,'package_p2_self_upgrade',work_disk=disk,iso=True);g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=40);pump(g,1.0)
                 if b'maintenance: persistent recovery required' not in g.output:
                     begin=len(g.output);send_bytes(g,b'demo quiet\r');g.expect_any((b'demo tasks stopped',b'demo tasks already stopped'),start=begin,timeout=40);g.expect_supervisor(start=begin,timeout=40)
                 return g

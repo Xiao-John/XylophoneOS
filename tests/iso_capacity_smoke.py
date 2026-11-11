@@ -37,7 +37,9 @@ def main():
     parser.add_argument('--dash-manifest',type=Path,default=ROOT/'.cache/xos_seed/dash/8098a3cc28ff4ce74f5b/manifest.json')
     args=parser.parse_args();build=args.build_dir.resolve();output=build/'acceptance';output.mkdir(exist_ok=True)
     metadata=json.loads((build/'manifest.json').read_text())
-    assert metadata['capacity_probe'] and not metadata['legacy_images_available']
+    # Legacy system images are dropped; only the install ISO and the practice floppy remain.
+    image_artifacts={name for name in metadata['artifacts'] if name.endswith(('.img','.iso'))}
+    assert metadata['capacity_probe'] and image_artifacts=={'xos-install.iso','real_mode.img'}
     assert metadata['artifacts']['kernel.bin']['bytes']>4*1024*1024
     assert sha_file(build/'kernel.bin')==metadata['artifacts']['kernel.bin']['sha256']
     original=json.loads(args.dash_manifest.read_text());dash=Path(original['elf'])

@@ -12,8 +12,14 @@ ROOT = Path(__file__).resolve().parents[1]
 MACHINE = "pc-i440fx-10.0"
 
 
-def qemu_command(image, *, vga=False, qmp=None, debug_port=None, cpu="qemu64,+rdrand", work_disk=None, iso=False):
-    qemu = shutil.which(os.environ.get("QEMU", "qemu-system-x86_64"))
+def qemu_command(image, *, vga=False, display=None, qmp=None, debug_port=None,
+                 cpu="qemu64,+rdrand", work_disk=None, iso=False):
+    configured_qemu = os.environ.get("QEMU", "qemu-system-x86_64")
+    qemu = shutil.which(configured_qemu)
+    if not qemu and "QEMU" not in os.environ and os.name == "nt":
+        installed = Path(os.environ.get("ProgramFiles", r"C:\Program Files")) / "qemu" / "qemu-system-x86_64.exe"
+        if installed.is_file():
+            qemu = str(installed)
     if not qemu:
         raise SystemExit("QEMU not found; install it or set QEMU=/path/to/qemu-system-x86_64")
     command = [
@@ -28,7 +34,7 @@ def qemu_command(image, *, vga=False, qmp=None, debug_port=None, cpu="qemu64,+rd
                     "-boot", "order=a,strict=on", "-no-reboot"]
     command += [
         "-monitor", "none", "-serial", "stdio",
-        "-display", "cocoa" if vga else "none",
+        "-display", display or ("sdl" if vga else "none"),
     ]
     if work_disk is not None:
         command += ["-drive", f"file={work_disk},format=raw,if=ide,index=0,media=disk,cache=writeback"]
@@ -41,20 +47,24 @@ def qemu_command(image, *, vga=False, qmp=None, debug_port=None, cpu="qemu64,+rd
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--vga", action="store_true", help="open a macOS VGA window")
+    parser.add_argument("--vga", action="store_true", help="open an SDL VGA window")
+    parser.add_argument("--display", help="QEMU display backend (for example sdl, gtk, or none)")
     parser.add_argument("--real-mode", action="store_true", help="run the original 16-bit exercise")
     parser.add_argument("--debug-port", type=int, help="pause at reset and listen on loopback for LLDB/GDB")
     parser.add_argument("--work-disk", type=Path, help="existing FAT16/FAT32 work disk image")
-    parser.add_argument("--iso", action="store_true", help="boot the embedded-kernel build/xos.iso")
+    parser.add_argument("--image", type=Path,
+                        help="explicit boot image; .iso files boot with -cdrom, others as floppy")
     parser.add_argument("--iso-file", action="store_true", help="boot the file-backed build/xos-install.iso")
     parser.add_argument("--install-iso", action="store_true", help="boot build/xos-install-dash.iso")
     args = parser.parse_args()
-    image = ROOT / "build" / ("real_mode.img" if args.real_mode else
-                              "xos-install-dash.iso" if args.install_iso else
-                              "xos-install.iso" if args.iso_file else
-                              "xos.iso" if args.iso else "xos.img")
+    image = args.image.resolve() if args.image else ROOT / "build" / (
+        "real_mode.img" if args.real_mode else
+        "xos-install-dash.iso" if args.install_iso else
+        "xos-install.iso")
     if not image.is_file():
         raise SystemExit("Run make build first")
+    # .iso images boot via -cdrom; raw images (real_mode.img) keep the floppy path.
+    iso_boot = image.suffix.lower() == ".iso"
     work_disk = args.work_disk
     if work_disk is None and not args.real_mode:
         work_disk = ROOT / "work_disk.img"
@@ -63,9 +73,10 @@ def main():
     if args.debug_port is not None:
         print(f"Guest paused at reset; debugger listening on 127.0.0.1:{args.debug_port}", flush=True)
     try:
-        subprocess.run(qemu_command(image, vga=args.vga, debug_port=args.debug_port,
+        subprocess.run(qemu_command(image, vga=args.vga, display=args.display,
+                                    debug_port=args.debug_port,
                                     work_disk=None if args.real_mode else work_disk,
-                                    iso=args.iso or args.iso_file or args.install_iso), check=True)
+                                    iso=iso_boot), check=True)
     except KeyboardInterrupt:
         pass
 

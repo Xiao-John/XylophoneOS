@@ -82,10 +82,10 @@ def main():
         system = json.loads(system_path.read_text())
         sdk = args.system/'sdk'
         sdk_receipt = json.loads((sdk/'manifest.json').read_text())
-        image = args.system/'xos.img'
+        image = args.system/'xos-install.iso'
         report.update(system_build_id=system['build_id'], system_manifest_sha256=sha(system_path),
                       xos_sha256=sha(image), sdk_manifest_sha256=sha(sdk/'manifest.json'))
-        if report['xos_sha256'] != system['artifacts']['xos.img']['sha256']:
+        if report['xos_sha256'] != system['artifacts']['xos-install.iso']['sha256']:
             raise AssertionError('system image does not match manifest')
         if sdk_receipt['build_id'] != system['build_id']:
             raise AssertionError('kernel and SDK build IDs differ')
@@ -200,7 +200,7 @@ def main():
                 'expected':'first candidate ENOEXEC/ENOTSUP returns without executing the second candidate'}
             if huge: transfer(disk,'import','/tests/huge-target',huge)
             if threaded: transfer(disk,'import','/tests/threaded',threaded)
-            guest = Guest(private,'dash_c3_exec_'+run_id[:12],work_disk=disk)
+            guest = Guest(private,'dash_c3_exec_'+run_id[:12],work_disk=disk,iso=True)
             report['qemu_command'] = guest.command
             qemu = Path(guest.command[0]);report['tools']['qemu'] = {'path':str(qemu.resolve()),'sha256':sha(qemu),
                 'version':subprocess.check_output([str(qemu),'--version'],text=True).splitlines()[0]}

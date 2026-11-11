@@ -23,9 +23,9 @@ def main():
     parser.add_argument('--package',type=Path,required=True); parser.add_argument('--profile',type=Path,required=True)
     parser.add_argument('--dash',type=Path,required=True); parser.add_argument('--output',type=Path,required=True)
     args=parser.parse_args(); out=args.output.resolve();out.mkdir(parents=True,exist_ok=True)
-    system=load_json(args.system/'manifest.json'); image=args.system/'xos.img'; profile=load_json(args.profile)
+    system=load_json(args.system/'manifest.json'); image=args.system/'xos-install.iso'; profile=load_json(args.profile)
     build=load_json(args.xypm_build); elf=Path(build['elf']); package=verify_package(args.package,profile)
-    require(sha_file(image)==system['artifacts']['xos.img']['sha256'],'system mismatch')
+    require(sha_file(image)==system['artifacts']['xos-install.iso']['sha256'],'system mismatch')
     require(package['manifest']['id']=='xos.daily_utilities','wrong package')
     report={'status':'failed','system_build_id':system['build_id'],'image_sha256':sha_file(image),
             'xypm_elf_sha256':sha_file(elf),'package_sha256':sha_file(args.package),
@@ -46,7 +46,7 @@ def main():
                 backend.command('import','/tests/tail_limit.dat',limit)
                 backend.command('import','/tests/tail_over_limit.dat',over)
             def boot():
-                g=Guest(image,'daily_p2',work_disk=disk);g.expect(b'xos64> ',timeout=40)
+                g=Guest(image,'daily_p2',work_disk=disk,iso=True);g.expect(b'xos64> ',timeout=40)
                 send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=40);pump(g,1.5);return g
             def command(g,line,expected,timeout=360):
                 start=len(g.output);send_bytes(g,line.encode()+b'\r');g.expect(expected,start=start,timeout=timeout)

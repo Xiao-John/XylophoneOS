@@ -128,6 +128,15 @@ int xos_evalpipe(union node *n, int flags) {
             if (xos_direct_stage(lp->n)) {
                 status = evalcommand(lp->n, 0);
             } else {
+                // C1 pipelines run external commands only: a builtin stage
+                // (printf, cd, ...) is rejected before it can run, and the
+                // longjmp path cancels the stages already started.
+                if (lp->n->type == NCMD && lp->n->ncmd.args && !lp->n->ncmd.assign) {
+                    struct cmdentry builtin_stage;
+                    find_command(lp->n->ncmd.args->narg.text, &builtin_stage, 0, pathval());
+                    if (builtin_stage.cmdtype == CMDBUILTIN || builtin_stage.cmdtype == CMDFUNCTION)
+                        sh_error("C1 pipeline requires external commands");
+                }
                 if (forkshell(NULL, lp->n, FORK_FG) == 0) {
                     if (previous >= 0) close(previous);
                     if (pip[0] >= 0) close(pip[0]);

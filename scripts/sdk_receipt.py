@@ -17,9 +17,14 @@ def tree_receipt(root,exclude=()):
     directories=[]
     for p in sorted(root.rglob('*')):
         if p.is_symlink():raise ValueError('SDK symlink rejected: '+str(p))
-        if p.is_file() and p.relative_to(root).as_posix() not in exclude:
-            files[p.relative_to(root).as_posix()]=sha(p)
-        elif p.is_dir():directories.append(p.relative_to(root).as_posix())
+        relative=p.relative_to(root)
+        # Python bytecode and host-tool caches are disposable; they must not
+        # change the identity of an otherwise identical SDK tree.
+        if '__pycache__' in relative.parts or relative.suffix=='.pyc' or relative.parts[:1]==('.cache',):
+            continue
+        if p.is_file() and relative.as_posix() not in exclude:
+            files[relative.as_posix()]=sha(p)
+        elif p.is_dir():directories.append(relative.as_posix())
         elif not p.is_file():raise ValueError('SDK special file rejected: '+str(p))
     return {'tree_sha256':hashlib.sha256(canonical({'files':files,'directories':directories})).hexdigest(),'files':files,'directories':directories,'excluded_files':list(exclude)}
 

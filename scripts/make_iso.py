@@ -21,6 +21,9 @@ def both32(value):
 
 def record(extent, size, flags, name):
     body = bytearray(33 + len(name))
+    # length fields are single bytes; refuse records that cannot be encoded
+    if len(body) > 255 or len(name) > 255:
+        raise SystemExit(f'ISO directory record too long: {name!r}')
     body[0] = len(body)
     body[1] = 0
     body[2:10] = both32(extent)
@@ -67,11 +70,25 @@ def main():
     root_lba = BOOT_RBA + boot_blocks
     path_lba = root_lba + 1
     files = []
+    seen = set()
     next_lba = path_lba + 1
     for item in args.file:
         if '=' not in item:
             raise SystemExit('--file requires NAME=PATH')
         name, source = item.split('=', 1)
+        if not name or name in ('.', '..') or '/' in name or '\\' in name:
+            raise SystemExit(f'invalid ISO file name: {name!r}')
+        try:
+            name.encode('ascii')
+        except UnicodeEncodeError as error:
+            raise SystemExit(f'ISO file name must be ASCII: {name!r}') from error
+        # record() stores name + ';1' in single-byte length fields
+        if len(name) > 220:
+            raise SystemExit(f'ISO file name too long: {name!r}')
+        folded = name.upper()
+        if folded in seen:
+            raise SystemExit(f'duplicate ISO file name: {name!r}')
+        seen.add(folded)
         data = Path(source).read_bytes()
         blocks = max(1, (len(data) + SECTOR - 1) // SECTOR)
         files.append((name, data, next_lba))

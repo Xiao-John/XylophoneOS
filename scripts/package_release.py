@@ -90,8 +90,8 @@ def main():
     if ROOT/'build/releases' not in out.parents:
         p.error('use a dedicated build/releases directory')
     system = json.loads((out/'system_manifest.json').read_text())
-    if sha(out/'xos.img') != system['artifacts']['xos.img']['sha256']:
-        p.error('frozen boot image differs from accepted manifest')
+    if sha(out/'xos-install.iso') != system['artifacts']['xos-install.iso']['sha256']:
+        p.error('frozen install ISO differs from accepted manifest')
     sdk_input = verify_sdk(out/'sdk', system)
     target = ROOT/'.cache/xos_seed/gcc/relinks/target_runtime_v5_receipt'
     runtime_input = verify_runtime(target, json.loads((ROOT/'config/release_cpp_runtime_v5.json').read_text()))
@@ -181,9 +181,8 @@ def main():
     for name, body in examples.items():
         path = image_dir/'examples'/name; path.write_text('/* SPDX-License-Identifier: Apache-2.0 */\n'+body)
         transfer('import','/src/'+name,path)
-    shutil.copyfile(out/'xos.img',image_dir/'xos.img')
-    if (out/'xos.iso').is_file():
-        shutil.copyfile(out/'xos.iso',image_dir/'xos.iso')
+    # xos-install.iso is the only regular boot product; legacy floppy/embedded images are gone.
+    shutil.copyfile(out/'xos-install.iso',image_dir/'xos-install.iso')
     shutil.copyfile(out/'xos-install-dash.iso',image_dir/'xos-install-dash.iso')
     shutil.copyfile(out/'install_manifest.json',image_dir/'install_manifest.json')
     shutil.copyfile(ROOT/'scripts/release_launcher.py',image_dir/'launch.py')
@@ -199,6 +198,7 @@ def main():
     for folder in (image_dir,sdk_dir):
         copy_notices(folder)
         shutil.copyfile(notes,folder/'README.md')
+    stage_dev_kit(sdk_dir)
     if verify_sdk(out/'sdk',system) != sdk_input:
         raise ValueError('SDK changed while packaging')
     if verify_runtime(target,json.loads((ROOT/'config/release_cpp_runtime_v5.json').read_text())) != runtime_input:
@@ -213,7 +213,7 @@ def main():
     sdk_binding={'input':sdk_input,'runtime':runtime_input,
                  'packaged':tree_receipt(sdk_dir,exclude=('release.json',))}
     release = {'name':'XylophoneOS Revival version '+VERSION,'version':VERSION,
-               'system_build_id':system['build_id'],'sdk_binding':sdk_binding,'xos_sha256':sha(out/'xos.img'),
+               'system_build_id':system['build_id'],'sdk_binding':sdk_binding,'xos_sha256':sha(out/'xos-install.iso'),
                'seed_manifest_sha256':sha(ROOT/'build/cpp_bundle/seed_manifest.json'),
                'sysroot_manifest_sha256':sha(ROOT/'build/cpp_bundle/sysroot_manifest.json'),
                'install_iso_sha256':sha(out/'xos-install-dash.iso'),
@@ -232,6 +232,70 @@ def main():
     (out/'release_manifest.json').write_text(json.dumps(release,indent=2)+'\n')
     archive(image_dir,out/(PREFIX+'_images.tar.gz'))
     archive(sdk_dir,out/(PREFIX+'_sdk.tar.gz'))
+
+
+
+def stage_dev_kit(sdk_dir):
+    """Attach host-side docs, XPK tools, profiles and a sample project to the packaged SDK."""
+    import shutil
+    docs = sdk_dir / 'docs'
+    (docs / 'usage').mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(ROOT / 'docs/usage/index.md', docs / 'usage/index.md')
+    userland = ROOT / 'docs/usage/userland'
+    if userland.is_dir():
+        shutil.copytree(userland, docs / 'usage/userland', dirs_exist_ok=True)
+    (docs / 'releases').mkdir(parents=True, exist_ok=True)
+    for name in ('playbook.md', 'SDK_DEVELOPING.md'):
+        src = ROOT / 'docs/releases' / name
+        if src.is_file():
+            shutil.copyfile(src, docs / 'releases' / name)
+    shutil.copyfile(ROOT / 'docs/releases/SDK_DEVELOPING.md', sdk_dir / 'DEVELOPING.md')
+    tools = sdk_dir / 'tools'
+    tools.mkdir(exist_ok=True)
+    for name in ('xos_app.py', 'xypm_format.py', 'xypm.py', 'xypm_image.py'):
+        shutil.copyfile(ROOT / 'scripts' / name, tools / name)
+    shutil.copyfile(ROOT / 'scripts/sdk_adopt_profile.py', tools / 'adopt_sdk.py')
+    # xypm_image compiles its private FatFs host backend on first use.  Keep the
+    # relative source layout it expects inside the SDK so offline install works
+    # without the XOS source checkout.
+    host_sources = [
+        ROOT / 'scripts/xypm_disk_host.cpp',
+        ROOT / 'src/user/services/fatfs_unicode.cpp',
+        ROOT / 'src/third_party/fatfs/ff.c',
+        *sorted((ROOT / 'src/third_party/fatfs').glob('*.h')),
+    ]
+    for source in host_sources:
+        destination = sdk_dir / source.relative_to(ROOT)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, destination)
+    cfg = sdk_dir / 'config' / 'package'
+    cfg.mkdir(parents=True, exist_ok=True)
+    for src in sorted((ROOT / 'config/package').glob('*.json')):
+        shutil.copyfile(src, cfg / src.name)
+    sample = sdk_dir / 'examples' / 'xpk_hello'
+    (sample / 'src').mkdir(parents=True, exist_ok=True)
+    (sample / 'src' / 'main.cpp').write_text(
+        '// SPDX-License-Identifier: Apache-2.0\n'
+        '#include <cstdio>\n#include <string>\n'
+        'int main() { std::puts("Hello from XOS package: xos.hello"); return 0; }\n')
+    shutil.copyfile(sdk_dir / 'LICENSE', sample / 'LICENSE')
+    app = {
+        'format_version': 1, 'id': 'xos.hello', 'upstream_version': '0.1.0', 'revision': 0,
+        'target_profile': 'xos-x86_64-sdk-local', 'language': 'cpp',
+        'sources': ['src/main.cpp'],
+        'required_features': ['stdio', 'cxx_runtime'],
+        'runtime_dependencies': [],
+        'files': [
+            {'source': 'build/hello.elf', 'path': 'usr/bin/hello', 'role': 'executable'},
+            {'source': 'LICENSE', 'path': 'usr/share/licenses/xos.hello/LICENSE', 'role': 'data'},
+            {'source': 'src/main.cpp', 'path': 'usr/share/xos.hello/source/main.cpp', 'role': 'data'},
+        ],
+        'licenses': ['usr/share/licenses/xos.hello/LICENSE'],
+    }
+    import hashlib as _hashlib
+    (sample / 'xos_app.json').write_text(
+        json.dumps(app, indent=2, ensure_ascii=False, sort_keys=True) + '\n')
+    (sample / '.gitignore').write_text('build/\ndist/\n')
 
 
 COMPILE_SCRIPT = '''# SPDX-License-Identifier: Apache-2.0

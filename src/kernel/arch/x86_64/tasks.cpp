@@ -5,12 +5,18 @@
 #include <xos/thread_abi.hpp>
 #include "../../core/thread_lifecycle.hpp"
 #include "../../core/stream_lease.hpp"
+#include "../../core/vm_pin.hpp"
+#include "../../core/vm_continuation.hpp"
 #include <xos/block.hpp>
 #include <xos/syscall.hpp>
 #include <xos/memory.hpp>
 #include <xos/format.hpp>
 #include <xos/platform.hpp>
 #include "frame.hpp"
+#include "build_info.hpp"
+#if XOS_VM1_PROBE
+#include "../../core/anonymous_reservations.hpp"
+#endif
 #include "interrupt_entry.hpp"
 #include <xos/clock.hpp>
 #include "arch/x86_64/interrupt_wait.hpp"
@@ -18,6 +24,9 @@ static_assert(xos::clock::resolution_ns == xos::thread_tick_ns);
 #include "user_blobs.hpp"
 #include "user_images.hpp"
 #include <xos/device_abi.hpp>
+#include <xos/ipc_v1_abi.hpp>
+// Shared audio protocol bounds the PC speaker lease defined below.
+#include <xos/audio_abi.hpp>
 
 namespace xos {
 extern const u8* boot_payload;
@@ -34,12 +43,15 @@ constexpr u64 user_data_address = 0x40010000ull;
 constexpr u64 user_stack_top = 0x40020000ull;
 constexpr u64 user_stack_bottom = user_stack_top - 4 * page_size;
 constexpr u64 user_limit = process_user_end;
-// E03's receiver, the supervisor/files bootstrap pair, and eight task pairs.
-constexpr u32 max_endpoints = 21;
+// E03 receiver, supervisor/files bootstrap channels, and bounded generic IPC.
+constexpr u32 max_endpoints = 37;
 constexpr u32 file_session_count = 8;
 constexpr u32 default_message_bytes = 64;
 constexpr u32 file_message_bytes = 4096;
 constexpr u32 kernel_stack_bytes = 4096;
+// Must outlast the longest legal note (audio::max_note_ms) plus worker
+// startup and scheduling delay, otherwise a max-length note expires first.
+constexpr u64 pc_speaker_lease_ns = u64{audio::max_note_ms} * 1000000ull + 500000000ull;
 constexpr u32 user_code_selector = 0x2b;
 constexpr u32 user_data_selector = 0x33;
 
@@ -61,9 +73,12 @@ struct process_record {
     u64 cr3;
     u64 pid;
     u64 ticks;
-    // Reserved for a future kernel-authenticated device grant. No current
-    // syscall assigns these fields; zero means all port I/O is denied.
+    // Fixed, kernel-authenticated device grants loaded into the TSS bitmap.
     u32 io_window_first, io_window_length;
+    bool pc_speaker_io;
+    bool pc_speaker_controller;
+    bool pc_speaker_lease_started;
+    u64 pc_speaker_deadline_ns;
     task_state state;
     char name[12];
     u32 send_handle;
@@ -73,6 +88,10 @@ struct process_record {
     bool supervisor;
     bool block_access;
     u32 spawn_depth;
+    // SL1 identity-carried create authority (shell_launch contract §3).
+    // Separate from spawn_depth: set only via sys_process_authority on a
+    // building child; copied by fork and exec; never increased by the child.
+    bool can_create;
     i32 exit_code;
     u64 parent;
     u64 entry;
@@ -99,6 +118,10 @@ struct process_record {
     // Private, never-runnable image constructor for exec. It owns pages and a
     // temporary kernel stack, but no completion, file session, or pipe routes.
     bool replacement_pending;
+    vm_continuation continuation;
+    process_outcome deferred_outcome;
+    i64 deferred_code;
+    u64 deferred_vector, deferred_address, deferred_instruction;
 };
 
 struct completion_record { bool used; bool ready; u64 parent; process_status status; };
@@ -114,9 +137,19 @@ struct endpoint_record {
     u32 capacity;
     bool session_response;
     bool generic_channel;
+    bool generic;
+    u32 channel_id;
     bool pending;
     u32 length;
     u8 data[file_message_bytes];
+};
+struct ipc_name_record { bool used; u64 owner_pid; char name[32]; };
+struct ipc_connection_record {
+    bool used;
+    u64 service_pid;
+    u64 client_pid;
+    u32 channel_id;
+    ipc_channel service_channel;
 };
 
 struct thread_record : thread_lifetime {
@@ -128,11 +161,66 @@ struct thread_record : thread_lifetime {
     u64 argument;
     u64 initial_stack;
     u32 wait_channels[channel_wait_many_max], wait_channel_count;
+    vm_pin user_pin;
     alignas(16) u8 fpu_state[512];
 };
 process_record tasks[8];
+#if XOS_VM1_PROBE
+anonymous_vm::reservations vm1_probe_regions[8];
+struct vm2_failure_injection { i64 page=-1, table=-1; bool trace=false; };
+vm2_failure_injection vm2_failures[8];
+struct vm2_probe_state {
+    u64 pages[4096];
+    u32 target, count, fail_after;
+    bool prepare_reported, publish_reported, rollback_reported;
+    i64 error;
+    const u64* process_ticks;
+    u64 initial_ticks;
+};
+vm2_probe_state vm2_probe_states[8];
+vm_step vm2_probe_step(void* opaque, vm_phase phase, u32 budget, i64& result) {
+    auto& state = *static_cast<vm2_probe_state*>(opaque);
+    if (*state.process_ticks != state.initial_ticks) { state.error=process_error_state; }
+    if (phase == vm_phase::preparing) {
+        if (!state.prepare_reported) { format::text("[vm2-probe] preparing\r\n"); state.prepare_reported=true; }
+        while (budget-- && state.count < state.target) {
+            if (state.fail_after && state.count == state.fail_after) {
+                state.error=process_error_resources; result=state.error; return vm_step::failed;
+            }
+            u64 physical=0;
+            if (allocate_user_page(&physical) != memory_result::none) { state.error=process_error_resources; result=state.error; return vm_step::failed; }
+            state.pages[state.count++]=physical;
+        }
+        return state.count==state.target ? vm_step::prepared : vm_step::again;
+    }
+    if (phase == vm_phase::publishing || phase == vm_phase::rolling_back) {
+        if (phase == vm_phase::publishing && !state.publish_reported) {
+            format::text("[vm2-probe] publishing\r\n"); state.publish_reported=true;
+        }
+        if (phase == vm_phase::rolling_back && !state.rollback_reported) {
+            format::text("[vm2-probe] rolling_back\r\n"); state.rollback_reported=true;
+        }
+        while (budget-- && state.count) {
+            if (release_user_page(state.pages[--state.count]) != memory_result::none) { halt(); }
+        }
+        if (!state.count) { result=state.error; return vm_step::finished; }
+        return vm_step::again;
+    }
+    halt();
+}
+
+#endif
 thread_record threads[thread_max_total];
 thread_record* current_thread;
+u64 next_vm_continuation_generation = 1;
+[[maybe_unused]] bool begin_vm_continuation(process_record& owner, thread_record& thread,
+                                             void* context, vm_step_function step) {
+    if (thread.process != &owner || thread.state != thread_state::running || owner.closing ||
+        !next_vm_continuation_generation ||
+        !owner.continuation.begin(thread.tid, next_vm_continuation_generation, context, step)) return false;
+    ++next_vm_continuation_generation;
+    return true;
+}
 u64 next_tid = 1;
 u64 next_wait_order = 1;
 thread_record& main_thread(process_record* process) {
@@ -145,6 +233,8 @@ process_record* current;
 u64 next_pid = 1;
 endpoint_record endpoints[max_endpoints];
 u64 next_endpoint_handle = 1;
+ipc_name_record ipc_names[8];
+ipc_connection_record ipc_connections[16];
 u64 files_pid;
 pipe_object pipes[process_max_pipes];
 u64 next_pipe_token = process_pipe_token_min;
@@ -156,6 +246,8 @@ process_guard_info admission_guard{};
 stream_lease input_lease{};
 u64 pio_com1_owner, pio_com1_controller;
 bool pio_com1_quarantined;
+u64 pio_speaker_owner, pio_speaker_controller;
+u64 pio_speaker_delegated_controller;
 u64 irq_owner, irq_token, irq_next_token = 1, irq_sequence;
 bool irq_pending, irq_quarantined;
 void ready_with(thread_record& thread, i64 result);
@@ -166,6 +258,9 @@ void wake_irq_waiters(i64 result) {
             thread.wait_target == irq_token) { ready_with(thread, result); }
     }
 }
+process_record* task_by_pid(u64 pid);
+void finish_task(process_record* task, process_outcome outcome, i64 code,
+                 u64 vector = 0, u64 address = 0, u64 instruction = 0);
 
 void release_irq() {
     if (irq_token == 0) { return; }
@@ -186,8 +281,46 @@ void quarantine_com1(process_record* task) {
     pio_com1_quarantined = true;
 }
 
+void release_pc_speaker(process_record* task) {
+    if (task == nullptr || pio_speaker_owner != task->pid) { return; }
+    platform::pc_speaker_stop();
+    task->pc_speaker_io = false;
+    task->pc_speaker_lease_started = false;
+    task->pc_speaker_deadline_ns = 0;
+    pio_speaker_owner = 0;
+    pio_speaker_controller = 0;
+    if (task == current) {
+        if (!set_user_io_permissions(task->io_window_first, task->io_window_length, false)) {
+            format::text("[sched] event=invalid_io_permissions result=halt\r\n");
+            halt();
+        }
+    }
+}
+
+void revoke_pc_speaker_controller(process_record* task) {
+    if (task == nullptr || pio_speaker_delegated_controller != task->pid) { return; }
+    if (pio_speaker_owner != 0 && pio_speaker_controller == task->pid) {
+        process_record* owner = task_by_pid(pio_speaker_owner);
+        release_pc_speaker(owner);
+        if (owner != nullptr && owner != task && owner->state != task_state::dead)
+            finish_task(owner, process_outcome::killed, -9);
+    }
+    task->pc_speaker_controller = false;
+    pio_speaker_delegated_controller = 0;
+}
+
+void expire_pc_speaker_lease() {
+    if (pio_speaker_owner == 0) { return; }
+    process_record* owner = task_by_pid(pio_speaker_owner);
+    if (owner == nullptr || !owner->pc_speaker_lease_started ||
+        clock::monotonic_ns() < owner->pc_speaker_deadline_ns) { return; }
+    release_pc_speaker(owner);
+}
+
 bool display_endpoint(u64 handle);
 void display_wake(u64 handle,i64 result);
+void wake_ipc_waiters(u32 handle, i64 result,
+                      thread_wait_kind kind = thread_wait_kind::none);
 void display_release(u64 pid);
 extern u64 display_service_pid;
 extern u32 display_request_handle,display_response_handle;
@@ -342,8 +475,10 @@ void copy_to_user(u64 destination, const void* source, u64 length) {
 
 bool user_range_ok(u64 address, u64 length, bool write) {
     if (length == 0) { return true; }
-    if (address < user_base || address >= user_limit) { return false; }
-    if (length > user_limit - address) { return false; }
+    const bool low = address >= user_base && address < user_limit && length <= user_limit-address;
+    const bool arena = address >= 0x100000000000ull && address < 0x200000000000ull &&
+                       length <= 0x200000000000ull-address;
+    if (!low && !arena) { return false; }
     const u64 first = address & ~(page_size - 1);
     const u64 last = (address + length - 1) & ~(page_size - 1);
     for (u64 page = first; page <= last; page += page_size) {
@@ -517,6 +652,10 @@ process_record* prepare_task(const char* name) {
     if (task == nullptr || next_pid == 0 || next_pid > 0x7fffffffffffffff ||
         next_tid == 0 || next_tid > 0x7fffffffffffffff) { return nullptr; }
     *task = process_record{};
+#if XOS_VM1_PROBE
+    vm1_probe_regions[static_cast<u32>(task - tasks)].clear();
+    vm2_failures[static_cast<u32>(task - tasks)] = vm2_failure_injection{};
+#endif
     task->pid = next_pid++;
     copy_name(task->name, name);
     task->cr3 = create_address_space();
@@ -553,10 +692,10 @@ bool add_user_page(process_record* task, u64 address, const u8* bytes, u32 size,
         return false;
     }
     u64 physical = 0;
-    if (allocate_page(&physical) != memory_result::none) { return false; }
+    if (allocate_user_page(&physical) != memory_result::none) { return false; }
     if (size != 0) { copy_bytes(reinterpret_cast<u8*>(physical) + offset, bytes, size); }
     if (!map_user(task->cr3, address, physical, permissions)) {
-        (void)release_page(physical); return false;
+        (void)release_user_page(physical); return false;
     }
     ++task->user_pages;
     return true;
@@ -627,6 +766,7 @@ process_record* create_supervisor() {
     task->initial_stack = process_stack_top - 16;
     main_thread(task).stack_top = process_stack_top;
     task->supervisor = true;
+    task->can_create = true;
     task->state = task_state::fresh;
     format::text("[task] event=created pid="); format::decimal(task->pid);
     format::text(" name=supervisor bootstrap=trusted_segments\r\n");
@@ -696,11 +836,97 @@ endpoint_record* endpoint_for(u64 handle) {
     return nullptr;
 }
 
+void wake_ipc_waiters(u32 handle, i64 result, thread_wait_kind kind) {
+    for (auto& thread : threads) {
+        if (thread.state == thread_state::blocked && thread.wait_target == handle &&
+            (thread.wait_kind == thread_wait_kind::ipc_receive ||
+             thread.wait_kind == thread_wait_kind::ipc_send) &&
+            (kind == thread_wait_kind::none || thread.wait_kind == kind)) {
+            ready_with(thread, result);
+        }
+    }
+}
+
+void revoke_ipc_channel(u32 channel_id, i64 wake_result) {
+    for (auto& connection : ipc_connections) {
+        if (connection.used && connection.channel_id == channel_id) {
+            connection = ipc_connection_record{};
+        }
+    }
+    for (auto& endpoint : endpoints) {
+        if (!endpoint.used || !endpoint.generic || endpoint.channel_id != channel_id) { continue; }
+        wake_ipc_waiters(endpoint.handle, wake_result);
+        endpoint = endpoint_record{};
+    }
+}
+
 process_record* task_by_pid(u64 pid) {
     for (auto& task : tasks) {
         if (task.state != task_state::free && task.pid == pid) { return &task; }
     }
     return nullptr;
+}
+
+bool copy_ipc_name(u64 address, char (&name)[32]) {
+    if (address == 0) return false;
+    for (u32 i = 0; i < sizeof(name); ++i) {
+        if (address > ~u64{0} - i || !user_range_ok(address + i, 1, false)) return false;
+        copy_from_user(&name[i], address + i, 1);
+        const char value = name[i];
+        if (value == '\0') return i != 0;
+        if (!((value >= 'a' && value <= 'z') || (value >= '0' && value <= '9') ||
+              value == '-' || value == '_' || value == '.')) return false;
+    }
+    return false;
+}
+
+ipc_name_record* find_ipc_name(const char* name) {
+    for (auto& entry : ipc_names) {
+        if (!entry.used) continue;
+        u32 i = 0;
+        while (name[i] != '\0' && entry.name[i] == name[i]) ++i;
+        if (name[i] == '\0' && entry.name[i] == '\0') return &entry;
+    }
+    return nullptr;
+}
+
+bool ipc_service_published(u64 pid) {
+    for (const auto& entry : ipc_names) if (entry.used && entry.owner_pid == pid) return true;
+    return false;
+}
+
+bool create_generic_channel(u64 sender_pid, u64 receiver_pid, u64 owner_pid,
+                            ipc_channel& sender_channel, ipc_channel& receiver_channel) {
+    if (sender_pid == 0 || receiver_pid == 0 || sender_pid == receiver_pid ||
+        next_endpoint_handle > 0xfffffffeull) return false;
+    u32 free_count = 0;
+    for (const auto& endpoint : endpoints) if (!endpoint.used) ++free_count;
+    if (free_count < 2) return false;
+    const u32 request = endpoint_attach(receiver_pid, sender_pid, owner_pid, file_message_bytes);
+    const u32 response = endpoint_attach(sender_pid, receiver_pid, owner_pid, file_message_bytes);
+    if (request == 0 || response == 0) {
+        if (auto* endpoint = endpoint_for(request)) *endpoint = endpoint_record{};
+        if (auto* endpoint = endpoint_for(response)) *endpoint = endpoint_record{};
+        return false;
+    }
+    auto* request_endpoint = endpoint_for(request);
+    auto* response_endpoint = endpoint_for(response);
+    request_endpoint->generic = true;
+    request_endpoint->channel_id = request;
+    response_endpoint->generic = true;
+    response_endpoint->channel_id = request;
+    sender_channel = {request, response};
+    receiver_channel = {response, request};
+    return true;
+}
+
+void wake_ipc_acceptors(u64 service_pid, i64 result) {
+    for (auto& thread : threads) {
+        if (thread.state == thread_state::blocked && thread.process != nullptr &&
+            thread.process->pid == service_pid && thread.wait_kind == thread_wait_kind::ipc_accept) {
+            ready_with(thread, result);
+        }
+    }
 }
 
 bool files_service_live() {
@@ -714,7 +940,7 @@ i64 ipc_send(u64 handle, u64 address, u64 length) {
     if (endpoint == nullptr || current == nullptr || endpoint->sender_pid != current->pid ||
         (current->send_handle != handle &&
          !(current->block_access && endpoint->session_response) && !display_endpoint(handle) &&
-         !endpoint->generic_channel)) {
+         !endpoint->generic_channel && !endpoint->generic)) {
         return sys_error_invalid_handle;
     }
     if (endpoint->receiver_pid == current->pid || length == 0 || length > endpoint->capacity) {
@@ -722,7 +948,10 @@ i64 ipc_send(u64 handle, u64 address, u64 length) {
     }
     process_record* receiver = task_by_pid(endpoint->receiver_pid);
     if (receiver == nullptr || receiver->state == task_state::dead ||
-        receiver->state == task_state::building) { return sys_error_invalid_handle; }
+        receiver->state == task_state::building ||
+        ((endpoint->generic_channel || endpoint->generic) && receiver->closing)) {
+        return (endpoint->generic_channel || endpoint->generic) ? pipe_error_broken : sys_error_invalid_handle;
+    }
     if (endpoint->pending || (handle==display_request_handle && display_delivered)) { return sys_error_full; }
     if (handle==display_response_handle && !display_delivered) {return sys_error_invalid_argument;}
     if (!user_range_ok(address, length, false)) { return sys_error_invalid_argument; }
@@ -730,6 +959,7 @@ i64 ipc_send(u64 handle, u64 address, u64 length) {
     endpoint->length = static_cast<u32>(length);
     endpoint->pending = true;
     if (endpoint->generic_channel) { wake_channel_waiters(endpoint->handle, true, false, 0); }
+    if (endpoint->generic) { wake_ipc_waiters(endpoint->handle, 0, thread_wait_kind::ipc_receive); }
     if(handle==display_response_handle){display_delivered=false;display_presented=false;}
     if(display_endpoint(handle)){display_wake(handle,0);}
     return 0;
@@ -739,16 +969,23 @@ i64 ipc_recv(u64 handle, u64 address, u64 length) {
     endpoint_record* endpoint = endpoint_for(handle);
     if (endpoint == nullptr || current == nullptr || endpoint->receiver_pid != current->pid ||
         (current->recv_handle != handle && !current->block_access && !display_endpoint(handle) &&
-         !endpoint->generic_channel)) {
+         !endpoint->generic_channel && !endpoint->generic)) {
         return sys_error_invalid_handle;
     }
     if (!user_range_ok(address, length, true)) { return sys_error_invalid_argument; }
+    if (endpoint->generic && !endpoint->pending) {
+        const process_record* sender = task_by_pid(endpoint->sender_pid);
+        if (sender == nullptr || sender->state == task_state::dead || sender->closing) {
+            return pipe_error_broken;
+        }
+    }
     if (!endpoint->pending) { return sys_error_empty; }
     if (length < endpoint->length) { return sys_error_invalid_argument; }
     copy_to_user(address, endpoint->data, endpoint->length);
     const u32 length_received = endpoint->length;
     endpoint->pending = false;
     if (endpoint->generic_channel) { wake_channel_waiters(endpoint->handle, false, true, 0); }
+    if (endpoint->generic) { wake_ipc_waiters(endpoint->handle, 0, thread_wait_kind::ipc_send); }
     if(handle==display_request_handle){display_delivered=true;display_presented=false;}
     else {endpoint->length = 0;}
     return static_cast<i64>(length_received);
@@ -857,15 +1094,29 @@ void mark_reap(process_record* task) {
 
 // This always runs on a different process's kernel stack. Shared pages have one owner.
 void destroy_task(process_record* task) {
-    if (task == nullptr || task->state == task_state::free || task == current) { return; }
+    if (task == nullptr || task->state == task_state::free || task == current || task->continuation.active()) { return; }
+    release_pc_speaker(task);
+    revoke_pc_speaker_controller(task);
     quarantine_com1(task);
     release_channels(task->pid);
     (void)input_lease.remove(task->pid);
     reap_pending[task_index(task)] = false;
     const u64 pid = task->pid;
+    for (auto& entry : ipc_names) {
+        if (entry.used && entry.owner_pid == pid) entry = ipc_name_record{};
+    }
+    wake_ipc_acceptors(pid, pipe_error_broken);
+    for (auto& connection : ipc_connections) {
+        if (!connection.used || (connection.service_pid != pid && connection.client_pid != pid)) continue;
+        const u32 channel_id = connection.channel_id;
+        revoke_ipc_channel(channel_id, pipe_error_broken);
+        connection = ipc_connection_record{};
+    }
     for (auto& endpoint : endpoints) {
-        if (endpoint.used && (endpoint.owner_pid == pid || endpoint.receiver_pid == pid ||
-                              endpoint.sender_pid == pid)) { endpoint = endpoint_record{}; }
+        if (!endpoint.used || (endpoint.owner_pid != pid && endpoint.receiver_pid != pid &&
+                               endpoint.sender_pid != pid)) { continue; }
+        if (endpoint.generic) { revoke_ipc_channel(endpoint.channel_id, pipe_error_broken); }
+        else { endpoint = endpoint_record{}; }
     }
     task_pipe_release_all(task);
     u64 freed = 0;
@@ -876,6 +1127,10 @@ void destroy_task(process_record* task) {
         thread = thread_record{};
     }
     if (task->cr3 != 0) { freed += destroy_address_space(task->cr3); }
+#if XOS_VM1_PROBE
+    vm1_probe_regions[static_cast<u32>(task - tasks)].clear();
+    vm2_failures[static_cast<u32>(task - tasks)] = vm2_failure_injection{};
+#endif
     *task = process_record{};
     if (task_total > 0) { --task_total; }
     if (process_trace_enabled) {
@@ -898,8 +1153,25 @@ completion_record* completion_for(u64 parent, u64 pid) {
 }
 
 void finish_task(process_record* task, process_outcome outcome, i64 code,
-                  u64 vector = 0, u64 address = 0, u64 instruction = 0) {
+                  u64 vector, u64 address, u64 instruction) {
     if (task->state == task_state::dead) { return; }
+    release_pc_speaker(task);
+    revoke_pc_speaker_controller(task);
+    if (task->continuation.active()) {
+        if (!task->continuation.cancelled) {
+            task->deferred_outcome=outcome; task->deferred_code=code;
+            task->deferred_vector=vector; task->deferred_address=address; task->deferred_instruction=instruction;
+            task->closing=true; task->continuation.cancel();
+            // Preserve the existing process-tree cancellation semantics even
+            // when this task needs multiple batches to release its resources.
+            for (auto& child : tasks) {
+                if (child.state != task_state::free && child.parent == task->pid) {
+                    finish_task(&child, process_outcome::killed, -9);
+                }
+            }
+        }
+        return;
+    }
     quarantine_com1(task);
     release_channels(task->pid);
     (void)input_lease.remove(task->pid);
@@ -909,6 +1181,7 @@ void finish_task(process_record* task, process_outcome outcome, i64 code,
     for (auto& thread : threads) {
         if (thread.process == task && thread.state != thread_state::free) {
             thread.state = thread_state::dead;
+            thread.user_pin.clear();
             thread.wait_kind = thread_wait_kind::none;
         }
     }
@@ -1000,6 +1273,7 @@ void deliver_wait(thread_record* thread, interrupt_frame* frame) {
         *item = completion_record{};
         frame->rax = 0;
     } else { frame->rax = static_cast<u64>(process_error_invalid); }
+    thread->user_pin.clear();
     thread->wait_kind = thread_wait_kind::none;
     thread->wait_target = 0;
 }
@@ -1010,6 +1284,8 @@ thread_record* pick_ready() {
         thread_record& thread = threads[index];
         if (thread.process == nullptr || thread.process->state == task_state::building ||
             thread.process->state == task_state::dead) { continue; }
+        if (thread.process->continuation.active() &&
+            thread.tid != thread.process->continuation.owner_tid) { continue; }
         if (thread.state == thread_state::ready || thread.state == thread_state::fresh) {
             cursor = (index + 1) % thread_max_total;
             return &thread;
@@ -1028,8 +1304,15 @@ void switch_to(thread_record* thread) {
     current = thread->process;
     current->state = task_state::running;
     thread->state = thread_state::running;
-    if (!set_user_io_window(current->io_window_first, current->io_window_length)) {
-        format::text("[sched] event=invalid_io_window result=halt\r\n");
+    if (current->pc_speaker_io && !current->pc_speaker_lease_started) {
+        const u64 now = clock::monotonic_ns();
+        current->pc_speaker_lease_started = true;
+        current->pc_speaker_deadline_ns = now > ~u64{0} - pc_speaker_lease_ns
+            ? ~u64{0} : now + pc_speaker_lease_ns;
+    }
+    if (!set_user_io_permissions(current->io_window_first, current->io_window_length,
+                                 current->pc_speaker_io)) {
+        format::text("[sched] event=invalid_io_permissions result=halt\r\n");
         halt();
     }
     set_kernel_stack(thread->kernel_stack_top);
@@ -1059,27 +1342,64 @@ interrupt_frame* schedule(interrupt_frame* frame) {
         if (frame != nullptr) { current_thread->kernel_rsp = reinterpret_cast<u64>(frame); }
         fpu_save(current_thread->fpu_state);
     }
-    thread_record* next = pick_ready();
-    // Interrupts in ring0 never schedule: the idle loop keeps this saved syscall
-    // frame and only permits IRQs to advance time. No blocked syscall polls userspace.
-    while (next == nullptr) {
-        arch::wait_for_interrupt();
-        expire_waiters();
-        next = pick_ready();
+    for (;;) {
+        thread_record* next = pick_ready();
+        while (next == nullptr) {
+            arch::wait_for_interrupt(); expire_waiters(); next = pick_ready();
+        }
+        interrupt_frame* next_frame = next->state == thread_state::fresh
+            ? make_initial_frame(next) : reinterpret_cast<interrupt_frame*>(next->kernel_rsp);
+        switch_to(next);
+        auto& continuation = next->process->continuation;
+        if (continuation.active()) {
+            i64 result = 0;
+            const auto step_result = continuation.step(continuation.context, continuation.phase,
+                                                        vm_continuation_batch, result);
+            if (step_result == vm_step::prepared && continuation.phase == vm_phase::preparing) {
+                continuation.phase = vm_phase::publishing;
+            } else if (step_result == vm_step::failed && continuation.phase == vm_phase::preparing) {
+                continuation.failure = result;
+                continuation.phase = vm_phase::rolling_back;
+            } else if (step_result == vm_step::finished) {
+                const bool cancelled = continuation.cancelled;
+                if (continuation.phase == vm_phase::rolling_back && !cancelled) result=continuation.failure;
+                continuation.clear();
+                if (cancelled) {
+                    auto* owner = next->process;
+                    finish_task(owner, owner->deferred_outcome, owner->deferred_code,
+                                owner->deferred_vector, owner->deferred_address, owner->deferred_instruction);
+                    continue;
+                }
+                next_frame->rax = static_cast<u64>(result);
+                fpu_restore(next->fpu_state); deliver_wait(next, next_frame); return next_frame;
+            } else if (step_result != vm_step::again) {
+                format::text("[vm] continuation invariant failure\r\n"); halt();
+            }
+            next->state = thread_state::ready;
+            // If no other process can run, allow the unified clock and wakeups
+            // to progress instead of spinning through all remaining batches.
+            bool other = false;
+            for (const auto& peer : threads) {
+                if (peer.process && peer.process != next->process &&
+                    peer.process->state != task_state::dead && peer.process->state != task_state::building &&
+                    (!peer.process->continuation.active() ||
+                     peer.tid == peer.process->continuation.owner_tid) &&
+                    (peer.state == thread_state::ready || peer.state == thread_state::fresh)) { other=true; break; }
+            }
+            if (!other) { arch::wait_for_interrupt(); expire_waiters(); }
+            continue;
+        }
+        fpu_restore(next->fpu_state); deliver_wait(next, next_frame); return next_frame;
     }
-    interrupt_frame* next_frame = next->state == thread_state::fresh
-        ? make_initial_frame(next) : reinterpret_cast<interrupt_frame*>(next->kernel_rsp);
-    switch_to(next);
-    fpu_restore(next->fpu_state);
-    deliver_wait(next, next_frame);
-    return next_frame;
 }
 
 process_record* owned_process(u64 handle) {
     if (current == nullptr) { return nullptr; }
     for (auto& task : tasks) {
         if (task.state != task_state::free && task.pid == handle && task.parent == current->pid) {
-            if (current->supervisor || current->spawn_depth != 0 ||
+            // SL1: a parent holding identity-carried create authority may operate
+            // on its own building children even when legacy spawn_depth is 0.
+            if (current->supervisor || current->spawn_depth != 0 || current->can_create ||
                 (task.state == task_state::building && task.replacement_pending)) { return &task; }
             return nullptr;
         }
@@ -1156,9 +1476,9 @@ i64 set_heap_break(u64 requested) {
         u64 address = old_end;
         for (; address < new_end; address += page_size) {
             u64 physical = 0;
-            if (allocate_page(&physical) != memory_result::none) { break; }
+            if (allocate_user_page(&physical) != memory_result::none) { break; }
             if (map_page_in(current->cr3, address, physical, {true, false, true}) != memory_result::none) {
-                (void)release_page(physical);
+                (void)release_user_page(physical);
                 break;
             }
             ++current->user_pages;
@@ -1167,7 +1487,7 @@ i64 set_heap_break(u64 requested) {
             for (u64 rollback = old_end; rollback < address; rollback += page_size) {
                 u64 physical = 0;
                 if (unmap_page_in(current->cr3, rollback, &physical) == memory_result::none) {
-                    (void)release_page(physical);
+                    (void)release_user_page(physical);
                     if (current->user_pages != 0) { --current->user_pages; }
                 }
             }
@@ -1184,7 +1504,7 @@ i64 set_heap_break(u64 requested) {
         for (u64 address = new_end; address < old_end; address += page_size) {
             u64 physical = 0;
             if (unmap_page_in(current->cr3, address, &physical) != memory_result::none ||
-                release_page(physical) != memory_result::none) { return process_error_state; }
+                release_user_page(physical) != memory_result::none) { return process_error_state; }
             if (current->user_pages != 0) { --current->user_pages; }
         }
     }
@@ -1216,21 +1536,146 @@ thread_record* thread_by_id(u64 tid) {
 // word/result buffer. On this single CPU every caller holds the interrupt gate.
 bool pinned_range(process_record* process, u64 begin, u64 end) {
     for (const auto& thread : threads) {
-        if (thread.process != process || thread.state != thread_state::blocked) { continue; }
-        u64 address = 0, bytes = 0;
-        if (thread.wait_kind == thread_wait_kind::word) { address = thread.wait_target; bytes = 4; }
-        if (thread.wait_kind == thread_wait_kind::process) { address = thread.wait_buffer; bytes = sizeof(process_status); }
-        if (thread.wait_kind == thread_wait_kind::join) { address = thread.wait_buffer; bytes = sizeof(u64); }
-        if (bytes != 0 && address < end && address + bytes > begin) { return true; }
+        if (thread.process == process && thread.state != thread_state::free &&
+            thread.state != thread_state::dead && thread.user_pin.overlaps(begin, end)) return true;
     }
     return false;
 }
+
+#if XOS_VM1_PROBE
+// VM2 page work is staged outside the 4 KiB kernel stack. The owning process
+// is frozen by vm_continuation while these records are live.
+struct vm2_page_transaction {
+    process_record* owner;
+    u64 address, end, scan;
+    u32 operation, protection, pages, cursor, prepared, staged_count;
+    bool allocation_pass, rollback_started, trace, staging_reported, publish_reported;
+    i64 fail_page, fail_table;
+    u64 staged[4096];
+    u64 committed[4096];
+    anonymous_vm::reservations regions;
+};
+vm2_page_transaction vm2_page_transactions[8];
+vm_step vm2_page_step(void* opaque, vm_phase phase, u32 budget, i64& result) {
+    auto& tx=*static_cast<vm2_page_transaction*>(opaque);
+    auto& owner=*tx.owner;
+    const auto requested=static_cast<vm_page_protection>(tx.protection);
+    if (phase==vm_phase::preparing && tx.operation==5) {
+        while (budget-- && tx.scan<tx.end) {
+            const u64 address=tx.scan; bool found=false;
+            if (vm_scan_page_in(owner.cr3,&tx.scan,tx.end,&found)!=memory_result::none) {
+                result=anonymous_vm::invalid; return vm_step::failed;
+            }
+            if (found) {
+                if (tx.staged_count==4096) { result=anonymous_vm::resources; return vm_step::failed; }
+                tx.committed[tx.staged_count++]=address;
+            }
+        }
+        if (tx.scan==tx.end) { tx.cursor=0; return vm_step::prepared; }
+        return vm_step::again;
+    }
+    if (phase==vm_phase::preparing) {
+        // Check all existing pages and pins before allocating, preserving error precedence.
+        while (budget-- && tx.cursor<tx.pages) {
+            const u32 index=tx.cursor;
+            const u64 address=tx.address+u64{index}*page_size;
+            u64 physical=0; vm_page_protection old{};
+            const auto lookup=vm_lookup_page_in(owner.cr3,address,&physical,&old);
+            if (lookup!=memory_result::none && lookup!=memory_result::not_mapped) {
+                result=anonymous_vm::invalid; return vm_step::failed;
+            }
+            const bool exists=lookup==memory_result::none;
+            if (!tx.allocation_pass) {
+                if (tx.operation==2 && exists && old!=requested) {
+                    result=anonymous_vm::invalid; return vm_step::failed;
+                }
+                if (exists && (tx.operation==4 || (tx.operation==3 &&
+                    (static_cast<u32>(old) & ~tx.protection))) &&
+                    pinned_range(&owner,address,address+page_size)) {
+                    result=-5; return vm_step::failed;
+                }
+            } else {
+                tx.staged[index]=0;
+                if (!exists && (tx.operation==2 || (tx.operation==3 && tx.protection!=0))) {
+                    if (owner.user_pages>=process_max_pages || tx.staged_count>=process_max_pages-owner.user_pages ||
+                        (tx.fail_page>=0 && static_cast<i64>(tx.staged_count)==tx.fail_page) ||
+                        allocate_user_page(&physical)!=memory_result::none) {
+                        result=anonymous_vm::resources; return vm_step::failed;
+                    }
+                    if (tx.fail_table>=0) memory_self_test_fail_after(tx.fail_table);
+                    const auto table_result=vm_prepare_page_in(owner.cr3,address);
+                    if (tx.fail_table>=0) { memory_self_test_fail_after(-1); tx.fail_table=-1; }
+                    if (table_result!=memory_result::none) {
+                        (void)release_user_page(physical); vm_prune_empty_page_tables_in(owner.cr3,address);
+                        result=anonymous_vm::resources; return vm_step::failed;
+                    }
+                    tx.staged[index]=physical; ++tx.staged_count;
+                    if (tx.trace && !tx.staging_reported && tx.staged_count==64) {
+                        format::text("[vm2-pages] staging\r\n"); tx.staging_reported=true;
+                    }
+                }
+                tx.prepared=index+1;
+            }
+            ++tx.cursor;
+        }
+        if (tx.cursor==tx.pages) {
+            tx.cursor=0;
+            if (!tx.allocation_pass) { tx.allocation_pass=true; return vm_step::again; }
+            return vm_step::prepared;
+        }
+        return vm_step::again;
+    }
+    if (phase==vm_phase::rolling_back) {
+        if (!tx.rollback_started) { tx.cursor=0; tx.rollback_started=true; }
+        while (budget-- && tx.cursor<tx.prepared) {
+            const u32 index=tx.cursor++;
+            if (tx.staged[index]) {
+                (void)release_user_page(tx.staged[index]);
+                vm_prune_empty_page_tables_in(owner.cr3,tx.address+u64{index}*page_size);
+                tx.staged[index]=0;
+            }
+        }
+        if (tx.cursor==tx.prepared) { result=0; return vm_step::finished; }
+        return vm_step::again;
+    }
+    if (phase==vm_phase::publishing) {
+        if (tx.trace && !tx.publish_reported) {
+            format::text("[vm2-pages] publishing\r\n"); tx.publish_reported=true;
+        }
+        const u32 count=tx.operation==5 ? tx.staged_count : tx.pages;
+        while (budget-- && tx.cursor<count) {
+            const u32 index=tx.cursor++;
+            const u64 address=tx.operation==5 ? tx.committed[index] : tx.address+u64{index}*page_size;
+            u64 physical=0; vm_page_protection old{};
+            const auto lookup=vm_lookup_page_in(owner.cr3,address,&physical,&old);
+            if (tx.operation!=5 && tx.staged[index]) {
+                if (lookup!=memory_result::not_mapped || vm_install_page_in(owner.cr3,address,tx.staged[index],requested)!=memory_result::none) halt();
+                tx.staged[index]=0; ++owner.user_pages;
+            } else if (lookup==memory_result::none) {
+                if (tx.operation==4 || tx.operation==5) {
+                    if (vm_remove_page_in(owner.cr3,address,&physical)!=memory_result::none ||
+                        release_user_page(physical)!=memory_result::none || !owner.user_pages) halt();
+                    --owner.user_pages;
+                } else if (tx.operation==3 && old!=requested) {
+                    if (vm_protect_page_in(owner.cr3,address,requested)!=memory_result::none) halt();
+                }
+            } else if (lookup!=memory_result::not_mapped || tx.operation==5) halt();
+        }
+        if (tx.cursor==count) {
+            if (tx.operation==5) vm1_probe_regions[static_cast<u32>(&owner-tasks)]=tx.regions;
+            result=0; return vm_step::finished;
+        }
+        return vm_step::again;
+    }
+    halt();
+}
+#endif
 
 void release_thread_range(thread_record& thread, u64 begin, u64 end) {
     for (u64 address = begin; address < end; address += page_size) {
         u64 physical = 0;
         if (unmap_page_in(thread.process->cr3, address, &physical) == memory_result::none) {
-            (void)release_page(physical);
+            (void)release_user_page(physical);
             if (thread.process->user_pages != 0) { --thread.process->user_pages; }
         }
     }
@@ -1239,6 +1684,7 @@ void release_thread_range(thread_record& thread, u64 begin, u64 end) {
 void ready_with(thread_record& thread, i64 result) {
     auto* saved = reinterpret_cast<interrupt_frame*>(thread.kernel_rsp);
     saved->rax = static_cast<u64>(result);
+    thread.user_pin.clear();
     thread.wait_kind = thread_wait_kind::none;
     thread.wait_target = 0;
     thread.wait_channel_count = 0;
@@ -1478,6 +1924,7 @@ void* thread_syscall(interrupt_frame* frame) {
         if (target->reaped) {
             copy_to_user(second, &target->result, sizeof(u64)); *target = thread_record{}; result = 0; break;
         }
+        if (!current_thread->user_pin.set(second, sizeof(u64))) { result = thread_error_busy; break; }
         target->joiner = current_thread->tid;
         current_thread->wait_target = first; current_thread->wait_buffer = second;
         current_thread->wait_kind = thread_wait_kind::join;
@@ -1506,6 +1953,7 @@ void* thread_syscall(interrupt_frame* frame) {
         if (value != request.expected) { result = thread_value_changed; break; }
         if (thread_deadline_reached(clock::monotonic_ns(), request.deadline_ns)) { result = thread_error_timeout; break; }
         if (next_wait_order == 0) { result = process_error_resources; break; }
+        if (!current_thread->user_pin.set(request.address, sizeof(u32))) { result = thread_error_busy; break; }
         current_thread->wait_order = next_wait_order++;
         current_thread->wait_target = request.address;
         current_thread->deadline_ns = request.deadline_ns;
@@ -1562,7 +2010,7 @@ i64 prepare_fork(interrupt_frame* frame) {
             return thread_error_unsupported;
         }
     }
-    if (current->spawn_depth == 0) { return process_error_denied; }
+    if (current->spawn_depth == 0 && !current->can_create) { return process_error_denied; }
     if (current->closing || current_thread->leaving) { return process_error_state; }
     if (current->fork_depth >= process_fork_depth_max || !files_service_live()) {
         return process_error_resources;
@@ -1578,6 +2026,7 @@ i64 prepare_fork(interrupt_frame* frame) {
     if (child == nullptr) { return process_error_resources; }
     child->parent = current->pid;
     child->spawn_depth = current->spawn_depth;
+    child->can_create = current->can_create;
     child->fork_source = current->pid;
     child->fork_depth = current->fork_depth + 1;
     child->fork_pending = true;
@@ -1654,6 +2103,47 @@ void* process_syscall(interrupt_frame* frame) {
     i64 result = process_error_invalid;
     const u64 first = frame->rdi, second = frame->rsi, third = frame->rdx;
     switch (frame->rax) {
+    case sys_ipc_v1: {
+        if (third != 0) {
+            result = static_cast<i64>(ipc_v1_error::invalid_argument);
+            break;
+        }
+        if (first != static_cast<u64>(ipc_v1_action::query_features)) {
+            result = static_cast<i64>(ipc_v1_error::unsupported);
+            break;
+        }
+        if (!user_range_ok(second, sizeof(ipc_v1_feature_query), false) ||
+            !user_range_ok(second, sizeof(ipc_v1_feature_query), true)) {
+            result = static_cast<i64>(ipc_v1_error::address);
+            break;
+        }
+        ipc_v1_feature_query query{};
+        copy_from_user(&query, second, sizeof(query));
+        const bool outputs_zero = query.known_features == 0 && query.supported_features == 0 &&
+            query.max_message_bytes == 0 && query.max_handles_per_process == 0 &&
+            query.max_endpoints_system == 0 && query.max_pending_calls == 0 &&
+            query.max_queue_per_endpoint == 0 && query.max_reply_tokens_per_process == 0;
+        if (query.header.version != ipc_v1_version) {
+            result = static_cast<i64>(ipc_v1_error::unsupported);
+            break;
+        }
+        if (query.header.size != sizeof(query) || query.header.reserved != 0 ||
+            !outputs_zero || query.reserved[0] != 0 || query.reserved[1] != 0) {
+            result = static_cast<i64>(ipc_v1_error::invalid_argument);
+            break;
+        }
+        query.known_features = ipc_v1_feature_known_mask;
+        query.supported_features = 0;
+        query.max_message_bytes = ipc_v1_max_message_bytes;
+        query.max_handles_per_process = ipc_v1_max_handles_per_process;
+        query.max_endpoints_system = ipc_v1_max_endpoints_system;
+        query.max_pending_calls = ipc_v1_max_pending_calls;
+        query.max_queue_per_endpoint = ipc_v1_max_queue_per_endpoint;
+        query.max_reply_tokens_per_process = ipc_v1_max_reply_tokens_per_process;
+        copy_to_user(second, &query, sizeof(query));
+        result = 0;
+        break;
+    }
     case sys_irq_event: {
         const auto action = static_cast<irq_event_action>(first);
         if (action == irq_event_action::bind) {
@@ -1695,6 +2185,75 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_pio_grant: {
+        if (third == pio_resource_pc_speaker) {
+            const auto speaker_action = static_cast<pio_grant_action>(first);
+            if (speaker_action == pio_grant_action::delegate) {
+                if (!current->supervisor) { result = process_error_denied; break; }
+                process_record* target = owned_process(second);
+                if (target == nullptr || target->state != task_state::building ||
+                    target->replacement_pending || target->fork_pending || target->pc_speaker_controller) {
+                    result = process_error_denied; break;
+                }
+                if (pio_speaker_delegated_controller != 0 || pio_speaker_owner != 0) {
+                    result = process_error_state; break;
+                }
+                target->pc_speaker_controller = true;
+                pio_speaker_delegated_controller = target->pid;
+                result = 0;
+                break;
+            }
+            if (speaker_action == pio_grant_action::release) {
+                if (second != 0 || current->pid != pio_speaker_owner) {
+                    result = process_error_denied; break;
+                }
+                release_pc_speaker(current); result = 0;
+                break;
+            }
+            if (speaker_action == pio_grant_action::controller) {
+                if (second != 0) { break; }
+                result = current->pid == pio_speaker_owner && pio_speaker_controller != 0
+                    ? static_cast<i64>(pio_speaker_controller) : process_error_denied;
+                break;
+            }
+            if (speaker_action == pio_grant_action::query) {
+                if (second != 0) { break; }
+                if (!current->supervisor && current->pid != pio_speaker_delegated_controller) {
+                    result = process_error_denied; break;
+                }
+                result = pio_speaker_owner != 0 ? 1 : 0;
+            } else if (speaker_action == pio_grant_action::grant) {
+                if (!current->supervisor && current->pid != pio_speaker_delegated_controller) {
+                    result = process_error_denied; break;
+                }
+                process_record* target = owned_process(second);
+                if (target == nullptr || target->state != task_state::building ||
+                    target->replacement_pending || target->fork_pending || target->pc_speaker_io ||
+                    target->pc_speaker_controller) {
+                    result = process_error_denied; break;
+                }
+                if (pio_speaker_owner != 0) { result = process_error_state; break; }
+                target->pc_speaker_io = true;
+                target->pc_speaker_lease_started = false;
+                target->pc_speaker_deadline_ns = 0;
+                pio_speaker_owner = target->pid;
+                pio_speaker_controller = current->pid;
+                result = 0;
+            } else if (speaker_action == pio_grant_action::revoke) {
+                process_record* target = task_by_pid(second);
+                if (target != nullptr && target->pid == pio_speaker_delegated_controller &&
+                    current->supervisor && target->parent == current->pid) {
+                    revoke_pc_speaker_controller(target);
+                    result = 0; break;
+                }
+                if ((!current->supervisor && current->pid != pio_speaker_delegated_controller) ||
+                    target == nullptr || target->parent != current->pid ||
+                    target->pid != pio_speaker_owner || pio_speaker_controller != current->pid) {
+                    result = process_error_denied; break;
+                }
+                release_pc_speaker(target); result = 0;
+            }
+            break;
+        }
         if (third != pio_resource_com1) { break; }
         const auto action = static_cast<pio_grant_action>(first);
         if (action == pio_grant_action::controller) {
@@ -1973,6 +2532,9 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_process_exec_prepare: {
+#if XOS_VM1_PROBE
+        if (vm1_probe_regions[static_cast<u32>(current - tasks)].count()) { result = process_error_state; break; }
+#endif
         if (admission_guard.owner_pid != 0) { result = process_error_busy; break; }
         if (first != 0 || third > 11 ||
             (third != 0 && !user_range_ok(second, third, false))) { break; }
@@ -1991,6 +2553,7 @@ void* process_syscall(interrupt_frame* frame) {
         process_record* stage = prepare_task(name);
         if (stage == nullptr) { result = process_error_resources; break; }
         stage->parent = current->pid;
+        stage->can_create = current->can_create;
         stage->replacement_pending = true;
         stage->stdio_mask = 0;
         for (auto& route : stage->stdio) { route = stdio_route{}; }
@@ -2061,6 +2624,8 @@ void* process_syscall(interrupt_frame* frame) {
             result = process_error_state; break;
         }
         if (next_endpoint_handle > 0xfffffffeull) { result = process_error_resources; break; }
+        release_pc_speaker(current);
+        revoke_pc_speaker_controller(current);
         quarantine_com1(current);
         release_channels(current->pid, extended.channels, preserve_channels ? extended.count : 0);
         display_release(current->pid);
@@ -2089,7 +2654,7 @@ void* process_syscall(interrupt_frame* frame) {
         current->recv_handle = current->session_response_handle = response->handle;
         current->cr3 = stage->cr3;
         current->io_window_first = current->io_window_length = 0;
-        (void)set_user_io_window(0, 0);
+        (void)set_user_io_permissions(0, 0, false);
         current->user_pages = stage->user_pages;
         current->entry = entry.entry;
         current->initial_stack = entry.stack;
@@ -2143,6 +2708,9 @@ void* process_syscall(interrupt_frame* frame) {
         return frame;
     }
     case sys_process_fork_prepare:
+#if XOS_VM1_PROBE
+        if (vm1_probe_regions[static_cast<u32>(current - tasks)].count()) { result = process_error_state; break; }
+#endif
         if (admission_guard.owner_pid != 0) { result = process_error_busy; break; }
         if (first == 0 && second == 0 && third == 0) { result = prepare_fork(frame); }
         break;
@@ -2269,7 +2837,9 @@ void* process_syscall(interrupt_frame* frame) {
             (current->pid != admission_guard.owner_pid || admission_guard.worker_pid != 0)) {
             result = process_error_busy; break;
         }
-        if (!current->supervisor && current->spawn_depth == 0) { result = process_error_denied; break; }
+        if (!current->supervisor && current->spawn_depth == 0 && !current->can_create) {
+            result = process_error_denied; break;
+        }
         if (first > 7 || (first & ~u64{current->stdio_mask}) != 0 || third > 11 ||
             (third != 0 && !user_range_ok(second, third, false))) { break; }
         if (!files_service_live()) { result = process_error_resources; break; }
@@ -2317,6 +2887,7 @@ void* process_syscall(interrupt_frame* frame) {
             result = process_error_state; break;
         }
         task->spawn_depth = second != 0 ? 1 : 0;
+        task->can_create = second != 0;
         result = 0;
         break;
     }
@@ -2334,6 +2905,53 @@ void* process_syscall(interrupt_frame* frame) {
             result = process_error_state; break;
         }
         task->spawn_depth = static_cast<u32>(second);
+        task->can_create = second != 0;
+        result = 0;
+        break;
+    }
+    case sys_process_authority: {
+        // SL1: identity-carried create authority on a building child (or query).
+        // mode 0 clear, 1 set, 2 copy from caller, 3 query (result = 0/1).
+        if (admission_guard.owner_pid != 0) { result = process_error_denied; break; }
+        const auto mode = static_cast<process_authority_mode>(second);
+        if (second > static_cast<u64>(process_authority_mode::query)) {
+            result = process_error_invalid; break;
+        }
+        process_record* task = nullptr;
+        if (first == current->pid) {
+            task = current;  // self-query
+        } else {
+            task = owned_process(first);
+        }
+        if (task == nullptr) { result = process_error_denied; break; }
+        const bool is_parent = task->parent == current->pid;
+        if (mode == process_authority_mode::query) {
+            // Self, parent, or supervisor may query.
+            if (task != current && !is_parent && !current->supervisor) {
+                result = process_error_denied; break;
+            }
+            result = task->can_create ? 1 : 0;
+            break;
+        }
+        if (task->state != task_state::building || task->replacement_pending) {
+            result = process_error_state; break;
+        }
+        if (!current->supervisor && !is_parent) {
+            result = process_error_denied; break;
+        }
+        if (mode == process_authority_mode::clear) {
+            // Full reduction: drop new-track authority and legacy depth so the
+            // child cannot create through either track (shell_launch §3).
+            task->can_create = false;
+            task->spawn_depth = 0;
+            result = 0;
+            break;
+        }
+        // set / copy_from_caller: caller must already hold create authority.
+        if (!current->supervisor && !current->can_create) {
+            result = process_error_denied; break;
+        }
+        task->can_create = true;
         result = 0;
         break;
     }
@@ -2545,6 +3163,7 @@ void* process_syscall(interrupt_frame* frame) {
         if (client.state != task_state::free && client.state != task_state::dead &&
             client.session_request_handle != 0 && client.session_response_handle != 0) {
             info.pid = client.pid;
+            info.parent_pid = client.parent;
             info.request_handle = client.session_request_handle;
             info.response_handle = client.session_response_handle;
         }
@@ -2621,6 +3240,7 @@ void* process_syscall(interrupt_frame* frame) {
                     waiter.wait_target == first) { result = thread_error_busy; break; }
             }
             if (result == thread_error_busy) { break; }
+            if (!current_thread->user_pin.set(second, sizeof(process_status))) { result = thread_error_busy; break; }
             current_thread->wait_target = first; current_thread->wait_buffer = second;
             current_thread->wait_kind = thread_wait_kind::process;
             current_thread->state = thread_state::blocked; frame->rax = 0;
@@ -2644,6 +3264,180 @@ void* process_syscall(interrupt_frame* frame) {
         if (!user_range_ok(first, 2 * sizeof(u32), true)) { break; }
         u32 values[2] = {current->send_handle, current->recv_handle};
         copy_to_user(first, values, sizeof(values)); result = 0;
+        break;
+    }
+    case sys_ipc_endpoint: {
+        const auto action = static_cast<ipc_endpoint_action>(first);
+        if (action == ipc_endpoint_action::create) {
+            process_record* peer = task_by_pid(second == 0 ? current->parent : second);
+            if (peer == nullptr || peer == current || peer->state == task_state::building ||
+                peer->state == task_state::dead || peer->closing ||
+                !user_range_ok(third, sizeof(ipc_channel), true)) {
+                result = process_error_invalid; break;
+            }
+            ipc_channel channel{}, peer_channel{};
+            if (!create_generic_channel(current->pid, peer->pid, current->pid,
+                                        channel, peer_channel)) {
+                result = process_error_resources; break;
+            }
+            (void)peer_channel;
+            copy_to_user(third, &channel, sizeof(channel));
+            result = 0;
+            break;
+        }
+        if (action == ipc_endpoint_action::revoke && third == 0) {
+            auto* endpoint = endpoint_for(second);
+            if (endpoint == nullptr || !endpoint->generic || endpoint->owner_pid != current->pid) {
+                result = process_error_denied; break;
+            }
+            revoke_ipc_channel(endpoint->channel_id, pipe_error_broken);
+            result = 0;
+            break;
+        }
+        if (action == ipc_endpoint_action::close && third == 0) {
+            auto* endpoint = endpoint_for(second);
+            if (endpoint == nullptr || !endpoint->generic ||
+                (endpoint->sender_pid != current->pid && endpoint->receiver_pid != current->pid)) {
+                result = process_error_denied; break;
+            }
+            revoke_ipc_channel(endpoint->channel_id, pipe_error_broken);
+            result = 0;
+            break;
+        }
+        if (action == ipc_endpoint_action::query_peer &&
+            user_range_ok(third, sizeof(u64), true)) {
+            const auto* endpoint = endpoint_for(second);
+            if (endpoint == nullptr || !endpoint->generic) { result = process_error_denied; break; }
+            u64 peer = 0;
+            if (endpoint->sender_pid == current->pid) peer = endpoint->receiver_pid;
+            else if (endpoint->receiver_pid == current->pid) peer = endpoint->sender_pid;
+            else { result = process_error_denied; break; }
+            copy_to_user(third, &peer, sizeof(peer));
+            result = 0;
+            break;
+        }
+        break;
+    }
+    case sys_ipc_wait: {
+        if (third != 0 || second > static_cast<u64>(ipc_wait_mode::try_send)) { break; }
+        auto* endpoint = endpoint_for(first);
+        if (endpoint == nullptr || !endpoint->generic) { result = process_error_denied; break; }
+        const auto mode = static_cast<ipc_wait_mode>(second);
+        const bool receiving = mode == ipc_wait_mode::receive || mode == ipc_wait_mode::try_receive;
+        const bool nonblocking = mode == ipc_wait_mode::try_receive || mode == ipc_wait_mode::try_send;
+        if ((receiving && endpoint->receiver_pid != current->pid) ||
+            (!receiving && endpoint->sender_pid != current->pid)) {
+            result = process_error_denied; break;
+        }
+        const process_record* peer = task_by_pid(receiving ? endpoint->sender_pid : endpoint->receiver_pid);
+        if (peer == nullptr || peer->state == task_state::dead || peer->closing) {
+            result = pipe_error_broken; break;
+        }
+        if ((receiving && endpoint->pending) || (!receiving && !endpoint->pending)) {
+            result = 0; break;
+        }
+        if (nonblocking) { result = process_error_would_block; break; }
+        current_thread->wait_kind = receiving ? thread_wait_kind::ipc_receive : thread_wait_kind::ipc_send;
+        current_thread->wait_target = endpoint->handle;
+        current_thread->state = thread_state::blocked;
+        frame->rax = 0;
+        return schedule(frame);
+    }
+    case sys_ipc_name: {
+        const auto action = static_cast<ipc_name_action>(first);
+        if (action == ipc_name_action::publish || action == ipc_name_action::unpublish ||
+            action == ipc_name_action::connect) {
+            if (action != ipc_name_action::connect && third != 0) { break; }
+            char name[32]{};
+            if (!copy_ipc_name(second, name)) { result = process_error_invalid; break; }
+            auto* entry = find_ipc_name(name);
+            if (action == ipc_name_action::publish) {
+                if (entry != nullptr) {
+                    result = entry->owner_pid == current->pid ? 0 : process_error_busy;
+                    break;
+                }
+                if (current->closing) { result = process_error_state; break; }
+                for (auto& slot : ipc_names) {
+                    if (!slot.used) {
+                        slot.used = true;
+                        slot.owner_pid = current->pid;
+                        for (u32 i = 0; i < sizeof(slot.name); ++i) slot.name[i] = name[i];
+                        result = 0;
+                        break;
+                    }
+                }
+                if (result == sys_error_invalid_argument) result = process_error_resources;
+                break;
+            }
+            if (action == ipc_name_action::unpublish) {
+                if (entry == nullptr || entry->owner_pid != current->pid) {
+                    result = process_error_denied; break;
+                }
+                *entry = ipc_name_record{};
+                if (!ipc_service_published(current->pid)) {
+                    wake_ipc_acceptors(current->pid, pipe_error_broken);
+                    for (auto& connection : ipc_connections) {
+                        if (connection.used && connection.service_pid == current->pid) {
+                            revoke_ipc_channel(connection.channel_id, pipe_error_broken);
+                        }
+                    }
+                }
+                result = 0;
+                break;
+            }
+            if (!user_range_ok(third, sizeof(ipc_channel), true)) { break; }
+            if (entry == nullptr) { result = ipc_error_name_not_found; break; }
+            process_record* server = task_by_pid(entry->owner_pid);
+            if (server == nullptr || server == current || server->state == task_state::dead ||
+                server->state == task_state::building || server->closing) {
+                result = ipc_error_name_not_found; break;
+            }
+            ipc_connection_record* slot = nullptr;
+            for (auto& connection : ipc_connections) {
+                if (!connection.used) { slot = &connection; break; }
+            }
+            if (slot == nullptr) { result = process_error_resources; break; }
+            ipc_channel client_channel{}, service_channel{};
+            if (!create_generic_channel(current->pid, server->pid, current->pid,
+                                        client_channel, service_channel)) {
+                result = process_error_resources; break;
+            }
+            slot->used = true;
+            slot->service_pid = server->pid;
+            slot->client_pid = current->pid;
+            slot->channel_id = client_channel.send;
+            slot->service_channel = service_channel;
+            copy_to_user(third, &client_channel, sizeof(client_channel));
+            wake_ipc_acceptors(server->pid, 0);
+            result = 0;
+            break;
+        }
+        if (action == ipc_name_action::accept) {
+            if (third != 0 || !user_range_ok(second, sizeof(ipc_channel), true)) { break; }
+            if (!ipc_service_published(current->pid)) { result = process_error_denied; break; }
+            for (auto& connection : ipc_connections) {
+                if (!connection.used || connection.service_pid != current->pid) continue;
+                copy_to_user(second, &connection.service_channel, sizeof(ipc_channel));
+                connection = ipc_connection_record{};
+                result = 0;
+                break;
+            }
+            if (result == sys_error_invalid_argument) result = process_error_would_block;
+            break;
+        }
+        if (action == ipc_name_action::wait_accept && second == 0 && third == 0) {
+            if (!ipc_service_published(current->pid)) { result = process_error_denied; break; }
+            bool pending = false;
+            for (const auto& connection : ipc_connections) {
+                pending |= connection.used && connection.service_pid == current->pid;
+            }
+            if (pending) { result = 0; break; }
+            current_thread->wait_kind = thread_wait_kind::ipc_accept;
+            current_thread->wait_target = current->pid;
+            current_thread->state = thread_state::blocked;
+            frame->rax = 0;
+            return schedule(frame);
+        }
         break;
     }
     case sys_block_read:
@@ -2704,6 +3498,7 @@ void* input_entry(interrupt_frame* frame) {
 
 void* timer_entry(interrupt_frame* frame) {
     platform::timer_interrupt();
+    expire_pc_speaker_lease();
     // Boot diagnostics may enable IRQ0 before any process has been entered.
     // They advance the same clock without expiring/scheduling prepared tasks.
     if (current == nullptr || current_thread == nullptr) { return frame; }
@@ -2721,7 +3516,8 @@ void* syscall_entry(interrupt_frame* frame) {
     const u64 number = frame->rax;
     if(current->pid==display_service_pid &&
        (number==sys_process_create || number==sys_process_exec_prepare || number==sys_process_fork_prepare ||
-        number==sys_process_delegate || number==sys_process_grant)) {
+        number==sys_process_delegate || number==sys_process_grant ||
+        number==sys_ipc_endpoint || number==sys_ipc_wait || number==sys_ipc_name)) {
         frame->rax=static_cast<u64>(display_denied);return frame;
     }
     if (number >= sys_thread_prepare && number <= sys_thread_profile) { return thread_syscall(frame); }
@@ -2795,6 +3591,111 @@ void* syscall_entry(interrupt_frame* frame) {
         }
         break;
     }
+#if XOS_VM1_PROBE
+    case 67: {
+        // Dedicated probe image only: never exported in default SDK/manifest.
+        if ((frame->rdi & 7) || !user_range_ok(frame->rdi, sizeof(anonymous_vm::request), false)) {
+            result = -2; break;
+        }
+        if (frame->rsi || frame->rdx) { result = anonymous_vm::invalid; break; }
+        anonymous_vm::request request{};
+        copy_from_user(&request, frame->rdi, sizeof(request));
+        // Exercise a genuine ready-but-not-yet-delivered process wait pin.
+        if (request.operation == 0xfffd && request.version == 1 && request.size == sizeof(request) &&
+            !request.flags && request.address && request.length && !request.alignment &&
+            !request.protection && !request.reserved0 && !request.reserved1 && !request.reserved2) {
+            auto* child = owned_process(request.address);
+            const u64 address = request.length;
+            if (!child || child->state == task_state::building || child->state == task_state::dead ||
+                child->continuation.active() ||
+                !user_range_ok(address, sizeof(process_status), true)) { result=process_error_invalid; break; }
+            const u64 first_page = address & ~(page_size-1);
+            const u64 last_page = (address+sizeof(process_status)-1) & ~(page_size-1);
+            const bool before = pinned_range(current, first_page, first_page+page_size) &&
+                                pinned_range(current, last_page, last_page+page_size);
+            finish_task(child, process_outcome::killed, -9);
+            destroy_task(child);
+            bool waiter_ready = false;
+            for (const auto& thread : threads) {
+                if (thread.process == current && thread.state == thread_state::ready &&
+                    thread.wait_kind == thread_wait_kind::process && thread.wait_target == request.address) waiter_ready=true;
+            }
+            const bool after = pinned_range(current, first_page, first_page+page_size) &&
+                               pinned_range(current, last_page, last_page+page_size);
+            result = before && waiter_ready && after ? 0 : process_error_state; break;
+        }
+        if (request.operation==0xfffb && request.version==1 && request.size==sizeof(request) &&
+            !request.flags && !request.address && !request.length && !request.alignment &&
+            !request.protection && !request.reserved0 && !request.reserved1 && !request.reserved2) {
+            vm2_failures[static_cast<u32>(current-tasks)].trace=true; result=0; break;
+        }
+        // Probe-only scoped allocation failure. The global allocator hook is
+        // active only inside one non-yielding page-table preparation call.
+        if (request.operation==0xfffc && request.version==1 && request.size==sizeof(request) &&
+            request.flags<=1 && request.address<=4096 && !request.length && !request.alignment &&
+            !request.protection && !request.reserved0 && !request.reserved1 && !request.reserved2) {
+            auto& injection=vm2_failures[static_cast<u32>(current-tasks)];
+            injection.page=request.flags==0 ? static_cast<i64>(request.address) : -1;
+            injection.table=request.flags==1 ? static_cast<i64>(request.address) : -1;
+            result=0; break;
+        }
+        // Private test diagnostic, deliberately absent from the public wire.
+        if (request.operation == 0xffff && request.version == 1 && request.size == sizeof(request) &&
+            !request.flags && !request.address && !request.length && !request.alignment &&
+            !request.protection && !request.reserved0 && !request.reserved1 && !request.reserved2) {
+            result = memory_status().free_pages; break;
+        }
+        if (request.operation == 0xfffe && request.version == 1 && request.size == sizeof(request) &&
+            request.flags <= 1 && request.address > 0 && request.address <= 4096 &&
+            ((!request.flags && !request.length) || (request.flags == 1 && request.length > 0 && request.length < request.address)) &&
+            !request.alignment && !request.protection && !request.reserved0 && !request.reserved1 && !request.reserved2) {
+            if (current->closing || current->continuation.active()) { result=process_error_state; break; }
+            auto& state=vm2_probe_states[static_cast<u32>(current - tasks)];
+            state.target=static_cast<u32>(request.address); state.count=0; state.error=0;
+            state.fail_after=static_cast<u32>(request.length);
+            state.process_ticks=&current->ticks; state.initial_ticks=current->ticks;
+            state.prepare_reported=false; state.publish_reported=false; state.rollback_reported=false;
+            if (!begin_vm_continuation(*current, *current_thread, &state, vm2_probe_step)) {
+                result=process_error_state; break;
+            }
+            frame->rax=0; return schedule(frame);
+        }
+        if (request.operation>=2 && request.operation<=5) {
+            if (request.version!=1 || request.size!=sizeof(request) || request.flags || request.alignment ||
+                request.reserved0 || request.reserved1 || request.reserved2 || !request.length ||
+                (request.address % page_size) || (request.length % page_size) ||
+                request.address<anonymous_vm::arena_begin || request.address>=anonymous_vm::arena_end ||
+                request.length>anonymous_vm::arena_end-request.address) { result=anonymous_vm::invalid; break; }
+            if ((request.protection & 6)==6) { result=-3; break; }
+            if ((request.protection!=0 && request.protection!=1 && request.protection!=3 && request.protection!=5) ||
+                (request.operation==2 && !request.protection) ||
+                (request.operation>=4 && request.protection)) { result=anonymous_vm::invalid; break; }
+            if (current->closing || current->continuation.active()) { result=anonymous_vm::closing; break; }
+            const u32 slot=static_cast<u32>(current-tasks);
+            auto& regions=vm1_probe_regions[slot];
+            if (request.operation!=5 && !regions.contains(request.address,request.length)) { result=-6; break; }
+            if (request.operation==5 && pinned_range(current,request.address,request.address+request.length)) { result=-5; break; }
+            if (request.operation!=5 && request.length/page_size>4096) { result=anonymous_vm::resources; break; }
+            auto& tx=vm2_page_transactions[slot];
+            tx.owner=current; tx.address=request.address; tx.end=request.address+request.length; tx.scan=tx.address;
+            tx.operation=request.operation; tx.protection=request.protection;
+            tx.pages=request.operation==5 ? 0 : static_cast<u32>(request.length/page_size);
+            tx.cursor=0; tx.prepared=0; tx.staged_count=0; tx.allocation_pass=false; tx.rollback_started=false;
+            tx.fail_page=vm2_failures[slot].page; tx.fail_table=vm2_failures[slot].table;
+            tx.trace=vm2_failures[slot].trace; tx.staging_reported=false; tx.publish_reported=false;
+            vm2_failures[slot]=vm2_failure_injection{};
+            if (request.operation==5) {
+                tx.regions=regions;
+                result=tx.regions.unmap(request.address,request.length);
+                if (result) break;
+            }
+            if (!begin_vm_continuation(*current,*current_thread,&tx,vm2_page_step)) { result=anonymous_vm::closing; break; }
+            frame->rax=0; return schedule(frame);
+        }
+        result = vm1_probe_regions[static_cast<u32>(current - tasks)].apply(request, current->closing);
+        break;
+    }
+#endif
     case sys_random_bytes:
         result = frame->rdx == 0 ? random_bytes(frame->rdi, frame->rsi)
                                  : random_error_invalid;

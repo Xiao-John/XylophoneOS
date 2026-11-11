@@ -46,6 +46,7 @@ inline constexpr u64 sys_process_foreground = 55, sys_process_cancel = 56;
 // C2: unstarted eager-copy child, authenticated files clone, then commit.
 inline constexpr u64 sys_process_fork_prepare = 57, sys_process_fork_commit = 58;
 inline constexpr u64 sys_process_fork_files = 59;
+inline constexpr u64 sys_ipc_endpoint = 84, sys_ipc_wait = 85, sys_ipc_name = 86;
 // C3: prepare an unstarted replacement (same signature as create, mask=0),
 // then commit(entry, depth_mode): 0 retains depth; n>0 requests depth n-1,
 // which must be strictly smaller than current authority.
@@ -59,9 +60,15 @@ enum class stream_lease_action : u64 { claim = 0, delegate = 1, reclaim = 2, que
 inline constexpr u64 sys_channel = 81;
 inline constexpr u64 sys_pio_grant = 82;
 inline constexpr u64 sys_irq_event = 83;
+// SL1 shell_launch: identity-carried create authority, separate from
+// legacy spawn_depth delegation (contracts/shell_launch.md §3).
+// mode: 0 clear, 1 set, 2 copy from caller, 3 query (returns 0/1 in result).
+inline constexpr u64 sys_process_authority = 87;
+enum class process_authority_mode : u64 { clear = 0, set = 1, copy_from_caller = 2, query = 3 };
 enum class irq_event_action : u64 { bind = 0, wait = 1, ack = 2, close = 3 };
-enum class pio_grant_action : u64 { grant = 0, revoke = 1, query = 2, controller = 3, recover = 4 };
+enum class pio_grant_action : u64 { grant = 0, revoke = 1, query = 2, controller = 3, recover = 4, release = 5, delegate = 6 };
 inline constexpr u64 pio_resource_com1 = 1;
+inline constexpr u64 pio_resource_pc_speaker = 2;
 enum class channel_action : u64 { create = 0, enumerate = 1, close = 2, wait = 3, wait_many = 4, fork_pair = 5, verify_fork_pair = 6 };
 inline constexpr u32 channel_version = 1, channel_send = 1, channel_receive = 2;
 inline constexpr u32 channel_wait_many_max = 4;
@@ -160,10 +167,19 @@ struct process_status {
     u64 instruction;
 };
 struct process_stats { u32 free_pages; u32 tasks; u32 completions; u32 reserved; };
-struct file_session_info { u64 pid; u32 request_handle; u32 response_handle; };
+// parent_pid is kernel-authenticated creator identity; the files service uses
+// it to authorize handle transfer instead of trusting a caller-supplied PID.
+struct file_session_info { u64 pid; u64 parent_pid; u32 request_handle; u32 response_handle; };
 struct pipe_handles { u32 read_token; u32 write_token; };
+enum class ipc_endpoint_action : u64 { create = 0, revoke = 1, query_peer = 2, close = 3 };
+enum class ipc_wait_mode : u64 { receive = 0, send = 1, try_receive = 2, try_send = 3 };
+enum class ipc_name_action : u64 { publish = 0, unpublish = 1, connect = 2, accept = 3, wait_accept = 4 };
+struct ipc_channel { u32 send; u32 receive; };
+inline constexpr i64 ipc_error_full = -4, ipc_error_broken = -7;
+inline constexpr i64 ipc_error_name_not_found = -2;
 static_assert(sizeof(process_page) == 24 && sizeof(process_entry) == 24);
 static_assert(sizeof(startup_info) == 48 && sizeof(process_status) == 48);
-static_assert(sizeof(file_session_info) == 16);
+static_assert(sizeof(file_session_info) == 24);
 static_assert(sizeof(pipe_handles) == 8);
+static_assert(sizeof(ipc_channel) == 8);
 }

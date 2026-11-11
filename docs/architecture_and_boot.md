@@ -23,10 +23,14 @@ E08-2 新进程布局和运行时边界见 e08.md；ELF解析仍仅在用户态�
 
 ## 默认 BIOS 启动通路
 
-启动扇区仍从 `0x7c00` 将后续 16 扇区装到 `0x8000`，但默认第二阶段改为
-`kernel_loader.asm`。原来的命令行只保留在 `real_mode.img`。
-默认镜像从 LBA 17 起存放由 ELF 导出的原始内核，实际扇区数见 manifest。
-第二阶段逐扇区 CHS 读取，越过磁道时重新计算 C/H/S，读失败最多三次。
+当前常规引导产物是 file-backed 的 `build/xos-install.iso`：El Torito 把只含
+boot sector + loader 的 no-emulation 启动映像装到 `0x7c00`，再由
+`kernel_loader_iso_file` 经 ATAPI/ISO9660 读入 `KERNEL.BIN`（见 E07 段）。
+裸盘/软盘逐扇区装载路径已随 legacy 废除移除，以下保留为机制记录：
+启动扇区曾把后续 16 扇区装到 `0x8000`，第二阶段 `kernel_loader.asm` 从 LBA 17 起
+逐扇区 CHS 读取 ELF 导出的原始内核（扇区数当时见 manifest），越过磁道时重新计算
+C/H/S，读失败最多三次；保留的 `real_mode.img` 练习仍用同样的两阶段装载，
+原第二阶段命令行只保留在该练习镜像。
 每次读取 512 字节，避免跨磁道/64 KiB DMA 边界；不依赖通用文件系统。
 
 引导器检查 CPUID 的 long mode、NX 与 PAE，收集最多 64 个非空 E820 条目，
@@ -171,12 +175,14 @@ supervisor 内置最小编辑器：正文行原样追加（空行、连续空格
 
 工作盘 `work_disk.img` 独立于 `build/`，由 `make disk` 显式创建/格式化；构建和
 启动只打开已有盘。`make run` 默认用带 dash payload 的 install ISO（`build/xos-install-dash.iso`），
-`make run_file` 用 file-backed ISO，`make run_iso` 用嵌入 kernel 的旧 ISO，
-`make run_floppy` 保留 1.44 MiB 软盘路径；工作盘仍是 `if=ide,index=0,media=disk`。
+`make run_file` 用 file-backed ISO（`build/xos-install.iso`，唯一常规内核引导产物，
+任意内核尺寸可用）；工作盘仍是 `if=ide,index=0,media=disk`。
 file-backed ISO 的 no-emulation boot image 只有 boot sector + loader，
 `KERNEL.BIN`/`DASH.ELF` 由 loader 经 ATAPI/ISO9660 读入；boot image 不再承载
-kernel。旧 `xos.iso` 仍把 boot sector、loader 和 kernel 一起装进初始映像，
-受真实模式 640 KiB 边界约束。
+kernel。原嵌入式 kernel ISO 把 boot sector、loader 和 kernel 一起装进初始映像，
+受真实模式 640 KiB 窗口限制：该 legacy 引导产物已随 legacy 废除移除，
+旧的嵌入式 ISO / 软盘内核启动目标一并删除，裸盘/软盘内核镜像不再生成，
+仅 `real_mode.img` 保留 16 位软盘练习路径。
 测试使用临时 FAT16 副本，`make smoke` 不写日常盘。
 
 内核 `platform/pc/ata.cpp` 做 primary master ATA PIO：IDENTIFY、LBA28 读写、

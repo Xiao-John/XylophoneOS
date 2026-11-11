@@ -33,7 +33,7 @@ def main():
  for path in (build/'quickjs').glob('*receipt.json'):
   if path.name!='receipt.json':copy(path,'failures/quickjs/'+path.name)
  for path in (build/'quickjs').glob('*build.log'):copy(path,'failures/quickjs/'+path.name,True)
- artifacts=[system/'xos.img',system/'xos-install.iso',system/'kernel.elf',build/'quickjs/js_probe.elf',guest/'js_probe',py/'target_build/python.exe',py/'stage_py1/usr/bin/python3',guest/'work.img']
+ artifacts=[system/'xos-install.iso',system/'kernel.elf',build/'quickjs/js_probe.elf',guest/'js_probe',py/'target_build/python.exe',py/'stage_py1/usr/bin/python3',guest/'work.img']
  artifacts.extend((build/'localpilot-wheel').glob('*.whl'))
  artifact_rows=[{'path':str(path),'bytes':path.stat().st_size,'sha256':sha(path),'retention':'local; not a release asset'} for path in artifacts if path.is_file()]
  owned=list((ROOT/'scripts').glob('modern_apps_*.py'))+list((ROOT/'tests').glob('modern_apps_*.py'))+list((ROOT/'tests/fixtures/modern_apps').glob('*'))+list((ROOT/'licenses/modern_apps').glob('*'))+[ROOT/'licenses/components.json']

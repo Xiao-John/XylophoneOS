@@ -167,6 +167,9 @@ xsh> exec-file /out/hello.elf
 | 找不到刚导入的文件 | 先关 QEMU 再导入；`ls` 核对；构建成功不等于已安装 |
 | 重复 import 或编辑冲突 | `import` 拒绝覆盖；`edit` 不承诺冲突检测，改后 `sync` 再核对 |
 
+- 发行包入口是解压后的 `launch.py`（或 images 包内启动脚本），不是仓库的 `make run`。
+- 客体没有 `/bin`；可执行文件在 `/usr/bin`（如 `x86_64-elf-gcc`）。PATH 里没有裸名 `gcc`/`g++`，请用 `x86_64-elf-gcc` / `x86_64-elf-g++`。
+
 ## 相关
 
 - 机制：[E04 装载与 SDK 契约](../../e04_loader_sdk.md)、[E08 原生工具链](../../e08.md)

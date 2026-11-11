@@ -59,7 +59,7 @@ def main():
     system_manifest = a.system/'manifest.json'
     if not system_manifest.exists(): system_manifest = a.system/'system_manifest.json'
     system = json.loads(system_manifest.read_text())
-    assert hashlib.sha256((a.system/'xos.img').read_bytes()).hexdigest()==system['artifacts']['xos.img']['sha256']
+    assert hashlib.sha256((a.system/'xos-install.iso').read_bytes()).hexdigest()==system['artifacts']['xos-install.iso']['sha256']
     report={'status':'failed','dash_sha256':manifest['sha256'],'system_build_id':system['build_id'],'checks':[]}
     guest=None
     try:
@@ -87,7 +87,7 @@ def main():
                 if name in CASES:
                     reference=subprocess.run(['/bin/sh','-c',body],env={'PROBE':str(host),'PATH':'/usr/bin:/bin'},capture_output=True)
                     expected[name]=reference.stdout
-            guest=Guest(a.system/'xos.img','dash_a',work_disk=disk)
+            guest=Guest(a.system/'xos-install.iso','dash_a',work_disk=disk,iso=True)
             guest.expect(b'xos64> ',timeout=40);send_bytes(guest,b'run\r')
             guest.expect_supervisor(trace=True,timeout=40);pump(guest,1.5)
             baseline=resources(guest)

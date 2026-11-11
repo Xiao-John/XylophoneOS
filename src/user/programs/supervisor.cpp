@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT AND Apache-2.0
 // Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/sdk.hpp>
+#include <xos/audio_client.hpp>
 #include <xos/display_client.hpp>
 #include <xos/elf.hpp>
 #include <xos/execution.hpp>
@@ -22,6 +23,8 @@ bool demo_keep;
 bool demo_quiet;
 bool verbose_trace;
 bool persistent_recovery_gate;
+xos::audio::client audio_session;
+u64 audio_service_pid, audio_retry_after_ns;
 
 // The transaction directory is a durable recovery marker. Only a definite
 // not-found result permits ordinary startup or release of the admission guard.
@@ -170,6 +173,188 @@ u32 image_named(const char* name) {
     }
     return 0;
 }
+
+i64 delegate_audio_controller(u64 child, void*) {
+    return xos::sdk::pio_grant(xos::pio_grant_action::delegate, child,
+                               xos::pio_resource_pc_speaker);
+}
+
+// audio_service runs without supervisor rights and cannot read the image
+// catalog (sys_image_info/sys_image_read are supervisor-only), so publish
+// the tone worker image as a regular file the service spawns with
+// spawn_file. No privilege is granted; the 16 KiB bound fails loudly
+// instead of spawning from a stale copy (the current image is ~9.5 KiB).
+i64 publish_tone_worker(u32 tone) {
+    image_info info{};
+    i64 result = sdk::syscall(sys_image_info, tone, reinterpret_cast<u64>(&info));
+    if (result < 0) return result;
+    if (info.size == 0 || info.size > 16384) return process_error_resources;
+    static u8 worker_image[16384];
+    image_read_request request{0, reinterpret_cast<u64>(worker_image), info.size};
+    result = sdk::syscall(sys_image_read, tone, reinterpret_cast<u64>(&request));
+    if (result != static_cast<i64>(info.size)) return result < 0 ? result : process_error_invalid;
+    file::client files;
+    if (!files.init()) return static_cast<i64>(file::status::io);
+    // replace() chunks past the single-request payload cap, creates the
+    // target when missing, and commits atomically (the plain write() call
+    // rejects anything larger than one request as invalid).
+    return files.replace(audio::worker_image_path, worker_image, static_cast<u32>(info.size));
+}
+
+i64 start_audio_service() {
+    const u32 image = image_named("audio_service");
+    if (image == 0) return process_error_resources;
+    const u32 tone = image_named("audio_tone");
+    if (tone == 0) return process_error_resources;
+    const i64 published = publish_tone_worker(tone);
+    if (published != 0) return published;
+    // The service runs without supervisor rights and cannot enumerate the
+    // image catalog (sys_image_info is supervisor-only); hand it the tone
+    // image id as argv[1] instead of granting privilege.
+    char tone_arg[4] = {};
+    tone_arg[0] = static_cast<char>('0' + (tone / 10) % 10);
+    tone_arg[1] = static_cast<char>('0' + tone % 10);
+    const char* arguments[] = {"audio_service", tone_arg};
+    spawn_options options{};
+    for (u32 i = 0; i < 3; ++i) options.stdio[i] = -2;
+    options.delegate_spawn_depth = 2;
+    options.prepare_child = delegate_audio_controller;
+    const i64 child = xos::sdk::spawn_image_options(image, 2, arguments, options);
+    if (child > 0) {
+        audio_service_pid = static_cast<u64>(child);
+        audio_retry_after_ns = 0;
+    }
+    return child;
+}
+
+i64 ensure_audio_service(bool force = false) {
+    if (audio_service_pid != 0) {
+        process_status status{};
+        const i64 waited = syscall(sys_process_wait, audio_service_pid,
+                                   reinterpret_cast<u64>(&status), 1);
+        if (waited == process_error_would_block) return 0;
+        if (waited == 0) audio_service_pid = 0;
+        else return waited;
+        const i64 now = syscall(sys_clock_monotonic);
+        if (now >= 0 && static_cast<u64>(now) <= thread_deadline_infinite - 1000000000ull)
+            audio_retry_after_ns = static_cast<u64>(now) + 1000000000ull;
+    }
+    if (!force && audio_retry_after_ns != 0) {
+        const i64 now = syscall(sys_clock_monotonic);
+        if (now >= 0 && static_cast<u64>(now) < audio_retry_after_ns) return process_error_would_block;
+    }
+    const i64 started = start_audio_service();
+    if (started < 0) {
+        const i64 now = syscall(sys_clock_monotonic);
+        if (now >= 0 && static_cast<u64>(now) <= thread_deadline_infinite - 1000000000ull)
+            audio_retry_after_ns = static_cast<u64>(now) + 1000000000ull;
+    }
+    return started;
+}
+
+void print_audio_state(xos::audio::job_state state) {
+    using xos::audio::job_state;
+    switch (state) {
+    case job_state::none: print("none"); break;
+    case job_state::accepted: print("accepted"); break;
+    case job_state::playing: print("playing"); break;
+    case job_state::completed: print("completed"); break;
+    case job_state::cancelled: print("cancelled"); break;
+    case job_state::expired: print("expired"); break;
+    case job_state::device_lost: print("device_lost"); break;
+    }
+}
+
+i64 connect_audio_client() {
+    if (audio_session.connected()) return 0;
+    return audio_session.connect();
+}
+
+void submit_audio(const xos::audio::note* notes, u32 count) {
+    i64 result = connect_audio_client();
+    if (result != 0) {
+        print("audio: service unavailable (error="); signed_decimal(result); print(")\n");
+        return;
+    }
+    u64 job = 0;
+    result = audio_session.submit(notes, count, job);
+    if (result != 0) {
+        print("audio: request rejected (error="); signed_decimal(result); print(")\n");
+        return;
+    }
+    print("audio: accepted job="); decimal(job); print("\n");
+}
+
+bool parse_melody(const char* data, u32 length, xos::audio::note* output, u32& count) {
+    count = 0;
+    u32 position = 0;
+    while (position < length) {
+        if (count == xos::audio::max_notes) return false;
+        auto parse_unsigned = [&](u32& value) {
+            const u32 start = position;
+            value = 0;
+            while (position < length && data[position] >= '0' && data[position] <= '9') {
+                const u32 digit = static_cast<u32>(data[position++] - '0');
+                if (value > (0xffffffffu - digit) / 10) return false;
+                value = value * 10 + digit;
+            }
+            return position != start;
+        };
+        xos::audio::note item{};
+        if (!parse_unsigned(item.frequency_hz)) return false;
+        if (position >= length || (data[position] != ' ' && data[position] != '\t')) return false;
+        while (position < length && (data[position] == ' ' || data[position] == '\t')) ++position;
+        if (!parse_unsigned(item.duration_ms)) return false;
+        while (position < length && (data[position] == ' ' || data[position] == '\t')) ++position;
+        if (position < length && data[position] == '\r') ++position;
+        if (position < length && data[position] != '\n') return false;
+        if (position < length) ++position;
+        output[count++] = item;
+    }
+    return xos::audio::validate_sequence(output, count) == 0;
+}
+
+void audio_job_command(u32 argc, char** argv) {
+    using namespace xos::audio;
+    if (argc == 2 && equal(argv[1], "close")) {
+        const i64 result = audio_session.close();
+        print(result == 0 ? "audio: session closed\n" : "audio: close error=");
+        if (result != 0) { signed_decimal(result); print("\n"); }
+        return;
+    }
+    if (argc == 3 && (equal(argv[1], "status") || equal(argv[1], "cancel"))) {
+        const u64 job = number(argv[2]);
+        if (job == 0) { print("Usage: audio status|cancel <job>\n"); return; }
+        i64 result = connect_audio_client();
+        response reply{};
+        if (result == 0) result = equal(argv[1], "status")
+            ? audio_session.status(job, reply) : audio_session.cancel(job, reply);
+        if (result != 0) {
+            print("audio: result unknown or unavailable (error="); signed_decimal(result); print(")\n");
+            return;
+        }
+        print("audio: job="); decimal(job); print(" state=");
+        print_audio_state(static_cast<job_state>(reply.state));
+        print(" notes="); decimal(reply.completed_notes); print("\n");
+        return;
+    }
+    print("Usage: audio status|cancel <job> | audio close\n");
+}
+
+void melody_command(const char* path) {
+    char contents[2048]{};
+    u32 length = 0;
+    file::client files;
+    if (!files.init()) { print("melody: files service unavailable\n"); return; }
+    const i64 loaded = files.read_all(path, contents, sizeof(contents), length);
+    if (loaded != 0) { print("melody: cannot read file (error="); signed_decimal(loaded); print(")\n"); return; }
+    xos::audio::note notes[xos::audio::max_notes]{};
+    u32 count = 0;
+    if (!parse_melody(contents, length, notes, count)) {
+        print("melody: invalid sequence\n"); return;
+    }
+    submit_audio(notes, count);
+}
 void image_list() {
     for (u32 id = 1; id < 32; ++id) {
         image_info info{};
@@ -219,12 +404,34 @@ bool builtin_named(const char* name) {
     const char* const names[] = {"help", "trace", "type", "ps", "kill", "images", "exec", "spawn",
         "wait", "stats", "primtest", "elftest", "ls", "cat", "stat", "rm", "edit", "filetest",
         "sync", "exec-file", "exec-driver", "exd", "spawn-file", "mkdir", "mv", "demo",
-        "maint-run", "maint-recover", "maint-recover-boot", "maint-status", "diag", "tty-run"};
+        "maint-run", "maint-recover", "maint-recover-boot", "maint-status", "diag", "tty-run",
+        "tone", "melody", "audio"};
     for (const auto* item : names) { if (equal(name, item)) { return true; } }
     return false;
 }
+// SL2 authority modes for launch_file:
+//  spawn_depth: legacy grant(1)/delegate(>1) — kept for exec-driver compat.
+//  inherit_create: copy caller's can_create onto the child (common contract).
+//  Ordinary bare commands and tty-run use inherit_create; exec-file uses neither;
+//  exec-driver keeps the historical grant.
+namespace {
+struct launch_prepare_ctx {
+    bool terminal;
+};
+xos::i64 launch_prepare_child(xos::u64 child, void* context) {
+    const i64 auth = syscall(sys_process_authority, child,
+                             static_cast<u64>(process_authority_mode::copy_from_caller));
+    if (auth != 0) { return auth; }
+    auto* ctx = static_cast<launch_prepare_ctx*>(context);
+    if (ctx != nullptr && ctx->terminal) {
+        return user::shell_terminal::prepare_application(child, nullptr);
+    }
+    return 0;
+}
+}  // namespace
+
 void launch_file(const char* name, u32 argc, char** argv, u32 spawn_depth, bool background, bool diagnosed = false,
-                 bool terminal_session = false) {
+                 bool terminal_session = false, bool inherit_create = false) {
     const auto candidate = execution::resolve(name, "/usr/bin:/bin:/");
     if (candidate.kind != execution::candidate_kind::executable) {
         candidate_error(name, candidate); return;
@@ -249,11 +456,15 @@ void launch_file(const char* name, u32 argc, char** argv, u32 spawn_depth, bool 
     options.environment_count = 1;
     const char* terminal_environment[] = {"PATH=/usr/bin:/bin:/", "TERM=xterm",
         "TERMINFO=/usr/local/share/terminfo", "LINES=24", "COLUMNS=80"};
+    launch_prepare_ctx prepare_ctx{terminal_session};
     if (terminal_session) {
         for (u32 fd = 0; fd < 3; ++fd) options.stdio[fd] = -2;
-        options.prepare_child = user::shell_terminal::prepare_application;
         options.terminal_send_handle = user::shell_terminal::application_send_handle();
         options.environment = terminal_environment; options.environment_count = 5;
+    }
+    if (inherit_create || terminal_session) {
+        options.prepare_child = launch_prepare_child;
+        options.prepare_context = &prepare_ctx;
     }
     execution::launch_diagnostic diagnostic{};
     const i64 child = diagnosed
@@ -279,18 +490,18 @@ void launch_file(const char* name, u32 argc, char** argv, u32 spawn_depth, bool 
                                    terminal_session); }
 }
 // Explicit supervisor entry; filenames do not confer maintenance authority.
-void maintenance_run(u32 argc, char** argv, bool recovering, bool boot_image = false) {
+bool maintenance_run(u32 argc, char** argv, bool recovering, bool boot_image = false) {
     process_guard_info gate{};
     if (syscall(sys_process_guard, static_cast<u64>(process_guard_action::query),
-                reinterpret_cast<u64>(&gate)) != 0) { print("maintenance: unavailable\n"); return; }
+                reinterpret_cast<u64>(&gate)) != 0) { print("maintenance: unavailable\n"); return false; }
     file::client files;
-    if (!files.init()) { print("maintenance: files unavailable\n"); return; }
+    if (!files.init()) { print("maintenance: files unavailable\n"); return false; }
     i64 result;
     if (recovering) {
         if (gate.owner_pid == 0 && persistent_recovery_gate) {
             result = syscall(sys_process_guard, static_cast<u64>(process_guard_action::begin));
         } else {
-            if (gate.owner_pid != pid()) { print("maintenance: no retained session\n"); return; }
+            if (gate.owner_pid != pid()) { print("maintenance: no retained session\n"); return false; }
             // Releasing only the file lease leaves the kernel admission barrier up.
             result = files.maintenance_release();
             if (result == 0) { result = syscall(sys_process_guard, static_cast<u64>(process_guard_action::rearm)); }
@@ -299,7 +510,7 @@ void maintenance_run(u32 argc, char** argv, bool recovering, bool boot_image = f
         result = syscall(sys_process_guard, static_cast<u64>(process_guard_action::begin));
     }
     if (result != 0) {
-        print("maintenance: busy or denied error="); signed_decimal(result); print("\n"); return;
+        print("maintenance: busy or denied error="); signed_decimal(result); print("\n"); return false;
     }
     i64 child = -1;
     if (boot_image) {
@@ -321,7 +532,7 @@ void maintenance_run(u32 argc, char** argv, bool recovering, bool boot_image = f
     const bool completed = child > 0 && wait(static_cast<u64>(child), outcome) == 0;
     const bool success = completed && outcome.outcome == process_outcome::exited && outcome.code == 0;
     if (!success && (child > 0 || recovering)) {
-        print("maintenance: retained; run maint-recover with a recovery tool\n"); return;
+        print("maintenance: retained; run maint-recover with a recovery tool\n"); return false;
     }
     if (!marker_is_absent()) {
         persistent_recovery_gate = true;
@@ -336,15 +547,20 @@ void maintenance_run(u32 argc, char** argv, bool recovering, bool boot_image = f
             process_status recovery_outcome{};
             const bool cleaned = recovery_child > 0 && wait(static_cast<u64>(recovery_child), recovery_outcome) == 0 &&
                 recovery_outcome.outcome == process_outcome::exited && recovery_outcome.code == 0;
-            if (!cleaned) { print("maintenance: retained; automatic recovery failed\n"); return; }
+            if (!cleaned) { print("maintenance: retained; automatic recovery failed\n"); return false; }
         }
-        if (!marker_is_absent()) { print("maintenance: retained; persistent recovery is required\n"); return; }
+        if (!marker_is_absent()) { print("maintenance: retained; persistent recovery is required\n"); return false; }
     }
     result = files.maintenance_release();
     if (result == 0) { result = syscall(sys_process_guard, static_cast<u64>(process_guard_action::end)); }
-    if (result != 0) { print("maintenance: retained; cleanup error="); signed_decimal(result); print("\n"); }
-    else { persistent_recovery_gate = false; if (child > 0) { print("maintenance: completed\n"); }
-        else { print("maintenance: program unavailable; session closed\n"); } }
+    if (result != 0) {
+        print("maintenance: retained; cleanup error="); signed_decimal(result); print("\n");
+        return false;
+    }
+    persistent_recovery_gate = false;
+    if (child > 0) { print("maintenance: completed\n"); }
+    else { print("maintenance: program unavailable; session closed\n"); }
+    return success;
 }
 void show_stats() {
     const auto state = stats();
@@ -424,7 +640,9 @@ void execute(u32 argc, char** argv) {
               "          tty-run <terminal-compatible program> [args]\n"
               "Maintain  maint-run <program> [args] | maint-recover <program> [args] | maint-recover-boot | maint-status\n"
               "Shell     dash -i starts dash; exit inside dash returns here\n"
-              "Display   display-start | exec gfxdemo [check|fault|hold|stop]\n"
+              "Audio     tone <Hz> <ms> | melody <file> | audio status|cancel <job> | audio close\n"
+              "          audio start|restart manages the user-mode audio service\n"
+              "Display   display-start | interactium-start | exec gfxdemo [check|fault|hold|stop]\n"
               "Debug     diag <program> [args] | trace on/off | ps | kill <pid> | stats | images | primtest | elftest | filetest\n"
               "Search    /usr/bin:/bin:/; paths containing '/' are used directly\n");
     } else if (equal(argv[0], "trace")) {
@@ -463,6 +681,21 @@ void execute(u32 argc, char** argv) {
         const i64 granted=child>0?display_control(display_action::grant_service,static_cast<u64>(child)):child;
         display_started(child,granted);
         if(child>0 && granted!=0){(void)syscall(10,static_cast<u64>(child));result_line(static_cast<u64>(child));}
+    } else if (equal(argv[0], "interactium-start") && argc == 1) {
+        const char* display_args[]={"display","normal"};
+        const i64 display_pid=spawn(image_named("display"),2,display_args);
+        const i64 granted=display_pid>0?display_control(display_action::grant_service,
+                                                          static_cast<u64>(display_pid)):display_pid;
+        display_started(display_pid,granted);
+        if(display_pid>0 && granted!=0){
+            (void)syscall(10,static_cast<u64>(display_pid));
+            result_line(static_cast<u64>(display_pid));
+            return;
+        }
+        const char* args[]={"interactiumd"};
+        const i64 child=spawn(image_named("interactiumd"),1,args);
+        print("[interactium-start] pid=");signed_decimal(child);print(" display=");
+        signed_decimal(display_pid);print("\n");
     } else if ((equal(argv[0], "exec") || equal(argv[0], "spawn")) && argc >= 2) {
         if (user::shell_terminal::active()) {
             print("xsh: legacy image unavailable in terminal session\n"); return;
@@ -508,10 +741,42 @@ void execute(u32 argc, char** argv) {
                                    reinterpret_cast<u64>(&gate));
         print("maintenance: owner="); decimal(gate.owner_pid); print(" worker="); decimal(gate.worker_pid);
         print(" error="); signed_decimal(result); print("\n");
+    } else if (equal(argv[0], "tone") && argc == 3) {
+        const u64 frequency = number(argv[1]), duration = number(argv[2]);
+        if (frequency < audio::min_frequency_hz || frequency > audio::max_frequency_hz ||
+            duration < audio::min_note_ms || duration > audio::max_note_ms) {
+            print("Usage: tone <40..5000 Hz> <10..2000 ms>\n"); return;
+        }
+        const audio::note item{static_cast<u32>(frequency), static_cast<u32>(duration)};
+        submit_audio(&item, 1);
+    } else if (equal(argv[0], "melody") && argc == 2) {
+        melody_command(argv[1]);
+    } else if (equal(argv[0], "audio") && argc == 2 && equal(argv[1], "start")) {
+        const i64 result = ensure_audio_service(true);
+        if (result == 0) { print("audio: service running\n"); }
+        else { print("audio: service start failed (error="); signed_decimal(result); print(")\n"); }
+    } else if (equal(argv[0], "audio") && argc == 2 && equal(argv[1], "restart")) {
+        (void)audio_session.close();
+        if (audio_service_pid != 0) {
+            const u64 old_pid = audio_service_pid;
+            const i64 killed = syscall(sys_process_cancel, old_pid);
+            if (killed == 0) {
+                process_status status{};
+                (void)syscall(sys_process_wait, old_pid, reinterpret_cast<u64>(&status), 1);
+            }
+            audio_service_pid = 0;
+        }
+        audio_retry_after_ns = 0;
+        const i64 result = ensure_audio_service(true);
+        if (result == 0) { print("audio: service restarted; reconnect for a new session\n"); }
+        else { print("audio: restart failed (error="); signed_decimal(result); print(")\n"); }
+    } else if (equal(argv[0], "audio") && argc >= 2) {
+        audio_job_command(argc, argv);
     } else if (equal(argv[0], "tty-run") && argc >= 2) {
-        launch_file(argv[1], argc - 1, argv + 1, 1, false, false, true);
+        launch_file(argv[1], argc - 1, argv + 1, 0, false, false, true, true);
     } else if (equal(argv[0], "diag") && argc >= 2) {
-        launch_file(argv[1], argc - 1, argv + 1, 0, false, true);
+        // Diagnosed target uses the common inherit-create contract (SL3).
+        launch_file(argv[1], argc - 1, argv + 1, 0, false, true, false, true);
     } else if ((equal(argv[0], "exec-file") || equal(argv[0], "spawn-file") ||
                 equal(argv[0], "exec-driver") || equal(argv[0], "exd")) && argc >= 2) {
         const bool driver = equal(argv[0], "exec-driver") || equal(argv[0], "exd");
@@ -544,12 +809,9 @@ void execute(u32 argc, char** argv) {
         print(checked == 24 && before.free_pages == after.free_pages ? " result=pass resources=stable\n"
                                                                     : " result=FAILED\n");
     } else {
-        // dash is the explicitly configured development shell; make is the
-        // pinned explicit -B build tool. Both may delegate smaller construction
-        // depths to the other and to GNU compiler drivers. Other bare commands
-        // retain the legacy direct-child construction authority.
-        const bool development_tool = equal(argv[0], "dash") || equal(argv[0], "make");
-        launch_file(argv[0], argc, argv, development_tool ? 3u : 1u, false);
+        // SL2: every bare command uses the common inherit-create contract;
+        // no name-based depth grants (shell_launch contract §4).
+        launch_file(argv[0], argc, argv, 0, false, false, false, true);
     }
 }
 }
@@ -565,9 +827,38 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     process_guard_info startup_gate{};
     const i64 gate_query = syscall(sys_process_guard, static_cast<u64>(process_guard_action::query),
                                    reinterpret_cast<u64>(&startup_gate));
-    if (!persistent_recovery_gate || (gate_query == 0 && startup_gate.owner_pid == pid())) { ui::init(); }
+    const bool ui_ran = !persistent_recovery_gate ||
+                        (gate_query == 0 && startup_gate.owner_pid == pid());
+    if (ui_ran) { ui::init(); }
     print("\nWelcome to Xshell | XylophoneOS\n"
           "help: commands   dash -i: POSIX shell   trace on: diagnostics\n\n");
+    (void)ensure_audio_service();
+    // DU4: one-shot P2 install after demos are quieted so process_guard can begin.
+    if (ui_ran && ui::bundle_install_ok() && ui::staged_count() > 0 &&
+        !ui::bundle_marker_present()) {
+        if (!demo_keep && !demo_quiet) {
+            for (u64 demo = 1; demo <= 4; ++demo) { (void)syscall(10, demo); }
+            demo_quiet = true;
+        }
+        bool all_ok = true;
+        for (u32 i = 0; i < ui::staged_count(); ++i) {
+            const char* path = ui::staged_path(i);
+            if (path == nullptr) { all_ok = false; continue; }
+            char program[] = "xypm";
+            // ensure is idempotent: an already-installed identical package is
+            // a success, so a partial first boot can finish on retry.
+            char action[] = "ensure";
+            char* args[] = {program, action, const_cast<char*>(path)};
+            if (!maintenance_run(3, args, false)) { all_ok = false; }
+        }
+        if (all_ok && ui::bundle_marker_write()) {
+            print("[files] bundle packages installed\n");
+        } else if (all_ok) {
+            print("[files] bundle marker write failed; will retry next boot\n");
+        } else {
+            print("[files] bundle package install incomplete; will retry next boot\n");
+        }
+    }
     bool last_cr = false;
     for (;;) {
         print("xsh> ");
@@ -637,6 +928,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
                     demo_quiet = true;
                     if (killed) { print(verbose_trace ? "\n[xsh] demo tasks stopped\nxsh> " : "\nxsh> "); }
                 }
+                (void)ensure_audio_service();
                 yield();
                 continue;
             }

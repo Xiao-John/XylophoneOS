@@ -21,14 +21,14 @@ def main():
     guest = None
     try:
         with tempfile.TemporaryDirectory(prefix='xos_pthread_') as folder:
-            private = Path(folder); image = private/'boot.img'; disk = private/'work.img'
-            shutil.copyfile(build/'xos.img', image); create_fat32(disk, 512)
+            private = Path(folder); image = private/'boot.iso'; disk = private/'work.img'
+            shutil.copyfile(build/'xos-install.iso', image); create_fat32(disk, 512)
             transfer(disk, 'mkdir', '/bin')
             payload = build/'threading_cpp_probe.elf'
             report['payload_sha256'] = hashlib.sha256(payload.read_bytes()).hexdigest()
             transfer(disk, 'import', '/bin/cppthread.elf', payload)
             transfer(disk, 'import', '/bin/legacy.elf', build/'threading_legacy.elf')
-            guest = Guest(image, 'threading_cpp', work_disk=disk)
+            guest = Guest(image, 'threading_cpp', iso=True, work_disk=disk)
             guest.expect(b'xos64> ', timeout=30); send_bytes(guest,b'run\r')
             guest.expect_supervisor(trace=True, timeout=30); pump(guest,1.5)
             baseline = resources(guest); report['resources_before'] = baseline

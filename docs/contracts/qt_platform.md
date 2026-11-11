@@ -1,92 +1,126 @@
-# Qt移植与系统底座协作契约
+# Qt Port and System-Foundation Integration Contract
 
-2026-10-28。接口责任与需求登记；受限 QtCore 客体资格见下文，不冻结尚未设计的C函数/ABI。
-Qt具体版本、模块、feature、工具和资源预算在G01确定，不能把本契约当作任意Qt版本保证。
+2026-10-28. This document registers interface ownership and requirements. The constrained
+QtCore guest qualification is summarized below; this contract does not freeze C functions
+or ABIs that have not yet been designed. Qt version, modules, features, tools, and resource
+budgets are selected at G01, so this contract is not a guarantee for arbitrary Qt versions.
 
-## 责任登记
+## Ownership Register
 
-| 能力 | 提供方/当前状态 | Qt侧责任与下一个验收 |
+| Capability | Provider / current status | Qt responsibility and next qualification |
 |---|---|---|
-| C++/pthread/TLS | 工具链/线程线；T0–T2、T3-PY和Qt QThread受限测试有各自证据 | Qt配置与QThread/互斥/条件/退出探针；不复制第二套线程库或空锁 |
-| 单调/墙钟 | 时钟SDK；单调等待与PY3 B2墙钟已有受限证据 | QtCore计时/超时与实际分辨率，唤醒deadline不被墙钟调整替换 |
-| 事件就绪/唤醒 | QtCore受限 posted event/单调计时与跨线程唤醒已客体验证；通用多对象poll/select未实现 | E16 通过锁外阻塞输入线程、Qt queued wake 组合；无通用 poll/select，不忙轮询或假报 FD 就绪 |
-| 显示/输入 | 显示线；display_client、65/66、单surface/焦点、CPU raster与PS2 | QPA integration/screen/window/backing-store/input；读取实际mode/stride，客户端RAM呈现，不直接MMIO/BIOS |
-| 内存/映射 | 内存线；堆/页预算已有，VMA/mmap/mprotect未实施 | 列实际调用与合法回退，提交最小失败探针；不从Qt侧另加内核mmap特例 |
-| 文件/路径 | 文件服务+libc；现有受限FD/路径，权限/链接/完整locale未完成 | QtCore读写/资源/错误，明确ASCII路径边界；UTF-8内容不代表Unicode文件名合规 |
-| 网络/终端/动态装载 | 各底座专项；无完整兼容资格 | 首窗不强制全量实现；关闭feature须可见并按实际消费者记录，不伪造成功 |
-| moc/rcc/uic等生成器 | 移植线 | 首轮可同版本宿主生成、交叉构建；目标端重建另验G10，不混淆执行地 |
+| C++ / pthread / TLS | Toolchain and threading workstreams; T0-T2, T3-PY, and constrained Qt QThread tests have separate evidence | Qt configuration and QThread/mutex/condition/exit probes; do not duplicate the thread library or use no-op locks |
+| Monotonic / wall clock | Clock SDK; constrained evidence exists for monotonic waits and PY3 B2 wall clock | QtCore timers/timeouts and actual resolution; wake deadlines must not be replaced by wall-clock adjustments |
+| Event readiness / wakeup | Constrained QtCore posted events, monotonic timers, and cross-thread wakeups have passed in guest; general multi-object poll/select is not implemented | E16 combines an input thread blocked outside the lock with Qt queued wakeups; no general poll/select, busy polling, or false FD readiness |
+| Display / input | Display workstream; display_client, 65/66, one surface/focus, CPU raster, and PS/2 | QPA integration/screen/window/backing store/input; read actual mode/stride and render in client RAM, without direct MMIO/BIOS |
+| Memory / mapping | Memory workstream; heap/page budgets exist, VMA/mmap/mprotect are not implemented | List actual calls and valid fallbacks; provide a minimal failure probe; do not add a Qt-specific kernel mmap path |
+| Files / paths | File service and libc; constrained FDs/paths exist, permissions/links/full locale do not | QtCore I/O/resources/errors; state the ASCII path boundary clearly; UTF-8 content does not imply Unicode filename support |
+| Network / terminal / dynamic loading | Owned by their respective foundation workstreams; no full compatibility qualification | Do not require all features for the first window; disabled features must be visible and recorded against actual consumers, not reported as success |
+| moc/rcc/uic and other generators | Porting workstream | The first port may generate on the host with matching versions and cross-build; target-side regeneration is a separate G10 test |
 
-## 接口边界
+## Interface Boundaries
 
-- 内核只提供通用机制，不包含Qt类、对象名、程序名特权或Qt专属syscall。
-- 用户态QtCore平台适配与QPA插件由移植线维护；现有src/ports/下新Qt目录在选型开工时建立。
-  显示服务/SDK由显示线维护，pthread由线程线维护，公用libc/dispatch由整合负责人维护。
-- SDK可用能力必须有版本/尺寸/布局、返回约定、错误与取消/超时、对象生命周期、线程并发
-  和配额说明；具体ABI在提供方专项设计冻结。本表的“需要”不能直接当作头文件声明。
-- 显示调用前完整校验源缓冲/区域；Qt不得假设零拷贝、直接Framebuffer映射或任意多窗口。
-  输入序列/丢失重同步、焦点、客户端/服务死亡与等待唤醒沿用显示契约。
-- 请求改变单surface、等待方式、共享映射或对象撤销语义时，先列新契约和旧消费者影响，
-  不在QPA补丁里暗改底层行为。不要用新编号绕过必要的兼容与身份检查。
+- The kernel provides generic mechanisms only. It contains no Qt classes, object names,
+  program-name privileges, or Qt-specific syscalls.
+- The porting workstream owns the user-space QtCore platform adaptation and QPA plugin.
+  It creates a Qt port directory under `src/ports/` when implementation begins. The display
+  workstream owns the display service/SDK, the threading workstream owns pthread, and the
+  integration lead owns shared libc/dispatch changes.
+- Every SDK capability needs a version, size/layout, return convention, error and
+  cancellation/timeout behavior, object lifecycle, concurrency rules, and quotas. The
+  provider's contract must freeze the ABI. A requirement in this table is not itself a
+  header declaration.
+- Validate source buffers and regions before display calls. Qt must not assume zero-copy,
+  direct framebuffer mapping, or an arbitrary number of windows. Input sequence/loss
+  resynchronization, focus, client/service death, and wait wakeups follow the display contract.
+- A request to change single-surface policy, waiting, shared mappings, or object-revocation
+  semantics must describe the new contract and affected old consumers first. Do not silently
+  change foundation behavior in a QPA patch or use a new number to bypass compatibility and
+  identity checks.
 
-## 并行工作流程
+## Parallel Work Process
 
-1. 开工在state登记责任角色、分支、文件范围与最小gate；没有登记不能推定其他agent活跃。
-2. Qt移植只修改端口/平台适配/自身构建与夹具；缺底座能力时提交调用点、输入、错误及预期。
-3. ABI编号与服务op按abi_registry.md先登记，公共头/manifest/dispatch由对应负责人整合。
-   号段预留防止跨模块重号，同段内仍需逐项登记；不抢PID/endpoint固定值。
-4. 各自私有输出目录，SDK/构建输入固定；共享build排他。旧G02/T2/Python结果只佐证其原输入。
-5. QtCore G03、首窗G04、Widgets G05、QML G06、Quick G07分别验；未实现/未运行/失败明确区分。
+1. Register the owner, branch, file scope, and minimum gate in `state` before work begins.
+   Do not assume another agent is active without an entry.
+2. Qt porting changes only the port, platform adaptation, its build, and its fixtures. When
+   a foundation capability is missing, submit the call site, inputs, errors, and expected behavior.
+3. Register syscall numbers and service operations in `abi_registry.md` first. The owner
+   responsible for that interface integrates public headers, manifests, and dispatch.
+   Reserved number ranges prevent cross-module collisions, but each operation still needs
+   an entry. Do not claim fixed PID/endpoint values.
+4. Use private output directories and fixed SDK/build inputs; shared `build` use is exclusive.
+   Old G02/T2/Python results apply only to their recorded inputs.
+5. Qualify QtCore G03, first window G04, Widgets G05, QML G06, and Quick G07 separately.
+   Distinguish not implemented, not run, and failed.
 
-E15 已由 PR #8 合入（7a7481f），E16 已由 PR #9 合入（be1e9c1）；新组合须独立记录输入与验收。
+E15 merged in PR #8 (`7a7481f`) and E16 merged in PR #9 (`be1e9c1`). Any new combination
+must record its own inputs and qualification.
 
-## E15 受限实现与资格
+## E15 Constrained Implementation and Qualification
 
-`codex/qt6-e15` 使用单消费者 coalescing wait-word 分发 posted events 和单调定时器；
-FD/socket notifier 拒绝，不能与显示等待复用。QMutex 使用 pthread 单调条件变量；
-QThread 取消、映射、路径 canonicalization、UID 权限及无覆盖 rename 不支持。
-源码、竞态/生命周期限制与客体候选证据见 [0063](../work_log/0063_qt_e15_continuation.md)。
-G01/G03 已受限功能通过，见 [0064](../work_log/0064_qt_e15_qualification.md)；绝对峰值和发行审计未完成。不据此开放新 ABI 或声明 poll 支持。
-同一冻结实现的阻塞边界投递、伪唤醒/绝对deadline及活动定时器线程退出补验见
-[0065](../work_log/0065_qt_e15_lifecycle_recheck.md)；未扩展公共机制或更改ABI。
+`codex/qt6-e15` uses a single-consumer coalescing wait-word for posted events and monotonic
+timers. FD/socket notifiers are rejected and cannot be multiplexed with display waits.
+QMutex uses pthread monotonic condition variables. QThread cancellation, mappings, path
+canonicalization, UID permissions, and no-overwrite rename are unsupported. See
+[0063](../work_log/0063_qt_e15_continuation.md) for source, race/lifecycle limits, and guest
+candidate evidence. Constrained G01/G03 features passed; see
+[0064](../work_log/0064_qt_e15_qualification.md). Absolute peak memory and release audits
+remain incomplete. This does not open new ABIs or qualify poll support. Follow-up tests for
+blocked-boundary posting, spurious wakeups/absolute deadlines, and active timer-worker exit
+on the same frozen implementation are in [0065](../work_log/0065_qt_e15_lifecycle_recheck.md);
+they add no public mechanism and change no ABI.
 
-## E16 受限 QPA 契约
+## E16 Constrained QPA Contract
 
-Qt 6.8.3 静态 `xos` 平台插件：真实 mode/stride、RGB32 用户态 QImage、QRegion
-裁剪与同步 Display Service present；无 MMIO 映射/程序名授权。一个独占全屏 Surface，
-第二个窗口 connect=-16 后明确诊断并退出；非零 offset/子窗口 flush 不支持。
+The static Qt 6.8.3 `xos` platform plugin reads the actual display mode/stride, renders to a
+user-space RGB32 QImage, clips QRegion, and synchronously presents through Display Service.
+There is no MMIO mapping or program-name authorization. One exclusive full-screen Surface
+is supported. A second window reports connect=-16 and exits; nonzero flush offsets and child
+windows are unsupported.
 
-同一 display_client 的请求/回复事务用 QMutex 串行。输入线程是 SDK joinable pthread，
-`wait_input()` 不持该锁，读取后向 GUI 线程的 QObject 投递任务，由 GUI 线程调用
-QWindowSystemInterface。退出先置停止、disconnect 唤醒，再 pthread_join，最后清
-投递目标；服务死亡以 -19/退出码72处理，重新启动服务后新客户端可恢复。正常共两线程，
-仍受每进程4线程限制。没有扩大 syscall65/66 或 display wire v1。
+Requests/replies on one display_client are serialized by QMutex. Input uses an SDK joinable
+pthread. `wait_input()` does not hold the transaction lock; after reading input it posts a
+task to a QObject on the GUI thread, which calls QWindowSystemInterface. Shutdown sets the
+stop flag, disconnects to wake the input wait, joins the pthread, then clears the delivery
+target. Service death returns -19 and exits with status 72; a new client can recover after
+the service restarts. Normal use has two threads and remains within the per-process limit of
+four. No syscall 65/66 or display wire v1 changes were made.
 
-Qt 6.8.3 当前 QThread::wait 的 detached 清理通知可早于内核线程退出；E16 不改变 E15，
-输入线程使用 pthread_join 取得完整回收保证。隐藏窗口产生 Qt 焦点退出并抑制 GUI 输入，
-独占 Surface 直到窗口销毁才撤销。Set1 英文及 Shift/Ctrl/Alt/Caps、鼠标三键、序列、
-64项溢出 resync；无 IME/滚轮/USB/多窗口合成。字体为原版 DejaVu 经实际 FreeType/
-HarfBuzz/QPainter 路径。实现、失败与资格见 [E16实施](../plans/qt_e16_execution.md) 和
-[0066](../work_log/0066_qt_e16_qualification.md)。静态发行/逐成员许可审查仍未完成。
+In Qt 6.8.3, the detached-thread cleanup notification used by QThread::wait may precede
+kernel-thread exit. E16 leaves E15 unchanged and uses pthread_join for complete input-thread
+reclamation. Hiding the window triggers Qt focus loss and suppresses GUI input, but the
+exclusive Surface remains until destruction. Supported input is Set1 English, Shift/Ctrl/Alt/
+Caps, three mouse buttons, sequencing, and 64-entry overflow resync. IME, wheel, USB, and
+multi-window composition are absent. The original DejaVu font is rendered through FreeType/
+HarfBuzz/QPainter. See the [E16 implementation](../plans/qt_e16_execution.md) and
+[0066](../work_log/0066_qt_e16_qualification.md) for implementation, failures, and qualification.
+Static distribution and per-member license reviews remain incomplete.
 
-## E17 Widgets / Aurora 受限契约
+## E17 Widgets / Aurora Constrained Contract
 
-使用同一份新构建的 SDK/C++ 运行库交叉编译 Core/Gui/Widgets，冻结 QtBase 6.8.3；
-不混用旧 E15 归档。E15/E16 原构建入口与冻结报告保留。Widgets 的非原生子控件、
-viewport 和滚动实测使用顶层 backing store、零 offset；现有 child/native、非零
-flush offset 和第二顶层拒绝语义不扩展。QPA 仅补 Home/End/PageUp/PageDown/Delete
-Set1 映射和 flush 观测；没有新 syscall 或 display wire 变更。
+Cross-compile Core/Gui/Widgets with the same newly built SDK/C++ runtime and frozen QtBase
+6.8.3; do not mix in the old E15 archives. Retain the original E15/E16 build entry points
+and frozen reports. Widgets child controls, viewport, and scrolling were tested with the
+top-level backing store and zero offset. Existing child/native, nonzero flush-offset, and
+second-top-level rejection semantics are unchanged. QPA adds only Home/End/PageUp/PageDown/
+Delete Set1 mapping and flush observation; there are no new syscalls or display-wire changes.
 
-`libXosAurora.a` 提供 `aurora::initialize(QApplication&)`，选择 QProxyStyle/QPalette
-及标准按钮/文本/输入的深色样式；canvas/panel/button 为可选共享控件。有限低频模糊、
-环境混合和软件指针都在该应用内完成，不是系统合成器、跨应用折射或 GPU 加速。
-QtGui 的图像/绘制线程池可多占一个线程，实测常见为3线程，仍受4线程配额；不是把
-E16 的两个线程结论照搬到 Widgets。正常/kill/fault/服务故障后的进程资源已核对。
+`libXosAurora.a` provides `aurora::initialize(QApplication&)`, selecting QProxyStyle/QPalette
+and a dark style for standard buttons, text, and input. Canvas/panel/button are optional shared
+controls. Its bounded low-frequency blur, environment blending, and software pointer are
+application-local; they are not a system compositor, cross-application refraction, or GPU
+acceleration. The QtGui image/paint thread pool may add one thread; observed usage is commonly
+three threads and remains within the four-thread quota. Do not transfer E16's two-thread result
+to Widgets. Process resources were checked after normal exit, kill, fault, and service failure.
 
-保存复用文件 wire-v2 的 staging/journal。只读以非截断可写 open + close 检查；
-QFile 用于读/核对，不用 WriteOnly 截断目标；QSaveFile 不构成安全覆盖承诺。
-precommit 错误保留原目标；commit/final sync 错误为 UNKNOWN，保留缓冲并阻止重试。
-消费者旧内容比较不是并发 CAS；不宣称所有错误都保留旧路径、任意断电或扇区撕裂安全。
-实际错误路径、注入层级、重启字节比对及局限见 [0078](../work_log/0078_qt_e17_aurora_qualification.md)。
+Saving reuses file wire-v2 staging/journal. Read-only checks use a non-truncating writable
+open followed by close. QFile is used for reading/comparison, not WriteOnly truncation of the
+target; QSaveFile does not promise safe overwrite. Pre-commit errors preserve the target.
+Commit/final-sync errors yield UNKNOWN, retain the buffer, and block retry. Comparing old
+content in the consumer is not concurrent CAS. Do not claim all errors preserve the old path,
+arbitrary power-loss safety, or protection from torn sectors. Actual error paths, injection
+layers, post-reboot byte comparisons, and limits are documented in
+[0078](../work_log/0078_qt_e17_aurora_qualification.md).
 
 G05/Aurora 仅对冻结夹具和已声明范围通过；静态分发/完整许可/重链接、绝对峰值、
 CPU、长期压力、完整 Unicode 字体、IME/剪贴板、QML/Quick 均没有继承资格。

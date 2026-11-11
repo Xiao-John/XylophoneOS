@@ -26,7 +26,7 @@ stage_gates() {
 stage_freeze() {
   mkdir -p "$R"
   cp build/manifest.json "$R/system_manifest.json"
-  cp build/xos.img build/xos.iso build/xos-install-dash.iso build/install_manifest.json "$R/"
+  cp build/xos-install.iso build/xos-install-dash.iso build/install_manifest.json "$R/"
   rm -rf "$R/sdk"
   cp -R build/sdk "$R/sdk"
   echo "frozen $R"

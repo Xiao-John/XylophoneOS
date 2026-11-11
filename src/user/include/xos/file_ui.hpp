@@ -6,6 +6,12 @@
 namespace xos::ui {
 void init();
 bool available();
+// XOSBND1 staged XPKs (DU4): paths under /var/cache/xypm/incoming/
+u32 staged_count();
+const char* staged_path(u32 index);
+bool bundle_marker_present();
+bool bundle_marker_write();
+bool bundle_install_ok();
 void list(const char* path = "/");
 void make_directory(const char* path);
 void rename_file(const char* old_path, const char* new_path);

@@ -6,10 +6,10 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser()
 for n in ('system','quota-system','timeout-system','qt-fixtures','qt-runner-root','output'):p.add_argument('--'+n,type=Path,required=True)
-a=p.parse_args();out=a.output.resolve();out.mkdir(parents=True,exist_ok=False);fixtures=a.qt_fixtures.resolve();qtroot=a.qt_runner_root.resolve();image=a.system.resolve()/'xos.img';sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
+a=p.parse_args();out=a.output.resolve();out.mkdir(parents=True,exist_ok=False);fixtures=a.qt_fixtures.resolve();qtroot=a.qt_runner_root.resolve();image=a.system.resolve()/'xos-install.iso';sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
 manifest=json.loads((a.system/'manifest.json').read_text())
 for n,h in manifest['sources'].items():assert sha(ROOT/n)==h,n
-assert sha(image)==manifest['artifacts']['xos.img']['sha256']
+assert sha(image)==manifest['artifacts']['xos-install.iso']['sha256']
 # These private aliases are for unchanged baseline tests. No other worktree build is used.
 for source in a.system.resolve().iterdir():
  target=ROOT/'build'/source.name

@@ -40,6 +40,25 @@ class public_path_tests(unittest.TestCase):
             with self.subTest(category=category):
                 self.assertIn(category, self.categories(value))
 
+    def test_bare_temp_segment_is_doubtful_and_host_temp_is_open(self):
+        # A bare temp segment is ambiguous with XOS guest paths: it must be
+        # listed for double check but never block on its own. Host-private
+        # temp locations stay confirmed and blocking.
+        bare = b'run python3 ' + b'/tm' + b'p/hello.py'
+        host = b'cp out ' + b'/private/tm' + b'p/job/x'
+        bare_findings = self.findings(bare)
+        self.assertEqual([(f['category'], f['status']) for f in bare_findings],
+                         [('ambiguous_tmp', 'DOUBTFUL')])
+        self.assertFalse([f for f in bare_findings if f['status'] != 'DOUBTFUL'])
+        host_findings = self.findings(host)
+        self.assertEqual([(f['category'], f['status']) for f in host_findings],
+                         [('private_temp', 'OPEN')])
+        # A host-private hit also inside a bare match is counted once each,
+        # never downgraded by the ambiguous category.
+        mixed = self.findings(b'/private/tm' + b'p/x and ' + b'/tm' + b'p/y')
+        self.assertEqual(sorted(f['category'] for f in mixed),
+                         ['ambiguous_tmp', 'private_temp'])
+
     def test_nested_zip_gzip_tar_member_content_name_and_link(self):
         tar = io.BytesIO()
         with tarfile.open(fileobj=tar, mode='w') as archive:

@@ -13,7 +13,7 @@ XylophoneOS: BIOS real_mode bring-up; x86_64 is next.
 No protected memory or user tasks yet.
 ```
 
-这是 0001 保留的 16 位练习镜像，不是默认 `xos.img` 的内核。
+这是 0001 保留的 16 位练习镜像，不是常规系统内核（常规引导产物为 file-backed 的 `build/xos-install.iso`，legacy 软盘/裸盘镜像已废除）。
 
 ## 失败与边界
 

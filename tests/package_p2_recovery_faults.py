@@ -28,7 +28,7 @@ def build_probe(sdk,output):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--system',type=Path,required=True);parser.add_argument('--output',type=Path,required=True);args=parser.parse_args()
-    system=args.system.resolve();out=args.output.resolve();out.mkdir(parents=True,exist_ok=True);manifest=load_json(system/'manifest.json');image=system/'xos.img';require(sha_file(image)==manifest['artifacts']['xos.img']['sha256'],'system image mismatch');probe=out/'recovery_fault.elf';build_probe(system/'sdk',probe)
+    system=args.system.resolve();out=args.output.resolve();out.mkdir(parents=True,exist_ok=True);manifest=load_json(system/'manifest.json');image=system/'xos-install.iso';require(sha_file(image)==manifest['artifacts']['xos-install.iso']['sha256'],'system image mismatch');probe=out/'recovery_fault.elf';build_probe(system/'sdk',probe)
     report={'status':'failed','system_build_id':manifest['build_id'],'image_sha256':sha_file(image),'probe_sha256':sha_file(probe),'test_sha256':sha_file(Path(__file__)),'operations':{},'not_run':['power_loss','sector_tearing']};guest=None
     try:
         with tempfile.TemporaryDirectory(prefix='xypm_recovery_faults_') as temp:
@@ -51,7 +51,7 @@ def main():
                     if case=='committed':backend.command('import','/var/lib/xypm/txdata/committed',temp_file('commit',commit))
                 return disk
             def start(disk):
-                g=Guest(boot,'package_p2_recovery_faults',work_disk=disk);g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=40);pump(g,0.8);return g
+                g=Guest(boot,'package_p2_recovery_faults',work_disk=disk,iso=True);g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=40);pump(g,0.8);return g
             def command(g,line,expected,timeout=90):
                 begin=len(g.output);send_bytes(g,line.encode()+b'\r');matched=g.expect_any((expected,b'xsh> '),start=begin,timeout=timeout);require(matched==expected,'unexpected result '+line+': '+repr(bytes(g.output)[begin:][-3000:]));g.expect_supervisor(start=begin,timeout=timeout);return bytes(g.output)[begin:]
             def verify(disk,case):

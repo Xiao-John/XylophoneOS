@@ -170,10 +170,10 @@ def main():
         if not source.is_file() or sha(source) != item['sha256']:
             raise AssertionError(f'Seed tool provenance mismatch: {name}')
     system = json.loads((ROOT / 'build/manifest.json').read_text())
-    image_hash = sha(ROOT / 'build/xos.img')
-    recorded_image_hash = system.get('artifacts', {}).get('xos.img', {}).get('sha256')
+    image_hash = sha(ROOT / 'build/xos-install.iso')
+    recorded_image_hash = system.get('artifacts', {}).get('xos-install.iso', {}).get('sha256')
     if recorded_image_hash and recorded_image_hash != image_hash:
-        raise AssertionError('build/xos.img does not match build/manifest.json')
+        raise AssertionError('build/xos-install.iso does not match build/manifest.json')
     sdk_files = verify_current_sdk(sdk_manifest, ROOT / 'build')
     report = {'status': 'failed', 'gate': 'E08-4', 'build_id': system['build_id'],
               'xos_sha256': image_hash, 'seed_manifest': str(manifest_path),

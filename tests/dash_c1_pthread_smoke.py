@@ -51,9 +51,9 @@ def main():
         report.update(system_build_id=system['build_id'], system_manifest_sha256=sha(system_path),
                       sdk_manifest_sha256=sha(sdk_path), sdk_profile=sdk['profile'],
                       sdk_recorded_qualification=sdk.get('qualification'))
-        image = args.system/'xos.img'
+        image = args.system/'xos-install.iso'
         report['image_sha256'] = sha(image)
-        if sha(image) != system['artifacts']['xos.img']['sha256']:
+        if sha(image) != system['artifacts']['xos-install.iso']['sha256']:
             raise AssertionError('system image differs from manifest')
         # Validate every frozen SDK artifact and every local source receipt,
         # including the branch's actual newlib syscall implementation.
@@ -103,7 +103,7 @@ def main():
             create_fat32(disk, 512)
             transfer(disk, 'mkdir', '/tests')
             transfer(disk, 'import', '/tests/pipe_pthread', executable)
-            guest = Guest(private_image, 'dash_c1_pthread', work_disk=disk)
+            guest = Guest(private_image, 'dash_c1_pthread', work_disk=disk, iso=True)
             report['qemu_command'] = guest.command
             qemu = Path(guest.command[0])
             report['tools']['qemu'] = {'path': str(qemu.resolve()), 'sha256': sha(qemu),

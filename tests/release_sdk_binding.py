@@ -57,8 +57,8 @@ class BindingCases(unittest.TestCase):
         parent=ROOT/'build/releases';parent.mkdir(parents=True,exist_ok=True)
         with tempfile.TemporaryDirectory(prefix='audit_binding_',dir=parent) as folder:
             out=Path(folder);shutil.copytree(self.sdk,out/'sdk')
-            boot=out/'xos.img';boot.write_bytes(b'fixture boot bytes')
-            system=copy.deepcopy(self.system);system['artifacts']['xos.img']={'sha256':sha(boot)}
+            iso=out/'xos-install.iso';iso.write_bytes(b'fixture install iso bytes')
+            system=copy.deepcopy(self.system);system['artifacts']['xos-install.iso']={'sha256':sha(iso)}
             (out/'system_manifest.json').write_text(json.dumps(system))
             (out/'sdk/lib/libc.a').write_bytes(b'wrong SDK')
             before={p.relative_to(out).as_posix():sha(p) for p in out.rglob('*') if p.is_file()}
@@ -67,7 +67,7 @@ class BindingCases(unittest.TestCase):
             self.assertNotEqual(run.returncode,0);self.assertIn('SDK file set',run.stderr)
             after={p.relative_to(out).as_posix():sha(p) for p in out.rglob('*') if p.is_file()}
             self.assertEqual(before,after)
-            self.assertEqual({p.name for p in out.iterdir()},{'sdk','xos.img','system_manifest.json'})
+            self.assertEqual({p.name for p in out.iterdir()},{'sdk','xos-install.iso','system_manifest.json'})
     def test_runtime_tree_and_provenance_binding(self):
         runtime=self.root/'runtime';(runtime/'lib').mkdir(parents=True)
         lib=runtime/'lib/libstdc++.a';lib.write_bytes(b'fixture library')

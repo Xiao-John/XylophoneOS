@@ -30,7 +30,7 @@ def main():
     build=ROOT/'build';manifest=json.loads((build/'manifest.json').read_text())
     report={'status':'failed','build_id':manifest['build_id'],'checks':[],
             'source_sha256':manifest['source_digest'] if 'source_digest' in manifest else manifest.get('source_sha256'),
-            'image_sha256':sha(build/'xos.img'),'not_run':['real_hardware','SMP','Qt','long_term_stress']}
+            'image_sha256':sha(build/'xos-install.iso'),'not_run':['real_hardware','SMP','Qt','long_term_stress']}
     guest=None
     def mark(name,**fields):report['checks'].append({'name':name,'status':'passed',**fields})
     def command(line,expected=b'xsh> ',timeout=30):
@@ -68,7 +68,7 @@ def main():
         mark('source_and_artifact_hashes_match_manifest')
         with tempfile.TemporaryDirectory(prefix='xos_e14_') as directory:
             disk=Path(directory)/'work.img';create_fat32(disk,512)
-            guest=boot(build/'xos.img',log_prefix+'/main',disk)
+            guest=boot(build/'xos-install.iso',log_prefix+'/main',disk,iso=True)
             assert b'width=800 height=600 stride=3200' in guest.output
             physical=int(re.search(rb'\[display\][^\r\n]*physical=(0x[0-9a-f]+)',guest.output)[1],16)
             send_bytes(guest,b'run\r');guest.expect_supervisor(trace=True);pump(guest,1.6)
@@ -189,14 +189,14 @@ def main():
             assert resources(guest)==baseline
             mark('serial_xshell_loader_libc_file_service_and_sync_remain_usable')
             guest.close();guest=None
-            # Both ISO loaders carry the extension; file-backed boot is the default route.
-            for image in ('xos.iso','xos-install.iso'):
-                guest=boot(build/image,log_prefix+'/'+image,disk,iso=True)
-                assert b'width=800 height=600 stride=3200' in guest.output
-                send_bytes(guest,b'run\r');guest.expect_supervisor(trace=True);pump(guest,1.5)
-                service=service_start();command('exec gfxdemo check',b'checks=pass')
-                mark('bios_'+image+'_graphics_and_guest_checks')
-                guest.close();guest=None
+            # The file-backed ISO is the default boot route.
+            boot_image='xos-install.iso'
+            guest=boot(build/boot_image,log_prefix+'/'+boot_image,disk,iso=True)
+            assert b'width=800 height=600 stride=3200' in guest.output
+            send_bytes(guest,b'run\r');guest.expect_supervisor(trace=True);pump(guest,1.5)
+            service=service_start();command('exec gfxdemo check',b'checks=pass')
+            mark('bios_'+boot_image+'_graphics_and_guest_checks')
+            guest.close();guest=None
             guest=boot(build/'xos-install.iso',log_prefix+'/no_vga',disk,iso=True,no_vga=True)
             assert b'[display] state=ready' not in guest.output
             send_bytes(guest,b'run\r');guest.expect_supervisor(trace=True);pump(guest,1.5)

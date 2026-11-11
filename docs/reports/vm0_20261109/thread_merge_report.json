@@ -1,0 +1,25 @@
+{
+  "baseline": [
+    130111,
+    2,
+    0
+  ],
+  "checks": [
+    "thread_core",
+    "thread_last",
+    "thread_arbitration",
+    "spawn_private_ordered_actions",
+    "B2_order_dup_append_input_builtin_restore",
+    "thread_model_nested_Escape",
+    "ISO_sys53_dash_payload"
+  ],
+  "dash_sha256": "3ca05b97bec606b7440365a1b59ed5ba843d4f53b2ee4160b75e3e5604be4ad0",
+  "image_sha256": "8d3e382ddb13bc41f5fbfe588c5cdcd3723e5f344cc57359b499934483230d6b",
+  "iso_sha256": "58af4e6e60f0d7d107fad3623ee6e9c28ac7ed09ddb2fb96aaac6d1246aa4f69",
+  "not_run": [
+    "full_threaded_newlib_CXX_SDK_requalification",
+    "B2_full_native_compiler_chain"
+  ],
+  "status": "passed",
+  "system_build_id": "e68f6403d72f1f58"
+}

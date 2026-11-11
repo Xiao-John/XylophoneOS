@@ -63,6 +63,53 @@ inline i64 ipc_handles(u32& send_handle, u32& recv_handle) {
     if (result == 0) { send_handle = values[0]; recv_handle = values[1]; }
     return result;
 }
+inline i64 ipc_channel_create(u64 peer_pid, ipc_channel& channel) {
+    return syscall(sys_ipc_endpoint, static_cast<u64>(ipc_endpoint_action::create), peer_pid,
+                   reinterpret_cast<u64>(&channel));
+}
+inline i64 ipc_channel_revoke(u32 endpoint) {
+    return syscall(sys_ipc_endpoint, static_cast<u64>(ipc_endpoint_action::revoke), endpoint, 0);
+}
+inline i64 ipc_endpoint_peer(u32 endpoint, u64& peer_pid) {
+    return syscall(sys_ipc_endpoint, static_cast<u64>(ipc_endpoint_action::query_peer), endpoint,
+                   reinterpret_cast<u64>(&peer_pid));
+}
+inline i64 ipc_channel_close(u32 endpoint) {
+    return syscall(sys_ipc_endpoint, static_cast<u64>(ipc_endpoint_action::close), endpoint, 0);
+}
+inline i64 ipc_wait(u32 endpoint, ipc_wait_mode mode) {
+    return syscall(sys_ipc_wait, endpoint, static_cast<u64>(mode), 0);
+}
+inline ipc_channel ipc_channel_for_peer(const ipc_channel& channel) {
+    return {channel.receive, channel.send};
+}
+inline i64 ipc_name_publish(const char* name) {
+    return syscall(sys_ipc_name, static_cast<u64>(ipc_name_action::publish),
+                   reinterpret_cast<u64>(name), 0);
+}
+inline i64 ipc_name_unpublish(const char* name) {
+    return syscall(sys_ipc_name, static_cast<u64>(ipc_name_action::unpublish),
+                   reinterpret_cast<u64>(name), 0);
+}
+inline i64 ipc_name_connect(const char* name, ipc_channel& channel) {
+    return syscall(sys_ipc_name, static_cast<u64>(ipc_name_action::connect),
+                   reinterpret_cast<u64>(name), reinterpret_cast<u64>(&channel));
+}
+inline i64 ipc_name_try_accept(ipc_channel& channel) {
+    return syscall(sys_ipc_name, static_cast<u64>(ipc_name_action::accept),
+                   reinterpret_cast<u64>(&channel), 0);
+}
+inline i64 ipc_name_wait_accept() {
+    return syscall(sys_ipc_name, static_cast<u64>(ipc_name_action::wait_accept), 0, 0);
+}
+inline i64 ipc_name_accept(ipc_channel& channel) {
+    for (;;) {
+        const i64 result = ipc_name_try_accept(channel);
+        if (result != process_error_would_block) return result;
+        const i64 waited = ipc_name_wait_accept();
+        if (waited < 0) return waited;
+    }
+}
 inline void yield() { (void)syscall(3); }
 inline u64 ticks() { return static_cast<u64>(syscall(7)); }
 inline u64 pid() { return static_cast<u64>(syscall(6)); }
@@ -75,7 +122,13 @@ bool equal(const char* left, const char* right);
 i64 spawn(u32 image, u32 argc, const char* const* argv);
 i64 spawn_buffer(const char* name, const u8* bytes, u64 size, u32 argc,
                  const char* const* argv);
+i64 spawn_buffer_options(const char* name, const u8* bytes, u64 size, u32 argc,
+                         const char* const* argv, const spawn_options& options);
+i64 spawn_image_options(u32 image, u32 argc, const char* const* argv,
+                         const spawn_options& options);
 i64 spawn_file(const char* path, u32 argc, const char* const* argv);
+i64 spawn_file_options(const char* path, u32 argc, const char* const* argv,
+                       const spawn_options& options);
 inline i64 wait(u64 child, process_status& status) {
     return syscall(sys_process_wait, child, reinterpret_cast<u64>(&status));
 }

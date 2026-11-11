@@ -21,22 +21,94 @@ MAX_PACKAGES = 64
 MAX_OWNED_FILES = 8192
 
 
+def _uid():
+    return getattr(os, 'getuid', lambda: 0)()
+
+
+def _secure_directory(path):
+    try:
+        info = path.lstat()
+    except OSError:
+        return False
+    return (stat.S_ISDIR(info.st_mode) and info.st_uid == _uid() and
+            (info.st_mode & 0o077) == 0)
+
+
+def _claim_directory(path):
+    """Create or tighten a directory we own to 0700; reject foreign ownership."""
+    try:
+        if not path.exists():
+            path.mkdir(mode=0o700)
+        info = path.lstat()
+        if not (stat.S_ISDIR(info.st_mode) and info.st_uid == _uid()):
+            return False
+        if (info.st_mode & 0o077) != 0:
+            path.chmod(0o700)
+        return _secure_directory(path)
+    except OSError:
+        return False
+
+
+def _private_cache_root():
+    """0700 per-user cache root; fall back to mkdtemp if it is not trustworthy."""
+    candidate = Path(tempfile.gettempdir()) / ('xos_xypm_host_%d' % _uid())
+    if _claim_directory(candidate):
+        return candidate
+    return Path(tempfile.mkdtemp(prefix='xos_xypm_host_'))
+
+
+def _private_folder(root, digest):
+    folder = root / digest
+    if _claim_directory(folder):
+        return folder
+    return Path(tempfile.mkdtemp(prefix='xos_xypm_host_build_', dir=root))
+
+
+def _write_private(path, data):
+    # Replace any pre-existing entry instead of truncating it: a planted
+    # symlink or attacker-owned file must not influence the write.
+    try:
+        os.unlink(path)
+    except FileNotFoundError:
+        pass
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, 'O_NOFOLLOW', 0)
+    descriptor = os.open(path, flags, 0o600)
+    with os.fdopen(descriptor, 'wb') as stream:
+        stream.write(data)
+
+
 def host_tool():
     sources = [ROOT/'scripts/xypm_disk_host.cpp', ROOT/'src/third_party/fatfs/ff.c',
                ROOT/'src/user/services/fatfs_unicode.cpp']
     headers = sorted((ROOT/'src/third_party/fatfs').glob('*.h'))
     snapshots = {p.name: p.read_bytes() for p in sources + headers}
     digest = hashlib.sha256(canonical({n: hashlib.sha256(b).hexdigest() for n,b in snapshots.items()})).hexdigest()
-    folder = ROOT/'.cache/xos_seed/xypm_host'/digest
-    folder.mkdir(parents=True, exist_ok=True)
+    # Keep the compiled helper outside the SDK tree.  xos_app binds profiles to a
+    # hash of the SDK tree; a cache written under SDK/.cache would silently
+    # invalidate that profile after the first xypm command.
+    root = _private_cache_root()
+    folder = _private_folder(root, digest)
     output = folder/'xypm_disk_host'
-    if not output.exists():
+    stamp = folder/'xypm_disk_host.sha256'
+    trusted = False
+    try:
+        info = output.lstat()
+        if (stat.S_ISREG(info.st_mode) and info.st_uid == _uid() and
+                (info.st_mode & 0o022) == 0 and stat.S_ISREG(stamp.lstat().st_mode) and
+                stamp.lstat().st_uid == _uid()):
+            trusted = sha_file(output) == stamp.read_text().strip()
+    except OSError:
+        trusted = False
+    if not trusted:
         for name, data in snapshots.items():
-            (folder/name).write_bytes(data)
+            _write_private(folder/name, data)
         compiler = shutil.which('clang++') or shutil.which('c++')
         require(compiler is not None, 'host C++ compiler required')
+        temporary = folder/('xypm_disk_host.%d.%s.tmp' % (os.getpid(), uuid.uuid4().hex))
         subprocess.run([compiler,'-std=c++17','-O2','-w','-I',str(folder),
-                        *[str(folder/p.name) for p in sources],'-o',str(output)],check=True)
+                        *[str(folder/p.name) for p in sources],'-o',str(temporary)],check=True)
+        os.replace(temporary, output)
+        _write_private(stamp, (sha_file(output) + '\n').encode())
     return output
 
 
@@ -125,6 +197,16 @@ def owners(db):
     return result
 
 
+def profile_file_for(profile_id):
+    for path in sorted((ROOT / 'config/package').glob('*.json')):
+        try:
+            if load_json(path).get('id') == profile_id:
+                return path.relative_to(ROOT).as_posix()
+        except (OSError, ValueError, KeyError, TypeError):
+            continue
+    return None
+
+
 def load_db(disk, profile):
     # Refuse parallel ownership databases left by pre-rename development images.
     for old_name in ('xpm', 'xpkg'):
@@ -140,7 +222,14 @@ def load_db(disk, profile):
     require(not info['directory'] and info['size']<=1<<20,'invalid xypm database size/type')
     db=load_json(disk.export(DB_PATH))
     fields(db,('format_version','target_profile','packages','created_directories','index_sha256'))
-    require(type(db['format_version']) is int and db['format_version']==1 and db['target_profile']==profile['id'],'database profile/version mismatch')
+    require(type(db['format_version']) is int and db['format_version']==1,
+            'database version mismatch: image=%r' % db['format_version'])
+    if db['target_profile'] != profile['id']:
+        hint = profile_file_for(db['target_profile'])
+        raise ValueError('database profile mismatch: image=%r selected=%r; use %s; '
+                         'local profiles are development-only and incompatible with a release image'
+                         % (db['target_profile'], profile['id'],
+                            hint if hint else 'a matching profile'))
     require(type(db['packages']) is dict and len(db['packages'])<=MAX_PACKAGES,'invalid package database')
     require(type(db['created_directories']) is list and len(db['created_directories'])<=MAX_OWNED_FILES*4,'invalid directory ownership')
     for path in db['created_directories']:

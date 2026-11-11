@@ -16,7 +16,7 @@ p=argparse.ArgumentParser()
 for n in ('system','qt-payload','output'):p.add_argument('--'+n,type=Path,required=True)
 p.add_argument('--access-payload',type=Path)
 a=p.parse_args();out=a.output.resolve();out.mkdir(parents=True,exist_ok=False)
-image=a.system/'xos.img';manifest=json.loads((a.system/'manifest.json').read_text());assert sha(image)==manifest['artifacts']['xos.img']['sha256']
+image=a.system/'xos-install.iso';manifest=json.loads((a.system/'manifest.json').read_text());assert sha(image)==manifest['artifacts']['xos-install.iso']['sha256']
 receipt=json.loads(a.qt_payload.with_suffix('.receipt.json').read_text());assert sha(a.qt_payload)==receipt['elf_sha256']
 for n,h in receipt['inputs'].items():assert sha(n)==h,n
 # The C branch changes kernel internals only. Verify every SDK runtime/shared input.
@@ -35,7 +35,7 @@ def boot(disk,backend,name):
   cmd=original(*args,**kw)
   if backend=='virtio':cmd[cmd.index('-vga')+1]='none';cmd+=['-device','virtio-gpu-pci,id=vgpu,disable-legacy=on']
   return cmd
- with patch.object(boot_smoke,'qemu_command',qemu):g=Guest(image.resolve(),str(out.relative_to(ROOT/'build'))+'/'+name,work_disk=disk)
+ with patch.object(boot_smoke,'qemu_command',qemu):g=Guest(image.resolve(),str(out.relative_to(ROOT/'build'))+'/'+name,iso=True,work_disk=disk)
  g.expect(b'xos64> ',timeout=45)
  if backend=='virtio':
   assert b'[display] backend=virtio-gpu-2d' in g.output and b'state=ready width=' not in g.output

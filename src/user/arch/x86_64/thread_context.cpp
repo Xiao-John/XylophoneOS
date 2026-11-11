@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-#include "../../threading/runtime.hpp"
+#include <runtime.hpp>
 #include <errno.h>
 #include <stdint.h>
 using namespace xos;

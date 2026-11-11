@@ -71,13 +71,13 @@ def main():
     system_dir = args.system_dir.resolve()
     output_dir = args.output_dir.resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
-    image = system_dir / "xos.img"
+    image = system_dir / "xos-install.iso"
     manifest_path = system_dir / "manifest.json"
     if not manifest_path.exists():
         manifest_path = system_dir / "system_manifest.json"
     manifest = json.loads(manifest_path.read_text())
     image_sha256 = hashlib.sha256(image.read_bytes()).hexdigest()
-    expected_image_sha256 = manifest.get("artifacts", {}).get("xos.img", {}).get("sha256")
+    expected_image_sha256 = manifest.get("artifacts", {}).get("xos-install.iso", {}).get("sha256")
     if expected_image_sha256 and image_sha256 != expected_image_sha256:
         raise AssertionError("system image differs from its manifest")
 
@@ -130,7 +130,7 @@ def main():
             transfer(helper, disk, "import", "/usr/bin/program.txt", hello_probe)
             transfer(helper, disk, "import", "/usr/bin/ui_fault", fault)
             transfer(helper, disk, "import", "/usr/bin/dash", dash)
-            guest = Guest(image, "xsh_ui", work_disk=disk)
+            guest = Guest(image, "xsh_ui", iso=True, work_disk=disk)
             guest.expect(b"xos64> ", timeout=40)
             send_bytes(guest, b"run\r")
             guest.expect(b"Xshell", timeout=30)

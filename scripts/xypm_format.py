@@ -177,7 +177,20 @@ def validate_manifest(value):
 
 
 def check_profile(manifest, profile):
-    require(profile['id'] == manifest['target_profile'], 'target profile mismatch')
+    if profile['id'] != manifest['target_profile']:
+        expected = manifest['target_profile']
+        hint = None
+        for path in sorted(DEFAULT_PROFILE.parent.glob('*.json')):
+            try:
+                if json.loads(path.read_text()).get('id') == expected:
+                    hint = path.name
+                    break
+            except (OSError, ValueError, TypeError):
+                pass
+        require(False, 'package target profile mismatch: package=%r selected=%r; use %s; '
+                        'local profiles are development-only and incompatible with a release image'
+                        % (expected, profile['id'],
+                           ('config/package/' + hint) if hint else 'a matching profile'))
     require(set(manifest['required_features']) <= set(profile['features']), 'required feature unavailable')
 
 

@@ -120,13 +120,13 @@ def main():
     args.artifacts.mkdir(parents=True,exist_ok=False)
     system=json.loads((args.system/'manifest.json').read_text());dash=json.loads(args.dash_manifest.read_text());make=json.loads(args.make_manifest.read_text())
     report={'phase':'C3_here_document_and_make','status':'failed','source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
-        'system_build_id':system['build_id'],'image_sha256':sha(args.system/'xos.img'),'sdk_manifest_sha256':sha(args.system/'sdk/manifest.json'),
+        'system_build_id':system['build_id'],'image_sha256':sha(args.system/'xos-install.iso'),'sdk_manifest_sha256':sha(args.system/'sdk/manifest.json'),
         'dash_sha256':dash['sha256'],'dash_manifest_sha256':sha(args.dash_manifest),'make_sha256':make['sha256'],'make_manifest_sha256':sha(args.make_manifest),'make_commit':make['commit'],'make_profile':make['profile'],'host_tools':system['tools'],'make_build_tools':make['tools'],
         'commands':[],'checks':[],'inputs':{},'host_reference':{},'exports':{},'artifacts':str(args.artifacts),
         'not_run':['C3_exec_identity_and_failure_atomicity_qualified_by_separate_runner','SMP','unrelated_long_randomized_stress']}
     guest=None
     try:
-        if report['image_sha256']!=system['artifacts']['xos.img']['sha256']:raise AssertionError('system image mismatch')
+        if report['image_sha256']!=system['artifacts']['xos-install.iso']['sha256']:raise AssertionError('system image mismatch')
         if make['commit']!='c546c3a5724c81cee9a11d816a38ccdf17472129':raise AssertionError('unexpected Make source commit')
         sdk=args.system/'sdk';sdk_info=json.loads((sdk/'manifest.json').read_text())
         if sdk_info['build_id']!=system['build_id'] or make['sdk_manifest_sha256']!=sha(sdk/'manifest.json'):raise AssertionError('SDK/Make build input mismatch')
@@ -269,7 +269,7 @@ def main():
                 path=args.artifacts/(name+'.sh');path.write_text('# SPDX-License-Identifier: Apache-2.0\n'+text)
                 transfer(disk,'import','/tests/c3_'+name+'.sh',path)
                 report['scripts'][name]={'input':text,'sha256':sha(path)}
-            guest=Guest(args.system/'xos.img','dash_c3',work_disk=disk)
+            guest=Guest(args.system/'xos-install.iso','dash_c3',work_disk=disk,iso=True)
             report['qemu_command']=guest.command;report['qemu_version']=subprocess.check_output([guest.command[0],'--version'],text=True).splitlines()[0]
             guest.expect(b'xos64> ',timeout=40);send_bytes(guest,b'run\r');guest.expect_supervisor(trace=True,timeout=40);pump(guest,1.5)
             baseline=resources(guest);report['baseline_resources']=baseline

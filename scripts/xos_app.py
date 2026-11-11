@@ -21,9 +21,14 @@ def tree_receipt(root):
     root = Path(root).resolve(strict=True)
     result = {}
     for path in sorted(root.rglob('*')):
+        relative = path.relative_to(root)
         require(not path.is_symlink(), 'SDK symlinks unsupported: ' + str(path))
+        # Local Python/host-tool caches are not SDK inputs.  Importing tools or
+        # running xypm must not invalidate the profile that binds this tree.
+        if '__pycache__' in relative.parts or relative.suffix == '.pyc' or relative.parts[0] == '.cache':
+            continue
         if path.is_file():
-            result[path.relative_to(root).as_posix()] = sha_file(path)
+            result[relative.as_posix()] = sha_file(path)
     return hashlib.sha256(canonical(result)).hexdigest(), result
 
 
@@ -89,7 +94,11 @@ def output_for(project, value):
 
 def build(project, sdk, profile):
     project, value = project_load(project)
-    require(value['target_profile'] == profile['id'], 'project target profile mismatch')
+    require(value['target_profile'] == profile['id'],
+            'project target_profile mismatch: project has %r, profile is %r; '
+            'set target_profile in xos_app.json to the profile id, or re-init with '
+            '--profile <adopted.json> from tools/adopt_sdk.py' %
+            (value['target_profile'], profile['id']))
     require(set(value['required_features']) <= set(profile['features']), 'required feature unavailable')
     sdk = Path(sdk).resolve(strict=True)
     bound = sdk_check(sdk, profile)

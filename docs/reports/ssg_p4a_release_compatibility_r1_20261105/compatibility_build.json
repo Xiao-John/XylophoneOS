@@ -1,0 +1,124 @@
+{
+  "official_inputs": {
+    "images_archive_sha256": "1de27573ca7119b72df27a3d8a4ff55097e699d86c21a319c7b76bd2d7e4da60",
+    "sdk_archive_sha256": "929d6070f016f8315e7aa6d18c7bca545182facb730f3760bf1becacf9c80ec4",
+    "qt6_static_archive_sha256": "744a5260cfab63cdf8392ad9178773c516c349b127905e6181f0c5ff8612455f",
+    "sdk_packaged_files_verified_against_release_binding": 1127,
+    "qt6_asset_files_verified_against_asset_manifest": 6053,
+    "qt_target_libraries_sha256": {
+      "libQt6Core.a": "29fbacd8b34b9a4f271b2f4e7bc98cad75f6aabc86d0daf268717d0e6092e53c",
+      "libQt6Gui.a": "d27294fb4a0f69f425980a0ffda70c0f6415ffac83b12feeb2d4daa348233040",
+      "libQt6Widgets.a": "688392dbd2d815c18e4f5bcc5d0ba1494bceb82788a80add7c191a5c6da465c6"
+    },
+    "release_sdk_manifest_sha256": "eee2d653d5023df96abdd66c97a458aca176ff4d6ce3a10aa28d6dac654f6d28",
+    "release_sdk_manifest_top_level_keys": [
+      "abi",
+      "build_id",
+      "configuration",
+      "diagnostic_extensions",
+      "display_extensions",
+      "libc",
+      "licenses",
+      "process_extensions",
+      "runtime_model",
+      "target"
+    ],
+    "release_sdk_runtime_model": "single",
+    "release_sdk_manifest_has_artifact_hash_map": false,
+    "file_client_header_sha256": "a9f02e9e8831b95fa30a9e8e7634c251cc285b6b1f8e643e5c0d20905640dc7e",
+    "file_client_archive_member": "src_user_sdk_file_client.cpp.o",
+    "file_client_symbols_observed": [
+      "xos::file::client::init()",
+      "xos::file::client::open(...)"
+    ]
+  },
+  "direct_build_failures": [
+    {
+      "stage": "repository P4A Browser build",
+      "error": "fatal error: string: No such file or directory",
+      "cause": "-nostdinc++ is used but the release SDK C++ header directory is nested at cpp/include/c++/16.2.0 and the helper does not add it"
+    },
+    {
+      "stage": "Browser build with only that include path added",
+      "error": "std::mutex is unavailable",
+      "cause": "the release SDK c++config.h leaves _GLIBCXX_HAS_GTHREADS undefined"
+    },
+    {
+      "stage": "P4A app headers",
+      "error": "xos/thread_core.hpp not found",
+      "cause": "the P4A source requires the current thread profile header, absent from the release SDK package"
+    },
+    {
+      "stage": "P4A Core link",
+      "error": "undefined reference to pthread_* and xos::elf::inspect_reader",
+      "cause": "release SDK is a single-thread runtime and its loader library is separate; the P4A helper links neither a thread runtime nor libxos_loader.a"
+    },
+    {
+      "stage": "Qt package headers",
+      "error": "generated Qt header include points outside the package to the packager build/source tree",
+      "cause": "969 exported headers include an absolute source-root prefix and 11 generated config headers refer to build-tree files absent from the package"
+    },
+    {
+      "stage": "QtCore link with release SDK",
+      "error": "undefined reference to std::condition_variable methods",
+      "cause": "official Qt static libraries were built with thread support, while the release SDK C++ runtime has GThreads disabled"
+    }
+  ],
+  "compatibility_build": {
+    "status": "BUILT",
+    "classification": "TEST_ONLY_COMPATIBILITY_BUILD_NOT_RELEASE_SDK_DIRECT",
+    "p4a_source_head": "a7c7db01f2b61e7828876841b34c30087d4d09d9",
+    "p4a_targets_built": [
+      "browser",
+      "browser-test",
+      "notes",
+      "notes-test",
+      "supervisor",
+      "supervisor-test",
+      "subscriber",
+      "contract-test",
+      "subscriber-state-test"
+    ],
+    "p4a_build_manifest_sha256": "c73f6068064961206ef4dfb2d1771741481d24fe76453de82817b9da245516e8",
+    "sdk_compatibility_record": {
+      "status": "TEST_ONLY_COMPAT_SDK",
+      "official_sdk_archive_sha256": "929d6070f016f8315e7aa6d18c7bca545182facb730f3760bf1becacf9c80ec4",
+      "official_libxos_sha256": "e359bf3c204a44dc3ad28fdd8b3942adb2e80ffac69573c6c3dea0601e5b30b5",
+      "official_libxos_loader_sha256": "68491b2cb8f390400960ff946e2b04cfc0bba50ffef92441ba078384ab6da82f",
+      "merged_libxos_sha256": "116bb2e3a7912826f8b9aed851540d7e3656d526c377be6058eea99b16836d01",
+      "thread_core_header_sha256": "a9fdf5923eab60d225678a96aacf31599d8d9f45f841ab1ee8de4737e4e8bb7d",
+      "pthread_header_sha256": "55f60a7e02fba0da429004f6a402e28fce9da41b3ced3edc6b26d0c206ebc11a",
+      "thread_runtime_overlay_objects": [
+        "src_user_threading_pthread.cpp.o",
+        "src_user_libc_cpp_runtime.cpp.o",
+        "src_user_arch_x86_64_thread_context.cpp.o"
+      ],
+      "threaded_cpp_headers_tree_sha256": "c93d6f33b2a0a840f3a1d84341c061abca5b7fbc2e86b8e1d6033b923dc414d9",
+      "threaded_libstdc_sha256": "a7ce4fe82d8c735b94f5604dab75fb802df2dfe1e99861b481341dd42320559d",
+      "threaded_libsupc_sha256": "82c5c6ac5da4d5b99a29d740427c691ba4163e64c1b3948c2780b85878bee327",
+      "artifact_count": 1134,
+      "wrapper_manifest_sha256": "fdafe06d0daf2cc8c1077312ce927c00946228746d76843ebf10ddc05fbc59d3",
+      "runtime_overlay_files": {
+        "include/newlib.h": "2bcbb575b61e2641276cdec516da5e18f00f533f83eabe817fcbad43ae2b2a69",
+        "include/pthread.h": "ab7f3bd8a2eed1465fc5c2a02fdcc5f186311bf872f8d5a6a7751d1b5e26f8d0",
+        "include/sys/_pthreadtypes.h": "53196a2f61d3f1e6175701e3351d3c323a8268de1475d80a1389ca9f88098e2a",
+        "include/termios.h": "fc13c1c649a2530491bed09e072743a931822b0faa826efb34e98bafd7373fa8",
+        "include/time.h": "700429d839a9319830aab671128f9b9041564b42cbaa7b94286269c55a04e096",
+        "lib/libc.a": "d252bb6f1e37133f5e62e3c6a6b6fef337a75e2c22f7b101d63eea5a0fbd9e28",
+        "cpp/lib/libstdc++.a": "a7ce4fe82d8c735b94f5604dab75fb802df2dfe1e99861b481341dd42320559d",
+        "cpp/lib/libsupc++.a": "82c5c6ac5da4d5b99a29d740427c691ba4163e64c1b3948c2780b85878bee327"
+      }
+    },
+    "qt_header_source_prefix_relocations": 969,
+    "qt_generated_config_sidecars": 11,
+    "official_qt_libraries_remained_unmodified": true,
+    "file_client_override_used": false,
+    "host_tools": {
+      "target_compiler": "x86_64-elf-g++ GCC 16.2.0",
+      "target_compiler_sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
+      "host_moc_sha256": "6ab35b238fef41dab4dc4c425f92710cc76dc099d4bc54ba29c9152e332c2793",
+      "host_rcc_sha256": "63c711e483fa2b6bf1f478add86ff5e8235302b2a119bb0d7b7e4b68bc1cacff"
+    },
+    "full_matrix_build_manifest_sha256": "eda0a951caef33e46d515045f248b030632fd8ca300715b31fde2fb181057338"
+  }
+}

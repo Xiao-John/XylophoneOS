@@ -6,6 +6,7 @@ from pathlib import Path
 import shutil
 import struct
 from toolchain import COMMON_FLAGS, X86_FLAGS, TARGET, tool
+from ipc_v1_manifest import ipc_v1_manifest_entry
 
 
 def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=False, ncurses_supervisor_probe=False):
@@ -205,6 +206,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
         "configuration": TARGET, "runtime_model": "single",
         "display_extensions": {"version": 1, "syscalls": [65, 66], "pixel_format": "XRGB8888", "surface_count": 1},
         "vm_extensions": {"version": 1, "syscall": 67, "status": "implemented_unqualified"},
+        "ipc_v1": ipc_v1_manifest_entry(),
         "diagnostic_extensions": {"fault_bundle_format": 1, "loader_receipt": "sha256-held-instance",
                                   "diagnostic_shell_command": "diag"},
         "process_extensions": {"syscalls": [*range(54, 62), *range(80, 87)], "file_operations": [20, 21, 22],

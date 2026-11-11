@@ -220,6 +220,12 @@ sys60 试行可显式保留调用者参与的少量空通道；不设置标志�
 单线程终端 libc 试行通过该机制交接描述符和下一个请求序号，目标须同时声明
 `.xos.exec` v3 与 `.xos.tty` v1；尚未取得客体资格。
 
+sys88 `sys_ipc_v1` 的 action、固定结构、错误和 capability feature 位由
+[IPC v1 契约](contracts/ipc_v1.md)与 `ipc_v1_abi.hpp` 登记。IP1 提供返回空 supported
+feature set 的 runtime query，以及 SDK `ipc_v1.hpp` 查询 helper；endpoint call/reply 后端
+尚未实现。普通 SDK 与实验线程 SDK manifest 均声明
+`registered_unsupported`、空 feature 列表；不得将该登记称作可运行 IPC 能力。
+
 sys82 `sys_pio_grant` 是开发中的固定设备 PIO 授权；COM1 交接/隔离及 PC Speaker
 端口范围、2.5 秒静音租约、主动 release 见[专项契约](contracts/pio_grant.md)。这两类
 资源尚未客体验收，不等于 IRQ 或用户态终端资格。

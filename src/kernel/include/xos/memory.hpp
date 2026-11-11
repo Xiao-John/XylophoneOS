@@ -59,6 +59,7 @@ memory_result map_pci_device_page(u64 virtual_address, u64 physical);
 
 // Kernel boot self-check only; -1 disables deterministic allocation failure.
 void memory_self_test_fail_after(i64 count);
+i64 memory_self_test_remaining();
 bool memory_self_check();
 const char* memory_result_name(memory_result result);
 
@@ -88,6 +89,9 @@ memory_result vm_scan_page_in(u64 space, u64* cursor, u64 end, bool* found);
 // constructor must destroy that whole unstarted space to roll back.
 memory_result copy_user_pages_in(u64 source, u64 destination, u32 page_limit,
                                  u32* copied_pages);
+memory_result copy_user_pages_batch(u64 source, u64 destination, u32 page_limit,
+                                    u32* copied_pages, u64* cursor, u32 budget);
+memory_result release_user_pages_batch(u64 space, u64* cursor, u32* released_pages, u32 budget);
 }
 
 namespace xos::arch {

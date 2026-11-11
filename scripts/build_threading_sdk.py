@@ -35,10 +35,14 @@ def main():
     parser.add_argument('--output', type=Path, default=ROOT / 'build/threading_sdk')
     parser.add_argument('--logs-dir', type=Path, default=ROOT / 'build/threading_sdk_logs')
     parser.add_argument('--cpp-work-dir', type=Path, default=ROOT / '.cache/xos_seed/threading_cpp')
+    parser.add_argument('--gcc-objdir', type=Path, help='completed cross-GCC gcc object directory')
+    parser.add_argument('--resume-cpp', action='store_true', help='reuse an existing private C++ work directory')
     parser.add_argument('--cpp', action='store_true')
     parser.add_argument('--jobs', type=int, default=8, help='positive parallel build job count (default: 8)')
     args = parser.parse_args()
-    if args.cpp_work_dir != ROOT / '.cache/xos_seed/threading_cpp' and args.cpp_work_dir.exists():
+    if args.resume_cpp and not args.cpp:
+        parser.error('--resume-cpp requires --cpp')
+    if args.cpp_work_dir != ROOT / '.cache/xos_seed/threading_cpp' and args.cpp_work_dir.exists() and not args.resume_cpp:
         parser.error('a custom --cpp-work-dir must not already exist')
     if args.jobs < 1:
         parser.error('--jobs must be positive')
@@ -115,6 +119,7 @@ def main():
         shutil.copytree(ROOT / folder, output / 'include/xos', dirs_exist_ok=True)
     for header in (ROOT / 'src/user/include').glob('*.h'):
         shutil.copyfile(header, output / 'include' / header.name)
+    shutil.copytree(ROOT / 'src/user/include/sys', output / 'include/sys', dirs_exist_ok=True)
     shutil.copytree(ROOT / 'src/user/threading/include', output / 'include', dirs_exist_ok=True)
     with (output / 'include/newlib.h').open('a') as header:
         header.write('\n/* XOS E13-T profile: matching archives use __getreent. */\n#define __DYNAMIC_REENT__ 1\n')
@@ -247,7 +252,7 @@ def main():
         # available.  Re-running GCC's generator makefiles in this small
         # directory pulls in build-tree libiberty targets that are not part of
         # the SDK and fails before producing the headers.
-        generated_gcc = ROOT / 'build/qt_enabled/gcc_build/gcc'
+        generated_gcc = args.gcc_objdir.resolve(strict=True) if args.gcc_objdir else ROOT / 'build/qt_enabled/gcc_build/gcc'
         required_gcc_headers = ('tm.h', 'tm_p.h', 'tconfig.h', 'libgcc.mvars')
         if not all((generated_gcc / name).is_file() for name in required_gcc_headers):
             run(configure_command(gcc / 'gcc/configure', '--target=x86_64-elf', '--disable-multilib',
@@ -301,6 +306,7 @@ def main():
     if final_inputs != initial_inputs:
         raise SystemExit('SDK inputs changed during the build; retry with a stable source snapshot')
     receipt = {'profile': 'xos-threading-v1-experimental', 'abi': 1, 'thread_abi': 1,
+               'vm_extensions': {'version': 1, 'syscall': 67, 'status': 'implemented_unqualified'},
                'display_extensions': {'version': 1, 'syscalls': [65, 66], 'pixel_format': 'XRGB8888', 'surface_count': 1},
                'ipc_v1': ipc_v1_manifest_entry(),
                'process_extensions': {'syscalls': [*range(54,62),80,81,82], 'file_operations': [20,21,22],

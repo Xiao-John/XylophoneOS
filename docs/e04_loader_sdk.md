@@ -395,3 +395,16 @@ sys65=display控制/认证channel/等待，sys66=服务角色对已接收request
 见[display_backend.md](implementation/display.md)。0059整合保留sys0–64（含熵63/墙钟64）、ELF/startup/thread/file布局
 保持不变；新模块追加目录，不改变原image ID。boot_info v1仍64字节，v2为112
 字节，保留reserved的ISO payload语义。旧内核不能消费新v2引导器。
+
+## VM3 匿名内存与 SDK（恢复中）
+
+`xos/vm_abi.hpp` 定义版本 1 的 `sys_vm` 请求布局，`xos/vm.hpp` 提供当前进程的
+匿名保留和页面操作封装。普通与线程 SDK 的 `vm_extensions.status` 在完整
+V1–V7 验收之前均为 `implemented_unqualified`；这不是已认证的公共能力。
+
+libc 当前仅实现 `MAP_PRIVATE | MAP_ANONYMOUS` 的 `PROT_NONE` 保留；后续可用
+`mprotect` 在保留区内提交或改变保护，`munmap` 解除匿名映射。文件映射、共享映射、
+覆盖式 `MAP_FIXED` 和原子带权限 `mmap` 不在当前子集中。单线程普通运行时的
+fork 使用独立物理页复制；线程运行时仍不支持 fork/exec。详细错误与限制见
+[匿名 VM 契约](contracts/anonymous_vm.md)，恢复和验收状态见
+[VM3 工作记录](work_log/58b24599_vm3_lifecycle_sdk.md)。

@@ -10,6 +10,8 @@ import subprocess
 p=argparse.ArgumentParser(description=__doc__)
 for n in ('source','sdk','qt-build','qt-source','core-build','host-qt','binutils','output'):
     p.add_argument('--'+n,type=Path,required=True)
+p.add_argument('--matching-core', action='store_true',
+               help='use Core from this same Qt build instead of frozen E15')
 a=p.parse_args()
 source,sdk,qt,qs,core,host,binutils,out=[getattr(a,n).resolve() for n in
     ('source','sdk','qt_build','qt_source','core_build','host_qt','binutils','output')]
@@ -18,6 +20,9 @@ sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 for rel,h in json.loads((sdk/'manifest.json').read_text())['artifacts'].items():
     if sha(sdk/rel)!=h: raise SystemExit('SDK mismatch: '+rel)
 expected='d9435accf464ff5f7fa6d668b59c77ed5f3b5da21f2a0f56de512794aab474d3'
+if a.matching_core:
+    if core != qt: raise SystemExit('matching Core must come from the same Qt build')
+    expected=sha(core/'lib/libQt6Core.a')
 if sha(core/'lib/libQt6Core.a')!=expected: raise SystemExit('E15 QtCore hash mismatch')
 for name in ('moc','rcc'):
     if '6.8.3' not in subprocess.check_output([host/'libexec'/name,'-v'],stderr=subprocess.STDOUT,text=True):

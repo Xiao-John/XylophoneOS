@@ -89,6 +89,46 @@ bool vm_page_check() {
         user_baseline.unique_pages==users.unique_pages && user_baseline.references==users.references;
 }
 
+bool vm_batch_copy_check() {
+    const auto before=memory_status();
+    const auto users_before=user_pages_status();
+    const u64 source=arch::create_address_space(), destination=arch::create_address_space();
+    bool ok=source && destination;
+    constexpr u64 address=0x100000000000ull;
+    for (u32 i=0;ok && i<33;++i) {
+        u64 physical=0;
+        ok=allocate_user_page(&physical)==memory_result::none;
+        if (!ok) break;
+        *reinterpret_cast<u64*>(physical)=check_pattern+i;
+        const u64 current=address+u64{i}*page_size;
+        if (vm_prepare_page_in(source,current)!=memory_result::none ||
+            vm_install_page_in(source,current,physical,i==16 ? vm_page_protection::none :
+                               vm_page_protection::read_write)!=memory_result::none) {
+            (void)release_user_page(physical);ok=false;
+        }
+    }
+    u64 cursor=0x40000000ull;u32 copied=0;
+    for(u32 i=0;ok && cursor!=(u64{1}<<47) && i<128;++i)
+        ok=copy_user_pages_batch(source,destination,33,&copied,&cursor,32)==memory_result::none;
+    ok=ok && cursor==(u64{1}<<47) && copied==33;
+    for(u32 i=0;ok && i<33;++i) {
+        u64 original=0, clone=0;vm_page_protection a{},b{};
+        const u64 current=address+u64{i}*page_size;
+        ok=vm_lookup_page_in(source,current,&original,&a)==memory_result::none &&
+           vm_lookup_page_in(destination,current,&clone,&b)==memory_result::none &&
+           original!=clone && a==b && *reinterpret_cast<u64*>(clone)==check_pattern+i;
+    }
+    u64 release_cursor=0x40000000ull;u32 released=0;
+    for(u32 i=0;ok && release_cursor!=(u64{1}<<47) && i<128;++i)
+        ok=release_user_pages_batch(destination,&release_cursor,&released,32)==memory_result::none;
+    ok=ok && release_cursor==(u64{1}<<47) && released==33;
+    if(source) (void)arch::destroy_address_space(source);
+    if(destination) (void)arch::destroy_address_space(destination);
+    const auto after=memory_status();const auto users_after=user_pages_status();
+    return ok && before.free_pages==after.free_pages && before.allocated_pages==after.allocated_pages &&
+           users_before.unique_pages==users_after.unique_pages && users_before.references==users_after.references;
+}
+
 bool user_ownership_check() {
     const auto before = memory_status();
     const auto ubefore = user_pages_status();
@@ -159,6 +199,7 @@ bool memory_self_check() {
     if (!user_ownership_check()) { report("fail", "user_ownership"); return false; }
     if (!user_rollback_check()) { report("fail", "user_rollback"); return false; }
     if (!vm_page_check()) { report("fail", "vm_page"); return false; }
+    if (!vm_batch_copy_check()) { report("fail", "vm_batch_copy"); return false; }
     format::text("[vm] event=self_check result=pass address=");
     format::hex(check_virtual);
     format::text(" physical=");

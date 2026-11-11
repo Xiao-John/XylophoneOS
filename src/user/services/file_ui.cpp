@@ -973,7 +973,21 @@ void stat(const char* name) {
 
 void remove_file(const char* name) {
     const i64 result = client.remove(name);
-    if (result != 0) { error_line("remove", result); return; }
+    if (result != 0) {
+        // rm sends no allow_directory, so the service refused a directory:
+        // name the POSIX cause instead of the bare status (shell has no errno).
+        u32 size = 0, attributes = 0;
+        if (result == static_cast<i64>(file::status::invalid) &&
+            client.stat(name, size, attributes) == 0 &&
+            (attributes & file::stat_is_directory) != 0) {
+            print("[files] remove: is a directory (EISDIR): ");
+            print(name);
+            print("\n");
+            return;
+        }
+        error_line("remove", result);
+        return;
+    }
     print("[files] removed "); print(name); print("\n");
 }
 

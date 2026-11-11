@@ -427,6 +427,17 @@ i64 client::remove(const char* path) {
     return call(op::remove);
 }
 
+i64 client::remove_directory(const char* path) {
+    session_guard guard;
+    request_ = request{};
+    u32 path_length = 0;
+    const i64 path_result = set_path(path, request_.name, path_length);
+    if (path_result != 0) { return path_result; }
+    request_.name_length = path_length;
+    request_.flags = allow_directory;
+    return call(op::remove);
+}
+
 i64 client::mkdir(const char* path) {
     session_guard guard;
     request_ = request{};

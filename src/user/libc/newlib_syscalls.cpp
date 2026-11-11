@@ -941,7 +941,9 @@ extern "C" int rmdir(const char* path) {
     if ((attributes & xos::file::stat_is_directory) == 0) { errno = ENOTDIR; return -1; }
     // FatFs reports a non-empty directory as FR_DENIED; the service currently
     // maps that coarse result to EINVAL rather than a distinct ENOTEMPTY.
-    const xos::i64 result = file_client.remove(normalized);
+    // allow_directory is what separates rmdir from unlink: without it the
+    // service refuses every directory (EISDIR) before f_unlink.
+    const xos::i64 result = file_client.remove_directory(normalized);
     if (result != 0) { errno = error_from_file(result); return -1; }
     return 0;
 }

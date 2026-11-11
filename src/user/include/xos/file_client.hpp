@@ -36,6 +36,7 @@ public:
     i64 replace(const char* path, const void* data, u32 length);
     i64 read_all(const char* path, void* data, u32 capacity, u32& length);
     i64 remove(const char* path);
+    i64 remove_directory(const char* path);
     i64 mkdir(const char* path);
     i64 rename(const char* old_path, const char* new_path);
     i64 block_bench(u32 length);

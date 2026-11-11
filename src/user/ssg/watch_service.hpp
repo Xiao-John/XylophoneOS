@@ -13,8 +13,9 @@ struct watch_options {
 };
 struct watch_outcome {
     uint64_t started_ns=0,elapsed_ns=0;
-    unsigned cycles=0,events=0;
-    bool output_ok=true,partial=true;
+    unsigned cycles=0,events=0,events_attempted=0,acknowledgements=0;
+    bool output_ok=true,partial=true,delivery_unknown=false,resync_required=false;
+    QString failure;
 };
 class watch_hooks {
 public:
@@ -39,6 +40,37 @@ inline bool emit_event_frame(const QJsonObject &event,unsigned sequence){
     }
     return write_event_record(QByteArray("\nP3C_EVENT_END ")+number+'\n');
 }
+enum class delivery_state { committed, not_sent, rejected, unknown };
+struct event_delivery { delivery_state state=delivery_state::unknown;bool acknowledged=false;QString failure; };
+
+class event_sink {
+public:
+    virtual ~event_sink()=default;
+    virtual bool begin(const watch_options &options)=0;
+    virtual event_delivery publish(const QJsonObject &event,unsigned stream_sequence)=0;
+    virtual bool cycle_complete(unsigned cycle,bool partial)=0;
+};
+
+class console_event_sink final:public event_sink {
+public:
+    bool begin(const watch_options &options)override{
+        if(!isatty(1) || xos::sdk::syscall(xos::sys_process_stdio,0,1)!=1)return false;
+        const auto record=QByteArray("\nP3C_WATCH_STARTED interval_s=")+QByteArray::number(options.interval_seconds)+
+            " duration_s="+QByteArray::number(options.duration_seconds)+" max_cycles="+QByteArray::number(options.max_cycles)+
+            " source_timeout_s="+QByteArray::number(options.source_timeout_seconds)+" globalAtomicSnapshot=NOT_IMPLEMENTED\n";
+        return std::fflush(stdout)==0 && write_event_record(record);
+    }
+    event_delivery publish(const QJsonObject &event,unsigned sequence)override{
+        return emit_event_frame(event,sequence)
+            ?event_delivery{delivery_state::committed,false,{}}
+            :event_delivery{delivery_state::unknown,false,QStringLiteral("CONSOLE_FRAME_INCOMPLETE")};
+    }
+    bool cycle_complete(unsigned cycle,bool partial)override{
+        const auto record=QByteArray("\nP3C_CYCLE_READY cycle=")+QByteArray::number(cycle)+
+            " aggregate="+(partial?"PARTIAL":"OBSERVED_COMPLETE")+'\n';
+        return write_event_record(record);
+    }
+};
 inline void recheck_provider(provider_adapter &provider,observation &o){
     if(!provider.available()){
         o.status="UNAVAILABLE";o.failure_reason="SOURCE_EXITED";o.completeness="NOT_OBSERVED";
@@ -48,21 +80,18 @@ inline void recheck_provider(provider_adapter &provider,observation &o){
 }
 inline watch_outcome run_watch_loop(provider_adapter &first,provider_adapter &second,
                                     watch_slot &first_slot,watch_slot &second_slot,
-                                    watch_control &control,const watch_options &options,watch_hooks &hooks){
+                                    watch_control &control,const watch_options &options,watch_hooks &hooks,
+                                    event_sink *selected_sink=nullptr){
     using xos::u64;
     watch_outcome result;result.started_ns=xos::thread::clock();
-    // Newlib's pipe-backed stdout can block without a deadline. Until an
-    // independently bounded sink exists, do not start on redirected stdout.
-    if(!isatty(1) || xos::sdk::syscall(xos::sys_process_stdio,0,1)!=1){result.output_ok=false;return result;}
     if(options.interval_seconds<1 || options.interval_seconds>30 || options.duration_seconds<1 || options.duration_seconds>3600 ||
        options.max_cycles<1 || options.max_cycles>1024 || options.source_timeout_seconds<1 || options.source_timeout_seconds>300){
         result.output_ok=false;std::printf("P3C_WATCH_ERROR reason=INVALID_BOUNDS\n");return result;
     }
+    console_event_sink console_sink;
+    event_sink &sink=selected_sink?*selected_sink:static_cast<event_sink &>(console_sink);
+    if(!sink.begin(options)){result.output_ok=false;result.failure="SINK_SETUP";return result;}
     const u64 deadline=result.started_ns+u64(options.duration_seconds)*1000000000ull;
-    const auto start_record=QByteArray("\nP3C_WATCH_STARTED interval_s=")+QByteArray::number(options.interval_seconds)+
-        " duration_s="+QByteArray::number(options.duration_seconds)+" max_cycles="+QByteArray::number(options.max_cycles)+
-        " source_timeout_s="+QByteArray::number(options.source_timeout_seconds)+" globalAtomicSnapshot=NOT_IMPLEMENTED\n";
-    if(std::fflush(stdout)!=0 || !write_event_record(start_record)){result.output_ok=false;return result;}
     while(result.cycles<options.max_cycles && !control.stopped()){
         auto now=xos::thread::clock();if(now>=deadline)break;
         const u64 first_budget=qMin(u64(options.source_timeout_seconds)*1000000000ull,deadline-now);
@@ -80,14 +109,18 @@ inline watch_outcome run_watch_loop(provider_adapter &first,provider_adapter &se
         const auto a_event=first_slot.accept(first,std::move(a));
         const auto b_event=second_slot.accept(second,std::move(b));
         for(const auto &event:{a_event,b_event}){
-            if(!emit_event_frame(event,result.events+1)){result.output_ok=false;break;}
-            ++result.events;
+            const auto delivery=sink.publish(event,result.events_attempted+1);
+            ++result.events_attempted;
+            if(delivery.state==delivery_state::committed){++result.events;if(delivery.acknowledged)++result.acknowledgements;}
+            else{
+                result.output_ok=false;result.resync_required=true;result.failure=delivery.failure;
+                result.delivery_unknown=delivery.state==delivery_state::unknown;
+                break;
+            }
         }
         if(!result.output_ok)break;
         ++result.cycles;
-        const auto cycle_record=QByteArray("\nP3C_CYCLE_READY cycle=")+QByteArray::number(result.cycles)+
-            " aggregate="+(result.partial?"PARTIAL":"OBSERVED_COMPLETE")+'\n';
-        if(!write_event_record(cycle_record)){result.output_ok=false;break;}
+        if(!sink.cycle_complete(result.cycles,result.partial)){result.output_ok=false;result.resync_required=true;break;}
         if(!hooks.cycle_complete(result.cycles)){result.output_ok=false;break;}
         if(result.cycles==options.max_cycles)break;
         const u64 next=qMin(deadline,xos::thread::clock()+u64(options.interval_seconds)*1000000000ull);

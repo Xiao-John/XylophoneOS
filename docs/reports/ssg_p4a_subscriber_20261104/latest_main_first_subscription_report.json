@@ -1,0 +1,124 @@
+{
+  "status": "PASSED_SCOPED",
+  "scenario": "first",
+  "inputs": {
+    "image": {
+      "sha256": "e2e9f2fd6572163b854c96917a19233c2aebbcf602a16b7b138e0d32c0308ab4"
+    },
+    "supervisor": {
+      "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+    },
+    "browser": {
+      "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+    },
+    "notes": {
+      "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+    },
+    "subscriber": {
+      "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+    },
+    "input": {
+      "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+    }
+  },
+  "events": [
+    "P4A_SEND stream=1 slot=browser bytes=852 frame_hash=4cd9460c",
+    "P4A_RECEIVE stream=1 slot=browser local=1 type=SOURCE_UNKNOWN state=OBSERVED revision=5 bytes=852 frame_hash=4cd9460c",
+    "P4A_ACK stream=1 status=COMMITTED proof=SUBSCRIBER_IN_MEMORY_STATE_ONLY",
+    "P4A_SEND stream=2 slot=notes bytes=911 frame_hash=210f7459",
+    "P4A_RECEIVE stream=2 slot=notes local=1 type=SOURCE_UNKNOWN state=OBSERVED revision=0 bytes=911 frame_hash=210f7459",
+    "P4A_ACK stream=2 status=COMMITTED proof=SUBSCRIBER_IN_MEMORY_STATE_ONLY"
+  ],
+  "image_format": "iso",
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "qemu_sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
+  "qemu_command_template": [
+    "${XOS_QEMU}",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_IMAGE}",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:${XOS_QMP_SOCKET},server=on,wait=off"
+  ],
+  "before": [
+    130231,
+    3,
+    1
+  ],
+  "after": [
+    130231,
+    3,
+    1
+  ],
+  "pipe_capacity_available": {
+    "before": 8,
+    "after": 8
+  },
+  "thread_stats": {
+    "before": [
+      4,
+      1,
+      0,
+      0,
+      129126,
+      1095,
+      1
+    ],
+    "after": [
+      4,
+      1,
+      0,
+      0,
+      129117,
+      1104,
+      1
+    ]
+  },
+  "thread_stats_page_delta": {
+    "free_pages": -9,
+    "process_user_pages": 9
+  },
+  "stale_token_probe": "4/4_DENIED",
+  "processes": {
+    "supervisor": 10,
+    "browser": 11,
+    "notes": 12,
+    "subscriber": 13
+  },
+  "source_exits": [
+    "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+    "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+  ],
+  "supervisor_exit": {
+    "kind": "exited",
+    "code": 0
+  },
+  "resources_restored": true,
+  "elapsed_seconds": 20.061
+}

@@ -1,0 +1,143 @@
+{
+  "status": "OBSERVED_PENDING_INDEPENDENT_VERIFICATION",
+  "case": "baseline",
+  "ordinary": true,
+  "events": [],
+  "qmp_events": [
+    {
+      "command": "input-send-event",
+      "arguments": {
+        "events": [
+          {
+            "type": "key",
+            "data": {
+              "down": true,
+              "key": {
+                "type": "qcode",
+                "data": "esc"
+              }
+            }
+          }
+        ]
+      },
+      "serial_offset": 19146
+    },
+    {
+      "command": "qmp_capabilities",
+      "arguments": null,
+      "serial_offset": 19146
+    },
+    {
+      "command": "input-send-event",
+      "arguments": {
+        "events": [
+          {
+            "type": "key",
+            "data": {
+              "down": false,
+              "key": {
+                "type": "qcode",
+                "data": "esc"
+              }
+            }
+          }
+        ]
+      },
+      "serial_offset": 19443
+    }
+  ],
+  "inputs": {
+    "image": {
+      "sha256": "8bf45852c88b0077cdd647a18383dfa435fa0ccab5a1fbdb99b06f00407591c3"
+    },
+    "supervisor": {
+      "sha256": "927d5385b303405fa882e296faf3af2320d4510850e6f3a3222def42e8613262"
+    },
+    "browser": {
+      "sha256": "94d6c67c189467485bf182dd92ce1090201d7b80334966135456db4deb1a46e3"
+    },
+    "notes": {
+      "sha256": "206262259a652be10828913cedcdecbbb9799e4a9aac7938fdfff4211be1e18a"
+    },
+    "input": {
+      "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+    }
+  },
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "qemu_sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
+  "qemu_command_template": [
+    "${XOS_QEMU}",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-drive",
+    "file=${XOS_IMAGE},format=raw,if=floppy,index=0,readonly=on",
+    "-boot",
+    "order=a,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-qmp",
+    "unix:${XOS_QMP_SOCKET},server=on,wait=off"
+  ],
+  "active_display": [
+    130231,
+    3,
+    1
+  ],
+  "after": [
+    130231,
+    3,
+    1
+  ],
+  "processes": {
+    "supervisor": 10,
+    "browser": 11,
+    "notes": 12
+  },
+  "source_exits": [
+    "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+    "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+  ],
+  "supervisor_exit": {
+    "kind": "exited",
+    "code": 0
+  },
+  "thread_samples": [
+    "BROWSER_SAMPLE pages=7315 threads=4 tab=0 scroll=0",
+    "EDITOR_SAMPLE pages=5351 threads=2 scroll=0 cursor=0",
+    "EDITOR_SAMPLE pages=5357 threads=2 scroll=0 cursor=0",
+    "EDITOR_SAMPLE pages=5357 threads=2 scroll=0 cursor=0",
+    "EDITOR_SAMPLE pages=5357 threads=2 scroll=0 cursor=0",
+    "EDITOR_SAMPLE pages=5357 threads=2 scroll=0 cursor=0",
+    "EDITOR_SAMPLE pages=5357 threads=2 scroll=0 cursor=0",
+    "EDITOR_SAMPLE pages=5357 threads=2 scroll=0 cursor=0",
+    "EDITOR_SAMPLE pages=5361 threads=2 scroll=0 cursor=0",
+    "EDITOR_SAMPLE pages=5361 threads=2 scroll=0 cursor=0",
+    "EDITOR_SAMPLE pages=5361 threads=2 scroll=0 cursor=0",
+    "EDITOR_SAMPLE pages=5361 threads=2 scroll=0 cursor=0",
+    "EDITOR_SAMPLE pages=5361 threads=2 scroll=0 cursor=0",
+    "EDITOR_SAMPLE pages=5361 threads=2 scroll=0 cursor=0"
+  ],
+  "resources_restored": true,
+  "elapsed_seconds": 28.603
+}

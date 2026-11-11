@@ -1,0 +1,143 @@
+{
+  "status": "PASSED_SCOPED",
+  "checks": [
+    {
+      "name": "initial_baseline_unknown",
+      "status": "PASS"
+    },
+    {
+      "name": "unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "changed",
+      "status": "PASS"
+    },
+    {
+      "name": "unsupported_geometry",
+      "status": "PASS"
+    },
+    {
+      "name": "permission_change",
+      "status": "PASS"
+    },
+    {
+      "name": "denial_not_unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "grant_reacquires",
+      "status": "PASS"
+    },
+    {
+      "name": "exit_unavailable",
+      "status": "PASS"
+    },
+    {
+      "name": "exit_not_unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "recovery_requires_reset",
+      "status": "PASS"
+    },
+    {
+      "name": "invalidated_not_unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "invalidated_reacquire_reset",
+      "status": "PASS"
+    },
+    {
+      "name": "rewire_requires_new_instance",
+      "status": "PASS"
+    },
+    {
+      "name": "new_instance_replaced",
+      "status": "PASS"
+    },
+    {
+      "name": "new_epoch_replaced",
+      "status": "PASS"
+    },
+    {
+      "name": "scope_requires_reset",
+      "status": "PASS"
+    },
+    {
+      "name": "slot_is_prewired",
+      "status": "PASS"
+    },
+    {
+      "name": "unknown_comparison_invalidates",
+      "status": "PASS"
+    },
+    {
+      "name": "unknown_requires_new_baseline",
+      "status": "PASS"
+    },
+    {
+      "name": "replacement_precedes_denial",
+      "status": "PASS"
+    },
+    {
+      "name": "stop_initially_clear",
+      "status": "PASS"
+    },
+    {
+      "name": "explicit_stop_and_cancel",
+      "status": "PASS"
+    },
+    {
+      "name": "substituted_provider_uses_same_loop",
+      "status": "PASS"
+    },
+    {
+      "name": "substituted_provider_cancelled",
+      "status": "PASS"
+    },
+    {
+      "name": "stop_before_baseline_is_partial",
+      "status": "PASS"
+    },
+    {
+      "name": "stop_during_next_cycle_is_partial",
+      "status": "PASS"
+    },
+    {
+      "name": "redirected_sink_fails_closed",
+      "status": "PASS"
+    },
+    {
+      "name": "capped_retry_recovers",
+      "status": "PASS"
+    },
+    {
+      "name": "capped_retry_is_bounded",
+      "status": "PASS"
+    },
+    {
+      "name": "noncap_failure_is_not_retried",
+      "status": "PASS"
+    },
+    {
+      "name": "capped_retry_respects_deadline",
+      "status": "PASS"
+    },
+    {
+      "name": "retry_count_in_event",
+      "status": "PASS"
+    }
+  ],
+  "before": [
+    130275,
+    2,
+    0
+  ],
+  "after": [
+    130275,
+    2,
+    0
+  ]
+}

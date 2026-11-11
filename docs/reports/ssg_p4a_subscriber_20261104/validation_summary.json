@@ -1,0 +1,3350 @@
+{
+  "status": "PASSED_SCOPED",
+  "base_commit": "6fe330ce2dd9441d72da611c1f87b80dad8e3b03",
+  "system_build_id": "a9639522f20f8f74",
+  "p4a_build_status": "BUILT",
+  "host_reference": {
+    "status": "PASSED_SCOPED",
+    "log": "${XOS_VALIDATION_OUT}/host_reference.log"
+  },
+  "scenario_runs": [
+    {
+      "scenario": "first",
+      "status": "PASSED_SCOPED",
+      "guest_exit_code": 0,
+      "independent_verify_exit_code": 0,
+      "events_attempted": 2,
+      "supervisor_acks": 2,
+      "reset_count": 0,
+      "timeout_or_unknown_count": 0,
+      "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+      "watch_stop": "P4A_WATCH_STOP reason=CYCLE_LIMIT cycles=1 events=2 attempted=2 acks=2 delivery=ACKED resync=AS_NEEDED aggregate=OBSERVED_COMPLETE elapsed_ns=4500000000 failure=",
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "runtime_seconds": 20.279,
+      "resource_samples": {
+        "before": [
+          130231,
+          3,
+          1
+        ],
+        "after": [
+          130231,
+          3,
+          1
+        ],
+        "thread_stats": {
+          "before": [
+            4,
+            1,
+            0,
+            0,
+            129126,
+            1095,
+            1
+          ],
+          "after": [
+            4,
+            1,
+            0,
+            0,
+            129117,
+            1104,
+            1
+          ]
+        },
+        "pipe_capacity_available": {
+          "before": 8,
+          "after": 8
+        }
+      },
+      "resources_restored": true,
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "input_hashes": {
+        "image": {
+          "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+        },
+        "supervisor": {
+          "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+        },
+        "browser": {
+          "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+        },
+        "notes": {
+          "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+        },
+        "subscriber": {
+          "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+        },
+        "input": {
+          "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+        }
+      },
+      "guest_log": "${XOS_VALIDATION_OUT}/scenarios/first.guest.log",
+      "verify_log": "${XOS_VALIDATION_OUT}/scenarios/first.verify.log",
+      "command_template": [
+        "${XOS_PYTHON}",
+        "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+        "--image",
+        "${XOS_IMAGE}",
+        "--supervisor",
+        "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+        "--browser",
+        "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+        "--notes",
+        "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+        "--subscriber",
+        "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+        "--input",
+        "${XOS_INPUT}",
+        "--case",
+        "first",
+        "--output",
+        "${XOS_VALIDATION_OUT}/scenarios/first"
+      ]
+    },
+    {
+      "scenario": "notes-edit",
+      "status": "PASSED_SCOPED",
+      "guest_exit_code": 0,
+      "independent_verify_exit_code": 0,
+      "events_attempted": 6,
+      "supervisor_acks": 6,
+      "reset_count": 0,
+      "timeout_or_unknown_count": 0,
+      "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+      "watch_stop": "P4A_WATCH_STOP reason=CYCLE_LIMIT cycles=3 events=6 attempted=6 acks=6 delivery=ACKED resync=AS_NEEDED aggregate=OBSERVED_COMPLETE elapsed_ns=15490000000 failure=",
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "runtime_seconds": 32.058,
+      "resource_samples": {
+        "before": [
+          130231,
+          3,
+          1
+        ],
+        "after": [
+          130231,
+          3,
+          1
+        ],
+        "thread_stats": {
+          "before": [
+            4,
+            1,
+            0,
+            0,
+            129127,
+            1094,
+            1
+          ],
+          "after": [
+            4,
+            1,
+            0,
+            0,
+            129110,
+            1111,
+            1
+          ]
+        },
+        "pipe_capacity_available": {
+          "before": 8,
+          "after": 8
+        }
+      },
+      "resources_restored": true,
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "input_hashes": {
+        "image": {
+          "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+        },
+        "supervisor": {
+          "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+        },
+        "browser": {
+          "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+        },
+        "notes": {
+          "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+        },
+        "subscriber": {
+          "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+        },
+        "input": {
+          "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+        }
+      },
+      "guest_log": "${XOS_VALIDATION_OUT}/scenarios/notes-edit.guest.log",
+      "verify_log": "${XOS_VALIDATION_OUT}/scenarios/notes-edit.verify.log",
+      "command_template": [
+        "${XOS_PYTHON}",
+        "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+        "--image",
+        "${XOS_IMAGE}",
+        "--supervisor",
+        "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+        "--browser",
+        "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+        "--notes",
+        "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+        "--subscriber",
+        "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+        "--input",
+        "${XOS_INPUT}",
+        "--case",
+        "notes-edit",
+        "--output",
+        "${XOS_VALIDATION_OUT}/scenarios/notes-edit"
+      ]
+    },
+    {
+      "scenario": "browser-scroll",
+      "status": "PASSED_SCOPED",
+      "guest_exit_code": 0,
+      "independent_verify_exit_code": 0,
+      "events_attempted": 6,
+      "supervisor_acks": 6,
+      "reset_count": 0,
+      "timeout_or_unknown_count": 0,
+      "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+      "watch_stop": "P4A_WATCH_STOP reason=CYCLE_LIMIT cycles=3 events=6 attempted=6 acks=6 delivery=ACKED resync=AS_NEEDED aggregate=OBSERVED_COMPLETE elapsed_ns=16480000000 failure=",
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "runtime_seconds": 32.509,
+      "resource_samples": {
+        "before": [
+          130231,
+          3,
+          1
+        ],
+        "after": [
+          130231,
+          3,
+          1
+        ],
+        "thread_stats": {
+          "before": [
+            4,
+            1,
+            0,
+            0,
+            129126,
+            1095,
+            1
+          ],
+          "after": [
+            4,
+            1,
+            0,
+            0,
+            129077,
+            1144,
+            1
+          ]
+        },
+        "pipe_capacity_available": {
+          "before": 8,
+          "after": 8
+        }
+      },
+      "resources_restored": true,
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "input_hashes": {
+        "image": {
+          "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+        },
+        "supervisor": {
+          "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+        },
+        "browser": {
+          "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+        },
+        "notes": {
+          "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+        },
+        "subscriber": {
+          "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+        },
+        "input": {
+          "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+        }
+      },
+      "guest_log": "${XOS_VALIDATION_OUT}/scenarios/browser-scroll.guest.log",
+      "verify_log": "${XOS_VALIDATION_OUT}/scenarios/browser-scroll.verify.log",
+      "command_template": [
+        "${XOS_PYTHON}",
+        "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+        "--image",
+        "${XOS_IMAGE}",
+        "--supervisor",
+        "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+        "--browser",
+        "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+        "--notes",
+        "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+        "--subscriber",
+        "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+        "--input",
+        "${XOS_INPUT}",
+        "--case",
+        "browser-scroll",
+        "--output",
+        "${XOS_VALIDATION_OUT}/scenarios/browser-scroll"
+      ]
+    },
+    {
+      "scenario": "notes-revoke",
+      "status": "PASSED_SCOPED",
+      "guest_exit_code": 0,
+      "independent_verify_exit_code": 0,
+      "events_attempted": 6,
+      "supervisor_acks": 6,
+      "reset_count": 0,
+      "timeout_or_unknown_count": 0,
+      "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+      "watch_stop": "P4A_WATCH_STOP reason=CYCLE_LIMIT cycles=3 events=6 attempted=6 acks=6 delivery=ACKED resync=AS_NEEDED aggregate=PARTIAL elapsed_ns=15600000000 failure=",
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "runtime_seconds": 31.36,
+      "resource_samples": {
+        "before": [
+          130231,
+          3,
+          1
+        ],
+        "after": [
+          130231,
+          3,
+          1
+        ],
+        "thread_stats": {
+          "before": [
+            4,
+            1,
+            0,
+            0,
+            129127,
+            1094,
+            1
+          ],
+          "after": [
+            4,
+            1,
+            0,
+            0,
+            129108,
+            1113,
+            1
+          ]
+        },
+        "pipe_capacity_available": {
+          "before": 8,
+          "after": 8
+        }
+      },
+      "resources_restored": true,
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "input_hashes": {
+        "image": {
+          "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+        },
+        "supervisor": {
+          "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+        },
+        "browser": {
+          "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+        },
+        "notes": {
+          "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+        },
+        "subscriber": {
+          "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+        },
+        "input": {
+          "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+        }
+      },
+      "guest_log": "${XOS_VALIDATION_OUT}/scenarios/notes-revoke.guest.log",
+      "verify_log": "${XOS_VALIDATION_OUT}/scenarios/notes-revoke.verify.log",
+      "command_template": [
+        "${XOS_PYTHON}",
+        "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+        "--image",
+        "${XOS_IMAGE}",
+        "--supervisor",
+        "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+        "--browser",
+        "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+        "--notes",
+        "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+        "--subscriber",
+        "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+        "--input",
+        "${XOS_INPUT}",
+        "--case",
+        "notes-revoke",
+        "--output",
+        "${XOS_VALIDATION_OUT}/scenarios/notes-revoke"
+      ]
+    },
+    {
+      "scenario": "protect-document",
+      "status": "PASSED_SCOPED",
+      "guest_exit_code": 0,
+      "independent_verify_exit_code": 0,
+      "events_attempted": 6,
+      "supervisor_acks": 6,
+      "reset_count": 0,
+      "timeout_or_unknown_count": 0,
+      "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+      "watch_stop": "P4A_WATCH_STOP reason=CYCLE_LIMIT cycles=3 events=6 attempted=6 acks=6 delivery=ACKED resync=AS_NEEDED aggregate=PARTIAL elapsed_ns=15260000000 failure=",
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "runtime_seconds": 31.593,
+      "resource_samples": {
+        "before": [
+          130231,
+          3,
+          1
+        ],
+        "after": [
+          130231,
+          3,
+          1
+        ],
+        "thread_stats": {
+          "before": [
+            4,
+            1,
+            0,
+            0,
+            129127,
+            1094,
+            1
+          ],
+          "after": [
+            4,
+            1,
+            0,
+            0,
+            129116,
+            1105,
+            1
+          ]
+        },
+        "pipe_capacity_available": {
+          "before": 8,
+          "after": 8
+        }
+      },
+      "resources_restored": true,
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "input_hashes": {
+        "image": {
+          "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+        },
+        "supervisor": {
+          "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+        },
+        "browser": {
+          "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+        },
+        "notes": {
+          "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+        },
+        "subscriber": {
+          "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+        },
+        "input": {
+          "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+        }
+      },
+      "guest_log": "${XOS_VALIDATION_OUT}/scenarios/protect-document.guest.log",
+      "verify_log": "${XOS_VALIDATION_OUT}/scenarios/protect-document.verify.log",
+      "command_template": [
+        "${XOS_PYTHON}",
+        "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+        "--image",
+        "${XOS_IMAGE}",
+        "--supervisor",
+        "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+        "--browser",
+        "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+        "--notes",
+        "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+        "--subscriber",
+        "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+        "--input",
+        "${XOS_INPUT}",
+        "--case",
+        "protect-document",
+        "--output",
+        "${XOS_VALIDATION_OUT}/scenarios/protect-document"
+      ]
+    },
+    {
+      "scenario": "protect-ancestor",
+      "status": "PASSED_SCOPED",
+      "guest_exit_code": 0,
+      "independent_verify_exit_code": 0,
+      "events_attempted": 6,
+      "supervisor_acks": 6,
+      "reset_count": 0,
+      "timeout_or_unknown_count": 0,
+      "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+      "watch_stop": "P4A_WATCH_STOP reason=CYCLE_LIMIT cycles=3 events=6 attempted=6 acks=6 delivery=ACKED resync=AS_NEEDED aggregate=PARTIAL elapsed_ns=14380000000 failure=",
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "runtime_seconds": 29.894,
+      "resource_samples": {
+        "before": [
+          130231,
+          3,
+          1
+        ],
+        "after": [
+          130231,
+          3,
+          1
+        ],
+        "thread_stats": {
+          "before": [
+            4,
+            1,
+            0,
+            0,
+            129127,
+            1094,
+            1
+          ],
+          "after": [
+            4,
+            1,
+            0,
+            0,
+            129116,
+            1105,
+            1
+          ]
+        },
+        "pipe_capacity_available": {
+          "before": 8,
+          "after": 8
+        }
+      },
+      "resources_restored": true,
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "input_hashes": {
+        "image": {
+          "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+        },
+        "supervisor": {
+          "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+        },
+        "browser": {
+          "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+        },
+        "notes": {
+          "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+        },
+        "subscriber": {
+          "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+        },
+        "input": {
+          "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+        }
+      },
+      "guest_log": "${XOS_VALIDATION_OUT}/scenarios/protect-ancestor.guest.log",
+      "verify_log": "${XOS_VALIDATION_OUT}/scenarios/protect-ancestor.verify.log",
+      "command_template": [
+        "${XOS_PYTHON}",
+        "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+        "--image",
+        "${XOS_IMAGE}",
+        "--supervisor",
+        "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+        "--browser",
+        "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+        "--notes",
+        "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+        "--subscriber",
+        "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+        "--input",
+        "${XOS_INPUT}",
+        "--case",
+        "protect-ancestor",
+        "--output",
+        "${XOS_VALIDATION_OUT}/scenarios/protect-ancestor"
+      ]
+    },
+    {
+      "scenario": "browser-exit",
+      "status": "PASSED_SCOPED",
+      "guest_exit_code": 0,
+      "independent_verify_exit_code": 0,
+      "events_attempted": 6,
+      "supervisor_acks": 6,
+      "reset_count": 0,
+      "timeout_or_unknown_count": 0,
+      "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+      "watch_stop": "P4A_WATCH_STOP reason=CYCLE_LIMIT cycles=3 events=6 attempted=6 acks=6 delivery=ACKED resync=AS_NEEDED aggregate=PARTIAL elapsed_ns=6920000000 failure=",
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "runtime_seconds": 22.621,
+      "resource_samples": {
+        "before": [
+          130231,
+          3,
+          1
+        ],
+        "after": [
+          130231,
+          3,
+          1
+        ],
+        "thread_stats": {
+          "before": [
+            4,
+            1,
+            0,
+            0,
+            129126,
+            1095,
+            1
+          ],
+          "after": [
+            4,
+            1,
+            0,
+            0,
+            129109,
+            1112,
+            1
+          ]
+        },
+        "pipe_capacity_available": {
+          "before": 8,
+          "after": 8
+        }
+      },
+      "resources_restored": true,
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "input_hashes": {
+        "image": {
+          "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+        },
+        "supervisor": {
+          "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+        },
+        "browser": {
+          "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+        },
+        "notes": {
+          "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+        },
+        "subscriber": {
+          "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+        },
+        "input": {
+          "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+        }
+      },
+      "guest_log": "${XOS_VALIDATION_OUT}/scenarios/browser-exit.guest.log",
+      "verify_log": "${XOS_VALIDATION_OUT}/scenarios/browser-exit.verify.log",
+      "command_template": [
+        "${XOS_PYTHON}",
+        "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+        "--image",
+        "${XOS_IMAGE}",
+        "--supervisor",
+        "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+        "--browser",
+        "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+        "--notes",
+        "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+        "--subscriber",
+        "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+        "--input",
+        "${XOS_INPUT}",
+        "--case",
+        "browser-exit",
+        "--output",
+        "${XOS_VALIDATION_OUT}/scenarios/browser-exit"
+      ]
+    },
+    {
+      "scenario": "notes-exit",
+      "status": "PASSED_SCOPED",
+      "guest_exit_code": 0,
+      "independent_verify_exit_code": 0,
+      "events_attempted": 6,
+      "supervisor_acks": 6,
+      "reset_count": 0,
+      "timeout_or_unknown_count": 0,
+      "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+      "watch_stop": "P4A_WATCH_STOP reason=CYCLE_LIMIT cycles=3 events=6 attempted=6 acks=6 delivery=ACKED resync=AS_NEEDED aggregate=PARTIAL elapsed_ns=15390000000 failure=",
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "runtime_seconds": 30.931,
+      "resource_samples": {
+        "before": [
+          130231,
+          3,
+          1
+        ],
+        "after": [
+          130231,
+          3,
+          1
+        ],
+        "thread_stats": {
+          "before": [
+            4,
+            1,
+            0,
+            0,
+            129127,
+            1094,
+            1
+          ],
+          "after": [
+            4,
+            1,
+            0,
+            0,
+            129080,
+            1141,
+            1
+          ]
+        },
+        "pipe_capacity_available": {
+          "before": 8,
+          "after": 8
+        }
+      },
+      "resources_restored": true,
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "input_hashes": {
+        "image": {
+          "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+        },
+        "supervisor": {
+          "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+        },
+        "browser": {
+          "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+        },
+        "notes": {
+          "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+        },
+        "subscriber": {
+          "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+        },
+        "input": {
+          "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+        }
+      },
+      "guest_log": "${XOS_VALIDATION_OUT}/scenarios/notes-exit.guest.log",
+      "verify_log": "${XOS_VALIDATION_OUT}/scenarios/notes-exit.verify.log",
+      "command_template": [
+        "${XOS_PYTHON}",
+        "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+        "--image",
+        "${XOS_IMAGE}",
+        "--supervisor",
+        "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+        "--browser",
+        "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+        "--notes",
+        "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+        "--subscriber",
+        "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+        "--input",
+        "${XOS_INPUT}",
+        "--case",
+        "notes-exit",
+        "--output",
+        "${XOS_VALIDATION_OUT}/scenarios/notes-exit"
+      ]
+    },
+    {
+      "scenario": "stop",
+      "status": "PASSED_SCOPED",
+      "guest_exit_code": 0,
+      "independent_verify_exit_code": 0,
+      "events_attempted": 4,
+      "supervisor_acks": 4,
+      "reset_count": 0,
+      "timeout_or_unknown_count": 0,
+      "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+      "watch_stop": "P4A_WATCH_STOP reason=EXPLICIT_STOP cycles=2 events=4 attempted=4 acks=4 delivery=ACKED resync=AS_NEEDED aggregate=OBSERVED_COMPLETE elapsed_ns=10180000000 failure=",
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "runtime_seconds": 26.435,
+      "resource_samples": {
+        "before": [
+          130231,
+          3,
+          1
+        ],
+        "after": [
+          130231,
+          3,
+          1
+        ],
+        "thread_stats": {
+          "before": [
+            4,
+            1,
+            0,
+            0,
+            129126,
+            1095,
+            1
+          ],
+          "after": [
+            4,
+            1,
+            0,
+            0,
+            129053,
+            1168,
+            1
+          ]
+        },
+        "pipe_capacity_available": {
+          "before": 8,
+          "after": 8
+        }
+      },
+      "resources_restored": true,
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "input_hashes": {
+        "image": {
+          "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+        },
+        "supervisor": {
+          "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+        },
+        "browser": {
+          "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+        },
+        "notes": {
+          "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+        },
+        "subscriber": {
+          "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+        },
+        "input": {
+          "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+        }
+      },
+      "guest_log": "${XOS_VALIDATION_OUT}/scenarios/stop.guest.log",
+      "verify_log": "${XOS_VALIDATION_OUT}/scenarios/stop.verify.log",
+      "command_template": [
+        "${XOS_PYTHON}",
+        "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+        "--image",
+        "${XOS_IMAGE}",
+        "--supervisor",
+        "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+        "--browser",
+        "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+        "--notes",
+        "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+        "--subscriber",
+        "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+        "--input",
+        "${XOS_INPUT}",
+        "--case",
+        "stop",
+        "--output",
+        "${XOS_VALIDATION_OUT}/scenarios/stop"
+      ]
+    },
+    {
+      "scenario": "cancel-inflight",
+      "status": "PASSED_SCOPED",
+      "guest_exit_code": 0,
+      "independent_verify_exit_code": 0,
+      "events_attempted": 2,
+      "supervisor_acks": 2,
+      "reset_count": 0,
+      "timeout_or_unknown_count": 0,
+      "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+      "watch_stop": "P4A_WATCH_STOP reason=EXPLICIT_STOP cycles=1 events=2 attempted=2 acks=2 delivery=ACKED resync=AS_NEEDED aggregate=PARTIAL elapsed_ns=9440000000 failure=",
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "runtime_seconds": 28.634,
+      "resource_samples": {
+        "before": [
+          130231,
+          3,
+          1
+        ],
+        "after": [
+          130231,
+          3,
+          1
+        ],
+        "thread_stats": {
+          "before": [
+            4,
+            1,
+            0,
+            0,
+            129126,
+            1095,
+            1
+          ],
+          "after": [
+            4,
+            1,
+            0,
+            0,
+            129082,
+            1139,
+            1
+          ]
+        },
+        "pipe_capacity_available": {
+          "before": 8,
+          "after": 8
+        }
+      },
+      "resources_restored": true,
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "input_hashes": {
+        "image": {
+          "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+        },
+        "supervisor": {
+          "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+        },
+        "browser": {
+          "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+        },
+        "notes": {
+          "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+        },
+        "subscriber": {
+          "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+        },
+        "input": {
+          "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+        }
+      },
+      "guest_log": "${XOS_VALIDATION_OUT}/scenarios/cancel-inflight.guest.log",
+      "verify_log": "${XOS_VALIDATION_OUT}/scenarios/cancel-inflight.verify.log",
+      "command_template": [
+        "${XOS_PYTHON}",
+        "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+        "--image",
+        "${XOS_IMAGE}",
+        "--supervisor",
+        "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+        "--browser",
+        "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+        "--notes",
+        "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+        "--subscriber",
+        "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+        "--input",
+        "${XOS_INPUT}",
+        "--case",
+        "cancel-inflight",
+        "--output",
+        "${XOS_VALIDATION_OUT}/scenarios/cancel-inflight"
+      ]
+    },
+    {
+      "scenario": "wrong-ack",
+      "status": "PASSED_SCOPED",
+      "guest_exit_code": 0,
+      "independent_verify_exit_code": 0,
+      "events_attempted": 1,
+      "supervisor_acks": 0,
+      "reset_count": 0,
+      "timeout_or_unknown_count": 1,
+      "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+      "watch_stop": "P4A_WATCH_STOP reason=OUTPUT_ERROR cycles=0 events=0 attempted=1 acks=0 delivery=UNKNOWN resync=RESET_REQUIRED aggregate=OBSERVED_COMPLETE elapsed_ns=4480000000 failure=ACK_FRAME_MISMATCH_UNKNOWN",
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 1
+      },
+      "runtime_seconds": 21.223,
+      "resource_samples": {
+        "before": [
+          130231,
+          3,
+          1
+        ],
+        "after": [
+          130231,
+          3,
+          1
+        ],
+        "thread_stats": {
+          "before": [
+            4,
+            1,
+            0,
+            0,
+            129126,
+            1095,
+            1
+          ],
+          "after": [
+            4,
+            1,
+            0,
+            0,
+            129111,
+            1110,
+            1
+          ]
+        },
+        "pipe_capacity_available": {
+          "before": 8,
+          "after": 8
+        }
+      },
+      "resources_restored": true,
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "input_hashes": {
+        "image": {
+          "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+        },
+        "supervisor": {
+          "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+        },
+        "browser": {
+          "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+        },
+        "notes": {
+          "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+        },
+        "subscriber": {
+          "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+        },
+        "input": {
+          "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+        }
+      },
+      "guest_log": "${XOS_VALIDATION_OUT}/scenarios/wrong-ack.guest.log",
+      "verify_log": "${XOS_VALIDATION_OUT}/scenarios/wrong-ack.verify.log",
+      "command_template": [
+        "${XOS_PYTHON}",
+        "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+        "--image",
+        "${XOS_IMAGE}",
+        "--supervisor",
+        "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+        "--browser",
+        "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+        "--notes",
+        "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+        "--subscriber",
+        "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+        "--input",
+        "${XOS_INPUT}",
+        "--case",
+        "wrong-ack",
+        "--output",
+        "${XOS_VALIDATION_OUT}/scenarios/wrong-ack"
+      ]
+    },
+    {
+      "scenario": "duplicate-ack",
+      "status": "PASSED_SCOPED",
+      "guest_exit_code": 0,
+      "independent_verify_exit_code": 0,
+      "events_attempted": 2,
+      "supervisor_acks": 1,
+      "reset_count": 0,
+      "timeout_or_unknown_count": 1,
+      "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=4 clean=0",
+      "watch_stop": "P4A_WATCH_STOP reason=OUTPUT_ERROR cycles=0 events=1 attempted=2 acks=1 delivery=UNKNOWN resync=RESET_REQUIRED aggregate=OBSERVED_COMPLETE elapsed_ns=4370000000 failure=ACK_FRAME_MISMATCH_UNKNOWN",
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 1
+      },
+      "runtime_seconds": 20.01,
+      "resource_samples": {
+        "before": [
+          130231,
+          3,
+          1
+        ],
+        "after": [
+          130231,
+          3,
+          1
+        ],
+        "thread_stats": {
+          "before": [
+            4,
+            1,
+            0,
+            0,
+            129126,
+            1095,
+            1
+          ],
+          "after": [
+            4,
+            1,
+            0,
+            0,
+            129111,
+            1110,
+            1
+          ]
+        },
+        "pipe_capacity_available": {
+          "before": 8,
+          "after": 8
+        }
+      },
+      "resources_restored": true,
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "input_hashes": {
+        "image": {
+          "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+        },
+        "supervisor": {
+          "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+        },
+        "browser": {
+          "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+        },
+        "notes": {
+          "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+        },
+        "subscriber": {
+          "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+        },
+        "input": {
+          "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+        }
+      },
+      "guest_log": "${XOS_VALIDATION_OUT}/scenarios/duplicate-ack.guest.log",
+      "verify_log": "${XOS_VALIDATION_OUT}/scenarios/duplicate-ack.verify.log",
+      "command_template": [
+        "${XOS_PYTHON}",
+        "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+        "--image",
+        "${XOS_IMAGE}",
+        "--supervisor",
+        "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+        "--browser",
+        "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+        "--notes",
+        "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+        "--subscriber",
+        "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+        "--input",
+        "${XOS_INPUT}",
+        "--case",
+        "duplicate-ack",
+        "--output",
+        "${XOS_VALIDATION_OUT}/scenarios/duplicate-ack"
+      ]
+    },
+    {
+      "scenario": "corrupt-frame",
+      "status": "PASSED_SCOPED",
+      "guest_exit_code": 0,
+      "independent_verify_exit_code": 0,
+      "events_attempted": 1,
+      "supervisor_acks": 0,
+      "reset_count": 1,
+      "timeout_or_unknown_count": 0,
+      "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=3 clean=0",
+      "watch_stop": "P4A_WATCH_STOP reason=OUTPUT_ERROR cycles=0 events=0 attempted=1 acks=0 delivery=REJECTED resync=RESET_REQUIRED aggregate=OBSERVED_COMPLETE elapsed_ns=4310000000 failure=SUBSCRIBER_REJECTED_EVENT",
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 1
+      },
+      "runtime_seconds": 19.688,
+      "resource_samples": {
+        "before": [
+          130231,
+          3,
+          1
+        ],
+        "after": [
+          130231,
+          3,
+          1
+        ],
+        "thread_stats": {
+          "before": [
+            4,
+            1,
+            0,
+            0,
+            129126,
+            1095,
+            1
+          ],
+          "after": [
+            4,
+            1,
+            0,
+            0,
+            129111,
+            1110,
+            1
+          ]
+        },
+        "pipe_capacity_available": {
+          "before": 8,
+          "after": 8
+        }
+      },
+      "resources_restored": true,
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "input_hashes": {
+        "image": {
+          "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+        },
+        "supervisor": {
+          "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+        },
+        "browser": {
+          "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+        },
+        "notes": {
+          "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+        },
+        "subscriber": {
+          "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+        },
+        "input": {
+          "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+        }
+      },
+      "guest_log": "${XOS_VALIDATION_OUT}/scenarios/corrupt-frame.guest.log",
+      "verify_log": "${XOS_VALIDATION_OUT}/scenarios/corrupt-frame.verify.log",
+      "command_template": [
+        "${XOS_PYTHON}",
+        "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+        "--image",
+        "${XOS_IMAGE}",
+        "--supervisor",
+        "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+        "--browser",
+        "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+        "--notes",
+        "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+        "--subscriber",
+        "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+        "--input",
+        "${XOS_INPUT}",
+        "--case",
+        "corrupt-frame",
+        "--output",
+        "${XOS_VALIDATION_OUT}/scenarios/corrupt-frame"
+      ]
+    },
+    {
+      "scenario": "backpressure",
+      "status": "PASSED_SCOPED",
+      "guest_exit_code": 0,
+      "independent_verify_exit_code": 0,
+      "events_attempted": 1,
+      "supervisor_acks": 0,
+      "reset_count": 0,
+      "timeout_or_unknown_count": 2,
+      "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=4 clean=0",
+      "watch_stop": "P4A_WATCH_STOP reason=OUTPUT_ERROR cycles=0 events=0 attempted=1 acks=0 delivery=UNKNOWN resync=RESET_REQUIRED aggregate=OBSERVED_COMPLETE elapsed_ns=9410000000 failure=ACK_TIMEOUT_UNKNOWN",
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 1
+      },
+      "runtime_seconds": 26.181,
+      "resource_samples": {
+        "before": [
+          130231,
+          3,
+          1
+        ],
+        "after": [
+          130231,
+          3,
+          1
+        ],
+        "thread_stats": {
+          "before": [
+            4,
+            1,
+            0,
+            0,
+            129126,
+            1095,
+            1
+          ],
+          "after": [
+            4,
+            1,
+            0,
+            0,
+            129111,
+            1110,
+            1
+          ]
+        },
+        "pipe_capacity_available": {
+          "before": 8,
+          "after": 8
+        }
+      },
+      "resources_restored": true,
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "input_hashes": {
+        "image": {
+          "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+        },
+        "supervisor": {
+          "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+        },
+        "browser": {
+          "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+        },
+        "notes": {
+          "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+        },
+        "subscriber": {
+          "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+        },
+        "input": {
+          "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+        }
+      },
+      "guest_log": "${XOS_VALIDATION_OUT}/scenarios/backpressure.guest.log",
+      "verify_log": "${XOS_VALIDATION_OUT}/scenarios/backpressure.verify.log",
+      "command_template": [
+        "${XOS_PYTHON}",
+        "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+        "--image",
+        "${XOS_IMAGE}",
+        "--supervisor",
+        "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+        "--browser",
+        "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+        "--notes",
+        "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+        "--subscriber",
+        "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+        "--input",
+        "${XOS_INPUT}",
+        "--case",
+        "backpressure",
+        "--output",
+        "${XOS_VALIDATION_OUT}/scenarios/backpressure"
+      ]
+    },
+    {
+      "scenario": "first",
+      "status": "PASSED_SCOPED",
+      "guest_exit_code": 0,
+      "independent_verify_exit_code": 0,
+      "events_attempted": 2,
+      "supervisor_acks": 2,
+      "reset_count": 0,
+      "timeout_or_unknown_count": 0,
+      "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+      "watch_stop": "P4A_WATCH_STOP reason=CYCLE_LIMIT cycles=1 events=2 attempted=2 acks=2 delivery=ACKED resync=AS_NEEDED aggregate=OBSERVED_COMPLETE elapsed_ns=4620000000 failure=",
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "runtime_seconds": 20.402,
+      "resource_samples": {
+        "before": [
+          130231,
+          3,
+          1
+        ],
+        "after": [
+          130231,
+          3,
+          1
+        ],
+        "thread_stats": {
+          "before": [
+            4,
+            1,
+            0,
+            0,
+            129126,
+            1095,
+            1
+          ],
+          "after": [
+            4,
+            1,
+            0,
+            0,
+            129117,
+            1104,
+            1
+          ]
+        },
+        "pipe_capacity_available": {
+          "before": 8,
+          "after": 8
+        }
+      },
+      "resources_restored": true,
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "input_hashes": {
+        "image": {
+          "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+        },
+        "supervisor": {
+          "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+        },
+        "browser": {
+          "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+        },
+        "notes": {
+          "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+        },
+        "subscriber": {
+          "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+        },
+        "input": {
+          "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+        }
+      },
+      "guest_log": "${XOS_VALIDATION_OUT}/resync/corrupt-frame-new-baseline.guest.log",
+      "verify_log": "${XOS_VALIDATION_OUT}/resync/corrupt-frame-new-baseline.verify.log",
+      "command_template": [
+        "${XOS_PYTHON}",
+        "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+        "--image",
+        "${XOS_IMAGE}",
+        "--supervisor",
+        "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+        "--browser",
+        "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+        "--notes",
+        "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+        "--subscriber",
+        "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+        "--input",
+        "${XOS_INPUT}",
+        "--case",
+        "first",
+        "--output",
+        "${XOS_VALIDATION_OUT}/resync/corrupt-frame-new-baseline"
+      ]
+    },
+    {
+      "scenario": "first",
+      "status": "PASSED_SCOPED",
+      "guest_exit_code": 0,
+      "independent_verify_exit_code": 0,
+      "events_attempted": 2,
+      "supervisor_acks": 2,
+      "reset_count": 0,
+      "timeout_or_unknown_count": 0,
+      "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+      "watch_stop": "P4A_WATCH_STOP reason=CYCLE_LIMIT cycles=1 events=2 attempted=2 acks=2 delivery=ACKED resync=AS_NEEDED aggregate=OBSERVED_COMPLETE elapsed_ns=4260000000 failure=",
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "runtime_seconds": 20.046,
+      "resource_samples": {
+        "before": [
+          130231,
+          3,
+          1
+        ],
+        "after": [
+          130231,
+          3,
+          1
+        ],
+        "thread_stats": {
+          "before": [
+            4,
+            1,
+            0,
+            0,
+            129126,
+            1095,
+            1
+          ],
+          "after": [
+            4,
+            1,
+            0,
+            0,
+            129117,
+            1104,
+            1
+          ]
+        },
+        "pipe_capacity_available": {
+          "before": 8,
+          "after": 8
+        }
+      },
+      "resources_restored": true,
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "input_hashes": {
+        "image": {
+          "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+        },
+        "supervisor": {
+          "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+        },
+        "browser": {
+          "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+        },
+        "notes": {
+          "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+        },
+        "subscriber": {
+          "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+        },
+        "input": {
+          "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+        }
+      },
+      "guest_log": "${XOS_VALIDATION_OUT}/resync/backpressure-new-baseline.guest.log",
+      "verify_log": "${XOS_VALIDATION_OUT}/resync/backpressure-new-baseline.verify.log",
+      "command_template": [
+        "${XOS_PYTHON}",
+        "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+        "--image",
+        "${XOS_IMAGE}",
+        "--supervisor",
+        "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+        "--browser",
+        "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+        "--notes",
+        "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+        "--subscriber",
+        "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+        "--input",
+        "${XOS_INPUT}",
+        "--case",
+        "first",
+        "--output",
+        "${XOS_VALIDATION_OUT}/resync/backpressure-new-baseline"
+      ]
+    }
+  ],
+  "resync_runs": [
+    {
+      "failure_scenario": "corrupt-frame",
+      "status": "PASSED_SCOPED",
+      "independent_verify_exit_code": 0,
+      "verify_log": "${XOS_VALIDATION_OUT}/resync/corrupt-frame.verify.log"
+    },
+    {
+      "failure_scenario": "backpressure",
+      "status": "PASSED_SCOPED",
+      "independent_verify_exit_code": 0,
+      "verify_log": "${XOS_VALIDATION_OUT}/resync/backpressure.verify.log"
+    }
+  ],
+  "stress": {
+    "status": "PASSED_SCOPED",
+    "requested_runs": 12,
+    "passed_runs": 12,
+    "runs": [
+      {
+        "scenario": "first",
+        "status": "PASSED_SCOPED",
+        "guest_exit_code": 0,
+        "independent_verify_exit_code": 0,
+        "events_attempted": 2,
+        "supervisor_acks": 2,
+        "reset_count": 0,
+        "timeout_or_unknown_count": 0,
+        "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+        "watch_stop": "P4A_WATCH_STOP reason=CYCLE_LIMIT cycles=1 events=2 attempted=2 acks=2 delivery=ACKED resync=AS_NEEDED aggregate=OBSERVED_COMPLETE elapsed_ns=4490000000 failure=",
+        "supervisor_exit": {
+          "kind": "exited",
+          "code": 0
+        },
+        "runtime_seconds": 20.534,
+        "resource_samples": {
+          "before": [
+            130231,
+            3,
+            1
+          ],
+          "after": [
+            130231,
+            3,
+            1
+          ],
+          "thread_stats": {
+            "before": [
+              4,
+              1,
+              0,
+              0,
+              129126,
+              1095,
+              1
+            ],
+            "after": [
+              4,
+              1,
+              0,
+              0,
+              129117,
+              1104,
+              1
+            ]
+          },
+          "pipe_capacity_available": {
+            "before": 8,
+            "after": 8
+          }
+        },
+        "resources_restored": true,
+        "source_exits": [
+          "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+          "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+        ],
+        "input_hashes": {
+          "image": {
+            "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+          },
+          "supervisor": {
+            "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+          },
+          "browser": {
+            "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+          },
+          "notes": {
+            "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+          },
+          "subscriber": {
+            "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+          },
+          "input": {
+            "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+          }
+        },
+        "guest_log": "${XOS_VALIDATION_OUT}/stress/run-01.guest.log",
+        "verify_log": "${XOS_VALIDATION_OUT}/stress/run-01.verify.log",
+        "command_template": [
+          "${XOS_PYTHON}",
+          "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+          "--image",
+          "${XOS_IMAGE}",
+          "--supervisor",
+          "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+          "--browser",
+          "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+          "--notes",
+          "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+          "--subscriber",
+          "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+          "--input",
+          "${XOS_INPUT}",
+          "--case",
+          "first",
+          "--output",
+          "${XOS_VALIDATION_OUT}/stress/run-01"
+        ],
+        "run_id": "run-01"
+      },
+      {
+        "scenario": "first",
+        "status": "PASSED_SCOPED",
+        "guest_exit_code": 0,
+        "independent_verify_exit_code": 0,
+        "events_attempted": 2,
+        "supervisor_acks": 2,
+        "reset_count": 0,
+        "timeout_or_unknown_count": 0,
+        "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+        "watch_stop": "P4A_WATCH_STOP reason=CYCLE_LIMIT cycles=1 events=2 attempted=2 acks=2 delivery=ACKED resync=AS_NEEDED aggregate=OBSERVED_COMPLETE elapsed_ns=4740000000 failure=",
+        "supervisor_exit": {
+          "kind": "exited",
+          "code": 0
+        },
+        "runtime_seconds": 20.423,
+        "resource_samples": {
+          "before": [
+            130231,
+            3,
+            1
+          ],
+          "after": [
+            130231,
+            3,
+            1
+          ],
+          "thread_stats": {
+            "before": [
+              4,
+              1,
+              0,
+              0,
+              129126,
+              1095,
+              1
+            ],
+            "after": [
+              4,
+              1,
+              0,
+              0,
+              129117,
+              1104,
+              1
+            ]
+          },
+          "pipe_capacity_available": {
+            "before": 8,
+            "after": 8
+          }
+        },
+        "resources_restored": true,
+        "source_exits": [
+          "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+          "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+        ],
+        "input_hashes": {
+          "image": {
+            "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+          },
+          "supervisor": {
+            "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+          },
+          "browser": {
+            "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+          },
+          "notes": {
+            "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+          },
+          "subscriber": {
+            "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+          },
+          "input": {
+            "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+          }
+        },
+        "guest_log": "${XOS_VALIDATION_OUT}/stress/run-02.guest.log",
+        "verify_log": "${XOS_VALIDATION_OUT}/stress/run-02.verify.log",
+        "command_template": [
+          "${XOS_PYTHON}",
+          "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+          "--image",
+          "${XOS_IMAGE}",
+          "--supervisor",
+          "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+          "--browser",
+          "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+          "--notes",
+          "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+          "--subscriber",
+          "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+          "--input",
+          "${XOS_INPUT}",
+          "--case",
+          "first",
+          "--output",
+          "${XOS_VALIDATION_OUT}/stress/run-02"
+        ],
+        "run_id": "run-02"
+      },
+      {
+        "scenario": "first",
+        "status": "PASSED_SCOPED",
+        "guest_exit_code": 0,
+        "independent_verify_exit_code": 0,
+        "events_attempted": 2,
+        "supervisor_acks": 2,
+        "reset_count": 0,
+        "timeout_or_unknown_count": 0,
+        "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+        "watch_stop": "P4A_WATCH_STOP reason=CYCLE_LIMIT cycles=1 events=2 attempted=2 acks=2 delivery=ACKED resync=AS_NEEDED aggregate=OBSERVED_COMPLETE elapsed_ns=4240000000 failure=",
+        "supervisor_exit": {
+          "kind": "exited",
+          "code": 0
+        },
+        "runtime_seconds": 19.97,
+        "resource_samples": {
+          "before": [
+            130231,
+            3,
+            1
+          ],
+          "after": [
+            130231,
+            3,
+            1
+          ],
+          "thread_stats": {
+            "before": [
+              4,
+              1,
+              0,
+              0,
+              129126,
+              1095,
+              1
+            ],
+            "after": [
+              4,
+              1,
+              0,
+              0,
+              129117,
+              1104,
+              1
+            ]
+          },
+          "pipe_capacity_available": {
+            "before": 8,
+            "after": 8
+          }
+        },
+        "resources_restored": true,
+        "source_exits": [
+          "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+          "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+        ],
+        "input_hashes": {
+          "image": {
+            "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+          },
+          "supervisor": {
+            "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+          },
+          "browser": {
+            "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+          },
+          "notes": {
+            "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+          },
+          "subscriber": {
+            "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+          },
+          "input": {
+            "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+          }
+        },
+        "guest_log": "${XOS_VALIDATION_OUT}/stress/run-03.guest.log",
+        "verify_log": "${XOS_VALIDATION_OUT}/stress/run-03.verify.log",
+        "command_template": [
+          "${XOS_PYTHON}",
+          "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+          "--image",
+          "${XOS_IMAGE}",
+          "--supervisor",
+          "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+          "--browser",
+          "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+          "--notes",
+          "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+          "--subscriber",
+          "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+          "--input",
+          "${XOS_INPUT}",
+          "--case",
+          "first",
+          "--output",
+          "${XOS_VALIDATION_OUT}/stress/run-03"
+        ],
+        "run_id": "run-03"
+      },
+      {
+        "scenario": "first",
+        "status": "PASSED_SCOPED",
+        "guest_exit_code": 0,
+        "independent_verify_exit_code": 0,
+        "events_attempted": 2,
+        "supervisor_acks": 2,
+        "reset_count": 0,
+        "timeout_or_unknown_count": 0,
+        "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+        "watch_stop": "P4A_WATCH_STOP reason=CYCLE_LIMIT cycles=1 events=2 attempted=2 acks=2 delivery=ACKED resync=AS_NEEDED aggregate=OBSERVED_COMPLETE elapsed_ns=4520000000 failure=",
+        "supervisor_exit": {
+          "kind": "exited",
+          "code": 0
+        },
+        "runtime_seconds": 20.233,
+        "resource_samples": {
+          "before": [
+            130231,
+            3,
+            1
+          ],
+          "after": [
+            130231,
+            3,
+            1
+          ],
+          "thread_stats": {
+            "before": [
+              4,
+              1,
+              0,
+              0,
+              129126,
+              1095,
+              1
+            ],
+            "after": [
+              4,
+              1,
+              0,
+              0,
+              129117,
+              1104,
+              1
+            ]
+          },
+          "pipe_capacity_available": {
+            "before": 8,
+            "after": 8
+          }
+        },
+        "resources_restored": true,
+        "source_exits": [
+          "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+          "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+        ],
+        "input_hashes": {
+          "image": {
+            "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+          },
+          "supervisor": {
+            "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+          },
+          "browser": {
+            "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+          },
+          "notes": {
+            "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+          },
+          "subscriber": {
+            "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+          },
+          "input": {
+            "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+          }
+        },
+        "guest_log": "${XOS_VALIDATION_OUT}/stress/run-04.guest.log",
+        "verify_log": "${XOS_VALIDATION_OUT}/stress/run-04.verify.log",
+        "command_template": [
+          "${XOS_PYTHON}",
+          "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+          "--image",
+          "${XOS_IMAGE}",
+          "--supervisor",
+          "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+          "--browser",
+          "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+          "--notes",
+          "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+          "--subscriber",
+          "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+          "--input",
+          "${XOS_INPUT}",
+          "--case",
+          "first",
+          "--output",
+          "${XOS_VALIDATION_OUT}/stress/run-04"
+        ],
+        "run_id": "run-04"
+      },
+      {
+        "scenario": "first",
+        "status": "PASSED_SCOPED",
+        "guest_exit_code": 0,
+        "independent_verify_exit_code": 0,
+        "events_attempted": 2,
+        "supervisor_acks": 2,
+        "reset_count": 0,
+        "timeout_or_unknown_count": 0,
+        "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+        "watch_stop": "P4A_WATCH_STOP reason=CYCLE_LIMIT cycles=1 events=2 attempted=2 acks=2 delivery=ACKED resync=AS_NEEDED aggregate=OBSERVED_COMPLETE elapsed_ns=4500000000 failure=",
+        "supervisor_exit": {
+          "kind": "exited",
+          "code": 0
+        },
+        "runtime_seconds": 20.011,
+        "resource_samples": {
+          "before": [
+            130231,
+            3,
+            1
+          ],
+          "after": [
+            130231,
+            3,
+            1
+          ],
+          "thread_stats": {
+            "before": [
+              4,
+              1,
+              0,
+              0,
+              129126,
+              1095,
+              1
+            ],
+            "after": [
+              4,
+              1,
+              0,
+              0,
+              129117,
+              1104,
+              1
+            ]
+          },
+          "pipe_capacity_available": {
+            "before": 8,
+            "after": 8
+          }
+        },
+        "resources_restored": true,
+        "source_exits": [
+          "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+          "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+        ],
+        "input_hashes": {
+          "image": {
+            "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+          },
+          "supervisor": {
+            "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+          },
+          "browser": {
+            "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+          },
+          "notes": {
+            "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+          },
+          "subscriber": {
+            "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+          },
+          "input": {
+            "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+          }
+        },
+        "guest_log": "${XOS_VALIDATION_OUT}/stress/run-05.guest.log",
+        "verify_log": "${XOS_VALIDATION_OUT}/stress/run-05.verify.log",
+        "command_template": [
+          "${XOS_PYTHON}",
+          "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+          "--image",
+          "${XOS_IMAGE}",
+          "--supervisor",
+          "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+          "--browser",
+          "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+          "--notes",
+          "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+          "--subscriber",
+          "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+          "--input",
+          "${XOS_INPUT}",
+          "--case",
+          "first",
+          "--output",
+          "${XOS_VALIDATION_OUT}/stress/run-05"
+        ],
+        "run_id": "run-05"
+      },
+      {
+        "scenario": "first",
+        "status": "PASSED_SCOPED",
+        "guest_exit_code": 0,
+        "independent_verify_exit_code": 0,
+        "events_attempted": 2,
+        "supervisor_acks": 2,
+        "reset_count": 0,
+        "timeout_or_unknown_count": 0,
+        "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+        "watch_stop": "P4A_WATCH_STOP reason=CYCLE_LIMIT cycles=1 events=2 attempted=2 acks=2 delivery=ACKED resync=AS_NEEDED aggregate=OBSERVED_COMPLETE elapsed_ns=4280000000 failure=",
+        "supervisor_exit": {
+          "kind": "exited",
+          "code": 0
+        },
+        "runtime_seconds": 19.725,
+        "resource_samples": {
+          "before": [
+            130231,
+            3,
+            1
+          ],
+          "after": [
+            130231,
+            3,
+            1
+          ],
+          "thread_stats": {
+            "before": [
+              4,
+              1,
+              0,
+              0,
+              129126,
+              1095,
+              1
+            ],
+            "after": [
+              4,
+              1,
+              0,
+              0,
+              129117,
+              1104,
+              1
+            ]
+          },
+          "pipe_capacity_available": {
+            "before": 8,
+            "after": 8
+          }
+        },
+        "resources_restored": true,
+        "source_exits": [
+          "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+          "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+        ],
+        "input_hashes": {
+          "image": {
+            "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+          },
+          "supervisor": {
+            "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+          },
+          "browser": {
+            "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+          },
+          "notes": {
+            "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+          },
+          "subscriber": {
+            "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+          },
+          "input": {
+            "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+          }
+        },
+        "guest_log": "${XOS_VALIDATION_OUT}/stress/run-06.guest.log",
+        "verify_log": "${XOS_VALIDATION_OUT}/stress/run-06.verify.log",
+        "command_template": [
+          "${XOS_PYTHON}",
+          "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+          "--image",
+          "${XOS_IMAGE}",
+          "--supervisor",
+          "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+          "--browser",
+          "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+          "--notes",
+          "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+          "--subscriber",
+          "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+          "--input",
+          "${XOS_INPUT}",
+          "--case",
+          "first",
+          "--output",
+          "${XOS_VALIDATION_OUT}/stress/run-06"
+        ],
+        "run_id": "run-06"
+      },
+      {
+        "scenario": "first",
+        "status": "PASSED_SCOPED",
+        "guest_exit_code": 0,
+        "independent_verify_exit_code": 0,
+        "events_attempted": 2,
+        "supervisor_acks": 2,
+        "reset_count": 0,
+        "timeout_or_unknown_count": 0,
+        "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+        "watch_stop": "P4A_WATCH_STOP reason=CYCLE_LIMIT cycles=1 events=2 attempted=2 acks=2 delivery=ACKED resync=AS_NEEDED aggregate=OBSERVED_COMPLETE elapsed_ns=4480000000 failure=",
+        "supervisor_exit": {
+          "kind": "exited",
+          "code": 0
+        },
+        "runtime_seconds": 20.071,
+        "resource_samples": {
+          "before": [
+            130231,
+            3,
+            1
+          ],
+          "after": [
+            130231,
+            3,
+            1
+          ],
+          "thread_stats": {
+            "before": [
+              4,
+              1,
+              0,
+              0,
+              129126,
+              1095,
+              1
+            ],
+            "after": [
+              4,
+              1,
+              0,
+              0,
+              129117,
+              1104,
+              1
+            ]
+          },
+          "pipe_capacity_available": {
+            "before": 8,
+            "after": 8
+          }
+        },
+        "resources_restored": true,
+        "source_exits": [
+          "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+          "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+        ],
+        "input_hashes": {
+          "image": {
+            "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+          },
+          "supervisor": {
+            "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+          },
+          "browser": {
+            "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+          },
+          "notes": {
+            "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+          },
+          "subscriber": {
+            "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+          },
+          "input": {
+            "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+          }
+        },
+        "guest_log": "${XOS_VALIDATION_OUT}/stress/run-07.guest.log",
+        "verify_log": "${XOS_VALIDATION_OUT}/stress/run-07.verify.log",
+        "command_template": [
+          "${XOS_PYTHON}",
+          "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+          "--image",
+          "${XOS_IMAGE}",
+          "--supervisor",
+          "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+          "--browser",
+          "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+          "--notes",
+          "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+          "--subscriber",
+          "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+          "--input",
+          "${XOS_INPUT}",
+          "--case",
+          "first",
+          "--output",
+          "${XOS_VALIDATION_OUT}/stress/run-07"
+        ],
+        "run_id": "run-07"
+      },
+      {
+        "scenario": "first",
+        "status": "PASSED_SCOPED",
+        "guest_exit_code": 0,
+        "independent_verify_exit_code": 0,
+        "events_attempted": 2,
+        "supervisor_acks": 2,
+        "reset_count": 0,
+        "timeout_or_unknown_count": 0,
+        "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+        "watch_stop": "P4A_WATCH_STOP reason=CYCLE_LIMIT cycles=1 events=2 attempted=2 acks=2 delivery=ACKED resync=AS_NEEDED aggregate=OBSERVED_COMPLETE elapsed_ns=4540000000 failure=",
+        "supervisor_exit": {
+          "kind": "exited",
+          "code": 0
+        },
+        "runtime_seconds": 20.318,
+        "resource_samples": {
+          "before": [
+            130231,
+            3,
+            1
+          ],
+          "after": [
+            130231,
+            3,
+            1
+          ],
+          "thread_stats": {
+            "before": [
+              4,
+              1,
+              0,
+              0,
+              129126,
+              1095,
+              1
+            ],
+            "after": [
+              4,
+              1,
+              0,
+              0,
+              129117,
+              1104,
+              1
+            ]
+          },
+          "pipe_capacity_available": {
+            "before": 8,
+            "after": 8
+          }
+        },
+        "resources_restored": true,
+        "source_exits": [
+          "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+          "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+        ],
+        "input_hashes": {
+          "image": {
+            "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+          },
+          "supervisor": {
+            "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+          },
+          "browser": {
+            "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+          },
+          "notes": {
+            "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+          },
+          "subscriber": {
+            "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+          },
+          "input": {
+            "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+          }
+        },
+        "guest_log": "${XOS_VALIDATION_OUT}/stress/run-08.guest.log",
+        "verify_log": "${XOS_VALIDATION_OUT}/stress/run-08.verify.log",
+        "command_template": [
+          "${XOS_PYTHON}",
+          "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+          "--image",
+          "${XOS_IMAGE}",
+          "--supervisor",
+          "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+          "--browser",
+          "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+          "--notes",
+          "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+          "--subscriber",
+          "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+          "--input",
+          "${XOS_INPUT}",
+          "--case",
+          "first",
+          "--output",
+          "${XOS_VALIDATION_OUT}/stress/run-08"
+        ],
+        "run_id": "run-08"
+      },
+      {
+        "scenario": "first",
+        "status": "PASSED_SCOPED",
+        "guest_exit_code": 0,
+        "independent_verify_exit_code": 0,
+        "events_attempted": 2,
+        "supervisor_acks": 2,
+        "reset_count": 0,
+        "timeout_or_unknown_count": 0,
+        "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+        "watch_stop": "P4A_WATCH_STOP reason=CYCLE_LIMIT cycles=1 events=2 attempted=2 acks=2 delivery=ACKED resync=AS_NEEDED aggregate=OBSERVED_COMPLETE elapsed_ns=4380000000 failure=",
+        "supervisor_exit": {
+          "kind": "exited",
+          "code": 0
+        },
+        "runtime_seconds": 19.818,
+        "resource_samples": {
+          "before": [
+            130231,
+            3,
+            1
+          ],
+          "after": [
+            130231,
+            3,
+            1
+          ],
+          "thread_stats": {
+            "before": [
+              4,
+              1,
+              0,
+              0,
+              129126,
+              1095,
+              1
+            ],
+            "after": [
+              4,
+              1,
+              0,
+              0,
+              129117,
+              1104,
+              1
+            ]
+          },
+          "pipe_capacity_available": {
+            "before": 8,
+            "after": 8
+          }
+        },
+        "resources_restored": true,
+        "source_exits": [
+          "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+          "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+        ],
+        "input_hashes": {
+          "image": {
+            "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+          },
+          "supervisor": {
+            "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+          },
+          "browser": {
+            "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+          },
+          "notes": {
+            "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+          },
+          "subscriber": {
+            "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+          },
+          "input": {
+            "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+          }
+        },
+        "guest_log": "${XOS_VALIDATION_OUT}/stress/run-09.guest.log",
+        "verify_log": "${XOS_VALIDATION_OUT}/stress/run-09.verify.log",
+        "command_template": [
+          "${XOS_PYTHON}",
+          "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+          "--image",
+          "${XOS_IMAGE}",
+          "--supervisor",
+          "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+          "--browser",
+          "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+          "--notes",
+          "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+          "--subscriber",
+          "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+          "--input",
+          "${XOS_INPUT}",
+          "--case",
+          "first",
+          "--output",
+          "${XOS_VALIDATION_OUT}/stress/run-09"
+        ],
+        "run_id": "run-09"
+      },
+      {
+        "scenario": "first",
+        "status": "PASSED_SCOPED",
+        "guest_exit_code": 0,
+        "independent_verify_exit_code": 0,
+        "events_attempted": 2,
+        "supervisor_acks": 2,
+        "reset_count": 0,
+        "timeout_or_unknown_count": 0,
+        "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+        "watch_stop": "P4A_WATCH_STOP reason=CYCLE_LIMIT cycles=1 events=2 attempted=2 acks=2 delivery=ACKED resync=AS_NEEDED aggregate=OBSERVED_COMPLETE elapsed_ns=4330000000 failure=",
+        "supervisor_exit": {
+          "kind": "exited",
+          "code": 0
+        },
+        "runtime_seconds": 19.659,
+        "resource_samples": {
+          "before": [
+            130231,
+            3,
+            1
+          ],
+          "after": [
+            130231,
+            3,
+            1
+          ],
+          "thread_stats": {
+            "before": [
+              4,
+              1,
+              0,
+              0,
+              129126,
+              1095,
+              1
+            ],
+            "after": [
+              4,
+              1,
+              0,
+              0,
+              129117,
+              1104,
+              1
+            ]
+          },
+          "pipe_capacity_available": {
+            "before": 8,
+            "after": 8
+          }
+        },
+        "resources_restored": true,
+        "source_exits": [
+          "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+          "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+        ],
+        "input_hashes": {
+          "image": {
+            "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+          },
+          "supervisor": {
+            "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+          },
+          "browser": {
+            "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+          },
+          "notes": {
+            "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+          },
+          "subscriber": {
+            "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+          },
+          "input": {
+            "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+          }
+        },
+        "guest_log": "${XOS_VALIDATION_OUT}/stress/run-10.guest.log",
+        "verify_log": "${XOS_VALIDATION_OUT}/stress/run-10.verify.log",
+        "command_template": [
+          "${XOS_PYTHON}",
+          "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+          "--image",
+          "${XOS_IMAGE}",
+          "--supervisor",
+          "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+          "--browser",
+          "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+          "--notes",
+          "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+          "--subscriber",
+          "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+          "--input",
+          "${XOS_INPUT}",
+          "--case",
+          "first",
+          "--output",
+          "${XOS_VALIDATION_OUT}/stress/run-10"
+        ],
+        "run_id": "run-10"
+      },
+      {
+        "scenario": "first",
+        "status": "PASSED_SCOPED",
+        "guest_exit_code": 0,
+        "independent_verify_exit_code": 0,
+        "events_attempted": 2,
+        "supervisor_acks": 2,
+        "reset_count": 0,
+        "timeout_or_unknown_count": 0,
+        "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+        "watch_stop": "P4A_WATCH_STOP reason=CYCLE_LIMIT cycles=1 events=2 attempted=2 acks=2 delivery=ACKED resync=AS_NEEDED aggregate=OBSERVED_COMPLETE elapsed_ns=4290000000 failure=",
+        "supervisor_exit": {
+          "kind": "exited",
+          "code": 0
+        },
+        "runtime_seconds": 19.599,
+        "resource_samples": {
+          "before": [
+            130231,
+            3,
+            1
+          ],
+          "after": [
+            130231,
+            3,
+            1
+          ],
+          "thread_stats": {
+            "before": [
+              4,
+              1,
+              0,
+              0,
+              129126,
+              1095,
+              1
+            ],
+            "after": [
+              4,
+              1,
+              0,
+              0,
+              129117,
+              1104,
+              1
+            ]
+          },
+          "pipe_capacity_available": {
+            "before": 8,
+            "after": 8
+          }
+        },
+        "resources_restored": true,
+        "source_exits": [
+          "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+          "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+        ],
+        "input_hashes": {
+          "image": {
+            "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+          },
+          "supervisor": {
+            "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+          },
+          "browser": {
+            "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+          },
+          "notes": {
+            "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+          },
+          "subscriber": {
+            "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+          },
+          "input": {
+            "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+          }
+        },
+        "guest_log": "${XOS_VALIDATION_OUT}/stress/run-11.guest.log",
+        "verify_log": "${XOS_VALIDATION_OUT}/stress/run-11.verify.log",
+        "command_template": [
+          "${XOS_PYTHON}",
+          "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+          "--image",
+          "${XOS_IMAGE}",
+          "--supervisor",
+          "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+          "--browser",
+          "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+          "--notes",
+          "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+          "--subscriber",
+          "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+          "--input",
+          "${XOS_INPUT}",
+          "--case",
+          "first",
+          "--output",
+          "${XOS_VALIDATION_OUT}/stress/run-11"
+        ],
+        "run_id": "run-11"
+      },
+      {
+        "scenario": "first",
+        "status": "PASSED_SCOPED",
+        "guest_exit_code": 0,
+        "independent_verify_exit_code": 0,
+        "events_attempted": 2,
+        "supervisor_acks": 2,
+        "reset_count": 0,
+        "timeout_or_unknown_count": 0,
+        "subscriber_exit": "P4A_SUBSCRIBER_EXIT reaped=1 cancelled=0 outcome=1 code=0 clean=1",
+        "watch_stop": "P4A_WATCH_STOP reason=CYCLE_LIMIT cycles=1 events=2 attempted=2 acks=2 delivery=ACKED resync=AS_NEEDED aggregate=OBSERVED_COMPLETE elapsed_ns=4490000000 failure=",
+        "supervisor_exit": {
+          "kind": "exited",
+          "code": 0
+        },
+        "runtime_seconds": 20.644,
+        "resource_samples": {
+          "before": [
+            130231,
+            3,
+            1
+          ],
+          "after": [
+            130231,
+            3,
+            1
+          ],
+          "thread_stats": {
+            "before": [
+              4,
+              1,
+              0,
+              0,
+              129126,
+              1095,
+              1
+            ],
+            "after": [
+              4,
+              1,
+              0,
+              0,
+              129117,
+              1104,
+              1
+            ]
+          },
+          "pipe_capacity_available": {
+            "before": 8,
+            "after": 8
+          }
+        },
+        "resources_restored": true,
+        "source_exits": [
+          "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+          "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+        ],
+        "input_hashes": {
+          "image": {
+            "sha256": "ffa4b06e088b3c72cc282afafa730b438380d2bfb8fe39559511bf820921b5e6"
+          },
+          "supervisor": {
+            "sha256": "24753332318405eb98b692ac53cb4a455eb9f4920db1bd89b2e89cd3180d8793"
+          },
+          "browser": {
+            "sha256": "02375c449001a37b69da715abd7c78cabc3f31b78e34149ce29564bbe8e60d87"
+          },
+          "notes": {
+            "sha256": "b0f390a01550180e7ae105ed321d03fed2856c6b540456182522151bd47f258b"
+          },
+          "subscriber": {
+            "sha256": "ab732ede674ad9e5b79e285e467004b6eb86385cf0495af5f6f9554b893c7722"
+          },
+          "input": {
+            "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+          }
+        },
+        "guest_log": "${XOS_VALIDATION_OUT}/stress/run-12.guest.log",
+        "verify_log": "${XOS_VALIDATION_OUT}/stress/run-12.verify.log",
+        "command_template": [
+          "${XOS_PYTHON}",
+          "${XOS_ROOT}/tests/ssg_p4a_guest.py",
+          "--image",
+          "${XOS_IMAGE}",
+          "--supervisor",
+          "${XOS_P4A_BUILD_DIR}/supervisor-test/supervisor-test.elf",
+          "--browser",
+          "${XOS_P4A_BUILD_DIR}/browser-test/browser.elf",
+          "--notes",
+          "${XOS_P4A_BUILD_DIR}/notes-test/notes.elf",
+          "--subscriber",
+          "${XOS_P4A_BUILD_DIR}/subscriber/subscriber.elf",
+          "--input",
+          "${XOS_INPUT}",
+          "--case",
+          "first",
+          "--output",
+          "${XOS_VALIDATION_OUT}/stress/run-12"
+        ],
+        "run_id": "run-12"
+      }
+    ],
+    "retry_policy": "all attempts retained; no failure runs removed"
+  },
+  "subscriber_state_guest": {
+    "status": "PASSED_SCOPED",
+    "guest_exit_code": 0,
+    "report": {
+      "status": "PASSED_SCOPED",
+      "inputs": {
+        "image_sha256": "8bf45852c88b0077cdd647a18383dfa435fa0ccab5a1fbdb99b06f00407591c3",
+        "payload_sha256": "e663ff32c843edd2e60371fff43f90990fcefe324f27aa0b1ec93dffdcb189ae"
+      },
+      "checks": [
+        {
+          "name": "initial_browser_baseline",
+          "status": "PASS"
+        },
+        {
+          "name": "initial_notes_baseline",
+          "status": "PASS"
+        },
+        {
+          "name": "contiguous_source_change",
+          "status": "PASS"
+        },
+        {
+          "name": "duplicate_stream_sequence_resets_state",
+          "status": "PASS"
+        },
+        {
+          "name": "stream_sequence_gap_resets_state",
+          "status": "PASS"
+        },
+        {
+          "name": "source_sequence_gap_rejected",
+          "status": "PASS"
+        },
+        {
+          "name": "wrong_header_source_rejected",
+          "status": "PASS"
+        },
+        {
+          "name": "source_instance_replacement_requires_new_session",
+          "status": "PASS"
+        },
+        {
+          "name": "epoch_change_requires_replacement_event",
+          "status": "PASS"
+        },
+        {
+          "name": "explicit_epoch_replacement_rebaselines",
+          "status": "PASS"
+        },
+        {
+          "name": "stale_revision_change_rejected",
+          "status": "PASS"
+        },
+        {
+          "name": "denial_clears_current_summary",
+          "status": "PASS"
+        },
+        {
+          "name": "protection_clears_current_summary",
+          "status": "PASS"
+        },
+        {
+          "name": "provider_exit_invalidates_current_summary",
+          "status": "PASS"
+        },
+        {
+          "name": "unexpected_content_field_rejected",
+          "status": "PASS"
+        },
+        {
+          "name": "oversized_summary_rejected",
+          "status": "PASS"
+        },
+        {
+          "name": "unknown_event_type_rejected",
+          "status": "PASS"
+        },
+        {
+          "name": "wire_event_encode",
+          "status": "PASS"
+        },
+        {
+          "name": "wire_event_decode_and_checksum",
+          "status": "PASS"
+        },
+        {
+          "name": "unknown_protocol_version_rejected",
+          "status": "PASS"
+        },
+        {
+          "name": "invalid_source_slot_rejected",
+          "status": "PASS"
+        },
+        {
+          "name": "oversized_frame_length_rejected",
+          "status": "PASS"
+        },
+        {
+          "name": "wire_checksum_damage_rejected",
+          "status": "PASS"
+        },
+        {
+          "name": "atomic_pipe_frame_exact_capacity",
+          "status": "PASS"
+        },
+        {
+          "name": "ack_sequence_and_status_frame",
+          "status": "PASS"
+        }
+      ],
+      "qemu_version": "QEMU emulator version 11.1.2",
+      "qemu_sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
+      "qemu_command_template": [
+        "${XOS_QEMU}",
+        "-machine",
+        "pc-i440fx-10.0",
+        "-accel",
+        "tcg",
+        "-cpu",
+        "qemu64,+rdrand",
+        "-m",
+        "512M",
+        "-smp",
+        "1",
+        "-nic",
+        "none",
+        "-vga",
+        "std",
+        "-rtc",
+        "base=utc,clock=host",
+        "-drive",
+        "file=${XOS_IMAGE},format=raw,if=floppy,index=0,readonly=on",
+        "-boot",
+        "order=a,strict=on",
+        "-no-reboot",
+        "-monitor",
+        "none",
+        "-serial",
+        "stdio",
+        "-display",
+        "none",
+        "-drive",
+        "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "-qmp",
+        "unix:${XOS_QMP_SOCKET},server=on,wait=off"
+      ],
+      "before": [
+        130275,
+        2,
+        0
+      ],
+      "after": [
+        130275,
+        2,
+        0
+      ],
+      "test_summary": "P4A_STATE_TEST_DONE checks=25 failures=0",
+      "resources_restored": true
+    },
+    "log": "${XOS_VALIDATION_OUT}/subscriber-state.guest.log",
+    "command_template": [
+      "${XOS_PYTHON}",
+      "${XOS_ROOT}/tests/ssg_p4a_state_guest.py",
+      "--image",
+      "${XOS_FLOPPY_IMAGE}",
+      "--payload",
+      "${XOS_P4A_BUILD_DIR}/subscriber-state-test/subscriber-state-test.elf",
+      "--output",
+      "${XOS_VALIDATION_OUT}/subscriber-state"
+    ]
+  },
+  "p3c_contract": {
+    "status": "PASSED_SCOPED",
+    "guest_exit_code": 0,
+    "report": {
+      "status": "PASSED_SCOPED",
+      "checks": [
+        {
+          "name": "initial_baseline_unknown",
+          "status": "PASS"
+        },
+        {
+          "name": "unchanged",
+          "status": "PASS"
+        },
+        {
+          "name": "changed",
+          "status": "PASS"
+        },
+        {
+          "name": "unsupported_geometry",
+          "status": "PASS"
+        },
+        {
+          "name": "permission_change",
+          "status": "PASS"
+        },
+        {
+          "name": "denial_not_unchanged",
+          "status": "PASS"
+        },
+        {
+          "name": "grant_reacquires",
+          "status": "PASS"
+        },
+        {
+          "name": "exit_unavailable",
+          "status": "PASS"
+        },
+        {
+          "name": "exit_not_unchanged",
+          "status": "PASS"
+        },
+        {
+          "name": "recovery_requires_reset",
+          "status": "PASS"
+        },
+        {
+          "name": "invalidated_not_unchanged",
+          "status": "PASS"
+        },
+        {
+          "name": "invalidated_reacquire_reset",
+          "status": "PASS"
+        },
+        {
+          "name": "rewire_requires_new_instance",
+          "status": "PASS"
+        },
+        {
+          "name": "new_instance_replaced",
+          "status": "PASS"
+        },
+        {
+          "name": "new_epoch_replaced",
+          "status": "PASS"
+        },
+        {
+          "name": "scope_requires_reset",
+          "status": "PASS"
+        },
+        {
+          "name": "slot_is_prewired",
+          "status": "PASS"
+        },
+        {
+          "name": "unknown_comparison_invalidates",
+          "status": "PASS"
+        },
+        {
+          "name": "unknown_requires_new_baseline",
+          "status": "PASS"
+        },
+        {
+          "name": "replacement_precedes_denial",
+          "status": "PASS"
+        },
+        {
+          "name": "stop_initially_clear",
+          "status": "PASS"
+        },
+        {
+          "name": "explicit_stop_and_cancel",
+          "status": "PASS"
+        },
+        {
+          "name": "substituted_provider_uses_same_loop",
+          "status": "PASS"
+        },
+        {
+          "name": "substituted_provider_cancelled",
+          "status": "PASS"
+        },
+        {
+          "name": "stop_before_baseline_is_partial",
+          "status": "PASS"
+        },
+        {
+          "name": "stop_during_next_cycle_is_partial",
+          "status": "PASS"
+        },
+        {
+          "name": "redirected_sink_fails_closed",
+          "status": "PASS"
+        },
+        {
+          "name": "capped_retry_recovers",
+          "status": "PASS"
+        },
+        {
+          "name": "capped_retry_is_bounded",
+          "status": "PASS"
+        },
+        {
+          "name": "noncap_failure_is_not_retried",
+          "status": "PASS"
+        },
+        {
+          "name": "capped_retry_respects_deadline",
+          "status": "PASS"
+        },
+        {
+          "name": "retry_count_in_event",
+          "status": "PASS"
+        }
+      ],
+      "before": [
+        130275,
+        2,
+        0
+      ],
+      "after": [
+        130275,
+        2,
+        0
+      ]
+    },
+    "log": "${XOS_VALIDATION_OUT}/p3c-contract.guest.log",
+    "command_template": [
+      "${XOS_PYTHON}",
+      "${XOS_ROOT}/tests/ssg_watch_contract_guest.py",
+      "--image",
+      "${XOS_FLOPPY_IMAGE}",
+      "--payload",
+      "${XOS_P4A_BUILD_DIR}/contract-test/contract-test.elf",
+      "--output",
+      "${XOS_VALIDATION_OUT}/p3c-contract"
+    ]
+  },
+  "p3c_console_compatibility": {
+    "status": "PASSED_SCOPED",
+    "guest_exit_code": 0,
+    "independent_verify_exit_code": 0,
+    "report": {
+      "status": "OBSERVED_PENDING_INDEPENDENT_VERIFICATION",
+      "case": "baseline",
+      "ordinary": true,
+      "events": [],
+      "qmp_events": [
+        {
+          "command": "input-send-event",
+          "arguments": {
+            "events": [
+              {
+                "type": "key",
+                "data": {
+                  "down": true,
+                  "key": {
+                    "type": "qcode",
+                    "data": "esc"
+                  }
+                }
+              }
+            ]
+          },
+          "serial_offset": 19146
+        },
+        {
+          "command": "qmp_capabilities",
+          "arguments": null,
+          "serial_offset": 19146
+        },
+        {
+          "command": "input-send-event",
+          "arguments": {
+            "events": [
+              {
+                "type": "key",
+                "data": {
+                  "down": false,
+                  "key": {
+                    "type": "qcode",
+                    "data": "esc"
+                  }
+                }
+              }
+            ]
+          },
+          "serial_offset": 19443
+        }
+      ],
+      "inputs": {
+        "image": {
+          "sha256": "8bf45852c88b0077cdd647a18383dfa435fa0ccab5a1fbdb99b06f00407591c3"
+        },
+        "supervisor": {
+          "sha256": "927d5385b303405fa882e296faf3af2320d4510850e6f3a3222def42e8613262"
+        },
+        "browser": {
+          "sha256": "94d6c67c189467485bf182dd92ce1090201d7b80334966135456db4deb1a46e3"
+        },
+        "notes": {
+          "sha256": "206262259a652be10828913cedcdecbbb9799e4a9aac7938fdfff4211be1e18a"
+        },
+        "input": {
+          "sha256": "e8ec8487b810c264719400abc182b86b06d530aa9a34fb709fd92f5a8d27835f"
+        }
+      },
+      "qemu_version": "QEMU emulator version 11.1.2",
+      "qemu_sha256": "986c0aac646ff3a0d8bb6eeb2090813e0d3163bc9cff0388e78397ae6a206b7e",
+      "qemu_command_template": [
+        "${XOS_QEMU}",
+        "-machine",
+        "pc-i440fx-10.0",
+        "-accel",
+        "tcg",
+        "-cpu",
+        "qemu64,+rdrand",
+        "-m",
+        "512M",
+        "-smp",
+        "1",
+        "-nic",
+        "none",
+        "-vga",
+        "std",
+        "-rtc",
+        "base=utc,clock=host",
+        "-drive",
+        "file=${XOS_IMAGE},format=raw,if=floppy,index=0,readonly=on",
+        "-boot",
+        "order=a,strict=on",
+        "-no-reboot",
+        "-monitor",
+        "none",
+        "-serial",
+        "stdio",
+        "-display",
+        "none",
+        "-drive",
+        "file=${XOS_WORK_DISK},format=raw,if=ide,index=0,media=disk,cache=writeback",
+        "-qmp",
+        "unix:${XOS_QMP_SOCKET},server=on,wait=off"
+      ],
+      "active_display": [
+        130231,
+        3,
+        1
+      ],
+      "after": [
+        130231,
+        3,
+        1
+      ],
+      "processes": {
+        "supervisor": 10,
+        "browser": 11,
+        "notes": 12
+      },
+      "source_exits": [
+        "P3B_SOURCE_EXIT slot=browser reaped=1 cancelled=0 outcome=1 code=0",
+        "P3B_SOURCE_EXIT slot=notes reaped=1 cancelled=0 outcome=1 code=0"
+      ],
+      "supervisor_exit": {
+        "kind": "exited",
+        "code": 0
+      },
+      "thread_samples": [
+        "BROWSER_SAMPLE pages=7315 threads=4 tab=0 scroll=0",
+        "EDITOR_SAMPLE pages=5351 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5357 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5357 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5357 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5357 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5357 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5357 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5361 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5361 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5361 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5361 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5361 threads=2 scroll=0 cursor=0",
+        "EDITOR_SAMPLE pages=5361 threads=2 scroll=0 cursor=0"
+      ],
+      "resources_restored": true,
+      "elapsed_seconds": 28.603
+    },
+    "guest_log": "${XOS_VALIDATION_OUT}/p3c-ordinary.guest.log",
+    "verify_log": "${XOS_VALIDATION_OUT}/p3c-ordinary.verify.log",
+    "command_template": [
+      "${XOS_PYTHON}",
+      "${XOS_ROOT}/tests/ssg_watch_guest.py",
+      "--image",
+      "${XOS_FLOPPY_IMAGE}",
+      "--supervisor",
+      "${XOS_P4A_BUILD_DIR}/supervisor/supervisor.elf",
+      "--browser",
+      "${XOS_P4A_BUILD_DIR}/browser/browser.elf",
+      "--notes",
+      "${XOS_P4A_BUILD_DIR}/notes/notes.elf",
+      "--browser-receipt",
+      "${XOS_P4A_BUILD_DIR}/browser/browser.portable.receipt.json",
+      "--input",
+      "${XOS_INPUT}",
+      "--ordinary",
+      "--output",
+      "${XOS_VALIDATION_OUT}/p3c-ordinary"
+    ]
+  },
+  "pipe_resource_scope": "before/after available-object sample plus four-object reuse/stale-token probe; no exact global counter syscall",
+  "exit_race_root_cause": "UNRESOLVED",
+  "globalAtomicSnapshot": "NOT_IMPLEMENTED",
+  "production_broker": "NOT_IMPLEMENTED",
+  "localpilot_end_to_end": "NOT_RUN"
+}

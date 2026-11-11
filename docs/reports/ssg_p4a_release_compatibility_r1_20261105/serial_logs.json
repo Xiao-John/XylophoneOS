@@ -1,0 +1,69 @@
+{
+  "compression": "gzip, mtime=0; contents are byte-preserved",
+  "logs": [
+    {
+      "raw_path": "guest_runs/final_r6_first_serial.log",
+      "raw_bytes": 584722,
+      "raw_sha256": "c99c353408b5981267383560aee08dc5b7f309ac53b7c3db9815323680af92dc",
+      "compressed_path": "guest_runs/final_r6_first_serial.log.gz",
+      "compressed_bytes": 69550,
+      "compressed_sha256": "8a129ef05508413b444cd5d290b492f6e7cd8a73a36445bdde01c882c0ab0484"
+    },
+    {
+      "raw_path": "guest_runs/final_r6_premature_eof_serial.log",
+      "raw_bytes": 8943,
+      "raw_sha256": "99fcc8bb98a7ea995f3171c74e32439f85cceacefbb2fb0feb1ab526f6754976",
+      "compressed_path": "guest_runs/final_r6_premature_eof_serial.log.gz",
+      "compressed_bytes": 3157,
+      "compressed_sha256": "bcbe1749df6f713878e867d8d7af8fd808b6c24e8e803acaabca710e6017601f"
+    },
+    {
+      "raw_path": "guest_runs/first_serial.log",
+      "raw_bytes": 584678,
+      "raw_sha256": "94406a64a8355e35ebe24c1cb7e55bbebf81dd9592e12a0a4869e4007629721b",
+      "compressed_path": "guest_runs/first_serial.log.gz",
+      "compressed_bytes": 69528,
+      "compressed_sha256": "1ea5a5e1e71fc2194825f1be08abfc8e50ab612148f884410ce4286192daaed6"
+    },
+    {
+      "raw_path": "guest_runs/premature_eof_serial.log",
+      "raw_bytes": 8889,
+      "raw_sha256": "caa8eaf69cbbaf3e3566b309a04f68b5b87bc2d352108a7d2a61223a537bd38f",
+      "compressed_path": "guest_runs/premature_eof_serial.log.gz",
+      "compressed_bytes": 3128,
+      "compressed_sha256": "3c5441891e757db6d15ef54a4aabd2b064d77e4ac4293c9751bf6db6d2379ebd"
+    },
+    {
+      "raw_path": "guest_runs/wrong_ack_serial.log",
+      "raw_bytes": 580826,
+      "raw_sha256": "925fece2710ec60b54a52b7aec23ab6ae8ca064f8326a84cef10e1cdb926c2b6",
+      "compressed_path": "guest_runs/wrong_ack_serial.log.gz",
+      "compressed_bytes": 69215,
+      "compressed_sha256": "49ba296d5f0af81cfec914369033feed098cd6ee59d1239fe847396d42cc0415"
+    },
+    {
+      "raw_path": "evidence/stress/run-06/serial.log",
+      "raw_bytes": 584658,
+      "raw_sha256": "f3ff302153bc7f9579511e01290efb31a69841b7fc654f24f41ea49c62e9fa2a",
+      "compressed_path": "evidence/stress/run-06/serial.log.gz",
+      "compressed_bytes": 69613,
+      "compressed_sha256": "d503c5c1884b91a2d3cc267389fb0b75b051614d7683a6acc393ce1315f4c50e"
+    },
+    {
+      "raw_path": "evidence/p3c-contract/serial.log",
+      "raw_bytes": 12214,
+      "raw_sha256": "21368d00d8524f286732514c154bbf9ab49ea3a3cd167fad723de1bcfb200b65",
+      "compressed_path": "evidence/p3c-contract/serial.log.gz",
+      "compressed_bytes": 3165,
+      "compressed_sha256": "8b3970069331246e9b8a5e53d1050d46d73575fb989687f9df53fd886ef5925e"
+    },
+    {
+      "raw_path": "evidence/p3c-ordinary/serial.log",
+      "raw_bytes": 19524,
+      "raw_sha256": "27450e6a59791f12dc1f14d6f8694ac938cbce011331c54070a3f91518fe6d61",
+      "compressed_path": "evidence/p3c-ordinary/serial.log.gz",
+      "compressed_bytes": 5241,
+      "compressed_sha256": "1f2a15f3942b48d8ce2a680261b17d4db429b49dad4a14973af37953a507b757"
+    }
+  ]
+}

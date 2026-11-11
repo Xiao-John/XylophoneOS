@@ -23,7 +23,7 @@ def main():
  for name,digest in sdk_manifest['artifacts'].items():assert sha(sdk/name)==digest,name
  obj=out/'probe.o';binary=out/'probe.elf'
  subprocess.run([tool('gcc'),'-std=c11','-O2','-ffreestanding','-fno-pie','-fno-stack-protector','-ftls-model=local-exec','-DXOS_THREADED_RUNTIME',*X86_FLAGS,'-I',str(sdk/'include'),'-c',str(root/'tests/fixtures/vm3/threaded_probe.c'),'-o',str(obj)],check=True)
- subprocess.run([tool('g++'),*X86_FLAGS,'-nostdlib','-static','-no-pie','-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096','-T',str(sdk/'user.ld'),str(sdk/'crt0_posix.o'),str(obj),'-Wl,--start-group','-Wl,--whole-archive',str(sdk/'lib/libxos.a'),'-Wl,--no-whole-archive',str(sdk/'lib/libc.a'),str(sdk/'lib/libm.a'),'-lgcc','-Wl,--end-group','-o',str(binary)],check=True)
+ subprocess.run([tool('g++'),*X86_FLAGS,'-nostdlib','-static','-no-pie','-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096','-T',str(sdk/'user.ld'),str(sdk/'crt0_posix.o'),str(obj),'-Wl,--start-group','-Wl,--whole-archive',str(sdk/'lib/libxos.a'),'-Wl,--no-whole-archive',str(sdk/'cpp/lib/libstdc++.a'),str(sdk/'cpp/lib/libsupc++.a'),str(sdk/'lib/libc.a'),str(sdk/'lib/libm.a'),str(sdk/'cpp/lib/libgcc.a'),'-Wl,--end-group','-o',str(binary)],check=True)
  report={'status':'failed','build_id':manifest['build_id'],'image_sha256':sha(system/'xos-install.iso'),'sdk_manifest_sha256':sha(sdk/'manifest.json'),'elf_sha256':sha(binary),'checks':[]};guest=None
  try:
   with tempfile.TemporaryDirectory(prefix='xos_vm3_thread_') as tmp:

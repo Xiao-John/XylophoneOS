@@ -5,10 +5,10 @@
 extern "C" clock_t _times(struct tms*);
 
 // newlib's clock() reaches the platform through _times_r() -> times(), but the
-// SDK archive ships no public times() wrapper. XOS has no CPU-time accounting,
-// so _times() reports ENOSYS and time.process_time() fails at runtime instead
-// of returning invented values.
-extern "C" clock_t times(struct tms* buffer) {
+// Older SDKs have no public times() wrapper. Keep a weak fallback so SDKs
+// that supply the wrapper can provide their own definition. XOS has no CPU
+// accounting, so _times() reports ENOSYS instead of inventing a value.
+extern "C" __attribute__((weak)) clock_t times(struct tms* buffer) {
     return _times(buffer);
 }
 

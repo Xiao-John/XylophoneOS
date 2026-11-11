@@ -240,6 +240,10 @@ def target_environment(sdk, build_python, bridge, zlib_prefix=None):
         LIBS=shlex.join(libraries),
         CONFIG_SITE=str(PORT / "config/xos_config.site"),
         PYTHON_FOR_BUILD=str(build_python),
+        # Host pkg-config metadata must not advertise host libraries to the
+        # cross compiler; target dependencies are passed explicitly above.
+        PKG_CONFIG_PATH="",
+        PKG_CONFIG_LIBDIR=os.devnull,
     )
     return env
 
@@ -493,6 +497,10 @@ def main():
                 )
                 report["status"] = "built_not_run"
                 executable = target_build / "python.exe"
+                # Native Unix cross toolchains emit an unsuffixed executable;
+                # keep the established artifact name for the staging tools.
+                if not executable.exists() and (target_build / "python").is_file():
+                    shutil.copy2(target_build / "python", executable)
                 report["executable"] = {"path": str(executable),
                                         "bytes": executable.stat().st_size,
                                         "sha256": sha256(executable)}

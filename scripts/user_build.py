@@ -29,6 +29,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
             shutil.copyfile(header, sdk / "include/xos" / header.name)
     for header in sorted((root / "src/user/include").glob("*.h")):
         shutil.copyfile(header, sdk / "include" / header.name)
+    shutil.copytree(root / "src/user/include/sys", sdk / "include/sys", dirs_exist_ok=True)
     shutil.copyfile(root / "src/user/arch/x86_64/user.ld", sdk / "user.ld")
     shutil.copyfile(root / "LICENSE", sdk / "LICENSE")
     shutil.copyfile(root / "NOTICE", sdk / "NOTICE")
@@ -204,6 +205,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
         "build_id": build_id, "abi": 1, "target": "x86_64-elf",
         "configuration": TARGET, "runtime_model": "single",
         "display_extensions": {"version": 1, "syscalls": [65, 66], "pixel_format": "XRGB8888", "surface_count": 1},
+        "vm_extensions": {"version": 1, "syscall": 67, "status": "implemented_unqualified"},
         "ipc_v1": ipc_v1_manifest_entry(),
         "diagnostic_extensions": {"fault_bundle_format": 1, "loader_receipt": "sha256-held-instance",
                                   "diagnostic_shell_command": "diag"},

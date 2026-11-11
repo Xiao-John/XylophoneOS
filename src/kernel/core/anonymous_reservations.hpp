@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
 #include <xos/types.hpp>
+#include <xos/vm_abi.hpp>
 
 namespace xos::anonymous_vm {
 constexpr u64 arena_begin = 0x100000000000ull;
@@ -11,13 +12,7 @@ constexpr u64 max_reservation = 4ull << 40;
 constexpr u64 max_total = 8ull << 40;
 constexpr u32 max_fragments = 256;
 constexpr i64 invalid = -1, resources = -4, collision = -7, closing = -8;
-struct request {
-    u32 version, size, operation, flags;
-    u64 address, length, alignment;
-    u32 protection, reserved0;
-    u64 reserved1, reserved2;
-};
-static_assert(sizeof(request) == 64);
+using request = xos::vm_request;
 struct region { u64 begin, end; };
 
 // A bounded, sorted set of uncommitted anonymous intervals. No page-table or
@@ -122,7 +117,7 @@ public:
         return 0;
     }
     // Internal wire validator. Capability discovery remains unavailable until
-    // VM3 provides lifecycle support; no syscall dispatch is connected here.
+    // Wire operations shared by the public syscall and internal tests.
     i64 apply(const request& r, bool process_closing) {
         if(r.version!=1 || r.size!=sizeof(request) || r.reserved0 || r.reserved1 || r.reserved2)
             return invalid;

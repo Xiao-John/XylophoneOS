@@ -168,6 +168,7 @@ memory_result release_page(u64 physical) {
 }
 
 void memory_self_test_fail_after(i64 count) { self_test_allocations = count; }
+i64 memory_self_test_remaining() { return self_test_allocations; }
 memory_result allocate_user_page(u64* physical) {
     const auto result = allocate_page(physical);
     if (result != memory_result::none) { return result; }

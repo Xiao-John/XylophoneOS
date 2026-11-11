@@ -497,6 +497,10 @@ def main():
                 )
                 report["status"] = "built_not_run"
                 executable = target_build / "python.exe"
+                # Native Unix cross toolchains emit an unsuffixed executable;
+                # keep the established artifact name for the staging tools.
+                if not executable.exists() and (target_build / "python").is_file():
+                    shutil.copy2(target_build / "python", executable)
                 report["executable"] = {"path": str(executable),
                                         "bytes": executable.stat().st_size,
                                         "sha256": sha256(executable)}

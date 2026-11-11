@@ -29,8 +29,8 @@ extern "C" int xos_user_main(const startup_info* info) {
  if(call(large)!=0 || call(stats)!=before)return fail("sparse_unmap_first");
  request r{1,64,1,1,base,4*page,page,0,0,0,0};
  if(call(r)!=static_cast<i64>(base)) return fail("reserve");
- if(syscall(sys_process_fork_prepare)!=process_error_state ||
-    syscall(sys_process_exec_prepare)!=process_error_state) return fail("lifecycle_guard");
+ // VM3 permits fork and exec with reservations; their lifecycle and rollback
+ // are exercised by the VM3 guest rather than the reservation-only probe.
  if(call(r)!=-7) return fail("collision");
  r.operation=5;r.flags=0;r.address=base+page;r.length=2*page;r.alignment=0;
  if(call(r)!=0) return fail("split");

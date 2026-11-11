@@ -34,10 +34,14 @@ def main():
     parser.add_argument('--output', type=Path, default=ROOT / 'build/threading_sdk')
     parser.add_argument('--logs-dir', type=Path, default=ROOT / 'build/threading_sdk_logs')
     parser.add_argument('--cpp-work-dir', type=Path, default=ROOT / '.cache/xos_seed/threading_cpp')
+    parser.add_argument('--gcc-objdir', type=Path, help='completed cross-GCC gcc object directory')
+    parser.add_argument('--resume-cpp', action='store_true', help='reuse an existing private C++ work directory')
     parser.add_argument('--cpp', action='store_true')
     parser.add_argument('--jobs', type=int, default=8, help='positive parallel build job count (default: 8)')
     args = parser.parse_args()
-    if args.cpp_work_dir != ROOT / '.cache/xos_seed/threading_cpp' and args.cpp_work_dir.exists():
+    if args.resume_cpp and not args.cpp:
+        parser.error('--resume-cpp requires --cpp')
+    if args.cpp_work_dir != ROOT / '.cache/xos_seed/threading_cpp' and args.cpp_work_dir.exists() and not args.resume_cpp:
         parser.error('a custom --cpp-work-dir must not already exist')
     if args.jobs < 1:
         parser.error('--jobs must be positive')
@@ -247,7 +251,7 @@ def main():
         # available.  Re-running GCC's generator makefiles in this small
         # directory pulls in build-tree libiberty targets that are not part of
         # the SDK and fails before producing the headers.
-        generated_gcc = ROOT / 'build/qt_enabled/gcc_build/gcc'
+        generated_gcc = args.gcc_objdir.resolve(strict=True) if args.gcc_objdir else ROOT / 'build/qt_enabled/gcc_build/gcc'
         required_gcc_headers = ('tm.h', 'tm_p.h', 'tconfig.h', 'libgcc.mvars')
         if not all((generated_gcc / name).is_file() for name in required_gcc_headers):
             run(configure_command(gcc / 'gcc/configure', '--target=x86_64-elf', '--disable-multilib',

@@ -120,6 +120,7 @@
 | 0220 | `0220_audio_output_au0.md` | Audio output AU0：PC Speaker 到 QEMU WAV 勘查 |
 | 0221 | `0221_audio_output_au1.md` | Audio output AU1：受限扬声器 PIO 租约与强制静音（客体验收待工具链） |
 | 0222 | `0222_audio_output_au2.md` | Audio output AU2：用户态单音服务、旋律命令与服务恢复（客体验收待工具链） |
+| 38f2c931 | `38f2c931_ipc_ip1_abi_reference_model.md` | IPC IP1：syscall 88 ABI 登记与 host-only 参考模型（SDK unsupported） |
 
 音频记录在 #96 合入时由 0217–0219 改为 0220–0222：0217/0218 已被 VM1/VM2 占用，
 0219 已由 WebEngine M0 审计占用。新记录自 **0223** 起继续唯一，不得复用 0216–0222。

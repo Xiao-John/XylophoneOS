@@ -24,6 +24,7 @@ static_assert(xos::clock::resolution_ns == xos::thread_tick_ns);
 #include "user_blobs.hpp"
 #include "user_images.hpp"
 #include <xos/device_abi.hpp>
+#include <xos/ipc_v1_abi.hpp>
 // Shared audio protocol bounds the PC speaker lease defined below.
 #include <xos/audio_abi.hpp>
 
@@ -2102,6 +2103,47 @@ void* process_syscall(interrupt_frame* frame) {
     i64 result = process_error_invalid;
     const u64 first = frame->rdi, second = frame->rsi, third = frame->rdx;
     switch (frame->rax) {
+    case sys_ipc_v1: {
+        if (third != 0) {
+            result = static_cast<i64>(ipc_v1_error::invalid_argument);
+            break;
+        }
+        if (first != static_cast<u64>(ipc_v1_action::query_features)) {
+            result = static_cast<i64>(ipc_v1_error::unsupported);
+            break;
+        }
+        if (!user_range_ok(second, sizeof(ipc_v1_feature_query), false) ||
+            !user_range_ok(second, sizeof(ipc_v1_feature_query), true)) {
+            result = static_cast<i64>(ipc_v1_error::address);
+            break;
+        }
+        ipc_v1_feature_query query{};
+        copy_from_user(&query, second, sizeof(query));
+        const bool outputs_zero = query.known_features == 0 && query.supported_features == 0 &&
+            query.max_message_bytes == 0 && query.max_handles_per_process == 0 &&
+            query.max_endpoints_system == 0 && query.max_pending_calls == 0 &&
+            query.max_queue_per_endpoint == 0 && query.max_reply_tokens_per_process == 0;
+        if (query.header.version != ipc_v1_version) {
+            result = static_cast<i64>(ipc_v1_error::unsupported);
+            break;
+        }
+        if (query.header.size != sizeof(query) || query.header.reserved != 0 ||
+            !outputs_zero || query.reserved[0] != 0 || query.reserved[1] != 0) {
+            result = static_cast<i64>(ipc_v1_error::invalid_argument);
+            break;
+        }
+        query.known_features = ipc_v1_feature_known_mask;
+        query.supported_features = 0;
+        query.max_message_bytes = ipc_v1_max_message_bytes;
+        query.max_handles_per_process = ipc_v1_max_handles_per_process;
+        query.max_endpoints_system = ipc_v1_max_endpoints_system;
+        query.max_pending_calls = ipc_v1_max_pending_calls;
+        query.max_queue_per_endpoint = ipc_v1_max_queue_per_endpoint;
+        query.max_reply_tokens_per_process = ipc_v1_max_reply_tokens_per_process;
+        copy_to_user(second, &query, sizeof(query));
+        result = 0;
+        break;
+    }
     case sys_irq_event: {
         const auto action = static_cast<irq_event_action>(first);
         if (action == irq_event_action::bind) {

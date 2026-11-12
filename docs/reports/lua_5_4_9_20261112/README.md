@@ -16,7 +16,7 @@
 | 项 | 值 |
 |---|---|
 | 包 | `thirdparty.lua-5.4.9.xpk`，1,044,480 字节（由 `src/ports/lua/build.py` 直接产出） |
-| 包 sha256 | `49f80fd37adad0783ba99d0aa20eedc678a4735619300af50979cd6342b84fb2` |
+| 包 sha256 | `7e153558133a47077e0e64518e01f34d69731dd294a974e5e54af822f2f3007d` |
 | 载荷 | `usr/bin/lua`、`usr/lib/liblua.a`、`usr/share/lua/include/{lua,luaconf,lauxlib,lualib}.h`、样例、许可（`doc/readme.html`）、`source.json`、`build_receipt.json` |
 
 上游零补丁、无端口 shim；默认 C99 配置（不启用 `LUA_USE_POSIX`，因此没有
@@ -81,3 +81,14 @@ dash_rc=0
 
 按 [`src/ports/lua/README.md`](../../../src/ports/lua/README.md) 设置 `XOS_SDK`、
 `XOS_SOURCE_ARCHIVE`、`XOS_OUT` 后执行配方，再按上面的安装与两条路径重跑。
+
+## 模块搜索路径（补充验证）
+
+```text
+$ lua -e 'print(package.path)'
+/usr/share/lua/5.4/?.lua;/usr/share/lua/5.4/?/init.lua;/usr/lib/lua/5.4/?.lua;/usr/lib/lua/5.4/?/init.lua;./?.lua;./?/init.lua
+$ lua -e 'print(require("hello"))'
+mod-ok  /usr/share/lua/5.4/hello.lua
+```
+
+`hello.lua` 由测试导入到 `/usr/share/lua/5.4/`，`require` 直接命中。

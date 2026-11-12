@@ -20,7 +20,7 @@
   "package": {
     "id": "thirdparty.lz4",
     "target_profile": "xos-x86_64-static-threaded-v1",
-    "xpk_sha256": "51721a74c8845e03478f0d9802a1db0cd5c1c7296e2340787100ca9d24eb3954"
+    "xpk_sha256": "94724be9428a9d835fe4ea6d9772be9db08c54f3f31a61af79269bcd4361c199"
   },
   "integration": {
     "guest_only": true,

@@ -35,7 +35,7 @@ python3 scripts/xypm.py install \
   "$XOS_OUT/thirdparty.lua-5.4.9.xpk"
 ```
 
-已验证的包哈希：`49f80fd37adad0783ba99d0aa20eedc678a4735619300af50979cd6342b84fb2`
+已验证的包哈希：`7e153558133a47077e0e64518e01f34d69731dd294a974e5e54af822f2f3007d`
 （1,044,480 字节，由本目录配方构建；换 SDK、上游或配方后必须重算并更新 `port.json`）。
 
 **xsh**（直接执行）：
@@ -72,3 +72,15 @@ exec-file /usr/bin/lua /usr/share/lua/samples/hello.lua
 - 头文件放在 `/usr/share/lua/include/`（xypm 只允许 `/usr/bin`、`/usr/lib`、`/usr/share`）。
 - 源码哈希来自 Debian 镜像的 `orig.tar.gz`，未与 lua.org 官方附件二次比对。
 - 客体证据绑定当前基线构建与 SDK；换构建输入后需重验。
+
+### 构建 SDK 绑定
+
+配方会把所用 SDK 的树哈希写进构建回执，并核对目标 profile 的 `sdk_tree_sha256`。
+用开发树 `build/sdk`（未登记到 profile）构建时需显式设置
+`XOS_SDK_UNREGISTERED_OK=1`；发布 SDK 不需要。
+
+### 模块搜索路径
+
+构建时定义 `LUA_PATH_DEFAULT`，优先 `/usr/share/lua/5.4/` 与 `/usr/lib/lua/5.4/`
+（xypm 的安装根），保留 `./?.lua`。客体验证：`require("hello")` 从
+`/usr/share/lua/5.4/hello.lua` 加载成功。

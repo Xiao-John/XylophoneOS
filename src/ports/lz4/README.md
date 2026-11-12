@@ -34,11 +34,11 @@ python3 src/ports/lz4/build.py
 ```sh
 python3 scripts/xypm.py install \
   --image work_disk.img --output-image with_lz4.img --offline \
-  --profile config/package/xos_x86_64_static_single_b2_v1.json \
+  --profile config/package/xos_x86_64_static_threaded_v1.json \
   "$XOS_OUT/thirdparty.lz4-1.10.0.xpk"
 ```
 
-已验证的包哈希：`51721a74c8845e03478f0d9802a1db0cd5c1c7296e2340787100ca9d24eb3954`（778,240 字节，由本目录配方构建；换 SDK、上游或
+已验证的包哈希：`94724be9428a9d835fe4ea6d9772be9db08c54f3f31a61af79269bcd4361c199`（788,480 字节，由本目录配方构建；换 SDK、上游或
 配方后必须重算并更新 `port.json`）。
 
 客体（xsh 直接调用，或用 `dash` 脚本）：
@@ -60,6 +60,7 @@ exec-file /usr/bin/lz4 /missing /x.lz4
 
 - 只验证 xsh 与 dash 脚本；未跑上游 `tests/`。
 - 需要线程 SDK（`build/threading_sdk`）与 threaded profile；普通 single SDK 不能构建本包。
+- 安装命令必须使用 threaded profile 文件（`--profile`），否则 profile 不匹配会被拒绝。
 - `-T` 的线程数上限与调度行为沿用线程 SDK 的 1:1 线程模型；SMP 未验。
 - 包内头文件放在 `/usr/share/lz4/include/`（xypm 只允许 `/usr/bin`、`/usr/lib`、
   `/usr/share` 三个前缀）。

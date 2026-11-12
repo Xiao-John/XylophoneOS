@@ -42,9 +42,17 @@ def main():
     archive = need("XOS_SOURCE_ARCHIVE")
     out = need("XOS_OUT")
     out.mkdir(parents=True, exist_ok=True)
+    output = out / f"{port['package']['id']}-{lock['version']}.xpk"
+    receipt_output = out / "build_receipt.json"
+    # A reused output directory must never keep a previous success visible.
+    output.unlink(missing_ok=True)
+    receipt_output.unlink(missing_ok=True)
 
     if sha256(archive) != lock["sha256"]:
         raise SystemExit("ports/zstd: source archive hash differs from source_lock.json")
+    sys.path.insert(0, str(HERE.parents[2] / "scripts"))
+    from xos_app import tree_receipt
+    sdk_tree_sha256 = tree_receipt(sdk)[0]
     for name in ("manifest.json", "user.ld", "crt0_posix.o"):
         if not (sdk / name).is_file():
             raise SystemExit(f"ports/zstd: SDK is missing {name}")
@@ -68,7 +76,9 @@ def main():
 
     libgcc = subprocess.check_output([cc, "-print-libgcc-file-name"], text=True).strip()
     cflags = (f"-O2 -mno-red-zone -fno-pie -fno-pic -fno-stack-protector "
-              f"-idirafter {sdk}/include")
+              f"-idirafter {sdk}/include -D_POSIX_THREADS=1 "
+              "-D_POSIX_READER_WRITER_LOCKS=200809L -D_UNIX98_THREAD_MUTEX_ATTRIBUTES=1 "
+              "-DXOS_THREADED_RUNTIME")
     run(["make", "-C", str(source / "lib"), "libzstd.a", "-j", "4",
          f"CC={cc}", f"AR={ar}", f"RANLIB={ranlib}", "ZSTD_MULTITHREAD=1",
          f"CFLAGS={cflags} -DZSTD_MULTITHREAD"])
@@ -126,6 +136,7 @@ def main():
             "sdk": sdk.name,
             "sdk_build_id": (json.loads((sdk / "manifest.json").read_text()).get("build_id")
                              or json.loads((sdk / "manifest.json").read_text()).get("profile", "")),
+            "sdk_tree_sha256": sdk_tree_sha256,
             "compiler": subprocess.check_output([cc, "--version"], text=True).splitlines()[0],
             "strip": "x86_64-elf-objcopy --strip-all zstd",
         },

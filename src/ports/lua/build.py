@@ -47,9 +47,23 @@ def main():
     archive = need("XOS_SOURCE_ARCHIVE")
     out = need("XOS_OUT")
     out.mkdir(parents=True, exist_ok=True)
+    output = out / f"{port['package']['id']}-{lock['version']}.xpk"
+    receipt_output = out / "build_receipt.json"
+    # A reused output directory must never keep a previous success visible.
+    output.unlink(missing_ok=True)
+    receipt_output.unlink(missing_ok=True)
 
     if sha256(archive) != lock["sha256"]:
         raise SystemExit("ports/lua: source archive hash differs from source_lock.json")
+    sys.path.insert(0, str(HERE.parents[2] / "scripts"))
+    from xos_app import tree_receipt
+    sdk_tree_sha256 = tree_receipt(sdk)[0]
+    profile_name = port["package"]["target_profile"].replace("-", "_") + ".json"
+    profile_path = HERE.parents[2] / "config/package" / profile_name
+    if profile_path.is_file():
+        registered = json.loads(profile_path.read_text()).get("sdk_tree_sha256", [])
+        if sdk_tree_sha256 not in registered and os.environ.get("XOS_SDK_UNREGISTERED_OK") != "1":
+            raise SystemExit("ports/lua: SDK tree is not registered for the target profile")
     for name in ("manifest.json", "user.ld", "crt0_posix.o"):
         if not (sdk / name).is_file():
             raise SystemExit(f"ports/lua: SDK is missing {name}")
@@ -72,8 +86,10 @@ def main():
 
     libgcc = subprocess.check_output([cc, "-print-libgcc-file-name"], text=True).strip()
     src = source / "src"
+    # xypm only installs under /usr; point Lua's module search there.
     cflags = ["-O2", "-std=c99", "-mno-red-zone", "-fno-pie", "-fno-pic",
-              "-fno-stack-protector", "-idirafter", str(sdk / "include")]
+              "-fno-stack-protector", "-idirafter", str(sdk / "include"),
+              '-DLUA_PATH_DEFAULT="/usr/share/lua/5.4/?.lua;/usr/share/lua/5.4/?/init.lua;/usr/lib/lua/5.4/?.lua;/usr/lib/lua/5.4/?/init.lua;./?.lua;./?/init.lua"']
     link = ["-nostdlib", "-static", "-no-pie", "-T", str(sdk / "user.ld"),
             str(sdk / "crt0_posix.o"), "-Wl,--start-group",
             str(sdk / "lib/libxos.a"), str(sdk / "lib/libxos_loader.a"),
@@ -127,7 +143,9 @@ def main():
             "approach": "direct cross compile with the frozen XOS SDK (no upstream patch)",
             "configuration": "default C99 build (no LUA_USE_POSIX: no popen/readline)",
             "sdk": sdk.name,
-            "sdk_build_id": json.loads((sdk / "manifest.json").read_text())["build_id"],
+            "sdk_build_id": (json.loads((sdk / "manifest.json").read_text()).get("build_id")
+                             or json.loads((sdk / "manifest.json").read_text()).get("profile", "")),
+            "sdk_tree_sha256": sdk_tree_sha256,
             "compiler": subprocess.check_output([cc, "--version"], text=True).splitlines()[0],
             "strip": "x86_64-elf-objcopy --strip-all lua",
         },

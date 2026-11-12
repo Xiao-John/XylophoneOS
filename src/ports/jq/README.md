@@ -39,7 +39,7 @@ python3 scripts/xypm.py install \
   "$XOS_OUT/thirdparty.jq-1.8.2.xpk"
 ```
 
-已验证的包哈希：`a9696ca5e62017cf9cf0be05eb725f2ca5d74aeb512398080bfe058027518cfb`
+已验证的包哈希：`13742ac8d0512a5c34a1c2e1b2baac18d643afc0622194b28147bf6a8a7a883a`
 （1,710,080 字节，由本目录配方构建；换 SDK、上游或配方后必须重算并更新 `port.json`）。
 
 **xsh**（直接执行）：
@@ -70,3 +70,9 @@ exec-file /usr/bin/jq -M -n -f /usr/share/jq/samples/regex.jq
 - 未构建 `libjq` 共享库；未跑上游 `tests/`。
 - 头文件放在 `/usr/share/jq/include/`（xypm 只允许 `/usr/bin`、`/usr/lib`、`/usr/share`）。
 - 源码哈希来自 Debian 镜像的 `orig.tar.gz`，未与 GitHub release 附件二次比对。
+
+### 依赖锁定与许可
+
+Onguruma 归档由 `oniguruma.lock.json` 固定 SHA-256（并在构建回执中记录），
+XPK 同时携带 `COPYING`（jq）与 `COPYING.oniguruma`（BSD-2-Clause）；
+`libjq.a` 内含 decNumber 目标文件。

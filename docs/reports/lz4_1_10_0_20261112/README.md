@@ -17,18 +17,18 @@
 
 | 项 | 值 |
 |---|---|
-| 包 | `thirdparty.lz4-1.10.0.xpk`，778,240 字节（由 `src/ports/lz4/build.py` 直接产出） |
-| 包 sha256 | `51721a74c8845e03478f0d9802a1db0cd5c1c7296e2340787100ca9d24eb3954` |
+| 包 | `thirdparty.lz4-1.10.0.xpk`，788,480 字节（由 `src/ports/lz4/build.py` 直接产出） |
+| 包 sha256 | `94724be9428a9d835fe4ea6d9772be9db08c54f3f31a61af79269bcd4361c199` |
 | 载荷 | `usr/bin/lz4`、`usr/lib/liblz4.a`、`usr/share/lz4/include/*.h`、样例、两份许可、`source.json`、`build_receipt.json` |
 
-上游零补丁：只多编译端口侧 `compat/tpool_single_thread.c`（单线程构建下惰性线程池桩）。
+上游零补丁：只多编译端口侧 上游 `threadpool.c`（单线程构建下惰性线程池桩）。
 客体 `/dev/null` 不存在，`lz4 -t` 因此失败（见“未覆盖 / 已知失败”）。
 
 ## 安装
 
 ```sh
 python3 scripts/xypm.py install --image disks/base.img --output-image disks/lz4.img \
-  --offline --profile config/package/xos_x86_64_static_single_b2_v1.json \
+  --offline --profile config/package/xos_x86_64_static_threaded_v1.json \
   thirdparty.lz4-1.10.0.xpk
 ```
 
@@ -40,12 +40,16 @@ python3 scripts/xypm.py install --image disks/base.img --output-image disks/lz4.
 `680c48c74164969e64be4edd2cd54001052693fd68e1134861de15f420796afc`。
 
 ```text
-*** lz4 v1.10.0 64-bit single-thread, by Yann Collet ***
+*** lz4 v1.10.0 64-bit multithread, by Yann Collet ***
 /usr/bin/lz4 -T2 -1 /usr/share/lz4/samples/sample.txt /sample.lz4
-Compressed 3000 bytes into 298 bytes ==> 9.93%
+Using 2 threads for compression
+Compressed 3960 bytes into 391 bytes ==> 9.87%
+Done in 0.02 s ==> 0.19 MiB/s  (cpu load : 100%)
 /sample.lz4                    : decoded 3000 bytes
 /usr/bin/lz4 -T2 -1 /usr/share/lz4/samples/sample.txt /sample.lz4
-Compressed 3000 bytes into 298 bytes ==> 9.93%
+Using 2 threads for compression
+Compressed 3960 bytes into 391 bytes ==> 9.87%
+Done in 0.02 s ==> 0.19 MiB/s  (cpu load : 100%)
 /sample9.lz4                   : decoded 3000 bytes
 /missing: No such file or directory
 missing_rc=1

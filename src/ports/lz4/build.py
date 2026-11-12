@@ -65,7 +65,9 @@ def main():
 
     libgcc = subprocess.check_output([cc, "-print-libgcc-file-name"], text=True).strip()
     cflags = ["-O2", "-mno-red-zone", "-fno-pie", "-fno-pic", "-fno-stack-protector",
-              "-idirafter", str(sdk / "include")]
+              "-idirafter", str(sdk / "include"),
+              "-D_POSIX_THREADS=1", "-D_POSIX_READER_WRITER_LOCKS=200809L",
+              "-D_UNIX98_THREAD_MUTEX_ATTRIBUTES=1", "-DXOS_THREADED_RUNTIME"]
     loader = sdk / "lib/libxos_loader.a"
     link = ["-nostdlib", "-static", "-no-pie", "-T", str(sdk / "user.ld"),
             str(sdk / "crt0_posix.o"), "-Wl,--start-group",

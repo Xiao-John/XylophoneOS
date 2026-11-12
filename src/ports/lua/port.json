@@ -19,7 +19,7 @@
   "package": {
     "id": "thirdparty.lua",
     "target_profile": "xos-x86_64-static-single-b2-v1",
-    "xpk_sha256": "49f80fd37adad0783ba99d0aa20eedc678a4735619300af50979cd6342b84fb2"
+    "xpk_sha256": "7e153558133a47077e0e64518e01f34d69731dd294a974e5e54af822f2f3007d"
   },
   "integration": {
     "guest_only": true,

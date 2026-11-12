@@ -40,9 +40,17 @@ def main():
     archive = need("XOS_SOURCE_ARCHIVE")
     out = need("XOS_OUT")
     out.mkdir(parents=True, exist_ok=True)
+    output = out / f"{port['package']['id']}-{lock['version']}.xpk"
+    receipt_output = out / "build_receipt.json"
+    # A reused output directory must never keep a previous success visible.
+    output.unlink(missing_ok=True)
+    receipt_output.unlink(missing_ok=True)
 
     if sha256(archive) != lock["sha256"]:
         raise SystemExit("ports/oniguruma: source archive hash differs from source_lock.json")
+    sys.path.insert(0, str(HERE.parents[2] / "scripts"))
+    from xos_app import tree_receipt
+    sdk_tree_sha256 = tree_receipt(sdk)[0]
     for name in ("manifest.json", "user.ld", "crt0_posix.o"):
         if not (sdk / name).is_file():
             raise SystemExit(f"ports/oniguruma: SDK is missing {name}")
@@ -114,7 +122,9 @@ def main():
             "approach": "upstream CMake cross build with the frozen XOS SDK",
             "configuration": "static library, UTF-8/posix headers, samples/regex.c",
             "sdk": sdk.name,
-            "sdk_build_id": json.loads((sdk / "manifest.json").read_text())["build_id"],
+            "sdk_build_id": (json.loads((sdk / "manifest.json").read_text()).get("build_id")
+                             or json.loads((sdk / "manifest.json").read_text()).get("profile", "")),
+            "sdk_tree_sha256": sdk_tree_sha256,
             "compiler": subprocess.check_output([cc, "--version"], text=True).splitlines()[0],
         },
     }

@@ -19,7 +19,7 @@
   "package": {
     "id": "thirdparty.oniguruma",
     "target_profile": "xos-x86_64-static-single-b2-v1",
-    "xpk_sha256": "61bc17c3eb47bd4b53befb27d6f478175faab24435d109c2d7ff1a319da9c7aa"
+    "xpk_sha256": "7be31e58ec623f1feb64ba0fd5da1761586a425a5d404f124ab252d847f0a23b"
   },
   "integration": {
     "guest_only": true,

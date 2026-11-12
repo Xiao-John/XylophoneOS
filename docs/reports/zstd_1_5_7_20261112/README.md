@@ -18,14 +18,14 @@
 | 项 | 值 |
 |---|---|
 | 包 | `thirdparty.zstd-1.5.7.xpk`，2,437,120 字节 |
-| 包 sha256 | `dfe284b79564960a9ee9b659ae2f1d9b140e5d11145292c995b4c4edd5694563` |
+| 包 sha256 | `039a38f762278a0f7d20a7bd2d33173e31710fbe50c7bb37091b335ce5a58624` |
 | 载荷 | `usr/bin/zstd`、`usr/lib/libzstd.a`、`usr/share/zstd/include/{zstd,zdict,zstd_errors}.h`、样例、`LICENSE`+`COPYING`、`source.json`、`build_receipt.json` |
 
 ## 安装
 
 ```sh
 python3 scripts/xypm.py install --image disks/base.img --output-image disks/zstd.img \
-  --offline --profile config/package/xos_x86_64_static_single_b2_v1.json \
+  --offline --profile config/package/xos_x86_64_static_threaded_v1.json \
   thirdparty.zstd-1.5.7.xpk
 ```
 
@@ -38,7 +38,7 @@ python3 scripts/xypm.py install --image disks/base.img --output-image disks/zstd
 
 ```text
 zstd --version                      -> *** Zstandard CLI (64-bit) v1.5.7, by Yann Collet ***
-zstd -T2 -1 -f -o /sample.zst sample.txt -> 3.93 KiB => 202 B (6.73%)
+zstd -T2 -1 -f -o /sample.zst sample.txt -> 3.93 KiB => 239 B (5.95%)
 zstd -t /sample.zst                  -> /sample.zst : 4020 bytes   (test_rc=0)
 zstd -d -f /sample.zst -o /sample.out-> /sample.zst : 4020 bytes   (dec_rc=0)
 zstd -19 -f sample.txt -o /sample19.zst -> 3.93 KiB => 180 B (4.48%) (c19_rc=0)

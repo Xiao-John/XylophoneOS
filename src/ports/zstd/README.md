@@ -36,11 +36,11 @@ python3 src/ports/zstd/build.py
 ```sh
 python3 scripts/xypm.py install \
   --image work_disk.img --output-image with_zstd.img --offline \
-  --profile config/package/xos_x86_64_static_single_b2_v1.json \
+  --profile config/package/xos_x86_64_static_threaded_v1.json \
   "$XOS_OUT/thirdparty.zstd-1.5.7.xpk"
 ```
 
-包 target profile：`xos-x86_64-static-threaded-v1`。已验证的包哈希：`dfe284b79564960a9ee9b659ae2f1d9b140e5d11145292c995b4c4edd5694563`
+包 target profile：`xos-x86_64-static-threaded-v1`。已验证的包哈希：`039a38f762278a0f7d20a7bd2d33173e31710fbe50c7bb37091b335ce5a58624`
 （2,437,120 字节，由本目录配方构建；换 SDK、上游或配方后必须重算并更新 `port.json`）。
 
 **xsh**（直接执行）：

@@ -38,12 +38,23 @@ def main():
     lock = json.loads((HERE / "source_lock.json").read_text())
     sdk = need("XOS_SDK")
     archive = need("XOS_SOURCE_ARCHIVE")
+    onig_lock = json.loads((HERE / "oniguruma.lock.json").read_text())
     onig_archive = need("XOS_ONIGURUMA_ARCHIVE")
+    if sha256(onig_archive) != onig_lock["sha256"]:
+        raise SystemExit("ports/jq: oniguruma archive hash differs from oniguruma.lock.json")
     out = need("XOS_OUT")
     out.mkdir(parents=True, exist_ok=True)
+    output = out / f"{port['package']['id']}-{lock['version']}.xpk"
+    receipt_output = out / "build_receipt.json"
+    # A reused output directory must never keep a previous success visible.
+    output.unlink(missing_ok=True)
+    receipt_output.unlink(missing_ok=True)
 
     if sha256(archive) != lock["sha256"]:
         raise SystemExit("ports/jq: source archive hash differs from source_lock.json")
+    sys.path.insert(0, str(HERE.parents[2] / "scripts"))
+    from xos_app import tree_receipt
+    sdk_tree_sha256 = tree_receipt(sdk)[0]
     for name in ("manifest.json", "user.ld", "crt0_posix.o"):
         if not (sdk / name).is_file():
             raise SystemExit(f"ports/jq: SDK is missing {name}")
@@ -73,7 +84,8 @@ def main():
 
     libgcc = subprocess.check_output([cc, "-print-libgcc-file-name"], text=True).strip()
     cflags = (f"-O2 -mno-red-zone -fno-pie -fno-pic -fno-stack-protector "
-              f"-idirafter {sdk}/include -D_POSIX_THREADS")
+              f"-idirafter {sdk}/include -D_POSIX_THREADS=1 "
+              "-D_POSIX_READER_WRITER_LOCKS=200809L -D_UNIX98_THREAD_MUTEX_ATTRIBUTES=1")
     prefix = work / "onig-prefix"
     (prefix / "include").mkdir(parents=True)
     (prefix / "lib").mkdir()
@@ -126,7 +138,7 @@ def main():
          str(sdk / "lib/libm.a"), libgcc, "-Wl,--end-group", "-o", str(binary_source)])
 
     library_objects = [str(p) for p in objects
-                       if p.name not in ("main.o", "jq_test.o")]
+                       if p.name not in ("main.o", "jq_test.o")] + dec_objects
     static_lib = work / "libjq.a"
     run([ar, "rcsD", str(static_lib), *library_objects])
 
@@ -152,6 +164,7 @@ def main():
     license_dir = tree / f"usr/share/licenses/{package}"
     license_dir.mkdir(parents=True)
     shutil.copyfile(source / "COPYING", license_dir / "COPYING")
+    shutil.copyfile(onig_source / "COPYING", license_dir / "COPYING.oniguruma")
 
     provenance = {
         "package": package,
@@ -163,12 +176,15 @@ def main():
         "archive_sha256": lock["sha256"],
         "archive_mirror": lock["url"],
         "sha256_scope": lock.get("sha256_scope", "upstream_release"),
+        "oniguruma": {"archive": onig_lock["archive"], "sha256": onig_lock["sha256"]},
         "build": {
             "approach": "autotools configure + manual link with the frozen XOS SDK",
             "configuration": "private static oniguruma 6.9.10; decNumber enabled; static; -D_POSIX_THREADS",
             "threading": "single-thread pthread subset from the SDK (no port shim)",
             "sdk": sdk.name,
-            "sdk_build_id": json.loads((sdk / "manifest.json").read_text())["build_id"],
+            "sdk_build_id": (json.loads((sdk / "manifest.json").read_text()).get("build_id")
+                             or json.loads((sdk / "manifest.json").read_text()).get("profile", "")),
+            "sdk_tree_sha256": sdk_tree_sha256,
             "compiler": subprocess.check_output([cc, "--version"], text=True).splitlines()[0],
             "strip": "x86_64-elf-objcopy --strip-all jq",
         },
@@ -213,7 +229,8 @@ def main():
         "required_features": ["stdio", "heap", "file_io"],
         "runtime_dependencies": [],
         "files": files,
-        "licenses": [f"usr/share/licenses/{package}/COPYING"],
+        "licenses": [f"usr/share/licenses/{package}/COPYING",
+                     f"usr/share/licenses/{package}/COPYING.oniguruma"],
         "build_receipt": {"path": "usr/share/jq/build_receipt.json",
                           "sha256": sha256(receipt_path)},
         "source": f"{lock['archive']} sha256 {lock['sha256']} ({lock['url']}); "

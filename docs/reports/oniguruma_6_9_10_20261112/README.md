@@ -15,7 +15,7 @@
 
 | 项 | 值 |
 |---|---|
-| 包 | `thirdparty.oniguruma-6.9.10.xpk`，包 sha256 `61bc17c3eb47bd4b53befb27d6f478175faab24435d109c2d7ff1a319da9c7aa` |
+| 包 | `thirdparty.oniguruma-6.9.10.xpk`，包 sha256 `7be31e58ec623f1feb64ba0fd5da1761586a425a5d404f124ab252d847f0a23b` |
 | 载荷 | `usr/lib/libonig.a`、`usr/share/oniguruma/include/{oniguruma,oniggnu,onigposix}.h`、`samples/regex.c`、`COPYING`、`source.json`、`build_receipt.json` |
 
 ## 安装

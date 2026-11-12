@@ -18,7 +18,7 @@
 | 项 | 值 |
 |---|---|
 | 包 | `thirdparty.jq-1.8.2.xpk`，1,710,080 字节 |
-| 包 sha256 | `a9696ca5e62017cf9cf0be05eb725f2ca5d74aeb512398080bfe058027518cfb` |
+| 包 sha256 | `13742ac8d0512a5c34a1c2e1b2baac18d643afc0622194b28147bf6a8a7a883a` |
 | 载荷 | `usr/bin/jq`、`usr/lib/libjq.a`、`usr/share/jq/include/{jq.h,jv.h}`、四个样例、`COPYING`、`source.json`、`build_receipt.json` |
 
 上游零补丁，**无端口侧 shim**：jq 需要的 `pthread_once`/TSS 由 SDK 的单线程 pthread 子集

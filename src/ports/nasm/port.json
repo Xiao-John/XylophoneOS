@@ -1,0 +1,34 @@
+{
+  "format_version": 1,
+  "id": "nasm",
+  "name": "NASM (Netwide Assembler)",
+  "upstream_version": "2.16.03",
+  "license": [
+    "BSD-2-Clause"
+  ],
+  "homepage": "https://www.nasm.us/",
+  "source": {
+    "kind": "tarball",
+    "lock": "source_lock.json"
+  },
+  "build": {
+    "system": "autotools",
+    "recipe": "build.py",
+    "patches": []
+  },
+  "package": {
+    "id": "thirdparty.nasm",
+    "target_profile": "xos-x86_64-static-single-b2-v1",
+    "xpk_sha256": "ba17988aeb9d690e0b0ce2bbefa55e41f3d7af9b228f96832128e4ca9dfa7356"
+  },
+  "integration": {
+    "guest_only": true,
+    "bootstrap_images": [],
+    "iso_members": []
+  },
+  "status": "guest_verified",
+  "note": "零源码补丁；nasm 与 ndisasm 同包安装到 /usr/bin；upstream autotools 配冻结 SDK 链接。客体 xsh 实测汇编（-f bin/-f elf64 含宏）、反汇编（-b 16/-b 64）、版本、帮助与错误路径。",
+  "evidence": [
+    "docs/reports/nasm_2_16_03_20261112/README.md"
+  ]
+}

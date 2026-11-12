@@ -43,6 +43,10 @@ enum flags : u32 {
     open_option_mask = open_create | open_exclusive | open_truncate | open_append,
     open_valid_mask = open_access_mask | open_option_mask,
     list_directories = 1u << 8,
+    // op::remove: permit deleting a directory (rmdir semantics). Absent — the
+    // default, since every existing client zeroes the request — a directory is
+    // refused before f_unlink, so rm/unlink can never delete one.
+    allow_directory = 1u << 9,
 };
 
 enum class status : i32 {

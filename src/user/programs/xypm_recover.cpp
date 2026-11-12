@@ -91,8 +91,8 @@ state file_hash(const char* path,u32& size,u8 digest[32]) {
     hash.finish(digest);return state::present;
 }
 bool matches(state s,u32 size,const u8 digest[32],u32 expected_size,const u8 expected_hash[32]){return s==state::present&&size==expected_size&&memcmp(digest,expected_hash,32)==0;}
-bool remove_if_exists(const char* path){u32 size=0,attrs=0;state s=stat_path(path,size,attrs);if(s==state::absent)return true;if(s!=state::present||files.remove(path)!=0)return false;recovery_checkpoint();return true;}
-bool remove_if_empty_directory(const char* path){u32 size=0,attrs=0;state s=stat_path(path,size,attrs);if(s==state::absent)return true;if(s!=state::present||!(attrs&file::stat_is_directory))return false;file::entry entries[8]{};u32 count=0,cursor=0;if(files.list(path,entries,8,count,cursor)!=0)return false;if(count||cursor)return true;if(files.remove(path)!=0)return false;recovery_checkpoint();return true;}
+bool remove_if_exists(const char* path){u32 size=0,attrs=0;state s=stat_path(path,size,attrs);if(s==state::absent)return true;if(s!=state::present)return false;const i64 removed=(attrs&file::stat_is_directory)?files.remove_directory(path):files.remove(path);if(removed!=0)return false;recovery_checkpoint();return true;}
+bool remove_if_empty_directory(const char* path){u32 size=0,attrs=0;state s=stat_path(path,size,attrs);if(s==state::absent)return true;if(s!=state::present||!(attrs&file::stat_is_directory))return false;file::entry entries[8]{};u32 count=0,cursor=0;if(files.list(path,entries,8,count,cursor)!=0)return false;if(count||cursor)return true;if(files.remove_directory(path)!=0)return false;recovery_checkpoint();return true;}
 bool read_stamp(const char* path,const char expected[8],bool& present){
     u32 size=0,attrs=0;state s=stat_path(path,size,attrs);if(s==state::absent){present=false;return true;}
     if(s!=state::present||(attrs&file::stat_is_directory)||size!=8)return false;

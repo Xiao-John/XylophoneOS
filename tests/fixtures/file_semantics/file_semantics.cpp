@@ -455,6 +455,59 @@ int main(int argc, char** argv) {
     require(read_file("fullhole.txt") == "0123", "fullhole rollback content");
     ++checks;
 
+    // 18. rm must not delete an empty directory: op::remove refuses it and the
+    //     directory itself stays on disk.
+    reset_media();
+    require(mkdir_path(client, "rm_empty").status_code == static_cast<i32>(status::ok),
+            "mkdir rm_empty");
+    request removal = make_request(op::remove);
+    set_name(removal, "rm_empty");
+    require(call(client, removal).status_code == static_cast<i32>(status::invalid),
+            "rm empty directory refused");
+    require(f_stat("rm_empty", &info) == FR_OK && (info.fattrib & AM_DIR) != 0,
+            "empty directory survives rm");
+    ++checks;
+
+    // 19. The same refusal for a non-empty directory must leave its contents.
+    require(mkdir_path(client, "rm_full").status_code == static_cast<i32>(status::ok),
+            "mkdir rm_full");
+    seed_file("rm_full/child.txt", "keep", 4);
+    removal = make_request(op::remove);
+    set_name(removal, "rm_full");
+    require(call(client, removal).status_code == static_cast<i32>(status::invalid),
+            "rm non-empty directory refused");
+    require(f_stat("rm_full", &info) == FR_OK && (info.fattrib & AM_DIR) != 0,
+            "non-empty directory survives rm");
+    require(read_file("rm_full/child.txt") == "keep", "directory content intact");
+    ++checks;
+
+    // 20. allow_directory restores rmdir semantics: opting in deletes an empty
+    //     directory.
+    require(mkdir_path(client, "rmdir_ok").status_code == static_cast<i32>(status::ok),
+            "mkdir rmdir_ok");
+    removal = make_request(op::remove);
+    set_name(removal, "rmdir_ok");
+    removal.flags = allow_directory;
+    require(call(client, removal).status_code == static_cast<i32>(status::ok),
+            "allow_directory removes empty directory");
+    require(f_stat("rmdir_ok", &info) != FR_OK, "opted-in directory is gone");
+    ++checks;
+
+    // 21. The opt-in weakens nothing else: a non-empty directory is still
+    //     refused (FatFs FR_DENIED) and keeps its contents.
+    require(mkdir_path(client, "rmdir_full").status_code == static_cast<i32>(status::ok),
+            "mkdir rmdir_full");
+    seed_file("rmdir_full/child.txt", "keep", 4);
+    removal = make_request(op::remove);
+    set_name(removal, "rmdir_full");
+    removal.flags = allow_directory;
+    require(call(client, removal).status_code == static_cast<i32>(status::invalid),
+            "allow_directory still refuses non-empty directory");
+    require(f_stat("rmdir_full", &info) == FR_OK && (info.fattrib & AM_DIR) != 0,
+            "non-empty directory survives opt-in");
+    require(read_file("rmdir_full/child.txt") == "keep", "opted-in content intact");
+    ++checks;
+
     std::printf("FILE_SEMANTICS_CASES_PASSED=%d\n", checks);
     return 0;
 }

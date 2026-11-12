@@ -24,7 +24,7 @@ def command(guest, line, expected, timeout=15):
     start = len(guest.output)
     send_bytes(guest, line.encode() + b"\r")
     guest.expect(expected, start=start, timeout=timeout)
-    guest.expect(b"sup> ", start=start, timeout=timeout)
+    guest.expect(b"xsh> ", start=start, timeout=timeout)
     return bytes(guest.output)[start:]
 
 
@@ -143,7 +143,7 @@ def main():
         send_bytes(guest, b"hello_from_stdin\r")
         guest.expect(b"[echo] done", start=start)
         guest.expect(b"kind=exited code=0", start=start)
-        guest.expect(b"sup> ", start=start)
+        guest.expect(b"xsh> ", start=start)
         checks.append("inherited_stdin_stdout_and_nonblocking_read")
 
         for name, reason in (("bad_magic", "header"), ("bad_interp", "unsupported"),
@@ -210,7 +210,7 @@ def main():
         send_bytes(guest, b"\x1b")
         guest.expect(b"event=cancelled_by_escape", start=start)
         guest.expect(b"kind=killed code=-27", start=start)
-        guest.expect(b"sup> ", start=start)
+        guest.expect(b"xsh> ", start=start)
         if resources(guest) != baseline:
             raise AssertionError("Foreground cancellation leaked resources")
         checks.append("foreground_infinite_loop_escape_recovers_terminal")

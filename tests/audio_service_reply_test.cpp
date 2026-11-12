@@ -35,6 +35,14 @@ struct fake_kernel {
     bool revoked_while_pending = false;
     xos::u32 close_calls = 0;
 
+    // spawn_buffer_options records, so the worker digest gate can be driven
+    // without a loader.
+    xos::u32 spawn_calls = 0;
+    xos::i64 spawn_result = 5001;
+    const char* spawn_name = nullptr;
+    xos::u64 spawn_size = 0;
+    xos::u32 spawn_argc = 0;
+
     fake_endpoint* find(xos::u32 handle) {
         if (handle == send_handle) return &endpoints[0];
         if (handle == receive_handle) return &endpoints[1];
@@ -146,7 +154,35 @@ bool equal(const char* left, const char* right) {
     return *left == *right;
 }
 
-i64 spawn_file_options(const char*, u32, const char* const*, const spawn_options&) { return -1; }
+i64 spawn_buffer_options(const char* name, const u8* bytes, u64 size, u32 argc,
+                         const char* const* argv, const spawn_options& options) {
+    (void)bytes; (void)argv; (void)options;
+    ++kernel.spawn_calls;
+    kernel.spawn_name = name;
+    kernel.spawn_size = size;
+    kernel.spawn_argc = argc;
+    return kernel.spawn_result;
+}
+}
+
+// The service reads /tone_worker.img through file::client and refuses to
+// spawn bytes that do not match argv[2]. The real client needs a live files
+// session, so the host test scripts the read instead.
+namespace xos::file {
+u8 worker_stub_image[audio::worker_image_limit];
+u32 worker_stub_length = 0;
+i64 worker_stub_result = 0;
+
+bool client::init() { return true; }
+
+i64 client::read_all(const char*, void* data, u32 capacity, u32& length) {
+    length = 0;
+    if (worker_stub_result != 0) { return worker_stub_result; }
+    if (worker_stub_length > capacity) { return static_cast<i64>(status::no_space); }
+    std::memcpy(data, worker_stub_image, worker_stub_length);
+    length = worker_stub_length;
+    return 0;
+}
 }
 
 namespace {
@@ -230,6 +266,63 @@ void test_full_mailbox_retries() {
     check(kernel.poll_count == 1, "full mailbox: waited for the unread reply");
     check(reply_matches(0), "full mailbox: reply queued with result 0");
 }
+
+// argv[2] is a fixed 64-digit hex digest: anything else must be rejected
+// rather than downgraded to "skip the check".
+void test_digest_parser() {
+    char text[65] = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+    xos::u8 out[32]{};
+    check(parse_digest(text, out), "digest: 64 hex digits accepted");
+    check(out[0] == 0x01 && out[1] == 0x23 && out[31] == 0xef, "digest: byte order big-endian");
+    text[64] = '0';
+    check(!parse_digest(text, out), "digest: trailing garbage rejected");
+    text[64] = '\0';
+    text[3] = 'z';
+    check(!parse_digest(text, out), "digest: non-hex digit rejected");
+    text[3] = '3';
+    text[10] = '\0';
+    check(!parse_digest(text, out), "digest: truncated value rejected");
+    text[10] = 'a';
+    check(!parse_digest(nullptr, out), "digest: null argument rejected");
+}
+
+// G-1/G-4: a note spawns only after the file bytes hash to the published
+// digest, and the spawned process keeps the audio_tone name.
+void test_worker_digest_gate() {
+    reset_kernel();
+    xos::file::worker_stub_result = 0;
+    xos::file::worker_stub_length = 64;
+    for (xos::u32 i = 0; i < xos::file::worker_stub_length; ++i) {
+        xos::file::worker_stub_image[i] = static_cast<xos::u8>(i * 3 + 1);
+    }
+    sha256 hash;
+    hash.update(xos::file::worker_stub_image, xos::file::worker_stub_length);
+    hash.finish(expected_digest);
+    digest_expected = true;
+
+    xos::u64 child = 0;
+    check(start_tone_worker(440, 100, child), "worker: matching digest spawns");
+    check(kernel.spawn_calls == 1, "worker: exactly one spawn attempt");
+    check(kernel.spawn_name != nullptr && std::strcmp(kernel.spawn_name, "audio_tone") == 0,
+          "worker: process name stays audio_tone");
+    check(kernel.spawn_size == xos::file::worker_stub_length,
+          "worker: spawns the verified byte count");
+    check(kernel.spawn_argc == 3, "worker: keeps the three worker arguments");
+    check(child == 5001, "worker: child pid propagated");
+
+    // Substituted file: same length, different bytes, no matching digest.
+    xos::file::worker_stub_image[7] = static_cast<xos::u8>(xos::file::worker_stub_image[7] ^ 0xffu);
+    child = 0;
+    check(!start_tone_worker(440, 100, child), "worker: substituted image refused");
+    check(kernel.spawn_calls == 1, "worker: no spawn after digest mismatch");
+    check(child == 0, "worker: no child pid after mismatch");
+
+    // An oversized or unreadable image refuses the same way.
+    xos::file::worker_stub_result = static_cast<xos::i64>(xos::file::status::no_space);
+    check(!start_tone_worker(440, 100, child), "worker: unreadable image refused");
+    check(kernel.spawn_calls == 1, "worker: no spawn on read failure");
+    xos::file::worker_stub_result = 0;
+}
 }
 
 int main() {
@@ -239,6 +332,8 @@ int main() {
     test_close_is_bounded();
     test_send_failure_disconnects();
     test_full_mailbox_retries();
+    test_digest_parser();
+    test_worker_digest_gate();
     if (failures != 0) {
         std::printf("audio_service_reply_test: %d failure(s)\n", failures);
         return 1;

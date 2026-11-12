@@ -116,7 +116,7 @@ GDT 增加 ring3 code/data 描述符（0x2b/0x33）；TSS 仍占两个 GDT 槽�
 
 八个静态任务是 `heartbeat`、`spinner`、`receiver`、`sender`、`probe`、`quitter`、
 `supervisor`、`files`；其中 spinner 永不主动让出，probe 先试非法 IPC 再读内核页，
-quitter 通过 `exit` 退出，supervisor 提供用户态 `sup> ` 终端（`ps`、`kill <pid>`、
+quitter 通过 `exit` 退出，supervisor 提供用户态 `xsh> ` 终端（`ps`、`kill <pid>`、
 `help`），files 是 E05 的 RAM 文件服务。调度为 round-robin，只从 ring3 被中断时
 切换；内核入口保持关中断，不做内核抢占或嵌套调度。
 
@@ -139,7 +139,7 @@ ring3 异常（含 page fault）打印任务 pid/vector/RIP/CR2 后标记该任�
 页表、用户页与内核栈，并打印 `[task] event=reclaimed pid=... pages=...`。
 supervisor 通过 `kill <pid>` 也能终止一个挂起任务并立即回收。
 
-`run` 命令进入用户任务后不返回内核调试控制台；supervisor 的 `sup> ` 是当前
+`run` 命令进入用户任务后不返回内核调试控制台；supervisor 的 `xsh> ` 是当前
 可交互终端，`ps` 能在 spinner 占用时间片时返回任务列表，`kill 2` 能停掉
 spinner 并让 heartbeat 继续。它是最小监督路径，不是完整 shell、登录或服务管理。
 

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 #include <xos/audio_abi.hpp>
 #include <xos/channel_io.hpp>
+#include <xos/fault_sha256.hpp>
+#include <xos/file_client.hpp>
 #include <xos/sdk.hpp>
 #include <xos/thread_abi.hpp>
 
@@ -25,7 +27,31 @@ session sessions[max_sessions];
 session overflow_session{};
 playback current_job{};
 u64 next_job_id = 1;
-u32 tone_image;
+// argv[2] carries the SHA-256 of the worker image the supervisor published.
+// /tone_worker.img has no ACL, so a matching digest is the only evidence the
+// bytes read back for this note are the ones that were published.
+u8 expected_digest[32];
+bool digest_expected = false;
+
+int hex_digit(char value) {
+    if (value >= '0' && value <= '9') return value - '0';
+    if (value >= 'a' && value <= 'f') return value - 'a' + 10;
+    if (value >= 'A' && value <= 'F') return value - 'A' + 10;
+    return -1;
+}
+
+// Exactly 64 hex digits and nothing else; a truncated or padded value is not
+// a digest and must not be treated as "verify nothing".
+bool parse_digest(const char* text, u8 output[32]) {
+    if (text == nullptr) return false;
+    for (u32 i = 0; i < worker_digest_hex_length; ++i) {
+        const int high = hex_digit(text[i]);
+        if (high < 0) return false;
+        if ((i & 1u) == 0) { output[i / 2] = static_cast<u8>(high << 4); }
+        else { output[i / 2] = static_cast<u8>(output[i / 2] | high); }
+    }
+    return text[worker_digest_hex_length] == '\0';
+}
 
 i64 monotonic_now(u64& value) {
     const i64 result = sdk::syscall(sys_clock_monotonic);
@@ -303,7 +329,27 @@ bool start_tone_worker(u32 frequency, u32 duration_ms, u64& child_pid) {
     sdk::spawn_options options{};
     for (u32 i = 0; i < 3; ++i) options.stdio[i] = -2;
     options.prepare_child = prepare_tone_worker;
-    const i64 result = sdk::spawn_file_options(worker_image_path, 3, argv, options);
+    // The worker file is world-writable in the sense that any process may
+    // replace it, so every note re-reads it and checks the published digest
+    // before spawning. Bytes are never cached across notes: a cached copy
+    // would reintroduce the window the check exists to close.
+    static u8 worker_image[worker_image_limit];
+    file::client files{};
+    if (!files.init()) return false;
+    u32 length = 0;
+    const i64 read = files.read_all(worker_image_path, worker_image, sizeof(worker_image), length);
+    // read_all reports no_space when the file exceeds the capacity, so an
+    // oversized or unreadable image fails this note instead of spawning.
+    if (read != 0 || length == 0 || length > worker_image_limit) return false;
+    sha256 hash;
+    hash.update(worker_image, static_cast<usize>(length));
+    u8 digest[32];
+    hash.finish(digest);
+    for (u32 i = 0; i < 32; ++i) { if (digest[i] != expected_digest[i]) return false; }
+    // Spawn the verified bytes: no second lookup of the path, so the file
+    // cannot change between the check and the exec, and the process name
+    // stays "audio_tone" instead of the truncated path.
+    const i64 result = sdk::spawn_buffer_options("audio_tone", worker_image, length, 3, argv, options);
     if (result <= 0) return false;
     child_pid = static_cast<u64>(result);
     return true;
@@ -378,6 +424,9 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
         }
         if (!valid || tone == 0 || tone > 31) tone = 0;
     }
+    if (startup->argc >= 3 && argv != nullptr && argv[2] != nullptr) {
+        digest_expected = parse_digest(argv[2], expected_digest);
+    }
     if (tone == 0) {
         // Fallback for privileged callers; a plain spawn cannot enumerate.
         for (u32 id = 1; id < 32; ++id) {
@@ -386,8 +435,9 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
             if (sdk::equal(info.name, "audio_tone")) { tone = id; break; }
         }
     }
-    if (tone == 0 || sdk::ipc_name_publish(service_name) != 0) return 10;
-    tone_image = tone;
+    // No publisher digest means nothing pins /tone_worker.img: running would
+    // hand the speaker PIO grant to whatever bytes happen to be at that path.
+    if (tone == 0 || !digest_expected || sdk::ipc_name_publish(service_name) != 0) return 10;
     for (;;) {
         reap_worker();
         advance_playback();

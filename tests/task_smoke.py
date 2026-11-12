@@ -54,7 +54,7 @@ def main():
         keep_start = len(guest.output)
         send_bytes(guest, b"demo keep\r")
         guest.expect(b"demo: keep", start=keep_start, timeout=8)
-        guest.expect(b"sup> ", start=keep_start, timeout=8)
+        guest.expect(b"xsh> ", start=keep_start, timeout=8)
         checks.append("ring3_tasks_and_timer_started")
 
         pump(guest, 2.0)
@@ -89,18 +89,18 @@ def main():
             raise AssertionError("heartbeat stopped after the probe fault")
         checks.append("user_fault_isolated_to_probe")
 
-        guest.expect(b"sup> ", start=start, timeout=10)
+        guest.expect(b"xsh> ", start=start, timeout=10)
         ps_start = len(guest.output)
         send_bytes(guest, b"ps\r")
         guest.expect(b"pid=2 name=spinner", start=ps_start, timeout=8)
-        guest.expect(b"sup> ", start=ps_start, timeout=8)
+        guest.expect(b"xsh> ", start=ps_start, timeout=8)
         checks.append("supervisor_terminal_lists_live_tasks")
 
         kill_start = len(guest.output)
         send_bytes(guest, b"kill 2\r")
         guest.expect(b"killed_by_supervisor pid=2", start=kill_start, timeout=8)
         guest.expect(b"[task] event=reclaimed pid=2", start=kill_start, timeout=8)
-        guest.expect(b"sup> ", start=kill_start, timeout=8)
+        guest.expect(b"xsh> ", start=kill_start, timeout=8)
         pump(guest, 0.5)
         after_kill = bytes(guest.output)[kill_start:]
         if after_kill.count(b"A") < 3:
@@ -109,7 +109,7 @@ def main():
 
         second_ps = len(guest.output)
         send_bytes(guest, b"ps\r")
-        guest.expect(b"sup> ", start=second_ps, timeout=8)
+        guest.expect(b"xsh> ", start=second_ps, timeout=8)
         if b"pid=2" in bytes(guest.output)[second_ps:]:
             raise AssertionError("killed task still listed by ps")
         checks.append("killed_task_removed_from_tasklist")

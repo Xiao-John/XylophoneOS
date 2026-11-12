@@ -16,7 +16,7 @@ def command(guest, line, expected, timeout=20):
     start = len(guest.output)
     send_bytes(guest, line.encode() + b"\r")
     guest.expect(expected, start=start, timeout=timeout)
-    guest.expect(b"sup> ", start=start, timeout=timeout)
+    guest.expect(b"xsh> ", start=start, timeout=timeout)
     return bytes(guest.output)[start:]
 
 

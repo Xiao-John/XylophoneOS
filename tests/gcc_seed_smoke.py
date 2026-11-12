@@ -222,7 +222,7 @@ def main():
             def run(line, expected=0, contains=None, timeout=180):
                 started = time.monotonic()
                 supervisor_line = guest_command(line, (gcc,))
-                output = command(guest, supervisor_line, b'sup> ', timeout=timeout)
+                output = command(guest, supervisor_line, b'xsh> ', timeout=timeout)
                 diagnostic_result = diagnose(output, supervisor_line)
                 match = re.search(rb'kind=exited code=(-?\d+)', output)
                 current = resources(guest)

@@ -99,7 +99,7 @@ wait 只能收集自己的已提交子任务，未完成则真正挂起父任务
 取消其所属子任务并丢弃它的完成记录；没有通用 orphan/adoption 或服务重启机制。
 
 前台 `exec` / `wait` 挂起监督任务时，单独按 Escape 可终止被等待子任务并恢复
-`sup> `，所以 `exec spin` 不要求重建镜像。它是固定串口控制机制，不是 POSIX
+`xsh> `，所以 `exec spin` 不要求重建镜像。它是固定串口控制机制，不是 POSIX
 信号或完整 TTY；不撤销程序已产生的副作用。UART 输入仍是有限轮询，取消键应
 单独发送，不保证长串未读输入后的控制键及时性。Ctrl-C 仍由宿主关闭 QEMU。
 
@@ -235,6 +235,9 @@ AU2 音频客户端复用 sys86 命名 IPC 和普通 channel wait/send/receive�
 SDK client 分别位于 `audio_abi.hpp` 与 `audio_client.hpp`，完整版本、限额、job 状态、
 授权链和失败语义见[单音服务协议](contracts/audio_service.md)。supervisor 只委派
 controller 权限给服务；客户端不获 PIO，每个音符由有 2.5 秒租约的隔离 worker 执行。
+worker 镜像经 `/tone_worker.img` 交接，由 supervisor 发布时算出的 SHA-256 作为服务
+`argv[2]` 钉住，服务每个音符重读、验摘要后从已验证内存 spawn，无摘要即拒绝启动，
+见[单音服务协议](contracts/audio_service.md)的"worker 镜像交接"一节。
 代码已实现但未完成目标交叉构建和客体验收。
 
 sys83 `sys_irq_event` 为受控 IRQ 事件、等待和确认；当前仅 IRQ4、未客体验收，

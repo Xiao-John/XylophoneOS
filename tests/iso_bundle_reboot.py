@@ -95,7 +95,7 @@ def main():
             send_bytes(guest, b"echo FIRSTBOOT\r")
             guest.expect(b"FIRSTBOOT", start=begin, timeout=20)
             send_bytes(guest, b"exit\r")
-            guest.expect_any((b"xsh> ", b"sup> "), start=begin, timeout=20)
+            guest.expect(b"xsh> ", start=begin, timeout=20)
             report["checks"].append({"name": "first-boot-dash-runs",
                                      "passed": True})
         except Exception as exc:
@@ -137,7 +137,7 @@ def main():
             send_bytes(guest, b"echo SECONDBOOT\r")
             guest.expect(b"SECONDBOOT", start=begin, timeout=20)
             send_bytes(guest, b"exit\r")
-            guest.expect_any((b"xsh> ", b"sup> "), start=begin, timeout=20)
+            guest.expect(b"xsh> ", start=begin, timeout=20)
             report["checks"].append({"name": "second-boot-dash-runs",
                                      "passed": True})
             report["status"] = "passed"

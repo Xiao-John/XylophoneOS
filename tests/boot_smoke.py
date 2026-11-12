@@ -37,9 +37,7 @@ class Guest:
         self.qmp_socket = None
 
     def expect(self, expected, *, start=0, timeout=12):
-        if expected == b"sup> ":
-            alternatives = (expected, b"xsh> ")
-        elif expected == b"[sup] demo tasks stopped":
+        if expected == b"[sup] demo tasks stopped":
             alternatives = (expected, b"[xsh] demo tasks stopped")
         else:
             alternatives = (expected,)
@@ -62,15 +60,15 @@ class Guest:
         raise AssertionError(f"{self.name}: missing any of {expected_values!r}; output={self.output[-1000:]!r}")
 
     def expect_supervisor(self, *, trace=False, start=0, timeout=12):
-        prompt = self.expect_any((b"sup> ", b"xsh> "), start=start, timeout=timeout)
-        if prompt == b"xsh> " and trace:
+        prompt = self.expect(b"xsh> ", start=start, timeout=timeout)
+        if trace:
             command_start = len(self.output)
             for value in b"trace on\r":
                 self.process.stdin.write(bytes([value]))
                 self.process.stdin.flush()
                 time.sleep(0.003)
             self.expect(b"xsh: trace on", start=command_start, timeout=timeout)
-            self.expect_any((b"xsh> ", b"sup> "), start=command_start, timeout=timeout)
+            self.expect(b"xsh> ", start=command_start, timeout=timeout)
         return prompt
 
     def send_line(self, data, expected):

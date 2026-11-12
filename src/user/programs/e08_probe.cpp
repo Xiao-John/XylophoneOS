@@ -63,7 +63,7 @@ extern "C" int xos_user_main(const xos::startup_info* start) {
         if(client.list("/out/guest_directory",entries,2,count,cursor)!=0 || count!=1 ||
            !sdk::equal(entries[0].name,"renamed_source.txt") ||
            client.remove("/out/guest_directory/renamed_source.txt")!=0 ||
-           client.remove("/out/guest_directory")!=0) return failure(21);
+           client.remove_directory("/out/guest_directory")!=0) return failure(21);
         if(client.replace("/src/../bad","x",1)>=0 || client.replace("/out/trailing.","x",1)>=0) return failure(22);
 
         if(client.begin_replace("/out/long_result_name.txt",262144)!=0) return failure(10);

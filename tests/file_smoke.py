@@ -21,7 +21,7 @@ def command(guest, line, expected, timeout=15):
     start = len(guest.output)
     send_bytes(guest, line.encode() + b"\r")
     guest.expect(expected, start=start, timeout=timeout)
-    guest.expect(b"sup> ", start=start, timeout=timeout)
+    guest.expect(b"xsh> ", start=start, timeout=timeout)
     return bytes(guest.output)[start:]
 
 
@@ -79,7 +79,7 @@ def main():
             editor_line(guest, line)
         send_bytes(guest, b":wq\r")
         guest.expect(b"[edit] saved note.txt", start=start, timeout=10)
-        guest.expect(b"sup> ", start=start, timeout=10)
+        guest.expect(b"xsh> ", start=start, timeout=10)
         checks.append("editor_accepts_blank_lines_and_consecutive_spaces")
 
         cat = command(guest, "cat note.txt", b"first line", timeout=15)
@@ -97,7 +97,7 @@ def main():
         editor_line(guest, b"fourth")
         send_bytes(guest, b":wq\r")
         guest.expect(b"[edit] saved note.txt", start=start, timeout=10)
-        guest.expect(b"sup> ", start=start, timeout=10)
+        guest.expect(b"xsh> ", start=start, timeout=10)
         cat = command(guest, "cat note.txt", b"fourth", timeout=15)
         if b"first line" not in cat or b"fourth" not in cat:
             raise AssertionError("modify did not preserve old lines")
@@ -118,7 +118,7 @@ def main():
         send_bytes(guest, b"exec-file hello.elf\r")
         guest.expect(b"hello from file", start=start, timeout=15)
         guest.expect(b"kind=exited code=0", start=start, timeout=15)
-        guest.expect(b"sup> ", start=start, timeout=15)
+        guest.expect(b"xsh> ", start=start, timeout=15)
         checks.append("loader_reads_complete_file_snapshot_before_loading")
 
         report["status"] = "passed"

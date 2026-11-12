@@ -1308,6 +1308,12 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         FILINFO info{};
         const FRESULT stat_result = f_stat(path, &info);
         if (stat_result != FR_OK) { reply(out, in, from_fr(stat_result)); break; }
+        // POSIX: unlink/rm never deletes a directory, empty or not (EISDIR).
+        // FatFs f_unlink does delete an empty directory, and the shell's rm
+        // talks to this service directly so libc's EISDIR pre-check never runs.
+        // allow_directory (rmdir, package cleanup) opts back in: an empty
+        // directory is then removable, a non-empty one still fails FR_DENIED.
+        if ((info.fattrib & AM_DIR) != 0 && (in.flags & allow_directory) == 0) { reply(out, in, status::invalid); break; }
         const FRESULT result = f_unlink(path);
         if (result == FR_OK) { (void)forget_identity(identity_key(info)); }
         reply(out, in, from_fr(result));

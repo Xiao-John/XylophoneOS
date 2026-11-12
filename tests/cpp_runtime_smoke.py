@@ -41,7 +41,7 @@ def spawn_worker(guest, worker_id, hold_ticks):
     line = f"spawn-file /bin/cpp_runtime_probe.elf {worker_id} {hold_ticks}".encode() + b"\r"
     send_bytes(guest, line)
     output = pump_until(guest, b"[loader] started pid=", start, 15)
-    pump_until(guest, b"sup> ", start, 15)
+    pump_until(guest, b"xsh> ", start, 15)
     output = bytes(guest.output)[start:]
     match = re.search(rb"\[loader\] started pid=(\d+)", output)
     if match is None:
@@ -174,7 +174,7 @@ def main():
                 start = len(guest.output)
                 send_bytes(guest, f"wait {worker_pids[worker_id]}\r".encode())
                 output = pump_until(guest, b"kind=exited code=0", start, 20)
-                pump_until(guest, b"sup> ", start, 20)
+                pump_until(guest, b"xsh> ", start, 20)
                 if b"[cpp_runtime] FAIL" in output:
                     raise AssertionError(f"worker {worker_id} lost TLS while running: {output[-1200:]!r}")
             combined = bytes(guest.output)

@@ -83,7 +83,7 @@ void cleanup_old_preparation(){
     if(absent(prep_dir))return;
     xos::file::entry entries[4]{};u32 count=0,cursor=0;must(files.list(prep_dir,entries,4,count,cursor)==0&&cursor==0&&count<=1,"stale preparation contains unexpected files");
     if(count){must(!entries[0].directory&&std::strcmp(entries[0].name,"prepare")==0,"stale preparation contains unknown data");u8 stamp[8];u32 length=0;must(files.read_all(prep_stamp,stamp,sizeof(stamp),length)==0&&length==8&&!std::memcmp(stamp,prepare_magic,8),"stale preparation marker is invalid");must(files.remove(prep_stamp)==0,"cannot clean stale preparation marker");}
-    must(files.remove(prep_dir)==0&&files.sync()==0,"cannot clean stale preparation");
+    must(files.remove_directory(prep_dir)==0&&files.sync()==0,"cannot clean stale preparation");
 }
 void begin_preparation(){
     ensure_directory("/var");ensure_directory("/var/lib");ensure_directory("/var/lib/xypm");

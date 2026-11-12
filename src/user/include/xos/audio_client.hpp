@@ -116,14 +116,17 @@ public:
     i64 status(u64 job_id, response& output) {
         request message{}; message.operation = static_cast<u32>(operation::status);
         message.job_id = job_id;
-        const i64 result = exchange(message, output);
-        return result != 0 ? result : output.result;
+        // reply.result carries the JOB's outcome, which is legitimately
+        // nonzero (device_lost/expired); only exchange() failures are call
+        // errors. Callers read the outcome from output.result/output.state.
+        return exchange(message, output);
     }
     i64 cancel(u64 job_id, response& output) {
         request message{}; message.operation = static_cast<u32>(operation::cancel);
         message.job_id = job_id;
-        const i64 result = exchange(message, output);
-        return result != 0 ? result : output.result;
+        // Same contract as status(): cancelling a finished job echoes its
+        // outcome, which must not masquerade as a transport failure.
+        return exchange(message, output);
     }
     i64 close() {
         if (!open_) return 0;

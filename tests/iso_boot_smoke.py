@@ -45,7 +45,7 @@ def main():
             begin = len(guest.output)
             send_bytes(guest, b"type hello\r")
             guest.expect(b"hello", start=begin, timeout=20)
-            guest.expect_any((b"xsh> ", b"sup> "), start=begin, timeout=20)
+            guest.expect(b"xsh> ", start=begin, timeout=20)
             report["checks"].append({"name": "files-service", "passed": True})
         finally:
             guest.close()

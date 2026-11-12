@@ -9,12 +9,14 @@ import hashlib
 import json
 from pathlib import Path
 import sys
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "tests"), str(ROOT / "scripts")]
 from boot_smoke import Guest
 from process_smoke import command, resources
 from task_smoke import send_bytes, pump
+from make_work_disk import make_image
 
 
 def sha(path):
@@ -41,8 +43,11 @@ def main():
     report = {"status": "failed", "guest_qualification": "running", "build_id": manifest["build_id"],
               "image_sha256": sha(image), "checks": [], "not_run": ["tcp", "dns", "tls", "untrusted_dma_isolation"]}
     guest = None
+    temporary = tempfile.TemporaryDirectory(prefix="xos_net_guest_")
+    disk = Path(temporary.name) / "work.img"
+    disk.write_bytes(make_image())
     try:
-        guest = Guest(image, str(out.relative_to(ROOT / "build")) + "/guest", iso=True, network=True)
+        guest = Guest(image, str(out.relative_to(ROOT / "build")) + "/guest", iso=True, network=True, work_disk=disk)
         report["qemu_command"] = guest.command
         guest.expect(b"xos64> ", timeout=60)
         send_bytes(guest, b"run\r")
@@ -70,6 +75,7 @@ def main():
         if guest:
             (out / "serial.log").write_bytes(guest.output)
             guest.close()
+        temporary.cleanup()
         (out / "report.json").write_text(json.dumps(report, indent=2) + "\n")
 
 

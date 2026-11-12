@@ -13,9 +13,10 @@
 
 ## 验证
 
-- build `41e919e2ccb9c253`（kernel 721752 字节）。
+- build `26161cda4ebf8109`（kernel 721752 字节）。
 - `tests/dev_null_guest.py`：`DEV_NULL_OK`，覆盖 open/write/lseek/read/stat/fstat/close，
-  以及 `/dev/not-null` 返回 `ENOENT`；资源计数回基线。
+  以及 `/dev/not-null` 返回 `ENOENT`、`O_CREAT|O_EXCL` 对已存在的 `/dev/null` 返回
+  `EEXIST`（不把“创建成功”报给调用方）；资源计数回基线。
 - 用线程版 lz4 在客体复测（同一 ISO）：
 
 ```text

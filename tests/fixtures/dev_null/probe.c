@@ -34,15 +34,20 @@ int main(void) {
     errno = 0;
     const int missing = open("/dev/not-null", O_RDONLY);
     const int missing_errno = errno;
+    errno = 0;
+    const int exclusive = open("/dev/null", O_CREAT | O_EXCL | O_RDWR);
+    const int exclusive_errno = errno;
     const int closed = fd >= 0 ? close(fd) : -1;
 
-    printf("dev_stat=%d/%d dev_mode=%o ", dev_stat, dev_errno, (unsigned)dev_status.st_mode);
+    printf("excl=%d/%d dev_stat=%d/%d dev_mode=%o ", exclusive, exclusive_errno,
+           dev_stat, dev_errno, (unsigned)dev_status.st_mode);
     printf("fd=%d open_errno=%d write=%ld offset=%ld read=%ld stat=%d fstat=%d close=%d missing=%d/%d\n",
            fd, open_errno, (long)written, (long)offset, (long)read_back, stat_ok, fstat_ok, closed,
            missing, missing_errno);
     const int ok = fd >= 0 && written == 5 && offset == 0 && read_back == 0
         && stat_ok && fstat_ok && closed == 0
-        && missing == -1 && missing_errno == ENOENT;
+        && missing == -1 && missing_errno == ENOENT
+        && exclusive == -1 && exclusive_errno == EEXIST;
     puts(ok ? "DEV_NULL_OK" : "DEV_NULL_FAILED");
     return ok ? 0 : 1;
 }

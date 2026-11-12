@@ -1,0 +1,9 @@
+{
+  "kind": "tarball",
+  "version": "6.9.10",
+  "url": "https://mirrors.aliyun.com/debian/pool/main/libo/libonig/libonig_6.9.10.orig.tar.gz",
+  "upstream_site": "https://github.com/kkos/oniguruma/releases/tag/v6.9.10",
+  "archive": "libonig_6.9.10.orig.tar.gz",
+  "sha256": "ad92309d0d13eebc27f6592e875f3efbfa3dda2bf6da5952e00f0a2120c921a8",
+  "sha256_scope": "mirror_fetch"
+}

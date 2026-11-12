@@ -1,0 +1,9 @@
+{
+  "kind": "tarball",
+  "version": "1.8.2",
+  "url": "https://mirrors.aliyun.com/debian/pool/main/j/jq/jq_1.8.2.orig.tar.gz",
+  "upstream_site": "https://github.com/jqlang/jq/releases/tag/jq-1.8.2",
+  "archive": "jq_1.8.2.orig.tar.gz",
+  "sha256": "71b8d6e8f5fe81f6c6d0d110e3892251f6ce76ed095abd315e26e6e1193af3af",
+  "sha256_scope": "mirror_fetch"
+}

@@ -1,0 +1,9 @@
+{
+  "kind": "tarball",
+  "version": "1.5.7",
+  "url": "https://mirrors.aliyun.com/debian/pool/main/libz/libzstd/libzstd_1.5.7%2Bdfsg.orig.tar.xz",
+  "upstream_site": "https://github.com/facebook/zstd/releases/tag/v1.5.7",
+  "archive": "libzstd_1.5.7+dfsg.orig.tar.xz",
+  "sha256": "0c092ef267edce57ba7f3f2645c861f72eaf5e76273c6c3632869423464b90a5",
+  "sha256_scope": "mirror_fetch"
+}

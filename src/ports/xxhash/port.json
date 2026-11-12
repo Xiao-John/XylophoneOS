@@ -1,0 +1,35 @@
+{
+  "format_version": 1,
+  "id": "xxhash",
+  "name": "xxHash",
+  "upstream_version": "0.8.3",
+  "license": [
+    "BSD-2-Clause",
+    "GPL-2.0-only"
+  ],
+  "homepage": "https://xxhash.com/",
+  "source": {
+    "kind": "tarball",
+    "lock": "source_lock.json"
+  },
+  "build": {
+    "system": "custom",
+    "recipe": "build.py",
+    "patches": []
+  },
+  "package": {
+    "id": "thirdparty.xxhash",
+    "target_profile": "xos-x86_64-static-single-b2-v1",
+    "xpk_sha256": "cbd24a96cfc6cfa26071b7286ad84431b47475230d60d8764d3b6ba536875495"
+  },
+  "integration": {
+    "guest_only": true,
+    "bootstrap_images": [],
+    "iso_members": []
+  },
+  "status": "guest_verified",
+  "note": "库 BSD-2-Clause、xxhsum CLI GPL-2.0；上游零补丁，仅端口侧 compat/times.c 转发 _times。客体实测 H0/H1/H2/H3、stdin、-c 校验与错误路径，与宿主参考实现逐位一致。",
+  "evidence": [
+    "docs/reports/xxhash_0_8_3_20261112/README.md"
+  ]
+}

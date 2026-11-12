@@ -1,0 +1,9 @@
+{
+  "kind": "tarball",
+  "version": "1.10.0",
+  "url": "https://mirrors.aliyun.com/debian/pool/main/l/lz4/lz4_1.10.0.orig.tar.gz",
+  "upstream_site": "https://github.com/lz4/lz4/releases/tag/v1.10.0",
+  "archive": "lz4_1.10.0.orig.tar.gz",
+  "sha256": "537512904744b35e232912055ccf8ec66d768639ff3abe5788d90d792ec5f48b",
+  "sha256_scope": "mirror_fetch"
+}

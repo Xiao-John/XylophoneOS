@@ -1,0 +1,35 @@
+{
+  "format_version": 1,
+  "id": "jq",
+  "name": "jq",
+  "upstream_version": "1.8.2",
+  "license": [
+    "MIT",
+    "ICU"
+  ],
+  "homepage": "https://jqlang.org/",
+  "source": {
+    "kind": "tarball",
+    "lock": "source_lock.json"
+  },
+  "build": {
+    "system": "autotools",
+    "recipe": "build.py",
+    "patches": []
+  },
+  "package": {
+    "id": "thirdparty.jq",
+    "target_profile": "xos-x86_64-static-single-b2-v1",
+    "xpk_sha256": "a9696ca5e62017cf9cf0be05eb725f2ca5d74aeb512398080bfe058027518cfb"
+  },
+  "integration": {
+    "guest_only": true,
+    "bootstrap_images": [],
+    "iso_members": []
+  },
+  "status": "guest_verified",
+  "note": "静态链接私有 oniguruma 6.9.10（test/match/capture/scan/sub/gsub 可用）；decNumber 启用；pthread 子集由 SDK 提供（无端口桩）。xsh 与 dash 双路径实测。",
+  "evidence": [
+    "docs/reports/jq_1_8_2_20261112/README.md"
+  ]
+}

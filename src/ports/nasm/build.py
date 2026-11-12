@@ -70,7 +70,7 @@ def main():
          f"LIBS=-Wl,--start-group {sdk}/lib/libxos.a {sdk}/lib/libxos_loader.a "
          f"{sdk}/lib/libc.a {sdk}/lib/libm.a {sdk}/cpp/lib/libgcc.a -Wl,--end-group"],
         cwd=source, env=env)
-    run(["make", "-j4", "nasm"], cwd=source, env=env)
+    run(["make", "-j4", "nasm", "ndisasm"], cwd=source, env=env)
 
     tree = out / "tree"
     if tree.exists():
@@ -78,6 +78,8 @@ def main():
     binary = tree / "usr/bin/nasm"
     binary.parent.mkdir(parents=True)
     run([objcopy, "--strip-all", source / "nasm", binary])
+    disassembler = tree / "usr/bin/ndisasm"
+    run([objcopy, "--strip-all", source / "ndisasm", disassembler])
     package = port["package"]["id"]
     license_dir = tree / f"usr/share/licenses/{package}"
     license_dir.mkdir(parents=True)
@@ -117,7 +119,11 @@ def main():
         "recipe_sha256": sha256(HERE / "build.py"),
         "sdk": provenance["build"],
         "input": {"archive": lock["archive"], "sha256": lock["sha256"]},
-        "binary": {"path": "usr/bin/nasm", "sha256": sha256(binary), "size": binary.stat().st_size},
+        "binaries": [
+            {"path": "usr/bin/nasm", "sha256": sha256(binary), "size": binary.stat().st_size},
+            {"path": "usr/bin/ndisasm", "sha256": sha256(disassembler),
+             "size": disassembler.stat().st_size},
+        ],
         "outputs": {},
     }
     receipt_path = share / "build_receipt.json"
@@ -131,7 +137,8 @@ def main():
         relative = path.relative_to(tree).as_posix()
         files.append({"path": relative, "type": "file", "size": path.stat().st_size,
                       "sha256": sha256(path),
-                      "role": "executable" if relative == "usr/bin/nasm" else "data"})
+                      "role": "executable"
+                      if relative in ("usr/bin/nasm", "usr/bin/ndisasm") else "data"})
     license_path = f"usr/share/licenses/{package}/LICENSE"
     manifest = {
         "format_version": 1,

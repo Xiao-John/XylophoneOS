@@ -1,4 +1,4 @@
-# NASM 2.16.03 客体证据（2026-11-12）
+# NASM 2.16.03（含 ndisasm）客体证据（2026-11-12）
 
 端口：`src/ports/nasm`。本报告是 `port.json.status = guest_verified` 的证据。
 只覆盖这里列出的冻结输入；换 SDK、换上游版本或改配方后必须重跑。
@@ -20,10 +20,10 @@
 
 | 项 | 值 |
 |---|---|
-| 包 | `thirdparty.nasm-2.16.03.xpk`，1,730,560 字节（由 `src/ports/nasm/build.py` 直接产出） |
-| 包 sha256 | `0b7940222df8c08fe76ccb289b7117b35fd7690afe52cbf05825416a54a88d11` |
-| 载荷 | `usr/bin/nasm`、`usr/share/licenses/thirdparty.nasm/LICENSE`、`usr/share/nasm/{source.json,build_receipt.json,hello.asm,macro64.asm}` |
-| `usr/bin/nasm` | 1,716,416 字节，ELF64 `EXEC`，入口 `0x40000000`，无 `INTERP`，3 段 LOAD + TLS |
+| 包 | `thirdparty.nasm-2.16.03.xpk`，2,805,760 字节（由 `src/ports/nasm/build.py` 直接产出） |
+| 包 sha256 | `ba17988aeb9d690e0b0ce2bbefa55e41f3d7af9b228f96832128e4ca9dfa7356` |
+| 载荷 | `usr/bin/nasm`（1,716,416 B）、`usr/bin/ndisasm`（1,068,768 B）、`usr/share/licenses/thirdparty.nasm/LICENSE`、`usr/share/nasm/{source.json,build_receipt.json,hello.asm,macro64.asm}` |
+| ELF 形态 | 两者都是静态 `EXEC`，入口 `0x40000000`，无 `INTERP`，3 段 LOAD + TLS |
 | 宿主校验 | `xypm.py verify` = `verified_integrity_only` / `profile_checked` |
 
 上游 1190 个源文件与干净的 `nasm-2.16.03.tar.xz` 逐字节一致（逐文件 sha256 比对，
@@ -34,13 +34,13 @@
 
 ```sh
 python3 scripts/xypm.py install \
-  --image disks/base.img --output-image disks/run5.img --offline \
+  --image disks/base.img --output-image run.img --offline \
   --profile config/package/xos_x86_64_static_single_b2_v1.json \
   thirdparty.nasm-2.16.03.xpk
 ```
 
-结果：`verified_files: 6`；`verify-installed` 返回 `{"status": "verified", "files": 6}`；
-`list` 显示 `thirdparty.nasm 2.16.03 rev 0`。卸载事务也验证过：`remove` 后 `list` 为空。
+结果：`verified_files: 7`；`list` 显示 `thirdparty.nasm 2.16.03 rev 0`。卸载事务也验证过：
+`remove` 后 `list` 为空。
 
 ## 客体运行（xsh，原始输出）
 
@@ -48,6 +48,19 @@ python3 scripts/xypm.py install \
 xsh> exec-file /usr/bin/nasm -v
 NASM version 2.16.03 compiled on Nov 12 2026
 xsh> exec-file /usr/bin/nasm -f bin /usr/share/nasm/hello.asm -o /hello.bin
+xsh> exec-file /usr/bin/ndisasm -b 16 /hello.bin
+00000000  B83412            mov ax,0x1234
+00000003  CD10              int 0x10
+00000005  F4                hlt
+xsh> exec-file /usr/bin/nasm -f bin /usr/share/nasm/macro64.asm -o /macro64.bin
+xsh> exec-file /usr/bin/ndisasm -b 64 /macro64.bin
+00000000  B83C000000        mov eax,0x3c
+00000005  BF00000000        mov edi,0x0
+0000000A  0F05              syscall
+0000000C  90                nop
+0000000D  90                nop
+xsh> exec-file /usr/bin/ndisasm -v
+NDISASM version 2.16.03 compiled on Nov 12 2026
 xsh> exec-file /usr/bin/nasm -f elf64 /usr/share/nasm/macro64.asm -o /macro64.o
 xsh> exec-file /usr/bin/nasm /nonexistent.asm -o /x.bin
 nasm: fatal: unable to open input file `/nonexistent.asm' No such file or directory
@@ -60,18 +73,20 @@ xsh> exec-file /usr/bin/nasm -h
 
 | 文件 | 结果 |
 |---|---|
-| `/hello.bin` | 6 字节 `b8 34 12 cd 10 f4`（sha256 `b34a05a19ebb47d6d059488b8c9ceb350970e944c484e0df59423f5fc284ba97`） |
-| `/macro64.o` | 592 字节，ELF64 `REL`，含全局 `_start`；反汇编 `b8 3c 00 00 00 / bf 00 00 00 00 / 0f 05 / 90 90`（sha256 `4b00a318c7fc2c1771accb68ff6b6a530ddd0584550dd8d707c094ef7c5cf1ef`） |
+| `/hello.bin` | 6 字节 `b8 34 12 cd 10 f4`，sha256 `b34a05a19ebb47d6d059488b8c9ceb350970e944c484e0df59423f5fc284ba97` |
+| `/macro64.bin` | 14 字节 `b8 3c 00 00 00 bf 00 00 00 00 0f 05 90 90`，sha256 `478365ed0155027ded9785d090284fc972ab467d734d39725b1c144c70a7f2a7` |
+| `/macro64.o` | 592 字节，ELF64 `REL`，全局 `_start`；`b8 3c 00 00 00 / bf 00 00 00 00 / 0f 05 / 90 90`，sha256 `4b00a318c7fc2c1771accb68ff6b6a530ddd0584550dd8d707c094ef7c5cf1ef` |
 
 `hello.asm` 与 `macro64.asm` 是包内自带的样例（`src/ports/nasm/samples/`），因此这条
 验收不依赖仓库外的源文件。
 
 ## 未覆盖
 
-- NASM 自带 `test/` 套件未跑；`ndisasm` 未构建。
+- NASM 自带 `test/` 套件未跑。
 - 只测 xsh；dash 未测。
 - 未在官方 0.0.2-1103 发行盘上复验（原因见上）。
 - 未比较 `nasm.us` 官方归档哈希。
+- `ndisasm` 只对 `-f bin` 原始字节验证；不对 ELF 容器整体反汇编（那本来不是它的用途）。
 
 ## 复现
 

@@ -21,7 +21,20 @@
 | 包 sha256 | `94724be9428a9d835fe4ea6d9772be9db08c54f3f31a61af79269bcd4361c199` |
 | 载荷 | `usr/bin/lz4`、`usr/lib/liblz4.a`、`usr/share/lz4/include/*.h`、样例、两份许可、`source.json`、`build_receipt.json` |
 
-上游零补丁：只多编译端口侧 上游 `threadpool.c`（单线程构建下惰性线程池桩）。
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:b8909de64da3331081bb8c867cf025d8a5f72da433f4b8cfa73e03cb5e82490a -->
+
+上游零补丁：当前配方启用 `LZ4IO_MULTITHREAD=1`，编译上游 `threadpool.c`，
+链接线程 SDK；这是线程化 CLI 构建。
+
+证据复核：仓库只保存本 README，没有原始串口日志、安装回执或上述 XPK。
+下面历史记录同时出现 3960 → 391 字节和 3000 → 298 字节，不能视为同一次运行，
+也无法绑定到表中包哈希。以下内容保留供追溯，**不构成表中线程化包通过验证的证明**。
+需从表中哈希对应的包重新安装，保存包摘要、安装回执、完整命令与原始日志，
+并记录输入、压缩产物及解压产物的大小和摘要，才能补齐证据。
+
+<!-- /coderabbit-ai-generated:v1 -->
 客体 `/dev/null` 不存在，`lz4 -t` 因此失败（见“未覆盖 / 已知失败”）。
 
 ## 安装

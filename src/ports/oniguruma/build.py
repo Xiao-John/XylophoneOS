@@ -36,8 +36,6 @@ def run(command, cwd=None):
 def main():
     port = json.loads((HERE / "port.json").read_text())
     lock = json.loads((HERE / "source_lock.json").read_text())
-    sdk = need("XOS_SDK")
-    archive = need("XOS_SOURCE_ARCHIVE")
     out = need("XOS_OUT")
     out.mkdir(parents=True, exist_ok=True)
     output = out / f"{port['package']['id']}-{lock['version']}.xpk"
@@ -46,6 +44,21 @@ def main():
     output.unlink(missing_ok=True)
     receipt_output.unlink(missing_ok=True)
 
+    try:
+        build(port, lock, out, output)
+    except BaseException:
+        output.unlink(missing_ok=True)
+        receipt_output.unlink(missing_ok=True)
+        # The staging tree can contain a receipt written before packing failed.
+        tree = out / "tree"
+        if tree.exists():
+            shutil.rmtree(tree)
+        raise
+
+
+def build(port, lock, out, output):
+    sdk = need("XOS_SDK")
+    archive = need("XOS_SOURCE_ARCHIVE")
     if sha256(archive) != lock["sha256"]:
         raise SystemExit("ports/oniguruma: source archive hash differs from source_lock.json")
     sys.path.insert(0, str(HERE.parents[2] / "scripts"))

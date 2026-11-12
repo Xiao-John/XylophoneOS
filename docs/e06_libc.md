@@ -14,6 +14,10 @@
   见[SDK](e04_loader_sdk.md)、[Shell](implementation/shell.md)。当前FD不代表完整POSIX。
 - getentropy→sys63真实RDRAND接口；墙钟/gettimeofday→sys64，单调时间/睡眠走线程等待
   机制。输出大小、errno、不支持/硬件失败按各自契约；不以uptime或固定种子补安全接口。
+- 线程 SDK 可由公开归档重建：`newlib-4.6.0.20260123.tar.gz` 取自 sourceware
+  （sha256 `6ff27e3bf022666f43f7802255be680eeff722ac181b1725d21e2e8318604ee3`），
+  再跑 `build_threading_newlib.py` 与 `build_threading_sdk.py`。本机已用该 SDK 实测
+  lz4 `-T2`、zstd `-T2` 的压缩/解压在客体通过。
 - 普通 SDK 提供**单线程 pthread 子集**：`pthread_once`、TSS keys、mutex/cond/rwlock、
   `pthread_self/equal`、`sched_yield` 在单线程进程里语义正确；`pthread_create/join/detach`
   返回 `ENOSYS`。声明需要 POSIX feature 宏（`xos_app.py` 已带），真实多线程仍需线程 SDK。

@@ -3174,7 +3174,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                 current_thread->deadline_ns = request.deadline_ns;
                 current_thread->wait_kind = thread_wait_kind::ipc_v1_wait_set;
                 current_thread->state = thread_state::blocked;
-                frame->rax = 0; return nullptr;
+                frame->rax = 0; return schedule(frame);
             }
         }
         frame->rax = static_cast<u64>(result); return frame;
@@ -3287,7 +3287,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                 current_thread->deadline_ns = request.deadline_ns;
                 current_thread->wait_kind = thread_wait_kind::ipc_v1_notification;
                 current_thread->state = thread_state::blocked;
-                frame->rax = 0; return nullptr;
+                frame->rax = 0; return schedule(frame);
             }
         }
         frame->rax = static_cast<u64>(result); return frame;
@@ -3409,7 +3409,8 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                 } else if (ipc_v1_token_count(current->pid) >= ipc_v1_max_reply_tokens_per_process || !ipc_v1_next_reply_token) {
                     result = static_cast<i64>(ipc_v1_error::resources);
                 } else {
-                    call.state = ipc_v1_call_state::delivered; call.reply_token = ipc_v1_next_reply_token++;
+                    call.state = ipc_v1_call_state::delivered; call.receiver_pid = current->pid;
+                    call.reply_token = ipc_v1_next_reply_token++;
                     request.message_length_out = call.payload_length; request.label_out = call.label;
                     request.badge_out = call.badge; request.reply_token_out = call.reply_token;
                     copy_to_user(address, &request, sizeof(request));

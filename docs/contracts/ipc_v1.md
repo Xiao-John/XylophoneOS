@@ -80,7 +80,7 @@ capacity 时，`buffer_too_small` 返回 server，token 仍归 server 持有以�
 | message label / badge / handle / reply token | 独立 `u64`；label/badge 是数据，handle/token 是 opaque 值 |
 | payload | 0–256 字节；label 不计入 payload 上限；空 payload 合法，不携带 cap/fd/pointer |
 | quota | 系统 32 个 open endpoint、16 个 grant、64 个 grant mapping；每进程 8 个有效 IPC handle、65536 个用户页；系统 32 个 queued/delivered call；每 endpoint 最多 8 个 queued call；每 receiver 8 个未消费 reply token；单 grant 最多 64 页 |
-| handle/token | 内核在一次启动期间分别单调递增、不回绕、不复用；编号耗尽返回 `resources` |
+| handle/token | 新分配的 handle 值在一次启动期间单调递增、不回绕、不复用；grant delegate 为目标安装与源句柄相同的值（目标已持有该值时返回 `resources`），同值记录按持有进程区分，handle 操作须同时匹配值与持有进程；编号耗尽返回 `resources` |
 | deadline | 单调绝对纳秒；0=只尝试当前可配对路径，不排队（无配对则 `would_block`）；`UINT64_MAX`=无限；就绪先于超时判定 |
 | FIFO | endpoint 内按成功入队次序交付；不承诺跨 endpoint 顺序、优先级或跨 endpoint 公平性 |
 
@@ -117,8 +117,11 @@ reply 成功消费 token 后置 bit0；后续 receive 失败仍报告该位，�
 ## IP3 通知、wait set 与慢路径
 
 IP3 的 action 数值与请求布局已在共享头登记（8–18），SDK 提供对应薄封装。通知与 wait set
-均已有 x86-64 慢路径；PR #111 的补验已通过（`tests/ipc_v1_guest.py` runs=3，资源基线守恒），feature query 的 supported mask
-与两个 manifest 仍为空，保持验收结果与 feature 宣告分离。ABI/内核代码存在不表示已支持。通知与 wait set 的固定限制为系统各
+均已有 x86-64 慢路径；PR #111 的补验已通过（`tests/ipc_v1_guest.py` runs=3，资源基线守恒），
+随后四个 feature（`endpoint_call_v1`、`deadline_v1`、`notification_v1`、`wait_set_v1`）由 query
+与两个 manifest 一并开放（supported mask `0x0f`）；`bulk_grant_v1` 仍关闭，待 IP4 验收。
+验收结果与 feature 宣告分离的原则保持：未验收的 feature 不得因代码存在而宣告支持。通知与
+wait set 的固定限制为系统各
 32 个对象、每个 wait set 最多 8 个 source；对象 handle 仍计入每进程 8 个 handle 总额度。
 
 | action | 值 | 请求结构 | 字节数 |
@@ -175,7 +178,8 @@ IP1 将 handle 绑定到进程主体，不绑定可用户自报的 PID。创建 
 endpoint_create 的 rights 必须是已知权利位的非零子集；调用者只能持有所请求的权利。
 delegate 只可删减现有 rights，指定存活 target PID 与
 u64 badge，并为目标生成新 handle。target PID 仅标识被授予者，不构成授权证明；只有拥有
-派生 handle 的主体才能使用它。handle 在本次启动期单调唯一、不重用；目标进程 exit、
+派生 handle 的主体才能使用它。新分配的 handle 值在本次启动期单调唯一、不重用；grant
+delegate 安装的同值记录按持有进程区分，操作须同时匹配值与持有进程。目标进程 exit、
 fault 或成功 exec 后其 handles 与持有的 reply tokens 撤销，fork 不继承，failed exec 不变。
 endpoint 最后一个 receive 权利撤销时立即关闭：未交付 calls 返回 closed，已交付 calls
 置结果未知并撤销 token。manage holder 关闭 endpoint 时所有 handle 失效，未交付请求不再

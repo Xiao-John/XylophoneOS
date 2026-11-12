@@ -52,6 +52,16 @@ int child_mode(u64 handle, u64 address) {
     return 0;
 }
 
+int child_read_only_mode(u64 handle, u64 address) {
+    u64 map_id = 0, length = 0;
+    const i64 result = ipc_v1::grant_map(handle, address, ipc_v1_grant_access::read_write, map_id, length);
+    if (result != static_cast<i64>(ipc_v1_error::denied)) {
+        fail("child-read-write-denied", result); return 14;
+    }
+    printf("[ipc-v1-grant] child-read-only-denied PASS\n");
+    return 0;
+}
+
 bool cross_process_share_and_exit() {
     u64 source[1024]{};
     source[0] = 0x1020304050607080ull;
@@ -85,6 +95,35 @@ bool cross_process_share_and_exit() {
     if (ipc_v1::grant_unmap(handle, map_id) != 0 || ipc_v1::grant_close(handle) != 0) {
         fail("cross-process-cleanup"); return false;
     }
+    // Rights reduction: a read-only delegate must refuse a read-write map in
+    // the child. Same-value delegation lets argv carry the source value.
+    u64 ro_source[1024]{};
+    ro_source[0] = 0x1122334455667788ull;
+    u64 ro_handle = 0, ro_length = 0;
+    if (ipc_v1::grant_create(reinterpret_cast<u64>(ro_source), sizeof(ro_source),
+                             grant_rights, ro_handle, ro_length) != 0) {
+        fail("create-read-only"); return false;
+    }
+    char ro_handle_text[32]{}, ro_address_text[32]{};
+    snprintf(ro_handle_text, sizeof(ro_handle_text), "%llu", static_cast<unsigned long long>(ro_handle));
+    constexpr u64 ro_child_address = grant_arena + 0x300000;
+    snprintf(ro_address_text, sizeof(ro_address_text), "%llu", static_cast<unsigned long long>(ro_child_address));
+    const char* ro_args[] = {"childro", ro_handle_text, ro_address_text};
+    const i64 ro_child = sdk::spawn_file("/bin/ipc_v1_grant_probe.elf", 3, ro_args);
+    if (ro_child <= 0) {
+        fail("spawn-childro", ro_child); (void)ipc_v1::grant_close(ro_handle); return false;
+    }
+    u64 ro_out = 0;
+    if (ipc_v1::grant_delegate(ro_handle, static_cast<u64>(ro_child),
+            static_cast<u32>(ipc_v1_grant_right::read_mapping), ro_out) != 0 || ro_out != ro_handle) {
+        fail("delegate-read-only"); (void)ipc_v1::grant_close(ro_handle); return false;
+    }
+    process_status ro_status{};
+    if (sdk::wait(static_cast<u64>(ro_child), ro_status) != 0 ||
+        ro_status.outcome != process_outcome::exited || ro_status.code != 0) {
+        fail("wait-childro", ro_status.code); (void)ipc_v1::grant_close(ro_handle); return false;
+    }
+    if (ipc_v1::grant_close(ro_handle) != 0) { fail("cleanup-read-only"); return false; }
     return true;
 }
 
@@ -122,6 +161,15 @@ bool pinned_revoke_is_busy() {
     if (ipc_v1::notification_create(ipc_v1_notification_right_all, notification) != 0) {
         fail("pin-notification-create"); (void)ipc_v1::grant_close(grant); return false;
     }
+    // notification_signal ORs the handle's badge into pending_bits; the
+    // creator's own handle carries badge0, so it would leave bits untouched.
+    // Self-delegation mints a new handle value with badge1 and signal rights.
+    u64 signal_handle = 0;
+    if (ipc_v1::notification_delegate(notification, own_pid(), 1,
+            static_cast<u32>(ipc_v1_notification_right::signal), signal_handle) != 0 || !signal_handle) {
+        fail("pin-signal-delegate"); (void)ipc_v1::notification_close(notification);
+        (void)ipc_v1::grant_close(grant); return false;
+    }
     const u64 values[] = {notification, address};
     pin_wait_result = 0; __atomic_store_n(&pin_wait_entered, 0u, __ATOMIC_RELEASE);
     pthread_t waiter{};
@@ -134,7 +182,7 @@ bool pinned_revoke_is_busy() {
     if (ipc_v1::grant_close(grant) != static_cast<i64>(ipc_v1_error::busy)) {
         fail("pinned-close-busy"); return false;
     }
-    if (ipc_v1::notification_signal(notification) != 0 || pthread_join(waiter, nullptr) != 0 ||
+    if (ipc_v1::notification_signal(signal_handle) != 0 || pthread_join(waiter, nullptr) != 0 ||
         pin_wait_result != 0 || reinterpret_cast<ipc_v1_notification_wait*>(address)->bits_out != 1) {
         fail("pinned-wait-wakeup", pin_wait_result); return false;
     }
@@ -184,7 +232,9 @@ bool mapping_quota_and_aliases() {
         fail("alias-map-or-snapshot"); (void)ipc_v1::grant_close(handle); return false;
     }
     reinterpret_cast<volatile u64*>(a)[600] = shared_marker;
-    if (reinterpret_cast<volatile u64*>(b)[600] != shared_marker) { fail("same-process-shared-alias"); }
+    if (reinterpret_cast<volatile u64*>(b)[600] != shared_marker) {
+        fail("same-process-shared-alias"); (void)ipc_v1::grant_close(handle); return false;
+    }
     u64 duplicate_handle = 0;
     if (ipc_v1::grant_delegate(handle, own_pid(), static_cast<u32>(ipc_v1_grant_right::read_mapping), duplicate_handle) !=
             static_cast<i64>(ipc_v1_error::resources) ||
@@ -209,6 +259,16 @@ bool mapping_quota_and_aliases() {
         fail("mapping-quota"); (void)ipc_v1::grant_close(handle); return false;
     }
     if (ipc_v1::grant_close(handle) != 0) { fail("close-all-maps"); return false; }
+    // Closing must release both the quota mappings' pages and their
+    // reservation: a fresh grant has to map at one of those addresses again.
+    u64 reuse_handle = 0, reuse_length = 0, reuse_id = 0;
+    if (ipc_v1::grant_create(0, 4096, grant_rights, reuse_handle, reuse_length) != 0) {
+        fail("reuse-create"); return false;
+    }
+    const bool reused = ipc_v1::grant_map(reuse_handle, grant_arena + 0x800000,
+        ipc_v1_grant_access::read, reuse_id, reuse_length) == 0;
+    const i64 reuse_close = ipc_v1::grant_close(reuse_handle);
+    if (!reused || reuse_close != 0) { fail("close-releases-reservation", reuse_close); return false; }
     return ipc_v1::grant_unmap(handle, third) == static_cast<i64>(ipc_v1_error::invalid_handle);
 }
 
@@ -223,13 +283,18 @@ int main(int argc, char** argv) {
     if (argv) {
         for (int i = 0; i + 2 < argc; ++i) {
             if (argv[i] && argv[i][0] == 'c') {
+                if (argv[i][4] == 'd' && argv[i][5] == 'r') {
+                    return child_read_only_mode(parse_u64(argv[i + 1]), parse_u64(argv[i + 2]));
+                }
                 return child_mode(parse_u64(argv[i + 1]), parse_u64(argv[i + 2]));
             }
         }
     }
     ipc_v1_feature_query query{};
-    if (ipc_v1::query_features(query) != 0 || query.supported_features != 0) {
-        fail("feature-remains-unsupported"); return 1;
+    // Post-#114 main: the four guest-qualified features are supported (0x0f);
+    // bulk_grant_v1 must stay clear until this PR's owner acceptance passes.
+    if (ipc_v1::query_features(query) != 0 || query.supported_features != 0x0f) {
+        fail("feature-mask"); return 1;
     }
     if (!cross_process_share_and_exit() || !mapping_quota_and_aliases() ||
         !pinned_revoke_is_busy() || !map_close_races()) { return 1; }

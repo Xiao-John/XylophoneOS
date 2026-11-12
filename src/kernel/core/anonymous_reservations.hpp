@@ -52,6 +52,22 @@ public:
         }
         return false;
     }
+    // True when unmapping [begin,end) would split a strictly containing
+    // interval and therefore needs a spare fragment slot.
+    bool needs_split(u64 begin, u64 length) const {
+        if (!interval(begin, length)) return false;
+        const u64 end = begin + length;
+        for (u32 i = 0; i < count_; ++i) {
+            if (regions_[i].begin < begin && regions_[i].end > end) return true;
+        }
+        return false;
+    }
+    // Preflight for unmap(): with the caller serialized against other VM
+    // mutations, a true result guarantees unmap() succeeds without touching
+    // any state first.
+    bool can_unmap(u64 begin, u64 length) const {
+        return interval(begin, length) && !(count_ == max_fragments && needs_split(begin, length));
+    }
     void clear() { count_=0; bytes_=0; }
     i64 reserve(u64 hint, u64 length, u64 alignment, bool exact) {
         if (!valid_reserve(hint,length,alignment,exact)) return invalid;

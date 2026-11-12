@@ -2593,6 +2593,17 @@ void ipc_v1_remove_grant_mapping(u32 mapping_slot) {
     const auto mapping = ipc_v1_grant_mappings[mapping_slot];
     process_record* owner = task_by_pid(mapping.holder_pid);
     if (owner == nullptr || owner->cr3 == 0) { halt(); }
+    const u32 owner_index = task_index(owner);
+    auto& regions = vm1_probe_regions[owner_index];
+    const u64 length = u64{mapping.page_count} * page_size;
+    // Preflight before any page-table or grant-page change: on a full
+    // fragment table with this range strictly inside one interval, unmap()
+    // reports resources. Live callers (grant_unmap/grant_close) preflight and
+    // return that recoverable error before reaching here; only a dying task
+    // (exit/exec) can arrive with the preflight false, and its table is
+    // cleared on death - keep the interval and continue the removal rather
+    // than panicking on a capacity condition.
+    const bool release_reservation = regions.can_unmap(mapping.address, length);
     for (u32 page = 0; page < mapping.page_count; ++page) {
         const u64 address = mapping.address + u64{page} * page_size;
         u64 physical = 0;
@@ -2604,8 +2615,7 @@ void ipc_v1_remove_grant_mapping(u32 mapping_slot) {
         --owner->user_pages;
         vm_prune_empty_page_tables_in(owner->cr3, address);
     }
-    const u32 owner_index = task_index(owner);
-    if (vm1_probe_regions[owner_index].unmap(mapping.address, u64{mapping.page_count} * page_size) != 0) { halt(); }
+    if (release_reservation) { (void)regions.unmap(mapping.address, length); }
     ipc_v1_grant_mappings[mapping_slot] = ipc_v1_grant_mapping_record{};
 }
 
@@ -3293,7 +3303,12 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                                 release_user_page(physical) != memory_result::none) { halt(); }
                             vm_prune_empty_page_tables_in(current->cr3, request.address + u64{i} * page_size);
                         }
-                        if (vm1_probe_regions[static_cast<u32>(current - tasks)].unmap(request.address, rounded) != 0) { halt(); }
+                        // unmap() preflights the split capacity before
+                        // mutating anything: on the impossible-full path it
+                        // returns resources and keeps the interval (cleared
+                        // with the task), so a capacity condition never
+                        // becomes a kernel halt.
+                        (void)vm1_probe_regions[static_cast<u32>(current - tasks)].unmap(request.address, rounded);
                         result = static_cast<i64>(ipc_v1_error::resources);
                     } else {
                         current->user_pages += page_count;
@@ -3332,6 +3347,10 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                 const auto mapping = ipc_v1_grant_mappings[found];
                 if (pinned_range(current, mapping.address, mapping.address + u64{mapping.page_count} * page_size)) {
                     result = static_cast<i64>(ipc_v1_error::busy);
+                } else if (!vm1_probe_regions[static_cast<u32>(current - tasks)].can_unmap(
+                               mapping.address, u64{mapping.page_count} * page_size)) {
+                    // Recoverable capacity error before any state changes.
+                    result = static_cast<i64>(ipc_v1_error::resources);
                 } else { ipc_v1_remove_grant_mapping(found); result = 0; }
             }
         }
@@ -3352,14 +3371,23 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
         else {
             const u32 slot = handle->object_slot;
             bool busy = false;
+            bool reservation_full = false;
             for (const auto& mapping : ipc_v1_grant_mappings) {
                 if (!mapping.used || mapping.grant_slot != slot) { continue; }
                 process_record* owner = task_by_pid(mapping.holder_pid);
                 if (owner && pinned_range(owner, mapping.address, mapping.address + u64{mapping.page_count} * page_size)) {
                     busy = true; break;
                 }
+                // Same no-effects contract as the pin preflight: a full
+                // fragment table that cannot split must surface as a
+                // recoverable error, not a later halt during removal.
+                if (owner && !vm1_probe_regions[static_cast<u32>(owner - tasks)].can_unmap(
+                        mapping.address, u64{mapping.page_count} * page_size)) {
+                    reservation_full = true;
+                }
             }
             if (busy) { result = static_cast<i64>(ipc_v1_error::busy); }
+            else if (reservation_full) { result = static_cast<i64>(ipc_v1_error::resources); }
             else { ipc_v1_destroy_grant(slot); result = 0; }
         }
         frame->rax = static_cast<u64>(result); return frame;

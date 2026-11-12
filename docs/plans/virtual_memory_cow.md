@@ -1,9 +1,12 @@
 # 虚拟内存与 COW fork 实施路线
 
-2026-11-09。VM0受限底座已实现并定向验证，见[VM0工作记录](../work_log/0201_vm0_page_ownership.md)；VM1以专用探针完成受限验收，VM2页面操作已在专用探针中实现并完成受限客体验收；VM3及后续仍为计划。不修改宪法，不开放多线程 fork。
+2026-11-12 更新。VM0–VM3 已实现，VM3 的 SDK 能力仍为 `implemented_unqualified`，
+其 V1–V7 正式资格尚未完成，见[VM3 恢复记录](../work_log/58b24599_vm3_lifecycle_sdk.md)。
+COW0 已冻结[契约与失败矩阵](../contracts/cow0.md)，COW1–COW3 尚未实现；不修改宪法，
+不开放多线程 fork。下文历史基线描述仅供追溯，当前审计以 COW0 为准。
 现有匿名 VM 契约仍为主依据：
 [已合入的 PX4-A 提案](https://github.com/Xiao-John/XylophoneOS/blob/d57ff0e4674d297c6d4e1e20e3ba16a76dec3d57/docs/contracts/anonymous_vm.md)。
-该登记认领 sys67，不表示公开实现；VM1专用探针不作为公共ABI分配。
+sys67 已实现但尚未资格认证；VM1 专用探针诊断不作为公共 ABI 分配。
 不另分配 COW syscall，沿用既有 fork prepare/commit/abort 的用户态协议。
 
 ## 已核源码与真实缺口
@@ -13,7 +16,7 @@
 tasks.cpp::prepare_fork 只允许普通单线程主线程，并在准备完成及文件描述继承确认后
 commit 才使子进程可运行。保留该授权/文件协议及失败回滚，不把 fork 改成隐式 spawn。
 copy_to_user 当前是原始虚拟地址 copy_bytes；user_range_ok(write) 要求硬件 RW。
-物理分配器没有共享用户页引用计数。直接清 PTE.RW 会使合法 copyout 被拒绝，或在
+当时物理分配器没有共享用户页引用计数；当前 VM0 已具备用户页引用计数。直接清 PTE.RW 会使合法 copyout 被拒绝，或在
 ring0 写保护故障中 panic；只添加用户 page fault 分支不足以实现 COW。
 
 ## 设计边界
@@ -37,7 +40,7 @@ NONE 但保留内容的已提交页不能因 PTE 不 present 被遗失。每进�
 | VM1 匿名保留（专用探针受限通过） | 按既有 sys67 wire、16–32TiB arena/256片段及预算实现 reserve/unmap；稀疏元数据，不按保留字节分配页表 | V1/V3 的保留、溢出、碰撞、分裂、洞、退出与页表计数 |
 | VM2 提交与保护（专用探针受限通过） | commit/protect/NONE/decommit、W^X、跨页 copyin/out；32页有界续体；pin 与进程关闭仲裁 | V2/V4/V5；真实 fault、事务回滚、等待输出 pin、kill 清理，不能以宿主测试代替 |
 | VM3 生命周期与 SDK | eager fork 复制全部 VMA及隐藏提交页；exec原子替换；两类SDK与libc子集；不提前公布 supported | V6/V7，完成既有 V1–V7 后认领受限匿名VM |
-| COW0 契约冻结 | 页引用/逻辑权限、copyout、fork失败原子性、OOM及统计冻结；保留 eager 对照 profile | 源码路径清单与故障矩阵可独立评审，无新公共ABI |
+| COW0 契约冻结（已完成文档） | 页引用/逻辑权限、copyout、fork失败原子性、OOM及统计冻结；规定后续保留 eager 对照 profile | [源码路径清单与故障矩阵](../contracts/cow0.md)可独立评审，无新公共 ABI；本阶段不实现 profile |
 | COW1 fork 快照 | 子页表独立；私有可写页共享并撤硬件写权；只读页共享；父TLB同步；复制VMA | 父子双向隔离、跨页、TLS/栈/堆/匿名/NONE内容、孙代、父先退出 |
 | COW2 所有写入路径 | 用户保护故障与内核copyout共用分离机制，wait_word/输出pin策略落实 | 用户写、pipe/file/read、IPC recv、random、wait/join等逐路径验证；非法写仍异常 |
 | COW3 资格 | 全失败回滚、exec/退出/kill、共享映射扩展规则、受影响应用及资源性能对照 | eager与COW内容/权限/errno等价，真实物理节省与耗时单独报告 |

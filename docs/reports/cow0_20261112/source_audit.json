@@ -1,0 +1,437 @@
+{
+  "baseline_commit": "9c51eb46e321e0f2aee7837b00e90d5733ad9cfb",
+  "scope": "lexical kernel user-copy and physical-write candidates; manual review required",
+  "files_sha256": {
+    "src/kernel/arch/x86_64/display_tasks.inc": "de1d146369619c5b9c55c99ce433915db2f6f75dd94b31b49b7e1417934f6bb1",
+    "src/kernel/arch/x86_64/exceptions.cpp": "2a6f09685b5f4415a2faf955c9a7fdb34475e681aeef3242296e9ecb0fb57c23",
+    "src/kernel/arch/x86_64/paging.cpp": "7da30b721810a726f0d9af5fe441acf81003c2cc56b8250d62dd50824591fbb6",
+    "src/kernel/arch/x86_64/tasks.cpp": "ae26835b602c4c9ea82a1499bb4c676f5d7d515063e5b2a5d41650745110345c",
+    "src/kernel/core/anonymous_reservations.hpp": "8f520fdb4dd626ee2c4e671fd2e956e55dee84f14fe5791c1c3b7e054f51d4f5",
+    "src/kernel/core/memory.cpp": "ceda7aa24fb63c6efbf15d8b250be8319d9c03db594bd8bcca4831c41d7f034d",
+    "src/kernel/core/self_check.cpp": "e2ede95538d04d08e93a98feb1f9a4c856c495fb1853c7eb7299908f79f99ddf",
+    "src/kernel/core/vm_continuation.hpp": "6c9168b0d9141b55a73ce57d53cae9d8424740bc401a715febc39b29011dfe9e",
+    "src/kernel/core/vm_pin.hpp": "5f92b350bd19588a94be653b30c388b4c1702dd326c54b62d58d2d74d9ddcdda",
+    "src/kernel/include/xos/memory.hpp": "00e2fa7c6cf6a98be712c7f3416dc610e09ae368cfbb990249df09f261b2e327",
+    "src/shared/include/xos/ipc_v1_abi.hpp": "93f1e6e51f28c7a39e503b59be8dc7bff64b8d5646c253e489ff259ed71257b4",
+    "src/shared/include/xos/process_abi.hpp": "c3112a3c91e8fed96efa7f5557a763659c1de2f87a2cf2e1d2f2493cd1198ae9",
+    "src/shared/include/xos/thread_abi.hpp": "2dc12676cebf56d6f16b682e52f35fa14dd21f0a2ea94525115f33bc8d576585"
+  },
+  "sites": [
+    {
+      "path": "src/kernel/arch/x86_64/display_tasks.inc",
+      "line": 73,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "const auto mode=display::mode();copy_to_user(second,&mode,sizeof(mode));result=0;break;"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/display_tasks.inc",
+      "line": 109,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(second,&channel,sizeof(channel));display_wake(0,0);result=0;break;"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/display_tasks.inc",
+      "line": 117,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(second,&channel,sizeof(channel));result=0;break;"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/display_tasks.inc",
+      "line": 145,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(second,&event,sizeof(event));result=0;break;"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/paging.cpp",
+      "line": 415,
+      "kinds": [
+        "physical_direct_candidate"
+      ],
+      "text": "auto* output=reinterpret_cast<u64*>(physical);"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 624,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(destination, bytes, length);"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 757,
+      "kinds": [
+        "physical_direct_candidate"
+      ],
+      "text": "if (size != 0) { copy_bytes(reinterpret_cast<u8*>(physical) + offset, bytes, size); }"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 1045,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(address, endpoint->data, endpoint->length);"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 1069,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(address + i, &pipe.data[offset], 1);"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 1114,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(address, &byte, 1);"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 1339,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(thread->ipc_v1_request_address, &request, sizeof(request));"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 1342,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(thread->ipc_v1_reply_address, thread->ipc_v1_payload, thread->ipc_v1_length);"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 1367,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(thread->ipc_v1_request_address, &request, sizeof(request));"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 1376,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(thread->ipc_v1_request_address, &request, sizeof(request));"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 1379,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(thread->ipc_v1_payload_address, thread->ipc_v1_payload, thread->ipc_v1_length);"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 1395,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(thread->wait_buffer, &item->status, sizeof(process_status));"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 1848,
+      "kinds": [
+        "physical_direct_candidate"
+      ],
+      "text": "copy_bytes(reinterpret_cast<void*>(physical + (address & (page_size - 1))),"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 1987,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(second, &reservation, sizeof(reservation));"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 2024,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(first, &info, sizeof(info)); result = 0; break;"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 2074,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(second, &target->result, sizeof(u64)); *target = thread_record{}; result = 0; break;"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 2140,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(first, &stats, sizeof(stats)); result = 0; break;"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 2541,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(address, &query, sizeof(query)); result = 0;"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 2574,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(address, &request, sizeof(request)); result = 0;"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 2606,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "} else { request.handle_out = ipc_v1_handles[slot].value; copy_to_user(address, &request, sizeof(request)); result = 0; }"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 2668,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(address, &request, sizeof(request)); result = static_cast<i64>(ipc_v1_error::timeout);"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 2737,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "request.message_length_out = call.payload_length; copy_to_user(address, &request, sizeof(request));"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 2745,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(address, &request, sizeof(request));"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 2746,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "if (call.payload_length) copy_to_user(request.buffer, call.payload, call.payload_length);"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 2813,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(address, &request, sizeof(request));"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 2848,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(address, &request, sizeof(request));"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 2849,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "if (call.payload_length) copy_to_user(request.receive_buffer, call.payload, call.payload_length);"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 3119,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(second, &request, sizeof(request));"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 3158,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(third, &info, sizeof(info)); result = 0; break;"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 3253,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(second, &admission_guard, sizeof(admission_guard)); result = 0; break;"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 3507,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(second, boot_payload + first, length);"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 3562,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(second, &info, sizeof(info)); result = 0;"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 3570,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(request.destination, image.bytes + request.offset, length);"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 3817,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(first, &handles, sizeof(handles));"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 3910,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(second, &info, sizeof(info));"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 3972,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(second, &item->status, sizeof(process_status));"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 4000,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(first, &status, sizeof(status)); result = 0;"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 4006,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(first, values, sizeof(values)); result = 0;"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 4024,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(third, &channel, sizeof(channel));"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 4055,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(third, &peer, sizeof(peer));"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 4150,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(third, &client_channel, sizeof(client_channel));"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 4160,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(second, &connection.service_channel, sizeof(ipc_channel));"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 4201,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(address, block_buffer, bytes);"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 4214,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(first, &sectors, sizeof(sectors)); result = 0;"
+    },
+    {
+      "path": "src/kernel/arch/x86_64/tasks.cpp",
+      "line": 4329,
+      "kinds": [
+        "copy_to_user"
+      ],
+      "text": "copy_to_user(address, buffer, used);"
+    },
+    {
+      "path": "src/kernel/core/self_check.cpp",
+      "line": 70,
+      "kinds": [
+        "physical_direct_candidate"
+      ],
+      "text": "if (ok) { owned=true; *reinterpret_cast<u64*>(physical)=check_pattern; }"
+    },
+    {
+      "path": "src/kernel/core/self_check.cpp",
+      "line": 102,
+      "kinds": [
+        "physical_direct_candidate"
+      ],
+      "text": "*reinterpret_cast<u64*>(physical)=check_pattern+i;"
+    },
+    {
+      "path": "src/kernel/core/self_check.cpp",
+      "line": 148,
+      "kinds": [
+        "physical_direct_candidate"
+      ],
+      "text": "*reinterpret_cast<u64*>(physical) = check_pattern;"
+    }
+  ]
+}

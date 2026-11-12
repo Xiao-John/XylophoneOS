@@ -14,6 +14,9 @@
   见[SDK](e04_loader_sdk.md)、[Shell](implementation/shell.md)。当前FD不代表完整POSIX。
 - getentropy→sys63真实RDRAND接口；墙钟/gettimeofday→sys64，单调时间/睡眠走线程等待
   机制。输出大小、errno、不支持/硬件失败按各自契约；不以uptime或固定种子补安全接口。
+- 普通 SDK 提供**单线程 pthread 子集**：`pthread_once`、TSS keys、mutex/cond/rwlock、
+  `pthread_self/equal`、`sched_yield` 在单线程进程里语义正确；`pthread_create/join/detach`
+  返回 `ENOSYS`。声明需要 POSIX feature 宏（`xos_app.py` 已带），真实多线程仍需线程 SDK。
 - `times()`/`clock()` 用单调时基（1000 tick/秒，非线程 CPU 计时）；C11 `timespec_get`
   走 sys64 纳秒。`utime`/`chmod`/`chown` 已提供可链接符号但返回 `ENOSYS`——文件服务
   尚无时间戳/权限/所有权写 ABI，不伪造成功。`clock_gettime`/POSIX timers 的头文件

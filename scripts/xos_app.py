@@ -118,7 +118,11 @@ def build(project, sdk, profile):
     os.close(fd)
     temporary = Path(temporary)
     cmd = [resolved, '-O2', '-mno-red-zone', '-fno-pie', '-fno-pic', '-fno-stack-protector',
-           '-ftls-model=local-exec', '-idirafter', str(sdk / 'include'), '-I', str(project / 'src')]
+           '-ftls-model=local-exec', '-idirafter', str(sdk / 'include'), '-I', str(project / 'src'),
+           # The ordinary SDK ships a single-thread pthread subset; these POSIX
+           # feature macros make its declarations visible to user programs.
+           '-D_POSIX_THREADS=1', '-D_POSIX_READER_WRITER_LOCKS=200809L',
+           '-D_UNIX98_THREAD_MUTEX_ATTRIBUTES=1']
     if value['language'] == 'cpp':
         cmd += ['-std=gnu++17', '-nostdinc++', '-fuse-cxa-atexit']
         for name in ('', '/x86_64-unknown-elf', '/backward'):

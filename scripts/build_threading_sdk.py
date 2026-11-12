@@ -151,7 +151,8 @@ def main():
              '-fno-pic', '-fno-pie', '-mno-red-zone', '-march=x86-64', '-mcmodel=small',
              '-ftls-model=local-exec', '-DXOS_THREADED_RUNTIME', '-nostdinc++',
              '-I' + str(output / 'include'), '-I' + str(ROOT / 'src/user/threading')]
-    sources = [*sorted((ROOT / 'src/user/libc').glob('*.cpp')),
+    sources = [*sorted(p for p in (ROOT / 'src/user/libc').glob('*.cpp')
+                        if p.name != 'pthread_single.cpp'),
                ROOT / 'src/user/sdk/file_client.cpp', ROOT / 'src/user/sdk/text.cpp',
                ROOT / 'src/user/sdk/terminal_client.cpp',
                ROOT / 'src/user/arch/x86_64/syscall.cpp', ROOT / 'src/user/arch/x86_64/tls.cpp',

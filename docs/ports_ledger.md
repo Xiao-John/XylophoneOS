@@ -23,6 +23,9 @@
 | PL-0008 | 2026-11-12 | jq | libc 缺 `dirname`、`realpath`、`pathconf`，jq 链接失败 | 在 libc 实现三者（`realpath` 复用 `resolve_path`） | 本组本地工作区已改，未提交 | fixed |
 | PL-0009 | 2026-11-12 | jq | 普通 profile 无 pthread 运行时，jq 的 hash seed 与 decNumber TSD 需要 `pthread_once`/key | 保持普通 profile 单线程语义，不伪造 pthread；端口侧单线程桩 | 端口 `compat/pthread_single_thread.c`（与 lz4 的线程池桩同类） | wontfix |
 
+| PL-0010 | 2026-11-12 | jq/lz4/zstd | 普通 SDK 完全没有 pthread 符号，端口各自带桩 | 默认 SDK 加单线程安全子集（once/TSS/mutex/cond/rwlock，create 返回 ENOSYS），并让 `xos_app.py` 打开 POSIX feature 宏 | `src/user/libc/pthread_single.cpp`；jq 已删桩 | fixed |
+| PL-0011 | 2026-11-12 | lz4/zstd | 真实多线程（`-T`）仍不可用于包：threaded profile 不存在，且线程 SDK 需要 SHA 固定的 newlib 源（`6ff27e3b…`，本地与公开镜像都没有） | 拿到该 newlib 归档后跑 `build_threading_newlib.py` + `build_threading_sdk.py`，登记 threaded profile，再把 lz4/zstd 的 `-T` 打开 | 大项，攒批开 issue | open |
+
 ## 登记规则
 
 1. 判定标准：不是端口自己的问题（上游代码、打包、许可都排除），而是 XOS 的 libc、

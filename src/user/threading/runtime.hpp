@@ -9,6 +9,7 @@ struct xos_thread_control {
     void* argument;
     _reent reent;
     void* once_active;
+    char name[16];
     bool cleanup_started;
     struct { void* value; unsigned generation; } keys[PTHREAD_KEYS_MAX];
 };

@@ -62,13 +62,15 @@ def main():
     if machine != "x86_64-elf":
         raise SystemExit(f"ports/nasm: compiler targets {machine}, expected x86_64-elf")
 
+    libgcc = subprocess.check_output([compiler, "-print-libgcc-file-name"], text=True).strip()
+    loader = sdk / "lib/libxos_loader.a"
     env = dict(os.environ)
     env["CC"] = compiler
     run(["./configure", "--host=x86_64-elf", f"--build={os.uname().machine}-apple-darwin",
          f"CFLAGS=-O2 -mno-red-zone -fno-pie -fno-pic -fno-stack-protector -idirafter {sdk}/include",
          f"LDFLAGS=-nostdlib -static -no-pie -T {sdk}/user.ld {sdk}/crt0_posix.o",
          f"LIBS=-Wl,--start-group {sdk}/lib/libxos.a {sdk}/lib/libxos_loader.a "
-         f"{sdk}/lib/libc.a {sdk}/lib/libm.a {sdk}/cpp/lib/libgcc.a -Wl,--end-group"],
+         f"{sdk}/lib/libc.a {sdk}/lib/libm.a {libgcc} -Wl,--end-group"],
         cwd=source, env=env)
     run(["make", "-j4", "nasm", "ndisasm"], cwd=source, env=env)
 
@@ -129,7 +131,10 @@ def main():
     receipt_path = share / "build_receipt.json"
     receipt_path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
 
-    sys.path.insert(0, str(sdk / "tools"))
+    for candidate in (sdk / "tools", HERE.parents[2] / "scripts"):
+        if (candidate / "xypm_format.py").is_file():
+            sys.path.insert(0, str(candidate))
+            break
     import xypm_format  # noqa: E402
 
     files = []

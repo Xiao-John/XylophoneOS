@@ -21,7 +21,7 @@
 | 项 | 值 |
 |---|---|
 | 包 | `thirdparty.nasm-2.16.03.xpk`，2,805,760 字节（由 `src/ports/nasm/build.py` 直接产出） |
-| 包 sha256 | `ba17988aeb9d690e0b0ce2bbefa55e41f3d7af9b228f96832128e4ca9dfa7356` |
+| 包 sha256 | `aea6def2decb6dedfa74cbe30404c87a5f86a83823c9889668d78623e84240b0` |
 | 载荷 | `usr/bin/nasm`（1,716,416 B）、`usr/bin/ndisasm`（1,068,768 B）、`usr/share/licenses/thirdparty.nasm/LICENSE`、`usr/share/nasm/{source.json,build_receipt.json,hello.asm,macro64.asm}` |
 | ELF 形态 | 两者都是静态 `EXEC`，入口 `0x40000000`，无 `INTERP`，3 段 LOAD + TLS |
 | 宿主校验 | `xypm.py verify` = `verified_integrity_only` / `profile_checked` |
@@ -80,10 +80,32 @@ xsh> exec-file /usr/bin/nasm -h
 `hello.asm` 与 `macro64.asm` 是包内自带的样例（`src/ports/nasm/samples/`），因此这条
 验收不依赖仓库外的源文件。
 
+## dash 路径（原始输出）
+
+`/tests/nasm_dash.sh`：
+
+```sh
+/usr/bin/nasm -v
+/usr/bin/nasm -f bin /usr/share/nasm/hello.asm -o /hello_dash.bin
+/usr/bin/ndisasm -b 16 /hello_dash.bin
+/usr/bin/nasm -f elf64 /usr/share/nasm/macro64.asm -o /macro64_dash.o
+echo dash_rc=$?
+```
+
+```text
+NASM version 2.16.03 compiled on Nov 12 2026
+00000000  B83412            mov ax,0x1234
+00000003  CD10              int 0x10
+00000005  F4                hlt
+dash_rc=0
+```
+
+`/hello_dash.bin` 导出核对为 `b8 34 12 cd 10 f4`，与 xsh 路径一致。
+
 ## 未覆盖
 
 - NASM 自带 `test/` 套件未跑。
-- 只测 xsh；dash 未测。
+- xsh 与 dash 两条路径都已实测。
 - 未在官方 0.0.2-1103 发行盘上复验（原因见上）。
 - 未比较 `nasm.us` 官方归档哈希。
 - `ndisasm` 只对 `-f bin` 原始字节验证；不对 ELF 容器整体反汇编（那本来不是它的用途）。

@@ -38,8 +38,12 @@ def sdk_check(sdk, profile):
     require(metadata.get('abi') == 1 and metadata.get('target') == 'x86_64-elf', 'unsupported SDK ABI/target')
     digest, files = tree_receipt(sdk)
     require(digest in profile['sdk_tree_sha256'], 'SDK snapshot not registered for profile; do not mix headers/libraries')
-    for name in ('crt0_posix.o', 'user.ld', 'lib/libxos.a', 'lib/libxos_loader.a',
-                 'lib/libc.a', 'lib/libm.a', 'cpp/lib/libgcc.a'):
+    required = ['crt0_posix.o', 'user.ld', 'lib/libxos.a', 'lib/libc.a', 'lib/libm.a']
+    if profile.get('runtime_model', 'single') == 'single':
+        required.append('lib/libxos_loader.a')
+    if 'cxx_runtime' in profile.get('features', ()):
+        required.append('cpp/lib/libgcc.a')
+    for name in required:
         require(name in files, 'SDK missing ' + name)
     return {'tree_sha256': digest, 'files': files, 'sdk_build_id': metadata['build_id']}
 
@@ -118,7 +122,11 @@ def build(project, sdk, profile):
     os.close(fd)
     temporary = Path(temporary)
     cmd = [resolved, '-O2', '-mno-red-zone', '-fno-pie', '-fno-pic', '-fno-stack-protector',
-           '-ftls-model=local-exec', '-idirafter', str(sdk / 'include'), '-I', str(project / 'src')]
+           '-ftls-model=local-exec', '-idirafter', str(sdk / 'include'), '-I', str(project / 'src'),
+           # The ordinary SDK ships a single-thread pthread subset; these POSIX
+           # feature macros make its declarations visible to user programs.
+           '-D_POSIX_THREADS=1', '-D_POSIX_READER_WRITER_LOCKS=200809L',
+           '-D_UNIX98_THREAD_MUTEX_ATTRIBUTES=1']
     if value['language'] == 'cpp':
         cmd += ['-std=gnu++17', '-nostdinc++', '-fuse-cxa-atexit']
         for name in ('', '/x86_64-unknown-elf', '/backward'):

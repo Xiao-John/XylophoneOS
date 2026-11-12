@@ -19,7 +19,7 @@
   "package": {
     "id": "thirdparty.nasm",
     "target_profile": "xos-x86_64-static-single-b2-v1",
-    "xpk_sha256": "ba17988aeb9d690e0b0ce2bbefa55e41f3d7af9b228f96832128e4ca9dfa7356"
+    "xpk_sha256": "aea6def2decb6dedfa74cbe30404c87a5f86a83823c9889668d78623e84240b0"
   },
   "integration": {
     "guest_only": true,

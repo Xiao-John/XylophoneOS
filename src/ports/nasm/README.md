@@ -37,7 +37,7 @@ python3 scripts/xypm.py install \
   "$XOS_OUT/thirdparty.nasm-2.16.03.xpk"
 ```
 
-已验证的包哈希：`ba17988aeb9d690e0b0ce2bbefa55e41f3d7af9b228f96832128e4ca9dfa7356`
+已验证的包哈希：`aea6def2decb6dedfa74cbe30404c87a5f86a83823c9889668d78623e84240b0`
 （2,805,760 字节，由本目录配方与 0.0.2-1103 SDK 构建；换 SDK、上游或配方后必须重算
 并更新 `port.json`）。
 
@@ -57,6 +57,16 @@ exec-file /usr/bin/nasm -f elf64 /usr/share/nasm/macro64.asm -o /macro64.o
     # 期望 x86-64 REL，_start 处 b8 3c 00 00 00 / bf 00 00 00 00 / 0f 05 / 90 90
 ```
 
+**dash**（`/tests/nasm_dash.sh`，与 xsh 同一份包）：
+
+```text
+NASM version 2.16.03 compiled on Nov 12 2026
+00000000  B83412            mov ax,0x1234
+00000003  CD10              int 0x10
+00000005  F4                hlt
+dash_rc=0
+```
+
 错误路径（应打印 `nasm: fatal: unable to open input file ...` 并以状态 1 退出）：
 
 ```text
@@ -65,7 +75,7 @@ exec-file /usr/bin/nasm /nonexistent.asm -o /x.bin
 
 ## 已知限制
 
-- 只验证 xsh 调用；dash 路径未测。
+- xsh 与 dash 两条路径都已实测（同一份包）。
 - 未跑 NASM 自带 `test/` 测试套件；只做了 `-v`、`-h`、`-f bin`、`-f elf64`（含
   `%macro`/`%rep`）、`ndisasm -b 16/-b 64` 与错误路径的针对性样例。
 - `ndisasm` 是原始反汇编器：对 ELF 容器整体反汇编没有意义，因此只对 `-f bin` 产物验证。

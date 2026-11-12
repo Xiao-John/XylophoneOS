@@ -15,6 +15,7 @@
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <libgen.h>
 #include <limits.h>
 #include <spawn.h>
 #include <stdio.h>
@@ -25,7 +26,10 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/time.h>
+#include <sys/features.h>
 #include <sys/times.h>
+#include <time.h>
+#include <utime.h>
 #include <sys/wait.h>
 #include <termios.h>
 #include <unistd.h>
@@ -876,6 +880,16 @@ extern "C" int gettimeofday(struct timeval* value, void*) {
     value->tv_usec = static_cast<suseconds_t>((now % 1000000000) / 1000);
     return 0;
 }
+extern "C" int timespec_get(struct timespec* value, int base) {
+    if (value == nullptr) { errno = EFAULT; return 0; }
+    if (base != TIME_UTC) { errno = EINVAL; return 0; }
+    const xos::i64 now = xos::sdk::syscall(xos::sys_clock_realtime, 0);
+    if (now < 0) { errno = now == xos::realtime_error_io ? EIO : EINVAL; return 0; }
+    value->tv_sec = static_cast<time_t>(now / 1000000000);
+    value->tv_nsec = static_cast<long>(now % 1000000000);
+    return TIME_UTC;
+}
+
 extern "C" int getentropy(void* buffer, size_t length) {
     if (length > 256) { errno = EINVAL; return -1; }
     const xos::i64 result = xos::sdk::syscall(xos::sys_random_bytes,
@@ -1950,5 +1964,68 @@ extern "C" clock_t _times(struct tms* result) {
     return ticks;
 }
 extern "C" clock_t times(struct tms* result) { return _times(result); }
+// XOS has no file timestamp or ownership ABI yet; expose the symbols so POSIX
+// callers link and receive an honest failure instead of a missing symbol.
+extern "C" int utime(const char* path, const struct utimbuf*) {
+    if (path == nullptr) { errno = EFAULT; return -1; }
+    errno = ENOSYS;
+    return -1;
+}
+extern "C" int chmod(const char* path, mode_t) {
+    if (path == nullptr) { errno = EFAULT; return -1; }
+    errno = ENOSYS;
+    return -1;
+}
+extern "C" int chown(const char* path, uid_t, gid_t) {
+    if (path == nullptr) { errno = EFAULT; return -1; }
+    errno = ENOSYS;
+    return -1;
+}
+
+extern "C" char* dirname(char* path) {
+    static char dot[] = ".";
+    if (path == nullptr || path[0] == '\0') { return dot; }
+    size_t length = strlen(path);
+    while (length > 1 && path[length - 1] == '/') { path[--length] = '\0'; }
+    char* slash = strrchr(path, '/');
+    if (slash == nullptr) { return dot; }
+    if (slash == path) { path[1] = '\0'; return path; }
+    *slash = '\0';
+    length = strlen(path);
+    while (length > 1 && path[length - 1] == '/') { path[--length] = '\0'; }
+    return path;
+}
+
+extern "C" char* realpath(const char* path, char* resolved) {
+    if (path == nullptr) { errno = EINVAL; return nullptr; }
+    char normalized[max_path];
+    bool trailing_slash = false;
+    const int resolved_status = resolve_path(path, normalized, trailing_slash);
+    if (resolved_status != 0) { errno = resolved_status; return nullptr; }
+    u32 size = 0, attributes = 0;
+    const xos::i64 status = file_client.stat_info(normalized, size, attributes);
+    if (status != 0) { errno = error_from_file(status); return nullptr; }
+    const bool directory = (attributes & xos::file::stat_is_directory) != 0;
+    if (trailing_slash && !directory) { errno = ENOTDIR; return nullptr; }
+    const size_t length = strlen(normalized);
+    char* output = resolved;
+    if (output == nullptr) {
+        output = static_cast<char*>(malloc(length + 1));
+        if (output == nullptr) { errno = ENOMEM; return nullptr; }
+    }
+    memcpy(output, normalized, length + 1);
+    return output;
+}
+
+extern "C" long pathconf(const char* path, int name) {
+    if (path == nullptr) { errno = EFAULT; return -1; }
+    switch (name) {
+    case _PC_LINK_MAX: return 1;
+    case _PC_NAME_MAX: return 255;
+    case _PC_PATH_MAX: return max_path;
+    case _PC_CHOWN_RESTRICTED: return 1;
+    default: errno = EINVAL; return -1;
+    }
+}
 extern "C" int getpid() { return _getpid(); }
 extern "C" int kill(int pid, int sig) { return _kill(pid, sig); }

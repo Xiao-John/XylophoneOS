@@ -151,7 +151,8 @@ def main():
              '-fno-pic', '-fno-pie', '-mno-red-zone', '-march=x86-64', '-mcmodel=small',
              '-ftls-model=local-exec', '-DXOS_THREADED_RUNTIME', '-nostdinc++',
              '-I' + str(output / 'include'), '-I' + str(ROOT / 'src/user/threading')]
-    sources = [*sorted((ROOT / 'src/user/libc').glob('*.cpp')),
+    sources = [*sorted(p for p in (ROOT / 'src/user/libc').glob('*.cpp')
+                        if p.name != 'pthread_single.cpp'),
                ROOT / 'src/user/sdk/file_client.cpp', ROOT / 'src/user/sdk/text.cpp',
                ROOT / 'src/user/sdk/terminal_client.cpp',
                ROOT / 'src/user/arch/x86_64/syscall.cpp', ROOT / 'src/user/arch/x86_64/tls.cpp',
@@ -164,8 +165,10 @@ def main():
     for source in sources:
         target = objects / (str(source.relative_to(ROOT)).replace('/', '_') + '.o')
         target.parent.mkdir(parents=True, exist_ok=True)
-        # pthread_once must unwind its in-progress marker if an initializer throws.
-        extra = ['-fexceptions', '-funwind-tables'] if source.name == 'pthread.cpp' else ['-fno-exceptions']
+        # C-only builds have no C++ exceptions, so pthread.cpp must not pull in
+        # __gxx_personality_v0; the C++ SDK keeps unwinding for throwing initializers.
+        exceptions = ['-fexceptions', '-funwind-tables'] if args.cpp else ['-fno-exceptions']
+        extra = exceptions if source.name == 'pthread.cpp' else ['-fno-exceptions']
         run([cross, *flags, *extra, '-c', str(source), '-o', str(target)], source.stem + '.log')
         compiled.append(target)
     archive = output / 'lib/libxos.a'
@@ -306,7 +309,11 @@ def main():
         raise SystemExit('GCC source tree changed during the runtime build')
     if final_inputs != initial_inputs:
         raise SystemExit('SDK inputs changed during the build; retry with a stable source snapshot')
+    system_manifest = ROOT / 'build/manifest.json'
+    build_id = (json.loads(system_manifest.read_text())['build_id']
+                if system_manifest.is_file() else '')
     receipt = {'profile': 'xos-threading-v1-experimental', 'abi': 1, 'thread_abi': 1,
+               'target': 'x86_64-elf', 'build_id': build_id,
                'vm_extensions': {'version': 1, 'syscall': 67, 'status': 'implemented_unqualified'},
                'display_extensions': {'version': 1, 'syscalls': [65, 66], 'pixel_format': 'XRGB8888', 'surface_count': 1},
                'ipc_v1': ipc_v1_manifest_entry(),

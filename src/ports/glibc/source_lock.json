@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "status": "candidate_unverified_signature",
+  "component": "glibc",
+  "version": "2.44",
+  "archive": "glibc-2.44.tar.xz",
+  "upstream_url": "https://ftp.gnu.org/gnu/glibc/glibc-2.44.tar.xz",
+  "retrieved_url": "https://mirrors.nju.edu.cn/gnu/glibc/glibc-2.44.tar.xz",
+  "archive_bytes": 20620544,
+  "archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+  "signature_url": "https://mirrors.nju.edu.cn/gnu/glibc/glibc-2.44.tar.xz.sig",
+  "signature_sha256": "44aabe605a02a56959bab51b92d985945db66dbd0117debe3d741252b2133ec6",
+  "signature_verification": "NOT_RUN: no gpg or trusted signing key available",
+  "patches": [],
+  "use": "research only; do not build distributable or mark verified until signature and signer trust are checked"
+}

@@ -3,9 +3,10 @@
 2026-11-10。用户要求先明确应用与内核可并行工作的边界，暂不启动 VM3。规范见
 [IPC v1 契约](../contracts/ipc_v1.md)。计划原始基线为 `d708790`；VM2 #102 已在其后合入，
 本路线仍不要求 VM3 才能开展接口设计、参考模型和小消息实现。
-2026-11-11：IP1 ABI 与参考模型已由 PR #107 合入。`codex/ipc-ip2` 正在加入 x86-64
-单核 endpoint/RPC 慢路径和 SDK wrappers；feature query 暂仍返回 supported mask 零，普通与
-线程 SDK manifest 显式标 unsupported，直至客体验收完成。模型和语法检查不能替代产品资格。
+2026-11-12：IP1–IP3 已合入，IP2/IP3 客体验收在 PR #111 记录并通过。四个 IPC feature
+(`endpoint_call_v1`、`deadline_v1`、`notification_v1`、`wait_set_v1`) 已具备开放依据；
+IP4 `bulk_grant_v1` 仍待客体验收。IP5 正加入受限短消息直接切换、handle 索引和批量复制，
+附延迟分布探针；这次代码和性能探针仍待维护者 guest run。
 
 ## 当前事实与问题
 
@@ -48,7 +49,7 @@ seL4 的官方 [IPC](https://docs.sel4.systems/Tutorials/ipc.html) 和
 | IP2 同步端点与 RPC | 先以测试服务调用，显式检测 capability；旧客户端照常 | 对象/权限/队列、call/receive/reply、期限、取消、close/exit；正常慢路径 | 真实 guest 功能、异常、竞争与资源精确回收；新能力才可按 profile 宣告 |
 | IP3 等待与迁移 | 在文件、终端、显示、Interactium、音频中选择纵向切片，旧/新差分 | notification、可授权的 wait set 和现有事件互操作；按实际缺口分开登记 | 各迁移服务双路径比较、崩溃及重启语义明确，适用工具 xsh/dash 双验 |
 | IP4 大块数据 | 框架只依赖显式 buffer/grant feature，保持小消息通路 | 独立共享页/grant 授权、生命周期、撤销和 VM/COW 安全设计 | 在 VM/共享映射相关资格具备后作真实授权、故障和性能验收 |
-| IP5 快路径与扩展 | 相同 API/协议，不因 fastpath 改调用 | 测量驱动的短消息快路径、直接切换、端点索引与批量复制 | 与慢路径同值/同错误/安全等价，报告分布、回退和资源；SMP 另立阶段 |
+| IP5 快路径与扩展 | 相同 API/协议，不因 fastpath 改调用 | 受限短消息直接切换、端点 handle 索引与 IPC payload 批量复制 | 新 guest probe 对比 direct-waiter 与 polling fallback 的延迟分布、语义和资源；SMP 另立阶段 |
 
 两个工作流可以从 IP0 并行：服务侧以提案的逻辑类型、版本化协议和模型测试推进，
 实际二进制、数字 wire 及 capability 宣告在 IP1 登记后才可依赖；内核侧先实现参考
@@ -76,11 +77,11 @@ seL4 的官方 [IPC](https://docs.sel4.systems/Tutorials/ipc.html) 和
 - 发布证据：源码 commit、工具/镜像/ELF 和 SDK hash、参数、时间域、原始串口、
   通过/失败/未运行及范围；使用历史工作记录作线索，不将旧结果改绑新镜像。
 
-## 立即可执行的下一步
+## 当前下一步
 
-1. IP2 内核路径等待维护者完成真实客体验收；期间不得开启 endpoint/deadline feature。
-2. IP3 notification 和 wait set x86-64 慢路径已实现，覆盖有权利检查、deadline、最多 8 个
-   source、关闭事件、endpoint readiness 互操作和进程退出撤销。首版 wait set 只接 IPC v1
-   endpoint readiness 与 notification；IRQ/process-exit/channel wait_many 不混入。
-3. 维护者执行客体验收；在验收前保持 notification/wait_set feature 和 manifests
-   unsupported。服务迁移与测量仍待运行后端资格后开展。
+1. IP2/IP3 已按 PR #111 的三轮真实客体验收开放四个 feature；bulk_grant 保持关闭，等待 IP4
+   PR 的客体 race/resource 验收。
+2. IP5 提供可重复的 QEMU 延迟分布脚本。运行前以同一源版本重建系统镜像和线程 SDK，记录
+   build/image/SDK/ELF hash；QEMU 数值只作相对测量，不能代替硬件声明。
+3. 快路径探针通过后复核慢/快路径错误、权限、deadline、handle/token 和资源回收；任何
+   SMP 或跨核唤醒优化另立阶段。

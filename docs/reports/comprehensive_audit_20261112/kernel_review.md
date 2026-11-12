@@ -1,8 +1,10 @@
+最终基线已补审至 `4c9b6f8feb0667d7169167e406da662be789876c`。以下保留早期阶段的验证计数与状态，尤其 e624 阶段的 IPC unsupported 描述已由上游 #114 更新；当前状态和增量结论以 `latest_upstream_review.md`、总报告及最终结果为准。
+
 本附件合并分阶段审阅记录。阶段内计数不相加；最终覆盖与结果以 `repository_inventory.csv` 和 `validation_results.json` 为准。宿主绝对路径已机械替换为 `${XOS_ROOT}`、`${XOS_AUDIT_WORK}` 等占位符，以下不是未经处理的原始日志。临时清单名仅用于说明记录来源；本报告附有最终 CSV、结构化结果、关键日志与可重放命令。
 
 # Kernel, boot and shared ABI audit — 2026-11-12
 
-Final baseline: e6246faf8eefac305a99528f727b1592ee93a5b2.
+Phase baseline: e6246faf8eefac305a99528f727b1592ee93a5b2.
 
 Scope: all 74 files listed in kernel_audit_files.txt (src/kernel, src/boot, src/shared). Read the complete first-party contents, including all 5,397 lines of tasks.cpp, page tables, memory ownership, VM continuation/pins/COW, IPC v1, platform devices, shared ABI and BIOS loaders. This is source review, not a proof that every path is correct.
 
@@ -108,7 +110,7 @@ The SQLite runner also accepts the builder's normal cache location by default. T
 
 # Third-party visible source and integration audit — 2026-11-12
 
-Final repository baseline: `e6246faf8eefac305a99528f727b1592ee93a5b2`. This is a source/integration review plus narrowly scoped host regressions, not a guest or complete dependency qualification.
+Phase repository baseline: `e6246faf8eefac305a99528f727b1592ee93a5b2`. This is a source/integration review plus narrowly scoped host regressions, not a guest or complete dependency qualification.
 
 ## Exact reading coverage
 

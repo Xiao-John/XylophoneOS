@@ -1,13 +1,14 @@
 {
   "schema_version": 1,
-  "baseline_commit": "e6246faf8eefac305a99528f727b1592ee93a5b2",
+  "baseline_commit": "4c9b6f8feb0667d7169167e406da662be789876c",
   "branch": "codex/comprehensive-audit-20261112",
   "date": "2026-11-12",
   "interpretation": [
     "Batches overlap; do not sum them as independent tests.",
     "Host actual implementation, extracted source, synthetic boundary output and reference model tests have different scopes.",
     "Absolute host paths are mechanically normalized; this is an exported summary, not verbatim logs.",
-    "No target image, guest, full Qt build, full SDK build or complete release qualification passed in this environment."
+    "No target image, guest, full Qt build, full SDK build or complete release qualification passed in this environment.",
+    "Initial 22+3 kernel object checks are e624 evidence; latest tasks.cpp alone was recompiled in three configurations after 4c9 and K03. Other unchanged source tests are retained as phase records."
   ],
   "tool_versions": [
     {
@@ -92,11 +93,11 @@
     "errors": [
       {
         "test": "test_real_c_cpp_project_outside_repository (package_p0_cases.IndependentBuildCases.test_real_c_cpp_project_outside_repository)",
-        "traceback": "Traceback (most recent call last):\n  File \"${XOS_ROOT}/tests/package_p0_cases.py\", line 158, in test_real_c_cpp_project_outside_repository\n    result=build(project,SDK,PROFILE)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"${XOS_ROOT}/scripts/xos_app.py\", line 103, in build\n    sdk = Path(sdk).resolve(strict=True)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"${PYTHON_RUNTIME}/lib/python3.12/pathlib.py\", line 1240, in resolve\n    s = self._flavour.realpath(self, strict=strict)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen posixpath>\", line 424, in realpath\n  File \"<frozen posixpath>\", line 468, in _joinrealpath\nFileNotFoundError: [Errno 2] No such file or directory: '${XOS_ROOT}/build/releases/0.0.1-1024'\n"
+        "traceback": "Traceback (most recent call last):\n  File \"${XOS_ROOT}/tests/package_p0_cases.py\", line 158, in test_real_c_cpp_project_outside_repository\n    result=build(project,SDK,PROFILE)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"${XOS_ROOT}/scripts/xos_app.py\", line 103, in build\n    sdk = Path(sdk).resolve(strict=True)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"${XOS_RUNTIME_ROOT}/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py\", line 1240, in resolve\n    s = self._flavour.realpath(self, strict=strict)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen posixpath>\", line 424, in realpath\n  File \"<frozen posixpath>\", line 468, in _joinrealpath\nFileNotFoundError: [Errno 2] No such file or directory: '${XOS_ROOT}/build/releases/0.0.1-1024'\n"
       },
       {
         "test": "test_sdk_binding_and_init_refusal (package_p0_cases.IndependentBuildCases.test_sdk_binding_and_init_refusal)",
-        "traceback": "Traceback (most recent call last):\n  File \"${XOS_ROOT}/tests/package_p0_cases.py\", line 193, in test_sdk_binding_and_init_refusal\n    with self.assertRaises(PackageError):sdk_check(SDK,profile)\n                                         ^^^^^^^^^^^^^^^^^^^^^^\n  File \"${XOS_ROOT}/scripts/xos_app.py\", line 36, in sdk_check\n    sdk = Path(sdk).resolve(strict=True)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"${PYTHON_RUNTIME}/lib/python3.12/pathlib.py\", line 1240, in resolve\n    s = self._flavour.realpath(self, strict=strict)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen posixpath>\", line 424, in realpath\n  File \"<frozen posixpath>\", line 468, in _joinrealpath\nFileNotFoundError: [Errno 2] No such file or directory: '${XOS_ROOT}/build/releases/0.0.1-1024'\n"
+        "traceback": "Traceback (most recent call last):\n  File \"${XOS_ROOT}/tests/package_p0_cases.py\", line 193, in test_sdk_binding_and_init_refusal\n    with self.assertRaises(PackageError):sdk_check(SDK,profile)\n                                         ^^^^^^^^^^^^^^^^^^^^^^\n  File \"${XOS_ROOT}/scripts/xos_app.py\", line 36, in sdk_check\n    sdk = Path(sdk).resolve(strict=True)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"${XOS_RUNTIME_ROOT}/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py\", line 1240, in resolve\n    s = self._flavour.realpath(self, strict=strict)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen posixpath>\", line 424, in realpath\n  File \"<frozen posixpath>\", line 468, in _joinrealpath\nFileNotFoundError: [Errno 2] No such file or directory: '${XOS_ROOT}/build/releases/0.0.1-1024'\n"
       }
     ],
     "skipped": [
@@ -105,8 +106,8 @@
         "reason": "no idna xpk on disk"
       }
     ],
-    "seconds": 4.514,
-    "scope": "host unittest discovery; modules may include reference models; full guest qualification NOT_RUN"
+    "seconds": 4.406,
+    "scope": "latest 4c9b6f8 plus audit fixes; host tests include reference models; no guest qualification"
   },
   "host_script_batch": [
     {
@@ -428,9 +429,9 @@
         "tests/file_semantics.py"
       ],
       "exit_code": 0,
-      "seconds": 1.878,
-      "log": "file_semantics_final.log",
-      "scope": "host"
+      "seconds": 1.401,
+      "log": "file_semantics_latest.log",
+      "scope": "host; actual implementation or source extraction, no guest"
     },
     {
       "test": "file_recovery_faults",
@@ -439,9 +440,9 @@
         "tests/file_recovery_faults.py"
       ],
       "exit_code": 0,
-      "seconds": 1.219,
-      "log": "file_recovery_faults_final.log",
-      "scope": "host"
+      "seconds": 1.067,
+      "log": "file_recovery_faults_latest.log",
+      "scope": "host; actual implementation or source extraction, no guest"
     },
     {
       "test": "libc_startup_host",
@@ -450,9 +451,9 @@
         "tests/libc_startup_host.py"
       ],
       "exit_code": 0,
-      "seconds": 0.687,
-      "log": "libc_startup_host_final.log",
-      "scope": "host"
+      "seconds": 0.644,
+      "log": "libc_startup_host_latest.log",
+      "scope": "host; actual implementation or source extraction, no guest"
     },
     {
       "test": "cpp_abi_output_test",
@@ -461,9 +462,9 @@
         "tests/cpp_abi_output_test.py"
       ],
       "exit_code": 0,
-      "seconds": 0.681,
-      "log": "cpp_abi_output_test_final.log",
-      "scope": "host"
+      "seconds": 0.765,
+      "log": "cpp_abi_output_test_latest.log",
+      "scope": "host; actual implementation or source extraction, no guest"
     },
     {
       "test": "archive_member_map_test",
@@ -472,9 +473,9 @@
         "tests/archive_member_map_test.py"
       ],
       "exit_code": 0,
-      "seconds": 0.19,
-      "log": "archive_member_map_test_final.log",
-      "scope": "host"
+      "seconds": 0.179,
+      "log": "archive_member_map_test_latest.log",
+      "scope": "host; actual implementation or source extraction, no guest"
     },
     {
       "test": "adventure_readline_test",
@@ -483,9 +484,9 @@
         "tests/adventure_readline_test.py"
       ],
       "exit_code": 0,
-      "seconds": 0.149,
-      "log": "adventure_readline_test_final.log",
-      "scope": "host"
+      "seconds": 0.143,
+      "log": "adventure_readline_test_latest.log",
+      "scope": "host; actual implementation or source extraction, no guest"
     },
     {
       "test": "dash_pipeline_fds_test",
@@ -494,9 +495,9 @@
         "tests/dash_pipeline_fds_test.py"
       ],
       "exit_code": 0,
-      "seconds": 0.17,
-      "log": "dash_pipeline_fds_test_final.log",
-      "scope": "host"
+      "seconds": 0.134,
+      "log": "dash_pipeline_fds_test_latest.log",
+      "scope": "host; actual implementation or source extraction, no guest"
     },
     {
       "test": "kernel_process_wait_race_test",
@@ -505,9 +506,9 @@
         "tests/kernel_process_wait_race_test.py"
       ],
       "exit_code": 0,
-      "seconds": 0.157,
-      "log": "kernel_process_wait_race_test_final.log",
-      "scope": "host"
+      "seconds": 0.144,
+      "log": "kernel_process_wait_race_test_latest.log",
+      "scope": "host; actual implementation or source extraction, no guest"
     },
     {
       "test": "build_newlib_cache_test",
@@ -516,9 +517,9 @@
         "tests/build_newlib_cache_test.py"
       ],
       "exit_code": 0,
-      "seconds": 0.225,
-      "log": "build_newlib_cache_test_final.log",
-      "scope": "host"
+      "seconds": 0.243,
+      "log": "build_newlib_cache_test_latest.log",
+      "scope": "host; actual implementation or source extraction, no guest"
     },
     {
       "test": "binutils_stress_exit_test",
@@ -527,9 +528,20 @@
         "tests/binutils_stress_exit_test.py"
       ],
       "exit_code": 0,
-      "seconds": 0.091,
-      "log": "binutils_stress_exit_test_final.log",
-      "scope": "host"
+      "seconds": 0.09,
+      "log": "binutils_stress_exit_test_latest.log",
+      "scope": "host; actual implementation or source extraction, no guest"
+    },
+    {
+      "test": "ipc_v1_query_compat_test",
+      "command": [
+        "python3",
+        "tests/ipc_v1_query_compat_test.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.272,
+      "log": "ipc_v1_query_compat_test_latest.log",
+      "scope": "host; actual implementation or source extraction, no guest"
     }
   ],
   "sqlite_final_rerun": {
@@ -545,8 +557,8 @@
   },
   "syntax": {
     "python": {
-      "checked": 428,
-      "accepted": 427,
+      "checked": 430,
+      "accepted": 429,
       "errors": [
         {
           "path": "tests/fixtures/cpython_py1/syntax_error.py",
@@ -558,16 +570,6 @@
     "shell": {
       "checked": 27,
       "errors": []
-    },
-    "tools": {
-      "gcc": "/usr/bin/gcc",
-      "g++": "/usr/bin/g++",
-      "ar": "/usr/bin/ar",
-      "nm": "/usr/bin/nm",
-      "nasm": null,
-      "qemu-system-x86_64": null,
-      "x86_64-elf-gcc": null,
-      "x86_64-elf-g++": null
     }
   },
   "system_build": {
@@ -577,7 +579,6 @@
     ],
     "exit_code": 2,
     "status": "BLOCKED",
-    "log": "make_build.log",
     "output": "python3 scripts/build.py\nNASM not found; install it or set NASM=/path/to/nasm\nmake: *** [Makefile:9: build] Error 1\n"
   },
   "release_diagnostic_preflight": {
@@ -745,14 +746,15 @@
     "validation_log.txt"
   ],
   "coverage": {
-    "baseline_files": 5247,
-    "baseline_code_patch_build_files": 1172,
-    "new_implementation_regression_files": 17,
-    "inventory_rows": 5264,
+    "baseline_files": 5250,
+    "baseline_code_patch_build_files": 1174,
+    "new_implementation_regression_files": 18,
+    "inventory_rows": 5268,
     "code_review_methods": {
       "full_text": 1179,
       "full_diff_against_reviewed_source": 4,
-      "compared_identical_to_reviewed_source": 6
+      "compared_identical_to_reviewed_source": 6,
+      "full_text_plus_reviewed_upstream_delta": 3
     },
     "baseline_code_by_top": {
       ".github": 1,
@@ -763,10 +765,11 @@
       "experiments": 1,
       "scripts": 105,
       "src": 478,
-      "tests": 506
+      "tests": 508
     },
     "plans_fully_read": 31,
-    "scope_definition": "Non-archived visible code, patches, Make/CMake/CI and code-related build inputs; binary/archive internals, story YAML data, assets and all historical prose are not claimed as full source review. New report artifacts and worklog are tracked by git and this report manifest, not recursively added to this inventory."
+    "scope_definition": "Non-archived visible code, patches, Make/CMake/CI and code-related build inputs; binary/archive internals, story YAML data, assets and all historical prose are not claimed as full source review. New report artifacts and worklog are tracked by git and this report manifest, not recursively added to this inventory.",
+    "latest_delta_review": "Initial complete source review at e6246fa plus complete 15-file upstream delta to 4c9b6f8, context review, and full reads where indicated in the inventory. Three code files explicitly retain the full_text_plus_reviewed_upstream_delta method."
   },
   "documentation_replays": {
     "commands_run": 6,
@@ -782,8 +785,123 @@
     "scope": "actual host AST/CLI/command selection; no guest",
     "results_directory_at_run": "build/comprehensive_audit_replay"
   },
+  "initial_baseline_commit": "e6246faf8eefac305a99528f727b1592ee93a5b2",
+  "final_targeted_batch_before_latest_merge": [
+    {
+      "test": "file_semantics",
+      "command": [
+        "python3",
+        "tests/file_semantics.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1.878,
+      "log": "file_semantics_final.log",
+      "scope": "host"
+    },
+    {
+      "test": "file_recovery_faults",
+      "command": [
+        "python3",
+        "tests/file_recovery_faults.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1.219,
+      "log": "file_recovery_faults_final.log",
+      "scope": "host"
+    },
+    {
+      "test": "libc_startup_host",
+      "command": [
+        "python3",
+        "tests/libc_startup_host.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.687,
+      "log": "libc_startup_host_final.log",
+      "scope": "host"
+    },
+    {
+      "test": "cpp_abi_output_test",
+      "command": [
+        "python3",
+        "tests/cpp_abi_output_test.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.681,
+      "log": "cpp_abi_output_test_final.log",
+      "scope": "host"
+    },
+    {
+      "test": "archive_member_map_test",
+      "command": [
+        "python3",
+        "tests/archive_member_map_test.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.19,
+      "log": "archive_member_map_test_final.log",
+      "scope": "host"
+    },
+    {
+      "test": "adventure_readline_test",
+      "command": [
+        "python3",
+        "tests/adventure_readline_test.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.149,
+      "log": "adventure_readline_test_final.log",
+      "scope": "host"
+    },
+    {
+      "test": "dash_pipeline_fds_test",
+      "command": [
+        "python3",
+        "tests/dash_pipeline_fds_test.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.17,
+      "log": "dash_pipeline_fds_test_final.log",
+      "scope": "host"
+    },
+    {
+      "test": "kernel_process_wait_race_test",
+      "command": [
+        "python3",
+        "tests/kernel_process_wait_race_test.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.157,
+      "log": "kernel_process_wait_race_test_final.log",
+      "scope": "host"
+    },
+    {
+      "test": "build_newlib_cache_test",
+      "command": [
+        "python3",
+        "tests/build_newlib_cache_test.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.225,
+      "log": "build_newlib_cache_test_final.log",
+      "scope": "host"
+    },
+    {
+      "test": "binutils_stress_exit_test",
+      "command": [
+        "python3",
+        "tests/binutils_stress_exit_test.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.091,
+      "log": "binutils_stress_exit_test_final.log",
+      "scope": "host"
+    }
+  ],
+  "latest_upstream": "latest_upstream_results.json",
   "repository_gates": [
     {
+      "name": "abi_doc_consistency",
       "command": [
         "python3",
         "tests/abi_doc_consistency.py"
@@ -792,6 +910,7 @@
       "output": "PASS current ABI table: {'sys_pipe_wait': 54, 'sys_stream_lease': 80, 'sys_channel': 81, 'sys_pio_grant': 82, 'sys_irq_event': 83, 'sys_process_guard': 62, 'sys_random_bytes': 63, 'sys_clock_realtime': 64, 'sys_display': 65, 'sys_display_present': 66, 'sys_ipc_endpoint': 84, 'sys_ipc_wait': 85, 'sys_ipc_name': 86, 'clone_session': 20, 'anonymous': 21, 'anonymous_seal': 22, 'maintenance_acquire': 23, 'maintenance_release': 24, 'truncate': 25}\n"
     },
     {
+      "name": "docs_consistency",
       "command": [
         "python3",
         "tests/docs_consistency.py"
@@ -800,47 +919,31 @@
       "output": "{\"status\": \"passed\", \"local_links\": 895, \"allocated_syscalls\": 77, \"history_sources\": 73}\n"
     },
     {
+      "name": "report_manifest_check",
       "command": [
         "python3",
         "tests/report_manifest_check.py"
       ],
       "exit_code": 0,
-      "status": "passed",
-      "new_report_compliant": true,
-      "failures": []
+      "output": "{\n \"status\": \"passed\",\n \"compliant\": [\n  \"audio_output_au0_20261109\",\n  \"aurora_midnight_dock_20261030\",\n  \"aurora_ssg_consumers_20261101\",\n  \"browser_fragment_integrity_20261030\",\n  \"comprehensive_audit_20261112\",\n  \"gcc_runtime_member_license_20261103\",\n  \"gnu_seed_distribution_20261103\",\n  \"newlib_member_license_20261103\",\n  \"perry_host_path_scrub_20261031\",\n  \"qt_member_license_20261103\",\n  \"qt_static_distribution_20261103\",\n  \"ssg_consumer_exit_20261101\",\n  \"ssg_notes_range_review_20261101\",\n  \"ssg_notes_round2_20261103\",\n  \"ssg_p1_cross_process_20261030\",\n  \"ssg_p1_round2_20261103\",\n  \"ssg_p2_diagnostic_20261030\",\n  \"ssg_p2_round2_20261103\",\n  \"ssg_p2_watchdog_20261101\",\n  \"ssg_p2b_notes_range_20261030\",\n  \"ssg_p2c_notes_boundaries_20261030\",\n  \"ssg_p2d_initial_20261030\",\n  \"ssg_p2e_partial_20261030\",\n  \"ssg_p2f_20261030\",\n  \"ssg_p2g3_20261030\",\n  \"ssg_p2g4_20261030\",\n  \"ssg_p2g4_watchdog_20261101\",\n  \"ssg_p2g5_20261030\",\n  \"ssg_p2g6_20261030\",\n  \"ssg_p2g_20261030\",\n  \"ssg_p3a2_notes_live_20261031\",\n  \"ssg_p3b_dual_provider_20261031\",\n  \"ssg_p3c_engine_neutral_20261031\",\n  \"ssg_p4a_release_compatibility_r1_20261105\",\n  \"ssg_p4a_subscriber_20261104\",\n  \"ssg_pagination_review_20261101\",\n  \"ssg_pagination_round2_20261103\",\n  \"vm0_20261109\",\n  \"vm1_20261109\",\n  \"vm2_foundation_20261109\"\n ],\n \"grandfathered\": [\n  \"aurora_browser_20261029\",\n  \"aurora_c30_rename_20261030\",\n  \"aurora_g3_review_20261030\",\n  \"aurora_glass_v2_20261030\",\n  \"aurora_sdk_review_20261030\",\n  \"aurora_standard_button_20261030\",\n  \"aurora_standard_button_dash_20261030\",\n  \"browser_http_20261029\",\n  \"c30_rename_b1_20261031\",\n  \"c6_guest_requal_20261031\",\n  \"channel_20261030\",\n  \"cow0_20261112\",\n  \"daily_utilities_20261028\",\n  \"dash_c1_20261026\",\n  \"dash_c2_20261026\",\n  \"dash_c3_20261026\",\n  \"display_e14_20261026\",\n  \"fb0_20261029\",\n  \"fb12_20261029\",\n  \"fb12_dash_20261029\",\n  \"issue37_path_hygiene\",\n  \"modern2_network_20261029\",\n  \"modern2_network_c28_20261029\",\n  \"modern2_px4a_20261029\",\n  \"modern2_px4a_c29_20261029\",\n  \"modern2_python_20261029\",\n  \"modern2_runtime_20261029\",\n  \"modern_apps_20261029\",\n  \"net_clock_irq_split_20261030\",\n  \"network_device_gap_20261029\",\n  \"qt_e15_continuation_20261028\",\n  \"qt_e15_preflight_20261028\",\n  \"qt_e15_qualified_20261028\",\n  \"qt_e15_recheck_20261028\",\n  \"qt_e16_qualified_20261028\",\n  \"qt_e17_qualified_20261029\",\n  \"semantic_broker_pipe_20261030\",\n  \"ssg_diff_dash_20261030\",\n  \"ssg_diff_integrity_20261030\",\n  \"ssg_targeted_diff_20261030\",\n  \"threading_20261025\",\n  \"virtio_gpu_2d_qualified_20261029\"\n ],\n \"legacy_verified\": [\n  {\n   \"directory\": \"issue37_path_hygiene\",\n   \"scope\": \"legacy_index_and_flat_manifest\",\n   \"members\": 3\n  }\n ],\n \"failures\": []\n}\n"
     },
     {
+      "name": "public_evidence_paths",
       "command": [
         "python3",
         "tests/check_public_evidence_paths.py",
         "--index",
         "--base",
-        "e6246faf8eefac305a99528f727b1592ee93a5b2"
+        "4c9b6f8feb0667d7169167e406da662be789876c"
       ],
       "exit_code": 0,
-      "status": "PUBLIC_READY",
-      "files_selected": 110,
-      "files_scanned": 110,
-      "findings": [
-        {
-          "location": "src/ports/cpython/sqlite/xos_vfs.c",
-          "category": "ambiguous_tmp",
-          "classification": "NEEDS_REVIEW",
-          "status": "DOUBTFUL"
-        },
-        {
-          "location": "tests/archive_member_map_test.py",
-          "category": "ambiguous_tmp",
-          "classification": "NEEDS_REVIEW",
-          "status": "DOUBTFUL"
-        }
-      ],
-      "doubtful_review": [
-        "xos_vfs.c: temporary filename belongs to the XOS guest filesystem, unchanged from baseline.",
-        "archive_member_map_test.py: absolute path is synthetic input deliberately rejected by the validator, not a real host file."
+      "output": "{\n  \"status\": \"PUBLIC_READY\",\n  \"source\": \"index\",\n  \"base\": \"4c9b6f8feb0667d7169167e406da662be789876c\",\n  \"files_selected\": 118,\n  \"files_scanned\": 118,\n  \"findings\": [\n    {\n      \"location\": \"src/ports/cpython/sqlite/xos_vfs.c\",\n      \"category\": \"ambiguous_tmp\",\n      \"classification\": \"NEEDS_REVIEW\",\n      \"status\": \"DOUBTFUL\"\n    },\n    {\n      \"location\": \"tests/archive_member_map_test.py\",\n      \"category\": \"ambiguous_tmp\",\n      \"classification\": \"NEEDS_REVIEW\",\n      \"status\": \"DOUBTFUL\"\n    }\n  ]\n}\n",
+      "review_notes": [
+        "The two DOUBTFUL findings are legitimate /tmp runtime naming in SQLite VFS and an explicit /tmp/source.c negative fixture. No OPEN findings; scanner and allowlist are unchanged."
       ]
     },
     {
+      "name": "staged_diff_check",
       "command": [
         "git",
         "diff",
@@ -849,11 +952,10 @@
       ],
       "exit_code": 0,
       "output": ""
-    },
-    {
-      "check": "report_relative_links",
-      "checked": 122,
-      "missing": []
     }
-  ]
+  ],
+  "report_local_links": {
+    "checked": 122,
+    "missing": []
+  }
 }

@@ -13,13 +13,14 @@ inline i64 invoke(ipc_v1_action action, T& request) {
                        reinterpret_cast<u64>(&request), 0);
 }
 
-inline i64 query_features(ipc_v1_feature_query& output) {
+inline i64 query_features(ipc_v1_feature_query& output, bool include_direct_switch_count = false) {
     output = {};
     output.header.version = ipc_v1_version;
     output.header.size = sizeof(output);
     const i64 result = sdk::syscall(sys_ipc_v1,
         static_cast<u64>(ipc_v1_action::query_features),
-        reinterpret_cast<u64>(&output), 0);
+        reinterpret_cast<u64>(&output),
+        include_direct_switch_count ? ipc_v1_query_flag_direct_switch_count : 0);
     if (result != 0) return result;
     if (output.known_features != ipc_v1_feature_known_mask ||
         (output.supported_features & ~output.known_features) != 0 ||
@@ -29,7 +30,7 @@ inline i64 query_features(ipc_v1_feature_query& output) {
         output.max_pending_calls != ipc_v1_max_pending_calls ||
         output.max_queue_per_endpoint != ipc_v1_max_queue_per_endpoint ||
         output.max_reply_tokens_per_process != ipc_v1_max_reply_tokens_per_process ||
-        output.reserved[0] != 0 || output.reserved[1] != 0) {
+        output.reserved != 0) {
         output = {};
         return static_cast<i64>(ipc_v1_error::state);
     }

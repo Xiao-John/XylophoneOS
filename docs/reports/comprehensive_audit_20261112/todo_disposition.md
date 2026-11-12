@@ -1,8 +1,8 @@
 # XOS 31 份计划的待办处置表
 
-日期：2026-11-12。对照基线：上游 main `e6246faf8eefac305a99528f727b1592ee93a5b2`，以及本轮 `codex/comprehensive-audit-20261112` 工作区修复。此表只归纳，不修改计划原文、代码、`state.md` 或冻结证据，也不表示修复已合入 main 或已发布。
+日期：2026-11-12。对照基线：上游 main `4c9b6f8feb0667d7169167e406da662be789876c`，以及本轮 `codex/comprehensive-audit-20261112` 工作区修复。此表只归纳，不修改计划原文、代码、`state.md` 或冻结证据，也不表示修复已合入 main 或已发布。
 
-已完整阅读 `docs/plans/*.md` 的全部 **31 份文件、2,997 行**；精确路径和全文阅读状态见 `repository_inventory.csv`。同时对照已审代码、[docs/tech_debt.md](../../tech_debt.md)、较新的专项工作日志及本轮各组修复报告。计划常保留早期正文；同一文件后附的实施记录和当前实际代码优先于旧的“尚未实施”。2026-11-04 的 [docs/state.md](../../state.md) 也是历史快照，不能覆盖之后的 VM、Shell、DU4、音频等进展。
+已完整阅读 `docs/plans/*.md` 的全部 **31 份文件、2,998 行**；精确路径和全文阅读状态见 `repository_inventory.csv`。同时对照已审代码、[docs/tech_debt.md](../../tech_debt.md)、较新的专项工作日志及本轮各组修复报告。计划常保留早期正文；同一文件后附的实施记录和当前实际代码优先于旧的“尚未实施”。2026-11-04 的 [docs/state.md](../../state.md) 也是历史快照，不能覆盖之后的 VM、Shell、DU4、音频等进展。
 
 “历史受限通过”仅承认原记录冻结输入上的结果；“本轮修复”仅承认本轮实际完成的源码和所列验证。当前环境缺少固定 x86_64-elf GCC/G++ 16.2.0、Binutils 2.47.20260726、NASM 3.02、QEMU 11.1.2 和匹配 Qt 构建环境，本轮没有新的客体、BIOS、设备或完整发行资格。旧 PASS 不转移到本修订，宿主模型不冒充内核或客体运行。
 
@@ -22,7 +22,7 @@
 | [daily_utilities_iso_payload.md](../../plans/daily_utilities_iso_payload.md) | 顶部更新和 0208/0209 已落实 XOSBND1、type5 工具、首启抽取、P2 自动安装、marker 幂等与历史拒绝/重启/日常工具门槛；旧正文“布局未冻结”“未做空盘安装”已过期。 | 修复 ISO 目录项填充/名称长度/大端路径表；调整失真的测试断言和真实结果行判定。没有改写 DU4 旧证据。 | 当前修订需从匹配系统、SDK、XPK 重新执行空盘安装、坏包、容量、重启、幂等与 P2 事务组合。任意断电和扇区撕裂不在旧通过范围；新发行必须单独出具来源与安装证据。 |
 | [dash.md](../../plans/dash.md) | A/B/C 已有受限通过；正文中 Shell 启动机制尚未实现的表述被 SL1/SL2 的创建权继承与 nested dash 接入覆盖。 | 修复 fd 0/1/2 已关闭时 pipe 端点与 dup2 冲突，真实宿主管道覆盖四种标准流组合；另修底层 libc 启动重定向与 execvp 边界。 | 完整信号、后台任务/作业控制、通用重定向及与真实 Make 的流程仍受 POSIX/SL3/SL4 门槛约束。重建 matching dash/SDK 后运行客体；不能用宿主 pipe 回归宣称完整 shell 资格。 |
 | [input_edit_foundation.md](../../plans/input_edit_foundation.md) | F1 内建行式编辑器与 F2 xsh 编辑已有实现及部分组合证据；字节保留、大小上限、未知保存结果保留缓冲等约束仍有效。 | 修复终端服务死亡时编辑器永久读错误循环，复用已有 recover，保留文档/dirty 并丢弃未完成输入；真实 file_ui 的追加、替换、插入三场景宿主通过。 | 需实际 UART/terminal.elf 死亡、COM1 回收、重启和保存失败客体回归。F3 只有真实复用消费者出现才抽取；完整终端、IME、多行富编辑不由 F1/F2 自动满足。 |
-| [ipc_sel4.md](../../plans/ipc_sel4.md) | IP1 契约/ABI/模型及 IP2 RPC slow path、IP3 notification/wait set 已有代码；运行 feature bits 仍为 0，SDK 为 registered_unsupported。不能把枚举注册等同可支持，也不能再把实现写成全未开始。 | 修正参考模型排队请求遗漏 caller badge，并用真实模型回归；kernel wait 修复另有实际实现宿主测试。模型通过不等于 IPC 内核资格。 | IP2/IP3 需真实客体覆盖权限、截止时间、取消、关闭、进程退出、pin 和资源回收，完成后才开放能力位。IP4 共享 grant 依赖 VM/授权生命周期；IP5 性能优化先建立正确性与测量基线。 |
+| [ipc_sel4.md](../../plans/ipc_sel4.md) | 最新 #114 依据 #111 的三轮上游客体记录，将 IP2/IP3 的 endpoint_call/deadline/notification/wait_set 在 runtime 和双 SDK 开放为 0x0f。IP5 直接切换、handle 索引与批量复制已有实现，新增性能探针尚未客体运行；bulk_grant 仍关闭。 | 修 caller-first 模型 badge 和真实 process wait/pin；收尾补审发现 direct_switch_count 占用旧零保留字，改为 query flags 显式请求，默认保持旧 SDK 兼容。模型与宿主兼容回归不替代当前客体资格。 | 在同一最新系统/SDK 复验 IP2/IP3 组合及 IP5 的直接切换/回退、deadline、权限、close、计数与资源；记录 p50/p95/p99，但 QEMU 数字不作硬件保证。IP4 共享 grant 仍须 VM/授权生命周期与真实客体验收后单独开放。 |
 | [iso.md](../../plans/iso.md) | A0–A5 的文件承载 BIOS 启动方案已有历史实现；旧小于 64 KiB 的探索边界和 embedded/floppy 流程已被当前 8 MiB 文件/16 MiB 内存/32 MiB 载荷设计及后续构建迁移覆盖。 | 修复 ISO9660 目录记录偶数填充、文件名上限 219 和独立大端路径表；真实镜像字节结构宿主测试通过。 | 新镜像 BIOS 启动、安装、边界容量与故障流程仍需固定 NASM/QEMU。UEFI、真机和任意崩溃恢复不在现有计划已完成范围；宿主镜像解析不能证明固件启动。 |
 | [localpilot_ssg_adapter_proposal.md](../../plans/localpilot_ssg_adapter_proposal.md) | 是接入方案，未包含或迁移私有 LocalPilot。XOS 已有 SSG、Interactium 和受限 broker/管道工作，不能据早期提案说这些基础全不存在；也没有 LP 端到端资格。 | 审阅提案及底层实现；修复部分 Interactium 输入归属/重同步和 SSG 构建/验证器问题。未修改 LocalPilot、凭据或接入权限。 | 需取得获授权的真实 LP 源码和匹配运行环境，按 scope/epoch/action 契约完成 broker、权限、取消、UNKNOWN 与重启测试；未授权或来源未知的动作不能由适配器自动重放。 |
 | [localpilot_xos_lp0.md](../../plans/localpilot_xos_lp0.md) | LP0 为依赖勘查；主题 JSON v2/CSS 生成和局部基础不等于 React/Tauri/LP 业务运行。Python、Pillow、SSG 的子集通过不能扩张成完整 LocalPilot 可运行。 | 汇总真实能力边界；没有复制私有工程、启动网络模型服务或伪造应用兼容结果。 | Python HTTP/SSE/TLS、React/DOM、Rust/Tauri/Wry、Node、窗口/文件对话框/监听/宠物 overlay 等需按实际架构择路，配合获授权源代码和真实网络接口逐项落地。保留业务代码的要求需真正端到端测试；MLX 可选路线单独决定。 |

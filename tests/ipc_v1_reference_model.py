@@ -124,7 +124,7 @@ class reference_model:
     def query_features():
         return {
             "known": ipc_v1_feature_known_mask,
-            "supported": 0x3,
+            "supported": 0x0f,
             "limits": (ipc_v1_max_message_bytes,
                        ipc_v1_max_handles_per_process,
                        ipc_v1_max_endpoints_system,
@@ -408,13 +408,15 @@ class ipc_v1_reference_model_test(unittest.TestCase):
     def test_manifest_feature_model_is_not_product_support(self):
         query = reference_model.query_features()
         self.assertEqual(query["known"], ipc_v1_feature_known_mask)
-        self.assertEqual(query["supported"], 0x3)
+        self.assertEqual(query["supported"], 0x0f)
         self.assertEqual(query["limits"][0], ipc_v1_max_message_bytes)
 
-    def test_both_sdk_profiles_share_an_unsupported_ipc_manifest_entry(self):
+    def test_both_sdk_profiles_share_the_guest_qualified_ipc_manifest_entry(self):
         entry = ipc_v1_manifest_entry()
         self.assertEqual(entry, {"abi_version": 1, "syscall": 88,
-                                 "status": "registered_unsupported", "features": []})
+                                 "status": "supported", "features": [
+                                     "endpoint_call_v1", "deadline_v1",
+                                     "notification_v1", "wait_set_v1"]})
         root = Path(__file__).resolve().parents[1]
         for builder in (root / "scripts/user_build.py",
                         root / "scripts/build_threading_sdk.py"):

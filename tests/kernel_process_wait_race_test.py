@@ -51,6 +51,9 @@ def main():
         "process_record* owned_process(u64 handle) {",
     )
     implementation = "\n".join(definition(source, value) for value in signatures)
+    ipc_copy = "void copy_ipc_payload(void* destination, const void* source, u32 length) {"
+    if ipc_copy in source:
+        implementation = definition(source, ipc_copy) + implementation
     wait_case = definition(source, "case sys_process_wait: {")
     dispatch = """
 void* wait_syscall(interrupt_frame* frame) {

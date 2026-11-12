@@ -1,3 +1,5 @@
+最终基线已补审至 `4c9b6f8feb0667d7169167e406da662be789876c`。以下保留早期阶段的验证计数与状态，尤其 e624 阶段的 IPC unsupported 描述已由上游 #114 更新；当前状态和增量结论以 `latest_upstream_review.md`、总报告及最终结果为准。
+
 本附件合并分阶段审阅记录。阶段内计数不相加；最终覆盖与结果以 `repository_inventory.csv` 和 `validation_results.json` 为准。宿主绝对路径已机械替换为 `${XOS_ROOT}`、`${XOS_AUDIT_WORK}` 等占位符，以下不是未经处理的原始日志。临时清单名仅用于说明记录来源；本报告附有最终 CSV、结构化结果、关键日志与可重放命令。
 
 # XOS UI / SSG / 端口构建审计分报告

@@ -1,6 +1,7 @@
 # 构建、交付和证据工具专项复核
 
-基线：`e6246faf8eefac305a99528f727b1592ee93a5b2`。日期：2026-11-12。
+初审基线：`e6246faf8eefac305a99528f727b1592ee93a5b2`；最终增量基线：
+`4c9b6f8feb0667d7169167e406da662be789876c`。日期：2026-11-12。
 本文件补充总表中 B01–B06、B14、B16–B17、B23、T01–T03 的实现和验证边界。
 
 ## 1. ISO 结构的两个实际错误
@@ -110,7 +111,7 @@ Python 用法说明补充已知 exec_prefix 提示的含义和如何区分真实
 
 ## 7. 阅读方法和冻结代码
 
-全树路径基线为 5,247 项。代码范围以总报告的 CSV 为准，包括 `.c/.cpp/.cc/.h/.hpp`、
+全树路径基线为 5,250 项。代码范围以总报告的 CSV 为准，包括 `.c/.cpp/.cc/.h/.hpp`、
 汇编及 include、Python/shell、链接脚本、JavaScript/HTML/CSS、Swift、Make/CMake、
 patch/diff 和有关构建输入。CSV 中 `inventory_only` 表示仅盘点，不能作为全文审阅。
 
@@ -127,7 +128,7 @@ initial 版本完整对照。CSV 显式记录比较对象与方式，不声称�
 `package_p0_cases` 缺少 `build/releases/0.0.1-1024`；skip 为缺 idna XPK。没有降低
 失败条件，也没有将这些项目移出统计。
 
-最终 Python 语法扫描 428 文件，其中 427 可解析，唯一失败是明确的负例
+最终 Python 语法扫描 430 文件，其中 429 可解析，唯一失败是明确的负例
 `tests/fixtures/cpython_py1/syntax_error.py`；27 个 shell 文件的 bash 语法检查通过。
 这些检查不证明脚本的全部运行路径正确，bash 语法检查也不是全部 shell 的运行资格。
 

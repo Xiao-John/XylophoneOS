@@ -2,8 +2,10 @@
 
 ## 结论和边界
 
-本轮从上游 `Xiao-John/XylophoneOS` 最新 main 开始，审阅期间又同步了
-`e6246faf8eefac305a99528f727b1592ee93a5b2`（UTF-8 M2 边界探针）。修复在独立
+本轮从上游 `Xiao-John/XylophoneOS` 最新 main 开始，先同步了 UTF-8 M2 边界探针，
+收尾又纳入刚合并的 IPC IP5。最终审计基线为
+`4c9b6f8feb0667d7169167e406da662be789876c`（#114）；相对前一基线
+`e6246faf8eefac305a99528f727b1592ee93a5b2` 的 15 个增量文件已另行复核。修复在独立
 `codex/comprehensive-audit-20261112` 分支交付；未合并、未发布新发行版、未改写历史验收。
 
 已经逐文件审阅当前可见的自研内核、启动、共享 ABI、用户运行时、服务、程序、
@@ -14,13 +16,13 @@ GUI/SSG、端口适配、构建脚本和测试；也补读了全部可见第三�
 第三方源码归档内部、预编译库内部、美术资产和非代码数据不在源码全读声明内。
 本报告不证明“项目所有 bug 已清零”；也没有反汇编审计全部二进制。
 
-基线共 **5,247 个跟踪文件**，其中 **1,172 个可见代码、补丁和构建输入文件**全部有
-逐文件审阅记录；本轮新增的 **17 个实现/回归文件**也已复核。这里不把二进制归档、
+基线共 **5,250 个跟踪文件**，其中 **1,174 个可见代码、补丁和构建输入文件**全部有
+逐文件审阅记录；本轮新增的 **18 个实现/回归文件**也已复核。这里不把二进制归档、
 压缩包内部源码、游戏 YAML 数据或全部历史报告文字算作已逐行代码审计。
 
-下表共 **56 项修复或待办处理**：23 项运行代码问题、29 项构建/测试/证据工具问题、
+下表共 **57 项修复或待办处理**：24 项运行代码问题、29 项构建/测试/证据工具问题、
 3 项交付材料与文档待办、1 项参考模型问题。这是按问题类别去重后的条目数，
-不是“56 个客体 bug 已验收”。完整逐条说明与未验收边界同时交付。
+不是“57 个客体 bug 已验收”。完整逐条说明与未验收边界同时交付。
 
 本机可用 GCC/G++、ar、nm 和 Python；缺少仓库固定的 x86_64-elf GCC/G++ 16.2.0、
 Binutils 2.47.20260726、NASM 3.02、QEMU 11.1.2。实际运行系统构建在 NASM 检查处失败。
@@ -35,10 +37,11 @@ DMA、Qt 客体界面或完整发行流程。未用其他编译器冒充固定�
 | unittest：24 个模块 | 256 项：253 通过、0 failure、2 error、1 skip | 两个 error 是缺少旧 SDK；一个 skip 是缺少 idna XPK，未隐藏或降级 |
 | 真实 files/FatFs 回归 | 文件语义 25/25；故障恢复 21/21 | 内存盘和实际磁盘写错误注入，不是实际设备断电验收 |
 | 真实 libc/loader/file_client 链路 | 启动描述符 15/15；execvp 边界 6/6 | 宿主替代 syscall/IPC 边界，未执行目标内核 |
+| IPC 新旧 SDK 查询兼容 | 9/9 | 真实历史/当前头与当前内核查询分支，syscall/页合法性/计数设置为宿主边界 |
 | Interactium 与 transport | ASan/UBSan 两套通过 | 实际服务实现；容器中关闭 leak detection，不宣称完成泄漏检查 |
 | SQLite、dash、Adventure、ABI、归档等 | 对应真实实现或真实 CLI 定向回归通过 | 详细命令和边界在附件；与 unittest 有重叠，不累计成虚假的独立总数 |
-| Python/shell 语法 | 428 个 Python 中 427 可解析，1 个是有意 syntax_error 负例；27 个 shell 语法通过 | 语法检查不是完整执行 |
-| 内核对象编译 | 默认 22 个、VM1/COW1 另 3 个对象通过 | 宿主 g++ 和生成头声明替身，未链接/启动系统 |
+| Python/shell 语法 | 430 个 Python 中 429 可解析，1 个是有意 syntax_error 负例；27 个 shell 语法通过 | 语法检查不是完整执行 |
+| 内核对象编译 | 初审默认 22 个、VM1/COW1 另 3 个；最新 tasks.cpp 三配置重跑通过 | 宿主 g++ 和生成头声明替身，未链接/启动系统；没有把初审批次改称全部在新基线上重跑 |
 | `make build` | **BLOCKED，退出 2：NASM 不存在** | 固定工具链、QEMU、Qt、SDK 和完整发行验收未完成 |
 
 两项缺 SDK 的 unittest 为 `package_p0_cases` 的独立 C/C++ 工程与 SDK binding/init
@@ -54,6 +57,7 @@ DMA、Qt 客体界面或完整发行流程。未用其他编译器冒充固定�
 |---|---|---|
 | K01 | 父进程线程 A 等待子进程；完成后 A 已唤醒但尚未取结果，线程 B 抢先 wait，消耗完成记录，A 得到假成功且遗留 VM pin。 | 把既有重复等待检查前移到 ready 分支之前；真实 tasks.cpp 片段回归覆盖阻塞/轮询竞争、跨页 copyout 与 pin 释放。旧实现稳定失败，修后通过。 |
 | K02 | monitor 连续 `alloc; alloc; free` 覆盖唯一记录的页地址，第一张页无法释放。 | 已持有页时返回 busy；真实 console/memory 宿主回归恢复页数基线，kernel smoke 增加相同客体用例。 |
+| K03 | 最新 IP5 在原 72 字节 ABI 的旧零保留字中默认返回直切计数；计数非零后，真实旧 SDK 的 feature query 稳定返回 -112 并清空输出。 | 通过既有 arg3 的 query 专用 0x1 位显式选择计数，默认保持零；SDK 默认兼容、IP5 两处主动取数。旧/新 SDK、0/1 累计、未知 flag 和非 query flag 共 9 场景通过；未修 IP5 的相同回归失败。 |
 | F01 | seek 到 EOF 之后写入失败，逻辑偏移被回滚为 EOF，后续重试写错位置。 | 仅将 FatFs 游标钳到合法位置，保留原逻辑偏移；真实文件服务回归通过。 |
 | F02 | 活动原子保存尚未完成时，另一个无关文件的 rename-replace 清理了其 staging 临时文件，导致全局 recovery gate。 | rename 只清理自身 journal/backup，保留活动 staging；真实文件服务回归通过。 |
 | F03 | replace_chunk 部分写入后返回错误，却未累计已写入长度；重试可能重复数据。 | 无论最终错误与否都记录真实进度并回传；真实短写/错误回归通过。 |
@@ -118,8 +122,9 @@ ISO 格式核对来源：[ECMA-119 第四版](https://www.ecma-international.org
 ### 1. 当前修订的真实系统和 GUI 验收
 
 缺失固定工具链阻止 `make build`，因此也阻止 `make smoke`、VM/COW/IPC、音频、
-Qt、SL3/SL4 和发行 smoke。宿主 g++ 编译了 22 个 kernel/shared C++ 单元，另外
-编译了开启 VM1/COW1 的 3 个对象；生成镜像头仅使用声明替身，没有链接启动镜像。
+Qt、SL3/SL4 和发行 smoke。宿主初审编译了 22 个 kernel/shared C++ 单元，另外
+编译了开启 VM1/COW1 的 3 个对象；#114 合并及 K03 修复后又单独编译最新 tasks.cpp
+的默认、VM1、VM1+COW1 三个配置。生成镜像头仅使用声明替身，没有链接启动镜像。
 ASan/UBSan 测试保留；容器的 ptrace 环境不能跑 LeakSanitizer，相关测试关闭的是
 leak detection，不能据此声称无泄漏。
 
@@ -138,14 +143,18 @@ I/O 输出。父进程退出当前会递归终止子进程，“父先退出、�
 [COW 契约](../../contracts/cow0.md) 完成生命周期、copyout、失败回滚与真实客体故障注入；
 VM3 的 reserve/commit/decommit/protect/query、线程等待 pin 和进程退出必须联合验收。
 
-### 3. IPC v1 和设备授权尚未获得运行资格
+### 3. IPC 最新状态与设备授权欠账
 
-main 有 endpoint、notification、wait-set 实现，但 SDK 仍正确声明 unsupported。
-真实 close/cancel/deadline/队列/等待竞争未在本轮验证；上游未合并工作不能算作 main 已有能力。
+最新 #114 依据上游 #111 记录的三轮客体验收，已经将 endpoint_call、deadline、
+notification、wait_set 四个位同时在 runtime 与双 SDK 开放为 `0x0f`；不能再把当前
+主线写成全部 unsupported。IP5 短消息直接切换、handle 索引和批量复制也已合入，
+其新客体探针与性能结果尚待运行。`bulk_grant_v1` 的 `0x10` 仍关闭。
+本轮没有重跑上游的历史客体验收，也没有把它改绑为本轮组合结果。
 `sys_device` 的请求校验后端仍返回 unknown，grant/map/DMA/IRQ/revoke 尚未完整落地。
 
-退出条件：先在同一构建通过 [IPC 契约](../../contracts/ipc_v1.md) 的慢路径与生命周期矩阵，
-再分别推进 bulk/fastpath；设备授权按 [A2 契约](../../contracts/device_authorization_v1.md)
+退出条件：在本轮同一构建复验 [IPC 契约](../../contracts/ipc_v1.md) 的慢路径与生命周期
+矩阵，并运行 IP5 的兼容性、回退、计数、资源和延迟分布探针；bulk 仍按 IP4 单独资格化。
+设备授权按 [A2 契约](../../contracts/device_authorization_v1.md)
 落地对象、回收和用户态驱动迁移，再接网络。硬件路径的延迟不能靠猜测调整。
 
 ### 4. 文件服务仍不是完整 POSIX
@@ -232,7 +241,7 @@ xypm P3、Qt Quick/QML、完整多语言和故障包后续阶段属于尚未完�
 | 2 | 完成本轮修复的客体验收，再做补丁发行 | smoke、所有变更相关 guest、Qt 保存/输入、资源基线与 release smoke 全通过；新发行明确旧 SDK 兼容边界。 |
 | 3 | 用文件/目录 identity 收口 POSIX 文件语义 | 多打开、延迟删除、目录替换、cwd 跟随 rename、真实满盘和崩溃恢复都有可重复测试。 |
 | 4 | 完成 VM3 与 COW2/COW3 | copyout 准备/提交、pin、OOM 回滚、父子生命周期和资源回收联合通过；之后才评估默认 COW。 |
-| 5 | 按层验收 IPC v1 | 先 slowpath/endpoint/wait-set 全矩阵，再 bulk 与 fastpath；失败回退行为和资源基线可观测。 |
+| 5 | 收口 IPC 新组合、快路径与 bulk 资格 | 在已开放的 IP2/IP3 上复验本轮组合，验证 IP5 的旧 SDK 兼容、回退、资源与延迟分布；IP4 bulk 独立验收后才开放。 |
 | 6 | 落地设备授权并迁移驱动 | grant/map/IRQ/revoke 可用，驱动死亡能清理资源；随后推进用户态网络和真实音频输出。 |
 | 7 | 修清运行库、依赖头与 Python 扩展的确定故障 | 按真实 seed profile 验证并修复 newlib 头兼容问题；重现并解决 Pillow 分配 fault；完成 TLS/分配/等待/退出组合测试和真正 CPU 时间记账。 |
 | 8 | 收口桌面输入、编辑保存和 SSG 生命周期 | 覆盖换焦点长按、服务重启、A 保存后打开 B、consumer 退出；D13/D14 有根因和稳定回归；M2 边界有客体结果。 |
@@ -250,6 +259,7 @@ xypm P3、Qt Quick/QML、完整多语言和故障包后续阶段属于尚未完�
 - `validation_log.txt`：关键结果与失败的规范化日志；`validation_reproductions.md` 给出一次性宿主检查的完整重放代码。
 - `kernel_review.md`、`userland_review.md`、`ui_review.md`：分工审阅的具体证据和局限。
 - `root_review.md`：ISO、构建、证据工具、发行流程与最终交叉复核说明。
+- `latest_upstream_review.md`、`latest_upstream_results.json`：#114 增量复核、IPC 支持状态更正、兼容性修复及实际验证证据。
 - `todo_disposition.md`：31 份计划及仍开放技术债的逐项处置和依赖。
 - `bug_hunt_questions.md`：原题集线索、仓库保留测试和本轮新增测试题。
 - `fatfs_truncate_results.json`、`newlib_header_results.json`、`ui_host_results.json`：失败/成功对照及明确的验证范围。

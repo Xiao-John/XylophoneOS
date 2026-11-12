@@ -1,0 +1,288 @@
+{
+  "abi_compat_results.json": {
+    "base": "e6246faf8eefac305a99528f727b1592ee93a5b2",
+    "upstream": "4c9b6f8feb0667d7169167e406da662be789876c",
+    "method": "Unmodified old/new ABI+SDK headers; real new kernel query branch and copy/header helpers extracted unchanged. Only syscall transport, page validity and counter setup are host boundaries. Not a guest test.",
+    "compiler": "g++ (Debian 14.2.0-19) 14.2.0",
+    "commands": [
+      [
+        "g++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-O2",
+        "-I",
+        "${XOS_AUDIT_WORK}/latest_ipc_validation/new",
+        "-c",
+        "${XOS_AUDIT_WORK}/latest_ipc_validation/kernel_query.cpp",
+        "-o",
+        "${XOS_AUDIT_WORK}/latest_ipc_validation/kernel_query.o"
+      ],
+      [
+        "g++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-O2",
+        "-I",
+        "${XOS_AUDIT_WORK}/latest_ipc_validation/old",
+        "${XOS_AUDIT_WORK}/latest_ipc_validation/client.cpp",
+        "${XOS_AUDIT_WORK}/latest_ipc_validation/kernel_query.o",
+        "-o",
+        "${XOS_AUDIT_WORK}/latest_ipc_validation/old_client"
+      ],
+      [
+        "g++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-O2",
+        "-I",
+        "${XOS_AUDIT_WORK}/latest_ipc_validation/new",
+        "${XOS_AUDIT_WORK}/latest_ipc_validation/client.cpp",
+        "${XOS_AUDIT_WORK}/latest_ipc_validation/kernel_query.o",
+        "-o",
+        "${XOS_AUDIT_WORK}/latest_ipc_validation/new_client"
+      ]
+    ],
+    "results": {
+      "old": "direct_switch_count=0 query_result=0 supported=15\ndirect_switch_count=1 query_result=-112 supported=0\n",
+      "new": "direct_switch_count=0 query_result=0 supported=15\ndirect_switch_count=1 query_result=0 supported=15\n"
+    }
+  },
+  "k03_before_after.json": [
+    {
+      "source": "${XOS_AUDIT_WORK}/latest_ipc_validation/tasks_ip5_before.cpp",
+      "command": [
+        "python3",
+        "tests/ipc_v1_query_compat_test.py",
+        "--source",
+        "${XOS_AUDIT_WORK}/latest_ipc_validation/tasks_ip5_before.cpp"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "old_query: ${XOS_TEMP}/xos_ipc_query_compat_egz82in8/old.cpp:16: int main(): Assertion `ipc_v1::query_features(query)==0' failed.\nTraceback (most recent call last):\n  File \"${XOS_ROOT}/tests/ipc_v1_query_compat_test.py\", line 162, in <module>\n    main()\n  File \"${XOS_ROOT}/tests/ipc_v1_query_compat_test.py\", line 40, in main\n    subprocess.run([str(binary)], check=True)\n  File \"${XOS_RUNTIME_ROOT}/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py\", line 571, in run\n    raise CalledProcessError(retcode, process.args,\nsubprocess.CalledProcessError: Command '['${XOS_TEMP}/xos_ipc_query_compat_egz82in8/old_query']' died with <Signals.SIGABRT: 6>.\n"
+    },
+    {
+      "source": "${XOS_ROOT}/src/kernel/arch/x86_64/tasks.cpp",
+      "command": [
+        "python3",
+        "tests/ipc_v1_query_compat_test.py",
+        "--source",
+        "${XOS_ROOT}/src/kernel/arch/x86_64/tasks.cpp"
+      ],
+      "returncode": 0,
+      "stdout": "IPC_V1_QUERY_COMPAT_CASES_PASSED=9\n",
+      "stderr": ""
+    }
+  ],
+  "k03_source_hashes.json": {
+    "src/kernel/arch/x86_64/tasks.cpp": "cb773b58f14a7ffc5092c0e8af0abc60e03c622527f55d525e91abfeeb420022",
+    "src/shared/include/xos/ipc_v1_abi.hpp": "8b69d9f5fb878f89dd093a07c55c5ef5cf499f7f0c188a7d003fed49d1f7183b",
+    "src/user/include/xos/ipc_v1.hpp": "3d80e5c3df8e1b342882535833c3bd7775e5bc328b8e5ffdc81696d0c2e4d9f9",
+    "tests/fixtures/ipc_v1_fastpath/ipc_v1_fastpath_probe.cpp": "0c36b4153165242c20a7937c8484c1ca900a9f3dbdf2676dc40b1b97f9fe5fe5",
+    "docs/contracts/ipc_v1.md": "566eb77e0eaf47939929c76574053460f7ad95f41bdaf824b77f5a8b58f8f6f8",
+    "docs/e04_loader_sdk.md": "706ecbc70cdccba2993a67ecde15243d3fe1a9c966ee2c90a83f85347affb286",
+    "tests/ipc_v1_query_compat_test.py": "859be522dcabc5e65d7e0207cd3aa49fd144be190560ddecdd4d7b71da9b460b"
+  },
+  "latest_tasks_compile.json": {
+    "scope": "Latest merged tasks.cpp plus K01 and K03; real repository COMMON_FLAGS and X86_FLAGS; declarations replace generated images; no linker, real generated image, cross compiler or guest qualification. Original 22+3 object run belongs to e624 audit phase.",
+    "compiler": "/usr/bin/x86_64-linux-gnu-g++-14",
+    "version": "g++ (Debian 14.2.0-19) 14.2.0\nCopyright (C) 2024 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+    "source_sha256": "cb773b58f14a7ffc5092c0e8af0abc60e03c622527f55d525e91abfeeb420022",
+    "checks": [
+      {
+        "mode": "default",
+        "command": [
+          "/usr/bin/g++",
+          "-std=c++20",
+          "-ffreestanding",
+          "-nostdinc++",
+          "-fno-exceptions",
+          "-fno-rtti",
+          "-fno-stack-protector",
+          "-fno-threadsafe-statics",
+          "-fno-use-cxa-atexit",
+          "-fno-unwind-tables",
+          "-fno-asynchronous-unwind-tables",
+          "-fno-omit-frame-pointer",
+          "-fno-pic",
+          "-fno-pie",
+          "-g3",
+          "-gdwarf-4",
+          "-O2",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-Wconversion",
+          "-Wshadow",
+          "-m64",
+          "-march=x86-64",
+          "-mtune=generic",
+          "-mcmodel=small",
+          "-mno-red-zone",
+          "-mgeneral-regs-only",
+          "-DXOS_VM1_PROBE=0",
+          "-DXOS_COW1_PROBE=0",
+          "-I",
+          "${XOS_ROOT}/src/kernel/include",
+          "-I",
+          "${XOS_ROOT}/src/kernel",
+          "-I",
+          "${XOS_ROOT}/src/shared/include",
+          "-I",
+          "${XOS_ROOT}/src/kernel/arch/x86_64",
+          "-I",
+          "${XOS_AUDIT_WORK}/latest_ipc_validation/declaration_headers",
+          "-c",
+          "${XOS_ROOT}/src/kernel/arch/x86_64/tasks.cpp",
+          "-o",
+          "${XOS_AUDIT_WORK}/latest_ipc_validation/tasks_default.o"
+        ],
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "mode": "vm1",
+        "command": [
+          "/usr/bin/g++",
+          "-std=c++20",
+          "-ffreestanding",
+          "-nostdinc++",
+          "-fno-exceptions",
+          "-fno-rtti",
+          "-fno-stack-protector",
+          "-fno-threadsafe-statics",
+          "-fno-use-cxa-atexit",
+          "-fno-unwind-tables",
+          "-fno-asynchronous-unwind-tables",
+          "-fno-omit-frame-pointer",
+          "-fno-pic",
+          "-fno-pie",
+          "-g3",
+          "-gdwarf-4",
+          "-O2",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-Wconversion",
+          "-Wshadow",
+          "-m64",
+          "-march=x86-64",
+          "-mtune=generic",
+          "-mcmodel=small",
+          "-mno-red-zone",
+          "-mgeneral-regs-only",
+          "-DXOS_VM1_PROBE=1",
+          "-DXOS_COW1_PROBE=0",
+          "-I",
+          "${XOS_ROOT}/src/kernel/include",
+          "-I",
+          "${XOS_ROOT}/src/kernel",
+          "-I",
+          "${XOS_ROOT}/src/shared/include",
+          "-I",
+          "${XOS_ROOT}/src/kernel/arch/x86_64",
+          "-I",
+          "${XOS_AUDIT_WORK}/latest_ipc_validation/declaration_headers",
+          "-c",
+          "${XOS_ROOT}/src/kernel/arch/x86_64/tasks.cpp",
+          "-o",
+          "${XOS_AUDIT_WORK}/latest_ipc_validation/tasks_vm1.o"
+        ],
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "mode": "vm1_cow1",
+        "command": [
+          "/usr/bin/g++",
+          "-std=c++20",
+          "-ffreestanding",
+          "-nostdinc++",
+          "-fno-exceptions",
+          "-fno-rtti",
+          "-fno-stack-protector",
+          "-fno-threadsafe-statics",
+          "-fno-use-cxa-atexit",
+          "-fno-unwind-tables",
+          "-fno-asynchronous-unwind-tables",
+          "-fno-omit-frame-pointer",
+          "-fno-pic",
+          "-fno-pie",
+          "-g3",
+          "-gdwarf-4",
+          "-O2",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-Wconversion",
+          "-Wshadow",
+          "-m64",
+          "-march=x86-64",
+          "-mtune=generic",
+          "-mcmodel=small",
+          "-mno-red-zone",
+          "-mgeneral-regs-only",
+          "-DXOS_VM1_PROBE=1",
+          "-DXOS_COW1_PROBE=1",
+          "-I",
+          "${XOS_ROOT}/src/kernel/include",
+          "-I",
+          "${XOS_ROOT}/src/kernel",
+          "-I",
+          "${XOS_ROOT}/src/shared/include",
+          "-I",
+          "${XOS_ROOT}/src/kernel/arch/x86_64",
+          "-I",
+          "${XOS_AUDIT_WORK}/latest_ipc_validation/declaration_headers",
+          "-c",
+          "${XOS_ROOT}/src/kernel/arch/x86_64/tasks.cpp",
+          "-o",
+          "${XOS_AUDIT_WORK}/latest_ipc_validation/tasks_vm1_cow1.o"
+        ],
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ]
+  },
+  "upstream_test_validation": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "chunk_id": "d19366",
+        "wall_time_seconds": 0.033909307,
+        "exit_code": 0,
+        "original_token_count": 744,
+        "output": "test_both_sdk_profiles_share_the_guest_qualified_ipc_manifest_entry (__main__.ipc_v1_reference_model_test.test_both_sdk_profiles_share_the_guest_qualified_ipc_manifest_entry) ... ok\ntest_call_first_preserves_caller_badge (__main__.ipc_v1_reference_model_test.test_call_first_preserves_caller_badge) ... ok\ntest_call_timeout_after_delivery_returns_result_unknown (__main__.ipc_v1_reference_model_test.test_call_timeout_after_delivery_returns_result_unknown) ... ok\ntest_call_timeout_before_delivery_guarantees_no_delivery (__main__.ipc_v1_reference_model_test.test_call_timeout_before_delivery_guarantees_no_delivery) ... ok\ntest_close_distinguishes_queued_from_delivered_calls (__main__.ipc_v1_reference_model_test.test_close_distinguishes_queued_from_delivered_calls) ... ok\ntest_delegation_cannot_increase_rights (__main__.ipc_v1_reference_model_test.test_delegation_cannot_increase_rights) ... ok\ntest_delivery_then_close_invalidates_reply_and_marks_unknown (__main__.ipc_v1_reference_model_test.test_delivery_then_close_invalidates_reply_and_marks_unknown) ... ok\ntest_empty_and_maximum_messages_are_valid_but_max_plus_one_is_not (__main__.ipc_v1_reference_model_test.test_empty_and_maximum_messages_are_valid_but_max_plus_one_is_not) ... ok\ntest_expired_deadline_still_observes_already_queued_message_first (__main__.ipc_v1_reference_model_test.test_expired_deadline_still_observes_already_queued_message_first) ... ok\ntest_fifo_queue_and_depth_limit (__main__.ipc_v1_reference_model_test.test_fifo_queue_and_depth_limit) ... ok\ntest_handle_owner_and_rights_are_authenticated (__main__.ipc_v1_reference_model_test.test_handle_owner_and_rights_are_authenticated) ... ok\ntest_manifest_feature_model_is_not_product_support (__main__.ipc_v1_reference_model_test.test_manifest_feature_model_is_not_product_support) ... ok\ntest_per_process_endpoint_handle_quota (__main__.ipc_v1_reference_model_test.test_per_process_endpoint_handle_quota) ... ok\ntest_receive_buffer_too_small_does_not_consume (__main__.ipc_v1_reference_model_test.test_receive_buffer_too_small_does_not_consume) ... ok\ntest_receive_first_rendezvous_preserves_badge_and_payload_snapshot (__main__.ipc_v1_reference_model_test.test_receive_first_rendezvous_preserves_badge_and_payload_snapshot) ... ok\ntest_reply_buffer_too_small_keeps_one_shot_token_live (__main__.ipc_v1_reference_model_test.test_reply_buffer_too_small_keeps_one_shot_token_live) ... ok\ntest_reply_receive_reports_reply_success_when_receive_fails (__main__.ipc_v1_reference_model_test.test_reply_receive_reports_reply_success_when_receive_fails) ... ok\ntest_reply_token_quota_does_not_consume_next_call (__main__.ipc_v1_reference_model_test.test_reply_token_quota_does_not_consume_next_call) ... ok\ntest_system_endpoint_quota_and_nonreused_handle (__main__.ipc_v1_reference_model_test.test_system_endpoint_quota_and_nonreused_handle) ... ok\n\n----------------------------------------------------------------------\nRan 19 tests in 0.003s\n\nOK\n"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "chunk_id": "8ea3d8",
+        "wall_time_seconds": 4.5547e-05,
+        "exit_code": 0,
+        "original_token_count": 0,
+        "output": ""
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "chunk_id": "3a5ce8",
+        "wall_time_seconds": 3.4453e-05,
+        "exit_code": 0,
+        "original_token_count": 0,
+        "output": ""
+      }
+    }
+  ],
+  "scope": "actual old/current SDK and kernel query branch; current tasks host objects with declaration substitutes; no guest or performance run"
+}

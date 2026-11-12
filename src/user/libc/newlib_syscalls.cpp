@@ -15,6 +15,7 @@
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <libgen.h>
 #include <limits.h>
 #include <spawn.h>
 #include <stdio.h>
@@ -1979,6 +1980,47 @@ extern "C" int chown(const char* path, uid_t, gid_t) {
     if (path == nullptr) { errno = EFAULT; return -1; }
     errno = ENOSYS;
     return -1;
+}
+
+extern "C" char* dirname(char* path) {
+    static char dot[] = ".";
+    if (path == nullptr || path[0] == '\0') { return dot; }
+    size_t length = strlen(path);
+    while (length > 1 && path[length - 1] == '/') { path[--length] = '\0'; }
+    char* slash = strrchr(path, '/');
+    if (slash == nullptr) { return dot; }
+    if (slash == path) { path[1] = '\0'; return path; }
+    *slash = '\0';
+    length = strlen(path);
+    while (length > 1 && path[length - 1] == '/') { path[--length] = '\0'; }
+    return path;
+}
+
+extern "C" char* realpath(const char* path, char* resolved) {
+    if (path == nullptr) { errno = EINVAL; return nullptr; }
+    char normalized[max_path];
+    bool trailing_slash = false;
+    const int resolved_status = resolve_path(path, normalized, trailing_slash);
+    if (resolved_status != 0) { errno = resolved_status; return nullptr; }
+    const size_t length = strlen(normalized);
+    char* output = resolved;
+    if (output == nullptr) {
+        output = static_cast<char*>(malloc(length + 1));
+        if (output == nullptr) { errno = ENOMEM; return nullptr; }
+    }
+    memcpy(output, normalized, length + 1);
+    return output;
+}
+
+extern "C" long pathconf(const char* path, int name) {
+    if (path == nullptr) { errno = EFAULT; return -1; }
+    switch (name) {
+    case _PC_LINK_MAX: return 1;
+    case _PC_NAME_MAX: return 255;
+    case _PC_PATH_MAX: return max_path - 1;
+    case _PC_CHOWN_RESTRICTED: return 1;
+    default: errno = EINVAL; return -1;
+    }
 }
 extern "C" int getpid() { return _getpid(); }
 extern "C" int kill(int pid, int sig) { return _kill(pid, sig); }

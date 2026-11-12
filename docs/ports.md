@@ -39,7 +39,7 @@ src/ports/<id>/
 | `build.system` | string | `autotools` / `make` / `cmake` / `meson` / `custom` / `prebuilt` |
 | `build.recipe` | string \| null | 相对端口目录的脚本路径；status ≥ `cross_built_guest_not_run` 时必需 |
 | `build.patches` | string[] | 相对路径，必须都在 `patches/` 且存在 |
-| `package.id` | string | 与 `port.json.id` 同规则，且与 `package.target_profile` 一致绑定 |
+| `package.id` | string | 包标识，与端口 id **不同**：小写字母开头，可含 `.`/`-` 分隔（如 `thirdparty.nasm`），≤80 字节；全仓唯一，与 `package.target_profile` 绑定 |
 | `package.target_profile` | string | 必须等于 `config/package/*.json` 里某个 `id` |
 | `package.xpk_sha256` | string \| null | 64 位小写十六进制；status ≥ `packed_guest_not_run` 时必需 |
 | `integration.guest_only` | bool | 端口默认 `true` |
@@ -79,6 +79,8 @@ src/ports/<id>/
 - 一律 `git format-patch` 格式：首行 `From <40 位 commit>`，含 `Subject:` 头。
 - 补丁只改上游文件；XOS 侧粘合代码放端口自己的 `build.py` 或独立源文件，不进补丁。
 - 禁止二进制补丁、文件改名、权限位修改；确需改名的在 `README.md` 记录理由。
+  校验器会拒绝含 `GIT binary patch`、`Binary files`、`old mode`/`new mode`、
+  `rename from`/`rename to` 的补丁。
 
 ## 5. 状态与升级条件
 
@@ -92,7 +94,8 @@ src/ports/<id>/
 | `blocked` | 有明确阻塞 | 阻塞解除后回到对应状态，`note` 写清原因 |
 | `retired` | 停止维护 | — |
 
-状态词只此八个，不得新造同义词。
+状态词只此八个，不得新造同义词。`source_locked` 及之后的状态要求 `source` 非
+null（自研、无上游来源的端口最多停在 `planned`）。
 
 ## 6. 构建配方契约
 

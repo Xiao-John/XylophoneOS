@@ -1,7 +1,7 @@
 # src/ports：第三方移植目录
 
 这里存放**第三方源码的移植元数据**，不是源码镜像，也不是 OS 功能代码。
-权威规范见[端口规范](../docs/ports.md)；本文件只给目录契约和上手步骤。
+权威规范见[端口规范](../../docs/ports.md)；本文件只给目录契约和上手步骤。
 
 ## 目录契约
 
@@ -20,7 +20,7 @@ src/ports/<id>/
 ## 新增一个端口
 
 1. `cp -r src/ports/_template src/ports/<id>`；
-2. 填 `port.json`（字段与取值见[端口规范](../docs/ports.md#2-portjson-字段)）；
+2. 填 `port.json`（字段与取值见[端口规范](../../docs/ports.md#2-portjson-字段)）；
 3. 上游归档放 `.cache/xos_seed/` 或仓库外目录，**不入 git**；
 4. 写 `README.md`：状态、构建命令、包 ID/哈希与安装验证命令、已知限制；
 5. 写离线配方：只读 `XOS_SDK` / `XOS_SOURCE_ARCHIVE` / `XOS_OUT`，产出 `.xpk` 与回执；

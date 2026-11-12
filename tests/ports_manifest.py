@@ -114,13 +114,68 @@ def main():
 
         case("patch_format", "git format-patch", patch_case)
 
+        def write_lock(directory):
+            (directory / "source_lock.json").write_text(json.dumps({
+                "kind": "tarball", "version": "1.0.0",
+                "url": "https://example.invalid/tool-1.0.0.tar.gz",
+                "archive": "tool-1.0.0.tar.gz", "sha256": "a" * 64}, indent=2) + "\n")
+
+        def locked(directory, status="source_locked"):
+            write_lock(directory)
+            return dict(source={"kind": "tarball", "lock": "source_lock.json"}, status=status)
+
+        def source_locked_without_source(directory, port):
+            base_port(directory, status="source_locked")
+
+        case("source_locked_without_source", "requires a locked upstream source",
+             source_locked_without_source)
+
+        def non_object_port(directory, port):
+            (directory / "port.json").write_text("[]\n")
+
+        case("non_object_port", "expected an object", non_object_port)
+
+        def non_object_lock(directory, port):
+            base_port(directory, **locked(directory))
+            (directory / "source_lock.json").write_text("[]\n")
+
+        case("non_object_lock", "expected an object", non_object_lock)
+
+        def patch_gap(directory, port):
+            patches = directory / "patches"
+            patches.mkdir()
+            (patches / "0002_thing.patch").write_text(
+                "From " + "a" * 40 + " Mon Sep 17 00:00:00 2001\nSubject: [PATCH] t\n")
+            base_port(directory, build={"system": "custom", "recipe": None,
+                                        "patches": ["patches/0002_thing.patch"]})
+
+        case("patch_gap", "consecutive", patch_gap)
+
+        def patch_binary(directory, port):
+            patches = directory / "patches"
+            patches.mkdir()
+            (patches / "0001_thing.patch").write_text(
+                "From " + "a" * 40 + " Mon Sep 17 00:00:00 2001\nSubject: [PATCH] t\n\n"
+                "GIT binary patch\nliteral 3\n")
+            base_port(directory, build={"system": "custom", "recipe": None,
+                                        "patches": ["patches/0001_thing.patch"]})
+
+        case("patch_binary", "forbidden patch operation", patch_binary)
+
+        def empty_license(directory, port):
+            base_port(directory, license=[])
+
+        case("empty_license", "at least one license", empty_license)
+
+        case("status_type", "expected one of", lambda d, p: base_port(d, status=[]))
+
         def good_patch(directory, port):
             patches = directory / "patches"
             patches.mkdir()
             (patches / "0001_thing.patch").write_text(
                 "From " + "a" * 40 + " Mon Sep 17 00:00:00 2001\n"
                 "Subject: [PATCH] thing\n\n---\n a | 1 +\n")
-            base_port(directory, status="source_locked",
+            base_port(directory, **locked(directory),
                       build={"system": "custom", "recipe": None,
                              "patches": ["patches/0001_thing.patch"]})
 

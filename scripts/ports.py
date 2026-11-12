@@ -144,7 +144,7 @@ def check_source(port, base, where, report):
     if unknown:
         report.fail(where + ".source", f"unknown fields: {sorted(unknown)}")
     kind = source.get("kind")
-    if kind not in SOURCES:
+    if not isinstance(kind, str) or kind not in SOURCES:
         report.fail(where + ".source.kind", f"expected one of {sorted(SOURCES)}")
         return
     lock_name = source.get("lock", "source_lock.json")
@@ -155,6 +155,8 @@ def check_source(port, base, where, report):
         return
     lock = load(lock_path, rel(lock_path), report)
     if not isinstance(lock, dict):
+        if lock is not None:
+            report.fail(rel(lock_path), "expected an object")
         return
     if lock.get("kind") != kind:
         report.fail(rel(lock_path) + ".kind",
@@ -176,8 +178,8 @@ def check_patches(port, base, where, report):
             report.fail(entry, "expected patches/NNNN_topic.patch")
             continue
         number = int(match.group(1))
-        if number <= previous:
-            report.fail(entry, "sequence numbers must increase from 0001")
+        if number != previous + 1:
+            report.fail(entry, "patch numbers must start at 0001 and be consecutive")
         previous = number
         path = inside(base, name, entry, report)
         if path is None:
@@ -191,6 +193,11 @@ def check_patches(port, base, where, report):
             report.fail(entry, "not a git format-patch file (missing 'From <commit> ...')")
         if not any(line.startswith("Subject:") for line in head[:20]):
             report.fail(entry, "not a git format-patch file (missing Subject:)")
+        for line in head:
+            if line.startswith(("old mode ", "new mode ", "rename from ", "rename to ",
+                                "Binary files ")) or "GIT binary patch" in line:
+                report.fail(entry, f"forbidden patch operation: {line.strip()}")
+                break
     directory = base / "patches"
     if directory.is_dir():
         actual = sorted(p.name for p in directory.glob("*.patch"))
@@ -245,6 +252,8 @@ def check_port(directory, report, profiles, seen, package_seen):
     where = rel(directory)
     port = load(directory / "port.json", where + "/port.json", report)
     if not isinstance(port, dict):
+        if port is not None:
+            report.fail(where + "/port.json", "expected an object")
         return
     unknown = set(port) - PORT_FIELDS
     if unknown:
@@ -263,17 +272,21 @@ def check_port(directory, report, profiles, seen, package_seen):
         seen.add(identifier)
     text(port.get("name"), where + "/port.json.name", report, 1, 120)
     text(port.get("upstream_version"), where + "/port.json.upstream_version", report, 1, 128)
-    if not string_list(port.get("license"), where + "/port.json.license", report, 16):
-        pass
+    if string_list(port.get("license"), where + "/port.json.license", report, 16) \
+            and not port["license"]:
+        report.fail(where + "/port.json.license", "at least one license is required")
     homepage = port.get("homepage")
     if homepage is not None and (not isinstance(homepage, str) or not homepage.startswith("https://")):
         report.fail(where + "/port.json.homepage", "expected https:// URL or null")
     status = port.get("status")
-    if status not in STATUS:
+    if not isinstance(status, str) or status not in STATUS:
         report.fail(where + "/port.json.status", f"expected one of {sorted(STATUS)}")
         return
     text(port.get("note"), where + "/port.json.note", report, 1, 512)
-    if status == "blocked" and len(port.get("note", "")) < 10:
+    if status in {"source_locked", *BUILT} and port.get("source") is None:
+        report.fail(where + "/port.json.source",
+                    f"status {status!r} requires a locked upstream source")
+    if status == "blocked" and isinstance(port.get("note"), str) and len(port["note"]) < 10:
         report.fail(where + "/port.json.note", "blocked ports must describe the blocker")
 
     check_source(port, directory, where + "/port.json", report)
@@ -284,7 +297,8 @@ def check_port(directory, report, profiles, seen, package_seen):
     else:
         if set(build) - BUILD_FIELDS:
             report.fail(where + "/port.json.build", f"unknown fields: {sorted(set(build) - BUILD_FIELDS)}")
-        if build.get("system") not in SYSTEMS:
+        system = build.get("system")
+        if not isinstance(system, str) or system not in SYSTEMS:
             report.fail(where + "/port.json.build.system", f"expected one of {sorted(SYSTEMS)}")
         check_patches(port, directory, where + "/port.json", report)
         check_recipe(port, directory, where, report, status)
@@ -303,7 +317,7 @@ def check_port(directory, report, profiles, seen, package_seen):
         else:
             package_seen.add(package_id)
         profile = package.get("target_profile")
-        if profile not in profiles:
+        if not isinstance(profile, str) or profile not in profiles:
             report.fail(where + "/port.json.package.target_profile",
                         f"no config/package profile declares id {profile!r}")
         digest = package.get("xpk_sha256")

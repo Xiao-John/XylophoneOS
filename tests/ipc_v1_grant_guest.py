@@ -118,7 +118,7 @@ def main():
         baseline = resources(guest)
         report['resources_before'] = baseline
         for iteration in range(args.runs):
-            result = command(guest, 'exec-file /bin/ipc_v1_grant_probe.elf',
+            result = command(guest, '/bin/ipc_v1_grant_probe.elf',
                              b'kind=exited code=', timeout=180)
             if b'[ipc-v1-grant] shared-cross-process' not in result or b' PASS' not in result:
                 raise AssertionError(result[-5000:].decode('utf-8', 'replace'))

@@ -1,6 +1,12 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 #ifndef XOS_PTHREAD_H
 #define XOS_PTHREAD_H
+#ifndef _POSIX_READER_WRITER_LOCKS
+#define _POSIX_READER_WRITER_LOCKS 200809L
+#endif
+#ifndef _UNIX98_THREAD_MUTEX_ATTRIBUTES
+#define _UNIX98_THREAD_MUTEX_ATTRIBUTES 1
+#endif
 #include <sys/types.h>
 #include <sys/_pthreadtypes.h>
 #include <time.h>
@@ -27,6 +33,24 @@ extern "C" {
 #define PTHREAD_COND_INITIALIZER {0,0,CLOCK_REALTIME,1}
 #define PTHREAD_RWLOCK_INITIALIZER {0}
 #define PTHREAD_ONCE_INIT {0,0,0}
+#define PTHREAD_BARRIER_SERIAL_THREAD (-1)
+
+typedef struct {
+    pthread_mutex_t mutex;
+    pthread_cond_t cond;
+    unsigned count;
+    unsigned waiting;
+    unsigned generation;
+} pthread_barrier_t;
+
+typedef volatile int pthread_spinlock_t;
+
+#if defined(XOS_THREADED_RUNTIME)
+/* The threaded newlib build has no rwlock attribute object; XOS still ships
+   the attribute API (reader/writer locks themselves are ENOTSUP there). */
+typedef struct { int pshared; } pthread_rwlockattr_t;
+#endif
+
 int sched_yield(void);
 int clock_gettime(clockid_t, struct timespec*);
 int clock_getres(clockid_t, struct timespec*);
@@ -87,6 +111,26 @@ int pthread_cancel(pthread_t);
 int pthread_setcancelstate(int, int*);
 int pthread_setcanceltype(int, int*);
 int pthread_atfork(void(*)(void), void(*)(void), void(*)(void));
+int pthread_barrier_init(pthread_barrier_t*, const void*, unsigned);
+int pthread_barrier_destroy(pthread_barrier_t*);
+int pthread_barrier_wait(pthread_barrier_t*);
+int pthread_spin_init(pthread_spinlock_t*, int);
+int pthread_spin_destroy(pthread_spinlock_t*);
+int pthread_spin_lock(pthread_spinlock_t*);
+int pthread_spin_trylock(pthread_spinlock_t*);
+int pthread_spin_unlock(pthread_spinlock_t*);
+int pthread_attr_getguardsize(const pthread_attr_t*, size_t*);
+int pthread_attr_setguardsize(pthread_attr_t*, size_t);
+int pthread_condattr_getpshared(const pthread_condattr_t*, int*);
+int pthread_rwlockattr_init(pthread_rwlockattr_t*);
+int pthread_rwlockattr_destroy(pthread_rwlockattr_t*);
+int pthread_rwlockattr_setpshared(pthread_rwlockattr_t*, int);
+int pthread_rwlockattr_getpshared(const pthread_rwlockattr_t*, int*);
+int pthread_setname_np(pthread_t, const char*);
+int pthread_getname_np(pthread_t, char*, size_t);
+int pthread_tryjoin_np(pthread_t, void**);
+int pthread_timedjoin_np(pthread_t, void**, const struct timespec*);
+int pthread_getcpuclockid(pthread_t, clockid_t*);
 #ifdef __cplusplus
 }
 #endif

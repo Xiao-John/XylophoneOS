@@ -30,6 +30,9 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
     for header in sorted((root / "src/user/include").glob("*.h")):
         shutil.copyfile(header, sdk / "include" / header.name)
     shutil.copytree(root / "src/user/include/sys", sdk / "include/sys", dirs_exist_ok=True)
+    # The XOS pthread surface (single-thread subset in the ordinary SDK, full
+    # runtime in the threading SDK) is declared by the shared header, not newlib's.
+    shutil.copyfile(root / "src/user/threading/include/pthread.h", sdk / "include/pthread.h")
     shutil.copyfile(root / "src/user/arch/x86_64/user.ld", sdk / "user.ld")
     shutil.copyfile(root / "LICENSE", sdk / "LICENSE")
     shutil.copyfile(root / "NOTICE", sdk / "NOTICE")

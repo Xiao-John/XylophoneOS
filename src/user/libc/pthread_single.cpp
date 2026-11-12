@@ -14,6 +14,7 @@
 #endif
 #include <errno.h>
 #include <pthread.h>
+#include <semaphore.h>
 #include <string.h>
 #include <xos/sdk.hpp>
 
@@ -159,3 +160,93 @@ extern "C" int pthread_getname_np(pthread_t, char* name, size_t size) {
     name[size - 1] = '\0';
     return 0;
 }
+
+extern "C" int sem_init(sem_t* sem, int pshared, unsigned value) {
+    if (sem == nullptr) { return EINVAL; }
+    if (pshared != 0) { return ENOSYS; }
+    sem->value = value;
+    sem->pshared = pshared;
+    sem->initialized = 1;
+    return 0;
+}
+extern "C" int sem_destroy(sem_t* sem) {
+    if (sem == nullptr || !sem->initialized) { return EINVAL; }
+    sem->initialized = 0;
+    return 0;
+}
+extern "C" int sem_wait(sem_t* sem) {
+    if (sem == nullptr || !sem->initialized) { return EINVAL; }
+    while (sem->value == 0) { sched_yield(); }
+    --sem->value;
+    return 0;
+}
+extern "C" int sem_trywait(sem_t* sem) {
+    if (sem == nullptr || !sem->initialized) { return EINVAL; }
+    if (sem->value == 0) { return EAGAIN; }
+    --sem->value;
+    return 0;
+}
+extern "C" int sem_timedwait(sem_t* sem, const struct timespec*) {
+    return sem_trywait(sem);
+}
+extern "C" int sem_post(sem_t* sem) {
+    if (sem == nullptr || !sem->initialized) { return EINVAL; }
+    ++sem->value;
+    return 0;
+}
+extern "C" int sem_getvalue(sem_t* sem, int* value) {
+    if (sem == nullptr || value == nullptr || !sem->initialized) { return EINVAL; }
+    *value = static_cast<int>(sem->value);
+    return 0;
+}
+extern "C" int pthread_barrier_init(pthread_barrier_t* barrier, const void*, unsigned count) {
+    if (barrier == nullptr || count == 0) { return EINVAL; }
+    barrier->count = count;
+    barrier->waiting = 0;
+    barrier->generation = 0;
+    return 0;
+}
+extern "C" int pthread_barrier_destroy(pthread_barrier_t* barrier) {
+    return barrier == nullptr ? EINVAL : 0;
+}
+extern "C" int pthread_barrier_wait(pthread_barrier_t* barrier) {
+    if (barrier == nullptr || barrier->count == 0) { return EINVAL; }
+    if (barrier->count != 1) {
+        // No other thread can arrive in the single-thread runtime.
+        while (true) { sched_yield(); }
+    }
+    return PTHREAD_BARRIER_SERIAL_THREAD;
+}
+extern "C" int pthread_spin_init(pthread_spinlock_t* lock, int) {
+    if (lock == nullptr) { return EINVAL; }
+    __atomic_store_n(lock, 0, __ATOMIC_RELEASE);
+    return 0;
+}
+extern "C" int pthread_spin_destroy(pthread_spinlock_t* lock) {
+    return lock == nullptr ? EINVAL : 0;
+}
+extern "C" int pthread_spin_lock(pthread_spinlock_t* lock) {
+    if (lock == nullptr) { return EINVAL; }
+    while (__atomic_exchange_n(lock, 1, __ATOMIC_ACQUIRE) != 0) { sched_yield(); }
+    return 0;
+}
+extern "C" int pthread_spin_trylock(pthread_spinlock_t* lock) {
+    if (lock == nullptr) { return EINVAL; }
+    return __atomic_exchange_n(lock, 1, __ATOMIC_ACQUIRE) == 0 ? 0 : EBUSY;
+}
+extern "C" int pthread_spin_unlock(pthread_spinlock_t* lock) {
+    if (lock == nullptr) { return EINVAL; }
+    __atomic_store_n(lock, 0, __ATOMIC_RELEASE);
+    return 0;
+}
+extern "C" int pthread_attr_getguardsize(const pthread_attr_t*, size_t* size) {
+    if (size == nullptr) { return EINVAL; }
+    *size = 0;
+    return 0;
+}
+extern "C" int pthread_attr_setguardsize(pthread_attr_t*, size_t size) {
+    return size == 0 ? 0 : ENOTSUP;
+}
+extern "C" int pthread_tryjoin_np(pthread_t, void**) { return ENOTSUP; }
+extern "C" int pthread_timedjoin_np(pthread_t, void**, const struct timespec*) { return ENOTSUP; }
+extern "C" int pthread_getcpuclockid(pthread_t, clockid_t*) { return ENOTSUP; }

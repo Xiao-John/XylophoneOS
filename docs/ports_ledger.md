@@ -27,6 +27,9 @@
 | PL-0011 | 2026-11-12 | lz4/zstd | 真实多线程不可用：线程 SDK 需要 SHA 固定的 newlib 源（`6ff27e3b…`） | 从 sourceware 公开目录取回同名归档（哈希一致），重建线程 newlib 与线程 SDK；lz4 `-T2`、zstd `-T2` 客体实测通过 | 归档在 `.cache/xos_seed/threading_sources/`（不入库） | fixed |
 | PL-0012 | 2026-11-12 | lz4/zstd | 线程化**打包**未打通：没有 threaded profile，xypm 的 DB/profile 仍是 b2 | 新增 `xos-x86_64-static-threaded-v1` profile（登记线程 SDK 树哈希与系统 build），用该 profile 安装线程包；线程 SDK 改为 C 模式 `-fno-exceptions`，不再依赖 libsupc++ | 已实测：lz4/zstd 线程包安装到 threaded DB，`-T2` 压缩/解压通过 | fixed |
 
+| PL-0013 | 2026-11-12 | 线程端口 | P2 常用多线程面缺失：信号量、barrier、spinlock、setname、guardsize、cond/rwlock attr | 在线程运行时与单线程子集各实现一份；`test_p2_guest` 双 SDK 客体验证 | — | fixed |
+| PL-0014 | 2026-11-12 | 线程端口 | `pthread_tryjoin_np`/`timedjoin_np` 需要非阻塞/带 deadline 的 join；`pthread_getcpuclockid` 需要 per-thread CPU 时钟。内核 join 只有阻塞版，`thread_info` 无状态字段 | 评估新增 `sys_thread_tryjoin`/deadline join 与 CPU 时间计入；在此之前保持 `ENOTSUP` | 端口按 `ENOTSUP` 处理 | open |
+
 ## 登记规则
 
 1. 判定标准：不是端口自己的问题（上游代码、打包、许可都排除），而是 XOS 的 libc、

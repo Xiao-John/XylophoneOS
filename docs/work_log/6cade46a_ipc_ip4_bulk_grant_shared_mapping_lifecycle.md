@@ -26,3 +26,7 @@ grant backing 不借用进程现有页，不依赖未交付的 COW，也不暴�
 ## 未完成与下一步
 
 真实 guest acceptance 未运行，不能据此启用 bulk_grant 或修改任一 SDK manifest。维护者运行脚本，检查 cross-process grant, manager close race, quota exhaustion/recovery, process exit reclamation 和资源回归；额外验收 exec 替换清理。单核实现不表示 SMP 支持。
+
+## Owner 验收反馈修复（2026-11-12）
+
+PR #112 owner 验收发现子进程收到的源句柄值与 delegate 分配的新值不一致，跨进程首场景失败。grant delegate 现在向目标安装源句柄值，目标已持有该值时返回 `resources`；契约明确该语义。探针检查返回值、同进程重复委托与子进程缺少 manage 权利的拒绝。此前的 owner guest 结果不覆盖此修复，须重新验收完整场景。

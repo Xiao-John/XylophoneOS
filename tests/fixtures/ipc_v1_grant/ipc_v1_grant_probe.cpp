@@ -41,6 +41,9 @@ int child_mode(u64 handle, u64 address) {
         (void)thread::sleep_until(thread::clock() + 1000000ull);
     }
     if (result != 0 || length != 8192) { fail("child-map-timeout", result); return 12; }
+    if (ipc_v1::grant_close(handle) != static_cast<i64>(ipc_v1_error::denied)) {
+        fail("child-delegated-rights"); return 14;
+    }
     auto* words = reinterpret_cast<volatile u64*>(address);
     if (words[0] != 0x1020304050607080ull || words[600] != 0) { fail("child-snapshot"); return 13; }
     words[600] = shared_marker;
@@ -66,7 +69,7 @@ bool cross_process_share_and_exit() {
     u64 child_handle = 0;
     const u32 child_rights = static_cast<u32>(ipc_v1_grant_right::read_mapping) |
         static_cast<u32>(ipc_v1_grant_right::write_mapping);
-    if (ipc_v1::grant_delegate(handle, static_cast<u64>(child), child_rights, child_handle) != 0 || !child_handle) {
+    if (ipc_v1::grant_delegate(handle, static_cast<u64>(child), child_rights, child_handle) != 0 || child_handle != handle) {
         fail("delegate-child"); (void)ipc_v1::grant_close(handle); return false;
     }
     process_status status{};
@@ -182,13 +185,12 @@ bool mapping_quota_and_aliases() {
     }
     reinterpret_cast<volatile u64*>(a)[600] = shared_marker;
     if (reinterpret_cast<volatile u64*>(b)[600] != shared_marker) { fail("same-process-shared-alias"); }
-    u64 read_handle = 0;
-    if (ipc_v1::grant_delegate(handle, own_pid(), static_cast<u32>(ipc_v1_grant_right::read_mapping), read_handle) != 0 ||
-        ipc_v1::grant_map(read_handle, c, ipc_v1_grant_access::read, third, third_length) != 0 ||
-        reinterpret_cast<volatile u64*>(c)[600] != shared_marker ||
-        ipc_v1::grant_map(read_handle, grant_arena + 0x30000, ipc_v1_grant_access::read_write,
-                          length, second_length) != static_cast<i64>(ipc_v1_error::denied)) {
-        fail("delegated-rights"); (void)ipc_v1::grant_close(handle); return false;
+    u64 duplicate_handle = 0;
+    if (ipc_v1::grant_delegate(handle, own_pid(), static_cast<u32>(ipc_v1_grant_right::read_mapping), duplicate_handle) !=
+            static_cast<i64>(ipc_v1_error::resources) ||
+        ipc_v1::grant_map(handle, c, ipc_v1_grant_access::read, third, third_length) != 0 ||
+        reinterpret_cast<volatile u64*>(c)[600] != shared_marker) {
+        fail("duplicate-delegate-or-read-map"); (void)ipc_v1::grant_close(handle); return false;
     }
     if (ipc_v1::grant_unmap(handle, first) != 0 || ipc_v1::grant_unmap(handle, second) != 0 ||
         ipc_v1::grant_unmap(handle, third) != 0) { fail("alias-unmap"); (void)ipc_v1::grant_close(handle); return false; }
@@ -207,7 +209,7 @@ bool mapping_quota_and_aliases() {
         fail("mapping-quota"); (void)ipc_v1::grant_close(handle); return false;
     }
     if (ipc_v1::grant_close(handle) != 0) { fail("close-all-maps"); return false; }
-    return ipc_v1::grant_unmap(read_handle, third) == static_cast<i64>(ipc_v1_error::invalid_handle);
+    return ipc_v1::grant_unmap(handle, third) == static_cast<i64>(ipc_v1_error::invalid_handle);
 }
 
 u64 own_pid() {

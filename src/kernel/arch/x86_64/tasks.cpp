@@ -2474,13 +2474,16 @@ ipc_v1_grant_handle_record* ipc_v1_grant_handle_for(u64 value, u64 holder) {
     return nullptr;
 }
 
-u32 ipc_v1_allocate_grant_handle(u32 object_slot, u64 holder, u32 rights) {
-    if (!ipc_v1_next_handle || ipc_v1_handle_count(holder) >= ipc_v1_max_handles_per_process) {
+u32 ipc_v1_allocate_grant_handle(u32 object_slot, u64 holder, u32 rights, u64 delegated_value = 0) {
+    if ((!delegated_value && !ipc_v1_next_handle) ||
+        (delegated_value && ipc_v1_grant_handle_for(delegated_value, holder)) ||
+        ipc_v1_handle_count(holder) >= ipc_v1_max_handles_per_process) {
         return ipc_v1_max_grants_system * ipc_v1_max_handles_per_process;
     }
     for (u32 i = 0; i < ipc_v1_max_grants_system * ipc_v1_max_handles_per_process; ++i) {
         if (!ipc_v1_grant_handles[i].used) {
-            ipc_v1_grant_handles[i] = {true, object_slot, rights, ipc_v1_next_handle++, holder};
+            const u64 value = delegated_value ? delegated_value : ipc_v1_next_handle++;
+            ipc_v1_grant_handles[i] = {true, object_slot, rights, value, holder};
             return i;
         }
     }
@@ -3097,7 +3100,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
         else if (!target || target->closing || target->state == task_state::dead || target->state == task_state::building) {
             result = static_cast<i64>(ipc_v1_error::invalid_argument);
         } else {
-            const u32 slot = ipc_v1_allocate_grant_handle(source->object_slot, request.target_pid, request.rights);
+            const u32 slot = ipc_v1_allocate_grant_handle(source->object_slot, request.target_pid, request.rights, source->value);
             if (slot == ipc_v1_max_grants_system * ipc_v1_max_handles_per_process) {
                 result = static_cast<i64>(ipc_v1_error::resources);
             } else { request.handle_out = ipc_v1_grant_handles[slot].value; copy_to_user(address, &request, sizeof(request)); result = 0; }

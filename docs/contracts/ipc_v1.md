@@ -255,7 +255,8 @@ IP0 不为追求零拷贝开放任意跨进程映射。IP4 grant 使用内核单
 user pages，创建时可同步快照来源缓冲区（source=0 表示清零）；这不承诺零拷贝。
 每 grant 最多 64 页，系统最多 16 个 grant/64 个活动映射，映射页计入 holder 的
 user-page quota。初始 rights 为 read_mapping=1、write_mapping=2、manage=4、delegate=8；
-delegate 只能缩权，grant badge 必须为零。映射只能 read 或 read_write，永不 executable；
+delegate 只能缩权，grant badge 必须为零。grant delegate 在目标进程安装与源句柄相同的值，
+`handle_out` 返回该值；目标已持有该值时返回 `resources`，不产生新句柄。映射只能 read 或 read_write，永不 executable；
 grant 不授予任意物理地址、DMA 或 MMIO。使用者指定页对齐的高位 VM arena 地址；
 映射预约同一匿名 VM reservation 集合，防止地址碰撞。活动 grant 映射期间，VM
 commit/protect/decommit/unmap 对重叠区间返回 IPC busy。每个映射有单调 map_id，只有

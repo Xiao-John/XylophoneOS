@@ -47,7 +47,7 @@ seL4 的官方 [IPC](https://docs.sel4.systems/Tutorials/ipc.html) 和
 | IP1 ABI 与参考模型 | 构建与后端无关的契约测试，编写不冒充产品的模型客户端/服务 | 登记 syscall 88、固定布局/错误/发现；普通与线程 SDK manifest 明确 unsupported | 当前 PR 合入后完成登记；参考模型覆盖边界；仍不标记 supported |
 | IP2 同步端点与 RPC | 先以测试服务调用，显式检测 capability；旧客户端照常 | 对象/权限/队列、call/receive/reply、期限、取消、close/exit；正常慢路径 | 真实 guest 功能、异常、竞争与资源精确回收；新能力才可按 profile 宣告 |
 | IP3 等待与迁移 | 在文件、终端、显示、Interactium、音频中选择纵向切片，旧/新差分 | notification、可授权的 wait set 和现有事件互操作；按实际缺口分开登记 | 各迁移服务双路径比较、崩溃及重启语义明确，适用工具 xsh/dash 双验 |
-| IP4 大块数据 | 框架只依赖显式 buffer/grant feature，保持小消息通路 | 独立共享页/grant 授权、生命周期、撤销和 VM/COW 安全设计 | 在 VM/共享映射相关资格具备后作真实授权、故障和性能验收 |
+| IP4 大块数据 | 框架只依赖显式 buffer/grant feature，保持小消息通路 | 内核分配页 backing、权利缩减、共享映射、pin/VM 冲突与生命周期撤销已实现；VM/COW 不作为共享页来源 | owner guest 验收跨进程授权、close/map race、资源与进程退出回收后再考虑启用 feature |
 | IP5 快路径与扩展 | 相同 API/协议，不因 fastpath 改调用 | 测量驱动的短消息快路径、直接切换、端点索引与批量复制 | 与慢路径同值/同错误/安全等价，报告分布、回退和资源；SMP 另立阶段 |
 
 两个工作流可以从 IP0 并行：服务侧以提案的逻辑类型、版本化协议和模型测试推进，
@@ -79,8 +79,10 @@ seL4 的官方 [IPC](https://docs.sel4.systems/Tutorials/ipc.html) 和
 ## 立即可执行的下一步
 
 1. IP2 内核路径等待维护者完成真实客体验收；期间不得开启 endpoint/deadline feature。
-2. IP3 notification 和 wait set x86-64 慢路径已实现，覆盖有权利检查、deadline、最多 8 个
-   source、关闭事件、endpoint readiness 互操作和进程退出撤销。首版 wait set 只接 IPC v1
-   endpoint readiness 与 notification；IRQ/process-exit/channel wait_many 不混入。
-3. 维护者执行客体验收；在验收前保持 notification/wait_set feature 和 manifests
-   unsupported。服务迁移与测量仍待运行后端资格后开展。
+2. IP3 notification 与 wait set 已在 PR #111 完成真实 guest acceptance（runs=3、资源基线守恒），但 query 与 manifests 仍保持 unsupported；不得因验收通过自动启用 feature。
+3. IP4 maintainer 运行 `tests/ipc_v1_grant_guest.py`；在 owner 验收前保持 bulk_grant unsupported。服务迁移与测量仍待运行后端资格后开展。
+
+
+## IP4 当前交付（2026-11-12）
+
+IP4 后端在 `codex/ipc-ip4`：新增 grant create/delegate/map/unmap/close，独立 backing pages 和 per-map page references，使用匿名 VM reservation 管理映射区间；对重叠 VM 修改返回 busy，close 对 pin 做全局预检并原子撤销。SDK wrappers 和 `tests/ipc_v1_grant_guest.py` 覆盖真实跨进程共享、source snapshot、只读授权、mapping quota、map/close race、pin 阻断撤销、exit revoke 和资源回到基线。测试脚本尚未在本轮运行；IP3 guest acceptance 已在 PR #111 通过但仍保持 feature unsupported；IP4 acceptance 待 owner 运行，普通/线程 SDK manifests 维持 unsupported。

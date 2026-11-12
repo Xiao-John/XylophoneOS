@@ -1,6 +1,6 @@
 # IPC v1：稳定接口与实现契约
 
-2026-11-11，**IP1 已合入；IP2 内核路径正在实现，未经 guest qualification 的 feature 与 SDK 仍 unsupported**。
+2026-11-12，IP1–IP3 后端已实现；IP3 guest acceptance 已在 PR #111 补验通过（head `c36da914`，runs=3），feature query 与 manifests 仍保持 unsupported。IP4 grant 后端和 owner guest 验收脚本已实现，guest acceptance 待运行。
 路线见 [IPC 计划](../plans/ipc_sel4.md)；现行 [通道契约](channel.md)、
 [Interactium](interactium.md)、[线程](threading.md)与[ABI 登记](abi_registry.md)
 继续有效。IP1 的固定 ABI 位于 `src/shared/include/xos/ipc_v1_abi.hpp`，syscall 88
@@ -80,15 +80,16 @@ capacity 时，`buffer_too_small` 返回 server，token 仍归 server 持有以�
 | feature 位 | `endpoint_call_v1=0x1`, `deadline_v1=0x2`, `notification_v1=0x4`, `wait_set_v1=0x8`, `bulk_grant_v1=0x10`；known mask `0x1f` |
 | message label / badge / handle / reply token | 独立 `u64`；label/badge 是数据，handle/token 是 opaque 值 |
 | payload | 0–256 字节；label 不计入 payload 上限；空 payload 合法，不携带 cap/fd/pointer |
-| quota | 系统 32 个 open endpoint；每进程 8 个有效 handle；系统 32 个 queued/delivered call；每 endpoint 最多 8 个 queued call；每 receiver 8 个未消费 reply token |
+| quota | 系统 32 个 open endpoint、16 个 grant、64 个 grant mapping；每进程 8 个有效 IPC handle、65536 个用户页；系统 32 个 queued/delivered call；每 endpoint 最多 8 个 queued call；每 receiver 8 个未消费 reply token；单 grant 最多 64 页 |
 | handle/token | 内核在一次启动期间分别单调递增、不回绕、不复用；编号耗尽返回 `resources` |
 | deadline | 单调绝对纳秒；0=只尝试当前可配对路径，不排队（无配对则 `would_block`）；`UINT64_MAX`=无限；就绪先于超时判定 |
 | FIFO | endpoint 内按成功入队次序交付；不承诺跨 endpoint 顺序、优先级或跨 endpoint 公平性 |
 
 `query_features.known_features` 固定为 `0x1f`，`supported_features` 必须是其子集。IP2
 目标 mask 为 `0x3`（endpoint call 与 deadline）；当前两个实际 SDK manifest 的 supported
-set 为空。通知、wait set、bulk grant 不在 IP1/IP2 中。ABI 头已登记但 syscall 未实现时，
-运行时返回 `unsupported`，不得返回全零成功结果。
+set 为空。通知、wait set 与 bulk grant 属于 IP3/IP4，不改变 IP2 mask；这些后续 action 已有内核路径，
+但未完成 owner qualification 时不能宣告 supported。尚未实现或未知的 action 返回 `unsupported`，
+不得返回全零成功结果。
 
 以下负值只属于 sys88，并非 errno：
 
@@ -107,6 +108,7 @@ set 为空。通知、wait set、bulk grant 不在 IP1/IP2 中。ABI 头已登�
 | `stale_token` | -111 | token 已消费、撤销、超时或代际失效 |
 | `state` | -112 | 当前状态不允许该操作 |
 | `address` | -113 | 用户地址范围无效或算术溢出 |
+| `busy` | -114 | grant 映射被 pin，或 VM 修改与活动 grant 映射重叠 |
 
 错误到 libc errno 的映射由 SDK 单独定义。`call.phase_out` 为
 `not_delivered=0`、`delivered=1`、`replied=2`；timeout 发生于 delivered 后时，phase 保持
@@ -116,8 +118,8 @@ reply 成功消费 token 后置 bit0；后续 receive 失败仍报告该位，�
 ## IP3 通知、wait set 与慢路径
 
 IP3 的 action 数值与请求布局已在共享头登记（8–18），SDK 提供对应薄封装。通知与 wait set
-均已有 x86-64 慢路径；所有 IP3 feature 尚未完成客体验收，feature query 的 supported mask
-与两个 manifest 继续为空。ABI/内核代码存在不表示已支持。通知与 wait set 的固定限制为系统各
+均已有 x86-64 慢路径；PR #111 的补验已通过（`tests/ipc_v1_guest.py` runs=3，资源基线守恒），feature query 的 supported mask
+与两个 manifest 仍为空，保持验收结果与 feature 宣告分离。ABI/内核代码存在不表示已支持。通知与 wait set 的固定限制为系统各
 32 个对象、每个 wait set 最多 8 个 source；对象 handle 仍计入每进程 8 个 handle 总额度。
 
 | action | 值 | 请求结构 | 字节数 |
@@ -133,6 +135,11 @@ IP3 的 action 数值与请求布局已在共享头登记（8–18），SDK 提�
 | `wait_set_wait` | 16 | `ipc_v1_wait_set_wait` | 64 |
 | `notification_close` | 17 | `ipc_v1_object_close` | 40 |
 | `wait_set_close` | 18 | `ipc_v1_object_close` | 40 |
+| `grant_create` | 19 | `ipc_v1_grant_create` | 72 |
+| `grant_delegate` | 20 | `ipc_v1_object_delegate` | 72 |
+| `grant_map` | 21 | `ipc_v1_grant_map` | 72 |
+| `grant_unmap` | 22 | `ipc_v1_grant_unmap` | 48 |
+| `grant_close` | 23 | `ipc_v1_object_close` | 40 |
 
 通知权利为 `signal=1`、`wait=2`、`manage=4`、`delegate=8`；wait set 权利为
 `wait=1`、`manage=2`、`delegate=4`。创建和 delegate 共用 `ipc_v1_object_create` /
@@ -244,12 +251,21 @@ kill、关闭、撤销与 reply 的竞争由内核在同一序列化点裁决：
 
 ## 大块数据与 VM 依赖
 
-IP0 不为追求零拷贝开放任意跨进程映射。IP4 以独立 proposal 设计页/缓冲区 grant：
-页归属和引用、可转授权限、配额、读写/执行、映射身份、CPU/TLB 同步、pin、撤销、
-超时、退出和故障回收，以及交付/撤销竞态必须有真实验收；DMA/MMIO 不自动纳入。
-VM2 #102 已合入；VM3/COW 和共享映射均未作为当前 IPC 的已交付依赖，不能以
-私有匿名 VM 探针冒充跨进程共享机制。小消息与大块数据走不同契约，不承诺大消息
-自动零拷贝；按实测选择阈值，阈值不是接口语义。
+IP0 不为追求零拷贝开放任意跨进程映射。IP4 grant 使用内核单独分配并持有引用的
+user pages，创建时可同步快照来源缓冲区（source=0 表示清零）；这不承诺零拷贝。
+每 grant 最多 64 页，系统最多 16 个 grant/64 个活动映射，映射页计入 holder 的
+user-page quota。初始 rights 为 read_mapping=1、write_mapping=2、manage=4、delegate=8；
+delegate 只能缩权，grant badge 必须为零。映射只能 read 或 read_write，永不 executable；
+grant 不授予任意物理地址、DMA 或 MMIO。使用者指定页对齐的高位 VM arena 地址；
+映射预约同一匿名 VM reservation 集合，防止地址碰撞。活动 grant 映射期间，VM
+commit/protect/decommit/unmap 对重叠区间返回 IPC busy。每个映射有单调 map_id，只有
+同一进程持有对应 grant handle 才能 unmap。manage close 先整体检查所有进程的阻塞 pin，
+若任何映射被 pin 则无副作用地返回 busy；否则同步撤销所有映射、handle 与 backing
+references。exit/fault/成功 exec 撤销该 holder 的 map 与 handle；最后一个 handle 撤销时
+销毁对象。单核 syscall gate 串行化 map/revoke 和页表变更，活动映射引用使 backing 页
+在映射销毁前保持存活。仍须由 owner 在真实 guest 验证委派、跨进程共享、映射/关闭竞态、
+资源回收和失败路径；feature query 与 SDK manifests 目前保持 unsupported。小消息与大块
+数据走不同契约，不承诺大消息自动零拷贝；按实测选择阈值，阈值不是接口语义。
 
 ## 兼容与迁移
 
@@ -273,5 +289,5 @@ IP1 已冻结并合入本页的 syscall 88 ABI、布局、错误、额度、生�
 delivery/reply 竞争、handle/token 撤销和 `reply_receive` 部分成功语义；如果内核资源布局
 无法满足所登记额度，应在支持任何 feature 前另行修订 ABI。实际 endpoint fairness 只要求
 endpoint 内 FIFO，不宣称跨 endpoint 公平。fork 不继承、成功 exec 撤销 IPC v1 handles；
-failed exec 保持不变。IP3 再单独设计 notification 与 wait set；IP4 设计共享 grant。
+failed exec 保持不变。IP3 notification 与 wait set 的 guest acceptance 已在 PR #111 通过，feature 仍 unsupported；IP4 独立 grant 后端与验收脚本已就绪，owner qualification 待运行。
 安全性质与性能指标的验证矩阵见[实施路线](../plans/ipc_sel4.md)。

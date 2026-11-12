@@ -1,9 +1,12 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 #ifndef XOS_PTHREAD_H
 #define XOS_PTHREAD_H
-#ifndef _POSIX_READER_WRITER_LOCKS
-#define _POSIX_READER_WRITER_LOCKS 200809L
+/* Older newlib feature headers report reader/writer locks as unsupported;
+   XOS ships the API, so make the type declarations visible. */
+#ifdef _POSIX_READER_WRITER_LOCKS
+#undef _POSIX_READER_WRITER_LOCKS
 #endif
+#define _POSIX_READER_WRITER_LOCKS 200809L
 #ifndef _UNIX98_THREAD_MUTEX_ATTRIBUTES
 #define _UNIX98_THREAD_MUTEX_ATTRIBUTES 1
 #endif

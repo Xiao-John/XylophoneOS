@@ -40,7 +40,8 @@ def main():
             create_fat32(disk, 512)
             transfer(disk, 'import', '/probe', exe)
             def boot():
-                guest = Guest(a.image, 'utf8_filename', work_disk=disk)
+                guest = Guest(a.image, 'utf8_filename', work_disk=disk,
+                              iso=str(a.image).endswith('.iso'))
                 guest.expect(b'xos64> ', timeout=30)
                 start = len(guest.output); send_bytes(guest, b'run\r')
                 guest.expect_supervisor(start=start, timeout=40)
@@ -61,9 +62,17 @@ def main():
                 command(guest, 'mv 中文/你好.txt 中文/世界.txt')
                 assert b'hello' in command(guest, 'cat 中文/世界.txt')
                 command(guest, 'sync')
-                assert b'UTF8_LIBC_OK' in command(guest, '/probe')
+                probe = command(guest, '/probe')
+                assert b'UTF8_LIBC_OK' in probe
+                assert b'UTF8_M2_NONBMP_OK' in probe
+                assert b'UTF8_M2_PATH_BOUNDARY_OK' in probe
+                assert b'UTF8_M2_DIRECTORY_PAGING_OK' in probe
+                command(guest, 'sync')
                 report['checks'].append('libc_create_list_rename_read_invalid_unlink')
                 report['checks'].append('mkdir_create_list_read_rename_sync')
+                report['checks'].append('non_bmp_utf8_create_readdir_rename_read_unlink')
+                report['checks'].append('255_byte_path_accept_256_byte_path_reject')
+                report['checks'].append('long_common_prefix_alias_generation_and_directory_paging')
             finally:
                 guest.close()
             guest = boot()

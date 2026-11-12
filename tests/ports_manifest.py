@@ -141,6 +141,17 @@ def main():
 
         case("non_object_lock", "expected an object", non_object_lock)
 
+        def null_port(directory, port):
+            (directory / "port.json").write_text("null\n")
+
+        case("null_port", "expected an object", null_port)
+
+        def null_lock(directory, port):
+            base_port(directory, **locked(directory))
+            (directory / "source_lock.json").write_text("null\n")
+
+        case("null_lock", "expected an object", null_lock)
+
         def patch_gap(directory, port):
             patches = directory / "patches"
             patches.mkdir()
@@ -156,11 +167,23 @@ def main():
             patches.mkdir()
             (patches / "0001_thing.patch").write_text(
                 "From " + "a" * 40 + " Mon Sep 17 00:00:00 2001\nSubject: [PATCH] t\n\n"
+                "diff --git a/x b/x\nindex 1111111..2222222 100644\n"
                 "GIT binary patch\nliteral 3\n")
             base_port(directory, build={"system": "custom", "recipe": None,
                                         "patches": ["patches/0001_thing.patch"]})
 
         case("patch_binary", "forbidden patch operation", patch_binary)
+
+        def patch_mode(directory, port):
+            patches = directory / "patches"
+            patches.mkdir()
+            (patches / "0001_thing.patch").write_text(
+                "From " + "a" * 40 + " Mon Sep 17 00:00:00 2001\nSubject: [PATCH] t\n\n"
+                "diff --git a/x b/x\nold mode 100644\nnew mode 100755\n")
+            base_port(directory, build={"system": "custom", "recipe": None,
+                                        "patches": ["patches/0001_thing.patch"]})
+
+        case("patch_mode", "forbidden patch operation", patch_mode)
 
         def empty_license(directory, port):
             base_port(directory, license=[])
@@ -178,6 +201,27 @@ def main():
             base_port(directory, **locked(directory),
                       build={"system": "custom", "recipe": None,
                              "patches": ["patches/0001_thing.patch"]})
+
+        def text_mentions_binary(directory, port):
+            patches = directory / "patches"
+            patches.mkdir()
+            (patches / "0001_thing.patch").write_text(
+                "From " + "a" * 40 + " Mon Sep 17 00:00:00 2001\n"
+                "Subject: [PATCH] mention GIT binary patch in prose\n\n"
+                "GIT binary patch is a marker we mention in the commit message\n"
+                "---\n x.c | 1 +\n\n"
+                "diff --git a/x.c b/x.c\n--- a/x.c\n+++ b/x.c\n"
+                "@@ -0,0 +1 @@\n+puts(\"GIT binary patch\");\n")
+            base_port(directory, **locked(directory),
+                      build={"system": "custom", "recipe": None,
+                             "patches": ["patches/0001_thing.patch"]})
+
+        directory = scratch / "text_mentions_binary"
+        directory.mkdir()
+        text_mentions_binary(directory, base_port(directory))
+        result = run("check", str(directory))
+        check("prose mentioning binary markers accepted",
+              result.returncode == 0, result.stdout + result.stderr)
 
         directory = scratch / "good_patch"
         directory.mkdir()

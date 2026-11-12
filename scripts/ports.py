@@ -36,6 +36,9 @@ def rel(path):
         return str(path)
 
 
+_INVALID = object()
+
+
 class Report:
     def __init__(self):
         self.errors = []
@@ -79,7 +82,7 @@ def load(path, where, report):
         report.fail(where, "file is missing")
     except (OSError, UnicodeError, json.JSONDecodeError) as error:
         report.fail(where, f"unreadable JSON: {error}")
-    return None
+    return _INVALID
 
 
 def check_tarball(lock, where, report):
@@ -155,7 +158,7 @@ def check_source(port, base, where, report):
         return
     lock = load(lock_path, rel(lock_path), report)
     if not isinstance(lock, dict):
-        if lock is not None:
+        if lock is not _INVALID:
             report.fail(rel(lock_path), "expected an object")
         return
     if lock.get("kind") != kind:
@@ -193,9 +196,15 @@ def check_patches(port, base, where, report):
             report.fail(entry, "not a git format-patch file (missing 'From <commit> ...')")
         if not any(line.startswith("Subject:") for line in head[:20]):
             report.fail(entry, "not a git format-patch file (missing Subject:)")
+        in_diff = False
         for line in head:
-            if line.startswith(("old mode ", "new mode ", "rename from ", "rename to ",
-                                "Binary files ")) or "GIT binary patch" in line:
+            if line.startswith("diff --git "):
+                in_diff = True
+                continue
+            if not in_diff:
+                continue
+            if line == "GIT binary patch" or line.startswith(
+                    ("Binary files ", "old mode ", "new mode ", "rename from ", "rename to ")):
                 report.fail(entry, f"forbidden patch operation: {line.strip()}")
                 break
     directory = base / "patches"
@@ -252,7 +261,7 @@ def check_port(directory, report, profiles, seen, package_seen):
     where = rel(directory)
     port = load(directory / "port.json", where + "/port.json", report)
     if not isinstance(port, dict):
-        if port is not None:
+        if port is not _INVALID:
             report.fail(where + "/port.json", "expected an object")
         return
     unknown = set(port) - PORT_FIELDS

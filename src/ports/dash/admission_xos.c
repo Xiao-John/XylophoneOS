@@ -117,8 +117,14 @@ int xos_evalpipe(union node *n, int flags) {
         handler = &loc;
         xos_pipeline_begin();
         for (fd = 0; fd < 2; ++fd) {
-            saved[fd] = fcntl(fd, F_DUPFD_CLOEXEC, 10);
-            if (saved[fd] < 0 && errno != EBADF) sh_error("pipeline: save descriptor");
+            /* Three states: >=0 saved copy; -1 was closed before the pipeline
+               (EBADF); -2 untouched - a real fcntl failure must keep -2 so the
+               restore never treats "save failed" as "originally closed" and
+               closes a live descriptor (stdout) on the longjmp path. */
+            int duped = fcntl(fd, F_DUPFD_CLOEXEC, 10);
+            if (duped >= 0) saved[fd] = duped;
+            else if (errno == EBADF) saved[fd] = -1;
+            else sh_error("pipeline: save descriptor");
         }
         for (lp = n->npipe.cmdlist; lp; lp = lp->next) {
             if (lp->next && pipe(pip) < 0) sh_error("pipeline: pipe: %s", strerror(errno));
@@ -138,9 +144,14 @@ int xos_evalpipe(union node *n, int flags) {
                         sh_error("C1 pipeline requires external commands");
                 }
                 if (forkshell(NULL, lp->n, FORK_FG) == 0) {
-                    if (previous >= 0) close(previous);
+                    /* previous/pip[1] may be the very stdio slot they were
+                       dup'd into when the original stdio was closed (e.g.
+                       previous == 0 is this stage's live stdin): closing the
+                       number would kill the live endpoint. Copies in slots
+                       above 2 are always safe to drop. */
+                    if (previous > 0) close(previous);
                     if (pip[0] >= 0) close(pip[0]);
-                    if (pip[1] >= 0) close(pip[1]);
+                    if (pip[1] > 0) close(pip[1]);
                     for (fd = 0; fd < 2; ++fd) if (saved[fd] >= 0) close(saved[fd]);
                     evaltreenr(lp->n, (flags & EV_TESTED) | EV_EXIT);
                 }
@@ -148,7 +159,12 @@ int xos_evalpipe(union node *n, int flags) {
             }
             unwindredir(redirs); unwindfiles(files); unwindlocalvars(locals);
             for (fd = 0; fd < 2; ++fd) {
-                if (saved[fd] >= 0) dup2(saved[fd], fd); else close(fd);
+                if (saved[fd] >= 0) { dup2(saved[fd], fd); }
+                /* Never close a slot that still holds an active pipeline
+                   endpoint: with a closed stdin, pipe() legitimately takes
+                   fd0 and the next stage needs it as previous/stdin. The
+                   explicit pip/previous closes below release it instead. */
+                else if (saved[fd] == -1 && fd != pip[0] && fd != pip[1]) close(fd);
             }
             if (previous >= 0) close(previous);
             previous = -1;

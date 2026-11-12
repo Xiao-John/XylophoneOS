@@ -1096,10 +1096,11 @@ extern "C" int fcntl(int fd, int command, ...) {
 extern "C" int pipe(int output[2]) {
     runtime_guard guard(fd_table_lock);
     if (output == nullptr) { errno = EFAULT; return -1; }
-    // Keep pipes out of the stdio slots (0-2): shells save/restore those
-    // around pipelines, and a pipe landing on a closed stdin would be killed
-    // by the restore (750c0ff8 regressed this to alloc_fd(0)).
-    const int read_fd = alloc_fd();
+    // POSIX: pipe() takes the lowest free descriptors, including closed
+    // stdio slots. The pipeline save/restore in admission_xos.c skips slots
+    // that still hold active pipe endpoints, so nothing may reserve 0-2 here
+    // (narrowing the #105 min-3 rule per the R4-2 ruling).
+    const int read_fd = alloc_fd(0);
     if (read_fd < 0) { errno = EMFILE; return -1; }
     int write_fd = -1;
     for (int fd = read_fd + 1; fd < fd_count; ++fd) {
@@ -1519,6 +1520,20 @@ static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
         if (object.kind == object_kind::kernel && object.stdio_source >= 0 && object.stdio_source < 3) {
             options.stdio[fd] = object.stdio_source;
         } else if (object.kind == object_kind::pipe_read || object.kind == object_kind::pipe_write) {
+            // The kernel requires fd0 readable and fd1/fd2 writable
+            // (sys_process_stdio rejects a direction mismatch). pipe() takes
+            // the lowest free slot, so a closed stdio slot can hold the wrong
+            // direction (pipe read at stderr after `exec 2>&-`). Inheriting
+            // that bookkeeping fd would fail the whole spawn; the parent
+            // keeps its end and the child gets the slot closed - exactly what
+            // the slot meant before the pipe took it.
+            const bool slot_wants_write = fd != 0;
+            const bool pipe_writes = object.kind == object_kind::pipe_write;
+            if (pipe_writes != slot_wants_write) {
+                options.stdio[fd] = -2;
+                snapshot.assign(fd, -1);
+                continue;
+            }
             options.stdio[fd] = object.handle;
         } else if (object.kind == object_kind::file) {
             options.file_handles[fd] = object.handle;
@@ -1806,7 +1821,8 @@ extern "C" int xos_open_anonymous(void) {
     int object, fd;
     {
         runtime_guard guard(fd_table_lock);
-        fd = alloc_fd(); object = fd < 0 ? -1 : alloc_object(object_kind::file, handle, O_RDWR);
+        // POSIX lowest free slot, same rule as pipe()/open(): no stdio reservation.
+        fd = alloc_fd(0); object = fd < 0 ? -1 : alloc_object(object_kind::file, handle, O_RDWR);
         if (object >= 0) descriptors[fd] = {static_cast<signed char>(object), true};
     }
     if (object < 0) { (void)file_client.close(handle); errno = EMFILE; return -1; }

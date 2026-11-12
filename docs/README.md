@@ -28,7 +28,7 @@
 
 - 基底：[架构/启动](architecture_and_boot.md)、[C++子集](cpp_subset.md)、[工具链](toolchain.md)、
   [用户装载/SDK](e04_loader_sdk.md)、[文件服务](e05_file_service.md)、[libc](e06_libc.md)、[持久盘](e07_persistent_work_disk.md)。
-- 移植：[端口规范](ports.md)（`src/ports` 元数据、校验器与首个样例）、[线程契约](contracts/threading.md)、[Qt协作](contracts/qt_platform.md)、[POSIX](contracts/posix_subset.md)、
+- 移植：[端口规范](ports.md)、[端口反馈账本](ports_ledger.md)（`src/ports` 元数据、校验器与首个样例）、[线程契约](contracts/threading.md)、[Qt协作](contracts/qt_platform.md)、[POSIX](contracts/posix_subset.md)、
   [QtCore](implementation/qt_core.md)、[显示](implementation/display.md)、[Shell](implementation/shell.md)、[Make](implementation/make.md)。
 - [日常工具集设计](plans/daily_utilities.md)：DU1/2首批13命令已有实现与定向证据；完整逐命令资格、后续工具及包/ISO交付见state。
 - 独立扩展：[应用故障包计划](plans/app_fault_bundle.md)的[FB0格式与勘查](implementation/fb0_fault_bundle_contract.md)

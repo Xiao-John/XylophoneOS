@@ -14,6 +14,10 @@
   见[SDK](e04_loader_sdk.md)、[Shell](implementation/shell.md)。当前FD不代表完整POSIX。
 - getentropy→sys63真实RDRAND接口；墙钟/gettimeofday→sys64，单调时间/睡眠走线程等待
   机制。输出大小、errno、不支持/硬件失败按各自契约；不以uptime或固定种子补安全接口。
+- `times()`/`clock()` 用单调时基（1000 tick/秒，非线程 CPU 计时）；C11 `timespec_get`
+  走 sys64 纳秒。`utime`/`chmod`/`chown` 已提供可链接符号但返回 `ENOSYS`——文件服务
+  尚无时间戳/权限/所有权写 ABI，不伪造成功。`clock_gettime`/POSIX timers 的头文件
+  可见性受 `_POSIX_TIMERS` 控制，本组未开启，见[端口反馈账本](ports_ledger.md)。
 - truncate/ftruncate接files op25；stat仍有合成属性。权限、链接、完整时间元数据、locale、
   signals、socket、通用就绪等待与mmap族未取得完整资格，缺项不能永远成功。
 

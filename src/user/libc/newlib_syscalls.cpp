@@ -25,7 +25,10 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/time.h>
+#include <sys/features.h>
 #include <sys/times.h>
+#include <time.h>
+#include <utime.h>
 #include <sys/wait.h>
 #include <termios.h>
 #include <unistd.h>
@@ -876,6 +879,16 @@ extern "C" int gettimeofday(struct timeval* value, void*) {
     value->tv_usec = static_cast<suseconds_t>((now % 1000000000) / 1000);
     return 0;
 }
+extern "C" int timespec_get(struct timespec* value, int base) {
+    if (value == nullptr) { errno = EFAULT; return 0; }
+    if (base != TIME_UTC) { errno = EINVAL; return 0; }
+    const xos::i64 now = xos::sdk::syscall(xos::sys_clock_realtime, 0);
+    if (now < 0) { errno = now == xos::realtime_error_io ? EIO : EINVAL; return 0; }
+    value->tv_sec = static_cast<time_t>(now / 1000000000);
+    value->tv_nsec = static_cast<long>(now % 1000000000);
+    return TIME_UTC;
+}
+
 extern "C" int getentropy(void* buffer, size_t length) {
     if (length > 256) { errno = EINVAL; return -1; }
     const xos::i64 result = xos::sdk::syscall(xos::sys_random_bytes,
@@ -1950,5 +1963,22 @@ extern "C" clock_t _times(struct tms* result) {
     return ticks;
 }
 extern "C" clock_t times(struct tms* result) { return _times(result); }
+// XOS has no file timestamp or ownership ABI yet; expose the symbols so POSIX
+// callers link and receive an honest failure instead of a missing symbol.
+extern "C" int utime(const char* path, const struct utimbuf*) {
+    if (path == nullptr) { errno = EFAULT; return -1; }
+    errno = ENOSYS;
+    return -1;
+}
+extern "C" int chmod(const char* path, mode_t) {
+    if (path == nullptr) { errno = EFAULT; return -1; }
+    errno = ENOSYS;
+    return -1;
+}
+extern "C" int chown(const char* path, uid_t, gid_t) {
+    if (path == nullptr) { errno = EFAULT; return -1; }
+    errno = ENOSYS;
+    return -1;
+}
 extern "C" int getpid() { return _getpid(); }
 extern "C" int kill(int pid, int sig) { return _kill(pid, sig); }

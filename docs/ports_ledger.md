@@ -16,6 +16,12 @@
 | PL-0003 | 2026-11-12 | lz4 | C11 `timespec_get()` 有声明无实现，`timefn.c` 链接失败 | 用 sys64 实现 `TIME_UTC` | 本组实现并加客体用例 | fixed |
 | PL-0004 | 2026-11-12 | lz4 | `clock_gettime`/`timer_*` 的声明受 `_POSIX_TIMERS` 控制，当前 newlib 特性头未开启；端口无法使用 POSIX 时钟接口 | 决定是否声明 `_POSIX_TIMERS` 并实现 `clock_gettime`（`timer_*` 仍需单独评估），或提供稳定的替代入口 | 本组未做；`timespec_get` 可覆盖墙钟需求 | open |
 | PL-0005 | 2026-11-12 | lz4 | 文件服务没有时间戳/权限/所有权写操作，`utime`/`chmod`/`chown` 只能 `ENOSYS` | 评估在 file ABI 增加 `set_metadata`（FatFs `f_utime`/`AM_RDO`）并登记契约 | 端口接受 `ENOSYS` 并跳过元数据复制 | open |
+| PL-0006 | 2026-11-12 | lz4 | 客体没有 `/dev/null`；`lz4 -t` 打开空输出时报 `/dev/null: No such file or directory` 并退出 1 | 提供设备命名空间或 file 服务层面的 null 对象；`open/read/write/lseek/fstat` 与 spawn 继承都要有语义 | 无（不用假文件顶替；`-t` 暂记为已知失败） | open |
+
+| PL-0007 | 2026-11-12 | lua | `system()`/`popen()` 只有 newlib 的 ENOSYS 桩，Lua `os.execute` 返回 `nil, "Function not implemented", 88`，`io.popen` 不可用 | 需要 shell 启动与管道语义（属大项），与 PL-0006 一批开 issue | 无；端口不伪造，README 记为限制 | open |
+
+| PL-0008 | 2026-11-12 | jq | libc 缺 `dirname`、`realpath`、`pathconf`，jq 链接失败 | 在 libc 实现三者（`realpath` 复用 `resolve_path`） | 本组本地工作区已改，未提交 | fixed |
+| PL-0009 | 2026-11-12 | jq | 普通 profile 无 pthread 运行时，jq 的 hash seed 与 decNumber TSD 需要 `pthread_once`/key | 保持普通 profile 单线程语义，不伪造 pthread；端口侧单线程桩 | 端口 `compat/pthread_single_thread.c`（与 lz4 的线程池桩同类） | wontfix |
 
 ## 登记规则
 
@@ -24,3 +30,5 @@
 2. 每条只写一个可验证的现象，附最小复现命令；不写推测性重构建议。
 3. 修完后把状态改为 `fixed` 并补 PR/提交号；不要删除旧行。
 4. 若同一问题在多个端口重复出现，沿用原 ID 追加“另见端口”，不新开编号。
+5. 大项（需要新设备/命名空间、进程模型、ABI 或完整子系统）不在本地半实现；保持
+   `open`，攒批后统一开 issue，并在汇报里列出批次。

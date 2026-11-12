@@ -309,7 +309,11 @@ def main():
         raise SystemExit('GCC source tree changed during the runtime build')
     if final_inputs != initial_inputs:
         raise SystemExit('SDK inputs changed during the build; retry with a stable source snapshot')
+    system_manifest = ROOT / 'build/manifest.json'
+    build_id = (json.loads(system_manifest.read_text())['build_id']
+                if system_manifest.is_file() else '')
     receipt = {'profile': 'xos-threading-v1-experimental', 'abi': 1, 'thread_abi': 1,
+               'target': 'x86_64-elf', 'build_id': build_id,
                'vm_extensions': {'version': 1, 'syscall': 67, 'status': 'implemented_unqualified'},
                'display_extensions': {'version': 1, 'syscalls': [65, 66], 'pixel_format': 'XRGB8888', 'surface_count': 1},
                'ipc_v1': ipc_v1_manifest_entry(),

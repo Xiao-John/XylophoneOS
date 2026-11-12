@@ -25,7 +25,9 @@ def compile_probe(source, output, sdk, threaded):
     libgcc = subprocess.check_output([compiler, "-print-libgcc-file-name"], text=True).strip()
     flags = ["-idirafter", str(sdk / "include"),
              "-D_POSIX_THREADS=1", "-D_POSIX_READER_WRITER_LOCKS=200809L",
-             "-D_UNIX98_THREAD_MUTEX_ATTRIBUTES=1", "-DXOS_THREADED_RUNTIME"]
+             "-D_UNIX98_THREAD_MUTEX_ATTRIBUTES=1"]
+    if threaded:
+        flags.append("-DXOS_THREADED_RUNTIME")
     libraries = [str(sdk / "lib/libxos.a"), str(sdk / "lib/libc.a"),
                  str(sdk / "lib/libm.a")]
     loader = sdk / "lib/libxos_loader.a"

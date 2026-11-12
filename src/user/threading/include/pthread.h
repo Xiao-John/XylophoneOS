@@ -32,7 +32,11 @@ extern "C" {
 #define PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP {0,0,0,0,PTHREAD_MUTEX_RECURSIVE,1,0}
 #define PTHREAD_COND_INITIALIZER {0,0,CLOCK_REALTIME,1}
 #define PTHREAD_RWLOCK_INITIALIZER {0}
+#if defined(XOS_THREADED_RUNTIME)
 #define PTHREAD_ONCE_INIT {0,0,0}
+#else
+#define PTHREAD_ONCE_INIT {1,0}
+#endif
 #define PTHREAD_BARRIER_SERIAL_THREAD (-1)
 
 typedef struct {
@@ -85,6 +89,8 @@ int pthread_mutex_lock(pthread_mutex_t*);
 int pthread_mutex_trylock(pthread_mutex_t*);
 int pthread_mutex_unlock(pthread_mutex_t*);
 int pthread_mutex_timedlock(pthread_mutex_t*, const struct timespec*);
+int pthread_rwlock_init(pthread_rwlock_t*, const pthread_rwlockattr_t*);
+int pthread_rwlock_destroy(pthread_rwlock_t*);
 int pthread_rwlock_rdlock(pthread_rwlock_t*);
 int pthread_rwlock_tryrdlock(pthread_rwlock_t*);
 int pthread_rwlock_wrlock(pthread_rwlock_t*);

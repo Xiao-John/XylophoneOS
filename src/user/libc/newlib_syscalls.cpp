@@ -2002,6 +2002,11 @@ extern "C" char* realpath(const char* path, char* resolved) {
     bool trailing_slash = false;
     const int resolved_status = resolve_path(path, normalized, trailing_slash);
     if (resolved_status != 0) { errno = resolved_status; return nullptr; }
+    u32 size = 0, attributes = 0;
+    const xos::i64 status = file_client.stat_info(normalized, size, attributes);
+    if (status != 0) { errno = error_from_file(status); return nullptr; }
+    const bool directory = (attributes & xos::file::stat_is_directory) != 0;
+    if (trailing_slash && !directory) { errno = ENOTDIR; return nullptr; }
     const size_t length = strlen(normalized);
     char* output = resolved;
     if (output == nullptr) {
@@ -2017,7 +2022,7 @@ extern "C" long pathconf(const char* path, int name) {
     switch (name) {
     case _PC_LINK_MAX: return 1;
     case _PC_NAME_MAX: return 255;
-    case _PC_PATH_MAX: return max_path - 1;
+    case _PC_PATH_MAX: return max_path;
     case _PC_CHOWN_RESTRICTED: return 1;
     default: errno = EINVAL; return -1;
     }

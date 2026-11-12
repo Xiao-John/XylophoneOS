@@ -17,12 +17,12 @@
   "runtime_model": "threaded",
   "scope": "experimental threaded SDK: retargetable newlib locks, dynamic __getreent, 1:1 threads; no C++ runtime in this build",
   "sdk_tree_sha256": [
-    "915a9cb2019e8fb8bf6c216944ab7b35da98bc9fa7c4de37a2216134a555f66a"
+    "3c404a0debfacb0764cc59828fa559cafe01e593034ff451b300d4b7ce8f38c6"
   ],
   "startup_version": 2,
   "syscall_abi": 1,
   "verified_system_builds": [
-    "d0e65ed6413f371f"
+    "2e456eec4374e9a8"
   ],
   "word_bits": 64
 }

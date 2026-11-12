@@ -17,6 +17,7 @@
 #include <semaphore.h>
 #include <string.h>
 #include <xos/sdk.hpp>
+#include <xos/thread_abi.hpp>
 
 #ifndef PTHREAD_PROCESS_PRIVATE
 #define PTHREAD_PROCESS_PRIVATE 0
@@ -26,7 +27,6 @@ namespace {
 constexpr unsigned key_count = 64;
 void* key_values[key_count];
 bool key_active[key_count];
-pthread_key_t key_next;
 char thread_name[16] = "main";
 }  // namespace
 
@@ -40,10 +40,15 @@ extern "C" int pthread_once(pthread_once_t* once, void (*routine)(void)) {
 }
 
 extern "C" int pthread_key_create(pthread_key_t* key, void (*)(void*)) {
-    if (key == nullptr || key_next >= key_count) { return EAGAIN; }
-    key_active[key_next] = true;
-    *key = key_next++;
-    return 0;
+    if (key == nullptr) { return EINVAL; }
+    for (pthread_key_t candidate = 0; candidate < key_count; ++candidate) {
+        if (key_active[candidate]) { continue; }
+        key_active[candidate] = true;
+        key_values[candidate] = nullptr;
+        *key = candidate;
+        return 0;
+    }
+    return EAGAIN;
 }
 
 extern "C" int pthread_key_delete(pthread_key_t key) {
@@ -76,9 +81,31 @@ extern "C" int pthread_cond_signal(pthread_cond_t*) { return 0; }
 extern "C" int pthread_cond_broadcast(pthread_cond_t*) { return 0; }
 // A spurious wakeup is permitted; with one thread there is nobody to signal.
 extern "C" int pthread_cond_wait(pthread_cond_t*, pthread_mutex_t*) { return 0; }
-extern "C" int pthread_cond_timedwait(pthread_cond_t*, pthread_mutex_t*, const struct timespec*) { return 0; }
-extern "C" int pthread_cond_clockwait(pthread_cond_t*, pthread_mutex_t*, clockid_t,
-                                      const struct timespec*) { return 0; }
+
+namespace {
+bool deadline_passed(clockid_t clock_id, const struct timespec* deadline) {
+    if (deadline == nullptr) { return true; }
+    const xos::u64 syscall_number = clock_id == CLOCK_MONOTONIC
+        ? xos::sys_clock_monotonic : xos::sys_clock_realtime;
+    const xos::i64 now = xos::sdk::syscall(syscall_number, 0);
+    if (now < 0) { return true; }
+    const xos::u64 deadline_ns = static_cast<xos::u64>(deadline->tv_sec) * 1000000000ull
+        + static_cast<xos::u64>(deadline->tv_nsec);
+    return static_cast<xos::u64>(now) >= deadline_ns;
+}
+}  // namespace
+
+// A spurious wakeup is allowed before the deadline; once it passes the wait
+// must fail with ETIMEDOUT instead of pretending success forever.
+extern "C" int pthread_cond_timedwait(pthread_cond_t*, pthread_mutex_t*,
+                                      const struct timespec* deadline) {
+    return deadline_passed(CLOCK_REALTIME, deadline) ? ETIMEDOUT : 0;
+}
+extern "C" int pthread_cond_clockwait(pthread_cond_t*, pthread_mutex_t*, clockid_t clock_id,
+                                      const struct timespec* deadline) {
+    if (clock_id != CLOCK_REALTIME && clock_id != CLOCK_MONOTONIC) { return EINVAL; }
+    return deadline_passed(clock_id, deadline) ? ETIMEDOUT : 0;
+}
 
 extern "C" int pthread_rwlock_init(pthread_rwlock_t*, const pthread_rwlockattr_t*) { return 0; }
 extern "C" int pthread_rwlock_destroy(pthread_rwlock_t*) { return 0; }
@@ -95,11 +122,23 @@ extern "C" int pthread_rwlockattr_getpshared(const pthread_rwlockattr_t*, int* s
     return 0;
 }
 
-extern "C" int pthread_mutexattr_init(pthread_mutexattr_t*) { return 0; }
+extern "C" int pthread_mutexattr_init(pthread_mutexattr_t* attr) {
+    if (attr == nullptr) { return EINVAL; }
+    attr->is_initialized = 1;
+    attr->type = PTHREAD_MUTEX_DEFAULT;
+    return 0;
+}
 extern "C" int pthread_mutexattr_destroy(pthread_mutexattr_t*) { return 0; }
-extern "C" int pthread_mutexattr_settype(pthread_mutexattr_t*, int) { return 0; }
-extern "C" int pthread_mutexattr_gettype(const pthread_mutexattr_t*, int* type) {
-    if (type != nullptr) { *type = PTHREAD_MUTEX_DEFAULT; }
+extern "C" int pthread_mutexattr_settype(pthread_mutexattr_t* attr, int type) {
+    if (attr == nullptr) { return EINVAL; }
+    if (type != PTHREAD_MUTEX_NORMAL && type != PTHREAD_MUTEX_ERRORCHECK
+        && type != PTHREAD_MUTEX_RECURSIVE) { return EINVAL; }
+    attr->type = type;
+    return 0;
+}
+extern "C" int pthread_mutexattr_gettype(const pthread_mutexattr_t* attr, int* type) {
+    if (attr == nullptr || type == nullptr) { return EINVAL; }
+    *type = attr->type;
     return 0;
 }
 extern "C" int pthread_mutexattr_setpshared(pthread_mutexattr_t*, int) { return 0; }
@@ -112,7 +151,9 @@ extern "C" int pthread_condattr_getclock(const pthread_condattr_t*, clockid_t* c
     if (clock_id != nullptr) { *clock_id = CLOCK_REALTIME; }
     return 0;
 }
-extern "C" int pthread_condattr_setpshared(pthread_condattr_t*, int) { return 0; }
+extern "C" int pthread_condattr_setpshared(pthread_condattr_t*, int shared) {
+    return shared == PTHREAD_PROCESS_PRIVATE ? 0 : ENOTSUP;
+}
 extern "C" int pthread_condattr_getpshared(const pthread_condattr_t*, int* shared) {
     if (shared != nullptr) { *shared = PTHREAD_PROCESS_PRIVATE; }
     return 0;

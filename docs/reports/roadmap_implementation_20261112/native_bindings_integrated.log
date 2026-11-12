@@ -1,0 +1,23 @@
+test_changed_iso_rejected (test_shell_launch_bindings.shell_launch_binding_tests.test_changed_iso_rejected) ... ok
+test_changed_sdk_header_rejected_even_when_manifest_unchanged (test_shell_launch_bindings.shell_launch_binding_tests.test_changed_sdk_header_rejected_even_when_manifest_unchanged) ... ok
+test_changed_source_rejected (test_shell_launch_bindings.shell_launch_binding_tests.test_changed_source_rejected) ... ok
+test_changed_tool_elf_rejected (test_shell_launch_bindings.shell_launch_binding_tests.test_changed_tool_elf_rejected) ... ok
+test_echoed_marker_does_not_pass (test_shell_launch_bindings.shell_launch_binding_tests.test_echoed_marker_does_not_pass) ... ok
+test_escaping_receipt_path_rejected (test_shell_launch_bindings.shell_launch_binding_tests.test_escaping_receipt_path_rejected) ... ok
+test_explicit_receipt_beats_newer_cache_artifact (test_shell_launch_bindings.shell_launch_binding_tests.test_explicit_receipt_beats_newer_cache_artifact) ... ok
+test_final_exit_wins_over_earlier_child (test_shell_launch_bindings.shell_launch_binding_tests.test_final_exit_wins_over_earlier_child) ... ok
+test_incomplete_sdk_receipt_rejected (test_shell_launch_bindings.shell_launch_binding_tests.test_incomplete_sdk_receipt_rejected) ... ok
+test_missing_artifact_is_not_execution (test_shell_launch_bindings.shell_launch_binding_tests.test_missing_artifact_is_not_execution) ... ok
+test_missing_final_exit_rejected (test_shell_launch_bindings.shell_launch_binding_tests.test_missing_final_exit_rejected) ... ok
+test_real_lf_and_crlf_result_lines (test_shell_launch_bindings.shell_launch_binding_tests.test_real_lf_and_crlf_result_lines) ... ok
+test_receipt_does_not_rewrite_sdk_provenance (test_shell_launch_bindings.shell_launch_binding_tests.test_receipt_does_not_rewrite_sdk_provenance) ... ok
+test_system_binds_sources_iso_and_full_sdk (test_shell_launch_bindings.shell_launch_binding_tests.test_system_binds_sources_iso_and_full_sdk) ... ok
+test_tool_source_mismatch_rejected (test_shell_launch_bindings.shell_launch_binding_tests.test_tool_source_mismatch_rejected) ... ok
+test_unbound_sdk_addition_rejected (test_shell_launch_bindings.shell_launch_binding_tests.test_unbound_sdk_addition_rejected) ... ok
+test_wrong_profile_rejected (test_shell_launch_bindings.shell_launch_binding_tests.test_wrong_profile_rejected) ... ok
+test_zero_exit_cannot_pass_negative_case (test_shell_launch_bindings.shell_launch_binding_tests.test_zero_exit_cannot_pass_negative_case) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.110s
+
+OK

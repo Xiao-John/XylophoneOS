@@ -14,6 +14,7 @@ sys.path[:0]=[str(ROOT/'tests'),str(ROOT/'scripts')]
 from boot_smoke import Guest
 from make_work_disk import create_fat32
 from process_smoke import command,resources
+from graphics_guest import start_graphics, stop_graphics
 from task_smoke import pump,send_bytes
 from work_disk import transfer
 
@@ -35,7 +36,7 @@ try:
   g=Guest(a.image.resolve(),str(out.relative_to(ROOT/'build'))+'/guest',work_disk=disk);report['qemu_command']=g.command
   g.expect(b'xos64> ',timeout=45);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=45)
   command(g,'demo quiet',b'demo tasks stopped',timeout=20);base=resources(g);report['baseline_resources']=base
-  service_data=command(g,'display-start',b'result=0');service=int(re.search(rb'\[display-start\] pid=(\d+)',service_data)[1]);g.expect(b'[display-service] ready');active=resources(g)
+  service, compositor = start_graphics(g);active=resources(g)
   start=len(g.output);send_bytes(g,b'exec-file /bin/standard.elf\r');g.expect(b'AURORA_STANDARD_READY failures=',start=start,timeout=90);pump(g,.5)
   data=bytes(g.output)[start:];checks=re.findall(rb'AURORA_STANDARD_CHECK ([a-z_]+)=(PASS|FAIL)',data)
   report['checks']=[{'name':name.decode(),'status':status.decode()} for name,status in checks]
@@ -51,7 +52,7 @@ try:
    for down in (True,False):g.qmp('input-send-event',{'events':[{'type':'key','data':{'down':down,'key':{'type':'qcode','data':'esc'}}}]})
    g.expect(b'AURORA_STANDARD_DASH_STATUS:0',start=start,timeout=30);g.expect_supervisor(start=start,timeout=30);assert resources(g)==active
    report['dash_checks']=[{'name':name.decode(),'status':status.decode()} for name,status in dash_checks]
-  command(g,'exec gfxdemo stop',b'kind=exited code=0');command(g,f'wait {service}',b'kind=exited code=0');report['after_resources']=resources(g);assert report['after_resources']==base
+  stop_graphics(g, service, compositor);report['after_resources']=resources(g);assert report['after_resources']==base
   report['status']='PASSED' if len(checks)==3 and all(status==b'PASS' for _,status in checks) else 'FAILED'
 except Exception as error:
  report['error']=repr(error);raise

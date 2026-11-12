@@ -189,7 +189,7 @@ bool run_case(u32 length, bool polling) {
 int main() {
     if (thread::enable() != 0) { fail("thread-profile"); return 1; }
     ipc_v1_feature_query query{};
-    if (ipc_v1::query_features(query) != 0 || query.supported_features != 0x0f ||
+    if (ipc_v1::query_features(query) != 0 || (query.supported_features & 0x0f) != 0x0f ||
         (query.supported_features & static_cast<u64>(ipc_v1_feature::bulk_grant)) != 0) {
         fail("feature-mask", static_cast<i64>(query.supported_features)); return 1;
     }

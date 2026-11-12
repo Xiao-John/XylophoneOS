@@ -1,0 +1,33 @@
+{
+  "scope": "HOST_REAL_SOURCE_TRANSPORT_REGRESSION",
+  "baseline_commit": "158a9b99550c03b97e74e3b9e4c2fd6a288c8bf3",
+  "compiler": "c++ (Debian 14.2.0-19) 14.2.0",
+  "python": "3.12.14",
+  "checks": [
+    {
+      "name": "baseline",
+      "command": [
+        "python3",
+        "tests/ssg_deadline_host_test.py",
+        "--revision",
+        "158a9b99550c03b97e74e3b9e4c2fd6a288c8bf3"
+      ],
+      "exit_code": 1,
+      "result": "EXPECTED_FAILURE"
+    },
+    {
+      "name": "current",
+      "command": [
+        "python3",
+        "tests/ssg_deadline_host_test.py"
+      ],
+      "exit_code": 0,
+      "result": "PASS"
+    }
+  ],
+  "qt_widgets_runtime": "NOT_RUN",
+  "guest": "NOT_RUN",
+  "historical_exit_race_root_cause": "UNRESOLVED",
+  "historical_pillow_malloc_fault_root_cause": "UNRESOLVED",
+  "method": "Real unmodified transfer and encoder definitions; only syscall transport/time schedule injected. No replacement Qt implementation."
+}

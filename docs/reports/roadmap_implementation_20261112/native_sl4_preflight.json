@@ -1,0 +1,16 @@
+{
+  "gate": "SL4",
+  "status": "not_run",
+  "guest_execution": "not_run",
+  "checks": [],
+  "planned_command_groups": 14,
+  "not_applicable": {
+    "xsh_shell_syntax": "no shell cd/export, quoting, pipes, subshell or replacing exec; application API inheritance is tested",
+    "spawn_fd_above_2": "current startup-v2 spawn contract transfers stdio; 32-FD/CLOEXEC is checked through fork+exec"
+  },
+  "limits": {
+    "xsh_chain": "four application spawn hops",
+    "dash_chain": "dash plus three application hops; no increase to the existing process budget"
+  },
+  "error": "[Errno 2] No such file or directory: 'build/identity_system'"
+}

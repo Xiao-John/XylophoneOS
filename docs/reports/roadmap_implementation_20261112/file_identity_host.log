@@ -1,0 +1,35 @@
+FILE_SEMANTICS_CASES_PASSED=25
+[identity] independent_open_shared_inode ok
+[identity] independent_append_current_eof ok
+[identity] truncate_shared_metadata_independent_offset ok
+[identity] lfn_sfn_aliases_share_object ok
+[identity] open_rename_updates_fatfs_entry ok
+[identity] unlink_delays_reclamation_and_prevents_reuse ok
+[identity] rename_over_open_target_preserves_both_objects ok
+[identity] directory_replace_and_unlinked_cwd_parent ok
+[identity] cwd_follows_ancestor_rename_and_sfn_alias ok
+[identity] removed_cwd_and_parent_never_rebind ok
+[identity] loader_pin_preserves_content_lease ok
+[identity] fork_shared_description_and_cwd_lifecycle ok
+[identity] atomic_save_with_open_old_inode ok
+[identity] atomic_save_retains_parent_identity ok
+[identity] atomic_save_removed_parent_fails_without_redirect ok
+[identity] real_near_full_gap_and_truncate_rollback ok
+[identity] real_full_disk_short_write_and_save_space_gate ok
+[identity] fatfs_lock_not_disabled_and_wrong_fil_rejected ok
+[identity] failed_deferred_delete_remains_owned_until_retry ok
+[identity] directory_replacement_recovery ok
+[identity] startup_reclaims_unlinked_backing_files_and_directories ok
+[identity] directory_replacement_and_ancestor_guard_with_sfn_aliases ok
+[identity] maintenance_gate_keeps_failed_close_ownership ok
+FILE_IDENTITY_CASES_PASSED=23
+[libc identity] startup_cwd_protocol ok
+[libc identity] independent_open_real_stack ok
+[libc identity] unlink_recreate_libc_identity ok
+[libc identity] cwd_rename_and_relative_open ok
+[libc identity] directory_stream_identity_and_fchdir ok
+[libc identity] deleted_cwd_errors_and_fchdir_recovery ok
+[libc identity] path_and_directory_errno_real_service ok
+[libc identity] runtime_reinitialization_preserves_session_cwd ok
+[libc identity] all_directory_and_file_references_reclaimed ok
+LIBC_FILE_IDENTITY_CASES_PASSED=9

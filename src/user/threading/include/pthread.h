@@ -8,6 +8,12 @@
 #ifndef CLOCK_MONOTONIC
 #define CLOCK_MONOTONIC 4
 #endif
+#ifndef CLOCK_PROCESS_CPUTIME_ID
+#define CLOCK_PROCESS_CPUTIME_ID 2
+#endif
+#ifndef CLOCK_THREAD_CPUTIME_ID
+#define CLOCK_THREAD_CPUTIME_ID 3
+#endif
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -1,15 +1,19 @@
 // SPDX-License-Identifier: Apache-2.0
 #include <cassert>
 #include <cstdio>
+#include <cstdlib>
 #include <sys/mman.h>
 #include <xos/memory.hpp>
 #include <xos/audio_abi.hpp>
 #include <xos/ipc_v1_abi.hpp>
+#include <xos/device_abi.hpp>
 #include <xos/format.hpp>
 #include "core/thread_lifecycle.hpp"
 #include "core/stream_lease.hpp"
 #include "core/vm_pin.hpp"
 #include "core/vm_continuation.hpp"
+#include "core/user_copyout.hpp"
+#include "core/cpu_accounting.hpp"
 #include "arch/x86_64/frame.hpp"
 
 namespace xos {
@@ -21,17 +25,30 @@ memory_result query_page(u64 address, u64* physical, page_permissions* permissio
     *permissions = {true, false, true};
     return memory_result::none;
 }
+memory_result inspect_user_write_in(u64, u64 address, user_write_page& page) {
+    page = {};
+    u64 physical;
+    page_permissions permissions{};
+    return query_page(address, &physical, &permissions);
+}
+memory_result stage_user_write(user_write_page&) { std::abort(); }
+bool user_write_unchanged_in(u64, const user_write_page&) { std::abort(); }
+void publish_user_write_in(u64, user_write_page&) { std::abort(); }
+memory_result release_user_page(u64) { std::abort(); }
 }
 namespace xos::platform {
 bool debug_write(const char*) { return true; }
 }
 namespace xos::arch {
+[[noreturn]] void halt() { std::abort(); }
+u64 execution_counter() { return 0; }
 namespace {
 #include "kernel_wait_records.inc"
 process_record tasks[8];
 thread_record threads[thread_max_total];
 process_record* current;
 thread_record* current_thread;
+cpu_accounting cpu_usage;
 bool reap_pending[8];
 constexpr bool process_trace_enabled = false;
 stream_lease input_lease;
@@ -39,6 +56,7 @@ u32 schedules;
 
 // No device grants, IPC sessions, or display clients are created by this test.
 void ipc_v1_revoke_process(u64) {}
+void device_revoke_process(u64) {}
 void release_pc_speaker(process_record*) {}
 void revoke_pc_speaker_controller(process_record*) {}
 void quarantine_com1(process_record*) {}
@@ -70,6 +88,9 @@ void reset() {
     tasks[0].can_create = true;
     tasks[1].pid = 2;
     tasks[1].parent = 1;
+#if XOS_RUNTIME_VM
+    tasks[1].cancel_parent = 1;
+#endif
     tasks[1].state = task_state::ready;
     tasks[1].completion_slot = 1;
     completions[0].used = true;
@@ -134,6 +155,41 @@ int main() {
     assert(wait_for(2, second_output, 1) == 0);
     assert(second_status->pid == 2 && second_status->code == -9 && !completions[0].used);
     assert(schedules == 0 && !current_thread->user_pin.active());
+#if XOS_RUNTIME_VM
+    const process_outcome normal_outcomes[] = {process_outcome::exited, process_outcome::faulted};
+    for (auto outcome : normal_outcomes) {
+        reset();
+        finish_task(&tasks[0], outcome, 0);
+        assert(tasks[1].state == task_state::ready && tasks[1].parent == 0);
+        assert(tasks[1].completion_slot == 0 && !completions[0].used);
+        finish_task(&tasks[1], process_outcome::exited, 0);
+        assert(reap_pending[1] && !completions[0].used);
+    }
+    reset();
+    tasks[1].state = task_state::building;
+    finish_task(&tasks[0], process_outcome::exited, 0);
+    assert(tasks[1].state == task_state::dead && reap_pending[1]);
+
+    reset();
+    tasks[2].pid = 3;
+    tasks[2].parent = tasks[2].cancel_parent = 2;
+    tasks[2].state = task_state::ready;
+    finish_task(&tasks[1], process_outcome::exited, 0);
+    assert(tasks[2].state == task_state::ready && tasks[2].parent == 0 && tasks[2].cancel_parent == 1);
+    finish_task(&tasks[0], process_outcome::killed, -9);
+    assert(tasks[2].state == task_state::dead && reap_pending[2]);
+
+    reset();
+    tasks[1].cpu = {70, 30};
+    tasks[1].child_cpu = {5, 7};
+    finish_task(&tasks[1], process_outcome::exited, 0);
+    assert(tasks[0].child_cpu.user == 0 && tasks[0].child_cpu.system == 0);
+    assert(wait_for(2, second_output, 1) == 0);
+    assert(tasks[0].child_cpu.user == 75 && tasks[0].child_cpu.system == 37);
+    assert(wait_for(2, second_output, 1) == process_error_denied);
+    assert(tasks[0].child_cpu.user == 75 && tasks[0].child_cpu.system == 37);
+    std::puts("PASS normal/fault parent exit, orphan cleanup, builder cancellation, explicit kill ancestry, child CPU consumption");
+#endif
     assert(munmap(memory, 3 * page_size) == 0);
     std::puts("PASS process wait: pending duplicate, ready owner, cross-page pin, delivery, single consumption");
 }

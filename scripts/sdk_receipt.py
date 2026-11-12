@@ -44,6 +44,9 @@ def verify_sdk(root,system):
         raise ValueError('SDK build/ABI/target differs from frozen system')
     if metadata.get('configuration')!=system['configuration'] or metadata.get('runtime_model')!='single':
         raise ValueError('SDK configuration/runtime differs from frozen system')
+    if 'archive_provenance' in metadata:
+        from archive_member_map import verify_bundle
+        verify_bundle(root, metadata['archive_provenance'], ('lib/libc.a', 'lib/libm.a'))
     return {**receipt,'manifest_sha256':sha(root/'manifest.json'),'build_id':metadata['build_id'],
             'target':metadata['target'],'abi':metadata['abi'],
             'system_configuration_sha256':hashlib.sha256(canonical(system['configuration'])).hexdigest()}

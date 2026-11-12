@@ -48,7 +48,7 @@ seL4 的官方 [IPC](https://docs.sel4.systems/Tutorials/ipc.html) 和
 | IP1 ABI 与参考模型 | 构建与后端无关的契约测试，编写不冒充产品的模型客户端/服务 | 登记 syscall 88、固定布局/错误/发现；普通与线程 SDK manifest 明确 unsupported | 当前 PR 合入后完成登记；参考模型覆盖边界；仍不标记 supported |
 | IP2 同步端点与 RPC | 先以测试服务调用，显式检测 capability；旧客户端照常 | 对象/权限/队列、call/receive/reply、期限、取消、close/exit；正常慢路径 | 真实 guest 功能、异常、竞争与资源精确回收；新能力才可按 profile 宣告 |
 | IP3 等待与迁移 | 在文件、终端、显示、Interactium、音频中选择纵向切片，旧/新差分 | notification、可授权的 wait set 和现有事件互操作；按实际缺口分开登记 | 各迁移服务双路径比较、崩溃及重启语义明确，适用工具 xsh/dash 双验 |
-| IP4 大块数据 | 框架只依赖显式 buffer/grant feature，保持小消息通路 | 独立共享页/grant 授权、生命周期、撤销和 VM/COW 安全设计 | 在 VM/共享映射相关资格具备后作真实授权、故障和性能验收 |
+| IP4 大块数据 | 框架只依赖显式 buffer/grant feature，保持小消息通路 | 内核分配页 backing、权利缩减、共享映射、pin/VM 冲突与生命周期撤销已实现（PR #112）；VM/COW 不作为共享页来源 | owner guest 验收跨进程授权、close/map race、资源与进程退出回收后再启用 bulk_grant |
 | IP5 快路径与扩展 | 相同 API/协议，不因 fastpath 改调用 | 受限短消息直接切换、端点 handle 索引与 IPC payload 批量复制 | 新 guest probe 对比 direct-waiter 与 polling fallback 的延迟分布、语义和资源；SMP 另立阶段 |
 
 两个工作流可以从 IP0 并行：服务侧以提案的逻辑类型、版本化协议和模型测试推进，
@@ -85,3 +85,9 @@ seL4 的官方 [IPC](https://docs.sel4.systems/Tutorials/ipc.html) 和
    build/image/SDK/ELF hash；QEMU 数值只作相对测量，不能代替硬件声明。
 3. 快路径探针通过后复核慢/快路径错误、权限、deadline、handle/token 和资源回收；任何
    SMP 或跨核唤醒优化另立阶段。
+4. IP4 maintainer 运行 `tests/ipc_v1_grant_guest.py`（owner 验收记录见 PR #112）；在
+   owner 验收前保持 bulk_grant unsupported。服务迁移与测量仍待运行后端资格后开展。
+
+## IP4 当前交付（2026-11-12）
+
+IP4 后端在 `codex/ipc-ip4`：新增 grant create/delegate/map/unmap/close，独立 backing pages 和 per-map page references，使用匿名 VM reservation 管理映射区间；对重叠 VM 修改返回 busy，close 对 pin 做全局预检并原子撤销。delegate 将源句柄数值安装到目标进程（目标已持有该值时返回 `resources`）。SDK wrappers 和 `tests/ipc_v1_grant_guest.py` 覆盖真实跨进程共享、source snapshot、只读授权、mapping quota、map/close race、pin 阻断撤销、exit revoke 和资源回到基线。owner acceptance 由维护者在 PR #112 运行（harness 启动方式与 delegate 句柄值两处问题已在该 PR 修复）；bulk_grant 在验收通过前保持 unsupported，普通/线程 SDK manifests 维持该状态。

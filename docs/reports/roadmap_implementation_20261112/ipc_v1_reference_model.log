@@ -1,0 +1,24 @@
+test_both_sdk_profiles_separate_available_features_from_qualification (__main__.ipc_v1_reference_model_test.test_both_sdk_profiles_separate_available_features_from_qualification) ... ok
+test_call_first_preserves_caller_badge (__main__.ipc_v1_reference_model_test.test_call_first_preserves_caller_badge) ... ok
+test_call_timeout_after_delivery_returns_result_unknown (__main__.ipc_v1_reference_model_test.test_call_timeout_after_delivery_returns_result_unknown) ... ok
+test_call_timeout_before_delivery_guarantees_no_delivery (__main__.ipc_v1_reference_model_test.test_call_timeout_before_delivery_guarantees_no_delivery) ... ok
+test_close_distinguishes_queued_from_delivered_calls (__main__.ipc_v1_reference_model_test.test_close_distinguishes_queued_from_delivered_calls) ... ok
+test_delegation_cannot_increase_rights (__main__.ipc_v1_reference_model_test.test_delegation_cannot_increase_rights) ... ok
+test_delivery_then_close_invalidates_reply_and_marks_unknown (__main__.ipc_v1_reference_model_test.test_delivery_then_close_invalidates_reply_and_marks_unknown) ... ok
+test_empty_and_maximum_messages_are_valid_but_max_plus_one_is_not (__main__.ipc_v1_reference_model_test.test_empty_and_maximum_messages_are_valid_but_max_plus_one_is_not) ... ok
+test_expired_deadline_still_observes_already_queued_message_first (__main__.ipc_v1_reference_model_test.test_expired_deadline_still_observes_already_queued_message_first) ... ok
+test_fifo_queue_and_depth_limit (__main__.ipc_v1_reference_model_test.test_fifo_queue_and_depth_limit) ... ok
+test_handle_owner_and_rights_are_authenticated (__main__.ipc_v1_reference_model_test.test_handle_owner_and_rights_are_authenticated) ... ok
+test_manifest_feature_model_is_not_product_support (__main__.ipc_v1_reference_model_test.test_manifest_feature_model_is_not_product_support) ... ok
+test_per_process_endpoint_handle_quota (__main__.ipc_v1_reference_model_test.test_per_process_endpoint_handle_quota) ... ok
+test_receive_buffer_too_small_does_not_consume (__main__.ipc_v1_reference_model_test.test_receive_buffer_too_small_does_not_consume) ... ok
+test_receive_first_rendezvous_preserves_badge_and_payload_snapshot (__main__.ipc_v1_reference_model_test.test_receive_first_rendezvous_preserves_badge_and_payload_snapshot) ... ok
+test_reply_buffer_too_small_keeps_one_shot_token_live (__main__.ipc_v1_reference_model_test.test_reply_buffer_too_small_keeps_one_shot_token_live) ... ok
+test_reply_receive_reports_reply_success_when_receive_fails (__main__.ipc_v1_reference_model_test.test_reply_receive_reports_reply_success_when_receive_fails) ... ok
+test_reply_token_quota_does_not_consume_next_call (__main__.ipc_v1_reference_model_test.test_reply_token_quota_does_not_consume_next_call) ... ok
+test_system_endpoint_quota_and_nonreused_handle (__main__.ipc_v1_reference_model_test.test_system_endpoint_quota_and_nonreused_handle) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.012s
+
+OK

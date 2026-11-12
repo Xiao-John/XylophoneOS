@@ -52,7 +52,10 @@ void pic_input_enable() {
 }
 void pic_mask(u8 irq, bool masked) {
     if (irq < 8) change_bit(master_data, static_cast<u8>(1u << irq), masked);
-    else if (irq < 16) change_bit(slave_data, static_cast<u8>(1u << (irq - 8)), masked);
+    else if (irq < 16) {
+        change_bit(slave_data, static_cast<u8>(1u << (irq - 8)), masked);
+        if (!masked) change_bit(master_data, 4, false);
+    }
 }
 }
 

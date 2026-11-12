@@ -14,6 +14,7 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
     print("[display-service] ready file=denied block=denied spawn=denied\n");
     const auto* argv=reinterpret_cast<const char* const*>(startup->argv);
     const bool fault=startup->argc>1 && equal(argv[1],"fault");
+    const bool fault_present=startup->argc>1 && equal(argv[1],"fault-present");
     for(;;){
         display_channel channel{};
         const auto accepted=display_control(display_action::accept,reinterpret_cast<u64>(&channel));
@@ -25,6 +26,9 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
         display_reply reply{};reply.result=display_invalid;
         bool stop=false;
         if(received==sizeof(request) && request.version==1 && request.size==sizeof(request) && request.reserved==0){
+            if(fault_present && request.operation==display_operation::present){
+                print("[display-service] fault_after_present\n");__asm__ volatile("ud2");
+            }
             switch(request.operation){
             case display_operation::mode:
                 reply.result=display_control(display_action::mode,reinterpret_cast<u64>(&reply.mode));break;

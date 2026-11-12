@@ -1,0 +1,50 @@
+From: XOS contributors
+Subject: [PATCH] use the system monotonic clock and release the GIL while sleeping
+
+--- a/Python/pytime.c
++++ b/Python/pytime.c
+@@ -1,3 +1,4 @@
+ #ifdef __xos__
+ extern long long xos_cpython_monotonic_ns(void);
++extern long long xos_cpython_clock_resolution_ns(void);
+ #endif
+--- a/Python/pytime.c
++++ b/Python/pytime.c
+@@ -1,8 +1,16 @@
+ #elif defined(__xos__)
+-    *tp = (PyTime_t)xos_cpython_monotonic_ns();
++    long long now = xos_cpython_monotonic_ns();
++    long long resolution = info ? xos_cpython_clock_resolution_ns() : 1;
++    if (now < 0 || resolution < 0) {
++        if (raise_exc) {
++            PyErr_SetFromErrno(PyExc_OSError);
++        }
++        return -1;
++    }
++    *tp = (PyTime_t)now;
+     if (info) {
+-        info->implementation = "XOS PIT ticks";
+-        info->resolution = 0.01;
++        info->implementation = "XOS monotonic clock";
++        info->resolution = (double)resolution / 1e9;
+         info->monotonic = 1;
+         info->adjustable = 0;
+     }
+--- a/Modules/timemodule.c
++++ b/Modules/timemodule.c
+@@ -1,6 +1,12 @@
+ #ifdef __xos__
+-    // XOS has no blocking sleep primitive; the bridge spins on PIT ticks.
+-    extern void xos_cpython_sleep_ns(long long);
+-    xos_cpython_sleep_ns(timeout);
++    extern int xos_cpython_sleep_ns(long long);
++    int sleep_result;
++    Py_BEGIN_ALLOW_THREADS
++    sleep_result = xos_cpython_sleep_ns(timeout);
++    Py_END_ALLOW_THREADS
++    if (sleep_result < 0) {
++        PyErr_SetFromErrno(PyExc_OSError);
++        return -1;
++    }
+     return 0;
+ #else

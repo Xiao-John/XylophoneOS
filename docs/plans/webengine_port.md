@@ -70,7 +70,7 @@
 |---|---|
 | JSC 解释器-only（`ENABLE_JIT=0`） | 上游官方配置。未来 JIT 是**增量**：届时按 C20 论证内核新增 W^X 可执行页授权并先登记 ABI，不返工。 |
 | cairo 软件渲染 → QImage/QPA 合成 | GTK/WPE 端同款官方路径；GPU 合成留给未来图形授权的自然延伸，不向内核加应用专属面。 |
-| 静态链接、每进程一个 ELF | XOS 无动态加载器是既定架构事实，不是绕行；与 WebKit2 进程形态原生匹配。 |
+| 静态链接和多进程 | XOS 当前无动态加载器；进程入口、ELF 组织及上游构建假设须由 M0 验证。 |
 | HTTP 栈从用户态服务起步 | [browser_http README](../../src/ports/browser_http/README.md) 的受限解析器和 obligations 是纵切片资产；完整网络后端及其需求按锁定版本审计。 |
 | Qt/Aurora 作嵌入壳 | embedder 关系是上游常态；壳可替换，引擎不为壳打私有补丁。 |
 | 上游补丁 | 一律进入 `source_lock.json`（补丁哈希显式记录），无隐式分叉；升级时补丁可审可重放。 |
@@ -81,15 +81,15 @@
 | # | 范围 | 验收门 | 性质 |
 |---|---|---|---|
 | M0 | 正式源锁；按 [posix_subset 契约](../contracts/posix_subset.md) 的状态词审计 WebKit 所需 POSIX 面（mmap/mprotect/生成/信号/线程/文件）；客机内存定容；(a)/(b) 端口路线用真实构建裁决；许可预演 | `docs/reports/webengine_m0_*/README.md` 落盘：未知全部变成有数的清单；本文回填确切源锁与 M3 重估 | 测量型 |
-| M1 | JSC（`ENABLE_JIT=0`）+ WTF 静态构建在 XOS 运行；ES262 用 test262 出**实测**通过率 | 客体 guest gate 命令 + 通过率报告（只报数字，不声明完整兼容） | 机械型 |
-| M2 | WebCore 本地页：ICU/freetype/harfbuzz/woff2/sqlite/libjpeg/libpng/libwebp/cairo 各自源锁与移植；Qt 壳嵌入视口渲染本地 HTML/CSS/DOM | [aurora_browser 契约](../contracts/aurora_browser.md) 的本地页/输入/像素/错误/回收用例作为对照子集通过 + 报告 | 机械型 |
+| M1 | JSC（`ENABLE_JIT=0`）+ WTF 静态构建在 XOS 运行；ES262 用 test262 出**实测**通过率 | 客体 guest gate 命令 + 通过率报告（只报数字，不声明完整兼容） | 实现与测量 |
+| M2 | WebCore 本地页：ICU/freetype/harfbuzz/woff2/sqlite/libjpeg/libpng/libwebp/cairo 各自源锁与移植；Qt 壳嵌入视口渲染本地 HTML/CSS/DOM | [aurora_browser 契约](../contracts/aurora_browser.md) 的本地页/输入/像素/错误/回收用例作为对照子集通过 + 报告 | 实现与测量 |
 | M3 | 网络用户服务：设备授权按 [network_device_v1 提案](../contracts/network_device_v1_proposal.md) 走独立登记 PR（C20 审核后实现，不复用旧 `sys_net_device` 帧代理）；lwIP 或等价 TCP 进用户服务；以受控 HTTP 纵切片验证网络；WebKit 网络后端按 M0 的上游接口与依赖审计选型；TLS/证书/时间/熵复用 CPython 已交付成果，TLS 库另行许可与安全评审；对接 NetworkProcess 后端 | 客体内对受控 HTTP/TLS 服务真实 GET；负向输入、超时、对端死亡用例；冻结回执 | 最长的杆 |
 | M4 | WebKit2 三进程经 XOS 生成机制与 IPC 接通；WebProcess 零设备特权；进程死亡客户端可观察 | 页面在 WebProcess 渲染；杀进程后客户端报错不假成功（C25） | 结构型 |
 | M5 | 真实 HTTPS 网站资格；恶意输入/资源耗尽负向验收；渲染器准入审计（引擎评估文档要求项） | pass/partial/fail/not_run 分栏报告，不预支完整兼容 | 资格型 |
 
 量级说明：M0 后才能给 M3 实数；在此之前不给单一总数。已验证的地基
 （GCC 16.2.0、newlib 4.6.0、线程 SDK 真 pthreads、Qt 6.8.3/QPA、CPython 熵与时钟）
-使 这些地基不能证明 WebKit 的组合需求已经满足。M1/M2 的运行时、内存、构建、嵌入及多进程路径均为待测风险，网络也是独立关键路径。
+这些地基不能证明 WebKit 的组合需求已经满足。M1/M2 的运行时、内存、构建、嵌入及多进程路径均为待测风险，网络也是独立关键路径。
 
 ## 6. 宪法与契约依赖
 
@@ -115,7 +115,7 @@
 | `src/ports/browser_http` 解析器 + 冻结回执 | 受控 HTTP 纵切片及测试资产；不预设为 WebKit 的完整网络后端，也不视其 obligations 为完整浏览器需求 |
 | Qt 6.8.3 / QPA / display ABI | 浏览器壳与嵌入视口 |
 | 线程 SDK（真 pthreads） | M1 起全部引擎线程 |
-| CPython 熵/时钟/时区成果 | M3 TLS 与证书时间检查 |
+| CPython 熵/时钟/时区成果 | M3 TLS 与证书时间检查的候选基础；实际接口及资格须重新验证 |
 | [posix_subset 契约](../contracts/posix_subset.md) | M0 审计的状态词与登记入口 |
 | [network_device_v1 提案](../contracts/network_device_v1_proposal.md) | M3 前置：独立登记 PR 后才实现 |
 
@@ -181,4 +181,4 @@ pass/partial/fail/not_run 均须报告；受控站点通过不代表互联网兼
    先例对候选基线做正式源锁，落 `src/ports/webkit/source_lock.json`；命令序列与哈希
    写入 M0 报告并回填本文第 2 节。
 2. M0 第二步：以 posix_subset 契约状态词出 POSIX 缺口清单。
-3. M0 第三步：(a)/(b) 各做一次真实交叉构建尝试，凭报告裁决端口路线。
+3. M0 第三步：按第 9 节对两条路线分别开展可复现构建和依赖调查；证据不足时保留未裁决，列出下一探针。

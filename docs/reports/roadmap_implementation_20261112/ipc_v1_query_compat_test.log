@@ -1,0 +1,12 @@
+${XOS_TEMP}/kernel.cpp: In function ‘void copy_to_user(kernelxos::u64, const void*, kernelxos::u64)’:
+${XOS_TEMP}/kernel.cpp:23:5: error: ‘commit_user_output’ was not declared in this scope
+   23 |     commit_user_output();
+      |     ^~~~~~~~~~~~~~~~~~
+Traceback (most recent call last):
+  File "${XOS_ROOT}/tests/ipc_v1_query_compat_test.py", line 162, in <module>
+    main()
+  File "${XOS_ROOT}/tests/ipc_v1_query_compat_test.py", line 32, in main
+    subprocess.run([*common, "-I", str(directory / "new"), "-c", str(kernel),
+  File "${XOS_PYTHON_RUNTIME}", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['c++', '-std=c++20', '-O2', '-Wall', '-Wextra', '-Werror', '-I', '${XOS_TEMP}/new', '-c', '${XOS_TEMP}/kernel.cpp', '-o', '${XOS_TEMP}/kernel.o']' returned non-zero exit status 1.

@@ -10,6 +10,12 @@ COW0 已冻结[契约与失败矩阵](../contracts/cow0.md)；COW1 的真实 for
 sys67 已实现但尚未资格认证；VM1 专用探针诊断不作为公共 ABI 分配。
 不另分配 COW syscall，沿用既有 fork prepare/commit/abort 的用户态协议。
 
+本轮补充：按用户允许客体门槛不阻塞实现的授权，COW2 写回准备/提交/失败回滚、阻塞
+pin、COW-L1/L2 的正常退出收养与显式取消链已实现，并接入普通 fork；构建
+`--eager-fork` 保留对照。真实分配器/页表/消费者及进程完成记录的宿主回归已通过，
+普通客体、硬件 TLB、应用矩阵与 COW3 性能/资格仍未运行；下文历史“迁移前保持”描述
+对应迁移前基线，当前语义以 [COW 契约](../contracts/cow0.md)的新接入节为准。
+
 ## 已核源码与真实缺口
 
 基线 a2ccab1：paging.cpp::copy_user_pages_in 只遍历 PML4[0]/PDPT[1]，

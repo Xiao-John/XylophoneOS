@@ -17,6 +17,11 @@ public:
     i64 ping();
     i64 list(entry* entries, u32 capacity, u32& count);
     i64 list(const char* path, entry* entries, u32 capacity, u32& count, u32& cursor);
+    i64 list(u32 directory_handle, entry* entries, u32 capacity, u32& count, u32& cursor);
+    i64 set_cwd(const char* path, u64 target_pid = 0, bool initialize_only = false);
+    i64 set_cwd_handle(u32 directory_handle);
+    i64 get_cwd(char* path, u32 capacity);
+    i64 resolve_path(const char* path, char* absolute, u32 capacity);
     i64 stat(const char* path, u32& size, u32& version);
     i64 stat_info(const char* path, u32& size, u32& attributes);
     i64 stat_info(const char* path, u32& size, u32& attributes, u32& identity);
@@ -51,6 +56,8 @@ public:
 private:
     i64 set_path(const char* path, char* target, u32& length);
     i64 call(op operation);
+    i64 decode_list(entry* entries, u32 capacity, u32& count, u32& cursor);
+    i64 copy_response_path(char* path, u32 capacity);
     u32 send_handle_;
     u32 recv_handle_;
     u32 request_id_;

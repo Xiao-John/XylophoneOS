@@ -24,12 +24,16 @@
 | `sys_ipc_endpoint` | 84 |
 | `sys_ipc_wait` | 85 |
 | `sys_ipc_name` | 86 |
+| `sys_process_cpu_time` | 89 |
 | `clone_session` | 20 |
 | `anonymous` | 21 |
 | `anonymous_seal` | 22 |
 | `maintenance_acquire` | 23 |
 | `maintenance_release` | 24 |
 | `truncate` | 25 |
+| `cwd_set` | 26 |
+| `cwd_get` | 27 |
+| `resolve_path` | 28 |
 
 ## 谁负责什么
 
@@ -95,8 +99,12 @@ wait 只能收集自己的已提交子任务，未完成则真正挂起父任务
 `killed`（-9 为监督终止，-27 为 Escape 取消）。异常不会被伪装成退出码 0。
 
 资源回收与结果记录分开：死任务在其他任务的内核栈上回收，完成记录保留到 wait。
-修复 E03 漏回收 PDPT 的问题，并让所有创建中途失败走回滚。builder 退出/故障时
-取消其所属子任务并丢弃它的完成记录；没有通用 orphan/adoption 或服务重启机制。
+创建中途失败走回滚。builder 正常退出或 fault 时，building 子任务取消；已提交子任务
+交内核收养（等待父身份变为 0，原父的完成记录释放），继续使用其自身地址空间和
+files 会话，退出后自动回收。独立的取消祖先关系沿最近存活祖先传递，显式 kill/cancel
+仍级联取消后代；权限检查与前台 Escape 入口不扩大。收养不创建新的可 wait 句柄，
+也不转交原父的设备/通道权利；所有者死亡造成的通道关闭仍按对应契约。未实现 POSIX
+进程组、信号、subreaper 或自动服务重启。本轮实现已有宿主回归，客体验收未运行。
 
 前台 `exec` / `wait` 挂起监督任务时，单独按 Escape 可终止被等待子任务并恢复
 `xsh> `，所以 `exec spin` 不要求重建镜像。它是固定串口控制机制，不是 POSIX
@@ -120,6 +128,20 @@ sys_file_session=27 是 files 专属的可信会话枚举；普通程序通过 i
 `file_session_info` 另含内核填写的 `parent_pid`（创建者）：files 只允许父进程把
 句柄转移给尚未启动的子进程，调用方自报的目标 PID 不再构成授权。
 
+2026-11-12 文件身份增量保持 v2 wire 布局及 op 1–25，追加 op26 `cwd_set`、
+op27 `cwd_get`、op28 `resolve_path`。open flags 追加 bit10 `open_directory`、
+bit11 `open_pin`；stat/fstat flags bit1 表示已 unlink；状态 -10/-11/-12/-13
+分别为 not_directory/is_directory/not_empty/name_too_long。目录 list 可使用已有
+目录句柄。`cwd_set` 使用路径、目录句柄或空名继承 cwd，flags bit0 为只初始化，
+offset 为 0/self 或经 kernel parent_pid 认证且尚未初始化的子 PID。
+
+files 统一持有每 inode 的 FIL，独立 open 保留独立偏移；dup/fork 仍共享描述。
+cwd 由服务保留目录引用，spawn 在子进程启动前委派，fork 克隆，同 PID exec 保留。
+装载器显式 readonly pin 与已有可写打开互斥，冲突返回 open 阶段的 busy；普通只读
+打开不再阻止写者。rename/unlink/原子替换可以改变名字，但不能改变 pin 的旧对象。
+依赖新 cwd/目录流语义的旧静态程序需用新 SDK 重建。协议、生命周期、限额和已运行
+宿主/未运行客体的边界见 [文件身份契约](contracts/file_identity.md)。
+
 0021用户库增量：SDK v5的__cxa_thread_atexit/强exit提供单用户线程的正常TLS析构，
 不改ELF装载/内核ABI；main-return/显式exit的LIFO、TLS先于global/fini已客体验证。
 普通SDK的该历史资格不包括线程；线程SDK见contracts/threading.md。无动态TLS/DSO卸载。
@@ -129,8 +151,10 @@ sys_file_session=27 是 files 专属的可信会话枚举；普通程序通过 i
 新增execution.hpp及loader/command.cpp：候选检查/有序PATH搜索保留在用户态，
 不看扩展名，分missing/directory/executable/not_executable/incompatible/unreadable。
 最终装载仍保持同一打开文件跨校验/映射的锁定，不以预检代替最终保证。
-spawn_file_diagnosed返回open/inspect/prepare/create/map/start阶段、错误码与ELF
-原因；旧spawn接口行为保留。完整策略见xsh.md；不是任意ABI或完整脚本执行支持。
+spawn_file_diagnosed返回open/inspect/prepare/create/map/start/file_setup阶段、错误码与ELF
+原因；file_setup 标识 cwd/文件句柄转交、映像读取或关闭的文件服务错误，使 libc
+不把同值的 kernel/file 错误混淆。普通 spawn 与 exec 使用同一阶段化 errno 映射；
+旧 SDK spawn 接口仍返回原始错误值。完整策略见xsh.md；不是任意ABI或完整脚本执行支持。
 
 新增sys_debug_trace=36：first为0/1，second/third必须0；仅真实bootstrap supervisor
 可改变正常进程生命周期日志，driver构造权不包含该权限。错误输出不受其影响。
@@ -223,11 +247,23 @@ sys60 试行可显式保留调用者参与的少量空通道；不设置标志�
 sys88 `sys_ipc_v1` 的 action、固定结构、错误和 capability feature 位由
 [IPC v1 契约](contracts/ipc_v1.md)与 `ipc_v1_abi.hpp` 登记。PR #111 的三轮客体验收后，
 runtime query 与普通/实验线程 SDK manifest 声明 `endpoint_call_v1`、`deadline_v1`、
-`notification_v1`、`wait_set_v1` supported。`bulk_grant_v1` 仍关闭，等待 IP4 客体验收；
+`notification_v1`、`wait_set_v1` supported。`bulk_grant_v1` 仍关闭，等待 IP4 客体验收
+（grant 后端与 owner 验收脚本见 PR #112）；
 IP5 快路径另有语义/性能探针，QEMU 测量不视为硬件性能保证。
 默认 `query_features(output)` 保持旧 72 字节查询及零保留字；只有
 `query_features(output, true)` 使用 query 专用 arg3 位 `0x1` 请求直切计数。
 未知位及其他 action 的非零 arg3 仍拒绝，计数选择不改变四个 supported feature。
+
+sys89 `sys_process_cpu_time(&value,0,0)` 接受 8 字节对齐、`version=1,size=72` 的
+`process_cpu_time`。成功返回 0，输出本进程 user/system、已 wait 子进程累计
+user/system、当前线程 user/system、独立的 monotonic elapsed 及计数转换分辨率，
+单位均为纳秒。只查询调用者，不接受目标 PID。参数/地址错返回 -2，写回资源不足
+返回 -5，计时源不可用返回 -19；失败不输出部分结构。普通与线程 SDK 提供
+`sdk::cpu_time`，状态仍为 `implemented_unqualified`，不得把宿主测试当客体资格。
+`times/_times` 的四个 CPU 字段按 `CLOCKS_PER_SEC` 转换，返回值为启动后 monotonic
+ticks；`clock()` 只包含本进程 user+system；`sysconf(_SC_CLK_TCK)` 返回相同单位。
+线程 SDK 的 `CLOCK_PROCESS_CPUTIME_ID`/`CLOCK_THREAD_CPUTIME_ID` 使用同一查询。
+校准与暂停边界见[时间域契约](contracts/time_domains.md#cpu-执行时间-v1)。
 
 sys82 `sys_pio_grant` 是开发中的固定设备 PIO 授权；COM1 交接/隔离及 PC Speaker
 端口范围、2.5 秒静音租约、主动 release 见[专项契约](contracts/pio_grant.md)。这两类

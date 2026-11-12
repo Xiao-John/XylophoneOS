@@ -42,6 +42,14 @@ are written with the existing atomic Pipe flag, so the kernel accepts either
 the whole bounded frame or no bytes. A partial result is still treated as
 unknown and ends the stream.
 
+Readiness alone does not establish that a deadline is still current: a ready
+Pipe can be returned after the waiting thread resumes late. Both peers check
+the monotonic deadline before each transfer attempt, and readers check it
+again before accepting a complete frame. An expired event write that has not
+started remains `NOT_SENT`; expiry after sending an event keeps its ACK outcome
+`UNKNOWN`. These checks do not turn scheduling or Pipe operations into a hard
+real-time delivery guarantee.
+
 ## Event frame and source state
 
 The private, versioned framing is distinct from P1 request/response frames:

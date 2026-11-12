@@ -3,6 +3,8 @@
 from __future__ import annotations
 import argparse, hashlib, json, os, platform, shutil, subprocess, sys, tarfile, urllib.request
 from pathlib import Path
+import shlex
+from archive_provenance import capture_build
 
 ROOT = Path(__file__).resolve().parents[1]
 PORT = ROOT / "src/ports/gcc"
@@ -201,6 +203,7 @@ def build(sdk: Path, expected: str, jobs: int, configure_only: bool, stdcxx: Pat
         raise RuntimeError(f"host libstdc++ prefix is incomplete: {stdcxx}")
     patch_files = sorted((PORT / "patches").glob("*.patch"))
     record = {"source_sha256": sha256(CACHE / LOCK["source_archive"]), "sdk_manifest_sha256": actual,
+              "provenance_generator_sha256": sha256(ROOT / 'scripts/archive_provenance.py'),
               "patches": {p.name: sha256(p) for p in patch_files},
               "config_site_sha256": sha256(PORT / "config/xos_cache_seed.sh"),
               "cxx_runtime_sha256": sha256(PORT / "cxx_runtime.cpp"),
@@ -212,6 +215,7 @@ def build(sdk: Path, expected: str, jobs: int, configure_only: bool, stdcxx: Pat
     fingerprint = hashlib.sha256(json.dumps(record, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     work = CACHE / "build" / fingerprint
     work.mkdir(parents=True, exist_ok=True)
+    capture = capture_build(work, fingerprint, 'gcc-mixed-source-declarations')
     install = work / "install"; build_dir = work / "build"; build_dir.mkdir(exist_ok=True)
     config_site = PORT / "config/xos_cache_seed.sh"
     env = os.environ.copy()
@@ -245,6 +249,8 @@ def build(sdk: Path, expected: str, jobs: int, configure_only: bool, stdcxx: Pat
         run([obj["ar"], "rcs", str(cxx_runtime), str(cxx_obj)])
     wrapper(work / "xos-cc", gcc, sdk, libgcc)
     wrapper(work / "xos-cxx", gxx, sdk, libgcc, None, stdcxx)
+    for variable in ('CC', 'CXX', 'CC_FOR_TARGET', 'CXX_FOR_TARGET'):
+        env[variable] = shlex.join([*capture.launcher(), env[variable]])
 
     log = work / "build.log"
     configure = [str(source / "configure"), *record["configure_options"]]
@@ -257,9 +263,11 @@ def build(sdk: Path, expected: str, jobs: int, configure_only: bool, stdcxx: Pat
     install.mkdir(parents=True, exist_ok=True)
     run([native["make"], "install-gcc", "install-target-libgcc", f"DESTDIR={install}"], cwd=build_dir, env=env, log=log)
     tools = inspect_gcc(install, obj["readelf"])
+    archive_manifests = capture.archives(install)
     manifest_out = {**record, "canonical": {"build": build_triple, "host": host, "target": target},
                     "sdk_manifest": str(manifest.relative_to(ROOT)), "tools": tools,
-                    "configure_log": str(log.relative_to(ROOT)), "manifest_schema": 1}
+                    "configure_log": str(log.relative_to(ROOT)), "manifest_schema": 1,
+                    "build_id": fingerprint, "archive_manifests": archive_manifests}
     (work / "manifest.json").write_text(json.dumps(manifest_out, indent=2, sort_keys=True) + "\n")
     print(work); return work
 

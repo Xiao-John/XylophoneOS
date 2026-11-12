@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
-// Segment 1a probe: sys_device (112) header validation must use the frozen
-// device_abi error values; known operations are transient device_unknown
-// until segments 1b-1e land their machinery.
+// Header/authority probe for the callable sys_device backend. No hardware
+// claim is made by this ordinary unprivileged process.
 #include <xos/device_abi.hpp>
 using namespace xos;
 
@@ -36,11 +35,15 @@ static bool expect(const char* name, i64 got, i64 wanted) {
 int main() {
     alignas(8) static unsigned char storage[64];
     auto* request = reinterpret_cast<xos::device_request*>(storage);
+    device_grant_input grant{1, 1, device_right_query, 0};
+    device_output output{};
     bool ok = true;
     auto reset = [&]() {
         *request = xos::device_request{};
         request->version = 1; request->size = sizeof(xos::device_request);
         request->operation = xos::device_operation::grant;
+        request->input_address = reinterpret_cast<u64>(&grant); request->input_length = sizeof(grant);
+        request->output_address = reinterpret_cast<u64>(&output); request->output_length = sizeof(output);
     };
     reset(); request->version = 2;
     ok &= expect("bad_version", device_call(reinterpret_cast<u64>(request)), xos::device_invalid);
@@ -55,10 +58,14 @@ int main() {
     reset(); request->deadline_ns = 1;
     ok &= expect("deadline_on_query", device_call(reinterpret_cast<u64>(request)), xos::device_invalid);
     ok &= expect("unaligned_request", device_call(reinterpret_cast<u64>(request) + 1), xos::device_invalid);
-    reset(); request->input_address = 1; request->input_length = 8;
+    reset(); request->input_address = 8;
     ok &= expect("unreadable_input", device_call(reinterpret_cast<u64>(request)), xos::device_fault);
     reset();
-    ok &= expect("grant_unimplemented", device_call(reinterpret_cast<u64>(request)), xos::device_unknown);
+    ok &= expect("ordinary_process_cannot_grant", device_call(reinterpret_cast<u64>(request)), xos::device_denied);
+    reset(); request->input_length -= 8;
+    ok &= expect("wrong_substructure_size", device_call(reinterpret_cast<u64>(request)), xos::device_invalid);
+    reset(); request->output_length -= 8;
+    ok &= expect("short_output_no_grant", device_call(reinterpret_cast<u64>(request)), xos::device_invalid);
     if (!ok) { emit("DEVICE_ABI_PROBE done_with_failures\n"); return 1; }
     emit("DEVICE_ABI_PROBE ok\n"); return 0;
 }

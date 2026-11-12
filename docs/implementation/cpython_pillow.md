@@ -66,3 +66,12 @@ imagequant 和 Tk 等可选原生后端未集成。源码中其他纯 Python 插
 符号链接或 LocalPilot 安全检查，也没有提供空 `_socket`、`select` 或 subprocess。
 完整 Agent Core/API 1.0、身份、Operator 审批、UNKNOWN、HTTPS 和发行资格各自验收。
 本接口只解除了原来“没有静态 `_imaging`”这一具体依赖阻塞。
+
+## 2026-11-12 时间桥修复
+
+CPython 补丁序列新增 `0006_xos_blocking_time.patch`：`time.sleep()` 在释放 GIL 后
+调用 sys47 的绝对截止时间阻塞等待，单调时间/分辨率从 sys46 获取，失败传播 OSError。
+旧独立桥的自旋和固定 10ms 假定已从当前源码替换。宿主测试链接真实桥，只替换 SDK
+syscall 边界，检查精确截止时间、零/负时长与错误传播；线程 fixture 增加睡眠期间
+另一线程前进的断言。CPython/Pillow 目标 ELF 尚未重建，这不是 Pillow `_malloc_r`
+历史 page fault 已解决的证明。

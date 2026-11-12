@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #include <xos/sdk.hpp>
+#include <xos/thread_abi.hpp>
+#include <errno.h>
 #include <sys/times.h>
 
 extern "C" clock_t _times(struct tms*);
@@ -10,28 +12,28 @@ extern "C" __attribute__((weak)) clock_t times(struct tms* buffer) {
     return _times(buffer);
 }
 
-// This compatibility bridge still spins instead of using the threading
-// profile's blocking sleep service. No signal can interrupt it. CPython's
-// time.sleep() calls this directly because newlib hides nanosleep() behind an
-// unset _POSIX_TIMERS visibility level.
-extern "C" void xos_cpython_sleep_ns(long long nanoseconds) {
-    constexpr xos::u64 ns_per_tick = 10000000;
-    if (nanoseconds <= 0) {
-        return;
+extern "C" int xos_cpython_sleep_ns(long long nanoseconds) {
+    if (nanoseconds < 0) { errno = EINVAL; return -1; }
+    const xos::i64 now = xos::sdk::syscall(xos::sys_clock_monotonic);
+    if (now < 0) { errno = EIO; return -1; }
+    const xos::u64 duration = static_cast<xos::u64>(nanoseconds);
+    if (duration > xos::thread_deadline_infinite - 1 - static_cast<xos::u64>(now)) {
+        errno = EOVERFLOW; return -1;
     }
-    const xos::u64 ticks =
-        (static_cast<xos::u64>(nanoseconds) + ns_per_tick - 1) / ns_per_tick;
-    const xos::u64 deadline = xos::sdk::ticks() + ticks;
-    while (xos::sdk::ticks() < deadline) {
-    }
+    const xos::i64 result = xos::sdk::syscall(xos::sys_sleep_until,
+        static_cast<xos::u64>(now) + duration);
+    if (result < 0) { errno = result == xos::thread_error_unsupported ? ENOSYS : EIO; return -1; }
+    return 0;
 }
 
 extern "C" long long xos_cpython_monotonic_ns() {
-    constexpr xos::u64 ns_per_tick = 10000000;
-    constexpr xos::u64 max_signed = 0x7fffffffffffffffULL;
-    const xos::u64 ticks = xos::sdk::ticks();
-    if (ticks > max_signed / ns_per_tick) {
-        return static_cast<long long>(max_signed);
-    }
-    return static_cast<long long>(ticks * ns_per_tick);
+    const xos::i64 result = xos::sdk::syscall(xos::sys_clock_monotonic);
+    if (result < 0) { errno = EIO; return -1; }
+    return result;
+}
+
+extern "C" long long xos_cpython_clock_resolution_ns() {
+    const xos::i64 result = xos::sdk::syscall(xos::sys_clock_monotonic, 1);
+    if (result <= 0) { errno = EIO; return -1; }
+    return result;
 }

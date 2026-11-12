@@ -12,6 +12,7 @@ from make_work_disk import create_fat32
 from work_disk import transfer
 from task_smoke import send_bytes,pump
 from process_smoke import command,resources
+from graphics_guest import start_graphics, stop_graphics, reap_compositor
 sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
 p=argparse.ArgumentParser()
 for n in ('image','payload','output'):p.add_argument('--'+n,type=Path,required=True)
@@ -57,8 +58,9 @@ def finish(b,code=0,background=False):
  else:g.expect(f'kind=exited code={code}'.encode(),start=b,timeout=30);g.expect_supervisor(start=b)
  if code==0:assert b'input-thread-joined' in bytes(g.output)[b:]
 def service_start():
- b=len(g.output);r=command(g,'display-start',b'result=0');g.expect(b'[display-service] ready',start=b);return int(re.search(rb'\[display-start\] pid=(\d+)',r)[1])
-def service_stop(pid):command(g,'exec gfxdemo stop',b'kind=exited code=0');command(g,f'wait {pid}',b'kind=exited code=0')
+ return start_graphics(g)
+def service_stop(pid, compositor):
+ stop_graphics(g, pid, compositor)
 def boot(disk,name,no_vga=False):
  global g
  orig=boot_smoke.qemu_command
@@ -78,9 +80,9 @@ try:
    f=d/name;f.write_bytes(data);transfer(disk,'import','/'+name,f)
   boot(disk,'guest',a.case=='no-vga');base=resources(g);report['baseline']=base
   if a.case=='no-vga':
-   r=command(g,'exec-file /bin/notes.elf /note.txt',b'kind=exited',timeout=90);assert b'unavailable or invalid Display Service mode (-19)' in r;assert resources(g)==base;mark('no_graphics_explicit_failure_and_serial_rescue')
+   r=command(g,'exec-file /bin/notes.elf /note.txt',b'kind=exited',timeout=90);assert b'Interactium connect/hello failed' in r;assert resources(g)==base;mark('no_graphics_explicit_failure_and_serial_rescue')
   else:
-   service=service_start();with_service=resources(g);report['with_service']=with_service
+   service,compositor=service_start();with_service=resources(g);report['with_service']=with_service
    if a.case=='interactive':
     b=start();screenshot('aurora-open');chord('ctrl','end');type_text('hello\nworld');stroke('home');key('shift',True)
     for _ in range(5):stroke('right')
@@ -98,18 +100,18 @@ try:
      b=start(path);sb=len(g.output);chord('ctrl','s');g.expect(b'EDITOR_SAVE_OK',start=sb);stroke('esc');finish(b);assert resources(g)==with_service
     mark('bom_crlf_empty_and_no_trailing_newline_roundtrip')
     b=start('/new.txt');type_text('new\nfile');sb=len(g.output);chord('ctrl','s');g.expect(b'EDITOR_SAVE_OK',start=sb);stroke('esc');finish(b);assert resources(g)==with_service;mark('new_file_creation')
-    command(g,'sync',b'[files] sync=ok');service_stop(service);assert resources(g)==base;shutdown('first')
+    command(g,'sync',b'[files] sync=ok');service_stop(service,compositor);assert resources(g)==base;shutdown('first')
     comparisons={}
     for name,wanted in [('note.txt',expected),('long.txt',longtext),('crlf.txt',b'\xef\xbb\xbfFirst\r\nSecond\r\n'),('empty.txt',b''),('noeol.txt',b'No newline'),('new.txt',b'new\nfile')]:
      target=d/('export-'+name);transfer(disk,'export','/'+name,target);assert target.read_bytes()==wanted,name;comparisons[name]={'bytes':len(wanted),'sha256':sha(target)}
-    boot(disk,'reboot');service=service_start();b=start();assert b'EDITOR_OPEN_OK bytes='+str(len(expected)).encode() in bytes(g.output)[b:];stroke('esc');finish(b);command(g,'sync',b'[files] sync=ok');service_stop(service);mark('sync_reboot_byte_exact_readback',comparisons=comparisons)
+    boot(disk,'reboot');service,compositor=service_start();b=start();assert b'EDITOR_OPEN_OK bytes='+str(len(expected)).encode() in bytes(g.output)[b:];stroke('esc');finish(b);command(g,'sync',b'[files] sync=ok');service_stop(service,compositor);mark('sync_reboot_byte_exact_readback',comparisons=comparisons)
    else:
     for i in range(3):
      b=start();stroke('esc');finish(b);assert resources(g)==with_service
     mark('three_widget_create_exit_cycles_resources_exact')
     b=start(background=True);pid=int(re.search(rb'\[loader\] started pid=(\d+)',bytes(g.output)[b:])[1]);command(g,f'kill {pid}',b'kill: accepted');command(g,f'wait {pid}',b'kind=killed');assert resources(g)==with_service;mark('killed_editor_reclaims_input_surface_and_heap')
-    b=start(background=True);pid=int(re.search(rb'\[loader\] started pid=(\d+)',bytes(g.output)[b:])[1]);command(g,f'kill {service}',b'kill: accepted');command(g,f'wait {pid}',b'kind=exited code=72');command(g,f'wait {service}',b'kind=killed');assert resources(g)==base;mark('display_death_exits_widgets_client_and_serial_survives')
-    service=service_start();with_service=resources(g);b=start();stroke('esc');finish(b);assert resources(g)==with_service;service_stop(service);assert resources(g)==base;mark('display_restart_new_editor_recovers')
+    b=start(background=True);pid=int(re.search(rb'\[loader\] started pid=(\d+)',bytes(g.output)[b:])[1]);command(g,f'kill {service}',b'kill: accepted');command(g,f'wait {pid}',b'kind=exited code=72');command(g,f'wait {service}',b'kind=killed');reap_compositor(g,compositor);assert resources(g)==base;mark('display_death_exits_widgets_client_and_serial_survives')
+    service,compositor=service_start();with_service=resources(g);b=start();stroke('esc');finish(b);assert resources(g)==with_service;service_stop(service,compositor);assert resources(g)==base;mark('display_restart_new_editor_recovers')
   report['status']='PASSED'
 except Exception as e:report['error']=str(e);raise
 finally:

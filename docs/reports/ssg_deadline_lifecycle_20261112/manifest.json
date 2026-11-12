@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "files": {
+    "baseline.txt": "dae248cb829c7c74b4f93312d50687ad10c5ecb8ebe658e811cfde003bb28858",
+    "current.txt": "0445f98b81781a0cf6e9ad1803d84f2cdca497a09e02a9e33a61ca7b617e5989",
+    "result.json": "03cf576752d1a6fb7603eb74f970b3801a31078bf6183d80313618fae01bfd9c"
+  }
+}

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Shared SDK manifest entry for guest-qualified IPC v1 feature groups."""
+"""Callable IPC v1 features and their separate guest qualification."""
 
 
 def ipc_v1_manifest_entry():
@@ -12,5 +12,13 @@ def ipc_v1_manifest_entry():
             "deadline_v1",
             "notification_v1",
             "wait_set_v1",
+            "bulk_grant_v1",
         ],
+        "guest_qualification": {
+            "endpoint_call_v1": "previously_qualified",
+            "deadline_v1": "previously_qualified",
+            "notification_v1": "previously_qualified",
+            "wait_set_v1": "previously_qualified",
+            "bulk_grant_v1": "not_run",
+        },
     }

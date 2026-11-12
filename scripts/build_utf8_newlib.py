@@ -10,6 +10,8 @@ import shlex
 import shutil
 import subprocess
 import tarfile
+from newlib_patches import apply_patches, patch_root
+from archive_provenance import capture_build
 
 ROOT = Path(__file__).resolve().parents[1]
 VERSION = '4.6.0.20260123'
@@ -48,6 +50,7 @@ def main():
     receipt = {'status': 'building', 'source_url': SOURCE_URL, 'source_sha256': SOURCE_SHA256,
                'script_sha256': digest(Path(__file__)), 'tools': selected, 'tool_versions': versions,
                'commands': [], 'profiles': {}, 'patch_sha256': digest(PATCH),
+               'header_patches': {p.name: digest(p) for p in sorted(patch_root.glob('*_*.patch'))},
                'note': 'Build candidate only; no XOS runtime or UTF-8 acceptance.'}
     receipt_path = work / 'receipt.json'
     try:
@@ -61,6 +64,7 @@ def main():
                                     'log': str(work / 'patch.log')})
         with (work / 'patch.log').open('w') as output:
             subprocess.run(patch_command, cwd=source, stdout=output, stderr=subprocess.STDOUT, check=True)
+        apply_patches(source)
         tools = work / 'target_tools'
         tools.mkdir()
         for name in ('as', 'ld'):
@@ -72,7 +76,11 @@ def main():
             build.mkdir(parents=True)
             env = os.environ.copy()
             env.pop('COMPILER_PATH', None)
-            compiler = shlex.quote(selected['x86_64-elf-gcc'])
+            build_id = hashlib.sha256(json.dumps({'profile': profile, 'source': SOURCE_SHA256,
+                'patch': digest(PATCH), 'headers': receipt['header_patches'],
+                'script': receipt['script_sha256'], 'compiler': digest(Path(selected['x86_64-elf-gcc']))}, sort_keys=True).encode()).hexdigest()
+            capture = capture_build(profile_dir, build_id, 'newlib-mixed-source-declarations')
+            compiler = shlex.join([*capture.launcher(), selected['x86_64-elf-gcc']])
             tool_prefix = shlex.quote(str(tools) + '/')
             env.update(CC_FOR_TARGET=f'{compiler} -B{tool_prefix}',
                        CCAS_FOR_TARGET=f'{compiler} -B{tool_prefix}',
@@ -101,6 +109,8 @@ def main():
             include = prefix / 'x86_64-elf/include/newlib.h'
             if '#define _MB_CAPABLE 1' not in include.read_text():
                 raise RuntimeError(f'{profile} did not produce _MB_CAPABLE')
+            profile_info['build_id'] = build_id
+            profile_info['archive_manifests'] = capture.archives(prefix)
             profile_info['artifacts'] = {str(p.relative_to(prefix)): digest(p)
                                          for p in sorted(prefix.rglob('*')) if p.is_file()}
             profile_info['status'] = 'built_unverified'
@@ -109,6 +119,8 @@ def main():
                 'status': 'built_unverified', 'source_sha256': SOURCE_SHA256,
                 'profile': profile, 'script_sha256': receipt['script_sha256'],
                 'patch_sha256': receipt['patch_sha256'],
+                'header_patches': receipt['header_patches'],
+                'build_id': build_id, 'archive_manifests': profile_info['archive_manifests'],
                 'environment': profile_info['environment'],
                 'commands': [item for item in receipt['commands'] if item['profile'] == profile],
                 'artifacts': profile_info['artifacts']}, indent=2) + '\n')

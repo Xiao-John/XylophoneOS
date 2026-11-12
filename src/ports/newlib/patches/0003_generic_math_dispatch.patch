@@ -1,0 +1,21 @@
+--- a/newlib/libc/include/tgmath.h
++++ b/newlib/libc/include/tgmath.h
+@@ -73,3 +73,4 @@
+-#define	__tg_integer(__e1, __e2, __e3)					\
+-	(((__typeof__(__e1))1.5 == 1) || ((__typeof__(__e2))1.5 == 1) ||	\
+-	 ((__typeof__(__e3))1.5 == 1))
++#define	__tg_integer(__e1, __e2, __e3)\
++	(__builtin_classify_type(__e1) == 1 || \
++	 __builtin_classify_type(__e2) == 1 || \
++	 __builtin_classify_type(__e3) == 1)
+@@ -82 +83,3 @@
+-#if defined (_LDBL_EQ_DBL) || defined (__CYGWIN__)
++#if defined (_LDBL_EQ_DBL) || defined (__CYGWIN__) || \
++    defined(__aarch64__) || defined(__i386__) || defined(__x86_64__) || \
++    defined(__riscv)
+@@ -90,2 +93,3 @@
+-	(__tg_type_corr(__x, __y, __z, double) || __tg_integer(__x, __y, __z)) \
+-		? __fn(__VA_ARGS__) : __fnf(__VA_ARGS__)
++	__builtin_choose_expr(\
++	    __tg_type_corr(__x, __y, __z, double) || __tg_integer(__x, __y, __z), \
++	    __fn(__VA_ARGS__), __fnf(__VA_ARGS__))

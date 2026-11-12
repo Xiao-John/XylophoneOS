@@ -100,11 +100,12 @@ def main():
     report = {'status': 'built_not_run', 'profile': 'sbase_make_xos_explicit_always_build_v1',
               'commit': lock['commit'], 'tree': lock['tree'], 'fingerprint': fingerprint,
               'elf': str(elf.relative_to(ROOT)), 'guest_path': '/usr/bin/make',
+              'receipt': str((work / 'manifest.json').relative_to(ROOT)),
               'sha256': sha(elf), 'bytes': elf.stat().st_size,
               'sdk_manifest_sha256': sha(sdk / 'manifest.json'),
               'inputs': inputs, 'tools': tools, 'commands': commands,
               'adapted_sources': {name: sha(source / name) for name in (*COMPILED_C, 'make.h')},
-              'requires': ['explicit -B', 'real fork/execve', '/usr/bin/dash', 'spawn depth 2'],
+              'requires': ['explicit -B', 'real fork/execve', '/usr/bin/dash', 'inherit-create authority'],
               'upstream_license_sha256': sha(PORT / 'upstream/LICENSE')}
     (work / 'manifest.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps({key: value for key, value in report.items()

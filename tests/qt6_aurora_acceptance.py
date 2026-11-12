@@ -9,6 +9,7 @@ from make_work_disk import create_fat32
 from work_disk import transfer
 from task_smoke import send_bytes,pump
 from process_smoke import command,resources
+from graphics_guest import start_graphics
 p=argparse.ArgumentParser()
 for n in ('image','payload','output'):p.add_argument('--'+n,type=Path,required=True)
 a=p.parse_args();out=a.output.resolve();out.mkdir(parents=True,exist_ok=False);sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
@@ -19,7 +20,7 @@ try:
  with tempfile.TemporaryDirectory(prefix='xos_aurora_') as tmp:
   disk=Path(tmp)/'work.img';create_fat32(disk,512);transfer(disk,'mkdir','/bin');transfer(disk,'import','/bin/aurora.elf',a.payload)
   g=Guest(a.image.resolve(),str(out.relative_to(ROOT/'build'))+'/guest',work_disk=disk);report['qemu_command']=g.command
-  g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True);pump(g,1.3);command(g,'display-start',b'result=0');g.expect(b'[display-service] ready');base=resources(g)
+  g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True);pump(g,1.3);service, compositor = start_graphics(g);base=resources(g)
   b=len(g.output);send_bytes(g,b'exec-file /bin/aurora.elf\r');g.expect(b'AURORA_SHOWCASE_READY',start=b,timeout=90);pump(g,.2)
   def shot(name):
    g.qmp('screendump',{'filename':str(out/(name+'.ppm'))})

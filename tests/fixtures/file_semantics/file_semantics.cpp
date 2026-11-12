@@ -84,7 +84,22 @@ FRESULT injected_write(FIL* file, const void* buffer, UINT length, UINT* written
 #undef f_rename
 #undef f_unlink
 
-namespace xos::sdk { i64 syscall(u64, u64, u64, u64) { return 0; } }
+xos::file_session_info kernel_sessions[xos::file::max_sessions];
+xos::process_guard_info kernel_guard;
+#ifndef xos_file_fixture_external_syscall
+namespace xos::sdk {
+i64 syscall(u64 number, u64 first, u64 second, u64) {
+    if (number == sys_process_guard) {
+        *reinterpret_cast<process_guard_info*>(second) = kernel_guard;
+    }
+    if (number == sys_file_session) {
+        if (first >= file::max_sessions) { return -2; }
+        *reinterpret_cast<file_session_info*>(second) = kernel_sessions[first];
+    }
+    return 0;
+}
+}
+#endif
 
 namespace {
 using namespace xos;
@@ -196,9 +211,15 @@ void reset_media() {
     fs = FATFS{};
     mounted = true;
     recovery_failed = false;
+    maintenance_writer = 0;
+    kernel_guard = xos::process_guard_info{};
     require(f_mount(&fs, "", 1) == FR_OK, "fixture mount");
     for (auto& session : sessions) { session = client_session{}; }
     for (auto& description : descriptions) { description = open_description{}; }
+    for (auto& object : file_objects) { object = file_object{}; }
+    file_identity_count = 0;
+    next_file_inode = 2;
+    staging_parent = 0;
     generations[0] = 0;
     next_anonymous_serial = 0;
     staging_active = false;
@@ -521,7 +542,7 @@ int main(int argc, char** argv) {
     removal = make_request(op::remove);
     set_name(removal, "rmdir_full");
     removal.flags = allow_directory;
-    require(call(client, removal).status_code == static_cast<i32>(status::invalid),
+    require(call(client, removal).status_code == static_cast<i32>(status::not_empty),
             "allow_directory still refuses non-empty directory");
     require(f_stat("rmdir_full", &info) == FR_OK && (info.fattrib & AM_DIR) != 0,
             "non-empty directory survives opt-in");

@@ -67,10 +67,10 @@ def main():
         checks.append("file_service_boot_and_list")
 
         check = command(guest, "filetest", b"[filetest] result=pass")
-        for marker in (b"short=read/eof", b"handles=independent", b"locked=preserved", b"write=actual"):
+        for marker in (b"short=read/eof", b"handles=independent", b"replaced=preserved", b"write=actual"):
             if marker not in check:
                 raise AssertionError(f"filetest missing {marker!r}")
-        checks.append("short_read_eof_independent_handles_lock_and_invalid_reject")
+        checks.append("short_read_eof_independent_handles_replace_and_invalid_reject")
 
         start = len(guest.output)
         send_bytes(guest, b"edit note.txt\r")

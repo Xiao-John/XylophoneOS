@@ -1,0 +1,89 @@
+{
+  "scope": "host fixture behavior and guest source compilation, not XOS Make/GCC execution",
+  "records": [
+    {
+      "command": [
+        "c++",
+        "-std=c++20",
+        "-ffreestanding",
+        "-nostdinc++",
+        "-fno-exceptions",
+        "-fno-rtti",
+        "-fno-stack-protector",
+        "-fno-threadsafe-statics",
+        "-fno-use-cxa-atexit",
+        "-fno-unwind-tables",
+        "-fno-asynchronous-unwind-tables",
+        "-fno-omit-frame-pointer",
+        "-fno-pic",
+        "-fno-pie",
+        "-g3",
+        "-gdwarf-4",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wconversion",
+        "-Wshadow",
+        "-m64",
+        "-march=x86-64",
+        "-mtune=generic",
+        "-mcmodel=small",
+        "-mno-red-zone",
+        "-mgeneral-regs-only",
+        "-w",
+        "-Isrc/user/include",
+        "-Isrc/shared/include",
+        "-Isrc/third_party/newlib/x86_64-elf/include",
+        "-c",
+        "tests/fixtures/shell_launch/sl4_runtime.cpp",
+        "-o",
+        "build/native_dev/host/sl4_runtime.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "cc",
+        "tests/fixtures/shell_launch/project_c.c",
+        "tests/fixtures/shell_launch/project_value.c",
+        "-o",
+        "build/native_dev/host/c_project"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "build/native_dev/host/c_project"
+      ],
+      "returncode": 0,
+      "stdout": "SL3_C_OK\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "c++",
+        "-std=c++17",
+        "tests/fixtures/shell_launch/project_cpp.cpp",
+        "tests/fixtures/shell_launch/project_cpp_value.cpp",
+        "-o",
+        "build/native_dev/host/cpp_project"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "build/native_dev/host/cpp_project"
+      ],
+      "returncode": 0,
+      "stdout": "SL3_CPP_OK\n",
+      "stderr": ""
+    }
+  ]
+}

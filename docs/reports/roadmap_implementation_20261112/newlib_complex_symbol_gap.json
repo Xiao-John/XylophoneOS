@@ -1,0 +1,12 @@
+{
+  "scope": "real regenerated header compile and prebuilt archive symbol inspection; not target link",
+  "compile_returncode": 0,
+  "undefined": [
+    "csqrtl"
+  ],
+  "absent_from_bundled_libc_libm": [
+    "csqrtl"
+  ],
+  "object_nm": "                 U csqrtl\n",
+  "status": "HEADER_FIXED_LIBRARY_COVERAGE_INCOMPLETE"
+}

@@ -9,6 +9,7 @@ from ssg_public_paths import portable, resolve_template
 from boot_smoke import Guest
 from make_work_disk import create_fat32
 from process_smoke import command, resources
+from graphics_guest import start_graphics
 from task_smoke import send_bytes
 from work_disk import transfer
 p=argparse.ArgumentParser()
@@ -24,7 +25,7 @@ try:
   disk=Path(td)/'work.img';create_fat32(disk,512);transfer(disk,'mkdir','/bin');transfer(disk,'import','/bin/probe.elf',a.payload)
   g=Guest(a.image.resolve(),str(out.relative_to(ROOT/'build'))+'/guest',work_disk=disk);report['qemu_command']=g.command
   g.expect(b'xos64> ',timeout=45);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=45)
-  command(g,'demo quiet',b'demo tasks stopped');command(g,'display-start',b'result=0');g.expect(b'[display-service] ready');report['resources_before']=resources(g)
+  command(g,'demo quiet',b'demo tasks stopped');service, compositor = start_graphics(g);report['resources_before']=resources(g)
   start=len(g.output);send_bytes(g,b'exec-driver /bin/probe.elf\r');g.expect(b'SSG_RANGE_TEST_DONE',start=start,timeout=120);g.expect_supervisor(start=start,timeout=60)
   output=bytes(g.output)[start:];report['checks']=[{'name':n.decode(),'status':s.decode()} for n,s in re.findall(rb'SSG_RANGE_CHECK ([a-z_]+)=(PASS|FAIL)',output)]
   report['resources_after']=resources(g)

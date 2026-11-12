@@ -1,0 +1,21 @@
+{
+  "artifacts": {},
+  "error": "system failed; see ${XOS_ROOT}/build/candidates/roadmap_20261112_check/system.log",
+  "guest_qualification": "not_run",
+  "published": false,
+  "source_commit": "158a9b99550c03b97e74e3b9e4c2fd6a288c8bf3",
+  "status": "failed",
+  "steps": [
+    {
+      "argv": [
+        "${XOS_PYTHON}",
+        "scripts/build.py"
+      ],
+      "log": "system.log",
+      "name": "system",
+      "returncode": 1,
+      "status": "failed"
+    }
+  ],
+  "working_diff_sha256": "85004b0c18800fa43133ba562b677a808577ce493e31e8c2a1205c1fbe95a270"
+}

@@ -27,10 +27,10 @@
 | # | 债项 | 规模 | 退出条件 | 依据 |
 |---|---|---|---|---|
 | A1 | **内核态驱动存量**：virtio_gpu+display / ata / ps2 | 256 + 131 + 108 行 | 设备授权原语落地 → 逐个迁用户态驱动服务，独立客体验收 | [0088](./work_log/0088_kernel_driver_c28_debt_register.md) |
-| A2 | **设备授权原语**（**论证+登记已交 PR，实施待续**） | 1 个 ABI（`sys_device`=112，多路入口） | C20 论证与接口冻结已成文：[device_authorization_v1](./contracts/device_authorization_v1.md)（请求布局/11 操作/权利位/错误值全部冻结；DMA 终止序与 quarantine 成文；PIO 边界= sys82 线）。登记 PR 另含登记表 112–127 新段与 112 认领。实施已开工：段 1a（112 端到端接通+冻结头校验+客体负向探针 9/9，见0170）已交付；下一步=段 1b grant 表 → 显示迁移纵向切片 → ps2/ata（依赖 sys82 对齐）→ 网络 |
+| A2 | **设备授权原语：实现已交付，客体未验**（2026-11-12） | sys112 grant、MMIO、连续 DMA、IRQ、撤销/退出与用户态 VirtIO-net 原始帧纵切 | 仅 supervisor 的 owned building child 可获授权；真实硬件/guest 未验。无 IOMMU，未证实 reset 的 DMA 仍 quarantine。显示/PS2/ATA 全迁移与完整网络仍待实施。 | [设备契约](contracts/device_authorization_v1.md)、[网络契约](contracts/net_user_driver.md)、[07374f76](work_log/07374f76_ipc_device_network_runtime.md) |
 | A3 | debug_console 引导/调试例外 | 73 行 | 按 C26 登记随例外线处理（按设计存在，非欠账实为"记账资产"） | 0088 |
 
-> 网络线（N2/TCP/HTTPS）按你指示不出账，仅留 A2 这条共同前置。
+> 网络原始帧纵切随 A2 实装；N2/TCP/HTTPS 不在本轮实现结果中。
 
 ## 二、命名债（C30）
 
@@ -57,7 +57,7 @@
 |---|---|---|
 | D1 | xypm | P3 未开工（完整事务、签名仓库） |
 | D3 | 故障包 | FB3/FB4、任意断电安全、全局收集、寄存器/栈快照 |
-| D4 | Pillow 线程 | **BLOCKED**：dash worker newlib `_malloc_r` vector14 未解 |
+| D4 | Pillow 线程 | **UNRESOLVED**：旧 dash worker 的 newlib `_malloc_r` vector14 根因未定位；已核对 TLS、锁、sbrk、退出和历史回执，缺原故障 ELF/线程 archive/堆现场，不能用宿主 Pillow 代验。定位边界见 [9e72a804](work_log/9e72a804_ssg_deadlines_lifecycle_review.md)。 |
 | D5 | 现代应用 | Web 能力/应用化 BLOCKED |
 | D6 | 平台 | 系统重建/自举未验、SMP 未验、绝对峰值未测 |
 | D7 | Qt | **许可面收口**（0189）：Qt 2 份上游文本入库登记（11→13）、LGPLv3 §4d0 对应源码/可重链接交付物成文（`src/ports/qt6/REDISTRIBUTION.md`+manifest）、10 补丁修改标注（`patches/MODIFICATIONS.md`）、GCC 运行库逐成员 **397/407**、Qt 逐成员映射见 `docs/reports/qt_member_license_20261103/`；newlib 1053/1053（0188）。**均为映射/材料审查、非法务意见**；B4 打包核验与 B5 安全审查已于 2026-11-04 执行并闭合，Qt 静态交付物随 0.0.2-1103 分发；残余见 `licenses/open_items.json`（商业 N/A 等）。#67/#68 已合入 main，`open_items.json` 审计闸门生效。剩余=QML/Quick 未实现（未立项，功能线不阻塞发版） |
@@ -65,9 +65,9 @@
 | D9 | 音频 | AU1/AU2 已有 PC Speaker 租约、用户态单音服务和命令实现（0221/0222）；客体音频输出、服务恢复与 AU3–AU5 仍待验收/实施。不能继续按“仅文档”处理，也不能视为已通过端到端验收。 |
 | D10 | 发行 | **0.0.2-1103 已发布**（2026-11-04，含 Qt 资产；smoke 11/11）；1026 历史可下载。下次发版按 playbook/release_pipeline.sh |
 | D11 | 启动/恢复门 | **无盘启动**时 files 客户端返回 `io`，supervisor 恢复门按 fail-closed 常开，xsh 仅剩白名单命令可用（`d6363f8`，2026-10-27 引入）。本轮经用户裁决只给 `task`/`process`/`libc` 三个 smoke 测试补挂临时工作盘绕开；"无盘（io）是否应视为无标记而放行"属设计语义，待按宪法原则裁决后再改门 |
-| D12 | 构建/证据 | **部分偿还（2026-11-12）**：三份历史映射脚本已共用 `scripts/archive_member_map.py`，新增归档哈希、成员集合、源哈希及 build id 的统一清单校验；14 项宿主回归通过。仍待各依赖首次重建时同步生成 `member_manifest.json` 并接入正式验收；历史推导报告不升级为契约产物。见 [本轮审计](reports/comprehensive_audit_20261112/README.md)。 |
-| D13 | Aurora Desktop | Studio 首跑间歇超时：同一二进制重跑通过、根因未明（PR #45 证据如实保留）；退出条件=定位根因或给出稳定复现/豁免判据 |
-| D14 | SSG P3B/P3C | **竞态与限定验收挂账**（#50/#51 合并时按披露接受，不阻塞合入）：`EXIT_RACE_ROOT_CAUSE=UNRESOLVED`（consumer-exit timeout ×2、Notes shutdown 竞态根因未明）；早期 stress **23/24** 不回溯升级；P3C 仅 scoped requalification（32 contract checks + 独立 guest verifier，旧构建 24/24 stress 未在合入 head 重跑）；`globalAtomicSnapshot=NOT_IMPLEMENTED`、`DISTRIBUTION_NOT_QUALIFIED`。退出条件=定位竞态根因或给出豁免判据 + 在合入后 main head 重跑完整 stress 并留证 |
+| D12 | 构建/证据 | **构建时捕获已实现，完整目标重建未验（2026-11-12）**：实际 compiler invocation、source/object/member 字节捕获已接入 newlib/GCC/Qt/双 SDK；SDK 导入保留原始 build id，license/release gate 校验覆盖。历史 derived 报告不升级；普通 SDK 的 legacy libc/libm 明示。宿主真实 cc/ar 回归通过，目标重建/Qt CMake hooks 尚未运行。见 [14a518fa](work_log/14a518fa_audit_followthrough_runtime_build_gui.md)。 |
+| D13 | Aurora Desktop | **UNRESOLVED**：原 Studio 套件超时实际发生在后段 legacy Qt probe 的 `QT_WIDGETS_OK` 之后，事件循环与 input join 已结束；已缩小到对象析构/运行库退出区间，但缺阻塞栈，不能判定根因。见 [9e72a804](work_log/9e72a804_ssg_deadlines_lifecycle_review.md)。 |
+| D14 | SSG P3B/P3C | **竞态与限定验收挂账**（#50/#51 合并时按披露接受，不阻塞合入）：`EXIT_RACE_ROOT_CAUSE=UNRESOLVED`（consumer-exit timeout ×2、Notes shutdown 竞态根因未明）；早期 stress **23/24** 不回溯升级；P3C 仅 scoped requalification（32 contract checks + 独立 guest verifier，旧构建 24/24 stress 未在合入 head 重跑）；`globalAtomicSnapshot=NOT_IMPLEMENTED`、`DISTRIBUTION_NOT_QUALIFIED`。2026-11-12 已修独立的迟到 ACK/传输期限问题（真实传输函数 20/20），但没有根因证据将其等同于本债。退出条件=定位竞态根因或给出豁免判据 + 在合入后 main head 重跑完整 stress 并留证；见 [9e72a804](work_log/9e72a804_ssg_deadlines_lifecycle_review.md)。 |
 
 ## 六、盲测遗留（2026-11-05，0.0.2-1103 第三方盲测）
 
@@ -78,7 +78,7 @@
 | BT-03 | DOC/UX | **打包流程已补 `/bin`（2026-11-12）**；已发布旧镜像仍不含该目录。 | `scripts/package_release.py`、`scripts/release_smoke.py`；退出条件=在下次实际发行镜像运行新 release smoke。 |
 | BT-04 | UX | **公开用法已解释（2026-11-12）**：静态 CPython profile 的 `exec_prefix` 启动提示不等同于模块导入成功或失败；提示本身尚未消除。 | [Python 用法](usage/userland/python.md#启动时的-exec_prefix-提示) 说明安装路径、如何检查实际结果，以及真实导入错误的区别；重新配置和重建解释器仍可后续处理。 |
 | BT-05 | DOC/可发现性 | **下一次打包默认加入 xos-diag（2026-11-12）**：冻结 ELF 并验证 system manifest 后安装 `/usr/bin/xos-diag`；旧已发布镜像未变。 | freeze/package/smoke 与使用文档已同步；退出条件=完整构建并跑下一次发行验收，不能将源码改动冒充已发布。 |
-| BT-06 | 语义限制 | `clock()` 修复为单调墙钟（首次调用起，1000 Hz）；XOS 当前没有 per-process CPU accounting，因此 `clock()` 不是严格的进程 CPU 时间。 | `src/user/libc/newlib_syscalls.cpp`；退出条件=引入进程 CPU tick 统计并把 `_times` 改为真实 user/system time。 |
+| BT-06 | 语义实现/客体未验 | **已实现真实 CPU 记账（2026-11-12）**：sys89 返回进程 user/system、当前线程和已等待子进程 CPU 时间；`_times`/`times`/`clock` 与 pthread CPU clock 接入。 | 真实记账/时间桥宿主回归通过；单 CPU TSC 校准及目标运行尚未验收，不能将旧发布二进制视为已更新。见 [6bd8c261](work_log/6bd8c261_vm_cow_runtime_cpu_accounting.md)。 |
 | BT-07 | 发行 | `v0.0.2-1103` 已发布的 SDK 资产早于 P0/P1 XYPm 修复；磁盘上的源码/新构建 SDK 与下载资产不一致。 | PR #85 / XYPm 调查；退出条件=重新打包 SDK、更新校验清单，或发后续 patch release。 |
 | BT-08 | UX/诊断 | `-ftime-report` 的 guest clock 曾输出约 516 年、百分比超过 100%；本次已修 `_times`，但既有发布编译器二进制不会因源码修复自动更新。 | `build/cpp_link_investigation/session.log`；退出条件=重建并发布编译器/SDK 后复测。 |
 
@@ -86,11 +86,11 @@
 
 | 编号 | 分类 | 债项 | 证据 / 退出条件 |
 |---|---|---|---|
-| FS-01 | 语义 | 同一文件已有写打开时，再 `open`（读或写）返回 `busy`：FatFs `FF_FS_LOCK=32` 用它防止两个 `FIL` 的目录项互相覆盖。POSIX 允许同一文件多个打开；当前只有 `dup`/fork 共享描述。 | `src/third_party/fatfs/ffconf.h`、`tests/fixtures/file_posix/file_posix.c`；退出条件=按 inode 共享描述或实现多 `FIL` 的目录项协调后放开锁。 |
-| FS-02 | 语义 | `rename` 只替换普通文件；目录→已存在空目录、目录跨父目录替换均不支持（返回 EEXIST），目录移入自身后代已明确拒绝。 | `src/user/services/files.cpp` `op::rename`；退出条件=按 POSIX 目录替换语义实现并覆盖短名别名测试。 |
-| FS-03 | 验证 | `ftruncate` 扩大与满盘路径只用注入短写验证了“返回 no_space 并回滚长度”，未在真实满盘介质上端到端复现；回滚本身是 best effort，失败会置 recovery gate。 | `tests/file_semantics.py` 第 11 组；退出条件=专用近满 FAT 镜像客体测试。 |
-| FS-04 | 语义 | 有打开实例的文件不能 `unlink`/`rename`（返回 `busy`）；POSIX 允许删除已打开文件并延迟释放。 | `src/user/services/files.cpp` `op::remove`/`op::rename`；退出条件=引用计数 + 延迟删除。 |
-| FS-05 | 性能 | libc 路径解析对每个中间分量发一次 `stat` RPC，无缓存；深路径的 `open/stat` 会比原先多若干次 IPC。 | `src/user/libc/newlib_syscalls.cpp` `resolve_path_from`；退出条件=确认开销不可接受时加 cwd 相对缓存或服务端逐分量解析。 |
+| FS-01 | 语义实现/客体未验 | **已实现共享 file identity**：每对象唯一 FatFs FIL，独立 open 各有 offset，dup/fork 共享 open description，允许多读写打开；显式 loader pin 保持可执行字节稳定。 | 真实 files/FatFs 与 libc→SDK→service 宿主链通过；固定目标/客体未运行。见 [file_identity](contracts/file_identity.md)。 |
+| FS-02 | 语义实现/客体未验 | **已实现空目录替换与跨父目录移动**，含短名/长名别名及祖先检查。 | 真实 FAT 宿主回归通过；目标客体未运行。见 [b8e04c2a](work_log/b8e04c2a_posix_file_identity.md)。 |
+| FS-03 | 验证 | 近满 FAT16 介质生成器与 guest fixture 已实现，真实宿主介质验证保留一簇；客体满盘扩大/回滚未运行。回滚失败仍进入 recovery gate。 | `tests/fixtures/file_semantics/prepare_near_full.cpp` 与 `tests/file_identity_guest.py`；固定客体端到端通过后才能关闭验证欠账。 |
+| FS-04 | 语义实现/客体未验 | **已实现打开文件 rename/unlink 与延迟删除**：服务保留对象引用，原路径与已打开实例分离，最后引用关闭才回收 backing。 | 真实 FatFs identity/recovery 回归通过；不宣称任意 FAT 断电原子性。见 [file_identity](contracts/file_identity.md)。 |
+| FS-05 | 性能/客体未测 | 相对路径已交服务端按 cwd identity 解析，增加 wire v2 resolve_path，不再逐中间分量发 libc stat RPC。 | 源码与真实宿主链已覆盖；实际深路径延迟/缓存收益未测，不凭猜测新增缓存。 |
 | FS-07 | 性能 | `ftruncate`/写越界必须真实写零才能避免泄露旧簇；扩大到大文件时成本与新增长度线性，FAT 没有可安全使用的稀疏表示。 | `src/user/services/files.cpp` `zero_fill`；退出条件=确认大文件场景实际需要后，评估按簇清零或专用格式化路径。 |
 | FS-06 | 授权边界 | 句柄转移现在要求内核认证的 `parent_pid` 等于调用者；父进程仍可向自己的子进程注入并耗尽其 `max_open`，这是创建者权限内的行为，未引入显式接受令牌。 | `src/kernel/arch/x86_64/tasks.cpp` `sys_file_session`、`src/user/services/files.cpp` `op::transfer`；退出条件=需要更强隔离时引入目标接受/能力令牌。 |
-| FS-08 | 语义 | libc 的 cwd 以文本路径保存，不绑定目录 inode：`chdir("/a")` 后若 `/a` 被 rename，相对路径会按旧名解析（POSIX 应跟随重命名目录）；若 `/a` 被删除并重建，则相对操作会落到新目录，构成路径劫持语义。 | `src/user/libc/newlib_syscalls.cpp` `resolve_path`/`chdir`；退出条件=按目录 identity 解析相对路径，或由服务端提供 cwd 句柄并在 rename/remove 时维护存活会话。 |
+| FS-08 | 语义实现/客体未验 | **cwd 已绑定目录 identity**：rename 后相对路径跟随，删除重建不会切到新目录；被删 cwd 保留 detached 身份。spawn/fork/exec 继承与 nullable startup 编码已修。 | 实际 libc/loader 与文件服务回归通过；客体 inherited-cwd、dash 多层继承待运行。见 [file_identity](contracts/file_identity.md)。 |

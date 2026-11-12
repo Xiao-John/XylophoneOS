@@ -136,6 +136,7 @@ int main(int argc,char **argv) {
         xos::thread_stats before{};
         xos::sdk::syscall(xos::sys_thread_stats,reinterpret_cast<xos::u64>(&before));
         Demo w(mode=="pixels",mode=="idle",mode=="overflow");w.show();
+        std::unique_ptr<Demo> second_window;
         std::unique_ptr<std::thread> idleSampler;
         if(mode=="idle") {
             idleSampler=std::make_unique<std::thread>([&app]{
@@ -163,12 +164,26 @@ int main(int argc,char **argv) {
             std::printf("QT_GUI_IMAGE_OOM_NULL_OK\n");QCoreApplication::quit();
         });
         if(mode=="fault") QTimer::singleShot(800,[]{std::printf("QT_GUI_FAULT_TRIGGER\n");asm volatile("ud2");});
-        if(mode=="second") QTimer::singleShot(800,[]{auto *w2=new Demo;w2->show();});
-        if(mode=="auto" || mode=="repeat") QTimer::singleShot(1200,&w,&QWindow::close);
+        if(mode=="second") {
+            QTimer::singleShot(250,&w,[&]{
+                second_window=std::make_unique<Demo>();second_window->show();
+                if(!w.isVisible() || !second_window->isVisible() ||
+                   w.handle()==second_window->handle()) qFatal("Independent Qt windows missing");
+                std::printf("QT_GUI_SECOND_WINDOW_OK\n");
+            });
+            QTimer::singleShot(750,&w,[&]{
+                second_window.reset();
+                if(!w.isVisible()) qFatal("Closing second window closed first window");
+                w.requestActivate();
+                std::printf("QT_GUI_SECOND_WINDOW_RELEASED\n");
+            });
+        }
+        if(mode=="auto" || mode=="repeat" || mode=="second") QTimer::singleShot(1200,&w,&QWindow::close);
         QObject::connect(&w,&QWindow::visibleChanged,[&](bool v){if(!v && mode!="focus") app.quit();});
         std::printf("QT_GUI_READY cycle=%d\n",i);
         const int rc=app.exec();
         if(idleSampler) idleSampler->join();
+        second_window.reset();
         w.destroy();
         xos::thread_stats after{};
         xos::sdk::syscall(xos::sys_thread_stats,reinterpret_cast<xos::u64>(&after));

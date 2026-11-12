@@ -1,0 +1,7 @@
+{
+  "status": "not_run",
+  "guest_execution": "not_run",
+  "checks": [],
+  "gate": "SL3 C/C++ Make",
+  "error": "[Errno 2] No such file or directory: 'build/identity_system'"
+}

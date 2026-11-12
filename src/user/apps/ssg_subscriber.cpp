@@ -26,6 +26,7 @@ read_state read_exact(char *data,unsigned length,u64 deadline,bool allow_idle_wa
     unsigned offset=0;
     u64 current_deadline=deadline;
     while(offset<length){
+        if(thread::clock()>=current_deadline)return read_state::timeout;
         const auto result=sdk::syscall(sys_handle_read,0,reinterpret_cast<u64>(data+offset),length-offset);
         if(result>0){
             if(offset==0 && allow_idle_wait)current_deadline=thread::clock()+frame_timeout_ns;
@@ -38,7 +39,7 @@ read_state read_exact(char *data,unsigned length,u64 deadline,bool allow_idle_wa
         if(waited==thread_error_timeout)return read_state::timeout;
         if(waited<0)return read_state::error;
     }
-    return read_state::complete;
+    return thread::clock()<current_deadline?read_state::complete:read_state::timeout;
 }
 
 bool write_ack(unsigned sequence,unsigned status) {
@@ -46,6 +47,7 @@ bool write_ack(unsigned sequence,unsigned status) {
     if(!encode_ack(frame,sizeof(frame),sequence,status,frame_size))return false;
     const u64 deadline=thread::clock()+frame_timeout_ns;
     for(;;){
+        if(thread::clock()>=deadline)return false;
         const auto result=sdk::syscall(sys_handle_write,u64{1}|pipe_write_atomic_flag,
             reinterpret_cast<u64>(frame),frame_size);
         if(result==static_cast<i64>(frame_size))return true;

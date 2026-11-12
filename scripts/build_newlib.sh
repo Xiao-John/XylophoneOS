@@ -17,6 +17,7 @@ if [ ! -f "$SRC/configure" ]; then
     rm -rf "$SRC"
     mv "$EXTRACT" "$SRC"
 fi
+python3 "$ROOT/scripts/newlib_patches.py" "$SRC"
 rm -rf "$BUILD" "$PREFIX"
 mkdir "$BUILD"
 cd "$BUILD"

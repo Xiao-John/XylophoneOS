@@ -70,6 +70,11 @@ inline constexpr u64 ipc_v1_feature_known_mask = 0x1full;
 inline constexpr u64 ipc_v1_feature_ip2_mask =
     static_cast<u64>(ipc_v1_feature::endpoint_call) |
     static_cast<u64>(ipc_v1_feature::deadline);
+inline constexpr u64 ipc_v1_feature_ip3_mask =
+    static_cast<u64>(ipc_v1_feature::notification) |
+    static_cast<u64>(ipc_v1_feature::wait_set);
+inline constexpr u64 ipc_v1_feature_supported_mask =
+    ipc_v1_feature_ip2_mask | ipc_v1_feature_ip3_mask;
 
 // These values are scoped to sys_ipc_v1 and are not errno values.
 enum class ipc_v1_error : i64 {

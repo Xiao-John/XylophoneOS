@@ -35,6 +35,7 @@ struct file_object {
     bool directory;
     bool anonymous;
     bool unlinked;
+    bool null_device;
     bool closed;
     u32 references;
     u32 parent; // 0 is the permanent volume root.
@@ -411,7 +412,7 @@ u32 find_object(file_identity_key key) {
 status cleanup_object(u32 index) {
     file_object& object = file_objects[index - 1];
     if (!object.used || object.references != 0) { return status::invalid; }
-    if (!object.directory && !object.closed) {
+    if (!object.directory && !object.null_device && !object.closed) {
         const FRESULT result = f_close(&object.file);
         if (result != FR_OK) { return from_fr(result); }
         object.closed = true;
@@ -595,6 +596,38 @@ status directory_from_path(path_reference& path, u32& object) {
         return status::ok;
     }
     return acquire_directory(path.parent, path.path, object);
+}
+
+bool equals_path(const char* path, const char* name) {
+    if (path == nullptr) { return false; }
+    if (path[0] == '/') { ++path; }
+    for (u32 index = 0; ; ++index) {
+        if (path[index] != name[index]) { return false; }
+        if (name[index] == '\0') { return true; }
+    }
+}
+
+bool is_dev_directory(const char* path) { return equals_path(path, "dev"); }
+bool is_null_device(const char* path) { return equals_path(path, "dev/null"); }
+
+status open_null_object(u32& index) {
+    for (u32 i = 0; i < max_file_objects; ++i) {
+        if (file_objects[i].used && file_objects[i].null_device) {
+            index = i + 1;
+            retain_object(index);
+            return status::ok;
+        }
+    }
+    u32 slot = 0;
+    while (slot < max_file_objects && file_objects[slot].used) { ++slot; }
+    if (slot == max_file_objects) { return status::full; }
+    file_object& object = file_objects[slot];
+    object = file_object{};
+    object.used = true;
+    object.null_device = true;
+    object.references = 1;
+    index = slot + 1;
+    return status::ok;
 }
 
 status open_file_object(path_reference& path, u32 flags, u32& index) {
@@ -1212,6 +1245,19 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             out.reserved = 1;
             break;
         }
+        if (is_dev_directory(path)) {
+            reply(out, in, status::ok);
+            out.value = 0;
+            out.reserved = 0;
+            out.flags = stat_is_directory;
+            break;
+        }
+        if (is_null_device(path)) {
+            reply(out, in, status::ok);
+            out.value = 0;
+            out.reserved = 0;
+            break;
+        }
         FILINFO info{};
         const FRESULT result = f_stat(path, &info);
         if (result != FR_OK) { reply(out, in, from_fr(result)); break; }
@@ -1325,6 +1371,19 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         if (slot == max_open || description_slot == max_open_descriptions ||
             !next_handle(session_index, handle)) { reply(out, in, status::full); break; }
         u32 object = 0;
+        if (!directory && is_null_device(resolved.path)) {
+            // /dev/null always exists; O_CREAT|O_EXCL must report that.
+            if ((options & open_exclusive) != 0) { reply(out, in, status::exists); break; }
+            const status opened_null = open_null_object(object);
+            if (opened_null != status::ok) { reply(out, in, opened_null); break; }
+            open_description& null_description = descriptions[description_slot];
+            null_description = open_description{true, 1, object, flags, 0};
+            session.opens[slot] = open_record{true, handle, description_slot + 1};
+            reply(out, in, status::ok);
+            out.handle = handle;
+            out.value = 0;
+            break;
+        }
         const status opened = directory ? directory_from_path(resolved, object)
             : open_file_object(resolved, flags, object);
         if (opened != status::ok) { reply(out, in, opened); break; }
@@ -1365,6 +1424,13 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         open_description* description = description_for(item);
         if (description == nullptr) { reply(out, in, status::bad_handle); break; }
         const file_object& object = object_for(*description);
+        if (object.null_device) {
+            reply(out, in, status::ok);
+            out.value = 0;
+            out.flags = 0;
+            out.reserved = 0;
+            break;
+        }
         reply(out, in, status::ok);
         out.value = object.directory ? 0 : f_size(&object.file);
         out.flags = (object.directory ? stat_is_directory : 0) | (object.unlinked ? stat_unlinked : 0);
@@ -1377,6 +1443,9 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         if (description == nullptr) { reply(out, in, status::bad_handle); break; }
         if (object_for(*description).directory) { reply(out, in, status::is_directory); break; }
         if ((description->flags & read_only) == 0) { reply(out, in, status::invalid); break; }
+        if (object_for(*description).null_device) {
+            reply(out, in, status::ok); out.length = 0; out.value = 0; break;
+        }
         const u32 size = static_cast<u32>(f_size(&file_for(*description)));
         if (description->position >= size) {
             reply(out, in, status::ok);
@@ -1410,6 +1479,12 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         // POSIX: a zero-byte write is a pure no-op. It must not move the
         // offset, must not extend the file, and append mode gains nothing.
         if (in.length == 0) { reply(out, in, status::ok); out.value = 0; break; }
+        if (object_for(*description).null_device) {
+            reply(out, in, status::ok);
+            out.value = in.length;
+            description->position += in.length;
+            break;
+        }
         const u32 offset_before = description->position;
         u32 position = description->position;
         if ((description->flags & open_append) != 0) {
@@ -1471,7 +1546,10 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         const i64 displacement = static_cast<i64>(in.offset);
         i64 base = 0;
         if (in.flags == seek_current) { base = static_cast<i64>(description->position); }
-        else if (in.flags == seek_end) { base = static_cast<i64>(f_size(&file_for(*description))); }
+        else if (in.flags == seek_end) {
+            base = object_for(*description).null_device
+                ? 0 : static_cast<i64>(f_size(&file_for(*description)));
+        }
         else if (in.flags != seek_set) { reply(out, in, status::invalid); break; }
         if ((displacement < 0 && displacement < -base) ||
             (displacement > 0 && base > static_cast<i64>(fat32_max_file_bytes) - displacement)) {
@@ -1494,6 +1572,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             in.flags != 0 || in.length != 0 || in.name_length != 0) {
             reply(out, in, status::invalid); break;
         }
+        if (object_for(*description).null_device) { reply(out, in, status::ok); break; }
         const u32 target = static_cast<u32>(in.offset);
         const u32 current = static_cast<u32>(f_size(&file_for(*description)));
         if (target > current) {

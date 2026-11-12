@@ -1,0 +1,19 @@
+{
+  "format_version": 1,
+  "id": "nasm",
+  "name": "NASM (Netwide Assembler)",
+  "upstream_version": "2.16.03",
+  "license": ["BSD-2-Clause"],
+  "homepage": "https://www.nasm.us/",
+  "source": {"kind": "tarball", "lock": "source_lock.json"},
+  "build": {"system": "autotools", "recipe": "build.py", "patches": []},
+  "package": {
+    "id": "thirdparty.nasm",
+    "target_profile": "xos-x86_64-static-single-b2-v1",
+    "xpk_sha256": "0b7940222df8c08fe76ccb289b7117b35fd7690afe52cbf05825416a54a88d11"
+  },
+  "integration": {"guest_only": true, "bootstrap_images": [], "iso_members": []},
+  "status": "guest_verified",
+  "note": "零源码补丁；upstream autotools 配冻结 SDK 链接。客体 xsh 实测 -v、-h、-f bin、-f elf64（含宏/%rep）与错误路径。",
+  "evidence": ["docs/reports/nasm_2_16_03_20261112/README.md"]
+}

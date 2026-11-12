@@ -3351,6 +3351,11 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                                mapping.address, u64{mapping.page_count} * page_size)) {
                     // Recoverable capacity error before any state changes.
                     result = static_cast<i64>(ipc_v1_error::resources);
+                } else if (current->continuation.active()) {
+                    // The pending VM continuation would restore a reservation
+                    // snapshot that still contains this range (same stale
+                    // interval as the close path); reject until it finishes.
+                    result = static_cast<i64>(ipc_v1_error::state);
                 } else { ipc_v1_remove_grant_mapping(found); result = 0; }
             }
         }
@@ -3372,6 +3377,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
             const u32 slot = handle->object_slot;
             bool busy = false;
             bool reservation_full = false;
+            bool holder_continuation = false;
             for (const auto& mapping : ipc_v1_grant_mappings) {
                 if (!mapping.used || mapping.grant_slot != slot) { continue; }
                 process_record* owner = task_by_pid(mapping.holder_pid);
@@ -3385,9 +3391,17 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                         mapping.address, u64{mapping.page_count} * page_size)) {
                     reservation_full = true;
                 }
+                // A holder mid VM-continuation holds a snapshot of its
+                // reservation table (vm2_page_step restores tx.regions on
+                // finish); removing the grant now would be undone by that
+                // restore, resurrecting a stale interval after a successful
+                // close. Reject while any holder continuation is active,
+                // mirroring grant_map's own continuation guard.
+                if (owner && owner->continuation.active()) { holder_continuation = true; }
             }
             if (busy) { result = static_cast<i64>(ipc_v1_error::busy); }
             else if (reservation_full) { result = static_cast<i64>(ipc_v1_error::resources); }
+            else if (holder_continuation) { result = static_cast<i64>(ipc_v1_error::state); }
             else { ipc_v1_destroy_grant(slot); result = 0; }
         }
         frame->rax = static_cast<u64>(result); return frame;

@@ -267,8 +267,9 @@ commit/protect/decommit/unmap 对重叠区间返回 IPC busy。每个映射有�
 若任何映射被 pin 则无副作用地返回 busy；否则同步撤销所有映射、handle 与 backing
 references。exit/fault/成功 exec 撤销该 holder 的 map 与 handle；最后一个 handle 撤销时
 销毁对象。单核 syscall gate 串行化 map/revoke 和页表变更，活动映射引用使 backing 页
-在映射销毁前保持存活。仍须由 owner 在真实 guest 验证委派、跨进程共享、映射/关闭竞态、
-资源回收和失败路径；feature query 与 SDK manifests 目前保持 unsupported。小消息与大块
+在映射销毁前保持存活。owner 已在 PR #112 完成真实 guest 验证（委派、跨进程共享、映射/关闭
+竞态、资源回收与失败路径，runs=3 资源守恒）；`bulk_grant_v1` 在该 PR 合并并另行启用前保持
+关闭（其余四 feature 的 supported `0x0f` 状态见上文与 IP3 节）。小消息与大块
 数据走不同契约，不承诺大消息自动零拷贝；按实测选择阈值，阈值不是接口语义。
 
 ## 兼容与迁移

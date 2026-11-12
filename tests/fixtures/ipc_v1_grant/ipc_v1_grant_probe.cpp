@@ -54,7 +54,15 @@ int child_mode(u64 handle, u64 address) {
 
 int child_read_only_mode(u64 handle, u64 address) {
     u64 map_id = 0, length = 0;
-    const i64 result = ipc_v1::grant_map(handle, address, ipc_v1_grant_access::read_write, map_id, length);
+    // The parent delegates after spawn returns; a child that runs first sees
+    // invalid_handle until the same-value delegate lands, exactly like
+    // child_mode. Only the first non-invalid answer is meaningful.
+    i64 result = static_cast<i64>(ipc_v1_error::invalid_handle);
+    for (u32 attempt = 0; attempt < 200; ++attempt) {
+        result = ipc_v1::grant_map(handle, address, ipc_v1_grant_access::read_write, map_id, length);
+        if (result != static_cast<i64>(ipc_v1_error::invalid_handle)) { break; }
+        (void)thread::sleep_until(thread::clock() + 1000000ull);
+    }
     if (result != static_cast<i64>(ipc_v1_error::denied)) {
         fail("child-read-write-denied", result); return 14;
     }

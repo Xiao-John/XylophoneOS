@@ -19,7 +19,7 @@ grant backing 不借用进程现有页，不依赖未交付的 COW，也不暴�
 - guest 资格脚本：`python3 tests/ipc_v1_grant_guest.py --system <same-build-system-dir> --sdk <same-build-threading-sdk> --output <new-output-dir>`；**本轮未运行**，由维护者运行验收。
 - 完整目标构建：`make build` 未运行到编译，因环境缺少 NASM；`x86_64-elf-g++` 交叉编译器也不可用。
 - 严格 host C++ syntax：内核 `tasks.cpp`（使用临时生成头文件占位）与 IP4 guest fixture 均通过 `-Wall -Wextra -Werror -Wconversion -Wshadow -fsyntax-only`。
-- 文档一致性、ABI 文档一致性、Python `py_compile` 与 `git diff --check` 通过；公开路径扫描待 staging 后运行。
+- 文档一致性、ABI 文档一致性、Python `py_compile` 与 `git diff --check` 通过；公开证据路径扫描：`PUBLIC_READY`，11 个变更文件已扫描，0 findings。
 - IP4 guest qualification 未运行；不运行 IP3 guest qualification（已由 PR #111 acceptance 通过）。
 - manifest/query：静态核对保持 registered_unsupported / supported mask 0。
 

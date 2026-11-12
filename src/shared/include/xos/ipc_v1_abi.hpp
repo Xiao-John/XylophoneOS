@@ -70,6 +70,11 @@ inline constexpr u64 ipc_v1_feature_known_mask = 0x1full;
 inline constexpr u64 ipc_v1_feature_ip2_mask =
     static_cast<u64>(ipc_v1_feature::endpoint_call) |
     static_cast<u64>(ipc_v1_feature::deadline);
+inline constexpr u64 ipc_v1_feature_ip3_mask =
+    static_cast<u64>(ipc_v1_feature::notification) |
+    static_cast<u64>(ipc_v1_feature::wait_set);
+inline constexpr u64 ipc_v1_feature_supported_mask =
+    ipc_v1_feature_ip2_mask | ipc_v1_feature_ip3_mask;
 
 // These values are scoped to sys_ipc_v1 and are not errno values.
 enum class ipc_v1_error : i64 {
@@ -136,7 +141,8 @@ struct ipc_v1_feature_query {
     u32 max_pending_calls;
     u32 max_queue_per_endpoint;
     u32 max_reply_tokens_per_process;
-    u64 reserved[2];
+    u64 direct_switch_count;
+    u64 reserved;
 };
 
 struct ipc_v1_endpoint_create {
@@ -237,7 +243,8 @@ static_assert(sizeof(ipc_v1_wait_event) == 16 && sizeof(ipc_v1_wait_set_wait) ==
 static_assert(__builtin_offsetof(ipc_v1_header, reserved) == 8);
 static_assert(__builtin_offsetof(ipc_v1_feature_query, known_features) == 16 &&
               __builtin_offsetof(ipc_v1_feature_query, max_message_bytes) == 32 &&
-              __builtin_offsetof(ipc_v1_feature_query, reserved) == 56);
+              __builtin_offsetof(ipc_v1_feature_query, direct_switch_count) == 56 &&
+              __builtin_offsetof(ipc_v1_feature_query, reserved) == 64);
 static_assert(__builtin_offsetof(ipc_v1_endpoint_create, handle_out) == 24);
 static_assert(__builtin_offsetof(ipc_v1_endpoint_delegate, handle_out) == 48);
 static_assert(__builtin_offsetof(ipc_v1_call, send_buffer) == 40 &&

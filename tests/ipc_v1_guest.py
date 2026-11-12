@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 """Build and run IPC v1 race/resource probes in an actual XOS guest.
 
-This test intentionally calls the registered syscalls while feature query stays
-zero. It checks implementation behavior; it does not qualify/publish features.
+This probes the IP2/IP3 behavior covered by the guest qualification record. It is
+not a fastpath performance probe and does not establish any new feature support.
 """
 import argparse
 import hashlib

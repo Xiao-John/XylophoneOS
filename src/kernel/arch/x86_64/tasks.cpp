@@ -302,6 +302,9 @@ vm_step vm2_probe_step(void* opaque, vm_phase phase, u32 budget, i64& result) {
 thread_record threads[thread_max_total];
 ipc_v1_endpoint_record ipc_v1_endpoints[ipc_v1_max_endpoints_system];
 ipc_v1_handle_record ipc_v1_handles[ipc_v1_max_endpoints_system * ipc_v1_max_handles_per_process];
+struct ipc_v1_endpoint_handle_index_entry { u64 value; u32 slot; u8 state; };
+inline constexpr u32 ipc_v1_endpoint_handle_index_capacity = 512;
+ipc_v1_endpoint_handle_index_entry ipc_v1_endpoint_handle_index[ipc_v1_endpoint_handle_index_capacity];
 ipc_v1_call_record ipc_v1_calls[ipc_v1_max_pending_calls];
 ipc_v1_notification_record ipc_v1_notifications[ipc_v1_max_notifications_system];
 ipc_v1_notification_handle_record ipc_v1_notification_handles[
@@ -311,6 +314,7 @@ ipc_v1_wait_set_handle_record ipc_v1_wait_set_handles[
     ipc_v1_max_wait_sets_system * ipc_v1_max_handles_per_process];
 u64 ipc_v1_next_handle = 1;
 u64 ipc_v1_next_reply_token = 1;
+u64 ipc_v1_direct_switch_count = 0;
 u64 ipc_v1_next_wait_order = 1;
 thread_record* current_thread;
 u64 next_vm_continuation_generation = 1;
@@ -523,6 +527,21 @@ void copy_bytes(void* destination, const void* source, u64 length) {
     auto* to = static_cast<u8*>(destination);
     auto* from = static_cast<const u8*>(source);
     for (u64 i = 0; i < length; ++i) { to[i] = from[i]; }
+}
+
+// IPC payloads are non-overlapping snapshots. Copy full machine words with
+// unaligned-safe compiler memcpy lowering, then handle the tail bytewise.
+void copy_ipc_payload(void* destination, const void* source, u32 length) {
+    auto* to = static_cast<u8*>(destination);
+    auto* from = static_cast<const u8*>(source);
+    u32 offset = 0;
+    while (length - offset >= sizeof(u64)) {
+        u64 word = 0;
+        __builtin_memcpy(&word, from + offset, sizeof(word));
+        __builtin_memcpy(to + offset, &word, sizeof(word));
+        offset += sizeof(word);
+    }
+    while (offset < length) { to[offset] = from[offset]; ++offset; }
 }
 
 void append_text(char* buffer, u32& used, u32 capacity, const char* text) {
@@ -1420,7 +1439,8 @@ void deliver_wait(thread_record* thread, interrupt_frame* frame) {
             copy_to_user(thread->ipc_v1_request_address, &request, sizeof(request));
             if (frame->rax == 0 && thread->ipc_v1_phase == static_cast<u32>(ipc_v1_call_phase::replied) &&
                 thread->ipc_v1_length != 0) {
-                copy_to_user(thread->ipc_v1_reply_address, thread->ipc_v1_payload, thread->ipc_v1_length);
+                copy_ipc_payload(reinterpret_cast<void*>(thread->ipc_v1_reply_address),
+                                 thread->ipc_v1_payload, thread->ipc_v1_length);
             }
         } else { frame->rax = static_cast<u64>(ipc_v1_error::address); }
         for (auto& pin : thread->ipc_v1_pins) { pin.clear(); }
@@ -1457,7 +1477,7 @@ void deliver_wait(thread_record* thread, interrupt_frame* frame) {
             copy_to_user(thread->ipc_v1_request_address, &request, sizeof(request));
         }
         if (valid && frame->rax == 0 && thread->ipc_v1_length != 0) {
-            copy_to_user(thread->ipc_v1_payload_address, thread->ipc_v1_payload, thread->ipc_v1_length);
+            copy_ipc_payload(reinterpret_cast<void*>(thread->ipc_v1_payload_address), thread->ipc_v1_payload, thread->ipc_v1_length);
         }
         if (!valid) { frame->rax = static_cast<u64>(ipc_v1_error::address); }
         for (auto& pin : thread->ipc_v1_pins) { pin.clear(); }
@@ -1538,7 +1558,7 @@ interrupt_frame* make_initial_frame(thread_record* thread) {
 
 void reap_threads();
 void expire_waiters();
-interrupt_frame* schedule(interrupt_frame* frame) {
+interrupt_frame* schedule(interrupt_frame* frame, thread_record* preferred = nullptr) {
     expire_waiters();
     reap_dead();
     reap_threads();
@@ -1548,7 +1568,21 @@ interrupt_frame* schedule(interrupt_frame* frame) {
         fpu_save(current_thread->fpu_state);
     }
     for (;;) {
-        thread_record* next = pick_ready();
+        thread_record* next = nullptr;
+        if (preferred != nullptr) {
+            thread_record* candidate = preferred;
+            preferred = nullptr;
+            if (candidate != current_thread && candidate->state == thread_state::ready &&
+                candidate->process != nullptr && candidate->process->state != task_state::dead &&
+                candidate->process->state != task_state::building &&
+                (!candidate->process->continuation.active() ||
+                 candidate->tid == candidate->process->continuation.owner_tid)) {
+                next = candidate;
+                ++ipc_v1_direct_switch_count;
+                cursor = (static_cast<u32>(candidate - threads) + 1) % thread_max_total;
+            }
+        }
+        if (next == nullptr) { next = pick_ready(); }
         while (next == nullptr) {
             arch::wait_for_interrupt(); expire_waiters(); next = pick_ready();
         }
@@ -2416,9 +2450,63 @@ i64 prepare_fork(interrupt_frame* frame) {
 
 #include "display_tasks.inc"
 
+u32 ipc_v1_endpoint_handle_index_position(u64 value) {
+    return static_cast<u32>(value) & (ipc_v1_endpoint_handle_index_capacity - 1);
+}
+
+bool ipc_v1_endpoint_handle_index_insert(u64 value, u32 slot) {
+    u32 position = ipc_v1_endpoint_handle_index_position(value);
+    u32 tombstone = ipc_v1_endpoint_handle_index_capacity;
+    for (u32 probe = 0; probe < ipc_v1_endpoint_handle_index_capacity; ++probe) {
+        auto& entry = ipc_v1_endpoint_handle_index[position];
+        if (entry.state == 1 && entry.value == value) { return false; }
+        if (entry.state == 2 && tombstone == ipc_v1_endpoint_handle_index_capacity) { tombstone = position; }
+        if (entry.state == 0) {
+            const u32 target = tombstone == ipc_v1_endpoint_handle_index_capacity ? position : tombstone;
+            ipc_v1_endpoint_handle_index[target] = {value, slot, 1};
+            return true;
+        }
+        position = (position + 1) & (ipc_v1_endpoint_handle_index_capacity - 1);
+    }
+    if (tombstone != ipc_v1_endpoint_handle_index_capacity) {
+        ipc_v1_endpoint_handle_index[tombstone] = {value, slot, 1};
+        return true;
+    }
+    return false;
+}
+
+void ipc_v1_endpoint_handle_index_remove(u64 value) {
+    if (!value) { return; }
+    u32 position = ipc_v1_endpoint_handle_index_position(value);
+    for (u32 probe = 0; probe < ipc_v1_endpoint_handle_index_capacity; ++probe) {
+        auto& entry = ipc_v1_endpoint_handle_index[position];
+        if (entry.state == 0) { return; }
+        if (entry.state == 1 && entry.value == value) {
+            entry.value = 0; entry.slot = 0; entry.state = 2; return;
+        }
+        position = (position + 1) & (ipc_v1_endpoint_handle_index_capacity - 1);
+    }
+}
+
+void ipc_v1_clear_endpoint_handle(u32 slot) {
+    if (slot >= ipc_v1_max_endpoints_system * ipc_v1_max_handles_per_process) { return; }
+    auto& handle = ipc_v1_handles[slot];
+    if (handle.used) { ipc_v1_endpoint_handle_index_remove(handle.value); }
+    handle = ipc_v1_handle_record{};
+}
+
 ipc_v1_handle_record* ipc_v1_handle_for(u64 value, u64 holder) {
-    for (auto& handle : ipc_v1_handles) {
-        if (handle.used && handle.value == value && handle.holder_pid == holder) { return &handle; }
+    if (!value) { return nullptr; }
+    u32 position = ipc_v1_endpoint_handle_index_position(value);
+    for (u32 probe = 0; probe < ipc_v1_endpoint_handle_index_capacity; ++probe) {
+        const auto& entry = ipc_v1_endpoint_handle_index[position];
+        if (entry.state == 0) { return nullptr; }
+        if (entry.state == 1 && entry.value == value) {
+            if (entry.slot >= ipc_v1_max_endpoints_system * ipc_v1_max_handles_per_process) { return nullptr; }
+            auto& handle = ipc_v1_handles[entry.slot];
+            return handle.used && handle.value == value && handle.holder_pid == holder ? &handle : nullptr;
+        }
+        position = (position + 1) & (ipc_v1_endpoint_handle_index_capacity - 1);
     }
     return nullptr;
 }
@@ -2638,8 +2726,13 @@ u32 ipc_v1_allocate_handle(u32 endpoint_slot, u64 holder, u32 rights, u64 badge)
     const u32 slot = ipc_v1_free_handle_slot();
     if (slot == ipc_v1_max_endpoints_system * ipc_v1_max_handles_per_process) { return slot; }
     auto& handle = ipc_v1_handles[slot];
-    handle.used = true; handle.endpoint_slot = endpoint_slot; handle.rights = rights;
-    handle.value = ipc_v1_next_handle++; handle.holder_pid = holder; handle.badge = badge;
+    const u64 value = ipc_v1_next_handle;
+    handle = {true, endpoint_slot, rights, value, holder, badge};
+    if (!ipc_v1_endpoint_handle_index_insert(value, slot)) {
+        handle = ipc_v1_handle_record{};
+        return ipc_v1_max_endpoints_system * ipc_v1_max_handles_per_process;
+    }
+    ++ipc_v1_next_handle;
     return slot;
 }
 
@@ -2658,7 +2751,7 @@ void ipc_v1_wake_call(u32 slot, i64 result) {
         waiter.ipc_v1_length = call.reply_length;
         waiter.ipc_v1_label = call.reply_label;
         waiter.ipc_v1_payload_address = waiter.ipc_v1_reply_address;
-        copy_bytes(waiter.ipc_v1_payload, call.reply, call.reply_length);
+        copy_ipc_payload(waiter.ipc_v1_payload, call.reply, call.reply_length);
     } else { waiter.ipc_v1_length = 0; }
     ready_with(waiter, result);
 }
@@ -2673,8 +2766,10 @@ void ipc_v1_close_endpoint(u32 endpoint_slot, i64 result) {
                 source.object_slot == endpoint_slot) { source.closed = true; }
         }
     }
-    for (auto& handle : ipc_v1_handles) {
-        if (handle.used && handle.endpoint_slot == endpoint_slot) { handle = ipc_v1_handle_record{}; }
+    for (u32 i = 0; i < ipc_v1_max_endpoints_system * ipc_v1_max_handles_per_process; ++i) {
+        if (ipc_v1_handles[i].used && ipc_v1_handles[i].endpoint_slot == endpoint_slot) {
+            ipc_v1_clear_endpoint_handle(i);
+        }
     }
     for (u32 i = 0; i < ipc_v1_max_pending_calls; ++i) {
         auto& call = ipc_v1_calls[i];
@@ -2772,8 +2867,10 @@ void ipc_v1_revoke_process(u64 pid) {
             call = ipc_v1_call_record{};
         }
     }
-    for (auto& handle : ipc_v1_handles) {
-        if (handle.used && handle.holder_pid == pid) { handle = ipc_v1_handle_record{}; }
+    for (u32 i = 0; i < ipc_v1_max_endpoints_system * ipc_v1_max_handles_per_process; ++i) {
+        if (ipc_v1_handles[i].used && ipc_v1_handles[i].holder_pid == pid) {
+            ipc_v1_clear_endpoint_handle(i);
+        }
     }
     for (u32 slot = 0; slot < ipc_v1_max_endpoints_system; ++slot) {
         if (!had_handle[slot] || !ipc_v1_endpoints[slot].used) { continue; }
@@ -2792,6 +2889,20 @@ void ipc_v1_revoke_process(u64 pid) {
         if (thread.process == nullptr || thread.process->pid != pid) { continue; }
         ipc_v1_unpin(thread);
     }
+}
+
+inline constexpr u32 ipc_v1_fastpath_max_bytes = 64;
+
+thread_record* ipc_v1_receiver_for_call(u32 call_slot) {
+    if (call_slot >= ipc_v1_max_pending_calls) { return nullptr; }
+    const auto& call = ipc_v1_calls[call_slot];
+    if (call.state != ipc_v1_call_state::delivered) { return nullptr; }
+    for (auto& thread : threads) {
+        if (thread.process != nullptr && thread.process->pid == call.receiver_pid &&
+            thread.state == thread_state::ready && thread.wait_kind == thread_wait_kind::ipc_v1_receive &&
+            thread.ipc_v1_call_slot == call_slot) { return &thread; }
+    }
+    return nullptr;
 }
 
 bool ipc_v1_deliver_to_waiter(u32 call_slot) {
@@ -2824,7 +2935,7 @@ bool ipc_v1_deliver_to_waiter(u32 call_slot) {
     waiter->ipc_v1_length = call.payload_length;
     waiter->ipc_v1_label = call.label; waiter->ipc_v1_badge = call.badge;
     waiter->ipc_v1_token = call.reply_token; waiter->ipc_v1_call_slot = call_slot;
-    copy_bytes(waiter->ipc_v1_payload, call.payload, call.payload_length);
+    copy_ipc_payload(waiter->ipc_v1_payload, call.payload, call.payload_length);
     ready_with(*waiter, 0);
     ipc_v1_notify_wait_sets();
     return true;
@@ -2861,7 +2972,7 @@ i64 ipc_v1_reply_token(u64 token, u64 label, const u8* payload, u32 length) {
     }
     if (length > call.reply_capacity) { return static_cast<i64>(ipc_v1_error::buffer_too_small); }
     call.reply_label = label; call.reply_length = length;
-    if (length != 0) { copy_bytes(call.reply, payload, length); }
+    if (length != 0) { copy_ipc_payload(call.reply, payload, length); }
     call.state = ipc_v1_call_state::replied;
     ipc_v1_wake_call(call_slot, 0);
     call = ipc_v1_call_record{};
@@ -2886,17 +2997,18 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
             query.max_queue_per_endpoint == 0 && query.max_reply_tokens_per_process == 0;
         if (query.header.version != ipc_v1_version) { result = static_cast<i64>(ipc_v1_error::unsupported); }
         else if (!ipc_v1_header_valid(query.header, sizeof(query)) || !outputs_zero ||
-                 query.reserved[0] != 0 || query.reserved[1] != 0) {
+                 query.direct_switch_count != 0 || query.reserved != 0) {
             result = static_cast<i64>(ipc_v1_error::invalid_argument);
         } else {
             query.known_features = ipc_v1_feature_known_mask;
-            query.supported_features = 0;
+            query.supported_features = ipc_v1_feature_supported_mask;
             query.max_message_bytes = ipc_v1_max_message_bytes;
             query.max_handles_per_process = ipc_v1_max_handles_per_process;
             query.max_endpoints_system = ipc_v1_max_endpoints_system;
             query.max_pending_calls = ipc_v1_max_pending_calls;
             query.max_queue_per_endpoint = ipc_v1_max_queue_per_endpoint;
             query.max_reply_tokens_per_process = ipc_v1_max_reply_tokens_per_process;
+            query.direct_switch_count = ipc_v1_direct_switch_count;
             copy_to_user(address, &query, sizeof(query)); result = 0;
         }
         frame->rax = static_cast<u64>(result); return frame;
@@ -3414,7 +3526,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                     call.order = ipc_v1_next_wait_order++; call.label = request.label;
                     call.badge = handle->badge;
                     call.payload_length = request.send_length; call.reply_capacity = request.reply_capacity;
-                    if (request.send_length != 0) copy_from_user(call.payload, request.send_buffer, request.send_length);
+                    if (request.send_length != 0) copy_ipc_payload(call.payload, reinterpret_cast<const void*>(request.send_buffer), request.send_length);
                     current_thread->ipc_v1_request_address = address;
                     current_thread->ipc_v1_reply_address = request.reply_buffer;
                     current_thread->ipc_v1_call_slot = slot;
@@ -3423,6 +3535,12 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                     current_thread->deadline_ns = request.deadline_ns;
                     ipc_v1_try_deliver_queued(endpoint_slot);
                     if (call.state == ipc_v1_call_state::queued) { ipc_v1_notify_wait_sets(); }
+                    thread_record* direct_receiver = nullptr;
+                    if (request.deadline_ns != 0 && request.send_length <= ipc_v1_fastpath_max_bytes &&
+                        request.reply_capacity <= ipc_v1_fastpath_max_bytes &&
+                        call.state == ipc_v1_call_state::delivered) {
+                        direct_receiver = ipc_v1_receiver_for_call(slot);
+                    }
                     if (request.deadline_ns == 0 && call.state == ipc_v1_call_state::queued) {
                         call = ipc_v1_call_record{}; ipc_v1_unpin(*current_thread);
                         current_thread->ipc_v1_request_address = current_thread->ipc_v1_reply_address = 0;
@@ -3431,7 +3549,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                     }
                     current_thread->wait_kind = thread_wait_kind::ipc_v1_call;
                     current_thread->state = thread_state::blocked;
-                    frame->rax = 0; return schedule(frame);
+                    frame->rax = 0; return schedule(frame, direct_receiver);
                 }
             }
         }
@@ -3475,7 +3593,8 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                     request.message_length_out = call.payload_length; request.label_out = call.label;
                     request.badge_out = call.badge; request.reply_token_out = call.reply_token;
                     copy_to_user(address, &request, sizeof(request));
-                    if (call.payload_length) copy_to_user(request.buffer, call.payload, call.payload_length);
+                    if (call.payload_length) copy_ipc_payload(reinterpret_cast<void*>(request.buffer),
+                                                              call.payload, call.payload_length);
                     ipc_v1_try_deliver_queued(handle->endpoint_slot);
                     ipc_v1_notify_wait_sets();
                     result = 0;
@@ -3512,7 +3631,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
         else if (!user_range_ok(request.buffer, request.length, false)) { result = static_cast<i64>(ipc_v1_error::address); }
         else {
             u8 payload[ipc_v1_max_message_bytes]{};
-            if (request.length) copy_from_user(payload, request.buffer, request.length);
+            if (request.length) copy_ipc_payload(payload, reinterpret_cast<const void*>(request.buffer), request.length);
             result = ipc_v1_reply_token(request.reply_token, request.label, payload, request.length);
         }
         frame->rax = static_cast<u64>(result); return frame;
@@ -3536,7 +3655,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
             result = static_cast<i64>(ipc_v1_error::address);
         } else {
             u8 reply_payload[ipc_v1_max_message_bytes]{};
-            if (request.reply_length) copy_from_user(reply_payload, request.reply_buffer, request.reply_length);
+            if (request.reply_length) copy_ipc_payload(reply_payload, reinterpret_cast<const void*>(request.reply_buffer), request.reply_length);
             result = ipc_v1_reply_token(request.reply_token, request.reply_label,
                                         reply_payload, request.reply_length);
             if (result != 0) { frame->rax = static_cast<u64>(result); return frame; }
@@ -3579,7 +3698,8 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                 request.receive_length_out = call.payload_length; request.label_out = call.label;
                 request.badge_out = call.badge; request.next_reply_token_out = call.reply_token;
                 copy_to_user(address, &request, sizeof(request));
-                if (call.payload_length) copy_to_user(request.receive_buffer, call.payload, call.payload_length);
+                if (call.payload_length) copy_ipc_payload(reinterpret_cast<void*>(request.receive_buffer),
+                                                          call.payload, call.payload_length);
                 ipc_v1_try_deliver_queued(receive_handle->endpoint_slot);
                 ipc_v1_notify_wait_sets();
                 frame->rax = 0; return frame;

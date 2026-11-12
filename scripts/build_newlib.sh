@@ -13,7 +13,10 @@ if [ ! -f "$SRC/configure" ]; then
     EXTRACT="$CACHE/newlib-$VERSION-extract"
     rm -rf "$EXTRACT"
     mkdir "$EXTRACT"
-    tar -xzf "$CACHE/newlib.tar.gz" -C "$EXTRACT" --strip-components=1
+    if ! tar -xzf "$CACHE/newlib.tar.gz" -C "$EXTRACT" --strip-components=1; then
+        rm -f "$CACHE/newlib.tar.gz"
+        exit 1
+    fi
     rm -rf "$SRC"
     mv "$EXTRACT" "$SRC"
 fi

@@ -1,0 +1,9 @@
+# PR 116 baseline and review follow-up
+
+PR head 158a9b99550c03b97e74e3b9e4c2fd6a288c8bf3 was combined with main 7bb3209c. The IPC contract conflict retains default-zero direct-switch counts, the opt-in query, and the actual 0x0f supported feature mask; bulk grant implementation does not itself establish its qualification.
+
+Review fixes: archive bytes are hashed and parsed from one read and manifest paths must stay inside the resolved root; SQLite test validates both digests and size without assert and extracts those same bytes; newlib retries discard an archive after extraction failure and the curl test models resume; partial modern-app source fetches remain retryable while preserving verified successes; resync for non-target overlapping windows is projected outside each window. The frozen historical validation_commands.txt is retained as evidence of the original run; its quoted ${XOS_ROOT} commands are not directly executable. For a new run replace those quoted output/execution paths with build/comprehensive_audit/... and create the directory first.
+
+Host checks: archive provenance 15/15 using GNU x86_64-elf-ar; newlib cache 3/3; IPC query compatibility 9/9; dash descriptor regression and Interactium model passed. The host kernel wait test failed to compile on macOS because MAP_FIXED_NOREPLACE is absent; libc startup host test failed to compile with Apple Clang due to the _exit noreturn declaration. These are host environment failures, not guest passes. SQLite test with the pinned archive, complete Qt/SDK, IPC bulk grant and release qualification were not run.
+
+The final source build `86a0a1994d2a48f5` produced ISO SHA-256 `8eefc158194c20a1bb32b4b1d56a2264deccdf1134b1cdc16994b94f2924f65f`. QEMU boot 6/6, process 13/13, file smoke 8/8, file recovery 5/5, file POSIX 11/11 and the Interactium two-window guest suite passed. ABI documentation and report-manifest checks passed. These checks do not establish full PR acceptance.

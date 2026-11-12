@@ -61,6 +61,33 @@ inline i64 endpoint_close(u64 handle) {
     return invoke(ipc_v1_action::endpoint_close, request);
 }
 
+inline i64 grant_create(u64 source, u64 length, u32 rights, u64& handle, u64& actual_length) {
+    ipc_v1_grant_create request{}; request.source=source; request.length=length; request.rights=rights;
+    const i64 result=invoke(ipc_v1_action::grant_create, request);
+    handle=result == 0 ? request.handle_out : 0; actual_length=result == 0 ? request.length_out : 0;
+    return result;
+}
+inline i64 grant_delegate(u64 handle, u64 target_pid, u32 rights, u64& output) {
+    ipc_v1_object_delegate request{}; request.handle=handle; request.target_pid=target_pid; request.rights=rights;
+    const i64 result=invoke(ipc_v1_action::grant_delegate, request);
+    output=result == 0 ? request.handle_out : 0; return result;
+}
+inline i64 grant_map(u64 handle, u64 address, ipc_v1_grant_access access, u64& map_id, u64& length) {
+    ipc_v1_grant_map request{}; request.handle=handle; request.address=address;
+    request.access=static_cast<u32>(access);
+    const i64 result=invoke(ipc_v1_action::grant_map, request);
+    map_id=result == 0 ? request.map_id_out : 0; length=result == 0 ? request.length_out : 0;
+    return result;
+}
+inline i64 grant_unmap(u64 handle, u64 map_id) {
+    ipc_v1_grant_unmap request{}; request.handle=handle; request.map_id=map_id;
+    return invoke(ipc_v1_action::grant_unmap, request);
+}
+inline i64 grant_close(u64 handle) {
+    ipc_v1_object_close request{}; request.handle=handle;
+    return invoke(ipc_v1_action::grant_close, request);
+}
+
 inline i64 notification_create(u32 rights, u64& handle) {
     ipc_v1_object_create request{}; request.rights = rights;
     const i64 result = invoke(ipc_v1_action::notification_create, request);

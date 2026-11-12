@@ -159,6 +159,18 @@ bool service::write_tile(session_token token, window_id id, const tile_payload& 
     return true;
 }
 
+namespace {
+void project_pointer_outside(display_event& event, const window_state& window) {
+    const i64 right = static_cast<i64>(window.x) + window.width;
+    const i64 bottom = static_cast<i64>(window.y) + window.height;
+    if (event.x >= window.x && event.y >= window.y &&
+        static_cast<i64>(event.x) < right && static_cast<i64>(event.y) < bottom) {
+        if (window.x > -2147483647) event.x = window.x - 1;
+        else if (window.y > -2147483647) event.y = window.y - 1;
+    }
+}
+}
+
 bool service::queue_input(const display_event& source) {
     last_modifiers_ = source.modifiers;
     window_id target{};
@@ -176,6 +188,7 @@ bool service::queue_input(const display_event& source) {
             if (!window->id.valid()) continue;
             display_event sync = source;
             sync.buttons = window->id == pointer_target_ ? mouse_buttons_ : 0;
+            if (window->id != pointer_target_) project_pointer_outside(sync, *window);
             queued |= enqueue_event(window->id, sync);
         }
         return queued;
@@ -371,16 +384,7 @@ void service::send_pointer_leave(const display_event& source, window_id old_targ
     const auto* old_window = manager_.get(old_target);
     if (!old_window || !old_window->visible) return;   // destroyed or hidden: no recipient
     display_event leave = source;
-    const i64 right = static_cast<i64>(old_window->x) + old_window->width;
-    const i64 bottom = static_cast<i64>(old_window->y) + old_window->height;
-    if (leave.x >= old_window->x && leave.y >= old_window->y &&
-        static_cast<i64>(leave.x) < right && static_cast<i64>(leave.y) < bottom) {
-        // Overlapping windows still contain the pointer, so shift the copy just
-        // outside the previous window: that coordinate is what tells the client
-        // the pointer left.
-        if (old_window->x > -2147483647) leave.x = old_window->x - 1;
-        else if (old_window->y > -2147483647) leave.y = old_window->y - 1;
-    }
+    project_pointer_outside(leave, *old_window);
     (void)enqueue_event(old_target, leave);
 }
 

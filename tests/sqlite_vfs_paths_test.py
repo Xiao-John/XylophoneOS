@@ -2,6 +2,7 @@
 """Host-test the XOS VFS with the pinned, unmodified SQLite amalgamation."""
 import argparse
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
@@ -21,12 +22,14 @@ def main():
     args = parser.parse_args()
     lock = json.loads((port_root / "sqlite_lock.json").read_text())
     data = args.archive.read_bytes()
-    assert len(data) == lock["archive_bytes"]
+    if len(data) != lock["archive_bytes"]:
+        raise SystemExit("archive size mismatch")
     for algorithm in ("sha256", "sha3_256"):
-        assert hashlib.new(algorithm, data).hexdigest() == lock[algorithm]
+        if hashlib.new(algorithm, data).hexdigest() != lock[algorithm]:
+            raise SystemExit(f"archive {algorithm} mismatch")
     with tempfile.TemporaryDirectory(prefix="xos_sqlite_vfs_") as temporary:
         directory = Path(temporary)
-        with tarfile.open(args.archive, "r:gz") as archive:
+        with tarfile.open(fileobj=io.BytesIO(data), mode="r:gz") as archive:
             for name in ("sqlite3.h", "sqlite3.c"):
                 member = next(item for item in archive.getmembers() if item.name.endswith("/" + name))
                 with archive.extractfile(member) as stream:

@@ -156,6 +156,15 @@ class manifest_tests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "build_id mismatch"):
             self.verify()
 
+    def test_symlink_escape_is_rejected(self):
+        with tempfile.TemporaryDirectory(prefix="xos_outside_") as outside:
+            target = Path(outside) / "outside.c"
+            target.write_text("outside")
+            (self.root / "escape").symlink_to(target)
+            self.manifest["members"][0]["source"] = "escape"
+            with self.assertRaisesRegex(ValueError, "escapes repository"):
+                self.verify()
+
     def test_non_repository_path_is_rejected(self):
         for path in ("/tmp/source.c", "../source.c", ".", "C:/source.c"):
             with self.subTest(path=path):

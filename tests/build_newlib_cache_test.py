@@ -32,7 +32,9 @@ if [ -f "$CACHE/extract-fail" ]; then
     printf 'incomplete archive' > "$CACHE/newlib.tar.gz"
     exit 0
 fi
-cp "$CACHE/fixture.tar.gz" "$CACHE/newlib.tar.gz"
+offset=0
+if [ -f "$CACHE/newlib.tar.gz" ]; then offset=$(wc -c < "$CACHE/newlib.tar.gz"); fi
+tail -c +$((offset + 1)) "$CACHE/fixture.tar.gz" >> "$CACHE/newlib.tar.gz"
 ''')
         curl.chmod(0o755)
         make = binaries / "make"

@@ -24,7 +24,10 @@ def main():
 
 def read_archive(path):
     """Return members in archive order; reject ambiguous name-only mappings."""
-    data = Path(path).read_bytes()
+    return parse_archive(Path(path).read_bytes(), path)
+
+
+def parse_archive(data, path):
     if data[:8] != b"!<arch>\n":
         raise ValueError(f"not a plain GNU ar archive: {path}")
     offset, longnames, members = 8, b"", {}
@@ -76,8 +79,10 @@ def verify_manifest(manifest_path, root, build_id):
         raise ValueError("build_id mismatch")
     archive = repository_path(root, manifest.get("archive"), "archive")
     repository_path(root, manifest.get("generator"), "generator")
-    check_digest(archive, manifest.get("archive_sha256"))
-    actual = read_archive(archive)
+    data = archive.read_bytes()
+    if hashlib.sha256(data).hexdigest() != manifest.get("archive_sha256"):
+        raise ValueError(f"sha256 mismatch: {archive}")
+    actual = parse_archive(data, archive)
     records = manifest.get("members")
     if not isinstance(records, list):
         raise ValueError("members must be an array")
@@ -114,7 +119,11 @@ def repository_path(root, value, field):
     path = PurePosixPath(value)
     if not path.parts or path.is_absolute() or ".." in path.parts or ":" in path.parts[0]:
         raise ValueError(f"{field} must be a repository-relative POSIX path")
-    return Path(root) / value
+    resolved_root = Path(root).resolve()
+    resolved = (resolved_root / value).resolve()
+    if not resolved.is_relative_to(resolved_root):
+        raise ValueError(f"{field} escapes repository root")
+    return resolved
 
 
 def check_digest(path, expected):

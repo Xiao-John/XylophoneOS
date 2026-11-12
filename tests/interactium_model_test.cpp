@@ -489,11 +489,16 @@ int main() {
         resync.kind = 4;
         resync.sequence = 2;
         resync.lost = 65;
+        resync.x = 60; resync.y = 60;
         assert(resync_service.queue_input(resync));
         assert(resync_service.take_input(owner, original, event));
         assert(event.kind == input_kind::resync && event.lost == 65);
+        assert(event.x < first.x || event.y < first.y ||
+               event.x >= first.x + static_cast<i32>(first.width) ||
+               event.y >= first.y + static_cast<i32>(first.height));
         assert(resync_service.take_input(owner, other, event));
         assert(event.kind == input_kind::resync && event.lost == 65);
+        assert(event.x == 60 && event.y == 60);
 
         key.sequence = 3;
         assert(resync_service.queue_input(key));

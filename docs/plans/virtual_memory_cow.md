@@ -2,7 +2,8 @@
 
 2026-11-12 更新。VM0–VM3 已实现，VM3 的 SDK 能力仍为 `implemented_unqualified`，
 其 V1–V7 正式资格尚未完成，见[VM3 恢复记录](../work_log/58b24599_vm3_lifecycle_sdk.md)。
-COW0 已冻结[契约与失败矩阵](../contracts/cow0.md)，COW1–COW3 尚未实现；不修改宪法，
+COW0 已冻结[契约与失败矩阵](../contracts/cow0.md)；COW1 的真实 fork 和用户故障
+路径已通过隔离探针定向验收，完整资格仍须 COW2、COW-L1/L2 和 COW3；不修改宪法，
 不开放多线程 fork。下文历史基线描述仅供追溯，当前审计以 COW0 为准。
 现有匿名 VM 契约仍为主依据：
 [已合入的 PX4-A 提案](https://github.com/Xiao-John/XylophoneOS/blob/d57ff0e4674d297c6d4e1e20e3ba16a76dec3d57/docs/contracts/anonymous_vm.md)。
@@ -41,14 +42,30 @@ NONE 但保留内容的已提交页不能因 PTE 不 present 被遗失。每进�
 | VM2 提交与保护（专用探针受限通过） | commit/protect/NONE/decommit、W^X、跨页 copyin/out；32页有界续体；pin 与进程关闭仲裁 | V2/V4/V5；真实 fault、事务回滚、等待输出 pin、kill 清理，不能以宿主测试代替 |
 | VM3 生命周期与 SDK | eager fork 复制全部 VMA及隐藏提交页；exec原子替换；两类SDK与libc子集；不提前公布 supported | V6/V7，完成既有 V1–V7 后认领受限匿名VM |
 | COW0 契约冻结（已完成文档） | 页引用/逻辑权限、copyout、fork失败原子性、OOM及统计冻结；规定后续保留 eager 对照 profile | [源码路径清单与故障矩阵](../contracts/cow0.md)可独立评审，无新公共 ABI；本阶段不实现 profile |
-| COW1 fork 快照 | 子页表独立；私有可写页共享并撤硬件写权；只读页共享；父TLB同步；复制VMA | 父子双向隔离、跨页、TLS/栈/堆/匿名/NONE内容、孙代、父先退出 |
+| COW1 fork 快照（隔离探针受限通过） | 隔离探针中子页表独立；私有可写页共享并撤硬件写权；只读页共享；父TLB同步；复制VMA | 真实用户态多代、共享、权限、故障、取消和定向失败测试通过；父先退出及完整生命周期留待 COW-L2/COW3，见[工作记录](../work_log/cow1_snapshot_progress.md) |
+| COW-L1 生命周期契约及任务域 | 区分父子等待关系与任务域取消；设计收养、完成记录、构造中子进程和现有监管的迁移 | 明确授权、资源和 files/通道归属；现有默认语义在迁移前不变；契约评审通过 |
+| COW-L2 生命周期及任务域实现 | 构造中子进程随构造者回收；已提交进程可被收养；任务域提供显式整体取消 | 父正常/异常退出后子进程存活、收养和回收；显式取消覆盖多代；既有 shell、服务及 eager fork 回归 |
 | COW2 所有写入路径 | 用户保护故障与内核copyout共用分离机制，wait_word/输出pin策略落实 | 用户写、pipe/file/read、IPC recv、random、wait/join等逐路径验证；非法写仍异常 |
-| COW3 资格 | 全失败回滚、exec/退出/kill、共享映射扩展规则、受影响应用及资源性能对照 | eager与COW内容/权限/errno等价，真实物理节省与耗时单独报告 |
+| COW3 资格 | 全失败回滚、exec/退出/kill、共享映射扩展规则、受影响应用及资源性能对照 | COW-L1/L2 和 COW2 通过；真实父先退出后子写入、eager与COW内容/权限/errno等价，真实物理节省与耗时单独报告 |
 
 VM1/2 可在同一个实现 PR 分步构建，但不能交付会让旧 fork 漏拷匿名页的组合：
 公开匿名能力之前必须包含 VM3 的 eager 兼容路径。COW可在VM0后用旧窗口原型化，
 主线优先完成匿名VM基线，再启用COW，降低同时改地址图和共享所有权的调试成本。
 文件/共享映射为 PX4-B 独立路线；无需等待文件映射才开始匿名私有 COW。
+
+## 进程生命周期裁决
+
+保留 COW0 父先退出的验收要求，将其真实进程场景列为 COW-L2 和 COW3 的出口；
+COW1 可先在隔离探针中验证父地址空间先销毁、引用回收和其余快照事务，但不得把这些
+替代真实进程测试，也不得据此开放普通 COW。COW-L1/L2 可以与 COW2 并行；现有
+`finish_task` 的递归取消在生命周期迁移完成前保持，不能在 COW1 单方面移除。
+
+目标模型借鉴 POSIX：父子关系负责等待、退出状态和收养；已提交子进程不因父的正常
+退出而自动死亡。独立任务域承担跨代的显式取消和监管；它不自动等同 POSIX 进程组、
+会话或 shell job。构造中子进程仍随构造者取消，终端前台和任务域的关系须另行定义。
+迁移设计必须具体规定异常退出、监管者死亡、收养者不可用、配额、完成记录、files
+会话、通道及设备授权，兼容现有 shell 前台取消和服务安全边界；先提供明确迁移路径和
+回归测试，再改变默认行为。完整 POSIX 信号及终端 job control 不作为 COW-L2 的隐含承诺。
 
 ## COW 的执行与失败约束
 

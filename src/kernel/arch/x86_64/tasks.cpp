@@ -14,6 +14,9 @@
 #include <xos/platform.hpp>
 #include "frame.hpp"
 #include "build_info.hpp"
+#if XOS_COW1_PROBE
+#include "cow1_probe.hpp"
+#endif
 #include "../../core/anonymous_reservations.hpp"
 #include "interrupt_entry.hpp"
 #include <xos/clock.hpp>
@@ -68,6 +71,14 @@ struct pipe_object {
 };
 
 struct process_record {
+#if XOS_COW1_PROBE
+    bool cow1_probe_enabled;
+    u32 cow1_probe_faults;
+    bool cow1_probe_fail_fault;
+    bool cow1_probe_fail_files_ack;
+    bool cow1_probe_inject_retain;
+    u32 cow1_probe_retain_after;
+#endif
     u64 cr3;
     u64 pid;
     u64 ticks;
@@ -214,6 +225,12 @@ struct fork_copy_transaction {
     u64 copy_cursor=0, release_cursor=0;
     u32 released=0;
     i64 fail_after=-1;
+#if XOS_COW1_PROBE
+    bool cow=false;
+    u64 publish_cursor=0;
+    i64 prepared_pid=0;
+    i64 fail_retain=-1;
+#endif
 };
 fork_copy_transaction fork_copies[8];
 bool fork_child_staged(const process_record* task) {
@@ -551,7 +568,14 @@ bool user_range_ok(u64 address, u64 length, bool write) {
             return false;
         }
         if (!permissions.user) { return false; }
-        if (write && !permissions.writable) { return false; }
+        if (write && !permissions.writable) {
+#if XOS_COW1_PROBE
+            if (!current || !current->cow1_probe_enabled ||
+                arch::cow1_resolve_page(current->cr3,page)!=memory_result::none) return false;
+#else
+            return false;
+#endif
+        }
     }
     return true;
 }
@@ -1913,6 +1937,10 @@ void* thread_syscall(interrupt_frame* frame) {
     }
     switch (frame->rax) {
     case sys_thread_profile: {
+#if XOS_COW1_PROBE
+        // COW1 deliberately does not implement the threaded copyout/pin paths.
+        if (current->cow1_probe_enabled) { result = thread_error_unsupported; break; }
+#endif
         thread_header header{};
         if (!user_range_ok(first, sizeof(header), false)) { result = thread_error_address; break; }
         copy_from_user(&header, first, sizeof(header));
@@ -2208,6 +2236,9 @@ i64 finish_fork_copy(fork_copy_transaction& tx) {
         format::text(" pages="); format::decimal(child->user_pages); format::text("\r\n");
     }
     const i64 pid=static_cast<i64>(child->pid);
+#if XOS_COW1_PROBE
+    if (tx.cow) { tx.prepared_pid=pid; return pid; }
+#endif
     tx.child=nullptr;tx.owner=nullptr;return pid;
 }
 vm_step fork_copy_step(void* opaque,vm_phase phase,u32 budget,i64& result) {
@@ -2223,8 +2254,16 @@ vm_step fork_copy_step(void* opaque,vm_phase phase,u32 budget,i64& result) {
             format::text("[vm3-fork] preparing\r\n");
         if(tx.fail_after>=0) memory_self_test_fail_after(tx.fail_after);
 #endif
+#if XOS_COW1_PROBE
+        const auto copied=tx.cow
+            ? arch::cow1_stage_batch(tx.owner->cr3,child->cr3,process_max_pages,
+                                     &child->user_pages,&tx.copy_cursor,work,&tx.fail_retain)
+            : copy_user_pages_batch(tx.owner->cr3,child->cr3,process_max_pages,
+                                    &child->user_pages,&tx.copy_cursor,work);
+#else
         const auto copied=copy_user_pages_batch(tx.owner->cr3,child->cr3,process_max_pages,
-                                                 &child->user_pages,&tx.copy_cursor,work);
+                                                &child->user_pages,&tx.copy_cursor,work);
+#endif
 #if XOS_VM1_PROBE
         if(tx.fail_after>=0) { tx.fail_after=memory_self_test_remaining();memory_self_test_fail_after(-1); }
 #endif
@@ -2232,8 +2271,24 @@ vm_step fork_copy_step(void* opaque,vm_phase phase,u32 budget,i64& result) {
         if(tx.copy_cursor!=(u64{1}<<47))return vm_step::again;
         if(child->user_pages!=tx.owner->user_pages) { result=process_error_resources;return vm_step::failed; }
         result=finish_fork_copy(tx);
-        return result>0 ? vm_step::finished : vm_step::failed;
+        if (result<=0) return vm_step::failed;
+#if XOS_COW1_PROBE
+        if (tx.cow) return vm_step::prepared;
+#endif
+        return vm_step::finished;
     }
+#if XOS_COW1_PROBE
+    if (phase==vm_phase::publishing && tx.cow) {
+        if (tx.owner->user_pages > 256 && tx.publish_cursor == 0x40000000ull)
+            format::text("[cow1-probe] publishing\r\n");
+        if (arch::cow1_publish_batch(tx.owner->cr3,child->cr3,&tx.publish_cursor,work)!=memory_result::none)
+            halt();
+        if (tx.publish_cursor!=(u64{1}<<47)) return vm_step::again;
+        result=tx.prepared_pid;
+        tx.child=nullptr; tx.owner=nullptr;
+        return vm_step::finished;
+    }
+#endif
     if(phase==vm_phase::rolling_back) {
 #if XOS_VM1_PROBE
         if (tx.owner->user_pages > 256 && tx.release_cursor == 0x40000000ull)
@@ -2271,6 +2326,12 @@ i64 prepare_fork(interrupt_frame* frame) {
     auto& tx=fork_copies[static_cast<u32>(current-tasks)];
     tx.owner=current;tx.child=child;tx.frame=frame;
     tx.copy_cursor=0x40000000ull;tx.release_cursor=0x40000000ull;tx.released=0;tx.fail_after=-1;
+#if XOS_COW1_PROBE
+    child->cow1_probe_enabled=current->cow1_probe_enabled;
+    tx.cow=current->cow1_probe_enabled; tx.publish_cursor=0x40000000ull; tx.prepared_pid=0;
+    tx.fail_retain=current->cow1_probe_inject_retain ? static_cast<i64>(current->cow1_probe_retain_after) : -1;
+    current->cow1_probe_inject_retain=false;
+#endif
 #if XOS_VM1_PROBE
     tx.fail_after=vm2_failures[static_cast<u32>(current-tasks)].fork;
     vm2_failures[static_cast<u32>(current-tasks)].fork=-1;
@@ -3485,7 +3546,16 @@ void* process_syscall(interrupt_frame* frame) {
             child->fork_source != second || child->parent != second) {
             result = process_error_denied; break;
         }
-        if (third == 1) { child->fork_files_ack = true; }
+        if (third == 1) {
+#if XOS_COW1_PROBE
+            if (source->cow1_probe_enabled && source->cow1_probe_fail_files_ack) {
+                source->cow1_probe_fail_files_ack=false;
+                format::text("[cow1-probe] fork_files_ack=injected_failure\r\n");
+                result=process_error_resources; break;
+            }
+#endif
+            child->fork_files_ack = true;
+        }
         result = 0; break;
     }
     case sys_boot_payload: {
@@ -4340,6 +4410,48 @@ void* syscall_entry(interrupt_frame* frame) {
         anonymous_vm::request request{};
         copy_from_user(&request, frame->rdi, sizeof(request));
 #if XOS_VM1_PROBE
+#if XOS_COW1_PROBE
+        // Private opt-in: never available in ordinary or VM-only images.
+        if (request.operation==0xfff9 && request.version==1 && request.size==sizeof(request) &&
+            !request.flags && !request.address && !request.length && !request.alignment &&
+            !request.protection && !request.reserved0 && !request.reserved1 && !request.reserved2) {
+            if (current->threads_enabled || current->closing || current->continuation.active()) {
+                result=process_error_state; break;
+            }
+            current->cow1_probe_enabled=true; result=0; break;
+        }
+        if (request.operation==0xfff8 && request.version==1 && request.size==sizeof(request) &&
+            !request.flags && !request.address && !request.length && !request.alignment &&
+            !request.protection && !request.reserved0 && !request.reserved1 && !request.reserved2) {
+            result=current->cow1_probe_enabled ? current->cow1_probe_faults : process_error_denied;
+            break;
+        }
+        if (request.operation==0xfff7 && request.version==1 && request.size==sizeof(request) &&
+            !request.flags && !request.address && !request.length && !request.alignment &&
+            !request.protection && !request.reserved0 && !request.reserved1 && !request.reserved2) {
+            result=current->cow1_probe_enabled ? user_pages_status().unique_pages : process_error_denied;
+            break;
+        }
+        if (request.operation==0xfff6 && request.version==1 && request.size==sizeof(request) &&
+            !request.flags && !request.address && !request.length && !request.alignment &&
+            !request.protection && !request.reserved0 && !request.reserved1 && !request.reserved2) {
+            if (!current->cow1_probe_enabled) { result=process_error_denied; break; }
+            current->cow1_probe_fail_fault=true; result=0; break;
+        }
+        if (request.operation==0xfff5 && request.version==1 && request.size==sizeof(request) &&
+            !request.flags && !request.address && !request.length && !request.alignment &&
+            !request.protection && !request.reserved0 && !request.reserved1 && !request.reserved2) {
+            if (!current->cow1_probe_enabled) { result=process_error_denied; break; }
+            current->cow1_probe_fail_files_ack=true; result=0; break;
+        }
+        if (request.operation==0xfff4 && request.version==1 && request.size==sizeof(request) &&
+            !request.flags && request.address<=65536 && !request.length && !request.alignment &&
+            !request.protection && !request.reserved0 && !request.reserved1 && !request.reserved2) {
+            if (!current->cow1_probe_enabled) { result=process_error_denied; break; }
+            current->cow1_probe_inject_retain=true;
+            current->cow1_probe_retain_after=static_cast<u32>(request.address); result=0; break;
+        }
+#endif
         // Exercise a genuine ready-but-not-yet-delivered process wait pin.
         if (request.operation == 0xfffd && request.version == 1 && request.size == sizeof(request) &&
             !request.flags && request.address && request.length && !request.alignment &&
@@ -4486,6 +4598,18 @@ void* syscall_entry(interrupt_frame* frame) {
 
 void* user_fault(interrupt_frame* frame) {
     const u64 fault_address = frame->vector == 14 ? read_cr2() : 0;
+#if XOS_COW1_PROBE
+    if (current && current->cow1_probe_enabled && frame->vector==14 &&
+        (frame->error & 0x1f)==0x07) {
+        const bool inject=current->cow1_probe_fail_fault;
+        current->cow1_probe_fail_fault=false;
+        if (inject) memory_self_test_fail_after(0);
+        const auto resolved=arch::cow1_resolve_page(current->cr3,fault_address & ~(page_size-1));
+        if (inject) memory_self_test_fail_after(-1);
+        if (resolved==memory_result::none) { ++current->cow1_probe_faults; return frame; }
+        if (resolved==memory_result::out_of_memory) format::text("[cow1-probe] fault=cow_oom\r\n");
+    }
+#endif
     format::text("[task] event=fault pid=");
     format::decimal(current != nullptr ? current->pid : 0);
     format::text(" vector=");

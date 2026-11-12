@@ -1,11 +1,12 @@
 # IPC v1：稳定接口与实现契约
 
-2026-11-12，IP1–IP3 后端已实现；IP3 guest acceptance 已在 PR #111 补验通过（head `c36da914`，runs=3），feature query 与 manifests 仍保持 unsupported。IP4 grant 后端和 owner guest 验收脚本已实现，guest acceptance 待运行。
+2026-11-12，**IP2/IP3 功能已完成 guest qualification；endpoint_call、deadline、notification 与 wait_set 已支持（query 与两 manifest = 0x0f）。bulk_grant 仍待 IP4 qualification：grant 后端与 owner guest 验收脚本已实现（PR #112），验收进行中。**
 路线见 [IPC 计划](../plans/ipc_sel4.md)；现行 [通道契约](channel.md)、
 [Interactium](interactium.md)、[线程](threading.md)与[ABI 登记](abi_registry.md)
 继续有效。IP1 的固定 ABI 位于 `src/shared/include/xos/ipc_v1_abi.hpp`，syscall 88
-列入 ABI 登记；IP2 分支加入 endpoint/call/receive/reply/reply_receive 内核路径和 SDK
-封装，sys88 feature query 仍返回 supported mask 零，等待真实客体资格完成后才更新 SDK manifest。
+列入 ABI 登记；sys88 feature query 报告 supported mask `0x0f`。普通与线程 SDK manifest
+登记 `endpoint_call_v1`、`deadline_v1`、`notification_v1`、`wait_set_v1` 为 supported；
+`bulk_grant_v1` 在 IP4 客体验收前保持关闭。
 
 ## 目标与约束
 
@@ -28,17 +29,15 @@ C20–C25、C28–C29 生效；不扩大设备权限、不修改现有进程与�
 
 IP0 冻结逻辑语义；IP1 冻结下列 x86-64 v1 ABI 数字、结构布局、限额、错误和 feature
 命名。注册不提供已验的运行时能力。`ipc_open` 等逻辑名仍是概念接口，
-不得当作当前头文件符号。普通与线程 SDK manifest 都须输出
-`ipc_v1: {abi_version: 1, syscall: 88, status: "registered_unsupported", features: []}`；
-编译期有 ABI 头不代表运行时可用。IP2/后续阶段只有在真实后端、双 manifest 与客体资格
-完成后才能变更为 supported。IP2 分支包含端点与同步 RPC 内核实现，但在真实 guest qualification
-前，SDK manifest 与 feature query 均保持 unsupported/零 supported features。
+不得当作当前头文件符号。普通与线程 SDK manifest 仅声明经真实客体验收的 feature；
+编译期有 ABI 头不代表运行时可用。IP2/IP3 通过客体验收后，四个位按本契约登记为 supported；
+IP4 的 bulk grant 仍保持关闭，直到真实 guest qualification。
 
 能力分组：`endpoint_call_v1`（受控端点、短消息 call/receive/reply）、
 `deadline_v1`（统一单调绝对期限）、`notification_v1`（通知）、`wait_set_v1`
 （多源等待）、`bulk_grant_v1`（大块共享授予）；各组独立登记和报告。不存在的组
-不得在 manifest 标 supported；本阶段所有实际 SDK manifest 的 feature set 为空。
-接口使用 `(version, size)`、固定宽度整数、保留字段必须为零，未知版本/flag 拒绝；
+不得在 manifest 标 supported；经真实客体验收的 endpoint_call/deadline/notification/wait_set 四组按本契约登记为 supported（0x0f），bulk_grant_v1 保持关闭直至 IP4 验收。
+接口使用 `(version, size)`、固定宽度整数、保留字段必须为零，未知版本/flag 拒绝；`ipc_v1_feature_query.direct_switch_count` 为内核输出的短消息直切累计（输入仍须为零），供客体独立验证直切路径确实发生；
 每项成功和失败的输出初始化规则在 IP1 冻结如下。syscall 88 已登记；89–95 与 128+
 仍未分配，禁止私号试验污染公共 ABI。
 
@@ -282,13 +281,17 @@ Interactium、音频；旧路径退役需单独的调用清单、ABI 兼容方�
 不能因为新接口存在就悄悄改变旧程序。经 shell 启动的工具按 C27 分别在 xsh/dash
 验收；纯 SDK/内核探针如不适用两 shell，说明原因。
 
-## IP2 与后续验收待项
+## qualification 与待项
 
-IP1 已冻结并合入本页的 syscall 88 ABI、布局、错误、额度、生命周期与 feature 分组。IP2
-分支正在落地后端，尚未完成真实 guest qualification；故 feature mask 和两个 SDK manifest
-仍保持 unsupported。启用前须逐项兑现相同的原子性、权限、buffer-too-small、deadline/
-delivery/reply 竞争、handle/token 撤销和 `reply_receive` 部分成功语义；如果内核资源布局
-无法满足所登记额度，应在支持任何 feature 前另行修订 ABI。实际 endpoint fairness 只要求
-endpoint 内 FIFO，不宣称跨 endpoint 公平。fork 不继承、成功 exec 撤销 IPC v1 handles；
-failed exec 保持不变。IP3 notification 与 wait set 的 guest acceptance 已在 PR #111 通过，feature 仍 unsupported；IP4 独立 grant 后端与验收脚本已就绪，owner qualification 待运行。
-安全性质与性能指标的验证矩阵见[实施路线](../plans/ipc_sel4.md)。
+IP1 已冻结并合入本页的 syscall 88 ABI、布局、错误、额度、生命周期与 feature 分组。
+IP2/IP3 的真实客体资格已在 PR #111 的补验记录中完成：`tests/ipc_v1_guest.py`
+同一构建运行 3 轮，覆盖并发 RPC、deadline/reply race、close wakeup、handle quota recovery、
+notification merge/blocking、wait-set readiness/capacity，资源基线 `[129826,3,1]`
+前后相同。四个 feature 因此由 query 与两个 SDK manifest 一并开放。快路径本次仍须由维护者
+运行 IP5 性能/语义探针；资格记录与基准需区分已实测和待运行。
+
+`bulk_grant_v1` 仍关闭，待 IP4 的共享映射授权、生命周期、竞争与资源 guest qualification
+（grant 后端、SDK wrappers 与 `tests/ipc_v1_grant_guest.py` 见 PR #112，owner acceptance
+记录以该 PR 为准）。实际 endpoint fairness 只要求 endpoint 内 FIFO，不宣称跨 endpoint
+公平。fork 不继承、成功 exec 撤销 IPC v1 handles；failed exec 保持不变。安全性质与性能
+指标矩阵见[实施路线](../plans/ipc_sel4.md)。

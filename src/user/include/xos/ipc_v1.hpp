@@ -29,7 +29,7 @@ inline i64 query_features(ipc_v1_feature_query& output) {
         output.max_pending_calls != ipc_v1_max_pending_calls ||
         output.max_queue_per_endpoint != ipc_v1_max_queue_per_endpoint ||
         output.max_reply_tokens_per_process != ipc_v1_max_reply_tokens_per_process ||
-        output.reserved[0] != 0 || output.reserved[1] != 0) {
+        output.reserved != 0) {
         output = {};
         return static_cast<i64>(ipc_v1_error::state);
     }

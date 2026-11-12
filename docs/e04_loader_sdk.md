@@ -221,10 +221,11 @@ sys60 试行可显式保留调用者参与的少量空通道；不设置标志�
 `.xos.exec` v3 与 `.xos.tty` v1；尚未取得客体资格。
 
 sys88 `sys_ipc_v1` 的 action、固定结构、错误和 capability feature 位由
-[IPC v1 契约](contracts/ipc_v1.md)与 `ipc_v1_abi.hpp` 登记。IP2 endpoint/call/receive/reply、IP3 notification/wait-set 与 IP4 bulk-grant 的 syscall/SDK 封装均已实现，尚未完成客体资格；
-runtime query 仍返回空 supported feature set。
-普通 SDK 与实验线程 SDK manifest 均声明
-`registered_unsupported`、空 feature 列表；不得将当前实现称作已验 IPC 能力。
+[IPC v1 契约](contracts/ipc_v1.md)与 `ipc_v1_abi.hpp` 登记。PR #111 的三轮客体验收后，
+runtime query 与普通/实验线程 SDK manifest 声明 `endpoint_call_v1`、`deadline_v1`、
+`notification_v1`、`wait_set_v1` supported。`bulk_grant_v1` 仍关闭，等待 IP4 客体验收
+（grant 后端与 owner 验收脚本见 PR #112）；
+IP5 快路径另有语义/性能探针，QEMU 测量不视为硬件性能保证。
 
 sys82 `sys_pio_grant` 是开发中的固定设备 PIO 授权；COM1 交接/隔离及 PC Speaker
 端口范围、2.5 秒静音租约、主动 release 见[专项契约](contracts/pio_grant.md)。这两类

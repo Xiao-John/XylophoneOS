@@ -40,7 +40,8 @@ def main():
             create_fat32(disk, 512)
             transfer(disk, 'import', '/probe', exe)
             def boot():
-                guest = Guest(a.image, 'utf8_filename', work_disk=disk)
+                guest = Guest(a.image, 'utf8_filename', work_disk=disk,
+                              iso=str(a.image).endswith('.iso'))
                 guest.expect(b'xos64> ', timeout=30)
                 start = len(guest.output); send_bytes(guest, b'run\r')
                 guest.expect_supervisor(start=start, timeout=40)

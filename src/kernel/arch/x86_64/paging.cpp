@@ -1,6 +1,12 @@
 // SPDX-License-Identifier: MIT AND Apache-2.0
 // Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/memory.hpp>
+#include "build_info.hpp"
+#if XOS_COW1_PROBE
+#include "../../core/cow_snapshot.hpp"
+#include "cow1_probe.hpp"
+#include <xos/platform.hpp>
+#endif
 
 namespace xos {
 namespace {
@@ -11,6 +17,7 @@ constexpr u64 huge = 1ull << 7;
 // Software-owned logical write intent; independent of hardware RW.
 constexpr u64 logical_writable = 1ull << 9;
 constexpr u64 vm_hidden = 1ull << 10;
+constexpr u64 cow_private = 1ull << 11;
 constexpr u64 no_execute = 1ull << 63;
 constexpr u64 address_mask = 0x000ffffffffff000ull;
 
@@ -310,7 +317,11 @@ memory_result vm_lookup_page_in(u64 space,u64 address,u64* physical,vm_page_prot
         !(entry & user) || !user_page_references(entry & address_mask)) return memory_result::invalid;
     *physical=entry & address_mask;
     *protection=(entry & vm_hidden) ? vm_page_protection::none :
+#if XOS_COW1_PROBE
+        (entry & logical_writable) ? vm_page_protection::read_write :
+#else
         (entry & writable) ? vm_page_protection::read_write :
+#endif
         !(entry & no_execute) ? vm_page_protection::read_execute : vm_page_protection::read;
     return memory_result::none;
 }
@@ -327,7 +338,12 @@ memory_result vm_protect_page_in(u64 space,u64 address,vm_page_protection protec
     u64 physical=0; vm_page_protection old{};
     const auto result=vm_lookup_page_in(space,address,&physical,&old);
     if (result!=memory_result::none) return result;
-    *vm_leaf(space,address)=vm_entry(physical,protection);
+    u64 replacement=vm_entry(physical,protection);
+#if XOS_COW1_PROBE
+    if (protection==vm_page_protection::read_write && user_page_references(physical)>1)
+        replacement=(replacement & ~writable) | cow_private;
+#endif
+    *vm_leaf(space,address)=replacement;
     if (read_cr3()==space) invalidate(address);
     return memory_result::none;
 }
@@ -379,6 +395,189 @@ memory_result release_user_pages_batch(u64 space,u64* cursor,u32* released_pages
     }
     return memory_result::none;
 }
+#if XOS_COW1_PROBE
+namespace arch {
+namespace {
+bool cow1_valid_space(u64 space, u64 address) {
+    return space && !(space % page_size) && space < max_managed_phys &&
+           !(address % page_size) && address >= 0x40000000ull && address < (u64{1} << 47);
+}
+u64* cow1_leaf(u64 space, u64 address) {
+    u64* entries = table(space);
+    const u32 shifts[] = {39, 30, 21};
+    for (u32 shift : shifts) {
+        const u64 entry = entries[index_of(address, shift)];
+        if ((entry & (present | user | writable)) != (present | user | writable) ||
+            (entry & huge)) return nullptr;
+        entries = table(entry);
+    }
+    return &entries[index_of(address, 12)];
+}
+}
+memory_result cow1_stage_page(u64 source, u64 destination, u64 address, i64* fail_retain) {
+    if (!cow1_valid_space(source,address) || !cow1_valid_space(destination,address) || source==destination)
+        return memory_result::invalid;
+    const u64* leaf=cow1_leaf(source,address);
+    if (!leaf || !(*leaf & (present | vm_hidden))) return memory_result::not_mapped;
+    const u64 entry=*leaf, physical=entry & address_mask;
+    page_permissions effective{};
+    u64 queried=0;
+    if ((entry & present) && query_page_in(source,address,&queried,&effective)!=memory_result::none)
+        return memory_result::invalid;
+    constexpr u64 allowed=address_mask | present | writable | user | (u64{1}<<5) | (u64{1}<<6) |
+                          logical_writable | vm_hidden | cow_private | no_execute;
+    const cow::snapshot_page facts{bool(entry & present),bool(entry & vm_hidden),bool(entry & user),
+        true,true,bool(entry & writable),bool(entry & logical_writable),
+        (entry & present) ? effective.executable : !(entry & no_execute),
+        bool(entry & cow_private),user_page_references(physical)};
+    const auto action=cow::classify_snapshot(facts);
+    if ((entry & ~allowed) || action==cow::snapshot_action::invalid) return memory_result::invalid;
+    memory_result result=memory_result::none;
+    u64* pml4=table(destination);
+    if ((pml4[index_of(address,39)] & present) &&
+        (pml4[index_of(address,39)] & (user | writable)) != (user | writable)) return memory_result::invalid;
+    u64* pdpt=ensure_table(pml4,index_of(address,39),true,&result);
+    if (!pdpt) return result;
+    if ((pdpt[index_of(address,30)] & present) &&
+        (pdpt[index_of(address,30)] & (user | writable)) != (user | writable)) return memory_result::invalid;
+    u64* pd=ensure_table(pdpt,index_of(address,30),true,&result);
+    if (!pd) return result;
+    if ((pd[index_of(address,21)] & present) &&
+        (pd[index_of(address,21)] & (user | writable)) != (user | writable)) return memory_result::invalid;
+    u64* pt=ensure_table(pd,index_of(address,21),true,&result);
+    if (!pt) return result;
+    u64& target=pt[index_of(address,12)];
+    if (target) return memory_result::already_mapped;
+    if (fail_retain && *fail_retain==0) return memory_result::out_of_memory;
+    result=retain_user_page(physical);
+    if (result!=memory_result::none) return result;
+    if (fail_retain && *fail_retain>0) --*fail_retain;
+    target=entry;
+    if ((entry & present) && !effective.executable) target |= no_execute;
+    if (action==cow::snapshot_action::writable_cow) target=(target & ~writable) | cow_private;
+    return memory_result::none;
+}
+memory_result cow1_publish_page(u64 source, u64 destination, u64 address) {
+    if (!cow1_valid_space(source,address) || !cow1_valid_space(destination,address) || source==destination)
+        return memory_result::invalid;
+    u64* parent=cow1_leaf(source,address); const u64* child=cow1_leaf(destination,address);
+    if (!parent || !child || !(*child & (present | vm_hidden)) ||
+        (*parent & address_mask)!=(*child & address_mask) || user_page_references(*parent & address_mask)<2)
+        return memory_result::invalid;
+    constexpr u64 identity=present | vm_hidden | user | logical_writable | no_execute;
+    u64 normalized=*parent;
+    if (*parent & present) {
+        u64 physical=0; page_permissions effective{};
+        if (query_page_in(source,address,&physical,&effective)!=memory_result::none)
+            return memory_result::invalid;
+        if (!effective.executable) normalized |= no_execute;
+    }
+    if ((normalized & identity)!=(*child & identity) || !(*parent & user) ||
+        ((*parent & writable) && !(*child & cow_private)) || (*child & writable))
+        return memory_result::invalid;
+    if (*child & cow_private) {
+        if (!(*parent & logical_writable) || !(*parent & present) || (normalized & no_execute)==0)
+            return memory_result::invalid;
+        *parent=(*parent & ~writable) | cow_private | no_execute;
+        if (read_cr3()==source) invalidate(address);
+    }
+    return memory_result::none;
+}
+memory_result cow1_resolve_page(u64 space, u64 address) {
+    if (!cow1_valid_space(space,address)) return memory_result::invalid;
+    u64* leaf=cow1_leaf(space,address);
+    if (!leaf) return memory_result::not_mapped;
+    const u64 entry=*leaf, physical=entry & address_mask;
+    if ((entry & (present | user | logical_writable | cow_private | no_execute)) !=
+        (present | user | logical_writable | cow_private | no_execute) || (entry & writable))
+        return memory_result::invalid;
+    const u32 references=user_page_references(physical);
+    if (!references) return memory_result::invalid;
+    if (references==1) {
+        *leaf=(entry | writable) & ~cow_private;
+    } else {
+        u64 replacement=0;
+        const auto result=allocate_user_page(&replacement);
+        if (result!=memory_result::none) return result;
+        auto* to=reinterpret_cast<u64*>(replacement);
+        const auto* from=reinterpret_cast<const u64*>(physical);
+        for (u32 i=0;i<page_size/sizeof(u64);++i) to[i]=from[i];
+        *leaf=((entry & ~address_mask) | replacement | writable) & ~cow_private;
+        if (read_cr3()==space) invalidate(address);
+        if (release_user_page(physical)!=memory_result::none) halt();
+        return memory_result::none;
+    }
+    if (read_cr3()==space) invalidate(address);
+    return memory_result::none;
+}
+namespace {
+// Consume at most one leaf or missing-subtree entry per call.
+memory_result cow1_next(u64 space, u64* cursor, bool* found) {
+    constexpr u64 end=u64{1}<<47;
+    const u64 address=*cursor;
+    u64* entries=table(space);
+    const u32 shifts[]={39,30,21};
+    *found=false;
+    for (u32 shift : shifts) {
+        const u64 entry=entries[index_of(address,shift)];
+        if (!(entry & present)) {
+            const u64 next=(address | ((u64{1}<<shift)-1))+1;
+            *cursor=next<end ? next : end;
+            return memory_result::none;
+        }
+        if ((entry & (user | writable))!=(user | writable) || (entry & huge))
+            return memory_result::invalid;
+        entries=table(entry);
+    }
+    const u64 entry=entries[index_of(address,12)];
+    if (entry && !(entry & (present | vm_hidden))) return memory_result::invalid;
+    *found=(entry & (present | vm_hidden))!=0;
+    *cursor=address+page_size;
+    return memory_result::none;
+}
+bool cow1_valid_cursor(u64 space, u64 destination, const u64* cursor, u32 budget) {
+    return cursor && budget && space && destination && space!=destination &&
+           !(space%page_size) && !(destination%page_size) &&
+           space<max_managed_phys && destination<max_managed_phys &&
+           *cursor>=0x40000000ull && *cursor<=(u64{1}<<47) && !(*cursor%page_size);
+}
+}
+memory_result cow1_stage_batch(u64 source, u64 destination, u32 limit,
+                               u32* staged, u64* cursor, u32 budget, i64* fail_retain) {
+    if (!staged || !cow1_valid_cursor(source,destination,cursor,budget)) return memory_result::invalid;
+    while (budget-- && *cursor<(u64{1}<<47)) {
+        const u64 address=*cursor;
+        u64 next=address; bool found=false;
+        const auto scan=cow1_next(source,&next,&found);
+        if (scan!=memory_result::none) return scan;
+        if (found) {
+            if (*staged>=limit) return memory_result::out_of_memory;
+            const auto result=cow1_stage_page(source,destination,address,fail_retain);
+            if (result!=memory_result::none) return result;
+            ++*staged;
+        }
+        *cursor=next;
+    }
+    return memory_result::none;
+}
+memory_result cow1_publish_batch(u64 source, u64 destination, u64* cursor, u32 budget) {
+    if (!cow1_valid_cursor(source,destination,cursor,budget)) return memory_result::invalid;
+    while (budget-- && *cursor<(u64{1}<<47)) {
+        const u64 address=*cursor;
+        u64 next=address; bool found=false;
+        const auto scan=cow1_next(source,&next,&found);
+        if (scan!=memory_result::none) return scan;
+        if (found) {
+            const auto result=cow1_publish_page(source,destination,address);
+            if (result!=memory_result::none) return result;
+        }
+        *cursor=next;
+    }
+    return memory_result::none;
+}
+}
+#endif
+
 memory_result copy_user_pages_batch(u64 source, u64 destination, u32 page_limit,
                                     u32* copied_pages, u64* cursor, u32 budget) {
     constexpr u64 end=u64{1}<<47;

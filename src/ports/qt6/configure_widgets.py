@@ -61,12 +61,13 @@ ninja_text = ninja_file.read_text()
 # GCC emits MSYS /c/... paths in depfiles, which native Windows Ninja cannot
 # stat. Disable depfile loading in both generated Ninja files; explicit source
 # dependencies remain in build.ninja and output mtimes drive incremental builds.
-for generated_ninja in (ninja_file, build/'CMakeFiles'/'rules.ninja'):
-    ninja_text = generated_ninja.read_text()
-    ninja_text = re.sub(r'^  (?:depfile = \$DEP_FILE|deps = gcc)\r?\n', '',
-                        ninja_text, flags=re.M)
-    generated_ninja.write_text(ninja_text)
-(a.build.resolve()/'.ninja_deps').unlink(missing_ok=True)
+if os.name == 'nt':
+    for generated_ninja in (ninja_file, build/'CMakeFiles'/'rules.ninja'):
+        ninja_text = generated_ninja.read_text()
+        ninja_text = re.sub(r'^  (?:depfile = \$DEP_FILE|deps = gcc)\r?\n', '',
+                            ninja_text, flags=re.M)
+        generated_ninja.write_text(ninja_text)
+    (a.build.resolve()/'.ninja_deps').unlink(missing_ok=True)
 
 # Qt's synced forwarding headers embed absolute Windows paths. The target GCC
 # treats those as relative include names, so make paths inside this build

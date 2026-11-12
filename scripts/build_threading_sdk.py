@@ -82,7 +82,7 @@ def main():
     logs = args.logs_dir.resolve()
     if logs != ROOT / 'build' and ROOT / 'build' not in logs.parents:
         raise SystemExit('logs directory must be build/ or one of its subdirectories')
-    logs.mkdir(exist_ok=True)
+    logs.mkdir(parents=True, exist_ok=True)
     commands = []
     def run(command, name, cwd=None, env=None):
         commands.append([str(s) for s in command])

@@ -24,7 +24,7 @@ report = {'status':'FAILED', 'image_sha256':hashlib.sha256(a.image.read_bytes())
 guest = None
 try:
     with tempfile.TemporaryDirectory(prefix='xos_qt_fault_') as folder:
-        tmp=Path(folder); image=tmp/'boot.img'; disk=tmp/'work.img'
+        tmp=Path(folder); image=tmp/('boot'+a.image.suffix); disk=tmp/'work.img'
         shutil.copyfile(a.image,image); create_fat32(disk,512)
         transfer(disk,'mkdir','/bin'); transfer(disk,'import','/bin/qtcore.elf',a.payload)
         guest=Guest(image,'qt6_fault',work_disk=disk)

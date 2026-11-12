@@ -20,7 +20,7 @@ def both32(value):
 
 
 def record(extent, size, flags, name):
-    body = bytearray(33 + len(name))
+    body = bytearray(33 + len(name) + (len(name) % 2 == 0))
     # length fields are single bytes; refuse records that cannot be encoded
     if len(body) > 255 or len(name) > 255:
         raise SystemExit(f'ISO directory record too long: {name!r}')
@@ -34,7 +34,7 @@ def record(extent, size, flags, name):
     body[27] = 0
     body[28:32] = both16(1)
     body[32] = len(name)
-    body[33:] = name
+    body[33:33 + len(name)] = name
     return body
 
 
@@ -71,7 +71,7 @@ def main():
     path_lba = root_lba + 1
     files = []
     seen = set()
-    next_lba = path_lba + 1
+    next_lba = path_lba + 2
     for item in args.file:
         if '=' not in item:
             raise SystemExit('--file requires NAME=PATH')
@@ -83,7 +83,7 @@ def main():
         except UnicodeEncodeError as error:
             raise SystemExit(f'ISO file name must be ASCII: {name!r}') from error
         # record() stores name + ';1' in single-byte length fields
-        if len(name) > 220:
+        if len(name) > 219:
             raise SystemExit(f'ISO file name too long: {name!r}')
         folded = name.upper()
         if folded in seen:
@@ -108,7 +108,7 @@ def main():
     pvd[128:132] = both16(SECTOR)
     pvd[132:140] = both32(10)
     pvd[140:144] = struct.pack('<I', path_lba)
-    pvd[148:152] = b'\x00\x00\x00\x00'
+    pvd[148:152] = struct.pack('>I', path_lba + 1)
     pvd[156:190] = record(root_lba, SECTOR, 2, b'\x00')
     pvd[881] = 1
     image[16 * SECTOR:17 * SECTOR] = pvd
@@ -174,6 +174,9 @@ def main():
     path[6:8] = struct.pack('<H', 1)
     path[8:10] = b'\x00\x00'
     image[path_lba * SECTOR:(path_lba + 1) * SECTOR] = path
+    path[2:6] = struct.pack('>I', root_lba)
+    path[6:8] = struct.pack('>H', 1)
+    image[(path_lba + 1) * SECTOR:(path_lba + 2) * SECTOR] = path
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_bytes(image)

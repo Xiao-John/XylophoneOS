@@ -56,7 +56,7 @@ report = {'status': 'FAILED', 'qualification': 'NOT_RUN', 'gate_A_overall': 'NOT
 fixture = out / 'input.html'
 fixture.write_bytes(inputs['input'].read_bytes())
 report['inputs']['input']['sha256'] = sha(fixture.read_bytes())
-for name in ('ssg_browser_pages_probe.py', 'ssg_browser_structure.py'):
+for name in (Path(__file__).name, 'ssg_browser_structure.py'):
     source = ROOT / 'tests' / name
     report['inputs'][name] = {'path': str(source), 'sha256': sha(source.read_bytes())}
 image_format = a.image_format

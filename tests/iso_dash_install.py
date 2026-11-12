@@ -77,7 +77,7 @@ def main():
             send_bytes(guest, b"dash -i\r")
             guest.expect(b"$ ", start=begin, timeout=30)
             send_bytes(guest, b"echo A3DASH\r")
-            guest.expect(b"A3DASH", start=begin, timeout=20)
+            guest.expect(b"\nA3DASH\n", start=begin, timeout=20)
             send_bytes(guest, b"exit\r")
             guest.expect(b"xsh> ", start=begin, timeout=20)
             report["checks"].append({"name": "dash-runs", "passed": True})

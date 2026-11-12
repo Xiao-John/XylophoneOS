@@ -34,7 +34,7 @@ guest = None
 try:
     with tempfile.TemporaryDirectory(prefix='xos_qt_sdk_probe_') as tmp:
         disk = Path(tmp) / 'work.img'
-        image = Path(tmp) / 'boot.img'
+        image = Path(tmp) / ('boot' + a.image.suffix)
         shutil.copyfile(a.image, image)
         create_fat32(disk, 512)
         transfer(disk, 'mkdir', '/bin')

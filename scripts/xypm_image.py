@@ -97,7 +97,7 @@ def host_tool():
                 (info.st_mode & 0o022) == 0 and stat.S_ISREG(stamp.lstat().st_mode) and
                 stamp.lstat().st_uid == _uid()):
             trusted = sha_file(output) == stamp.read_text().strip()
-    except OSError:
+    except (OSError, ValueError):
         trusted = False
     if not trusted:
         for name, data in snapshots.items():

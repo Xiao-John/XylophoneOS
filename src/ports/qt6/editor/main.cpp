@@ -63,8 +63,8 @@ class editor final : public aurora::canvas {
         return bytes;
     }
     void logPoint(const char *name,QWidget *w) {const auto p=w->mapToGlobal(w->rect().center());std::printf("EDITOR_POINT %s=%d,%d\n",name,p.x(),p.y());}
-    void fileLabel() {
-        const auto name=path->text().section('/',-1);
+    void fileLabel(const QString &file) {
+        const auto name=file.section('/',-1);
         sideFile->setText(sideFile->fontMetrics().elidedText(name,Qt::ElideMiddle,140));
         fileTitle->setText(fileTitle->fontMetrics().elidedText("LOCAL / "+name.toUpper(),Qt::ElideMiddle,460));
     }
@@ -83,24 +83,24 @@ class editor final : public aurora::canvas {
         // QTextDocument normalizes some Unicode separators; reject loss before loading.
         QTextDocument check;check.setPlainText(normalized);
         if(check.toPlainText()!=normalized){message("Open refused: unsupported Unicode paragraph separators");return;}
-        fileLabel();
+        fileLabel(path->text());
         loading=true;bom=hasBom;crlf=windows;original=bytes;loadedPath=path->text();
         text->setPlainText(normalized);text->document()->setModified(false);loading=false;uncertain=false;
         message(QString("Opened %1 bytes; UTF-8%2%3").arg(bytes.size()).arg(bom?" BOM":"").arg(crlf?" CRLF":" LF"));
         std::printf("EDITOR_OPEN_OK bytes=%lld\n",(long long)bytes.size());text->setFocus();
     }
-    bool saveFile() {
+    bool saveFile(const QString &target) {
         if(uncertain){message("Save blocked: prior commit outcome unknown; recover first");return false;}
         const auto bytes=encode();
         // Detect changes since load before replacing an existing file. This is a
         // consumer check, not a filesystem CAS or a concurrent-writer guarantee.
-        if(path->text()==loadedPath) {
+        if(target==loadedPath) {
             QByteArray current;QString error;
             if(!xos_editor::read(loadedPath,current,error) || current!=original){message("Save refused: file changed or cannot be read; keep buffer");return false;}
         }
-        const auto result=xos_editor::save(path->text(),bytes);
+        const auto result=xos_editor::save(target,bytes);
         uncertain=result.unknown;message(result.message);
-        if(result.saved){fileLabel();original=bytes;loadedPath=path->text();text->document()->setModified(false);}
+        if(result.saved){fileLabel(target);original=bytes;loadedPath=target;text->document()->setModified(false);}
         return result.saved;
     }
     void request(Pending action) {
@@ -151,13 +151,18 @@ public:
         status=new QLabel("New document · Local files only");status->setTextFormat(Qt::PlainText);status->setStyleSheet("color: #a8c7c6; font-size: 10px;");status->setWordWrap(true);body->addWidget(status);
         connect(text,&QPlainTextEdit::cursorPositionChanged,this,[this]{const auto c=text->textCursor();position->setText(QString("Ln %1, Col %2  ·  %3 characters  ·  UTF-8%4").arg(c.blockNumber()+1).arg(c.positionInBlock()+1).arg(text->document()->characterCount()-1).arg(crlf?" CRLF":" LF"));});
         connect(open,&QPushButton::clicked,this,[this]{request(Pending::Open);});
-        connect(save,&QPushButton::clicked,this,[this]{saveFile();});
+        connect(save,&QPushButton::clicked,this,[this]{saveFile(path->text());});
         connect(quit,&QPushButton::clicked,this,[this]{request(Pending::Quit);});
-        connect(keep,&QPushButton::clicked,this,[this]{if(saveFile()) perform(pending);});
+        connect(keep,&QPushButton::clicked,this,[this]{
+            // During Open, the path field names the next document, not the save target.
+            const auto target=pending==Pending::Open?loadedPath:path->text();
+            if(pending==Pending::Open && target.isEmpty()){message("Cancel and save the new document before opening another path");return;}
+            if(saveFile(target))perform(pending);
+        });
         connect(discard,&QPushButton::clicked,this,[this]{perform(pending);});
         connect(cancel,&QPushButton::clicked,this,[this]{pending=Pending::None;confirmation->hide();text->setFocus();});
         auto shortcut=[this](QKeySequence seq,auto callback){auto *s=new QShortcut(seq,this);connect(s,&QShortcut::activated,this,callback);};
-        shortcut(QKeySequence(Qt::CTRL|Qt::Key_S),[this]{saveFile();});
+        shortcut(QKeySequence(Qt::CTRL|Qt::Key_S),[this]{saveFile(path->text());});
         shortcut(QKeySequence(Qt::CTRL|Qt::Key_O),[this]{path->setFocus();path->selectAll();});
         shortcut(QKeySequence(Qt::Key_Escape),[this]{request(Pending::Quit);});
         connect(path,&QLineEdit::returnPressed,this,[this]{request(Pending::Open);});

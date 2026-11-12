@@ -1,0 +1,104 @@
+XOS audit commands — 2026-11-12
+Baseline: e6246faf8eefac305a99528f727b1592ee93a5b2
+Run from repository root. These are command records/reproduction instructions, not a claim that missing guest prerequisites are present.
+Host environment: CXX=g++, ASAN_OPTIONS=detect_leaks=0. LeakSanitizer was unavailable in the container.
+Do not sum overlapping test batches. Units/errors/skips are recorded in validation_results.json.
+
+1. Final unittest discovery (256 run; 253 pass; 2 missing-SDK errors; 1 missing-XPK skip)
+PYTHONPATH=tests CXX=g++ ASAN_OPTIONS=detect_leaks=0 python3 -m unittest archive_member_map_test binutils_stress_exit_test build_newlib_cache_test cow0_source_audit_test cpp_seed_bundle_cases ipc_v1_reference_model iso_capacity_smoke libc_audit_symbols_test package_p0_cases package_p1_cases release_sdk_binding seed_diagnostics_cases seed_preflight_cases ssg_browser_structure_test ssg_p2g4_ab_validator_test temporal_semantic_model_test test_evidence_host_command_templates test_public_evidence_paths test_report_manifest_check test_review_evidence_guest_findings test_verify_evidence_index test_verify_evidence_migration test_xos_bundle xypm_profile_errors
+
+2. Final targeted actual-implementation regressions
+python3 tests/file_semantics.py
+python3 tests/file_recovery_faults.py
+python3 tests/libc_startup_host.py
+python3 tests/cpp_abi_output_test.py
+python3 tests/archive_member_map_test.py
+python3 tests/adventure_readline_test.py
+python3 tests/dash_pipeline_fds_test.py
+python3 tests/kernel_process_wait_race_test.py
+python3 tests/build_newlib_cache_test.py
+python3 tests/binutils_stress_exit_test.py
+
+3. Other executed host scripts (some repeated by the final batch)
+python3 tests/abi_doc_consistency.py
+python3 tests/docs_consistency.py
+python3 tests/file_semantics.py
+python3 tests/file_recovery_faults.py
+python3 tests/fatfs_diskio_cases.py
+python3 tests/xypm_json_cases.py
+python3 tests/work_disk_cache.py
+python3 tests/xypm_host_cache.py
+python3 tests/ssg_p4a_host_test.py
+python3 tests/ssg_watch_events_test.py
+python3 tests/browser_http_test.py --output build/comprehensive_audit/browser_http_final
+python3 tests/make_iso_names.py
+python3 tests/pc_speaker_lease_check.py
+python3 tests/libc_startup_host.py
+python3 tests/kernel_process_wait_race_test.py
+python3 tests/archive_member_map_test.py
+python3 tests/libc_audit_symbols_test.py
+
+4. Supplemental compilation and real host executables
+python3 tests/adventure_readline_test.py
+python3 tests/dash_pipeline_fds_test.py
+python3 tests/sqlite_vfs_paths_test.py --archive ../sqlite_vfs_audit/sqlite-autoconf-3540100.tar.gz
+python3 tests/cpp_abi_output_test.py
+python3 tests/build_newlib_cache_test.py
+g++ -std=c++17 -O1 -ffunction-sections -fdata-sections -Isrc/user/include -Isrc/shared/include tests/supervisor_host_test.cpp -Wl,--gc-sections -o '${XOS_ROOT}/build/comprehensive_audit/supervisor_host'
+'${XOS_ROOT}/build/comprehensive_audit/supervisor_host'
+g++ -std=c++17 -O1 -Isrc/user/include -Isrc/shared/include tests/interactium_demo_host_test.cpp src/user/interactium/service.cpp src/user/interactium/window_manager.cpp -o '${XOS_ROOT}/build/comprehensive_audit/interactium_demo_host'
+'${XOS_ROOT}/build/comprehensive_audit/interactium_demo_host'
+g++ -std=c++17 -O1 -ffunction-sections -fdata-sections -Isrc/user/include -Isrc/shared/include tests/file_ui_terminal_host_test.cpp src/user/sdk/text.cpp -Wl,--gc-sections -o '${XOS_ROOT}/build/comprehensive_audit/file_ui_terminal_host'
+'${XOS_ROOT}/build/comprehensive_audit/file_ui_terminal_host'
+
+5. Actual service/transport and blur with sanitizers
+mkdir -p build/comprehensive_audit
+g++ -std=c++20 -Wall -Wextra -Werror -Wconversion -Wshadow -fsanitize=address,undefined -fno-omit-frame-pointer -Isrc/shared/include tests/interactium_model_test.cpp src/user/interactium/service.cpp src/user/interactium/window_manager.cpp src/user/interactium/dispatcher.cpp -o build/comprehensive_audit/interactium_model
+ASAN_OPTIONS=detect_leaks=0 build/comprehensive_audit/interactium_model
+g++ -std=c++20 -Wall -Wextra -Werror -Wconversion -Wshadow -fsanitize=address,undefined -fno-omit-frame-pointer -Isrc/shared/include tests/interactium_transport_test.cpp src/user/interactium/service.cpp src/user/interactium/window_manager.cpp src/user/interactium/dispatcher.cpp src/user/interactium/service_loop.cpp -o build/comprehensive_audit/interactium_transport
+ASAN_OPTIONS=detect_leaks=0 build/comprehensive_audit/interactium_transport
+g++ -std=c++20 -Wall -Wextra -Werror -Wconversion -Wshadow -Wno-error=misleading-indentation -fsanitize=address,undefined -fno-omit-frame-pointer tests/aurora_blur_cases.cpp src/ports/qt6/aurora/blur.cpp -o build/comprehensive_audit/aurora_blur
+ASAN_OPTIONS=detect_leaks=0 build/comprehensive_audit/aurora_blur
+
+The commands above use reproducible repository-local output locations. Original sanitizer run locations were audit scratch; results are recorded in ui_review.md. The warning downgrade only affects the existing blur test misleading-indentation warning.
+
+6. System build: actually attempted and BLOCKED
+make build
+Observed: NASM not found; make exit code 2. No target image or guest result was produced.
+
+7. Repository gates (final results are in validation_results.json repository_gates after completion)
+python3 tests/abi_doc_consistency.py
+python3 tests/docs_consistency.py
+python3 tests/report_manifest_check.py
+python3 tests/check_public_evidence_paths.py --index --base e6246faf8eefac305a99528f727b1592ee93a5b2
+git diff --check
+
+8. Additional replay material
+validation_reproductions.md contains complete host-only AST/CLI checks for UI/build/provenance/e08 fixes.
+userland_review.md contains the complete real Guest.expect replay for 10 output markers.
+newlib_header_results.json includes all three exact probe sources, commands, header hashes and compiler diagnostics.
+kernel_review.md describes declaration-only kernel object compilation and all substituted boundaries.
+
+9. Prerequisites that remain absent
+Locked newlib source archive for tests/unicode_width_consistency.py (the argument is mandatory).
+Matching FB12 guest acceptance/report.json, running ELF, symbol ELF and target addr2line for tests/fb2_symbolize_test.py.
+build/releases/0.0.1-1024 for two package_p0_cases; idna XPK for one bundle test.
+Pinned target toolchain, SDK/seed, QEMU and Qt build assets for complete system/release/GUI qualification.
+
+Version: python3 --version
+Python 3.12.14
+
+Version: g++ --version
+g++ (Debian 14.2.0-19) 14.2.0
+
+Version: ar --version
+GNU ar (GNU Binutils for Debian) 2.44
+
+Version: nm --version
+GNU nm (GNU Binutils for Debian) 2.44
+
+Version: make --version
+GNU Make 4.4.1
+
+Version: git --version
+git version 2.52.0

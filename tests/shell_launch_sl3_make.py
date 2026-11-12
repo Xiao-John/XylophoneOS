@@ -101,6 +101,9 @@ def main() -> int:
             )
             transfer(disk, "import", "/src/hello.c", Path(tmp) / "hello.c")
             transfer(disk, "import", "/tests/Makefile", Path(tmp) / "Makefile")
+            script = Path(tmp) / "run_make.sh"
+            script.write_text("#!/usr/bin/dash\nmake -B -f /tests/Makefile all\n")
+            transfer(disk, "import", "/out/run_make.sh", script)
 
             base_command = boot_smoke.qemu_command
 
@@ -140,9 +143,6 @@ def main() -> int:
             report["checks"].append("built_elf_runs_exit0")
 
             # dash script: bare make (no exec-driver).
-            script = Path(tmp) / "run_make.sh"
-            script.write_text("#!/usr/bin/dash\nmake -B -f /tests/Makefile all\n")
-            transfer(disk, "import", "/out/run_make.sh", script)
             r = command(
                 guest,
                 "dash /out/run_make.sh",

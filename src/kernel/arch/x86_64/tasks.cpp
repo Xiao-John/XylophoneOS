@@ -4711,18 +4711,19 @@ void* process_syscall(interrupt_frame* frame) {
         if (!user_range_ok(second, sizeof(process_status), true)) { break; }
         completion_record* item = completion_for(current->pid, first);
         if (item == nullptr) { result = process_error_denied; break; }
+        if (!item->ready && third == 1) { result = process_error_would_block; break; }
+        // A woken waiter still owns the completion until deliver_wait copies it.
+        for (const auto& waiter : threads) {
+            if (waiter.process == current && waiter.wait_kind == thread_wait_kind::process &&
+                waiter.wait_target == first) { result = thread_error_busy; break; }
+        }
+        if (result == thread_error_busy) { break; }
         if (item->ready) {
             copy_to_user(second, &item->status, sizeof(process_status));
             *item = completion_record{}; result = 0;
         } else {
-            if (third == 1) { result = process_error_would_block; break; }
             process_record* child = owned_process(first);
             if (child == nullptr || child->state == task_state::building) { result = process_error_state; break; }
-            for (const auto& waiter : threads) {
-                if (waiter.process == current && waiter.wait_kind == thread_wait_kind::process &&
-                    waiter.wait_target == first) { result = thread_error_busy; break; }
-            }
-            if (result == thread_error_busy) { break; }
             if (!current_thread->user_pin.set(second, sizeof(process_status))) { result = thread_error_busy; break; }
             current_thread->wait_target = first; current_thread->wait_buffer = second;
             current_thread->wait_kind = thread_wait_kind::process;

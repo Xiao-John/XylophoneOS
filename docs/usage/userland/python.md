@@ -33,6 +33,22 @@ print("py-ok", json.dumps({"x": 1}), len(zlib.compress(b"XOS")))
 写文件、导入：宿主侧用 `python3 scripts/work_disk.py <image> import /out/hello.py hello.py`
 （见 [getting_started](getting_started.md)）；或客体内 `edit` 后保存。
 
+## 启动时的 exec_prefix 提示
+
+旧发行的解释器可能先输出：
+
+```text
+Could not find platform dependent libraries <exec_prefix>
+```
+
+这是 CPython 启动时查找平台库目录的提示。当前 XOS profile 将支持的 C 扩展静态
+链接进解释器，Python 标准库安装在 `/usr/lib/python3.14/`；这条提示单独出现不表示
+脚本或这些静态模块无法运行。可先运行上面的最小示例，检查实际输出及进程退出结果。
+
+如果随后出现 `ModuleNotFoundError`、其他 traceback 或非零退出，应按具体错误检查
+已安装文件和 profile 支持范围。当前文档解释了 BT-04 的已知提示，尚未通过重新配置
+和重建解释器消除它；已有下载资产不会因本页更新而改变。
+
 ## 相关
 
 - 资格细节：`docs/history/userland.md`（PY0–PY3、A/B 专项）

@@ -18,6 +18,8 @@ def get(url):
     return urllib.request.urlopen(request, timeout=45).read()
 
 def main():
+    if (REPORT / 'source_lock.json').exists():
+        raise SystemExit('source lock already frozen; use modern_apps_prepare.py to restore pinned inputs')
     OUT.mkdir(parents=True, exist_ok=True)
     REPORT.mkdir(parents=True, exist_ok=True)
     meta = json.loads(get(f'https://chromium.googlesource.com/chromium/src/+/refs/tags/{CHROMIUM}?format=JSON')[4:])

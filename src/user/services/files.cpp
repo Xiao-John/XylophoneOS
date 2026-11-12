@@ -484,9 +484,9 @@ bool missing(FRESULT result) { return result == FR_NO_FILE || result == FR_NO_PA
 
 // Keep the journal through cleanup and its flush. On an ambiguous final delete/
 // flush error, try to restore the marker; never reopen the service after failure.
-bool finish_recovery(const char* path) {
+bool finish_recovery(const char* path, bool remove_staging = true) {
     if (disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK ||
-        !remove_if_present(temp_name) || !remove_if_present(journal_temp_name) ||
+        (remove_staging && !remove_if_present(temp_name)) || !remove_if_present(journal_temp_name) ||
         !remove_if_present(backup_name) ||
         disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK) { return false; }
     if (f_unlink(journal_name) != FR_OK) { return false; }
@@ -898,6 +898,8 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         description = open_description{};
         const FRESULT result = f_open(&description.file, path, mode);
         if (result != FR_OK) { reply(out, in, from_fr(result)); break; }
+        description.used = true;
+        copy_text(description.path, path);
         if ((options & open_truncate) != 0 && (options & open_create) == 0) {
             // FA_OPEN_EXISTING honored the no-create contract; truncate only
             // now that the file is known to exist.
@@ -907,8 +909,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             // truncated length without waiting for this handle to close.
             if (truncate_result == FR_OK) { truncate_result = f_sync(&description.file); }
             if (truncate_result != FR_OK) {
-                (void)f_close(&description.file);
-                description = open_description{};
+                (void)cleanup_description(description);
                 reply(out, in, from_fr(truncate_result));
                 break;
             }
@@ -916,10 +917,8 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         if ((options & open_append) != 0 && (options & open_truncate) == 0) {
             description.position = static_cast<u32>(f_size(&description.file));
         }
-        description.used = true;
         description.references = 1;
         description.flags = in.flags;
-        copy_text(description.path, path);
         open_record& item = session.opens[slot];
         item = open_record{};
         item.used = true;
@@ -1000,7 +999,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             }
             const u32 restore = offset_before <= size ? offset_before : size;
             (void)seek_description(*description, restore);
-            description->position = restore;
+            description->position = offset_before;
         };
         const status grown = grow_with_zeros(*description, size, position);
         if (grown != status::ok) {
@@ -1168,9 +1167,9 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             in.length > staging_total - staging_written) { reply(out, in, status::invalid); break; }
         UINT written = 0;
         const FRESULT result = f_write(&staging_file, in.data, in.length, &written);
-        if (result != FR_OK) { reply(out, in, from_fr(result)); break; }
         staging_written += written;
-        reply(out, in, written == in.length ? status::ok : status::no_space);
+        reply(out, in, result != FR_OK ? from_fr(result) :
+                       written == in.length ? status::ok : status::no_space);
         out.value = staging_written;
         break;
     }
@@ -1282,7 +1281,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
     case op::replace_abort:
         if (!staging_active || staging_owner != session.pid) { reply(out, in, status::bad_handle); break; }
         abort_staging();
-        reply(out, in, status::ok);
+        reply(out, in, recovery_failed ? status::io : status::ok);
         break;
     case op::sync: {
         status code = status::ok;
@@ -1418,7 +1417,9 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
                 }
                 reply(out, in, from_fr(renamed)); break;
             }
-            if (disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK || !finish_recovery(new_path)) {
+            // Rename uses only journal/backup; an unrelated replacement may
+            // still own the open staging file.
+            if (disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK || !finish_recovery(new_path, false)) {
                 recovery_failed = true;
                 reply(out, in, status::io); break;
             }

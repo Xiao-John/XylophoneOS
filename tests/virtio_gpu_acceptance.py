@@ -24,7 +24,7 @@ sdk=next(Path(n).parent for n in receipt['inputs'] if n.endswith('/sdk/manifest.
 sdk_manifest=json.loads((sdk/'manifest.json').read_text());checked={}
 for n,h in sdk_manifest['inputs'].items():
  if n.startswith(('src/shared/','src/user/')):assert sha(ROOT/n)==h,n;checked[n]=h
-report={'status':'FAILED','build_id':manifest['build_id'],'image_sha256':sha(image),'elf_sha256':sha(a.qt_payload),'sdk_compatible_inputs':checked,'checks':[],'runs':[]};g=None
+report={'status':'FAILED','build_id':manifest['build_id'],'image_sha256':sha(image),'elf_sha256':sha(a.qt_payload),'sdk_compatible_inputs':checked,'checks':[],'not_run':[],'runs':[]};g=None
 
 def key(k,d):g.qmp('input-send-event',{'events':[{'type':'key','data':{'down':d,'key':{'type':'qcode','data':k}}}]})
 def stroke(k):key(k,True);key(k,False)
@@ -93,7 +93,10 @@ try:
    expected=Image.frombytes('RGB',(800,600),reference.read_bytes(),'raw','BGRX');assert expected.tobytes()==screens[backend].tobytes(),backend
    report['runs'].append({'backend':backend,'baseline':base,'with_service':with_service,'qemu_command':cmd,'pixel_sha256':hashlib.sha256(screens[backend].tobytes()).hexdigest(),'qt_reference_sha256':sha(reference),'cpu_observations':samples,'pixel_comparison':'1,440,000 RGB bytes exact; X is unused by B8G8R8X8/XRGB8888'})
    print(backend,'PASSED',flush=True)
-  assert screens['vbe'].tobytes()==screens['virtio'].tobytes();report['checks']=['actual_virtio_PCI_VERSION1_queue_and_fenced_completions','scatter_DMA_create_attach_scanout_transfer_flush','dirty_rect_offsets_exact_Qt_reference_pixels','same_frame_VBE_and_VirtIO_exact_RGB','device_invalid_resource_bounds_cycles_reset_free_pages','PS2_keys_mouse_actual_Qt_events','client_fault_second_window_and_repeated_window_lifetime','service_death_and_restart_exact_resource_baselines','user_MMIO_and_PCI_IO_fault_isolation','same_workload_present_and_host_process_CPU_observations'];report['status']='PASSED'
+  assert screens['vbe'].tobytes()==screens['virtio'].tobytes();report['checks']=['actual_virtio_PCI_VERSION1_queue_and_fenced_completions','scatter_DMA_create_attach_scanout_transfer_flush','dirty_rect_offsets_exact_Qt_reference_pixels','same_frame_VBE_and_VirtIO_exact_RGB','device_invalid_resource_bounds_cycles_reset_free_pages','PS2_keys_mouse_actual_Qt_events','client_fault_second_window_and_repeated_window_lifetime','service_death_and_restart_exact_resource_baselines','same_workload_present_and_host_process_CPU_observations']
+  if a.access_payload:report['checks'].append('user_MMIO_and_PCI_IO_fault_isolation')
+  else:report['not_run'].append('user_MMIO_and_PCI_IO_fault_isolation: --access-payload not supplied')
+  report['status']='PASSED'
 except Exception as e:report['error']=str(e);raise
 finally:
  if g:close('failed')

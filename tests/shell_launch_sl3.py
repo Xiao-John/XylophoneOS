@@ -91,6 +91,10 @@ def main() -> int:
                     pass
             pump(guest, 0.5)
 
+            r = command(guest, "diag", b"Usage: diag <program> [args]")
+            assert b"not found" not in r and b"[loader] started" not in r, r
+            report["checks"].append("xsh_diag_builtin_usage")
+
             # 1) xsh bare xos-diag normal → exit 0, back to supervisor, no bundle.
             r = command(guest, "xos-diag /bin/hello.elf", b"kind=exited code=0", timeout=60)
             assert b"[xos-diag] kind=exited code=0" in r, r

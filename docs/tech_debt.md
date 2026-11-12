@@ -62,10 +62,10 @@
 | D6 | 平台 | 系统重建/自举未验、SMP 未验、绝对峰值未测 |
 | D7 | Qt | **许可面收口**（0189）：Qt 2 份上游文本入库登记（11→13）、LGPLv3 §4d0 对应源码/可重链接交付物成文（`src/ports/qt6/REDISTRIBUTION.md`+manifest）、10 补丁修改标注（`patches/MODIFICATIONS.md`）、GCC 运行库逐成员 **397/407**、Qt 逐成员映射见 `docs/reports/qt_member_license_20261103/`；newlib 1053/1053（0188）。**均为映射/材料审查、非法务意见**；B4 打包核验与 B5 安全审查已于 2026-11-04 执行并闭合，Qt 静态交付物随 0.0.2-1103 分发；残余见 `licenses/open_items.json`（商业 N/A 等）。#67/#68 已合入 main，`open_items.json` 审计闸门生效。剩余=QML/Quick 未实现（未立项，功能线不阻塞发版） |
 | D8 | 工具/发行 | ISO 通用载荷/空盘安装、日常工具逐命令资格、非 ASCII 大小写折叠、完整游戏流程、公开分发未验 |
-| D9 | 音频 | AU0–AU5 仅文档 |
+| D9 | 音频 | AU1/AU2 已有 PC Speaker 租约、用户态单音服务和命令实现（0221/0222）；客体音频输出、服务恢复与 AU3–AU5 仍待验收/实施。不能继续按“仅文档”处理，也不能视为已通过端到端验收。 |
 | D10 | 发行 | **0.0.2-1103 已发布**（2026-11-04，含 Qt 资产；smoke 11/11）；1026 历史可下载。下次发版按 playbook/release_pipeline.sh |
 | D11 | 启动/恢复门 | **无盘启动**时 files 客户端返回 `io`，supervisor 恢复门按 fail-closed 常开，xsh 仅剩白名单命令可用（`d6363f8`，2026-10-27 引入）。本轮经用户裁决只给 `task`/`process`/`libc` 三个 smoke 测试补挂临时工作盘绕开；"无盘（io）是否应视为无标记而放行"属设计语义，待按宪法原则裁决后再改门 |
-| D12 | 构建/证据 | **归档成员来源实现债**：`docs/contracts/archive_member_provenance.md` 已立（下次重建起产出 `member_manifest.json`），但三份考古脚本（newlib/GCC/Qt）尚未抽成共享校验器 `scripts/archive_member_map.py`。退出条件=契约生效的首次重建同时落地共享实现，此后逐成员审计只读清单+跑校验 |
+| D12 | 构建/证据 | **部分偿还（2026-11-12）**：三份历史映射脚本已共用 `scripts/archive_member_map.py`，新增归档哈希、成员集合、源哈希及 build id 的统一清单校验；14 项宿主回归通过。仍待各依赖首次重建时同步生成 `member_manifest.json` 并接入正式验收；历史推导报告不升级为契约产物。见 [本轮审计](reports/comprehensive_audit_20261112/README.md)。 |
 | D13 | Aurora Desktop | Studio 首跑间歇超时：同一二进制重跑通过、根因未明（PR #45 证据如实保留）；退出条件=定位根因或给出稳定复现/豁免判据 |
 | D14 | SSG P3B/P3C | **竞态与限定验收挂账**（#50/#51 合并时按披露接受，不阻塞合入）：`EXIT_RACE_ROOT_CAUSE=UNRESOLVED`（consumer-exit timeout ×2、Notes shutdown 竞态根因未明）；早期 stress **23/24** 不回溯升级；P3C 仅 scoped requalification（32 contract checks + 独立 guest verifier，旧构建 24/24 stress 未在合入 head 重跑）；`globalAtomicSnapshot=NOT_IMPLEMENTED`、`DISTRIBUTION_NOT_QUALIFIED`。退出条件=定位竞态根因或给出豁免判据 + 在合入后 main head 重跑完整 stress 并留证 |
 
@@ -73,11 +73,11 @@
 
 | 编号 | 分类 | 债项 | 证据 / 退出条件 |
 |---|---|---|---|
-| BT-01 | BUG/UX | 嵌套 dash 的 fork 拒绝：直接由 `xsh>` 启动的 dash 可 fork；dash 内再启动 dash 后，命令替换报 `fork: Not owner`。公开文档未说明嵌套 shell 不继承构造权。 | 盲测 `qemu_session.log`；退出条件=明确这是权限边界并写入 dash 文档，或修复为可预期的错误/降级。 |
-| BT-02 | UX | `diag` 无参数时报 `xsh: diag: not found`，没有 usage；`diag` 是 builtin，错误会误导。 | 盲测 `qemu_session.log`；退出条件=无参数打印 `Usage: diag <program> [args]` 并返回明确状态，补 usage 文档。 |
-| BT-03 | DOC/UX | `/bin` 在 PATH 和部分示例中出现，但发行工作盘没有 `/bin`；`ls /bin` 报 `[files] list error=-1`。 | 盲测 `ls /bin`、`echo $PATH`；退出条件=建立 `/bin`、移除 PATH 中不存在的项，或同步修改所有示例。 |
-| BT-04 | UX | CPython 每次启动打印 `Could not find platform dependent libraries <exec_prefix>`；核心功能可用但首次使用者会误判安装损坏。 | 盲测 Python 多文件项目；退出条件=设置正确的 exec_prefix/移除该警告，或在公开文档解释。 |
-| BT-05 | DOC/可发现性 | `xos-diag` 默认不装入发行工作盘，公开入口和 `dash` 内都没有可执行文件；当前文档要求从构建产物手工安装。盲测 K 因此无法完成。 | `docs/usage/userland/dash.md`、客体 `/usr/bin`；退出条件=把 `xos-diag` 纳入发行载荷，或提供正式、可审计的安装包并在 README 指向。 |
+| BT-01 | BUG/UX | **主线已通过 SL1/SL2 改为创建权继承**，旧盲测的名称特判与深度委派行为已过期；本轮不重复实施。 | [SL1](work_log/0216_sl1_create_authority.md)、[SL2](work_log/0217_sl2_shell接入.md)；当前修订的完整客体复验仍受固定工具链限制。 |
+| BT-02 | UX | **源码已修，客体待验（2026-11-12）**：裸 `diag` 打印 `Usage: diag <program> [args]`，不再落入外部程序查找。 | 已补 `tests/shell_launch_sl3.py` 用例；本轮未运行客体，见 [审计说明](reports/comprehensive_audit_20261112/README.md)。 |
+| BT-03 | DOC/UX | **打包流程已补 `/bin`（2026-11-12）**；已发布旧镜像仍不含该目录。 | `scripts/package_release.py`、`scripts/release_smoke.py`；退出条件=在下次实际发行镜像运行新 release smoke。 |
+| BT-04 | UX | **公开用法已解释（2026-11-12）**：静态 CPython profile 的 `exec_prefix` 启动提示不等同于模块导入成功或失败；提示本身尚未消除。 | [Python 用法](usage/userland/python.md#启动时的-exec_prefix-提示) 说明安装路径、如何检查实际结果，以及真实导入错误的区别；重新配置和重建解释器仍可后续处理。 |
+| BT-05 | DOC/可发现性 | **下一次打包默认加入 xos-diag（2026-11-12）**：冻结 ELF 并验证 system manifest 后安装 `/usr/bin/xos-diag`；旧已发布镜像未变。 | freeze/package/smoke 与使用文档已同步；退出条件=完整构建并跑下一次发行验收，不能将源码改动冒充已发布。 |
 | BT-06 | 语义限制 | `clock()` 修复为单调墙钟（首次调用起，1000 Hz）；XOS 当前没有 per-process CPU accounting，因此 `clock()` 不是严格的进程 CPU 时间。 | `src/user/libc/newlib_syscalls.cpp`；退出条件=引入进程 CPU tick 统计并把 `_times` 改为真实 user/system time。 |
 | BT-07 | 发行 | `v0.0.2-1103` 已发布的 SDK 资产早于 P0/P1 XYPm 修复；磁盘上的源码/新构建 SDK 与下载资产不一致。 | PR #85 / XYPm 调查；退出条件=重新打包 SDK、更新校验清单，或发后续 patch release。 |
 | BT-08 | UX/诊断 | `-ftime-report` 的 guest clock 曾输出约 516 年、百分比超过 100%；本次已修 `_times`，但既有发布编译器二进制不会因源码修复自动更新。 | `build/cpp_link_investigation/session.log`；退出条件=重建并发布编译器/SDK 后复测。 |

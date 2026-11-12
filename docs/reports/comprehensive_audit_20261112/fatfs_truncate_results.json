@@ -1,0 +1,53 @@
+{
+  "before.json": {
+    "compiler": "/usr/bin/g++",
+    "compiler_realpath": "/usr/bin/x86_64-linux-gnu-g++-14",
+    "compiler_version": "g++ (Debian 14.2.0-19) 14.2.0",
+    "command": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-O1",
+      "-w",
+      "-I${XOS_ROOT}/src/third_party/fatfs",
+      "-I${XOS_ROOT}/src/user/include",
+      "-I${XOS_ROOT}/src/shared/include",
+      "${XOS_ROOT}/tests/fixtures/file_semantics/file_semantics.cpp",
+      "${XOS_ROOT}/src/third_party/fatfs/ff.c",
+      "${XOS_ROOT}/src/user/services/fatfs_unicode.cpp",
+      "-o",
+      "${XOS_AUDIT_WORK}/fatfs_truncate_audit/before"
+    ],
+    "source_sha256": "40c8347976fff9cb1ae287ea55cf89c188e99df97e2251efc0e33694292ce566",
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "FAIL truncate failed close releases lock after cleanup retry\n",
+    "test_sha256": "7c1486fcb8106f36ae516dbb2c10b925eb906206c3d321198fdb213119708c90",
+    "fault_boundary": "persistent disk_write RES_ERROR (real f_sync and f_close)"
+  },
+  "after.json": {
+    "compiler": "/usr/bin/g++",
+    "compiler_realpath": "/usr/bin/x86_64-linux-gnu-g++-14",
+    "compiler_version": "g++ (Debian 14.2.0-19) 14.2.0",
+    "command": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-O1",
+      "-w",
+      "-I${XOS_ROOT}/src/third_party/fatfs",
+      "-I${XOS_ROOT}/src/user/include",
+      "-I${XOS_ROOT}/src/shared/include",
+      "${XOS_ROOT}/tests/fixtures/file_semantics/file_semantics.cpp",
+      "${XOS_ROOT}/src/third_party/fatfs/ff.c",
+      "${XOS_ROOT}/src/user/services/fatfs_unicode.cpp",
+      "-o",
+      "${XOS_AUDIT_WORK}/fatfs_truncate_audit/after"
+    ],
+    "source_sha256": "3bee5aaf877808131da25ce8c8961f6defc4946b4ffe3cdcec58432b6a4d46ea",
+    "exit_code": 0,
+    "stdout": "FILE_SEMANTICS_CASES_PASSED=25\n",
+    "stderr": "",
+    "test_sha256": "7c1486fcb8106f36ae516dbb2c10b925eb906206c3d321198fdb213119708c90",
+    "fault_boundary": "persistent disk_write RES_ERROR (real f_sync and f_close)"
+  },
+  "scope": "actual files.cpp and FatFs; memory disk_write error injection; pre-fix source already includes earlier audit fixes"
+}

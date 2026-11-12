@@ -4,16 +4,14 @@
 
 extern "C" clock_t _times(struct tms*);
 
-// newlib's clock() reaches the platform through _times_r() -> times(), but the
 // Older SDKs have no public times() wrapper. Keep a weak fallback so SDKs
-// that supply the wrapper can provide their own definition. XOS has no CPU
-// accounting, so _times() reports ENOSYS instead of inventing a value.
+// that supply the wrapper can provide their own definition.
 extern "C" __attribute__((weak)) clock_t times(struct tms* buffer) {
     return _times(buffer);
 }
 
-// XOS has no blocking sleep service. Spin on the PIT tick counter instead: the
-// delay is real, but it consumes CPU. No signal can interrupt it. CPython's
+// This compatibility bridge still spins instead of using the threading
+// profile's blocking sleep service. No signal can interrupt it. CPython's
 // time.sleep() calls this directly because newlib hides nanosleep() behind an
 // unset _POSIX_TIMERS visibility level.
 extern "C" void xos_cpython_sleep_ns(long long nanoseconds) {

@@ -22,6 +22,7 @@ D7 收口时为回答"这个静态归档成员是从哪个源文件编出来的"
 {
   "version": 1,
   "archive": "build/<tree>/lib/libX.a",
+  "archive_sha256": "<sha256 of the archive bytes>",
   "build_id": "<system build id>",
   "generator": "<script path that emitted it>",
   "members": [
@@ -40,6 +41,19 @@ D7 收口时为回答"这个静态归档成员是从哪个源文件编出来的"
    见 `docs/tech_debt.md` D12），比对"清单 ↔ 归档实际成员 ↔ 源文件哈希"。
 
 ## 老人老办法（分界线）
+
+`scripts/archive_member_map.py` 提供统一 GNU archive 读取和清单内容校验：
+
+```sh
+python3 scripts/archive_member_map.py build/<tree>/lib/member_manifest.json --build-id <system-build-id>
+```
+
+校验器检查归档哈希、实际成员集合、源文件哈希和调用者指定的 build id。
+`archive_sha256` 防止成员名称未变但对象内容已变时复用旧清单。
+同名重复归档成员无法由当前 name-only 清单区分，因此明确拒绝，不能静默去重。
+输出 `derived_members` 保留推导来源的身份；`content_verified` 只表示内容一致，
+不证明清单确实在同一次构建产生，也不代表逐成员声明审计或分发资格已完成。
+三个历史映射脚本共用读取器；构建端生成清单和正式验收接入仍须在各依赖重建时完成。
 
 本契约**不追溯**已发布与既有构建：
 

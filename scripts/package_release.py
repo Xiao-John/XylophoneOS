@@ -111,6 +111,12 @@ def main():
     if not helper.is_file():
         p.error('build/work_disk_host must already be prepared; do not rebuild shared tools')
     entries = list(seed['install_files']) + list(sysroot['files'])
+    diagnostic = out / 'user_xos_diag.image.elf'
+    diagnostic_hash = system['artifacts']['user_xos_diag.image.elf']['sha256']
+    if sha(diagnostic) != diagnostic_hash:
+        p.error('frozen xos-diag differs from system manifest')
+    entries.append({'path': str(diagnostic), 'guest_path': '/usr/bin/xos-diag',
+                    'sha256': diagnostic_hash})
     if a.cpython_stage:
         stage_manifest=json.loads(a.cpython_stage.read_text())
         # Stage directory name mirrors the manifest stem (stage_py3 / stage_py3_b).
@@ -134,7 +140,7 @@ def main():
     sdk_dir.mkdir()
     from make_work_disk import create_fat32
     create_fat32(disk, 2048)
-    directories = {'/src','/out','/tmp'}
+    directories = {'/bin','/src','/out','/tmp'}
     for entry in entries:
         source = ROOT/entry['path']
         if sha(source) != entry['sha256']:

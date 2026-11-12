@@ -23,6 +23,14 @@ int read_fault_after = -1;    // >= 0: read this many bytes then error.
 int rename_fault_nth = -1;
 int rename_fault_nth2 = -1;
 int rename_calls = 0;
+bool unlink_fault = false;
+bool disk_write_fault = false;
+unsigned disk_write_faults_seen = 0;
+
+FRESULT injected_unlink(const char* path) {
+    if (unlink_fault) { unlink_fault = false; return FR_DISK_ERR; }
+    return f_unlink(path);
+}
 
 FRESULT injected_rename(const char* old_path, const char* new_path) {
     ++rename_calls;
@@ -69,10 +77,12 @@ FRESULT injected_write(FIL* file, const void* buffer, UINT length, UINT* written
 #define f_read injected_read
 #define f_write injected_write
 #define f_rename injected_rename
+#define f_unlink injected_unlink
 #include "../../../src/user/services/files.cpp"
 #undef f_read
 #undef f_write
 #undef f_rename
+#undef f_unlink
 
 namespace xos::sdk { i64 syscall(u64, u64, u64, u64) { return 0; } }
 
@@ -191,6 +201,12 @@ void reset_media() {
     for (auto& description : descriptions) { description = open_description{}; }
     generations[0] = 0;
     next_anonymous_serial = 0;
+    staging_active = false;
+    staging_open = false;
+    staging_owner = 0;
+    staging_written = 0;
+    staging_total = 0;
+    staging_path[0] = '\0';
 }
 
 void seed_file(const char* path, const void* data, UINT length) {
@@ -381,6 +397,8 @@ int main(int argc, char** argv) {
     require(write_handle(client, opened.handle, "Z", 1).status_code == static_cast<i32>(status::no_space),
             "gap short write");
     require(fstat_handle(client, opened.handle).value == 4, "gap rollback size");
+    require(seek_handle(client, opened.handle, 0, xos::file::seek_current).value == 1024,
+            "gap failure preserves logical offset");
     require(close_handle(client, opened.handle).status_code == static_cast<i32>(status::ok), "gap close");
     require(read_file("gaproll.txt") == "0123", "gap rollback content");
     ++checks;
@@ -449,6 +467,8 @@ int main(int argc, char** argv) {
     require(write_handle(client, opened.handle, "Z", 1).status_code ==
             static_cast<i32>(status::no_space), "fullhole zero-byte write");
     require(fstat_handle(client, opened.handle).value == 4, "fullhole rollback size");
+    require(seek_handle(client, opened.handle, 0, xos::file::seek_current).value == 1024,
+            "data failure preserves logical offset");
     require(close_handle(client, opened.handle).status_code == static_cast<i32>(status::ok),
             "fullhole close");
     write_fail_nth = -1;
@@ -508,6 +528,87 @@ int main(int argc, char** argv) {
     require(read_file("rmdir_full/child.txt") == "keep", "opted-in content intact");
     ++checks;
 
+    // A rename transaction must not clean up another live replacement's temp.
+    reset_media();
+    seed_file("pending.txt", "old", 3);
+    seed_file("move.txt", "new", 3);
+    seed_file("destination.txt", "dst", 3);
+    request begin = make_request(op::replace_begin);
+    set_name(begin, "pending.txt");
+    begin.length = 3;
+    require(call(client, begin).status_code == static_cast<i32>(status::ok), "pending begin");
+    request chunk = make_request(op::replace_chunk);
+    chunk.length = 3;
+    std::memcpy(chunk.data, "set", 3);
+    require(call(client, chunk).status_code == static_cast<i32>(status::ok), "pending chunk");
+    require(rename_path(client, "move.txt", "destination.txt").status_code == static_cast<i32>(status::ok),
+            "unrelated rename with active staging");
+    require(!recovery_failed && staging_active, "rename preserves staging and service");
+    require(call(client, make_request(op::replace_commit)).status_code == static_cast<i32>(status::ok),
+            "pending commit after rename");
+    require(read_file("pending.txt") == "set" && read_file("destination.txt") == "new",
+            "both transactions preserve content");
+    ++checks;
+
+    // Partial staging progress still counts when the underlying write fails.
+    reset_media();
+    begin = make_request(op::replace_begin);
+    set_name(begin, "partial_replace.txt");
+    begin.length = 4;
+    require(call(client, begin).status_code == static_cast<i32>(status::ok), "partial staging begin");
+    chunk = make_request(op::replace_chunk);
+    chunk.length = 4;
+    std::memcpy(chunk.data, "abcd", 4);
+    write_fault_after = 2;
+    const response staging_error = call(client, chunk);
+    require(staging_error.status_code == static_cast<i32>(status::io), "partial staging error");
+    require(call(client, chunk).status_code == static_cast<i32>(status::invalid),
+            "reject duplicate staging prefix after partial error");
+    chunk.offset = 2;
+    chunk.length = 2;
+    std::memcpy(chunk.data, "cd", 2);
+    require(call(client, chunk).status_code == static_cast<i32>(status::ok), "partial staging resume");
+    require(call(client, make_request(op::replace_commit)).status_code == static_cast<i32>(status::ok),
+            "partial staging commit");
+    require(read_file("partial_replace.txt") == "abcd", "partial staging content exactly once");
+    ++checks;
+
+    reset_media();
+    begin = make_request(op::replace_begin);
+    set_name(begin, "abort.txt");
+    begin.length = 1;
+    require(call(client, begin).status_code == static_cast<i32>(status::ok), "abort begin");
+    unlink_fault = true;
+    require(call(client, make_request(op::replace_abort)).status_code == static_cast<i32>(status::io),
+            "abort reports failed cleanup");
+    require(recovery_failed, "abort failed cleanup keeps recovery gate");
+    ++checks;
+
+    // Failed O_TRUNC has no client handle, but a failed real f_close still
+    // owns the FatFs lock until the zero-reference cleanup sweep succeeds.
+    reset_media();
+    seed_file("truncfail.txt", "abcdef", 6);
+    disk_write_fault = true;
+    disk_write_faults_seen = 0;
+    const response truncate_error = open_path(client, "truncfail.txt",
+        xos::file::write_only | xos::file::open_truncate);
+    require(truncate_error.status_code == static_cast<i32>(status::io) &&
+            truncate_error.handle == 0, "truncate sync failure reports no handle");
+    require(disk_write_faults_seen == 2, "real truncate sync and close both fail");
+    retry_description_cleanup();
+    disk_write_fault = false;
+    retry_description_cleanup();
+    opened = open_path(client, "truncfail.txt", xos::file::read_write);
+    require(opened.status_code == static_cast<i32>(status::ok),
+            "truncate failed close releases lock after cleanup retry");
+    require(fstat_handle(client, opened.handle).value == 0, "retried truncate size");
+    require(close_handle(client, opened.handle).status_code == static_cast<i32>(status::ok),
+            "retried truncate close");
+    for (const auto& description : descriptions) {
+        require(!description.used, "truncate failure leaves no owned description");
+    }
+    ++checks;
+
     std::printf("FILE_SEMANTICS_CASES_PASSED=%d\n", checks);
     return 0;
 }
@@ -522,6 +623,7 @@ extern "C" DRESULT disk_read(BYTE p, BYTE* buffer, LBA_t sector, UINT count) {
 }
 extern "C" DRESULT disk_write(BYTE p, const BYTE* buffer, LBA_t sector, UINT count) {
     if (p || sector >= media.size() / 512 || count > media.size() / 512 - sector) { return RES_PARERR; }
+    if (disk_write_fault) { ++disk_write_faults_seen; return RES_ERROR; }
     std::memcpy(media.data() + sector * 512, buffer, static_cast<size_t>(count) * 512);
     return RES_OK;
 }

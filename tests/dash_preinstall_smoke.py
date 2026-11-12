@@ -50,7 +50,7 @@ def main():
             pump(guest, 0.4)
             commands = [(b"type dash\r", b"dash -> /usr/bin/dash"),
                         (b"dash -i\r", b"$ "),
-                        (b"echo PREINSTALLED_DASH\r", b"PREINSTALLED_DASH"),
+                        (b"echo PREINSTALLED_DASH\r", b"\nPREINSTALLED_DASH\n"),
                         (b"exit\r", b"xsh> ")]
             for command, expected in commands:
                 begin = len(guest.output)

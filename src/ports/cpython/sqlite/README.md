@@ -14,6 +14,10 @@ The supported profile is deliberately single-threaded and single-process:
   custom VFS permits compatible shared locks and rejects conflicting locks
   within one process; it cannot coordinate another process or provide
   WAL/shared-memory locking.
+* Database paths are made absolute and normalized before SQLite derives journal
+  paths. Locks compare the `fstat` device/inode identity, so relative, case and
+  short-name aliases cannot create independent locks for the same open file.
+  The file service may reject a conflicting writable open before VFS locking.
 * WAL and loadable extensions are disabled. Use rollback-journal mode.
 * The VFS checks file size before each read and never seeks past EOF. FatFs
   extends a file when `f_lseek()` moves past its current end, unlike POSIX

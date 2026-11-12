@@ -261,7 +261,7 @@ i64 ensure_audio_service(bool force = false) {
         if (now >= 0 && static_cast<u64>(now) <= thread_deadline_infinite - 1000000000ull)
             audio_retry_after_ns = static_cast<u64>(now) + 1000000000ull;
     }
-    return started;
+    return started < 0 ? started : 0;
 }
 
 void print_audio_state(xos::audio::job_state state) {
@@ -417,7 +417,7 @@ bool builtin_named(const char* name) {
         "wait", "stats", "primtest", "elftest", "ls", "cat", "stat", "rm", "edit", "filetest",
         "sync", "exec-file", "exec-driver", "exd", "spawn-file", "mkdir", "mv", "demo",
         "maint-run", "maint-recover", "maint-recover-boot", "maint-status", "diag", "tty-run",
-        "tone", "melody", "audio"};
+        "tone", "melody", "audio", "display-start", "interactium-start"};
     for (const auto* item : names) { if (equal(name, item)) { return true; } }
     return false;
 }
@@ -786,7 +786,8 @@ void execute(u32 argc, char** argv) {
         audio_job_command(argc, argv);
     } else if (equal(argv[0], "tty-run") && argc >= 2) {
         launch_file(argv[1], argc - 1, argv + 1, 0, false, false, true, true);
-    } else if (equal(argv[0], "diag") && argc >= 2) {
+    } else if (equal(argv[0], "diag")) {
+        if (argc < 2) { print("Usage: diag <program> [args]\n"); return; }
         // Diagnosed target uses the common inherit-create contract (SL3).
         launch_file(argv[1], argc - 1, argv + 1, 0, false, true, false, true);
     } else if ((equal(argv[0], "exec-file") || equal(argv[0], "spawn-file") ||

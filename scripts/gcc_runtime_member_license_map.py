@@ -30,6 +30,8 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from archive_member_map import read_archive
+
 ROOT = Path(__file__).resolve().parents[1]
 
 ARCHIVES = {
@@ -52,35 +54,6 @@ DECLARATION_RULES = (
     ("mit_like", re.compile(r"Permission to use, copy, modify, and/or distribute", re.I)),
     ("other_copyright", re.compile(r"Copyright\s*(\(|©|\d)", re.I)),
 )
-
-
-def read_archive(path):
-    """Return {member_name: bytes} for a GNU ``!<arch>`` archive."""
-    data = Path(path).read_bytes()
-    if data[:8] != b"!<arch>\n":
-        raise SystemExit(f"not a plain ar archive: {path}")
-    offset, longnames, out = 8, None, {}
-    while offset + 60 <= len(data):
-        header = data[offset:offset + 60]
-        name = header[0:16].decode("ascii", "replace")
-        size = int(header[48:58].decode().strip())
-        body = offset + 60
-        chunk = data[body:body + size]
-        if name.startswith("//"):
-            longnames = chunk
-        token = name.strip()
-        if token in ("/", "//") or token.startswith("/SYM"):
-            pass
-        elif token.startswith("/") and token[1:].isdigit() and longnames is not None:
-            start = int(token[1:])
-            end = longnames.find(b"/\n", start)
-            out[longnames[start:end if end >= 0 else None].decode()] = chunk
-        else:
-            out[token] = chunk
-        offset = body + size
-        if offset % 2:
-            offset += 1
-    return out
 
 
 def source_files():

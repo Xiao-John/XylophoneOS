@@ -616,6 +616,8 @@ extern "C" int xos_libc_init(const xos::startup_info* startup) {
                 }
                 continue;
             }
+            // open() may reuse this closed stdio slot directly.
+            if (opened == fd) { continue; }
             const int source_object = descriptors[opened].object;
             if (valid_fd(fd)) {
                 const int old_object = descriptors[fd].object;
@@ -1788,12 +1790,13 @@ extern "C" int execvp(const char* path, char* const argv[]) {
     for (u32 start = 0;;) {
         u32 end = start; while (search[end] && search[end] != ':') ++end;
         const size_t directory_length = end - start;
-        if (directory_length + (directory_length ? 1u : 0u) + name_length >= max_path) {
+        const size_t separator = directory_length && search[end - 1] != '/' ? 1u : 0u;
+        if (directory_length + separator + name_length >= max_path) {
             saved = ENAMETOOLONG;
         } else {
             char candidate[max_path]; u32 used = 0;
             for (u32 i = start; i < end; ++i) candidate[used++] = search[i];
-            if (end > start) candidate[used++] = '/';
+            if (separator) candidate[used++] = '/';
             for (size_t i = 0; i < name_length; ++i) candidate[used++] = path[i];
             candidate[used] = 0;
             execve(candidate, argv, environ);

@@ -70,6 +70,7 @@ def main():
                     shutil.copyfile(header, sdk / 'include/xos' / header.name)
         for header in sorted((ROOT / 'src/user/include').glob('*.h')):
             shutil.copyfile(header, sdk / 'include' / header.name)
+        shutil.copytree(ROOT / 'src/user/include/sys', sdk / 'include/sys', dirs_exist_ok=True)
         (sdk / 'lib').mkdir()
         for name in ('libc.a', 'libm.a'):
             shutil.copyfile(newlib / 'lib' / name, sdk / 'lib' / name)

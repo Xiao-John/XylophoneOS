@@ -3,6 +3,7 @@
 import hashlib
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -75,7 +76,7 @@ def check_xypm_install(sdk, images, folder, report):
                     '--root', str(root), '--manifest', str(manifest_path), '-o', str(package)],
                    check=True, stdout=subprocess.DEVNULL)
     image = folder / 'xypm_probe.img'
-    subprocess.run(['cp', '-c', str(images / 'work_disk.img'), str(image)], check=True)
+    shutil.copyfile(images / 'work_disk.img', image)
     installed = folder / 'xypm_probe_installed.img'
     subprocess.run([sys.executable, str(tool), 'install', '--profile', str(profile_path),
                     '--image', str(image), '--output-image', str(installed), '--offline', str(package)],
@@ -122,9 +123,15 @@ def main():
         with tempfile.TemporaryDirectory(prefix='xos_release_') as folder:
             folder=Path(folder);disk=folder/'work.img'
             check_xypm_install(sdk,images,folder,report)
-            subprocess.run(['cp','-c',str(images/'work_disk.img'),str(disk)],check=True)
+            shutil.copyfile(images/'work_disk.img',disk)
             with Disk(disk,folder,True) as backend:require(backend.info('/usr/bin/dash') is None,'dash preinstalled on release work disk')
             report['checks'].append('fresh_work_disk_has_no_dash')
+            with Disk(disk,folder,True) as backend:
+                bin_info = backend.info('/bin')
+                require(bin_info is not None and bin_info['directory'], 'release PATH directory /bin is missing')
+                require(sha_file(backend.export('/usr/bin/xos-diag')) ==
+                        metadata['guest_files']['/usr/bin/xos-diag'], 'packaged xos-diag differs from frozen input')
+            report['checks'].append('release_bin_and_xos_diag')
             iso=images/'xos-install-dash.iso'
             launch=build_command('qemu-system-x86_64',iso,disk,None)
             require('order=d' in launch and any('media=cdrom' in x for x in launch),'launcher does not use ISO')

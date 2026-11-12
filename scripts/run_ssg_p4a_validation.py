@@ -134,7 +134,6 @@ def main():
 
     results = []
     by_name = {}
-    scenarios = list(scenarios)
     for scenario in scenarios:
         run_dir = output / 'scenarios' / scenario
         result = run_guest_case(scenario, run_dir, image, supervisor, browser, notes,

@@ -221,10 +221,10 @@ overlay_files=[f for f in overlay.rglob('*') if f.is_file()]
 inputs=[asset,wallpaper,aurora,*extra_archives,*sorted((here/'aurora').glob('*.*')),*sorted((here/'editor').glob('*.hpp')),here/'editor/main.cpp',*qt_inputs,*overlay_files,*overlay_targets,*sorted((here/'patches').glob('*.patch')),*sorted((here/'runtime').glob('*.*')),source,here/'qpa/qxos.cpp',here/'qpa/xos.json',Path(__file__),font,sdk/'manifest.json',*([sdk_release] if sdk_release.is_file() else []),*archives,*resources,plugin]
 receipt={'commands':commands,'inputs':{str(p):sha(p) for p in inputs},'elf_sha256':sha(out),
          'qtcore_sha256':expected,'host_tools':{n:sha(host_tool(n)) for n in ('moc','rcc')}}
+receipt['inputs'].update({str(p.resolve()): sha(p) for p in [*a.extra_source, *a.moc_header, *a.resource_qrc, *additional_sources]})
 mappings=[('XOS_SDK_PREFIX',sdk),('XOS_BUILD_DIR',qt),('XOS_QT_SOURCE',qs),('XOS_HOST_QT',host),('XOS_BINUTILS',binutils),('XOS_ARTIFACT_DIR',out.parent),('XOS_CXX',cxx),('XOS_AR',ar),('XOS_PYTHON',sys.executable)]
 if a.portable_receipt:
     receipt['commands_kind']='templates; execution uses the original runtime arguments'
     receipt=portable(receipt,mappings,strict=True)
-receipt['inputs'].update({str(p.resolve()): sha(p) for p in [*a.extra_source, *a.moc_header, *a.resource_qrc, *additional_sources]})
 out.with_suffix('.receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
 print('Built real Qt Widgets XOS ELF:',out)

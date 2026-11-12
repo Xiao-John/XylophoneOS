@@ -76,6 +76,7 @@ def main():
             report["serial_tail"] = output[-2000:].decode("utf-8", "replace")
             report["status"] = "PASSED" if passed else "FAILED"
         finally:
+            guest.close()
             (out / "report.json").write_text(json.dumps(report, indent=1) + "\n")
             (out / "serial.log").write_bytes(guest.output)
     print(json.dumps({"status": report["status"], "output": str(out)}))

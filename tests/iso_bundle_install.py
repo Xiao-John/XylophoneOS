@@ -78,13 +78,13 @@ def main():
             report["checks"].append({"name": "incoming-listed", "passed": True})
             begin = len(guest.output)
             send_bytes(guest, b"stat /usr/bin/dash\r")
-            guest.expect(b"dash", start=begin, timeout=20)
+            guest.expect(b"/usr/bin/dash size=", start=begin, timeout=20)
             report["checks"].append({"name": "dash-stat", "passed": True})
             begin = len(guest.output)
             send_bytes(guest, b"dash -i\r")
             guest.expect(b"$ ", start=begin, timeout=30)
             send_bytes(guest, b"echo BUNDLEDASH\r")
-            guest.expect(b"BUNDLEDASH", start=begin, timeout=20)
+            guest.expect(b"\nBUNDLEDASH\n", start=begin, timeout=20)
             report["checks"].append({"name": "dash-runs", "passed": True})
             report["status"] = "passed"
         except Exception as exc:

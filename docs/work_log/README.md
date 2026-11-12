@@ -130,6 +130,7 @@
 | 49364f6e | `49364f6e_ipc_ip2_synchronous_endpoints_and_rpc.md` | IPC IP2：sys88 endpoint 与同步 RPC 慢路径实现（guest qualification 未运行） |
 | 8c39b047 | `8c39b047_ipc_ip3_notification_and_wait_set_abi_registrati.md` | IPC IP3：notification/wait-set 实现及可复用 guest race/resource 验收脚本（owner 验收待跑） |
 | 59ae1469 | `59ae1469_utf_8_m2_filename_boundary_probe.md` | UTF-8 M2：非 BMP 文件名、255 字节路径边界、长目录项分页 guest 探针（客体验收未运行） |
+| b8f02808 | `b8f02808_comprehensive_audit.md` | 2026-11-12 全仓审计：56 项修复/待办处理、逐文件覆盖、24 题 bug-hunt 索引与未验收边界 |
 
 音频记录在 #96 合入时由 0217–0219 改为 0220–0222：0217/0218 已被 VM1/VM2 占用，
 0219 已由 WebEngine M0 审计占用。新记录自 **0223** 起继续唯一，不得复用 0216–0222。

@@ -5,6 +5,7 @@
 #include <xos/fault_sha256.hpp>
 #include <xos/sdk.hpp>
 #include <xos/text.hpp>
+#include "shell_terminal.hpp"
 
 namespace xos::ui {
 namespace {
@@ -140,7 +141,15 @@ bool editor_read_line(char* line, u32& used, bool& last_cr) {
     for (;;) {
         char byte = 0;
         const i64 got = read(0, &byte, 1);
-        if (got <= 0) { yield(); continue; }
+        if (got <= 0) {
+            if (got < 0 && user::shell_terminal::needs_recovery() &&
+                user::shell_terminal::recover("/bin/terminal.elf") > 0) {
+                last_cr = false;
+                print("\n[edit] terminal restarted; input discarded, buffer retained\n");
+                return false;
+            }
+            yield(); continue;
+        }
         if (byte == '\n' && last_cr) { last_cr = false; continue; }
         last_cr = byte == '\r';
         if (byte == '\r' || byte == '\n') { print("\n"); break; }

@@ -1,0 +1,436 @@
+Normalized validation log export. Paths are placeholders; no guest PASS is implied.
+
+===== unit_tests_final.log =====
+test_duplicate_names_cannot_be_silently_merged (archive_member_map_test.archive_reader_tests.test_duplicate_names_cannot_be_silently_merged) ... ok
+test_invalid_header_trailer_is_rejected (archive_member_map_test.archive_reader_tests.test_invalid_header_trailer_is_rejected) ... ok
+test_members_match_real_ar (archive_member_map_test.archive_reader_tests.test_members_match_real_ar) ... ok
+test_trailing_partial_header_is_rejected (archive_member_map_test.archive_reader_tests.test_trailing_partial_header_is_rejected) ... ok
+test_truncated_payload_is_rejected (archive_member_map_test.archive_reader_tests.test_truncated_payload_is_rejected) ... ok
+test_changed_archive_with_same_member_names_is_rejected (archive_member_map_test.manifest_tests.test_changed_archive_with_same_member_names_is_rejected) ... ok
+test_changed_source_is_rejected (archive_member_map_test.manifest_tests.test_changed_source_is_rejected) ... ok
+test_derived_mapping_is_reported_as_derived (archive_member_map_test.manifest_tests.test_derived_mapping_is_reported_as_derived) ... ok
+test_duplicate_manifest_member_is_rejected (archive_member_map_test.manifest_tests.test_duplicate_manifest_member_is_rejected) ... ok
+test_missing_member_is_rejected (archive_member_map_test.manifest_tests.test_missing_member_is_rejected) ... ok
+test_non_repository_path_is_rejected (archive_member_map_test.manifest_tests.test_non_repository_path_is_rejected) ... ok
+test_valid_manifest_and_cli (archive_member_map_test.manifest_tests.test_valid_manifest_and_cli) ... ok
+test_wrong_build_is_rejected (archive_member_map_test.manifest_tests.test_wrong_build_is_rejected) ... ok
+test_retained_object_must_match_archive_payload (archive_member_map_test.qt_object_record_tests.test_retained_object_must_match_archive_payload) ... ok
+test_explicit_exit_remains_exact (binutils_stress_exit_test.guest_exit_tests.test_explicit_exit_remains_exact) ... ok
+test_negative_case_accepts_nonzero (binutils_stress_exit_test.guest_exit_tests.test_negative_case_accepts_nonzero) ... ok
+test_negative_case_rejects_zero (binutils_stress_exit_test.guest_exit_tests.test_negative_case_rejects_zero) ... ok
+test_download_failure_can_retry (build_newlib_cache_test.newlib_cache_tests.test_download_failure_can_retry) ... ok
+test_existing_empty_source_can_retry (build_newlib_cache_test.newlib_cache_tests.test_existing_empty_source_can_retry) ... ok
+test_extract_failure_can_retry (build_newlib_cache_test.newlib_cache_tests.test_extract_failure_can_retry) ... ok
+test_check_rejects_changed_or_new_write_sites (cow0_source_audit_test.Cow0SourceAuditTest.test_check_rejects_changed_or_new_write_sites) ... ok
+test_inventory_discovers_new_sites_and_direct_physical_candidate (cow0_source_audit_test.Cow0SourceAuditTest.test_inventory_discovers_new_sites_and_direct_physical_candidate) ... ok
+test_write_cannot_mislabel_a_changed_baseline (cow0_source_audit_test.Cow0SourceAuditTest.test_write_cannot_mislabel_a_changed_baseline) ... ok
+test_disabled_exception_or_rtti_rejected (cpp_seed_bundle_cases.BundleCases.test_disabled_exception_or_rtti_rejected) ... ok
+test_host_runtime_rejected (cpp_seed_bundle_cases.BundleCases.test_host_runtime_rejected) ... ok
+test_incomplete_feature_or_archive_is_not_accepted (cpp_seed_bundle_cases.BundleCases.test_incomplete_feature_or_archive_is_not_accepted) ... ok
+test_modified_archive_is_not_accepted (cpp_seed_bundle_cases.BundleCases.test_modified_archive_is_not_accepted) ... ok
+test_target_binding_and_cpp_header_order (cpp_seed_bundle_cases.BundleCases.test_target_binding_and_cpp_header_order) ... ok
+test_both_sdk_profiles_share_an_unsupported_ipc_manifest_entry (ipc_v1_reference_model.ipc_v1_reference_model_test.test_both_sdk_profiles_share_an_unsupported_ipc_manifest_entry) ... ok
+test_call_first_preserves_caller_badge (ipc_v1_reference_model.ipc_v1_reference_model_test.test_call_first_preserves_caller_badge) ... ok
+test_call_timeout_after_delivery_returns_result_unknown (ipc_v1_reference_model.ipc_v1_reference_model_test.test_call_timeout_after_delivery_returns_result_unknown) ... ok
+test_call_timeout_before_delivery_guarantees_no_delivery (ipc_v1_reference_model.ipc_v1_reference_model_test.test_call_timeout_before_delivery_guarantees_no_delivery) ... ok
+test_close_distinguishes_queued_from_delivered_calls (ipc_v1_reference_model.ipc_v1_reference_model_test.test_close_distinguishes_queued_from_delivered_calls) ... ok
+test_delegation_cannot_increase_rights (ipc_v1_reference_model.ipc_v1_reference_model_test.test_delegation_cannot_increase_rights) ... ok
+test_delivery_then_close_invalidates_reply_and_marks_unknown (ipc_v1_reference_model.ipc_v1_reference_model_test.test_delivery_then_close_invalidates_reply_and_marks_unknown) ... ok
+test_empty_and_maximum_messages_are_valid_but_max_plus_one_is_not (ipc_v1_reference_model.ipc_v1_reference_model_test.test_empty_and_maximum_messages_are_valid_but_max_plus_one_is_not) ... ok
+test_expired_deadline_still_observes_already_queued_message_first (ipc_v1_reference_model.ipc_v1_reference_model_test.test_expired_deadline_still_observes_already_queued_message_first) ... ok
+test_fifo_queue_and_depth_limit (ipc_v1_reference_model.ipc_v1_reference_model_test.test_fifo_queue_and_depth_limit) ... ok
+test_handle_owner_and_rights_are_authenticated (ipc_v1_reference_model.ipc_v1_reference_model_test.test_handle_owner_and_rights_are_authenticated) ... ok
+test_manifest_feature_model_is_not_product_support (ipc_v1_reference_model.ipc_v1_reference_model_test.test_manifest_feature_model_is_not_product_support) ... ok
+test_per_process_endpoint_handle_quota (ipc_v1_reference_model.ipc_v1_reference_model_test.test_per_process_endpoint_handle_quota) ... ok
+test_receive_buffer_too_small_does_not_consume (ipc_v1_reference_model.ipc_v1_reference_model_test.test_receive_buffer_too_small_does_not_consume) ... ok
+test_receive_first_rendezvous_preserves_badge_and_payload_snapshot (ipc_v1_reference_model.ipc_v1_reference_model_test.test_receive_first_rendezvous_preserves_badge_and_payload_snapshot) ... ok
+test_reply_buffer_too_small_keeps_one_shot_token_live (ipc_v1_reference_model.ipc_v1_reference_model_test.test_reply_buffer_too_small_keeps_one_shot_token_live) ... ok
+test_reply_receive_reports_reply_success_when_receive_fails (ipc_v1_reference_model.ipc_v1_reference_model_test.test_reply_receive_reports_reply_success_when_receive_fails) ... ok
+test_reply_token_quota_does_not_consume_next_call (ipc_v1_reference_model.ipc_v1_reference_model_test.test_reply_token_quota_does_not_consume_next_call) ... ok
+test_system_endpoint_quota_and_nonreused_handle (ipc_v1_reference_model.ipc_v1_reference_model_test.test_system_endpoint_quota_and_nonreused_handle) ... ok
+test_archive_headings_are_not_unresolved_symbols (libc_audit_symbols_test.libc_audit_symbol_tests.test_archive_headings_are_not_unresolved_symbols) ... ok
+test_real_c_cpp_project_outside_repository (package_p0_cases.IndependentBuildCases.test_real_c_cpp_project_outside_repository) ... ERROR
+test_sdk_binding_and_init_refusal (package_p0_cases.IndependentBuildCases.test_sdk_binding_and_init_refusal) ... ERROR
+test_bad_expected_hash (package_p0_cases.PackageCases.test_bad_expected_hash) ... ok
+test_case_and_parent_file_collisions (package_p0_cases.PackageCases.test_case_and_parent_file_collisions) ... ok
+test_executable_role_requires_supported_elf (package_p0_cases.PackageCases.test_executable_role_requires_supported_elf) ... ok
+test_json_duplicates_nan_surrogates_depth (package_p0_cases.PackageCases.test_json_duplicates_nan_surrogates_depth) ... ok
+test_license_receipt_and_dependencies (package_p0_cases.PackageCases.test_license_receipt_and_dependencies) ... ok
+test_links_extensions_and_bad_checksum (package_p0_cases.PackageCases.test_links_extensions_and_bad_checksum) ... ok
+test_metadata_bounds_unknown_and_types (package_p0_cases.PackageCases.test_metadata_bounds_unknown_and_types) ... ok
+test_missing_extra_duplicate_or_manifest_order (package_p0_cases.PackageCases.test_missing_extra_duplicate_or_manifest_order) ... ok
+test_no_clobber_and_partial_cleanup (package_p0_cases.PackageCases.test_no_clobber_and_partial_cleanup) ... ok
+test_payload_corruption_truncation_and_trailing (package_p0_cases.PackageCases.test_payload_corruption_truncation_and_trailing) ... ok
+test_profile_and_feature_refused (package_p0_cases.PackageCases.test_profile_and_feature_refused) ... ok
+test_roundtrip_utf8_and_deterministic (package_p0_cases.PackageCases.test_roundtrip_utf8_and_deterministic) ... ok
+test_symlink_source_and_package (package_p0_cases.PackageCases.test_symlink_source_and_package) ... ok
+test_traversal_case_alias_reserved_paths (package_p0_cases.PackageCases.test_traversal_case_alias_reserved_paths) ... ok
+test_corrupt_database_or_projection_refused (package_p1_cases.ImageCases.test_corrupt_database_or_projection_refused) ... ok
+test_exact_dependencies_and_reverse_dependency (package_p1_cases.ImageCases.test_exact_dependencies_and_reverse_dependency) ... ok
+test_exports_across_sessions_do_not_collide (package_p1_cases.ImageCases.test_exports_across_sessions_do_not_collide) ... ok
+test_full_disk_preflight (package_p1_cases.ImageCases.test_full_disk_preflight) ... ok
+test_injected_failure_never_publishes_or_changes_source (package_p1_cases.ImageCases.test_injected_failure_never_publishes_or_changes_source) ... ok
+test_install_upgrade_remove_and_utf8_metadata (package_p1_cases.ImageCases.test_install_upgrade_remove_and_utf8_metadata) ... ok
+test_legacy_database_not_mistaken_for_empty_installation (package_p1_cases.ImageCases.test_legacy_database_not_mistaken_for_empty_installation) ... ok
+test_modified_files_protected_for_upgrade_and_remove (package_p1_cases.ImageCases.test_modified_files_protected_for_upgrade_and_remove) ... ok
+test_output_refusal_symlinks_and_image_lock (package_p1_cases.ImageCases.test_output_refusal_symlinks_and_image_lock) ... ok
+test_owned_conflict_and_parent_file (package_p1_cases.ImageCases.test_owned_conflict_and_parent_file) ... ok
+test_unmanaged_and_case_folded_collision (package_p1_cases.ImageCases.test_unmanaged_and_case_folded_collision) ... ok
+test_user_files_in_shared_directory_survive_uninstall (package_p1_cases.ImageCases.test_user_files_in_shared_directory_survive_uninstall) ... ok
+test_changed_file (release_sdk_binding.BindingCases.test_changed_file) ... ok
+test_copy_must_match_inputs_before_publication (release_sdk_binding.BindingCases.test_copy_must_match_inputs_before_publication) ... ok
+test_exact_input_and_packaged_receipt (release_sdk_binding.BindingCases.test_exact_input_and_packaged_receipt) ... ok
+test_missing_file (release_sdk_binding.BindingCases.test_missing_file) ... ok
+test_mixed_manifest_and_symlink (release_sdk_binding.BindingCases.test_mixed_manifest_and_symlink) ... ok
+test_packaged_tamper_refused (release_sdk_binding.BindingCases.test_packaged_tamper_refused) ... ok
+test_packager_rejects_bad_sdk_before_creating_output (release_sdk_binding.BindingCases.test_packager_rejects_bad_sdk_before_creating_output) ... ok
+test_runtime_tree_and_provenance_binding (release_sdk_binding.BindingCases.test_runtime_tree_and_provenance_binding) ... ok
+test_stale_file_and_empty_directory (release_sdk_binding.BindingCases.test_stale_file_and_empty_directory) ... ok
+test_unbound_legacy_system_refused (release_sdk_binding.BindingCases.test_unbound_legacy_system_refused) ... ok
+test_wrong_config_target_or_runtime_even_when_file_hash_is_rebound (release_sdk_binding.BindingCases.test_wrong_config_target_or_runtime_even_when_file_hash_is_rebound) ... ok
+test_actual_paths_only (seed_diagnostics_cases.DiagnosticCases.test_actual_paths_only) ... ok
+test_basename_assembler_trace (seed_diagnostics_cases.DiagnosticCases.test_basename_assembler_trace) ... ok
+test_driver_routing (seed_diagnostics_cases.DiagnosticCases.test_driver_routing) ... ok
+test_echo_not_evidence (seed_diagnostics_cases.DiagnosticCases.test_echo_not_evidence) ... ok
+test_fault_is_not_exit (seed_diagnostics_cases.DiagnosticCases.test_fault_is_not_exit) ... ok
+test_host_search_leak (seed_diagnostics_cases.DiagnosticCases.test_host_search_leak) ... ok
+test_link_and_authority (seed_diagnostics_cases.DiagnosticCases.test_link_and_authority) ... ok
+test_load_failure_without_wait (seed_diagnostics_cases.DiagnosticCases.test_load_failure_without_wait) ... ok
+test_nonzero_error (seed_diagnostics_cases.DiagnosticCases.test_nonzero_error) ... ok
+test_actual_image_end_excludes_guard_stack_and_startup (seed_preflight_cases.SeedPreflightCases.test_actual_image_end_excludes_guard_stack_and_startup) ... ok
+test_casefold_collision_and_file_directory_conflict (seed_preflight_cases.SeedPreflightCases.test_casefold_collision_and_file_directory_conflict) ... ok
+test_duplicate_across_seed_and_sysroot_rejected (seed_preflight_cases.SeedPreflightCases.test_duplicate_across_seed_and_sysroot_rejected) ... ok
+test_guest_path_canonical_and_ascii_rules (seed_preflight_cases.SeedPreflightCases.test_guest_path_canonical_and_ascii_rules) ... ok
+test_guest_path_space_allowed_but_byte_limit_enforced (seed_preflight_cases.SeedPreflightCases.test_guest_path_space_allowed_but_byte_limit_enforced) ... ok
+test_hash_and_declared_size_checked (seed_preflight_cases.SeedPreflightCases.test_hash_and_declared_size_checked) ... ok
+test_host_cxx_is_not_implicitly_a_target_sysroot (seed_preflight_cases.SeedPreflightCases.test_host_cxx_is_not_implicitly_a_target_sysroot) ... ok
+test_isolated_project_root_is_never_read (seed_preflight_cases.SeedPreflightCases.test_isolated_project_root_is_never_read) ... ok
+test_loads_may_not_overlap_tls_heap_or_reserved_budget (seed_preflight_cases.SeedPreflightCases.test_loads_may_not_overlap_tls_heap_or_reserved_budget) ... ok
+test_sdk_manifest_hash_and_explicit_input_hashes_checked (seed_preflight_cases.SeedPreflightCases.test_sdk_manifest_hash_and_explicit_input_hashes_checked) ... ok
+test_source_host_absolute_and_parent_paths_rejected (seed_preflight_cases.SeedPreflightCases.test_source_host_absolute_and_parent_paths_rejected) ... ok
+test_symlink_in_parent_is_rejected (seed_preflight_cases.SeedPreflightCases.test_symlink_in_parent_is_rejected) ... ok
+test_sysroot_paths_are_explicit_and_never_rewritten (seed_preflight_cases.SeedPreflightCases.test_sysroot_paths_are_explicit_and_never_rewritten) ... ok
+test_tls_static_subset_valid_and_rejects_bounds (seed_preflight_cases.SeedPreflightCases.test_tls_static_subset_valid_and_rejects_bounds) ... ok
+test_tool_must_be_static_amd64_exec (seed_preflight_cases.SeedPreflightCases.test_tool_must_be_static_amd64_exec) ... ok
+test_tool_path_hash_and_explicit_guest_path_select_alias (seed_preflight_cases.SeedPreflightCases.test_tool_path_hash_and_explicit_guest_path_select_alias) ... ok
+test_tool_whitelist_and_install_mapping_are_enforced (seed_preflight_cases.SeedPreflightCases.test_tool_whitelist_and_install_mapping_are_enforced) ... ok
+test_valid_explicit_bundle_and_sysroot_prefix (seed_preflight_cases.SeedPreflightCases.test_valid_explicit_bundle_and_sysroot_prefix) ... ok
+test_consumer_counts_and_completion_must_match (ssg_browser_structure_test.resource_rejection_tests.test_consumer_counts_and_completion_must_match) ... ok
+test_every_exit_outcome_must_be_unique_and_expected (ssg_browser_structure_test.resource_rejection_tests.test_every_exit_outcome_must_be_unique_and_expected) ... ok
+test_explicit_refusal_is_scoped_and_not_a1 (ssg_browser_structure_test.resource_rejection_tests.test_explicit_refusal_is_scoped_and_not_a1) ... ok
+test_final_reply_must_explicitly_reject_without_page_fields (ssg_browser_structure_test.resource_rejection_tests.test_final_reply_must_explicitly_reject_without_page_fields) ... ok
+test_final_source_fields_are_bound_when_present (ssg_browser_structure_test.resource_rejection_tests.test_final_source_fields_are_bound_when_present) ... ok
+test_first_page_refusal_with_no_emitted_nodes (ssg_browser_structure_test.resource_rejection_tests.test_first_page_refusal_with_no_emitted_nodes) ... ok
+test_only_complete_bound_before_oracle_is_allowed (ssg_browser_structure_test.resource_rejection_tests.test_only_complete_bound_before_oracle_is_allowed) ... ok
+test_plain_success_capture_cannot_be_resource_qualification (ssg_browser_structure_test.resource_rejection_tests.test_plain_success_capture_cannot_be_resource_qualification) ... ok
+test_prior_pages_cannot_complete_or_change_scope (ssg_browser_structure_test.resource_rejection_tests.test_prior_pages_cannot_complete_or_change_scope) ... ok
+test_refusal_must_occur_near_first_oversized_node (ssg_browser_structure_test.resource_rejection_tests.test_refusal_must_occur_near_first_oversized_node) ... ok
+test_requests_and_continuations_are_bound (ssg_browser_structure_test.resource_rejection_tests.test_requests_and_continuations_are_bound) ... ok
+test_scope_and_three_process_identities_are_required (ssg_browser_structure_test.resource_rejection_tests.test_scope_and_three_process_identities_are_required) ... ok
+test_successful_prefix_is_independently_checked (ssg_browser_structure_test.resource_rejection_tests.test_successful_prefix_is_independently_checked) ... ok
+test_transport_failure_is_not_expected_resource_refusal (ssg_browser_structure_test.resource_rejection_tests.test_transport_failure_is_not_expected_resource_refusal) ... ok
+test_utf16_budget_and_exact_boundary (ssg_browser_structure_test.resource_rejection_tests.test_utf16_budget_and_exact_boundary) ... ok
+test_cannot_reopen_closed_subtree (ssg_browser_structure_test.structure_validator_tests.test_cannot_reopen_closed_subtree) ... ok
+test_consumer_rejection_and_unsuccessful_exits (ssg_browser_structure_test.structure_validator_tests.test_consumer_rejection_and_unsuccessful_exits) ... ok
+test_cursor_chain_and_reuse (ssg_browser_structure_test.structure_validator_tests.test_cursor_chain_and_reuse) ... ok
+test_drop_terminal_page (ssg_browser_structure_test.structure_validator_tests.test_drop_terminal_page) ... ok
+test_duplicate_id (ssg_browser_structure_test.structure_validator_tests.test_duplicate_id) ... ok
+test_duplicate_or_orphan_or_truncated_frame (ssg_browser_structure_test.structure_validator_tests.test_duplicate_or_orphan_or_truncated_frame) ... ok
+test_early_completion (ssg_browser_structure_test.structure_validator_tests.test_early_completion) ... ok
+test_exact_node_limit_has_empty_terminal_page (ssg_browser_structure_test.structure_validator_tests.test_exact_node_limit_has_empty_terminal_page) ... ok
+test_extra_node (ssg_browser_structure_test.structure_validator_tests.test_extra_node) ... ok
+test_false_typed_flags_are_not_booleans (ssg_browser_structure_test.structure_validator_tests.test_false_typed_flags_are_not_booleans) ... ok
+test_filtered_or_false_typed_scope_is_rejected (ssg_browser_structure_test.structure_validator_tests.test_filtered_or_false_typed_scope_is_rejected) ... ok
+test_historical_provider_claim_without_oracle_is_unqualified (ssg_browser_structure_test.structure_validator_tests.test_historical_provider_claim_without_oracle_is_unqualified) ... ok
+test_input_hash_mismatch (ssg_browser_structure_test.structure_validator_tests.test_input_hash_mismatch) ... ok
+test_json_duplicate_keys_and_invalid_base64 (ssg_browser_structure_test.structure_validator_tests.test_json_duplicate_keys_and_invalid_base64) ... ok
+test_legacy_consumer_completion_cannot_qualify (ssg_browser_structure_test.structure_validator_tests.test_legacy_consumer_completion_cannot_qualify) ... ok
+test_missing_exit_or_process_identity (ssg_browser_structure_test.structure_validator_tests.test_missing_exit_or_process_identity) ... ok
+test_netstrings_count_utf8_and_preserve_missing_fields (ssg_browser_structure_test.structure_validator_tests.test_netstrings_count_utf8_and_preserve_missing_fields) ... ok
+test_omit_whole_subtree_even_with_consistent_completion (ssg_browser_structure_test.structure_validator_tests.test_omit_whole_subtree_even_with_consistent_completion) ... ok
+test_one_character_href_change (ssg_browser_structure_test.structure_validator_tests.test_one_character_href_change) ... ok
+test_one_character_text_change (ssg_browser_structure_test.structure_validator_tests.test_one_character_text_change) ... ok
+test_oracle_cannot_lie_about_children_or_digest (ssg_browser_structure_test.structure_validator_tests.test_oracle_cannot_lie_about_children_or_digest) ... ok
+test_oracle_changed_or_truncated (ssg_browser_structure_test.structure_validator_tests.test_oracle_changed_or_truncated) ... ok
+test_oracle_missing (ssg_browser_structure_test.structure_validator_tests.test_oracle_missing) ... ok
+test_orphan_parent (ssg_browser_structure_test.structure_validator_tests.test_orphan_parent) ... ok
+test_parent_must_precede_child (ssg_browser_structure_test.structure_validator_tests.test_parent_must_precede_child) ... ok
+test_resource_error_cannot_be_complete (ssg_browser_structure_test.structure_validator_tests.test_resource_error_cannot_be_complete) ... ok
+test_scroll_change_and_no_progress_page (ssg_browser_structure_test.structure_validator_tests.test_scroll_change_and_no_progress_page) ... ok
+test_second_root (ssg_browser_structure_test.structure_validator_tests.test_second_root) ... ok
+test_source_epoch_and_revision_drift (ssg_browser_structure_test.structure_validator_tests.test_source_epoch_and_revision_drift) ... ok
+test_sparse_ids_unicode_and_incomplete_geometry_are_scoped (ssg_browser_structure_test.structure_validator_tests.test_sparse_ids_unicode_and_incomplete_geometry_are_scoped) ... ok
+test_swap_distinct_sibling_subtrees (ssg_browser_structure_test.structure_validator_tests.test_swap_distinct_sibling_subtrees) ... ok
+test_tag_and_role_mismatch (ssg_browser_structure_test.structure_validator_tests.test_tag_and_role_mismatch) ... ok
+test_text_truncation_flag (ssg_browser_structure_test.structure_validator_tests.test_text_truncation_flag) ... ok
+test_unpaired_frames_and_message_sequence (ssg_browser_structure_test.structure_validator_tests.test_unpaired_frames_and_message_sequence) ... ok
+test_utf16_text_range (ssg_browser_structure_test.structure_validator_tests.test_utf16_text_range) ... ok
+test_wrong_existing_parent (ssg_browser_structure_test.structure_validator_tests.test_wrong_existing_parent) ... ok
+test_wrong_root (ssg_browser_structure_test.structure_validator_tests.test_wrong_root) ... ok
+test_changed_oracle_or_input_is_rejected (ssg_p2g4_ab_validator_test.ab_validator_tests.test_changed_oracle_or_input_is_rejected) ... ok
+test_missing_node_and_bad_cursor_are_rejected (ssg_p2g4_ab_validator_test.ab_validator_tests.test_missing_node_and_bad_cursor_are_rejected) ... ok
+test_missing_oracle_is_rejected (ssg_p2g4_ab_validator_test.ab_validator_tests.test_missing_oracle_is_rejected) ... ok
+test_reused_session_or_scroll_is_rejected (ssg_p2g4_ab_validator_test.ab_validator_tests.test_reused_session_or_scroll_is_rejected) ... ok
+test_two_complete_sessions_match_independent_oracles (ssg_p2g4_ab_validator_test.ab_validator_tests.test_two_complete_sessions_match_independent_oracles) ... ok
+test_expiry_revocation_and_other_producer (temporal_semantic_model_test.TemporalSemanticsTest.test_expiry_revocation_and_other_producer) ... ok
+test_invalid_scope_and_budget (temporal_semantic_model_test.TemporalSemanticsTest.test_invalid_scope_and_budget) ... ok
+test_on_demand_frame_and_budget (temporal_semantic_model_test.TemporalSemanticsTest.test_on_demand_frame_and_budget) ... ok
+test_source_replacement_and_reference_validation (temporal_semantic_model_test.TemporalSemanticsTest.test_source_replacement_and_reference_validation) ... ok
+test_time_domains_and_caption_authority (temporal_semantic_model_test.TemporalSemanticsTest.test_time_domains_and_caption_authority) ... ok
+test_guest_command_and_plain_text_are_not_rewritten (test_evidence_host_command_templates.evidence_host_command_tests.test_guest_command_and_plain_text_are_not_rewritten) ... ok
+test_host_command_list_and_relative_qemu_are_templated (test_evidence_host_command_templates.evidence_host_command_tests.test_host_command_list_and_relative_qemu_are_templated) ... ok
+test_host_reference_command_does_not_change_test_input (test_evidence_host_command_templates.evidence_host_command_tests.test_host_reference_command_does_not_change_test_input) ... ok
+test_identical_value_outside_qemu_is_left_for_review (test_evidence_host_command_templates.evidence_host_command_tests.test_identical_value_outside_qemu_is_left_for_review) ... ok
+test_only_reviewed_host_log_gets_temp_template (test_evidence_host_command_templates.evidence_host_command_tests.test_only_reviewed_host_log_gets_temp_template) ... ok
+test_qemu_temp_is_templated_but_guest_temp_is_preserved (test_evidence_host_command_templates.evidence_host_command_tests.test_qemu_temp_is_templated_but_guest_temp_is_preserved) ... ok
+test_reviewed_archive_argument_is_templated (test_evidence_host_command_templates.evidence_host_command_tests.test_reviewed_archive_argument_is_templated) ... ok
+test_reviewed_document_template_preserves_markdown_delimiters (test_evidence_host_command_templates.evidence_host_command_tests.test_reviewed_document_template_preserves_markdown_delimiters) ... ok
+test_reviewed_host_environment_is_scoped_to_exact_evidence (test_evidence_host_command_templates.evidence_host_command_tests.test_reviewed_host_environment_is_scoped_to_exact_evidence) ... ok
+test_reviewed_host_error_does_not_change_guest_value (test_evidence_host_command_templates.evidence_host_command_tests.test_reviewed_host_error_does_not_change_guest_value) ... ok
+test_same_temp_root_outside_qemu_preserves_guest_value (test_evidence_host_command_templates.evidence_host_command_tests.test_same_temp_root_outside_qemu_preserves_guest_value) ... ok
+test_archive_owner_metadata_and_json_escapes (test_public_evidence_paths.public_path_tests.test_archive_owner_metadata_and_json_escapes) ... ok
+test_bare_temp_segment_is_doubtful_and_host_temp_is_open (test_public_evidence_paths.public_path_tests.test_bare_temp_segment_is_doubtful_and_host_temp_is_open) ... ok
+test_commit_delta_scans_committed_changes_and_not_inherited_history (test_public_evidence_paths.public_path_tests.test_commit_delta_scans_committed_changes_and_not_inherited_history) ... ok
+test_identity_gate_rejects_empty_and_hides_mixed_case_names (test_public_evidence_paths.public_path_tests.test_identity_gate_rejects_empty_and_hides_mixed_case_names) ... ok
+test_index_reads_staged_blob_not_worktree (test_public_evidence_paths.public_path_tests.test_index_reads_staged_blob_not_worktree) ... ok
+test_nested_zip_gzip_tar_member_content_name_and_link (test_public_evidence_paths.public_path_tests.test_nested_zip_gzip_tar_member_content_name_and_link) ... ok
+test_private_paths_in_markdown_json_binary_and_utf16 (test_public_evidence_paths.public_path_tests.test_private_paths_in_markdown_json_binary_and_utf16) ... ok
+test_public_serialization_uses_known_roots_and_rejects_unknown (test_public_evidence_paths.public_path_tests.test_public_serialization_uses_known_roots_and_rejects_unknown) ... ok
+test_system_paths_are_not_personal_and_custom_commands_flagged (test_public_evidence_paths.public_path_tests.test_system_paths_are_not_personal_and_custom_commands_flagged) ... ok
+test_unreadable_and_limited_archives_are_unverified (test_public_evidence_paths.public_path_tests.test_unreadable_and_limited_archives_are_unverified) ... ok
+test_zip_symlink_target_and_member_name (test_public_evidence_paths.public_path_tests.test_zip_symlink_target_and_member_name) ... ok
+test_exact_legacy_hygiene_index_is_scoped_and_not_broadly_allowed (test_report_manifest_check.report_manifest_tests.test_exact_legacy_hygiene_index_is_scoped_and_not_broadly_allowed) ... ok
+test_flat_manifest_rejects_changed_missing_extra_and_unsafe_files (test_report_manifest_check.report_manifest_tests.test_flat_manifest_rejects_changed_missing_extra_and_unsafe_files) ... ok
+test_known_legacy_bundle_is_grandfathered_and_scoped (test_report_manifest_check.report_manifest_tests.test_known_legacy_bundle_is_grandfathered_and_scoped) ... ok
+test_legacy_hash_corruption_and_duplicate_members_fail (test_report_manifest_check.report_manifest_tests.test_legacy_hash_corruption_and_duplicate_members_fail) ... ok
+test_symlink_and_duplicate_json_keys_fail (test_report_manifest_check.report_manifest_tests.test_symlink_and_duplicate_json_keys_fail) ... ok
+test_unknown_legacy_shape_is_not_whitelisted (test_report_manifest_check.report_manifest_tests.test_unknown_legacy_shape_is_not_whitelisted) ... ok
+test_exact_source_identical_guest_data_is_reviewed (test_review_evidence_guest_findings.guest_finding_review_tests.test_exact_source_identical_guest_data_is_reviewed) ... ok
+test_guest_data_tampering_fails_even_after_hash_update (test_review_evidence_guest_findings.guest_finding_review_tests.test_guest_data_tampering_fails_even_after_hash_update) ... ok
+test_private_path_category_cannot_be_approved (test_review_evidence_guest_findings.guest_finding_review_tests.test_private_path_category_cannot_be_approved) ... ok
+test_untemplated_host_command_is_rejected (test_review_evidence_guest_findings.guest_finding_review_tests.test_untemplated_host_command_is_rejected) ... ok
+test_cli_error_does_not_expose_checkout_path (test_verify_evidence_index.verify_evidence_index_tests.test_cli_error_does_not_expose_checkout_path) ... ok
+test_current_index_can_verify_files_from_historical_commit (test_verify_evidence_index.verify_evidence_index_tests.test_current_index_can_verify_files_from_historical_commit) ... ok
+test_empty_malformed_and_duplicate_indexes_fail_closed (test_verify_evidence_index.verify_evidence_index_tests.test_empty_malformed_and_duplicate_indexes_fail_closed) ... ok
+test_historical_commit_is_independent_of_changed_checkout (test_verify_evidence_index.verify_evidence_index_tests.test_historical_commit_is_independent_of_changed_checkout) ... ok
+test_json_named_sha256sums_is_parsed_as_json (test_verify_evidence_index.verify_evidence_index_tests.test_json_named_sha256sums_is_parsed_as_json) ... ok
+test_legacy_index_can_name_json_files_without_suffix (test_verify_evidence_index.verify_evidence_index_tests.test_legacy_index_can_name_json_files_without_suffix) ... ok
+test_mismatch_and_missing_do_not_pass (test_verify_evidence_index.verify_evidence_index_tests.test_mismatch_and_missing_do_not_pass) ... ok
+test_repository_relative_index_entries (test_verify_evidence_index.verify_evidence_index_tests.test_repository_relative_index_entries) ... ok
+test_sha256sums (test_verify_evidence_index.verify_evidence_index_tests.test_sha256sums) ... ok
+test_size_mismatch_and_invalid_size_fail (test_verify_evidence_index.verify_evidence_index_tests.test_size_mismatch_and_invalid_size_fail) ... ok
+test_symlinks_are_rejected (test_verify_evidence_index.verify_evidence_index_tests.test_symlinks_are_rejected) ... ok
+test_valid_json_and_evidence_sha256 (test_verify_evidence_index.verify_evidence_index_tests.test_valid_json_and_evidence_sha256) ... ok
+test_guest_tmp_change_is_rejected_even_if_hashes_are_updated (test_verify_evidence_migration.evidence_migration_tests.test_guest_tmp_change_is_rejected_even_if_hashes_are_updated) ... ok
+test_host_document_notice_does_not_change_guest_text (test_verify_evidence_migration.evidence_migration_tests.test_host_document_notice_does_not_change_guest_text) ... ok
+test_index_input_metadata_cannot_be_rebound (test_verify_evidence_migration.evidence_migration_tests.test_index_input_metadata_cannot_be_rebound) ... ok
+test_source_and_export_are_both_bound_to_git (test_verify_evidence_migration.evidence_migration_tests.test_source_and_export_are_both_bound_to_git) ... ok
+test_unlisted_archive_member_change_is_rejected (test_verify_evidence_migration.evidence_migration_tests.test_unlisted_archive_member_change_is_rejected) ... ok
+test_wrong_source_and_unlisted_leaf_fail (test_verify_evidence_migration.evidence_migration_tests.test_wrong_source_and_unlisted_leaf_fail) ... ok
+test_failed_build_leaves_no_output (test_xos_bundle.BundleCli.test_failed_build_leaves_no_output) ... ok
+test_invalid_manifest_is_rejected_without_traceback (test_xos_bundle.BundleCli.test_invalid_manifest_is_rejected_without_traceback) ... ok
+test_build_rejects_unknown_type (test_xos_bundle.BundlePaddingAndNames.test_build_rejects_unknown_type) ... ok
+test_case_insensitive_duplicate_names (test_xos_bundle.BundlePaddingAndNames.test_case_insensitive_duplicate_names) ... ok
+test_name_must_be_single_fat_filename (test_xos_bundle.BundlePaddingAndNames.test_name_must_be_single_fat_filename) ... ok
+test_nonzero_inter_member_padding (test_xos_bundle.BundlePaddingAndNames.test_nonzero_inter_member_padding) ... ok
+test_nonzero_trailing_padding (test_xos_bundle.BundlePaddingAndNames.test_nonzero_trailing_padding) ... ok
+test_parse_rejects_backslash_name (test_xos_bundle.BundlePaddingAndNames.test_parse_rejects_backslash_name) ... ok
+test_parse_rejects_non_compact_names (test_xos_bundle.BundlePaddingAndNames.test_parse_rejects_non_compact_names) ... ok
+test_parse_rejects_unused_name_tail (test_xos_bundle.BundlePaddingAndNames.test_parse_rejects_unused_name_tail) ... ok
+test_tool_name_collides_with_dash_target (test_xos_bundle.BundlePaddingAndNames.test_tool_name_collides_with_dash_target) ... ok
+test_bad_magic (test_xos_bundle.BundleReject.test_bad_magic) ... ok
+test_bad_version (test_xos_bundle.BundleReject.test_bad_version) ... ok
+test_elf_magic_required (test_xos_bundle.BundleReject.test_elf_magic_required) ... ok
+test_hash_mismatch (test_xos_bundle.BundleReject.test_hash_mismatch) ... ok
+test_real_xpk_magic (test_xos_bundle.BundleReject.test_real_xpk_magic) ... skipped 'no idna xpk on disk'
+test_reserved_nonzero (test_xos_bundle.BundleReject.test_reserved_nonzero) ... ok
+test_total_mismatch (test_xos_bundle.BundleReject.test_total_mismatch) ... ok
+test_truncated (test_xos_bundle.BundleReject.test_truncated) ... ok
+test_build_parse_dash_only (test_xos_bundle.BundleRoundTrip.test_build_parse_dash_only) ... ok
+test_full_trio (test_xos_bundle.BundleRoundTrip.test_full_trio) ... ok
+test_reject_duplicate_daily (test_xos_bundle.BundleRoundTrip.test_reject_duplicate_daily) ... ok
+test_reject_missing_dash (test_xos_bundle.BundleRoundTrip.test_reject_missing_dash) ... ok
+test_total_within_budget (test_xos_bundle.BundleRoundTrip.test_total_within_budget) ... ok
+test_parse_rejects_non_elf_tool (test_xos_bundle.BundleToolElf.test_parse_rejects_non_elf_tool) ... ok
+test_tool_elf_roundtrip (test_xos_bundle.BundleToolElf.test_tool_elf_roundtrip) ... ok
+test_tool_must_be_elf (test_xos_bundle.BundleToolElf.test_tool_must_be_elf) ... ok
+test_feature_mismatch_is_separate_from_profile_mismatch (xypm_profile_errors.ProfileErrorTests.test_feature_mismatch_is_separate_from_profile_mismatch) ... ok
+test_local_profile_cannot_satisfy_b2_package (xypm_profile_errors.ProfileErrorTests.test_local_profile_cannot_satisfy_b2_package) ... ok
+test_profile_hint_is_resolved_from_config (xypm_profile_errors.ProfileErrorTests.test_profile_hint_is_resolved_from_config) ... ok
+
+======================================================================
+ERROR: test_real_c_cpp_project_outside_repository (package_p0_cases.IndependentBuildCases.test_real_c_cpp_project_outside_repository)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "${XOS_ROOT}/tests/package_p0_cases.py", line 158, in test_real_c_cpp_project_outside_repository
+    result=build(project,SDK,PROFILE)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "${XOS_ROOT}/scripts/xos_app.py", line 103, in build
+    sdk = Path(sdk).resolve(strict=True)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "${PYTHON_RUNTIME}/lib/python3.12/pathlib.py", line 1240, in resolve
+    s = self._flavour.realpath(self, strict=strict)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen posixpath>", line 424, in realpath
+  File "<frozen posixpath>", line 468, in _joinrealpath
+FileNotFoundError: [Errno 2] No such file or directory: '${XOS_ROOT}/build/releases/0.0.1-1024'
+
+======================================================================
+ERROR: test_sdk_binding_and_init_refusal (package_p0_cases.IndependentBuildCases.test_sdk_binding_and_init_refusal)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "${XOS_ROOT}/tests/package_p0_cases.py", line 193, in test_sdk_binding_and_init_refusal
+    with self.assertRaises(PackageError):sdk_check(SDK,profile)
+                                         ^^^^^^^^^^^^^^^^^^^^^^
+  File "${XOS_ROOT}/scripts/xos_app.py", line 36, in sdk_check
+    sdk = Path(sdk).resolve(strict=True)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "${PYTHON_RUNTIME}/lib/python3.12/pathlib.py", line 1240, in resolve
+    s = self._flavour.realpath(self, strict=strict)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen posixpath>", line 424, in realpath
+  File "<frozen posixpath>", line 468, in _joinrealpath
+FileNotFoundError: [Errno 2] No such file or directory: '${XOS_ROOT}/build/releases/0.0.1-1024'
+
+----------------------------------------------------------------------
+Ran 256 tests in 4.514s
+
+FAILED (errors=2, skipped=1)
+
+===== file_semantics_final.log =====
+FILE_SEMANTICS_CASES_PASSED=25
+
+===== file_recovery_faults_final.log =====
+RECOVERY_CASES_PASSED=21
+
+===== libc_startup_host_final.log =====
+LIBC_STARTUP_CASES_PASSED=15
+execvp path case 0: ok (opens=1, errno=2)
+execvp path case 1: ok (opens=1, errno=2)
+execvp path case 2: ok (opens=1, errno=2)
+execvp path case 3: ok (opens=0, errno=91)
+execvp path case 4: ok (opens=1, errno=2)
+execvp path case 5: ok (opens=2, errno=2)
+LIBC_EXECVP_CASES_PASSED=6
+
+===== cpp_abi_output_test_final.log =====
+PASS C++ ABI build/smoke output: SDK/runtime remain immutable after rejected output paths
+
+===== archive_member_map_test_final.log =====
+..............
+----------------------------------------------------------------------
+Ran 14 tests in 0.093s
+
+OK
+
+===== adventure_readline_test_final.log =====
+PASS Adventure readline: empty EOF, partial line EOF, newline and subsequent EOF
+
+===== dash_pipeline_fds_test_final.log =====
+PASS dash pipeline: stdin/stdout open or closed, pipe content and descriptor restoration
+
+===== kernel_process_wait_race_test_final.log =====
+PASS process wait: pending duplicate, ready owner, cross-page pin, delivery, single consumption
+
+===== build_newlib_cache_test_final.log =====
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.145s
+
+OK
+
+===== binutils_stress_exit_test_final.log =====
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+
+===== supervisor_host.log =====
+audio service launch retains arguments and delegation: ok
+audio service launch closes stdio: ok
+new audio service reports success: ok
+running audio service reports success without respawn: ok
+audio service launch retains arguments and delegation: ok
+audio service launch closes stdio: ok
+failed audio launch preserves error: ok
+failed audio launch backs off: ok
+audio service launch retains arguments and delegation: ok
+audio service launch closes stdio: ok
+forced audio restart reports success: ok
+worker publish error prevents launch: ok
+type recognizes display-start: ok
+type recognizes interactium-start: ok
+type still resolves external names: ok
+SUPERVISOR_CASES_PASSED=9
+
+===== interactium_demo_host.log =====
+demo input case 0: ok
+demo input case 1: ok
+demo input case 2: ok
+demo input case 3: ok
+INTERACTIUM_DEMO_CASES_PASSED=4
+
+===== file_ui_terminal_host.log =====
+editor recovery case 0: ok
+editor recovery case 1: ok
+editor recovery case 2: ok
+FILE_UI_TERMINAL_CASES_PASSED=3
+
+===== sqlite_vfs_paths.log =====
+PASS SQLite VFS: canonical paths, alias locks, released locks, journal after cwd change
+
+===== make_build.log =====
+python3 scripts/build.py
+NASM not found; install it or set NASM=/path/to/nasm
+make: *** [Makefile:9: build] Error 1
+
+===== unicode_width_consistency.log =====
+usage: unicode_width_consistency.py [-h] archive
+unicode_width_consistency.py: error: the following arguments are required: archive
+
+===== fb2_symbolize_test.log =====
+Traceback (most recent call last):
+  File "${XOS_ROOT}/tests/fb2_symbolize_test.py", line 53, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "${XOS_ROOT}/tests/fb2_symbolize_test.py", line 15, in main
+    source=json.loads((acceptance/'report.json').read_text())
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "${PYTHON_RUNTIME}/lib/python3.12/pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "${PYTHON_RUNTIME}/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '${XOS_ROOT}/build/fb12/acceptance/report.json'
+
+===== kernel host object record =====
+Host-only compilation using repository flags, generated image DECLARATIONS only. No bootable image, cross-compiler audit, link, NASM, QEMU, or guest qualification.
+PASS host-g++ object compile probe=0 src/kernel/arch/x86_64/cpu.cpp
+PASS host-g++ object compile probe=0 src/kernel/arch/x86_64/exceptions.cpp
+PASS host-g++ object compile probe=0 src/kernel/arch/x86_64/paging.cpp
+PASS host-g++ object compile probe=0 src/kernel/arch/x86_64/tasks.cpp
+PASS host-g++ object compile probe=0 src/kernel/core/boot_info.cpp
+PASS host-g++ object compile probe=0 src/kernel/core/clock.cpp
+PASS host-g++ object compile probe=0 src/kernel/core/console.cpp
+PASS host-g++ object compile probe=0 src/kernel/core/cow1_self_check.cpp
+PASS host-g++ object compile probe=0 src/kernel/core/kernel_main.cpp
+PASS host-g++ object compile probe=0 src/kernel/core/memory.cpp
+PASS host-g++ object compile probe=0 src/kernel/core/panic.cpp
+PASS host-g++ object compile probe=0 src/kernel/core/self_check.cpp
+PASS host-g++ object compile probe=0 src/kernel/platform/pc/ata.cpp
+PASS host-g++ object compile probe=0 src/kernel/platform/pc/debug_console.cpp
+PASS host-g++ object compile probe=0 src/kernel/platform/pc/display.cpp
+PASS host-g++ object compile probe=0 src/kernel/platform/pc/interrupts.cpp
+PASS host-g++ object compile probe=0 src/kernel/platform/pc/pci.cpp
+PASS host-g++ object compile probe=0 src/kernel/platform/pc/ps2.cpp
+PASS host-g++ object compile probe=0 src/kernel/platform/pc/rtc.cpp
+PASS host-g++ object compile probe=0 src/kernel/platform/pc/speaker.cpp
+PASS host-g++ object compile probe=0 src/kernel/platform/pc/virtio_gpu.cpp
+PASS host-g++ object compile probe=0 src/shared/runtime/memory.cpp
+PASS host-g++ object compile probe=1 src/kernel/arch/x86_64/tasks.cpp
+PASS host-g++ object compile probe=1 src/kernel/arch/x86_64/paging.cpp
+PASS host-g++ object compile probe=1 src/kernel/core/cow1_self_check.cpp
+
+Compiler label correction: earlier g++12 tags were a recording error, not an explicitly selected compiler. Compilation invoked g++ from PATH. Current resolved executable: /usr/bin/x86_64-linux-gnu-g++-14; current --version: g++ (Debian 14.2.0-19) 14.2.0. The original object run did not separately record its version output.

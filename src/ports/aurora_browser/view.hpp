@@ -271,7 +271,9 @@ public:
     void set_caption(const char *s)override{caption=QString::fromUtf8(s).left(128);std::printf("BROWSER_TITLE %s\n",caption.toUtf8().constData());}
     void set_base_url(const char*)override{} // HTML <base> is outside admitted tags.
     void link(const litehtml::document::ptr&,const litehtml::element::ptr&)override{}
-    void on_anchor_click(const char *url,const litehtml::element::ptr&)override{auto target=resolve(QString::fromUtf8(url),page);std::printf("BROWSER_LINK target=%s\n",target.toUtf8().constData());if(navigate)QTimer::singleShot(0,this,[this,target]{navigate(target);});}
+    void on_anchor_click(const char *url,const litehtml::element::ptr&)override{const auto href=QString::fromUtf8(url);auto target=resolve(href,page);std::printf("BROWSER_LINK target=%s\n",target.toUtf8().constData());
+        // Keep a rejected URL distinct from an intentional empty/current-page link.
+        if(navigate)QTimer::singleShot(0,this,[this,href]{navigate(href);});}
     void set_cursor(const char *s)override{viewport()->setCursor(QByteArray(s)=="pointer"?Qt::PointingHandCursor:Qt::ArrowCursor);}
     void transform_text(litehtml::string &s,litehtml::text_transform type)override{auto q=QString::fromUtf8(s.c_str());if(type==litehtml::text_transform_uppercase)q=q.toUpper();else if(type==litehtml::text_transform_lowercase)q=q.toLower();s=q.toUtf8().constData();}
     void import_css(litehtml::string &text,const litehtml::string &url,litehtml::string &base)override {text.clear();if(++imports>8)throw std::runtime_error("CSS quota");auto path=resource(url.c_str(),base.c_str());QByteArray bytes;QString error;if(path.isEmpty()||!path.endsWith(".css")||!read(path,bytes,8192,error)||!css_allowed(bytes)){std::printf("BROWSER_RESOURCE_REJECT css\n");throw std::runtime_error("stylesheet rejected");}std::printf("BROWSER_CSS_LOADED path=%s bytes=%d\n",path.toUtf8().constData(),int(bytes.size()));text.assign(bytes.constData(),bytes.size());base=path.toUtf8().constData();}

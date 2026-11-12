@@ -25,7 +25,7 @@ report = {'status': 'FAILED', 'image_sha256': hashlib.sha256(a.image.read_bytes(
 try:
     with tempfile.TemporaryDirectory(prefix='xos_qt_persist_') as temp:
         disk = Path(temp) / 'work.img'
-        image = Path(temp) / 'boot.img'
+        image = Path(temp) / ('boot' + a.image.suffix)
         shutil.copyfile(a.image, image)
         create_fat32(disk, 512)
         transfer(disk, 'mkdir', '/bin')

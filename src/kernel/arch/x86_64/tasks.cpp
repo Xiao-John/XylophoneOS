@@ -173,7 +173,9 @@ struct thread_record : thread_lifetime {
     u32 ipc_v1_phase;
     u32 ipc_v1_reply_consumed;
     u32 ipc_v1_wait_action;
+    u32 ipc_v1_event_count;
     u8 ipc_v1_payload[ipc_v1_max_message_bytes];
+    ipc_v1_wait_event ipc_v1_events[ipc_v1_max_wait_set_sources];
     alignas(16) u8 fpu_state[512];
 };
 
@@ -186,6 +188,20 @@ struct ipc_v1_handle_record {
     u64 value;
     u64 holder_pid;
     u64 badge;
+};
+struct ipc_v1_notification_record { bool used; u64 pending_bits; };
+struct ipc_v1_notification_handle_record {
+    bool used; u32 object_slot; u32 rights; u64 value; u64 holder_pid; u64 badge;
+};
+struct ipc_v1_wait_set_source_record {
+    bool used; bool closed; u32 source_id; u32 source_kind; u32 object_slot;
+};
+struct ipc_v1_wait_set_record {
+    bool used; u32 next_source_id;
+    ipc_v1_wait_set_source_record sources[ipc_v1_max_wait_set_sources];
+};
+struct ipc_v1_wait_set_handle_record {
+    bool used; u32 object_slot; u32 rights; u64 value; u64 holder_pid; u64 badge;
 };
 struct ipc_v1_call_record {
     ipc_v1_call_state state;
@@ -270,6 +286,12 @@ thread_record threads[thread_max_total];
 ipc_v1_endpoint_record ipc_v1_endpoints[ipc_v1_max_endpoints_system];
 ipc_v1_handle_record ipc_v1_handles[ipc_v1_max_endpoints_system * ipc_v1_max_handles_per_process];
 ipc_v1_call_record ipc_v1_calls[ipc_v1_max_pending_calls];
+ipc_v1_notification_record ipc_v1_notifications[ipc_v1_max_notifications_system];
+ipc_v1_notification_handle_record ipc_v1_notification_handles[
+    ipc_v1_max_notifications_system * ipc_v1_max_handles_per_process];
+ipc_v1_wait_set_record ipc_v1_wait_sets[ipc_v1_max_wait_sets_system];
+ipc_v1_wait_set_handle_record ipc_v1_wait_set_handles[
+    ipc_v1_max_wait_sets_system * ipc_v1_max_handles_per_process];
 u64 ipc_v1_next_handle = 1;
 u64 ipc_v1_next_reply_token = 1;
 u64 ipc_v1_next_wait_order = 1;
@@ -314,6 +336,8 @@ u64 irq_owner, irq_token, irq_next_token = 1, irq_sequence;
 bool irq_pending, irq_quarantined;
 void ready_with(thread_record& thread, i64 result);
 void ipc_v1_revoke_process(u64 pid);
+void ipc_v1_notify_wait_sets();
+u32 ipc_v1_consume_wait_set(u32 object_slot, ipc_v1_wait_event* output, u32 capacity);
 
 void wake_irq_waiters(i64 result) {
     for (auto& thread : threads) {
@@ -1327,6 +1351,39 @@ bool cancel_foreground() {
 }
 
 void deliver_wait(thread_record* thread, interrupt_frame* frame) {
+    if (thread->wait_kind == thread_wait_kind::ipc_v1_wait_set) {
+        ipc_v1_wait_set_wait request{};
+        const u32 count = frame->rax == 0 ? thread->ipc_v1_event_count :
+            (frame->rax == static_cast<u64>(ipc_v1_error::buffer_too_small) ? thread->ipc_v1_event_count : 0);
+        if (frame->rax == 0 && count == 0) { frame->rax = static_cast<u64>(ipc_v1_error::would_block); }
+        if (user_range_ok(thread->ipc_v1_request_address, sizeof(request), true)) {
+            copy_from_user(&request, thread->ipc_v1_request_address, sizeof(request));
+            request.count_out = count;
+            copy_to_user(thread->ipc_v1_request_address, &request, sizeof(request));
+            if (frame->rax == 0 && count != 0) {
+                copy_to_user(thread->ipc_v1_payload_address, thread->ipc_v1_events,
+                             static_cast<u64>(count) * sizeof(ipc_v1_wait_event));
+            }
+        } else { frame->rax = static_cast<u64>(ipc_v1_error::address); }
+        for (auto& pin : thread->ipc_v1_pins) { pin.clear(); }
+        thread->ipc_v1_request_address = thread->ipc_v1_payload_address = 0;
+        thread->ipc_v1_payload_capacity = thread->ipc_v1_event_count = 0;
+        thread->wait_kind = thread_wait_kind::none;
+        return;
+    }
+    if (thread->wait_kind == thread_wait_kind::ipc_v1_notification) {
+        ipc_v1_notification_wait request{};
+        if (user_range_ok(thread->ipc_v1_request_address, sizeof(request), true)) {
+            copy_from_user(&request, thread->ipc_v1_request_address, sizeof(request));
+            request.bits_out = frame->rax == 0 ? thread->ipc_v1_label : 0;
+            copy_to_user(thread->ipc_v1_request_address, &request, sizeof(request));
+        } else { frame->rax = static_cast<u64>(ipc_v1_error::address); }
+        for (auto& pin : thread->ipc_v1_pins) { pin.clear(); }
+        thread->ipc_v1_request_address = 0;
+        thread->ipc_v1_label = 0;
+        thread->wait_kind = thread_wait_kind::none;
+        return;
+    }
     if (thread->wait_kind == thread_wait_kind::ipc_v1_call) {
         ipc_v1_call request{};
         const bool valid = user_range_ok(thread->ipc_v1_request_address, sizeof(request), true) &&
@@ -1812,7 +1869,9 @@ void ready_with(thread_record& thread, i64 result) {
     saved->rax = static_cast<u64>(result);
     thread.user_pin.clear();
     if (thread.wait_kind != thread_wait_kind::ipc_v1_call &&
-        thread.wait_kind != thread_wait_kind::ipc_v1_receive) {
+        thread.wait_kind != thread_wait_kind::ipc_v1_receive &&
+        thread.wait_kind != thread_wait_kind::ipc_v1_notification &&
+        thread.wait_kind != thread_wait_kind::ipc_v1_wait_set) {
         thread.wait_kind = thread_wait_kind::none;
     }
     thread.wait_target = 0;
@@ -1868,6 +1927,18 @@ void reap_threads() {
 void expire_waiters() {
     const u64 now = clock::monotonic_ns();
     for (auto& thread : threads) {
+        if (thread.state == thread_state::blocked &&
+            thread.wait_kind == thread_wait_kind::ipc_v1_notification &&
+            thread_deadline_reached(now, thread.deadline_ns)) {
+            thread.ipc_v1_label = 0;
+            ready_with(thread, static_cast<i64>(ipc_v1_error::timeout));
+            continue;
+        }
+        if (thread.state == thread_state::blocked && thread.wait_kind == thread_wait_kind::ipc_v1_wait_set &&
+            thread_deadline_reached(now, thread.deadline_ns)) {
+            ready_with(thread, static_cast<i64>(ipc_v1_error::timeout));
+            continue;
+        }
         if (thread.state == thread_state::blocked && thread.wait_kind == thread_wait_kind::ipc_v1_receive &&
             thread_deadline_reached(now, thread.deadline_ns)) {
             thread.ipc_v1_length = 0;
@@ -2294,7 +2365,168 @@ ipc_v1_handle_record* ipc_v1_handle_for(u64 value, u64 holder) {
 u32 ipc_v1_handle_count(u64 pid) {
     u32 count = 0;
     for (const auto& handle : ipc_v1_handles) { if (handle.used && handle.holder_pid == pid) { ++count; } }
+    for (const auto& handle : ipc_v1_notification_handles) {
+        if (handle.used && handle.holder_pid == pid) { ++count; }
+    }
+    for (const auto& handle : ipc_v1_wait_set_handles) {
+        if (handle.used && handle.holder_pid == pid) { ++count; }
+    }
     return count;
+}
+
+ipc_v1_notification_handle_record* ipc_v1_notification_handle_for(u64 value, u64 holder) {
+    for (auto& handle : ipc_v1_notification_handles) {
+        if (handle.used && handle.value == value && handle.holder_pid == holder) { return &handle; }
+    }
+    return nullptr;
+}
+
+ipc_v1_wait_set_handle_record* ipc_v1_wait_set_handle_for(u64 value, u64 holder) {
+    for (auto& handle : ipc_v1_wait_set_handles) {
+        if (handle.used && handle.value == value && handle.holder_pid == holder) { return &handle; }
+    }
+    return nullptr;
+}
+
+u32 ipc_v1_allocate_wait_set_handle(u32 object_slot, u64 holder, u32 rights, u64 badge) {
+    if (!ipc_v1_next_handle || ipc_v1_handle_count(holder) >= ipc_v1_max_handles_per_process) {
+        return ipc_v1_max_wait_sets_system * ipc_v1_max_handles_per_process;
+    }
+    for (u32 i = 0; i < ipc_v1_max_wait_sets_system * ipc_v1_max_handles_per_process; ++i) {
+        if (!ipc_v1_wait_set_handles[i].used) {
+            auto& handle = ipc_v1_wait_set_handles[i];
+            handle = {true, object_slot, rights, ipc_v1_next_handle++, holder, badge};
+            return i;
+        }
+    }
+    return ipc_v1_max_wait_sets_system * ipc_v1_max_handles_per_process;
+}
+
+struct ipc_v1_ready_event {
+    ipc_v1_wait_event event;
+    u32 notification_slot;
+};
+
+u32 ipc_v1_collect_wait_set(u32 object_slot, ipc_v1_ready_event* output) {
+    if (object_slot >= ipc_v1_max_wait_sets_system || !ipc_v1_wait_sets[object_slot].used) { return 0; }
+    u32 count = 0;
+    const auto& wait_set = ipc_v1_wait_sets[object_slot];
+    for (const auto& source : wait_set.sources) {
+        if (!source.used) { continue; }
+        ipc_v1_wait_event event{};
+        if (source.closed) {
+            event.kind = static_cast<u32>(ipc_v1_wait_event_kind::closed);
+        } else if (source.source_kind == static_cast<u32>(ipc_v1_wait_source::endpoint)) {
+            if (source.object_slot >= ipc_v1_max_endpoints_system || !ipc_v1_endpoints[source.object_slot].used) {
+                event.kind = static_cast<u32>(ipc_v1_wait_event_kind::closed);
+            } else {
+                bool queued = false;
+                for (const auto& call : ipc_v1_calls) {
+                    queued = queued || (call.state == ipc_v1_call_state::queued &&
+                                        call.endpoint_slot == source.object_slot);
+                }
+                if (!queued) { continue; }
+                event.kind = static_cast<u32>(ipc_v1_wait_event_kind::endpoint_ready);
+            }
+        } else if (source.source_kind == static_cast<u32>(ipc_v1_wait_source::notification)) {
+            if (source.object_slot >= ipc_v1_max_notifications_system ||
+                !ipc_v1_notifications[source.object_slot].used) {
+                event.kind = static_cast<u32>(ipc_v1_wait_event_kind::closed);
+            } else {
+                const u64 bits = ipc_v1_notifications[source.object_slot].pending_bits;
+                if (bits == 0) { continue; }
+                event.kind = static_cast<u32>(ipc_v1_wait_event_kind::notification);
+                event.value = bits;
+            }
+        } else { continue; }
+        event.source_id = source.source_id;
+        output[count].event = event;
+        output[count].notification_slot = event.kind == static_cast<u32>(ipc_v1_wait_event_kind::notification)
+            ? source.object_slot : ipc_v1_max_notifications_system;
+        ++count;
+    }
+    for (u32 i = 1; i < count; ++i) {
+        auto value = output[i];
+        u32 j = i;
+        while (j != 0 && output[j - 1].event.source_id > value.event.source_id) {
+            output[j] = output[j - 1]; --j;
+        }
+        output[j] = value;
+    }
+    return count;
+}
+
+u32 ipc_v1_consume_wait_set(u32 object_slot, ipc_v1_wait_event* output, u32 capacity) {
+    ipc_v1_ready_event ready[ipc_v1_max_wait_set_sources]{};
+    const u32 count = ipc_v1_collect_wait_set(object_slot, ready);
+    if (count > capacity) { return count; }
+    for (u32 i = 0; i < count; ++i) {
+        output[i] = ready[i].event;
+        if (ready[i].notification_slot < ipc_v1_max_notifications_system) {
+            ipc_v1_notifications[ready[i].notification_slot].pending_bits = 0;
+        }
+    }
+    return count;
+}
+
+void ipc_v1_notify_wait_sets() {
+    bool visited[thread_max_total]{};
+    for (u32 n = 0; n < thread_max_total; ++n) {
+        u32 selected = thread_max_total;
+        for (u32 i = 0; i < thread_max_total; ++i) {
+            const auto& thread = threads[i];
+            if (visited[i] || thread.state != thread_state::blocked ||
+                thread.wait_kind != thread_wait_kind::ipc_v1_wait_set) { continue; }
+            if (selected == thread_max_total || thread.wait_order < threads[selected].wait_order) { selected = i; }
+        }
+        if (selected == thread_max_total) { return; }
+        visited[selected] = true;
+        auto& thread = threads[selected];
+        ipc_v1_ready_event ready[ipc_v1_max_wait_set_sources]{};
+        const u32 count = ipc_v1_collect_wait_set(thread.ipc_v1_call_slot, ready);
+        if (count == 0) { continue; }
+        if (count > thread.ipc_v1_payload_capacity) {
+            thread.ipc_v1_event_count = count;
+            ready_with(thread, static_cast<i64>(ipc_v1_error::buffer_too_small));
+        } else {
+            thread.ipc_v1_event_count = ipc_v1_consume_wait_set(thread.ipc_v1_call_slot,
+                thread.ipc_v1_events, thread.ipc_v1_payload_capacity);
+            ready_with(thread, 0);
+        }
+    }
+}
+
+u32 ipc_v1_allocate_notification_handle(u32 object_slot, u64 holder, u32 rights, u64 badge) {
+    if (!ipc_v1_next_handle || ipc_v1_handle_count(holder) >= ipc_v1_max_handles_per_process) {
+        return ipc_v1_max_notifications_system * ipc_v1_max_handles_per_process;
+    }
+    for (u32 i = 0; i < ipc_v1_max_notifications_system * ipc_v1_max_handles_per_process; ++i) {
+        if (!ipc_v1_notification_handles[i].used) {
+            auto& handle = ipc_v1_notification_handles[i];
+            handle = {true, object_slot, rights, ipc_v1_next_handle++, holder, badge};
+            return i;
+        }
+    }
+    return ipc_v1_max_notifications_system * ipc_v1_max_handles_per_process;
+}
+
+void ipc_v1_wake_notification_waiter(u32 object_slot) {
+    if (object_slot >= ipc_v1_max_notifications_system) { return; }
+    auto& object = ipc_v1_notifications[object_slot];
+    if (!object.used || object.pending_bits == 0) { return; }
+    thread_record* waiter = nullptr;
+    for (auto& thread : threads) {
+        if (thread.state != thread_state::blocked ||
+            thread.wait_kind != thread_wait_kind::ipc_v1_notification) { continue; }
+        auto* handle = ipc_v1_notification_handle_for(thread.wait_target, thread.process->pid);
+        if (handle == nullptr || handle->object_slot != object_slot) { continue; }
+        if (waiter == nullptr || thread.wait_order < waiter->wait_order) { waiter = &thread; }
+    }
+    if (waiter != nullptr) {
+        waiter->ipc_v1_label = object.pending_bits;
+        object.pending_bits = 0;
+        ready_with(*waiter, 0);
+    }
 }
 
 u32 ipc_v1_token_count(u64 pid) {
@@ -2373,6 +2605,13 @@ void ipc_v1_wake_call(u32 slot, i64 result) {
 void ipc_v1_close_endpoint(u32 endpoint_slot, i64 result) {
     if (endpoint_slot >= ipc_v1_max_endpoints_system || !ipc_v1_endpoints[endpoint_slot].used) { return; }
     ipc_v1_endpoints[endpoint_slot].closed = true;
+    for (auto& wait_set : ipc_v1_wait_sets) {
+        if (!wait_set.used) { continue; }
+        for (auto& source : wait_set.sources) {
+            if (source.used && source.source_kind == static_cast<u32>(ipc_v1_wait_source::endpoint) &&
+                source.object_slot == endpoint_slot) { source.closed = true; }
+        }
+    }
     for (auto& handle : ipc_v1_handles) {
         if (handle.used && handle.endpoint_slot == endpoint_slot) { handle = ipc_v1_handle_record{}; }
     }
@@ -2391,10 +2630,68 @@ void ipc_v1_close_endpoint(u32 endpoint_slot, i64 result) {
         }
     }
     ipc_v1_endpoints[endpoint_slot] = ipc_v1_endpoint_record{};
+    ipc_v1_notify_wait_sets();
 }
 
 void ipc_v1_revoke_process(u64 pid) {
     expire_waiters();
+    bool had_notification[ipc_v1_max_notifications_system]{};
+    bool had_wait_set[ipc_v1_max_wait_sets_system]{};
+    for (auto& handle : ipc_v1_notification_handles) {
+        if (handle.used && handle.holder_pid == pid) {
+            if (handle.object_slot < ipc_v1_max_notifications_system) {
+                had_notification[handle.object_slot] = true;
+            }
+            handle = ipc_v1_notification_handle_record{};
+        }
+    }
+    for (auto& handle : ipc_v1_wait_set_handles) {
+        if (handle.used && handle.holder_pid == pid) {
+            if (handle.object_slot < ipc_v1_max_wait_sets_system) { had_wait_set[handle.object_slot] = true; }
+            handle = ipc_v1_wait_set_handle_record{};
+        }
+    }
+    for (u32 slot = 0; slot < ipc_v1_max_wait_sets_system; ++slot) {
+        if (!had_wait_set[slot] || !ipc_v1_wait_sets[slot].used) { continue; }
+        bool remains = false;
+        for (const auto& handle : ipc_v1_wait_set_handles) {
+            remains = remains || (handle.used && handle.object_slot == slot);
+        }
+        if (!remains) {
+            ipc_v1_wait_sets[slot] = ipc_v1_wait_set_record{};
+            for (auto& thread : threads) {
+                if (thread.state == thread_state::blocked &&
+                    thread.wait_kind == thread_wait_kind::ipc_v1_wait_set && thread.ipc_v1_call_slot == slot) {
+                    ready_with(thread, static_cast<i64>(ipc_v1_error::closed));
+                }
+            }
+        }
+    }
+    for (u32 slot = 0; slot < ipc_v1_max_notifications_system; ++slot) {
+        if (!had_notification[slot] || !ipc_v1_notifications[slot].used) { continue; }
+        bool remains = false;
+        for (const auto& handle : ipc_v1_notification_handles) {
+            remains = remains || (handle.used && handle.object_slot == slot);
+        }
+        if (!remains) {
+            ipc_v1_notifications[slot] = ipc_v1_notification_record{};
+            for (auto& wait_set : ipc_v1_wait_sets) {
+                for (auto& source : wait_set.sources) {
+                    if (source.used && source.source_kind == static_cast<u32>(ipc_v1_wait_source::notification) &&
+                        source.object_slot == slot) { source.closed = true; }
+                }
+            }
+            for (auto& thread : threads) {
+                if (thread.state == thread_state::blocked &&
+                    thread.wait_kind == thread_wait_kind::ipc_v1_notification &&
+                    thread.ipc_v1_call_slot == slot) {
+                    thread.ipc_v1_label = 0;
+                    ready_with(thread, static_cast<i64>(ipc_v1_error::closed));
+                }
+            }
+            ipc_v1_notify_wait_sets();
+        }
+    }
     bool had_handle[ipc_v1_max_endpoints_system]{};
     bool had_receiver[ipc_v1_max_endpoints_system]{};
     for (const auto& handle : ipc_v1_handles) {
@@ -2468,6 +2765,7 @@ bool ipc_v1_deliver_to_waiter(u32 call_slot) {
     waiter->ipc_v1_token = call.reply_token; waiter->ipc_v1_call_slot = call_slot;
     copy_bytes(waiter->ipc_v1_payload, call.payload, call.payload_length);
     ready_with(*waiter, 0);
+    ipc_v1_notify_wait_sets();
     return true;
 }
 
@@ -2623,6 +2921,377 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
         } else { ipc_v1_close_endpoint(handle->endpoint_slot, static_cast<i64>(ipc_v1_error::closed)); result = 0; }
         frame->rax = static_cast<u64>(result); return frame;
     }
+    if (action == static_cast<u64>(ipc_v1_action::notification_create) ||
+        action == static_cast<u64>(ipc_v1_action::wait_set_create)) {
+        ipc_v1_object_create request{};
+        if ((address & 7u) != 0 || !user_range_ok(address, sizeof(request), false) ||
+            !user_range_ok(address, sizeof(request), true)) {
+            frame->rax = static_cast<u64>(ipc_v1_error::address); return frame;
+        }
+        copy_from_user(&request, address, sizeof(request));
+        const bool notification = action == static_cast<u64>(ipc_v1_action::notification_create);
+        const u32 rights_mask = notification ? ipc_v1_notification_right_all : ipc_v1_wait_set_right_all;
+        if (request.header.version != ipc_v1_version) { result = static_cast<i64>(ipc_v1_error::unsupported); }
+        else if (!ipc_v1_header_valid(request.header, sizeof(request)) || request.flags != 0 ||
+                 request.handle_out != 0 || request.reserved[0] != 0 || request.reserved[1] != 0 ||
+                 request.rights == 0 || (request.rights & ~rights_mask) != 0) {
+            result = static_cast<i64>(ipc_v1_error::invalid_argument);
+        } else if (current == nullptr || current->closing) { result = static_cast<i64>(ipc_v1_error::state); }
+        else if (!notification) {
+            u32 object_slot = ipc_v1_max_wait_sets_system;
+            for (u32 i = 0; i < ipc_v1_max_wait_sets_system; ++i) {
+                if (!ipc_v1_wait_sets[i].used) { object_slot = i; break; }
+            }
+            if (object_slot == ipc_v1_max_wait_sets_system) { result = static_cast<i64>(ipc_v1_error::resources); }
+            else {
+                ipc_v1_wait_sets[object_slot] = ipc_v1_wait_set_record{true, 1, {}};
+                const u32 slot = ipc_v1_allocate_wait_set_handle(object_slot, current->pid, request.rights, 0);
+                if (slot == ipc_v1_max_wait_sets_system * ipc_v1_max_handles_per_process) {
+                    ipc_v1_wait_sets[object_slot] = ipc_v1_wait_set_record{};
+                    result = static_cast<i64>(ipc_v1_error::resources);
+                } else {
+                    request.handle_out = ipc_v1_wait_set_handles[slot].value;
+                    copy_to_user(address, &request, sizeof(request)); result = 0;
+                }
+            }
+        }
+        else {
+            u32 object_slot = ipc_v1_max_notifications_system;
+            for (u32 i = 0; i < ipc_v1_max_notifications_system; ++i) {
+                if (!ipc_v1_notifications[i].used) { object_slot = i; break; }
+            }
+            if (object_slot == ipc_v1_max_notifications_system) { result = static_cast<i64>(ipc_v1_error::resources); }
+            else {
+                ipc_v1_notifications[object_slot] = {true, 0};
+                const u32 slot = ipc_v1_allocate_notification_handle(object_slot, current->pid, request.rights, 0);
+                if (slot == ipc_v1_max_notifications_system * ipc_v1_max_handles_per_process) {
+                    ipc_v1_notifications[object_slot] = ipc_v1_notification_record{};
+                    result = static_cast<i64>(ipc_v1_error::resources);
+                } else {
+                    request.handle_out = ipc_v1_notification_handles[slot].value;
+                    copy_to_user(address, &request, sizeof(request)); result = 0;
+                }
+            }
+        }
+        frame->rax = static_cast<u64>(result); return frame;
+    }
+    if (action == static_cast<u64>(ipc_v1_action::notification_delegate) ||
+        action == static_cast<u64>(ipc_v1_action::wait_set_delegate)) {
+        ipc_v1_object_delegate request{};
+        if ((address & 7u) != 0 || !user_range_ok(address, sizeof(request), false) ||
+            !user_range_ok(address, sizeof(request), true)) {
+            frame->rax = static_cast<u64>(ipc_v1_error::address); return frame;
+        }
+        copy_from_user(&request, address, sizeof(request));
+        const bool notification = action == static_cast<u64>(ipc_v1_action::notification_delegate);
+        auto* notification_source = notification ? ipc_v1_notification_handle_for(request.handle, current->pid) : nullptr;
+        auto* wait_set_source = notification ? nullptr : ipc_v1_wait_set_handle_for(request.handle, current->pid);
+        const u32 rights_mask = notification ? ipc_v1_notification_right_all : ipc_v1_wait_set_right_all;
+        if (request.header.version != ipc_v1_version) { result = static_cast<i64>(ipc_v1_error::unsupported); }
+        else if (!ipc_v1_header_valid(request.header, sizeof(request)) || request.flags != 0 ||
+                 request.handle_out != 0 || request.reserved[0] != 0 || request.reserved[1] != 0 ||
+                 request.target_pid == 0 || request.rights == 0 || (request.rights & ~rights_mask) != 0) {
+            result = static_cast<i64>(ipc_v1_error::invalid_argument);
+        } else if ((notification && notification_source == nullptr) || (!notification && wait_set_source == nullptr)) {
+            result = static_cast<i64>(ipc_v1_error::invalid_handle);
+        } else if (notification
+            ? ((notification_source->rights & static_cast<u32>(ipc_v1_notification_right::delegate)) == 0 ||
+               (request.rights & ~notification_source->rights) != 0)
+            : ((wait_set_source->rights & static_cast<u32>(ipc_v1_wait_set_right::delegate)) == 0 ||
+               (request.rights & ~wait_set_source->rights) != 0)) { result = static_cast<i64>(ipc_v1_error::denied); }
+        else if (task_by_pid(request.target_pid) == nullptr || task_by_pid(request.target_pid)->closing ||
+                 task_by_pid(request.target_pid)->state == task_state::dead ||
+                 task_by_pid(request.target_pid)->state == task_state::building) {
+            result = static_cast<i64>(ipc_v1_error::invalid_argument);
+        } else {
+            if (notification) {
+                const u32 slot = ipc_v1_allocate_notification_handle(notification_source->object_slot,
+                                                                      request.target_pid, request.rights, request.badge);
+                if (slot == ipc_v1_max_notifications_system * ipc_v1_max_handles_per_process) {
+                    result = static_cast<i64>(ipc_v1_error::resources);
+                } else { request.handle_out = ipc_v1_notification_handles[slot].value;
+                    copy_to_user(address, &request, sizeof(request)); result = 0; }
+            } else {
+                const u32 slot = ipc_v1_allocate_wait_set_handle(wait_set_source->object_slot,
+                                                                  request.target_pid, request.rights, request.badge);
+                if (slot == ipc_v1_max_wait_sets_system * ipc_v1_max_handles_per_process) {
+                    result = static_cast<i64>(ipc_v1_error::resources);
+                } else { request.handle_out = ipc_v1_wait_set_handles[slot].value;
+                    copy_to_user(address, &request, sizeof(request)); result = 0; }
+            }
+        }
+        frame->rax = static_cast<u64>(result); return frame;
+    }
+    if (action == static_cast<u64>(ipc_v1_action::notification_signal)) {
+        ipc_v1_notification_signal request{};
+        if ((address & 7u) != 0 || !user_range_ok(address, sizeof(request), false)) {
+            frame->rax = static_cast<u64>(ipc_v1_error::address); return frame;
+        }
+        copy_from_user(&request, address, sizeof(request));
+        auto* handle = ipc_v1_notification_handle_for(request.handle, current->pid);
+        if (request.header.version != ipc_v1_version) { result = static_cast<i64>(ipc_v1_error::unsupported); }
+        else if (!ipc_v1_header_valid(request.header, sizeof(request)) || request.reserved[0] != 0 ||
+                 request.reserved[1] != 0) { result = static_cast<i64>(ipc_v1_error::invalid_argument); }
+        else if (handle == nullptr) { result = static_cast<i64>(ipc_v1_error::invalid_handle); }
+        else if ((handle->rights & static_cast<u32>(ipc_v1_notification_right::signal)) == 0) {
+            result = static_cast<i64>(ipc_v1_error::denied);
+        } else {
+            auto& object = ipc_v1_notifications[handle->object_slot];
+            if (!object.used) { result = static_cast<i64>(ipc_v1_error::closed); }
+            else {
+                object.pending_bits |= handle->badge;
+                ipc_v1_wake_notification_waiter(handle->object_slot);
+                ipc_v1_notify_wait_sets();
+                result = 0;
+            }
+        }
+        frame->rax = static_cast<u64>(result); return frame;
+    }
+    if (action == static_cast<u64>(ipc_v1_action::wait_set_add)) {
+        ipc_v1_wait_set_add request{};
+        if ((address & 7u) != 0 || !user_range_ok(address, sizeof(request), false) ||
+            !user_range_ok(address, sizeof(request), true)) {
+            frame->rax = static_cast<u64>(ipc_v1_error::address); return frame;
+        }
+        copy_from_user(&request, address, sizeof(request));
+        auto* wait_handle = ipc_v1_wait_set_handle_for(request.wait_set_handle, current->pid);
+        auto* endpoint_handle = request.source_kind == static_cast<u32>(ipc_v1_wait_source::endpoint)
+            ? ipc_v1_handle_for(request.source_handle, current->pid) : nullptr;
+        auto* notification_handle = request.source_kind == static_cast<u32>(ipc_v1_wait_source::notification)
+            ? ipc_v1_notification_handle_for(request.source_handle, current->pid) : nullptr;
+        if (request.header.version != ipc_v1_version) { result = static_cast<i64>(ipc_v1_error::unsupported); }
+        else if (!ipc_v1_header_valid(request.header, sizeof(request)) || request.flags != 0 ||
+                 request.source_id_out != 0 || request.reserved32 != 0 ||
+                 request.reserved[0] != 0 || request.reserved[1] != 0 ||
+                 (request.source_kind != static_cast<u32>(ipc_v1_wait_source::endpoint) &&
+                  request.source_kind != static_cast<u32>(ipc_v1_wait_source::notification))) {
+            result = static_cast<i64>(ipc_v1_error::invalid_argument);
+        } else if (wait_handle == nullptr) { result = static_cast<i64>(ipc_v1_error::invalid_handle); }
+        else if ((wait_handle->rights & static_cast<u32>(ipc_v1_wait_set_right::manage)) == 0) {
+            result = static_cast<i64>(ipc_v1_error::denied);
+        } else if ((request.source_kind == static_cast<u32>(ipc_v1_wait_source::endpoint) && endpoint_handle == nullptr) ||
+                   (request.source_kind == static_cast<u32>(ipc_v1_wait_source::notification) && notification_handle == nullptr)) {
+            result = static_cast<i64>(ipc_v1_error::invalid_handle);
+        } else if (request.source_kind == static_cast<u32>(ipc_v1_wait_source::endpoint) &&
+                   (endpoint_handle->rights & static_cast<u32>(ipc_v1_right::receive)) == 0) {
+            result = static_cast<i64>(ipc_v1_error::denied);
+        } else if (request.source_kind == static_cast<u32>(ipc_v1_wait_source::notification) &&
+                   (notification_handle->rights & static_cast<u32>(ipc_v1_notification_right::wait)) == 0) {
+            result = static_cast<i64>(ipc_v1_error::denied);
+        } else {
+            auto& object = ipc_v1_wait_sets[wait_handle->object_slot];
+            u32 source_slot = ipc_v1_max_wait_set_sources;
+            for (u32 i = 0; i < ipc_v1_max_wait_set_sources; ++i) {
+                if (!object.sources[i].used) { source_slot = i; break; }
+            }
+            if (source_slot == ipc_v1_max_wait_set_sources || !object.next_source_id) {
+                result = static_cast<i64>(ipc_v1_error::resources);
+            } else {
+                auto& source = object.sources[source_slot];
+                source.used = true; source.closed = false; source.source_id = object.next_source_id++;
+                source.source_kind = request.source_kind;
+                source.object_slot = request.source_kind == static_cast<u32>(ipc_v1_wait_source::endpoint)
+                    ? endpoint_handle->endpoint_slot : notification_handle->object_slot;
+                request.source_id_out = source.source_id;
+                copy_to_user(address, &request, sizeof(request)); result = 0;
+                ipc_v1_notify_wait_sets();
+            }
+        }
+        frame->rax = static_cast<u64>(result); return frame;
+    }
+    if (action == static_cast<u64>(ipc_v1_action::wait_set_remove)) {
+        ipc_v1_wait_set_remove request{};
+        if ((address & 7u) != 0 || !user_range_ok(address, sizeof(request), false)) {
+            frame->rax = static_cast<u64>(ipc_v1_error::address); return frame;
+        }
+        copy_from_user(&request, address, sizeof(request));
+        auto* handle = ipc_v1_wait_set_handle_for(request.wait_set_handle, current->pid);
+        if (request.header.version != ipc_v1_version) { result = static_cast<i64>(ipc_v1_error::unsupported); }
+        else if (!ipc_v1_header_valid(request.header, sizeof(request)) || request.source_id == 0 ||
+                 request.reserved32 != 0 || request.reserved[0] != 0 || request.reserved[1] != 0) {
+            result = static_cast<i64>(ipc_v1_error::invalid_argument);
+        } else if (handle == nullptr) { result = static_cast<i64>(ipc_v1_error::invalid_handle); }
+        else if ((handle->rights & static_cast<u32>(ipc_v1_wait_set_right::manage)) == 0) {
+            result = static_cast<i64>(ipc_v1_error::denied);
+        } else {
+            result = static_cast<i64>(ipc_v1_error::invalid_argument);
+            auto& object = ipc_v1_wait_sets[handle->object_slot];
+            for (auto& source : object.sources) {
+                if (source.used && source.source_id == request.source_id) {
+                    source = ipc_v1_wait_set_source_record{}; result = 0; break;
+                }
+            }
+            if (result == 0) { ipc_v1_notify_wait_sets(); }
+        }
+        frame->rax = static_cast<u64>(result); return frame;
+    }
+    if (action == static_cast<u64>(ipc_v1_action::wait_set_wait)) {
+        ipc_v1_wait_set_wait request{};
+        if ((address & 7u) != 0 || !user_range_ok(address, sizeof(request), false) ||
+            !user_range_ok(address, sizeof(request), true)) {
+            frame->rax = static_cast<u64>(ipc_v1_error::address); return frame;
+        }
+        copy_from_user(&request, address, sizeof(request));
+        auto* handle = ipc_v1_wait_set_handle_for(request.handle, current->pid);
+        const u64 event_bytes = static_cast<u64>(request.capacity) * sizeof(ipc_v1_wait_event);
+        if (request.header.version != ipc_v1_version) { result = static_cast<i64>(ipc_v1_error::unsupported); }
+        else if (!ipc_v1_header_valid(request.header, sizeof(request)) || request.count_out != 0 ||
+                 request.capacity > ipc_v1_max_wait_set_sources || (request.capacity != 0 && request.events == 0) ||
+                 request.reserved[0] != 0 || request.reserved[1] != 0 ||
+                 ipc_v1_ranges_overlap(address, sizeof(request), request.events, event_bytes)) {
+            result = static_cast<i64>(ipc_v1_error::invalid_argument);
+        } else if (!user_range_ok(request.events, event_bytes, true)) { result = static_cast<i64>(ipc_v1_error::address); }
+        else if (handle == nullptr) { result = static_cast<i64>(ipc_v1_error::invalid_handle); }
+        else if ((handle->rights & static_cast<u32>(ipc_v1_wait_set_right::wait)) == 0) {
+            result = static_cast<i64>(ipc_v1_error::denied);
+        } else {
+            ipc_v1_ready_event ready[ipc_v1_max_wait_set_sources]{};
+            const u32 count = ipc_v1_collect_wait_set(handle->object_slot, ready);
+            if (count != 0 && count > request.capacity) {
+                request.count_out = count; copy_to_user(address, &request, sizeof(request));
+                result = static_cast<i64>(ipc_v1_error::buffer_too_small);
+            } else if (count != 0) {
+                ipc_v1_wait_event events[ipc_v1_max_wait_set_sources]{};
+                request.count_out = ipc_v1_consume_wait_set(handle->object_slot, events, request.capacity);
+                if (request.count_out != 0) copy_to_user(request.events, events,
+                    static_cast<u64>(request.count_out) * sizeof(ipc_v1_wait_event));
+                copy_to_user(address, &request, sizeof(request)); result = 0;
+            } else if (request.deadline_ns == 0) { result = static_cast<i64>(ipc_v1_error::would_block); }
+            else if (thread_deadline_reached(clock::monotonic_ns(), request.deadline_ns)) {
+                result = static_cast<i64>(ipc_v1_error::timeout);
+            } else if (!ipc_v1_next_wait_order ||
+                       !ipc_v1_pin(*current_thread, 0, address, sizeof(request)) ||
+                       !ipc_v1_pin(*current_thread, 1, request.events, event_bytes)) {
+                ipc_v1_unpin(*current_thread); result = static_cast<i64>(ipc_v1_error::resources);
+            } else {
+                current_thread->ipc_v1_request_address = address;
+                current_thread->ipc_v1_payload_address = request.events;
+                current_thread->ipc_v1_payload_capacity = request.capacity;
+                current_thread->ipc_v1_call_slot = handle->object_slot;
+                current_thread->ipc_v1_event_count = 0;
+                current_thread->wait_target = request.handle;
+                current_thread->wait_order = ipc_v1_next_wait_order++;
+                current_thread->deadline_ns = request.deadline_ns;
+                current_thread->wait_kind = thread_wait_kind::ipc_v1_wait_set;
+                current_thread->state = thread_state::blocked;
+                frame->rax = 0; return schedule(frame);
+            }
+        }
+        frame->rax = static_cast<u64>(result); return frame;
+    }
+    if (action == static_cast<u64>(ipc_v1_action::notification_close)) {
+        ipc_v1_object_close request{};
+        if ((address & 7u) != 0 || !user_range_ok(address, sizeof(request), false)) {
+            frame->rax = static_cast<u64>(ipc_v1_error::address); return frame;
+        }
+        copy_from_user(&request, address, sizeof(request));
+        auto* handle = ipc_v1_notification_handle_for(request.handle, current->pid);
+        if (request.header.version != ipc_v1_version) { result = static_cast<i64>(ipc_v1_error::unsupported); }
+        else if (!ipc_v1_header_valid(request.header, sizeof(request)) ||
+                 request.reserved[0] != 0 || request.reserved[1] != 0) {
+            result = static_cast<i64>(ipc_v1_error::invalid_argument);
+        } else if (handle == nullptr) { result = static_cast<i64>(ipc_v1_error::invalid_handle); }
+        else if ((handle->rights & static_cast<u32>(ipc_v1_notification_right::manage)) == 0) {
+            result = static_cast<i64>(ipc_v1_error::denied);
+        } else {
+            const u32 slot = handle->object_slot;
+            ipc_v1_notifications[slot] = ipc_v1_notification_record{};
+            for (auto& wait_set : ipc_v1_wait_sets) {
+                if (!wait_set.used) { continue; }
+                for (auto& source : wait_set.sources) {
+                    if (source.used && source.source_kind == static_cast<u32>(ipc_v1_wait_source::notification) &&
+                        source.object_slot == slot) { source.closed = true; }
+                }
+            }
+            for (auto& candidate : ipc_v1_notification_handles) {
+                if (candidate.used && candidate.object_slot == slot) {
+                    candidate = ipc_v1_notification_handle_record{};
+                }
+            }
+            for (auto& thread : threads) {
+                if (thread.state == thread_state::blocked &&
+                    thread.wait_kind == thread_wait_kind::ipc_v1_notification &&
+                    thread.ipc_v1_call_slot == slot) {
+                    thread.ipc_v1_label = 0;
+                    ready_with(thread, static_cast<i64>(ipc_v1_error::closed));
+                }
+            }
+            ipc_v1_notify_wait_sets();
+            result = 0;
+        }
+        frame->rax = static_cast<u64>(result); return frame;
+    }
+    if (action == static_cast<u64>(ipc_v1_action::wait_set_close)) {
+        ipc_v1_object_close request{};
+        if ((address & 7u) != 0 || !user_range_ok(address, sizeof(request), false)) {
+            frame->rax = static_cast<u64>(ipc_v1_error::address); return frame;
+        }
+        copy_from_user(&request, address, sizeof(request));
+        auto* handle = ipc_v1_wait_set_handle_for(request.handle, current->pid);
+        if (request.header.version != ipc_v1_version) { result = static_cast<i64>(ipc_v1_error::unsupported); }
+        else if (!ipc_v1_header_valid(request.header, sizeof(request)) ||
+                 request.reserved[0] != 0 || request.reserved[1] != 0) {
+            result = static_cast<i64>(ipc_v1_error::invalid_argument);
+        } else if (handle == nullptr) { result = static_cast<i64>(ipc_v1_error::invalid_handle); }
+        else if ((handle->rights & static_cast<u32>(ipc_v1_wait_set_right::manage)) == 0) {
+            result = static_cast<i64>(ipc_v1_error::denied);
+        } else {
+            const u32 slot = handle->object_slot;
+            ipc_v1_wait_sets[slot] = ipc_v1_wait_set_record{};
+            for (auto& candidate : ipc_v1_wait_set_handles) {
+                if (candidate.used && candidate.object_slot == slot) {
+                    candidate = ipc_v1_wait_set_handle_record{};
+                }
+            }
+            for (auto& thread : threads) {
+                if (thread.state == thread_state::blocked &&
+                    thread.wait_kind == thread_wait_kind::ipc_v1_wait_set && thread.ipc_v1_call_slot == slot) {
+                    ready_with(thread, static_cast<i64>(ipc_v1_error::closed));
+                }
+            }
+            result = 0;
+        }
+        frame->rax = static_cast<u64>(result); return frame;
+    }
+    if (action == static_cast<u64>(ipc_v1_action::notification_wait)) {
+        ipc_v1_notification_wait request{};
+        if ((address & 7u) != 0 || !user_range_ok(address, sizeof(request), false) ||
+            !user_range_ok(address, sizeof(request), true)) {
+            frame->rax = static_cast<u64>(ipc_v1_error::address); return frame;
+        }
+        copy_from_user(&request, address, sizeof(request));
+        auto* handle = ipc_v1_notification_handle_for(request.handle, current->pid);
+        if (request.header.version != ipc_v1_version) { result = static_cast<i64>(ipc_v1_error::unsupported); }
+        else if (!ipc_v1_header_valid(request.header, sizeof(request)) || request.bits_out != 0 ||
+                 request.reserved[0] != 0 || request.reserved[1] != 0) { result = static_cast<i64>(ipc_v1_error::invalid_argument); }
+        else if (handle == nullptr) { result = static_cast<i64>(ipc_v1_error::invalid_handle); }
+        else if ((handle->rights & static_cast<u32>(ipc_v1_notification_right::wait)) == 0) {
+            result = static_cast<i64>(ipc_v1_error::denied);
+        } else {
+            auto& object = ipc_v1_notifications[handle->object_slot];
+            if (!object.used) { result = static_cast<i64>(ipc_v1_error::closed); }
+            else if (object.pending_bits != 0) {
+                request.bits_out = object.pending_bits; object.pending_bits = 0;
+                copy_to_user(address, &request, sizeof(request)); result = 0;
+            } else if (request.deadline_ns == 0) { result = static_cast<i64>(ipc_v1_error::would_block); }
+            else if (thread_deadline_reached(clock::monotonic_ns(), request.deadline_ns)) {
+                result = static_cast<i64>(ipc_v1_error::timeout);
+            } else if (!ipc_v1_next_wait_order || !ipc_v1_pin(*current_thread, 0, address, sizeof(request))) {
+                ipc_v1_unpin(*current_thread); result = static_cast<i64>(ipc_v1_error::resources);
+            } else {
+                current_thread->ipc_v1_request_address = address;
+                current_thread->ipc_v1_label = 0;
+                current_thread->ipc_v1_call_slot = handle->object_slot;
+                current_thread->wait_target = request.handle;
+                current_thread->wait_order = ipc_v1_next_wait_order++;
+                current_thread->deadline_ns = request.deadline_ns;
+                current_thread->wait_kind = thread_wait_kind::ipc_v1_notification;
+                current_thread->state = thread_state::blocked;
+                frame->rax = 0; return schedule(frame);
+            }
+        }
+        frame->rax = static_cast<u64>(result); return frame;
+    }
     if (action == static_cast<u64>(ipc_v1_action::call)) {
         ipc_v1_call request{};
         if ((address & 7u) != 0 || !user_range_ok(address, sizeof(request), false) ||
@@ -2692,6 +3361,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                     current_thread->ipc_v1_length = 0;
                     current_thread->deadline_ns = request.deadline_ns;
                     ipc_v1_try_deliver_queued(endpoint_slot);
+                    if (call.state == ipc_v1_call_state::queued) { ipc_v1_notify_wait_sets(); }
                     if (request.deadline_ns == 0 && call.state == ipc_v1_call_state::queued) {
                         call = ipc_v1_call_record{}; ipc_v1_unpin(*current_thread);
                         current_thread->ipc_v1_request_address = current_thread->ipc_v1_reply_address = 0;
@@ -2739,12 +3409,14 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                 } else if (ipc_v1_token_count(current->pid) >= ipc_v1_max_reply_tokens_per_process || !ipc_v1_next_reply_token) {
                     result = static_cast<i64>(ipc_v1_error::resources);
                 } else {
-                    call.state = ipc_v1_call_state::delivered; call.reply_token = ipc_v1_next_reply_token++;
+                    call.state = ipc_v1_call_state::delivered; call.receiver_pid = current->pid;
+                    call.reply_token = ipc_v1_next_reply_token++;
                     request.message_length_out = call.payload_length; request.label_out = call.label;
                     request.badge_out = call.badge; request.reply_token_out = call.reply_token;
                     copy_to_user(address, &request, sizeof(request));
                     if (call.payload_length) copy_to_user(request.buffer, call.payload, call.payload_length);
                     ipc_v1_try_deliver_queued(handle->endpoint_slot);
+                    ipc_v1_notify_wait_sets();
                     result = 0;
                 }
             } else if (request.deadline_ns == 0) { result = static_cast<i64>(ipc_v1_error::would_block); }
@@ -2848,6 +3520,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                 copy_to_user(address, &request, sizeof(request));
                 if (call.payload_length) copy_to_user(request.receive_buffer, call.payload, call.payload_length);
                 ipc_v1_try_deliver_queued(receive_handle->endpoint_slot);
+                ipc_v1_notify_wait_sets();
                 frame->rax = 0; return frame;
             }
             if (request.deadline_ns == 0) { return finish_receive_error(static_cast<i64>(ipc_v1_error::would_block)); }

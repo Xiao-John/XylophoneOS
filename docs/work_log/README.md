@@ -128,6 +128,7 @@
 | 0222 | `0222_audio_output_au2.md` | Audio output AU2：用户态单音服务、旋律命令与服务恢复（客体验收待工具链） |
 | 38f2c931 | `38f2c931_ipc_ip1_abi_reference_model.md` | IPC IP1：syscall 88 ABI 登记与 host-only 参考模型（SDK unsupported） |
 | 49364f6e | `49364f6e_ipc_ip2_synchronous_endpoints_and_rpc.md` | IPC IP2：sys88 endpoint 与同步 RPC 慢路径实现（guest qualification 未运行） |
+| 8c39b047 | `8c39b047_ipc_ip3_notification_and_wait_set_abi_registrati.md` | IPC IP3：notification/wait-set 实现及可复用 guest race/resource 验收脚本（owner 验收待跑） |
 
 音频记录在 #96 合入时由 0217–0219 改为 0220–0222：0217/0218 已被 VM1/VM2 占用，
 0219 已由 WebEngine M0 审计占用。新记录自 **0223** 起继续唯一，不得复用 0216–0222。

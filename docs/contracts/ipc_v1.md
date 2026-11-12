@@ -113,6 +113,48 @@ set 为空。通知、wait set、bulk grant 不在 IP1/IP2 中。ABI 头已登�
 delivered，业务结果未知，调用者不得自动重试。`reply_receive.reply_consumed_out` 仅在
 reply 成功消费 token 后置 bit0；后续 receive 失败仍报告该位，不能重放已完成 reply。
 
+## IP3 通知、wait set 与慢路径
+
+IP3 的 action 数值与请求布局已在共享头登记（8–18），SDK 提供对应薄封装。通知与 wait set
+均已有 x86-64 慢路径；所有 IP3 feature 尚未完成客体验收，feature query 的 supported mask
+与两个 manifest 继续为空。ABI/内核代码存在不表示已支持。通知与 wait set 的固定限制为系统各
+32 个对象、每个 wait set 最多 8 个 source；对象 handle 仍计入每进程 8 个 handle 总额度。
+
+| action | 值 | 请求结构 | 字节数 |
+|---|---:|---|---:|
+| `notification_create` | 8 | `ipc_v1_object_create` | 48 |
+| `notification_delegate` | 9 | `ipc_v1_object_delegate` | 72 |
+| `notification_signal` | 10 | `ipc_v1_notification_signal` | 40 |
+| `notification_wait` | 11 | `ipc_v1_notification_wait` | 56 |
+| `wait_set_create` | 12 | `ipc_v1_object_create` | 48 |
+| `wait_set_delegate` | 13 | `ipc_v1_object_delegate` | 72 |
+| `wait_set_add` | 14 | `ipc_v1_wait_set_add` | 64 |
+| `wait_set_remove` | 15 | `ipc_v1_wait_set_remove` | 48 |
+| `wait_set_wait` | 16 | `ipc_v1_wait_set_wait` | 64 |
+| `notification_close` | 17 | `ipc_v1_object_close` | 40 |
+| `wait_set_close` | 18 | `ipc_v1_object_close` | 40 |
+
+通知权利为 `signal=1`、`wait=2`、`manage=4`、`delegate=8`；wait set 权利为
+`wait=1`、`manage=2`、`delegate=4`。创建和 delegate 共用 `ipc_v1_object_create` /
+`ipc_v1_object_delegate` 布局。通知 signal 使用授权 handle 的 badge 作为 bit mask，pending
+状态按 OR 合并；badge 为零是成功 no-op。notification wait 原子读取并清零累计位，0 deadline
+只轮询，最大 u64 表示无限等待。单 CPU syscall gate 串行化 pending 检查和阻塞登记；多个
+直接 notification waiter 按等待登记顺序消费。signal 唤醒直接 waiter 的优先级高于 wait-set
+notification source；多个 wait-set waiter 按登记顺序分配可消费 bits。manage 权利持有者
+close 会撤销全部 handle、清除 pending bits
+并以 `closed` 唤醒 waiter。最后一个持有者 exit 或成功 exec 时对象也会销毁。
+
+wait set 首版 source 类型仅支持 endpoint 与 notification：endpoint source 必须在添加时持有
+receive 权利，报告 queued call readiness；notification source 必须持有 wait 权利，返回并消费
+累计 bits。事件 kind 为 endpoint_ready=1、notification=2、closed=3。source close/revoke 产生
+可重复观察的 closed 事件，直到显式 remove。wait 返回容量不足时应写入所需事件数且不消费
+通知；最大容量为 8。首版不支持把 sys83 IRQ、process exit 或旧 channel `wait_many` 加入
+wait set；这些既有接口语义不变，也不得宣称为统一等待。source 的 badge/value 解释固定在
+事件 value 中：endpoint readiness 为 0，notification 为被消费的 bit mask，closed 为 0。
+
+ABI 结构大小由共享头 static_assert 固定。通知和 wait set 都仅完成源码实现及本地静态检查，
+没有 guest qualification，因此不能宣告任何 IP3 feature supported。
+
 ## 对象、权利与消息
 
 逻辑对象为 endpoint、受权引用（handle）、一次性 reply token 和可选 notification。

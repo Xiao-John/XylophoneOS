@@ -40,6 +40,7 @@ memory_result allocate_page(u64* physical);
 memory_result release_page(u64 physical);
 // User data-page references are separate from page-table/kernel allocations.
 memory_result allocate_user_page(u64* physical);
+memory_result allocate_contiguous_user_pages(u32 count, u64 alignment, u64* physical);
 memory_result retain_user_page(u64 physical);
 memory_result release_user_page(u64 physical);
 u32 user_page_references(u64 physical);
@@ -53,9 +54,18 @@ memory_result unmap_page(u64 virtual_address);
 memory_result query_page(u64 virtual_address, u64* physical, page_permissions* permissions);
 memory_result query_logical_write_in(u64 address_space, u64 virtual_address, bool* result);
 
+// The mapping token is architecture-private. Inspect/stage do not publish;
+// all tokens must still match before the first publication in a write set.
+struct user_write_page { u64 address, mapping, replacement; };
+memory_result inspect_user_write_in(u64 space, u64 address, user_write_page& page);
+memory_result stage_user_write(user_write_page& page);
+bool user_write_unchanged_in(u64 space, const user_write_page& page);
+void publish_user_write_in(u64 space, user_write_page& page);
+
 memory_result map_device_page(u64 virtual_address, u64 physical);
 // Separate kernel-only PCI UC aperture; not an extension of the VBE mapping.
 memory_result map_pci_device_page(u64 virtual_address, u64 physical);
+memory_result map_device_page_in(u64 space, u64 address, u64 physical, bool writable);
 
 // Kernel boot self-check only; -1 disables deterministic allocation failure.
 void memory_self_test_fail_after(i64 count);

@@ -2,11 +2,9 @@
 // Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/memory.hpp>
 #include "build_info.hpp"
-#if XOS_COW1_PROBE
 #include "../../core/cow_snapshot.hpp"
 #include "cow1_probe.hpp"
 #include <xos/platform.hpp>
-#endif
 
 namespace xos {
 namespace {
@@ -99,6 +97,25 @@ memory_result map_device_page(u64 virtual_address, u64 physical) {
     if ((leaf & present) != 0) { return memory_result::already_mapped; }
     leaf = physical | present | writable | no_execute | (1ull << 3) | (1ull << 4);
     invalidate(virtual_address);
+    return memory_result::none;
+}
+
+memory_result map_device_page_in(u64 space, u64 address, u64 physical, bool write) {
+    if (!space || space % page_size || space >= max_managed_phys || address % page_size ||
+        address < 0x210000000000ull || address >= 0x210010000000ull || physical % page_size ||
+        physical < max_managed_phys || physical >= 0x100000000ull) return memory_result::invalid;
+    memory_result result{};
+    auto* pdpt = ensure_table(table(space), index_of(address, 39), true, &result);
+    if (!pdpt) return result;
+    auto* pd = ensure_table(pdpt, index_of(address, 30), true, &result);
+    if (!pd) return result;
+    auto* pt = ensure_table(pd, index_of(address, 21), true, &result);
+    if (!pt) return result;
+    auto& leaf = pt[index_of(address, 12)];
+    if (leaf & (present | vm_hidden)) return memory_result::already_mapped;
+    leaf = physical | present | user | no_execute | (1ull << 3) | (1ull << 4) |
+           (write ? writable | logical_writable : 0);
+    if (read_cr3() == space) invalidate(address);
     return memory_result::none;
 }
 
@@ -317,11 +334,7 @@ memory_result vm_lookup_page_in(u64 space,u64 address,u64* physical,vm_page_prot
         !(entry & user) || !user_page_references(entry & address_mask)) return memory_result::invalid;
     *physical=entry & address_mask;
     *protection=(entry & vm_hidden) ? vm_page_protection::none :
-#if XOS_COW1_PROBE
         (entry & logical_writable) ? vm_page_protection::read_write :
-#else
-        (entry & writable) ? vm_page_protection::read_write :
-#endif
         !(entry & no_execute) ? vm_page_protection::read_execute : vm_page_protection::read;
     return memory_result::none;
 }
@@ -339,10 +352,8 @@ memory_result vm_protect_page_in(u64 space,u64 address,vm_page_protection protec
     const auto result=vm_lookup_page_in(space,address,&physical,&old);
     if (result!=memory_result::none) return result;
     u64 replacement=vm_entry(physical,protection);
-#if XOS_COW1_PROBE
     if (protection==vm_page_protection::read_write && user_page_references(physical)>1)
         replacement=(replacement & ~writable) | cow_private;
-#endif
     *vm_leaf(space,address)=replacement;
     if (read_cr3()==space) invalidate(address);
     return memory_result::none;
@@ -395,7 +406,6 @@ memory_result release_user_pages_batch(u64 space,u64* cursor,u32* released_pages
     }
     return memory_result::none;
 }
-#if XOS_COW1_PROBE
 namespace arch {
 namespace {
 bool cow1_valid_space(u64 space, u64 address) {
@@ -484,30 +494,17 @@ memory_result cow1_publish_page(u64 source, u64 destination, u64 address) {
     return memory_result::none;
 }
 memory_result cow1_resolve_page(u64 space, u64 address) {
-    if (!cow1_valid_space(space,address)) return memory_result::invalid;
-    u64* leaf=cow1_leaf(space,address);
-    if (!leaf) return memory_result::not_mapped;
-    const u64 entry=*leaf, physical=entry & address_mask;
-    if ((entry & (present | user | logical_writable | cow_private | no_execute)) !=
-        (present | user | logical_writable | cow_private | no_execute) || (entry & writable))
+    user_write_page page{};
+    const auto inspected=inspect_user_write_in(space,address,page);
+    if (inspected!=memory_result::none) return inspected;
+    if (page.address==0) return memory_result::invalid;
+    const auto staged=stage_user_write(page);
+    if (staged!=memory_result::none) return staged;
+    if (!user_write_unchanged_in(space,page)) {
+        if (page.replacement) (void)release_user_page(page.replacement);
         return memory_result::invalid;
-    const u32 references=user_page_references(physical);
-    if (!references) return memory_result::invalid;
-    if (references==1) {
-        *leaf=(entry | writable) & ~cow_private;
-    } else {
-        u64 replacement=0;
-        const auto result=allocate_user_page(&replacement);
-        if (result!=memory_result::none) return result;
-        auto* to=reinterpret_cast<u64*>(replacement);
-        const auto* from=reinterpret_cast<const u64*>(physical);
-        for (u32 i=0;i<page_size/sizeof(u64);++i) to[i]=from[i];
-        *leaf=((entry & ~address_mask) | replacement | writable) & ~cow_private;
-        if (read_cr3()==space) invalidate(address);
-        if (release_user_page(physical)!=memory_result::none) halt();
-        return memory_result::none;
     }
-    if (read_cr3()==space) invalidate(address);
+    publish_user_write_in(space,page);
     return memory_result::none;
 }
 namespace {
@@ -576,7 +573,48 @@ memory_result cow1_publish_batch(u64 source, u64 destination, u64* cursor, u32 b
     return memory_result::none;
 }
 }
-#endif
+
+memory_result inspect_user_write_in(u64 space,u64 address,user_write_page& page) {
+    page={};
+    if (!arch::cow1_valid_space(space,address)) return memory_result::invalid;
+    const u64* leaf=arch::cow1_leaf(space,address);
+    if (!leaf || (*leaf & (present | user))!=(present | user)) return memory_result::not_mapped;
+    const u64 entry=*leaf;
+    if (entry & writable) return memory_result::none;
+    constexpr u64 required=present | user | logical_writable | cow_private | no_execute;
+    constexpr u64 allowed=address_mask | required | (u64{1}<<5) | (u64{1}<<6);
+    if ((entry & required)!=required || (entry & ~allowed) ||
+        !user_page_references(entry & address_mask)) return memory_result::invalid;
+    page={address,entry,0};
+    return memory_result::none;
+}
+
+memory_result stage_user_write(user_write_page& page) {
+    const u64 physical=page.mapping & address_mask;
+    if (user_page_references(physical)==1) return memory_result::none;
+    const auto result=allocate_user_page(&page.replacement);
+    if (result!=memory_result::none) return result;
+    auto* destination=reinterpret_cast<u64*>(page.replacement);
+    const auto* source=reinterpret_cast<const u64*>(physical);
+    for (u32 i=0;i<page_size/sizeof(u64);++i) destination[i]=source[i];
+    return memory_result::none;
+}
+
+bool user_write_unchanged_in(u64 space,const user_write_page& page) {
+    const u64* leaf=arch::cow1_leaf(space,page.address);
+    constexpr u64 hardware_observation=(u64{1}<<5) | (u64{1}<<6);
+    return leaf && ((*leaf ^ page.mapping) & ~hardware_observation)==0;
+}
+
+void publish_user_write_in(u64 space,user_write_page& page) {
+    u64* leaf=arch::cow1_leaf(space,page.address);
+    const u64 old=page.mapping & address_mask;
+    const u64 physical=page.replacement ? page.replacement : old;
+    *leaf=((page.mapping & ~address_mask) | physical | writable) & ~cow_private;
+    if (read_cr3()==space) invalidate(page.address);
+    if (page.replacement && release_user_page(old)!=memory_result::none) arch::halt();
+    page.replacement=0;
+}
 
 memory_result copy_user_pages_batch(u64 source, u64 destination, u32 page_limit,
                                     u32* copied_pages, u64* cursor, u32 budget) {

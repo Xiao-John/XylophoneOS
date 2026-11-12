@@ -10,6 +10,7 @@ from boot_smoke import Guest
 from make_work_disk import create_fat32
 from work_disk import transfer
 from process_smoke import command, resources
+from graphics_guest import start_graphics
 from task_smoke import send_bytes, pump
 p=argparse.ArgumentParser()
 for name in ('image','session','consumer','notes','output'): p.add_argument('--'+name,type=Path,required=True)
@@ -26,7 +27,7 @@ try:
   g=Guest(a.image.resolve(),str(out.relative_to(ROOT/'build'))+'/guest',work_disk=disk);report['qemu_command']=g.command
   g.expect(b'xos64> ',timeout=45);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=45)
   command(g,'demo quiet',b'demo tasks stopped');base=resources(g)
-  command(g,'display-start',b'result=0');g.expect(b'[display-service] ready');active=resources(g)
+  service, compositor = start_graphics(g);active=resources(g)
   start=len(g.output);send_bytes(g,b'exec-driver /bin/session.elf /long.txt text-range --text\r')
   g.expect(b'SSG_TEXT_RANGE_COMPLETE',start=start,timeout=180);g.expect(b'SSG_SESSION consumer_wait=0 outcome=1 code=0',start=start,timeout=90)
   output=bytes(g.output)[start:];frames=[]

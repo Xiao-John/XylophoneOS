@@ -414,8 +414,9 @@ public:
         if(connected && client_->configure(id_,geometry(),v)!=0)
             qWarning("XOS QPA: Interactium visibility update failed");
         if(v && client_->focus(id_)!=0) qWarning("XOS QPA: Interactium focus failed");
-        WSI::handleFocusWindowChanged(v?QPlatformWindow::window():nullptr);
-        WSI::handleExposeEvent(QPlatformWindow::window(),v?QRegion(geometry()):QRegion());
+        if(v || QGuiApplication::focusWindow()==QPlatformWindow::window())
+            WSI::handleFocusWindowChanged(v?QPlatformWindow::window():nullptr);
+        WSI::handleExposeEvent(QPlatformWindow::window(),v?QRegion(QRect(QPoint(),geometry().size())):QRegion());
     }
     bool isExposed() const override { return visible; }
     void requestActivateWindow() override {

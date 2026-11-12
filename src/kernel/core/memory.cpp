@@ -180,6 +180,31 @@ u32 user_page_references(u64 physical) {
     if (physical % page_size != 0 || physical >= managed_high) { return 0; }
     return user_references[physical / page_size];
 }
+memory_result allocate_contiguous_user_pages(u32 count, u64 alignment, u64* physical) {
+    if (!physical || !count || count > managed_pages || alignment < page_size ||
+        alignment > max_managed_phys || (alignment & (alignment - 1))) return memory_result::invalid;
+    if (self_test_allocations >= 0 && static_cast<u64>(self_test_allocations) < count)
+        return memory_result::out_of_memory;
+    const u32 step = static_cast<u32>(alignment / page_size);
+    const u32 first = static_cast<u32>(first_allocatable / page_size);
+    for (u32 page = (first + step - 1) & ~(step - 1); page <= managed_pages - count; page += step) {
+        u32 available = 0;
+        while (available < count && !bit_test(used_bitmap, page + available)) ++available;
+        if (available != count) continue;
+        for (u32 i = 0; i < count; ++i) {
+            bit_set(used_bitmap, page + i); bit_set(allocated_bitmap, page + i);
+            user_references[page + i] = 1;
+        }
+        free_page_count -= count; allocated_page_count += count;
+        unique_user_pages += count; total_user_references += count;
+        if (self_test_allocations > 0) self_test_allocations -= count;
+        *physical = u64{page} * page_size;
+        auto* words = reinterpret_cast<volatile u64*>(*physical);
+        for (u64 i = 0; i < u64{count} * page_size / sizeof(u64); ++i) words[i] = 0;
+        return memory_result::none;
+    }
+    return memory_result::out_of_memory;
+}
 memory_result retain_user_page(u64 physical) {
     const auto references = user_page_references(physical);
     if (references == 0 || references == ~u32{0} || total_user_references == ~u32{0}) {

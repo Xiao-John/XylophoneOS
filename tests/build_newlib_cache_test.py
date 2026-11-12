@@ -46,6 +46,9 @@ tail -c +$((offset + 1)) "$CACHE/fixture.tar.gz" >> "$CACHE/newlib.tar.gz"
             info.size = len(configure)
             info.mode = 0o755
             archive.addfile(info, io.BytesIO(configure))
+            for name in ('stdatomic.h', 'tgmath.h'):
+                header = repo_root / 'src/third_party/newlib/x86_64-elf/include' / name
+                archive.add(header, arcname=f'newlib-{newlib_version}/newlib/libc/include/{name}')
         self.environment = dict(os.environ, CACHE=str(self.cache),
                                 PATH=str(binaries) + os.pathsep + os.environ["PATH"])
 

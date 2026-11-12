@@ -72,7 +72,7 @@ candidate inspect(const char* path) {
     }
 
     u32 handle = 0, opened_size = 0, version = 0;
-    const i64 opened = client.open(path, file::read_only, handle, opened_size, version);
+    const i64 opened = client.open(path, file::read_only | file::open_pin, handle, opened_size, version);
     (void)version;
     if (opened < 0) {
         result.error = opened;

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 """SL2: both shells use inherit-create; no name-based authorization."""
+import argparse
 import hashlib
 import json
 import re
@@ -18,13 +19,21 @@ from make_work_disk import create_fat32
 from work_disk import transfer
 from task_smoke import send_bytes, pump
 from process_smoke import command
+from shell_launch_support import bind_system, bind_tool
 from toolchain import COMMON_FLAGS, X86_FLAGS, tool
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--system", type=Path, default=ROOT / "build")
+    parser.add_argument("--dash-receipt", type=Path, required=True)
+    args = parser.parse_args()
+    system = args.system
+    system_binding = bind_system(system)
+    dash, dash_binding = bind_tool(args.dash_receipt, "dash_c3", system / "sdk")
     out = ROOT / "build/shell_launch_sl2"
     out.mkdir(parents=True, exist_ok=True)
-    sdk = ROOT / "build/sdk"
+    sdk = system / "sdk"
     src = ROOT / "tests/fixtures/shell_launch/sl1_authority.cpp"
     obj = out / "sl2_probe.o"
     elf = out / "sl2_probe.elf"
@@ -41,16 +50,9 @@ def main() -> int:
          "-Wl,--end-group", "-o", str(elf)],
         check=True,
     )
-    # dash for the in-shell leg
-    dash_candidates = list((ROOT / ".cache/xos_seed/dash").glob("*/build/src/dash.runtime"))
-    if not dash_candidates:
-        raise SystemExit("dash.runtime not found; run scripts/build_dash.py first")
-    dash = sorted(dash_candidates, key=lambda p: p.stat().st_mtime)[-1]
-
-    report = {"status": "failed", "checks": [], "build_id": None, "elf_sha256": hashlib.sha256(elf.read_bytes()).hexdigest()}
+    report = {"status": "failed", "checks": [], "build_id": system_binding["build_id"], "dash_binding": dash_binding, "elf_sha256": hashlib.sha256(elf.read_bytes()).hexdigest()}
     guest = None
     try:
-        report["build_id"] = json.loads((ROOT / "build/manifest.json").read_text())["build_id"]
         with tempfile.TemporaryDirectory(prefix="xos_sl2_") as tmp:
             disk = Path(tmp) / "disk.img"
             create_fat32(disk, 512)
@@ -74,7 +76,7 @@ def main() -> int:
                 return cmd
 
             with patch.object(boot_smoke, "qemu_command", qemu):
-                guest = Guest(ROOT / "build/xos-install.iso", "sl2probe", work_disk=disk, iso=True)
+                guest = Guest(system / "xos-install.iso", "sl2probe", work_disk=disk, iso=True)
             report["qemu_command"] = guest.command
             guest.expect(b"xos64> ", timeout=30)
             send_bytes(guest, b"run\r")

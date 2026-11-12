@@ -41,3 +41,31 @@ make debug/LLDB入口与config/debug_kernel.lldb用于带符号目标调试；�
 SDK/发行打包必须核system manifest、完整文件/目录/哈希、配置与运行库来源；输入与实际
 拷贝/成品绑定，不复用旧staging。许可、源码、符号与发行镜像可对应；见[许可](licensing.md)
 和[发行/审计摘要](history/delivery_audit.md)。系统内重建与编译器自举均尚未验收。
+
+## 固定工具链搬迁与候选构建（2026-11-12）
+
+现有固定 Linux 工具链可以通过 `scripts/bootstrap_toolchain.py export` 产出
+可迁移的 tar.xz；`restore` 在一个新目录恢复它。导出和恢复均核 GCC/target、实际
+as/ld、NASM、QEMU 与 `config/toolchain.json`，归档成员逐项核哈希/模式/相对链接，
+恢复后再次验证实际新路径。不会从网络选一个“最新”版本替换锁。
+
+```sh
+python3 scripts/bootstrap_toolchain.py export --prefix "$XOS_TOOLCHAIN_ROOT" --output build/toolchain.tar.xz
+python3 scripts/bootstrap_toolchain.py restore --bundle build/toolchain.tar.xz --sha256 "$XOS_TOOLCHAIN_SHA256" --prefix "$XOS_NEW_TOOLCHAIN_ROOT"
+source "$XOS_NEW_TOOLCHAIN_ROOT/activate.sh"
+make candidate CANDIDATE_OUTPUT=build/candidates/my_revision
+```
+
+`XOS_TOOLCHAIN_ROOT` 是现有受信工具前缀，`XOS_NEW_TOOLCHAIN_ROOT` 必须尚不存在；
+`XOS_TOOLCHAIN_SHA256` 取导出回执或受信传输记录，不能取自未经核对的同名下载。
+没有这一工具前缀或归档时，脚本不能凭空恢复二进制。
+
+`candidate` 按顺序构建 system、同次 dash、install ISO、许可证/归档来源检查，
+随后按 system manifest 复制产物到新候选目录。dash 使用明确回执，避免按 mtime
+捡旧缓存。任一步失败停止，记录失败日志；不会把旧产物写成成功候选。默认不运行 guest，
+完成状态为 `built_unverified`，`--guest` 才调用已有 `make smoke`。
+可以在 `CANDIDATE_ARGS` 传入 `--newlib-archive <verified archive> --gcc-source <GCC tree>`
+顺序构建完整线程 C++ SDK；每个新归档必须带来源清单。
+
+本次环境缺 NASM/固定交叉工具链/QEMU，候选命令实际停在第一步并留下失败回执；
+没有生成新系统镜像、固定 SDK、发布包或 guest 合格标记。发布流水线也拒绝覆盖旧冻结目录。

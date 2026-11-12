@@ -35,11 +35,11 @@
         "files task",
         "offline installer"
       ],
-      "modifications": "ff_string/configuration and FILINFO SFN directory-entry sector/offset identity extension; preserve upstream notice; details in src/third_party/fatfs/README.md",
+      "modifications": "ff_string/configuration, FILINFO SFN directory-entry identity, and sole-FIL f_rename_open lock-preserving rename extension; preserve upstream notice; details in src/third_party/fatfs/README.md",
       "artifact_sha256": {
-        "src/third_party/fatfs/ff.c": "22610a39c37d1db311a9428e1c618768ce299537a42881da9cdba8f1d0dda8b0",
+        "src/third_party/fatfs/ff.c": "1cc3c92f46bc51643f1a8e4b5f9cbb23d2997291e94a490133e954335f079c71",
         "licenses/fatfs.txt": "5e865b99f0a4800b699d356a20887741c49681d36f712ba9cd0c2c65dea89f7c",
-        "src/third_party/fatfs/ff.h": "765af966a517fc5dbb2217cb9788d6b7005b35630652a2aa221907dbe66c13a5"
+        "src/third_party/fatfs/ff.h": "b5ea24517af464ffa17f66d23a0ae11cf9838a7e720e25bd955278dd20935afe"
       }
     },
     {

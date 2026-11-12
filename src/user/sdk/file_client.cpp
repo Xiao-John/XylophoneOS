@@ -108,6 +108,23 @@ i64 client::list(const char* path, entry* entries, u32 capacity, u32& count, u32
     const i64 result = call(op::list);
     if (result != 0) { return result; }
 
+    return decode_list(entries, capacity, count, cursor);
+}
+
+i64 client::list(u32 directory_handle, entry* entries, u32 capacity, u32& count, u32& cursor) {
+    session_guard guard;
+    count = 0;
+    if (entries == nullptr || capacity == 0 || directory_handle == 0) { return status_value(status::invalid); }
+    request_ = request{};
+    request_.handle = directory_handle;
+    request_.offset = cursor;
+    request_.flags = list_directories;
+    request_.length = capacity;
+    const i64 result = call(op::list);
+    return result == 0 ? decode_list(entries, capacity, count, cursor) : result;
+}
+
+i64 client::decode_list(entry* entries, u32 capacity, u32& count, u32& cursor) {
     u32 position = 0;
     while (position < response_.length) {
         if (response_.length - position < list_record_header_size || count >= capacity) {
@@ -141,6 +158,57 @@ i64 client::list(const char* path, entry* entries, u32 capacity, u32& count, u32
     if (response_.value > 0xffffffffu) { return status_value(status::io); }
     cursor = static_cast<u32>(response_.value);
     return 0;
+}
+
+i64 client::set_cwd(const char* path, u64 target_pid, bool initialize_only) {
+    session_guard guard;
+    request_ = request{};
+    if (path != nullptr) {
+        u32 length = 0;
+        const i64 result = set_path(path, request_.name, length);
+        if (result != 0) { return result; }
+        request_.name_length = length;
+    }
+    request_.offset = target_pid;
+    request_.flags = initialize_only ? 1u : 0u;
+    return call(op::cwd_set);
+}
+
+i64 client::set_cwd_handle(u32 directory_handle) {
+    session_guard guard;
+    if (directory_handle == 0) { return status_value(status::bad_handle); }
+    request_ = request{};
+    request_.handle = directory_handle;
+    return call(op::cwd_set);
+}
+
+i64 client::copy_response_path(char* path, u32 capacity) {
+    const u32 length = response_.name_length;
+    if (length == 0 || length >= max_name || response_.name[length] != '\0' ||
+        response_.name[0] != '/' || !xos::text::valid(response_.name, length)) {
+        return status_value(status::io);
+    }
+    if (path == nullptr || capacity <= length) { return status_value(status::name_too_long); }
+    for (u32 i = 0; i <= length; ++i) { path[i] = response_.name[i]; }
+    return 0;
+}
+
+i64 client::get_cwd(char* path, u32 capacity) {
+    session_guard guard;
+    request_ = request{};
+    const i64 result = call(op::cwd_get);
+    return result == 0 ? copy_response_path(path, capacity) : result;
+}
+
+i64 client::resolve_path(const char* path, char* absolute, u32 capacity) {
+    session_guard guard;
+    request_ = request{};
+    u32 length = 0;
+    const i64 prepared = set_path(path, request_.name, length);
+    if (prepared != 0) { return prepared; }
+    request_.name_length = length;
+    const i64 result = call(op::resolve_path);
+    return result == 0 ? copy_response_path(absolute, capacity) : result;
 }
 
 i64 client::list(entry* entries, u32 capacity, u32& count) {
@@ -392,7 +460,7 @@ i64 client::read_all(const char* path, void* data, u32 capacity, u32& length) {
     u32 handle = 0;
     u32 opened_size = 0;
     u32 opened_version = 0;
-    result = open(path, read_only, handle, opened_size, opened_version);
+    result = open(path, read_only | open_pin, handle, opened_size, opened_version);
     if (result != 0) { return result; }
     if (opened_size != size || opened_version != version) {
         (void)close(handle);

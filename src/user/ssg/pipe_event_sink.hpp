@@ -22,6 +22,7 @@ class pipe_event_sink final:public ssg_watch::event_sink {
 
     io_state write_frame(const char *frame,unsigned frame_size,xos::u64 deadline) {
         for (;;) {
+            if(xos::thread::clock()>=deadline)return io_state::timeout;
             const auto result=xos::sdk::syscall(xos::sys_pipe_write,
                 xos::u64(event_write_)|xos::pipe_write_atomic_flag,
                 reinterpret_cast<xos::u64>(frame),frame_size);
@@ -37,6 +38,7 @@ class pipe_event_sink final:public ssg_watch::event_sink {
     io_state read_exact(char *data,unsigned length,xos::u64 deadline) {
         unsigned offset=0;
         while (offset<length) {
+            if(xos::thread::clock()>=deadline)return io_state::timeout;
             const auto result=xos::sdk::syscall(xos::sys_pipe_read,ack_read_,
                 reinterpret_cast<xos::u64>(data+offset),length-offset);
             if (result>0) { offset+=static_cast<unsigned>(result);continue; }
@@ -46,7 +48,7 @@ class pipe_event_sink final:public ssg_watch::event_sink {
             if (waited==xos::thread_error_timeout) return io_state::timeout;
             if (waited<0) return io_state::error;
         }
-        return io_state::complete;
+        return xos::thread::clock()<deadline?io_state::complete:io_state::timeout;
     }
 
     ssg_watch::event_delivery fail(ssg_watch::delivery_state state,const QString &reason) {

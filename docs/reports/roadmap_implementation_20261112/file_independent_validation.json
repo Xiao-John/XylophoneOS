@@ -1,0 +1,89 @@
+{
+  "base_commit": "158a9b99550c03b97e74e3b9e4c2fd6a288c8bf3",
+  "branch": "codex/posix-identity-20261112",
+  "host_test_groups": 99,
+  "new_identity_groups": 32,
+  "checks": [
+    {
+      "name": "file_semantics",
+      "status": "passed",
+      "cases": 25
+    },
+    {
+      "name": "file_identity",
+      "status": "passed",
+      "cases": 23
+    },
+    {
+      "name": "libc_sdk_service_fatfs",
+      "status": "passed",
+      "cases": 9
+    },
+    {
+      "name": "file_recovery",
+      "status": "passed",
+      "cases": 21
+    },
+    {
+      "name": "libc_startup",
+      "status": "passed",
+      "cases": 15
+    },
+    {
+      "name": "libc_execvp",
+      "status": "passed",
+      "cases": 6
+    },
+    {
+      "name": "asan_ubsan",
+      "status": "passed",
+      "cases": 48,
+      "scope": "same 25+23 cases; LeakSanitizer disabled because ptrace runner unsupported"
+    },
+    {
+      "name": "strict_runtime_translation_units",
+      "status": "passed",
+      "count": 7,
+      "evidence": "runtime_compile.json"
+    },
+    {
+      "name": "guest_probe_syntax_and_python_compile",
+      "status": "passed"
+    },
+    {
+      "name": "real_near_full_preparer",
+      "status": "passed",
+      "free_clusters": 1,
+      "image_bytes": 16777216,
+      "existing_output_rejected_and_unchanged": true
+    },
+    {
+      "name": "current_abi_table",
+      "status": "passed"
+    },
+    {
+      "name": "fatfs_registered_hashes",
+      "status": "passed",
+      "count": 3
+    },
+    {
+      "name": "target_build",
+      "status": "blocked",
+      "reason": "NASM not found",
+      "evidence": "target_build.json"
+    },
+    {
+      "name": "guest_identity_fork_exec_dual_shell_near_full",
+      "status": "not_run",
+      "reason": "No newly built target image/SDK: NASM precheck blocked build"
+    }
+  ],
+  "logs": {
+    "identity": "identity.log",
+    "recovery": "recovery.log",
+    "startup_execvp": "startup_execvp.log",
+    "asan_ubsan": "asan_ubsan.log"
+  },
+  "production_sources_and_host_compile_commands": "report.json",
+  "current_new_work_log": "docs/work_log/b8e04c2a_posix_file_identity.md"
+}

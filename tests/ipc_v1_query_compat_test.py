@@ -95,6 +95,8 @@ using namespace kernelxos;
 struct interrupt_frame { u64 rax=0; u64 rdi=0; u64 rsi=0; u64 rdx=0; };
 u64 ipc_v1_direct_switch_count=0;
 void expire_waiters() {}
+// This fixture tests ABI bytes in ordinary host memory, not VM/COW publication.
+void commit_user_output() {}
 bool user_range_ok(u64 address,u64 length,bool) {
     return address!=0 && length==sizeof(ipc_v1_feature_query);
 }
@@ -128,7 +130,7 @@ int main() {
     for(counter=0; counter<2; ++counter) {
         ipc_v1_feature_query query{};
         assert(ipc_v1::query_features(query)==0);
-        assert(query.supported_features==0x0f);
+        assert(query.supported_features==0x1f);
 """
     if revision == "old":
         return preamble + r"""
@@ -139,7 +141,7 @@ int main() {
     return preamble + r"""
         assert(query.direct_switch_count==0 && query.reserved==0);
         assert(ipc_v1::query_features(query,true)==0);
-        assert(query.supported_features==0x0f);
+        assert(query.supported_features==0x1f);
         assert(query.direct_switch_count==counter && query.reserved==0);
     }
     for(u64 flags=2; flags<4; ++flags) {

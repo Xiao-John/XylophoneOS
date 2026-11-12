@@ -4,6 +4,7 @@
 import argparse
 from pathlib import Path
 import subprocess
+from provenance import cmake_capture_options
 p = argparse.ArgumentParser(description=__doc__)
 for name in ('source', 'build', 'sdk', 'binutils', 'host-qt'):
     p.add_argument('--'+name, type=Path, required=True)
@@ -24,4 +25,5 @@ cmd = ['cmake', '-S', str(a.source.resolve()), '-B', str(a.build.resolve()), '-G
        '-DINPUT_freetype=qt', '-DINPUT_harfbuzz=qt', '-DINPUT_opengl=no',
        '-DQT_QPA_DEFAULT_PLATFORM=xos']
 cmd += ['-DFEATURE_'+f+'=OFF' for f in off]
+cmd += cmake_capture_options(a, cmd)
 subprocess.run(cmd, check=True)

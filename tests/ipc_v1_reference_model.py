@@ -411,12 +411,18 @@ class ipc_v1_reference_model_test(unittest.TestCase):
         self.assertEqual(query["supported"], 0x0f)
         self.assertEqual(query["limits"][0], ipc_v1_max_message_bytes)
 
-    def test_both_sdk_profiles_share_the_guest_qualified_ipc_manifest_entry(self):
+    def test_both_sdk_profiles_separate_available_features_from_qualification(self):
         entry = ipc_v1_manifest_entry()
         self.assertEqual(entry, {"abi_version": 1, "syscall": 88,
                                  "status": "supported", "features": [
                                      "endpoint_call_v1", "deadline_v1",
-                                     "notification_v1", "wait_set_v1"]})
+                                     "notification_v1", "wait_set_v1", "bulk_grant_v1"],
+                                 "guest_qualification": {
+                                     "endpoint_call_v1": "previously_qualified",
+                                     "deadline_v1": "previously_qualified",
+                                     "notification_v1": "previously_qualified",
+                                     "wait_set_v1": "previously_qualified",
+                                     "bulk_grant_v1": "not_run"}})
         root = Path(__file__).resolve().parents[1]
         for builder in (root / "scripts/user_build.py",
                         root / "scripts/build_threading_sdk.py"):

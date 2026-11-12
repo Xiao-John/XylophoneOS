@@ -28,6 +28,9 @@ enum class op : u16 {
     transfer = 19,
     maintenance_acquire = 23, maintenance_release = 24,
     truncate = 25, // handle + offset=size; FatFs-backed, regular writable file only.
+    cwd_set = 26, // path, or an owned directory handle; survives same-PID exec.
+    cwd_get = 27, // canonical absolute name; unlinked cwd reports not_found.
+    resolve_path = 28, // resolve against the session cwd, return absolute name.
     anonymous_seal = 22, // irrevocably remove write access from an anonymous instance
     anonymous = 21, // private disk-backed open description, unlinked at last close
     clone_session = 20, // source authenticated by session; offset = fork child PID
@@ -41,7 +44,9 @@ enum flags : u32 {
     open_truncate = 1u << 4, open_append = 1u << 5,
     open_access_mask = read_write,
     open_option_mask = open_create | open_exclusive | open_truncate | open_append,
-    open_valid_mask = open_access_mask | open_option_mask,
+    open_directory = 1u << 10,
+    open_pin = 1u << 11, // explicit immutable-content lease while loading a file.
+    open_valid_mask = open_access_mask | open_option_mask | open_directory | open_pin,
     list_directories = 1u << 8,
     // op::remove: permit deleting a directory (rmdir semantics). Absent — the
     // default, since every existing client zeroes the request — a directory is
@@ -52,6 +57,7 @@ enum flags : u32 {
 enum class status : i32 {
     ok = 0, not_found = -1, invalid = -2, full = -3, no_space = -4,
     busy = -5, bad_handle = -6, io = -7, would_block = -8, exists = -9,
+    not_directory = -10, is_directory = -11, not_empty = -12, name_too_long = -13,
 };
 
 struct [[gnu::packed]] request {
@@ -89,6 +95,7 @@ struct [[gnu::packed]] response {
 // index in the requested directory (zero when the listing is complete).
 inline constexpr u8 entry_is_directory = 1;
 inline constexpr u32 stat_is_directory = entry_is_directory;
+inline constexpr u32 stat_unlinked = 1u << 1;
 inline constexpr u32 list_record_header_size = 7;
 
 static_assert(sizeof(request) == message_size);

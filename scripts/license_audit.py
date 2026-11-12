@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+from archive_member_map import verify_bundle
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -41,6 +42,8 @@ def main():
     args=parser.parse_args()
     build=args.build.resolve(strict=True); sdk=build/'sdk'
     manifest=json.loads((sdk/'manifest.json').read_text())
+    archive_provenance = verify_bundle(sdk, manifest.get('archive_provenance'),
+                                      allowed_legacy=('lib/libc.a', 'lib/libm.a'))
     components=json.loads((ROOT/'licenses/components.json').read_text())
     component_sources={}
     checked={}
@@ -94,6 +97,7 @@ def main():
     active=[item['id'] for item in listing if item['status']=='open']
     report={'build_id' :manifest['build_id'],'status':'passed','scope':'registered_materials_and_sdk_copies',
             'files':checked,'new_sources':new_sources,'not_completed':active,
+            'archive_provenance': archive_provenance,
             'open_items':listing,
             'open_items_register':'licenses/open_items.json',
             'review_reports':{
@@ -102,7 +106,7 @@ def main():
                 'qt_static_distribution_review':'docs/reports/qt_static_distribution_20261103/'},
             'review_limits':['member mapping is declaration extraction, not a legal opinion',
                              'qt static redistribution remains NOT_GRANTED (see review report)',
-                             'archive member provenance is derived until docs/contracts/archive_member_provenance.md takes effect']}
+                             'legacy dependency mappings retain their historical derived status; captured mappings do not grant distribution rights']}
     (build/'license_report.json').write_text(json.dumps(report,indent=2)+'\n')
     print(f"PASS: {len(checked)} license materials | build {manifest['build_id']} | "
           f"open license items: {len(active)} -> {', '.join(active) if active else 'none'} "

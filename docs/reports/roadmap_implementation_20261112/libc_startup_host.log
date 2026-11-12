@@ -1,0 +1,20 @@
+LIBC_STARTUP_CASES_PASSED=15
+execvp path case 0: ok (opens=1, errno=2)
+execvp path case 1: ok (opens=1, errno=2)
+execvp path case 2: ok (opens=1, errno=2)
+execvp path case 3: ok (opens=0, errno=91)
+execvp path case 4: ok (opens=1, errno=2)
+execvp path case 5: ok (opens=2, errno=2)
+LIBC_EXECVP_CASES_PASSED=6
+spawn error case 0: ok (result=1, expected=1, create=1, abort=0)
+spawn error case 1: ok (result=12, expected=12, create=1, abort=0)
+spawn error case 2: ok (result=16, expected=16, create=1, abort=0)
+spawn error case 3: ok (result=2, expected=2, create=0, abort=0)
+spawn error case 4: ok (result=16, expected=16, create=0, abort=0)
+spawn error case 5: ok (result=11, expected=11, create=0, abort=0)
+spawn error case 6: ok (result=8, expected=8, create=0, abort=0)
+spawn error case 7: ok (result=2, expected=2, create=1, abort=1)
+spawn error case 8: ok (result=16, expected=16, create=1, abort=1)
+spawn error case 9: ok (result=11, expected=11, create=1, abort=1)
+LIBC_SPAWN_ERROR_CASES_PASSED=10
+LIBC_EXEC_CWD_CASES_PASSED=1

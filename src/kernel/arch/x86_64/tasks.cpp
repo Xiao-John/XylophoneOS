@@ -6,6 +6,9 @@
 #include "../../core/thread_lifecycle.hpp"
 #include "../../core/stream_lease.hpp"
 #include "../../core/vm_pin.hpp"
+#include "../../core/user_copyout.hpp"
+#include "../../core/cpu_accounting.hpp"
+#include "cpu_time.hpp"
 #include "../../core/vm_continuation.hpp"
 #include <xos/block.hpp>
 #include <xos/syscall.hpp>
@@ -14,8 +17,9 @@
 #include <xos/platform.hpp>
 #include "frame.hpp"
 #include "build_info.hpp"
-#if XOS_COW1_PROBE
 #include "cow1_probe.hpp"
+#ifndef XOS_COW_FORK
+#define XOS_COW_FORK 1
 #endif
 #include "../../core/anonymous_reservations.hpp"
 #include "interrupt_entry.hpp"
@@ -26,6 +30,7 @@ static_assert(xos::clock::resolution_ns == xos::thread_tick_ns);
 #include "user_images.hpp"
 #include <xos/device_abi.hpp>
 #include <xos/ipc_v1_abi.hpp>
+#include "../../core/device_grants.hpp"
 // Shared audio protocol bounds the PC speaker lease defined below.
 #include <xos/audio_abi.hpp>
 
@@ -82,6 +87,8 @@ struct process_record {
     u64 cr3;
     u64 pid;
     u64 ticks;
+    cpu_totals cpu;
+    cpu_totals child_cpu;
     // Fixed, kernel-authenticated device grants loaded into the TSS bitmap.
     u32 io_window_first, io_window_length;
     bool pc_speaker_io;
@@ -103,6 +110,7 @@ struct process_record {
     bool can_create;
     i32 exit_code;
     u64 parent;
+    u64 cancel_parent;
     u64 entry;
     u64 initial_stack;
     u64 startup;
@@ -133,7 +141,7 @@ struct process_record {
     u64 deferred_vector, deferred_address, deferred_instruction;
 };
 
-struct completion_record { bool used; bool ready; u64 parent; process_status status; };
+struct completion_record { bool used; bool ready; u64 parent; process_status status; cpu_totals cpu; };
 completion_record completions[16];
 
 struct endpoint_record {
@@ -172,6 +180,10 @@ struct thread_record : thread_lifetime {
     u32 wait_channels[channel_wait_many_max], wait_channel_count;
     vm_pin user_pin;
     vm_pin ipc_v1_pins[3];
+    user_copyout output;
+    cpu_totals cpu;
+    device_output device_result;
+    u64 device_event_token;
     u64 ipc_v1_request_address;
     u64 ipc_v1_payload_address;
     u64 ipc_v1_reply_address;
@@ -250,12 +262,10 @@ struct fork_copy_transaction {
     u64 copy_cursor=0, release_cursor=0;
     u32 released=0;
     i64 fail_after=-1;
-#if XOS_COW1_PROBE
     bool cow=false;
     u64 publish_cursor=0;
     i64 prepared_pid=0;
     i64 fail_retain=-1;
-#endif
 };
 fork_copy_transaction fork_copies[8];
 bool fork_child_staged(const process_record* task) {
@@ -264,6 +274,9 @@ bool fork_child_staged(const process_record* task) {
     return false;
 }
 anonymous_vm::reservations vm1_probe_regions[8];
+// Close preflight is serialized by the syscall gate; its 4 KiB scratch must not
+// consume the thread's 4 KiB kernel stack.
+anonymous_vm::reservations ipc_v1_close_regions;
 struct vm2_failure_injection { i64 page=-1, table=-1, fork=-1; bool trace=false; };
 vm2_failure_injection vm2_failures[8];
 #if XOS_VM1_PROBE
@@ -330,7 +343,9 @@ u64 ipc_v1_next_reply_token = 1;
 u64 ipc_v1_direct_switch_count = 0;
 u64 ipc_v1_next_wait_order = 1;
 u64 ipc_v1_next_map_id = 1;
+constinit device_grants::store device_store;
 thread_record* current_thread;
+cpu_accounting cpu_usage;
 u64 next_vm_continuation_generation = 1;
 [[maybe_unused]] bool begin_vm_continuation(process_record& owner, thread_record& thread,
                                              void* context, vm_step_function step) {
@@ -371,6 +386,8 @@ u64 irq_owner, irq_token, irq_next_token = 1, irq_sequence;
 bool irq_pending, irq_quarantined;
 void ready_with(thread_record& thread, i64 result);
 void ipc_v1_revoke_process(u64 pid);
+void device_revoke_process(u64 pid);
+void* device_authorize_syscall(interrupt_frame* frame);
 void ipc_v1_notify_wait_sets();
 u32 ipc_v1_consume_wait_set(u32 object_slot, ipc_v1_wait_event* output, u32 capacity);
 
@@ -607,7 +624,15 @@ void copy_from_user(void* destination, u64 source, u64 length) {
     copy_bytes(destination, reinterpret_cast<const void*>(source), length);
 }
 
+void commit_user_output() {
+    if (current_thread->output.commit() != memory_result::none) {
+        format::text("[vm] copyout mapping changed before publication\r\n");
+        halt();
+    }
+}
+
 void copy_to_user(u64 destination, const void* source, u64 length) {
+    commit_user_output();
     copy_bytes(reinterpret_cast<void*>(destination), source, length);
 }
 
@@ -616,9 +641,14 @@ bool user_range_ok(u64 address, u64 length, bool write) {
     const bool low = address >= user_base && address < user_limit && length <= user_limit-address;
     const bool arena = address >= 0x100000000000ull && address < 0x200000000000ull &&
                        length <= 0x200000000000ull-address;
-    if (!low && !arena) { return false; }
+    const bool device = address >= device_window_begin && address < device_window_end &&
+                        length <= device_window_end - address;
+    if (!low && !arena && !device) { return false; }
     const u64 first = address & ~(page_size - 1);
     const u64 last = (address + length - 1) & ~(page_size - 1);
+    if (write) {
+        return current_thread->output.prepare(current->cr3, first, last) == memory_result::none;
+    }
     for (u64 page = first; page <= last; page += page_size) {
         u64 physical = 0;
         page_permissions permissions{};
@@ -626,49 +656,10 @@ bool user_range_ok(u64 address, u64 length, bool write) {
             return false;
         }
         if (!permissions.user) { return false; }
-        if (write && !permissions.writable) {
-#if XOS_COW1_PROBE
-            if (!current || !current->cow1_probe_enabled ||
-                arch::cow1_resolve_page(current->cr3,page)!=memory_result::none) return false;
-#else
-            return false;
-#endif
-        }
     }
     return true;
 }
 
-// sys_device (device_authorization_v1) segment 1a: request snapshot and
-// frozen header validation; known operations are transient device_unknown
-// until segments 1b-1e land the grant/map/irq/dma machinery.
-void* device_authorize_syscall(interrupt_frame* frame) {
-    i64 result = device_unknown;
-    const u64 request_address = frame->rdi;
-    do {
-        if (frame->rsi != 0 || frame->rdx != 0) { result = device_invalid; break; }
-        device_request request{};
-        if ((request_address & 7) != 0) { result = device_invalid; break; }
-        if (!user_range_ok(request_address, sizeof(request), false)) { result = device_fault; break; }
-        copy_from_user(&request, request_address, sizeof(request));
-        const u32 operation = static_cast<u32>(request.operation);
-        if (request.version != 1 || request.size != sizeof(request) || request.reserved != 0 ||
-            request.flags != 0 || operation < 1 || operation > 11) { result = device_invalid; break; }
-        if (request.deadline_ns != 0 && request.operation != device_operation::irq_wait) {
-            result = device_invalid; break;
-        }
-        if (request.input_length != 0 &&
-            (request.input_address == 0 || !user_range_ok(request.input_address, request.input_length, false))) {
-            result = device_fault; break;
-        }
-        if (request.output_length != 0 &&
-            (request.output_address == 0 || !user_range_ok(request.output_address, request.output_length, true))) {
-            result = device_fault; break;
-        }
-        result = device_unknown;
-    } while (false);
-    frame->rax = static_cast<u64>(result);
-    return frame;
-}
 
 bool rdrand_supported() {
     u32 eax = 1, ebx = 0, ecx = 0, edx = 0;
@@ -1115,7 +1106,6 @@ i64 ipc_recv(u64 handle, u64 address, u64 length) {
          !endpoint->generic_channel && !endpoint->generic)) {
         return sys_error_invalid_handle;
     }
-    if (!user_range_ok(address, length, true)) { return sys_error_invalid_argument; }
     if (endpoint->generic && !endpoint->pending) {
         const process_record* sender = task_by_pid(endpoint->sender_pid);
         if (sender == nullptr || sender->state == task_state::dead || sender->closing) {
@@ -1124,6 +1114,7 @@ i64 ipc_recv(u64 handle, u64 address, u64 length) {
     }
     if (!endpoint->pending) { return sys_error_empty; }
     if (length < endpoint->length) { return sys_error_invalid_argument; }
+    if (!user_range_ok(address, endpoint->length, true)) { return sys_error_invalid_argument; }
     copy_to_user(address, endpoint->data, endpoint->length);
     const u32 length_received = endpoint->length;
     endpoint->pending = false;
@@ -1235,7 +1226,7 @@ void mark_reap(process_record* task) {
     if (task != nullptr) { reap_pending[task_index(task)] = true; }
 }
 
-// This always runs on a different process's kernel stack. Shared pages have one owner.
+// Runs on another process's stack. Each user mapping releases its own reference.
 void destroy_task(process_record* task) {
     if (task == nullptr || task->state == task_state::free || task == current || task->continuation.active() ||
         fork_child_staged(task)) { return; }
@@ -1247,6 +1238,7 @@ void destroy_task(process_record* task) {
     reap_pending[task_index(task)] = false;
     const u64 pid = task->pid;
     ipc_v1_revoke_process(pid);
+    device_revoke_process(pid);
     for (auto& entry : ipc_names) {
         if (entry.used && entry.owner_pid == pid) entry = ipc_name_record{};
     }
@@ -1267,6 +1259,7 @@ void destroy_task(process_record* task) {
     u64 freed = 0;
     for (auto& thread : threads) {
         if (thread.process != task) { continue; }
+        thread.output.reset();
         if (thread.kernel_stack_top != 0 &&
             release_page(thread.kernel_stack_top - kernel_stack_bytes) == memory_result::none) { ++freed; }
         thread = thread_record{};
@@ -1298,7 +1291,9 @@ completion_record* completion_for(u64 parent, u64 pid) {
 void finish_task(process_record* task, process_outcome outcome, i64 code,
                   u64 vector, u64 address, u64 instruction) {
     if (task->state == task_state::dead) { return; }
+    if (cpu_usage.process == &task->cpu) { cpu_usage.stop(execution_counter()); }
     ipc_v1_revoke_process(task->pid);
+    device_revoke_process(task->pid);
     release_pc_speaker(task);
     revoke_pc_speaker_controller(task);
     if (task->continuation.active()) {
@@ -1306,10 +1301,12 @@ void finish_task(process_record* task, process_outcome outcome, i64 code,
             task->deferred_outcome=outcome; task->deferred_code=code;
             task->deferred_vector=vector; task->deferred_address=address; task->deferred_instruction=instruction;
             task->closing=true; task->continuation.cancel();
-            // Preserve the existing process-tree cancellation semantics even
-            // when this task needs multiple batches to release its resources.
+            // Explicit cancellation still follows its ancestry while VM work
+            // unwinds; committed children survive an ordinary parent exit.
             for (auto& child : tasks) {
-                if (child.state != task_state::free && child.parent == task->pid) {
+                if (child.state != task_state::free && child.state != task_state::dead &&
+                    ((outcome == process_outcome::killed && child.cancel_parent == task->pid) ||
+                     (child.parent == task->pid && child.state == task_state::building))) {
                     finish_task(&child, process_outcome::killed, -9);
                 }
             }
@@ -1324,6 +1321,7 @@ void finish_task(process_record* task, process_outcome outcome, i64 code,
     task->state = task_state::dead;
     for (auto& thread : threads) {
         if (thread.process == task && thread.state != thread_state::free) {
+            thread.output.reset();
             thread.state = thread_state::dead;
             thread.user_pin.clear();
             thread.wait_kind = thread_wait_kind::none;
@@ -1333,6 +1331,8 @@ void finish_task(process_record* task, process_outcome outcome, i64 code,
     if (task->completion_slot != 0) {
         auto& item = completions[task->completion_slot - 1];
         item.status = {1, outcome, task->pid, code, vector, address, instruction};
+        item.cpu = task->cpu;
+        item.cpu.include(task->child_cpu);
         item.ready = true;
         for (auto& parent : threads) {
             if (parent.process != nullptr && parent.process->pid == task->parent &&
@@ -1340,10 +1340,16 @@ void finish_task(process_record* task, process_outcome outcome, i64 code,
                 parent.wait_target == task->pid) { parent.state = thread_state::ready; }
         }
     }
-    // Builder authority is not inherited. Losing the builder cancels its children.
+    // Unstarted constructors lose their owner. Runnable children instead pass
+    // to the kernel reaper; their cancellation ancestry follows the live tree.
     for (auto& child : tasks) {
-        if (child.state != task_state::free && child.parent == task->pid) {
+        if (child.state == task_state::free || child.state == task_state::dead) { continue; }
+        if ((outcome == process_outcome::killed && child.cancel_parent == task->pid) ||
+            (child.parent == task->pid && child.state == task_state::building)) {
             finish_task(&child, process_outcome::killed, -9);
+        } else {
+            if (child.parent == task->pid) { child.parent = 0; child.completion_slot = 0; }
+            if (child.cancel_parent == task->pid) { child.cancel_parent = task->cancel_parent; }
         }
     }
     for (auto& item : completions) {
@@ -1409,6 +1415,15 @@ bool cancel_foreground() {
 }
 
 void deliver_wait(thread_record* thread, interrupt_frame* frame) {
+    if (thread->wait_kind == thread_wait_kind::device_irq) {
+        if (thread->ipc_v1_pins[0].active() && user_range_ok(thread->wait_buffer, sizeof(device_output), true))
+            copy_to_user(thread->wait_buffer, &thread->device_result, sizeof(device_output));
+        else frame->rax = static_cast<u64>(device_fault);
+        thread->ipc_v1_pins[0].clear();
+        thread->device_result = {}; thread->device_event_token = 0;
+        thread->wait_kind = thread_wait_kind::none;
+        return;
+    }
     if (thread->wait_kind == thread_wait_kind::ipc_v1_wait_set) {
         ipc_v1_wait_set_wait request{};
         const u32 count = frame->rax == 0 ? thread->ipc_v1_event_count :
@@ -1509,6 +1524,7 @@ void deliver_wait(thread_record* thread, interrupt_frame* frame) {
     if (item == nullptr || !item->ready) { return; }
     if (user_range_ok(thread->wait_buffer, sizeof(process_status), true)) {
         copy_to_user(thread->wait_buffer, &item->status, sizeof(process_status));
+        thread->process->child_cpu.include(item->cpu);
         *item = completion_record{};
         frame->rax = 0;
     } else { frame->rax = static_cast<u64>(process_error_invalid); }
@@ -1574,6 +1590,8 @@ interrupt_frame* make_initial_frame(thread_record* thread) {
 void reap_threads();
 void expire_waiters();
 interrupt_frame* schedule(interrupt_frame* frame, thread_record* preferred = nullptr) {
+    if (current_thread != nullptr) { commit_user_output(); }
+    if (cpu_usage.valid) { cpu_usage.stop(execution_counter()); }
     expire_waiters();
     reap_dead();
     reap_threads();
@@ -1604,6 +1622,7 @@ interrupt_frame* schedule(interrupt_frame* frame, thread_record* preferred = nul
         interrupt_frame* next_frame = next->state == thread_state::fresh
             ? make_initial_frame(next) : reinterpret_cast<interrupt_frame*>(next->kernel_rsp);
         switch_to(next);
+        if (cpu_usage.valid) { cpu_usage.select(&next->process->cpu, &next->cpu, true, execution_counter()); }
         auto& continuation = next->process->continuation;
         if (continuation.active()) {
             i64 result = 0;
@@ -1630,6 +1649,7 @@ interrupt_frame* schedule(interrupt_frame* frame, thread_record* preferred = nul
                 format::text("[vm] continuation invariant failure\r\n"); halt();
             }
             next->state = thread_state::ready;
+            if (cpu_usage.valid) { cpu_usage.stop(execution_counter()); }
             // If no other process can run, allow the unified clock and wakeups
             // to progress instead of spinning through all remaining batches.
             bool other = false;
@@ -1752,8 +1772,11 @@ i64 set_heap_break(u64 requested) {
         for (u64 address = new_end; address < old_end; address += page_size) {
             u64 physical = 0;
             page_permissions permissions{};
+            bool logical_write = false;
             if (query_page_in(current->cr3, address, &physical, &permissions) != memory_result::none ||
-                !permissions.user || !permissions.writable) { return process_error_state; }
+                !permissions.user ||
+                query_logical_write_in(current->cr3, address, &logical_write) != memory_result::none ||
+                !logical_write) { return process_error_state; }
         }
         for (u64 address = new_end; address < old_end; address += page_size) {
             u64 physical = 0;
@@ -1944,7 +1967,8 @@ void ready_with(thread_record& thread, i64 result) {
     if (thread.wait_kind != thread_wait_kind::ipc_v1_call &&
         thread.wait_kind != thread_wait_kind::ipc_v1_receive &&
         thread.wait_kind != thread_wait_kind::ipc_v1_notification &&
-        thread.wait_kind != thread_wait_kind::ipc_v1_wait_set) {
+        thread.wait_kind != thread_wait_kind::ipc_v1_wait_set &&
+        thread.wait_kind != thread_wait_kind::device_irq) {
         thread.wait_kind = thread_wait_kind::none;
     }
     thread.wait_target = 0;
@@ -1975,7 +1999,8 @@ void reap_threads() {
                 // its validated physical page instead of changing the active CR3.
                 u64 physical = 0; page_permissions permissions{};
                 const u64 address = waiter.wait_buffer;
-                if (query_page_in(waiter.process->cr3, address & ~(page_size - 1), &physical, &permissions)
+                if (waiter.user_pin.begin == address && waiter.user_pin.end == address + sizeof(u64) &&
+                    query_page_in(waiter.process->cr3, address & ~(page_size - 1), &physical, &permissions)
                     == memory_result::none && permissions.user && permissions.writable) {
                     copy_bytes(reinterpret_cast<void*>(physical + (address & (page_size - 1))),
                                &thread.result, sizeof(u64));
@@ -2000,6 +2025,12 @@ void reap_threads() {
 void expire_waiters() {
     const u64 now = clock::monotonic_ns();
     for (auto& thread : threads) {
+        if (thread.state == thread_state::blocked && thread.wait_kind == thread_wait_kind::device_irq &&
+            thread_deadline_reached(now, thread.deadline_ns)) {
+            thread.device_result = {};
+            ready_with(thread, device_timeout);
+            continue;
+        }
         if (thread.state == thread_state::blocked &&
             thread.wait_kind == thread_wait_kind::ipc_v1_notification &&
             thread_deadline_reached(now, thread.deadline_ns)) {
@@ -2222,6 +2253,7 @@ void* thread_syscall(interrupt_frame* frame) {
             copy_to_user(second, &target->result, sizeof(u64)); *target = thread_record{}; result = 0; break;
         }
         if (!current_thread->user_pin.set(second, sizeof(u64))) { result = thread_error_busy; break; }
+        commit_user_output();
         target->joiner = current_thread->tid;
         current_thread->wait_target = first; current_thread->wait_buffer = second;
         current_thread->wait_kind = thread_wait_kind::join;
@@ -2251,6 +2283,7 @@ void* thread_syscall(interrupt_frame* frame) {
         if (thread_deadline_reached(clock::monotonic_ns(), request.deadline_ns)) { result = thread_error_timeout; break; }
         if (next_wait_order == 0) { result = process_error_resources; break; }
         if (!current_thread->user_pin.set(request.address, sizeof(u32))) { result = thread_error_busy; break; }
+        commit_user_output();
         current_thread->wait_order = next_wait_order++;
         current_thread->wait_target = request.address;
         current_thread->deadline_ns = request.deadline_ns;
@@ -2356,9 +2389,7 @@ i64 finish_fork_copy(fork_copy_transaction& tx) {
         format::text(" pages="); format::decimal(child->user_pages); format::text("\r\n");
     }
     const i64 pid=static_cast<i64>(child->pid);
-#if XOS_COW1_PROBE
     if (tx.cow) { tx.prepared_pid=pid; return pid; }
-#endif
     tx.child=nullptr;tx.owner=nullptr;return pid;
 }
 vm_step fork_copy_step(void* opaque,vm_phase phase,u32 budget,i64& result) {
@@ -2374,16 +2405,11 @@ vm_step fork_copy_step(void* opaque,vm_phase phase,u32 budget,i64& result) {
             format::text("[vm3-fork] preparing\r\n");
         if(tx.fail_after>=0) memory_self_test_fail_after(tx.fail_after);
 #endif
-#if XOS_COW1_PROBE
         const auto copied=tx.cow
             ? arch::cow1_stage_batch(tx.owner->cr3,child->cr3,process_max_pages,
                                      &child->user_pages,&tx.copy_cursor,work,&tx.fail_retain)
             : copy_user_pages_batch(tx.owner->cr3,child->cr3,process_max_pages,
                                     &child->user_pages,&tx.copy_cursor,work);
-#else
-        const auto copied=copy_user_pages_batch(tx.owner->cr3,child->cr3,process_max_pages,
-                                                &child->user_pages,&tx.copy_cursor,work);
-#endif
 #if XOS_VM1_PROBE
         if(tx.fail_after>=0) { tx.fail_after=memory_self_test_remaining();memory_self_test_fail_after(-1); }
 #endif
@@ -2392,15 +2418,14 @@ vm_step fork_copy_step(void* opaque,vm_phase phase,u32 budget,i64& result) {
         if(child->user_pages!=tx.owner->user_pages) { result=process_error_resources;return vm_step::failed; }
         result=finish_fork_copy(tx);
         if (result<=0) return vm_step::failed;
-#if XOS_COW1_PROBE
         if (tx.cow) return vm_step::prepared;
-#endif
         return vm_step::finished;
     }
-#if XOS_COW1_PROBE
     if (phase==vm_phase::publishing && tx.cow) {
+#if XOS_COW1_PROBE
         if (tx.owner->user_pages > 256 && tx.publish_cursor == 0x40000000ull)
             format::text("[cow1-probe] publishing\r\n");
+#endif
         if (arch::cow1_publish_batch(tx.owner->cr3,child->cr3,&tx.publish_cursor,work)!=memory_result::none)
             halt();
         if (tx.publish_cursor!=(u64{1}<<47)) return vm_step::again;
@@ -2408,7 +2433,6 @@ vm_step fork_copy_step(void* opaque,vm_phase phase,u32 budget,i64& result) {
         tx.child=nullptr; tx.owner=nullptr;
         return vm_step::finished;
     }
-#endif
     if(phase==vm_phase::rolling_back) {
 #if XOS_VM1_PROBE
         if (tx.owner->user_pages > 256 && tx.release_cursor == 0x40000000ull)
@@ -2432,6 +2456,10 @@ i64 prepare_fork(interrupt_frame* frame) {
     }
     if (current->spawn_depth == 0 && !current->can_create) return process_error_denied;
     if (current->closing || current_thread->leaving) return process_error_state;
+    if (device_store.mapped(current->pid)) return process_error_busy;
+    for (const auto& mapping : ipc_v1_grant_mappings) {
+        if (mapping.used && mapping.holder_pid == current->pid) return process_error_busy;
+    }
     if (current->fork_depth >= process_fork_depth_max || !files_service_live()) return process_error_resources;
     u32 free_endpoints=0;bool free_completion=false;
     for(const auto& item:completions) if(!item.used) { free_completion=true;break; }
@@ -2440,12 +2468,14 @@ i64 prepare_fork(interrupt_frame* frame) {
     process_record* child=prepare_task(current->name);
     if(!child)return process_error_resources;
     child->parent=current->pid;child->spawn_depth=current->spawn_depth;child->can_create=current->can_create;
+    child->cancel_parent=current->pid;
     child->fork_source=current->pid;child->fork_depth=current->fork_depth+1;child->fork_pending=true;
     child->heap_break=current->heap_break;child->entry=current->entry;
     child->initial_stack=current->initial_stack;child->startup=current->startup;
     auto& tx=fork_copies[static_cast<u32>(current-tasks)];
     tx.owner=current;tx.child=child;tx.frame=frame;
     tx.copy_cursor=0x40000000ull;tx.release_cursor=0x40000000ull;tx.released=0;tx.fail_after=-1;
+    tx.cow=XOS_COW_FORK; tx.publish_cursor=0x40000000ull; tx.prepared_pid=0; tx.fail_retain=-1;
 #if XOS_COW1_PROBE
     child->cow1_probe_enabled=current->cow1_probe_enabled;
     tx.cow=current->cow1_probe_enabled; tx.publish_cursor=0x40000000ull; tx.prepared_pid=0;
@@ -2586,6 +2616,29 @@ bool ipc_v1_grant_overlap(u64 pid, u64 begin, u64 end) {
         }
     }
     return false;
+}
+
+i64 ipc_v1_grant_close_status(u32 slot) {
+    bool continuing = false;
+    for (const auto& mapping : ipc_v1_grant_mappings) {
+        if (!mapping.used || mapping.grant_slot != slot) continue;
+        auto* owner = task_by_pid(mapping.holder_pid);
+        if (owner && pinned_range(owner, mapping.address,
+                mapping.address + u64{mapping.page_count} * page_size)) {
+            return static_cast<i64>(ipc_v1_error::busy);
+        }
+        continuing = continuing || (owner && owner->continuation.active());
+    }
+    for (auto& owner : tasks) {
+        ipc_v1_close_regions = vm1_probe_regions[static_cast<u32>(&owner - tasks)];
+        for (const auto& mapping : ipc_v1_grant_mappings) {
+            if (mapping.used && mapping.grant_slot == slot && mapping.holder_pid == owner.pid &&
+                ipc_v1_close_regions.unmap(mapping.address, u64{mapping.page_count} * page_size) != 0) {
+                return static_cast<i64>(ipc_v1_error::resources);
+            }
+        }
+    }
+    return continuing ? static_cast<i64>(ipc_v1_error::state) : 0;
 }
 
 void ipc_v1_remove_grant_mapping(u32 mapping_slot) {
@@ -3378,34 +3431,8 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
         else if (!(handle->rights & static_cast<u32>(ipc_v1_grant_right::manage))) { result = static_cast<i64>(ipc_v1_error::denied); }
         else {
             const u32 slot = handle->object_slot;
-            bool busy = false;
-            bool reservation_full = false;
-            bool holder_continuation = false;
-            for (const auto& mapping : ipc_v1_grant_mappings) {
-                if (!mapping.used || mapping.grant_slot != slot) { continue; }
-                process_record* owner = task_by_pid(mapping.holder_pid);
-                if (owner && pinned_range(owner, mapping.address, mapping.address + u64{mapping.page_count} * page_size)) {
-                    busy = true; break;
-                }
-                // Same no-effects contract as the pin preflight: a full
-                // fragment table that cannot split must surface as a
-                // recoverable error, not a later halt during removal.
-                if (owner && !vm1_probe_regions[static_cast<u32>(owner - tasks)].can_unmap(
-                        mapping.address, u64{mapping.page_count} * page_size)) {
-                    reservation_full = true;
-                }
-                // A holder mid VM-continuation holds a snapshot of its
-                // reservation table (vm2_page_step restores tx.regions on
-                // finish); removing the grant now would be undone by that
-                // restore, resurrecting a stale interval after a successful
-                // close. Reject while any holder continuation is active,
-                // mirroring grant_map's own continuation guard.
-                if (owner && owner->continuation.active()) { holder_continuation = true; }
-            }
-            if (busy) { result = static_cast<i64>(ipc_v1_error::busy); }
-            else if (reservation_full) { result = static_cast<i64>(ipc_v1_error::resources); }
-            else if (holder_continuation) { result = static_cast<i64>(ipc_v1_error::state); }
-            else { ipc_v1_destroy_grant(slot); result = 0; }
+            result = ipc_v1_grant_close_status(slot);
+            if (result == 0) ipc_v1_destroy_grant(slot);
         }
         frame->rax = static_cast<u64>(result); return frame;
     }
@@ -3738,6 +3765,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                 current_thread->ipc_v1_payload_capacity = request.capacity;
                 current_thread->ipc_v1_call_slot = handle->object_slot;
                 current_thread->ipc_v1_event_count = 0;
+                commit_user_output();
                 current_thread->wait_target = request.handle;
                 current_thread->wait_order = ipc_v1_next_wait_order++;
                 current_thread->deadline_ns = request.deadline_ns;
@@ -3850,6 +3878,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
             } else {
                 current_thread->ipc_v1_request_address = address;
                 current_thread->ipc_v1_label = 0;
+                commit_user_output();
                 current_thread->ipc_v1_call_slot = handle->object_slot;
                 current_thread->wait_target = request.handle;
                 current_thread->wait_order = ipc_v1_next_wait_order++;
@@ -3915,6 +3944,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                          !ipc_v1_pin(*current_thread, 1, request.reply_buffer, request.reply_capacity)) {
                     ipc_v1_unpin(*current_thread); result = static_cast<i64>(ipc_v1_error::resources);
                 } else {
+                    commit_user_output();
                     auto& call = ipc_v1_calls[slot]; call = ipc_v1_call_record{};
                     call.state = ipc_v1_call_state::queued; call.endpoint_slot = endpoint_slot;
                     call.caller_thread_slot = static_cast<u32>(current_thread - threads);
@@ -4002,6 +4032,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                      !ipc_v1_pin(*current_thread, 1, request.buffer, request.capacity)) {
                 ipc_v1_unpin(*current_thread); result = static_cast<i64>(ipc_v1_error::resources);
             } else {
+                commit_user_output();
                 current_thread->ipc_v1_request_address = address; current_thread->ipc_v1_payload_address = request.buffer;
                 current_thread->ipc_v1_payload_capacity = request.capacity; current_thread->ipc_v1_length = 0;
                 current_thread->ipc_v1_call_slot = handle->endpoint_slot;
@@ -4052,6 +4083,9 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
         } else {
             u8 reply_payload[ipc_v1_max_message_bytes]{};
             if (request.reply_length) copy_ipc_payload(reply_payload, reinterpret_cast<const void*>(request.reply_buffer), request.reply_length);
+            // Reply and receive are separate commits: an unsuccessful receive
+            // must still report that the reply token has already been consumed.
+            commit_user_output();
             result = ipc_v1_reply_token(request.reply_token, request.reply_label,
                                         reply_payload, request.reply_length);
             if (result != 0) { frame->rax = static_cast<u64>(result); return frame; }
@@ -4109,6 +4143,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                 ipc_v1_unpin(*current_thread);
                 return finish_receive_error(static_cast<i64>(ipc_v1_error::resources));
             }
+            commit_user_output();
             current_thread->ipc_v1_request_address = address;
             current_thread->ipc_v1_payload_address = request.receive_buffer;
             current_thread->ipc_v1_payload_capacity = request.receive_capacity;
@@ -4128,6 +4163,8 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
     }
     frame->rax = static_cast<u64>(ipc_v1_error::unsupported); return frame;
 }
+
+#include "device_tasks.inc"
 
 void* process_syscall(interrupt_frame* frame) {
     if (frame->rax == sys_ipc_v1) { return ipc_v1_syscall(frame); }
@@ -4540,6 +4577,7 @@ void* process_syscall(interrupt_frame* frame) {
         process_record* stage = prepare_task(name);
         if (stage == nullptr) { result = process_error_resources; break; }
         stage->parent = current->pid;
+        stage->cancel_parent = current->pid;
         stage->can_create = current->can_create;
         stage->replacement_pending = true;
         stage->stdio_mask = 0;
@@ -4612,6 +4650,7 @@ void* process_syscall(interrupt_frame* frame) {
         }
         if (next_endpoint_handle > 0xfffffffeull) { result = process_error_resources; break; }
         ipc_v1_revoke_process(current->pid);
+        device_revoke_process(current->pid);
         release_pc_speaker(current);
         revoke_pc_speaker_controller(current);
         quarantine_com1(current);
@@ -4850,6 +4889,7 @@ void* process_syscall(interrupt_frame* frame) {
         process_record* task = prepare_task(name);
         if (task == nullptr) { result = process_error_resources; break; }
         task->parent = current->pid;
+        task->cancel_parent = current->pid;
         if (!inherit_stdio(task, current, static_cast<u32>(first))) {
             destroy_task(task); result = process_error_state; break;
         }
@@ -5236,11 +5276,13 @@ void* process_syscall(interrupt_frame* frame) {
         if (result == thread_error_busy) { break; }
         if (item->ready) {
             copy_to_user(second, &item->status, sizeof(process_status));
+            current->child_cpu.include(item->cpu);
             *item = completion_record{}; result = 0;
         } else {
             process_record* child = owned_process(first);
             if (child == nullptr || child->state == task_state::building) { result = process_error_state; break; }
             if (!current_thread->user_pin.set(second, sizeof(process_status))) { result = thread_error_busy; break; }
+            commit_user_output();
             current_thread->wait_target = first; current_thread->wait_buffer = second;
             current_thread->wait_kind = thread_wait_kind::process;
             current_thread->state = thread_state::blocked; frame->rax = 0;
@@ -5481,7 +5523,26 @@ void* process_syscall(interrupt_frame* frame) {
 }
 }
 
+void cpu_interrupt_enter(interrupt_frame* frame) {
+    if (cpu_usage.valid && (frame->cs & 3) == 3 && current_thread != nullptr) {
+        cpu_usage.select(&current->cpu, &current_thread->cpu, true, execution_counter());
+    }
+}
+
+void cpu_interrupt_leave(interrupt_frame* frame) {
+    if (cpu_usage.valid && (frame->cs & 3) == 3 && current_thread != nullptr) {
+        cpu_usage.select(&current->cpu, &current_thread->cpu, false, execution_counter());
+    }
+}
+
 void* input_entry(interrupt_frame* frame) {
+    if (frame->vector >= 32 && frame->vector < 48 && frame->vector != 33 &&
+        frame->vector != 36 && frame->vector != 44) {
+        const u8 irq = static_cast<u8>(frame->vector - 32);
+        if (!device_store.interrupt(device_backend, irq)) platform::irq_mask(irq);
+        platform::irq_acknowledge(irq);
+        return frame;
+    }
     if (frame->vector == 36) {
         platform::irq_mask(4);
         platform::irq_acknowledge(4);
@@ -5510,7 +5571,7 @@ void* timer_entry(interrupt_frame* frame) {
     return frame;
 }
 
-void* syscall_entry(interrupt_frame* frame) {
+void* dispatch_syscall(interrupt_frame* frame) {
     reap_dead();
     reap_threads();
     const u64 number = frame->rax;
@@ -5528,6 +5589,27 @@ void* syscall_entry(interrupt_frame* frame) {
     if(number==sys_device){return device_authorize_syscall(frame);}
     i64 result = sys_error_invalid_argument;
     switch (number) {
+    case sys_process_cpu_time: {
+        process_cpu_time output{};
+        if (frame->rsi != 0 || frame->rdx != 0 || (frame->rdi & 7) ||
+            !user_range_ok(frame->rdi, sizeof(output), false)) { result = process_error_invalid; break; }
+        copy_from_user(&output, frame->rdi, sizeof(output));
+        if (output.version != 1 || output.size != sizeof(output)) { result = process_error_invalid; break; }
+        if (!cpu_usage.valid) { result = process_cpu_time_unavailable; break; }
+        if (!user_range_ok(frame->rdi, sizeof(output), true)) { result = process_error_invalid; break; }
+        cpu_usage.charge(execution_counter());
+        if (!cpu_usage.valid) { result = process_cpu_time_unavailable; break; }
+        output.user_ns = execution_time_ns(current->cpu.user);
+        output.system_ns = execution_time_ns(current->cpu.system);
+        output.child_user_ns = execution_time_ns(current->child_cpu.user);
+        output.child_system_ns = execution_time_ns(current->child_cpu.system);
+        output.thread_user_ns = execution_time_ns(current_thread->cpu.user);
+        output.thread_system_ns = execution_time_ns(current_thread->cpu.system);
+        output.elapsed_ns = clock::monotonic_ns();
+        output.resolution_ns = execution_resolution_ns();
+        copy_to_user(frame->rdi, &output, sizeof(output));
+        result = 0; break;
+    }
     case sys_write: {
         const u64 address = frame->rdi;
         const u64 length = frame->rsi;
@@ -5560,7 +5642,7 @@ void* syscall_entry(interrupt_frame* frame) {
     case sys_tasklist: {
         const u64 address = frame->rdi;
         const u64 length = frame->rsi;
-        if (length == 0 || !user_range_ok(address, length, true)) {
+        if (length == 0) {
             result = sys_error_invalid_argument;
             break;
         }
@@ -5583,7 +5665,7 @@ void* syscall_entry(interrupt_frame* frame) {
                 buffer[used++] = '\n';
             }
         }
-        if (used > length) {
+        if (used > length || !user_range_ok(address, used, true)) {
             result = sys_error_invalid_argument;
         } else {
             copy_to_user(address, buffer, used);
@@ -5789,20 +5871,49 @@ void* syscall_entry(interrupt_frame* frame) {
     return frame;
 }
 
+void* syscall_entry(interrupt_frame* frame) {
+    thread_record* caller = current_thread;
+    const u64 number = frame->rax;
+    caller->output.reset();
+    void* returned = dispatch_syscall(frame);
+    if (returned == frame && caller->output.failure == memory_result::out_of_memory) {
+        i64 error = process_error_resources;
+        if (number == sys_random_bytes) error = random_error_io;
+        else if (number == sys_block_read || number == sys_block_info) error = block_error_io;
+        else if (number == sys_recv || number == sys_tasklist) error = sys_error_full;
+        else if (number >= sys_thread_prepare && number <= sys_thread_profile) error = thread_error_memory;
+        else if (number == sys_display || number == sys_display_present) error = display_resources;
+        else if (number == sys_ipc_v1) error = static_cast<i64>(ipc_v1_error::resources);
+        else if (number == sys_device) error = device_resources;
+        frame->rax = static_cast<u64>(error);
+    }
+    caller->output.reset();
+    return returned;
+}
+
 void* user_fault(interrupt_frame* frame) {
     const u64 fault_address = frame->vector == 14 ? read_cr2() : 0;
-#if XOS_COW1_PROBE
-    if (current && current->cow1_probe_enabled && frame->vector==14 &&
+    if (current && frame->vector==14 &&
         (frame->error & 0x1f)==0x07) {
+#if XOS_COW1_PROBE
         const bool inject=current->cow1_probe_fail_fault;
         current->cow1_probe_fail_fault=false;
         if (inject) memory_self_test_fail_after(0);
-        const auto resolved=arch::cow1_resolve_page(current->cr3,fault_address & ~(page_size-1));
-        if (inject) memory_self_test_fail_after(-1);
-        if (resolved==memory_result::none) { ++current->cow1_probe_faults; return frame; }
-        if (resolved==memory_result::out_of_memory) format::text("[cow1-probe] fault=cow_oom\r\n");
-    }
 #endif
+        const auto resolved=arch::cow1_resolve_page(current->cr3,fault_address & ~(page_size-1));
+#if XOS_COW1_PROBE
+        if (inject) memory_self_test_fail_after(-1);
+        if (resolved==memory_result::none) ++current->cow1_probe_faults;
+#endif
+        if (resolved==memory_result::none) return frame;
+        if (resolved==memory_result::out_of_memory) {
+#if XOS_COW1_PROBE
+            format::text("[cow1-probe] fault=cow_oom\r\n");
+#else
+            format::text("[cow] fault=cow_oom\r\n");
+#endif
+        }
+    }
     format::text("[task] event=fault pid=");
     format::decimal(current != nullptr ? current->pid : 0);
     format::text(" vector=");
@@ -5865,6 +5976,9 @@ bool tasks_create_default() {
 }
 
 [[noreturn]] void tasks_enter() {
+    cpu_usage.valid = execution_clock_init();
+    if (cpu_usage.valid) { cpu_usage.last = execution_counter(); }
+    else { format::text("[clock] event=cpu_time unavailable=calibration_failed\r\n"); }
     display::input_init();
     if (!platform::realtime_clock_init(clock::monotonic_ns())) {
         format::text("[clock] event=realtime unavailable=rtc_invalid\r\n");
@@ -5879,6 +5993,7 @@ bool tasks_create_default() {
     format::text("[sched] event=start tasks=");
     format::decimal(task_total);
     format::text("\r\n");
+    if (cpu_usage.valid) { cpu_usage.select(&first->process->cpu, &first->cpu, false, execution_counter()); }
     enter_frame(frame);
 }
 

@@ -9,6 +9,7 @@ from make_work_disk import create_fat32
 from work_disk import transfer
 from task_smoke import send_bytes,pump
 from process_smoke import command,resources
+from graphics_guest import start_graphics, stop_graphics, reap_compositor
 p=argparse.ArgumentParser()
 for name in ('image','target','output'):p.add_argument('--'+name,type=Path,required=True)
 p.add_argument('--case',choices=['interactive','session','lifecycle','studio'],default='interactive')
@@ -50,7 +51,7 @@ try:
    for f in (ROOT/'src/ports/aurora_browser/pages').iterdir():transfer(disk,'import','/web/'+f.name,f)
   g=Guest(a.image.resolve(),str(out.relative_to(ROOT/'build'))+'/guest',work_disk=disk);report['qemu_command']=g.command
   g.expect(b'xos64> ',timeout=45);send_bytes(g,b'run\r');g.expect_supervisor(trace=True);pump(g,1.3)
-  base=resources(g);service_result=command(g,'display-start',b'result=0');service=int(re.search(rb'\[display-start\] pid=(\d+)',service_result)[1]);g.expect(b'[display-service] ready');with_service=resources(g)
+  base=resources(g);service, compositor = start_graphics(g);with_service=resources(g)
   report['baseline']=base;report['with_service']=with_service
   def start(background=False,app='desktop',args=''):
    b=len(g.output);send_bytes(g,('spawn-file' if background else 'exec-file').encode()+f' /bin/{app}.elf{args}\r'.encode());g.expect(b'STUDIO_READY' if app=='studio' else b'DESKTOP_READY',start=b,timeout=90);pump(g,.4);return b
@@ -91,16 +92,16 @@ try:
     click('Studio',b'DESKTOP_PAGE index=2');shot('component-studio');click('Menu',b'DESKTOP_PAGE index=4');click('Send notification',b'Hello from');shot('notification');click('Back to Studio',b'DESKTOP_PAGE index=2')
     click_xy(250,350);stroke('a');g.expect(b'DESKTOP_EDIT',start=b);stroke('tab');shot('keyboard-focus');mark('real_menu_notification_text_and_keyboard')
     finish(b);mark('desktop_exit_exact_resources')
-    command(g,'exec-file /bin/gap.elf',b'kind=exited code=0');mark('display_released_after_desktop')
+    command(g,'exec-file /bin/gap.elf occupied',b'kind=exited code=0');mark('compositor_retains_display_after_desktop')
    else:
     pid=int(re.search(rb'\[loader\] started pid=(\d+)',bytes(g.output)[b:])[1])
     command(g,'exec-file /bin/gap.elf occupied',b'kind=exited code=0');mark('second_process_EBUSY_and_direct_present_denied')
     command(g,f'kill {pid}',b'kill: accepted');command(g,f'wait {pid}',b'kind=killed');assert resources(g)==with_service;mark('desktop_kill_exact_resources')
-    b=start(True);pid=int(re.search(rb'\[loader\] started pid=(\d+)',bytes(g.output)[b:])[1]);command(g,f'kill {service}',b'kill: accepted');command(g,f'wait {pid}',b'kind=exited code=72');command(g,f'wait {service}',b'kind=killed');assert resources(g)==base;mark('display_death_fails_closed_serial_survives')
-    s=command(g,'display-start',b'result=0');service=int(re.search(rb'\[display-start\] pid=(\d+)',s)[1]);g.expect(b'[display-service] ready');with_service=resources(g);b=start();finish(b);mark('desktop_after_service_restart')
+    b=start(True);pid=int(re.search(rb'\[loader\] started pid=(\d+)',bytes(g.output)[b:])[1]);command(g,f'kill {service}',b'kill: accepted');command(g,f'wait {pid}',b'kind=exited code=72');command(g,f'wait {service}',b'kind=killed');reap_compositor(g,compositor);assert resources(g)==base;mark('display_death_fails_closed_serial_survives')
+    service, compositor = start_graphics(g);with_service=resources(g);b=start();finish(b);mark('desktop_after_service_restart')
   if a.legacy:
    sb=len(g.output);send_bytes(g,b'exec-file /bin/legacy.elf\r');g.expect(b'QT_WIDGETS_READY',start=sb,timeout=90);pump(g,.3);shot('legacy-no-aurora');stroke('esc');g.expect(b'kind=exited code=0',start=sb);g.expect_supervisor(start=sb);assert resources(g)==with_service;mark('non_aurora_app_preserved')
-  command(g,'exec gfxdemo stop',b'kind=exited code=0');command(g,f'wait {service}',b'kind=exited code=0');assert resources(g)==base;command(g,'sync',b'[files] sync=ok');mark('service_stop_and_file_sync');report['status']='PASSED'
+  stop_graphics(g, service, compositor);assert resources(g)==base;command(g,'sync',b'[files] sync=ok');mark('service_stop_and_file_sync');report['status']='PASSED'
 except Exception as e:report['error']=str(e);raise
 finally:
  if g:

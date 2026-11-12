@@ -24,7 +24,7 @@ try:
   disk=Path(tmp)/'work.img';create_fat32(disk,512);transfer(disk,'mkdir','/bin');transfer(disk,'import','/bin/aurora.elf',a.payload)
   with patch.object(boot_smoke,'qemu_command',no_display):g=Guest(a.image.resolve(),str(out.relative_to(ROOT/'build'))+'/guest',work_disk=disk)
   report['qemu_command']=g.command;g.expect(b'xos64> ',timeout=45);send_bytes(g,b'run\r');g.expect_supervisor(trace=True);pump(g,1.2);base=resources(g)
-  result=command(g,'exec-file /bin/aurora.elf',b'kind=exited',timeout=90);assert b'unavailable or invalid Display Service mode (-19)' in result;assert resources(g)==base
+  result=command(g,'exec-file /bin/aurora.elf',b'kind=exited',timeout=90);assert b'Interactium connect/hello failed' in result;assert resources(g)==base
   command(g,'sync',b'[files] sync=ok');report.update(status='PASSED',checks=['no_display_explicit_QPA_failure','exact_resources_after_failed_browser','serial_and_file_sync_survive'],baseline=base)
 except Exception as e:report['error']=str(e);raise
 finally:

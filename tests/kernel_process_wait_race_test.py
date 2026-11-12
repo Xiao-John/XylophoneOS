@@ -54,6 +54,9 @@ def main():
     ipc_copy = "void copy_ipc_payload(void* destination, const void* source, u32 length) {"
     if ipc_copy in source:
         implementation = definition(source, ipc_copy) + implementation
+    runtime_vm = "user_copyout output;" in source
+    if runtime_vm:
+        implementation = definition(source, "void commit_user_output() {") + implementation
     wait_case = definition(source, "case sys_process_wait: {")
     dispatch = """
 void* wait_syscall(interrupt_frame* frame) {
@@ -74,6 +77,7 @@ void* wait_syscall(interrupt_frame* frame) {
         subprocess.run([
             os.environ.get("CXX", "c++"), "-std=c++20", "-Wall", "-Wextra", "-Werror",
             "-DXOS_COW1_PROBE=0", "-I", str(directory), "-I", str(repo_root / "src/kernel"),
+            "-DXOS_RUNTIME_VM=" + str(int(runtime_vm)),
             "-I", str(repo_root / "src/kernel/include"), "-I", str(repo_root / "src/shared/include"),
             str(repo_root / "tests/kernel_process_wait_race_test.cpp"), "-o", str(binary),
         ], check=True)

@@ -43,7 +43,7 @@ inline constexpr u64 sys_pipe_wait = 54;
 // the existing nonblocking/short-write ABI; atomic writes are <=4096 bytes.
 inline constexpr u64 pipe_write_atomic_flag = u64{1} << 63;
 inline constexpr u64 sys_process_foreground = 55, sys_process_cancel = 56;
-// C2: unstarted eager-copy child, authenticated files clone, then commit.
+// Unstarted private-memory snapshot, authenticated files clone, then commit.
 inline constexpr u64 sys_process_fork_prepare = 57, sys_process_fork_commit = 58;
 inline constexpr u64 sys_process_fork_files = 59;
 inline constexpr u64 sys_ipc_endpoint = 84, sys_ipc_wait = 85, sys_ipc_name = 86;
@@ -64,6 +64,16 @@ inline constexpr u64 sys_irq_event = 83;
 // legacy spawn_depth delegation (contracts/shell_launch.md §3).
 // mode: 0 clear, 1 set, 2 copy from caller, 3 query (returns 0/1 in result).
 inline constexpr u64 sys_process_authority = 87;
+inline constexpr u64 sys_process_cpu_time = 89;
+inline constexpr i64 process_cpu_time_unavailable = -19;
+// Own process and current thread only. Child totals become visible once their
+// completion is consumed; elapsed_ns is the independent monotonic clock.
+struct process_cpu_time {
+    u32 version, size;
+    u64 user_ns, system_ns, child_user_ns, child_system_ns;
+    u64 thread_user_ns, thread_system_ns, elapsed_ns, resolution_ns;
+};
+static_assert(sizeof(process_cpu_time) == 72);
 enum class process_authority_mode : u64 { clear = 0, set = 1, copy_from_caller = 2, query = 3 };
 enum class irq_event_action : u64 { bind = 0, wait = 1, ack = 2, close = 3 };
 enum class pio_grant_action : u64 { grant = 0, revoke = 1, query = 2, controller = 3, recover = 4, release = 5, delegate = 6 };

@@ -1,0 +1,2 @@
+PASS normal/fault parent exit, orphan cleanup, builder cancellation, explicit kill ancestry, child CPU consumption
+PASS process wait: pending duplicate, ready owner, cross-page pin, delivery, single consumption

@@ -43,7 +43,10 @@ def main():
                         help="bounded VirtIO-GPU completion polls; zero is an explicit timeout profile")
     parser.add_argument("--vm1-probe", action="store_true", help="enable isolated VM1 test-only syscall 67")
     parser.add_argument("--cow1-probe", action="store_true", help="enable isolated COW1 page-table self-check")
+    parser.add_argument("--eager-fork", action="store_true", help="use the eager-copy fork control profile")
     args = parser.parse_args()
+    if args.eager_fork and args.cow1_probe:
+        parser.error("select eager control or the opt-in COW1 probe, not both")
     if args.cow1_probe and (not args.vm1_probe or args.output_dir.resolve() == BUILD):
         parser.error("COW1 probe requires --vm1-probe and an isolated output directory")
     if not 1 <= args.gpu_dma_page_limit <= 4096 or not 0 <= args.gpu_poll_limit <= 100000000:
@@ -100,19 +103,20 @@ def main():
     sources.extend(p for p in sorted((ROOT / "licenses").glob("*")) if p.is_file())
     for folder in ("src", "scripts", "tests", "config"):
         sources.extend(p for p in sorted((ROOT / folder).rglob("*"))
-                       if p.suffix in (".asm", ".s", ".sh", ".inc", ".py", ".cpp", ".hpp", ".c", ".h", ".ld", ".json", ".lldb"))
+                       if p.suffix in (".asm", ".s", ".sh", ".inc", ".py", ".cpp", ".hpp", ".c", ".h", ".ld", ".json", ".lldb", ".patch"))
     source_hashes = {str(p.relative_to(ROOT)): sha256(p.read_bytes()) for p in sources}
     source_digest = sha256(json.dumps({"sources": source_hashes, "capacity_probe": args.capacity_probe,
                                       "terminal_supervisor_probe": args.terminal_supervisor_probe,
                                       "ncurses_supervisor_probe": args.ncurses_supervisor_probe,
                                       "clock_irq_probe": args.clock_irq_probe, "vm1_probe": args.vm1_probe,
-                                      "cow1_probe": args.cow1_probe, "virtio_gpu": gpu_config}, sort_keys=True).encode())
+                                      "cow1_probe": args.cow1_probe, "cow_fork": not args.eager_fork,
+                                      "virtio_gpu": gpu_config}, sort_keys=True).encode())
     build_id = source_digest[:16]
     eggs = int(TARGET["easter_eggs"])
     (BUILD / "build_info.inc").write_text(
         f'%define xos_build_id "{build_id}"\n%define xos_easter_eggs {eggs}\n')
     (BUILD / "build_info.hpp").write_text(
-        f'#define XOS_BUILD_ID "{build_id}"\n#define XOS_EASTER_EGGS {eggs}\n#define XOS_CAPACITY_PROBE {int(args.capacity_probe)}\n#define XOS_CLOCK_IRQ_PROBE {int(args.clock_irq_probe)}\n#define XOS_VM1_PROBE {int(args.vm1_probe)}\n#define XOS_COW1_PROBE {int(args.cow1_probe)}\n')
+        f'#define XOS_BUILD_ID "{build_id}"\n#define XOS_EASTER_EGGS {eggs}\n#define XOS_CAPACITY_PROBE {int(args.capacity_probe)}\n#define XOS_CLOCK_IRQ_PROBE {int(args.clock_irq_probe)}\n#define XOS_VM1_PROBE {int(args.vm1_probe)}\n#define XOS_COW1_PROBE {int(args.cow1_probe)}\n#define XOS_COW_FORK {int(not args.eager_fork)}\n')
     commands = []
 
     def run(command):
@@ -267,7 +271,8 @@ def main():
     manifest = {
         "build_id": build_id,
         "version": (ROOT / "VERSION").read_text().strip(), "source_sha256": source_digest,
-        "vm1_probe": args.vm1_probe, "cow1_probe": args.cow1_probe, "capacity_probe": args.capacity_probe, "terminal_supervisor_probe": args.terminal_supervisor_probe,
+        "vm1_probe": args.vm1_probe, "cow1_probe": args.cow1_probe, "cow_fork": not args.eager_fork,
+        "capacity_probe": args.capacity_probe, "terminal_supervisor_probe": args.terminal_supervisor_probe,
         "ncurses_supervisor_probe": args.ncurses_supervisor_probe,
         "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config,
         "sources": source_hashes,

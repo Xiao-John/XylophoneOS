@@ -1056,18 +1056,22 @@ void filetest() {
     ok = ok && client.read_all("t1", image_buffer, sizeof(image_buffer), length) == 0 &&
          length == 7 && image_buffer[0] == 'a' && image_buffer[5] == 'X';
     if (!ok) { print("[filetest] failed stage=3\n"); return; }
-    // Active readers lock replacement; rejected commit must preserve the file.
+    // Replacing a pathname must not redirect the existing read description.
     ok = ok && client.open("t1", file::read_only, h1, size, version) == 0;
-    ok = ok && client.replace("t1", "bad", 3) < 0;
+    ok = ok && client.replace("t1", "new", 3) == 0;
+    ok = ok && client.read(h1, short_read, sizeof(short_read)) == 7 &&
+         short_read[0] == 'a' && short_read[5] == 'X' && short_read[6] == 'Y';
     ok = ok && client.close(h1) == 0;
-    ok = ok && client.stat("t1", size, version) == 0 && size == 7;
+    ok = ok && client.stat("t1", size, version) == 0 && size == 3;
+    ok = ok && client.read_all("t1", image_buffer, sizeof(image_buffer), length) == 0 &&
+         length == 3 && image_buffer[0] == 'n' && image_buffer[2] == 'w';
     if (!ok) { print("[filetest] failed stage=4\n"); return; }
     char ignored = 0;
     ok = ok && client.read(99, &ignored, 1) < 0;
     ok = ok && client.remove("t1") == 0;
     if (!ok) { print("[filetest] failed stage=6\n"); return; }
     print(ok ? "[filetest] result=pass short=read/eof handles=independent "
-               "locked=preserved write=actual invalid=rejected\n"
+               "replaced=preserved write=actual invalid=rejected\n"
              : "[filetest] result=FAILED\n");
 }
 }

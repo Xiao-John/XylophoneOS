@@ -1,0 +1,265 @@
+{
+  "scope": "independent host validation; no native guest execution",
+  "unit_tests_passed": 18,
+  "host_projects_passed": 2,
+  "guest_runtime_tus_compiled": 1,
+  "python_files_compiled": 8,
+  "runner_help_passed": 4,
+  "shell_syntax_passed": 4,
+  "full_guest": "not_run",
+  "planned_guest_groups": 14,
+  "records": [
+    {
+      "command": [
+        "c++",
+        "-std=c++20",
+        "-ffreestanding",
+        "-nostdinc++",
+        "-fno-exceptions",
+        "-fno-rtti",
+        "-fno-stack-protector",
+        "-fno-threadsafe-statics",
+        "-fno-use-cxa-atexit",
+        "-fno-unwind-tables",
+        "-fno-asynchronous-unwind-tables",
+        "-fno-omit-frame-pointer",
+        "-fno-pic",
+        "-fno-pie",
+        "-g3",
+        "-gdwarf-4",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wconversion",
+        "-Wshadow",
+        "-m64",
+        "-march=x86-64",
+        "-mtune=generic",
+        "-mcmodel=small",
+        "-mno-red-zone",
+        "-mgeneral-regs-only",
+        "-w",
+        "-Isrc/user/include",
+        "-Isrc/shared/include",
+        "-Isrc/third_party/newlib/x86_64-elf/include",
+        "-c",
+        "tests/fixtures/shell_launch/sl4_runtime.cpp",
+        "-o",
+        "build/native_dev/host/sl4_runtime.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "cc",
+        "tests/fixtures/shell_launch/project_c.c",
+        "tests/fixtures/shell_launch/project_value.c",
+        "-o",
+        "build/native_dev/host/c_project"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "build/native_dev/host/c_project"
+      ],
+      "returncode": 0,
+      "stdout": "SL3_C_OK\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "c++",
+        "-std=c++17",
+        "tests/fixtures/shell_launch/project_cpp.cpp",
+        "tests/fixtures/shell_launch/project_cpp_value.cpp",
+        "-o",
+        "build/native_dev/host/cpp_project"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "build/native_dev/host/cpp_project"
+      ],
+      "returncode": 0,
+      "stdout": "SL3_CPP_OK\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_shell_launch_bindings.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "test_changed_iso_rejected (test_shell_launch_bindings.shell_launch_binding_tests.test_changed_iso_rejected) ... ok\ntest_changed_sdk_header_rejected_even_when_manifest_unchanged (test_shell_launch_bindings.shell_launch_binding_tests.test_changed_sdk_header_rejected_even_when_manifest_unchanged) ... ok\ntest_changed_source_rejected (test_shell_launch_bindings.shell_launch_binding_tests.test_changed_source_rejected) ... ok\ntest_changed_tool_elf_rejected (test_shell_launch_bindings.shell_launch_binding_tests.test_changed_tool_elf_rejected) ... ok\ntest_echoed_marker_does_not_pass (test_shell_launch_bindings.shell_launch_binding_tests.test_echoed_marker_does_not_pass) ... ok\ntest_escaping_receipt_path_rejected (test_shell_launch_bindings.shell_launch_binding_tests.test_escaping_receipt_path_rejected) ... ok\ntest_explicit_receipt_beats_newer_cache_artifact (test_shell_launch_bindings.shell_launch_binding_tests.test_explicit_receipt_beats_newer_cache_artifact) ... ok\ntest_final_exit_wins_over_earlier_child (test_shell_launch_bindings.shell_launch_binding_tests.test_final_exit_wins_over_earlier_child) ... ok\ntest_incomplete_sdk_receipt_rejected (test_shell_launch_bindings.shell_launch_binding_tests.test_incomplete_sdk_receipt_rejected) ... ok\ntest_missing_artifact_is_not_execution (test_shell_launch_bindings.shell_launch_binding_tests.test_missing_artifact_is_not_execution) ... ok\ntest_missing_final_exit_rejected (test_shell_launch_bindings.shell_launch_binding_tests.test_missing_final_exit_rejected) ... ok\ntest_real_lf_and_crlf_result_lines (test_shell_launch_bindings.shell_launch_binding_tests.test_real_lf_and_crlf_result_lines) ... ok\ntest_receipt_does_not_rewrite_sdk_provenance (test_shell_launch_bindings.shell_launch_binding_tests.test_receipt_does_not_rewrite_sdk_provenance) ... ok\ntest_system_binds_sources_iso_and_full_sdk (test_shell_launch_bindings.shell_launch_binding_tests.test_system_binds_sources_iso_and_full_sdk) ... ok\ntest_tool_source_mismatch_rejected (test_shell_launch_bindings.shell_launch_binding_tests.test_tool_source_mismatch_rejected) ... ok\ntest_unbound_sdk_addition_rejected (test_shell_launch_bindings.shell_launch_binding_tests.test_unbound_sdk_addition_rejected) ... ok\ntest_wrong_profile_rejected (test_shell_launch_bindings.shell_launch_binding_tests.test_wrong_profile_rejected) ... ok\ntest_zero_exit_cannot_pass_negative_case (test_shell_launch_bindings.shell_launch_binding_tests.test_zero_exit_cannot_pass_negative_case) ... ok\n\n----------------------------------------------------------------------\nRan 18 tests in 0.098s\n\nOK\n"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "py_compile",
+        "scripts/build_make.py",
+        "scripts/build_dash.py",
+        "tests/shell_launch_support.py",
+        "tests/shell_launch_sl2.py",
+        "tests/shell_launch_sl3.py",
+        "tests/shell_launch_sl3_make.py",
+        "tests/shell_launch_sl4.py",
+        "tests/test_shell_launch_bindings.py"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "tests/shell_launch_sl2.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "stdout": "usage: shell_launch_sl2.py [-h] [--system SYSTEM] --dash-receipt DASH_RECEIPT\n\nSL2: both shells use inherit-create; no name-based authorization.\n\noptions:\n  -h, --help            show this help message and exit\n  --system SYSTEM\n  --dash-receipt DASH_RECEIPT\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "tests/shell_launch_sl3.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "stdout": "usage: shell_launch_sl3.py [-h] [--system SYSTEM] --dash-receipt DASH_RECEIPT\n\nSL3: ordinary xos-diag invocation returns to the shell with correct codes.\n\noptions:\n  -h, --help            show this help message and exit\n  --system SYSTEM\n  --dash-receipt DASH_RECEIPT\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "tests/shell_launch_sl3_make.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "stdout": "usage: shell_launch_sl3_make.py [-h] [--system SYSTEM] --make-receipt\n                                MAKE_RECEIPT --dash-receipt DASH_RECEIPT\n                                --seed-manifest SEED_MANIFEST --seed-root\n                                SEED_ROOT --sysroot-manifest SYSROOT_MANIFEST\n                                --sysroot-root SYSROOT_ROOT [--preflight-only]\n                                [--report REPORT]\n\nSL3: receipt-bound native C/C++ Make projects through ordinary xsh and dash.\n\noptions:\n  -h, --help            show this help message and exit\n  --system SYSTEM\n  --make-receipt MAKE_RECEIPT\n  --dash-receipt DASH_RECEIPT\n  --seed-manifest SEED_MANIFEST\n  --seed-root SEED_ROOT\n  --sysroot-manifest SYSROOT_MANIFEST\n  --sysroot-root SYSROOT_ROOT\n  --preflight-only\n  --report REPORT\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "tests/shell_launch_sl4.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "stdout": "usage: shell_launch_sl4.py [-h] [--system SYSTEM] --make-receipt MAKE_RECEIPT\n                           --dash-receipt DASH_RECEIPT --seed-manifest\n                           SEED_MANIFEST --seed-root SEED_ROOT\n                           --sysroot-manifest SYSROOT_MANIFEST --sysroot-root\n                           SYSROOT_ROOT [--preflight-only] [--report REPORT]\n\nSL4: one bound system/SDK/tool set, native projects and both shell entrances.\n\noptions:\n  -h, --help            show this help message and exit\n  --system SYSTEM\n  --make-receipt MAKE_RECEIPT\n  --dash-receipt DASH_RECEIPT\n  --seed-manifest SEED_MANIFEST\n  --seed-root SEED_ROOT\n  --sysroot-manifest SYSROOT_MANIFEST\n  --sysroot-root SYSROOT_ROOT\n  --preflight-only\n  --report REPORT\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-n",
+        "tests/fixtures/shell_launch/build_project.sh"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-n",
+        "tests/fixtures/shell_launch/sl4_shell.sh"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-n",
+        "tests/fixtures/shell_launch/sl4_nested.sh"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-n",
+        "tests/fixtures/shell_launch/sl4_exec.sh"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "tests/shell_launch_sl3_make.py",
+        "--system",
+        "build/identity_system",
+        "--make-receipt",
+        "build/native_inputs/make.json",
+        "--dash-receipt",
+        "build/native_inputs/dash.json",
+        "--seed-manifest",
+        "build/native_inputs/seed_manifest.json",
+        "--seed-root",
+        ".",
+        "--sysroot-manifest",
+        "build/native_inputs/sysroot_manifest.json",
+        "--sysroot-root",
+        ".",
+        "--preflight-only",
+        "--report",
+        "build/native_dev/sl3/report.json"
+      ],
+      "returncode": 2,
+      "stdout": "NOT_RUN SL3 C/C++ Make: 0 guest checks\n",
+      "stderr": "",
+      "expected_returncode": 2
+    },
+    {
+      "command": [
+        "python3",
+        "tests/shell_launch_sl4.py",
+        "--system",
+        "build/identity_system",
+        "--make-receipt",
+        "build/native_inputs/make.json",
+        "--dash-receipt",
+        "build/native_inputs/dash.json",
+        "--seed-manifest",
+        "build/native_inputs/seed_manifest.json",
+        "--seed-root",
+        ".",
+        "--sysroot-manifest",
+        "build/native_inputs/sysroot_manifest.json",
+        "--sysroot-root",
+        ".",
+        "--preflight-only",
+        "--report",
+        "build/native_dev/sl4/report.json"
+      ],
+      "returncode": 2,
+      "stdout": "NOT_RUN SL4: 0 guest command groups\n",
+      "stderr": "",
+      "expected_returncode": 2
+    }
+  ]
+}

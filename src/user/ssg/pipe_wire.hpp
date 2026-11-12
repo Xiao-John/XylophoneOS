@@ -17,8 +17,8 @@ constexpr xos::u64 io_timeout_ns=30000000000ull;
 inline void put32(char *p, unsigned v){for(unsigned i=0;i<4;i++)p[i]=char((v>>(8*i))&255);}
 inline unsigned get32(const char *p){unsigned v=0;for(unsigned i=0;i<4;i++)v|=unsigned(static_cast<unsigned char>(p[i]))<<(8*i);return v;}
 
-// sys_pipe_wait has no deadline. This helper waits on the existing monotonic
-// wait-word deadline and closes both local routes on a stalled partial frame.
+// This P1 helper uses a wait-word deadline to supervise the whole transfer
+// and closes both local routes on a stalled partial frame.
 // Closing is terminal: it never retries or pretends a partial message succeeded.
 class pipe_watchdog final {
     alignas(4) xos::u32 state=0; // even=idle, odd=armed, reserved=terminal

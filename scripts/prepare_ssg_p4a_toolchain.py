@@ -50,13 +50,16 @@ def main():
     current_file_client_object = system_build / 'src_user_sdk_file_client.cpp.o'
     if not current_file_client_object.is_file():
         raise SystemExit('current-main build is missing its compiled file_client object')
-    overlay_object = output_sdk / 'objects/src_user_sdk_file_client_p4a.cpp.o'
+    overlay_object = output_sdk / 'objects' / current_file_client_object.name
     overlay_object.parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(current_file_client_object, overlay_object)
     archive = output_sdk / 'lib/libxos.a'
     ar = shutil.which('x86_64-elf-ar')
     if not ar:
         raise SystemExit('missing x86_64-elf-ar')
+    members = subprocess.check_output([ar, 't', str(archive)], text=True).splitlines()
+    if members.count(overlay_object.name) != 1:
+        raise SystemExit('expected exactly one replaceable file_client member; rebuild the SDK')
     subprocess.run([ar, 'rcsD', str(archive), str(overlay_object)], check=True)
 
     manifest_path = output_sdk / 'manifest.json'
@@ -68,7 +71,10 @@ def main():
         relative = header.relative_to(output_sdk).as_posix()
         artifact_paths.add(relative)
     artifact_paths.add('lib/libxos.a')
-    artifact_paths.add('objects/src_user_sdk_file_client_p4a.cpp.o')
+    artifact_paths.add(overlay_object.relative_to(output_sdk).as_posix())
+    inherited_provenance = manifest.pop('archive_provenance', None)
+    manifest['qualification'] = 'not_run'
+    manifest['archive_provenance_pending'] = 'mixed legacy overlay; rebuild the complete SDK before qualification or distribution'
     artifacts = {}
     for relative in sorted(artifact_paths):
         artifact = output_sdk / relative
@@ -81,7 +87,8 @@ def main():
         'current_main_system_manifest_sha256': sha(system_manifest_path),
         'current_main_file_client_header_sha256': sha(current_xos / 'file_client.hpp'),
         'current_main_file_client_object_sha256': sha(current_file_client_object),
-        'archive_addition': 'objects/src_user_sdk_file_client_p4a.cpp.o',
+        'archive_replacement': overlay_object.relative_to(output_sdk).as_posix(),
+        'inherited_archive_provenance_invalidated': inherited_provenance is not None,
         'intent': 'retain the qualified Qt E17 C++ runtime while supplying current-main file::client symbols',
     }
     manifest_path.write_text(json.dumps(manifest, indent=2) + '\n')
@@ -108,7 +115,7 @@ def main():
         'qt_cache_overlay_sha256': sha(output_qt / 'CMakeCache.txt'),
         'compiler_version': subprocess.check_output([shutil.which('x86_64-elf-g++'), '--version'],
                                                     text=True).splitlines()[0],
-        'archive_member': 'objects/src_user_sdk_file_client_p4a.cpp.o',
+        'archive_member': overlay_object.relative_to(output_sdk).as_posix(),
         'semantics': 'local build overlay; no installed SDK or Qt artifact changed',
     }
     (output_sdk / 'p4a_overlay_receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')

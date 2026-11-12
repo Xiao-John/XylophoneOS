@@ -7,9 +7,12 @@ import shutil
 import struct
 from toolchain import COMMON_FLAGS, X86_FLAGS, TARGET, tool
 from ipc_v1_manifest import ipc_v1_manifest_entry
+from device_manifest import device_manifest_entry
+from archive_provenance import capture_build, copy_archive_provenance, digest
 
 
 def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=False, ncurses_supervisor_probe=False):
+    capture = capture_build(build, build_id, 'xos-source-declarations')
     sdk = build / "sdk"
     if sdk.is_symlink():
         raise SystemExit("Refusing a symlinked SDK output directory")
@@ -19,6 +22,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
     (sdk / "lib").mkdir(exist_ok=True)
     newlib = root / "src/third_party/newlib/x86_64-elf"
     shutil.copytree(newlib / "include", sdk / "include", dirs_exist_ok=True)
+    from newlib_patches import apply_patches
+    apply_patches(sdk / "include", headers=True)
     shutil.copyfile(newlib / "lib/libc.a", sdk / "lib/libc.a")
     shutil.copyfile(newlib / "lib/libm.a", sdk / "lib/libm.a")
     shutil.copyfile(root / "src/third_party/newlib/COPYING.NEWLIB", sdk / "COPYING.NEWLIB")
@@ -46,7 +51,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
         object_name = str(source.relative_to(root)).replace("\\", "_").replace("/", "_")
         obj = build / (object_name + ".o")
         isa_flags = [flag for flag in X86_FLAGS if source.name != "core_probe.cpp" or flag != "-mgeneral-regs-only"]
-        run([tool("g++"), *COMMON_FLAGS, *isa_flags, "-I", str(sdk / "include"),
+        run([*capture.launcher(), tool("g++"), *COMMON_FLAGS, *isa_flags, "-I", str(sdk / "include"),
              "-I", str(root / "src/third_party/fatfs"),
              "-I", str(root / "src/user/include"),
              "-I", str(source.parent),
@@ -62,6 +67,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
     core_archive = build / "threading_core/libxos_thread_core.a"
     core_archive.parent.mkdir(exist_ok=True)
     run([tool("ar"), "rcsD", str(core_archive), thread_core])
+    capture.archive(core_archive)
     def compile_fatfs(source):
         object_name = str(source.relative_to(root)).replace("\\", "_").replace("/", "_")
         obj = build / (object_name + ".o")
@@ -91,7 +97,12 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
     loader_objects.append(compile_source(root / "src/user/arch/x86_64/tls.cpp"))
     loader_archive = sdk / "lib/libxos_loader.a"
     run([tool("ar"), "rcsD", str(loader_archive), *loader_objects])
-    names = ("supervisor", "files", "demo", "fault", "spin", "slow", "echo", "hello", "ipc_probe", "libc_hello", "e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "display", "gfxdemo", "interactium", "interactiumd", "ic_client", "xypm_recover", "xos_diag", "terminal", "terminal_app_probe", "audio_service", "audio_tone")
+    archive_manifests = {}
+    for built_archive in (archive, loader_archive):
+        captured = capture.archive(built_archive)
+        copied = copy_archive_provenance(captured, build, built_archive, sdk)
+        archive_manifests[copied.relative_to(sdk).as_posix()] = digest(copied.read_bytes())
+    names = ("supervisor", "files", "demo", "fault", "spin", "slow", "echo", "hello", "ipc_probe", "libc_hello", "e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "display", "gfxdemo", "interactium", "interactiumd", "ic_client", "xypm_recover", "xos_diag", "terminal", "terminal_app_probe", "audio_service", "audio_tone", "net_service")
     bootstrap_names = ("supervisor", "files")
     libc_programs = ("libc_hello", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "xos_diag", "terminal_app_probe")
     disk_programs = ("e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "xos_diag", "terminal", "terminal_app_probe")
@@ -135,6 +146,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
              *([str(loader_archive)] if name in ("supervisor", "xos_diag") else []), *fault_objects,
              *([str(core_archive), str(loader_archive)] if name in ("threading_core_probe", "gfxdemo", "terminal") else []),
              *([compile_source(root / "src/user/drivers/uart_16550.cpp")] if name == "terminal" else []),
+             *([compile_source(root / "src/user/drivers/virtio_net.cpp")] if name == "net_service" else []),
                      *([compile_source(root / "src/user/drivers/pc_speaker.cpp")] if name == "audio_tone" else []),
              *([file_ui_object, terminal_control_object, shell_terminal_object] if name == "supervisor" else []),
              *([str(loader_archive)] if name == "supervisor" else []),
@@ -203,13 +215,21 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
         return hashlib.sha256(path.read_bytes()).hexdigest()
     (sdk / "manifest.json").write_text(json.dumps({
         "build_id": build_id, "abi": 1, "target": "x86_64-elf",
+        "archive_provenance": {"version": 1, "manifests": archive_manifests,
+            "legacy_archives": {"lib/" + name: digest((sdk / "lib" / name).read_bytes())
+                                for name in ("libc.a", "libm.a")}},
         "configuration": TARGET, "runtime_model": "single",
         "display_extensions": {"version": 1, "syscalls": [65, 66], "pixel_format": "XRGB8888", "surface_count": 1},
         "vm_extensions": {"version": 1, "syscall": 67, "status": "implemented_unqualified"},
+        "cpu_time": {"version": 1, "syscall": 89, "status": "implemented_unqualified",
+                     "unit": "nanoseconds", "scope": ["process", "current_thread", "waited_children"]},
         "ipc_v1": ipc_v1_manifest_entry(),
+        "device_authorization": device_manifest_entry(),
         "diagnostic_extensions": {"fault_bundle_format": 1, "loader_receipt": "sha256-held-instance",
                                   "diagnostic_shell_command": "diag"},
-        "process_extensions": {"syscalls": [*range(54, 62), *range(80, 87)], "file_operations": [20, 21, 22],
+        "file_identity": {"version": 1, "wire_version": 2, "status": "implemented_unverified",
+                          "cwd_operations": [26, 27, 28], "directory_flag": 1024, "pin_flag": 2048},
+        "process_extensions": {"syscalls": [*range(54, 62), *range(80, 87)], "file_operations": list(range(20, 29)),
             "startup_versions": [1, 2, 3], "exec_image_abi": 3, "exec_marker": ".xos.exec",
             "fork_supported": True, "exec_supported": True, "single_main_thread_only": True,
             "max_fork_depth": 3, "replacement_reservations": 1, "fd_count": 32, "spawn_argument_bytes": 255,

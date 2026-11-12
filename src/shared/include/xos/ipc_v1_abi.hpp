@@ -83,7 +83,8 @@ inline constexpr u64 ipc_v1_feature_ip3_mask =
     static_cast<u64>(ipc_v1_feature::notification) |
     static_cast<u64>(ipc_v1_feature::wait_set);
 inline constexpr u64 ipc_v1_feature_supported_mask =
-    ipc_v1_feature_ip2_mask | ipc_v1_feature_ip3_mask;
+    ipc_v1_feature_ip2_mask | ipc_v1_feature_ip3_mask |
+    static_cast<u64>(ipc_v1_feature::bulk_grant);
 
 // These values are scoped to sys_ipc_v1 and are not errno values.
 enum class ipc_v1_error : i64 {

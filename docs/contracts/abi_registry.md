@@ -17,10 +17,11 @@
 | 83 | 83 | allocated | 受控 IRQ 事件；实现未验 |
 | 84 | 86 | allocated | Interactium IPC channel readiness and service-name registration/connection |
 | 87 | 87 | allocated | SL1 创建能力：`sys_process_authority`（shell_launch 契约；并行占号 84 与 Interactium 撞号，按已合入登记改列 87） |
-| 88 | 88 | allocated | 通用 IPC v1；IP2/IP3 四 feature 已客体验收并 registered supported（0x0f），IP4 bulk grant 与 IP5 快路径资格分开追踪（bulk_grant 待 PR #112 验收） |
-| 89 | 95 | reserved | 系统底座线：通用等待/信号/进程控制；其余接口尚未登记 |
+| 88 | 88 | allocated | 通用 IPC v1；IP2/IP3 有既有客体记录，IP4 bulk 可调用但本组合 guest 未运行，IP5 性能资格独立 |
+| 89 | 89 | allocated | 自身进程/当前线程 CPU 时间；版本 1，已实现但未客体验收 |
+| 90 | 95 | reserved | 系统底座线：通用等待/信号/进程控制；其余接口尚未登记 |
 | 96 | 111 | reserved | 显示/输入线的后续机制；现有65/66保留 |
-| 112 | 112 | allocated | 设备授权线 v1 单入口 `sys_device`；实现按[契约](device_authorization_v1.md)§7 分段推进 |
+| 112 | 112 | allocated | 设备授权线 v1 `sys_device`；grant/MMIO/DMA/IRQ/撤销已实现，限定 profile、guest 未运行，见[契约](device_authorization_v1.md)§9 |
 | 113 | 127 | reserved | 设备授权线：后续机制 |
 | 128 | 65535 | unallocated | 不存在私有试用号；先通过登记PR分配，扩大范围亦须明确登记 |
 
@@ -116,6 +117,7 @@ action 6 由对端验证派生通道来源，结构为 `channel_fork_verificatio
 | 83 | `sys_irq_event` | `src/shared/include/xos/process_abi.hpp` |
 | 87 | `sys_process_authority` | `src/shared/include/xos/process_abi.hpp` |
 | 88 | `sys_ipc_v1` | `src/shared/include/xos/ipc_v1_abi.hpp` |
+| 89 | `sys_process_cpu_time` | `src/shared/include/xos/process_abi.hpp` |
 | 112 | `sys_device` | `src/shared/include/xos/device_abi.hpp` |
 | 84 | `sys_ipc_endpoint` | `src/shared/include/xos/process_abi.hpp` |
 | 85 | `sys_ipc_wait` | `src/shared/include/xos/process_abi.hpp` |
@@ -141,12 +143,18 @@ claimed必须位于对应reserved段，不能与现有接口或其他认领重�
 
 | 命名空间 | 当前分配/版本 | 下一项登记责任 |
 |---|---|---|
-| files op | wire v2、op1–25；20clone_session、21anonymous、22seal、23/24维护、25truncate | 文件/包管理共用服务，由文件协议负责人整合；不得各自追加同一个next op |
+| files op | wire v2、op1–28；20clone_session、21anonymous、22seal、23/24维护、25truncate、26cwd_set、27cwd_get、28resolve_path | 文件/包管理共用服务；26由已认证parent_pid约束构造子继承，目录句柄与cwd保留身份引用，见file_identity契约；不得各自追加同一个next op |
 | display action / operation | v1控制action0–9、request operation1–6 | 显示负责人；Qt通过用户态display_client接入，不另造同名内核接口 |
 | startup/exec | startup1/2/3、.xos.exec/v3身份标记；试行 startup2 flag bit16 与 reserved 承载 terminal send handle，仅限只读 `.xos.tty` v1 opt-in | loader/SDK负责人，升级须说明旧二进制准入/拒绝与迁移；终端扩展尚未客体验收 |
 | boot_info | v1 64字节；显示扩展v2 112字节；payload descriptor独立 | 引导/内核共同登记，不借用对方字段 |
 | endpoint/PID/TID | 内核按生命周期分配的运行时身份 | 不预留静态数字给Qt，不以程序名或客户端自填身份授予权利 |
 | SDK manifest | process_extensions与display_extensions等能力/输入标识 | 普通/线程生成器同步；reserved不登记为supported |
+| net 服务协议 | v1 information/transmit/receive/stop；raw Ethernet 1514 字节 | 用户态 VirtIO-net；[纵切契约](net_user_driver.md)，guest 未运行 |
+
+2026-11-12 用户授权将本轮实现交付与 guest 资格分开：sys88 actions 19–23 沿用 PR #112 公开 grant
+create/delegate/map/unmap/close（delegate 保持同值句柄），supported mask `0x1f` 表示可调用机制；SDK manifest
+另列 bulk `guest_qualification=not_run`。sys112 沿用操作 1–11，不另占号，有限资源与
+配置快照按其契约 §9 登记。旧客体和 IP5 性能记录不重绑，不以 feature 位表示已通过验证。
 
 每个op只在其服务/协议版本内解释，不与syscall共用“全球号表”。上述服务具体布局仍以
 共享头和专项契约为准；若新需求改变结构，必须独立评估版本/尺寸/向后兼容，不只抢新编号。

@@ -5,13 +5,13 @@ import argparse
 import gzip
 import hashlib
 import json
+import re
 from pathlib import Path
 import shutil
 import subprocess
 import sys
 
 root = Path(__file__).resolve().parents[1]
-report_name = 'ssg_p4a_subscriber_20261104'
 
 
 def sha_bytes(data):
@@ -43,9 +43,13 @@ def main():
     parser.add_argument('--build', type=Path, required=True)
     parser.add_argument('--system-build', type=Path, required=True)
     parser.add_argument('--sdk-overlay', type=Path, required=True)
+    parser.add_argument('--report-name', required=True, help='new report name below docs/reports/')
     parser.add_argument('--refresh', action='store_true',
                         help='refresh generated leaves in an existing compliant report directory')
     args = parser.parse_args()
+    report_name = args.report_name
+    if not re.fullmatch(r'[a-z][a-z0-9_]+', report_name) or report_name == 'ssg_p4a_subscriber_20261104':
+        parser.error('use a new report name; the historical P4A report is frozen')
     validation, initial = [path.resolve(strict=True) for path in (args.validation, args.initial_validation)]
     state_initial = args.state_initial.resolve(strict=True)
     build, system, sdk_overlay = [path.resolve(strict=True) for path in
@@ -77,10 +81,12 @@ def main():
     copy_bytes(build / 'manifest.json', output, 'p4a_build_manifest.json')
     copy_bytes(sdk_overlay / 'p4a_overlay_receipt.json', output, 'sdk_overlay_receipt.json')
 
-    artifact_names = ('kernel.elf', 'kernel.bin', 'xos.iso', 'xos.img', 'xos-install.iso')
+    artifact_names = ('kernel.elf', 'kernel.bin', 'xos-install.iso')
     artifacts = {}
     for name in artifact_names:
         item = system_manifest['artifacts'][name]
+        if sha_bytes((system / name).read_bytes()) != item['sha256']:
+            raise SystemExit('system artifact changed: ' + name)
         artifacts[name] = {'bytes': item['bytes'], 'sha256': item['sha256']}
     system_summary = {
         'status': 'BUILT',

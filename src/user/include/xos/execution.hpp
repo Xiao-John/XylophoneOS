@@ -26,7 +26,7 @@ candidate inspect(const char* path);
 candidate resolve(const char* name, const char* search_path);
 const char* kind_name(candidate_kind kind);
 
-enum class launch_stage { none, open, inspect, prepare, create, map, start };
+enum class launch_stage { none, open, inspect, prepare, create, map, start, file_setup };
 
 struct launch_diagnostic {
     launch_stage stage;

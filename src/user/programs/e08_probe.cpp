@@ -35,9 +35,15 @@ extern "C" int xos_user_main(const xos::startup_info* start) {
         sdk::print("[e08] abandoned-ready\n");
         for(;;) sdk::yield();
     }
-    u32 denied_handle=0,denied_size=0,denied_version=0;
-    if(client.open("/src/long_source_name.txt",file::write_only,denied_handle,denied_size,denied_version)>=0 ||
-       client.replace("/src/long_source_name.txt","bad",3)>=0 || client.close(h)!=0) return failure(6);
+    u32 second_handle=0,second_size=0,second_version=0;
+    if(client.open("/src/long_source_name.txt",file::write_only,second_handle,second_size,second_version)!=0 ||
+       client.close(second_handle)!=0 || client.close(h)!=0) return failure(6);
+    if(client.replace("/out/open_replacement.txt","old",3)!=0 ||
+       client.open("/out/open_replacement.txt",file::read_only,h,size,version)!=0 ||
+       client.replace("/out/open_replacement.txt","new",3)!=0 ||
+       client.read(h,chunk,3)!=3 || chunk[0]!='o' || chunk[2]!='d' || client.close(h)!=0 ||
+       client.stat("/out/open_replacement.txt",size,version)!=0 || size!=3 ||
+       client.remove("/out/open_replacement.txt")!=0) return failure(6);
     if(bench) {
         sdk::print("[e08] ata-start\n");
         if(client.block_bench(8*1024*1024)!=8*1024*1024) return failure(18);
@@ -64,7 +70,11 @@ extern "C" int xos_user_main(const xos::startup_info* start) {
            !sdk::equal(entries[0].name,"renamed_source.txt") ||
            client.remove("/out/guest_directory/renamed_source.txt")!=0 ||
            client.remove_directory("/out/guest_directory")!=0) return failure(21);
-        if(client.replace("/src/../bad","x",1)>=0 || client.replace("/out/trailing.","x",1)>=0) return failure(22);
+        if(client.replace("/out/../out/dot_check","x",1)!=0 ||
+           client.stat("/out/dot_check",size,version)!=0 || size!=1 ||
+           client.remove("/out/dot_check")!=0 ||
+           client.replace("/out/missing/../bad","x",1)>=0 ||
+           client.replace("/out/trailing.","x",1)>=0) return failure(22);
 
         if(client.begin_replace("/out/long_result_name.txt",262144)!=0) return failure(10);
         for(u32 offset=0;offset<262144;) {

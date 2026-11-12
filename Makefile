@@ -8,6 +8,10 @@ all: build
 build:
 	$(PYTHON) scripts/build.py
 
+.PHONY: candidate
+candidate:
+	$(PYTHON) scripts/build_candidate.py --output "$(CANDIDATE_OUTPUT)" $(CANDIDATE_ARGS)
+
 dash: build
 	$(PYTHON) scripts/build_dash.py
 

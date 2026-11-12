@@ -79,6 +79,10 @@ def verify_manifest(manifest_path, root, build_id):
         raise ValueError("build_id mismatch")
     archive = repository_path(root, manifest.get("archive"), "archive")
     repository_path(root, manifest.get("generator"), "generator")
+    if "generator_sha256" in manifest:
+        check_digest(repository_path(root, manifest["generator"], "generator"), manifest["generator_sha256"])
+    if "imported_manifest" in manifest:
+        check_digest(repository_path(root, manifest["imported_manifest"], "imported manifest"), manifest.get("imported_manifest_sha256"))
     data = archive.read_bytes()
     if hashlib.sha256(data).hexdigest() != manifest.get("archive_sha256"):
         raise ValueError(f"sha256 mismatch: {archive}")
@@ -96,6 +100,8 @@ def verify_manifest(manifest_path, root, build_id):
         if member in listed:
             raise ValueError(f"duplicate manifest member {member!r}")
         listed.add(member)
+        if 'object_sha256' in record and hashlib.sha256(actual.get(member, b'')).hexdigest() != record['object_sha256']:
+            raise ValueError(f'object digest mismatch: {member}')
         source = repository_path(root, record.get("source"), "source")
         check_digest(source, record.get("source_sha256"))
         category = record.get("declaration_class")
@@ -111,6 +117,37 @@ def verify_manifest(manifest_path, root, build_id):
     return {"archive": manifest["archive"], "build_id": build_id,
             "members": len(actual), "derived_members": derived,
             "content_verified": True}
+
+
+def verify_bundle(root, provenance, allowed_legacy=()):
+    if not isinstance(provenance, dict) or provenance.get('version') != 1:
+        raise ValueError('SDK requires version 1 archive_provenance')
+    manifests, legacy = provenance.get('manifests'), provenance.get('legacy_archives')
+    if not isinstance(manifests, dict) or not isinstance(legacy, dict):
+        raise ValueError('archive manifests and legacy archives must be mappings')
+    if not set(legacy) <= set(allowed_legacy):
+        raise ValueError('unregistered legacy archive exemption')
+    represented, results = set(), []
+    for relative, expected in manifests.items():
+        path = repository_path(root, relative, 'manifest')
+        check_digest(path, expected)
+        entry = json.loads(path.read_text())
+        result = verify_manifest(path, root, entry.get('build_id'))
+        if result['derived_members'] or entry.get('capture') != 'compiler-invocation-and-object-bytes':
+            raise ValueError('new archive requires captured compiler/object provenance')
+        if result['archive'] in represented:
+            raise ValueError('duplicate archive provenance')
+        represented.add(result['archive'])
+        results.append(result)
+    for relative, expected in legacy.items():
+        if relative in represented:
+            raise ValueError('archive is both captured and legacy')
+        check_digest(repository_path(root, relative, 'legacy archive'), expected)
+        represented.add(relative)
+    actual = {path.relative_to(root).as_posix() for path in Path(root).rglob('*.a')}
+    if actual != represented:
+        raise ValueError(f'archive coverage mismatch: missing={sorted(actual - represented)}, extra={sorted(represented - actual)}')
+    return {'captured': results, 'legacy_archives': sorted(legacy), 'all_archives_accounted': True}
 
 
 def repository_path(root, value, field):

@@ -35,12 +35,20 @@ enum class ipc_v1_action : u64 {
     wait_set_remove = 15,
     wait_set_wait = 16,
     notification_close = 17,
-    wait_set_close = 18
+    wait_set_close = 18,
+    grant_create = 19,
+    grant_delegate = 20,
+    grant_map = 21,
+    grant_unmap = 22,
+    grant_close = 23
 };
 
 inline constexpr u32 ipc_v1_max_notifications_system = 32;
 inline constexpr u32 ipc_v1_max_wait_sets_system = 32;
 inline constexpr u32 ipc_v1_max_wait_set_sources = 8;
+inline constexpr u32 ipc_v1_max_grants_system = 16;
+inline constexpr u32 ipc_v1_max_grant_pages = 64;
+inline constexpr u32 ipc_v1_max_grant_mappings_system = 64;
 
 enum class ipc_v1_notification_right : u32 {
     signal = 1u << 0, wait = 1u << 1, manage = 1u << 2, delegate = 1u << 3
@@ -90,7 +98,8 @@ enum class ipc_v1_error : i64 {
     buffer_too_small = -110,
     stale_token = -111,
     state = -112,
-    address = -113
+    address = -113,
+    busy = -114
 };
 
 enum class ipc_v1_call_phase : u32 {
@@ -129,6 +138,22 @@ struct ipc_v1_wait_event { u32 source_id; u32 kind; u64 value; };
 struct ipc_v1_wait_set_wait {
     ipc_v1_header header; u64 handle; u64 deadline_ns; u64 events;
     u32 capacity; u32 count_out; u64 reserved[2];
+};
+
+enum class ipc_v1_grant_right : u32 { read_mapping = 1u << 0, write_mapping = 1u << 1, manage = 1u << 2, delegate = 1u << 3 };
+inline constexpr u32 ipc_v1_grant_right_all = 0x0fu;
+enum class ipc_v1_grant_access : u32 { read = 1, read_write = 3 };
+
+struct ipc_v1_grant_create {
+    ipc_v1_header header; u64 source; u64 length; u32 rights; u32 flags;
+    u64 length_out; u64 handle_out; u64 reserved[2];
+};
+struct ipc_v1_grant_map {
+    ipc_v1_header header; u64 handle; u64 address; u32 access; u32 reserved32;
+    u64 map_id_out; u64 length_out; u64 reserved[2];
+};
+struct ipc_v1_grant_unmap {
+    ipc_v1_header header; u64 handle; u64 map_id; u64 reserved[2];
 };
 
 struct ipc_v1_feature_query {
@@ -227,6 +252,8 @@ struct ipc_v1_reply_receive {
 };
 
 static_assert(sizeof(ipc_v1_header) == 16);
+static_assert(sizeof(ipc_v1_grant_create) == 72 && sizeof(ipc_v1_grant_map) == 72);
+static_assert(sizeof(ipc_v1_grant_unmap) == 48);
 static_assert(sizeof(ipc_v1_feature_query) == 72);
 static_assert(sizeof(ipc_v1_endpoint_create) == 48);
 static_assert(sizeof(ipc_v1_endpoint_delegate) == 72);

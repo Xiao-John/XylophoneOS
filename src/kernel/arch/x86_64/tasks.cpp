@@ -214,6 +214,15 @@ struct ipc_v1_wait_set_record {
 struct ipc_v1_wait_set_handle_record {
     bool used; u32 object_slot; u32 rights; u64 value; u64 holder_pid; u64 badge;
 };
+struct ipc_v1_grant_record {
+    bool used; u32 page_count; u64 length; u64 pages[ipc_v1_max_grant_pages];
+};
+struct ipc_v1_grant_handle_record {
+    bool used; u32 object_slot; u32 rights; u64 value; u64 holder_pid;
+};
+struct ipc_v1_grant_mapping_record {
+    bool used; u32 grant_slot; u32 page_count; u32 access; u64 map_id; u64 holder_pid; u64 address;
+};
 struct ipc_v1_call_record {
     ipc_v1_call_state state;
     u32 endpoint_slot;
@@ -312,10 +321,15 @@ ipc_v1_notification_handle_record ipc_v1_notification_handles[
 ipc_v1_wait_set_record ipc_v1_wait_sets[ipc_v1_max_wait_sets_system];
 ipc_v1_wait_set_handle_record ipc_v1_wait_set_handles[
     ipc_v1_max_wait_sets_system * ipc_v1_max_handles_per_process];
+ipc_v1_grant_record ipc_v1_grants[ipc_v1_max_grants_system];
+ipc_v1_grant_handle_record ipc_v1_grant_handles[
+    ipc_v1_max_grants_system * ipc_v1_max_handles_per_process];
+ipc_v1_grant_mapping_record ipc_v1_grant_mappings[ipc_v1_max_grant_mappings_system];
 u64 ipc_v1_next_handle = 1;
 u64 ipc_v1_next_reply_token = 1;
 u64 ipc_v1_direct_switch_count = 0;
 u64 ipc_v1_next_wait_order = 1;
+u64 ipc_v1_next_map_id = 1;
 thread_record* current_thread;
 u64 next_vm_continuation_generation = 1;
 [[maybe_unused]] bool begin_vm_continuation(process_record& owner, thread_record& thread,
@@ -367,6 +381,7 @@ void wake_irq_waiters(i64 result) {
     }
 }
 process_record* task_by_pid(u64 pid);
+u32 task_index(process_record* task);
 void finish_task(process_record* task, process_outcome outcome, i64 code,
                  u64 vector = 0, u64 address = 0, u64 instruction = 0);
 
@@ -2520,6 +2535,9 @@ u32 ipc_v1_handle_count(u64 pid) {
     for (const auto& handle : ipc_v1_wait_set_handles) {
         if (handle.used && handle.holder_pid == pid) { ++count; }
     }
+    for (const auto& handle : ipc_v1_grant_handles) {
+        if (handle.used && handle.holder_pid == pid) { ++count; }
+    }
     return count;
 }
 
@@ -2535,6 +2553,86 @@ ipc_v1_wait_set_handle_record* ipc_v1_wait_set_handle_for(u64 value, u64 holder)
         if (handle.used && handle.value == value && handle.holder_pid == holder) { return &handle; }
     }
     return nullptr;
+}
+
+ipc_v1_grant_handle_record* ipc_v1_grant_handle_for(u64 value, u64 holder) {
+    for (auto& handle : ipc_v1_grant_handles) {
+        if (handle.used && handle.value == value && handle.holder_pid == holder) { return &handle; }
+    }
+    return nullptr;
+}
+
+u32 ipc_v1_allocate_grant_handle(u32 object_slot, u64 holder, u32 rights, u64 delegated_value = 0) {
+    if ((!delegated_value && !ipc_v1_next_handle) ||
+        (delegated_value && ipc_v1_grant_handle_for(delegated_value, holder)) ||
+        ipc_v1_handle_count(holder) >= ipc_v1_max_handles_per_process) {
+        return ipc_v1_max_grants_system * ipc_v1_max_handles_per_process;
+    }
+    for (u32 i = 0; i < ipc_v1_max_grants_system * ipc_v1_max_handles_per_process; ++i) {
+        if (!ipc_v1_grant_handles[i].used) {
+            const u64 value = delegated_value ? delegated_value : ipc_v1_next_handle++;
+            ipc_v1_grant_handles[i] = {true, object_slot, rights, value, holder};
+            return i;
+        }
+    }
+    return ipc_v1_max_grants_system * ipc_v1_max_handles_per_process;
+}
+
+bool ipc_v1_grant_overlap(u64 pid, u64 begin, u64 end) {
+    for (const auto& mapping : ipc_v1_grant_mappings) {
+        if (mapping.used && mapping.holder_pid == pid) {
+            const u64 mapping_end = mapping.address + u64{mapping.page_count} * page_size;
+            if (mapping.address < end && begin < mapping_end) { return true; }
+        }
+    }
+    return false;
+}
+
+void ipc_v1_remove_grant_mapping(u32 mapping_slot) {
+    if (mapping_slot >= ipc_v1_max_grant_mappings_system || !ipc_v1_grant_mappings[mapping_slot].used) { return; }
+    const auto mapping = ipc_v1_grant_mappings[mapping_slot];
+    process_record* owner = task_by_pid(mapping.holder_pid);
+    if (owner == nullptr || owner->cr3 == 0) { halt(); }
+    const u32 owner_index = task_index(owner);
+    auto& regions = vm1_probe_regions[owner_index];
+    const u64 length = u64{mapping.page_count} * page_size;
+    // Preflight before any page-table or grant-page change: on a full
+    // fragment table with this range strictly inside one interval, unmap()
+    // reports resources. Live callers (grant_unmap/grant_close) preflight and
+    // return that recoverable error before reaching here; only a dying task
+    // (exit/exec) can arrive with the preflight false, and its table is
+    // cleared on death - keep the interval and continue the removal rather
+    // than panicking on a capacity condition.
+    const bool release_reservation = regions.can_unmap(mapping.address, length);
+    for (u32 page = 0; page < mapping.page_count; ++page) {
+        const u64 address = mapping.address + u64{page} * page_size;
+        u64 physical = 0;
+        if (vm_remove_page_in(owner->cr3, address, &physical) != memory_result::none ||
+            mapping.grant_slot >= ipc_v1_max_grants_system || !ipc_v1_grants[mapping.grant_slot].used ||
+            page >= ipc_v1_grants[mapping.grant_slot].page_count ||
+            physical != ipc_v1_grants[mapping.grant_slot].pages[page] ||
+            release_user_page(physical) != memory_result::none || owner->user_pages == 0) { halt(); }
+        --owner->user_pages;
+        vm_prune_empty_page_tables_in(owner->cr3, address);
+    }
+    if (release_reservation) { (void)regions.unmap(mapping.address, length); }
+    ipc_v1_grant_mappings[mapping_slot] = ipc_v1_grant_mapping_record{};
+}
+
+void ipc_v1_destroy_grant(u32 slot) {
+    if (slot >= ipc_v1_max_grants_system || !ipc_v1_grants[slot].used) { return; }
+    for (u32 i = 0; i < ipc_v1_max_grant_mappings_system; ++i) {
+        if (ipc_v1_grant_mappings[i].used && ipc_v1_grant_mappings[i].grant_slot == slot) {
+            ipc_v1_remove_grant_mapping(i);
+        }
+    }
+    for (auto& handle : ipc_v1_grant_handles) {
+        if (handle.used && handle.object_slot == slot) { handle = ipc_v1_grant_handle_record{}; }
+    }
+    for (u32 i = 0; i < ipc_v1_grants[slot].page_count; ++i) {
+        if (release_user_page(ipc_v1_grants[slot].pages[i]) != memory_result::none) { halt(); }
+    }
+    ipc_v1_grants[slot] = ipc_v1_grant_record{};
 }
 
 u32 ipc_v1_allocate_wait_set_handle(u32 object_slot, u64 holder, u32 rights, u64 badge) {
@@ -2791,6 +2889,27 @@ void ipc_v1_close_endpoint(u32 endpoint_slot, i64 result) {
 
 void ipc_v1_revoke_process(u64 pid) {
     expire_waiters();
+    bool had_grant[ipc_v1_max_grants_system]{};
+    for (u32 i = 0; i < ipc_v1_max_grant_mappings_system; ++i) {
+        if (ipc_v1_grant_mappings[i].used && ipc_v1_grant_mappings[i].holder_pid == pid) {
+            had_grant[ipc_v1_grant_mappings[i].grant_slot] = true;
+            ipc_v1_remove_grant_mapping(i);
+        }
+    }
+    for (auto& handle : ipc_v1_grant_handles) {
+        if (handle.used && handle.holder_pid == pid) {
+            if (handle.object_slot < ipc_v1_max_grants_system) { had_grant[handle.object_slot] = true; }
+            handle = ipc_v1_grant_handle_record{};
+        }
+    }
+    for (u32 slot = 0; slot < ipc_v1_max_grants_system; ++slot) {
+        if (!had_grant[slot] || !ipc_v1_grants[slot].used) { continue; }
+        bool remains = false;
+        for (const auto& handle : ipc_v1_grant_handles) {
+            remains = remains || (handle.used && handle.object_slot == slot);
+        }
+        if (!remains) { ipc_v1_destroy_grant(slot); }
+    }
     bool had_notification[ipc_v1_max_notifications_system]{};
     bool had_wait_set[ipc_v1_max_wait_sets_system]{};
     for (auto& handle : ipc_v1_notification_handles) {
@@ -3010,6 +3129,280 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
             query.max_reply_tokens_per_process = ipc_v1_max_reply_tokens_per_process;
             query.direct_switch_count = ipc_v1_direct_switch_count;
             copy_to_user(address, &query, sizeof(query)); result = 0;
+        }
+        frame->rax = static_cast<u64>(result); return frame;
+    }
+    if (action == static_cast<u64>(ipc_v1_action::grant_create)) {
+        ipc_v1_grant_create request{};
+        if ((address & 7u) != 0 || !user_range_ok(address, sizeof(request), false) ||
+            !user_range_ok(address, sizeof(request), true)) {
+            frame->rax = static_cast<u64>(ipc_v1_error::address); return frame;
+        }
+        copy_from_user(&request, address, sizeof(request));
+        if (request.header.version != ipc_v1_version) { result = static_cast<i64>(ipc_v1_error::unsupported); }
+        else if (!ipc_v1_header_valid(request.header, sizeof(request)) || request.flags ||
+                 request.length_out || request.handle_out || request.reserved[0] || request.reserved[1] ||
+                 !request.length || request.length > u64{ipc_v1_max_grant_pages} * page_size ||
+                 !request.rights || (request.rights & ~ipc_v1_grant_right_all)) {
+            result = static_cast<i64>(ipc_v1_error::invalid_argument);
+        } else if (request.source && !user_range_ok(request.source, request.length, false)) {
+            result = static_cast<i64>(ipc_v1_error::address);
+        } else if (current == nullptr || current->closing || current->continuation.active()) {
+            result = static_cast<i64>(ipc_v1_error::state);
+        } else if (!ipc_v1_next_handle || ipc_v1_handle_count(current->pid) >= ipc_v1_max_handles_per_process) {
+            result = static_cast<i64>(ipc_v1_error::resources);
+        } else {
+            u32 grant_slot = ipc_v1_max_grants_system;
+            for (u32 i = 0; i < ipc_v1_max_grants_system; ++i) {
+                if (!ipc_v1_grants[i].used) { grant_slot = i; break; }
+            }
+            u32 handle_slot = ipc_v1_max_grants_system * ipc_v1_max_handles_per_process;
+            for (u32 i = 0; i < ipc_v1_max_grants_system * ipc_v1_max_handles_per_process; ++i) {
+                if (!ipc_v1_grant_handles[i].used) { handle_slot = i; break; }
+            }
+            if (grant_slot == ipc_v1_max_grants_system ||
+                handle_slot == ipc_v1_max_grants_system * ipc_v1_max_handles_per_process) {
+                result = static_cast<i64>(ipc_v1_error::resources);
+            } else {
+                const u32 page_count = static_cast<u32>((request.length + page_size - 1) / page_size);
+                ipc_v1_grant_record grant{};
+                grant.used = true; grant.page_count = page_count; grant.length = request.length;
+                bool allocated = true;
+                u64 offset = 0;
+                for (u32 i = 0; i < page_count; ++i) {
+                    u64 physical = 0;
+                    if (allocate_user_page(&physical) != memory_result::none) { allocated = false; break; }
+                    grant.pages[i] = physical;
+                    auto* bytes = reinterpret_cast<u8*>(physical);
+                    for (u32 j = 0; j < page_size; ++j) { bytes[j] = 0; }
+                    const u64 count = request.length - offset < page_size ? request.length - offset : page_size;
+                    if (request.source && count) {
+                        copy_from_user(bytes, request.source + offset, count);
+                    }
+                    offset += count;
+                }
+                if (!allocated) {
+                    for (u32 i = 0; i < page_count; ++i) {
+                        if (grant.pages[i]) { (void)release_user_page(grant.pages[i]); }
+                    }
+                    result = static_cast<i64>(ipc_v1_error::resources);
+                } else {
+                    ipc_v1_grants[grant_slot] = grant;
+                    const u32 allocated_handle = ipc_v1_allocate_grant_handle(grant_slot, current->pid, request.rights);
+                    if (allocated_handle == ipc_v1_max_grants_system * ipc_v1_max_handles_per_process) {
+                        ipc_v1_destroy_grant(grant_slot);
+                        result = static_cast<i64>(ipc_v1_error::resources);
+                    } else {
+                        request.length_out = request.length;
+                        request.handle_out = ipc_v1_grant_handles[allocated_handle].value;
+                        copy_to_user(address, &request, sizeof(request)); result = 0;
+                    }
+                }
+            }
+        }
+        frame->rax = static_cast<u64>(result); return frame;
+    }
+    if (action == static_cast<u64>(ipc_v1_action::grant_delegate)) {
+        ipc_v1_object_delegate request{};
+        if ((address & 7u) != 0 || !user_range_ok(address, sizeof(request), false) ||
+            !user_range_ok(address, sizeof(request), true)) {
+            frame->rax = static_cast<u64>(ipc_v1_error::address); return frame;
+        }
+        copy_from_user(&request, address, sizeof(request));
+        auto* source = current ? ipc_v1_grant_handle_for(request.handle, current->pid) : nullptr;
+        process_record* target = task_by_pid(request.target_pid);
+        if (request.header.version != ipc_v1_version) { result = static_cast<i64>(ipc_v1_error::unsupported); }
+        else if (!ipc_v1_header_valid(request.header, sizeof(request)) || request.flags || request.badge ||
+                 request.handle_out || request.reserved[0] || request.reserved[1] || !request.target_pid ||
+                 !request.rights || (request.rights & ~ipc_v1_grant_right_all)) {
+            result = static_cast<i64>(ipc_v1_error::invalid_argument);
+        } else if (!source) { result = static_cast<i64>(ipc_v1_error::invalid_handle); }
+        else if (!(source->rights & static_cast<u32>(ipc_v1_grant_right::delegate)) ||
+                 (request.rights & ~source->rights)) { result = static_cast<i64>(ipc_v1_error::denied); }
+        else if (!target || target->closing || target->state == task_state::dead || target->state == task_state::building) {
+            result = static_cast<i64>(ipc_v1_error::invalid_argument);
+        } else {
+            const u32 slot = ipc_v1_allocate_grant_handle(source->object_slot, request.target_pid, request.rights, source->value);
+            if (slot == ipc_v1_max_grants_system * ipc_v1_max_handles_per_process) {
+                result = static_cast<i64>(ipc_v1_error::resources);
+            } else { request.handle_out = ipc_v1_grant_handles[slot].value; copy_to_user(address, &request, sizeof(request)); result = 0; }
+        }
+        frame->rax = static_cast<u64>(result); return frame;
+    }
+    if (action == static_cast<u64>(ipc_v1_action::grant_map)) {
+        ipc_v1_grant_map request{};
+        if ((address & 7u) != 0 || !user_range_ok(address, sizeof(request), false) ||
+            !user_range_ok(address, sizeof(request), true)) {
+            frame->rax = static_cast<u64>(ipc_v1_error::address); return frame;
+        }
+        copy_from_user(&request, address, sizeof(request));
+        auto* handle = current ? ipc_v1_grant_handle_for(request.handle, current->pid) : nullptr;
+        const bool address_valid = request.address && request.address % page_size == 0 &&
+            request.address >= anonymous_vm::arena_begin && request.address < anonymous_vm::arena_end;
+        const u64 rounded = handle && handle->object_slot < ipc_v1_max_grants_system &&
+            ipc_v1_grants[handle->object_slot].used ?
+            ((ipc_v1_grants[handle->object_slot].length + page_size - 1) & ~(page_size - 1)) : 0;
+        if (request.header.version != ipc_v1_version) { result = static_cast<i64>(ipc_v1_error::unsupported); }
+        else if (!ipc_v1_header_valid(request.header, sizeof(request)) || request.reserved32 ||
+                 request.map_id_out || request.length_out || request.reserved[0] || request.reserved[1] ||
+                 !address_valid ||
+                 (request.access != static_cast<u32>(ipc_v1_grant_access::read) &&
+                  request.access != static_cast<u32>(ipc_v1_grant_access::read_write))) {
+            result = static_cast<i64>(ipc_v1_error::invalid_argument);
+        } else if (!handle) { result = static_cast<i64>(ipc_v1_error::invalid_handle); }
+        else if (!rounded || rounded > anonymous_vm::arena_end - request.address) {
+            result = static_cast<i64>(ipc_v1_error::invalid_argument);
+        } else if (!(handle->rights & static_cast<u32>(ipc_v1_grant_right::read_mapping)) ||
+                 (request.access == static_cast<u32>(ipc_v1_grant_access::read_write) &&
+                  !(handle->rights & static_cast<u32>(ipc_v1_grant_right::write_mapping)))) {
+            result = static_cast<i64>(ipc_v1_error::denied);
+        } else if (current->closing || current->continuation.active()) { result = static_cast<i64>(ipc_v1_error::state); }
+        else if (!ipc_v1_next_map_id || current->user_pages > process_max_pages ||
+                 rounded / page_size > process_max_pages - current->user_pages) {
+            result = static_cast<i64>(ipc_v1_error::resources);
+        } else {
+            u32 map_slot = ipc_v1_max_grant_mappings_system;
+            for (u32 i = 0; i < ipc_v1_max_grant_mappings_system; ++i) {
+                if (!ipc_v1_grant_mappings[i].used) { map_slot = i; break; }
+            }
+            if (map_slot == ipc_v1_max_grant_mappings_system) { result = static_cast<i64>(ipc_v1_error::resources); }
+            else {
+                auto& grant = ipc_v1_grants[handle->object_slot];
+                const u32 page_count = grant.page_count;
+                const auto reserved = vm1_probe_regions[static_cast<u32>(current - tasks)].reserve(
+                    request.address, rounded, page_size, true);
+                if (reserved < 0) { result = reserved == anonymous_vm::collision
+                    ? static_cast<i64>(ipc_v1_error::address) : static_cast<i64>(ipc_v1_error::resources); }
+                else {
+                    bool prepared = true;
+                    u32 done = 0;
+                    for (; done < page_count; ++done) {
+                        const u64 page_address = request.address + u64{done} * page_size;
+                        u64 physical = 0; vm_page_protection prior{};
+                        if (vm_lookup_page_in(current->cr3, page_address, &physical, &prior) != memory_result::not_mapped ||
+                            vm_prepare_page_in(current->cr3, page_address) != memory_result::none) {
+                            vm_prune_empty_page_tables_in(current->cr3, page_address);
+                            prepared = false; break;
+                        }
+                        if (retain_user_page(grant.pages[done]) != memory_result::none) {
+                            vm_prune_empty_page_tables_in(current->cr3, page_address);
+                            prepared = false; break;
+                        }
+                        if (vm_install_page_in(current->cr3, page_address, grant.pages[done],
+                                request.access == static_cast<u32>(ipc_v1_grant_access::read)
+                                    ? vm_page_protection::read : vm_page_protection::read_write) != memory_result::none) {
+                            if (release_user_page(grant.pages[done]) != memory_result::none) { halt(); }
+                            vm_prune_empty_page_tables_in(current->cr3, page_address);
+                            prepared = false; break;
+                        }
+                    }
+                    if (!prepared) {
+                        for (u32 i = 0; i < done; ++i) {
+                            u64 physical = 0;
+                            if (vm_remove_page_in(current->cr3, request.address + u64{i} * page_size, &physical) != memory_result::none ||
+                                release_user_page(physical) != memory_result::none) { halt(); }
+                            vm_prune_empty_page_tables_in(current->cr3, request.address + u64{i} * page_size);
+                        }
+                        // unmap() preflights the split capacity before
+                        // mutating anything: on the impossible-full path it
+                        // returns resources and keeps the interval (cleared
+                        // with the task), so a capacity condition never
+                        // becomes a kernel halt.
+                        (void)vm1_probe_regions[static_cast<u32>(current - tasks)].unmap(request.address, rounded);
+                        result = static_cast<i64>(ipc_v1_error::resources);
+                    } else {
+                        current->user_pages += page_count;
+                        const u64 map_id = ipc_v1_next_map_id++;
+                        ipc_v1_grant_mappings[map_slot] = {true, handle->object_slot, page_count,
+                            request.access, map_id, current->pid, request.address};
+                        request.map_id_out = map_id; request.length_out = grant.length;
+                        copy_to_user(address, &request, sizeof(request)); result = 0;
+                    }
+                }
+            }
+        }
+        frame->rax = static_cast<u64>(result); return frame;
+    }
+    if (action == static_cast<u64>(ipc_v1_action::grant_unmap)) {
+        ipc_v1_grant_unmap request{};
+        if ((address & 7u) != 0 || !user_range_ok(address, sizeof(request), false)) {
+            frame->rax = static_cast<u64>(ipc_v1_error::address); return frame;
+        }
+        copy_from_user(&request, address, sizeof(request));
+        auto* handle = current ? ipc_v1_grant_handle_for(request.handle, current->pid) : nullptr;
+        if (request.header.version != ipc_v1_version) { result = static_cast<i64>(ipc_v1_error::unsupported); }
+        else if (!ipc_v1_header_valid(request.header, sizeof(request)) || !request.map_id || request.reserved[0] || request.reserved[1]) {
+            result = static_cast<i64>(ipc_v1_error::invalid_argument);
+        } else if (!handle) { result = static_cast<i64>(ipc_v1_error::invalid_handle); }
+        else if (!(handle->rights & static_cast<u32>(ipc_v1_grant_right::read_mapping))) { result = static_cast<i64>(ipc_v1_error::denied); }
+        else {
+            u32 found = ipc_v1_max_grant_mappings_system;
+            for (u32 i = 0; i < ipc_v1_max_grant_mappings_system; ++i) {
+                const auto& mapping = ipc_v1_grant_mappings[i];
+                if (mapping.used && mapping.map_id == request.map_id && mapping.holder_pid == current->pid &&
+                    mapping.grant_slot == handle->object_slot) { found = i; break; }
+            }
+            if (found == ipc_v1_max_grant_mappings_system) { result = static_cast<i64>(ipc_v1_error::invalid_handle); }
+            else {
+                const auto mapping = ipc_v1_grant_mappings[found];
+                if (pinned_range(current, mapping.address, mapping.address + u64{mapping.page_count} * page_size)) {
+                    result = static_cast<i64>(ipc_v1_error::busy);
+                } else if (!vm1_probe_regions[static_cast<u32>(current - tasks)].can_unmap(
+                               mapping.address, u64{mapping.page_count} * page_size)) {
+                    // Recoverable capacity error before any state changes.
+                    result = static_cast<i64>(ipc_v1_error::resources);
+                } else if (current->continuation.active()) {
+                    // The pending VM continuation would restore a reservation
+                    // snapshot that still contains this range (same stale
+                    // interval as the close path); reject until it finishes.
+                    result = static_cast<i64>(ipc_v1_error::state);
+                } else { ipc_v1_remove_grant_mapping(found); result = 0; }
+            }
+        }
+        frame->rax = static_cast<u64>(result); return frame;
+    }
+    if (action == static_cast<u64>(ipc_v1_action::grant_close)) {
+        ipc_v1_object_close request{};
+        if ((address & 7u) != 0 || !user_range_ok(address, sizeof(request), false)) {
+            frame->rax = static_cast<u64>(ipc_v1_error::address); return frame;
+        }
+        copy_from_user(&request, address, sizeof(request));
+        auto* handle = current ? ipc_v1_grant_handle_for(request.handle, current->pid) : nullptr;
+        if (request.header.version != ipc_v1_version) { result = static_cast<i64>(ipc_v1_error::unsupported); }
+        else if (!ipc_v1_header_valid(request.header, sizeof(request)) || request.reserved[0] || request.reserved[1]) {
+            result = static_cast<i64>(ipc_v1_error::invalid_argument);
+        } else if (!handle) { result = static_cast<i64>(ipc_v1_error::invalid_handle); }
+        else if (!(handle->rights & static_cast<u32>(ipc_v1_grant_right::manage))) { result = static_cast<i64>(ipc_v1_error::denied); }
+        else {
+            const u32 slot = handle->object_slot;
+            bool busy = false;
+            bool reservation_full = false;
+            bool holder_continuation = false;
+            for (const auto& mapping : ipc_v1_grant_mappings) {
+                if (!mapping.used || mapping.grant_slot != slot) { continue; }
+                process_record* owner = task_by_pid(mapping.holder_pid);
+                if (owner && pinned_range(owner, mapping.address, mapping.address + u64{mapping.page_count} * page_size)) {
+                    busy = true; break;
+                }
+                // Same no-effects contract as the pin preflight: a full
+                // fragment table that cannot split must surface as a
+                // recoverable error, not a later halt during removal.
+                if (owner && !vm1_probe_regions[static_cast<u32>(owner - tasks)].can_unmap(
+                        mapping.address, u64{mapping.page_count} * page_size)) {
+                    reservation_full = true;
+                }
+                // A holder mid VM-continuation holds a snapshot of its
+                // reservation table (vm2_page_step restores tx.regions on
+                // finish); removing the grant now would be undone by that
+                // restore, resurrecting a stale interval after a successful
+                // close. Reject while any holder continuation is active,
+                // mirroring grant_map's own continuation guard.
+                if (owner && owner->continuation.active()) { holder_continuation = true; }
+            }
+            if (busy) { result = static_cast<i64>(ipc_v1_error::busy); }
+            else if (reservation_full) { result = static_cast<i64>(ipc_v1_error::resources); }
+            else if (holder_continuation) { result = static_cast<i64>(ipc_v1_error::state); }
+            else { ipc_v1_destroy_grant(slot); result = 0; }
         }
         frame->rax = static_cast<u64>(result); return frame;
     }
@@ -5323,6 +5716,9 @@ void* syscall_entry(interrupt_frame* frame) {
                 (request.operation>=4 && request.protection)) { result=anonymous_vm::invalid; break; }
             if (current->closing || current->continuation.active()) { result=anonymous_vm::closing; break; }
             const u32 slot=static_cast<u32>(current-tasks);
+            if (ipc_v1_grant_overlap(current->pid, request.address, request.address + request.length)) {
+                result = static_cast<i64>(ipc_v1_error::busy); break;
+            }
             auto& regions=vm1_probe_regions[slot];
             if (request.operation!=5 && !regions.contains(request.address,request.length)) { result=-6; break; }
             if (request.operation==5 && pinned_range(current,request.address,request.address+request.length)) { result=-5; break; }

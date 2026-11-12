@@ -129,6 +129,7 @@
 | 38f2c931 | `38f2c931_ipc_ip1_abi_reference_model.md` | IPC IP1：syscall 88 ABI 登记与 host-only 参考模型（SDK unsupported） |
 | 49364f6e | `49364f6e_ipc_ip2_synchronous_endpoints_and_rpc.md` | IPC IP2：sys88 endpoint 与同步 RPC 慢路径实现（后由 PR #111 三轮 guest qualification） |
 | 8c39b047 | `8c39b047_ipc_ip3_notification_and_wait_set_abi_registrati.md` | IPC IP3：notification/wait-set 实现及可复用 guest race/resource 验收脚本（PR #111 三轮验收通过） |
+| 6cade46a | [`6cade46a_ipc_ip4_bulk_grant_shared_mapping_lifecycle.md`](6cade46a_ipc_ip4_bulk_grant_shared_mapping_lifecycle.md) | IPC IP4：bulk grant 共享映射、授权、撤销、生命周期及 owner guest 验收脚本（bulk_grant feature 保持关闭） |
 | d923f231 | `d923f231_ipc_ip5_short_message_fastpath_and_guest_latency.md` | IPC IP5：短消息直接切换、handle 索引、批量复制、guest latency probe；同步开放已验收的 IP2/IP3 四个位 |
 | 59ae1469 | `59ae1469_utf_8_m2_filename_boundary_probe.md` | UTF-8 M2：非 BMP 文件名、255 字节路径边界、长目录项分页 guest 探针（客体验收未运行） |
 

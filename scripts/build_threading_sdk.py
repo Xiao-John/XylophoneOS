@@ -158,7 +158,8 @@ def main():
                ROOT / 'src/shared/runtime/memory.cpp',
                *sorted((ROOT / 'src/user/loader').glob('*.cpp')),
                *sorted((ROOT / 'src/user/threading').glob('*.cpp')),
-               ROOT / 'src/user/arch/x86_64/thread_context.cpp']
+               ROOT / 'src/user/arch/x86_64/thread_context.cpp',
+               ROOT / 'src/user/arch/x86_64/thread_core.cpp']
     compiled = []
     for source in sources:
         target = objects / (str(source.relative_to(ROOT)).replace('/', '_') + '.o')

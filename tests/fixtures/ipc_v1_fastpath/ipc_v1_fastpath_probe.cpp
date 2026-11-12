@@ -123,6 +123,8 @@ u64 percentile(const u64* values, u32 count, u32 percentile_value) {
 }
 
 bool run_case(u32 length, bool polling) {
+    ipc_v1_feature_query baseline{};
+    if (ipc_v1::query_features(baseline) != 0) { fail("switch-baseline"); return false; }
     u64 endpoint = 0;
     constexpr u32 rights = static_cast<u32>(ipc_v1_right::call) |
         static_cast<u32>(ipc_v1_right::receive) | static_cast<u32>(ipc_v1_right::manage);
@@ -167,9 +169,16 @@ bool run_case(u32 length, bool polling) {
         fail("server-join", context.error); (void)ipc_v1::endpoint_close(endpoint); return false;
     }
     if (ipc_v1::endpoint_close(endpoint) != 0) { fail("endpoint-close"); return false; }
-    printf("[ipc-ip5] mode=%s bytes=%u fastpath_eligible=%u samples=%u p50_ns=%llu p95_ns=%llu p99_ns=%llu\n",
+    ipc_v1_feature_query observed{};
+    if (ipc_v1::query_features(observed) != 0) { fail("switch-observation"); return false; }
+    const u64 switches = observed.direct_switch_count - baseline.direct_switch_count;
+    const bool eligible = !polling && length <= 64;
+    if ((eligible && switches == 0) || (!eligible && switches != 0)) {
+        fail("fastpath-observation", static_cast<i64>(switches)); return false;
+    }
+    printf("[ipc-ip5] mode=%s bytes=%u fastpath_eligible=%u switches=%llu samples=%u p50_ns=%llu p95_ns=%llu p99_ns=%llu\n",
         polling ? "poll-fallback" : "blocked-receiver", length,
-        !polling && length <= 64 ? 1u : 0u, sample_count,
+        eligible ? 1u : 0u, static_cast<unsigned long long>(switches), sample_count,
         static_cast<unsigned long long>(percentile(samples, sample_count, 50)),
         static_cast<unsigned long long>(percentile(samples, sample_count, 95)),
         static_cast<unsigned long long>(percentile(samples, sample_count, 99)));
@@ -180,7 +189,8 @@ bool run_case(u32 length, bool polling) {
 int main() {
     if (thread::enable() != 0) { fail("thread-profile"); return 1; }
     ipc_v1_feature_query query{};
-    if (ipc_v1::query_features(query) != 0 || query.supported_features != ipc_v1_feature_supported_mask) {
+    if (ipc_v1::query_features(query) != 0 || query.supported_features != 0x0f ||
+        (query.supported_features & static_cast<u64>(ipc_v1_feature::bulk_grant)) != 0) {
         fail("feature-mask", static_cast<i64>(query.supported_features)); return 1;
     }
     for (u32 length : payload_sizes) {

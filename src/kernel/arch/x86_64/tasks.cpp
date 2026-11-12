@@ -314,6 +314,7 @@ ipc_v1_wait_set_handle_record ipc_v1_wait_set_handles[
     ipc_v1_max_wait_sets_system * ipc_v1_max_handles_per_process];
 u64 ipc_v1_next_handle = 1;
 u64 ipc_v1_next_reply_token = 1;
+u64 ipc_v1_direct_switch_count = 0;
 u64 ipc_v1_next_wait_order = 1;
 thread_record* current_thread;
 u64 next_vm_continuation_generation = 1;
@@ -1577,6 +1578,7 @@ interrupt_frame* schedule(interrupt_frame* frame, thread_record* preferred = nul
                 (!candidate->process->continuation.active() ||
                  candidate->tid == candidate->process->continuation.owner_tid)) {
                 next = candidate;
+                ++ipc_v1_direct_switch_count;
                 cursor = (static_cast<u32>(candidate - threads) + 1) % thread_max_total;
             }
         }
@@ -2995,7 +2997,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
             query.max_queue_per_endpoint == 0 && query.max_reply_tokens_per_process == 0;
         if (query.header.version != ipc_v1_version) { result = static_cast<i64>(ipc_v1_error::unsupported); }
         else if (!ipc_v1_header_valid(query.header, sizeof(query)) || !outputs_zero ||
-                 query.reserved[0] != 0 || query.reserved[1] != 0) {
+                 query.direct_switch_count != 0 || query.reserved != 0) {
             result = static_cast<i64>(ipc_v1_error::invalid_argument);
         } else {
             query.known_features = ipc_v1_feature_known_mask;
@@ -3006,6 +3008,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
             query.max_pending_calls = ipc_v1_max_pending_calls;
             query.max_queue_per_endpoint = ipc_v1_max_queue_per_endpoint;
             query.max_reply_tokens_per_process = ipc_v1_max_reply_tokens_per_process;
+            query.direct_switch_count = ipc_v1_direct_switch_count;
             copy_to_user(address, &query, sizeof(query)); result = 0;
         }
         frame->rax = static_cast<u64>(result); return frame;

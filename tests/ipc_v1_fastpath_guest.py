@@ -117,6 +117,18 @@ def main():
             raise AssertionError(report['probe_output'][-8000:])
         if result.count(b'[ipc-ip5] mode=') != 10:
             raise AssertionError('expected ten mode/payload distributions')
+        for line in result.decode('utf-8', 'replace').splitlines():
+            if '[ipc-ip5] mode=' not in line:
+                continue
+            if 'switches=' not in line:
+                raise AssertionError(f'missing switch observation: {line}')
+            switches = int(line.split('switches=')[1].split()[0])
+            eligible = 'mode=blocked-receiver' in line and any(
+                f'bytes={size} ' in line for size in (0, 8, 64))
+            if eligible and switches == 0:
+                raise AssertionError(f'fastpath never observed: {line}')
+            if not eligible and switches != 0:
+                raise AssertionError(f'unexpected direct switch: {line}')
         report['resources_after'] = resources(guest)
         if report['resources_after'] != report['resources_before']:
             raise AssertionError(f"guest resource drift: {report['resources_before']} -> {report['resources_after']}")

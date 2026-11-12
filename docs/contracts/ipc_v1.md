@@ -36,8 +36,8 @@ IP4 的 bulk grant 仍保持关闭，直到真实 guest qualification。
 能力分组：`endpoint_call_v1`（受控端点、短消息 call/receive/reply）、
 `deadline_v1`（统一单调绝对期限）、`notification_v1`（通知）、`wait_set_v1`
 （多源等待）、`bulk_grant_v1`（大块共享授予）；各组独立登记和报告。不存在的组
-不得在 manifest 标 supported；本阶段所有实际 SDK manifest 的 feature set 为空。
-接口使用 `(version, size)`、固定宽度整数、保留字段必须为零，未知版本/flag 拒绝；
+不得在 manifest 标 supported；经真实客体验收的 endpoint_call/deadline/notification/wait_set 四组按本契约登记为 supported（0x0f），bulk_grant_v1 保持关闭直至 IP4 验收。
+接口使用 `(version, size)`、固定宽度整数、保留字段必须为零，未知版本/flag 拒绝；`ipc_v1_feature_query.direct_switch_count` 为内核输出的短消息直切累计（输入仍须为零），供客体独立验证直切路径确实发生；
 每项成功和失败的输出初始化规则在 IP1 冻结如下。syscall 88 已登记；89–95 与 128+
 仍未分配，禁止私号试验污染公共 ABI。
 

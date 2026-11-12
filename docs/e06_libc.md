@@ -18,6 +18,8 @@
   （sha256 `6ff27e3bf022666f43f7802255be680eeff722ac181b1725d21e2e8318604ee3`），
   再跑 `build_threading_newlib.py` 与 `build_threading_sdk.py`。本机已用该 SDK 实测
   lz4 `-T2`、zstd `-T2` 的压缩/解压在客体通过。
+- 线程包使用 profile `xos-x86_64-static-threaded-v1`（features 含 `threads`，登记线程
+  SDK 树哈希与已验证系统 build）；xypm 事务按该 profile 建库。
 - 普通 SDK 提供**单线程 pthread 子集**：`pthread_once`、TSS keys、mutex/cond/rwlock、
   `pthread_self/equal`、`sched_yield` 在单线程进程里语义正确；`pthread_create/join/detach`
   返回 `ENOSYS`。声明需要 POSIX feature 宏（`xos_app.py` 已带），真实多线程仍需线程 SDK。

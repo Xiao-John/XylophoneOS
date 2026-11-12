@@ -25,7 +25,7 @@
 
 | PL-0010 | 2026-11-12 | jq/lz4/zstd | 普通 SDK 完全没有 pthread 符号，端口各自带桩 | 默认 SDK 加单线程安全子集（once/TSS/mutex/cond/rwlock，create 返回 ENOSYS），并让 `xos_app.py` 打开 POSIX feature 宏 | `src/user/libc/pthread_single.cpp`；jq 已删桩 | fixed |
 | PL-0011 | 2026-11-12 | lz4/zstd | 真实多线程不可用：线程 SDK 需要 SHA 固定的 newlib 源（`6ff27e3b…`） | 从 sourceware 公开目录取回同名归档（哈希一致），重建线程 newlib 与线程 SDK；lz4 `-T2`、zstd `-T2` 客体实测通过 | 归档在 `.cache/xos_seed/threading_sources/`（不入库） | fixed |
-| PL-0012 | 2026-11-12 | lz4/zstd | 线程化**打包**未打通：没有 threaded profile，xypm 的 DB/profile 仍是 b2；线程版二进制目前是宿主验证件，不是可安装包 | 新增 threaded profile 并按需重建 xypm，或明确“线程运行时随包静态链接、profile 保持 b2”的登记方式 | 线程版仅本地验证，未打包 | open |
+| PL-0012 | 2026-11-12 | lz4/zstd | 线程化**打包**未打通：没有 threaded profile，xypm 的 DB/profile 仍是 b2 | 新增 `xos-x86_64-static-threaded-v1` profile（登记线程 SDK 树哈希与系统 build），用该 profile 安装线程包；线程 SDK 改为 C 模式 `-fno-exceptions`，不再依赖 libsupc++ | 已实测：lz4/zstd 线程包安装到 threaded DB，`-T2` 压缩/解压通过 | fixed |
 
 ## 登记规则
 

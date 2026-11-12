@@ -165,8 +165,10 @@ def main():
     for source in sources:
         target = objects / (str(source.relative_to(ROOT)).replace('/', '_') + '.o')
         target.parent.mkdir(parents=True, exist_ok=True)
-        # pthread_once must unwind its in-progress marker if an initializer throws.
-        extra = ['-fexceptions', '-funwind-tables'] if source.name == 'pthread.cpp' else ['-fno-exceptions']
+        # C-only builds have no C++ exceptions, so pthread.cpp must not pull in
+        # __gxx_personality_v0; the C++ SDK keeps unwinding for throwing initializers.
+        exceptions = ['-fexceptions', '-funwind-tables'] if args.cpp else ['-fno-exceptions']
+        extra = exceptions if source.name == 'pthread.cpp' else ['-fno-exceptions']
         run([cross, *flags, *extra, '-c', str(source), '-o', str(target)], source.stem + '.log')
         compiled.append(target)
     archive = output / 'lib/libxos.a'

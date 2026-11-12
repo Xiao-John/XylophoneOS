@@ -1,7 +1,11 @@
 #include <xos/format.hpp>
 #include <xos/memory.hpp>
+#include "build_info.hpp"
 
 namespace xos {
+#if XOS_COW1_PROBE
+bool cow1_self_check();
+#endif
 namespace {
 constexpr u64 check_virtual = 0x40000000ull;
 constexpr u64 check_pattern = 0x1122334455667788ull;
@@ -200,6 +204,9 @@ bool memory_self_check() {
     if (!user_rollback_check()) { report("fail", "user_rollback"); return false; }
     if (!vm_page_check()) { report("fail", "vm_page"); return false; }
     if (!vm_batch_copy_check()) { report("fail", "vm_batch_copy"); return false; }
+#if XOS_COW1_PROBE
+    if (!cow1_self_check()) { report("fail", "cow1_page_tables"); return false; }
+#endif
     format::text("[vm] event=self_check result=pass address=");
     format::hex(check_virtual);
     format::text(" physical=");

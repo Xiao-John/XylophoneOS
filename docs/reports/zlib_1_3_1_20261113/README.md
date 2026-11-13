@@ -5,25 +5,34 @@
 | 端口 | `src/ports/zlib` |
 | 上游归档 | `zlib-1.3.1.tar.gz`，sha256 `9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23`（zlib.net fossils） |
 | 构建方式 | `./configure --static` + `make libz.a` + 手工链接 `test/minigzip.c` |
-| 构建 SDK | 仓库开发树 `build/sdk` |
-| 包 | `thirdparty.zlib-1.3.1.xpk`，sha256 `21520a68ee52aa397d0bfc93a4c3b3e4274626f8d2b0b8dab978dbd3f5e4c6d9`，8 个文件 |
 | 目标 profile | `xos-x86_64-static-single-b2-v1` |
+| 客体系统 | `build/xos-install.iso`，build `41f3fce8bbf46593`，kernel 805016 字节 |
+| 构建 SDK | 开发树 `build/sdk`；SDK build `41f3fce8bbf46593`；树哈希 `78fe9a04248bea82d79ff10bcecfb4036dc94d590d24109bdfc5ed94e33ea18c`（未登记到 profile，构建时使用 `XOS_SDK_UNREGISTERED_OK=1`） |
+| 包 | `thirdparty.zlib-1.3.1.xpk`，sha256 `aa795f283785252aa68e84c8b6eba3eb0e3ea7cb22b43310b8408f241ad72fd8`，8 个文件 |
+| `minigzip` 交付物 | `usr/bin/minigzip`，sha256 `271647853907888bf8925c2409b8ebe169045df90879586172c65ab035c763d3`，216576 字节 |
 
 ## 安装事务
 
 ```text
 python3 scripts/xypm.py install --image base.img --output-image work.img --offline \
   --profile config/package/xos_x86_64_static_single_b2_v1.json thirdparty.zlib-1.3.1.xpk
--> verified_files 8, mutations 22, backend_sha256 0d8023a3…
+-> verified_files 8, mutations 22, backend_sha256 0d8023a31e1aefee2e484e0e14b1db939aaac9ae4757ab40a41690a19756e7e7
 ```
+
+安装后导出 `/usr/bin/minigzip` 复核摘要为
+`271647853907888bf8925c2409b8ebe169045df90879586172c65ab035c763d3`，与 XPK 内
+`payload/usr/bin/minigzip` **完全一致**；两个 shell 都直接运行这个已安装路径，
+不再使用 `/tests/minigzip` 副本。
 
 ## xsh 原始输出
 
 ```text
 xsh> exec-file /usr/bin/minigzip -d -c /s.gz
 ZLIB DATA COMPRESSION LIBRARY
+
+zlib 1.3.1 is a general purpose data compression library.  All the code is
+thread safe.  The data format used by the zlib library is described by RFCs
 ...
-zlib 1.3.1 is a general purpose data compression library. ...
 ```
 
 ## dash 原始输出
@@ -31,16 +40,18 @@ zlib 1.3.1 is a general purpose data compression library. ...
 `dash /tests/zl2.sh`（bare command，dash 有 spawn 权限）：
 
 ```text
-/tests/minigzip -c /usr/share/zlib/samples/sample.txt > /s.gz
+/usr/bin/minigzip -c /usr/share/zlib/samples/sample.txt > /s.gz
 c_rc=0
-/tests/minigzip -d -c /s.gz > /s.out
+/usr/bin/minigzip -d -c /s.gz > /s.out
 d_rc=0
 ```
 
 ## 互操作
 
-- 客体 `/s.gz` 2527 字节，头 `1f 8b 08`；宿主 `gzip -d` 解压成功。
-- 宿主解压结果与客体 `/s.out`（5317 字节）逐字节相同。
+- 客体 `/s.gz` 2527 字节（头 `1f 8b 08`），sha256 由宿主 `gzip -d` 成功解压。
+- 宿主解压结果与客体 `/s.out`（5317 字节，
+  sha256 `d106dcdb2a0b3087cb3a2380b9f00a0bbadc7eb835cd80408f94a2d78d69727d`）
+  逐字节相同。
 
 ## 未覆盖
 

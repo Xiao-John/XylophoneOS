@@ -8,7 +8,7 @@ zlib 压缩库与 `minigzip`（gzip 格式的压缩/解压示例工具）。
 
 - 包 id：`thirdparty.zlib`
 - 目标 profile：`xos-x86_64-static-single-b2-v1`
-- 已验证包哈希：`21520a68ee52aa397d0bfc93a4c3b3e4274626f8d2b0b8dab978dbd3f5e4c6d9`
+- 已验证包哈希：`aa795f283785252aa68e84c8b6eba3eb0e3ea7cb22b43310b8408f241ad72fd8`
   （由本目录配方构建；换 SDK/上游/配方后必须重算并更新 `port.json`）。
 
 ## 构建
@@ -19,6 +19,9 @@ export XOS_SOURCE_ARCHIVE=/path/to/zlib-1.3.1.tar.gz
 export XOS_OUT=/path/to/out
 python3 build.py
 ```
+
+配方会核对 `XOS_SDK` 树哈希是否登记在目标 profile 的 `sdk_tree_sha256`；用开发树
+`build/sdk`（未登记）构建时需设置 `XOS_SDK_UNREGISTERED_OK=1`。
 
 配方：`./configure --static` → `make libz.a`，再用 SDK 的 crt0/链接脚本编译
 `test/minigzip.c`。安装 `/usr/bin/minigzip`、`/usr/lib/libz.a`、
@@ -41,8 +44,8 @@ ZLIB DATA COMPRESSION LIBRARY
 
 ```text
 $ dash /tests/zl2.sh
-minigzip -c samples/sample.txt > /s.gz   -> c_rc=0
-minigzip -d -c /s.gz > /s.out            -> d_rc=0
+/usr/bin/minigzip -c samples/sample.txt > /s.gz  -> c_rc=0
+/usr/bin/minigzip -d -c /s.gz > /s.out           -> d_rc=0
 ```
 
 产物 `/s.gz`（2527 字节，`1f 8b 08` 头）可被宿主 `gzip -d` 解开，解压结果与

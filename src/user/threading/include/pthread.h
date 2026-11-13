@@ -1,7 +1,16 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 #ifndef XOS_PTHREAD_H
 #define XOS_PTHREAD_H
-#ifndef _POSIX_READER_WRITER_LOCKS
+#if defined(XOS_THREADED_RUNTIME)
+/* The threaded runtime returns ENOTSUP from the rwlock operations, so do not
+   claim POSIX reader/writer lock support there; only declare the objects. */
+typedef struct { int pshared; } pthread_rwlockattr_t;
+#else
+/* Older newlib feature headers report reader/writer locks as unsupported;
+   the single-thread runtime implements them, so expose the types. */
+#ifdef _POSIX_READER_WRITER_LOCKS
+#undef _POSIX_READER_WRITER_LOCKS
+#endif
 #define _POSIX_READER_WRITER_LOCKS 200809L
 #endif
 #ifndef _UNIX98_THREAD_MUTEX_ATTRIBUTES
@@ -55,11 +64,6 @@ typedef struct {
 
 typedef volatile int pthread_spinlock_t;
 
-#if defined(XOS_THREADED_RUNTIME)
-/* The threaded newlib build has no rwlock attribute object; XOS still ships
-   the attribute API (reader/writer locks themselves are ENOTSUP there). */
-typedef struct { int pshared; } pthread_rwlockattr_t;
-#endif
 
 int sched_yield(void);
 int clock_gettime(clockid_t, struct timespec*);

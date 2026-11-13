@@ -9,6 +9,7 @@ import re
 import shlex
 import subprocess
 import tarfile
+import tempfile
 
 
 def digest(path):
@@ -28,6 +29,7 @@ def main():
     assert digest(root / 'scripts/glibc_g1_probe.py') == report['probe_sha256']
     assert digest(root / 'src/ports/glibc/patches/0001-config-sub-xos.patch') == report['patch_sha256']
     assert digest(root / 'src/ports/glibc/patches/0002-xos-abi-note.patch') == report['xos_abi_note_patch_sha256']
+    assert digest(root / 'src/ports/glibc/patches/0003-xos-tls-init.patch') == report['xos_tls_patch_sha256']
     assert report['status'] == 'diagnostic_only' and report['nptl_backend_experimental'] and not report['synthetic_abi_tag']
     assert report['sysroot_enforced'] and report['configure_exit_code'] == 0
     assert not report['hacker_mode'] and '--enable-hacker-mode' not in report['command']
@@ -73,14 +75,50 @@ def main():
     assert re.search(r'\bud2\b', text) and not re.search(r'R_X86_64_', text)
     assert digest(build / 'csu/abi-tag.h') == digest(source / 'sysdeps/xos/abi-tag.h')
     assert 'This configuration not matched in ../abi-tags' not in (output / 'make.log').read_text()
-    note = report['isolated_abi_note']
-    assert report['diagnostic_objects']['abi-note']['exit_code'] != 0
-    assert note['exit_code'] == 0 and note['suppresses_before_compile']
-    assert digest(build / 'csu/abi-note.o') == note['object_sha256']
+    note = report['diagnostic_objects']['abi-note']
+    assert note['exit_code'] == 0 and report['isolated_abi_note'] is None
+    assert digest(build / 'csu/abi-note.o') == note['sha256']
     assert digest(output / 'abi-note-readelf.txt') == note['notes_sha256']
-    assert '../sysdeps/x86_64/xos/abi-note.c' in (output / 'abi-note-isolated.log').read_text()
+    assert '../sysdeps/x86_64/xos/abi-note.c' in (output / 'abi-note-dependencies.d').read_text()
     notes = (output / 'abi-note-readelf.txt').read_text()
     assert 'NT_GNU_PROPERTY_TYPE_0' in notes and 'NT_GNU_ABI_TAG' not in notes
+    for name, expected in report['generated_layout_headers'].items():
+        assert digest(build / name) == expected
+    assert '#define SEM_T_ALIGN 8' in (build / 'sem_t-align.h').read_text()
+    assert '#define DTV_OFFSET 8' in (build / 'tlsdesc.h').read_text()
+    deps = (build / 'tlsdesc.h.d').read_text()
+    assert 'sysdeps/x86_64/xos/tls.h' in deps and 'sysdeps/x86_64/nptl/tls.h' in deps
+
+    # Reuse glibc's actual compile flags, without a shell, to inspect the
+    # deliberately failing TLS_INIT_TP hook in an XOS target object.
+    logs = (output / 'abi-note-object.log').read_text() + (output / 'make.log').read_text()
+    command_line = next(line for line in logs.splitlines()
+                        if '/cc ../sysdeps/x86_64/xos/abi-note.c ' in line)
+    cmd = shlex.split(command_line)
+    position = cmd.index('../sysdeps/x86_64/xos/abi-note.c')
+    cmd[position:position + 1] = ['-x', 'c', '-']
+    for flag in ('-MF', '-MT'):
+        if flag in cmd:
+            position = cmd.index(flag)
+            del cmd[position:position + 2]
+    for flag in ('-MD', '-MP'):
+        if flag in cmd:
+            cmd.remove(flag)
+    with tempfile.TemporaryDirectory(prefix='xos_glibc_tls_test_') as temp:
+        obj = Path(temp) / 'tls_probe.o'
+        cmd[cmd.index('-o') + 1] = str(obj)
+        subprocess.run(cmd, cwd=source / 'csu', check=True, capture_output=True, text=True,
+                       input='#include <tls.h>\nint tls_probe(void *p) { return TLS_INIT_TP(p); }\n')
+        disassembly = subprocess.check_output(['x86_64-elf-objdump', '-d', str(obj)], text=True)
+        assert re.search(r'\bxor\s+%eax,%eax', disassembly)
+        assert not re.search(r'\b(syscall|int)\b', disassembly)
+        # Compare the experimental public types to the actual XOS thread ABI.
+        cpp = '#include <xos/thread_abi.hpp>\n#define _SEMAPHORE_H 1\n#include <bits/semaphore.h>\n#include <bits/pthread_stack_min-dynamic.h>\n#include <bits/local_lim.h>\nstatic_assert(PTHREAD_STACK_MIN == xos::thread_stack_min);\nstatic_assert(sizeof(sem_t) == 32 && alignof(sem_t) == 8);\nstatic_assert(PTHREAD_KEYS_MAX == 128);\n'
+        cxx = report['tools']['x86_64-elf-g++']['path']
+        subprocess.run([cxx, '-std=c++17', '-ffreestanding', '-nostdinc',
+                        '-I', str(root / 'src/shared/include'), '-I', str(source / 'sysdeps/xos'),
+                        '-x', 'c++', '-c', '-', '-o', str(obj)], input=cpp, text=True,
+                       capture_output=True, check=True)
     root = output / 'xos-glibc-sysroot'
     manifest = json.loads((output / 'header-manifest.json').read_text())
     assert digest(output / 'header-manifest.json') == report['header_install']['manifest_sha256']
@@ -90,7 +128,9 @@ def main():
         assert digest(root / name) == expected
     assert digest(root / 'usr/include/stdlib.h') == digest(source / 'stdlib/stdlib.h')
     assert digest(root / 'usr/include/bits/stdio_lim.h') == digest(source / 'sysdeps/xos/bits/stdio_lim.h')
-    assert 'bits/semaphore.h' in (output / 'install-headers.log').read_text()
+    assert digest(root / 'usr/include/bits/semaphore.h') == digest(source / 'sysdeps/xos/bits/semaphore.h')
+    assert 'bits/types/idtype_t.h' in (output / 'install-headers.log').read_text()
+    assert 'Generic bits/errno.h included' in (output / 'make.log').read_text()
     print('PASS diagnostic objects, symbols, instruction sequence, header provenance and partial sysroot')
     print('NOT ACCEPTED: experimental backend, incomplete headers and libc build, no guest test')
 

@@ -68,6 +68,8 @@ def main():
                 shutil.copyfile(path, destination)
         note_patch = ROOT / 'src/ports/glibc/patches/0002-xos-abi-note.patch'
         subprocess.run(['patch', '-p1', '-i', str(note_patch)], cwd=source, check=True)
+        tls_patch = ROOT / 'src/ports/glibc/patches/0003-xos-tls-init.patch'
+        subprocess.run(['patch', '-p1', '-i', str(tls_patch)], cwd=source, check=True)
         # This value is deliberately synthetic and is never an XOS ABI assignment.
         if args.synthetic_abi_tag:
             with (source / 'abi-tags').open('a') as file:
@@ -98,7 +100,7 @@ def main():
     make_result = None
     if backend and result.returncode == 0:
         with (output/'make.log').open('w') as log:
-            make_result = subprocess.run(['gnumake', '-j4'], cwd=build, env=env, stdout=log, stderr=subprocess.STDOUT)
+            make_result = subprocess.run(['gnumake', '-j1'], cwd=build, env=env, stdout=log, stderr=subprocess.STDOUT)
     objects = {}
     if backend and make_result is not None:
         for subdir, name in (('stdlib', 'abs'), ('posix', '_exit'), ('csu', 'abi-note')):
@@ -128,7 +130,7 @@ def main():
     # only to inspect sysdeps source selection and note contents. It is not a
     # successful normal csu build, whose failure is retained above.
     isolated_note = None
-    if backend and make_result is not None:
+    if backend and make_result is not None and objects['abi-note']['exit_code'] != 0:
         note_object = build / 'csu/abi-note.o'
         with (output / 'abi-note-isolated.log').open('w') as log:
             isolated = subprocess.run(['gnumake', '-C', str(source / 'csu'),
@@ -141,6 +143,13 @@ def main():
             (output / 'abi-note-readelf.txt').write_text(notes)
             isolated_note.update({'object_sha256': digest(note_object),
                                   'notes_sha256': digest(output / 'abi-note-readelf.txt')})
+    if backend and objects.get('abi-note', {}).get('exit_code') == 0:
+        note_object = build / 'csu/abi-note.o'
+        notes = subprocess.check_output(['x86_64-elf-readelf', '-n', str(note_object)], text=True)
+        (output / 'abi-note-readelf.txt').write_text(notes)
+        objects['abi-note']['notes_sha256'] = digest(output / 'abi-note-readelf.txt')
+    layout_headers = {name: digest(build / name) for name in
+                      ('sem_t-align.h', 'tcb-offsets.h', 'tlsdesc.h') if (build / name).is_file()}
     header_install = None
     if backend and make_result is not None:
         with (output / 'install-headers.log').open('w') as log:
@@ -167,7 +176,9 @@ def main():
               'private_sysroot_initially_empty': str(sysroot),
               'sysroot_enforced': backend, 'diagnostic_objects': objects,
               'header_install': header_install, 'isolated_abi_note': isolated_note,
+              'generated_layout_headers': layout_headers,
               'xos_abi_note_patch_sha256': digest(note_patch) if backend else None,
+              'xos_tls_patch_sha256': digest(tls_patch) if backend else None,
               'xos_overlay_sha256': {str(p.relative_to(ROOT / 'src/ports/glibc/sysdeps')): digest(p) for p in (ROOT / 'src/ports/glibc/sysdeps').rglob('*') if p.is_file()},
               'configure_log_sha256': digest(output/'configure.log'),
               'not_claimed': ['complete XOS sysdeps', 'target runtime', 'guest qualification', 'distributable source']}

@@ -80,3 +80,13 @@ G1 仍未验收：真实 XOS 工具链、正式 ABI note 策略、完整目标�
 在新的隔离研究输出中，不使用 hacker 模式或合成 ABI tag，正常全构建越过 `abi-tags` 阻塞，仍因 `bits/semaphore.h` 与 `bits/pthread_stack_min-dynamic.h` 缺失退出 2。正常 `csu/abi-note.o` 构建仍被这些前置项阻塞；为了单独验证所选源和 note，额外调用 glibc 子目录 make 并明确清空 `before-compile` 前置项：该**受限单对象诊断**成功，readelf 显示 x86-64 baseline 的 `NT_GNU_PROPERTY_TYPE_0`，没有 `NT_GNU_ABI_TAG`。它不是正常 csu 构建通过，更不是客体测试。其对象 SHA-256 `4289a089ad3e7ace1f795c8ea2e55c1ce9e898b53d13e70eb1a2b4645a35a3f5`；报告 SHA-256 `f18bf43be6bcbd93fb35d6787d158ba2391fbb41829f197c23a71cd5fee1d98f`。
 
 目标对象、编译依赖、sysroot 部分头文件、注册目标限制与报告输入散列的检查均通过，探针与证据路径检查重新执行。G1 仍 partial；下一处实际工作是为 NPTL 与 XOS 线程后端建立真实语义和目标头，而非将跳过前置项的结果当成完整 glibc 构建。
+
+## 继续：线程类型和 x86-64 NPTL TLS 选择（2026-11-14）
+
+根据 glibc 2.44 的 `struct new_sem` 容量/对齐断言，为实验 XOS x86-64 LP64 端口提供 32 字节、8 字节对齐的 `sem_t` 不透明存储；`PTHREAD_STACK_MIN` 取 XOS `thread_abi.hpp` 的 65536 字节原生栈下限，实际 TLS、保护页和运行时所需大小可能更大。线程本地键表在候选 glibc 中暂定 128 个及 4 次析构迭代，均由用户态管理，不改变内核四线程配额。这些是实验 ABI 定义，不证明 sem、线程或 POSIX 运行行为，也未承诺最终发行 ABI。
+
+进一步核查发现，原 `Implies nptl` 没有选中 `sysdeps/x86_64/nptl`，之前生成的配置实际上使用了通用 TLS 头；已有对象和配置报告不能用于证明 glibc TCB 正确。现在架构专属 XOS Implies 显式选中 `x86_64/nptl` 与 `x86/nptl`，并通过 XOS 包装头选择上游 x86-64 NPTL 布局。上游头中的 Linux `ARCH_SET_FS` 与 Linux syscall 不适用于 XOS；候选补丁 `0003-xos-tls-init.patch`（SHA-256 `ca6b676fa71da5dca5ff58ce0da2c10725c0c18fd837c6e99027da3b340646e0`）在 XOS 路径将 `TLS_INIT_TP` 明确设为失败，未实现前不会声称线程指针已安装。当前 `sys_process_tls` 只允许创建者设置 building 子进程，无法充当调用者设置自身 TP 的接口。正式初始化仍须设计/实现并在客体验证。
+
+干净输入采用单线程 make，避免调查时一次并行启动中 `libc-modules.h` 尚未生成的非目标噪声。上游生成的 `sem_t-align.h` 为 8、`tlsdesc.h` 中 `DTV_OFFSET` 为 8，依赖记录同时指向 XOS 包装头和 x86-64 NPTL 头；此前被前置项阻塞的 `abi-note.o` 现可按正常 glibc 规则编译。`abs`、`_exit`、note 对象和头文件来源检查通过；另用 glibc 实际编译参数生成 TLS 初始化探针，目标指令返回失败且没有 `syscall`/`int`。交叉编译静态断言核对 `sem_t` 尺寸/对齐、栈下限与实际 XOS 线程契约、键数。以上是目标构建检查，未运行线程或 glibc 客体。
+
+完整 make 仍退出 2，下一处可见障碍为通用 `bits/errno.h` 明确报移植未完成及 `bits/types/idtype_t.h` 缺失；头文件安装至 184 个后因后者退出 2。私有报告 SHA-256 `361891f1291fafa0deb95221ec8dc469978da5e87eeef06ff7f7a08b6e20af25`，头文件清单 SHA-256 `b25aac0da9cc465c635db18c7392b889aa43858712520fd3ea0d3896a69a1437`。G1 仍 partial，继续处理真实 errno、进程等待类型和后端，禁止复制 Linux syscall 或将上述显式失败当作可运行 TLS。

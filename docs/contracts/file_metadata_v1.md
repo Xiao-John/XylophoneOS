@@ -26,7 +26,7 @@ ACL、xattr、symlink、atime/ctime 持久化、原生文件系统或 glibc 切�
 
 <!-- coderabbit-ai-generated:v1 -->
 
-<!-- coderabbit-ai-generated-section:v1:cbe96fa6c974340dc570f21e937fbf5d6813583e6fa7eefc27752c3ec6aa3479 -->
+<!-- coderabbit-ai-generated-section:v1:84038ef3dd434939e20253e5ddfe708168b1911addfb43b5ed7d2a2f48821ddc -->
 
 ## 2. 目标语义（M1）
 
@@ -48,7 +48,8 @@ FAT 可表达年份为 **UTC 1980 至 2107 年**，可存储的 mtime 最小值�
 `1980-01-01T00:00:00Z`，最大值为 `2107-12-31T23:59:58Z`（均含边界）。
 mtime 量化 2 秒；设置后回读允许 ±2 秒。实际待设置的时间（含 NOW 解析结果）须在
 上述闭区间内，先检查秒与纳秒组成的完整值，再量化；超出范围返回线路 `invalid`，libc
-按现有 `error_from_file` 映射为 `EINVAL`，不截断、钳位或回绕。OMIT 不作为待设置时间检查。
+在已确认支持元数据的服务上按现有 `error_from_file` 映射为 `EINVAL`（判定见第 3 节），
+不截断、钳位或回绕。OMIT 不作为待设置时间检查。
 
 已打开句柄语义：POSIX profile 下，`chmod` 不撤销已打开句柄的读写能力；已 `unlink`/anonymous
 对象没有稳定路径，元数据写返回 `ENOTSUP`，不回退到 backing 名字。
@@ -57,7 +58,7 @@ mtime 量化 2 秒；设置后回读允许 ±2 秒。实际待设置的时间（
 
 <!-- coderabbit-ai-generated:v1 -->
 
-<!-- coderabbit-ai-generated-section:v1:badab67e47cf46f7cac27c853495bf866d1ec73bfe5f3df214d38c68c89349bd -->
+<!-- coderabbit-ai-generated-section:v1:7b7fb16a5304e5900ee561b630b16bc7db335eb218e312d4891c6b7b67fefdd8 -->
 
 ## 3. 线格式与版本协商
 
@@ -78,8 +79,20 @@ struct metadata_request {   // 40 bytes, little-endian
 - 选择对象：`request.handle != 0` 按句柄；否则按 `request.name`（路径，`name_length > 0`）。
   两者同时给出、或都为空 → `invalid`。`request.length` 必须等于结构大小，`flags/offset` 保留为 0。
 - `mask` 未定义位、`version != 1`、`reserved != 0`、纳秒越界 → `invalid`。
-- 能力探测：旧服务对未知 op 返回 `invalid`；libc 将元数据调用映射为 `ENOTSUP`（而非 `EINVAL`），
-  调用方可据此降级。新服务对旧客户端完全透明（旧客户端不会发送 op 29）。
+- `invalid` 的 errno 选择仅对 op 29 作兼容处理，通用 `error_from_file` 保持 `invalid → EINVAL`：
+  已确认支持元数据的服务返回 `invalid`（含越界 mtime）→ `EINVAL`；
+  已确认旧服务对未知 op 29 返回 `invalid` → `ENOTSUP`，调用方可据此降级。
+  不得仅凭 op 29 的 `invalid` 推断服务不支持元数据。
+- 能力判定：以同一文件服务会话的成功 `stat/fstat` 响应为依据，按下文完整校验后，
+  `length = 0` 记为 legacy；有效 `FMET` v1 记录记为 metadata_v1。
+  M1 服务必须同时提供读取扩展和 op 29，禁止仅实现其一后公布 `FMET` v1。
+  若收到 op 29 `invalid` 时能力仍为 unknown，先对根目录 `/` 发起只读 `stat` 探测，
+  再按上述规则选择 errno；探测失败按其错误返回，非空畸形响应报 `EIO`，保持 unknown，
+  不得猜测为 legacy，也不得重试元数据写。libc 在发送前发现的参数错误仍直接报 `EINVAL`。
+- 缓存作用域为客户端绑定的文件服务会话，初值 unknown；只有校验成功的读取响应可填充缓存。
+  缓存读写及首次探测须由普通/线程 SDK 共用的会话锁串行化；会话初始化、断连/重连、
+  服务替换或 fork 后端点重绑定时清空，不得按 ABI v2、PID 或复用的句柄值跨会话沿用。
+  服务能力在会话内固定，服务升级须重建会话。新服务对旧客户端完全透明（旧客户端不会发送 op 29）。
 - 不升 `abi_version`、不改 request/response 布局；若 M2 需要新字段，另立 v2 结构并保留本结构只读。
 
 ### stat/fstat 读取扩展（M1）
@@ -149,11 +162,14 @@ stat/fstat 不写 data），使用既有合成值：权限 `0777`、`uid=gid=0`�
 
 <!-- coderabbit-ai-generated:v1 -->
 
-<!-- coderabbit-ai-generated-section:v1:739c0573e3b8b3fdc12fbac0540d29a0c62b8571264f1ec0de42f0ebfc599790 -->
+<!-- coderabbit-ai-generated-section:v1:e8dd2548297fa1d1ab39fa1999841b1ca70e0ecea2509f5239c0df1b772f8b94 -->
 
 ## 6. 错误优先级（冻结）
 
-1. 结构/版本/长度/保留位/纳秒非法，或待设置 mtime 超出第 2 节 FAT 范围 → `invalid`（libc `EINVAL`；沿用现有映射）
+以下为支持元数据的 M1 服务处理请求时的优先级；旧服务不解析 op 29，其未知 op 的
+`invalid` 由第 3 节会话能力规则映射为 `ENOTSUP`，不适用以下参数优先级。
+
+1. 结构/版本/长度/保留位/纳秒非法，或待设置 mtime 超出第 2 节 FAT 范围 → `invalid`（已确认 metadata_v1 时 libc `EINVAL`；unknown 时先按第 3 节探测）
 
 2. 句柄无效 → `bad_handle`；路径不存在 → `not_found`
 3. unlinked/anonymous 对象 → `ENOTSUP`
@@ -170,19 +186,25 @@ stat/fstat 不写 data），使用既有合成值：权限 `0777`、`uid=gid=0`�
 
 ## 7. 兼容与回滚
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:83dcb67a736f9fb71f33a0593b82cf436cd599b28a4905e3f77664811397323c -->
+
 | 组合 | 预期 |
 |---|---|
 | 新 libc + 新服务 | 全部语义 |
-| 新 libc + 旧服务 | op 29 → `invalid` → libc `ENOTSUP`；`stat/access` 仍按旧合成值 |
+| 新 libc + 旧服务 | 同会话成功 `stat/fstat length=0` 确认 legacy 后，op 29 `invalid` → libc `ENOTSUP`；`stat/access` 仍按旧合成值 |
 | 旧 libc + 新服务 | 不发送 op 29；数据/路径语义不变 |
 | 普通 SDK / 线程 SDK | 同一 `libc` 源码与线路，分别构建、分别验收 |
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 回滚：还原 `FF_USE_CHMOD`、服务 op29 与 libc 映射需同镜像回退；没有磁盘格式变化、没有
 sidecar、没有新 syscall，回滚不影响既有文件内容。已发布的 SDK 不与新服务混跑（静态镜像）。
 
 <!-- coderabbit-ai-generated:v1 -->
 
-<!-- coderabbit-ai-generated-section:v1:f2fa56a451230158e606d7df7a64a7c7b6b38b1b666a7b300e8f2a05a65dadc1 -->
+<!-- coderabbit-ai-generated-section:v1:1181eea08902555ece7e1027ba72bd570dde60b3442c90893423076312a0e910 -->
 
 ## 8. 验收（M1 必须以客体原生日志为准）
 
@@ -195,7 +217,7 @@ sidecar、没有新 syscall，回滚不影响既有文件内容。已发布的 S
 - 时间：`utime`/`utimensat` 设置 mtime 回读（±2 秒）；显式 atime → `ENOTSUP`；双 `UTIME_OMIT`
   仍做参数校验；无墙钟时 `UTIME_NOW` → `ENOTSUP`。
   UTC 最小值 `1980-01-01T00:00:00Z` 与最大值 `2107-12-31T23:59:58Z` 均可设置并准确回读；
-  下界前/上界后（含纳秒越界边界）的时间 → `invalid`/`EINVAL`，mtime 与 RDO 均不改变。
+  下界前/上界后（含纳秒越界边界）的时间，在已确认 metadata_v1 的服务上 → `invalid`/`EINVAL`，mtime 与 RDO 均不改变。
 - 原子性：单字段及 RDO + MTIME 请求均覆盖校验失败、只读介质和后端故障，失败后回读所有
   字段不变；组合请求若不受支持，验证写入前 `ENOTSUP`，不得以拆分请求通过验收。
   开放原子提交时须额外按所声明的崩溃/断电保证范围注入故障并验证恢复。
@@ -203,7 +225,15 @@ sidecar、没有新 syscall，回滚不影响既有文件内容。已发布的 S
 - 对象生命周期：`unlink`/anonymous 后元数据写 → `ENOTSUP`；rename 后不作用到同名新对象。
 - 只读卷：`chmod`/时间写/数据写都 `EROFS`，`stat` 仍可读。
 
-- 兼容：构造旧服务 `stat/fstat length=0` 响应验证旧合成值及 op29 `ENOTSUP` 降级；
+- 兼容与 errno 选择：同会话分别以成功 `stat/fstat length=0` 和有效 `FMET` v1 响应
+  确认 legacy / metadata_v1，再注入相同的 op 29 `invalid`，分别断言 `ENOTSUP` / `EINVAL`；
+  后者覆盖越界 mtime 及结构/版本/长度/保留位/纳秒非法，且不得将缓存降级为 legacy。
+  初始 unknown 且先收到 op 29 `invalid` 时，验证只探测 `/`，两种读取响应分别选择上述 errno；
+  探测失败返回对应错误、畸形响应返回 `EIO`，保持 unknown 且无写重试。
+  验证发送前的本地参数错误不受服务能力影响，始终为 `EINVAL`。
+  普通/线程 SDK 均覆盖缓存命中不重复探测、并发首次探测串行化，以及会话初始化、断连/重连、
+  服务替换、fork 后端点重绑定清空缓存（含新旧服务双向切换及句柄值复用）。
+  验证旧服务合成值及 `ENOTSUP` 降级；
   构造有效 `FMET` v1 的零值 mtime 响应，确认不会被误判为旧格式；截断、错误标识/版本/长度
   的非空响应须报 `EIO`；分别验证 stat/fstat 的字段、字节序与 RDO mode；旧 libc 对新服务无回归。
 

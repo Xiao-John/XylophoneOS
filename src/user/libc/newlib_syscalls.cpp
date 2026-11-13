@@ -1895,7 +1895,9 @@ extern "C" off_t _lseek(int fd, off_t offset, int whence) {
     const off_t result = lseek(fd, offset, whence);
     return result;
 }
-extern "C" [[noreturn]] void _exit(int code) {
+// Apple clang rejects an attribute that is absent on the first declaration
+// (<unistd.h> declares _exit without it), so keep the definition plain.
+extern "C" void _exit(int code) {
     close_runtime_descriptors();
     xos::sdk::exit(code);
 }

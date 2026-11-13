@@ -647,14 +647,28 @@ extern "C" _READ_WRITE_RETURN_TYPE read(int fd, void* buffer, size_t length) {
                                     reinterpret_cast<xos::u64>(buffer), length);
             if (result != xos::process_error_would_block) {
                 if (result < 0) { errno = error_from_kernel(result); return -1; }
+                if (object.kind == object_kind::kernel && result > 0) {
+                    // The legacy console has no line discipline; map Enter's CR
+                    // to NL so line-oriented programs (bc, cat, ...) see lines.
+                    char* bytes = static_cast<char*>(buffer);
+                    for (xos::i64 i = 0; i < result; ++i) {
+                        if (bytes[i] == '\r') { bytes[i] = '\n'; }
+                    }
+                }
                 return static_cast<ssize_t>(result);
             }
-            const xos::i64 waited = xos::sdk::syscall(xos::sys_pipe_wait, object.handle);
-            if (waited < 0) {
-                // The original nonblocking console behavior is preserved.
-                errno = waited == xos::process_error_would_block ? EAGAIN : error_from_kernel(waited);
-                return -1;
+            if (object.kind == object_kind::pipe_read) {
+                const xos::i64 waited = xos::sdk::syscall(xos::sys_pipe_wait, object.handle);
+                if (waited < 0) { errno = error_from_kernel(waited); return -1; }
+                continue;
             }
+            // The kernel exposes console input as a non-blocking poll. POSIX
+            // read() on a terminal must block instead of reporting EAGAIN.
+            if ((object.flags & O_NONBLOCK) != 0) { errno = EAGAIN; return -1; }
+            const xos::i64 now = xos::sdk::syscall(xos::sys_clock_monotonic, 0);
+            if (now < 0) { errno = EIO; return -1; }
+            (void)xos::sdk::syscall(xos::sys_sleep_until,
+                                    static_cast<xos::u64>(now) + 1000000ull);
         }
     }
     errno = EBADF; return -1;

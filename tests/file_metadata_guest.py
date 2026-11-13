@@ -16,10 +16,12 @@ from process_smoke import command, resources
 
 
 def compile_probe(source, output, sdk):
-    compiler = shutil.which("x86_64-elf-gcc") or "x86_64-elf-gcc"
+    # The probe also exercises the raw file_client, so build it as C++.
+    compiler = shutil.which("x86_64-elf-g++") or "x86_64-elf-g++"
     libgcc = subprocess.check_output([compiler, "-print-libgcc-file-name"], text=True).strip()
     subprocess.run([
-        compiler, "-O2", "-mno-red-zone", "-fno-pie", "-fno-pic", "-fno-stack-protector",
+        compiler, "-std=c++20", "-O2", "-mno-red-zone", "-fno-pie", "-fno-pic",
+        "-fno-stack-protector", "-fno-exceptions", "-fno-rtti", "-nostdinc++",
         "-idirafter", str(sdk / "include"), "-nostdlib", "-static", "-no-pie",
         "-T", str(sdk / "user.ld"), str(sdk / "crt0_posix.o"), str(source),
         "-Wl,--start-group", str(sdk / "lib/libxos.a"), str(sdk / "lib/libxos_loader.a"),
@@ -73,9 +75,11 @@ def main():
             report["checks"].append("resources_restored")
             report["status"] = "passed"
     finally:
+        # Keep a report even when compilation, the guest command or a resource
+        # assertion fails; "passed" is only set after all checks succeed.
         if guest is not None:
             guest.close()
-    (ROOT / "build/file_metadata.json").write_text(json.dumps(report, indent=2) + "\n")
+        (ROOT / "build/file_metadata.json").write_text(json.dumps(report, indent=2) + "\n")
     print(json.dumps({"status": report["status"], "checks": report["checks"],
                       "build_id": report["build_id"]}))
 

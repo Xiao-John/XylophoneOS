@@ -21,7 +21,7 @@
 
 ## 验证
 
-build `b0fe3ea7c4ce90ff`；探针在 xsh（bare）与 dash 下都输出
+build `3b97a178c66cabec`；探针在 xsh（bare）与 dash 下都输出
 `FILE_METADATA_OK`（`failures=0`），资源回基线。证据：
 `docs/reports/file_metadata_20261113/README.md`。
 

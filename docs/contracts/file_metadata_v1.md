@@ -257,9 +257,10 @@ sidecar、没有新 syscall，回滚不影响既有文件内容。已发布的 S
 
 ## 11. M1 实施记录与偏差（2026-11-13）
 
-已实现并客体验收（build `b0fe3ea7c4ce90ff`，`tests/file_metadata_guest.py`）：
+已实现并客体验收（build `3b97a178c66cabec`，`tests/file_metadata_guest.py`）：
 
-- 文件 ABI：`abi_version` 保持 2；`op::set_metadata = 29`；`status` 增加 `not_supported = -14`、`read_only_volume = -15`、`access_denied = -16`；`stat/fstat` 用 `flags` bit2 表示 RDO、`data[0..8]` 携带 mtime 秒（旧客户端忽略）。
+- 文件 ABI：`abi_version` 保持 2；`op::set_metadata = 29`；`status` 增加 `not_supported = -14`、`read_only_volume = -15`、`access_denied = -16`；`stat/fstat` 返回 24 字节 `FMET` v1 记录（`data[0..24]`，含 mtime 与投影 mode；
+`length=0` 为 legacy），`flags` 只保留目录/unlinked。
 - FatFs：`FF_USE_CHMOD=1`；mtime 用 `f_utime`（2 秒量化、UTC），RDO 用 `f_chmod`。
 - libc：`chmod/fchmod` 只接受与投影一致的 `0644/0444`，其余与 setuid/setgid/sticky 都 `ENOTSUP`；`chown/fchown/lchown` 对 `-1/0` 成功、其它 `ENOTSUP`；`utimensat/futimens` 只在 atime 为 `UTIME_OMIT` 时写 mtime，支持 `UTIME_NOW`（无墙钟 → `ENOTSUP`）；`utime/utimes` 因显式 atime 一律 `ENOTSUP`；`stat/fstat` 合成 `0644/0444`、`0755`、`uid=gid=0`，atime/ctime 回读为 mtime；`access(W_OK)` 检查 RDO；打开只读文件写返回 `EACCES`。
 - 对象生命周期：unlinked/anonymous 的元数据写 `ENOTSUP`；目录 `chmod` 在 M1 直接 `ENOTSUP`（未验证目录 RDO 的写隔离，不承诺 `0555`）。

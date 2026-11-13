@@ -366,12 +366,13 @@ int open_normalized(const char* path, int flags) {
 }
 
 void fill_stat(struct stat* output, u32 size, bool directory, u32 identity = 0,
-               u64 mtime = 0, bool read_only = false) {
+               u64 mtime = 0, u32 file_mode = 0) {
     memset(output, 0, sizeof(*output));
     output->st_dev = static_cast<dev_t>(1);
     output->st_ino = static_cast<ino_t>(identity);
-    const mode_t projection = directory ? 0755 : (read_only ? 0444 : 0644);
-    output->st_mode = static_cast<mode_t>((directory ? S_IFDIR : S_IFREG) | projection);
+    output->st_mode = file_mode != 0
+        ? static_cast<mode_t>(file_mode)
+        : static_cast<mode_t>((directory ? S_IFDIR : S_IFREG) | 0777);
     output->st_nlink = 1;
     output->st_size = static_cast<off_t>(size);
     output->st_blksize = 512;
@@ -764,15 +765,16 @@ extern "C" int stat(const char* path, struct stat* status) {
     bool trailing_slash = false;
     const int resolved = prepare_path(path, normalized, trailing_slash);
     if (resolved != 0) { errno = resolved; return -1; }
-    u32 size = 0, attributes = 0, identity = 0;
+    u32 size = 0, attributes = 0, identity = 0, file_mode = 0;
     u64 mtime = 0;
-    const xos::i64 result = file_client.stat_info(normalized, size, attributes, identity, mtime);
+    const xos::i64 result = file_client.stat_info(normalized, size, attributes, identity,
+                                                  mtime, file_mode);
     if (result != 0) { errno = error_from_file(result); return -1; }
     if (trailing_slash && (attributes & xos::file::stat_is_directory) == 0) {
         errno = ENOTDIR; return -1;
     }
     fill_stat(status, size, (attributes & xos::file::stat_is_directory) != 0, identity,
-              mtime, (attributes & xos::file::stat_read_only) != 0);
+              mtime, file_mode);
     if ((attributes & xos::file::stat_unlinked) != 0) { status->st_nlink = 0; }
     return 0;
 }
@@ -890,12 +892,13 @@ extern "C" int fstat(int fd, struct stat* status) {
         fill_stat(status, 0, false); status->st_mode = S_IFIFO | 0666; return 0;
     }
     if (object.kind != object_kind::file) { errno = EBADF; return -1; }
-    u32 size = 0, attributes = 0, identity = 0;
+    u32 size = 0, attributes = 0, identity = 0, file_mode = 0;
     u64 mtime = 0;
-    const xos::i64 result = file_client.fstat(object.handle, size, attributes, identity, mtime);
+    const xos::i64 result = file_client.fstat(object.handle, size, attributes, identity,
+                                             mtime, file_mode);
     if (result != 0) { errno = error_from_file(result); return -1; }
     fill_stat(status, size, (attributes & xos::file::stat_is_directory) != 0, identity,
-              mtime, (attributes & xos::file::stat_read_only) != 0);
+              mtime, file_mode);
     if ((attributes & xos::file::stat_unlinked) != 0) { status->st_nlink = 0; }
     return 0;
 }
@@ -1952,9 +1955,17 @@ extern "C" clock_t clock() {
 namespace {
 int metadata_result(xos::i64 result) {
     if (result == static_cast<xos::i64>(xos::file::status::invalid)) {
-        // An older file service answers unknown operations with invalid; expose
-        // metadata support as ENOTSUP so callers can degrade.
-        errno = ENOTSUP;
+        // Distinguish a metadata-capable service rejecting bad arguments from
+        // an older service that answers the unknown op with invalid.
+        if (file_client.metadata_format() == 0) {
+            u32 size = 0, attributes = 0, identity = 0, mode = 0;
+            u64 mtime = 0;
+            if (file_client.stat_info("/", size, attributes, identity, mtime, mode) != 0) {
+                errno = EIO;
+                return -1;
+            }
+        }
+        errno = file_client.metadata_format() == 1 ? ENOTSUP : EINVAL;
         return -1;
     }
     if (result < 0) { errno = error_from_file(result); return -1; }
@@ -1968,10 +1979,19 @@ bool mode_supported(mode_t mode, bool& read_only) {
     return false;
 }
 
-int set_mtime(u32 handle, const char* path, time_t seconds) {
+constexpr time_t fat_epoch_min = 315532800;   // 1980-01-01T00:00:00Z
+constexpr time_t fat_epoch_max = 4354819198;  // 2107-12-31T23:59:58Z
+
+int set_mtime(u32 handle, const char* path, time_t seconds, long nanoseconds) {
+    if (nanoseconds < 0 || nanoseconds >= 1000000000L ||
+        seconds < fat_epoch_min || seconds > fat_epoch_max ||
+        (seconds == fat_epoch_max && nanoseconds > 0)) {
+        errno = EINVAL;
+        return -1;
+    }
     return metadata_result(file_client.set_metadata(
         handle, path, xos::file::metadata_mtime, 0, 0, 0,
-        static_cast<xos::i64>(seconds), 0));
+        static_cast<xos::i64>(seconds), static_cast<xos::i64>(nanoseconds)));
 }
 
 bool now_seconds(time_t& seconds) {
@@ -2003,17 +2023,25 @@ extern "C" int futimens(int fd, const struct timespec times[2]) {
     if (times == nullptr) { errno = ENOTSUP; return -1; }
     if (times[0].tv_nsec != UTIME_OMIT) { errno = ENOTSUP; return -1; }
     if (times[1].tv_nsec == UTIME_OMIT) {
-        struct stat ignored {};
-        return fstat(fd, &ignored);
+        // Validate through the already-pinned handle; re-entering fstat(fd)
+        // would take a second object lock and can deadlock with dup2 swaps.
+        u32 size = 0, attributes = 0, identity = 0, mode = 0;
+        u64 mtime = 0;
+        const xos::i64 result = file_client.fstat(object.handle, size, attributes,
+                                                 identity, mtime, mode);
+        if (result < 0) { errno = error_from_file(result); return -1; }
+        return 0;
     }
     time_t seconds = 0;
+    long nanoseconds = 0;
     if (times[1].tv_nsec == UTIME_NOW) {
         if (!now_seconds(seconds)) { errno = ENOTSUP; return -1; }
     } else {
         if (times[1].tv_nsec < 0 || times[1].tv_nsec >= 1000000000L) { errno = EINVAL; return -1; }
         seconds = times[1].tv_sec;
+        nanoseconds = times[1].tv_nsec;
     }
-    return set_mtime(object.handle, nullptr, seconds);
+    return set_mtime(object.handle, nullptr, seconds, nanoseconds);
 }
 
 extern "C" int utimensat(int dirfd, const char* path, const struct timespec times[2], int flags) {
@@ -2027,13 +2055,15 @@ extern "C" int utimensat(int dirfd, const char* path, const struct timespec time
         return stat(path, &ignored);
     }
     time_t seconds = 0;
+    long nanoseconds = 0;
     if (times[1].tv_nsec == UTIME_NOW) {
         if (!now_seconds(seconds)) { errno = ENOTSUP; return -1; }
     } else {
         if (times[1].tv_nsec < 0 || times[1].tv_nsec >= 1000000000L) { errno = EINVAL; return -1; }
         seconds = times[1].tv_sec;
+        nanoseconds = times[1].tv_nsec;
     }
-    return set_mtime(0, path, seconds);
+    return set_mtime(0, path, seconds, nanoseconds);
 }
 
 extern "C" int chmod(const char* path, mode_t mode) {

@@ -26,12 +26,18 @@ public:
     i64 stat_info(const char* path, u32& size, u32& attributes);
     i64 stat_info(const char* path, u32& size, u32& attributes, u32& identity);
     i64 stat_info(const char* path, u32& size, u32& attributes, u32& identity, u64& mtime);
+    i64 stat_info(const char* path, u32& size, u32& attributes, u32& identity,
+                  u64& mtime, u32& mode);
     i64 anonymous(u32& handle);
     i64 seal_anonymous(u32 handle);
     i64 open(const char* path, u32 flags, u32& handle, u32& size, u32& version);
     i64 fstat(u32 handle, u32& size, u32& attributes);
     i64 fstat(u32 handle, u32& size, u32& attributes, u32& identity);
     i64 fstat(u32 handle, u32& size, u32& attributes, u32& identity, u64& mtime);
+    i64 fstat(u32 handle, u32& size, u32& attributes, u32& identity,
+              u64& mtime, u32& mode);
+    // 0 unknown, 1 legacy (length=0), 2 metadata_v1 (FMET record).
+    u8 metadata_format() const { return metadata_format_; }
     i64 set_metadata(u32 handle, const char* path, u16 mask, u16 attr,
                      i64 atime_sec, i64 atime_nsec, i64 mtime_sec, i64 mtime_nsec);
     i64 read(u32 handle, void* data, u32 length);
@@ -58,6 +64,8 @@ public:
     i64 abort_replace();
 
 private:
+    i64 decode_metadata(u64& mtime, u32& mode);
+    u8 metadata_format_ = 0;
     i64 set_path(const char* path, char* target, u32& length);
     i64 call(op operation);
     i64 decode_list(entry* entries, u32 capacity, u32& count, u32& cursor);

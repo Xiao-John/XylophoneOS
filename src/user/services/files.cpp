@@ -365,12 +365,22 @@ FIL& file_for(const open_description& description);
 status object_path(u32 object, char* path, bool logical);
 status append_path(const char* parent, const char* leaf, char* path);
 
-void write_stat_metadata(response& out, u32 attrib, u64 mtime) {
-    if ((attrib & AM_RDO) != 0) { out.flags |= stat_read_only; }
-    for (u32 i = 0; i < stat_metadata_bytes; ++i) {
-        out.data[i] = static_cast<u8>(mtime >> (8 * i));
-    }
-    out.length = stat_metadata_bytes;
+constexpr u32 mode_regular = 0100000u;
+constexpr u32 mode_directory = 0040000u;
+constexpr u32 metadata_record_bytes = 24;
+
+void write_stat_metadata(response& out, bool directory, u32 attrib, u64 mtime) {
+    const u32 permissions = directory ? 0755u : (((attrib & AM_RDO) != 0) ? 0444u : 0644u);
+    const u32 mode = (directory ? mode_directory : mode_regular) | permissions;
+    u8* record = out.data;
+    record[0] = 'F'; record[1] = 'M'; record[2] = 'E'; record[3] = 'T';
+    record[4] = 1; record[5] = 0;                 // u16 version = 1
+    record[6] = static_cast<u8>(metadata_record_bytes);
+    record[7] = 0;                                // u16 record length = 24
+    for (u32 i = 0; i < 8; ++i) { record[8 + i] = static_cast<u8>(mtime >> (8 * i)); }
+    for (u32 i = 0; i < 4; ++i) { record[16 + i] = 0; } // mtime_nsec = 0 (FAT)
+    for (u32 i = 0; i < 4; ++i) { record[20 + i] = static_cast<u8>(mode >> (8 * i)); }
+    out.length = metadata_record_bytes;
 }
 
 status file_object_path(const file_object& object, char* path) {
@@ -591,6 +601,8 @@ status acquire_directory(u32 parent, const char* path, u32& index) {
         object.inode = inode;
         object.directory_sector = info.xos_dir_sector;
         object.directory_offset = info.xos_dir_offset;
+        object.metadata_attrib = info.fattrib;
+        object.mtime_sec = fat_to_unix(info.fdate, info.ftime);
         retain_object(parent);
         index = i + 1;
         return status::ok;
@@ -746,7 +758,10 @@ status open_file_object(path_reference& path, u32 flags, u32& index) {
             }
         }
         file_object& object = file_objects[index - 1];
-        if ((access & write_only) != 0 && (object.file.flag & FA_WRITE) == 0) { return status::access_denied; }
+        if ((access & write_only) != 0 &&
+            ((object.file.flag & FA_WRITE) == 0 || (info.fattrib & AM_RDO) != 0)) {
+            return status::access_denied;
+        }
         retain_object(index);
     } else {
         u32 slot = 0;
@@ -773,9 +788,10 @@ status open_file_object(path_reference& path, u32 flags, u32& index) {
         object.used = true;
         object.references = 1;
         object.parent = path.parent;
-        if (found == FR_OK) {
-            object.metadata_attrib = info.fattrib;
-            object.mtime_sec = fat_to_unix(info.fdate, info.ftime);
+        FILINFO opened_info{};
+        if (f_stat(path.path, &opened_info) == FR_OK) {
+            object.metadata_attrib = opened_info.fattrib;
+            object.mtime_sec = fat_to_unix(opened_info.fdate, opened_info.ftime);
         }
         copy_text(object.name, path.leaf);
         retain_object(object.parent);
@@ -1325,7 +1341,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         operation == op::clone_session || operation == op::write || operation == op::replace_begin ||
         operation == op::replace_chunk || operation == op::replace_commit || operation == op::replace_abort ||
         operation == op::remove || operation == op::mkdir || operation == op::rename || operation == op::sync ||
-        operation == op::truncate ||
+        operation == op::truncate || operation == op::set_metadata ||
         (operation == op::open && ((in.flags & open_access_mask) != read_only ||
                                   (in.flags & open_option_mask) != 0));
     if (mutating && (gate.owner_pid != 0 || maintenance_writer != 0) &&
@@ -1368,7 +1384,8 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         out.value = info.fsize;
         out.reserved = inode;
         if ((info.fattrib & AM_DIR) != 0) { out.flags = stat_is_directory; }
-        write_stat_metadata(out, info.fattrib, fat_to_unix(info.fdate, info.ftime));
+        write_stat_metadata(out, (info.fattrib & AM_DIR) != 0, info.fattrib,
+                            fat_to_unix(info.fdate, info.ftime));
         const u32 object = find_object(identity_key(info));
         if (object != 0) {
             const file_object& retained = file_objects[object - 1];
@@ -1538,7 +1555,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         out.value = object.directory ? 0 : f_size(&object.file);
         out.flags = (object.directory ? stat_is_directory : 0) | (object.unlinked ? stat_unlinked : 0);
         out.reserved = object.inode;
-        write_stat_metadata(out, object.metadata_attrib, object.mtime_sec);
+        write_stat_metadata(out, object.directory, object.metadata_attrib, object.mtime_sec);
         break;
     }
     case op::read: {
@@ -1944,11 +1961,29 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             reply(out, in, status::invalid);
             break;
         }
+        if (((metadata.mask & metadata_atime) != 0 &&
+             (metadata.atime_nsec < 0 || metadata.atime_nsec >= 1000000000)) ||
+            ((metadata.mask & metadata_mtime) != 0 &&
+             (metadata.mtime_nsec < 0 || metadata.mtime_nsec >= 1000000000))) {
+            reply(out, in, status::invalid);
+            break;
+        }
+        // Each metadata write is a single field; combined fields cannot be
+        // committed atomically on this backend.
+        u32 field_count = 0;
+        for (u32 bit = 0; bit < 3; ++bit) {
+            if ((metadata.mask & (1u << bit)) != 0) { ++field_count; }
+        }
+        if (field_count > 1) { reply(out, in, status::not_supported); break; }
         char path[max_name]{};
         file_object* object = nullptr;
         if (in.handle != 0) {
             open_description* description = description_for(find_open(session, in.handle));
             if (description == nullptr) { reply(out, in, status::bad_handle); break; }
+            // Flush pending data so a later f_sync/f_close cannot rewrite the
+            // directory entry with GET_FATTIME() and undo f_utime.
+            const FRESULT synced = f_sync(&file_for(*description));
+            if (synced != FR_OK) { reply(out, in, from_fr(synced)); break; }
             object = &object_for(*description);
             if (object->null_device || object->unlinked) { reply(out, in, status::not_supported); break; }
             const status named = file_object_path(*object, path);
@@ -1980,9 +2015,16 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             const FRESULT touched = f_utime(path, &stamp);
             if (touched != FR_OK) { reply(out, in, from_fr(touched)); break; }
         }
-        if (object != nullptr && f_stat(path, &info) == FR_OK) {
-            object->metadata_attrib = info.fattrib;
-            object->mtime_sec = fat_to_unix(info.fdate, info.ftime);
+        if (f_stat(path, &info) == FR_OK) {
+            file_object* refreshed = object;
+            if (refreshed == nullptr) {
+                const u32 index = find_object(identity_key(info));
+                if (index != 0) { refreshed = &file_objects[index - 1]; }
+            }
+            if (refreshed != nullptr) {
+                refreshed->metadata_attrib = info.fattrib;
+                refreshed->mtime_sec = fat_to_unix(info.fdate, info.ftime);
+            }
         }
         reply(out, in, status::ok);
         break;

@@ -5,7 +5,7 @@
 | 契约 | [`docs/contracts/file_metadata_v1.md`](../../contracts/file_metadata_v1.md) |
 | 线格式 | file wire v2；新增 op29 `set_metadata`；`stat/fstat` 扩展 RDO 位与 mtime |
 | FatFs | `FF_USE_CHMOD=1`；mtime 2 秒量化、UTC；RDO 由 `f_chmod` 设置 |
-| 构建 | build `b0fe3ea7c4ce90ff`（kernel 813208 字节） |
+| 构建 | build `3b97a178c66cabec`（kernel 813208 字节） |
 | 测试 | `tests/file_metadata_guest.py`（`metadata_unit` + `metadata_dash` + 资源回基线） |
 
 ## 客体原始输出（节选）
@@ -23,6 +23,13 @@ access_w_ok=1
 open_write_ok=1
 chmod_0600_notsup=1
 chmod_setuid_notsup=1
+open_before_chmod=1
+chmod_with_open_handle=1
+open_after_chmod_denied=1
+fstat_path_chmod_visible=1
+chmod_restore=1
+futimens_bad_nsec=1
+combined_mask_rejected=1
 chown_noop=1
 chown_other_notsup=1
 utimensat_mtime=1
@@ -57,6 +64,8 @@ FILE_METADATA_OK
 - `utimensat` 写 mtime（`1700000000` 回读一致）；显式 atime → `ENOTSUP`；双 `UTIME_OMIT` 校验对象。
 - `futimens`/`fchmod`/`fstat` 走 fd 路径；unlink 后 `fchmod` → `ENOTSUP`。
 - xsh（bare probe）与 dash 两条路径。
+- 已打开可写句柄不绕过后续 `chmod 0444`；`fstat` 能立即看到路径形式 `chmod`；
+  纳秒越界 → `EINVAL`；RDO+MTIME 组合请求 → `ENOTSUP`。
 
 ## 未覆盖
 

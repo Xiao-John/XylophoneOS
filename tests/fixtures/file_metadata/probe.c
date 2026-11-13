@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: Apache-2.0 */
+#define _POSIX_C_SOURCE 200809L
 /* FAT metadata honest subset: RDO + mtime, chown no-op, ENOTSUP for the rest. */
 #include <errno.h>
 #include <fcntl.h>
@@ -6,6 +7,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <xos/file_client.hpp>
 
 #ifndef UTIME_NOW
 #define UTIME_NOW (-2L)
@@ -88,6 +90,41 @@ int main(void) {
                             && (status.st_mode & 07777) == 0444);
     check("fchmod_writable", timed >= 0 && fchmod(timed, 0644) == 0);
     if (timed >= 0) { close(timed); }
+
+    // A writable handle already open must not bypass a later chmod(0444).
+    const int before = open("/meta.txt", O_WRONLY);
+    check("open_before_chmod", before >= 0);
+    check("chmod_with_open_handle", chmod("/meta.txt", 0444) == 0);
+    errno = 0;
+    check("open_after_chmod_denied", open("/meta.txt", O_WRONLY) == -1 && errno == EACCES);
+    // Path-form metadata writes must refresh an already-open object cache.
+    struct stat handle_status;
+    memset(&handle_status, 0, sizeof(handle_status));
+    check("fstat_path_chmod_visible", before >= 0 && fstat(before, &handle_status) == 0
+                                      && (handle_status.st_mode & 07777) == 0444);
+    check("chmod_restore", chmod("/meta.txt", 0644) == 0);
+    if (before >= 0) { close(before); }
+
+    // Nanoseconds are validated before FAT quantization.
+    times[0].tv_sec = 0; times[0].tv_nsec = UTIME_OMIT;
+    times[1].tv_sec = 1700000100; times[1].tv_nsec = 1000000000;
+    const int nano_fd = open("/meta.txt", O_RDWR);
+    errno = 0;
+    check("futimens_bad_nsec", nano_fd >= 0 && futimens(nano_fd, times) == -1 && errno == EINVAL);
+    if (nano_fd >= 0) { close(nano_fd); }
+
+    // RDO + MTIME in one request is rejected (no partial commit).
+    xos::file::client raw;
+    if (raw.init()) {
+        const xos::i64 combined = raw.set_metadata(
+            0, "/meta.txt",
+            static_cast<xos::u16>(xos::file::metadata_read_only | xos::file::metadata_mtime),
+            0, 0, 0, 1700000100, 0);
+        check("combined_mask_rejected",
+              combined == static_cast<xos::i64>(xos::file::status::not_supported));
+    } else {
+        check("combined_mask_rejected", false);
+    }
 
     const int unlinked = open("/meta2.txt", O_CREAT | O_RDWR, 0644);
     check("create2", unlinked >= 0);

@@ -1,6 +1,10 @@
 # 用户态 VirtIO-net 纵切 v1
 
 2026-11-12。**implemented_unverified，guest qualification=not_run**。
+2026-11-13 复核：在加固后的 main 上重跑 `tests/virtio_net_guest.py`，原始帧纵切
+**guest qualification=passed_with_limits**（ARP TX/RX、IRQ、reset 释放、三轮资源稳定）；
+TCP/DNS/TLS/不可信 DMA 隔离仍 not_run。证据见
+[network_raw_20261113](../reports/network_raw_20261113/README.md)。
 本轮用户授权先实现并交付可评审代码，客体证据后补；不沿用已撤回 N1 内核驱动的历史资格。
 
 ## 运行与权限路径

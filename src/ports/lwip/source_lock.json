@@ -1,0 +1,8 @@
+{
+  "kind": "tarball",
+  "version": "2.2.1",
+  "url": "https://mirrors.aliyun.com/debian/pool/main/l/lwip/lwip_2.2.1+dfsg1.orig.tar.xz",
+  "archive": "lwip-2.2.1.tar.xz",
+  "sha256": "83729c274c499d3348e9fbbe043a3113f3fa8953e7efddc7c21c7fcbb1f2b7b1",
+  "sha256_scope": "upstream_release"
+}

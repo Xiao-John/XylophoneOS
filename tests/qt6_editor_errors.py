@@ -9,6 +9,7 @@ from make_work_disk import create_fat32
 from work_disk import transfer
 from task_smoke import send_bytes,pump
 from process_smoke import command,resources
+from graphics_guest import start_graphics
 from qt6_fat_fixture import alter
 p=argparse.ArgumentParser()
 for n in ('image','payload','output'):p.add_argument('--'+n,type=Path,required=True)
@@ -21,7 +22,7 @@ try:
   tmp=Path(tmp);original=tmp/'original';original.write_bytes(b'Original file must survive.\n')
   for mode,marker in [('readonly',b'Target is not writable'),('full',b'Cannot stage save')]:
    disk=tmp/(mode+'.img');create_fat32(disk,512);transfer(disk,'mkdir','/bin');transfer(disk,'import','/bin/notes.elf',a.payload);transfer(disk,'import','/LOCK.TXT',original);alter(disk,mode)
-   g=Guest(a.image.resolve(),str(out.relative_to(ROOT/'build'))+'/'+mode,work_disk=disk);g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True);pump(g,1.3);command(g,'display-start',b'result=0');g.expect(b'[display-service] ready');base=resources(g)
+   g=Guest(a.image.resolve(),str(out.relative_to(ROOT/'build'))+'/'+mode,work_disk=disk);g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True);pump(g,1.3);service, compositor = start_graphics(g);base=resources(g)
    b=len(g.output);send_bytes(g,b'spawn-file /bin/notes.elf /LOCK.TXT\r');g.expect(b'QT_EDITOR_READY',start=b,timeout=90);pid=int(re.search(rb'\[loader\] started pid=(\d+)',bytes(g.output)[b:])[1])
    def key(k,d):g.qmp('input-send-event',{'events':[{'type':'key','data':{'down':d,'key':{'type':'qcode','data':k}}}]})
    key('a',True);key('a',False);key('ctrl',True);key('s',True);key('s',False);key('ctrl',False);g.expect(marker,start=b,timeout=30);assert b'EDITOR_SAVE_OK' not in bytes(g.output)[b:]

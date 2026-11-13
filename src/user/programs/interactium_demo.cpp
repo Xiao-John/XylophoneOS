@@ -146,17 +146,24 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     i32 drag_offset_x = 0;
     i32 drag_offset_y = 0;
     bool left_was_down = false;
+    bool succeeded = true;
     for (;;) {
         display_event event{};
         const i64 result = display.input(event);
-        if (result != 0) continue;
+        if (result == display_again) {
+            if (display.wait_input() != 0) { succeeded = false; break; }
+            continue;
+        }
+        if (result != 0) { succeeded = false; break; }
         if (event.kind == 1 && (event.code == 16 || event.code == 1)) break;
         if (event.kind == 4) {
             cursor_x = event.x;
             cursor_y = event.y;
             left_was_down = (event.buttons & 1u) != 0;
             dragging = {};
-            if (!render(window_service, surfaces, 2, display, mode, cursor_x, cursor_y)) break;
+            if (!render(window_service, surfaces, 2, display, mode, cursor_x, cursor_y)) {
+                succeeded = false; break;
+            }
             continue;
         }
         if (event.kind != 3) continue;
@@ -185,10 +192,12 @@ extern "C" int xos_user_main(const xos::startup_info*) {
         }
         if (!left_down) dragging = {};
         left_was_down = left_down;
-        if (!render(window_service, surfaces, 2, display, mode, cursor_x, cursor_y)) break;
+        if (!render(window_service, surfaces, 2, display, mode, cursor_x, cursor_y)) {
+            succeeded = false; break;
+        }
     }
     print("[interactium-demo] closed\n");
     (void)display.focus(false);
     (void)display.close();
-    return 0;
+    return succeeded ? 0 : 6;
 }

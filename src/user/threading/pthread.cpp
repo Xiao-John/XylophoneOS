@@ -317,6 +317,22 @@ extern "C" int pthread_setcanceltype(int, int*) { return ENOTSUP; }
 extern "C" int pthread_atfork(void(*)(), void(*)(), void(*)()) { return ENOTSUP; }
 extern "C" int clock_gettime(clockid_t clock, timespec* value) {
     if (!value) { errno = EFAULT; return -1; }
+    if (clock == CLOCK_PROCESS_CPUTIME_ID || clock == CLOCK_THREAD_CPUTIME_ID) {
+        process_cpu_time sample{};
+        const i64 status = sdk::cpu_time(sample);
+        if (status < 0) {
+            errno = status == process_cpu_time_unavailable ? ENOTSUP :
+                status == process_error_resources ? ENOMEM : EIO;
+            return -1;
+        }
+        const u64 user = clock == CLOCK_PROCESS_CPUTIME_ID ? sample.user_ns : sample.thread_user_ns;
+        const u64 system = clock == CLOCK_PROCESS_CPUTIME_ID ? sample.system_ns : sample.thread_system_ns;
+        if (system > ~u64{0} - user) { errno = EOVERFLOW; return -1; }
+        const u64 total = user + system;
+        value->tv_sec = static_cast<time_t>(total / 1000000000);
+        value->tv_nsec = static_cast<long>(total % 1000000000);
+        return 0;
+    }
     if (clock == CLOCK_REALTIME) {
         const i64 now = sdk::syscall(sys_clock_realtime, 0);
         if (now < 0) { errno = now == realtime_error_io ? EIO : EINVAL; return -1; }
@@ -329,6 +345,17 @@ extern "C" int clock_gettime(clockid_t clock, timespec* value) {
     value->tv_nsec = static_cast<long>(now % 1000000000); return 0;
 }
 extern "C" int clock_getres(clockid_t clock, timespec* value) {
+    if (clock == CLOCK_PROCESS_CPUTIME_ID || clock == CLOCK_THREAD_CPUTIME_ID) {
+        process_cpu_time sample{};
+        const i64 status = sdk::cpu_time(sample);
+        if (status < 0) {
+            errno = status == process_cpu_time_unavailable ? ENOTSUP :
+                status == process_error_resources ? ENOMEM : EIO;
+            return -1;
+        }
+        if (value) { *value = {0, static_cast<long>(sample.resolution_ns)}; }
+        return 0;
+    }
     if (clock != CLOCK_MONOTONIC && clock != CLOCK_REALTIME) { errno = EINVAL; return -1; }
     if (value) { value->tv_sec = 0; value->tv_nsec = static_cast<long>(sdk::syscall(sys_clock_monotonic, 1)); } return 0;
 }

@@ -228,12 +228,13 @@ int main(int argc, char** argv) {
     const int long_fd = open(long_path, O_CREAT | O_WRONLY, 0644);
     check(long_fd >= 0, "long name create");
     if (long_fd >= 0) { close(long_fd); }
-    char* spawnp_argv[] = {long_name, 0};
+    char* spawnp_argv[] = {(char*)"probe", 0};
     char* spawnp_envp[] = {(char*)"PATH=/case/", 0};
     pid_t spawnp_child = 0;
     errno = 0;
     const int spawnp_error = posix_spawnp(&spawnp_child, long_name, 0, 0,
                                           spawnp_argv, spawnp_envp);
+    if (spawnp_error != ENOEXEC) printf("[posix] spawnp_error=%d\n", spawnp_error);
     check(spawnp_error == ENOEXEC, "spawnp trailing-slash PATH boundary");
     if (spawnp_error == 0) { (void)waitpid(spawnp_child, 0, 0); }
 

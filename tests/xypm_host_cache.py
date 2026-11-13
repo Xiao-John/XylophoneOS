@@ -38,6 +38,11 @@ def main():
         assert not link.is_symlink() and link.read_bytes() == b'bad'
         xi._write_private(root / 'plain', b'ok')
         assert (root / 'plain').read_bytes() == b'ok'
+        tool = xi.host_tool()
+        stamp = tool.with_suffix('.sha256')
+        stamp.write_bytes(b'\xff\xfe')
+        assert xi.host_tool() == tool
+        assert stamp.read_text().strip() == xi.sha_file(tool), 'corrupt stamp was not rebuilt'
     print('XYPm_HOST_CACHE_OK')
 
 

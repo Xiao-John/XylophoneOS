@@ -25,6 +25,7 @@ from boot_smoke import Guest
 from make_work_disk import create_fat32
 from work_disk import transfer
 from process_smoke import command, resources
+from graphics_guest import start_graphics
 from task_smoke import send_bytes, pump
 from ssg_browser_structure import decode_capture, validate_capture, validate_resource_rejection
 from ssg_public_paths import portable
@@ -54,7 +55,7 @@ report = {'status': 'FAILED', 'qualification': 'NOT_RUN', 'gate_A_overall': 'NOT
 fixture = out / 'input.html'
 fixture.write_bytes(inputs['input'].read_bytes())
 report['inputs']['input']['sha256'] = sha(fixture.read_bytes())
-for name in ('ssg_browser_pages_probe.py', 'ssg_browser_structure.py'):
+for name in (Path(__file__).name, 'ssg_browser_structure.py'):
     source = ROOT / 'tests' / name
     report['inputs'][name] = {'path': str(source), 'sha256': sha(source.read_bytes())}
 image_format = a.image_format
@@ -222,8 +223,7 @@ try:
         g.expect_supervisor(trace=True, timeout=45)
         command(g, 'demo quiet', b'demo tasks stopped')
         report['baseline'] = resources(g)
-        command(g, 'display-start', b'result=0')
-        g.expect(b'[display-service] ready')
+        service, compositor = start_graphics(g)
         report['display'] = resources(g)
         start = len(g.output)
         guest_command = 'exec-driver /bin/session.elf /web/ssg.html browser-pages-reload --browser --text'

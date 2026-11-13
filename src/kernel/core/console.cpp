@@ -100,6 +100,10 @@ void command_mem() {
 }
 
 void command_alloc() {
+    if (have_last_allocated) {
+        format::text("alloc result=busy\r\n");
+        return;
+    }
     u64 physical = 0;
     const memory_result result = allocate_page(&physical);
     format::text("alloc result=");

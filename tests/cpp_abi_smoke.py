@@ -19,6 +19,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 BUILDER = ROOT / "scripts" / "build_cpp_abi_probe.py"
 sys.path[:0] = [str(ROOT / "scripts"), str(ROOT / "tests")]
+from build_cpp_abi_probe import ManifestError, validate_output_root
 
 
 def feature_markers(name: str) -> tuple[list[bytes], list[bytes], list[bytes]]:
@@ -82,6 +83,12 @@ def main() -> int:
         print(f"NOT_READY: --output-root contains a symlink component: {linked}", file=sys.stderr)
         return 2
     output_root = args.output_root.expanduser().resolve()
+    try:
+        validate_output_root(output_root, args.sdk.expanduser().resolve(),
+                             args.runtime_prefix.expanduser().resolve())
+    except ManifestError as exc:
+        print(f"NOT_READY: {exc}", file=sys.stderr)
+        return 2
     builder_started_ns = time.time_ns()
     command = [sys.executable, str(BUILDER), "--sdk", str(args.sdk),
                "--runtime-prefix", str(args.runtime_prefix),
@@ -119,7 +126,7 @@ def main() -> int:
         if builder_returncode == 0:
             report["status"] = "failed"
             report["report_error"] = f"builder succeeded without a readable report: {exc}"
-    if (isinstance(build_report, dict) and builder_returncode == 0
+    if (isinstance(build_report, dict)
             and build_report_path.stat().st_mtime_ns < builder_started_ns):
         report["status"] = "failed"
         report["report_error"] = "builder report predates this invocation"

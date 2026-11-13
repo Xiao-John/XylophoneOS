@@ -13,6 +13,8 @@
 #include <xos/file_client.hpp>
 #include <xos/text.hpp>
 #include <xos/thread_abi.hpp>
+#include <xos/device.hpp>
+#include <xos/net_client.hpp>
 #include "fault_bundle.hpp"
 #include "../services/shell_terminal.hpp"
 
@@ -26,6 +28,7 @@ bool verbose_trace;
 bool persistent_recovery_gate;
 xos::audio::client audio_session;
 u64 audio_service_pid, audio_retry_after_ns;
+u64 network_service_pid;
 
 // The transaction directory is a durable recovery marker. Only a definite
 // not-found result permits ordinary startup or release of the admission guard.
@@ -140,6 +143,7 @@ void result_line(u64 child, bool explicit_wait = false, const fault_bundle::rece
         print("xsh: terminal session failed; service restarted\n");
     }
     if (result < 0) { print("wait: error="); signed_decimal(result); print("\n"); return; }
+    if (child == network_service_pid) network_service_pid = 0;
     if (!verbose_trace) {
         if (status.outcome == process_outcome::exited) {
             if (status.code != 0 || explicit_wait) {
@@ -211,6 +215,68 @@ i64 publish_tone_worker(u32 tone, char digest_text[audio::worker_digest_hex_leng
     return files.replace(audio::worker_image_path, worker_image, static_cast<u32>(info.size));
 }
 
+struct network_launch { u64 instance, grant; u32 channel; };
+i64 prepare_network_driver(u64 child, void* context) {
+    auto& launch = *static_cast<network_launch*>(context);
+    device_output grant{};
+    i64 result = device::grant(child, launch.instance, device_right_all, grant);
+    if (result) return result;
+    launch.grant = grant.token;
+    const channel_create channel{channel_version, sizeof(channel_create), sdk::pid(), child, sizeof(net::bootstrap), 0};
+    result = sdk::channel_open(channel);
+    if (result < 0) return result;
+    launch.channel = static_cast<u32>(result);
+    return 0;
+}
+void start_network(u64 instance, bool probe) {
+    if (instance == 0 || instance > 65536) { print("net: instance must be 1 + PCI BDF\n"); return; }
+    if (!probe && network_service_pid) {
+        process_status status{};
+        const i64 waited = syscall(sys_process_wait, network_service_pid, reinterpret_cast<u64>(&status), 1);
+        if (waited == process_error_would_block) { print("net: owned service already running\n"); return; }
+        if (waited) { print("net: owner status error="); signed_decimal(waited); print("\n"); return; }
+        network_service_pid = 0;
+    }
+    const u32 image = image_named("net_service");
+    if (!image) { print("net: driver image missing\n"); return; }
+    network_launch launch{instance, 0, 0};
+    spawn_options options{}; options.stdio[0] = -2;
+    options.prepare_child = prepare_network_driver; options.prepare_context = &launch;
+    const char* arguments[]{"net_service", probe ? "probe" : "serve"};
+    const i64 child = sdk::spawn_image_options(image, 2, arguments, options);
+    if (child < 0) {
+        if (launch.channel) (void)sdk::channel_close(launch.channel);
+        if (launch.grant) (void)device::revoke(launch.grant);
+        print("net: start error="); signed_decimal(child); print("\n"); return;
+    }
+    const net::bootstrap message{net::version, sizeof(net::bootstrap), launch.grant};
+    const i64 sent = sdk::ipc_send(launch.channel, &message, sizeof(message));
+    if (sent != 0) {
+        (void)syscall(10, static_cast<u64>(child));
+        (void)sdk::channel_close(launch.channel);
+        (void)device::revoke(launch.grant);
+        print("net: bootstrap error="); signed_decimal(sent); print("\n"); return;
+    }
+    if (probe) result_line(static_cast<u64>(child));
+    else {
+        network_service_pid = static_cast<u64>(child);
+        print("[net-start] pid="); decimal(network_service_pid); print("\n");
+    }
+}
+void stop_network() {
+    if (!network_service_pid) { print("net: no owned service\n"); return; }
+    net::client client;
+    i64 result = client.connect(network_service_pid);
+    if (!result) {
+        net::message response{};
+        result = client.request(net::operation::stop, nullptr, 0, response,
+            static_cast<u64>(syscall(sys_clock_monotonic)) + 2000000000ull);
+    }
+    client.close();
+    if (result) { print("net: stop error="); signed_decimal(result); print("\n"); return; }
+    result_line(network_service_pid); network_service_pid = 0;
+}
+
 i64 start_audio_service() {
     const u32 image = image_named("audio_service");
     if (image == 0) return process_error_resources;
@@ -261,7 +327,7 @@ i64 ensure_audio_service(bool force = false) {
         if (now >= 0 && static_cast<u64>(now) <= thread_deadline_infinite - 1000000000ull)
             audio_retry_after_ns = static_cast<u64>(now) + 1000000000ull;
     }
-    return started;
+    return started < 0 ? started : 0;
 }
 
 void print_audio_state(xos::audio::job_state state) {
@@ -408,6 +474,7 @@ const char* launch_stage_name(execution::launch_stage stage) {
     case execution::launch_stage::create: return "create process";
     case execution::launch_stage::map: return "load process image";
     case execution::launch_stage::start: return "start process";
+    case execution::launch_stage::file_setup: return "prepare file references";
     case execution::launch_stage::none: return "launch program";
     }
     return "launch program";
@@ -417,7 +484,7 @@ bool builtin_named(const char* name) {
         "wait", "stats", "primtest", "elftest", "ls", "cat", "stat", "rm", "edit", "filetest",
         "sync", "exec-file", "exec-driver", "exd", "spawn-file", "mkdir", "mv", "demo",
         "maint-run", "maint-recover", "maint-recover-boot", "maint-status", "diag", "tty-run",
-        "tone", "melody", "audio"};
+        "tone", "melody", "audio", "display-start", "interactium-start", "net-start", "net-stop", "net-probe"};
     for (const auto* item : names) { if (equal(name, item)) { return true; } }
     return false;
 }
@@ -654,6 +721,7 @@ void execute(u32 argc, char** argv) {
               "Shell     dash -i starts dash; exit inside dash returns here\n"
               "Audio     tone <Hz> <ms> | melody <file> | audio status|cancel <job> | audio close\n"
               "          audio start|restart manages the user-mode audio service\n"
+              "Network   net-start <instance> | net-stop | net-probe <instance>\n"
               "Display   display-start | interactium-start | exec gfxdemo [check|fault|hold|stop]\n"
               "Debug     diag <program> [args] | trace on/off | ps | kill <pid> | stats | images | primtest | elftest | filetest\n"
               "Search    /usr/bin:/bin:/; paths containing '/' are used directly\n");
@@ -687,8 +755,13 @@ void execute(u32 argc, char** argv) {
         print(syscall(10, number(argv[1])) == 0 ? "kill: accepted\n" : "kill: invalid pid\n");
     } else if (equal(argv[0], "images") && argc == 1) {
         image_list();
-    } else if (equal(argv[0], "display-start") && (argc==1 || (argc==2 && equal(argv[1],"fault")))) {
-        const char* args[]={"display",argc==2?"fault":"normal"};
+    } else if ((equal(argv[0], "net-start") || equal(argv[0], "net-probe")) && argc == 2) {
+        start_network(number(argv[1]), equal(argv[0], "net-probe"));
+    } else if (equal(argv[0], "net-stop") && argc == 1) {
+        stop_network();
+    } else if (equal(argv[0], "display-start") && (argc==1 || (argc==2 &&
+               (equal(argv[1],"fault") || equal(argv[1],"fault-present"))))) {
+        const char* args[]={"display",argc==2?argv[1]:"normal"};
         const i64 child=spawn(image_named("display"),2,args);
         const i64 granted=child>0?display_control(display_action::grant_service,static_cast<u64>(child)):child;
         display_started(child,granted);
@@ -786,7 +859,8 @@ void execute(u32 argc, char** argv) {
         audio_job_command(argc, argv);
     } else if (equal(argv[0], "tty-run") && argc >= 2) {
         launch_file(argv[1], argc - 1, argv + 1, 0, false, false, true, true);
-    } else if (equal(argv[0], "diag") && argc >= 2) {
+    } else if (equal(argv[0], "diag")) {
+        if (argc < 2) { print("Usage: diag <program> [args]\n"); return; }
         // Diagnosed target uses the common inherit-create contract (SL3).
         launch_file(argv[1], argc - 1, argv + 1, 0, false, true, false, true);
     } else if ((equal(argv[0], "exec-file") || equal(argv[0], "spawn-file") ||

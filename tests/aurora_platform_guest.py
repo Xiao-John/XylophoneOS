@@ -9,6 +9,7 @@ from make_work_disk import create_fat32
 from work_disk import transfer
 from task_smoke import send_bytes,pump
 from process_smoke import command,resources
+from graphics_guest import start_graphics, stop_graphics
 p=argparse.ArgumentParser()
 for n in ('image','target','output'):p.add_argument('--'+n,type=Path,required=True)
 p.add_argument('--apps',type=Path)
@@ -72,11 +73,11 @@ try:
   for name,data in fixtures.items():f=Path(tmp)/name;f.write_bytes(data);transfer(disk,'import',('/web/' if name.endswith('.html') else '/')+name,f)
   if a.dash and a.case=='dash':
    transfer(disk,'import','/bin/dash',a.dash)
-   script=Path(tmp)/'check.sh';script.write_text('/bin/desktop.elf\necho DESKTOP_DASH_STATUS:$?\n/bin/semantics.elf\necho SEMANTIC_DASH_STATUS:$?\n/bin/gap.elf\necho GAP_DASH_STATUS:$?\n/bin/session.elf\necho SESSION_DASH_STATUS:$?\n')
+   script=Path(tmp)/'check.sh';script.write_text('/bin/desktop.elf\necho DESKTOP_DASH_STATUS:$?\n/bin/semantics.elf\necho SEMANTIC_DASH_STATUS:$?\n/bin/gap.elf occupied\necho GAP_DASH_STATUS:$?\n/bin/session.elf\necho SESSION_DASH_STATUS:$?\n')
    transfer(disk,'import','/check.sh',script)
   g=Guest(a.image.resolve(),str(out.relative_to(ROOT/'build'))+'/guest',work_disk=disk);report['qemu_command']=g.command
   g.expect(b'xos64> ',timeout=45);send_bytes(g,b'run\r');g.expect_supervisor(trace=True);pump(g,1.3);base=resources(g)
-  service_result=command(g,'display-start',b'result=0');service=int(re.search(rb'\[display-start\] pid=(\d+)',service_result)[1]);g.expect(b'[display-service] ready');active=resources(g)
+  service, compositor = start_graphics(g);active=resources(g)
   report['resources']={'idle_baseline':base,'display_active':active}
   def launch(name,args='',ready=None):
    b=len(g.output);send_bytes(g,f'exec-file /bin/{name}.elf {args}\r'.encode());g.expect(ready or (name.upper()+'_READY').encode(),start=b,timeout=90);pump(g,.4);return b
@@ -89,7 +90,9 @@ try:
     for _ in range(16):stroke('a')
     g.expect(b'RENDER_EDIT count=16 ',start=sb);pump(g,.2);data=bytes(g.output)[sb:]
     gens=list(map(int,re.findall(rb'RENDER_EDIT[^\n]* generations=(\d+)',data)));assert gens and all(v==row['generations'] for v in gens)
-    row['input_delivery_ns']=[int(y)-int(x) for x,y in re.findall(rb'\[qpa-input\][^\n]* ns=(\d+) kind=1 [^\n]* gui_ns=(\d+)',data)]
+    row['input_delivery_ns']=[]
+    row['input_delivery_status']='not_measured_current_protocol_has_no_source_timestamp'
+    row['input_key_events']=len(re.findall(rb'\[qpa-input\] seq=\d+ kind=1\b',data))
     row['dirty_present_ns']=list(map(int,re.findall(rb'\[qpa-frame\][^\n]* ns=(\d+)',data)))
     updates=re.findall(rb'RENDER_UPDATE_BEGIN\r?\n(.*?)RENDER_UPDATE_END ns=(\d+)',data,re.S)
     row['widget_update_paint_and_present_ns']=[int(ns) for body,ns in updates if b'[qpa-frame]' in body]
@@ -174,7 +177,7 @@ try:
   else:
    assert a.dash
    b=len(g.output);send_bytes(g,b'exec-driver /bin/dash /check.sh\r');g.expect(b'DESKTOP_READY',start=b,timeout=90);chord('ctrl','q');g.expect(b'DESKTOP_DASH_STATUS:0',start=b);g.expect(b'SEMANTIC_READY',start=b,timeout=90);stroke('esc');g.expect(b'SEMANTIC_DASH_STATUS:0',start=b);g.expect(b'GAP_DASH_STATUS:0',start=b);g.expect(b'SESSION_START_FAILED error=-1',start=b);g.expect(b'SESSION_DASH_STATUS:1',start=b);g.expect_supervisor(start=b,timeout=40);assert resources(g)==active;mark('dash_real_desktop_and_semantic_elf_lifecycle')
-  command(g,'exec gfxdemo stop',b'kind=exited code=0');command(g,f'wait {service}',b'kind=exited code=0');assert resources(g)==base;report['resources']['after_cleanup']=resources(g);command(g,'sync',b'[files] sync=ok');mark('serial_file_service_and_resource_baseline');report['status']='PASSED'
+  stop_graphics(g, service, compositor);assert resources(g)==base;report['resources']['after_cleanup']=resources(g);command(g,'sync',b'[files] sync=ok');mark('serial_file_service_and_resource_baseline');report['status']='PASSED'
 except Exception as error:report['error']=repr(error);raise
 finally:
  if g:(out/'serial.log').write_bytes(g.output);g.close()

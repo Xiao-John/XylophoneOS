@@ -18,6 +18,7 @@ from make_work_disk import create_fat32
 from work_disk import transfer
 from task_smoke import send_bytes,pump
 from process_smoke import command,resources
+from graphics_guest import start_graphics, stop_graphics, reap_compositor, compare_composited_pixels, check_first_present_fault
 
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def main():
@@ -46,11 +47,9 @@ def main():
   g.expect(f'kind=exited code={code}'.encode(),start=begin,timeout=30);g.expect_supervisor(start=begin)
   if code==0: assert b'input-thread-joined' in bytes(g.output)[begin:]
  def service_start():
-  b=len(g.output);r=command(g,'display-start',b'result=0');g.expect(b'[display-service] ready',start=b)
-  return int(re.search(rb'\[display-start\] pid=(\d+)',r)[1])
- def service_stop(pid):
-  command(g,'exec gfxdemo stop',b'kind=exited code=0')
-  command(g,f'wait {pid}',b'kind=exited code=0')
+  return start_graphics(g)
+ def service_stop(pid, compositor):
+  stop_graphics(g, pid, compositor)
  try:
   with tempfile.TemporaryDirectory(prefix='xos_qt_g04_') as d:
    disk=Path(d)/'test.img';create_fat32(disk,512);transfer(disk,'mkdir','/bin');transfer(disk,'import','/bin/qtgui.elf',a.payload)
@@ -66,17 +65,19 @@ def main():
    baseline=resources(g);report['baseline']=baseline
    if a.case=='no-vga':
     result=command(g,'exec-file /bin/qtgui.elf auto',b'kind=exited',timeout=90)
-    assert b'unavailable or invalid Display Service mode (-19)' in result,result[-1500:]
+    assert b'Interactium connect/hello failed' in result,result[-1500:]
     assert b'QT_GUI_READY' not in result
     assert resources(g)==baseline
     mark('missing_graphics_device_fails_explicitly_and_serial_recovers')
    else:
-    service=service_start();with_service=resources(g);report['with_service']=with_service
+    service,compositor=service_start();with_service=resources(g);report['with_service']=with_service
     if a.case=='pixels':
      begin=start('pixels');g.expect(b'QT_GUI_PIXEL_REFERENCE_READY',start=begin,timeout=30)
      physical=int(re.search(rb'\[display\][^\n]*physical=(0x[0-9a-f]+)',g.output)[1],16)
-     mode=re.search(rb'width=(\d+) height=(\d+) stride=(\d+) format=(\d+)',bytes(g.output)[begin:])
-     width,height,stride,fmt=map(int,mode.groups());assert fmt==1
+     mode=re.search(rb'\[display\][^\n]*width=(\d+) height=(\d+) stride=(\d+)',bytes(g.output))
+     assert mode is not None
+     # The kernel accepts this VBE mode only with display_xrgb8888; its log has no format field.
+     width,height,stride=map(int,mode.groups())
      g.qmp('pmemsave',{'val':physical,'size':height*stride,'filename':str(out/'scanout.bin')})
      g.qmp('screendump',{'filename':str(out/'scanout.ppm')})
      from PIL import Image
@@ -91,13 +92,15 @@ def main():
      image.save(out/'scanout.png')
      stroke('esc');finish(begin)
      assert resources(g)==with_service
-     command(g,'sync',b'[files] sync=ok');service_stop(service);assert resources(g)==baseline
+     command(g,'sync',b'[files] sync=ok');service_stop(service,compositor);assert resources(g)==baseline
      g.close();g=None
      transfer(disk,'export','/qtframe.bin',out/'qtimage.bin')
      reference=(out/'qtimage.bin').read_bytes();device=(out/'scanout.bin').read_bytes()
      assert len(reference)==width*height*4
-     for y in range(height):assert reference[y*width*4:(y+1)*width*4]==device[y*stride:y*stride+width*4],y
-     mark('qimage_exact_bytes_equal_scanout_full_dirty_clip_font_and_xrgb',width=width,height=height,stride=stride,text_ink_pixels=ink,
+     expected=Image.frombytes('RGB',(width,height),reference,'raw','BGRX')
+     scanout=Image.frombytes('RGB',(width,height),device,'raw','BGRX',stride)
+     compare_composited_pixels(expected,scanout);assert scanout.tobytes()==image.convert('RGB').tobytes()
+     mark('qimage_exact_rgb_outside_compositor_cursor_and_cursor_samples',width=width,height=height,stride=stride,text_ink_pixels=ink,
           image_sha256=sha(out/'qtimage.bin'),framebuffer_sha256=sha(out/'scanout.bin'),screenshot_sha256=sha(out/'scanout.png'))
     elif a.case=='interactive':
      begin=start('overflow');pump(g,.3)
@@ -119,8 +122,8 @@ def main():
      for i in range(80):stroke('b');time.sleep(.002)
      g.expect(b'kind=4',start=begin,timeout=15);pump(g,.4)
      data=bytes(g.output)[begin:]
-     events=[tuple(map(int,m)) for m in re.findall(rb'\[qpa-input\] seq=(\d+) ns=(\d+) kind=(\d+) code=(\d+) mods=(\d+) buttons=(\d+) lost=(\d+) gui_ns=(\d+)',data)]
-     assert any(e[2]==4 and e[6]>=65 for e in events)
+     events=[tuple(map(int,m)) for m in re.findall(rb'\[qpa-input\] seq=(\d+) kind=(\d+) code=(\d+) mods=(\d+) buttons=(\d+) lost=(\d+)',data)]
+     assert any(e[1]==4 and e[5]>=65 for e in events)
      assert b'[qt-key] release key=80' in data
      assert all(x[0]<y[0] for x,y in zip(events,events[1:]))
      mark('real_64_entry_queue_overflow_resync_releases_held_keys_order_preserved',events=events)
@@ -130,17 +133,17 @@ def main():
      Image.open(out/'interactive.ppm').save(out/'interactive.png')
      stroke('esc');finish(begin);assert resources(g)==with_service
      mark('gui_exit_cancels_hardware_wait_and_joins_thread_resources_restored')
-     service_stop(service);assert resources(g)==baseline
+     service_stop(service,compositor);assert resources(g)==baseline
     else:
      for mode in ('auto','repeat','focus','idle','oom','quota','fault','second'):
       begin=len(g.output)
       result=command(g,'exec-file /bin/qtgui.elf '+mode,b'kind=faulted' if mode=='fault' else b'kind=exited',timeout=90)
       if mode=='fault':assert b'QT_GUI_FAULT_TRIGGER' in result and b'vector=6' in result
       elif mode=='quota':assert b'input thread resource allocation failed' in result
-      elif mode=='second':assert b'exclusive Surface connect failed (-16)' in result
       else:
        assert b'QT_GUI_OK' in result and b'kind=exited code=0' in result
-       assert result.count(b'input-thread-joined')==(3 if mode=='repeat' else 1)
+       assert result.count(b'input-thread-joined')==({'repeat':3,'second':2}.get(mode,1))
+       if mode=='second':assert b'QT_GUI_SECOND_WINDOW_OK' in result and b'QT_GUI_SECOND_WINDOW_RELEASED' in result
        if mode=='focus':assert b'QT_GUI_FOCUS_OUT_OK' in result and b'QT_GUI_FOCUS_IN_OK' in result
        if mode=='idle':assert int(re.search(rb'QT_GUI_IDLE waiting=(\d+)',result)[1])>=2
        if mode=='oom':assert b'QT_GUI_IMAGE_OOM_NULL_OK' in result
@@ -154,20 +157,19 @@ def main():
      begin=start('hold',True)
      pid=int(re.search(rb'\[loader\] started pid=(\d+)',bytes(g.output)[begin:])[1])
      command(g,f'kill {service}',b'kill: accepted');pump(g,.2)
-     command(g,f'wait {pid}',b'kind=exited code=72');command(g,f'wait {service}',b'kind=killed')
+     command(g,f'wait {pid}',b'kind=exited code=72');command(g,f'wait {service}',b'kind=killed');reap_compositor(g,compositor)
      assert resources(g)==baseline
      mark('service_death_wakes_input_and_client_exits_all_resources_return')
-     service=service_start();with_service=resources(g)
+     service,compositor=service_start();with_service=resources(g)
      result=command(g,'exec-file /bin/qtgui.elf auto',b'kind=exited code=0',timeout=90)
      assert b'QT_GUI_OK' in result;assert resources(g)==with_service
-     service_stop(service);assert resources(g)==baseline
+     service_stop(service,compositor);assert resources(g)==baseline
      mark('service_restart_new_qt_client_recovers_and_serial_rescue_works')
-     result=command(g,'display-start fault',b'result=0')
-     fault_service=int(re.search(rb'\[display-start\] pid=(\d+)',result)[1])
-     result=command(g,'exec-file /bin/qtgui.elf auto',b'kind=exited code=72',timeout=90)
-     assert b'present failed (-19)' in result or b'Display Service disconnected' in result
-     command(g,f'wait {fault_service}',b'kind=faulted');assert resources(g)==baseline
-     mark('service_fault_during_real_qt_present_releases_inflight_ipc')
+     service, compositor = start_graphics(g, fault_present=True)
+     result=command(g,'exec-file /bin/qtgui.elf auto',b'kind=exited',timeout=90)
+     stage=check_first_present_fault(result)
+     command(g,f'wait {service}',b'kind=faulted');reap_compositor(g,compositor);assert resources(g)==baseline
+     mark('first_compositor_present_fault_reclaims_clients_and_services',client_failure_stage=stage)
    report['status']='PASSED'
  except Exception as e:
   report['error']=str(e);raise

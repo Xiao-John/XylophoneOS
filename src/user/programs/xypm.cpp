@@ -239,7 +239,7 @@ int main(int argc,char** argv) {
 #ifdef XYP_TEST_FAULTS
     if(argc==5&&!std::strcmp(argv[3],"--fault-after")&&(!std::strcmp(argv[1],"install")||!std::strcmp(argv[1],"upgrade")||!std::strcmp(argv[1],"remove"))){char* end=nullptr;unsigned long step=std::strtoul(argv[4],&end,10);if(end&&*end==0&&step>0&&step<=100000)return transaction::run(argv[1],argv[2],static_cast<unsigned>(step));}
 #endif
-    if(argc==5&&(!std::strcmp(argv[1],"install")||!std::strcmp(argv[1],"upgrade"))&&!std::strcmp(argv[3],"--sha256"))return transaction::run(argv[1],argv[2],0,argv[4]);
+    if(argc==5&&(!std::strcmp(argv[1],"install")||!std::strcmp(argv[1],"upgrade")||!std::strcmp(argv[1],"ensure"))&&!std::strcmp(argv[3],"--sha256"))return transaction::run(argv[1],argv[2],0,argv[4]);
     if(argc==3&&(!std::strcmp(argv[1],"install")||!std::strcmp(argv[1],"upgrade")||!std::strcmp(argv[1],"ensure")||!std::strcmp(argv[1],"remove")))return transaction::run(argv[1],argv[2]);
     if(argc==2&&!std::strcmp(argv[1],"recover"))return xypm_recover_run()==0?0:3;
     std::fputs("xypm: unsupported command or arguments; use --help\n",stderr);return 2;

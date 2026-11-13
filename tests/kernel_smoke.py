@@ -171,6 +171,7 @@ def main():
                 raise AssertionError("Allocator returned a page beyond configured RAM")
             if symbols["kernel_start"] <= physical < symbols["kernel_end"]:
                 raise AssertionError("Allocator returned a page inside the kernel image")
+            send_command(guest, b"alloc", b"alloc result=busy")
             send_command(guest, b"free", b"free result=ok")
             send_command(guest, b"free", b"free result=invalid")
             checks.append("e820_physical_page_allocator_bounds_and_double_free")

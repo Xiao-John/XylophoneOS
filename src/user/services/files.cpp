@@ -27,16 +27,30 @@ struct open_record {
     u32 description;
 };
 
-struct open_description {
+// A FIL is the shared inode's cache and FatFs lock. File offsets and access
+// rights belong to descriptions; dup/fork references retain the description.
+constexpr u32 max_file_objects = 256;
+struct file_object {
     bool used;
+    bool directory;
     bool anonymous;
+    bool unlinked;
     bool closed;
     u32 references;
+    u32 parent; // 0 is the permanent volume root.
+    u16 inode;
+    u32 directory_sector;
+    u16 directory_offset;
     FIL file;
-    char path[max_name];
+    char name[max_name];
+    char backing[13]; // Reserved root name for an unlinked, referenced object.
+};
+
+struct open_description {
+    bool used;
+    u32 references;
+    u32 object;
     u32 flags;
-    // POSIX file offset. Kept here instead of relying on FIL.fptr so seeking
-    // past EOF never expands the file and truncation preserves the offset.
     u32 position;
 };
 
@@ -45,6 +59,8 @@ struct client_session {
     u64 parent_pid;
     u32 request_handle;
     u32 response_handle;
+    u32 cwd;
+    bool cwd_initialized;
     open_record opens[max_open];
 };
 
@@ -55,6 +71,8 @@ u64 maintenance_writer;
 client_session sessions[max_sessions];
 u32 generations[max_sessions];
 open_description descriptions[max_open_descriptions];
+file_object file_objects[max_file_objects];
+file_object root_object{true, true, false, false, true, 0, 0, 1, 0, 0, {}, {}, {}};
 request request_buffer;
 response response_buffer;
 u8 block_bench_buffer[4096];
@@ -62,6 +80,8 @@ FIL staging_file;
 bool staging_active;
 bool staging_open;
 char staging_path[max_name];
+u32 staging_parent;
+char staging_leaf[max_name];
 u64 staging_owner;
 u32 staging_written;
 u32 staging_total;
@@ -188,24 +208,6 @@ bool same_path_object(const char* left, const char* right) {
     return ak.sector != 0 && same_identity_key(ak, bk);
 }
 
-enum class path_relation { same, different, error };
-
-// Identity comparison with an explicit error state: an I/O failure must not
-// be reported as "same object" by callers that then skip the real operation.
-path_relation compare_path_objects(const char* left, const char* right) {
-    if (names_equal(left, right)) { return path_relation::same; }
-    FILINFO a{}, b{};
-    const FRESULT ar = f_stat(left, &a), br = f_stat(right, &b);
-    if ((ar != FR_OK && ar != FR_NO_FILE && ar != FR_NO_PATH) ||
-        (br != FR_OK && br != FR_NO_FILE && br != FR_NO_PATH)) {
-        return path_relation::error;
-    }
-    if (ar != FR_OK || br != FR_OK) { return path_relation::different; }
-    const auto ak = identity_key(a), bk = identity_key(b);
-    if (ak.sector == 0 || bk.sector == 0) { return path_relation::error; }
-    return same_identity_key(ak, bk) ? path_relation::same : path_relation::different;
-}
-
 // True when `target` names an entry below the directory described by
 // `source`. Comparison uses the on-disk directory entry identity, so FAT long
 // name / short alias spelling differences cannot hide a descendant. Returns
@@ -289,15 +291,6 @@ bool normalize_path(const char* source, u32 source_length, char* output,
     return true;
 }
 
-bool request_path(const request& in, char* output, bool allow_root = false,
-                  bool allow_trailing_slash = false) {
-    if (in.name_length == 0 || in.name_length >= max_name) { return false; }
-    for (u32 i = 0; i < in.name_length; ++i) {
-        if (in.name[i] == '\0') { return false; }
-    }
-    return normalize_path(in.name, in.name_length, output, allow_root, allow_trailing_slash);
-}
-
 status from_fr(FRESULT result) {
     switch (result) {
     case FR_OK: return status::ok;
@@ -316,8 +309,10 @@ status from_fr(FRESULT result) {
     }
 }
 
+FIL& file_for(const open_description& description);
+
 status seek_description(open_description& description, u32 position) {
-    return from_fr(f_lseek(&description.file, static_cast<FSIZE_t>(position)));
+    return from_fr(f_lseek(&file_for(description), static_cast<FSIZE_t>(position)));
 }
 
 // Write zeros at the current end of file. FatFs extends a file when f_lseek
@@ -329,7 +324,7 @@ status zero_fill(open_description& description, u32 count) {
         const UINT chunk = count > sizeof(zeros) ? static_cast<UINT>(sizeof(zeros))
                                                  : static_cast<UINT>(count);
         UINT written = 0;
-        const FRESULT result = f_write(&description.file, zeros, chunk, &written);
+        const FRESULT result = f_write(&file_for(description), zeros, chunk, &written);
         if (result != FR_OK) { return from_fr(result); }
         if (written != chunk) { return status::no_space; }
         count -= written;
@@ -344,17 +339,12 @@ status grow_with_zeros(open_description& description, u32 from, u32 to) {
     return zero_fill(description, to - from);
 }
 
-bool any_open(const client_session&, const char* path) {
-    FILINFO info{};
-    const FRESULT result = f_stat(path, &info);
-    if (result != FR_OK && result != FR_NO_FILE && result != FR_NO_PATH) { return true; }
-    const bool found = result == FR_OK;
-    const file_identity_key key = found ? identity_key(info) : file_identity_key{};
-    for (const auto& item : descriptions) {
-        if (item.used && (names_equal(item.path, path) ||
-            (found && key.sector != 0 && same_identity_key(key, identity_key(item.file))))) { return true; }
-    }
-    return false;
+file_object& object_for(const open_description& description) {
+    return description.object == 0 ? root_object : file_objects[description.object - 1];
+}
+
+FIL& file_for(const open_description& description) {
+    return object_for(description).file;
 }
 
 open_description* description_for(open_record* item) {
@@ -373,55 +363,404 @@ bool anonymous_path(const char* path) {
     return true;
 }
 
-status cleanup_description(open_description& description) {
-    // A failed close/unlink remains an owned, zero-reference description so a
-    // later service sweep can retry. Never reuse its FIL or forget its path.
-    if (!description.used || description.references != 0) { return status::invalid; }
-    if (description.anonymous && !anonymous_path(description.path)) { return status::io; }
-    file_identity_key identity{};
-    // FatFs keeps dir_sect/dir_ptr after f_close invalidates obj.fs. The volume
-    // and its window are permanent, so pending unlink retains the same key.
-    if (description.file.dir_ptr != nullptr) {
-        const ptrdiff_t offset = description.file.dir_ptr - fs.win;
-        if (offset >= 0 && offset < FF_MAX_SS) {
-            identity = {static_cast<u32>(description.file.dir_sect), static_cast<u16>(offset), 0};
+void retain_object(u32 object) {
+    if (object != 0) { ++file_objects[object - 1].references; }
+}
+
+status release_object(u32 object);
+
+status object_path(u32 object, char* path, bool logical = false) {
+    u32 chain[max_name / 2];
+    u32 count = 0;
+    while (object != 0) {
+        const file_object& item = file_objects[object - 1];
+        if (count == max_name / 2) { return status::name_too_long; }
+        chain[count++] = object;
+        if (item.unlinked) {
+            if (logical) { return status::not_found; }
+            break;
+        }
+        object = item.parent;
+    }
+    u32 used = 0;
+    while (count != 0) {
+        const file_object& item = file_objects[chain[--count] - 1];
+        const char* name = item.unlinked ? item.backing : item.name;
+        const u32 length = text_length(name, max_name);
+        if (used + (used != 0) + length >= max_name) { return status::name_too_long; }
+        if (used != 0) { path[used++] = '/'; }
+        for (u32 i = 0; i < length; ++i) { path[used++] = name[i]; }
+    }
+    path[used] = '\0';
+    return status::ok;
+}
+
+file_identity_key key_for_object(const file_object& object) {
+    return file_identity_key{object.directory_sector, object.directory_offset, object.inode};
+}
+
+u32 find_object(file_identity_key key) {
+    for (u32 i = 0; i < max_file_objects; ++i) {
+        if (file_objects[i].used && same_identity_key(key_for_object(file_objects[i]), key)) {
+            return i + 1;
         }
     }
-    if (!description.closed) {
-        const FRESULT result = f_close(&description.file);
+    return 0;
+}
+
+status cleanup_object(u32 index) {
+    file_object& object = file_objects[index - 1];
+    if (!object.used || object.references != 0) { return status::invalid; }
+    if (!object.directory && !object.closed) {
+        const FRESULT result = f_close(&object.file);
         if (result != FR_OK) { return from_fr(result); }
-        description.closed = true;
+        object.closed = true;
     }
-    if (description.anonymous) {
-        const FRESULT result = f_unlink(description.path);
+    if (object.unlinked) {
+        if (!anonymous_path(object.backing)) { return status::io; }
+        const FRESULT result = f_unlink(object.backing);
         if (result != FR_OK && result != FR_NO_FILE && result != FR_NO_PATH) { return from_fr(result); }
-        (void)forget_identity(identity);
+        (void)forget_identity(key_for_object(object));
     }
+    const u32 parent = object.parent;
+    object = file_object{};
+    return release_object(parent);
+}
+
+status release_object(u32 object) {
+    if (object == 0) { return status::ok; }
+    file_object& item = file_objects[object - 1];
+    if (--item.references != 0) { return status::ok; }
+    return cleanup_object(object);
+}
+
+status cleanup_description(open_description& description) {
+    if (!description.used || description.references != 0) { return status::invalid; }
+    const u32 object = description.object;
     description = open_description{};
-    return status::ok;
+    return release_object(object);
 }
 
 status release_open(open_record& item) {
     open_description* description = description_for(&item);
     status result = status::ok;
-    if (description != nullptr) {
-        if (description->references > 1) { --description->references; }
-        else {
-            description->references = 0;
-            result = cleanup_description(*description);
-        }
+    if (description != nullptr && --description->references == 0) {
+        result = cleanup_description(*description);
     }
     item = open_record{};
     return result;
 }
 
 void retry_description_cleanup() {
-    for (auto& description : descriptions) {
-        if (description.used && description.references == 0) { (void)cleanup_description(description); }
+    for (u32 i = 0; i < max_file_objects; ++i) {
+        if (file_objects[i].used && file_objects[i].references == 0) { (void)cleanup_object(i + 1); }
     }
 }
 
+struct path_reference {
+    u32 parent = 0;
+    status error = status::ok;
+    char leaf[max_name]{};
+    char path[max_name]{};
+    ~path_reference() { (void)release_object(parent); }
+};
+
+status append_path(const char* parent, const char* leaf, char* path) {
+    const u32 base = text_length(parent, max_name);
+    const u32 length = text_length(leaf, max_name);
+    if (base + (base != 0 && length != 0) + length >= max_name) { return status::name_too_long; }
+    u32 used = 0;
+    for (; used < base; ++used) { path[used] = parent[used]; }
+    if (base != 0 && length != 0) { path[used++] = '/'; }
+    for (u32 i = 0; i < length; ++i) { path[used++] = leaf[i]; }
+    path[used] = '\0';
+    return status::ok;
+}
+
+// f_stat may echo the requested LFN spelling. Enumerating the parent once
+// when retaining a directory gives getcwd the stored name, including SFN use.
+status directory_name(u32 parent, file_identity_key key, char* name) {
+    char path[max_name]{};
+    status code = object_path(parent, path);
+    if (code != status::ok) { return code; }
+    DIR directory{};
+    FRESULT result = f_opendir(&directory, path);
+    if (result != FR_OK) { return from_fr(result); }
+    FILINFO info{};
+    bool found = false;
+    while ((result = f_readdir(&directory, &info)) == FR_OK && info.fname[0] != '\0') {
+        if (same_identity_key(identity_key(info), key)) {
+            copy_text(name, info.fname);
+            found = true;
+            break;
+        }
+    }
+    const FRESULT closed = f_closedir(&directory);
+    if (result != FR_OK) { return from_fr(result); }
+    if (closed != FR_OK) { return from_fr(closed); }
+    return found ? status::ok : status::not_found;
+}
+
+status acquire_directory(u32 parent, const char* path, u32& index) {
+    FILINFO info{};
+    const FRESULT result = f_stat(path, &info);
+    if (result != FR_OK) { return from_fr(result); }
+    if ((info.fattrib & AM_DIR) == 0) { return status::not_directory; }
+    index = find_object(identity_key(info));
+    if (index != 0) { retain_object(index); return status::ok; }
+    for (u32 i = 0; i < max_file_objects; ++i) {
+        if (file_objects[i].used) { continue; }
+        u16 inode = 0;
+        if (!identity_for_info(info, inode)) { return status::full; }
+        file_object& object = file_objects[i];
+        const status named = directory_name(parent, identity_key(info), object.name);
+        if (named != status::ok) { return named; }
+        object.used = true;
+        object.directory = true;
+        object.references = 1;
+        object.parent = parent;
+        object.inode = inode;
+        object.directory_sector = info.xos_dir_sector;
+        object.directory_offset = info.xos_dir_offset;
+        retain_object(parent);
+        index = i + 1;
+        return status::ok;
+    }
+    return status::full;
+}
+
+status resolve_service_path(client_session& session, const char* source, u32 length,
+                            path_reference& output, bool allow_root = false,
+                            bool allow_trailing_slash = false) {
+    if (length == 0) { return status::not_found; }
+    if (length >= max_name) { return status::name_too_long; }
+    if (!xos::text::valid(source, length)) { return status::invalid; }
+    for (u32 i = 0; i < length; ++i) {
+        const u8 c = static_cast<u8>(source[i]);
+        if (c < 0x20 || c == 0x7f || c == '\\' || c == ':' || c == '*' || c == '?' ||
+            c == '"' || c == '<' || c == '>' || c == '|') { return status::invalid; }
+    }
+    if (length > 1 && source[length - 1] == '/' && !allow_trailing_slash) { return status::invalid; }
+    output.parent = source[0] == '/' ? 0 : session.cwd;
+    retain_object(output.parent);
+    u32 position = 0;
+    while (position < length) {
+        while (position < length && source[position] == '/') { ++position; }
+        const u32 begin = position;
+        while (position < length && source[position] != '/') { ++position; }
+        const u32 size = position - begin;
+        if (size == 0 || (size == 1 && source[begin] == '.')) { continue; }
+        if (size == 2 && source[begin] == '.' && source[begin + 1] == '.') {
+            const u32 parent = output.parent == 0 ? 0 : file_objects[output.parent - 1].parent;
+            retain_object(parent);
+            (void)release_object(output.parent);
+            output.parent = parent;
+            continue;
+        }
+        if (source[position - 1] == '.' || source[position - 1] == ' ' ||
+            reserved_component(source + begin, size)) { return status::invalid; }
+        if (output.parent != 0 && file_objects[output.parent - 1].unlinked) { return status::not_found; }
+        char parent_path[max_name]{};
+        status code = object_path(output.parent, parent_path);
+        if (code != status::ok) { return code; }
+        for (u32 i = 0; i < size; ++i) { output.leaf[i] = source[begin + i]; }
+        output.leaf[size] = '\0';
+        code = append_path(parent_path, output.leaf, output.path);
+        if (code != status::ok) { return code; }
+        u32 next = position;
+        while (next < length && source[next] == '/') { ++next; }
+        if (next == length && source[length - 1] != '/') { return status::ok; }
+        u32 directory = 0;
+        code = acquire_directory(output.parent, output.path, directory);
+        if (code != status::ok) { return code; }
+        (void)release_object(output.parent);
+        output.parent = directory;
+        output.leaf[0] = '\0';
+    }
+    if (output.parent == 0 && !allow_root) { return status::invalid; }
+    return object_path(output.parent, output.path);
+}
+
+bool request_path(const request& in, client_session& session, path_reference& output,
+                  bool allow_root = false, bool allow_trailing_slash = false) {
+    output.error = resolve_service_path(session, in.name, in.name_length, output,
+                                        allow_root, allow_trailing_slash);
+    return output.error == status::ok;
+}
+
+status directory_from_path(path_reference& path, u32& object) {
+    if (path.leaf[0] == '\0') {
+        object = path.parent;
+        retain_object(object);
+        return status::ok;
+    }
+    return acquire_directory(path.parent, path.path, object);
+}
+
+status open_file_object(path_reference& path, u32 flags, u32& index) {
+    const u32 access = flags & open_access_mask;
+    const u32 options = flags & open_option_mask;
+    FILINFO info{};
+    const FRESULT found = f_stat(path.path, &info);
+    if (found != FR_OK && found != FR_NO_FILE) { return from_fr(found); }
+    if (found == FR_OK && (info.fattrib & AM_DIR) != 0) { return status::is_directory; }
+    if (found == FR_OK && (options & open_exclusive) != 0) { return status::exists; }
+    if (found == FR_NO_FILE && (options & open_create) == 0) { return status::not_found; }
+    index = found == FR_OK ? find_object(identity_key(info)) : 0;
+    if (index != 0) {
+        for (const auto& description : descriptions) {
+            if (!description.used || description.object != index) { continue; }
+            if (((flags & open_pin) != 0 && (description.flags & write_only) != 0) ||
+                ((access & write_only) != 0 && (description.flags & open_pin) != 0)) {
+                return status::busy;
+            }
+        }
+        file_object& object = file_objects[index - 1];
+        if ((access & write_only) != 0 && (object.file.flag & FA_WRITE) == 0) { return status::invalid; }
+        retain_object(index);
+    } else {
+        u32 slot = 0;
+        while (slot < max_file_objects && file_objects[slot].used) { ++slot; }
+        u16 known_inode = 0;
+        if (slot == max_file_objects ||
+            (found == FR_OK ? !identity_for_info(info, known_inode) : !can_allocate_identity())) {
+            return status::full;
+        }
+        file_object& object = file_objects[slot];
+        object = file_object{};
+        BYTE mode = FA_READ | FA_WRITE;
+        if (found == FR_OK && (info.fattrib & AM_RDO) != 0) {
+            if ((access & write_only) != 0) { return status::invalid; }
+            mode = FA_READ;
+        }
+        if ((options & open_exclusive) != 0) { mode |= FA_CREATE_NEW; }
+        else if ((options & open_create) != 0) { mode |= FA_OPEN_ALWAYS; }
+        FRESULT opened = f_open(&object.file, path.path, mode);
+        if ((opened == FR_WRITE_PROTECTED || opened == FR_DENIED) && access == read_only && options == 0) {
+            opened = f_open(&object.file, path.path, FA_READ);
+        }
+        if (opened != FR_OK) { return from_fr(opened); }
+        object.used = true;
+        object.references = 1;
+        object.parent = path.parent;
+        copy_text(object.name, path.leaf);
+        retain_object(object.parent);
+        index = slot + 1;
+        const file_identity_key key = identity_key(object.file);
+        object.directory_sector = key.sector;
+        object.directory_offset = key.offset;
+        if (!identity_for_file(object.file, object.inode)) {
+            (void)release_object(index);
+            return status::full;
+        }
+    }
+    if ((options & open_truncate) != 0) {
+        FIL& file = file_objects[index - 1].file;
+        FRESULT result = f_lseek(&file, 0);
+        if (result == FR_OK) { result = f_truncate(&file); }
+        if (result == FR_OK) { result = f_sync(&file); }
+        if (result != FR_OK) {
+            (void)release_object(index);
+            return from_fr(result);
+        }
+    }
+    return status::ok;
+}
+
+status anonymous_name(char* path) {
+    for (u32 attempt = 0; attempt < anonymous_serial_limit; ++attempt) {
+        copy_text(path, "XOS00000.TMP");
+        u32 serial = next_anonymous_serial;
+        next_anonymous_serial = (next_anonymous_serial + 1) % anonymous_serial_limit;
+        for (u32 digit = 0; digit < 5; ++digit) {
+            path[7 - digit] = static_cast<char>('0' + serial % 10);
+            serial /= 10;
+        }
+        FILINFO info{};
+        const FRESULT result = f_stat(path, &info);
+        if (result == FR_NO_FILE) { return status::ok; }
+        if (result != FR_OK) { return from_fr(result); }
+    }
+    return status::full;
+}
+
+status directory_empty(const char* path) {
+    DIR directory{};
+    FRESULT result = f_opendir(&directory, path);
+    if (result != FR_OK) { return from_fr(result); }
+    FILINFO info{};
+    result = f_readdir(&directory, &info);
+    const FRESULT closed = f_closedir(&directory);
+    if (result != FR_OK) { return from_fr(result); }
+    if (closed != FR_OK) { return from_fr(closed); }
+    return info.fname[0] == '\0' ? status::ok : status::not_empty;
+}
+
+status move_disk_object(const char* from, const char* to, const FILINFO& before) {
+    const file_identity_key old_key = identity_key(before);
+    u16 inode = 0;
+    if (!identity_for_info(before, inode)) { return status::full; }
+    const u32 index = find_object(old_key);
+    const FRESULT result = index != 0 && !file_objects[index - 1].directory &&
+        !file_objects[index - 1].closed
+        ? f_rename_open(&file_objects[index - 1].file, from, to) : f_rename(from, to);
+    if (result != FR_OK) {
+        if (result == FR_DISK_ERR || result == FR_INT_ERR) { recovery_failed = true; }
+        return from_fr(result);
+    }
+    FILINFO after{};
+    if (f_stat(to, &after) != FR_OK || !move_identity(old_key, identity_key(after), inode)) {
+        recovery_failed = true;
+        return status::io;
+    }
+    if (index != 0) {
+        file_objects[index - 1].directory_sector = after.xos_dir_sector;
+        file_objects[index - 1].directory_offset = after.xos_dir_offset;
+    }
+    return status::ok;
+}
+
+void relocate_object(u32 index, u32 parent, const char* leaf) {
+    if (index == 0) { return; }
+    file_object& object = file_objects[index - 1];
+    retain_object(parent);
+    const u32 previous = object.parent;
+    object.parent = parent;
+    copy_text(object.name, leaf);
+    (void)release_object(previous);
+}
+
+status detach_object(u32 index, const char* path, const FILINFO& info, const char* reserved = nullptr) {
+    file_object& object = file_objects[index - 1];
+    char hidden[13]{};
+    status code = status::ok;
+    if (reserved) copy_text(hidden, reserved);
+    else code = anonymous_name(hidden);
+    if (code != status::ok) { return code; }
+    code = move_disk_object(path, hidden, info);
+    if (code != status::ok) { return code; }
+    object.unlinked = true;
+    copy_text(object.backing, hidden);
+    return status::ok;
+}
+
+bool refresh_staging_path() {
+    if (!staging_active) { return true; }
+    char parent[max_name]{};
+    return object_path(staging_parent, parent, true) == status::ok &&
+           append_path(parent, staging_leaf, staging_path) == status::ok;
+}
+
+bool cleanup_pending() {
+    for (const auto& object : file_objects) {
+        if (object.used && object.references == 0) { return true; }
+    }
+    return false;
+}
+
 void close_session(client_session& session) {
+    (void)release_object(session.cwd);
+    session.cwd = 0;
     for (auto& item : session.opens) {
         if (item.used) { release_open(item); }
     }
@@ -434,6 +773,8 @@ void close_session(client_session& session) {
         staging_written = 0;
         staging_total = 0;
         staging_path[0] = '\0';
+        (void)release_object(staging_parent);
+        staging_parent = 0;
     }
 }
 
@@ -484,9 +825,9 @@ bool missing(FRESULT result) { return result == FR_NO_FILE || result == FR_NO_PA
 
 // Keep the journal through cleanup and its flush. On an ambiguous final delete/
 // flush error, try to restore the marker; never reopen the service after failure.
-bool finish_recovery(const char* path) {
+bool finish_recovery(const char* path, bool remove_staging = true) {
     if (disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK ||
-        !remove_if_present(temp_name) || !remove_if_present(journal_temp_name) ||
+        (remove_staging && !remove_if_present(temp_name)) || !remove_if_present(journal_temp_name) ||
         !remove_if_present(backup_name) ||
         disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK) { return false; }
     if (f_unlink(journal_name) != FR_OK) { return false; }
@@ -521,8 +862,8 @@ void recover() {
     if ((target_result != FR_OK && !missing(target_result)) ||
         (backup_result != FR_OK && !missing(backup_result)) ||
         (temp_result != FR_OK && !missing(temp_result)) ||
-        (target_result == FR_OK && (target_info.fattrib & AM_DIR) != 0) ||
-        (backup_result == FR_OK && (backup_info.fattrib & AM_DIR) != 0) ||
+        (target_result == FR_OK && backup_result == FR_OK &&
+         ((target_info.fattrib ^ backup_info.fattrib) & AM_DIR) != 0) ||
         (temp_result == FR_OK && (temp_info.fattrib & AM_DIR) != 0)) {
         recovery_failed = true; return;
     }
@@ -530,6 +871,23 @@ void recover() {
         recovery_failed = true; return;
     }
     if (!finish_recovery(path)) { recovery_failed = true; }
+}
+
+void recover_orphans() {
+    DIR directory{};
+    if (f_opendir(&directory, "") != FR_OK) { recovery_failed = true; return; }
+    FILINFO info{};
+    FRESULT result = FR_OK;
+    while ((result = f_readdir(&directory, &info)) == FR_OK && info.fname[0] != '\0') {
+        if (anonymous_path(info.fname) && f_unlink(info.fname) != FR_OK) {
+            recovery_failed = true;
+            break;
+        }
+    }
+    const FRESULT closed = f_closedir(&directory);
+    if (result != FR_OK || closed != FR_OK || disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK) {
+        recovery_failed = true;
+    }
 }
 
 void reply(response& out, const request& in, status code) {
@@ -551,9 +909,21 @@ bool supported_name(const char* name, u32& length) {
     return true;
 }
 
-void list_directory(const request& in, response& out) {
-    char path[max_name]{};
-    if (!request_path(in, path, true, true)) { reply(out, in, status::invalid); return; }
+open_record* find_open(client_session& session, u32 handle);
+
+void list_directory(const request& in, response& out, client_session& session) {
+    path_reference resolved;
+    if (in.handle != 0) {
+        open_description* description = description_for(find_open(session, in.handle));
+        if (description == nullptr) { reply(out, in, status::bad_handle); return; }
+        if (!object_for(*description).directory) { reply(out, in, status::not_directory); return; }
+        if (in.name_length != 0) { reply(out, in, status::invalid); return; }
+        resolved.error = object_path(description->object, resolved.path);
+        if (resolved.error != status::ok) { reply(out, in, resolved.error); return; }
+    } else if (!request_path(in, session, resolved, true, true)) {
+        reply(out, in, resolved.error); return;
+    }
+    const char* path = resolved.path;
     DIR dir{};
     const FRESULT opened = f_opendir(&dir, path);
     if (opened != FR_OK) { reply(out, in, from_fr(opened)); return; }
@@ -646,6 +1016,10 @@ status clone_session(client_session& source, u64 child_pid) {
     for (u32 index = 0; index < max_open_descriptions; ++index) {
         if (additions[index] > 0xffffffffu - descriptions[index].references) { return status::full; }
     }
+    retain_object(source.cwd);
+    (void)release_object(target->cwd);
+    target->cwd = source.cwd;
+    target->cwd_initialized = source.cwd_initialized;
     target->pid = child_pid;
     target->parent_pid = child_info.parent_pid;
     target->request_handle = child_info.request_handle;
@@ -667,6 +1041,8 @@ status clone_session(client_session& source, u64 child_pid) {
         for (auto& item : target->opens) {
             if (item.used) { release_open(item); }
         }
+        (void)release_object(target->cwd);
+        target->cwd = 0;
         return status::bad_handle;
     }
     // Staging transactions retain their original owner and are not inherited.
@@ -681,6 +1057,8 @@ void abort_staging() {
     staging_written = 0;
     staging_total = 0;
     staging_path[0] = '\0';
+    (void)release_object(staging_parent);
+    staging_parent = 0;
 }
 
 u64 available_bytes() {
@@ -694,6 +1072,52 @@ u64 required_staging_bytes(u32 bytes) {
     const u64 cluster_bytes = static_cast<u64>(fs.csize) * 512u;
     const u64 content_clusters = bytes == 0 ? 0 : (static_cast<u64>(bytes) + cluster_bytes - 1) / cluster_bytes;
     return (content_clusters + disk_slack_clusters) * cluster_bytes;
+}
+
+status replace_namespace(const char* source, const char* target, const FILINFO& source_info,
+                         const FILINFO* target_info, bool journal_new = false) {
+    if (target_info == nullptr) {
+        if (!journal_new) { return move_disk_object(source, target, source_info); }
+        if (!write_journal(target)) { recovery_failed = true; return status::io; }
+        const status code = move_disk_object(source, target, source_info);
+        if (code != status::ok) { recovery_failed = true; return code; }
+        if (!finish_recovery(target, false)) { recovery_failed = true; return status::io; }
+        return status::ok;
+    }
+    const u32 replaced = find_object(identity_key(*target_info));
+    char reserved_hidden[13]{};
+    if (replaced != 0) {
+        const status reserved = anonymous_name(reserved_hidden);
+        if (reserved != status::ok) return reserved;
+    }
+    FILINFO backup_info{};
+    if (!missing(f_stat(backup_name, &backup_info))) { return status::busy; }
+    if (!write_journal(target)) {
+        if (journal_new) { recovery_failed = true; }
+        return status::io;
+    }
+    status code = move_disk_object(target, backup_name, *target_info);
+    if (code != status::ok) { recovery_failed = true; return code; }
+    if (f_stat(backup_name, &backup_info) != FR_OK) { recovery_failed = true; return status::io; }
+    code = move_disk_object(source, target, source_info);
+    if (code != status::ok) {
+        if (move_disk_object(backup_name, target, backup_info) == status::ok) {
+            if (f_unlink(journal_name) != FR_OK) { recovery_failed = true; }
+        } else { recovery_failed = true; }
+        return code;
+    }
+    if (replaced != 0) {
+        code = detach_object(replaced, backup_name, backup_info, reserved_hidden);
+        if (code != status::ok) { recovery_failed = true; return code; }
+    } else {
+        const FRESULT removed = f_unlink(backup_name);
+        if (removed != FR_OK) { recovery_failed = true; return from_fr(removed); }
+        (void)forget_identity(identity_key(backup_info));
+    }
+    // An unrelated replace transaction can still own XOSTMP.TMP. A rename
+    // commits only its journal and backup; never abort that other transaction.
+    if (!finish_recovery(target, false)) { recovery_failed = true; return status::io; }
+    return status::ok;
 }
 
 void handle(const request& in, response& out, client_session& session, u32 session_index) {
@@ -746,6 +1170,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         for (const auto& description : descriptions) {
             if (description.used) { reply(out, in, status::busy); return; }
         }
+        if (cleanup_pending()) { reply(out, in, status::busy); return; }
         maintenance_writer = session.pid;
         reply(out, in, status::ok); return;
     }
@@ -757,6 +1182,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         for (const auto& description : descriptions) {
             if (description.used) { reply(out, in, status::busy); return; }
         }
+        if (cleanup_pending()) { reply(out, in, status::busy); return; }
         if (sdk::syscall(sys_block_sync) != 0) { reply(out, in, status::io); return; }
         maintenance_writer = 0;
         reply(out, in, status::ok); return;
@@ -774,11 +1200,12 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
     }
     switch (operation) {
     case op::list:
-        list_directory(in, out);
+        list_directory(in, out, session);
         break;
     case op::stat: {
-        char path[max_name]{};
-        if (!request_path(in, path, true)) { reply(out, in, status::invalid); break; }
+        path_reference resolved;
+        if (!request_path(in, session, resolved, true, true)) { reply(out, in, resolved.error); break; }
+        const char* path = resolved.path;
         if (path[0] == '\0') {
             reply(out, in, status::ok);
             out.flags = stat_is_directory;
@@ -794,14 +1221,101 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         out.value = info.fsize;
         out.reserved = inode;
         if ((info.fattrib & AM_DIR) != 0) { out.flags = stat_is_directory; }
+        const u32 object = find_object(identity_key(info));
+        if (object != 0) {
+            const file_object& retained = file_objects[object - 1];
+            if (!retained.directory && !retained.closed) { out.value = f_size(&retained.file); }
+            if (retained.unlinked) { out.flags |= stat_unlinked; }
+        }
         break;
     }
-    case op::anonymous: {
-        bool empty = in.handle == 0 && in.flags == 0 && in.reserved == 0 && in.offset == 0 &&
-            in.length == 0 && in.name_length == 0;
-        for (char byte : in.name) { empty = empty && byte == 0; }
-        for (u8 byte : in.data) { empty = empty && byte == 0; }
-        if (!empty) { reply(out, in, status::invalid); break; }
+    case op::cwd_set: {
+        if ((in.flags & ~1u) != 0 || in.length != 0 || in.reserved != 0) {
+            reply(out, in, status::invalid); break;
+        }
+        client_session* target = &session;
+        if (in.offset != 0 && in.offset != session.pid) {
+            target = nullptr;
+            for (auto& candidate : sessions) {
+                if (candidate.pid == in.offset) { target = &candidate; break; }
+            }
+            if (target == nullptr) { reply(out, in, status::would_block); break; }
+            if (target->parent_pid != session.pid) { reply(out, in, status::invalid); break; }
+            if (target->cwd_initialized) { reply(out, in, status::busy); break; }
+        }
+        if ((in.flags & 1u) != 0 && target->cwd_initialized) { reply(out, in, status::ok); break; }
+        u32 directory = 0;
+        if (in.handle != 0) {
+            open_description* description = description_for(find_open(session, in.handle));
+            if (description == nullptr) { reply(out, in, status::bad_handle); break; }
+            if (!object_for(*description).directory) { reply(out, in, status::not_directory); break; }
+            if (in.name_length != 0) { reply(out, in, status::invalid); break; }
+            directory = description->object;
+            retain_object(directory);
+        } else if (in.name_length == 0) {
+            directory = session.cwd;
+            retain_object(directory);
+        } else {
+            path_reference resolved;
+            if (!request_path(in, session, resolved, true, true)) { reply(out, in, resolved.error); break; }
+            const status code = directory_from_path(resolved, directory);
+            if (code != status::ok) { reply(out, in, code); break; }
+        }
+        const u32 previous = target->cwd;
+        target->cwd = directory;
+        target->cwd_initialized = true;
+        (void)release_object(previous);
+        reply(out, in, status::ok);
+        break;
+    }
+    case op::cwd_get:
+    case op::resolve_path: {
+        path_reference resolved;
+        status code = status::ok;
+        if (operation == op::cwd_get) {
+            code = object_path(session.cwd, resolved.path, true);
+        } else {
+            if (!request_path(in, session, resolved, true, true)) { reply(out, in, resolved.error); break; }
+            char parent[max_name]{};
+            code = object_path(resolved.parent, parent, true);
+        }
+        if (code != status::ok) { reply(out, in, code); break; }
+        const u32 length = text_length(resolved.path, max_name);
+        if (length + 1 >= max_name) { reply(out, in, status::name_too_long); break; }
+        reply(out, in, status::ok);
+        out.name[0] = '/';
+        for (u32 i = 0; i <= length; ++i) { out.name[i + 1] = resolved.path[i]; }
+        out.name_length = length + 1;
+        break;
+    }
+    case op::anonymous:
+    case op::open: {
+        const bool anonymous = operation == op::anonymous;
+        const u32 flags = anonymous ? read_write | open_create | open_exclusive : in.flags;
+        const u32 access = flags & open_access_mask;
+        const u32 options = flags & open_option_mask;
+        const bool directory = (flags & open_directory) != 0;
+        path_reference resolved;
+        if (anonymous) {
+            bool empty = in.handle == 0 && in.flags == 0 && in.reserved == 0 && in.offset == 0 &&
+                in.length == 0 && in.name_length == 0;
+            for (char byte : in.name) { empty = empty && byte == 0; }
+            for (u8 byte : in.data) { empty = empty && byte == 0; }
+            if (!empty) { reply(out, in, status::invalid); break; }
+            const status named = anonymous_name(resolved.path);
+            if (named != status::ok) { reply(out, in, named); break; }
+            copy_text(resolved.leaf, resolved.path);
+        } else if (!request_path(in, session, resolved, directory, directory)) {
+            reply(out, in, resolved.error); break;
+        }
+        if ((flags & ~open_valid_mask) != 0 ||
+            (access != read_only && access != write_only && access != read_write) ||
+            ((options & open_exclusive) != 0 && (options & open_create) == 0) ||
+            ((options & (open_truncate | open_append)) != 0 && (access & write_only) == 0) ||
+            (directory && (access != read_only || options != 0 || (flags & open_pin) != 0)) ||
+            ((flags & open_pin) != 0 && (access != read_only || options != 0))) {
+            reply(out, in, status::invalid); break;
+        }
         u32 slot = max_open, description_slot = max_open_descriptions;
         for (u32 i = 0; i < max_open; ++i) { if (!session.opens[i].used) { slot = i; break; } }
         for (u32 i = 0; i < max_open_descriptions; ++i) {
@@ -809,36 +1323,28 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         }
         u32 handle = 0;
         if (slot == max_open || description_slot == max_open_descriptions ||
-            next_anonymous_serial >= anonymous_serial_limit || !next_handle(session_index, handle)) {
-            reply(out, in, status::full); break;
-        }
+            !next_handle(session_index, handle)) { reply(out, in, status::full); break; }
+        u32 object = 0;
+        const status opened = directory ? directory_from_path(resolved, object)
+            : open_file_object(resolved, flags, object);
+        if (opened != status::ok) { reply(out, in, opened); break; }
         open_description& description = descriptions[description_slot];
-        description = open_description{};
-        FRESULT opened = FR_EXIST;
-        char path[] = "XOS00000.TMP";
-        for (u32 attempt = 0; attempt < anonymous_collision_limit &&
-             next_anonymous_serial < anonymous_serial_limit; ++attempt) {
-            u32 serial = next_anonymous_serial++;
-            for (u32 digit = 0; digit < 5; ++digit) {
-                path[7 - digit] = static_cast<char>('0' + serial % 10); serial /= 10;
-            }
-            opened = f_open(&description.file, path, FA_CREATE_NEW | FA_READ | FA_WRITE);
-            if (opened != FR_EXIST) { break; }
+        description = open_description{true, 1, object, flags, 0};
+        file_object& target = object_for(description);
+        if (anonymous) {
+            target.anonymous = true;
+            target.unlinked = true;
+            copy_text(target.backing, resolved.path);
         }
-        if (opened != FR_OK) {
-            // CREATE_NEW never overwrites a collision. An error does not prove
-            // ownership of a pre-existing path, so do not unlink it here.
-            description = open_description{};
-            reply(out, in, from_fr(opened)); break;
+        if (!directory && (options & open_append) != 0 && (options & open_truncate) == 0) {
+            description.position = static_cast<u32>(f_size(&target.file));
         }
-        description.used = true;
-        description.anonymous = true;
-        description.references = 1;
-        description.flags = read_write;
-        copy_text(description.path, path);
         session.opens[slot] = open_record{true, handle, description_slot + 1};
         reply(out, in, status::ok);
         out.handle = handle;
+        out.value = directory ? 0 : f_size(&target.file);
+        out.flags = directory ? stat_is_directory : 0;
+        out.reserved = target.inode;
         break;
     }
     case op::anonymous_seal: {
@@ -848,105 +1354,30 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         for (u8 byte : in.data) { empty = empty && byte == 0; }
         if (!empty) { reply(out, in, status::invalid); break; }
         open_description* description = description_for(find_open(session, in.handle));
-        if (description == nullptr || !description->anonymous || description->closed ||
+        if (description == nullptr || !object_for(*description).anonymous ||
             description->references == 0) { reply(out, in, status::bad_handle); break; }
-        // The one description is shared by all fork/transfer references. Seal
-        // only removes write authority; no FIL close/reopen or seek occurs.
         description->flags = read_only;
         reply(out, in, status::ok);
-        break;
-    }
-    case op::open: {
-        char path[max_name]{};
-        const u32 access = in.flags & open_access_mask;
-        const u32 options = in.flags & open_option_mask;
-        if (!request_path(in, path) || (in.flags & ~open_valid_mask) != 0 ||
-            (access != read_only && access != write_only && access != read_write) ||
-            ((options & open_exclusive) != 0 && (options & open_create) == 0) ||
-            ((options & (open_truncate | open_append)) != 0 && (access & write_only) == 0)) {
-            reply(out, in, status::invalid); break;
-        }
-        u32 slot = max_open;
-        for (u32 i = 0; i < max_open; ++i) { if (!session.opens[i].used) { slot = i; break; } }
-        if (slot == max_open) { reply(out, in, status::full); break; }
-        u32 description_slot = max_open_descriptions;
-        for (u32 i = 0; i < max_open_descriptions; ++i) {
-            if (!descriptions[i].used) { description_slot = i; break; }
-        }
-        if (description_slot == max_open_descriptions) { reply(out, in, status::full); break; }
-        FILINFO info{};
-        const FRESULT stat_result = f_stat(path, &info);
-        if (stat_result == FR_OK && (info.fattrib & AM_DIR) != 0) {
-            reply(out, in, status::invalid); break;
-        }
-        if (stat_result != FR_OK && stat_result != FR_NO_FILE) {
-            reply(out, in, from_fr(stat_result)); break;
-        }
-        // O_TRUNC/O_APPEND without O_CREAT must not create the file.
-        if (stat_result == FR_NO_FILE && (options & (open_create | open_exclusive)) == 0) {
-            reply(out, in, status::not_found); break;
-        }
-        u32 handle = 0;
-        if (!next_handle(session_index, handle)) { reply(out, in, status::full); break; }
-        BYTE mode = FA_OPEN_EXISTING;
-        if ((access & read_only) != 0) { mode |= FA_READ; }
-        if ((access & write_only) != 0) { mode |= FA_WRITE; }
-        if ((options & open_exclusive) != 0) { mode |= FA_CREATE_NEW; }
-        else if ((options & open_create) != 0 && (options & open_truncate) != 0) { mode |= FA_CREATE_ALWAYS; }
-        else if ((options & open_create) != 0) { mode |= FA_OPEN_ALWAYS; }
-        open_description& description = descriptions[description_slot];
-        description = open_description{};
-        const FRESULT result = f_open(&description.file, path, mode);
-        if (result != FR_OK) { reply(out, in, from_fr(result)); break; }
-        if ((options & open_truncate) != 0 && (options & open_create) == 0) {
-            // FA_OPEN_EXISTING honored the no-create contract; truncate only
-            // now that the file is known to exist.
-            FRESULT truncate_result = f_lseek(&description.file, 0);
-            if (truncate_result == FR_OK) { truncate_result = f_truncate(&description.file); }
-            // Commit the cached directory entry so other opens observe the
-            // truncated length without waiting for this handle to close.
-            if (truncate_result == FR_OK) { truncate_result = f_sync(&description.file); }
-            if (truncate_result != FR_OK) {
-                (void)f_close(&description.file);
-                description = open_description{};
-                reply(out, in, from_fr(truncate_result));
-                break;
-            }
-        }
-        if ((options & open_append) != 0 && (options & open_truncate) == 0) {
-            description.position = static_cast<u32>(f_size(&description.file));
-        }
-        description.used = true;
-        description.references = 1;
-        description.flags = in.flags;
-        copy_text(description.path, path);
-        open_record& item = session.opens[slot];
-        item = open_record{};
-        item.used = true;
-        item.handle = handle;
-        item.description = description_slot + 1;
-        reply(out, in, status::ok);
-        out.handle = item.handle;
-        out.value = f_size(&description.file);
         break;
     }
     case op::fstat: {
         open_record* item = find_open(session, in.handle);
         open_description* description = description_for(item);
         if (description == nullptr) { reply(out, in, status::bad_handle); break; }
-        u16 inode = 0;
-        if (!identity_for_file(description->file, inode)) { reply(out, in, status::full); break; }
+        const file_object& object = object_for(*description);
         reply(out, in, status::ok);
-        out.value = f_size(&description->file);
-        out.reserved = inode;
+        out.value = object.directory ? 0 : f_size(&object.file);
+        out.flags = (object.directory ? stat_is_directory : 0) | (object.unlinked ? stat_unlinked : 0);
+        out.reserved = object.inode;
         break;
     }
     case op::read: {
         open_record* item = find_open(session, in.handle);
         open_description* description = description_for(item);
         if (description == nullptr) { reply(out, in, status::bad_handle); break; }
+        if (object_for(*description).directory) { reply(out, in, status::is_directory); break; }
         if ((description->flags & read_only) == 0) { reply(out, in, status::invalid); break; }
-        const u32 size = static_cast<u32>(f_size(&description->file));
+        const u32 size = static_cast<u32>(f_size(&file_for(*description)));
         if (description->position >= size) {
             reply(out, in, status::ok);
             out.length = 0;
@@ -963,7 +1394,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         // reply() clears the buffer, so acknowledge before f_read fills data.
         reply(out, in, status::ok);
         UINT read = 0;
-        const FRESULT result = f_read(&description->file, out.data, wanted, &read);
+        const FRESULT result = f_read(&file_for(*description), out.data, wanted, &read);
         if (result != FR_OK && read == 0) { reply(out, in, from_fr(result)); break; }
         description->position += read;
         out.length = read;
@@ -974,6 +1405,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         open_record* item = find_open(session, in.handle);
         open_description* description = description_for(item);
         if (description == nullptr) { reply(out, in, status::bad_handle); break; }
+        if (object_for(*description).directory) { reply(out, in, status::is_directory); break; }
         if ((description->flags & write_only) == 0) { reply(out, in, status::invalid); break; }
         // POSIX: a zero-byte write is a pure no-op. It must not move the
         // offset, must not extend the file, and append mode gains nothing.
@@ -981,26 +1413,26 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         const u32 offset_before = description->position;
         u32 position = description->position;
         if ((description->flags & open_append) != 0) {
-            position = static_cast<u32>(f_size(&description->file));
+            position = static_cast<u32>(f_size(&file_for(*description)));
         }
         if (position > fat32_max_file_bytes || in.length > sizeof(in.data) ||
             in.length > fat32_max_file_bytes - position) { reply(out, in, status::no_space); break; }
         // A write past EOF leaves a hole that must read back as zeros; FatFs
         // would otherwise expose whatever the reused clusters contained.
-        const u32 size = static_cast<u32>(f_size(&description->file));
+        const u32 size = static_cast<u32>(f_size(&file_for(*description)));
         // Undo a failed write: drop any zero-fill extension first, then put
         // the offset back. The offset never lands past the restored length,
         // because f_lseek beyond EOF re-extends the file with uncleared
         // clusters. A failed restore of the length itself is a real fault;
         // the final reposition is best effort.
         auto undo_failed_write = [&]() {
-            if (static_cast<u32>(f_size(&description->file)) > size) {
+            if (static_cast<u32>(f_size(&file_for(*description))) > size) {
                 if (seek_description(*description, size) != status::ok ||
-                    f_truncate(&description->file) != FR_OK) { recovery_failed = true; }
+                    f_truncate(&file_for(*description)) != FR_OK) { recovery_failed = true; }
             }
             const u32 restore = offset_before <= size ? offset_before : size;
             (void)seek_description(*description, restore);
-            description->position = restore;
+            description->position = offset_before;
         };
         const status grown = grow_with_zeros(*description, size, position);
         if (grown != status::ok) {
@@ -1017,7 +1449,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             reply(out, in, seek); break;
         }
         UINT written = 0;
-        const FRESULT result = f_write(&description->file, in.data, in.length, &written);
+        const FRESULT result = f_write(&file_for(*description), in.data, in.length, &written);
         description->position = position + written;
         if (written == 0) {
             // in.length > 0 here, so zero bytes means the media is full
@@ -1035,10 +1467,11 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         open_record* item = find_open(session, in.handle);
         open_description* description = description_for(item);
         if (description == nullptr) { reply(out, in, status::bad_handle); break; }
+        if (object_for(*description).directory) { reply(out, in, status::is_directory); break; }
         const i64 displacement = static_cast<i64>(in.offset);
         i64 base = 0;
         if (in.flags == seek_current) { base = static_cast<i64>(description->position); }
-        else if (in.flags == seek_end) { base = static_cast<i64>(f_size(&description->file)); }
+        else if (in.flags == seek_end) { base = static_cast<i64>(f_size(&file_for(*description))); }
         else if (in.flags != seek_set) { reply(out, in, status::invalid); break; }
         if ((displacement < 0 && displacement < -base) ||
             (displacement > 0 && base > static_cast<i64>(fat32_max_file_bytes) - displacement)) {
@@ -1056,29 +1489,30 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         open_record* item = find_open(session, in.handle);
         open_description* description = description_for(item);
         if (description == nullptr) { reply(out, in, status::bad_handle); break; }
+        if (object_for(*description).directory) { reply(out, in, status::is_directory); break; }
         if ((description->flags & write_only) == 0 || in.offset > fat32_max_file_bytes ||
             in.flags != 0 || in.length != 0 || in.name_length != 0) {
             reply(out, in, status::invalid); break;
         }
         const u32 target = static_cast<u32>(in.offset);
-        const u32 current = static_cast<u32>(f_size(&description->file));
+        const u32 current = static_cast<u32>(f_size(&file_for(*description)));
         if (target > current) {
             const status grown = grow_with_zeros(*description, current, target);
             if (grown != status::ok) {
                 // Do not report success for a partial extension: restore the
                 // original length before returning the real failure.
                 if (seek_description(*description, current) == status::ok) {
-                    if (f_truncate(&description->file) != FR_OK) { recovery_failed = true; }
+                    if (f_truncate(&file_for(*description)) != FR_OK) { recovery_failed = true; }
                 } else { recovery_failed = true; }
                 reply(out, in, grown); break;
             }
         } else if (target < current) {
             const status seek = seek_description(*description, target);
             if (seek != status::ok) { reply(out, in, seek); break; }
-            const FRESULT truncate_result = f_truncate(&description->file);
+            const FRESULT truncate_result = f_truncate(&file_for(*description));
             if (truncate_result != FR_OK) { reply(out, in, from_fr(truncate_result)); break; }
         }
-        const FRESULT synced = f_sync(&description->file);
+        const FRESULT synced = f_sync(&file_for(*description));
         if (synced != FR_OK) { reply(out, in, from_fr(synced)); break; }
         // ftruncate never changes the file offset.
         reply(out, in, status::ok);
@@ -1132,10 +1566,10 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         break;
     }
     case op::replace_begin: {
-        char path[max_name]{};
-        if (!request_path(in, path) || in.length > fat32_max_file_bytes) {
-            reply(out, in, status::invalid); break;
-        }
+        path_reference resolved;
+        if (!request_path(in, session, resolved)) { reply(out, in, resolved.error); break; }
+        const char* path = resolved.path;
+        if (in.length > fat32_max_file_bytes) { reply(out, in, status::invalid); break; }
         if (staging_active) {
             reply(out, in, status::busy);
             break;
@@ -1147,7 +1581,6 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         if (target_result != FR_OK && target_result != FR_NO_FILE) {
             reply(out, in, from_fr(target_result)); break;
         }
-        if (any_open(session, path)) { reply(out, in, status::busy); break; }
         const u64 required = required_staging_bytes(in.length);
         if (required > available_bytes()) { reply(out, in, status::no_space); break; }
         const FRESULT opened = f_open(&staging_file, temp_name, FA_CREATE_ALWAYS | FA_WRITE);
@@ -1158,6 +1591,9 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         staging_written = 0;
         staging_total = in.length;
         copy_text(staging_path, path);
+        staging_parent = resolved.parent;
+        retain_object(staging_parent);
+        copy_text(staging_leaf, resolved.leaf);
         reply(out, in, status::ok);
         out.value = staging_total;
         break;
@@ -1168,126 +1604,54 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             in.length > staging_total - staging_written) { reply(out, in, status::invalid); break; }
         UINT written = 0;
         const FRESULT result = f_write(&staging_file, in.data, in.length, &written);
-        if (result != FR_OK) { reply(out, in, from_fr(result)); break; }
         staging_written += written;
-        reply(out, in, written == in.length ? status::ok : status::no_space);
+        reply(out, in, result != FR_OK ? from_fr(result) :
+                       written == in.length ? status::ok : status::no_space);
         out.value = staging_written;
         break;
     }
     case op::replace_commit: {
         if (!staging_active || staging_owner != session.pid) { reply(out, in, status::bad_handle); break; }
         if (!staging_open || staging_written != staging_total) { reply(out, in, status::invalid); break; }
-        for (const auto& owner_session : sessions) {
-            if (any_open(owner_session, staging_path)) { reply(out, in, status::busy); return; }
-        }
+        if (!refresh_staging_path()) { abort_staging(); reply(out, in, status::not_found); break; }
         FRESULT result = f_sync(&staging_file);
         const FRESULT closed = f_close(&staging_file);
         if (result == FR_OK) { result = closed; }
-        staging_open = false;
-        if (result != FR_OK) {
-            abort_staging();
-            reply(out, in, from_fr(result));
-            break;
+        if (closed == FR_OK) { staging_open = false; }
+        if (result != FR_OK) { abort_staging(); reply(out, in, from_fr(result)); break; }
+        FILINFO target{}, source{};
+        const FRESULT target_result = f_stat(staging_path, &target);
+        if (target_result != FR_OK && target_result != FR_NO_FILE) {
+            abort_staging(); reply(out, in, from_fr(target_result)); break;
         }
-        FILINFO info{};
-        const FRESULT target_result = f_stat(staging_path, &info);
-        const bool target_exists = target_result == FR_OK;
-        if (!target_exists && target_result != FR_NO_FILE) {
-            abort_staging();
-            reply(out, in, from_fr(target_result));
-            break;
+        if (target_result == FR_OK && (target.fattrib & AM_DIR) != 0) {
+            abort_staging(); reply(out, in, status::is_directory); break;
         }
-        if (target_exists && (info.fattrib & AM_DIR) != 0) {
-            abort_staging();
-            reply(out, in, status::invalid);
-            break;
-        }
-        const file_identity_key old_target_key = target_exists ? identity_key(info) : file_identity_key{};
-        u16 target_inode = 0;
-        if (target_exists) {
-            if (!identity_for_info(info, target_inode)) {
-                abort_staging();
-                reply(out, in, status::full);
-                break;
-            }
-        } else if (!can_allocate_identity()) {
-            abort_staging();
-            reply(out, in, status::full);
-            break;
-        }
-        if (!write_journal(staging_path)) {
-            recovery_failed = true;
+        if (f_stat(temp_name, &source) != FR_OK) { abort_staging(); reply(out, in, status::io); break; }
+        const status committed = replace_namespace(temp_name, staging_path, source,
+            target_result == FR_OK ? &target : nullptr, true);
+        if (committed == status::ok && disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK) { recovery_failed = true; }
+        const u32 written = staging_written;
+        if (!recovery_failed) { abort_staging(); }
+        else {
             staging_active = false;
             staging_owner = 0;
-            reply(out, in, status::io);
-            break;
+            (void)release_object(staging_parent);
+            staging_parent = 0;
         }
-        bool failed = false;
-        if (target_exists) {
-            if (!remove_if_present(backup_name) || f_rename(staging_path, backup_name) != FR_OK) {
-                failed = true;
-            }
-        }
-        if (!failed && f_rename(temp_name, staging_path) != FR_OK) {
-            failed = true;
-            if (target_exists) {
-                if (f_rename(backup_name, staging_path) != FR_OK) {
-                    recovery_failed = true;
-                } else {
-                    FILINFO restored_info{};
-                    if (f_stat(staging_path, &restored_info) != FR_OK ||
-                        !move_identity(old_target_key, identity_key(restored_info), target_inode)) {
-                        recovery_failed = true;
-                    }
-                }
-            }
-        }
-        if (failed) {
-            recovery_failed = true;
-            staging_active = false;
-            staging_owner = 0;
-            reply(out, in, status::io);
-            break;
-        }
-        if (disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK) {
-            recovery_failed = true;
-            staging_active = false;
-            staging_owner = 0;
-            reply(out, in, status::io);
-            break;
-        }
-        FILINFO committed_info{};
-        if (f_stat(staging_path, &committed_info) == FR_OK) {
-            // Identity bookkeeping is an in-memory table: a failed update only
-            // leaves a stale entry, never a wrong on-disk state, so it must not
-            // fail a replace that is already committed.
-            if (target_exists) {
-                (void)move_identity(old_target_key, identity_key(committed_info), target_inode);
-            } else {
-                (void)identity_for_info(committed_info, target_inode);
-            }
-        }
-        // Clear the journal and backup even when the stat above failed: a
-        // leftover backup would block every later rename until a restart.
-        if (!finish_recovery(staging_path)) { recovery_failed = true; }
-        staging_active = false;
-        staging_owner = 0;
-        reply(out, in, recovery_failed ? status::io : status::ok);
-        out.value = staging_written;
-        staging_written = 0;
-        staging_total = 0;
-        staging_path[0] = '\0';
+        reply(out, in, recovery_failed ? status::io : committed);
+        out.value = written;
         break;
     }
     case op::replace_abort:
         if (!staging_active || staging_owner != session.pid) { reply(out, in, status::bad_handle); break; }
         abort_staging();
-        reply(out, in, status::ok);
+        reply(out, in, recovery_failed ? status::io : status::ok);
         break;
     case op::sync: {
         status code = status::ok;
-        for (auto& item : descriptions) {
-            if (!item.used || (item.flags & write_only) == 0) { continue; }
+        for (auto& item : file_objects) {
+            if (!item.used || item.directory || item.closed) { continue; }
             const FRESULT synced = f_sync(&item.file);
             if (synced != FR_OK) { code = from_fr(synced); break; }
         }
@@ -1299,142 +1663,78 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         break;
     }
     case op::remove: {
-        char path[max_name]{};
-        if (!request_path(in, path)) { reply(out, in, status::invalid); break; }
-        if (staging_active && same_path_object(staging_path, path)) { reply(out, in, status::busy); break; }
-        for (const auto& owner_session : sessions) {
-            if (any_open(owner_session, path)) { reply(out, in, status::busy); return; }
+        path_reference resolved;
+        if (!request_path(in, session, resolved)) { reply(out, in, resolved.error); break; }
+        const char* path = resolved.path;
+        if (resolved.leaf[0] == '\0') { reply(out, in, status::invalid); break; }
+        if (staging_active && refresh_staging_path() && same_path_object(staging_path, path)) {
+            reply(out, in, status::busy); break;
         }
         FILINFO info{};
-        const FRESULT stat_result = f_stat(path, &info);
-        if (stat_result != FR_OK) { reply(out, in, from_fr(stat_result)); break; }
-        // POSIX: unlink/rm never deletes a directory, empty or not (EISDIR).
-        // FatFs f_unlink does delete an empty directory, and the shell's rm
-        // talks to this service directly so libc's EISDIR pre-check never runs.
-        // allow_directory (rmdir, package cleanup) opts back in: an empty
-        // directory is then removable, a non-empty one still fails FR_DENIED.
-        if ((info.fattrib & AM_DIR) != 0 && (in.flags & allow_directory) == 0) { reply(out, in, status::invalid); break; }
-        const FRESULT result = f_unlink(path);
-        if (result == FR_OK) { (void)forget_identity(identity_key(info)); }
-        reply(out, in, from_fr(result));
+        const FRESULT found = f_stat(path, &info);
+        if (found != FR_OK) { reply(out, in, from_fr(found)); break; }
+        if ((info.fattrib & AM_DIR) != 0) {
+            if ((in.flags & allow_directory) == 0) { reply(out, in, status::invalid); break; }
+            const status empty = directory_empty(path);
+            if (empty != status::ok) { reply(out, in, empty); break; }
+        }
+        const u32 object = find_object(identity_key(info));
+        if (object != 0) { reply(out, in, detach_object(object, path, info)); break; }
+        const FRESULT removed = f_unlink(path);
+        if (removed == FR_OK) { (void)forget_identity(identity_key(info)); }
+        reply(out, in, from_fr(removed));
         break;
     }
     case op::mkdir: {
-        char path[max_name]{};
-        if (!request_path(in, path)) { reply(out, in, status::invalid); break; }
-        reply(out, in, from_fr(f_mkdir(path)));
+        path_reference resolved;
+        if (!request_path(in, session, resolved)) { reply(out, in, resolved.error); break; }
+        reply(out, in, from_fr(f_mkdir(resolved.path)));
         break;
     }
     case op::rename: {
-        char old_path[max_name]{};
-        char new_path[max_name]{};
-        if (!request_path(in, old_path) || in.length == 0 || in.length >= max_name ||
-            !normalize_path(reinterpret_cast<const char*>(in.data), in.length, new_path, false)) {
-            reply(out, in, status::invalid); break;
-        }
-        if (staging_active &&
+        path_reference source, target;
+        if (!request_path(in, session, source)) { reply(out, in, source.error); break; }
+        target.error = resolve_service_path(session, reinterpret_cast<const char*>(in.data), in.length, target);
+        if (target.error != status::ok) { reply(out, in, target.error); break; }
+        if (source.leaf[0] == '\0' || target.leaf[0] == '\0') { reply(out, in, status::invalid); break; }
+        const char* old_path = source.path;
+        const char* new_path = target.path;
+        if (staging_active && refresh_staging_path() &&
             (same_path_object(staging_path, old_path) || same_path_object(staging_path, new_path))) {
             reply(out, in, status::busy); break;
         }
-        for (const auto& owner_session : sessions) {
-            if (any_open(owner_session, old_path) || any_open(owner_session, new_path)) {
-                reply(out, in, status::busy); return;
-            }
+        FILINFO old_info{}, new_info{};
+        const FRESULT old_result = f_stat(old_path, &old_info);
+        if (old_result != FR_OK) { reply(out, in, from_fr(old_result)); break; }
+        const FRESULT new_result = f_stat(new_path, &new_info);
+        if (new_result != FR_OK && !missing(new_result)) { reply(out, in, from_fr(new_result)); break; }
+        const bool exists = new_result == FR_OK;
+        const bool directory = (old_info.fattrib & AM_DIR) != 0;
+        const u32 moving = find_object(identity_key(old_info));
+        if (exists && same_identity_key(identity_key(old_info), identity_key(new_info))) {
+            if (names_equal_exact(old_path, new_path)) { reply(out, in, status::ok); break; }
+            const status code = move_disk_object(old_path, new_path, old_info);
+            if (code == status::ok) { relocate_object(moving, target.parent, target.leaf); }
+            reply(out, in, code); break;
         }
-        FILINFO old_info{};
-        const FRESULT old_stat = f_stat(old_path, &old_info);
-        if (old_stat != FR_OK) { reply(out, in, from_fr(old_stat)); break; }
-        const bool old_is_directory = (old_info.fattrib & AM_DIR) != 0;
-        const path_relation relation = compare_path_objects(old_path, new_path);
-        if (relation == path_relation::error) { reply(out, in, status::io); break; }
-        if (relation == path_relation::same) {
-            // Exact same spelling is a no-op. names_equal() folds case, so a
-            // case-only spelling change must still reach FatFs, which updates
-            // the directory entry's stored case.
-            if (!names_equal_exact(old_path, new_path)) {
-                FILINFO before{};
-                const FRESULT before_stat = f_stat(old_path, &before);
-                const FRESULT renamed = f_rename(old_path, new_path);
-                if (renamed != FR_OK) { reply(out, in, from_fr(renamed)); break; }
-                // Best-effort identity migration: the directory entry moved to
-                // a new location, so re-key the in-memory identity. A failed
-                // stat or move only leaves a stale entry, never a wrong reply.
-                if (before_stat == FR_OK) {
-                    FILINFO after{};
-                    if (f_stat(new_path, &after) == FR_OK) {
-                        u16 moved_inode = 0;
-                        const file_identity_key before_key = identity_key(before);
-                        if (identity_for_key(before_key, moved_inode)) {
-                            (void)move_identity(before_key, identity_key(after), moved_inode);
-                        }
-                    }
-                }
-            }
-            reply(out, in, status::ok); break;
-        }
-        if (old_is_directory) {
+        if (directory) {
             const int ancestor = directory_is_ancestor(old_info, new_path);
             if (ancestor < 0) { reply(out, in, status::io); break; }
             if (ancestor > 0) { reply(out, in, status::invalid); break; }
         }
-        FILINFO new_info{};
-        const FRESULT new_stat = f_stat(new_path, &new_info);
-        if (new_stat != FR_OK && !missing(new_stat)) { reply(out, in, from_fr(new_stat)); break; }
-        const bool target_exists = new_stat == FR_OK;
-        if (target_exists) {
-            if (same_identity_key(identity_key(old_info), identity_key(new_info))) {
-                reply(out, in, status::ok); break;
+        if (exists) {
+            const bool target_directory = (new_info.fattrib & AM_DIR) != 0;
+            if (directory != target_directory) {
+                reply(out, in, target_directory ? status::is_directory : status::not_directory); break;
             }
-            // Replacing a directory is outside this service's supported POSIX
-            // subset; report it instead of silently moving the tree.
-            if (old_is_directory || (new_info.fattrib & AM_DIR) != 0) {
-                reply(out, in, status::exists); break;
+            if (directory) {
+                const status empty = directory_empty(new_path);
+                if (empty != status::ok) { reply(out, in, empty); break; }
             }
         }
-        u16 inode = 0;
-        if (!identity_for_info(old_info, inode)) { reply(out, in, status::full); break; }
-        FRESULT renamed = FR_OK;
-        if (target_exists) {
-            // Journal + backup make the replacement recoverable: a crash before
-            // the final rename restores the old target on the next boot.
-            if (!write_journal(new_path)) { reply(out, in, status::io); break; }
-            FILINFO backup_info{};
-            if (!missing(f_stat(backup_name, &backup_info))) {
-                (void)f_unlink(journal_name);
-                reply(out, in, status::busy); break;
-            }
-            if (f_rename(new_path, backup_name) != FR_OK) {
-                (void)f_unlink(journal_name);
-                reply(out, in, status::io); break;
-            }
-            renamed = f_rename(old_path, new_path);
-            if (renamed != FR_OK) {
-                if (f_rename(backup_name, new_path) != FR_OK) {
-                    // Keep journal and backup so boot recovery can restore the
-                    // old target. Deleting the journal here would strand it.
-                    recovery_failed = true;
-                } else {
-                    (void)f_unlink(journal_name);
-                }
-                reply(out, in, from_fr(renamed)); break;
-            }
-            if (disk_ioctl(0, CTRL_SYNC, nullptr) != RES_OK || !finish_recovery(new_path)) {
-                recovery_failed = true;
-                reply(out, in, status::io); break;
-            }
-            (void)forget_identity(identity_key(new_info));
-        } else {
-            renamed = f_rename(old_path, new_path);
-            if (renamed != FR_OK) { reply(out, in, from_fr(renamed)); break; }
-        }
-        // f_rename already committed the new name on disk. Identity is a pure
-        // in-memory table, so a failed stat or move must not be reported as an
-        // I/O failure that would make the client retry an applied rename.
-        FILINFO committed_info{};
-        if (f_stat(new_path, &committed_info) == FR_OK) {
-            (void)move_identity(identity_key(old_info), identity_key(committed_info), inode);
-        }
-        reply(out, in, status::ok);
+        const status renamed = replace_namespace(old_path, new_path, old_info, exists ? &new_info : nullptr);
+        if (renamed == status::ok) { relocate_object(moving, target.parent, target.leaf); }
+        reply(out, in, renamed);
         break;
     }
     default:
@@ -1448,7 +1748,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     using namespace xos;
     const FRESULT mounted_result = f_mount(&fs, "", 1);
     mounted = mounted_result == FR_OK;
-    if (mounted) { recover(); }
+    if (mounted) { recover(); if (!recovery_failed) { recover_orphans(); } }
     const u64 own_pid = sdk::pid();
     for (;;) {
         retry_description_cleanup();

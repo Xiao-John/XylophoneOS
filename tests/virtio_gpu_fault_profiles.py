@@ -9,6 +9,7 @@ import boot_smoke
 from boot_smoke import Guest
 from task_smoke import send_bytes,pump
 from process_smoke import command,resources
+from graphics_guest import start_graphics, stop_graphics
 from make_work_disk import create_fat32
 from work_disk import transfer
 p=argparse.ArgumentParser()
@@ -39,11 +40,11 @@ try:
     freed=re.search(rb'DMA_released=(\d+) free_before=(\d+) free_after=(\d+)',g.output);assert freed and int(freed[3])-int(freed[2])==int(freed[1]),g.output[-1000:]
    send_bytes(g,b'run\r');g.expect_supervisor(trace=True);pump(g,1.3);base=resources(g)
    if name=='no_device':
-    result=command(g,'exec-file /bin/gui.elf auto',b'kind=exited',timeout=90);assert b'unavailable or invalid Display Service mode (-19)' in result;assert resources(g)==base
+    result=command(g,'exec-file /bin/gui.elf auto',b'kind=exited',timeout=90);assert b'Interactium connect/hello failed' in result;assert resources(g)==base
    else:
-    result=command(g,'display-start',b'result=0');service=int(re.search(rb'\[display-start\] pid=(\d+)',result)[1]);g.expect(b'[display-service] ready');with_service=resources(g)
+    service, compositor = start_graphics(g);with_service=resources(g)
     result=command(g,'exec-file /bin/gui.elf auto',b'kind=exited code=0',timeout=90);assert b'QT_GUI_OK' in result;assert resources(g)==with_service
-    command(g,'exec gfxdemo stop',b'kind=exited code=0');command(g,f'wait {service}',b'kind=exited code=0');assert resources(g)==base
+    stop_graphics(g, service, compositor);assert resources(g)==base
    report['checks'].append({'name':name,'status':'PASSED','image_sha256':sha(system/'xos-install.iso'),'build_id':manifest['build_id'],'configuration':manifest.get('virtio_gpu'),'resources':base,'qemu_command':g.command})
    (out/(name+'.serial.log')).write_bytes(g.output);g.close();g=None;print(name,'PASSED',flush=True)
   report['status']='PASSED'

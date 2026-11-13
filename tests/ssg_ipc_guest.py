@@ -10,6 +10,7 @@ from boot_smoke import Guest
 from make_work_disk import create_fat32
 from work_disk import transfer
 from process_smoke import command,resources
+from graphics_guest import start_graphics, stop_graphics
 from task_smoke import send_bytes,pump
 p=argparse.ArgumentParser()
 for n in ('image','session','consumer','notes','output'):p.add_argument('--'+n,type=Path,required=True)
@@ -58,7 +59,7 @@ try:
   g=Guest(a.image.resolve(),str(out.relative_to(ROOT/'build'))+'/guest',work_disk=disk);report['qemu_command']=g.command
   g.expect(b'xos64> ',timeout=45);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=45)
   command(g,'demo quiet',b'demo tasks stopped');base=resources(g)
-  service_result=command(g,'display-start',b'result=0');service=int(re.search(rb'\[display-start\] pid=(\d+)',service_result)[1]);g.expect(b'[display-service] ready');active=resources(g)
+  service, compositor = start_graphics(g);active=resources(g)
   report['baseline_resources']=base;report['display_resources']=active
   if not a.only_browser:
    start=len(g.output);line='exec-driver /bin/session.elf /ssg.txt scenario --text';report['guest_command']=line;send_bytes(g,(line+'\r').encode())
@@ -213,7 +214,7 @@ try:
    b=len(g.output);send_bytes(g,b'exec-driver /bin/dash /ssg-dash.sh\r')
    g.expect(b'SSG_SESSION consumer_spawn=FAIL code=-1',start=b,timeout=90);g.expect(b'SSG_DASH_STATUS:2',start=b,timeout=30)
    g.expect_supervisor(start=b,timeout=30);assert resources(g)==active;mark('dash_without_spawn_delegation_denied')
-  command(g,'exec gfxdemo stop' ,b'kind=exited code=0');command(g,f'wait {service}',b'kind=exited code=0');assert resources(g)==base
+  stop_graphics(g, service, compositor);assert resources(g)==base
   command(g,'sync',b'[files] sync=ok');report['final_resources']=resources(g);mark('display_and_guest_resource_baseline_restored')
   report['status']='PASSED_SCOPED'
 except Exception as error:

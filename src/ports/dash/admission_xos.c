@@ -127,7 +127,18 @@ int xos_evalpipe(union node *n, int flags) {
             else sh_error("pipeline: save descriptor");
         }
         for (lp = n->npipe.cmdlist; lp; lp = lp->next) {
-            if (lp->next && pipe(pip) < 0) sh_error("pipeline: pipe: %s", strerror(errno));
+            if (lp->next) {
+                if (pipe(pip) < 0) sh_error("pipeline: pipe: %s", strerror(errno));
+                // Closed stdio slots may be reused by pipe(); keep both ends
+                // away from dup2's destinations before installing any route.
+                for (fd = 0; fd < 2; ++fd) {
+                    if (pip[fd] > 2) continue;
+                    int moved = fcntl(pip[fd], F_DUPFD_CLOEXEC, 3);
+                    if (moved < 0) sh_error("pipeline: save pipe descriptor");
+                    close(pip[fd]);
+                    pip[fd] = moved;
+                }
+            }
             if (previous >= 0 && dup2(previous, 0) < 0) sh_error("pipeline: stdin");
             if (pip[1] >= 0 && dup2(pip[1], 1) < 0) sh_error("pipeline: stdout");
             exitstatus = before_status;

@@ -101,7 +101,7 @@ def main():
         start=len(guest.output);send_bytes(guest,b'dash -i\r')
         guest.expect(b'$ ',start=start,timeout=45)
         start=len(guest.output);send_bytes(guest,b'echo ISO_CAPACITY_OK\r')
-        guest.expect(b'ISO_CAPACITY_OK',start=start,timeout=45)
+        guest.expect(b'\nISO_CAPACITY_OK\n',start=start,timeout=45)
         guest.expect(b'$ ',start=start,timeout=45)
         start=len(guest.output);send_bytes(guest,b'exit\r')
         guest.expect_supervisor(start=start,timeout=45)

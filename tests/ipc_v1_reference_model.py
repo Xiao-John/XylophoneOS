@@ -76,6 +76,7 @@ class call_record:
     payload: bytes
     reply_capacity: int
     deadline_ns: int
+    badge: int
     state: phase = phase.not_delivered
     receiver_pid: int = 0
     reply_token: int = 0
@@ -205,7 +206,7 @@ class reference_model:
         call_id = self.next_call_id
         self.next_call_id += 1
         call = call_record(call_id, cap.endpoint_id, pid, label, bytes(payload),
-                           reply_capacity, deadline_ns)
+                           reply_capacity, deadline_ns, cap.badge)
         self.calls[call_id] = call
         self._match_waiter(obj, call, cap.badge, now_ns)
         if call.state == phase.not_delivered:
@@ -257,7 +258,7 @@ class reference_model:
             if self._active_reply_token_count(pid) >= ipc_v1_max_reply_tokens_per_process:
                 return ipc_v1_error.resources
             obj.queued_calls.popleft()
-            return self._deliver(call, None, cap.badge, pid)
+            return self._deliver(call, None, call.badge, pid)
         if deadline_ns == ipc_v1_deadline_poll:
             return ipc_v1_error.would_block
         if deadline_ns != ipc_v1_deadline_infinite and deadline_ns <= now_ns:
@@ -410,12 +411,18 @@ class ipc_v1_reference_model_test(unittest.TestCase):
         self.assertEqual(query["supported"], 0x0f)
         self.assertEqual(query["limits"][0], ipc_v1_max_message_bytes)
 
-    def test_both_sdk_profiles_share_the_guest_qualified_ipc_manifest_entry(self):
+    def test_both_sdk_profiles_separate_available_features_from_qualification(self):
         entry = ipc_v1_manifest_entry()
         self.assertEqual(entry, {"abi_version": 1, "syscall": 88,
                                  "status": "supported", "features": [
                                      "endpoint_call_v1", "deadline_v1",
-                                     "notification_v1", "wait_set_v1"]})
+                                     "notification_v1", "wait_set_v1", "bulk_grant_v1"],
+                                 "guest_qualification": {
+                                     "endpoint_call_v1": "previously_qualified",
+                                     "deadline_v1": "previously_qualified",
+                                     "notification_v1": "previously_qualified",
+                                     "wait_set_v1": "previously_qualified",
+                                     "bulk_grant_v1": "not_run"}})
         root = Path(__file__).resolve().parents[1]
         for builder in (root / "scripts/user_build.py",
                         root / "scripts/build_threading_sdk.py"):
@@ -468,6 +475,12 @@ class ipc_v1_reference_model_test(unittest.TestCase):
         self.assertFalse(result["consumed"])
         result = self.model.begin_receive(10, self.server_handle, 4, 0, 0)
         self.assertEqual(result["call_id"], call_id)
+
+    def test_call_first_preserves_caller_badge(self):
+        call_id = self.model.submit_call(20, self.client_handle, 7, b"ping", 8, 100, 0)
+        received = self.model.begin_receive(10, self.server_handle, 4, 0, 0)
+        self.assertEqual(received["call_id"], call_id)
+        self.assertEqual(received["badge"], 0xabc)
 
     def test_reply_buffer_too_small_keeps_one_shot_token_live(self):
         received = self._deliver(b"q", reply_capacity=2)

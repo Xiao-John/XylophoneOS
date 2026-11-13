@@ -73,7 +73,7 @@ struct directory_state {
     bool eof;
     bool dot_returned;
     bool dotdot_returned;
-    char path[max_path];
+    int fd;
     xos::file::entry entries[16];
     u32 count;
     u32 cursor;
@@ -98,7 +98,6 @@ struct pipe_handles { u32 read_token; u32 write_token; };
 xos::file::client file_client;
 xos::terminal::client terminal_client;
 bool runtime_ready;
-char current_directory[max_path] = "/";
 fd_slot descriptors[fd_count];
 open_object objects[object_count];
 directory_state directories[directory_count];
@@ -119,6 +118,10 @@ int error_from_file(xos::i64 result) {
     case status::bad_handle: return EBADF;
     case status::would_block: return EAGAIN;
     case status::exists: return EEXIST;
+    case status::not_directory: return ENOTDIR;
+    case status::is_directory: return EISDIR;
+    case status::not_empty: return ENOTEMPTY;
+    case status::name_too_long: return ENAMETOOLONG;
     case status::io: return EIO;
     case status::ok: return 0;
     }
@@ -157,19 +160,16 @@ int error_from_kernel(xos::i64 result) {
     return EIO;
 }
 
-int error_from_spawn(xos::i64 result) {
-    switch (static_cast<xos::file::status>(result)) {
-    case xos::file::status::not_found: return ENOENT;
-    case xos::file::status::invalid: return ENOEXEC;
-    case xos::file::status::full: return EMFILE;
-    case xos::file::status::no_space: return ENOSPC;
-    case xos::file::status::busy: return EBUSY;
-    case xos::file::status::bad_handle: return EBADF;
-    case xos::file::status::io: return EIO;
-    case xos::file::status::would_block: return EAGAIN;
-    case xos::file::status::exists: return EEXIST;
-    case xos::file::status::ok: return 0;
+int error_from_launch(xos::i64 result, const xos::execution::launch_diagnostic& diagnostic) {
+    using stage = xos::execution::launch_stage;
+    if (diagnostic.stage == stage::open || diagnostic.stage == stage::file_setup) {
+        return error_from_file(result);
     }
+    if (diagnostic.stage == stage::inspect) {
+        return result == xos::thread_error_unsupported ? ENOTSUP : ENOEXEC;
+    }
+    if (diagnostic.stage == stage::prepare) { return E2BIG; }
+    if (result == xos::process_error_busy) { return EBUSY; }
     return error_from_kernel(result);
 }
 
@@ -188,87 +188,22 @@ bool copy_string(const char* source, char* target, u32 capacity) {
     return true;
 }
 
-bool valid_path_byte(u8 c) {
-    return c >= 0x20 && c != 0x7f && c != ':' && c != '\\' && c != '*' && c != '?' &&
-           c != '"' && c != '<' && c != '>' && c != '|';
-}
-
-// Resolve `path` against an absolute base directory. Every intermediate
-// component is checked with the file service and must be a directory: a
-// lexical ".." is only collapsed after its preceding component has been
-// resolved, so "missing/../target" and "file/../target" fail instead of
-// silently reaching "target". Returns 0 or a positive errno.
-int resolve_path_from(const char* base, const char* path, char* output, bool& trailing_slash) {
-    if (base == nullptr || path == nullptr || output == nullptr) { return EINVAL; }
-    if (path[0] == '\0') { return ENOENT; }
+// Directory traversal belongs to the service, where cwd and all path
+// mutations share one serialized namespace. Do not turn a relative name into
+// a cached absolute cwd string before the request reaches that service.
+int prepare_path(const char* path, char* output, bool& trailing_slash) {
+    if (path == nullptr || output == nullptr) { return EINVAL; }
     u32 length = 0;
     while (path[length] != '\0') {
-        if (length >= max_path * 2) { return ENAMETOOLONG; }
+        if (length + 1 >= max_path) { return ENAMETOOLONG; }
+        output[length] = path[length];
         ++length;
     }
+    if (length == 0) { return ENOENT; }
     trailing_slash = length > 1 && path[length - 1] == '/';
-    u32 used = 0;
-    if (path[0] == '/') {
-        output[used++] = '/';
-    } else {
-        while (base[used] != '\0') {
-            if (used + 1 >= max_path) { return ENAMETOOLONG; }
-            output[used] = base[used];
-            ++used;
-        }
-        if (used == 0 || output[0] != '/') { return EINVAL; }
-    }
-    u32 index = path[0] == '/' ? 1 : 0;
-    while (index < length) {
-        while (index < length && path[index] == '/') { ++index; }
-        const u32 start = index;
-        while (index < length && path[index] != '/') { ++index; }
-        const u32 component = index - start;
-        if (component == 0 || (component == 1 && path[start] == '.')) { continue; }
-        if (component == 2 && path[start] == '.' && path[start + 1] == '.') {
-            if (used > 1) {
-                u32 cut = used;
-                while (cut > 1 && output[cut - 1] != '/') { --cut; }
-                used = cut > 1 ? cut - 1 : 1;
-            }
-            continue;
-        }
-        for (u32 i = 0; i < component; ++i) {
-            if (!valid_path_byte(static_cast<u8>(path[start + i]))) { return EINVAL; }
-        }
-        if (path[start + component - 1] == '.' || path[start + component - 1] == ' ') {
-            return EINVAL;
-        }
-        const u32 separator = used > 1 ? 1 : 0;
-        // Room for the separator, component and trailing NUL; exactly
-        // max_path bytes (255 characters) is a valid path.
-        if (used + separator + component + 1 > max_path) { return ENAMETOOLONG; }
-        if (separator != 0) { output[used++] = '/'; }
-        for (u32 i = 0; i < component; ++i) { output[used++] = path[start + i]; }
-        // Remaining components (including "..") require this one to be a
-        // directory. The final component is checked by the operation itself.
-        u32 lookahead = index;
-        while (lookahead < length && path[lookahead] == '/') { ++lookahead; }
-        if (lookahead < length) {
-            output[used] = '\0';
-            u32 size = 0, attributes = 0;
-            const xos::i64 result = file_client.stat_info(output, size, attributes);
-            if (result != 0) { return error_from_file(result); }
-            if ((attributes & xos::file::stat_is_directory) == 0) { return ENOTDIR; }
-        }
-    }
-    output[used] = '\0';
-    if (!xos::text::valid(output, used)) { return EINVAL; }
+    while (length > 1 && output[length - 1] == '/') { --length; }
+    output[length] = '\0';
     return 0;
-}
-
-int resolve_path(const char* path, char* output, bool& trailing_slash) {
-    char base[max_path];
-    {
-        runtime_guard guard(cwd_lock);
-        memcpy(base, current_directory, max_path);
-    }
-    return resolve_path_from(base, path, output, trailing_slash);
 }
 
 // argv/environment are byte strings; filesystem paths use UTF-8.
@@ -371,13 +306,14 @@ int open_flags_to_file(int flags, u32& translated) {
     // File opens never acquire a controlling terminal. GCC's libcpp requests
     // O_NOCTTY even for ordinary source files.
     const int supported = O_ACCMODE | O_CREAT | O_EXCL | O_TRUNC | O_APPEND | O_CLOEXEC |
-                          O_NOCTTY;
+                          O_NOCTTY | O_DIRECTORY;
     if ((flags & ~supported) != 0) { return EINVAL; }
     const int access = flags & O_ACCMODE;
     if (access == O_RDONLY) { translated = xos::file::read_only; }
     else if (access == O_WRONLY) { translated = xos::file::write_only; }
     else if (access == O_RDWR) { translated = xos::file::read_write; }
     else { return EINVAL; }
+    if ((flags & O_DIRECTORY) != 0) { translated |= xos::file::open_directory; }
     if ((flags & O_CREAT) != 0) { translated |= xos::file::open_create; }
     if ((flags & O_EXCL) != 0) { translated |= xos::file::open_exclusive; }
     if ((flags & O_TRUNC) != 0) { translated |= xos::file::open_truncate; }
@@ -388,10 +324,10 @@ int open_flags_to_file(int flags, u32& translated) {
 int open_normalized(const char* path, int flags) {
     char normalized[max_path];
     bool trailing_slash = false;
-    const int resolved = resolve_path(path, normalized, trailing_slash);
+    const int resolved = prepare_path(path, normalized, trailing_slash);
     if (resolved != 0) { errno = resolved; return -1; }
-    if (trailing_slash) {
-        // "name/" only names a directory; opening it is never valid.
+    if (trailing_slash && (flags & O_DIRECTORY) == 0) {
+        // Ordinary file opens retain their explicit directory rejection.
         u32 size = 0, attributes = 0;
         const xos::i64 status = file_client.stat_info(normalized, size, attributes);
         errno = status != 0 ? error_from_file(status)
@@ -577,15 +513,17 @@ extern "C" int xos_libc_init(const xos::startup_info* startup) {
         descriptors[fd].close_on_exec = false;
         objects[object].stdio_source = static_cast<signed char>(fd);
     }
-    current_directory[0] = '/'; current_directory[1] = '\0';
+    char startup_directory[max_path] = "/";
+    if (extension != nullptr && extension->working_directory != 0 &&
+        !copy_string(reinterpret_cast<const char*>(extension->working_directory),
+                     startup_directory, sizeof(startup_directory))) {
+        errno = EINVAL; return -1;
+    }
+    const xos::i64 cwd_result = file_client.set_cwd(startup_directory, 0, true);
+    if (cwd_result != 0) { errno = error_from_file(cwd_result); return -1; }
     environ = nullptr;
     runtime_ready = true;
     if (extension != nullptr) {
-        if (extension->working_directory != 0 &&
-            !copy_string(reinterpret_cast<const char*>(extension->working_directory),
-                         current_directory, sizeof(current_directory))) {
-            errno = EINVAL; return -1;
-        }
         environ = reinterpret_cast<char**>(extension->environment);
         if (startup->version >= 3) return restore_exec_descriptors(startup);
         for (int fd = 0; fd < 3; ++fd) {
@@ -620,6 +558,8 @@ extern "C" int xos_libc_init(const xos::startup_info* startup) {
                 }
                 continue;
             }
+            // open() may reuse this closed stdio slot directly.
+            if (opened == fd) { continue; }
             const int source_object = descriptors[opened].object;
             if (valid_fd(fd)) {
                 const int old_object = descriptors[fd].object;
@@ -800,7 +740,7 @@ extern "C" int stat(const char* path, struct stat* status) {
     if (status == nullptr) { errno = EFAULT; return -1; }
     char normalized[max_path];
     bool trailing_slash = false;
-    const int resolved = resolve_path(path, normalized, trailing_slash);
+    const int resolved = prepare_path(path, normalized, trailing_slash);
     if (resolved != 0) { errno = resolved; return -1; }
     u32 size = 0, attributes = 0, identity = 0;
     const xos::i64 result = file_client.stat_info(normalized, size, attributes, identity);
@@ -809,6 +749,7 @@ extern "C" int stat(const char* path, struct stat* status) {
         errno = ENOTDIR; return -1;
     }
     fill_stat(status, size, (attributes & xos::file::stat_is_directory) != 0, identity);
+    if ((attributes & xos::file::stat_unlinked) != 0) { status->st_nlink = 0; }
     return 0;
 }
 
@@ -821,10 +762,10 @@ extern "C" int access(const char* path, int mode) {
     if ((mode & X_OK) != 0 && !S_ISDIR(status.st_mode)) {
         char normalized[max_path];
         bool trailing_slash = false;
-        const int resolved = resolve_path(path, normalized, trailing_slash);
+        const int resolved = prepare_path(path, normalized, trailing_slash);
         if (resolved != 0) { errno = resolved; return -1; }
         u32 handle = 0, size = 0, version = 0;
-        const xos::i64 opened = file_client.open(normalized, xos::file::read_only, handle, size, version);
+        const xos::i64 opened = file_client.open(normalized, xos::file::read_only | xos::file::open_pin, handle, size, version);
         if (opened < 0) { errno = error_from_file(opened); return -1; }
         executable_reader reader{handle};
         xos::elf::load_plan plan{};
@@ -845,6 +786,7 @@ extern "C" long sysconf(int name) {
     case _SC_OPEN_MAX: return fd_count;
     case _SC_PAGESIZE: return 4096;
     case _SC_ARG_MAX: return 64 * 256;
+    case _SC_CLK_TCK: return CLOCKS_PER_SEC;
     default: errno = EINVAL; return -1;
     }
 }
@@ -924,13 +866,14 @@ extern "C" int fstat(int fd, struct stat* status) {
     const xos::i64 result = file_client.fstat(object.handle, size, attributes, identity);
     if (result != 0) { errno = error_from_file(result); return -1; }
     fill_stat(status, size, (attributes & xos::file::stat_is_directory) != 0, identity);
+    if ((attributes & xos::file::stat_unlinked) != 0) { status->st_nlink = 0; }
     return 0;
 }
 
 extern "C" int unlink(const char* path) {
     char normalized[max_path];
     bool trailing_slash = false;
-    const int resolved = resolve_path(path, normalized, trailing_slash);
+    const int resolved = prepare_path(path, normalized, trailing_slash);
     if (resolved != 0) { errno = resolved; return -1; }
     u32 size = 0, attributes = 0;
     const xos::i64 stat_result = file_client.stat_info(normalized, size, attributes);
@@ -948,17 +891,13 @@ extern "C" int _unlink(const char* path) { return unlink(path); }
 extern "C" int rmdir(const char* path) {
     char normalized[max_path];
     bool trailing_slash = false;
-    const int resolved = resolve_path(path, normalized, trailing_slash);
+    const int resolved = prepare_path(path, normalized, trailing_slash);
     if (resolved != 0) { errno = resolved; return -1; }
     u32 size = 0, attributes = 0;
     const xos::i64 stat_result = file_client.stat_info(normalized, size, attributes);
     (void)size;
     if (stat_result != 0) { errno = error_from_file(stat_result); return -1; }
     if ((attributes & xos::file::stat_is_directory) == 0) { errno = ENOTDIR; return -1; }
-    // FatFs reports a non-empty directory as FR_DENIED; the service currently
-    // maps that coarse result to EINVAL rather than a distinct ENOTEMPTY.
-    // allow_directory is what separates rmdir from unlink: without it the
-    // service refuses every directory (EISDIR) before f_unlink.
     const xos::i64 result = file_client.remove_directory(normalized);
     if (result != 0) { errno = error_from_file(result); return -1; }
     return 0;
@@ -967,9 +906,9 @@ extern "C" int rmdir(const char* path) {
 extern "C" int rename(const char* old_path, const char* new_path) {
     char old_normalized[max_path], new_normalized[max_path];
     bool old_trailing = false, new_trailing = false;
-    const int old_resolved = resolve_path(old_path, old_normalized, old_trailing);
+    const int old_resolved = prepare_path(old_path, old_normalized, old_trailing);
     if (old_resolved != 0) { errno = old_resolved; return -1; }
-    const int new_resolved = resolve_path(new_path, new_normalized, new_trailing);
+    const int new_resolved = prepare_path(new_path, new_normalized, new_trailing);
     if (new_resolved != 0) { errno = new_resolved; return -1; }
     if (old_trailing) {
         // A trailing slash on the source requires a directory.
@@ -993,7 +932,7 @@ extern "C" int _rename(const char* old_path, const char* new_path) { return rena
 extern "C" int mkdir(const char* path, mode_t) {
     char normalized[max_path];
     bool trailing_slash = false;
-    const int resolved = resolve_path(path, normalized, trailing_slash);
+    const int resolved = prepare_path(path, normalized, trailing_slash);
     if (resolved != 0) { errno = resolved; return -1; }
     const xos::i64 result = file_client.mkdir(normalized);
     if (result != 0) { errno = error_from_file(result); return -1; }
@@ -1003,7 +942,8 @@ extern "C" int _mkdir(const char* path, mode_t mode) { return mkdir(path, mode);
 
 extern "C" char* getcwd(char* buffer, size_t size) {
     char snapshot[max_path];
-    { runtime_guard guard(cwd_lock); memcpy(snapshot, current_directory, max_path); }
+    const xos::i64 result = file_client.get_cwd(snapshot, sizeof(snapshot));
+    if (result != 0) { errno = error_from_file(result); return nullptr; }
     const size_t length = strlen(snapshot) + 1;
     if (buffer == nullptr) {
         if (size != 0) { errno = EINVAL; return nullptr; }
@@ -1017,16 +957,24 @@ extern "C" char* getcwd(char* buffer, size_t size) {
 }
 
 extern "C" int chdir(const char* path) {
-    char normalized[max_path];
+    runtime_guard guard(cwd_lock);
+    char prepared[max_path];
     bool trailing_slash = false;
-    const int resolved = resolve_path(path, normalized, trailing_slash);
-    if (resolved != 0) { errno = resolved; return -1; }
-    u32 size = 0, attributes = 0;
-    const xos::i64 result = file_client.stat_info(normalized, size, attributes);
-    (void)size;
+    const int valid = prepare_path(path, prepared, trailing_slash);
+    if (valid != 0) { errno = valid; return -1; }
+    const xos::i64 result = file_client.set_cwd(prepared);
     if (result != 0) { errno = error_from_file(result); return -1; }
-    if ((attributes & xos::file::stat_is_directory) == 0) { errno = ENOTDIR; return -1; }
-    { runtime_guard guard(cwd_lock); memcpy(current_directory, normalized, strlen(normalized) + 1); }
+    return 0;
+}
+
+extern "C" int fchdir(int fd) {
+    runtime_guard guard(cwd_lock);
+    object_lease lease(fd);
+    if (lease.index < 0) { errno = EBADF; return -1; }
+    const open_object& object = objects[lease.index];
+    if (object.kind != object_kind::file) { errno = ENOTDIR; return -1; }
+    const xos::i64 result = file_client.set_cwd_handle(object.handle);
+    if (result != 0) { errno = error_from_file(result); return -1; }
     return 0;
 }
 
@@ -1237,30 +1185,33 @@ extern "C" void cfmakeraw(struct termios* value) {
 
 extern "C" DIR* opendir(const char* path) {
     runtime_guard guard(directory_lock);
-    char normalized[max_path];
-    bool trailing_slash = false;
-    const int resolved = resolve_path(path, normalized, trailing_slash);
-    if (resolved != 0) { errno = resolved; return nullptr; }
-    u32 size = 0, attributes = 0;
-    const xos::i64 stat_result = file_client.stat_info(normalized, size, attributes);
-    (void)size;
-    if (stat_result != 0) { errno = error_from_file(stat_result); return nullptr; }
-    if ((attributes & xos::file::stat_is_directory) == 0) { errno = ENOTDIR; return nullptr; }
     directory_state* state = nullptr;
     for (int i = 0; i < directory_count; ++i) {
         if (!directories[i].active) { state = &directories[i]; break; }
     }
     if (state == nullptr) { errno = EMFILE; return nullptr; }
+    const int fd = open_normalized(path, O_RDONLY | O_DIRECTORY | O_CLOEXEC);
+    if (fd < 0) { return nullptr; }
     *state = directory_state{};
     state->active = true;
-    memcpy(state->path, normalized, strlen(normalized) + 1);
+    state->fd = fd;
     return reinterpret_cast<DIR*>(state);
+}
+
+extern "C" int dirfd(DIR* directory) {
+    runtime_guard guard(directory_lock);
+    directory_state* state = get_directory(directory);
+    if (state == nullptr) { errno = EBADF; return -1; }
+    return state->fd;
 }
 
 extern "C" struct dirent* readdir(DIR* directory) {
     runtime_guard guard(directory_lock);
     directory_state* state = get_directory(directory);
     if (state == nullptr) { errno = EBADF; return nullptr; }
+    object_lease lease(state->fd);
+    if (lease.index < 0) { errno = EBADF; return nullptr; }
+    const open_object& object = objects[lease.index];
     // POSIX requires the synthetic "." and ".." entries before real ones.
     if (!state->dot_returned || !state->dotdot_returned) {
         memset(&state->current, 0, sizeof(state->current));
@@ -1273,7 +1224,7 @@ extern "C" struct dirent* readdir(DIR* directory) {
     }
     while (state->position >= state->count && !state->eof) {
         state->count = 0;
-        xos::i64 result = file_client.list(state->path, state->entries, 16,
+        xos::i64 result = file_client.list(object.handle, state->entries, 16,
                                           state->count, state->cursor);
         if (result != 0) { errno = error_from_file(result); return nullptr; }
         state->position = 0;
@@ -1291,8 +1242,9 @@ extern "C" int closedir(DIR* directory) {
     runtime_guard guard(directory_lock);
     directory_state* state = get_directory(directory);
     if (state == nullptr) { errno = EBADF; return -1; }
+    const int fd = state->fd;
     *state = directory_state{};
-    return 0;
+    return close_fd(fd);
 }
 
 extern "C" void rewinddir(DIR* directory) {
@@ -1406,8 +1358,7 @@ static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
                                   u32 delegate_spawn_depth) {
     runtime_guard spawn_guard(spawn_lock);
     if (path == nullptr || argv == nullptr) { return EINVAL; }
-    char working_directory[max_path];
-    { runtime_guard guard(cwd_lock); memcpy(working_directory, current_directory, max_path); }
+    runtime_guard cwd_guard(cwd_lock);
     struct spawn_snapshot {
         fd_slot fds[fd_count];
         open_object open[object_count + action_count]{};
@@ -1437,13 +1388,13 @@ static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
                 if (!used) { (void)file_client.close(open[previous].handle); open[previous] = open_object{}; }
             }
         }
-        int open_action(const spawn_action& action, const char* base) {
+        int open_action(const spawn_action& action) {
             int index = object_count;
             while (index < object_count + action_count && open[index].kind != object_kind::none) { ++index; }
             if (index == object_count + action_count) { return EMFILE; }
             char path[max_path];
             bool trailing_slash = false;
-            const int resolved = resolve_path_from(base, action.path, path, trailing_slash);
+            const int resolved = prepare_path(action.path, path, trailing_slash);
             if (resolved != 0) { return resolved; }
             if (trailing_slash) { return ENOTDIR; }
             u32 flags = 0, handle = 0, size = 0, version = 0;
@@ -1462,7 +1413,7 @@ static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
     } snapshot;
     char normalized_path[max_path];
     bool path_trailing = false;
-    const int path_resolved = resolve_path_from(working_directory, path, normalized_path, path_trailing);
+    const int path_resolved = prepare_path(path, normalized_path, path_trailing);
     if (path_resolved != 0) { return path_resolved; }
     if (path_trailing) { return ENOTDIR; }
     if (attributes != nullptr && *attributes != nullptr &&
@@ -1475,7 +1426,7 @@ static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
     // SL2 common contract: child inherits caller's can_create unless a legacy
     // grant/delegate below also applies (both may run; copy is idempotent).
     options.prepare_child = inherit_create_prepare;
-    options.working_directory = working_directory;
+    options.working_directory = nullptr;
     char environment_bytes[16384];
     const char* environment_vector[xos::startup_environment_max + 1]{};
     u32 env_count = 0, environment_used = 0;
@@ -1516,7 +1467,7 @@ static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
         for (u32 i = 0; i < set->count; ++i) {
             const spawn_action& action = set->actions[i];
             if (action.kind == action_kind::open) {
-                const int error = snapshot.open_action(action, working_directory);
+                const int error = snapshot.open_action(action);
                 if (error != 0) { return error; }
             } else if (action.kind == action_kind::close) {
                 if (!snapshot.valid(action.first)) { return EBADF; }
@@ -1576,12 +1527,10 @@ static int posix_spawn_with_depth(pid_t* output_pid, const char* path,
             aggregate += length;
         }
     }
-    const xos::i64 child = xos::sdk::spawn_file_options(normalized_path, argc,
-        const_cast<const char* const*>(argv), options);
-    if (child < 0) {
-        if (child == -8) { return E2BIG; }
-        return error_from_spawn(child);
-    }
+    xos::execution::launch_diagnostic diagnostic{};
+    const xos::i64 child = xos::execution::spawn_file_diagnosed(normalized_path, argc,
+        const_cast<const char* const*>(argv), options, diagnostic);
+    if (child < 0) { return error_from_launch(child, diagnostic); }
     if (output_pid != nullptr) { *output_pid = static_cast<pid_t>(child); }
     return 0;
 }
@@ -1720,17 +1669,14 @@ static int exec_image(const char* path, char* const argv[], char* const envp[], 
     errno = ENOTSUP; return -1;
 #else
     if (!runtime_ready || !path || !argv) { errno = EINVAL; return -1; }
-    char normalized[max_path], cwd[max_path];
+    char normalized[max_path];
     bool trailing_slash = false;
-    {
-        runtime_guard guard(cwd_lock); memcpy(cwd, current_directory, max_path);
-    }
-    const int resolved = resolve_path_from(cwd, path, normalized, trailing_slash);
+    const int resolved = prepare_path(path, normalized, trailing_slash);
     if (resolved != 0) { errno = resolved; return -1; }
     if (trailing_slash) { errno = ENOTDIR; return -1; }
     xos::sdk::spawn_options options{};
     options.replace_image = true; options.exec_depth_mode = depth_mode;
-    options.working_directory = cwd;
+    options.working_directory = nullptr;
     u32 argc = 0;
     char checked[xos::process_max_exec_arg_bytes];
     while (argc < xos::process_max_args && argv[argc]) {
@@ -1780,11 +1726,7 @@ static int exec_image(const char* path, char* const argv[], char* const envp[], 
     const auto result = xos::execution::spawn_file_diagnosed(normalized, argc,
         const_cast<const char* const*>(argv), options, diagnostic);
     if (result >= 0) { errno = EIO; return -1; } // successful exec never returns
-    using stage = xos::execution::launch_stage;
-    if (diagnostic.stage == stage::open) errno = error_from_file(result);
-    else if (diagnostic.stage == stage::inspect) errno = result == xos::thread_error_unsupported ? ENOTSUP : ENOEXEC;
-    else if (diagnostic.stage == stage::prepare) errno = E2BIG;
-    else errno = error_from_kernel(result);
+    errno = error_from_launch(result, diagnostic);
     return -1;
 #endif
 }
@@ -1802,12 +1744,13 @@ extern "C" int execvp(const char* path, char* const argv[]) {
     for (u32 start = 0;;) {
         u32 end = start; while (search[end] && search[end] != ':') ++end;
         const size_t directory_length = end - start;
-        if (directory_length + (directory_length ? 1u : 0u) + name_length >= max_path) {
+        const size_t separator = directory_length && search[end - 1] != '/' ? 1u : 0u;
+        if (directory_length + separator + name_length >= max_path) {
             saved = ENAMETOOLONG;
         } else {
             char candidate[max_path]; u32 used = 0;
             for (u32 i = start; i < end; ++i) candidate[used++] = search[i];
-            if (end > start) candidate[used++] = '/';
+            if (separator) candidate[used++] = '/';
             for (size_t i = 0; i < name_length; ++i) candidate[used++] = path[i];
             candidate[used] = 0;
             execve(candidate, argv, environ);
@@ -1946,24 +1889,27 @@ extern "C" int _getpid() { return static_cast<int>(xos::sdk::pid()); }
 extern "C" int _kill(int, int) { errno = ENOSYS; return -1; }
 extern "C" clock_t _times(struct tms* result) {
     if (result == nullptr) { errno = EFAULT; return static_cast<clock_t>(-1); }
-    static u64 clock_origin_ns;
-    static bool clock_origin_set;
-    const xos::i64 now_ns = xos::sdk::syscall(xos::sys_clock_monotonic, 0);
-    if (now_ns < 0) { errno = EIO; return static_cast<clock_t>(-1); }
-    if (!clock_origin_set) { clock_origin_ns = static_cast<u64>(now_ns); clock_origin_set = true; }
-    const u64 elapsed_ns = static_cast<u64>(now_ns) >= clock_origin_ns
-        ? static_cast<u64>(now_ns) - clock_origin_ns : 0;
-    // newlib's x86_64 CLOCKS_PER_SEC is 1000.  This is monotonic wall time since
-    // the first clock/times call, not per-thread CPU accounting (XOS has no such
-    // ABI yet); it is still the best available value and keeps clock() finite.
-    const clock_t ticks = static_cast<clock_t>(elapsed_ns / 1000000ull);
-    result->tms_utime = ticks;
-    result->tms_stime = 0;
-    result->tms_cutime = 0;
-    result->tms_cstime = 0;
-    return ticks;
+    xos::process_cpu_time sample{};
+    const xos::i64 status = xos::sdk::cpu_time(sample);
+    if (status < 0) {
+        errno = status == xos::process_cpu_time_unavailable ? ENOTSUP :
+            status == xos::process_error_resources ? ENOMEM : EIO;
+        return static_cast<clock_t>(-1);
+    }
+    static_assert(sizeof(clock_t) == sizeof(u64) && 1000000000ull % CLOCKS_PER_SEC == 0);
+    constexpr u64 unit = 1000000000ull / CLOCKS_PER_SEC;
+    result->tms_utime = static_cast<clock_t>(sample.user_ns / unit);
+    result->tms_stime = static_cast<clock_t>(sample.system_ns / unit);
+    result->tms_cutime = static_cast<clock_t>(sample.child_user_ns / unit);
+    result->tms_cstime = static_cast<clock_t>(sample.child_system_ns / unit);
+    return static_cast<clock_t>(sample.elapsed_ns / unit);
 }
 extern "C" clock_t times(struct tms* result) { return _times(result); }
+extern "C" clock_t clock() {
+    struct tms sample{};
+    if (_times(&sample) == static_cast<clock_t>(-1)) { return static_cast<clock_t>(-1); }
+    return sample.tms_utime + sample.tms_stime;
+}
 // XOS has no file timestamp or ownership ABI yet; expose the symbols so POSIX
 // callers link and receive an honest failure instead of a missing symbol.
 extern "C" int utime(const char* path, const struct utimbuf*) {
@@ -2000,7 +1946,7 @@ extern "C" char* realpath(const char* path, char* resolved) {
     if (path == nullptr) { errno = EINVAL; return nullptr; }
     char normalized[max_path];
     bool trailing_slash = false;
-    const int resolved_status = resolve_path(path, normalized, trailing_slash);
+    const int resolved_status = prepare_path(path, normalized, trailing_slash);
     if (resolved_status != 0) { errno = resolved_status; return nullptr; }
     u32 size = 0, attributes = 0;
     const xos::i64 status = file_client.stat_info(normalized, size, attributes);

@@ -1,0 +1,7 @@
+PASS copyout allocation rollback, atomic publication, duplicate ranges, parent exit and child sole-owner write
+PASS cross-range permission rollback and unchanged-mapping commit check
+PASS logical protection restore and fork retain failure cleanup
+PASS explicit writable sharing remains shared
+PASS three-generation private writes and exact final reference cleanup
+PASS bounded copyout metadata exhaustion rolls back earlier output ranges
+PASS eager/COW real page backend equivalence: RW/R/NONE; eager adds 3 unique data pages, COW adds 0

@@ -122,6 +122,13 @@ def write_report(output_root: Path, report: dict[str, Any]) -> None:
     path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def validate_output_root(output_root: Path, sdk_root: Path, runtime_root: Path) -> None:
+    if output_root == sdk_root or sdk_root in output_root.parents:
+        raise ManifestError("output-root must not be inside the immutable SDK")
+    if output_root == runtime_root or runtime_root in output_root.parents:
+        raise ManifestError("output-root must not be inside the target runtime prefix")
+
+
 def main() -> int:
     args = parse_args()
     selected = [item.strip() for item in args.features.split(",") if item.strip()]
@@ -135,13 +142,14 @@ def main() -> int:
         reject_symlink_components(args.runtime_prefix, "--runtime-prefix")
         reject_symlink_components(args.runtime_manifest, "--runtime-manifest")
         reject_symlink_components(args.output_root, "--output-root")
+        sdk_root = args.sdk.resolve()
+        runtime_root = args.runtime_prefix.resolve()
+        manifest_path = args.runtime_manifest.resolve()
+        output_root = args.output_root.resolve()
+        validate_output_root(output_root, sdk_root, runtime_root)
     except ManifestError as exc:
         print(f"NOT_READY: {exc}", file=sys.stderr)
         return 2
-    sdk_root = args.sdk.resolve()
-    runtime_root = args.runtime_prefix.resolve()
-    manifest_path = args.runtime_manifest.resolve()
-    output_root = args.output_root.resolve()
     report: dict[str, Any] = {
         "schema_version": 1,
         "created_utc": datetime.now(timezone.utc).isoformat(),
@@ -157,10 +165,6 @@ def main() -> int:
             raise ManifestError(f"SDK root does not exist: {sdk_root}")
         if not manifest_path.is_file():
             raise ManifestError(f"runtime manifest does not exist: {manifest_path}")
-        if output_root == sdk_root or sdk_root in output_root.parents:
-            raise ManifestError("output-root must not be inside the immutable SDK")
-        if output_root == runtime_root or runtime_root in output_root.parents:
-            raise ManifestError("output-root must not be inside the target runtime prefix")
         manifest = load_json(manifest_path)
         report["inputs"] = {
             "sdk": str(sdk_root),

@@ -22,6 +22,7 @@ D7 收口时为回答"这个静态归档成员是从哪个源文件编出来的"
 {
   "version": 1,
   "archive": "build/<tree>/lib/libX.a",
+  "archive_sha256": "<sha256 of the archive bytes>",
   "build_id": "<system build id>",
   "generator": "<script path that emitted it>",
   "members": [
@@ -40,6 +41,44 @@ D7 收口时为回答"这个静态归档成员是从哪个源文件编出来的"
    见 `docs/tech_debt.md` D12），比对"清单 ↔ 归档实际成员 ↔ 源文件哈希"。
 
 ## 老人老办法（分界线）
+
+`scripts/archive_member_map.py` 提供统一 GNU archive 读取和清单内容校验：
+
+```sh
+python3 scripts/archive_member_map.py build/<tree>/lib/member_manifest.json --build-id <system-build-id>
+```
+
+校验器检查归档哈希、实际成员集合、源文件哈希和调用者指定的 build id。
+`archive_sha256` 防止成员名称未变但对象内容已变时复用旧清单。
+同名重复归档成员无法由当前 name-only 清单区分，因此明确拒绝，不能静默去重。
+输出 `derived_members` 保留推导来源的身份；`content_verified` 只表示内容一致，
+不证明清单确实在同一次构建产生，也不代表逐成员声明审计或分发资格已完成。
+三个历史映射脚本共用读取器。2026-11-12 起，新构建脚本已接入下述捕获器；
+目标依赖尚未在本轮固定工具链重建，因此这不改变历史归档的资格。
+
+## 构建时捕获实现
+
+`scripts/archive_provenance.py` 在真实编译成功后记录源内容快照、对象内容哈希、
+命令哈希与构建 id。构建期间源文件变化会失败；生成成员清单时逐一比较归档成员的
+实际 bytes 与捕获对象，不以同名或符号反查代替。找不到唯一来源就拒绝生成合格清单。
+`tests/archive_provenance_test.py` 使用真实 C 编译器和 GNU ar 验证正常链、改名成员、
+缺失捕获、对象修改、源快照修改、跨构建 id 和 SDK 复制覆盖。
+
+接入点为两个独立 newlib 构建器、普通 SDK、线程 SDK、原生 GCC Seed，以及 Qt 的
+CMake compiler launcher/archive finish。线程 SDK 的 libgcc 改为从 supplied GCC
+源完整构建后组合 unwind 成员，不再把旧 libgcc.a 的未知成员默认为本轮编译。
+生成归档边上的 `<archive>.member_manifest.json`；SDK manifest 中
+`archive_provenance.manifests` 引用文件哈希。`license_audit.py` 和新 SDK 的发布身份
+检查调用 `verify_bundle`，核实际 `.a` 集合的完整覆盖，拒绝推导记录冒充捕获记录。
+
+同一依赖复制到 SDK 时保留其原始 compilation build id、源快照、原清单及哈希，
+不改成 SDK 本轮重编。源路径相对明确的构建/SDK 根；若上游源在根外，保存编译时的
+字节快照。`declaration_class` 的 `*-mixed-source-declarations` 表示上游混合声明范围，
+不是逐文件许可证结论。复制源快照不免除完整对应源码和 NOTICE 的交付义务。
+
+普通 SDK 暂保留仓库既有 newlib `libc.a`/`libm.a`，在 `legacy_archives` 中用实际哈希
+单独登记，不能冒充新捕获归档。新的线程 SDK 不接受这一豁免，必须先重建 newlib。
+历史 P4A 混合叠加 SDK 明确失效旧归档资格，须完整重建后再进入验收/分发。
 
 本契约**不追溯**已发布与既有构建：
 

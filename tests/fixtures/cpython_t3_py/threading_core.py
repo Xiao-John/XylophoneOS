@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 import queue
 import threading
+import time
 
 
 counter = 0
@@ -62,5 +63,23 @@ assert items.get(timeout=2.0) == ("queue", 314)
 items.task_done()
 worker.join()
 items.join()
+
+sleep_started = threading.Event()
+sleep_progress = threading.Event()
+sleep_results = []
+
+
+def sleeping_worker():
+    sleep_started.set()
+    time.sleep(0.15)
+    sleep_results.append(sleep_progress.is_set())
+
+
+worker = threading.Thread(target=sleeping_worker, name="sleep-releases-gil")
+worker.start()
+assert sleep_started.wait(2.0)
+sleep_progress.set()
+worker.join()
+assert sleep_results == [True]
 
 print("T3_PY_CORE_OK Lock RLock Condition Event Queue")

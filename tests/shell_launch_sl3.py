@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 """SL3: ordinary xos-diag invocation returns to the shell with correct codes."""
+import argparse
 import hashlib
 import json
 import re
@@ -17,27 +18,30 @@ from make_work_disk import create_fat32
 from work_disk import transfer
 from task_smoke import send_bytes, pump
 from process_smoke import command
+from shell_launch_support import bind_system, bind_tool
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--system", type=Path, default=ROOT / "build")
+    parser.add_argument("--dash-receipt", type=Path, required=True)
+    args = parser.parse_args()
+    system = args.system
+    system_binding = bind_system(system)
+    dash, dash_binding = bind_tool(args.dash_receipt, "dash_c3", system / "sdk")
     out = ROOT / "build/shell_launch_sl3"
     out.mkdir(parents=True, exist_ok=True)
-    system = ROOT / "build"
     diag_elf = system / "user_xos_diag.image.elf"
     fault_elf = system / "user_fault.image.elf"
     hello_elf = system / "user_hello.image.elf"
     for path in (diag_elf, fault_elf, hello_elf, system / "xos-install.iso"):
         if not path.is_file():
             raise SystemExit(f"missing build artifact: {path}")
-    dash_candidates = list((ROOT / ".cache/xos_seed/dash").glob("*/build/src/dash.runtime"))
-    if not dash_candidates:
-        raise SystemExit("dash.runtime not found; run scripts/build_dash.py first")
-    dash = sorted(dash_candidates, key=lambda p: p.stat().st_mtime)[-1]
-
-    manifest = json.loads((system / "manifest.json").read_text())
+    manifest = system_binding
     report = {
         "status": "failed",
         "checks": [],
+        "dash_binding": dash_binding,
         "build_id": manifest["build_id"],
         "diag_sha256": hashlib.sha256(diag_elf.read_bytes()).hexdigest(),
         "fault_sha256": hashlib.sha256(fault_elf.read_bytes()).hexdigest(),
@@ -90,6 +94,10 @@ def main() -> int:
                 except Exception:
                     pass
             pump(guest, 0.5)
+
+            r = command(guest, "diag", b"Usage: diag <program> [args]")
+            assert b"not found" not in r and b"[loader] started" not in r, r
+            report["checks"].append("xsh_diag_builtin_usage")
 
             # 1) xsh bare xos-diag normal → exit 0, back to supervisor, no bundle.
             r = command(guest, "xos-diag /bin/hello.elf", b"kind=exited code=0", timeout=60)

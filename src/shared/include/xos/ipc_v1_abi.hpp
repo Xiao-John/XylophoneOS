@@ -15,6 +15,7 @@ inline constexpr u32 ipc_v1_max_queue_per_endpoint = 8;
 inline constexpr u32 ipc_v1_max_reply_tokens_per_process = 8;
 inline constexpr u64 ipc_v1_deadline_poll = 0;
 inline constexpr u64 ipc_v1_deadline_infinite = ~u64{0};
+inline constexpr u64 ipc_v1_query_flag_direct_switch_count = 1ull << 0;
 
 enum class ipc_v1_action : u64 {
     query_features = 0,
@@ -82,7 +83,8 @@ inline constexpr u64 ipc_v1_feature_ip3_mask =
     static_cast<u64>(ipc_v1_feature::notification) |
     static_cast<u64>(ipc_v1_feature::wait_set);
 inline constexpr u64 ipc_v1_feature_supported_mask =
-    ipc_v1_feature_ip2_mask | ipc_v1_feature_ip3_mask;
+    ipc_v1_feature_ip2_mask | ipc_v1_feature_ip3_mask |
+    static_cast<u64>(ipc_v1_feature::bulk_grant);
 
 // These values are scoped to sys_ipc_v1 and are not errno values.
 enum class ipc_v1_error : i64 {
@@ -166,6 +168,7 @@ struct ipc_v1_feature_query {
     u32 max_pending_calls;
     u32 max_queue_per_endpoint;
     u32 max_reply_tokens_per_process;
+    // Keep the former reserved word zero unless the query explicitly opts in.
     u64 direct_switch_count;
     u64 reserved;
 };

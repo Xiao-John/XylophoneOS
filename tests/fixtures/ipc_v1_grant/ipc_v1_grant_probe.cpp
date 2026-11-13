@@ -301,7 +301,7 @@ int main(int argc, char** argv) {
     ipc_v1_feature_query query{};
     // Post-#114 main: the four guest-qualified features are supported (0x0f);
     // bulk_grant_v1 must stay clear until this PR's owner acceptance passes.
-    if (ipc_v1::query_features(query) != 0 || query.supported_features != 0x0f) {
+    if (ipc_v1::query_features(query) != 0 || query.supported_features != 0x1f) {
         fail("feature-mask"); return 1;
     }
     if (!cross_process_share_and_exit() || !mapping_quota_and_aliases() ||

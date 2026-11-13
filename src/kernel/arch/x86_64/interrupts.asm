@@ -77,6 +77,26 @@ irq4_stub:
     push qword 36
     jmp interrupt_common
 
+%macro device_irq_stub 1
+global device_irq_%1
+device_irq_%1:
+    push qword 0
+    push qword (32 + %1)
+    jmp interrupt_common
+%endmacro
+device_irq_stub 2
+device_irq_stub 3
+device_irq_stub 5
+device_irq_stub 6
+device_irq_stub 7
+device_irq_stub 8
+device_irq_stub 9
+device_irq_stub 10
+device_irq_stub 11
+device_irq_stub 13
+device_irq_stub 14
+device_irq_stub 15
+
 global syscall_stub
 syscall_stub:
     push qword 0
@@ -171,6 +191,10 @@ gdt_load:
     ret
 
 section .rodata align=8
+global irq_stub_table
+irq_stub_table:
+    dq irq0_stub, irq1_stub, device_irq_2, device_irq_3, irq4_stub, device_irq_5, device_irq_6, device_irq_7
+    dq device_irq_8, device_irq_9, device_irq_10, device_irq_11, irq12_stub, device_irq_13, device_irq_14, device_irq_15
 global exception_stub_table
 exception_stub_table:
     dq isr_0, isr_1, isr_2, isr_3, isr_4, isr_5, isr_6, isr_7

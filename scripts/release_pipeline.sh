@@ -24,10 +24,14 @@ stage_gates() {
 }
 
 stage_freeze() {
+  if [[ -e "$R" ]]; then
+    echo "refusing to overwrite a frozen release; choose a new VERSION or candidate directory" >&2
+    return 1
+  fi
   mkdir -p "$R"
   cp build/manifest.json "$R/system_manifest.json"
   cp build/xos-install.iso build/xos-install-dash.iso build/install_manifest.json "$R/"
-  rm -rf "$R/sdk"
+  cp build/user_xos_diag.image.elf "$R/"
   cp -R build/sdk "$R/sdk"
   echo "frozen $R"
 }
@@ -42,9 +46,10 @@ stage_package() {
   for kv in ${EXTRA_ELFS:-}; do
     args+=(--extra-elf "$kv")
   done
-  # Refuse if staged outputs exist (packager also checks)
-  rm -rf "$R"/xylophoneos_revival_"$V"_images "$R"/xylophoneos_revival_"$V"_sdk
-  rm -f "$R"/release_manifest.json "$R"/xylophoneos_revival_"$V"_images.tar.gz "$R"/xylophoneos_revival_"$V"_sdk.tar.gz
+  if [[ -e "$R/release_manifest.json" || -e "$R/xylophoneos_revival_${V}_images.tar.gz" || -e "$R/xylophoneos_revival_${V}_sdk.tar.gz" ]]; then
+    echo "refusing to overwrite an existing release package" >&2
+    return 1
+  fi
   "$PYTHON" scripts/package_release.py "${args[@]}"
 }
 
@@ -54,7 +59,7 @@ stage_smoke() {
 }
 
 stage_materials() {
-  rm -rf "$R/sources"
+  if [[ -e "$R/sources" ]]; then echo "refusing existing frozen source materials" >&2; return 1; fi
   "$PYTHON" scripts/package_release_materials.py
 }
 

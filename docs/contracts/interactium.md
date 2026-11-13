@@ -51,16 +51,18 @@ Display Service -> VBE or VirtIO-GPU
   composites with CPU source-over blending, and presents the result. Input is routed
   to the owner of the hit window or focused window. A pointer crossing to another
   window also reaches the previously hit window so that window can observe the leave,
-  and a key release stays with the window that took the press. When the shared input
+  and key repeats and release stay with the window that took the initial press. When the shared input
   queue overflows, the affected window is told through a `resync` carrying the lost
-  count, mirroring the display queue's own recovery event. QPA clients no longer open
+  count. A recovery event from the display queue is forwarded to every window and
+  clears the router's pressed-key ownership, because the lost input may include a
+  release for an unfocused window. QPA clients no longer open
   Display v1 directly.
 - `src/ports/qt6/qpa/qxos.cpp` connects to Interactium through the name service. Each
   QPA window maps to a window ID, and the backing store packs dirty regions into tiles
   no larger than the endpoint capacity. Each top-level window has its own ID, pixel
   surface, lifecycle, and input polling thread. Mouse input is routed by hit testing;
-  keyboard presses go to the focused window while releases return to the window that
-  took the press. Qt child widgets are still drawn in
+  initial keyboard presses go to the focused window while repeats and releases
+  return to the window that took the press. Qt child widgets are still drawn in
   their parent window's backing store.
 - `compositor` provides z-order and CPU source-over composition. The standalone
   `interactium` demo remains available for model and input verification without Qt.

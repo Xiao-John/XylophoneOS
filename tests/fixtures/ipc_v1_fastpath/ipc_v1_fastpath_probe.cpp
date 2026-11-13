@@ -124,7 +124,7 @@ u64 percentile(const u64* values, u32 count, u32 percentile_value) {
 
 bool run_case(u32 length, bool polling) {
     ipc_v1_feature_query baseline{};
-    if (ipc_v1::query_features(baseline) != 0) { fail("switch-baseline"); return false; }
+    if (ipc_v1::query_features(baseline, true) != 0) { fail("switch-baseline"); return false; }
     u64 endpoint = 0;
     constexpr u32 rights = static_cast<u32>(ipc_v1_right::call) |
         static_cast<u32>(ipc_v1_right::receive) | static_cast<u32>(ipc_v1_right::manage);
@@ -170,7 +170,7 @@ bool run_case(u32 length, bool polling) {
     }
     if (ipc_v1::endpoint_close(endpoint) != 0) { fail("endpoint-close"); return false; }
     ipc_v1_feature_query observed{};
-    if (ipc_v1::query_features(observed) != 0) { fail("switch-observation"); return false; }
+    if (ipc_v1::query_features(observed, true) != 0) { fail("switch-observation"); return false; }
     const u64 switches = observed.direct_switch_count - baseline.direct_switch_count;
     const bool eligible = !polling && length <= 64;
     if ((eligible && switches == 0) || (!eligible && switches != 0)) {
@@ -189,8 +189,7 @@ bool run_case(u32 length, bool polling) {
 int main() {
     if (thread::enable() != 0) { fail("thread-profile"); return 1; }
     ipc_v1_feature_query query{};
-    if (ipc_v1::query_features(query) != 0 || query.supported_features != 0x0f ||
-        (query.supported_features & static_cast<u64>(ipc_v1_feature::bulk_grant)) != 0) {
+    if (ipc_v1::query_features(query) != 0 || (query.supported_features & 0x0f) != 0x0f) {
         fail("feature-mask", static_cast<i64>(query.supported_features)); return 1;
     }
     for (u32 length : payload_sizes) {

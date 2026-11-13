@@ -14,9 +14,14 @@ extern "C" char* readline(const char* prompt) {
     for (;;) {
         char byte = 0;
         const xos::i64 got = xos::sdk::read(0, &byte, 1);
-        if (got == xos::process_error_would_block || got == 0) {
+        if (got == xos::process_error_would_block) {
             xos::sdk::yield();
             continue;
+        }
+        if (got == 0) {
+            if (used != 0) { break; }
+            free(buffer);
+            return nullptr;
         }
         if (got < 0) {
             free(buffer);

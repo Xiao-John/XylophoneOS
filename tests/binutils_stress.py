@@ -109,8 +109,8 @@ def main():
             if match is None:
                 raise AssertionError(f'no result: {line}: {output[-1200:]!r}')
             actual = int(match[1])
-            if code is not None and actual != code:
-                raise AssertionError(f'{line}: expected {code}, got {actual}: {output[-1500:]!r}')
+            if actual != code if code is not None else actual == 0:
+                raise AssertionError(f'{line}: expected {code if code is not None else "nonzero"}, got {actual}: {output[-1500:]!r}')
             if contains is not None and contains not in output:
                 raise AssertionError(f'{line}: missing {contains!r}: {output[-1500:]!r}')
             current = resources(guest)

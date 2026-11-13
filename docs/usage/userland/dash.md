@@ -134,8 +134,10 @@ C3 报告的 `not_run_or_unsupported` 明确列出：完整 POSIX 与 GNU Make�
 
 ## 相关工具：xos-diag（可选）
 
-`xos-diag` 是独立诊断程序（构建产物 `user_xos_diag.image.elf`），**默认不装入发行工作盘**。
-需要时从源码构建产物安装到客体 `/usr/bin/xos-diag`。SL3 起普通命令即可诊断：
+`xos-diag` 是独立诊断程序（构建产物 `user_xos_diag.image.elf`）。
+2026-11-12 起的打包流程会冻结该产物并校验同一 system manifest，再装入
+`/usr/bin/xos-diag`；旧版 `v0.0.2-1103` 下载镜像仍不含它，需手工安装或等待后续发行。
+此打包改动尚待下一次完整 release smoke 验证。SL3 起普通命令即可诊断：
 xsh 直接 `xos-diag /path/to/program`，dash 中同样裸调用（无需 `(exec …)` 或
 `exec-driver`），结束后回到原 Shell 并返回目标退出码（正常低 8 位；故障/取消 128；
 找不到程序 127）。见 `docs/implementation/fb12_fault_bundle.md`。未安装时裸调用

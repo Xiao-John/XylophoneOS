@@ -38,6 +38,7 @@ R=build/releases/$V
 mkdir -p "$R"
 cp build/manifest.json "$R/system_manifest.json"
 cp build/xos-install.iso build/xos-install-dash.iso build/install_manifest.json "$R/"
+cp build/user_xos_diag.image.elf "$R/"
 rm -rf "$R/sdk" && cp -R build/sdk "$R/sdk"
 ```
 
@@ -58,6 +59,8 @@ python3 scripts/package_release.py \
 
 - `package_release` 按 **manifest 文件名** 推导 stage 目录（`stage_py3_b_manifest.json`
   → `stage_py3_b/`），不要手改路径。
+- 打包器默认加入 `/usr/bin/xos-diag` 并创建 PATH 中的 `/bin`；诊断程序必须来自
+  冻结 system manifest 所绑定的同一构建，不需另加 `--extra-elf xos-diag=...`。
 - 重复 guest 路径会失败：seed 的 `/usr/share/licenses/*` 与 cpython stage 的
   zlib 许可曾撞车——seed 侧不装 zlib（文本仍随 third_party_notices/Qt 资产）。
 - Qt 资产独立打包（不动 `verify_sdk` 严格集）：库+头+配方+补丁+许可+源包 →
@@ -66,7 +69,7 @@ python3 scripts/package_release.py \
 ## 5. 冒烟与校验
 
 ```bash
-python3 scripts/release_smoke.py   # 必须 11/11 → package_smoke_report.json
+python3 scripts/release_smoke.py   # 所有当前检查必须通过 → package_smoke_report.json
 python3 scripts/package_release_materials.py  # sources；seed 仅许可增项时可复用 GNU correspondence
 # CHECKSUMS.sha256：对 images/sdk/qt6_static/sources/manifests 逐文件 shasum -a 256
 ```

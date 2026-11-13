@@ -18,6 +18,8 @@ def get(url):
     return urllib.request.urlopen(request, timeout=45).read()
 
 def main():
+    if (REPORT / 'source_lock.json').exists():
+        raise SystemExit('source lock already frozen; use modern_apps_prepare.py to restore pinned inputs')
     OUT.mkdir(parents=True, exist_ok=True)
     REPORT.mkdir(parents=True, exist_ok=True)
     meta = json.loads(get(f'https://chromium.googlesource.com/chromium/src/+/refs/tags/{CHROMIUM}?format=JSON')[4:])
@@ -36,10 +38,26 @@ def main():
         tasks.append(('v8/'+p,f'https://chromium.googlesource.com/v8/v8/+/{v8}/{p}?format=TEXT',True))
     for p in ['LICENSE.txt','package.json','.npmrc','src/vs/base/browser/browser.ts','src/vs/platform/files/browser/htmlFileSystemProvider.ts','src/vs/platform/terminal/node/ptyService.ts','src/vs/platform/files/node/watcher/watcherMain.ts','src/vs/workbench/services/extensions/browser/webWorkerExtensionHost.ts','src/vs/editor/browser/controller/editContext/native/nativeEditContext.ts','src/vs/workbench/services/extensions/worker/webWorkerExtensionHostIframe.html','src/vs/workbench/browser/web.main.ts','src/vs/workbench/api/node/extensionHostProcess.ts']:
         tasks.append(('vscode/'+p,f'https://raw.githubusercontent.com/microsoft/vscode/{code_sha}/{p}',False))
+    partial = REPORT / 'source_lock.partial.json'
+    previous = json.loads(partial.read_text()) if partial.exists() else {}
+    if previous and (previous.get('chromium', {}).get('sha') != sha or
+                     previous.get('v8', {}).get('sha') != v8 or
+                     previous.get('code_oss', {}).get('sha') != code_sha):
+        raise SystemExit('partial source revisions changed; investigate before retry')
+    saved = {entry['path']: entry for entry in previous.get('files', []) if entry.get('status') == 'PASSED'}
+    for path, url, _ in tasks:
+        prior = saved.get(path)
+        if prior:
+            existing = (OUT / path).read_bytes()
+            if prior.get('url') != url or hashlib.sha256(existing).hexdigest() != prior.get('sha256'):
+                raise SystemExit(f'previous successful source changed: {path}')
     results=[]
     def fetch(t):
         p,u,b64=t
         try:
+            prior = saved.get(p)
+            if prior:
+                return prior
             data=get(u)
             if b64:data=base64.b64decode(data)
             target=OUT/p;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(data)
@@ -47,6 +65,11 @@ def main():
         except Exception as e:return {'path':p,'url':u,'status':'FAILED','error':str(e)}
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:results=list(pool.map(fetch,tasks))
     report={'scope':'source retrieval, not a complete checkout or runtime qualification','chromium':{'version':CHROMIUM,'sha':sha},'v8':{'sha':v8},'code_oss':{'version':CODE,'sha':code_sha},'files':results}
+    if any(entry['status'] != 'PASSED' for entry in results):
+        partial.write_text(json.dumps(report,indent=2)+'\n')
+        print(json.dumps(report,indent=2))
+        raise SystemExit('source retrieval incomplete; retry permitted')
     (REPORT/'source_lock.json').write_text(json.dumps(report,indent=2)+'\n')
+    partial.unlink(missing_ok=True)
     print(json.dumps(report,indent=2))
 if __name__=='__main__':main()

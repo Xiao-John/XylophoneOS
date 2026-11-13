@@ -2,7 +2,8 @@
 #pragma once
 #include <xos/memory.hpp>
 namespace xos::arch {
-// Private COW1 diagnostics only. Callers must freeze the source address
+// Internal private-page snapshot backend, shared by runtime and diagnostics.
+// Callers must freeze the source address
 // space and keep the destination non-runnable until publication completes.
 memory_result cow1_stage_page(u64 source, u64 destination, u64 address, i64* fail_retain = nullptr);
 memory_result cow1_publish_page(u64 source, u64 destination, u64 address);

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Segment 1a gate: build the device_abi probe and run it on the real guest."""
+"""Run sys_device header and ordinary-process authority probes on a real guest."""
 import argparse
 import hashlib
 import json
@@ -61,8 +61,8 @@ def main():
         report = {"status": "FAILED", "segment": "device_authorization_v1_step1a",
                   "image_sha256": sha256(a.image), "elf_sha256": sha256(elf),
                   "source_sha256": source_sha, "abi_header_sha256": header_sha,
-                  "checks": [], "not_run": ["grant_machinery", "map", "irq", "dma"]}
-        guest = Guest(a.image, "device_abi_1a", work_disk=disk, iso=True)
+                  "checks": [], "not_run": ["authorized_grant", "map", "irq", "dma", "quiescence"]}
+        guest = Guest(a.image, "device_abi_1a", work_disk=disk, iso=a.image.suffix.lower() == ".iso")
         try:
             guest.expect(b"xos64> ", timeout=30)
             send_bytes(guest, b"run\r")
@@ -76,6 +76,7 @@ def main():
             report["serial_tail"] = output[-2000:].decode("utf-8", "replace")
             report["status"] = "PASSED" if passed else "FAILED"
         finally:
+            guest.close()
             (out / "report.json").write_text(json.dumps(report, indent=1) + "\n")
             (out / "serial.log").write_bytes(guest.output)
     print(json.dumps({"status": report["status"], "output": str(out)}))

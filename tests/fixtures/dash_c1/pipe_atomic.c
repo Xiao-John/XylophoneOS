@@ -43,7 +43,7 @@ static void raw_minimum_checks(void) {
     check(raw(30,(unsigned long)&pair,0,0)==0,"raw-pipe-create");
     check(raw(54,pair.writer,512,0)==0 && raw(54,pair.writer,0,0)==0,"writer-ready-for-minimum");
     check(raw(54,pair.reader,1,0)==-2 && raw(54,pair.writer,4097,0)==-2 &&
-          raw(54,pair.writer,512,1)==-2 && raw(54,12345,0,0)==-1,"wait-minimum-validation");
+          raw(54,pair.writer,512,1)==0 && raw(54,12345,0,0)==-1,"wait-minimum-validation");
     /* Requests larger than PIPE_BUF retain the explicit short-write contract. */
     check(raw(32,pair.writer,(unsigned long)raw_buffer,sizeof(raw_buffer))==4096,"large-write-remains-short");
     check(raw(31,pair.reader,(unsigned long)raw_buffer,257)==257,"release-only-257-bytes");

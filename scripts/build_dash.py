@@ -23,6 +23,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--sdk', type=Path, default=ROOT/'build/sdk')
     parser.add_argument('--archive', type=Path, default=ROOT/'src/ports/dash/upstream/dash-0.5.13.5.tar.gz')
+    parser.add_argument('--receipt', type=Path, help='write this build receipt to an explicit consumer path')
     a = parser.parse_args()
     if not a.archive.exists():
         parser.error(f'dash archive not found: {a.archive}')
@@ -95,7 +96,12 @@ def main():
     if load_segments(elf) != load_segments(debug_elf):
         raise SystemExit('debug stripping changed loaded bytes or the entry point')
     result = {'profile':'dash_c3','version':lock['version'],'elf':str(elf.relative_to(ROOT)),'sha256':sha(elf),'bytes':elf.stat().st_size,'inputs':inputs,'status':'built_not_run','debug_elf':str(debug_elf.relative_to(ROOT)),'debug_sha256':sha(debug_elf),'load_segments_unchanged':True,'objcopy':{'path':objcopy,'sha256':sha(objcopy),'version':subprocess.check_output([objcopy,'--version'],text=True).splitlines()[0]}}
+    result['receipt'] = str((work/'manifest.json').relative_to(ROOT))
+    result['sdk_manifest_sha256'] = sha(sdk/'manifest.json')
     (work/'manifest.json').write_text(json.dumps(result,indent=2)+'\n')
+    if a.receipt:
+        a.receipt.parent.mkdir(parents=True, exist_ok=True)
+        a.receipt.write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps({k:v for k,v in result.items() if k!='inputs'}))
 
 

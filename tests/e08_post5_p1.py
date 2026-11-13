@@ -26,6 +26,8 @@ def main():
     p.add_argument('--report', type=Path, default=ROOT / 'build/e08_post5_p1_report.json')
     p.add_argument('--keep-image', action='store_true')
     a = p.parse_args()
+    if a.cycles < 1:
+        p.error('cycles must be positive')
     levels = {x.strip() for x in a.levels.split(',') if x.strip()}
     unknown = levels - {'r1', 'r2', 'r3', 'r5'}
     if unknown or not levels:
@@ -151,7 +153,7 @@ def main():
                 out = run('exec-file /out/bss.elf')
                 if b'P1_R3_BSS=ok' not in out: raise AssertionError('R3 BSS marker missing')
                 run(f'{gcc} {sys} -I/src -c /src/deep.c -o /out/deep.o')
-                report['checks'].append('R3 1MiB source/8MiB BSS/64 includes')
+                report['checks'].append(f'R3 {(tmp / "big.c").stat().st_size} byte source/8MiB BSS/64 includes')
 
             if 'r5' in levels:
                 run(f'{gcc} {sys} -I/src -c /src/bad_header.c -o /out/bad.o', expected=None)

@@ -1,0 +1,16 @@
+test_changed_file (__main__.BindingCases.test_changed_file) ... ok
+test_copy_must_match_inputs_before_publication (__main__.BindingCases.test_copy_must_match_inputs_before_publication) ... ok
+test_exact_input_and_packaged_receipt (__main__.BindingCases.test_exact_input_and_packaged_receipt) ... ok
+test_missing_file (__main__.BindingCases.test_missing_file) ... ok
+test_mixed_manifest_and_symlink (__main__.BindingCases.test_mixed_manifest_and_symlink) ... ok
+test_packaged_tamper_refused (__main__.BindingCases.test_packaged_tamper_refused) ... ok
+test_packager_rejects_bad_sdk_before_creating_output (__main__.BindingCases.test_packager_rejects_bad_sdk_before_creating_output) ... ok
+test_runtime_tree_and_provenance_binding (__main__.BindingCases.test_runtime_tree_and_provenance_binding) ... ok
+test_stale_file_and_empty_directory (__main__.BindingCases.test_stale_file_and_empty_directory) ... ok
+test_unbound_legacy_system_refused (__main__.BindingCases.test_unbound_legacy_system_refused) ... ok
+test_wrong_config_target_or_runtime_even_when_file_hash_is_rebound (__main__.BindingCases.test_wrong_config_target_or_runtime_even_when_file_hash_is_rebound) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.102s
+
+OK

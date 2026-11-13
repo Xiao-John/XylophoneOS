@@ -1,0 +1,27 @@
+{
+  "status": "PUBLIC_READY",
+  "source": "index",
+  "base": "7bb3209cbae87b04ddbcbbd5399d7ddc1645dde5",
+  "files_selected": 352,
+  "files_scanned": 352,
+  "findings": [
+    {
+      "location": "docs/reports/comprehensive_audit_20261112/validation_results.json",
+      "category": "ambiguous_tmp",
+      "classification": "NEEDS_REVIEW",
+      "status": "DOUBTFUL"
+    },
+    {
+      "location": "src/ports/cpython/sqlite/xos_vfs.c",
+      "category": "ambiguous_tmp",
+      "classification": "NEEDS_REVIEW",
+      "status": "DOUBTFUL"
+    },
+    {
+      "location": "tests/archive_member_map_test.py",
+      "category": "ambiguous_tmp",
+      "classification": "NEEDS_REVIEW",
+      "status": "DOUBTFUL"
+    }
+  ]
+}

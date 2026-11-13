@@ -39,7 +39,9 @@ manifest={'status':'BUILDING','commands_kind':'templates; execution uses the ori
           'output':str(out),'tools':{}}
 try:
     for tool in ('x86_64-elf-g++','x86_64-elf-gcc','x86_64-elf-ar'):
-        path=Path(shutil.which(tool) or '').resolve(strict=True)
+        found=shutil.which(tool)
+        if not found:raise FileNotFoundError('missing tool: '+tool)
+        path=Path(found).resolve(strict=True)
         manifest['tools'][tool]={'path':str(path),'sha256':sha(path),
             'version':subprocess.check_output([str(path),'--version'],text=True).splitlines()[0]}
     for i,cmd in enumerate(commands):
@@ -50,6 +52,7 @@ try:
         out/'session.elf',out/'consumer/ssg-consumer.elf',out/'notes/notes.elf',out/'browser/browser.elf')}
     manifest['status']='BUILT'
 except Exception as e:
+    manifest['status']='FAILED'
     manifest['error']=repr(e)
     raise
 finally:

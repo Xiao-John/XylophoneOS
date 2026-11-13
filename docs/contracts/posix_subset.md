@@ -1,6 +1,6 @@
 # XOS POSIX 子集契约 v1
 
-2026-10-26。状态：文档契约已建立，扩展实现与新验收尚未开始。
+2026-10-26 建立；文件身份范围于 2026-11-12 更新。各面状态分别以下表和专项契约为准。
 本文件定义工程边界，不声明POSIX认证、完整POSIX或完整POSIX Shell兼容。
 
 ## 参照、决策与声明
@@ -41,7 +41,7 @@
 | 进程/执行 | accepted_subset：单线程eager-copy fork、同PID exec、同步spawn；线程SDK的fork/exec不支持 | 补继承/等待/信号和多线程生命周期；[Shell范围](../implementation/shell.md)、[SDK](../e04_loader_sdk.md) |
 | Shell | accepted_subset：前台管道、子Shell、命令替换、HereDoc；后台/trap/jobs/wait/kill内建拒绝，用户重定向仅FD0–2 | 按底层能力逐项开放；[C3记录](../history/shell.md#log-0049_dash_c3_script_exec_make) |
 | FD/管道 | accepted_subset：共享打开描述、32FD执行转交/CLOEXEC、阻塞管道；不推出完整fcntl/所有标志支持 | 完整逐项清单、非阻塞/中断/就绪等待；Issue 8的CLOFORK另行核对 |
-| 文件/身份 | accepted_subset：有界读写/目录/持久化；stat使用合成模式等属性 | 路径、权限/UID/GID、时间戳、链接与打开后删除；[文件服务](../e05_file_service.md) |
+| 文件/身份 | 既有有界读写/目录/持久化为 accepted_subset；新增独立 open 共享 inode、打开后 rename/unlink、空目录替换和目录引用 cwd 为 implemented_unverified，真实宿主联测已过、客体未运行；stat 仍有合成属性 | 客体验收、权限/UID/GID、时间戳和链接；[文件身份契约](file_identity.md)、[文件服务](../e05_file_service.md) |
 | 线程 | accepted_subset：T0–T2声明的创建/退出、TLS、mutex/cond/once/TSS；cancel/atfork等仍unsupported | 补线程接口缺口与进程交互；[线程契约](threading.md) |
 | 时间 | accepted_subset：单调时钟与等待；墙钟/时区PY3 B2 accepted_subset（0058），仅其声明范围 | 复用0058冻结证据，另核CPU时间、信号定时器与时钟跳变；[PY3](../plans/cpython_extensions.md) |
 | 映射 | unsupported：mmap/munmap为ENOSYS；mprotect/共享映射无资格 | VMA、匿名映射与保护、文件与共享映射分期 |

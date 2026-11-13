@@ -128,17 +128,17 @@ and [0057](../../../docs/history/userland.md#log-0058_cpython_py3_b_segment).
   enabled because their XOS bridges/parser are present.
 - Modules that need fork/exec, select, pty or dlopen remain unavailable.
   `zoneinfo` uses the locked `tzdata` package when no system database exists.
-- `xos_time.cpp` provides the monotonic clock in 10 ms PIT ticks, a `times()`
-  wrapper that reports ENOSYS to newlib's `clock()`, and a spin-based
-  `time.sleep()`.
+- `xos_time.cpp` provides the monotonic clock in 10 ms PIT ticks, a weak
+  `times()` wrapper delegating to the selected SDK's `_times()`, and a
+  spin-based `time.sleep()`.
 
 ## Honest limits of this profile
 
 - CPython's hash secret remains deterministic in this port patch, even though
   `os.urandom()`, `random` and `secrets` use the B1 system entropy service. Do
   not treat randomized hashing as a security boundary.
-- `time.sleep()` spins on PIT ticks and consumes CPU. There is no blocking
-  timer or wakeup service.
+- This port's `time.sleep()` bridge still spins on PIT ticks and consumes CPU;
+  it does not yet use the blocking sleep service available to the threading runtime.
 - `time.time()`, UTC `datetime` and the locked ZoneInfo database are available.
   The wall clock samples the PC RTC at boot and advances using PIT ticks; there
   is no separate RTC refresh while a VM is paused or suspended.

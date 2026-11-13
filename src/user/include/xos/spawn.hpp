@@ -37,7 +37,8 @@ namespace sdk {
 struct spawn_options {
     u32 environment_count = 0;
     const char* const* environment = nullptr;
-    const char* working_directory = "/";
+    // nullptr inherits the service cwd reference; an explicit path is resolved by the parent.
+    const char* working_directory = nullptr;
     // -1 inherits the corresponding kernel console/pipe ref; -2 closes it.
     i64 stdio[3] = {-1, -1, -1};
     // A path here is opened by the child's libc startup, replacing that fd.

@@ -134,6 +134,15 @@
 | 6cade46a | [`6cade46a_ipc_ip4_bulk_grant_shared_mapping_lifecycle.md`](6cade46a_ipc_ip4_bulk_grant_shared_mapping_lifecycle.md) | IPC IP4：bulk grant 共享映射、授权、撤销、生命周期及 owner guest 验收脚本（bulk_grant feature 保持关闭） |
 | d923f231 | `d923f231_ipc_ip5_short_message_fastpath_and_guest_latency.md` | IPC IP5：短消息直接切换、handle 索引、批量复制、guest latency probe；同步开放已验收的 IP2/IP3 四个位 |
 | 59ae1469 | `59ae1469_utf_8_m2_filename_boundary_probe.md` | UTF-8 M2：非 BMP 文件名、255 字节路径边界、长目录项分页 guest 探针（客体验收未运行） |
+| b8f02808 | `b8f02808_comprehensive_audit.md` | 2026-11-12 全仓审计：57 项修复/待办处理、逐文件覆盖、24 题 bug-hunt 索引与未验收边界 |
+
+| 14a518fa | `14a518fa_audit_followthrough_runtime_build_gui.md` | 审计后续：源补丁、CPU/Python 时间、31 图形 runner、构建来源与候选流程 |
+| 6bd8c261 | `6bd8c261_vm_cow_runtime_cpu_accounting.md` | COW 事务写出、父子生命周期、普通 fork 与真实 CPU 记账 |
+| b8e04c2a | `b8e04c2a_posix_file_identity.md` | 文件/目录 identity、延迟删除、cwd 继承与 loader 错误域 |
+| 9e72a804 | `9e72a804_ssg_deadlines_lifecycle_review.md` | SSG 绝对期限修复；D13/D14/Pillow 历史根因仍未定位 |
+| 07374f76 | `07374f76_ipc_device_network_runtime.md` | 上游 IP4 ABI 对齐、设备授权与用户态 VirtIO-net 原始帧服务 |
+
+| c274a9e1 | `c274a9e1_native_development_gates.md` | 显式工具回执、真实多 TU C/C++ Make 工程与 14 组双 shell SL3/SL4 矩阵 |
 
 音频记录在 #96 合入时由 0217–0219 改为 0220–0222：0217/0218 已被 VM1/VM2 占用，
 0219 已由 WebEngine M0 审计占用。新记录自 **0223** 起继续唯一，不得复用 0216–0222。

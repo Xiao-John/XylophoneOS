@@ -109,8 +109,10 @@ def main():
         parser.error('choose a new output directory under build/')
     output.mkdir(parents=True)
     python = sys.executable
-    image = system / 'xos.iso'
-    floppy = system / 'xos.img'
+    image = system / 'xos-install.iso'
+    system_manifest = json.loads((system / 'manifest.json').read_text())
+    if sha(image) != system_manifest['artifacts']['xos-install.iso']['sha256']:
+        raise SystemExit('install ISO differs from the supplied system manifest')
     supervisor = build / 'supervisor-test/supervisor-test.elf'
     browser = build / 'browser-test/browser.elf'
     notes = build / 'notes-test/notes.elf'
@@ -118,9 +120,9 @@ def main():
     html = root / 'tests/fixtures/ssg_browser/p2f.html'
     mappings = [('XOS_SYSTEM_BUILD_DIR', system), ('XOS_P4A_BUILD_DIR', build),
                 ('XOS_VALIDATION_OUT', output), ('XOS_IMAGE', image),
-                ('XOS_FLOPPY_IMAGE', floppy), ('XOS_QEMU', qemu),
+                ('XOS_QEMU', qemu),
                 ('XOS_PYTHON', python), ('XOS_INPUT', html)]
-    for path in (image, floppy, supervisor, browser, notes, subscriber, html):
+    for path in (image, supervisor, browser, notes, subscriber, html):
         if not path.is_file():
             raise SystemExit('missing validation input: ' + path.name)
 
@@ -134,7 +136,6 @@ def main():
 
     results = []
     by_name = {}
-    scenarios = list(scenarios)
     for scenario in scenarios:
         run_dir = output / 'scenarios' / scenario
         result = run_guest_case(scenario, run_dir, image, supervisor, browser, notes,
@@ -170,7 +171,7 @@ def main():
         print('stress', name, result['status'], flush=True)
 
     state_output = output / 'subscriber-state'
-    state_command = [python, root / 'tests/ssg_p4a_state_guest.py', '--image', floppy,
+    state_command = [python, root / 'tests/ssg_p4a_state_guest.py', '--image', image,
                      '--payload', build / 'subscriber-state-test/subscriber-state-test.elf',
                      '--output', state_output]
     state_log = output / 'subscriber-state.guest.log'
@@ -182,7 +183,7 @@ def main():
                     'command_template': portable_command(state_command, mappings)}
 
     contract_output = output / 'p3c-contract'
-    contract_command = [python, root / 'tests/ssg_watch_contract_guest.py', '--image', floppy,
+    contract_command = [python, root / 'tests/ssg_watch_contract_guest.py', '--image', image,
                         '--payload', build / 'contract-test/contract-test.elf', '--output', contract_output]
     contract_log = output / 'p3c-contract.guest.log'
     contract_status = run_logged('p3c-contract', contract_command, environment, contract_log)
@@ -194,7 +195,7 @@ def main():
     p3c_ordinary = {'status': 'NOT_RUN'}
     if not args.skip_p3c_regression:
         ordinary_output = output / 'p3c-ordinary'
-        ordinary_command = [python, root / 'tests/ssg_watch_guest.py', '--image', floppy,
+        ordinary_command = [python, root / 'tests/ssg_watch_guest.py', '--image', image,
                             '--supervisor', build / 'supervisor/supervisor.elf',
                             '--browser', build / 'browser/browser.elf', '--notes', build / 'notes/notes.elf',
                             '--browser-receipt', build / 'browser/browser.portable.receipt.json',

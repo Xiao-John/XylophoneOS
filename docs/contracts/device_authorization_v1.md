@@ -1,10 +1,10 @@
-# 设备授权原语 v1（已登记，未实施）
+# 设备授权原语 v1（已实现，客体资格未运行）
 
-2026-11-01。状态：**REGISTERED / IMPLEMENTATION PENDING**。本契约完成
+2026-11-12。状态：**IMPLEMENTED_UNVERIFIED / GUEST_NOT_RUN**。本契约完成
 [network_device_v1_proposal.md](network_device_v1_proposal.md) 的 C20 论证与 ABI 登记，
-冻结接口、编号、权利与错误数值；实施（内核机制与用户态驱动服务）另开 PR。
-提交实施前须按本契约与 [abi_registry](abi_registry.md) 逐项对齐，不得以本登记
-暗示实现已存在。遵循宪法 C20/C21/C22/C25/C28/C29 与
+冻结接口、编号、权利与错误数值；本轮实现授权表、MMIO、DMA、IRQ 与终止后端，
+以及受限的用户态 VirtIO-net 纵切。用户明确授权将完成实现与客体验收分开交付；
+不修改旧段 1a 记录，不把宿主验证称为 guest 通过。对照 [abi_registry](abi_registry.md)，遵循宪法 C20/C21/C22/C25/C28/C29 与
 [时间域契约](time_domains.md)。
 
 ## 1. C20 论证：为什么必须新增此内核机制
@@ -119,11 +119,15 @@ token 失效；③ 屏蔽并解绑 IRQ；④ 撤销 CPU 映射并同步 TLB；�
 - 新设 reserved 段 **112–127「设备授权线」**（自原 112–65535 unallocated 中划出；
   扩大范围须再登记）。
 - 认领：**112 `sys_device`**（设备授权/内核机制负责人；范围=本契约 v1；状态
-  claimed；实施另开 PR，登记不生成源码常量或能力）。
+  implemented_unverified；本轮已实现可调用后端，客体验收尚未运行）。
 - 与 65/66 的关系：显示客户端 ABI 迁移期间保持不变；显示驱动迁出后 65/66 由
   用户态显示驱动服务承接，内核侧实现替换另行验收登记。
 
-## 7. 实施路线（每步独立 PR + 独立客体验收）
+## 7. 迁移路线与客体验收
+
+原路线的每步独立客体验收仍是资格记录要求；本轮用户授权实现与资格分开交付，
+缺少客体环境不再阻止提交已完成的实现。当前已实现第 1 步后端和第 5 步网络纵切，
+均为 implemented_unverified；第 2–4 步仍是后续迁移，不计为本轮完成。
 
 1. 内核原语：授权表/代际、请求快照与校验框架、映射与 TLB、IRQ 路由与 WAIT/ACK、
    DMA 页池与 quarantine。验收：负向探针套件（越权、越界、代际、撤销竞态、
@@ -136,9 +140,79 @@ token 失效；③ 屏蔽并解绑 IRQ；④ 撤销 CPU 映射并同步 TLB；�
 
 ## 8. 边界与非目标
 
-- 本登记不授权任何实现，不扩大既有授权范围，不改变内核隔离默认（普通进程依旧
-  无 MMIO/PCI IO/DMA）。
-- 无 IOMMU：受权设备的 DMA 隔离不能由 pin/配额证明；v1 只授予受信驱动+设备组合，
-  信任假设在实施 PR 中逐项声明。
+- 本轮实现按用户授权推进；内核隔离默认不变，普通进程不能授予 MMIO/PCI IO/DMA。
+- 未实现 IOMMU：获得 MMIO 的驱动属于受信驱动，能够填写设备 DMA 地址。
+  handle/映射鉴权、pin、方向与配额不限制恶意驱动或设备发出的任意 DMA；v1 只授予
+  受信驱动与设备组合。quarantine 仅处理无法确认停止时的内存回收，**不是硬件 DMA
+  隔离**，不能把普通进程不能取得 grant 等同于已隔离受权驱动。
 - pio_grant（sys82）线的资源模型、交接与隔离语义不在本契约内；两契约互不替代，
   IRQ 语义以本契约为通用出口。
+
+## 9. 当前后端的精确 profile
+
+接口和 SDK 分别为 `src/shared/include/xos/device_abi.hpp` 与
+`src/user/include/xos/device.hpp`。请求头仍为 64 字节，输出精确 56 字节，均 8 字节对齐；
+无输出的操作必须传 output_address/output_length=0，只有 IRQ_WAIT 可给 deadline。
+所有输入先快照，输出在副作用前完整验证并 pin；无输出的撤销操作不回写请求结构。
+DMA_ALLOC 失败引起自身 grant 终止且撤掉输出窗口时，清 pin、返回 FAULT，不再 copyout。
+
+| 操作 | input_length / 子结构 | 输出解释（其余字段为 0） |
+|---|---|---|
+| GRANT | 32：process_object、device_instance、rights、reserved | token、generation、rights |
+| QUERY | 16：index、reserved | token、generation、length、offset、rights、attributes；见下文 |
+| MAP | 32：index、offset、length、permissions | token、generation、rights、length、attributes、address=用户 VA |
+| UNMAP | 0 | 无；request.object_token 为映射 token |
+| DMA_ALLOC | 32：length、alignment、direction、reserved | token、generation、length、address=用户 VA、offset=设备地址、attributes=direction、rights=CPU 权限 |
+| DMA_RELEASE | 0 | 无；request.object_token 为 DMA token |
+| IRQ_BIND | 16：index=6、reserved | token=事件、generation、offset=当前序号、attributes=IRQ |
+| IRQ_WAIT / IRQ_ACK | 16：sequence、reserved | WAIT 同 IRQ_BIND；ACK 无输出 |
+| REVOKE / CLOSE | 0 | 无；request.object_token 为 grant |
+
+所有 reserved 必须为零。device_instance 编码为 `1 + (bus<<8 | slot<<3 | function)`，
+范围 1..65536。授权仅限真实 bootstrap supervisor 对其 owned building child；不支持
+任意活进程转授，PID、名称、路径均不能替代主体认证。issuer/owner 任一退出或成功 exec
+均触发统一撤销。当前只接收未启用 bus mastering 的 network-class PCI type-0 function，
+避免夺取内核仍使用的显示、存储等设备。PIO、全局 PCI 扫描、任意 config 写接口均未开放。
+
+QUERY 索引 0..5 是完整页隔离的 memory BAR，6 是独占 legacy IRQ；不存在的资源返回
+NO_DEVICE。MAP permissions 仅 1（读）或 3（读写），user/NX/UC；BAR 边界、页对齐与
+页粒度隔离在入口校验。只允许 512 MiB..4 GiB 的平台设备窗口，不能映射 RAM。
+QUERY 的 0x100..0x13f 为**已授予设备的只读 256 字节配置快照**：length=4、offset 为
+配置字节偏移、attributes 低 32 位为 8，高 32 位为配置 dword；物理 BAR base、ROM base
+和 MSI message address 已清除。这个有限机制使用户驱动能发现 vendor capabilities，
+不必授予 PCI I/O 端口；不解释 VirtIO 队列、不开放任意设备配置。
+
+系统最多 16 grants，派生映射总计 128；每进程 16 个 16 MiB slot，窗口
+`0x210000000000..0x210010000000`。MMIO/DMA 映射同时受 process_max_pages 约束。
+每个 grant 最多 1024 个 DMA 页、每 owner 最多 2048 页、全系统最多 4096 页，均含 quarantine 页；单 DMA 对象
+最多 4 MiB、alignment 为 4096..16 MiB 的 2 次幂。真实连续物理分配、清零和 user-page
+refcount 用同一 allocator，失败回滚，不把任意既存用户页“声明成 DMA”。方向为 1=to_device、
+2=from_device、3=bidirectional；from_device 的 CPU 映射只读，其他两种读写。无 IOMMU
+时方向和页配额不约束恶意设备的总线访问，仍要求受信设备与驱动组合。
+
+当前可安全回收 DMA 的设备限于 VirtIO-net `1af4:1041`、以及具有 modern common
+capability 的 `1af4:1000`。用户驱动写 reset 并等 device_status=0；内核仅以有界 UC
+只读观察器核对该完成状态，同时禁用并读回 Bus Master Enable，然后才归还页。
+依据 [VirtIO 1.2 §2.4.1 / §2.4.2](https://docs.oasis-open.org/virtio/virtio/v1.2/virtio-v1.2.html)：
+设备报告 reset 完成后不得继续访问队列。该观察器只服务回收证明，不在内核驱动协议、
+填写 ring、收发帧或执行 reset。PCIe Transactions Pending 清零本身**不是** posted-write
+普适排空证明，当前没有采用该判据。其他设备请求 DMA 返回 NO_DEVICE。
+每个受支持设备保留一个有界 observer 映射，最多 16 个，不计作用户 DMA 页泄漏。
+
+DMA_RELEASE 先遮罩 IRQ、撤销该对象的 CPU 映射，再核对停止证据。成功时归还该对象页，
+设备保持 bus mastering 暂停；以后 DMA_ALLOC 才重新启用。无法确认时级联终止 grant，
+保留全部 DMA 页，返回 UNKNOWN。正常 CLOSE、issuer REVOKE、exit、exec、fault 都遵守
+相同页保留规则。未按设备协议 reset 的 kill/fault **可能 quarantine**，不承诺无条件回收。
+撤销不会把仍能 DMA 的页归还给下一进程，quarantined instance 不允许新 owner 重用。
+
+IRQ 只接受平台实际独占、未被其他 PCI function 使用的 3/5/7/9/10/11 路由；保留
+timer、PS/2、COM1、RTC、ATA 路由。一次到达屏蔽路由并发布单调序号；屏蔽期间同一
+未确认 level 合并，最多一个 pending event。序号耗尽停止发布并返回 IO，绝不回绕。
+WAIT 仅接受上次已确认序号；0 deadline 或已过期且无 pending 返回 TIMEOUT；有 pending
+先返回事件。ACK 精确匹配当前 pending 序号，重复或过期返回 STALE；清设备原因留给
+用户驱动。ACK 成功才重新开启路由。WAIT 的检查、pin、阻塞登记与 IRQ 路由同一 CPU
+中断 gate 串行化；退出/撤销唤醒为 CLOSED，输出窗口被其他 grant 撤掉时返回 FAULT。
+
+宿主入口 `tests/ipc_device_host.py` 测真实 store/allocator；它替代硬件边界，不能证明
+PCI、PIC、TLB 或 guest 调度正确。客体入口 `tests/device_abi_guest.py` 与
+`tests/virtio_net_guest.py` 均未在本轮运行；完整负向权限、并发与同镜像回归仍待客体执行。

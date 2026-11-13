@@ -4,6 +4,7 @@
 import argparse
 from pathlib import Path
 import subprocess
+from provenance import cmake_capture_options
 
 here = Path(__file__).resolve().parent
 p = argparse.ArgumentParser(description=__doc__)
@@ -23,4 +24,5 @@ cmd = ['cmake', '-S', str(a.source.resolve()), '-B', str(a.build.resolve()), '-G
        '-DQT_QMAKE_TARGET_MKSPEC=xos-g++', '-DQT_HOST_PATH=' + str(a.host_qt.resolve()),
        '-DBUILD_SHARED_LIBS=OFF', '-DQT_BUILD_EXAMPLES=OFF', '-DQT_BUILD_TESTS=OFF']
 cmd += ['-DFEATURE_' + feature + '=OFF' for feature in features_off]
+cmd += cmake_capture_options(a, cmd)
 subprocess.run(cmd, check=True)

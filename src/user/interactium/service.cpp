@@ -159,9 +159,40 @@ bool service::write_tile(session_token token, window_id id, const tile_payload& 
     return true;
 }
 
+namespace {
+void project_pointer_outside(display_event& event, const window_state& window) {
+    const i64 right = static_cast<i64>(window.x) + window.width;
+    const i64 bottom = static_cast<i64>(window.y) + window.height;
+    if (event.x >= window.x && event.y >= window.y &&
+        static_cast<i64>(event.x) < right && static_cast<i64>(event.y) < bottom) {
+        if (window.x > -2147483647) event.x = window.x - 1;
+        else if (window.y > -2147483647) event.y = window.y - 1;
+    }
+}
+}
+
 bool service::queue_input(const display_event& source) {
     last_modifiers_ = source.modifiers;
     window_id target{};
+    if (source.kind == 4) {
+        mouse_buttons_ = source.buttons;
+        last_pointer_x_ = source.x;
+        last_pointer_y_ = source.y;
+        const auto hit = manager_.hit_test(source.x, source.y);
+        pointer_target_ = hit.id.valid() ? hit.id : manager_.focused();
+        for (auto& key : pressed_) key = {};
+        // The display queue may have lost a release owned by any window.
+        bool queued = false;
+        for (u32 i = 0; i < window_table_capacity; ++i) {
+            const auto* window = manager_.at(i);
+            if (!window->id.valid()) continue;
+            display_event sync = source;
+            sync.buttons = window->id == pointer_target_ ? mouse_buttons_ : 0;
+            if (window->id != pointer_target_) project_pointer_outside(sync, *window);
+            queued |= enqueue_event(window->id, sync);
+        }
+        return queued;
+    }
     if (source.kind == 3) {
         const auto hit = manager_.hit_test(source.x, source.y);
         target = hit.id.valid() ? hit.id : manager_.focused();
@@ -180,12 +211,8 @@ bool service::queue_input(const display_event& source) {
         pointer_target_ = target;
     } else {
         target = manager_.focused();
-        if (source.kind == 4) {
-            mouse_buttons_ = source.buttons;
-            last_pointer_x_ = source.x;
-            last_pointer_y_ = source.y;
-        } else if (source.kind == 1) {
-            note_key_press(target, source.code);
+        if (source.kind == 1) {
+            target = note_key_press(target, source.code);
         } else if (source.kind == 2) {
             const window_id pressed_at = take_press_target(source.code);
             // A release belongs to the window that took the press. When that
@@ -330,15 +357,17 @@ void service::release_window(window_id id, u32 slot) {
     }
 }
 
-void service::note_key_press(window_id target, u32 code) {
-    if (!target.valid()) return;
+window_id service::note_key_press(window_id target, u32 code) {
+    if (!target.valid()) return {};
+    // PS/2 auto-repeat belongs to the original press until its release.
     for (auto& item : pressed_)
-        if (item.used && item.code == code) { item.target = target; return; }
+        if (item.used && item.code == code) return item.target;
     for (auto& item : pressed_)
-        if (!item.used) { item = {code, target, true}; return; }
+        if (!item.used) { item = {code, target, true}; return target; }
     // More keys held than tracked slots: recycle the oldest entry.
     pressed_[pressed_next_] = {code, target, true};
     pressed_next_ = (pressed_next_ + 1) % pressed_key_capacity;
+    return target;
 }
 
 window_id service::take_press_target(u32 code) {
@@ -355,16 +384,7 @@ void service::send_pointer_leave(const display_event& source, window_id old_targ
     const auto* old_window = manager_.get(old_target);
     if (!old_window || !old_window->visible) return;   // destroyed or hidden: no recipient
     display_event leave = source;
-    const i64 right = static_cast<i64>(old_window->x) + old_window->width;
-    const i64 bottom = static_cast<i64>(old_window->y) + old_window->height;
-    if (leave.x >= old_window->x && leave.y >= old_window->y &&
-        static_cast<i64>(leave.x) < right && static_cast<i64>(leave.y) < bottom) {
-        // Overlapping windows still contain the pointer, so shift the copy just
-        // outside the previous window: that coordinate is what tells the client
-        // the pointer left.
-        if (old_window->x > -2147483647) leave.x = old_window->x - 1;
-        else if (old_window->y > -2147483647) leave.y = old_window->y - 1;
-    }
+    project_pointer_outside(leave, *old_window);
     (void)enqueue_event(old_target, leave);
 }
 

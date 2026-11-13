@@ -21,6 +21,8 @@ struct XosFile {
     int fd;
     int lock_level;
     int delete_on_close;
+    dev_t device;
+    ino_t inode;
     char path[XOS_SQLITE_MAX_PATH];
     XosFile *next;
 };
@@ -141,7 +143,7 @@ static int xLock(sqlite3_file *raw, int level) {
     XosFile *file = (XosFile *)raw;
     if (level <= file->lock_level) return SQLITE_OK;
     for (XosFile *other = open_files; other; other = other->next) {
-        if (other == file || strcmp(other->path, file->path) != 0) continue;
+        if (other == file || other->device != file->device || other->inode != file->inode) continue;
         int conflict = 0;
         if (level == SQLITE_LOCK_SHARED)
             conflict = other->lock_level >= SQLITE_LOCK_PENDING;
@@ -168,7 +170,7 @@ static int xCheckReservedLock(sqlite3_file *raw, int *result) {
     if (*result) return SQLITE_OK;
     for (XosFile *other = open_files; other; other = other->next) {
         if (other != file && other->lock_level >= SQLITE_LOCK_RESERVED &&
-            strcmp(other->path, file->path) == 0) { *result = 1; break; }
+            other->device == file->device && other->inode == file->inode) { *result = 1; break; }
     }
     return SQLITE_OK;
 }
@@ -205,6 +207,14 @@ static int xOpen(sqlite3_vfs *vfs, const char *name, sqlite3_file *raw,
     if (flags & SQLITE_OPEN_EXCLUSIVE) oflags |= O_EXCL;
     file->fd = open(path, oflags, 0666);
     if (file->fd < 0) return map_errno();
+    struct stat status;
+    if (fstat(file->fd, &status) != 0) {
+        (void)close(file->fd);
+        file->fd = -1;
+        return SQLITE_IOERR_FSTAT;
+    }
+    file->device = status.st_dev;
+    file->inode = status.st_ino;
     file->base.pMethods = &io_methods;
     file->next = open_files;
     open_files = file;
@@ -227,9 +237,40 @@ static int xAccess(sqlite3_vfs *vfs, const char *path, int flags, int *result) {
 
 static int xFullPathname(sqlite3_vfs *vfs, const char *path, int size, char *output) {
     (void)vfs;
+    char absolute[XOS_SQLITE_MAX_PATH];
     size_t length = strlen(path);
-    if (length + 1 > (size_t)size) return SQLITE_CANTOPEN;
-    memcpy(output, path, length + 1);
+    size_t prefix = 0;
+    if (path[0] != '/') {
+        if (!getcwd(absolute, sizeof(absolute))) return SQLITE_CANTOPEN;
+        prefix = strlen(absolute);
+        if (prefix > 1) {
+            if (prefix + 1 == sizeof(absolute)) return SQLITE_CANTOPEN;
+            absolute[prefix++] = '/';
+        }
+    }
+    if (length >= sizeof(absolute) - prefix) return SQLITE_CANTOPEN;
+    memcpy(absolute + prefix, path, length + 1);
+
+    /* XOS has no symlinks. Normalize lexically even before a new DB exists. */
+    size_t used = 1, cursor = 1;
+    while (absolute[cursor]) {
+        while (absolute[cursor] == '/') ++cursor;
+        size_t begin = cursor;
+        while (absolute[cursor] && absolute[cursor] != '/') ++cursor;
+        size_t component = cursor - begin;
+        if (!component || (component == 1 && absolute[begin] == '.')) continue;
+        if (component == 2 && absolute[begin] == '.' && absolute[begin + 1] == '.') {
+            while (used > 1 && absolute[used - 1] != '/') --used;
+            if (used > 1) --used;
+            continue;
+        }
+        if (used > 1) absolute[used++] = '/';
+        memmove(absolute + used, absolute + begin, component);
+        used += component;
+    }
+    absolute[used] = '\0';
+    if (size <= 0 || used + 1 > (size_t)size) return SQLITE_CANTOPEN;
+    memcpy(output, absolute, used + 1);
     return SQLITE_OK;
 }
 

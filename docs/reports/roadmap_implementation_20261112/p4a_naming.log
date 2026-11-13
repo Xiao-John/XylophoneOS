@@ -1,0 +1,224 @@
+{
+  "status": "PASS",
+  "checked_files": [
+    {
+      "file": "src/user/apps/ssg_multi_session.cpp",
+      "definitions": [
+        "alive",
+        "browser_result",
+        "capture_next",
+        "client_failure",
+        "close_token",
+        "collect_pair",
+        "finish",
+        "identity",
+        "launch",
+        "log_aggregate_diff",
+        "log_thread_stats",
+        "main",
+        "notes_result",
+        "pair_observation",
+        "pipe_capacity_sample",
+        "pipe_reuse_probe",
+        "random_instance",
+        "session_source",
+        "shutdown",
+        "source_failure",
+        "stop_subscriber",
+        "subscriber_alive",
+        "subscriber_session",
+        "unavailable_result",
+        "watch_alive",
+        "watch_fixture_hooks",
+        "watch_input",
+        "watch_number",
+        "watch_test_sender"
+      ]
+    },
+    {
+      "file": "src/user/apps/ssg_subscriber.cpp",
+      "definitions": [
+        "log_line",
+        "main",
+        "read_exact",
+        "read_state",
+        "reject_frame",
+        "valid_instance",
+        "write_ack"
+      ]
+    },
+    {
+      "file": "src/user/ssg/pipe_event_sink.hpp",
+      "definitions": [
+        "acknowledgements",
+        "bind",
+        "fail",
+        "io_state",
+        "pipe_event_sink",
+        "read_exact",
+        "write_frame"
+      ]
+    },
+    {
+      "file": "src/user/ssg/subscriber_state.hpp",
+      "definitions": [
+        "accept",
+        "consumer_state",
+        "decimal_sequence",
+        "invalidate_all",
+        "reject",
+        "require_resync",
+        "source_state",
+        "stream_sequence",
+        "valid_clock",
+        "valid_summary"
+      ]
+    },
+    {
+      "file": "src/user/ssg/subscription_wire.hpp",
+      "definitions": [
+        "decode_header",
+        "frame_header",
+        "get_u16",
+        "get_u32",
+        "payload_checksum",
+        "put_u16",
+        "put_u32",
+        "verify_payload"
+      ]
+    },
+    {
+      "file": "tests/fixtures/qt6/ssg_p4a_state_test.cpp",
+      "definitions": [
+        "check",
+        "main",
+        "submit"
+      ]
+    },
+    {
+      "file": "scripts/build_ssg_p4a.py",
+      "definitions": [
+        "main",
+        "root",
+        "sha"
+      ]
+    },
+    {
+      "file": "scripts/export_ssg_p4a_report.py",
+      "definitions": [
+        "copy_bytes",
+        "copy_json",
+        "copy_log",
+        "main",
+        "root",
+        "sha_bytes"
+      ]
+    },
+    {
+      "file": "scripts/prepare_ssg_p4a_toolchain.py",
+      "definitions": [
+        "local_build_path",
+        "main",
+        "root",
+        "sha"
+      ]
+    },
+    {
+      "file": "scripts/run_ssg_p4a_validation.py",
+      "definitions": [
+        "main",
+        "portable_command",
+        "root",
+        "run_guest_case",
+        "run_logged",
+        "scenarios",
+        "sha"
+      ]
+    },
+    {
+      "file": "tests/ssg_p4a_guest.py",
+      "definitions": [
+        "cases",
+        "main",
+        "root",
+        "sha"
+      ]
+    },
+    {
+      "file": "tests/ssg_p4a_host_test.py",
+      "definitions": [
+        "ack_committed",
+        "ack_kind",
+        "ack_rejected",
+        "check",
+        "checks",
+        "checksum",
+        "decode_event",
+        "decode_header",
+        "encode_frame",
+        "event_fields",
+        "event_kind",
+        "event_magic",
+        "event_payload",
+        "frame_header_size",
+        "header_format",
+        "max_payload",
+        "must_reject",
+        "pipe_size",
+        "protocol_error",
+        "protocol_version",
+        "run",
+        "unique_pairs",
+        "validate_instance",
+        "validate_transition"
+      ]
+    },
+    {
+      "file": "tests/ssg_p4a_resync_verify.py",
+      "definitions": [
+        "main",
+        "source_instances",
+        "verify"
+      ]
+    },
+    {
+      "file": "tests/ssg_p4a_state_guest.py",
+      "definitions": [
+        "main",
+        "root",
+        "sha"
+      ]
+    },
+    {
+      "file": "tests/ssg_p4a_verify.py",
+      "definitions": [
+        "decode_frames",
+        "event_fields",
+        "expected_consumer_state",
+        "frame_header_size",
+        "main",
+        "max_frame_size",
+        "payload_checksum",
+        "unique_pairs",
+        "verify"
+      ]
+    },
+    {
+      "file": "tests/ssg_p4a_name_check.py",
+      "definitions": [
+        "cpp_files",
+        "function_def",
+        "main",
+        "py_files",
+        "root",
+        "snake",
+        "type_decl"
+      ]
+    }
+  ],
+  "failures": [],
+  "rules": [
+    "C30 snake_case for P4A-owned definitions",
+    "SPDX header present on P4A code and test files"
+  ]
+}

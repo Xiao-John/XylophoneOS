@@ -144,13 +144,15 @@ class BundleToolElf(unittest.TestCase):
             ])
 
     def test_parse_rejects_non_elf_tool(self):
-        # bypass build check by patching bytes after build is not easy; build already checks
-        blob = xb.build([
+        blob = bytearray(xb.build([
             (xb.TYPE_DASH, 'd', elf_stub()),
             (xb.TYPE_TOOL, 't', elf_stub()),
-        ])
-        info = xb.parse(blob)
-        self.assertEqual(info['members'][1]['type'], xb.TYPE_TOOL)
+        ]))
+        member = xb.parse(bytes(blob))['members'][1]
+        start = member['data_off']
+        blob[start:start + 4] = b'BAD!'
+        with self.assertRaisesRegex(xb.BundleError, 'type 5 is not ELF'):
+            xb.parse(bytes(blob), check_hashes=False)
 
 class BundlePaddingAndNames(unittest.TestCase):
     def test_nonzero_inter_member_padding(self):
@@ -228,9 +230,9 @@ class BundlePaddingAndNames(unittest.TestCase):
     def test_parse_rejects_backslash_name(self):
         blob = bytearray(xb.build([(xb.TYPE_DASH, 'dash', elf_stub())]))
         info = xb.parse(bytes(blob), check_hashes=False)
-        name_off = 64 + 4
+        name_off = xb.HEADER_SIZE + xb.ENTRY_SIZE * len(info['members'])
         blob[name_off] = 0x5c
-        with self.assertRaises(xb.BundleError):
+        with self.assertRaisesRegex(xb.BundleError, 'invalid name byte'):
             xb.parse(bytes(blob))
 
 

@@ -67,7 +67,7 @@ def alter(disk, mode):
 
 try:
     with tempfile.TemporaryDirectory(prefix='xos_qt_file_errors_') as temp:
-        tmp = Path(temp); image = tmp/'boot.img'; shutil.copyfile(a.image, image)
+        tmp = Path(temp); image = tmp/('boot'+a.image.suffix); shutil.copyfile(a.image, image)
         empty = tmp/'empty'; empty.write_bytes(b'')
         locked = tmp/'locked'; locked.write_bytes(b'original')
         for mode, marker in [('readonly', b'QT_READONLY_ERROR_OK'), ('full', b'QT_FULL_ERROR_OK')]:

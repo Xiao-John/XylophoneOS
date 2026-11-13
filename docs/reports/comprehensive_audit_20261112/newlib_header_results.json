@@ -1,0 +1,64 @@
+{
+  "compiler": "/usr/bin/gcc",
+  "compiler_realpath": "/usr/bin/x86_64-linux-gnu-gcc-14",
+  "compiler_version": "gcc (Debian 14.2.0-19) 14.2.0",
+  "cases": [
+    {
+      "case": "atomic_initializers",
+      "command": [
+        "/usr/bin/gcc",
+        "-std=gnu11",
+        "-ffreestanding",
+        "-isystem",
+        "${XOS_ROOT}/src/third_party/newlib/x86_64-elf/include",
+        "-fsyntax-only",
+        "${XOS_AUDIT_WORK}/newlib_header_audit/atomic_initializers.c"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "In file included from ${XOS_AUDIT_WORK}/newlib_header_audit/atomic_initializers.c:3:\n${XOS_AUDIT_WORK}/newlib_header_audit/atomic_initializers.c:4:20: error: field name not in record or union initializer\n    4 | atomic_int value = ATOMIC_VAR_INIT(0);\n      |                    ^~~~~~~~~~~~~~~\n${XOS_AUDIT_WORK}/newlib_header_audit/atomic_initializers.c:4:20: note: (near initialization for ‘value’)\n${XOS_AUDIT_WORK}/newlib_header_audit/atomic_initializers.c:5:1: warning: braces around scalar initializer\n    5 | atomic_flag flag = ATOMIC_FLAG_INIT;\n      | ^~~~~~~~~~~\n${XOS_AUDIT_WORK}/newlib_header_audit/atomic_initializers.c:5:1: note: (near initialization for ‘flag.__flag’)\n${XOS_AUDIT_WORK}/newlib_header_audit/atomic_initializers.c:5:20: error: field name not in record or union initializer\n    5 | atomic_flag flag = ATOMIC_FLAG_INIT;\n      |                    ^~~~~~~~~~~~~~~~\n${XOS_AUDIT_WORK}/newlib_header_audit/atomic_initializers.c:5:20: note: (near initialization for ‘flag.__flag’)\n${XOS_AUDIT_WORK}/newlib_header_audit/atomic_initializers.c: In function ‘initialize’:\n${XOS_AUDIT_WORK}/newlib_header_audit/atomic_initializers.c:6:25: error: request for member ‘__val’ in something not a structure or union\n    6 | void initialize(void) { atomic_init(&value, 1); }\n      |                         ^~~~~~~~~~~\n"
+    },
+    {
+      "case": "generic_math_types",
+      "command": [
+        "/usr/bin/gcc",
+        "-std=gnu11",
+        "-ffreestanding",
+        "-isystem",
+        "${XOS_ROOT}/src/third_party/newlib/x86_64-elf/include",
+        "-fsyntax-only",
+        "${XOS_AUDIT_WORK}/newlib_header_audit/generic_math_types.c"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "${XOS_AUDIT_WORK}/newlib_header_audit/generic_math_types.c:2:1: error: static assertion failed: \"sqrt(float) returns float\"\n    2 | _Static_assert(__builtin_types_compatible_p(__typeof__(sqrt(1.0f)), float), \"sqrt(float) returns float\");\n      | ^~~~~~~~~~~~~~\n${XOS_AUDIT_WORK}/newlib_header_audit/generic_math_types.c:3:1: error: static assertion failed: \"sqrt(long double) returns long double\"\n    3 | _Static_assert(__builtin_types_compatible_p(__typeof__(sqrt(1.0L)), long double), \"sqrt(long double) returns long double\");\n      | ^~~~~~~~~~~~~~\n"
+    },
+    {
+      "case": "align_helpers",
+      "command": [
+        "/usr/bin/gcc",
+        "-std=gnu11",
+        "-ffreestanding",
+        "-isystem",
+        "${XOS_ROOT}/src/third_party/newlib/x86_64-elf/include",
+        "-fsyntax-only",
+        "${XOS_AUDIT_WORK}/newlib_header_audit/align_helpers.c"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "header_sha256": {
+    "stdatomic.h": "19ccd68478bce7eb9a9ba8a7a556854947ed5f8454ea0ef94c587b9f594cdb0a",
+    "tgmath.h": "4cee5f66824b507890fa22a0462ce46d177ca14345280e01d7bee660e01d42c9",
+    "sys/cdefs.h": "6934407e76242c86361247a6fcadf1f885985bd7cdd3652afc26d8056073f32e",
+    "newlib.h": "f83c3134b15f42b48bb595259c43ab971aac50f7d1d8a21dd32944980d13380b"
+  },
+  "scope": "host GCC 14 selected actual vendored headers; pinned GCC 16.2.0 and actual seed NOT_RUN; diagnostics normalized",
+  "probe_sources": {
+    "align_helpers.c": "#include <sys/_types.h>\n#include <sys/cdefs.h>\nunsigned long up(unsigned long x) { return __align_up(x, 8); }\nunsigned long down(unsigned long x) { return __align_down(x, 8); }\n",
+    "atomic_initializers.c": "#include <stddef.h>\n#include <stdint.h>\n#include <stdatomic.h>\natomic_int value = ATOMIC_VAR_INIT(0);\natomic_flag flag = ATOMIC_FLAG_INIT;\nvoid initialize(void) { atomic_init(&value, 1); }\n",
+    "generic_math_types.c": "#include <tgmath.h>\n_Static_assert(__builtin_types_compatible_p(__typeof__(sqrt(1.0f)), float), \"sqrt(float) returns float\");\n_Static_assert(__builtin_types_compatible_p(__typeof__(sqrt(1.0L)), long double), \"sqrt(long double) returns long double\");\n"
+  }
+}

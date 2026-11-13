@@ -1,170 +1,115 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""SL3: real minimal C project via guest Make + GCC seed (requires seed cache)."""
+"""SL3: receipt-bound native C/C++ Make projects through ordinary xsh and dash."""
 import argparse
-import hashlib
 import json
-import re
 import sys
 import tempfile
 from pathlib import Path
-from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path[:0] = [str(ROOT / "scripts"), str(ROOT / "tests")]
-import boot_smoke
+repo_root = Path(__file__).resolve().parents[1]
+sys.path[:0] = [str(repo_root / 'scripts'), str(repo_root / 'tests')]
 from boot_smoke import Guest
 from make_work_disk import create_fat32
 from work_disk import transfer
-from task_smoke import send_bytes, pump
-from process_smoke import command
+from shell_launch_support import (add_arguments, bind_native_inputs, boot_guest,
+                                  install_files, run_case, sha, write_report)
+
+fixture_root = repo_root / 'tests/fixtures/shell_launch'
 
 
-def main() -> int:
+def prepare_project_disk(args, bound, folder, report):
+    disk = folder / 'work.img'
+    create_fat32(disk, 2048)
+    created = set()
+    install_files(disk, args.seed_root, bound['seed'], created)
+    install_files(disk, args.sysroot_root, bound['sysroot'], created)
+    for directory in ('/bin', '/usr', '/usr/bin', '/src', '/src/sl3', '/out', '/out/sl3', '/tmp', '/tests', '/tests/work'):
+        if directory not in created:
+            transfer(disk, 'mkdir', directory)
+            created.add(directory)
+    transfer(disk, 'import', '/usr/bin/make', bound['make'])
+    transfer(disk, 'import', '/usr/bin/dash', bound['dash'])
+    names = ('project.h', 'project_value.c', 'project_c.c', 'project_cpp.cpp', 'project_cpp_value.cpp', 'link_error.c')
+    report['fixtures'] = {}
+    for name in names:
+        source = fixture_root / name
+        transfer(disk, 'import', '/src/sl3/' + name, source)
+        report['fixtures'][name] = sha(source)
+    makefile = folder / 'project.mk'
+    text = (fixture_root / 'project.mk').read_text()
+    for variable, tool in (('cc', 'gcc'), ('cxx', 'g++'), ('ar', 'ar')):
+        text = text.replace('@' + variable + '@', bound['tools'][tool]['guest_path'])
+    makefile.write_text(text)
+    transfer(disk, 'import', '/src/sl3/project.mk', makefile)
+    report['fixtures']['project.mk'] = sha(makefile)
+    transfer(disk, 'import', '/tests/build_project.sh', fixture_root / 'build_project.sh')
+    report['fixtures']['build_project.sh'] = sha(fixture_root / 'build_project.sh')
+    return disk
+
+
+def run_project(guest, report):
+    run_case(guest, report, 'native_c_cpp_make', 'xsh', 'make -B -f /src/sl3/project.mk all', timeout=600)
+    run_case(guest, report, 'native_c_program', 'xsh', '/out/sl3/c.elf', [b'SL3_C_OK'])
+    run_case(guest, report, 'native_cpp_program', 'xsh', '/out/sl3/cpp.elf', [b'SL3_CPP_OK'])
+    run_case(guest, report, 'native_c_cpp_make_and_programs', 'dash', 'dash /tests/build_project.sh',
+             [b'SL3_C_OK', b'SL3_CPP_OK', b'SL3_DASH_PROJECT_OK'], timeout=600)
+
+
+def export_project(disk, folder, report):
+    report['outputs'] = {}
+    for name in ('c.elf', 'cpp.elf', 'libvalue.a'):
+        path = folder / name
+        transfer(disk, 'export', '/out/sl3/' + name, path)
+        report['outputs'][name] = {'sha256': sha(path), 'bytes': path.stat().st_size}
+
+
+def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--seed-manifest", type=Path, required=True,
-                        help="GCC seed manifest (install_files must exist on disk)")
-    parser.add_argument("--seed-root", type=Path, required=True)
-    parser.add_argument("--sysroot-manifest", type=Path, required=True)
-    parser.add_argument("--sysroot-root", type=Path, required=True)
-    parser.add_argument("--report", type=Path,
-                        default=ROOT / "build/shell_launch_sl3_make/report.json")
+    add_arguments(parser)
+    parser.add_argument('--report', type=Path, default=repo_root / 'build/shell_launch_sl3_make/report.json')
     args = parser.parse_args()
-
-    out = args.report.parent
-    out.mkdir(parents=True, exist_ok=True)
-    seed = json.loads(args.seed_manifest.read_text())
-    sysroot = json.loads(args.sysroot_manifest.read_text())
-    # Verify seed inputs exist before booting.
-    missing = []
-    for entry in seed.get("install_files", []):
-        path = args.seed_root / entry["path"]
-        if not path.is_file():
-            missing.append(entry["path"])
-    if missing:
-        report = {
-            "status": "not_run",
-            "reason": "gcc seed cache missing; cannot import toolchain",
-            "missing_sample": missing[:5],
-            "missing_count": len(missing),
-            "seed_manifest": str(args.seed_manifest),
-        }
-        args.report.write_text(json.dumps(report, indent=2) + "\n")
-        print("NOT_RUN SL3 make: gcc seed install_files missing", len(missing))
-        return 2
-
-    make_candidates = list((ROOT / ".cache/xos_seed/make").glob("*/make"))
-    dash_candidates = list((ROOT / ".cache/xos_seed/dash").glob("*/build/src/dash.runtime"))
-    if not make_candidates or not dash_candidates:
-        report = {"status": "not_run", "reason": "make or dash binary missing"}
-        args.report.write_text(json.dumps(report, indent=2) + "\n")
-        print("NOT_RUN SL3 make: make/dash missing")
-        return 2
-    make_elf = sorted(make_candidates, key=lambda p: p.stat().st_mtime)[-1]
-    dash = sorted(dash_candidates, key=lambda p: p.stat().st_mtime)[-1]
-
-    manifest = json.loads((ROOT / "build/manifest.json").read_text())
-    report = {
-        "status": "failed",
-        "checks": [],
-        "build_id": manifest["build_id"],
-        "make_sha256": hashlib.sha256(make_elf.read_bytes()).hexdigest(),
-        "dash_sha256": hashlib.sha256(dash.read_bytes()).hexdigest(),
-        "seed_manifest_sha256": hashlib.sha256(args.seed_manifest.read_bytes()).hexdigest(),
-    }
+    report = {'status': 'not_run', 'guest_execution': 'not_run', 'checks': [], 'gate': 'SL3 C/C++ Make'}
     guest = None
+    code = 1
     try:
-        with tempfile.TemporaryDirectory(prefix="xos_sl3make_") as tmp:
-            disk = Path(tmp) / "disk.img"
-            create_fat32(disk, 2048)
-            for d in ("/bin", "/usr", "/usr/bin", "/src", "/out", "/sysroot", "/tests"):
-                transfer(disk, "mkdir", d)
-            # Import seed + sysroot (same pattern as gcc_seed_smoke).
-            from gcc_seed_smoke import import_manifest_files
-            seed_files = import_manifest_files(disk, args.seed_root, seed["install_files"], "Seed")
-            sys_files = import_manifest_files(disk, args.sysroot_root, sysroot["files"], "sysroot")
-            report["seed_files"] = len(seed_files)
-            report["sysroot_files"] = len(sys_files)
-            transfer(disk, "import", "/usr/bin/make", make_elf)
-            transfer(disk, "import", "/usr/bin/dash", dash)
-
-            # Minimal real C project: one .c → one executable.
-            (Path(tmp) / "hello.c").write_text(
-                "int main(void) { return 0; }\n"
-            )
-            (Path(tmp) / "Makefile").write_text(
-                "CC = /usr/bin/x86_64-elf-gcc\n"
-                "CFLAGS = --sysroot=/sysroot -static\n"
-                "all: /out/hello.elf\n"
-                "/out/hello.elf: /src/hello.c\n"
-                "\t$(CC) $(CFLAGS) $< -o $@\n"
-            )
-            transfer(disk, "import", "/src/hello.c", Path(tmp) / "hello.c")
-            transfer(disk, "import", "/tests/Makefile", Path(tmp) / "Makefile")
-
-            base_command = boot_smoke.qemu_command
-
-            def qemu(*args, **kwargs):
-                cmd = base_command(*args, **kwargs)
-                for i, v in enumerate(cmd):
-                    if v.startswith("file=" + str(disk) + ","):
-                        cmd[i] = v + ",id=workdisk,node-name=workraw,werror=report,rerror=report"
-                return cmd
-
-            with patch.object(boot_smoke, "qemu_command", qemu):
-                guest = Guest(ROOT / "build/xos-install.iso", "sl3make", work_disk=disk, iso=True)
-            report["qemu_command"] = guest.command
-            guest.expect(b"xos64> ", timeout=30)
-            send_bytes(guest, b"run\r")
-            guest.expect_supervisor(trace=True, timeout=30)
-            command(guest, "demo keep", b"demo: keep")
-            for pid in (1, 3, 4):
-                try:
-                    command(guest, f"kill {pid}", b"kill: accepted", timeout=10)
-                except Exception:
-                    pass
-            pump(guest, 0.5)
-
-            # Ordinary bare make -B (no exec-driver / name-based grant).
-            r = command(
-                guest,
-                "make -B -f /tests/Makefile all",
-                b"kind=exited code=0",
-                timeout=180,
-            )
-            assert b"cc1" in r or b"x86_64-elf-gcc" in r or b"hello" in r, r[-3000:]
-            report["checks"].append("xsh_bare_make_builds_c_project")
-
-            # Run the produced binary via ordinary command.
-            r = command(guest, "/out/hello.elf", b"kind=exited code=0", timeout=60)
-            report["checks"].append("built_elf_runs_exit0")
-
-            # dash script: bare make (no exec-driver).
-            script = Path(tmp) / "run_make.sh"
-            script.write_text("#!/usr/bin/dash\nmake -B -f /tests/Makefile all\n")
-            transfer(disk, "import", "/out/run_make.sh", script)
-            r = command(
-                guest,
-                "dash /out/run_make.sh",
-                b"kind=exited code=0",
-                timeout=180,
-            )
-            report["checks"].append("dash_script_make_builds")
-
-            report["status"] = "passed"
+        bound = bind_native_inputs(args, report)
+        if args.preflight_only:
+            report['status'] = 'preflight_passed'
+            code = 0
+        else:
+            with tempfile.TemporaryDirectory(prefix='xos_sl3_native_') as temporary:
+                folder = Path(temporary)
+                disk = prepare_project_disk(args, bound, folder, report)
+                guest = Guest(args.system / 'xos-install.iso', 'sl3_native', work_disk=disk, iso=True)
+                report['qemu_command'] = guest.command
+                report['guest_execution'] = 'started'
+                boot_guest(guest)
+                run_project(guest, report)
+                guest.close()
+                (args.report.parent / 'serial.log').parent.mkdir(parents=True, exist_ok=True)
+                (args.report.parent / 'serial.log').write_bytes(guest.output)
+                guest = None
+                # Export only after QEMU releases the disk.
+                export_project(disk, folder, report)
+                report['status'] = report['guest_execution'] = 'passed'
+                code = 0
+    except FileNotFoundError as error:
+        report['status'] = 'not_run' if report['guest_execution'] == 'not_run' else 'failed'
+        report['error'] = str(error)
+        code = 2 if report['status'] == 'not_run' else 1
     except Exception as error:
-        report["error"] = str(error)
-        if guest is not None:
-            report["output_tail"] = bytes(guest.output[-4000:]).decode(errors="replace")
-        raise
+        report['status'] = 'failed'
+        report['error'] = str(error)
     finally:
         if guest is not None:
-            (out / "serial.log").write_bytes(guest.output)
+            args.report.parent.mkdir(parents=True, exist_ok=True)
+            (args.report.parent / 'serial.log').write_bytes(guest.output)
             guest.close()
-        args.report.write_text(json.dumps(report, indent=2) + "\n")
-    print("PASS SL3 make", len(report["checks"]), "checks")
-    return 0
+        write_report(args.report, report)
+    print(report['status'].upper(), 'SL3 C/C++ Make:', len(report['checks']), 'guest checks')
+    return code
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     raise SystemExit(main())

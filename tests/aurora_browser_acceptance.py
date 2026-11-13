@@ -9,6 +9,7 @@ import boot_smoke
 from boot_smoke import Guest
 from task_smoke import send_bytes,pump
 from process_smoke import command,resources
+from graphics_guest import start_graphics, stop_graphics, reap_compositor
 from make_work_disk import create_fat32
 from work_disk import transfer
 p=argparse.ArgumentParser()
@@ -52,7 +53,7 @@ try:
   with patch.object(boot_smoke,'qemu_command',guest_command):g=Guest(a.image.resolve(),str(out.relative_to(ROOT/'build'))+'/guest',work_disk=disk)
   report['qemu_command']=g.command;g.expect(b'xos64> ',timeout=45)
   if a.backend=='virtio':assert b'[display] backend=virtio-gpu-2d' in bytes(g.output) and b'backend=vbe fallback=1' not in bytes(g.output),'virtio backend not selected'
-  send_bytes(g,b'run\r');g.expect_supervisor(trace=True);pump(g,1.2);base=resources(g);service_result=command(g,'display-start',b'result=0');service=int(re.search(rb'\[display-start\] pid=(\d+)',service_result)[1]);g.expect(b'[display-service] ready');with_service=resources(g);report['baseline']=base;report['with_service']=with_service
+  send_bytes(g,b'run\r');g.expect_supervisor(trace=True);pump(g,1.2);base=resources(g);service, compositor = start_graphics(g);with_service=resources(g);report['baseline']=base;report['with_service']=with_service
   def start(background=False):
    b=len(g.output);send_bytes(g,(b'spawn-file' if background else b'exec-file')+b' /bin/aurora.elf\r');g.expect(b'BROWSER_READY',start=b,timeout=90);pump(g,.3);return b
   def finish(b):
@@ -91,8 +92,8 @@ try:
    for _ in range(2):b=start();finish(b)
    mark('three_launch_exit_cycles_exact_resources')
    b=start(True);pid=int(re.search(rb'\[loader\] started pid=(\d+)',bytes(g.output)[b:])[1]);command(g,f'kill {pid}',b'kill: accepted');command(g,f'wait {pid}',b'kind=killed');assert resources(g)==with_service;mark('killed_browser_full_resource_return')
-   b=start(True);pid=int(re.search(rb'\[loader\] started pid=(\d+)',bytes(g.output)[b:])[1]);command(g,f'kill {service}',b'kill: accepted');command(g,f'wait {pid}',b'kind=exited code=72');command(g,f'wait {service}',b'kind=killed');assert resources(g)==base;mark('display_death_browser_fails_closed_serial_survives');service_result=command(g,'display-start',b'result=0');service=int(re.search(rb'\[display-start\] pid=(\d+)',service_result)[1]);g.expect(b'[display-service] ready');with_service=resources(g);b=start();finish(b);mark('new_browser_after_display_restart')
-  command(g,'exec gfxdemo stop',b'kind=exited code=0');command(g,f'wait {service}',b'kind=exited code=0');assert resources(g)==base;pump(g,.2);command(g,'sync',b'[files] sync=ok');mark('file_sync_and_serial_rescue_after_browser');report['status']='PASSED'
+   b=start(True);pid=int(re.search(rb'\[loader\] started pid=(\d+)',bytes(g.output)[b:])[1]);command(g,f'kill {service}',b'kill: accepted');command(g,f'wait {pid}',b'kind=exited code=72');command(g,f'wait {service}',b'kind=killed');reap_compositor(g,compositor);assert resources(g)==base;mark('display_death_browser_fails_closed_serial_survives');service, compositor = start_graphics(g);with_service=resources(g);b=start();finish(b);mark('new_browser_after_display_restart')
+  stop_graphics(g, service, compositor);assert resources(g)==base;pump(g,.2);command(g,'sync',b'[files] sync=ok');mark('file_sync_and_serial_rescue_after_browser');report['status']='PASSED'
 except Exception as error:report['error']=str(error);raise
 finally:
  if g:(out/'serial.log').write_bytes(g.output);g.close()

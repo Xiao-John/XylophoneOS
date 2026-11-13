@@ -18,7 +18,7 @@ from run_qemu import MACHINE, qemu_command
 
 
 class Guest:
-    def __init__(self, image, name, *, cpu="qemu64,+rdrand", debug_port=None, work_disk=None, iso=None):
+    def __init__(self, image, name, *, cpu="qemu64,+rdrand", debug_port=None, work_disk=None, iso=None, network=False):
         # Boot medium follows the image suffix unless the caller overrides:
         # .iso files need -cdrom, everything else (real_mode.img) stays floppy.
         if iso is None:
@@ -28,7 +28,7 @@ class Guest:
         self.temp = tempfile.TemporaryDirectory(prefix="xos_")
         self.qmp_path = str(Path(self.temp.name) / "qmp.sock")
         self.command = qemu_command(image, qmp=self.qmp_path, cpu=cpu, debug_port=debug_port,
-                                    work_disk=work_disk, iso=iso)
+                                    work_disk=work_disk, iso=iso, network=network)
         self.stderr = open(ROOT / f"build/{name}_qemu.log", "wb")
         self.process = subprocess.Popen(self.command, stdin=subprocess.PIPE,
                                         stdout=subprocess.PIPE, stderr=self.stderr)

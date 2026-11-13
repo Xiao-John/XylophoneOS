@@ -18,6 +18,7 @@ sys.path[:0] = [str(ROOT / 'tests'), str(ROOT / 'scripts')]
 from boot_smoke import Guest
 from make_work_disk import create_fat32
 from process_smoke import command, resources
+from graphics_guest import start_graphics
 from ssg_p3b_guest import fixture, key
 from ssg_public_paths import portable
 from ssg_watch_events import decode_event_records
@@ -68,8 +69,7 @@ def main():
             send_bytes(guest, b'run\r')
             guest.expect_supervisor(trace=True, timeout=45)
             command(guest, 'demo quiet', b'demo tasks stopped')
-            command(guest, 'display-start', b'result=0')
-            guest.expect(b'[display-service] ready')
+            service, compositor = start_graphics(guest)
             active = resources(guest)
             summary['active_display_resources'] = active
             original_qmp = guest.qmp

@@ -13,7 +13,7 @@ MACHINE = "pc-i440fx-10.0"
 
 
 def qemu_command(image, *, vga=False, display=None, qmp=None, debug_port=None,
-                 cpu="qemu64,+rdrand", work_disk=None, iso=False):
+                 cpu="qemu64,+rdrand", work_disk=None, iso=False, network=False):
     configured_qemu = os.environ.get("QEMU", "qemu-system-x86_64")
     qemu = shutil.which(configured_qemu)
     if not qemu and "QEMU" not in os.environ and os.name == "nt":
@@ -38,6 +38,9 @@ def qemu_command(image, *, vga=False, display=None, qmp=None, debug_port=None,
     ]
     if work_disk is not None:
         command += ["-drive", f"file={work_disk},format=raw,if=ide,index=0,media=disk,cache=writeback"]
+    if network:
+        command += ["-netdev", "user,id=xosnet", "-device",
+                    "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56"]
     if qmp:
         command += ["-qmp", f"unix:{qmp},server=on,wait=off"]
     if debug_port is not None:
@@ -49,6 +52,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--vga", action="store_true", help="open an SDL VGA window")
     parser.add_argument("--display", help="QEMU display backend (for example sdl, gtk, or none)")
+    parser.add_argument("--network", action="store_true", help="enable the explicit modern VirtIO-net user-driver profile (instance 41)")
     parser.add_argument("--real-mode", action="store_true", help="run the original 16-bit exercise")
     parser.add_argument("--debug-port", type=int, help="pause at reset and listen on loopback for LLDB/GDB")
     parser.add_argument("--work-disk", type=Path, help="existing FAT16/FAT32 work disk image")
@@ -76,6 +80,7 @@ def main():
         subprocess.run(qemu_command(image, vga=args.vga, display=args.display,
                                     debug_port=args.debug_port,
                                     work_disk=None if args.real_mode else work_disk,
+                                    network=args.network,
                                     iso=iso_boot), check=True)
     except KeyboardInterrupt:
         pass

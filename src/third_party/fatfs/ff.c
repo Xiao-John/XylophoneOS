@@ -5267,9 +5267,10 @@ FRESULT f_mkdir (
 /* API: Rename a File/Directory                                          */
 /*-----------------------------------------------------------------------*/
 
-FRESULT f_rename (
-	const TCHAR* path_old,	/* Pointer to the object name to be renamed */
-	const TCHAR* path_new	/* Pointer to the new name */
+static FRESULT rename_object (
+	const TCHAR* path_old,
+	const TCHAR* path_new,
+	FIL* opened
 )
 {
 	FRESULT res;
@@ -5290,7 +5291,20 @@ FRESULT f_rename (
 				res = FR_INVALID_NAME;		/* Object must not be a dot name or blank name */
 #if FF_FS_LOCK
 			} else {
-				res = chk_share(&djo, 2);	/* Check if the object is in use */
+				if (opened) {
+					/* XOS owns exactly one FIL for every shared file object. */
+					UINT id = opened->obj.lockid;
+					if (opened->obj.fs != fs || opened->obj.id != fs->id ||
+						id == 0 || id > FF_FS_LOCK || Files[id - 1].fs != fs ||
+						Files[id - 1].clu != djo.obj.sclust || Files[id - 1].ofs != djo.dptr ||
+						(Files[id - 1].ctr != 1 && Files[id - 1].ctr != 0x100) ||
+						opened->dir_sect != djo.sect || opened->dir_ptr != djo.dir ||
+						(djo.obj.attr & AM_DIR)) {
+						res = FR_LOCKED;
+					}
+				} else {
+					res = chk_share(&djo, 2);
+				}
 #endif
 			}
 		}
@@ -5368,6 +5382,16 @@ FRESULT f_rename (
 			if (res == FR_OK) {		/* New entry has been created */
 				res = dir_remove(&djo);	/* Remove old entry */
 				if (res == FR_OK) {
+					/* The new entry is authoritative before the final flush. A
+					   flush error does not restore the deleted old entry. */
+					if (opened) {
+						opened->dir_sect = djn.sect;
+						opened->dir_ptr = djn.dir;
+#if FF_FS_LOCK
+						Files[opened->obj.lockid - 1].clu = djn.obj.sclust;
+						Files[opened->obj.lockid - 1].ofs = djn.dptr;
+#endif
+					}
 					res = sync_fs(fs);
 				}
 			}
@@ -5377,6 +5401,21 @@ FRESULT f_rename (
 	}
 
 	LEAVE_FF(fs, res);
+}
+
+FRESULT f_rename (const TCHAR* path_old, const TCHAR* path_new)
+{
+	return rename_object(path_old, path_new, 0);
+}
+
+/* XOS extension: move a sole open regular-file object while keeping its lock.
+   The service serializes calls and shares this FIL across its descriptions. */
+FRESULT f_rename_open (FIL* opened, const TCHAR* path_old, const TCHAR* path_new)
+{
+	FRESULT res;
+	if (!opened) return FR_INVALID_OBJECT;
+	res = f_sync(opened);
+	return res == FR_OK ? rename_object(path_old, path_new, opened) : res;
 }
 
 #endif /* !FF_FS_READONLY */

@@ -8,10 +8,14 @@ import argparse
 import hashlib
 import json
 import os
+import shlex
 from pathlib import Path
 import shutil
 import subprocess
 from ipc_v1_manifest import ipc_v1_manifest_entry
+from device_manifest import device_manifest_entry
+from archive_provenance import capture_build, copy_archive_provenance
+from archive_member_map import verify_bundle
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -62,7 +66,11 @@ def main():
                     *sorted((ROOT / 'src/user/threading/include').rglob('*.h')),
                     *sorted((ROOT / 'src/user').rglob('*.cpp')),
                     ROOT / 'scripts/build_threading_sdk.py', ROOT / 'scripts/build_threading_newlib.py',
+                    ROOT / 'scripts/newlib_patches.py',
+                    ROOT / 'scripts/archive_provenance.py', ROOT / 'scripts/archive_member_map.py',
+                    *sorted((ROOT / 'src/ports/newlib/patches').glob('*.patch')),
                     ROOT / 'scripts/build.py', ROOT / 'scripts/toolchain.py', ROOT / 'scripts/user_build.py',
+                    ROOT / 'scripts/ipc_v1_manifest.py', ROOT / 'scripts/device_manifest.py',
                     ROOT / 'src/ports/gcc/patches/0008-xos-thread-clock-boundary.patch',
                     ROOT / 'src/user/threading/compile.py', ROOT / 'src/user/arch/x86_64/user.ld',
                     ROOT / 'src/user/arch/x86_64/start.asm']
@@ -79,10 +87,14 @@ def main():
     if output.is_symlink():
         raise SystemExit('Refusing a symlinked SDK output directory')
     output.mkdir(parents=True, exist_ok=True)
+    build_id = hashlib.sha256(json.dumps({'inputs': initial_inputs,
+        'newlib': sha(prefix.parent / 'receipt.json'), 'gcc': gcc_tree_before}, sort_keys=True).encode()).hexdigest()
+    capture = capture_build(output, build_id, 'xos-source-declarations')
+    archive_manifests = {}
     logs = args.logs_dir.resolve()
     if logs != ROOT / 'build' and ROOT / 'build' not in logs.parents:
         raise SystemExit('logs directory must be build/ or one of its subdirectories')
-    logs.mkdir(exist_ok=True)
+    logs.mkdir(parents=True, exist_ok=True)
     commands = []
     def run(command, name, cwd=None, env=None):
         commands.append([str(s) for s in command])
@@ -113,8 +125,15 @@ def main():
     for folder in ['include', 'lib']:
         (output / folder).mkdir(exist_ok=True)
     shutil.copytree(newlib / 'include', output / 'include', dirs_exist_ok=True)
+    from newlib_patches import apply_patches
+    apply_patches(output / 'include', headers=True)
     for name in ['libc.a', 'libm.a']:
         shutil.copyfile(newlib / 'lib' / name, output / 'lib' / name)
+        captured = newlib / 'lib' / (name + '.member_manifest.json')
+        if not captured.is_file():
+            raise SystemExit('newlib requires a build-produced member manifest; rebuild it with the current builder')
+        copied = copy_archive_provenance(captured, prefix.parent, output / 'lib' / name, output)
+        archive_manifests[copied.relative_to(output).as_posix()] = sha(copied)
     for folder in ['src/shared/include/xos', 'src/user/include/xos']:
         shutil.copytree(ROOT / folder, output / 'include/xos', dirs_exist_ok=True)
     for header in (ROOT / 'src/user/include').glob('*.h'):
@@ -125,6 +144,8 @@ def main():
         header.write('\n/* XOS E13-T profile: matching archives use __getreent. */\n#define __DYNAMIC_REENT__ 1\n')
     with (output / 'include/time.h').open('a') as header:
         header.write('\n#ifndef CLOCK_MONOTONIC\n#define CLOCK_MONOTONIC 4\n#endif\n'
+                     '#ifndef CLOCK_PROCESS_CPUTIME_ID\n#define CLOCK_PROCESS_CPUTIME_ID 2\n#endif\n'
+                     '#ifndef CLOCK_THREAD_CPUTIME_ID\n#define CLOCK_THREAD_CPUTIME_ID 3\n#endif\n'
                      '#ifdef __cplusplus\nextern "C" {\n#endif\n'
                      'int clock_gettime(clockid_t, struct timespec*);\n'
                      'int clock_getres(clockid_t, struct timespec*);\n'
@@ -165,16 +186,16 @@ def main():
     for source in sources:
         target = objects / (str(source.relative_to(ROOT)).replace('/', '_') + '.o')
         target.parent.mkdir(parents=True, exist_ok=True)
-        # C-only builds have no C++ exceptions, so pthread.cpp must not pull in
-        # __gxx_personality_v0; the C++ SDK keeps unwinding for throwing initializers.
         exceptions = ['-fexceptions', '-funwind-tables'] if args.cpp else ['-fno-exceptions']
         extra = exceptions if source.name == 'pthread.cpp' else ['-fno-exceptions']
-        run([cross, *flags, *extra, '-c', str(source), '-o', str(target)], source.stem + '.log')
+        run([*capture.launcher(), cross, *flags, *extra, '-c', str(source), '-o', str(target)], source.stem + '.log')
         compiled.append(target)
     archive = output / 'lib/libxos.a'
     if archive.exists():
         archive.unlink()
     run(['x86_64-elf-ar', 'rcsD', str(archive), *map(str, compiled)], 'archive.log')
+    captured = capture.archive(archive)
+    archive_manifests[captured.relative_to(output).as_posix()] = sha(captured)
     # Keep the C++ configuration in a private, separate target runtime build.
     if args.cpp:
         work = args.cpp_work_dir.resolve()
@@ -184,6 +205,7 @@ def main():
         (work / 'libgcc').mkdir(parents=True, exist_ok=True)
         shutil.copyfile(gcc / 'libgcc/gthr-posix.h', work / 'libgcc/gthr-default.h')
         build.mkdir(exist_ok=True)
+        gcc_capture = capture_build(work, build_id, 'gcc-runtime-mixed-source-declarations')
         env = os.environ.copy()
         env.pop('COMPILER_PATH', None)  # Host configure helpers use the native linker.
         target_tools = work / 'target_tools'
@@ -197,11 +219,11 @@ def main():
         include_dir = str(output / 'include')
         if os.name == 'nt':
             include_dir = subprocess.check_output([shutil.which('cygpath'), '-u', include_dir], text=True).strip()
-        env.update(CC='x86_64-elf-gcc -B' + binutils,
-                   CXX='x86_64-elf-g++ -B' + binutils,
+        env.update(CC=shlex.join([*gcc_capture.launcher(), 'x86_64-elf-gcc', '-B' + binutils]),
+                   CXX=shlex.join([*gcc_capture.launcher(), 'x86_64-elf-g++', '-B' + binutils]),
                    AR='x86_64-elf-ar', RANLIB='x86_64-elf-ranlib',
-                   CFLAGS='-O2 -g -mno-red-zone -I' + include_dir,
-                   CXXFLAGS='-O2 -g -mno-red-zone -fno-pie -fno-pic -D__XOS_NO_WALL_CLOCK__ -I' + include_dir,
+                   CFLAGS='-O2 -g -mno-red-zone -DXOS_THREADED_RUNTIME -I' + include_dir,
+                   CXXFLAGS='-O2 -g -mno-red-zone -fno-pie -fno-pic -DXOS_THREADED_RUNTIME -D__XOS_NO_WALL_CLOCK__ -I' + include_dir,
                    gcc_cv_target_thread_file='posix', ac_cv_func_fcntl='yes', ac_cv_func_getexecname='no', ac_cv_func___cxa_thread_atexit='yes')
         run(configure_command(gcc / 'libstdc++-v3/configure', '--host=x86_64-elf',
              '--prefix=' + str(output / 'cpp'), '--with-gxx-include-dir=' + str(output / 'cpp/include'),
@@ -273,7 +295,8 @@ def main():
         else:
             # This fallback is only needed when no completed cross-GCC build
             # is available; avoid rebuilding generator programs on MSYS.
-            run(['make', '-o', 'specs', '-o', 'xgcc.exe', 'libgcc.mvars'],
+            run(['make', '-o', 'specs', '-o', 'xgcc', '-o', 'xgcc.exe',
+                 'libgcc.mvars', 'tm.h', 'tm_p.h', 'tconfig.h'],
                 'gcc_headers_make.log', cwd=compiler_build, env=native)
         for header in ('tm.h', 'tm_p.h', 'tconfig.h'):
             path = compiler_build / header
@@ -291,7 +314,7 @@ def main():
              '--disable-gcov', '--prefix=' + str(output / 'cpp')),
             'libgcc_configure.log', cwd=unwind_build, env=env)
         members = ['unwind-dw2.o', 'unwind-dw2-fde.o', 'unwind-sjlj.o', 'unwind-c.o', 'emutls.o']
-        run(['make', '-j' + str(args.jobs), 'gcc_objdir=' + str(compiler_build), *members],
+        run(['make', '-j' + str(args.jobs), 'gcc_objdir=' + str(compiler_build), 'libgcc.a', *members],
             'libgcc_make.log', cwd=unwind_build, env=env)
         libgcc = output / 'cpp/lib/libgcc.a'
         original_name = subprocess.check_output([cross, '-print-libgcc-file-name'], text=True).strip()
@@ -299,8 +322,12 @@ def main():
             original_name = subprocess.check_output(
                 [shutil.which('cygpath'), '-w', original_name], text=True).strip()
         original = Path(original_name)
-        shutil.copyfile(original, libgcc)
+        shutil.copyfile(unwind_build / 'libgcc.a', libgcc)
         run(['x86_64-elf-ar', 'rcsD', str(libgcc), *[str(unwind_build / name) for name in members]], 'libgcc_archive.log')
+        for built_archive in sorted((output / 'cpp').rglob('*.a')):
+            captured = gcc_capture.archive(built_archive)
+            copied = copy_archive_provenance(captured, work, built_archive, output)
+            archive_manifests[copied.relative_to(output).as_posix()] = sha(copied)
         for name in ['COPYING3', 'COPYING.RUNTIME']:
             shutil.copyfile(gcc / name, output / 'licenses' / ('gcc-' + name))
     final_inputs = {str(p.relative_to(ROOT)): sha(p) for p in owned_inputs}
@@ -314,10 +341,16 @@ def main():
                 if system_manifest.is_file() else '')
     receipt = {'profile': 'xos-threading-v1-experimental', 'abi': 1, 'thread_abi': 1,
                'target': 'x86_64-elf', 'build_id': build_id,
+               'archive_provenance': {'version': 1, 'manifests': archive_manifests, 'legacy_archives': {}},
                'vm_extensions': {'version': 1, 'syscall': 67, 'status': 'implemented_unqualified'},
+               'cpu_time': {'version': 1, 'syscall': 89, 'status': 'implemented_unqualified',
+                            'unit': 'nanoseconds', 'scope': ['process', 'current_thread', 'waited_children']},
                'display_extensions': {'version': 1, 'syscalls': [65, 66], 'pixel_format': 'XRGB8888', 'surface_count': 1},
                'ipc_v1': ipc_v1_manifest_entry(),
-               'process_extensions': {'syscalls': [*range(54,62),80,81,82], 'file_operations': [20,21,22],
+               'device_authorization': device_manifest_entry(),
+               'file_identity': {'version': 1, 'wire_version': 2, 'status': 'implemented_unverified',
+                                 'cwd_operations': [26, 27, 28], 'directory_flag': 1024, 'pin_flag': 2048},
+               'process_extensions': {'syscalls': [*range(54,62),80,81,82], 'file_operations': list(range(20,29)),
                    'startup_versions': [1,2,3], 'exec_image_abi': 3, 'exec_marker': '.xos.exec',
                    'fork_supported': False, 'exec_supported': False, 'fd_count': 32,
                    'pipe_atomic_bytes': 4096, 'pipe_wait_write_minimum': True,
@@ -338,6 +371,7 @@ def main():
                'base_libgcc_sha256': sha(original) if args.cpp else None,
                'newlib_input': {name: sha(newlib / 'lib' / name) for name in ['libc.a', 'libm.a']},
                'artifacts': {str(p.relative_to(output)): sha(p) for p in output.rglob('*') if p.is_file() and p.name != 'manifest.json'}}
+    verify_bundle(output, receipt['archive_provenance'])
     (output / 'manifest.json').write_text(json.dumps(receipt, indent=2) + '\n')
     print('Built experimental threading SDK:', output)
 

@@ -61,7 +61,7 @@ class service {
     void purge_input(window_id target);
     void reset_window_state(window_id id);
     void release_window(window_id id, u32 slot);
-    void note_key_press(window_id target, u32 code);
+    window_id note_key_press(window_id target, u32 code);
     window_id take_press_target(u32 code);
     void send_pointer_leave(const display_event& source, window_id old_target);
 

@@ -437,5 +437,74 @@ int main() {
         assert(!release_service.queue_input(key));   // orphan release is dropped, not reassigned
         assert(!release_service.take_input(release_b, release_window_b, event));
     }
+
+    {
+        service repeat_service;
+        const auto owner = repeat_service.connect(95);
+        const auto original = repeat_service.create_window(owner, first);
+        const auto other = repeat_service.create_window(owner, second);
+        assert(repeat_service.focus_window(owner, original));
+        display_event key{};
+        key.kind = 1;
+        key.code = 30;
+        key.sequence = 1;
+        assert(repeat_service.queue_input(key));
+        assert(repeat_service.focus_window(owner, other));
+        key.sequence = 2;
+        assert(repeat_service.queue_input(key));
+        key.sequence = 3;
+        key.kind = 2;
+        assert(repeat_service.queue_input(key));
+        input_payload event{};
+        assert(repeat_service.take_input(owner, original, event));
+        assert(event.kind == input_kind::key_press && event.input_sequence == 1);
+        assert(repeat_service.take_input(owner, original, event));
+        assert(event.kind == input_kind::key_press && event.input_sequence == 2);
+        assert(repeat_service.take_input(owner, original, event));
+        assert(event.kind == input_kind::key_release && event.input_sequence == 3);
+        assert(!repeat_service.take_input(owner, other, event));
+
+        key.sequence = 4;
+        key.kind = 1;
+        assert(repeat_service.queue_input(key));
+        assert(repeat_service.take_input(owner, other, event));
+        assert(event.kind == input_kind::key_press);
+    }
+
+    {
+        service resync_service;
+        const auto owner = resync_service.connect(96);
+        const auto original = resync_service.create_window(owner, first);
+        const auto other = resync_service.create_window(owner, second);
+        assert(resync_service.focus_window(owner, original));
+        display_event key{};
+        key.kind = 1;
+        key.code = 30;
+        key.sequence = 1;
+        assert(resync_service.queue_input(key));
+        input_payload event{};
+        assert(resync_service.take_input(owner, original, event));
+        assert(resync_service.focus_window(owner, other));
+        display_event resync{};
+        resync.kind = 4;
+        resync.sequence = 2;
+        resync.lost = 65;
+        resync.x = 60; resync.y = 60;
+        assert(resync_service.queue_input(resync));
+        assert(resync_service.take_input(owner, original, event));
+        assert(event.kind == input_kind::resync && event.lost == 65);
+        assert(event.x < first.x || event.y < first.y ||
+               event.x >= first.x + static_cast<i32>(first.width) ||
+               event.y >= first.y + static_cast<i32>(first.height));
+        assert(resync_service.take_input(owner, other, event));
+        assert(event.kind == input_kind::resync && event.lost == 65);
+        assert(event.x == 60 && event.y == 60);
+
+        key.sequence = 3;
+        assert(resync_service.queue_input(key));
+        assert(resync_service.take_input(owner, other, event));
+        assert(event.kind == input_kind::key_press);
+        assert(!resync_service.take_input(owner, original, event));
+    }
     return 0;
 }

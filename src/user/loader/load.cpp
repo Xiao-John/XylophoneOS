@@ -90,7 +90,7 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
                  bool close_file, u32 file_handle, const spawn_options* options = nullptr,
                  execution::launch_diagnostic* diagnostic = nullptr) {
     if (diagnostic != nullptr) { *diagnostic = {execution::launch_stage::none, 0, elf::error::none}; }
-    if (argc == 0 || argc > process_max_args || argv == nullptr || size == 0 ||
+    if (argc == 0 || argc > process_max_args || argv == nullptr ||
         read_exact == nullptr || name == nullptr) {
         if (diagnostic != nullptr) { *diagnostic = {execution::launch_stage::prepare, process_error_invalid, elf::error::none}; }
         if (close_file) { (void)file_client.close(file_handle); }
@@ -199,7 +199,8 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
             if (options->file_handles[fd] != 0) { extension->flags |= 1u << (8 + fd); }
         }
         extension->environment = startup_address + env_offset;
-        if (!put_string(options->working_directory, extension->working_directory)) {
+        if (options->working_directory != nullptr &&
+            !put_string(options->working_directory, extension->working_directory)) {
             return fail_before_create(process_error_invalid);
         }
         for (u32 fd = 0; fd < 3; ++fd) {
@@ -239,6 +240,20 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     i64 result = 0;
     if (options != nullptr && !replacing) {
         auto* extension = reinterpret_cast<startup_extension*>(page + startup_extension_offset);
+        if (!file_client_ready) {
+            file_client_ready = file_client.init();
+            if (!file_client_ready) { result = static_cast<i64>(file::status::io); }
+        }
+        if (result >= 0) {
+            result = static_cast<i64>(file::status::would_block);
+            for (u32 attempt = 0; attempt < 64 && result == static_cast<i64>(file::status::would_block); ++attempt) {
+                result = file_client.set_cwd(options->working_directory, static_cast<u64>(child));
+                if (result == static_cast<i64>(file::status::would_block)) { yield(); }
+            }
+        }
+        if (result < 0 && diagnostic != nullptr) {
+            *diagnostic = {execution::launch_stage::file_setup, result, elf::error::none};
+        }
         for (u32 fd = 0; result >= 0 && fd < 3; ++fd) {
             if (options->file_handles[fd] != 0) {
                 if (options->open_paths[fd] != nullptr) { result = process_error_invalid; break; }
@@ -250,7 +265,13 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
                                                        static_cast<u64>(child), target_handle);
                     if (transferred == static_cast<i64>(file::status::would_block)) { yield(); }
                 }
-                if (transferred < 0) { result = transferred; break; }
+                if (transferred < 0) {
+                    result = transferred;
+                    if (diagnostic != nullptr) {
+                        *diagnostic = {execution::launch_stage::file_setup, result, elf::error::none};
+                    }
+                    break;
+                }
                 extension->file_handles[fd] = target_handle;
                 continue;
             }
@@ -283,7 +304,10 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
                 !read_exact(read_context, segment.offset + start - segment.address,
                             page_buffer + (start - address),
                             static_cast<u32>(file_end - start))) {
-                result = process_error_invalid;
+                result = static_cast<i64>(file::status::io);
+                if (diagnostic != nullptr) {
+                    *diagnostic = {execution::launch_stage::file_setup, result, elf::error::io};
+                }
                 break;
             }
             mapping = {address, reinterpret_cast<u64>(page_buffer), 4096,
@@ -307,7 +331,12 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     // copies. A close failure is a failed load and must not make a runnable child.
     if (close_file) {
         const i64 closed = file_client.close(file_handle);
-        if (result >= 0 && closed < 0) { result = closed; }
+        if (result >= 0 && closed < 0) {
+            result = closed;
+            if (diagnostic != nullptr) {
+                *diagnostic = {execution::launch_stage::file_setup, result, elf::error::none};
+            }
+        }
     }
     if (result >= 0 && options != nullptr && options->prepare_child != nullptr) {
         result = options->prepare_child(static_cast<u64>(child), options->prepare_context);
@@ -384,7 +413,7 @@ i64 spawn_file_impl(const char* path, u32 argc, const char* const* argv, const s
         file_client_ready = true;
     }
     u32 handle = 0, size = 0, version = 0;
-    const i64 opened = file_client.open(path, file::read_only, handle, size, version);
+    const i64 opened = file_client.open(path, file::read_only | file::open_pin, handle, size, version);
     (void)version; // The held read-only handle pins the opened version until close;
     if (opened < 0) { return opened; }
     opened_file source{&file_client, handle};
@@ -405,13 +434,13 @@ i64 spawn_file_diagnosed_impl(const char* path, u32 argc, const char* const* arg
     }
     if (!file_client_ready) {
         if (!file_client.init()) {
-            diagnostic = {execution::launch_stage::open, process_error_resources, elf::error::none};
-            return process_error_resources;
+            diagnostic = {execution::launch_stage::open, static_cast<i64>(file::status::io), elf::error::none};
+            return diagnostic.code;
         }
         file_client_ready = true;
     }
     u32 handle = 0, size = 0, version = 0;
-    const i64 opened = file_client.open(path, file::read_only, handle, size, version);
+    const i64 opened = file_client.open(path, file::read_only | file::open_pin, handle, size, version);
     (void)version;
     if (opened < 0) {
         diagnostic = {execution::launch_stage::open, opened, elf::error::none};

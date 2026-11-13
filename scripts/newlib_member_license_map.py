@@ -21,6 +21,8 @@ import json
 import re
 from pathlib import Path
 
+from archive_member_map import read_archive
+
 ROOT = Path(__file__).resolve().parents[1]
 
 SDK_ARCHIVES = ("build/sdk/lib/libc.a", "build/sdk/lib/libm.a")
@@ -39,32 +41,8 @@ DECLARATION_WINDOW = None  # whole file: a few sources carry the copyright below
 
 
 def iter_archive_members(path):
-    """Yield member names of a GNU ``!<arch>`` archive in order."""
-    data = path.read_bytes()
-    if data[:8] != b"!<arch>\n":
-        raise SystemExit(f"not a plain ar archive: {path}")
-    offset, longnames = 8, None
-    while offset + 60 <= len(data):
-        header = data[offset:offset + 60]
-        name = header[0:16].decode("ascii", "replace")
-        size = int(header[48:58].decode().strip())
-        body = offset + 60
-        if name.startswith("//"):
-            longnames = data[body:body + size]
-        token = name.strip()
-        if token in ("/", "//") or token.startswith("/SYM"):
-            pass
-        elif token.startswith("/") and token[1:].isdigit() and longnames is not None:
-            start = int(token[1:])
-            end = longnames.find(b"/\n", start)
-            yield longnames[start:end if end >= 0 else None].decode()
-        else:
-            yield token.rstrip("/")
-        offset = body + size
-        if offset % 2:
-            offset += 1
-
-
+    """Yield validated GNU archive member names in file order."""
+    yield from read_archive(path)
 def load_dependency_map():
     """Map object basename -> tree-relative source path, first tree wins."""
     mapping = {}
@@ -178,7 +156,7 @@ def main():
 
     for archive in SDK_ARCHIVES:
         entries = []
-        for member in sorted(set(iter_archive_members(ROOT / archive))):
+        for member in sorted(iter_archive_members(ROOT / archive)):
             dependency = member if member.endswith(".o") else member + ".o"
             if dependency in dependencies:
                 source, resolution = dependencies[dependency], "dependency_file"

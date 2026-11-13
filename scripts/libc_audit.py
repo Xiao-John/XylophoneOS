@@ -1,4 +1,5 @@
-"""Produce the E06 dependency audit from the actual vendored SDK artifacts."""
+# SPDX-License-Identifier: Apache-2.0
+"""Inventory the current SDK's libc references and XOS definitions."""
 import hashlib
 import json
 import re
@@ -7,24 +8,19 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SDK = ROOT / "build/sdk"
-NEWLIB = ROOT / "src/third_party/newlib/x86_64-elf"
-PROVIDED = {
-    "_write", "_read", "_close", "_sbrk", "_fstat", "_isatty", "_lseek",
-    "_exit", "_getpid", "_kill", "_times", "write", "read", "close", "sbrk",
-    "fstat", "isatty", "lseek", "getpid", "kill", "open", "stat", "unlink",
-}
 
 
 def sha256(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def symbols(*args):
-    output = subprocess.check_output(["x86_64-elf-nm", *args], text=True)
+def symbols(*args, nm="x86_64-elf-nm"):
+    output = subprocess.check_output([nm, *args], text=True)
     values = []
     for line in output.splitlines():
         fields = line.split()
-        if fields:
+        # Archive member headings are not symbols.
+        if len(fields) >= 2 and len(fields[-2]) == 1:
             values.append(fields[-1])
     return values
 
@@ -35,33 +31,35 @@ def main():
     if not libc.is_file() or not libm.is_file():
         raise SystemExit("Run make build first")
     unresolved = sorted(set(symbols("-u", str(libc))))
-    provided = sorted(s for s in unresolved if s in PROVIDED)
-    unsupported = [s for s in ("open", "stat", "unlink") if s in provided]
+    definitions = set(symbols("--defined-only", "-g", str(SDK / "lib/libxos.a"),
+                              str(SDK / "lib/libxos_loader.a")))
+    provided = sorted(set(unresolved) & definitions)
+    metadata = json.loads((SDK / "manifest.json").read_text())
     hello = SDK.parent / "user_libc_hello.image.elf"
     report = {
-        "newlib_version": "4.6.0.20260123",
+        "newlib_version": metadata["libc"]["version"],
+        "build_id": metadata["build_id"],
         "configuration": {
-            "target": "x86_64-elf",
+            "target": metadata["target"],
+            "runtime_model": metadata["runtime_model"],
             "libc_sha256": sha256(libc),
             "libm_sha256": sha256(libm),
             "libc_bytes": libc.stat().st_size,
             "libm_bytes": libm.stat().st_size,
-            "sse": True,
-            "multilib": False,
-            "newlib_supplied_syscalls": False,
-            "lfn": False,
         },
         "provided_syscall_symbols": provided,
-        "unsupported_path_syscalls": unsupported,
+        "defined_path_syscall_symbols": sorted(definitions & {"open", "stat", "unlink"}),
         "unresolved_symbol_count": len(unresolved),
         "libc_hello": {
             "bytes": hello.stat().st_size if hello.is_file() else None,
             "sha256": sha256(hello) if hello.is_file() else None,
         },
         "notes": [
-            "console read/write and a 64 KiB static sbrk heap are implemented",
-            "open/stat/unlink return ENOSYS; POSIX file paths are not mapped to the XOS file service",
-            "per-task FXSAVE/FXRSTOR supplies SSE/x87 state; no libstdc++/exceptions/TLS",
+            "Undefined references are counted across libc archive members before final linking; "
+            "some are resolved by other members of libc itself.",
+            "Provided symbols are measured from libxos.a and libxos_loader.a, not a historical allowlist.",
+            "Symbol presence does not establish runtime semantics or guest qualification; "
+            "use the file, libc, threading and process regression suites.",
         ],
     }
     (ROOT / "build/libc_audit.json").write_text(json.dumps(report, indent=2) + "\n")

@@ -37,6 +37,8 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from archive_member_map import read_archive
+
 ROOT = Path(__file__).resolve().parents[1]
 
 ARCHIVE_TREES = {
@@ -69,35 +71,6 @@ DECLARATION_RULES = (
     ("other_copyright", re.compile(r"Copyright\s*(\(|©|\d)", re.I)),
 )
 SPDX_RE = re.compile(r"SPDX-License-Identifier:\s*(.+)")
-
-
-def read_archive(path):
-    """Return {member_name: bytes} for a GNU ``!<arch>`` archive, in file order."""
-    data = Path(path).read_bytes()
-    if data[:8] != b"!<arch>\n":
-        raise SystemExit(f"not a plain ar archive: {path}")
-    offset, longnames, out = 8, None, collections.OrderedDict()
-    while offset + 60 <= len(data):
-        header = data[offset:offset + 60]
-        name = header[0:16].decode("ascii", "replace")
-        size = int(header[48:58].decode().strip())
-        body = offset + 60
-        chunk = data[body:body + size]
-        if name.startswith("//"):
-            longnames = chunk
-        token = name.strip()
-        if token in ("/", "//") or token.startswith("/SYM"):
-            pass
-        elif token.startswith("/") and token[1:].isdigit() and longnames is not None:
-            start = int(token[1:])
-            end = longnames.find(b"/\n", start)
-            out[longnames[start:end if end >= 0 else None].decode()] = chunk
-        else:
-            out[token.rstrip("/")] = chunk
-        offset = body + size
-        if offset % 2:
-            offset += 1
-    return out
 
 
 def archive_target(archive_name):
@@ -319,6 +292,8 @@ def resolve(member, payload, deps, objects, target, source_root, source_idx,
         hits = target_scoped_candidates(objects.get(member, []), target)
         chosen, ambiguous_paths = prefer_candidate(hits, target)
         if chosen is not None:
+            if chosen.read_bytes() != payload:
+                return None, "object_record_byte_mismatch", False
             derived = source_from_object(parent_of_target(chosen), chosen, target)
             if derived:
                 if (source_root / derived).is_file():

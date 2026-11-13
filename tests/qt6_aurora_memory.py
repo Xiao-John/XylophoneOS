@@ -7,6 +7,7 @@ ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT/'tests'),str(ROO
 from boot_smoke import Guest
 from task_smoke import send_bytes,pump
 from process_smoke import command,resources
+from graphics_guest import start_graphics
 from make_work_disk import create_fat32
 from work_disk import transfer
 p=argparse.ArgumentParser()
@@ -17,7 +18,7 @@ report={'status':'FAILED','image_sha256':sha(a.image),'elf_sha256':sha(a.payload
 try:
  with tempfile.TemporaryDirectory(prefix='xos_aurora_memory_') as tmp:
   disk=Path(tmp)/'work.img';create_fat32(disk,512);transfer(disk,'mkdir','/bin');transfer(disk,'import','/bin/memory.elf',a.payload)
-  g=Guest(a.image.resolve(),str(out.relative_to(ROOT/'build'))+'/guest',work_disk=disk);report['qemu_command']=g.command;g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True);pump(g,1.3);command(g,'display-start',b'result=0');g.expect(b'[display-service] ready');base=resources(g)
+  g=Guest(a.image.resolve(),str(out.relative_to(ROOT/'build'))+'/guest',work_disk=disk);report['qemu_command']=g.command;g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True);pump(g,1.3);service, compositor = start_graphics(g);base=resources(g)
   for i in range(3):
    pair={}
    for mode in ('baseline','aurora'):

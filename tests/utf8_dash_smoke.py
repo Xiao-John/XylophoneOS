@@ -74,7 +74,7 @@ def main():
             guest.expect(b"$ ", start=begin, timeout=40)
             pump(guest, 0.3)
 
-            send(b"echo \xe4\xbd\xa0\xe5\xa5\xbd\r", b"\xe4\xbd\xa0\xe5\xa5\xbd")
+            send(b"echo \xe4\xbd\xa0\xe5\xa5\xbd\r", b"\n\xe4\xbd\xa0\xe5\xa5\xbd\n")
             check("echo", True)
 
             text = send(b"echo ab\xc3\xa9\x7fc\r", b"abc")

@@ -43,8 +43,8 @@ def main():
             pump(guest, 0.5)
             report["checks"].append({"name": "boot-to-shell", "passed": True})
             begin = len(guest.output)
-            send_bytes(guest, b"type hello\r")
-            guest.expect(b"hello", start=begin, timeout=20)
+            send_bytes(guest, b"type hello.elf\r")
+            guest.expect(b"hello.elf -> /hello.elf", start=begin, timeout=20)
             guest.expect(b"xsh> ", start=begin, timeout=20)
             report["checks"].append({"name": "files-service", "passed": True})
         finally:

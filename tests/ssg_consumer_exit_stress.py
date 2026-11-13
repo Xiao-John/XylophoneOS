@@ -14,6 +14,7 @@ sys.path[:0] = [str(ROOT / 'tests'), str(ROOT / 'scripts')]
 from boot_smoke import Guest
 from make_work_disk import create_fat32
 from process_smoke import command, resources
+from graphics_guest import start_graphics, stop_graphics
 from task_smoke import pump, send_bytes
 from work_disk import transfer
 
@@ -64,9 +65,7 @@ def main():
             guest.expect_supervisor(trace=True, timeout=45)
             command(guest, 'demo quiet', b'demo tasks stopped')
             baseline = resources(guest)
-            started = command(guest, 'display-start', b'result=0')
-            service = int(re.search(rb'\[display-start\] pid=(\d+)', started)[1])
-            guest.expect(b'[display-service] ready')
+            service, compositor = start_graphics(guest)
             active = resources(guest)
             for index in range(args.rounds):
                 begin = len(guest.output)
@@ -86,8 +85,7 @@ def main():
                     raise AssertionError('resources did not return to active baseline')
                 report['completed_rounds'] = index + 1
                 print('PASS denied-consumer exit', index + 1, flush=True)
-            command(guest, 'exec gfxdemo stop', b'kind=exited code=0')
-            command(guest, f'wait {service}', b'kind=exited code=0')
+            stop_graphics(guest, service, compositor)
             if resources(guest) != baseline:
                 raise AssertionError('display resources did not return to baseline')
             report['status'] = 'PASSED_SCOPED'

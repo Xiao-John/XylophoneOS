@@ -1,6 +1,11 @@
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:d2130c0cb77dd0098ba12904619db74012afb8aad81f429fdaa22178e6985e11 -->
+
 # work_log 编号索引
 
-新增记录：[ebd84ab1 — system/popen/pclose](ebd84ab1_system_popen.md)、
+新增记录：[615bd706 — 文件元数据 M0](615bd706_metadata_m0.md)、
+[ebd84ab1 — system/popen/pclose](ebd84ab1_system_popen.md)、
 [404fe6a0 — 文件服务 /dev/null](404fe6a0_dev_null.md)、
 [0397b23e — libc 时间与文件元数据符号](0397b23e_libc.md)、
 [179cb2fc — 端口规范与校验器](179cb2fc.md)、
@@ -53,6 +58,8 @@
 本索引不改变任何历史记录内容与文件名，仅登记编号归属；历史上曾有"晚合入方改号"
 方案，因会牵动被冻结清单的哈希级联而按"老人老办法"否决，过程见
 [0154](0154_c4_pivot_c5_rework_evidence_contract.md)。
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 ## 新占号登记（自 0156 起）
 

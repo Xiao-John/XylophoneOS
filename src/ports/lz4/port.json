@@ -1,0 +1,35 @@
+{
+  "format_version": 1,
+  "id": "lz4",
+  "name": "LZ4",
+  "upstream_version": "1.10.0",
+  "license": [
+    "BSD-2-Clause",
+    "GPL-2.0-only"
+  ],
+  "homepage": "https://lz4.org/",
+  "source": {
+    "kind": "tarball",
+    "lock": "source_lock.json"
+  },
+  "build": {
+    "system": "custom",
+    "recipe": "build.py",
+    "patches": []
+  },
+  "package": {
+    "id": "thirdparty.lz4",
+    "target_profile": "xos-x86_64-static-threaded-v1",
+    "xpk_sha256": "94724be9428a9d835fe4ea6d9772be9db08c54f3f31a61af79269bcd4361c199"
+  },
+  "integration": {
+    "guest_only": true,
+    "bootstrap_images": [],
+    "iso_members": []
+  },
+  "status": "guest_verified",
+  "note": "线程化构建（LZ4IO_MULTITHREAD=1，threading SDK），-T2 客体实测；库 BSD-2、CLI GPL-2。",
+  "evidence": [
+    "docs/reports/lz4_1_10_0_20261112/README.md"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "kind": "tarball",
+  "version": "0.8.3",
+  "url": "https://mirrors.aliyun.com/debian/pool/main/x/xxhash/xxhash_0.8.3.orig.tar.gz",
+  "upstream_site": "https://github.com/Cyan4973/xxHash/releases/tag/v0.8.3",
+  "archive": "xxhash_0.8.3.orig.tar.gz",
+  "sha256": "aae608dfe8213dfd05d909a57718ef82f30722c392344583d3f39050c7f29a80",
+  "sha256_scope": "mirror_fetch"
+}

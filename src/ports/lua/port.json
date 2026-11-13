@@ -1,0 +1,34 @@
+{
+  "format_version": 1,
+  "id": "lua",
+  "name": "Lua",
+  "upstream_version": "5.4.9",
+  "license": [
+    "MIT"
+  ],
+  "homepage": "https://www.lua.org/",
+  "source": {
+    "kind": "tarball",
+    "lock": "source_lock.json"
+  },
+  "build": {
+    "system": "custom",
+    "recipe": "build.py",
+    "patches": []
+  },
+  "package": {
+    "id": "thirdparty.lua",
+    "target_profile": "xos-x86_64-static-single-b2-v1",
+    "xpk_sha256": "edf3906ebd5f0ec3b033de10cd6edb71651ad84e7c8ab8bdb3d0131116cdfb6d"
+  },
+  "integration": {
+    "guest_only": true,
+    "bootstrap_images": [],
+    "iso_members": []
+  },
+  "status": "guest_verified",
+  "note": "上游默认 C99 配置，零补丁；交付解释器 + liblua.a + 头文件。xsh 与 dash 双路径实测；os.execute/io.popen 因 system()/popen() 未实现而诚实地失败（PL-0007）。",
+  "evidence": [
+    "docs/reports/lua_5_4_9_20261112/README.md"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "format_version": 1,
+  "id": "zstd",
+  "name": "Zstandard",
+  "upstream_version": "1.5.7",
+  "license": [
+    "BSD-3-Clause",
+    "GPL-2.0-only"
+  ],
+  "homepage": "https://facebook.github.io/zstd/",
+  "source": {
+    "kind": "tarball",
+    "lock": "source_lock.json"
+  },
+  "build": {
+    "system": "make",
+    "recipe": "build.py",
+    "patches": []
+  },
+  "package": {
+    "id": "thirdparty.zstd",
+    "target_profile": "xos-x86_64-static-threaded-v1",
+    "xpk_sha256": "81b6cf26e99312259771a415a2b6c8238cbe1c33c87638f1bd74c8401cab3237"
+  },
+  "integration": {
+    "guest_only": true,
+    "bootstrap_images": [],
+    "iso_members": []
+  },
+  "status": "guest_verified",
+  "note": "线程化构建（ZSTD_MULTITHREAD，threading SDK），-T2 客体实测；双许可 BSD-3/GPLv2。",
+  "evidence": [
+    "docs/reports/zstd_1_5_7_20261112/README.md"
+  ]
+}

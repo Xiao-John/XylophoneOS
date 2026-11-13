@@ -49,3 +49,5 @@ This still does not qualify the full COW3 matrix, complete desktop/SSG, networki
 The `b5c574499f0a6d73` image also passed boot 6/6, process 13/13, file 8/8, POSIX file 11/11, xsh and near-full file identity, three VirtIO ARP/IRQ/reset/release cycles, display 18 groups and Interactium guest. The dash identity entrance was not rerun on this image.
 
 Two additional independent VM3 libc guest runs on `b5c574499f0a6d73` passed after the first success; the cause of the earlier BIOS failures remains undetermined.
+
+As a follow-up to the earlier `iso_read` failures, the final `b5c574499f0a6d73` ISO was booted 20 times independently under QEMU with a private 512 MiB work disk; all 20 reached `xos64>`. This is a bounded repeat check and does not establish the cause of the earlier failures.

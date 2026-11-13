@@ -17,8 +17,13 @@ constexpr unsigned max_popen = 32;
 struct popen_entry {
     FILE* stream;
     pid_t pid;
+    bool reserved;
 };
 popen_entry popen_table[max_popen];
+// Short critical sections only (table scan/commit); no blocking work inside.
+volatile int popen_lock;
+void lock_table() { while (__atomic_exchange_n(&popen_lock, 1, __ATOMIC_ACQUIRE) != 0) {} }
+void unlock_table() { __atomic_store_n(&popen_lock, 0, __ATOMIC_RELEASE); }
 
 const char* shell_path() {
     const char* configured = getenv("XOS_SHELL");
@@ -53,7 +58,7 @@ int wait_for(pid_t pid) {
 extern "C" int system(const char* command) {
     if (command == nullptr) { return shell_path() != nullptr ? 1 : 0; }
     const char* shell = shell_path();
-    if (shell == nullptr) { errno = ENOENT; return 127; }
+    if (shell == nullptr) { errno = ENOENT; return 127 << 8; }
     (void)fflush(nullptr);
     const int pid = spawn_shell(shell, command, nullptr);
     if (pid < 0) {
@@ -61,7 +66,7 @@ extern "C" int system(const char* command) {
         // failures are reported as -1 with errno preserved.
         const int failure = errno;
         errno = failure;
-        return failure == ENOENT ? 127 : -1;
+        return failure == ENOENT ? (127 << 8) : -1;
     }
     return wait_for(pid);
 }
@@ -73,30 +78,60 @@ extern "C" FILE* popen(const char* command, const char* mode) {
     }
     const char* shell = shell_path();
     if (shell == nullptr) { errno = ENOENT; return nullptr; }
+
     unsigned slot = max_popen;
+    lock_table();
     for (unsigned i = 0; i < max_popen; ++i) {
-        if (popen_table[i].stream == nullptr) { slot = i; break; }
+        if (popen_table[i].stream == nullptr && !popen_table[i].reserved) {
+            popen_table[i] = popen_entry{nullptr, 0, true};
+            slot = i;
+            break;
+        }
     }
+    unlock_table();
     if (slot == max_popen) { errno = EMFILE; return nullptr; }
 
+    auto release_slot = [&]() {
+        lock_table();
+        popen_table[slot] = popen_entry{nullptr, 0, false};
+        unlock_table();
+    };
+
     int fds[2] = {-1, -1};
-    if (pipe(fds) != 0) { return nullptr; }
-    posix_spawn_file_actions_t actions;
-    if (posix_spawn_file_actions_init(&actions) != 0) {
-        (void)close(fds[0]); (void)close(fds[1]);
-        return nullptr;
-    }
+    if (pipe(fds) != 0) { release_slot(); return nullptr; }
     const int child_fd = mode[0] == 'r' ? fds[1] : fds[0];
     const int parent_fd = mode[0] == 'r' ? fds[0] : fds[1];
     const int target_fd = mode[0] == 'r' ? STDOUT_FILENO : STDIN_FILENO;
+
+    // Create the stream first: a failure here must not leave a child running.
+    FILE* stream = fdopen(parent_fd, mode);
+    if (stream == nullptr) {
+        (void)close(fds[0]); (void)close(fds[1]);
+        release_slot();
+        return nullptr;
+    }
+
+    posix_spawn_file_actions_t actions;
+    if (posix_spawn_file_actions_init(&actions) != 0) {
+        (void)fclose(stream);
+        (void)close(child_fd);
+        release_slot();
+        errno = ENOMEM;
+        return nullptr;
+    }
     int action_error = posix_spawn_file_actions_adddup2(&actions, child_fd, target_fd);
-    if (action_error == 0) { action_error = posix_spawn_file_actions_addclose(&actions, child_fd); }
-    if (action_error == 0 && child_fd != parent_fd) {
+    // Never close the descriptor that was just mapped onto the target.
+    if (action_error == 0 && child_fd != target_fd) {
+        action_error = posix_spawn_file_actions_addclose(&actions, child_fd);
+    }
+    if (action_error == 0 && parent_fd != target_fd && parent_fd != child_fd) {
         action_error = posix_spawn_file_actions_addclose(&actions, parent_fd);
     }
     if (action_error != 0) {
         posix_spawn_file_actions_destroy(&actions);
-        (void)close(fds[0]); (void)close(fds[1]);
+        (void)fclose(stream);
+        (void)close(child_fd);
+        release_slot();
         errno = action_error;
         return nullptr;
     }
@@ -104,27 +139,33 @@ extern "C" FILE* popen(const char* command, const char* mode) {
     const int pid = spawn_shell(shell, command, &actions);
     posix_spawn_file_actions_destroy(&actions);
     (void)close(child_fd);
-    if (pid < 0) { (void)close(parent_fd); return nullptr; }
-
-    FILE* stream = fdopen(parent_fd, mode);
-    if (stream == nullptr) {
-        (void)close(parent_fd);
-        (void)wait_for(pid);
+    if (pid < 0) {
+        (void)fclose(stream);
+        release_slot();
         return nullptr;
     }
-    popen_table[slot] = popen_entry{stream, static_cast<pid_t>(pid)};
+
+    lock_table();
+    popen_table[slot] = popen_entry{stream, static_cast<pid_t>(pid), false};
+    unlock_table();
     return stream;
 }
 
 extern "C" int pclose(FILE* stream) {
     if (stream == nullptr) { errno = EINVAL; return -1; }
     unsigned slot = max_popen;
+    pid_t pid = 0;
+    lock_table();
     for (unsigned i = 0; i < max_popen; ++i) {
-        if (popen_table[i].stream == stream) { slot = i; break; }
+        if (popen_table[i].stream == stream) {
+            slot = i;
+            pid = popen_table[i].pid;
+            popen_table[i] = popen_entry{nullptr, 0, false};
+            break;
+        }
     }
+    unlock_table();
     if (slot == max_popen) { errno = ECHILD; return -1; }
-    const pid_t pid = popen_table[slot].pid;
-    popen_table[slot] = popen_entry{nullptr, 0};
     (void)fclose(stream);
     return wait_for(pid);
 }

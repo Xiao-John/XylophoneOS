@@ -61,6 +61,23 @@ def main():
             after = resources(guest)
             if after != baseline:
                 raise AssertionError(f"resource leak: {baseline} -> {after}")
+            guest.close()
+            guest = None
+
+            bare = folder / "bare.img"
+            create_fat32(bare, 512)
+            for directory in ("/usr", "/usr/bin"):
+                transfer(bare, "mkdir", directory)
+            transfer(bare, "import", "/usr/bin/posix_shell", probe)
+            guest = boot(bare, "posix_shell_missing")
+            missing_baseline = resources(guest)
+            missing = command(guest, "posix_shell no-shell", b"kind=exited code=", timeout=120)
+            if b"kind=exited code=0" not in missing or b"POSIX_SHELL_MISSING_OK" not in missing:
+                raise AssertionError(missing[-4000:])
+            report["checks"].append("missing_shell_127")
+            after_missing = resources(guest)
+            if after_missing != missing_baseline:
+                raise AssertionError(f"resource leak (no shell): {missing_baseline} -> {after_missing}")
             report["checks"].append("resources_restored")
             report["status"] = "passed"
     finally:

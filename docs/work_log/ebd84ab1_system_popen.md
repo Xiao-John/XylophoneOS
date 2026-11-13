@@ -34,3 +34,12 @@ resources_restored
 
 覆盖 `system("true")`、`system("exit 3")`、`system("nosuchcommand-xyz")`→WEXITSTATUS 127、
 `system(NULL)`、`popen("echo hi","r")`、`popen("read value; exit 7","w")`。
+
+## 评审修正（#130）
+
+- shell 缺失 / spawn ENOENT：返回 `127 << 8`（wait 状态编码），调用方 `WEXITSTATUS`
+  得到 127。
+- `popen` 表用短原子自旋锁保护槽位预留/提交/移除；先 `fdopen` 再 spawn，流创建
+  失败不会留下运行中的子进程；`dup2` 目标 fd 不再被多余的 `close` 关掉。
+- 探针写入用例改为 `read value && [ "$value" = value ]`（错误内容返回 9）；
+  新增无 shell 盘用例，断言 `system` → `WEXITSTATUS 127`、`popen` → `ENOENT`。

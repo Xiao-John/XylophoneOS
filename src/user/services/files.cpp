@@ -93,10 +93,14 @@ struct file_identity_key {
     u16 inode;
 };
 
-// Inode 1 is the volume root. Other identities are issued monotonically and
+constexpr u16 dev_directory_inode = 0xfffe;
+constexpr u16 null_device_inode = 0xffff;
+
+// Inode 1 is the volume root; the top two identities are virtual objects.
+// FAT identities are issued monotonically and
 // never reused during this service lifetime, so removed entries cannot alias a
 // later file. Once the 16-bit namespace is exhausted, identity queries fail.
-constexpr u32 max_file_identities = 65534;
+constexpr u32 max_file_identities = 65532;
 file_identity_key file_identities[max_file_identities];
 u32 file_identity_count;
 u32 next_file_inode = 2;
@@ -117,7 +121,7 @@ file_identity_key identity_key(const FIL& file) {
 }
 
 bool can_allocate_identity() {
-    return file_identity_count < max_file_identities && next_file_inode <= 0xffffu;
+    return file_identity_count < max_file_identities && next_file_inode < dev_directory_inode;
 }
 
 bool identity_for_key(file_identity_key key, u16& inode) {
@@ -544,26 +548,6 @@ status resolve_service_path(client_session& session, const char* source, u32 len
             c == '"' || c == '<' || c == '>' || c == '|') { return status::invalid; }
     }
     if (length > 1 && source[length - 1] == '/' && !allow_trailing_slash) { return status::invalid; }
-    {
-        // Virtual device paths do not exist on the FAT volume; resolve them
-        // before walking parents (the parent store has no "dev" entry).
-        const char* bare = source[0] == '/' ? source + 1 : source;
-        const u32 bare_length = length - (source[0] == '/' ? 1u : 0u);
-        if (bare_length == 3 && bare[0] == 'd' && bare[1] == 'e' && bare[2] == 'v') {
-            output.parent = 0;
-            output.leaf[0] = 'd'; output.leaf[1] = 'e'; output.leaf[2] = 'v'; output.leaf[3] = '\0';
-            output.path[0] = 'd'; output.path[1] = 'e'; output.path[2] = 'v'; output.path[3] = '\0';
-            return status::ok;
-        }
-        if (bare_length == 8 && equals_path(bare, "dev/null")) {
-            output.parent = 0;
-            output.leaf[0] = 'n'; output.leaf[1] = 'u'; output.leaf[2] = 'l'; output.leaf[3] = 'l';
-            output.leaf[4] = '\0';
-            for (u32 i = 0; i < 8; ++i) { output.path[i] = bare[i]; }
-            output.path[8] = '\0';
-            return status::ok;
-        }
-    }
     output.parent = source[0] == '/' ? 0 : session.cwd;
     retain_object(output.parent);
     u32 position = 0;
@@ -592,6 +576,32 @@ status resolve_service_path(client_session& session, const char* source, u32 len
         if (code != status::ok) { return code; }
         u32 next = position;
         while (next < length && source[next] == '/') { ++next; }
+        // Recognize dev only after walking preceding components, so missing
+        // intermediate directories still fail even when followed by "..".
+        if (output.parent == 0 && size == 3 && source[begin] == 'd' &&
+            source[begin + 1] == 'e' && source[begin + 2] == 'v') {
+            bool null_device = false;
+            while (next < length) {
+                const u32 part = next;
+                while (next < length && source[next] != '/') { ++next; }
+                const u32 count = next - part;
+                if (count == 1 && source[part] == '.') {
+                    // A dot still requires the preceding object to be a directory.
+                    if (null_device) { return status::not_directory; }
+                } else if (!null_device && count == 4 && source[part] == 'n' &&
+                           source[part + 1] == 'u' && source[part + 2] == 'l' &&
+                           source[part + 3] == 'l') {
+                    null_device = true;
+                } else {
+                    return null_device ? status::not_directory : status::not_found;
+                }
+                while (next < length && source[next] == '/') { ++next; }
+            }
+            if (null_device && source[length - 1] == '/') { return status::not_directory; }
+            copy_text(output.path, null_device ? "dev/null" : "dev");
+            copy_text(output.leaf, null_device ? "null" : "dev");
+            return status::ok;
+        }
         if (next == length && source[length - 1] != '/') { return status::ok; }
         u32 directory = 0;
         code = acquire_directory(output.parent, output.path, directory);
@@ -647,6 +657,7 @@ status open_null_object(u32& index) {
     object = file_object{};
     object.used = true;
     object.null_device = true;
+    object.inode = null_device_inode;
     object.references = 1;
     index = slot + 1;
     return status::ok;
@@ -1270,14 +1281,14 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         if (is_dev_directory(path)) {
             reply(out, in, status::ok);
             out.value = 0;
-            out.reserved = 0;
+            out.reserved = dev_directory_inode;
             out.flags = stat_is_directory;
             break;
         }
         if (is_null_device(path)) {
             reply(out, in, status::ok);
             out.value = 0;
-            out.reserved = 0;
+            out.reserved = null_device_inode;
             break;
         }
         FILINFO info{};
@@ -1403,6 +1414,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             session.opens[slot] = open_record{true, handle, description_slot + 1};
             reply(out, in, status::ok);
             out.handle = handle;
+            out.reserved = object_for(null_description).inode;
             out.value = 0;
             break;
         }
@@ -1450,7 +1462,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             reply(out, in, status::ok);
             out.value = 0;
             out.flags = 0;
-            out.reserved = 0;
+            out.reserved = null_device_inode;
             break;
         }
         reply(out, in, status::ok);
@@ -1502,6 +1514,10 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         // offset, must not extend the file, and append mode gains nothing.
         if (in.length == 0) { reply(out, in, status::ok); out.value = 0; break; }
         if (object_for(*description).null_device) {
+            if (description->position > fat32_max_file_bytes ||
+                in.length > fat32_max_file_bytes - description->position) {
+                reply(out, in, status::no_space); break;
+            }
             reply(out, in, status::ok);
             out.value = in.length;
             description->position += in.length;
@@ -1670,6 +1686,9 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         path_reference resolved;
         if (!request_path(in, session, resolved)) { reply(out, in, resolved.error); break; }
         const char* path = resolved.path;
+        if (is_dev_directory(path) || is_null_device(path)) {
+            reply(out, in, status::invalid); break;
+        }
         if (in.length > fat32_max_file_bytes) { reply(out, in, status::invalid); break; }
         if (staging_active) {
             reply(out, in, status::busy);

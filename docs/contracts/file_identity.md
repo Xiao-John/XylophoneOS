@@ -14,7 +14,15 @@ files 服务继续串行处理请求。每个正在使用的普通文件只持�
 
 对象由已经解析的 FAT 目录项 sector/offset 识别，LFN、SFN 和 ASCII 大小写别名
 归于同一对象。`stat`/`fstat` 的 `st_dev` 沿用单卷值，`st_ino` 在本次服务生命期
-内非零且不复用：根目录为 1，其余编号单调分配。重命名移动目录项位置，同时迁移
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:8574e7e2c3de7e449fc4346d5ad041ba2f0c67700679e316e0631e0ccf272cae -->
+
+内非零且不复用：根目录为 1，FAT 对象编号从 2 到 65533 单调分配；
+65534、65535 分别保留给虚拟 `/dev`、`/dev/null`，不随对象槽释放改变。
+重命名移动目录项位置，同时迁移
+
+<!-- /coderabbit-ai-generated:v1 -->
 身份映射。删除后同名创建取得新编号；原打开描述仍指向旧对象。编号不写入磁盘，
 重启后的 inode 数值不承诺与先前相同。
 

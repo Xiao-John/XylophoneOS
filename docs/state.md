@@ -20,7 +20,16 @@
   `sys_device`=112 已登记（[device_authorization_v1](contracts/device_authorization_v1.md)）
   并完成实施段 1a。
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:53757a1ad8410553e9456a0f361319015140b6fc922f67676819ff1402ab8878 -->
+
+2026-11-13 审查修复：虚拟 `/dev` 路径、staging 拒绝、稳定身份与 null 写入边界已通过宿主验证；
+详见 [记录](work_log/61f0c353_dev_null_review.md)，客体验证未运行。
+
 ## 各线状态（一句话，细节见 work_log）
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 | 线 | 状态 | 记录 |
 |---|---|---|

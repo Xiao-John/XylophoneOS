@@ -115,3 +115,10 @@ staging 带 `owner_pid`：同一客户端重复 begin 返回 busy；不同 PID�
 崩溃恢复、POSIX errno/open flags、文件时间戳、配额、原生编译、完整 libc。
 E07 已加入同步/恢复和有限掉电边界；E06 已选择 newlib 并接入 SDK。当前服务绑定
 supervisor 单客户端。
+
+## 虚拟设备路径（2026-11-12）
+
+文件服务内置 `/dev` 虚拟目录与 `/dev/null`：`stat` 返回目录/零长文件；`open` 返回可继承
+句柄；写入丢弃、读取 EOF、`lseek` 维护逻辑偏移、`ftruncate` 成功但不改大小。
+`readdir("/dev")` 仍按 FatFs 处理，不会列出 `null`。证据见
+[dev_null_20261112](reports/dev_null_20261112/README.md)。

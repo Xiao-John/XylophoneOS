@@ -254,6 +254,56 @@ int main(int argc, char** argv) {
     client.pid = 10;
     client.parent_pid = 5;
 
+    // Virtual devices are independent of FAT entries and transient object slots.
+    reset_media();
+    auto stat_path = [&](const char* path) {
+        request in = make_request(op::stat);
+        set_name(in, path);
+        return call(client, in);
+    };
+    const response dev = stat_path("/dev/");
+    const response null_stat = stat_path("/./dev/null");
+    require(dev.status_code == 0 && (dev.flags & stat_is_directory) && dev.reserved != 0,
+            "virtual dev trailing slash");
+    require(null_stat.status_code == 0 && null_stat.reserved != 0 &&
+            null_stat.reserved != dev.reserved && dev.reserved != 1, "distinct virtual identities");
+    require(stat_path("/missing/../dev/null").status_code != 0,
+            "missing intermediate directory still fails");
+    require(stat_path("/dev/null/").status_code == static_cast<i32>(status::not_directory),
+            "null is not directory");
+    response null_open = open_path(client, "/./dev/./null", xos::file::read_write);
+    require(null_open.status_code == 0 && null_open.reserved == null_stat.reserved &&
+            fstat_handle(client, null_open.handle).reserved == null_stat.reserved,
+            "stat open fstat share virtual identity");
+    require(seek_handle(client, null_open.handle, 0xfffffffdu, seek_set).status_code == 0,
+            "null seek near limit");
+    require(write_handle(client, null_open.handle, "x", 1).value == 1 &&
+            seek_handle(client, null_open.handle, 0, seek_current).value == 0xfffffffeu,
+            "null write reaches offset limit");
+    require(write_handle(client, null_open.handle, "x", 1).status_code ==
+            static_cast<i32>(status::no_space) &&
+            seek_handle(client, null_open.handle, 0, seek_current).value == 0xfffffffeu,
+            "null overflow fails without moving offset");
+    require(close_handle(client, null_open.handle).status_code == 0, "close virtual object");
+    null_open = open_path(client, "/dev/null", xos::file::read_write);
+    require(null_open.reserved == null_stat.reserved, "virtual identity survives slot release");
+    close_handle(client, null_open.handle);
+    seed_file("null", "keep", 4);
+    require(f_mkdir("dev") == FR_OK, "physical dev fixture");
+    seed_file("dev/null", "physical", 8);
+    request virtual_replace = make_request(op::replace_begin);
+    set_name(virtual_replace, "/./dev/null");
+    require(call(client, virtual_replace).status_code == static_cast<i32>(status::invalid) &&
+            !staging_active && read_file("null") == "keep" && read_file("dev/null") == "physical",
+            "virtual replacement rejected before staging");
+    const u32 saved_next = next_file_inode;
+    next_file_inode = dev_directory_inode - 1;
+    u16 last_inode = 0;
+    require(identity_for_key({123, 0, 0}, last_inode) && last_inode == dev_directory_inode - 1 &&
+            !can_allocate_identity(), "FAT allocator excludes virtual identities");
+    next_file_inode = saved_next;
+    ++checks;
+
     // 1. O_TRUNC/O_APPEND without O_CREAT must not create a new file.
     reset_media();
     require(open_path(client, "missing.txt", xos::file::write_only | xos::file::open_truncate).status_code ==

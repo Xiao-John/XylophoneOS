@@ -40,3 +40,15 @@
 另外取得更新的 keyserver 公钥（装甲文件 SHA-256 `7305140fd8333ceefcb1a3aa88e78a865672caff82b9f274083b1321f90d178c`，解码后 keyring SHA-256 `4d7c10f67569448dca4901245e896988dadfa1318c208b3f3bbfb92c0fe440cc`）；gpgv 输出 `GOODSIG`、相同 `VALIDSIG` 和主钥指纹，签名密钥未报告 `EXPKEYSIG`。个别无关旧密钥有 `KEYEXPIRED`，不能仅凭这一通用状态判定签名密钥已过期。`scripts/glibc_g1_signature_diagnostic.py` 固定输入哈希和指纹、检查 gpgv 状态并拒绝过期/撤销签名；旧 GNU 公钥环应被拒绝，更新公钥可通过密码学检查。额外对篡改的 RSA 签名进行负向验证，即使相应更新了输入哈希也被拒绝。
 
 **信任仍未完成**：keyserver 公钥的更新、有效期及撤销信息尚未经独立可信渠道确认，gpgv 将指定 keyring 当作信任输入，不能据 `GOODSIG` 推导身份信任。来源锁仍为 `candidate_unverified_signature`，仅供研究。签名核对不改变上述 G1 构建和客体验收状态。
+
+## 继续：XOS 目标对象与隔离头文件探针（2026-11-13）
+
+新增研究用 `src/ports/glibc/sysdeps/xos/`：x86-64 `_exit` 通过 XOS syscall 2 终止进程，意外返回时执行非法指令；`kernel-features.h` 不宣称 Linux 可选内核特性；`bits/stdio_lim.h` 的 `FILENAME_MAX` 为 256 字节（含 NUL），对应现有 XOS 文件路径缓冲界限。该定义是当前能力的候选值，文件描述符及 POSIX 路径语义仍须另行验证。它们不使整个 sysdeps 或运行时成为完成品。
+
+重新从候选归档解包，隔离工具链，指定原本为空的私有 sysroot，以现有 `--hacker-mode --diagnose-nptl` 研究配置运行。构建时 `config-sysdirs` 实际包含 `sysdeps/xos`，编译器实际目标依然是裸 `x86_64-elf`，且配置仍临时使用 NPTL Implies 与合成 ABI tag 255；这些不是正式平台配置。所用编译器 SHA-256 `078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f`，候选源码、补丁及 overlay 的散列和完整命令写入私有 report。
+
+- glibc 的 `stdlib/abs.c` 和本端口的 `sysdeps/xos/_exit.c` 经 glibc 对应子目录规则实际编为 ELF64 x86-64 可重定位对象；对象 SHA-256 分别为 `82a2631427ea94843428e95d4029a68ae046780349352293046cbfb1501f3628`、`1a746248f719c2fe779275457d76db78d8bef75e1f46a5711b7c0a656686c4bb`。readelf 检查了符号，反汇编核对 `_exit` 的 syscall 号、`int 0x80`、返回后 `ud2` 与无外部重定位；未运行该对象。
+- 尝试在私有 sysroot 安装 glibc 头文件，安装到 116 个文件后退出 2，首个头安装阻塞为 `bits/semaphore.h` 缺失；并行构建退出 2，暴露 `bits/semaphore.h` 和 `bits/pthread_stack_min-dynamic.h` 缺失。已安装文件是**不完整且未经资格认可的诊断产物**，不得作为 SDK。manifest SHA-256 `3d4de5b29b4a89511e25850b2b9b184d63466fdde3d88f147cdd73171af488ee`；抽查 `stdlib.h` 与上游源一致，`bits/stdio_lim.h` 与 XOS overlay 一致。
+- `tests/glibc_g1_artifact_test.py` 对实际对象、符号、目标指令、编译依赖路径与散列、头文件清单和抽样来源做检查：依赖只来自解包 glibc、私有构建树或交叉 GCC 自身头目录，未混入 newlib/宿主 libc；该检查通过。`tests/glibc_g1_probe_test.py` 也通过。报告 SHA-256 `3d3a9c6d2474989e54f89d9a57fa2fdbb25731d57cea784f087488e0e12a78ef`；私有路径、日志和对象不作为发行物提交。
+
+G1 仍 **partial**：还没有真实、无合成 ABI tag 的完整 XOS 后端配置，没有完整 glibc 或可用 SDK。下一步须为 NPTL 的线程、等待和信号量定义与实现可维护的 XOS 后端及 ABI，然后从干净输入重跑配置、对象、头文件与来源核验；不能把上述诊断对象当作完整 libc 或客体验收。

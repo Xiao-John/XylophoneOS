@@ -5,6 +5,8 @@ import argparse
 import hashlib
 import json
 import os
+import shlex
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -43,31 +45,89 @@ def main():
         marker = source / 'sysdeps/xos'
         marker.mkdir()
         (marker / 'Implies').write_text('nptl\n')
+        overlay = ROOT / 'src/ports/glibc/sysdeps/xos'
+        for path in sorted(overlay.rglob('*')):
+            if path.is_file():
+                destination = marker / path.relative_to(overlay)
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(path, destination)
         # This value is deliberately synthetic and is never an XOS ABI assignment.
         with (source / 'abi-tags').open('a') as file:
             file.write('\n.*-.*-xos.* 255 0.0.0\n')
     target = subprocess.check_output([source/'scripts/config.sub', 'x86_64-unknown-xos'], text=True).strip()
     build = output / 'configure'
     build.mkdir()
-    command = [str(source/'configure'), '--build=aarch64-apple-darwin', '--host=x86_64-unknown-xos', '--disable-werror']
+    command = [str(source/'configure'), '--build=aarch64-apple-darwin', '--host=x86_64-unknown-xos', '--prefix=/usr', '--disable-werror']
     if args.hacker_mode:
         command.append('--enable-hacker-mode')
     env = os.environ.copy()
     env['CC'] = 'x86_64-elf-gcc'
     env['CXX'] = 'x86_64-elf-g++'
+    compiler_path = Path(shutil.which(env['CC'])).resolve(strict=True)
     compiler_target = subprocess.check_output([env['CC'], '-dumpmachine'], text=True).strip()
+    sysroot = output / 'xos-glibc-sysroot'
+    sysroot.mkdir()
+    if args.diagnose_nptl:
+        # Force an empty, private sysroot; retain GCC's own freestanding headers.
+        for name, compiler in (('cc', env['CC']), ('cxx', env['CXX'])):
+            wrapper = output / name
+            wrapper.write_text('#!/bin/sh\nexec ' + shlex.quote(shutil.which(compiler))
+                               + ' --sysroot=' + shlex.quote(str(sysroot)) + ' "$@"\n')
+            wrapper.chmod(0o755)
+        env['CC'], env['CXX'] = str(output / 'cc'), str(output / 'cxx')
     with (output/'configure.log').open('w') as log:
         result = subprocess.run(command, cwd=build, env=env, stdout=log, stderr=subprocess.STDOUT)
     make_result = None
     if args.diagnose_nptl and result.returncode == 0:
         with (output/'make.log').open('w') as log:
             make_result = subprocess.run(['gnumake', '-j4'], cwd=build, env=env, stdout=log, stderr=subprocess.STDOUT)
+    objects = {}
+    if args.diagnose_nptl and make_result is not None:
+        for subdir, name in (('stdlib', 'abs'), ('posix', '_exit')):
+            (build / subdir).mkdir(exist_ok=True)
+            target_object = build / subdir / (name + '.o')
+            with (output / (name + '-object.log')).open('w') as log:
+                obj_result = subprocess.run(['gnumake', '-C', str(source / subdir),
+                    'objdir=' + str(build), str(target_object)], env=env,
+                    stdout=log, stderr=subprocess.STDOUT)
+            item = {'exit_code': obj_result.returncode,
+                    'log_sha256': digest(output / (name + '-object.log'))}
+            if obj_result.returncode == 0 and target_object.is_file():
+                readelf = subprocess.run(['x86_64-elf-readelf', '-h', '-s', str(target_object)],
+                                         capture_output=True, text=True, check=True)
+                (output / (name + '-readelf.txt')).write_text(readelf.stdout)
+                item.update({'sha256': digest(target_object),
+                             'readelf_sha256': digest(output / (name + '-readelf.txt'))})
+                for suffix in ('.d', '.dt'):
+                    dep = Path(str(target_object) + suffix)
+                    if dep.is_file():
+                        saved_dep = output / (name + '-dependencies.d')
+                        shutil.copyfile(dep, saved_dep)
+                        item['dependency_file_sha256'] = digest(saved_dep)
+                        break
+            objects[name] = item
+    header_install = None
+    if args.diagnose_nptl and make_result is not None:
+        with (output / 'install-headers.log').open('w') as log:
+            install = subprocess.run(['gnumake', '-C', str(build), 'install-headers',
+                                      'DESTDIR=' + str(sysroot)], env=env,
+                                     stdout=log, stderr=subprocess.STDOUT)
+        headers = {str(p.relative_to(sysroot)): digest(p) for p in sorted(sysroot.rglob('*')) if p.is_file()}
+        (output / 'header-manifest.json').write_text(json.dumps(headers, indent=2) + '\n')
+        header_install = {'exit_code': install.returncode, 'file_count': len(headers),
+                          'log_sha256': digest(output / 'install-headers.log'),
+                          'manifest_sha256': digest(output / 'header-manifest.json')}
     report = {'status': 'diagnostic_only', 'source_sha256': digest(archive),
               'source_authentication': lock['signature_verification'], 'patch_sha256': digest(patch),
               'canonical_target': target, 'command': command, 'cc': env['CC'],
               'cxx': env['CXX'], 'compiler_target': compiler_target,
+              'compiler_path': str(compiler_path), 'compiler_sha256': digest(compiler_path),
               'hacker_mode': args.hacker_mode, 'configure_exit_code': result.returncode,
               'synthetic_nptl_diagnostic': args.diagnose_nptl,
+              'private_sysroot_initially_empty': str(sysroot),
+              'sysroot_enforced': args.diagnose_nptl, 'diagnostic_objects': objects,
+              'header_install': header_install,
+              'xos_overlay_sha256': {str(p.relative_to(ROOT / 'src/ports/glibc/sysdeps/xos')): digest(p) for p in (ROOT / 'src/ports/glibc/sysdeps/xos').rglob('*') if p.is_file()},
               'configure_log_sha256': digest(output/'configure.log'),
               'not_claimed': ['XOS sysdeps', 'target runtime', 'guest qualification', 'distributable source']}
     if make_result is not None:

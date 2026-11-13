@@ -9,7 +9,7 @@ import tempfile
 
 repo_root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(repo_root / "tests"))
-from host_tools import gc_sections_flags, nm_defined_args, nm_program, objcopy_program
+from host_tools import IS_DARWIN, gc_sections_flags, nm_defined_args, nm_program, objcopy_program
 
 
 def main():
@@ -28,9 +28,14 @@ def main():
                         "-o", str(runtime)], check=True)
         symbols = subprocess.check_output([nm, *nm_defined_args(), str(runtime)], text=True)
         mapping = output / "symbols.txt"
-        mapping.write_text("".join(f"{name} audit_{name}\n" for line in symbols.splitlines()
-                                  if re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]*", name := line.split()[0])
-                                  and not name.startswith("_Z")))
+        renamed = []
+        for line in symbols.splitlines():
+            name = line.split()[0]
+            prefix = "_" if IS_DARWIN and name.startswith("_") else ""
+            base = name[len(prefix):]
+            if re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]*", base) and not base.startswith("_Z"):
+                renamed.append(f"{name} {prefix}audit_{base}\n")
+        mapping.write_text("".join(renamed))
         subprocess.run([objcopy, "--redefine-syms=" + str(mapping), str(runtime)], check=True)
         binary = output / "libc_startup"
         subprocess.run([compiler, *flags, str(repo_root / "tests/libc_startup_host_test.cpp"),

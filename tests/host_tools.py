@@ -45,14 +45,15 @@ def _program(name):
 
 
 def nm_program():
-    # GNU nm and llvm-nm accept the same arguments below on Linux and macOS.
+    # macOS supports Apple nm or llvm-nm; other hosts use GNU-compatible nm.
+    # Defined-symbol selection below uses the flag supported by each platform.
     explicit = os.environ.get("NM")
     return explicit if explicit else _program("nm")
 
 
 def nm_defined_args():
     """Arguments selecting external, defined symbols in portable output."""
-    return ["-P", "-g", "--defined-only"]
+    return ["-P", "-g", "-U" if IS_DARWIN else "--defined-only"]
 
 
 def objcopy_program():

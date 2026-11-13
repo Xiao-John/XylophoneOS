@@ -16,7 +16,7 @@ sys.path.insert(0, str(repo_root / "scripts"))
 from make_work_disk import make_image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from host_tools import gc_sections_flags, nm_defined_args, nm_program, objcopy_program
+from host_tools import IS_DARWIN, gc_sections_flags, nm_defined_args, nm_program, objcopy_program
 
 
 def main():
@@ -55,9 +55,14 @@ def main():
         run([*runtime_flags, "-c", repo_root / "src/user/libc/newlib_syscalls.cpp", "-o", runtime])
         symbols = subprocess.check_output([nm_program(), *nm_defined_args(), runtime], text=True)
         mapping = output / "symbols.txt"
-        mapping.write_text("".join(f"{name} audit_{name}\n" for line in symbols.splitlines()
-                                  if re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]*", name := line.split()[0])
-                                  and not name.startswith("_Z")))
+        renamed = []
+        for line in symbols.splitlines():
+            name = line.split()[0]
+            prefix = "_" if IS_DARWIN and name.startswith("_") else ""
+            base = name[len(prefix):]
+            if re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]*", base) and not base.startswith("_Z"):
+                renamed.append(f"{name} {prefix}audit_{base}\n")
+        mapping.write_text("".join(renamed))
         run([objcopy_program(), "--redefine-syms=" + str(mapping), runtime])
         service = output / "service.o"
         run([*host_flags, "-c", repo_root / "tests/fixtures/file_semantics/libc_service.cpp", "-o", service])

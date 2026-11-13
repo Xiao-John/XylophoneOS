@@ -1,6 +1,6 @@
 # 文件元数据契约 v1（FAT 诚实子集）
 
-2026-11-13。状态：**M0 契约与 ABI 占号；尚未实现**。依据 [权限与 POSIX 元数据裁决](../plans/permission_model_glibc.md)
+2026-11-13。状态：**M0 已登记；M1 已实现并客体验收（见 §11 的实施偏差）**。依据 [权限与 POSIX 元数据裁决](../plans/permission_model_glibc.md)
 第四节与 [ABI 登记](abi_registry.md) 的分配流程。本文只冻结 M1 要实现的语义、线格式、错误优先级与验收；
 未列能力一律不做，也不以符号存在或链接成功宣称 POSIX 权限完备。
 
@@ -254,3 +254,19 @@ sidecar、没有新 syscall，回滚不影响既有文件内容。已发布的 S
 
 所有权/组/NSS/`set*id`、mode/umask 持久化、ACL、xattr、symlink、atime/ctime 持久化、
 原生文件系统、sidecar、glibc sysdeps、`chmod` 影响已打开句柄、目录原子 rename 事务。
+
+## 11. M1 实施记录与偏差（2026-11-13）
+
+已实现并客体验收（build `b0fe3ea7c4ce90ff`，`tests/file_metadata_guest.py`）：
+
+- 文件 ABI：`abi_version` 保持 2；`op::set_metadata = 29`；`status` 增加 `not_supported = -14`、`read_only_volume = -15`、`access_denied = -16`；`stat/fstat` 用 `flags` bit2 表示 RDO、`data[0..8]` 携带 mtime 秒（旧客户端忽略）。
+- FatFs：`FF_USE_CHMOD=1`；mtime 用 `f_utime`（2 秒量化、UTC），RDO 用 `f_chmod`。
+- libc：`chmod/fchmod` 只接受与投影一致的 `0644/0444`，其余与 setuid/setgid/sticky 都 `ENOTSUP`；`chown/fchown/lchown` 对 `-1/0` 成功、其它 `ENOTSUP`；`utimensat/futimens` 只在 atime 为 `UTIME_OMIT` 时写 mtime，支持 `UTIME_NOW`（无墙钟 → `ENOTSUP`）；`utime/utimes` 因显式 atime 一律 `ENOTSUP`；`stat/fstat` 合成 `0644/0444`、`0755`、`uid=gid=0`，atime/ctime 回读为 mtime；`access(W_OK)` 检查 RDO；打开只读文件写返回 `EACCES`。
+- 对象生命周期：unlinked/anonymous 的元数据写 `ENOTSUP`；目录 `chmod` 在 M1 直接 `ENOTSUP`（未验证目录 RDO 的写隔离，不承诺 `0555`）。
+- 兼容：旧服务对 op29 返回 `invalid`，libc 统一映射为 `ENOTSUP` 供降级。
+
+偏差说明：
+
+1. `X_OK` 保留既有“ELF 可加载性”校验，而不是一律 `EACCES`；运行时探针依赖该行为，执行授权仍在 loader。
+2. `utime/utimes` 的显式 atime 使其按裁决失败，而不是静默只写 mtime。
+3. 目录 `chmod` 与目录 RDO 不在 M1 承诺范围；`stat` 目录固定 `0755`。

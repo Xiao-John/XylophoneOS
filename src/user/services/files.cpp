@@ -45,6 +45,8 @@ struct file_object {
     FIL file;
     char name[max_name];
     char backing[13]; // Reserved root name for an unlinked, referenced object.
+    u32 metadata_attrib; // FAT attribute snapshot (AM_RDO drives mode projection).
+    u64 mtime_sec;       // FAT mtime in Unix seconds; 0 means unknown.
 };
 
 struct open_description {
@@ -73,7 +75,7 @@ client_session sessions[max_sessions];
 u32 generations[max_sessions];
 open_description descriptions[max_open_descriptions];
 file_object file_objects[max_file_objects];
-file_object root_object{true, true, false, false, false, true, 0, 0, 1, 0, 0, {}, {}, {}};
+file_object root_object{true, true, false, false, false, true, 0, 0, 1, 0, 0, {}, {}, {}, 0, 0};
 request request_buffer;
 response response_buffer;
 u8 block_bench_buffer[4096];
@@ -296,6 +298,50 @@ bool normalize_path(const char* source, u32 source_length, char* output,
     return true;
 }
 
+u64 fat_to_unix(u16 fdate, u16 ftime) {
+    if (fdate == 0) { return 0; }
+    const u32 year = 1980u + ((fdate >> 9) & 0x7fu);
+    const u32 month = (fdate >> 5) & 0x0fu;
+    const u32 day = fdate & 0x1fu;
+    const u32 hour = (ftime >> 11) & 0x1fu;
+    const u32 minute = (ftime >> 5) & 0x3fu;
+    const u32 second = (ftime & 0x1fu) * 2u;
+    if (month < 1 || month > 12 || day < 1 || day > 31 || hour > 23 || minute > 59) { return 0; }
+    // Civil-from-days, valid for the FAT range (1980-2107).
+    u32 y = year;
+    const u32 m = month;
+    y -= m <= 2 ? 1 : 0;
+    const u32 era = y / 400u;
+    const u32 yoe = y - era * 400u;
+    const u32 mp = (m + 9u) % 12u;
+    const u32 doy = (153u * mp + 2u) / 5u + day - 1u;
+    const u32 doe = yoe * 365u + yoe / 4u - yoe / 100u + doy;
+    const u64 days = static_cast<u64>(era) * 146097ull + doe - 719468ull;
+    return days * 86400ull + hour * 3600ull + minute * 60ull + second;
+}
+
+bool unix_to_fat(u64 seconds, u16& fdate, u16& ftime) {
+    if (seconds == 0) { return false; }
+    const u64 days = seconds / 86400ull;
+    const u32 rem = static_cast<u32>(seconds % 86400ull);
+    const u64 z = days + 719468ull;
+    const u64 era = z / 146097ull;
+    const u64 doe = z - era * 146097ull;
+    const u64 yoe = (doe - doe / 1460ull + doe / 36524ull - doe / 146096ull) / 365ull;
+    const u64 year = yoe + era * 400ull;
+    const u64 doy = doe - (365ull * yoe + yoe / 4ull - yoe / 100ull);
+    const u64 mp = (5ull * doy + 2ull) / 153ull;
+    const u64 day = doy - (153ull * mp + 2ull) / 5ull + 1ull;
+    const u64 month = mp < 10ull ? mp + 3ull : mp - 9ull;
+    const u64 calendar_year = month <= 2ull ? year + 1ull : year;
+    if (calendar_year < 1980ull || calendar_year > 2107ull) { return false; }
+    fdate = static_cast<u16>(((calendar_year - 1980ull) << 9)
+                             | (month << 5) | day);
+    ftime = static_cast<u16>(((rem / 3600u) << 11) | (((rem / 60u) % 60u) << 5)
+                             | ((rem % 60u) / 2u));
+    return true;
+}
+
 status from_fr(FRESULT result) {
     switch (result) {
     case FR_OK: return status::ok;
@@ -305,8 +351,8 @@ status from_fr(FRESULT result) {
     case FR_TOO_MANY_OPEN_FILES: return status::full;
     case FR_LOCKED: return status::busy;
     case FR_EXIST: return status::exists;
-    case FR_DENIED:
-    case FR_WRITE_PROTECTED:
+    case FR_WRITE_PROTECTED: return status::read_only_volume;
+    case FR_DENIED: return status::access_denied;
     case FR_INVALID_OBJECT: return status::invalid;
     case FR_NOT_ENOUGH_CORE:
     case FR_MKFS_ABORTED: return status::no_space;
@@ -315,6 +361,24 @@ status from_fr(FRESULT result) {
 }
 
 FIL& file_for(const open_description& description);
+
+status object_path(u32 object, char* path, bool logical);
+status append_path(const char* parent, const char* leaf, char* path);
+
+void write_stat_metadata(response& out, u32 attrib, u64 mtime) {
+    if ((attrib & AM_RDO) != 0) { out.flags |= stat_read_only; }
+    for (u32 i = 0; i < stat_metadata_bytes; ++i) {
+        out.data[i] = static_cast<u8>(mtime >> (8 * i));
+    }
+    out.length = stat_metadata_bytes;
+}
+
+status file_object_path(const file_object& object, char* path) {
+    char parent[max_name];
+    const status code = object_path(object.parent, parent, false);
+    if (code != status::ok) { return code; }
+    return append_path(parent, object.name, path);
+}
 
 status seek_description(open_description& description, u32 position) {
     return from_fr(f_lseek(&file_for(description), static_cast<FSIZE_t>(position)));
@@ -682,7 +746,7 @@ status open_file_object(path_reference& path, u32 flags, u32& index) {
             }
         }
         file_object& object = file_objects[index - 1];
-        if ((access & write_only) != 0 && (object.file.flag & FA_WRITE) == 0) { return status::invalid; }
+        if ((access & write_only) != 0 && (object.file.flag & FA_WRITE) == 0) { return status::access_denied; }
         retain_object(index);
     } else {
         u32 slot = 0;
@@ -696,7 +760,7 @@ status open_file_object(path_reference& path, u32 flags, u32& index) {
         object = file_object{};
         BYTE mode = FA_READ | FA_WRITE;
         if (found == FR_OK && (info.fattrib & AM_RDO) != 0) {
-            if ((access & write_only) != 0) { return status::invalid; }
+            if ((access & write_only) != 0) { return status::access_denied; }
             mode = FA_READ;
         }
         if ((options & open_exclusive) != 0) { mode |= FA_CREATE_NEW; }
@@ -709,6 +773,10 @@ status open_file_object(path_reference& path, u32 flags, u32& index) {
         object.used = true;
         object.references = 1;
         object.parent = path.parent;
+        if (found == FR_OK) {
+            object.metadata_attrib = info.fattrib;
+            object.mtime_sec = fat_to_unix(info.fdate, info.ftime);
+        }
         copy_text(object.name, path.leaf);
         retain_object(object.parent);
         index = slot + 1;
@@ -1300,6 +1368,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         out.value = info.fsize;
         out.reserved = inode;
         if ((info.fattrib & AM_DIR) != 0) { out.flags = stat_is_directory; }
+        write_stat_metadata(out, info.fattrib, fat_to_unix(info.fdate, info.ftime));
         const u32 object = find_object(identity_key(info));
         if (object != 0) {
             const file_object& retained = file_objects[object - 1];
@@ -1469,6 +1538,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         out.value = object.directory ? 0 : f_size(&object.file);
         out.flags = (object.directory ? stat_is_directory : 0) | (object.unlinked ? stat_unlinked : 0);
         out.reserved = object.inode;
+        write_stat_metadata(out, object.metadata_attrib, object.mtime_sec);
         break;
     }
     case op::read: {
@@ -1855,6 +1925,66 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         const status renamed = replace_namespace(old_path, new_path, old_info, exists ? &new_info : nullptr);
         if (renamed == status::ok) { relocate_object(moving, target.parent, target.leaf); }
         reply(out, in, renamed);
+        break;
+    }
+    case op::set_metadata: {
+        if (in.length != sizeof(metadata_request) || in.flags != 0 || in.offset != 0 ||
+            in.reserved != 0 || (in.handle == 0 && in.name_length == 0) ||
+            (in.handle != 0 && in.name_length != 0)) {
+            reply(out, in, status::invalid);
+            break;
+        }
+        metadata_request metadata{};
+        for (u32 i = 0; i < sizeof(metadata); ++i) {
+            reinterpret_cast<u8*>(&metadata)[i] = in.data[i];
+        }
+        if (metadata.version != 1 || metadata.reserved != 0 ||
+            (metadata.mask & ~(metadata_read_only | metadata_mtime | metadata_atime)) != 0 ||
+            (metadata.attr & ~static_cast<u16>(AM_RDO)) != 0) {
+            reply(out, in, status::invalid);
+            break;
+        }
+        char path[max_name]{};
+        file_object* object = nullptr;
+        if (in.handle != 0) {
+            open_description* description = description_for(find_open(session, in.handle));
+            if (description == nullptr) { reply(out, in, status::bad_handle); break; }
+            object = &object_for(*description);
+            if (object->null_device || object->unlinked) { reply(out, in, status::not_supported); break; }
+            const status named = file_object_path(*object, path);
+            if (named != status::ok) { reply(out, in, named); break; }
+        } else {
+            path_reference resolved;
+            if (!request_path(in, session, resolved)) { reply(out, in, resolved.error); break; }
+            copy_text(path, resolved.path);
+        }
+        if ((metadata.mask & metadata_atime) != 0) { reply(out, in, status::not_supported); break; }
+        FILINFO info{};
+        const FRESULT found = f_stat(path, &info);
+        if (found != FR_OK) { reply(out, in, from_fr(found)); break; }
+        if ((metadata.mask & metadata_read_only) != 0) {
+            // Directory RDO has no verified write enforcement on this backend.
+            if ((info.fattrib & AM_DIR) != 0) { reply(out, in, status::not_supported); break; }
+            const FRESULT changed = f_chmod(path, (metadata.attr & AM_RDO) != 0 ? AM_RDO : 0, AM_RDO);
+            if (changed != FR_OK) { reply(out, in, from_fr(changed)); break; }
+        }
+        if ((metadata.mask & metadata_mtime) != 0) {
+            u16 fdate = 0, ftime = 0;
+            if (!unix_to_fat(static_cast<u64>(metadata.mtime_sec), fdate, ftime)) {
+                reply(out, in, status::invalid);
+                break;
+            }
+            FILINFO stamp{};
+            stamp.fdate = fdate;
+            stamp.ftime = ftime;
+            const FRESULT touched = f_utime(path, &stamp);
+            if (touched != FR_OK) { reply(out, in, from_fr(touched)); break; }
+        }
+        if (object != nullptr && f_stat(path, &info) == FR_OK) {
+            object->metadata_attrib = info.fattrib;
+            object->mtime_sec = fat_to_unix(info.fdate, info.ftime);
+        }
+        reply(out, in, status::ok);
         break;
     }
     default:

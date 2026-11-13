@@ -430,6 +430,14 @@ int main(int argc, char** argv) {
     no_objects();
     new_check("maintenance_gate_keeps_failed_close_ownership");
 
+    fresh();
+    seed_file("XOS99999.TMP", "busy", 4);
+    next_anonymous_serial = anonymous_serial_limit - 1;
+    char hidden_name[13]{};
+    require(anonymous_name(hidden_name) == status::ok &&
+            std::strcmp(hidden_name, "XOS00000.TMP") == 0, "anonymous names wrap around collisions");
+    new_check("anonymous_name_wrap_and_collision");
+
     std::printf("FILE_IDENTITY_CASES_PASSED=%d\n", checks);
     return 0;
 }

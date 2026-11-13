@@ -3,6 +3,7 @@
 from pathlib import Path
 import hashlib
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -53,7 +54,7 @@ def main():
         mapping.write_text("".join(f"{name} audit_{name}\n" for line in symbols.splitlines()
                                   if re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]*", name := line.split()[0])
                                   and not name.startswith("_Z")))
-        run(["objcopy", "--redefine-syms=" + str(mapping), runtime])
+        run([os.environ.get("OBJCOPY", "objcopy"), "--redefine-syms=" + str(mapping), runtime])
         service = output / "service.o"
         run([*host_flags, "-c", repo_root / "tests/fixtures/file_semantics/libc_service.cpp", "-o", service])
         libc_test = output / "libc_identity"

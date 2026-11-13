@@ -18,3 +18,17 @@
 ## 下一步
 
 明确 XOS target 三元组及 GCC/binutils/sysroot 的真实匹配；依据上游端口方式设计 XOS sysdeps 的必要实现、启动及 ABI tag 策略和最早可执行纵切片。先盘点 generic ENOSYS/伪成功、构建需要的目标内核头、TLS/线程与 loader 合同，再以独立测试证明行为；不能把 hacker-mode、空目录或通用桩冒充后端。源码签名需通过可信独立来源确认公钥后验证；取得完整宿主工具并记录来源、版本和散列。G1 继续，不将该调查视为 G2 或动态链接完成。
+
+## 继续：NPTL 依赖探针（2026-11-13）
+
+在独立解包副本中进行更深入的**负向诊断**：`--hacker-mode --diagnose-nptl` 创建临时 `sysdeps/xos/Implies` 指向 `nptl`，并添加仅供测试的 ABI tag 255；该数字不是 XOS ABI 分配，不写入候选源码或发行材料。configure 返回 0 仅说明诊断目录组合可生成 Makefile，不能说明 XOS 后端有效。随后 GNU make 退出 2，首先暴露 `bits/semaphore.h` 和 `bits/pthread_stack_min-dynamic.h` 缺失；日志 SHA-256 `2469e67b16fa6c9da9e1e8ce6865dd9189a4062f91966540966aed111c91be43`。诊断入口拒绝无 hacker-mode 的该选项、错误归档与已存在的输出目录；`python3 tests/glibc_g1_probe_test.py` 通过。这些边界测试不是 glibc 功能测试。
+
+| 实际接口 | glibc 2.44 源码依赖 | 当前 XOS 接口 | 尚需证明/实现 |
+|---|---|---|---|
+| 初始 TLS | x86-64 NPTL `tls.h` 的 `TLS_INIT_TCB_SIZE` 是 `sizeof(struct pthread)`，包含 DTV、自指针及线程描述符 | `src/user/arch/x86_64/tls.cpp` 按 variant II 映射静态模板，在 TP 写自指针并给 TCB 预留 16 字节；`sys_process_tls` 仅允许创建者对 building 子进程设置 | glibc TCB 大小、DTV、对齐、FS 基址变更权和主线程早期初始化必须有独立契约及真实客体证据；不可把现有 16 字节当完整 TCB |
+| 创建/退出 | `nptl/pthread_create.c` 使用 `__clone_internal`、退出时的 clear-tid、rseq 与 robust-list 路径 | prepare/start/abort、begin_exit/exit、join/detach，且有每进程四线程、固定 stack/TLS 配额 | 定义成功/失败、发布原子性、线程 TLS、退出通知、清理、join 竞态和限制；不能只映射 syscall 号码，robust/rseq 是否可裁剪须由实际构建配置和语义证明 |
+| 等待 | NPTL 的 futex、绝对时限、取消与 robust mutex 语义 | `sys_wait_word` / `sys_wake_word`、绝对单调 deadline，受 XOS 地址与资源约束 | 比较共享/私有等待键、竞态、取消、超时、内存生命周期；共享 futex、requeue、优先级继承和 owner death 不能凭接口同名宣称支持 |
+| 启动/动态链接 | glibc startup、辅助向量、解释器与动态 TLS | XOS `_start` 收到 `startup_info`，既有 ELF 解析在用户态；当前 G1 未实现 glibc CRT | 版本化启动与 auxv 约定、真正 XOS 工具链、独立 sysroot、`PT_INTERP` 和隔离资源权限需另行冻结 |
+| syscall 与文件 | glibc 内部系统相关头及 errno | x86-64 XOS SDK 使用 `int 0x80` 和 XOS 号；文件经认证文件服务/SDK | 独立 XOS sysdep 调用与错误映射，审查 fd/session/fork/exec/路径；禁止将 Linux syscall 号或 newlib 内部结构当成 XOS ABI |
+
+以上是当前源码比对和诊断，尚无可运行 glibc；已运行探针的 ABI tag 及占位目录不能发布或用于真正目标。下一步应先确定 XOS glibc 线程后端的构造与初始 TLS 所有权，再按真实头、启动和等待语义实现最小静态纵切；签名、工具链、动态装载和授权仍是独立验收。

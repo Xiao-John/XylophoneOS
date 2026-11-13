@@ -135,6 +135,11 @@ def verify_bundle(root, provenance, allowed_legacy=()):
         result = verify_manifest(path, root, entry.get('build_id'))
         if result['derived_members'] or entry.get('capture') != 'compiler-invocation-and-object-bytes':
             raise ValueError('new archive requires captured compiler/object provenance')
+        for record in entry['members']:
+            for field in ('object_sha256', 'command_sha256'):
+                digest = record.get(field)
+                if not isinstance(digest, str) or len(digest) != 64 or any(c not in '0123456789abcdef' for c in digest):
+                    raise ValueError(f'missing or invalid {field}')
         if result['archive'] in represented:
             raise ValueError('duplicate archive provenance')
         represented.add(result['archive'])

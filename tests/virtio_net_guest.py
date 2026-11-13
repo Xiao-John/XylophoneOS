@@ -43,10 +43,11 @@ def main():
     report = {"status": "failed", "guest_qualification": "running", "build_id": manifest["build_id"],
               "image_sha256": sha(image), "checks": [], "not_run": ["tcp", "dns", "tls", "untrusted_dma_isolation"]}
     guest = None
-    temporary = tempfile.TemporaryDirectory(prefix="xos_net_guest_")
-    disk = Path(temporary.name) / "work.img"
-    disk.write_bytes(make_image())
+    temporary = None
     try:
+        temporary = tempfile.TemporaryDirectory(prefix="xos_net_guest_")
+        disk = Path(temporary.name) / "work.img"
+        disk.write_bytes(make_image())
         guest = Guest(image, str(out.relative_to(ROOT / "build")) + "/guest", iso=True, network=True, work_disk=disk)
         report["qemu_command"] = guest.command
         guest.expect(b"xos64> ", timeout=60)
@@ -72,10 +73,12 @@ def main():
     finally:
         if report["status"] != "passed":
             report["guest_qualification"] = "failed" if guest else "not_run"
+            if guest is None: report["status"] = "not_run"
         if guest:
             (out / "serial.log").write_bytes(guest.output)
             guest.close()
-        temporary.cleanup()
+        if temporary is not None:
+            temporary.cleanup()
         (out / "report.json").write_text(json.dumps(report, indent=2) + "\n")
 
 

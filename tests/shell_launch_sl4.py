@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """SL4: one bound system/SDK/tool set, native projects and both shell entrances."""
 import argparse
+import json
 from pathlib import Path
 import subprocess
 import sys
@@ -21,6 +22,10 @@ def build_probe(sdk, output, report):
         compiler, c_compiler = tool("g++"), tool("gcc")
     except SystemExit as error:
         raise FileNotFoundError(str(error)) from error
+    manifest = json.loads((sdk.parent / "manifest.json").read_text())
+    expected = manifest["toolchain"]["executables"]
+    if sha(Path(compiler)) != expected["g++"]["sha256"] or sha(Path(c_compiler)) != expected["gcc"]["sha256"]:
+        raise ValueError("probe compiler differs from system manifest")
     libgcc = subprocess.check_output([c_compiler, "-print-libgcc-file-name"], text=True).strip()
     command = [compiler, "-std=c++20", "-O2", "-mno-red-zone", "-fno-pie", "-fno-pic",
                "-fno-stack-protector", "-fno-exceptions", "-fno-rtti", "-isystem", str(sdk / "include"),

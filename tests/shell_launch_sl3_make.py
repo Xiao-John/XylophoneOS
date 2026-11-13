@@ -21,10 +21,13 @@ fixture_root = repo_root / 'tests/fixtures/shell_launch'
 def prepare_project_disk(args, bound, folder, report):
     disk = folder / 'work.img'
     create_fat32(disk, 2048)
-    install_files(disk, args.seed_root, bound['seed'])
-    install_files(disk, args.sysroot_root, bound['sysroot'])
+    created = set()
+    install_files(disk, args.seed_root, bound['seed'], created)
+    install_files(disk, args.sysroot_root, bound['sysroot'], created)
     for directory in ('/bin', '/usr', '/usr/bin', '/src', '/src/sl3', '/out', '/out/sl3', '/tmp', '/tests', '/tests/work'):
-        transfer(disk, 'mkdir', directory)
+        if directory not in created:
+            transfer(disk, 'mkdir', directory)
+            created.add(directory)
     transfer(disk, 'import', '/usr/bin/make', bound['make'])
     transfer(disk, 'import', '/usr/bin/dash', bound['dash'])
     names = ('project.h', 'project_value.c', 'project_c.c', 'project_cpp.cpp', 'project_cpp_value.cpp', 'link_error.c')

@@ -668,10 +668,10 @@ status open_file_object(path_reference& path, u32 flags, u32& index) {
 }
 
 status anonymous_name(char* path) {
-    for (u32 attempt = 0; attempt < anonymous_collision_limit &&
-         next_anonymous_serial < anonymous_serial_limit; ++attempt) {
+    for (u32 attempt = 0; attempt < anonymous_serial_limit; ++attempt) {
         copy_text(path, "XOS00000.TMP");
-        u32 serial = next_anonymous_serial++;
+        u32 serial = next_anonymous_serial;
+        next_anonymous_serial = (next_anonymous_serial + 1) % anonymous_serial_limit;
         for (u32 digit = 0; digit < 5; ++digit) {
             path[7 - digit] = static_cast<char>('0' + serial % 10);
             serial /= 10;
@@ -730,10 +730,12 @@ void relocate_object(u32 index, u32 parent, const char* leaf) {
     (void)release_object(previous);
 }
 
-status detach_object(u32 index, const char* path, const FILINFO& info) {
+status detach_object(u32 index, const char* path, const FILINFO& info, const char* reserved = nullptr) {
     file_object& object = file_objects[index - 1];
     char hidden[13]{};
-    status code = anonymous_name(hidden);
+    status code = status::ok;
+    if (reserved) copy_text(hidden, reserved);
+    else code = anonymous_name(hidden);
     if (code != status::ok) { return code; }
     code = move_disk_object(path, hidden, info);
     if (code != status::ok) { return code; }
@@ -1082,13 +1084,18 @@ status replace_namespace(const char* source, const char* target, const FILINFO& 
         if (!finish_recovery(target, false)) { recovery_failed = true; return status::io; }
         return status::ok;
     }
+    const u32 replaced = find_object(identity_key(*target_info));
+    char reserved_hidden[13]{};
+    if (replaced != 0) {
+        const status reserved = anonymous_name(reserved_hidden);
+        if (reserved != status::ok) return reserved;
+    }
     FILINFO backup_info{};
     if (!missing(f_stat(backup_name, &backup_info))) { return status::busy; }
     if (!write_journal(target)) {
         if (journal_new) { recovery_failed = true; }
         return status::io;
     }
-    const u32 replaced = find_object(identity_key(*target_info));
     status code = move_disk_object(target, backup_name, *target_info);
     if (code != status::ok) { recovery_failed = true; return code; }
     if (f_stat(backup_name, &backup_info) != FR_OK) { recovery_failed = true; return status::io; }
@@ -1100,7 +1107,7 @@ status replace_namespace(const char* source, const char* target, const FILINFO& 
         return code;
     }
     if (replaced != 0) {
-        code = detach_object(replaced, backup_name, backup_info);
+        code = detach_object(replaced, backup_name, backup_info, reserved_hidden);
         if (code != status::ok) { recovery_failed = true; return code; }
     } else {
         const FRESULT removed = f_unlink(backup_name);

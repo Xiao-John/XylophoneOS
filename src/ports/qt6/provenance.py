@@ -2,6 +2,8 @@
 """Use CMake's compiler launcher and archive finish hooks for member capture."""
 import hashlib
 import json
+import os
+import subprocess
 from pathlib import Path
 import shlex
 import sys
@@ -19,7 +21,7 @@ def cmake_capture_options(arguments, command):
     launcher = ';'.join(capture.launcher())
     archive = capture.launcher()
     archive[2] = 'archive'
-    finish = '<CMAKE_RANLIB> <TARGET>;' + shlex.join(archive) + ' <TARGET>'
+    finish = '<CMAKE_RANLIB> <TARGET>;' + (subprocess.list2cmdline(archive) if os.name == 'nt' else shlex.join(archive)) + ' <TARGET>'
     (arguments.build / 'provenance_config.json').write_text(json.dumps(
         {'build_id': build_id, 'recipe': recipe, 'guest_qualification': 'not_run'},
         indent=2, sort_keys=True) + '\n')

@@ -1,0 +1,28 @@
+{
+  "architecture": "x86_64",
+  "byte_order": "little",
+  "compiler_version": "16.2.0",
+  "evidence": "docs/e06_libc.md threading section; docs/ports_ledger.md PL-0011",
+  "features": [
+    "stdio",
+    "heap",
+    "file_io",
+    "directories",
+    "static_tls",
+    "threads"
+  ],
+  "format_version": 1,
+  "id": "xos-x86_64-static-threaded-v1",
+  "layout": "e13t_threaded_dynamic_reent",
+  "runtime_model": "threaded",
+  "scope": "experimental threaded SDK: retargetable newlib locks, dynamic __getreent, 1:1 threads; no C++ runtime in this build",
+  "sdk_tree_sha256": [
+    "3c404a0debfacb0764cc59828fa559cafe01e593034ff451b300d4b7ce8f38c6"
+  ],
+  "startup_version": 2,
+  "syscall_abi": 1,
+  "verified_system_builds": [
+    "2e456eec4374e9a8"
+  ],
+  "word_bits": 64
+}

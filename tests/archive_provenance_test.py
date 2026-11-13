@@ -51,6 +51,16 @@ class provenance_tests(unittest.TestCase):
             copied = copy_archive_provenance(manifest, root, copied_archive, sdk)
             provenance = {'version': 1, 'manifests': {copied.name: digest(copied.read_bytes())}, 'legacy_archives': {}}
             self.assertTrue(verify_bundle(sdk, provenance)['all_archives_accounted'])
+            for field in ('object_sha256', 'command_sha256'):
+                altered = json.loads(copied.read_text())
+                del altered['members'][0][field]
+                original = copied.read_text()
+                copied.write_text(json.dumps(altered))
+                provenance['manifests'][copied.name] = digest(copied.read_bytes())
+                with self.assertRaisesRegex(ValueError, field):
+                    verify_bundle(sdk, provenance)
+                copied.write_text(original)
+                provenance['manifests'][copied.name] = digest(copied.read_bytes())
             (sdk / 'unregistered.a').write_bytes(archive.read_bytes())
             with self.assertRaisesRegex(ValueError, 'coverage mismatch'):
                 verify_bundle(sdk, provenance)

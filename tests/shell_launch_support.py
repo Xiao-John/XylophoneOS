@@ -156,12 +156,14 @@ def bind_native_inputs(args, report):
             "sysroot": checked.sysroot_files, "tools": checked.tools}
 
 
-def install_files(disk, source_root, entries):
+def install_files(disk, source_root, entries, created=None):
+    if created is None: created = set()
     directories = set()
     for item in entries:
         directories.update(str(path) for path in Path(item["guest_path"]).parents if str(path) != "/")
-    for path in sorted(directories, key=lambda value: (value.count("/"), value)):
+    for path in sorted(directories - created, key=lambda value: (value.count("/"), value)):
         transfer(disk, "mkdir", path)
+        created.add(path)
     for item in entries:
         transfer(disk, "import", item["guest_path"], source_root / item["source_path"])
 

@@ -18,7 +18,7 @@ i64 bootstrap(u64& grant) {
     const i64 result = sdk::channel_get(0, channel);
     if (result || channel.rights != channel_receive || channel.peer_pid != channel.controller_pid) return device_denied;
     net::bootstrap message{};
-    const i64 received = sdk::ipc_recv(channel.handle, &message, sizeof(message));
+    const i64 received = sdk::channel_receive_wait(channel.handle, &message, sizeof(message), now() + 3000000000ull);
     (void)sdk::channel_close(channel.handle);
     if (received != sizeof(message) || message.version != net::version || message.size != sizeof(message) || !message.grant)
         return device_invalid;

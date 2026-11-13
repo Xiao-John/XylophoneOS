@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "runtime.hpp"
 #include <errno.h>
+#include <semaphore.h>
 #include <stdint.h>
 #include <limits.h>
+#include <string.h>
 using namespace xos;
 namespace {
 pthread_mutex_t creation_lock = PTHREAD_MUTEX_INITIALIZER;
@@ -375,6 +377,195 @@ extern "C" int pthread_rwlock_wrlock(pthread_rwlock_t*) { return ENOTSUP; }
 extern "C" int pthread_rwlock_trywrlock(pthread_rwlock_t*) { return ENOTSUP; }
 extern "C" int pthread_rwlock_unlock(pthread_rwlock_t*) { return ENOTSUP; }
 extern "C" int sched_yield() { xos::sdk::yield(); return 0; }
+
+extern "C" int sem_init(sem_t* sem, int pshared, unsigned value) {
+    if (sem == nullptr) { return EINVAL; }
+    if (pshared != 0) { return ENOSYS; }
+    if (pthread_mutex_init(&sem->mutex, nullptr) != 0) { return EAGAIN; }
+    if (pthread_cond_init(&sem->cond, nullptr) != 0) { pthread_mutex_destroy(&sem->mutex); return EAGAIN; }
+    sem->value = value;
+    sem->pshared = pshared;
+    sem->initialized = 1;
+    return 0;
+}
+
+extern "C" int sem_destroy(sem_t* sem) {
+    if (sem == nullptr || !sem->initialized) { return EINVAL; }
+    sem->initialized = 0;
+    pthread_cond_destroy(&sem->cond);
+    return pthread_mutex_destroy(&sem->mutex);
+}
+
+extern "C" int sem_wait(sem_t* sem) {
+    if (sem == nullptr || !sem->initialized) { return EINVAL; }
+    int status = pthread_mutex_lock(&sem->mutex);
+    if (status != 0) { return status; }
+    while (sem->value == 0) {
+        status = pthread_cond_wait(&sem->cond, &sem->mutex);
+        if (status != 0) { pthread_mutex_unlock(&sem->mutex); return status; }
+    }
+    --sem->value;
+    return pthread_mutex_unlock(&sem->mutex);
+}
+
+extern "C" int sem_trywait(sem_t* sem) {
+    if (sem == nullptr || !sem->initialized) { return EINVAL; }
+    int status = pthread_mutex_lock(&sem->mutex);
+    if (status != 0) { return status; }
+    if (sem->value == 0) { pthread_mutex_unlock(&sem->mutex); return EAGAIN; }
+    --sem->value;
+    return pthread_mutex_unlock(&sem->mutex);
+}
+
+extern "C" int sem_timedwait(sem_t* sem, const timespec* timeout) {
+    if (sem == nullptr || !sem->initialized || timeout == nullptr) { return EINVAL; }
+    int status = pthread_mutex_lock(&sem->mutex);
+    if (status != 0) { return status; }
+    while (sem->value == 0) {
+        status = pthread_cond_timedwait(&sem->cond, &sem->mutex, timeout);
+        if (status != 0) { pthread_mutex_unlock(&sem->mutex); return status; }
+    }
+    --sem->value;
+    return pthread_mutex_unlock(&sem->mutex);
+}
+
+extern "C" int sem_post(sem_t* sem) {
+    if (sem == nullptr || !sem->initialized) { return EINVAL; }
+    int status = pthread_mutex_lock(&sem->mutex);
+    if (status != 0) { return status; }
+    ++sem->value;
+    status = pthread_cond_signal(&sem->cond);
+    pthread_mutex_unlock(&sem->mutex);
+    return status;
+}
+
+extern "C" int sem_getvalue(sem_t* sem, int* value) {
+    if (sem == nullptr || value == nullptr || !sem->initialized) { return EINVAL; }
+    int status = pthread_mutex_lock(&sem->mutex);
+    if (status != 0) { return status; }
+    *value = static_cast<int>(sem->value);
+    return pthread_mutex_unlock(&sem->mutex);
+}
+
+extern "C" int pthread_barrier_init(pthread_barrier_t* barrier, const void*, unsigned count) {
+    if (barrier == nullptr || count == 0) { return EINVAL; }
+    if (pthread_mutex_init(&barrier->mutex, nullptr) != 0) { return EAGAIN; }
+    if (pthread_cond_init(&barrier->cond, nullptr) != 0) { pthread_mutex_destroy(&barrier->mutex); return EAGAIN; }
+    barrier->count = count;
+    barrier->waiting = 0;
+    barrier->generation = 0;
+    return 0;
+}
+
+extern "C" int pthread_barrier_destroy(pthread_barrier_t* barrier) {
+    if (barrier == nullptr) { return EINVAL; }
+    pthread_cond_destroy(&barrier->cond);
+    return pthread_mutex_destroy(&barrier->mutex);
+}
+
+extern "C" int pthread_barrier_wait(pthread_barrier_t* barrier) {
+    if (barrier == nullptr || barrier->count == 0) { return EINVAL; }
+    int status = pthread_mutex_lock(&barrier->mutex);
+    if (status != 0) { return status; }
+    const unsigned generation = barrier->generation;
+    ++barrier->waiting;
+    if (barrier->waiting == barrier->count) {
+        barrier->waiting = 0;
+        ++barrier->generation;
+        pthread_cond_broadcast(&barrier->cond);
+        pthread_mutex_unlock(&barrier->mutex);
+        return PTHREAD_BARRIER_SERIAL_THREAD;
+    }
+    while (barrier->generation == generation) {
+        status = pthread_cond_wait(&barrier->cond, &barrier->mutex);
+        if (status != 0) { pthread_mutex_unlock(&barrier->mutex); return status; }
+    }
+    return pthread_mutex_unlock(&barrier->mutex);
+}
+
+extern "C" int pthread_spin_init(pthread_spinlock_t* lock, int) {
+    if (lock == nullptr) { return EINVAL; }
+    __atomic_store_n(lock, 0, __ATOMIC_RELEASE);
+    return 0;
+}
+
+extern "C" int pthread_spin_destroy(pthread_spinlock_t* lock) {
+    return lock == nullptr ? EINVAL : 0;
+}
+
+extern "C" int pthread_spin_lock(pthread_spinlock_t* lock) {
+    if (lock == nullptr) { return EINVAL; }
+    while (__atomic_exchange_n(lock, 1, __ATOMIC_ACQUIRE) != 0) { sched_yield(); }
+    return 0;
+}
+
+extern "C" int pthread_spin_trylock(pthread_spinlock_t* lock) {
+    if (lock == nullptr) { return EINVAL; }
+    return __atomic_exchange_n(lock, 1, __ATOMIC_ACQUIRE) == 0 ? 0 : EBUSY;
+}
+
+extern "C" int pthread_spin_unlock(pthread_spinlock_t* lock) {
+    if (lock == nullptr) { return EINVAL; }
+    __atomic_store_n(lock, 0, __ATOMIC_RELEASE);
+    return 0;
+}
+
+extern "C" int pthread_attr_getguardsize(const pthread_attr_t*, size_t* size) {
+    if (size == nullptr) { return EINVAL; }
+    *size = 0;
+    return 0;
+}
+
+extern "C" int pthread_attr_setguardsize(pthread_attr_t*, size_t size) {
+    return size == 0 ? 0 : ENOTSUP;
+}
+
+extern "C" int pthread_condattr_getpshared(const pthread_condattr_t*, int* shared) {
+    if (shared == nullptr) { return EINVAL; }
+    *shared = PTHREAD_PROCESS_PRIVATE;
+    return 0;
+}
+
+extern "C" int pthread_rwlockattr_init(pthread_rwlockattr_t*) { return 0; }
+extern "C" int pthread_rwlockattr_destroy(pthread_rwlockattr_t*) { return 0; }
+extern "C" int pthread_rwlockattr_setpshared(pthread_rwlockattr_t*, int shared) {
+    return shared == PTHREAD_PROCESS_PRIVATE ? 0 : ENOTSUP;
+}
+extern "C" int pthread_rwlockattr_getpshared(const pthread_rwlockattr_t*, int* shared) {
+    if (shared == nullptr) { return EINVAL; }
+    *shared = PTHREAD_PROCESS_PRIVATE;
+    return 0;
+}
+
+extern "C" int pthread_setname_np(pthread_t id, const char* name) {
+    if (name == nullptr) { return EINVAL; }
+    if (id != pthread_self()) { return ESRCH; }
+    xos_thread_control* control = xos_current_control();
+    if (control == nullptr) { return ESRCH; }
+    for (unsigned i = 0; i < sizeof(control->name) - 1 && name[i] != '\0'; ++i) {
+        control->name[i] = name[i];
+        control->name[i + 1] = '\0';
+    }
+    return 0;
+}
+
+extern "C" int pthread_getname_np(pthread_t id, char* name, size_t size) {
+    if (name == nullptr || size == 0) { return EINVAL; }
+    if (id != pthread_self()) { return ESRCH; }
+    xos_thread_control* control = xos_current_control();
+    if (control == nullptr) { return ESRCH; }
+    const char* source = control->name[0] != '\0' ? control->name : "main";
+    size_t index = 0;
+    for (; index + 1 < size && source[index] != '\0'; ++index) { name[index] = source[index]; }
+    name[index] = '\0';
+    return 0;
+}
+
+// The kernel exposes only a blocking join; non-blocking variants stay honest.
+extern "C" int pthread_tryjoin_np(pthread_t, void**) { return ENOTSUP; }
+extern "C" int pthread_timedjoin_np(pthread_t, void**, const timespec*) { return ENOTSUP; }
+extern "C" int pthread_getcpuclockid(pthread_t, clockid_t*) { return ENOTSUP; }
+
 extern "C" unsigned sleep(unsigned seconds) {
     const timespec duration{static_cast<time_t>(seconds), 0};
     return nanosleep(&duration, nullptr) == 0 ? 0 : seconds;

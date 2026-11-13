@@ -49,6 +49,7 @@ def main():
     patches = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(patch_root.glob('*.patch'))}
     build_id = hashlib.sha256(json.dumps({'source': SOURCE_SHA256, 'patches': patches,
         'script': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        'capture_generator': hashlib.sha256((ROOT / 'scripts/archive_provenance.py').read_bytes()).hexdigest(),
         'compiler': hashlib.sha256(Path(shutil.which('x86_64-elf-gcc')).read_bytes()).hexdigest()}, sort_keys=True).encode()).hexdigest()
     capture = capture_build(work, build_id, 'newlib-mixed-source-declarations')
     compiler = shlex.join([*capture.launcher(), 'x86_64-elf-gcc', '-B' + str(tools) + '/'])

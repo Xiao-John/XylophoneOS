@@ -143,6 +143,7 @@ void result_line(u64 child, bool explicit_wait = false, const fault_bundle::rece
         print("xsh: terminal session failed; service restarted\n");
     }
     if (result < 0) { print("wait: error="); signed_decimal(result); print("\n"); return; }
+    if (child == network_service_pid) network_service_pid = 0;
     if (!verbose_trace) {
         if (status.outcome == process_outcome::exited) {
             if (status.code != 0 || explicit_wait) {
@@ -225,8 +226,7 @@ i64 prepare_network_driver(u64 child, void* context) {
     result = sdk::channel_open(channel);
     if (result < 0) return result;
     launch.channel = static_cast<u32>(result);
-    const net::bootstrap message{net::version, sizeof(net::bootstrap), grant.token};
-    return sdk::ipc_send(launch.channel, &message, sizeof(message));
+    return 0;
 }
 void start_network(u64 instance, bool probe) {
     if (instance == 0 || instance > 65536) { print("net: instance must be 1 + PCI BDF\n"); return; }
@@ -248,6 +248,14 @@ void start_network(u64 instance, bool probe) {
         if (launch.channel) (void)sdk::channel_close(launch.channel);
         if (launch.grant) (void)device::revoke(launch.grant);
         print("net: start error="); signed_decimal(child); print("\n"); return;
+    }
+    const net::bootstrap message{net::version, sizeof(net::bootstrap), launch.grant};
+    const i64 sent = sdk::ipc_send(launch.channel, &message, sizeof(message));
+    if (sent != 0) {
+        (void)syscall(10, static_cast<u64>(child));
+        (void)sdk::channel_close(launch.channel);
+        (void)device::revoke(launch.grant);
+        print("net: bootstrap error="); signed_decimal(sent); print("\n"); return;
     }
     if (probe) result_line(static_cast<u64>(child));
     else {

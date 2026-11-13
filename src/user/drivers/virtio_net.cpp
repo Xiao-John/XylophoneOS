@@ -95,7 +95,8 @@ i64 split_queue::receive(u8* frame, u32 capacity) {
     const u32 id = elements[consumed_ % queue_size].id, length = elements[consumed_ % queue_size].length;
     if (id >= queue_size || !active_[id] || length < header_bytes + 14 || length > header_bytes + frame_limit) return device_io;
     const auto* buffer = reinterpret_cast<const volatile u8*>(address_ + 4096 + u64{id} * buffer_bytes);
-    if (buffer[0] || buffer[1] || buffer[10] != 1 || buffer[11] != 0) return device_io;
+    // num_buffers is meaningful only when VIRTIO_NET_F_MRG_RXBUF is negotiated.
+    if (buffer[0] || buffer[1]) return device_io;
     for (u32 i = header_bytes; i < length; ++i) frame[i - header_bytes] = buffer[i];
     ++consumed_; publish(static_cast<u16>(id)); return length - header_bytes;
 }
@@ -174,7 +175,11 @@ i64 driver::configure() {
         notify_[index] = reinterpret_cast<volatile u16*>(registers[1] + offset);
         queues_[index].initialize(dma.address + u64{index} * queue_bytes, dma.offset + u64{index} * queue_bytes, index == 0);
         const u64 physical = queues_[index].physical();
-        write<u64>(32, physical); write<u64>(40, physical + available_offset); write<u64>(48, physical + used_offset);
+        for (u32 reg = 32; reg <= 48; reg += 8) {
+            const u64 address = physical + (reg == 40 ? available_offset : reg == 48 ? used_offset : 0);
+            write<u32>(reg, static_cast<u32>(address));
+            write<u32>(reg + 4, static_cast<u32>(address >> 32));
+        }
         write<u16>(28, 1);
         if (read<u16>(28) != 1) return device_io;
     }

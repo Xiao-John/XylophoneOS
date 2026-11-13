@@ -1,0 +1,9 @@
+{
+  "kind": "tarball",
+  "version": "2.16.03",
+  "url": "https://mirrors.aliyun.com/blfs/conglomeration/nasm/nasm-2.16.03.tar.xz",
+  "upstream_site": "https://www.nasm.us/pub/nasm/releasebuilds/2.16.03/",
+  "archive": "nasm-2.16.03.tar.xz",
+  "sha256": "1412a1c760bbd05db026b6c0d1657affd6631cd0a63cddb6f73cc6d4aa616148",
+  "sha256_scope": "mirror_fetch"
+}

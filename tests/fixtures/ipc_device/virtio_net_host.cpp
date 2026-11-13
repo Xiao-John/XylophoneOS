@@ -57,7 +57,7 @@ int main() {
     std::memset(ring, 0, sizeof(ring));
     split_queue rx; rx.initialize(reinterpret_cast<u64>(ring), 0x300000, true);
     auto* packet = ring + 4096 + 5 * buffer_bytes;
-    packet[10] = 1; packet[12] = 0x52;
+    packet[10] = 0; packet[12] = 0x52;
     entries[0] = {5, 72}; used[1] = 1;
     u8 received[frame_limit]{};
     assert(rx.receive(received, sizeof(received)) == 60 && received[0] == 0x52 && available[1] == queue_size + 1);

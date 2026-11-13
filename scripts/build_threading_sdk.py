@@ -172,7 +172,8 @@ def main():
              '-fno-pic', '-fno-pie', '-mno-red-zone', '-march=x86-64', '-mcmodel=small',
              '-ftls-model=local-exec', '-DXOS_THREADED_RUNTIME', '-nostdinc++',
              '-I' + str(output / 'include'), '-I' + str(ROOT / 'src/user/threading')]
-    sources = [*sorted((ROOT / 'src/user/libc').glob('*.cpp')),
+    sources = [*sorted(p for p in (ROOT / 'src/user/libc').glob('*.cpp')
+                        if p.name != 'pthread_single.cpp'),
                ROOT / 'src/user/sdk/file_client.cpp', ROOT / 'src/user/sdk/text.cpp',
                ROOT / 'src/user/sdk/terminal_client.cpp',
                ROOT / 'src/user/arch/x86_64/syscall.cpp', ROOT / 'src/user/arch/x86_64/tls.cpp',
@@ -185,8 +186,8 @@ def main():
     for source in sources:
         target = objects / (str(source.relative_to(ROOT)).replace('/', '_') + '.o')
         target.parent.mkdir(parents=True, exist_ok=True)
-        # pthread_once must unwind its in-progress marker if an initializer throws.
-        extra = ['-fexceptions', '-funwind-tables'] if source.name == 'pthread.cpp' else ['-fno-exceptions']
+        exceptions = ['-fexceptions', '-funwind-tables'] if args.cpp else ['-fno-exceptions']
+        extra = exceptions if source.name == 'pthread.cpp' else ['-fno-exceptions']
         run([*capture.launcher(), cross, *flags, *extra, '-c', str(source), '-o', str(target)], source.stem + '.log')
         compiled.append(target)
     archive = output / 'lib/libxos.a'
@@ -334,8 +335,11 @@ def main():
         raise SystemExit('GCC source tree changed during the runtime build')
     if final_inputs != initial_inputs:
         raise SystemExit('SDK inputs changed during the build; retry with a stable source snapshot')
+    system_manifest = ROOT / 'build/manifest.json'
+    build_id = (json.loads(system_manifest.read_text())['build_id']
+                if system_manifest.is_file() else '')
     receipt = {'profile': 'xos-threading-v1-experimental', 'abi': 1, 'thread_abi': 1,
-               'build_id': build_id,
+               'target': 'x86_64-elf', 'build_id': build_id,
                'archive_provenance': {'version': 1, 'manifests': archive_manifests, 'legacy_archives': {}},
                'vm_extensions': {'version': 1, 'syscall': 67, 'status': 'implemented_unqualified'},
                'cpu_time': {'version': 1, 'syscall': 89, 'status': 'implemented_unqualified',

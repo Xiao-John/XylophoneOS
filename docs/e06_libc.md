@@ -14,6 +14,23 @@
   见[SDK](e04_loader_sdk.md)、[Shell](implementation/shell.md)。当前FD不代表完整POSIX。
 - getentropy→sys63真实RDRAND接口；墙钟/gettimeofday→sys64，单调时间/睡眠走线程等待
   机制。输出大小、errno、不支持/硬件失败按各自契约；不以uptime或固定种子补安全接口。
+- 线程 SDK 可由公开归档重建：`newlib-4.6.0.20260123.tar.gz` 取自 sourceware
+  （sha256 `6ff27e3bf022666f43f7802255be680eeff722ac181b1725d21e2e8318604ee3`），
+  再跑 `build_threading_newlib.py` 与 `build_threading_sdk.py`。本机已用该 SDK 实测
+  lz4 `-T2`、zstd `-T2` 的压缩/解压在客体通过。
+- 线程运行时补齐常用 P2 面：`sem_init/wait/trywait/timedwait/post/getvalue`（基于 mutex/cond）、
+  `pthread_barrier_*`、`pthread_spin_*`、`pthread_setname_np/getname_np`、attr guardsize、
+  `pthread_condattr_getpshared`、`pthread_rwlockattr_*`；普通 SDK 提供同名单线程实现。
+  `pthread_tryjoin_np/timedjoin_np/getcpuclockid` 目前诚实返回 `ENOTSUP`。
+- 线程包使用 profile `xos-x86_64-static-threaded-v1`（features 含 `threads`，登记线程
+  SDK 树哈希与已验证系统 build）；xypm 事务按该 profile 建库。
+- 普通 SDK 提供**单线程 pthread 子集**：`pthread_once`、TSS keys、mutex/cond/rwlock、
+  `pthread_self/equal`、`sched_yield` 在单线程进程里语义正确；`pthread_create/join/detach`
+  返回 `ENOSYS`。声明需要 POSIX feature 宏（`xos_app.py` 已带），真实多线程仍需线程 SDK。
+- `times()`/`clock()` 用单调时基（1000 tick/秒，非线程 CPU 计时）；C11 `timespec_get`
+  走 sys64 纳秒。`utime`/`chmod`/`chown` 已提供可链接符号但返回 `ENOSYS`——文件服务
+  尚无时间戳/权限/所有权写 ABI，不伪造成功。`clock_gettime`/POSIX timers 的头文件
+  可见性受 `_POSIX_TIMERS` 控制，本组未开启，见[端口反馈账本](ports_ledger.md)。
 - truncate/ftruncate接files op25；stat仍有合成属性。权限、链接、完整时间元数据、locale、
   signals、socket、通用就绪等待与mmap族未取得完整资格，缺项不能永远成功。
 

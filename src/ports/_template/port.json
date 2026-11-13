@@ -1,0 +1,27 @@
+{
+  "format_version": 1,
+  "id": "example_tool",
+  "name": "Example Tool",
+  "upstream_version": "1.0.0",
+  "license": ["MIT"],
+  "homepage": "https://example.invalid/tool",
+  "source": {"kind": "tarball", "lock": "source_lock.json"},
+  "build": {
+    "system": "autotools",
+    "recipe": null,
+    "patches": []
+  },
+  "package": {
+    "id": "example.tool",
+    "target_profile": "xos-x86_64-static-single-b2-v1",
+    "xpk_sha256": null
+  },
+  "integration": {
+    "guest_only": true,
+    "bootstrap_images": [],
+    "iso_members": []
+  },
+  "status": "planned",
+  "note": "复制为 src/ports/<id> 后逐项填写；字段语义见 docs/ports.md。空字段不要保留占位：source 为 null 表示 XOS 自研，recipe 仅在未构建前为 null。",
+  "evidence": []
+}

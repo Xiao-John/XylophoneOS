@@ -28,6 +28,9 @@ def main():
         parser.error('--output must be a new directory below build/candidates/')
     if bool(args.newlib_archive) != bool(args.gcc_source):
         parser.error('supply --newlib-archive and --gcc-source together for the threaded C++ SDK')
+    untracked = subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard', '-z'], cwd=ROOT)
+    if untracked:
+        parser.error('untracked files may be build inputs; commit or move them before candidate build')
     output.mkdir(parents=True)
     report = {'status': 'building', 'source_commit': git(['rev-parse', 'HEAD']),
               'working_diff_sha256': hashlib.sha256(subprocess.check_output(['git', 'diff', 'HEAD'], cwd=ROOT)).hexdigest(),
@@ -77,11 +80,16 @@ def main():
             target = frozen / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(source, target)
+            if sha(target) != item['sha256']:
+                raise ValueError('frozen artifact differs from manifest: ' + relative)
             report['artifacts']['system/' + relative] = item['sha256']
         for name in ('manifest.json', 'install_manifest.json', 'license_report.json', 'xos-install-dash.iso'):
             source = ROOT / 'build' / name
+            expected = sha(source)
             shutil.copyfile(source, frozen / name)
-            report['artifacts']['system/' + name] = sha(source)
+            if sha(frozen / name) != expected:
+                raise ValueError('frozen artifact changed: ' + name)
+            report['artifacts']['system/' + name] = expected
         if args.newlib_archive:
             report['threaded_sdk_manifest_sha256'] = sha(output / 'threading_sdk/manifest.json')
         report['status'] = 'built_smoke_passed' if args.guest else 'built_unverified'

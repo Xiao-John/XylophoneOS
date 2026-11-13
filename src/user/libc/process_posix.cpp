@@ -103,6 +103,15 @@ extern "C" FILE* popen(const char* command, const char* mode) {
     const int parent_fd = mode[0] == 'r' ? fds[0] : fds[1];
     const int target_fd = mode[0] == 'r' ? STDOUT_FILENO : STDIN_FILENO;
 
+    // Keep this stream out of later spawned children.
+    if (fcntl(parent_fd, F_SETFD, FD_CLOEXEC) < 0) {
+        const int failure = errno;
+        (void)close(fds[0]); (void)close(fds[1]);
+        release_slot();
+        errno = failure;
+        return nullptr;
+    }
+
     // Create the stream first: a failure here must not leave a child running.
     FILE* stream = fdopen(parent_fd, mode);
     if (stream == nullptr) {

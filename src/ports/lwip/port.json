@@ -19,7 +19,7 @@
   "package": {
     "id": "thirdparty.lwip",
     "target_profile": "xos-x86_64-static-single-b2-v1",
-    "xpk_sha256": "053b54300de0cffb13b363507ff33e782114ebd5317a828357c104033ae514d6"
+    "xpk_sha256": "15bbd8dc4fa55e69f598e2d916360dee22994f8b98b936933179c84427c9f043"
   },
   "integration": {
     "guest_only": true,
@@ -27,7 +27,7 @@
     "iso_members": []
   },
   "status": "guest_verified",
-  "note": "lwIP 2.2.1 NO_SYS=1：liblwip.a + 头文件 + net_ping 探针；经 net 服务原始帧完成 ARP/ICMP（网关 10.0.2.2 回包）。",
+  "note": "lwIP 2.2.1 NO_SYS=1：liblwip.a + 头文件 + net_ping 探针；经 net 服务原始帧完成 ARP/ICMP（网关 10.0.2.2），xsh 与 dash 双路径实测。",
   "evidence": [
     "docs/reports/lwip_2_2_1_20261113/README.md"
   ]

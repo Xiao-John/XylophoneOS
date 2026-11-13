@@ -8,7 +8,7 @@
 
 - 包 id：`thirdparty.lwip`
 - 目标 profile：`xos-x86_64-static-single-b2-v1`
-- 已验证包哈希：`053b54300de0cffb13b363507ff33e782114ebd5317a828357c104033ae514d6`
+- 已验证包哈希：`15bbd8dc4fa55e69f598e2d916360dee22994f8b98b936933179c84427c9f043`
   （由本目录配方构建；换 SDK/上游/配方后必须重算并更新 `port.json`）。
 
 ## 交付
@@ -27,6 +27,9 @@ export XOS_SOURCE_ARCHIVE=/path/to/lwip-2.2.1.tar.xz
 export XOS_OUT=/path/to/out
 python3 build.py
 ```
+
+配方会核对 `XOS_SDK` 树哈希是否登记在目标 profile 的 `sdk_tree_sha256`；用开发树
+`build/sdk`（未登记）构建时需设置 `XOS_SDK_UNREGISTERED_OK=1`。
 
 配方编译 `NO_SYS=1` 的 lwIP：核心 + IPv4（不含 DHCP/AUTOIP/IGMP/DNS）+ `ethernet.c`，
 链接 `net_ping.cpp`（`sys_now`/`LWIP_RAND`/diag 由端口的 `xos_lwip.h` 提供）。

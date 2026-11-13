@@ -60,6 +60,12 @@ def main():
     sys.path.insert(0, str(HERE.parents[2] / "scripts"))
     from xos_app import tree_receipt
     sdk_tree_sha256 = tree_receipt(sdk)[0]
+    profile_name = port["package"]["target_profile"].replace("-", "_") + ".json"
+    profile_path = HERE.parents[2] / "config/package" / profile_name
+    if profile_path.is_file():
+        registered = json.loads(profile_path.read_text()).get("sdk_tree_sha256", [])
+        if sdk_tree_sha256 not in registered and os.environ.get("XOS_SDK_UNREGISTERED_OK") != "1":
+            raise SystemExit("ports/lwip: SDK tree is not registered for the target profile")
 
     cc = shutil.which("x86_64-elf-gcc")
     cxx = shutil.which("x86_64-elf-g++")

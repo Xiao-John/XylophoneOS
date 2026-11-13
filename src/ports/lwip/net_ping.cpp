@@ -77,7 +77,13 @@ u16_t icmp_checksum(const u8* data, u16 length) {
     return static_cast<u16>(~sum);
 }
 
-u8_t on_icmp(void*, raw_pcb*, pbuf* packet, const ip_addr_t*) {
+ip_addr_t gateway_address() {
+    ip_addr_t gateway;
+    IP_ADDR4(&gateway, 10, 0, 2, 2);
+    return gateway;
+}
+
+u8_t on_icmp(void*, raw_pcb*, pbuf* packet, const ip_addr_t* source) {
     if (packet->len < sizeof(ip_hdr) + sizeof(icmp_echo_hdr)) { pbuf_free(packet); return 1; }
     // lwIP's raw API delivers the IPv4 header; skip it to reach ICMP.
     const auto* iph = static_cast<const ip_hdr*>(packet->payload);
@@ -85,8 +91,10 @@ u8_t on_icmp(void*, raw_pcb*, pbuf* packet, const ip_addr_t*) {
     if (packet->len < header_length + sizeof(icmp_echo_hdr)) { pbuf_free(packet); return 1; }
     const auto* header = reinterpret_cast<const icmp_echo_hdr*>(
         static_cast<const u8*>(packet->payload) + header_length);
+    ip_addr_t gateway = gateway_address();
     if (header->type == ICMP_ER && header->id == htons(g_identifier)
-        && header->seqno == htons(g_expected)) {
+        && header->seqno == htons(g_expected)
+        && source != nullptr && ip_addr_cmp(source, &gateway)) {
         g_replied = true;
     }
     pbuf_free(packet);
@@ -107,8 +115,7 @@ void send_ping(u16 sequence) {
     for (u16 i = 0; i < payload; ++i) { body[i] = static_cast<u8>(sequence + i); }
     header->chksum = htons(icmp_checksum(static_cast<const u8*>(packet->payload),
                                          sizeof(icmp_echo_hdr) + payload));
-    ip_addr_t gateway;
-    IP_ADDR4(&gateway, 10, 0, 2, 2);
+    ip_addr_t gateway = gateway_address();
     g_expected = sequence;
     g_replied = false;
     g_sent_at_ms = sys_now();

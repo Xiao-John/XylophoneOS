@@ -5,7 +5,7 @@
 | 端口 | `src/ports/lwip` |
 | 上游归档 | `lwip_2.2.1+dfsg1.orig.tar.xz`，sha256 `83729c274c499d3348e9fbbe043a3113f3fa8953e7efddc7c21c7fcbb1f2b7b1`（Debian/aliyun） |
 | 构建方式 | NO_SYS 核心 + IPv4 + ethernet 编成 `liblwip.a`；手工链接 `net_ping` |
-| 包 | `thirdparty.lwip-2.2.1.xpk`，sha256 `053b54300de0cffb13b363507ff33e782114ebd5317a828357c104033ae514d6`，168 个文件 |
+| 包 | `thirdparty.lwip-2.2.1.xpk`，sha256 `15bbd8dc4fa55e69f598e2d916360dee22994f8b98b936933179c84427c9f043`，168 个文件 |
 | 客体镜像 | `build/xos-install.iso`，build `dbac77b20e54558e`（kernel 805016 字节） |
 
 ## 安装事务
@@ -33,6 +33,15 @@ xsh> net-stop
 - 首先完成 ARP（网关 MAC `52:55:0a:00:02:02`），随后 ICMP echo request 收到
   `type=0`、`id=0x584f`、`seq=1` 的 echo reply。
 - 同一轮启动/停止服务后，再跑一轮结果一致（重复运行验证）。
+
+dash 路径（同一份包，`dash` 以 bare command 启动）：
+
+```text
+xsh> dash /tests/ping.sh
+[net_ping] mac=52:54:00:12:34:56 ip=10.0.2.15 gateway=10.0.2.2
+[net_ping] reply seq=1 rtt_ms=100
+dash_rc=0
+```
 
 ## 未覆盖
 

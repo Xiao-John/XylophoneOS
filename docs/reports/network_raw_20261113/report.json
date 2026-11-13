@@ -15,7 +15,7 @@
     "untrusted_dma_isolation"
   ],
   "qemu_command": [
-    "/opt/homebrew/bin/qemu-system-x86_64",
+    "qemu-system-x86_64",
     "-machine",
     "pc-i440fx-10.0",
     "-accel",
@@ -33,7 +33,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-cdrom",
-    "/Users/xylo/Documents/XylophoneOS/build/ipc_device_system/xos-install.iso",
+    "${XOS_ROOT}/build/ipc_device_system/xos-install.iso",
     "-boot",
     "order=d,strict=on",
     "-no-reboot",
@@ -44,13 +44,13 @@
     "-display",
     "none",
     "-drive",
-    "file=/var/folders/x6/3clfjww5133fn5kbknq7c_2m0000gn/T/xos_net_guest_cbk2aqt9/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "file=${XOS_LOCAL_PATH},format=raw,if=ide,index=0,media=disk,cache=writeback",
     "-netdev",
     "user,id=xosnet",
     "-device",
     "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56",
     "-qmp",
-    "unix:/var/folders/x6/3clfjww5133fn5kbknq7c_2m0000gn/T/xos_vu5r78id/qmp.sock,server=on,wait=off"
+    "unix:${XOS_LOCAL_PATH},server=on,wait=off"
   ],
   "stable_resources": [
     129709,

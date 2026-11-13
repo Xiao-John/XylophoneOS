@@ -22,5 +22,5 @@ not_run: tcp, dns, tls, untrusted_dma_isolation
 
 含义：真实 ARP TX/RX（网关 `10.0.2.2` 回复）、至少一次 IRQ、reset 后 grant 释放、
 连续三轮资源基线稳定。TCP/DNS/TLS 与不可信 DMA 隔离仍未验证——TCP 现已由
-[lwIP 端口](lwip_2_2_1_20261113/README.md) 的 ICMP 用例向前推进一层，但 lwIP 的
+[lwIP 端口](../lwip_2_2_1_20261113/README.md) 的 ICMP 用例向前推进一层，但 lwIP 的
 TCP 尚无客体证据。

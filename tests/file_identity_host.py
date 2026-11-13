@@ -8,11 +8,15 @@ import re
 import shutil
 import subprocess
 import sys
+import sys
 import tempfile
 
 repo_root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(repo_root / "scripts"))
 from make_work_disk import make_image
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from host_tools import gc_sections_flags, nm_defined_args, nm_program, objcopy_program
 
 
 def main():
@@ -44,17 +48,17 @@ def main():
         run([*host_flags, "-c", repo_root / "src/user/services/fatfs_unicode.cpp", "-o", unicode])
         service_test = output / "file_identity"
         run([*host_flags, repo_root / "tests/fixtures/file_semantics/file_identity.cpp", fatfs,
-             unicode, "-Wl,--gc-sections", "-o", service_test])
+             unicode, *gc_sections_flags(), "-o", service_test])
         run([service_test, image])
 
         runtime = output / "runtime.o"
         run([*runtime_flags, "-c", repo_root / "src/user/libc/newlib_syscalls.cpp", "-o", runtime])
-        symbols = subprocess.check_output(["nm", "-P", "-g", "--defined-only", runtime], text=True)
+        symbols = subprocess.check_output([nm_program(), *nm_defined_args(), runtime], text=True)
         mapping = output / "symbols.txt"
         mapping.write_text("".join(f"{name} audit_{name}\n" for line in symbols.splitlines()
                                   if re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]*", name := line.split()[0])
                                   and not name.startswith("_Z")))
-        run([os.environ.get("OBJCOPY", "objcopy"), "--redefine-syms=" + str(mapping), runtime])
+        run([objcopy_program(), "--redefine-syms=" + str(mapping), runtime])
         service = output / "service.o"
         run([*host_flags, "-c", repo_root / "tests/fixtures/file_semantics/libc_service.cpp", "-o", service])
         libc_test = output / "libc_identity"
@@ -62,7 +66,7 @@ def main():
             "tests/fixtures/file_semantics/libc_identity.cpp", "src/user/sdk/file_client.cpp",
             "src/user/sdk/terminal_client.cpp", "src/user/sdk/text.cpp")]
         run([*runtime_flags, *sources, runtime, service, fatfs, unicode,
-             "-Wl,--gc-sections", "-o", libc_test])
+             *gc_sections_flags(), "-o", libc_test])
         run([libc_test, image])
 
     paths = ["src/user/services/files.cpp", "src/user/libc/newlib_syscalls.cpp",

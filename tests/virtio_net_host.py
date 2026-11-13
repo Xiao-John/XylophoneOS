@@ -11,15 +11,15 @@ import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
-# GNU ld drops unreachable sections with --gc-sections; Apple's ld uses dead_strip.
-GC_SECTIONS = ["-Wl,-dead_strip"] if sys.platform == "darwin" else ["-Wl,--gc-sections"]
+sys.path.insert(0, str(ROOT / "tests"))
+from host_tools import gc_sections_flags
 
 
 def main():
     with tempfile.TemporaryDirectory(prefix="xos_virtio_net_") as temporary:
         binary = Path(temporary) / "virtio_net_host"
         subprocess.run([os.environ.get("CXX", "c++"), "-std=c++20", "-O2", "-Wall", "-Wextra", "-Werror",
-                        "-ffunction-sections", "-fdata-sections", *GC_SECTIONS,
+                        "-ffunction-sections", "-fdata-sections", *gc_sections_flags(),
                         "-I", str(ROOT / "src/user"), "-I", str(ROOT / "src/shared/include"),
                         "-idirafter", str(ROOT / "src/user/include"),
                         str(ROOT / "tests/fixtures/ipc_device/virtio_net_host.cpp"),

@@ -73,7 +73,7 @@ client_session sessions[max_sessions];
 u32 generations[max_sessions];
 open_description descriptions[max_open_descriptions];
 file_object file_objects[max_file_objects];
-file_object root_object{true, true, false, false, true, 0, 0, 1, 0, 0, {}, {}, {}};
+file_object root_object{true, true, false, false, false, true, 0, 0, 1, 0, 0, {}, {}, {}};
 request request_buffer;
 response response_buffer;
 u8 block_bench_buffer[4096];
@@ -530,6 +530,8 @@ status acquire_directory(u32 parent, const char* path, u32& index) {
     return status::full;
 }
 
+bool equals_path(const char* path, const char* name);
+
 status resolve_service_path(client_session& session, const char* source, u32 length,
                             path_reference& output, bool allow_root = false,
                             bool allow_trailing_slash = false) {
@@ -542,6 +544,26 @@ status resolve_service_path(client_session& session, const char* source, u32 len
             c == '"' || c == '<' || c == '>' || c == '|') { return status::invalid; }
     }
     if (length > 1 && source[length - 1] == '/' && !allow_trailing_slash) { return status::invalid; }
+    {
+        // Virtual device paths do not exist on the FAT volume; resolve them
+        // before walking parents (the parent store has no "dev" entry).
+        const char* bare = source[0] == '/' ? source + 1 : source;
+        const u32 bare_length = length - (source[0] == '/' ? 1u : 0u);
+        if (bare_length == 3 && bare[0] == 'd' && bare[1] == 'e' && bare[2] == 'v') {
+            output.parent = 0;
+            output.leaf[0] = 'd'; output.leaf[1] = 'e'; output.leaf[2] = 'v'; output.leaf[3] = '\0';
+            output.path[0] = 'd'; output.path[1] = 'e'; output.path[2] = 'v'; output.path[3] = '\0';
+            return status::ok;
+        }
+        if (bare_length == 8 && equals_path(bare, "dev/null")) {
+            output.parent = 0;
+            output.leaf[0] = 'n'; output.leaf[1] = 'u'; output.leaf[2] = 'l'; output.leaf[3] = 'l';
+            output.leaf[4] = '\0';
+            for (u32 i = 0; i < 8; ++i) { output.path[i] = bare[i]; }
+            output.path[8] = '\0';
+            return status::ok;
+        }
+    }
     output.parent = source[0] == '/' ? 0 : session.cwd;
     retain_object(output.parent);
     u32 position = 0;

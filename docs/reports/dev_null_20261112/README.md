@@ -13,7 +13,7 @@
 
 ## 验证
 
-- build `26161cda4ebf8109`（kernel 721752 字节）。
+- build `44a4c235011f5a2a`（kernel 721752 字节）。
 - `tests/dev_null_guest.py`：`DEV_NULL_OK`，覆盖 open/write/lseek/read/stat/fstat/close，
   以及 `/dev/not-null` 返回 `ENOENT`、`O_CREAT|O_EXCL` 对已存在的 `/dev/null` 返回
   `EEXIST`（不把“创建成功”报给调用方）；资源计数回基线。

@@ -36,14 +36,18 @@ def run(command, cwd=None, env=None):
 def main():
     port = json.loads((HERE / "port.json").read_text())
     lock = json.loads((HERE / "source_lock.json").read_text())
-    sdk = need("XOS_SDK")
-    archive = need("XOS_SOURCE_ARCHIVE")
     out = need("XOS_OUT")
     out.mkdir(parents=True, exist_ok=True)
     output = out / f"{port['package']['id']}-{lock['version']}.xpk"
     receipt_output = out / "build_receipt.json"
     output.unlink(missing_ok=True)
     receipt_output.unlink(missing_ok=True)
+    tree = out / "tree"
+    if tree.exists():
+        shutil.rmtree(tree)
+
+    sdk = need("XOS_SDK")
+    archive = need("XOS_SOURCE_ARCHIVE")
 
     if sha256(archive) != lock["sha256"]:
         raise SystemExit("ports/bc: source archive hash differs from source_lock.json")
@@ -52,8 +56,10 @@ def main():
             raise SystemExit(f"ports/bc: SDK is missing {name}")
 
     sys.path.insert(0, str(HERE.parents[2] / "scripts"))
-    from xos_app import tree_receipt
-    sdk_tree_sha256 = tree_receipt(sdk)[0]
+    from xos_app import sdk_check
+    profile_name = port["package"]["target_profile"].replace("-", "_") + ".json"
+    profile = json.loads((HERE.parents[2] / "config/package" / profile_name).read_text())
+    sdk_tree_sha256 = sdk_check(sdk, profile)["tree_sha256"]
 
     cc = shutil.which("x86_64-elf-gcc")
     objcopy = shutil.which("x86_64-elf-objcopy")
@@ -85,9 +91,6 @@ def main():
     for directory in ("bc", "dc"):
         run(["make", "-j4"], cwd=source / directory, env=env)
 
-    tree = out / "tree"
-    if tree.exists():
-        shutil.rmtree(tree)
     bindir = tree / "usr/bin"
     bindir.mkdir(parents=True)
     for name in ("bc", "dc"):

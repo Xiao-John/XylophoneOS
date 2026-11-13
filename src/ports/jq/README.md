@@ -39,7 +39,7 @@ python3 scripts/xypm.py install \
   "$XOS_OUT/thirdparty.jq-1.8.2.xpk"
 ```
 
-已验证的包哈希：`13742ac8d0512a5c34a1c2e1b2baac18d643afc0622194b28147bf6a8a7a883a`
+已验证的包哈希：`043170b16f9d88e0cdebf55829694d4ee17692aa718318052bfcde6d30a989c4`
 （1,710,080 字节，由本目录配方构建；换 SDK、上游或配方后必须重算并更新 `port.json`）。
 
 **xsh**（直接执行）：

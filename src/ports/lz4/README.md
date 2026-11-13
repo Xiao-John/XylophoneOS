@@ -48,7 +48,7 @@ exec-file /usr/bin/lz4 -V
     *** LZ4 command line interface 64-bits v1.10.0 ...
 exec-file /usr/bin/lz4 -T2 -1 /usr/share/lz4/samples/sample.txt /sample.lz4
 exec-file /usr/bin/lz4 -t /sample.lz4
-    # 当前基线：/dev/null 不存在，-t 报 /dev/null: No such file or directory 并退出 1
+    # 需要 /dev/null（#126）；基线未合并该设备时退出 1，见账本 PL-0006
     # （账本 PL-0006）；压缩/解压路径不受影响
 exec-file /usr/bin/lz4 -d /sample.lz4 /sample.out
     # /sample.out 与样例逐字节相同

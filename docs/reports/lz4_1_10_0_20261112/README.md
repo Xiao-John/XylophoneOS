@@ -47,37 +47,48 @@ python3 scripts/xypm.py install --image disks/base.img --output-image disks/lz4.
 
 结果：`verify-installed = verified`；`list` 显示 `thirdparty.lz4 1.10.0 rev 0`。
 
-## 客体运行（dash 脚本，原始输出）
+## 客体运行（原始输出，同一份包）
 
 样例 `usr/share/lz4/samples/sample.txt`，3000 字节，sha256
 `680c48c74164969e64be4edd2cd54001052693fd68e1134861de15f420796afc`。
 
+xsh 路径：
+
 ```text
+xsh> exec-file /usr/bin/lz4 -v -T2 -1 -f /usr/share/lz4/samples/sample.txt /sample.lz4
 *** lz4 v1.10.0 64-bit multithread, by Yann Collet ***
-/usr/bin/lz4 -T2 -1 /usr/share/lz4/samples/sample.txt /sample.lz4
 Using 2 threads for compression
-Compressed 3960 bytes into 391 bytes ==> 9.87%
-Done in 0.02 s ==> 0.19 MiB/s  (cpu load : 100%)
-/sample.lz4                    : decoded 3000 bytes
-/usr/bin/lz4 -T2 -1 /usr/share/lz4/samples/sample.txt /sample.lz4
-Using 2 threads for compression
-Compressed 3960 bytes into 391 bytes ==> 9.87%
-Done in 0.02 s ==> 0.19 MiB/s  (cpu load : 100%)
-/sample9.lz4                   : decoded 3000 bytes
-/missing: No such file or directory
-missing_rc=1
+Read : 0 MiB   ==> 9.93%
+Compressed 3000 bytes into 298 bytes ==> 9.93%
+Done in 0.03 s ==> 0.10 MiB/s  (cpu load : 100%)
 ```
 
-- `/sample.out`、`/sample9.out` 与样例**逐字节相同**（sha256 同上）。
-- 客体产出的 `/sample.lz4`（298 字节）sha256 `0e82989633a6b667cee184a006a1abc5a9fe3f5ec1678827f31d0f9ded359980`，
+dash 路径（`/usr/bin/lz4 -v -T2 -1 -f /sample.txt /sample.lz4`）：
+
+```text
+*** lz4 v1.10.0 64-bit multithread, by Yann Collet ***
+Using 2 threads for compression
+Read : 0 MiB   ==> 9.93%
+Compressed 3000 bytes into 298 bytes ==> 9.93%
+Done in 0.02 s ==> 0.14 MiB/s  (cpu load : 100%)
+c_rc=0
+*** lz4 v1.10.0 64-bit multithread, by Yann Collet ***
+Decompressed : 0 MiB
+/sample.lz4                    : decoded 3000 bytes
+d_rc=0
+```
+
+- `/sample.out` 与样例**逐字节相同**（sha256 同上）。
+- 客体产出的 `/sample.lz4`（298 字节）sha256
+  `0e82989633a6b667cee184a006a1abc5a9fe3f5ec1678827f31d0f9ded359980`，
   与宿主参考实现压缩同一文件的结果**完全相同**。
 - 宿主参考实现能解压客体产出的 `.lz4`（decoded 3000 bytes，与样例一致）。
 
 ## 未覆盖 / 已知失败
 
-- `lz4 -t /sample.lz4` 退出 1：`/dev/null: No such file or directory`。基线没有
-  `/dev/null`，`-t` 无法建空输出；与 LZ4 无关，已记入
-  [端口反馈账本](../../ports_ledger.md) `PL-0006`。压缩/解压路径不受影响。
+- `lz4 -t` 需要 `/dev/null`；基线尚未提供时该命令报
+  `/dev/null: No such file or directory` 并退出 1（账本 `PL-0006`，
+  由 #126 提供设备后应可复核）。压缩/解压路径不受影响。
 - 上游 `tests/` 未跑；只验证 xsh + dash 脚本。
 - `-T2` 已验证压缩/解压与宿主互解；SMP 与更高线程数未验。
 - 未在官方发行盘复验。

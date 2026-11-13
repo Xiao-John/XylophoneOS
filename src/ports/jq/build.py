@@ -40,8 +40,6 @@ def main():
     archive = need("XOS_SOURCE_ARCHIVE")
     onig_lock = json.loads((HERE / "oniguruma.lock.json").read_text())
     onig_archive = need("XOS_ONIGURUMA_ARCHIVE")
-    if sha256(onig_archive) != onig_lock["sha256"]:
-        raise SystemExit("ports/jq: oniguruma archive hash differs from oniguruma.lock.json")
     out = need("XOS_OUT")
     out.mkdir(parents=True, exist_ok=True)
     output = out / f"{port['package']['id']}-{lock['version']}.xpk"
@@ -49,6 +47,8 @@ def main():
     # A reused output directory must never keep a previous success visible.
     output.unlink(missing_ok=True)
     receipt_output.unlink(missing_ok=True)
+    if sha256(onig_archive) != onig_lock["sha256"]:
+        raise SystemExit("ports/jq: oniguruma archive hash differs from oniguruma.lock.json")
 
     if sha256(archive) != lock["sha256"]:
         raise SystemExit("ports/jq: source archive hash differs from source_lock.json")

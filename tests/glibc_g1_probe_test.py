@@ -20,9 +20,23 @@ with tempfile.TemporaryDirectory(prefix='xos_glibc_g1_test_') as temporary:
     run = subprocess.run([sys.executable, SCRIPT, '--archive', archive, '--output', output, '--diagnose-nptl'], capture_output=True, text=True)
     assert run.returncode != 0 and 'requires --hacker-mode' in run.stderr
     assert not output.exists()
+    run = subprocess.run([sys.executable, SCRIPT, '--archive', archive, '--output', output, '--synthetic-abi-tag'], capture_output=True, text=True)
+    assert run.returncode != 0 and 'requires --xos-backend' in run.stderr
+    assert not output.exists()
     output.mkdir()
     (output/'keep').write_text('preserve')
     run = subprocess.run([sys.executable, SCRIPT, '--archive', archive, '--output', output], capture_output=True, text=True)
     assert run.returncode != 0 and 'new directory' in run.stderr
     assert (output/'keep').read_text() == 'preserve'
-print('PASS G1 probe guards')
+fragment = ROOT / 'src/ports/glibc/sysdeps/xos/preconfigure'
+for machine, host_os, expected in (('x86_64/64', 'xos', 'yes'),
+                                   ('x86_64/x32', 'xos', 'no'),
+                                   ('x86_64/64', 'linux-gnu', 'no'),
+                                   ('x86_64/64', 'xos-unknown', 'no'),
+                                   ('aarch64', 'xos', 'no')):
+    run = subprocess.run(['sh', '-c', '. "$1"; printf %s "$libc_config_ok"',
+                          'preconfigure-test', str(fragment)],
+                         env={'machine': machine, 'host_os': host_os, 'libc_config_ok': 'no'},
+                         capture_output=True, text=True, check=True)
+    assert run.stdout == expected
+print('PASS G1 probe guards and backend target selection')

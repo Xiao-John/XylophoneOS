@@ -52,3 +52,21 @@
 - `tests/glibc_g1_artifact_test.py` 对实际对象、符号、目标指令、编译依赖路径与散列、头文件清单和抽样来源做检查：依赖只来自解包 glibc、私有构建树或交叉 GCC 自身头目录，未混入 newlib/宿主 libc；该检查通过。`tests/glibc_g1_probe_test.py` 也通过。报告 SHA-256 `3d3a9c6d2474989e54f89d9a57fa2fdbb25731d57cea784f087488e0e12a78ef`；私有路径、日志和对象不作为发行物提交。
 
 G1 仍 **partial**：还没有真实、无合成 ABI tag 的完整 XOS 后端配置，没有完整 glibc 或可用 SDK。下一步须为 NPTL 的线程、等待和信号量定义与实现可维护的 XOS 后端及 ABI，然后从干净输入重跑配置、对象、头文件与来源核验；不能把上述诊断对象当作完整 libc 或客体验收。
+
+## 继续：无合成 ABI 标记的 XOS 配置探针（2026-11-13）
+
+`sysdeps/xos/preconfigure` 使用 glibc 提供的端口预配置入口，仅对 `x86_64/64-xos` 设置 `libc_config_ok=yes` 并明确打印未完成警告。这个变量按上游定义会跳过其不支持平台的检查；它是实验端口的定向登记，**不是上游已支持或 XOS 后端已完成的证明**。`sysdeps/xos/Implies` 明确将 NPTL 选为依赖调查方向，选择源码不代表 XOS 已提供其线程、TLS、futex 或信号量语义。预配置入口对 x32、非 XOS 和其他架构不放行。
+
+`--xos-backend` 从锁定候选归档解出新源码、应用 XOS 三元组补丁并复制仓库中的真实 XOS overlay，不使用 `--enable-hacker-mode`、不修改 `abi-tags`、不生成假的 ABI tag。私有空 sysroot 明确传给交叉编译器，正常 configure 退出 0 且 `config-sysdirs` 选择 XOS 和 NPTL；整体 make 退出 2，最早明确阻塞是上游 `abi-tags` 无 XOS 记录，另有 semaphore、pthread stack minimum 头缺失。`install-headers` 退出 2，在 116 个文件处因 `bits/semaphore.h` 停止。这些失败属于预期记录，不改变后端未完成状态，也不分配未经约定的 GNU OS ABI 标记。
+
+同一干净输入使用 glibc 的实际子目录规则编出 `abs` 与 XOS `_exit` 的 ELF64 对象，SHA-256 为 `7cef76c76fe1cb694a21dbb3b58bf5618961057173d33be5a65f8c8b7beb9644`、`374ceb2cd5e6f647f88482e6ae4cb4ce35ea5758b40aace7cfcecf5b5689c3b3`。对其符号、汇编、依赖边界、头文件内容及散列执行 `tests/glibc_g1_artifact_test.py` 通过；测试还核对归档与锁、上游 `abs.c`、仓库补丁和 overlay、探针与各工具散列、所选 sysdeps、无虚构 ABI tag。目标选择与探针保护测试通过。私有报告 SHA-256 `393d36e4bacba1da1a96ea76905386cc3891a6260abbe40c23c2e098f5756df2`；对象散列绑定当次构建路径，不能当作可重现二进制声明。
+
+```sh
+# 在满足工具要求、已设置隔离工具 PATH 的环境中：
+python3 scripts/glibc_g1_probe.py --archive "$GLIBC_ARCHIVE" --output "$NEW_SCRATCH" --xos-backend
+# 完整构建尚未通过，探针预期非零；继续检查产生的报告和实际对象：
+python3 tests/glibc_g1_artifact_test.py "$NEW_SCRATCH" --archive "$GLIBC_ARCHIVE"
+python3 tests/glibc_g1_probe_test.py
+```
+
+G1 仍未验收：真实 XOS 工具链、正式 ABI note 策略、完整目标头与 libc 尚缺，候选签名的信任状态未变；本次不声称 guest、动态链接或 POSIX 支持。下一步先厘清 XOS 可执行格式与 glibc ABI note 的衔接，再实现有真实语义的目标线程/等待基础，不能为了通过构建复制 Linux 假设。

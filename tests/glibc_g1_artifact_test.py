@@ -8,6 +8,7 @@ from pathlib import Path
 import re
 import shlex
 import subprocess
+import tarfile
 
 
 def digest(path):
@@ -17,14 +18,34 @@ def digest(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('output', type=Path)
+    parser.add_argument('--archive', type=Path, required=True)
     args = parser.parse_args()
     output = args.output.resolve(strict=True)
     report = json.loads((output / 'report.json').read_text())
-    assert report['status'] == 'diagnostic_only' and report['synthetic_nptl_diagnostic']
+    root = Path(__file__).resolve().parents[1]
+    lock = json.loads((root / 'src/ports/glibc/source_lock.json').read_text())
+    assert digest(args.archive) == lock['archive_sha256'] == report['source_sha256']
+    assert digest(root / 'scripts/glibc_g1_probe.py') == report['probe_sha256']
+    assert digest(root / 'src/ports/glibc/patches/0001-config-sub-xos.patch') == report['patch_sha256']
+    assert report['status'] == 'diagnostic_only' and report['nptl_backend_experimental'] and not report['synthetic_abi_tag']
     assert report['sysroot_enforced'] and report['configure_exit_code'] == 0
+    assert not report['hacker_mode'] and '--enable-hacker-mode' not in report['command']
     assert report['make_exit_code'] != 0 and report['header_install']['exit_code'] != 0
     source = output / 'glibc-2.44'
     build = output / 'configure'
+    with tarfile.open(args.archive) as tar:
+        original = tar.extractfile('glibc-2.44/stdlib/abs.c')
+        assert original is not None and original.read() == (source / 'stdlib/abs.c').read_bytes()
+    assert 'sysdeps/xos' in (build / 'config.make').read_text()
+    assert 'experimental and incomplete' in (output / 'configure.log').read_text()
+    assert not re.search(r'^\.\*-\.\*-xos', (source / 'abi-tags').read_text(), re.M)
+    overlay = Path(__file__).resolve().parents[1] / 'src/ports/glibc/sysdeps/xos'
+    for name, expected in report['xos_overlay_sha256'].items():
+        assert digest(overlay / name) == expected == digest(source / 'sysdeps/xos' / name)
+    assert set(report['xos_overlay_sha256']) == {str(p.relative_to(overlay)) for p in overlay.rglob('*') if p.is_file()}
+    for tool in report['tools'].values():
+        if tool['available']:
+            assert digest(Path(tool['path'])) == tool['sha256']
     compiler = Path(report['compiler_path']).resolve(strict=True)
     assert digest(compiler) == report['compiler_sha256']
     compiler_include = Path(subprocess.check_output([str(compiler), '-print-file-name=include'], text=True).strip()).resolve()
@@ -59,7 +80,7 @@ def main():
     assert digest(root / 'usr/include/bits/stdio_lim.h') == digest(source / 'sysdeps/xos/bits/stdio_lim.h')
     assert 'bits/semaphore.h' in (output / 'install-headers.log').read_text()
     print('PASS diagnostic objects, symbols, instruction sequence, header provenance and partial sysroot')
-    print('NOT ACCEPTED: synthetic backend setup, incomplete headers and libc build, no guest test')
+    print('NOT ACCEPTED: experimental backend, incomplete headers and libc build, no guest test')
 
 
 if __name__ == '__main__':

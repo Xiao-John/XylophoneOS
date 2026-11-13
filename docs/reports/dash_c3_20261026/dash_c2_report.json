@@ -605,7 +605,7 @@
     },
     "descriptor_restore": {
       "shell": "/bin/sh",
-      "input": "f() { printf 'child_file\\n' > /var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_c2_twi3y_y3/native_out/child_marker; }; f | \"$PROBE\" copy; printf 'parent_stdout_restored\\n'\n(printf 'subshell_file\\n' > /var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_c2_twi3y_y3/native_out/sub_marker); printf 'parent_again\\n'\n",
+      "input": "f() { printf 'child_file\\n' > ${XOS_LOCAL_PATH}; }; f | \"$PROBE\" copy; printf 'parent_stdout_restored\\n'\n(printf 'subshell_file\\n' > ${XOS_LOCAL_PATH}); printf 'parent_again\\n'\n",
       "expected_exit": 0,
       "actual_exit": 0,
       "stdout": "parent_stdout_restored\nparent_again\n",

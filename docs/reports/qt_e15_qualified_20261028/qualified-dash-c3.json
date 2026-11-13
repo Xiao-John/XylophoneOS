@@ -1452,7 +1452,7 @@
     },
     "pipeline_override": {
       "shell": "/bin/sh",
-      "input": "\"$PROBE\" copy </var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_c3_bbqtmwfw/empty | \"$PROBE\" copy <<DOC\nlast_stdin_document\nDOC\n",
+      "input": "\"$PROBE\" copy <${XOS_LOCAL_PATH} | \"$PROBE\" copy <<DOC\nlast_stdin_document\nDOC\n",
       "exit": 0,
       "stdout_sha256": "99ed853e7cda7f22d7f846c37174514f22e6124e01b071e4093207aac3b5e778",
       "bytes": 20,
@@ -1468,11 +1468,11 @@
     },
     "redirection_failure_cleanup": {
       "shell": "/bin/sh",
-      "input": "if \"$PROBE\" copy <<DOC >/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_c3_bbqtmwfw/missing_reference_parent/file; then printf BAD; else printf 'C3_REDIR_RECOVERED\\n'; fi\nunused_document\nDOC\n",
+      "input": "if \"$PROBE\" copy <<DOC >${XOS_LOCAL_PATH}; then printf BAD; else printf 'C3_REDIR_RECOVERED\\n'; fi\nunused_document\nDOC\n",
       "exit": 0,
       "stdout_sha256": "ffd3514271837420c7475008d39392bae5034ad93a03f9a944c73fd22005123a",
       "bytes": 19,
-      "stderr": "/bin/sh: /var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_c3_bbqtmwfw/missing_reference_parent/file: No such file or directory\n"
+      "stderr": "/bin/sh: ${XOS_LOCAL_PATH} No such file or directory\n"
     },
     "large": {
       "shell": "/bin/sh",
@@ -1484,7 +1484,7 @@
     },
     "direct_posix_script": {
       "shell": "/bin/sh",
-      "input": "cd /\nv=parent; e=before; export e; set -- p 'two words'\n/var/folders/4c/g1vj7l516656nxhgql13ssxw0000gn/T/xos_dash_c3_bbqtmwfw/posix_direct.sh 'one two' ''\ns=$?\nprintf 'C3_DIRECT_PARENT status=%s v=%s e=%s cwd=%s argc=%s first=<%s> second=<%s>\\n' \"$s\" \"$v\" \"$e\" \"$PWD\" \"$#\" \"$1\" \"$2\"\nprintf 'C3_DIRECT_PARENT_CONTINUED\\n'\n",
+      "input": "cd /\nv=parent; e=before; export e; set -- p 'two words'\n${XOS_LOCAL_PATH} 'one two' ''\ns=$?\nprintf 'C3_DIRECT_PARENT status=%s v=%s e=%s cwd=%s argc=%s first=<%s> second=<%s>\\n' \"$s\" \"$v\" \"$e\" \"$PWD\" \"$#\" \"$1\" \"$2\"\nprintf 'C3_DIRECT_PARENT_CONTINUED\\n'\n",
       "exit": 0,
       "stdout": "C3_DIRECT argc=2 arg1=<one two> arg2=<> name=</tests/c3_posix_direct.sh> env=<before>\nC3_DIRECT substitution=<captured> here=<literal $NO_EXPAND>\nC3_DIRECT child_cwd=/tmp\nC3_DIRECT_PARENT status=17 v=parent e=before cwd=/ argc=2 first=<p> second=<two words>\nC3_DIRECT_PARENT_CONTINUED\n",
       "stdout_sha256": "9fb6487d1feca736a83a331dbde8a6434974872d2e772c80196fd38cfad349c4",

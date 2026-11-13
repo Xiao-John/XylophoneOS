@@ -27,6 +27,9 @@
 - 普通 SDK 提供**单线程 pthread 子集**：`pthread_once`、TSS keys、mutex/cond/rwlock、
   `pthread_self/equal`、`sched_yield` 在单线程进程里语义正确；`pthread_create/join/detach`
   返回 `ENOSYS`。声明需要 POSIX feature 宏（`xos_app.py` 已带），真实多线程仍需线程 SDK。
+- 控制台 `read()` 是阻塞语义：内核只提供非阻塞轮询，libc 在 `EAGAIN` 时以 1 ms
+  `sys_sleep_until` 重试，并把 Enter 的 CR 映射为 NL（旧控制台没有行规程）。
+  `O_NONBLOCK` 仍返回 `EAGAIN`。
 - `times()`/`clock()` 用单调时基（1000 tick/秒，非线程 CPU 计时）；C11 `timespec_get`
   走 sys64 纳秒。`utime`/`chmod`/`chown` 已提供可链接符号但返回 `ENOSYS`——文件服务
   尚无时间戳/权限/所有权写 ABI，不伪造成功。`clock_gettime`/POSIX timers 的头文件

@@ -24,6 +24,7 @@
 | PL-0011 | 2026-11-12 | lz4/zstd | 真实多线程不可用：线程 SDK 需要 SHA 固定的 newlib 源（`6ff27e3b…`） | 从 sourceware 公开目录取回同名归档（哈希一致），重建线程 newlib 与线程 SDK；lz4 `-T2`、zstd `-T2` 客体实测通过 | 归档在 `.cache/xos_seed/threading_sources/`（不入库）；PR #119 `98700f61` | fixed |
 | PL-0012 | 2026-11-12 | lz4/zstd | 线程化**打包**未打通：没有 threaded profile，xypm 的 DB/profile 仍是 b2 | 新增 `xos-x86_64-static-threaded-v1` profile（登记线程 SDK 树哈希与系统 build），用该 profile 安装线程包；线程 SDK 改为 C 模式 `-fno-exceptions` | profile 见 `config/package/`；lz4/zstd 线程包安装与 `-T2` 实测；PR #119 `930d0e2d` | fixed |
 | PL-0013 | 2026-11-12 | 线程端口 | P2 常用多线程面缺失：信号量、barrier、spinlock、setname、guardsize、cond/rwlock attr | 在线程运行时与单线程子集各实现一份 | `tests/pthread_p2_guest.py`（双 SDK 探针）；PR #119 `f3baddc5` | fixed |
+| PL-0015 | 2026-11-13 | bc | 控制台 `read()` 非阻塞：空输入时内核返回 `would_block`，libc 映射成 `EAGAIN`；POSIX 程序（bc 的 flex 扫描器、cat 类工具）把 read 失败当致命错误 | libc 对控制台句柄阻塞等待（1 ms `sys_sleep_until` 轮询），并把 Enter 的 CR 映射为 NL；管道路径不变 | `tests/console_read_guest.py`；bc 交互 `2+3` 实测 | fixed |
 | PL-0014 | 2026-11-12 | 线程端口 | `pthread_tryjoin_np`/`timedjoin_np` 需要非阻塞/带 deadline 的 join；`pthread_getcpuclockid` 需要 per-thread CPU 时钟。内核 join 只有阻塞版，`thread_info` 无状态字段 | 评估新增 `sys_thread_tryjoin`/deadline join 与 CPU 时间计入；在此之前保持 `ENOTSUP` | 端口按 `ENOTSUP` 处理 | open |
 
 ## 登记规则

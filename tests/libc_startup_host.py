@@ -4,9 +4,12 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 
 repo_root = Path(__file__).resolve().parents[1]
+# GNU ld drops unreachable sections with --gc-sections; Apple's ld uses dead_strip.
+GC_SECTIONS = ["-Wl,-dead_strip"] if sys.platform == "darwin" else ["-Wl,--gc-sections"]
 
 
 def main():
@@ -35,7 +38,7 @@ def main():
                         str(repo_root / "src/user/loader/load.cpp"),
                         str(repo_root / "src/user/loader/elf.cpp"),
                         str(repo_root / "src/user/arch/x86_64/tls.cpp"), str(runtime),
-                        "-Wl,--gc-sections", "-o", str(binary)], check=True)
+                        *GC_SECTIONS, "-o", str(binary)], check=True)
         subprocess.run([str(binary)], check=True)
 
 

@@ -70,3 +70,13 @@ python3 tests/glibc_g1_probe_test.py
 ```
 
 G1 仍未验收：真实 XOS 工具链、正式 ABI note 策略、完整目标头与 libc 尚缺，候选签名的信任状态未变；本次不声称 guest、动态链接或 POSIX 支持。下一步先厘清 XOS 可执行格式与 glibc ABI note 的衔接，再实现有真实语义的目标线程/等待基础，不能为了通过构建复制 Linux 假设。
+
+## 继续：XOS 的 GNU ABI note 构建路径（2026-11-14）
+
+现有 `src/user/loader/elf.cpp` 对 ELF64 ET_EXEC 检查机器、OSABI、边界和 LOAD 等，但对 `PT_NOTE` 跳过内容；不读取 GNU ABI note。glibc 2.44 的通用 `csu/abi-note.c` 需要 `abi-tags` 分配的 GNU OS 编号，而 XOS 目前没有已知分配。研究配置据此选择不发出该 GNU OS ABI note，绝不借用 Linux 编号或保留的虚构数值。此举不提供版本检查或原生/外来二进制区分，也不决定未来 ABI：动态链接的身份、版本与拒绝策略仍须由 D0 冻结并在 D1/D3 验证。
+
+新增候选补丁 `0002-xos-abi-note.patch`（SHA-256 `ad2c03e0613c8765fd4f3033efbf69d6357b39a70547da2fc1186df91aceac52`），仅在 XOS 配置下提供无 GNU OS 标签定义的 `abi-tag.h`，其他配置保留上游路径。实验 XOS 后端提供 `sysdeps/x86_64/xos/abi-note.c`，保留上游 x86 ISA property note 而省去 GNU OS ABI note。实际检测发现放到通用 `sysdeps/xos` 会被更高优先级的上游 x86 文件覆盖，已改为架构与系统组合目录；最终 configure 的 sysdeps 列表与实际编译命令均确认选择后者。
+
+在新的隔离研究输出中，不使用 hacker 模式或合成 ABI tag，正常全构建越过 `abi-tags` 阻塞，仍因 `bits/semaphore.h` 与 `bits/pthread_stack_min-dynamic.h` 缺失退出 2。正常 `csu/abi-note.o` 构建仍被这些前置项阻塞；为了单独验证所选源和 note，额外调用 glibc 子目录 make 并明确清空 `before-compile` 前置项：该**受限单对象诊断**成功，readelf 显示 x86-64 baseline 的 `NT_GNU_PROPERTY_TYPE_0`，没有 `NT_GNU_ABI_TAG`。它不是正常 csu 构建通过，更不是客体测试。其对象 SHA-256 `4289a089ad3e7ace1f795c8ea2e55c1ce9e898b53d13e70eb1a2b4645a35a3f5`；报告 SHA-256 `f18bf43be6bcbd93fb35d6787d158ba2391fbb41829f197c23a71cd5fee1d98f`。
+
+目标对象、编译依赖、sysroot 部分头文件、注册目标限制与报告输入散列的检查均通过，探针与证据路径检查重新执行。G1 仍 partial；下一处实际工作是为 NPTL 与 XOS 线程后端建立真实语义和目标头，而非将跳过前置项的结果当成完整 glibc 构建。

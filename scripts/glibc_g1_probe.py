@@ -60,12 +60,14 @@ def main():
     if backend:
         marker = source / 'sysdeps/xos'
         marker.mkdir()
-        overlay = ROOT / 'src/ports/glibc/sysdeps/xos'
+        overlay = ROOT / 'src/ports/glibc/sysdeps'
         for path in sorted(overlay.rglob('*')):
             if path.is_file():
-                destination = marker / path.relative_to(overlay)
+                destination = source / 'sysdeps' / path.relative_to(overlay)
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(path, destination)
+        note_patch = ROOT / 'src/ports/glibc/patches/0002-xos-abi-note.patch'
+        subprocess.run(['patch', '-p1', '-i', str(note_patch)], cwd=source, check=True)
         # This value is deliberately synthetic and is never an XOS ABI assignment.
         if args.synthetic_abi_tag:
             with (source / 'abi-tags').open('a') as file:
@@ -99,7 +101,7 @@ def main():
             make_result = subprocess.run(['gnumake', '-j4'], cwd=build, env=env, stdout=log, stderr=subprocess.STDOUT)
     objects = {}
     if backend and make_result is not None:
-        for subdir, name in (('stdlib', 'abs'), ('posix', '_exit')):
+        for subdir, name in (('stdlib', 'abs'), ('posix', '_exit'), ('csu', 'abi-note')):
             (build / subdir).mkdir(exist_ok=True)
             target_object = build / subdir / (name + '.o')
             with (output / (name + '-object.log')).open('w') as log:
@@ -122,6 +124,23 @@ def main():
                         item['dependency_file_sha256'] = digest(saved_dep)
                         break
             objects[name] = item
+    # This separate probe suppresses the blocked csu before-compile prerequisites
+    # only to inspect sysdeps source selection and note contents. It is not a
+    # successful normal csu build, whose failure is retained above.
+    isolated_note = None
+    if backend and make_result is not None:
+        note_object = build / 'csu/abi-note.o'
+        with (output / 'abi-note-isolated.log').open('w') as log:
+            isolated = subprocess.run(['gnumake', '-C', str(source / 'csu'),
+                'objdir=' + str(build), 'before-compile=', str(note_object)],
+                env=env, stdout=log, stderr=subprocess.STDOUT)
+        isolated_note = {'exit_code': isolated.returncode, 'suppresses_before_compile': True,
+                         'log_sha256': digest(output / 'abi-note-isolated.log')}
+        if isolated.returncode == 0 and note_object.is_file():
+            notes = subprocess.check_output(['x86_64-elf-readelf', '-n', str(note_object)], text=True)
+            (output / 'abi-note-readelf.txt').write_text(notes)
+            isolated_note.update({'object_sha256': digest(note_object),
+                                  'notes_sha256': digest(output / 'abi-note-readelf.txt')})
     header_install = None
     if backend and make_result is not None:
         with (output / 'install-headers.log').open('w') as log:
@@ -147,8 +166,9 @@ def main():
               'synthetic_abi_tag': args.synthetic_abi_tag,
               'private_sysroot_initially_empty': str(sysroot),
               'sysroot_enforced': backend, 'diagnostic_objects': objects,
-              'header_install': header_install,
-              'xos_overlay_sha256': {str(p.relative_to(ROOT / 'src/ports/glibc/sysdeps/xos')): digest(p) for p in (ROOT / 'src/ports/glibc/sysdeps/xos').rglob('*') if p.is_file()},
+              'header_install': header_install, 'isolated_abi_note': isolated_note,
+              'xos_abi_note_patch_sha256': digest(note_patch) if backend else None,
+              'xos_overlay_sha256': {str(p.relative_to(ROOT / 'src/ports/glibc/sysdeps')): digest(p) for p in (ROOT / 'src/ports/glibc/sysdeps').rglob('*') if p.is_file()},
               'configure_log_sha256': digest(output/'configure.log'),
               'not_claimed': ['complete XOS sysdeps', 'target runtime', 'guest qualification', 'distributable source']}
     if make_result is not None:

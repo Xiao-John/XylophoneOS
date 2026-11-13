@@ -27,6 +27,7 @@ def main():
     assert digest(args.archive) == lock['archive_sha256'] == report['source_sha256']
     assert digest(root / 'scripts/glibc_g1_probe.py') == report['probe_sha256']
     assert digest(root / 'src/ports/glibc/patches/0001-config-sub-xos.patch') == report['patch_sha256']
+    assert digest(root / 'src/ports/glibc/patches/0002-xos-abi-note.patch') == report['xos_abi_note_patch_sha256']
     assert report['status'] == 'diagnostic_only' and report['nptl_backend_experimental'] and not report['synthetic_abi_tag']
     assert report['sysroot_enforced'] and report['configure_exit_code'] == 0
     assert not report['hacker_mode'] and '--enable-hacker-mode' not in report['command']
@@ -36,12 +37,13 @@ def main():
     with tarfile.open(args.archive) as tar:
         original = tar.extractfile('glibc-2.44/stdlib/abs.c')
         assert original is not None and original.read() == (source / 'stdlib/abs.c').read_bytes()
-    assert 'sysdeps/xos' in (build / 'config.make').read_text()
+    sysdirs = (build / 'config.make').read_text()
+    assert 'sysdeps/xos' in sysdirs and 'sysdeps/x86_64/xos' in sysdirs
     assert 'experimental and incomplete' in (output / 'configure.log').read_text()
     assert not re.search(r'^\.\*-\.\*-xos', (source / 'abi-tags').read_text(), re.M)
-    overlay = Path(__file__).resolve().parents[1] / 'src/ports/glibc/sysdeps/xos'
+    overlay = Path(__file__).resolve().parents[1] / 'src/ports/glibc/sysdeps'
     for name, expected in report['xos_overlay_sha256'].items():
-        assert digest(overlay / name) == expected == digest(source / 'sysdeps/xos' / name)
+        assert digest(overlay / name) == expected == digest(source / 'sysdeps' / name)
     assert set(report['xos_overlay_sha256']) == {str(p.relative_to(overlay)) for p in overlay.rglob('*') if p.is_file()}
     for tool in report['tools'].values():
         if tool['available']:
@@ -69,6 +71,16 @@ def main():
     text = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'posix/_exit.o')], text=True)
     assert re.search(r'\bmov\s+\$0x2,%eax', text) and re.search(r'\bint\s+\$0x80', text)
     assert re.search(r'\bud2\b', text) and not re.search(r'R_X86_64_', text)
+    assert digest(build / 'csu/abi-tag.h') == digest(source / 'sysdeps/xos/abi-tag.h')
+    assert 'This configuration not matched in ../abi-tags' not in (output / 'make.log').read_text()
+    note = report['isolated_abi_note']
+    assert report['diagnostic_objects']['abi-note']['exit_code'] != 0
+    assert note['exit_code'] == 0 and note['suppresses_before_compile']
+    assert digest(build / 'csu/abi-note.o') == note['object_sha256']
+    assert digest(output / 'abi-note-readelf.txt') == note['notes_sha256']
+    assert '../sysdeps/x86_64/xos/abi-note.c' in (output / 'abi-note-isolated.log').read_text()
+    notes = (output / 'abi-note-readelf.txt').read_text()
+    assert 'NT_GNU_PROPERTY_TYPE_0' in notes and 'NT_GNU_ABI_TAG' not in notes
     root = output / 'xos-glibc-sysroot'
     manifest = json.loads((output / 'header-manifest.json').read_text())
     assert digest(output / 'header-manifest.json') == report['header_install']['manifest_sha256']

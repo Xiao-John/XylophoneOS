@@ -35,7 +35,7 @@ python3 scripts/xypm.py install \
   "$XOS_OUT/thirdparty.lua-5.4.9.xpk"
 ```
 
-已验证的包哈希：`7e153558133a47077e0e64518e01f34d69731dd294a974e5e54af822f2f3007d`
+已验证的包哈希：`edf3906ebd5f0ec3b033de10cd6edb71651ad84e7c8ab8bdb3d0131116cdfb6d`
 （1,044,480 字节，由本目录配方构建；换 SDK、上游或配方后必须重算并更新 `port.json`）。
 
 **xsh**（直接执行）：

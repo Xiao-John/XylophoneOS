@@ -40,7 +40,7 @@ python3 scripts/xypm.py install \
   "$XOS_OUT/thirdparty.zstd-1.5.7.xpk"
 ```
 
-包 target profile：`xos-x86_64-static-threaded-v1`。已验证的包哈希：`039a38f762278a0f7d20a7bd2d33173e31710fbe50c7bb37091b335ce5a58624`
+包 target profile：`xos-x86_64-static-threaded-v1`。已验证的包哈希：`81b6cf26e99312259771a415a2b6c8238cbe1c33c87638f1bd74c8401cab3237`
 （2,437,120 字节，由本目录配方构建；换 SDK、上游或配方后必须重算并更新 `port.json`）。
 
 **xsh**（直接执行）：

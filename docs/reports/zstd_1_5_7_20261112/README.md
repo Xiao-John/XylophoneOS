@@ -18,7 +18,7 @@
 | 项 | 值 |
 |---|---|
 | 包 | `thirdparty.zstd-1.5.7.xpk`，2,437,120 字节 |
-| 包 sha256 | `039a38f762278a0f7d20a7bd2d33173e31710fbe50c7bb37091b335ce5a58624` |
+| 包 sha256 | `81b6cf26e99312259771a415a2b6c8238cbe1c33c87638f1bd74c8401cab3237` |
 | 载荷 | `usr/bin/zstd`、`usr/lib/libzstd.a`、`usr/share/zstd/include/{zstd,zdict,zstd_errors}.h`、样例、`LICENSE`+`COPYING`、`source.json`、`build_receipt.json` |
 
 ## 安装

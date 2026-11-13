@@ -20,7 +20,7 @@
   "package": {
     "id": "thirdparty.zstd",
     "target_profile": "xos-x86_64-static-threaded-v1",
-    "xpk_sha256": "039a38f762278a0f7d20a7bd2d33173e31710fbe50c7bb37091b335ce5a58624"
+    "xpk_sha256": "81b6cf26e99312259771a415a2b6c8238cbe1c33c87638f1bd74c8401cab3237"
   },
   "integration": {
     "guest_only": true,

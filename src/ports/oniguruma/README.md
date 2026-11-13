@@ -33,7 +33,7 @@ python3 scripts/xypm.py install \
   "$XOS_OUT/thirdparty.oniguruma-6.9.10.xpk"
 ```
 
-已验证的包哈希：`7be31e58ec623f1feb64ba0fd5da1761586a425a5d404f124ab252d847f0a23b`
+已验证的包哈希：`fcfda1a8a46fe9d1efcca3b006eb1f9043386ac19f5847ddb9bb282aaa72e8f5`
 
 库没有命令行入口；验收方式是编译包内探针 `samples/regex.c` 并运行：
 

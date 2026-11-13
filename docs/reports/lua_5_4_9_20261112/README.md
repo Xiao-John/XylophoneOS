@@ -16,7 +16,7 @@
 | 项 | 值 |
 |---|---|
 | 包 | `thirdparty.lua-5.4.9.xpk`，1,044,480 字节（由 `src/ports/lua/build.py` 直接产出） |
-| 包 sha256 | `7e153558133a47077e0e64518e01f34d69731dd294a974e5e54af822f2f3007d` |
+| 包 sha256 | `edf3906ebd5f0ec3b033de10cd6edb71651ad84e7c8ab8bdb3d0131116cdfb6d` |
 | 载荷 | `usr/bin/lua`、`usr/lib/liblua.a`、`usr/share/lua/include/{lua,luaconf,lauxlib,lualib}.h`、样例、许可（`doc/readme.html`）、`source.json`、`build_receipt.json` |
 
 上游零补丁、无端口 shim；默认 C99 配置（不启用 `LUA_USE_POSIX`，因此没有

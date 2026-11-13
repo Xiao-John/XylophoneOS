@@ -12,9 +12,9 @@
 int main(void) {
     int lifetime[2], report[2];
     if (pipe(lifetime) || pipe(report)) return 1;
-    unsigned char* memory = mmap(NULL, 8192, PROT_READ | PROT_WRITE,
+    unsigned char* memory = mmap(NULL, 8192, PROT_NONE,
                                  MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-    if (memory == MAP_FAILED) return 2;
+    if (memory == MAP_FAILED || mprotect(memory, 8192, PROT_READ | PROT_WRITE)) return 2;
     memory[0] = 17; memory[4096] = 23;
     const pid_t parent = fork();
     if (parent < 0) return 3;

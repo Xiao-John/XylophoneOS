@@ -222,8 +222,8 @@ def main():
         env.update(CC=shlex.join([*gcc_capture.launcher(), 'x86_64-elf-gcc', '-B' + binutils]),
                    CXX=shlex.join([*gcc_capture.launcher(), 'x86_64-elf-g++', '-B' + binutils]),
                    AR='x86_64-elf-ar', RANLIB='x86_64-elf-ranlib',
-                   CFLAGS='-O2 -g -mno-red-zone -I' + include_dir,
-                   CXXFLAGS='-O2 -g -mno-red-zone -fno-pie -fno-pic -D__XOS_NO_WALL_CLOCK__ -I' + include_dir,
+                   CFLAGS='-O2 -g -mno-red-zone -DXOS_THREADED_RUNTIME -I' + include_dir,
+                   CXXFLAGS='-O2 -g -mno-red-zone -fno-pie -fno-pic -DXOS_THREADED_RUNTIME -D__XOS_NO_WALL_CLOCK__ -I' + include_dir,
                    gcc_cv_target_thread_file='posix', ac_cv_func_fcntl='yes', ac_cv_func_getexecname='no', ac_cv_func___cxa_thread_atexit='yes')
         run(configure_command(gcc / 'libstdc++-v3/configure', '--host=x86_64-elf',
              '--prefix=' + str(output / 'cpp'), '--with-gxx-include-dir=' + str(output / 'cpp/include'),
@@ -295,7 +295,8 @@ def main():
         else:
             # This fallback is only needed when no completed cross-GCC build
             # is available; avoid rebuilding generator programs on MSYS.
-            run(['make', '-o', 'specs', '-o', 'xgcc.exe', 'libgcc.mvars'],
+            run(['make', '-o', 'specs', '-o', 'xgcc', '-o', 'xgcc.exe',
+                 'libgcc.mvars', 'tm.h', 'tm_p.h', 'tconfig.h'],
                 'gcc_headers_make.log', cwd=compiler_build, env=native)
         for header in ('tm.h', 'tm_p.h', 'tconfig.h'):
             path = compiler_build / header

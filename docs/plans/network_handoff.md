@@ -40,6 +40,10 @@ EOI/屏蔽不得隐式推进或重置时基、运行设备业务。透明有界�
   challenge、ARP/IP/TCP/HTTP抓包、真实响应字节摘要和同run截图。DNS/DHCP、TLS独立验收，
   不关闭主机名、证书、时间或熵检查取得通过。
 
+2026-11-13 进展：M2 的原始帧纵切已在客体复核通过（`docs/reports/network_raw_20261113/`）；
+新增 lwIP 2.2.1 端口，以 raw API 完成 ARP + ICMP（`net_ping`，见
+`docs/reports/lwip_2_2_1_20261113/`）。N2 剩余：lwIP TCP、受控 HTTP、DNS/DHCP、TLS。
+
 上述均为后续门槛，本次没有实现或运行。单核/独占IRQ可作为明确受限profile；共享IRQ、
 SMP、热插拔、网络产品和分发不因本设计获得资格。各机制/驱动独立交付，不要求一次实现
 完整网络栈才证明最小权利或等待机制，但不得以局部门槛替代最终链路。

@@ -1,0 +1,34 @@
+{
+  "format_version": 1,
+  "id": "lwip",
+  "name": "lwIP",
+  "upstream_version": "2.2.1",
+  "license": [
+    "BSD-3-Clause"
+  ],
+  "homepage": "https://savannah.nongnu.org/projects/lwip/",
+  "source": {
+    "kind": "tarball",
+    "lock": "source_lock.json"
+  },
+  "build": {
+    "system": "custom",
+    "recipe": "build.py",
+    "patches": []
+  },
+  "package": {
+    "id": "thirdparty.lwip",
+    "target_profile": "xos-x86_64-static-single-b2-v1",
+    "xpk_sha256": "053b54300de0cffb13b363507ff33e782114ebd5317a828357c104033ae514d6"
+  },
+  "integration": {
+    "guest_only": true,
+    "bootstrap_images": [],
+    "iso_members": []
+  },
+  "status": "guest_verified",
+  "note": "lwIP 2.2.1 NO_SYS=1：liblwip.a + 头文件 + net_ping 探针；经 net 服务原始帧完成 ARP/ICMP（网关 10.0.2.2 回包）。",
+  "evidence": [
+    "docs/reports/lwip_2_2_1_20261113/README.md"
+  ]
+}

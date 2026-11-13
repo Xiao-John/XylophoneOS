@@ -1,0 +1,60 @@
+{
+  "status": "passed",
+  "guest_qualification": "passed_with_limits",
+  "build_id": "8dec156945c3a664",
+  "image_sha256": "fb89f19d805b2d47681a87d2ff31b0df56d6ed35d3c316ca10f73ba04fe6aade",
+  "checks": [
+    "user_driver_tx_rx_irq_reset_release_0",
+    "user_driver_tx_rx_irq_reset_release_1",
+    "user_driver_tx_rx_irq_reset_release_2"
+  ],
+  "not_run": [
+    "tcp",
+    "dns",
+    "tls",
+    "untrusted_dma_isolation"
+  ],
+  "qemu_command": [
+    "/opt/homebrew/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "/Users/xylo/Documents/XylophoneOS/build/ipc_device_system/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/var/folders/x6/3clfjww5133fn5kbknq7c_2m0000gn/T/xos_net_guest_cbk2aqt9/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-netdev",
+    "user,id=xosnet",
+    "-device",
+    "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56",
+    "-qmp",
+    "unix:/var/folders/x6/3clfjww5133fn5kbknq7c_2m0000gn/T/xos_vu5r78id/qmp.sock,server=on,wait=off"
+  ],
+  "stable_resources": [
+    129709,
+    4,
+    1
+  ]
+}

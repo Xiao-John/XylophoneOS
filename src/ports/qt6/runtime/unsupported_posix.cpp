@@ -8,7 +8,6 @@
 #include <grp.h>
 #include <unistd.h>
 #include <errno.h>
-extern "C" int chmod(const char *, mode_t) { errno = ENOTSUP; return -1; }
 extern "C" int fchmod(int, mode_t) { errno = ENOTSUP; return -1; }
 extern "C" int link(const char *, const char *) { errno = ENOTSUP; return -1; }
 extern "C" int symlink(const char *, const char *) { errno = ENOTSUP; return -1; }

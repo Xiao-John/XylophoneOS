@@ -1,6 +1,7 @@
 # work_log 编号索引
 
-新增记录：[404fe6a0 — 文件服务 /dev/null](404fe6a0_dev_null.md)、
+新增记录：[ebd84ab1 — system/popen/pclose](ebd84ab1_system_popen.md)、
+[404fe6a0 — 文件服务 /dev/null](404fe6a0_dev_null.md)、
 [0397b23e — libc 时间与文件元数据符号](0397b23e_libc.md)、
 [179cb2fc — 端口规范与校验器](179cb2fc.md)、
 [0203 — 发版 D 步打包与 release_smoke 11/11](0203_release_packaging.md)、

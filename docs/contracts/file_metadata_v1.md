@@ -257,7 +257,7 @@ sidecar、没有新 syscall，回滚不影响既有文件内容。已发布的 S
 
 ## 11. M1 实施记录与偏差（2026-11-13）
 
-已实现并客体验收（build `3b97a178c66cabec`，`tests/file_metadata_guest.py`）：
+已实现并客体验收（build `89d7eb53c3bcc87d`，`tests/file_metadata_guest.py`）：
 
 - 文件 ABI：`abi_version` 保持 2；`op::set_metadata = 29`；`status` 增加 `not_supported = -14`、`read_only_volume = -15`、`access_denied = -16`；`stat/fstat` 返回 24 字节 `FMET` v1 记录（`data[0..24]`，含 mtime 与投影 mode；
 `length=0` 为 legacy），`flags` 只保留目录/unlinked。

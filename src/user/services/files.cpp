@@ -1861,6 +1861,12 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             if (!item.used || item.directory || item.closed) { continue; }
             const FRESULT synced = f_sync(&item.file);
             if (synced != FR_OK) { code = from_fr(synced); break; }
+            // f_sync rewrites the directory entry timestamp; keep the cache in sync.
+            FILINFO refreshed_info{};
+            if (f_stat(item.name, &refreshed_info) == FR_OK) {
+                item.metadata_attrib = refreshed_info.fattrib;
+                item.mtime_sec = fat_to_unix(refreshed_info.fdate, refreshed_info.ftime);
+            }
         }
         if (code == status::ok && staging_active && staging_open && f_sync(&staging_file) != FR_OK) {
             code = status::io;
@@ -1981,10 +1987,13 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             open_description* description = description_for(find_open(session, in.handle));
             if (description == nullptr) { reply(out, in, status::bad_handle); break; }
             // Flush pending data so a later f_sync/f_close cannot rewrite the
-            // directory entry with GET_FATTIME() and undo f_utime.
-            const FRESULT synced = f_sync(&file_for(*description));
-            if (synced != FR_OK) { reply(out, in, from_fr(synced)); break; }
+            // directory entry with GET_FATTIME() and undo f_utime.  Directories
+            // have no open FIL and must not be synced here.
             object = &object_for(*description);
+            if (!object->directory) {
+                const FRESULT synced = f_sync(&file_for(*description));
+                if (synced != FR_OK) { reply(out, in, from_fr(synced)); break; }
+            }
             if (object->null_device || object->unlinked) { reply(out, in, status::not_supported); break; }
             const status named = file_object_path(*object, path);
             if (named != status::ok) { reply(out, in, named); break; }

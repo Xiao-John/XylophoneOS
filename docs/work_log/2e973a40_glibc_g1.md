@@ -280,3 +280,9 @@ XOS 单调时钟和实时钟按现有契约使用 syscall 46 的分辨率；当�
 修复 XOS 栈下限头未被安装的问题，两个 `bits/pthread_stack_min` 头现由 NPTL 安装。独立 sysroot 安装 337 个文件；普通目标客户端仍因缺少最终 `gnu/stubs.h` 失败。为检查后续头文件，在 sysroot 之外使用锁定 glibc 源码自带的构建期占位头进行单独诊断：errno、stdio、pthread、semaphore、wait 和 limits 头及关键布局/常量可编译为目标对象，依赖来源检查通过。占位头没有安装进 sysroot，该结果不构成完整 SDK 或运行资格。
 
 探针报告 SHA-256 `4c49131359e309993d0fad0e647ed82ecd119791dd24eaf92751c696fd34fba2`。完整 libc 构建仍未通过，G1 保持 partial。
+
+## 继续：公共 C 头的独立包含检查（2026-11-15）
+
+扩大安装头文件的诊断范围，发现 `sys/socket.h` 使用 `ssize_t` 时未包含其类型声明；候选补丁显式包含 `<sys/types.h>`，不代表 socket 运行功能已实现。使用锁定 glibc 自带的构建期占位 `gnu/stubs.h`、独立 sysroot 和交叉编译器，逐个检查 150 个公共 C 头，全部通过；Fortran 专用头、内部头及上游故意拒绝的 `regexp.h` 不在此检查范围。目标对象、补丁及依赖来源检查通过。
+
+报告 SHA-256 `9603cdc12e02cb60b5a135b5a708c5bcf60fcd88e3c7ae5098bab776165c277d`，扫描 SHA-256 `bafcd65ced17e1405bea1fc9bcd76e18744715ae35735c5ec290a0bd8ddcd494`。占位头未安装入 sysroot；普通客户端仍缺少最终生成的 `gnu/stubs.h`，完整 libc 构建仍失败，G1 保持 partial。

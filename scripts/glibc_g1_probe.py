@@ -88,6 +88,8 @@ def main():
         subprocess.run(['patch', '-p1', '-i', str(sem_init_patch)], cwd=source, check=True)
         nptl_include_patch = ROOT / 'src/ports/glibc/patches/0011-nptl-explicit-includes.patch'
         subprocess.run(['patch', '-p1', '-i', str(nptl_include_patch)], cwd=source, check=True)
+        socket_types_patch = ROOT / 'src/ports/glibc/patches/0012-socket-include-types.patch'
+        subprocess.run(['patch', '-p1', '-i', str(socket_types_patch)], cwd=source, check=True)
         # This value is deliberately synthetic and is never an XOS ABI assignment.
         if args.synthetic_abi_tag:
             with (source / 'abi-tags').open('a') as file:
@@ -269,6 +271,7 @@ def main():
               'dlerror_patch_sha256': digest(dlerror_patch) if backend else None,
               'sem_init_patch_sha256': digest(sem_init_patch) if backend else None,
               'nptl_include_patch_sha256': digest(nptl_include_patch) if backend else None,
+              'socket_types_patch_sha256': digest(socket_types_patch) if backend else None,
               'xos_overlay_sha256': {str(p.relative_to(ROOT / 'src/ports/glibc/sysdeps')): digest(p) for p in (ROOT / 'src/ports/glibc/sysdeps').rglob('*') if p.is_file()},
               'configure_log_sha256': digest(output/'configure.log'),
               'not_claimed': ['complete XOS sysdeps', 'target runtime', 'guest qualification', 'distributable source']}

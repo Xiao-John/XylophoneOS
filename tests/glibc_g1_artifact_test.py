@@ -38,7 +38,8 @@ def main():
                           ('0008-freopen-no-fd-path.patch', 'freopen_patch_sha256'),
                           ('0009-dlerror-errno-include.patch', 'dlerror_patch_sha256'),
                           ('0010-sem-init-private-only.patch', 'sem_init_patch_sha256'),
-                          ('0011-nptl-explicit-includes.patch', 'nptl_include_patch_sha256')):
+                          ('0011-nptl-explicit-includes.patch', 'nptl_include_patch_sha256'),
+                          ('0012-socket-include-types.patch', 'socket_types_patch_sha256')):
         assert digest(root / 'src/ports/glibc/patches' / filename) == report[key]
     assert report['status'] == 'diagnostic_only' and report['nptl_backend_experimental'] and not report['synthetic_abi_tag']
     assert report['sysroot_enforced'] and report['configure_exit_code'] == 0

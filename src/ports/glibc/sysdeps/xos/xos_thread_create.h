@@ -32,6 +32,7 @@ struct xos_thread_launch_result {
 typedef xos_i64 (*xos_thread_setup_fn) (const struct xos_thread_reservation *,
                                         struct xos_thread_start_parameters *,
                                         void *);
+typedef void (*xos_thread_rollback_fn) (void *);
 
 #ifdef __cplusplus
 extern "C" {
@@ -61,12 +62,14 @@ int __xos_thread_tls_layout (const struct xos_thread_reservation *,
    initialize the TLS, entry and any data visible to the new thread before
    returning.  TID is published before start, but is tentative until launch
    returns.  An abort error leaves the ID available for caller recovery.
-   Setup and start errors are returned unchanged, separately from abort_error.
+   On setup or start failure, rollback (if supplied) runs before abort while
+   the reservation is still mapped; it must handle partial setup.  Setup and
+   start errors are returned unchanged, separately from abort_error.
    Arguments must be valid; result must not own an earlier reservation and
    must not be modified concurrently.  */
 __attribute__ ((visibility ("hidden")))
 xos_i64 __xos_thread_launch (xos_u64, xos_u64, xos_u64,
-                             xos_thread_setup_fn, void *,
+                             xos_thread_setup_fn, xos_thread_rollback_fn, void *,
                              struct xos_thread_launch_result *);
 #ifdef __cplusplus
 }

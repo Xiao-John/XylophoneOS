@@ -54,7 +54,8 @@ __xos_thread_abort (xos_u64 tid)
 
 xos_i64
 __xos_thread_launch (xos_u64 stack, xos_u64 tls, xos_u64 flags,
-                     xos_thread_setup_fn setup, void *context,
+                     xos_thread_setup_fn setup, xos_thread_rollback_fn rollback,
+                     void *context,
                      struct xos_thread_launch_result *result)
 {
   struct xos_thread_reservation reservation = { 0 };
@@ -81,6 +82,8 @@ __xos_thread_launch (xos_u64 stack, xos_u64 tls, xos_u64 flags,
       result->started = 1;
       return 0;
     }
+  if (rollback != 0)
+    rollback (context);
   result->abort_error = __xos_thread_abort (reservation.tid);
   if (result->abort_error == 0)
     __atomic_store_n (&result->tid, 0, __ATOMIC_RELEASE);

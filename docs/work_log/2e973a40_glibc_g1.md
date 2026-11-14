@@ -208,3 +208,11 @@ XOS 当前无 restartable-sequences 内核协议。实验 NPTL 的 XOS `rseq-int
 XOS 为新线程分别预留栈和 TLS；glibc x86-64 使用 `TLS_TCB_AT_TP`，静态 TLS 在 TP 之前，`struct pthread` 从 TP 开始，loader 的静态大小包含描述符。新增私有布局计算：使用调用方提供的实际静态大小、对齐和描述符大小，在内核给出的 TLS 范围内计算静态区域、TP 和描述符末端；检查尺寸、对齐、越界和整数溢出，失败不修改输出。此计算不分配或初始化 TLS、DTV 与线程描述符，也尚未接入 `pthread_create`。原始线程桥注释同时修正为：撤销失败时由调用方查明状态，不能断言预留必然仍存在。
 
 宿主测试覆盖多组对齐与地址、空间不足、非法参数、溢出及失败输出；目标编译以实际 glibc `TLS_TCB_SIZE` 和所选 x86-64 TLS 定义编译调用，并核对桥目标符号、全部诊断对象来源和既有回归。完整 make 仍在 `clone3.h` 处失败，客体、TLS 初始化和 join 均未验收，G1 继续为 partial。桥对象 SHA-256 `bce57c7178d77f8f2244e670b2d3166964f07f7c689d121c1ee326fbc8caea54`，报告 SHA-256 `776d7d5c5cb77e0d242638c658566b0e9c017a2226adab8242f2d8926ed98e45`。
+
+## 继续：线程 TLS 初始化及启动前回滚（2026-11-14）
+
+在已验证的 XOS 预留区布局上，新增 glibc 私有 TLS 初始化：使用实际 loader 静态大小和对齐计算位置，初始化线程描述符中必要的自指针、首个 TSD 块和 setxid 状态，并调用 glibc `_dl_allocate_tls` 分配 DTV、初始化静态 TLS。布局失败和 DTV 分配失败分别返回，失败不发布描述符。新增只用于启动前回滚的清理入口，调用 `_dl_deallocate_tls(..., false)`，不释放内核拥有的 TLS 区域。线程启动事务增加回滚回调，在 setup 或 start 失败时先执行调用方清理，再尝试 abort；保留原失败与独立的 abort 错误。
+
+模拟覆盖 DTV 分配失败、预留区不足、启动失败时先释放 DTV 再撤销预留，以及 setup 失败时无误释放；既有测试通过。干净目标构建实际使用 glibc 内部定义编译 TLS 初始化对象，并检查符号与完整依赖来源；对象 SHA-256 `4a4317005b6f22e3ea85f13a78485b22fd9843c512191648765fbff2e0785f02`，报告 SHA-256 `be2596ca2771c41da503c34578b32e18e7932e8867d4103e40dd39ef83b3a656`。
+
+这仍不是可运行的 `pthread_create`：上游栈分配、入口、描述符注册和 join 尚未接入。尤其 XOS 内核回收死线程时先释放栈/TLS 页面，再唤醒 joiner；因此不能假定 join 后还能访问描述符并执行 glibc 常规清理。正常线程退出的 DTV、描述符与结果生命周期需要另行实现和客体验证，不能把启动前回滚接口用于该路径。完整 make 仍阻塞于 `clone3.h`，独立头文件客户端缺少 `gnu/stubs.h`，G1 仍为 partial。

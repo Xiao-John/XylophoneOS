@@ -5,6 +5,8 @@
   "tag": "v9.1.0000",
   "tag_object": "451037a9809c6e9648146f7ac8faabe6a1904cac",
   "commit": "b4ddc6c11e95cef4b372e239871fae1c8d4f72b6",
-  "status": "source_identity_pinned_archive_and_dependencies_unverified",
-  "note": "Exploratory baseline, not a security update or release qualification. Source download, archive SHA-256, license review and target feature/dependency matrix remain pending."
+  "status": "git_source_pinned_dependencies_candidate_not_guest_qualified",
+  "note": "Git archive --format=tar HEAD; archive SHA is not a GitHub tar.gz hash. Vim 9.1.0000 is an exploratory baseline, not a current security-fix claim.",
+  "git_archive_tar_sha256": "337f02fcc362ffe9e0baa296ddda9b9af94f5769332fd372e9cb2dfa64891182",
+  "license_sha256": "0b3f1f330cb1b179bb17c7c687d4cec601e0aa3462bc7f890ad4c3888d37d720"
 }

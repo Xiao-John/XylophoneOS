@@ -1,9 +1,8 @@
-# Vim source identity (preliminary)
+# Vim source identity and dependency inventory
 
-`source_lock.json` pins the annotated upstream tag and dereferenced Git commit
-observed with `git ls-remote`. This is a reproducible source identity, not a
-validated source archive or an accepted release: source download, archive hash,
-licensing and target dependency audit remain outstanding. Vim 9.1.0000 is an
-exploratory baseline, not a claim that it contains current security fixes. The
-full-terminal capability goal and V0 acceptance remain in
-[the Vim plan](../../../docs/plans/vim.md).
+`source_lock.json` pins Vim 9.1.0000 and the hash of a locally generated
+`git archive --format=tar HEAD`. This is a source identity, not a GitHub
+release tarball hash or an accepted target build. See [dependency inventory](DEPENDENCIES.md)
+and [the Vim plan](../../../docs/plans/vim.md). The upstream license is
+retained in `LICENSE.upstream`; bundled member review and the full target
+feature matrix remain open. This old baseline does not claim current fixes.

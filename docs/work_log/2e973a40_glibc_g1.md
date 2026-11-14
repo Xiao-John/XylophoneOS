@@ -108,3 +108,13 @@ G1 仍未验收：真实 XOS 工具链、正式 ABI note 策略、完整目标�
 `tests/glibc_g1_wait_test.py` 在宿主以模拟系统调用验证请求布局与内核公开 C++ ABI 的对应、版本、大小、保留字段、期望值、有限/无限截止时间、原始错误及唤醒计数；另以真实 x86-64 交叉编译验证对象中的两条 `int 0x80` 与调用号。测试通过，但模拟不代替客体验证。干净源码构建中 glibc 自身 nptl 子目录规则成功编出 `xos_wait_word.o`，SHA-256 `650f83bc90565866e1edf1189d4d9338c37c2ebaa8d80dc2ed563119ef25254d`；报告 SHA-256 `203275652e2ae6fa3f3eda40f19a292054907df1dbfb0682da38f140c95b6490`，对象/头文件来源与既有探针检查通过。
 
 接入 glibc 的后续工作必须明确处理原始状态到 glibc 可接受错误的转换、因取消/信号引起的中断、无效地址和对象生命周期、资源上限、相对/绝对超时及实时钟、共享等待、robust/PI/requeue 等；不能把不同语义直接包装成 Linux futex 成功。完整构建当前仍在 NPTL 的内部 syscall/futex 接口处失败，安装的头缺少生成的 `gnu/stubs.h`，故 G1 和客体资格仍未完成。
+
+## 继续：NPTL 私有无时限低级等待接入（2026-11-14）
+
+为 glibc `lowlevellock-futex.h` 增加 XOS 覆盖，使 `lll_futex_wait` / `lll_futex_wake` 的**进程私有、无超时**路径调用上一步的 XOS wait-word 桥。候选适配器把 XOS value-changed 映射为 `-EAGAIN`，地址、超时、无效参数与资源错误分别映射到 libc errno；成功唤醒返回 glibc 低级接口要求的 0，而不是误把唤醒个数视为错误。errno 是 libc 值，不把任意 XOS 内核返回值取反。未知结果返回 `-EIO`，不会被当成成功。
+
+XOS 目前没有相同语义的跨进程共享 futex、低级定时等待、取消入口、requeue、wake-op 或 PI；这些路径明确 trap，时钟支持查询返回不支持，避免静默丢失唤醒或调用 Linux syscall。这是保守的实验失败策略，尚非 POSIX 线程实现；以后需要由 API 层及语义完整的后端给出适当错误与行为，不能把 trap 当作最终用户接口。
+
+模拟测试验证 XOS 请求和 glibc 低级结果转换，包括值变化、无效地址、超时、资源和未知错误、唤醒计数及无效计数；目标交叉编译核对真实 syscall 指令。另用真实 glibc 编译配置编译低级宏探针，检查私有等待/唤醒分别引用 XOS 适配器、共享路径包含 trap；构建中的依赖文件确认优先选择 XOS 覆盖头。两份 XOS 原语和适配器由 glibc 的 nptl 子目录规则编成目标对象，适配器 SHA-256 `d6b4b65fa7050867642168b4788b441211af8b752d9b6818f25884ed0bdcc899`，完整研究报告 SHA-256 `1b0ea29faa064b96b8587afe7549b4c47e6bd0dc700a657eb2c50368f1687d14`。探针、对象/头文件来源检查通过，尚无客体证据。
+
+完整 make 仍退出 2，首批剩余错误包括缺少 XOS 的 `__syscall_arg_t` 和 `INTERNAL_SYSCALL_CALL`；目标客户端仍因 `gnu/stubs.h` 缺失不能使用 sysroot。G1 保持 partial，下一步处理 XOS 实际系统调用约定及 glibc 启动/取消依赖，持续保留不支持项的真实失败。

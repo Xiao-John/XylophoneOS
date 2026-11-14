@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 #include "xos_wait_word.h"
+#include "xos_lll_futex.h"
+#include <errno.h>
 #include <xos/thread_abi.hpp>
 
 static xos_u64 last_number, last_first, last_second;
@@ -33,5 +35,22 @@ int main ()
       last_first != (xos_u64) &word || last_second != 3) return 4;
   next_result = xos::thread_error_address;
   if (__xos_wake_word (&word, 0) != next_result || last_second != 0) return 5;
+  next_result = xos::thread_value_changed;
+  if (__xos_lll_wait (&word, 7) != -EAGAIN) return 6;
+  next_result = xos::thread_error_address;
+  if (__xos_lll_wait (&word, 7) != -EFAULT) return 7;
+  next_result = xos::thread_error_timeout;
+  if (__xos_lll_wait (&word, 7) != -ETIMEDOUT) return 8;
+  next_result = 3;
+  if (__xos_lll_wake (&word, 4) != 0) return 9;
+  if (__xos_lll_wake (&word, -1) != -EINVAL) return 10;
+  next_result = -999;
+  if (__xos_lll_wait (&word, 7) != -EIO) return 11;
+  next_result = xos::thread_error_busy;
+  if (__xos_lll_wait (&word, 7) != -EBUSY) return 12;
+  next_result = xos::process_error_resources;
+  if (__xos_lll_wait (&word, 7) != -ENOMEM) return 13;
+  next_result = xos::process_error_invalid;
+  if (__xos_lll_wake (&word, 2) != -EINVAL) return 14;
   return 0;
 }

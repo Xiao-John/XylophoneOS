@@ -113,6 +113,14 @@ def main():
         disassembly = subprocess.check_output(['x86_64-elf-objdump', '-d', str(obj)], text=True)
         assert re.search(r'\bxor\s+%eax,%eax', disassembly)
         assert not re.search(r'\b(syscall|int)\b', disassembly)
+        glue = ("#include <stddef.h>\n#include <lowlevellock-futex.h>\n"
+                "int wait_probe(unsigned *p) { return lll_futex_wait(p, 3, LLL_PRIVATE); }\n"
+                "int wake_probe(unsigned *p) { return lll_futex_wake(p, 1, LLL_PRIVATE); }\n"
+                "int shared_probe(unsigned *p) { return lll_futex_wait(p, 3, LLL_SHARED); }\n")
+        subprocess.run(cmd, cwd=source / 'csu', check=True, capture_output=True, text=True, input=glue)
+        glue_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(obj)], text=True)
+        assert '__xos_lll_wait' in glue_code and '__xos_lll_wake' in glue_code
+        assert re.search(r'\bud2\b', glue_code)
         # Compare the experimental public types to the actual XOS thread ABI.
         cpp = '#include <xos/thread_abi.hpp>\n#define _SEMAPHORE_H 1\n#include <bits/semaphore.h>\n#include <bits/pthread_stack_min-dynamic.h>\n#include <bits/local_lim.h>\nstatic_assert(PTHREAD_STACK_MIN == xos::thread_stack_min);\nstatic_assert(sizeof(sem_t) == 32 && alignof(sem_t) == 8);\nstatic_assert(PTHREAD_KEYS_MAX == 128);\n#define _ERRNO_H 1\n#include <bits/errno.h>\n#include <bits/types/idtype_t.h>\nstatic_assert(EINVAL == 22 && ENOSYS == 88 && EWOULDBLOCK == EAGAIN);\nstatic_assert(P_ALL == 0 && P_PID == 1 && P_PGID == 2);\n'
         cxx = report['tools']['x86_64-elf-g++']['path']
@@ -140,6 +148,9 @@ def main():
     assert '../sysdeps/xos/xos_wait_word.c' in (output / 'xos_wait_word-dependencies.d').read_text()
     wait_symbols = (output / 'xos_wait_word-readelf.txt').read_text()
     assert '__xos_wait_word' in wait_symbols and '__xos_wake_word' in wait_symbols
+    adapter = report['diagnostic_objects']['xos_lll_futex']
+    assert adapter['exit_code'] == 0 and digest(build / 'nptl/xos_lll_futex.o') == adapter['sha256']
+    assert '../sysdeps/xos/xos_lll_futex.c' in (output / 'xos_lll_futex-dependencies.d').read_text()
     secure = report['diagnostic_objects']['check_fds']
     assert secure['exit_code'] == 0 and digest(build / 'csu/check_fds.o') == secure['sha256']
     assert '../sysdeps/xos/check_fds.c' in (output / 'check_fds-dependencies.d').read_text()

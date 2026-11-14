@@ -1,0 +1,32 @@
+{
+  "format_version": 1,
+  "id": "ncurses",
+  "name": "ncursesw",
+  "upstream_version": "6.5",
+  "license": [
+    "X11"
+  ],
+  "homepage": "https://invisible-island.net/ncurses/",
+  "source": {
+    "kind": "tarball",
+    "lock": "source_lock.json"
+  },
+  "build": {
+    "system": "custom",
+    "recipe": "build.py",
+    "patches": []
+  },
+  "package": {
+    "id": "thirdparty.ncursesw",
+    "target_profile": "xos-x86_64-static-single-b2-v1",
+    "xpk_sha256": "392ba5bdd04be70b5a6ed3da4e784783e88cc24391e8de8d12a6a72b1651cb88"
+  },
+  "integration": {
+    "guest_only": true,
+    "bootstrap_images": [],
+    "iso_members": []
+  },
+  "status": "planned",
+  "note": "ncursesw 6.5 受限 profile：宽字符终端库 + 消费者探针。仅验证 24x80 单线程串口子集。",
+  "evidence": []
+}

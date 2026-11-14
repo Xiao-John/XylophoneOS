@@ -135,6 +135,11 @@ def main():
     assert digest(output / 'header-client.log') == report['header_client']['log_sha256']
     assert 'gnu/stubs.h' in (output / 'header-client.log').read_text()
     assert '__syscall_arg_t' in (output / 'make.log').read_text()
+    native_wait = report['diagnostic_objects']['xos_wait_word']
+    assert native_wait['exit_code'] == 0 and digest(build / 'nptl/xos_wait_word.o') == native_wait['sha256']
+    assert '../sysdeps/xos/xos_wait_word.c' in (output / 'xos_wait_word-dependencies.d').read_text()
+    wait_symbols = (output / 'xos_wait_word-readelf.txt').read_text()
+    assert '__xos_wait_word' in wait_symbols and '__xos_wake_word' in wait_symbols
     secure = report['diagnostic_objects']['check_fds']
     assert secure['exit_code'] == 0 and digest(build / 'csu/check_fds.o') == secure['sha256']
     assert '../sysdeps/xos/check_fds.c' in (output / 'check_fds-dependencies.d').read_text()

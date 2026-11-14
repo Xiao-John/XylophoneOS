@@ -100,3 +100,11 @@ G1 仍未验收：真实 XOS 工具链、正式 ABI note 策略、完整目标�
 从原始候选归档和隔离工具重跑：glibc `install-headers` 退出 0，安装 335 个文件，清单 SHA-256 `318a2cdd442ca67ce36545a9883bf41b144b068607a84228cec6c8b5ce337840`；然而真实目标客户端包含 errno、stdio、pthread、semaphore 和 wait 头时退出 1，首个错误是缺少只有完整 libc 构建才能生成的 `gnu/stubs.h`。因此命令完成不等于完整、可用的 sysroot；没有人为创建空 stubs 来掩盖缺口。正常完整 make 仍退出 2，进入 NPTL 后缺少 XOS `__syscall_arg_t`、内部系统调用和 futex 后端；必须根据 XOS 实际线程及等待语义实现，不能直接调用 Linux futex。
 
 本次检查覆盖目标 errno/等待类型静态断言、安装文件来源和哈希、实际客户端失败、XOS 安全 FD 函数对象及 `_exit` 重定位，既有 TLS 失败、对象、note 和目标隔离检查也通过。私有 report SHA-256 `66852503a6dd5177aea99972c5fe37099b3d78a2c5cda599bc00ef6de84e922f`。G1 保持 partial，未得到可用 SDK、完整 libc 或客体运行结果。
+
+## 继续：XOS 私有 wait-word 原语（2026-11-14）
+
+新增 glibc 端口私有的 `__xos_wait_word`、`__xos_wake_word`，按 `thread_abi.hpp` 构造版本 1、40 字节请求，使用 XOS syscall 48/49 和 `int 0x80`。等待使用绝对单调时钟纳秒或全 1 的无限期限，按内核原样返回 XOS 结果；唤醒保留内核的唤醒计数或错误。它们只封装同进程地址等待，不设置 errno、不了解 glibc 取消，也不声称 futex、跨进程共享或实时钟语义。XOS sysdeps Makefile 将其登记为 NPTL 私有支持对象；当前 NPTL 尚未调用这个桥，不能据此宣称 pthread 已经可用。
+
+`tests/glibc_g1_wait_test.py` 在宿主以模拟系统调用验证请求布局与内核公开 C++ ABI 的对应、版本、大小、保留字段、期望值、有限/无限截止时间、原始错误及唤醒计数；另以真实 x86-64 交叉编译验证对象中的两条 `int 0x80` 与调用号。测试通过，但模拟不代替客体验证。干净源码构建中 glibc 自身 nptl 子目录规则成功编出 `xos_wait_word.o`，SHA-256 `650f83bc90565866e1edf1189d4d9338c37c2ebaa8d80dc2ed563119ef25254d`；报告 SHA-256 `203275652e2ae6fa3f3eda40f19a292054907df1dbfb0682da38f140c95b6490`，对象/头文件来源与既有探针检查通过。
+
+接入 glibc 的后续工作必须明确处理原始状态到 glibc 可接受错误的转换、因取消/信号引起的中断、无效地址和对象生命周期、资源上限、相对/绝对超时及实时钟、共享等待、robust/PI/requeue 等；不能把不同语义直接包装成 Linux futex 成功。完整构建当前仍在 NPTL 的内部 syscall/futex 接口处失败，安装的头缺少生成的 `gnu/stubs.h`，故 G1 和客体资格仍未完成。

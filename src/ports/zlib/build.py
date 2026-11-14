@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import shlex
 import shutil
 import subprocess
 import sys
@@ -74,11 +75,11 @@ def main():
     if not (source / "zlib.h").is_file():
         raise SystemExit("ports/zlib: unexpected archive layout")
 
-    cflags = ("-O2 -mno-red-zone -fno-pie -fno-pic -fno-stack-protector "
-              f"-idirafter {sdk}/include")
+    cflags = ["-O2", "-mno-red-zone", "-fno-pie", "-fno-pic",
+              "-fno-stack-protector", "-idirafter", f"{sdk}/include"]
     env = dict(os.environ)
     env.update({"CHOST": "x86_64-elf", "CC": cc,
-                "CFLAGS": cflags, "AR": ar, "RANLIB": "x86_64-elf-ranlib"})
+                "CFLAGS": shlex.join(cflags), "AR": ar, "RANLIB": "x86_64-elf-ranlib"})
     run(["./configure", "--static"], cwd=source, env=env)
     run(["make", "-j4", "libz.a"], cwd=source, env=env)
 
@@ -88,7 +89,7 @@ def main():
             str(sdk / "lib/libc.a"), str(sdk / "lib/libm.a"), libgcc,
             "-Wl,--end-group"]
     binary_source = work / "minigzip"
-    run([cc, *cflags.split(), "-I", str(source), str(source / "test/minigzip.c"),
+    run([cc, *cflags, "-I", str(source), str(source / "test/minigzip.c"),
          str(source / "libz.a"), *link, "-o", str(binary_source)])
 
     tree = out / "tree"

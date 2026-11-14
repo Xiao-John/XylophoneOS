@@ -8,7 +8,7 @@
 | 目标 profile | `xos-x86_64-static-single-b2-v1` |
 | 客体系统 | `build/xos-install.iso`，build `41f3fce8bbf46593`，kernel 805016 字节 |
 | 构建 SDK | 开发树 `build/sdk`；SDK build `41f3fce8bbf46593`；树哈希 `78fe9a04248bea82d79ff10bcecfb4036dc94d590d24109bdfc5ed94e33ea18c`（未登记到 profile，构建时使用 `XOS_SDK_UNREGISTERED_OK=1`） |
-| 包 | `thirdparty.zlib-1.3.1.xpk`，sha256 `aa795f283785252aa68e84c8b6eba3eb0e3ea7cb22b43310b8408f241ad72fd8`，8 个文件 |
+| 包 | `thirdparty.zlib-1.3.1.xpk`，sha256 `3f00b879fc9db9986eb0208c08c2e18a7053f4da19122ff9bd8c2206593b4581`，8 个文件 |
 | `minigzip` 交付物 | `usr/bin/minigzip`，sha256 `271647853907888bf8925c2409b8ebe169045df90879586172c65ab035c763d3`，216576 字节 |
 
 ## 安装事务

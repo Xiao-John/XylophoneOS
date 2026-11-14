@@ -19,7 +19,7 @@
   "package": {
     "id": "thirdparty.zlib",
     "target_profile": "xos-x86_64-static-single-b2-v1",
-    "xpk_sha256": "aa795f283785252aa68e84c8b6eba3eb0e3ea7cb22b43310b8408f241ad72fd8"
+    "xpk_sha256": "3f00b879fc9db9986eb0208c08c2e18a7053f4da19122ff9bd8c2206593b4581"
   },
   "integration": {
     "guest_only": true,

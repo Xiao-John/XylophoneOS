@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import shlex
 import shutil
 import subprocess
 import sys
@@ -88,19 +89,19 @@ def build(port, lock, out, output):
         raise SystemExit(f"ports/zstd: compiler targets {machine}, expected x86_64-elf")
 
     libgcc = subprocess.check_output([cc, "-print-libgcc-file-name"], text=True).strip()
-    cflags = (f"-O2 -mno-red-zone -fno-pie -fno-pic -fno-stack-protector "
-              f"-idirafter {sdk}/include -D_POSIX_THREADS=1 "
-              "-D_POSIX_READER_WRITER_LOCKS=200809L -D_UNIX98_THREAD_MUTEX_ATTRIBUTES=1 "
-              "-DXOS_THREADED_RUNTIME")
+    cflags = ["-O2", "-mno-red-zone", "-fno-pie", "-fno-pic",
+              "-fno-stack-protector", f"-idirafter", f"{sdk}/include",
+              "-D_POSIX_THREADS=1", "-D_POSIX_READER_WRITER_LOCKS=200809L",
+              "-D_UNIX98_THREAD_MUTEX_ATTRIBUTES=1", "-DXOS_THREADED_RUNTIME"]
     run(["make", "-C", str(source / "lib"), "libzstd.a", "-j", "4",
          f"CC={cc}", f"AR={ar}", f"RANLIB={ranlib}", "ZSTD_MULTITHREAD=1",
-         f"CFLAGS={cflags} -DZSTD_MULTITHREAD"])
+         f"CFLAGS={shlex.join(cflags + ['-DZSTD_MULTITHREAD'])}"])
     library = source / "lib/libzstd.a"
     if not library.is_file() or library.stat().st_size < 100000:
         raise SystemExit("ports/zstd: libzstd.a build looks incomplete")
 
     binary_source = work / "zstd"
-    run([cc, *cflags.split(), "-I", str(source / "lib"), "-I", str(source / "programs"),
+    run([cc, *cflags, "-I", str(source / "lib"), "-I", str(source / "programs"),
          "-DZSTD_LEGACY_SUPPORT=0", "-DZSTD_NOTRACE", "-DZSTD_MULTITHREAD",
          *(str(source / "programs" / name) for name in PROGRAM_SOURCES),
          str(library), "-nostdlib", "-static", "-no-pie",

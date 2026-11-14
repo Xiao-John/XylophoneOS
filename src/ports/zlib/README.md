@@ -8,7 +8,7 @@ zlib 压缩库与 `minigzip`（gzip 格式的压缩/解压示例工具）。
 
 - 包 id：`thirdparty.zlib`
 - 目标 profile：`xos-x86_64-static-single-b2-v1`
-- 已验证包哈希：`aa795f283785252aa68e84c8b6eba3eb0e3ea7cb22b43310b8408f241ad72fd8`
+- 已验证包哈希：`3f00b879fc9db9986eb0208c08c2e18a7053f4da19122ff9bd8c2206593b4581`
   （由本目录配方构建；换 SDK/上游/配方后必须重算并更新 `port.json`）。
 
 ## 构建

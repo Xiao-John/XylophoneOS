@@ -315,6 +315,24 @@ extern "C" int pthread_cancel(pthread_t) { return ENOTSUP; }
 extern "C" int pthread_setcancelstate(int, int*) { return ENOTSUP; }
 extern "C" int pthread_setcanceltype(int, int*) { return ENOTSUP; }
 extern "C" int pthread_atfork(void(*)(), void(*)(), void(*)()) { return ENOTSUP; }
+extern "C" int clock_settime(clockid_t, const timespec*) {
+    // The kernel provides no wall-clock setter; POSIX allows EPERM.
+    return EPERM;
+}
+
+extern "C" int clock_nanosleep(clockid_t clock_id, int flags,
+                                const timespec* req, timespec* rem) {
+    if (req == nullptr) { return EFAULT; }
+    if (req->tv_nsec < 0 || req->tv_nsec >= 1000000000L || req->tv_sec < 0) {
+        return EINVAL;
+    }
+    if (flags != 0 && flags != 4 /* TIMER_ABSTIME */) { return EINVAL; }
+    // Delegate to nanosleep for relative sleep; absolute sleep is not
+    // supported in the threaded runtime yet.
+    if (flags == 4) { return ENOTSUP; }
+    return nanosleep(req, rem);
+}
+
 extern "C" int clock_gettime(clockid_t clock, timespec* value) {
     if (!value) { errno = EFAULT; return -1; }
     if (clock == CLOCK_PROCESS_CPUTIME_ID || clock == CLOCK_THREAD_CPUTIME_ID) {

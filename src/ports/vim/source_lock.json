@@ -1,0 +1,10 @@
+{
+  "name": "vim",
+  "version": "9.1.0000",
+  "repository": "https://github.com/vim/vim.git",
+  "tag": "v9.1.0000",
+  "tag_object": "451037a9809c6e9648146f7ac8faabe6a1904cac",
+  "commit": "b4ddc6c11e95cef4b372e239871fae1c8d4f72b6",
+  "status": "source_identity_pinned_archive_and_dependencies_unverified",
+  "note": "Exploratory baseline, not a security update or release qualification. Source download, archive SHA-256, license review and target feature/dependency matrix remain pending."
+}

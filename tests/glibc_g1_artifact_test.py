@@ -33,7 +33,8 @@ def main():
     assert report['status'] == 'diagnostic_only' and report['nptl_backend_experimental'] and not report['synthetic_abi_tag']
     assert report['sysroot_enforced'] and report['configure_exit_code'] == 0
     assert not report['hacker_mode'] and '--enable-hacker-mode' not in report['command']
-    assert report['make_exit_code'] != 0 and report['header_install']['exit_code'] != 0
+    assert report['make_exit_code'] != 0 and report['header_install']['exit_code'] == 0
+    assert report['header_client']['exit_code'] != 0
     source = output / 'glibc-2.44'
     build = output / 'configure'
     with tarfile.open(args.archive) as tar:
@@ -113,7 +114,7 @@ def main():
         assert re.search(r'\bxor\s+%eax,%eax', disassembly)
         assert not re.search(r'\b(syscall|int)\b', disassembly)
         # Compare the experimental public types to the actual XOS thread ABI.
-        cpp = '#include <xos/thread_abi.hpp>\n#define _SEMAPHORE_H 1\n#include <bits/semaphore.h>\n#include <bits/pthread_stack_min-dynamic.h>\n#include <bits/local_lim.h>\nstatic_assert(PTHREAD_STACK_MIN == xos::thread_stack_min);\nstatic_assert(sizeof(sem_t) == 32 && alignof(sem_t) == 8);\nstatic_assert(PTHREAD_KEYS_MAX == 128);\n'
+        cpp = '#include <xos/thread_abi.hpp>\n#define _SEMAPHORE_H 1\n#include <bits/semaphore.h>\n#include <bits/pthread_stack_min-dynamic.h>\n#include <bits/local_lim.h>\nstatic_assert(PTHREAD_STACK_MIN == xos::thread_stack_min);\nstatic_assert(sizeof(sem_t) == 32 && alignof(sem_t) == 8);\nstatic_assert(PTHREAD_KEYS_MAX == 128);\n#define _ERRNO_H 1\n#include <bits/errno.h>\n#include <bits/types/idtype_t.h>\nstatic_assert(EINVAL == 22 && ENOSYS == 88 && EWOULDBLOCK == EAGAIN);\nstatic_assert(P_ALL == 0 && P_PID == 1 && P_PGID == 2);\n'
         cxx = report['tools']['x86_64-elf-g++']['path']
         subprocess.run([cxx, '-std=c++17', '-ffreestanding', '-nostdinc',
                         '-I', str(root / 'src/shared/include'), '-I', str(source / 'sysdeps/xos'),
@@ -129,8 +130,17 @@ def main():
     assert digest(root / 'usr/include/stdlib.h') == digest(source / 'stdlib/stdlib.h')
     assert digest(root / 'usr/include/bits/stdio_lim.h') == digest(source / 'sysdeps/xos/bits/stdio_lim.h')
     assert digest(root / 'usr/include/bits/semaphore.h') == digest(source / 'sysdeps/xos/bits/semaphore.h')
-    assert 'bits/types/idtype_t.h' in (output / 'install-headers.log').read_text()
-    assert 'Generic bits/errno.h included' in (output / 'make.log').read_text()
+    assert digest(root / 'usr/include/bits/errno.h') == digest(source / 'sysdeps/xos/bits/errno.h')
+    assert digest(root / 'usr/include/bits/types/idtype_t.h') == digest(source / 'sysdeps/xos/bits/types/idtype_t.h')
+    assert digest(output / 'header-client.log') == report['header_client']['log_sha256']
+    assert 'gnu/stubs.h' in (output / 'header-client.log').read_text()
+    assert '__syscall_arg_t' in (output / 'make.log').read_text()
+    secure = report['diagnostic_objects']['check_fds']
+    assert secure['exit_code'] == 0 and digest(build / 'csu/check_fds.o') == secure['sha256']
+    assert '../sysdeps/xos/check_fds.c' in (output / 'check_fds-dependencies.d').read_text()
+    disassembly = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'csu/check_fds.o')], text=True)
+    assert re.search(r'\bmov\s+\$0x7f,%edi', disassembly) and re.search(r'R_X86_64_\w+\s+_exit', disassembly)
+
     print('PASS diagnostic objects, symbols, instruction sequence, header provenance and partial sysroot')
     print('NOT ACCEPTED: experimental backend, incomplete headers and libc build, no guest test')
 

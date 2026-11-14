@@ -103,7 +103,7 @@ def main():
             make_result = subprocess.run(['gnumake', '-j1'], cwd=build, env=env, stdout=log, stderr=subprocess.STDOUT)
     objects = {}
     if backend and make_result is not None:
-        for subdir, name in (('stdlib', 'abs'), ('posix', '_exit'), ('csu', 'abi-note')):
+        for subdir, name in (('stdlib', 'abs'), ('posix', '_exit'), ('csu', 'abi-note'), ('csu', 'check_fds')):
             (build / subdir).mkdir(exist_ok=True)
             target_object = build / subdir / (name + '.o')
             with (output / (name + '-object.log')).open('w') as log:
@@ -161,6 +161,18 @@ def main():
         header_install = {'exit_code': install.returncode, 'file_count': len(headers),
                           'log_sha256': digest(output / 'install-headers.log'),
                           'manifest_sha256': digest(output / 'header-manifest.json')}
+    header_client = None
+    if backend and header_install is not None:
+        client_source = '#include <errno.h>\n#include <stdio.h>\n#include <pthread.h>\n#include <semaphore.h>\n#include <sys/wait.h>\nint probe(void) { return EINVAL; }\n'
+        with (output / 'header-client.log').open('w') as log:
+            client = subprocess.run([env['CC'], '-isystem', str(sysroot / 'usr/include'),
+                                     '-ffreestanding', '-x', 'c', '-c', '-',
+                                     '-o', str(output / 'header-client.o')],
+                                    input=client_source, text=True, stdout=log, stderr=subprocess.STDOUT)
+        header_client = {'exit_code': client.returncode,
+                         'log_sha256': digest(output / 'header-client.log')}
+        if client.returncode == 0:
+            header_client['object_sha256'] = digest(output / 'header-client.o')
     tool_names = ('x86_64-elf-gcc', 'x86_64-elf-g++', 'x86_64-elf-as',
                   'x86_64-elf-ld', 'x86_64-elf-readelf', 'x86_64-elf-objdump',
                   'gnumake', 'gawk', 'bison', 'patch')
@@ -175,7 +187,7 @@ def main():
               'synthetic_abi_tag': args.synthetic_abi_tag,
               'private_sysroot_initially_empty': str(sysroot),
               'sysroot_enforced': backend, 'diagnostic_objects': objects,
-              'header_install': header_install, 'isolated_abi_note': isolated_note,
+              'header_install': header_install, 'header_client': header_client, 'isolated_abi_note': isolated_note,
               'generated_layout_headers': layout_headers,
               'xos_abi_note_patch_sha256': digest(note_patch) if backend else None,
               'xos_tls_patch_sha256': digest(tls_patch) if backend else None,

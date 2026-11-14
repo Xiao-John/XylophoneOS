@@ -90,3 +90,13 @@ G1 仍未验收：真实 XOS 工具链、正式 ABI note 策略、完整目标�
 干净输入采用单线程 make，避免调查时一次并行启动中 `libc-modules.h` 尚未生成的非目标噪声。上游生成的 `sem_t-align.h` 为 8、`tlsdesc.h` 中 `DTV_OFFSET` 为 8，依赖记录同时指向 XOS 包装头和 x86-64 NPTL 头；此前被前置项阻塞的 `abi-note.o` 现可按正常 glibc 规则编译。`abs`、`_exit`、note 对象和头文件来源检查通过；另用 glibc 实际编译参数生成 TLS 初始化探针，目标指令返回失败且没有 `syscall`/`int`。交叉编译静态断言核对 `sem_t` 尺寸/对齐、栈下限与实际 XOS 线程契约、键数。以上是目标构建检查，未运行线程或 glibc 客体。
 
 完整 make 仍退出 2，下一处可见障碍为通用 `bits/errno.h` 明确报移植未完成及 `bits/types/idtype_t.h` 缺失；头文件安装至 184 个后因后者退出 2。私有报告 SHA-256 `361891f1291fafa0deb95221ec8dc469978da5e87eeef06ff7f7a08b6e20af25`，头文件清单 SHA-256 `b25aac0da9cc465c635db18c7392b889aa43858712520fd3ea0d3896a69a1437`。G1 仍 partial，继续处理真实 errno、进程等待类型和后端，禁止复制 Linux syscall 或将上述显式失败当作可运行 TLS。
+
+## 继续：errno、等待类型与真实头文件客户端（2026-11-14）
+
+新增候选 XOS glibc `bits/errno.h`，以数值表独立保存本 libc 的错误码；初始共有 85 个名称（含 `EWOULDBLOCK` 别名），与本机已有 XOS newlib SDK 中同名宏数值对照一致，但不引入其 `errno`、`_reent`、头文件或运行时代码。错误码是用户态 ABI，不能直接把 XOS 各服务/内核的负值取反当作 errno；后续各后端需做实际映射和负向测试。该表目前为候选，非发行 ABI 冻结。增加 `idtype_t` 的 `P_ALL`、`P_PID`、`P_PGID` 类型值，不代表 XOS 已实现 waitid 或进程组。
+
+上游通用 `check_fds.c` 依赖 Linux 风格设备号与 `st_rdev`，不能直接用于现有 XOS。实验端口提供 XOS `__libc_check_standard_fds`：若 glibc 安全启动路径请求检查，而可信标准描述符及 `/dev/null` 契约尚未建立，就以 `_exit(127)` 直接失败，不伪报成功或继续特权启动。交叉编译和反汇编确认选择 XOS 实现，且调用 `_exit`；这不是安全启动或客体验收，D0/D3 仍需完成可信启动、FD 与失败行为验证。
+
+从原始候选归档和隔离工具重跑：glibc `install-headers` 退出 0，安装 335 个文件，清单 SHA-256 `318a2cdd442ca67ce36545a9883bf41b144b068607a84228cec6c8b5ce337840`；然而真实目标客户端包含 errno、stdio、pthread、semaphore 和 wait 头时退出 1，首个错误是缺少只有完整 libc 构建才能生成的 `gnu/stubs.h`。因此命令完成不等于完整、可用的 sysroot；没有人为创建空 stubs 来掩盖缺口。正常完整 make 仍退出 2，进入 NPTL 后缺少 XOS `__syscall_arg_t`、内部系统调用和 futex 后端；必须根据 XOS 实际线程及等待语义实现，不能直接调用 Linux futex。
+
+本次检查覆盖目标 errno/等待类型静态断言、安装文件来源和哈希、实际客户端失败、XOS 安全 FD 函数对象及 `_exit` 重定位，既有 TLS 失败、对象、note 和目标隔离检查也通过。私有 report SHA-256 `66852503a6dd5177aea99972c5fe37099b3d78a2c5cda599bc00ef6de84e922f`。G1 保持 partial，未得到可用 SDK、完整 libc 或客体运行结果。

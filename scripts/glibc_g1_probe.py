@@ -12,6 +12,8 @@ import subprocess
 import sys
 import tarfile
 
+from glibc_g1_deps import collect_dependency_files
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -185,6 +187,22 @@ def main():
                          'log_sha256': digest(output / 'header-client.log')}
         if client.returncode == 0:
             header_client['object_sha256'] = digest(output / 'header-client.o')
+    # Bind every successfully compiled diagnostic object's actual inputs,
+    # including generated build headers, and reject headers outside the
+    # extracted source, private build tree and compiler freestanding headers.
+    compiler_include = Path(subprocess.check_output(
+        [str(compiler_path), '-print-file-name=include'], text=True).strip())
+    dependency_manifest = {}
+    for name, item in objects.items():
+        if item['exit_code'] == 0:
+            depfile = output / (name + '-dependencies.d')
+            if not depfile.is_file():
+                raise RuntimeError('missing dependency file for ' + name)
+            dependency_manifest[name] = collect_dependency_files(
+                depfile, source, build, compiler_include, name)
+    if dependency_manifest:
+        (output / 'dependency-manifest.json').write_text(
+            json.dumps(dependency_manifest, sort_keys=True, indent=2) + '\n')
     built_objects = {}
     if backend and make_result is not None:
         for name in ('signal/raise.os', 'signal/sigwait.os', 'stdlib/arc4random.o', 'libio/freopen.o', 'libio/freopen64.o', 'dlfcn/dlerror.o'):
@@ -208,6 +226,8 @@ def main():
               'header_install': header_install, 'header_client': header_client, 'isolated_abi_note': isolated_note,
               'built_objects': built_objects,
               'generated_layout_headers': layout_headers,
+              'dependency_manifest_sha256': digest(output / 'dependency-manifest.json') if dependency_manifest else None,
+              'dependency_collector_sha256': digest(ROOT / 'scripts/glibc_g1_deps.py'),
               'xos_abi_note_patch_sha256': digest(note_patch) if backend else None,
               'xos_tls_patch_sha256': digest(tls_patch) if backend else None,
               'sigset_patch_sha256': digest(sigset_patch) if backend else None,

@@ -8,6 +8,7 @@ from pathlib import Path
 import re
 import shlex
 import subprocess
+import sys
 import tarfile
 import tempfile
 
@@ -51,6 +52,14 @@ def main():
     assert 'sysdeps/xos' in sysdirs and 'sysdeps/x86_64/xos' in sysdirs
     assert 'experimental and incomplete' in (output / 'configure.log').read_text()
     assert not re.search(r'^\.\*-\.\*-xos', (source / 'abi-tags').read_text(), re.M)
+    sys.path.insert(0, str(root / 'scripts'))
+    from glibc_g1_deps import collect_dependency_files
+    assert digest(root / 'scripts/glibc_g1_deps.py') == report['dependency_collector_sha256']
+    dependency_manifest_path = output / 'dependency-manifest.json'
+    assert digest(dependency_manifest_path) == report['dependency_manifest_sha256']
+    dependency_manifest = json.loads(dependency_manifest_path.read_text())
+    successful = {name for name, item in report['diagnostic_objects'].items() if item['exit_code'] == 0}
+    assert set(dependency_manifest) == successful
     overlay = Path(__file__).resolve().parents[1] / 'src/ports/glibc/sysdeps'
     for name, expected in report['xos_overlay_sha256'].items():
         assert digest(overlay / name) == expected == digest(source / 'sysdeps' / name)
@@ -62,6 +71,52 @@ def main():
     assert digest(compiler) == report['compiler_sha256']
     compiler_include = Path(subprocess.check_output([str(compiler), '-print-file-name=include'], text=True).strip()).resolve()
     roots = (source.resolve(), build.resolve(), compiler_include, compiler_include.parent / 'include-fixed')
+    # Reconstruct patched upstream files independently from the locked archive;
+    # verify every compiler-consumed source and header, not just abs/_exit.
+    patches = sorted((root / 'src/ports/glibc/patches').glob('*.patch'))
+    patched_files = set()
+    for patch in patches:
+        for line in patch.read_text().splitlines():
+            if line.startswith('+++ b/'):
+                patched_files.add(line[6:])
+    with tempfile.TemporaryDirectory(prefix='xos_glibc_pristine_') as temp:
+        pristine = Path(temp)
+        with tarfile.open(args.archive) as tar:
+            for name in patched_files:
+                source_file = tar.extractfile('glibc-2.44/' + name)
+                assert source_file is not None
+                destination = pristine / name
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes(source_file.read())
+        for patch in patches:
+            subprocess.run(['patch', '-s', '-p1', '-i', str(patch)], cwd=pristine, check=True)
+        upstream = {}
+        for name in sorted(successful):
+            depfile = output / (name + '-dependencies.d')
+            assert digest(depfile) == report['diagnostic_objects'][name]['dependency_file_sha256']
+            inputs = collect_dependency_files(depfile, source, build, compiler_include, name)
+            assert inputs == dependency_manifest[name]
+            for key, expected in inputs.items():
+                if not key.startswith('source/'):
+                    continue
+                relative = key[len('source/'):]
+                if relative.startswith('sysdeps/') and (overlay / relative[len('sysdeps/'):]).is_file():
+                    original = (overlay / relative[len('sysdeps/'):]).read_bytes()
+                elif relative in patched_files:
+                    original = (pristine / relative).read_bytes()
+                else:
+                    assert relative not in upstream or upstream[relative] == expected
+                    upstream[relative] = expected
+                    continue
+                assert hashlib.sha256(original).hexdigest() == expected, relative
+        with tarfile.open(args.archive, 'r|xz') as tar:
+            for member in tar:
+                prefix = 'glibc-2.44/'
+                if member.name.startswith(prefix) and member.name[len(prefix):] in upstream:
+                    relative = member.name[len(prefix):]
+                    item = tar.extractfile(member)
+                    assert item is not None and hashlib.sha256(item.read()).hexdigest() == upstream.pop(relative), relative
+        assert not upstream, f'missing archive dependencies: {sorted(upstream)}'
     for subdir, name, implementation in (('stdlib', 'abs', 'stdlib/abs.c'),
                                           ('posix', '_exit', 'sysdeps/xos/_exit.c')):
         artifact = build / subdir / (name + '.o')

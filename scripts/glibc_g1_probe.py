@@ -86,6 +86,8 @@ def main():
         subprocess.run(['patch', '-p1', '-i', str(dlerror_patch)], cwd=source, check=True)
         sem_init_patch = ROOT / 'src/ports/glibc/patches/0010-sem-init-private-only.patch'
         subprocess.run(['patch', '-p1', '-i', str(sem_init_patch)], cwd=source, check=True)
+        nptl_include_patch = ROOT / 'src/ports/glibc/patches/0011-nptl-explicit-includes.patch'
+        subprocess.run(['patch', '-p1', '-i', str(nptl_include_patch)], cwd=source, check=True)
         # This value is deliberately synthetic and is never an XOS ABI assignment.
         if args.synthetic_abi_tag:
             with (source / 'abi-tags').open('a') as file:
@@ -119,7 +121,7 @@ def main():
             make_result = subprocess.run(['gnumake', '-j1'], cwd=build, env=env, stdout=log, stderr=subprocess.STDOUT)
     objects = {}
     if backend and make_result is not None:
-        for subdir, name in (('stdlib', 'abs'), ('posix', '_exit'), ('csu', 'abi-note'), ('csu', 'check_fds'), ('nptl', 'xos_wait_word'), ('nptl', 'xos_lll_futex'), ('nptl', 'xos_thread_exit'), ('nptl', 'xos_thread_create'), ('nptl', 'xos_thread_tls'), ('signal', 'sigset'), ('misc', 'fd_to_filename'), ('nptl', 'cancellation'), ('nptl', 'xos_timed_wait'), ('nptl', 'futex-internal'), ('nptl', 'nptl_setxid'), ('nptl', 'pthread_cancel'), ('nptl', 'sem_init')):
+        for subdir, name in (('stdlib', 'abs'), ('posix', '_exit'), ('csu', 'abi-note'), ('csu', 'check_fds'), ('nptl', 'xos_wait_word'), ('nptl', 'xos_lll_futex'), ('nptl', 'xos_thread_exit'), ('nptl', 'xos_thread_create'), ('nptl', 'xos_thread_tls'), ('signal', 'sigset'), ('misc', 'fd_to_filename'), ('nptl', 'cancellation'), ('nptl', 'xos_timed_wait'), ('nptl', 'futex-internal'), ('nptl', 'nptl_setxid'), ('nptl', 'pthread_cancel'), ('nptl', 'sem_init'), ('nptl', 'sem_post')):
             (build / subdir).mkdir(exist_ok=True)
             target_object = build / subdir / (name + '.o')
             with (output / (name + '-object.log')).open('w') as log:
@@ -239,6 +241,7 @@ def main():
               'freopen_patch_sha256': digest(freopen_patch) if backend else None,
               'dlerror_patch_sha256': digest(dlerror_patch) if backend else None,
               'sem_init_patch_sha256': digest(sem_init_patch) if backend else None,
+              'nptl_include_patch_sha256': digest(nptl_include_patch) if backend else None,
               'xos_overlay_sha256': {str(p.relative_to(ROOT / 'src/ports/glibc/sysdeps')): digest(p) for p in (ROOT / 'src/ports/glibc/sysdeps').rglob('*') if p.is_file()},
               'configure_log_sha256': digest(output/'configure.log'),
               'not_claimed': ['complete XOS sysdeps', 'target runtime', 'guest qualification', 'distributable source']}

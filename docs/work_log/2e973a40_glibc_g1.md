@@ -236,3 +236,9 @@ glibc 2.44 的 `_dl_determine_tlsoffset` 将 TCB 前的静态 TLS 区域向 load
 其中确认上游 `sem_init` 对 `pshared != 0` 原本会返回成功，而 XOS 当前 wait/wake 只支持进程内键。候选 XOS 补丁保留 glibc 进程内初始化和超限 `EINVAL`，对非零 `pshared` 在修改对象前返回 `ENOTSUP`；补充候选 NPTL `SEM_VALUE_MAX`。这不实现或认可进程间信号量，也不证明进程内信号量等待、取消或整体 pthread 可用。
 
 基于散列锁定归档提取并应用补丁的宿主测试覆盖共享参数、边界、对象不变及私有初始化；干净目标构建生成补丁后的 `sem_init.o`，SHA-256 `c38c5e102f4f04d0fac6891575e42494ab230789ae838b9bb1b05d2cb4c976eb`，对象、符号和所有依赖来源检查通过，报告 SHA-256 `ea4072392dc97ccd2a986ff24e34b1392d4e6bd74be4416cdecfca6809313010`。既有宿主测试通过；完整构建仍在 `clone3.h` 停止，缺少完整目标头和客体验收，G1 仍为 partial。
+
+## 继续：NPTL 类型来源与信号量发布目标对象（2026-11-14）
+
+`make -k` 揭示 glibc NPTL 的 `internaltypes.h` 使用 `struct sched_param`、`cpu_set_t` 却依赖间接包含；`sem_post.c` 使用 `SEM_VALUE_MAX` 也未显式包含 `<limits.h>`。候选补丁分别补充 `<sched.h>` 与 `<limits.h>`；类型来自 glibc 通用头，不代表 XOS 已实现 CPU 亲和性或调度策略。
+
+从散列锁定归档提取并补丁的 `sem_post.c` 在宿主模拟中检查递增、上限 `EOVERFLOW`、不必要时不唤醒及存在等待者时唤醒一个；这不证明并发、等待或客体语义。干净 XOS 目标构建实际生成 `sem_post.o`，并确认其引用 XOS 私有唤醒桥和意外错误终止入口；对象 SHA-256 `6e1406e340f7559f7ef2f59b6154270b65b6c16ef6476cfcaf03bcd121d2bd48`，报告 SHA-256 `91a67e238fa40779b10f127d01a011461c191659d04eb8f9a431cf5ab801f861`，补丁、对象和所有依赖来源检查通过。完整构建仍在 `clone3.h` 失败，未做 glibc 客体验收，G1 仍为 partial。

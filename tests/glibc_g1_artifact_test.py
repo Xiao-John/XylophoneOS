@@ -266,6 +266,11 @@ def main():
     pid_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'posix/getpid.o')], text=True)
     assert re.search(r'\bmov\s+\$0x6,%eax', pid_code) and re.search(r'\bint\s+\$0x80', pid_code)
     assert not re.search(r'\bsyscall\b', pid_code)
+    clock_item = report['diagnostic_objects']['clock_gettime']
+    assert clock_item['exit_code'] == 0 and digest(build / 'time/clock_gettime.o') == clock_item['sha256']
+    assert '../sysdeps/xos/clock_gettime.c' in (output / 'clock_gettime-dependencies.d').read_text()
+    clock_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'time/clock_gettime.o')], text=True)
+    assert re.search(r'\bint\s+\$0x80', clock_code) and not re.search(r'\bsyscall\b', clock_code)
     sigset = report['diagnostic_objects']['sigset']
     assert sigset['exit_code'] == 0 and digest(build / 'signal/sigset.o') == sigset['sha256']
     sigset_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'signal/sigset.o')], text=True)

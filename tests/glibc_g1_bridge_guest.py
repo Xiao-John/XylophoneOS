@@ -27,6 +27,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--yield-build', type=Path, help='G1 diagnostic output containing the real target sched_yield object')
     parser.add_argument('--pid-build', type=Path, help='G1 diagnostic output containing the real target getpid object')
+    parser.add_argument('--clock-build', type=Path, help='G1 diagnostic output containing the real target clock_gettime object')
     args = parser.parse_args()
     build = root/'build'
     overlay = root/'src/ports/glibc/sysdeps/xos'
@@ -82,12 +83,28 @@ def main():
         sources.append(pid_source)
         pid_provenance = {'report_sha256': sha(pid_report), 'object_sha256': sha(pid_object)}
         cmd[-2:-2] = ['-DXOS_GLIBC_TEST_GETPID', str(pid_object)]
+    clock_provenance = None
+    if args.clock_build:
+        clock_candidate = args.clock_build.resolve(strict=True)
+        clock_report = clock_candidate/'report.json'
+        clock_data = json.loads(clock_report.read_text())
+        clock_object = clock_candidate/'configure/time/clock_gettime.o'
+        clock_source = overlay/'clock_gettime.c'
+        assert clock_data['nptl_backend_experimental'] and not clock_data['hacker_mode']
+        assert not clock_data['synthetic_abi_tag'] and clock_data['sysroot_enforced']
+        assert clock_data['xos_overlay_sha256']['xos/clock_gettime.c'] == sha(clock_source)
+        assert clock_data['diagnostic_objects']['clock_gettime']['exit_code'] == 0
+        assert clock_data['diagnostic_objects']['clock_gettime']['sha256'] == sha(clock_object)
+        inputs[str(clock_source.relative_to(root))] = sha(clock_source)
+        sources.append(clock_source)
+        clock_provenance = {'report_sha256': sha(clock_report), 'object_sha256': sha(clock_object)}
+        cmd[-2:-2] = ['-DXOS_GLIBC_TEST_CLOCK', str(clock_object)]
     subprocess.run(cmd, check=True)
     assert inputs == {str(path.relative_to(root)): sha(path) for path in sources}
     report = {'status': 'failed', 'scope': 'freestanding XOS thread bridge; no glibc linked',
               'build_id': system['build_id'], 'system_manifest_sha256': sha(system_manifest),
               'image_sha256': sha(image), 'probe_sha256': sha(probe), 'inputs': inputs,
-              'compiler_command': cmd, 'compiler_sha256': sha(compiler), 'yield_provenance': yield_provenance, 'pid_provenance': pid_provenance, 'checks': []}
+              'compiler_command': cmd, 'compiler_sha256': sha(compiler), 'yield_provenance': yield_provenance, 'pid_provenance': pid_provenance, 'clock_provenance': clock_provenance, 'checks': []}
     guest = None
     try:
         with tempfile.TemporaryDirectory(prefix='xos_glibc_bridge_') as folder:
@@ -123,6 +140,10 @@ def main():
                 assert sha(pid_report) == pid_provenance['report_sha256']
                 assert sha(pid_object) == pid_provenance['object_sha256']
                 report['checks'].append('glibc_target_getpid_same_process_across_threads')
+            if clock_provenance is not None:
+                assert sha(clock_report) == clock_provenance['report_sha256']
+                assert sha(clock_object) == clock_provenance['object_sha256']
+                report['checks'].append('glibc_target_clock_matches_native_and_rejects_unknown')
             report['resources'] = before
             report['output'] = outputs
             report['status'] = 'passed_subset'

@@ -254,3 +254,11 @@ glibc 通用 `sched_yield` 返回 `ENOSYS`，但 XOS 已有 syscall 3：直接�
 XOS 原生 `sys_getpid` 返回所属进程的正 64 位标识；当前 glibc 通用候选 `pid_t` 是有符号 32 位。新增实验 XOS `getpid`：能表示时原样返回，不可表示时返回 -1 并设 `EOVERFLOW`，异常非正值返回 `EIO`；禁止截断成另一个合法身份。这个溢出失败不是对 POSIX `getpid` 总是成功的完整实现：最终原生 `pid_t` 位宽与相关结构和接口仍需整体裁决，不据此冻结 ABI 或声称无限生命周期合规。
 
 宿主模拟检查最小值、最大可表示值、溢出、异常返回及成功时 errno 不变；真实目标对象使用 XOS syscall 6，符号和全部来源检查通过。对象 SHA-256 `39d2482a67ecac045312714dbaa695bd5447563ea35960f9e6b034bcf533f045`，报告 SHA-256 `f2c614fc848cb06b0d20569526219059b1c0a72301d80573985532fadccad4b0`。客体探针可选择链接实际目标对象，并比较主线程和子线程的进程 ID；最终提交后须重新构建系统运行该子集。完整 glibc、pthread 和目标 SDK 未完成，G1 仍为 partial。
+
+## 继续：原生时钟查询与 PID 位宽调查（2026-11-14）
+
+XOS 提供单调纳秒 syscall 46 和 UTC 实时纳秒 syscall 64。新增实验 `clock_gettime`：对单调和实时时钟转换秒/纳秒；未知或尚未接入的时钟返回 `EINVAL`，无效 RTC 返回 `EIO`，单调值超出带符号返回范围时返回 `EOVERFLOW`。这不是完整 POSIX 时钟：CPU 时钟尚未接入，用户指针故障语义和 RTC 异常的客体验证均未完成。
+
+宿主模拟覆盖时钟选择、纳秒转换、错误与失败时输出不变；干净构建生成目标对象并检查符号、陷入与来源。对象 SHA-256 `e0dd272bb7c3ce3758ea5ffb139a261e8aad1c78493c2a91802dea698e776765`，报告 SHA-256 `2df77ebd0a8b4318884d1ca76da6136b742a5a2ce90263e858143fbccc127bd4`。客体桥探针可链接该对象并与内核原始单调计时对照，未知时钟检查真实 errno；最终提交后需重建系统运行该模式。
+
+另核对 64 位 `pid_t` 可行性：上游通用 `setpgid` 参数及 `getppid`、`setsid` 返回值直接使用 `int`，而声明使用 `pid_t`；`siginfo_t` 及 NPTL 描述符也包含该类型。因此不能只改 `__PID_T_TYPE` 就冻结 64 位 ABI，仍须逐项处理类型、结构、接口和旧 SDK 兼容。当前 `getpid` 超范围失败仍是明确的未完成限制。完整 libc、SDK 和线程纵切片均未验收，G1 保持 partial。

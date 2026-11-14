@@ -6,9 +6,15 @@ static xos_u64 child_result;
 static int rollback_count;
 static struct xos_thread_launch_result launch;
 static int invalid_start;
+#if defined XOS_GLIBC_TEST_GETPID || defined XOS_GLIBC_TEST_CLOCK
+__thread int __libc_errno;
+#endif
+#ifdef XOS_GLIBC_TEST_CLOCK
+struct test_timespec { long tv_sec, tv_nsec; };
+extern int __clock_gettime (int, struct test_timespec *);
+#endif
 #ifdef XOS_GLIBC_TEST_GETPID
 extern int __getpid (void);
-__thread int __libc_errno;
 static int expected_pid;
 #endif
 #ifdef XOS_GLIBC_TEST_YIELD
@@ -78,6 +84,18 @@ int guest_main (void)
 #ifdef XOS_GLIBC_TEST_GETPID
   expected_pid = (int) trap (6, 0, 0);
   if (expected_pid <= 0 || __getpid () != expected_pid) return 18;
+#endif
+#ifdef XOS_GLIBC_TEST_CLOCK
+  struct test_timespec sample = {11, 22};
+  xos_i64 before = trap (46, 0, 0);
+  if (before < 0 || __clock_gettime (1, &sample) != 0) return 19;
+  xos_i64 after = trap (46, 0, 0);
+  if (sample.tv_sec < 0 || sample.tv_nsec < 0 || sample.tv_nsec >= 1000000000L) return 20;
+  xos_u64 sample_ns = (xos_u64) sample.tv_sec * 1000000000UL + (xos_u64) sample.tv_nsec;
+  if (after < 0 || sample_ns < (xos_u64) before || sample_ns > (xos_u64) after) return 21;
+  sample.tv_sec = 11; sample.tv_nsec = 22; __libc_errno = 0;
+  if (__clock_gettime (987, &sample) != -1 || __libc_errno != 22 ||
+      sample.tv_sec != 11 || sample.tv_nsec != 22) return 22;
 #endif
   struct xos_thread_header header = {1, sizeof (header), 0};
   if (trap (52, (xos_u64) &header, 0) != 0) return 10;

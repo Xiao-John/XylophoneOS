@@ -262,3 +262,9 @@ XOS 提供单调纳秒 syscall 46 和 UTC 实时纳秒 syscall 64。新增实验
 宿主模拟覆盖时钟选择、纳秒转换、错误与失败时输出不变；干净构建生成目标对象并检查符号、陷入与来源。对象 SHA-256 `e0dd272bb7c3ce3758ea5ffb139a261e8aad1c78493c2a91802dea698e776765`，报告 SHA-256 `2df77ebd0a8b4318884d1ca76da6136b742a5a2ce90263e858143fbccc127bd4`。客体桥探针可链接该对象并与内核原始单调计时对照，未知时钟检查真实 errno；最终提交后需重建系统运行该模式。
 
 另核对 64 位 `pid_t` 可行性：上游通用 `setpgid` 参数及 `getppid`、`setsid` 返回值直接使用 `int`，而声明使用 `pid_t`；`siginfo_t` 及 NPTL 描述符也包含该类型。因此不能只改 `__PID_T_TYPE` 就冻结 64 位 ABI，仍须逐项处理类型、结构、接口和旧 SDK 兼容。当前 `getpid` 超范围失败仍是明确的未完成限制。完整 libc、SDK 和线程纵切片均未验收，G1 保持 partial。
+
+## 继续：当前进程与线程 CPU 时钟（2026-11-14）
+
+`clock_gettime` 接入已有的 XOS `sys_process_cpu_time` v1，分别返回当前进程和当前线程的 user+system 纳秒总量；请求使用私有 C 布局，宿主编译逐字段对照共享 ABI。计数器不可用、资源不足、其他内核失败及累加溢出分别映射为 `ENOTSUP`、`ENOMEM`、`EIO` 和 `EOVERFLOW`，失败不写输出。其他进程/线程的 CPU 时钟、用户指针故障及完整 POSIX 时钟语义仍未实现或验收。
+
+宿主模拟覆盖两个时钟的字段选择、转换、溢出和错误；目标对象及全部依赖来源检查通过。目标对象 SHA-256 `6309c5883c74e1cf893ec4ff2bbaa8e53f512e1763c12cf378c7f5afbf714e4f`，报告 SHA-256 `57751a7b9a8b7a1c938152eadde9afc95f85bd86d0640c0c5cdfddbf3c409775`。客体探针对照同一进程的内核原始计数，若计数器不可用则检查明确失败；最终提交后重新构建并记录实际可用状态。完整 libc、SDK 和 pthread 仍未完成，G1 保持 partial。

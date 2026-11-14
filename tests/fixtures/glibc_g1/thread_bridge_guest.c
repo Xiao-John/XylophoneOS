@@ -1,6 +1,9 @@
 /* SPDX-License-Identifier: Apache-2.0
    Standalone XOS guest test of the private native bridge.  No libc is linked. */
 #include "xos_thread_create.h"
+#ifdef XOS_GLIBC_TEST_CLOCK
+#include "xos_cpu_time.h"
+#endif
 
 static xos_u64 child_result;
 static int rollback_count;
@@ -96,6 +99,32 @@ int guest_main (void)
   sample.tv_sec = 11; sample.tv_nsec = 22; __libc_errno = 0;
   if (__clock_gettime (987, &sample) != -1 || __libc_errno != 22 ||
       sample.tv_sec != 11 || sample.tv_nsec != 22) return 22;
+#endif
+#ifdef XOS_GLIBC_TEST_CLOCK
+  struct xos_cpu_time cpu_before = {.version = 1, .size = sizeof (cpu_before)};
+  xos_i64 cpu_status = trap (89, (xos_u64) &cpu_before, 0);
+  for (int which = 2; which <= 3; ++which) {
+    sample.tv_sec = 11; sample.tv_nsec = 22; __libc_errno = 0;
+    int result = __clock_gettime (which, &sample);
+    if (cpu_status == -19) {
+      if (result != -1 || __libc_errno != 134 || sample.tv_sec != 11 || sample.tv_nsec != 22) return 23;
+    } else {
+      if (cpu_status != 0 || result != 0 || sample.tv_sec < 0 || sample.tv_nsec < 0 || sample.tv_nsec >= 1000000000L) return 24;
+      struct xos_cpu_time cpu_after = {.version = 1, .size = sizeof (cpu_after)};
+      if (trap (89, (xos_u64) &cpu_after, 0) != 0) return 25;
+      xos_u64 lo = which == 2 ? cpu_before.user_ns + cpu_before.system_ns : cpu_before.thread_user_ns + cpu_before.thread_system_ns;
+      xos_u64 hi = which == 2 ? cpu_after.user_ns + cpu_after.system_ns : cpu_after.thread_user_ns + cpu_after.thread_system_ns;
+      xos_u64 got = (xos_u64) sample.tv_sec * 1000000000UL + (xos_u64) sample.tv_nsec;
+      if (got < lo || got > hi) return 26;
+    }
+  }
+  if (cpu_status == -19) {
+    static const char unavailable[] = "[g1] cpu_time=unavailable\n";
+    (void) trap (1, (xos_u64) unavailable, sizeof (unavailable) - 1);
+  } else {
+    static const char available[] = "[g1] cpu_time=available\n";
+    (void) trap (1, (xos_u64) available, sizeof (available) - 1);
+  }
 #endif
   struct xos_thread_header header = {1, sizeof (header), 0};
   if (trap (52, (xos_u64) &header, 0) != 0) return 10;

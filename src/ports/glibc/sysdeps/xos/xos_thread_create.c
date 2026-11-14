@@ -62,7 +62,7 @@ __xos_thread_launch (xos_u64 stack, xos_u64 tls, xos_u64 flags,
   xos_i64 error;
 
   /* The caller owns RESULT until this function returns.  The published ID
-     is tentative until success; on failed rollback it identifies the still
+     is tentative until success; on failed rollback it identifies the
      reservation whose final state must be resolved by the caller.  */
   __atomic_store_n (&result->tid, 0, __ATOMIC_RELEASE);
   result->abort_error = 0;
@@ -85,4 +85,34 @@ __xos_thread_launch (xos_u64 stack, xos_u64 tls, xos_u64 flags,
   if (result->abort_error == 0)
     __atomic_store_n (&result->tid, 0, __ATOMIC_RELEASE);
   return error;
+}
+
+/* glibc x86-64 TLS_TCB_AT_TP: dl_tls_static_size includes the TCB,
+   and the remaining static TLS is placed immediately before the TCB.  */
+int
+__xos_thread_tls_layout (const struct xos_thread_reservation *reservation,
+                         xos_u64 static_size, xos_u64 alignment,
+                         xos_u64 descriptor_size,
+                         struct xos_thread_tls_layout *layout)
+{
+  const xos_u64 max = (xos_u64) -1;
+  xos_u64 prefix, minimum, pointer;
+  if (alignment < 16 || (alignment & (alignment - 1)) != 0
+      || descriptor_size < 16 || static_size < descriptor_size
+      || reservation->tls_begin >= reservation->tls_end)
+    return -1;
+  prefix = static_size - descriptor_size;
+  if (prefix > max - reservation->tls_begin)
+    return -1;
+  minimum = reservation->tls_begin + prefix;
+  if (minimum > max - (alignment - 1))
+    return -1;
+  pointer = (minimum + alignment - 1) & ~(alignment - 1);
+  if (pointer > reservation->tls_end
+      || descriptor_size > reservation->tls_end - pointer)
+    return -1;
+  struct xos_thread_tls_layout value = { pointer - prefix, pointer,
+                                         pointer + descriptor_size };
+  *layout = value;
+  return 0;
 }

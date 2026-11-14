@@ -177,6 +177,15 @@ def main():
         disassembly = subprocess.check_output(['x86_64-elf-objdump', '-d', str(obj)], text=True)
         assert re.search(r'\bxor\s+%eax,%eax', disassembly)
         assert not re.search(r'\b(syscall|int)\b', disassembly)
+        # Compile the XOS layout helper against glibc's selected real TCB
+        # definition; this is an object-level contract, not initialized TLS.
+        layout = ('#include <tls.h>\n#include <xos_thread_create.h>\n'
+                  '_Static_assert(TLS_TCB_AT_TP && !TLS_DTV_AT_TP, "x86 TLS layout");\n'
+                  'int probe(const struct xos_thread_reservation *r, unsigned long s, unsigned long a, '
+                  'struct xos_thread_tls_layout *l) { return __xos_thread_tls_layout(r, s, a, TLS_TCB_SIZE, l); }\n')
+        subprocess.run(cmd, cwd=source / 'csu', check=True, capture_output=True, text=True, input=layout)
+        layout_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(obj)], text=True)
+        assert '__xos_thread_tls_layout' in layout_code
         glue = ("#include <stddef.h>\n#include <lowlevellock-futex.h>\n"
                 "int wait_probe(unsigned *p) { return lll_futex_wait(p, 3, LLL_PRIVATE); }\n"
                 "int wake_probe(unsigned *p) { return lll_futex_wake(p, 1, LLL_PRIVATE); }\n"
@@ -236,8 +245,8 @@ def main():
     thread_create = report['diagnostic_objects']['xos_thread_create']
     assert thread_create['exit_code'] == 0 and digest(build / 'nptl/xos_thread_create.o') == thread_create['sha256']
     assert '../sysdeps/xos/xos_thread_create.c' in (output / 'xos_thread_create-dependencies.d').read_text()
-    create_symbols = (output / 'xos_thread_create-readelf.txt').read_text()
-    assert all(symbol in create_symbols for symbol in ('__xos_thread_prepare', '__xos_thread_start', '__xos_thread_abort', '__xos_thread_launch'))
+    create_symbols = subprocess.check_output(['x86_64-elf-readelf', '--wide', '-s', str(build / 'nptl/xos_thread_create.o')], text=True)
+    assert all(symbol in create_symbols for symbol in ('__xos_thread_prepare', '__xos_thread_start', '__xos_thread_abort', '__xos_thread_launch', '__xos_thread_tls_layout'))
     sigset = report['diagnostic_objects']['sigset']
     assert sigset['exit_code'] == 0 and digest(build / 'signal/sigset.o') == sigset['sha256']
     sigset_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'signal/sigset.o')], text=True)

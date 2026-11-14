@@ -71,7 +71,7 @@ def main():
                 conn.sendall(challenge[:7]); conn.sendall(challenge[7:]); conn.shutdown(socket.SHUT_WR)
                 host['client_eof'] = conn.recv(1) == b''
         except Exception as error: host['error']=str(error)
-    worker=threading.Thread(target=serve,daemon=True); worker.start()
+    worker=threading.Thread(target=serve,daemon=True)
     try:
         with tempfile.TemporaryDirectory(prefix='xos_tcp_guest_') as temp:
             disk=Path(temp)/'work.img'; create_fat32(disk,512); transfer(disk,'mkdir','/bin'); transfer(disk,'import','/bin/tcp.elf',payload)
@@ -81,6 +81,7 @@ def main():
             command(guest,'demo quiet',b'demo tasks'); pump(guest,.2)
             output=command(guest,'net-start 41',b'[net-start] pid=',timeout=60)
             guest.expect(b'[net] ready',timeout=60); baseline=resources(guest)
+            worker.start()
             output=command(guest,f'exec-driver /bin/tcp.elf {port}',b'kind=exited code=',timeout=90)
             expected=('TCP_REPLY:'+challenge.hex()).encode()
             if expected not in output or b'TCP_GUEST_PASS' not in output or b'kind=exited code=0' not in output: raise AssertionError(output[-4000:])

@@ -118,3 +118,13 @@ XOS 目前没有相同语义的跨进程共享 futex、低级定时等待、取�
 模拟测试验证 XOS 请求和 glibc 低级结果转换，包括值变化、无效地址、超时、资源和未知错误、唤醒计数及无效计数；目标交叉编译核对真实 syscall 指令。另用真实 glibc 编译配置编译低级宏探针，检查私有等待/唤醒分别引用 XOS 适配器、共享路径包含 trap；构建中的依赖文件确认优先选择 XOS 覆盖头。两份 XOS 原语和适配器由 glibc 的 nptl 子目录规则编成目标对象，适配器 SHA-256 `d6b4b65fa7050867642168b4788b441211af8b752d9b6818f25884ed0bdcc899`，完整研究报告 SHA-256 `1b0ea29faa064b96b8587afe7549b4c47e6bd0dc700a657eb2c50368f1687d14`。探针、对象/头文件来源检查通过，尚无客体证据。
 
 完整 make 仍退出 2，首批剩余错误包括缺少 XOS 的 `__syscall_arg_t` 和 `INTERNAL_SYSCALL_CALL`；目标客户端仍因 `gnu/stubs.h` 缺失不能使用 sysroot。G1 保持 partial，下一步处理 XOS 实际系统调用约定及 glibc 启动/取消依赖，持续保留不支持项的真实失败。
+
+## 继续：系统调用入口与非末线程退出（2026-11-14）
+
+新增 XOS x86-64 `sysdep.h`，沿用 glibc 通用参数类型但只把明确实现的名称派发给 XOS 入口；未知名称在当前构建中报错，不翻译成同号 Linux syscall。新增 `__xos_internal_exit`：先调用 XOS `sys_thread_begin_exit`，确认不是最后线程后才调用 `sys_thread_exit`；如结果为最后线程、握手失败或线程退出意外返回，则以进程退出码 127 失败收束，避免跳过 glibc 最后线程收尾。宿主模拟验证 syscall 顺序、非末线程参数及末线程/错误回退；交叉对象检查了 42、43、2 号 XOS 中断及返回后的 trap。实际 NPTL 主线程退出还涉及取消、join 及共享等待；当前相关路径仍不完整，不据此宣称 pthread 或客体通过。
+
+实验构建添加 XOS 私有 `shlib-versions`，暂用 `libc.so.0.1`、`libm.so.0.1` 和 `GLIBC_2.44` 起始版本，使生成器能够给 libc/libm 分配模块号。它们仅是当前隔离构建候选，不是冻结发行 ABI、解释器路径或 Linux 二进制兼容承诺；动态链接身份和兼容规则仍受 D0–D4 门约束。目录流只以前置声明暴露不透明类型；需要目录流布局或功能的代码仍须等真实文件服务后端，不伪造实现。
+
+GNU glibc 2.44 的通用 `sigset` 失败桩在目标 GCC 16 下因返回整数 -1 而无法编译；候选补丁 `0004-sigset-error-pointer.patch` 将其改为标准 `SIG_ERR` 指针，仍设置 `ENOSYS` 且保留 stub 标记，不宣称信号可用。交叉对象反汇编确认该失败值与错误码。干净构建继续到上游通用 `raise` 的 `gsignal` 别名/隐藏符号冲突，完整 make 退出 2；头文件安装仍完成 335 项，但目标客户端缺少 `gnu/stubs.h` 而失败，sysroot 未获 SDK 资格。
+
+生成的 XOS 线程退出和 `sigset` 对象 SHA-256 分别为 `d18ca95e3c6d075c1ac8c9901e5b276ac9e4591f9019b837e6b4845e83a7139d`、`cbcffdbc4eccc397645cbac31d71800b7d21da0d258ebbb26b1c7d13d1b0db5e`；报告 SHA-256 `339e7b9be40e945543ea8658912e9e235fab16e0dfc72263be15c3e3dbfe879b`。目标来源、对象、模块版本、未知系统调用拒绝、等待桥、线程退出和 ABI 选择检查均通过；未运行客体。G1 仍 partial。

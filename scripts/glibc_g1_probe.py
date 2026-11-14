@@ -70,6 +70,8 @@ def main():
         subprocess.run(['patch', '-p1', '-i', str(note_patch)], cwd=source, check=True)
         tls_patch = ROOT / 'src/ports/glibc/patches/0003-xos-tls-init.patch'
         subprocess.run(['patch', '-p1', '-i', str(tls_patch)], cwd=source, check=True)
+        sigset_patch = ROOT / 'src/ports/glibc/patches/0004-sigset-error-pointer.patch'
+        subprocess.run(['patch', '-p1', '-i', str(sigset_patch)], cwd=source, check=True)
         # This value is deliberately synthetic and is never an XOS ABI assignment.
         if args.synthetic_abi_tag:
             with (source / 'abi-tags').open('a') as file:
@@ -103,7 +105,7 @@ def main():
             make_result = subprocess.run(['gnumake', '-j1'], cwd=build, env=env, stdout=log, stderr=subprocess.STDOUT)
     objects = {}
     if backend and make_result is not None:
-        for subdir, name in (('stdlib', 'abs'), ('posix', '_exit'), ('csu', 'abi-note'), ('csu', 'check_fds'), ('nptl', 'xos_wait_word'), ('nptl', 'xos_lll_futex')):
+        for subdir, name in (('stdlib', 'abs'), ('posix', '_exit'), ('csu', 'abi-note'), ('csu', 'check_fds'), ('nptl', 'xos_wait_word'), ('nptl', 'xos_lll_futex'), ('nptl', 'xos_thread_exit'), ('signal', 'sigset')):
             (build / subdir).mkdir(exist_ok=True)
             target_object = build / subdir / (name + '.o')
             with (output / (name + '-object.log')).open('w') as log:
@@ -191,6 +193,7 @@ def main():
               'generated_layout_headers': layout_headers,
               'xos_abi_note_patch_sha256': digest(note_patch) if backend else None,
               'xos_tls_patch_sha256': digest(tls_patch) if backend else None,
+              'sigset_patch_sha256': digest(sigset_patch) if backend else None,
               'xos_overlay_sha256': {str(p.relative_to(ROOT / 'src/ports/glibc/sysdeps')): digest(p) for p in (ROOT / 'src/ports/glibc/sysdeps').rglob('*') if p.is_file()},
               'configure_log_sha256': digest(output/'configure.log'),
               'not_claimed': ['complete XOS sysdeps', 'target runtime', 'guest qualification', 'distributable source']}

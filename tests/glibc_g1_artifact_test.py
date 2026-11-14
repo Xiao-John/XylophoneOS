@@ -30,6 +30,7 @@ def main():
     assert digest(root / 'src/ports/glibc/patches/0001-config-sub-xos.patch') == report['patch_sha256']
     assert digest(root / 'src/ports/glibc/patches/0002-xos-abi-note.patch') == report['xos_abi_note_patch_sha256']
     assert digest(root / 'src/ports/glibc/patches/0003-xos-tls-init.patch') == report['xos_tls_patch_sha256']
+    assert digest(root / 'src/ports/glibc/patches/0004-sigset-error-pointer.patch') == report['sigset_patch_sha256']
     assert report['status'] == 'diagnostic_only' and report['nptl_backend_experimental'] and not report['synthetic_abi_tag']
     assert report['sysroot_enforced'] and report['configure_exit_code'] == 0
     assert not report['hacker_mode'] and '--enable-hacker-mode' not in report['command']
@@ -121,6 +122,14 @@ def main():
         glue_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(obj)], text=True)
         assert '__xos_lll_wait' in glue_code and '__xos_lll_wake' in glue_code
         assert re.search(r'\bud2\b', glue_code)
+        sysdep = '#include <sysdep.h>\nvoid probe(void) { INTERNAL_SYSCALL_CALL(exit, 0); }\n'
+        subprocess.run(cmd, cwd=source / 'csu', check=True, capture_output=True, text=True, input=sysdep)
+        sysdep_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(obj)], text=True)
+        assert '__xos_internal_exit' in sysdep_code
+        unsupported = '#include <sysdep.h>\nvoid probe(void) { INTERNAL_SYSCALL_CALL(no_such_xos_call, 0); }\n'
+        failure = subprocess.run(cmd + ['-Werror=implicit-function-declaration'], cwd=source / 'csu',
+                                 capture_output=True, text=True, input=unsupported)
+        assert failure.returncode != 0 and '__xos_internal_no_such_xos_call' in failure.stderr
         # Compare the experimental public types to the actual XOS thread ABI.
         cpp = '#include <xos/thread_abi.hpp>\n#define _SEMAPHORE_H 1\n#include <bits/semaphore.h>\n#include <bits/pthread_stack_min-dynamic.h>\n#include <bits/local_lim.h>\nstatic_assert(PTHREAD_STACK_MIN == xos::thread_stack_min);\nstatic_assert(sizeof(sem_t) == 32 && alignof(sem_t) == 8);\nstatic_assert(PTHREAD_KEYS_MAX == 128);\n#define _ERRNO_H 1\n#include <bits/errno.h>\n#include <bits/types/idtype_t.h>\nstatic_assert(EINVAL == 22 && ENOSYS == 88 && EWOULDBLOCK == EAGAIN);\nstatic_assert(P_ALL == 0 && P_PID == 1 && P_PGID == 2);\n'
         cxx = report['tools']['x86_64-elf-g++']['path']
@@ -142,7 +151,19 @@ def main():
     assert digest(root / 'usr/include/bits/types/idtype_t.h') == digest(source / 'sysdeps/xos/bits/types/idtype_t.h')
     assert digest(output / 'header-client.log') == report['header_client']['log_sha256']
     assert 'gnu/stubs.h' in (output / 'header-client.log').read_text()
-    assert '__syscall_arg_t' in (output / 'make.log').read_text()
+    assert 'gsignal' in (output / 'make.log').read_text()
+    assert 'aliased to undefined symbol' in (output / 'make.log').read_text()
+    versions = (build / 'soversions.i').read_text()
+    assert 'DEFAULT libc 0.1  GLIBC_2.44' in versions
+    assert 'DEFAULT libm 0.1  GLIBC_2.44' in versions
+    assert '#define MODULE_libc ' in (build / 'libc-modules.h').read_text()
+    thread_exit = report['diagnostic_objects']['xos_thread_exit']
+    assert thread_exit['exit_code'] == 0 and digest(build / 'nptl/xos_thread_exit.o') == thread_exit['sha256']
+    assert '../sysdeps/xos/xos_thread_exit.c' in (output / 'xos_thread_exit-dependencies.d').read_text()
+    sigset = report['diagnostic_objects']['sigset']
+    assert sigset['exit_code'] == 0 and digest(build / 'signal/sigset.o') == sigset['sha256']
+    sigset_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'signal/sigset.o')], text=True)
+    assert '$0x58' in sigset_code and '$0xffffffffffffffff' in sigset_code
     native_wait = report['diagnostic_objects']['xos_wait_word']
     assert native_wait['exit_code'] == 0 and digest(build / 'nptl/xos_wait_word.o') == native_wait['sha256']
     assert '../sysdeps/xos/xos_wait_word.c' in (output / 'xos_wait_word-dependencies.d').read_text()

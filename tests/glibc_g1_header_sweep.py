@@ -9,6 +9,7 @@ import subprocess
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('output', type=Path)
+parser.add_argument('--language', choices=('c', 'c++'), default='c')
 args = parser.parse_args()
 output = args.output.resolve(strict=True)
 report = json.loads((output/'report.json').read_text())
@@ -21,11 +22,13 @@ results = {}
 for header in headers:
     path = root/header
     assert hashlib.sha256(path.read_bytes()).hexdigest() == manifest['usr/include/'+header]
-    cmd = [str(output/'cc'), '-isystem', str(output/'header-bootstrap'), '-isystem', str(root),
-           '-ffreestanding', '-fsyntax-only', '-x', 'c', '-']
+    cmd = [str(output/('cc' if args.language == 'c' else 'cxx')), '-isystem', str(output/'header-bootstrap'), '-isystem', str(root),
+           '-ffreestanding', '-fsyntax-only', '-x', args.language, '-']
+    if args.language == 'c++':
+        cmd[1:1] = ['-std=c++17', '-nostdinc++']
     result = subprocess.run(cmd, input='#include <'+header+'>\n', text=True, capture_output=True)
     results[header] = {'exit_code': result.returncode, 'error': result.stderr[-2000:] if result.returncode else ''}
 failed = [name for name, result in results.items() if result['exit_code']]
-result = {'status': 'diagnostic_only', 'placeholder': True, 'total': len(headers), 'failed': failed, 'headers': results}
-(output/'header-sweep.json').write_text(json.dumps(result, indent=2)+'\n')
+result = {'status': 'diagnostic_only', 'placeholder': True, 'language': args.language, 'total': len(headers), 'failed': failed, 'headers': results}
+(output/('header-sweep.json' if args.language == 'c' else 'header-sweep-cxx.json')).write_text(json.dumps(result, indent=2)+'\n')
 print(json.dumps({'total': len(headers), 'failed': failed}, ensure_ascii=False))

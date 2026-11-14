@@ -286,3 +286,9 @@ XOS 单调时钟和实时钟按现有契约使用 syscall 46 的分辨率；当�
 扩大安装头文件的诊断范围，发现 `sys/socket.h` 使用 `ssize_t` 时未包含其类型声明；候选补丁显式包含 `<sys/types.h>`，不代表 socket 运行功能已实现。使用锁定 glibc 自带的构建期占位 `gnu/stubs.h`、独立 sysroot 和交叉编译器，逐个检查 150 个公共 C 头，全部通过；Fortran 专用头、内部头及上游故意拒绝的 `regexp.h` 不在此检查范围。目标对象、补丁及依赖来源检查通过。
 
 报告 SHA-256 `9603cdc12e02cb60b5a135b5a708c5bcf60fcd88e3c7ae5098bab776165c277d`，扫描 SHA-256 `bafcd65ced17e1405bea1fc9bcd76e18744715ae35735c5ec290a0bd8ddcd494`。占位头未安装入 sysroot；普通客户端仍缺少最终生成的 `gnu/stubs.h`，完整 libc 构建仍失败，G1 保持 partial。
+
+## 继续：公共头 C++ 包含检查（2026-11-15）
+
+扩展公共头诊断，使用交叉 C++ 编译器及 `-nostdinc++` 检查严格 C++17 模式；发现 `thread_db.h` 依赖未显式声明的 `sigset_t`，已补充声明头。锁定源码干净构建后，诊断性占位头条件下 150 个公共 C 头在 C 和 C++ 模式均可单独包含；对象、补丁和依赖来源验证通过。这不构成线程调试或 C++ 标准库资格。
+
+构建报告 SHA-256 `04155c186b1ca467de47251eea2235f7194784bf183805df1ee31f93aec8ee05`，C++ 扫描 SHA-256 `aee13f41f2d68f1714ce16def9d4aa2ca6faa90bb67004cf383b56a94332cc54`。最终 `gnu/stubs.h`、完整 libc 和可用 SDK 仍缺失，G1 继续为 partial。

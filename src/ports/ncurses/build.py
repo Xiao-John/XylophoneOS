@@ -50,7 +50,7 @@ def main():
     output.unlink(missing_ok=True)
     receipt_output.unlink(missing_ok=True)
 
-    if sha256(archive) != lock["archive_sha256"]:
+    if sha256(archive) != lock["sha256"]:
         raise SystemExit("ports/ncursesw: source archive hash differs from source_lock.json")
     for name in ("manifest.json", "user.ld", "crt0_posix.o"):
         if not (sdk / name).is_file():
@@ -73,8 +73,18 @@ def main():
     if not all((cc, ar, ranlib, objcopy)):
         raise SystemExit("ports/ncursesw: x86_64-elf-gcc/ar/ranlib/objcopy must be on PATH")
     cc_build = shutil.which("cc") or shutil.which("gcc") or cc
+    libgcc = subprocess.check_output([cc, "-print-libgcc-file-name"], text=True).strip()
 
     work = Path(tempfile.mkdtemp(prefix="ncursesw_build_", dir=out))
+    try:
+        _build(port, lock, sdk, archive, out, output, receipt_output, work,
+               cc, cc_build, ar, ranlib, objcopy, libgcc, sdk_tree_sha256)
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
+
+def _build(port, lock, sdk, archive, out, output, receipt_output, work,
+           cc, cc_build, ar, ranlib, objcopy, libgcc, sdk_tree_sha256):
     with tarfile.open(archive) as tar:
         tar.extractall(work, filter="data")
     source = work / f"ncurses-{lock['version']}"
@@ -107,6 +117,15 @@ def main():
     ]
     run(configure_cmd, cwd=source, env=env)
 
+    # ncurses generated term.h includes sgtty.h which newlib lacks; provide a stub.
+    sgtty_stub = sdk / "include/sgtty.h"
+    if not sgtty_stub.is_file():
+        sgtty_stub.write_text(
+            "/* Stub for ncurses term.h compatibility. */\n"
+            "#ifndef _SGTTY_H\n#define _SGTTY_H\n"
+            "struct sgttyb { char sg_ispeed, sg_ospeed, sg_erase, sg_kill; short sg_flags; };\n"
+            "#endif\n")
+
     run(["make", "-j4"], cwd=source, env=env)
 
     library = source / "lib/libncursesw.a"
@@ -138,13 +157,12 @@ def main():
         terminfo_db.mkdir(parents=True, exist_ok=True)
 
     # Build consumer probes
-    libgcc = subprocess.check_output([cc, "-print-libgcc-file-name"], text=True).strip()
     consumers = {}
     consumer_dir = HERE.parents[2] / "tests/fixtures/ncursesw"
     for name in ("wide_screen_probe", "reentry_probe"):
         source_file = consumer_dir / f"{name}.c"
         if not source_file.is_file():
-            continue
+            raise SystemExit(f"ports/ncursesw: missing consumer probe {source_file}")
         binary = work / name
         run([cc, *cflags, "-I", str(source / "include"),
              "-D_XOPEN_SOURCE_EXTENDED=1",
@@ -171,7 +189,7 @@ def main():
     shutil.copyfile(library, libdir / "libncursesw.a")
 
     # Headers
-    include_dir = tree / "usr/include/ncursesw"
+    include_dir = tree / "usr/share/ncursesw/include"
     include_dir.mkdir(parents=True)
     for header in PUBLIC_HEADERS:
         src = source / "include" / header
@@ -182,7 +200,7 @@ def main():
     # Terminfo
     terminfo_dir = tree / "usr/share/terminfo"
     terminfo_dir.mkdir(parents=True)
-    shutil.copytree(terminfo_db, terminfo_dir / "terminfo", dirs_exist_ok=True)
+    shutil.copytree(terminfo_db, terminfo_dir, dirs_exist_ok=True)
 
     # Consumer probes
     bin_dir = tree / "usr/bin"
@@ -193,6 +211,9 @@ def main():
     # License
     license_dir = tree / f"usr/share/licenses/{package}"
     license_dir.mkdir(parents=True)
+    notice_hash = lock.get("notice_sha256", "")
+    if notice_hash and sha256(HERE / "upstream/COPYING") != notice_hash:
+        raise SystemExit("ports/ncursesw: upstream COPYING hash differs from lock")
     shutil.copyfile(HERE / "upstream/COPYING", license_dir / "COPYING")
     if (HERE / "upstream/terminfo-source-notice.txt").is_file():
         shutil.copyfile(HERE / "upstream/terminfo-source-notice.txt",
@@ -200,12 +221,13 @@ def main():
 
     # Provenance
     share = tree / "usr/share/ncursesw"
-    share.mkdir(parents=True)
+    share.mkdir(parents=True, exist_ok=True)
     provenance = {
         "package": package, "upstream": port["name"], "version": lock["version"],
         "license": port["license"],
-        "archive": lock.get("source_url", ""), "archive_sha256": lock["archive_sha256"],
-        "notes": "bounded profile: widec, single-thread, 24x80 serial, xterm terminfo",
+        "archive": lock.get("url", ""), "archive_sha256": lock["sha256"],
+        "notes": f"bounded profile: widec, single-thread, 24x80 serial, "
+                 f"terminfo={'generated' if terminfo_ok else 'empty'}",
         "build": {
             "approach": "configure --enable-widec --without-shared --disable-sigwinch",
             "sdk": sdk.name,
@@ -219,7 +241,7 @@ def main():
         "revision": 0, "status": "cross_built_guest_not_run",
         "recipe_sha256": sha256(HERE / "build.py"),
         "sdk": provenance["build"],
-        "input": {"archive_sha256": lock["archive_sha256"]},
+        "input": {"archive_sha256": lock["sha256"]},
         "binaries": [{"path": f"usr/bin/{name}", "sha256": sha256(bin_dir / name),
                       "size": (bin_dir / name).stat().st_size}
                      for name in consumers],
@@ -252,10 +274,11 @@ def main():
         "licenses": [f"usr/share/licenses/{package}/COPYING"],
         "build_receipt": {"path": "usr/share/ncursesw/build_receipt.json",
                           "sha256": sha256(receipt_path)},
-        "source": f"{lock.get('source_url','')} sha256 {lock['archive_sha256']}",
+        "source": f"{lock.get('url','')} sha256 {lock['sha256']}",
     }
     result = xypm_format.pack_package(tree, manifest, output)
     final = dict(receipt, status="packed_guest_not_run",
+                 terminfo={"generated": terminfo_ok},
                  outputs={"xpk": output.name, "sha256": result["sha256"]})
     receipt_output.write_text(json.dumps(final, indent=2, sort_keys=True) + "\n")
     shutil.rmtree(work)

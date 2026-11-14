@@ -91,14 +91,25 @@ def _build(port, lock, sdk, archive, out, output, receipt_output, work,
     if not (source / "configure").is_file():
         raise SystemExit("ports/ncursesw: unexpected archive layout")
 
+    # ncurses generated term.h includes sgtty.h which newlib lacks; provide a stub.
+    compat_include = work / "compat_include"
+    compat_include.mkdir()
+    sgtty_stub = compat_include / "sgtty.h"
+    sgtty_stub.write_text(
+        "/* Stub for ncurses term.h compatibility. */\n"
+        "#ifndef _SGTTY_H\n#define _SGTTY_H\n"
+        "struct sgttyb { char sg_ispeed, sg_ospeed, sg_erase, sg_kill; short sg_flags; };\n"
+        "#endif\n")
+
     cflags = ["-O2", "-mno-red-zone", "-fno-pie", "-fno-pic",
-              "-fno-stack-protector", "-idirafter", f"{sdk}/include",
+              "-fno-stack-protector", "-I", str(compat_include), "-idirafter", f"{sdk}/include",
               "-D_XOPEN_SOURCE=700", "-D_XOPEN_SOURCE_EXTENDED=1"]
     env = dict(os.environ)
     env.update({
         "CC": cc, "BUILD_CC": cc_build, "AR": ar, "RANLIB": ranlib,
         "CFLAGS": shlex.join(cflags),
-        "CPPFLAGS": shlex.join(["-idirafter", f"{sdk}/include"]),
+        "CPPFLAGS": shlex.join(["-I", str(compat_include),
+                                "-idirafter", f"{sdk}/include"]),
         "LDFLAGS": shlex.join(["-nostdlib", "-static", "-no-pie",
                                "-T", f"{sdk}/user.ld", f"{sdk}/crt0_posix.o"]),
         "LIBS": shlex.join(["-Wl,--start-group",
@@ -116,15 +127,6 @@ def _build(port, lock, sdk, archive, out, output, receipt_output, work,
         "--without-tests", "--without-debug", "--disable-sigwinch",
     ]
     run(configure_cmd, cwd=source, env=env)
-
-    # ncurses generated term.h includes sgtty.h which newlib lacks; provide a stub.
-    sgtty_stub = sdk / "include/sgtty.h"
-    if not sgtty_stub.is_file():
-        sgtty_stub.write_text(
-            "/* Stub for ncurses term.h compatibility. */\n"
-            "#ifndef _SGTTY_H\n#define _SGTTY_H\n"
-            "struct sgttyb { char sg_ispeed, sg_ospeed, sg_erase, sg_kill; short sg_flags; };\n"
-            "#endif\n")
 
     run(["make", "-j4"], cwd=source, env=env)
 
@@ -196,6 +198,8 @@ def _build(port, lock, sdk, archive, out, output, receipt_output, work,
         if src.is_file():
             dest = include_dir / Path(header).name
             shutil.copyfile(src, dest)
+
+    shutil.copyfile(sgtty_stub, include_dir / "sgtty.h")
 
     # Terminfo
     terminfo_dir = tree / "usr/share/terminfo"

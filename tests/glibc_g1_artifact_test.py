@@ -31,6 +31,10 @@ def main():
     assert digest(root / 'src/ports/glibc/patches/0002-xos-abi-note.patch') == report['xos_abi_note_patch_sha256']
     assert digest(root / 'src/ports/glibc/patches/0003-xos-tls-init.patch') == report['xos_tls_patch_sha256']
     assert digest(root / 'src/ports/glibc/patches/0004-sigset-error-pointer.patch') == report['sigset_patch_sha256']
+    for filename, key in (('0005-raise-hidden-alias.patch', 'raise_patch_sha256'),
+                          ('0006-sigwait-failure.patch', 'sigwait_patch_sha256'),
+                          ('0007-arc4random-atomic-include.patch', 'atomic_patch_sha256')):
+        assert digest(root / 'src/ports/glibc/patches' / filename) == report[key]
     assert report['status'] == 'diagnostic_only' and report['nptl_backend_experimental'] and not report['synthetic_abi_tag']
     assert report['sysroot_enforced'] and report['configure_exit_code'] == 0
     assert not report['hacker_mode'] and '--enable-hacker-mode' not in report['command']
@@ -67,6 +71,8 @@ def main():
         dep = output / (name + '-dependencies.d')
         assert digest(dep) == item['dependency_file_sha256']
         first_rule = dep.read_text().replace('\\\n', ' ').splitlines()[0]
+        first_rule = first_rule.replace('$(common-objpfx)', str(build) + '/')
+        first_rule = first_rule.replace('$(..)', str(source) + '/')
         inputs = shlex.split(first_rule.split(':', 1)[1])
         resolved = [(source / subdir / name).resolve(strict=True) for name in inputs]
         assert (source / implementation).resolve() in resolved
@@ -122,7 +128,7 @@ def main():
         glue_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(obj)], text=True)
         assert '__xos_lll_wait' in glue_code and '__xos_lll_wake' in glue_code
         assert re.search(r'\bud2\b', glue_code)
-        sysdep = '#include <sysdep.h>\nvoid probe(void) { INTERNAL_SYSCALL_CALL(exit, 0); }\n'
+        sysdep = '#include <sysdep.h>\n_Static_assert(SINGLE_THREAD_P == 0, "locks must not be elided");\nvoid probe(void) { INTERNAL_SYSCALL_CALL(exit, 0); }\n'
         subprocess.run(cmd, cwd=source / 'csu', check=True, capture_output=True, text=True, input=sysdep)
         sysdep_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(obj)], text=True)
         assert '__xos_internal_exit' in sysdep_code
@@ -151,8 +157,17 @@ def main():
     assert digest(root / 'usr/include/bits/types/idtype_t.h') == digest(source / 'sysdeps/xos/bits/types/idtype_t.h')
     assert digest(output / 'header-client.log') == report['header_client']['log_sha256']
     assert 'gnu/stubs.h' in (output / 'header-client.log').read_text()
-    assert 'gsignal' in (output / 'make.log').read_text()
-    assert 'aliased to undefined symbol' in (output / 'make.log').read_text()
+    for name in ('signal/raise.os', 'signal/sigwait.os', 'stdlib/arc4random.o'):
+        assert digest(build / name) == report['built_objects'][name]
+    symbols = subprocess.check_output(['x86_64-elf-readelf', '-Ws', str(build / 'signal/raise.os')], text=True)
+    assert re.search(r'GLOBAL\s+HIDDEN\s+\d+\s+__GI_raise\b', symbols)
+    assert re.search(r'GLOBAL\s+DEFAULT\s+\d+\s+raise\b', symbols)
+    assert re.search(r'WEAK\s+DEFAULT\s+\d+\s+gsignal\b', symbols)
+    symbols = subprocess.check_output(['x86_64-elf-readelf', '-Ws', str(build / 'signal/sigwait.os')], text=True)
+    assert re.search(r'GLOBAL\s+HIDDEN\s+\d+\s+__GI___sigwait\b', symbols)
+    assert re.search(r'WEAK\s+DEFAULT\s+\d+\s+sigwait\b', symbols)
+    sigwait_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'signal/sigwait.os')], text=True)
+    assert re.search(r'\$0x58,%eax', sigwait_code) and '__libc_errno' not in sigwait_code
     versions = (build / 'soversions.i').read_text()
     assert 'DEFAULT libc 0.1  GLIBC_2.44' in versions
     assert 'DEFAULT libm 0.1  GLIBC_2.44' in versions

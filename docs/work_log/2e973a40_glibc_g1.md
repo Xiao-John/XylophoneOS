@@ -128,3 +128,13 @@ XOS 目前没有相同语义的跨进程共享 futex、低级定时等待、取�
 GNU glibc 2.44 的通用 `sigset` 失败桩在目标 GCC 16 下因返回整数 -1 而无法编译；候选补丁 `0004-sigset-error-pointer.patch` 将其改为标准 `SIG_ERR` 指针，仍设置 `ENOSYS` 且保留 stub 标记，不宣称信号可用。交叉对象反汇编确认该失败值与错误码。干净构建继续到上游通用 `raise` 的 `gsignal` 别名/隐藏符号冲突，完整 make 退出 2；头文件安装仍完成 335 项，但目标客户端缺少 `gnu/stubs.h` 而失败，sysroot 未获 SDK 资格。
 
 生成的 XOS 线程退出和 `sigset` 对象 SHA-256 分别为 `d18ca95e3c6d075c1ac8c9901e5b276ac9e4591f9019b837e6b4845e83a7139d`、`cbcffdbc4eccc397645cbac31d71800b7d21da0d258ebbb26b1c7d13d1b0db5e`；报告 SHA-256 `339e7b9be40e945543ea8658912e9e235fab16e0dfc72263be15c3e3dbfe879b`。目标来源、对象、模块版本、未知系统调用拒绝、等待桥、线程退出和 ABI 选择检查均通过；未运行客体。G1 仍 partial。
+
+## 继续：信号失败桩、线程锁与 libc 交叉构建（2026-11-14）
+
+修复 glibc 2.44 通用失败桩在共享构建中遗漏隐藏符号定义的问题：`raise` / `gsignal` 继续设置 `ENOSYS` 并失败，`sigwait` 直接返回错误号 `ENOSYS`，符合该接口的返回约定，不宣称 XOS 已实现信号。目标共享对象实际导出 `raise`、弱别名 `gsignal` 和隐藏入口；`sigwait` 对象导出对应入口，反汇编确认直接返回错误号且不修改 errno。候选补丁的输入和哈希记录于 report。
+
+`arc4random.c` 显式包含其使用的原子操作头，XOS 线程配置使用 glibc 的保守 `SINGLE_THREAD_P == 0`，始终走锁路径，不能假设运行时始终单线程；XOS stdio 锁包装头显式引入 `EBUSY` 定义。错误文本复用 glibc GNU 通用的符号描述，但使用 XOS 候选 errno 数值；XOS 候选 profile 从 `GLIBC_2.44` 起，没有历史信号列表版本可导出。这些修改均不保证随机数、线程或信号功能可在客体运行。
+
+干净归档、私有 sysroot 和已记录工具链构建已越过前述失败，`signal/raise.os`、`signal/sigwait.os` 和 `stdlib/arc4random.o` 均实际产生并记录散列。完整 make 下一处失败是 `libio/freopen.c` 所需 `arch-fd_to_filename.h` 尚无 XOS 实现；XOS 当前不能假定 Linux `/proc/self/fd` 语义。头文件安装退出 0，但目标客户端仍缺少由完整 libc 生成的 `gnu/stubs.h`，不是合格 SDK。报告 SHA-256 `224b1d83e87b7762641d2e18011a3f14ab37184e5cacf16413842bbbb6ee0511`。
+
+目标对象符号、失败语义、补丁与工具散列、保守锁路径、wait 和线程退出模拟、探针保护及依赖来源检查通过；未运行完整 libc 或客体。G1 继续为 partial。

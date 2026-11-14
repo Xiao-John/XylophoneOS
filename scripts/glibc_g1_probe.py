@@ -72,6 +72,12 @@ def main():
         subprocess.run(['patch', '-p1', '-i', str(tls_patch)], cwd=source, check=True)
         sigset_patch = ROOT / 'src/ports/glibc/patches/0004-sigset-error-pointer.patch'
         subprocess.run(['patch', '-p1', '-i', str(sigset_patch)], cwd=source, check=True)
+        raise_patch = ROOT / 'src/ports/glibc/patches/0005-raise-hidden-alias.patch'
+        subprocess.run(['patch', '-p1', '-i', str(raise_patch)], cwd=source, check=True)
+        sigwait_patch = ROOT / 'src/ports/glibc/patches/0006-sigwait-failure.patch'
+        subprocess.run(['patch', '-p1', '-i', str(sigwait_patch)], cwd=source, check=True)
+        atomic_patch = ROOT / 'src/ports/glibc/patches/0007-arc4random-atomic-include.patch'
+        subprocess.run(['patch', '-p1', '-i', str(atomic_patch)], cwd=source, check=True)
         # This value is deliberately synthetic and is never an XOS ABI assignment.
         if args.synthetic_abi_tag:
             with (source / 'abi-tags').open('a') as file:
@@ -175,6 +181,12 @@ def main():
                          'log_sha256': digest(output / 'header-client.log')}
         if client.returncode == 0:
             header_client['object_sha256'] = digest(output / 'header-client.o')
+    built_objects = {}
+    if backend and make_result is not None:
+        for name in ('signal/raise.os', 'signal/sigwait.os', 'stdlib/arc4random.o'):
+            obj = build / name
+            if obj.is_file():
+                built_objects[name] = digest(obj)
     tool_names = ('x86_64-elf-gcc', 'x86_64-elf-g++', 'x86_64-elf-as',
                   'x86_64-elf-ld', 'x86_64-elf-readelf', 'x86_64-elf-objdump',
                   'gnumake', 'gawk', 'bison', 'patch')
@@ -190,10 +202,14 @@ def main():
               'private_sysroot_initially_empty': str(sysroot),
               'sysroot_enforced': backend, 'diagnostic_objects': objects,
               'header_install': header_install, 'header_client': header_client, 'isolated_abi_note': isolated_note,
+              'built_objects': built_objects,
               'generated_layout_headers': layout_headers,
               'xos_abi_note_patch_sha256': digest(note_patch) if backend else None,
               'xos_tls_patch_sha256': digest(tls_patch) if backend else None,
               'sigset_patch_sha256': digest(sigset_patch) if backend else None,
+              'raise_patch_sha256': digest(raise_patch) if backend else None,
+              'sigwait_patch_sha256': digest(sigwait_patch) if backend else None,
+              'atomic_patch_sha256': digest(atomic_patch) if backend else None,
               'xos_overlay_sha256': {str(p.relative_to(ROOT / 'src/ports/glibc/sysdeps')): digest(p) for p in (ROOT / 'src/ports/glibc/sysdeps').rglob('*') if p.is_file()},
               'configure_log_sha256': digest(output/'configure.log'),
               'not_claimed': ['complete XOS sysdeps', 'target runtime', 'guest qualification', 'distributable source']}

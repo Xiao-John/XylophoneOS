@@ -4,6 +4,7 @@
 #define XOS_GLIBC_X86_64_SYSDEP_H 1
 #include_next <sysdep.h>
 #ifndef __ASSEMBLER__
+# include <single-thread.h> /* generic: never elide locking on XOS */
 # include <syscall_types.h>
 # include <xos_thread_exit.h>
 /* The current XOS trap ABI has three arguments and no seventh cancel arg. */

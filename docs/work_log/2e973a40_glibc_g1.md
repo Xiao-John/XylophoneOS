@@ -274,3 +274,9 @@ XOS 提供单调纳秒 syscall 46 和 UTC 实时纳秒 syscall 64。新增实验
 XOS 单调时钟和实时钟按现有契约使用 syscall 46 的分辨率；当前进程与线程 CPU 时钟使用版本化 CPU 计数响应中的分辨率。新增候选 glibc `clock_getres`，支持标准允许的空结果指针；对未知时钟、计数不可用和异常分辨率明确失败，不虚报精度。`clock_gettime` 与 `clock_getres` 共用私有原生陷入封装，不使用 Linux 系统调用号。
 
 宿主测试覆盖四类时钟、空指针、换算、零值和内核错误；干净目标构建与全部对象来源检查通过。`clock_getres.o` SHA-256 `13cd309eeab6f6265aca6902dc66ee10036d5296a3412bba2dca0bcf22b24c09`，报告 SHA-256 `4cfb86c176cb90d3dfc88b048e43ad5b29898d19ee79d5ad9ac70df25f207fe3`。扩展的客体探针将目标对象与内核原始精度对照，并区分 CPU 计数可用与不可用；提交后须重新运行。其他进程/线程的 CPU 时钟、用户指针故障和完整 libc 尚未验收，G1 仍为 partial。
+
+## 继续：独立 sysroot 的头文件安装检查（2026-11-15）
+
+修复 XOS 栈下限头未被安装的问题，两个 `bits/pthread_stack_min` 头现由 NPTL 安装。独立 sysroot 安装 337 个文件；普通目标客户端仍因缺少最终 `gnu/stubs.h` 失败。为检查后续头文件，在 sysroot 之外使用锁定 glibc 源码自带的构建期占位头进行单独诊断：errno、stdio、pthread、semaphore、wait 和 limits 头及关键布局/常量可编译为目标对象，依赖来源检查通过。占位头没有安装进 sysroot，该结果不构成完整 SDK 或运行资格。
+
+探针报告 SHA-256 `4c49131359e309993d0fad0e647ed82ecd119791dd24eaf92751c696fd34fba2`。完整 libc 构建仍未通过，G1 保持 partial。

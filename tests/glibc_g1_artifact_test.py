@@ -225,6 +225,33 @@ def main():
     assert digest(root / 'usr/include/bits/types/idtype_t.h') == digest(source / 'sysdeps/xos/bits/types/idtype_t.h')
     assert digest(output / 'header-client.log') == report['header_client']['log_sha256']
     assert 'gnu/stubs.h' in (output / 'header-client.log').read_text()
+    for name in ('pthread_stack_min.h', 'pthread_stack_min-dynamic.h'):
+        installed = root / 'usr/include/bits' / name
+        assert digest(installed) == digest(source / 'sysdeps/xos/bits' / name)
+    bootstrap = report['header_bootstrap_client']
+    assert bootstrap['diagnostic_only'] and bootstrap['exit_code'] == 0
+    placeholder = output / 'header-bootstrap/gnu/stubs.h'
+    assert digest(placeholder) == bootstrap['placeholder_sha256'] == digest(source / 'include/gnu/stubs.h')
+    with tarfile.open(args.archive) as archive:
+        original = archive.extractfile('glibc-2.44/include/gnu/stubs.h')
+        assert original is not None and original.read() == placeholder.read_bytes()
+    assert not (root / 'usr/include/gnu/stubs.h').exists()
+    assert digest(output / 'header-bootstrap-client.log') == bootstrap['log_sha256']
+    assert digest(output / 'header-bootstrap-client.o') == bootstrap['object_sha256']
+    depfile = output / 'header-bootstrap-client.d'
+    assert digest(depfile) == bootstrap['dependency_file_sha256']
+    rule = depfile.read_text().replace('\\\n', ' ').splitlines()[0]
+    paths = [Path(x).resolve(strict=True) for x in shlex.split(rule.split(':', 1)[1])]
+    assert placeholder.resolve() in paths
+    for name in ('pthread_stack_min.h', 'pthread_stack_min-dynamic.h'):
+        assert (root / 'usr/include/bits' / name).resolve() in paths
+    for path in paths:
+        if root.resolve() in path.parents:
+            assert str(path.relative_to(root.resolve())) in manifest, path
+        else:
+            assert path == placeholder.resolve() or compiler_include in path.parents, path
+    header_elf = subprocess.check_output(['x86_64-elf-readelf', '-h', str(output / 'header-bootstrap-client.o')], text=True)
+    assert 'ELF64' in header_elf and 'Advanced Micro Devices X86-64' in header_elf
     for name in ('signal/raise.os', 'signal/sigwait.os', 'stdlib/arc4random.o',
                  'libio/freopen.o', 'libio/freopen64.o', 'dlfcn/dlerror.o'):
         assert digest(build / name) == report['built_objects'][name]

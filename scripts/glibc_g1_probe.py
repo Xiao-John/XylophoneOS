@@ -181,7 +181,12 @@ def main():
                           'manifest_sha256': digest(output / 'header-manifest.json')}
     header_client = None
     if backend and header_install is not None:
-        client_source = '#include <errno.h>\n#include <stdio.h>\n#include <pthread.h>\n#include <semaphore.h>\n#include <sys/wait.h>\nint probe(void) { return EINVAL; }\n'
+        client_source = ('#include <errno.h>\n#include <stdio.h>\n#include <pthread.h>\n'
+                         '#include <semaphore.h>\n#include <sys/wait.h>\n#include <limits.h>\n'
+                         '_Static_assert(PTHREAD_STACK_MIN == 65536, "stack");\n'
+                         '_Static_assert(sizeof(sem_t) == 32, "sem");\n'
+                         '_Static_assert(EINVAL == 22 && SEM_VALUE_MAX == 2147483647, "limits");\n'
+                         'int probe(void) { return EINVAL; }\n')
         with (output / 'header-client.log').open('w') as log:
             client = subprocess.run([env['CC'], '-isystem', str(sysroot / 'usr/include'),
                                      '-ffreestanding', '-x', 'c', '-c', '-',
@@ -191,6 +196,28 @@ def main():
                          'log_sha256': digest(output / 'header-client.log')}
         if client.returncode == 0:
             header_client['object_sha256'] = digest(output / 'header-client.o')
+    # The upstream build-only placeholder is kept outside the sysroot.  It
+    # exposes further installed-header errors without pretending to provide a
+    # complete, distributable gnu/stubs.h or a successful ordinary client.
+    bootstrap_client = None
+    if backend and header_client is not None:
+        bootstrap = output / 'header-bootstrap'
+        (bootstrap / 'gnu').mkdir(parents=True)
+        shutil.copyfile(source / 'include/gnu/stubs.h', bootstrap / 'gnu/stubs.h')
+        depfile = output / 'header-bootstrap-client.d'
+        obj = output / 'header-bootstrap-client.o'
+        with (output / 'header-bootstrap-client.log').open('w') as log:
+            client = subprocess.run([env['CC'], '-isystem', str(bootstrap),
+                                     '-isystem', str(sysroot / 'usr/include'),
+                                     '-ffreestanding', '-MD', '-MF', str(depfile),
+                                     '-MT', str(obj), '-x', 'c', '-c', '-', '-o', str(obj)],
+                                    input=client_source, text=True, stdout=log, stderr=subprocess.STDOUT)
+        bootstrap_client = {'exit_code': client.returncode, 'diagnostic_only': True,
+                            'placeholder_sha256': digest(bootstrap / 'gnu/stubs.h'),
+                            'log_sha256': digest(output / 'header-bootstrap-client.log')}
+        if client.returncode == 0:
+            bootstrap_client['object_sha256'] = digest(obj)
+            bootstrap_client['dependency_file_sha256'] = digest(depfile)
     # Bind every successfully compiled diagnostic object's actual inputs,
     # including generated build headers, and reject headers outside the
     # extracted source, private build tree and compiler freestanding headers.
@@ -227,7 +254,7 @@ def main():
               'synthetic_abi_tag': args.synthetic_abi_tag,
               'private_sysroot_initially_empty': str(sysroot),
               'sysroot_enforced': backend, 'diagnostic_objects': objects,
-              'header_install': header_install, 'header_client': header_client, 'isolated_abi_note': isolated_note,
+              'header_install': header_install, 'header_client': header_client, 'header_bootstrap_client': bootstrap_client, 'isolated_abi_note': isolated_note,
               'built_objects': built_objects,
               'generated_layout_headers': layout_headers,
               'dependency_manifest_sha256': digest(output / 'dependency-manifest.json') if dependency_manifest else None,

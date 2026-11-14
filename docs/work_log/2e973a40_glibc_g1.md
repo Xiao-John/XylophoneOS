@@ -172,3 +172,9 @@ XOS 当前没有可用来重开任意已打开文件描述符、且与 Linux `/p
 当前 XOS 线程契约不支持取消，目标 `pthread_cancel` 因此按 pthread 约定直接返回 `ENOTSUP`，不修改 errno；不采用 Linux 的 `SIGCANCEL` 与 `SI_TKILL`。宿主负向测试验证凭据请求不变、失败返回及处理器 trap，另验证取消错误和 errno 不变；目标对象符号、错误值、隐藏可见性及无 Linux syscall 的检查通过。真实 XOS 客体、信号及 pthread 取消行为尚未验收。
 
 从锁定归档干净重建时，完整 make 越过凭据同步及取消源文件，继续至 `pthread_create.c` 缺少 `rseq-internal.h` 退出 2；rseq、线程创建和 TLS 仍须依赖实际 XOS 后端，不能只复制 Linux 定义。`install-headers` 完成 335 项，独立目标客户端仍因缺少 `gnu/stubs.h` 失败。`nptl_setxid.o`、`pthread_cancel.o` 的 SHA-256 为 `ff29ed23de54dfbd11bd6aed892e19362a516348fa18ff007da4e75d4a33468d`、`5187234f829b607bb2cc23eaedf1dbc34502f99248d9b34de8831b2b4889e122`；报告 SHA-256 `54f86b1116d22fa2339ee448a952547dcd290b60b892d3d3b4ad4010cfd1275e`。全部现有 G1 宿主/目标对象探针通过；完整 libc、SDK 和客体运行未通过，G1 保持 partial。
+
+## 继续：明确禁用未实现的 rseq（2026-11-14）
+
+XOS 当前无 restartable-sequences 内核协议。实验 NPTL 的 XOS `rseq-internal.h` 对唯一已调查的 `cpu_id` 查询返回负的未注册状态，注册请求无论是否要求都返回 false；若上游线程创建把它标为必需，其现有检查将失败而不声称注册成功。未知字段没有定义，避免凭空提供其语义。这个内部回退不实现或认可公开 rseq ABI、rseq TLS 布局，也不使线程创建可运行。
+
+宿主测试覆盖未注册状态、请求与不请求均不返回成功，以及未知字段编译失败。干净构建越过 `rseq-internal.h` 缺失，下一处 `pthread_create.c` 失败为缺少 Linux `clone3.h`；真正的 glibc 线程创建必须接入 XOS prepare/start、TLS 和退出契约，不能将 clone3 号码或结构当作 XOS ABI。其他既有目标对象、wait、取消、身份及来源探针通过；头文件安装 335 项但目标客户端仍缺少 `gnu/stubs.h`。私有报告 SHA-256 `6f219c929c91f427e02bc142b9de82bbe0781375f28778241e01a47ac3c89800`。未运行客体，G1 仍 partial。

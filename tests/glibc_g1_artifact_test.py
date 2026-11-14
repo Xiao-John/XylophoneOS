@@ -182,7 +182,7 @@ def main():
     assert thread_create['exit_code'] == 0 and digest(build / 'nptl/xos_thread_create.o') == thread_create['sha256']
     assert '../sysdeps/xos/xos_thread_create.c' in (output / 'xos_thread_create-dependencies.d').read_text()
     create_symbols = (output / 'xos_thread_create-readelf.txt').read_text()
-    assert all(symbol in create_symbols for symbol in ('__xos_thread_prepare', '__xos_thread_start', '__xos_thread_abort'))
+    assert all(symbol in create_symbols for symbol in ('__xos_thread_prepare', '__xos_thread_start', '__xos_thread_abort', '__xos_thread_launch'))
     sigset = report['diagnostic_objects']['sigset']
     assert sigset['exit_code'] == 0 and digest(build / 'signal/sigset.o') == sigset['sha256']
     sigset_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'signal/sigset.o')], text=True)

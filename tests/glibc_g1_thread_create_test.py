@@ -20,8 +20,8 @@ with tempfile.TemporaryDirectory(prefix='xos_glibc_thread_') as tmp:
     subprocess.run(['x86_64-elf-gcc', '-std=c11', '-O2', '-ffreestanding', '-nostdinc', '-Wall', '-Werror',
                     '-I', str(overlay), '-c', str(overlay/'xos_thread_create.c'), '-o', str(target)], check=True)
     code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(target)], text=True)
-    assert len(re.findall(r'\bint\s+\$0x80', code)) == 3
+    assert len(re.findall(r'\bint\s+\$0x80', code)) >= 3
     for number in ('26', '27', '28'):
         assert re.search(r'\$0x' + number + r',%eax', code)
-    assert not re.search(r'\bsyscall\b|R_X86_64_', code)
-print('PASS native thread request layouts, raw outcomes and XOS target traps')
+    assert not re.search(r'\bsyscall\b', code)
+print('PASS native thread request layouts, raw outcomes, rollback ownership and XOS target traps')

@@ -18,6 +18,18 @@ struct xos_thread_start_request {
   xos_u64 tid, entry, argument, stack, thread_pointer;
 };
 
+struct xos_thread_start_parameters {
+  xos_u64 entry, argument, stack, thread_pointer;
+};
+struct xos_thread_launch_result {
+  xos_u64 tid; /* Access atomically if another thread observes it.  */
+  xos_i64 abort_error;
+  xos_u32 started;
+};
+typedef xos_i64 (*xos_thread_setup_fn) (const struct xos_thread_reservation *,
+                                        struct xos_thread_start_parameters *,
+                                        void *);
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -32,6 +44,17 @@ __attribute__ ((visibility ("hidden")))
 xos_i64 __xos_thread_start (xos_u64, xos_u64, xos_u64, xos_u64, xos_u64);
 __attribute__ ((visibility ("hidden")))
 xos_i64 __xos_thread_abort (xos_u64);
+/* Setup runs while the reservation is owned by the caller and must fully
+   initialize the TLS, entry and any data visible to the new thread before
+   returning.  TID is published before start, but is tentative until launch
+   returns.  An abort error leaves the ID available for caller recovery.
+   Setup and start errors are returned unchanged, separately from abort_error.
+   Arguments must be valid; result must not own an earlier reservation and
+   must not be modified concurrently.  */
+__attribute__ ((visibility ("hidden")))
+xos_i64 __xos_thread_launch (xos_u64, xos_u64, xos_u64,
+                             xos_thread_setup_fn, void *,
+                             struct xos_thread_launch_result *);
 #ifdef __cplusplus
 }
 #endif

@@ -51,3 +51,38 @@ __xos_thread_abort (xos_u64 tid)
 {
   return xos_trap (40, tid, 0);
 }
+
+xos_i64
+__xos_thread_launch (xos_u64 stack, xos_u64 tls, xos_u64 flags,
+                     xos_thread_setup_fn setup, void *context,
+                     struct xos_thread_launch_result *result)
+{
+  struct xos_thread_reservation reservation = { 0 };
+  struct xos_thread_start_parameters parameters = { 0 };
+  xos_i64 error;
+
+  /* The caller owns RESULT until this function returns.  The published ID
+     is tentative until success; on failed rollback it identifies the still
+     reservation whose final state must be resolved by the caller.  */
+  __atomic_store_n (&result->tid, 0, __ATOMIC_RELEASE);
+  result->abort_error = 0;
+  result->started = 0;
+  error = __xos_thread_prepare (stack, tls, flags, &reservation);
+  if (error != 0)
+    return error;
+  __atomic_store_n (&result->tid, reservation.tid, __ATOMIC_RELEASE);
+  error = setup (&reservation, &parameters, context);
+  if (error == 0)
+    error = __xos_thread_start (reservation.tid, parameters.entry,
+                                parameters.argument, parameters.stack,
+                                parameters.thread_pointer);
+  if (error == 0)
+    {
+      result->started = 1;
+      return 0;
+    }
+  result->abort_error = __xos_thread_abort (reservation.tid);
+  if (result->abort_error == 0)
+    __atomic_store_n (&result->tid, 0, __ATOMIC_RELEASE);
+  return error;
+}

@@ -13,8 +13,20 @@ static_assert(offsetof(xos_thread_reservation, tls_end) == offsetof(xos::thread_
 static_assert(offsetof(xos_thread_start_request, thread_pointer) == offsetof(xos::thread_start_request, thread_pointer));
 static xos_i64 answer;
 static int calls;
+static bool launch_mode;
+static xos_i64 prepare_error, start_error, abort_error, setup_error;
+static xos_thread_launch_result *observed;
+static int setup_calls, abort_calls, start_calls;
 extern "C" xos_i64 __xos_thread_test_call(xos_u64 nr, xos_u64 first, xos_u64 second) {
   ++calls;
+  if (launch_mode) {
+    if (nr == xos::sys_thread_prepare) answer = prepare_error;
+    else if (nr == xos::sys_thread_start) {
+      ++start_calls;
+      assert(__atomic_load_n(&observed->tid, __ATOMIC_ACQUIRE) == 17);
+      answer = start_error;
+    } else { ++abort_calls; answer = abort_error; }
+  }
   if (nr == xos::sys_thread_prepare) {
     xos::thread_prepare_request req;
     std::memcpy(&req, reinterpret_cast<void *>(first), sizeof req);
@@ -35,6 +47,12 @@ extern "C" xos_i64 __xos_thread_test_call(xos_u64 nr, xos_u64 first, xos_u64 sec
   }
   return answer;
 }
+static xos_i64 setup(const xos_thread_reservation *r, xos_thread_start_parameters *p, void *) {
+  ++setup_calls;
+  assert(r->tid == 17 && __atomic_load_n(&observed->tid, __ATOMIC_ACQUIRE) == 17);
+  *p = {21, 22, 32, 48};
+  return setup_error;
+}
 int main() {
   xos_thread_reservation reservation{};
   answer = -17;
@@ -49,4 +67,22 @@ int main() {
   assert(__xos_thread_abort(17) == 0);
   assert(__xos_thread_start(17, 21, 22, 32, 48) == 0);
   assert(calls == 6);
+  launch_mode = true;
+  xos_thread_launch_result result{};
+  observed = &result;
+  prepare_error = -17;
+  assert(__xos_thread_launch(65536, 512, 1, setup, nullptr, &result) == -17);
+  assert(result.tid == 0 && result.abort_error == 0 && !result.started && setup_calls == 0 && abort_calls == 0);
+  prepare_error = 0; setup_error = -2;
+  assert(__xos_thread_launch(65536, 512, 1, setup, nullptr, &result) == -2);
+  assert(result.tid == 0 && result.abort_error == 0 && !result.started && start_calls == 0 && abort_calls == 1);
+  setup_error = 0; start_error = -2; abort_error = -12;
+  assert(__xos_thread_launch(65536, 512, 1, setup, nullptr, &result) == -2);
+  assert(result.tid == 17 && result.abort_error == -12 && !result.started && start_calls == 1 && abort_calls == 2);
+  abort_error = 0;
+  assert(__xos_thread_launch(65536, 512, 1, setup, nullptr, &result) == -2);
+  assert(result.tid == 0 && result.abort_error == 0 && !result.started && start_calls == 2 && abort_calls == 3);
+  start_error = 0;
+  assert(__xos_thread_launch(65536, 512, 1, setup, nullptr, &result) == 0);
+  assert(result.tid == 17 && result.abort_error == 0 && result.started && start_calls == 3 && abort_calls == 3);
 }

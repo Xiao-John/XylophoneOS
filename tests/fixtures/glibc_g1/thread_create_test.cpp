@@ -63,9 +63,11 @@ static void test_tls_layout() {
   for (xos_u64 alignment = 16; alignment <= 4096; alignment *= 2) {
     for (xos_u64 begin = 1; begin < 128; ++begin) {
       r.tls_begin = begin; r.tls_end = begin + 0x10000;
-      assert(__xos_thread_tls_layout(&r, 0x1000, alignment, 0x400, &out) == 0);
+      xos_u64 prefix = (0xc00 + alignment - 1) & ~(alignment - 1);
+      assert(__xos_thread_tls_layout(&r, prefix + 0x400, alignment, 0x400, &out) == 0);
       assert(out.thread_pointer % alignment == 0 && out.static_begin >= r.tls_begin);
-      assert(out.thread_pointer - out.static_begin == 0xc00);
+      assert(out.thread_pointer - out.static_begin == prefix);
+      assert(out.static_begin % alignment == 0);
       assert(out.descriptor_end - out.thread_pointer == 0x400 && out.descriptor_end <= r.tls_end);
     }
   }
@@ -76,6 +78,9 @@ static void test_tls_layout() {
   assert(__xos_thread_tls_layout(&r, 64, 8, 16, &out) == -1);
   assert(__xos_thread_tls_layout(&r, 15, 16, 16, &out) == -1);
   assert(__xos_thread_tls_layout(&r, 64, 16, 15, &out) == -1);
+  assert(__xos_thread_tls_layout(&r, 81, 16, 16, &out) == -1);
+  r.tls_begin = 0; r.tls_end = 128;
+  assert(__xos_thread_tls_layout(&r, 16, 16, 16, &out) == -1);
   r.tls_begin = ~xos_u64{0} - 20; r.tls_end = ~xos_u64{0};
   assert(__xos_thread_tls_layout(&r, 48, 16, 16, &out) == -1);
   r.tls_begin = ~xos_u64{0} - 20; r.tls_end = ~xos_u64{0};

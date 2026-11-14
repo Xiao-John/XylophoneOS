@@ -102,9 +102,14 @@ __xos_thread_tls_layout (const struct xos_thread_reservation *reservation,
   xos_u64 prefix, minimum, pointer;
   if (alignment < 16 || (alignment & (alignment - 1)) != 0
       || descriptor_size < 16 || static_size < descriptor_size
+      || reservation->tls_begin == 0
       || reservation->tls_begin >= reservation->tls_end)
     return -1;
   prefix = static_size - descriptor_size;
+  /* _dl_determine_tlsoffset rounds the pre-TCB region to the same
+     alignment.  Reject inconsistent metadata instead of misaligning TLS. */
+  if ((prefix & (alignment - 1)) != 0)
+    return -1;
   if (prefix > max - reservation->tls_begin)
     return -1;
   minimum = reservation->tls_begin + prefix;

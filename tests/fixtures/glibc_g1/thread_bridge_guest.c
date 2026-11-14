@@ -6,6 +6,11 @@ static xos_u64 child_result;
 static int rollback_count;
 static struct xos_thread_launch_result launch;
 static int invalid_start;
+#ifdef XOS_GLIBC_TEST_GETPID
+extern int __getpid (void);
+__thread int __libc_errno;
+static int expected_pid;
+#endif
 #ifdef XOS_GLIBC_TEST_YIELD
 extern int __sched_yield (void);
 static unsigned int child_waiting, child_yielded, parent_ack;
@@ -27,6 +32,9 @@ void guest_thread_enter (void *);
 void guest_thread_worker (void *raw) __attribute__ ((noreturn, used));
 void guest_thread_worker (void *raw)
 {
+#ifdef XOS_GLIBC_TEST_GETPID
+  if (__getpid () != expected_pid) finish (94);
+#endif
   xos_u64 tp;
   __asm__ volatile ("mov %%fs:0,%0" : "=r" (tp));
   if (raw != &child_result || tp == 0 || *(xos_u64 *) tp != tp)
@@ -67,6 +75,10 @@ static void rollback (void *context)
 int guest_main (void) __attribute__ ((used));
 int guest_main (void)
 {
+#ifdef XOS_GLIBC_TEST_GETPID
+  expected_pid = (int) trap (6, 0, 0);
+  if (expected_pid <= 0 || __getpid () != expected_pid) return 18;
+#endif
   struct xos_thread_header header = {1, sizeof (header), 0};
   if (trap (52, (xos_u64) &header, 0) != 0) return 10;
   invalid_start = 1;

@@ -260,6 +260,12 @@ def main():
     yield_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'posix/sched_yield.o')], text=True)
     assert re.search(r'\bmov\s+\$0x3,%eax', yield_code) and re.search(r'\bint\s+\$0x80', yield_code)
     assert not re.search(r'\bsyscall\b', yield_code)
+    pid_item = report['diagnostic_objects']['getpid']
+    assert pid_item['exit_code'] == 0 and digest(build / 'posix/getpid.o') == pid_item['sha256']
+    assert '../sysdeps/xos/getpid.c' in (output / 'getpid-dependencies.d').read_text()
+    pid_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'posix/getpid.o')], text=True)
+    assert re.search(r'\bmov\s+\$0x6,%eax', pid_code) and re.search(r'\bint\s+\$0x80', pid_code)
+    assert not re.search(r'\bsyscall\b', pid_code)
     sigset = report['diagnostic_objects']['sigset']
     assert sigset['exit_code'] == 0 and digest(build / 'signal/sigset.o') == sigset['sha256']
     sigset_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'signal/sigset.o')], text=True)

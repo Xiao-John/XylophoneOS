@@ -26,6 +26,7 @@ def sha(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--yield-build', type=Path, help='G1 diagnostic output containing the real target sched_yield object')
+    parser.add_argument('--pid-build', type=Path, help='G1 diagnostic output containing the real target getpid object')
     args = parser.parse_args()
     build = root/'build'
     overlay = root/'src/ports/glibc/sysdeps/xos'
@@ -65,12 +66,28 @@ def main():
         sources.append(yield_source)
         yield_provenance = {'report_sha256': sha(source_report), 'object_sha256': sha(yield_object)}
         cmd[-2:-2] = ['-DXOS_GLIBC_TEST_YIELD', str(yield_object)]
+    pid_provenance = None
+    if args.pid_build:
+        pid_candidate = args.pid_build.resolve(strict=True)
+        pid_report = pid_candidate/'report.json'
+        pid_data = json.loads(pid_report.read_text())
+        pid_object = pid_candidate/'configure/posix/getpid.o'
+        pid_source = overlay/'getpid.c'
+        assert pid_data['nptl_backend_experimental'] and not pid_data['hacker_mode']
+        assert not pid_data['synthetic_abi_tag'] and pid_data['sysroot_enforced']
+        assert pid_data['xos_overlay_sha256']['xos/getpid.c'] == sha(pid_source)
+        assert pid_data['diagnostic_objects']['getpid']['exit_code'] == 0
+        assert pid_data['diagnostic_objects']['getpid']['sha256'] == sha(pid_object)
+        inputs[str(pid_source.relative_to(root))] = sha(pid_source)
+        sources.append(pid_source)
+        pid_provenance = {'report_sha256': sha(pid_report), 'object_sha256': sha(pid_object)}
+        cmd[-2:-2] = ['-DXOS_GLIBC_TEST_GETPID', str(pid_object)]
     subprocess.run(cmd, check=True)
     assert inputs == {str(path.relative_to(root)): sha(path) for path in sources}
     report = {'status': 'failed', 'scope': 'freestanding XOS thread bridge; no glibc linked',
               'build_id': system['build_id'], 'system_manifest_sha256': sha(system_manifest),
               'image_sha256': sha(image), 'probe_sha256': sha(probe), 'inputs': inputs,
-              'compiler_command': cmd, 'compiler_sha256': sha(compiler), 'yield_provenance': yield_provenance, 'checks': []}
+              'compiler_command': cmd, 'compiler_sha256': sha(compiler), 'yield_provenance': yield_provenance, 'pid_provenance': pid_provenance, 'checks': []}
     guest = None
     try:
         with tempfile.TemporaryDirectory(prefix='xos_glibc_bridge_') as folder:
@@ -102,6 +119,10 @@ def main():
                 assert sha(source_report) == yield_provenance['report_sha256']
                 assert sha(yield_object) == yield_provenance['object_sha256']
                 report['checks'].append('glibc_target_sched_yield_between_threads')
+            if pid_provenance is not None:
+                assert sha(pid_report) == pid_provenance['report_sha256']
+                assert sha(pid_object) == pid_provenance['object_sha256']
+                report['checks'].append('glibc_target_getpid_same_process_across_threads')
             report['resources'] = before
             report['output'] = outputs
             report['status'] = 'passed_subset'

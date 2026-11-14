@@ -243,6 +243,46 @@ i64 client::stat_info(const char* path, u32& size, u32& attributes) {
 }
 
 i64 client::stat_info(const char* path, u32& size, u32& attributes, u32& identity) {
+    u64 mtime = 0;
+    return stat_info(path, size, attributes, identity, mtime);
+}
+
+i64 client::stat_info(const char* path, u32& size, u32& attributes, u32& identity,
+                      u64& mtime) {
+    u32 mode = 0;
+    return stat_info(path, size, attributes, identity, mtime, mode);
+}
+
+i64 client::decode_metadata(u64& mtime, u32& mode) {
+    mode = 0;
+    mtime = 0;
+    if (response_.length == 0) {
+        metadata_format_ = 1;
+        return 0;
+    }
+    if (response_.length != 24) { metadata_format_ = 0; return status_value(status::io); }
+    const u8* r = response_.data;
+    if (r[0] != 'F' || r[1] != 'M' || r[2] != 'E' || r[3] != 'T' ||
+        r[4] != 1 || r[5] != 0 || r[6] != 24 || r[7] != 0) {
+        return status_value(status::io);
+    }
+    u64 seconds = 0;
+    for (u32 i = 0; i < 8; ++i) { seconds |= static_cast<u64>(r[8 + i]) << (8 * i); }
+    u32 nanoseconds = 0;
+    for (u32 i = 0; i < 4; ++i) { nanoseconds |= static_cast<u32>(r[16 + i]) << (8 * i); }
+    u32 record_mode = 0;
+    for (u32 i = 0; i < 4; ++i) { record_mode |= static_cast<u32>(r[20 + i]) << (8 * i); }
+    if (nanoseconds >= 1000000000u) { return status_value(status::io); }
+    const u32 type = record_mode & 0170000u;
+    if (type != 0100000u && type != 0040000u) { return status_value(status::io); }
+    metadata_format_ = 2;
+    mtime = seconds;
+    mode = record_mode;
+    return 0;
+}
+
+i64 client::stat_info(const char* path, u32& size, u32& attributes, u32& identity,
+                      u64& mtime, u32& mode) {
     session_guard guard;
     request_ = request{};
     u32 path_length = 0;
@@ -254,7 +294,7 @@ i64 client::stat_info(const char* path, u32& size, u32& attributes, u32& identit
     size = static_cast<u32>(response_.value);
     attributes = response_.flags;
     identity = response_.reserved;
-    return 0;
+    return decode_metadata(mtime, mode);
 }
 
 i64 client::anonymous(u32& handle) {
@@ -297,6 +337,17 @@ i64 client::fstat(u32 handle, u32& size, u32& attributes) {
 }
 
 i64 client::fstat(u32 handle, u32& size, u32& attributes, u32& identity) {
+    u64 mtime = 0;
+    return fstat(handle, size, attributes, identity, mtime);
+}
+
+i64 client::fstat(u32 handle, u32& size, u32& attributes, u32& identity, u64& mtime) {
+    u32 mode = 0;
+    return fstat(handle, size, attributes, identity, mtime, mode);
+}
+
+i64 client::fstat(u32 handle, u32& size, u32& attributes, u32& identity,
+                  u64& mtime, u32& mode) {
     session_guard guard;
     request_ = request{};
     request_.handle = handle;
@@ -305,7 +356,36 @@ i64 client::fstat(u32 handle, u32& size, u32& attributes, u32& identity) {
     size = static_cast<u32>(response_.value);
     attributes = response_.flags;
     identity = response_.reserved;
-    return 0;
+    return decode_metadata(mtime, mode);
+}
+
+i64 client::set_metadata(u32 handle, const char* path, u16 mask, u16 attr,
+                         i64 atime_sec, i64 atime_nsec, i64 mtime_sec, i64 mtime_nsec) {
+    session_guard guard;
+    if ((handle == 0 && path == nullptr) || (handle != 0 && path != nullptr)) {
+        return status_value(status::invalid);
+    }
+    request_ = request{};
+    request_.handle = handle;
+    request_.length = sizeof(metadata_request);
+    if (path != nullptr) {
+        u32 path_length = 0;
+        const i64 path_result = set_path(path, request_.name, path_length);
+        if (path_result != 0) { return path_result; }
+        request_.name_length = path_length;
+    }
+    metadata_request metadata{};
+    metadata.version = 1;
+    metadata.mask = mask;
+    metadata.attr = attr;
+    metadata.atime_sec = atime_sec;
+    metadata.atime_nsec = atime_nsec;
+    metadata.mtime_sec = mtime_sec;
+    metadata.mtime_nsec = mtime_nsec;
+    for (u32 i = 0; i < sizeof(metadata); ++i) {
+        request_.data[i] = reinterpret_cast<const u8*>(&metadata)[i];
+    }
+    return call(op::set_metadata);
 }
 
 i64 client::read(u32 handle, void* data, u32 length) {

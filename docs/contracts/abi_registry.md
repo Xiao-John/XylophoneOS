@@ -133,7 +133,7 @@ PX4-A 提议认领如下；本分支未合入前不构成全项目登记，不�
 | 编号 | 拟用符号 | 责任角色 | 状态 | 实现PR |
 |---:|---|---|---|---|
 | 67 | `sys_vm` | VM负责人；匿名私有VMA v1 | allocated | 实施中，资格待验；[契约](anonymous_vm.md) |
-| files op 29 | `file::op::set_metadata` | 文件/包管理共用服务；FAT 诚实子集 | claimed (M0) | 待实施；[契约](file_metadata_v1.md) |
+| files op 29 | `file::op::set_metadata` | 文件/包管理共用服务；FAT 诚实子集 | allocated (M1) | [契约](file_metadata_v1.md)；`tests/file_metadata_guest.py` |
 
 
 claimed必须位于对应reserved段，不能与现有接口或其他认领重复；不生成源码常量或能力。
@@ -144,7 +144,7 @@ claimed必须位于对应reserved段，不能与现有接口或其他认领重�
 
 | 命名空间 | 当前分配/版本 | 下一项登记责任 |
 |---|---|---|
-| files op | wire v2、op1–29；20clone_session、21anonymous、22seal、23/24维护、25truncate、26cwd_set、27cwd_get、28resolve_path；**29 set_metadata 已占号（M0，未实现）** | 文件/包管理共用服务；26由已认证parent_pid约束构造子继承，目录句柄与cwd保留身份引用，见file_identity契约；op29 见[file_metadata_v1](file_metadata_v1.md)；不得各自追加同一个next op |
+| files op | wire v2、op1–29；20clone_session、21anonymous、22seal、23/24维护、25truncate、26cwd_set、27cwd_get、28resolve_path；**29 set_metadata 已实现并客体验收（M1）** | 文件/包管理共用服务；26由已认证parent_pid约束构造子继承，目录句柄与cwd保留身份引用，见file_identity契约；op29 见[file_metadata_v1](file_metadata_v1.md)；不得各自追加同一个next op |
 | display action / operation | v1控制action0–9、request operation1–6 | 显示负责人；Qt通过用户态display_client接入，不另造同名内核接口 |
 | startup/exec | startup1/2/3、.xos.exec/v3身份标记；试行 startup2 flag bit16 与 reserved 承载 terminal send handle，仅限只读 `.xos.tty` v1 opt-in | loader/SDK负责人，升级须说明旧二进制准入/拒绝与迁移；终端扩展尚未客体验收 |
 | boot_info | v1 64字节；显示扩展v2 112字节；payload descriptor独立 | 引导/内核共同登记，不借用对方字段 |

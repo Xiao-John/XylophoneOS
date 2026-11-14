@@ -34,6 +34,7 @@ enum class op : u16 {
     anonymous_seal = 22, // irrevocably remove write access from an anonymous instance
     anonymous = 21, // private disk-backed open description, unlinked at last close
     clone_session = 20, // source authenticated by session; offset = fork child PID
+    set_metadata = 29, // FAT honest subset: RDO + mtime; payload in request.data.
 };
 
 enum seek_origin : u32 { seek_set = 0, seek_current = 1, seek_end = 2 };
@@ -58,6 +59,7 @@ enum class status : i32 {
     ok = 0, not_found = -1, invalid = -2, full = -3, no_space = -4,
     busy = -5, bad_handle = -6, io = -7, would_block = -8, exists = -9,
     not_directory = -10, is_directory = -11, not_empty = -12, name_too_long = -13,
+    not_supported = -14, read_only_volume = -15, access_denied = -16,
 };
 
 struct [[gnu::packed]] request {
@@ -96,7 +98,26 @@ struct [[gnu::packed]] response {
 inline constexpr u8 entry_is_directory = 1;
 inline constexpr u32 stat_is_directory = entry_is_directory;
 inline constexpr u32 stat_unlinked = 1u << 1;
+inline constexpr u32 stat_read_only = 1u << 2;
+// op::stat/fstat: first 8 bytes of response.data carry mtime seconds (0 = unknown).
+inline constexpr u32 stat_metadata_bytes = 8;
 inline constexpr u32 list_record_header_size = 7;
+
+enum metadata_mask : u16 {
+    metadata_read_only = 1u << 0,
+    metadata_mtime = 1u << 1,
+    metadata_atime = 1u << 2,
+};
+
+struct [[gnu::packed]] metadata_request {
+    u16 version; // 1
+    u16 mask;
+    u16 attr;    // 0 or AM_RDO
+    u16 reserved;
+    i64 atime_sec, atime_nsec;
+    i64 mtime_sec, mtime_nsec;
+};
+static_assert(sizeof(metadata_request) == 40);
 
 static_assert(sizeof(request) == message_size);
 static_assert(sizeof(response) == message_size);

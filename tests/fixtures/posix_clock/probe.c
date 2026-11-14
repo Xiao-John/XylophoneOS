@@ -111,8 +111,17 @@ int main(void) {
     // clock_nanosleep: invalid nsec
     struct timespec bad_req = {0, 1000000000L};
     errno = 0;
-    check("clock_nanosleep_bad_nsec", clock_nanosleep(CLOCK_MONOTONIC, 0, &bad_req, NULL) == -1
-           && errno == EINVAL);
+    check("clock_nanosleep_bad_nsec", clock_nanosleep(CLOCK_MONOTONIC, 0, &bad_req, NULL) == EINVAL);
+
+    // clock_nanosleep: invalid clock_id
+    check("clock_nanosleep_bad_clock",
+          clock_nanosleep(999, 0, &sleep_req, NULL) == EINVAL);
+
+    // clock_getres: NULL res is valid (probe clock support)
+    check("clock_getres_null_realtime", clock_getres(CLOCK_REALTIME, NULL) == 0);
+    check("clock_getres_null_monotonic", clock_getres(CLOCK_MONOTONIC, NULL) == 0);
+    errno = 0;
+    check("clock_getres_null_bad", clock_getres(999, NULL) == -1 && errno == EINVAL);
 
     // nanosleep: relative
     struct timespec nano_req = {0, 30'000'000};  // 30 ms

@@ -149,6 +149,8 @@ def main():
                      '#ifdef __cplusplus\nextern "C" {\n#endif\n'
                      'int clock_gettime(clockid_t, struct timespec*);\n'
                      'int clock_getres(clockid_t, struct timespec*);\n'
+                     'int clock_settime(clockid_t, const struct timespec*);\n'
+                     'int clock_nanosleep(clockid_t, int, const struct timespec*, struct timespec*);\n'
                      'int nanosleep(const struct timespec*, struct timespec*);\n'
                      '#ifdef __cplusplus\n}\n#endif\n')
     shutil.copyfile(ROOT / 'src/user/threading/compile.py', output / 'compile.py')

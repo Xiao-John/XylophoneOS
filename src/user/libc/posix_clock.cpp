@@ -67,20 +67,17 @@ extern "C" int clock_gettime(clockid_t clock_id, struct timespec* tp) {
 }
 
 extern "C" int clock_getres(clockid_t clock_id, struct timespec* res) {
-    if (res == nullptr) { errno = EFAULT; return -1; }
     switch (clock_id) {
     case CLOCK_REALTIME:
     case CLOCK_REALTIME_COARSE:
         // Wall clock has nanosecond resolution (syscall returns ns).
-        res->tv_sec = 0;
-        res->tv_nsec = 1;
+        if (res != nullptr) { res->tv_sec = 0; res->tv_nsec = 1; }
         return 0;
     case CLOCK_MONOTONIC:
     case CLOCK_MONOTONIC_RAW:
     case CLOCK_MONOTONIC_COARSE:
         // Monotonic clock is driven by the scheduler tick (10 ms).
-        res->tv_sec = 0;
-        res->tv_nsec = 10'000'000;
+        if (res != nullptr) { res->tv_sec = 0; res->tv_nsec = 10'000'000; }
         return 0;
     default:
         errno = EINVAL;
@@ -96,38 +93,54 @@ extern "C" int clock_settime(clockid_t, const struct timespec*) {
 
 extern "C" int clock_nanosleep(clockid_t clock_id, int flags,
                                 const struct timespec* req, struct timespec* rem) {
-    if (req == nullptr) { errno = EFAULT; return -1; }
+    if (req == nullptr) { return EFAULT; }
     if (req->tv_nsec < 0 || req->tv_nsec >= static_cast<long>(nanoseconds_per_second) ||
         req->tv_sec < 0) {
-        errno = EINVAL;
-        return -1;
+        return EINVAL;
     }
-    if (flags != 0 && flags != TIMER_ABSTIME) { errno = EINVAL; return -1; }
+    if (flags != 0 && flags != TIMER_ABSTIME) { return EINVAL; }
 
-    // Compute the sleep deadline in monotonic time.  For relative sleep the
-    // deadline is now + duration; for absolute sleep the given time is
-    // converted through the current clock offset.
-    xos::u64 monotonic_deadline = 0;
-    const xos::i64 monotonic_now = xos::sdk::syscall(xos::sys_clock_monotonic, 0);
-    if (monotonic_now < 0) { errno = EIO; return -1; }
+    // Validate clock_id before entering either branch.
+    const bool is_monotonic = clock_id == CLOCK_MONOTONIC ||
+                              clock_id == CLOCK_MONOTONIC_RAW ||
+                              clock_id == CLOCK_MONOTONIC_COARSE;
+    const bool is_realtime = clock_id == CLOCK_REALTIME ||
+                             clock_id == CLOCK_REALTIME_COARSE;
+    if (!is_monotonic && !is_realtime) { return EINVAL; }
 
     if (flags == TIMER_ABSTIME) {
-        const xos::i64 wall_now = clock_ns(clock_id);
-        if (wall_now < 0) { errno = EINVAL; return -1; }
-        const xos::u64 wall_deadline = timespec_to_ns(req);
-        const xos::i64 wall_delta = static_cast<xos::i64>(wall_deadline)
-                                  - static_cast<xos::i64>(wall_now);
-        if (wall_delta <= 0) {
-            // Deadline already passed.
-            return 0;
+        if (is_monotonic) {
+            // Monotonic absolute: use the request deadline directly.
+            const xos::u64 deadline = timespec_to_ns(req);
+            const xos::i64 now = xos::sdk::syscall(xos::sys_clock_monotonic, 0);
+            if (now < 0) { return EIO; }
+            if (static_cast<xos::u64>(now) >= deadline) { return 0; }
+            const xos::i64 result = xos::sdk::syscall(xos::sys_sleep_until, deadline);
+            return result < 0 ? EIO : 0;
         }
-        monotonic_deadline = static_cast<xos::u64>(monotonic_now)
-                           + static_cast<xos::u64>(wall_delta);
-    } else {
-        const xos::u64 duration = timespec_to_ns(req);
-        monotonic_deadline = static_cast<xos::u64>(monotonic_now) + duration;
+        // Realtime absolute: convert through the current wall-to-monotonic
+        // offset, then re-check after waking to correct for preempt delay.
+        for (;;) {
+            const xos::i64 monotonic_now = xos::sdk::syscall(xos::sys_clock_monotonic, 0);
+            const xos::i64 wall_now = xos::sdk::syscall(xos::sys_clock_realtime, 0);
+            if (monotonic_now < 0 || wall_now < 0) { return EIO; }
+            const xos::u64 wall_deadline = timespec_to_ns(req);
+            const xos::i64 wall_delta = static_cast<xos::i64>(wall_deadline)
+                                      - static_cast<xos::i64>(wall_now);
+            if (wall_delta <= 0) { return 0; }
+            const xos::u64 monotonic_deadline =
+                static_cast<xos::u64>(monotonic_now) + static_cast<xos::u64>(wall_delta);
+            const xos::i64 result = xos::sdk::syscall(xos::sys_sleep_until, monotonic_deadline);
+            if (result < 0) { return EIO; }
+            // Re-check: the conversion used a sample from before the sleep.
+        }
     }
 
+    // Relative sleep.
+    const xos::i64 monotonic_now = xos::sdk::syscall(xos::sys_clock_monotonic, 0);
+    if (monotonic_now < 0) { return EIO; }
+    const xos::u64 duration = timespec_to_ns(req);
+    const xos::u64 monotonic_deadline = static_cast<xos::u64>(monotonic_now) + duration;
     const xos::i64 result = xos::sdk::syscall(xos::sys_sleep_until, monotonic_deadline);
     if (result < 0) {
         if (rem != nullptr) {
@@ -136,12 +149,13 @@ extern "C" int clock_nanosleep(clockid_t clock_id, int flags,
                 ? monotonic_deadline - static_cast<xos::u64>(after) : 0;
             ns_to_timespec(remaining, rem);
         }
-        errno = result == xos::process_error_would_block ? EAGAIN : EIO;
-        return -1;
+        return result == xos::process_error_would_block ? EAGAIN : EIO;
     }
     return 0;
 }
 
 extern "C" int nanosleep(const struct timespec* req, struct timespec* rem) {
-    return clock_nanosleep(CLOCK_MONOTONIC, 0, req, rem);
+    const int code = clock_nanosleep(CLOCK_MONOTONIC, 0, req, rem);
+    if (code != 0) { errno = code; return -1; }
+    return 0;
 }

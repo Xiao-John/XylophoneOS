@@ -8,4 +8,6 @@
 #define PTHREAD_KEYS_MAX 128
 #define _POSIX_THREAD_DESTRUCTOR_ITERATIONS 4
 #define PTHREAD_DESTRUCTOR_ITERATIONS 4
+/* Conservative NPTL value bound, also representable by int. */
+#define SEM_VALUE_MAX 2147483647
 #endif

@@ -36,7 +36,8 @@ def main():
                           ('0006-sigwait-failure.patch', 'sigwait_patch_sha256'),
                           ('0007-arc4random-atomic-include.patch', 'atomic_patch_sha256'),
                           ('0008-freopen-no-fd-path.patch', 'freopen_patch_sha256'),
-                          ('0009-dlerror-errno-include.patch', 'dlerror_patch_sha256')):
+                          ('0009-dlerror-errno-include.patch', 'dlerror_patch_sha256'),
+                          ('0010-sem-init-private-only.patch', 'sem_init_patch_sha256')):
         assert digest(root / 'src/ports/glibc/patches' / filename) == report[key]
     assert report['status'] == 'diagnostic_only' and report['nptl_backend_experimental'] and not report['synthetic_abi_tag']
     assert report['sysroot_enforced'] and report['configure_exit_code'] == 0
@@ -296,6 +297,9 @@ def main():
     xid_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(xid_obj)], text=True)
     assert '$0x58' in xid_code and re.search(r'\bud2\b', xid_code)
     assert not re.search(r'\b(syscall|int)\b', xid_code)
+    sem_init = report['diagnostic_objects']['sem_init']
+    assert sem_init['exit_code'] == 0 and digest(build / 'nptl/sem_init.o') == sem_init['sha256']
+    assert 'sem_init.c' in (output / 'sem_init-dependencies.d').read_text()
     pthread_cancel = report['diagnostic_objects']['pthread_cancel']
     assert pthread_cancel['exit_code'] == 0 and digest(build / 'nptl/pthread_cancel.o') == pthread_cancel['sha256']
     assert '../sysdeps/xos/pthread_cancel.c' in (output / 'pthread_cancel-dependencies.d').read_text()

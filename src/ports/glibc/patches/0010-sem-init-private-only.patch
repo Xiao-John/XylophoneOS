@@ -1,0 +1,11 @@
+--- a/nptl/sem_init.c
++++ b/nptl/sem_init.c
+@@ -33,0 +34,8 @@
++      return -1;
++    }
++
++  /* XOS wait keys are process-private; accepting a shared semaphore would
++     let initialization succeed without interprocess wake semantics.  */
++  if (pshared != 0)
++    {
++      __set_errno (ENOTSUP);

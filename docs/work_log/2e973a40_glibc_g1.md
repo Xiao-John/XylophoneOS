@@ -228,3 +228,11 @@ XOS 为新线程分别预留栈和 TLS；glibc x86-64 使用 `TLS_TCB_AT_TP`，�
 glibc 2.44 的 `_dl_determine_tlsoffset` 将 TCB 前的静态 TLS 区域向 loader 所需对齐取整；其 `_dl_tls_block_align` 从对齐后的静态区域首地址推导 TP。此前 XOS 布局函数接受前缀不满足该对齐的参数，可能让 TLS 数据不满足实际对齐；同时零地址会使 `_dl_allocate_tls(NULL)` 走自行分配路径。现已拒绝这两种输入，失败保持输出不变。
 
 新增测试从散列锁定的候选源码归档提取原始 `elf/dl-tls_block_align.h`，直接编译其函数，并与 XOS 布局结果比较，覆盖多个对齐、起始偏移和静态 TLS 大小；宿主边界与既有回归通过。此比较仅验证地址计算，不意味着实际 glibc TLS 初始化、pthread 生命周期或完整 SDK 已验收。最终组合需重新构建目标对象并运行客体桥；G1 保持 partial。
+
+## 继续：进程间信号量初始化的真实失败（2026-11-14）
+
+为避免用临时替身掩盖首个阻塞，针对上一轮独立候选构建执行 `make -k` 收集后续独立错误，日志 SHA-256 `08dca447adf69093bfd8d5edc84b8ecf7474357af68695cfb45294add4ac4f5c`。除 `clone3.h` 外，还暴露调度亲和性、线程 CPU 时钟、信号和其他目标头/接口缺口；这些错误可能互相连锁，不能把错误条数当成独立实现工作量或构建成功。
+
+其中确认上游 `sem_init` 对 `pshared != 0` 原本会返回成功，而 XOS 当前 wait/wake 只支持进程内键。候选 XOS 补丁保留 glibc 进程内初始化和超限 `EINVAL`，对非零 `pshared` 在修改对象前返回 `ENOTSUP`；补充候选 NPTL `SEM_VALUE_MAX`。这不实现或认可进程间信号量，也不证明进程内信号量等待、取消或整体 pthread 可用。
+
+基于散列锁定归档提取并应用补丁的宿主测试覆盖共享参数、边界、对象不变及私有初始化；干净目标构建生成补丁后的 `sem_init.o`，SHA-256 `c38c5e102f4f04d0fac6891575e42494ab230789ae838b9bb1b05d2cb4c976eb`，对象、符号和所有依赖来源检查通过，报告 SHA-256 `ea4072392dc97ccd2a986ff24e34b1392d4e6bd74be4416cdecfca6809313010`。既有宿主测试通过；完整构建仍在 `clone3.h` 停止，缺少完整目标头和客体验收，G1 仍为 partial。

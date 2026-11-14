@@ -5,7 +5,7 @@
 | 契约 | [`docs/contracts/file_metadata_v1.md`](../../contracts/file_metadata_v1.md) |
 | 线格式 | file wire v2；新增 op29 `set_metadata`；`stat/fstat` 扩展 RDO 位与 mtime |
 | FatFs | `FF_USE_CHMOD=1`；mtime 2 秒量化、UTC；RDO 由 `f_chmod` 设置 |
-| 构建 | build `89d7eb53c3bcc87d`（kernel 813208 字节） |
+| 构建 | build `3e8f7fedfdf7c72b`（kernel 813208 字节） |
 | 测试 | `tests/file_metadata_guest.py`（`metadata_unit` + `metadata_dash` + 资源回基线） |
 
 ## 客体原始输出（节选）

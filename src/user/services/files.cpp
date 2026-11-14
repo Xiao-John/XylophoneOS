@@ -1862,10 +1862,16 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             const FRESULT synced = f_sync(&item.file);
             if (synced != FR_OK) { code = from_fr(synced); break; }
             // f_sync rewrites the directory entry timestamp; keep the cache in sync.
-            FILINFO refreshed_info{};
-            if (f_stat(item.name, &refreshed_info) == FR_OK) {
-                item.metadata_attrib = refreshed_info.fattrib;
-                item.mtime_sec = fat_to_unix(refreshed_info.fdate, refreshed_info.ftime);
+            // item.name is the leaf name; use object_path for the full path so
+            // nested and unlinked objects are queried correctly.
+            char full_path[max_name];
+            const u32 index = static_cast<u32>(&item - file_objects) + 1;
+            if (object_path(index, full_path) == status::ok) {
+                FILINFO refreshed_info{};
+                if (f_stat(full_path, &refreshed_info) == FR_OK) {
+                    item.metadata_attrib = refreshed_info.fattrib;
+                    item.mtime_sec = fat_to_unix(refreshed_info.fdate, refreshed_info.ftime);
+                }
             }
         }
         if (code == status::ok && staging_active && staging_open && f_sync(&staging_file) != FR_OK) {

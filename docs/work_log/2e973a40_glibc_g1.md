@@ -146,3 +146,11 @@ XOS 当前没有可用来重开任意已打开文件描述符、且与 Linux `/p
 独立宿主测试核对路径转换对有效及负描述符均返回空指针并设置 `ENOTSUP`；干净 XOS 目标构建实际生成 `fd_to_filename.o`、`freopen.o`、`freopen64.o`，对象来源及调用引用检查通过。`dlerror.c` 对 `__set_errno` 增加显式 `<errno.h>` 包含，避免依赖 Linux 头的间接包含；这只是编译修正，不意味着动态加载已实现。
 
 完整 make 已继续到 `nptl/cancellation.c`，在取消系统调用参数宏缺失处退出 2；不可借用 Linux 可取消 syscall 汇编来宣称支持。头文件安装仍完成 335 项，独立客户端因未生成 `gnu/stubs.h` 失败，sysroot 尚不可用。报告 SHA-256 `4d7627f3999bef3d917a40e01ac30d6b6c236f39ecc5a3bd68f57561f43eddcf`；描述符转换、等待桥、线程退出、目标符号与探针保护检查通过，尚无 glibc 客体运行。G1 继续为 partial。
+
+## 继续：取消系统调用的明确失败边界（2026-11-14）
+
+现有 XOS 线程契约不支持异步取消，不能借用 glibc 的 Linux `SIGCANCEL`、可取消 syscall 汇编与无副作用的 `EINTR` 假设。实验 XOS 后端补齐 glibc 所需的非七参数声明，提供受限的取消 syscall 入口：内部约定返回 `-ENOSYS` 且不改 errno；公开约定返回 -1 并设置 `ENOSYS`；意外进入取消展开入口时 trap。这些入口不执行传入的系统调用、不假装关闭取消后操作成功，也不提供 pthread 取消功能；实现真正取消及正确的非取消运行路径仍是后续工作。目标对象中这三个内部符号均隐藏，避免成为新公共 ABI。
+
+宿主负向测试验证两种返回约定和 errno，目标对象反汇编确认返回值、失败 trap 且无 syscall 指令；目标对象 SHA-256 `d8879cfd3a207249c87879cf4f28b39e2197f2dfee5a475e07c1a733cfa6aff2`。干净构建越过原 `cancellation.c` 参数错误，下一阻塞在上游 `futex-internal.c` 对原子头及 Linux futex/可取消 syscall 的依赖。已有私有无超时 wait 桥不能自动等同于其定时、实时钟、取消、共享和 PI 语义。头文件安装仍为 335 项且目标客户端缺失 `gnu/stubs.h`；完整 libc、SDK 与客体运行均未通过。
+
+取消负向测试、wait 桥、线程退出、描述符失败、探针防护与对象/符号/来源检查均通过；报告 SHA-256 `9e212c0d9e2b45ed63a4c821c4c4e3667e7d9e9400c6a43601b29e11d719f45a`。G1 保持 partial。

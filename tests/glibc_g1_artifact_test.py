@@ -182,6 +182,15 @@ def main():
     assert sigset['exit_code'] == 0 and digest(build / 'signal/sigset.o') == sigset['sha256']
     sigset_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'signal/sigset.o')], text=True)
     assert '$0x58' in sigset_code and '$0xffffffffffffffff' in sigset_code
+    cancellation = report['diagnostic_objects']['cancellation']
+    assert cancellation['exit_code'] == 0 and digest(build / 'nptl/cancellation.o') == cancellation['sha256']
+    assert '../sysdeps/xos/cancellation.c' in (output / 'cancellation-dependencies.d').read_text()
+    cancel_symbols = subprocess.check_output(['x86_64-elf-readelf', '-Ws', str(build / 'nptl/cancellation.o')], text=True)
+    for name in ('__internal_syscall_cancel', '__syscall_cancel', '__syscall_do_cancel'):
+        assert re.search(r'GLOBAL\s+HIDDEN\s+\d+\s+' + name + r'\b', cancel_symbols)
+    cancel_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'nptl/cancellation.o')], text=True)
+    assert '$0xffffffffffffffa8,%rax' in cancel_code and '$0x58' in cancel_code
+    assert re.search(r'\bud2\b', cancel_code) and not re.search(r'\b(syscall|int)\b', cancel_code)
     native_wait = report['diagnostic_objects']['xos_wait_word']
     assert native_wait['exit_code'] == 0 and digest(build / 'nptl/xos_wait_word.o') == native_wait['sha256']
     assert '../sysdeps/xos/xos_wait_word.c' in (output / 'xos_wait_word-dependencies.d').read_text()

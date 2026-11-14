@@ -6,6 +6,10 @@ static xos_u64 child_result;
 static int rollback_count;
 static struct xos_thread_launch_result launch;
 static int invalid_start;
+#ifdef XOS_GLIBC_TEST_YIELD
+extern int __sched_yield (void);
+static unsigned int child_waiting, child_yielded, parent_ack;
+#endif
 static xos_i64 trap (xos_u64 n, xos_u64 a, xos_u64 b)
 {
   xos_i64 result;
@@ -27,6 +31,13 @@ void guest_thread_worker (void *raw)
   __asm__ volatile ("mov %%fs:0,%0" : "=r" (tp));
   if (raw != &child_result || tp == 0 || *(xos_u64 *) tp != tp)
     finish (90);
+#ifdef XOS_GLIBC_TEST_YIELD
+  __atomic_store_n (&child_waiting, 1, __ATOMIC_RELEASE);
+  do {
+    if (__sched_yield () != 0) finish (93);
+    __atomic_store_n (&child_yielded, 1, __ATOMIC_RELEASE);
+  } while (!__atomic_load_n (&parent_ack, __ATOMIC_ACQUIRE));
+#endif
   child_result = 0xabc;
   if (trap (42, 0, 0) != 0)
     finish (91);
@@ -64,6 +75,14 @@ int guest_main (void)
   invalid_start = 0;
   if (__xos_thread_launch (65536, 4096, 0, setup, rollback, &launch, &launch) != 0) return 13;
   if (!launch.started || !launch.tid || launch.abort_error != 0 || rollback_count != 1) return 14;
+#ifdef XOS_GLIBC_TEST_YIELD
+  unsigned int attempts = 0;
+  if (__sched_yield () != 0) return 17;
+  while (!__atomic_load_n (&child_waiting, __ATOMIC_ACQUIRE)
+         || !__atomic_load_n (&child_yielded, __ATOMIC_ACQUIRE))
+    if (__sched_yield () != 0 || ++attempts == 100000) return 17;
+  __atomic_store_n (&parent_ack, 1, __ATOMIC_RELEASE);
+#endif
   xos_u64 value = 0;
   if (trap (44, launch.tid, (xos_u64) &value) != 0) return 15;
   if (value != 0x1234 || child_result != 0xabc) return 16;

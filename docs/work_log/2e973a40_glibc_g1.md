@@ -242,3 +242,9 @@ glibc 2.44 的 `_dl_determine_tlsoffset` 将 TCB 前的静态 TLS 区域向 load
 `make -k` 揭示 glibc NPTL 的 `internaltypes.h` 使用 `struct sched_param`、`cpu_set_t` 却依赖间接包含；`sem_post.c` 使用 `SEM_VALUE_MAX` 也未显式包含 `<limits.h>`。候选补丁分别补充 `<sched.h>` 与 `<limits.h>`；类型来自 glibc 通用头，不代表 XOS 已实现 CPU 亲和性或调度策略。
 
 从散列锁定归档提取并补丁的 `sem_post.c` 在宿主模拟中检查递增、上限 `EOVERFLOW`、不必要时不唤醒及存在等待者时唤醒一个；这不证明并发、等待或客体语义。干净 XOS 目标构建实际生成 `sem_post.o`，并确认其引用 XOS 私有唤醒桥和意外错误终止入口；对象 SHA-256 `6e1406e340f7559f7ef2f59b6154270b65b6c16ef6476cfcaf03bcd121d2bd48`，报告 SHA-256 `91a67e238fa40779b10f127d01a011461c191659d04eb8f9a431cf5ab801f861`，补丁、对象和所有依赖来源检查通过。完整构建仍在 `clone3.h` 失败，未做 glibc 客体验收，G1 仍为 partial。
+
+## 继续：使用原生调度让出的 glibc 目标对象（2026-11-14）
+
+glibc 通用 `sched_yield` 返回 `ENOSYS`，但 XOS 已有 syscall 3：直接交还调度器，恢复后不承诺 RAX 为返回值。新增 XOS 目标实现发出该调用并返回 0，不把恢复后的寄存器误作 Linux 错误码，保持 errno；不声称实时调度、亲和性或其他调度接口可用。
+
+宿主模拟验证调用及 errno，干净候选构建生成 XOS 目标对象，指令、符号及依赖来源检查通过；对象 SHA-256 `523e7a2ece82c6b037ce6bee0915d804da6c2ac6e56b9346b3e0a4d11b9a5b70`，报告 SHA-256 `42915e64802f09e252198968ad4c990939fa956fef2cb9998a2b67a5587ae5f7`。客体桥探针增加可选模式，将这份真实目标对象与无 libc 的测试程序链接，在两个 XOS 线程间检查让出与资源恢复；提交后的系统须重建并运行该模式，结果记在本地客体报告。此子集不证明 glibc SDK、pthread 或完整构建通过；G1 继续为 partial。

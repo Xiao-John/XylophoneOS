@@ -254,6 +254,12 @@ def main():
     assert '../sysdeps/xos/xos_thread_tls.c' in (output / 'xos_thread_tls-dependencies.d').read_text()
     tls_symbols = subprocess.check_output(['x86_64-elf-readelf', '--wide', '-s', str(build / 'nptl/xos_thread_tls.o')], text=True)
     assert all(symbol in tls_symbols for symbol in ('__xos_thread_tls_initialize', '__xos_thread_tls_release', '_dl_allocate_tls', '_dl_deallocate_tls'))
+    yield_item = report['diagnostic_objects']['sched_yield']
+    assert yield_item['exit_code'] == 0 and digest(build / 'posix/sched_yield.o') == yield_item['sha256']
+    assert '../sysdeps/xos/sched_yield.c' in (output / 'sched_yield-dependencies.d').read_text()
+    yield_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'posix/sched_yield.o')], text=True)
+    assert re.search(r'\bmov\s+\$0x3,%eax', yield_code) and re.search(r'\bint\s+\$0x80', yield_code)
+    assert not re.search(r'\bsyscall\b', yield_code)
     sigset = report['diagnostic_objects']['sigset']
     assert sigset['exit_code'] == 0 and digest(build / 'signal/sigset.o') == sigset['sha256']
     sigset_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'signal/sigset.o')], text=True)

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 """Run the freestanding XOS thread bridge in a real, privately booted guest."""
+import argparse
 import hashlib
 import json
 import shutil
@@ -23,6 +24,9 @@ def sha(path):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--yield-build', type=Path, help='G1 diagnostic output containing the real target sched_yield object')
+    args = parser.parse_args()
     build = root/'build'
     overlay = root/'src/ports/glibc/sysdeps/xos'
     fixture = root/'tests/fixtures/glibc_g1'
@@ -45,12 +49,28 @@ def main():
            '-fno-stack-protector', '-ffreestanding', '-nostdlib', '-static', '-no-pie',
            '-Wl,--build-id=none', '-T', str(sources[1]), '-I', str(overlay),
            str(sources[0]), str(sources[2]), '-o', str(probe)]
+    yield_provenance = None
+    if args.yield_build:
+        candidate = args.yield_build.resolve(strict=True)
+        source_report = candidate/'report.json'
+        source_data = json.loads(source_report.read_text())
+        yield_object = candidate/'configure/posix/sched_yield.o'
+        yield_source = overlay/'sched_yield.c'
+        assert source_data['nptl_backend_experimental'] and not source_data['hacker_mode']
+        assert not source_data['synthetic_abi_tag'] and source_data['sysroot_enforced']
+        assert source_data['xos_overlay_sha256']['xos/sched_yield.c'] == sha(yield_source)
+        assert source_data['diagnostic_objects']['sched_yield']['exit_code'] == 0
+        assert source_data['diagnostic_objects']['sched_yield']['sha256'] == sha(yield_object)
+        inputs[str(yield_source.relative_to(root))] = sha(yield_source)
+        sources.append(yield_source)
+        yield_provenance = {'report_sha256': sha(source_report), 'object_sha256': sha(yield_object)}
+        cmd[-2:-2] = ['-DXOS_GLIBC_TEST_YIELD', str(yield_object)]
     subprocess.run(cmd, check=True)
     assert inputs == {str(path.relative_to(root)): sha(path) for path in sources}
     report = {'status': 'failed', 'scope': 'freestanding XOS thread bridge; no glibc linked',
               'build_id': system['build_id'], 'system_manifest_sha256': sha(system_manifest),
               'image_sha256': sha(image), 'probe_sha256': sha(probe), 'inputs': inputs,
-              'compiler_command': cmd, 'compiler_sha256': sha(compiler), 'checks': []}
+              'compiler_command': cmd, 'compiler_sha256': sha(compiler), 'yield_provenance': yield_provenance, 'checks': []}
     guest = None
     try:
         with tempfile.TemporaryDirectory(prefix='xos_glibc_bridge_') as folder:
@@ -78,6 +98,10 @@ def main():
             assert sha(probe) == report['probe_sha256'] and sha(compiler) == report['compiler_sha256']
             report['checks'] = ['start_failure_rollback', 'prepare_start_native_traps',
                                 'child_tls_and_exit', 'join_value', 'four_runs_resources_restored']
+            if yield_provenance is not None:
+                assert sha(source_report) == yield_provenance['report_sha256']
+                assert sha(yield_object) == yield_provenance['object_sha256']
+                report['checks'].append('glibc_target_sched_yield_between_threads')
             report['resources'] = before
             report['output'] = outputs
             report['status'] = 'passed_subset'

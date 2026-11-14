@@ -1,0 +1,34 @@
+{
+  "format_version": 1,
+  "id": "zlib",
+  "name": "zlib",
+  "upstream_version": "1.3.1",
+  "license": [
+    "Zlib"
+  ],
+  "homepage": "https://zlib.net/",
+  "source": {
+    "kind": "tarball",
+    "lock": "source_lock.json"
+  },
+  "build": {
+    "system": "custom",
+    "recipe": "build.py",
+    "patches": []
+  },
+  "package": {
+    "id": "thirdparty.zlib",
+    "target_profile": "xos-x86_64-static-single-b2-v1",
+    "xpk_sha256": "3f00b879fc9db9986eb0208c08c2e18a7053f4da19122ff9bd8c2206593b4581"
+  },
+  "integration": {
+    "guest_only": true,
+    "bootstrap_images": [],
+    "iso_members": []
+  },
+  "status": "guest_verified",
+  "note": "zlib 1.3.1：libz.a + 头文件 + minigzip；零上游补丁。xsh 与 dash 均运行已安装 /usr/bin/minigzip。",
+  "evidence": [
+    "docs/reports/zlib_1_3_1_20261113/README.md"
+  ]
+}

@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import shlex
 import shutil
 import subprocess
 import sys
@@ -83,9 +84,10 @@ def main():
         raise SystemExit(f"ports/jq: compiler targets {machine}, expected x86_64-elf")
 
     libgcc = subprocess.check_output([cc, "-print-libgcc-file-name"], text=True).strip()
-    cflags = (f"-O2 -mno-red-zone -fno-pie -fno-pic -fno-stack-protector "
-              f"-idirafter {sdk}/include -D_POSIX_THREADS=1 "
-              "-D_POSIX_READER_WRITER_LOCKS=200809L -D_UNIX98_THREAD_MUTEX_ATTRIBUTES=1")
+    cflags = ["-O2", "-mno-red-zone", "-fno-pie", "-fno-pic",
+              "-fno-stack-protector", f"-idirafter", f"{sdk}/include",
+              "-D_POSIX_THREADS=1", "-D_POSIX_READER_WRITER_LOCKS=200809L",
+              "-D_UNIX98_THREAD_MUTEX_ATTRIBUTES=1"]
     prefix = work / "onig-prefix"
     (prefix / "include").mkdir(parents=True)
     (prefix / "lib").mkdir()
@@ -101,11 +103,11 @@ def main():
     onig_build = work / "onig-build"
     run([cmake, "-S", str(onig_source), "-B", str(onig_build),
          f"-DCMAKE_TOOLCHAIN_FILE={toolchain}", "-DBUILD_SHARED_LIBS=OFF",
-         "-DCMAKE_BUILD_TYPE=Release", f"-DCMAKE_C_FLAGS={cflags}"])
+         "-DCMAKE_BUILD_TYPE=Release", f"-DCMAKE_C_FLAGS={shlex.join(cflags)}"])
     run([cmake, "--build", str(onig_build), "--target", "onig", "-j", "4"])
     configure = ["./configure", "--host=x86_64-elf", "--build=aarch64-apple-darwin",
                  f"--with-oniguruma={prefix}", "--disable-maintainer-mode", "--disable-docs",
-                 "--disable-shared", "--enable-static", f"CC={cc}", f"CFLAGS={cflags}",
+                 "--disable-shared", "--enable-static", f"CC={cc}", f"CFLAGS={shlex.join(cflags)}",
                  f"LDFLAGS=-nostdlib -static -no-pie -T {sdk}/user.ld {sdk}/crt0_posix.o",
                  "LIBS=-Wl,--start-group "
                  f"{sdk}/lib/libxos.a {sdk}/lib/libxos_loader.a {sdk}/lib/libc.a "
@@ -126,7 +128,7 @@ def main():
     dec_objects = []
     for name in ("decContext.c", "decNumber.c"):
         target = work / (Path(name).stem + ".o")
-        run([cc, *cflags.split(), "-I", str(source / "vendor/decNumber"),
+        run([cc, *cflags, "-I", str(source / "vendor/decNumber"),
              "-c", str(source / "vendor/decNumber" / name), "-o", str(target)])
         dec_objects.append(str(target))
     binary_source = work / "jq"

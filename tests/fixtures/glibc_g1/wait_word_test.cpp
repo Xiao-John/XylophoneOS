@@ -1,14 +1,17 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 #include "xos_wait_word.h"
 #include "xos_lll_futex.h"
+#include "xos_timed_wait.h"
 #include <errno.h>
 #include <xos/thread_abi.hpp>
 
 static xos_u64 last_number, last_first, last_second;
 static struct xos_wait_word_request observed;
 static xos_i64 next_result;
+static unsigned trap_calls;
 extern "C" xos_i64 __xos_wait_test_call (xos_u64 number, xos_u64 first, xos_u64 second)
 {
+  ++trap_calls;
   last_number = number; last_first = first; last_second = second;
   if (number == xos::sys_wait_word) observed = *(const struct xos_wait_word_request *) first;
   return next_result;
@@ -52,5 +55,22 @@ int main ()
   if (__xos_lll_wait (&word, 7) != -ENOMEM) return 13;
   next_result = xos::process_error_invalid;
   if (__xos_lll_wake (&word, 2) != -EINVAL) return 14;
+  next_result = 0;
+  if (__xos_wait_monotonic (&word, 7, 1, 5, 42) != 0 ||
+      observed.deadline_ns != 5000000042ULL) return 15;
+  if (__xos_wait_monotonic (&word, 7, 0, -1, -1) != 0 ||
+      observed.deadline_ns != xos::thread_deadline_infinite) return 16;
+  if (__xos_wait_monotonic (&word, 7, 1, 18446744073LL, 709551614L) != 0 ||
+      observed.deadline_ns != xos::thread_deadline_infinite - 1) return 17;
+  unsigned before = trap_calls;
+  if (__xos_wait_monotonic (&word, 7, 1, 18446744073LL, 709551615L) != EOVERFLOW ||
+      __xos_wait_monotonic (&word, 7, 1, -1, 0) != ETIMEDOUT ||
+      __xos_wait_monotonic (&word, 7, 1, 1, -1) != EINVAL ||
+      __xos_wait_monotonic (&word, 7, 1, 1, 1000000000L) != EINVAL ||
+      trap_calls != before) return 18;
+  next_result = xos::thread_value_changed;
+  if (__xos_wait_monotonic (&word, 7, 1, 1, 0) != EAGAIN) return 19;
+  next_result = xos::thread_error_timeout;
+  if (__xos_wait_monotonic (&word, 7, 1, 1, 0) != ETIMEDOUT) return 20;
   return 0;
 }

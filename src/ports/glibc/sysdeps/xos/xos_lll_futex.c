@@ -4,8 +4,8 @@
 #include "xos_lll_futex.h"
 #include "xos_wait_word.h"
 
-static int
-translate_wait (xos_i64 result)
+int
+__xos_translate_wait (xos_i64 result)
 {
   switch (result)
     {
@@ -23,7 +23,7 @@ translate_wait (xos_i64 result)
 int
 __xos_lll_wait (unsigned int *word, unsigned int expected)
 {
-  return translate_wait (__xos_wait_word (word, expected, ~(xos_u64) 0));
+  return __xos_translate_wait (__xos_wait_word (word, expected, ~(xos_u64) 0));
 }
 
 int
@@ -33,5 +33,5 @@ __xos_lll_wake (unsigned int *word, int count)
     return -EINVAL;
   xos_i64 result = __xos_wake_word (word, (xos_u32) count);
   /* glibc low-level callers want zero for any nonnegative wake count.  */
-  return result >= 0 ? 0 : translate_wait (result);
+  return result >= 0 ? 0 : __xos_translate_wait (result);
 }

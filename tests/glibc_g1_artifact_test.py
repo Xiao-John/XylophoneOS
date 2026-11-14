@@ -205,6 +205,13 @@ def main():
     for name in ('freopen.o', 'freopen64.o'):
         code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'libio' / name)], text=True)
         assert '__fd_to_filename' in code and '_IO_file_close_maybe_unlink' in code
+    for name in ('xos_timed_wait', 'futex-internal'):
+        item = report['diagnostic_objects'][name]
+        assert item['exit_code'] == 0 and digest(build / ('nptl/' + name + '.o')) == item['sha256']
+        assert '../sysdeps/xos/' + name + '.c' in (output / (name + '-dependencies.d')).read_text()
+    timed_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'nptl/futex-internal.o')], text=True)
+    assert '__xos_wait_monotonic' in timed_code and re.search(r'\bud2\b', timed_code)
+    assert not re.search(r'\b(syscall|int)\b', timed_code)
     secure = report['diagnostic_objects']['check_fds']
     assert secure['exit_code'] == 0 and digest(build / 'csu/check_fds.o') == secure['sha256']
     assert '../sysdeps/xos/check_fds.c' in (output / 'check_fds-dependencies.d').read_text()

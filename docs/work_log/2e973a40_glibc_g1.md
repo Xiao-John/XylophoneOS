@@ -154,3 +154,13 @@ XOS 当前没有可用来重开任意已打开文件描述符、且与 Linux `/p
 宿主负向测试验证两种返回约定和 errno，目标对象反汇编确认返回值、失败 trap 且无 syscall 指令；目标对象 SHA-256 `d8879cfd3a207249c87879cf4f28b39e2197f2dfee5a475e07c1a733cfa6aff2`。干净构建越过原 `cancellation.c` 参数错误，下一阻塞在上游 `futex-internal.c` 对原子头及 Linux futex/可取消 syscall 的依赖。已有私有无超时 wait 桥不能自动等同于其定时、实时钟、取消、共享和 PI 语义。头文件安装仍为 335 项且目标客户端缺失 `gnu/stubs.h`；完整 libc、SDK 与客体运行均未通过。
 
 取消负向测试、wait 桥、线程退出、描述符失败、探针防护与对象/符号/来源检查均通过；报告 SHA-256 `9e212c0d9e2b45ed63a4c821c4c4e3667e7d9e9400c6a43601b29e11d719f45a`。G1 保持 partial。
+
+## 继续：单调绝对时间等待（2026-11-14）
+
+新增 XOS 私有单调时钟等待转换及 glibc `__futex_abstimed_wait64` 的实验后端：绝对秒/纳秒转换为 XOS 纳秒期限，保留空超时的无限等待；负秒返回 `ETIMEDOUT`、非规范纳秒返回 `EINVAL`，无法表示的有限期限及与 `UINT64_MAX` 无限哨兵冲突返回 `EOVERFLOW`。XOS 原始值变化与超时映射到 glibc 错误，glibc 调用方不会处理的其他内核/资源错误调用 fatal，避免被忽略后无限重试。该接口只处理私有单调等待，不处理 realtime 或跨进程共享。
+
+可取消等待和进程共享路径明确 trap；PI 路径也 trap：审查发现部分 NPTL PI 锁调用方不会检查 `ENOTSUP`，若简单返回该值可能错误地继续执行并当作已获得锁。当前 `futex_abstimed_supported_clockid` 仍不对外宣称时钟支持，相关 API 尚未验收，不能以这个内部片段声称条件变量、取消或 POSIX 线程可用。
+
+宿主模拟测试覆盖有限和无限期限、边界及溢出、无效纳秒、原始错误转换，以及共享/取消/PI/意外错误的终止分支；目标编译实际选中 XOS `futex-internal.c`，生成的两个目标对象分别为 `a198e2cd8f7f93d47c0e18f375bc854a5a7cdf970363a38dcb0dc1a1b1be94a0`、`95ce27777718c6cdf10991be031e00c8868cd5205b16cc24ef77ed56ad95f77c`。现有取消、线程退出、路径、wait 桥、符号、来源与探针检查通过，未运行客体。
+
+完整 make 已越过原 Linux futex 接口错误，下一阻塞为上游 `nptl_setxid.c` 依赖 Linux `SIGSETXID`、`SI_TKILL` 和系统调用约定；它须与 XOS 权限/身份模型对齐，不能伪造 Linux 凭据语义。独立头文件客户端仍缺少 `gnu/stubs.h`。报告 SHA-256 `3337b801a6fd06c24ae34b1d30ba618c055186a7ae5c5782255862d56fad4dac`；G1 仍 partial。

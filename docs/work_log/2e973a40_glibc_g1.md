@@ -164,3 +164,11 @@ XOS 当前没有可用来重开任意已打开文件描述符、且与 Linux `/p
 宿主模拟测试覆盖有限和无限期限、边界及溢出、无效纳秒、原始错误转换，以及共享/取消/PI/意外错误的终止分支；目标编译实际选中 XOS `futex-internal.c`，生成的两个目标对象分别为 `a198e2cd8f7f93d47c0e18f375bc854a5a7cdf970363a38dcb0dc1a1b1be94a0`、`95ce27777718c6cdf10991be031e00c8868cd5205b16cc24ef77ed56ad95f77c`。现有取消、线程退出、路径、wait 桥、符号、来源与探针检查通过，未运行客体。
 
 完整 make 已越过原 Linux futex 接口错误，下一阻塞为上游 `nptl_setxid.c` 依赖 Linux `SIGSETXID`、`SI_TKILL` 和系统调用约定；它须与 XOS 权限/身份模型对齐，不能伪造 Linux 凭据语义。独立头文件客户端仍缺少 `gnu/stubs.h`。报告 SHA-256 `3337b801a6fd06c24ae34b1d30ba618c055186a7ae5c5782255862d56fad4dac`；G1 仍 partial。
+
+## 继续：凭据切换与 pthread 取消的真实失败（2026-11-14）
+
+依据 [XOS 权限设计](../plans/permission_model_glibc.md)，`set*id` 身份切换尚未实现，uid/gid 也不能自行扩大 authority。XOS 后端的 `__nptl_setxid` 不调用 Linux syscall、不发送 `SIGSETXID`，保留请求内容并返回 -1、设置 `ENOSYS`；误入 Linux 式凭据同步信号处理入口时 trap。这个实验入口不提供身份切换，不决定后续身份/委派契约，也不以 uid 值授权。
+
+当前 XOS 线程契约不支持取消，目标 `pthread_cancel` 因此按 pthread 约定直接返回 `ENOTSUP`，不修改 errno；不采用 Linux 的 `SIGCANCEL` 与 `SI_TKILL`。宿主负向测试验证凭据请求不变、失败返回及处理器 trap，另验证取消错误和 errno 不变；目标对象符号、错误值、隐藏可见性及无 Linux syscall 的检查通过。真实 XOS 客体、信号及 pthread 取消行为尚未验收。
+
+从锁定归档干净重建时，完整 make 越过凭据同步及取消源文件，继续至 `pthread_create.c` 缺少 `rseq-internal.h` 退出 2；rseq、线程创建和 TLS 仍须依赖实际 XOS 后端，不能只复制 Linux 定义。`install-headers` 完成 335 项，独立目标客户端仍因缺少 `gnu/stubs.h` 失败。`nptl_setxid.o`、`pthread_cancel.o` 的 SHA-256 为 `ff29ed23de54dfbd11bd6aed892e19362a516348fa18ff007da4e75d4a33468d`、`5187234f829b607bb2cc23eaedf1dbc34502f99248d9b34de8831b2b4889e122`；报告 SHA-256 `54f86b1116d22fa2339ee448a952547dcd290b60b892d3d3b4ad4010cfd1275e`。全部现有 G1 宿主/目标对象探针通过；完整 libc、SDK 和客体运行未通过，G1 保持 partial。

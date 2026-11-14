@@ -212,6 +212,22 @@ def main():
     timed_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'nptl/futex-internal.o')], text=True)
     assert '__xos_wait_monotonic' in timed_code and re.search(r'\bud2\b', timed_code)
     assert not re.search(r'\b(syscall|int)\b', timed_code)
+    xid = report['diagnostic_objects']['nptl_setxid']
+    assert xid['exit_code'] == 0 and digest(build / 'nptl/nptl_setxid.o') == xid['sha256']
+    assert '../sysdeps/xos/nptl_setxid.c' in (output / 'nptl_setxid-dependencies.d').read_text()
+    xid_obj = build / 'nptl/nptl_setxid.o'
+    xid_symbols = subprocess.check_output(['x86_64-elf-readelf', '-Ws', str(xid_obj)], text=True)
+    for name in ('__nptl_setxid', '__nptl_setxid_sighandler'):
+        assert re.search(r'GLOBAL\s+HIDDEN\s+\d+\s+' + name + r'\b', xid_symbols)
+    xid_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(xid_obj)], text=True)
+    assert '$0x58' in xid_code and re.search(r'\bud2\b', xid_code)
+    assert not re.search(r'\b(syscall|int)\b', xid_code)
+    pthread_cancel = report['diagnostic_objects']['pthread_cancel']
+    assert pthread_cancel['exit_code'] == 0 and digest(build / 'nptl/pthread_cancel.o') == pthread_cancel['sha256']
+    assert '../sysdeps/xos/pthread_cancel.c' in (output / 'pthread_cancel-dependencies.d').read_text()
+    cancel_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'nptl/pthread_cancel.o')], text=True)
+    assert '$0x86,%eax' in cancel_code and '__libc_errno' not in cancel_code
+    assert not re.search(r'\b(syscall|int)\b', cancel_code)
     secure = report['diagnostic_objects']['check_fds']
     assert secure['exit_code'] == 0 and digest(build / 'csu/check_fds.o') == secure['sha256']
     assert '../sysdeps/xos/check_fds.c' in (output / 'check_fds-dependencies.d').read_text()

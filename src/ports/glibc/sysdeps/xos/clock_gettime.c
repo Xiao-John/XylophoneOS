@@ -4,26 +4,9 @@
 #include <time.h>
 #include <shlib-compat.h>
 #include "xos_cpu_time.h"
+#include "xos_clock.h"
 
 _Static_assert (sizeof (struct xos_cpu_time) == 72, "XOS CPU time ABI");
-
-static long int
-xos_clock_trap (unsigned long number, unsigned long first)
-{
-#ifdef XOS_GLIBC_CLOCK_TEST
-  extern long int __xos_clock_test_trap (unsigned long, unsigned long);
-  return __xos_clock_test_trap (number, first);
-#else
-# if !defined __x86_64__ || defined __ILP32__
-#  error "XOS clock_gettime supports x86-64 LP64 only"
-# endif
-  long int value;
-  __asm__ volatile ("int $0x80" : "=a" (value)
-                    : "a" (number), "D" (first), "S" (0UL), "d" (0UL)
-                    : "memory", "cc");
-  return value;
-#endif
-}
 
 int
 __clock_gettime (clockid_t clock_id, struct timespec *tp)
@@ -32,7 +15,7 @@ __clock_gettime (clockid_t clock_id, struct timespec *tp)
   if (clock_id == CLOCK_PROCESS_CPUTIME_ID || clock_id == CLOCK_THREAD_CPUTIME_ID)
     {
       struct xos_cpu_time sample = { .version = 1, .size = sizeof (sample) };
-      long int result = xos_clock_trap (89, (unsigned long) &sample);
+      long int result = __xos_clock_trap (89, (unsigned long) &sample);
       if (result != 0)
         {
           __set_errno (result == -19 ? ENOTSUP : result == -5 ? ENOMEM : EIO);
@@ -61,7 +44,7 @@ __clock_gettime (clockid_t clock_id, struct timespec *tp)
           __set_errno (EINVAL);
           return -1;
         }
-      long int value = xos_clock_trap (number, 0);
+      long int value = __xos_clock_trap (number, 0);
       if (value < 0)
         {
           /* The monotonic ABI returns unsigned nanoseconds via signed RAX;

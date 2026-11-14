@@ -13,10 +13,11 @@ with tempfile.TemporaryDirectory(prefix='xos_glibc_clock_') as tmp:
     exe = tmp/'test'
     subprocess.run(['clang', '-std=c11', '-Wall', '-Werror', '-DXOS_GLIBC_CLOCK_TEST', '-I', str(tmp), '-I', str(root/'src/ports/glibc/sysdeps/xos'),
                     str(root/'src/ports/glibc/sysdeps/xos/clock_gettime.c'),
+                    str(root/'src/ports/glibc/sysdeps/xos/clock_getres.c'),
                     str(root/'tests/fixtures/glibc_g1/clock_gettime_test.c'), '-o', str(exe)], check=True)
     subprocess.run([str(exe)], check=True)
     subprocess.run(['clang++', '-std=c++17', '-Wall', '-Werror',
                     '-I', str(root/'src/shared/include'), '-I', str(root/'src/ports/glibc/sysdeps/xos'),
                     str(root/'tests/fixtures/glibc_g1/cpu_time_abi_test.cpp'), '-o', str(exe)], check=True)
     subprocess.run([str(exe)], check=True)
-print('PASS clock selection, ns conversion and explicit failures')
+print('PASS clock readings, resolution, NULL and explicit failures')

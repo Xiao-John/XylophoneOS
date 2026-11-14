@@ -15,6 +15,7 @@ __thread int __libc_errno;
 #ifdef XOS_GLIBC_TEST_CLOCK
 struct test_timespec { long tv_sec, tv_nsec; };
 extern int __clock_gettime (int, struct test_timespec *);
+extern int __clock_getres (int, struct test_timespec *);
 #endif
 #ifdef XOS_GLIBC_TEST_GETPID
 extern int __getpid (void);
@@ -101,9 +102,21 @@ int guest_main (void)
       sample.tv_sec != 11 || sample.tv_nsec != 22) return 22;
 #endif
 #ifdef XOS_GLIBC_TEST_CLOCK
+  xos_i64 native_resolution = trap (46, 1, 0);
+  if (native_resolution <= 0 || __clock_getres (1, &sample) != 0) return 27;
+  if ((xos_u64) sample.tv_sec * 1000000000UL + (xos_u64) sample.tv_nsec != (xos_u64) native_resolution) return 28;
+  if (__clock_getres (0, 0) != 0) return 29;
   struct xos_cpu_time cpu_before = {.version = 1, .size = sizeof (cpu_before)};
   xos_i64 cpu_status = trap (89, (xos_u64) &cpu_before, 0);
   for (int which = 2; which <= 3; ++which) {
+    sample.tv_sec = 11; sample.tv_nsec = 22; __libc_errno = 0;
+    int resolution_result = __clock_getres (which, &sample);
+    if (cpu_status == -19) {
+      if (resolution_result != -1 || __libc_errno != 134 || sample.tv_sec != 11 || sample.tv_nsec != 22) return 30;
+    } else {
+      if (cpu_status != 0 || resolution_result != 0 ||
+          (xos_u64) sample.tv_sec * 1000000000UL + (xos_u64) sample.tv_nsec != cpu_before.resolution_ns) return 31;
+    }
     sample.tv_sec = 11; sample.tv_nsec = 22; __libc_errno = 0;
     int result = __clock_gettime (which, &sample);
     if (cpu_status == -19) {

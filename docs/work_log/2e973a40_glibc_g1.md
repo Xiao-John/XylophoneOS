@@ -268,3 +268,9 @@ XOS 提供单调纳秒 syscall 46 和 UTC 实时纳秒 syscall 64。新增实验
 `clock_gettime` 接入已有的 XOS `sys_process_cpu_time` v1，分别返回当前进程和当前线程的 user+system 纳秒总量；请求使用私有 C 布局，宿主编译逐字段对照共享 ABI。计数器不可用、资源不足、其他内核失败及累加溢出分别映射为 `ENOTSUP`、`ENOMEM`、`EIO` 和 `EOVERFLOW`，失败不写输出。其他进程/线程的 CPU 时钟、用户指针故障及完整 POSIX 时钟语义仍未实现或验收。
 
 宿主模拟覆盖两个时钟的字段选择、转换、溢出和错误；目标对象及全部依赖来源检查通过。目标对象 SHA-256 `6309c5883c74e1cf893ec4ff2bbaa8e53f512e1763c12cf378c7f5afbf714e4f`，报告 SHA-256 `57751a7b9a8b7a1c938152eadde9afc95f85bd86d0640c0c5cdfddbf3c409775`。客体探针对照同一进程的内核原始计数，若计数器不可用则检查明确失败；最终提交后重新构建并记录实际可用状态。完整 libc、SDK 和 pthread 仍未完成，G1 保持 partial。
+
+## 继续：时钟精度查询（2026-11-14）
+
+XOS 单调时钟和实时钟按现有契约使用 syscall 46 的分辨率；当前进程与线程 CPU 时钟使用版本化 CPU 计数响应中的分辨率。新增候选 glibc `clock_getres`，支持标准允许的空结果指针；对未知时钟、计数不可用和异常分辨率明确失败，不虚报精度。`clock_gettime` 与 `clock_getres` 共用私有原生陷入封装，不使用 Linux 系统调用号。
+
+宿主测试覆盖四类时钟、空指针、换算、零值和内核错误；干净目标构建与全部对象来源检查通过。`clock_getres.o` SHA-256 `13cd309eeab6f6265aca6902dc66ee10036d5296a3412bba2dca0bcf22b24c09`，报告 SHA-256 `4cfb86c176cb90d3dfc88b048e43ad5b29898d19ee79d5ad9ac70df25f207fe3`。扩展的客体探针将目标对象与内核原始精度对照，并区分 CPU 计数可用与不可用；提交后须重新运行。其他进程/线程的 CPU 时钟、用户指针故障和完整 libc 尚未验收，G1 仍为 partial。

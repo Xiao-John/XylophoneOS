@@ -90,18 +90,27 @@ def main():
         clock_data = json.loads(clock_report.read_text())
         clock_object = clock_candidate/'configure/time/clock_gettime.o'
         clock_source = overlay/'clock_gettime.c'
+        res_source = overlay/'clock_getres.c'
+        res_object = clock_candidate/'configure/time/clock_getres.o'
+        clock_helper = overlay/'xos_clock.h'
         clock_header = overlay/'xos_cpu_time.h'
         assert clock_data['nptl_backend_experimental'] and not clock_data['hacker_mode']
         assert not clock_data['synthetic_abi_tag'] and clock_data['sysroot_enforced']
         assert clock_data['xos_overlay_sha256']['xos/clock_gettime.c'] == sha(clock_source)
         assert clock_data['diagnostic_objects']['clock_gettime']['exit_code'] == 0
         assert clock_data['diagnostic_objects']['clock_gettime']['sha256'] == sha(clock_object)
+        assert clock_data['diagnostic_objects']['clock_getres']['exit_code'] == 0
+        assert clock_data['diagnostic_objects']['clock_getres']['sha256'] == sha(res_object)
+        assert clock_data['xos_overlay_sha256']['xos/clock_getres.c'] == sha(res_source)
+        assert clock_data['xos_overlay_sha256']['xos/xos_clock.h'] == sha(clock_helper)
         assert clock_data['xos_overlay_sha256']['xos/xos_cpu_time.h'] == sha(clock_header)
         inputs[str(clock_source.relative_to(root))] = sha(clock_source)
         inputs[str(clock_header.relative_to(root))] = sha(clock_header)
-        sources.extend([clock_source, clock_header])
-        clock_provenance = {'report_sha256': sha(clock_report), 'object_sha256': sha(clock_object)}
-        cmd[-2:-2] = ['-DXOS_GLIBC_TEST_CLOCK', str(clock_object)]
+        inputs[str(res_source.relative_to(root))] = sha(res_source)
+        inputs[str(clock_helper.relative_to(root))] = sha(clock_helper)
+        sources.extend([clock_source, clock_header, res_source, clock_helper])
+        clock_provenance = {'report_sha256': sha(clock_report), 'object_sha256': sha(clock_object), 'resolution_sha256': sha(res_object)}
+        cmd[-2:-2] = ['-DXOS_GLIBC_TEST_CLOCK', str(clock_object), str(res_object)]
     subprocess.run(cmd, check=True)
     assert inputs == {str(path.relative_to(root)): sha(path) for path in sources}
     report = {'status': 'failed', 'scope': 'freestanding XOS thread bridge; no glibc linked',
@@ -146,11 +155,13 @@ def main():
             if clock_provenance is not None:
                 assert sha(clock_report) == clock_provenance['report_sha256']
                 assert sha(clock_object) == clock_provenance['object_sha256']
+                assert sha(res_object) == clock_provenance['resolution_sha256']
                 report['checks'].append('glibc_target_clock_matches_native_and_rejects_unknown')
                 for output in outputs:
                     assert '[g1] cpu_time=available' in output or '[g1] cpu_time=unavailable' in output
                 report['cpu_time_modes'] = ['available' if '[g1] cpu_time=available' in output else 'unavailable' for output in outputs]
                 report['checks'].append('glibc_target_cpu_clock_matches_native_or_reports_unavailable')
+                report['checks'].append('glibc_target_clock_resolution_matches_native')
             report['resources'] = before
             report['output'] = outputs
             report['status'] = 'passed_subset'

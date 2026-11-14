@@ -121,7 +121,7 @@ def main():
             make_result = subprocess.run(['gnumake', '-j1'], cwd=build, env=env, stdout=log, stderr=subprocess.STDOUT)
     objects = {}
     if backend and make_result is not None:
-        for subdir, name in (('stdlib', 'abs'), ('posix', '_exit'), ('csu', 'abi-note'), ('csu', 'check_fds'), ('nptl', 'xos_wait_word'), ('nptl', 'xos_lll_futex'), ('nptl', 'xos_thread_exit'), ('nptl', 'xos_thread_create'), ('nptl', 'xos_thread_tls'), ('signal', 'sigset'), ('misc', 'fd_to_filename'), ('nptl', 'cancellation'), ('nptl', 'xos_timed_wait'), ('nptl', 'futex-internal'), ('nptl', 'nptl_setxid'), ('nptl', 'pthread_cancel'), ('nptl', 'sem_init'), ('nptl', 'sem_post'), ('posix', 'sched_yield'), ('posix', 'getpid'), ('time', 'clock_gettime')):
+        for subdir, name in (('stdlib', 'abs'), ('posix', '_exit'), ('csu', 'abi-note'), ('csu', 'check_fds'), ('nptl', 'xos_wait_word'), ('nptl', 'xos_lll_futex'), ('nptl', 'xos_thread_exit'), ('nptl', 'xos_thread_create'), ('nptl', 'xos_thread_tls'), ('signal', 'sigset'), ('misc', 'fd_to_filename'), ('nptl', 'cancellation'), ('nptl', 'xos_timed_wait'), ('nptl', 'futex-internal'), ('nptl', 'nptl_setxid'), ('nptl', 'pthread_cancel'), ('nptl', 'sem_init'), ('nptl', 'sem_post'), ('posix', 'sched_yield'), ('posix', 'getpid'), ('time', 'clock_gettime'), ('time', 'clock_getres')):
             (build / subdir).mkdir(exist_ok=True)
             target_object = build / subdir / (name + '.o')
             with (output / (name + '-object.log')).open('w') as log:

@@ -271,6 +271,11 @@ def main():
     assert '../sysdeps/xos/clock_gettime.c' in (output / 'clock_gettime-dependencies.d').read_text()
     clock_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'time/clock_gettime.o')], text=True)
     assert re.search(r'\bint\s+\$0x80', clock_code) and not re.search(r'\bsyscall\b', clock_code)
+    resolution_item = report['diagnostic_objects']['clock_getres']
+    assert resolution_item['exit_code'] == 0 and digest(build / 'time/clock_getres.o') == resolution_item['sha256']
+    assert '../sysdeps/xos/clock_getres.c' in (output / 'clock_getres-dependencies.d').read_text()
+    resolution_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'time/clock_getres.o')], text=True)
+    assert re.search(r'\bint\s+\$0x80', resolution_code) and not re.search(r'\bsyscall\b', resolution_code)
     sigset = report['diagnostic_objects']['sigset']
     assert sigset['exit_code'] == 0 and digest(build / 'signal/sigset.o') == sigset['sha256']
     sigset_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'signal/sigset.o')], text=True)

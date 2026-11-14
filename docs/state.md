@@ -1,4 +1,12 @@
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:90931ae2e9c35f122f69d6a2d8f97553c7bb0665dfec150942b8dded8a6e49c4 -->
+
 # XOS 当前状态（全局快照）
+
+线程时钟错误返回修复（分支验证）：三项 review 问题已修复，宿主 wrapper 测试通过；客体测试缺工具链和 SDK 未运行。[记录](work_log/7bc4cfb8_threaded_clock_error_returns.md)。
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 2026-11-04 · 快照（发版后更新）。按 [Discipline](Discipline.md) 的 state.md 规则，本文件只在整体变动
 时刻（功能 PR 合入 main、Release、里程碑）由当时的合并者更新；行级细节与证据见各

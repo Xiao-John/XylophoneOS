@@ -33,7 +33,9 @@ def main():
     assert digest(root / 'src/ports/glibc/patches/0004-sigset-error-pointer.patch') == report['sigset_patch_sha256']
     for filename, key in (('0005-raise-hidden-alias.patch', 'raise_patch_sha256'),
                           ('0006-sigwait-failure.patch', 'sigwait_patch_sha256'),
-                          ('0007-arc4random-atomic-include.patch', 'atomic_patch_sha256')):
+                          ('0007-arc4random-atomic-include.patch', 'atomic_patch_sha256'),
+                          ('0008-freopen-no-fd-path.patch', 'freopen_patch_sha256'),
+                          ('0009-dlerror-errno-include.patch', 'dlerror_patch_sha256')):
         assert digest(root / 'src/ports/glibc/patches' / filename) == report[key]
     assert report['status'] == 'diagnostic_only' and report['nptl_backend_experimental'] and not report['synthetic_abi_tag']
     assert report['sysroot_enforced'] and report['configure_exit_code'] == 0
@@ -157,7 +159,8 @@ def main():
     assert digest(root / 'usr/include/bits/types/idtype_t.h') == digest(source / 'sysdeps/xos/bits/types/idtype_t.h')
     assert digest(output / 'header-client.log') == report['header_client']['log_sha256']
     assert 'gnu/stubs.h' in (output / 'header-client.log').read_text()
-    for name in ('signal/raise.os', 'signal/sigwait.os', 'stdlib/arc4random.o'):
+    for name in ('signal/raise.os', 'signal/sigwait.os', 'stdlib/arc4random.o',
+                 'libio/freopen.o', 'libio/freopen64.o', 'dlfcn/dlerror.o'):
         assert digest(build / name) == report['built_objects'][name]
     symbols = subprocess.check_output(['x86_64-elf-readelf', '-Ws', str(build / 'signal/raise.os')], text=True)
     assert re.search(r'GLOBAL\s+HIDDEN\s+\d+\s+__GI_raise\b', symbols)
@@ -187,6 +190,12 @@ def main():
     adapter = report['diagnostic_objects']['xos_lll_futex']
     assert adapter['exit_code'] == 0 and digest(build / 'nptl/xos_lll_futex.o') == adapter['sha256']
     assert '../sysdeps/xos/xos_lll_futex.c' in (output / 'xos_lll_futex-dependencies.d').read_text()
+    fd_path = report['diagnostic_objects']['fd_to_filename']
+    assert fd_path['exit_code'] == 0 and digest(build / 'misc/fd_to_filename.o') == fd_path['sha256']
+    assert '../sysdeps/xos/fd_to_filename.c' in (output / 'fd_to_filename-dependencies.d').read_text()
+    for name in ('freopen.o', 'freopen64.o'):
+        code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'libio' / name)], text=True)
+        assert '__fd_to_filename' in code and '_IO_file_close_maybe_unlink' in code
     secure = report['diagnostic_objects']['check_fds']
     assert secure['exit_code'] == 0 and digest(build / 'csu/check_fds.o') == secure['sha256']
     assert '../sysdeps/xos/check_fds.c' in (output / 'check_fds-dependencies.d').read_text()

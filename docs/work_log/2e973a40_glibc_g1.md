@@ -138,3 +138,11 @@ GNU glibc 2.44 的通用 `sigset` 失败桩在目标 GCC 16 下因返回整数 -
 干净归档、私有 sysroot 和已记录工具链构建已越过前述失败，`signal/raise.os`、`signal/sigwait.os` 和 `stdlib/arc4random.o` 均实际产生并记录散列。完整 make 下一处失败是 `libio/freopen.c` 所需 `arch-fd_to_filename.h` 尚无 XOS 实现；XOS 当前不能假定 Linux `/proc/self/fd` 语义。头文件安装退出 0，但目标客户端仍缺少由完整 libc 生成的 `gnu/stubs.h`，不是合格 SDK。报告 SHA-256 `224b1d83e87b7762641d2e18011a3f14ab37184e5cacf16413842bbbb6ee0511`。
 
 目标对象符号、失败语义、补丁与工具散列、保守锁路径、wait 和线程退出模拟、探针保护及依赖来源检查通过；未运行完整 libc 或客体。G1 继续为 partial。
+
+## 继续：无描述符路径时的 freopen 失败路径（2026-11-14）
+
+XOS 当前没有可用来重开任意已打开文件描述符、且与 Linux `/proc/self/fd` 等价的文件服务契约。新增 XOS 私有 `__fd_to_filename`，明确返回空指针和 `ENOTSUP`；候选补丁使 `freopen` 与 `freopen64` 检查该失败，关闭原文件流、保留错误并返回失败，而不是将空路径传给打开函数或构造未经授权的伪路径。有文件名的原有路径保留；`freopen(NULL, ...)` 在此实验后端尚不支持。该失败分支尚未在客体运行，不能视为完整 stdio 资格。
+
+独立宿主测试核对路径转换对有效及负描述符均返回空指针并设置 `ENOTSUP`；干净 XOS 目标构建实际生成 `fd_to_filename.o`、`freopen.o`、`freopen64.o`，对象来源及调用引用检查通过。`dlerror.c` 对 `__set_errno` 增加显式 `<errno.h>` 包含，避免依赖 Linux 头的间接包含；这只是编译修正，不意味着动态加载已实现。
+
+完整 make 已继续到 `nptl/cancellation.c`，在取消系统调用参数宏缺失处退出 2；不可借用 Linux 可取消 syscall 汇编来宣称支持。头文件安装仍完成 335 项，独立客户端因未生成 `gnu/stubs.h` 失败，sysroot 尚不可用。报告 SHA-256 `4d7627f3999bef3d917a40e01ac30d6b6c236f39ecc5a3bd68f57561f43eddcf`；描述符转换、等待桥、线程退出、目标符号与探针保护检查通过，尚无 glibc 客体运行。G1 继续为 partial。

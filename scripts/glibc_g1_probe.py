@@ -78,6 +78,10 @@ def main():
         subprocess.run(['patch', '-p1', '-i', str(sigwait_patch)], cwd=source, check=True)
         atomic_patch = ROOT / 'src/ports/glibc/patches/0007-arc4random-atomic-include.patch'
         subprocess.run(['patch', '-p1', '-i', str(atomic_patch)], cwd=source, check=True)
+        freopen_patch = ROOT / 'src/ports/glibc/patches/0008-freopen-no-fd-path.patch'
+        subprocess.run(['patch', '-p1', '-i', str(freopen_patch)], cwd=source, check=True)
+        dlerror_patch = ROOT / 'src/ports/glibc/patches/0009-dlerror-errno-include.patch'
+        subprocess.run(['patch', '-p1', '-i', str(dlerror_patch)], cwd=source, check=True)
         # This value is deliberately synthetic and is never an XOS ABI assignment.
         if args.synthetic_abi_tag:
             with (source / 'abi-tags').open('a') as file:
@@ -111,7 +115,7 @@ def main():
             make_result = subprocess.run(['gnumake', '-j1'], cwd=build, env=env, stdout=log, stderr=subprocess.STDOUT)
     objects = {}
     if backend and make_result is not None:
-        for subdir, name in (('stdlib', 'abs'), ('posix', '_exit'), ('csu', 'abi-note'), ('csu', 'check_fds'), ('nptl', 'xos_wait_word'), ('nptl', 'xos_lll_futex'), ('nptl', 'xos_thread_exit'), ('signal', 'sigset')):
+        for subdir, name in (('stdlib', 'abs'), ('posix', '_exit'), ('csu', 'abi-note'), ('csu', 'check_fds'), ('nptl', 'xos_wait_word'), ('nptl', 'xos_lll_futex'), ('nptl', 'xos_thread_exit'), ('signal', 'sigset'), ('misc', 'fd_to_filename')):
             (build / subdir).mkdir(exist_ok=True)
             target_object = build / subdir / (name + '.o')
             with (output / (name + '-object.log')).open('w') as log:
@@ -183,7 +187,7 @@ def main():
             header_client['object_sha256'] = digest(output / 'header-client.o')
     built_objects = {}
     if backend and make_result is not None:
-        for name in ('signal/raise.os', 'signal/sigwait.os', 'stdlib/arc4random.o'):
+        for name in ('signal/raise.os', 'signal/sigwait.os', 'stdlib/arc4random.o', 'libio/freopen.o', 'libio/freopen64.o', 'dlfcn/dlerror.o'):
             obj = build / name
             if obj.is_file():
                 built_objects[name] = digest(obj)
@@ -210,6 +214,8 @@ def main():
               'raise_patch_sha256': digest(raise_patch) if backend else None,
               'sigwait_patch_sha256': digest(sigwait_patch) if backend else None,
               'atomic_patch_sha256': digest(atomic_patch) if backend else None,
+              'freopen_patch_sha256': digest(freopen_patch) if backend else None,
+              'dlerror_patch_sha256': digest(dlerror_patch) if backend else None,
               'xos_overlay_sha256': {str(p.relative_to(ROOT / 'src/ports/glibc/sysdeps')): digest(p) for p in (ROOT / 'src/ports/glibc/sysdeps').rglob('*') if p.is_file()},
               'configure_log_sha256': digest(output/'configure.log'),
               'not_claimed': ['complete XOS sysdeps', 'target runtime', 'guest qualification', 'distributable source']}

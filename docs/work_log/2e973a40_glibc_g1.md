@@ -316,3 +316,9 @@ XOS 单调时钟和实时钟按现有契约使用 syscall 46 的分辨率；当�
 恢复构建环境时发现，glibc 配置脚本会调用未带目标前缀的 `readelf`；该工具缺失时配置仍可继续，但会错误关闭 x86 ISA 属性探测。探针现显式选择并记录 `x86_64-elf-readelf` 的真实路径，覆盖继承的 `READELF`，验证器检查配置日志与记录一致。
 
 在 PATH 不提供普通 `readelf` 且继承变量故意指向失败程序的条件下，干净配置正确检测到 ISA 属性支持；对象、来源和随机数目标对象验证通过。报告 SHA-256 `93b3e6c4bd324dcbdff7025cc13b1bd14086716da44bea08b3aedda72979d747`。完整构建仍在 `clone3.h` 失败，G1 保持 partial。
+
+## 继续：区分 C++ 前端与目标链接（2026-11-15）
+
+glibc configure 的 C++11/98 探针首先缺少 `<cstdlib>`，目标链接又缺少 crt0、libstdc++、libm 和 libc；不能据此认定语言前端不支持 C++。新增独立的 freestanding C++17 对象探针，禁用 C++ 默认头目录，仅检查 constexpr、模板和 `thread_local` 的目标代码及 TLS 符号；干净构建和对象来源检查通过，报告 SHA-256 `c28f6d53b8195e6e94c68ea547638aed48cc850a234789fafd4d79076d93cfa6`。
+
+该探针不链接或运行，不能证明标准库、异常、TLS 运行时或 C++ SDK 可用；完整 libc 构建仍停在 `clone3.h`，G1 保持 partial。

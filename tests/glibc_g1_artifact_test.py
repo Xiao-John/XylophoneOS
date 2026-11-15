@@ -50,6 +50,13 @@ def main():
     assert not report['hacker_mode'] and '--enable-hacker-mode' not in report['command']
     assert report['make_exit_code'] != 0 and report['header_install']['exit_code'] == 0
     assert report['header_client']['exit_code'] != 0
+    cxx_probe = report['cxx_freestanding']
+    assert cxx_probe['diagnostic_only'] and cxx_probe['exit_code'] == 0
+    assert digest(output / 'cxx-freestanding.cc') == cxx_probe['source_sha256']
+    assert digest(output / 'cxx-freestanding.o') == cxx_probe['object_sha256']
+    assert digest(output / 'cxx-freestanding.log') == cxx_probe['log_sha256']
+    cxx_elf = subprocess.check_output(['x86_64-elf-readelf', '--wide', '-h', '-s', str(output / 'cxx-freestanding.o')], text=True)
+    assert 'Advanced Micro Devices X86-64' in cxx_elf and re.search(r'\bTLS\b.*\bcxx_tls\b', cxx_elf)
     source = output / 'glibc-2.44'
     build = output / 'configure'
     with tarfile.open(args.archive) as tar:

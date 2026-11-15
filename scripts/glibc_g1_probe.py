@@ -242,6 +242,25 @@ def main():
     if dependency_manifest:
         (output / 'dependency-manifest.json').write_text(
             json.dumps(dependency_manifest, sort_keys=True, indent=2) + '\n')
+    # A cross C++ frontend can compile language features even when glibc's
+    # configure cannot link a target program or find C++ standard headers.
+    # Keep this freestanding result separate from SDK and runtime qualification.
+    cxx_probe = None
+    if backend and make_result is not None:
+        cxx_source = output / 'cxx-freestanding.cc'
+        cxx_source.write_text('template<class T> constexpr T twice(T v) { return v + v; }\n'
+                              'thread_local int cxx_tls = 7;\n'
+                              'static_assert(twice(3) == 6, "constexpr");\n'
+                              'int probe() { return cxx_tls + twice(2); }\n')
+        cxx_object = output / 'cxx-freestanding.o'
+        with (output / 'cxx-freestanding.log').open('w') as log:
+            cxx_result = subprocess.run([env['CXX'], '-std=c++17', '-nostdinc++', '-ffreestanding',
+                                         '-fno-exceptions', '-fno-rtti', '-c', str(cxx_source),
+                                         '-o', str(cxx_object)], stdout=log, stderr=subprocess.STDOUT)
+        cxx_probe = {'exit_code': cxx_result.returncode, 'source_sha256': digest(cxx_source),
+                     'log_sha256': digest(output / 'cxx-freestanding.log'), 'diagnostic_only': True}
+        if cxx_result.returncode == 0:
+            cxx_probe['object_sha256'] = digest(cxx_object)
     built_objects = {}
     if backend and make_result is not None:
         for name in ('signal/raise.os', 'signal/sigwait.os', 'stdlib/arc4random.o', 'libio/freopen.o', 'libio/freopen64.o', 'dlfcn/dlerror.o'):
@@ -262,6 +281,7 @@ def main():
               'synthetic_abi_tag': args.synthetic_abi_tag,
               'private_sysroot_initially_empty': str(sysroot),
               'sysroot_enforced': backend, 'diagnostic_objects': objects,
+              'cxx_freestanding': cxx_probe,
               'header_install': header_install, 'header_client': header_client, 'header_bootstrap_client': bootstrap_client, 'isolated_abi_note': isolated_note,
               'built_objects': built_objects,
               'generated_layout_headers': layout_headers,

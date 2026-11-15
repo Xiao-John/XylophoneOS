@@ -8,6 +8,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / 'scripts/glibc_g1_probe.py'
+sys.path.insert(0, str(ROOT / 'scripts'))
+from glibc_g1_probe import clean_build_environment
+poison = {'CPATH': '/untrusted', 'CFLAGS': '-bad', 'CC': 'bad', 'READELF': 'bad',
+          'PATH': '/tools', 'BISON_PKGDATADIR': '/data'}
+clean, removed = clean_build_environment(poison)
+assert clean == {'PATH': '/tools', 'BISON_PKGDATADIR': '/data'}
+assert removed == ['CC', 'CFLAGS', 'CPATH', 'READELF']
+assert len(poison) == 6
 
 with tempfile.TemporaryDirectory(prefix='xos_glibc_g1_test_') as temporary:
     root = Path(temporary)

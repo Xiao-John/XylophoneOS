@@ -21,6 +21,28 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+# Variables that can silently inject host/old-SDK headers, libraries, flags,
+# or tools.  PATH and BISON_PKGDATADIR remain explicit caller inputs and all
+# selected tools are recorded separately; never record removed values.
+BUILD_ENV_BLOCKLIST = frozenset({
+    'CPATH', 'C_INCLUDE_PATH', 'CPLUS_INCLUDE_PATH', 'OBJC_INCLUDE_PATH',
+    'LIBRARY_PATH', 'COMPILER_PATH', 'GCC_EXEC_PREFIX', 'SDKROOT',
+    'CFLAGS', 'CXXFLAGS', 'CPPFLAGS', 'LDFLAGS', 'CFLAGS_FOR_BUILD',
+    'CC_FOR_BUILD', 'BUILD_CC', 'PKG_CONFIG_PATH', 'PKG_CONFIG_LIBDIR',
+    'CC', 'CXX', 'AS', 'LD', 'AR', 'NM', 'RANLIB', 'STRIP', 'OBJCOPY',
+    'OBJDUMP', 'READELF', 'LD_PRELOAD', 'LD_LIBRARY_PATH',
+    'DYLD_INSERT_LIBRARIES', 'DYLD_LIBRARY_PATH', 'DYLD_FRAMEWORK_PATH',
+})
+
+
+def clean_build_environment(inherited):
+    env = dict(inherited)
+    removed = sorted(name for name in BUILD_ENV_BLOCKLIST if name in env)
+    for name in removed:
+        del env[name]
+    return env, removed
+
+
 def tool_identity(name):
     executable = shutil.which(name)
     if not executable:
@@ -102,7 +124,7 @@ def main():
     command = [str(source/'configure'), '--build=aarch64-apple-darwin', '--host=x86_64-unknown-xos', '--prefix=/usr', '--disable-werror']
     if args.hacker_mode:
         command.append('--enable-hacker-mode')
-    env = os.environ.copy()
+    env, sanitized_environment = clean_build_environment(os.environ)
     env['CC'] = 'x86_64-elf-gcc'
     env['CXX'] = 'x86_64-elf-g++'
     target_readelf = shutil.which('x86_64-elf-readelf')
@@ -273,7 +295,7 @@ def main():
     tools = {name: tool_identity(name) for name in tool_names}
     report = {'status': 'diagnostic_only', 'probe_sha256': digest(Path(__file__)), 'tools': tools, 'source_sha256': digest(archive),
               'source_authentication': lock['signature_verification'], 'patch_sha256': digest(patch),
-              'canonical_target': target, 'command': command, 'cc': env['CC'],
+              'canonical_target': target, 'command': command, 'sanitized_environment': sanitized_environment, 'cc': env['CC'],
               'cxx': env['CXX'], 'readelf': env['READELF'], 'compiler_target': compiler_target,
               'compiler_path': str(compiler_path), 'compiler_sha256': digest(compiler_path),
               'hacker_mode': args.hacker_mode, 'configure_exit_code': result.returncode,

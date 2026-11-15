@@ -105,6 +105,10 @@ def main():
     env = os.environ.copy()
     env['CC'] = 'x86_64-elf-gcc'
     env['CXX'] = 'x86_64-elf-g++'
+    target_readelf = shutil.which('x86_64-elf-readelf')
+    if not target_readelf:
+        raise SystemExit('x86_64-elf-readelf is required')
+    env['READELF'] = str(Path(target_readelf).resolve(strict=True))
     compiler_path = Path(shutil.which(env['CC'])).resolve(strict=True)
     compiler_target = subprocess.check_output([env['CC'], '-dumpmachine'], text=True).strip()
     sysroot = output / 'xos-glibc-sysroot'
@@ -251,7 +255,7 @@ def main():
     report = {'status': 'diagnostic_only', 'probe_sha256': digest(Path(__file__)), 'tools': tools, 'source_sha256': digest(archive),
               'source_authentication': lock['signature_verification'], 'patch_sha256': digest(patch),
               'canonical_target': target, 'command': command, 'cc': env['CC'],
-              'cxx': env['CXX'], 'compiler_target': compiler_target,
+              'cxx': env['CXX'], 'readelf': env['READELF'], 'compiler_target': compiler_target,
               'compiler_path': str(compiler_path), 'compiler_sha256': digest(compiler_path),
               'hacker_mode': args.hacker_mode, 'configure_exit_code': result.returncode,
               'nptl_backend_experimental': backend,

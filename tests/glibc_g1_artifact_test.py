@@ -44,6 +44,9 @@ def main():
         assert digest(root / 'src/ports/glibc/patches' / filename) == report[key]
     assert report['status'] == 'diagnostic_only' and report['nptl_backend_experimental'] and not report['synthetic_abi_tag']
     assert report['sysroot_enforced'] and report['configure_exit_code'] == 0
+    assert report['readelf'] == report['tools']['x86_64-elf-readelf']['path']
+    assert 'readelf: command not found' not in (output / 'configure.log').read_text()
+    assert "READELF='" + report['readelf'] + "'" in (output / 'configure/config.log').read_text()
     assert not report['hacker_mode'] and '--enable-hacker-mode' not in report['command']
     assert report['make_exit_code'] != 0 and report['header_install']['exit_code'] == 0
     assert report['header_client']['exit_code'] != 0

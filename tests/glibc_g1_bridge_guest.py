@@ -28,6 +28,7 @@ def main():
     parser.add_argument('--yield-build', type=Path, help='G1 diagnostic output containing the real target sched_yield object')
     parser.add_argument('--pid-build', type=Path, help='G1 diagnostic output containing the real target getpid object')
     parser.add_argument('--clock-build', type=Path, help='G1 diagnostic output containing the real target clock_gettime object')
+    parser.add_argument('--random-build', type=Path, help='G1 output with target random objects')
     args = parser.parse_args()
     build = root/'build'
     overlay = root/'src/ports/glibc/sysdeps/xos'
@@ -111,12 +112,31 @@ def main():
         sources.extend([clock_source, clock_header, res_source, clock_helper])
         clock_provenance = {'report_sha256': sha(clock_report), 'object_sha256': sha(clock_object), 'resolution_sha256': sha(res_object)}
         cmd[-2:-2] = ['-DXOS_GLIBC_TEST_CLOCK', str(clock_object), str(res_object)]
+    random_provenance = None
+    if args.random_build:
+        candidate = args.random_build.resolve(strict=True)
+        random_report = candidate/'report.json'
+        data = json.loads(random_report.read_text())
+        assert data['nptl_backend_experimental'] and not data['hacker_mode']
+        assert not data['synthetic_abi_tag'] and data['sysroot_enforced']
+        random_objects = []
+        for name in ('getrandom', 'getentropy'):
+            source = overlay/(name+'.c')
+            obj = candidate/'configure/stdlib'/(name+'.o')
+            assert data['xos_overlay_sha256']['xos/'+name+'.c'] == sha(source)
+            assert data['diagnostic_objects'][name]['exit_code'] == 0
+            assert data['diagnostic_objects'][name]['sha256'] == sha(obj)
+            inputs[str(source.relative_to(root))] = sha(source)
+            sources.append(source)
+            random_objects.append(obj)
+        random_provenance = {'report_sha256': sha(random_report), 'object_sha256': [sha(x) for x in random_objects]}
+        cmd[-2:-2] = ['-DXOS_GLIBC_TEST_RANDOM', *map(str, random_objects)]
     subprocess.run(cmd, check=True)
     assert inputs == {str(path.relative_to(root)): sha(path) for path in sources}
     report = {'status': 'failed', 'scope': 'freestanding XOS thread bridge; no glibc linked',
               'build_id': system['build_id'], 'system_manifest_sha256': sha(system_manifest),
               'image_sha256': sha(image), 'probe_sha256': sha(probe), 'inputs': inputs,
-              'compiler_command': cmd, 'compiler_sha256': sha(compiler), 'yield_provenance': yield_provenance, 'pid_provenance': pid_provenance, 'clock_provenance': clock_provenance, 'checks': []}
+              'compiler_command': cmd, 'compiler_sha256': sha(compiler), 'yield_provenance': yield_provenance, 'pid_provenance': pid_provenance, 'clock_provenance': clock_provenance, 'random_provenance': random_provenance, 'checks': []}
     guest = None
     try:
         with tempfile.TemporaryDirectory(prefix='xos_glibc_bridge_') as folder:
@@ -162,6 +182,10 @@ def main():
                 report['cpu_time_modes'] = ['available' if '[g1] cpu_time=available' in output else 'unavailable' for output in outputs]
                 report['checks'].append('glibc_target_cpu_clock_matches_native_or_reports_unavailable')
                 report['checks'].append('glibc_target_clock_resolution_matches_native')
+            if random_provenance is not None:
+                assert sha(random_report) == random_provenance['report_sha256']
+                assert [sha(x) for x in random_objects] == random_provenance['object_sha256']
+                report['checks'].append('glibc_target_random_limits_and_errors')
             report['resources'] = before
             report['output'] = outputs
             report['status'] = 'passed_subset'

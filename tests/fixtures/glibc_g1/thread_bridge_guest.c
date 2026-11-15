@@ -9,13 +9,18 @@ static xos_u64 child_result;
 static int rollback_count;
 static struct xos_thread_launch_result launch;
 static int invalid_start;
-#if defined XOS_GLIBC_TEST_GETPID || defined XOS_GLIBC_TEST_CLOCK
+#if defined XOS_GLIBC_TEST_GETPID || defined XOS_GLIBC_TEST_CLOCK || defined XOS_GLIBC_TEST_RANDOM
 __thread int __libc_errno;
 #endif
 #ifdef XOS_GLIBC_TEST_CLOCK
 struct test_timespec { long tv_sec, tv_nsec; };
 extern int __clock_gettime (int, struct test_timespec *);
 extern int __clock_getres (int, struct test_timespec *);
+#endif
+#ifdef XOS_GLIBC_TEST_RANDOM
+extern long __getrandom (void *, unsigned long, unsigned int);
+extern int getentropy (void *, unsigned long);
+static unsigned char random_bytes[300];
 #endif
 #ifdef XOS_GLIBC_TEST_GETPID
 extern int __getpid (void);
@@ -138,6 +143,16 @@ int guest_main (void)
     static const char available[] = "[g1] cpu_time=available\n";
     (void) trap (1, (xos_u64) available, sizeof (available) - 1);
   }
+#endif
+#ifdef XOS_GLIBC_TEST_RANDOM
+  if (__getrandom (random_bytes, sizeof (random_bytes), 0) != 256) return 32;
+  if (getentropy (random_bytes, 256) != 0) return 33;
+  __libc_errno = 0;
+  if (getentropy (random_bytes, 257) != -1 || __libc_errno != 5) return 34;
+  __libc_errno = 0;
+  if (__getrandom (random_bytes, 1, 1) != -1 || __libc_errno != 134) return 35;
+  __libc_errno = 0;
+  if (__getrandom ((void *) 1, 1, 0) != -1 || __libc_errno != 14) return 36;
 #endif
   struct xos_thread_header header = {1, sizeof (header), 0};
   if (trap (52, (xos_u64) &header, 0) != 0) return 10;

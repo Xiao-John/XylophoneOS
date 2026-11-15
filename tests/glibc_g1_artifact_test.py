@@ -305,6 +305,13 @@ def main():
     assert '../sysdeps/xos/clock_getres.c' in (output / 'clock_getres-dependencies.d').read_text()
     resolution_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'time/clock_getres.o')], text=True)
     assert re.search(r'\bint\s+\$0x80', resolution_code) and not re.search(r'\bsyscall\b', resolution_code)
+    for name in ('getrandom', 'getentropy'):
+        item = report['diagnostic_objects'][name]
+        assert item['exit_code'] == 0 and digest(build / 'stdlib' / (name + '.o')) == item['sha256']
+        assert '../sysdeps/xos/' + name + '.c' in (output / (name + '-dependencies.d')).read_text()
+    random_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'stdlib/getrandom.o')], text=True)
+    assert re.search(r'\bmov\s+\$0x3f,%eax', random_code) and re.search(r'\bint\s+\$0x80', random_code)
+    assert not re.search(r'\bsyscall\b', random_code)
     sigset = report['diagnostic_objects']['sigset']
     assert sigset['exit_code'] == 0 and digest(build / 'signal/sigset.o') == sigset['sha256']
     sigset_code = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'signal/sigset.o')], text=True)

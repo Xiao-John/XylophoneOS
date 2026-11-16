@@ -1,0 +1,8 @@
+--- a/sysdeps/nptl/internaltypes.h
++++ b/sysdeps/nptl/internaltypes.h
+@@ -21,0 +22 @@
++#include <sched.h>
+--- a/nptl/sem_post.c
++++ b/nptl/sem_post.c
+@@ -20,0 +21 @@
++#include <limits.h>

@@ -1,0 +1,4 @@
+--- a/stdlib/arc4random.c
++++ b/stdlib/arc4random.c
+@@ -18,0 +19 @@
++#include <atomic.h>

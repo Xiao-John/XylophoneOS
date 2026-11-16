@@ -1,0 +1,5 @@
+--- a/signal/sigset.c
++++ b/signal/sigset.c
+@@ -27 +27 @@
+-  return -1;
++  return SIG_ERR;

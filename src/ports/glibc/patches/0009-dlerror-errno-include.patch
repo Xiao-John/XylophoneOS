@@ -1,0 +1,4 @@
+--- a/dlfcn/dlerror.c
++++ b/dlfcn/dlerror.c
+@@ -19,0 +20 @@
++#include <errno.h>

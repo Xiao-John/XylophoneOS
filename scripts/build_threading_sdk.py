@@ -149,6 +149,8 @@ def main():
                      '#ifdef __cplusplus\nextern "C" {\n#endif\n'
                      'int clock_gettime(clockid_t, struct timespec*);\n'
                      'int clock_getres(clockid_t, struct timespec*);\n'
+                     'int clock_settime(clockid_t, const struct timespec*);\n'
+                     'int clock_nanosleep(clockid_t, int, const struct timespec*, struct timespec*);\n'
                      'int nanosleep(const struct timespec*, struct timespec*);\n'
                      '#ifdef __cplusplus\n}\n#endif\n')
     shutil.copyfile(ROOT / 'src/user/threading/compile.py', output / 'compile.py')
@@ -173,7 +175,7 @@ def main():
              '-ftls-model=local-exec', '-DXOS_THREADED_RUNTIME', '-nostdinc++',
              '-I' + str(output / 'include'), '-I' + str(ROOT / 'src/user/threading')]
     sources = [*sorted(p for p in (ROOT / 'src/user/libc').glob('*.cpp')
-                        if p.name != 'pthread_single.cpp'),
+                        if p.name not in ('pthread_single.cpp', 'posix_clock.cpp')),
                ROOT / 'src/user/sdk/file_client.cpp', ROOT / 'src/user/sdk/text.cpp',
                ROOT / 'src/user/sdk/terminal_client.cpp',
                ROOT / 'src/user/arch/x86_64/syscall.cpp', ROOT / 'src/user/arch/x86_64/tls.cpp',

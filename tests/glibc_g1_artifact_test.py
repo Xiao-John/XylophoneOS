@@ -50,6 +50,12 @@ def main():
     assert not report['hacker_mode'] and '--enable-hacker-mode' not in report['command']
     assert report['make_exit_code'] != 0 and report['header_install']['exit_code'] == 0
     assert report['header_client']['exit_code'] != 0
+    make_log = output / 'make.log'
+    assert digest(make_log) == report['make_log_sha256']
+    first_error = next(
+        (number, line) for number, line in enumerate(make_log.read_text().splitlines(), 1)
+        if re.search(r'(^|:\s+)(fatal error|error|Error):', line))
+    assert report['first_build_error'] == {'line': first_error[0], 'diagnostic': first_error[1]}
     cxx_probe = report['cxx_freestanding']
     assert cxx_probe['diagnostic_only'] and cxx_probe['exit_code'] == 0
     assert digest(output / 'cxx-freestanding.cc') == cxx_probe['source_sha256']
@@ -63,7 +69,10 @@ def main():
         original = tar.extractfile('glibc-2.44/stdlib/abs.c')
         assert original is not None and original.read() == (source / 'stdlib/abs.c').read_bytes()
     sysdirs = (build / 'config.make').read_text()
-    assert 'sysdeps/xos' in sysdirs and 'sysdeps/x86_64/xos' in sysdirs
+    selected = re.search(r'^config-sysdirs\s*=\s*(.+)$', sysdirs, re.M)[1].split()
+    assert selected.index('sysdeps/x86_64/xos') < selected.index('sysdeps/x86_64/nptl')
+    assert selected.index('sysdeps/xos') < selected.index('sysdeps/nptl')
+    assert all('linux' not in directory.split('/') for directory in selected)
     assert 'experimental and incomplete' in (output / 'configure.log').read_text()
     assert not re.search(r'^\.\*-\.\*-xos', (source / 'abi-tags').read_text(), re.M)
     sys.path.insert(0, str(root / 'scripts'))
@@ -264,6 +273,23 @@ def main():
             assert path == placeholder.resolve() or compiler_include in path.parents, path
     header_elf = subprocess.check_output(['x86_64-elf-readelf', '-h', str(output / 'header-bootstrap-client.o')], text=True)
     assert 'ELF64' in header_elf and 'Advanced Micro Devices X86-64' in header_elf
+    minimum = report['minimum_link']
+    assert minimum['exit_code'] == 0
+    linked = output / 'minimum-client.elf'
+    linkmap = output / 'minimum-client.map'
+    assert digest(linked) == minimum['elf_sha256']
+    assert digest(linkmap) == minimum['map_sha256']
+    assert digest(output / 'minimum-client.log') == minimum['log_sha256']
+    assert set(re.findall(r'^LOAD (.+)$', linkmap.read_text(), re.M)) == {
+        str(output / 'header-bootstrap-client.o'), str(build / 'stdlib/abs.o'),
+        str(build / 'posix/_exit.o'),
+    }
+    elf = subprocess.check_output([report['readelf'], '-W', '-h', '-l', '-s', str(linked)], text=True)
+    assert 'Advanced Micro Devices X86-64' in elf and re.search(r'Type:\s+EXEC\b', elf)
+    assert not re.search(r'^\s+(INTERP|DYNAMIC)\s', elf, re.M)
+    assert not re.search(r'\bUND[^\S\n]+\S', elf, re.M)
+    for name in ('_start', 'abs', '_exit'):
+        assert re.search(r'\bFUNC\s+GLOBAL\s+\w+\s+\d+\s+' + name + r'$', elf, re.M)
     for name in ('signal/raise.os', 'signal/sigwait.os', 'stdlib/arc4random.o',
                  'libio/freopen.o', 'libio/freopen64.o', 'dlfcn/dlerror.o'):
         assert digest(build / name) == report['built_objects'][name]
@@ -283,6 +309,12 @@ def main():
     thread_exit = report['diagnostic_objects']['xos_thread_exit']
     assert thread_exit['exit_code'] == 0 and digest(build / 'nptl/xos_thread_exit.o') == thread_exit['sha256']
     assert '../sysdeps/xos/xos_thread_exit.c' in (output / 'xos_thread_exit-dependencies.d').read_text()
+    thread_entry = report['diagnostic_objects']['xos_thread_entry']
+    entry_object = build / 'nptl/xos_thread_entry.o'
+    assert thread_entry['exit_code'] == 0 and digest(entry_object) == thread_entry['sha256']
+    assert 'source/sysdeps/x86_64/xos/xos_thread_entry.S' in dependency_manifest['xos_thread_entry']
+    entry_symbols = (output / 'xos_thread_entry-readelf.txt').read_text()
+    assert re.search(r'\bFUNC\s+GLOBAL\s+HIDDEN\s+\d+\s+__xos_thread_entry\b', entry_symbols)
     thread_create = report['diagnostic_objects']['xos_thread_create']
     assert thread_create['exit_code'] == 0 and digest(build / 'nptl/xos_thread_create.o') == thread_create['sha256']
     assert '../sysdeps/xos/xos_thread_create.c' in (output / 'xos_thread_create-dependencies.d').read_text()

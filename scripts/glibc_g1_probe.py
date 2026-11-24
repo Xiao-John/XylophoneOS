@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shlex
 import shutil
 from pathlib import Path
@@ -32,6 +33,7 @@ BUILD_ENV_BLOCKLIST = frozenset({
     'CC', 'CXX', 'AS', 'LD', 'AR', 'NM', 'RANLIB', 'STRIP', 'OBJCOPY',
     'OBJDUMP', 'READELF', 'LD_PRELOAD', 'LD_LIBRARY_PATH',
     'DYLD_INSERT_LIBRARIES', 'DYLD_LIBRARY_PATH', 'DYLD_FRAMEWORK_PATH',
+    'CONFIG_SITE', 'MAKEFLAGS', 'GNUMAKEFLAGS', 'MAKEFILES', 'MFLAGS',
 })
 
 
@@ -125,6 +127,7 @@ def main():
     if args.hacker_mode:
         command.append('--enable-hacker-mode')
     env, sanitized_environment = clean_build_environment(os.environ)
+    env['CONFIG_SITE'] = '/dev/null'
     env['CC'] = 'x86_64-elf-gcc'
     env['CXX'] = 'x86_64-elf-g++'
     target_readelf = shutil.which('x86_64-elf-readelf')
@@ -132,7 +135,7 @@ def main():
         raise SystemExit('x86_64-elf-readelf is required')
     env['READELF'] = str(Path(target_readelf).resolve(strict=True))
     compiler_path = Path(shutil.which(env['CC'])).resolve(strict=True)
-    compiler_target = subprocess.check_output([env['CC'], '-dumpmachine'], text=True).strip()
+    compiler_target = subprocess.check_output([env['CC'], '-dumpmachine'], text=True, env=env).strip()
     sysroot = output / 'xos-glibc-sysroot'
     sysroot.mkdir()
     if backend:
@@ -151,7 +154,7 @@ def main():
             make_result = subprocess.run(['gnumake', '-j1'], cwd=build, env=env, stdout=log, stderr=subprocess.STDOUT)
     objects = {}
     if backend and make_result is not None:
-        for subdir, name in (('stdlib', 'abs'), ('posix', '_exit'), ('csu', 'abi-note'), ('csu', 'check_fds'), ('nptl', 'xos_wait_word'), ('nptl', 'xos_lll_futex'), ('nptl', 'xos_thread_exit'), ('nptl', 'xos_thread_create'), ('nptl', 'xos_thread_tls'), ('signal', 'sigset'), ('misc', 'fd_to_filename'), ('nptl', 'cancellation'), ('nptl', 'xos_timed_wait'), ('nptl', 'futex-internal'), ('nptl', 'nptl_setxid'), ('nptl', 'pthread_cancel'), ('nptl', 'sem_init'), ('nptl', 'sem_post'), ('posix', 'sched_yield'), ('posix', 'getpid'), ('time', 'clock_gettime'), ('time', 'clock_getres'), ('stdlib', 'getrandom'), ('stdlib', 'getentropy')):
+        for subdir, name in (('stdlib', 'abs'), ('posix', '_exit'), ('csu', 'abi-note'), ('csu', 'check_fds'), ('nptl', 'xos_wait_word'), ('nptl', 'xos_lll_futex'), ('nptl', 'xos_thread_exit'), ('nptl', 'xos_thread_create'), ('nptl', 'xos_thread_entry'), ('nptl', 'xos_thread_tls'), ('signal', 'sigset'), ('misc', 'fd_to_filename'), ('nptl', 'cancellation'), ('nptl', 'xos_timed_wait'), ('nptl', 'futex-internal'), ('nptl', 'nptl_setxid'), ('nptl', 'pthread_cancel'), ('nptl', 'sem_init'), ('nptl', 'sem_post'), ('posix', 'sched_yield'), ('posix', 'getpid'), ('time', 'clock_gettime'), ('time', 'clock_getres'), ('stdlib', 'getrandom'), ('stdlib', 'getentropy')):
             (build / subdir).mkdir(exist_ok=True)
             target_object = build / subdir / (name + '.o')
             with (output / (name + '-object.log')).open('w') as log:
@@ -216,7 +219,9 @@ def main():
                          '_Static_assert(PTHREAD_STACK_MIN == 65536, "stack");\n'
                          '_Static_assert(sizeof(sem_t) == 32, "sem");\n'
                          '_Static_assert(EINVAL == 22 && SEM_VALUE_MAX == 2147483647, "limits");\n'
-                         'int probe(void) { return EINVAL; }\n')
+                         '#include <stdlib.h>\n#include <unistd.h>\n'
+                         'static volatile int operand = -7;\n'
+                         'void _start(void) { _exit(abs(operand)); }\n')
         with (output / 'header-client.log').open('w') as log:
             client = subprocess.run([env['CC'], '-isystem', str(sysroot / 'usr/include'),
                                      '-ffreestanding', '-x', 'c', '-c', '-',
@@ -248,11 +253,29 @@ def main():
         if client.returncode == 0:
             bootstrap_client['object_sha256'] = digest(obj)
             bootstrap_client['dependency_file_sha256'] = digest(depfile)
+    minimum_link = None
+    if bootstrap_client and bootstrap_client['exit_code'] == 0 and all(
+            objects[name].get('sha256') for name in ('abs', '_exit')):
+        # Exercise the installed declarations and actual target implementations
+        # together. Name all link inputs explicitly, with no CRT or default libs.
+        linker = Path(shutil.which('x86_64-elf-ld')).resolve(strict=True)
+        linked = output / 'minimum-client.elf'
+        linkmap = output / 'minimum-client.map'
+        logpath = output / 'minimum-client.log'
+        with logpath.open('w') as log:
+            link = subprocess.run([str(linker), '-static', '--no-undefined',
+                                   '-e', '_start', '-Map', str(linkmap),
+                                   '-o', str(linked), str(obj),
+                                   str(build/'stdlib/abs.o'), str(build/'posix/_exit.o')],
+                                  env=env, stdout=log, stderr=subprocess.STDOUT)
+        minimum_link = {'exit_code': link.returncode, 'log_sha256': digest(logpath)}
+        if link.returncode == 0:
+            minimum_link.update(elf_sha256=digest(linked), map_sha256=digest(linkmap))
     # Bind every successfully compiled diagnostic object's actual inputs,
     # including generated build headers, and reject headers outside the
     # extracted source, private build tree and compiler freestanding headers.
     compiler_include = Path(subprocess.check_output(
-        [str(compiler_path), '-print-file-name=include'], text=True).strip())
+        [str(compiler_path), '-print-file-name=include'], text=True, env=env).strip())
     dependency_manifest = {}
     for name, item in objects.items():
         if item['exit_code'] == 0:
@@ -304,6 +327,7 @@ def main():
               'private_sysroot_initially_empty': str(sysroot),
               'sysroot_enforced': backend, 'diagnostic_objects': objects,
               'cxx_freestanding': cxx_probe,
+              'minimum_link': minimum_link,
               'header_install': header_install, 'header_client': header_client, 'header_bootstrap_client': bootstrap_client, 'isolated_abi_note': isolated_note,
               'built_objects': built_objects,
               'generated_layout_headers': layout_headers,
@@ -326,7 +350,14 @@ def main():
               'not_claimed': ['complete XOS sysdeps', 'target runtime', 'guest qualification', 'distributable source']}
     if make_result is not None:
         report['make_exit_code'] = make_result.returncode
-        report['make_log_sha256'] = digest(output/'make.log')
+        make_log = output/'make.log'
+        report['make_log_sha256'] = digest(make_log)
+        if make_result.returncode != 0:
+            lines = make_log.read_text(errors='replace').splitlines()
+            report['first_build_error'] = next(
+                ({'line': number, 'diagnostic': line} for number, line in enumerate(lines, 1)
+                 if re.search(r'(^|:\s+)(fatal error|error|Error):', line)),
+                None)
     (output/'report.json').write_text(json.dumps(report, indent=2)+'\n')
     print(json.dumps(report, indent=2))
     # An exploratory incomplete backend cannot count as a successful full build.

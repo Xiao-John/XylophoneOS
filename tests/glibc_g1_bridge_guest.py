@@ -29,6 +29,7 @@ def main():
     parser.add_argument('--pid-build', type=Path, help='G1 diagnostic output containing the real target getpid object')
     parser.add_argument('--clock-build', type=Path, help='G1 diagnostic output containing the real target clock_gettime object')
     parser.add_argument('--random-build', type=Path, help='G1 output with target random objects')
+    parser.add_argument('--entry-build', type=Path, help='G1 output with target thread entry object')
     args = parser.parse_args()
     build = root/'build'
     overlay = root/'src/ports/glibc/sysdeps/xos'
@@ -46,12 +47,31 @@ def main():
     probe = build/'glibc_g1_bridge_guest.elf'
     sources = [fixture/'thread_bridge_guest.c', fixture/'thread_bridge_guest.ld',
                overlay/'xos_thread_create.c', overlay/'xos_thread_create.h', overlay/'xos_wait_word.h', Path(__file__).resolve()]
+    entry_source = overlay.parent/'x86_64/xos/xos_thread_entry.S'
+    entry_header = overlay/'xos_thread_entry.h'
+    sources.extend([entry_source, entry_header])
     inputs = {str(path.relative_to(root)): sha(path) for path in sources}
     compiler = Path(shutil.which('x86_64-elf-gcc')).resolve(strict=True)
     cmd = [str(compiler), '-std=c11', '-O2', '-mno-red-zone', '-fno-pie', '-fno-pic',
            '-fno-stack-protector', '-ffreestanding', '-nostdlib', '-static', '-no-pie',
            '-Wl,--build-id=none', '-T', str(sources[1]), '-I', str(overlay),
            str(sources[0]), str(sources[2]), '-o', str(probe)]
+    entry_provenance = None
+    if args.entry_build:
+        candidate = args.entry_build.resolve(strict=True)
+        entry_report = candidate/'report.json'
+        data = json.loads(entry_report.read_text())
+        entry_object = candidate/'configure/nptl/xos_thread_entry.o'
+        assert data['nptl_backend_experimental'] and not data['hacker_mode']
+        assert not data['synthetic_abi_tag'] and data['sysroot_enforced']
+        for path in (entry_source, entry_header):
+            assert data['xos_overlay_sha256'][str(path.relative_to(overlay.parent))] == sha(path)
+        assert data['diagnostic_objects']['xos_thread_entry']['exit_code'] == 0
+        assert data['diagnostic_objects']['xos_thread_entry']['sha256'] == sha(entry_object)
+        entry_provenance = {'report_sha256': sha(entry_report), 'object_sha256': sha(entry_object)}
+        cmd[-2:-2] = [str(entry_object)]
+    else:
+        cmd[-2:-2] = [str(entry_source)]
     yield_provenance = None
     if args.yield_build:
         candidate = args.yield_build.resolve(strict=True)
@@ -136,7 +156,8 @@ def main():
     report = {'status': 'failed', 'scope': 'freestanding XOS thread bridge; no glibc linked',
               'build_id': system['build_id'], 'system_manifest_sha256': sha(system_manifest),
               'image_sha256': sha(image), 'probe_sha256': sha(probe), 'inputs': inputs,
-              'compiler_command': cmd, 'compiler_sha256': sha(compiler), 'yield_provenance': yield_provenance, 'pid_provenance': pid_provenance, 'clock_provenance': clock_provenance, 'random_provenance': random_provenance, 'checks': []}
+              'compiler_command': cmd, 'compiler_sha256': sha(compiler), 'yield_provenance': yield_provenance, 'pid_provenance': pid_provenance, 'clock_provenance': clock_provenance, 'random_provenance': random_provenance,
+              'entry_provenance': entry_provenance, 'checks': []}
     guest = None
     try:
         with tempfile.TemporaryDirectory(prefix='xos_glibc_bridge_') as folder:
@@ -163,7 +184,12 @@ def main():
             assert inputs == {str(path.relative_to(root)): sha(path) for path in sources}
             assert sha(probe) == report['probe_sha256'] and sha(compiler) == report['compiler_sha256']
             report['checks'] = ['start_failure_rollback', 'prepare_start_native_traps',
+                                'native_thread_c_entry_alignment_and_argument',
                                 'child_tls_and_exit', 'join_value', 'four_runs_resources_restored']
+            if entry_provenance is not None:
+                assert sha(entry_report) == entry_provenance['report_sha256']
+                assert sha(entry_object) == entry_provenance['object_sha256']
+                report['checks'].append('glibc_target_thread_entry_trampoline')
             if yield_provenance is not None:
                 assert sha(source_report) == yield_provenance['report_sha256']
                 assert sha(yield_object) == yield_provenance['object_sha256']

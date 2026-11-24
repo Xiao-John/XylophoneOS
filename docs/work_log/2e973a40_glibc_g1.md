@@ -322,3 +322,13 @@ XOS 单调时钟和实时钟按现有契约使用 syscall 46 的分辨率；当�
 glibc configure 的 C++11/98 探针首先缺少 `<cstdlib>`，目标链接又缺少 crt0、libstdc++、libm 和 libc；不能据此认定语言前端不支持 C++。新增独立的 freestanding C++17 对象探针，禁用 C++ 默认头目录，仅检查 constexpr、模板和 `thread_local` 的目标代码及 TLS 符号；干净构建和对象来源检查通过，报告 SHA-256 `c28f6d53b8195e6e94c68ea547638aed48cc850a234789fafd4d79076d93cfa6`。
 
 该探针不链接或运行，不能证明标准库、异常、TLS 运行时或 C++ SDK 可用；完整 libc 构建仍停在 `clone3.h`，G1 保持 partial。
+
+## 继续：最小静态链接与原生线程入口（2026-11-24）
+
+从锁定归档重跑候选构建。探针屏蔽了调用环境中的头文件、编译器搜索路径、configure site 文件和 make 选项，编译器查询也使用同一环境。以故意设置的 CFLAGS、COMPILER_PATH、CONFIG_SITE、CPATH、LIBRARY_PATH、MAKEFLAGS 和 READELF 验证该路径，配置成功，x86 ISA 属性检测正常。
+
+独立 sysroot 安装了 337 个文件。诊断客户端使用已安装头文件和 sysroot 外的上游构建期占位头，显式链接实际生成的 glibc `abs.o` 与 XOS `_exit.o`。链接映射只包含客户端及这两个对象，目标 ELF 无未定义的命名符号、动态段或解释器。探针记录首个完整构建错误并绑定原始日志，仍为 NPTL `pthread_create` 引入的 `clone3.h`。构建报告 SHA-256 为 `222f3908c7c9e67f806334dbe8f307a41baf53e5124ae1596c35d8c617ff3e29`。
+
+新增 x86-64 原生线程入口，按 SysV ABI 将内核提供的栈和参数交给 C 回调。XOS 会在唤醒 joiner 之前回收 TLS，而 glibc 的 `pthread_t` 使用线程描述符地址。公共 `pthread_create` 接入仍须解决描述符保留、DTV 回收和 join/detach 的生命周期。最终 `gnu/stubs.h` 与完整 SDK 尚未生成。
+
+同批头文件以 C 和 C++17 各编译检查 150 个公开头，全部通过，仍依赖构建期占位头。XOS 镜像 `66f11530e5b7efbc` 的客体报告为 `passed_subset`。真实 `xos_thread_entry.o` 通过回调栈对齐、参数传递、TLS、退出与 join 检查，四轮后资源恢复。调度、PID、时钟和随机数目标对象的组合检查也通过。客体报告 SHA-256 为 `7cffe0c85313ea830a389d8a14bd4f3392192d4a5f128600ab0563dee5f4f4e5`。链接器报告 `getentropy.o` 缺少 `.note.GNU-stack`。

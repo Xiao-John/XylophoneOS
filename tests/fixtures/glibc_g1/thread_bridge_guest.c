@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0
    Standalone XOS guest test of the private native bridge.  No libc is linked. */
 #include "xos_thread_create.h"
+#include "xos_thread_entry.h"
 #ifdef XOS_GLIBC_TEST_CLOCK
 #include "xos_cpu_time.h"
 #endif
@@ -43,10 +44,9 @@ static void finish (xos_u64 code)
   (void) trap (2, code, 0);
   __builtin_trap ();
 }
-void guest_thread_enter (void *);
-void guest_thread_worker (void *raw) __attribute__ ((noreturn, used));
-void guest_thread_worker (void *raw)
+static void guest_thread_worker (void *raw)
 {
+  if (((xos_u64) __builtin_frame_address (0) & 15) != 0) finish (95);
 #ifdef XOS_GLIBC_TEST_GETPID
   if (__getpid () != expected_pid) finish (94);
 #endif
@@ -67,17 +67,17 @@ void guest_thread_worker (void *raw)
   (void) trap (43, 0x1234, 0);
   finish (92);
 }
-__asm__ (".text\n.globl guest_thread_enter\n"
-         "guest_thread_enter:\ncld\nxor %ebp,%ebp\nand $-16,%rsp\n"
-         "call guest_thread_worker\nud2\n");
+static const struct xos_thread_entry_args entry_args = {
+  .run = guest_thread_worker, .argument = &child_result
+};
 static xos_i64 setup (const struct xos_thread_reservation *r,
                       struct xos_thread_start_parameters *p, void *context)
 {
   if (context != &launch || __atomic_load_n (&launch.tid, __ATOMIC_ACQUIRE) != r->tid)
     return -77;
   *(xos_u64 *) r->tls_begin = r->tls_begin;
-  p->entry = invalid_start ? 0 : (xos_u64) guest_thread_enter;
-  p->argument = (xos_u64) &child_result;
+  p->entry = invalid_start ? 0 : (xos_u64) __xos_thread_entry;
+  p->argument = (xos_u64) &entry_args;
   p->stack = r->stack_top;
   p->thread_pointer = r->tls_begin;
   return 0;

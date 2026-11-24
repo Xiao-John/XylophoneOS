@@ -332,3 +332,15 @@ glibc configure 的 C++11/98 探针首先缺少 `<cstdlib>`，目标链接又缺
 新增 x86-64 原生线程入口，按 SysV ABI 将内核提供的栈和参数交给 C 回调。XOS 会在唤醒 joiner 之前回收 TLS，而 glibc 的 `pthread_t` 使用线程描述符地址。公共 `pthread_create` 接入仍须解决描述符保留、DTV 回收和 join/detach 的生命周期。最终 `gnu/stubs.h` 与完整 SDK 尚未生成。
 
 同批头文件以 C 和 C++17 各编译检查 150 个公开头，全部通过，仍依赖构建期占位头。XOS 镜像 `66f11530e5b7efbc` 的客体报告为 `passed_subset`。真实 `xos_thread_entry.o` 通过回调栈对齐、参数传递、TLS、退出与 join 检查，四轮后资源恢复。调度、PID、时钟和随机数目标对象的组合检查也通过。客体报告 SHA-256 为 `7cffe0c85313ea830a389d8a14bd4f3392192d4a5f128600ab0563dee5f4f4e5`。链接器报告 `getentropy.o` 缺少 `.note.GNU-stack`。
+
+## 继续：原生堆与匿名映射（2026-11-24）
+
+glibc 的 `brk` 接入现有 XOS syscall 29。静态 TLS 引导中的 `_dl_early_allocate` 直接使用这条调用，失败时返回空指针，避免在安装线程指针前访问 TLS 里的 `errno`。宿主测试覆盖返回地址、失败值和堆状态。目标对象的反汇编核实了陷入指令及引导路径无 `%fs` 访问。
+
+`mmap`、`mmap64`、`mprotect`、`munmap` 接入 syscall 67，沿用 XOS SDK 已有的匿名私有映射契约。初始映射仅保留 `PROT_NONE` 地址范围，随后用 `mprotect` 提交和设权。精确映射遇到碰撞返回 `EEXIST`，同时要求写入与执行权限时返回 `EACCES`。默认 glibc 分配器直接请求可写映射的路径仍有兼容工作。
+
+从锁定归档重建后，六个内存接口目标对象的源码、依赖、符号与指令检查通过，逐个构建的 PIC 对象也通过。C 和 C++17 各编译检查 150 个公开头，仍使用构建期占位头。构建报告 SHA-256 为 `2dc89952fda22bf063e301ef41a705eff32f51a2ed5a48ea4ff54842b0299f89`。
+
+镜像 `e728fdec0e012f4d` 的客体探针直接链接这六个对象，验证堆增长、回缩及失败保持原值，匿名地址预留、提交、保护、释放和重新分配后的清零。四轮均通过，资源恢复到 `[129725, 3, 1]`。客体报告 SHA-256 为 `08402b811526375578accc06ab8cad6374c4b88b72134b85f91be2255246232c`。该探针由 XOS 现有 loader 设置 TLS，glibc 自身的主线程 TLS 安装未运行。链接器报告 `munmap.o` 缺少 `.note.GNU-stack`。
+
+并行构建诊断中，上游通用 `mprotect` 与 `munmap` 的别名编译错误已消失。完整构建的第一个错误仍是上游 `pthread_create` 引入的 `clone3.h`。现有内核会在原生 join 返回前回收执行 TCB，静态线程需要让公开句柄与执行 TCB 分离，并明确 DTV 属于线程映射还是独立分配。最终 `gnu/stubs.h` 和完整 SDK 仍未生成，G1 保持 partial。

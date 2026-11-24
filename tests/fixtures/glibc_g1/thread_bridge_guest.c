@@ -5,12 +5,26 @@
 #ifdef XOS_GLIBC_TEST_CLOCK
 #include "xos_cpu_time.h"
 #endif
+#ifdef XOS_GLIBC_TEST_MEMORY
+# define _SYS_MMAN_H 1
+# include "bits/mman.h"
+# define MAP_FAILED ((void *) -1)
+# define _ERRNO_H 1
+# include "bits/errno.h"
+extern void *_dl_early_allocate (unsigned long);
+extern int __brk (void *);
+extern void *__curbrk;
+extern void *__mmap64 (void *, unsigned long, int, int, int, long);
+extern int __mprotect (void *, unsigned long, int);
+extern int __munmap (void *, unsigned long);
+#endif
 
 static xos_u64 child_result;
 static int rollback_count;
 static struct xos_thread_launch_result launch;
 static int invalid_start;
-#if defined XOS_GLIBC_TEST_GETPID || defined XOS_GLIBC_TEST_CLOCK || defined XOS_GLIBC_TEST_RANDOM
+#if defined XOS_GLIBC_TEST_GETPID || defined XOS_GLIBC_TEST_CLOCK \
+    || defined XOS_GLIBC_TEST_RANDOM || defined XOS_GLIBC_TEST_MEMORY
 __thread int __libc_errno;
 #endif
 #ifdef XOS_GLIBC_TEST_CLOCK
@@ -44,6 +58,50 @@ static void finish (xos_u64 code)
   (void) trap (2, code, 0);
   __builtin_trap ();
 }
+#ifdef XOS_GLIBC_TEST_MEMORY
+static void check_memory (void)
+{
+  xos_i64 initial_break = trap (29, 0, 0);
+  if (initial_break <= 0) finish (50);
+  void *initial = (void *) initial_break;
+  volatile unsigned char *heap = _dl_early_allocate (4097);
+  if (heap != initial || __curbrk != (void *) (initial_break + 4097)) finish (51);
+  heap[4096] = 0x5a;
+  if (heap[4096] != 0x5a || __brk (initial) != 0 || __curbrk != initial
+      || trap (29, 0, 0) != initial_break) finish (52);
+  __libc_errno = 0;
+  if (__brk ((void *) 1) != -1 || __libc_errno != ENOMEM || __curbrk != initial)
+    finish (53);
+  __libc_errno = 0;
+  if (_dl_early_allocate ((unsigned long) -1) != 0 || __libc_errno != 0
+      || trap (29, 0, 0) != initial_break) finish (54);
+
+  int flags = MAP_PRIVATE | MAP_ANONYMOUS;
+  void *mapped = __mmap64 (0, 4097, PROT_NONE, flags, -1, 0);
+  if (mapped == MAP_FAILED) finish (55);
+  __libc_errno = 0;
+  if (__mmap64 (mapped, 4097, PROT_NONE, flags | MAP_FIXED_NOREPLACE, -1, 0)
+        != MAP_FAILED || __libc_errno != EEXIST) finish (56);
+  __libc_errno = 0;
+  if (__mprotect (mapped, 4097, PROT_WRITE | PROT_EXEC) != -1
+      || __libc_errno != EACCES) finish (57);
+  if (__mprotect (mapped, 4097, PROT_READ | PROT_WRITE) != 0) finish (58);
+  volatile unsigned char *bytes = mapped;
+  if (bytes[0] != 0 || bytes[4096] != 0) finish (59);
+  bytes[0] = 0x35;
+  bytes[4096] = 0xac;
+  if (__mprotect (mapped, 4097, PROT_READ) != 0
+      || bytes[0] != 0x35 || bytes[4096] != 0xac) finish (60);
+  if (__munmap (mapped, 4097) != 0) finish (61);
+  __libc_errno = 0;
+  if (__mprotect (mapped, 4097, PROT_READ) != -1 || __libc_errno != ENOMEM)
+    finish (62);
+  if (__mmap64 (mapped, 4097, PROT_NONE, flags | MAP_FIXED_NOREPLACE, -1, 0)
+        != mapped || __mprotect (mapped, 4097, PROT_READ) != 0
+      || bytes[0] != 0 || bytes[4096] != 0 || __munmap (mapped, 4097) != 0)
+    finish (63);
+}
+#endif
 static void guest_thread_worker (void *raw)
 {
   if (((xos_u64) __builtin_frame_address (0) & 15) != 0) finish (95);
@@ -90,6 +148,9 @@ static void rollback (void *context)
 int guest_main (void) __attribute__ ((used));
 int guest_main (void)
 {
+#ifdef XOS_GLIBC_TEST_MEMORY
+  check_memory ();
+#endif
 #ifdef XOS_GLIBC_TEST_GETPID
   expected_pid = (int) trap (6, 0, 0);
   if (expected_pid <= 0 || __getpid () != expected_pid) return 18;

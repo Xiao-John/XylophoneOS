@@ -243,6 +243,7 @@ def main():
     assert digest(root / 'usr/include/bits/stdio_lim.h') == digest(source / 'sysdeps/xos/bits/stdio_lim.h')
     assert digest(root / 'usr/include/bits/semaphore.h') == digest(source / 'sysdeps/xos/bits/semaphore.h')
     assert digest(root / 'usr/include/bits/errno.h') == digest(source / 'sysdeps/xos/bits/errno.h')
+    assert digest(root / 'usr/include/bits/mman.h') == digest(source / 'sysdeps/xos/bits/mman.h')
     assert digest(root / 'usr/include/bits/types/idtype_t.h') == digest(source / 'sysdeps/xos/bits/types/idtype_t.h')
     assert digest(output / 'header-client.log') == report['header_client']['log_sha256']
     assert 'gnu/stubs.h' in (output / 'header-client.log').read_text()
@@ -417,6 +418,29 @@ def main():
     assert '../sysdeps/xos/check_fds.c' in (output / 'check_fds-dependencies.d').read_text()
     disassembly = subprocess.check_output(['x86_64-elf-objdump', '-dr', str(build / 'csu/check_fds.o')], text=True)
     assert re.search(r'\bmov\s+\$0x7f,%edi', disassembly) and re.search(r'R_X86_64_\w+\s+_exit', disassembly)
+
+    for subdir, name, trap, symbol in (
+        ('misc', 'brk', '1d', '__brk'),
+        ('elf', 'dl-early_allocate', '1d', '_dl_early_allocate'),
+        ('misc', 'mmap', '43', '__mmap'),
+        ('misc', 'mmap64', None, '__mmap64'),
+        ('misc', 'mprotect', '43', '__mprotect'),
+        ('misc', 'munmap', '43', '__munmap'),
+    ):
+        obj = build / subdir / (name + '.o')
+        item = report['diagnostic_objects'][name]
+        assert item['exit_code'] == 0 and digest(obj) == item['sha256'], name
+        assert f'source/sysdeps/xos/{name}.c' in dependency_manifest[name]
+        symbols = subprocess.check_output([report['readelf'], '-Ws', obj], text=True)
+        assert re.search(r'\bFUNC\b.*\s\d+\s+' + symbol + r'\s*$', symbols, re.M)
+        code = subprocess.check_output(['x86_64-elf-objdump', '-dr', obj], text=True)
+        if trap is None:
+            assert re.search(r'R_X86_64_\w+\s+__mmap\b', code)
+        else:
+            assert re.search(r'\$0x' + trap + r',%(e|r)ax\b', code)
+            assert re.search(r'\bint\s+\$0x80\b', code) and '\tsyscall' not in code
+        if name == 'dl-early_allocate':
+            assert 'errno' not in code and not re.search(r'%fs:', code)
 
     print('PASS diagnostic objects, symbols, instruction sequence, header provenance and partial sysroot')
     print('NOT ACCEPTED: experimental backend, incomplete headers and libc build, no guest test')

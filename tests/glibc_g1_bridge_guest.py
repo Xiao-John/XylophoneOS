@@ -30,6 +30,7 @@ def main():
     parser.add_argument('--clock-build', type=Path, help='G1 diagnostic output containing the real target clock_gettime object')
     parser.add_argument('--random-build', type=Path, help='G1 output with target random objects')
     parser.add_argument('--entry-build', type=Path, help='G1 output with target thread entry object')
+    parser.add_argument('--memory-build', type=Path, help='G1 output with target heap and VM objects')
     args = parser.parse_args()
     build = root/'build'
     overlay = root/'src/ports/glibc/sysdeps/xos'
@@ -151,13 +152,39 @@ def main():
             random_objects.append(obj)
         random_provenance = {'report_sha256': sha(random_report), 'object_sha256': [sha(x) for x in random_objects]}
         cmd[-2:-2] = ['-DXOS_GLIBC_TEST_RANDOM', *map(str, random_objects)]
+    memory_provenance = None
+    if args.memory_build:
+        candidate = args.memory_build.resolve(strict=True)
+        memory_report = candidate/'report.json'
+        data = json.loads(memory_report.read_text())
+        assert data['nptl_backend_experimental'] and not data['hacker_mode']
+        assert not data['synthetic_abi_tag'] and data['sysroot_enforced']
+        memory_targets = (
+            ('misc', 'brk'), ('elf', 'dl-early_allocate'), ('misc', 'mmap'),
+            ('misc', 'mmap64'), ('misc', 'mprotect'), ('misc', 'munmap'),
+        )
+        for name in ([name + '.c' for _, name in memory_targets]
+                     + ['xos_heap_break.h', 'xos_vm.h', 'bits/mman.h', 'bits/errno.h']):
+            source = overlay/name
+            assert data['xos_overlay_sha256']['xos/'+name] == sha(source)
+            inputs[str(source.relative_to(root))] = sha(source)
+            sources.append(source)
+        memory_objects = {}
+        for subdir, name in memory_targets:
+            obj = candidate/'configure'/subdir/(name+'.o')
+            assert data['diagnostic_objects'][name]['exit_code'] == 0
+            assert data['diagnostic_objects'][name]['sha256'] == sha(obj)
+            memory_objects[obj] = sha(obj)
+        memory_provenance = {'report_sha256': sha(memory_report),
+                             'object_sha256': {obj.name: digest for obj, digest in memory_objects.items()}}
+        cmd[-2:-2] = ['-DXOS_GLIBC_TEST_MEMORY', *map(str, memory_objects)]
     subprocess.run(cmd, check=True)
     assert inputs == {str(path.relative_to(root)): sha(path) for path in sources}
-    report = {'status': 'failed', 'scope': 'freestanding XOS thread bridge; no glibc linked',
+    report = {'status': 'failed', 'scope': 'freestanding XOS bridge with optional glibc target objects',
               'build_id': system['build_id'], 'system_manifest_sha256': sha(system_manifest),
               'image_sha256': sha(image), 'probe_sha256': sha(probe), 'inputs': inputs,
               'compiler_command': cmd, 'compiler_sha256': sha(compiler), 'yield_provenance': yield_provenance, 'pid_provenance': pid_provenance, 'clock_provenance': clock_provenance, 'random_provenance': random_provenance,
-              'entry_provenance': entry_provenance, 'checks': []}
+              'entry_provenance': entry_provenance, 'memory_provenance': memory_provenance, 'checks': []}
     guest = None
     try:
         with tempfile.TemporaryDirectory(prefix='xos_glibc_bridge_') as folder:
@@ -212,6 +239,11 @@ def main():
                 assert sha(random_report) == random_provenance['report_sha256']
                 assert [sha(x) for x in random_objects] == random_provenance['object_sha256']
                 report['checks'].append('glibc_target_random_limits_and_errors')
+            if memory_provenance is not None:
+                assert sha(memory_report) == memory_provenance['report_sha256']
+                assert {obj: sha(obj) for obj in memory_objects} == memory_objects
+                report['checks'].extend(['glibc_target_heap_growth_shrink_and_errors',
+                                         'glibc_target_anonymous_vm_reserve_protect_unmap_and_errors'])
             report['resources'] = before
             report['output'] = outputs
             report['status'] = 'passed_subset'

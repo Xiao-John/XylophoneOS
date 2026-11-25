@@ -1,0 +1,67 @@
+{
+  "format": "derived path-normalized public evidence",
+  "originals": {
+    "build/files_extra_host_qualified/report.json": {
+      "sha256": "3530d3e0a8ba5414cc9da5d0940791fcd059345142d623aa6848f18a351e0e3c",
+      "kind": "original workspace evidence"
+    },
+    "build/files_extra_host_sanitized_qualified/report.json": {
+      "sha256": "184e7f7e4d599a276276fbef750128e88af7fbcb1d0751eaaa9c0e37549c512b",
+      "kind": "original workspace evidence"
+    },
+    "build/files_api_regression_qualified/report.json": {
+      "sha256": "5bb579ceae33a5e43ecb46884c9bec31a20a002b57d481207cba13657357b051",
+      "kind": "original workspace evidence"
+    },
+    "build/files_extra_guest_release/report.json": {
+      "sha256": "afad621917f616a12399a4d031646067305135cc15de51d9cf8aeff4b94da69c",
+      "kind": "original workspace evidence"
+    },
+    "build/files_legacy_guest_release/report.json": {
+      "sha256": "0dd7b98eabf0ce2bd733aa58ca9a66905a329b768699d56d5c825d1cb6276fa4",
+      "kind": "original workspace evidence"
+    },
+    "build/files_extra_guest_release/serial.log": {
+      "sha256": "56339134f5a306eb90be40b06784ab23b59a756c20e60f046dedd9dfc1d0d5cf",
+      "kind": "original workspace evidence"
+    },
+    "build/files_legacy_guest_release/serial.log": {
+      "sha256": "0d0d9a836063932c9763fe069d98463e980ee0ade146396e9849196b1b9eef27",
+      "kind": "original workspace evidence"
+    },
+    "build/glibc_files_extra_sdk_qualified/manifest.json": {
+      "sha256": "a16f805170c3d93dccbc85880cc6ae9e7555b161375dc6cd7344f62275d43aba",
+      "kind": "original workspace evidence"
+    },
+    "build/glibc_files_extra_system_release/manifest.json": {
+      "sha256": "a9ba35d1591a15ea97511b95e6d9022c2ac625280e07d06af7bc1d95f03887fb",
+      "kind": "original workspace evidence"
+    },
+    "build/glibc_files_extra_sdk_qualified/source_verification/report.json": {
+      "sha256": "2b01b32523f1f0ac494432e3f9ef8c1aa142d65733c5cd5a2a72085136591e64",
+      "kind": "original workspace evidence"
+    },
+    "build/files_extra_abi_release/abi_doc_report.json": {
+      "sha256": "29cf1392631e0c5a1e01839a7c1c8afb370ef9fb6d5daa872dd5815d469bb9e7",
+      "kind": "original workspace evidence"
+    },
+    "build/files_extra_guest/report.json": {
+      "sha256": "dcdaa68dad89b8066dbcf8c3d14a348afe52315e2932677595af2e6debf5e8a3",
+      "kind": "original workspace evidence"
+    },
+    "build/files_extra_guest_v3/report.json": {
+      "sha256": "1d313aea28dd171786d940f831fb8b4c08c66de5c259601915cbd61ce8b496ae",
+      "kind": "original workspace evidence"
+    }
+  },
+  "transformations": [
+    "Replace repository absolute prefix with ${XOS_REPO}.",
+    "Replace preview root prefix with ${PREVIEW_PREFIX}.",
+    "Replace ephemeral guest directory with ${PRIVATE_GUEST}.",
+    "Replace guest serial_sha256 with sibling serial filename; flat manifest binds exported bytes.",
+    "build_inputs.json selects complete source maps, build profiles, tools and artifact identities.",
+    "earlier_results.json extracts prior successful runs and records earlier failures; qualification.json summarizes scope.",
+    "Serial exports normalize CRLF to LF and remove trailing line whitespace; raw-byte identities remain in originals."
+  ],
+  "trust_root": "Git commit containing this directory; manifest.json hashes all leaf exports."
+}

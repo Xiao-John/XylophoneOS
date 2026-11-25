@@ -1,0 +1,219 @@
+XOS: loading stage_two
+[loader] firmware=bios target=x86_64
+[boot] event=kernel_enter arch=x86_64 build=2802101e956bea35
+[boot] event=boot_info_valid memory_map=complete
+[boot] event=runtime_checked bss=zero data=valid
+[cpu] event=exceptions_ready idt=0x0000000000257110 vectors=32 double_fault_ist=1
+[display] state=ready width=800 height=600 stride=3200 physical=0x00000000fd000000 bytes=1920000 cache=uc user_mapping=none
+[display] backend=vbe fallback=1
+[mem] event=initialized usable_kib=523775 managed_kib=524160 pages=131040 free_pages=130193 allocated_pages=1
+[mem] event=window low=0x0000000000100000 high=0x000000001ffe0000
+[vm] event=self_check result=pass address=0x0000000040000000 physical=0x000000000034f000
+[block] event=ready device=ata sectors=1048576
+[task] event=created pid=1 name=heartbeat
+[task] event=created pid=2 name=spinner
+[task] event=created pid=3 name=receiver
+[task] event=created pid=4 name=sender
+[task] event=created pid=5 name=probe
+[task] event=created pid=6 name=quitter
+[task] event=created pid=7 name=supervisor bootstrap=trusted_segments
+[task] event=created pid=8 name=files bootstrap=trusted_segments
+[task] event=ready count=8
+[boot] result=ready stage=E04
+The underscores made it to 64 bits.
+
+  ================================================
+   XOS 0.0.2 | 64-bit | more checks than excuses
+   Guest star: Guo YePeng (did not panic, yet)
+   "It booted on my machine." - everyone, ever
+  ================================================
+   guo = ceremonial greeting    joke = deterministic
+   help = actual work
+xos64> run
+[sched] event=starting
+[input] ps2=ready irq1=enabled irq12=enabled
+[sched] event=start tasks=8
+Abad length
+bad pointer
+tx
+bad handle rejected
+no send right
+[task] event=fault pid=5 vector=14 rip=0x0000000040000060 cr2=0x0000000000100000 result=killed tid=5
+[task] event=reclaimed pid=5 pages=11
+bye
+[task] event=reclaimed pid=6 pages=11
+ping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+Abad length
+bad pointer
+ping
+[files] ready hello.elf bytes=9872
+
+Welcome to Xshell | XylophoneOS
+help: commands   dash -i: POSIX shell   trace on: diagnostics
+
+AAbad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+xsh> tping
+bad length
+bad pointer
+tx
+race on
+xsh: trace on
+xsh> AAping
+demo quietAbad length
+bad pointer
+tx
+
+[task] event=killed_by_supervisor pid=1
+[task] event=reclaimed pid=1 pages=11
+[task] event=killed_by_supervisor pid=2
+[task] event=reclaimed pid=2 pages=11
+[task] event=killed_by_supervisor pid=3
+[task] event=reclaimed pid=3 pages=11
+[task] event=killed_by_supervisor pid=4
+[task] event=reclaimed pid=4 pages=11
+[sup] demo tasks stopped
+xsh> stats
+[resources] free=129715 tasks=3 completions=1
+xsh> exec-file /bin/g3_files_extra
+[process] event=started pid=10 parent=7
+[process] pid=10 address_space=0x000000000034f000
+[loader] started pid=10 file=/bin/g3_files_extra
+[process] event=wait_blocked parent=7 child=10
+GLIBC_FILES_EXTRA_POSITIONED_PASS aliases=shared append=explicit threads=3
+GLIBC_FILES_EXTRA_DIRECTORY_PASS entries=100 identity=stat cookies=resume utf8=long scandir=sorted
+GLIBC_FILES_EXTRA_PASS checks=4429 handle_quota=16 reuse=64
+[task] event=reclaimed pid=10 pages=228
+[wait] pid=10 kind=exited code=0
+xsh> stats
+[resources] free=129715 tasks=3 completions=1
+xsh> exec-driver /bin/g3_files_extra_parent /bin/g3_files_extra_receiver
+[process] event=started pid=11 parent=7
+[process] pid=11 address_space=0x000000000034f000
+[loader] started pid=11 file=/bin/g3_files_extra_parent
+[process] event=wait_blocked parent=7 child=11
+[process] event=fork_prepared pid=12 parent=11 depth=1 pages=125
+[process] event=fork_committed pid=12 parent=11
+[process] event=exec_prepared pid=12 staging_pid=13
+[process] event=exec_replaced old_pid=12 current_pid=12 target_pid=12 staging_pid=13 tid=15 old_address_space=0x00000000005b0000 address_space=0x00000000005c4000 file_session_rekeyed=1 old_spawn_depth=1 spawn_depth=1
+[task] event=reclaimed pid=13 pages=22
+GLIBC_FILES_EXTRA_INHERIT_DIR_PASS rename=stable deleted=retained
+[process] event=wait_blocked parent=11 child=12
+GLIBC_FILES_EXTRA_CHILD_PASS positioned_rounds=256
+[task] event=reclaimed pid=12 pages=228
+GLIBC_FILES_EXTRA_PARENT_PASS shared_offset=512 child_positioned=256 dirs_reclaimed=3
+[task] event=reclaimed pid=11 pages=133
+[wait] pid=11 kind=exited code=0
+xsh> stats
+[resources] free=129715 tasks=3 completions=1
+xsh> exec-file /bin/g3_files_extra
+[process] event=started pid=14 parent=7
+[process] pid=14 address_space=0x000000000034f000
+[loader] started pid=14 file=/bin/g3_files_extra
+[process] event=wait_blocked parent=7 child=14
+GLIBC_FILES_EXTRA_POSITIONED_PASS aliases=shared append=explicit threads=3
+GLIBC_FILES_EXTRA_DIRECTORY_PASS entries=100 identity=stat cookies=resume utf8=long scandir=sorted
+GLIBC_FILES_EXTRA_PASS checks=4429 handle_quota=16 reuse=64
+[task] event=reclaimed pid=14 pages=228
+[wait] pid=14 kind=exited code=0
+xsh> stats
+[resources] free=129715 tasks=3 completions=1
+xsh> exec-driver /bin/g3_files_extra_parent /bin/g3_files_extra_receiver
+[process] event=started pid=15 parent=7
+[process] pid=15 address_space=0x000000000034f000
+[loader] started pid=15 file=/bin/g3_files_extra_parent
+[process] event=wait_blocked parent=7 child=15
+[process] event=fork_prepared pid=16 parent=15 depth=1 pages=125
+[process] event=fork_committed pid=16 parent=15
+[process] event=exec_prepared pid=16 staging_pid=17
+[process] event=exec_replaced old_pid=16 current_pid=16 target_pid=16 staging_pid=17 tid=22 old_address_space=0x00000000005b0000 address_space=0x00000000005c4000 file_session_rekeyed=1 old_spawn_depth=1 spawn_depth=1
+[task] event=reclaimed pid=17 pages=22
+GLIBC_FILES_EXTRA_INHERIT_DIR_PASS rename=stable deleted=retained
+[process] event=wait_blocked parent=15 child=16
+GLIBC_FILES_EXTRA_CHILD_PASS positioned_rounds=256
+[task] event=reclaimed pid=16 pages=228
+GLIBC_FILES_EXTRA_PARENT_PASS shared_offset=512 child_positioned=256 dirs_reclaimed=3
+[task] event=reclaimed pid=15 pages=133
+[wait] pid=15 kind=exited code=0
+xsh> stats
+[resources] free=129715 tasks=3 completions=1
+xsh> exec-file /bin/g3_files_extra
+[process] event=started pid=18 parent=7
+[process] pid=18 address_space=0x000000000034f000
+[loader] started pid=18 file=/bin/g3_files_extra
+[process] event=wait_blocked parent=7 child=18
+GLIBC_FILES_EXTRA_POSITIONED_PASS aliases=shared append=explicit threads=3
+GLIBC_FILES_EXTRA_DIRECTORY_PASS entries=100 identity=stat cookies=resume utf8=long scandir=sorted
+GLIBC_FILES_EXTRA_PASS checks=4429 handle_quota=16 reuse=64
+[task] event=reclaimed pid=18 pages=228
+[wait] pid=18 kind=exited code=0
+xsh> stats
+[resources] free=129715 tasks=3 completions=1
+xsh> exec-driver /bin/g3_files_extra_parent /bin/g3_files_extra_receiver
+[process] event=started pid=19 parent=7
+[process] pid=19 address_space=0x000000000034f000
+[loader] started pid=19 file=/bin/g3_files_extra_parent
+[process] event=wait_blocked parent=7 child=19
+[process] event=fork_prepared pid=20 parent=19 depth=1 pages=125
+[process] event=fork_committed pid=20 parent=19
+[process] event=exec_prepared pid=20 staging_pid=21
+[process] event=exec_replaced old_pid=20 current_pid=20 target_pid=20 staging_pid=21 tid=29 old_address_space=0x00000000005b0000 address_space=0x00000000005c4000 file_session_rekeyed=1 old_spawn_depth=1 spawn_depth=1
+[task] event=reclaimed pid=21 pages=22
+GLIBC_FILES_EXTRA_INHERIT_DIR_PASS rename=stable deleted=retained
+[process] event=wait_blocked parent=19 child=20
+GLIBC_FILES_EXTRA_CHILD_PASS positioned_rounds=256
+[task] event=reclaimed pid=20 pages=228
+GLIBC_FILES_EXTRA_PARENT_PASS shared_offset=512 child_positioned=256 dirs_reclaimed=3
+[task] event=reclaimed pid=19 pages=133
+[wait] pid=19 kind=exited code=0
+xsh> stats
+[resources] free=129715 tasks=3 completions=1
+xsh>

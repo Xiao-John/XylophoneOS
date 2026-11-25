@@ -1,0 +1,38 @@
+{
+  "scope": "G3 directory streams and true positioned file I/O",
+  "status": "passed_subset",
+  "base_commit": "a7aa492",
+  "host_real_service_groups": 8,
+  "sanitized_real_service_groups": 8,
+  "shared_api_state_machine_groups": 36,
+  "shared_api_real_service_groups": 10,
+  "guest_cases": 2,
+  "guest_repetitions": 3,
+  "legacy_guest_cases": 3,
+  "resources_each_run": [
+    129715,
+    3,
+    1
+  ],
+  "guest_environment": "QEMU 11.1.3; TCG; one CPU; 512 MiB; private FAT32 disk; serial-only",
+  "upstream_source": "Signature verification completed before extraction using the PR154 locked signer.",
+  "not_run": [
+    "LeakSanitizer: ptrace environment restriction",
+    "Real hardware and QEMU 11.1.2",
+    "Full upstream glibc testsuite",
+    "dash launch path",
+    "File service-death guest on this source combination",
+    "Snapshot guarantees during concurrent directory mutation",
+    "Terminal APIs and glibc-originating fork/exec/spawn: separate modules"
+  ],
+  "reports": [
+    "host.json",
+    "host_sanitized.json",
+    "shared_api_regression.json",
+    "guest.json",
+    "legacy_guest.json",
+    "build_inputs.json",
+    "upstream_signature.json",
+    "abi.json"
+  ]
+}

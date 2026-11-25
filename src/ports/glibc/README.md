@@ -93,3 +93,11 @@ signals, asynchronous cancellation, process-shared/robust synchronization,
 fork/exec from a glibc parent and general POSIX conformance remain outside this
 G2 qualification.  Their current stub or unsupported behavior must not be
 interpreted as a successful implementation.
+
+The G3 files-extra module adds bounded directory streams with real service
+identities and cookies, and positioned read/write operations which preserve the
+shared open-description offset. Its `files-extra` guest suite exercises public
+glibc APIs, concurrent threads, a native parent sharing a file with a glibc
+child, and final resource recovery. Directory streams use the opt-in identity
+format of files op 2; positioned I/O uses op 30/31. Older services fail this
+extension explicitly; old directory clients retain their existing wire format.

@@ -106,10 +106,15 @@ def suite_cases(suite):
             ('g3_files_threads', 'glibc_g3/files_public_probe.c', [], 0,
              ['GLIBC_G3_FILES_PASS', 'threaded=1']),
         ])
+    if suite in ('files-extra', 'all'):
+        cases.append(('g3_files_extra', 'glibc_g3/files_extra_public_probe.c', [], 0,
+                      ['GLIBC_FILES_EXTRA_POSITIONED_PASS', 'GLIBC_FILES_EXTRA_DIRECTORY_PASS',
+                       'GLIBC_FILES_EXTRA_PASS']))
     return cases
 
 
-def build_newlib_parent(system_build, output, report):
+def build_newlib_parent(system_build, output, report,
+                       fixture='glibc_g3/files_exec_parent.c', name='g3_files_parent'):
     """Use the same system's existing SDK for an actual cross-libc exec."""
     sdk = system_build / 'sdk'
     receipt = json.loads((sdk / 'manifest.json').read_text())
@@ -120,9 +125,9 @@ def build_newlib_parent(system_build, output, report):
     env['LC_ALL'] = 'C'
     libgcc = Path(subprocess.check_output([compiler, '-print-libgcc-file-name'], env=env, text=True).strip())
     headers = subprocess.check_output([compiler, '-print-file-name=include'], env=env, text=True).strip()
-    source = ROOT / 'tests/fixtures/glibc_g3/files_exec_parent.c'
-    binary = output / 'g3_files_parent.elf'
-    obj = output / 'g3_files_parent.o'
+    source = ROOT / 'tests/fixtures' / fixture
+    binary = output / (name + '.elf')
+    obj = output / (name + '.o')
     inputs = [sdk / name for name in ('crt0_posix.o', 'user.ld', 'lib/libxos.a',
               'lib/libxos_loader.a', 'lib/libc.a', 'lib/libm.a')]
     report['newlib_parent_inputs'] = {str(path.relative_to(sdk)): sha(path) for path in inputs}
@@ -136,13 +141,13 @@ def build_newlib_parent(system_build, output, report):
                  '-T', str(sdk / 'user.ld'), str(sdk / 'crt0_posix.o'), str(obj),
                  '-Wl,--start-group', *map(str, inputs[2:]), str(libgcc),
                  '-Wl,--end-group', '-o', str(binary)]]
-    with (output / 'g3_files_parent_build.log').open('w') as log:
+    with (output / (name + '_build.log')).open('w') as log:
         for invocation in commands:
             subprocess.run(invocation, cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT, check=True)
     for path in inputs:
         if sha(path) != report['newlib_parent_inputs'][str(path.relative_to(sdk))]:
             raise RuntimeError('newlib SDK changed while building exec parent')
-    report['elfs']['g3_files_parent'] = {'source': 'glibc_g3/files_exec_parent.c',
+    report['elfs'][name] = {'source': fixture,
         'source_sha256': sha(source), 'elf_sha256': sha(binary), 'build_commands': commands,
         'compiler_sha256': sha(compiler), 'exec_receiver_marker': exec_opt_in(binary),
         'sanitized_environment': removed}
@@ -213,7 +218,7 @@ def main():
     parser.add_argument('--death-system-build', type=Path,
                         help='private system built with --glibc-files-death-probe')
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--suite', choices=('g2', 'threads', 'files', 'exit', 'all'), default='g2')
+    parser.add_argument('--suite', choices=('g2', 'threads', 'files', 'files-extra', 'exit', 'all'), default='g2')
     parser.add_argument('--repetitions', type=int, default=3)
     args = parser.parse_args()
     if not 1 <= args.repetitions <= 10:
@@ -321,12 +326,24 @@ def main():
             cases.append(('g3_files_parent', 'glibc_g3/files_exec_parent.c',
                           ['/bin/g3_files_receiver'], 0,
                           ['GLIBC_G3_FILES_PARENT_READY', 'GLIBC_G3_FILES_INHERIT_PASS']))
+        if args.suite in ('files-extra', 'all'):
+            build_glibc('g3_files_extra_receiver', 'glibc_g3/files_extra_public_probe.c',
+                        ['XOS_GLIBC_G3_EXEC_RECEIVER'])
+            programs['g3_files_extra_parent'] = build_newlib_parent(
+                system_build, output, report, 'glibc_g3/files_extra_exec_parent.c', 'g3_files_extra_parent')
+            cases.append(('g3_files_extra_parent', 'glibc_g3/files_extra_exec_parent.c',
+                          ['/bin/g3_files_extra_receiver'], 0,
+                          ['GLIBC_FILES_EXTRA_INHERIT_DIR_PASS', 'GLIBC_FILES_EXTRA_CHILD_PASS',
+                           'GLIBC_FILES_EXTRA_PARENT_PASS']))
         verify_inputs()
         report['status'] = 'failed'
         with tempfile.TemporaryDirectory(prefix='xos_glibc_static_') as temporary:
             disk = Path(temporary) / 'work.img'
             create_fat32(disk, 512)
             transfer(disk, 'mkdir', '/bin')
+            if args.suite in ('files-extra', 'all'):
+                transfer(disk, 'mkdir', '/g3_enum')
+                transfer(disk, 'mkdir', '/g3_enum/sub')
             for name, binary in programs.items():
                 transfer(disk, 'import', '/bin/' + name, binary)
             guest = Guest(image, 'glibc_static_' + args.suite, work_disk=disk,
@@ -348,7 +365,7 @@ def main():
                 report['newlib_control'] = 'passed: current-system malloc/printf/exit/resources'
             for repetition in range(args.repetitions):
                 for name, _, arguments, expected_status, markers in cases:
-                    launch = 'exec-driver' if name == 'g3_files_parent' else 'exec-file'
+                    launch = 'exec-driver' if name in ('g3_files_parent', 'g3_files_extra_parent') else 'exec-file'
                     line = launch + ' /bin/' + name + ''.join(' ' + arg for arg in arguments)
                     kind, code = ('exited', expected_status) if isinstance(expected_status, int) else expected_status
                     began = time.monotonic()

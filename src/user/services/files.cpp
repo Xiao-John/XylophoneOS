@@ -1062,12 +1062,19 @@ bool supported_name(const char* name, u32& length) {
 open_record* find_open(client_session& session, u32 handle);
 
 void list_directory(const request& in, response& out, client_session& session) {
+    const bool identities = (in.flags & list_identity) != 0;
+    if ((in.flags & ~(list_directories | list_identity)) != 0 || in.reserved != 0 ||
+        in.offset > 0xffffffffu || (identities && in.handle == 0)) {
+        reply(out, in, status::invalid); return;
+    }
     path_reference resolved;
+    open_description* directory = nullptr;
     if (in.handle != 0) {
         open_description* description = description_for(find_open(session, in.handle));
         if (description == nullptr) { reply(out, in, status::bad_handle); return; }
         if (!object_for(*description).directory) { reply(out, in, status::not_directory); return; }
         if (in.name_length != 0) { reply(out, in, status::invalid); return; }
+        directory = description;
         resolved.error = object_path(description->object, resolved.path);
         if (resolved.error != status::ok) { reply(out, in, resolved.error); return; }
     } else if (!request_path(in, session, resolved, true, true)) {
@@ -1078,38 +1085,71 @@ void list_directory(const request& in, response& out, client_session& session) {
     const FRESULT opened = f_opendir(&dir, path);
     if (opened != FR_OK) { reply(out, in, from_fr(opened)); return; }
     reply(out, in, status::ok);
+    out.flags = identities ? static_cast<u32>(list_identity) : 0u;
     const u32 wanted = in.length == 0 ? 64 : in.length;
-    u64 raw_index = 0;
+    u64 raw_index = identities ? 2 : 0;
     u32 used = 0;
     u32 emitted = 0;
     bool stopped = false;
+    // The versioned format alone contains dot entries. Their identities come
+    // from the same retained objects used by cwd/fstat, including after rename
+    // and unlink; no path lookup can accidentally bind a recreated directory.
+    auto emit = [&](const char* name, u32 name_length, bool is_directory,
+                    u32 size, u16 inode, u64 current) {
+        const u32 header = identities ? list_identity_record_header_size : list_record_header_size;
+        if (emitted >= wanted || header + name_length > sizeof(out.data) - used) {
+            out.value = current;
+            stopped = true;
+            return false;
+        }
+        out.data[used++] = static_cast<u8>(name_length);
+        out.data[used++] = static_cast<u8>(name_length >> 8);
+        out.data[used++] = is_directory ? entry_is_directory : 0;
+        for (u32 shift = 0; shift < 32; shift += 8) { out.data[used++] = static_cast<u8>(size >> shift); }
+        if (identities) {
+            out.data[used++] = static_cast<u8>(inode);
+            out.data[used++] = static_cast<u8>(inode >> 8);
+            const u32 next = static_cast<u32>(current + 1);
+            for (u32 shift = 0; shift < 32; shift += 8) { out.data[used++] = static_cast<u8>(next >> shift); }
+        }
+        for (u32 i = 0; i < name_length; ++i) { out.data[used++] = static_cast<u8>(name[i]); }
+        ++emitted;
+        return true;
+    };
+    if (identities) {
+        const file_object& object = object_for(*directory);
+        const file_object& parent = object.parent == 0 ? root_object : file_objects[object.parent - 1];
+        if (in.offset == 0) { (void)emit(".", 1, true, 0, object.inode, 0); }
+        if (!stopped && in.offset <= 1) { (void)emit("..", 2, true, 0, parent.inode, 1); }
+    }
     FILINFO info{};
-    while (true) {
+    while (!stopped) {
         const FRESULT result = f_readdir(&dir, &info);
         if (result != FR_OK) { out.status_code = static_cast<i32>(from_fr(result)); break; }
         if (info.fname[0] == '\0') { break; }
+        if (raw_index >= 0xffffffffu) { out.status_code = static_cast<i32>(status::full); break; }
         const u64 current = raw_index++;
         if (current < in.offset) { continue; }
         u32 name_length = 0;
         if (!supported_name(info.fname, name_length)) { continue; }
         if (path[0] == '\0' && reserved_component(info.fname, name_length)) { continue; }
-        const u32 record_size = list_record_header_size + name_length;
-        if (emitted >= wanted || record_size > sizeof(out.data) - used) {
+        const u32 header = identities ? list_identity_record_header_size : list_record_header_size;
+        if (emitted >= wanted || header + name_length > sizeof(out.data) - used) {
             out.value = current;
             stopped = true;
             break;
         }
-        out.data[used++] = static_cast<u8>(name_length);
-        out.data[used++] = static_cast<u8>(name_length >> 8);
-        out.data[used++] = (info.fattrib & AM_DIR) != 0 ? entry_is_directory : 0;
-        const u32 size = static_cast<u32>(info.fsize);
-        for (u32 shift = 0; shift < 32; shift += 8) { out.data[used++] = static_cast<u8>(size >> shift); }
-        for (u32 i = 0; i < name_length; ++i) { out.data[used++] = static_cast<u8>(info.fname[i]); }
-        ++emitted;
+        u16 inode = 0;
+        if (identities && !identity_for_info(info, inode)) {
+            out.status_code = static_cast<i32>(status::full); break;
+        }
+        (void)emit(info.fname, name_length, (info.fattrib & AM_DIR) != 0,
+                   static_cast<u32>(info.fsize), inode, current);
     }
-    if (!stopped && out.value == 0) { out.value = 0; }
     out.length = used;
-    (void)f_closedir(&dir);
+    const FRESULT closed = f_closedir(&dir);
+    if (out.status_code == 0 && closed != FR_OK) { out.status_code = static_cast<i32>(from_fr(closed)); }
+    if (out.status_code != 0) { reply(out, in, static_cast<status>(out.status_code)); }
 }
 
 bool next_handle(u32 session_index, u32& value) {
@@ -1357,7 +1397,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         reply(out, in, status::ok); return;
     }
     const bool mutating = operation == op::anonymous || operation == op::anonymous_seal ||
-        operation == op::clone_session || operation == op::write || operation == op::replace_begin ||
+        operation == op::clone_session || operation == op::write || operation == op::write_at || operation == op::replace_begin ||
         operation == op::replace_chunk || operation == op::replace_commit || operation == op::replace_abort ||
         operation == op::remove || operation == op::mkdir || operation == op::rename || operation == op::sync ||
         operation == op::truncate || operation == op::set_metadata ||
@@ -1577,7 +1617,13 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         write_stat_metadata(out, object.directory, object.metadata_attrib, object.mtime_sec);
         break;
     }
-    case op::read: {
+    case op::read:
+    case op::read_at: {
+        const bool positioned = operation == op::read_at;
+        if (positioned && (in.flags != 0 || in.reserved != 0 || in.name_length != 0 ||
+            in.offset > fat32_max_file_bytes || in.length > sizeof(out.data))) {
+            reply(out, in, status::invalid); break;
+        }
         open_record* item = find_open(session, in.handle);
         open_description* description = description_for(item);
         if (description == nullptr) { reply(out, in, status::bad_handle); break; }
@@ -1586,8 +1632,9 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         if (object_for(*description).null_device) {
             reply(out, in, status::ok); out.length = 0; out.value = 0; break;
         }
+        const u32 position = positioned ? static_cast<u32>(in.offset) : description->position;
         const u32 size = static_cast<u32>(f_size(&file_for(*description)));
-        if (description->position >= size) {
+        if (position >= size) {
             reply(out, in, status::ok);
             out.length = 0;
             out.value = 0;
@@ -1596,21 +1643,28 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         UINT wanted = in.length > sizeof(out.data)
                           ? static_cast<UINT>(sizeof(out.data))
                           : static_cast<UINT>(in.length);
-        const u32 remaining = size - description->position;
+        const u32 remaining = size - position;
         if (wanted > remaining) { wanted = remaining; }
-        const status seek = seek_description(*description, description->position);
+        const status seek = seek_description(*description, position);
         if (seek != status::ok) { reply(out, in, seek); break; }
         // reply() clears the buffer, so acknowledge before f_read fills data.
         reply(out, in, status::ok);
         UINT read = 0;
         const FRESULT result = f_read(&file_for(*description), out.data, wanted, &read);
         if (result != FR_OK && read == 0) { reply(out, in, from_fr(result)); break; }
-        description->position += read;
+        if (!positioned) { description->position += read; }
         out.length = read;
         out.value = read;
         break;
     }
-    case op::write: {
+    case op::write:
+    case op::write_at: {
+        const bool positioned = operation == op::write_at;
+        if (in.length > sizeof(in.data) ||
+            (positioned && (in.flags != 0 || in.reserved != 0 || in.name_length != 0 ||
+                            in.offset > fat32_max_file_bytes))) {
+            reply(out, in, status::invalid); break;
+        }
         open_record* item = find_open(session, in.handle);
         open_description* description = description_for(item);
         if (description == nullptr) { reply(out, in, status::bad_handle); break; }
@@ -1619,19 +1673,21 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         // POSIX: a zero-byte write is a pure no-op. It must not move the
         // offset, must not extend the file, and append mode gains nothing.
         if (in.length == 0) { reply(out, in, status::ok); out.value = 0; break; }
+        u32 position = positioned ? static_cast<u32>(in.offset) : description->position;
         if (object_for(*description).null_device) {
-            if (description->position > fat32_max_file_bytes ||
-                in.length > fat32_max_file_bytes - description->position) {
+            if (position > fat32_max_file_bytes || in.length > fat32_max_file_bytes - position) {
                 reply(out, in, status::no_space); break;
             }
             reply(out, in, status::ok);
             out.value = in.length;
-            description->position += in.length;
+            if (!positioned) { description->position += in.length; }
             break;
         }
         const u32 offset_before = description->position;
-        u32 position = description->position;
-        if ((description->flags & open_append) != 0) {
+        // read_at/write_at are one service request. Only the physical FIL cursor
+        // moves; the retained open-description offset is untouched on every
+        // success, short-I/O and failure path. O_APPEND applies only to write.
+        if (!positioned && (description->flags & open_append) != 0) {
             position = static_cast<u32>(f_size(&file_for(*description)));
         }
         if (position > fat32_max_file_bytes || in.length > sizeof(in.data) ||
@@ -1669,7 +1725,7 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         }
         UINT written = 0;
         const FRESULT result = f_write(&file_for(*description), in.data, in.length, &written);
-        description->position = position + written;
+        if (!positioned) { description->position = position + written; }
         if (written == 0) {
             // in.length > 0 here, so zero bytes means the media is full
             // (FR_OK reports the short write) or the write errored outright.

@@ -1,0 +1,9 @@
+{
+  "status": "not_run",
+  "suite": "files-extra",
+  "runs": [],
+  "qmp": "disabled; serial-only qualification",
+  "active_worker_normal_exit": "unsupported; separate fail-fast status-127 check",
+  "dash_entry": "not_run",
+  "error": "SDK input snapshot changed"
+}

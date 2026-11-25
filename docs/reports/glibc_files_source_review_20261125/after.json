@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "profile": "files_extra",
+  "expected_runner_status": "failed",
+  "injection": "append a valid comment to a source only after the real final link succeeds",
+  "runner_sha256": "21a043cea7d3de92a7bb497bbaaf83a446dc01253c875fb6e927ec35d465181a",
+  "mutation_path": "src/ports/glibc/sysdeps/xos/xos_file_positioned.c",
+  "input_sha256": "42c8c754e345d23cf121b980661597f2d9f18ac4ede13ec3a3fcd0a23ceb21df",
+  "command": [
+    "${XOS_HOST_RUNTIME}/codex-primary-runtime/dependencies/python/bin/python3",
+    "${XOS_REPO}/build/files_source_binding_after/checkout/tests/glibc_files_extra_host.py",
+    "--output",
+    "${XOS_REPO}/build/files_source_binding_after/qualification"
+  ],
+  "returncode": 1,
+  "changed_sha256": "45af037711ac3b936f34ca4187a8e902f3719ebca070f6eb1107ce9054517796",
+  "linked_binary_sha256": "755eee76c6137d48d2ad09045e01613de57eeb205b8e2d19fca75f4e9e4051b4",
+  "runner_status": "failed",
+  "recorded_source_sha256": "42c8c754e345d23cf121b980661597f2d9f18ac4ede13ec3a3fcd0a23ceb21df",
+  "runner_error": "source inputs changed during qualification"
+}

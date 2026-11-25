@@ -435,6 +435,42 @@ i64 client::seek(u32 handle, u32 offset) {
     return seek(handle, static_cast<i64>(offset), seek_set);
 }
 
+i64 client::read_at(u32 handle, void* data, u32 length, u64 offset) {
+    session_guard guard;
+    if ((data == nullptr && length != 0) || length > sizeof(response_.data) ||
+        offset > fat32_max_file_bytes) { return status_value(status::invalid); }
+    request_ = request{};
+    request_.handle = handle;
+    request_.length = length;
+    request_.offset = offset;
+    const i64 result = call(op::read_at);
+    if (result != 0) { return result; }
+    if (response_.length > length || response_.value != response_.length ||
+        response_.handle != 0 || response_.flags != 0 || response_.reserved != 0 ||
+        response_.name_length != 0) { return status_value(status::io); }
+    auto* target = static_cast<u8*>(data);
+    for (u32 i = 0; i < response_.length; ++i) { target[i] = response_.data[i]; }
+    return static_cast<i64>(response_.length);
+}
+
+i64 client::write_at(u32 handle, const void* data, u32 length, u64 offset) {
+    session_guard guard;
+    if ((data == nullptr && length != 0) || length > sizeof(request_.data) ||
+        offset > fat32_max_file_bytes) { return status_value(status::invalid); }
+    request_ = request{};
+    request_.handle = handle;
+    request_.length = length;
+    request_.offset = offset;
+    const auto* source = static_cast<const u8*>(data);
+    for (u32 i = 0; i < length; ++i) { request_.data[i] = source[i]; }
+    const i64 result = call(op::write_at);
+    if (result != 0) { return result; }
+    if (response_.value > length || (length != 0 && response_.value == 0) ||
+        response_.length != 0 || response_.handle != 0 || response_.flags != 0 ||
+        response_.reserved != 0 || response_.name_length != 0) { return status_value(status::io); }
+    return static_cast<i64>(response_.value);
+}
+
 i64 client::seek(u32 handle, i64 offset, u32 origin) {
     session_guard guard;
     request_ = request{};

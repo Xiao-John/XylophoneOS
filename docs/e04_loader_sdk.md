@@ -34,6 +34,8 @@
 | `cwd_set` | 26 |
 | `cwd_get` | 27 |
 | `resolve_path` | 28 |
+| `read_at` | 30 |
+| `write_at` | 31 |
 
 ## 谁负责什么
 
@@ -144,6 +146,12 @@ bit11 `open_pin`；stat/fstat flags bit1 表示已 unlink；状态 -10/-11/-12/-
 分别为 not_directory/is_directory/not_empty/name_too_long。目录 list 可使用已有
 目录句柄。`cwd_set` 使用路径、目录句柄或空名继承 cwd，flags bit0 为只初始化，
 offset 为 0/self 或经 kernel parent_pid 认证且尚未初始化的子 PID。
+
+G3 文件扩展追加 op30 `read_at`、31 `write_at`：SDK 的同名方法以 handle 和
+显式 offset 操作，服务在一次请求内保持共享描述的原 position；新系统和 SDK
+一起重建。op2 的可选 `list_identity` bit12 返回真实 inode 与每条 next_cursor，
+旧请求保留 7 字节记录头。glibc 目录流及 pread/pwrite 使用这两个扩展，详情和
+客体复跑入口见 [G3 文件契约](contracts/glibc_files_v1.md#定位读写与目录流)。
 
 files 统一持有每 inode 的 FIL，独立 open 保留独立偏移；dup/fork 仍共享描述。
 cwd 由服务保留目录引用，spawn 在子进程启动前委派，fork 克隆，同 PID exec 保留。

@@ -15,5 +15,8 @@ sysdep_routines += xos_thread_name xos_nptl_exit
 endif
 
 ifeq ($(subdir),io)
-sysdep_routines += xos_file_runtime
+sysdep_routines += xos_file_runtime xos_file_positioned
+endif
+ifeq ($(subdir),dirent)
+sysdep_routines += xos_file_directory
 endif

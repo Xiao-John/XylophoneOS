@@ -1,0 +1,101 @@
+{
+  "status": "passed_subset",
+  "system_build_id": "6e7709d96aba9bd8",
+  "image_sha256": "2b624201010404f5fd33132e4b19e182280440ca813a42664fb3735d1ef717be",
+  "glibc_manifest_sha256": "653da8d0bf4968b7a5f9ca38d800188111b93a9bbc7bfc76e7a73999c408c0a5",
+  "runs": [
+    {
+      "case": "g3_files_extra",
+      "repetition": 1,
+      "status": "passed",
+      "resources": [
+        129715,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "g3_files_extra_parent",
+      "repetition": 1,
+      "status": "passed",
+      "resources": [
+        129715,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "g3_files_extra",
+      "repetition": 2,
+      "status": "passed",
+      "resources": [
+        129715,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "g3_files_extra_parent",
+      "repetition": 2,
+      "status": "passed",
+      "resources": [
+        129715,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "g3_files_extra",
+      "repetition": 3,
+      "status": "passed",
+      "resources": [
+        129715,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "g3_files_extra_parent",
+      "repetition": 3,
+      "status": "passed",
+      "resources": [
+        129715,
+        3,
+        1
+      ]
+    }
+  ],
+  "scope": "Earlier source snapshot before the shared native short-read correction; superseded by guest.json.",
+  "earlier_compile_failures": [
+    {
+      "output": "build/files_extra_host_initial",
+      "status": "failed",
+      "reason": "Native SDK directory shim shadowed host+glibc-overlay headers; fixed include ordering."
+    },
+    {
+      "output": "build/files_extra_host_second",
+      "status": "failed",
+      "reason": "FatFs DIR collided with POSIX DIR and test pid trap name was wrong; fixture namespaces corrected."
+    },
+    {
+      "output": "build/glibc_files_extra_system",
+      "status": "failed",
+      "reason": "Target Werror rejected enum/integer conditional; explicit u32 conversion added."
+    },
+    {
+      "output": "build/files_extra_guest",
+      "status": "not_run",
+      "reason": "Native parent failed to link usleep before QEMU launch; unnecessary delay removed."
+    },
+    {
+      "output": "build/native_parent_link_probe",
+      "status": "failed",
+      "reason": "Native SDK did not declare sched_yield; parent now schedules via real file IPC."
+    },
+    {
+      "output": "build/glibc_files_extra_system_guest_v2",
+      "status": "not_qualified",
+      "reason": "Fixture source changed while system build was running; built a new source-bound candidate."
+    }
+  ]
+}

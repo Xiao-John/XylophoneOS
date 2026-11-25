@@ -1,0 +1,72 @@
+{
+  "status": "not_run",
+  "suite": "files-extra",
+  "runs": [],
+  "qmp": "disabled; serial-only qualification",
+  "active_worker_normal_exit": "unsupported; separate fail-fast status-127 check",
+  "dash_entry": "not_run",
+  "system_build_id": "e643bcda6aeb4030",
+  "image_sha256": "f76cb6885d51365976fca928b34fb12d852f5e2d9f162c5f84edc2424572f647",
+  "system_manifest_sha256": "ea5d63ed5ea834ed71728342b93046a5c00db5f937e59bb44cb399aa8e89a2a1",
+  "glibc_manifest_sha256": "653da8d0bf4968b7a5f9ca38d800188111b93a9bbc7bfc76e7a73999c408c0a5",
+  "sdk_profile": "xos_glibc_static_research_v1",
+  "elfs": {
+    "g3_files_extra": {
+      "source": "glibc_g3/files_extra_public_probe.c",
+      "source_sha256": "08feaec99cca55b43e66a4bdfa722a0b4e9991d3dabbd2f75aa3a538fda94b19",
+      "elf_sha256": "cd1068ab719fa3477b530d5489a31c1584c698ce5772fbe7c60cfaa4e537b963",
+      "build_command": [
+        "/usr/bin/python3",
+        "${XOS_REPO}/scripts/build_glibc_program.py",
+        "--sdk",
+        "${XOS_REPO}/build/glibc_files_extra_sdk_final/sysroot",
+        "--source",
+        "${XOS_REPO}/tests/fixtures/glibc_g3/files_extra_public_probe.c",
+        "--output",
+        "${XOS_REPO}/build/files_extra_guest/g3_files_extra.elf"
+      ],
+      "build_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exec_receiver_marker": null
+    },
+    "g3_files_extra_receiver": {
+      "source": "glibc_g3/files_extra_public_probe.c",
+      "source_sha256": "08feaec99cca55b43e66a4bdfa722a0b4e9991d3dabbd2f75aa3a538fda94b19",
+      "elf_sha256": "56e52f9f94ade79a130fe5765cd384ec8347de3d9808099985829d672a86272f",
+      "build_command": [
+        "/usr/bin/python3",
+        "${XOS_REPO}/scripts/build_glibc_program.py",
+        "--sdk",
+        "${XOS_REPO}/build/glibc_files_extra_sdk_final/sysroot",
+        "--source",
+        "${XOS_REPO}/tests/fixtures/glibc_g3/files_extra_public_probe.c",
+        "--output",
+        "${XOS_REPO}/build/files_extra_guest/g3_files_extra_receiver.elf",
+        "--define",
+        "XOS_GLIBC_G3_EXEC_RECEIVER"
+      ],
+      "build_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exec_receiver_marker": {
+        "section": ".xos.exec",
+        "address": 1074271696,
+        "offset": 529872,
+        "flags": 2,
+        "load_flags": 4,
+        "sha256": "604c184f80d2c947a4cd359c3fb720343dfc2d1c6a006f6e4bf10a558a42e962",
+        "magic": "0x3349424143455858",
+        "version": 3,
+        "size": 16
+      }
+    }
+  },
+  "runner_sha256": "079ec4707d7e48c821051c9f604bb32d67980f085fe4acb8a15122fce09adc93",
+  "newlib_parent_inputs": {
+    "crt0_posix.o": "7d158b171d5d3d5b18ae62d949c6776d3807b6b80697a6b623d73331e687194e",
+    "user.ld": "b8b57be81f11d8f181ba6221f2c51db906b5d282ef8e436c2f0f9bcff068a1de",
+    "lib/libxos.a": "48f27f40d59bf2a155fad823cec949b5c7bc48436676a318b576d66d1b226023",
+    "lib/libxos_loader.a": "d95cafd6e8e834513cf0666b7910f04bd3b5d604acba8f67dc5e2f1e65d50d83",
+    "lib/libc.a": "283fa07ad205c80af92e955a91da027435d8a8a90cb7e27933f57925cc5baa22",
+    "lib/libm.a": "4cfdd6324f6776d025923ee369fad51236a9ee5730c8143a6b3b03b963eefd80"
+  },
+  "newlib_parent_libgcc_sha256": "1e19f0657fafd72f6c35a49b15d13c5772d49c829066c1f863518c29055c4f93",
+  "error": "Command '['${PREVIEW_PREFIX}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc', '-nostdlib', '-static', '-no-pie', '-Wl,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096', '-T', '${XOS_REPO}/build/glibc_files_extra_system_final/sdk/user.ld', '${XOS_REPO}/build/glibc_files_extra_system_final/sdk/crt0_posix.o', '${XOS_REPO}/build/files_extra_guest/g3_files_extra_parent.o', '-Wl,--start-group', '${XOS_REPO}/build/glibc_files_extra_system_final/sdk/lib/libxos.a', '${XOS_REPO}/build/glibc_files_extra_system_final/sdk/lib/libxos_loader.a', '${XOS_REPO}/build/glibc_files_extra_system_final/sdk/lib/libc.a', '${XOS_REPO}/build/glibc_files_extra_system_final/sdk/lib/libm.a', '${PREVIEW_PREFIX}/Cellar/x86_64-elf-gcc/16.2.0/lib/gcc/x86_64-elf/16.2.0/libgcc.a', '-Wl,--end-group', '-o', '${XOS_REPO}/build/files_extra_guest/g3_files_extra_parent.elf']' returned non-zero exit status 1."
+}

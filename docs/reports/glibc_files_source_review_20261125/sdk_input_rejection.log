@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "${XOS_REPO}/tests/glibc_static_guest.py", line 367, in <module>
+    main()
+    ~~~~^^
+  File "${XOS_REPO}/tests/glibc_static_guest.py", line 246, in main
+    verify_inputs()
+    ~~~~~~~~~~~~~^^
+  File "${XOS_REPO}/tests/glibc_static_guest.py", line 233, in verify_inputs
+    raise RuntimeError('SDK input snapshot changed')
+RuntimeError: SDK input snapshot changed

@@ -14,6 +14,23 @@ sys.path.insert(0, str(ROOT / 'scripts'))
 from make_work_disk import make_image
 
 
+def source_snapshot():
+    overlay = ROOT / 'src/ports/glibc/sysdeps/xos'
+    sources = [overlay / (name + '.c') for name in
+               ('xos_file_runtime', 'xos_file_directory', 'xos_file_positioned')]
+    sources += [ROOT / name for name in
+                ('src/third_party/fatfs/ff.c', 'src/user/services/fatfs_unicode.cpp',
+                 'src/user/sdk/file_client.cpp', 'src/user/sdk/text.cpp',
+                 'src/user/services/files.cpp', 'tests/fixtures/glibc_g3/files_extra_service.cpp',
+                 'tests/fixtures/file_semantics/file_semantics.cpp', 'scripts/make_work_disk.py')]
+    sources += [Path(__file__).resolve()]
+    sources += list(overlay.rglob('*.h')) + list((ROOT / 'src/third_party/fatfs').glob('*.h'))
+    sources += [path for name in ('src/shared/include/xos', 'src/user/include/xos')
+                for path in (ROOT / name).rglob('*.hpp')]
+    return {str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in sorted(set(sources))}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True)
@@ -29,7 +46,7 @@ def main():
                 '-I', str(ROOT / 'src/third_party/fatfs'), '-idirafter', str(ROOT / 'src/user/include')]
     if args.sanitize:
         flags += ['-fsanitize=address,undefined', '-fno-sanitize-recover=all', '-fno-omit-frame-pointer']
-    commands, objects, sources = [], [], []
+    commands, objects = [], []
 
     def run(command, name):
         commands.append(list(map(str, command)))
@@ -42,15 +59,18 @@ def main():
 
     report = {'status': 'failed', 'kernel_transport': 'simulated', 'guest': 'not_run_by_this_runner',
               'sanitizers': ['address', 'undefined'] if args.sanitize else [],
-              'leak_sanitizer': 'not_run', 'commands': commands}
+              'leak_sanitizer': 'not_run', 'commands': commands, 'source_snapshot_verified': False}
     try:
+        # Freeze all translation units, repository headers and image-generation
+        # inputs before the first compiler invocation. Keep these original
+        # digests in failed reports as well as successful qualifications.
+        report['sources'] = source_snapshot()
         for name in ['xos_file_runtime', 'xos_file_directory', 'xos_file_positioned']:
             source = overlay / (name + '.c')
             obj = output / (name + '.o')
             run([os.getenv('CC', 'gcc'), '-std=c11', '-DXOS_GLIBC_FILE_TEST', *flags, *includes,
                  '-Wall', '-Wextra', '-Werror', '-Wconversion', '-Wshadow', '-c', str(source), '-o', str(obj)], name)
             objects.append(obj)
-            sources.append(source)
         for name, relative in [('fatfs', 'src/third_party/fatfs/ff.c'),
                                ('unicode', 'src/user/services/fatfs_unicode.cpp'),
                                ('client', 'src/user/sdk/file_client.cpp'),
@@ -59,7 +79,6 @@ def main():
             obj = output / (name + '.o')
             run([os.getenv('CXX', 'g++'), '-std=c++20', *flags, *includes, '-c', str(source), '-o', str(obj)], name)
             objects.append(obj)
-            sources.append(source)
         fixture = ROOT / 'tests/fixtures/glibc_g3/files_extra_service.cpp'
         binary = output / 'files_extra'
         run([os.getenv('CXX', 'g++'), '-std=c++20', *flags, *includes,
@@ -68,14 +87,12 @@ def main():
         disk.write_bytes(make_image())
         result = run([str(binary), str(disk)], 'run')
         disk.unlink()
+        current_sources = source_snapshot()
+        if current_sources != report['sources']:
+            report['sources_after'] = current_sources
+            raise RuntimeError('source inputs changed during qualification')
+        report.update(status='passed', output=result, source_snapshot_verified=True)
         print(result, end='')
-        sources += [fixture, Path(__file__).resolve(), ROOT / 'src/user/services/files.cpp',
-                    ROOT / 'src/shared/include/xos/file_abi.hpp', ROOT / 'src/user/include/xos/file_client.hpp',
-                    ROOT / 'tests/fixtures/file_semantics/file_semantics.cpp']
-        sources += list(overlay.glob('xos_file*.h')) + [overlay / 'dirstream.h', overlay / 'bits/dirent.h']
-        report.update(status='passed', output=result,
-                      sources={str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
-                               for path in sorted(set(sources))})
     except Exception as error:
         report['error'] = str(error)
         raise

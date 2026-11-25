@@ -1,0 +1,9 @@
+PASS files_extra dup_position_unchanged
+PASS files_extra cross_session_shared_description
+PASS files_extra append_and_sparse_zeros
+PASS files_extra short_io_fault_rollback_bounds
+PASS files_extra native_sdk_same_session_exchange
+PASS files_extra directory_identity_pagination_cookie_rename
+PASS files_extra deleted_directory_identity_and_reclamation
+PASS files_extra all_service_resources_reclaimed
+PASS 8 files_extra real integration groups

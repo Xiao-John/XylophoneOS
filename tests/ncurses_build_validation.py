@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """Host regression checks for ncurses SDK isolation and header staging."""
 import importlib.util
 import json

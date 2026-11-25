@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Regression checks for stale port outputs on input and packaging failures."""
 import importlib.util
 import json

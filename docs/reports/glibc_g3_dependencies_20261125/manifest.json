@@ -1,4 +1,5 @@
 {
+  "version": 1,
   "files": {
     "derivation.json": "7a31d096466694cb54c99451f30223332eee0acffdc8b05417dd73656928bf52",
     "exit_host.log": "6e22630d509d1565b32c9cb376ac5f319504b5f15152a659fac4131d818e8d50",

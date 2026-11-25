@@ -153,7 +153,9 @@ joinable线程），全局最多32个线程槽。进程仍共享原256 MiB用户
   `i32 timeout_status`、`u32 reserved=0`。deadline 使用统一单调纳秒时域，必须
   严格晚于当前时间，距离不超过 30 秒，禁止无限值；timeout_status 必须非零。
   内核完整复制和校验后原子登记当前 TID 为唯一退出所有者并关闭线程 profile、
-  prepare/start 和本进程 exec/fork 入口。现存线程保持可调度，IPC、文件 I/O、
+  prepare/start 和本进程 exec/fork 入口。已经 prepare 的 fork 也不得在窗口内
+  commit 或发布子进程；原 abort/退出回收路径仍可处理该构建对象。
+  现存线程保持可调度，IPC、文件 I/O、
   malloc 所需 VM、wait/wake、线程正常清理和 join 保持有效。
 
 窗口期间不设置通用 `closing` 标记，避免将清理所需 IPC/VM 误当成已死亡请求。

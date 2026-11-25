@@ -53,15 +53,18 @@ void bounded_unchanged(u64 deadline) {
 }
 int main() {
     reset();
+    check(fork_admission_open(process), "ordinary process cannot fork");
     check(dispatch(0) == 0 && process.closing && process.exit_owner == 1,
           "first legacy stop-peers call changed");
     check(threads[1].state == thread_state::dead && threads[1].detached && reap_calls == 1,
           "legacy stop-peers no longer reaps peers");
+    check(!fork_admission_open(process), "closing process retains fork admission");
     check(dispatch(0) == 0, "legacy owner reentry changed");
     reset();
     process_exit_cleanup_request request{{1, sizeof(request), 0}, 1000000100, 125, 0};
     check(dispatch(1, reinterpret_cast<u64>(&request)) == 0, "cleanup claim failed");
     const u64 deadline = request.deadline_ns;
+    check(!fork_admission_open(process), "bounded cleanup retains fork admission");
     check(dispatch(0) == process_error_state, "cleanup owner downgraded to stop-peers");
     bounded_unchanged(deadline);
     current_thread = &threads[1];
@@ -75,5 +78,5 @@ int main() {
     bounded_unchanged(deadline);
     check(dispatch(0) == process_error_state, "repeated owner downgraded to stop-peers");
     bounded_unchanged(deadline);
-    std::puts("PASS sys51 legacy behavior and bounded cleanup owner downgrade rejection");
+    std::puts("PASS sys51 legacy behavior, bounded cleanup, and fork admission");
 }

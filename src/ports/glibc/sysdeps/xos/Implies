@@ -1,0 +1,3 @@
+# Experimental backend: NPTL sources are selected for dependency discovery.
+# Selecting them does not provide the XOS thread, TLS, or futex semantics.
+nptl

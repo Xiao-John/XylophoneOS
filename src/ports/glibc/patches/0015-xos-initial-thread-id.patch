@@ -1,0 +1,56 @@
+--- a/sysdeps/nptl/dl-tls_init_tp.c
++++ b/sysdeps/nptl/dl-tls_init_tp.c
+@@ -24,6 +24,10 @@
+ #include <rseq-internal.h>
+ #include <thread_pointer.h>
+ #include <dl-symbol-redir-ifunc.h>
++#ifdef XOS_GLIBC_TLS
++# include <stdio.h>
++# include <xos_thread_identity.h>
++#endif
+
+ #define TUNABLE_NAMESPACE pthread
+ #include <dl-tunables.h>
+@@ -73,7 +77,15 @@
+   list_add (&pd->list, &GL (dl_stack_user));
+
+    /* Early initialization of the TCB.   */
++#ifdef XOS_GLIBC_TLS
++   struct xos_thread_info info;
++   if (xos_thread_lifecycle (41, (xos_u64) &info, 0) != 0
++       || info.tid == 0 || info.tid > FUTEX_TID_MASK)
++     __libc_fatal ("XOS glibc: initial TID exceeds the mutex owner field\n");
++   pd->tid = info.tid;
++#else
+    pd->tid = INTERNAL_SYSCALL_CALL (set_tid_address, &pd->joinstate);
++#endif
+    THREAD_SETMEM (pd, specific[0], &pd->specific_1stblock[0]);
+    THREAD_SETMEM (pd, stack_mode, ALLOCATE_GUARD_USER);
+    THREAD_SETMEM (pd, joinstate, THREAD_STATE_JOINABLE);
+@@ -92,6 +104,7 @@
+     pd->robust_head.futex_offset = (offsetof (pthread_mutex_t, __data.__lock)
+                                     - offsetof (pthread_mutex_t,
+                                                 __data.__list.__next));
++#ifndef XOS_GLIBC_TLS
+     int res = INTERNAL_SYSCALL_CALL (set_robust_list, &pd->robust_head,
+                                      sizeof (struct robust_list_head));
+     if (!INTERNAL_SYSCALL_ERROR_P (res))
+@@ -100,8 +113,10 @@
+         __nptl_set_robust_list_avail = true;
+ #endif
+       }
++#endif
+   }
+
++#ifndef XOS_GLIBC_TLS
+   {
+     /* If the registration fails or is disabled by tunable, the public
+        '__rseq_size' will be set to '0' regardless of the feature size of the
+@@ -112,6 +127,7 @@
+     if (!rseq_register_current_thread (pd, do_rseq))
+       _rseq_size = 0;
+   }
++#endif
+
+   /* Set initial thread's stack block from 0 up to __libc_stack_end.
+      It will be bigger than it actually is, but for unwind.c/pt-longjmp.c

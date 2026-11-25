@@ -45,6 +45,8 @@ def suite_cases(suite):
         cases.extend([
             ('g2_return', 'glibc_g2/static_main.c', ['alpha'], 37, markers),
             ('g2_exit', 'glibc_g2/static_main.c', ['alpha', 'exit'], 39, markers),
+            ('g2_fatal_stderr', 'glibc_g2/fatal_stderr.c', [], 127,
+             ['G2 fatal stderr begin:' + '.' * 300 + ':G2 fatal stderr end']),
         ])
     if suite in ('threads', 'all'):
         cases.extend([
@@ -147,6 +149,15 @@ def main():
     args = parser.parse_args()
     if not 1 <= args.repetitions <= 10:
         parser.error('repetitions must be in 1..10')
+    cases = suite_cases(args.suite)
+    required = {relative for _, relative, _, _, _ in cases}
+    if args.suite in ('files', 'all'):
+        required.add('glibc_g3/files_exec_parent.c')
+    missing = sorted(relative for relative in required
+                     if not (ROOT / 'tests/fixtures' / relative).is_file())
+    if missing:
+        parser.error(f'guest suite {args.suite!r} unavailable: missing fixtures: '
+                     + ', '.join(missing))
     output = args.output.absolute()
     if output.exists() or output.is_symlink():
         parser.error('output must be a new private directory')
@@ -185,7 +196,6 @@ def main():
                     raise RuntimeError('SDK artifact changed: ' + name)
 
         verify_inputs()
-        cases = suite_cases(args.suite)
         report.update({'system_build_id': system['build_id'], 'image_sha256': sha(image),
                        'system_manifest_sha256': initial_system_manifest,
                        'glibc_manifest_sha256': initial_sdk_manifest,

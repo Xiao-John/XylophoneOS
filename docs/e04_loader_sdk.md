@@ -190,6 +190,12 @@ process_stats 的布局及进程权限含义。共享 ABI 见 `thread_abi.hpp`�
 新 SDK 是独立 profile；旧 ELF 继续装载，若占用新线程 arena，显式 opt-in
 返回 ENOTSUP，不能静默覆盖映射。用户态 ELF 策略仍在 loader，内核不解析 TLS 模板。
 
+2026-11-25 的 sys51 显式 mode 1 增加有界清理窗口：32 字节版本 1 请求登记唯一
+退出所有者、最多 30 秒的绝对单调 deadline 和非零超时状态；现存线程及 I/O 保持
+运行，新线程和本进程映像替换被拒绝，最终 sys_exit 统一回收。机制 SDK 提供
+`xos::thread::begin_process_cleanup`。旧 mode 0 保持，详细兼容、并发退出和失败
+生命周期见 [线程契约](contracts/threading.md#有界进程清理窗口sys51-mode-1)。
+
 ## P2-1通用进程准入与文件写租约（0048实现、PR #2整合后编号）
 
 2026-10-26当前为`sys_process_guard=62`，53仍为ISO payload，38–52线程ABI不变。

@@ -343,6 +343,8 @@ def main():
                 if system_manifest.is_file() else '')
     receipt = {'profile': 'xos-threading-v1-experimental', 'abi': 1, 'thread_abi': 1,
                'target': 'x86_64-elf', 'build_id': build_id,
+               'process_exit_cleanup': {'syscall': 51, 'mode': 1, 'request_version': 1,
+                                        'deadline_max_ns': 30000000000, 'guest_qualification': 'not_run'},
                'archive_provenance': {'version': 1, 'manifests': archive_manifests, 'legacy_archives': {}},
                'vm_extensions': {'version': 1, 'syscall': 67, 'status': 'implemented_unqualified'},
                'cpu_time': {'version': 1, 'syscall': 89, 'status': 'implemented_unqualified',

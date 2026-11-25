@@ -225,6 +225,21 @@
  }
  
  static const char *legal_pathopt(const char *opt, const char *term, int magic)
+@@ -333,11 +282,4 @@ static int test_exec(const char *fullname, struct stat64 *statb)
+-	if ((statb->st_mode & 0111) != 0111 &&
+-#ifdef HAVE_FACCESSAT
+-	    !test_file_access(fullname, X_OK)
+-#else
+-	    !test_access(statb, X_OK)
+-#endif
+-	   )
+-		return 0;
+-
+-	return 1;
++	/* Use XOS ELF admission and the same text script rule as spawn. */
++	return access(fullname, X_OK) == 0 ||
++	       (errno == EACCES && xos_shell_script(fullname));
+ }
 --- a/src/expand.c
 +++ b/src/expand.c
 @@ -1730,7 +1730,7 @@

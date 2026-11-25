@@ -15,6 +15,7 @@ startup总16KiB，进程全局8个；资源不足明确失败与清理，不承�
 
 直接脚本兼容由Dash在用户态处理：无shebang或/bin/sh、/bin/dash、/usr/bin/dash
 且无额外interpreter参数的文本可fork后exec当前Dash；其他shebang明确失败。
+Dash 查找常规命令文件时使用 SDK 的 ELF 可执行性检查和同一套脚本准入规则。
 不创建/bin/sh文件别名、不替换Xsh/default Shell。Make选定sbase固定c546c3a的
 显式-B串行profile，详见make_subset.md；没有增量时间戳/并行/GNU Make全兼容声明。
 

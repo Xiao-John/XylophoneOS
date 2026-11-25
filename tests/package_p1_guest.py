@@ -58,6 +58,35 @@ def main():
                 for name,arguments,_,_ in cases:
                     path=folder/(name+'.sh');path.write_text('xypm '+arguments+'\n')
                     disk.command('import','/tests/'+name+'.sh',path)
+                for name in ('path_directory', 'path_directory/xypm', 'path_bad_elf',
+                             'path_bad_script', 'path_scripts'):
+                    disk.command('mkdir', '/tests/'+name)
+                wrong_isa = bytearray(dash_elf.read_bytes())
+                require(wrong_isa[:4] == b'\x7fELF' and len(wrong_isa) >= 20, 'dash fixture is not ELF')
+                wrong_isa[18:20] = (183).to_bytes(2, 'little')
+                wrong_elf = folder/'wrong_isa.elf'
+                wrong_elf.write_bytes(wrong_isa)
+                disk.command('import', '/tests/path_bad_elf/xypm', wrong_elf)
+                for directory, name, text in (
+                    ('path_bad_script', 'xypm', '#!/unsupported\nprintf "PATH_BAD_SCRIPT_RAN\\n"\n'),
+                    ('path_scripts', 'p1_shebang', '#!/usr/bin/dash\nprintf "PATH_SHEBANG_OK\\n"\n'),
+                    ('path_scripts', 'p1_plain', 'printf "PATH_PLAIN_OK\\n"\n'),
+                ):
+                    script = folder/(directory+'-'+name)
+                    script.write_text(text)
+                    disk.command('import', '/tests/'+directory+'/'+name, script)
+                lookup = folder/'path_lookup.sh'
+                lookup.write_text('''set -e
+PATH=/tests/path_directory:/tests/path_bad_elf:/tests/path_bad_script:/tests/path_scripts:/usr/bin
+export PATH
+command -v xypm
+xypm --version
+command -v p1_shebang
+p1_shebang
+command -v p1_plain
+p1_plain
+''')
+                disk.command('import', '/tests/path_lookup.sh', lookup)
                 redirect=folder/'redirect.sh'
                 redirect.write_text('''set -e
 xypm list > /out/xypm_list.txt
@@ -94,6 +123,12 @@ xypm --version
                 via_dash=command('dash /tests/'+name+'.sh',code)
                 require(expected in direct and expected in via_dash,'different xsh/dash xypm behavior: '+name)
                 report['checks'].append('same_xypm_'+name+'_status_'+str(code))
+            lookup_output = command('dash /tests/path_lookup.sh').replace(b'\r\n', b'\n')
+            for marker in (b'\n/usr/bin/xypm\n', b'\nxypm ', b'\n/tests/path_scripts/p1_shebang\n',
+                           b'\nPATH_SHEBANG_OK\n', b'\n/tests/path_scripts/p1_plain\n', b'\nPATH_PLAIN_OK\n'):
+                require(marker in lookup_output, 'dash PATH marker missing: '+repr(marker))
+            require(b'PATH_BAD_SCRIPT_RAN' not in lookup_output, 'unsupported interpreter ran through PATH')
+            report['checks'].append('dash_path_admits_xos_elf_and_supported_scripts')
             data=command('dash /tests/redirect.sh');require(b'xypm ' in data,'stdout not restored after redirects')
             report['checks'].append('dash_B2_redirect_and_stdout_restore')
             data=command('exec-file /usr/bin/external_cpp');require(b'friends.external_cpp' in data,'installed C++ demo did not run')

@@ -2514,6 +2514,10 @@ vm_step fork_copy_step(void* opaque,vm_phase phase,u32 budget,i64& result) {
     }
     halt();
 }
+bool fork_admission_open(const process_record& process) {
+    return !process.closing && process.exit_cleanup_deadline_ns == 0;
+}
+
 i64 prepare_fork(interrupt_frame* frame) {
     if (current == nullptr || current->supervisor || current->block_access) return process_error_denied;
     if (current->threads_enabled || current_thread != &main_thread(current) || !current_thread->main)
@@ -2523,7 +2527,7 @@ i64 prepare_fork(interrupt_frame* frame) {
             peer.state != thread_state::free && peer.state != thread_state::dead) return thread_error_unsupported;
     }
     if (current->spawn_depth == 0 && !current->can_create) return process_error_denied;
-    if (current->closing || current->exit_cleanup_deadline_ns != 0 || current_thread->leaving)
+    if (!fork_admission_open(*current) || current_thread->leaving)
         return process_error_state;
     if (device_store.mapped(current->pid)) return process_error_busy;
     for (const auto& mapping : ipc_v1_grant_mappings) {
@@ -4817,7 +4821,7 @@ void* process_syscall(interrupt_frame* frame) {
         if (second != 0 || third != 0) { break; }
         process_record* child = owned_process(first);
         if (child == nullptr) { result = process_error_denied; break; }
-        if (current->closing || child->state != task_state::building || !child->fork_pending ||
+        if (!fork_admission_open(*current) || child->state != task_state::building || !child->fork_pending ||
             child->fork_source != current->pid || !child->fork_files_ack) {
             result = process_error_state; break;
         }

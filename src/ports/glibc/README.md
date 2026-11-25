@@ -10,6 +10,11 @@ reviewed primary key and signing subkey are bound by GNU and Gentoo sources;
 current key updates are recorded in `source_lock.json`. `build_glibc_sdk.py`
 checks the archive, detached signature and pinned public key with `gpgv` before
 extracting source. Expired or revoked keys and unexpected signers fail the build.
+Offline revocation checks cover the pinned key material. Before every release
+qualification, refresh the revocation sources under the lock's `update_policy`
+to include notices published since that material was reviewed.
+Verification and extraction use the same captured archive bytes; later changes
+to the download path cannot replace the source that is extracted and executed.
 It applies every numbered patch in order and records all port inputs and tools.
 It rejects source or tool mutation during a build. The XOS runtime remains a
 separately qualified research profile.

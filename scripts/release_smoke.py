@@ -20,7 +20,7 @@ from sdk_receipt import verify_sdk, verify_packaged_sdk, verify_copied_inputs
 def check_sdk_devkit(sdk, metadata, binding, report):
     """The packaged SDK must run its own XYPm host backend without a source checkout."""
     tools = sdk / 'tools'
-    for name in ('xos_app.py', 'xypm_format.py', 'xypm.py', 'xypm_image.py', 'adopt_sdk.py'):
+    for name in ('xos_app.py', 'xypm_format.py', 'xypm.py', 'xypm_image.py', 'xypm_repository.py', 'adopt_sdk.py'):
         require((tools / name).is_file(), 'SDK devkit tool missing: ' + name)
     for name in ('scripts/xypm_disk_host.cpp', 'src/user/services/fatfs_unicode.cpp',
                  'src/third_party/fatfs/ff.c', 'src/third_party/fatfs/ff.h',

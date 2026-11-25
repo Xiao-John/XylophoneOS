@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xylophoneos.invalid/schema/repository-v1.json",
+  "title": "xypm offline repository index v1",
+  "description": "At most 1 MiB UTF-8. Duplicate keys, floats, unknown fields and depth beyond 8 are rejected. Packages sort by SHA-256; dependencies and features sort uniquely by id/name. Semantic checks are in xypm_repository.py and xypm_repository.hpp.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format_version", "target_profile", "packages"],
+  "properties": {
+    "format_version": {"const": 1, "type": "integer"},
+    "target_profile": {"$ref": "#/$defs/identifier"},
+    "packages": {
+      "type": "array", "minItems": 1, "maxItems": 256,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "upstream_version", "revision", "sha256", "size", "required_features", "runtime_dependencies"],
+        "properties": {
+          "id": {"$ref": "#/$defs/identifier"},
+          "upstream_version": {"$ref": "#/$defs/version"},
+          "revision": {"type": "integer", "minimum": 0, "maximum": 2147483647},
+          "sha256": {"$ref": "#/$defs/digest"},
+          "size": {"type": "integer", "minimum": 512, "maximum": 277884928, "multipleOf": 512},
+          "required_features": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/identifier"}},
+          "runtime_dependencies": {
+            "type": "array", "maxItems": 128,
+            "items": {
+              "type": "object", "additionalProperties": false,
+              "required": ["id", "upstream_version", "revision", "sha256"],
+              "properties": {
+                "id": {"$ref": "#/$defs/identifier"},
+                "upstream_version": {"$ref": "#/$defs/version"},
+                "revision": {"type": "integer", "minimum": 0, "maximum": 2147483647},
+                "sha256": {"$ref": "#/$defs/digest"}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "identifier": {"type": "string", "maxLength": 80, "pattern": "^[a-z][a-z0-9_]*(?:[.-][a-z0-9_]+)*$"},
+    "version": {"type": "string", "minLength": 1, "maxLength": 1024, "pattern": "^[^\\u0000]+$"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Build the independent, read-only guest xypm package with a frozen SDK."""
+"""Build the independent guest xypm package with a frozen SDK."""
 import argparse
 import hashlib
 import json
@@ -21,7 +21,8 @@ def main():
     journal_header=ROOT/'src/user/programs/xypm_journal.hpp'
     transaction_header=ROOT/'src/user/programs/xypm_transaction_impl.hpp'
     recovery_source=ROOT/'src/user/programs/xypm_recover.cpp'
-    key=hashlib.sha256(canonical({'source':sha_file(source),'native_header':sha_file(native_header),'journal_header':sha_file(journal_header),'transaction_header':sha_file(transaction_header),'recovery_source':sha_file(recovery_source),'fault_injection':args.fault_injection,'text_header':sha_file(ROOT/'src/user/include/xos/text.hpp'),'width_data_header':sha_file(ROOT/'src/user/include/xos/unicode_width_data.hpp'),'build_script':sha_file(__file__),'builder':sha_file(ROOT/'scripts/xos_app.py'),'sdk_profile':profile})).hexdigest()[:20]
+    repository_headers=[ROOT/'src/user/programs'/name for name in ('xypm_repository.hpp','xypm_repository_io.hpp')]
+    key=hashlib.sha256(canonical({'source':sha_file(source),'native_header':sha_file(native_header),'journal_header':sha_file(journal_header),'transaction_header':sha_file(transaction_header),'recovery_source':sha_file(recovery_source),'repository_headers':{path.name:sha_file(path) for path in repository_headers},'fault_injection':args.fault_injection,'text_header':sha_file(ROOT/'src/user/include/xos/text.hpp'),'width_data_header':sha_file(ROOT/'src/user/include/xos/unicode_width_data.hpp'),'build_script':sha_file(__file__),'builder':sha_file(ROOT/'scripts/xos_app.py'),'sdk_profile':profile})).hexdigest()[:20]
     folder=ROOT/'.cache/xos_seed/xypm'/key;folder.mkdir(parents=True,exist_ok=True)
     project=folder/'project'
     if not project.exists():
@@ -31,6 +32,7 @@ def main():
         shutil.copyfile(native_header,project/'src/xypm_native.hpp')
         shutil.copyfile(journal_header,project/'src/xypm_journal.hpp')
         shutil.copyfile(transaction_header,project/'src/xypm_transaction_impl.hpp')
+        for header in repository_headers:shutil.copyfile(header,project/'src'/header.name)
         (project/'src/xypm_recover.cpp').write_bytes(b'#define XYP_RECOVERY_LIBRARY 1\n'+recovery_source.read_bytes())
         (project/'src/xos').mkdir()
         shutil.copyfile(ROOT/'src/user/include/xos/text.hpp',project/'src/xos/text.hpp')
@@ -43,6 +45,8 @@ def main():
                         '#define XYP_PACKAGE_FEATURES(name) xypm_profile_feature(name)\n')
         (project/'src/xypm_profile.hpp').write_text(profile_header,encoding='utf-8')
         app=load_json(project/'xos_app.json')
+        app['upstream_version']='0.4.0'
+        app['revision']=0
         app['sources'].append('src/xypm_recover.cpp')
         if 'stdio_transfer' in profile['features']:app['required_features'].append('stdio_transfer')
         app['files'].append({'source':'src/xos/unicode_width_data.hpp','path':'usr/share/xos.xypm/source/xos/unicode_width_data.hpp','role':'data'})
@@ -52,6 +56,8 @@ def main():
         app['files'].append({'source':'src/xypm_transaction_impl.hpp','path':'usr/share/xos.xypm/source/xypm_transaction_impl.hpp','role':'data'})
         app['files'].append({'source':'src/xypm_recover.cpp','path':'usr/share/xos.xypm/source/xypm_recover.cpp','role':'data'})
         app['files'].append({'source':'src/xypm_profile.hpp','path':'usr/share/xos.xypm/source/xypm_profile.hpp','role':'data'})
+        for header in repository_headers:
+            app['files'].append({'source':'src/'+header.name,'path':'usr/share/xos.xypm/source/'+header.name,'role':'data'})
         (project/'xos_app.json').write_bytes(canonical(app))
     receipt=build(project,args.sdk,profile)
     output=folder/'xypm.xpk'

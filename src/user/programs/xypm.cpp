@@ -11,6 +11,7 @@
 #include "xypm_profile.hpp"
 #include "xypm_native.hpp"
 #include "xypm_journal.hpp"
+#include "xypm_repository_io.hpp"
 // The frozen single-thread SDK uses this weak hook for every file RPC. Share
 // its sequence with the P2 maintenance-acquire extension sent below.
 extern "C" xos::u32 xos_file_request_id() {
@@ -190,6 +191,7 @@ int plan_package(const char* operation,const char* path,FILE** held=nullptr,xypm
     const bool ensure=std::strcmp(operation,"ensure")==0;
     if(ensure&&prior&&std::strcmp(prior->sha,package.digest)==0){
         if(verified)*verified=package;if(held)*held=source;
+        xypm_native::error_target=nullptr;
         if(!quiet)std::printf("Already installed: %s\n",id);
         return 1;
     }
@@ -225,12 +227,61 @@ int plan_remove(const char* id,bool quiet=false){
     if(!quiet)std::printf("Plan: remove %s\nFiles: %u\nNo files changed.\n",id,files);return 0;
 }
 #include "xypm_transaction_impl.hpp"
+
+int repository_command(const char* action, const char* directory, const char* lock,
+                       const char* selected, const char* expected_lock_digest) {
+    jmp_buf recovery;
+    xypm_native::error_target = &recovery;
+    if (setjmp(recovery) != 0) {
+        xypm_native::error_target = nullptr;
+        xypm_repository::cleanup();
+        std::fprintf(stderr, "xypm: repository rejected: %s\n", xypm_native::last_error);
+        return 3;
+    }
+    xypm_repository::verify(directory, lock, expected_lock_digest, canonical_component_path);
+    const auto& repository = xypm_repository::active;
+    char digest[65]{}, path[256]{};
+    if (selected) {
+        xypm_native::require(xypm_native::identifier(selected), "invalid selected package id");
+        for (size_t i = 0; i < repository.ordered_count; ++i) {
+            auto* entry = repository.ordered[i];
+            if (!std::strcmp(selected, xypm_native::field(entry, "id")->text))
+                std::memcpy(digest, xypm_native::field(entry, "sha256")->text, sizeof(digest));
+        }
+        xypm_native::require(digest[0] != 0, "package is not selected by lock");
+        xypm_repository::package_path(directory, digest, path);
+    } else {
+        std::printf("Repository closure verified: %u packages\nIndex SHA-256: %s\nLock SHA-256: %s\n",
+                    static_cast<unsigned>(repository.ordered_count), repository.index_digest, repository.lock_digest);
+        if (!std::strcmp(action, "repo-plan")) {
+            std::puts("Dependency-first lock order (one explicit install/upgrade transaction per package):");
+            for (size_t i = 0; i < repository.ordered_count; ++i) {
+                auto* entry = repository.ordered[i];
+                std::printf("%s r%u %s\n", xypm_native::field(entry, "id")->text,
+                            static_cast<unsigned>(xypm_native::field(entry, "revision")->number),
+                            xypm_native::field(entry, "sha256")->text);
+            }
+            std::puts("Existing database, ownership and reverse dependencies are checked by each transaction.");
+        }
+    }
+    xypm_native::error_target = nullptr;
+    xypm_repository::cleanup();
+    // Reverify the selected digest on the handle held by the P2 worker. It
+    // never installs bytes merely because an earlier pathname check passed.
+    return selected ? transaction::run(action + 5, path, 0, digest) : 0;
+}
 }
 int main(int argc,char** argv) {
-    if (argc==2&&!std::strcmp(argv[1],"--version")) {std::puts("xypm 0.3 (P2 transactions)");return 0;}
+    if (argc==2&&!std::strcmp(argv[1],"--version")) {std::puts("xypm 0.4.0 (P3 offline repositories)");return 0;}
     if (argc==1 || (argc==2&&!std::strcmp(argv[1],"--help"))) {
-        std::puts("xypm list | info <package-id> | verify <package.xpk> [sha256]\nxypm plan install|upgrade <package.xpk> | remove <package-id>\nxypm install|upgrade|ensure <package.xpk> [--sha256 <digest>] | remove <package-id> | recover (maintenance only)");return 0;
+        std::puts("xypm list | info <package-id> | verify <package.xpk> [sha256]\nxypm plan install|upgrade <package.xpk> | remove <package-id>\nxypm install|upgrade|ensure <package.xpk> [--sha256 <digest>] | remove <package-id> | recover (maintenance only)\nxypm repo-verify|repo-plan <absolute-repository-dir> <absolute-lock.json> [--lock-sha256 <digest>]\nxypm repo-install|repo-upgrade <absolute-repository-dir> <absolute-lock.json> <package-id> [--lock-sha256 <digest>] (maintenance only)");return 0;
     }
+    if ((argc==4||argc==6) && (!std::strcmp(argv[1],"repo-verify")||!std::strcmp(argv[1],"repo-plan")) &&
+        (argc==4||!std::strcmp(argv[4],"--lock-sha256")))
+        return repository_command(argv[1],argv[2],argv[3],nullptr,argc==6?argv[5]:nullptr);
+    if ((argc==5||argc==7) && (!std::strcmp(argv[1],"repo-install")||!std::strcmp(argv[1],"repo-upgrade")) &&
+        (argc==5||!std::strcmp(argv[5],"--lock-sha256")))
+        return repository_command(argv[1],argv[2],argv[3],argv[4],argc==7?argv[6]:nullptr);
     if (argc==2&&!std::strcmp(argv[1],"list")) return query(nullptr);
     if (argc==3&&!std::strcmp(argv[1],"info")&&identifier(argv[2])) return query(argv[2]);
     if ((argc==3||argc==4)&&!std::strcmp(argv[1],"verify")) return verify_package_path(argv[2],nullptr,false,argc==4?argv[3]:nullptr);

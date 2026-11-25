@@ -3,7 +3,9 @@
 import hashlib
 import io
 import json
+import os
 import re
+import stat
 import struct
 import tarfile
 import tempfile
@@ -271,26 +273,32 @@ def _tar_name(raw):
 def verify_package(path, profile=None, expected_sha256=None, sink=None):
     """Verify exact bytes, with optional private callback; never extract via tarfile."""
     path = Path(path)
-    require(path.is_file() and not path.is_symlink(), 'package must be a regular non-symlink file')
-    with path.open('rb') as stream:
-        identity = (stream.seek(0, 2),)
-        require(identity[0] <= MAX_ARCHIVE and identity[0] % 512 == 0, 'archive size/alignment invalid')
-        stream.seek(0)
+    try:
+        descriptor = os.open(path, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) |
+                             getattr(os, 'O_NONBLOCK', 0))
+    except OSError as error:
+        raise PackageError('cannot open regular non-symlink package: ' + str(error)) from error
+    with os.fdopen(descriptor, 'rb') as stream:
+        before = os.fstat(stream.fileno())
+        require(stat.S_ISREG(before.st_mode), 'package must be a regular non-symlink file')
+        archive_size = before.st_size
+        require(archive_size <= MAX_ARCHIVE and archive_size % 512 == 0, 'archive size/alignment invalid')
         package_hash = hashlib.sha256()
+        consumed = 0
         def read(size):
+            nonlocal consumed
+            require(0 <= size <= archive_size - consumed, 'archive exceeds captured size')
             value = stream.read(size); package_hash.update(value)
             require(len(value) == size, 'truncated archive')
+            consumed += size
             return value
         manifest, expected, seen, index = None, {}, set(), 0
         while True:
             block = read(512)
             if not any(block):
                 require(read(512) == bytes(512), 'missing two tar end blocks')
-                while True:
-                    tail = stream.read(65536)
-                    if not tail:
-                        break
-                    package_hash.update(tail)
+                while consumed < archive_size:
+                    tail = read(min(65536, archive_size - consumed))
                     require(not any(tail), 'nonzero trailing archive data')
                 break
             require(index <= MAX_MEMBERS, 'too many archive members')
@@ -337,8 +345,12 @@ def verify_package(path, profile=None, expected_sha256=None, sink=None):
         if expected_sha256 is not None:
             require(type(expected_sha256) is str and HEX.fullmatch(expected_sha256), 'invalid expected package hash')
             require(result_hash == expected_sha256, 'package SHA-256 mismatch')
-        require(stream.tell() == identity[0], 'archive length changed')
-    return {'manifest': manifest, 'sha256': result_hash, 'payload_files': len(seen), 'status': 'verified_integrity_only'}
+        require(consumed == archive_size and stream.read(1) == b'', 'archive length changed')
+        after = os.fstat(stream.fileno())
+        require((after.st_size, after.st_mtime_ns, after.st_ctime_ns) ==
+                (before.st_size, before.st_mtime_ns, before.st_ctime_ns), 'archive changed during verification')
+    return {'manifest': manifest, 'sha256': result_hash, 'archive_size': archive_size,
+            'payload_files': len(seen), 'status': 'verified_integrity_only'}
 
 
 def pack_package(root, manifest, output):

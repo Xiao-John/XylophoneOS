@@ -1,0 +1,4 @@
+$REPO/tests/fixtures/process_wait/probe.cpp:3:10: fatal error: xos/thread_core.hpp: No such file or directory
+    3 | #include <xos/thread_core.hpp>
+      |          ^~~~~~~~~~~~~~~~~~~~~
+compilation terminated.

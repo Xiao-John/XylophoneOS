@@ -56,11 +56,19 @@
 
 ## 活跃工作线程下的进程 exit
 
-G2 候选以 acquire 读取 `__nptl_nthreads`。大于 1 时通过原生 console 诊断并
-以状态 127 强制终止，避免停止持有 malloc/stdio 锁的线程后再进入普通 libc 收尾。
-这是当前实现的能力边界；活跃工作线程下的正常 `exit` 回调/flush 仍待独立闭环。
+正常 `return`、`exit` 和 `quick_exit` 先通过 sys51 mode 1 领取唯一退出责任，
+关闭线程创建并保留现存线程的调度和 I/O。所有者按 glibc 上游顺序执行调用者
+TLS 析构、退出回调和适用的 stdio flush，最后由 sys_exit 统一停止并回收进程。
+现存线程在窗口内 return/pthread_exit 时继续完成自己的 TLS/TSD/libc 清理；
+仍在运行或等待的线程由最终进程退出回收，其应用析构需要应用主动协调。
 
-本模块在所有 TLS/TSD/libc 线程清理完成后，以 release 递减线程计数；后续只执行
-原生退出握手。全部 join 后的正常退出、主线程 `pthread_exit` 和最后工作线程
-收尾已在独立完整 SDK 上各通过三轮客体验收。定向负向探针让工作线程持有 stdout
-锁，检查状态 127、原生诊断和资源恢复；具体 SDK/镜像及日志散列见工作记录。
+同一所有者递归 exit 保留原生窗口，其他线程并发 exit 阻塞等待进程结束，不持有
+glibc exit 锁。窗口为 30 秒绝对单调 deadline，超时退出 127 并记录内核跟踪事件；
+无限持锁、回调环和退出所有者主动 pthread_exit 均发布明确失败。内核仅在回调
+结束或失败后停止 peers。版本、权限、错误及旧 mode 0 兼容见
+[线程契约](threading.md#有界进程清理窗口sys51-mode-1)。
+
+每个工作线程仍在所有 TLS/TSD/libc 清理完成后以 release 递减计数，再执行原生
+退出握手。最后线程收尾复用同一清理窗口和 glibc 回调路径。
+本增量的 61 项实际客体结果、产物绑定和范围见
+[8bfdcae1 工作记录](../work_log/8bfdcae1_glibc_active_process_exit.md)。

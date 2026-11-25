@@ -236,6 +236,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
             "legacy_archives": {"lib/" + name: digest((sdk / "lib" / name).read_bytes())
                                 for name in ("libc.a", "libm.a")}},
         "configuration": TARGET, "runtime_model": "single",
+        "process_exit_cleanup": {"syscall": 51, "mode": 1, "request_version": 1,
+                                 "deadline_max_ns": 30000000000, "guest_qualification": "not_run"},
         "display_extensions": {"version": 1, "syscalls": [65, 66], "pixel_format": "XRGB8888", "surface_count": 1},
         "vm_extensions": {"version": 1, "syscall": 67, "status": "implemented_unqualified"},
         "cpu_time": {"version": 1, "syscall": 89, "status": "implemented_unqualified",
@@ -248,6 +250,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
         "file_identity": {"version": 1, "wire_version": 2, "status": "implemented_unverified",
                           "cwd_operations": [26, 27, 28], "directory_flag": 1024, "pin_flag": 2048},
         "process_extensions": {"syscalls": [*range(54, 62), *range(80, 87)], "file_operations": list(range(20, 29)),
+            "wait": {"syscall": 20, "nonblocking_flag": 1, "any_flag": 2,
+                     "any_target": 0, "completion_bytes": 48, "guest_qualification": "not_run"},
             "thread_pointer": {"syscall": 35, "current_thread_mode": 1, "guest_qualification": "not_run"},
             "startup_versions": [1, 2, 3], "exec_image_abi": 3, "exec_marker": ".xos.exec",
             "fork_supported": True, "exec_supported": True, "single_main_thread_only": True,

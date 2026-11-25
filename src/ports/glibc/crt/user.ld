@@ -29,13 +29,30 @@ SECTIONS {
     } :data
     .init_array : ALIGN(8) {
         __init_array_start = .;
-        KEEP(*(SORT_BY_INIT_PRIORITY(.init_array.*))) KEEP(*(.init_array))
+        /* GCC's ELF backend can emit legacy .ctors, including inverted
+           numeric priorities. Use the GNU ELF linker ordering for both
+           formats; crtbegin/end sentinel words are not callable entries. */
+        KEEP(*(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*)))
+        KEEP(*(.init_array EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o) .ctors))
         __init_array_end = .;
     } :data
     .fini_array : ALIGN(8) {
         __fini_array_start = .;
-        KEEP(*(SORT_BY_INIT_PRIORITY(.fini_array.*))) KEEP(*(.fini_array))
+        KEEP(*(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*)))
+        KEEP(*(.fini_array EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o) .dtors))
         __fini_array_end = .;
+    } :data
+    /* Preserve the empty legacy sentinel lists for the compiler CRT's own
+       _init/_fini hooks. All application callbacks are in the arrays above. */
+    .ctors : ALIGN(8) {
+        KEEP(*crtbegin.o(.ctors)) KEEP(*crtbegin?.o(.ctors))
+        KEEP(*(EXCLUDE_FILE (*crtend.o *crtend?.o) .ctors))
+        KEEP(*(SORT(.ctors.*))) KEEP(*(.ctors))
+    } :data
+    .dtors : ALIGN(8) {
+        KEEP(*crtbegin.o(.dtors)) KEEP(*crtbegin?.o(.dtors))
+        KEEP(*(EXCLUDE_FILE (*crtend.o *crtend?.o) .dtors))
+        KEEP(*(SORT(.dtors.*))) KEEP(*(.dtors))
     } :data
     .tdata : { *(.tdata .tdata.*) } :data :tls
     .tbss (NOLOAD) : { *(.tbss .tbss.*) *(.tcommon) } :data :tls

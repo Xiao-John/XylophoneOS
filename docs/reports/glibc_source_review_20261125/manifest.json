@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "files": {
+    "authentication_tests.json": "1eb85b08edae94dcf927c7dc43dc209b96cb162793b8186be0f45d0f369f1927",
+    "configure_summary.json": "b1a18dd98b8b7a437365e27c29b1231d72fea4c73deb5203a88308a3b8a31d5f",
+    "snapshot_tests.json": "43d3254a57b53ea0ca0b8eba64b20c680a6eea5da4a0ff6dc46b9a79dd8afe23",
+    "source_verification.json": "774768e0d9a8e93e1c7686493c8a546f9fc7161cb7f9e78aaae0aec02fa8fc3e"
+  }
+}

@@ -30,6 +30,14 @@
 
 ## syscall逐项登记
 
+sys51 显式 mode 1 为有界进程清理窗口，32 字节版本 1 请求，旧 mode 0 保持。
+独占退出责任、30 秒单调 deadline 上限及失败/回滚语义见
+[线程契约](threading.md#有界进程清理窗口sys51-mode-1)。
+
+sys84–86 端点、待 accept 连接及发布名称在成功 exec 时按
+[endpoint 生命周期](ipc_endpoint_lifecycle.md) 一起撤销，失败 exec 完整保留；
+sys81 的显式 channel 继承仍由原契约约束。
+
 sys60 试行 bit32 扩展 entry 可显式保留通用通道，布局见 `process_exec_channel_entry`
 和 [通道契约](channel.md)；默认 ABI 不变，尚未客体验证。
 sys81 试行 action 4 对最多四个通用端点做原子检查与等待，布局见
@@ -44,6 +52,9 @@ owned building 子进程主线程指针；1 `current_thread` 允许调用线程�
 分配的线程指针，第一参数必须为当前 PID。其它模式拒绝。权限、地址与生命周期
 校验见 [线程契约](threading.md#当前线程安装运行库线程指针)。本扩展供隔离 glibc
 G2/G3 候选使用，SDK 单独记录能力与客体验证；不更换默认 libc。
+
+sys20 第三参数 bit0 为非阻塞，bit1 与第一参数为零共同选择显式
+[wait-any](process_wait.md)；旧精确 PID 请求的 flags 0/1 保持原行为。
 
 数值来源分别为内核基础syscall头与共享ABI头；此表锁定当前分配，自动检查捕获重号、漏项、
 新增占用预留段而未登记，以及源码与本表偏移。allocated不等于完整POSIX或应用资格。

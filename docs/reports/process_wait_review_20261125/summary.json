@@ -1,0 +1,29 @@
+{
+  "status": "host_pass_guest_pending",
+  "review": "PR161 three acceptance corrections",
+  "results": {
+    "kernel_wait_host": 8,
+    "kernel_wait_asan_ubsan": 8,
+    "identity_and_source_snapshot_host": 8
+  },
+  "guest_qualification": "not_run_for_this_revision",
+  "derivation": {
+    "kind": "public path normalization",
+    "rule": "source root replaced by ${XOS_SOURCE_ROOT}",
+    "raw_receipts_sha256": {
+      "build/review_host/report.json": "5226b7813fc734eb42c585a11ebb9887f480b8a55a984cbc4f5fd55c7306e68f",
+      "build/review_sanitized_host/report.json": "4392062ca11d15f3695a872ba2d7b585071ddfdef9789e28cae08cd732495133",
+      "build/review_identity_final/report.json": "72d76e6e26de70552df0be23851c291ada14aaead4367e4987b7372cf80d8296",
+      "build/review_identity_final/snapshot_harness/report.json": "5bdb868acc83dce7f0f0d6c9f36a9e7c564f4b2f50c4ecc8522df6ab32418957",
+      "build/review_host/host.log": "cdae79502181c6f3dcce8bea9e72ef134b001926eaa6dcdbe0e3da6443a0f670",
+      "build/review_sanitized_host/host.log": "cdae79502181c6f3dcce8bea9e72ef134b001926eaa6dcdbe0e3da6443a0f670",
+      "build/review_identity_final/snapshot_harness.log": "cdae79502181c6f3dcce8bea9e72ef134b001926eaa6dcdbe0e3da6443a0f670"
+    }
+  },
+  "limits": [
+    "coherent replacement controls use synthetic hashed systems and do not execute their placeholder ISO bytes",
+    "kernel wait harness executes extracted production code with simulated privileged scheduling/memory hooks",
+    "LeakSanitizer disabled in ASan/UBSan run",
+    "27 real wait-any guest runs remain pending on a freshly built combined system"
+  ]
+}

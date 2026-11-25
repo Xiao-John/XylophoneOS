@@ -34,11 +34,12 @@ def build_and_test(options, output):
     cxx = os.environ.get("CXX", "c++")
     cc = os.environ.get("CC", "cc")
     fixture = root / "tests/fixtures/network/service_host.cpp"
+    loop_fixture = root / "tests/fixtures/network/service_loop_host.cpp"
     production_sources = [root / "src/user/network/service_core.cpp", root / "src/user/network/lwip_stack.cpp"]
     compile_inputs = [(root / "src/user/network/service_loop.cpp", "loop", []),
                       (root / "src/user/programs/net_service.cpp", "entry_raw", []),
                       (root / "src/user/programs/net_service.cpp", "entry_native", ["-DXOS_NET_STACK=1"])]
-    own_inputs = [Path(__file__).resolve(), fixture, *production_sources, *(item for item, _, _ in compile_inputs),
+    own_inputs = [Path(__file__).resolve(), fixture, loop_fixture, *production_sources, *(item for item, _, _ in compile_inputs),
                   root / "src/user/network/service_core.hpp", root / "src/user/network/lwip_stack.hpp",
                   root / "src/user/network/service_loop.hpp", root / "src/shared/include/xos/net_service_abi.hpp",
                   root / "src/user/network/include/lwipopts.h", root / "src/ports/lwip/include/lwipopts.h",
@@ -58,24 +59,33 @@ def build_and_test(options, output):
     strict = ["-Wall", "-Wextra", "-Werror"]
     run([cxx, "-std=c++20", *strict, *common, str(fixture),
          *map(str, production_sources), *objects, "-o", str(binary)])
+    loop_binary = output / "net_service_loop_host"
+    run([cxx, "-std=c++20", *strict, *common, "-I", str(root / "src/user/include"),
+         str(loop_fixture), str(root / "src/user/network/service_loop.cpp"),
+         *map(str, production_sources), *objects, "-o", str(loop_binary)])
     freestanding = ["-std=c++20", "-O2", *strict, "-ffreestanding", "-fno-exceptions",
                     "-fno-rtti", "-nostdinc++", "-mno-red-zone", *includes,
                     "-I", str(root / "src/user/include")]
     for item, label, flags in compile_inputs:
         run([cxx, *freestanding, *flags, "-c", str(item), "-o", str(output / (label + ".o"))])
     scenarios = subprocess.check_output([str(binary), "--list"], text=True).splitlines()
+    loop_scenarios = subprocess.check_output([str(loop_binary), "--list"], text=True).splitlines()
     for scenario in scenarios:
         run([str(binary), scenario])
+    for scenario in loop_scenarios:
+        run([str(loop_binary), scenario])
     for name, expected in input_hashes.items():
         if hashlib.sha256((root / name).read_bytes()).hexdigest() != expected:
             raise RuntimeError(f"Network input changed while the test ran: {name}; rerun required")
     receipt = {"guest_qualification": "not_run", "wire_version": 2,
                "lwip_archive_sha256": lock["sha256"], "scenarios": scenarios,
+               "loop_scenarios": loop_scenarios,
                "sanitizers": ["address", "undefined"] if options.sanitize else [],
                "asan_options": os.environ.get("ASAN_OPTIONS", ""),
                "inputs": input_hashes}
     (output / "result.json").write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
     print(f"NET_SERVICE_REAL_LWIP_SCENARIOS_PASSED={len(scenarios)}")
+    print(f"NET_SERVICE_PRODUCTION_LOOP_SCENARIOS_PASSED={len(loop_scenarios)}")
 
 
 def main():

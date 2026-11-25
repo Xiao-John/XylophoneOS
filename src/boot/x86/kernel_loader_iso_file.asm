@@ -232,6 +232,10 @@ protected_entry:
 %define cd_status (cd_base + 7)
 %define cd_command (cd_base + 7)
 %define cd_drive (cd_base + 6)
+%define cd_pit_control 0x43
+%define cd_pit_channel_2 0x42
+%define cd_pit_gate 0x61
+%define cd_wait_windows 18  ; 18 * 65536 PIT ticks at 1193182 Hz, just under 1 s
 
 load_kernel32:
     mov dx, cd_ctrl
@@ -286,8 +290,10 @@ load_kernel32:
     call check_extent
     jc .fail
     mov edi, 0x2800
+    mov dword [cd_error_message], read_error
     call cd_read_one
     jc .fail
+    mov dword [cd_error_message], directory_error
 
     mov ebp, cd_kernel_name
     mov ecx, 12
@@ -542,35 +548,65 @@ cd_read_one:
     ret
 
 cd_wait_not_busy:
-    mov ecx, 0xffff
-.loop:
-    in al, dx
-    test al, 0x80
-    jz .ok
-    loop .loop
-    stc
-    ret
-.ok:
-    clc
-    ret
+    xor ah, ah
+    jmp cd_wait_status
 
 cd_wait_drq:
-    mov ecx, 0xffff
-.loop:
+    mov ah, 0x08
+
+; PIT channel 2 provides elapsed boot time with interrupts masked. The
+; status-read count is only a fallback if that timer cannot make progress.
+; DX is the ATAPI status port. AH selects the condition and AL preserves
+; the last ATAPI status on success.
+cd_wait_status:
+    push ebx
+    in al, cd_pit_gate
+    mov bl, al
+    mov bh, cd_wait_windows
+.start_window:
+    mov al, bl
+    and al, 0xfc            ; lower channel 2 gate and mute the speaker
+    out cd_pit_gate, al
+    mov al, 0xb0            ; channel 2, lo/hi reload, mode 0 one-shot
+    out cd_pit_control, al
+    xor al, al              ; reload zero represents 65536 ticks
+    out cd_pit_channel_2, al
+    out cd_pit_channel_2, al
+    mov al, bl
+    and al, 0xfd
+    or al, 1
+    out cd_pit_gate, al
+    mov ecx, 0x100000
+.poll:
     in al, dx
     test al, 0x80
-    jnz .again
+    jnz .check_time
+    test ah, ah
+    jz .ok
     test al, 0x21
     jnz .fail
-    test al, 0x08
+    test al, ah
     jnz .ok
-.again:
-    loop .loop
+.check_time:
+    in al, cd_pit_gate
+    test al, 0x20           ; channel 2 OUT goes high at terminal count
+    jnz .window_elapsed
+    loop .poll
+    jmp .fail
+.window_elapsed:
+    dec bh
+    jnz .start_window
 .fail:
     stc
-    ret
+    jmp .restore_gate
 .ok:
     clc
+.restore_gate:
+    push eax
+    mov al, bl
+    out cd_pit_gate, al
+    pop eax
+    pop ebx
     ret
 
 cd_packet:

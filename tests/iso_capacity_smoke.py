@@ -116,6 +116,22 @@ def main():
         # Source payload survives allocations throughout running user tasks.
         serial=(ROOT/'build/iso_capacity/large_serial.log').read_bytes()
         assert b'BOOT_ERROR' not in serial and b'[panic]' not in serial
+        command=boot_smoke.qemu_command
+        optical_bps=512*1024
+        def slow_optical(*a,**kw):
+            result=command(*a,**kw)
+            option=result.index('-cdrom')
+            filename=result[option+1].replace(',',',,')
+            result[option:option+2]=['-drive',
+                f'file={filename},if=ide,index=2,media=cdrom,format=raw,bps_rd={optical_bps}']
+            return result
+        with mock.patch('boot_smoke.qemu_command',slow_optical):
+            guest=Guest(iso,'iso_capacity/slow_optical',iso=True,qmp_enabled=False)
+        guest.expect(b'xos64> ',timeout=45)
+        guest.expect(b'capacity_probe_verified bytes=5242880')
+        guest.expect(f'payload_bytes={payload.stat().st_size}'.encode())
+        guest.close();guest=None
+        mark('delayed_optical_reads_complete',bytes_per_second=optical_bps)
         base=bytearray(iso.read_bytes());entries=records(base)
         failures=[('kernel_size','KERNEL.BIN;1',10,9<<20,b'BOOT_ERROR: iso_kernel_size'),
                   ('payload_size','DASH.ELF;1',10,33<<20,b'BOOT_ERROR: iso_payload_size'),
@@ -132,7 +148,6 @@ def main():
         path=output/'directory.iso';path.write_bytes(malformed)
         guest=Guest(path,'iso_capacity/directory',iso=True);guest.expect(b'BOOT_ERROR: iso_directory',timeout=25)
         guest.close();guest=None;mark('reject_truncated_directory_record')
-        command=boot_smoke.qemu_command
         def small_ram(*a,**kw):
             result=command(*a,**kw);result[result.index('-m')+1]='32M';return result
         with mock.patch('boot_smoke.qemu_command',small_ram):guest=Guest(iso,'iso_capacity/ram',iso=True)

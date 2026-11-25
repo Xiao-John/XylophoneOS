@@ -1,0 +1,910 @@
+{
+  "status": "audit_complete_activation_blocked",
+  "production_dns_enabled": false,
+  "guest": "not_run",
+  "scope": "Locked upstream DNS, actual XOS lwip_stack and Ethernet/IP/UDP; local simulated peer and entropy source.",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/core/init.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_init.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/core/def.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_def.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/core/inet_chksum.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_inet_chksum.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/core/ip.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_ip.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/core/mem.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_mem.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/core/memp.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_memp.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/core/netif.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_netif.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/core/pbuf.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_pbuf.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/core/raw.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_raw.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/core/stats.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_stats.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/core/sys.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_sys.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/core/tcp.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_tcp.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/core/tcp_in.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_tcp_in.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/core/tcp_out.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_tcp_out.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/core/timeouts.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_timeouts.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/core/udp.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_udp.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/core/dns.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_dns.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/core/ipv4/etharp.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_ipv4_etharp.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/core/ipv4/icmp.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_ipv4_icmp.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/core/ipv4/ip4.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_ipv4_ip4.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/core/ipv4/ip4_addr.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_ipv4_ip4_addr.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/core/ipv4/ip4_frag.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_ipv4_ip4_frag.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/netif/ethernet.c",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_netif_ethernet.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-g++-14",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "${XOS_REPO}/tests/fixtures/network/dns_upstream_audit.cpp",
+        "${XOS_REPO}/src/user/network/lwip_stack.cpp",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_init.c.o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_def.c.o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_inet_chksum.c.o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_ip.c.o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_mem.c.o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_memp.c.o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_netif.c.o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_pbuf.c.o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_raw.c.o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_stats.c.o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_sys.c.o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_tcp.c.o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_tcp_in.c.o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_tcp_out.c.o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_timeouts.c.o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_udp.c.o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_dns.c.o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_ipv4_etharp.c.o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_ipv4_icmp.c.o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_ipv4_ip4.c.o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_ipv4_ip4_addr.c.o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_core_ipv4_ip4_frag.c.o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/src_netif_ethernet.c.o",
+        "-o",
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/dns_upstream_audit"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/dns_upstream_audit",
+        "valid"
+      ],
+      "returncode": 0,
+      "stdout": "AUDIT valid accepted=1 callback_count=1 address=0a000202\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/dns_upstream_audit",
+        "wrong_id"
+      ],
+      "returncode": 0,
+      "stdout": "AUDIT wrong_id accepted=0 callback_count=0 address=00000000\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/dns_upstream_audit",
+        "wrong_question"
+      ],
+      "returncode": 0,
+      "stdout": "AUDIT wrong_question accepted=0 callback_count=0 address=00000000\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/dns_upstream_audit",
+        "wrong_source_address"
+      ],
+      "returncode": 0,
+      "stdout": "AUDIT wrong_source_address accepted=0 callback_count=0 address=00000000\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/dns_upstream_audit",
+        "wrong_source_port"
+      ],
+      "returncode": 0,
+      "stdout": "AUDIT wrong_source_port accepted=1 callback_count=1 address=0a000202\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/dns_upstream_audit",
+        "other_query_port"
+      ],
+      "returncode": 0,
+      "stdout": "AUDIT other_query_port accepted=1 callback_count=1 address=0a000202\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/dns_upstream_audit",
+        "unrelated_owner"
+      ],
+      "returncode": 0,
+      "stdout": "AUDIT unrelated_owner accepted=1 callback_count=1 address=0a000202\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/dns_upstream_audit",
+        "truncated"
+      ],
+      "returncode": 0,
+      "stdout": "AUDIT truncated accepted=1 callback_count=1 address=0a000202\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/dns_upstream_audit",
+        "other_opcode"
+      ],
+      "returncode": 0,
+      "stdout": "AUDIT other_opcode accepted=1 callback_count=1 address=0a000202\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/dns_upstream_audit",
+        "ttl_pause"
+      ],
+      "returncode": 0,
+      "stdout": "AUDIT ttl_pause original_ttl_seconds=2 elapsed_seconds=3 cached=1\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/dns_upstream_audit",
+        "server_change"
+      ],
+      "returncode": 0,
+      "stdout": "AUDIT server_change cached_previous_server=1\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_dns_upstream_audit_final/dns_upstream_audit",
+        "entropy_failure"
+      ],
+      "returncode": 42,
+      "stdout": "AUDIT entropy_failure repeated_draws=4096 operation_returned=0\n",
+      "stderr": ""
+    }
+  ],
+  "observations": [
+    {
+      "case": "valid",
+      "status": "control_pass",
+      "output": "AUDIT valid accepted=1 callback_count=1 address=0a000202"
+    },
+    {
+      "case": "wrong_id",
+      "status": "control_pass",
+      "output": "AUDIT wrong_id accepted=0 callback_count=0 address=00000000"
+    },
+    {
+      "case": "wrong_question",
+      "status": "control_pass",
+      "output": "AUDIT wrong_question accepted=0 callback_count=0 address=00000000"
+    },
+    {
+      "case": "wrong_source_address",
+      "status": "control_pass",
+      "output": "AUDIT wrong_source_address accepted=0 callback_count=0 address=00000000"
+    },
+    {
+      "case": "wrong_source_port",
+      "status": "activation_gate_failed",
+      "output": "AUDIT wrong_source_port accepted=1 callback_count=1 address=0a000202"
+    },
+    {
+      "case": "other_query_port",
+      "status": "activation_gate_failed",
+      "output": "AUDIT other_query_port accepted=1 callback_count=1 address=0a000202"
+    },
+    {
+      "case": "unrelated_owner",
+      "status": "activation_gate_failed",
+      "output": "AUDIT unrelated_owner accepted=1 callback_count=1 address=0a000202"
+    },
+    {
+      "case": "truncated",
+      "status": "activation_gate_failed",
+      "output": "AUDIT truncated accepted=1 callback_count=1 address=0a000202"
+    },
+    {
+      "case": "other_opcode",
+      "status": "activation_gate_failed",
+      "output": "AUDIT other_opcode accepted=1 callback_count=1 address=0a000202"
+    },
+    {
+      "case": "ttl_pause",
+      "status": "activation_gate_failed",
+      "output": "AUDIT ttl_pause original_ttl_seconds=2 elapsed_seconds=3 cached=1"
+    },
+    {
+      "case": "server_change",
+      "status": "activation_gate_failed",
+      "output": "AUDIT server_change cached_previous_server=1"
+    },
+    {
+      "case": "entropy_failure",
+      "status": "activation_gate_failed",
+      "output": "AUDIT entropy_failure repeated_draws=4096 operation_returned=0"
+    }
+  ],
+  "inputs": {
+    "scripts/lwip_service_build.py": "a6266c1279926fbce96e33bbb3cc5f8840afcbbf0a492c4c2594ea2770c322a7",
+    "src/ports/lwip/include/arch/cc.h": "446b61b46b5990ffca4555f53e20a73b83074719578344564383844f1fde32b4",
+    "src/ports/lwip/include/lwipopts.h": "26561f4bd5744e062a05e988909dae5fd4aecc4926086484eed05cdeed3b6b8a",
+    "src/ports/lwip/source_lock.json": "7d6bb31032a2b4af37584a0d4e3dc80f7c60f7122417d1192459cd7ee978b37d",
+    "src/shared/include/xos/abi_types.hpp": "2a417532cbdafc1d7545064ef78fe692b07ab0ec430f44367d779415fdc48478",
+    "src/shared/include/xos/net_service_abi.hpp": "cb407cec1622efaf39861b7ee0f76fe7899f59b1bafd110838f884584204b9e7",
+    "src/user/network/include/arch/cc.h": "2a766914e4674667c90137f70694655f1396416497bac17a49e4a0be7a9a3416",
+    "src/user/network/include/lwipopts.h": "ed6475a419cfe6f1ea3498f83a1370f1b74c34af77b472f0c7f60cf93f162c7d",
+    "src/user/network/lwip_stack.cpp": "8794559217ae2b4764734e180b352f86465d0396ec1b991cd0016a1ce4142926",
+    "src/user/network/lwip_stack.hpp": "302696577131c5afd8bd2ae89c1ebc7db1765d5ea0600a85bc378667e38cb09a",
+    "src/user/network/service_core.hpp": "61cb33e940ae3cd48b8bf74cc88f3e28cdbd8806603d061ad73bcb86c47e01fc",
+    "tests/fixtures/network/dns_upstream_audit.cpp": "44d8587d4ec1e77907c004f49cb83dcc2764851c327994fdc4b80f286acc2bb3",
+    "tests/lwip_dns_audit.py": "038042852892f3fde1c9600dad75df8ae380eb7842fbc95b90eb2cd9071c63c8"
+  },
+  "sanitized_environment": [],
+  "tools": {
+    "CC": {
+      "path": "/usr/bin/x86_64-linux-gnu-gcc-14",
+      "sha256": "a23ecab8ff08f09ad8c80602c2c5df7f49e09c25905cb8975902e101bf72635f",
+      "version": "x86_64-linux-gnu-gcc-14 (Debian 14.2.0-19) 14.2.0"
+    },
+    "CXX": {
+      "path": "/usr/bin/x86_64-linux-gnu-g++-14",
+      "sha256": "6b3696e4dcb85e1c949c732a02befa50e3983ecf94ce7e8e58d9d503b954b79d",
+      "version": "x86_64-linux-gnu-g++-14 (Debian 14.2.0-19) 14.2.0"
+    }
+  },
+  "archive_sha256": "83729c274c499d3348e9fbbe043a3113f3fa8953e7efddc7c21c7fcbb1f2b7b1",
+  "test_only_options": [
+    "Production options unchanged; test include overrides LWIP_DNS=1."
+  ],
+  "upstream_inputs": {
+    "src/core/init.c": "e79eface962c17e082bc6d2f9bc0eef16be4cbef1deca3e8248fc7b171b0a49f",
+    "src/core/def.c": "a12f3ef6c087efb6d4ec524cf332ff438d2504c17d60c263d0bb1b82b79eb2cd",
+    "src/core/inet_chksum.c": "fc82b44fc866704a51c0aacd6037b10802b88e8576e1b691917cd2b863878b1b",
+    "src/core/ip.c": "82d0fc6b45c6d1af88bdece3229fc9821274263c261369de4f81b8d6c80751e7",
+    "src/core/mem.c": "b5316284f3f42782d8b55a750f3f0557d3031edd0c280e653f2fb6dec3f74ed3",
+    "src/core/memp.c": "91ca3a00487d61849324ae571ac9ede550a879365c557aba38667ace122b6c00",
+    "src/core/netif.c": "62e386985e3f2c9b943466ef01d3dcda798ee0167d56fd59c057e928f979cbc2",
+    "src/core/pbuf.c": "2f953eb2bc5b696b2eea156386cc4f99c793859bbf65cee967653bdf3374db61",
+    "src/core/raw.c": "3ba4f2e5d2b61bbfbe813653c7f4e88e2542d567808d3f03be000e0876ce0392",
+    "src/core/stats.c": "a18b76cde437213ca9f00137bdb61adb00f6f931fe28c40c81f811a5e674caea",
+    "src/core/sys.c": "86e336dedec36e042aadaebe93c8be944675210841ccabf180200e82c91b0f8d",
+    "src/core/tcp.c": "76d701944a20dae435fb09a37046fea046ba1d996038362e37eae57157ba586f",
+    "src/core/tcp_in.c": "f79b20e6b123af2ed2cfc2b470fe982d0c88d1357fc5a11537bab9cd20d4b639",
+    "src/core/tcp_out.c": "d8d8d5a54097114904f89f8c5602c937ef3b086933f2132a557698fc65d7e4af",
+    "src/core/timeouts.c": "930bcfaf5b12b97f975fca7b8c2f7ab999cffa37f7c840ea91b340aa4ef62115",
+    "src/core/udp.c": "6454ba858cf8a2c71e4a27e0da4b1569160f923c2adce19842dbb6f90da61af7",
+    "src/core/dns.c": "fe35ede9919974da54598630cc08d654ccc30b668c45b09668c3ba572686b26c",
+    "src/core/ipv4/etharp.c": "8ee2c65e26eacf265ef34798aefd39aa9678296a64154d3d049b10f32e658f5d",
+    "src/core/ipv4/icmp.c": "d53c96e7ce02514d6c88b41df7c2e37d8e0212a297466f50590305c5e3504285",
+    "src/core/ipv4/ip4.c": "d4973142adede3b868036d5404df9a258ed632788d98969539dc21470b748ae6",
+    "src/core/ipv4/ip4_addr.c": "b440b85c9e49e60510cfa61d40e24b0e2ad480e23a821a94017e42df09dcf8be",
+    "src/core/ipv4/ip4_frag.c": "bb0ddf79430bcd073f7f837451f868107dd6ce60444df72b7c02aca7ca3d4ff6",
+    "src/netif/ethernet.c": "7c493427956150ca9e97decd87784df0d2adb0f1504fa262b7e732bee1892eaf"
+  },
+  "binary_sha256": "984de16f47ad818de9c38b7fce38b453ed8c3e3bb2c80a10565284704e01d130"
+}

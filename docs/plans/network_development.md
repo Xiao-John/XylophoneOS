@@ -14,6 +14,12 @@
 
 ## 阶段
 
+2026-11-25 分支进展：`2baed87` 已有 N2/N3 的11项传输、13项生命周期及12轮
+撤销/槽复用真实客体结果，见 [ca46b580](../work_log/ca46b580_network_multi_application_qualification.md)。
+N4 的控制配置、租约、resolver 权限/缓存/取消和启用门槛见
+[原生契约提案](../contracts/network_n4_v1_proposal.md)。锁定 lwIP 的 DNS 包级 audit
+发现8项启用门槛失败，production DNS/DHCP保持关闭；该设计与审计单独交付。
+
 <!-- coderabbit-ai-generated:v1 -->
 
 <!-- coderabbit-ai-generated-section:v1:3bd51f0965bffac939bc3d84fce5381a7c2af3f06d5b6a146214815277f73d94 -->
@@ -23,7 +29,9 @@
 <!-- /coderabbit-ai-generated:v1 -->
 2. **N2 网络服务契约与多会话**：盘点 net 单会话与 IPC 生命周期；设计认证、连接/地址授权、独占设备、队列与预算、进程退出/取消/重启、背压和观察错误；先按登记流程冻结 ABI，再由用户态服务持有 lwIP，普通应用不接触设备。包括恶意/失效请求、并发、撤销和资源回收。
 3. **N3 TCP/UDP 客户端接口与 HTTP**：分次实现可用的连接与数据报接口及 SDK，覆盖短读写、EOF、错误、超时、并发与多应用；以宿主新鲜挑战验证真实 HTTP 状态和字节，再将它接入浏览器，不将旧 HTTP 解析器当作完整后端。
-4. **N4 配置与名称**：DHCP 租约和续期、DNS 解析与错误/缓存/超时单独验收；保留静态配置的确定性对照。
+4. **N4 配置与名称**：按[专项提案](../contracts/network_n4_v1_proposal.md)分开交付
+   DNS后端加固、取消/缓存、真实解析客体，以及DHCP状态机/真实租约；保留静态配置的
+   确定性对照，配置变化必须使旧事务和缓存失效。
 5. **N5 安全传输**：有真实熵、可信墙钟和独立证书信任配置后集成成熟 TLS；验证证书链、主机名、过期、时间不可用、熵不足、对端错误和真实 HTTPS，不绕过检查。
 6. **N6 glibc 与 WebKit**：按上游实际依赖做 socket/POSIX 兼容、NetworkProcess 和进程隔离，真实网站和资源/故障测试单独验收；不以探针通过宣称 WebKit 完成。
 

@@ -11,6 +11,17 @@ static int allocate_calls, release_calls, fail_allocate;
 static struct pthread *last;
 static struct xos_thread_reservation kernel_reservation;
 static int starts, aborts, expected_releases;
+static dtv_t *reserved_dtv;
+static int reject_static_modules;
+void *__xos_dl_init_reserved_tls (void *tcb, dtv_t *dtv)
+{
+  if (reject_static_modules)
+    return NULL;
+  struct pthread *pd = tcb;
+  assert (pd->header.self == pd && pd->header.dtv == NULL);
+  reserved_dtv = dtv;
+  return tcb;
+}
 xos_i64 __xos_thread_test_call (xos_u64 n, xos_u64 a, xos_u64 b)
 {
   if (n == 38) {
@@ -96,4 +107,14 @@ int main (void)
   fail_allocate = 1;
   assert (__xos_thread_launch (65536, 4096, 0, setup, rollback, &context, &result) == -2);
   assert (release_calls == 2 && starts == 1 && aborts == 2 && context.pd == NULL && result.tid == 0);
+  assert (__xos_thread_static_tls_initialize (&r, &out) == 0);
+  assert ((uintptr_t) reserved_dtv >= (uintptr_t) out + sizeof (*out));
+  assert ((uintptr_t) reserved_dtv % _Alignof (dtv_t) == 0);
+  assert ((uintptr_t) (reserved_dtv + 3) <= r.tls_end);
+  r.tls_end = (uintptr_t) (reserved_dtv + 3) - 1;
+  assert (__xos_thread_static_tls_initialize (&r, &out) == -1);
+  r.tls_end = r.tls_begin + sizeof region;
+  reject_static_modules = 1;
+  struct pthread *previous = out;
+  assert (__xos_thread_static_tls_initialize (&r, &out) == -2 && out == previous);
 }

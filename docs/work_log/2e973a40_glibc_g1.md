@@ -344,3 +344,11 @@ glibc 的 `brk` 接入现有 XOS syscall 29。静态 TLS 引导中的 `_dl_early
 镜像 `e728fdec0e012f4d` 的客体探针直接链接这六个对象，验证堆增长、回缩及失败保持原值，匿名地址预留、提交、保护、释放和重新分配后的清零。四轮均通过，资源恢复到 `[129725, 3, 1]`。客体报告 SHA-256 为 `08402b811526375578accc06ab8cad6374c4b88b72134b85f91be2255246232c`。该探针由 XOS 现有 loader 设置 TLS，glibc 自身的主线程 TLS 安装未运行。链接器报告 `munmap.o` 缺少 `.note.GNU-stack`。
 
 并行构建诊断中，上游通用 `mprotect` 与 `munmap` 的别名编译错误已消失。完整构建的第一个错误仍是上游 `pthread_create` 引入的 `clone3.h`。现有内核会在原生 join 返回前回收执行 TCB，静态线程需要让公开句柄与执行 TCB 分离，并明确 DTV 属于线程映射还是独立分配。最终 `gnu/stubs.h` 和完整 SDK 仍未生成，G1 保持 partial。
+
+## 继续：静态线程 DTV 的所有权（2026-11-25）
+
+线程必须在进入 XOS 退出握手前完成用户态清理。新的静态 TLS 初始化入口把 DTV 的三个槽放在执行 TCB 之后，校验对齐和剩余空间。glibc 的实际 TLS 初始化代码只在初始模块为静态可执行文件且代数为零时接受这个 DTV，复用上游的模板复制与清零逻辑。该 DTV 随线程 reservation 一并回收，无需在 join 中读回 TCB 或单独释放数组。普通 glibc 初始化和现有堆分配入口仍使用原路径。
+
+宿主测试覆盖对齐、空间少一字节、模块集合不支持及失败时输出不变。整个线程运行过程中禁止动态加载的策略尚未接入，公共 `pthread_create` 也尚未使用该入口。
+
+从锁定归档重建生成 `elf/dl-tls.o` 与 `nptl/xos_thread_tls.o`。首个完整构建错误仍是 `pthread_create` 引入的 `clone3.h`，正式 `gnu/stubs.h` 仍未生成。构建报告 SHA-256 为 `f137dbd399915190a62299ec8be2053ed94eeae5b29db41b4e68a5ac61919294`。未运行该 DTV 路径的客体验证。

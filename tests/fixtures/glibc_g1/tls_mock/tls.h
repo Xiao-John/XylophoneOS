@@ -12,4 +12,5 @@ struct pthread {
 #define TLS_DTV_AT_TP 0
 #define TLS_TCB_SIZE sizeof (struct pthread)
 #define TLS_TPADJ(pd) (pd)
+typedef union { size_t counter; void *pointer[2]; } dtv_t;
 #endif

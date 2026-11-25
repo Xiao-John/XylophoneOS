@@ -15,4 +15,13 @@ int __xos_thread_tls_initialize (const struct xos_thread_reservation *,
    implemented: the kernel can unmap TLS before a joiner can inspect it. */
 __attribute__ ((visibility ("hidden")))
 void __xos_thread_tls_release (struct pthread *);
+#ifndef SHARED
+/* Uses the reservation for both the TCB and the initial static DTV.
+   The kernel reclaims both together. Do not call the heap-backed release
+   function for this layout. Invalid layout returns -1 and an unsupported
+   TLS module set returns -2. */
+__attribute__ ((visibility ("hidden")))
+int __xos_thread_static_tls_initialize (const struct xos_thread_reservation *,
+                                       struct pthread **);
+#endif
 #endif

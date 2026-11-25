@@ -40,7 +40,8 @@ def main():
                           ('0010-sem-init-private-only.patch', 'sem_init_patch_sha256'),
                           ('0011-nptl-explicit-includes.patch', 'nptl_include_patch_sha256'),
                           ('0012-socket-include-types.patch', 'socket_types_patch_sha256'),
-                          ('0013-thread-db-sigset-include.patch', 'thread_db_patch_sha256')):
+                          ('0013-thread-db-sigset-include.patch', 'thread_db_patch_sha256'),
+                          ('0014-xos-reserved-dtv.patch', 'dtv_patch_sha256')):
         assert digest(root / 'src/ports/glibc/patches' / filename) == report[key]
     assert report['status'] == 'diagnostic_only' and report['nptl_backend_experimental'] and not report['synthetic_abi_tag']
     assert report['sysroot_enforced'] and report['configure_exit_code'] == 0
@@ -326,6 +327,14 @@ def main():
     assert '../sysdeps/xos/xos_thread_tls.c' in (output / 'xos_thread_tls-dependencies.d').read_text()
     tls_symbols = subprocess.check_output(['x86_64-elf-readelf', '--wide', '-s', str(build / 'nptl/xos_thread_tls.o')], text=True)
     assert all(symbol in tls_symbols for symbol in ('__xos_thread_tls_initialize', '__xos_thread_tls_release', '_dl_allocate_tls', '_dl_deallocate_tls'))
+    assert '__xos_thread_static_tls_initialize' in tls_symbols and '__xos_dl_init_reserved_tls' in tls_symbols
+    dl_tls = report['diagnostic_objects']['dl-tls']
+    dl_tls_object = build / 'elf/dl-tls.o'
+    assert dl_tls['exit_code'] == 0 and digest(dl_tls_object) == dl_tls['sha256']
+    assert 'source/elf/dl-tls.c' in dependency_manifest['dl-tls']
+    dl_tls_symbols = subprocess.check_output([report['readelf'], '-Ws', dl_tls_object], text=True)
+    assert re.search(r'\bFUNC\s+GLOBAL\s+HIDDEN\s+\d+\s+__xos_dl_init_reserved_tls\b',
+                     dl_tls_symbols)
     yield_item = report['diagnostic_objects']['sched_yield']
     assert yield_item['exit_code'] == 0 and digest(build / 'posix/sched_yield.o') == yield_item['sha256']
     assert '../sysdeps/xos/sched_yield.c' in (output / 'sched_yield-dependencies.d').read_text()

@@ -9,7 +9,7 @@
 |---:|---:|---|---|
 | 0 | 0 | reserved | 既有空位，禁止擅自使用 |
 | 1 | 66 | allocated | 现有分配，逐项见下表；不重新编号 |
-| 67 | 67 | allocated | 匿名虚拟内存 v1；VM3 恢复中，资格待验 |
+| 67 | 67 | allocated | 匿名虚拟内存 v1。VM3 恢复后的限定客体证据见[记录](../work_log/58b24599_vm3_lifecycle_sdk.md)，完整资格待验 |
 | 68 | 79 | reserved | 内存线：VMA/映射机制 |
 | 80 | 80 | allocated | 通用字节流授权；实现未验 |
 | 81 | 81 | allocated | 通用受控 IPC；实现未验 |
@@ -21,7 +21,7 @@
 | 89 | 89 | allocated | 自身进程/当前线程 CPU 时间；版本 1，已实现但未客体验收 |
 | 90 | 95 | reserved | 系统底座线：通用等待/信号/进程控制；其余接口尚未登记 |
 | 96 | 111 | reserved | 显示/输入线的后续机制；现有65/66保留 |
-| 112 | 112 | allocated | 设备授权线 v1 `sys_device`；grant/MMIO/DMA/IRQ/撤销已实现，限定 profile、guest 未运行，见[契约](device_authorization_v1.md)§9 |
+| 112 | 112 | allocated | 设备授权线 v1 `sys_device`。grant/MMIO/DMA/IRQ/撤销已实现，已有[网络纵切限定客体证据](net_user_driver.md)，通用资格见[契约](device_authorization_v1.md)§9 |
 | 113 | 127 | reserved | 设备授权线：后续机制 |
 | 128 | 65535 | unallocated | 不存在私有试用号；先通过登记PR分配，扩大范围亦须明确登记 |
 
@@ -149,7 +149,7 @@ PX4-A 提议认领如下；本分支未合入前不构成全项目登记，不�
 
 | 编号 | 拟用符号 | 责任角色 | 状态 | 实现PR |
 |---:|---|---|---|---|
-| 67 | `sys_vm` | VM负责人；匿名私有VMA v1 | allocated | 实施中，资格待验；[契约](anonymous_vm.md) |
+| 67 | `sys_vm` | VM负责人；匿名私有VMA v1 | allocated | 已实现，完整资格待验。[契约](anonymous_vm.md)与[恢复记录](../work_log/58b24599_vm3_lifecycle_sdk.md) |
 | files op 29 | `file::op::set_metadata` | 文件/包管理共用服务；FAT 诚实子集 | allocated (M1) | [契约](file_metadata_v1.md)；`tests/file_metadata_guest.py` |
 | files op 30/31 | `file::op::read_at/write_at` | G3 文件模块；显式位置，不改共享 offset | allocated | [契约](glibc_files_v1.md#定位读写与目录流)；`tests/glibc_files_extra_host.py` |
 
@@ -169,8 +169,8 @@ claimed必须位于对应reserved段，不能与现有接口或其他认领重�
 | boot_info | v1 64字节；显示扩展v2 112字节；payload descriptor独立 | 引导/内核共同登记，不借用对方字段 |
 | endpoint/PID/TID | 内核按生命周期分配的运行时身份 | 不预留静态数字给Qt，不以程序名或客户端自填身份授予权利 |
 | SDK manifest | process_extensions与display_extensions等能力/输入标识 | 普通/线程生成器同步；reserved不登记为supported |
-| net 服务协议 | v1 information/transmit/receive/stop；raw Ethernet 1514 字节 | 用户态 VirtIO-net；[纵切契约](net_user_driver.md)，guest 未运行 |
-| net2 服务协议 | v2 64字节header，1024字节payload，operations1–9；原生TCP/UDP连接与认证多会话 | 网络用户态线；[v2契约](net_service_v2.md)，先登记后实现，guest待验；v1诊断显式隔离，无新增syscall |
+| net 服务协议 | v1 information/transmit/receive/stop，raw Ethernet 1514 字节 | 用户态 VirtIO-net。[纵切契约](net_user_driver.md)记录 ARP、IRQ 与 reset 的限定客体验收 |
+| net2 服务协议 | v2 64字节header，1024字节payload，operations1–9，原生TCP/UDP连接与认证多会话 | 网络用户态线。[v2 契约](net_service_v2.md)与[多应用复验](../work_log/69b0e274_network_guest_readiness_and_window.md)登记已验范围。v1 诊断显式隔离，沿用既有 syscall |
 
 2026-11-12 用户授权将本轮实现交付与 guest 资格分开：sys88 actions 19–23 沿用 PR #112 公开 grant
 create/delegate/map/unmap/close（delegate 保持同值句柄），supported mask `0x1f` 表示可调用机制；SDK manifest

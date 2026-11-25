@@ -30,6 +30,17 @@ def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def exit_browser(guest, begin, baseline):
+    for down in (True, False):
+        guest.qmp("input-send-event", {"events": [{"type": "key", "data": {
+            "down": down, "key": {"type": "qcode", "data": "esc"}}}]})
+    guest.expect(b"kind=exited code=0", start=begin, timeout=30)
+    guest.expect_supervisor(start=begin)
+    pump(guest, 0.1)
+    if resources(guest) != baseline:
+        raise AssertionError("Browser/IPC resources did not return after exit")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("system", "payload", "output"):
@@ -40,7 +51,7 @@ def main():
     out.mkdir(parents=True, exist_ok=False)
     report = {"status": "not_run", "runner_sha256": sha(__file__), "checks": [],
               "not_run": ["DNS", "TLS", "redirect_navigation", "remote_keyboard_navigation",
-                          "cross_origin_guest_negative", "forced_service_death", "hardware_network",
+                          "forced_service_death", "hardware_network",
                           "remote_BMP", "remote_reload_history_tabs", "in_process_budget_reset",
                           "GUI_responsiveness_during_synchronous_fetch"]}
     guest = server = worker = None
@@ -92,6 +103,14 @@ def main():
         server.settimeout(0.25)
         port = server.getsockname()[1]
         authority = f"10.0.2.2:{port}"
+        other_port = 1 if port != 1 else 2
+        denied_styles = {
+            f"/{nonce}/other-origin.html": f"http://10.0.2.2:{other_port}/{nonce}/theme.css",
+            f"/{nonce}/local-resource.html": "file:/web/theme.css",
+        }
+        for target, style in denied_styles.items():
+            bodies[target] = (f'<html><head><link rel="stylesheet" href="{style}"></head>'
+                              '<body><p>Resource must be rejected</p></body></html>').encode()
 
         def serve():
             try:
@@ -184,16 +203,21 @@ def main():
                     picture.save(out / "http-browser.png")
                     report["screenshot_sha256"] = sha(out / "http-browser.png")
                     report["checks"].append("remote_stylesheet_background_and_text_pixels")
-                for down in (True, False):
-                    guest.qmp("input-send-event", {"events": [{"type": "key", "data": {
-                        "down": down, "key": {"type": "qcode", "data": "esc"}}}]})
-                guest.expect(b"kind=exited code=0", start=begin, timeout=30)
-                guest.expect_supervisor(start=begin)
-                pump(guest, 0.1)
-                if resources(guest) != baseline:
-                    raise AssertionError("Browser/IPC resources did not return after exit")
-                report["checks"].append(f"fresh_http_css_render_close_resources_cycle_{cycle}")
-            if host.get("error") or sorted(host["requests"]) != sorted([page_path, css_path] * 3):
+                exit_browser(guest, begin, baseline)
+                report["checks"].append(f"fresh_http_css_close_resources_cycle_{cycle}")
+            for target in denied_styles:
+                begin = len(guest.output)
+                candidate = "http://" + authority + target
+                send_bytes(guest, f"exec-file /bin/aurora.elf --network-service-pid {service_pid} {candidate}\r".encode())
+                guest.expect(b"BROWSER_RESOURCE_REJECT css", start=begin, timeout=90)
+                guest.expect(b"Page error: Stylesheet rejected", start=begin, timeout=90)
+                guest.expect(b"BROWSER_READY engine=litehtml-0.9 local_only=0", start=begin, timeout=90)
+                exit_browser(guest, begin, baseline)
+                if b"BROWSER_CSS_LOADED" in guest.output[begin:] or b"BROWSER_LOADED path=" in guest.output[begin:]:
+                    raise AssertionError("Rejected resource was loaded")
+                report["checks"].append("reject_http_" + target.rsplit("/", 1)[1].removesuffix(".html"))
+            expected = [page_path, css_path] * 3 + list(denied_styles)
+            if host.get("error") or sorted(host["requests"]) != sorted(expected):
                 raise AssertionError(str(host))
             stop_graphics(guest, display, compositor)
             stopped_output = command(guest, "net-stop", b"kind=exited code=0", timeout=60)

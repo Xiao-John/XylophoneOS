@@ -10,6 +10,8 @@ bool inspect_capabilities(const u32 (&configuration)[64], const u64 (&bar_length
 
 class split_queue {
 public:
+    // Backing pages must be valid and the device reset/queue disabled. This also
+    // clears a previously latched queue fault; it is not a live-device reset.
     void initialize(u64 address, u64 physical, bool receive);
     i64 transmit(const u8* frame, u32 length);
     i64 receive(u8* frame, u32 capacity);
@@ -17,9 +19,13 @@ public:
     u64 physical() const { return physical_; }
 private:
     u64 address_ = 0, physical_ = 0;
-    u16 available_ = 0, consumed_ = 0;
+    u16 available_ = 0, consumed_ = 0, validated_ = 0;
+    bool receive_ = false, failed_ = false;
     bool active_[queue_size]{};
+    struct completion { u16 id, length; };
+    completion pending_[queue_size]{};
     void publish(u16 descriptor);
+    i64 fail() { failed_ = true; return device_io; }
 };
 
 class driver {

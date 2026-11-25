@@ -177,7 +177,8 @@ def main():
                 nonce = secrets.token_hex(16)
                 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server:
                     server.bind(('127.0.0.1', 0)); server.settimeout(0.2)
-                    cancel = threading.Event(); exchange = {'round': round_number, 'nonce': nonce, 'echoes': 0}
+                    cancel, release_echo = threading.Event(), threading.Event()
+                    exchange = {'round': round_number, 'nonce': nonce, 'echoes': 0}
                     report['revocations'].append(exchange)
 
                     def echo():
@@ -189,6 +190,9 @@ def main():
                                     continue
                                 if data != nonce.encode():
                                     raise ValueError('revocation echo mismatch')
+                                while not release_echo.wait(0.1):
+                                    if cancel.is_set():
+                                        return
                                 server.sendto(data, peer); exchange['echoes'] += 1
                         except OSError as error:
                             if not cancel.is_set():
@@ -198,14 +202,27 @@ def main():
 
                     worker = threading.Thread(target=echo, daemon=True); worker.start()
                     try:
-                        pid, _, _, begin = spawn('pending', b'NET_PENDING_READY', f'{server.getsockname()[1]} {nonce}')
+                        pid, handle, _, begin = spawn('pending', b'NET_PENDING_EMPTY', f'{server.getsockname()[1]} {nonce}')
+                        if exchange['echoes']:
+                            raise AssertionError('echo sent before the empty-queue negative control')
+                        exchange['empty_reply_observed_before_echo'] = True
+                        release_echo.set()
+                        ready = f'NET_PENDING_READY pid={pid} first={handle} second=96'.encode()
+                        guest.expect(ready, start=begin, timeout=20)
+                        exchange['retained_datagram_bytes'] = 32
+                        exchange['nonconsuming_reply_lower_bound'] = 96
                         command(guest, f'net-revoke {pid}', b'result=0', timeout=10)
                         # Repeated replacement processes must get only their own
                         # information response, never the prior UDP payload.
                         run('info', b'NET_INFO_PASS')
                         guest.expect(b'NET_REVOKED_PASS' + f' pid={pid} '.encode(), start=begin, timeout=10)
                         wait(pid); restored(baseline); info(1, 0)
-                        if exchange['echoes'] != 2 or exchange.get('error'):
+                        duration = re.search(rb'NET_REVOKED_PASS pid=' + str(pid).encode() + rb' first=(\d+)',
+                                             bytes(guest.output)[begin:])
+                        if not duration or int(duration[1]) >= 500_000_000:
+                            raise AssertionError('queued payload was not revoked before its reply deadline')
+                        exchange['revoke_before_reply_timeout_ns'] = int(duration[1])
+                        if exchange['echoes'] != 1 or exchange.get('error'):
                             raise AssertionError(str(exchange))
                         exchange['status'] = 'passed'
                     finally:

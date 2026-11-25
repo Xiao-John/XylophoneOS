@@ -1,0 +1,201 @@
+{
+  "scope": "production FD/session state machine; simulated kernel and files service",
+  "sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "leak_sanitizer": "not_run",
+  "guest": "not_run",
+  "results": [
+    {
+      "case": "basic",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "bounds",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "concurrent",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "public_lease",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "directory_legacy",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "directory_identity",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "directory_bad_cursor",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "directory_bad_identity",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "directory_bad_utf8",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "directory_bad_count",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "directory_truncated",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "inheritance",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "invalid_inheritance",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "duplicate_cleanup",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "pipe_lease",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "pipe_writev",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "no_session",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "wrong_sequence",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "bad_magic",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "inheritance_v2",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "duplicate_v2_handle",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "path_v2_redirection",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "bad_version",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "overread",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "overwrite",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "unknown_status",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "metadata",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "timeout",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "service_death",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "clock_failure",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "late_reply",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "send_failure",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "short_reply",
+      "status": "pass",
+      "returncode": 0
+    }
+  ],
+  "real_files_fatfs": {
+    "status": "pass",
+    "groups": 10,
+    "kernel_transport": "simulated"
+  },
+  "sources": {
+    "src/ports/glibc/sysdeps/xos/bits/fcntl.h": "cbea321317a554ace85be39a0b074aabca184208f3403c692a078aabc2a8c503",
+    "src/ports/glibc/sysdeps/xos/bits/stat.h": "d9da497699f111a767e83d2a26844f88022d66bfffaec4b9b2943003ae3dd517",
+    "src/ports/glibc/sysdeps/xos/writev.c": "2de76aabc065aad844083f34ded44c78c6c2f374163268506f435e781796a78d",
+    "src/ports/glibc/sysdeps/xos/xos_file_result.h": "5f83d3e084b9e293a3c5180b98bfa084698ffffc270e7eeb491a362fc3f89b34",
+    "src/ports/glibc/sysdeps/xos/xos_file_runtime.c": "f3fe7d7b8990920850fb1e938035441fc3bd839ff7b7dde2ec26657c9f4d161f",
+    "src/ports/glibc/sysdeps/xos/xos_file_runtime.h": "8cda14cc178b3c35c9fc3854d7797223e34a8db86446d8c99251fb0dbda6f93a",
+    "src/ports/glibc/sysdeps/xos/xos_file_wire.h": "69e29681853e18d34ccb44d884e5e92fe0f89bed7489de2ca516aa29bd802f02",
+    "src/shared/include/xos/file_abi.hpp": "63b1bbfbc72af9dcb464da1458716625d0a41e46a02124eee11f6e180db550f7",
+    "src/third_party/fatfs/ff.c": "1cc3c92f46bc51643f1a8e4b5f9cbb23d2997291e94a490133e954335f079c71",
+    "src/third_party/fatfs/ff.h": "b5ea24517af464ffa17f66d23a0ae11cf9838a7e720e25bd955278dd20935afe",
+    "src/user/services/fatfs_unicode.cpp": "9989bd8e66f2c84a6d10e48f7e7a6790e9fcc1f31f9d15a5d57c14da067d2dc9",
+    "src/user/services/files.cpp": "113152a18b0a81f47f31a1dd824c14c679283df5023c258da275c7782ac05326",
+    "tests/fixtures/file_semantics/file_semantics.cpp": "9d821b81d8bab8d89437805513b0d8171fe3e02a4135d7f8ef9c3db1c67fdea3",
+    "tests/fixtures/file_semantics/libc_service.cpp": "b895623b6acbbd7ba24205b82398e4f8b46c3853fc959de716ba13669d1bbc03",
+    "tests/fixtures/glibc_g3/files_runtime.cpp": "0861ab54e9ef161654cd1cc0004c575ca9f2345cb16786531f6d03ac6cb73957",
+    "tests/fixtures/glibc_g3/files_service.cpp": "f4994768887bbc14bda7dc3309638107a1ba4a1c22e3268cc25723240854e66b",
+    "tests/fixtures/glibc_g3/host_aliases.h": "1e0f469d53f9a8a3ecde19b2088993cda051453bd7c8a677a519e0746c6903c0",
+    "tests/glibc_g3_files_host.py": "4551f3fbb9690f9d1238b011b1b6744a5ef432f144d0ce27588facbb145e437b"
+  }
+}

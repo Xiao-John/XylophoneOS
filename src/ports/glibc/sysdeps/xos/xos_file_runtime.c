@@ -113,13 +113,85 @@ session_fault (int error)
 }
 
 static int
+valid_text (const unsigned char *data, unsigned int length, int component)
+{
+  unsigned int at = 0;
+  while (at < length)
+    {
+      unsigned int value = data[at++], continuation = 0, minimum = 0;
+      if (value < 0x20 || value == 0x7f || (component && value == '/')) return 0;
+      if (value < 0x80) continue;
+      if (value >= 0xc2 && value <= 0xdf) { continuation = 1; minimum = 0x80; value &= 31; }
+      else if (value >= 0xe0 && value <= 0xef) { continuation = 2; minimum = 0x800; value &= 15; }
+      else if (value >= 0xf0 && value <= 0xf4) { continuation = 3; minimum = 0x10000; value &= 7; }
+      else return 0;
+      if (continuation > length - at) return 0;
+      while (continuation-- != 0)
+        {
+          unsigned int next = data[at++];
+          if ((next & 0xc0) != 0x80) return 0;
+          value = (value << 6) | (next & 63);
+        }
+      if (value < minimum || value > 0x10ffff || (value >= 0xd800 && value <= 0xdfff)) return 0;
+    }
+  return 1;
+}
+
+static int
+valid_directory_response (void)
+{
+  const unsigned int identity = request.flags & (1U << 12);
+  const unsigned int header = identity ? 13U : 7U;
+  const unsigned int limit = request.length ? request.length : 64U;
+  if (response.handle != 0 || response.reserved != 0 || response.flags != identity
+      || response.value > 0xffffffffULL
+      || (response.length == 0 && response.value != 0)
+      || (response.value != 0 && response.value <= request.offset)) return 0;
+  unsigned int at = 0, count = 0;
+  xos_u64 previous = request.offset;
+  while (at < response.length)
+    {
+      if (response.length - at < header || ++count > limit) return 0;
+      const unsigned char *record = response.data + at;
+      unsigned int length = (unsigned int) record[0] | ((unsigned int) record[1] << 8);
+      if (length == 0 || length >= 256 || (record[2] & ~1U) != 0
+          || length > response.length - at - header) return 0;
+      if (identity)
+        {
+          unsigned int inode = (unsigned int) record[7] | ((unsigned int) record[8] << 8);
+          xos_u32 next = (xos_u32) record[9] | ((xos_u32) record[10] << 8)
+            | ((xos_u32) record[11] << 16) | ((xos_u32) record[12] << 24);
+          if (inode == 0 || next <= previous) return 0;
+          previous = next;
+        }
+      if (!valid_text (record + header, length, 1)) return 0;
+      at += header + length;
+    }
+  return !identity || response.value == 0 || previous <= response.value;
+}
+
+static int
 valid_response_shape (unsigned int operation)
 {
-  if (response.status_code != 0) return 1;
-  if (operation == 4)
+  if (response.status_code != 0) return response.name_length == 0;
+  if (operation == 27 || operation == 28)
+    return response.handle == 0 && response.flags == 0 && response.reserved == 0
+      && response.length == 0 && response.value == 0 && response.name_length > 0
+      && response.name_length < sizeof (response.name) && response.name[0] == '/'
+      && response.name[response.name_length] == 0
+      && valid_text ((const unsigned char *) response.name, response.name_length, 0);
+  if (response.name_length != 0) return 0;
+  if (operation == 2) return valid_directory_response ();
+  if (operation == 19)
+    return response.handle != 0 && response.flags == 0 && response.reserved == 0
+      && response.length == 0 && response.value == 0;
+  /* anonymous creates a fresh empty regular file and returns the same handle
+     and identity fields as open; it must not poison the shared session. */
+  if (operation == 4 || operation == 21)
     return response.length == 0 && response.handle != 0
       && (response.flags & ~1U) == 0 && response.reserved != 0
-      && response.reserved <= 65535 && response.value <= 0xfffffffeULL;
+      && response.reserved <= 65535 && response.value <= 0xfffffffeULL
+      && (operation != 21 || (response.flags == 0 && response.value == 0));
   if (operation == 3 || operation == 18)
     return response.handle == 0 && (response.flags & ~7U) == 0
       && response.reserved != 0 && response.reserved <= 65535
@@ -127,12 +199,19 @@ valid_response_shape (unsigned int operation)
       && (response.length == 0 || response.length == 24);
   if (response.handle != 0 || response.flags != 0 || response.reserved != 0)
     return 0;
-  if (operation == 5)
-    return response.value == response.length && response.length <= request.length;
+  if (operation == 5 || operation == 30)
+    return (operation != 30 || request.length <= sizeof (response.data))
+      && response.value == response.length && response.length <= request.length;
   if (response.length != 0) return 0;
-  if (operation == 6)
-    return response.value <= request.length && (response.value != 0 || request.length == 0);
+  if (operation == 6 || operation == 31)
+    return request.length <= sizeof (request.data) && response.value <= request.length
+      && (response.value != 0 || request.length == 0);
   if (operation == 7) return response.value <= 0xfffffffeULL;
+  /* Native block_bench reports the exact completed request, with no payload.
+     Its limit is an ABI constant shared with file_abi.hpp, not an IPC length. */
+  if (operation == 17)
+    return request.length != 0 && request.length <= 8U * 1024U * 1024U
+      && response.value == request.length;
   return response.value == 0;
 }
 
@@ -172,7 +251,7 @@ call_service (unsigned int operation)
           if (received != sizeof (response) || response.magic != 0x53455246
               || response.version != 2 || response.request_id != request.request_id
               || response.length > sizeof (response.data)
-              || response.name_length != 0 || response.status_code > 0
+              || response.name_length >= sizeof (response.name) || response.status_code > 0
               || response.status_code < -16 || !valid_response_shape (operation))
             return session_fault (EIO);
           return service_error (response.status_code);
@@ -189,19 +268,26 @@ call_service (unsigned int operation)
 static int
 prepare_path (const char *path)
 {
+  return (int) __xos_file_request_path (&request, path);
+}
+
+long
+__xos_file_request_path (struct xos_file_request *output, const char *path)
+{
+  if (output == 0) return -EFAULT;
   if (path == 0) return -EFAULT;
   unsigned int length = 0;
-  while (length < sizeof (request.name) && path[length] != 0)
+  while (length < sizeof (output->name) && path[length] != 0)
     {
       unsigned char value = (unsigned char) path[length];
       if (value < 0x20 || value == 0x7f) return -EINVAL;
-      request.name[length] = path[length];
+      output->name[length] = path[length];
       ++length;
     }
   if (length == 0) return -ENOENT;
-  if (length == sizeof (request.name)) return -ENAMETOOLONG;
-  request.name[length] = 0;
-  request.name_length = length;
+  if (length == sizeof (output->name)) return -ENAMETOOLONG;
+  output->name[length] = 0;
+  output->name_length = length;
   return 0;
 }
 
@@ -788,4 +874,92 @@ __xos_file_isatty (int fd)
     }
   unlock_session ();
   return result;
+}
+
+long
+__xos_file_lease_acquire (int fd, int access, struct xos_file_lease *lease)
+{
+  if (lease == 0) return -EFAULT;
+  *lease = (struct xos_file_lease) { .object = -1 };
+  if (access < -1 || access > 1) return -EINVAL;
+  int error = begin ();
+  if (error != 0) return error;
+  int index = object_for (fd);
+  long result = index < 0 ? -EBADF : 0;
+  if (index >= 0)
+    {
+      struct open_object *object = &objects[index];
+      unsigned int mode = object->flags & O_ACCMODE;
+      if ((access == 0 && mode == O_WRONLY) || (access == 1 && mode == O_RDONLY))
+        result = -EBADF;
+      else if (object->references == ~(unsigned int) 0)
+        result = -EOVERFLOW;
+      else
+        {
+          ++object->references;
+          *lease = (struct xos_file_lease) { index, object->kind, object->handle, object->flags };
+        }
+    }
+  unlock_session ();
+  return result;
+}
+
+long
+__xos_file_lease_release (struct xos_file_lease *lease)
+{
+  if (lease == 0) return -EFAULT;
+  if (lease->object < 0 || lease->object >= object_limit) return -EINVAL;
+  int error = lock_session ();
+  if (error != 0) return error;
+  struct open_object *object = &objects[lease->object];
+  long result = -EINVAL;
+  if (object->references != 0 && object->kind == lease->kind && object->handle == lease->handle)
+    {
+      result = close_object (lease->object);
+      *lease = (struct xos_file_lease) { .object = -1 };
+    }
+  unlock_session ();
+  return result;
+}
+
+long
+__xos_file_exchange (const struct xos_file_request *input, struct xos_file_response *output)
+{
+  if (input == 0 || output == 0) return -EFAULT;
+  /* Callers own disjoint request and response records. */
+  if ((const void *) input == (const void *) output) return -EINVAL;
+  memset (output, 0, sizeof (*output));
+  int error = begin ();
+  if (error != 0) return error;
+  request = *input;
+  long result = call_service (request.operation);
+  if (result == 0) *output = response;
+  unlock_session ();
+  return result;
+}
+
+long
+xos_file_session_exchange (const struct xos_file_request *input, struct xos_file_response *output)
+{
+  long result = __xos_file_exchange (input, output);
+  switch (result)
+    {
+    case 0: return 0;
+    case -ENOENT: return -1;
+    case -EINVAL: return -2;
+    case -EMFILE: return -3;
+    case -ENOSPC: return -4;
+    case -EBUSY: return -5;
+    case -EBADF: return -6;
+    case -EAGAIN: return -8;
+    case -EEXIST: return -9;
+    case -ENOTDIR: return -10;
+    case -EISDIR: return -11;
+    case -ENOTEMPTY: return -12;
+    case -ENAMETOOLONG: return -13;
+    case -ENOTSUP: return -14;
+    case -EROFS: return -15;
+    case -EACCES: return -16;
+    default: return -7;
+    }
 }

@@ -1,0 +1,27 @@
+{
+  "status": "design_and_audit_complete_activation_blocked",
+  "base_commit": "2baed871f9d233a08258047b09863c991116dd7e",
+  "actual_host_controls": 4,
+  "actual_host_activation_gate_failures": 8,
+  "production_changes": false,
+  "production_dns": false,
+  "production_dhcp": false,
+  "candidate_operations": "10-14 proposal only; shared enum and implemented ABI registry unchanged",
+  "runtime_under_test": "Actual production XOS lwip_stack plus verified, unpatched lwIP2.2.1 dns.c with test-only DNS enable",
+  "simulated_boundaries": [
+    "local Ethernet peer",
+    "monotonic clock",
+    "entropy availability"
+  ],
+  "entropy_observation": "After runtime entropy failure the real resolver did not return within 4096 draws; fixture exited 42 at its work budget.",
+  "not_run": [
+    "QEMU DNS/DHCP",
+    "DHCP packet/state-machine execution",
+    "ASan/UBSan for this audit",
+    "glibc resolver/socket integration",
+    "live external DNS",
+    "DNS activation or N4 full qualification",
+    "Resolver cancellation and PCB reclamation; each audit case ends its isolated host process"
+  ],
+  "next": "Independent DNS endpoint/answer-validation and bounded-entropy hardening; keep production disabled until cancellation/cache and guest gates complete."
+}

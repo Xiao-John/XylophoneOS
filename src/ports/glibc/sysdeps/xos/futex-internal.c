@@ -15,7 +15,8 @@ __futex_abstimed_wait64 (unsigned int *word, unsigned int expected,
      continue as though an independent process can wake this waiter. */
   if (private != FUTEX_PRIVATE)
     __builtin_trap ();
-  if (clockid != CLOCK_MONOTONIC && clockid != CLOCK_REALTIME)
+  /* An unbounded wait has no clock domain.  */
+  if (abstime != NULL && clockid != CLOCK_MONOTONIC && clockid != CLOCK_REALTIME)
     return EINVAL;
   int result = (clockid == CLOCK_MONOTONIC
                 ? __xos_wait_monotonic : __xos_wait_realtime)

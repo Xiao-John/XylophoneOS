@@ -1,0 +1,142 @@
+{
+  "schema": 1,
+  "entries": [
+    {
+      "file": "transport.json",
+      "source": "build/network_review_transport_guest_v3/report.json",
+      "source_sha256": "268602a46ff410a898d10f95454b522c5889fb555b25425d7136d3948deae56c",
+      "source_bytes": 11996,
+      "encoding": "json",
+      "transformation": "known host roots replaced by explicit path variables; text logs normalized to LF without trailing whitespace"
+    },
+    {
+      "file": "lifecycle.json",
+      "source": "build/network_review_lifecycle_guest_v3/report.json",
+      "source_sha256": "5ede44245b544f318d28bb81542d9a1603defb01740d604ea595ed10e5c8f48d",
+      "source_bytes": 8573,
+      "encoding": "json",
+      "transformation": "known host roots replaced by explicit path variables; text logs normalized to LF without trailing whitespace"
+    },
+    {
+      "file": "transport_user_serial.log",
+      "source": "build/network_review_transport_guest_v3/user_network.serial.log",
+      "source_sha256": "2407c296cfa50ba28ae1910c71804a1214d28b05abd62d1c7a3f8c7cab454442",
+      "source_bytes": 11122,
+      "encoding": "text",
+      "transformation": "known host roots replaced by explicit path variables; text logs normalized to LF without trailing whitespace"
+    },
+    {
+      "file": "transport_window_serial.log",
+      "source": "build/network_review_transport_guest_v3/guest.serial.log",
+      "source_sha256": "f99e5ca9f11d8c56da244a464851472711797dc33f04924ee6757663e3d17a94",
+      "source_bytes": 6201,
+      "encoding": "text",
+      "transformation": "known host roots replaced by explicit path variables; text logs normalized to LF without trailing whitespace"
+    },
+    {
+      "file": "lifecycle_serial.log",
+      "source": "build/network_review_lifecycle_guest_v3/guest_before_reboot.serial.log",
+      "source_sha256": "496404461de140b8244906d769b3c0da254064e6ffd92b9761bb6a10e06ba6d8",
+      "source_bytes": 22495,
+      "encoding": "text",
+      "transformation": "known host roots replaced by explicit path variables; text logs normalized to LF without trailing whitespace"
+    },
+    {
+      "file": "reboot_serial.log",
+      "source": "build/network_review_lifecycle_guest_v3/guest.serial.log",
+      "source_sha256": "791e95719882759b7ea73de6b2124e4f3d22d25965df266557b78c4341617d8f",
+      "source_bytes": 4114,
+      "encoding": "text",
+      "transformation": "known host roots replaced by explicit path variables; text logs normalized to LF without trailing whitespace"
+    },
+    {
+      "file": "transport_user.pcap.b64",
+      "source": "build/network_review_transport_guest_v3/network.pcap",
+      "source_sha256": "bd026f27238a9d61aabbb24031c99c97262a5a2ba6a9d32d811c2cd2146102e6",
+      "source_bytes": 26591,
+      "encoding": "base64",
+      "transformation": "base64 of original bytes"
+    },
+    {
+      "file": "transport_window.pcap.b64",
+      "source": "build/network_review_transport_guest_v3/window_network.pcap",
+      "source_sha256": "8997580a3737a43e188c0ff4d70c684fc4916dad037333ffb609918f1fc6a1e6",
+      "source_bytes": 31588,
+      "encoding": "base64",
+      "transformation": "base64 of original bytes"
+    },
+    {
+      "file": "lifecycle.pcap.b64",
+      "source": "build/network_review_lifecycle_guest_v3/network.pcap",
+      "source_sha256": "b1297d9d7adce26440c2972ea276f7ee8d35c87061d12e2517fec39eb1d1e321",
+      "source_bytes": 2594,
+      "encoding": "base64",
+      "transformation": "base64 of original bytes"
+    },
+    {
+      "file": "reboot.pcap.b64",
+      "source": "build/network_review_lifecycle_guest_v3/reboot.pcap",
+      "source_sha256": "76b9f119750cbf211bd13a5b2d6231801e036899b7dfdbdc67eb4e2596f83f14",
+      "source_bytes": 238,
+      "encoding": "base64",
+      "transformation": "base64 of original bytes"
+    },
+    {
+      "file": "system.json",
+      "source": "build/network_review_system_v3/manifest.json",
+      "source_sha256": "aa9b36d8bf888fddd3c094b1ca4f6b2bbeb9727f9d542873b6cda6b0970141fd",
+      "source_bytes": 425814,
+      "encoding": "json",
+      "transformation": "known host roots replaced by explicit path variables; text logs normalized to LF without trailing whitespace"
+    },
+    {
+      "file": "transport_fixture.json",
+      "source": "build/network_review_transport_fixture_v3/net_transport_probe.receipt.json",
+      "source_sha256": "54841a7cdad6eaeacebf646b9ed3625edc64731fea70dd65f351dab4d3ced904",
+      "source_bytes": 5202,
+      "encoding": "json",
+      "transformation": "known host roots replaced by explicit path variables; text logs normalized to LF without trailing whitespace"
+    },
+    {
+      "file": "lifecycle_fixture.json",
+      "source": "build/network_review_lifecycle_fixture_v3/receipt.json",
+      "source_sha256": "4250acd3f65140ca7d3a0682f94276c4806ac8dfabb0beb6d81387e105655ec7",
+      "source_bytes": 6449,
+      "encoding": "json",
+      "transformation": "known host roots replaced by explicit path variables; text logs normalized to LF without trailing whitespace"
+    },
+    {
+      "file": "lwip_inputs.json",
+      "source": "build/network_review_system_v3/net_lwip_inputs.json",
+      "source_sha256": "f694c33ae0f88facca281706cdf8686e55166e50a905619757de295c3bde508e",
+      "source_bytes": 81343,
+      "encoding": "json",
+      "transformation": "known host roots replaced by explicit path variables; text logs normalized to LF without trailing whitespace"
+    },
+    {
+      "file": "first_packet_window_failure.json",
+      "source": "build/network_review_transport_guest_v2/report.json",
+      "source_sha256": "396ec6cfd84d78632d58508790785e3de042b151b3b9bfb324e41ad9fbb03bcc",
+      "source_bytes": 9318,
+      "encoding": "json",
+      "transformation": "known host roots replaced by explicit path variables; text logs normalized to LF without trailing whitespace"
+    },
+    {
+      "file": "first_packet_window_failure.pcap.b64",
+      "source": "build/network_review_transport_guest_v2/window_network.pcap",
+      "source_sha256": "68bff86e7a4dff6b9b306823cb889dd5ea66487e0f00b38b6d85cc4e9ba4d2da",
+      "source_bytes": 1078,
+      "encoding": "base64",
+      "transformation": "base64 of original bytes"
+    },
+    {
+      "file": "execution_tools.json",
+      "source": "build/network_review_execution_tools.json",
+      "source_sha256": "f7611ff6aeb5416db4538fad6c3ba46155f9a1921bfe0aed32a644280274541f",
+      "source_bytes": 715,
+      "encoding": "json",
+      "transformation": "known host executable root replaced by explicit path variable"
+    }
+  ],
+  "published_file_hashes": "Only the flat manifest.json binds the exported leaves."
+}

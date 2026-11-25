@@ -98,7 +98,7 @@
       ],
       "artifact_sha256": {
         "src/ports/ncurses/upstream/COPYING": "b2feb54f39529abe226f709a292584fde48a2e5721559fee417d2cdd51cb7cc1",
-        "src/ports/ncurses/source_lock.json": "6ce494e41d9a032782b83794c3336725dd41d8b7a9a1263a34e10d5a61d488ee",
+        "src/ports/ncurses/source_lock.json": "d4d2d05b79bf7848e1131d462d3d0c55e4d88f8769ec63f934f0b41c5ba7be96",
         "src/ports/ncurses/upstream/terminfo-source-notice.txt": "41d9c0d38bb763a20b3ee9c0ca98eabaede6d8303352a6aea10c72563f66f20a"
       },
       "source_archive_sha256": "136d91bc269a9a5785e5f9e980bc76ab57428f604ce3e5a5a90cebc767971cc6",
@@ -448,12 +448,15 @@
       "artifact_sha256": {
         "src/ports/cpython/sqlite/UPSTREAM_LICENSE.md": "3a487aaf2da3a06e58adba55c6e507a927cda568bc20d822bf62c36bdeb33d14",
         "src/ports/cpython/sqlite/sqlite_lock.json": "c0f54b2c5682e8d0462183e3f48e69d80e257342a3fdcb660a3ce580fb8d2e73",
-        "src/ports/cpython/sqlite/xos_vfs.c": "1a01a6b34bdb190834ff2bbdade92bf101108242e11f3f7bb7b5871d107550eb"
+        "src/ports/cpython/sqlite/xos_vfs.c": "87e7788346192b17914ff98a3240444dfed5d0a5512e968b284f5d826765b844"
+      },
+      "source_files": {
+        "src/ports/cpython/sqlite/xos_vfs.c": "Apache-2.0"
       },
       "used_in": [
         "Static CPython _sqlite3 module with XOS VFS, rollback journal and one-process database locking"
       ],
-      "modifications": "XOS VFS uses fsync/ftruncate hooks, EOF-safe reads for FatFs, and maps busy open errors to SQLITE_BUSY; WAL and loadable extensions disabled",
+      "modifications": "XOS VFS uses fsync/ftruncate hooks, EOF-safe reads for FatFs, and maps busy open errors to SQLITE_BUSY; compares open files by device and inode, and normalizes paths lexically; WAL and loadable extensions disabled",
       "distribution_status": "local guest-accepted build; source archive retained in local cache; carry matching source and license if binaries are distributed"
     },
     {
@@ -799,7 +802,7 @@
         "optional user-mode native network service",
         "raw diagnostic probes"
       ],
-      "modifications": "Pinned upstream source remains unchanged; XOS NO_SYS integration under src/user/network and src/ports/lwip; no libc-private ABI.",
+      "modifications": "Pinned upstream archive plus ordered, hash-bound DNS reply-validation and bounded-entropy patches in source_lock.json; original BSD-3-Clause notices retained. XOS NO_SYS adapter remains libc-independent; production DNS and DHCP remain disabled.",
       "artifact_sha256": {
         "licenses/lwip.txt": "ef4aac92e05e87cd1cdc140870ed52206ba03d4a7fe46c1e11d7ffa6c87d252b"
       }

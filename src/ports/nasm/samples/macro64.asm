@@ -1,3 +1,4 @@
+; SPDX-License-Identifier: Apache-2.0
 ; Preprocessor + ELF64 self-test shipped with the NASM package.
 BITS 64
 default rel

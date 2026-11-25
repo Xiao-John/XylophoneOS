@@ -11,6 +11,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / 'scripts'), str(ROOT / 'tests')]
@@ -47,6 +48,8 @@ def suite_cases(suite):
         cases.extend([
             ('g2_return', 'glibc_g2/static_main.c', ['alpha'], 37, markers),
             ('g2_exit', 'glibc_g2/static_main.c', ['alpha', 'exit'], 39, markers),
+            ('g2_fatal_stderr', 'glibc_g2/fatal_stderr.c', [], 127,
+             ['G2 fatal stderr begin:' + '.' * 300 + ':G2 fatal stderr end']),
         ])
     if suite in ('threads', 'all'):
         cases.extend([
@@ -58,8 +61,44 @@ def suite_cases(suite):
             ('g3_detached', 'glibc_g3/detached_threads.c', [], 0,
              ['G3-T PASS detached creation detach TSD slots kernel-stack recovery rounds=16']),
             ('g3_active_exit', 'glibc_g3/blocked_stdio_exit.c', [], 127,
-             ['G3-T BEGIN active worker owns stdout', 'XOS glibc: exit with active threads']),
+             ['G3-T BEGIN active worker owns stdout', 'G3-X callback before blocked flush',
+              'event=exit_cleanup_timeout']),
         ])
+    if suite in ('exit', 'all'):
+        normal_markers = ['G3-X BEGIN active peers and buffered files',
+                          'G3-X worker buffered', 'G3-X callback second',
+                          'G3-X callback first', 'G3-X fini and complete stdout flush']
+        cases.extend([
+            ('g3_exit_return', 'glibc_g3/active_exit.c', [], 37, normal_markers),
+            ('g3_exit_return_verify', 'glibc_g3/active_exit.c', ['verify'], 0,
+             ['G3-X PASS process-exit file flush bytes and resource release']),
+            ('g3_exit_explicit', 'glibc_g3/active_exit.c', ['exit'], 39, normal_markers),
+            ('g3_exit_explicit_verify', 'glibc_g3/active_exit.c', ['verify'], 0,
+             ['G3-X PASS process-exit file flush bytes and resource release']),
+            ('g3_exit_concurrent', 'glibc_g3/exit_protocol.c', ['concurrent'], 37,
+             ['G3-X callback first once', 'G3-X concurrent caller preserved owner status',
+              'G3-X callback last once']),
+            ('g3_exit_recursive', 'glibc_g3/exit_protocol.c', ['recursive'], 43,
+             ['G3-X callback first once', 'G3-X callback last once']),
+            ('g3_exit_worker', 'glibc_g3/exit_protocol.c', ['worker'], 41,
+             ['G3-X callback first once', 'G3-X callback last once']),
+            ('g3_exit_quick', 'glibc_g3/exit_protocol.c', ['quick'], 45,
+             ['G3-X quick callback first', 'G3-X quick callback last']),
+            ('g3_exit_abi', 'glibc_g3/exit_protocol.c', ['abi'], 125,
+             ['G3-X owner stop-peers denied and original timeout retained',
+              'G3-X PASS ABI rejection ownership peer cleanup and fixed deadline',
+              'event=exit_cleanup_timeout']),
+            ('g3_exit_legacy', 'glibc_g3/exit_protocol.c', ['legacy'], 46,
+             ['G3-X legacy stop-peers first call and reentry preserved']),
+            ('g3_exit_fault', 'glibc_g3/exit_protocol.c', ['fault'], ('faulted', 0),
+             ['G3-X owner fault ready', 'event=fault', 'vector=6']),
+            ('g3_exit_abandon', 'glibc_g3/exit_protocol.c', ['abandon'], 127,
+             ['G3-X owner abandon ready']),
+        ])
+        if suite == 'exit':
+            cases.append(('g3_active_exit', 'glibc_g3/blocked_stdio_exit.c', [], 127,
+                          ['G3-T BEGIN active worker owns stdout',
+                           'G3-X callback before blocked flush', 'event=exit_cleanup_timeout']))
     if suite in ('files', 'all'):
         cases.extend([
             ('g3_files_single', 'glibc_g3/files_public_probe.c', ['single'], 0,
@@ -179,18 +218,27 @@ def main():
     parser.add_argument('--death-system-build', type=Path,
                         help='private system built with --glibc-files-death-probe')
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--suite', choices=('g2', 'threads', 'files', 'files-extra', 'all'), default='g2')
+    parser.add_argument('--suite', choices=('g2', 'threads', 'files', 'files-extra', 'exit', 'all'), default='g2')
     parser.add_argument('--repetitions', type=int, default=3)
     args = parser.parse_args()
     if not 1 <= args.repetitions <= 10:
         parser.error('repetitions must be in 1..10')
+    cases = suite_cases(args.suite)
+    required = {relative for _, relative, _, _, _ in cases}
+    if args.suite in ('files', 'all'):
+        required.add('glibc_g3/files_exec_parent.c')
+    missing = sorted(relative for relative in required
+                     if not (ROOT / 'tests/fixtures' / relative).is_file())
+    if missing:
+        parser.error(f'guest suite {args.suite!r} unavailable: missing fixtures: '
+                     + ', '.join(missing))
     output = args.output.absolute()
     if output.exists() or output.is_symlink():
         parser.error('output must be a new private directory')
     output.mkdir(parents=True)
     report = {'status': 'not_run', 'suite': args.suite, 'runs': [],
               'qmp': 'disabled; serial-only qualification',
-              'active_worker_normal_exit': 'unsupported; separate fail-fast status-127 check',
+              'active_worker_normal_exit': 'native bounded cleanup window; qualified only by exit suite',
               'dash_entry': 'not_run'}
     guest = None
     try:
@@ -244,7 +292,6 @@ def main():
                         raise RuntimeError('service-death artifact changed: ' + name)
 
         verify_inputs()
-        cases = suite_cases(args.suite)
         report.update({'system_build_id': system['build_id'], 'image_sha256': sha(image),
                        'system_manifest_sha256': initial_system_manifest,
                        'glibc_manifest_sha256': initial_sdk_manifest,
@@ -320,9 +367,12 @@ def main():
                 for name, _, arguments, expected_status, markers in cases:
                     launch = 'exec-driver' if name in ('g3_files_parent', 'g3_files_extra_parent') else 'exec-file'
                     line = launch + ' /bin/' + name + ''.join(' ' + arg for arg in arguments)
-                    captured = command(guest, line, b'kind=exited code=', timeout=120)
-                    statuses = re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', captured)
-                    if statuses != [str(expected_status).encode()]:
+                    kind, code = ('exited', expected_status) if isinstance(expected_status, int) else expected_status
+                    began = time.monotonic()
+                    captured = command(guest, line, b'kind=', timeout=15 if name == 'g3_exit_abi' else 120)
+                    elapsed = time.monotonic() - began
+                    statuses = re.findall(rb'\[wait\] pid=\d+ kind=(\w+) code=(-?\d+)', captured)
+                    if statuses != [(kind.encode(), str(code).encode())]:
                         raise AssertionError(f'{name}: expected status {expected_status}; output={captured!r}')
                     position = 0
                     for marker in markers:
@@ -330,12 +380,22 @@ def main():
                         if found < 0:
                             raise AssertionError(f'{name}: missing ordered marker {marker!r}; output={captured!r}')
                         position = found + len(marker)
+                    if name.startswith('g3_exit_') and name not in ('g3_exit_abi', 'g3_exit_fault', 'g3_exit_abandon'):
+                        for marker in markers:
+                            if captured.count(marker.encode()) != 1:
+                                raise AssertionError(f'{name}: repeated callback or marker: {marker!r}')
+                    if name == 'g3_active_exit' and b'G3-X pending bytes must not be reported flushed' in captured:
+                        raise AssertionError('blocked stdout flush was incorrectly reported complete')
+                    if name == 'g3_exit_quick' and (b'G3-X quick pending stdout' in captured
+                                                   or b'G3-X callback first once' in captured):
+                        raise AssertionError('quick_exit flushed stdout or ran ordinary exit callbacks')
                     pump(guest, 0.1)
                     after = resources(guest)
                     if after != baseline:
                         raise AssertionError(f'{name}: resource drift {baseline} -> {after}')
                     report['runs'].append({'case': name, 'repetition': repetition + 1,
-                                           'status': 'passed', 'expected_exit_code': expected_status,
+                                           'status': 'passed', 'expected_exit_code': code,
+                                           'expected_outcome': kind, 'elapsed_seconds': elapsed,
                                            'resources': after, 'output': captured.decode(errors='replace')})
                     (output / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
             if args.suite in ('files', 'all'):

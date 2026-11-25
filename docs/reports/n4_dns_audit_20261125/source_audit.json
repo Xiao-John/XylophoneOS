@@ -1,0 +1,58 @@
+{
+  "status": "source_review_only",
+  "archive_sha256": "83729c274c499d3348e9fbbe043a3113f3fa8953e7efddc7c21c7fcbb1f2b7b1",
+  "source_files": {
+    "src/core/dns.c": "fe35ede9919974da54598630cc08d654ccc30b668c45b09668c3ba572686b26c",
+    "src/include/lwip/dns.h": "962c462c90afd41ed010b961f539c11b2baba3e8a6bfe584f331a5e4d43c1b05",
+    "src/core/ipv4/dhcp.c": "f89cf1aacbd9a04dcb47a03c81a1a231331f4edb323d2e0cf26e640ca78c3453",
+    "src/include/lwip/dhcp.h": "babfa093330aa0b8039badc8c373f11dda5dd8f0e94c55e4440a6643b9996f7e",
+    "src/core/timeouts.c": "930bcfaf5b12b97f975fca7b8c2f7ab999cffa37f7c840ea91b340aa4ef62115",
+    "src/include/lwip/opt.h": "d750b825d4e399eca387bdeb98a78dc96267095eb8f15cdb39e4e88d23c14360"
+  },
+  "dns": {
+    "public_api": "gethostbyname/gethostbyname_addrtype return one address or NULL callback; no cancellation, flush, detailed error or TTL result API",
+    "configured_default_security": "RAND_XID | NO_MULTIPLE_OUTSTANDING | RAND_SRC_PORT",
+    "lifetime": "dns_init does not flush initialized tables; dns_setserver does not clear cache or cancel requests",
+    "cache": "DNS_STATE_DONE TTL decremented per dns_tmr invocation; timeout overload skips missed intervals",
+    "packet_findings": "See actual 12 observations in audit.json; test overrides DNS only in private include directory"
+  },
+  "dhcp": {
+    "execution": "not_run",
+    "capabilities": "dhcp_start, renew, network_changed_link_up, release_and_stop, cleanup; DHCP and ACD production flags disabled",
+    "timers": "default fine 500ms and coarse 60s; offered finite lease rounds to coarse ticks; absolute-deadline adaptation required",
+    "identity": "UDP PCB connects to source port67; application parser checks BOOTREPLY/chaddr/XID; further option/state audit required",
+    "randomness": "DHCP_CREATE_RAND_XID defaults1 and uses LWIP_RAND; runtime entropy failure must suppress transmission",
+    "integration": "DHCP updates netif address and optional global DNS servers; controller policy/atomic config epoch required"
+  },
+  "primary_references": [
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc5452",
+      "sections": [
+        "9.1",
+        "9.2"
+      ],
+      "scope": "response matching and unpredictable ID/source port"
+    },
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc2308",
+      "sections": [
+        "5"
+      ],
+      "scope": "NXDOMAIN/NODATA negative cache TTL"
+    },
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc9520",
+      "sections": [
+        "3.2"
+      ],
+      "scope": "bounded cache for resolution failures"
+    },
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc2131",
+      "sections": [
+        "4.4.5"
+      ],
+      "scope": "renew/rebind/lease expiration"
+    }
+  ]
+}

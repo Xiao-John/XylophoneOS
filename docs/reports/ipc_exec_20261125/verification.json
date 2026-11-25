@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "system_build_id": "79e9f31e75f572f5",
+  "root_source": "bd1ff96 + reviewed IPC exec changes",
+  "toolchain": "xos-glibc-sdk-preview GCC 16.2.0 / Binutils 2.47.20260726 / QEMU 11.1.3",
+  "host_regression": "kernel_process_wait_race_test.py passed normal/fault exit, orphan cleanup, builder cancel, kill ancestry, duplicate/pending wait, pinned output, single completion consumption",
+  "initial_fixture_failures": [
+    "128 MiB test image rejected by supported FAT32 512..2048 MiB range before guest launch",
+    "self-publish is idempotent, so initial busy assertion was invalid; final probe uses peer connection to prove failed exec preserves name and denied unpublish to prove successful exec removed it"
+  ]
+}

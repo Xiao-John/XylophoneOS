@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """Build lwIP (NO_SYS) and a raw-frame ICMP probe for XOS (offline)."""
 import hashlib
 import json
@@ -6,7 +7,6 @@ import os
 import shutil
 import subprocess
 import sys
-import tarfile
 import tempfile
 from pathlib import Path
 
@@ -59,6 +59,7 @@ def main():
 
     sys.path.insert(0, str(HERE.parents[2] / "scripts"))
     from xos_app import tree_receipt
+    from lwip_service_build import prepare_source, source_patches
     sdk_tree_sha256 = tree_receipt(sdk)[0]
     profile_name = port["package"]["target_profile"].replace("-", "_") + ".json"
     profile_path = HERE.parents[2] / "config/package" / profile_name
@@ -76,9 +77,7 @@ def main():
     libgcc = subprocess.check_output([cxx, "-print-libgcc-file-name"], text=True).strip()
 
     work = Path(tempfile.mkdtemp(prefix="lwip_build_", dir=out))
-    with tarfile.open(archive) as tar:
-        tar.extractall(work, filter="data")
-    source = work / f"lwip-{lock['version']}"
+    source = prepare_source(HERE.parents[2], archive, work / "source")
     includes = source / "src/include"
     if not (includes / "lwip/init.h").is_file():
         raise SystemExit("ports/lwip: unexpected archive layout")
@@ -138,12 +137,18 @@ def main():
     license_dir = tree / f"usr/share/licenses/{package}"
     license_dir.mkdir(parents=True)
     shutil.copyfile(source / "COPYING", license_dir / "COPYING")
+    patches = source_patches(HERE.parents[2])
+    for entry in patches:
+        target = share / entry["path"]
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(HERE / entry["path"], target)
 
     provenance = {
         "package": package, "upstream": port["name"], "version": lock["version"],
         "license": port["license"], "archive": lock["archive"],
         "archive_sha256": lock["sha256"], "archive_mirror": lock["url"],
         "sha256_scope": lock.get("sha256_scope", "upstream_release"),
+        "patches": patches,
         "notes": "NO_SYS=1; raw-frame net service as link layer; ICMP probe",
         "build": {"approach": "compile core+ipv4+ethernet into liblwip.a",
                   "sdk": sdk.name,
@@ -158,6 +163,7 @@ def main():
         "revision": 0, "status": "cross_built_guest_not_run",
         "recipe_sha256": sha256(HERE / "build.py"), "sdk": provenance["build"],
         "input": {"archive": lock["archive"], "sha256": lock["sha256"]},
+        "patches": patches,
         "binaries": [{"path": "usr/bin/net_ping", "sha256": sha256(bindir / "net_ping"),
                       "size": (bindir / "net_ping").stat().st_size}],
     }

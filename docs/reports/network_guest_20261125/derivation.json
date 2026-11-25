@@ -1,0 +1,131 @@
+{
+  "schema": 1,
+  "entries": [
+    {
+      "file": "transport.json",
+      "source": "build/network_transport_guest_v3/report.json",
+      "source_sha256": "5c4bd7ab3a960e8c81595603afacb18c2bf7e3ab73db972f5e0743a6a1c81366",
+      "source_bytes": 6992,
+      "export_sha256": "d306845e31da72384ba75d0374a59dded2e076201f294f271725c86267d7f44e",
+      "encoding": "json",
+      "transformation": "known host roots replaced by explicit path variables; text logs normalized to LF without trailing whitespace"
+    },
+    {
+      "file": "lifecycle.json",
+      "source": "build/network_lifecycle_guest_v3/report.json",
+      "source_sha256": "4917472693a8410c47f6a32a2db705f74df44c5d1ddd080ccf39383db85d6fbd",
+      "source_bytes": 6405,
+      "export_sha256": "31eed1708e799c59a7b62b000635a7d1c2bacee1294662edae6a8d16b70192da",
+      "encoding": "json",
+      "transformation": "known host roots replaced by explicit path variables; text logs normalized to LF without trailing whitespace"
+    },
+    {
+      "file": "transport_serial.log",
+      "source": "build/network_transport_guest_v3/guest.serial.log",
+      "source_sha256": "9dd8cd2c005685efdba7fceab5f44b20aa143ea80386730ddb74a940694514ad",
+      "source_bytes": 10888,
+      "export_sha256": "9e7916032fe482cf26c99938ac200d7c19beb8bebea71e6d18a01c69385f49a1",
+      "encoding": "text",
+      "transformation": "known host roots replaced by explicit path variables; text logs normalized to LF without trailing whitespace"
+    },
+    {
+      "file": "lifecycle_serial.log",
+      "source": "build/network_lifecycle_guest_v3/guest_before_reboot.serial.log",
+      "source_sha256": "92082c64e642f4d780d23266df01397352a116d0097bbfed8b827281602d29b2",
+      "source_bytes": 21821,
+      "export_sha256": "f6e636d6f4e1af7c929e3e313eb3e086d4aec3038f2c09afd9a1a7871a9c5279",
+      "encoding": "text",
+      "transformation": "known host roots replaced by explicit path variables; text logs normalized to LF without trailing whitespace"
+    },
+    {
+      "file": "reboot_serial.log",
+      "source": "build/network_lifecycle_guest_v3/guest.serial.log",
+      "source_sha256": "3e1026c695d68ad13f1af03707d0ea468330e4c3d7f53c9b0db78541820a3cb8",
+      "source_bytes": 4143,
+      "export_sha256": "bcc4b3fef7dba9752798f7a92bec91833132def26c718942bc744f981165a9c6",
+      "encoding": "text",
+      "transformation": "known host roots replaced by explicit path variables; text logs normalized to LF without trailing whitespace"
+    },
+    {
+      "file": "transport.pcap.b64",
+      "source": "build/network_transport_guest_v3/network.pcap",
+      "source_sha256": "896806186e016af290aa4cf4bb776b3971ece44a2a26cadb1e862deeb636f3fe",
+      "source_bytes": 26731,
+      "export_sha256": "5d13d7c49edebfd25bff11d6f4a487e93c505e4b37729b2cab06d8ac3eb71042",
+      "encoding": "base64",
+      "transformation": "base64 of original bytes"
+    },
+    {
+      "file": "lifecycle.pcap.b64",
+      "source": "build/network_lifecycle_guest_v3/network.pcap",
+      "source_sha256": "71f1c25bb69599149fd91b891687aafa8500e113b1c104deac77dba41a8234da",
+      "source_bytes": 4754,
+      "export_sha256": "7f448eb4e71d95adcd98c5b19a39f908ffd0f18af68ecb013d3d0bc92b849236",
+      "encoding": "base64",
+      "transformation": "base64 of original bytes"
+    },
+    {
+      "file": "reboot.pcap.b64",
+      "source": "build/network_lifecycle_guest_v3/reboot.pcap",
+      "source_sha256": "cb2a78447eb1798761bcbc964bb09d499f0881cead5333c815c5a64652cd81e3",
+      "source_bytes": 238,
+      "export_sha256": "69844e3e658a7be42f0167b5c9507b380f6aac9b7f4bbd82aed835abf2d0d3d9",
+      "encoding": "base64",
+      "transformation": "base64 of original bytes"
+    },
+    {
+      "file": "system.json",
+      "source": "build/network_qualified_system_v3/manifest.json",
+      "source_sha256": "95fd561f53eac7e8cc72b544332eda572521367946affc0b5dcb7d6c69d4bade",
+      "source_bytes": 427690,
+      "export_sha256": "e97b060758e8b757985c2f7546d295d89f3c116b6ff24a8ec6dd88af5e669339",
+      "encoding": "json",
+      "transformation": "known host roots replaced by explicit path variables; text logs normalized to LF without trailing whitespace"
+    },
+    {
+      "file": "transport_fixture.json",
+      "source": "build/network_transport_fixture_v3/net_transport_probe.receipt.json",
+      "source_sha256": "c95bbc08e381dd4e714cd9cb51ffe7c4879dea4dc73a62c9f9f9d7e3e275383b",
+      "source_bytes": 5207,
+      "export_sha256": "0b2575bfaba26c417833fbed510f06f1dcd1aad7a2f160aadbf193be9028d241",
+      "encoding": "json",
+      "transformation": "known host roots replaced by explicit path variables; text logs normalized to LF without trailing whitespace"
+    },
+    {
+      "file": "lifecycle_fixture.json",
+      "source": "build/network_lifecycle_fixture_v3/receipt.json",
+      "source_sha256": "0ddf1ba339cf9e95d68fa60e87901beee91eb54081782eb3f017392b2a5119dd",
+      "source_bytes": 6465,
+      "export_sha256": "ca26ed859a91d26791232bb3f85ef5a87bfcc52b2a67c1ee01b389886ddf3163",
+      "encoding": "json",
+      "transformation": "known host roots replaced by explicit path variables; text logs normalized to LF without trailing whitespace"
+    },
+    {
+      "file": "lwip_inputs.json",
+      "source": "build/network_qualified_system_v3/net_lwip_inputs.json",
+      "source_sha256": "f694c33ae0f88facca281706cdf8686e55166e50a905619757de295c3bde508e",
+      "source_bytes": 81343,
+      "export_sha256": "f694c33ae0f88facca281706cdf8686e55166e50a905619757de295c3bde508e",
+      "encoding": "json",
+      "transformation": "known host roots replaced by explicit path variables; text logs normalized to LF without trailing whitespace"
+    },
+    {
+      "file": "earlier_serial_parser_failure.json",
+      "source": "build/network_lifecycle_guest/report.json",
+      "source_sha256": "ba63dac55d0beea00fce22e2a0613fab5cc29abed48d359f301036a7d0974a37",
+      "source_bytes": 3762,
+      "export_sha256": "1dec7ad988924d00667bae4575cac6c95bbc56e91abe8e286dee4d5aa7c29c05",
+      "encoding": "json",
+      "transformation": "known host roots replaced by explicit path variables; text logs normalized to LF without trailing whitespace"
+    },
+    {
+      "file": "earlier_crash_restart_expectation_failure.json",
+      "source": "build/network_lifecycle_guest_v2/report.json",
+      "source_sha256": "9a0a740fc501ed8874dd31b1a4d8c15fa1a41b821a555a7f43abd011d974ad60",
+      "source_bytes": 5849,
+      "export_sha256": "a73b5f338132ee2126532d2436f818825c751d5f68b26719c6db4134d816aab6",
+      "encoding": "json",
+      "transformation": "known host roots replaced by explicit path variables; text logs normalized to LF without trailing whitespace"
+    }
+  ]
+}

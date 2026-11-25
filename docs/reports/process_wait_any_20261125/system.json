@@ -1,0 +1,45 @@
+{
+  "build_id": "44d163ec92cfd57e",
+  "source_sha256": "44d163ec92cfd57e6280a99a4214e3543d3cf56831c0bbc2ea2e26245d813d7a",
+  "source_manifest_sha256": "177ba3bf2ffe4998708f1d71b47b355dd90f33c50d801f86a5fa32723a380fb1",
+  "tested_sources": {
+    "src/kernel/arch/x86_64/tasks.cpp": "163e48c02def874ac45f6959e6ba65c77a3b4ae88d319391274a43e5a94a78c1",
+    "src/shared/include/xos/process_abi.hpp": "5eec6b77734f8b39daf9b63233cef9b34aa4645a3edcdd7e928fc759fdc7724e",
+    "src/user/include/xos/sdk.hpp": "9d1649943e9a62ff83612ec1d7bcbdfacec302696a89554e0cf82526f9c82769",
+    "scripts/user_build.py": "29ff17a58e45362b8f22427837d57e3227eb7a56ad7961471b0c1f0d1abce9e5",
+    "tests/fixtures/process_wait/exec_receiver.cpp": "cd82236224e98617a83cc39098e9c0e7470d340332adcdd76769b00311f6277e",
+    "tests/fixtures/process_wait/probe.cpp": "9b83e3dde02b3fc0b93cb3d94f9e14ba585a400cc2ceacb97ffc1b077d3e089d",
+    "tests/process_wait_any_guest.py": "e07660f949d468bf121e37fe57cbb65fca12d432d9a0bbc884a2ee97834c74b7"
+  },
+  "artifacts": {
+    "xos-install.iso": {
+      "bytes": 888832,
+      "sha256": "49dda972f311cd5d32e57f15e97dccf93c0478b03299ec797db5a217b0b260b2"
+    },
+    "sdk/crt0.o": {
+      "bytes": 1824,
+      "sha256": "33e0bd37e83215a1257bfcc4342df184cada40fb3cb4c051c29f39b50405c01c"
+    },
+    "sdk/crt0_posix.o": {
+      "bytes": 1968,
+      "sha256": "e27b599fe3dad2a12e5c1d5d161607237c0d3678f464760287daf61955a461c9"
+    },
+    "sdk/lib/libc.a": {
+      "bytes": 6720094,
+      "sha256": "283fa07ad205c80af92e955a91da027435d8a8a90cb7e27933f57925cc5baa22"
+    },
+    "sdk/lib/libxos.a": {
+      "bytes": 1720486,
+      "sha256": "c3a4577fa1e81964a43a00a3c2e657562f2571fffc0f344da49369a3497b1d2f"
+    },
+    "sdk/lib/libxos_loader.a": {
+      "bytes": 439868,
+      "sha256": "0d45354868aa2135bd7ad07fe28370ab82abf87628d8158dcbda90c2783027df"
+    },
+    "sdk/manifest.json": {
+      "bytes": 5805,
+      "sha256": "1b4c5c317405b73b5d829e312f74533cb090ced907ed0129bc50cc7af7ed1224"
+    }
+  },
+  "scope": "selected metadata from immutable locally tested system manifest; full system sources verified before and after guest"
+}

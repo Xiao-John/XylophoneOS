@@ -137,6 +137,10 @@ i64 spawn_file_options(const char* path, u32 argc, const char* const* argv,
 inline i64 wait(u64 child, process_status& status) {
     return syscall(sys_process_wait, child, reinterpret_cast<u64>(&status));
 }
+inline i64 wait_any(process_status& status, bool nonblocking = false) {
+    return syscall(sys_process_wait, 0, reinterpret_cast<u64>(&status),
+                   process_wait_any | (nonblocking ? process_wait_nonblocking : 0));
+}
 inline i64 cpu_time(process_cpu_time& result) {
     result = {};
     result.version = 1;

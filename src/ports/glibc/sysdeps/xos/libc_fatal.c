@@ -4,21 +4,20 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <unistd.h>
+#include "xos_console.h"
 
 static void
 raw_write (const char *text, size_t length)
 {
-  long ignored;
   while (length != 0)
     {
       size_t amount = length > 256 ? 256 : length;
-      __asm__ volatile ("int $0x80" : "=a" (ignored)
-                        : "a" (1UL), "D" (text), "S" (amount), "d" (0UL)
-                        : "memory", "cc");
-      if (ignored <= 0 || (size_t) ignored > amount)
+      long written = xos_console_raw (11, STDERR_FILENO, (uintptr_t) text,
+                                      amount);
+      if (written <= 0 || (size_t) written > amount)
         return;
-      text += ignored;
-      length -= ignored;
+      text += written;
+      length -= written;
     }
 }
 

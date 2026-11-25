@@ -1,0 +1,1399 @@
+{
+  "status": "failed",
+  "production_dns_enabled": false,
+  "production_dhcp_enabled": false,
+  "guest": "not_run",
+  "sanitizers": [],
+  "remaining_gates": [
+    "D2 absolute TTL, config invalidation, cancellation, error classes",
+    "D3 real guest DNS and full DHCP"
+  ],
+  "scope": "Hash-bound lwIP patches, actual XOS lwip_stack and Ethernet/IP/UDP; local simulated peer and entropy source.",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/core/init.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_init.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/core/def.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_def.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/core/inet_chksum.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_inet_chksum.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/core/ip.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_ip.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/core/mem.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_mem.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/core/memp.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_memp.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/core/netif.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_netif.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/core/pbuf.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_pbuf.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/core/raw.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_raw.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/core/stats.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_stats.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/core/sys.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_sys.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/core/tcp.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_tcp.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/core/tcp_in.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_tcp_in.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/core/tcp_out.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_tcp_out.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/core/timeouts.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_timeouts.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/core/udp.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_udp.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/core/dns.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_dns.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/core/ipv4/etharp.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_ipv4_etharp.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/core/ipv4/icmp.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_ipv4_icmp.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/core/ipv4/ip4.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_ipv4_ip4.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/core/ipv4/ip4_addr.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_ipv4_ip4_addr.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/core/ipv4/ip4_frag.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_ipv4_ip4_frag.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-14",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "-c",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/netif/ethernet.c",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_netif_ethernet.c.o"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-g++-14",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-O2",
+        "-g",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/include",
+        "-I",
+        "${XOS_REPO}/src/user/network/include",
+        "-I",
+        "${XOS_REPO}/src/ports/lwip/include",
+        "-I",
+        "${XOS_REPO}/build/n4_d1_destination_probe/source/lwip-2.2.1/src/include",
+        "-I",
+        "${XOS_REPO}/src/shared/include",
+        "-I",
+        "${XOS_REPO}/src/user",
+        "${XOS_REPO}/tests/fixtures/network/dns_hardening_host.cpp",
+        "${XOS_REPO}/src/user/network/lwip_stack.cpp",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_init.c.o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_def.c.o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_inet_chksum.c.o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_ip.c.o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_mem.c.o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_memp.c.o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_netif.c.o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_pbuf.c.o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_raw.c.o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_stats.c.o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_sys.c.o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_tcp.c.o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_tcp_in.c.o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_tcp_out.c.o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_timeouts.c.o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_udp.c.o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_dns.c.o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_ipv4_etharp.c.o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_ipv4_icmp.c.o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_ipv4_ip4.c.o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_ipv4_ip4_addr.c.o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_core_ipv4_ip4_frag.c.o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/src_netif_ethernet.c.o",
+        "-o",
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "--list"
+      ],
+      "returncode": 0,
+      "stdout": "valid\nuncompressed_mixed_case\npartial_compression\nmultiple_direct_answers\ncompression_depth_16\nwrong_id\nwrong_question\nwrong_question_count\nwrong_source_address\nwrong_source_port\nother_query_port\nunrelated_owner\ntruncated\nother_opcode\nother_opcode_high\nnot_response\nwrong_class\nwrong_type\nbad_rdata_length\nshort_rdata\nincomplete_answer_section\nreserved_owner_label\npointer_self\npointer_forward\npointer_out_of_bounds\npointer_header\nquestion_prefix\nquestion_suffix\nquestion_label_boundary\ncname_chain\ncompression_depth_17\ndestination_broadcast\ndestination_subnet_broadcast\ndestination_multicast\ndestination_other_unicast\nentropy_port_failure\nentropy_id_failure\nzero_id_valid\ninvalid_ports_budget\nport_collision_budget\nid_collision_budget\nquery_capacity\nudp_capacity\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "valid"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=valid\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "uncompressed_mixed_case"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=uncompressed_mixed_case\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "partial_compression"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=partial_compression\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "multiple_direct_answers"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=multiple_direct_answers\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "compression_depth_16"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=compression_depth_16\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "wrong_id"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=wrong_id\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "wrong_question"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=wrong_question\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "wrong_question_count"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=wrong_question_count\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "wrong_source_address"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=wrong_source_address\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "wrong_source_port"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=wrong_source_port\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "other_query_port"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=other_query_port\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "unrelated_owner"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=unrelated_owner\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "truncated"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=truncated\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "other_opcode"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=other_opcode\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "other_opcode_high"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=other_opcode_high\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "not_response"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=not_response\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "wrong_class"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=wrong_class\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "wrong_type"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=wrong_type\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "bad_rdata_length"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=bad_rdata_length\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "short_rdata"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=short_rdata\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "incomplete_answer_section"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=incomplete_answer_section\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "reserved_owner_label"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=reserved_owner_label\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "pointer_self"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=pointer_self\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "pointer_forward"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=pointer_forward\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "pointer_out_of_bounds"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=pointer_out_of_bounds\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "pointer_header"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=pointer_header\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "question_prefix"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=question_prefix\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "question_suffix"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=question_suffix\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "question_label_boundary"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=question_label_boundary\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "cname_chain"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=cname_chain\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "compression_depth_17"
+      ],
+      "returncode": 0,
+      "stdout": "DNS_HARDENING_CASE_PASS=compression_depth_17\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host",
+        "destination_broadcast"
+      ],
+      "returncode": -6,
+      "stdout": "",
+      "stderr": "DNS hardening fixture: invalid frame cannot complete either query\n"
+    }
+  ],
+  "observations": [
+    {
+      "case": "valid",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=valid"
+    },
+    {
+      "case": "uncompressed_mixed_case",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=uncompressed_mixed_case"
+    },
+    {
+      "case": "partial_compression",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=partial_compression"
+    },
+    {
+      "case": "multiple_direct_answers",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=multiple_direct_answers"
+    },
+    {
+      "case": "compression_depth_16",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=compression_depth_16"
+    },
+    {
+      "case": "wrong_id",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=wrong_id"
+    },
+    {
+      "case": "wrong_question",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=wrong_question"
+    },
+    {
+      "case": "wrong_question_count",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=wrong_question_count"
+    },
+    {
+      "case": "wrong_source_address",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=wrong_source_address"
+    },
+    {
+      "case": "wrong_source_port",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=wrong_source_port"
+    },
+    {
+      "case": "other_query_port",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=other_query_port"
+    },
+    {
+      "case": "unrelated_owner",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=unrelated_owner"
+    },
+    {
+      "case": "truncated",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=truncated"
+    },
+    {
+      "case": "other_opcode",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=other_opcode"
+    },
+    {
+      "case": "other_opcode_high",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=other_opcode_high"
+    },
+    {
+      "case": "not_response",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=not_response"
+    },
+    {
+      "case": "wrong_class",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=wrong_class"
+    },
+    {
+      "case": "wrong_type",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=wrong_type"
+    },
+    {
+      "case": "bad_rdata_length",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=bad_rdata_length"
+    },
+    {
+      "case": "short_rdata",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=short_rdata"
+    },
+    {
+      "case": "incomplete_answer_section",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=incomplete_answer_section"
+    },
+    {
+      "case": "reserved_owner_label",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=reserved_owner_label"
+    },
+    {
+      "case": "pointer_self",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=pointer_self"
+    },
+    {
+      "case": "pointer_forward",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=pointer_forward"
+    },
+    {
+      "case": "pointer_out_of_bounds",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=pointer_out_of_bounds"
+    },
+    {
+      "case": "pointer_header",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=pointer_header"
+    },
+    {
+      "case": "question_prefix",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=question_prefix"
+    },
+    {
+      "case": "question_suffix",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=question_suffix"
+    },
+    {
+      "case": "question_label_boundary",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=question_label_boundary"
+    },
+    {
+      "case": "cname_chain",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=cname_chain"
+    },
+    {
+      "case": "compression_depth_17",
+      "status": "pass",
+      "output": "DNS_HARDENING_CASE_PASS=compression_depth_17"
+    }
+  ],
+  "inputs": {
+    "scripts/lwip_service_build.py": "b41f0c87339b9a045ac8708aaac8a974e72d6fab1699d3bb6a1ed97242324982",
+    "src/ports/lwip/include/arch/cc.h": "446b61b46b5990ffca4555f53e20a73b83074719578344564383844f1fde32b4",
+    "src/ports/lwip/include/lwipopts.h": "26561f4bd5744e062a05e988909dae5fd4aecc4926086484eed05cdeed3b6b8a",
+    "src/ports/lwip/patches/0001_dns_reply_validation.patch": "6e98bce638e71aab0bb4165f386d857ac99bf5b3aaf7056c6907f04005ec6652",
+    "src/ports/lwip/patches/0002_dns_bounded_entropy.patch": "fd2b3d180a3bc854db55edcc5967193e8a69d8867140519b051f8b29c559e0a3",
+    "src/ports/lwip/source_lock.json": "ee6df4e0e4abd89601bf87ed968a5d9f2d001dfd121aa193cab80bf41231fd29",
+    "src/shared/include/xos/abi_types.hpp": "2a417532cbdafc1d7545064ef78fe692b07ab0ec430f44367d779415fdc48478",
+    "src/shared/include/xos/net_service_abi.hpp": "cb407cec1622efaf39861b7ee0f76fe7899f59b1bafd110838f884584204b9e7",
+    "src/user/network/include/arch/cc.h": "e1168b47adda008e6f8b13fe64c02d643753a5ff6606fc8b19de180256e727ff",
+    "src/user/network/include/lwipopts.h": "4add38074a98e302e261a7651c8681f836c65e6fcb967064d60b7875bb4c140b",
+    "src/user/network/lwip_stack.cpp": "eb2390e33d57e26e7c80ce55f614ece1c490d892a4c5e94bcd3bcb482a078401",
+    "src/user/network/lwip_stack.hpp": "43daef962ae23a1971d67190e0a8d6a3e426f1d1631087d9620a876c073ff293",
+    "src/user/network/service_core.hpp": "61cb33e940ae3cd48b8bf74cc88f3e28cdbd8806603d061ad73bcb86c47e01fc",
+    "tests/fixtures/network/dns_hardening_host.cpp": "aab8bc64a5cc35fe5f5a81c71a159e0e19b901d8604c27537521e460ee0a4867",
+    "tests/lwip_dns_hardening.py": "6e9d7525fa8bf65cafbfd8a2c32d85c7d7a94936c44e5ffaa89c9e9c385497db"
+  },
+  "sanitized_environment": [],
+  "asan_options": "",
+  "ubsan_options": "",
+  "tools": {
+    "CC": {
+      "path": "/usr/bin/x86_64-linux-gnu-gcc-14",
+      "sha256": "a23ecab8ff08f09ad8c80602c2c5df7f49e09c25905cb8975902e101bf72635f",
+      "version": "x86_64-linux-gnu-gcc-14 (Debian 14.2.0-19) 14.2.0"
+    },
+    "CXX": {
+      "path": "/usr/bin/x86_64-linux-gnu-g++-14",
+      "sha256": "6b3696e4dcb85e1c949c732a02befa50e3983ecf94ce7e8e58d9d503b954b79d",
+      "version": "x86_64-linux-gnu-g++-14 (Debian 14.2.0-19) 14.2.0"
+    },
+    "PATCH": {
+      "path": "/usr/bin/patch",
+      "sha256": "29e29ae977a8967019ce6858132e68c2a51d72cdd2c9526ced64dbc8328c4434",
+      "version": "GNU patch 2.8"
+    }
+  },
+  "patches": [
+    {
+      "path": "patches/0001_dns_reply_validation.patch",
+      "sha256": "6e98bce638e71aab0bb4165f386d857ac99bf5b3aaf7056c6907f04005ec6652",
+      "files": {
+        "src/core/dns.c": {
+          "before": "fe35ede9919974da54598630cc08d654ccc30b668c45b09668c3ba572686b26c",
+          "after": "de7201ecd5e56da1e667f7a9ec3561f1b03d2f71142ac19254143b9400bc1aa2"
+        },
+        "src/include/lwip/prot/dns.h": {
+          "before": "34049c0f7f489aaec12d0589dc51ecfb24408dba422f605d8deb207c44d02b8f",
+          "after": "f264c9100589169dd867cb7642905857609259bfadbcb83352c78fc15e1bd992"
+        }
+      }
+    },
+    {
+      "path": "patches/0002_dns_bounded_entropy.patch",
+      "sha256": "fd2b3d180a3bc854db55edcc5967193e8a69d8867140519b051f8b29c559e0a3",
+      "files": {
+        "src/core/dns.c": {
+          "before": "de7201ecd5e56da1e667f7a9ec3561f1b03d2f71142ac19254143b9400bc1aa2",
+          "after": "a310ad83700a192f148dc5da8d3b2741b04b9a02b13a6a8550954cfa92d62832"
+        }
+      }
+    }
+  ],
+  "archive_sha256": "83729c274c499d3348e9fbbe043a3113f3fa8953e7efddc7c21c7fcbb1f2b7b1",
+  "test_only_options": [
+    "Production options unchanged; test include overrides LWIP_DNS=1."
+  ],
+  "upstream_inputs": {
+    "src/core/def.c": "a12f3ef6c087efb6d4ec524cf332ff438d2504c17d60c263d0bb1b82b79eb2cd",
+    "src/core/dns.c": "a310ad83700a192f148dc5da8d3b2741b04b9a02b13a6a8550954cfa92d62832",
+    "src/core/inet_chksum.c": "fc82b44fc866704a51c0aacd6037b10802b88e8576e1b691917cd2b863878b1b",
+    "src/core/init.c": "e79eface962c17e082bc6d2f9bc0eef16be4cbef1deca3e8248fc7b171b0a49f",
+    "src/core/ip.c": "82d0fc6b45c6d1af88bdece3229fc9821274263c261369de4f81b8d6c80751e7",
+    "src/core/ipv4/etharp.c": "8ee2c65e26eacf265ef34798aefd39aa9678296a64154d3d049b10f32e658f5d",
+    "src/core/ipv4/icmp.c": "d53c96e7ce02514d6c88b41df7c2e37d8e0212a297466f50590305c5e3504285",
+    "src/core/ipv4/ip4.c": "d4973142adede3b868036d5404df9a258ed632788d98969539dc21470b748ae6",
+    "src/core/ipv4/ip4_addr.c": "b440b85c9e49e60510cfa61d40e24b0e2ad480e23a821a94017e42df09dcf8be",
+    "src/core/ipv4/ip4_frag.c": "bb0ddf79430bcd073f7f837451f868107dd6ce60444df72b7c02aca7ca3d4ff6",
+    "src/core/mem.c": "b5316284f3f42782d8b55a750f3f0557d3031edd0c280e653f2fb6dec3f74ed3",
+    "src/core/memp.c": "91ca3a00487d61849324ae571ac9ede550a879365c557aba38667ace122b6c00",
+    "src/core/netif.c": "62e386985e3f2c9b943466ef01d3dcda798ee0167d56fd59c057e928f979cbc2",
+    "src/core/pbuf.c": "2f953eb2bc5b696b2eea156386cc4f99c793859bbf65cee967653bdf3374db61",
+    "src/core/raw.c": "3ba4f2e5d2b61bbfbe813653c7f4e88e2542d567808d3f03be000e0876ce0392",
+    "src/core/stats.c": "a18b76cde437213ca9f00137bdb61adb00f6f931fe28c40c81f811a5e674caea",
+    "src/core/sys.c": "86e336dedec36e042aadaebe93c8be944675210841ccabf180200e82c91b0f8d",
+    "src/core/tcp.c": "76d701944a20dae435fb09a37046fea046ba1d996038362e37eae57157ba586f",
+    "src/core/tcp_in.c": "f79b20e6b123af2ed2cfc2b470fe982d0c88d1357fc5a11537bab9cd20d4b639",
+    "src/core/tcp_out.c": "d8d8d5a54097114904f89f8c5602c937ef3b086933f2132a557698fc65d7e4af",
+    "src/core/timeouts.c": "930bcfaf5b12b97f975fca7b8c2f7ab999cffa37f7c840ea91b340aa4ef62115",
+    "src/core/udp.c": "6454ba858cf8a2c71e4a27e0da4b1569160f923c2adce19842dbb6f90da61af7",
+    "src/include/compat/posix/arpa/inet.h": "8b3edc25121de40cd1c3338d5d68be93091f0713ee8a23eba9789f14d41e0f6d",
+    "src/include/compat/posix/net/if.h": "b1cc52bb828e7cc23f070269a60a6ea33f3fd828190b0248f4cd589f06fcab6e",
+    "src/include/compat/posix/netdb.h": "ec3cb99596ef6bf11b39870541bf6607a7cff6011cfef99bf5d53f2abed05948",
+    "src/include/compat/posix/sys/socket.h": "8b3edc25121de40cd1c3338d5d68be93091f0713ee8a23eba9789f14d41e0f6d",
+    "src/include/compat/stdc/errno.h": "9fdac7c52c9fe0cfdf50f96eae29c5f341a9afde5a56166d21500c656a8a0728",
+    "src/include/lwip/acd.h": "ac7477d81a56bedf62e3db9e502a6d9a46ddf6f8705fd420df91e9f8a2398275",
+    "src/include/lwip/altcp.h": "9140dba340b590f329b0d8653c71104d0509d1e7dbb6c184a99afe980474c958",
+    "src/include/lwip/altcp_tcp.h": "e6b325b516d9e2af49b3187e01cd324066ef2c6508a2d9c06016fc0570148d43",
+    "src/include/lwip/altcp_tls.h": "cf34454f5e63c8f766b0653ffe492bebf763ee767cacfa7277ee84336a9ac55d",
+    "src/include/lwip/api.h": "39a93870e9151ab0a4a70c007c931cf3b642b0704eee43aa662aba9cb9d14f4a",
+    "src/include/lwip/apps/FILES": "1baacff539b72c79be4fb5491be4963f0103557286405b3b4b4dd3396bdb0196",
+    "src/include/lwip/apps/altcp_proxyconnect.h": "c4b47d012ce46a6aa25d4038ecfe0844b0f3cdfe40e6234d622de298aa48ab13",
+    "src/include/lwip/apps/altcp_tls_mbedtls_opts.h": "7fb4fef6a302f23316bad885be4d108a9227377c00948df5be82c9a49fefb0b9",
+    "src/include/lwip/apps/fs.h": "7b262fbde86e0217750e1254db7fe2660f7d79f11a9c7cc4b039d75870582bfe",
+    "src/include/lwip/apps/http_client.h": "ff927c68dd58bb9eeeb99f407b72849dc0da7d39253dd601707269d478a3ad86",
+    "src/include/lwip/apps/httpd.h": "d9b70d5da0ad3d525cf2a2c3d18bc5403fa6d693365db583dd64b3de94d60087",
+    "src/include/lwip/apps/httpd_opts.h": "d7dec61f4a8f4856504f21734290396588116ec09c8fe1ff9f89ec8ba2510cb9",
+    "src/include/lwip/apps/lwiperf.h": "894124ebd57d7aa493072e19981781a642d6d7f0ebdd58af5f792dfde20d101e",
+    "src/include/lwip/apps/mdns.h": "359d459f2d0a4d00eab082d28699478bfb175bd015ecd00a7b601f3494a5d0ca",
+    "src/include/lwip/apps/mdns_domain.h": "6fd124cb463e07bf6ee81aa816db0cc86204c739f57e98be2f31691fea9bc456",
+    "src/include/lwip/apps/mdns_opts.h": "f98772a9ec77cb8ff02853f77d2fa9538d7f4e96561ee5a64a1e39b36952383b",
+    "src/include/lwip/apps/mdns_out.h": "2bff804ddd536e3b1daa97d6322a5279aac56288851de1f277c9c131f16dc365",
+    "src/include/lwip/apps/mdns_priv.h": "46167eba46afba0bc2ecede799441e1f6916e6dd864f2a4ecb75a90ba6474e4d",
+    "src/include/lwip/apps/mqtt.h": "f7732e962845c1870905d6c6e2cf589cf646b86f82ab3e88bf0bbe31e2de55ee",
+    "src/include/lwip/apps/mqtt_opts.h": "b8bb920a04472488f3fa1371cbb9c934bfead7cc8ba7f06316da4bdb2e354feb",
+    "src/include/lwip/apps/mqtt_priv.h": "e4903b34c12c941650045977e2629d41b1ca8407e48dc28d9ba36382825bb2d9",
+    "src/include/lwip/apps/netbiosns.h": "438a8e5cb80794959e0ebb0989a8d0615dc8d2d737fa97c231b10d4040e8f715",
+    "src/include/lwip/apps/netbiosns_opts.h": "6d83f549e1ce36325382c0a776bddb1b66fc1d3cb1cd573aa92eb2cc719ac313",
+    "src/include/lwip/apps/smtp.h": "61d670c0c914cc4d39f6c9e4661a1ac5e2b3cdfc45bb972b35cbf7ad3ea3d569",
+    "src/include/lwip/apps/smtp_opts.h": "6f3e0517c42b198078615074a72d8d158304264c8fa56a1dea79636bdd1898be",
+    "src/include/lwip/apps/snmp.h": "5fd93bca18a358edc4771ec850278d1615c1b6869d30bd51d6bddaa37fefaae9",
+    "src/include/lwip/apps/snmp_core.h": "226888829e92f37f5e34e04f8472c2bc00f16817f41253288b7746eb1afeeb7a",
+    "src/include/lwip/apps/snmp_mib2.h": "6f40a24aedc34c24f13d4e4dba0fc49237bc692ee30e2a2d43b6bbe9446087b0",
+    "src/include/lwip/apps/snmp_opts.h": "fcd7d37a9418f6b25fc367ad1252c193a62915099b5bbc9f6693f0526d915bd4",
+    "src/include/lwip/apps/snmp_scalar.h": "f88ed96f2010bb383af723c50f8e0b93a9a5d566599ef0f35c11102124805c09",
+    "src/include/lwip/apps/snmp_snmpv2_framework.h": "8397074e6d74aceb6430e077537eff4330f6c712d00647a13f2832093a7f9eeb",
+    "src/include/lwip/apps/snmp_snmpv2_usm.h": "ddd777bac19a3f0c6823854f121e52e1c16a9f788540e1f172920b45a01713bc",
+    "src/include/lwip/apps/snmp_table.h": "1d0ef0508b2a00f55e6a90c27d484e526a2db5cde41c13b2aafcc6f2c8d7e25b",
+    "src/include/lwip/apps/snmp_threadsync.h": "730f06bbad7d1fc61cf30fb43f27c4b90c6da50685630563c2f9b1763576f74b",
+    "src/include/lwip/apps/snmpv3.h": "7d1be4c7469ae8108d3657433f965c8884e66475178fee2a474fbbf01aee3fe0",
+    "src/include/lwip/apps/sntp.h": "c7b56e4653387585d4d5073c1917f93114027ccae13ef842880441477b471653",
+    "src/include/lwip/apps/sntp_opts.h": "368b754a6fb6ddfaa050df58f0db975937ca49b49803cd647baee8cdd295c0d3",
+    "src/include/lwip/apps/tftp_client.h": "afe8265f9b7c7746c5bf86b5a739e1eae6c064c7af7e116959a7b52c66064ed3",
+    "src/include/lwip/apps/tftp_common.h": "76b2fb20cbe1212c6e691e9216ced22cc959f602ce76e0fed06dd3c474fb6f31",
+    "src/include/lwip/apps/tftp_opts.h": "185e13e074f0ca14271e187fe15fbe8411de355d55ec6cd4fbb5b271776f8479",
+    "src/include/lwip/apps/tftp_server.h": "627e19deb28320005781f9052d090aa6fc7d5785ccb0a4315c50beee4180d0c8",
+    "src/include/lwip/arch.h": "9801c4638064a3f7f27a90ed4b01867fa65128c67303d40536867dad1ad03f78",
+    "src/include/lwip/autoip.h": "d7b0a366fc1442033df3e7247fff0cf28851c1ef7ad6539ac2728fb5f483f707",
+    "src/include/lwip/debug.h": "1f3545fc48dec531f2dff50fffa1094bd4bdd0fca5bb96e32f82c559e33a4fce",
+    "src/include/lwip/def.h": "224152c2266e14b418ee0e7e1704df9c103011630240548221a91cf6aff64d90",
+    "src/include/lwip/dhcp.h": "babfa093330aa0b8039badc8c373f11dda5dd8f0e94c55e4440a6643b9996f7e",
+    "src/include/lwip/dhcp6.h": "dbac3f610e3e76547691af73a667bd5fd6564a7fbfa5ac382ef77604938d4afa",
+    "src/include/lwip/dns.h": "962c462c90afd41ed010b961f539c11b2baba3e8a6bfe584f331a5e4d43c1b05",
+    "src/include/lwip/err.h": "af26b573fc5c6a31877fdcde35e15382ac0c8b01f35af3f5a4429f9cf5dd323d",
+    "src/include/lwip/errno.h": "79dc6e03887ccf301e01a5129d1a732e21fb05308a8e38f04ada44e0928c075a",
+    "src/include/lwip/etharp.h": "bd50bec728d92dbd790a1504e52f42e4e1bdd018380c2b116f0dd8d3ed44e3f9",
+    "src/include/lwip/ethip6.h": "7a7e744ae373a720261be3651adaa0f35ff00ebb1bcf38e5330e371ddfd162b7",
+    "src/include/lwip/icmp.h": "84f63c9fbc6f6d66ef437f834279c25c20bfa78834eb0ee347c70377f7f8d8c8",
+    "src/include/lwip/icmp6.h": "f790cd444ecbe2e605b2f1a1deab3e6e9662ba6e87fd47b401912c5a118ee836",
+    "src/include/lwip/if_api.h": "6f6945cccbf0721180ddc7ff589d9f7b47f825ce62ae8b3cf6c186f5d2750822",
+    "src/include/lwip/igmp.h": "abf5ff1e19ec61690b6e8d55c8ee11afd1556b77c8b0fc452d5eb490810cc27f",
+    "src/include/lwip/inet.h": "27abe1e75d1d8a1901875360ac4444199ff0193bc8f83368c182c08c0240db36",
+    "src/include/lwip/inet_chksum.h": "df6720f78e47afde2315d6a9dee1bb5b26f76692ce3e040c574409493435c933",
+    "src/include/lwip/init.h": "b5ab1373f83c2ead8413d681351d1275ce6c6375c25e2bc555c4098d2d9a5307",
+    "src/include/lwip/init.h.cmake.in": "38df819f1ae753f240e9adb27398c14d6cf3e2e9065547a8ceb7694a9d132216",
+    "src/include/lwip/ip.h": "dc040fd513b7fff5de699e235e2a09623f2a80d813c09ae91f9c6af067f756e8",
+    "src/include/lwip/ip4.h": "188a62765c765fb07cda26a695f17c9c1674c0da7539c71e4d8f79b3f6f6ba21",
+    "src/include/lwip/ip4_addr.h": "58f6c9a179e8719fb91f2b76b489be45e05365c3958dbba55f00a4d134adf535",
+    "src/include/lwip/ip4_frag.h": "8b0bb67655cba6da8cddc360e655c711553ad35e6306dbae618637e80be9911c",
+    "src/include/lwip/ip6.h": "7681c2948f700aa565c387ca20654f7322991ca15de7fd4e8f342a8ce44abe57",
+    "src/include/lwip/ip6_addr.h": "9dea395e61fdcc6676afdfd322838c185cb87d8b38c39b0ad0b83b206f300c00",
+    "src/include/lwip/ip6_frag.h": "3ab1bdb9220a3c87c8187fb26b1150cd03c4401b0a0c6db2ea4a22674141dd3b",
+    "src/include/lwip/ip6_zone.h": "4b1dfc44be4c4c138ac41d17fdfc88712fab42557c899193e46bc4e6972e4641",
+    "src/include/lwip/ip_addr.h": "90e9886f4fc5e96058d19d3504415d52ee37d8ebd7d29aeede3435f247cb4146",
+    "src/include/lwip/mem.h": "6a3403dd83cc564cdb1b2f712baf925b522fe2755ccebef3dc17ffd3c19319c6",
+    "src/include/lwip/memp.h": "79dfd019219330cf08deb1360483eb7d1da7a1a7a304034ef65ad52feefba1ef",
+    "src/include/lwip/mld6.h": "026348d23012aa1c2210ae53f2a5ddf3a273cf004ef597a1861266a01d4ca86e",
+    "src/include/lwip/nd6.h": "79fa57b4bded6763d38f5e4fa56aa2fac8117bf76ffc69869e05357af88951d6",
+    "src/include/lwip/netbuf.h": "1aa92014d8919c5073b5123c92881e00b0c507ca485667ccdebbf31afa214ff3",
+    "src/include/lwip/netdb.h": "582518497fefd57cd1d227947965c71b1dc16846add471af0fddfbb461c7aca0",
+    "src/include/lwip/netif.h": "6e958aa1bd23b7381c09a873f7af919323f87ec50a2d3055a46f75275c2a121b",
+    "src/include/lwip/netifapi.h": "2c087eac81246ac74e3ba2c3922de0612890587f0cca7c1360f379a57ab45518",
+    "src/include/lwip/opt.h": "d750b825d4e399eca387bdeb98a78dc96267095eb8f15cdb39e4e88d23c14360",
+    "src/include/lwip/pbuf.h": "0b84e49877d81241874c101d24aa6fd815e6e78407f0894f88af371e04437196",
+    "src/include/lwip/priv/altcp_priv.h": "8b1c271129eea8f8d125ee8e653e143d5099683c2fddb9bc64524fcfdadcabd1",
+    "src/include/lwip/priv/api_msg.h": "e2458063868f0813bc26f41709bbf78d994760e72667b646b88f15e16e235f48",
+    "src/include/lwip/priv/mem_priv.h": "c90c9b64c8ea95c05d5b8b10d706acb53b6cc124166e8dd85b397698679f7920",
+    "src/include/lwip/priv/memp_priv.h": "37aff2894bbe25f1888e43b96be80f4c1a43a24867c0fc9aceb4093328682937",
+    "src/include/lwip/priv/memp_std.h": "86cdf1d80f2716a07011dc763e5fa614cd2b555382cb7d6750176116def67a0f",
+    "src/include/lwip/priv/nd6_priv.h": "0f8b44f4163523c10c2085a8b9393b87e81d054c9a40cf0887be2885d8b2fa35",
+    "src/include/lwip/priv/raw_priv.h": "0b2b019a55fab8eed89d668f13402778835117fe472464046472cd04b93c2bb2",
+    "src/include/lwip/priv/sockets_priv.h": "2efcf39c42b1a7055628461915d42521a4df3cb285b6f5635a5c6a961aff4f93",
+    "src/include/lwip/priv/tcp_priv.h": "07df02da365d83e5a488b4cf9e61d8319132d11b6830a7fe6b04c2912fd3d4c9",
+    "src/include/lwip/priv/tcpip_priv.h": "13fb2e7159ebcafc4ddda4961a9d70b2f8182f9e201aa990cb9148d8897bf598",
+    "src/include/lwip/prot/acd.h": "3d5d347182390f367afd107322bdbc2b4997806cd0bc83a7ccc5579248e956a5",
+    "src/include/lwip/prot/autoip.h": "a0b78c818f6642e68c1d9c0b5c3ad12fc6595b66ac5ae41724c52decc6de760c",
+    "src/include/lwip/prot/dhcp.h": "bc74edb6abff7b5182e04e2e588292401ecba3875bb6673156b026a5c391dbc4",
+    "src/include/lwip/prot/dhcp6.h": "72c645a6153694229ca535f044af2d1520ebc7860baa98121747218a08c2b74b",
+    "src/include/lwip/prot/dns.h": "f264c9100589169dd867cb7642905857609259bfadbcb83352c78fc15e1bd992",
+    "src/include/lwip/prot/etharp.h": "55164c0d047f1279982fef9681491c8811f8482976aff7fab9b63a9a589ded76",
+    "src/include/lwip/prot/ethernet.h": "0d8dab96e78a88835525ef03299666e7007434874a6b63c0206aee499c7e3ad9",
+    "src/include/lwip/prot/iana.h": "745c2d70a5d4839e3df5a34f7e37b83bcc7fe58f39eba1d2f5e238242d74c878",
+    "src/include/lwip/prot/icmp.h": "5acac93c34363f3ca07f3f14c8861f09cf822096e6654941a307f1c78914cf5c",
+    "src/include/lwip/prot/icmp6.h": "a3fdc254460b9e2c45cbfb1ad2402c055b34b907a09fb5337a0f26e068302074",
+    "src/include/lwip/prot/ieee.h": "ec85a505aba178178743b34429f463a41ac43d3750d63901c7e1273dcd0a2ba6",
+    "src/include/lwip/prot/igmp.h": "9adb3a0b03feff302b057020aa860fd958f6ef4528225014c104bd4175ebdff7",
+    "src/include/lwip/prot/ip.h": "eb5371e5ac58467253d813bc58726e317f91abadb10336497de0d64645ec01cd",
+    "src/include/lwip/prot/ip4.h": "033570c0b7657f5475959f7b74d9e23c6f8e81498495d5b23d8c2eeb0640d7a7",
+    "src/include/lwip/prot/ip6.h": "c0514e97f153f2e5cf514e6f1f4350fd2cbcb7073ebc05495b436c638bd32109",
+    "src/include/lwip/prot/mld6.h": "9601cee67b48c4b7cadb75caf3d83c05f5409d367341af70af7e7e4f46f173f8",
+    "src/include/lwip/prot/nd6.h": "20f5b3bf8edd5be9b6241df2a5448a7ed4f08ae35714ac7c36383efbba012edf",
+    "src/include/lwip/prot/tcp.h": "db67bb5ea0517a8cd9e30ebf655743f69ce05e77ca6e4a113e8c60e69bd7c48a",
+    "src/include/lwip/prot/udp.h": "b56daa8ff1e8e52cdd4f720297f07af2a96feea254db86768e20e157d7ce2784",
+    "src/include/lwip/raw.h": "e9efc60e31f2ff39a98b1367968ac724fc91ecdc115a74fc44813b761f02caf7",
+    "src/include/lwip/sio.h": "d5b13bb9fe2010b215d0c8b9453890b564c12b58471968bcd099563b02469d34",
+    "src/include/lwip/snmp.h": "6cdfd8137209605ed6623ba081d37cc291840d85b40fb5120eaa6d93b83dd1a7",
+    "src/include/lwip/sockets.h": "cd8af60d7acd3158103cd2b141884cecea79d4011daaa6c9e3f987bb21f8ad84",
+    "src/include/lwip/stats.h": "02d5512b59cce1c006388c6535134dd7f84e866ecca5f72bc632fb0718634b9f",
+    "src/include/lwip/sys.h": "3455bc027fd97de759f962f664c6084242f08dd80e5c65834cc05aa0a0802e8e",
+    "src/include/lwip/tcp.h": "eb514477b21ed78dd4d527f4aea3bed5585200e285b85c666689b9c43b77a89a",
+    "src/include/lwip/tcpbase.h": "cf4b048f3bc228ab364cde15eb6be5eca961fab09036c699c2c4b1437ab90aff",
+    "src/include/lwip/tcpip.h": "c772dbff8e46a86ffa65ec62e5b304e75525b6bcfef94917fb7de1045449f603",
+    "src/include/lwip/timeouts.h": "a383b43e3ba021d06ff3791d223db46cb3385e8dcdfcec0221ef2a006243c022",
+    "src/include/lwip/udp.h": "f9783bca6b68b10c229185559e0ae7e79bb793e1d6c244c7b26408516187f1f8",
+    "src/include/netif/bridgeif.h": "39d409d880187e2a7b372ddae2b1cfc004b88a0dd786dbe9070945420b8e42c8",
+    "src/include/netif/bridgeif_opts.h": "bc6e5f0677c621a5a8adb315e1cdb06210e1391efea6d308684103fd38edfe66",
+    "src/include/netif/etharp.h": "2e1ab81eced65420cdee5940d2e547cae7b0fa70088f452692363676ecfc66dc",
+    "src/include/netif/ethernet.h": "1dd88263e583593e47f7c891680d67838287160551b8c06562c9feca1ddee443",
+    "src/include/netif/ieee802154.h": "02f21d8b3e143fa77d8fa3f0d3db9ac1683507436ab441a61d5012ddb6037699",
+    "src/include/netif/lowpan6.h": "538ac2429cedf9193b6538998f3ba5bdd003fbf0840fd03b46d4ad5bcfaa4c20",
+    "src/include/netif/lowpan6_ble.h": "5c40e2a9640810cebaa8a0e501913cae093368da21f1226e9476b078f34f247f",
+    "src/include/netif/lowpan6_common.h": "eed0a8f45ea6e62ba4238d6bc139a1bef5fe625ec7527b52856fbf885c12f8ba",
+    "src/include/netif/lowpan6_opts.h": "fc57628292ff0ccece9770a9c101b992f350c55088af2bb364246fbcf6f3f024",
+    "src/include/netif/ppp/ccp.h": "b6e681ffe6855a6772c6d0a9077f144676c30db0c9ec0ea461e816f7647d6d43",
+    "src/include/netif/ppp/chap-md5.h": "f67cd93664262575ded862c17bac7c1003e2eb690224b89ba2b0cdd221c2f725",
+    "src/include/netif/ppp/chap-new.h": "f7bfb4e194fedcd1e6d499320826ecca7f14add5170c8fb7d4832b8e831bc2ac",
+    "src/include/netif/ppp/chap_ms.h": "77316bd6366248a0d0715e19e231667c1564f3ef081dc3ba839cd673a5d4984e",
+    "src/include/netif/ppp/eap.h": "1f52215c54298f1b93049cda01f2a9a6dfd254f52b5ba4507bcf755fee16a2c1",
+    "src/include/netif/ppp/ecp.h": "4936fccc29a900ced5b67906f97f192ea634642b6a003605dc1cb40d65d011f6",
+    "src/include/netif/ppp/eui64.h": "fc79081c31fd7333b0e2b3cf61c870727a3b066d82482c894b02c81cdbf464c7",
+    "src/include/netif/ppp/fsm.h": "8751104f5cdeb3ace720744016431ee2d704983e8a94de7add0830e63dfdef0e",
+    "src/include/netif/ppp/ipcp.h": "60bb47d15951954c865393be49b64f6daecc966f7146aeee187530a111d9008a",
+    "src/include/netif/ppp/ipv6cp.h": "69de1cc233f9ec05312a6cd4d5b558d91d04e39626ad6f9e0fbc4ee61a5709d0",
+    "src/include/netif/ppp/lcp.h": "0278457347c50aeaa4636124d0265fb8064511f461de2b3ff7fa51e3dacb0345",
+    "src/include/netif/ppp/magic.h": "44881d887c9d1cb351115eabdb54e276fcbaf7e631ef310ef59195b299e5fc2a",
+    "src/include/netif/ppp/mppe.h": "8dd28c994f67ca45b11586ecc195fabedd5d51efa0bd99872336d82886477c9f",
+    "src/include/netif/ppp/polarssl/arc4.h": "970bc9075bf7aef36f4a225ba8a3dcb89c16a1948016f3521ca4a7609b7ba284",
+    "src/include/netif/ppp/polarssl/des.h": "f0a3ea812ead16f7d8fba08115429b5bd7deed1d9ffc6dddf66ec44b1d95ef0a",
+    "src/include/netif/ppp/polarssl/md4.h": "d1982ff627c1176d03c60fa8ae307af09626a2655e08525a146019276edb9058",
+    "src/include/netif/ppp/polarssl/md5.h": "1962ff0d88f8a7efbb6c8592eb13154129cfc7012c8cc22be7981df35e3c8ba4",
+    "src/include/netif/ppp/polarssl/sha1.h": "2951ad6ae5b5797112ae1899cd814536c445334bf59cbd91bf5414db0613980d",
+    "src/include/netif/ppp/ppp.h": "980aca3ab5ad5e5d90922728b1e0779f53fc747bcd1e47b7e2cf0c63e1d17863",
+    "src/include/netif/ppp/ppp_impl.h": "6470c520bf42767fdb850ce6028e494ea67ed12258499c3f7c4eb86d58d2998e",
+    "src/include/netif/ppp/ppp_opts.h": "4a3507a0cc400a05592d15252ac6513044f1e514be26ba6502fe0b055daa2bc8",
+    "src/include/netif/ppp/pppapi.h": "f1520293792605ad0f0c78c93a5907d478affbebea8d6be1b0f8a8bdc9c4b427",
+    "src/include/netif/ppp/pppcrypt.h": "954943c6c1286c707c0f1182428eb514dc8cf87a704a4e8f26a926553f260d58",
+    "src/include/netif/ppp/pppdebug.h": "fab025981023c13721fac50978c5416ce2c9a0f40db200ef78ce4cd36d3b9b63",
+    "src/include/netif/ppp/pppoe.h": "0288d2c8921899c66d0c5f4be01d3173eba6d68473b1af0a8d2e21220ea58238",
+    "src/include/netif/ppp/pppol2tp.h": "ae9a819aaf816ae4ff25c35bddaf7c10654a54b95451b247fd5d2824229d3cf7",
+    "src/include/netif/ppp/pppos.h": "afaafbc40596ccc0511cf3352deec609f5a114e181cfeb3eb804525abecf49e3",
+    "src/include/netif/ppp/upap.h": "7cf555545ed20e7d7897ed935c6333e77d629b1862e4e2136df87ebebfcb3907",
+    "src/include/netif/ppp/vj.h": "9fc361a36a938d2044d9449bd82d4f3c36e3145a1585596b64fe10b6cb1d13cd",
+    "src/include/netif/slipif.h": "f58cc6842251be4358904b2475021fc2da592de3756fbb358b615b0173efd791",
+    "src/include/netif/zepif.h": "7b3a4c9094483c14eb3c4da651874aca325e3927fde02eb28e226040deef4714",
+    "src/netif/ethernet.c": "7c493427956150ca9e97decd87784df0d2adb0f1504fa262b7e732bee1892eaf"
+  },
+  "error": "command failed: ${XOS_REPO}/build/n4_d1_destination_probe/dns_hardening_host returned -6, expected 0; DNS hardening fixture: invalid frame cannot complete either query\n"
+}

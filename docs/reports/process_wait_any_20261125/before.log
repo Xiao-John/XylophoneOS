@@ -1,0 +1,1 @@
+kernel_process_wait_race_test: $REPO/tests/kernel_process_wait_race_test.cpp:215: int main(): Assertion `wait_for(0, second_output, process_wait_any | process_wait_nonblocking) == process_error_would_block' failed.

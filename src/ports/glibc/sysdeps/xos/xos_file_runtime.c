@@ -185,10 +185,13 @@ valid_response_shape (unsigned int operation)
   if (operation == 19)
     return response.handle != 0 && response.flags == 0 && response.reserved == 0
       && response.length == 0 && response.value == 0;
-  if (operation == 4)
+  /* anonymous creates a fresh empty regular file and returns the same handle
+     and identity fields as open; it must not poison the shared session. */
+  if (operation == 4 || operation == 21)
     return response.length == 0 && response.handle != 0
       && (response.flags & ~1U) == 0 && response.reserved != 0
-      && response.reserved <= 65535 && response.value <= 0xfffffffeULL;
+      && response.reserved <= 65535 && response.value <= 0xfffffffeULL
+      && (operation != 21 || (response.flags == 0 && response.value == 0));
   if (operation == 3 || operation == 18)
     return response.handle == 0 && (response.flags & ~7U) == 0
       && response.reserved != 0 && response.reserved <= 65535
@@ -204,6 +207,11 @@ valid_response_shape (unsigned int operation)
     return request.length <= sizeof (request.data) && response.value <= request.length
       && (response.value != 0 || request.length == 0);
   if (operation == 7) return response.value <= 0xfffffffeULL;
+  /* Native block_bench reports the exact completed request, with no payload.
+     Its limit is an ABI constant shared with file_abi.hpp, not an IPC length. */
+  if (operation == 17)
+    return request.length != 0 && request.length <= 8U * 1024U * 1024U
+      && response.value == request.length;
   return response.value == 0;
 }
 

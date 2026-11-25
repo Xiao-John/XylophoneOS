@@ -1,0 +1,215 @@
+{
+  "status": "passed",
+  "runner_sha256": "341b2d572da7e2496f1099b1df32dd21200123993b69e59969d4dabbe05c7830",
+  "checks": [
+    "cross_pid_handles_and_controller_operations_denied",
+    "four_applications_eight_connections_controller_reserved_budget",
+    "kill_reclaims_all_application_connections_and_resources",
+    "cancel_reclaims_connections_and_resources",
+    "exit_reclaims_connections_and_resources",
+    "exec_reclaims_connections_and_resources",
+    "stall_reclaims_connections_and_resources",
+    "fault_reclaims_connections_and_resources",
+    "pending_data_revoke_new_pid_reuse_and_revoked_pid_reconnect_denial",
+    "idle_60s_connection_and_resource_reclamation",
+    "orderly_reset_restart_and_precise_resource_baseline",
+    "service_kill_closes_peers_retains_dma_and_rejects_three_regrants",
+    "platform_reboot_restores_driver_and_final_precise_resources"
+  ],
+  "revocations": [
+    {
+      "round": 0,
+      "nonce": "fbda3970ecc3645cedce43316b84892a",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "nonce": "aac2a62f580d4c3bca69291acd613a23",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "nonce": "ed695965c55c4b50ba7501b603d0431c",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 3,
+      "nonce": "915514984122004e9fe0c464f988776d",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 4,
+      "nonce": "cc88d907d53226cd9700b49d80de5dba",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 5,
+      "nonce": "f48689ec6b74a640211821c013f0dc28",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 6,
+      "nonce": "01be1236271c40bd4c49eb4fc421e43e",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 7,
+      "nonce": "938974689efba2f70b059e14cd6287fe",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 8,
+      "nonce": "2c337ebd64775c12f81e71709cc7f503",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 9,
+      "nonce": "213ce442dd673eda7c778586f790f18d",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 10,
+      "nonce": "ab1f51f31e8f94a9420f5239adbb2402",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 11,
+      "nonce": "def6b4d8ef27ab70bbab79a9b3ed4ee8",
+      "echoes": 2,
+      "status": "passed"
+    }
+  ],
+  "not_run": [
+    "in_place_driver_crash_recovery_requires_new_device_contract",
+    "unresponsive_device_reset_injection",
+    "packet_loss_reordering",
+    "DNS_DHCP_TLS",
+    "deterministic_same_poll_round_revoke_accept_schedule"
+  ],
+  "build_id": "2f5890c5859e2625",
+  "image_sha256": "3e722682d8156e4acbd0f417d306e261fdc65d00630a56e7511671845587b125",
+  "system_manifest_sha256": "95fd561f53eac7e8cc72b544332eda572521367946affc0b5dcb7d6c69d4bade",
+  "fixture_receipt_sha256": "0ddf1ba339cf9e95d68fa60e87901beee91eb54081782eb3f017392b2a5119dd",
+  "sdk_tree_sha256": "7367390aea788807f2ed061f91fe344d238b481e47e4b8863c58a1df0fb3d528",
+  "artifacts": {
+    "net_lifecycle_probe.elf": "fd0d53bba0cd65a21944af64489a93fdb1cf5579451d51829623d466e146fa23",
+    "net_exec_receiver.elf": "ed03914fa4ad3c557dc24dd3707aa93ab75fe83d8b7d60c2584e9cbab2ca0271"
+  },
+  "initial_disk_sha256": "c422335896c0ee8da3f7f44b05402f1a7118fa43b9ae131de66542193c48d8ad",
+  "qemu_command": [
+    "${XOS_HOST_BIN}/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_ROOT}/build/network_qualified_system_v3/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_TEMP_ROOT}/xos_net_lifecycle__ptqbbi7/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-netdev",
+    "user,id=xosnet",
+    "-device",
+    "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56",
+    "-object",
+    "filter-dump,id=xos_capture,netdev=xosnet,file=${XOS_ROOT}/build/network_lifecycle_guest_v3/network.pcap"
+  ],
+  "baseline": [
+    129630,
+    3,
+    1
+  ],
+  "before_service": [
+    129799,
+    2,
+    0
+  ],
+  "service_pid": 11,
+  "reply_timeout_ns": 520000000,
+  "idle_timeout_ns": 59990000000,
+  "quarantined_dma_pages": 66,
+  "resources_after_quarantine": [
+    129733,
+    2,
+    0
+  ],
+  "reboot_qemu_command": [
+    "${XOS_HOST_BIN}/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_ROOT}/build/network_qualified_system_v3/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_TEMP_ROOT}/xos_net_lifecycle__ptqbbi7/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-netdev",
+    "user,id=xosnet",
+    "-device",
+    "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56",
+    "-object",
+    "filter-dump,id=xos_capture,netdev=xosnet,file=${XOS_ROOT}/build/network_lifecycle_guest_v3/reboot.pcap"
+  ],
+  "evidence_files": {
+    "reboot.pcap": "cb2a78447eb1798761bcbc964bb09d499f0881cead5333c815c5a64652cd81e3",
+    "network.pcap": "71f1c25bb69599149fd91b891687aafa8500e113b1c104deac77dba41a8234da",
+    "guest_qemu.log": "3b7815e7154d23fb7835c91c691ea4776324e85738f4ec4ec8dc763711ff56b5",
+    "guest_serial.log": "92082c64e642f4d780d23266df01397352a116d0097bbfed8b827281602d29b2",
+    "guest.serial.log": "3e1026c695d68ad13f1af03707d0ea468330e4c3d7f53c9b0db78541820a3cb8",
+    "reboot_qemu.log": "3b7815e7154d23fb7835c91c691ea4776324e85738f4ec4ec8dc763711ff56b5",
+    "guest_before_reboot.serial.log": "92082c64e642f4d780d23266df01397352a116d0097bbfed8b827281602d29b2",
+    "reboot_serial.log": "3e1026c695d68ad13f1af03707d0ea468330e4c3d7f53c9b0db78541820a3cb8"
+  }
+}

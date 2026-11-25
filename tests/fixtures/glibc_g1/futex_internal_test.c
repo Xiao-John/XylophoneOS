@@ -53,7 +53,8 @@ int main (void)
   int before = seen;
   if (__futex_abstimed_wait64 (&word, 1, CLOCK_PROCESS_CPUTIME_ID, &deadline, 0) != EINVAL || seen != before) return 3;
   if (__futex_abstimed_wait64 (&word, 1, CLOCK_REALTIME, &deadline, 0) != 0 || wall != 1 || !timed) return 4;
-  if (__futex_abstimed_wait_cancelable64 (&word, 1, CLOCK_REALTIME, 0, 0) != 0 || wall != 2 || timed) return 6;
+  if (__futex_abstimed_wait64 (&word, 1, CLOCK_REALTIME, 0, 0) != 0 || wall != 2 || timed) return 6;
+  if (__futex_abstimed_wait_cancelable64 (&word, 1, CLOCK_REALTIME, 0, 0) != 0 || wall != 3 || timed) return 7;
   if (!traps (0) || !traps (1) || !traps (2) || !traps (3)) return 5;
   return 0;
 }

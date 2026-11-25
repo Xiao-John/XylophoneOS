@@ -82,7 +82,24 @@ static void process_request(const xos_file_request& input) {
     pending.version = xos::file::abi_version;
     pending.request_id = input.request_id;
     const auto operation = static_cast<xos::file::op>(input.operation);
-    if (operation == xos::file::op::open) {
+    if (operation == xos::file::op::list) {
+        const bool identity = (input.flags & (1U << 12)) != 0;
+        pending.flags = identity ? 1U << 12 : 0;
+        const unsigned int header = identity ? 13U : 7U;
+        unsigned int at = 0;
+        for (unsigned int index = 0; index < 2; ++index) {
+            pending.data[at] = static_cast<unsigned char>(index + 1);
+            pending.data[at + 2] = 1;
+            if (identity) {
+                pending.data[at + 7] = static_cast<unsigned char>(7 + index);
+                pending.data[at + 9] = static_cast<unsigned char>(index + 1);
+            }
+            if (index == 0) pending.data[at + header] = '.';
+            else { pending.data[at + header] = 0xc3; pending.data[at + header + 1] = 0xa9; }
+            at += header + index + 1;
+        }
+        pending.length = at;
+    } else if (operation == xos::file::op::open) {
         ++opens;
         assert(input.name_length > 0 && input.name_length < 256 && input.name[input.name_length] == 0);
         if (!std::strcmp(input.name, "/missing") || (!exists && !(input.flags & xos::file::open_create)))
@@ -180,6 +197,13 @@ extern "C" long __xos_file_test_trap(xos_u64 number, xos_u64 first, xos_u64 seco
             if (!std::strcmp(failure, "overwrite")) pending.value = 3801;
             if (!std::strcmp(failure, "unknown_status")) pending.status_code = 1;
             if (!std::strcmp(failure, "metadata")) pending.data[0] = 0;
+            if (!std::strcmp(failure, "directory_bad_cursor")) pending.data[23] = 1;
+            if (!std::strcmp(failure, "directory_bad_identity")) pending.data[7] = 0;
+            if (!std::strcmp(failure, "directory_bad_utf8")) pending.data[27] = 0xc0;
+            if (!std::strcmp(failure, "directory_truncated")) --pending.length;
+            if (!std::strcmp(failure, "directory_empty_progress")) {
+                pending.length = 0; pending.value = 2;
+            }
         }
         std::memcpy(reinterpret_cast<void*>(second), &pending, sizeof(pending));
         has_pending = false;
@@ -377,6 +401,57 @@ static void pipe_writev() {
     assert(xos_test_writev(3, nullptr, 0) == -1 && errno == EBADF);
 }
 
+static void public_lease() {
+    const int old_fd = static_cast<int>(__xos_file_open("/fixture", O_RDWR));
+    assert(old_fd == 3 && __xos_file_write(old_fd, "abcdef", 6) == 6);
+    assert(__xos_file_seek(old_fd, 1, SEEK_SET) == 1);
+    xos_file_lease lease{}, invalid{};
+    assert(__xos_file_lease_acquire(1, 0, &invalid) == -EBADF && invalid.object == -1);
+    assert(__xos_file_lease_acquire(old_fd, 0, &lease) == 0);
+    assert(__xos_file_close(old_fd) == 0 && closes == 0);
+    const int replacement = static_cast<int>(__xos_file_open("/fixture", O_RDONLY));
+    assert(replacement == old_fd);
+    xos_file_request input{}; xos_file_response output{};
+    input.operation = 5; input.handle = lease.handle; input.length = 2;
+    assert(__xos_file_exchange(&input, &output) == 0);
+    assert(output.length == 2 && !std::memcmp(output.data, "bc", 2));
+    char byte = 0;
+    assert(__xos_file_read(replacement, &byte, 1) == 1 && byte == 'a');
+    assert(__xos_file_lease_release(&lease) == 0 && closes == 1 && lease.object == -1);
+    assert(__xos_file_lease_release(&lease) == -EINVAL && closes == 1);
+    assert(__xos_file_close(replacement) == 0 && closes == 2);
+    input = {}; input.operation = 4; input.flags = 1;
+    assert(__xos_file_request_path(&input, "/missing") == 0);
+    std::memset(&output, 0xff, sizeof(output));
+    assert(xos_file_session_exchange(&input, &output) == -1);
+    const xos_file_response empty{};
+    assert(!std::memcmp(&output, &empty, sizeof(output)));
+}
+
+static void directory_exchange(const char* scenario) {
+    const bool legacy = !std::strcmp(scenario, "directory_legacy");
+    const bool success = legacy || !std::strcmp(scenario, "directory_identity")
+        || !std::strcmp(scenario, "directory_default_limit");
+    xos_file_request input{}; xos_file_response output{};
+    input.operation = 2; input.flags = legacy ? 1U << 8 : (1U << 8) | (1U << 12);
+    input.length = 2;
+    if (!std::strcmp(scenario, "directory_bad_count")) input.length = 1;
+    if (!std::strcmp(scenario, "directory_default_limit")) input.length = 0;
+    assert(__xos_file_request_path(&input, "/") == 0);
+    if (!success) { failure = scenario; failure_armed = true; }
+    assert(__xos_file_exchange(&input, &output) == (success ? 0 : -EIO));
+    if (success) {
+        assert(output.flags == (legacy ? 0U : 1U << 12));
+        assert(output.length == (legacy ? 17U : 29U) && output.value == 0);
+    } else {
+        const unsigned int before = sends;
+        const xos_file_response empty{};
+        assert(!std::memcmp(&output, &empty, sizeof(output)));
+        failure_armed = false;
+        assert(__xos_file_exchange(&input, &output) == -EIO && sends == before);
+    }
+}
+
 static void error_case(const char* scenario) {
     failure = scenario;
     if (!std::strcmp(scenario, "no_session")) {
@@ -410,6 +485,8 @@ int main(int argc, char** argv) {
              || !std::strcmp(argv[1], "path_v2_redirection")) inheritance_v2(argv[1]);
     else if (!std::strcmp(argv[1], "pipe_lease")) pipe_lease();
     else if (!std::strcmp(argv[1], "pipe_writev")) pipe_writev();
+    else if (!std::strcmp(argv[1], "public_lease")) public_lease();
+    else if (!std::strncmp(argv[1], "directory_", 10)) directory_exchange(argv[1]);
     else error_case(argv[1]);
     std::printf("PASS %s\n", argv[1]);
 }

@@ -11,7 +11,10 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES = [
-    "basic", "bounds", "concurrent", "inheritance", "invalid_inheritance",
+    "basic", "bounds", "concurrent", "public_lease", "directory_legacy", "directory_identity",
+    "directory_bad_cursor", "directory_bad_identity", "directory_bad_utf8",
+    "directory_bad_count", "directory_truncated", "directory_default_limit", "directory_empty_progress",
+    "inheritance", "invalid_inheritance",
     "duplicate_cleanup", "pipe_lease", "pipe_writev", "no_session", "wrong_sequence", "bad_magic",
     "inheritance_v2", "duplicate_v2_handle", "path_v2_redirection",
     "bad_version", "overread", "overwrite", "unknown_status", "metadata", "timeout",

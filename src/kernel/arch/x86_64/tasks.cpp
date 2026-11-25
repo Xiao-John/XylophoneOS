@@ -5007,6 +5007,21 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_process_tls: {
+        if (third == static_cast<u64>(process_tls_mode::current_thread)) {
+            if (first != current->pid) { result = process_error_denied; break; }
+            if (current->closing || current_thread->leaving) { result = process_error_state; break; }
+            const bool image_or_heap = second >= process_user_begin && second <= process_user_end - 16;
+            const bool anonymous = second >= vm_arena_begin && second <= vm_arena_end - 16;
+            if ((!image_or_heap && !anonymous) || second % 16 != 0 ||
+                !user_range_ok(second, 16, true)) { break; }
+            // Keep the scheduler's saved pointer and active CPU register in sync.
+            // The runtime owns the TCB layout and its storage lifetime.
+            current_thread->thread_pointer = second;
+            set_thread_pointer(second);
+            result = 0;
+            break;
+        }
+        if (third != static_cast<u64>(process_tls_mode::building_child)) { break; }
         process_record* task = owned_process(first);
         if (task == nullptr) { result = process_error_denied; break; }
         if (task->state != task_state::building) { result = process_error_state; break; }

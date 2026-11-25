@@ -13,7 +13,9 @@ __xos_nptl_cleanup_current (void)
   __nptl_deallocate_tsd ();
   __libc_thread_freeres ();
   __xos_thread_name_remove (__pthread_self ());
-  atomic_fetch_add_relaxed (&__nptl_nthreads, -1);
+  /* exit's acquire load must observe all cleanup before it can proceed
+     through the process termination barrier and global destructors. */
+  atomic_fetch_add_release (&__nptl_nthreads, -1);
 }
 
 void

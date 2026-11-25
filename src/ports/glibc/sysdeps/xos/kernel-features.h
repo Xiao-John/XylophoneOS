@@ -4,4 +4,5 @@
    verified.  In particular, Linux __ASSUME_* values must not be inherited.  */
 #ifndef XOS_GLIBC_KERNEL_FEATURES_H
 #define XOS_GLIBC_KERNEL_FEATURES_H 1
+#define __ASSUME_CLOSE_RANGE 0
 #endif

@@ -1,0 +1,183 @@
+--- a/dirent/scandir-cancel.c
++++ b/dirent/scandir-cancel.c
+@@ -16,6 +16,7 @@
+    License along with the GNU C Library; if not, see
+    <https://www.gnu.org/licenses/>.  */
+ 
++#include <stdlib.h>
+ #include <dirent.h>
+ 
+ void
+--- a/dirent/scandir-tail-common.c
++++ b/dirent/scandir-tail-common.c
+@@ -16,6 +16,8 @@
+    License along with the GNU C Library; if not, see
+    <https://www.gnu.org/licenses/>.  */
+ 
++#include <stdlib.h>
++#include <libc-lock.h>
+ #include <string.h>
+ #include <errno.h>
+ 
+--- a/dirent/scandirat64.c
++++ b/dirent/scandirat64.c
+@@ -16,6 +16,7 @@
+    <https://www.gnu.org/licenses/>.  */
+ 
+ #define scandirat __no_scandirat_decl
++#include <stddef.h>
+ #include <dirent.h>
+ #undef scandirat
+ 
+--- a/io/ftw-common.c
++++ b/io/ftw-common.c
+@@ -17,6 +17,9 @@
+    <https://www.gnu.org/licenses/>.  */
+ 
+ 
++#include <stdlib.h>
++#include <string.h>
++#include <errno.h>
+ #include <assert.h>
+ #include <dirent.h>
+ #include <fcntl.h>
+--- a/io/stat.c
++++ b/io/stat.c
+@@ -15,6 +15,7 @@
+    License along with the GNU C Library; if not, see
+    <https://www.gnu.org/licenses/>.  */
+ 
++#include <fcntl.h>
+ #include <sys/stat.h>
+ 
+ int
+--- a/io/stat64.c
++++ b/io/stat64.c
+@@ -15,6 +15,7 @@
+    License along with the GNU C Library; if not, see
+    <https://www.gnu.org/licenses/>.  */
+ 
++#include <fcntl.h>
+ #include <sys/stat.h>
+ 
+ int
+--- a/io/lstat.c
++++ b/io/lstat.c
+@@ -15,6 +15,7 @@
+    License along with the GNU C Library; if not, see
+    <https://www.gnu.org/licenses/>.  */
+ 
++#include <fcntl.h>
+ #include <sys/stat.h>
+ 
+ int
+--- a/io/lstat64.c
++++ b/io/lstat64.c
+@@ -15,6 +15,7 @@
+    License along with the GNU C Library; if not, see
+    <https://www.gnu.org/licenses/>.  */
+ 
++#include <fcntl.h>
+ #include <sys/stat.h>
+ 
+ int
+--- a/io/mknodat.c
++++ b/io/mknodat.c
+@@ -15,6 +15,7 @@
+    License along with the GNU C Library; if not, see
+    <https://www.gnu.org/licenses/>.  */
+ 
++#include <errno.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ 
+--- a/string/strerror_l.c
++++ b/string/strerror_l.c
+@@ -15,6 +15,7 @@
+    License along with the GNU C Library; if not, see
+    <https://www.gnu.org/licenses/>.  */
+ 
++#include <errno.h>
+ #include <libintl.h>
+ #include <locale.h>
+ #include <stdio.h>
+--- a/posix/glob64.c
++++ b/posix/glob64.c
+@@ -20,7 +20,7 @@
+ #include <glob.h>
+ #include <errno.h>
+ 
+-#ifdef GLOB_ATTRIBUTE
++#ifndef GLOB_ATTRIBUTE
+ # define GLOB_ATTRIBUTE
+ #endif
+ 
+--- a/posix/sysconf.c
++++ b/posix/sysconf.c
+@@ -252,15 +252,15 @@
+     case _SC_XBS5_LP64_OFF64:
+     case _SC_XBS5_LPBIG_OFFBIG:
+ 
+-    case _SC_POSIX_V6_ILP32_OFF32:
+-    case _SC_POSIX_V6_ILP32_OFFBIG:
+-    case _SC_POSIX_V6_LP64_OFF64:
+-    case _SC_POSIX_V6_LPBIG_OFFBIG:
+-
+-    case _SC_POSIX_V7_ILP32_OFF32:
+-    case _SC_POSIX_V7_ILP32_OFFBIG:
+-    case _SC_POSIX_V7_LP64_OFF64:
+-    case _SC_POSIX_V7_LPBIG_OFFBIG:
++    case _SC_V6_ILP32_OFF32:
++    case _SC_V6_ILP32_OFFBIG:
++    case _SC_V6_LP64_OFF64:
++    case _SC_V6_LPBIG_OFFBIG:
++
++    case _SC_V7_ILP32_OFF32:
++    case _SC_V7_ILP32_OFFBIG:
++    case _SC_V7_LP64_OFF64:
++    case _SC_V7_LPBIG_OFFBIG:
+ 
+     case _SC_XOPEN_LEGACY:
+     case _SC_XOPEN_REALTIME:
+--- a/io/fstat.c
++++ b/io/fstat.c
+@@ -15,6 +15,7 @@
+    License along with the GNU C Library; if not, see
+    <https://www.gnu.org/licenses/>.  */
+ 
++#include <fcntl.h>
+ #include <sys/stat.h>
+ #include <errno.h>
+ 
+--- a/io/fstat64.c
++++ b/io/fstat64.c
+@@ -15,6 +15,7 @@
+    License along with the GNU C Library; if not, see
+    <https://www.gnu.org/licenses/>.  */
+ 
++#include <fcntl.h>
+ #include <sys/stat.h>
+ #include <errno.h>
+ 
+--- a/io/fstatat.c
++++ b/io/fstatat.c
+@@ -15,6 +15,8 @@
+    License along with the GNU C Library; if not, see
+    <https://www.gnu.org/licenses/>.  */
+ 
++#include <stddef.h>
++#include <fcntl.h>
+ #include <sys/stat.h>
+ #include <errno.h>
+ 
+--- a/io/fstatat64.c
++++ b/io/fstatat64.c
+@@ -15,6 +15,8 @@
+    License along with the GNU C Library; if not, see
+    <https://www.gnu.org/licenses/>.  */
+ 
++#include <stddef.h>
++#include <fcntl.h>
+ #include <sys/stat.h>
+ #include <errno.h>
+ 

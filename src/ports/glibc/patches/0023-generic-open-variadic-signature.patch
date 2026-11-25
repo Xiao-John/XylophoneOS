@@ -1,0 +1,10 @@
+--- a/io/open.c
++++ b/io/open.c
+@@ -29 +29 @@
+-__libc_open (const char *file, int oflag)
++__libc_open (const char *file, int oflag, ...)
+--- a/io/open64.c
++++ b/io/open64.c
+@@ -27 +27 @@
+-__libc_open64 (const char *file, int oflag)
++__libc_open64 (const char *file, int oflag, ...)

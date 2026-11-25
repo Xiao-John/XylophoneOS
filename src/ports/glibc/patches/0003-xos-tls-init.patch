@@ -1,17 +1,44 @@
 --- a/sysdeps/x86_64/nptl/tls.h
 +++ b/sysdeps/x86_64/nptl/tls.h
-@@ -23 +23,3 @@
+@@ -20,7 +20,9 @@
+ #define _TLS_H	1
+ 
+ #ifndef __ASSEMBLER__
 -# include <asm/prctl.h>	/* For ARCH_SET_FS.  */
 +# ifndef XOS_GLIBC_TLS
 +#  include <asm/prctl.h>	/* For ARCH_SET_FS.  */
 +# endif
-@@ -141,0 +144,6 @@
+ # include <stdbool.h>
+ # include <stddef.h>
+ # include <stdint.h>
+@@ -139,6 +141,21 @@
+ 
+    We have to make the syscall for both uses of the macro since the
+    address might be (and probably is) different.  */
 +# ifdef XOS_GLIBC_TLS
-+/* XOS cannot yet install the initial glibc thread pointer in the calling
-+   process.  Fail explicitly instead of issuing the Linux arch_prctl syscall
-+   or reporting that TLS was initialized.  */
-+#  define TLS_INIT_TP(thrdescr) ((void) (thrdescr), 0)
++/* The user runtime owns the TCB layout.  XOS installs its address through
++   the explicit current-thread mode of the native process-TLS mechanism. */
++#  define TLS_INIT_TP(thrdescr) \
++  ({ void *_xos_tp = (thrdescr); \
++     tcbhead_t *_xos_head = _xos_tp; \
++     _xos_head->tcb = _xos_tp; \
++     _xos_head->self = _xos_tp; \
++     long _xos_pid, _xos_status; \
++     asm volatile ("int $0x80" : "=a" (_xos_pid) \
++                   : "a" (6UL), "D" (0UL), "S" (0UL), "d" (0UL) : "memory", "cc"); \
++     asm volatile ("int $0x80" : "=a" (_xos_status) \
++                   : "a" (35UL), "D" (_xos_pid), "S" (_xos_tp), "d" (1UL) : "memory", "cc"); \
++     _xos_status == 0; })
 +# else
-@@ -161,0 +170,2 @@
+ # define TLS_INIT_TP(thrdescr) \
+   ({ void *_thrdescr = (thrdescr);					      \
+      tcbhead_t *_head = _thrdescr;					      \
+@@ -159,6 +176,8 @@
+     _result == 0;							      \
+   })
+ 
 +# endif
 +
+ # define TLS_DEFINE_INIT_TP(tp, pd) void *tp = (pd)
+ 
+ 

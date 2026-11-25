@@ -43,6 +43,12 @@ sys81 action 5 试行派生 fork 子进程双向通道，结构为 `channel_fork
 action 6 由对端验证派生通道来源，结构为 `channel_fork_verification`；
 见同一契约，尚未客体验证。
 
+sys35 第三参数登记为 `process_tls_mode`：0 `building_child` 保留父进程设置
+owned building 子进程主线程指针；1 `current_thread` 允许调用线程安装自身运行库
+分配的线程指针，第一参数必须为当前 PID。其它模式拒绝。权限、地址与生命周期
+校验见 [线程契约](threading.md#当前线程安装运行库线程指针)。本扩展供隔离 glibc
+G2/G3 候选使用，SDK 单独记录能力与客体验证；不更换默认 libc。
+
 数值来源分别为内核基础syscall头与共享ABI头；此表锁定当前分配，自动检查捕获重号、漏项、
 新增占用预留段而未登记，以及源码与本表偏移。allocated不等于完整POSIX或应用资格。
 

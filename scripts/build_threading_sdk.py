@@ -355,6 +355,7 @@ def main():
                'file_identity': {'version': 1, 'wire_version': 2, 'status': 'implemented_unverified',
                                  'cwd_operations': [26, 27, 28], 'directory_flag': 1024, 'pin_flag': 2048},
                'process_extensions': {'syscalls': [*range(54,62),80,81,82], 'file_operations': list(range(20,29)),
+                   'thread_pointer': {'syscall': 35, 'current_thread_mode': 1, 'guest_qualification': 'not_run'},
                    'startup_versions': [1,2,3], 'exec_image_abi': 3, 'exec_marker': '.xos.exec',
                    'fork_supported': False, 'exec_supported': False, 'fd_count': 32,
                    'pipe_atomic_bytes': 4096, 'pipe_wait_write_minimum': True,

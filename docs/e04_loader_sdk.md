@@ -62,7 +62,8 @@ filesz <= memsz、虚拟地址窗口、p_align 的幂与同余、页内偏移同
 不同段共享一页也拒绝，避免合并权限产生 W+X。空 LOAD 不建立映射。
 
 0019新增：静态PT_TLS接受有界初始化模板与零填充区；TLS布局由用户态ISA后端
-完成，内核sys35仅为owned building子任务设置已映射的线程指针。AMD64 variant II
+完成，内核sys35默认模式为owned building子任务设置已映射的线程指针；显式模式1
+允许当前线程安装自身运行库分配的指针，见[线程契约](contracts/threading.md#当前线程安装运行库线程指针)。AMD64 variant II
 使用独立TLS arena和任务FS base；仅local-exec；线程profile静态TLS另见线程契约，无动态模块/DTV。模板1MiB、
 对齐64KiB上限，ELF LOAD不得覆盖TLS arena；失败abort回收。功能证据见0019。
 

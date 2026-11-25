@@ -1,0 +1,24 @@
+--- a/csu/libc-start.c
++++ b/csu/libc-start.c
+@@ -29,6 +29,7 @@
+ #include <stdlib.h>
+ #include <stdio.h>
+ #include <unistd.h>
++#include <errno.h>
+ #include <ldsodefs.h>
+ #include <libc-diag.h>
+ #include <libc-internal.h>
+@@ -344,6 +345,13 @@
+     __libc_check_standard_fds ();
+ #endif /* !SHARED */
+ 
++#ifdef XOS_GLIBC_TLS
++  /* Early optional resource-limit queries can fail with ENOSYS on XOS.
++     Establish the application errno state after libc setup and before
++     application constructors, which may themselves set errno.  */
++  __set_errno (0);
++#endif
++
+   /* Call the initializer of the program, if any.  */
+ #ifdef SHARED
+   if (__builtin_expect (GLRO(dl_debug_mask) & DL_DEBUG_IMPCALLS, 0))

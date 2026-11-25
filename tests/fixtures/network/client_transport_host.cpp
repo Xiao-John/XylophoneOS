@@ -177,6 +177,39 @@ void retry_and_timeout_cases() {
     ++groups;
 }
 
+void orderly_close_backpressure_case() {
+    auto sibling_open = step(operation::open, 0, connected);
+    sibling_open.opened_handle = 702;
+    auto unread = step(operation::receive, 0, eof);
+    unread.payload = {'r', 'x'};
+    scenario({step(operation::open, 0, connected), sibling_open,
+              step(operation::close, would_block), step(operation::send, 1),
+              unread, step(operation::close), step(operation::close)});
+    {
+        client value;
+        connected_client(value);
+        const auto until = deadline();
+        const auto first = open_connection(value, protocol::tcp, until);
+        u64 sibling = 0;
+        assert(value.open(protocol::tcp, permitted_address, 9001, until, sibling) == 0);
+        assert(sibling == 702);
+        assert(value.close_connection(first, until) == would_block);
+        assert(requests.size() == 3 && sleeps == 0 && endpoint_closes == 0);
+
+        const u8 byte = 's';
+        assert(value.write(sibling, &byte, 1, until) == 1);
+        u8 bytes[2]{};
+        assert(value.read(first, bytes, sizeof(bytes), until) == 2);
+        assert(bytes[0] == 'r' && bytes[1] == 'x');
+        assert(value.close_connection(first, until) == 0);
+        assert(value.close_connection(sibling, until) == 0);
+        assert(requests[3].object == sibling && requests[4].object == first);
+        assert(requests[5].object == first && requests[6].object == sibling);
+    }
+    disconnected();
+    ++groups;
+}
+
 void receive_and_datagram_rejection_cases() {
     // TCP data may carry EOF together; the following read returns zero/EOF.
     auto final_data = step(operation::receive, 0, eof);
@@ -394,9 +427,10 @@ int main() {
     datagram_cases();
     connection_progress_cases();
     retry_and_timeout_cases();
+    orderly_close_backpressure_case();
     receive_and_datagram_rejection_cases();
     malformed_envelope_cases();
     strict_reply_shapes();
-    std::printf("PASS N3 native client: groups=%u UDP-zero,required-retry,connecting,short-write,would-block,timeout-no-replay,EOF,malformed,cleanup strict-replies=1\n",
+    std::printf("PASS N3 native client: groups=%u UDP-zero,required-retry,connecting,short-write,would-block,close-preserves-siblings,timeout-no-replay,EOF,malformed,cleanup strict-replies=1\n",
                 groups);
 }

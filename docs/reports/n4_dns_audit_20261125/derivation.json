@@ -1,0 +1,14 @@
+{
+  "format": "derived path-normalized evidence",
+  "originals": {
+    "build/n4_dns_upstream_audit_final/report.json": "a91df096a75de4a1dd5404e346504277ac597814032a4652244253bc71035702",
+    "build/n4_dns_upstream_audit/report.json": "994f74c203cd28ebb4983d3a189ce165b5f40050089886e1f8818807b4d9dbf3"
+  },
+  "transformations": [
+    "Replace repository absolute prefix with ${XOS_REPO}.",
+    "source_audit.json records reviewed upstream sources and separately labels unexecuted DHCP.",
+    "qualification.json summarizes failed activation gates and actual execution limits."
+  ],
+  "earlier_execution": "Same4controls/8failedgates; superseded by final runner with compiler and abi_types provenance.",
+  "trust_root": "Enclosing Git commit and flat manifest; original source archive remains unchanged."
+}

@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "files": {
+    "host_normal.json": "a3864892ef65fe96d259a463277352b723a69b3ed113cc411d190b75b2c846fa",
+    "host_normal.log": "26e6dee267ef909cf98aabd8143cf3c63a201e39fb903d7cd2911912cbbd60dc",
+    "host_sanitized.json": "5180c3a9c0d856d1202fd2c1a099e9d975df2192841be83afde6697a499f860d",
+    "host_sanitized.log": "26e6dee267ef909cf98aabd8143cf3c63a201e39fb903d7cd2911912cbbd60dc"
+  }
+}

@@ -22,6 +22,18 @@ extern "C" void identity_service_request(const xos::file::request* in, xos::file
     handle(*in, *out, sessions[0], 0);
 }
 
+extern "C" xos::i64 identity_service_block(xos::u64 number, xos::u64 first,
+                                           xos::u64 second, xos::u64 third) {
+    if (number == xos::sys_block_info) {
+        *reinterpret_cast<xos::u64*>(first) = media.size() / 512;
+        return 0;
+    }
+    require(number == xos::sys_block_read && third > 0 && third <= 8,
+            "block benchmark bounded native read");
+    return disk_read(0, reinterpret_cast<BYTE*>(second), first, static_cast<UINT>(third))
+        == RES_OK ? 0 : -5;
+}
+
 extern "C" void identity_service_finished() {
     close_session(sessions[0]);
     retry_description_cleanup();

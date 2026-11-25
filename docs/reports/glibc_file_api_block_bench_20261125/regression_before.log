@@ -1,0 +1,8 @@
+PASS basic
+PASS bounds
+PASS concurrent
+PASS public_lease
+PASS native_read_capacity
+FAIL block_valid
+runtime_test: $REPO/tests/fixtures/glibc_g3/files_runtime.cpp:497: void block_bench(const char*): Assertion `__xos_file_exchange(&input, &output) == (success ? 0 : -EIO)' failed.
+

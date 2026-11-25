@@ -33,7 +33,7 @@ BUILD_ENV_BLOCKLIST = frozenset({
     'CC', 'CXX', 'AS', 'LD', 'AR', 'NM', 'RANLIB', 'STRIP', 'OBJCOPY',
     'OBJDUMP', 'READELF', 'LD_PRELOAD', 'LD_LIBRARY_PATH',
     'DYLD_INSERT_LIBRARIES', 'DYLD_LIBRARY_PATH', 'DYLD_FRAMEWORK_PATH',
-    'CONFIG_SITE', 'MAKEFLAGS', 'GNUMAKEFLAGS', 'MAKEFILES', 'MFLAGS',
+    'CONFIG_SITE', 'MAKE', 'MAKEFLAGS', 'GNUMAKEFLAGS', 'MAKEFILES', 'MFLAGS',
 })
 
 
@@ -54,6 +54,15 @@ def tool_identity(name):
     return {'available': True, 'path': str(executable), 'sha256': digest(executable),
             'version_exit_code': version.returncode,
             'version': (version.stdout or version.stderr).splitlines()[0] if (version.stdout or version.stderr) else ''}
+
+
+def select_gnu_make():
+    for name in ('make', 'gmake', 'gnumake'):
+        identity = tool_identity(name)
+        version = re.match(r'GNU Make (\d+)\.', identity.get('version', ''))
+        if identity.get('version_exit_code') == 0 and version and int(version[1]) >= 4:
+            return identity
+    raise SystemExit('GNU make 4 or later is required (make, gmake, or gnumake)')
 
 
 def main():
@@ -77,6 +86,7 @@ def main():
     lock = json.loads((ROOT / 'src/ports/glibc/source_lock.json').read_text())
     if digest(archive) != lock['archive_sha256']:
         raise SystemExit('candidate source archive SHA-256 mismatch')
+    make = select_gnu_make()
     output.mkdir(parents=True)
     with tarfile.open(archive) as tar:
         tar.extractall(output, filter='data')
@@ -131,11 +141,14 @@ def main():
     target = subprocess.check_output([source/'scripts/config.sub', 'x86_64-unknown-xos'], text=True).strip()
     build = output / 'configure'
     build.mkdir()
-    command = [str(source/'configure'), '--build=aarch64-apple-darwin', '--host=x86_64-unknown-xos', '--prefix=/usr', '--disable-werror']
-    if args.hacker_mode:
-        command.append('--enable-hacker-mode')
     env, sanitized_environment = clean_build_environment(os.environ)
     env['CONFIG_SITE'] = '/dev/null'
+    env['MAKE'] = make['path']
+    triplet = subprocess.check_output(['sh', source/'scripts/config.guess'], text=True, env=env).strip()
+    command = [str(source/'configure'), '--build=' + triplet, '--host=x86_64-unknown-xos',
+               '--prefix=/usr', '--disable-werror']
+    if args.hacker_mode:
+        command.append('--enable-hacker-mode')
     env['CC'] = 'x86_64-elf-gcc'
     env['CXX'] = 'x86_64-elf-g++'
     target_readelf = shutil.which('x86_64-elf-readelf')
@@ -159,7 +172,7 @@ def main():
     make_result = None
     if backend and result.returncode == 0:
         with (output/'make.log').open('w') as log:
-            make_result = subprocess.run(['gnumake', '-j1'], cwd=build, env=env, stdout=log, stderr=subprocess.STDOUT)
+            make_result = subprocess.run([make['path'], '-j1'], cwd=build, env=env, stdout=log, stderr=subprocess.STDOUT)
     objects = {}
     if backend and make_result is not None:
         diagnostic_targets = (
@@ -197,7 +210,7 @@ def main():
             (build / subdir).mkdir(exist_ok=True)
             target_object = build / subdir / (name + '.o')
             with (output / (name + '-object.log')).open('w') as log:
-                obj_result = subprocess.run(['gnumake', '-C', str(source / subdir),
+                obj_result = subprocess.run([make['path'], '-C', str(source / subdir),
                     'objdir=' + str(build), str(target_object)], env=env,
                     stdout=log, stderr=subprocess.STDOUT)
             item = {'exit_code': obj_result.returncode,
@@ -223,7 +236,7 @@ def main():
     if backend and make_result is not None and objects['abi-note']['exit_code'] != 0:
         note_object = build / 'csu/abi-note.o'
         with (output / 'abi-note-isolated.log').open('w') as log:
-            isolated = subprocess.run(['gnumake', '-C', str(source / 'csu'),
+            isolated = subprocess.run([make['path'], '-C', str(source / 'csu'),
                 'objdir=' + str(build), 'before-compile=', str(note_object)],
                 env=env, stdout=log, stderr=subprocess.STDOUT)
         isolated_note = {'exit_code': isolated.returncode, 'suppresses_before_compile': True,
@@ -243,7 +256,7 @@ def main():
     header_install = None
     if backend and make_result is not None:
         with (output / 'install-headers.log').open('w') as log:
-            install = subprocess.run(['gnumake', '-C', str(build), 'install-headers',
+            install = subprocess.run([make['path'], '-C', str(build), 'install-headers',
                                       'DESTDIR=' + str(sysroot)], env=env,
                                      stdout=log, stderr=subprocess.STDOUT)
         headers = {str(p.relative_to(sysroot)): digest(p) for p in sorted(sysroot.rglob('*')) if p.is_file()}
@@ -353,8 +366,9 @@ def main():
                 built_objects[name] = digest(obj)
     tool_names = ('x86_64-elf-gcc', 'x86_64-elf-g++', 'x86_64-elf-as',
                   'x86_64-elf-ld', 'x86_64-elf-readelf', 'x86_64-elf-objdump',
-                  'gnumake', 'gawk', 'bison', 'patch')
+                  'gawk', 'bison', 'patch')
     tools = {name: tool_identity(name) for name in tool_names}
+    tools['make'] = make
     report = {'status': 'diagnostic_only', 'probe_sha256': digest(Path(__file__)), 'tools': tools, 'source_sha256': digest(archive),
               'source_authentication': lock['signature_verification'], 'patch_sha256': digest(patch),
               'canonical_target': target, 'command': command, 'sanitized_environment': sanitized_environment, 'cc': env['CC'],

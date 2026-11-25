@@ -7,6 +7,8 @@
 extern "C" void xos_file_session_lock() __attribute__((weak));
 extern "C" void xos_file_session_unlock() __attribute__((weak));
 extern "C" xos::u32 xos_file_request_id() __attribute__((weak));
+extern "C" xos::i64 xos_file_session_exchange(const xos::file::request*,
+                                              xos::file::response*) __attribute__((weak));
 namespace xos::file {
 namespace {
 struct session_guard {
@@ -30,6 +32,12 @@ bool client::init() {
 }
 
 i64 client::call(op operation) {
+    // A libc with its own FD/session owner supplies one complete exchange,
+    // sharing sequence, deadline and failure state with its ordinary I/O.
+    if (xos_file_session_exchange) {
+        request_.operation = static_cast<u16>(operation);
+        return xos_file_session_exchange(&request_, &response_);
+    }
     const u64 caller = sdk::pid();
     if (owner_pid_ != caller) {
         // A fork copies arbitrary client objects, including loader and

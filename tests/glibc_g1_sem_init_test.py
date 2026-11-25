@@ -4,6 +4,7 @@
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -28,7 +29,7 @@ with tempfile.TemporaryDirectory(prefix='xos_glibc_sem_') as tmp:
     subprocess.run(['patch', '-s', '-p1', '-i', str(root/'src/ports/glibc/patches/0010-sem-init-private-only.patch')], cwd=tmp, check=True)
     shutil.copyfile(fixtures/'sem_mock/semaphoreP.h', tmp/'nptl/semaphoreP.h')
     exe = tmp/'test'
-    subprocess.run(['clang', '-std=c11', '-Wall', '-Werror', '-I', str(fixtures/'sem_mock'),
+    subprocess.run([os.environ.get('CC', 'clang'), '-std=c11', '-Wall', '-Werror', '-I', str(fixtures/'sem_mock'),
                     '-I', str(overlay), str(tmp/'nptl/sem_init.c'), str(fixtures/'sem_init_test.c'),
                     '-o', str(exe)], check=True)
     subprocess.run([str(exe)], check=True)

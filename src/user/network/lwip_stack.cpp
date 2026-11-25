@@ -25,6 +25,13 @@ xos::i64 map_error(err_t error) {
 }
 extern "C" u32_t sys_now() { return active_stack ? active_stack->milliseconds() : 0; }
 extern "C" uint32_t xos_lwip_rand() { return active_stack ? active_stack->random_word() : 0; }
+extern "C" int xos_lwip_dns_random(uint16_t* value) {
+    if (!value) return ERR_ARG;
+    xos::u32 word;
+    if (!active_stack || active_stack->random_checked(word)) return ERR_IF;
+    *value = static_cast<uint16_t>(word);
+    return ERR_OK;
+}
 extern "C" void xos_lwip_diag(const char*, ...) { if (active_stack) active_stack->fault(); }
 
 namespace xos::user::network {
@@ -36,8 +43,15 @@ u32 lwip_stack::milliseconds() {
 }
 u32 lwip_stack::random_word() {
     u32 result = 0;
-    if (io_.random(io_.context, result)) failure_ = io;
+    (void)random_checked(result);
     return result;
+}
+i64 lwip_stack::random_checked(u32& result) {
+    if (failure_) return failure_;
+    u32 word = 0;
+    if (io_.random(io_.context, word)) { failure_ = io; return failure_; }
+    result = word;
+    return 0;
 }
 err_t lwip_stack::configure(netif* interface) {
     interface->name[0] = 'x'; interface->name[1] = 'n';
@@ -71,6 +85,7 @@ void lwip_stack::shutdown() {
 }
 err_t lwip_stack::link_output(netif* interface, pbuf* packet) {
     auto& self = *static_cast<lwip_stack*>(interface->state);
+    if (self.failure_) return ERR_IF;
     if (!packet || !packet->tot_len || packet->tot_len > 1514) return ERR_BUF;
     u8 frame[1514];
     const u16_t copied = pbuf_copy_partial(packet, frame, packet->tot_len, 0);
@@ -235,14 +250,21 @@ i64 lwip_stack::close(u32 slot, bool aborting) {
     if (item.udp) udp_remove(item.udp);
     if (item.tcp) {
         auto* pcb = item.tcp;
+        // tcp_close sends RST when data has not been acknowledged through
+        // tcp_recved, discarding queued output as well. Keep ownership and
+        // the complete receive path intact until the application drains it.
+        if (!aborting && (item.count || pcb->refused_data || pcb->rcv_wnd != TCP_WND_MAX(pcb))) return would_block;
         tcp_arg(pcb, nullptr); tcp_recv(pcb, nullptr); tcp_err(pcb, nullptr);
-        if (aborting || !item.established) tcp_abort(pcb);
+        if (aborting) tcp_abort(pcb);
         else {
             const err_t result = tcp_close(pcb);
             if (result != ERR_OK) {
                 tcp_arg(pcb, &item); tcp_recv(pcb, on_receive); tcp_err(pcb, on_error);
                 return map_error(result);
             }
+            // In pinned 2.2.1, FIN allocation pressure sets TF_CLOSEPEND and
+            // returns ERR_OK: lwIP retries from its timer and owns the PCB.
+            // No callback may retain the application slot after this point.
         }
     }
     item = {}; return 0;

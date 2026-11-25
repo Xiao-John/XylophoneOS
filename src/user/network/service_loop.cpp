@@ -11,7 +11,7 @@ namespace {
 struct ipc_session {
     ipc_channel channel;
     net2::message reply;
-    u64 reply_deadline;
+    u64 reply_deadline, generation;
     bool pending, delivered;
     u32 reply_bytes;
 } sessions[net2::session_limit];
@@ -26,7 +26,15 @@ void close_channel(ipc_channel& channel) {
     if (channel.receive) (void)sdk::ipc_channel_close(channel.receive);
     channel = {};
 }
-void drop(u32 slot) { core.detach(slot); close_channel(sessions[slot].channel); sessions[slot] = {}; }
+void clear_session(u32 slot) {
+    close_channel(sessions[slot].channel);
+    sessions[slot] = {};
+}
+void drop(u32 slot) {
+    // A transport binding must never detach a replacement generation.
+    if (sessions[slot].generation == core.generation(slot)) core.detach(slot);
+    clear_session(slot);
+}
 }
 i64 serve(u64 controller, virtio_net::driver& nic) {
     const frame_io callbacks{&nic,
@@ -47,20 +55,23 @@ i64 serve(u64 controller, virtio_net::driver& nic) {
     u32 round_robin = 0;
     u64 stop_deadline = 0;
     for (;;) {
+        result = stack.poll(); if (result) break;
         const i64 clock = sdk::syscall(sys_clock_monotonic);
         if (clock < 0) { result = net2::io; break; }
-        const u64 now = static_cast<u64>(clock);
-        result = stack.poll(); if (result) break;
+        u64 now = static_cast<u64>(clock);
         core.expire(now);
         bool replies_pending = false;
         for (u32 count = 0; count < net2::session_limit; ++count) {
             const u32 slot = (round_robin + count) % net2::session_limit;
             auto& session = sessions[slot];
             if (!session.channel.send) continue;
-            if (!core.alive(slot)) { drop(slot); continue; }
+            if (!core.alive(slot) || session.generation != core.generation(slot)) { drop(slot); continue; }
             // try_send also detects process exit/exec/revocation even while idle.
             const i64 ready = sdk::ipc_wait(session.channel.send, ipc_wait_mode::try_send);
             if (ready && ready != process_error_would_block) { drop(slot); continue; }
+            const i64 reply_clock = sdk::syscall(sys_clock_monotonic);
+            if (reply_clock < 0) { result = net2::io; break; }
+            now = static_cast<u64>(reply_clock);
             if (session.pending) {
                 if (now >= session.reply_deadline) { drop(slot); continue; }
                 if (!session.delivered) {
@@ -75,6 +86,11 @@ i64 serve(u64 controller, virtio_net::driver& nic) {
             const i64 received = sdk::ipc_recv(session.channel.receive, &incoming, sizeof(incoming));
             if (received == -3) continue;
             if (received < static_cast<i64>(net::header_bytes)) { drop(slot); continue; }
+            // Polling, other sessions and ipc_recv can cross a deadline. Sample
+            // at authorization, after the complete request has been received.
+            const i64 request_clock = sdk::syscall(sys_clock_monotonic);
+            if (request_clock < 0) { result = net2::io; break; }
+            now = static_cast<u64>(request_clock);
             if (incoming.version == net::version) {
                 net::message legacy{};
                 __builtin_memcpy(&legacy, &incoming, net::header_bytes);
@@ -99,6 +115,7 @@ i64 serve(u64 controller, virtio_net::driver& nic) {
             session.pending = true; session.delivered = false;
             session.reply_deadline = bounded_deadline(now, net2::reply_timeout_ns); replies_pending = true;
         }
+        if (result) break;
         round_robin = (round_robin + 1) % net2::session_limit;
         if (core.stopping()) {
             if (!stop_deadline) stop_deadline = bounded_deadline(now, net2::reply_timeout_ns);
@@ -115,7 +132,16 @@ i64 serve(u64 controller, virtio_net::driver& nic) {
                     !sdk::ipc_endpoint_peer(channel.receive, receive_peer) && send_peer && send_peer == receive_peer;
                 const i64 slot = authenticated ? core.attach(send_peer, now) : net2::denied;
                 if (slot < 0) close_channel(channel);
-                else sessions[static_cast<u32>(slot)].channel = channel;
+                else {
+                    const u32 index = static_cast<u32>(slot);
+                    // Revocation can free a slot after its turn this round.
+                    // Close both old endpoints and erase reply state before
+                    // binding the newly authenticated application. Do not
+                    // detach the generation which attach just created.
+                    clear_session(index);
+                    sessions[index].channel = channel;
+                    sessions[index].generation = core.generation(index);
+                }
             }
             if (result) break;
         }
@@ -125,7 +151,8 @@ i64 serve(u64 controller, virtio_net::driver& nic) {
     }
     (void)sdk::ipc_name_unpublish(net2::service_name);
     (void)sdk::ipc_name_unpublish(net::service_name);
-    for (u32 i = 0; i < net2::session_limit; ++i) drop(i);
+    core.shutdown();
+    for (u32 i = 0; i < net2::session_limit; ++i) clear_session(i);
     stack.shutdown(); return result;
 }
 }

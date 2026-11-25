@@ -1,0 +1,10 @@
+{
+  "files": {
+    "host_normal.json": "5b0a5c9e9b7802bf7b318777be557c194ff22d5efec9a37dc554e7653c3ff265",
+    "host_normal.log": "25faf2a863687ce30dcd9acb1b807545017788eec14413ce124c146551b72b17",
+    "host_sanitized.json": "8d37a4bd726024e9b208f6117375f7c5f4e2f3088886035367482c6aaaa5f6f5",
+    "host_sanitized.log": "25faf2a863687ce30dcd9acb1b807545017788eec14413ce124c146551b72b17",
+    "verification.json": "7d652741a535471e55e0de6dee595154262884a9a0868a28cc49f0cde7f4340d"
+  },
+  "version": 1
+}

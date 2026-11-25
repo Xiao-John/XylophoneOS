@@ -14,14 +14,16 @@ u32 service_core::connection_count() const {
 }
 bool service_core::alive(u32 slot) const { return slot < session_limit && sessions_[slot].peer; }
 u64 service_core::peer(u32 slot) const { return alive(slot) ? sessions_[slot].peer : 0; }
+u64 service_core::generation(u32 slot) const { return alive(slot) ? sessions_[slot].generation : 0; }
 i64 service_core::attach(u64 peer_pid, u64 now) {
     if (!peer_pid || stopping_) return closed;
+    if (!next_generation_) return resources;
     for (const auto revoked : revoked_) if (revoked == peer_pid) return denied;
     for (const auto& item : sessions_) if (item.peer == peer_pid) return resources;
     const u32 first = peer_pid == controller_ ? client_sessions : 0;
     const u32 end = peer_pid == controller_ ? session_limit : client_sessions;
     for (u32 i = first; i < end; ++i) if (!sessions_[i].peer) {
-        sessions_[i] = {peer_pid, 0, now}; return i;
+        sessions_[i] = {peer_pid, 0, now, next_generation_++}; return i;
     }
     return resources;
 }

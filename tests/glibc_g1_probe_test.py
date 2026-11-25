@@ -5,17 +5,34 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / 'scripts/glibc_g1_probe.py'
 sys.path.insert(0, str(ROOT / 'scripts'))
-from glibc_g1_probe import clean_build_environment
+from glibc_g1_probe import clean_build_environment, select_gnu_make
 poison = {'CPATH': '/untrusted', 'CFLAGS': '-bad', 'CC': 'bad', 'READELF': 'bad',
-          'PATH': '/tools', 'BISON_PKGDATADIR': '/data'}
+          'MAKE': 'wrong-make', 'PATH': '/tools', 'BISON_PKGDATADIR': '/data'}
 clean, removed = clean_build_environment(poison)
 assert clean == {'PATH': '/tools', 'BISON_PKGDATADIR': '/data'}
-assert removed == ['CC', 'CFLAGS', 'CPATH', 'READELF']
-assert len(poison) == 6
+assert removed == ['CC', 'CFLAGS', 'CPATH', 'MAKE', 'READELF']
+assert len(poison) == 7
+
+linux_make = {'path': '/usr/bin/make', 'version_exit_code': 0, 'version': 'GNU Make 4.4.1'}
+mac_make = {'path': '/gnu/bin/gmake', 'version_exit_code': 0, 'version': 'GNU Make 4.4.1'}
+old_make = {'path': '/usr/bin/make', 'version_exit_code': 0, 'version': 'GNU Make 3.81'}
+with patch('glibc_g1_probe.tool_identity', side_effect=[linux_make]) as probe:
+    assert select_gnu_make() == linux_make
+    probe.assert_called_once_with('make')
+with patch('glibc_g1_probe.tool_identity', side_effect=[old_make, mac_make]):
+    assert select_gnu_make() == mac_make
+with patch('glibc_g1_probe.tool_identity', side_effect=[old_make, {}, {}]):
+    try:
+        select_gnu_make()
+    except SystemExit as error:
+        assert 'GNU make 4 or later is required' in str(error)
+    else:
+        raise AssertionError('accepted obsolete or missing make')
 
 with tempfile.TemporaryDirectory(prefix='xos_glibc_g1_test_') as temporary:
     root = Path(temporary)

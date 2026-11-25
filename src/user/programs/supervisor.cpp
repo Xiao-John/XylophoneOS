@@ -260,7 +260,17 @@ void start_network(u64 instance, bool probe, bool raw = false) {
     if (probe) result_line(static_cast<u64>(child));
     else {
         network_service_pid = static_cast<u64>(child);
-        print("[net-start] pid="); decimal(network_service_pid); print("\n");
+        // Publish the whole line in one write so the service's ready message
+        // cannot land between the label and its PID.
+        char line[sizeof("[net-start] pid=") + 21] = "[net-start] pid=";
+        auto value = network_service_pid;
+        const usize prefix = sizeof("[net-start] pid=") - 1;
+        usize digits = 1;
+        for (u64 remaining = value; remaining >= 10; remaining /= 10) ++digits;
+        line[prefix + digits] = '\n';
+        for (usize i = prefix + digits; i > prefix; value /= 10)
+            line[--i] = static_cast<char>('0' + value % 10);
+        print(line);
     }
 }
 void stop_network() {

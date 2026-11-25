@@ -4,6 +4,7 @@
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import shutil
@@ -16,6 +17,7 @@ sys.path[:0] = [str(ROOT / 'scripts'), str(ROOT / 'tests')]
 from boot_smoke import Guest
 from build_glibc_sdk import inputs as glibc_inputs
 from dash_c3_exec_smoke import exec_opt_in
+from glibc_g1_probe import clean_build_environment
 from make_work_disk import create_fat32
 from process_smoke import command, resources
 from task_smoke import send_bytes, pump
@@ -77,8 +79,10 @@ def build_newlib_parent(system_build, output, report):
     if receipt['build_id'] != report['system_build_id']:
         raise RuntimeError('newlib parent SDK and system build IDs differ')
     compiler = Path(shutil.which('x86_64-elf-gcc')).resolve(strict=True)
-    libgcc = Path(subprocess.check_output([compiler, '-print-libgcc-file-name'], text=True).strip())
-    headers = subprocess.check_output([compiler, '-print-file-name=include'], text=True).strip()
+    env, removed = clean_build_environment(os.environ)
+    env['LC_ALL'] = 'C'
+    libgcc = Path(subprocess.check_output([compiler, '-print-libgcc-file-name'], env=env, text=True).strip())
+    headers = subprocess.check_output([compiler, '-print-file-name=include'], env=env, text=True).strip()
     source = ROOT / 'tests/fixtures/glibc_g3/files_exec_parent.c'
     binary = output / 'g3_files_parent.elf'
     obj = output / 'g3_files_parent.o'
@@ -87,7 +91,7 @@ def build_newlib_parent(system_build, output, report):
     report['newlib_parent_inputs'] = {str(path.relative_to(sdk)): sha(path) for path in inputs}
     report['newlib_parent_libgcc_sha256'] = sha(libgcc)
     commands = [[str(compiler), '-std=gnu11', '-O2', '-g', '-mno-red-zone',
-                 '-fno-pie', '-fno-pic', '-fno-stack-protector', '-nostdinc',
+                 '-fno-pie', '-fno-pic', '-fno-stack-protector', '-fno-builtin', '-nostdinc',
                  '-isystem', str(sdk / 'include'), '-isystem', headers,
                  '-c', str(source), '-o', str(obj)],
                 [str(compiler), '-nostdlib', '-static', '-no-pie',
@@ -97,52 +101,80 @@ def build_newlib_parent(system_build, output, report):
                  '-Wl,--end-group', '-o', str(binary)]]
     with (output / 'g3_files_parent_build.log').open('w') as log:
         for invocation in commands:
-            subprocess.run(invocation, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT, check=True)
+            subprocess.run(invocation, cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT, check=True)
     for path in inputs:
         if sha(path) != report['newlib_parent_inputs'][str(path.relative_to(sdk))]:
             raise RuntimeError('newlib SDK changed while building exec parent')
     report['elfs']['g3_files_parent'] = {'source': 'glibc_g3/files_exec_parent.c',
         'source_sha256': sha(source), 'elf_sha256': sha(binary), 'build_commands': commands,
-        'compiler_sha256': sha(compiler), 'exec_receiver_marker': exec_opt_in(binary)}
+        'compiler_sha256': sha(compiler), 'exec_receiver_marker': exec_opt_in(binary),
+        'sanitized_environment': removed}
     return binary
 
 
-def service_death(guest, baseline):
-    """Kill only the observed files service in the disposable guest."""
-    listing = command(guest, 'ps', b'name=files ')
-    matches = re.findall(rb'^pid=(\d+) name=files state=[^\n]+$', listing, re.MULTILINE)
-    if len(matches) != 1:
-        raise AssertionError('expected one live files service: ' + repr(listing))
-    files_pid = int(matches[0])
-    start = len(guest.output)
-    spawned = command(guest, 'spawn-file /bin/g3_files_single service-death',
-                      b'GLIBC_G3_FILES_DEATH_READY', timeout=30)
-    children = re.findall(rb'\[loader\] started pid=(\d+)', spawned)
-    if len(children) != 1:
-        raise AssertionError('could not identify service-death probe')
-    child = int(children[0])
-    if child == files_pid:
-        raise AssertionError('probe and files service identities overlap')
-    command(guest, 'kill ' + str(files_pid), b'kill: accepted')
-    waited = command(guest, 'wait ' + str(child), b'kind=exited code=', timeout=60)
-    if re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', waited) != [b'0']:
-        raise AssertionError('service-death probe failed: ' + repr(waited))
-    captured = bytes(guest.output)[start:]
-    if b'GLIBC_G3_FILES_DEATH_PASS' not in captured:
-        raise AssertionError('service-death completion marker missing')
-    after = resources(guest)
-    if after[1] != baseline[1] - 1 or after[0] < baseline[0]:
-        raise AssertionError('files-service death leaked a task or pages')
-    return {'case': 'g3_files_service_death', 'status': 'passed',
-            'files_pid': files_pid, 'probe_pid': child,
-            'resources_after_service_removed': after,
-            'output': captured.decode(errors='replace')}
+def service_death(build, program, output, report):
+    """Exercise actual service exit in an explicitly instrumented private image."""
+    guest = None
+    result = report['service_death'] = {'status': 'failed', 'fault_injection': True}
+    try:
+        with tempfile.TemporaryDirectory(prefix='xos_glibc_files_death_') as temporary:
+            disk = Path(temporary) / 'work.img'
+            create_fat32(disk, 512)
+            transfer(disk, 'mkdir', '/bin')
+            transfer(disk, 'import', '/bin/g3_files', program)
+            guest = Guest(build / 'xos-install.iso', 'glibc_files_death',
+                          work_disk=disk, iso=True, qmp_enabled=False)
+            result['qemu_command'] = guest.command
+            guest.expect(b'xos64> ', timeout=30)
+            send_bytes(guest, b'run\r')
+            guest.expect_supervisor(trace=True, timeout=30)
+            command(guest, 'demo quiet', b'demo tasks')
+            baseline = resources(guest)
+            result['baseline'] = baseline
+            listing = command(guest, 'ps', b'name=files ')
+            matches = re.findall(rb'^pid=(\d+) name=files state=[^\n]+$', listing, re.MULTILINE)
+            if len(matches) != 1:
+                raise AssertionError('expected one live files service: ' + repr(listing))
+            result['files_pid'] = int(matches[0])
+            captured = command(guest, 'exec-file /bin/g3_files service-death',
+                               b'kind=exited code=', timeout=60)
+            if re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', captured) != [b'0']:
+                raise AssertionError('service-death probe failed: ' + repr(captured))
+            position = 0
+            reclaimed = ('[task] event=reclaimed pid=' + str(result['files_pid']) + ' ').encode()
+            for marker in (b'GLIBC_G3_FILES_DEATH_READY', reclaimed,
+                           b'GLIBC_G3_FILES_DEATH_PASS'):
+                found = captured.find(marker, position)
+                if found < 0:
+                    raise AssertionError('service-death marker missing: ' + repr(captured))
+                position = found + len(marker)
+            after = resources(guest)
+            freed = re.findall(re.escape(reclaimed) + rb'pages=(\d+)', captured)
+            if len(freed) != 1:
+                raise AssertionError('missing unique service page reclamation count')
+            expected = (baseline[0] + int(freed[0]), baseline[1] - 1, baseline[2])
+            if after != expected:
+                raise AssertionError(f'files-service death resource drift: expected {expected}, got {after}')
+            remaining = command(guest, 'ps', b'name=supervisor ')
+            if re.search(rb'^pid=\d+ name=files ', remaining, re.MULTILINE):
+                raise AssertionError('files service is still live after fault injection')
+            result.update(status='passed', resources_after_service_removed=after,
+                          expected_resources_after_service_removed=expected,
+                          output=captured.decode(errors='replace'))
+    finally:
+        if guest:
+            guest.close()
+            (output / 'service_death_serial.log').write_bytes(guest.output)
+            result['serial_sha256'] = sha(output / 'service_death_serial.log')
+    return {'case': 'g3_files_service_death', **result}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--system-build', type=Path, required=True)
     parser.add_argument('--glibc-build', type=Path, required=True)
+    parser.add_argument('--death-system-build', type=Path,
+                        help='private system built with --glibc-files-death-probe')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--suite', choices=('g2', 'threads', 'files', 'all'), default='g2')
     parser.add_argument('--repetitions', type=int, default=3)
@@ -174,6 +206,20 @@ def main():
         glibc_manifest = glibc_build / 'manifest.json'
         system = json.loads(system_manifest.read_text())
         sdk = json.loads(glibc_manifest.read_text())
+        if system.get('glibc_files_death_probe', False):
+            raise RuntimeError('ordinary cases require the normal system image')
+        death_build = None
+        if args.death_system_build:
+            death_build = args.death_system_build.resolve(strict=True)
+            death_manifest = death_build / 'manifest.json'
+            death_system = json.loads(death_manifest.read_text())
+            initial_death_manifest = sha(death_manifest)
+            if death_system.get('glibc_files_death_probe') is not True:
+                raise RuntimeError('service-death image lacks the explicit fault profile')
+            report['service_death_inputs'] = {
+                'build_id': death_system['build_id'],
+                'manifest_sha256': initial_death_manifest,
+                'image_sha256': sha(death_build / 'xos-install.iso')}
         if sdk.get('status') != 'static_sdk_built':
             raise RuntimeError('requires a successfully built complete static SDK')
         sysroot = glibc_build / 'sysroot'
@@ -194,6 +240,14 @@ def main():
             for name, expected in sdk['artifacts'].items():
                 if sha(sysroot / name) != expected:
                     raise RuntimeError('SDK artifact changed: ' + name)
+            if death_build:
+                if sha(death_manifest) != initial_death_manifest:
+                    raise RuntimeError('service-death manifest changed')
+                if death_system['sources'] != system['sources']:
+                    raise RuntimeError('normal and service-death source snapshots differ')
+                for name, information in death_system['artifacts'].items():
+                    if sha(death_build / name) != information['sha256']:
+                        raise RuntimeError('service-death artifact changed: ' + name)
 
         verify_inputs()
         report.update({'system_build_id': system['build_id'], 'image_sha256': sha(image),
@@ -278,7 +332,13 @@ def main():
                                            'resources': after, 'output': captured.decode(errors='replace')})
                     (output / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
             if args.suite in ('files', 'all'):
-                report['runs'].append(service_death(guest, baseline))
+                if death_build:
+                    report['runs'].append(service_death(death_build, programs['g3_files_single'],
+                                                        output, report))
+                else:
+                    report['service_death'] = {
+                        'status': 'not_run',
+                        'reason': 'requires a separate --glibc-files-death-probe system build'}
             verify_inputs()
             for name, binary in programs.items():
                 if sha(binary) != report['elfs'][name]['elf_sha256']:

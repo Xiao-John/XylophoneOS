@@ -1276,6 +1276,25 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         return;
     }
     const op operation = static_cast<op>(in.operation);
+#if defined(XOS_GLIBC_FILES_DEATH_PROBE) && XOS_GLIBC_FILES_DEATH_PROBE
+    // Dedicated disposable guest only. Exercise real endpoint teardown without
+    // changing the production supervisor's protected-service kill policy.
+    constexpr char death_path[] = "/.glibc_g3_service_death";
+    if (operation == op::open && in.flags == read_only && in.handle == 0 &&
+        in.reserved == 0 && in.offset == 0 && in.length == 0 &&
+        in.name_length == sizeof(death_path) - 1) {
+        bool matches = true;
+        for (u32 i = 0; i < sizeof(death_path); ++i) {
+            matches = matches && in.name[i] == death_path[i];
+        }
+        if (matches) {
+            // This service has no console route. The guest harness verifies
+            // the observed service PID's kernel reclamation trace and the
+            // client's EIO result; no additional authority is needed.
+            sdk::exit(86);
+        }
+    }
+#endif
     if (operation == op::ping) {
         reply(out, in, mounted && !recovery_failed ? status::ok : status::io);
         return;

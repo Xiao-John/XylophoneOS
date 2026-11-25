@@ -45,6 +45,8 @@ def main():
     parser.add_argument("--vm1-probe", action="store_true", help="enable isolated VM1 test-only syscall 67")
     parser.add_argument("--cow1-probe", action="store_true", help="enable isolated COW1 page-table self-check")
     parser.add_argument("--eager-fork", action="store_true", help="use the eager-copy fork control profile")
+    parser.add_argument("--glibc-files-death-probe", action="store_true",
+                        help="test-only files self-exit trigger; requires an isolated output directory")
     args = parser.parse_args()
     if args.eager_fork and args.cow1_probe:
         parser.error("select eager control or the opt-in COW1 probe, not both")
@@ -58,6 +60,8 @@ def main():
         raise SystemExit("output directory must be build/ or one of its subdirectories")
     if args.vm1_probe and BUILD == ROOT / "build":
         parser.error("VM1 probe requires an isolated build subdirectory")
+    if args.glibc_files_death_probe and BUILD == ROOT / "build":
+        parser.error("glibc files death probe requires an isolated build subdirectory")
     if args.terminal_supervisor_probe and args.ncurses_supervisor_probe:
         parser.error("select at most one test supervisor")
     if (args.terminal_supervisor_probe or args.ncurses_supervisor_probe) and BUILD == ROOT / "build":
@@ -111,6 +115,7 @@ def main():
                                       "ncurses_supervisor_probe": args.ncurses_supervisor_probe,
                                       "clock_irq_probe": args.clock_irq_probe, "vm1_probe": args.vm1_probe,
                                       "cow1_probe": args.cow1_probe, "cow_fork": not args.eager_fork,
+                                      "glibc_files_death_probe": args.glibc_files_death_probe,
                                       "virtio_gpu": gpu_config,
                                       "network_service": network_configuration(ROOT)}, sort_keys=True).encode())
     build_id = source_digest[:16]
@@ -126,7 +131,8 @@ def main():
         subprocess.run(command, check=True)
 
     user_artifacts = build_users(ROOT, BUILD, nasm, run, build_id, args.terminal_supervisor_probe,
-                                 args.ncurses_supervisor_probe)
+                                 args.ncurses_supervisor_probe,
+                                 glibc_files_death_probe=args.glibc_files_death_probe)
     user_programs = ("heartbeat", "spinner", "receiver", "sender", "probe", "quitter")
     header = ["#pragma once", "#include <xos/types.hpp>", "namespace xos::user_blobs {"]
     for name in user_programs:
@@ -276,6 +282,7 @@ def main():
         "vm1_probe": args.vm1_probe, "cow1_probe": args.cow1_probe, "cow_fork": not args.eager_fork,
         "capacity_probe": args.capacity_probe, "terminal_supervisor_probe": args.terminal_supervisor_probe,
         "ncurses_supervisor_probe": args.ncurses_supervisor_probe,
+        "glibc_files_death_probe": args.glibc_files_death_probe,
         "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config,
         "sources": source_hashes,
         "sdk_directories": [p.relative_to(BUILD / "sdk").as_posix()

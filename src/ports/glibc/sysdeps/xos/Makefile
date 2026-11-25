@@ -13,3 +13,7 @@ static-only-routines += xos_static_worker
 sysdep_routines += xos_static_worker
 sysdep_routines += xos_thread_name xos_nptl_exit
 endif
+
+ifeq ($(subdir),io)
+sysdep_routines += xos_file_runtime
+endif

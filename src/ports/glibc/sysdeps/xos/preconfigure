@@ -1,9 +1,0 @@
-# SPDX-License-Identifier: Apache-2.0
-# Register only the experimental XOS/x86-64 port with glibc's configure.
-# This permits configuration; it does not claim that libc or NPTL builds.
-case "$machine-$host_os" in
-  x86_64/64-xos)
-    libc_config_ok=yes
-    echo 'WARNING: XOS glibc backend is experimental and incomplete' >&2
-    ;;
-esac

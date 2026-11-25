@@ -1,6 +1,0 @@
-# Experimental XOS-only sonames and first glibc symbol version.  These are
-# build inputs for an isolated research sysroot, not a frozen release ABI.
-# XOS native objects must not be treated as Linux-compatible from the name.
-DEFAULT GLIBC_2.44
-libc=0.1
-libm=0.1

@@ -1,4 +1,0 @@
---- a/sysdeps/nptl/thread_db.h
-+++ b/sysdeps/nptl/thread_db.h
-@@ -26,0 +27 @@
-+#include <bits/types/sigset_t.h>

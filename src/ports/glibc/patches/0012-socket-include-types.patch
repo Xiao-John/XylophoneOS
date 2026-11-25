@@ -1,4 +1,0 @@
---- a/socket/sys/socket.h
-+++ b/socket/sys/socket.h
-@@ -22,0 +23 @@
-+#include <sys/types.h>

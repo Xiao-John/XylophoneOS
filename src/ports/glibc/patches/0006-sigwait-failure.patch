@@ -1,8 +1,0 @@
---- a/signal/sigwait.c
-+++ b/signal/sigwait.c
-@@ -25,2 +25 @@
--  __set_errno (ENOSYS);
--  return -1;
-+  return ENOSYS;
-@@ -27,0 +27 @@
-+libc_hidden_def (__sigwait)

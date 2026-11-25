@@ -32,7 +32,7 @@ case_results = []
 class repository_cases(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix='xypm_p3_')
-        self.folder = Path(self.temporary.name)
+        self.folder = Path(self.temporary.name).resolve()
         self.serial = 0
         self.base = self.package('friends.base')
         self.base_hash = sha_file(self.base)

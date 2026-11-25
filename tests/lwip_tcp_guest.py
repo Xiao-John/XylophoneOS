@@ -79,7 +79,7 @@ def main():
             result['qemu_command']=guest.command
             guest.expect(b'xos64> ',timeout=60); send_bytes(guest,b'run\r'); guest.expect_supervisor(trace=True,timeout=60)
             command(guest,'demo quiet',b'demo tasks'); pump(guest,.2)
-            output=command(guest,'net-start 41',b'[net-start] pid=',timeout=60)
+            output=command(guest,'net-start 41 raw',b'[net-start] pid=',timeout=60)
             guest.expect(b'[net] ready',timeout=60); baseline=resources(guest)
             worker.start()
             output=command(guest,f'exec-driver /bin/tcp.elf {port}',b'kind=exited code=',timeout=90)

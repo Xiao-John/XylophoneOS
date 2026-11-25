@@ -44,7 +44,7 @@ python3 scripts/xypm.py install --image base.img --output-image work.img --offli
 客体（QEMU 需 `--network`，即现代 VirtIO-net instance 41）：
 
 ```text
-xsh> net-start 41
+xsh> net-start 41 raw
 [net-start] pid=10
 [net] ready user_driver=1 raw_ethernet=1
 xsh> net_ping

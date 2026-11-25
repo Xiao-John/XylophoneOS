@@ -1,0 +1,261 @@
+// SPDX-License-Identifier: Apache-2.0
+#include "lwip_stack.hpp"
+extern "C" {
+#include "lwip/init.h"
+#include "lwip/etharp.h"
+#include "lwip/timeouts.h"
+#include "netif/ethernet.h"
+}
+
+namespace {
+xos::user::network::lwip_stack* active_stack;
+xos::i64 map_error(err_t error) {
+    using namespace xos::net2;
+    switch (error) {
+    case ERR_OK: return 0;
+    case ERR_MEM: case ERR_BUF: return would_block;
+    case ERR_TIMEOUT: return timeout;
+    case ERR_RST: case ERR_ABRT: return reset;
+    case ERR_CLSD: return closed;
+    case ERR_VAL: case ERR_ARG: return invalid;
+    case ERR_USE: return resources;
+    default: return io;
+    }
+}
+}
+extern "C" u32_t sys_now() { return active_stack ? active_stack->milliseconds() : 0; }
+extern "C" uint32_t xos_lwip_rand() { return active_stack ? active_stack->random_word() : 0; }
+extern "C" void xos_lwip_diag(const char*, ...) { if (active_stack) active_stack->fault(); }
+
+namespace xos::user::network {
+using namespace net2;
+u32 lwip_stack::milliseconds() {
+    const i64 value = io_.clock(io_.context);
+    if (value < 0) { failure_ = io; return 0; }
+    return static_cast<u32>(static_cast<u64>(value) / 1'000'000ull);
+}
+u32 lwip_stack::random_word() {
+    u32 result = 0;
+    if (io_.random(io_.context, result)) failure_ = io;
+    return result;
+}
+err_t lwip_stack::configure(netif* interface) {
+    interface->name[0] = 'x'; interface->name[1] = 'n';
+    interface->mtu = 1500; interface->hwaddr_len = 6;
+    interface->flags = NETIF_FLAG_BROADCAST | NETIF_FLAG_ETHARP | NETIF_FLAG_LINK_UP;
+    interface->output = etharp_output; interface->linkoutput = link_output;
+    return ERR_OK;
+}
+i64 lwip_stack::initialize(const frame_io& callbacks, const u8* mac) {
+    if (active_stack || active_ || !mac || !callbacks.clock || !callbacks.random ||
+        !callbacks.receive || !callbacks.transmit) return invalid;
+    io_ = callbacks; active_stack = this;
+    (void)milliseconds(); (void)random_word();
+    if (failure_) { active_stack = nullptr; return failure_; }
+    lwip_init();
+    ip4_addr_t address, mask, gateway;
+    IP4_ADDR(&address, 10, 0, 2, 15); IP4_ADDR(&mask, 255, 255, 255, 0); IP4_ADDR(&gateway, 10, 0, 2, 2);
+    for (u32 i = 0; i < 6; ++i) interface_.hwaddr[i] = mac[i];
+    if (!netif_add(&interface_, &address, &mask, &gateway, this, configure, ethernet_input)) {
+        active_stack = nullptr; return resources;
+    }
+    netif_set_default(&interface_); netif_set_up(&interface_); active_ = true;
+    return failure_;
+}
+void lwip_stack::shutdown() {
+    if (active_) {
+        for (u32 i = 0; i < connection_limit; ++i) (void)close(i, true);
+        netif_set_down(&interface_); netif_remove(&interface_); active_ = false;
+    }
+    if (active_stack == this) active_stack = nullptr;
+}
+err_t lwip_stack::link_output(netif* interface, pbuf* packet) {
+    auto& self = *static_cast<lwip_stack*>(interface->state);
+    if (!packet || !packet->tot_len || packet->tot_len > 1514) return ERR_BUF;
+    u8 frame[1514];
+    const u16_t copied = pbuf_copy_partial(packet, frame, packet->tot_len, 0);
+    if (copied != packet->tot_len) return ERR_BUF;
+    const i64 result = self.io_.transmit(self.io_.context, frame, copied);
+    // The frame transport uses native net2 backpressure at this boundary.
+    if (result == would_block) return ERR_MEM;
+    if (result) { self.failure_ = io; return ERR_IF; }
+    return ERR_OK;
+}
+i64 lwip_stack::poll() {
+    if (!active_ || failure_) return failure_ ? failure_ : closed;
+    const i64 began = io_.clock(io_.context);
+    if (began < 0) { failure_ = io; return failure_; }
+    // A queued SYN-ACK cannot revive a connection after its absolute deadline.
+    expire_connects(static_cast<u64>(began));
+    u8 frame[1514];
+    for (u32 i = 0; i < 64; ++i) {
+        const i64 size = io_.receive(io_.context, frame, sizeof(frame));
+        if (size < 0) { failure_ = io; break; }
+        if (!size) break;
+        if (size > static_cast<i64>(sizeof(frame))) { failure_ = io; break; }
+        auto* packet = pbuf_alloc(PBUF_RAW, static_cast<u16_t>(size), PBUF_POOL);
+        if (!packet) { if (dropped_ != ~u32{0}) ++dropped_; continue; }
+        if (pbuf_take(packet, frame, static_cast<u16_t>(size)) != ERR_OK ||
+            interface_.input(packet, &interface_) != ERR_OK) pbuf_free(packet);
+    }
+    sys_check_timeouts();
+    const i64 now = io_.clock(io_.context);
+    if (now < 0) failure_ = io;
+    else expire_connects(static_cast<u64>(now));
+    return failure_;
+}
+void lwip_stack::expire_connects(u64 now) {
+    for (u32 i = 0; i < connection_limit; ++i) {
+        auto& item = connections_[i];
+        if (item.tcp && !item.established && now >= item.deadline) {
+            (void)close(i, true); item.error = timeout;
+        }
+    }
+}
+err_t lwip_stack::on_connected(void* context, tcp_pcb* pcb, err_t error) {
+    auto& item = *static_cast<connection*>(context);
+    const i64 now = active_stack ? active_stack->io_.clock(active_stack->io_.context) : -1;
+    if (now < 0 || static_cast<u64>(now) >= item.deadline) {
+        tcp_arg(pcb, nullptr); tcp_recv(pcb, nullptr); tcp_err(pcb, nullptr);
+        tcp_abort(pcb); item.tcp = nullptr; item.ended = true;
+        item.error = now < 0 ? io : timeout;
+        if (now < 0 && active_stack) active_stack->failure_ = io;
+        return ERR_ABRT;
+    }
+    item.established = error == ERR_OK; item.error = map_error(error); return ERR_OK;
+}
+void lwip_stack::on_error(void* context, err_t error) {
+    auto& item = *static_cast<connection*>(context);
+    item.tcp = nullptr; item.error = map_error(error); item.ended = true;
+}
+err_t lwip_stack::on_receive(void* context, tcp_pcb*, pbuf* packet, err_t error) {
+    auto& item = *static_cast<connection*>(context);
+    if (!packet) { item.ended = true; return ERR_OK; }
+    if (error != ERR_OK) return error;
+    if (packet->tot_len > tcp_receive_bytes - item.count) return ERR_MEM;
+    const u32 tail = (item.head + item.count) % tcp_receive_bytes;
+    const u32 first = packet->tot_len < tcp_receive_bytes - tail ? packet->tot_len : tcp_receive_bytes - tail;
+    if (pbuf_copy_partial(packet, item.data + tail, static_cast<u16_t>(first), 0) != first ||
+        (first < packet->tot_len && pbuf_copy_partial(packet, item.data,
+          static_cast<u16_t>(packet->tot_len - first), static_cast<u16_t>(first)) != packet->tot_len - first)) {
+        item.error = io; pbuf_free(packet); return ERR_OK;
+    }
+    item.count += packet->tot_len; pbuf_free(packet);
+    // tcp_recved happens only after application consumption, preserving pressure.
+    return ERR_OK;
+}
+void lwip_stack::on_datagram(void* context, udp_pcb*, pbuf* packet, const ip_addr_t*, u16_t) {
+    auto& item = *static_cast<connection*>(context);
+    if (!packet) return;
+    if (item.count == udp_queue_limit || packet->tot_len > payload_bytes) {
+        if (active_stack && active_stack->dropped_ != ~u32{0}) ++active_stack->dropped_;
+    } else {
+        const u32 tail = (item.head + item.count) % udp_queue_limit;
+        const u16_t copied = pbuf_copy_partial(packet, item.data + tail * payload_bytes, packet->tot_len, 0);
+        if (copied == packet->tot_len) { item.datagram_lengths[tail] = copied; ++item.count; }
+    }
+    pbuf_free(packet);
+}
+i64 lwip_stack::open(u32 slot, protocol transport, u32 address, u16 port, u64 deadline) {
+    if (slot >= connection_limit || failure_) return io;
+    auto& item = connections_[slot];
+    if (item.tcp || item.udp) return resources;
+    item = {}; item.deadline = deadline;
+    ip_addr_t remote;
+    IP_ADDR4(&remote, (address >> 24) & 255, (address >> 16) & 255, (address >> 8) & 255, address & 255);
+    if (transport == protocol::tcp) {
+        item.tcp = tcp_new_ip_type(IPADDR_TYPE_V4);
+        if (!item.tcp) return resources;
+        tcp_arg(item.tcp, &item); tcp_err(item.tcp, on_error); tcp_recv(item.tcp, on_receive);
+        const err_t result = tcp_connect(item.tcp, &remote, port, on_connected);
+        if (result != ERR_OK) { (void)close(slot, true); return map_error(result); }
+    } else if (transport == protocol::udp) {
+        item.udp = udp_new_ip_type(IPADDR_TYPE_V4);
+        if (!item.udp) return resources;
+        const err_t result = udp_connect(item.udp, &remote, port);
+        if (result != ERR_OK) { (void)close(slot, true); return map_error(result); }
+        udp_recv(item.udp, on_datagram, &item); item.established = true;
+    } else return invalid;
+    if (failure_) { (void)close(slot, true); return failure_; }
+    return 0;
+}
+i64 lwip_stack::status(u32 slot, u32& flags) {
+    auto& item = connections_[slot]; flags = 0;
+    if (item.error) { flags = failed; return item.error; }
+    if (!item.tcp && !item.udp) return closed;
+    flags = item.established ? connected : connecting;
+    if (item.ended) flags |= eof;
+    return 0;
+}
+i64 lwip_stack::send(u32 slot, const u8* data, u32 length) {
+    auto& item = connections_[slot];
+    if (length > payload_bytes || (length && !data)) return invalid;
+    if (item.error) return item.error;
+    if (item.udp) {
+        auto* packet = pbuf_alloc(PBUF_TRANSPORT, static_cast<u16_t>(length), PBUF_RAM);
+        if (!packet) return would_block;
+        const err_t copied = pbuf_take(packet, data, static_cast<u16_t>(length));
+        const err_t result = copied == ERR_OK ? udp_send(item.udp, packet) : copied;
+        pbuf_free(packet); return result == ERR_OK ? length : map_error(result);
+    }
+    if (!item.tcp) return closed;
+    if (!item.established) return would_block;
+    if (!length) return 0;
+    u32 count = tcp_sndbuf(item.tcp); if (count > length) count = length;
+    if (!count) return would_block;
+    const err_t result = tcp_write(item.tcp, data, static_cast<u16_t>(count), TCP_WRITE_FLAG_COPY);
+    if (result != ERR_OK) return map_error(result);
+    // Data is already admitted. A transient output failure must not invite replay.
+    (void)tcp_output(item.tcp); return count;
+}
+i64 lwip_stack::receive(u32 slot, u8* data, u32 capacity, u32& length, u32& flags) {
+    auto& item = connections_[slot]; length = flags = 0;
+    if (!capacity || capacity > payload_bytes || !data) return invalid;
+    if (item.udp) {
+        if (!item.count) return would_block;
+        const u16 count = item.datagram_lengths[item.head];
+        if (capacity < count) { flags = count; return buffer_too_small; }
+        for (u32 i = 0; i < count; ++i) data[i] = item.data[item.head * payload_bytes + i];
+        item.head = (item.head + 1) % udp_queue_limit; --item.count; length = count; return 0;
+    }
+    if (item.count) {
+        const u32 count = item.count < capacity ? item.count : capacity;
+        for (u32 i = 0; i < count; ++i) data[i] = item.data[(item.head + i) % tcp_receive_bytes];
+        item.head = (item.head + count) % tcp_receive_bytes; item.count -= count;
+        if (item.tcp) tcp_recved(item.tcp, static_cast<u16_t>(count));
+        length = count; if (item.ended && !item.count && !item.error) flags = eof; return 0;
+    }
+    if (item.error) return item.error;
+    if (!item.tcp) return closed;
+    if (item.ended) { flags = eof; return 0; }
+    return would_block;
+}
+i64 lwip_stack::close(u32 slot, bool aborting) {
+    auto& item = connections_[slot];
+    if (item.udp) udp_remove(item.udp);
+    if (item.tcp) {
+        auto* pcb = item.tcp;
+        tcp_arg(pcb, nullptr); tcp_recv(pcb, nullptr); tcp_err(pcb, nullptr);
+        if (aborting || !item.established) tcp_abort(pcb);
+        else {
+            const err_t result = tcp_close(pcb);
+            if (result != ERR_OK) {
+                tcp_arg(pcb, &item); tcp_recv(pcb, on_receive); tcp_err(pcb, on_error);
+                return map_error(result);
+            }
+        }
+    }
+    item = {}; return 0;
+}
+stack_api lwip_stack::api() {
+    return {this,
+        [](void* self, u32 slot, protocol transport, u32 address, u16 port, u64 deadline) {
+            return static_cast<lwip_stack*>(self)->open(slot, transport, address, port, deadline); },
+        [](void* self, u32 slot, u32& flags) { return static_cast<lwip_stack*>(self)->status(slot, flags); },
+        [](void* self, u32 slot, const u8* data, u32 length) { return static_cast<lwip_stack*>(self)->send(slot, data, length); },
+        [](void* self, u32 slot, u8* data, u32 capacity, u32& length, u32& flags) {
+            return static_cast<lwip_stack*>(self)->receive(slot, data, capacity, length, flags); },
+        [](void* self, u32 slot, bool aborting) { return static_cast<lwip_stack*>(self)->close(slot, aborting); },
+        [](void* self) { return static_cast<lwip_stack*>(self)->dropped_; }};
+}
+}

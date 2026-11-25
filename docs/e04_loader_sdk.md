@@ -438,6 +438,20 @@ sys65=display控制/认证channel/等待，sys66=服务角色对已接收request
 保持不变；新模块追加目录，不改变原image ID。boot_info v1仍64字节，v2为112
 字节，保留reserved的ISO payload语义。旧内核不能消费新v2引导器。
 
+## N2 原生网络服务 SDK（2026-11-25）
+
+普通/线程SDK均导出`xos/net_service_abi.hpp`和`xos/net_service_client.hpp`。
+会话客户端必须提供可信启动者给出的实际服务PID；核验双向IPC peer后才发送请求。
+version=2的连接句柄独立于POSIX fd，短消息负载最多1024字节，没有newlib内部类型或
+bulk grant依赖。默认net-start进入服务持有lwIP的多会话模式，旧raw探针显式选择
+`net-start 41 raw`。完整布局、权限、错误、兼容及未验收项见
+[网络服务v2契约](contracts/net_service_v2.md)。
+
+构建本身不下载依赖：设置`XOS_LWIP_SOURCE_ARCHIVE`为
+`src/ports/lwip/source_lock.json`锁定的归档。开启/关闭状态与归档hash参与build_id，
+开启时产出`net_lwip_inputs.json`并随系统manifest绑定。未提供归档时v2服务明确不可用，
+独立ARP和可信raw诊断仍可使用。新SDK/镜像须重新构建，guest资格待补。
+
 ## VM3 匿名内存与 SDK（恢复中）
 
 `xos/vm_abi.hpp` 定义版本 1 的 `sys_vm` 请求布局，`xos/vm.hpp` 提供当前进程的

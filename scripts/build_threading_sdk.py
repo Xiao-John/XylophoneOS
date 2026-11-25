@@ -350,6 +350,8 @@ def main():
                'display_extensions': {'version': 1, 'syscalls': [65, 66], 'pixel_format': 'XRGB8888', 'surface_count': 1},
                'ipc_v1': ipc_v1_manifest_entry(),
                'device_authorization': device_manifest_entry(),
+               'network_service': {'wire_version': 2, 'server_selection': 'verified_service_pid',
+                                   'guest_qualification': 'not_run'},
                'file_identity': {'version': 1, 'wire_version': 2, 'status': 'implemented_unverified',
                                  'cwd_operations': [26, 27, 28], 'directory_flag': 1024, 'pin_flag': 2048},
                'process_extensions': {'syscalls': [*range(54,62),80,81,82], 'file_operations': list(range(20,29)),

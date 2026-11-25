@@ -229,7 +229,7 @@ i64 prepare_network_driver(u64 child, void* context) {
     launch.channel = static_cast<u32>(result);
     return 0;
 }
-void start_network(u64 instance, bool probe) {
+void start_network(u64 instance, bool probe, bool raw = false) {
     if (instance == 0 || instance > 65536) { print("net: instance must be 1 + PCI BDF\n"); return; }
     if (!probe && network_service_pid) {
         process_status status{};
@@ -243,7 +243,7 @@ void start_network(u64 instance, bool probe) {
     network_launch launch{instance, 0, 0};
     spawn_options options{}; options.stdio[0] = -2;
     options.prepare_child = prepare_network_driver; options.prepare_context = &launch;
-    const char* arguments[]{"net_service", probe ? "probe" : "serve"};
+    const char* arguments[]{"net_service", probe ? "probe" : raw ? "serve_raw" : "serve"};
     const i64 child = sdk::spawn_image_options(image, 2, arguments, options);
     if (child < 0) {
         if (launch.channel) (void)sdk::channel_close(launch.channel);
@@ -740,7 +740,7 @@ void execute(u32 argc, char** argv) {
               "Shell     dash -i starts dash; exit inside dash returns here\n"
               "Audio     tone <Hz> <ms> | melody <file> | audio status|cancel <job> | audio close\n"
               "          audio start|restart manages the user-mode audio service\n"
-              "Network   net-start <instance> | net-stop | net-probe <instance>\n"
+              "Network   net-start <instance> [raw] | net-stop | net-probe <instance>\n"
               "Display   display-start | interactium-start | exec gfxdemo [check|fault|hold|stop]\n"
               "Debug     diag <program> [args] | trace on/off | ps | kill <pid> | stats | images | primtest | elftest | filetest\n"
               "Search    /usr/bin:/bin:/; paths containing '/' are used directly\n");
@@ -774,8 +774,9 @@ void execute(u32 argc, char** argv) {
         print(syscall(10, number(argv[1])) == 0 ? "kill: accepted\n" : "kill: invalid pid\n");
     } else if (equal(argv[0], "images") && argc == 1) {
         image_list();
-    } else if ((equal(argv[0], "net-start") || equal(argv[0], "net-probe")) && argc == 2) {
-        start_network(number(argv[1]), equal(argv[0], "net-probe"));
+    } else if ((equal(argv[0], "net-start") || equal(argv[0], "net-probe")) &&
+               (argc == 2 || (argc == 3 && equal(argv[0], "net-start") && equal(argv[2], "raw")))) {
+        start_network(number(argv[1]), equal(argv[0], "net-probe"), argc == 3);
     } else if (equal(argv[0], "net-stop") && argc == 1) {
         stop_network();
     } else if (equal(argv[0], "display-start") && (argc==1 || (argc==2 &&

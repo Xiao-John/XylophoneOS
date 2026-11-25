@@ -9,6 +9,7 @@ from toolchain import COMMON_FLAGS, X86_FLAGS, TARGET, tool
 from ipc_v1_manifest import ipc_v1_manifest_entry
 from device_manifest import device_manifest_entry
 from archive_provenance import capture_build, copy_archive_provenance, digest
+from lwip_service_build import build as build_lwip_service
 
 
 def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=False, ncurses_supervisor_probe=False):
@@ -91,6 +92,11 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
     interactium_objects = [compile_source(root / "src/user/interactium" / name)
                           for name in ("window_manager.cpp", "service.cpp", "dispatcher.cpp",
                                        "service_loop.cpp", "ipc_transport.cpp")]
+    net_objects, net_includes, net_configuration = build_lwip_service(root, build, sdk, run, tool, X86_FLAGS)
+    if net_configuration["enabled"]:
+        net_objects += [compile_source(root / "src/user/network" / name,
+                                      (*net_includes, "-Os", "-ffunction-sections", "-fdata-sections"))
+                        for name in ("service_core.cpp", "lwip_stack.cpp", "service_loop.cpp")]
     archive = sdk / "lib/libxos.a"
     if archive.exists():
         archive.unlink()
@@ -133,6 +139,10 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
             # Keep the embedded supervisor compact after the bundle installer
             # additions.
             extra_flags += ("-Os",)
+        if name == "net_service":
+            extra_flags += ("-Os", "-ffunction-sections", "-fdata-sections")
+            if net_configuration["enabled"]:
+                extra_flags += ("-DXOS_NET_STACK=1",)
         if name in ("cpp_runtime_probe", "tls_exit_probe"):
             extra_flags += ("-fuse-cxa-atexit", "-ftls-model=local-exec",
                             "-funwind-tables", "-fasynchronous-unwind-tables",
@@ -144,12 +154,13 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
         executable = build / f"user_{name}.elf"
         run([tool("g++"), *X86_FLAGS, "-nostdlib", "-static", "-no-pie",
              "-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
-             *(["-Wl,--gc-sections"] if name == "libc_hello" else []),
+             *(["-Wl,--gc-sections"] if name in ("libc_hello", "net_service") else []),
              "-T", str(sdk / "user.ld"), str(sdk / ("crt0_posix.o" if name in ("runtime_probe", "cpp_runtime_probe", "tls_exit_probe") else "crt0_libc.o" if name in libc_programs else "crt0.o")), main,
              *([str(loader_archive)] if name in ("supervisor", "xos_diag") else []), *fault_objects,
              *([str(core_archive), str(loader_archive)] if name in ("threading_core_probe", "gfxdemo", "terminal") else []),
              *([compile_source(root / "src/user/drivers/uart_16550.cpp")] if name == "terminal" else []),
              *([compile_source(root / "src/user/drivers/virtio_net.cpp")] if name == "net_service" else []),
+             *(net_objects if name == "net_service" else []),
                      *([compile_source(root / "src/user/drivers/pc_speaker.cpp")] if name == "audio_tone" else []),
              *([file_ui_object, terminal_control_object, shell_terminal_object] if name == "supervisor" else []),
              *([str(loader_archive)] if name == "supervisor" else []),
@@ -228,6 +239,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                      "unit": "nanoseconds", "scope": ["process", "current_thread", "waited_children"]},
         "ipc_v1": ipc_v1_manifest_entry(),
         "device_authorization": device_manifest_entry(),
+        "network_service": net_configuration,
         "diagnostic_extensions": {"fault_bundle_format": 1, "loader_receipt": "sha256-held-instance",
                                   "diagnostic_shell_command": "diag"},
         "file_identity": {"version": 1, "wire_version": 2, "status": "implemented_unverified",
@@ -252,4 +264,5 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                  "libc_sha256": sha256(sdk / "lib/libc.a"),
                  "libm_sha256": sha256(sdk / "lib/libm.a")},
     }, indent=2) + "\n")
-    return [f"user_{name}{suffix}.elf" for name in names for suffix in ("", ".image")] + fixtures
+    return ([f"user_{name}{suffix}.elf" for name in names for suffix in ("", ".image")] + fixtures +
+            (["net_lwip_inputs.json"] if net_configuration["enabled"] else []))

@@ -10,13 +10,13 @@ import sys
 import tempfile
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT/'scripts'),str(ROOT/'tests')]
-from boot_smoke import Guest
 from make_work_disk import create_fat32
 from process_smoke import resources
-from task_smoke import send_bytes,pump
+from task_smoke import send_bytes
 from xypm_format import canonical,load_json,require,sha_file
 from xypm_image import Disk
-from package_p2_faults import sparse_copy
+from package_p2_faults import boot_maintenance_guest,sparse_copy
+from package_p2_verify_guest import quiet_maintenance_guest
 from package_p2_journal_recovery import journal_bytes
 import hashlib
 
@@ -51,7 +51,7 @@ def main():
                     if case=='committed':backend.command('import','/var/lib/xypm/txdata/committed',temp_file('commit',commit))
                 return disk
             def start(disk):
-                g=Guest(boot,'package_p2_recovery_faults',work_disk=disk,iso=True);g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=40);pump(g,0.8);return g
+                return boot_maintenance_guest(boot, 'package_p2_recovery_faults', disk)
             def command(g,line,expected,timeout=90):
                 begin=len(g.output);send_bytes(g,line.encode()+b'\r');matched=g.expect_any((expected,b'xsh> '),start=begin,timeout=timeout);require(matched==expected,'unexpected result '+line+': '+repr(bytes(g.output)[begin:][-3000:]));g.expect_supervisor(start=begin,timeout=timeout);return bytes(g.output)[begin:]
             def verify(disk,case):
@@ -63,14 +63,19 @@ def main():
                         else:require(found is not None and backend.export(row['path']).read_bytes()==expected,'incorrect destination '+row['path'])
             for case in ('rollback','committed'):
                 base=make_base(case);sample=root/(case+'_sample.img');sparse_copy(base,sample);guest=start(sample);baseline=resources(guest)
-                result=command(guest,'maint-recover /out/recover_fault 99999',b'maintenance: completed');match=re.search(rb'xypm-recover-test: checkpoints=(\d+)',result);require(match,'missing recovery checkpoint count');total=int(match.group(1));require(total>0,'empty recovery checkpoint set');require(resources(guest)==baseline,'resources drift');guest.close();(out/(case+'_sample.log')).write_bytes(guest.output);guest=None;verify(sample,case);sample.unlink()
+                result=command(guest,'maint-recover /out/recover_fault 99999',b'maintenance: completed')
+                quiet_maintenance_guest(guest)
+                match=re.search(rb'xypm-recover-test: checkpoints=(\d+)',result);require(match,'missing recovery checkpoint count');total=int(match.group(1));require(total>0,'empty recovery checkpoint set');require(resources(guest)==baseline,'resources drift');guest.close();(out/(case+'_sample.log')).write_bytes(guest.output);guest=None;verify(sample,case);sample.unlink()
                 report['operations'][case]={'checkpoints':total,'passed':[]}
                 for step in range(1,total+1):
                     disk=root/(case+'_trial.img');sparse_copy(base,disk);guest=start(disk);baseline=resources(guest)
                     result=command(guest,'maint-recover /out/recover_fault '+str(step),b'maintenance: retained');require(('xypm-recover-test: injected='+str(step)).encode() in result,'checkpoint not reached');require(resources(guest)==baseline,'resources drift after injected recovery failure');guest.close();(out/(case+'_'+str(step)+'_failure.log')).write_bytes(guest.output);guest=None
                     with Disk(disk,root,True) as backend:pending=any(backend.info(path) is not None for path in ('/var/lib/xypm/transaction','/var/lib/xypm/txdata','/var/lib/xypm/transaction_commit'))
                     guest=start(disk);baseline=resources(guest)
-                    if pending:command(guest,'maint-recover-boot',b'maintenance: completed');require(resources(guest)==baseline,'resources drift after recovery retry')
+                    if pending:
+                        command(guest,'maint-recover-boot',b'maintenance: completed')
+                        quiet_maintenance_guest(guest)
+                    require(resources(guest)==baseline,'resources drift after recovery retry')
                     guest.close();(out/(case+'_'+str(step)+'_retry.log')).write_bytes(guest.output);guest=None;verify(disk,case)
                     report['operations'][case]['passed'].append(step);(out/'recovery_fault_report.json').write_bytes(canonical(report));disk.unlink()
             report['status']='passed'

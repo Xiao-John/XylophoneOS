@@ -16,7 +16,7 @@ extern "C" int xos_user_main(const startup_info* startup) {
         sdk::print("GATE_MARKED\n"); return 0;
     }
     if (!sdk::equal(mode, "clear")) { return 2; }
-    if (files.remove("/var/lib/xypm/transaction") != 0 || files.sync() != 0) {
+    if (files.remove_directory("/var/lib/xypm/transaction") != 0 || files.sync() != 0) {
         sdk::print("GATE_FAIL clear\n"); return 3;
     }
     sdk::print("GATE_CLEARED\n"); return 0;

@@ -12,6 +12,7 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT/'scripts'),str(ROOT/'tests')]
 from boot_smoke import Guest
 from make_work_disk import create_fat32
+from package_p2_verify_guest import quiet_maintenance_guest
 from process_smoke import resources
 from task_smoke import send_bytes,pump
 from xypm_image import Disk
@@ -49,6 +50,7 @@ def main():
             boot=folder/'boot.img';shutil.copyfile(image,boot)
             guest=Guest(boot,'package_p2',work_disk=disk,iso=True)
             guest.expect(b'xos64> ',timeout=40);send_bytes(guest,b'run\r');guest.expect_supervisor(trace=True,timeout=40);pump(guest,1.5)
+            quiet_maintenance_guest(guest)
             baseline=resources(guest);report['baseline']=baseline
             def command(line,expected,stable=True):
                 start=len(guest.output);send_bytes(guest,line.encode()+b'\r')

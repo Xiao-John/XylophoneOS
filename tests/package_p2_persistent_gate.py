@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT/'scripts'), str(ROOT/'tests')]
 from boot_smoke import Guest
 from make_work_disk import create_fat32
+from package_p2_verify_guest import quiet_maintenance_guest
 from process_smoke import resources
 from task_smoke import send_bytes, pump
 from xypm_format import canonical, require, sha_file
@@ -53,14 +54,20 @@ def main():
             boot = folder/'boot.img'; shutil.copyfile(image, boot)
             def start(work_disk=disk):
                 g = Guest(boot, 'package_p2_persistent_gate', work_disk=work_disk, iso=True)
-                g.expect(b'xos64> ', timeout=40); send_bytes(g, b'run\r')
-                g.expect_supervisor(trace=True, timeout=40); pump(g, 1.5)
-                return g
+                try:
+                    g.expect(b'xos64> ', timeout=40); send_bytes(g, b'run\r')
+                    g.expect_supervisor(trace=True, timeout=40); pump(g, 1.5)
+                    return g
+                except BaseException:
+                    g.close()
+                    raise
             guest = start(); baseline = resources(guest); report['baseline'] = baseline
-            def command(line, expected):
+            def command(line, expected, *, released=False):
                 begin = len(guest.output); send_bytes(guest, line.encode()+b'\r')
                 guest.expect(expected, start=begin, timeout=60); guest.expect_supervisor(start=begin, timeout=60)
                 data = bytes(guest.output)[begin:]; require(b'GATE_FAIL' not in data, 'probe failure: '+repr(data))
+                if released:
+                    quiet_maintenance_guest(guest)
                 require(resources(guest) == baseline, 'resource drift after '+line)
             command('exec-file /out/gate_probe normal', b'command blocked')
             command('mkdir /out/blocked', b'command blocked')
@@ -77,7 +84,7 @@ def main():
             guest = start(); baseline = resources(guest)
             command('exec-file /out/gate_probe normal', b'command blocked')
             report['checks'].append('marker_survives_reboot_and_prevents_bootstrap_writes')
-            command('maint-recover /out/gate_probe clear', b'maintenance: completed')
+            command('maint-recover /out/gate_probe clear', b'maintenance: completed', released=True)
             command('exec-file /out/gate_probe normal', b'GATE_NORMAL')
             report['checks'].append('cleared_marker_allows_guard_release')
             guest.close(); (out/'first_boot.log').write_bytes(guest.output); guest = None
@@ -85,12 +92,14 @@ def main():
                 require(backend.info('/var/lib/xypm/transaction') is None, 'marker survived clear')
                 require(backend.info('/out/blocked') is None, 'blocked mutation escaped')
                 require(backend.export('/out/sentinel').read_bytes() == b'preserved', 'sentinel changed')
-            guest = start(); baseline = resources(guest)
+            guest = start()
+            quiet_maintenance_guest(guest)
+            baseline = resources(guest)
             command('exec-file /out/gate_probe normal', b'GATE_NORMAL')
             report['checks'].append('normal_start_after_clean_restart')
             command('maint-run /out/gate_probe mark', b'maintenance: retained')
             command('exec-file /out/gate_probe normal', b'command blocked')
-            command('maint-recover /out/gate_probe clear', b'maintenance: completed')
+            command('maint-recover /out/gate_probe clear', b'maintenance: completed', released=True)
             command('exec-file /out/gate_probe normal', b'GATE_NORMAL')
             report['checks'].append('worker_created_marker_retains_guard_until_cleared')
             guest.close(); (out/'clean_boot.log').write_bytes(guest.output); guest = None

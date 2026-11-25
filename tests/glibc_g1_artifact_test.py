@@ -42,7 +42,8 @@ def main():
                           ('0012-socket-include-types.patch', 'socket_types_patch_sha256'),
                           ('0013-thread-db-sigset-include.patch', 'thread_db_patch_sha256'),
                           ('0014-xos-reserved-dtv.patch', 'dtv_patch_sha256'),
-                          ('0015-xos-initial-thread-id.patch', 'thread_id_patch_sha256')):
+                          ('0015-xos-initial-thread-id.patch', 'thread_id_patch_sha256'),
+                          ('0016-xos-initial-pthread-exit.patch', 'initial_exit_patch_sha256')):
         assert digest(root / 'src/ports/glibc/patches' / filename) == report[key]
     assert report['status'] == 'diagnostic_only' and report['nptl_backend_experimental'] and not report['synthetic_abi_tag']
     assert report['sysroot_enforced'] and report['configure_exit_code'] == 0
@@ -374,6 +375,10 @@ def main():
     code = subprocess.check_output(['x86_64-elf-objdump', '-dr', create], text=True)
     assert re.search(r'R_X86_64_\w+\s+__xos_static_worker_launch\b', code)
     assert re.search(r'R_X86_64_\w+\s+__pthread_attr_getstacksize\b', code)
+    relocations = subprocess.check_output(['x86_64-elf-objdump', '-r', create], text=True)
+    for symbol in ('__xos_thread_name_add', '__xos_thread_name_remove',
+                   '__xos_nptl_cleanup_current', '__xos_nptl_last_process_exit'):
+        assert re.search(r'R_X86_64_\w+\s+' + symbol + r'\b', relocations)
     assert re.search(r'\$0x34,%(e|r)ax\b', code) and re.search(r'\bint\s+\$0x80\b', code)
     assert '\tsyscall' not in code
     for name, symbol in (
@@ -392,6 +397,27 @@ def main():
         code = subprocess.check_output(['x86_64-elf-objdump', '-dr', obj], text=True)
         assert re.search(r'\$0x86,%eax\b', code)
         assert not re.search(r'\b(?:call|syscall|int)\b|%r(?:di|si|dx)|%fs:', code)
+    for name, symbol in (
+        ('pthread_getname', '__xos_thread_name_get'),
+        ('pthread_setname', '__xos_thread_name_set'),
+        ('xos_thread_name', '__pthread_self'),
+        ('xos_nptl_exit', '__xos_thread_name_remove'),
+    ):
+        obj = build / 'nptl' / (name + '.o')
+        assert digest(obj) == report['diagnostic_objects'][name]['sha256']
+        assert f'source/sysdeps/xos/{name}.c' in dependency_manifest[name]
+        assert all('prctl' not in path for path in dependency_manifest[name])
+        code = subprocess.check_output(['x86_64-elf-objdump', '-dr', obj], text=True)
+        assert re.search(r'R_X86_64_\w+\s+' + symbol + r'\b', code)
+        assert '\tsyscall' not in code
+
+    startup = build / 'csu/libc-start.o'
+    assert digest(startup) == report['diagnostic_objects']['libc-start']['sha256']
+    assert 'source/sysdeps/nptl/libc_start_call_main.h' in dependency_manifest['libc-start']
+    code = subprocess.check_output(['x86_64-elf-objdump', '-dr', startup], text=True)
+    for symbol in ('__xos_nptl_cleanup_current', '__xos_thread_finish',
+                   '__xos_nptl_last_process_exit'):
+        assert re.search(r'R_X86_64_\w+\s+' + symbol + r'\b', code)
     yield_item = report['diagnostic_objects']['sched_yield']
     assert yield_item['exit_code'] == 0 and digest(build / 'posix/sched_yield.o') == yield_item['sha256']
     assert '../sysdeps/xos/sched_yield.c' in (output / 'sched_yield-dependencies.d').read_text()

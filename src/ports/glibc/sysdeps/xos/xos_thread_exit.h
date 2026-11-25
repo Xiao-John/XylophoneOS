@@ -9,6 +9,10 @@ extern "C" {
    LAST_PROCESS_EXIT with its TLS intact. That callback must not return. */
 __attribute__ ((noreturn, visibility ("hidden")))
 void __xos_thread_finish (unsigned long result, void (*last_process_exit) (void));
+__attribute__ ((visibility ("hidden")))
+void __xos_nptl_cleanup_current (void);
+__attribute__ ((noreturn, visibility ("hidden")))
+void __xos_nptl_last_process_exit (void);
 __attribute__ ((noreturn, visibility ("hidden")))
 void __xos_internal_exit (int status);
 #ifdef __cplusplus

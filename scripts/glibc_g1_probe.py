@@ -120,6 +120,8 @@ def main():
         subprocess.run(['patch', '-p1', '-i', str(dtv_patch)], cwd=source, check=True)
         thread_id_patch = ROOT / 'src/ports/glibc/patches/0015-xos-initial-thread-id.patch'
         subprocess.run(['patch', '-p1', '-i', str(thread_id_patch)], cwd=source, check=True)
+        initial_exit_patch = ROOT / 'src/ports/glibc/patches/0016-xos-initial-pthread-exit.patch'
+        subprocess.run(['patch', '-p1', '-i', str(initial_exit_patch)], cwd=source, check=True)
         # This value is deliberately synthetic and is never an XOS ABI assignment.
         if args.synthetic_abi_tag:
             with (source / 'abi-tags').open('a') as file:
@@ -170,6 +172,9 @@ def main():
             ('nptl', 'pthread_getaffinity'), ('nptl', 'pthread_setaffinity'),
             ('nptl', 'pthread_getschedparam'), ('nptl', 'pthread_setschedparam'),
             ('nptl', 'pthread_setschedprio'), ('nptl', 'pthread_getcpuclockid'),
+            ('nptl', 'pthread_getname'), ('nptl', 'pthread_setname'),
+            ('nptl', 'xos_thread_name'), ('nptl', 'xos_nptl_exit'),
+            ('csu', 'libc-start'),
             ('elf', 'dl-tls_init_tp'),
             ('elf', 'dl-tls'), ('signal', 'sigset'),
             ('misc', 'fd_to_filename'), ('nptl', 'cancellation'),
@@ -375,6 +380,7 @@ def main():
               'thread_db_patch_sha256': digest(thread_db_patch) if backend else None,
               'dtv_patch_sha256': digest(dtv_patch) if backend else None,
               'thread_id_patch_sha256': digest(thread_id_patch) if backend else None,
+              'initial_exit_patch_sha256': digest(initial_exit_patch) if backend else None,
               'xos_overlay_sha256': {str(p.relative_to(ROOT / 'src/ports/glibc/sysdeps')): digest(p) for p in (ROOT / 'src/ports/glibc/sysdeps').rglob('*') if p.is_file()},
               'configure_log_sha256': digest(output/'configure.log'),
               'not_claimed': ['complete XOS sysdeps', 'target runtime', 'guest qualification', 'distributable source']}

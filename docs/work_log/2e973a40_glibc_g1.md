@@ -384,3 +384,11 @@ XOS 后端将 `pthread_self` 和 `thrd_current` 接到 syscall 41，使用完整
 XOS 当前不提供线程 CPU affinity、可调的线程调度参数或可跨线程传递的 CPU 时钟 ID。六个相关 pthread 入口按原生契约返回 `ENOTSUP`，保留查询输出，不将公开 TID 解引用为描述符，也不使用 Linux 调用。现有调用者读取本线程 CPU 时间的 `CLOCK_THREAD_CPUTIME_ID` 仍可按原生接口使用。静态 `pthread_create` 改用 glibc 已有的栈属性查询，显式属性未设置栈大小时也读取进程默认值。
 
 从锁定归档的干净全量构建越过 affinity，首个错误移至 `pthread_getname.c` 引入的 `sys/prctl.h`。六个接口的目标对象和 PIC 对象均编译通过，已核验实际选源、符号、错误码和依赖。构建报告 SHA-256 为 `de45db434f6064cd2f76c555f48f7f20bc3014229231c757c89d396646678e03`。镜像 `e95890e0fea5496f` 使用真实目标对象运行四轮，验证错误值和调用方输出不变，并回收资源到 `[129725, 3, 1]`。客体报告 SHA-256 为 `0f95e541339053b1b239186effcd6d11df62c62079c10b343e1fd859aff5e10c`。完整 SDK 和公共 `pthread_create` 的 glibc 客体验证仍未完成，G1 保持 partial。
+
+## 继续：线程名称与初始线程退出（2026-11-25）
+
+`pthread_getname_np` 和 `pthread_setname_np` 使用用户态名称表。表按完整 TID 索引，由原生私有锁保护，容量与内核每进程线程上限一致。创建时继承调用线程的名称，停止前清除记录，启动失败也清除已登记项。名称支持 15 字节加 NUL，缓冲不足或名称过长返回 `ERANGE`，未登记的其他 TID 返回 `ESRCH`。名称仅供本进程 glibc 查询，不设置内核进程名。
+
+初始线程调用 `pthread_exit` 时，glibc 启动代码保存返回值，执行与工作线程同一套清理，再进入 XOS 原生退出握手。这样可把原始返回值交给 joiner，并由内核决定是否执行进程收尾。普通 `main` 返回仍调用进程退出。
+
+宿主测试覆盖名称继承、容量、清空、截断拒绝和失效 TID。从锁定归档的干净构建越过 `sys/prctl.h`，首个错误移到 `pthread_kill.c` 的 Linux gettid 和 tgkill 依赖。新的名称、清理与启动对象均编译并通过来源和调用核验，名称相关 PIC 对象也成功编译。构建报告 SHA-256 为 `9f5c25f94e0be0d4dd0746abd866bc386191550a20173be643b4eb1b9cc0c667`。镜像 `dc00807560875abd` 的既有客体桥四轮通过，资源恢复。客体报告 SHA-256 为 `80b9099b0d29d077b4789d23c106b32df1d5acb840fe70f8ea945fcc7b5596b3`；该桥未调用新的名称 API 或完整 glibc 启动。G1 保持 partial，完整 SDK 尚未生成。

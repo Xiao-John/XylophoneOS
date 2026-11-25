@@ -28,13 +28,16 @@ struct rtld_global *__nptl_rtld_global = &_rtld_global;
 # include <stdlib.h>
 # include <sys/single_threaded.h>
 # include "xos_static_worker.h"
+# include "xos_thread_exit.h"
 # include "xos_thread_identity.h"
+# include "xos_thread_name.h"
 
 struct worker_input
 {
   void *(*start) (void *);
   void *argument;
   bool c11;
+  xos_u64 tid;
 };
 
 static xos_i64
@@ -42,9 +45,12 @@ prepare_worker (struct pthread *pd,
                 const struct xos_thread_reservation *reservation,
                 void **argument)
 {
-  const struct worker_input *input = *argument;
+  struct worker_input *input = *argument;
   if (reservation->tid == 0 || reservation->tid > FUTEX_TID_MASK)
     return -5;
+  if (__xos_thread_name_add (reservation->tid) != 0)
+    return -5;
+  input->tid = reservation->tid;
   pd->tid = reservation->tid;
   pd->stackblock = (void *) reservation->stack_bottom;
   pd->stackblock_size = reservation->stack_top - reservation->stack_bottom;
@@ -83,21 +89,6 @@ start_worker (void *argument)
     }
   pd->cleanup_jmp_buf = NULL;
   return pd->result;
-}
-
-static void
-cleanup_worker (void)
-{
-  call_function_static_weak (__call_tls_dtors);
-  __nptl_deallocate_tsd ();
-  __libc_thread_freeres ();
-  atomic_fetch_add_relaxed (&__nptl_nthreads, -1);
-}
-
-static void
-last_worker_exit (void)
-{
-  exit (0);
 }
 
 static int
@@ -139,8 +130,8 @@ create_worker (pthread_t *thread, const struct pthread_attr *attr,
     }
   atomic_fetch_add_relaxed (&__nptl_nthreads, 1);
   struct xos_static_worker worker = {
-    .run = start_worker, .argument = input, .cleanup = cleanup_worker,
-    .last_process_exit = last_worker_exit, .prepare = prepare_worker
+    .run = start_worker, .argument = input, .cleanup = __xos_nptl_cleanup_current,
+    .last_process_exit = __xos_nptl_last_process_exit, .prepare = prepare_worker
   };
   struct xos_thread_launch_result launch;
   status = __xos_static_worker_launch (stacksize,
@@ -152,6 +143,8 @@ create_worker (pthread_t *thread, const struct pthread_attr *attr,
     }
 
   atomic_fetch_add_relaxed (&__nptl_nthreads, -1);
+  if (input->tid != 0)
+    __xos_thread_name_remove (input->tid);
   if (launch.abort_error != 0)
     __libc_fatal ("XOS glibc: could not release a thread reservation\n");
   if (status == -5 || status == -17)
@@ -174,7 +167,9 @@ __pthread_create_2_1 (pthread_t *thread, const pthread_attr_t *attr,
   (void) argument;
   return ENOTSUP;
 #else
-  struct worker_input input = { start, argument, attr == ATTR_C11_THREAD };
+  struct worker_input input = {
+    .start = start, .argument = argument, .c11 = attr == ATTR_C11_THREAD
+  };
   if (attr != NULL && !input.c11)
     return create_worker (thread, (const struct pthread_attr *) attr, &input);
 

@@ -440,6 +440,34 @@ void tcp_close_reused_slot_callbacks() {
     expect(status.result == 0 && status.flags == connected, "late old TCP error cannot mutate reused UDP slot");
     expect(env.send(slot, next, bytes{1, 9, 2}).result == 3, "replacement connection stays usable after late reset");
 }
+void tcp_closing_pool_preserves_other_application() {
+    environment env; const u32 victim = env.attach(), churn = env.attach(102);
+    const u64 victim_handle = env.connected_tcp(victim);
+    env.peer.answer_data = false; env.peer.echo_tcp = false;
+    // One app keeps closing connections whose FIN is unacknowledged. Their
+    // public handles are gone, but the real PCB pool still contains them.
+    for (u32 i = 0; i < connection_limit - 1; ++i) {
+        env.peer.now += 500'000'000ull; env.poll();
+        const u64 handle = env.open(churn, protocol::tcp, static_cast<u16>(9100 + i));
+        env.poll();
+        expect(env.request(churn, operation::status, handle).flags == connected, "churn connection established");
+        expect(env.request(churn, operation::close, handle).result == 0, "churn FIN accepted while peer withholds ACK");
+    }
+    auto request = env.input(churn, operation::open); request.address = permitted_address;
+    request.port = 9200; request.transport = protocol::tcp;
+    const auto reply = env.dispatch(churn, request);
+    const auto survivor = env.request(victim, operation::status, victim_handle);
+    expect(survivor.result == 0 && survivor.flags == connected,
+           "one application's close churn must never make lwIP evict another application's live PCB");
+    expect(reply.result == resources && !reply.object, "physical closing PCBs impose backpressure before lwIP eviction");
+    expect(env.core.connection_count() == 1, "failed churn OPEN leaves other application ownership intact");
+    env.core.shutdown(); env.stack.shutdown();
+    std::vector<void*> pcbs;
+    while (void* pcb = memp_malloc(MEMP_TCP_PCB)) pcbs.push_back(pcb);
+    expect(pcbs.size() == MEMP_NUM_TCP_PCB,
+           "stack shutdown reclaims the active PCB and all FIN-pending PCBs handed to lwIP");
+    for (void* pcb : pcbs) memp_free(MEMP_TCP_PCB, pcb);
+}
 void tcp_receive_wrap_and_reset() {
     environment env; const u32 slot = env.attach(); const u64 handle = env.connected_tcp(slot);
     bytes expected, received; u32 split_writes = 0;
@@ -585,6 +613,7 @@ const test_case cases[] = {
     {"tcp_close_unread_preserves_data", tcp_close_unread_preserves_data},
     {"tcp_close_fin_memory_pressure", tcp_close_fin_memory_pressure},
     {"tcp_close_reused_slot_callbacks", tcp_close_reused_slot_callbacks},
+    {"tcp_closing_pool_preserves_other_application", tcp_closing_pool_preserves_other_application},
     {"tcp_connect_deadline", tcp_connect_deadline}, {"tcp_late_handshake", tcp_late_handshake},
     {"tcp_handshake_callback_deadline", tcp_handshake_callback_deadline},
     {"tcp_timer_retransmission", tcp_timer_retransmission},

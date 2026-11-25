@@ -82,3 +82,28 @@ python3 tests/check_public_evidence_paths.py --index --base 5e49012ab2b359b31999
   该模块以新组合的实际回执独立交付，不沿用此前镜像结果。
 - 正常关闭已由 lwIP 接管的 FIN/确认仍需远端及计时器推进。关闭成功表示本地接受，
   上层保留对端故障和未知交付处理；没有自动重放网络副作用请求。
+
+## 后续审计：关闭中的实体 PCB 配额与停止回收
+
+生产代码冻结为 `cf156b3443109fcb0d3da60107d1122b0b789f51` 后，进一步核对逻辑 handle
+释放而 FIN 尚未确认的状态。新增一项真实池回归：应用 A 保持活跃连接，应用 B 连续
+建立并关闭七个 TCP 连接且对端不确认 FIN，填满八个 PCB。B 再次 OPEN 得到 resources，
+A 仍 connected；随后 core/stack shutdown 后可一次申请全部八个 `MEMP_TCP_PCB` 槽，
+并完整归还。该结果在现有生产代码上已经正确，没有为此添加实现补丁。
+
+源码对应关系：lwIP 2.2.1 `tcp_kill_prio` 只淘汰严格较低优先级；当前服务的 TCP
+统一采用相同默认优先级。`netif_remove` 会经 `tcp_netif_ip_addr_changed` 中止接口上
+仍在 active 链的关闭连接，所以服务停机也回收已经脱离应用 handle 的 FIN 状态。
+
+新证据保持独立：[network_pcb_quota_20261125](../reports/network_pcb_quota_20261125/verification.json)，
+未改写首批报告。实际执行以下命令，普通和 ASan/UBSan 各 **24 栈场景 + 2 生产循环场景通过**：
+
+```sh
+python3 tests/net_service_host.py --archive "$XOS_LWIP_SOURCE_ARCHIVE" \
+  --output build/net_pcb_quota/normal
+ASAN_OPTIONS=detect_leaks=0 python3 tests/net_service_host.py --sanitize \
+  --archive "$XOS_LWIP_SOURCE_ARCHIVE" --output build/net_pcb_quota/sanitized
+python3 scripts/verify_evidence_index.py docs/reports/network_pcb_quota_20261125/manifest.json
+```
+
+这是新增 host 资源审计，客体 exec/撤销/故障等资格继续由独立网络验收模块交付。

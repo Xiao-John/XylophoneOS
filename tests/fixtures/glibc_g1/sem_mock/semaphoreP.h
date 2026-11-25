@@ -4,7 +4,9 @@
 #include <errno.h>
 #include <stdint.h>
 #include <bits/local_lim.h>
+#ifndef __glibc_unlikely
 #define __glibc_unlikely(x) (x)
+#endif
 #define __set_errno(x) (errno = (x))
 #define ASSERT_PTHREAD_INTERNAL_SIZE(a, b) _Static_assert (sizeof (a) >= sizeof (b), "storage")
 #define USE_64B_ATOMICS_ON_SEM_T 1

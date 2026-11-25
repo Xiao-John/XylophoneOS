@@ -9,11 +9,11 @@ from make_work_disk import create_fat32
 from task_smoke import send_bytes, pump
 from xypm_format import canonical,load_json,require,sha_file,verify_package
 from xypm_image import Disk,query_image,transact
-from package_p2_verify_guest import fixtures,make_archive
+from package_p2_verify_guest import fixtures,make_archive,quiet_maintenance_guest
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--system',type=Path,required=True);p.add_argument('--xypm-build',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
-    out=a.output.resolve();out.mkdir(parents=True,exist_ok=True);system=a.system.resolve();info=load_json(system/'manifest.json');image=system/'xos-install.iso';require(sha_file(image)==info['artifacts']['xos-install.iso']['sha256'],'system image mismatch');build=load_json(a.xypm_build);elf=Path(build['elf']);profile=load_json(ROOT/'config/package/xos_x86_64_static_single_b2_v1.json');guest=None
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--system',type=Path,required=True);p.add_argument('--xypm-build',type=Path,required=True);p.add_argument('--profile',type=Path,default=ROOT/'config/package/xos_x86_64_static_single_b2_v1.json');p.add_argument('--output',type=Path,required=True);a=p.parse_args()
+    out=a.output.resolve();out.mkdir(parents=True,exist_ok=True);system=a.system.resolve();info=load_json(system/'manifest.json');image=system/'xos-install.iso';require(sha_file(image)==info['artifacts']['xos-install.iso']['sha256'],'system image mismatch');build=load_json(a.xypm_build);elf=Path(build['elf']);profile=load_json(a.profile);guest=None
     report={'status':'failed','system_build_id':info['build_id'],'image_sha256':sha_file(image),'xypm_elf_sha256':sha_file(elf),'test_sha256':sha_file(Path(__file__)),'checks':[],'not_run':['power_loss','sector_tearing']}
     try:
         with tempfile.TemporaryDirectory(prefix='xypm_p2_full_') as temp:
@@ -31,7 +31,7 @@ def main():
                 with filler.open('r+b') as f:f.truncate(available-1024*1024)
                 disk.command('import','/out/filler',filler);after=disk.command('free');report['free_before']=available;report['free_after']=int(after[1]);report['cluster_bytes']=cluster
             boot=root/'boot.img';shutil.copyfile(image,boot);guest=Guest(boot,'package_p2_full_disk',work_disk=work,iso=True);guest.expect(b'xos64> ',timeout=40);send_bytes(guest,b'run\r');guest.expect_supervisor(trace=True,timeout=40);pump(guest,1)
-            start=len(guest.output);send_bytes(guest,b'demo quiet\r');guest.expect_any((b'demo tasks stopped',b'demo tasks already stopped'),start=start,timeout=40);guest.expect_supervisor(start=start,timeout=40)
+            quiet_maintenance_guest(guest)
             start=len(guest.output);send_bytes(guest,b'maint-run /usr/bin/xypm upgrade /out/upgrade.xpk\r');guest.expect(b'maintenance: retained',start=start,timeout=300);guest.expect_supervisor(start=start,timeout=60);require(b'transaction stopped' in bytes(guest.output)[start:],'full disk did not stop transaction');report['checks'].append('full_disk_upgrade_stopped')
             start=len(guest.output);send_bytes(guest,b'maint-recover-boot\r');guest.expect(b'maintenance: completed',start=start,timeout=120);guest.expect_supervisor(start=start,timeout=60);guest.close();(out/'guest.log').write_bytes(guest.output);guest=None
             listed=query_image(work,profile,'list')['packages'];query_image(work,profile,'verify-installed');require(len(listed)==1 and listed[0]['upstream_version']=='1.0','old package changed')

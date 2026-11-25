@@ -18,7 +18,7 @@ from make_work_disk import create_fat32
 from task_smoke import send_bytes,pump
 from xypm_format import canonical,load_json,require,sha_file,verify_package
 from xypm_image import Disk,query_image,transact
-from package_p2_verify_guest import fixtures,make_archive
+from package_p2_verify_guest import fixtures,make_archive,quiet_maintenance_guest
 
 
 def resources(guest):
@@ -60,7 +60,7 @@ def main():
             def start(disk):
                 g=Guest(boot,'package_p2_faults',work_disk=disk,iso=True);g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=40);pump(g,1.0)
                 if b'maintenance: persistent recovery required' not in g.output:
-                    begin=len(g.output);send_bytes(g,b'demo quiet\r');g.expect_any((b'demo tasks stopped',b'demo tasks already stopped'),start=begin,timeout=40);g.expect_supervisor(start=begin,timeout=40)
+                    quiet_maintenance_guest(g)
                 return g
             def command(g,line,expected,timeout=90):
                 start_at=len(g.output);send_bytes(g,line.encode()+b'\r');match=g.expect_any((expected,b'xsh> '),start=start_at,timeout=timeout);require(match==expected,'unexpected result for '+line+': '+repr(bytes(g.output)[start_at:][-3000:]));g.expect_supervisor(start=start_at,timeout=timeout);return bytes(g.output)[start_at:]

@@ -61,6 +61,8 @@ python3 scripts/xypm.py repo-install repo lock.json friends.app --image base.img
 ```sh
 xypm repo-verify /repo /out/lock.json
 xypm repo-plan /repo /out/lock.json
+demo quiet
+audio stop
 maint-run /usr/bin/xypm repo-install /repo /out/lock.json friends.base
 maint-run /usr/bin/xypm repo-install /repo /out/lock.json friends.app
 maint-run /usr/bin/xypm repo-upgrade /repo /out/new_lock.json friends.app
@@ -69,6 +71,8 @@ maint-run /usr/bin/xypm repo-upgrade /repo /out/new_lock.json friends.app
 两个实现的 verify、plan、install、upgrade 均接受 `--lock-sha256 <摘要>`，用于
 验证独立可信渠道提供的锁字节摘要。未提供时仍验证索引、包和闭包的内部一致性。
 普通 xsh/dash 进程可只读验证和查看顺序，写入继续要求维护写租约和恢复器 ABI。
+在默认 xsh 会话中，先停止演示任务和自动启动的音频服务，以清空维护门禁要求的进程槽位。
+维护结束后可用 `audio start` 恢复音频服务。
 
 `repo-plan` 展示锁的依赖顺序。每次 install/upgrade 先验证整个锁闭包，再将选定包
 及精确摘要交给已有 P1/P2 单包事务；已有依赖必须先装好。P1 在私有候选盘中安装，

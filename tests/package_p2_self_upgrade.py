@@ -16,6 +16,7 @@ from task_smoke import send_bytes,pump
 from xypm_format import canonical,load_json,require,sha_file
 from xypm_image import Disk,query_image,transact
 from package_p2_faults import sparse_copy
+from package_p2_verify_guest import quiet_maintenance_guest
 
 
 def main():
@@ -33,7 +34,7 @@ def main():
             def start(disk):
                 g=Guest(boot,'package_p2_self_upgrade',work_disk=disk,iso=True);g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=40);pump(g,1.0)
                 if b'maintenance: persistent recovery required' not in g.output:
-                    begin=len(g.output);send_bytes(g,b'demo quiet\r');g.expect_any((b'demo tasks stopped',b'demo tasks already stopped'),start=begin,timeout=40);g.expect_supervisor(start=begin,timeout=40)
+                    quiet_maintenance_guest(g)
                 return g
             def command(g,line,expected,timeout=600):
                 begin=len(g.output);send_bytes(g,line.encode()+b'\r');match=g.expect_any((expected,b'xsh> '),start=begin,timeout=timeout);require(match==expected,'unexpected result for '+line+': '+repr(bytes(g.output)[begin:][-3000:]));g.expect_supervisor(start=begin,timeout=timeout);return bytes(g.output)[begin:]

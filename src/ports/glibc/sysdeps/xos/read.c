@@ -1,15 +1,10 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 #include <unistd.h>
-#include <limits.h>
-#include "xos_console.h"
-ssize_t
-__read (int descriptor, void *buffer, size_t length)
-{
-  if (descriptor != 0)
-    { __set_errno (EBADF); return -1; }
-  if (length > LONG_MAX)
-    { __set_errno (EINVAL); return -1; }
-  return xos_console_transfer (0, descriptor, (uintptr_t) buffer, length);
-}
-libc_hidden_def (__read)
-weak_alias (__read, read)
+#include "xos_file_result.h"
+ssize_t __libc_read (int fd, void *buffer, size_t length)
+{ return xos_file_result (__xos_file_read (fd, buffer, length)); }
+libc_hidden_def (__libc_read)
+weak_alias (__libc_read, __read)
+libc_hidden_weak (__read)
+weak_alias (__libc_read, read)
+libc_hidden_weak (read)

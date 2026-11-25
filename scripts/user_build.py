@@ -12,7 +12,8 @@ from archive_provenance import capture_build, copy_archive_provenance, digest
 from lwip_service_build import build as build_lwip_service
 
 
-def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=False, ncurses_supervisor_probe=False):
+def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=False,
+                ncurses_supervisor_probe=False, glibc_files_death_probe=False):
     capture = capture_build(build, build_id, 'xos-source-declarations')
     sdk = build / "sdk"
     if sdk.is_symlink():
@@ -139,6 +140,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
             # Keep the embedded supervisor compact after the bundle installer
             # additions.
             extra_flags += ("-Os",)
+        if name == "files" and glibc_files_death_probe:
+            extra_flags += ("-DXOS_GLIBC_FILES_DEATH_PROBE=1",)
         if name == "net_service":
             extra_flags += ("-Os", "-ffunction-sections", "-fdata-sections")
             if net_configuration["enabled"]:

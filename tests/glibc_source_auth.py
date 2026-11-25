@@ -47,12 +47,17 @@ def main():
         rejected = json.loads((output / ('reject_' + name) / 'report.json').read_text())
         assert rejected['status'] == 'rejected'
         cases.append({'name': 'reject_corrupted_' + name, 'status': 'passed'})
+    def evidence_snapshot():
+        return {str(path.relative_to(output / 'valid')): hashlib.sha256(path.read_bytes()).hexdigest()
+                for path in (output / 'valid').rglob('*') if path.is_file()}
+    existing = evidence_snapshot()
     try:
         verify_source(archive, output / 'valid')
     except ValueError as error:
         assert 'new directory' in str(error)
     else:
         raise AssertionError('verification evidence was overwritten')
+    assert evidence_snapshot() == existing, 'existing verification evidence changed'
     cases.append({'name': 'preserve_existing_evidence', 'status': 'passed'})
     result = {'status': 'passed', 'cases': cases,
               'scope': 'actual gpgv plus pinned archive/signature/key tampering',

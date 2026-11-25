@@ -75,3 +75,34 @@ python3 tests/docs_consistency.py --output-dir build/glibc_auth_docs
 组合需用更新来源锁重建独立 SDK，执行其实际受影响的客体用例；原 #151–#153
 冻结结果保留在各自输入上。libstdc++、xypm 双 profile、应用迁移及完整发行材料
 在后续模块分别交付。更新密钥或发布发行包时重新检查当前撤销与身份来源。
+
+## PR #154 评审跟进：来源快照与证据一致性
+
+2026-11-25，逐条核对评审意见后补入：固定使用预检记录的 gpgv 绝对路径；
+锁文件用同一次读取的字节生成信任记录与摘要；归档、签名和 key 均先捕获字节，
+gpgv 验证私有副本，解包使用同一不可变归档字节，不再重新打开下载路径。
+准备模式与完整构建在成功前共用输入/工具终检；SDK 内部 provenance 同步保存
+原始 verification report 摘要。README 明确离线撤销信息的材料边界和发布前更新。
+
+实际重验：有效签名/三种输入篡改/已有证据文件集合与摘要保持，共5项通过；
+新增真实归档快照测试在验签后替换下载路径，解包的20947个普通文件逐项匹配
+已签归档，替换内容、可变缓冲和未验证报告三种解包输入均在写入前拒绝。
+prepare-only再次完成configured，预检gpgv与实际验签工具摘要相同，成功终检通过。
+
+公开派生配置摘要与原字节测试报告位于
+[glibc_source_review_20261125](../reports/glibc_source_review_20261125/manifest.json)。
+最终configure原manifest SHA-256：
+`46386dfe123c9dacb281ec2afc497ea6f722e5721183e9266296af0686a0ce47`；
+快照测试报告SHA-256：
+`43d3254a57b53ea0ca0b8eba64b20c680a6eea5da4a0ff6dc46b9a79dd8afe23`。
+旧报告保持原输入绑定。本跟进改变构建来源路径，运行库代码未变；完整SDK和
+客体会在后续G4组合构建重新绑定，不使用此前客体结果替代新构建。
+
+复现新增检查：
+
+```sh
+"$XOS_SDK_RUN" python3 tests/glibc_source_auth.py --archive "$XOS_GLIBC_ARCHIVE" --output build/source_auth_review_tests
+"$XOS_SDK_RUN" python3 tests/glibc_source_snapshot.py --archive "$XOS_GLIBC_ARCHIVE" --output build/source_snapshot_review
+"$XOS_SDK_RUN" python3 scripts/build_glibc_sdk.py --archive "$XOS_GLIBC_ARCHIVE" --output build/authenticated_snapshot_configure --prepare-only
+python3 scripts/verify_evidence_index.py docs/reports/glibc_source_review_20261125/manifest.json
+```

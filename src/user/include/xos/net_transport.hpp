@@ -123,7 +123,9 @@ private:
         if (!handle) return invalid;
         message request{}, reply{}; request.action = cancel ? operation::cancel : operation::close;
         request.object = handle; request.deadline = deadline;
-        return exchange(request, reply);
+        // A confirmed orderly-close refusal can require the caller to drain
+        // unread data. Return it without waiting or dropping sibling handles.
+        return cancel ? exchange(request, reply) : session_.request(request, reply);
     }
 };
 }

@@ -150,16 +150,22 @@ for name in ('libc.a', 'libm.a'):
 sdk = Path('build/xypm_p3_preview_sdk')
 shutil.copytree(base, sdk)
 shutil.copytree(kit / 'sysroot/cpp', sdk / 'cpp')
-require(kit_files() == verified_kit_files, 'kit changed during copy')
+copied_cpp = {f'sysroot/{path.relative_to(sdk).as_posix()}': sha_file(path)
+              for path in (sdk / 'cpp').rglob('*') if path.is_file()}
+expected_cpp = {name: digest for name, digest in verified_kit_files.items()
+                if name.startswith('sysroot/cpp/')}
+require(copied_cpp == expected_cpp, 'copied C++ tree differs from verified archive')
 materials = sdk / 'licenses/preview_cpp'
 materials.mkdir()
 for name in ('GCC-COPYING', 'GCC-COPYING.RUNTIME', 'GCC-COPYING3', 'GCC-COPYING3.LIB'):
     shutil.copyfile(Path('src/ports/gcc/upstream') / name, materials / name)
 for name in ('SOURCES.md', 'inputs.json', 'cpp-release-manifest.json'):
-    shutil.copyfile(kit / name, materials / name)
+    target = materials / name
+    shutil.copyfile(kit / name, target)
+    require(sha_file(target) == verified_kit_files[name], 'copied material mismatch: ' + name)
 lineage = {'format_version': 1, 'status': 'candidate_guest_not_run', 'runtime_family': 'newlib',
-    'base_sdk_tree_sha256': tree_receipt(base)[0], 'cpp_preview_kit_sha256': sha_file(archive),
-    'cpp_preview_inputs_sha256': sha_file(kit / 'inputs.json'), 'cpp_source_release': 'v0.0.2-1103',
+    'base_sdk_tree_sha256': tree_receipt(base)[0], 'cpp_preview_kit_sha256': hashlib.sha256(archive_bytes).hexdigest(),
+    'cpp_preview_inputs_sha256': sha_file(materials / 'inputs.json'), 'cpp_source_release': 'v0.0.2-1103',
     'libc': metadata['libc'], 'cpp_archives': {name: sha_file(sdk / 'cpp/lib' / name)
         for name in ('libstdc++.a', 'libsupc++.a', 'libgcc.a')}}
 (sdk / 'xypm_sdk_lineage.json').write_bytes(canonical(lineage))

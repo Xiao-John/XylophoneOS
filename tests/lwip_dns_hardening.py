@@ -84,7 +84,11 @@ def main():
                            + '"\n#undef LWIP_DNS\n#define LWIP_DNS 1\n')
         report['test_only_options'] = ['Production options unchanged; test include overrides LWIP_DNS=1.']
         sanitizer = ['-fsanitize=address,undefined', '-fno-sanitize-recover=all',
-                     '-fno-omit-frame-pointer', '-fno-pie', '-no-pie'] if args.sanitize else []
+                     '-fno-omit-frame-pointer'] if args.sanitize else []
+        linker_flags = []
+        if args.sanitize and sys.platform == 'linux':
+            sanitizer.append('-fno-pie')
+            linker_flags.append('-no-pie')
         flags = ['-O1' if args.sanitize else '-O2', '-g', *sanitizer, '-I', str(include), '-I', str(ROOT / 'src/user/network/include'),
                  '-I', str(ROOT / 'src/ports/lwip/include'), '-I', str(source / 'src/include'),
                  '-I', str(ROOT / 'src/shared/include'), '-I', str(ROOT / 'src/user')]
@@ -99,7 +103,7 @@ def main():
             run([report['tools']['CC']['path'], '-std=c11', *flags, '-c', str(path), '-o', str(target)])
             objects.append(str(target))
         binary = output / 'dns_hardening_host'
-        run([report['tools']['CXX']['path'], '-std=c++20', '-Wall', '-Wextra', '-Werror', *flags,
+        run([report['tools']['CXX']['path'], '-std=c++20', '-Wall', '-Wextra', '-Werror', *flags, *linker_flags,
              str(ROOT / 'tests/fixtures/network/dns_hardening_host.cpp'),
              str(ROOT / 'src/user/network/lwip_stack.cpp'), *objects, '-o', str(binary)])
         cases = run([str(binary), '--list']).splitlines()

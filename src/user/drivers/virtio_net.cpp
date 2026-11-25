@@ -45,14 +45,24 @@ bool inspect_capabilities(const u32 (&configuration)[64], const u64 (&bar_length
 }
 
 void split_queue::initialize(u64 address, u64 physical, bool receive) {
-    address_ = address; physical_ = physical; available_ = consumed_ = 0;
+    address_ = address; physical_ = physical; available_ = consumed_ = validated_ = 0;
+    receive_ = receive; failed_ = false;
+    // The device must be reset/disabled before initialization. Do not rely on
+    // allocator zeroing when a driver reuses a quiesced queue's backing pages.
+    auto* control = reinterpret_cast<volatile u8*>(address_);
+    for (u32 i = 0; i < 4096; ++i) control[i] = 0;
     auto* descriptors = reinterpret_cast<volatile descriptor*>(address_);
+    auto* available = reinterpret_cast<volatile u16*>(address_ + available_offset);
     for (u16 i = 0; i < queue_size; ++i) {
         descriptors[i].address = physical_ + 4096 + u64{i} * buffer_bytes;
         descriptors[i].length = receive ? buffer_bytes : 0;
         descriptors[i].flags = receive ? 2 : 0; descriptors[i].next = 0;
         active_[i] = receive;
-        if (receive) publish(i);
+        if (receive) available[2 + i] = i;
+    }
+    if (receive) {
+        // Publish the whole initial batch once, after descriptors and entries.
+        fence(); available_ = queue_size; available[1] = available_; fence();
     }
 }
 void split_queue::publish(u16 index) {
@@ -61,18 +71,24 @@ void split_queue::publish(u16 index) {
     fence(); ++available_; available[1] = available_; fence();
 }
 i64 split_queue::reclaim_transmit() {
+    if (!address_) return device_closed;
+    if (receive_) return device_invalid;
+    if (failed_) return device_io;
     const auto* used = reinterpret_cast<volatile u16*>(address_ + used_offset);
     const u16 completed = used[1]; fence();
-    if (static_cast<u16>(completed - consumed_) > queue_size) return device_io;
+    if (static_cast<u16>(completed - consumed_) > queue_size) return fail();
     const auto* elements = reinterpret_cast<volatile used_element*>(address_ + used_offset + 4);
     while (consumed_ != completed) {
         const u32 id = elements[consumed_ % queue_size].id;
-        if (id >= queue_size || !active_[id]) return device_io;
+        if (id >= queue_size || !active_[id]) return fail();
         active_[id] = false; ++consumed_;
     }
     return 0;
 }
 i64 split_queue::transmit(const u8* frame, u32 length) {
+    if (!address_) return device_closed;
+    if (receive_) return device_invalid;
+    if (failed_) return device_io;
     if (!frame || length < 14 || length > frame_limit) return device_invalid;
     const i64 reclaimed = reclaim_transmit();
     if (reclaimed) return reclaimed;
@@ -86,19 +102,36 @@ i64 split_queue::transmit(const u8* frame, u32 length) {
     active_[id] = true; publish(id); return 0;
 }
 i64 split_queue::receive(u8* frame, u32 capacity) {
+    if (!address_) return device_closed;
+    if (!receive_) return device_invalid;
+    if (failed_) return device_io;
     if (!frame || capacity < frame_limit) return device_invalid;
     const auto* used = reinterpret_cast<volatile u16*>(address_ + used_offset);
     const u16 completed = used[1]; fence();
-    if (completed == consumed_) return 0;
-    if (static_cast<u16>(completed - consumed_) > queue_size) return device_io;
+    const u16 outstanding = static_cast<u16>(completed - consumed_);
+    if (outstanding > queue_size || static_cast<u16>(validated_ - consumed_) > outstanding) return fail();
     const auto* elements = reinterpret_cast<volatile used_element*>(address_ + used_offset + 4);
-    const u32 id = elements[consumed_ % queue_size].id, length = elements[consumed_ % queue_size].length;
-    if (id >= queue_size || !active_[id] || length < header_bytes + 14 || length > header_bytes + frame_limit) return device_io;
+    // Snapshot and validate every newly visible completion before reposting any
+    // descriptor. Otherwise two already-published records for one descriptor
+    // can both pass an ownership test after the first record is recycled.
+    while (validated_ != completed) {
+        const u16 slot = validated_ % queue_size;
+        const u32 id = elements[slot].id, length = elements[slot].length;
+        if (id >= queue_size || !active_[id] || length < header_bytes + 14 || length > header_bytes + frame_limit)
+            return fail();
+        active_[id] = false;
+        pending_[slot] = {static_cast<u16>(id), static_cast<u16>(length)};
+        ++validated_;
+    }
+    if (!outstanding) return 0;
+    const auto current = pending_[consumed_ % queue_size];
+    const u32 id = current.id, length = current.length;
     const auto* buffer = reinterpret_cast<const volatile u8*>(address_ + 4096 + u64{id} * buffer_bytes);
-    // num_buffers is meaningful only when VIRTIO_NET_F_MRG_RXBUF is negotiated.
-    if (buffer[0] || buffer[1]) return device_io;
+    // Mergeable RX is not negotiated: each completion is one frame. The
+    // num_buffers field never controls descriptor traversal in this profile.
+    if (buffer[0] || buffer[1]) return fail();
     for (u32 i = header_bytes; i < length; ++i) frame[i - header_bytes] = buffer[i];
-    ++consumed_; publish(static_cast<u16>(id)); return length - header_bytes;
+    ++consumed_; active_[id] = true; publish(static_cast<u16>(id)); return length - header_bytes;
 }
 
 bool driver::reset() {

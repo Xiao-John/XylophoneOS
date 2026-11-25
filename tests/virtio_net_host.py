@@ -4,6 +4,7 @@
 Only the actual device completion records are supplied by the fixture. Syscall
 transport/PCI/IRQ delivery are not executed and no guest pass is implied.
 """
+import argparse
 import os
 from pathlib import Path
 import subprocess
@@ -16,9 +17,14 @@ from host_tools import gc_sections_flags
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--sanitize", action="store_true", help="run AddressSanitizer and UndefinedBehaviorSanitizer")
+    args = parser.parse_args()
+    checks = (["-O1", "-g", "-fsanitize=address,undefined", "-fno-omit-frame-pointer"]
+              if args.sanitize else ["-O2"])
     with tempfile.TemporaryDirectory(prefix="xos_virtio_net_") as temporary:
         binary = Path(temporary) / "virtio_net_host"
-        subprocess.run([os.environ.get("CXX", "c++"), "-std=c++20", "-O2", "-Wall", "-Wextra", "-Werror",
+        subprocess.run([os.environ.get("CXX", "c++"), "-std=c++20", *checks, "-Wall", "-Wextra", "-Werror",
                         "-ffunction-sections", "-fdata-sections", *gc_sections_flags(),
                         "-I", str(ROOT / "src/user"), "-I", str(ROOT / "src/shared/include"),
                         "-idirafter", str(ROOT / "src/user/include"),

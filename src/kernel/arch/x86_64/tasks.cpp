@@ -2292,10 +2292,14 @@ void* thread_syscall(interrupt_frame* frame) {
             result = 0; break;
         }
         if (first != static_cast<u64>(process_exit_mode::stop_peers) || second != 0) { break; }
+        // A bounded cleanup owner must not erase its deadline or stop a peer
+        // that may still hold a libc/application lock needed by the owner.
+        if (current->exit_cleanup_deadline_ns != 0) {
+            result = process_error_state; break;
+        }
         if (current->exit_owner != 0 && current->exit_owner != current_thread->tid) {
             result = process_error_state; break;
         }
-        current->exit_cleanup_deadline_ns = 0;
         current->closing = true; current->exit_owner = current_thread->tid;
         for (auto& peer : threads) {
             if (peer.process == current && &peer != current_thread && peer.state != thread_state::free) {

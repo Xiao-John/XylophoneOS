@@ -152,6 +152,9 @@ abi_rejections (void)
   CHECK (claim (&good) == 0);
   struct cleanup_request again = request_after (30000000000UL, 124);
   CHECK (claim (&again) == 0);
+  /* Even the owner cannot downgrade a bounded cleanup window to the legacy
+     barrier: that would kill lock holders and erase the watchdog deadline. */
+  CHECK (native (51, 0, 0, 0) == -6);
   struct native_reservation unchanged_reservation;
   memset (&unchanged_reservation, 0x5a, sizeof (unchanged_reservation));
   struct native_reservation before = unchanged_reservation;
@@ -169,6 +172,8 @@ abi_rejections (void)
   CHECK (pthread_join (worker, &result) == 0);
   CHECK ((uintptr_t) result == UINT64_C (0xaabbccddee112233));
   CHECK (atomic_load_explicit (&peer_checked, memory_order_acquire) == 1);
+  CHECK (native (51, 0, 0, 0) == -6);
+  puts ("G3-X owner stop-peers denied and original timeout retained");
   puts ("G3-X PASS ABI rejection ownership peer cleanup and fixed deadline");
   CHECK (fflush (stdout) == 0);
   /* No yield or blocking call: the kernel timer must terminate this owner at
@@ -182,6 +187,16 @@ main (int argc, char **argv)
 {
   CHECK (argc == 2);
   mode = argv[1];
+  if (strcmp (mode, "legacy") == 0)
+    {
+      pthread_t worker;
+      CHECK (pthread_create (&worker, NULL, peer, NULL) == 0);
+      CHECK (native (51, 0, 0, 0) == 0);
+      CHECK (native (51, 0, 0, 0) == 0);
+      const char message[] = "G3-X legacy stop-peers first call and reentry preserved\n";
+      CHECK (write (2, message, sizeof (message) - 1) == sizeof (message) - 1);
+      _exit (46);
+    }
   if (strcmp (mode, "abi") == 0)
     abi_rejections ();
   if (strcmp (mode, "fault") == 0 || strcmp (mode, "abandon") == 0)

@@ -124,7 +124,52 @@ SDK 的 184 项构建输入、685 项安装产物均在构建和客体验收前�
 python3 tests/kernel_process_wait_race_test.py
 python3 tests/docs_consistency.py --output-dir build/active_exit_docs
 python3 tests/check_public_evidence_paths.py --index --base 07695514b01f004e53bd4355fae93b1d4f3b15a5
-python3 scripts/verify_evidence_index.py build/active_exit_evidence_index.json
+```
+
+完成上述构建与检查后，以下命令为本次复现新建平铺索引，并立即核验。它覆盖
+两套系统的 manifest/产物/SDK、完整 glibc sysroot、来源认证记录、正式客体
+报告/程序/日志及文档检查；路径相对 `build/`。历史 1401 项原索引及其摘要
+保持原样，新索引绑定本次产物，文件数和摘要按实际输出记录。
+
+```sh
+python3 - <<'PY'
+import hashlib, json
+from pathlib import Path
+root = Path('build')
+files = {}
+def add(path):
+    if path.is_symlink() or not path.is_file():
+        raise RuntimeError('expected regular evidence file: ' + str(path))
+    with path.open('rb') as stream:
+        files[path.relative_to(root).as_posix()] = hashlib.file_digest(stream, 'sha256').hexdigest()
+def tree(path):
+    if not path.is_dir():
+        raise RuntimeError('evidence directory missing: ' + str(path))
+    for item in sorted(path.rglob('*')):
+        if item.is_symlink():
+            raise RuntimeError('evidence symlink rejected: ' + str(item))
+        if item.is_file() and '__pycache__' not in item.parts:
+            add(item)
+for name in ('active_exit_qualified_system', 'active_exit_qualified_death'):
+    directory = root / name
+    add(directory / 'manifest.json')
+    for name in json.loads((directory / 'manifest.json').read_text())['artifacts']:
+        add(directory / name)
+    tree(directory / 'sdk')
+sdk = root / 'active_exit_verified_sdk'
+add(sdk / 'manifest.json')
+for name in json.loads((sdk / 'manifest.json').read_text())['artifacts']:
+    add(sdk / 'sysroot' / name)
+tree(sdk / 'source_verification')
+for name in ('active_exit_qualified_guest', 'active_exit_source_auth_sdk_test', 'active_exit_docs'):
+    tree(root / name)
+output = root / 'active_exit_reproduced_index.json'
+with output.open('x') as stream:
+    json.dump({'version': 1, 'files': dict(sorted(files.items()))}, stream, indent=2)
+    stream.write('\n')
+print('indexed', len(files), 'files in', output)
+PY
+python3 scripts/verify_evidence_index.py build/active_exit_reproduced_index.json
 ```
 
 只运行退出专项可使用 `--suite exit`。该套件通过实际 libc 公共接口及单列原生 ABI

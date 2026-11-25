@@ -146,8 +146,8 @@ joinable线程），全局最多32个线程槽。进程仍共享原256 MiB用户
 
 `sys_process_begin_exit(mode, request, 0)` 显式选择：
 
-- mode 0：保留原有 `(0,0,0)` 行为，唯一所有者立即停止、回收其他线程。
-  现有 newlib 运行库继续使用此模式。
+- mode 0：在尚未进入 mode 1 清理窗口时保留原有 `(0,0,0)` 行为，唯一所有者
+  立即停止、回收其他线程。现有 newlib 运行库继续使用此模式。
 - mode 1：`request` 指向 32 字节 `process_exit_cleanup_request`：16 字节
   `thread_header {version=1,size=32,reserved=0}`、`u64 deadline_ns`、
   `i32 timeout_status`、`u32 reserved=0`。deadline 使用统一单调纳秒时域，必须
@@ -160,6 +160,9 @@ joinable线程），全局最多32个线程槽。进程仍共享原256 MiB用户
 已经在“最后线程”退出握手中领取收尾责任的同一线程可进入 mode 1；其余线程
 已经安全停止。重复 mode 1 由同一所有者调用时返回成功，保留最早的截止时间与
 超时状态，不能延长窗口。其他线程获得 `thread_error_busy`，不能抢占所有权。
+清理窗口存在期间，所有线程（包括退出所有者）调用 mode 0 均返回
+`process_error_state`，保持原截止时间、失败状态和 peer 可调度状态；即使其他
+线程已经自然退出，所有者也不能通过 mode 0 取消有限窗口。
 glibc 并发 exit 的非所有者通过原生 sleep 阻塞等待整个进程终止；递归 exit
 仍由原所有者执行上游递归退出处理。
 

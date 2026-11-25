@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "cases": [
+    {
+      "name": "real_gpgv_valid_release",
+      "status": "passed"
+    },
+    {
+      "name": "reject_corrupted_archive",
+      "status": "passed"
+    },
+    {
+      "name": "reject_corrupted_signature",
+      "status": "passed"
+    },
+    {
+      "name": "reject_corrupted_key",
+      "status": "passed"
+    },
+    {
+      "name": "preserve_existing_evidence",
+      "status": "passed"
+    }
+  ],
+  "scope": "actual gpgv plus pinned archive/signature/key tampering",
+  "archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667"
+}

@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "regular_members_checked": 20947,
+  "checks": [
+    "download_replaced_after_verification",
+    "every_extracted_regular_member_matches",
+    "replaced_download_rejected",
+    "mutable_buffer_rejected",
+    "unverified_report_rejected"
+  ],
+  "archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667"
+}

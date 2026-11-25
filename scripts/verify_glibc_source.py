@@ -5,11 +5,14 @@ import argparse
 import base64
 from datetime import datetime, timezone
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
 import shutil
 import subprocess
+import tarfile
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 PORT = ROOT / 'src/ports/glibc'
@@ -20,9 +23,9 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
-def decode_key(path):
+def decode_key(path, *, data=None):
     """Remove OpenPGP ASCII armor; gpgv performs all cryptographic checks."""
-    text = Path(path).read_text(encoding='ascii')
+    text = (Path(path).read_bytes() if data is None else data).decode('ascii')
     begin = '-----BEGIN PGP PUBLIC KEY BLOCK-----'
     end = '-----END PGP PUBLIC KEY BLOCK-----'
     if text.count(begin) != 1 or text.count(end) != 1:
@@ -66,13 +69,33 @@ def check_status(returncode, output, expected):
             'hash_algorithm': int(valid[0][8])}
 
 
-def verify_source(archive, output, signature=None, key=None, gpgv='gpgv'):
+def read_archive(archive, expected_size):
+    """Capture bounded, immutable bytes before verification or extraction."""
+    with Path(archive).open('rb') as stream:
+        data = stream.read(expected_size + 1)
+    if len(data) != expected_size:
+        raise ValueError('archive size differs from source lock')
+    return data
+
+
+def extract_verified_source(archive_data, verification, destination):
+    """Extract the immutable snapshot that passed the release signature gate."""
+    if (not isinstance(archive_data, bytes)
+            or verification.get('status') != 'upstream_signature_verified'
+            or hashlib.sha256(archive_data).hexdigest() != verification.get('archive_sha256')):
+        raise ValueError('extraction bytes differ from the verified source snapshot')
+    with tarfile.open(fileobj=io.BytesIO(archive_data)) as package:
+        package.extractall(destination, filter='data')
+
+
+def verify_source(archive, output, signature=None, key=None, gpgv='gpgv', *, archive_data=None):
     archive = Path(archive).resolve(strict=True)
     output = Path(output).absolute()
     if output.exists() or output.is_symlink():
         raise ValueError('verification output must be a new directory')
     lock_path = PORT / 'source_lock.json'
-    lock = json.loads(lock_path.read_text())
+    lock_data = lock_path.read_bytes()
+    lock = json.loads(lock_data)
     trust = lock['signer_trust']
     signature = Path(signature or PORT / trust['signature_file']).resolve(strict=True)
     key = Path(key or PORT / trust['key_file']).resolve(strict=True)
@@ -80,12 +103,18 @@ def verify_source(archive, output, signature=None, key=None, gpgv='gpgv'):
     if not selected:
         raise ValueError('gpgv is required for source authentication')
     verifier = Path(selected).resolve(strict=True)
-    output.mkdir(parents=True)
+    output.mkdir(parents=True, mode=0o700)
+    if archive_data is None:
+        archive_data = read_archive(archive, lock['archive_bytes'])
+    if not isinstance(archive_data, bytes):
+        raise ValueError('archive snapshot must be immutable bytes')
+    signature_data, key_data = signature.read_bytes(), key.read_bytes()
     report = {'schema': 1, 'status': 'verifying',
               'verified_at': datetime.now(timezone.utc).isoformat(),
-              'lock_sha256': digest(lock_path),
-              'archive_sha256': digest(archive),
-              'signature_sha256': digest(signature), 'key_sha256': digest(key),
+              'lock_sha256': hashlib.sha256(lock_data).hexdigest(),
+              'archive_sha256': hashlib.sha256(archive_data).hexdigest(),
+              'signature_sha256': hashlib.sha256(signature_data).hexdigest(),
+              'key_sha256': hashlib.sha256(key_data).hexdigest(),
               'verifier': {'name': verifier.name, 'sha256': digest(verifier)},
               'trust_record': trust}
 
@@ -99,18 +128,29 @@ def verify_source(archive, output, signature=None, key=None, gpgv='gpgv'):
                 ('key', report['key_sha256'], trust['key_sha256'])):
             if actual != wanted:
                 raise ValueError(field + ' SHA-256 differs from reviewed source lock')
-        if archive.stat().st_size != lock['archive_bytes']:
+        if len(archive_data) != lock['archive_bytes']:
             raise ValueError('archive size differs from source lock')
         keyring = output / 'release_key.gpg'
-        keyring.write_bytes(decode_key(key))
+        keyring.write_bytes(decode_key(key, data=key_data))
         homedir = output / 'gnupg'
         homedir.mkdir(mode=0o700)
-        command = [str(verifier), '--homedir', str(homedir), '--keyring',
-                   str(keyring), '--status-fd', '1', str(signature), str(archive)]
         env = {name: value for name, value in os.environ.items()
                if name not in ('GNUPGHOME', 'GPG_AGENT_INFO', 'LD_PRELOAD', 'LD_LIBRARY_PATH')}
         env['LC_ALL'] = 'C'
-        result = subprocess.run(command, capture_output=True, env=env, timeout=60)
+        # gpgv reads private copies of the same bytes whose hashes are recorded.
+        # The caller can extract archive_data directly, without reopening a
+        # writable download path after verification.
+        with tempfile.TemporaryDirectory(prefix='source_', dir=output) as temporary:
+            snapshot_archive = Path(temporary) / 'archive'
+            snapshot_signature = Path(temporary) / 'signature'
+            snapshot_archive.write_bytes(archive_data)
+            snapshot_signature.write_bytes(signature_data)
+            command = [str(verifier), '--homedir', str(homedir), '--keyring',
+                       str(keyring), '--status-fd', '1', str(snapshot_signature), str(snapshot_archive)]
+            result = subprocess.run(command, capture_output=True, env=env, timeout=60)
+            if (digest(snapshot_archive) != report['archive_sha256']
+                    or digest(snapshot_signature) != report['signature_sha256']):
+                raise ValueError('private verification snapshot changed')
         (output / 'gpgv.status').write_bytes(result.stdout)
         (output / 'gpgv.log').write_bytes(result.stderr)
         report['gpgv_exit'] = result.returncode

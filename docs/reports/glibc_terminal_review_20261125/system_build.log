@@ -1,0 +1,2 @@
+ISO ${XOS_REPO}/build/terminal_system_sector/xos-install.iso sectors=436 boot_sectors=10 boot_bytes=5120 kernel_bytes=0
+Built xos-install.iso + real_mode.img | b7f3b54fba6a0103 | kernel 825496 bytes

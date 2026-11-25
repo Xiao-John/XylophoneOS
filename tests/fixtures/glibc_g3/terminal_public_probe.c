@@ -27,7 +27,7 @@ __attribute__((used,section(".xos.exec"))) static const struct exec_marker recei
 #endif
 static int output_fd=1;
 static unsigned checks;
-static int file_progress, reader_started;
+static int file_progress, reader_started, reader_completed;
 
 static void text(const char *value) {
     size_t at=0,length=strlen(value);
@@ -35,9 +35,32 @@ static void text(const char *value) {
 }
 static void check(int passed,int line) {
     (void)__atomic_add_fetch(&checks,1,__ATOMIC_RELAXED);
-    if(!passed) { char message[128]; snprintf(message,sizeof(message),"GLIBC_TERMINAL_FAIL line=%d errno=%d\n",line,errno); text(message); exit(81); }
+    if(!passed) {
+        /* The terminal session is serialized while read is pending. Preserve
+           the failing source line in native exit status without writing it. */
+        if(__atomic_load_n(&reader_started,__ATOMIC_ACQUIRE) &&
+           !__atomic_load_n(&reader_completed,__ATOMIC_ACQUIRE))_Exit(1000+line);
+        char message[128];snprintf(message,sizeof(message),"GLIBC_TERMINAL_FAIL line=%d errno=%d\n",line,errno);text(message);exit(81);
+    }
 }
 #define CHECK(value) check((value),__LINE__)
+/* Read-only E13-T v1 sys50 layout, matching xos/thread_abi.hpp. A regular
+   application sees only its own threads; the calling main is running. */
+struct native_thread_stats {
+    uint32_t version,size;
+    uint64_t reserved_header;
+    uint32_t processes,threads,reserved,waiting,results,free_pages;
+    uint32_t process_user_pages,process_kernel_stack_pages;
+};
+_Static_assert(sizeof(struct native_thread_stats)==48,"sys50 ABI size");
+static struct native_thread_stats thread_stats(void) {
+    struct native_thread_stats value;
+    long result;
+    __asm__ volatile("int $0x80" : "=a"(result)
+                     : "a"(50UL),"D"(&value),"S"(0UL),"d"(0UL) : "memory","cc");
+    CHECK(result==0 && value.version==1 && value.size==sizeof(value) && value.reserved_header==0);
+    return value;
+}
 static long long monotonic(void) {
     struct timespec value; CHECK(clock_gettime(CLOCK_MONOTONIC,&value)==0);
     return (long long)value.tv_sec*1000000000LL+value.tv_nsec;
@@ -60,6 +83,7 @@ static void *read_worker(void *unused) {
     while(at<sizeof(data)) { ssize_t n=read(0,data+at,sizeof(data)-at); CHECK(n>0 && (size_t)n<=sizeof(data)-at); at+=(size_t)n; }
     CHECK(__atomic_load_n(&file_progress,__ATOMIC_ACQUIRE)==1);
     CHECK(memcmp(data,"\033[A",3)==0);
+    __atomic_store_n(&reader_completed,1,__ATOMIC_RELEASE);
     return NULL;
 }
 static void mode_check(int fd,struct termios *value) {
@@ -84,6 +108,7 @@ int main(int argc,char **argv) {
     struct stat info;CHECK(fstat(0,&info)==0 && S_ISCHR(info.st_mode));
     mode_check(0,&value);CHECK(value.c_cc[VMIN]==1 && value.c_cc[VTIME]==0);
     if(argc>1 && !strcmp(argv[1],"warmup")) { text("GLIBC_TERMINAL_WARMUP_PASS\n");return 0; }
+    CHECK(argc==3 && strlen(argv[2])==32);
     original=value;value.c_lflag=ICANON;
     errno=0;CHECK(tcsetattr(0,TCSANOW,&value)==-1 && errno==ENOTSUP);
     CHECK(tcgetattr(0,&value)==0 && memcmp(&value,&original,sizeof(value))==0);
@@ -107,14 +132,36 @@ int main(int argc,char **argv) {
     text("GLIBC_TERMINAL_MODE_PASS raw=115200 timed=100ms ioctl=translated\n");
 
     text("GLIBC_TERMINAL_BLOCK_READY\n");
+    struct native_thread_stats stats=thread_stats();CHECK(stats.threads==1 && stats.waiting==0);
     pthread_t reader;CHECK(pthread_create(&reader,NULL,read_worker,NULL)==0);
-    while(!__atomic_load_n(&reader_started,__ATOMIC_ACQUIRE)) CHECK(sched_yield()==0);
+    const long long waiting_deadline=monotonic()+5000000000LL;
+    for(;;) {
+        stats=thread_stats();CHECK(stats.threads==2 && stats.reserved==0 && stats.results==0);
+        CHECK(__atomic_load_n(&reader_completed,__ATOMIC_ACQUIRE)==0);
+        if(__atomic_load_n(&reader_started,__ATOMIC_ACQUIRE) && stats.waiting==1)break;
+        CHECK(monotonic()<waiting_deadline && sched_yield()==0);
+    }
+    const unsigned before_threads=stats.threads,before_waiting=stats.waiting;
     int file=open("/g3_terminal_file",O_RDWR|O_CREAT|O_TRUNC,0600);CHECK(file==3);
     CHECK(write(file,"file",4)==4 && lseek(file,0,SEEK_SET)==0);
     char content[4];CHECK(read(file,content,sizeof(content))==4 && !memcmp(content,"file",4));
     errno=0;CHECK(tcgetattr(file,&value)==-1 && errno==ENOTTY);
     CHECK(close(file)==0 && unlink("/g3_terminal_file")==0);
+    stats=thread_stats();CHECK(stats.threads==2 && stats.waiting==1);
+    CHECK(__atomic_load_n(&reader_completed,__ATOMIC_ACQUIRE)==0);
     __atomic_store_n(&file_progress,1,__ATOMIC_RELEASE);
+    /* The host preallocated this one-sector file before boot and reads only
+       its fixed data sector. Fresh nonce + nonzero tail reject stale/partial
+       records without touching live filesystem metadata or terminal I/O. */
+    char observation[512];memset(observation,0xa5,sizeof(observation));
+    int formatted=snprintf(observation,sizeof(observation),
+        "G3_BLOCK_OBSERVATION v=1 before_threads=%u before_waiting=%u after_threads=%u after_waiting=%u file_progress=%d nonce=%s\n",
+        before_threads,before_waiting,stats.threads,stats.waiting,
+        __atomic_load_n(&file_progress,__ATOMIC_ACQUIRE),argv[2]);
+    CHECK(formatted>0 && (size_t)formatted<sizeof(observation));
+    file=open(argv[1],O_RDWR);CHECK(file==3);
+    CHECK(write(file,observation,sizeof(observation))==(ssize_t)sizeof(observation));
+    CHECK(fsync(file)==0 && close(file)==0);
     CHECK(pthread_join(reader,NULL)==0);
     text("GLIBC_TERMINAL_BLOCK_PASS escape=raw files=progress\n");
 

@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "${XOS_REPO}/tests/glibc_terminal_blocking_negative.py", line 137, in <module>
+    main()
+    ~~~~^^
+  File "${XOS_REPO}/tests/glibc_terminal_blocking_negative.py", line 108, in main
+    guest.expect(b'GLIBC_TERMINAL_READ_WAITING threads=2 waiting=1', start=start, timeout=60)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "${XOS_REPO}/tests/boot_smoke.py", line 45, in expect
+    return self.expect_any(alternatives, start=start, timeout=timeout)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "${XOS_REPO}/tests/boot_smoke.py", line 61, in expect_any
+    raise AssertionError(f"{self.name}: missing any of {expected_values!r}; output={self.output[-1000:]!r}")
+AssertionError: glibc_terminal_lock_fault: missing any of (b'GLIBC_TERMINAL_READ_WAITING threads=2 waiting=1',); output=bytearray(b'd length\nbad pointer\nAping\n[files] ready hello.elf bytes=9872\n\nWelcome to Xshell | XylophoneOS\nhelp: commands   dash -i: POSIX shell   trace on: diagnostics\n\nAAbad length\nbad pointer\ntx\nAping\nbad length\nbad pointer\ntx\nAping\nbad length\nbad pointer\ntx\nAping\nAbad length\nbad pointer\ntx\nping\nAbad length\nbad pointer\ntx\nping\nbad length\nbad pointer\ntx\nxsh> tAping\nbad length\nbad pointer\ntx\nrace on\nxsh: trace on\nxsh> Aping\ndemo quietAbad length\nbad pointer\ntx\n\n[task] event=killed_by_supervisor pid=1\r\n[task] event=reclaimed pid=1 pages=11\r\n[task] event=killed_by_supervisor pid=2\r\n[task] event=reclaimed pid=2 pages=11\r\n[task] event=killed_by_supervisor pid=3\r\n[task] event=reclaimed pid=3 pages=11\r\n[task] event=killed_by_supervisor pid=4\r\n[task] event=reclaimed pid=4 pages=11\r\n[sup] demo tasks stopped\nxsh> tty-run /bin/terminal_lock_fault\nxsh: starting terminal service\nGLIBC_TERMINAL_MODE_PASS raw=115200 timed=100ms ioctl=translated\nGLIBC_TERMINAL_BLOCK_READY\n[wait] pid=11 kind=exited code=91\nxsh> ')

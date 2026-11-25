@@ -16,6 +16,25 @@ CASES = ['basic', 'v3', 'lease', 'concurrent', 'invalid_v2', 'invalid_v3',
          'service_death', 'timeout', 'interrupted']
 
 
+def compiled_sources():
+    overlay = ROOT / 'src/ports/glibc/sysdeps/xos'
+    return [overlay / (name + '.c') for name in
+            ('xos_file_runtime', 'xos_terminal_runtime', 'ioctl')] + [
+        ROOT / 'src/ports/glibc/terminal_support.cpp', ROOT / 'src/user/sdk/terminal_client.cpp',
+        ROOT / 'tests/fixtures/glibc_g3/terminal_runtime.cpp']
+
+
+def source_snapshot():
+    overlay = ROOT / 'src/ports/glibc/sysdeps/xos'
+    sources = compiled_sources() + [Path(__file__).resolve(),
+                                   ROOT / 'tests/fixtures/glibc_g3/terminal_host_aliases.h']
+    sources += list(overlay.rglob('*.h'))
+    sources += [path for name in ('src/shared/include/xos', 'src/user/include/xos')
+                for path in (ROOT / name).rglob('*.hpp')]
+    return {str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in sorted(set(sources))}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True)
@@ -34,10 +53,9 @@ def main():
         environment['UBSAN_OPTIONS'] = 'halt_on_error=1:print_stacktrace=1'
     report = {'status': 'failed', 'scope': 'real libc FD/termios/native client; kernel and files peer simulated',
               'sanitizers': ['address', 'undefined'] if args.sanitize else [],
-              'leak_sanitizer': 'not_run', 'guest': 'not_run_by_this_runner', 'commands': [], 'results': []}
-    sources = [overlay / (name+'.c') for name in ['xos_file_runtime', 'xos_terminal_runtime', 'ioctl']]
-    sources += [ROOT/'src/ports/glibc/terminal_support.cpp', ROOT/'src/user/sdk/terminal_client.cpp',
-                ROOT/'tests/fixtures/glibc_g3/terminal_runtime.cpp']
+              'leak_sanitizer': 'not_run', 'guest': 'not_run_by_this_runner', 'commands': [], 'results': [],
+              'source_snapshot_verified': False}
+    sources = compiled_sources()
 
     def run(command, name):
         report['commands'].append(command)
@@ -48,6 +66,7 @@ def main():
         return result.stdout
 
     try:
+        report['sources'] = source_snapshot()
         objects = []
         for index, source in enumerate(sources):
             obj = output/(str(index)+'.o')
@@ -63,12 +82,11 @@ def main():
             assert text.strip() == 'PASS glibc_terminal '+case
             report['results'].append({'case':case,'status':'passed'})
             print(text,end='')
-        sources += [Path(__file__).resolve(), ROOT/'tests/fixtures/glibc_g3/terminal_host_aliases.h']
-        sources += list(overlay.glob('xos_file*.h'))+list(overlay.glob('xos_terminal*.h'))
-        sources += [overlay/'bits/fcntl.h',overlay/'bits/ioctls.h']
-        sources += [p for name in ['src/shared/include/xos','src/user/include/xos']
-                    for p in (ROOT/name).rglob('*.hpp')]
-        report['sources']={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(set(sources))}
+        current_sources = source_snapshot()
+        if current_sources != report['sources']:
+            report['sources_after'] = current_sources
+            raise RuntimeError('source inputs changed during qualification')
+        report['source_snapshot_verified'] = True
         report['status']='passed'
         print('PASS',len(CASES),'glibc terminal groups')
     except Exception as error:

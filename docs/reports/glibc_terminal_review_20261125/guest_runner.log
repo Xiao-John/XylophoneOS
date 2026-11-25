@@ -1,0 +1,1 @@
+PASS glibc terminal: authorized channels, termios/ioctl, blocking I/O, exec sequence, resources

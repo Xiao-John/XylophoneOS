@@ -1,0 +1,29 @@
+PASS glibc_terminal basic
+PASS glibc_terminal v3
+PASS glibc_terminal lease
+PASS glibc_terminal concurrent
+PASS glibc_terminal invalid_v2
+PASS glibc_terminal invalid_v3
+PASS glibc_terminal missing_flag
+PASS glibc_terminal missing_object
+PASS glibc_terminal zero_sequence
+PASS glibc_terminal bad_peer
+PASS glibc_terminal bad_rights
+PASS glibc_terminal bad_controller
+PASS glibc_terminal duplicate_channels
+PASS glibc_terminal wrong_sequence
+PASS glibc_terminal reserved
+PASS glibc_terminal unknown_status
+PASS glibc_terminal bad_mode
+PASS glibc_terminal overread
+PASS glibc_terminal zero_write
+PASS glibc_terminal short_reply
+PASS glibc_terminal service_death
+PASS glibc_terminal timeout
+PASS glibc_terminal interrupted
+Traceback (most recent call last):
+  File "${XOS_REPO}/build/terminal_source_binding_after/checkout/tests/glibc_terminal_host.py", line 100, in <module>
+    main()
+  File "${XOS_REPO}/build/terminal_source_binding_after/checkout/tests/glibc_terminal_host.py", line 88, in main
+    raise RuntimeError('source inputs changed during qualification')
+RuntimeError: source inputs changed during qualification

@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Exercise public glibc terminal interfaces through real authorized terminal v2 channels."""
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -11,6 +12,7 @@ import struct
 import subprocess
 import sys
 import tempfile
+import time
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT/'scripts'),str(ROOT/'tests')]
@@ -22,6 +24,7 @@ from glibc_static_guest import system_sources, sha
 from make_work_disk import create_fat32
 from process_smoke import command, resources
 from task_smoke import send_bytes, pump
+from terminal_observation_sector import observation_record, prepare_observations
 from work_disk import transfer
 
 
@@ -45,6 +48,29 @@ def tty_opt_in(path):
                 found.append({'address':section[3],'offset':section[4],'load_flags':ph[1]})
     if len(found)!=1:raise RuntimeError('terminal marker lacks one read-only load mapping')
     return found[0]
+
+
+def release_blocked_reader(guest, start, report, repetition, disk, observation, timeout=60):
+    expected=observation_record(observation['nonce'])
+    deadline=time.monotonic()+timeout
+    # No FAT lookup/export or host write is permitted after QEMU starts.
+    with disk.open('rb',buffering=0) as stream:
+        while True:
+            stream.seek(observation['offset']);actual=stream.read(512)
+            if actual==expected:break
+            captured=bytes(guest.output[start:])
+            if guest.process.poll() is not None or b'GLIBC_TERMINAL_FAIL' in captured or b'kind=exited code=' in captured:
+                raise RuntimeError('terminal probe stopped before the complete observation record')
+            if time.monotonic()>=deadline:
+                raise AssertionError('blocked-reader file-progress record timed out; input withheld')
+            pump(guest,0.025)
+    if b'GLIBC_TERMINAL_BLOCK_PASS' in guest.output[start:]:raise RuntimeError('blocking read completed before input')
+    report['input_events'].append({'repetition':repetition,'input_hex':'1b5b41',
+                                   'after':'complete_fresh_observation_record','serial_offset':len(guest.output),
+                                   'before_threads':2,'before_waiting':1,'after_threads':2,'after_waiting':1,
+                                   'file_progress':1,'record_sha256':hashlib.sha256(actual).hexdigest(),
+                                   'observation':observation})
+    send_bytes(guest,b'\x1b[A')
 
 
 def build_parent(system,output,report):
@@ -78,7 +104,7 @@ def main():
     args=parser.parse_args()
     if not 1<=args.repetitions<=10:parser.error('repetitions must be 1..10')
     output=args.output.absolute();output.mkdir(parents=True,exist_ok=False)
-    report={'status':'not_run','suite':'glibc_terminal','runs':[],'qmp':'disabled; serial-only',
+    report={'status':'not_run','suite':'glibc_terminal','runs':[],'input_events':[],'qmp':'disabled; serial-only',
             'not_run':['hardware UART timing','continuous-input flush race','glibc outgoing terminal fork/exec/spawn',
                        'same-session full-duplex I/O','dash launch entry','service death during guest I/O']}
     guest=None
@@ -115,6 +141,8 @@ def main():
             disk=Path(temporary)/'work.img';create_fat32(disk,512);transfer(disk,'mkdir','/bin')
             for name,binary in programs.items():transfer(disk,'import','/bin/'+name,binary)
             transfer(disk,'import','/bin/terminal.elf',system_build/'user_terminal.image.elf')
+            observations=prepare_observations(disk,args.repetitions)
+            report['observations']=observations;report['work_disk_initial_sha256']=sha(disk)
             guest=Guest(system_build/'xos-install.iso','glibc_terminal',work_disk=disk,iso=True,qmp_enabled=False)
             report['qemu_command']=guest.command
             report['qemu_version']=subprocess.check_output([guest.command[0],'--version'],text=True).splitlines()[0]
@@ -125,11 +153,11 @@ def main():
                 raise RuntimeError('authorized terminal warmup failed: '+repr(warmup))
             baseline=resources(guest);report['baseline_with_service']=baseline
             for repetition in range(args.repetitions):
-                start=len(guest.output);send_bytes(guest,b'tty-run /bin/terminal_probe\r')
+                observation=observations[repetition]
+                start=len(guest.output)
+                send_bytes(guest,('tty-run /bin/terminal_probe '+observation['path']+' '+observation['nonce']+'\r').encode())
                 guest.expect(b'GLIBC_TERMINAL_BLOCK_READY',start=start,timeout=60)
-                pump(guest,0.25)
-                if b'GLIBC_TERMINAL_BLOCK_PASS' in guest.output[start:]:raise RuntimeError('blocking read completed before input')
-                send_bytes(guest,b'\x1b[A')
+                release_blocked_reader(guest,start,report,repetition+1,disk,observation)
                 for ready,value in [(b'GLIBC_TERMINAL_FLUSH_QUEUE_READY',b'Q'),(b'GLIBC_TERMINAL_FLUSH_FRESH_READY',b'F'),
                                     (b'GLIBC_TERMINAL_TCSA_QUEUE_READY',b'X'),(b'GLIBC_TERMINAL_TCSA_FRESH_READY',b'N')]:
                     guest.expect(ready,start=start,timeout=60);send_bytes(guest,value)

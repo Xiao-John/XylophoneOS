@@ -141,7 +141,7 @@ struct process_record {
     u64 deferred_vector, deferred_address, deferred_instruction;
 };
 
-struct completion_record { bool used; bool ready; u64 parent; process_status status; cpu_totals cpu; };
+struct completion_record { bool used; bool ready; bool published; u64 parent; process_status status; cpu_totals cpu; };
 completion_record completions[16];
 
 struct endpoint_record {
@@ -1288,6 +1288,45 @@ completion_record* completion_for(u64 parent, u64 pid) {
     return nullptr;
 }
 
+bool process_completion_claimed(u64 parent, u64 pid) {
+    for (const auto& waiter : threads) {
+        if (waiter.process != nullptr && waiter.process->pid == parent &&
+            waiter.wait_kind == thread_wait_kind::process && waiter.wait_target == pid) return true;
+    }
+    return false;
+}
+
+completion_record* next_process_completion(u64 parent, bool& has_children) {
+    has_children = false;
+    for (auto& item : completions) {
+        if (!item.used || !item.published || item.parent != parent) continue;
+        has_children = true;
+        if (item.ready && !process_completion_claimed(parent, item.status.pid)) return &item;
+    }
+    return nullptr;
+}
+
+void wake_process_waiters(u64 parent) {
+    for (auto& waiter : threads) {
+        if (waiter.process == nullptr || waiter.process->pid != parent ||
+            waiter.state != thread_state::blocked ||
+            waiter.wait_kind != thread_wait_kind::process || waiter.wait_target != 0) continue;
+        bool has_children = false;
+        completion_record* item = next_process_completion(parent, has_children);
+        if (item != nullptr) {
+            // Bind the real PID before publishing ready. This claim survives
+            // until deferred copyout, exactly as for a precise PID waiter.
+            waiter.wait_target = item->status.pid;
+            waiter.state = thread_state::ready;
+        } else if (!has_children) {
+            // All native PIDs are positive and at most INT64_MAX. This private
+            // sentinel tells deferred delivery to return no-child unchanged.
+            waiter.wait_target = ~u64{0};
+            waiter.state = thread_state::ready;
+        }
+    }
+}
+
 void finish_task(process_record* task, process_outcome outcome, i64 code,
                   u64 vector, u64 address, u64 instruction) {
     if (task->state == task_state::dead) { return; }
@@ -1339,6 +1378,7 @@ void finish_task(process_record* task, process_outcome outcome, i64 code,
                 parent.state == thread_state::blocked && parent.wait_kind == thread_wait_kind::process &&
                 parent.wait_target == task->pid) { parent.state = thread_state::ready; }
         }
+        wake_process_waiters(task->parent);
     }
     // Unstarted constructors lose their owner. Runnable children instead pass
     // to the kernel reaper; their cancellation ancestry follows the live tree.
@@ -1521,8 +1561,9 @@ void deliver_wait(thread_record* thread, interrupt_frame* frame) {
     }
     if (thread->wait_kind != thread_wait_kind::process) { return; }
     completion_record* item = completion_for(thread->process->pid, thread->wait_target);
-    if (item == nullptr || !item->ready) { return; }
-    if (user_range_ok(thread->wait_buffer, sizeof(process_status), true)) {
+    if (item == nullptr) { frame->rax = static_cast<u64>(process_error_denied); }
+    else if (!item->ready) { frame->rax = static_cast<u64>(process_error_state); }
+    else if (user_range_ok(thread->wait_buffer, sizeof(process_status), true)) {
         copy_to_user(thread->wait_buffer, &item->status, sizeof(process_status));
         thread->process->child_cpu.include(item->cpu);
         *item = completion_record{};
@@ -1531,6 +1572,7 @@ void deliver_wait(thread_record* thread, interrupt_frame* frame) {
     thread->user_pin.clear();
     thread->wait_kind = thread_wait_kind::none;
     thread->wait_target = 0;
+    wake_process_waiters(thread->process->pid);
 }
 
 thread_record* pick_ready() {
@@ -4754,6 +4796,7 @@ void* process_syscall(interrupt_frame* frame) {
         }
         child->fork_pending = false;
         child->state = task_state::ready;
+        if (child->completion_slot != 0) completions[child->completion_slot - 1].published = true;
         if (process_trace_enabled) {
             format::text("[process] event=fork_committed pid="); format::decimal(child->pid);
             format::text(" parent="); format::decimal(child->parent); format::text("\r\n");
@@ -5260,6 +5303,7 @@ void* process_syscall(interrupt_frame* frame) {
         if (!valid_process_entry(task, entry)) { break; }
         task->entry = entry.entry; task->initial_stack = entry.stack; task->startup = entry.startup;
         task->state = task_state::fresh;
+        if (task->completion_slot != 0) completions[task->completion_slot - 1].published = true;
         if (process_trace_enabled) {
             format::text("[process] event=started pid="); format::decimal(task->pid);
             format::text(" parent="); format::decimal(task->parent); format::text("\r\n");
@@ -5278,27 +5322,34 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_process_wait: {
-        if (third > 1) { break; }
+        if ((third & ~(process_wait_nonblocking | process_wait_any)) != 0 ||
+            ((third & process_wait_any) != 0 && first != 0)) { break; }
         if (!user_range_ok(second, sizeof(process_status), true)) { break; }
-        completion_record* item = completion_for(current->pid, first);
-        if (item == nullptr) { result = process_error_denied; break; }
-        if (!item->ready && third == 1) { result = process_error_would_block; break; }
-        // A woken waiter still owns the completion until deliver_wait copies it.
-        for (const auto& waiter : threads) {
-            if (waiter.process == current && waiter.wait_kind == thread_wait_kind::process &&
-                waiter.wait_target == first) { result = thread_error_busy; break; }
+        const bool any = (third & process_wait_any) != 0;
+        bool has_children = false;
+        completion_record* item = any ? next_process_completion(current->pid, has_children)
+            : completion_for(current->pid, first);
+        if (item == nullptr && (!any || !has_children)) { result = process_error_denied; break; }
+        if ((item == nullptr || !item->ready) && (third & process_wait_nonblocking) != 0) {
+            result = process_error_would_block; break;
         }
-        if (result == thread_error_busy) { break; }
-        if (item->ready) {
+        // A woken waiter still owns the completion until deliver_wait copies it.
+        if (!any && process_completion_claimed(current->pid, first)) {
+            result = thread_error_busy; break;
+        }
+        if (item != nullptr && item->ready) {
             copy_to_user(second, &item->status, sizeof(process_status));
             current->child_cpu.include(item->cpu);
             *item = completion_record{}; result = 0;
+            wake_process_waiters(current->pid);
         } else {
-            process_record* child = owned_process(first);
-            if (child == nullptr || child->state == task_state::building) { result = process_error_state; break; }
+            if (!any) {
+                process_record* child = owned_process(first);
+                if (child == nullptr || child->state == task_state::building) { result = process_error_state; break; }
+            }
             if (!current_thread->user_pin.set(second, sizeof(process_status))) { result = thread_error_busy; break; }
             commit_user_output();
-            current_thread->wait_target = first; current_thread->wait_buffer = second;
+            current_thread->wait_target = any ? 0 : first; current_thread->wait_buffer = second;
             current_thread->wait_kind = thread_wait_kind::process;
             current_thread->state = thread_state::blocked; frame->rax = 0;
             if (process_trace_enabled) {

@@ -69,7 +69,7 @@ G2/G3 候选使用，SDK 单独记录能力与客体验证；不更换默认 lib
 | 17 | `sys_process_map` | `src/shared/include/xos/process_abi.hpp` |
 | 18 | `sys_process_start` | `src/shared/include/xos/process_abi.hpp` |
 | 19 | `sys_process_abort` | `src/shared/include/xos/process_abi.hpp` |
-| 20 | `sys_process_wait` | `src/shared/include/xos/process_abi.hpp` |
+| 20 | `sys_process_wait` | `src/shared/include/xos/process_abi.hpp`；third bit0 非阻塞，新增 bit1 + first=0 显式 [wait-any](process_wait.md)，旧精确 PID 0/1 请求保持 |
 | 21 | `sys_process_stats` | `src/shared/include/xos/process_abi.hpp` |
 | 22 | `sys_ipc_handles` | `src/shared/include/xos/process_abi.hpp` |
 | 23 | `sys_block_read` | `src/shared/include/xos/process_abi.hpp` |

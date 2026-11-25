@@ -656,7 +656,8 @@ extern "C" _READ_WRITE_RETURN_TYPE read(int fd, void* buffer, size_t length) {
                                     reinterpret_cast<xos::u64>(buffer), length);
             if (result != xos::process_error_would_block) {
                 if (result < 0) { errno = error_from_kernel(result); return -1; }
-                if (object.kind == object_kind::kernel && result > 0) {
+                if (object.kind == object_kind::kernel && result > 0 &&
+                    xos::sdk::syscall(xos::sys_process_stdio, 0, object.handle) == 1) {
                     // The legacy console has no line discipline; map Enter's CR
                     // to NL so line-oriented programs (bc, cat, ...) see lines.
                     char* bytes = static_cast<char*>(buffer);

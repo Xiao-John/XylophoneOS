@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "build_id": "e3f598bdd209b82a",
+  "system_source_entries_verified_after_run": 1296,
+  "system_artifact_entries_verified_after_run": 289,
+  "sdk_tree_sha256": "62e913f94c648d45d3f82ace8d27fb7bc7276c6379e8b5d6d5d3f97714e2cf63",
+  "fixture_artifacts_verified_after_run": {
+    "net_transport_probe.elf": "87de030d88283f078f4d4bc5466471df08ebe08abd04be294e406d36705a6da0",
+    "net_lifecycle_probe.elf": "157e5c9da57254437d19eb482961281b3b962ee7506c55b41a57419086627e87",
+    "net_exec_receiver.elf": "ed03914fa4ad3c557dc24dd3707aa93ab75fe83d8b7d60c2584e9cbab2ca0271"
+  },
+  "source_manifest": "build/network_review_system_v3/manifest.json",
+  "source_manifest_sha256": "aa9b36d8bf888fddd3c094b1ca4f6b2bbeb9727f9d542873b6cda6b0970141fd",
+  "image_sha256": "5f5be2aaeb588d88424c56b7ed3f7042486bb324a8e2f59def1ffe225399e523",
+  "libc_linked_into_fixtures": false
+}

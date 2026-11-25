@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "files": {
+    "derivation.json": "293f6a067f2c58e7960106e5ab9d0b754de76449472e168944ba27289aeb173b",
+    "earlier_crash_restart_expectation_failure.json": "a73b5f338132ee2126532d2436f818825c751d5f68b26719c6db4134d816aab6",
+    "earlier_serial_parser_failure.json": "1dec7ad988924d00667bae4575cac6c95bbc56e91abe8e286dee4d5aa7c29c05",
+    "lifecycle.json": "31eed1708e799c59a7b62b000635a7d1c2bacee1294662edae6a8d16b70192da",
+    "lifecycle.pcap.b64": "7f448eb4e71d95adcd98c5b19a39f908ffd0f18af68ecb013d3d0bc92b849236",
+    "lifecycle_fixture.json": "ca26ed859a91d26791232bb3f85ef5a87bfcc52b2a67c1ee01b389886ddf3163",
+    "lifecycle_serial.log": "f6e636d6f4e1af7c929e3e313eb3e086d4aec3038f2c09afd9a1a7871a9c5279",
+    "lwip_inputs.json": "f694c33ae0f88facca281706cdf8686e55166e50a905619757de295c3bde508e",
+    "reboot.pcap.b64": "69844e3e658a7be42f0167b5c9507b380f6aac9b7f4bbd82aed835abf2d0d3d9",
+    "reboot_serial.log": "bcc4b3fef7dba9752798f7a92bec91833132def26c718942bc744f981165a9c6",
+    "system.json": "e97b060758e8b757985c2f7546d295d89f3c116b6ff24a8ec6dd88af5e669339",
+    "transport.json": "d306845e31da72384ba75d0374a59dded2e076201f294f271725c86267d7f44e",
+    "transport.pcap.b64": "5d13d7c49edebfd25bff11d6f4a487e93c505e4b37729b2cab06d8ac3eb71042",
+    "transport_fixture.json": "0b2575bfaba26c417833fbed510f06f1dcd1aad7a2f160aadbf193be9028d241",
+    "transport_serial.log": "9e7916032fe482cf26c99938ac200d7c19beb8bebea71e6d18a01c69385f49a1"
+  }
+}

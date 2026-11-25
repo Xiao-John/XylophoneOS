@@ -50,6 +50,11 @@ FatFs 锁或磁盘簇的槽当作空槽。maintenance acquire/release 同时检�
   seek 或 truncate。`opendir` 以 `O_CLOEXEC` 打开目录 FD，`dirfd` 返回这个 FD，
   `closedir` 关闭它。`readdir` 继续使用有界分页，不承诺修改中的目录快照。
 
+`read_at/write_at`（op 30/31）在单个 files 请求内定位底层 FIL，始终保留打开
+描述的 position；经 `dup`、transfer、fork 共享该描述的其他进程也不会观察到
+临时 seek。`write_at` 使用显式位置，即使描述含 O_APPEND；普通 write 仍追加。
+它们沿用真实短 I/O、权限、空洞零填充、失败回滚及维护准入规则。
+
 ## rename、unlink 与原子替换
 
 对仍有引用的文件执行 unlink，会把该 inode 移到服务保留的根目录隐藏名字，立即
@@ -129,6 +134,24 @@ pin 保证的是已打开 inode 的内容在校验/装载期间不被写入；re
 冲突沿原 load/open 错误通道返回，不能偷偷复制不一致内容后报告成功。
 
 ## 有界资源与未实现范围
+
+op 2 增加可选 `list_identity = 1 << 12`。它要求非零、属于当前会话的目录
+handle；响应 flags 回显此位。每条记录为小端
+`[u16 name_bytes, u8 attributes, u32 size, u16 inode, u32 next_cursor, name]`，
+头长 13 字节；inode 与 stat/fstat 同源，分配耗尽返回 full，不能用零冒充未知。
+此格式依次提供 `.`、`..`（cursor 0/1，根的父仍为根）及 FAT 条目（从 2 开始）。
+每条 next_cursor 严格前进；response.value 是下一页 cursor，零表示本页读到末尾。
+单页最多 3798 字节且不超过请求条数；length=0 时默认 64 条。错误不返回可消费的
+部分页；FatFs close 错误如实返回。没有该位的旧请求继续使用 7 字节记录头和原
+游标空间，旧静态 SDK 无须解释新字段。
+
+目录身份由 retained object 决定：rename 后 stream 仍枚举同一目录；删除空目录
+并重建同名路径后，旧 stream 仍指向被保留的空对象，`.` identity 保持原值，
+`..` 使用保留的 parent 引用。cursor 是该目录当前枚举顺序中的 opaque cookie，
+不作为文件字节偏移；内容不变时 telldir/seekdir 可恢复位置。并发插入、删除或
+移动子项可能改变后续枚举顺序，调用者应 rewinddir 重新扫描。缓存页也按此规则
+处理，不能把分页结果当成一致性快照。新 client 遇到旧服务缺少回显位时明确失败，
+不会从旧记录猜测 inode。回退旧 client 时仍可使用原 op 2 格式。
 
 沿用每会话 16 句柄、全局 8 会话和 32 打开描述；新增最多 256 个被引用的非根对象，
 父目录引用也计入此预算。每次服务生命期最多发放 65534 个非根身份，不回绕复用。

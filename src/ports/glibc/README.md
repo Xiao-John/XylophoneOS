@@ -10,6 +10,11 @@ reviewed primary key and signing subkey are bound by GNU and Gentoo sources;
 current key updates are recorded in `source_lock.json`. `build_glibc_sdk.py`
 checks the archive, detached signature and pinned public key with `gpgv` before
 extracting source. Expired or revoked keys and unexpected signers fail the build.
+Offline revocation checks cover the pinned key material. Before every release
+qualification, refresh the revocation sources under the lock's `update_policy`
+to include notices published since that material was reviewed.
+Verification and extraction use the same captured archive bytes; later changes
+to the download path cannot replace the source that is extracted and executed.
 It applies every numbered patch in order and records all port inputs and tools.
 It rejects source or tool mutation during a build. The XOS runtime remains a
 separately qualified research profile.
@@ -89,6 +94,14 @@ signals, asynchronous cancellation, process-shared/robust synchronization,
 fork/exec from a glibc parent and general POSIX conformance remain outside this
 G2 qualification.  Their current stub or unsupported behavior must not be
 interpreted as a successful implementation.
+
+The G3 files-extra module adds bounded directory streams with real service
+identities and cookies, and positioned read/write operations which preserve the
+shared open-description offset. Its `files-extra` guest suite exercises public
+glibc APIs, concurrent threads, a native parent sharing a file with a glibc
+child, and final resource recovery. Directory streams use the opt-in identity
+format of files op 2; positioned I/O uses op 30/31. Older services fail this
+extension explicitly; old directory clients retain their existing wire format.
 
 ## G3 authenticated terminal adapter
 

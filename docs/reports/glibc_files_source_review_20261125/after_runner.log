@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "${XOS_REPO}/build/files_source_binding_after/checkout/tests/glibc_files_extra_host.py", line 104, in <module>
+    main()
+  File "${XOS_REPO}/build/files_source_binding_after/checkout/tests/glibc_files_extra_host.py", line 93, in main
+    raise RuntimeError('source inputs changed during qualification')
+RuntimeError: source inputs changed during qualification

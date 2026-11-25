@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "sources": {
+    "tests/process_wait_acceptance_host.py": "59aede9aaa858592c5f1ee0857779774b6c84a4b3aedf2bb15ae135db369b085",
+    "tests/process_wait_any_guest.py": "489ada9d2e62648f8488ddd8a628b2a03c9a29145304ed7ca91642f017e74f79",
+    "tests/shell_launch_support.py": "6a4b7d2555db36025633008fdb50ce66a0c323804985b7a37b36858edc5b7544",
+    "tests/kernel_process_wait_race_test.py": "1f650ed13d5f58eee3285332d61acb86e9f8e2d8c2205027d5de5385d2acf634",
+    "tests/fixtures/process_wait/probe.cpp": "2dcf8cc79414debf39c141db5d066360dc79c5d81ea184dd681cf16fef3578dd",
+    "src/kernel/arch/x86_64/tasks.cpp": "163e48c02def874ac45f6959e6ba65c77a3b4ae88d319391274a43e5a94a78c1",
+    "src/shared/include/xos/process_abi.hpp": "5eec6b77734f8b39daf9b63233cef9b34aa4645a3edcdd7e928fc759fdc7724e",
+    "src/shared/include/xos/abi_types.hpp": "2a417532cbdafc1d7545064ef78fe692b07ab0ec430f44367d779415fdc48478"
+  },
+  "guest": "not_run",
+  "results": [
+    "unchanged_system",
+    "coherent_build_replacement",
+    "coherent_iso_replacement",
+    "coherent_sdk_replacement",
+    "manifest_bytes_replacement",
+    "manifest_change_during_binding",
+    "all_seven_status_fields_and_unchanged_control",
+    "extracted_source_digest_survives_later_file_change"
+  ],
+  "scope": "synthetic identity gates, extracted sentinel predicate and actual host wait harness"
+}

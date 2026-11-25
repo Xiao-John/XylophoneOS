@@ -5,37 +5,20 @@
  #include <set-freeres.h>
  #include "exit.h"
 +#ifdef XOS_GLIBC_TLS
-+# include <pthreadP.h>
++# include <xos_process_exit.h>
 +#endif
  
  /* Initialize the flag that indicates exit function processing
     is complete. See concurrency notes in stdlib/exit.h where
-@@ -43,6 +46,29 @@
+@@ -43,6 +46,12 @@
  __run_exit_handlers (int status, struct exit_function_list **listp,
  		     bool run_list_atexit, bool run_dtors)
  {
 +#ifdef XOS_GLIBC_TLS
-+  /* The native termination barrier reaps peers immediately.  A live peer
-+     may own allocator or stdio locks, so its process-wide cleanup cannot
-+     safely be resumed after that barrier.  Require explicit joins before
-+     normal exit, and use a bounded raw failure for the unsupported case. */
-+  if (atomic_load_acquire (&__nptl_nthreads) > 1)
-+    {
-+      static const char message[] =
-+        "XOS glibc: exit with active threads is unsupported\n";
-+      long ignored;
-+      __asm__ volatile ("int $0x80" : "=a" (ignored)
-+                        : "a" (1UL), "D" (message),
-+                          "S" (sizeof (message) - 1), "d" (0UL)
-+                        : "memory", "cc");
-+      _exit (127);
-+    }
-+  long result;
-+  __asm__ volatile ("int $0x80" : "=a" (result)
-+                    : "a" (51UL), "D" (0UL), "S" (0UL), "d" (0UL)
-+                    : "memory", "cc");
-+  if (result != 0)
-+    _exit (127);
++  /* Keep existing peers runnable while callbacks and stdio need their locks.
++     sys_exit stops/reclaims the process after cleanup; the native deadline
++     bounds a callback or lock dependency that never completes.  */
++  __xos_process_exit_begin ();
 +#endif
    /* The exit should never return, so there is no need to unlock it.  */
    __libc_lock_lock_recursive (__exit_lock);

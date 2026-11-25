@@ -42,6 +42,8 @@ public:
                      i64 atime_sec, i64 atime_nsec, i64 mtime_sec, i64 mtime_nsec);
     i64 read(u32 handle, void* data, u32 length);
     i64 write(u32 handle, const void* data, u32 length);
+    i64 read_at(u32 handle, void* data, u32 length, u64 offset);
+    i64 write_at(u32 handle, const void* data, u32 length, u64 offset);
     i64 seek(u32 handle, u32 offset);
     i64 seek(u32 handle, i64 offset, u32 origin);
     i64 truncate(u32 handle, u32 size);

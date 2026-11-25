@@ -23,6 +23,7 @@ public:
     stack_api api();
     u32 milliseconds();
     u32 random_word();
+    i64 random_checked(u32& result);
     void fault() { failure_ = net2::io; }
 private:
     struct connection {

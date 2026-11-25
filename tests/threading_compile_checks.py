@@ -14,6 +14,12 @@ def main():
         assert hashlib.sha256((sdk/path).read_bytes()).hexdigest() == digest, path
     for path,digest in manifest['inputs'].items():
         assert hashlib.sha256((ROOT/path).read_bytes()).hexdigest() == digest, 'stale SDK source '+path
+    assert {29, 30, 31} <= set(manifest['process_extensions']['file_operations'])
+    file_identity = manifest['file_identity']
+    assert file_identity['list_identity_flag'] == 1 << 12
+    assert file_identity['list_identity_record_bytes'] == 13
+    assert file_identity['positioned_operations'] == [30, 31]
+    assert file_identity['positioned_preserves_offset'] is True
     common = ROOT/'build/threading_common_compile.cpp'
     common.write_text('#include "thread_lifecycle.hpp"\nint check(xos::thread_lifetime& t) { return xos::thread_has_user_work(t); }\n')
     command = [shutil.which('clang++'),'--target=aarch64-none-elf','-std=c++20','-ffreestanding',
@@ -27,7 +33,8 @@ def main():
         commands.append(invocation);logs.append(result.stdout)
         assert result.returncode == 0,result.stdout
     (ROOT/'build/threading_common_compile.log').write_text('\n'.join(logs))
-    report={'status':'passed','checks':['SDK artifact/source SHA256 consistency','AArch64 common lifecycle/pthread/lock compile only'],
+    report={'status':'passed','checks':['SDK artifact/source SHA256 consistency','file operation and identity metadata',
+                                      'AArch64 common lifecycle/pthread/lock compile only'],
             'not_run':['AArch64 boot/runtime'],'commands':commands}
     (ROOT/'build/threading_compile_report.json').write_text(json.dumps(report,indent=2)+'\n')
     print('PASS SDK receipt and common AArch64 compile checks (no second-ISA runtime claim)')

@@ -30,6 +30,14 @@
 
 ## syscall逐项登记
 
+sys51 显式 mode 1 为有界进程清理窗口，32 字节版本 1 请求，旧 mode 0 保持。
+独占退出责任、30 秒单调 deadline 上限及失败/回滚语义见
+[线程契约](threading.md#有界进程清理窗口sys51-mode-1)。
+
+sys84–86 端点、待 accept 连接及发布名称在成功 exec 时按
+[endpoint 生命周期](ipc_endpoint_lifecycle.md) 一起撤销，失败 exec 完整保留；
+sys81 的显式 channel 继承仍由原契约约束。
+
 sys60 试行 bit32 扩展 entry 可显式保留通用通道，布局见 `process_exec_channel_entry`
 和 [通道契约](channel.md)；默认 ABI 不变，尚未客体验证。
 sys81 试行 action 4 对最多四个通用端点做原子检查与等待，布局见
@@ -44,6 +52,9 @@ owned building 子进程主线程指针；1 `current_thread` 允许调用线程�
 分配的线程指针，第一参数必须为当前 PID。其它模式拒绝。权限、地址与生命周期
 校验见 [线程契约](threading.md#当前线程安装运行库线程指针)。本扩展供隔离 glibc
 G2/G3 候选使用，SDK 单独记录能力与客体验证；不更换默认 libc。
+
+sys20 第三参数 bit0 为非阻塞，bit1 与第一参数为零共同选择显式
+[wait-any](process_wait.md)；旧精确 PID 请求的 flags 0/1 保持原行为。
 
 数值来源分别为内核基础syscall头与共享ABI头；此表锁定当前分配，自动检查捕获重号、漏项、
 新增占用预留段而未登记，以及源码与本表偏移。allocated不等于完整POSIX或应用资格。
@@ -140,6 +151,7 @@ PX4-A 提议认领如下；本分支未合入前不构成全项目登记，不�
 |---:|---|---|---|---|
 | 67 | `sys_vm` | VM负责人；匿名私有VMA v1 | allocated | 实施中，资格待验；[契约](anonymous_vm.md) |
 | files op 29 | `file::op::set_metadata` | 文件/包管理共用服务；FAT 诚实子集 | allocated (M1) | [契约](file_metadata_v1.md)；`tests/file_metadata_guest.py` |
+| files op 30/31 | `file::op::read_at/write_at` | G3 文件模块；显式位置，不改共享 offset | allocated | [契约](glibc_files_v1.md#定位读写与目录流)；`tests/glibc_files_extra_host.py` |
 
 
 claimed必须位于对应reserved段，不能与现有接口或其他认领重复；不生成源码常量或能力。
@@ -150,7 +162,7 @@ claimed必须位于对应reserved段，不能与现有接口或其他认领重�
 
 | 命名空间 | 当前分配/版本 | 下一项登记责任 |
 |---|---|---|
-| files op | wire v2、op1–29；20clone_session、21anonymous、22seal、23/24维护、25truncate、26cwd_set、27cwd_get、28resolve_path；**29 set_metadata 已实现并客体验收（M1）** | 文件/包管理共用服务；26由已认证parent_pid约束构造子继承，目录句柄与cwd保留身份引用，见file_identity契约；op29 见[file_metadata_v1](file_metadata_v1.md)；不得各自追加同一个next op |
+| files op | wire v2、op1–31；20clone_session、21anonymous、22seal、23/24维护、25truncate、26cwd_set、27cwd_get、28resolve_path；29 set_metadata；30 read_at、31 write_at；op2 的 list_identity bit12 扩展目录记录 | 文件/包管理共用服务；26由已认证parent_pid约束构造子继承；身份与目录扩展见[file_identity](file_identity.md)，op29见[file_metadata_v1](file_metadata_v1.md)，30/31见[glibc_files_v1](glibc_files_v1.md)；下一操作从32协调登记 |
 | display action / operation | v1控制action0–9、request operation1–6 | 显示负责人；Qt通过用户态display_client接入，不另造同名内核接口 |
 | startup/exec | startup1/2/3、.xos.exec/v3身份标记；试行 startup2 flag bit16 与 reserved 承载 terminal send handle，仅限只读 `.xos.tty` v1 opt-in | loader/SDK负责人，升级须说明旧二进制准入/拒绝与迁移；glibc 终端接收 v2/v3 的受限客体资格见 [e6b8c410](../work_log/e6b8c410_glibc_terminal.md)，出站继承单独推进 |
 | glibc terminal | 既有 startup kind5 正式命名为 terminal；CRT capability bit1；libc 本地 TCGETS/TCSETS/TCSETSW/TCSETSF=0x5401–0x5404，FIONCLEX/FIOCLEX=0x5450/0x5451 | [glibc_terminal_v1](glibc_terminal_v1.md)；复用 native terminal v2，glibc termios 逐字段转换，实际资格按独立工作日志 |

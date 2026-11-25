@@ -42,9 +42,8 @@ def main():
                        'src/third_party/fatfs', 'tests/fixtures/file_semantics', 'tests/fixtures/glibc_g3']
         files = [runner, 'scripts/make_work_disk.py', 'src/user/services/files.cpp',
                  'src/user/services/fatfs_unicode.cpp', 'src/user/sdk/file_client.cpp',
-                 'src/user/sdk/terminal_client.cpp', 'src/user/sdk/text.cpp']
-        if args.profile == 'terminal':
-            files.append('src/ports/glibc/terminal_support.cpp')
+                 'src/user/sdk/terminal_client.cpp', 'src/user/sdk/text.cpp',
+                 'src/ports/glibc/terminal_support.cpp']
         for name in directories:
             shutil.copytree(ROOT / name, checkout / name)
         for name in files:

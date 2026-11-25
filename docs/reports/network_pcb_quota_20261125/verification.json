@@ -1,0 +1,18 @@
+{
+  "production_baseline": "cf156b3443109fcb0d3da60107d1122b0b789f51",
+  "production_changes": "none; audit regression only",
+  "host_toolchain": {
+    "cxx": "g++ (Debian 14.2.0-19) 14.2.0",
+    "python": "3.12.14"
+  },
+  "scenario": "tcp_closing_pool_preserves_other_application",
+  "observed": [
+    "One application retained a live TCP connection while another opened and closed seven TCP connections with withheld FIN acknowledgements",
+    "Eighth churn OPEN returned resources; the first application remained connected",
+    "After core.shutdown and stack.shutdown every MEMP_NUM_TCP_PCB slot was allocatable and then returned to the pool"
+  ],
+  "source_audit": "Pinned lwIP 2.2.1 tcp_kill_prio only evicts strictly lower priority PCBs; this service uses equal default priority. netif_remove invokes tcp_netif_ip_addr_changed to abort active closing PCBs after logical handles were released.",
+  "normal": "24 real-lwIP cases and 2 production-loop cases passed",
+  "asan_ubsan": "24 real-lwIP cases and 2 production-loop cases passed; detect_leaks=0 due ptrace restriction recorded in prior milestone",
+  "guest_qualification": "not_run in this host-only audit; dependent network acceptance report owns guest evidence"
+}

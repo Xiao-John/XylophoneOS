@@ -51,6 +51,38 @@ console/pipe 阻塞 I/O 在保留 open-description 引用后释放该锁，避�
 `close` 错误仍移除本地 FD，重复 close 返回 EBADF。`dup2` 先保留源描述再
 替换目标，目标旧描述的最终关闭错误不撤销已完成的替换。
 
+## 定位读写与目录流
+
+`pread/pread64/pwrite/pwrite64` 使用独立 `xos_file_positioned.c` 与 files op
+30/31。请求 `handle` 为调用者文件句柄、`offset` 为绝对位置、`length` 为实际
+有界传输量，其余控制字段为零。read_at 的成功响应 `value == length`；write_at
+返回真实已写字节、空 payload。每个请求在服务中串行完成，成功、短 I/O 和失败
+均不改打开描述的 position。跨进程 shared description 由服务保证；客户端不
+执行 seek/read/restore。O_APPEND 不改变 pwrite 的显式位置。
+
+公开调用仍一次最多读 3798/写 3800 字节，较大请求返回真实短 I/O；零字节写
+不增长文件。offset 为负返回 EINVAL，超过当前 FAT 可表示范围 0xfffffffe
+返回 EOVERFLOW；非文件 route 返回 ESPIPE。权限、目录错误、维护门禁、空洞
+零填充、部分进度和回滚规则与普通文件 I/O 共用。旧服务未实现 op30/31 时返回
+确定错误，禁止以 seek/read 模拟缺失的跨进程语义。
+
+`opendir/fdopendir/readdir/readdir64/readdir_r/readdir64_r/closedir/dirfd/rewinddir/`
+`telldir/seekdir` 使用 op 2 的 list_identity 格式，细节见文件身份契约。
+上游 scandir/scandir64 和排序逻辑复用这些真实目录接口。公共 dirent/dirent64
+保留原 generic 字段前缀，name 数组固定 256 字节；x86-64 LP64 下均为 272
+字节，d_name offset=12，d_ino 为真实服务身份。原目录入口是未实现 stub，本次
+启用时一并冻结有界结构，调用者须使用候选 SDK 成套重建。
+
+每个 DIR 持有一个 FD、一份 open-description lease 和最多 3798 字节缓存页；
+opendir 设置 CLOEXEC，fdopendir 只在成功时接管传入 FD，失败保留调用者所有权。
+closedir 关闭 FD 并释放 lease。单个流的推进、复制型 readdir_r 和 cookie 操作
+由私有 wait-word 锁串行化；不同流可并行。同流 readdir 返回的内部指针会被后续
+调用覆盖，调用者需要并发保留条目时应自行复制或使用 readdir_r。
+
+EOF 返回 NULL 并保留 errno；调用前设 errno=0 后，NULL/0 是正常结束，
+NULL/非零为错误。readdir_r 通过返回值报告错误。rewinddir 丢弃已缓存页面，从
+实时目录开头重新读取。无法恢复传输的错误仍由共享会话 fail latch 处理。
+
 ## 协议校验与服务死亡
 
 IPC endpoint 来自当前进程的 `sys_file_endpoints`。每次操作使用单调时钟的
@@ -98,7 +130,7 @@ O_APPEND 返回 ENOTSUP（既有服务没有该句柄操作）。
 相对路径的 `openat/fstatat` 支持 AT_FDCWD；其他 dirfd 相对路径返回 ENOTSUP。
 `AT_EMPTY_PATH` 可查询已打开的 FD。未知操作返回确定错误。
 
-路径型启动重定向、目录枚举、文件锁、pread/pwrite、mmap 文件
+路径型启动重定向、文件锁、mmap 文件
 映射、glibc 出站 fork/exec/spawn 与异步取消暂不属于本模块。fsync 调用真实 files
 sync，其他尚未实现操作沿用上游或 XOS 的明确失败路径。
 
@@ -107,12 +139,21 @@ sync，其他尚未实现操作沿用上游或 XOS 的明确失败路径。
 ```sh
 python3 tests/glibc_g3_files_host.py --output build/glibc_g3_files_host
 python3 tests/glibc_g3_files_host.py --sanitize --output build/glibc_g3_files_sanitize
+python3 tests/glibc_files_extra_host.py --output build/glibc_files_extra_host
+python3 tests/glibc_files_extra_host.py --sanitize --output build/glibc_files_extra_sanitize
 ```
 
 宿主回归替换内核陷阱而保留生产 FD/IPC 状态机，覆盖故障注入、并发、继承、
 管道 lease 和原子写；另一组链接实际 `files.cpp`/FatFs，验证真实文件服务。
 这两类报告分别标明模拟的运输边界。sanitizer 为 ASan+UBSan；受 ptrace 环境限制，
 LeakSanitizer 单独记未运行。
+
+扩展客体入口为 `tests/glibc_static_guest.py --suite files-extra`。它绑定当前
+source、完整 glibc SDK、程序 ELF 和实际系统镜像；公共 fixture 覆盖目录身份、
+UTF-8/长名字、多页 cookie、scandir、CLOEXEC、配额回收和多线程定位 I/O。
+native 父进程 fork 后 exec glibc 子进程，双方真实并发使用同一文件描述，父进程
+顺序读取必须保持字节串和最终 offset；另验证子进程目录 stream 在父进程 rename、
+删除和同名重建后保持身份。父进程使用现有 native libc，仅 glibc 接收端属于本模块。
 
 真实客体 fixture `files_public_probe.c` 链接完整候选 glibc，支持默认三 worker
 并发、`single`、`service-death` 和 `inherit`。`files_exec_parent.c` 用现有 newlib

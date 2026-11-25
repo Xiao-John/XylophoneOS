@@ -35,6 +35,8 @@ enum class op : u16 {
     anonymous = 21, // private disk-backed open description, unlinked at last close
     clone_session = 20, // source authenticated by session; offset = fork child PID
     set_metadata = 29, // FAT honest subset: RDO + mtime; payload in request.data.
+    read_at = 30, // handle + absolute offset; never changes the open-description position.
+    write_at = 31, // explicit offset, including O_APPEND; preserves the shared position.
 };
 
 enum seek_origin : u32 { seek_set = 0, seek_current = 1, seek_end = 2 };
@@ -49,6 +51,7 @@ enum flags : u32 {
     open_pin = 1u << 11, // explicit immutable-content lease while loading a file.
     open_valid_mask = open_access_mask | open_option_mask | open_directory | open_pin,
     list_directories = 1u << 8,
+    list_identity = 1u << 12, // op::list, owned directory handle; extended records below.
     // op::remove: permit deleting a directory (rmdir semantics). Absent — the
     // default, since every existing client zeroes the request — a directory is
     // refused before f_unlink, so rm/unlink can never delete one.
@@ -102,6 +105,11 @@ inline constexpr u32 stat_read_only = 1u << 2;
 // op::stat/fstat: first 8 bytes of response.data carry mtime seconds (0 = unknown).
 inline constexpr u32 stat_metadata_bytes = 8;
 inline constexpr u32 list_record_header_size = 7;
+// list_identity requests receive the same response flag and 13-byte headers:
+// [u16 name_bytes, u8 attributes, u32 size, u16 inode, u32 next_cursor, name].
+// This stream includes . and .., with cursors 0 and 1. FAT entries start at 2.
+// next_cursor belongs to this live directory; it is not a snapshot or byte offset.
+inline constexpr u32 list_identity_record_header_size = 13;
 
 enum metadata_mask : u16 {
     metadata_read_only = 1u << 0,

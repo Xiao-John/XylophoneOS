@@ -15,12 +15,20 @@ inline constexpr u64 thread_arena_end = thread_arena_begin + thread_max_per_proc
 inline constexpr u64 thread_stack_default = 256 * 1024, thread_stack_min = 64 * 1024;
 inline constexpr u64 thread_stack_max = 2 * 1024 * 1024, thread_tls_max = 0x120000;
 inline constexpr u64 thread_deadline_infinite = ~u64{0}, thread_tick_ns = 10000000;
+enum class process_exit_mode : u64 { stop_peers = 0, cleanup_window = 1 };
+inline constexpr u64 process_exit_cleanup_max_ns = 30000000000ull;
 inline constexpr i64 thread_error_address = -11, thread_error_busy = -12;
 inline constexpr i64 thread_error_timeout = -13, thread_value_changed = -14;
 inline constexpr i64 thread_error_not_found = -15, thread_error_deadlock = -16;
 inline constexpr i64 thread_error_memory = -17, thread_error_unsupported = -18;
 
 struct thread_header { u32 version; u32 size; u64 reserved; };
+struct process_exit_cleanup_request {
+    thread_header header;
+    u64 deadline_ns;
+    i32 timeout_status;
+    u32 reserved;
+};
 struct thread_prepare_request { thread_header header; u64 stack_bytes; u64 tls_bytes; u64 flags; };
 struct thread_reservation {
     thread_header header;
@@ -42,6 +50,7 @@ struct thread_stats {
 };
 inline constexpr u64 thread_flag_detached = 1;
 static_assert(sizeof(thread_header) == 16 && sizeof(thread_prepare_request) == 40);
+static_assert(sizeof(process_exit_cleanup_request) == 32);
 static_assert(sizeof(thread_reservation) == 56 && sizeof(thread_start_request) == 56);
 static_assert(sizeof(thread_info) == 56 && sizeof(thread_wait_request) == 40);
 static_assert(sizeof(thread_stats) == 48);

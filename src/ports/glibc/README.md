@@ -5,10 +5,14 @@ public C headers, and adds an XOS CRT and linker script.  The sysroot is private
 to this port.  Its headers, libraries and startup objects must be used together;
 the newlib SDK remains a separate build profile.
 
-The locked glibc archive is still a research candidate while its independent
-signature trust check is outstanding.  `build_glibc_sdk.py` verifies the locked
-archive SHA-256, applies every numbered patch in order, and records all port
-inputs and selected tools.  It rejects source or tool mutation during a build.
+The glibc 2.44 release archive has an authenticated upstream signature. The
+reviewed primary key and signing subkey are bound by GNU and Gentoo sources;
+current key updates are recorded in `source_lock.json`. `build_glibc_sdk.py`
+checks the archive, detached signature and pinned public key with `gpgv` before
+extracting source. Expired or revoked keys and unexpected signers fail the build.
+It applies every numbered patch in order and records all port inputs and tools.
+It rejects source or tool mutation during a build. The XOS runtime remains a
+separately qualified research profile.
 The installed SDK includes upstream licenses, compiler runtime licenses, the
 port sources, build scripts and a patch index.  It records the compiler runtime
 objects and copies the compiler's private C headers into the SDK.
@@ -16,10 +20,12 @@ objects and copies the compiler's private C headers into the SDK.
 ## Build and link
 
 Use the toolchain from the `xos-glibc-sdk-preview` release.  GNU make, a native
-build compiler, Python 3.12 or newer, gawk, bison and patch are required.  The
+build compiler, Python 3.12 or newer, gawk, bison, patch and gpgv are required. The
 archive path and output paths are explicit; each output directory must be new.
 
 ```sh
+python3 scripts/verify_glibc_source.py \
+  --archive /path/to/glibc-2.44.tar.xz --output build/glibc_source_auth
 python3 scripts/build_glibc_sdk.py \
   --archive /path/to/glibc-2.44.tar.xz --output build/glibc_static --jobs 8
 python3 scripts/build_glibc_program.py \

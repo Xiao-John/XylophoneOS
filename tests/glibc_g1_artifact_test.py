@@ -41,7 +41,8 @@ def main():
                           ('0011-nptl-explicit-includes.patch', 'nptl_include_patch_sha256'),
                           ('0012-socket-include-types.patch', 'socket_types_patch_sha256'),
                           ('0013-thread-db-sigset-include.patch', 'thread_db_patch_sha256'),
-                          ('0014-xos-reserved-dtv.patch', 'dtv_patch_sha256')):
+                          ('0014-xos-reserved-dtv.patch', 'dtv_patch_sha256'),
+                          ('0015-xos-initial-thread-id.patch', 'thread_id_patch_sha256')):
         assert digest(root / 'src/ports/glibc/patches' / filename) == report[key]
     assert report['status'] == 'diagnostic_only' and report['nptl_backend_experimental'] and not report['synthetic_abi_tag']
     assert report['sysroot_enforced'] and report['configure_exit_code'] == 0
@@ -342,6 +343,29 @@ def main():
     for symbol in ('__xos_thread_launch', '__xos_thread_static_tls_initialize',
                    '__xos_thread_finish', '__xos_thread_entry'):
         assert re.search(r'R_X86_64_\w+\s+' + symbol + r'\b', code)
+    for subdir, name, trap, implementation in (
+        ('nptl', 'pthread_self', '29', 'sysdeps/xos/pthread_self.c'),
+        ('nptl', 'pthread_join_common', '2c', 'sysdeps/xos/pthread_join_common.c'),
+        ('nptl', 'pthread_detach', '2d', 'sysdeps/xos/pthread_detach.c'),
+        ('nptl', 'pthread_tryjoin', None, 'sysdeps/xos/pthread_tryjoin.c'),
+        ('elf', 'dl-tls_init_tp', '29', 'sysdeps/nptl/dl-tls_init_tp.c'),
+    ):
+        obj = build / subdir / (name + '.o')
+        item = report['diagnostic_objects'][name]
+        assert item['exit_code'] == 0 and digest(obj) == item['sha256'], name
+        assert 'source/' + implementation in dependency_manifest[name]
+        code = subprocess.check_output(['x86_64-elf-objdump', '-dr', obj], text=True)
+        if trap is not None:
+            assert re.search(r'\$0x' + trap + r',%(e|r)ax\b', code)
+            assert re.search(r'\bint\s+\$0x80\b', code)
+        else:
+            assert not re.search(r'\bint\s+\$0x80\b', code)
+        assert '\tsyscall' not in code
+    current = build / 'nptl/thrd_current.o'
+    assert digest(current) == report['diagnostic_objects']['thrd_current']['sha256']
+    assert 'source/sysdeps/xos/thrd_current.c' in dependency_manifest['thrd_current']
+    code = subprocess.check_output(['x86_64-elf-objdump', '-dr', current], text=True)
+    assert re.search(r'R_X86_64_\w+\s+__pthread_self\b', code)
     yield_item = report['diagnostic_objects']['sched_yield']
     assert yield_item['exit_code'] == 0 and digest(build / 'posix/sched_yield.o') == yield_item['sha256']
     assert '../sysdeps/xos/sched_yield.c' in (output / 'sched_yield-dependencies.d').read_text()

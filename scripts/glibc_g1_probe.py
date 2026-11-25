@@ -118,6 +118,8 @@ def main():
         subprocess.run(['patch', '-p1', '-i', str(thread_db_patch)], cwd=source, check=True)
         dtv_patch = ROOT / 'src/ports/glibc/patches/0014-xos-reserved-dtv.patch'
         subprocess.run(['patch', '-p1', '-i', str(dtv_patch)], cwd=source, check=True)
+        thread_id_patch = ROOT / 'src/ports/glibc/patches/0015-xos-initial-thread-id.patch'
+        subprocess.run(['patch', '-p1', '-i', str(thread_id_patch)], cwd=source, check=True)
         # This value is deliberately synthetic and is never an XOS ABI assignment.
         if args.synthetic_abi_tag:
             with (source / 'abi-tags').open('a') as file:
@@ -162,6 +164,10 @@ def main():
             ('nptl', 'xos_lll_futex'), ('nptl', 'xos_thread_exit'),
             ('nptl', 'xos_thread_create'), ('nptl', 'xos_thread_entry'),
             ('nptl', 'xos_thread_tls'), ('nptl', 'xos_static_worker'),
+            ('nptl', 'pthread_self'), ('nptl', 'pthread_join_common'),
+            ('nptl', 'pthread_detach'), ('nptl', 'pthread_tryjoin'),
+            ('nptl', 'thrd_current'),
+            ('elf', 'dl-tls_init_tp'),
             ('elf', 'dl-tls'), ('signal', 'sigset'),
             ('misc', 'fd_to_filename'), ('nptl', 'cancellation'),
             ('nptl', 'xos_timed_wait'), ('nptl', 'futex-internal'),
@@ -365,6 +371,7 @@ def main():
               'socket_types_patch_sha256': digest(socket_types_patch) if backend else None,
               'thread_db_patch_sha256': digest(thread_db_patch) if backend else None,
               'dtv_patch_sha256': digest(dtv_patch) if backend else None,
+              'thread_id_patch_sha256': digest(thread_id_patch) if backend else None,
               'xos_overlay_sha256': {str(p.relative_to(ROOT / 'src/ports/glibc/sysdeps')): digest(p) for p in (ROOT / 'src/ports/glibc/sysdeps').rglob('*') if p.is_file()},
               'configure_log_sha256': digest(output/'configure.log'),
               'not_claimed': ['complete XOS sysdeps', 'target runtime', 'guest qualification', 'distributable source']}

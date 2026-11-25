@@ -15,14 +15,29 @@
 # define _SYS_MMAN_H 1
 # include "bits/mman.h"
 # define MAP_FAILED ((void *) -1)
-# define _ERRNO_H 1
-# include "bits/errno.h"
 extern void *_dl_early_allocate (unsigned long);
 extern int __brk (void *);
 extern void *__curbrk;
 extern void *__mmap64 (void *, unsigned long, int, int, int, long);
 extern int __mprotect (void *, unsigned long, int);
 extern int __munmap (void *, unsigned long);
+#endif
+#if defined XOS_GLIBC_TEST_MEMORY || defined XOS_GLIBC_TEST_IDENTITY
+# define _ERRNO_H 1
+# include "bits/errno.h"
+#endif
+#ifdef XOS_GLIBC_TEST_IDENTITY
+struct native_thread_info
+{
+  struct xos_thread_header header;
+  xos_u64 pid, tid, stack_begin, stack_end, thread_pointer;
+};
+struct native_join_time { long sec, nsec; };
+extern unsigned long __pthread_self (void);
+extern unsigned long thrd_current (void);
+extern int ___pthread_detach (unsigned long);
+extern int __pthread_clockjoin_ex (unsigned long, void **, int,
+                                   const struct native_join_time *, _Bool);
 #endif
 
 static xos_u64 child_result;
@@ -64,6 +79,23 @@ static void finish (xos_u64 code)
   (void) trap (2, code, 0);
   __builtin_trap ();
 }
+#ifdef XOS_GLIBC_TEST_IDENTITY
+static unsigned native_cancel_checks;
+void __pthread_testcancel (void)
+{
+  /* The backend currently has no remote cancellation delivery. Verify
+     which join paths request the cancellation check. */
+  ++native_cancel_checks;
+}
+
+static void check_native_self (void)
+{
+  struct native_thread_info info;
+  if (trap (41, (xos_u64) &info, 0) != 0 || info.tid == 0
+      || __pthread_self () != info.tid || thrd_current () != info.tid)
+    finish (64);
+}
+#endif
 #ifdef XOS_GLIBC_TEST_EXIT
 static void last_process_exit (void)
 {
@@ -117,6 +149,10 @@ static void check_memory (void)
 static void guest_thread_worker (void *raw)
 {
   if (((xos_u64) __builtin_frame_address (0) & 15) != 0) finish (95);
+#ifdef XOS_GLIBC_TEST_IDENTITY
+  check_native_self ();
+  if (__pthread_self () != launch.tid) finish (65);
+#endif
 #ifdef XOS_GLIBC_TEST_GETPID
   if (__getpid () != expected_pid) finish (94);
 #endif
@@ -248,7 +284,27 @@ int guest_main (void)
   __atomic_store_n (&parent_ack, 1, __ATOMIC_RELEASE);
 #endif
   xos_u64 value = 0;
+#ifdef XOS_GLIBC_TEST_IDENTITY
+  check_native_self ();
+  struct native_join_time deadline = { 0, 0 };
+  if (__pthread_clockjoin_ex (launch.tid, 0, 1, &deadline, 1) != ENOTSUP)
+    return 66;
+  if (__pthread_clockjoin_ex (__pthread_self (), 0, 0, 0, 1) != EDEADLK)
+    return 67;
+  void *returned = 0;
+  if (__pthread_clockjoin_ex (launch.tid, &returned, 0, 0, 1) != 0)
+    return 68;
+  value = (xos_u64) returned;
+  if (__pthread_clockjoin_ex (launch.tid, 0, 0, 0, 1) != ESRCH
+      || ___pthread_detach (launch.tid) != ESRCH)
+    return 69;
+  if (___pthread_detach (__pthread_self ()) != 0
+      || ___pthread_detach (__pthread_self ()) != EINVAL)
+    return 70;
+  if (native_cancel_checks != 3) return 71;
+#else
   if (trap (44, launch.tid, (xos_u64) &value) != 0) return 15;
+#endif
   if (value != G1_JOIN_RESULT || child_result != 0xabc) return 16;
 #ifdef XOS_GLIBC_TEST_EXIT
   __xos_thread_finish (0, last_process_exit);

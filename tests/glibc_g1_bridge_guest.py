@@ -31,6 +31,7 @@ def main():
     parser.add_argument('--random-build', type=Path, help='G1 output with target random objects')
     parser.add_argument('--entry-build', type=Path, help='G1 output with target thread entry object')
     parser.add_argument('--exit-build', type=Path, help='G1 output with target thread exit object')
+    parser.add_argument('--identity-build', type=Path, help='G1 output with native pthread identity and join objects')
     parser.add_argument('--memory-build', type=Path, help='G1 output with target heap and VM objects')
     args = parser.parse_args()
     build = root/'build'
@@ -91,6 +92,31 @@ def main():
         assert item['exit_code'] == 0 and item['sha256'] == sha(exit_object)
         exit_provenance = {'report_sha256': sha(exit_report), 'object_sha256': sha(exit_object)}
         cmd[-2:-2] = ['-DXOS_GLIBC_TEST_EXIT', str(exit_object)]
+    identity_provenance = None
+    if args.identity_build:
+        candidate = args.identity_build.resolve(strict=True)
+        identity_report = candidate/'report.json'
+        data = json.loads(identity_report.read_text())
+        assert data['nptl_backend_experimental'] and not data['hacker_mode']
+        assert not data['synthetic_abi_tag'] and data['sysroot_enforced']
+        names = ('pthread_self', 'pthread_join_common', 'pthread_detach', 'thrd_current')
+        for name in (*[name + '.c' for name in names],
+                     'xos_thread_identity.h', 'xos_thread_create.h', 'bits/errno.h'):
+            path = overlay/name
+            digest = sha(path)
+            assert data['xos_overlay_sha256']['xos/'+name] == digest
+            if str(path.relative_to(root)) not in inputs:
+                sources.append(path)
+                inputs[str(path.relative_to(root))] = digest
+        identity_objects = {}
+        for name in names:
+            obj = candidate/'configure/nptl'/(name+'.o')
+            item = data['diagnostic_objects'][name]
+            assert item['exit_code'] == 0 and item['sha256'] == sha(obj)
+            identity_objects[obj] = sha(obj)
+        identity_provenance = {'report_sha256': sha(identity_report),
+                               'object_sha256': {obj.name: digest for obj, digest in identity_objects.items()}}
+        cmd[-2:-2] = ['-DXOS_GLIBC_TEST_IDENTITY', *map(str, identity_objects)]
     yield_provenance = None
     if args.yield_build:
         candidate = args.yield_build.resolve(strict=True)
@@ -203,6 +229,7 @@ def main():
               'image_sha256': sha(image), 'probe_sha256': sha(probe), 'inputs': inputs,
               'compiler_command': cmd, 'compiler_sha256': sha(compiler), 'yield_provenance': yield_provenance, 'pid_provenance': pid_provenance, 'clock_provenance': clock_provenance, 'random_provenance': random_provenance,
               'entry_provenance': entry_provenance, 'exit_provenance': exit_provenance,
+              'identity_provenance': identity_provenance,
               'memory_provenance': memory_provenance, 'checks': []}
     guest = None
     try:
@@ -241,6 +268,11 @@ def main():
                 assert sha(exit_object) == exit_provenance['object_sha256']
                 report['checks'].extend(['glibc_target_thread_exit_preserves_result_width',
                                          'glibc_target_last_thread_process_exit'])
+            if identity_provenance is not None:
+                assert sha(identity_report) == identity_provenance['report_sha256']
+                assert {obj: sha(obj) for obj in identity_objects} == identity_objects
+                report['checks'].extend(['glibc_target_pthread_self_matches_kernel_tid',
+                                         'glibc_target_join_detach_and_stale_tid'])
             if yield_provenance is not None:
                 assert sha(source_report) == yield_provenance['report_sha256']
                 assert sha(yield_object) == yield_provenance['object_sha256']

@@ -360,3 +360,11 @@ glibc 的 `brk` 接入现有 XOS syscall 29。静态 TLS 引导中的 `_dl_early
 宿主测试验证栈对齐、TLS 初始化失败、启动参数所有权、清理顺序和最后线程分支。锁定归档的目标构建生成 `xos_static_worker.o` 和 `xos_thread_exit.o`，报告 SHA-256 为 `10031dac525e8b3dcf4958d1e1855ea4ff6480fe5a79334124ffcae09b52453f`。镜像 `33c0f47512e22be7` 的客体探针链接实际退出对象，验证 join 保留高位及最后线程成功退出进程，四轮资源回到 `[129725, 3, 1]`。客体报告 SHA-256 为 `96c12d5fc6d33e486fe1a7a60cd2ed16d319ea908412339ae7fcb64774ec650b`。
 
 静态工作线程启动仍只有宿主与目标对象证据。客体探针由原有桥启动，未运行真实的 glibc 静态 DTV、线程析构器或公共 `pthread_create`。完整构建仍停在 `clone3.h`，G1 保持 partial。
+
+## 继续：原生线程身份与回收（2026-11-25）
+
+XOS 后端将 `pthread_self` 和 `thrd_current` 接到 syscall 41，使用完整的 64 位 TID。阻塞 join 和 detach 通过 syscall 44/45，由内核持有回收权，调用方无需访问已经释放的线程描述符。无效截止时间返回 `EINVAL`，有效定时 join 和 tryjoin 返回 `ENOTSUP`。XOS 当前没有原子非阻塞 join 或有截止时间的 join。
+
+主线程的 NPTL TCB 后置初始化也使用 syscall 41，将原生 TID 写入内部 mutex owner 字段，超过该字段范围时明确失败。XOS 分支不注册 Linux robust list 或 rseq。主线程 FS 安装还需要接入，且上游 `pthread_create`、调度、线程属性和信号函数中仍有把公开句柄解引用为 TCB 的路径。该实验后端仍不能作为可运行的 pthread SDK。
+
+从锁定归档的干净构建生成六个相关目标对象，报告 SHA-256 为 `2e35ef7d5ec6205951400642f5b082b32890658a36c3de07cf2472df14bceac2`。镜像 `319b09b87ce6a260` 的客体探针链接身份、阻塞 join 和 detach 对象，验证父子线程的 POSIX/C11 身份与内核 TID 一致、拒绝自 join、保留 64 位结果、拒绝失效 TID 和重复 detach，以及定时 join 明确返回不支持。四轮资源均回到 `[129725, 3, 1]`。报告 SHA-256 为 `6583f693385b3a410946482655592d7e127c0382b590817a3dfaa37c771ec`。真正的 glibc 启动和取消投递未在该客体探针运行。完整构建仍停在 `pthread_create` 的 `clone3.h`，G1 保持 partial。

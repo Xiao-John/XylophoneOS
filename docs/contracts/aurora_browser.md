@@ -70,7 +70,7 @@ Latin/accented Latin/Greek glyphs do not establish CJK/full Unicode/IME coverage
 authenticated [N2 service](net_service_v2.md). Obtain the PID from the trusted
 supervisor's `net-start 41` output; the client verifies both IPC peers. The
 browser receives bytes through the service and obtains no NIC/device rights.
-This provider and its Qt target build still require guest qualification.
+The Qt target build and controlled HTTP subset have been qualified in QEMU.
 
 Numeric IPv4 HTTP is supported within the service allowlist (currently 10.0.2.2).
 The provider accepts fully framed 2xx responses. DNS, HTTPS/TLS, JavaScript,
@@ -103,13 +103,15 @@ After building a matching system with the pinned `XOS_LWIP_SOURCE_ARCHIVE`:
 python3 tests/aurora_browser_http_guest.py --system build/network_system --payload build/browser/aurora.elf --output build/browser_http_guest
 ```
 
-The runner verifies inputs, serves fresh HTML/CSS, checks actual GET/Host/close
-and body SHA-256, captures same-run scanout, and checks three launch/exit resource
-baselines. Screenshot capture is separate from visual-content validation.
-Remote BMP, history/tab/reload, in-process budget resets, negative-origin guest
-cases and service-death tests remain pending; rerun existing local acceptance
-with the new ELF too. Target Qt build and full guest execution are **NOT_RUN**
-in the current environment. See the [implementation work log](../work_log/70ac29fe_browser_native_http_provider.md).
+The runner verifies inputs and actual GET/Host/close, checks the SHA-256 of
+fresh HTML, CSS and BMP bodies, and verifies stylesheet text/background and BMP
+pixels on the guest scanout. It checks resource recovery after three successful
+loads, denied cross-origin and local-file stylesheets, HTTP 404 and truncated
+responses, then stops the service. The same browser ELF passed the local
+interactive, failure rollback, lifecycle and no-display suites.
+Remote history/tab/reload, in-process budget resets, forced network service
+death and GUI responsiveness during I/O still require separate qualification.
+See the [implementation and qualification log](../work_log/70ac29fe_browser_native_http_provider.md).
 
 Historical local-provider evidence, measured scope and failed iterations are in
 [0083](../work_log/0083_aurora_browser_offline.md).

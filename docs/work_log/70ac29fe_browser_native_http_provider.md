@@ -44,7 +44,7 @@ python3 tests/aurora_browser_http_guest.py --help
   生产policy测试由另一位审阅者独立重放通过。
 - ASan的LeakSanitizer受本环境ptrace限制关闭，泄漏检测 **NOT_RUN**。
 
-## 客体缺口和接手
+## 初次提交时的客体缺口和接手
 
 **目标Qt编译/链接和真实浏览器验收尚未运行。** 环境缺固定x86_64-elf
 GCC/G++16.2.0、Binutils2.47.20260726、NASM3.02、QEMU11.1.2、匹配冻结SDK、
@@ -66,3 +66,18 @@ POSIX socket/glibc适配和WebKit仍按既有阶段推进。
 4. 多应用网络与资源压力、调度/设备IRQ/reset、重启和独占设备退出。
 
 缺少环境时runner保留not_run并写明预检错误；取得匹配guest证据后再更新资格。
+
+## 组合补验（2026-11-25）
+
+- 以锁定的 Qt 6.8.3 和目标线程 SDK 重建真实 Aurora。当前 SDK 已实现
+  `fchmod`，移除 Qt 私有旧 stub 后通过目标链接。
+- `b097514b230c15e2` 通过本地 interactive 10 项、negative 18 项、
+  lifecycle 7 项和 no-display 3 项。已在 guest 复现串口消息拆分和尚未呈现的
+  帧导致的验收误判，并令测试等待完整计数和实际画面。N2 服务 PID 行改成单次
+  写入，避免被进程启动输出切断。
+- `b185cefce6cca571` 使用同一浏览器 ELF 通过增强 HTTP 客体 9 项，
+  含新鲜 HTML/CSS/BMP 字节、样式和位图像素、跨源及远程引用本地 CSS 拒绝、
+  HTTP 404 和截断、三轮正常退出、失败用例退场及服务关闭后的资源恢复。
+- 普通宿主规则测试以及 HTTP 解析器 208 项和 4096 个畸形向量通过。
+  图形的网络等待响应性、远程交互、服务故障和长时间并发保留独立门禁。
+  组合回执在本地 `build/pr143-147-browser` 与 `build/pr147-http-extra`。

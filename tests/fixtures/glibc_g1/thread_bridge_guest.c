@@ -2,6 +2,12 @@
    Standalone XOS guest test of the private native bridge.  No libc is linked. */
 #include "xos_thread_create.h"
 #include "xos_thread_entry.h"
+#ifdef XOS_GLIBC_TEST_EXIT
+# include "xos_thread_exit.h"
+# define G1_JOIN_RESULT 0xfedcba9876543210UL
+#else
+# define G1_JOIN_RESULT 0x1234UL
+#endif
 #ifdef XOS_GLIBC_TEST_CLOCK
 #include "xos_cpu_time.h"
 #endif
@@ -58,6 +64,12 @@ static void finish (xos_u64 code)
   (void) trap (2, code, 0);
   __builtin_trap ();
 }
+#ifdef XOS_GLIBC_TEST_EXIT
+static void last_process_exit (void)
+{
+  finish (0);
+}
+#endif
 #ifdef XOS_GLIBC_TEST_MEMORY
 static void check_memory (void)
 {
@@ -120,10 +132,14 @@ static void guest_thread_worker (void *raw)
   } while (!__atomic_load_n (&parent_ack, __ATOMIC_ACQUIRE));
 #endif
   child_result = 0xabc;
+#ifdef XOS_GLIBC_TEST_EXIT
+  __xos_thread_finish (G1_JOIN_RESULT, 0);
+#else
   if (trap (42, 0, 0) != 0)
     finish (91);
-  (void) trap (43, 0x1234, 0);
+  (void) trap (43, G1_JOIN_RESULT, 0);
   finish (92);
+#endif
 }
 static const struct xos_thread_entry_args entry_args = {
   .run = guest_thread_worker, .argument = &child_result
@@ -233,7 +249,10 @@ int guest_main (void)
 #endif
   xos_u64 value = 0;
   if (trap (44, launch.tid, (xos_u64) &value) != 0) return 15;
-  if (value != 0x1234 || child_result != 0xabc) return 16;
+  if (value != G1_JOIN_RESULT || child_result != 0xabc) return 16;
+#ifdef XOS_GLIBC_TEST_EXIT
+  __xos_thread_finish (0, last_process_exit);
+#endif
   return 0;
 }
 __asm__ (".section .text.entry,\"ax\"\n.globl _start\n"

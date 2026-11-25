@@ -30,6 +30,7 @@ def main():
     parser.add_argument('--clock-build', type=Path, help='G1 diagnostic output containing the real target clock_gettime object')
     parser.add_argument('--random-build', type=Path, help='G1 output with target random objects')
     parser.add_argument('--entry-build', type=Path, help='G1 output with target thread entry object')
+    parser.add_argument('--exit-build', type=Path, help='G1 output with target thread exit object')
     parser.add_argument('--memory-build', type=Path, help='G1 output with target heap and VM objects')
     args = parser.parse_args()
     build = root/'build'
@@ -73,6 +74,23 @@ def main():
         cmd[-2:-2] = [str(entry_object)]
     else:
         cmd[-2:-2] = [str(entry_source)]
+    exit_provenance = None
+    if args.exit_build:
+        candidate = args.exit_build.resolve(strict=True)
+        exit_report = candidate/'report.json'
+        data = json.loads(exit_report.read_text())
+        assert data['nptl_backend_experimental'] and not data['hacker_mode']
+        assert not data['synthetic_abi_tag'] and data['sysroot_enforced']
+        for name in ('xos_thread_exit.c', 'xos_thread_exit.h'):
+            path = overlay/name
+            assert data['xos_overlay_sha256']['xos/'+name] == sha(path)
+            sources.append(path)
+            inputs[str(path.relative_to(root))] = sha(path)
+        exit_object = candidate/'configure/nptl/xos_thread_exit.o'
+        item = data['diagnostic_objects']['xos_thread_exit']
+        assert item['exit_code'] == 0 and item['sha256'] == sha(exit_object)
+        exit_provenance = {'report_sha256': sha(exit_report), 'object_sha256': sha(exit_object)}
+        cmd[-2:-2] = ['-DXOS_GLIBC_TEST_EXIT', str(exit_object)]
     yield_provenance = None
     if args.yield_build:
         candidate = args.yield_build.resolve(strict=True)
@@ -184,7 +202,8 @@ def main():
               'build_id': system['build_id'], 'system_manifest_sha256': sha(system_manifest),
               'image_sha256': sha(image), 'probe_sha256': sha(probe), 'inputs': inputs,
               'compiler_command': cmd, 'compiler_sha256': sha(compiler), 'yield_provenance': yield_provenance, 'pid_provenance': pid_provenance, 'clock_provenance': clock_provenance, 'random_provenance': random_provenance,
-              'entry_provenance': entry_provenance, 'memory_provenance': memory_provenance, 'checks': []}
+              'entry_provenance': entry_provenance, 'exit_provenance': exit_provenance,
+              'memory_provenance': memory_provenance, 'checks': []}
     guest = None
     try:
         with tempfile.TemporaryDirectory(prefix='xos_glibc_bridge_') as folder:
@@ -217,6 +236,11 @@ def main():
                 assert sha(entry_report) == entry_provenance['report_sha256']
                 assert sha(entry_object) == entry_provenance['object_sha256']
                 report['checks'].append('glibc_target_thread_entry_trampoline')
+            if exit_provenance is not None:
+                assert sha(exit_report) == exit_provenance['report_sha256']
+                assert sha(exit_object) == exit_provenance['object_sha256']
+                report['checks'].extend(['glibc_target_thread_exit_preserves_result_width',
+                                         'glibc_target_last_thread_process_exit'])
             if yield_provenance is not None:
                 assert sha(source_report) == yield_provenance['report_sha256']
                 assert sha(yield_object) == yield_provenance['object_sha256']

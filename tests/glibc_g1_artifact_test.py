@@ -335,6 +335,13 @@ def main():
     dl_tls_symbols = subprocess.check_output([report['readelf'], '-Ws', dl_tls_object], text=True)
     assert re.search(r'\bFUNC\s+GLOBAL\s+HIDDEN\s+\d+\s+__xos_dl_init_reserved_tls\b',
                      dl_tls_symbols)
+    worker = build / 'nptl/xos_static_worker.o'
+    assert digest(worker) == report['diagnostic_objects']['xos_static_worker']['sha256']
+    assert 'source/sysdeps/xos/xos_static_worker.c' in dependency_manifest['xos_static_worker']
+    code = subprocess.check_output(['x86_64-elf-objdump', '-dr', worker], text=True)
+    for symbol in ('__xos_thread_launch', '__xos_thread_static_tls_initialize',
+                   '__xos_thread_finish', '__xos_thread_entry'):
+        assert re.search(r'R_X86_64_\w+\s+' + symbol + r'\b', code)
     yield_item = report['diagnostic_objects']['sched_yield']
     assert yield_item['exit_code'] == 0 and digest(build / 'posix/sched_yield.o') == yield_item['sha256']
     assert '../sysdeps/xos/sched_yield.c' in (output / 'sched_yield-dependencies.d').read_text()

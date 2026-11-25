@@ -15,4 +15,10 @@ with tempfile.TemporaryDirectory(prefix='xos_glibc_tls_') as temp:
                     str(fixtures/'thread_tls_test.c'), str(overlay/'xos_thread_tls.c'),
                     str(overlay/'xos_thread_create.c'), '-o', str(exe)], check=True)
     subprocess.run([str(exe)], check=True)
+    subprocess.run(['clang', '-std=c11', '-Wall', '-Werror',
+                    '-I', str(fixtures/'tls_mock'), '-I', str(overlay),
+                    str(fixtures/'static_worker_test.c'), str(overlay/'xos_static_worker.c'),
+                    '-o', str(exe)], check=True)
+    subprocess.run([str(exe)], check=True)
 print('PASS TLS setup, DTV allocation failure and explicit cleanup')
+print('PASS static worker stack handoff, callback ownership and cleanup ordering')

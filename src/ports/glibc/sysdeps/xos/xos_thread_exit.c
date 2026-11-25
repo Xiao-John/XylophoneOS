@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: Apache-2.0
-   Terminate a non-final XOS thread using the native exit handshake.  */
+   Terminate an XOS thread using the native exit handshake.  */
 #include "xos_thread_exit.h"
 #if !defined XOS_GLIBC_THREAD_TEST && (!defined __x86_64__ || defined __ILP32__)
 # error "XOS thread exit supports x86-64 LP64 only"
@@ -20,13 +20,19 @@ xos_thread_trap (unsigned long number, unsigned long first)
 #endif
 
 void
-__xos_internal_exit (int status)
+__xos_thread_finish (unsigned long result, void (*last_process_exit) (void))
 {
-  /* The kernel requires begin_exit before thread_exit.  A last-thread result
-     here contradicts NPTL's caller, which already observed another thread;
-     fail the process closed rather than skip glibc's last-thread cleanup.  */
-  if (xos_thread_trap (42, 0) == 0)
-    (void) xos_thread_trap (43, (unsigned long) (long) status);
+  long election = xos_thread_trap (42, 0);
+  if (election == 0)
+    (void) xos_thread_trap (43, result);
+  else if (election == 1 && last_process_exit != 0)
+    last_process_exit ();
   (void) xos_thread_trap (2, 127);
   __builtin_trap ();
+}
+
+void
+__xos_internal_exit (int status)
+{
+  __xos_thread_finish ((unsigned long) (long) status, 0);
 }

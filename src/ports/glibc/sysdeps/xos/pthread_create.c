@@ -112,7 +112,13 @@ create_worker (pthread_t *thread, const struct pthread_attr *attr,
           && (attr->extension->cpuset != NULL || attr->extension->sigmask_set))
       || attr->guardsize > 0xe0000)
     return ENOTSUP;
-  size_t stacksize = attr->stacksize == 0 ? 256 * 1024 : attr->stacksize;
+  size_t stacksize;
+  int stack_error = __pthread_attr_getstacksize ((const pthread_attr_t *) attr,
+                                                 &stacksize);
+  if (stack_error != 0)
+    return stack_error;
+  if (stacksize == 0)
+    stacksize = 256 * 1024;
   if (stacksize < 64 * 1024 || stacksize > 2 * 1024 * 1024)
     return EINVAL;
   stacksize = (stacksize + 4095) & -4096UL;

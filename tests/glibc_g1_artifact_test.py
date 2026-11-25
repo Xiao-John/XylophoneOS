@@ -373,8 +373,25 @@ def main():
                for path in dependency_manifest['pthread_create'])
     code = subprocess.check_output(['x86_64-elf-objdump', '-dr', create], text=True)
     assert re.search(r'R_X86_64_\w+\s+__xos_static_worker_launch\b', code)
+    assert re.search(r'R_X86_64_\w+\s+__pthread_attr_getstacksize\b', code)
     assert re.search(r'\$0x34,%(e|r)ax\b', code) and re.search(r'\bint\s+\$0x80\b', code)
     assert '\tsyscall' not in code
+    for name, symbol in (
+        ('pthread_getaffinity', 'pthread_getaffinity_np'),
+        ('pthread_setaffinity', 'pthread_setaffinity_np'),
+        ('pthread_getschedparam', 'pthread_getschedparam'),
+        ('pthread_setschedparam', 'pthread_setschedparam'),
+        ('pthread_setschedprio', 'pthread_setschedprio'),
+        ('pthread_getcpuclockid', 'pthread_getcpuclockid'),
+    ):
+        obj = build / 'nptl' / (name + '.o')
+        assert digest(obj) == report['diagnostic_objects'][name]['sha256']
+        assert f'source/sysdeps/xos/{name}.c' in dependency_manifest[name]
+        syms = subprocess.check_output([report['readelf'], '-Ws', obj], text=True)
+        assert re.search(r'\bFUNC\b.*\b' + symbol + r'$', syms, re.M)
+        code = subprocess.check_output(['x86_64-elf-objdump', '-dr', obj], text=True)
+        assert re.search(r'\$0x86,%eax\b', code)
+        assert not re.search(r'\b(?:call|syscall|int)\b|%r(?:di|si|dx)|%fs:', code)
     yield_item = report['diagnostic_objects']['sched_yield']
     assert yield_item['exit_code'] == 0 and digest(build / 'posix/sched_yield.o') == yield_item['sha256']
     assert '../sysdeps/xos/sched_yield.c' in (output / 'sched_yield-dependencies.d').read_text()

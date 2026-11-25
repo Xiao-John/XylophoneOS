@@ -22,9 +22,33 @@ extern void *__mmap64 (void *, unsigned long, int, int, int, long);
 extern int __mprotect (void *, unsigned long, int);
 extern int __munmap (void *, unsigned long);
 #endif
-#if defined XOS_GLIBC_TEST_MEMORY || defined XOS_GLIBC_TEST_IDENTITY
+#if defined XOS_GLIBC_TEST_MEMORY || defined XOS_GLIBC_TEST_IDENTITY \
+    || defined XOS_GLIBC_TEST_SCHEDULING
 # define _ERRNO_H 1
 # include "bits/errno.h"
+#endif
+#ifdef XOS_GLIBC_TEST_SCHEDULING
+struct test_sched_param { int sched_priority; };
+extern int pthread_getaffinity_np (unsigned long, unsigned long, void *);
+extern int pthread_setaffinity_np (unsigned long, unsigned long, const void *);
+extern int pthread_getschedparam (unsigned long, int *, struct test_sched_param *);
+extern int pthread_setschedparam (unsigned long, int, const struct test_sched_param *);
+extern int pthread_setschedprio (unsigned long, int);
+extern int pthread_getcpuclockid (unsigned long, int *);
+
+static int check_scheduling (unsigned long tid)
+{
+  unsigned long mask = 0x1234;
+  struct test_sched_param param = { 23 };
+  int policy = 37, clock = 41;
+  return pthread_getaffinity_np (tid, sizeof (mask), &mask) == ENOTSUP
+         && pthread_setaffinity_np (tid, sizeof (mask), &mask) == ENOTSUP
+         && pthread_getschedparam (tid, &policy, &param) == ENOTSUP
+         && pthread_setschedparam (tid, policy, &param) == ENOTSUP
+         && pthread_setschedprio (tid, param.sched_priority) == ENOTSUP
+         && pthread_getcpuclockid (tid, &clock) == ENOTSUP
+         && mask == 0x1234 && policy == 37 && param.sched_priority == 23 && clock == 41;
+}
 #endif
 #ifdef XOS_GLIBC_TEST_IDENTITY
 struct native_thread_info
@@ -275,6 +299,9 @@ int guest_main (void)
   invalid_start = 0;
   if (__xos_thread_launch (65536, 4096, 0, setup, rollback, &launch, &launch) != 0) return 13;
   if (!launch.started || !launch.tid || launch.abort_error != 0 || rollback_count != 1) return 14;
+#ifdef XOS_GLIBC_TEST_SCHEDULING
+  if (!check_scheduling (launch.tid)) return 72;
+#endif
 #ifdef XOS_GLIBC_TEST_YIELD
   unsigned int attempts = 0;
   if (__sched_yield () != 0) return 17;

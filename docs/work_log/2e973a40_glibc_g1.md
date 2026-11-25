@@ -378,3 +378,9 @@ XOS 后端将 `pthread_self` 和 `thrd_current` 接到 syscall 41，使用完整
 干净全量构建按正常规则选中 `sysdeps/xos/pthread_create.c` 并生成 `pthread_create.o`，越过 `clone3.h`。目标对象 SHA-256 为 `dba27379283b01af83b9bb77a3b4f3310cbf87902a07f30fecb2d8a2b13f8f72`。首个编译错误前移到 `pthread_getaffinity.c` 引用的 `__xos_internal_sched_getaffinity`。构建报告 SHA-256 为 `9e5dc9e81356679318c9ad08d5af792cc6f0a99d25f188fb4fe51d1e2bb44ab4`。对象、依赖和陷入指令核验通过，单独的 PIC 对象也完成编译。宿主测试确认预留准备失败不会启动线程，且新线程读取已拷贝的参数。
 
 镜像 `b849999104a49013` 的现有客体桥四轮通过，资源均恢复。客体报告 SHA-256 为 `e6ab3223b3fa9e4c15a2e25f9ebcef92b8e2328963574b7d7447fbf36ee56fc8`。该运行覆盖此前的身份、启动陷入、回收及内存对象。新增公共创建函数仍待完整 glibc 客体验证。最终 `gnu/stubs.h` 与 SDK 尚未生成，G1 保持 partial。
+
+## 继续：线程调度与默认栈（2026-11-25）
+
+XOS 当前不提供线程 CPU affinity、可调的线程调度参数或可跨线程传递的 CPU 时钟 ID。六个相关 pthread 入口按原生契约返回 `ENOTSUP`，保留查询输出，不将公开 TID 解引用为描述符，也不使用 Linux 调用。现有调用者读取本线程 CPU 时间的 `CLOCK_THREAD_CPUTIME_ID` 仍可按原生接口使用。静态 `pthread_create` 改用 glibc 已有的栈属性查询，显式属性未设置栈大小时也读取进程默认值。
+
+从锁定归档的干净全量构建越过 affinity，首个错误移至 `pthread_getname.c` 引入的 `sys/prctl.h`。六个接口的目标对象和 PIC 对象均编译通过，已核验实际选源、符号、错误码和依赖。构建报告 SHA-256 为 `de45db434f6064cd2f76c555f48f7f20bc3014229231c757c89d396646678e03`。镜像 `e95890e0fea5496f` 使用真实目标对象运行四轮，验证错误值和调用方输出不变，并回收资源到 `[129725, 3, 1]`。客体报告 SHA-256 为 `0f95e541339053b1b239186effcd6d11df62c62079c10b343e1fd859aff5e10c`。完整 SDK 和公共 `pthread_create` 的 glibc 客体验证仍未完成，G1 保持 partial。

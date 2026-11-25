@@ -151,6 +151,7 @@ claimed必须位于对应reserved段，不能与现有接口或其他认领重�
 | endpoint/PID/TID | 内核按生命周期分配的运行时身份 | 不预留静态数字给Qt，不以程序名或客户端自填身份授予权利 |
 | SDK manifest | process_extensions与display_extensions等能力/输入标识 | 普通/线程生成器同步；reserved不登记为supported |
 | net 服务协议 | v1 information/transmit/receive/stop；raw Ethernet 1514 字节 | 用户态 VirtIO-net；[纵切契约](net_user_driver.md)，guest 未运行 |
+| net2 服务协议 | v2 64字节header，1024字节payload，operations1–9；原生TCP/UDP连接与认证多会话 | 网络用户态线；[v2契约](net_service_v2.md)，先登记后实现，guest待验；v1诊断显式隔离，无新增syscall |
 
 2026-11-12 用户授权将本轮实现交付与 guest 资格分开：sys88 actions 19–23 沿用 PR #112 公开 grant
 create/delegate/map/unmap/close（delegate 保持同值句柄），supported mask `0x1f` 表示可调用机制；SDK manifest

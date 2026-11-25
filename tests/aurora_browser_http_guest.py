@@ -61,7 +61,19 @@ def main():
         receipt = json.loads(receipt_path.read_text())
         if sha(payload) != receipt["elf_sha256"] or receipt.get("network_profile", {}).get("service_wire_version") != 2:
             raise ValueError("Browser ELF or native network build receipt mismatch")
-        for name, digest in receipt["inputs"].items():
+        inputs = receipt["inputs"]
+        browser = root / "src/ports/aurora_browser"
+        expected_sources = [
+            browser / "build.py", browser / "main.cpp", *browser.glob("*.hpp"),
+            *sorted((root / "src/ports/browser_http").glob("*.hpp")),
+            root / "src/ports/browser_http/http.cpp",
+            root / "src/ports/browser_http/transport.cpp",
+        ]
+        missing = [path.relative_to(root).as_posix() for path in expected_sources
+                   if inputs.get(str(path)) != sha(path)]
+        if missing:
+            raise ValueError("Browser receipt missing current inputs: " + ", ".join(missing))
+        for name, digest in inputs.items():
             if sha(name) != digest:
                 raise ValueError("Browser input mismatch: " + name)
         nonce = secrets.token_hex(16)

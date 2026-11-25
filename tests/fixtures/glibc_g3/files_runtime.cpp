@@ -2,6 +2,7 @@
 // Exercise the production C FD/session state machine; replace only kernel traps.
 #include "xos_file_runtime.h"
 #include <xos/file_abi.hpp>
+#include <xos/file_client.hpp>
 #include <xos/spawn.hpp>
 #include <atomic>
 #include <cassert>
@@ -141,9 +142,10 @@ static void process_request(const xos_file_request& input) {
             if (file.position > content_size) content_size = file.position;
             pending.value = input.length;
         } else if (operation == xos::file::op::read) {
-            assert(input.length <= xos::file::response_data_size);
+            const unsigned int wanted = input.length > xos::file::response_data_size
+                ? xos::file::response_data_size : input.length;
             const unsigned int remaining = file.position < content_size ? content_size - file.position : 0;
-            pending.length = input.length < remaining ? input.length : remaining;
+            pending.length = wanted < remaining ? wanted : remaining;
             std::memcpy(pending.data, content + file.position, pending.length);
             file.position += pending.length;
             pending.value = pending.length;
@@ -168,6 +170,7 @@ extern "C" long __xos_file_test_trap(xos_u64 number, xos_u64 first, xos_u64 seco
     }
     std::lock_guard<std::mutex> guard(mock_lock);
     switch (number) {
+    case 6: return 77;
     case 22: {
         auto* handles = reinterpret_cast<xos_u32*>(first);
         handles[0] = 100; handles[1] = 101;
@@ -227,6 +230,12 @@ extern "C" long __xos_file_test_trap(xos_u64 number, xos_u64 first, xos_u64 seco
         return pipe_release.load() ? 3 : -3;
     default: std::abort();
     }
+}
+
+namespace xos::sdk {
+i64 syscall(u64 number, u64 first, u64 second, u64 third) {
+    return __xos_file_test_trap(number, first, second, third);
+}
 }
 
 static void setup_startup(unsigned int version) {
@@ -452,6 +461,25 @@ static void directory_exchange(const char* scenario) {
     }
 }
 
+static void native_read_capacity() {
+    const int fd = static_cast<int>(__xos_file_open("/fixture", O_RDWR));
+    unsigned char bytes[3800];
+    for (unsigned int i = 0; i < sizeof(bytes); ++i) bytes[i] = static_cast<unsigned char>(i * 17U);
+    assert(__xos_file_write(fd, bytes, sizeof(bytes)) == sizeof(bytes));
+    assert(__xos_file_seek(fd, 0, SEEK_SET) == 0);
+    xos_file_lease lease{};
+    assert(__xos_file_lease_acquire(fd, 0, &lease) == 0);
+    xos::file::client native;
+    assert(native.init());
+    unsigned char output[3800]{};
+    assert(native.read(lease.handle, output, sizeof(output)) == 3798);
+    assert(!std::memcmp(output, bytes, 3798));
+    unsigned char tail[2]{};
+    assert(__xos_file_read(fd, tail, sizeof(tail)) == 2);
+    assert(!std::memcmp(tail, bytes + 3798, 2));
+    assert(__xos_file_lease_release(&lease) == 0 && __xos_file_close(fd) == 0);
+}
+
 static void error_case(const char* scenario) {
     failure = scenario;
     if (!std::strcmp(scenario, "no_session")) {
@@ -486,6 +514,7 @@ int main(int argc, char** argv) {
     else if (!std::strcmp(argv[1], "pipe_lease")) pipe_lease();
     else if (!std::strcmp(argv[1], "pipe_writev")) pipe_writev();
     else if (!std::strcmp(argv[1], "public_lease")) public_lease();
+    else if (!std::strcmp(argv[1], "native_read_capacity")) native_read_capacity();
     else if (!std::strncmp(argv[1], "directory_", 10)) directory_exchange(argv[1]);
     else error_case(argv[1]);
     std::printf("PASS %s\n", argv[1]);

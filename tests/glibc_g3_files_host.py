@@ -11,7 +11,8 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES = [
-    "basic", "bounds", "concurrent", "public_lease", "directory_legacy", "directory_identity",
+    "basic", "bounds", "concurrent", "public_lease", "native_read_capacity",
+    "directory_legacy", "directory_identity",
     "directory_bad_cursor", "directory_bad_identity", "directory_bad_utf8",
     "directory_bad_count", "directory_truncated", "directory_default_limit", "directory_empty_progress",
     "inheritance", "invalid_inheritance",
@@ -46,6 +47,7 @@ def main():
     subprocess.run([cxx, "-std=c++17", *flags, "-I", str(ROOT / "src/shared/include"),
                     "-I", str(ROOT / "src/user/include"),
                     str(ROOT / "tests/fixtures/glibc_g3/files_runtime.cpp"), str(obj), str(writev),
+                    str(ROOT / "src/user/sdk/file_client.cpp"),
                     "-pthread", "-o", str(exe)], check=True)
     results = []
     environment = os.environ.copy()
@@ -111,11 +113,14 @@ def main():
                 ROOT / "src/user/services/fatfs_unicode.cpp",
                 ROOT / "src/third_party/fatfs/ff.h"]
     sources += list((ROOT / "tests/fixtures/glibc_g3").glob("*.cpp"))
+    sources += [ROOT / "src/user/sdk/file_client.cpp"]
+    sources += list((ROOT / "src/user/include/xos").rglob("*.hpp"))
+    sources += list((ROOT / "src/shared/include/xos").rglob("*.hpp"))
     report = json.loads((output / "report.json").read_text())
     report["real_files_fatfs"] = {"status": "pass", "groups": 10,
                                  "kernel_transport": "simulated"}
     report["sources"] = {str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
-                         for path in sorted(sources)}
+                         for path in sorted(set(sources))}
     (output / "report.json").write_text(json.dumps(report, indent=2) + "\n")
 
 

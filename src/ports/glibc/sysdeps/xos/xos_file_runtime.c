@@ -197,7 +197,7 @@ valid_response_shape (unsigned int operation)
   if (response.handle != 0 || response.flags != 0 || response.reserved != 0)
     return 0;
   if (operation == 5 || operation == 30)
-    return request.length <= sizeof (response.data)
+    return (operation != 30 || request.length <= sizeof (response.data))
       && response.value == response.length && response.length <= request.length;
   if (response.length != 0) return 0;
   if (operation == 6 || operation == 31)

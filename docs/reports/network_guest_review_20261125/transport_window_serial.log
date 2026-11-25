@@ -1,0 +1,180 @@
+XOS: loading stage_two
+[loader] firmware=bios target=x86_64
+[boot] event=kernel_enter arch=x86_64 build=e3f598bdd209b82a
+[boot] event=boot_info_valid memory_map=complete
+[boot] event=runtime_checked bss=zero data=valid
+[cpu] event=exceptions_ready idt=0x0000000000263110 vectors=32 double_fault_ist=1
+[display] state=ready width=800 height=600 stride=3200 physical=0x00000000fd000000 bytes=1920000 cache=uc user_mapping=none
+[display] backend=vbe fallback=1
+[mem] event=initialized usable_kib=523775 managed_kib=524160 pages=131040 free_pages=130181 allocated_pages=1
+[mem] event=window low=0x0000000000100000 high=0x000000001ffe0000
+[vm] event=self_check result=pass address=0x0000000040000000 physical=0x000000000035b000
+[block] event=ready device=ata sectors=1048576
+[task] event=created pid=1 name=heartbeat
+[task] event=created pid=2 name=spinner
+[task] event=created pid=3 name=receiver
+[task] event=created pid=4 name=sender
+[task] event=created pid=5 name=probe
+[task] event=created pid=6 name=quitter
+[task] event=created pid=7 name=supervisor bootstrap=trusted_segments
+[task] event=created pid=8 name=files bootstrap=trusted_segments
+[task] event=ready count=8
+[boot] result=ready stage=E04
+The underscores made it to 64 bits.
+
+  ================================================
+   XOS 0.0.2 | 64-bit | more checks than excuses
+   Guest star: Guo YePeng (did not panic, yet)
+   "It booted on my machine." - everyone, ever
+  ================================================
+   guo = ceremonial greeting    joke = deterministic
+   help = actual work
+xos64> run
+[sched] event=starting
+[input] ps2=ready irq1=enabled irq12=enabled
+[sched] event=start tasks=8
+Abad length
+bad pointer
+tx
+bad handle rejected
+no send right
+[task] event=fault pid=5 vector=14 rip=0x0000000040000060 cr2=0x0000000000100000 result=killed tid=5
+[task] event=reclaimed pid=5 pages=11
+bye
+[task] event=reclaimed pid=6 pages=11
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+A[files] hello.elf present bytes=9872
+
+Welcome to Xshell | XylophoneOS
+help: commands   dash -i: POSIX shell   trace on: diagnostics
+
+ping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Axsh> tping
+bad length
+bad pointer
+tx
+race on
+xsh: trace on
+xsh> demo quieAbad length
+bad pointer
+t
+[task] event=killed_by_supervisor pid=1
+[task] event=reclaimed pid=1 pages=11
+[task] event=killed_by_supervisor pid=2
+[task] event=reclaimed pid=2 pages=11
+[task] event=killed_by_supervisor pid=3
+[task] event=reclaimed pid=3 pages=11
+[task] event=killed_by_supervisor pid=4
+[task] event=reclaimed pid=4 pages=11
+[sup] demo tasks stopped
+xsh> audio stop
+[task] event=reclaimed pid=9 pages=96
+audio: service stopped
+xsh> net-probe 41
+[process] event=started pid=10 parent=7
+[process] pid=10 address_space=0x000000000035b000
+[process] event=wait_blocked parent=7 child=10
+[net-probe] tx=1 rx_arp=1 irq=1
+[net] close=0
+NET_USER_DRIVER_PASS
+[task] event=reclaimed pid=10 pages=103
+[wait] pid=10 kind=exited code=0
+xsh> stats
+[resources] free=129799 tasks=2 completions=0
+xsh> net-start 41
+[process] event=started pid=11 parent=7
+[process] pid=11 address_space=0x000000000035b000
+[net-start] pid=11
+xsh> [net] ready native_v2=1 user_driver=1 lwip=2.2.1 sessions=4 raw_ethernet=0
+stats
+[resources] free=129630 tasks=3 completions=1
+xsh> exec-file /bin/netprobe.elf tcp_queued 11 41000 7791d022c7fce15957470502d9c76949
+[process] event=started pid=12 parent=7
+[process] pid=12 address_space=0x0000000000582000
+[loader] started pid=12 file=/bin/netprobe.elf
+[process] event=wait_blocked parent=7 child=12
+NET2_TCP_QUEUED_CLOSE accepted=4096 unread=0
+NET2_TCP bytes=32 data=679d2e4e7cc3a63f02a769be2981930ff24627647a29eac53339d84ebfb78de9
+NET2_GUEST_PASS
+[task] event=reclaimed pid=12 pages=63
+[wait] pid=12 kind=exited code=0
+xsh> stats
+[resources] free=129630 tasks=3 completions=1
+xsh> exec-file /bin/netprobe.elf tcp_drained 11 41002 4a6ae8a2b5e6eb910bb4feb87658905b
+[process] event=started pid=13 parent=7
+[process] pid=13 address_space=0x0000000000582000
+[loader] started pid=13 file=/bin/netprobe.elf
+[process] event=wait_blocked parent=7 child=13
+NET2_TCP_DRAINED_CLOSE accepted=8192
+NET2_TCP bytes=32 data=3743496121813e5f19edda60aaea2839141d3682dd7edcfaca041f5280d5f7d8
+NET2_GUEST_PASS
+[task] event=reclaimed pid=13 pages=63
+[wait] pid=13 kind=exited code=0
+xsh> stats
+[resources] free=129630 tasks=3 completions=1
+xsh> /bin/dash /tests/netprobe.sh tcp_queued 11 41004 3449bba2f46940e29fa7f8ac369ccf4f
+[process] event=started pid=14 parent=7
+[process] pid=14 address_space=0x0000000000582000
+[loader] started pid=14 file=/bin/dash
+[process] event=wait_blocked parent=7 child=14
+[process] event=started pid=15 parent=14
+[process] pid=15 address_space=0x0000000000625000
+[process] event=wait_blocked parent=14 child=15
+NET2_TCP_QUEUED_CLOSE accepted=4096 unread=0
+NET2_TCP bytes=32 data=02e9ec171a6af108457ea3b5373f230c10decb1f6ec3f80d3a50eff658015f57
+NET2_GUEST_PASS
+[task] event=reclaimed pid=15 pages=63
+[task] event=reclaimed pid=14 pages=163
+[wait] pid=14 kind=exited code=0
+xsh> stats
+[resources] free=129630 tasks=3 completions=1
+xsh> /bin/dash /tests/netprobe.sh tcp_drained 11 41006 aec4cfd08c0dede4095736fb74f05d1e
+[process] event=started pid=16 parent=7
+[process] pid=16 address_space=0x0000000000582000
+[loader] started pid=16 file=/bin/dash
+[process] event=wait_blocked parent=7 child=16
+[process] event=started pid=17 parent=16
+[process] pid=17 address_space=0x0000000000625000
+[process] event=wait_blocked parent=16 child=17
+NET2_TCP_DRAINED_CLOSE accepted=8192
+NET2_TCP bytes=32 data=76275da36447c066d22f0c1eb5eae795109e8f4f0b71ac89173d3fdb473043bd
+NET2_GUEST_PASS
+[task] event=reclaimed pid=17 pages=63
+[task] event=reclaimed pid=16 pages=163
+[wait] pid=16 kind=exited code=0
+xsh> stats
+[resources] free=129630 tasks=3 completions=1
+xsh> net-stop
+[process] event=wait_blocked parent=7 child=11
+[net] close=0
+[task] event=reclaimed pid=11 pages=103
+[wait] pid=11 kind=exited code=0
+xsh> stats
+[resources] free=129799 tasks=2 completions=0
+xsh>

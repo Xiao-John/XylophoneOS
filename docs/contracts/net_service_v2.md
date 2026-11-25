@@ -110,8 +110,10 @@ TCP序列随机源调用sys63，初始化熵失败则拒绝启动，不以时钟
   表示EOF。零容量调用立即返回0；发送空TCP内容不产生网络写入。
 - UDP的`send_datagram`保留完整消息并允许0长度；`receive_datagram(..., required)`
   容量1–1024，返回0可为真实空报文。buffer_too_small给出required且保留队头供重试。
-- `close_connection/cancel_connection(handle, deadline)`分别有序关闭/中止。已确认
-  would_block可以带新sequence重试；交付后结果未知时关闭会话，禁止自动重放。
+- `close_connection/cancel_connection(handle, deadline)`分别有序关闭/中止。收到有序
+  关闭的 `would_block` 时直接返回，保留当前连接和同会话其他连接，调用方可先排空
+  接收数据再关闭，或显式中止。调用方重试使用新 sequence。交付后结果未知时关闭
+  会话，禁止自动重放。
 
 每个请求发送前和收到回复后都采样同一单调时钟，调度停顿跨过deadline时返回timeout。
 返回错误域保留本契约负数值；客户端因损坏响应返回io，不接受带多余数据的成功回复。

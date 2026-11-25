@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """Build and pack NASM for XOS from a local archive and a frozen SDK (offline)."""
 import hashlib
 import json

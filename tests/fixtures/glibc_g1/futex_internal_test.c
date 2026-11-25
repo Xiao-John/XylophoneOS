@@ -46,6 +46,8 @@ int main (void)
   if (__futex_abstimed_wait64 (&word, 1, CLOCK_MONOTONIC, 0, 0) != 0 || timed || sec || ns) return 2;
   int before = seen;
   if (__futex_abstimed_wait64 (&word, 1, CLOCK_REALTIME, &deadline, 0) != EINVAL || seen != before) return 3;
+  if (__futex_abstimed_wait64 (&word, 1, CLOCK_REALTIME, 0, 0) != 0 ||
+      seen != before + 1 || timed || sec || ns) return 4;
   if (!traps (0) || !traps (1) || !traps (2) || !traps (3)) return 5;
   return 0;
 }

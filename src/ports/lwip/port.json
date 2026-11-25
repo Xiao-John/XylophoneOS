@@ -14,20 +14,22 @@
   "build": {
     "system": "custom",
     "recipe": "build.py",
-    "patches": []
+    "patches": [
+      "patches/0001_dns_reply_validation.patch",
+      "patches/0002_dns_bounded_entropy.patch"
+    ]
   },
   "package": {
     "id": "thirdparty.lwip",
-    "target_profile": "xos-x86_64-static-single-b2-v1",
-    "xpk_sha256": "15bbd8dc4fa55e69f598e2d916360dee22994f8b98b936933179c84427c9f043"
+    "target_profile": "xos-x86_64-static-single-b2-v1"
   },
   "integration": {
     "guest_only": true,
     "bootstrap_images": [],
     "iso_members": []
   },
-  "status": "guest_verified",
-  "note": "lwIP 2.2.1 NO_SYS=1：liblwip.a + 头文件 + net_ping 探针；经 net 服务原始帧完成 ARP/ICMP（网关 10.0.2.2），xsh 与 dash 双路径实测。",
+  "status": "source_locked",
+  "note": "当前源码增加两份 hash-bound DNS 校验/有界熵补丁；production DNS/DHCP 保持关闭。2026-11-13 raw net_ping 的旧 XPK 客体证据保留；当前配方需重新打包和客体验收。N4-D1 宿主限定资格单独记录。",
   "evidence": [
     "docs/reports/lwip_2_2_1_20261113/README.md"
   ]

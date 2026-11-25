@@ -1,0 +1,25 @@
+{
+  "format": "derived path-normalized evidence",
+  "originals": {
+    "build/n4_d1_normal/report.json": "3e41a2857b72dcee751effee763eade1c596dd90fc9bfe2a5adab2e25869cfab",
+    "build/n4_d1_sanitizer/report.json": "2f97d2a505ead274f7b9d18e494d903397ec2f2faa5efa09ddbad4bf4b7064b3",
+    "build/n4_d1_n2_normal/result.json": "6250a342fb8467202c8caca455d18f5e073ba12fecd35c42ae2b26d842cbd9c6",
+    "build/n4_d1_n2_sanitizer/result.json": "19304dc10b4b6a5f76e4f71818a089db2367042fd54b9bc55e4e0e8c144c6e5c",
+    "build/n4_d1_n2_normal.log": "e7eb0a5044344493e97443e8938b6a7f8279963b369e85312c67efccf40859fa",
+    "build/n4_d1_n2_sanitizer.log": "e7eb0a5044344493e97443e8938b6a7f8279963b369e85312c67efccf40859fa",
+    "build/n4_d1_target/report.json": "15012188831e3fd2399e9ee0dda5ec3885998ae4e65ad33c8fc7b8042c8929a4",
+    "build/n4_d1_port_check.json": "76cd1bc1cce08033b2bc284a9af9b05f5f99401c195ca9048d9cc95b85d05152",
+    "build/n4_d1_destination_probe/report.json": "9493c648867d6b58ab6533faef2069594a5a67ad323495a691ede1b557023113",
+    "build/n4_d1_diagnostic/report.json": "9401f8e26a2ec72fb61082fec8b4e14e8462b2021a410c2900d203289701b1bb",
+    "build/n4_d1_sanitizer_diagnostic/report.json": "907f59ce15b44100692d67c45c6699958232a4cd75e1054a7c21c7ce28436d67",
+    "build/n4_d1_n2_diagnostic/result.json": "4aa1b93541bdaf16f1eaca768ce8acee48119dd3530d4dfcf74eac6149553637",
+    "build/n4_d1_target/net_lwip_inputs.json": "5172b8862725878dc24a6b20336c4f750c4c21b1cc03c5ac6bd8657a840814c1"
+  },
+  "transformations": [
+    "Replace repository prefix with ${XOS_REPO}.",
+    "Replace release SDK/toolchain/compiler-prefix paths with ${XOS_PREVIEW_SDK}, ${XOS_PREVIEW_TOOLCHAIN}, and ${XOS_PREVIEW_COMPILER_PREFIX}.",
+    "qualification.json summarizes final executed gates and computes hashes of preserved binaries.",
+    "Earlier 39-case runs are execution history; intermediate destination failure is retained separately."
+  ],
+  "trust_root": "Enclosing Git commit and flat manifest; patch and upstream inputs retain their original hashes."
+}

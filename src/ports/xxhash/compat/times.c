@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: Apache-2.0 */
 /* newlib's clock() path resolves _times_r -> times(), while the frozen SDK
    exports only _times(); forward so clock()-using tools link unchanged. */
 #include <sys/times.h>

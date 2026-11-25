@@ -1,0 +1,124 @@
+{
+  "status": "failed",
+  "runner_sha256": "29168ebf7cf8ff9dfddc2f81434aefb49435ea913d0c0683fae8b53bbebf0fd3",
+  "checks": [
+    "cross_pid_handles_and_controller_operations_denied",
+    "four_applications_eight_connections_controller_reserved_budget",
+    "kill_reclaims_all_application_connections_and_resources",
+    "cancel_reclaims_connections_and_resources",
+    "exit_reclaims_connections_and_resources",
+    "exec_reclaims_connections_and_resources",
+    "stall_reclaims_connections_and_resources",
+    "fault_reclaims_connections_and_resources"
+  ],
+  "revocations": [
+    {
+      "round": 0,
+      "nonce": "b54a32e6ea4d9d0cb9b6376cf613a8dd",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "nonce": "f8dd62e7d00b4482f2f61877acc9383a",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "nonce": "d4a7b8021c3c1cd05aef9f101759f2d9",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 3,
+      "nonce": "d929928824b118c1db7fbef073477652",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 4,
+      "nonce": "7755549f874779c20300383e701f5a9a",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 5,
+      "nonce": "cfd745dfa0811490838a7241327362f8",
+      "echoes": 2
+    }
+  ],
+  "not_run": [
+    "NIC_reset_failure_quarantine",
+    "packet_loss_reordering",
+    "DNS_DHCP_TLS",
+    "deterministic_same_poll_round_revoke_accept_schedule"
+  ],
+  "build_id": "8bd86a18760f91f7",
+  "image_sha256": "0f9445a24020b8b278d78c98bbab5f8bfa2a9a39891837abdc23f49408ffaf77",
+  "system_manifest_sha256": "6282ffbcc0f1cdbc1006df263dc6d1e33bf412e410ef760cd2894d517a8264de",
+  "fixture_receipt_sha256": "d27378634fac768dec60072245222014a7e0272a2c5215866cccfa7b307e8dbc",
+  "sdk_tree_sha256": "43943d95ea63bf45767760224b0dbfc2eedaa880ecee61e6f3c8b61a027b8c5d",
+  "artifacts": {
+    "net_lifecycle_probe.elf": "fd0d53bba0cd65a21944af64489a93fdb1cf5579451d51829623d466e146fa23",
+    "net_exec_receiver.elf": "ed03914fa4ad3c557dc24dd3707aa93ab75fe83d8b7d60c2584e9cbab2ca0271"
+  },
+  "initial_disk_sha256": "c422335896c0ee8da3f7f44b05402f1a7118fa43b9ae131de66542193c48d8ad",
+  "qemu_command": [
+    "${XOS_HOST_BIN}/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_ROOT}/build/network_qualified_system/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_TEMP_ROOT}/xos_net_lifecycle_a8zocht9/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-netdev",
+    "user,id=xosnet",
+    "-device",
+    "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56",
+    "-object",
+    "filter-dump,id=xos_capture,netdev=xosnet,file=${XOS_ROOT}/build/network_lifecycle_guest/network.pcap"
+  ],
+  "baseline": [
+    129630,
+    3,
+    1
+  ],
+  "before_service": [
+    129799,
+    2,
+    0
+  ],
+  "service_pid": 11,
+  "reply_timeout_ns": 520000000,
+  "error": "missing complete fixture identity",
+  "evidence_files": {
+    "network.pcap": "dd1fd55ac690f553679a9132daab39103515d5a07f98191ad202f15cf723ba79",
+    "guest_qemu.log": "3b7815e7154d23fb7835c91c691ea4776324e85738f4ec4ec8dc763711ff56b5",
+    "guest_serial.log": "af6b9e2e295ad8bedf128c0e2fd3b8db080d6bad38e8f4da2ed38a75dffb7f5b",
+    "guest.serial.log": "af6b9e2e295ad8bedf128c0e2fd3b8db080d6bad38e8f4da2ed38a75dffb7f5b"
+  }
+}

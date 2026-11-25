@@ -1,0 +1,56 @@
+{
+  "status": "passed",
+  "source_capture": "original window_network.pcap decoded from base64",
+  "source_capture_sha256": "8997580a3737a43e188c0ff4d70c684fc4916dad037333ffb609918f1fc6a1e6",
+  "ethernet_frames": 91,
+  "flows": [
+    {
+      "mode": "queued",
+      "shell": "xsh",
+      "peer_port": 41000,
+      "challenge_frame": 10,
+      "close_barrier_frame": 12,
+      "client_fin_frame": 17,
+      "verified_payload_bytes": 4096,
+      "window_release_frame": 14,
+      "first_payload_after_release_frame": 15,
+      "probe_frames_before_barrier": 0,
+      "unsent_bytes_lower_bound_at_close": 4096
+    },
+    {
+      "mode": "drained",
+      "shell": "xsh",
+      "peer_port": 41002,
+      "challenge_frame": 27,
+      "close_barrier_frame": 47,
+      "client_fin_frame": 44,
+      "verified_payload_bytes": 8192,
+      "full_payload_ack_frame": 43,
+      "acknowledged_before_close": 8192
+    },
+    {
+      "mode": "queued",
+      "shell": "dash",
+      "peer_port": 41004,
+      "challenge_frame": 53,
+      "close_barrier_frame": 55,
+      "client_fin_frame": 60,
+      "verified_payload_bytes": 4096,
+      "window_release_frame": 57,
+      "first_payload_after_release_frame": 58,
+      "probe_frames_before_barrier": 0,
+      "unsent_bytes_lower_bound_at_close": 4096
+    },
+    {
+      "mode": "drained",
+      "shell": "dash",
+      "peer_port": 41006,
+      "challenge_frame": 70,
+      "close_barrier_frame": 90,
+      "client_fin_frame": 87,
+      "verified_payload_bytes": 8192,
+      "full_payload_ack_frame": 86,
+      "acknowledged_before_close": 8192
+    }
+  ]
+}

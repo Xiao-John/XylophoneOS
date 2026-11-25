@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import subprocess
 import tarfile
 
 core_sources = ["init.c", "def.c", "inet_chksum.c", "ip.c", "mem.c", "memp.c", "netif.c",
@@ -22,7 +23,29 @@ def configuration(root):
     if digest != lock["sha256"]:
         raise SystemExit("Network service lwIP archive differs from source_lock.json")
     return {"enabled": True, "wire_version": 2, "lwip_version": lock["version"],
-            "archive_sha256": digest, "guest_qualification": "not_run"}
+            "archive_sha256": digest, "patches": source_patches(root),
+            "guest_qualification": "not_run"}
+
+
+def source_patches(root):
+    """Return and verify the tracked, ordered local changes to the raw archive."""
+    port = root / "src/ports/lwip"
+    entries = json.loads((port / "source_lock.json").read_text()).get("patches", [])
+    for entry in entries:
+        relative = Path(entry["path"])
+        if relative.is_absolute() or ".." in relative.parts:
+            raise ValueError("lwIP patch path must remain under its port directory")
+        if hashlib.sha256((port / relative).read_bytes()).hexdigest() != entry["sha256"]:
+            raise ValueError(f"lwIP patch hash mismatch: {relative}")
+        for name in entry["files"]:
+            if Path(name).is_absolute() or ".." in Path(name).parts:
+                raise ValueError("lwIP patched file must remain under its source directory")
+    return entries
+
+
+def source_input_paths(root):
+    return [root / "src/ports/lwip/source_lock.json",
+            *(root / "src/ports/lwip" / entry["path"] for entry in source_patches(root))]
 
 
 def extract_source(archive, output, expected_sha256):
@@ -41,12 +64,42 @@ def extract_source(archive, output, expected_sha256):
     return output / "lwip-2.2.1"
 
 
+def prepare_source(root, archive, output, *, patch_tool="patch", environment=None):
+    """Verify pristine bytes, then apply exact local patches to a private copy.
+
+    extract_source intentionally stays pristine for historical upstream audits.
+    No download, fuzzy application, prepatched source, or fallback is accepted.
+    """
+    lock = json.loads((root / "src/ports/lwip/source_lock.json").read_text())
+    patches = source_patches(root)
+    source = extract_source(archive, output, lock["sha256"])
+    for entry in patches:
+        patch_bytes = (root / "src/ports/lwip" / entry["path"]).read_bytes()
+        if hashlib.sha256(patch_bytes).hexdigest() != entry["sha256"]:
+            raise ValueError("lwIP patch changed after verification")
+        before = {str(path.relative_to(source)): hashlib.sha256(path.read_bytes()).hexdigest()
+                  for path in source.rglob("*") if path.is_file()}
+        for name, digests in entry["files"].items():
+            if before.get(name) != digests["before"]:
+                raise ValueError(f"lwIP patch preimage mismatch: {name}")
+        subprocess.run([patch_tool, "--batch", "--forward", "--fuzz=0", "--no-backup-if-mismatch", "-p1"],
+                       input=patch_bytes, cwd=source, check=True, timeout=30,
+                       stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=environment)
+        after = {str(path.relative_to(source)): hashlib.sha256(path.read_bytes()).hexdigest()
+                 for path in source.rglob("*") if path.is_file()}
+        expected = dict(before)
+        expected.update({name: digests["after"] for name, digests in entry["files"].items()})
+        if after != expected:
+            raise ValueError(f"lwIP patch output differs from locked files: {entry['path']}")
+    return source
+
+
 def build(root, output, sdk, run, tool, isa_flags):
     config = configuration(root)
     if not config["enabled"]:
         return [], (), config
     work = output / "net_lwip"
-    source = extract_source(os.environ["XOS_LWIP_SOURCE_ARCHIVE"], work / "source", config["archive_sha256"])
+    source = prepare_source(root, os.environ["XOS_LWIP_SOURCE_ARCHIVE"], work / "source")
     include_flags = ("-I", str(root / "src/user/network/include"),
                      "-I", str(root / "src/ports/lwip/include"), "-I", str(source / "src/include"))
     flags = ["-std=c11", "-Os", "-ffreestanding", "-fno-stack-protector", "-fno-pie", "-fno-pic",

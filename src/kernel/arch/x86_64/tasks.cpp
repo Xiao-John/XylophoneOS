@@ -1063,6 +1063,26 @@ void wake_ipc_acceptors(u64 service_pid, i64 result) {
     }
 }
 
+// sys84--86 channels belong to the current image. PID preservation on exec
+// does not retain endpoints, pending requests/replies or published services.
+// sys81's explicit quiescent-channel inheritance is a separate mechanism.
+void revoke_generic_ipc_process(u64 pid) {
+    for (auto& entry : ipc_names) {
+        if (entry.used && entry.owner_pid == pid) entry = ipc_name_record{};
+    }
+    wake_ipc_acceptors(pid, pipe_error_broken);
+    for (auto& connection : ipc_connections) {
+        if (!connection.used || (connection.service_pid != pid && connection.client_pid != pid)) continue;
+        revoke_ipc_channel(connection.channel_id, pipe_error_broken);
+    }
+    for (auto& endpoint : endpoints) {
+        if (endpoint.used && endpoint.generic &&
+            (endpoint.owner_pid == pid || endpoint.sender_pid == pid || endpoint.receiver_pid == pid)) {
+            revoke_ipc_channel(endpoint.channel_id, pipe_error_broken);
+        }
+    }
+}
+
 bool files_service_live() {
     process_record* service = task_by_pid(files_pid);
     return files_pid != 0 && service != nullptr && service->block_access &&
@@ -1239,16 +1259,7 @@ void destroy_task(process_record* task) {
     const u64 pid = task->pid;
     ipc_v1_revoke_process(pid);
     device_revoke_process(pid);
-    for (auto& entry : ipc_names) {
-        if (entry.used && entry.owner_pid == pid) entry = ipc_name_record{};
-    }
-    wake_ipc_acceptors(pid, pipe_error_broken);
-    for (auto& connection : ipc_connections) {
-        if (!connection.used || (connection.service_pid != pid && connection.client_pid != pid)) continue;
-        const u32 channel_id = connection.channel_id;
-        revoke_ipc_channel(channel_id, pipe_error_broken);
-        connection = ipc_connection_record{};
-    }
+    revoke_generic_ipc_process(pid);
     for (auto& endpoint : endpoints) {
         if (!endpoint.used || (endpoint.owner_pid != pid && endpoint.receiver_pid != pid &&
                                endpoint.sender_pid != pid)) { continue; }
@@ -4650,6 +4661,7 @@ void* process_syscall(interrupt_frame* frame) {
         }
         if (next_endpoint_handle > 0xfffffffeull) { result = process_error_resources; break; }
         ipc_v1_revoke_process(current->pid);
+        revoke_generic_ipc_process(current->pid);
         device_revoke_process(current->pid);
         release_pc_speaker(current);
         revoke_pc_speaker_controller(current);

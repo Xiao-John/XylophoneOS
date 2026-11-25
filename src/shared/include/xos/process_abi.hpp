@@ -46,6 +46,8 @@ inline constexpr u64 sys_process_foreground = 55, sys_process_cancel = 56;
 // Unstarted private-memory snapshot, authenticated files clone, then commit.
 inline constexpr u64 sys_process_fork_prepare = 57, sys_process_fork_commit = 58;
 inline constexpr u64 sys_process_fork_files = 59;
+// These endpoint pairs and published names are revoked on successful exec;
+// failed exec preserves them. Explicit sys81 channel inheritance is separate.
 inline constexpr u64 sys_ipc_endpoint = 84, sys_ipc_wait = 85, sys_ipc_name = 86;
 // C3: prepare an unstarted replacement (same signature as create, mask=0),
 // then commit(entry, depth_mode): 0 retains depth; n>0 requests depth n-1,

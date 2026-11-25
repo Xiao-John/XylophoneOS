@@ -339,9 +339,11 @@ i64 stop_audio_service() {
     process_status status{};
     i64 result = syscall(sys_process_wait, child, reinterpret_cast<u64>(&status), 1);
     if (result == process_error_would_block) {
-        result = syscall(sys_process_cancel, child);
-        if (result != 0) return result;
-        result = syscall(sys_process_wait, child, reinterpret_cast<u64>(&status), 0);
+        const i64 cancelled = syscall(sys_process_cancel, child);
+        // The child can exit after the first poll and before cancellation.
+        // Reap its completion without blocking if cancellation failed.
+        result = syscall(sys_process_wait, child, reinterpret_cast<u64>(&status), cancelled != 0);
+        if (cancelled != 0 && result != 0) return cancelled;
     }
     if (result == 0) audio_service_pid = 0;
     return result;

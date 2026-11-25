@@ -1,7 +1,9 @@
 # N2 原生网络服务 v2
 
-2026-11-25。登记基线 `08f3e13e`；实现分支先冻结本协议再实现。状态为
-implemented_unqualified，完整 guest qualification 待固定工具链与 QEMU 补验。
+2026-11-25。登记基线 `08f3e13e`；实现分支先冻结本协议再实现。后续组合
+`2baed87` 已完成[限定N2/N3客体验收](../work_log/ca46b580_network_multi_application_qualification.md)：
+11项传输、13项生命周期和12轮撤销/槽复用。资格只适用于该记录的实际组合。
+DNS/DHCP仍关闭；[N4提案](network_n4_v1_proposal.md)另列原生接口与启用门槛。
 
 ## 边界和兼容
 

@@ -49,7 +49,9 @@ def main():
             with Disk(trial,root,True) as disk:
                 require(disk.info('/usr/bin/xypm') is None,'xypm executable was not absent at interruption')
                 require(disk.info('/var/lib/xypm/transaction') is not None,'journal missing at interruption')
-            guest=start(trial);baseline=resources(guest);output=command(guest,'maint-recover-boot',b'maintenance: completed');require(b'transaction rolled back' in output,'boot recovery did not roll back');require(resources(guest)==baseline,'resources drift after recovery');guest.close();(out/'recovered.log').write_bytes(guest.output);guest=None
+            guest=start(trial);output=command(guest,'maint-recover-boot',b'maintenance: completed');require(b'transaction rolled back' in output,'boot recovery did not roll back')
+            quiet_maintenance_guest(guest)
+            require(resources(guest)==baseline,'resources drift after recovery');guest.close();(out/'recovered.log').write_bytes(guest.output);guest=None
             require(query_image(trial,profile,'verify-installed')['files']==fault['files'],'restored package fails verification')
             require(query_image(trial,profile,'info','xos.xypm')['sha256']==fault['sha256'],'restored database differs')
             with Disk(trial,root,True) as disk:

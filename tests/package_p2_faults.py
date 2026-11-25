@@ -94,9 +94,11 @@ def main():
                     require(resources(guest)==before,'resources drift after interrupted worker');guest.close();(out/(operation+'_'+str(step)+'_interrupted.log')).write_bytes(guest.output);guest=None
                     with Disk(trial,root,True) as backend:
                         pending=any(backend.info(path) is not None for path in ('/var/lib/xypm/transaction','/var/lib/xypm/txdata','/var/lib/xypm/transaction_commit'))
-                    guest=start(trial);before=resources(guest)
+                    guest=start(trial)
                     if pending:
-                        command(guest,'maint-recover-boot',b'maintenance: completed');require(resources(guest)==before,'resources drift after recovery')
+                        command(guest,'maint-recover-boot',b'maintenance: completed')
+                        quiet_maintenance_guest(guest)
+                    require(resources(guest)==baseline,'resources drift after reboot or recovery')
                     guest.close();(out/(operation+'_'+str(step)+'_recovery.log')).write_bytes(guest.output);guest=None
                     verify_state(trial,operation,step==total)
                     report['operations'][operation]['passed'].append(step);trial.unlink()

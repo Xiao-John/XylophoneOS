@@ -50,6 +50,9 @@ sys4/5、84–86，不新增 syscall，不依赖 bulk_grant_v1，不引入 libc 
 -206 closed、-207 io、-208 unsupported、-209 buffer_too_small、-210 reset。
 未知操作返回unsupported；版本、线长度、保留字段、重放等损坏关闭会话。
 失败响应不携带有效负载；buffer_too_small的flags单独报告所需容量。
+open/status的终止错误可带failed位。information成功负载固定32字节且flags=0；
+open/status成功无负载，状态为connecting、connected或connected|EOF；send及控制
+成功无负载且flags=0；receive成功仅允许EOF位。SDK逐操作核验这些形状，损坏时关闭会话。
 
 ## 权限、生命周期和预算
 
@@ -79,3 +82,32 @@ TCP序列随机源调用sys63，初始化熵失败则拒绝启动，不以时钟
 重放、配额、超时/关闭、TCP/UDP、短读写/EOF、背压和资源回收；host模拟不取得guest资格。
 客体需重建镜像和匹配SDK，在xsh/dash运行多应用、取消/撤销/kill/restart、队列压力及
 新鲜挑战HTTP，记录源码/SDK/ELF/镜像/夹具哈希、响应字节、资源基线及抓包。旧报告保持原样。
+
+## N3 原生客户端与HTTP
+
+`<xos/net_transport.hpp>`提供C++17便利API，继续使用上述v2线协议；没有新增字段、
+操作号、syscall、POSIX errno或FD。单个client由调用方串行使用，每PID仍至多一个会话。
+
+- `connect(expected_service_pid)`建立并认证会话；`close()`关闭会话和服务侧全部连接。
+- `open(protocol, address, port, deadline, handle)`等待TCP建立或直接建立UDP关联，
+  内部status轮询沿用原绝对期限；输出handle只在成功时可用。
+- TCP的`write/read(handle, bytes, count, deadline)`可短写/短读；正容量read的0返回
+  表示EOF。零容量调用立即返回0；发送空TCP内容不产生网络写入。
+- UDP的`send_datagram`保留完整消息并允许0长度；`receive_datagram(..., required)`
+  容量1–1024，返回0可为真实空报文。buffer_too_small给出required且保留队头供重试。
+- `close_connection/cancel_connection(handle, deadline)`分别有序关闭/中止。已确认
+  would_block可以带新sequence重试；交付后结果未知时关闭会话，禁止自动重放。
+
+每个请求发送前和收到回复后都采样同一单调时钟，调度停顿跨过deadline时返回timeout。
+返回错误域保留本契约负数值；客户端因损坏响应返回io，不接受带多余数据的成功回复。
+
+`browser_http::fetch`连接真实原生TCP，支持数字IPv4的HTTP GET，遵守同一个总期限、
+部分写入、精确Content-Length和EOF；返回status、完整body范围及最终URL。最多5次
+重定向且地址/端口保持同源；0次配置返回第一条完整响应。头部增量线性扫描后解析，
+头上限16KiB、body上限1MiB；调用方可以进一步限制总缓冲区。DNS、TLS、压缩和chunked
+等待后续阶段。浏览器在独立模块实施资源同源规则与导航总预算。
+
+新增真实客体入口`tests/net_transport_guest.py`使用运行时生成的nonce与随机32字节
+挑战，校验HTTP状态/字节、UDP字节、双向关闭、错误PID、关闭端口、服务重启和资源
+回收。测试记录按实际执行分别标为passed/failed/not_run；固定工具链与QEMU缺失时
+保留具体原因，不复用旧raw/纯parser报告取得N3资格。

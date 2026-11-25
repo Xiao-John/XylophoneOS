@@ -464,3 +464,18 @@ libc 当前仅实现 `MAP_PRIVATE | MAP_ANONYMOUS` 的 `PROT_NONE` 保留；后�
 fork 使用独立物理页复制；线程运行时仍不支持 fork/exec。详细错误与限制见
 [匿名 VM 契约](contracts/anonymous_vm.md)，恢复和验收状态见
 [VM3 工作记录](work_log/58b24599_vm3_lifecycle_sdk.md)。
+
+## N3 原生网络便利API（2026-11-25）
+
+SDK自动携带`<xos/net_transport.hpp>`，兼容C++17，提供PID固定的connect、TCP/UDP
+open、TCP短read/write、UDP原子send_datagram/receive_datagram、有序close与cancel。
+每次调用传绝对单调deadline；同一事务沿用一个总期限。空UDP与TCP EOF使用不同方法
+区分，UDP容量不足通过required报告并保留报文。此API不引入socket、errno或libc私有类型。
+HTTP库位于`src/ports/browser_http/transport.*`，通过原生TCP完成数字IPv4 GET；调用方
+提供已认证client、固定缓冲区和总期限，成功取得状态、精确body及最终URL。重定向限制
+在同一地址/端口，最多5次；浏览器可用0次并实施自身总请求/字节预算。详见
+[网络契约](contracts/net_service_v2.md)及[N3记录](work_log/e8f504b1_n3_native_tcp_udp_and_http_clients.md)。
+
+`build_net_transport_probe.py`要求网络头与匹配SDK相同，使用原生crt0、libxos及标准
+整数/尺寸头链接，不链接libc。不能把该探针作为dash的exec替换目标；脚本走普通spawn。
+`net_transport_guest.py`补验新镜像/SDK的HTTP/UDP随机挑战，所有既有报告保留原资格。

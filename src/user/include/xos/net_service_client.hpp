@@ -51,11 +51,15 @@ public:
             if (sent) {
                 const i64 received = sdk::ipc_recv(channel_.receive, &reply, sizeof(reply));
                 if (received != -3) {
+                    const i64 finished = sdk::syscall(sys_clock_monotonic);
+                    if (finished < 0 || static_cast<u64>(finished) >= input.deadline) {
+                        reply = {}; close(); return finished < 0 ? io : timeout;
+                    }
                     if (received < header_bytes || reply.version != version || reply.action != input.action ||
                         reply.sequence != input.sequence || reply.deadline || reply.reserved || reply.address ||
                         reply.port || reply.transport != protocol::none || reply.length > payload_bytes ||
                         static_cast<u64>(received) != header_bytes + reply.length ||
-                        (reply.result < 0 && reply.length) ||
+                        (reply.result < 0 && reply.length) || !valid_reply(input, reply) ||
                         (input.action != operation::open && reply.object != input.object) ||
                         (input.action == operation::open && ((reply.result == 0) != (reply.object != 0))) ||
                         (reply.result > 0 && (input.action != operation::send || static_cast<u64>(reply.result) > input.length))) {
@@ -69,6 +73,34 @@ public:
         }
     }
 private:
+    static bool valid_reply(const message& input, const message& reply) {
+        if (reply.result < 0) {
+            if (reply.result < reset || reply.result > invalid) return false;
+            if (input.action == operation::open || input.action == operation::status)
+                return !reply.flags || reply.flags == failed;
+            if (input.action == operation::receive && reply.result == buffer_too_small)
+                return reply.flags > input.flags && reply.flags <= payload_bytes;
+            return !reply.flags;
+        }
+        switch (input.action) {
+        case operation::information:
+            return !reply.result && reply.length == sizeof(information) && !reply.flags;
+        case operation::open:
+        case operation::status:
+            return !reply.result && !reply.length &&
+                (reply.flags == connecting || reply.flags == connected || reply.flags == (connected | eof));
+        case operation::send:
+            return !reply.length && !reply.flags && (!input.length || reply.result > 0);
+        case operation::receive:
+            return !reply.result && reply.length <= input.flags && !(reply.flags & ~eof);
+        case operation::close:
+        case operation::cancel:
+        case operation::revoke_peer:
+        case operation::stop:
+            return !reply.result && !reply.length && !reply.flags;
+        default: return false;
+        }
+    }
     ipc_channel channel_{};
     u64 next_sequence_ = 1;
 };

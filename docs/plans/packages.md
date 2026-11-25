@@ -64,6 +64,11 @@ python3 scripts/build_xypm.py --sdk /absolute/path/to/frozen_sdk --profile confi
 
 ### SDK边界
 
+G4 新增 [独立运行库候选 profile 契约](../contracts/xypm_sdk_profiles.md) 与
+`scripts/create_xypm_profile.py`：显式绑定成套 newlib/glibc SDK，保持独立输出、
+仓库与安装盘。生成和核验记录候选绑定，客体资格由实际验收提供；现有 v1
+数据库的单 profile 强校验继续生效。
+
 P0发行完整SDK仍绑定旧profile。B2新增`xos-x86_64-static-single-b2-v1`，
 只为已验系统`911184be3f3c99f6`的单线程CRT/stdio转交注册冻结快照，补入旧完整
 SDK的单线程C++归档及相应许可。SDK树哈希、组合方法与真实失败见0044记录。

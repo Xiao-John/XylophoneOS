@@ -50,6 +50,7 @@ def suite_cases(suite):
             ('g2_exit', 'glibc_g2/static_main.c', ['alpha', 'exit'], 39, markers),
             ('g2_fatal_stderr', 'glibc_g2/fatal_stderr.c', [], 127,
              ['G2 fatal stderr begin:' + '.' * 300 + ':G2 fatal stderr end']),
+            ('g2_ctor_order', 'glibc_g2/ctor_order.c', [], 0, ['GLIBC_CTOR_ORDER_PASS']),
         ])
     if suite in ('threads', 'all'):
         cases.extend([

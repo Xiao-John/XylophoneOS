@@ -33,6 +33,9 @@ def tree_receipt(root):
 
 
 def sdk_check(sdk, profile):
+    require(profile.get('runtime_family', 'newlib') == 'newlib',
+            'this application builder requires the newlib runtime family; '
+            'validate glibc candidates with create_xypm_profile.py')
     sdk = Path(sdk).resolve(strict=True)
     metadata = load_json(sdk / 'manifest.json')
     require(metadata.get('abi') == 1 and metadata.get('target') == 'x86_64-elf', 'unsupported SDK ABI/target')

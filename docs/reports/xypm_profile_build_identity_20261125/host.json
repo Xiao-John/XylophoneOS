@@ -1,0 +1,13 @@
+{
+  "guest": "not_run",
+  "inputs_unchanged": true,
+  "scope": "synthetic host-only SDK admission fixtures; no upstream signature or guest execution",
+  "sources": {
+    "scripts/create_xypm_profile.py": "459a95165248f661bf1d7835869a946810c568dba8c69baa2f10cd776c6d2504",
+    "scripts/xos_app.py": "25588d93baf31db044f9c9eee880b782bad26dbb5d9846eff022b1e63ee8ac44",
+    "scripts/xypm_sdk_profile.py": "5a6abed057293c4949f617076e500ee1cc490c73b71fbfc778dda384c7a5670e",
+    "tests/xypm_sdk_profile_host.py": "668c4c304c2073949e74f961b7b2107c82d24b02a49ea28fb46894c481273586"
+  },
+  "status": "passed",
+  "tests": 41
+}

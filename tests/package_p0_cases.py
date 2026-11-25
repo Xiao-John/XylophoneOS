@@ -197,7 +197,8 @@ class IndependentBuildCases(unittest.TestCase):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('--sdk',type=Path,default=SDK);parser.add_argument('--output',type=Path,default=REPORT)
-    args=parser.parse_args();SDK=args.sdk.resolve();REPORT=args.output.resolve();REPORT.parent.mkdir(parents=True,exist_ok=True)
+    parser.add_argument('--profile',type=Path,default=DEFAULT_PROFILE)
+    args=parser.parse_args();SDK=args.sdk.resolve();PROFILE=load_json(args.profile);REPORT=args.output.resolve();REPORT.parent.mkdir(parents=True,exist_ok=True)
     suite=unittest.TestSuite([unittest.defaultTestLoader.loadTestsFromTestCase(PackageCases),unittest.defaultTestLoader.loadTestsFromTestCase(IndependentBuildCases)])
     result=unittest.TextTestRunner(verbosity=2).run(suite)
     if REPORT.exists():

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """Build lwIP (NO_SYS) and a raw-frame ICMP probe for XOS (offline)."""
 import hashlib
 import json

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """Validate src/ports/<id>/port.json against docs/ports.md (structure only)."""
 import argparse
 import json

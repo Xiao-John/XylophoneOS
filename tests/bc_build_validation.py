@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Check bc input cleanup and the SDK gate without a cross compiler."""
 import importlib.util
 import json

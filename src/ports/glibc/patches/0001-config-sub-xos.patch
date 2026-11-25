@@ -1,0 +1,5 @@
+--- a/scripts/config.sub
++++ b/scripts/config.sub
+@@ -1726 +1726 @@
+-	gnu* | android* | bsd* | mach* | minix* | genix* | ultrix* | irix* \
++	gnu* | xos* | android* | bsd* | mach* | minix* | genix* | ultrix* | irix* \

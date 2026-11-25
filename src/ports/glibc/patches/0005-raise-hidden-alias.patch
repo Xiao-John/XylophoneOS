@@ -1,0 +1,4 @@
+--- a/signal/raise.c
++++ b/signal/raise.c
+@@ -27,0 +28 @@
++libc_hidden_def (raise)

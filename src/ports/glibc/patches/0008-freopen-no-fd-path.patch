@@ -1,0 +1,24 @@
+--- a/libio/freopen.c
++++ b/libio/freopen.c
+@@ -26,0 +27 @@
++#include <errno.h>
+@@ -53,0 +55,7 @@
++  if (gfilename == NULL)
++    {
++      int saved_errno = errno;
++      _IO_file_close_maybe_unlink (fp, false);
++      __set_errno (saved_errno);
++      goto end;
++    }
+--- a/libio/freopen64.c
++++ b/libio/freopen64.c
+@@ -26,0 +27 @@
++#include <errno.h>
+@@ -52,0 +54,7 @@
++  if (gfilename == NULL)
++    {
++      int saved_errno = errno;
++      _IO_file_close_maybe_unlink (fp, false);
++      __set_errno (saved_errno);
++      goto end;
++    }

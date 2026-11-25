@@ -1,0 +1,18 @@
+--- a/nptl/Makefile
++++ b/nptl/Makefile
+@@ -602,2 +602,6 @@
+
++ifeq ($(config-os),xos)
++routines := $(filter-out sem_routines,$(routines))
++endif
++
+ include ../Rules
+--- a/posix/Makefile
++++ b/posix/Makefile
+@@ -512,2 +512,6 @@
+
++ifeq ($(config-os),xos)
++routines := $(filter-out shm-directory,$(routines))
++endif
++
+ include ../Rules

@@ -70,6 +70,40 @@ static void checked(const char* name) { ++cases; std::printf("PASS real_service 
 int main(int argc, char** argv) {
     assert(argc == 2);
     identity_service_mount(argv[1]);
+    xos_file_request anonymous{}; xos_file_response created{};
+    anonymous.operation = 21;
+    assert(__xos_file_exchange(&anonymous, &created) == 0);
+    const unsigned int anonymous_handle = created.handle;
+    assert(anonymous_handle != 0 && created.reserved != 0 && created.value == 0);
+    anonymous.operation = 6; anonymous.handle = anonymous_handle; anonymous.length = 6;
+    std::memcpy(anonymous.data, "secret", 6);
+    assert(__xos_file_exchange(&anonymous, &created) == 0 && created.value == 6);
+    anonymous = {}; anonymous.operation = 22; anonymous.handle = anonymous_handle;
+    assert(__xos_file_exchange(&anonymous, &created) == 0);
+    anonymous = {}; anonymous.operation = 7; anonymous.handle = anonymous_handle;
+    assert(__xos_file_exchange(&anonymous, &created) == 0 && created.value == 0);
+    anonymous = {}; anonymous.operation = 5; anonymous.handle = anonymous_handle; anonymous.length = 6;
+    assert(__xos_file_exchange(&anonymous, &created) == 0 && created.length == 6);
+    assert(!std::memcmp(created.data, "secret", 6));
+    anonymous = {}; anonymous.operation = 6; anonymous.handle = anonymous_handle;
+    anonymous.length = 1; anonymous.data[0] = 'x';
+    assert(__xos_file_exchange(&anonymous, &created) == -EINVAL);
+    anonymous = {}; anonymous.operation = 8; anonymous.handle = anonymous_handle;
+    assert(__xos_file_exchange(&anonymous, &created) == 0);
+    checked("anonymous_create_io_seal_and_close");
+    unsigned int anonymous_handles[16]{};
+    for (unsigned int& handle : anonymous_handles) {
+        anonymous = {}; anonymous.operation = 21;
+        assert(__xos_file_exchange(&anonymous, &created) == 0);
+        handle = created.handle;
+    }
+    anonymous = {}; anonymous.operation = 21;
+    assert(__xos_file_exchange(&anonymous, &created) == -EMFILE);
+    for (unsigned int handle : anonymous_handles) {
+        anonymous = {}; anonymous.operation = 8; anonymous.handle = handle;
+        assert(__xos_file_exchange(&anonymous, &created) == 0);
+    }
+    checked("anonymous_quota_cleanup_then_regular_files");
     for (unsigned int length : {513U, 4097U, xos::file::max_block_bench_bytes}) {
         xos_file_request input{}; xos_file_response output{};
         input.operation = 17; input.length = length;

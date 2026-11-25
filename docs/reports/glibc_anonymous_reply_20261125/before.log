@@ -1,0 +1,1 @@
+runtime_test: $XOS_REPO/tests/fixtures/glibc_g3/files_runtime.cpp:535: void anonymous_exchange(const char*): Assertion `__xos_file_exchange(&input, &output) == (success ? 0 : -EIO)' failed.

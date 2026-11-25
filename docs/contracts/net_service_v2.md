@@ -41,7 +41,7 @@ sys4/5、84–86，不新增 syscall，不依赖 bulk_grant_v1，不引入 libc 
 | status | 3 | 返回connecting/connected/EOF/failed状态，失败返回终止错误 |
 | send | 4 | TCP短写；UDP保留报文边界、允许空报文；成功只表示本地接受 |
 | receive | 5 | TCP短读/EOF；UDP一条完整报文，容量不足保留报文并返回所需长度 |
-| close | 6 | 有序TCP关闭，队列不足可返回would_block；UDP释放 |
+| close | 6 | 有序TCP关闭；未读接收数据或关闭排队不足时返回would_block并保留连接；UDP释放 |
 | cancel | 7 | 立即终止连接、释放用户态资源；已发送字节结果仍未知 |
 | revoke_peer | 8 | 仅bootstrap controller；撤销该PID全部会话并拒绝其后续连接，直到服务重启 |
 | stop | 9 | 仅bootstrap controller；停止接入、有限等待回复消费，然后关闭全部连接和NIC |
@@ -62,11 +62,24 @@ open/status成功无负载，状态为connecting、connected或connected|EOF；s
 全局八个连接。handle在一次服务生命周期单调分配且不复用；服务重启使全部旧IPC失效。
 最多16个撤销PID；表满返回resources且不部分撤销。
 
+服务内部每次接纳分配不回绕的会话代际号，将IPC端点、待回复及其期限绑定到该次接纳。
+撤销后同一轮复用槽位前关闭旧双端点并清空整份回复状态；代际不匹配时清理旧绑定。
+代际号只在服务内部使用，线格式、连接handle和客户端sequence保持原协议。
+
 每连接TCP接收环8KiB，读取前不扩大TCP接收窗口；UDP队列四条、每条1024字节，满时
 丢新包并可查询计数。lwIP自身有界内存池，VirtIO队列满传递背压。每会话只保留一条
 待回复，回复阻塞超过500ms、会话空闲60秒、对端关闭或格式错误均回收会话全部连接。
 TCP连接建立受open请求原期限约束；没有自动重连/重发。服务轮转处理各会话，一轮
 每会话至多一个请求、至多64个NIC帧，持续调用sys_check_timeouts并在统一单调域等待。
+服务收到完整请求后重新采样单调时钟再授权，NIC轮询、其它会话或IPC接收期间跨过
+deadline的请求返回timeout，尚未执行的open/send不进入网络后端。
+
+TCP有序close在接收环或lwIP拒收缓冲仍有未读数据时返回would_block，保留handle、
+原接收数据、已接受发送数据及回调。调用方继续receive，排空后用新sequence重试；
+需要立即丢弃的调用方使用cancel。成功close表示lwIP已接管FIN和既有发送队列，
+应用handle随即失效。锁定的lwIP 2.2.1在FIN段分配不足时通过TF_CLOSEPEND自行重试；
+服务继续驱动计时器，并解除所有指向原应用槽位的回调，避免迟到FIN/RST影响复用槽位。
+FIN成功接管后的远端确认和TCP状态回收继续遵循lwIP计时器；该返回值不保证远端收到。
 
 客户端deadline超时关闭IPC会话；send可能已经交付，调用方不得自动重试副作用请求。
 进程exit/exec/fault由现有IPC生命周期暴露断开，服务回收PCB；服务退出时reset/close
@@ -95,8 +108,10 @@ TCP序列随机源调用sys63，初始化熵失败则拒绝启动，不以时钟
   表示EOF。零容量调用立即返回0；发送空TCP内容不产生网络写入。
 - UDP的`send_datagram`保留完整消息并允许0长度；`receive_datagram(..., required)`
   容量1–1024，返回0可为真实空报文。buffer_too_small给出required且保留队头供重试。
-- `close_connection/cancel_connection(handle, deadline)`分别有序关闭/中止。已确认
-  would_block可以带新sequence重试；交付后结果未知时关闭会话，禁止自动重放。
+- `close_connection/cancel_connection(handle, deadline)`分别有序关闭/中止。收到有序
+  关闭的 `would_block` 时直接返回，保留当前连接和同会话其他连接，调用方可先排空
+  接收数据再关闭，或显式中止。调用方重试使用新 sequence。交付后结果未知时关闭
+  会话，禁止自动重放。
 
 每个请求发送前和收到回复后都采样同一单调时钟，调度停顿跨过deadline时返回timeout。
 返回错误域保留本契约负数值；客户端因损坏响应返回io，不接受带多余数据的成功回复。

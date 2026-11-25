@@ -235,14 +235,21 @@ i64 lwip_stack::close(u32 slot, bool aborting) {
     if (item.udp) udp_remove(item.udp);
     if (item.tcp) {
         auto* pcb = item.tcp;
+        // tcp_close sends RST when data has not been acknowledged through
+        // tcp_recved, discarding queued output as well. Keep ownership and
+        // the complete receive path intact until the application drains it.
+        if (!aborting && (item.count || pcb->refused_data || pcb->rcv_wnd != TCP_WND_MAX(pcb))) return would_block;
         tcp_arg(pcb, nullptr); tcp_recv(pcb, nullptr); tcp_err(pcb, nullptr);
-        if (aborting || !item.established) tcp_abort(pcb);
+        if (aborting) tcp_abort(pcb);
         else {
             const err_t result = tcp_close(pcb);
             if (result != ERR_OK) {
                 tcp_arg(pcb, &item); tcp_recv(pcb, on_receive); tcp_err(pcb, on_error);
                 return map_error(result);
             }
+            // In pinned 2.2.1, FIN allocation pressure sets TF_CLOSEPEND and
+            // returns ERR_OK: lwIP retries from its timer and owns the PCB.
+            // No callback may retain the application slot after this point.
         }
     }
     item = {}; return 0;

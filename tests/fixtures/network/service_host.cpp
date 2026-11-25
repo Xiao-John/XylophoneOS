@@ -10,6 +10,9 @@
 #include <deque>
 #include <map>
 #include <vector>
+extern "C" {
+#include "lwip/memp.h"
+}
 
 namespace {
 using namespace xos;
@@ -50,12 +53,13 @@ struct packet_peer {
     struct tcp_peer {
         u16 local_port = 0, remote_port = 0;
         u32 client_next = 0, peer_next = 0;
+        bytes client_data;
     };
     std::deque<bytes> input;
     std::vector<bytes> output, udp_payloads;
     std::map<u16, tcp_peer> connections;
     u64 now = 1'000'000'000ull, received_frame_advance = 0;
-    u32 random_state = 0x9712ab41, tcp_syn_count = 0;
+    u32 random_state = 0x9712ab41, tcp_syn_count = 0, tcp_fin_count = 0, tcp_rst_count = 0;
     u16 udp_local_port = 0, udp_remote_port = 0;
     bool answer_arp = true, answer_syn = true, answer_data = true, echo_tcp = true, echo_udp = true;
     bool transmit_blocked = false, transmit_failed = false, clock_failed = false, random_failed = false;
@@ -132,7 +136,8 @@ struct packet_peer {
         auto& connection = connections[local_port];
         connection.local_port = local_port; connection.remote_port = remote_port;
         const u32 sequence = read_u32(body + 4); const u8 flags = body[13];
-        if (flags & rst_bit) return;
+        if (flags & rst_bit) { ++tcp_rst_count; return; }
+        if (flags & fin_bit) ++tcp_fin_count;
         if (flags & syn_bit) {
             ++tcp_syn_count; connection.client_next = sequence + 1;
             if (answer_syn) {
@@ -143,7 +148,10 @@ struct packet_peer {
         const u32 payload_length = body_length - tcp_header;
         if (payload_length || (flags & fin_bit)) {
             const bool fresh = sequence == connection.client_next;
-            if (fresh) connection.client_next += payload_length + !!(flags & fin_bit);
+            if (fresh) {
+                connection.client_next += payload_length + !!(flags & fin_bit);
+                connection.client_data.insert(connection.client_data.end(), body + tcp_header, body + body_length);
+            }
             if (answer_data) {
                 bytes echoed;
                 if (fresh && echo_tcp) echoed.assign(body + tcp_header, body + body_length);
@@ -377,18 +385,114 @@ void tcp_short_write_pressure() {
     expect(env.send(slot, handle, bytes{1, 2, 3}).result == 3, "peer acknowledgements restore send capacity");
     expect(env.request(slot, operation::cancel, handle).result == 0, "cancel stalled connection");
 }
+void tcp_close_unread_preserves_data() {
+    environment env; const u32 slot = env.attach(); const u64 handle = env.connected_tcp(slot);
+    env.peer.echo_tcp = false;
+    const auto incoming = pattern(517, 29), outgoing = pattern(383, 71);
+    env.peer.tcp_packet(env.peer.tcp_connection(), ack_bit | psh_bit, incoming); env.poll();
+    env.peer.transmit_blocked = true;
+    expect(env.send(slot, handle, outgoing).result == static_cast<i64>(outgoing.size()),
+           "queued TCP output is admitted before the blocked close");
+    expect(env.request(slot, operation::close, handle).result == would_block,
+           "unread TCP data defers orderly close and retains the handle");
+    expect(env.core.connection_count() == 1 && !env.peer.tcp_fin_count && !env.peer.tcp_rst_count,
+           "deferred close neither destroys ownership nor emits FIN/RST");
+    const auto first = env.receive(slot, handle, 113);
+    expect(first.result == 0 && first.length == 113 && !first.flags, "unread TCP bytes survive close retry");
+    expect(env.request(slot, operation::close, handle).result == would_block,
+           "partial receive still defers close");
+    const auto last = env.receive(slot, handle);
+    bytes received(first.data, first.data + first.length); received.insert(received.end(), last.data, last.data + last.length);
+    expect(last.result == 0 && received == incoming, "all original unread bytes remain in order");
+    env.peer.transmit_blocked = false;
+    expect(env.request(slot, operation::close, handle).result == 0, "drained TCP receive permits orderly close");
+    env.poll();
+    expect(env.peer.tcp_fin_count == 1 && env.peer.tcp_rst_count == 0, "drained close emits FIN instead of RST");
+    expect(env.peer.tcp_connection().client_data == outgoing, "all previously queued output reaches peer before FIN");
+    expect(env.core.connection_count() == 0, "accepted orderly close releases application handle");
+}
+void tcp_close_fin_memory_pressure() {
+    environment env; const u32 slot = env.attach(); const u64 handle = env.connected_tcp(slot);
+    std::vector<void*> segments;
+    while (void* segment = memp_malloc(MEMP_TCP_SEG)) segments.push_back(segment);
+    expect(segments.size() == MEMP_NUM_TCP_SEG, "real TCP segment pool is fully exhausted after handshake");
+    expect(env.request(slot, operation::close, handle).result == 0,
+           "pinned lwIP accepts pending FIN and owns its timer retry");
+    expect(!env.peer.tcp_fin_count && !env.peer.tcp_rst_count, "allocation pressure emits neither FIN nor reset");
+    const u64 next = env.open(slot);
+    expect(next > handle, "application slot can be reused while lwIP owns pending FIN");
+    for (void* segment : segments) memp_free(MEMP_TCP_SEG, segment);
+    env.peer.now += 250'000'000ull; env.poll(); env.poll();
+    expect(env.peer.tcp_fin_count == 1 && !env.peer.tcp_rst_count, "timer sends FIN when segment memory returns");
+    const auto payload = pattern(71, 12);
+    expect(env.send(slot, next, payload).result == static_cast<i64>(payload.size()), "old FIN callbacks leave replacement UDP connection intact");
+    env.poll(); const auto reply = env.receive(slot, next);
+    expect(reply.result == 0 && bytes(reply.data, reply.data + reply.length) == payload,
+           "replacement connection receives only its own data");
+}
+void tcp_close_reused_slot_callbacks() {
+    environment env; const u32 slot = env.attach(); const u64 handle = env.connected_tcp(slot);
+    env.peer.answer_data = false;
+    expect(env.request(slot, operation::close, handle).result == 0, "start closing old TCP connection");
+    const u64 next = env.open(slot);
+    env.peer.tcp_packet(env.peer.tcp_connection(), rst_bit | ack_bit); env.poll();
+    const auto status = env.request(slot, operation::status, next);
+    expect(status.result == 0 && status.flags == connected, "late old TCP error cannot mutate reused UDP slot");
+    expect(env.send(slot, next, bytes{1, 9, 2}).result == 3, "replacement connection stays usable after late reset");
+}
+void tcp_closing_pool_preserves_other_application() {
+    environment env; const u32 victim = env.attach(), churn = env.attach(102);
+    const u64 victim_handle = env.connected_tcp(victim);
+    env.peer.answer_data = false; env.peer.echo_tcp = false;
+    // One app keeps closing connections whose FIN is unacknowledged. Their
+    // public handles are gone, but the real PCB pool still contains them.
+    for (u32 i = 0; i < connection_limit - 1; ++i) {
+        env.peer.now += 500'000'000ull; env.poll();
+        const u64 handle = env.open(churn, protocol::tcp, static_cast<u16>(9100 + i));
+        env.poll();
+        expect(env.request(churn, operation::status, handle).flags == connected, "churn connection established");
+        expect(env.request(churn, operation::close, handle).result == 0, "churn FIN accepted while peer withholds ACK");
+    }
+    auto request = env.input(churn, operation::open); request.address = permitted_address;
+    request.port = 9200; request.transport = protocol::tcp;
+    const auto reply = env.dispatch(churn, request);
+    const auto survivor = env.request(victim, operation::status, victim_handle);
+    expect(survivor.result == 0 && survivor.flags == connected,
+           "one application's close churn must never make lwIP evict another application's live PCB");
+    expect(reply.result == resources && !reply.object, "physical closing PCBs impose backpressure before lwIP eviction");
+    expect(env.core.connection_count() == 1, "failed churn OPEN leaves other application ownership intact");
+    env.core.shutdown(); env.stack.shutdown();
+    std::vector<void*> pcbs;
+    while (void* pcb = memp_malloc(MEMP_TCP_PCB)) pcbs.push_back(pcb);
+    expect(pcbs.size() == MEMP_NUM_TCP_PCB,
+           "stack shutdown reclaims the active PCB and all FIN-pending PCBs handed to lwIP");
+    for (void* pcb : pcbs) memp_free(MEMP_TCP_PCB, pcb);
+}
 void tcp_receive_wrap_and_reset() {
     environment env; const u32 slot = env.attach(); const u64 handle = env.connected_tcp(slot);
-    for (u32 offset = 0; offset < 12288; offset += 512) {
-        const auto payload = pattern(512, offset); env.peer.tcp_packet(env.peer.tcp_connection(), ack_bit | psh_bit, payload);
-        env.poll(); bytes received;
-        while (received.size() < payload.size()) {
-            const auto reply = env.receive(slot, handle, 137);
-            expect(reply.result == 0 && reply.length, "TCP receive crosses ring boundary");
+    bytes expected, received; u32 split_writes = 0;
+    for (u32 chunk = 0; chunk < 24; ++chunk) {
+        const auto payload = pattern(997, chunk * 53);
+        if (expected.size() % tcp_receive_bytes + payload.size() > tcp_receive_bytes) {
+            ++split_writes;
+            expect(received.size() < expected.size(), "split tail write occurs with earlier unread bytes in ring");
+        }
+        expected.insert(expected.end(), payload.begin(), payload.end());
+        env.peer.tcp_packet(env.peer.tcp_connection(), ack_bit | psh_bit, payload); env.poll();
+        // Keep a varying nonempty suffix while adding the next different
+        // payload. Neither size divides 8192, exercising both copy fragments.
+        while (expected.size() - received.size() > 613) {
+            const auto reply = env.receive(slot, handle, 613);
+            expect(reply.result == 0 && reply.length == 613, "TCP receive crosses ring boundary with queued suffix");
             received.insert(received.end(), reply.data, reply.data + reply.length);
         }
-        expect(received == payload, "ring wrap preserves order and exact bytes");
     }
+    while (received.size() < expected.size()) {
+        const auto reply = env.receive(slot, handle, 137);
+        expect(reply.result == 0 && reply.length, "drain wrapped TCP receive suffix");
+        received.insert(received.end(), reply.data, reply.data + reply.length);
+    }
+    expect(split_writes >= 2 && received == expected, "split writes and partial reads preserve every differently phased byte");
     const auto last = pattern(33); env.peer.tcp_packet(env.peer.tcp_connection(), ack_bit | psh_bit, last); env.poll();
     env.peer.tcp_packet(env.peer.tcp_connection(), rst_bit | ack_bit); env.poll();
     const auto status = env.request(slot, operation::status, handle);
@@ -456,9 +560,13 @@ void udp_pressure_and_source_filter() {
     env.peer.echo_udp = false; expect(env.send(slot, handle, bytes{1}).result == 1, "discover UDP endpoint"); env.poll();
     env.peer.udp_packet(bytes{9}, 9001); env.poll();
     expect(env.receive(slot, handle).result == would_block, "connected UDP filters foreign source port");
+    env.peer.udp_packet(pattern(payload_bytes + 1)); env.poll();
+    expect(env.receive(slot, handle).result == would_block, "oversize UDP datagram is rejected while queue is empty");
+    auto info_reply = env.request(slot, operation::information); information info{};
+    std::memcpy(&info, info_reply.data, sizeof(info)); expect(info.udp_dropped == 1, "oversize alone increments drop count");
     const std::array<bytes, 4> accepted{pattern(3), bytes{}, pattern(123), pattern(payload_bytes)};
     for (const auto& payload : accepted) env.peer.udp_packet(payload);
-    env.peer.udp_packet(pattern(7)); env.peer.udp_packet(pattern(payload_bytes + 1)); env.poll();
+    env.peer.udp_packet(pattern(7)); env.poll();
     const auto small = env.receive(slot, handle, 1);
     expect(small.result == buffer_too_small && small.flags == 3 && !small.length, "too-small UDP receive retains full datagram");
     for (const auto& payload : accepted) {
@@ -466,7 +574,7 @@ void udp_pressure_and_source_filter() {
         expect(reply.result == 0 && bytes(reply.data, reply.data + reply.length) == payload, "UDP queue preserves accepted datagram order");
     }
     expect(env.receive(slot, handle).result == would_block, "full UDP queue drops new data");
-    const auto info_reply = env.request(slot, operation::information); information info{};
+    info_reply = env.request(slot, operation::information);
     std::memcpy(&info, info_reply.data, sizeof(info)); expect(info.udp_dropped == 2, "UDP pressure and oversize drops are counted");
 }
 void link_backpressure_and_budget() {
@@ -502,6 +610,10 @@ const test_case cases[] = {
     {"connection_quotas", connection_quotas}, {"revoke_policy", revoke_policy},
     {"deadlines_and_idle", deadlines_and_idle}, {"tcp_echo_and_eof", tcp_echo_and_eof},
     {"tcp_short_write_pressure", tcp_short_write_pressure}, {"tcp_receive_wrap_and_reset", tcp_receive_wrap_and_reset},
+    {"tcp_close_unread_preserves_data", tcp_close_unread_preserves_data},
+    {"tcp_close_fin_memory_pressure", tcp_close_fin_memory_pressure},
+    {"tcp_close_reused_slot_callbacks", tcp_close_reused_slot_callbacks},
+    {"tcp_closing_pool_preserves_other_application", tcp_closing_pool_preserves_other_application},
     {"tcp_connect_deadline", tcp_connect_deadline}, {"tcp_late_handshake", tcp_late_handshake},
     {"tcp_handshake_callback_deadline", tcp_handshake_callback_deadline},
     {"tcp_timer_retransmission", tcp_timer_retransmission},

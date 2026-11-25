@@ -1,18 +1,12 @@
-<!-- coderabbit-ai-generated:v1 -->
-
-<!-- coderabbit-ai-generated-section:v1:90931ae2e9c35f122f69d6a2d8f97553c7bb0665dfec150942b8dded8a6e49c4 -->
-
 # XOS 当前状态（全局快照）
 
-线程时钟错误返回修复（分支验证）：三项 review 问题已修复，宿主 wrapper 测试通过；客体测试缺工具链和 SDK 未运行。[记录](work_log/7bc4cfb8_threaded_clock_error_returns.md)。
+2026-11-26 · 整合阶段快照。主线代码与契约已收口至 #172。
+最终主线重建、整体验收与发行准备裁决待填。[阶段记录](work_log/efc3a5ff_xos_integration_campaign.md)
 
-<!-- /coderabbit-ai-generated:v1 -->
-
-2026-11-04 · 快照（发版后更新）。按 [Discipline](Discipline.md) 的 state.md 规则，本文件只在整体变动
-时刻（功能 PR 合入 main、Release、里程碑）由当时的合并者更新；行级细节与证据见各
-[work_log](work_log/)，本线活记忆写工作区根的 `STATE_L.md`（不入 git）。历史明细见
-[work_log](work_log/) 与 [history](history/)，原则裁决见
-[xos_plan.md 第一部分](xos_plan.md#第一部分设计原则)。
+按 [Discipline](Discipline.md) 在合并、发行或里程碑更新。过程与证据见
+[work_log](work_log/) 和 [history](history/)，设计原则见
+[xos_plan.md 第一部分](xos_plan.md#第一部分设计原则)。本线活记忆写工作区根的
+`STATE_L.md`（不入 Git）。
 
 ## 基线
 
@@ -24,37 +18,29 @@
 - 宪法 xos_plan v1.7：C28 驱动纯洁性、C29 时间域、C30 命名归属、C31 建设基础
   而非制造已经完成的假象；v1.7 删除 localpilot 隔离表述（`localpilot/` 已移出主
   工作区）。
-- ABI：71 个已分配 syscall（`docs_consistency` 实测）；67 仅匿名 VM 认领未实施；
-  `sys_device`=112 已登记（[device_authorization_v1](contracts/device_authorization_v1.md)）
-  并完成实施段 1a。
-
-<!-- coderabbit-ai-generated:v1 -->
-
-<!-- coderabbit-ai-generated-section:v1:53757a1ad8410553e9456a0f361319015140b6fc922f67676819ff1402ab8878 -->
-
-2026-11-13 审查修复：虚拟 `/dev` 路径、staging 拒绝、稳定身份与 null 写入边界已通过宿主验证；
-详见 [记录](work_log/61f0c353_dev_null_review.md)，客体验证未运行。
+- ABI 有 78 个已分配 syscall（`docs_consistency` 实测）。sys67 匿名 VM 已实现，
+  涵盖 VM1/VM2 和恢复后的 VM3 限定客体场景，完整资格待验。sys112 支撑用户态
+  VirtIO-Net 纵切。sys20 wait-any、sys35 当前线程 TLS 和 sys51 有界退出清理
+  均按各自契约和受测阶段登记。[ABI 登记](contracts/abi_registry.md)
 
 ## 各线状态（一句话，细节见 work_log）
-
-<!-- /coderabbit-ai-generated:v1 -->
 
 | 线 | 状态 | 记录 |
 |---|---|---|
 | 应用故障包 FB0–FB2 | 受限通过；FB3/FB4、断电安全、全局收集未验 | [0080](work_log/0080_fb0_fault_bundle.md)、[0081](work_log/0081_fb1_fb2_fault_bundle.md) |
 | 时钟/IRQ 统一（C29） | #33 已合，统一时基落地 | [0112](work_log/0112_clock_irq_split.md) |
-| VirtIO-Net N1 / PR #20 | 保持 RC 未合并：要求拆分，驱动留实验分支 | PR #20 分支内记录（0084/0101） |
-| N2 用户态网络 | BLOCKED；设备授权原语已登记且段 1a 合入（#64/#65），待段 1b grant 表 | [0097](work_log/0097_network_time_domains.md)、[0170](work_log/0170_device_authorization_step1a.md) |
-| 浏览器 B0/B1 | 已合（本地 HTML/CSS 子集）；B2 网络 BLOCKED | [0083](work_log/0083_aurora_browser_offline.md)、[0096](work_log/0096_browser_review_fixes.md) |
+| VirtIO-Net / N2–N3 | sys112 授权的用户态驱动和 lwIP v2 已合入。传输、多应用隔离、生命周期和撤销有绑定客体结果。raw 诊断保持隔离。 | [原始帧纵切](contracts/net_user_driver.md)、[v2 契约](contracts/net_service_v2.md)、[多应用复验](work_log/69b0e274_network_guest_readiness_and_window.md) |
+| N4 DNS/DHCP | 配置与名称契约以及 DNS 回包收紧已合入。生产 DNS/DHCP 保持关闭。 | [N4 契约](contracts/network_n4_v1_proposal.md)、[DNS 记录](work_log/4e29c6b1_network_dns_hardening.md) |
+| Aurora 浏览器 | 本地 HTML/CSS 和受控 HTTP 路径有匹配 SDK、浏览器及镜像的客体证据。最终组合复验待收口。 | [浏览器契约](contracts/aurora_browser.md)、[N3 TCP/UDP 与 HTTP](work_log/e8f504b1_n3_native_tcp_udp_and_http_clients.md) |
 | Aurora UI v2 SDK | #29 已合（含 C30 改名与评审修复） | [0102](work_log/0102_aurora_ui_v2_sdk.md)、[0112](work_log/0112_aurora_c30_rename_and_fixes.md) |
 | Semantic Broker / 时间语义 / G3 复核 | #30/#31/#32 已合（勘查与限定模型） | [0108](work_log/0108_semantic_pipe_probe.md)、[0109](work_log/0109_temporal_semantics.md)、[0110](work_log/0110_aurora_g3_review.md) |
 | 现代应用兼容 Phase 1 | 已合，探针级；完整浏览器/Core/HTTPS 未通过 | [0085](work_log/0085_modern_app_compatibility_phase1.md) |
 | Pillow 静态成像 | 核心受限通过；线程 BLOCKED（`_malloc_r` vector14 未解） | [0088](work_log/0088_cpython_static_pillow.md) |
-| PX4-A 匿名 VM | 仅设计认领，未实施 | [0098](work_log/0098_vm_time_domains.md) |
+| PX4-A 匿名 VM | sys67、续体、公开映射子集及 fork/exec 生命周期已实现，VM3 恢复后有定向客体记录。SDK 完整资格仍为 `implemented_unqualified`。 | [VM3 恢复记录](work_log/58b24599_vm3_lifecycle_sdk.md)、[VM2](work_log/588667af_vm2_full_qualification.md) |
 | 终端 / ncursesw W1 | 最终验收全 gate 通过并合入（#66）：W0 冻结、4 系统、15 项交接探针、`freeze_ncursesw_subset` 12 项 | [0187](work_log/0187_w1_final_acceptance.md)、[0074](work_log/0074_ncursesw_w1_scout.md) |
-| 许可两叶（D7） | #67/#68 已合入（0188/0189：newlib 1053/1053、GNU Seed、Qt 静态分发审查、Qt 文本/§4d0、GCC 397/407、逐成员映射）；`licenses/open_items.json` 闸门生效（3 open/3 deferred/2 N/A）；发版仍中止 | [0188](work_log/0188_d7_license_two_leaves.md)、[0189](work_log/0189_d7_license_full_closure.md) |
-| SSG 批次 / Aurora Dock | 2026-11-04 按依赖序合入 #45（Dock 图标）、#40（SSG consumers 派生证据）、#44→#49（Browser/Notes SSG 栈）、#50（P3B 双 Provider 聚合，C30 改名与全量 manifest 收口）；**#51 未动**（BLOCKED 挂账） | work_log 0190–0196；合并战役报告见 `build/pr_review_40_51/` |
-| 日常工具 / UTF-8 / xypm / 游戏 | 已整合；xypm P3 未完成；游戏线工作区已建未开工 | [0069](work_log/0069_daily_utilities.md)、[0068](work_log/0068_utf8_filenames.md)、[0066](work_log/0066_xypm_p2_validation.md) |
+| 许可两叶（D7） | #67/#68 逐成员映射和分发材料保留。#169 修正 SPDX 与材料摘要，本阶段登记 0 open、1 deferred、7 N/A。 | [0188](work_log/0188_d7_license_two_leaves.md)、[0189](work_log/0189_d7_license_full_closure.md)、[登记](../licenses/open_items.json)、[整合修正](work_log/7a8d4aa9_integration_license_materials.md) |
+| SSG 批次 / Aurora Dock | 2026-11-04 批次合入 #45（Dock 图标）、#40（SSG consumers 派生证据）、#44→#49（Browser/Notes SSG 栈）和 #50（P3B 双 Provider、C30 改名及全量 manifest）。 | [Dock](work_log/0190_aurora_midnight_dock.md)、[双 Provider](work_log/0196_ssg_p3b_dual_provider.md) |
+| 日常工具 / UTF-8 / 游戏 | 各自有既有整合记录，游戏线沿用该批的交付范围。 | [0069](work_log/0069_daily_utilities.md)、[0068](work_log/0068_utf8_filenames.md)、[Open Adventure](work_log/0066_open_adventure_package.md) |
 
 ## 当前能力与证据（慢变量）
 
@@ -66,23 +52,33 @@
 | Shell / 终端 | dash C1–C3受限通过，xsh保留默认；终端服务交接与 ncursesw 宽字符客体验收通过 | [C3资格](reports/dash_c3_20261026/qualification.json)，build2f7160b7d6633ee6；无完整信号/作业控制；[0187](work_log/0187_w1_final_acceptance.md) |
 | 显示/ISO | sys65/66 在 buildef83c9fc92217380 重验 G02 19组通过 | [当前报告](reports/qt_e16_qualified_20261028/g02/report.json)、[显示历史](history/boot_display.md)；QtGui/QPA 单全屏 raster 已验 |
 | CPython | PY0–PY2/T3-PY、A1–A3、B1–B4专项通过 | [用户态摘要](history/userland.md)；B2–B4系统6251d26b611a388d，Python11c39c52e451a9499450 |
-| xypm | P2原生验证、事务和启动恢复已实现；限定范围内验收通过 | [包计划](plans/packages.md)、[0066](work_log/0066_xypm_p2_validation.md)；P2验收范围和局限见记录；P3未完成 |
+| xypm | P2 验证、事务与启动恢复有客体记录。P3 离线仓库、锁、拒绝路径及重启后回读已合入并在匹配的 newlib SDK 客体复验。 | [P2](work_log/0066_xypm_p2_validation.md)、[P3](work_log/7c2de8a4_xypm_p3_preview_guest.md)、[包计划](plans/packages.md) |
+| glibc | G1–G3 与上游认证已合入，覆盖静态 CRT/TLS、pthread、文件服务及共享退出机制。#168 的 wait-any 保留 #161 原提交。 | [线程契约](contracts/glibc_static_threads.md)、[文件契约](contracts/glibc_files_v1.md)、[共享整合](work_log/efc3a5ff_xos_integration_campaign.md) |
+| SDK 过渡 | newlib 是现行默认。glibc C/C++ 使用隔离候选与配套验收，候选准入和激活分别登记。普通及线程 newlib 的文件能力清单已有同源阶段复验。 | [SDK profile 契约](contracts/xypm_sdk_profiles.md)、[glibc 源认证](work_log/53bc719e_glibc_source_authentication.md)、[阶段记录](work_log/efc3a5ff_xos_integration_campaign.md) |
 | 审计/整合 | A01–A04修复与PR3兼容已交付PR4 | [整合摘要](history/delivery_audit.md)，组合build76a2e4380f64fb2e，7定向组通过；非旧全量重验 |
 | POSIX/Qt | PX0子集文档已有；QtCore 6.8.3 G01/G03 与 QtGui/QPA G04 受限客体功能通过 | [PX路线](plans/posix.md)、[E16资格](reports/qt_e16_qualified_20261028/qualification.json)；Widgets/G05 已受限客体验证，见0078；QML/Quick 未实现，绝对峰值未验 |
 | 许可 | 材料检查通过；newlib 1053/1053、GCC 运行库 397/407 成员映射、GNU Seed 分发审查、Qt 静态分发审查与收口材料（文本/§4d0/补丁标注）已交付 | [许可证管理](licensing.md)、[0188](work_log/0188_d7_license_two_leaves.md)、[0189](work_log/0189_d7_license_full_closure.md)；均为映射/材料审查，**非法务意见**，Qt 静态交付物已按 B4/B5 门槛随 0.0.2-1103 分发（非法务意见） |
 
-每项资格只对其冻结输入成立。旧源/SDK/镜像不改绑；许可材料通过不代表逐成员审计完成。
+每项资格绑定各自冻结的源码、SDK、镜像和配置。逐成员许可范围按各自审查记录追溯。
 
 ## 下一步
 
-- **Qt 随 0.0.2-1103 已发行**（用户指令 2026-11-04）：B4 打包核验 25/25、B5 安全审查
-  PASS_WITH_LIMITS 已执行并闭合；非法务意见，商业路径 N/A，QML/Quick 未实现。
-- **PR #51 未合并**（用户指示保持不动）：BLOCKED（9 冲突、CHANGES_REQUESTED 未回应、
-  13 新报告缺 manifest、C30 违规）——进入合并队列前须先清障。
-- **0.0.2-1103 已于 2026-11-04 发布**（D7 收口 + open 清零 + Qt 门槛后按用户令执行）；
-  下次发版按 [playbook](releases/playbook.md) / `scripts/release_pipeline.sh`。
-- 设备授权原语段 1b（grant 表）→ 显示迁移纵向切片 → ps2/ata（依赖 sys82 对齐）；
-  N2 网络接其后。PR #20 按 RC 拆分要求仍挂账。
-- 系统重建/自举（D6）尚未开始；QML/Quick 移植为独立功能线，未立项。
+- 按 [阶段记录](work_log/efc3a5ff_xos_integration_campaign.md) 核对剩余 PR 和实际合并树，
+  从最终提交重建系统及两套 SDK，再执行整体验收和发行准备裁决。
+- N4 生产启用、glibc 默认 SDK 切换、动态链接 D1–D4、显示/ps2/ata 后续设备迁移、
+  系统重建/自举（D6）与 Qt QML/Quick 各按专项计划推进。
 - 按 Discipline → 本页 → 宪法 → 专项契约/登记接手；新开发独立分支/PR 交付，
   公共 build 排他。
+
+## 历史快照补记
+
+- 2026-11-04 的发行快照记录了 Qt B4 打包 25/25 和 B5 `PASS_WITH_LIMITS`，商业路径 N/A。
+  当时 #51 按指示暂缓，记录有 9 处冲突、请求修改及 13 份缺 manifest 的报告。
+  早期内核 VirtIO-Net RC #20 的拆分要求和段 1a 登记见
+  [设备授权记录](work_log/0170_device_authorization_step1a.md)。
+- 当时 D7 第一次阶段登记为 3 open、3 deferred、2 N/A，发行在正式收口后执行。
+  [D7 记录](work_log/0189_d7_license_full_closure.md) · [发行工作记录](work_log/0204_release_publish.md)
+- 线程时钟修复的原分支记录三项 review 修正及宿主 wrapper 通过，当时客体未运行。
+  [原始记录](work_log/7bc4cfb8_threaded_clock_error_returns.md)
+- 2026-11-13 的虚拟 `/dev` 审查记录包含 staging 拒绝、稳定身份和 null 写入边界。
+  宿主验证通过，当时客体未运行。[原始记录](work_log/61f0c353_dev_null_review.md)

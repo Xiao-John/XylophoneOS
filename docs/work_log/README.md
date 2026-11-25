@@ -154,6 +154,7 @@
 
 | c274a9e1 | `c274a9e1_native_development_gates.md` | 显式工具回执、真实多 TU C/C++ Make 工程与 14 组双 shell SL3/SL4 矩阵 |
 | 0c4c263f | [0c4c263f_glibc_g3_static_threads.md](0c4c263f_glibc_g3_static_threads.md) | glibc G3-T：私有同步、TID 属性生命周期及实际公共 API 探针 |
+| efc3a5ff | [efc3a5ff_xos_integration_campaign.md](efc3a5ff_xos_integration_campaign.md) | 整合阶段合并、候选资格和最终主线复验入口 |
 
 音频记录在 #96 合入时由 0217–0219 改为 0220–0222：0217/0218 已被 VM1/VM2 占用，
 0219 已由 WebEngine M0 审计占用。新记录自 **0223** 起继续唯一，不得复用 0216–0222。

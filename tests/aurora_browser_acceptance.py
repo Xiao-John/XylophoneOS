@@ -33,8 +33,12 @@ def navigate(path,expected=None):
  start=len(g.output);chord('ctrl','l');type_text(path);stroke('ret');g.expect(expected or b'BROWSER_LOADED path='+path.encode(),start=start,timeout=30);pump(g,.15);return start
 def scroll_to_end():
  start=len(g.output);stroke('end')
- g.expect(b'BROWSER_SCROLL value=',start=start,timeout=30)
- return int(re.findall(rb'BROWSER_SCROLL value=(\d+)',bytes(g.output)[start:])[-1])
+ marker=b'BROWSER_SCROLL value='
+ g.expect(marker,start=start,timeout=30)
+ pos=g.output.index(marker,start)
+ g.expect(b'\n',start=pos,timeout=30)
+ line=bytes(g.output[pos:g.output.index(b'\n',pos)])
+ return int(re.fullmatch(rb'BROWSER_SCROLL value=(\d+) max=\d+\r?',line)[1])
 def click_xy(x,y):
  for _ in range(10):g.qmp('input-send-event',{'events':[{'type':'rel','data':{'axis':'x','value':-100}},{'type':'rel','data':{'axis':'y','value':-100}}]});pump(g,.025)
  for offset in range(0,max(x,y),80):g.qmp('input-send-event',{'events':[{'type':'rel','data':{'axis':'x','value':min(80,max(0,x-offset))}},{'type':'rel','data':{'axis':'y','value':min(80,max(0,y-offset))}}]});pump(g,.025)

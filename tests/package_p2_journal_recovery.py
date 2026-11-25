@@ -13,6 +13,7 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT/'scripts'),str(ROOT/'tests')]
 from boot_smoke import Guest
 from make_work_disk import create_fat32
+from package_p2_verify_guest import quiet_maintenance_guest
 from process_smoke import resources
 from task_smoke import send_bytes,pump
 from xypm_format import canonical,require,sha_file
@@ -81,13 +82,16 @@ def main():
                     if case in ('commit_moved','commit_orphan'):backend.command('import','/var/lib/xypm/transaction_commit',temp_file('commit',commit))
                 guest=Guest(boot,'package_p2_recover_'+case,work_disk=disk,iso=True);guest.expect(b'xos64> ',timeout=40);send_bytes(guest,b'run\r');guest.expect_supervisor(trace=True,timeout=40);pump(guest,1.5)
                 baseline=resources(guest);start=len(guest.output);send_bytes(guest,b'maint-recover-boot\r');guest.expect_supervisor(start=start,timeout=120)
-                output=bytes(guest.output)[start:];require(resources(guest)==baseline,'resource drift in '+case)
+                output=bytes(guest.output)[start:]
                 success=case in ('rollback','partial_rollback','committed','commit_moved','commit_orphan','unpublished')
                 if success:
                     expected=b'committed transaction cleaned' if case in ('committed','commit_moved','commit_orphan') else b'unpublished preparation cleaned' if case=='unpublished' else b'transaction rolled back'
                     require(expected in output and b'maintenance: completed' in output,'recovery did not complete: '+repr(output[-2000:]))
+                    # Leaving recovery permits normal audio startup. Compare the same service state.
+                    quiet_maintenance_guest(guest)
                 else:
                     require(b'materials retained' in output and b'maintenance: retained' in output,'corruption did not retain gate: '+repr(output[-2000:]))
+                require(resources(guest)==baseline,'resource drift in '+case)
                 guest.close();(out/(case+'.log')).write_bytes(guest.output);guest=None
                 with Disk(disk,folder,True) as backend:
                     if success:

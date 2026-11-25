@@ -34,6 +34,17 @@ main (void)
   assert (strcmp (name, "main") == 0);
   assert (__pthread_setname_np (current, "creator") == 0);
   assert (__xos_thread_name_add (child) == 0);
+  struct xos_thread_attributes input = { 0x70000000, 0x70040000, 4096, 0 };
+  struct xos_thread_attributes output = { 0 };
+  assert (__xos_thread_attributes_set (child, &input) == 0);
+  assert (__xos_thread_attributes_get (child, 0, 0, &output) == 0);
+  assert (output.stack_bottom == input.stack_bottom && output.stack_top == input.stack_top);
+  assert (output.guard_size == 4096 && output.detached == 0);
+  assert (__xos_thread_attributes_get (current, 0x40000000, 0x40020000, &output) == 0);
+  assert (output.stack_bottom == 0x40000000 && output.stack_top == 0x40020000);
+  assert (output.guard_size == 0 && output.detached == 0);
+  __xos_thread_attributes_detach (child);
+  assert (__xos_thread_attributes_get (child, 0, 0, &output) == 0 && output.detached == 1);
   assert (__pthread_getname_np (child, name, sizeof (name)) == 0);
   assert (strcmp (name, "creator") == 0);
   assert (__pthread_setname_np (child, "1234567890123456") == ERANGE);
@@ -55,6 +66,9 @@ main (void)
   current = 100;
   assert (__pthread_setname_np (child, "stale") == ESRCH);
   assert (__pthread_getname_np (child, name, sizeof (name)) == ESRCH);
+  output = input;
+  assert (__xos_thread_attributes_get (child, 0, 0, &output) == ESRCH);
+  assert (memcmp (&output, &input, sizeof (output)) == 0);
   assert (__xos_thread_name_add (103) == 0);
   assert (__pthread_getname_np (103, name, sizeof (name)) == 0);
   assert (strcmp (name, "creator") == 0);

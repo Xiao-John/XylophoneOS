@@ -2,11 +2,14 @@
 #include <pthreadP.h>
 #include <shlib-compat.h>
 #include "xos_thread_identity.h"
+#include "xos_thread_name.h"
 
 int
 ___pthread_detach (pthread_t thread)
 {
   xos_i64 error = xos_thread_lifecycle (45, (xos_u64) thread, 0);
+  if (error == 0)
+    __xos_thread_attributes_detach ((xos_u64) thread);
   return error == 0 ? 0 : xos_thread_lifecycle_error (error);
 }
 versioned_symbol (libc, ___pthread_detach, pthread_detach, GLIBC_2_34);

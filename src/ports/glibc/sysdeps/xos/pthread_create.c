@@ -24,7 +24,6 @@ struct rtld_global *__nptl_rtld_global = &_rtld_global;
 # include <libc-diag.h>
 # include <libc-internal.h>
 # include <libioP.h>
-# include <resolv.h>
 # include <stdlib.h>
 # include <sys/single_threaded.h>
 # include "xos_static_worker.h"
@@ -38,6 +37,8 @@ struct worker_input
   void *argument;
   bool c11;
   xos_u64 tid;
+  xos_u64 guard_size;
+  int detached;
 };
 
 static xos_i64
@@ -51,6 +52,13 @@ prepare_worker (struct pthread *pd,
   if (__xos_thread_name_add (reservation->tid) != 0)
     return -5;
   input->tid = reservation->tid;
+  struct xos_thread_attributes attributes = {
+    .stack_bottom = reservation->stack_bottom,
+    .stack_top = reservation->stack_top,
+    .guard_size = input->guard_size, .detached = input->detached
+  };
+  if (__xos_thread_attributes_set (reservation->tid, &attributes) != 0)
+    return -5;
   pd->tid = reservation->tid;
   pd->stackblock = (void *) reservation->stack_bottom;
   pd->stackblock_size = reservation->stack_top - reservation->stack_bottom;
@@ -65,7 +73,9 @@ static void *
 start_worker (void *argument)
 {
   struct pthread *pd = argument;
-  __resp = &pd->res;
+  /* The XOS static profile does not select inet/resolv. Its resolver TLS
+     symbol is absent, so do not import a component that is not built. A
+     future resolver port must add per-thread resolver initialization here. */
   __ctype_init ();
 
   struct pthread_unwind_buf unwind;
@@ -113,6 +123,8 @@ create_worker (pthread_t *thread, const struct pthread_attr *attr,
   if (stacksize < 64 * 1024 || stacksize > 2 * 1024 * 1024)
     return EINVAL;
   stacksize = (stacksize + 4095) & -4096UL;
+  input->guard_size = (attr->guardsize + 4095) & -4096UL;
+  input->detached = (attr->flags & ATTR_FLAG_DETACHSTATE) != 0;
 
   struct xos_thread_header profile = { 1, sizeof (profile), 0 };
   xos_i64 status = xos_thread_lifecycle (52, (xos_u64) &profile, 0);

@@ -108,12 +108,9 @@ python3 tests/package_p1_cases.py
 python3 tests/xypm_json_cases.py
 ```
 
-当前环境缺固定 x86_64-elf GCC/G++ 16.2.0、成套冻结 SDK 和 QEMU，原生代码仅进行
-宿主编译/执行与完整程序语法检查。ASan/UBSan 已执行，LeakSanitizer 受 ptrace 环境
-限制未执行。精确结果和命令见本组 work_log。
-
-后续成员需用对应 profile 构建 `scripts/build_xypm.py`，在同版本系统和专用工作盘中
-分别从 xsh/dash 运行有效/畸形仓库、pin 不符、缺包、冲突、依赖安装及升级/卸载，
-验证未授权写入拒绝、维护恢复、资源回基线及重启后数据。还需把 P3 包衔接到 P2
-逐点中断/满盘/恢复矩阵；记录系统/SDK/ELF/仓库/锁/盘摘要、工具版本和串口原始输出。
-旧 P2 冻结报告保持原范围。
+组合候选已用对应 SDK、C3 本地 profile 和专用工作盘执行 xsh/dash、维护租约、
+依赖安装、显式升级／卸载、重启持久性和资源回基线。可用
+`tests/package_p3_guest.py` 重放，需提供构建系统、SDK、profile、xypm 构建回执和
+dash 回执。P2 的逐点中断、满盘和启动恢复另有回归。输入和报告范围见
+[实现与验收记录](../work_log/bebd5daf_xypm_p3_offline_repositories_and_validation_audi.md)。
+冻结版发行 SDK 和掉电／扇区撕裂各有独立验收。

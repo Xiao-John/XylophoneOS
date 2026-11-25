@@ -10,4 +10,8 @@
 #define PTHREAD_DESTRUCTOR_ITERATIONS 4
 /* Conservative NPTL value bound, also representable by int. */
 #define SEM_VALUE_MAX 2147483647
+/* XOS file-service paths are bounded UTF-8 byte strings (max_name in
+   xos/file_abi.hpp). NAME_MAX excludes the terminator. */
+#define NAME_MAX 255
+#define PATH_MAX 256
 #endif

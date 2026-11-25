@@ -34,6 +34,7 @@ def main():
     parser.add_argument('--identity-build', type=Path, help='G1 output with native pthread identity and join objects')
     parser.add_argument('--scheduling-build', type=Path, help='G1 output with native pthread scheduling objects')
     parser.add_argument('--signal-build', type=Path, help='G1 output with native pthread signal and name objects')
+    parser.add_argument('--shared-build', type=Path, help='G1 output with named semaphore and shared memory objects')
     parser.add_argument('--memory-build', type=Path, help='G1 output with target heap and VM objects')
     args = parser.parse_args()
     build = root/'build'
@@ -94,7 +95,7 @@ def main():
         assert item['exit_code'] == 0 and item['sha256'] == sha(exit_object)
         exit_provenance = {'report_sha256': sha(exit_report), 'object_sha256': sha(exit_object)}
         cmd[-2:-2] = ['-DXOS_GLIBC_TEST_EXIT', str(exit_object)]
-    def bind_thread_objects(candidate, names, headers, define, upstream=()):
+    def bind_thread_objects(candidate, names, headers, define, upstream=(), rt_names=()):
         if candidate is None:
             return None, {}, None
         candidate = candidate.resolve(strict=True)
@@ -102,7 +103,7 @@ def main():
         data = json.loads(report_path.read_text())
         assert data['nptl_backend_experimental'] and not data['hacker_mode']
         assert not data['synthetic_abi_tag'] and data['sysroot_enforced']
-        for name in (*[name + '.c' for name in names if name not in upstream],
+        for name in (*[name + '.c' for name in (*names, *rt_names) if name not in upstream],
                      *headers, 'bits/errno.h'):
             path = overlay/name
             digest = sha(path)
@@ -111,8 +112,9 @@ def main():
                 sources.append(path)
                 inputs[str(path.relative_to(root))] = digest
         objects = {}
-        for name in names:
-            obj = candidate/'configure/nptl'/(name+'.o')
+        for subdir, name in ([('nptl', name) for name in names]
+                             + [('rt', name) for name in rt_names]):
+            obj = candidate/'configure'/subdir/(name+'.o')
             item = data['diagnostic_objects'][name]
             assert item['exit_code'] == 0 and item['sha256'] == sha(obj)
             objects[obj] = sha(obj)
@@ -136,6 +138,10 @@ def main():
          'pthread_getname', 'pthread_setname', 'lowlevellock', 'xos_lll_futex', 'xos_wait_word'),
         ('xos_thread_name.h', 'xos_lll_futex.h', 'xos_wait_word.h'),
         '-DXOS_GLIBC_TEST_SIGNALS', upstream=('lowlevellock',))
+    shared_report, shared_objects, shared_provenance = bind_thread_objects(
+        args.shared_build, ('sem_open', 'sem_unlink', 'sem_close'),
+        ('bits/semaphore.h',), '-DXOS_GLIBC_TEST_SHARED',
+        rt_names=('shm_open', 'shm_unlink'))
     yield_provenance = None
     if args.yield_build:
         candidate = args.yield_build.resolve(strict=True)
@@ -251,6 +257,7 @@ def main():
               'identity_provenance': identity_provenance,
               'scheduling_provenance': scheduling_provenance,
               'signal_provenance': signal_provenance,
+              'shared_provenance': shared_provenance,
               'memory_provenance': memory_provenance, 'checks': []}
     guest = None
     try:
@@ -303,6 +310,10 @@ def main():
                 assert {obj: sha(obj) for obj in signal_objects} == signal_objects
                 report['checks'].extend(['glibc_target_thread_names_inherit_and_update',
                                          'glibc_target_signal_zero_and_delivery_errors'])
+            if shared_provenance is not None:
+                assert sha(shared_report) == shared_provenance['report_sha256']
+                assert {obj: sha(obj) for obj in shared_objects} == shared_objects
+                report['checks'].append('glibc_target_named_shared_objects_report_unavailable')
             if yield_provenance is not None:
                 assert sha(source_report) == yield_provenance['report_sha256']
                 assert sha(yield_object) == yield_provenance['object_sha256']

@@ -122,6 +122,8 @@ def main():
         subprocess.run(['patch', '-p1', '-i', str(thread_id_patch)], cwd=source, check=True)
         initial_exit_patch = ROOT / 'src/ports/glibc/patches/0016-xos-initial-pthread-exit.patch'
         subprocess.run(['patch', '-p1', '-i', str(initial_exit_patch)], cwd=source, check=True)
+        shared_object_patch = ROOT / 'src/ports/glibc/patches/0017-xos-shared-object-build.patch'
+        subprocess.run(['patch', '-p1', '-i', str(shared_object_patch)], cwd=source, check=True)
         # This value is deliberately synthetic and is never an XOS ABI assignment.
         if args.synthetic_abi_tag:
             with (source / 'abi-tags').open('a') as file:
@@ -183,6 +185,8 @@ def main():
             ('nptl', 'xos_timed_wait'), ('nptl', 'futex-internal'),
             ('nptl', 'nptl_setxid'), ('nptl', 'pthread_cancel'),
             ('nptl', 'sem_init'), ('nptl', 'sem_post'), ('posix', 'sched_yield'),
+            ('nptl', 'sem_open'), ('nptl', 'sem_close'), ('nptl', 'sem_unlink'),
+            ('rt', 'shm_open'), ('rt', 'shm_unlink'),
             ('posix', 'getpid'), ('time', 'clock_gettime'),
             ('time', 'clock_getres'), ('stdlib', 'getrandom'),
             ('stdlib', 'getentropy'), ('misc', 'brk'), ('elf', 'dl-early_allocate'),
@@ -383,6 +387,7 @@ def main():
               'dtv_patch_sha256': digest(dtv_patch) if backend else None,
               'thread_id_patch_sha256': digest(thread_id_patch) if backend else None,
               'initial_exit_patch_sha256': digest(initial_exit_patch) if backend else None,
+              'shared_object_patch_sha256': digest(shared_object_patch) if backend else None,
               'xos_overlay_sha256': {str(p.relative_to(ROOT / 'src/ports/glibc/sysdeps')): digest(p) for p in (ROOT / 'src/ports/glibc/sysdeps').rglob('*') if p.is_file()},
               'configure_log_sha256': digest(output/'configure.log'),
               'not_claimed': ['complete XOS sysdeps', 'target runtime', 'guest qualification', 'distributable source']}
@@ -394,7 +399,7 @@ def main():
             lines = make_log.read_text(errors='replace').splitlines()
             report['first_build_error'] = next(
                 ({'line': number, 'diagnostic': line} for number, line in enumerate(lines, 1)
-                 if re.search(r'(^|:\s+)(fatal error|error|Error):', line)),
+                 if re.search(r'(^|:\s+)((fatal error|error|Error):|\*\*\* No rule to make target\b)', line)),
                 None)
     (output/'report.json').write_text(json.dumps(report, indent=2)+'\n')
     print(json.dumps(report, indent=2))

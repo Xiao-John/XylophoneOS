@@ -23,7 +23,8 @@ extern int __mprotect (void *, unsigned long, int);
 extern int __munmap (void *, unsigned long);
 #endif
 #if defined XOS_GLIBC_TEST_MEMORY || defined XOS_GLIBC_TEST_IDENTITY \
-    || defined XOS_GLIBC_TEST_SCHEDULING || defined XOS_GLIBC_TEST_SIGNALS
+    || defined XOS_GLIBC_TEST_SCHEDULING || defined XOS_GLIBC_TEST_SIGNALS \
+    || defined XOS_GLIBC_TEST_SHARED
 # define _ERRNO_H 1
 # include "bits/errno.h"
 #endif
@@ -69,8 +70,18 @@ static int rollback_count;
 static struct xos_thread_launch_result launch;
 static int invalid_start;
 #if defined XOS_GLIBC_TEST_GETPID || defined XOS_GLIBC_TEST_CLOCK \
-    || defined XOS_GLIBC_TEST_RANDOM || defined XOS_GLIBC_TEST_MEMORY
+    || defined XOS_GLIBC_TEST_RANDOM || defined XOS_GLIBC_TEST_MEMORY \
+    || defined XOS_GLIBC_TEST_SHARED
 __thread int __libc_errno;
+#endif
+#ifdef XOS_GLIBC_TEST_SHARED
+# define _SEMAPHORE_H 1
+# include "bits/semaphore.h"
+extern sem_t *sem_open (const char *, int, ...);
+extern int sem_close (sem_t *);
+extern int sem_unlink (const char *);
+extern int shm_open (const char *, int, unsigned int);
+extern int shm_unlink (const char *);
 #endif
 #ifdef XOS_GLIBC_TEST_CLOCK
 struct test_timespec { long tv_sec, tv_nsec; };
@@ -311,6 +322,19 @@ static void rollback (void *context)
 int guest_main (void) __attribute__ ((used));
 int guest_main (void)
 {
+#ifdef XOS_GLIBC_TEST_SHARED
+  __libc_errno = 0;
+  if (sem_open ("/g1", 0) != SEM_FAILED || __libc_errno != ENOSYS) return 81;
+  __libc_errno = 0;
+  if (sem_unlink ("/g1") != -1 || __libc_errno != ENOSYS) return 82;
+  __libc_errno = 0;
+  if (shm_open ("/g1", 0, 0) != -1 || __libc_errno != ENOSYS) return 83;
+  __libc_errno = 0;
+  if (shm_unlink ("/g1") != -1 || __libc_errno != ENOSYS) return 84;
+  sem_t unnamed;
+  __libc_errno = 0;
+  if (sem_close (&unnamed) != -1 || __libc_errno != EINVAL) return 85;
+#endif
 #ifdef XOS_GLIBC_TEST_MEMORY
   check_memory ();
 #endif

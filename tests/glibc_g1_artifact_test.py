@@ -43,7 +43,8 @@ def main():
                           ('0013-thread-db-sigset-include.patch', 'thread_db_patch_sha256'),
                           ('0014-xos-reserved-dtv.patch', 'dtv_patch_sha256'),
                           ('0015-xos-initial-thread-id.patch', 'thread_id_patch_sha256'),
-                          ('0016-xos-initial-pthread-exit.patch', 'initial_exit_patch_sha256')):
+                          ('0016-xos-initial-pthread-exit.patch', 'initial_exit_patch_sha256'),
+                          ('0017-xos-shared-object-build.patch', 'shared_object_patch_sha256')):
         assert digest(root / 'src/ports/glibc/patches' / filename) == report[key]
     assert report['status'] == 'diagnostic_only' and report['nptl_backend_experimental'] and not report['synthetic_abi_tag']
     assert report['sysroot_enforced'] and report['configure_exit_code'] == 0
@@ -57,7 +58,7 @@ def main():
     assert digest(make_log) == report['make_log_sha256']
     first_error = next(
         (number, line) for number, line in enumerate(make_log.read_text().splitlines(), 1)
-        if re.search(r'(^|:\s+)(fatal error|error|Error):', line))
+        if re.search(r'(^|:\s+)((fatal error|error|Error):|\*\*\* No rule to make target\b)', line))
     assert report['first_build_error'] == {'line': first_error[0], 'diagnostic': first_error[1]}
     cxx_probe = report['cxx_freestanding']
     assert cxx_probe['diagnostic_only'] and cxx_probe['exit_code'] == 0
@@ -229,7 +230,7 @@ def main():
                                  capture_output=True, text=True, input=unsupported)
         assert failure.returncode != 0 and '__xos_internal_no_such_xos_call' in failure.stderr
         # Compare the experimental public types to the actual XOS thread ABI.
-        cpp = '#include <xos/thread_abi.hpp>\n#define _SEMAPHORE_H 1\n#include <bits/semaphore.h>\n#include <bits/pthread_stack_min-dynamic.h>\n#include <bits/local_lim.h>\nstatic_assert(PTHREAD_STACK_MIN == xos::thread_stack_min);\nstatic_assert(sizeof(sem_t) == 32 && alignof(sem_t) == 8);\nstatic_assert(PTHREAD_KEYS_MAX == 128);\n#define _ERRNO_H 1\n#include <bits/errno.h>\n#include <bits/types/idtype_t.h>\nstatic_assert(EINVAL == 22 && ENOSYS == 88 && EWOULDBLOCK == EAGAIN);\nstatic_assert(P_ALL == 0 && P_PID == 1 && P_PGID == 2);\n'
+        cpp = '#include <xos/thread_abi.hpp>\n#include <xos/file_abi.hpp>\n#define _SEMAPHORE_H 1\n#include <bits/semaphore.h>\n#include <bits/pthread_stack_min-dynamic.h>\n#include <bits/local_lim.h>\nstatic_assert(PTHREAD_STACK_MIN == xos::thread_stack_min);\nstatic_assert(sizeof(sem_t) == 32 && alignof(sem_t) == 8);\nstatic_assert(PTHREAD_KEYS_MAX == 128);\nstatic_assert(NAME_MAX + 1 == xos::file::max_name && PATH_MAX == xos::file::max_name);\n#define _ERRNO_H 1\n#include <bits/errno.h>\n#include <bits/types/idtype_t.h>\nstatic_assert(EINVAL == 22 && ENOSYS == 88 && EWOULDBLOCK == EAGAIN);\nstatic_assert(P_ALL == 0 && P_PID == 1 && P_PGID == 2);\n'
         cxx = report['tools']['x86_64-elf-g++']['path']
         subprocess.run([cxx, '-std=c++17', '-ffreestanding', '-nostdinc',
                         '-I', str(root / 'src/shared/include'), '-I', str(source / 'sysdeps/xos'),
@@ -247,6 +248,20 @@ def main():
     assert digest(root / 'usr/include/bits/semaphore.h') == digest(source / 'sysdeps/xos/bits/semaphore.h')
     assert digest(root / 'usr/include/bits/errno.h') == digest(source / 'sysdeps/xos/bits/errno.h')
     assert digest(root / 'usr/include/bits/mman.h') == digest(source / 'sysdeps/xos/bits/mman.h')
+    assert digest(root / 'usr/include/bits/local_lim.h') == digest(source / 'sysdeps/xos/bits/local_lim.h')
+    for subdir, name in (
+        ('nptl', 'sem_open'), ('nptl', 'sem_unlink'), ('nptl', 'sem_close'),
+        ('rt', 'shm_open'), ('rt', 'shm_unlink'),
+    ):
+        obj = build / subdir / (name + '.o')
+        assert digest(obj) == report['diagnostic_objects'][name]['sha256']
+        assert f'source/sysdeps/xos/{name}.c' in dependency_manifest[name]
+        sections = subprocess.check_output([report['readelf'], '-WS', obj], text=True)
+        assert (f'.gnu.glibc-stub.{name}' in sections) == (name != 'sem_close')
+        code = subprocess.check_output(['x86_64-elf-objdump', '-dr', obj], text=True)
+        error = '16' if name == 'sem_close' else '58'
+        assert re.search(r'\$0x' + error + r',', code)
+        assert not re.search(r'\b(?:syscall|int)\b', code)
     assert digest(root / 'usr/include/bits/types/idtype_t.h') == digest(source / 'sysdeps/xos/bits/types/idtype_t.h')
     assert digest(output / 'header-client.log') == report['header_client']['log_sha256']
     assert 'gnu/stubs.h' in (output / 'header-client.log').read_text()

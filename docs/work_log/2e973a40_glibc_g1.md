@@ -402,3 +402,9 @@ XOS 当前不提供线程 CPU affinity、可调的线程调度参数或可跨线
 从锁定归档重跑的干净构建通过线程信号相关对象，首个错误移至 `sem_open.c` 经 `shm-directory.h` 引用的 `NAME_MAX`。目标对象的来源、符号和调用关系通过核验，相关 PIC 对象编译通过。构建报告 SHA-256 为 `20699de4c9163208cf83f667681cf9d56ef6211aafee2fd62b1453855156b3d8`。
 
 镜像 `f8bf7f566380d9bd` 的客体桥链接实际信号和线程名称对象，验证存活登记、失效 TID、非零信号错误、输出掩码不变及跨线程改名。四轮通过，资源均回到 `[129725, 3, 1]`。客体报告 SHA-256 为 `68540e858d801db775e1b3279f151e0993e0abdba45b67f546e6281c4f2f62a0`。完整 SDK 尚未生成，G1 保持 partial。
+
+## 继续：命名信号量和共享内存接口（2026-11-25）
+
+将文件服务的 UTF-8 路径上限导出为 `NAME_MAX=255`、`PATH_MAX=256`。当前 XOS 没有 POSIX 共享对象命名空间。glibc 的 `sem_open`、`sem_unlink`、`shm_open` 与 `shm_unlink` 返回 `ENOSYS` 并保留供上游 `gnu/stubs.h` 生成器读取的标记；`sem_close` 对该后端无法产生的命名句柄返回 `EINVAL`。XOS 构建不选择文件映射辅助对象。私有匿名信号量的实现保留，宿主 `sem_init` 与 `sem_post` 测试通过。
+
+干净构建越过 `sem_open.c`。首个错误移到 `nptl/syscall_cancel.o` 缺少构建规则，探针现把该类 make 诊断计入首错。五个目标对象、PIC 编译、来源和符号检查通过。构建报告 SHA-256 为 `5bd3d0470dd5346c0caa25b0ddac51e3703b3c8fc8cf191ff6ffb1bdc0c67d2d`。镜像 `152cd96f4d4e95ab` 的组合客体桥链接真实目标对象，四轮验证错误码及资源恢复到 `[129725, 3, 1]`。客体报告 SHA-256 为 `5145accfafaeede7076a80b8ef858c295e66878b619383641af96a00c3c519a3`。G1 阶段收尾，正式 `gnu/stubs.h` 与完整 SDK 尚未生成。

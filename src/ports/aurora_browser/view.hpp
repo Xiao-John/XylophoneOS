@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
-#include "content.hpp"
+#include "network_content.hpp"
+#include <cstring>
 #include "scene_geometry.hpp"
 #include "../qt6/aurora/ssg.hpp"
 #include <litehtml.h>
@@ -27,6 +28,7 @@ class HtmlView final:public QAbstractScrollArea,public litehtml::document_contai
     QPainter *painter=nullptr;
     QMap<QString,QImage> images;
     QString page,caption;
+    content_source source_;
     int imports=0,fonts=0,clipDepth=0;
     bool layoutBusy=false;
     aurora::scene_stream scene;
@@ -44,7 +46,7 @@ class HtmlView final:public QAbstractScrollArea,public litehtml::document_contai
     void invalidate_pages(){++page_revision;page_expiry.stop();page_session.reset();}
     static QColor color(litehtml::web_color c){return QColor(c.red,c.green,c.blue,c.alpha);}
     static QRect box(const litehtml::position &r){return QRect(r.x,r.y,r.width,r.height);}
-    QString resource(const char *src,const char *base){return resolve(QString::fromUtf8(src),base&&*base?QString::fromUtf8(base):page);}
+    QString resource(const char *src,const char *base){return resolve_resource(QString::fromUtf8(src),base&&*base?QString::fromUtf8(base):page,page);}
     void relayout(){if(!doc||layoutBusy)return;invalidate_pages();
         struct Reset { bool &flag; ~Reset(){flag=false;} } reset{layoutBusy};layoutBusy=true;
         try{doc->render(viewport()->width());verticalScrollBar()->setRange(0,qMin(65536,qMax(0,doc->height()-viewport()->height())));verticalScrollBar()->setPageStep(viewport()->height());}
@@ -61,19 +63,24 @@ protected:
 public:
     std::function<void(QString)> navigate;
     std::function<void(QString)> titleChanged;
-    HtmlView(QWidget *parent):QAbstractScrollArea(parent){page_expiry.setSingleShot(true);connect(&page_expiry,&QTimer::timeout,this,[this]{page_session.reset();});setFrameShape(QFrame::NoFrame);viewport()->setMouseTracking(true);setFocusPolicy(Qt::StrongFocus);setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);connect(verticalScrollBar(),&QScrollBar::valueChanged,this,[this](int value){invalidate_pages();viewport()->update();std::printf("BROWSER_SCROLL value=%d max=%d\n",value,verticalScrollBar()->maximum());});}
-    bool load(const QString &path,QString &error){QByteArray bytes;if(!read(path,bytes,32768,error)||!html_allowed(bytes,error))return false;
+    HtmlView(QWidget *parent,xos::u64 service_pid=0):QAbstractScrollArea(parent),source_(service_pid){page_expiry.setSingleShot(true);connect(&page_expiry,&QTimer::timeout,this,[this]{page_session.reset();});setFrameShape(QFrame::NoFrame);viewport()->setMouseTracking(true);setFocusPolicy(Qt::StrongFocus);setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);connect(verticalScrollBar(),&QScrollBar::valueChanged,this,[this](int value){invalidate_pages();viewport()->update();std::printf("BROWSER_SCROLL value=%d max=%d\n",value,verticalScrollBar()->maximum());});}
+    bool load(const QString &path,QString &error){
+        source_.begin();
+        struct load_guard { content_source& source; ~load_guard(){source.finish();} } guard{source_};
+        QString resolved=path;QByteArray bytes;
+        try{
+        if(!source_.load(resolved,bytes,32768,error)||!html_allowed(bytes,error))return false;
 #ifdef XOS_SSG_TEST_ORACLE
         oracle_input_sha256=QCryptographicHash::hash(bytes,QCryptographicHash::Sha256).toHex();
 #endif
-        invalidate_pages();doc.reset();scene.invalidate();scene_ids.clear();next_scene_id=1;images.clear();page=path;caption.clear();imports=0;fonts=0;verticalScrollBar()->setValue(0);
-        try{doc=litehtml::document::createFromString(bytes.constData(),this);relayout();if(!doc){error="Layout resource budget failed";return false;}if(doc->height()>65536){doc.reset();error="Layout height budget exceeded";return false;}}
+        invalidate_pages();doc.reset();scene.invalidate();scene_ids.clear();next_scene_id=1;images.clear();page=resolved;caption.clear();imports=0;fonts=0;verticalScrollBar()->setValue(0);
+        doc=litehtml::document::createFromString(bytes.constData(),this);relayout();if(!doc){error="Layout resource budget failed";return false;}if(doc->height()>65536){doc.reset();error="Layout height budget exceeded";return false;}}
         catch(const std::exception &reason){layoutBusy=false;doc.reset();
             // liteHTML lets the stylesheet callback exceptions escape; report them as
             // stylesheet admission failures instead of an engine allocation error.
-            const std::string cause=reason.what();
-            if(cause=="stylesheet rejected")error="Stylesheet rejected";
-            else if(cause=="CSS quota")error="Stylesheet import quota exceeded";
+            const char* cause=reason.what();
+            if(!std::strcmp(cause,"stylesheet rejected"))error="Stylesheet rejected";
+            else if(!std::strcmp(cause,"CSS quota"))error="Stylesheet import quota exceeded";
             else error="Engine allocation or resource budget failed";
             return false;}
         if(!doc){error="Engine did not create document";return false;}
@@ -260,7 +267,7 @@ public:
     int get_default_font_size()const override{return 16;}
     const char *get_default_font_name()const override{return "DejaVu Sans";}
     void draw_list_marker(litehtml::uint_ptr,const litehtml::list_marker &m)override {if(!painter)return;painter->setPen(color(m.color));painter->setBrush(color(m.color));if(m.marker_type==litehtml::list_style_type_decimal)painter->drawText(box(m.pos),QString::number(m.index)+".");else painter->drawEllipse(box(m.pos));}
-    void load_image(const char *src,const char *base,bool)override {auto path=resource(src,base);if(path.isEmpty()||images.contains(path))return;if(images.size()>=8)throw std::runtime_error("image quota");QByteArray data;QString error;if(!path.endsWith(".bmp")||!read(path,data,1048630,error)||data.size()<54||data.mid(0,2)!="BM"){std::printf("BROWSER_RESOURCE_REJECT image\n");return;}
+    void load_image(const char *src,const char *base,bool)override {auto path=resource(src,base);if(path.isEmpty()||images.contains(path))return;if(images.size()>=8)throw std::runtime_error("image quota");QByteArray data;QString error;if(!resource_extension(path,".bmp")||!source_.load(path,data,1048630,error)||data.size()<54||data.mid(0,2)!="BM"){std::printf("BROWSER_RESOURCE_REJECT image\n");return;}
         auto u32=[&](int offset){return quint32(quint8(data[offset]))|(quint32(quint8(data[offset+1]))<<8)|(quint32(quint8(data[offset+2]))<<16)|(quint32(quint8(data[offset+3]))<<24);};
         // Only uncompressed Windows BMP, bounded positive dimensions before Qt.
         auto w=u32(18),h=u32(22);if(u32(14)!=40||w==0||h==0||w>512||h>512||u32(30)!=0||quint8(data[28])!=24||quint8(data[29])!=0){std::printf("BROWSER_RESOURCE_REJECT bmp-header\n");return;}
@@ -271,12 +278,14 @@ public:
     void set_caption(const char *s)override{caption=QString::fromUtf8(s).left(128);std::printf("BROWSER_TITLE %s\n",caption.toUtf8().constData());}
     void set_base_url(const char*)override{} // HTML <base> is outside admitted tags.
     void link(const litehtml::document::ptr&,const litehtml::element::ptr&)override{}
-    void on_anchor_click(const char *url,const litehtml::element::ptr&)override{const auto href=QString::fromUtf8(url);auto target=resolve(href,page);std::printf("BROWSER_LINK target=%s\n",target.toUtf8().constData());
-        // Keep a rejected URL distinct from an intentional empty/current-page link.
-        if(navigate)QTimer::singleShot(0,this,[this,href]{navigate(href);});}
+    void on_anchor_click(const char *url,const litehtml::element::ptr&)override{const auto href=QString::fromUtf8(url);auto target=resolve_location(href,page);std::printf("BROWSER_LINK target=%s\n",target.toUtf8().constData());
+        // Freeze the clicked document's absolute URL before the queued callback.
+        // An invalid target stays rejected even if another tab changes meanwhile.
+        const auto destination=target.isEmpty()?QStringLiteral("blocked:"):display_location(target);
+        if(navigate)QTimer::singleShot(0,this,[this,destination]{if(navigate)navigate(destination);});}
     void set_cursor(const char *s)override{viewport()->setCursor(QByteArray(s)=="pointer"?Qt::PointingHandCursor:Qt::ArrowCursor);}
     void transform_text(litehtml::string &s,litehtml::text_transform type)override{auto q=QString::fromUtf8(s.c_str());if(type==litehtml::text_transform_uppercase)q=q.toUpper();else if(type==litehtml::text_transform_lowercase)q=q.toLower();s=q.toUtf8().constData();}
-    void import_css(litehtml::string &text,const litehtml::string &url,litehtml::string &base)override {text.clear();if(++imports>8)throw std::runtime_error("CSS quota");auto path=resource(url.c_str(),base.c_str());QByteArray bytes;QString error;if(path.isEmpty()||!path.endsWith(".css")||!read(path,bytes,8192,error)||!css_allowed(bytes)){std::printf("BROWSER_RESOURCE_REJECT css\n");throw std::runtime_error("stylesheet rejected");}std::printf("BROWSER_CSS_LOADED path=%s bytes=%d\n",path.toUtf8().constData(),int(bytes.size()));text.assign(bytes.constData(),bytes.size());base=path.toUtf8().constData();}
+    void import_css(litehtml::string &text,const litehtml::string &url,litehtml::string &base)override {text.clear();if(++imports>8)throw std::runtime_error("CSS quota");auto path=resource(url.c_str(),base.c_str());QByteArray bytes;QString error;if(path.isEmpty()||!resource_extension(path,".css")||!source_.load(path,bytes,8192,error)||!css_allowed(bytes)){std::printf("BROWSER_RESOURCE_REJECT css\n");throw std::runtime_error("stylesheet rejected");}std::printf("BROWSER_CSS_LOADED path=%s bytes=%d\n",path.toUtf8().constData(),int(bytes.size()));text.assign(bytes.constData(),bytes.size());base=path.toUtf8().constData();}
     void set_clip(const litehtml::position &p,const litehtml::border_radiuses&)override{if(painter){painter->save();++clipDepth;painter->setClipRect(box(p),Qt::IntersectClip);}}
     void del_clip()override{if(painter&&clipDepth>0){painter->restore();--clipDepth;}}
     void get_client_rect(litehtml::position &r)const override{r=litehtml::position(0,0,viewport()->width(),viewport()->height());}

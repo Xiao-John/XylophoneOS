@@ -1,4 +1,4 @@
-# Aurora Browser local HTML/CSS prototype
+# Aurora Browser local HTML/CSS and controlled HTTP prototype
 
 2026-10-29. Application policy, not a new kernel ABI. The implementation uses the
 existing Qt 6.8.3 Widgets/QPA and `libXosAurora.a`, one fullscreen native window,
@@ -65,18 +65,55 @@ Latin/accented Latin/Greek glyphs do not establish CJK/full Unicode/IME coverage
 
 ## Network and future engine boundary
 
-The UI explicitly states local preview, JavaScript off and network unavailable.
-HTTP/HTTPS schemes are rejected. The separate `browser_http` module has bounded
-URL/HTTP parsing and its own host/XOS process evidence; it has no NIC/service
-transport and is not called by this browser. N2/B2 remain dependent on a qualified,
-authenticated network service and an explicitly registered device mechanism.
-TLS/CA/name/time/random validation, DNS, Internet browsing and JavaScript are
-NOT_RUN/unsupported. Certificate checks must never be bypassed or silently fall
-back to HTTP. A future network provider can supply bounded bytes/resources to
-this same engine/container/shell; replacing the layout engine need not change
-Aurora navigation or the kernel.
+2026-11-25 implementation update: local mode remains the default. Explicit
+`--network-service-pid <pid>` enables the native N3 HTTP provider, using the
+authenticated [N2 service](net_service_v2.md). Obtain the PID from the trusted
+supervisor's `net-start 41` output; the client verifies both IPC peers. The
+browser receives bytes through the service and obtains no NIC/device rights.
+The Qt target build and controlled HTTP subset have been qualified in QEMU.
 
-Evidence, measured scope and failed iterations are in
+Numeric IPv4 HTTP is supported within the service allowlist (currently 10.0.2.2).
+The provider accepts fully framed 2xx responses. DNS, HTTPS/TLS, JavaScript,
+chunked/compressed bodies and redirects remain outside this browser profile.
+Remote CSS/BMP resources, including their callback base, must share the document
+host/port; remote resources cannot read local files. Local documents retain local
+resources. Explicit navigation, Home, history and bookmarks can switch modes.
+
+Each navigation shares a three-second absolute monotonic deadline starting at
+its first network request, at most 17 requests, and a 2 MiB response-read budget.
+Failed requests consume their reserved budget; successful reads refund unused
+capacity. Existing per-resource and layout limits still apply. The provider
+closes IPC after initial parsing/layout on success and failure; repaint/resize
+cannot fetch new remote resources. Failed candidate loads preserve the old page.
+Queued links capture resolved absolute URLs; replaced-view callbacks are disabled.
+
+I/O runs synchronously on the GUI thread. Network waits share the deadline;
+interactive cancellation and GUI responsiveness need future asynchronous work
+and separate validation. Input limits govern rendering/layout CPU work.
+
+The existing browser builder now compiles the HTTP parser and native transport,
+checks its three SDK network headers match the current source revision, and
+records sources and provider policy in the receipt. Rebuild matching native/
+threading SDK, Qt 6.8.3 and browser together. This native interface adds no POSIX
+socket or glibc dependency.
+
+After building a matching system with the pinned `XOS_LWIP_SOURCE_ARCHIVE`:
+
+```sh
+python3 tests/aurora_browser_http_guest.py --system build/network_system --payload build/browser/aurora.elf --output build/browser_http_guest
+```
+
+The runner verifies inputs and actual GET/Host/close, checks the SHA-256 of
+fresh HTML, CSS and BMP bodies, and verifies stylesheet text/background and BMP
+pixels on the guest scanout. It checks resource recovery after three successful
+loads, denied cross-origin and local-file stylesheets, HTTP 404 and truncated
+responses, then stops the service. The same browser ELF passed the local
+interactive, failure rollback, lifecycle and no-display suites.
+Remote history/tab/reload, in-process budget resets, forced network service
+death and GUI responsiveness during I/O still require separate qualification.
+See the [implementation and qualification log](../work_log/70ac29fe_browser_native_http_provider.md).
+
+Historical local-provider evidence, measured scope and failed iterations are in
 [0083](../work_log/0083_aurora_browser_offline.md).
 
 Navigation loads a candidate view before replacing the current one. If parsing, stylesheet

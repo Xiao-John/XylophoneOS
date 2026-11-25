@@ -9,7 +9,7 @@ import boot_smoke
 from boot_smoke import Guest
 from task_smoke import send_bytes,pump
 from process_smoke import command,resources
-from graphics_guest import start_graphics, stop_graphics, reap_compositor
+from graphics_guest import start_graphics, stop_graphics, reap_compositor, wait_for_scanout
 from make_work_disk import create_fat32
 from work_disk import transfer
 p=argparse.ArgumentParser()
@@ -31,12 +31,23 @@ def type_text(text):
  for c in text:stroke(codes.get(c,c))
 def navigate(path,expected=None):
  start=len(g.output);chord('ctrl','l');type_text(path);stroke('ret');g.expect(expected or b'BROWSER_LOADED path='+path.encode(),start=start,timeout=30);pump(g,.15);return start
+def scroll_to_end():
+ start=len(g.output);stroke('end')
+ marker=b'BROWSER_SCROLL value='
+ g.expect(marker,start=start,timeout=30)
+ pos=g.output.index(marker,start)
+ g.expect(b'\n',start=pos,timeout=30)
+ line=bytes(g.output[pos:g.output.index(b'\n',pos)])
+ return int(re.fullmatch(rb'BROWSER_SCROLL value=(\d+) max=\d+\r?',line)[1])
 def click_xy(x,y):
  for _ in range(10):g.qmp('input-send-event',{'events':[{'type':'rel','data':{'axis':'x','value':-100}},{'type':'rel','data':{'axis':'y','value':-100}}]});pump(g,.025)
  for offset in range(0,max(x,y),80):g.qmp('input-send-event',{'events':[{'type':'rel','data':{'axis':'x','value':min(80,max(0,x-offset))}},{'type':'rel','data':{'axis':'y','value':min(80,max(0,y-offset))}}]});pump(g,.025)
  pump(g,.1)
  for down in (True,False):g.qmp('input-send-event',{'events':[{'type':'btn','data':{'button':'left','down':down}}]});pump(g,.1)
-def screenshot(name):
+def screenshot(name, check=None):
+ if check:
+  im=wait_for_scanout(g,out/(name+'.ppm'),check)
+  im.save(out/(name+'.png'));report.setdefault('screenshots',{})[name]=sha(out/(name+'.png'));return im
  g.qmp('screendump',{'filename':str(out/(name+'.ppm'))});from PIL import Image
  im=Image.open(out/(name+'.ppm'));assert im.size==(800,600);im.save(out/(name+'.png'));report.setdefault('screenshots',{})[name]=sha(out/(name+'.png'));return im
 try:
@@ -58,7 +69,14 @@ try:
    b=len(g.output);send_bytes(g,(b'spawn-file' if background else b'exec-file')+b' /bin/aurora.elf\r');g.expect(b'BROWSER_READY',start=b,timeout=90);pump(g,.3);return b
   def finish(b):
    stroke('esc');g.expect(b'kind=exited code=0',start=b,timeout=30);g.expect_supervisor(start=b);assert resources(g)==with_service
-  b=start();im=screenshot('start');assert b'BROWSER_LOADED path=/web/start.html' in bytes(g.output)[b:];assert b'BROWSER_CSS_LOADED path=/web/theme.css' in bytes(g.output)[b:];assert sum(1 for pixel in im.convert('RGB').get_flattened_data() if pixel==(244,247,252))>50000;mark('real_litehtml_engine_and_aurora_start_page')
+  b=start()
+  assert b'BROWSER_LOADED path=/web/start.html' in bytes(g.output)[b:]
+  assert b'BROWSER_CSS_LOADED path=/web/theme.css' in bytes(g.output)[b:]
+  im=wait_for_scanout(g,out/'start.ppm',lambda pic: pic.size==(800,600) and sum(
+   count for count,color in pic.getcolors(800*600) if color==(244,247,252))>50000)
+  im.save(out/'start.png')
+  report.setdefault('screenshots',{})['start']=sha(out/'start.png')
+  mark('real_litehtml_engine_and_aurora_start_page')
   if a.case=='interactive':
    anchor=list(re.finditer(rb'BROWSER_ANCHOR point=(\d+),(\d+)',bytes(g.output)[b:]))[-1];x,y=map(int,anchor.groups());sb=len(g.output);click_xy(x,y);g.expect(b'BROWSER_LINK target=/web/reading.html',start=sb);g.expect(b'BROWSER_LOADED path=/web/reading.html',start=sb);mark('real_ps2_anchor_click')
    screenshot('reading-top');stroke('pgdn');g.expect(b'BROWSER_SCROLL value=',start=b);stroke('end');pump(g,.2);screenshot('reading-end');assert max(map(int,re.findall(rb'BROWSER_SCROLL value=(\d+)',bytes(g.output)[b:])))>0;mark('address_bar_and_long_document_scroll')
@@ -71,15 +89,18 @@ try:
   elif a.case=='negative':
    # A linked stylesheet fails only after the engine has begun loading the page.
    # Preserve the rendered old page and its scroll, then exercise history and tabs.
-   navigate('/web/reading.html');stroke('end');pump(g,.2)
-   before=screenshot('before-failed-load').crop((70,220,730,500))
-   before_scroll=int(re.findall(rb'BROWSER_SCROLL value=(\d+)',bytes(g.output)[b:])[-1])
+   navigate('/web/reading.html');before_scroll=scroll_to_end()
+   # The scrollbar thumb reaches the bottom only after the scrolled content was presented.
+   before_frame=screenshot('before-failed-load',lambda im: im.getpixel((760,500))==(71,95,127))
+   status_box=(28,557,360,574)
+   old_status=before_frame.crop(status_box).tobytes()
    navigate('/web/external.html',b'Page error: Stylesheet rejected')
-   after=screenshot('after-failed-load').crop((70,220,730,500))
+   after_frame=screenshot('after-failed-load',lambda im: im.crop(status_box).tobytes()!=old_status)
+   before=before_frame.crop((70,220,730,500));after=after_frame.crop((70,220,730,500))
    assert before.tobytes()==after.tobytes(), 'failed load changed the rendered page'
    sb=len(g.output);chord('alt','left');g.expect(b'BROWSER_LOADED path=/web/start.html',start=sb)
    sb=len(g.output);chord('alt','right');g.expect(b'BROWSER_LOADED path=/web/reading.html',start=sb)
-   stroke('end');pump(g,.2);assert int(re.findall(rb'BROWSER_SCROLL value=(\d+)',bytes(g.output)[b:])[-1])==before_scroll
+   assert scroll_to_end()==before_scroll
    sb=len(g.output);chord('ctrl','t');g.expect(b'BROWSER_TAB active=1',start=sb)
    sb=len(g.output);chord('ctrl','tab');g.expect(b'BROWSER_TAB active=0',start=sb);g.expect(b'BROWSER_LOADED path=/web/reading.html',start=sb)
    assert int(re.findall(rb'BROWSER_SCROLL value=(\d+)',bytes(g.output)[sb:])[-1])==before_scroll

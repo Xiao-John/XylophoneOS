@@ -12,6 +12,11 @@ sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest();commands=[]
 def run(cmd):
  commands.append([str(x) for x in cmd]);subprocess.run(cmd,check=True)
 for rel,h in json.loads((sdk/'manifest.json').read_text())['artifacts'].items():assert sha(sdk/rel)==h,rel
+network_headers=[sdk/'include/xos'/name for name in ('net_service_abi.hpp','net_service_client.hpp','net_transport.hpp')]
+network_sources=[root/'src/shared/include/xos/net_service_abi.hpp',root/'src/user/include/xos/net_service_client.hpp',root/'src/user/include/xos/net_transport.hpp']
+for header,source_header in zip(network_headers,network_sources):
+ if not header.is_file():raise SystemExit('Rebuild the matching native/threading SDK with N2/N3 network headers: '+str(header))
+ if sha(header)!=sha(source_header):raise SystemExit('SDK network header differs from the browser source revision: '+str(header))
 cache=(qt/'CMakeCache.txt').read_text();assert 'FEATURE_widgets:BOOL=ON' in cache;assert '-I'+str(sdk/'include') in cache
 lock=json.loads((here/'source_lock.json').read_text());archive=here/lock['archive'];assert sha(archive)==lock['archive_sha256']
 work=out.parent;work.mkdir(parents=True,exist_ok=True);source=work/'litehtml-0.9'
@@ -37,11 +42,12 @@ flags=[*base,*cpp,'-I'+str(sdk/'include'),*incs,'-DQT_CORE_LIB','-DQT_GUI_LIB','
 if a.test_structure_oracle:flags.append('-DXOS_SSG_TEST_ORACLE')
 run([host/'libexec/moc',*[f for f in flags if f.startswith(('-I','-D'))],qtport/'qpa/qxos.cpp','-o',work/'qxos.moc'])
 appobjs=[]
-for name,src in [('qxos',qtport/'qpa/qxos.cpp'),('fonts',work/'fonts.cpp'),('browser',here/'main.cpp')]:
+http_sources=[here.parent/'browser_http/http.cpp',here.parent/'browser_http/transport.cpp']
+for name,src in [('qxos',qtport/'qpa/qxos.cpp'),('fonts',work/'fonts.cpp'),('browser',here/'main.cpp'),('browser_http',http_sources[0]),('browser_transport',http_sources[1])]:
  obj=work/(name+'.o');run([cxx,*flags,'-c',src,'-o',obj]);appobjs.append(obj)
 aurora=work/'libXosAurora.a';run([sys.executable,qtport/'build_aurora.py','--sdk',sdk,'--qt-build',qt,'--host-qt',host,'--binutils',binutils,'--output',aurora])
 archives=[qt/'lib'/('lib'+n+'.a') for n in ('Qt6Widgets','Qt6Gui','Qt6Core','Qt6BundledPcre2','Qt6BundledZLIB','Qt6BundledFreetype','Qt6BundledHarfbuzz')]
 resources=list((qt/'src/gui').glob('CMakeFiles/Gui_resources_*.dir/.rcc/*.o'))+list((qt/'src/widgets').glob('CMakeFiles/Widgets_resources_*.dir/.rcc/*.o'))
 run([cxx,'-B'+str(binutils)+'/','-nostdlib','-static','-no-pie','-Wl,--gc-sections,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096','-T',sdk/'user.ld',sdk/'crt0_posix.o',*appobjs,*resources,'-Wl,--start-group',aurora,engine,*archives,'-Wl,--whole-archive',sdk/'lib/libxos.a','-Wl,--no-whole-archive',sdk/'cpp/lib/libstdc++.a',sdk/'cpp/lib/libsupc++.a',sdk/'lib/libc.a',sdk/'lib/libm.a',sdk/'cpp/lib/libgcc.a','-Wl,--end-group','-o',out])
-inputs=[Path(__file__),here/'source_lock.json',archive,patch,*sorted(here.glob('*.hpp')),here/'main.cpp',font,sdk/'manifest.json',qt/'CMakeCache.txt',qtport/'qpa/qxos.cpp',*sorted((qtport/'aurora').glob('*.hpp')),*sorted((qtport/'aurora').glob('*.cpp')),aurora,engine,*archives,*resources,*[sdk/rel for rel in ('user.ld','crt0_posix.o','lib/libxos.a','lib/libc.a','lib/libm.a','cpp/lib/libstdc++.a','cpp/lib/libsupc++.a','cpp/lib/libgcc.a')]]
-receipt={'commands':commands,'inputs':{str(p):sha(p) for p in inputs},'test_structure_oracle':a.test_structure_oracle,'elf_sha256':sha(out),'engine_archive_sha256':sha(engine),'engine_commit':lock['commit'],'tools':{str(t):{'sha256':sha(Path(t)),'version':subprocess.check_output([t,'--version'],text=True).splitlines()[0]} for t in (cxx,cc,ar)},'source_manifest':lock['source_sha256']};out.with_suffix('.receipt.json').write_text(json.dumps(receipt,indent=2)+'\n');print('Built real XOS Aurora browser',out)
+inputs=[Path(__file__),here/'source_lock.json',archive,patch,*sorted(here.glob('*.hpp')),here/'main.cpp',*http_sources,*sorted((here.parent/'browser_http').glob('*.hpp')),*network_headers,font,sdk/'manifest.json',qt/'CMakeCache.txt',qtport/'qpa/qxos.cpp',*sorted((qtport/'aurora').glob('*.hpp')),*sorted((qtport/'aurora').glob('*.cpp')),aurora,engine,*archives,*resources,*[sdk/rel for rel in ('user.ld','crt0_posix.o','lib/libxos.a','lib/libc.a','lib/libm.a','cpp/lib/libstdc++.a','cpp/lib/libsupc++.a','cpp/lib/libgcc.a')]]
+receipt={'commands':commands,'inputs':{str(p):sha(p) for p in inputs},'network_profile':{'service_wire_version':2,'service_pid_required':True,'protocol':'HTTP numeric IPv4','same_origin_resources':True,'redirect_limit':0,'navigation_timeout_ns':3000000000,'navigation_request_limit':17,'navigation_byte_limit':2097152},'test_structure_oracle':a.test_structure_oracle,'elf_sha256':sha(out),'engine_archive_sha256':sha(engine),'engine_commit':lock['commit'],'tools':{str(t):{'sha256':sha(Path(t)),'version':subprocess.check_output([t,'--version'],text=True).splitlines()[0]} for t in (cxx,cc,ar)},'source_manifest':lock['source_sha256']};out.with_suffix('.receipt.json').write_text(json.dumps(receipt,indent=2)+'\n');print('Built real XOS Aurora browser',out)

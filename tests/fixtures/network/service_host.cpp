@@ -603,6 +603,29 @@ void entropy_failure() {
     expect(stack.initialize(peer.callbacks(), local_mac.data()) == io, "missing entropy rejects initialization");
     stack.shutdown();
 }
+void runtime_entropy_stops_transmit() {
+    environment env;
+    const u32 slot = env.attach();
+    const u64 handle = env.open(slot);
+    expect(env.send(slot, handle, bytes{1}).result == 1, "prime actual UDP/ARP path");
+    env.poll();
+    const auto frames = env.peer.output.size();
+    env.peer.random_failed = true;
+    u32 word = 0x12345678;
+    expect(env.stack.random_checked(word) == io && word == 0x12345678,
+           "failed entropy read preserves output and latches transport fault");
+    expect(env.send(slot, handle, bytes{2}).result == io,
+           "existing UDP send observes latched entropy failure");
+    expect(env.peer.output.size() == frames, "fatal entropy state cannot emit frames");
+    env.peer.random_failed = false;
+    expect(env.stack.random_checked(word) == io && env.stack.poll() == io,
+           "later successful entropy cannot silently recover the failed stack");
+    env.core.shutdown(); env.stack.shutdown();
+    std::vector<void*> pcbs;
+    while (void* pcb = memp_malloc(MEMP_UDP_PCB)) pcbs.push_back(pcb);
+    expect(pcbs.size() == MEMP_NUM_UDP_PCB, "shutdown returns all UDP PCBs after entropy failure");
+    for (void* pcb : pcbs) memp_free(MEMP_UDP_PCB, pcb);
+}
 struct test_case { const char* name; void (*run)(); };
 const test_case cases[] = {
     {"admission_and_stop", admission_and_stop}, {"framing_and_replay", framing_and_replay},
@@ -619,7 +642,8 @@ const test_case cases[] = {
     {"tcp_timer_retransmission", tcp_timer_retransmission},
     {"udp_binary_and_empty", udp_binary_and_empty}, {"udp_pressure_and_source_filter", udp_pressure_and_source_filter},
     {"link_backpressure_and_budget", link_backpressure_and_budget}, {"transport_faults", transport_faults},
-    {"clock_failure", clock_failure}, {"entropy_failure", entropy_failure}};
+    {"clock_failure", clock_failure}, {"entropy_failure", entropy_failure},
+    {"runtime_entropy_stops_transmit", runtime_entropy_stops_transmit}};
 }
 int main(int argc, char** argv) {
     if (argc == 2 && std::strcmp(argv[1], "--list") == 0) {

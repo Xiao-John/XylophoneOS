@@ -19,6 +19,9 @@
 N4 的控制配置、租约、resolver 权限/缓存/取消和启用门槛见
 [原生契约提案](../contracts/network_n4_v1_proposal.md)。锁定 lwIP 的 DNS 包级 audit
 发现8项启用门槛失败，production DNS/DHCP保持关闭；该设计与审计单独交付。
+D1 的端点/直接A答案/有界熵已通过43项普通与ASan/UBSan真实帧测试、N2的25+2项
+双构建回归和preview工具链编译，见[4e29c6b1](../work_log/4e29c6b1_network_dns_hardening.md)。
+下一步为D2生命周期与缓存、D3客体，以及独立TCP ISN加固；DNS/DHCP开关仍为0。
 
 <!-- coderabbit-ai-generated:v1 -->
 

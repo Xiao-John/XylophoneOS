@@ -25,6 +25,13 @@ xos::i64 map_error(err_t error) {
 }
 extern "C" u32_t sys_now() { return active_stack ? active_stack->milliseconds() : 0; }
 extern "C" uint32_t xos_lwip_rand() { return active_stack ? active_stack->random_word() : 0; }
+extern "C" int xos_lwip_dns_random(uint16_t* value) {
+    if (!value) return ERR_ARG;
+    xos::u32 word;
+    if (!active_stack || active_stack->random_checked(word)) return ERR_IF;
+    *value = static_cast<uint16_t>(word);
+    return ERR_OK;
+}
 extern "C" void xos_lwip_diag(const char*, ...) { if (active_stack) active_stack->fault(); }
 
 namespace xos::user::network {
@@ -36,8 +43,15 @@ u32 lwip_stack::milliseconds() {
 }
 u32 lwip_stack::random_word() {
     u32 result = 0;
-    if (io_.random(io_.context, result)) failure_ = io;
+    (void)random_checked(result);
     return result;
+}
+i64 lwip_stack::random_checked(u32& result) {
+    if (failure_) return failure_;
+    u32 word = 0;
+    if (io_.random(io_.context, word)) { failure_ = io; return failure_; }
+    result = word;
+    return 0;
 }
 err_t lwip_stack::configure(netif* interface) {
     interface->name[0] = 'x'; interface->name[1] = 'n';
@@ -71,6 +85,7 @@ void lwip_stack::shutdown() {
 }
 err_t lwip_stack::link_output(netif* interface, pbuf* packet) {
     auto& self = *static_cast<lwip_stack*>(interface->state);
+    if (self.failure_) return ERR_IF;
     if (!packet || !packet->tot_len || packet->tot_len > 1514) return ERR_BUF;
     u8 frame[1514];
     const u16_t copied = pbuf_copy_partial(packet, frame, packet->tot_len, 0);

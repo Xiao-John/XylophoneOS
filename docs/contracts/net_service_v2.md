@@ -88,8 +88,11 @@ FIN成功接管后的远端确认和TCP状态回收继续遵循lwIP计时器；�
 沿用设备契约。停止失败由内核quarantine处理，不冒称IOMMU隔离。
 
 `sys_now` 是sys46纳秒向下取整到毫秒后取低32位，lwIP原生处理32位回绕；不校准新时基。
-TCP序列随机源调用sys63，初始化熵失败则拒绝启动，不以时钟伪造随机数。NO_SYS单线程
-服务不依赖pthread/TLS。DNS/DHCP/TLS与POSIX socket适配分别属于N4/N5/N6。
+适配器随机源调用sys63，初始化熵失败则拒绝启动。lwIP当前TCP初始序列仍走上游
+`tcp_next_iss`的计数默认实现；此前“TCP序列随机源调用sys63”的说明有误，ISN
+加固须独立实现/验收。运行期熵错误锁存io后不再出帧；D1内部DNS准入使用可返回
+错误的熵接口和有限抽取预算，见[N4提案](network_n4_v1_proposal.md#54-d1-当前实现边界)。
+NO_SYS单线程服务不依赖pthread/TLS，DNS/DHCP/TLS与POSIX socket分别按N4/N5/N6推进。
 
 ## 验收与交接
 

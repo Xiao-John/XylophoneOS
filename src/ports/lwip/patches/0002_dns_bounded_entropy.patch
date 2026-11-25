@@ -1,0 +1,244 @@
+From e75a2edc887e980922d862349d306e1931103fc2 Mon Sep 17 00:00:00 2001
+From: Licooool <348150257+Licooool@users.noreply.github.com>
+Date: Wed, 25 Nov 2026 05:20:08 -0700
+Subject: [PATCH] dns: bound random admission and propagate entropy failures
+
+XOS N4-D1 local additions: Apache-2.0. The upstream DNS code and quoted context retain BSD-3-Clause terms and original notices. Production DNS/DHCP remain disabled.
+---
+ src/core/dns.c | 127 ++++++++++++++++++++++++++++++-------------------
+ 1 file changed, 77 insertions(+), 50 deletions(-)
+
+diff --git a/src/core/dns.c b/src/core/dns.c
+index e1bedca..5b24a7d 100644
+--- a/src/core/dns.c
++++ b/src/core/dns.c
+@@ -108,6 +108,19 @@ static u16_t dns_txid;
+ #endif
+ #endif
+ 
++/** Ports may return an entropy-source error instead of inventing a random
++ * word. Zero remains a valid transaction ID. The default preserves lwIP's
++ * callback contract for ports without a checked entropy provider. */
++#ifndef DNS_RANDOM_TRY
++#define DNS_RANDOM_TRY(value) (*(value) = (u16_t)DNS_RAND_TXID(), ERR_OK)
++#endif
++#ifndef DNS_MAX_RANDOM_ATTEMPTS
++#define DNS_MAX_RANDOM_ATTEMPTS 32
++#endif
++#if DNS_MAX_RANDOM_ATTEMPTS < 1 || DNS_MAX_RANDOM_ATTEMPTS > 255
++#error DNS_MAX_RANDOM_ATTEMPTS must be in the range 1..255
++#endif
++
+ /** Limits the source port to be >= 1024 by default */
+ #ifndef DNS_PORT_ALLOWED
+ #define DNS_PORT_ALLOWED(port) ((port) >= 1024)
+@@ -294,7 +307,6 @@ static void dns_call_found(u8_t idx, ip_addr_t *addr);
+ /* DNS variables */
+ static struct udp_pcb        *dns_pcbs[DNS_MAX_SOURCE_PORTS];
+ #if ((LWIP_DNS_SECURE & LWIP_DNS_SECURE_RAND_SRC_PORT) != 0)
+-static u8_t                   dns_last_pcb_idx;
+ #endif
+ static u8_t                   dns_seqno;
+ static struct dns_table_entry dns_table[DNS_TABLE_SIZE];
+@@ -856,26 +868,32 @@ overflow_return:
+ 
+ #if ((LWIP_DNS_SECURE & LWIP_DNS_SECURE_RAND_SRC_PORT) != 0)
+ static struct udp_pcb *
+-dns_alloc_random_port(void)
++dns_alloc_random_port(err_t *error)
+ {
+-  err_t err;
++  u16_t attempt;
+   struct udp_pcb *pcb;
+ 
++  *error = ERR_MEM;
+   pcb = udp_new_ip_type(IPADDR_TYPE_ANY);
+   if (pcb == NULL) {
+-    /* out of memory, have to reuse an existing pcb */
+     return NULL;
+   }
+-  do {
+-    u16_t port = (u16_t)DNS_RAND_TXID();
++  for (attempt = 0; attempt < DNS_MAX_RANDOM_ATTEMPTS; ++attempt) {
++    u16_t port;
++    *error = DNS_RANDOM_TRY(&port);
++    if (*error != ERR_OK) {
++      break;
++    }
+     if (DNS_PORT_ALLOWED(port)) {
+-      err = udp_bind(pcb, IP_ANY_TYPE, port);
++      *error = udp_bind(pcb, IP_ANY_TYPE, port);
+     } else {
+-      /* this port is not allowed, try again */
+-      err = ERR_USE;
++      *error = ERR_USE;
+     }
+-  } while (err == ERR_USE);
+-  if (err != ERR_OK) {
++    if (*error != ERR_USE) {
++      break;
++    }
++  }
++  if (*error != ERR_OK) {
+     udp_remove(pcb);
+     return NULL;
+   }
+@@ -884,41 +902,24 @@ dns_alloc_random_port(void)
+ }
+ 
+ /**
+- * dns_alloc_pcb() - allocates a new pcb (or reuses an existing one) to be used
++ * dns_alloc_pcb() - allocates a dedicated pcb to be used
+  * for sending a request
+  *
+  * @return an index into dns_pcbs
+  */
+ static u8_t
+-dns_alloc_pcb(void)
++dns_alloc_pcb(err_t *error)
+ {
+   u8_t i;
+-  u8_t idx;
+ 
++  *error = ERR_MEM;
+   for (i = 0; i < DNS_MAX_SOURCE_PORTS; i++) {
+     if (dns_pcbs[i] == NULL) {
+-      break;
+-    }
+-  }
+-  if (i < DNS_MAX_SOURCE_PORTS) {
+-    dns_pcbs[i] = dns_alloc_random_port();
+-    if (dns_pcbs[i] != NULL) {
+-      /* succeeded */
+-      dns_last_pcb_idx = i;
+-      return i;
+-    }
+-  }
+-  /* if we come here, creating a new UDP pcb failed, so we have to use
+-     an already existing one (so overflow is no issue) */
+-  for (i = 0, idx = (u8_t)(dns_last_pcb_idx + 1); i < DNS_MAX_SOURCE_PORTS; i++, idx++) {
+-    if (idx >= DNS_MAX_SOURCE_PORTS) {
+-      idx = 0;
+-    }
+-    if (dns_pcbs[idx] != NULL) {
+-      dns_last_pcb_idx = idx;
+-      return idx;
++      dns_pcbs[i] = dns_alloc_random_port(error);
++      return dns_pcbs[i] != NULL ? i : DNS_MAX_SOURCE_PORTS;
+     }
+   }
++  /* Exhaustion must not silently share another query's receive endpoint. */
+   return DNS_MAX_SOURCE_PORTS;
+ }
+ #endif /* ((LWIP_DNS_SECURE & LWIP_DNS_SECURE_RAND_SRC_PORT) != 0) */
+@@ -989,25 +990,31 @@ dns_call_found(u8_t idx, ip_addr_t *addr)
+ }
+ 
+ /* Create a query transmission ID that is unique for all outstanding queries */
+-static u16_t
+-dns_create_txid(void)
++static err_t
++dns_create_txid(u16_t *result)
+ {
+   u16_t txid;
++  u16_t attempt;
+   u8_t i;
++  err_t err;
+ 
+-again:
+-  txid = (u16_t)DNS_RAND_TXID();
+-
+-  /* check whether the ID is unique */
+-  for (i = 0; i < DNS_TABLE_SIZE; i++) {
+-    if ((dns_table[i].state == DNS_STATE_ASKING) &&
+-        (dns_table[i].txid == txid)) {
+-      /* ID already used by another pending query */
+-      goto again;
++  for (attempt = 0; attempt < DNS_MAX_RANDOM_ATTEMPTS; ++attempt) {
++    err = DNS_RANDOM_TRY(&txid);
++    if (err != ERR_OK) {
++      return err;
++    }
++    for (i = 0; i < DNS_TABLE_SIZE; i++) {
++      if ((dns_table[i].state == DNS_STATE_ASKING) &&
++          (dns_table[i].txid == txid)) {
++        break;
++      }
++    }
++    if (i == DNS_TABLE_SIZE) {
++      *result = txid;
++      return ERR_OK;
+     }
+   }
+-
+-  return txid;
++  return ERR_USE;
+ }
+ 
+ /**
+@@ -1047,7 +1054,7 @@ dns_check_entry(u8_t i)
+   switch (entry->state) {
+     case DNS_STATE_NEW:
+       /* initialize new entry */
+-      entry->txid = dns_create_txid();
++      /* The ID was checked before this entry became visible as ASKING. */
+       entry->state = DNS_STATE_ASKING;
+       entry->server_idx = 0;
+       entry->tmr = 1;
+@@ -1378,6 +1385,11 @@ next_answer:
+               dns_table[i].reqaddrtype = LWIP_DNS_ADDRTYPE_IPV4;
+             }
+             pbuf_free(p);
++            if (dns_create_txid(&dns_table[i].txid) != ERR_OK) {
++              dns_call_found(i, NULL);
++              dns_table[i].state = DNS_STATE_UNUSED;
++              return;
++            }
+             dns_table[i].state = DNS_STATE_NEW;
+             dns_check_entry(i);
+             return;
+@@ -1418,6 +1430,7 @@ dns_enqueue(const char *name, size_t hostnamelen, dns_found_callback found,
+   struct dns_table_entry *entry = NULL;
+   size_t namelen;
+   struct dns_req_entry *req;
++  err_t err;
+ #if ((LWIP_DNS_SECURE & LWIP_DNS_SECURE_NO_MULTIPLE_OUTSTANDING) != 0)
+   u8_t r;
+ #endif
+@@ -1520,13 +1533,13 @@ dns_enqueue(const char *name, size_t hostnamelen, dns_found_callback found,
+   entry->name[namelen] = 0;
+ 
+ #if ((LWIP_DNS_SECURE & LWIP_DNS_SECURE_RAND_SRC_PORT) != 0)
+-  entry->pcb_idx = dns_alloc_pcb();
++  entry->pcb_idx = dns_alloc_pcb(&err);
+   if (entry->pcb_idx >= DNS_MAX_SOURCE_PORTS) {
+     /* failed to get a UDP pcb */
+     LWIP_DEBUGF(DNS_DEBUG, ("dns_enqueue: \"%s\": failed to allocate a pcb\n", name));
+     entry->state = DNS_STATE_UNUSED;
+     req->found = NULL;
+-    return ERR_MEM;
++    return err;
+   }
+   LWIP_DEBUGF(DNS_DEBUG, ("dns_enqueue: \"%s\": use DNS pcb %"U16_F"\n", name, (u16_t)(entry->pcb_idx)));
+ #endif
+@@ -1535,6 +1548,20 @@ dns_enqueue(const char *name, size_t hostnamelen, dns_found_callback found,
+   entry->is_mdns = is_mdns;
+ #endif
+ 
++  err = dns_create_txid(&entry->txid);
++  if (err != ERR_OK) {
++    /* This call has not returned ERR_INPROGRESS: no callback may run.
++     * Discard only this admission's private PCB and unpublished request. */
++#if ((LWIP_DNS_SECURE & LWIP_DNS_SECURE_RAND_SRC_PORT) != 0)
++    udp_remove(dns_pcbs[entry->pcb_idx]);
++    dns_pcbs[entry->pcb_idx] = NULL;
++    entry->pcb_idx = DNS_MAX_SOURCE_PORTS;
++#endif
++    req->found = NULL;
++    entry->state = DNS_STATE_UNUSED;
++    return err;
++  }
++
+   dns_seqno++;
+ 
+   /* force to send query without waiting timer */

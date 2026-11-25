@@ -6,9 +6,12 @@ IPC exec 撤销和 [多应用客体验收](../work_log/ca46b580_network_multi_ap
 本提案不更改 shared 枚举、已分配 ABI 或生产 DNS/DHCP 开关。候选操作号须经主审、
 登记、共享头与 SDK/服务实现同步后才能调用。
 
-本轮只完成接口和生命周期设计、锁定 lwIP 的源码审阅及真实包级宿主 audit。
-八个 DNS 启用门槛尚未通过，见 [81c7b902](../work_log/81c7b902_n4_configuration_name_contract.md)。
-后续交付必须分别报告 DNS、DHCP 与各自子集的资格。
+C0 完成接口和生命周期设计、锁定 lwIP 源码审阅与包级 audit，记录八个启用门槛失败，
+见 [81c7b902](../work_log/81c7b902_n4_configuration_name_contract.md)。D1 已完成
+端点/直接答案校验与有界熵后端：43 项真实帧宿主用例及 ASan/UBSan、原 N2 的
+25+2 项普通与 sanitizer、preview 工具链的28对象编译通过，见
+[4e29c6b1](../work_log/4e29c6b1_network_dns_hardening.md)。D2 的取消/cache/config/错误分类、
+D3 客体与 DHCP 仍待完成；生产 DNS/DHCP 保持关闭，各子集资格分别报告。
 
 ## 1. 权限与兼容
 
@@ -163,9 +166,29 @@ transaction ID覆盖16位取值，源端口从当前可用的1024–65535范围�
 任何熵失败返回真实io并停止本次分配/发送，不能先发固定ID数据包再在poll末尾报错。
 失败前已分配的PCB/pbuf必须释放，服务既有fatal状态按统一shutdown路径处理。
 
-锁定上游的随机端口与ID循环没有次数上限，而当前XOS random_word在熵失败时
-锁存io并返回0。这两者组合会使DNS调用无法返回；先补可返回错误的内部熵接口和
-有界循环，再启用DNS。上游在端口分配失败时复用已有PCB的策略也须显式收紧。
+原始锁定上游的随机端口与ID循环没有次数上限，C0 已复现与旧XOS错误返回0组合后
+无法返回。D1 通过来源补丁与可返回错误的内部熵接口完成该处加固；原归档和 C0
+证据保留。每项准入的失败会回收该项PCB，耗尽时保持其他查询的独立端点。
+
+### 5.4 D1 当前实现边界
+
+D1 仅在测试配置编入 DNS。IPv4 接收同时核对当前接口单播目的地址、该查询实际
+PCB、server源地址与53端口、ID和完整question；广播/多播不能经ANY绑定绕过。
+完整answer section验证后才发布首个IN/A地址，所有owner须严格匹配query。
+压缩仅允许指向报文内先前位置，最多16次指针跳转、展开名最多255线字节；保留
+大小写不敏感匹配，并严格区分label边界。直接A子集接受多条同名A并返回首条；
+CNAME、未知类型/class、畸形或截断答案丢弃，查询继续等待。
+
+TC当前也是丢弃并保留pending；把截断、NODATA/NXDOMAIN等转换为准确对外错误，
+属于D2。该阶段还须完成末尾点规范化、512字节准入、绝对TTL/epoch及结果寿命、
+独立订阅取消、全局fatal/stop时注销所有既存DNS回调和PCB。D1只验证失败的新准入
+与已完成事务的回收；既存pending的全部退出/取消生命周期由D2/D3验收。
+
+内部`DNS_RANDOM_TRY`区分成功值0与熵错误；端口/ID分别最多32次抽取，遇熵错误
+立即返回`ERR_IF`并锁存stack io，碰撞预算耗尽为`ERR_USE`、无PCB为`ERR_MEM`。
+在返回`ERR_INPROGRESS`前失败时不调用callback、不发查询，回收本次独占PCB。
+普通网络适配器在fatal锁存后拒绝link_output，防止已存在UDP连接继续出帧。
+这是内部lwIP错误域；候选op10–14与新原生错误数值仍未分配。
 
 ## 6. DHCP 租约
 

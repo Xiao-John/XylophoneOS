@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT/'scripts'), str(ROOT/'tests')]
 from boot_smoke import Guest
 from make_work_disk import create_fat32
+from package_p2_verify_guest import quiet_maintenance_guest
 from process_smoke import resources
 from task_smoke import send_bytes, pump
 from xypm_format import canonical, require, sha_file
@@ -86,10 +87,7 @@ def main():
                 require(backend.info('/out/blocked') is None, 'blocked mutation escaped')
                 require(backend.export('/out/sentinel').read_bytes() == b'preserved', 'sentinel changed')
             guest = start()
-            begin = len(guest.output)
-            send_bytes(guest, b'audio stop\r')
-            guest.expect(b'audio: service stopped', start=begin, timeout=40)
-            guest.expect_supervisor(start=begin, timeout=40)
+            quiet_maintenance_guest(guest)
             baseline = resources(guest)
             command('exec-file /out/gate_probe normal', b'GATE_NORMAL')
             report['checks'].append('normal_start_after_clean_restart')

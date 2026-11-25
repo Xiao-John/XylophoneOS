@@ -18,7 +18,7 @@ from process_smoke import resources
 from task_smoke import send_bytes,pump
 from xypm_format import canonical,load_json,require,sha_file,verify_package
 from xypm_image import Disk,query_image
-from package_p2_verify_guest import fixtures,make_archive
+from package_p2_verify_guest import fixtures,make_archive,quiet_maintenance_guest
 
 
 def main():
@@ -40,7 +40,9 @@ def main():
                 sentinel=root/'sentinel';sentinel.write_bytes(b'user data');backend.command('import','/out/sentinel',sentinel)
             boot=root/'boot.img';shutil.copyfile(image,boot)
             def start():
-                g=Guest(boot,'package_p2_transactions',work_disk=disk,iso=True);g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=40);pump(g,1.5);return g
+                g=Guest(boot,'package_p2_transactions',work_disk=disk,iso=True);g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=40);pump(g,1.5)
+                quiet_maintenance_guest(g)
+                return g
             guest=start();baseline=resources(guest);report['baseline']=baseline
             def command(line,expected,timeout=300):
                 begin=len(guest.output);send_bytes(guest,line.encode()+b'\r');guest.expect(expected,start=begin,timeout=timeout);guest.expect_supervisor(start=begin,timeout=timeout);data=bytes(guest.output)[begin:];require(resources(guest)==baseline,'resources drift after '+line);return data

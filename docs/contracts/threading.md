@@ -137,19 +137,66 @@ joinable线程），全局最多32个线程槽。进程仍共享原256 MiB用户
 
 ### 退出与回收
 
+### 有界进程清理窗口（sys51 mode 1）
+
+2026-11-25 增量：正常退出的调用线程需要运行 TLS 析构、atexit 和 stdio flush；
+提前停止其他线程会留下它们持有的运行库锁。用户态无法原子关闭线程创建入口并
+保证退出所有者失去进展后仍回收进程。因此 sys51 增加通用的、有截止时间的清理
+窗口，内核仅管理进程生命周期，不解释 libc 对象或调用用户回调。
+
+`sys_process_begin_exit(mode, request, 0)` 显式选择：
+
+- mode 0：保留原有 `(0,0,0)` 行为，唯一所有者立即停止、回收其他线程。
+  现有 newlib 运行库继续使用此模式。
+- mode 1：`request` 指向 32 字节 `process_exit_cleanup_request`：16 字节
+  `thread_header {version=1,size=32,reserved=0}`、`u64 deadline_ns`、
+  `i32 timeout_status`、`u32 reserved=0`。deadline 使用统一单调纳秒时域，必须
+  严格晚于当前时间，距离不超过 30 秒，禁止无限值；timeout_status 必须非零。
+  内核完整复制和校验后原子登记当前 TID 为唯一退出所有者并关闭线程 profile、
+  prepare/start 和本进程 exec/fork 入口。现存线程保持可调度，IPC、文件 I/O、
+  malloc 所需 VM、wait/wake、线程正常清理和 join 保持有效。
+
+窗口期间不设置通用 `closing` 标记，避免将清理所需 IPC/VM 误当成已死亡请求。
+已经在“最后线程”退出握手中领取收尾责任的同一线程可进入 mode 1；其余线程
+已经安全停止。重复 mode 1 由同一所有者调用时返回成功，保留最早的截止时间与
+超时状态，不能延长窗口。其他线程获得 `thread_error_busy`，不能抢占所有权。
+glibc 并发 exit 的非所有者通过原生 sleep 阻塞等待整个进程终止；递归 exit
+仍由原所有者执行上游递归退出处理。
+
+所有者完成回调/flush 后调用 sys_exit，内核停止全部上下文并按原有回收路径
+发布一次指定退出状态。现存工作线程自行 return/pthread_exit 时仍完成自己的
+TLS/TSD/运行库清理，并仅结束该线程。所有者改为 thread_exit 会以登记的非零
+超时状态结束整个进程；所有者或其他线程 fault、监督 kill 和显式 `_exit` 保留
+原有整进程强制终止语义。截止时间到达时内核同样强制终止，发布 timeout_status，
+启用跟踪时记录 `event=exit_cleanup_timeout`；不在强制停止后继续用户回调。
+
+未知 mode、错误 version/size/reserved、无效 deadline/状态返回
+`process_error_invalid`；不可读请求返回 `thread_error_address`；已关闭且调用者
+不是退出所有者返回 `process_error_state`。失败不改变退出所有权、截止时间或
+线程创建能力。每次内核时钟调度边界检查至多 8 个进程，无轮询等待和新增配额。
+旧内核拒绝 mode 1；新 glibc 运行库报告失败并退出 127，不回退到先停止持锁者
+再运行回调的路径。回滚须同时回滚 mode 1 消费方，旧 mode 0 二进制保持可用。
+
+glibc 静态候选为正常 exit/quick_exit 选择 30 秒窗口和失败状态 127。应用负责
+回调及锁依赖的正确性；不释放锁、回调环或无限执行会得到明确的超时失败。
+其他线程的用户 TLS/TSD 析构仅在其主动 return/pthread_exit 时执行；要求全部
+应用工作完成的程序仍需自行协调和 join。该界限与进程结束时实际页面、句柄、
+等待和线程资源回收分别验收。
+
 | 触发 | 首版语义 |
 |---|---|
 | 线程入口 return / pthread_exit(value) | 只结束调用线程，执行本线程正常清理；join观察同一个value |
-| main return / exit(status) | 进程正常退出；阻止创建，停止并等待其他线程脱离执行，调用者TLS清理后执行进程atexit/fini/stdio收尾，最终发布一次状态 |
+| main return / exit(status) | 进程正常退出；mode 1 先关闭线程创建，保持现有线程运行以释放锁，调用者 TLS/atexit/fini/stdio 收尾后统一停止回收；mode 0 保留旧运行库顺序 |
 | _exit、监督kill/Escape、任意线程致命异常 | 结束整个进程并回收，不执行用户析构；故障保留实际TID/PID、向量和地址 |
 | 最后一个线程正常pthread_exit | 进程退出0；SDK与内核退出仲裁保证其他线程清理已结束，再执行一次进程正常收尾 |
 
-进程关闭阶段禁止 prepare/start；退出并发由唯一仲裁者发布终态。最后线程的
+进程关闭或清理窗口禁止 prepare/start；退出并发由唯一仲裁者发布终态。最后线程的
 “确认最后 + 禁止新线程 + 领取进程收尾责任”必须原子完成，不能在用户态无锁
 数线程。实现需提供对应退出握手；内核绝不直接调用用户析构。exit调用者正常
-清理不保证成功：其他已停止线程可能持有用户锁；首版不承诺exit修复死锁或运行
-其他线程的析构，_exit/监督取消是明确的强制终止路径。用户自行join后exit才有
-完整应用级清理保证；不能为掩盖死锁把析构伪装成已执行。
+清理依赖应用锁和回调能取得进展；旧 mode 0 可能留下已停止线程持有的锁，
+mode 1 保持现存线程运行并用 deadline 终止无法完成的清理。运行库不修复任意
+应用死锁或替其他线程运行析构，_exit/监督取消是强制终止路径。用户协调并 join
+全部线程后才能保证那些线程的应用级清理已经完成。
 
 joinable默认；同进程一个join者取得回收权，返回时目标TLS/reent清理已结束、
 执行已停止，结果只消费一次，栈/TLS可以安全回收。自join报EDEADLK；无效ID报

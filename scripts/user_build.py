@@ -236,6 +236,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
             "legacy_archives": {"lib/" + name: digest((sdk / "lib" / name).read_bytes())
                                 for name in ("libc.a", "libm.a")}},
         "configuration": TARGET, "runtime_model": "single",
+        "process_exit_cleanup": {"syscall": 51, "mode": 1, "request_version": 1,
+                                 "deadline_max_ns": 30000000000, "guest_qualification": "not_run"},
         "display_extensions": {"version": 1, "syscalls": [65, 66], "pixel_format": "XRGB8888", "surface_count": 1},
         "vm_extensions": {"version": 1, "syscall": 67, "status": "implemented_unqualified"},
         "cpu_time": {"version": 1, "syscall": 89, "status": "implemented_unqualified",

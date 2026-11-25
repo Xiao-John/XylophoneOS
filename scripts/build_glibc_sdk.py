@@ -77,6 +77,8 @@ def main():
         parser.error('missing tools: ' + ', '.join(missing))
     output.mkdir(parents=True)
     report = {'status': 'building', 'profile': 'xos_glibc_static_research_v1',
+              'process_exit_cleanup': {'syscall': 51, 'mode': 1, 'request_version': 1,
+                                       'deadline_ns': 30000000000, 'timeout_status': 127},
               'source_sha256': sha(archive),
               'source_authentication': lock['signature_verification'],
               'tools': tools, 'sanitized_environment': removed,

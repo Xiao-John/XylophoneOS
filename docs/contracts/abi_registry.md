@@ -30,6 +30,10 @@
 
 ## syscall逐项登记
 
+sys51 显式 mode 1 为有界进程清理窗口，32 字节版本 1 请求，旧 mode 0 保持。
+独占退出责任、30 秒单调 deadline 上限及失败/回滚语义见
+[线程契约](threading.md#有界进程清理窗口sys51-mode-1)。
+
 sys60 试行 bit32 扩展 entry 可显式保留通用通道，布局见 `process_exec_channel_entry`
 和 [通道契约](channel.md)；默认 ABI 不变，尚未客体验证。
 sys81 试行 action 4 对最多四个通用端点做原子检查与等待，布局见

@@ -10,6 +10,14 @@ inline i64 info(thread_info& value) { return sdk::syscall(sys_thread_info, reint
 inline u64 self() { thread_info value{}; return info(value) == 0 ? value.tid : 0; }
 inline u64 clock() { return static_cast<u64>(sdk::syscall(sys_clock_monotonic)); }
 inline i64 sleep_until(u64 deadline) { return sdk::syscall(sys_sleep_until, deadline); }
+// Claim a bounded process cleanup window. Peers retain execution/IO until the
+// owner calls sys_exit or the deadline forces the supplied nonzero status.
+inline i64 begin_process_cleanup(u64 deadline, i32 timeout_status) {
+    process_exit_cleanup_request request{{thread_abi_version, sizeof(request), 0},
+        deadline, timeout_status, 0};
+    return sdk::syscall(sys_process_begin_exit,
+        static_cast<u64>(process_exit_mode::cleanup_window), reinterpret_cast<u64>(&request));
+}
 inline i64 wait(u32* address, u32 expected, u64 deadline = thread_deadline_infinite) {
     thread_wait_request request{{thread_abi_version, sizeof(thread_wait_request), 0},
         reinterpret_cast<u64>(address), deadline, expected, 0};

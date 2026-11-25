@@ -179,7 +179,11 @@ supervisor 内置最小编辑器：正文行原样追加（空行、连续空格
 任意内核尺寸可用）；工作盘仍是 `if=ide,index=0,media=disk`。
 file-backed ISO 的 no-emulation boot image 只有 boot sector + loader，
 `KERNEL.BIN`/`DASH.ELF` 由 loader 经 ATAPI/ISO9660 读入；boot image 不再承载
-kernel。原嵌入式 kernel ISO 把 boot sector、loader 和 kernel 一起装进初始映像，
+kernel。加载器使用 PIT channel 2 为每次 ATAPI 状态等待提供约一秒上限，使
+光盘读取等待按实际经过的引导时间计量。该计时在进入内核前结束，保留 PIT
+channel 0 供内核初始化。读取超时报告 `BOOT_ERROR: iso_read`，目录格式错误
+报告 `BOOT_ERROR: iso_directory`。
+原嵌入式 kernel ISO 把 boot sector、loader 和 kernel 一起装进初始映像，
 受真实模式 640 KiB 窗口限制：该 legacy 引导产物已随 legacy 废除移除，
 旧的嵌入式 ISO / 软盘内核启动目标一并删除，裸盘/软盘内核镜像不再生成，
 仅 `real_mode.img` 保留 16 位软盘练习路径。

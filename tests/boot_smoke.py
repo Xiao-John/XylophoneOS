@@ -18,7 +18,7 @@ from run_qemu import MACHINE, qemu_command
 
 
 class Guest:
-    def __init__(self, image, name, *, cpu="qemu64,+rdrand", debug_port=None, work_disk=None, iso=None, network=False):
+    def __init__(self, image, name, *, cpu="qemu64,+rdrand", debug_port=None, work_disk=None, iso=None, network=False, qmp_enabled=True):
         # Boot medium follows the image suffix unless the caller overrides:
         # .iso files need -cdrom, everything else (real_mode.img) stays floppy.
         if iso is None:
@@ -26,7 +26,7 @@ class Guest:
         self.name = name
         self.output = bytearray()
         self.temp = tempfile.TemporaryDirectory(prefix="xos_")
-        self.qmp_path = str(Path(self.temp.name) / "qmp.sock")
+        self.qmp_path = str(Path(self.temp.name) / "qmp.sock") if qmp_enabled else None
         self.command = qemu_command(image, qmp=self.qmp_path, cpu=cpu, debug_port=debug_port,
                                     work_disk=work_disk, iso=iso, network=network)
         self.stderr = open(ROOT / f"build/{name}_qemu.log", "wb")
@@ -82,6 +82,8 @@ class Guest:
         self.expect(b"xos> ", start=start)
 
     def qmp(self, execute, arguments=None):
+        if self.qmp_path is None:
+            raise RuntimeError("QMP is disabled for this serial-only guest")
         if self.qmp_socket is None:
             self.qmp_socket = socket.socket(socket.AF_UNIX)
             self.qmp_socket.settimeout(5)

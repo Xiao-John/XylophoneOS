@@ -12,6 +12,7 @@ import subprocess
 import sys
 from toolchain import LOCK, TARGET, COMMON_FLAGS, X86_FLAGS, audit, tool, output
 from user_build import build_users
+from lwip_service_build import configuration as network_configuration
 
 ROOT = Path(__file__).resolve().parents[1]
 BUILD = ROOT / "build"
@@ -110,7 +111,8 @@ def main():
                                       "ncurses_supervisor_probe": args.ncurses_supervisor_probe,
                                       "clock_irq_probe": args.clock_irq_probe, "vm1_probe": args.vm1_probe,
                                       "cow1_probe": args.cow1_probe, "cow_fork": not args.eager_fork,
-                                      "virtio_gpu": gpu_config}, sort_keys=True).encode())
+                                      "virtio_gpu": gpu_config,
+                                      "network_service": network_configuration(ROOT)}, sort_keys=True).encode())
     build_id = source_digest[:16]
     eggs = int(TARGET["easter_eggs"])
     (BUILD / "build_info.inc").write_text(

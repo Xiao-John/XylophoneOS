@@ -3,6 +3,9 @@
 #include <xos/channel_io.hpp>
 #include <xos/text.hpp>
 #include "../drivers/virtio_net.hpp"
+#ifdef XOS_NET_STACK
+#include "../network/service_loop.hpp"
+#endif
 
 namespace {
 using namespace xos;
@@ -66,7 +69,7 @@ void close_session(ipc_channel& channel) {
     if (channel.receive) (void)sdk::ipc_channel_close(channel.receive);
     channel = {};
 }
-i64 serve() {
+i64 serve_raw() {
     const i64 published = sdk::ipc_name_publish(net::service_name);
     if (published) return published;
     sdk::print("[net] ready user_driver=1 raw_ethernet=1\n");
@@ -133,14 +136,25 @@ finished:
 extern "C" int xos_user_main(const xos::startup_info* startup) {
     using namespace xos;
     const auto* argv = reinterpret_cast<const char* const*>(startup->argv);
-    if (startup->argc != 2 || (!sdk::equal(argv[1], "probe") && !sdk::equal(argv[1], "serve"))) return 2;
+    if (startup->argc != 2 || (!sdk::equal(argv[1], "probe") && !sdk::equal(argv[1], "serve") &&
+        !sdk::equal(argv[1], "serve_raw"))) return 2;
+#ifndef XOS_NET_STACK
+    if (sdk::equal(argv[1], "serve")) {
+        sdk::print("[net] native_stack_unavailable: build with XOS_LWIP_SOURCE_ARCHIVE\n"); return 2;
+    }
+#endif
     u64 grant = 0;
     const i64 received = bootstrap(grant);
     if (received) { result_line("[net] bootstrap=", received); return 2; }
     const i64 initialized = nic.initialize(grant);
     if (initialized) { result_line("[net] initialization=", initialized); return 3; }
     const bool probing = sdk::equal(argv[1], "probe");
-    const i64 result = probing ? probe() : serve();
+    i64 result = 0;
+    if (probing) result = probe();
+    else if (sdk::equal(argv[1], "serve_raw")) result = serve_raw();
+#ifdef XOS_NET_STACK
+    else result = user::network::serve(controller, nic);
+#endif
     const i64 closed = nic.shutdown();
     result_line("[net] close=", closed);
     if (!result && !closed && probing) sdk::print("NET_USER_DRIVER_PASS\n");

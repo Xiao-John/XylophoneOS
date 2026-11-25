@@ -1,0 +1,3 @@
+# Select the x86-64 NPTL thread descriptor, TLS layout, and x86 ABI helpers.
+x86_64/nptl
+x86/nptl

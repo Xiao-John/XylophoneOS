@@ -1,0 +1,11 @@
+--- a/csu/Makefile
++++ b/csu/Makefile
+@@ -228,0 +229,6 @@
++# XOS currently emits no GNU ABI note; no GNU OS identifier is assigned.
++ifeq ($(config-os),xos)
++$(objpfx)abi-tag.h: $(..)sysdeps/xos/abi-tag.h
++	$(make-target-directory)
++	cp $< $@
++else
+@@ -246,0 +253 @@
++endif

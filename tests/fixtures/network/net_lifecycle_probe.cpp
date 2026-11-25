@@ -167,29 +167,47 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
         message input{}, reply{}; input.action = operation::send; input.object = handle; input.length = 32;
         __builtin_memcpy(input.data, argv[4], 32);
         require(client.request(input, reply) == 32, "pending-send");
-        // Wait for the echo without consuming the successful response. The
-        // service then owns a reply containing this application's secret.
+        // The host withholds the only echo until this negative control has
+        // observed an empty UDP queue. A readable IPC endpoint alone is not
+        // evidence of a payload: would_block replies are readable too.
+        input = {}; input.action = operation::receive; input.object = handle; input.flags = 31;
+        const i64 empty = client.request(input, reply);
+        require(empty == would_block && !reply.length && !reply.flags, "pending-empty", empty);
+        marker("NET_PENDING_EMPTY", handle);
+        // UDP's existing short-buffer result retains the complete datagram.
+        // No other request consumes this connection's sole 32-byte nonce.
+        const u64 echo_deadline = now() + 5'000'000'000ull;
         for (;;) {
-            input = {}; input.action = operation::receive; input.object = handle; input.flags = 32;
-            client.send(input);
-            while (sdk::ipc_wait(client.channel.receive, ipc_wait_mode::try_receive) == process_error_would_block) {
-                require(now() < input.deadline, "pending-reply-timeout"); sleep_ns(1'000'000);
-            }
-            // The host echoes immediately; allow a preceding would_block by
-            // consuming one response first, then request a second fresh echo.
-            const i64 got = client.receive(input, reply);
+            input = {}; input.action = operation::receive; input.object = handle; input.flags = 31;
+            input.deadline = echo_deadline;
+            const i64 got = client.request(input, reply);
             if (got == would_block) { sleep_ns(1'000'000); continue; }
-            require(!got && reply.length == 32, "pending-prime", got); break;
+            require(got == buffer_too_small && !reply.length && reply.flags == 32 && reply.object == handle,
+                    "pending-datagram-retained", got);
+            break;
         }
-        input = {}; input.action = operation::send; input.object = handle; input.length = 32;
-        __builtin_memcpy(input.data, argv[4], 32); require(client.request(input, reply) == 32, "pending-resend");
-        sleep_ns(50'000'000);
+        const u64 pending_began = now();
         input = {}; input.action = operation::receive; input.object = handle; input.flags = 32; client.send(input);
-        while (sdk::ipc_wait(client.channel.receive, ipc_wait_mode::try_receive) == process_error_would_block) {
-            require(now() < input.deadline, "pending-reply-timeout"); sleep_ns(1'000'000);
+        for (;;) {
+            const i64 ready = sdk::ipc_wait(client.channel.receive, ipc_wait_mode::try_receive);
+            if (!ready) break;
+            require(ready == process_error_would_block && now() < input.deadline, "pending-reply-timeout", ready);
+            sleep_ns(1'000'000);
         }
-        marker("NET_PENDING_READY", handle);
-        (void)client.wait_closed(5'000'000'000ull); client.close();
+        // Legacy sys5 rejects a short output buffer before copying or consuming
+        // the queued message. Only the successful receive can have 96 bytes;
+        // all errors above have the 64-byte header and would be consumed here.
+        __builtin_memset(&reply, 0xa5, sizeof(reply));
+        const i64 short_read = sdk::ipc_recv(client.channel.receive, &reply, header_bytes + 31);
+        require(short_read == -2, "pending-payload-not-header", short_read);
+        const auto* untouched = reinterpret_cast<const u8*>(&reply);
+        for (u32 i = 0; i < sizeof(reply); ++i) require(untouched[i] == 0xa5, "pending-buffer-unchanged");
+        require(!sdk::ipc_wait(client.channel.receive, ipc_wait_mode::try_receive), "pending-still-queued");
+        marker("NET_PENDING_READY", handle, header_bytes + 32);
+        (void)client.wait_closed(5'000'000'000ull);
+        const u64 revoked_after = now() - pending_began;
+        require(revoked_after < reply_timeout_ns, "pending-revoked-before-timeout", revoked_after);
+        client.close();
         // A fresh IPC pair can be allocated before admission; the first
         // authenticated reply must still fail for a revoked PID.
         const i64 reconnected = client.connect(service);
@@ -201,7 +219,7 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
             require(result == ipc_error_broken || result == -1 || result == process_error_denied,
                     "revoked-pid-reconnected", result);
         }
-        marker("NET_REVOKED_PASS"); return 0;
+        marker("NET_REVOKED_PASS", revoked_after); return 0;
     }
     if (sdk::equal(argv[1], "stall")) {
         message input{}; input.action = operation::information; client.send(input);

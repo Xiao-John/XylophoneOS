@@ -21,6 +21,7 @@ from task_smoke import send_bytes, pump
 from work_disk import transfer
 from xos_app import tree_receipt
 from build_net_transport_probe import INPUTS
+from net_tcp_window_peer import TcpWindowPeer
 
 
 def sha(path):
@@ -44,7 +45,7 @@ def main():
               'lifecycle_runner': 'tests/net_service_guest.py'}
     if not args.dash:
         report['not_run'].append('dash_shell')
-    guest = None
+    guest, window_peer = None, None
 
     def restored(expected):
         for _ in range(20):
@@ -340,16 +341,68 @@ def main():
             if b'[net] close=0' not in stopped or b'kind=exited code=0' not in stopped:
                 raise AssertionError('replacement reset/close failure')
             restored(before_service); report['checks'].append('service_restart_and_resource_baseline')
+            # A second NIC backend gives the private peer direct control of
+            # TCP receive windows. The ordinary user-network exchanges above
+            # remain a separate host-socket compatibility regression.
+            (out / 'user_network.serial.log').write_bytes(guest.output)
+            guest.close(); guest = None
+            window_peer = TcpWindowPeer()
+            report['window_peer_sha256'] = sha(ROOT / 'tests/net_tcp_window_peer.py')
+            report['controlled_closes'] = []
+            guest = Guest(system / 'xos-install.iso', str(out.relative_to(ROOT / 'build')) + '/window_guest',
+                          iso=True, network=True, work_disk=disk, qmp_enabled=not args.serial_only,
+                          network_capture=out / 'window_network.pcap', network_peer_port=window_peer.port)
+            report['window_qemu_command'] = guest.command
+            guest.expect(b'xos64> ', timeout=60); send_bytes(guest, b'run\r')
+            guest.expect_supervisor(trace=True, timeout=60)
+            command(guest, 'demo quiet', b'demo tasks'); pump(guest, 0.2)
+            command(guest, 'audio stop', b'audio: service stopped')
+            warmup = command(guest, 'net-probe 41', b'NET_USER_DRIVER_PASS', timeout=60)
+            if b'[net] close=0' not in warmup:
+                raise AssertionError('packet NIC warmup reset failed')
+            before_service = resources(guest)
+            pid = start_service(); baseline = resources(guest)
+            for shell in (['xsh', 'dash'] if args.dash else ['xsh']):
+                for mode in ('queued', 'drained'):
+                    nonce, challenge = secrets.token_hex(16), secrets.token_bytes(32)
+                    port, state = window_peer.begin(mode, nonce, challenge, shell)
+                    report['controlled_closes'].append(state)
+                    prefix = 'exec-file /bin/netprobe.elf' if shell == 'xsh' else '/bin/dash /tests/netprobe.sh'
+                    output = command(guest, f'{prefix} tcp_{mode} {pid} {port} {nonce}', b'kind=exited code=', timeout=90)
+                    expected = b'NET2_TCP bytes=32 data=' + challenge.hex().encode()
+                    accepted = 4096 if mode == 'queued' else 8192
+                    marker = f'NET2_TCP_{mode.upper()}_CLOSE accepted={accepted}'.encode()
+                    if (expected not in output or marker not in output or b'NET2_GUEST_PASS' not in output or
+                            b'kind=exited code=0' not in output):
+                        raise AssertionError(output[-4000:])
+                    window_peer.finish(port)
+                    restored(baseline)
+                    report['checks'].append(f'{shell}_tcp_{mode}_controlled_window_close_and_resources')
+            stopped = command(guest, 'net-stop', b'kind=exited code=', timeout=60)
+            if b'[net] close=0' not in stopped or b'kind=exited code=0' not in stopped:
+                raise AssertionError('packet service reset/close failure')
+            restored(before_service)
+            if window_peer.error:
+                raise AssertionError(window_peer.error)
             report['status'] = 'passed'
     except (Exception, SystemExit) as error:
         report['status'] = 'not_run' if guest is None else 'failed'
         report['error'] = str(error)
         raise
     finally:
+        if window_peer:
+            try:
+                window_peer.close()
+            except Exception as error:
+                report['status'], report['cleanup_error'] = 'failed', str(error)
+            if window_peer.error:
+                report['status'], report['window_peer_error'] = 'failed', window_peer.error
         if guest:
             (out / 'guest.serial.log').write_bytes(guest.output); guest.close()
         report['evidence_files'] = {path.name: sha(path) for path in out.iterdir() if path.is_file()}
         (out / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
+    if report['status'] != 'passed':
+        raise AssertionError(report.get('window_peer_error', report.get('cleanup_error', 'transport qualification failed')))
     print('PASS native service HTTP/UDP fresh challenge guest')
 
 

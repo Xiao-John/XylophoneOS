@@ -74,19 +74,23 @@ for flow in transport['controlled_closes']:
     challenges = [p for p in peer if hashlib.sha256(p['data']).hexdigest() == flow['challenge_sha256']]
     assert len(challenges) == 1 and len(challenges[0]['data']) == 32
     challenge = challenges[0]
-    expected, observed = nonce * (1 + count // 32), {}
+    expected = nonce * (1 + count // 32)
+    fins = [p for p in client if p['flags'] & 1]
+    assert fins and all((p['sequence'] + len(p['data'])) & MASK == (base + len(expected)) & MASK for p in fins)
+    fin = min(p['frame'] for p in fins)
+    observed, payloads = set(), []
     for packet in client:
         if not packet['data']:
             continue
         start = (packet['sequence'] - base) & MASK
         end = start + len(packet['data'])
         assert end <= len(expected) and packet['data'] == expected[start:end]
-        observed.update(enumerate(packet['data'], start))
-    assert bytes(observed[i] for i in range(len(expected))) == expected
+        frame = packet['frame']
+        payloads.append((frame, start, end))
+        if frame <= fin:
+            observed.update(range(start, end))
+    assert len(observed) == len(expected)
     assert hashlib.sha256(expected).hexdigest() == flow['request_sha256']
-    fins = [p for p in client if p['flags'] & 1]
-    assert fins and all((p['sequence'] + len(p['data'])) & MASK == (base + len(expected)) & MASK for p in fins)
-    fin = min(p['frame'] for p in fins)
     audit = {'mode': flow['mode'], 'shell': flow['shell'], 'peer_port': port, 'challenge_frame': challenge['frame'],
              'close_barrier_frame': barrier, 'client_fin_frame': fin, 'verified_payload_bytes': count}
     if flow['mode'] == 'queued':
@@ -98,14 +102,17 @@ for flow in transport['controlled_closes']:
         unsent = count - int(bool(probes))
         assert flow['close_barrier']['unsent_bytes_lower_bound'] == unsent
         release = next(p['frame'] for p in peer if p['frame'] > barrier and p['window'])
-        data = next(p['frame'] for p in client if p['frame'] > barrier and p['data'])
-        assert release < data <= fin
-        audit.update(window_release_frame=release, first_payload_after_release_frame=data,
+        after_barrier = [frame for frame, _, _ in payloads if barrier < frame <= fin]
+        assert after_barrier and all(release < frame for frame in after_barrier)
+        audit.update(window_release_frame=release, first_payload_after_release_frame=after_barrier[0],
                      probe_frames_before_barrier=len(probes), unsent_bytes_lower_bound_at_close=unsent)
     else:
         confirmation = next(p for p in peer if p['data'] == b'\xa5')
         assert confirmation['ack'] == (base + len(expected)) & MASK
         assert confirmation['frame'] < fin < barrier
+        confirmed = {offset for frame, start, end in payloads if frame < confirmation['frame']
+                     for offset in range(start, end)}
+        assert len(confirmed) == len(expected)
         audit.update(full_payload_ack_frame=confirmation['frame'], acknowledged_before_close=count)
     audits.append(audit)
 print(json.dumps({'status': 'passed', 'source_capture': 'original window_network.pcap decoded from base64',

@@ -25,10 +25,17 @@ bool nonce_valid(const char* value) {
     }
     return count == 32;
 }
-void result(const char* label, const u8* data) {
+void result(const char* label, const char* nonce, const u8* data) {
     constexpr char digits[] = "0123456789abcdef";
-    char text[128]{}; u32 count = 0;
+    char text[192]{}; u32 count = 0;
+    // A concurrent shell may already be echoing input on the current line.
+    text[count++] = '\n';
     for (; *label; ++label) text[count++] = *label;
+    constexpr char nonce_field[] = " nonce=";
+    for (u32 i = 0; nonce_field[i]; ++i) text[count++] = nonce_field[i];
+    for (u32 i = 0; i < 32; ++i) text[count++] = nonce[i];
+    constexpr char data_field[] = " data=";
+    for (u32 i = 0; data_field[i]; ++i) text[count++] = data_field[i];
     for (u32 i = 0; i < 32; ++i) { text[count++] = digits[data[i] >> 4]; text[count++] = digits[data[i] & 15]; }
     constexpr char suffix[] = "\nNET2_GUEST_PASS\n";
     for (u32 i = 0; suffix[i]; ++i) text[count++] = suffix[i];
@@ -129,7 +136,7 @@ i64 tcp_unread_close(u64 service_pid, u16 port, const char* nonce, u64 deadline,
         request = {}; request.action = net2::operation::close; request.object = barrier;
         status = exchange(request, reply); if (status) return status;
     }
-    result("NET2_TCP bytes=32 data=", buffer); return 0;
+    result("NET2_TCP bytes=32", nonce, buffer); return 0;
 }
 }
 extern "C" int xos_user_main(const xos::startup_info* startup) {
@@ -163,7 +170,7 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
         if (status != 32) return failed(status < 0 ? status : net2::io);
         status = client.close_connection(connection, deadline);
         if (status) return failed(status);
-        result("NET2_UDP bytes=32 data=", buffer);
+        result("NET2_UDP bytes=32", argv[4], buffer);
     } else {
         char address[96]{}; u32 size = 0;
         const char* prefix = "http://10.0.2.2:";
@@ -177,7 +184,7 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
         status = browser_http::fetch(client, target, buffer, sizeof(buffer), deadline, response, final_url, 0);
         if (status) return failed(status);
         if (response.status != 201 || response.body_length != 32) return failed(net2::io);
-        result("NET2_HTTP status=201 bytes=32 data=", buffer + response.body_offset);
+        result("NET2_HTTP status=201 bytes=32", argv[4], buffer + response.body_offset);
     }
     client.close(); return 0;
 }

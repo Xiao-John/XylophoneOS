@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Fresh HTTP/UDP byte challenges through the native N2 service, with pinned PID."""
 import argparse
+from collections import Counter
 import hashlib
 import json
 import re
@@ -22,6 +23,16 @@ from work_disk import transfer
 from xos_app import tree_receipt
 from build_net_transport_probe import INPUTS
 from net_tcp_window_peer import TcpWindowPeer
+
+RESPONSE_LABELS = {
+    'http': 'NET2_HTTP status=201 bytes=32',
+    'udp': 'NET2_UDP bytes=32',
+    'tcp_close': 'NET2_TCP bytes=32',
+}
+
+
+def response_record(kind, nonce, challenge_hex):
+    return f'{RESPONSE_LABELS[kind]} nonce={nonce} data={challenge_hex}'.encode()
 
 
 def sha(path):
@@ -147,10 +158,9 @@ def main():
             try:
                 prefix = 'exec-file /bin/netprobe.elf' if shell == 'xsh' else '/bin/dash /tests/netprobe.sh'
                 output = command(guest, f'{prefix} {kind} {pid} {port} {nonce}', b'kind=exited code=', timeout=90)
-                label = {'http': 'NET2_HTTP status=201 bytes=32 data=', 'udp': 'NET2_UDP bytes=32 data=',
-                         'tcp_close': 'NET2_TCP bytes=32 data='}[kind]
-                expected = label + challenge.hex()
-                if expected.encode() not in output or b'NET2_GUEST_PASS' not in output or b'kind=exited code=0' not in output:
+                expected = response_record(kind, nonce, challenge.hex())
+                if (output.splitlines().count(expected) != 1 or b'NET2_GUEST_PASS' not in output or
+                        b'kind=exited code=0' not in output):
                     raise AssertionError(output[-4000:])
                 worker.join(timeout=25)
                 if worker.is_alive() or host.get('error'):
@@ -247,10 +257,14 @@ def main():
             output = bytes(guest.output)[begin:]
             if output.count(b'NET2_GUEST_PASS') != 4:
                 raise AssertionError('four concurrent applications did not complete successfully')
+            expected_records = []
             for state, worker in zip(states, workers):
-                label = 'NET2_HTTP status=201 bytes=32 data=' if state['kind'] == 'http' else 'NET2_UDP bytes=32 data='
-                if worker.is_alive() or state.get('error') or (label + state.pop('expected_hex')).encode() not in output:
+                if worker.is_alive() or state.get('error'):
                     raise AssertionError(str(state))
+                expected_records.append(response_record(state['kind'], state['nonce'], state.pop('expected_hex')))
+            received_records = [line for line in output.splitlines() if line.startswith((b'NET2_HTTP ', b'NET2_UDP '))]
+            if Counter(received_records) != Counter(expected_records):
+                raise AssertionError('concurrent response records did not match their requesting applications')
             restored(baseline)
             report['checks'].append('four_concurrent_applications_distinct_http_udp_challenges_and_resources')
         finally:
@@ -369,10 +383,10 @@ def main():
                     report['controlled_closes'].append(state)
                     prefix = 'exec-file /bin/netprobe.elf' if shell == 'xsh' else '/bin/dash /tests/netprobe.sh'
                     output = command(guest, f'{prefix} tcp_{mode} {pid} {port} {nonce}', b'kind=exited code=', timeout=90)
-                    expected = b'NET2_TCP bytes=32 data=' + challenge.hex().encode()
+                    expected = response_record('tcp_close', nonce, challenge.hex())
                     accepted = 4096 if mode == 'queued' else 8192
                     marker = f'NET2_TCP_{mode.upper()}_CLOSE accepted={accepted}'.encode()
-                    if (expected not in output or marker not in output or b'NET2_GUEST_PASS' not in output or
+                    if (output.splitlines().count(expected) != 1 or marker not in output or b'NET2_GUEST_PASS' not in output or
                             b'kind=exited code=0' not in output):
                         raise AssertionError(output[-4000:])
                     window_peer.finish(port)

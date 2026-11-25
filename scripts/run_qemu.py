@@ -50,7 +50,8 @@ def qemu_command(image, *, vga=False, display=None, qmp=None, debug_port=None,
         command += ["-netdev", backend, "-device",
                     "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56"]
         if network_capture is not None:
-            command += ["-object", f"filter-dump,id=xos_capture,netdev=xosnet,file={network_capture}"]
+            capture_path = str(network_capture).replace(",", ",,")
+            command += ["-object", f"filter-dump,id=xos_capture,netdev=xosnet,file={capture_path}"]
     if qmp:
         command += ["-qmp", f"unix:{qmp},server=on,wait=off"]
     if debug_port is not None:

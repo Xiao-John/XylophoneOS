@@ -20,7 +20,7 @@
     "transport_user_serial.log": "66c87cb4e481ff0551f4beeb13ccd004ddfee7ba31e7e122824ffe43d0ae2c19",
     "transport_window.pcap.b64": "93b2551ff01b372a0803c3e0ebea10403bc4905ff72532240d30f7234c10d273",
     "transport_window_serial.log": "cc2901ed02213fbcfe402090410cfd985a563771d514b31f374606543937c7f5",
-    "verify_window_capture.py": "c2cb5f0a9666a4e5cf058b456da96fd7b542a75c80590052298b74b38273bfd2",
+    "verify_window_capture.py": "6e80c3a7f780ed395fc6894db254dfa00a6787ebc3aba64588705dd9dc96b764",
     "window_capture_audit.json": "dae8c5a02b6ec6ce7663e06a2b2f56e9bf215d0ac3b68f5af5c716beac0b1fcf"
   }
 }

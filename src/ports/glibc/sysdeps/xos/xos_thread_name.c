@@ -69,6 +69,15 @@ __xos_thread_name_remove (xos_u64 tid)
 }
 
 int
+__xos_thread_registered (xos_u64 tid)
+{
+  lll_lock (names_lock, LLL_PRIVATE);
+  int found = find_name (tid) != NULL;
+  lll_unlock (names_lock, LLL_PRIVATE);
+  return found;
+}
+
+int
 __xos_thread_name_get (xos_u64 tid, char *output)
 {
   xos_u64 self = __pthread_self ();

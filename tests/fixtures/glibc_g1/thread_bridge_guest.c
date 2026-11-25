@@ -23,7 +23,7 @@ extern int __mprotect (void *, unsigned long, int);
 extern int __munmap (void *, unsigned long);
 #endif
 #if defined XOS_GLIBC_TEST_MEMORY || defined XOS_GLIBC_TEST_IDENTITY \
-    || defined XOS_GLIBC_TEST_SCHEDULING
+    || defined XOS_GLIBC_TEST_SCHEDULING || defined XOS_GLIBC_TEST_SIGNALS
 # define _ERRNO_H 1
 # include "bits/errno.h"
 #endif
@@ -103,6 +103,83 @@ static void finish (xos_u64 code)
   (void) trap (2, code, 0);
   __builtin_trap ();
 }
+#ifdef XOS_GLIBC_TEST_SIGNALS
+struct test_sigset { unsigned long words[16]; };
+union test_sigval { int number; void *pointer; };
+extern int pthread_kill (unsigned long, int);
+extern int pthread_sigqueue (unsigned long, int, union test_sigval);
+extern int pthread_sigmask (int, const struct test_sigset *, struct test_sigset *);
+extern int pthread_getname_np (unsigned long, char *, unsigned long);
+extern int pthread_setname_np (unsigned long, const char *);
+extern unsigned long __pthread_self (void);
+extern int __xos_thread_name_add (unsigned long);
+extern void __xos_thread_name_remove (unsigned long);
+
+static unsigned signal_probe_done;
+static unsigned child_checked_name;
+
+void *
+memcpy (void *destination, const void *source, unsigned long size)
+{
+  unsigned char *out = destination;
+  const unsigned char *in = source;
+  for (unsigned long i = 0; i < size; ++i)
+    out[i] = in[i];
+  return destination;
+}
+
+void *
+memset (void *destination, int value, unsigned long size)
+{
+  unsigned char *out = destination;
+  for (unsigned long i = 0; i < size; ++i)
+    out[i] = value;
+  return destination;
+}
+
+unsigned long
+__strnlen (const char *string, unsigned long size)
+{
+  unsigned long length = 0;
+  while (length < size && string[length] != '\0')
+    ++length;
+  return length;
+}
+
+__attribute__ ((noreturn))
+void __libc_fatal (const char *message)
+{
+  (void) message;
+  finish (73);
+}
+
+static void check_signals (unsigned long child)
+{
+  unsigned long self = __pthread_self ();
+  struct test_sigset mask = { { 1 } };
+  struct test_sigset previous = { { 37 } };
+  union test_sigval value = { .number = 19 };
+  if (pthread_kill (self, 0) != 0 || pthread_kill (self, -1) != EINVAL
+      || pthread_kill (child, 0) != ESRCH)
+    finish (74);
+  if (pthread_setname_np (self, "g1") != 0 || __xos_thread_name_add (child) != 0)
+    finish (75);
+  char name[16];
+  if (pthread_getname_np (child, name, sizeof (name)) != 0
+      || name[0] != 'g' || name[1] != '1' || name[2] != 0
+      || pthread_setname_np (child, "worker") != 0)
+    finish (76);
+  if (pthread_kill (child, 0) != 0 || pthread_kill (child, 2) != ENOTSUP
+      || pthread_sigqueue (child, 0, value) != 0
+      || pthread_sigqueue (child, 2, value) != ENOTSUP)
+    finish (77);
+  if (pthread_sigmask (1, &mask, &previous) != ENOTSUP
+      || pthread_sigmask (-1, &mask, &previous) != EINVAL
+      || pthread_sigmask (1, 0, 0) != 0 || previous.words[0] != 37)
+    finish (78);
+  __atomic_store_n (&signal_probe_done, 1, __ATOMIC_RELEASE);
+}
+#endif
 #ifdef XOS_GLIBC_TEST_IDENTITY
 static unsigned native_cancel_checks;
 void __pthread_testcancel (void)
@@ -184,6 +261,16 @@ static void guest_thread_worker (void *raw)
   __asm__ volatile ("mov %%fs:0,%0" : "=r" (tp));
   if (raw != &child_result || tp == 0 || *(xos_u64 *) tp != tp)
     finish (90);
+#ifdef XOS_GLIBC_TEST_SIGNALS
+  while (!__atomic_load_n (&signal_probe_done, __ATOMIC_ACQUIRE))
+    (void) trap (3, 0, 0);
+  char name[16];
+  if (pthread_getname_np (__pthread_self (), name, sizeof (name)) != 0
+      || name[0] != 'w' || name[5] != 'r' || name[6] != 0)
+    finish (79);
+  __xos_thread_name_remove (__pthread_self ());
+  __atomic_store_n (&child_checked_name, 1, __ATOMIC_RELEASE);
+#endif
 #ifdef XOS_GLIBC_TEST_YIELD
   __atomic_store_n (&child_waiting, 1, __ATOMIC_RELEASE);
   do {
@@ -299,6 +386,9 @@ int guest_main (void)
   invalid_start = 0;
   if (__xos_thread_launch (65536, 4096, 0, setup, rollback, &launch, &launch) != 0) return 13;
   if (!launch.started || !launch.tid || launch.abort_error != 0 || rollback_count != 1) return 14;
+#ifdef XOS_GLIBC_TEST_SIGNALS
+  check_signals (launch.tid);
+#endif
 #ifdef XOS_GLIBC_TEST_SCHEDULING
   if (!check_scheduling (launch.tid)) return 72;
 #endif
@@ -333,6 +423,11 @@ int guest_main (void)
   if (trap (44, launch.tid, (xos_u64) &value) != 0) return 15;
 #endif
   if (value != G1_JOIN_RESULT || child_result != 0xabc) return 16;
+#ifdef XOS_GLIBC_TEST_SIGNALS
+  if (!__atomic_load_n (&child_checked_name, __ATOMIC_ACQUIRE)
+      || pthread_kill (launch.tid, 0) != ESRCH)
+    return 80;
+#endif
 #ifdef XOS_GLIBC_TEST_EXIT
   __xos_thread_finish (0, last_process_exit);
 #endif

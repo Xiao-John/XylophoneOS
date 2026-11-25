@@ -173,6 +173,8 @@ def main():
             ('nptl', 'pthread_getschedparam'), ('nptl', 'pthread_setschedparam'),
             ('nptl', 'pthread_setschedprio'), ('nptl', 'pthread_getcpuclockid'),
             ('nptl', 'pthread_getname'), ('nptl', 'pthread_setname'),
+            ('nptl', 'pthread_kill'), ('nptl', 'pthread_sigqueue'), ('nptl', 'pthread_sigmask'),
+            ('nptl', 'lowlevellock'),
             ('nptl', 'xos_thread_name'), ('nptl', 'xos_nptl_exit'),
             ('csu', 'libc-start'),
             ('elf', 'dl-tls_init_tp'),

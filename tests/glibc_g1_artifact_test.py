@@ -418,6 +418,20 @@ def main():
     for symbol in ('__xos_nptl_cleanup_current', '__xos_thread_finish',
                    '__xos_nptl_last_process_exit'):
         assert re.search(r'R_X86_64_\w+\s+' + symbol + r'\b', code)
+    for name, implementation, symbols in (
+        ('pthread_kill', 'sysdeps/xos/pthread_kill.c',
+         ('__pthread_self', '__xos_thread_registered')),
+        ('pthread_sigqueue', 'sysdeps/xos/pthread_sigqueue.c', ('__pthread_kill',)),
+        ('pthread_sigmask', 'sysdeps/xos/pthread_sigmask.c', ()),
+        ('lowlevellock', 'nptl/lowlevellock.c', ('__xos_lll_wait', '__xos_lll_wake')),
+    ):
+        obj = build / 'nptl' / (name + '.o')
+        assert digest(obj) == report['diagnostic_objects'][name]['sha256']
+        assert 'source/' + implementation in dependency_manifest[name]
+        code = subprocess.check_output(['x86_64-elf-objdump', '-dr', obj], text=True)
+        for symbol in symbols:
+            assert re.search(r'R_X86_64_\w+\s+' + symbol + r'\b', code)
+        assert not re.search(r'\b(?:syscall|int)\b', code)
     yield_item = report['diagnostic_objects']['sched_yield']
     assert yield_item['exit_code'] == 0 and digest(build / 'posix/sched_yield.o') == yield_item['sha256']
     assert '../sysdeps/xos/sched_yield.c' in (output / 'sched_yield-dependencies.d').read_text()

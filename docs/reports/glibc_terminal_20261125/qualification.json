@@ -1,0 +1,51 @@
+{
+  "scope": "G3 glibc terminal v2/v3 receiver, FD lifetime, termios and limited ioctl",
+  "status": "passed_subset",
+  "base_commit": "b1774d8",
+  "base_tree": "76b6aa0de9f7766c66df6f5b48d91a41c7f43fc6",
+  "shared_api_source": "36d5b03 (same base tree)",
+  "host_cases": 23,
+  "sanitized_host_cases": 23,
+  "files_state_machine_groups": 41,
+  "files_real_service_groups": 12,
+  "guest_cases": 2,
+  "guest_repetitions": 3,
+  "legacy_guest_cases": 3,
+  "terminal_resources_each_run": [
+    129533,
+    4,
+    2
+  ],
+  "legacy_resources_each_run": [
+    129717,
+    3,
+    1
+  ],
+  "guest_environment": "QEMU 11.1.3; TCG; one CPU; 512 MiB; private FAT32 disk; serial-only",
+  "upstream_source": "PR154 locked signer verified by gpgv before source extraction.",
+  "observed_failure": "One BIOS iso_read failure before userland, followed by one successful same-source retry; retained in legacy_first_boot_failure.json.",
+  "not_run": [
+    "LeakSanitizer: ptrace environment restriction",
+    "Hardware UART and QEMU 11.1.2",
+    "Full upstream glibc testsuite",
+    "Continuous-input flush race",
+    "glibc outgoing terminal fork/exec/spawn",
+    "Same-session full-duplex I/O",
+    "dash launch entry",
+    "Terminal service death during guest I/O",
+    "Active blocked terminal worker during normal exit: guest worker was joined before exit",
+    "Combined PR160 directory/positioned I/O and process SDK: separate source combination"
+  ],
+  "reports": [
+    "host.json",
+    "host_sanitized.json",
+    "files_regression.json",
+    "guest.json",
+    "legacy_first_boot_failure.json",
+    "legacy_guest.json",
+    "build_inputs.json",
+    "support_build.json",
+    "upstream_signature.json",
+    "abi.json"
+  ]
+}

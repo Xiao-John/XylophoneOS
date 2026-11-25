@@ -8,6 +8,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "xos_file_runtime.h"
+#include "xos_terminal_runtime.h"
 
 #ifdef XOS_GLIBC_FILE_TEST
 extern long __xos_file_test_trap (xos_u64, xos_u64, xos_u64, xos_u64);
@@ -25,13 +26,12 @@ file_trap (xos_u64 number, xos_u64 first, xos_u64 second, xos_u64 third)
 #endif
 
 extern const void *__xos_startup __attribute__ ((weak, visibility ("hidden")));
-/* The CRT accepts transferred handles and v3 description snapshots only when
-   this backend is linked. Path-based redirection and terminal sessions still
-   require a different startup action profile. */
+/* The backend and its strongly linked terminal adapter provide file (bit0)
+   and terminal (bit1) startup. Path-based redirection remains separate. */
 const unsigned int __xos_file_startup_capabilities
-  __attribute__ ((visibility ("hidden"))) = 1;
+  __attribute__ ((visibility ("hidden"))) = 3;
 enum { fd_limit = 32, object_limit = 32 };
-enum { kind_none, kind_kernel, kind_file, kind_pipe_read, kind_pipe_write };
+enum { kind_none, kind_kernel, kind_file, kind_pipe_read, kind_pipe_write, kind_terminal };
 struct fd_slot { int object; unsigned int close_on_exec; };
 struct open_object { unsigned int kind, handle, flags, references; };
 static struct fd_slot descriptors[fd_limit];
@@ -312,7 +312,7 @@ static long close_object (int);
 static long open_file (const char *, int);
 
 static int
-restore_descriptors (const struct xos_file_startup *startup)
+restore_descriptors (const struct xos_file_startup *startup, int terminal_startup)
 {
   const struct xos_file_startup_exec *exec = (const void *) ((const char *) startup + 152);
   if (!valid_startup_range ((xos_u64) exec, sizeof (*exec))
@@ -323,19 +323,28 @@ restore_descriptors (const struct xos_file_startup *startup)
     return -EINVAL;
   const struct xos_file_startup_descriptor *items = (const void *) exec->descriptors;
   unsigned int cleanup[object_limit] = { 0 };
+  int terminal_object = -1;
   memset (objects, 0, sizeof (objects));
   for (int i = 0; i < fd_limit; ++i) descriptors[i].object = -1;
   for (unsigned int i = 0; i < exec->count; ++i)
     {
       const struct xos_file_startup_descriptor *item = &items[i];
       if (item->object >= object_limit || item->kind < kind_kernel
-          || item->kind > kind_pipe_write || item->reserved != 0
+          || item->kind > kind_terminal || item->reserved != 0
           || !valid_flags (item->flags)
           || (item->kind == kind_kernel && item->handle > 2)
           || (item->kind == kind_file && item->handle == 0)
-          || (item->kind >= kind_pipe_read && item->handle < 65536)
+          || ((item->kind == kind_pipe_read || item->kind == kind_pipe_write)
+              && item->handle < 65536)
+          || (item->kind == kind_terminal && (item->handle != 0
+              || item->fd == ~(xos_u32) 0 || !terminal_startup))
           || (item->fd != ~(xos_u32) 0 && item->fd >= fd_limit))
         return -EINVAL;
+      if (item->kind == kind_terminal)
+        {
+          if (item->flags != O_RDWR) return -ENOTSUP;
+          terminal_object = (int) item->object;
+        }
       struct open_object *object = &objects[item->object];
       if (object->kind != 0
           && (object->kind != item->kind || object->handle != item->handle
@@ -362,14 +371,29 @@ restore_descriptors (const struct xos_file_startup *startup)
           ++object->references;
         }
     }
-  /* Validate the whole list before any close; malformed later entries cannot
-     cause early destruction of an inherited object. */
+  /* Validate the whole list before connecting or closing. A malformed later
+     entry cannot consume a terminal sequence or destroy inherited objects. */
+  if ((terminal_object >= 0) != terminal_startup) return -EINVAL;
+  if (terminal_startup)
+    {
+      struct terminal_exec { xos_u64 magic, next_sequence; };
+      const struct terminal_exec *terminal = (const void *) ((const char *) startup + 176);
+      if (!valid_startup_range ((xos_u64) terminal, sizeof (*terminal))
+          || terminal->magic != 0x33595454534f5858ULL || terminal->next_sequence == 0)
+        return -EINVAL;
+      long result = __xos_terminal_restore (startup);
+      if (result < 0) return (int) result;
+    }
   for (int i = 0; i < object_limit; ++i)
     if (cleanup[i])
       {
         objects[i].references = 1;
         long result = close_object (i);
-        if (result < 0) return (int) result;
+        if (result < 0)
+          {
+            if (terminal_startup) (void) __xos_terminal_close ();
+            return (int) result;
+          }
       }
   return 0;
 }
@@ -401,12 +425,27 @@ initialize (void)
     (const void *) ((const char *) startup + 64);
   if (!valid_startup_range ((xos_u64) extension, sizeof (*extension))
       || extension->magic != 0x32585445534f5855ULL
-      || extension->environment_count > 64 || extension->reserved != 0
+      || extension->environment_count > 64
+      || ((extension->flags & 0x10000U) == 0 ? extension->reserved != 0
+                                            : extension->reserved == 0)
       || (extension->flags & ~0x10707U) != 0)
     return initialization_error = -EINVAL;
-  if (extension->flags & 0x10000U) return initialization_error = -ENOTSUP;
+  const int terminal_startup = (extension->flags & 0x10000U) != 0;
   if (startup->version == 3)
-    return initialization_error = restore_descriptors (startup);
+    return initialization_error = restore_descriptors (startup, terminal_startup);
+  if (terminal_startup)
+    {
+      if (extension->flags != 0x10007U) return initialization_error = -EINVAL;
+      for (int i = 0; i < 3; ++i)
+        if (extension->open_paths[i] != 0 || extension->file_handles[i] != 0
+            || extension->open_flags[i] != 0) return initialization_error = -EINVAL;
+      long result = __xos_terminal_restore (startup);
+      if (result < 0) return initialization_error = (int) result;
+      memset (objects, 0, sizeof (objects));
+      objects[0] = (struct open_object) { kind_terminal, 0, O_RDWR, 3 };
+      for (int i = 0; i < 3; ++i) descriptors[i] = (struct fd_slot) { 0, 0 };
+      return 0;
+    }
   for (int i = 0; i < 3; ++i)
     {
       if ((extension->flags & (1U << i)) != 0)
@@ -521,6 +560,7 @@ close_object (int index)
       result = call_service (8);
       if (result == 0 && response.length != 0) result = session_fault (EIO);
     }
+  else if (object->kind == kind_terminal) result = __xos_terminal_close ();
   else result = kernel_error (file_trap (object->kind == kind_kernel ? 13 : 33,
                                         object->handle, 0, 0));
   /* The FD has already been removed. A close error must never make retry
@@ -548,6 +588,9 @@ __xos_file_close (int fd)
 static long
 stream_io (struct open_object object, void *buffer, size_t length, int writing)
 {
+  if (object.kind == kind_terminal)
+    return writing ? __xos_terminal_write (buffer, length, object.flags)
+                   : __xos_terminal_read (buffer, length, object.flags);
   const int console = object.kind == kind_kernel
     && file_trap (34, 0, object.handle, 0) == 1;
   if (writing && console && length > 256) length = 256;
@@ -716,7 +759,8 @@ __xos_file_stat (int fd, const char *path, struct stat *output)
       if (object->kind != kind_file)
         {
           memset (output, 0, sizeof (*output));
-          long console = object->kind == kind_kernel ? file_trap (34, 0, object->handle, 0) : 0;
+          long console = object->kind == kind_terminal ? 1
+            : object->kind == kind_kernel ? file_trap (34, 0, object->handle, 0) : 0;
           if (console < 0) { result = kernel_error (console); goto done; }
           output->st_mode = (console ? S_IFCHR : S_IFIFO) | 0600;
           output->st_nlink = 1;
@@ -783,7 +827,8 @@ __xos_file_fcntl (int fd, int command, int argument)
     {
       const unsigned int old = objects[index].flags;
       if ((argument & ~(O_ACCMODE | O_APPEND | O_NONBLOCK | O_DIRECTORY)) != 0
-          || (((unsigned int) argument ^ old) & O_APPEND) != 0)
+          || (((unsigned int) argument ^ old) & O_APPEND) != 0
+          || (objects[index].kind == kind_terminal && (argument & O_NONBLOCK) != 0))
         result = -ENOTSUP;
       else { objects[index].flags = (old & ~(unsigned int) O_NONBLOCK)
           | ((unsigned int) argument & O_NONBLOCK); result = 0; }
@@ -862,7 +907,8 @@ __xos_file_isatty (int fd)
   long result = -EBADF;
   if (index >= 0)
     {
-      if (objects[index].kind != kind_kernel) result = -ENOTTY;
+      if (objects[index].kind == kind_terminal) result = 1;
+      else if (objects[index].kind != kind_kernel) result = -ENOTTY;
       else
         {
           result = file_trap (34, 0, objects[index].handle, 0);

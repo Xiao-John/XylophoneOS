@@ -38,6 +38,8 @@ def main():
         flags += ["-fsanitize=address,undefined", "-fno-sanitize-recover=all",
                   "-fno-omit-frame-pointer"]
     cc, cxx = os.environ.get("CC", "gcc"), os.environ.get("CXX", "g++")
+    terminal_sources = [str(ROOT / 'src/ports/glibc/terminal_support.cpp'),
+                        str(ROOT / 'src/user/sdk/terminal_client.cpp')]
     obj, exe = output / "runtime.o", output / "runtime_test"
     subprocess.run([cc, "-std=c11", "-DXOS_GLIBC_FILE_TEST", *flags, "-c",
                     str(overlay / "xos_file_runtime.c"), "-o", str(obj)], check=True)
@@ -49,6 +51,7 @@ def main():
                     "-I", str(ROOT / "src/user/include"),
                     str(ROOT / "tests/fixtures/glibc_g3/files_runtime.cpp"), str(obj), str(writev),
                     str(ROOT / "src/user/sdk/file_client.cpp"),
+                    *terminal_sources,
                     "-pthread", "-o", str(exe)], check=True)
     results = []
     environment = os.environ.copy()
@@ -92,6 +95,7 @@ def main():
     subprocess.run([cxx, "-std=c++20", *flags, "-I", str(ROOT / "src/shared/include"),
                     "-I", str(ROOT / "src/user/include"),
                     str(ROOT / "tests/fixtures/glibc_g3/files_service.cpp"), str(obj),
+                    *terminal_sources,
                     *service_objects, "-Wl,--gc-sections", "-o", str(service_exe)], check=True)
     sys.path.insert(0, str(ROOT / "scripts"))
     from make_work_disk import make_image
@@ -115,6 +119,7 @@ def main():
                 ROOT / "src/third_party/fatfs/ff.h"]
     sources += list((ROOT / "tests/fixtures/glibc_g3").glob("*.cpp"))
     sources += [ROOT / "src/user/sdk/file_client.cpp"]
+    sources += list(map(Path, terminal_sources)) + list(overlay.glob('xos_terminal*'))
     sources += list((ROOT / "src/user/include/xos").rglob("*.hpp"))
     sources += list((ROOT / "src/shared/include/xos").rglob("*.hpp"))
     report = json.loads((output / "report.json").read_text())

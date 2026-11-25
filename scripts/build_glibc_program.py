@@ -124,6 +124,7 @@ def main():
                      str(lib / 'xos_start.o'), str(lib / 'crti.o'),
                      str(lib / 'crtbegin.o'), str(lib / 'xos_start_c.o'), *objects,
                      '-Wl,--start-group', str(lib / 'libc.a'), str(lib / 'libm.a'),
+                     str(lib / 'libxos_terminal.a'),
                      str(lib / 'libgcc.a'), *unwind, '-Wl,--end-group',
                      str(lib / 'crtend.o'), str(lib / 'crtn.o')])
         report['program_headers'] = verify_elf(output)

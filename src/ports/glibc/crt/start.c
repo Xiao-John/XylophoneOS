@@ -27,8 +27,8 @@ _Static_assert (sizeof (struct xos_startup_info) == 48, "startup prefix");
 _Static_assert (sizeof (struct xos_startup_extension) == 88, "startup extension");
 
 const void *__xos_startup __attribute__ ((visibility ("hidden")));
-/* Bit zero is supplied only by the G3 descriptor backend.  In the basic
-   console SDK, reject file inheritance before any constructors can run. */
+/* The real descriptor backend supplies file bit0 and terminal bit1. Reject
+   unavailable startup profiles before any constructors can run. */
 extern const unsigned int __xos_file_startup_capabilities
   __attribute__ ((weak, visibility ("hidden")));
 extern int main (int, char **, char **);
@@ -100,6 +100,8 @@ __xos_glibc_start (const struct xos_startup_info *startup, void *stack_top)
     fail ();
   const int file_descriptors = &__xos_file_startup_capabilities != NULL
                               && (__xos_file_startup_capabilities & 1) != 0;
+  const int terminal_descriptors = &__xos_file_startup_capabilities != NULL
+                                  && (__xos_file_startup_capabilities & 2) != 0;
   for (uint32_t i = 0; i < 3; ++i)
     if (startup->handles[i] > 2)
       fail ();
@@ -137,7 +139,7 @@ __xos_glibc_start (const struct xos_startup_info *startup, void *stack_top)
           if (extension->open_paths[i] != 0)
             unsupported ();
         }
-      if ((extension->flags & 0x10000U) != 0
+      if ((!terminal_descriptors && (extension->flags & 0x10000U) != 0)
           || (!file_descriptors && (extension->flags & 0x700U) != 0))
         unsupported ();
       if (startup->version == 3)

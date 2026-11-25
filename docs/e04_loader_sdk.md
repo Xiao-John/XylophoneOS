@@ -295,8 +295,13 @@ stdio 均关闭，且必须提供 prepare 回调与 `terminal_send_handle`。加
 startup2 扩展的 flag bit16 和 reserved 字段，再映射启动页，最后启动。失败会 abort
 子进程，调用方仍负责关闭创建的通道。应用用 `connect_startup` 根据内核认证的通道
 信息核对句柄及双方身份；标记不授予权限。单线程 libc 初始 fd 0/1/2 可接该客户端，
-但带终端描述符的 exec/fork 及多线程 libc 暂时明确拒绝；目前仅支持受限原始模式，
-未客体验收。旧镜像无标记时拒绝终端启动，不影响原有非终端启动路径。
+其受限 fork/exec 实现与资格见 [terminal_control](contracts/terminal_control.md)。
+glibc 后端接收 v2 和 v3 的 kind5 终端对象，以固定对象 lease 和会话锁处理多线程
+I/O；v3 沿用真实下一请求序号。当前仅支持原始模式与有限 termios/ioctl，glibc
+出站终端 spawn/exec/fork 单独推进。六次真实客体及未验项见
+[e6b8c410](work_log/e6b8c410_glibc_terminal.md) 和
+[glibc_terminal_v1](contracts/glibc_terminal_v1.md)。旧镜像无标记时拒绝终端启动，
+不影响原有非终端启动路径。
 
 SDK 控制台 read/write 的可选弱符号钩子供单个可执行文件自行接入用户态服务；没有
 定义时直接使用旧 syscall。当前 supervisor 编入试验桥接，默认保持旧路径，不为应用

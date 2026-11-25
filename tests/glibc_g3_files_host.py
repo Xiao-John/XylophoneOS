@@ -34,6 +34,8 @@ def main():
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
     overlay = ROOT / "src/ports/glibc/sysdeps/xos"
+    terminal_sources = [str(ROOT / 'src/ports/glibc/terminal_support.cpp'),
+                        str(ROOT / 'src/user/sdk/terminal_client.cpp')]
     sources = [ROOT / "src/user/services/files.cpp", ROOT / "src/third_party/fatfs/ff.c",
                ROOT / "src/shared/include/xos/file_abi.hpp", Path(__file__).resolve()]
     sources += list(overlay.glob("xos_file*"))
@@ -47,6 +49,7 @@ def main():
     sources += [ROOT / "src/user/sdk/file_client.cpp"]
     sources += list((ROOT / "src/user/include/xos").rglob("*.hpp"))
     sources += list((ROOT / "src/shared/include/xos").rglob("*.hpp"))
+    sources += list(map(Path, terminal_sources)) + list(overlay.glob('xos_terminal*'))
     source_inputs = {str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
                      for path in sorted(set(sources))}
     flags = ["-D_GNU_SOURCE", "-O1", "-g", "-Wall", "-Wextra", "-Werror",
@@ -66,6 +69,7 @@ def main():
                     "-I", str(ROOT / "src/user/include"),
                     str(ROOT / "tests/fixtures/glibc_g3/files_runtime.cpp"), str(obj), str(writev),
                     str(ROOT / "src/user/sdk/file_client.cpp"),
+                    *terminal_sources,
                     "-pthread", "-o", str(exe)], check=True)
     results = []
     environment = os.environ.copy()
@@ -110,6 +114,7 @@ def main():
     subprocess.run([cxx, "-std=c++20", *flags, "-I", str(ROOT / "src/shared/include"),
                     "-I", str(ROOT / "src/user/include"),
                     str(ROOT / "tests/fixtures/glibc_g3/files_service.cpp"), str(obj),
+                    *terminal_sources,
                     *service_objects, "-Wl,--gc-sections", "-o", str(service_exe)], check=True)
     sys.path.insert(0, str(ROOT / "scripts"))
     from make_work_disk import make_image

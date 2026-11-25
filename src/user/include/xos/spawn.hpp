@@ -25,7 +25,7 @@ static_assert(sizeof(startup_extension) == 88);
 // v3 exec-only extension follows the compatible v2 header at offset 152.
 inline constexpr u64 startup_exec_magic = 0x335845534f585546ull;
 inline constexpr u32 startup_exec_offset = startup_extension_offset + sizeof(startup_extension);
-enum class startup_fd_kind : u32 { kernel = 1, file = 2, pipe_read = 3, pipe_write = 4 };
+enum class startup_fd_kind : u32 { kernel = 1, file = 2, pipe_read = 3, pipe_write = 4, terminal = 5 };
 struct startup_descriptor { u32 fd, object, kind, handle, flags, reserved; };
 struct startup_exec_extension { u64 magic, descriptors; u32 count, reserved; };
 static_assert(sizeof(startup_descriptor) == 24 && sizeof(startup_exec_extension) == 24);

@@ -1,0 +1,84 @@
+{
+  "format": "derived path-normalized public evidence",
+  "originals": {
+    "build/terminal_host_final/report.json": {
+      "sha256": "1cf5c5a873860c03433df1e9c6a576ff5e0666ca6d36fd2c30c79ab885b33536",
+      "kind": "original workspace evidence"
+    },
+    "build/terminal_host_sanitized/report.json": {
+      "sha256": "ac694ff863f18c2f30a20ca13674be9c7fd0dc07917a173bd7887494c969de8f",
+      "kind": "original workspace evidence"
+    },
+    "build/terminal_files_regression/report.json": {
+      "sha256": "c066750a499a08b5745897891f27abdd68af34765f72fafab5995e2a1bfd5a8b",
+      "kind": "original workspace evidence"
+    },
+    "build/terminal_guest_initial/report.json": {
+      "sha256": "d95a2900f5f4c468b54afaf293bc2d341b57e0652b206308c4d7352dd51ad6cd",
+      "kind": "original workspace evidence"
+    },
+    "build/terminal_legacy_guest/report.json": {
+      "sha256": "c85a8d971c0901652d8bff32bd73d03edd7512739320c74af0b231263d41e727",
+      "kind": "original workspace evidence"
+    },
+    "build/terminal_legacy_guest_retry/report.json": {
+      "sha256": "d82c440be6931af61137d397d22c2576035e1fbdbb8f4da89402563f1ee64941",
+      "kind": "original workspace evidence"
+    },
+    "build/terminal_guest_initial/serial.log": {
+      "sha256": "e892b474e2d643faadcff612beb9210cd9391f1ede054240c1dcd5e51d748b6a",
+      "kind": "original workspace evidence"
+    },
+    "build/terminal_legacy_guest/serial.log": {
+      "sha256": "b9c5fce69a7916920b2a098bdbd692c8589ca81b950a16283c002c34d45d0ff4",
+      "kind": "original workspace evidence"
+    },
+    "build/terminal_legacy_guest_retry/serial.log": {
+      "sha256": "bace08f202e64d1d2fd78a6f26824b863516822b585f267eb0903a453c715005",
+      "kind": "original workspace evidence"
+    },
+    "build/terminal_sdk_initial/terminal_support/undefined.log": {
+      "sha256": "2da9da4bc714826825763e110a690247bf1e603e1beff1caa552faded91de23f",
+      "kind": "original workspace evidence"
+    },
+    "build/terminal_sdk_initial/terminal_support/sections.log": {
+      "sha256": "29cecca4360d3479970e67d50d53e946ac440b73e32054b0b5ba093dc51f29ee",
+      "kind": "original workspace evidence"
+    },
+    "build/terminal_sdk_initial/manifest.json": {
+      "sha256": "ade36f38cd935c9638bd91515208920ccc97a238edec66386cdb2ab49fbb8add",
+      "kind": "original workspace evidence"
+    },
+    "build/terminal_system_initial/manifest.json": {
+      "sha256": "b36317576ea158812056bb2fb6dda72bdbfbfdb68ae4d21adcaac5530fc94d99",
+      "kind": "original workspace evidence"
+    },
+    "build/terminal_sdk_initial/terminal_support/manifest.json": {
+      "sha256": "cd67839f3620b4bc383426143f232840e107c8cccf35f8e3925a7d79a0e94e8e",
+      "kind": "original workspace evidence"
+    },
+    "build/terminal_sdk_initial/source_verification/report.json": {
+      "sha256": "66650d873fa5ce60abb70e5f3497227f203ea9e8e24283a7307c39cd1dbaea77",
+      "kind": "original workspace evidence"
+    },
+    "build/terminal_abi_final/abi_doc_report.json": {
+      "sha256": "7f848d79e98a6ac58e98898e9426ba9b125e7cdc8d239537d0228d2d9ffaf9bf",
+      "kind": "original workspace evidence"
+    },
+    "build/terminal_host_initial/report.json": {
+      "sha256": "92d7e5570d67cf348ee0cf5447ee958215d93953904815e741ec7be0de9022f6",
+      "kind": "original workspace evidence"
+    }
+  },
+  "transformations": [
+    "Replace repository absolute prefix with ${XOS_REPO}.",
+    "Replace preview toolchain prefix with ${PREVIEW_PREFIX}.",
+    "Replace ephemeral private guest directories with ${PRIVATE_GUEST}.",
+    "Replace guest serial_sha256 with sibling serial filename; flat manifest binds exported bytes.",
+    "Text exports decode to text, normalize CRLF to LF and trim trailing whitespace; original raw hashes retained here.",
+    "build_inputs.json selects complete input maps, tools, profiles and artifact identities.",
+    "support_build.json removes per-step original log hashes and references the exported object checks by name.",
+    "earlier_results.json records superseded host and failed first BIOS boot; qualification.json summarizes actual scope."
+  ],
+  "trust_root": "Git commit containing this directory; manifest.json hashes all leaf exports."
+}

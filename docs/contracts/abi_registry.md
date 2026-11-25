@@ -164,7 +164,8 @@ claimed必须位于对应reserved段，不能与现有接口或其他认领重�
 |---|---|---|
 | files op | wire v2、op1–31；20clone_session、21anonymous、22seal、23/24维护、25truncate、26cwd_set、27cwd_get、28resolve_path；29 set_metadata；30 read_at、31 write_at；op2 的 list_identity bit12 扩展目录记录 | 文件/包管理共用服务；26由已认证parent_pid约束构造子继承；身份与目录扩展见[file_identity](file_identity.md)，op29见[file_metadata_v1](file_metadata_v1.md)，30/31见[glibc_files_v1](glibc_files_v1.md)；下一操作从32协调登记 |
 | display action / operation | v1控制action0–9、request operation1–6 | 显示负责人；Qt通过用户态display_client接入，不另造同名内核接口 |
-| startup/exec | startup1/2/3、.xos.exec/v3身份标记；试行 startup2 flag bit16 与 reserved 承载 terminal send handle，仅限只读 `.xos.tty` v1 opt-in | loader/SDK负责人，升级须说明旧二进制准入/拒绝与迁移；终端扩展尚未客体验收 |
+| startup/exec | startup1/2/3、.xos.exec/v3身份标记；试行 startup2 flag bit16 与 reserved 承载 terminal send handle，仅限只读 `.xos.tty` v1 opt-in | loader/SDK负责人，升级须说明旧二进制准入/拒绝与迁移；glibc 终端接收 v2/v3 的受限客体资格见 [e6b8c410](../work_log/e6b8c410_glibc_terminal.md)，出站继承单独推进 |
+| glibc terminal | 既有 startup kind5 正式命名为 terminal；CRT capability bit1；libc 本地 TCGETS/TCSETS/TCSETSW/TCSETSF=0x5401–0x5404，FIONCLEX/FIOCLEX=0x5450/0x5451 | [glibc_terminal_v1](glibc_terminal_v1.md)；复用 native terminal v2，glibc termios 逐字段转换，实际资格按独立工作日志 |
 | boot_info | v1 64字节；显示扩展v2 112字节；payload descriptor独立 | 引导/内核共同登记，不借用对方字段 |
 | endpoint/PID/TID | 内核按生命周期分配的运行时身份 | 不预留静态数字给Qt，不以程序名或客户端自填身份授予权利 |
 | SDK manifest | process_extensions与display_extensions等能力/输入标识 | 普通/线程生成器同步；reserved不登记为supported |

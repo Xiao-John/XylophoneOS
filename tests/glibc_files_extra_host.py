@@ -13,15 +13,23 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from make_work_disk import make_image
 
+NATIVE_SOURCES = (
+    ('fatfs', 'src/third_party/fatfs/ff.c'),
+    ('unicode', 'src/user/services/fatfs_unicode.cpp'),
+    ('client', 'src/user/sdk/file_client.cpp'),
+    ('text', 'src/user/sdk/text.cpp'),
+    ('terminal_support', 'src/ports/glibc/terminal_support.cpp'),
+    ('terminal_client', 'src/user/sdk/terminal_client.cpp'),
+)
+
 
 def source_snapshot():
     overlay = ROOT / 'src/ports/glibc/sysdeps/xos'
     sources = [overlay / (name + '.c') for name in
                ('xos_file_runtime', 'xos_file_directory', 'xos_file_positioned')]
+    sources += [ROOT / name for _, name in NATIVE_SOURCES]
     sources += [ROOT / name for name in
-                ('src/third_party/fatfs/ff.c', 'src/user/services/fatfs_unicode.cpp',
-                 'src/user/sdk/file_client.cpp', 'src/user/sdk/text.cpp',
-                 'src/user/services/files.cpp', 'tests/fixtures/glibc_g3/files_extra_service.cpp',
+                ('src/user/services/files.cpp', 'tests/fixtures/glibc_g3/files_extra_service.cpp',
                  'tests/fixtures/file_semantics/file_semantics.cpp', 'scripts/make_work_disk.py')]
     sources += [Path(__file__).resolve()]
     sources += list(overlay.rglob('*.h')) + list((ROOT / 'src/third_party/fatfs').glob('*.h'))
@@ -71,10 +79,7 @@ def main():
             run([os.getenv('CC', 'gcc'), '-std=c11', '-DXOS_GLIBC_FILE_TEST', *flags, *includes,
                  '-Wall', '-Wextra', '-Werror', '-Wconversion', '-Wshadow', '-c', str(source), '-o', str(obj)], name)
             objects.append(obj)
-        for name, relative in [('fatfs', 'src/third_party/fatfs/ff.c'),
-                               ('unicode', 'src/user/services/fatfs_unicode.cpp'),
-                               ('client', 'src/user/sdk/file_client.cpp'),
-                               ('text', 'src/user/sdk/text.cpp')]:
+        for name, relative in NATIVE_SOURCES:
             source = ROOT / relative
             obj = output / (name + '.o')
             run([os.getenv('CXX', 'g++'), '-std=c++20', *flags, *includes, '-c', str(source), '-o', str(obj)], name)

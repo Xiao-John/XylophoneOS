@@ -45,7 +45,11 @@ SDK 试行 `terminal_client.hpp` 可按启动者给出的 supervisor 与服务 P
 登记、files 克隆或 commit 失败时父进程 abort 子进程。登记传输失败时原会话结果
 可能未知；成功 commit 后服务失效会使子进程后续终端操作失败，而不撤销已成功 fork。
 `tty-run` 为该路径授予有限进程创建权限，受现有进程及 fork 深度限制；多线程运行库
-拒绝该启动扩展及 fork/exec。单线程 exec
+拒绝该启动扩展及 fork/exec；这里的多线程限制指既有 newlib 运行库。glibc 独立
+适配层以会话锁串行化请求、FD lease 保护阻塞 I/O，接收 startup v2/v3 终端继承；
+其模式转换、接口与六次客体结果见 [glibc 终端契约](glibc_terminal_v1.md) 和
+[e6b8c410](../work_log/e6b8c410_glibc_terminal.md)。glibc 出站终端继承另行实现。
+单线程 exec
 试行显式保留应用通道，并在 startup v3 中传递下一请求序号；目标必须声明 `.xos.exec`
 v3 和 `.xos.tty` v1。非 CLOEXEC 的终端描述符按原别名恢复，全部关闭时通道按原
 默认关闭；失败 exec 保持旧会话。该路径依赖调用者没有未完成请求，不保证断线或

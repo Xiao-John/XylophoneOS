@@ -27,7 +27,8 @@ long __xos_file_isatty (int) __attribute__ ((visibility ("hidden")));
 enum xos_file_kind
 {
   xos_file_kind_kernel = 1, xos_file_kind_file = 2,
-  xos_file_kind_pipe_read = 3, xos_file_kind_pipe_write = 4
+  xos_file_kind_pipe_read = 3, xos_file_kind_pipe_write = 4,
+  xos_file_kind_terminal = 5
 };
 struct xos_file_lease { int object; unsigned int kind, handle, flags; };
 long __xos_file_lease_acquire (int, int, struct xos_file_lease *)

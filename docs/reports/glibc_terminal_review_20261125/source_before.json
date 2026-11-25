@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "profile": "terminal",
+  "expected_runner_status": "passed",
+  "injection": "append a valid comment to a source only after the real final link succeeds",
+  "runner_sha256": "125f336bc59466cbcb0b666bd21699436ff0ad65881cada226bf5e3e0cb73ca6",
+  "mutation_path": "tests/fixtures/glibc_g3/terminal_runtime.cpp",
+  "input_sha256": "1b0e6e76442ab407f26e4a9c2f41fb546d62caf2cd2994112995dadac288bdeb",
+  "command": [
+    "${XOS_HOST_RUNTIME}/codex-primary-runtime/dependencies/python/bin/python3",
+    "${XOS_REPO}/build/terminal_source_binding_before/checkout/tests/glibc_terminal_host.py",
+    "--output",
+    "${XOS_REPO}/build/terminal_source_binding_before/qualification"
+  ],
+  "returncode": 0,
+  "changed_sha256": "c2fd5e6c873604927faf0a9c4c547f29f5f5135983ae48a30869fef9f1f977e3",
+  "linked_binary_sha256": "4a991e23beda66142f294df504619c00cc99c47fe7d3ca18d308af8e5ecfe0b8",
+  "runner_status": "passed",
+  "recorded_source_sha256": "c2fd5e6c873604927faf0a9c4c547f29f5f5135983ae48a30869fef9f1f977e3",
+  "runner_error": null
+}

@@ -1,0 +1,139 @@
+{
+  "status": "diagnostic_linked",
+  "diagnostic": true,
+  "sdk_manifest_sha256": "ade36f38cd935c9638bd91515208920ccc97a238edec66386cdb2ab49fbb8add",
+  "compiler": {
+    "available": true,
+    "path": "${XOS_TOOLCHAIN}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+    "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
+    "version_exit_code": 0,
+    "version": "x86_64-elf-gcc (GCC) 16.2.0"
+  },
+  "sanitized_environment": [],
+  "sources": {
+    "${XOS_REPO}/tests/fixtures/glibc_g3/terminal_public_probe.c": "fe629a91323f70fda120dc659023f37bf3efcdbf35b326be0dde630a5995d63b",
+    "${XOS_REPO}/build/terminal_blocking_negative_sector/mutation/xos_file_runtime.c": "33c2db8004cf104c9b49e36df3b43e9067250f9baa24f7cdeeeb4acc281d30d1"
+  },
+  "steps": [
+    {
+      "name": "compile-0",
+      "command": [
+        "${XOS_TOOLCHAIN}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "--sysroot=${XOS_REPO}/build/terminal_sdk_initial/sysroot",
+        "-O2",
+        "-g",
+        "-std=gnu11",
+        "-mno-red-zone",
+        "-fno-pie",
+        "-fno-omit-frame-pointer",
+        "-fno-builtin",
+        "-ftls-model=local-exec",
+        "-nostdinc",
+        "-isystem",
+        "${XOS_REPO}/build/terminal_sdk_initial/sysroot/usr/include",
+        "-isystem",
+        "${XOS_REPO}/build/terminal_sdk_initial/sysroot/usr/lib/compiler-include",
+        "-c",
+        "${XOS_REPO}/tests/fixtures/glibc_g3/terminal_public_probe.c",
+        "-o",
+        "${XOS_REPO}/build/terminal_blocking_negative_sector/terminal_lock_fault.elf.build/program_0.o"
+      ],
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "compile-1",
+      "command": [
+        "${XOS_TOOLCHAIN}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "--sysroot=${XOS_REPO}/build/terminal_sdk_initial/sysroot",
+        "-O2",
+        "-g",
+        "-std=gnu11",
+        "-mno-red-zone",
+        "-fno-pie",
+        "-fno-omit-frame-pointer",
+        "-fno-builtin",
+        "-ftls-model=local-exec",
+        "-nostdinc",
+        "-isystem",
+        "${XOS_REPO}/build/terminal_sdk_initial/sysroot/usr/include",
+        "-isystem",
+        "${XOS_REPO}/build/terminal_sdk_initial/sysroot/usr/lib/compiler-include",
+        "-c",
+        "${XOS_REPO}/build/terminal_blocking_negative_sector/mutation/xos_file_runtime.c",
+        "-o",
+        "${XOS_REPO}/build/terminal_blocking_negative_sector/terminal_lock_fault.elf.build/program_1.o"
+      ],
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "link",
+      "command": [
+        "${XOS_TOOLCHAIN}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "--sysroot=${XOS_REPO}/build/terminal_sdk_initial/sysroot",
+        "-static",
+        "-no-pie",
+        "-nostdlib",
+        "-Wl,--build-id=none",
+        "-Wl,-z,noexecstack",
+        "-Wl,-z,max-page-size=4096",
+        "-Wl,-T,${XOS_REPO}/build/terminal_sdk_initial/sysroot/user.ld",
+        "-o",
+        "${XOS_REPO}/build/terminal_blocking_negative_sector/terminal_lock_fault.elf",
+        "${XOS_REPO}/build/terminal_sdk_initial/sysroot/usr/lib/xos_start.o",
+        "${XOS_REPO}/build/terminal_sdk_initial/sysroot/usr/lib/crti.o",
+        "${XOS_REPO}/build/terminal_sdk_initial/sysroot/usr/lib/crtbegin.o",
+        "${XOS_REPO}/build/terminal_sdk_initial/sysroot/usr/lib/xos_start_c.o",
+        "${XOS_REPO}/build/terminal_blocking_negative_sector/terminal_lock_fault.elf.build/program_0.o",
+        "${XOS_REPO}/build/terminal_blocking_negative_sector/terminal_lock_fault.elf.build/program_1.o",
+        "-Wl,--start-group",
+        "${XOS_REPO}/build/terminal_sdk_initial/sysroot/usr/lib/libc.a",
+        "${XOS_REPO}/build/terminal_sdk_initial/sysroot/usr/lib/libm.a",
+        "${XOS_REPO}/build/terminal_sdk_initial/sysroot/usr/lib/libxos_terminal.a",
+        "${XOS_REPO}/build/terminal_sdk_initial/sysroot/usr/lib/libgcc.a",
+        "-Wl,--end-group",
+        "${XOS_REPO}/build/terminal_sdk_initial/sysroot/usr/lib/crtend.o",
+        "${XOS_REPO}/build/terminal_sdk_initial/sysroot/usr/lib/crtn.o"
+      ],
+      "exit_code": 0,
+      "log_sha256": "723d6453a0da453216e78e7f2e196ccf725f590eeb305a3a275d37f740132b50"
+    }
+  ],
+  "guest_qualification": "not_run",
+  "program_headers": [
+    {
+      "type": 1,
+      "flags": 5,
+      "virtual_address": 1073741824,
+      "file_size": 407334,
+      "memory_size": 407334,
+      "alignment": 4096
+    },
+    {
+      "type": 1,
+      "flags": 4,
+      "virtual_address": 1074151424,
+      "file_size": 174952,
+      "memory_size": 174952,
+      "alignment": 4096
+    },
+    {
+      "type": 1,
+      "flags": 6,
+      "virtual_address": 1074327552,
+      "file_size": 14016,
+      "memory_size": 31224,
+      "alignment": 4096
+    },
+    {
+      "type": 7,
+      "flags": 4,
+      "virtual_address": 1074341512,
+      "file_size": 56,
+      "memory_size": 80,
+      "alignment": 8
+    }
+  ],
+  "elf_sha256": "b72525c90388761181698d1a3cc6c27c25c100256ab556d3652e5f2369cec6b6"
+}

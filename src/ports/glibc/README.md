@@ -68,7 +68,8 @@ application constructors; the application errno state starts at zero.
 
 G2 console I/O uses inherited kernel standard handles.  File-backed inherited
 descriptors and startup v3 require the separate G3 file backend capability;
-terminal handoff and path-based spawn redirection currently fail explicitly.
+terminal handoff is supplied by the G3 terminal adapter below. Path-based spawn
+redirection currently fails explicitly.
 The linker preserves a per-program `.xos.exec` marker when a qualified fixture
 provides one.  Ordinary G2 programs do not advertise exec restoration support.
 
@@ -101,3 +102,18 @@ glibc APIs, concurrent threads, a native parent sharing a file with a glibc
 child, and final resource recovery. Directory streams use the opt-in identity
 format of files op 2; positioned I/O uses op 30/31. Older services fail this
 extension explicitly; old directory clients retain their existing wire format.
+
+## G3 authenticated terminal adapter
+
+`libxos_terminal.a` contains the existing terminal v2 client and a freestanding
+adapter compiled only against glibc and native `xos/` headers. The SDK builder
+records its inputs and licenses and rejects C++ constructor/runtime dependencies.
+Link it inside the same archive group as libc; `build_glibc_program.py` does this.
+The actual adapter supplies `.xos.tty` v1, startup v2 authorization and v3 sequence
+restoration, and one retained terminal object for aliased FDs. Terminal I/O releases
+the file-table lock and serializes complete requests on an independent wait lock.
+The public subset includes tcgetattr/tcsetattr/tcdrain/TCIFLUSH and the documented
+TCGETS/TCSETS/FIOCLEX ioctl family. Unsupported modes and O_NONBLOCK changes fail
+explicitly. Details and the still-deferred outgoing terminal inheritance are in
+`docs/contracts/glibc_terminal_v1.md`; host and real guest qualification use
+`tests/glibc_terminal_host.py` and `tests/glibc_terminal_guest.py`.

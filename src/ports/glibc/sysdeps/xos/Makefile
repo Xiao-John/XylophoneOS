@@ -23,3 +23,6 @@ endif
 ifeq ($(subdir),dirent)
 sysdep_routines += xos_file_directory
 endif
+ifeq ($(subdir),termios)
+sysdep_routines += xos_terminal_runtime
+endif

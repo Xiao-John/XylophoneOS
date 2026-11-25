@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "files": {
+    "abi.json": "7f848d79e98a6ac58e98898e9426ba9b125e7cdc8d239537d0228d2d9ffaf9bf",
+    "build_inputs.json": "f4f829b3b8759e8f623acf7affc630aa8d9f36d96027b495d220d7b0196bdffa",
+    "derivation.json": "db2557b3cdb42e98e018fcb43c8fbec82555b8ccb5b95a74181965d705174fbf",
+    "earlier_results.json": "9bebe5cdfe71c5bd6771fdb11dddc4aa6f6972ec2f99ad6a7f482b893157907f",
+    "files_regression.json": "c066750a499a08b5745897891f27abdd68af34765f72fafab5995e2a1bfd5a8b",
+    "guest.json": "df5884071828ca0e2cc816aecf740c92a5276687bc25aeaae04088dab3fa98a6",
+    "guest_serial.log": "67a8f29e85dc715a69201e84f4b29ce7a45d4718276509aa3445cf085bd6494f",
+    "host.json": "38525ce0ccdc214c873bbdd8d2d1307fb24b858eb885f9580f6ce68181e38ccd",
+    "host_sanitized.json": "7426fa36896b2f85450083ce58d86fc50c5e98fed41955adee2b9adda3f4f3d9",
+    "legacy_first_boot_failure.json": "afa4a20de61441f4cb0d7c6729fb94149276a0410ce0920d6f2940f2184a5cf0",
+    "legacy_first_boot_failure_serial.log": "205a151ba7d8adc856bbebc335f46ec437583a4d8b8cbeb15b75f13bfe504f2d",
+    "legacy_guest.json": "5b0d5918347164f37fab4fe2edfd41519a092f2ecd40bcbf610f9a693e61c690",
+    "legacy_serial.log": "0df15821751f902eff72136d9144962345153d3ed30ec5f5b2000b5654e55417",
+    "qualification.json": "0ea3afb1a0e460c2e974df10e1fb4649b6a6a6b976a57ff7e371bfefeaba0e96",
+    "support_build.json": "4a1749f6d784c208fcf570dc7faee2860c26409bea837d2f18434892f6652938",
+    "support_sections.log": "a1040be601f1378ac8757ad0e38b60fdaf06f30c3e6f64ef0509b24e2b23bdd9",
+    "support_undefined.log": "2da9da4bc714826825763e110a690247bf1e603e1beff1caa552faded91de23f",
+    "upstream_signature.json": "66650d873fa5ce60abb70e5f3497227f203ea9e8e24283a7307c39cd1dbaea77"
+  }
+}

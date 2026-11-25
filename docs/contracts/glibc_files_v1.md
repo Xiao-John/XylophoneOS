@@ -104,8 +104,10 @@ console/pipe 保持各自独立 route，可输出诊断并退出。进程销毁�
 
 G2 CRT 在进入 glibc 前设置 hidden `__xos_startup`。文件后端惰性读取，先验证
 startup 映射范围、对齐、magic、version、扩展长度、flags 与保留字段。
-hidden 常量 `__xos_file_startup_capabilities = 1` 表示链接了本接收后端；CRT 可用
-weak 引用识别该能力。G2 基础 console profile 仍可单独链接。
+hidden 常量 `__xos_file_startup_capabilities` 的 bit0 表示链接了本接收后端，
+bit1 表示已链接真实终端后端；本组合值为 3，CRT 可用 weak 引用识别这些能力。
+G2 基础 console profile 仍可单独链接。终端 startup v2/v3、kind5 与授权检查见
+[glibc 终端契约](glibc_terminal_v1.md)。
 
 - v1：接收 0/1/2 标准 route。
 - v2：接收 loader 已授权转移的文件句柄和关闭 mask，不重新按路径打开。
@@ -122,12 +124,13 @@ glibc 的 fork/exec/spawn 出站路径须由后续独立模块提供。
 ## 明确支持范围
 
 `F_GETFD/F_SETFD/F_DUPFD/F_DUPFD_CLOEXEC/F_GETFL` 支持；`F_SETFL` 可变更
-本地 O_NONBLOCK，改变 O_APPEND 返回 ENOTSUP（既有服务没有该句柄操作）。
+本地 O_NONBLOCK；终端对象请求该标志返回 ENOTSUP 并保持原 flags。改变
+O_APPEND 返回 ENOTSUP（既有服务没有该句柄操作）。
 文件系统无 symlink，NOFOLLOW 和 AT_SYMLINK_NOFOLLOW 按此 profile 处理。
 相对路径的 `openat/fstatat` 支持 AT_FDCWD；其他 dirfd 相对路径返回 ENOTSUP。
 `AT_EMPTY_PATH` 可查询已打开的 FD。未知操作返回确定错误。
 
-terminal 会话、路径型启动重定向、文件锁、mmap 文件
+路径型启动重定向、文件锁、mmap 文件
 映射、glibc 出站 fork/exec/spawn 与异步取消暂不属于本模块。fsync 调用真实 files
 sync，其他尚未实现操作沿用上游或 XOS 的明确失败路径。
 

@@ -12,6 +12,7 @@ from pathlib import Path
 import re
 import secrets
 import socket
+import struct
 import sys
 import tempfile
 import threading
@@ -52,7 +53,7 @@ def main():
     report = {"status": "not_run", "runner_sha256": sha(__file__), "checks": [],
               "not_run": ["DNS", "TLS", "redirect_navigation", "remote_keyboard_navigation",
                           "forced_service_death", "hardware_network",
-                          "remote_BMP", "remote_reload_history_tabs", "in_process_budget_reset",
+                          "remote_reload_history_tabs", "in_process_budget_reset",
                           "GUI_responsiveness_during_synchronous_fetch"]}
     guest = server = worker = None
     host = {"requests": []}
@@ -88,12 +89,19 @@ def main():
             if sha(name) != digest:
                 raise ValueError("Browser input mismatch: " + name)
         nonce = secrets.token_hex(16)
-        page_path, css_path = f"/{nonce}/index.html", f"/{nonce}/theme.css"
+        page_path = f"/{nonce}/index.html"
+        css_path = f"/{nonce}/theme.css"
+        bmp_path = f"/{nonce}/proof.bmp"
+        bmp_color = (183, 53, 118)
+        pixels = bytes(reversed(bmp_color)) * (32 * 32)
+        bmp = (struct.pack("<2sIHHI", b"BM", 54 + len(pixels), 0, 0, 54)
+               + struct.pack("<IiiHHIIiiII", 40, 32, 32, 1, 24, 0, len(pixels), 0, 0, 0, 0)
+               + pixels)
         css = b"body { color: #18324c; background-color: #f4f7fc; } h1 { font-size: 24px; }"
         page = ("<html><head><title>HTTP " + nonce + "</title>"
                 '<link rel="stylesheet" href="theme.css"></head><body>'
-                "<h1>Native HTTP</h1><p>" + nonce + "</p></body></html>").encode()
-        bodies = {page_path: page, css_path: css}
+                "<h1>Native HTTP</h1><p>" + nonce + '</p><img src="proof.bmp"></body></html>').encode()
+        bodies = {page_path: page, css_path: css, bmp_path: bmp}
         report.update(build_id=manifest["build_id"], image_sha256=sha(system / "xos-install.iso"),
                       browser_sha256=sha(payload), receipt_sha256=sha(receipt_path),
                       challenge_sha256={name: hashlib.sha256(body).hexdigest() for name, body in bodies.items()})
@@ -108,6 +116,12 @@ def main():
             f"/{nonce}/other-origin.html": f"http://10.0.2.2:{other_port}/{nonce}/theme.css",
             f"/{nonce}/local-resource.html": "file:/web/theme.css",
         }
+        error_pages = {
+            f"/{nonce}/not-found.html": ("404 Not Found", 0, b"Page error: HTTP status 404"),
+            f"/{nonce}/truncated.html": ("200 OK", 16, b"Page error: HTTP request failed"),
+        }
+        for target in error_pages:
+            bodies[target] = page
         for target, style in denied_styles.items():
             bodies[target] = (f'<html><head><link rel="stylesheet" href="{style}"></head>'
                               '<body><p>Resource must be rejected</p></body></html>').encode()
@@ -142,7 +156,8 @@ def main():
                         if headers.get("host") != authority or headers.get("connection", "").lower() != "close":
                             raise ValueError("HTTP authority/close contract mismatch")
                         body = bodies[target]
-                        head = (f"HTTP/1.1 200 OK\r\nContent-Length: {len(body)}\r\n"
+                        status, missing, _ = error_pages.get(target, ("200 OK", 0, b""))
+                        head = (f"HTTP/1.1 {status}\r\nContent-Length: {len(body) + missing}\r\n"
                                 "Connection: close\r\n\r\n").encode()
                         # Split actual network writes across framing and body boundaries.
                         connection.sendall(head[:11])
@@ -197,14 +212,16 @@ def main():
                         if picture.size != (800, 600):
                             return False
                         colors = {rgb: count for count, rgb in picture.crop((32, 222, 768, 550)).getcolors(800 * 600)}
-                        return colors.get((244, 247, 252), 0) > 5000 and colors.get((24, 50, 76), 0) > 30
+                        return (colors.get((244, 247, 252), 0) > 5000
+                                and colors.get((24, 50, 76), 0) > 30
+                                and colors.get(bmp_color, 0) >= 32 * 32)
 
                     picture = wait_for_scanout(guest, screenshot, painted)
                     picture.save(out / "http-browser.png")
                     report["screenshot_sha256"] = sha(out / "http-browser.png")
-                    report["checks"].append("remote_stylesheet_background_and_text_pixels")
+                    report["checks"].append("remote_stylesheet_text_and_bmp_pixels")
                 exit_browser(guest, begin, baseline)
-                report["checks"].append(f"fresh_http_css_close_resources_cycle_{cycle}")
+                report["checks"].append(f"fresh_http_css_bmp_close_resources_cycle_{cycle}")
             for target in denied_styles:
                 begin = len(guest.output)
                 candidate = "http://" + authority + target
@@ -216,7 +233,17 @@ def main():
                 if b"BROWSER_CSS_LOADED" in guest.output[begin:] or b"BROWSER_LOADED path=" in guest.output[begin:]:
                     raise AssertionError("Rejected resource was loaded")
                 report["checks"].append("reject_http_" + target.rsplit("/", 1)[1].removesuffix(".html"))
-            expected = [page_path, css_path] * 3 + list(denied_styles)
+            for target, (_, _, marker) in error_pages.items():
+                begin = len(guest.output)
+                candidate = "http://" + authority + target
+                send_bytes(guest, f"exec-file /bin/aurora.elf --network-service-pid {service_pid} {candidate}\r".encode())
+                guest.expect(marker, start=begin, timeout=90)
+                guest.expect(b"BROWSER_READY engine=litehtml-0.9 local_only=0", start=begin, timeout=90)
+                exit_browser(guest, begin, baseline)
+                if b"BROWSER_LOADED path=" in guest.output[begin:]:
+                    raise AssertionError("Error response was loaded")
+                report["checks"].append("reject_http_" + target.rsplit("/", 1)[1].removesuffix(".html"))
+            expected = [page_path, css_path, bmp_path] * 3 + list(denied_styles) + list(error_pages)
             if host.get("error") or sorted(host["requests"]) != sorted(expected):
                 raise AssertionError(str(host))
             stop_graphics(guest, display, compositor)
@@ -244,7 +271,7 @@ def main():
         (out / "report.json").write_text(json.dumps(report, indent=2) + "\n")
     if report["status"] != "passed":
         raise SystemExit("Guest qualification did not pass")
-    print("PASS: fresh native HTTP/CSS in the real browser, three exits and exact resources")
+    print("PASS: fresh native HTTP/CSS/BMP, rejected responses, and exact resources")
 
 
 if __name__ == "__main__":

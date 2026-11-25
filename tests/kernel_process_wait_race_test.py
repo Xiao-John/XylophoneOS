@@ -38,7 +38,9 @@ def main():
     parser.add_argument("--output", type=Path)
     parser.add_argument("--sanitize", action="store_true")
     args = parser.parse_args()
-    source = args.source.read_text()
+    source_bytes = args.source.read_bytes()
+    source = source_bytes.decode('utf-8')
+    source_sha256 = hashlib.sha256(source_bytes).hexdigest()
     records = source[source.index("constexpr u64 user_base"):
                      source.index("enum class ipc_v1_call_state")]
     signatures = (
@@ -98,7 +100,7 @@ void* wait_syscall(interrupt_frame* frame) {
             environment['ASAN_OPTIONS'] = 'detect_leaks=0:abort_on_error=1'
             environment['UBSAN_OPTIONS'] = 'halt_on_error=1:print_stacktrace=1'
         report = {'status': 'failed', 'scope': 'production tasks.cpp wait/finish/deferred delivery extraction',
-                  'command': command, 'source_sha256': hashlib.sha256(args.source.read_bytes()).hexdigest(),
+                  'command': command, 'source_sha256': source_sha256,
                   'sanitizers': ['address', 'undefined'] if args.sanitize else [],
                   'guest': 'not_run', 'leak_sanitizer': 'not_run', 'results': []}
         inputs = [repo_root / 'tests/kernel_process_wait_race_test.cpp', Path(__file__).resolve()]

@@ -34,7 +34,9 @@ u64 child(const char* mode, u64 milliseconds, u64 code) {
 }
 process_status sentinel() { return {99, process_outcome::faulted, 123, 57, 4, 5, 6}; }
 bool unchanged(const process_status& status) {
-    return status.version == 99 && status.pid == 123 && status.code == 57 && status.vector == 4;
+    return status.version == 99 && status.outcome == process_outcome::faulted &&
+           status.pid == 123 && status.code == 57 && status.vector == 4 &&
+           status.address == 5 && status.instruction == 6;
 }
 void no_child() {
     process_status status = sentinel();

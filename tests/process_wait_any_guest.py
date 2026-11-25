@@ -29,6 +29,31 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def system_identity(system):
+    """Freeze one validated system identity, including its manifest bytes."""
+    manifest_path = system / 'manifest.json'
+    manifest_bytes = manifest_path.read_bytes()
+    manifest = json.loads(manifest_bytes)
+    if bind_system(system) != manifest or manifest_path.read_bytes() != manifest_bytes:
+        raise RuntimeError('system manifest changed while binding acceptance inputs')
+    identity = {'build_id': manifest['build_id'],
+                'source_sha256': manifest['source_sha256'],
+                'system_manifest_sha256': hashlib.sha256(manifest_bytes).hexdigest()}
+    for name, key in [('xos-install.iso', 'iso_sha256'), ('sdk/manifest.json', 'sdk_manifest_sha256')]:
+        actual = sha(system / name)
+        if actual != manifest['artifacts'][name]['sha256']:
+            raise RuntimeError('system artifact changed while binding acceptance inputs: ' + name)
+        identity[key] = actual
+    return identity
+
+
+def verify_system_identity(system, expected):
+    current = system_identity(system)
+    for name, value in current.items():
+        if value != expected[name]:
+            raise RuntimeError('system identity changed during acceptance: ' + name)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--system', type=Path, required=True)
@@ -48,12 +73,8 @@ def main():
         (output / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
 
     try:
-        manifest = bind_system(system)
-        report['build_id'] = manifest['build_id']
-        report['source_sha256'] = manifest['source_sha256']
-        report['system_manifest_sha256'] = sha(system / 'manifest.json')
-        report['iso_sha256'] = sha(system / 'xos-install.iso')
-        report['sdk_manifest_sha256'] = sha(system / 'sdk/manifest.json')
+        initial_system = system_identity(system)
+        report.update(initial_system)
         report['tools'] = {name: tool_identity(name) for name in ('x86_64-elf-g++', 'qemu-system-x86_64')}
         environment, removed = clean_build_environment(os.environ)
         environment['LC_ALL'] = 'C'
@@ -105,6 +126,7 @@ def main():
             for name in report['elfs']:
                 transfer(disk, 'import', '/bin/' + name, output / (name + '.elf'))
             report['work_disk_initial_sha256'] = sha(disk)
+            verify_system_identity(system, initial_system)
             guest = Guest(system / 'xos-install.iso', 'process_wait_any',
                           work_disk=disk, iso=True, qmp_enabled=False)
             report['qemu_command'] = guest.command
@@ -158,7 +180,7 @@ def main():
                                 'fault/kill status identity', 'exec preserves existing children without PID cache',
                                 'orphan and foreground cancellation lifecycle', 'exact resource recovery each run']
             report['work_disk_final_sha256'] = sha(disk)
-        bind_system(system)
+        verify_system_identity(system, initial_system)
         for relative, expected in report['sources'].items():
             if sha(ROOT / relative) != expected:
                 raise RuntimeError('guest source changed during acceptance')

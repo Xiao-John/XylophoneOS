@@ -45,6 +45,9 @@ owned building 子进程主线程指针；1 `current_thread` 允许调用线程�
 校验见 [线程契约](threading.md#当前线程安装运行库线程指针)。本扩展供隔离 glibc
 G2/G3 候选使用，SDK 单独记录能力与客体验证；不更换默认 libc。
 
+sys20 第三参数 bit0 为非阻塞，bit1 与第一参数为零共同选择显式
+[wait-any](process_wait.md)；旧精确 PID 请求的 flags 0/1 保持原行为。
+
 数值来源分别为内核基础syscall头与共享ABI头；此表锁定当前分配，自动检查捕获重号、漏项、
 新增占用预留段而未登记，以及源码与本表偏移。allocated不等于完整POSIX或应用资格。
 
@@ -69,7 +72,7 @@ G2/G3 候选使用，SDK 单独记录能力与客体验证；不更换默认 lib
 | 17 | `sys_process_map` | `src/shared/include/xos/process_abi.hpp` |
 | 18 | `sys_process_start` | `src/shared/include/xos/process_abi.hpp` |
 | 19 | `sys_process_abort` | `src/shared/include/xos/process_abi.hpp` |
-| 20 | `sys_process_wait` | `src/shared/include/xos/process_abi.hpp`；third bit0 非阻塞，新增 bit1 + first=0 显式 [wait-any](process_wait.md)，旧精确 PID 0/1 请求保持 |
+| 20 | `sys_process_wait` | `src/shared/include/xos/process_abi.hpp` |
 | 21 | `sys_process_stats` | `src/shared/include/xos/process_abi.hpp` |
 | 22 | `sys_ipc_handles` | `src/shared/include/xos/process_abi.hpp` |
 | 23 | `sys_block_read` | `src/shared/include/xos/process_abi.hpp` |

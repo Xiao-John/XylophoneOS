@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "files": {
+    "identity_host.json": "72d76e6e26de70552df0be23851c291ada14aaead4367e4987b7372cf80d8296",
+    "kernel_wait_host.json": "cad51fd2497d67d07c13c81038ad2abafda76c822b077891699b0e0a8525e6c7",
+    "kernel_wait_host.log": "cdae79502181c6f3dcce8bea9e72ef134b001926eaa6dcdbe0e3da6443a0f670",
+    "kernel_wait_sanitized.json": "632610e523986cc82c0e5990ed2c5487a97256b7044f7694a7a84bc561fb6b92",
+    "kernel_wait_sanitized.log": "cdae79502181c6f3dcce8bea9e72ef134b001926eaa6dcdbe0e3da6443a0f670",
+    "source_snapshot_host.json": "66a909fa5b5e04e01c12f09c6c9b96f4741772c002fba353701c81fa79fef882",
+    "source_snapshot_host.log": "cdae79502181c6f3dcce8bea9e72ef134b001926eaa6dcdbe0e3da6443a0f670",
+    "summary.json": "c3a291a0ea5cfabfbad70f95c0be3e18dc467251da3de092148dedb8bffe1cd6"
+  }
+}

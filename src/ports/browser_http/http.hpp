@@ -3,8 +3,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-// Pure, allocation-free preparatory parsing. No socket, TLS, DNS or privilege.
-// The eventual transport must enforce monotonic deadlines and controlled peers.
+// Pure, allocation-free parsing. No socket, TLS, DNS or privilege.
+// The separate native transport enforces deadlines and controlled peers.
 namespace browser_http {
 constexpr size_t max_url = 2048, max_headers = 16384, max_body = 1024 * 1024;
 enum class error { ok, need_more, invalid, unsupported, too_large, truncated };

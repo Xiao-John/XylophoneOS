@@ -52,7 +52,7 @@ xsh> net_ping
 [net_ping] reply seq=1 rtt_ms=100
 ```
 
-`net_ping` 不启动设备：先由 supervisor `net-start <instance>` 授予设备并启动 `net` 服务，
+`net_ping` 不启动设备：先由 supervisor `net-start <instance> raw` 授予设备并启动 `net` 服务，
 再由探针通过命名 IPC 连接。`net-stop` 停止服务。
 
 ## 已知限制

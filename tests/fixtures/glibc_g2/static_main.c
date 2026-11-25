@@ -102,10 +102,15 @@ main (int argc, char **argv, char **envp)
   CHECK (observed_malloc (impossible) == NULL && errno == ENOMEM);
 
   jmp_buf checkpoint;
-  int jumped = setjmp (checkpoint);
-  if (jumped == 0)
-    longjmp (checkpoint, 7);
-  CHECK (jumped == 7);
+  switch (setjmp (checkpoint))
+    {
+    case 0:
+      longjmp (checkpoint, 7);
+    case 7:
+      break;
+    default:
+      CHECK (0);
+    }
 
   char formatted[80];
   CHECK (snprintf (formatted, sizeof (formatted), "%s:%d:%" PRIx64,

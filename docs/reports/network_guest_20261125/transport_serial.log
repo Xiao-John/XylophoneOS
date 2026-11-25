@@ -1,0 +1,296 @@
+XOS: loading stage_two
+[loader] firmware=bios target=x86_64
+[boot] event=kernel_enter arch=x86_64 build=2f5890c5859e2625
+[boot] event=boot_info_valid memory_map=complete
+[boot] event=runtime_checked bss=zero data=valid
+[cpu] event=exceptions_ready idt=0x0000000000263110 vectors=32 double_fault_ist=1
+[display] state=ready width=800 height=600 stride=3200 physical=0x00000000fd000000 bytes=1920000 cache=uc user_mapping=none
+[display] backend=vbe fallback=1
+[mem] event=initialized usable_kib=523775 managed_kib=524160 pages=131040 free_pages=130181 allocated_pages=1
+[mem] event=window low=0x0000000000100000 high=0x000000001ffe0000
+[vm] event=self_check result=pass address=0x0000000040000000 physical=0x000000000035b000
+[block] event=ready device=ata sectors=1048576
+[task] event=created pid=1 name=heartbeat
+[task] event=created pid=2 name=spinner
+[task] event=created pid=3 name=receiver
+[task] event=created pid=4 name=sender
+[task] event=created pid=5 name=probe
+[task] event=created pid=6 name=quitter
+[task] event=created pid=7 name=supervisor bootstrap=trusted_segments
+[task] event=created pid=8 name=files bootstrap=trusted_segments
+[task] event=ready count=8
+[boot] result=ready stage=E04
+The underscores made it to 64 bits.
+
+  ================================================
+   XOS 0.0.2 | 64-bit | more checks than excuses
+   Guest star: Guo YePeng (did not panic, yet)
+   "It booted on my machine." - everyone, ever
+  ================================================
+   guo = ceremonial greeting    joke = deterministic
+   help = actual work
+xos64> run
+[sched] event=starting
+[input] ps2=ready irq1=enabled irq12=enabled
+[sched] event=start tasks=8
+Abad length
+bad pointer
+tx
+bad handle rejected
+no send right
+[task] event=fault pid=5 vector=14 rip=0x0000000040000060 cr2=0x0000000000100000 result=killed tid=5
+[task] event=reclaimed pid=5 pages=11
+bye
+[task] event=reclaimed pid=6 pages=11
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+[files] ready hello.elf bytes=9872
+
+Welcome to Xshell | XylophoneOS
+help: commands   dash -i: POSIX shell   trace on: diagnostics
+
+Abad length
+bad pointer
+Aping
+bad length
+bad pointer
+tx
+AAping
+Abad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+xsh> tping
+bad length
+bad pointer
+tx
+race on
+xsh: trace on
+xsh> Ademo quietping
+bad length
+bad pointer
+tx
+
+[task] event=killed_by_supervisor pid=1
+[task] event=reclaimed pid=1 pages=11
+[task] event=killed_by_supervisor pid=2
+[task] event=reclaimed pid=2 pages=11
+[task] event=killed_by_supervisor pid=3
+[task] event=reclaimed pid=3 pages=11
+[task] event=killed_by_supervisor pid=4
+[task] event=reclaimed pid=4 pages=11
+[sup] demo tasks stopped
+xsh> audio stop
+[task] event=reclaimed pid=9 pages=96
+audio: service stopped
+xsh> net-probe 41
+[process] event=started pid=10 parent=7
+[process] pid=10 address_space=0x000000000035b000
+[process] event=wait_blocked parent=7 child=10
+[net-probe] tx=1 rx_arp=1 irq=1
+[net] close=0
+NET_USER_DRIVER_PASS
+[task] event=reclaimed pid=10 pages=103
+[wait] pid=10 kind=exited code=0
+xsh> stats
+[resources] free=129799 tasks=2 completions=0
+xsh> net-start 41
+[process] event=started pid=11 parent=7
+[process] pid=11 address_space=0x000000000035b000
+[net-start] pid=11
+xsh> [net] ready native_v2=1 user_driver=1 lwip=2.2.1 sessions=4 raw_ethernet=0
+stats
+[resources] free=129630 tasks=3 completions=1
+xsh> exec-file /bin/netprobe.elf http 11 56615 235471e83e08354b425a88d43a3679be
+[process] event=started pid=12 parent=7
+[process] pid=12 address_space=0x0000000000582000
+[loader] started pid=12 file=/bin/netprobe.elf
+[process] event=wait_blocked parent=7 child=12
+NET2_HTTP status=201 bytes=32 data=42e927d82a61e63157ae9f6f477ae027ad4989b378f2bc56594847bce25077d6
+NET2_GUEST_PASS
+[task] event=reclaimed pid=12 pages=63
+[wait] pid=12 kind=exited code=0
+xsh> stats
+[resources] free=129630 tasks=3 completions=1
+xsh> exec-file /bin/netprobe.elf udp 11 44997 3cd4ad6fdfffa489bc39464a2534c37a
+[process] event=started pid=13 parent=7
+[process] pid=13 address_space=0x0000000000582000
+[loader] started pid=13 file=/bin/netprobe.elf
+[process] event=wait_blocked parent=7 child=13
+NET2_UDP bytes=32 data=2ec2ab1cbfd5a09608a05fecf364a3ed394fe226e1a153941ee934369cc60650
+NET2_GUEST_PASS
+[task] event=reclaimed pid=13 pages=63
+[wait] pid=13 kind=exited code=0
+xsh> stats
+[resources] free=129630 tasks=3 completions=1
+xsh> exec-file /bin/netprobe.elf tcp_close 11 50213 63ce09813f70fb85e670b026e967fc91
+[process] event=started pid=14 parent=7
+[process] pid=14 address_space=0x0000000000582000
+[loader] started pid=14 file=/bin/netprobe.elf
+[process] event=wait_blocked parent=7 child=14
+NET2_TCP bytes=32 data=a163ea3e5857540c8aa9113a72a8d6a11bb0001f7ddbffaa39a4636a02f772ff
+NET2_GUEST_PASS
+[task] event=reclaimed pid=14 pages=63
+[wait] pid=14 kind=exited code=0
+xsh> stats
+[resources] free=129630 tasks=3 completions=1
+xsh> /bin/dash /tests/netprobe.sh http 11 60475 9c90b3cc6a52f877ee0119a891619b8a
+[process] event=started pid=15 parent=7
+[process] pid=15 address_space=0x0000000000582000
+[loader] started pid=15 file=/bin/dash
+[process] event=wait_blocked parent=7 child=15
+[process] event=started pid=16 parent=15
+[process] pid=16 address_space=0x0000000000625000
+[process] event=wait_blocked parent=15 child=16
+NET2_HTTP status=201 bytes=32 data=c3db5d0a9832594d664a56e944015460f02cb08dda0587bc34321de3609fad13
+NET2_GUEST_PASS
+[task] event=reclaimed pid=16 pages=63
+[task] event=reclaimed pid=15 pages=163
+[wait] pid=15 kind=exited code=0
+xsh> stats
+[resources] free=129630 tasks=3 completions=1
+xsh> /bin/dash /tests/netprobe.sh udp 11 45591 d94d30f7bb0ee26a0c98df76f25915a1
+[process] event=started pid=17 parent=7
+[process] pid=17 address_space=0x0000000000582000
+[loader] started pid=17 file=/bin/dash
+[process] event=wait_blocked parent=7 child=17
+[process] event=started pid=18 parent=17
+[process] pid=18 address_space=0x0000000000625000
+[process] event=wait_blocked parent=17 child=18
+NET2_UDP bytes=32 data=b4ce3e34767ea53e8b546e990e28a7f9bdc9b7aded2981bbd53eabf7f8537ad1
+NET2_GUEST_PASS
+[task] event=reclaimed pid=18 pages=63
+[task] event=reclaimed pid=17 pages=163
+[wait] pid=17 kind=exited code=0
+xsh> stats
+[resources] free=129630 tasks=3 completions=1
+xsh> /bin/dash /tests/netprobe.sh tcp_close 11 54995 72a906d936417375d9c7b0e890f9b3ca
+[process] event=started pid=19 parent=7
+[process] pid=19 address_space=0x0000000000582000
+[loader] started pid=19 file=/bin/dash
+[process] event=wait_blocked parent=7 child=19
+[process] event=started pid=20 parent=19
+[process] pid=20 address_space=0x0000000000625000
+[process] event=wait_blocked parent=19 child=20
+NET2_TCP bytes=32 data=93aac31c44f8bd144744a270e79b34726a08fd9f277282678f3f170246cd6501
+NET2_GUEST_PASS
+[task] event=reclaimed pid=20 pages=63
+[task] event=reclaimed pid=19 pages=163
+[wait] pid=19 kind=exited code=0
+xsh> stats
+[resources] free=129630 tasks=3 completions=1
+xsh> spawn-file /bin/netprobe.elf http 11 49055 5d62fb4835c916389979d1ffd146bd6d
+[process] event=started pid=21 parent=7
+[process] pid=21 address_space=0x0000000000582000
+[loader] started pid=21 file=/bin/netprobe.elf
+xsh> spawn-file /bin/netprobe.elf udp 11 32797 58f31bc476a8937ae426e447e2b678f0
+[process] event=started pid=22 parent=7
+[process] pid=22 address_space=0x00000000005c1000
+[loader] started pid=22 file=/bin/netprobe.elf
+xsh> spawn-file /bin/netprobe.elf http 11 59487 c9c9f82a13bde1ca54bb525fa4a7587d
+[process] event=started pid=23 parent=7
+[process] pid=23 address_space=0x0000000000600000
+[loader] started pid=23 file=/bin/netprobe.elf
+xsh> spawn-file /bin/netprobe.elf udp 11 49121 9c24c586156ca7da49673d07698f8f56
+[process] event=started pid=24 parent=7
+[process] pid=24 address_space=0x000000000063f000
+[loader] started pid=24 file=/bin/netprobe.elf
+xsh> wait 21
+[process] event=wait_blocked parent=7 child=21
+NET2_UDP bytes=32 data=93ca8bb69f9bee9f475a29f98102ca3c12b8d4e6e3d2e8117a62f3e0d2d77947
+NET2_GUEST_PASS
+[task] event=reclaimed pid=22 pages=63
+NET2_HTTP status=201 bytes=32 data=ee82ffcd6de87ae0a5fec8eaaead52710f0ca3a1bcecc7d7e4afac229a212783
+NET2_GUEST_PASS
+[task] event=reclaimed pid=21 pages=63
+NET2_HTTP status=201 bytes=32 data=12b266a29d4b25c1adbc100ffd78e995e2eb59978495c879bdbd592e175b4ff4
+NET2_GUEST_PASS
+[task] event=reclaimed pid=23 pages=63
+NET2_UDP bytes=32 data=0b861b6c9083dd86851de41777960ff0602a0d7259a6d307f92c27c254be5517
+NET2_GUEST_PASS
+[task] event=reclaimed pid=24 pages=63
+[wait] pid=21 kind=exited code=0
+xsh> wait 22
+[wait] pid=22 kind=exited code=0
+xsh> wait 23
+[wait] pid=23 kind=exited code=0
+xsh> wait 24
+[wait] pid=24 kind=exited code=0
+xsh> stats
+[resources] free=129630 tasks=3 completions=1
+xsh> exec-file /bin/netprobe.elf http 12 9 1b25ceafaf6db43abfdc870f3e0c876a
+[process] event=started pid=25 parent=7
+[process] pid=25 address_space=0x0000000000582000
+[loader] started pid=25 file=/bin/netprobe.elf
+[process] event=wait_blocked parent=7 child=25
+NET2_FAIL error=-202
+[task] event=reclaimed pid=25 pages=63
+[wait] pid=25 kind=exited code=1
+xsh> stats
+[resources] free=129630 tasks=3 completions=1
+xsh> exec-file /bin/netprobe.elf http 11 53129 1b25ceafaf6db43abfdc870f3e0c876a
+[process] event=started pid=26 parent=7
+[process] pid=26 address_space=0x0000000000582000
+[loader] started pid=26 file=/bin/netprobe.elf
+[process] event=wait_blocked parent=7 child=26
+NET2_FAIL error=-210
+[task] event=reclaimed pid=26 pages=63
+[wait] pid=26 kind=exited code=1
+xsh> stats
+[resources] free=129630 tasks=3 completions=1
+xsh> net-stop
+[process] event=wait_blocked parent=7 child=11
+[net] close=0
+[task] event=reclaimed pid=11 pages=103
+[wait] pid=11 kind=exited code=0
+xsh> stats
+[resources] free=129799 tasks=2 completions=0
+xsh> net-start 41
+[process] event=started pid=27 parent=7
+[process] pid=27 address_space=0x000000000035b000
+[net-start] pid=27
+xsh> [net] ready native_v2=1 user_driver=1 lwip=2.2.1 sessions=4 raw_ethernet=0
+stats
+[resources] free=129630 tasks=3 completions=1
+xsh> exec-file /bin/netprobe.elf http 27 58853 3efa2d8e6dd1ae6075744ec703af229f
+[process] event=started pid=28 parent=7
+[process] pid=28 address_space=0x0000000000582000
+[loader] started pid=28 file=/bin/netprobe.elf
+[process] event=wait_blocked parent=7 child=28
+NET2_HTTP status=201 bytes=32 data=7e4e51e5e328ad9474abe75f704249c8871e1c6aeb7dff1496fc628e221c8764
+NET2_GUEST_PASS
+[task] event=reclaimed pid=28 pages=63
+[wait] pid=28 kind=exited code=0
+xsh> stats
+[resources] free=129630 tasks=3 completions=1
+xsh> net-stop
+[process] event=wait_blocked parent=7 child=27
+[net] close=0
+[task] event=reclaimed pid=27 pages=103
+[wait] pid=27 kind=exited code=0
+xsh> stats
+[resources] free=129799 tasks=2 completions=0
+xsh>

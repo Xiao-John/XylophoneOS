@@ -4,5 +4,31 @@
   "url": "https://mirrors.aliyun.com/debian/pool/main/l/lwip/lwip_2.2.1+dfsg1.orig.tar.xz",
   "archive": "lwip-2.2.1.tar.xz",
   "sha256": "83729c274c499d3348e9fbbe043a3113f3fa8953e7efddc7c21c7fcbb1f2b7b1",
-  "sha256_scope": "upstream_release"
+  "sha256_scope": "upstream_release",
+  "patches": [
+    {
+      "path": "patches/0001_dns_reply_validation.patch",
+      "sha256": "d2b61475f66ff6a2b7e858db135b3f2c8586bf8d7935730c47b2c1da265d4ccb",
+      "files": {
+        "src/core/dns.c": {
+          "before": "fe35ede9919974da54598630cc08d654ccc30b668c45b09668c3ba572686b26c",
+          "after": "b52265704c191a97c6af244f27ab948e404bd3c9fd3a007152c46494dda0e3e5"
+        },
+        "src/include/lwip/prot/dns.h": {
+          "before": "34049c0f7f489aaec12d0589dc51ecfb24408dba422f605d8deb207c44d02b8f",
+          "after": "f264c9100589169dd867cb7642905857609259bfadbcb83352c78fc15e1bd992"
+        }
+      }
+    },
+    {
+      "path": "patches/0002_dns_bounded_entropy.patch",
+      "sha256": "ab5fd751ff436224e43a7968447889db5d25e7e0b0b5dc85949fbeeca954ce4b",
+      "files": {
+        "src/core/dns.c": {
+          "before": "b52265704c191a97c6af244f27ab948e404bd3c9fd3a007152c46494dda0e3e5",
+          "after": "5a84611e7c63e082981eae0ffa9c735c4ba3bcb3b9852ac6db9f74295597ed36"
+        }
+      }
+    }
+  ]
 }

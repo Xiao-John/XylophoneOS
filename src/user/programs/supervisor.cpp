@@ -15,6 +15,7 @@
 #include <xos/thread_abi.hpp>
 #include <xos/device.hpp>
 #include <xos/net_client.hpp>
+#include <xos/net_service_client.hpp>
 #include "fault_bundle.hpp"
 #include "../services/shell_terminal.hpp"
 
@@ -274,6 +275,29 @@ void start_network(u64 instance, bool probe, bool raw = false) {
         print(line);
     }
 }
+void network_control(net2::operation action, u64 peer = 0) {
+    if (!network_service_pid) { print("net: no owned service\n"); return; }
+    if (action == net2::operation::revoke_peer && !peer) { print("net: invalid peer\n"); return; }
+    const i64 now = syscall(sys_clock_monotonic);
+    if (now < 0) { print("net: clock unavailable\n"); return; }
+    net2::session_client client;
+    i64 result = client.connect(network_service_pid);
+    net2::message request{}, reply{};
+    if (!result) {
+        request.action = action; request.object = peer;
+        request.deadline = static_cast<u64>(now) + 2'000'000'000ull;
+        result = client.request(request, reply);
+    }
+    client.close();
+    if (result) { print("net: control error="); signed_decimal(result); print("\n"); return; }
+    if (action == net2::operation::information) {
+        net2::information info{};
+        __builtin_memcpy(&info, reply.data, sizeof(info));
+        print("[net-info] sessions="); decimal(info.sessions);
+        print(" connections="); decimal(info.connections);
+        print(" udp_dropped="); decimal(info.udp_dropped); print("\n");
+    } else { print("[net-revoke] pid="); decimal(peer); print(" result=0\n"); }
+}
 void stop_network() {
     if (!network_service_pid) { print("net: no owned service\n"); return; }
     net::client client;
@@ -513,7 +537,7 @@ bool builtin_named(const char* name) {
         "wait", "stats", "primtest", "elftest", "ls", "cat", "stat", "rm", "edit", "filetest",
         "sync", "exec-file", "exec-driver", "exd", "spawn-file", "mkdir", "mv", "demo",
         "maint-run", "maint-recover", "maint-recover-boot", "maint-status", "diag", "tty-run",
-        "tone", "melody", "audio", "display-start", "interactium-start", "net-start", "net-stop", "net-probe"};
+        "tone", "melody", "audio", "display-start", "interactium-start", "net-start", "net-stop", "net-probe", "net-info", "net-revoke"};
     for (const auto* item : names) { if (equal(name, item)) { return true; } }
     return false;
 }
@@ -751,6 +775,7 @@ void execute(u32 argc, char** argv) {
               "Audio     tone <Hz> <ms> | melody <file> | audio status|cancel <job> | audio close\n"
               "          audio start|restart manages the user-mode audio service\n"
               "Network   net-start <instance> [raw] | net-stop | net-probe <instance>\n"
+              "          net-info | net-revoke <pid>\n"
               "Display   display-start | interactium-start | exec gfxdemo [check|fault|hold|stop]\n"
               "Debug     diag <program> [args] | trace on/off | ps | kill <pid> | stats | images | primtest | elftest | filetest\n"
               "Search    /usr/bin:/bin:/; paths containing '/' are used directly\n");
@@ -789,6 +814,10 @@ void execute(u32 argc, char** argv) {
         start_network(number(argv[1]), equal(argv[0], "net-probe"), argc == 3);
     } else if (equal(argv[0], "net-stop") && argc == 1) {
         stop_network();
+    } else if (equal(argv[0], "net-info") && argc == 1) {
+        network_control(net2::operation::information);
+    } else if (equal(argv[0], "net-revoke") && argc == 2) {
+        network_control(net2::operation::revoke_peer, number(argv[1]));
     } else if (equal(argv[0], "display-start") && (argc==1 || (argc==2 &&
                (equal(argv[1],"fault") || equal(argv[1],"fault-present"))))) {
         const char* args[]={"display",argc==2?argv[1]:"normal"};

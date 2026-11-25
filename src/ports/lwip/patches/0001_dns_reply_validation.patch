@@ -1,0 +1,325 @@
+From 016e0a9bfde05716867c39c7ee78f08e7763be31 Mon Sep 17 00:00:00 2001
+From: Licooool <348150257+Licooool@users.noreply.github.com>
+Date: Wed, 25 Nov 2026 05:20:08 -0700
+Subject: [PATCH] dns: validate unicast endpoints and complete direct-address
+ answers
+
+XOS N4-D1 local additions: Apache-2.0. The upstream DNS code and quoted context retain BSD-3-Clause terms and original notices. Production DNS/DHCP remain disabled.
+---
+ src/core/dns.c              | 201 ++++++++++++++++++++----------------
+ src/include/lwip/prot/dns.h |   1 +
+ 2 files changed, 111 insertions(+), 91 deletions(-)
+
+diff --git a/src/core/dns.c b/src/core/dns.c
+index 6540f14..e1bedca 100644
+--- a/src/core/dns.c
++++ b/src/core/dns.c
+@@ -89,6 +89,7 @@
+ #if LWIP_DNS /* don't build if not configured for use in lwipopts.h */
+ 
+ #include "lwip/def.h"
++#include "lwip/ip.h"
+ #include "lwip/udp.h"
+ #include "lwip/mem.h"
+ #include "lwip/memp.h"
+@@ -669,92 +670,65 @@ dns_lookup(const char *name, size_t hostnamelen, ip_addr_t *addr LWIP_DNS_ADDRTY
+ static u16_t
+ dns_compare_name(const char *query, struct pbuf *p, u16_t start_offset)
+ {
+-  int n;
+   u16_t response_offset = start_offset;
+-
+-  do {
+-    n = pbuf_try_get_at(p, response_offset);
+-    if ((n < 0) || (response_offset == 0xFFFF)) {
+-      /* error or overflow */
++  u16_t encoded_end = 0;
++  u16_t expanded_length = 0;
++  u8_t labels = 0, jumps = 0;
++
++  /* RFC 1035 names have at most 255 wire octets. Backward compression
++   * pointers are permitted, with a separate work bound for pointer chains.
++   * Check label boundaries and the entire dotted query, not just a prefix. */
++  for (;;) {
++    int n = pbuf_try_get_at(p, response_offset);
++    if (n < 0) {
+       return 0xFFFF;
+     }
+-    response_offset++;
+-    /** @see RFC 1035 - 4.1.4. Message compression */
+     if ((n & 0xc0) == 0xc0) {
+-      /* Compressed name: cannot be equal since we don't send them */
+-      return 0xFFFF;
+-    } else {
+-      /* Not compressed name */
+-      while (n > 0) {
+-        int c = pbuf_try_get_at(p, response_offset);
+-        if (c < 0) {
+-          return 0xFFFF;
+-        }
+-        if (lwip_tolower((*query)) != lwip_tolower((u8_t)c)) {
+-          return 0xFFFF;
+-        }
+-        if (response_offset == 0xFFFF) {
+-          /* would overflow */
+-          return 0xFFFF;
+-        }
+-        response_offset++;
+-        ++query;
+-        --n;
++      int low;
++      u16_t target;
++      if ((response_offset == 0xFFFF) || (++jumps > 16)) {
++        return 0xFFFF;
++      }
++      low = pbuf_try_get_at(p, (u16_t)(response_offset + 1));
++      target = (u16_t)(((n & 0x3f) << 8) | (low < 0 ? 0 : low));
++      if ((low < 0) || (target < SIZEOF_DNS_HDR) || (target >= response_offset) ||
++          (response_offset > 0xFFFD)) {
++        return 0xFFFF;
+       }
+-      ++query;
++      if (encoded_end == 0) {
++        encoded_end = (u16_t)(response_offset + 2);
++      }
++      response_offset = target;
++      continue;
+     }
+-    n = pbuf_try_get_at(p, response_offset);
+-    if (n < 0) {
++    if ((n & 0xc0) != 0 || (expanded_length + n + 1 > 255)) {
+       return 0xFFFF;
+     }
+-  } while (n != 0);
+-
+-  if (response_offset == 0xFFFF) {
+-    /* would overflow */
+-    return 0xFFFF;
+-  }
+-  return (u16_t)(response_offset + 1);
+-}
+-
+-/**
+- * Walk through a compact encoded DNS name and return the end of the name.
+- *
+- * @param p pbuf containing the name
+- * @param query_idx start index into p pointing to encoded DNS name in the DNS server response
+- * @return index to end of the name
+- */
+-static u16_t
+-dns_skip_name(struct pbuf *p, u16_t query_idx)
+-{
+-  int n;
+-  u16_t offset = query_idx;
+-
+-  do {
+-    n = pbuf_try_get_at(p, offset++);
+-    if ((n < 0) || (offset == 0)) {
++    expanded_length = (u16_t)(expanded_length + n + 1);
++    if (response_offset == 0xFFFF) {
+       return 0xFFFF;
+     }
+-    /** @see RFC 1035 - 4.1.4. Message compression */
+-    if ((n & 0xc0) == 0xc0) {
+-      /* Compressed name: since we only want to skip it (not check it), stop here */
+-      break;
+-    } else {
+-      /* Not compressed name */
+-      if (offset + n >= p->tot_len) {
++    response_offset++;
++    if (n == 0) {
++      if (*query != '\0') {
+         return 0xFFFF;
+       }
+-      offset = (u16_t)(offset + n);
++      return encoded_end ? encoded_end : response_offset;
+     }
+-    n = pbuf_try_get_at(p, offset);
+-    if (n < 0) {
++    if (labels++ && (*query++ != '.')) {
+       return 0xFFFF;
+     }
+-  } while (n != 0);
+-
+-  if (offset == 0xFFFF) {
+-    return 0xFFFF;
++    while (n-- > 0) {
++      int c = pbuf_try_get_at(p, response_offset);
++      if ((c < 0) || (*query == '\0') || (*query == '.') ||
++          (lwip_tolower((u8_t)*query) != lwip_tolower((u8_t)c)) ||
++          (response_offset == 0xFFFF)) {
++        return 0xFFFF;
++      }
++      response_offset++;
++      query++;
++    }
+   }
+-  return (u16_t)(offset + 1);
+ }
+ 
+ /**
+@@ -1195,10 +1169,11 @@ dns_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr,
+   struct dns_answer ans;
+   struct dns_query qry;
+   u16_t nquestions, nanswers;
++  ip_addr_t answer_address;
++  u32_t answer_ttl = 0;
++  u8_t have_answer = 0;
+ 
+   LWIP_UNUSED_ARG(arg);
+-  LWIP_UNUSED_ARG(pcb);
+-  LWIP_UNUSED_ARG(port);
+ 
+   /* is the dns message big enough ? */
+   if (p->tot_len < (SIZEOF_DNS_HDR + SIZEOF_DNS_QUERY)) {
+@@ -1216,14 +1191,29 @@ dns_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr,
+       if ((entry->state == DNS_STATE_ASKING) &&
+           (entry->txid == txid)) {
+ 
++        /* The transaction ID does not authenticate a different local UDP
++         * endpoint. Match the PCB that actually sent this query. */
++#if ((LWIP_DNS_SECURE & LWIP_DNS_SECURE_RAND_SRC_PORT) != 0)
++        if ((entry->pcb_idx >= DNS_MAX_SOURCE_PORTS) ||
++            (dns_pcbs[entry->pcb_idx] != pcb)) {
++          goto ignore_packet;
++        }
++#else
++        if (dns_pcbs[0] != pcb) {
++          goto ignore_packet;
++        }
++#endif
++
+         /* We only care about the question(s) and the answers. The authrr
+            and the extrarr are simply discarded. */
+         nquestions = lwip_htons(hdr.numquestions);
+         nanswers   = lwip_htons(hdr.numanswers);
+ 
+         /* Check for correct response. */
+-        if ((hdr.flags1 & DNS_FLAG1_RESPONSE) == 0) {
+-          LWIP_DEBUGF(DNS_DEBUG, ("dns_recv: \"%s\": not a response\n", entry->name));
++        if (((hdr.flags1 & DNS_FLAG1_RESPONSE) == 0) ||
++            ((hdr.flags1 & DNS_FLAG1_OPCODE_MASK) != DNS_FLAG1_OPCODE_STANDARD) ||
++            ((hdr.flags1 & DNS_FLAG1_TRUNC) != 0)) {
++          LWIP_DEBUGF(DNS_DEBUG, ("dns_recv: \"%s\": not a complete QUERY response\n", entry->name));
+           goto ignore_packet; /* ignore this packet */
+         }
+         if (nquestions != 1) {
+@@ -1237,9 +1227,21 @@ dns_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr,
+         {
+           /* Check whether response comes from the same network address to which the
+              question was sent. (RFC 5452) */
+-          if (!ip_addr_eq(addr, &dns_servers[entry->server_idx])) {
++          if ((port != DNS_SERVER_PORT) || !ip_addr_eq(addr, &dns_servers[entry->server_idx])) {
+             goto ignore_packet; /* ignore this packet */
+           }
++          /* An ANY-bound PCB also receives broadcasts. A unicast DNS reply
++           * must target this interface's configured local address. */
++          if ((ip_current_netif() == NULL) || ip_addr_ismulticast(ip_current_dest_addr()) ||
++              ip_addr_isbroadcast(ip_current_dest_addr(), ip_current_netif())) {
++            goto ignore_packet;
++          }
++#if LWIP_IPV4
++          if (IP_IS_V4(ip_current_dest_addr()) &&
++              !ip4_addr_cmp(ip_2_ip4(ip_current_dest_addr()), netif_ip4_addr(ip_current_netif()))) {
++            goto ignore_packet;
++          }
++#endif
+         }
+ 
+         /* Check if the name in the "question" part match with the name in the entry and
+@@ -1285,8 +1287,10 @@ dns_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr,
+           }
+         } else {
+           while ((nanswers > 0) && (res_idx < p->tot_len)) {
+-            /* skip answer resource record's host name */
+-            res_idx = dns_skip_name(p, res_idx);
++            /* Direct-address subset: every answer must belong to the exact
++             * question. Alias-chain validation is deliberately not inferred
++             * from an arbitrary address record later in the packet. */
++            res_idx = dns_compare_name(entry->name, p, res_idx);
+             if (res_idx == 0xFFFF) {
+               goto ignore_packet; /* ignore this packet */
+             }
+@@ -1299,6 +1303,9 @@ dns_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr,
+               goto ignore_packet;
+             }
+             res_idx = (u16_t)(res_idx + SIZEOF_DNS_ANSWER);
++            if ((u32_t)res_idx + lwip_ntohs(ans.len) > p->tot_len) {
++              goto ignore_packet;
++            }
+ 
+             if (ans.cls == PP_HTONS(DNS_RRCLASS_IN)) {
+ #if LWIP_IPV4
+@@ -1312,11 +1319,12 @@ dns_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr,
+                   if (pbuf_copy_partial(p, &ip4addr, sizeof(ip4_addr_t), res_idx) != sizeof(ip4_addr_t)) {
+                     goto ignore_packet; /* ignore this packet */
+                   }
+-                  ip_addr_copy_from_ip4(dns_table[i].ipaddr, ip4addr);
+-                  pbuf_free(p);
+-                  /* handle correct response */
+-                  dns_correct_response(i, lwip_ntohl(ans.ttl));
+-                  return;
++                  if (!have_answer) {
++                    ip_addr_copy_from_ip4(answer_address, ip4addr);
++                    answer_ttl = lwip_ntohl(ans.ttl);
++                    have_answer = 1;
++                  }
++                  goto next_answer;
+                 }
+               }
+ #endif /* LWIP_IPV4 */
+@@ -1332,22 +1340,33 @@ dns_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr,
+                     goto ignore_packet; /* ignore this packet */
+                   }
+                   /* @todo: scope ip6addr? Might be required for link-local addresses at least? */
+-                  ip_addr_copy_from_ip6_packed(dns_table[i].ipaddr, ip6addr);
+-                  pbuf_free(p);
+-                  /* handle correct response */
+-                  dns_correct_response(i, lwip_ntohl(ans.ttl));
+-                  return;
++                  if (!have_answer) {
++                    ip_addr_copy_from_ip6_packed(answer_address, ip6addr);
++                    answer_ttl = lwip_ntohl(ans.ttl);
++                    have_answer = 1;
++                  }
++                  goto next_answer;
+                 }
+               }
+ #endif /* LWIP_IPV6 */
+             }
+-            /* skip this answer */
+-            if ((int)(res_idx + lwip_htons(ans.len)) > 0xFFFF) {
+-              goto ignore_packet; /* ignore this packet */
+-            }
++            /* CNAME and other unsupported answer types do not satisfy this
++             * direct-address profile. Keep the pending request intact. */
++            goto ignore_packet;
++next_answer:
+             res_idx = (u16_t)(res_idx + lwip_htons(ans.len));
+             --nanswers;
+           }
++          if (nanswers != 0) {
++            goto ignore_packet;
++          }
++          if (have_answer) {
++            /* Validate the entire answer section before publishing a result. */
++            ip_addr_copy(entry->ipaddr, answer_address);
++            pbuf_free(p);
++            dns_correct_response(i, answer_ttl);
++            return;
++          }
+ #if LWIP_IPV4 && LWIP_IPV6
+           if ((entry->reqaddrtype == LWIP_DNS_ADDRTYPE_IPV4_IPV6) ||
+               (entry->reqaddrtype == LWIP_DNS_ADDRTYPE_IPV6_IPV4)) {
+diff --git a/src/include/lwip/prot/dns.h b/src/include/lwip/prot/dns.h
+index 94782d6..8d8568d 100644
+--- a/src/include/lwip/prot/dns.h
++++ b/src/include/lwip/prot/dns.h
+@@ -82,6 +82,7 @@ extern "C" {
+ 
+ /* DNS protocol flags */
+ #define DNS_FLAG1_RESPONSE        0x80
++#define DNS_FLAG1_OPCODE_MASK     0x78
+ #define DNS_FLAG1_OPCODE_STATUS   0x10
+ #define DNS_FLAG1_OPCODE_INVERSE  0x08
+ #define DNS_FLAG1_OPCODE_STANDARD 0x00

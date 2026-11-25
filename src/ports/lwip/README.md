@@ -4,12 +4,15 @@
 
 ## 状态
 
-`guest_verified`（2026-11-13）。上游零补丁。
+当前源码状态为`source_locked`：原始2.2.1归档保持原哈希，增加两份按顺序验证的
+DNS回复校验/有界熵补丁。N4-D1已有独立宿主与目标编译证据，production DNS/DHCP
+仍为0。2026-11-13零补丁raw探针的`guest_verified`证据及包哈希保留为历史版本；
+当前配方尚未重新生成XPK或重跑其raw客体。
 
 - 包 id：`thirdparty.lwip`
 - 目标 profile：`xos-x86_64-static-single-b2-v1`
 - 已验证包哈希：`15bbd8dc4fa55e69f598e2d916360dee22994f8b98b936933179c84427c9f043`
-  （由本目录配方构建；换 SDK/上游/配方后必须重算并更新 `port.json`）。
+  （历史零补丁配方；当前`port.json`不将该哈希绑定到新配方）。
 
 ## 交付
 
@@ -33,6 +36,13 @@ python3 build.py
 
 配方编译 `NO_SYS=1` 的 lwIP：核心 + IPv4（不含 DHCP/AUTOIP/IGMP/DNS）+ `ethernet.c`，
 链接 `net_ping.cpp`（`sys_now`/`LWIP_RAND`/diag 由端口的 `xos_lwip.h` 提供）。
+配方与原生服务共用`scripts/lwip_service_build.py`：先验证原归档，再按
+`source_lock.json`核对patch SHA256及源文件前/后像；禁止fuzzy补丁与未登记文件变化。
+原始`extract_source`保留给C0上游审计。XPK的source/receipt记录全部patch输入，
+`usr/share/lwip/patches/`携带补丁；原BSD声明继续分发。
+
+当前网络原生适配器与DNS测试的来源、实际命令和限制见
+[N4-D1工作记录](../../../docs/work_log/4e29c6b1_network_dns_hardening.md)。
 
 ## 安装与验证
 

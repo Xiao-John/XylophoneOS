@@ -7,4 +7,12 @@
 typedef ptrdiff_t ssize_t;
 #define LWIP_NO_UNISTD_H 1
 #define LWIP_NO_CTYPE_H 1
+/* Private adapter hook; a failed entropy read is separate from the value 0. */
+#ifdef __cplusplus
+extern "C" {
+#endif
+int xos_lwip_dns_random(uint16_t* value);
+#ifdef __cplusplus
+}
+#endif
 #endif

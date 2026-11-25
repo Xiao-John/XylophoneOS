@@ -128,6 +128,8 @@ static void process_request(const xos_file_request& input) {
         if (!exists) pending.status_code = -1;
         else exists = false;
     } else if (operation == xos::file::op::sync) {
+    } else if (operation == xos::file::op::block_bench) {
+        pending.value = input.length;
     } else {
         assert(input.handle > 0 && input.handle <= 16);
         auto& file = files[input.handle];
@@ -200,6 +202,8 @@ extern "C" long __xos_file_test_trap(xos_u64 number, xos_u64 first, xos_u64 seco
             if (!std::strcmp(failure, "overwrite")) pending.value = 3801;
             if (!std::strcmp(failure, "unknown_status")) pending.status_code = 1;
             if (!std::strcmp(failure, "metadata")) pending.data[0] = 0;
+            if (!std::strcmp(failure, "block_bad_value")) ++pending.value;
+            if (!std::strcmp(failure, "block_bad_payload")) pending.length = 1;
             if (!std::strcmp(failure, "directory_bad_cursor")) pending.data[23] = 1;
             if (!std::strcmp(failure, "directory_bad_identity")) pending.data[7] = 0;
             if (!std::strcmp(failure, "directory_bad_utf8")) pending.data[27] = 0xc0;
@@ -480,6 +484,34 @@ static void native_read_capacity() {
     assert(__xos_file_lease_release(&lease) == 0 && __xos_file_close(fd) == 0);
 }
 
+static void block_bench(const char* scenario) {
+    const bool success = !std::strcmp(scenario, "block_valid");
+    xos_file_request input{};
+    input.operation = 17;
+    input.length = 513;
+    if (!std::strcmp(scenario, "block_zero_success")) input.length = 0;
+    if (!std::strcmp(scenario, "block_large_success"))
+        input.length = xos::file::max_block_bench_bytes + 1;
+    xos_file_response output{};
+    failure = scenario; failure_armed = !success;
+    assert(__xos_file_exchange(&input, &output) == (success ? 0 : -EIO));
+    if (success) {
+        assert(output.value == input.length && output.length == 0);
+        xos::file::client native;
+        assert(native.init() && native.block_bench(xos::file::max_block_bench_bytes)
+               == xos::file::max_block_bench_bytes);
+        const int fd = static_cast<int>(__xos_file_open("/fixture", O_RDWR));
+        assert(fd == 3 && __xos_file_write(fd, "ok", 2) == 2 && __xos_file_close(fd) == 0);
+    } else {
+        const unsigned int before = sends;
+        const xos_file_response empty{};
+        assert(!std::memcmp(&output, &empty, sizeof(output)));
+        failure_armed = false;
+        input.operation = 1;
+        assert(__xos_file_exchange(&input, &output) == -EIO && sends == before);
+    }
+}
+
 static void error_case(const char* scenario) {
     failure = scenario;
     if (!std::strcmp(scenario, "no_session")) {
@@ -515,6 +547,7 @@ int main(int argc, char** argv) {
     else if (!std::strcmp(argv[1], "pipe_writev")) pipe_writev();
     else if (!std::strcmp(argv[1], "public_lease")) public_lease();
     else if (!std::strcmp(argv[1], "native_read_capacity")) native_read_capacity();
+    else if (!std::strncmp(argv[1], "block_", 6)) block_bench(argv[1]);
     else if (!std::strncmp(argv[1], "directory_", 10)) directory_exchange(argv[1]);
     else error_case(argv[1]);
     std::printf("PASS %s\n", argv[1]);

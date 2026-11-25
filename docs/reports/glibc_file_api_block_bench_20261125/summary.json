@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "baseline_commit": "cb42fe6e72aa9d3311c0dfe15b0bd8ceb76bdeaf",
+  "baseline_runtime_sha256": "72bbba8ecd6b340a289450bca052462079fc2e89bb5ac07bf291b2d77f34f249",
+  "regression": "block_valid fails before the op17 validator branch; exact byte count is legitimate",
+  "normal_cases": 41,
+  "sanitized_cases": 41,
+  "real_service_groups_per_run": 12,
+  "actual_production_sources": [
+    "src/ports/glibc/sysdeps/xos/xos_file_runtime.c",
+    "src/user/sdk/file_client.cpp",
+    "src/user/services/files.cpp",
+    "src/third_party/fatfs/ff.c"
+  ],
+  "limits": {
+    "guest": "not_run",
+    "kernel_transport": "host substitute",
+    "leak_sanitizer": "not_run; ptrace restriction"
+  },
+  "compiler": "gcc (Debian 14.2.0-19) 14.2.0"
+}

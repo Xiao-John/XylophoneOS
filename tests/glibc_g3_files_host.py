@@ -12,6 +12,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 CASES = [
     "basic", "bounds", "concurrent", "public_lease", "native_read_capacity",
+    "block_valid", "block_bad_value", "block_bad_payload", "block_zero_success", "block_large_success",
     "directory_legacy", "directory_identity",
     "directory_bad_cursor", "directory_bad_identity", "directory_bad_utf8",
     "directory_bad_count", "directory_truncated", "directory_default_limit", "directory_empty_progress",
@@ -117,7 +118,7 @@ def main():
     sources += list((ROOT / "src/user/include/xos").rglob("*.hpp"))
     sources += list((ROOT / "src/shared/include/xos").rglob("*.hpp"))
     report = json.loads((output / "report.json").read_text())
-    report["real_files_fatfs"] = {"status": "pass", "groups": 10,
+    report["real_files_fatfs"] = {"status": "pass", "groups": 12,
                                  "kernel_transport": "simulated"}
     report["sources"] = {str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
                          for path in sorted(set(sources))}

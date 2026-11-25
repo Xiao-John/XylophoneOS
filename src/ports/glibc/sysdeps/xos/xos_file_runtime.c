@@ -204,6 +204,11 @@ valid_response_shape (unsigned int operation)
     return request.length <= sizeof (request.data) && response.value <= request.length
       && (response.value != 0 || request.length == 0);
   if (operation == 7) return response.value <= 0xfffffffeULL;
+  /* Native block_bench reports the exact completed request, with no payload.
+     Its limit is an ABI constant shared with file_abi.hpp, not an IPC length. */
+  if (operation == 17)
+    return request.length != 0 && request.length <= 8U * 1024U * 1024U
+      && response.value == request.length;
   return response.value == 0;
 }
 

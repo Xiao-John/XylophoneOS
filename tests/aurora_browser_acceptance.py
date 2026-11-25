@@ -31,6 +31,15 @@ def type_text(text):
  for c in text:stroke(codes.get(c,c))
 def navigate(path,expected=None):
  start=len(g.output);chord('ctrl','l');type_text(path);stroke('ret');g.expect(expected or b'BROWSER_LOADED path='+path.encode(),start=start,timeout=30);pump(g,.15);return start
+def painted_after(marker,start):
+ marker_at=g.output.find(marker,start)
+ assert marker_at>=0, marker
+ g.expect(b'[qpa-frame]',start=marker_at,timeout=30)
+def scroll_to_end():
+ start=len(g.output);stroke('end')
+ g.expect(b'BROWSER_SCROLL value=',start=start,timeout=30)
+ painted_after(b'BROWSER_SCROLL value=',start)
+ return int(re.findall(rb'BROWSER_SCROLL value=(\d+)',bytes(g.output)[start:])[-1])
 def click_xy(x,y):
  for _ in range(10):g.qmp('input-send-event',{'events':[{'type':'rel','data':{'axis':'x','value':-100}},{'type':'rel','data':{'axis':'y','value':-100}}]});pump(g,.025)
  for offset in range(0,max(x,y),80):g.qmp('input-send-event',{'events':[{'type':'rel','data':{'axis':'x','value':min(80,max(0,x-offset))}},{'type':'rel','data':{'axis':'y','value':min(80,max(0,y-offset))}}]});pump(g,.025)
@@ -78,15 +87,15 @@ try:
   elif a.case=='negative':
    # A linked stylesheet fails only after the engine has begun loading the page.
    # Preserve the rendered old page and its scroll, then exercise history and tabs.
-   navigate('/web/reading.html');stroke('end');pump(g,.2)
+   navigate('/web/reading.html');before_scroll=scroll_to_end()
    before=screenshot('before-failed-load').crop((70,220,730,500))
-   before_scroll=int(re.findall(rb'BROWSER_SCROLL value=(\d+)',bytes(g.output)[b:])[-1])
-   navigate('/web/external.html',b'Page error: Stylesheet rejected')
+   begin=navigate('/web/external.html',b'Page error: Stylesheet rejected')
+   painted_after(b'Page error: Stylesheet rejected',begin)
    after=screenshot('after-failed-load').crop((70,220,730,500))
    assert before.tobytes()==after.tobytes(), 'failed load changed the rendered page'
    sb=len(g.output);chord('alt','left');g.expect(b'BROWSER_LOADED path=/web/start.html',start=sb)
    sb=len(g.output);chord('alt','right');g.expect(b'BROWSER_LOADED path=/web/reading.html',start=sb)
-   stroke('end');pump(g,.2);assert int(re.findall(rb'BROWSER_SCROLL value=(\d+)',bytes(g.output)[b:])[-1])==before_scroll
+   assert scroll_to_end()==before_scroll
    sb=len(g.output);chord('ctrl','t');g.expect(b'BROWSER_TAB active=1',start=sb)
    sb=len(g.output);chord('ctrl','tab');g.expect(b'BROWSER_TAB active=0',start=sb);g.expect(b'BROWSER_LOADED path=/web/reading.html',start=sb)
    assert int(re.findall(rb'BROWSER_SCROLL value=(\d+)',bytes(g.output)[sb:])[-1])==before_scroll

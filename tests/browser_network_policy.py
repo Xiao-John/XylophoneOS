@@ -4,13 +4,15 @@
 import os
 from pathlib import Path
 import subprocess
+import sys
 
 root = Path(__file__).resolve().parents[1]
 output = root / 'build/browser_network_policy'
 output.mkdir(parents=True, exist_ok=True)
 command = [os.environ.get('CXX', 'c++'), '-std=c++17', '-Wall', '-Wextra', '-Werror',
            '-Wconversion', '-Wshadow', '-O1', '-g', '-fsanitize=address,undefined',
-           '-fno-sanitize-recover=all', '-fno-omit-frame-pointer', '-fno-pie', '-no-pie',
+           '-fno-sanitize-recover=all', '-fno-omit-frame-pointer',
+           *(['-fno-pie', '-no-pie'] if sys.platform.startswith('linux') else []),
            str(root / 'src/ports/browser_http/http.cpp'),
            str(root / 'tests/browser_http/navigation_policy.cpp'), '-o', str(output / 'probe')]
 subprocess.run(command, check=True)

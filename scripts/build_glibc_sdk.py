@@ -13,6 +13,7 @@ import subprocess
 import tarfile
 
 from glibc_g1_probe import clean_build_environment, tool_identity
+from verify_glibc_source import extract_verified_source, read_archive, verify_source
 
 ROOT = Path(__file__).resolve().parents[1]
 PORT = ROOT / 'src/ports/glibc'
@@ -27,7 +28,7 @@ def inputs():
     paths = [p for p in sorted(PORT.rglob('*')) if p.is_file()]
     paths.extend(ROOT / 'scripts' / name for name in
                  ('build_glibc_sdk.py', 'build_glibc_program.py',
-                  'glibc_g1_probe.py', 'glibc_g1_deps.py'))
+                  'glibc_g1_probe.py', 'glibc_g1_deps.py', 'verify_glibc_source.py'))
     return {str(p.relative_to(ROOT)): sha(p) for p in paths}
 
 
@@ -69,7 +70,7 @@ def main():
     names = ['x86_64-elf-gcc', 'x86_64-elf-g++', 'x86_64-elf-ld',
              'x86_64-elf-as', 'x86_64-elf-ar', 'x86_64-elf-readelf',
              'x86_64-elf-objdump', 'x86_64-elf-objcopy', 'x86_64-elf-nm',
-             'x86_64-elf-ranlib', 'gcc', 'python3', 'make', 'gawk', 'bison', 'patch']
+             'x86_64-elf-ranlib', 'gcc', 'python3', 'make', 'gawk', 'bison', 'patch', 'gpgv']
     tools = {name: tool_identity(name) for name in names}
     missing = [name for name in names if not tools[name]['available']]
     if missing:
@@ -96,9 +97,22 @@ def main():
         if result.returncode != 0:
             raise RuntimeError(name + ' failed; see ' + str(log))
 
+    def check_inputs():
+        if inputs() != report['inputs'] or sha(archive) != report['source_sha256']:
+            raise RuntimeError('build input files changed during compilation')
+        if any(sha(Path(item['path'])) != item['sha256'] for item in tools.values()):
+            raise RuntimeError('selected tool binary changed during compilation')
+
     try:
-        with tarfile.open(archive) as package:
-            package.extractall(output, filter='data')
+        archive_data = read_archive(archive, lock['archive_bytes'])
+        report['source_verification'] = verify_source(
+            archive, output / 'source_verification', gpgv=tools['gpgv']['path'], archive_data=archive_data)
+        if report['source_verification']['verifier']['sha256'] != tools['gpgv']['sha256']:
+            raise RuntimeError('source verifier differs from the selected build tool')
+        report['source_verification_report_sha256'] = sha(output / 'source_verification/report.json')
+        save()
+        extract_verified_source(archive_data, report['source_verification'], output)
+        del archive_data
         source = output / ('glibc-' + lock['version'])
         for patch in sorted((PORT / 'patches').glob('*.patch')):
             run('patch-' + patch.stem, ['patch', '-p1', '-i', str(patch)], source)
@@ -129,6 +143,7 @@ def main():
         # glibc's x86 assembly requires GAS division expressions.
         (build / 'configparms').write_text('ASFLAGS += -Wa,--divide\n')
         if args.prepare_only:
+            check_inputs()
             report['status'] = 'configured'
             save()
             return
@@ -194,19 +209,18 @@ def main():
         shutil.copytree(PORT, materials / 'port')
         (materials / 'scripts').mkdir()
         for name in ('build_glibc_sdk.py', 'build_glibc_program.py',
-                     'glibc_g1_probe.py', 'glibc_g1_deps.py'):
+                     'glibc_g1_probe.py', 'glibc_g1_deps.py', 'verify_glibc_source.py'):
             shutil.copyfile(ROOT / 'scripts' / name, materials / 'scripts' / name)
         (materials / 'provenance.json').write_text(json.dumps({
-            'source': lock, 'inputs': report['inputs'],
+            'source': lock, 'source_verification': report['source_verification'],
+            'source_verification_report_sha256': report['source_verification_report_sha256'],
+            'inputs': report['inputs'],
             'patch_order': [str(p.relative_to(ROOT))
                             for p in sorted((PORT / 'patches').glob('*.patch'))],
             'tools': tools, 'compiler_runtime': report['compiler_runtime'],
             'scope': 'static libraries and C headers; libc utilities excluded',
         }, indent=2) + '\n')
-        if inputs() != report['inputs'] or sha(archive) != report['source_sha256']:
-            raise RuntimeError('build input files changed during compilation')
-        if any(sha(Path(item['path'])) != item['sha256'] for item in tools.values()):
-            raise RuntimeError('selected tool binary changed during compilation')
+        check_inputs()
         report['artifacts'] = {str(p.relative_to(sysroot)): sha(p)
                                for p in sorted(sysroot.rglob('*')) if p.is_file()}
         report['status'] = 'static_sdk_built'

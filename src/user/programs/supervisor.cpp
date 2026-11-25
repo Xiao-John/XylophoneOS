@@ -28,6 +28,7 @@ bool verbose_trace;
 bool persistent_recovery_gate;
 xos::audio::client audio_session;
 u64 audio_service_pid, audio_retry_after_ns;
+bool audio_autostart = true;
 u64 network_service_pid;
 
 // The transaction directory is a durable recovery marker. Only a definite
@@ -306,6 +307,7 @@ i64 start_audio_service() {
 }
 
 i64 ensure_audio_service(bool force = false) {
+    if (!force && !audio_autostart) return process_error_would_block;
     if (audio_service_pid != 0) {
         process_status status{};
         const i64 waited = syscall(sys_process_wait, audio_service_pid,
@@ -328,6 +330,21 @@ i64 ensure_audio_service(bool force = false) {
             audio_retry_after_ns = static_cast<u64>(now) + 1000000000ull;
     }
     return started < 0 ? started : 0;
+}
+
+i64 stop_audio_service() {
+    (void)audio_session.close();
+    if (audio_service_pid == 0) return 0;
+    const u64 child = audio_service_pid;
+    process_status status{};
+    i64 result = syscall(sys_process_wait, child, reinterpret_cast<u64>(&status), 1);
+    if (result == process_error_would_block) {
+        result = syscall(sys_process_cancel, child);
+        if (result != 0) return result;
+        result = syscall(sys_process_wait, child, reinterpret_cast<u64>(&status), 0);
+    }
+    if (result == 0) audio_service_pid = 0;
+    return result;
 }
 
 void print_audio_state(xos::audio::job_state state) {
@@ -416,7 +433,7 @@ void audio_job_command(u32 argc, char** argv) {
         print(" notes="); decimal(reply.completed_notes); print("\n");
         return;
     }
-    print("Usage: audio status|cancel <job> | audio close\n");
+    print("Usage: audio status|cancel <job> | audio close|stop|start|restart\n");
 }
 
 void melody_command(const char* path) {
@@ -836,21 +853,23 @@ void execute(u32 argc, char** argv) {
         submit_audio(&item, 1);
     } else if (equal(argv[0], "melody") && argc == 2) {
         melody_command(argv[1]);
+    } else if (equal(argv[0], "audio") && argc == 2 && equal(argv[1], "stop")) {
+        audio_autostart = false;
+        const i64 result = stop_audio_service();
+        if (result == 0) { print("audio: service stopped\n"); }
+        else { print("audio: service stop failed (error="); signed_decimal(result); print(")\n"); }
     } else if (equal(argv[0], "audio") && argc == 2 && equal(argv[1], "start")) {
+        audio_autostart = true;
         const i64 result = ensure_audio_service(true);
         if (result == 0) { print("audio: service running\n"); }
         else { print("audio: service start failed (error="); signed_decimal(result); print(")\n"); }
     } else if (equal(argv[0], "audio") && argc == 2 && equal(argv[1], "restart")) {
-        (void)audio_session.close();
-        if (audio_service_pid != 0) {
-            const u64 old_pid = audio_service_pid;
-            const i64 killed = syscall(sys_process_cancel, old_pid);
-            if (killed == 0) {
-                process_status status{};
-                (void)syscall(sys_process_wait, old_pid, reinterpret_cast<u64>(&status), 1);
-            }
-            audio_service_pid = 0;
+        const i64 stopped = stop_audio_service();
+        if (stopped != 0) {
+            print("audio: service stop failed (error="); signed_decimal(stopped); print(")\n");
+            return;
         }
+        audio_autostart = true;
         audio_retry_after_ns = 0;
         const i64 result = ensure_audio_service(true);
         if (result == 0) { print("audio: service restarted; reconnect for a new session\n"); }

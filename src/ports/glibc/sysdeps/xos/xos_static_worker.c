@@ -43,6 +43,13 @@ setup_worker (const struct xos_thread_reservation *reservation,
   THREAD_COPY_POINTER_GUARD (pd);
 #endif
   state->worker = *(const struct xos_static_worker *) argument;
+  if (state->worker.prepare != 0)
+    {
+      xos_i64 status = state->worker.prepare (pd, reservation,
+                                             &state->worker.argument);
+      if (status != 0)
+        return status;
+    }
   state->trampoline.run = run_worker;
   state->trampoline.argument = state;
   *parameters = (struct xos_thread_start_parameters) {

@@ -166,7 +166,7 @@ def main():
             ('nptl', 'xos_thread_tls'), ('nptl', 'xos_static_worker'),
             ('nptl', 'pthread_self'), ('nptl', 'pthread_join_common'),
             ('nptl', 'pthread_detach'), ('nptl', 'pthread_tryjoin'),
-            ('nptl', 'thrd_current'),
+            ('nptl', 'thrd_current'), ('nptl', 'pthread_create'),
             ('elf', 'dl-tls_init_tp'),
             ('elf', 'dl-tls'), ('signal', 'sigset'),
             ('misc', 'fd_to_filename'), ('nptl', 'cancellation'),

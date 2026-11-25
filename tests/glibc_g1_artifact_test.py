@@ -366,6 +366,15 @@ def main():
     assert 'source/sysdeps/xos/thrd_current.c' in dependency_manifest['thrd_current']
     code = subprocess.check_output(['x86_64-elf-objdump', '-dr', current], text=True)
     assert re.search(r'R_X86_64_\w+\s+__pthread_self\b', code)
+    create = build / 'nptl/pthread_create.o'
+    assert digest(create) == report['diagnostic_objects']['pthread_create']['sha256']
+    assert 'source/sysdeps/xos/pthread_create.c' in dependency_manifest['pthread_create']
+    assert all('clone_internal' not in path and 'clone3.h' not in path
+               for path in dependency_manifest['pthread_create'])
+    code = subprocess.check_output(['x86_64-elf-objdump', '-dr', create], text=True)
+    assert re.search(r'R_X86_64_\w+\s+__xos_static_worker_launch\b', code)
+    assert re.search(r'\$0x34,%(e|r)ax\b', code) and re.search(r'\bint\s+\$0x80\b', code)
+    assert '\tsyscall' not in code
     yield_item = report['diagnostic_objects']['sched_yield']
     assert yield_item['exit_code'] == 0 and digest(build / 'posix/sched_yield.o') == yield_item['sha256']
     assert '../sysdeps/xos/sched_yield.c' in (output / 'sched_yield-dependencies.d').read_text()

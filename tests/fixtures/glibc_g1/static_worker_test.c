@@ -12,6 +12,7 @@ static _Alignas (16) unsigned char stack[65536];
 static struct pthread pd;
 static struct xos_thread_start_parameters initial;
 static int setup_error, started, calls;
+static xos_i64 prepare_error;
 static jmp_buf finished;
 
 int
@@ -62,6 +63,16 @@ run (void *argument)
   return &pd;
 }
 
+static xos_i64
+prepare (struct pthread *descriptor, const struct xos_thread_reservation *r,
+         void **argument)
+{
+  assert (descriptor == &pd && r->tls_begin == 0x70000000);
+  assert (*argument == &initial);
+  *argument = stack;
+  return prepare_error;
+}
+
 static void
 cleanup (void)
 {
@@ -85,12 +96,19 @@ __xos_thread_finish (unsigned long result, void (*last_process_exit) (void))
 int
 main (void)
 {
-  struct xos_static_worker worker = { run, stack, cleanup, last_exit };
+  struct xos_static_worker worker = {
+    .run = run, .argument = &initial, .cleanup = cleanup,
+    .last_process_exit = last_exit, .prepare = prepare
+  };
   struct xos_thread_launch_result result;
   setup_error = -2;
   assert (__xos_static_worker_launch (sizeof (stack), 1, &worker, &result) == -18);
   assert (!started);
   setup_error = 0;
+  prepare_error = -5;
+  assert (__xos_static_worker_launch (sizeof (stack), 1, &worker, &result) == -5);
+  assert (!started);
+  prepare_error = 0;
   assert (__xos_static_worker_launch (sizeof (stack), 1, &worker, &result) == 0);
   assert (started == 1 && result.tid == 19);
   worker = (struct xos_static_worker) { 0 };

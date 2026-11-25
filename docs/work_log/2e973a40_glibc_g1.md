@@ -368,3 +368,13 @@ XOS 后端将 `pthread_self` 和 `thrd_current` 接到 syscall 41，使用完整
 主线程的 NPTL TCB 后置初始化也使用 syscall 41，将原生 TID 写入内部 mutex owner 字段，超过该字段范围时明确失败。XOS 分支不注册 Linux robust list 或 rseq。主线程 FS 安装还需要接入，且上游 `pthread_create`、调度、线程属性和信号函数中仍有把公开句柄解引用为 TCB 的路径。该实验后端仍不能作为可运行的 pthread SDK。
 
 从锁定归档的干净构建生成六个相关目标对象，报告 SHA-256 为 `2e35ef7d5ec6205951400642f5b082b32890658a36c3de07cf2472df14bceac2`。镜像 `319b09b87ce6a260` 的客体探针链接身份、阻塞 join 和 detach 对象，验证父子线程的 POSIX/C11 身份与内核 TID 一致、拒绝自 join、保留 64 位结果、拒绝失效 TID 和重复 detach，以及定时 join 明确返回不支持。四轮资源均回到 `[129725, 3, 1]`。报告 SHA-256 为 `6583f693385b3a410946482655592d7e127c0382b590817a3dfaa37c771ec`。真正的 glibc 启动和取消投递未在该客体探针运行。完整构建仍停在 `pthread_create` 的 `clone3.h`，G1 保持 partial。
+
+## 继续：原生 pthread_create（2026-11-25）
+
+静态 `pthread_create` 选择 XOS 后端，经原生线程预留与启动交接 TCB、DTV 和用户入口。公开身份使用内核 TID，内部 mutex owner 字段在启动前检查可表示范围。启动失败撤销预留并回滚线程计数。工作入口为 `pthread_exit` 建立 unwind 返回点，随后依次处理 TLS 析构、TSD 和 libc 线程清理，再由内核选定最后退出者。工作线程从已初始化的静态 glibc 主线程启动，支持内核分配栈、分离状态及继承调度。自定义栈、显式调度和共享 glibc 的线程创建仍不支持。
+
+主线程 FS 安装、仍依赖 TCB 指针的公共扩展接口、动态 DTV 和 glibc 整体链接都有后续工作。客体桥的成功只能验证其实际链接的对象。
+
+干净全量构建按正常规则选中 `sysdeps/xos/pthread_create.c` 并生成 `pthread_create.o`，越过 `clone3.h`。目标对象 SHA-256 为 `dba27379283b01af83b9bb77a3b4f3310cbf87902a07f30fecb2d8a2b13f8f72`。首个编译错误前移到 `pthread_getaffinity.c` 引用的 `__xos_internal_sched_getaffinity`。构建报告 SHA-256 为 `9e5dc9e81356679318c9ad08d5af792cc6f0a99d25f188fb4fe51d1e2bb44ab4`。对象、依赖和陷入指令核验通过，单独的 PIC 对象也完成编译。宿主测试确认预留准备失败不会启动线程，且新线程读取已拷贝的参数。
+
+镜像 `b849999104a49013` 的现有客体桥四轮通过，资源均恢复。客体报告 SHA-256 为 `e6ab3223b3fa9e4c15a2e25f9ebcef92b8e2328963574b7d7447fbf36ee56fc8`。该运行覆盖此前的身份、启动陷入、回收及内存对象。新增公共创建函数仍待完整 glibc 客体验证。最终 `gnu/stubs.h` 与 SDK 尚未生成，G1 保持 partial。

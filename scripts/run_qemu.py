@@ -13,7 +13,9 @@ MACHINE = "pc-i440fx-10.0"
 
 
 def qemu_command(image, *, vga=False, display=None, qmp=None, debug_port=None,
-                 cpu="qemu64,+rdrand", work_disk=None, iso=False, network=False):
+                 cpu="qemu64,+rdrand", work_disk=None, iso=False, network=False, network_capture=None):
+    if network_capture is not None and not network:
+        raise ValueError("network_capture requires the explicit network profile")
     configured_qemu = os.environ.get("QEMU", "qemu-system-x86_64")
     qemu = shutil.which(configured_qemu)
     if not qemu and "QEMU" not in os.environ and os.name == "nt":
@@ -41,6 +43,8 @@ def qemu_command(image, *, vga=False, display=None, qmp=None, debug_port=None,
     if network:
         command += ["-netdev", "user,id=xosnet", "-device",
                     "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56"]
+        if network_capture is not None:
+            command += ["-object", f"filter-dump,id=xos_capture,netdev=xosnet,file={network_capture}"]
     if qmp:
         command += ["-qmp", f"unix:{qmp},server=on,wait=off"]
     if debug_port is not None:

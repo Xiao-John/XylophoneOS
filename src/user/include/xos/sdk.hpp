@@ -7,6 +7,11 @@
 
 namespace xos::sdk {
 i64 syscall(u64 number, u64 first = 0, u64 second = 0, u64 third = 0);
+// Runtime initialization only: caller owns and keeps the supplied TCB alive.
+inline i64 install_thread_pointer(u64 own_pid, void* pointer) {
+    return syscall(sys_process_tls, own_pid, reinterpret_cast<u64>(pointer),
+                   static_cast<u64>(process_tls_mode::current_thread));
+}
 u16 target_elf_machine();
 // Optional per-executable console mediation; absent in ordinary applications.
 extern "C" i64 xos_console_write_hook(u32, const void*, u64) __attribute__((weak));

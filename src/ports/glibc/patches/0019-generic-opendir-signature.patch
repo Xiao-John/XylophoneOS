@@ -1,0 +1,24 @@
+--- a/dirent/opendir.c
++++ b/dirent/opendir.c
+@@ -22,8 +22,11 @@
+ 
+ 
+ DIR *
+-__opendirat (int dfd, const char *name)
++__opendirat (int dfd, const char *name, int extra_flags, int *pnew_fd)
+ {
++  (void) dfd; (void) name; (void) extra_flags;
++  if (pnew_fd != NULL)
++    *pnew_fd = -1;
+   __set_errno (ENOSYS);
+   return NULL;
+ }
+@@ -33,7 +36,7 @@
+ DIR *
+ __opendir (const char *name)
+ {
+-  return __opendirat (AT_FDCWD, name);
++  return __opendirat (AT_FDCWD, name, 0, NULL);
+ }
+ weak_alias (__opendir, opendir)
+ 

@@ -1,0 +1,49 @@
+--- a/Makeconfig
++++ b/Makeconfig
+@@ -1235,7 +1235,8 @@
+ 	sed '/^[ 	]*#/d;/^[ 	]*$$/d' $< > $@T
+ 	mv -f $@T $@
+ 
+-ifeq (yes, $(build-shared))
++# XOS static libc still needs generated module, tunable and ABI headers.
++ifneq (,$(filter yes xos,$(build-shared) $(config-os)))
+ 
+ # To generate a header to support more than one ABI for different
+ # architecture variants, the CPU/Makefile defines abi-variants to be a
+@@ -1326,7 +1327,7 @@
+ 
+ # Generate version maps, but wait until sysdep-subdirs is known
+ ifeq ($(sysd-sorted-done),t)
+-ifeq ($(build-shared),yes)
++ifneq (,$(filter yes xos,$(build-shared) $(config-os)))
+ -include $(common-objpfx)sysd-versions
+ -include $(common-objpfx)Versions.mk
+ $(addprefix $(common-objpfx),$(version-maps)): $(common-objpfx)sysd-versions
+--- a/Makerules
++++ b/Makerules
+@@ -93,7 +93,7 @@
+ 			       $(before-compile))
+ 
+ # Even before that, we need abi-versions.h which is generated right here.
+-ifeq ($(build-shared),yes)
++ifneq (,$(filter yes xos,$(build-shared) $(config-os)))
+ ifndef avoid-generated
+ before-compile := $(common-objpfx)abi-versions.h $(before-compile)
+ $(common-objpfx)abi-versions.h: $(..)scripts/abi-versions.awk \
+@@ -289,7 +289,7 @@
+ 	mv -f $@T $@
+ endif
+ 
+-ifeq (yes,$(build-shared))
++ifneq (,$(filter yes xos,$(build-shared) $(config-os)))
+ # Generate the header containing the names of all shared libraries.
+ # We use a stamp file to avoid unnecessary recompilations.
+ before-compile += $(common-objpfx)gnu/lib-names.h
+--- a/Makeconfig
++++ b/Makeconfig
+@@ -1324 +1324,4 @@
+-$(common-objpfx)gcc-macros.h.in: $(common-objpfx)config.status
++$(common-objpfx)gcc-macros.h.in: $(common-objpfx)config.status \
++                                $(common-objpfx)config.h \
++                                $(common-objpfx)libc-modules.h \
++                                $(..)include/libc-symbols.h

@@ -182,7 +182,7 @@ def main():
     assert 'sysdeps/x86_64/xos/tls.h' in deps and 'sysdeps/x86_64/nptl/tls.h' in deps
 
     # Reuse glibc's actual compile flags, without a shell, to inspect the
-    # deliberately failing TLS_INIT_TP hook in an XOS target object.
+    # native current-thread TLS_INIT_TP hook in an XOS target object.
     logs = (output / 'abi-note-object.log').read_text() + (output / 'make.log').read_text()
     command_line = next(line for line in logs.splitlines()
                         if '/cc ../sysdeps/x86_64/xos/abi-note.c ' in line)
@@ -202,8 +202,10 @@ def main():
         subprocess.run(cmd, cwd=source / 'csu', check=True, capture_output=True, text=True,
                        input='#include <tls.h>\nint tls_probe(void *p) { return TLS_INIT_TP(p); }\n')
         disassembly = subprocess.check_output(['x86_64-elf-objdump', '-d', str(obj)], text=True)
-        assert re.search(r'\bxor\s+%eax,%eax', disassembly)
-        assert not re.search(r'\b(syscall|int)\b', disassembly)
+        assert len(re.findall(r'\bint\s+\$0x80', disassembly)) == 2
+        assert re.search(r'\bmov\s+\$0x23,%eax', disassembly)
+        assert re.search(r'\bmov\s+\$0x1,%edx', disassembly)
+        assert not re.search(r'\bsyscall\b', disassembly)
         # Compile the XOS layout helper against glibc's selected real TCB
         # definition; this is an object-level contract, not initialized TLS.
         layout = ('#include <tls.h>\n#include <xos_thread_create.h>\n'

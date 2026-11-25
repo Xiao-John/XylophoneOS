@@ -20,6 +20,9 @@ inline constexpr u64 sys_pipe_write = 32, sys_pipe_close = 33;
 // PID=0 queries own route (fd in arg2, arg3=0): 1 console, 0 pipe.
 inline constexpr u64 sys_process_stdio = 34;
 inline constexpr u64 sys_process_tls = 35;
+// arg3 explicitly selects the owner-building child or the calling thread.
+// current_thread requires arg1 == own PID and a mapped, writable arg2 TCB.
+enum class process_tls_mode : u64 { building_child = 0, current_thread = 1 };
 inline constexpr u64 sys_debug_trace = 36;
 inline constexpr u64 sys_process_delegate = 37;
 inline constexpr u64 sys_boot_payload = 53;

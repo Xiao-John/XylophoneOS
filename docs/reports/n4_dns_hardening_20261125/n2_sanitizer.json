@@ -1,0 +1,88 @@
+{
+  "asan_options": "detect_leaks=0:abort_on_error=1",
+  "guest_qualification": "not_run",
+  "inputs": {
+    "scripts/lwip_service_build.py": "50ae8a0b4b9a86e15f327a2779723b8caf64e60b1701bbfd822bb0e957ce8d6d",
+    "src/ports/lwip/include/arch/cc.h": "446b61b46b5990ffca4555f53e20a73b83074719578344564383844f1fde32b4",
+    "src/ports/lwip/include/lwipopts.h": "26561f4bd5744e062a05e988909dae5fd4aecc4926086484eed05cdeed3b6b8a",
+    "src/ports/lwip/patches/0001_dns_reply_validation.patch": "d2b61475f66ff6a2b7e858db135b3f2c8586bf8d7935730c47b2c1da265d4ccb",
+    "src/ports/lwip/patches/0002_dns_bounded_entropy.patch": "ab5fd751ff436224e43a7968447889db5d25e7e0b0b5dc85949fbeeca954ce4b",
+    "src/ports/lwip/source_lock.json": "0175e2a2273c207bccdb202235d3cd6e323f9bf7dbe21fc37e29579a2af3afc8",
+    "src/shared/include/xos/net_service_abi.hpp": "cb407cec1622efaf39861b7ee0f76fe7899f59b1bafd110838f884584204b9e7",
+    "src/user/network/include/arch/cc.h": "e1168b47adda008e6f8b13fe64c02d643753a5ff6606fc8b19de180256e727ff",
+    "src/user/network/include/lwipopts.h": "4add38074a98e302e261a7651c8681f836c65e6fcb967064d60b7875bb4c140b",
+    "src/user/network/lwip_stack.cpp": "eb2390e33d57e26e7c80ce55f614ece1c490d892a4c5e94bcd3bcb482a078401",
+    "src/user/network/lwip_stack.hpp": "43daef962ae23a1971d67190e0a8d6a3e426f1d1631087d9620a876c073ff293",
+    "src/user/network/service_core.cpp": "862207d0a1d03f43cd128e1cea6ef1c9375b3379b13936ced3d14fd095f913d2",
+    "src/user/network/service_core.hpp": "61cb33e940ae3cd48b8bf74cc88f3e28cdbd8806603d061ad73bcb86c47e01fc",
+    "src/user/network/service_loop.cpp": "addaecc965e7110b66134c7d1b8f02c36a52b31224ce844315ab42bdbc039d14",
+    "src/user/network/service_loop.hpp": "9b7fa4fe7c48d02d3435500eb26a09807868137cc0f2d2a7db78084fa18cf8c5",
+    "src/user/programs/net_service.cpp": "39bffb816155e71f12e25fba099b8824b622ab646832feb0fe712313408d71a2",
+    "tests/fixtures/network/service_host.cpp": "0e42c7a0e94070350649efc53b1f1ae3e98a39036a052a7f5bd49026899e8b22",
+    "tests/fixtures/network/service_loop_host.cpp": "23c3dd01fa8b9bf38547de7499dde1074e08987e2fef9a44ea694d191985c261",
+    "tests/net_service_host.py": "595dca010545a6223ca48dcb7229e52586bc8ed6366937d1edf690d94d9c1aaf"
+  },
+  "loop_scenarios": [
+    "revoked_slot_reply_isolation",
+    "expired_request_after_receive"
+  ],
+  "lwip_archive_sha256": "83729c274c499d3348e9fbbe043a3113f3fa8953e7efddc7c21c7fcbb1f2b7b1",
+  "lwip_patches": [
+    {
+      "files": {
+        "src/core/dns.c": {
+          "after": "b52265704c191a97c6af244f27ab948e404bd3c9fd3a007152c46494dda0e3e5",
+          "before": "fe35ede9919974da54598630cc08d654ccc30b668c45b09668c3ba572686b26c"
+        },
+        "src/include/lwip/prot/dns.h": {
+          "after": "f264c9100589169dd867cb7642905857609259bfadbcb83352c78fc15e1bd992",
+          "before": "34049c0f7f489aaec12d0589dc51ecfb24408dba422f605d8deb207c44d02b8f"
+        }
+      },
+      "path": "patches/0001_dns_reply_validation.patch",
+      "sha256": "d2b61475f66ff6a2b7e858db135b3f2c8586bf8d7935730c47b2c1da265d4ccb"
+    },
+    {
+      "files": {
+        "src/core/dns.c": {
+          "after": "5a84611e7c63e082981eae0ffa9c735c4ba3bcb3b9852ac6db9f74295597ed36",
+          "before": "b52265704c191a97c6af244f27ab948e404bd3c9fd3a007152c46494dda0e3e5"
+        }
+      },
+      "path": "patches/0002_dns_bounded_entropy.patch",
+      "sha256": "ab5fd751ff436224e43a7968447889db5d25e7e0b0b5dc85949fbeeca954ce4b"
+    }
+  ],
+  "sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "scenarios": [
+    "admission_and_stop",
+    "framing_and_replay",
+    "address_policy",
+    "object_isolation",
+    "connection_quotas",
+    "revoke_policy",
+    "deadlines_and_idle",
+    "tcp_echo_and_eof",
+    "tcp_short_write_pressure",
+    "tcp_receive_wrap_and_reset",
+    "tcp_close_unread_preserves_data",
+    "tcp_close_fin_memory_pressure",
+    "tcp_close_reused_slot_callbacks",
+    "tcp_closing_pool_preserves_other_application",
+    "tcp_connect_deadline",
+    "tcp_late_handshake",
+    "tcp_handshake_callback_deadline",
+    "tcp_timer_retransmission",
+    "udp_binary_and_empty",
+    "udp_pressure_and_source_filter",
+    "link_backpressure_and_budget",
+    "transport_faults",
+    "clock_failure",
+    "entropy_failure",
+    "runtime_entropy_stops_transmit"
+  ],
+  "wire_version": 2
+}

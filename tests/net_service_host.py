@@ -14,7 +14,7 @@ import tempfile
 
 root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(root / "scripts"))
-from lwip_service_build import core_sources, ipv4_sources, extract_source
+from lwip_service_build import core_sources, ipv4_sources, prepare_source, source_input_paths
 
 
 def run(arguments):
@@ -24,7 +24,7 @@ def run(arguments):
 def build_and_test(options, output):
     output.mkdir(parents=True, exist_ok=True)
     lock = json.loads((root / "src/ports/lwip/source_lock.json").read_text())
-    source = extract_source(options.archive, output / "source", lock["sha256"])
+    source = prepare_source(root, options.archive, output / "source")
     includes = ["-I", str(root / "src/user/network/include"),
                 "-I", str(root / "src/ports/lwip/include"), "-I", str(source / "src/include"),
                 "-I", str(root / "src/shared/include"), "-I", str(root / "src/user")]
@@ -44,7 +44,7 @@ def build_and_test(options, output):
                   root / "src/user/network/service_loop.hpp", root / "src/shared/include/xos/net_service_abi.hpp",
                   root / "src/user/network/include/lwipopts.h", root / "src/ports/lwip/include/lwipopts.h",
                   root / "src/user/network/include/arch/cc.h", root / "src/ports/lwip/include/arch/cc.h",
-                  root / "scripts/lwip_service_build.py"]
+                  root / "scripts/lwip_service_build.py", *source_input_paths(root)]
     input_hashes = {str(item.relative_to(root)): hashlib.sha256(item.read_bytes()).hexdigest()
                     for item in sorted(set(own_inputs))}
     sources = [source / "src/core" / name for name in core_sources]
@@ -79,6 +79,7 @@ def build_and_test(options, output):
             raise RuntimeError(f"Network input changed while the test ran: {name}; rerun required")
     receipt = {"guest_qualification": "not_run", "wire_version": 2,
                "lwip_archive_sha256": lock["sha256"], "scenarios": scenarios,
+               "lwip_patches": lock.get("patches", []),
                "loop_scenarios": loop_scenarios,
                "sanitizers": ["address", "undefined"] if options.sanitize else [],
                "asan_options": os.environ.get("ASAN_OPTIONS", ""),

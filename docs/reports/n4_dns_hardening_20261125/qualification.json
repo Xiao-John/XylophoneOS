@@ -1,0 +1,72 @@
+{
+  "status": "d1_host_complete_activation_blocked",
+  "source_base_local": "8f4dd18c4fa78811d9eee8322b6bcad04f662bb7",
+  "source_base_remote": "d8e36e4dbec101c7646c58b4c1a74bfa32367f54",
+  "source_base_tree": "591303372d66db41ca51ae72d3dfee05a66b388a",
+  "source_identity": "Enclosing Git commit plus exact compiled-input maps; all final maps verified again at evidence freeze.",
+  "production_dns": false,
+  "production_dhcp": false,
+  "new_public_abi": false,
+  "application_authority_expanded": false,
+  "host_dns_cases": {
+    "normal": 43,
+    "asan_ubsan": 43
+  },
+  "host_n2_regression": {
+    "normal_stack": 25,
+    "normal_loop": 2,
+    "asan_ubsan_stack": 25,
+    "asan_ubsan_loop": 2
+  },
+  "preview_target_compile": {
+    "objects": 28,
+    "production_lwip_c": 22,
+    "native_cpp": 5,
+    "test_only_dns_c": 1,
+    "compiler": "GCC 16.2.0",
+    "sdk_build_id": "152cd96f4d4e95ab",
+    "linked": false
+  },
+  "host_compiler": "Debian GCC/G++ 14.2.0-19",
+  "simulated_boundaries": [
+    "Ethernet peer",
+    "monotonic clock",
+    "entropy provider availability and deterministic collision samples"
+  ],
+  "actual_production_code": [
+    "lwip_stack",
+    "lwIP Ethernet/IP/UDP/DNS parser",
+    "lwIP PCB pools",
+    "N2 service_core and service_loop"
+  ],
+  "diagnostic_failure": "Intermediate source accepted a valid reply sent to the IPv4 broadcast destination; fixture aborted. The final 43-case source adds exact local unicast address validation.",
+  "license_materials": {
+    "upstream_copying_matches_registered_notice": true,
+    "notice_sha256": "ef4aac92e05e87cd1cdc140870ed52206ba03d4a7fe46c1e11d7ffa6c87d252b",
+    "component_modifications_recorded": true,
+    "full_sdk_license_audit": "not_run_no_new_sdk"
+  },
+  "artifacts": {
+    "build/n4_d1_normal/dns_hardening_host": "2b3432d9c73986985fc545b114baf6f80920ed5a68cbed27719cbcf9a4651b7d",
+    "build/n4_d1_sanitizer/dns_hardening_host": "9199561decbbb5ca3b267e3601df8c5a762214c8a6dfbb2542ed088c69f657dc",
+    "build/n4_d1_n2_normal/net_service_host": "b01afa656989d45dcd5ebf084bba6f228a631f001cdf9bef3d46533647a32635",
+    "build/n4_d1_n2_normal/net_service_loop_host": "6aa53d9c2ba3f213d3f65f4d50e768b8261319e6b2fc282edd089ca40eeb1930",
+    "build/n4_d1_n2_sanitizer/net_service_host": "f8639e23f438ae7752f767451e1df36a5b413e9e6cb620db3890f3ea01eda3df",
+    "build/n4_d1_n2_sanitizer/net_service_loop_host": "9e5e2a3c6cbcb9ed0728393bccfda06920a1f58c2b3f714b07c7b97a733fcf72",
+    "build/n4_d1_destination_probe/dns_hardening_host": "58e7f68880d655aa12789135bf4c2998e4c959b8afbf3af47b31f1a10c4cfbe3"
+  },
+  "not_run": [
+    "D2 absolute TTL/cache epoch, accurate error classes and canonical input admission",
+    "D2 independent cancellation/revoke and cleanup of all preexisting DNS requests on global fatal/stop",
+    "D3 QEMU DNS guest and source/SDK/ELF/ISO qualification",
+    "N2 guest requalification of this changed source tree",
+    "DHCP state machine, ACD and lease timing",
+    "glibc resolver/socket integration",
+    "LeakSanitizer",
+    "new raw XPK build/guest and new SDK/image license copies"
+  ],
+  "next": [
+    "Keep production DNS/DHCP disabled; D2 lifecycle/cache then D3 guest",
+    "Independent TCP ISN hook hardening using checked sys63 entropy before any SYN"
+  ]
+}

@@ -18,7 +18,7 @@ from make_work_disk import create_fat32
 from task_smoke import send_bytes,pump
 from xypm_format import canonical,load_json,require,sha_file,verify_package
 from xypm_image import Disk,query_image,transact
-from package_p2_verify_guest import fixtures,make_archive
+from package_p2_verify_guest import fixtures,make_archive,quiet_maintenance_guest
 
 
 def resources(guest):
@@ -28,6 +28,21 @@ def resources(guest):
     require(match is not None,'missing complete resource counters')
     guest.expect_supervisor(start=pos,timeout=40)
     return tuple(int(value) for value in match.groups())
+
+
+def boot_maintenance_guest(image, name, disk):
+    guest = Guest(image, name, work_disk=disk, iso=True)
+    try:
+        guest.expect(b'xos64> ', timeout=40)
+        send_bytes(guest, b'run\r')
+        guest.expect_supervisor(trace=True, timeout=40)
+        pump(guest, 1.0)
+        if b'maintenance: persistent recovery required' not in guest.output:
+            quiet_maintenance_guest(guest)
+        return guest
+    except BaseException:
+        guest.close()
+        raise
 
 
 def sparse_copy(source,dest):
@@ -58,10 +73,7 @@ def main():
             installed=root/'installed.img';transact(source,installed,profile,'install',package=v1)
             boot=root/'boot.img';shutil.copyfile(image,boot)
             def start(disk):
-                g=Guest(boot,'package_p2_faults',work_disk=disk,iso=True);g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=40);pump(g,1.0)
-                if b'maintenance: persistent recovery required' not in g.output:
-                    begin=len(g.output);send_bytes(g,b'demo quiet\r');g.expect_any((b'demo tasks stopped',b'demo tasks already stopped'),start=begin,timeout=40);g.expect_supervisor(start=begin,timeout=40)
-                return g
+                return boot_maintenance_guest(boot, 'package_p2_faults_' + args.operation, disk)
             def command(g,line,expected,timeout=90):
                 start_at=len(g.output);send_bytes(g,line.encode()+b'\r');match=g.expect_any((expected,b'xsh> '),start=start_at,timeout=timeout);require(match==expected,'unexpected result for '+line+': '+repr(bytes(g.output)[start_at:][-3000:]));g.expect_supervisor(start=start_at,timeout=timeout);return bytes(g.output)[start_at:]
             def verify_state(disk,operation,committed):
@@ -94,9 +106,11 @@ def main():
                     require(resources(guest)==before,'resources drift after interrupted worker');guest.close();(out/(operation+'_'+str(step)+'_interrupted.log')).write_bytes(guest.output);guest=None
                     with Disk(trial,root,True) as backend:
                         pending=any(backend.info(path) is not None for path in ('/var/lib/xypm/transaction','/var/lib/xypm/txdata','/var/lib/xypm/transaction_commit'))
-                    guest=start(trial);before=resources(guest)
+                    guest=start(trial)
                     if pending:
-                        command(guest,'maint-recover-boot',b'maintenance: completed');require(resources(guest)==before,'resources drift after recovery')
+                        command(guest,'maint-recover-boot',b'maintenance: completed')
+                        quiet_maintenance_guest(guest)
+                    require(resources(guest)==baseline,'resources drift after reboot or recovery')
                     guest.close();(out/(operation+'_'+str(step)+'_recovery.log')).write_bytes(guest.output);guest=None
                     verify_state(trial,operation,step==total)
                     report['operations'][operation]['passed'].append(step);trial.unlink()

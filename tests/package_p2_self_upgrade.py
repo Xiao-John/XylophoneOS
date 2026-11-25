@@ -9,13 +9,13 @@ import sys
 import tempfile
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT/'scripts'),str(ROOT/'tests')]
-from boot_smoke import Guest
 from make_work_disk import create_fat32
 from process_smoke import resources
-from task_smoke import send_bytes,pump
+from task_smoke import send_bytes
 from xypm_format import canonical,load_json,require,sha_file
 from xypm_image import Disk,query_image,transact
-from package_p2_faults import sparse_copy
+from package_p2_faults import boot_maintenance_guest, sparse_copy
+from package_p2_verify_guest import quiet_maintenance_guest
 
 
 def main():
@@ -31,10 +31,7 @@ def main():
             base=root/'base.img';transact(source,base,profile,'install',package=fault['package'])
             boot=root/'boot.img';shutil.copyfile(image,boot)
             def start(disk):
-                g=Guest(boot,'package_p2_self_upgrade',work_disk=disk,iso=True);g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=40);pump(g,1.0)
-                if b'maintenance: persistent recovery required' not in g.output:
-                    begin=len(g.output);send_bytes(g,b'demo quiet\r');g.expect_any((b'demo tasks stopped',b'demo tasks already stopped'),start=begin,timeout=40);g.expect_supervisor(start=begin,timeout=40)
-                return g
+                return boot_maintenance_guest(boot, 'package_p2_self_upgrade', disk)
             def command(g,line,expected,timeout=600):
                 begin=len(g.output);send_bytes(g,line.encode()+b'\r');match=g.expect_any((expected,b'xsh> '),start=begin,timeout=timeout);require(match==expected,'unexpected result for '+line+': '+repr(bytes(g.output)[begin:][-3000:]));g.expect_supervisor(start=begin,timeout=timeout);return bytes(g.output)[begin:]
             probe=root/'probe.img';sparse_copy(base,probe);guest=start(probe);baseline=resources(guest)
@@ -48,7 +45,9 @@ def main():
             with Disk(trial,root,True) as disk:
                 require(disk.info('/usr/bin/xypm') is None,'xypm executable was not absent at interruption')
                 require(disk.info('/var/lib/xypm/transaction') is not None,'journal missing at interruption')
-            guest=start(trial);baseline=resources(guest);output=command(guest,'maint-recover-boot',b'maintenance: completed');require(b'transaction rolled back' in output,'boot recovery did not roll back');require(resources(guest)==baseline,'resources drift after recovery');guest.close();(out/'recovered.log').write_bytes(guest.output);guest=None
+            guest=start(trial);output=command(guest,'maint-recover-boot',b'maintenance: completed');require(b'transaction rolled back' in output,'boot recovery did not roll back')
+            quiet_maintenance_guest(guest)
+            require(resources(guest)==baseline,'resources drift after recovery');guest.close();(out/'recovered.log').write_bytes(guest.output);guest=None
             require(query_image(trial,profile,'verify-installed')['files']==fault['files'],'restored package fails verification')
             require(query_image(trial,profile,'info','xos.xypm')['sha256']==fault['sha256'],'restored database differs')
             with Disk(trial,root,True) as disk:

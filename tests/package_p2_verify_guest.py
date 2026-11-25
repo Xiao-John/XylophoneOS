@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / 'scripts'), str(ROOT / 'tests')]
 from boot_smoke import Guest
 from make_work_disk import create_fat32
-from process_smoke import resources
+from process_smoke import command as supervisor_command, resources
 from task_smoke import send_bytes, pump
 from xypm_format import PackageError, canonical, load_json, require, sha_file, verify_package
 from xypm_image import Disk, load_db, query_image, transact, validate_dependencies
@@ -136,6 +136,14 @@ def fixtures(folder, profile, elf):
     return cases, plan_cases
 
 
+def quiet_maintenance_guest(guest):
+    start = len(guest.output)
+    send_bytes(guest, b'demo quiet\r')
+    guest.expect_any((b'demo tasks stopped', b'demo tasks already stopped'), start=start, timeout=40)
+    guest.expect_supervisor(start=start, timeout=40)
+    supervisor_command(guest, 'audio stop', b'audio: service stopped', timeout=40)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--system', type=Path, required=True)
@@ -176,7 +184,7 @@ def main():
                     require(args.dash_sha256 and sha_file(args.dash_elf) == args.dash_sha256, 'dash hash mismatch')
                     backend.command('import', '/usr/bin/dash', args.dash_elf)
                     script = folder/'dash_check.sh'
-                    script.write_text('set -e\nxypm verify /out/valid.xpk > /out/dash_ok.txt\nxypm verify /out/payload_hash.xpk 2> /out/dash_error.txt || test "$?" -eq 3\nxypm plan upgrade /out/valid.xpk\n')
+                    script.write_text('set -e\n/usr/bin/xypm verify /out/valid.xpk > /out/dash_ok.txt\n/usr/bin/xypm verify /out/payload_hash.xpk 2> /out/dash_error.txt || test "$?" -eq 3\n/usr/bin/xypm plan upgrade /out/valid.xpk\n')
                     backend.command('import', '/tests/dash_check.sh', script)
                 for name, path, _ in cases:
                     backend.command('import', '/out/'+name+'.xpk', path)
@@ -234,10 +242,11 @@ def main():
                 command('dash /tests/dash_check.sh', 0)
                 report['checks'].append('dash_verify_plan_and_error_status')
                 start = len(guest.output); send_bytes(guest, b'dash -i\r'); guest.expect(b'$ ', start=start, timeout=60)
-                start = len(guest.output); send_bytes(guest, b'xypm install /out/valid.xpk; echo DASH_STATUS=$?\r')
+                start = len(guest.output); send_bytes(guest, b'/usr/bin/xypm install /out/valid.xpk; echo DASH_STATUS=$?\r')
                 guest.expect(b'DASH_STATUS=3', start=start, timeout=60); guest.expect(b'$ ', start=start, timeout=60)
                 require(b'maintenance write lease required' in bytes(guest.output)[start:], 'dash unexpectedly gained write lease')
                 start = len(guest.output); send_bytes(guest, b'exit\r'); guest.expect_supervisor(start=start, timeout=60)
+                quiet_maintenance_guest(guest)
                 start = len(guest.output); send_bytes(guest, b'maint-run /usr/bin/xypm upgrade /out/valid.xpk\r')
                 guest.expect(b'maintenance: completed', start=start, timeout=300); guest.expect_supervisor(start=start, timeout=60)
                 report['checks'].append('dash_exit_then_maintenance_upgrade')

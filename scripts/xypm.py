@@ -35,9 +35,46 @@ def main():
         command.add_argument('--image',type=Path,required=True)
         command.add_argument('--profile',type=Path,default=DEFAULT_PROFILE)
         if name=='info':command.add_argument('id')
+    command = sub.add_parser('repo-create', help='create a local content-addressed repository')
+    command.add_argument('packages', nargs='+', type=Path)
+    command.add_argument('-o', '--output', required=True, type=Path)
+    command.add_argument('--profile', type=Path, default=DEFAULT_PROFILE)
+    command = sub.add_parser('repo-lock', help='lock explicit root package SHA-256 values')
+    command.add_argument('repository', type=Path)
+    command.add_argument('roots', nargs='+')
+    command.add_argument('-o', '--output', required=True, type=Path)
+    command.add_argument('--profile', type=Path, default=DEFAULT_PROFILE)
+    for name in ('repo-verify', 'repo-plan', 'repo-install', 'repo-upgrade'):
+        command = sub.add_parser(name)
+        command.add_argument('repository', type=Path)
+        command.add_argument('lock', type=Path)
+        command.add_argument('--lock-sha256', help='independently trusted digest of the lock bytes')
+        command.add_argument('--profile', type=Path, default=DEFAULT_PROFILE)
+        if name in ('repo-install', 'repo-upgrade'):
+            command.add_argument('id', help='one selected package; install dependencies in lock order')
+            command.add_argument('--image', type=Path, required=True)
+            command.add_argument('--output-image', type=Path, required=True)
+            command.add_argument('--offline', action='store_true', required=True)
     args = parser.parse_args()
     try:
-        if args.command in ('install','upgrade','remove'):
+        if args.command.startswith('repo-'):
+            from xypm_repository import (create_repository, make_lock, transact_locked,
+                                        verify_repository, write_metadata)
+            profile = load_json(args.profile)
+            if args.command == 'repo-create':
+                result = create_repository(args.packages, args.output, profile)
+            elif args.command == 'repo-lock':
+                lock = make_lock(args.repository, args.roots, profile)
+                result = dict(lock, lock_sha256=write_metadata(args.output, lock))
+            elif args.command in ('repo-install', 'repo-upgrade'):
+                result = transact_locked(args.repository, args.lock, args.id, args.image,
+                                         args.output_image, profile, args.command[5:],
+                                         args.lock_sha256)
+            else:
+                result = verify_repository(args.repository, args.lock, profile, args.lock_sha256)
+                if args.command == 'repo-plan':
+                    result['transaction_scope'] = 'one explicit package per install/upgrade; dependencies first'
+        elif args.command in ('install','upgrade','remove'):
             from xypm_image import transact
             result=transact(args.image,args.output_image,load_json(args.profile),args.command,
                             package=args.target if args.command!='remove' else None,

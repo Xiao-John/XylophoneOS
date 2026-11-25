@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xylophoneos.invalid/schema/repository-lock-v1.json",
+  "title": "xypm offline repository lock v1",
+  "description": "At most 1 MiB UTF-8. The exact index bytes are SHA-256 bound. Roots are unique sorted digests. Packages must equal deterministic dependency-first DFS of sorted roots and index dependencies; every chosen package id has exactly one version/revision/digest.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format_version", "target_profile", "index_sha256", "roots", "packages"],
+  "properties": {
+    "format_version": {"const": 1, "type": "integer"},
+    "target_profile": {"type": "string", "maxLength": 80, "pattern": "^[a-z][a-z0-9_]*(?:[.-][a-z0-9_]+)*$"},
+    "index_sha256": {"$ref": "#/$defs/digest"},
+    "roots": {"type": "array", "minItems": 1, "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}},
+    "packages": {"type": "array", "minItems": 1, "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

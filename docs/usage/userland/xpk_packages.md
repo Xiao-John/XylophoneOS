@@ -16,6 +16,18 @@ ustar 归档：首个成员是 `manifest.json`，其余为 `payload/<路径>` �
 机制与字段语义见[包管理计划](../../plans/packages.md)；客体内写入事务见
 [maintenance](../supervisor/maintenance.md)。
 
+## P3 离线仓库与锁
+
+xypm 0.4.0 增加 `repo-create`、`repo-lock`、`repo-verify`、`repo-plan`、
+`repo-install`、`repo-upgrade`。宿主生成包含 `index.json` 和按完整 SHA-256 命名的
+`.xpk` 的本地仓库，按明确选择的根包摘要产生确定性依赖锁。原生 xypm 读取同一格式，
+支持闭包核验、顺序查看及维护会话内单包安装/升级。
+
+索引最多 256 包，锁闭包最多 64 包；缺包、混 profile、冲突版本、依赖环和摘要不符
+会被拒绝。依赖按锁顺序先安装，各次操作继续使用已有单包事务和反向依赖保护。
+`--lock-sha256` 可核对独立提供的锁摘要。签名、密钥和防回滚机制属于后续安全阶段。
+完整命令、格式和客体待验清单见[离线仓库契约](../../contracts/xypm_repository_v1.md)。
+
 ## 最小 xos_app.json 模板
 
 不必手写：`xos_app.py init` 会生成（下例为 `--language cpp` 实测产物，

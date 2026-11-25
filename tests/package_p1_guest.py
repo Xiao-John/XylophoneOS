@@ -9,7 +9,7 @@ import sys
 import tempfile
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT/'scripts'),str(ROOT/'tests')]
-from xypm_format import DEFAULT_PROFILE,canonical,load_json,sha_file,require
+from xypm_format import DEFAULT_PROFILE,canonical,load_json,sha_file,require,verify_package
 from xypm_image import Disk,query_image
 from boot_smoke import Guest
 from make_work_disk import create_fat32
@@ -31,6 +31,9 @@ def main():
     dash=load_json(args.dash_manifest);dash_elf=ROOT/dash['elf'];require(sha_file(dash_elf)==dash['sha256'],'dash hash mismatch')
     build=load_json(args.xypm_build);require(sha_file(build['package'])==build['sha256'],'xypm package differs from build')
     profile=load_json(args.profile)
+    package_manifest=verify_package(build['package'],profile,build['sha256'])['manifest']
+    require(package_manifest['id']=='xos.xypm','wrong xypm package id')
+    expected_installed=('xos.xypm %s-r%d'%(package_manifest['upstream_version'],package_manifest['revision'])).encode('utf-8')
     demo=args.demo_package
     report={'status':'failed','system_build_id':metadata['build_id'],'image_sha256':sha_file(image),
             'dash_sha256':dash['sha256'],'xypm_package_sha256':build['sha256'],
@@ -48,8 +51,8 @@ def main():
             with Disk(source,folder) as disk:
                 for name in ('/usr','/usr/bin','/tests','/out'):disk.command('mkdir',name)
                 disk.command('import','/usr/bin/dash',dash_elf)
-                cases=[('version','--version',0,b'xypm 0.1'),('help','--help',0,b'xypm list'),
-                       ('list','list',0,b'xos.xypm 0.1.0-r0'),('info','info xos.xypm',0,b'id: xos.xypm'),
+                cases=[('version','--version',0,b'xypm '),('help','--help',0,b'xypm list'),
+                       ('list','list',0,expected_installed),('info','info xos.xypm',0,b'id: xos.xypm'),
                        ('missing','info friends.missing',1,b'xypm: package not installed'),
                        ('unsupported','install',2,b'xypm: unsupported command')]
                 for name,arguments,_,_ in cases:
@@ -91,7 +94,7 @@ xypm --version
                 via_dash=command('dash /tests/'+name+'.sh',code)
                 require(expected in direct and expected in via_dash,'different xsh/dash xypm behavior: '+name)
                 report['checks'].append('same_xypm_'+name+'_status_'+str(code))
-            data=command('dash /tests/redirect.sh');require(b'xypm 0.1' in data,'stdout not restored after redirects')
+            data=command('dash /tests/redirect.sh');require(b'xypm ' in data,'stdout not restored after redirects')
             report['checks'].append('dash_B2_redirect_and_stdout_restore')
             data=command('exec-file /usr/bin/external_cpp');require(b'friends.external_cpp' in data,'installed C++ demo did not run')
             report['checks'].append('installed_cpp_runs')
@@ -99,7 +102,7 @@ xypm --version
             guest.expect_supervisor(start=begin,timeout=30)
             guest.close();(out/'first_boot_serial.log').write_bytes(guest.output);guest=None
             with Disk(both,folder,True) as disk:
-                require(disk.export('/out/xypm_list.txt').read_bytes().find(b'xos.xypm 0.1.0-r0')>=0,'redirected list missing')
+                require(expected_installed in disk.export('/out/xypm_list.txt').read_bytes(),'redirected list missing')
                 require(disk.export('/out/xypm_error.txt').read_bytes()==b'xypm: package not installed\n','redirected stderr incorrect')
             # Upgrade same package explicitly, then remove only the demo; xypm and logs survive.
             upgraded=folder/'upgraded.img'
@@ -108,8 +111,8 @@ xypm --version
             report['transactions'].append(host('remove','friends.external_cpp','--image',upgraded,'--output-image',removed,'--offline'))
             require(query_image(removed,profile,'verify-installed')['files']==build['files'],'unexpected remaining ownership')
             guest=start(removed);baseline=resources(guest)
-            data=command('xypm list');require(b'xos.xypm 0.1.0-r0' in data and b'friends.external_cpp' not in data,'uninstall not persistent')
-            data=command('dash /tests/list.sh');require(b'xos.xypm 0.1.0-r0' in data,'dash query not persistent')
+            data=command('xypm list');require(expected_installed in data and b'friends.external_cpp' not in data,'uninstall not persistent')
+            data=command('dash /tests/list.sh');require(expected_installed in data,'dash query not persistent')
             report['checks'].append('upgrade_remove_reboot_both_shells')
             # The running image is locked; inspect it only after the guest closes.
             guest.close();(out/'second_boot_serial.log').write_bytes(guest.output);guest=None

@@ -99,13 +99,22 @@ wait 只能收集自己的已提交子任务，未完成则真正挂起父任务
 `exited`（有符号 32 位退出码）、`faulted`（vector/地址/指令）、
 `killed`（-9 为监督终止，-27 为 Escape 取消）。异常不会被伪装成退出码 0。
 
+sys20 新增显式 `process_wait_any`（third bit1，first 必须为 0），与原
+nonblocking bit0 组合；共享 SDK 提供 `wait_any(status, nonblocking)`。
+内核直接从认证 parent 的已发布子进程完成记录选择，exec 后继续有效。
+精确 PID / 任意子进程的并发等待仍唯一消费，失败 copyout 归还领取权，
+最后一份记录被他人消费后唤醒剩余等待者。详细错误、building 准入和验收见
+[process_wait 契约](contracts/process_wait.md)。
+
 资源回收与结果记录分开：死任务在其他任务的内核栈上回收，完成记录保留到 wait。
 创建中途失败走回滚。builder 正常退出或 fault 时，building 子任务取消；已提交子任务
 交内核收养（等待父身份变为 0，原父的完成记录释放），继续使用其自身地址空间和
 files 会话，退出后自动回收。独立的取消祖先关系沿最近存活祖先传递，显式 kill/cancel
 仍级联取消后代；权限检查与前台 Escape 入口不扩大。收养不创建新的可 wait 句柄，
 也不转交原父的设备/通道权利；所有者死亡造成的通道关闭仍按对应契约。未实现 POSIX
-进程组、信号、subreaper 或自动服务重启。本轮实现已有宿主回归，客体验收未运行。
+进程组、信号、subreaper 或自动服务重启。wait-any 增量的真实客体已验证
+普通 orphan、前台取消及资源回收，证据见
+[8e5c20fa 工作记录](work_log/8e5c20fa_native_wait_any.md)。
 
 前台 `exec` / `wait` 挂起监督任务时，单独按 Escape 可终止被等待子任务并恢复
 `xsh> `，所以 `exec spin` 不要求重建镜像。它是固定串口控制机制，不是 POSIX

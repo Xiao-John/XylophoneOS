@@ -10,6 +10,9 @@ inline constexpr u64 sys_image_info = 14, sys_image_read = 15;
 inline constexpr u64 sys_process_create = 16, sys_process_map = 17;
 inline constexpr u64 sys_process_start = 18, sys_process_abort = 19;
 inline constexpr u64 sys_process_wait = 20, sys_process_stats = 21;
+// sys20 flags: legacy exact-PID blocking/nonblocking remain 0/1.
+// wait_any is an explicit extension and requires target PID zero.
+inline constexpr u64 process_wait_nonblocking = 1, process_wait_any = 2;
 inline constexpr u64 sys_ipc_handles = 22;
 inline constexpr u64 sys_block_read = 23, sys_block_write = 24;
 inline constexpr u64 sys_block_sync = 25, sys_block_info = 26;

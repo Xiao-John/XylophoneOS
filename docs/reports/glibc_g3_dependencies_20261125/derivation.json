@@ -1,0 +1,18 @@
+{
+  "file_host.json": {
+    "original_sha256": "22fdf481615312dc22d32192e9c8080bdf06e946304bc5e0f64e5b39b1bcc8c2",
+    "conversion": "checkout root replaced with ${XOS_SOURCE_ROOT}"
+  },
+  "wait_host.json": {
+    "original_sha256": "38fde7cc731ac581c75ba7ebf008e58ce84b9e2591130dd13c4066f6fb5980cb",
+    "conversion": "checkout root replaced with ${XOS_SOURCE_ROOT}"
+  },
+  "wait_identity.json": {
+    "original_sha256": "90697dde066d820d7e25e1e211d0e85b199c88db33ff0e6ecfb5f825513f7c52",
+    "conversion": "checkout root replaced with ${XOS_SOURCE_ROOT}"
+  },
+  "exit_host.log": {
+    "original_sha256": "6e22630d509d1565b32c9cb376ac5f319504b5f15152a659fac4131d818e8d50",
+    "conversion": "checkout root replaced with ${XOS_SOURCE_ROOT}"
+  }
+}

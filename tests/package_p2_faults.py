@@ -30,6 +30,21 @@ def resources(guest):
     return tuple(int(value) for value in match.groups())
 
 
+def boot_maintenance_guest(image, name, disk):
+    guest = Guest(image, name, work_disk=disk, iso=True)
+    try:
+        guest.expect(b'xos64> ', timeout=40)
+        send_bytes(guest, b'run\r')
+        guest.expect_supervisor(trace=True, timeout=40)
+        pump(guest, 1.0)
+        if b'maintenance: persistent recovery required' not in guest.output:
+            quiet_maintenance_guest(guest)
+        return guest
+    except BaseException:
+        guest.close()
+        raise
+
+
 def sparse_copy(source,dest):
     with source.open('rb') as src,dest.open('xb') as dst:
         while True:
@@ -58,10 +73,7 @@ def main():
             installed=root/'installed.img';transact(source,installed,profile,'install',package=v1)
             boot=root/'boot.img';shutil.copyfile(image,boot)
             def start(disk):
-                g=Guest(boot,'package_p2_faults',work_disk=disk,iso=True);g.expect(b'xos64> ',timeout=40);send_bytes(g,b'run\r');g.expect_supervisor(trace=True,timeout=40);pump(g,1.0)
-                if b'maintenance: persistent recovery required' not in g.output:
-                    quiet_maintenance_guest(g)
-                return g
+                return boot_maintenance_guest(boot, 'package_p2_faults_' + args.operation, disk)
             def command(g,line,expected,timeout=90):
                 start_at=len(g.output);send_bytes(g,line.encode()+b'\r');match=g.expect_any((expected,b'xsh> '),start=start_at,timeout=timeout);require(match==expected,'unexpected result for '+line+': '+repr(bytes(g.output)[start_at:][-3000:]));g.expect_supervisor(start=start_at,timeout=timeout);return bytes(g.output)[start_at:]
             def verify_state(disk,operation,committed):

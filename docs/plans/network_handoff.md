@@ -7,7 +7,10 @@
 
 ## 机制、驱动与权限
 
-N2仍BLOCKED。原PR #18的内核整帧复制桥不能作为实施许可；替代接口先登记后实施。
+2026-11-25 接续：本页的早期N2阻塞项已由后续设备机制和用户态实现逐步推进；
+`2baed87` 的实际N2/N3范围见 [ca46b580](../work_log/ca46b580_network_multi_application_qualification.md)。
+DNS/DHCP另按 [N4提案](../contracts/network_n4_v1_proposal.md)推进。
+原PR #18的内核整帧复制桥不能作为实施许可；替代接口先登记后实施。
 内核只提供经C20论证的通用设备授权：认证主体、设备对象与代际、窄MMIO、DMA所有权/
 pin/配额、IRQ递送与应答、原子等待、撤销及停止失败的隔离机制。不得解释VirtIO ring或
 替用户态驱动维护收发队列。VirtIO初始化、feature协商、descriptor/avail/used与TX/RX均
@@ -44,7 +47,7 @@ EOI/屏蔽不得隐式推进或重置时基、运行设备业务。透明有界�
 新增 lwIP 2.2.1 端口，以 raw API 完成 ARP + ICMP（`net_ping`，见
 `docs/reports/lwip_2_2_1_20261113/`）。N2 剩余：lwIP TCP、受控 HTTP、DNS/DHCP、TLS。
 
-上述均为后续门槛，本次没有实现或运行。单核/独占IRQ可作为明确受限profile；共享IRQ、
+上述是本页初始设计时列出的门槛，后续实际结果按对应work_log确认。单核/独占IRQ可作为明确受限profile；共享IRQ、
 SMP、热插拔、网络产品和分发不因本设计获得资格。各机制/驱动独立交付，不要求一次实现
 完整网络栈才证明最小权利或等待机制，但不得以局部门槛替代最终链路。
 

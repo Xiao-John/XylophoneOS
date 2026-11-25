@@ -291,7 +291,7 @@ def glibc_binding(build, sdk, metadata, files, cxx, features):
     compiler = {'target': 'x86_64-elf', 'version': COMPILER_VERSION,
                 'gcc_sha256': digest_value(tool.get('sha256'), 'glibc GCC')}
     archives = ['usr/lib/libc.a', 'usr/lib/libm.a', 'usr/lib/libgcc.a']
-    for optional in ('usr/lib/libgcc_eh.a', 'usr/lib/libxos_process.a'):
+    for optional in ('usr/lib/libgcc_eh.a', 'usr/lib/libxos_process.a', 'usr/lib/libxos_terminal.a'):
         if optional in files:
             archives.append(optional)
     relative_file(sdk, 'usr/lib/compiler-include/stddef.h')

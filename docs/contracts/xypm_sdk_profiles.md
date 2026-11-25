@@ -33,7 +33,7 @@ glibc xypm 构建、安装和客体运行由后续应用迁移模块接入；本
 | 身份 | ABI 1、`x86_64-elf`、single、16 位小写十六进制 `build_id`、newlib 版本与头文件一致 | `static_sdk_built`、`xos_glibc_static_research_v1`、glibc 版本与头文件一致 |
 | 产物 | 完整树摘要、libc/libm 元数据摘要、已有归档来源摘要 | manifest 的完整 artifact 集与 sysroot 文件集及各摘要完全一致 |
 | 启动 | startup v3、`crt0_posix.o`、`user.ld` | 六个 `xos_start/crti/crtbegin/xos_start_c/crtend/crtn` 对象、`user.ld` |
-| 库 | libc/libm、native SDK/loader、成套 libgcc | libc/libm/libgcc，存在的 process/unwind 库一并检查 |
+| 库 | libc/libm、native SDK/loader、成套 libgcc | libc/libm/libgcc，存在的 process/terminal/unwind 库一并检查 |
 | 目标格式 | 所有归档成员与 CRT 必须为 ELF64、little endian、x86-64 relocatable | 同左 |
 | 来源状态 | 保留既有 `legacy_snapshot` 来源边界 | 独立 glibc 上游签名核验记录、锁、key/signature 和 gpgv 状态全部绑定 |
 

@@ -14,6 +14,7 @@ import tarfile
 
 from glibc_g1_probe import clean_build_environment, tool_identity
 from verify_glibc_source import extract_verified_source, read_archive, verify_source
+from build_glibc_terminal_support import input_paths as terminal_inputs
 
 ROOT = Path(__file__).resolve().parents[1]
 PORT = ROOT / 'src/ports/glibc'
@@ -29,7 +30,8 @@ def inputs():
     paths.extend(ROOT / 'scripts' / name for name in
                  ('build_glibc_sdk.py', 'build_glibc_program.py',
                   'glibc_g1_probe.py', 'glibc_g1_deps.py', 'verify_glibc_source.py'))
-    return {str(p.relative_to(ROOT)): sha(p) for p in paths}
+    paths.extend(terminal_inputs())
+    return {str(p.relative_to(ROOT)): sha(p) for p in sorted(set(paths))}
 
 
 def install_stub_header(source, sysroot, env):
@@ -77,6 +79,8 @@ def main():
         parser.error('missing tools: ' + ', '.join(missing))
     output.mkdir(parents=True)
     report = {'status': 'building', 'profile': 'xos_glibc_static_research_v1',
+              'process_exit_cleanup': {'syscall': 51, 'mode': 1, 'request_version': 1,
+                                       'deadline_ns': 30000000000, 'timeout_status': 127},
               'source_sha256': sha(archive),
               'source_authentication': lock['signature_verification'],
               'tools': tools, 'sanitized_environment': removed,
@@ -192,6 +196,8 @@ def main():
                                '-isystem', str(libdir / 'compiler-include'),
                                '-c', str(PORT / 'crt' / source_name),
                                '-o', str(libdir / (stem + '.o'))], build)
+        run('terminal-support', ['python3', str(ROOT / 'scripts/build_glibc_terminal_support.py'),
+                                 '--sdk', str(sysroot), '--output', str(output / 'terminal_support')], ROOT)
         shutil.copyfile(PORT / 'crt/user.ld', sysroot / 'user.ld')
         materials = sysroot / 'usr/share/xos-glibc'
         materials.mkdir(parents=True)
@@ -209,7 +215,8 @@ def main():
         shutil.copytree(PORT, materials / 'port')
         (materials / 'scripts').mkdir()
         for name in ('build_glibc_sdk.py', 'build_glibc_program.py',
-                     'glibc_g1_probe.py', 'glibc_g1_deps.py', 'verify_glibc_source.py'):
+                     'glibc_g1_probe.py', 'glibc_g1_deps.py', 'verify_glibc_source.py',
+                     'build_glibc_terminal_support.py'):
             shutil.copyfile(ROOT / 'scripts' / name, materials / 'scripts' / name)
         (materials / 'provenance.json').write_text(json.dumps({
             'source': lock, 'source_verification': report['source_verification'],

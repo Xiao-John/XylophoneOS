@@ -1,0 +1,18 @@
+
+0_terminal_support.o:
+                 U _ZN3xos8terminal11flush_inputERNS0_6clientE
+                 U _ZN3xos8terminal11write_untilERNS0_6clientEPKvjm
+                 U _ZN3xos8terminal15connect_startupERNS0_6clientEPKNS_12startup_infoE
+                 U _ZN3xos8terminal5closeERNS0_6clientE
+                 U _ZN3xos8terminal5drainERNS0_6clientE
+                 U _ZN3xos8terminal8get_modeERNS0_6clientERNS0_4modeE
+                 U _ZN3xos8terminal8set_modeERNS0_6clientERKNS0_4modeENS0_11mode_actionE
+                 U _ZN3xos8terminal9read_modeERNS0_6clientEPvj
+                 U __xos_wait_word
+                 U __xos_wake_word
+
+1_terminal_client.o:
+                 U _ZN3xos3sdk7syscallEmmmm
+                 U memset
+
+2_syscall.o:

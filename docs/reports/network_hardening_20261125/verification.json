@@ -1,0 +1,46 @@
+{
+  "base_commit": "5e49012ab2b359b31999d78083341ede98d5de4f",
+  "source_binding": "host_normal.json and host_sanitized.json inputs; Git commit containing this report",
+  "host": {
+    "cxx": "g++ (Debian 14.2.0-19) 14.2.0",
+    "python": "3.12.14"
+  },
+  "before_fix": {
+    "production_code": "base_commit",
+    "new_regressions": {
+      "revoked_slot_reply_isolation": "failed: unexpected extra reply delivered to replacement application",
+      "expired_request_after_receive": "failed: expired OPEN admitted instead of timeout",
+      "tcp_close_unread_preserves_data": "failed: unread close returned success instead of would_block"
+    },
+    "existing_correct_behavior": [
+      "tcp_close_fin_memory_pressure passed",
+      "tcp_close_reused_slot_callbacks passed"
+    ]
+  },
+  "after_fix": {
+    "normal": "23 stack and 2 production-loop scenarios passed",
+    "address_undefined_sanitizers": "23 stack and 2 production-loop scenarios passed with detect_leaks=0"
+  },
+  "leak_sanitizer": {
+    "status": "blocked",
+    "actual_result": "detect_leaks=1 failed before --list could complete: LeakSanitizer does not work under ptrace",
+    "followup": "rerun --sanitize with ASAN_OPTIONS=detect_leaks=1 on an unrestricted host"
+  },
+  "preview_target": {
+    "status": "passed",
+    "compiler": "x86_64-elf-g++ (GCC) 16.2.0",
+    "sdk_release": "xos-glibc-sdk-preview",
+    "header_profile": "bundled /opt/xos/sysroot newlib headers; no private libc APIs",
+    "translation_units": [
+      "src/user/network/service_core.cpp",
+      "src/user/network/service_loop.cpp",
+      "src/user/network/lwip_stack.cpp",
+      "src/user/programs/net_service.cpp"
+    ],
+    "scope": "freestanding target object compilation only; guest build handled in dependent acceptance milestone"
+  },
+  "guest_qualification": {
+    "status": "not_run",
+    "handoff": "tests/net_transport_guest.py; dependent network acceptance milestone binds its own source/SDK/image/PCAP inputs"
+  }
+}

@@ -1,0 +1,243 @@
+{
+  "status": "passed_subset",
+  "suite": "files-extra",
+  "runs": [
+    {
+      "case": "g3_files_extra",
+      "repetition": 1,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "resources": [
+        129715,
+        3,
+        1
+      ],
+      "output": "exec-file /bin/g3_files_extra\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x000000000034f000\r\n[loader] started pid=10 file=/bin/g3_files_extra\n[process] event=wait_blocked parent=7 child=10\r\nGLIBC_FILES_EXTRA_POSITIONED_PASS aliases=shared append=explicit threads=3\nGLIBC_FILES_EXTRA_DIRECTORY_PASS entries=100 identity=stat cookies=resume utf8=long scandir=sorted\nGLIBC_FILES_EXTRA_PASS checks=4429 handle_quota=16 reuse=64\n[task] event=reclaimed pid=10 pages=228\r\n[wait] pid=10 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "g3_files_extra_parent",
+      "repetition": 1,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "resources": [
+        129715,
+        3,
+        1
+      ],
+      "output": "exec-driver /bin/g3_files_extra_parent /bin/g3_files_extra_receiver\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x000000000034f000\r\n[loader] started pid=11 file=/bin/g3_files_extra_parent\n[process] event=wait_blocked parent=7 child=11\r\n[process] event=fork_prepared pid=12 parent=11 depth=1 pages=125\r\n[process] event=fork_committed pid=12 parent=11\r\n[process] event=exec_prepared pid=12 staging_pid=13\r\n[process] event=exec_replaced old_pid=12 current_pid=12 target_pid=12 staging_pid=13 tid=15 old_address_space=0x00000000005b0000 address_space=0x00000000005c4000 file_session_rekeyed=1 old_spawn_depth=1 spawn_depth=1\r\n[task] event=reclaimed pid=13 pages=22\r\nGLIBC_FILES_EXTRA_INHERIT_DIR_PASS rename=stable deleted=retained\n[process] event=wait_blocked parent=11 child=12\r\nGLIBC_FILES_EXTRA_CHILD_PASS positioned_rounds=256\n[task] event=reclaimed pid=12 pages=228\r\nGLIBC_FILES_EXTRA_PARENT_PASS shared_offset=512 child_positioned=256 dirs_reclaimed=3\n[task] event=reclaimed pid=11 pages=133\r\n[wait] pid=11 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "g3_files_extra",
+      "repetition": 2,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "resources": [
+        129715,
+        3,
+        1
+      ],
+      "output": "exec-file /bin/g3_files_extra\n[process] event=started pid=14 parent=7\r\n[process] pid=14 address_space=0x000000000034f000\r\n[loader] started pid=14 file=/bin/g3_files_extra\n[process] event=wait_blocked parent=7 child=14\r\nGLIBC_FILES_EXTRA_POSITIONED_PASS aliases=shared append=explicit threads=3\nGLIBC_FILES_EXTRA_DIRECTORY_PASS entries=100 identity=stat cookies=resume utf8=long scandir=sorted\nGLIBC_FILES_EXTRA_PASS checks=4429 handle_quota=16 reuse=64\n[task] event=reclaimed pid=14 pages=228\r\n[wait] pid=14 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "g3_files_extra_parent",
+      "repetition": 2,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "resources": [
+        129715,
+        3,
+        1
+      ],
+      "output": "exec-driver /bin/g3_files_extra_parent /bin/g3_files_extra_receiver\n[process] event=started pid=15 parent=7\r\n[process] pid=15 address_space=0x000000000034f000\r\n[loader] started pid=15 file=/bin/g3_files_extra_parent\n[process] event=wait_blocked parent=7 child=15\r\n[process] event=fork_prepared pid=16 parent=15 depth=1 pages=125\r\n[process] event=fork_committed pid=16 parent=15\r\n[process] event=exec_prepared pid=16 staging_pid=17\r\n[process] event=exec_replaced old_pid=16 current_pid=16 target_pid=16 staging_pid=17 tid=22 old_address_space=0x00000000005b0000 address_space=0x00000000005c4000 file_session_rekeyed=1 old_spawn_depth=1 spawn_depth=1\r\n[task] event=reclaimed pid=17 pages=22\r\nGLIBC_FILES_EXTRA_INHERIT_DIR_PASS rename=stable deleted=retained\n[process] event=wait_blocked parent=15 child=16\r\nGLIBC_FILES_EXTRA_CHILD_PASS positioned_rounds=256\n[task] event=reclaimed pid=16 pages=228\r\nGLIBC_FILES_EXTRA_PARENT_PASS shared_offset=512 child_positioned=256 dirs_reclaimed=3\n[task] event=reclaimed pid=15 pages=133\r\n[wait] pid=15 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "g3_files_extra",
+      "repetition": 3,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "resources": [
+        129715,
+        3,
+        1
+      ],
+      "output": "exec-file /bin/g3_files_extra\n[process] event=started pid=18 parent=7\r\n[process] pid=18 address_space=0x000000000034f000\r\n[loader] started pid=18 file=/bin/g3_files_extra\n[process] event=wait_blocked parent=7 child=18\r\nGLIBC_FILES_EXTRA_POSITIONED_PASS aliases=shared append=explicit threads=3\nGLIBC_FILES_EXTRA_DIRECTORY_PASS entries=100 identity=stat cookies=resume utf8=long scandir=sorted\nGLIBC_FILES_EXTRA_PASS checks=4429 handle_quota=16 reuse=64\n[task] event=reclaimed pid=18 pages=228\r\n[wait] pid=18 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "g3_files_extra_parent",
+      "repetition": 3,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "resources": [
+        129715,
+        3,
+        1
+      ],
+      "output": "exec-driver /bin/g3_files_extra_parent /bin/g3_files_extra_receiver\n[process] event=started pid=19 parent=7\r\n[process] pid=19 address_space=0x000000000034f000\r\n[loader] started pid=19 file=/bin/g3_files_extra_parent\n[process] event=wait_blocked parent=7 child=19\r\n[process] event=fork_prepared pid=20 parent=19 depth=1 pages=125\r\n[process] event=fork_committed pid=20 parent=19\r\n[process] event=exec_prepared pid=20 staging_pid=21\r\n[process] event=exec_replaced old_pid=20 current_pid=20 target_pid=20 staging_pid=21 tid=29 old_address_space=0x00000000005b0000 address_space=0x00000000005c4000 file_session_rekeyed=1 old_spawn_depth=1 spawn_depth=1\r\n[task] event=reclaimed pid=21 pages=22\r\nGLIBC_FILES_EXTRA_INHERIT_DIR_PASS rename=stable deleted=retained\n[process] event=wait_blocked parent=19 child=20\r\nGLIBC_FILES_EXTRA_CHILD_PASS positioned_rounds=256\n[task] event=reclaimed pid=20 pages=228\r\nGLIBC_FILES_EXTRA_PARENT_PASS shared_offset=512 child_positioned=256 dirs_reclaimed=3\n[task] event=reclaimed pid=19 pages=133\r\n[wait] pid=19 kind=exited code=0\nxsh> "
+    }
+  ],
+  "qmp": "disabled; serial-only qualification",
+  "active_worker_normal_exit": "unsupported; separate fail-fast status-127 check",
+  "dash_entry": "not_run",
+  "system_build_id": "2802101e956bea35",
+  "image_sha256": "00474f8148a5fa3536b6f65eadc319d1daebf2dd357c25838b4223a0dea18834",
+  "system_manifest_sha256": "a9ba35d1591a15ea97511b95e6d9022c2ac625280e07d06af7bc1d95f03887fb",
+  "glibc_manifest_sha256": "a16f805170c3d93dccbc85880cc6ae9e7555b161375dc6cd7344f62275d43aba",
+  "sdk_profile": "xos_glibc_static_research_v1",
+  "elfs": {
+    "g3_files_extra": {
+      "source": "glibc_g3/files_extra_public_probe.c",
+      "source_sha256": "08feaec99cca55b43e66a4bdfa722a0b4e9991d3dabbd2f75aa3a538fda94b19",
+      "elf_sha256": "9223f724d78c1b55db81eb679f01aa6410d7466a4c768fbdc17da4e99f0898c9",
+      "build_command": [
+        "/usr/bin/python3",
+        "${XOS_REPO}/scripts/build_glibc_program.py",
+        "--sdk",
+        "${XOS_REPO}/build/glibc_files_extra_sdk_qualified/sysroot",
+        "--source",
+        "${XOS_REPO}/tests/fixtures/glibc_g3/files_extra_public_probe.c",
+        "--output",
+        "${XOS_REPO}/build/files_extra_guest_release/g3_files_extra.elf"
+      ],
+      "build_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exec_receiver_marker": null
+    },
+    "g3_files_extra_receiver": {
+      "source": "glibc_g3/files_extra_public_probe.c",
+      "source_sha256": "08feaec99cca55b43e66a4bdfa722a0b4e9991d3dabbd2f75aa3a538fda94b19",
+      "elf_sha256": "163ced22644e61e7f240606315fda38c46e522a99f6829dfecdadd02095a440b",
+      "build_command": [
+        "/usr/bin/python3",
+        "${XOS_REPO}/scripts/build_glibc_program.py",
+        "--sdk",
+        "${XOS_REPO}/build/glibc_files_extra_sdk_qualified/sysroot",
+        "--source",
+        "${XOS_REPO}/tests/fixtures/glibc_g3/files_extra_public_probe.c",
+        "--output",
+        "${XOS_REPO}/build/files_extra_guest_release/g3_files_extra_receiver.elf",
+        "--define",
+        "XOS_GLIBC_G3_EXEC_RECEIVER"
+      ],
+      "build_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exec_receiver_marker": {
+        "section": ".xos.exec",
+        "address": 1074271696,
+        "offset": 529872,
+        "flags": 2,
+        "load_flags": 4,
+        "sha256": "604c184f80d2c947a4cd359c3fb720343dfc2d1c6a006f6e4bf10a558a42e962",
+        "magic": "0x3349424143455858",
+        "version": 3,
+        "size": 16
+      }
+    },
+    "g3_files_extra_parent": {
+      "source": "glibc_g3/files_extra_exec_parent.c",
+      "source_sha256": "9040a73319f64d563370ab7d4225b35338e11cee055cf14e0b2d1e1470076f62",
+      "elf_sha256": "d6896560e00dda2dcf1cd4111a09966042638533e150c0fa799e923c52674618",
+      "build_commands": [
+        [
+          "${PREVIEW_PREFIX}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+          "-std=gnu11",
+          "-O2",
+          "-g",
+          "-mno-red-zone",
+          "-fno-pie",
+          "-fno-pic",
+          "-fno-stack-protector",
+          "-fno-builtin",
+          "-nostdinc",
+          "-isystem",
+          "${XOS_REPO}/build/glibc_files_extra_system_release/sdk/include",
+          "-isystem",
+          "${PREVIEW_PREFIX}/Cellar/x86_64-elf-gcc/16.2.0/lib/gcc/x86_64-elf/16.2.0/include",
+          "-c",
+          "${XOS_REPO}/tests/fixtures/glibc_g3/files_extra_exec_parent.c",
+          "-o",
+          "${XOS_REPO}/build/files_extra_guest_release/g3_files_extra_parent.o"
+        ],
+        [
+          "${PREVIEW_PREFIX}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+          "-nostdlib",
+          "-static",
+          "-no-pie",
+          "-Wl,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096",
+          "-T",
+          "${XOS_REPO}/build/glibc_files_extra_system_release/sdk/user.ld",
+          "${XOS_REPO}/build/glibc_files_extra_system_release/sdk/crt0_posix.o",
+          "${XOS_REPO}/build/files_extra_guest_release/g3_files_extra_parent.o",
+          "-Wl,--start-group",
+          "${XOS_REPO}/build/glibc_files_extra_system_release/sdk/lib/libxos.a",
+          "${XOS_REPO}/build/glibc_files_extra_system_release/sdk/lib/libxos_loader.a",
+          "${XOS_REPO}/build/glibc_files_extra_system_release/sdk/lib/libc.a",
+          "${XOS_REPO}/build/glibc_files_extra_system_release/sdk/lib/libm.a",
+          "${PREVIEW_PREFIX}/Cellar/x86_64-elf-gcc/16.2.0/lib/gcc/x86_64-elf/16.2.0/libgcc.a",
+          "-Wl,--end-group",
+          "-o",
+          "${XOS_REPO}/build/files_extra_guest_release/g3_files_extra_parent.elf"
+        ]
+      ],
+      "compiler_sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
+      "exec_receiver_marker": {
+        "section": ".xos.exec",
+        "address": 1073856624,
+        "offset": 118896,
+        "flags": 2,
+        "load_flags": 4,
+        "sha256": "604c184f80d2c947a4cd359c3fb720343dfc2d1c6a006f6e4bf10a558a42e962",
+        "magic": "0x3349424143455858",
+        "version": 3,
+        "size": 16
+      },
+      "sanitized_environment": []
+    }
+  },
+  "runner_sha256": "079ec4707d7e48c821051c9f604bb32d67980f085fe4acb8a15122fce09adc93",
+  "newlib_parent_inputs": {
+    "crt0_posix.o": "7d158b171d5d3d5b18ae62d949c6776d3807b6b80697a6b623d73331e687194e",
+    "user.ld": "b8b57be81f11d8f181ba6221f2c51db906b5d282ef8e436c2f0f9bcff068a1de",
+    "lib/libxos.a": "a5e39353a1d256ce0afb72ff15d269c786be03a80b01bc059a642a479e97d48f",
+    "lib/libxos_loader.a": "fa3819c70441fddc78376f8c806ade5fc6613d99843610143eb00c4e5ee2556e",
+    "lib/libc.a": "283fa07ad205c80af92e955a91da027435d8a8a90cb7e27933f57925cc5baa22",
+    "lib/libm.a": "4cfdd6324f6776d025923ee369fad51236a9ee5730c8143a6b3b03b963eefd80"
+  },
+  "newlib_parent_libgcc_sha256": "1e19f0657fafd72f6c35a49b15d13c5772d49c829066c1f863518c29055c4f93",
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_REPO}/build/glibc_files_extra_system_release/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${PRIVATE_GUEST}/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "baseline": [
+    129715,
+    3,
+    1
+  ],
+  "serial_evidence": "guest_serial.log"
+}

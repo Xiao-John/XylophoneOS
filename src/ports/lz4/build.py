@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """Build and pack LZ4 (lz4 + liblz4) for XOS from a local archive (offline)."""
 import hashlib
 import json

@@ -1,0 +1,181 @@
+{
+  "status": "failed",
+  "suite": "glibc_terminal",
+  "runs": [],
+  "input_events": [],
+  "qmp": "disabled; serial-only",
+  "not_run": [
+    "hardware UART timing",
+    "continuous-input flush race",
+    "glibc outgoing terminal fork/exec/spawn",
+    "same-session full-duplex I/O",
+    "dash launch entry",
+    "service death during guest I/O"
+  ],
+  "system_build_id": "423799617bfde178",
+  "system_manifest_sha256": "e6a49c97faa2ed1b74312b39b5fa49bfa4c933eb9aa0bf989ac85266ca0422f9",
+  "glibc_manifest_sha256": "ade36f38cd935c9638bd91515208920ccc97a238edec66386cdb2ab49fbb8add",
+  "image_sha256": "0af0584043115bca3f5f68dd38e5a1e841d97af2b8631252813fbce101b7837c",
+  "runner_sha256": "8d282f80d0790f62dba522d9c6edccc499e58af7bb5b4f1b1587f594a071cdac",
+  "elfs": {
+    "terminal_probe": {
+      "source_sha256": "c83759717956a2a7cfa4fd0d9d254896b11ff492170e91f3e9a1ce78d334a4ae",
+      "elf_sha256": "2faace13b7c3c5e5026bafd18a411b312577ec77fbb7dd72509f0eb4c499c1b0",
+      "command": [
+        "/usr/bin/python3",
+        "${XOS_REPO}/scripts/build_glibc_program.py",
+        "--sdk",
+        "${XOS_REPO}/build/terminal_sdk_initial/sysroot",
+        "--source",
+        "${XOS_REPO}/tests/fixtures/glibc_g3/terminal_public_probe.c",
+        "--output",
+        "${XOS_REPO}/build/terminal_guest_review/terminal_probe.elf"
+      ],
+      "tty_marker": {
+        "address": 1074276352,
+        "offset": 534528,
+        "load_flags": 4
+      },
+      "exec_marker": null
+    },
+    "terminal_receiver": {
+      "source_sha256": "c83759717956a2a7cfa4fd0d9d254896b11ff492170e91f3e9a1ce78d334a4ae",
+      "elf_sha256": "bec8ab8ecde6684ca8c06ed6f8a98c1400efa57b3c22f4cd43b27f3735e0fa4c",
+      "command": [
+        "/usr/bin/python3",
+        "${XOS_REPO}/scripts/build_glibc_program.py",
+        "--sdk",
+        "${XOS_REPO}/build/terminal_sdk_initial/sysroot",
+        "--source",
+        "${XOS_REPO}/tests/fixtures/glibc_g3/terminal_public_probe.c",
+        "--output",
+        "${XOS_REPO}/build/terminal_guest_review/terminal_receiver.elf",
+        "--define",
+        "XOS_GLIBC_TERMINAL_EXEC_RECEIVER"
+      ],
+      "tty_marker": {
+        "address": 1074276352,
+        "offset": 534528,
+        "load_flags": 4
+      },
+      "exec_marker": {
+        "section": ".xos.exec",
+        "address": 1074276368,
+        "offset": 534544,
+        "flags": 2,
+        "load_flags": 4,
+        "sha256": "604c184f80d2c947a4cd359c3fb720343dfc2d1c6a006f6e4bf10a558a42e962",
+        "magic": "0x3349424143455858",
+        "version": 3,
+        "size": 16
+      }
+    },
+    "terminal_parent": {
+      "source_sha256": "f33e6900d34ba1ed106ec6c51e5974e1179119f472c6f644b63d3856e3cff580",
+      "elf_sha256": "f2d5179a2acbc14a9717798b6c63b72ea8b6fe55a8c3893c2bb3b9c1c4369d65",
+      "commands": [
+        [
+          "${XOS_TOOLCHAIN}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+          "-std=gnu11",
+          "-O2",
+          "-g",
+          "-mno-red-zone",
+          "-fno-pie",
+          "-fno-pic",
+          "-fno-stack-protector",
+          "-fno-builtin",
+          "-nostdinc",
+          "-isystem",
+          "${XOS_REPO}/build/terminal_system_review_final/sdk/include",
+          "-isystem",
+          "${XOS_TOOLCHAIN}/Cellar/x86_64-elf-gcc/16.2.0/lib/gcc/x86_64-elf/16.2.0/include",
+          "-c",
+          "${XOS_REPO}/tests/fixtures/glibc_g3/terminal_exec_parent.c",
+          "-o",
+          "${XOS_REPO}/build/terminal_guest_review/terminal_parent.o"
+        ],
+        [
+          "${XOS_TOOLCHAIN}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+          "-nostdlib",
+          "-static",
+          "-no-pie",
+          "-Wl,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096",
+          "-T",
+          "${XOS_REPO}/build/terminal_system_review_final/sdk/user.ld",
+          "${XOS_REPO}/build/terminal_system_review_final/sdk/crt0_posix.o",
+          "${XOS_REPO}/build/terminal_guest_review/terminal_parent.o",
+          "-Wl,--start-group",
+          "${XOS_REPO}/build/terminal_system_review_final/sdk/lib/libxos.a",
+          "${XOS_REPO}/build/terminal_system_review_final/sdk/lib/libxos_loader.a",
+          "${XOS_REPO}/build/terminal_system_review_final/sdk/lib/libc.a",
+          "${XOS_REPO}/build/terminal_system_review_final/sdk/lib/libm.a",
+          "${XOS_TOOLCHAIN}/Cellar/x86_64-elf-gcc/16.2.0/lib/gcc/x86_64-elf/16.2.0/libgcc.a",
+          "-Wl,--end-group",
+          "-o",
+          "${XOS_REPO}/build/terminal_guest_review/terminal_parent.elf"
+        ]
+      ],
+      "sdk_inputs": {
+        "crt0_posix.o": "198f9322360719735ae3c6d5b7ae0a02a511efb8680e3f84d81e2e387c64a85a",
+        "user.ld": "b8b57be81f11d8f181ba6221f2c51db906b5d282ef8e436c2f0f9bcff068a1de",
+        "lib/libxos.a": "6717cefe6d27d3339c60a9481e964f97e2444e43293993c12e5d5348c2c413fd",
+        "lib/libxos_loader.a": "7ac28d54e717275f24814fc8083e75d5eab548d753f832576ff854ad749b221a",
+        "lib/libc.a": "283fa07ad205c80af92e955a91da027435d8a8a90cb7e27933f57925cc5baa22",
+        "lib/libm.a": "4cfdd6324f6776d025923ee369fad51236a9ee5730c8143a6b3b03b963eefd80"
+      },
+      "libgcc_sha256": "1e19f0657fafd72f6c35a49b15d13c5772d49c829066c1f863518c29055c4f93",
+      "compiler_sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
+      "sanitized_environment": [],
+      "tty_marker": {
+        "address": 1073852384,
+        "offset": 114656,
+        "load_flags": 4
+      }
+    }
+  },
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_REPO}/build/terminal_system_review_final/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_TMP}/xos_glibc_terminal_o44xoweb/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "before_terminal": [
+    129717,
+    3,
+    1
+  ],
+  "baseline_with_service": [
+    129533,
+    4,
+    2
+  ],
+  "error": "glibc_terminal: missing any of (b'GLIBC_TERMINAL_READ_WAITING threads=2 waiting=1',); output=bytearray(b'gth\\nbad pointer\\ntx\\nbad length\\nbad pointer\\nAping\\nbad length\\nbad pointer\\ntx\\nAping\\nbad length\\nbad pointer\\ntx\\nxsh> tAping\\nbad length\\nbad pointer\\ntx\\nrace on\\nxsh: trace on\\nxsh> Aping\\nbad length\\nbad pointer\\ntx\\ndemo quieAping\\nbad length\\nbad pointer\\ntx\\nt\\n[task] event=killed_by_supervisor pid=1\\r\\n[task] event=reclaimed pid=1 pages=11\\r\\n[task] event=killed_by_supervisor pid=2\\r\\n[task] event=reclaimed pid=2 pages=11\\r\\n[task] event=killed_by_supervisor pid=3\\r\\n[task] event=reclaimed pid=3 pages=11\\r\\n[task] event=killed_by_supervisor pid=4\\r\\n[task] event=reclaimed pid=4 pages=11\\r\\n[sup] demo tasks stopped\\nxsh> stats\\n[resources] free=129717 tasks=3 completions=1\\nxsh> tty-run /bin/terminal_probe warmup\\nxsh: starting terminal service\\nGLIBC_TERMINAL_WARMUP_PASS\\n[wait] pid=11 kind=exited code=0\\nxsh> stats\\n[resources] free=129533 tasks=4 completions=2\\nxsh> tty-run /bin/terminal_probe\\nGLIBC_TERMINAL_MODE_PASS raw=115200 timed=100ms ioctl=translated\\nGLIBC_TERMINAL_BLOCK_READY\\n[wait] pid=12 kind=exited code=91\\nxsh> ')",
+  "serial_sha256": "9559f04ec51236b14c2953c16c5fe5dbd193db1cf36b9820d934041a429a1bf0"
+}

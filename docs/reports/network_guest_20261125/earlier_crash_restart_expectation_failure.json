@@ -1,0 +1,164 @@
+{
+  "status": "failed",
+  "runner_sha256": "c443df181db2c4c6a3b05fcf85c3bfeea0aed044ed9d35dbce2a0c7b7c1abcca",
+  "checks": [
+    "cross_pid_handles_and_controller_operations_denied",
+    "four_applications_eight_connections_controller_reserved_budget",
+    "kill_reclaims_all_application_connections_and_resources",
+    "cancel_reclaims_connections_and_resources",
+    "exit_reclaims_connections_and_resources",
+    "exec_reclaims_connections_and_resources",
+    "stall_reclaims_connections_and_resources",
+    "fault_reclaims_connections_and_resources",
+    "pending_data_revoke_new_pid_reuse_and_revoked_pid_reconnect_denial",
+    "idle_60s_connection_and_resource_reclamation"
+  ],
+  "revocations": [
+    {
+      "round": 0,
+      "nonce": "642c6aa307f16062325680b9fb596735",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "nonce": "7a48186a5fba6493ba7eee71900b8aad",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "nonce": "acb90b7aa5de0bc1d10507abd1e6541c",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 3,
+      "nonce": "d39970ce043490971ab24ef3d7446512",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 4,
+      "nonce": "d66e6ca3b1933e13b2d3eb7ab5ba134b",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 5,
+      "nonce": "9721e0a3cc7ab7e5a86a7b21ce96d772",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 6,
+      "nonce": "41d4d8e58e074dd431aa764a1861de1c",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 7,
+      "nonce": "4f4f3259dbba29f4c3dcc26fc31e012a",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 8,
+      "nonce": "2b6209a89f123ee4774ffdab67c8054f",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 9,
+      "nonce": "81621078412174028f80f39c4d3eb79a",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 10,
+      "nonce": "a556dbdc46f31a1f136855e12b26b615",
+      "echoes": 2,
+      "status": "passed"
+    },
+    {
+      "round": 11,
+      "nonce": "f61b5506e582b3092737d5b39c8bc476",
+      "echoes": 2,
+      "status": "passed"
+    }
+  ],
+  "not_run": [
+    "NIC_reset_failure_quarantine",
+    "packet_loss_reordering",
+    "DNS_DHCP_TLS",
+    "deterministic_same_poll_round_revoke_accept_schedule"
+  ],
+  "build_id": "6532a0aacf90c5f1",
+  "image_sha256": "b6df1109fb791a3a2cd8442d36d49f804162ee87a33a4776a885b778d64b16ab",
+  "system_manifest_sha256": "6caf8d74f2c09ed3f14fbea0e084513d293d5c1386fcd1e1a0eed2e7a3282cd8",
+  "fixture_receipt_sha256": "b314a50c970176f7a8f0fd6ff85aeb524a5ce802e6712107fa4be909b5d4adff",
+  "sdk_tree_sha256": "81b851afba4bf53e2003a340bfcbc3018be5a35bebbf4d7b031c37f0b59e19fe",
+  "artifacts": {
+    "net_lifecycle_probe.elf": "fd0d53bba0cd65a21944af64489a93fdb1cf5579451d51829623d466e146fa23",
+    "net_exec_receiver.elf": "ed03914fa4ad3c557dc24dd3707aa93ab75fe83d8b7d60c2584e9cbab2ca0271"
+  },
+  "initial_disk_sha256": "c422335896c0ee8da3f7f44b05402f1a7118fa43b9ae131de66542193c48d8ad",
+  "qemu_command": [
+    "${XOS_HOST_BIN}/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_ROOT}/build/network_qualified_system_v2/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_TEMP_ROOT}/xos_net_lifecycle_yejp2qwy/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-netdev",
+    "user,id=xosnet",
+    "-device",
+    "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56",
+    "-object",
+    "filter-dump,id=xos_capture,netdev=xosnet,file=${XOS_ROOT}/build/network_lifecycle_guest_v2/network.pcap"
+  ],
+  "baseline": [
+    129630,
+    3,
+    1
+  ],
+  "before_service": [
+    129799,
+    2,
+    0
+  ],
+  "service_pid": 11,
+  "reply_timeout_ns": 520000000,
+  "idle_timeout_ns": 59990000000,
+  "error": "network_lifecycle_guest_v2/guest: missing any of (b'[net-start] pid=',); output=bytearray(b'fe.elf idle 11\\n[process] event=started pid=48 parent=7\\r\\n[process] pid=48 address_space=0x0000000000582000\\r\\n[loader] started pid=48 file=/bin/netlife.elf\\n[process] event=wait_blocked parent=7 child=48\\r\\nNET_IDLE_PASS pid=48 first=59990000000 second=0\\n[task] event=reclaimed pid=48 pages=92\\r\\n[wait] pid=48 kind=exited code=0\\nxsh> stats\\n[resources] free=129630 tasks=3 completions=1\\nxsh> net-info\\n[net-info] sessions=1 connections=0 udp_dropped=0\\nxsh> spawn-file /bin/netlife.elf service_lost 11\\n[process] event=started pid=49 parent=7\\r\\n[process] pid=49 address_space=0x0000000000582000\\r\\n[loader] started pid=49 file=/bin/netlife.elf\\nxsh> NET_SERVICE_READY pid=49 first=27 second=0\\nkill 11\\n[task] event=killed_by_supervisor pid=11\\r\\n[task] event=reclaimed pid=11 pages=103\\r\\nkill: accepted\\nxsh> NET_SERVICE_LOST_PASS pid=49 first=0 second=0\\n[task] event=reclaimed pid=49 pages=92\\r\\nwait 49\\n[wait] pid=49 kind=exited code=0\\nxsh> net-start 41\\n[task] event=reclaimed pid=50 pages=96\\r\\nnet: start error=-11\\nxsh> ')",
+  "evidence_files": {
+    "network.pcap": "14d6e357c7ef9a10ddf730992e011993ff940ca29a1606db0496e85fe8cdc611",
+    "guest_qemu.log": "3b7815e7154d23fb7835c91c691ea4776324e85738f4ec4ec8dc763711ff56b5",
+    "guest_serial.log": "9587e39220bb7a1c60391c70789ff586a48d2dac6a03b04778db66f6397eb6ae",
+    "guest.serial.log": "9587e39220bb7a1c60391c70789ff586a48d2dac6a03b04778db66f6397eb6ae"
+  }
+}

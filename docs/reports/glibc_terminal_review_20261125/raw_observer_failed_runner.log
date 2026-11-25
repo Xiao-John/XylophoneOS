@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "${XOS_REPO}/tests/glibc_terminal_guest.py", line 183, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "${XOS_REPO}/tests/glibc_terminal_guest.py", line 144, in main
+    waiting,progress=release_blocked_reader(guest,start,report,repetition+1)
+                     ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "${XOS_REPO}/tests/glibc_terminal_guest.py", line 53, in release_blocked_reader
+    guest.expect(waiting,start=start,timeout=timeout)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "${XOS_REPO}/tests/boot_smoke.py", line 45, in expect
+    return self.expect_any(alternatives, start=start, timeout=timeout)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "${XOS_REPO}/tests/boot_smoke.py", line 61, in expect_any
+    raise AssertionError(f"{self.name}: missing any of {expected_values!r}; output={self.output[-1000:]!r}")
+AssertionError: glibc_terminal: missing any of (b'GLIBC_TERMINAL_READ_WAITING threads=2 waiting=1',); output=bytearray(b'gth\nbad pointer\ntx\nbad length\nbad pointer\nAping\nbad length\nbad pointer\ntx\nAping\nbad length\nbad pointer\ntx\nxsh> tAping\nbad length\nbad pointer\ntx\nrace on\nxsh: trace on\nxsh> Aping\nbad length\nbad pointer\ntx\ndemo quieAping\nbad length\nbad pointer\ntx\nt\n[task] event=killed_by_supervisor pid=1\r\n[task] event=reclaimed pid=1 pages=11\r\n[task] event=killed_by_supervisor pid=2\r\n[task] event=reclaimed pid=2 pages=11\r\n[task] event=killed_by_supervisor pid=3\r\n[task] event=reclaimed pid=3 pages=11\r\n[task] event=killed_by_supervisor pid=4\r\n[task] event=reclaimed pid=4 pages=11\r\n[sup] demo tasks stopped\nxsh> stats\n[resources] free=129717 tasks=3 completions=1\nxsh> tty-run /bin/terminal_probe warmup\nxsh: starting terminal service\nGLIBC_TERMINAL_WARMUP_PASS\n[wait] pid=11 kind=exited code=0\nxsh> stats\n[resources] free=129533 tasks=4 completions=2\nxsh> tty-run /bin/terminal_probe\nGLIBC_TERMINAL_MODE_PASS raw=115200 timed=100ms ioctl=translated\nGLIBC_TERMINAL_BLOCK_READY\n[wait] pid=12 kind=exited code=91\nxsh> ')

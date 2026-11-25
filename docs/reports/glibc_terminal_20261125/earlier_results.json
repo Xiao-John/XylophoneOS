@@ -1,0 +1,8 @@
+{
+  "initial_host_status": "passed",
+  "initial_host_cases": 23,
+  "scope": "Initial 23-case host pass preceded the op17 shared files validator fix; host.json supersedes that snapshot.",
+  "legacy_first_boot": "Failed before kernel/userland at BOOT_ERROR: iso_read; original report and serial retained.",
+  "legacy_retry": "A single fresh private-disk retry on unchanged SDK/system/source passed all three files cases.",
+  "boot_cause": "Not established; no bootloader change or automatic retry policy introduced."
+}

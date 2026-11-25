@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "archive_sha256": "20efd69b859a149ce16c86ad92ead6f64e19c0d15f395615e4cf1e44888a70f1",
+  "archive_files_verified": 1094,
+  "candidate_cpp_files_verified": 862,
+  "controls": [
+    "unaltered_kit_matches_verified_archive",
+    "existing_candidate_cpp_matches_verified_archive",
+    "modified_cpp_plus_matching_inputs_json_rejected"
+  ],
+  "guest": "existing_20_check_result_unchanged; no guest rerun for documentation-only changes",
+  "generated_index_sha256": "cbc8d9ac572d950b296539957f258adb43dc35aa036e81dd64d5275dda3e15af",
+  "generated_index_entries": 1767
+}

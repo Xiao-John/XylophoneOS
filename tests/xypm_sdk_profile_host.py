@@ -288,6 +288,18 @@ class profile_cases(unittest.TestCase):
         with self.assertRaisesRegex(PackageError, 'object target mismatch'):
             self.create()
 
+    def test_glibc_terminal_archive_is_bound_and_target_checked(self):
+        name = 'usr/lib/libxos_terminal.a'
+        archive = put(self.sysroot, name, archive_bytes())
+        self.save_glibc()
+        binding = self.create()['sdk_binding']
+        self.assertEqual(binding['link_artifacts'][name], sha_file(archive))
+        self.assertEqual(binding['archive_members'][name], 1)
+        archive.write_bytes(archive_bytes(machine=183))
+        self.save_glibc()
+        with self.assertRaisesRegex(PackageError, 'object target mismatch'):
+            self.create()
+
     def test_missing_crt_rejected_after_rehash(self):
         (self.sysroot / 'usr/lib/crtend.o').unlink()
         self.save_glibc()

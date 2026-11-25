@@ -124,6 +124,9 @@ struct process_record {
     bool threads_enabled;
     bool closing;
     u64 exit_owner;
+    // A live cleanup window keeps IPC/VM usable; closing denotes forced stop.
+    u64 exit_cleanup_deadline_ns;
+    i32 exit_cleanup_timeout_status;
     process_foreground foreground;
     bool foreground_active, foreground_cancelled;
     // A fork child resumes a copied syscall frame only after the files service
@@ -141,7 +144,7 @@ struct process_record {
     u64 deferred_vector, deferred_address, deferred_instruction;
 };
 
-struct completion_record { bool used; bool ready; u64 parent; process_status status; cpu_totals cpu; };
+struct completion_record { bool used; bool ready; bool published; u64 parent; process_status status; cpu_totals cpu; };
 completion_record completions[16];
 
 struct endpoint_record {
@@ -1063,6 +1066,26 @@ void wake_ipc_acceptors(u64 service_pid, i64 result) {
     }
 }
 
+// sys84--86 channels belong to the current image. PID preservation on exec
+// does not retain endpoints, pending requests/replies or published services.
+// sys81's explicit quiescent-channel inheritance is a separate mechanism.
+void revoke_generic_ipc_process(u64 pid) {
+    for (auto& entry : ipc_names) {
+        if (entry.used && entry.owner_pid == pid) entry = ipc_name_record{};
+    }
+    wake_ipc_acceptors(pid, pipe_error_broken);
+    for (auto& connection : ipc_connections) {
+        if (!connection.used || (connection.service_pid != pid && connection.client_pid != pid)) continue;
+        revoke_ipc_channel(connection.channel_id, pipe_error_broken);
+    }
+    for (auto& endpoint : endpoints) {
+        if (endpoint.used && endpoint.generic &&
+            (endpoint.owner_pid == pid || endpoint.sender_pid == pid || endpoint.receiver_pid == pid)) {
+            revoke_ipc_channel(endpoint.channel_id, pipe_error_broken);
+        }
+    }
+}
+
 bool files_service_live() {
     process_record* service = task_by_pid(files_pid);
     return files_pid != 0 && service != nullptr && service->block_access &&
@@ -1239,16 +1262,7 @@ void destroy_task(process_record* task) {
     const u64 pid = task->pid;
     ipc_v1_revoke_process(pid);
     device_revoke_process(pid);
-    for (auto& entry : ipc_names) {
-        if (entry.used && entry.owner_pid == pid) entry = ipc_name_record{};
-    }
-    wake_ipc_acceptors(pid, pipe_error_broken);
-    for (auto& connection : ipc_connections) {
-        if (!connection.used || (connection.service_pid != pid && connection.client_pid != pid)) continue;
-        const u32 channel_id = connection.channel_id;
-        revoke_ipc_channel(channel_id, pipe_error_broken);
-        connection = ipc_connection_record{};
-    }
+    revoke_generic_ipc_process(pid);
     for (auto& endpoint : endpoints) {
         if (!endpoint.used || (endpoint.owner_pid != pid && endpoint.receiver_pid != pid &&
                                endpoint.sender_pid != pid)) { continue; }
@@ -1286,6 +1300,45 @@ completion_record* completion_for(u64 parent, u64 pid) {
         if (item.used && item.parent == parent && item.status.pid == pid) { return &item; }
     }
     return nullptr;
+}
+
+bool process_completion_claimed(u64 parent, u64 pid) {
+    for (const auto& waiter : threads) {
+        if (waiter.process != nullptr && waiter.process->pid == parent &&
+            waiter.wait_kind == thread_wait_kind::process && waiter.wait_target == pid) return true;
+    }
+    return false;
+}
+
+completion_record* next_process_completion(u64 parent, bool& has_children) {
+    has_children = false;
+    for (auto& item : completions) {
+        if (!item.used || !item.published || item.parent != parent) continue;
+        has_children = true;
+        if (item.ready && !process_completion_claimed(parent, item.status.pid)) return &item;
+    }
+    return nullptr;
+}
+
+void wake_process_waiters(u64 parent) {
+    for (auto& waiter : threads) {
+        if (waiter.process == nullptr || waiter.process->pid != parent ||
+            waiter.state != thread_state::blocked ||
+            waiter.wait_kind != thread_wait_kind::process || waiter.wait_target != 0) continue;
+        bool has_children = false;
+        completion_record* item = next_process_completion(parent, has_children);
+        if (item != nullptr) {
+            // Bind the real PID before publishing ready. This claim survives
+            // until deferred copyout, exactly as for a precise PID waiter.
+            waiter.wait_target = item->status.pid;
+            waiter.state = thread_state::ready;
+        } else if (!has_children) {
+            // All native PIDs are positive and at most INT64_MAX. This private
+            // sentinel tells deferred delivery to return no-child unchanged.
+            waiter.wait_target = ~u64{0};
+            waiter.state = thread_state::ready;
+        }
+    }
 }
 
 void finish_task(process_record* task, process_outcome outcome, i64 code,
@@ -1339,6 +1392,7 @@ void finish_task(process_record* task, process_outcome outcome, i64 code,
                 parent.state == thread_state::blocked && parent.wait_kind == thread_wait_kind::process &&
                 parent.wait_target == task->pid) { parent.state = thread_state::ready; }
         }
+        wake_process_waiters(task->parent);
     }
     // Unstarted constructors lose their owner. Runnable children instead pass
     // to the kernel reaper; their cancellation ancestry follows the live tree.
@@ -1521,8 +1575,9 @@ void deliver_wait(thread_record* thread, interrupt_frame* frame) {
     }
     if (thread->wait_kind != thread_wait_kind::process) { return; }
     completion_record* item = completion_for(thread->process->pid, thread->wait_target);
-    if (item == nullptr || !item->ready) { return; }
-    if (user_range_ok(thread->wait_buffer, sizeof(process_status), true)) {
+    if (item == nullptr) { frame->rax = static_cast<u64>(process_error_denied); }
+    else if (!item->ready) { frame->rax = static_cast<u64>(process_error_state); }
+    else if (user_range_ok(thread->wait_buffer, sizeof(process_status), true)) {
         copy_to_user(thread->wait_buffer, &item->status, sizeof(process_status));
         thread->process->child_cpu.include(item->cpu);
         *item = completion_record{};
@@ -1531,6 +1586,7 @@ void deliver_wait(thread_record* thread, interrupt_frame* frame) {
     thread->user_pin.clear();
     thread->wait_kind = thread_wait_kind::none;
     thread->wait_target = 0;
+    wake_process_waiters(thread->process->pid);
 }
 
 thread_record* pick_ready() {
@@ -1589,9 +1645,11 @@ interrupt_frame* make_initial_frame(thread_record* thread) {
 
 void reap_threads();
 void expire_waiters();
+void expire_process_cleanup();
 interrupt_frame* schedule(interrupt_frame* frame, thread_record* preferred = nullptr) {
     if (current_thread != nullptr) { commit_user_output(); }
     if (cpu_usage.valid) { cpu_usage.stop(execution_counter()); }
+    expire_process_cleanup();
     expire_waiters();
     reap_dead();
     reap_threads();
@@ -1617,7 +1675,7 @@ interrupt_frame* schedule(interrupt_frame* frame, thread_record* preferred = nul
         }
         if (next == nullptr) { next = pick_ready(); }
         while (next == nullptr) {
-            arch::wait_for_interrupt(); expire_waiters(); next = pick_ready();
+            arch::wait_for_interrupt(); expire_process_cleanup(); expire_waiters(); next = pick_ready();
         }
         interrupt_frame* next_frame = next->state == thread_state::fresh
             ? make_initial_frame(next) : reinterpret_cast<interrupt_frame*>(next->kernel_rsp);
@@ -1660,7 +1718,7 @@ interrupt_frame* schedule(interrupt_frame* frame, thread_record* preferred = nul
                      peer.tid == peer.process->continuation.owner_tid) &&
                     (peer.state == thread_state::ready || peer.state == thread_state::fresh)) { other=true; break; }
             }
-            if (!other) { arch::wait_for_interrupt(); expire_waiters(); }
+            if (!other) { arch::wait_for_interrupt(); expire_process_cleanup(); expire_waiters(); }
             continue;
         }
         fpu_restore(next->fpu_state); deliver_wait(next, next_frame); return next_frame;
@@ -1723,7 +1781,8 @@ i64 replacement_caller_error() {
             return thread_error_unsupported;
         }
     }
-    return current->closing || current_thread->leaving ? process_error_state : 0;
+    return current->closing || current->exit_cleanup_deadline_ns != 0 || current_thread->leaving
+        ? process_error_state : 0;
 }
 
 u64 page_align_up(u64 address) {
@@ -2022,6 +2081,23 @@ void reap_threads() {
     }
 }
 
+void expire_process_cleanup() {
+    const u64 now = clock::monotonic_ns();
+    for (auto& process : tasks) {
+        if (process.state == task_state::free || process.state == task_state::dead ||
+            process.exit_cleanup_deadline_ns == 0 || now < process.exit_cleanup_deadline_ns) { continue; }
+        // Clear before finish_task: IPC revocation can expire ordinary waits.
+        // A cancelled VM continuation keeps the saved failure until rollback.
+        process.exit_cleanup_deadline_ns = 0;
+        if (process_trace_enabled) {
+            format::text("[task] event=exit_cleanup_timeout pid="); format::decimal(process.pid);
+            format::text(" owner_tid="); format::decimal(process.exit_owner);
+            format::text("\r\n");
+        }
+        finish_task(&process, process_outcome::exited, process.exit_cleanup_timeout_status);
+    }
+}
+
 void expire_waiters() {
     const u64 now = clock::monotonic_ns();
     for (auto& thread : threads) {
@@ -2079,8 +2155,9 @@ void* thread_syscall(interrupt_frame* frame) {
     i64 result = process_error_invalid;
     const u64 first = frame->rdi, second = frame->rsi;
     if (frame->rdx != 0 || (second != 0 && frame->rax != sys_thread_prepare &&
-        frame->rax != sys_thread_join && frame->rax != sys_wake_word) ||
-        ((frame->rax == sys_thread_begin_exit || frame->rax == sys_process_begin_exit) && first != 0)) {
+        frame->rax != sys_thread_join && frame->rax != sys_wake_word &&
+        frame->rax != sys_process_begin_exit) ||
+        (frame->rax == sys_thread_begin_exit && first != 0)) {
         frame->rax = static_cast<u64>(process_error_invalid); return frame;
     }
     if (current_thread->leaving && frame->rax != sys_thread_exit && frame->rax != sys_exit) {
@@ -2096,7 +2173,7 @@ void* thread_syscall(interrupt_frame* frame) {
         if (!user_range_ok(first, sizeof(header), false)) { result = thread_error_address; break; }
         copy_from_user(&header, first, sizeof(header));
         if (!valid_header(header, sizeof(header))) { break; }
-        if (current->closing) { result = process_error_state; break; }
+        if (current->closing || current->exit_cleanup_deadline_ns != 0) { result = process_error_state; break; }
         if (!current->threads_enabled) {
             // Explicit opt-in: an old ELF with a LOAD in this formerly available
             // interval remains executable but cannot opt into the new profile.
@@ -2121,7 +2198,7 @@ void* thread_syscall(interrupt_frame* frame) {
         if (result != 0) { break; }
         if (!user_range_ok(second, sizeof(thread_reservation), true)) { result = thread_error_address; break; }
         if (!current->threads_enabled) { result = thread_error_unsupported; break; }
-        if (current->closing) { result = process_error_state; break; }
+        if (current->closing || current->exit_cleanup_deadline_ns != 0) { result = process_error_state; break; }
         if (request.stack_bytes < thread_stack_min || request.stack_bytes > thread_stack_max ||
             request.stack_bytes % page_size != 0 || request.tls_bytes < 16 ||
             request.tls_bytes > thread_tls_max || (request.flags & ~thread_flag_detached) != 0) {
@@ -2171,7 +2248,8 @@ void* thread_syscall(interrupt_frame* frame) {
         result = read_thread_request(first, request); if (result != 0) { break; }
         thread_record* target = thread_by_id(request.tid);
         if (target == nullptr) { result = thread_error_not_found; break; }
-        if (current->closing || target->state != thread_state::reserved) { result = process_error_state; break; }
+        if (current->closing || current->exit_cleanup_deadline_ns != 0 ||
+            target->state != thread_state::reserved) { result = process_error_state; break; }
         u64 physical = 0; page_permissions permissions{};
         if (!user_range_ok(request.entry, 1, false) ||
             query_page(request.entry & ~(page_size - 1), &physical, &permissions) != memory_result::none ||
@@ -2205,6 +2283,9 @@ void* thread_syscall(interrupt_frame* frame) {
     case sys_thread_begin_exit: {
         if (current_thread->leaving || current->closing) { result = process_error_state; break; }
         current_thread->leaving = true;
+        // Existing workers may finish their own cleanup while the process
+        // owner still uses shared libc state. They cannot elect a new owner.
+        if (current->exit_cleanup_deadline_ns != 0) { result = 0; break; }
         bool last = true;
         for (const auto& peer : threads) {
             if (peer.process == current && thread_has_user_work(peer)) { last = false; }
@@ -2227,11 +2308,51 @@ void* thread_syscall(interrupt_frame* frame) {
         current_thread->result = first;
         current_thread->wait_kind = thread_wait_kind::none;
         current_thread->state = thread_state::dead;
-        if (current->exit_owner == current_thread->tid) { finish_task(current, process_outcome::exited, 0); }
+        if (current->exit_owner == current_thread->tid) {
+            // Abandoning a claimed cleanup window is a failed process exit.
+            const i32 status = current->exit_cleanup_deadline_ns != 0
+                ? current->exit_cleanup_timeout_status : 0;
+            current->exit_cleanup_deadline_ns = 0;
+            finish_task(current, process_outcome::exited, status);
+        }
         return schedule(frame);
     }
     case sys_process_begin_exit: {
-        if (current->closing && current->exit_owner != current_thread->tid) { result = process_error_state; break; }
+        if (first == static_cast<u64>(process_exit_mode::cleanup_window)) {
+            process_exit_cleanup_request request{};
+            result = read_thread_request(second, request);
+            if (result != 0) { break; }
+            const u64 now = clock::monotonic_ns();
+            if (request.reserved != 0 || request.timeout_status == 0 ||
+                request.deadline_ns == thread_deadline_infinite || request.deadline_ns <= now ||
+                request.deadline_ns - now > process_exit_cleanup_max_ns) {
+                result = process_error_invalid; break;
+            }
+            if (current->closing && current->exit_owner != current_thread->tid) {
+                result = process_error_state; break;
+            }
+            if (current->exit_owner != 0 && current->exit_owner != current_thread->tid) {
+                result = thread_error_busy; break;
+            }
+            if (current->exit_cleanup_deadline_ns == 0) {
+                current->exit_owner = current_thread->tid;
+                current->exit_cleanup_deadline_ns = request.deadline_ns;
+                current->exit_cleanup_timeout_status = request.timeout_status;
+                // The last-thread barrier already stopped its peers. It may
+                // now use IPC/VM to finish libc just like an ordinary owner.
+                current->closing = false;
+            }
+            result = 0; break;
+        }
+        if (first != static_cast<u64>(process_exit_mode::stop_peers) || second != 0) { break; }
+        // A bounded cleanup owner must not erase its deadline or stop a peer
+        // that may still hold a libc/application lock needed by the owner.
+        if (current->exit_cleanup_deadline_ns != 0) {
+            result = process_error_state; break;
+        }
+        if (current->exit_owner != 0 && current->exit_owner != current_thread->tid) {
+            result = process_error_state; break;
+        }
         current->closing = true; current->exit_owner = current_thread->tid;
         for (auto& peer : threads) {
             if (peer.process == current && &peer != current_thread && peer.state != thread_state::free) {
@@ -2446,6 +2567,10 @@ vm_step fork_copy_step(void* opaque,vm_phase phase,u32 budget,i64& result) {
     }
     halt();
 }
+bool fork_admission_open(const process_record& process) {
+    return !process.closing && process.exit_cleanup_deadline_ns == 0;
+}
+
 i64 prepare_fork(interrupt_frame* frame) {
     if (current == nullptr || current->supervisor || current->block_access) return process_error_denied;
     if (current->threads_enabled || current_thread != &main_thread(current) || !current_thread->main)
@@ -2455,7 +2580,8 @@ i64 prepare_fork(interrupt_frame* frame) {
             peer.state != thread_state::free && peer.state != thread_state::dead) return thread_error_unsupported;
     }
     if (current->spawn_depth == 0 && !current->can_create) return process_error_denied;
-    if (current->closing || current_thread->leaving) return process_error_state;
+    if (!fork_admission_open(*current) || current_thread->leaving)
+        return process_error_state;
     if (device_store.mapped(current->pid)) return process_error_busy;
     for (const auto& mapping : ipc_v1_grant_mappings) {
         if (mapping.used && mapping.holder_pid == current->pid) return process_error_busy;
@@ -4650,6 +4776,7 @@ void* process_syscall(interrupt_frame* frame) {
         }
         if (next_endpoint_handle > 0xfffffffeull) { result = process_error_resources; break; }
         ipc_v1_revoke_process(current->pid);
+        revoke_generic_ipc_process(current->pid);
         device_revoke_process(current->pid);
         release_pc_speaker(current);
         revoke_pc_speaker_controller(current);
@@ -4748,12 +4875,13 @@ void* process_syscall(interrupt_frame* frame) {
         if (second != 0 || third != 0) { break; }
         process_record* child = owned_process(first);
         if (child == nullptr) { result = process_error_denied; break; }
-        if (current->closing || child->state != task_state::building || !child->fork_pending ||
+        if (!fork_admission_open(*current) || child->state != task_state::building || !child->fork_pending ||
             child->fork_source != current->pid || !child->fork_files_ack) {
             result = process_error_state; break;
         }
         child->fork_pending = false;
         child->state = task_state::ready;
+        if (child->completion_slot != 0) completions[child->completion_slot - 1].published = true;
         if (process_trace_enabled) {
             format::text("[process] event=fork_committed pid="); format::decimal(child->pid);
             format::text(" parent="); format::decimal(child->parent); format::text("\r\n");
@@ -5260,6 +5388,7 @@ void* process_syscall(interrupt_frame* frame) {
         if (!valid_process_entry(task, entry)) { break; }
         task->entry = entry.entry; task->initial_stack = entry.stack; task->startup = entry.startup;
         task->state = task_state::fresh;
+        if (task->completion_slot != 0) completions[task->completion_slot - 1].published = true;
         if (process_trace_enabled) {
             format::text("[process] event=started pid="); format::decimal(task->pid);
             format::text(" parent="); format::decimal(task->parent); format::text("\r\n");
@@ -5278,27 +5407,34 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_process_wait: {
-        if (third > 1) { break; }
+        if ((third & ~(process_wait_nonblocking | process_wait_any)) != 0 ||
+            ((third & process_wait_any) != 0 && first != 0)) { break; }
         if (!user_range_ok(second, sizeof(process_status), true)) { break; }
-        completion_record* item = completion_for(current->pid, first);
-        if (item == nullptr) { result = process_error_denied; break; }
-        if (!item->ready && third == 1) { result = process_error_would_block; break; }
-        // A woken waiter still owns the completion until deliver_wait copies it.
-        for (const auto& waiter : threads) {
-            if (waiter.process == current && waiter.wait_kind == thread_wait_kind::process &&
-                waiter.wait_target == first) { result = thread_error_busy; break; }
+        const bool any = (third & process_wait_any) != 0;
+        bool has_children = false;
+        completion_record* item = any ? next_process_completion(current->pid, has_children)
+            : completion_for(current->pid, first);
+        if (item == nullptr && (!any || !has_children)) { result = process_error_denied; break; }
+        if ((item == nullptr || !item->ready) && (third & process_wait_nonblocking) != 0) {
+            result = process_error_would_block; break;
         }
-        if (result == thread_error_busy) { break; }
-        if (item->ready) {
+        // A woken waiter still owns the completion until deliver_wait copies it.
+        if (!any && process_completion_claimed(current->pid, first)) {
+            result = thread_error_busy; break;
+        }
+        if (item != nullptr && item->ready) {
             copy_to_user(second, &item->status, sizeof(process_status));
             current->child_cpu.include(item->cpu);
             *item = completion_record{}; result = 0;
+            wake_process_waiters(current->pid);
         } else {
-            process_record* child = owned_process(first);
-            if (child == nullptr || child->state == task_state::building) { result = process_error_state; break; }
+            if (!any) {
+                process_record* child = owned_process(first);
+                if (child == nullptr || child->state == task_state::building) { result = process_error_state; break; }
+            }
             if (!current_thread->user_pin.set(second, sizeof(process_status))) { result = thread_error_busy; break; }
             commit_user_output();
-            current_thread->wait_target = first; current_thread->wait_buffer = second;
+            current_thread->wait_target = any ? 0 : first; current_thread->wait_buffer = second;
             current_thread->wait_kind = thread_wait_kind::process;
             current_thread->state = thread_state::blocked; frame->rax = 0;
             if (process_trace_enabled) {

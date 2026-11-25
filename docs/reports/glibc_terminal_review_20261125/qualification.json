@@ -1,0 +1,143 @@
+{
+  "status": "passed",
+  "review_comments": [
+    4694700245,
+    4694700227
+  ],
+  "host_groups_each": 23,
+  "host_configurations": [
+    "normal",
+    "ASan+UBSan"
+  ],
+  "guest_runs": 6,
+  "resource_baseline": [
+    129533,
+    4,
+    2
+  ],
+  "system_build_id": "b7f3b54fba6a0103",
+  "source_binding_inputs": 89,
+  "source_regression": "real post-link source mutation: old runner passed with new digest; fixed runner fails and retains original digest",
+  "blocking_proof": "only main+reader exist; read-only sys50 reports 2 threads/1 waiting before and after real files I/O; file_progress=1 and fresh nonce encoded into a preallocated complete 512-byte sector with nonzero tail; host exact match precedes input",
+  "offline_preparation": "allocate distinct root files, resolve and verify data sectors before boot, hash the same disk passed to QEMU",
+  "live_host_access": "read-only fixed data-sector access; no live FAT metadata operation or disk write",
+  "negative": "diagnostic extra runtime object deliberately holds files lock through terminal read; progress sector unchanged for deadline, zero input injected",
+  "sdk": "existing terminal_sdk_initial complete SDK input/artifact map verified unchanged; no libc/ABI/permission change",
+  "sdk_manifest_sha256": "ade36f38cd935c9638bd91515208920ccc97a238edec66386cdb2ab49fbb8add",
+  "prior_failed_design": "native sys1 observer rejected after tty-run explicitly closes raw stdio and terminal owns COM1; original failed runs retained",
+  "not_run": [
+    "LeakSanitizer (ptrace environment)",
+    "physical machine",
+    "QEMU lock version 11.1.2; actual11.1.3",
+    "combined SDK terminal suite (separate integration follow-up)"
+  ],
+  "derivation": {
+    "path_templates": [
+      "XOS_REPO",
+      "XOS_WORKSPACE",
+      "XOS_TOOLCHAIN",
+      "XOS_HOST_RUNTIME",
+      "XOS_PREVIEW",
+      "XOS_TMP"
+    ],
+    "log_display": "CRLF to LF, trailing horizontal whitespace removed, one final newline",
+    "origins": {
+      "source_before.json": {
+        "original_sha256": "aa06412d6872585fe08274b05ee60f828eaf91107b0c914e8241e033c58f0cb2",
+        "derived": true
+      },
+      "source_before_qualification.json": {
+        "original_sha256": "a1a5884a4b784a3c15fcd0edcd80693b9e8d2ee24a39e0d3bca942dbbea75391",
+        "derived": true
+      },
+      "source_before.log": {
+        "original_sha256": "d78ae9e740045fadc7ecfb4dc3ebaaee7bdf09167e1bb7581436e186c7b09f40",
+        "derived": false
+      },
+      "source_after.json": {
+        "original_sha256": "be28318cccb42b557e4e3e248e8e299c7cdb61f991ab5b3c84bc9379ec04c08b",
+        "derived": true
+      },
+      "source_after_qualification.json": {
+        "original_sha256": "308c0bf65c08a900c6e3216c67fe996a96ec8864d375238475f30318d54cbc66",
+        "derived": true
+      },
+      "source_after.log": {
+        "original_sha256": "34c219dd489c4a0bc9b0f59f604b9c99fca35b8ad62e4ee42ef37e49b68e0abf",
+        "derived": true
+      },
+      "host_normal.json": {
+        "original_sha256": "f72ba0ae0f2b7b2fa3f98997bd471e1eefd2040a5248a1eadcee40286e2e7a12",
+        "derived": true
+      },
+      "host_normal.log": {
+        "original_sha256": "d78ae9e740045fadc7ecfb4dc3ebaaee7bdf09167e1bb7581436e186c7b09f40",
+        "derived": false
+      },
+      "host_sanitized.json": {
+        "original_sha256": "7ba195d9c3c490af8e20260ef164d0e8eab05e2be58e6a5c0cfb76cb74e81545",
+        "derived": true
+      },
+      "host_sanitized.log": {
+        "original_sha256": "d78ae9e740045fadc7ecfb4dc3ebaaee7bdf09167e1bb7581436e186c7b09f40",
+        "derived": false
+      },
+      "guest.json": {
+        "original_sha256": "463c7a81e611ecc3035c30daeaa24e8fa3ce6510f5055b2658efba15bd8f57c6",
+        "derived": true
+      },
+      "guest_serial.log": {
+        "original_sha256": "b6202be71471c07a6a9b0eaf63d711bd4e7784c0b533f1cfd153777b606a5263",
+        "derived": true
+      },
+      "guest_runner.log": {
+        "original_sha256": "d16a4237700298fbc2ca0796b15efeac46920265a9cf0d5e2ef6826eb3729c7a",
+        "derived": false
+      },
+      "held_lock_negative.json": {
+        "original_sha256": "e5e1c80ebef8108afa68a482ae583b8810971a4f3be0261e9a2e53d86cf83d5b",
+        "derived": true
+      },
+      "held_lock_negative_serial.log": {
+        "original_sha256": "0c50834cc2729425a361adcfda0695da819ec9854eea39d5a73555f4374bd51c",
+        "derived": true
+      },
+      "held_lock_negative_program.json": {
+        "original_sha256": "2ad6dd137db86088588e1257c31f1bcc85cf15ec074d0ffb1315ca1be0182134",
+        "derived": true
+      },
+      "held_lock_negative_runner.log": {
+        "original_sha256": "a259ab7cb9f374fbd588d53582c08c8282a2b11809caf10ad44f67ad1ba8525d",
+        "derived": false
+      },
+      "system.json": {
+        "original_sha256": "d36eb74fb2f62cec38a90dbb2b0ff4d8e052d1ea03d40f281437ed0d6f36d6c6",
+        "derived": true
+      },
+      "system_build.log": {
+        "original_sha256": "d37a4049b1077629b5532cdf8f892d471fd28642bb1dd196ed89384ccd2dd303",
+        "derived": true
+      },
+      "raw_observer_failed_guest.json": {
+        "original_sha256": "051f84d0c1354842e064e483415568306009dbd27d8386cd59fabf8ab36252a6",
+        "derived": true
+      },
+      "raw_observer_failed_serial.log": {
+        "original_sha256": "9559f04ec51236b14c2953c16c5fe5dbd193db1cf36b9820d934041a429a1bf0",
+        "derived": true
+      },
+      "raw_observer_failed_runner.log": {
+        "original_sha256": "c3c810c62df6cd4d8972fd26690ab074523feb68d25be0430d35759c8fad2ea1",
+        "derived": true
+      },
+      "raw_observer_failed_negative.json": {
+        "original_sha256": "0e339ad2cfb88e83e5e30c1a5f1dcf6de1780eb6b593f5bc90301f1e437251ca",
+        "derived": true
+      },
+      "raw_observer_failed_negative.log": {
+        "original_sha256": "fb73ef73bbc1773205e5a8e28e4d6938d4c15dc3b90fbe43e7aed1ce519f1b08",
+        "derived": true
+      }
+    }
+  }
+}

@@ -34,6 +34,8 @@
 | `cwd_set` | 26 |
 | `cwd_get` | 27 |
 | `resolve_path` | 28 |
+| `read_at` | 30 |
+| `write_at` | 31 |
 
 ## 谁负责什么
 
@@ -99,13 +101,22 @@ wait 只能收集自己的已提交子任务，未完成则真正挂起父任务
 `exited`（有符号 32 位退出码）、`faulted`（vector/地址/指令）、
 `killed`（-9 为监督终止，-27 为 Escape 取消）。异常不会被伪装成退出码 0。
 
+sys20 新增显式 `process_wait_any`（third bit1，first 必须为 0），与原
+nonblocking bit0 组合；共享 SDK 提供 `wait_any(status, nonblocking)`。
+内核直接从认证 parent 的已发布子进程完成记录选择，exec 后继续有效。
+精确 PID / 任意子进程的并发等待仍唯一消费，失败 copyout 归还领取权，
+最后一份记录被他人消费后唤醒剩余等待者。详细错误、building 准入和验收见
+[process_wait 契约](contracts/process_wait.md)。
+
 资源回收与结果记录分开：死任务在其他任务的内核栈上回收，完成记录保留到 wait。
 创建中途失败走回滚。builder 正常退出或 fault 时，building 子任务取消；已提交子任务
 交内核收养（等待父身份变为 0，原父的完成记录释放），继续使用其自身地址空间和
 files 会话，退出后自动回收。独立的取消祖先关系沿最近存活祖先传递，显式 kill/cancel
 仍级联取消后代；权限检查与前台 Escape 入口不扩大。收养不创建新的可 wait 句柄，
 也不转交原父的设备/通道权利；所有者死亡造成的通道关闭仍按对应契约。未实现 POSIX
-进程组、信号、subreaper 或自动服务重启。本轮实现已有宿主回归，客体验收未运行。
+进程组、信号、subreaper 或自动服务重启。wait-any 增量的真实客体已验证
+普通 orphan、前台取消及资源回收，证据见
+[8e5c20fa 工作记录](work_log/8e5c20fa_native_wait_any.md)。
 
 前台 `exec` / `wait` 挂起监督任务时，单独按 Escape 可终止被等待子任务并恢复
 `xsh> `，所以 `exec spin` 不要求重建镜像。它是固定串口控制机制，不是 POSIX
@@ -135,6 +146,12 @@ bit11 `open_pin`；stat/fstat flags bit1 表示已 unlink；状态 -10/-11/-12/-
 分别为 not_directory/is_directory/not_empty/name_too_long。目录 list 可使用已有
 目录句柄。`cwd_set` 使用路径、目录句柄或空名继承 cwd，flags bit0 为只初始化，
 offset 为 0/self 或经 kernel parent_pid 认证且尚未初始化的子 PID。
+
+G3 文件扩展追加 op30 `read_at`、31 `write_at`：SDK 的同名方法以 handle 和
+显式 offset 操作，服务在一次请求内保持共享描述的原 position；新系统和 SDK
+一起重建。op2 的可选 `list_identity` bit12 返回真实 inode 与每条 next_cursor，
+旧请求保留 7 字节记录头。glibc 目录流及 pread/pwrite 使用这两个扩展，详情和
+客体复跑入口见 [G3 文件契约](contracts/glibc_files_v1.md#定位读写与目录流)。
 
 files 统一持有每 inode 的 FIL，独立 open 保留独立偏移；dup/fork 仍共享描述。
 cwd 由服务保留目录引用，spawn 在子进程启动前委派，fork 克隆，同 PID exec 保留。
@@ -189,6 +206,12 @@ process_stats 的布局及进程权限含义。共享 ABI 见 `thread_abi.hpp`�
 地址保留与兼容策略见 [线程实现](implementation/threads.md)。
 新 SDK 是独立 profile；旧 ELF 继续装载，若占用新线程 arena，显式 opt-in
 返回 ENOTSUP，不能静默覆盖映射。用户态 ELF 策略仍在 loader，内核不解析 TLS 模板。
+
+2026-11-25 的 sys51 显式 mode 1 增加有界清理窗口：32 字节版本 1 请求登记唯一
+退出所有者、最多 30 秒的绝对单调 deadline 和非零超时状态；现存线程及 I/O 保持
+运行，新线程和本进程映像替换被拒绝，最终 sys_exit 统一回收。机制 SDK 提供
+`xos::thread::begin_process_cleanup`。旧 mode 0 保持，详细兼容、并发退出和失败
+生命周期见 [线程契约](contracts/threading.md#有界进程清理窗口sys51-mode-1)。
 
 ## P2-1通用进程准入与文件写租约（0048实现、PR #2整合后编号）
 
@@ -295,8 +318,13 @@ stdio 均关闭，且必须提供 prepare 回调与 `terminal_send_handle`。加
 startup2 扩展的 flag bit16 和 reserved 字段，再映射启动页，最后启动。失败会 abort
 子进程，调用方仍负责关闭创建的通道。应用用 `connect_startup` 根据内核认证的通道
 信息核对句柄及双方身份；标记不授予权限。单线程 libc 初始 fd 0/1/2 可接该客户端，
-但带终端描述符的 exec/fork 及多线程 libc 暂时明确拒绝；目前仅支持受限原始模式，
-未客体验收。旧镜像无标记时拒绝终端启动，不影响原有非终端启动路径。
+其受限 fork/exec 实现与资格见 [terminal_control](contracts/terminal_control.md)。
+glibc 后端接收 v2 和 v3 的 kind5 终端对象，以固定对象 lease 和会话锁处理多线程
+I/O；v3 沿用真实下一请求序号。当前仅支持原始模式与有限 termios/ioctl，glibc
+出站终端 spawn/exec/fork 单独推进。六次真实客体及未验项见
+[e6b8c410](work_log/e6b8c410_glibc_terminal.md) 和
+[glibc_terminal_v1](contracts/glibc_terminal_v1.md)。旧镜像无标记时拒绝终端启动，
+不影响原有非终端启动路径。
 
 SDK 控制台 read/write 的可选弱符号钩子供单个可执行文件自行接入用户态服务；没有
 定义时直接使用旧 syscall。当前 supervisor 编入试验桥接，默认保持旧路径，不为应用

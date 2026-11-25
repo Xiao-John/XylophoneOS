@@ -1,0 +1,121 @@
+{
+  "scope": "production FD/session state machine; simulated kernel and files service",
+  "sanitizers": [],
+  "leak_sanitizer": "not_requested",
+  "guest": "not_run",
+  "results": [
+    {
+      "case": "basic",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "bounds",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "concurrent",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "public_lease",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "native_read_capacity",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "block_valid",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "block_bad_value",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "block_bad_payload",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "block_zero_success",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "block_large_success",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "anonymous_valid",
+      "status": "fail",
+      "returncode": -6
+    }
+  ],
+  "sources": {
+    "src/ports/glibc/sysdeps/xos/bits/fcntl.h": "cbea321317a554ace85be39a0b074aabca184208f3403c692a078aabc2a8c503",
+    "src/ports/glibc/sysdeps/xos/bits/stat.h": "d9da497699f111a767e83d2a26844f88022d66bfffaec4b9b2943003ae3dd517",
+    "src/ports/glibc/sysdeps/xos/writev.c": "2de76aabc065aad844083f34ded44c78c6c2f374163268506f435e781796a78d",
+    "src/ports/glibc/sysdeps/xos/xos_file_result.h": "5f83d3e084b9e293a3c5180b98bfa084698ffffc270e7eeb491a362fc3f89b34",
+    "src/ports/glibc/sysdeps/xos/xos_file_runtime.c": "2252edd488432ea2e69273a61a04cafad728ed23e84ed75b3d251149eff92375",
+    "src/ports/glibc/sysdeps/xos/xos_file_runtime.h": "8cda14cc178b3c35c9fc3854d7797223e34a8db86446d8c99251fb0dbda6f93a",
+    "src/ports/glibc/sysdeps/xos/xos_file_wire.h": "69e29681853e18d34ccb44d884e5e92fe0f89bed7489de2ca516aa29bd802f02",
+    "src/shared/include/xos/abi_types.hpp": "2a417532cbdafc1d7545064ef78fe692b07ab0ec430f44367d779415fdc48478",
+    "src/shared/include/xos/audio_abi.hpp": "6b9e27332b5163d2eceb9e364581a80f74be098c8b47711f7b577f7e9b4b901d",
+    "src/shared/include/xos/device_abi.hpp": "cdece558f19833d44f5d372a674d430e869c8a9d8fdfb8d1a81e49581a10fa11",
+    "src/shared/include/xos/display_abi.hpp": "cb68448ca2d8d72622698a1e95441ae665a25e484a8abdcb94f29036378e1622",
+    "src/shared/include/xos/file_abi.hpp": "63b1bbfbc72af9dcb464da1458716625d0a41e46a02124eee11f6e180db550f7",
+    "src/shared/include/xos/interactium_abi.hpp": "361abd4c9564f8c02a311c55a521ecd462b9b06de03a53f51031e317b09589af",
+    "src/shared/include/xos/ipc_v1_abi.hpp": "0b77924d799879b0a4915b43723ca899d5bc8e2195e8e15853bf090a4e3d6911",
+    "src/shared/include/xos/net_abi.hpp": "14e0baf22c2de09588c8924b07a05a7b6095fc4db0b9d408405efbaa18cd819e",
+    "src/shared/include/xos/net_service_abi.hpp": "cb407cec1622efaf39861b7ee0f76fe7899f59b1bafd110838f884584204b9e7",
+    "src/shared/include/xos/process_abi.hpp": "84ad195332abcbc4381151da01a9e9e7162a88a0204844cc5e69d350449d08f5",
+    "src/shared/include/xos/terminal_abi.hpp": "ed6087dda8d402f1ea36f5fadd36b97d9e3ce759d234479ec1c0ff36593607c7",
+    "src/shared/include/xos/thread_abi.hpp": "2dc12676cebf56d6f16b682e52f35fa14dd21f0a2ea94525115f33bc8d576585",
+    "src/shared/include/xos/vm_abi.hpp": "2f02a1bf36c86953d70e49b28fbb4e243f4a417eb26647f0af53de6bb9728e95",
+    "src/third_party/fatfs/ff.c": "1cc3c92f46bc51643f1a8e4b5f9cbb23d2997291e94a490133e954335f079c71",
+    "src/third_party/fatfs/ff.h": "b5ea24517af464ffa17f66d23a0ae11cf9838a7e720e25bd955278dd20935afe",
+    "src/user/include/xos/audio_client.hpp": "75b4ef444194a38a9f64889b49c849ad399870129c81b2971ae27f8bfbd38746",
+    "src/user/include/xos/channel_io.hpp": "a8123186b82dfb974891fb66a3e1f3b568c353bdcb8720b52064ef609a138be9",
+    "src/user/include/xos/device.hpp": "a51d315ee644b727da7db66bb3111c3553a85e6fb8c0e8b6870dc70b07c08e5d",
+    "src/user/include/xos/display_client.hpp": "93f8349de6efdd765e31747847c512e7e76466930bd84f1b61fe3e6dbb15a395",
+    "src/user/include/xos/elf.hpp": "a80999738ae4985e09b0c05cac5495945794dc7bde11cb83ac9174423d1490f0",
+    "src/user/include/xos/execution.hpp": "be672cf35c0fd0e713c3092eb749c9b7e77bb50d9aac361d26243d803f37bc9d",
+    "src/user/include/xos/fault_sha256.hpp": "04e28a644eadaf21cc86dd1063456141caccd845d4a338604cd981212357f45d",
+    "src/user/include/xos/file_client.hpp": "0760fd519de728ff613d43f406c3d19283b281a138ae00155780669c7cc2e5dd",
+    "src/user/include/xos/file_ui.hpp": "4215b808c0043789ebfd2ca8209e9b69ea03b6d02470ebeb1185c212aef11aed",
+    "src/user/include/xos/ipc_v1.hpp": "b2eab30120f634d077b88a80d446a4908c21fbf12ddf33d5e962cb6c90d5983c",
+    "src/user/include/xos/libc_runtime.hpp": "d2808f67bf4be32d9de8d8003dded9c41ffa5b2169a8a63e1eb2cd93c9401dce",
+    "src/user/include/xos/net_client.hpp": "b4024b191e578f9af9820ed5b09622b4ba137c949026465ebd6134e63a8b7b62",
+    "src/user/include/xos/net_service_client.hpp": "e230c153b045e9de433d739bb93c447aa3c11ab8b14127767d0aef38db180a2b",
+    "src/user/include/xos/net_transport.hpp": "130232ad3719e13a7f60f6f399e27e2ea56d246b807331eee9f222fc3755a757",
+    "src/user/include/xos/runtime_lock.hpp": "047cefb19504110544a94f9053950eb543bc827dace493513be31ccb24be9706",
+    "src/user/include/xos/sdk.hpp": "cd2e649e48ac47fa96bf69affb414240e6631debeb2bc0ef33428356cf4479ac",
+    "src/user/include/xos/spawn.hpp": "b8d8278d08295d596e099d0adae80d1b3ceda28b5d47fd826080a023c073d19f",
+    "src/user/include/xos/terminal_client.hpp": "dd81b2358b028529afbd826679c6b8d4c17f52dda97b976c72605cace942cbd0",
+    "src/user/include/xos/terminal_control.hpp": "b2f803aa503e91c6c35ab174b0f7e6638c0edcec32375d33dd98b404fa00f78e",
+    "src/user/include/xos/text.hpp": "308cc2daf07b197fb474293418148e3db5b35033eec92727f894c53afd175085",
+    "src/user/include/xos/thread_core.hpp": "a9fdf5923eab60d225678a96aacf31599d8d9f45f841ab1ee8de4737e4e8bb7d",
+    "src/user/include/xos/tls.hpp": "c67cb8d2caea4f4da7ed44db61f26fba3ad20bc0f4f53e79d8ae752797d2e6e7",
+    "src/user/include/xos/unicode_width_data.hpp": "9e57137d6b1f67774805219b2170d3ef4638b180401ed18ac89fa3610cdb5c11",
+    "src/user/include/xos/vm.hpp": "45b721bce4dbe68123446415a16a953d1c85d9de0b5a9fc7c13c33fff3bcb82e",
+    "src/user/sdk/file_client.cpp": "d2bcdb8bb5a0db43525a0e697f0d2b13ed778c71badefaf36c198c77b205890d",
+    "src/user/services/fatfs_unicode.cpp": "9989bd8e66f2c84a6d10e48f7e7a6790e9fcc1f31f9d15a5d57c14da067d2dc9",
+    "src/user/services/files.cpp": "113152a18b0a81f47f31a1dd824c14c679283df5023c258da275c7782ac05326",
+    "tests/fixtures/file_semantics/file_semantics.cpp": "9d821b81d8bab8d89437805513b0d8171fe3e02a4135d7f8ef9c3db1c67fdea3",
+    "tests/fixtures/file_semantics/libc_service.cpp": "fab1ca88f67b8ff4137182de4cc6f219ca4463d9a5f9fa228254f6d013cd0b1c",
+    "tests/fixtures/glibc_g3/files_runtime.cpp": "45376e1441a6f64a901862485c9b55f40598c958675c8990ffa122a7f6d27424",
+    "tests/fixtures/glibc_g3/files_service.cpp": "b8a32af06c63690fd92ce26c2a4831465978a398157a2323c493db4f1377214f",
+    "tests/fixtures/glibc_g3/host_aliases.h": "1e0f469d53f9a8a3ecde19b2088993cda051453bd7c8a677a519e0746c6903c0",
+    "tests/glibc_g3_files_host.py": "1feb9ac33026e71ca7415899f560016cea1c30f2ed60fd7f025b32868699331f"
+  },
+  "status": "failed"
+}

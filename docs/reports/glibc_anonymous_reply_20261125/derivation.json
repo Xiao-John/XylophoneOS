@@ -1,0 +1,26 @@
+{
+  "before.json": {
+    "original_sha256": "7497271fe3d95bf000d75c1e2a4ea327af8dc674d44d2d995c31a7b8acc02b22",
+    "replacement": "checkout absolute path -> $XOS_REPO"
+  },
+  "before.log": {
+    "original_sha256": "cd583d1560407adb8f9f356177c914469cf838cfefd4a430284f7c9160c4072d",
+    "replacement": "checkout absolute path -> $XOS_REPO"
+  },
+  "host.json": {
+    "original_sha256": "414af04f7bda229ec7146050cb083502b7b2ecf35d0086951b8aaa6d881c8e2a",
+    "replacement": "checkout absolute path -> $XOS_REPO"
+  },
+  "sanitized.json": {
+    "original_sha256": "67346367d984ad6695ea23c936baf0632c99174294dabbea7bfc54e39149e9e6",
+    "replacement": "checkout absolute path -> $XOS_REPO"
+  },
+  "real_service.log": {
+    "original_sha256": "27365884f5959d8f7917352681d754c9ae523c797b824a715cbc0aef01aee5aa",
+    "replacement": "checkout absolute path -> $XOS_REPO"
+  },
+  "real_service_sanitized.log": {
+    "original_sha256": "27365884f5959d8f7917352681d754c9ae523c797b824a715cbc0aef01aee5aa",
+    "replacement": "checkout absolute path -> $XOS_REPO"
+  }
+}

@@ -8,6 +8,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "xos_file_runtime.h"
+#include "xos_terminal_runtime.h"
 
 #ifdef XOS_GLIBC_FILE_TEST
 extern long __xos_file_test_trap (xos_u64, xos_u64, xos_u64, xos_u64);
@@ -25,13 +26,12 @@ file_trap (xos_u64 number, xos_u64 first, xos_u64 second, xos_u64 third)
 #endif
 
 extern const void *__xos_startup __attribute__ ((weak, visibility ("hidden")));
-/* The CRT accepts transferred handles and v3 description snapshots only when
-   this backend is linked. Path-based redirection and terminal sessions still
-   require a different startup action profile. */
+/* The backend and its strongly linked terminal adapter provide file (bit0)
+   and terminal (bit1) startup. Path-based redirection remains separate. */
 const unsigned int __xos_file_startup_capabilities
-  __attribute__ ((visibility ("hidden"))) = 1;
+  __attribute__ ((visibility ("hidden"))) = 3;
 enum { fd_limit = 32, object_limit = 32 };
-enum { kind_none, kind_kernel, kind_file, kind_pipe_read, kind_pipe_write };
+enum { kind_none, kind_kernel, kind_file, kind_pipe_read, kind_pipe_write, kind_terminal };
 struct fd_slot { int object; unsigned int close_on_exec; };
 struct open_object { unsigned int kind, handle, flags, references; };
 static struct fd_slot descriptors[fd_limit];
@@ -113,13 +113,85 @@ session_fault (int error)
 }
 
 static int
+valid_text (const unsigned char *data, unsigned int length, int component)
+{
+  unsigned int at = 0;
+  while (at < length)
+    {
+      unsigned int value = data[at++], continuation = 0, minimum = 0;
+      if (value < 0x20 || value == 0x7f || (component && value == '/')) return 0;
+      if (value < 0x80) continue;
+      if (value >= 0xc2 && value <= 0xdf) { continuation = 1; minimum = 0x80; value &= 31; }
+      else if (value >= 0xe0 && value <= 0xef) { continuation = 2; minimum = 0x800; value &= 15; }
+      else if (value >= 0xf0 && value <= 0xf4) { continuation = 3; minimum = 0x10000; value &= 7; }
+      else return 0;
+      if (continuation > length - at) return 0;
+      while (continuation-- != 0)
+        {
+          unsigned int next = data[at++];
+          if ((next & 0xc0) != 0x80) return 0;
+          value = (value << 6) | (next & 63);
+        }
+      if (value < minimum || value > 0x10ffff || (value >= 0xd800 && value <= 0xdfff)) return 0;
+    }
+  return 1;
+}
+
+static int
+valid_directory_response (void)
+{
+  const unsigned int identity = request.flags & (1U << 12);
+  const unsigned int header = identity ? 13U : 7U;
+  const unsigned int limit = request.length ? request.length : 64U;
+  if (response.handle != 0 || response.reserved != 0 || response.flags != identity
+      || response.value > 0xffffffffULL
+      || (response.length == 0 && response.value != 0)
+      || (response.value != 0 && response.value <= request.offset)) return 0;
+  unsigned int at = 0, count = 0;
+  xos_u64 previous = request.offset;
+  while (at < response.length)
+    {
+      if (response.length - at < header || ++count > limit) return 0;
+      const unsigned char *record = response.data + at;
+      unsigned int length = (unsigned int) record[0] | ((unsigned int) record[1] << 8);
+      if (length == 0 || length >= 256 || (record[2] & ~1U) != 0
+          || length > response.length - at - header) return 0;
+      if (identity)
+        {
+          unsigned int inode = (unsigned int) record[7] | ((unsigned int) record[8] << 8);
+          xos_u32 next = (xos_u32) record[9] | ((xos_u32) record[10] << 8)
+            | ((xos_u32) record[11] << 16) | ((xos_u32) record[12] << 24);
+          if (inode == 0 || next <= previous) return 0;
+          previous = next;
+        }
+      if (!valid_text (record + header, length, 1)) return 0;
+      at += header + length;
+    }
+  return !identity || response.value == 0 || previous <= response.value;
+}
+
+static int
 valid_response_shape (unsigned int operation)
 {
-  if (response.status_code != 0) return 1;
-  if (operation == 4)
+  if (response.status_code != 0) return response.name_length == 0;
+  if (operation == 27 || operation == 28)
+    return response.handle == 0 && response.flags == 0 && response.reserved == 0
+      && response.length == 0 && response.value == 0 && response.name_length > 0
+      && response.name_length < sizeof (response.name) && response.name[0] == '/'
+      && response.name[response.name_length] == 0
+      && valid_text ((const unsigned char *) response.name, response.name_length, 0);
+  if (response.name_length != 0) return 0;
+  if (operation == 2) return valid_directory_response ();
+  if (operation == 19)
+    return response.handle != 0 && response.flags == 0 && response.reserved == 0
+      && response.length == 0 && response.value == 0;
+  /* anonymous creates a fresh empty regular file and returns the same handle
+     and identity fields as open; it must not poison the shared session. */
+  if (operation == 4 || operation == 21)
     return response.length == 0 && response.handle != 0
       && (response.flags & ~1U) == 0 && response.reserved != 0
-      && response.reserved <= 65535 && response.value <= 0xfffffffeULL;
+      && response.reserved <= 65535 && response.value <= 0xfffffffeULL
+      && (operation != 21 || (response.flags == 0 && response.value == 0));
   if (operation == 3 || operation == 18)
     return response.handle == 0 && (response.flags & ~7U) == 0
       && response.reserved != 0 && response.reserved <= 65535
@@ -127,12 +199,19 @@ valid_response_shape (unsigned int operation)
       && (response.length == 0 || response.length == 24);
   if (response.handle != 0 || response.flags != 0 || response.reserved != 0)
     return 0;
-  if (operation == 5)
-    return response.value == response.length && response.length <= request.length;
+  if (operation == 5 || operation == 30)
+    return (operation != 30 || request.length <= sizeof (response.data))
+      && response.value == response.length && response.length <= request.length;
   if (response.length != 0) return 0;
-  if (operation == 6)
-    return response.value <= request.length && (response.value != 0 || request.length == 0);
+  if (operation == 6 || operation == 31)
+    return request.length <= sizeof (request.data) && response.value <= request.length
+      && (response.value != 0 || request.length == 0);
   if (operation == 7) return response.value <= 0xfffffffeULL;
+  /* Native block_bench reports the exact completed request, with no payload.
+     Its limit is an ABI constant shared with file_abi.hpp, not an IPC length. */
+  if (operation == 17)
+    return request.length != 0 && request.length <= 8U * 1024U * 1024U
+      && response.value == request.length;
   return response.value == 0;
 }
 
@@ -172,7 +251,7 @@ call_service (unsigned int operation)
           if (received != sizeof (response) || response.magic != 0x53455246
               || response.version != 2 || response.request_id != request.request_id
               || response.length > sizeof (response.data)
-              || response.name_length != 0 || response.status_code > 0
+              || response.name_length >= sizeof (response.name) || response.status_code > 0
               || response.status_code < -16 || !valid_response_shape (operation))
             return session_fault (EIO);
           return service_error (response.status_code);
@@ -189,19 +268,26 @@ call_service (unsigned int operation)
 static int
 prepare_path (const char *path)
 {
+  return (int) __xos_file_request_path (&request, path);
+}
+
+long
+__xos_file_request_path (struct xos_file_request *output, const char *path)
+{
+  if (output == 0) return -EFAULT;
   if (path == 0) return -EFAULT;
   unsigned int length = 0;
-  while (length < sizeof (request.name) && path[length] != 0)
+  while (length < sizeof (output->name) && path[length] != 0)
     {
       unsigned char value = (unsigned char) path[length];
       if (value < 0x20 || value == 0x7f) return -EINVAL;
-      request.name[length] = path[length];
+      output->name[length] = path[length];
       ++length;
     }
   if (length == 0) return -ENOENT;
-  if (length == sizeof (request.name)) return -ENAMETOOLONG;
-  request.name[length] = 0;
-  request.name_length = length;
+  if (length == sizeof (output->name)) return -ENAMETOOLONG;
+  output->name[length] = 0;
+  output->name_length = length;
   return 0;
 }
 
@@ -229,7 +315,7 @@ static long close_object (int);
 static long open_file (const char *, int);
 
 static int
-restore_descriptors (const struct xos_file_startup *startup)
+restore_descriptors (const struct xos_file_startup *startup, int terminal_startup)
 {
   const struct xos_file_startup_exec *exec = (const void *) ((const char *) startup + 152);
   if (!valid_startup_range ((xos_u64) exec, sizeof (*exec))
@@ -240,19 +326,28 @@ restore_descriptors (const struct xos_file_startup *startup)
     return -EINVAL;
   const struct xos_file_startup_descriptor *items = (const void *) exec->descriptors;
   unsigned int cleanup[object_limit] = { 0 };
+  int terminal_object = -1;
   memset (objects, 0, sizeof (objects));
   for (int i = 0; i < fd_limit; ++i) descriptors[i].object = -1;
   for (unsigned int i = 0; i < exec->count; ++i)
     {
       const struct xos_file_startup_descriptor *item = &items[i];
       if (item->object >= object_limit || item->kind < kind_kernel
-          || item->kind > kind_pipe_write || item->reserved != 0
+          || item->kind > kind_terminal || item->reserved != 0
           || !valid_flags (item->flags)
           || (item->kind == kind_kernel && item->handle > 2)
           || (item->kind == kind_file && item->handle == 0)
-          || (item->kind >= kind_pipe_read && item->handle < 65536)
+          || ((item->kind == kind_pipe_read || item->kind == kind_pipe_write)
+              && item->handle < 65536)
+          || (item->kind == kind_terminal && (item->handle != 0
+              || item->fd == ~(xos_u32) 0 || !terminal_startup))
           || (item->fd != ~(xos_u32) 0 && item->fd >= fd_limit))
         return -EINVAL;
+      if (item->kind == kind_terminal)
+        {
+          if (item->flags != O_RDWR) return -ENOTSUP;
+          terminal_object = (int) item->object;
+        }
       struct open_object *object = &objects[item->object];
       if (object->kind != 0
           && (object->kind != item->kind || object->handle != item->handle
@@ -279,14 +374,29 @@ restore_descriptors (const struct xos_file_startup *startup)
           ++object->references;
         }
     }
-  /* Validate the whole list before any close; malformed later entries cannot
-     cause early destruction of an inherited object. */
+  /* Validate the whole list before connecting or closing. A malformed later
+     entry cannot consume a terminal sequence or destroy inherited objects. */
+  if ((terminal_object >= 0) != terminal_startup) return -EINVAL;
+  if (terminal_startup)
+    {
+      struct terminal_exec { xos_u64 magic, next_sequence; };
+      const struct terminal_exec *terminal = (const void *) ((const char *) startup + 176);
+      if (!valid_startup_range ((xos_u64) terminal, sizeof (*terminal))
+          || terminal->magic != 0x33595454534f5858ULL || terminal->next_sequence == 0)
+        return -EINVAL;
+      long result = __xos_terminal_restore (startup);
+      if (result < 0) return (int) result;
+    }
   for (int i = 0; i < object_limit; ++i)
     if (cleanup[i])
       {
         objects[i].references = 1;
         long result = close_object (i);
-        if (result < 0) return (int) result;
+        if (result < 0)
+          {
+            if (terminal_startup) (void) __xos_terminal_close ();
+            return (int) result;
+          }
       }
   return 0;
 }
@@ -318,12 +428,27 @@ initialize (void)
     (const void *) ((const char *) startup + 64);
   if (!valid_startup_range ((xos_u64) extension, sizeof (*extension))
       || extension->magic != 0x32585445534f5855ULL
-      || extension->environment_count > 64 || extension->reserved != 0
+      || extension->environment_count > 64
+      || ((extension->flags & 0x10000U) == 0 ? extension->reserved != 0
+                                            : extension->reserved == 0)
       || (extension->flags & ~0x10707U) != 0)
     return initialization_error = -EINVAL;
-  if (extension->flags & 0x10000U) return initialization_error = -ENOTSUP;
+  const int terminal_startup = (extension->flags & 0x10000U) != 0;
   if (startup->version == 3)
-    return initialization_error = restore_descriptors (startup);
+    return initialization_error = restore_descriptors (startup, terminal_startup);
+  if (terminal_startup)
+    {
+      if (extension->flags != 0x10007U) return initialization_error = -EINVAL;
+      for (int i = 0; i < 3; ++i)
+        if (extension->open_paths[i] != 0 || extension->file_handles[i] != 0
+            || extension->open_flags[i] != 0) return initialization_error = -EINVAL;
+      long result = __xos_terminal_restore (startup);
+      if (result < 0) return initialization_error = (int) result;
+      memset (objects, 0, sizeof (objects));
+      objects[0] = (struct open_object) { kind_terminal, 0, O_RDWR, 3 };
+      for (int i = 0; i < 3; ++i) descriptors[i] = (struct fd_slot) { 0, 0 };
+      return 0;
+    }
   for (int i = 0; i < 3; ++i)
     {
       if ((extension->flags & (1U << i)) != 0)
@@ -438,6 +563,7 @@ close_object (int index)
       result = call_service (8);
       if (result == 0 && response.length != 0) result = session_fault (EIO);
     }
+  else if (object->kind == kind_terminal) result = __xos_terminal_close ();
   else result = kernel_error (file_trap (object->kind == kind_kernel ? 13 : 33,
                                         object->handle, 0, 0));
   /* The FD has already been removed. A close error must never make retry
@@ -465,6 +591,9 @@ __xos_file_close (int fd)
 static long
 stream_io (struct open_object object, void *buffer, size_t length, int writing)
 {
+  if (object.kind == kind_terminal)
+    return writing ? __xos_terminal_write (buffer, length, object.flags)
+                   : __xos_terminal_read (buffer, length, object.flags);
   const int console = object.kind == kind_kernel
     && file_trap (34, 0, object.handle, 0) == 1;
   if (writing && console && length > 256) length = 256;
@@ -633,7 +762,8 @@ __xos_file_stat (int fd, const char *path, struct stat *output)
       if (object->kind != kind_file)
         {
           memset (output, 0, sizeof (*output));
-          long console = object->kind == kind_kernel ? file_trap (34, 0, object->handle, 0) : 0;
+          long console = object->kind == kind_terminal ? 1
+            : object->kind == kind_kernel ? file_trap (34, 0, object->handle, 0) : 0;
           if (console < 0) { result = kernel_error (console); goto done; }
           output->st_mode = (console ? S_IFCHR : S_IFIFO) | 0600;
           output->st_nlink = 1;
@@ -700,7 +830,8 @@ __xos_file_fcntl (int fd, int command, int argument)
     {
       const unsigned int old = objects[index].flags;
       if ((argument & ~(O_ACCMODE | O_APPEND | O_NONBLOCK | O_DIRECTORY)) != 0
-          || (((unsigned int) argument ^ old) & O_APPEND) != 0)
+          || (((unsigned int) argument ^ old) & O_APPEND) != 0
+          || (objects[index].kind == kind_terminal && (argument & O_NONBLOCK) != 0))
         result = -ENOTSUP;
       else { objects[index].flags = (old & ~(unsigned int) O_NONBLOCK)
           | ((unsigned int) argument & O_NONBLOCK); result = 0; }
@@ -779,7 +910,8 @@ __xos_file_isatty (int fd)
   long result = -EBADF;
   if (index >= 0)
     {
-      if (objects[index].kind != kind_kernel) result = -ENOTTY;
+      if (objects[index].kind == kind_terminal) result = 1;
+      else if (objects[index].kind != kind_kernel) result = -ENOTTY;
       else
         {
           result = file_trap (34, 0, objects[index].handle, 0);
@@ -788,4 +920,92 @@ __xos_file_isatty (int fd)
     }
   unlock_session ();
   return result;
+}
+
+long
+__xos_file_lease_acquire (int fd, int access, struct xos_file_lease *lease)
+{
+  if (lease == 0) return -EFAULT;
+  *lease = (struct xos_file_lease) { .object = -1 };
+  if (access < -1 || access > 1) return -EINVAL;
+  int error = begin ();
+  if (error != 0) return error;
+  int index = object_for (fd);
+  long result = index < 0 ? -EBADF : 0;
+  if (index >= 0)
+    {
+      struct open_object *object = &objects[index];
+      unsigned int mode = object->flags & O_ACCMODE;
+      if ((access == 0 && mode == O_WRONLY) || (access == 1 && mode == O_RDONLY))
+        result = -EBADF;
+      else if (object->references == ~(unsigned int) 0)
+        result = -EOVERFLOW;
+      else
+        {
+          ++object->references;
+          *lease = (struct xos_file_lease) { index, object->kind, object->handle, object->flags };
+        }
+    }
+  unlock_session ();
+  return result;
+}
+
+long
+__xos_file_lease_release (struct xos_file_lease *lease)
+{
+  if (lease == 0) return -EFAULT;
+  if (lease->object < 0 || lease->object >= object_limit) return -EINVAL;
+  int error = lock_session ();
+  if (error != 0) return error;
+  struct open_object *object = &objects[lease->object];
+  long result = -EINVAL;
+  if (object->references != 0 && object->kind == lease->kind && object->handle == lease->handle)
+    {
+      result = close_object (lease->object);
+      *lease = (struct xos_file_lease) { .object = -1 };
+    }
+  unlock_session ();
+  return result;
+}
+
+long
+__xos_file_exchange (const struct xos_file_request *input, struct xos_file_response *output)
+{
+  if (input == 0 || output == 0) return -EFAULT;
+  /* Callers own disjoint request and response records. */
+  if ((const void *) input == (const void *) output) return -EINVAL;
+  memset (output, 0, sizeof (*output));
+  int error = begin ();
+  if (error != 0) return error;
+  request = *input;
+  long result = call_service (request.operation);
+  if (result == 0) *output = response;
+  unlock_session ();
+  return result;
+}
+
+long
+xos_file_session_exchange (const struct xos_file_request *input, struct xos_file_response *output)
+{
+  long result = __xos_file_exchange (input, output);
+  switch (result)
+    {
+    case 0: return 0;
+    case -ENOENT: return -1;
+    case -EINVAL: return -2;
+    case -EMFILE: return -3;
+    case -ENOSPC: return -4;
+    case -EBUSY: return -5;
+    case -EBADF: return -6;
+    case -EAGAIN: return -8;
+    case -EEXIST: return -9;
+    case -ENOTDIR: return -10;
+    case -EISDIR: return -11;
+    case -ENOTEMPTY: return -12;
+    case -ENAMETOOLONG: return -13;
+    case -ENOTSUP: return -14;
+    case -EROFS: return -15;
+    case -EACCES: return -16;
+    default: return -7;
+    }
 }

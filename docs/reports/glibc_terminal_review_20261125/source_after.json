@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "profile": "terminal",
+  "expected_runner_status": "failed",
+  "injection": "append a valid comment to a source only after the real final link succeeds",
+  "runner_sha256": "33037df7d8eb32427f53aea2285c0533052ef4d9ada1f2a6a1884cc7f627bfb7",
+  "mutation_path": "tests/fixtures/glibc_g3/terminal_runtime.cpp",
+  "input_sha256": "1b0e6e76442ab407f26e4a9c2f41fb546d62caf2cd2994112995dadac288bdeb",
+  "command": [
+    "${XOS_HOST_RUNTIME}/codex-primary-runtime/dependencies/python/bin/python3",
+    "${XOS_REPO}/build/terminal_source_binding_after/checkout/tests/glibc_terminal_host.py",
+    "--output",
+    "${XOS_REPO}/build/terminal_source_binding_after/qualification"
+  ],
+  "returncode": 1,
+  "changed_sha256": "c2fd5e6c873604927faf0a9c4c547f29f5f5135983ae48a30869fef9f1f977e3",
+  "linked_binary_sha256": "19c5a27fbda8ffbfdd105cdf172891d0a86c4d267228f6e59d6d6256b1ba93c2",
+  "runner_status": "failed",
+  "recorded_source_sha256": "1b0e6e76442ab407f26e4a9c2f41fb546d62caf2cd2994112995dadac288bdeb",
+  "runner_error": "source inputs changed during qualification"
+}

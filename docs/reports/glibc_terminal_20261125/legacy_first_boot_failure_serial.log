@@ -1,0 +1,3 @@
+XOS: loading stage_two
+[loader] firmware=bios target=x86_64
+BOOT_ERROR: iso_read

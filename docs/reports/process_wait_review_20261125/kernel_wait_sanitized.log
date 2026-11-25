@@ -1,0 +1,8 @@
+PASS normal/fault parent exit, orphan cleanup, builder cancellation, explicit kill ancestry, child CPU consumption
+PASS wait-any: flags, nohang, output preservation, building and killed-builder invisibility
+PASS wait-any: deferred claim survives polling and wakes last-child competitors
+PASS wait-any: exact priority and multiple-any fault/kill unique consumption
+PASS wait-any: failed deferred copyout returns claim, preserves output and accounts CPU once
+PASS wait-any: parent exit releases pin and retains ordinary orphan lifecycle
+PASS wait-any: authenticated parent selection and ready nonblocking consumption
+PASS process wait: pending duplicate, ready owner, cross-page pin, delivery, single consumption

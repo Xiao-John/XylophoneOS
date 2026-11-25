@@ -1,0 +1,18 @@
+{
+  "environment": "release xos-glibc-sdk-preview tool environment",
+  "qemu_executable": "${XOS_HOST_BIN}/qemu-system-x86_64",
+  "qemu_sha256": "bea1a94ed5686c5cc8051175990519138a703982c7e5911a7dad64601633d1bf",
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)\nCopyright (c) 2003-2026 Fabrice Bellard and the QEMU Project developers",
+  "python_version": "3.14.10",
+  "machine": "pc-i440fx-10.0",
+  "accelerator": "tcg",
+  "cpu": "qemu64,+rdrand",
+  "memory": "512M",
+  "cpus": 1,
+  "qmp": "disabled; serial-only",
+  "network_backends": [
+    "QEMU user networking to local TCP/UDP sockets",
+    "QEMU socket to private loopback Ethernet peer"
+  ],
+  "external_network_services_contacted": false
+}

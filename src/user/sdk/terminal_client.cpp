@@ -66,16 +66,28 @@ i64 connect_startup(client& session, const startup_info* startup) {
 }
 
 namespace {
+bool known_error(i64 result) {
+    if (result >= 0) return true;
+    switch (result) {
+    case -1: case -2: case -3: case -4: case -5: case -6: case -7:
+    case -10: case -11: case -12: case -13: case -14: case -15: case -16:
+    case -17: case -18: case interrupted: return true;
+    default: return false;
+    }
+}
 i64 exchange(client& session, request& message, response& reply) {
-    if (session.send_handle == 0 || session.receive_handle == 0 || session.next_sequence == 0)
+    if (session.send_handle == 0 || session.receive_handle == 0 || session.next_sequence == 0) {
+        close(session);
         return process_error_state;
+    }
     message.version = version; message.size = sizeof(message); message.sequence = session.next_sequence++;
     i64 result = sdk::channel_send_wait(session.send_handle, &message, sizeof(message), thread_deadline_infinite);
     if (result == 0)
         result = sdk::channel_receive_wait(session.receive_handle, &reply, sizeof(reply), thread_deadline_infinite);
     if (result < 0) { close(session); return result; }
     if (result != static_cast<i64>(sizeof(reply)) || reply.version != version ||
-        reply.size != sizeof(reply) || reply.sequence != message.sequence || reply.length > data_bytes) {
+        reply.size != sizeof(reply) || reply.sequence != message.sequence || reply.length > data_bytes ||
+        reply.reserved != 0 || !known_error(reply.result)) {
         close(session); return process_error_state;
     }
     return 0;

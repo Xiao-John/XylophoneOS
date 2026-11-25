@@ -17,11 +17,16 @@ _Static_assert (sizeof (pthread_t) == sizeof (xos_u64), "XOS pthread handle ABI"
 static inline xos_i64
 xos_thread_lifecycle (xos_u64 number, xos_u64 first, xos_u64 second)
 {
+#ifdef XOS_GLIBC_IDENTITY_TEST
+  extern xos_i64 __xos_thread_identity_test_call (xos_u64, xos_u64, xos_u64);
+  return __xos_thread_identity_test_call (number, first, second);
+#else
   xos_i64 result;
   __asm__ volatile ("int $0x80" : "=a" (result)
                     : "a" (number), "D" (first), "S" (second), "d" (0UL)
                     : "memory", "cc");
   return result;
+#endif
 }
 
 static inline int

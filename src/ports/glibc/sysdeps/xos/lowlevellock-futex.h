@@ -5,8 +5,9 @@
 #include_next <lowlevellock-futex.h>
 #ifndef __ASSEMBLER__
 # include <xos_lll_futex.h>
-/* Silently treating process-shared or timed waits as private and untimed can
-   lose wakeups or hang.  Fail closed until their semantics are implemented. */
+/* This low-level entry is for untimed waits. Absolute monotonic/realtime
+   deadlines use futex-internal.c; relative times and shared keys must not
+   be silently treated as private, untimed operations. */
 # undef lll_futex_timed_wait
 # define lll_futex_timed_wait(word, expected, timeout, private) \
   ({ __auto_type __xos_timeout = (timeout); \
@@ -31,6 +32,8 @@
 # undef lll_futex_wait_cancel
 # define lll_futex_wait_cancel(...) (__builtin_trap (), 0)
 # undef lll_futex_supported_clockid
-# define lll_futex_supported_clockid(clockid) ((void) (clockid), 0)
+# define lll_futex_supported_clockid(clockid) \
+  ({ int __xos_clock = (clockid); \
+     __xos_clock == CLOCK_MONOTONIC || __xos_clock == CLOCK_REALTIME; })
 #endif
 #endif

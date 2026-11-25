@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Exercise glibc's XOS timed-wait adapter with explicit failure checks."""
 from pathlib import Path
+import os
 import subprocess
 import tempfile
 
@@ -18,8 +19,8 @@ struct __timespec64 { long tv_sec; long tv_nsec; };
 static inline __attribute__((noreturn)) void futex_fatal_error(void) { __builtin_trap(); }
 ''')
     executable = temp / 'test'
-    subprocess.run(['clang', '-std=c11', '-D_POSIX_C_SOURCE=200809L', '-Wall', '-Werror',
+    subprocess.run([os.environ.get('CC', 'cc'), '-std=c11', '-D_POSIX_C_SOURCE=200809L', '-Wall', '-Werror',
                     '-I', str(temp), '-I', str(overlay), str(overlay / 'futex-internal.c'),
                     str(fixture), '-o', str(executable)], check=True)
     subprocess.run([str(executable)], check=True)
-print('PASS monotonic futex forwarding and unsupported/fatal paths')
+print('PASS private monotonic/realtime futex forwarding and unsupported/fatal paths')

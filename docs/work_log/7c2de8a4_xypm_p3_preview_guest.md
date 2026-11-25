@@ -110,15 +110,37 @@ ASAN_OPTIONS=detect_leaks=0 python3 tests/package_p3_repository.py --sanitize
 从本次正式构建准备独立 candidate；完整校验与组合步骤如下。所有输出须是新路径。
 
 ```python
-import os, shutil, sys
-from pathlib import Path
+import hashlib, io, os, shutil, stat, sys, tarfile
+from pathlib import Path, PurePosixPath
 sys.path.insert(0, 'scripts')
 from xos_app import tree_receipt
 from xypm_format import canonical, load_json, require, sha_file
 base = Path('build/xypm_p3_preview_system/sdk')
 kit = Path(os.environ['XOS_PREVIEW_KIT'])
 archive = Path(os.environ['XOS_PREVIEW_KIT_ARCHIVE'])
-require(sha_file(archive) == '20efd69b859a149ce16c86ad92ead6f64e19c0d15f395615e4cf1e44888a70f1', 'kit mismatch')
+archive_bytes = archive.read_bytes()
+require(hashlib.sha256(archive_bytes).hexdigest() ==
+    '20efd69b859a149ce16c86ad92ead6f64e19c0d15f395615e4cf1e44888a70f1', 'kit mismatch')
+verified_kit_files = {}
+with tarfile.open(fileobj=io.BytesIO(archive_bytes)) as bundle:
+    for member in bundle.getmembers():
+        path = PurePosixPath(member.name)
+        require(not path.is_absolute() and '..' not in path.parts
+                and path.parts and path.parts[0] == 'linux-amd64'
+                and (member.isdir() or member.isfile()), 'unsafe kit member')
+        if member.isfile():
+            name = PurePosixPath(*path.parts[1:]).as_posix()
+            require(name not in verified_kit_files, 'duplicate kit member')
+            verified_kit_files[name] = hashlib.sha256(bundle.extractfile(member).read()).hexdigest()
+def kit_files():
+    result = {}
+    for path in kit.rglob('*'):
+        mode = path.lstat().st_mode
+        require(stat.S_ISREG(mode) or stat.S_ISDIR(mode), 'kit link/special file rejected')
+        if stat.S_ISREG(mode):
+            result[path.relative_to(kit).as_posix()] = sha_file(path)
+    return result
+require(kit_files() == verified_kit_files, 'kit differs from verified archive')
 for name, digest in load_json(kit / 'inputs.json')['files'].items():
     require(sha_file(kit / name) == digest, 'input mismatch: ' + name)
 metadata = load_json(base / 'manifest.json')
@@ -128,6 +150,7 @@ for name in ('libc.a', 'libm.a'):
 sdk = Path('build/xypm_p3_preview_sdk')
 shutil.copytree(base, sdk)
 shutil.copytree(kit / 'sysroot/cpp', sdk / 'cpp')
+require(kit_files() == verified_kit_files, 'kit changed during copy')
 materials = sdk / 'licenses/preview_cpp'
 materials.mkdir()
 for name in ('GCC-COPYING', 'GCC-COPYING.RUNTIME', 'GCC-COPYING3', 'GCC-COPYING3.LIB'):
@@ -153,13 +176,37 @@ evidence.mkdir(exist_ok=True)
 "${XOS_PREVIEW_RUN}" python3 scripts/build_dash.py --sdk build/xypm_p3_preview_system/sdk \
   --receipt build/xypm_p3_evidence/dash_build_receipt.json
 "${XOS_PREVIEW_RUN}" python3 scripts/build_xypm.py --sdk build/xypm_p3_preview_sdk \
-  --profile build/xypm_p3_evidence/profile.json
+  --profile build/xypm_p3_evidence/profile.json > build/xypm_p3_evidence/xypm_build_receipt.json
 "${XOS_PREVIEW_RUN}" python3 tests/package_p3_guest.py \
   --system build/xypm_p3_preview_system --sdk build/xypm_p3_preview_sdk \
   --profile build/xypm_p3_evidence/profile.json \
-  --xypm-build .cache/xos_seed/xypm/1f1c23187d6c4d8f2178/manifest.json \
-  --dash-manifest .cache/xos_seed/dash/c1cf788727f3790242b7/manifest.json \
+  --xypm-build build/xypm_p3_evidence/xypm_build_receipt.json \
+  --dash-manifest build/xypm_p3_evidence/dash_build_receipt.json \
   --output build/xypm_p3_guest_preview --serial-only
+```
+
+完成构建与客体后，生成本次实际输出的平铺索引，再运行核验：
+
+```python
+import hashlib, json
+from pathlib import Path
+root = Path.cwd().resolve()
+files = set()
+for name in ('build/xypm_p3_preview_system', 'build/xypm_p3_preview_sdk',
+             'build/xypm_p3_guest_preview', 'build/xypm_p3_evidence'):
+    files.update(path for path in (root / name).rglob('*') if path.is_file())
+xypm = json.loads((root / 'build/xypm_p3_evidence/xypm_build_receipt.json').read_text())
+dash = json.loads((root / 'build/xypm_p3_evidence/dash_build_receipt.json').read_text())
+for name in (xypm['elf'], xypm['package'], dash['elf'], dash['debug_elf']):
+    files.add(root / name)
+files.add(Path(xypm['elf']).parent / 'build_receipt.json')
+entries = {str(path.resolve().relative_to(root)):
+    hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted(files)}
+Path('build/xypm_p3_evidence_index.json').write_text(
+    json.dumps({'files': entries}, indent=2, sort_keys=True) + '\n')
+```
+
+```sh
 python3 scripts/verify_evidence_index.py build/xypm_p3_evidence_index.json --paths-root .
 ```
 
@@ -177,3 +224,16 @@ glibc 下的 xypm 待共享 file RPC hook、匹配的 native SDK archive、完�
 C++ SDK 与独立 profile 成套构建后运行；须隔离旧 weak request-id hooks，
 统一使用 glibc 的 session 锁和序号。双 profile 各自使用独立仓库与安装盘，
 保留 v1 数据库的单 profile 约束。同盘混装需后续单独契约。
+
+## PR159 评审复查（2026-11-25）
+
+对应评论4694296468/4694296479。复现配方现在将原始archive一次读取为字节，
+先校验锁定摘要，再从同一快照生成完整文件map。解包kit在复制前后均须与
+该map相同，包含inputs.json本身；链接、特殊文件、路径越界和重复文件拒绝。
+已实际核对1094个kit文件和当前candidate中的862个C++文件。真实反例同时
+改写头文件与inputs.json，旧的内部互相校验仍通过，而新增archive绑定拒绝。
+
+复现步骤增加实际receipt输出和索引生成代码，不依赖预先存在的本机索引。
+使用既有产物执行新代码，生成新的索引后1767/1767项核验通过，原索引保留。
+本增量只修文档/证据；原20项客体保持原系统、SDK和程序绑定。
+结果见[评审证据](../reports/xypm_p3_review_20261125/manifest.json)。

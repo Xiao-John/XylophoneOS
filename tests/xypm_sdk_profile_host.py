@@ -83,6 +83,7 @@ class profile_cases(unittest.TestCase):
                      'cpp/include/c++/16.2.0/x86_64-unknown-elf/bits/c++config.h']:
             put(self.newlib, name)
         self.nmeta = {'abi': 1, 'target': 'x86_64-elf', 'runtime_model': 'single',
+                      'build_id': '1234567890abcdef',
                       'libc': {'name': 'newlib', 'version': '4.6.0.20260123',
                                'libc_sha256': sha_file(self.newlib / 'lib/libc.a'),
                                'libm_sha256': sha_file(self.newlib / 'lib/libm.a')},
@@ -180,6 +181,20 @@ class profile_cases(unittest.TestCase):
         for family, source in [('newlib', self.glibc), ('glibc', self.newlib)]:
             with self.assertRaisesRegex(PackageError, 'family mismatch'):
                 module.candidate_profile(family, source, 'xos-x86_64-' + family + '-test-v1')
+
+    def test_newlib_missing_build_id_rejected(self):
+        self.nmeta.pop('build_id')
+        self.save_newlib()
+        with self.assertRaisesRegex(PackageError, 'build_id'):
+            self.create('newlib')
+
+    def test_newlib_malformed_build_id_rejected(self):
+        for value in (None, True, 1234, '', '1234567890ABCDEF', '0123', 'g' * 16):
+            with self.subTest(build_id=value):
+                self.nmeta['build_id'] = value
+                self.save_newlib()
+                with self.assertRaisesRegex(PackageError, 'build_id'):
+                    self.create('newlib')
 
     def test_newlib_builder_rejects_glibc_profile_before_access(self):
         from xos_app import sdk_check
@@ -450,14 +465,16 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, default=ROOT / 'build/xypm_profiles_host')
     args = parser.parse_args()
+    source_names = ('scripts/create_xypm_profile.py', 'scripts/xypm_sdk_profile.py',
+                    'scripts/xos_app.py', 'tests/xypm_sdk_profile_host.py')
+    source_inputs = {name: sha_file(ROOT / name) for name in source_names}
     suite = unittest.defaultTestLoader.loadTestsFromTestCase(profile_cases)
     result = unittest.TextTestRunner(verbosity=2).run(suite)
+    inputs_unchanged = source_inputs == {name: sha_file(ROOT / name) for name in source_names}
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
-    report = {'status': 'passed' if result.wasSuccessful() else 'failed', 'tests': result.testsRun,
+    report = {'status': 'passed' if result.wasSuccessful() and inputs_unchanged else 'failed', 'tests': result.testsRun,
               'scope': 'synthetic host-only SDK admission fixtures; no upstream signature or guest execution',
-              'guest': 'not_run', 'sources': {name: sha_file(ROOT / name) for name in (
-                  'scripts/create_xypm_profile.py', 'scripts/xypm_sdk_profile.py',
-                  'scripts/xos_app.py', 'tests/xypm_sdk_profile_host.py')}}
+              'guest': 'not_run', 'sources': source_inputs, 'inputs_unchanged': inputs_unchanged}
     (output / 'report.json').write_bytes(canonical(report))
-    raise SystemExit(0 if result.wasSuccessful() else 1)
+    raise SystemExit(0 if result.wasSuccessful() and inputs_unchanged else 1)

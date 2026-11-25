@@ -30,7 +30,7 @@ glibc xypm 构建、安装和客体运行由后续应用迁移模块接入；本
 | 内容 | newlib 候选 | glibc 候选 |
 |---|---|---|
 | 入口 | `--sdk` 完整发行/组合 SDK | `--sdk-build`，包含 `manifest.json` 与 `sysroot/` |
-| 身份 | ABI 1、`x86_64-elf`、single、newlib 版本与头文件一致 | `static_sdk_built`、`xos_glibc_static_research_v1`、glibc 版本与头文件一致 |
+| 身份 | ABI 1、`x86_64-elf`、single、16 位小写十六进制 `build_id`、newlib 版本与头文件一致 | `static_sdk_built`、`xos_glibc_static_research_v1`、glibc 版本与头文件一致 |
 | 产物 | 完整树摘要、libc/libm 元数据摘要、已有归档来源摘要 | manifest 的完整 artifact 集与 sysroot 文件集及各摘要完全一致 |
 | 启动 | startup v3、`crt0_posix.o`、`user.ld` | 六个 `xos_start/crti/crtbegin/xos_start_c/crtend/crtn` 对象、`user.ld` |
 | 库 | libc/libm、native SDK/loader、成套 libgcc | libc/libm/libgcc，存在的 process/unwind 库一并检查 |

@@ -196,6 +196,9 @@ def source_binding(build, sdk, metadata, *, cxx=False):
 def newlib_binding(sdk, metadata, files, cxx, features):
     require(type(metadata.get('abi')) is int and metadata['abi'] == 1 and metadata.get('target') == 'x86_64-elf'
             and metadata.get('runtime_model') == 'single', 'newlib SDK ABI/target/runtime mismatch')
+    require(isinstance(metadata.get('build_id'), str)
+            and re.fullmatch(r'[0-9a-f]{16}', metadata['build_id']),
+            'newlib SDK build_id must be a 16-digit lowercase hexadecimal identity')
     libc = object_member(metadata, 'libc')
     require(libc.get('name') == 'newlib', 'SDK runtime family mismatch: expected newlib')
     version = libc.get('version')

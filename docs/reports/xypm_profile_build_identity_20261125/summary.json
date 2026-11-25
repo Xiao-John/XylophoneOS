@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "host_tests": 41,
+  "real_newlib_profile": "candidate_binding_verified",
+  "sdk_tree_sha256": "092349e37c424fd3b800bd4bd8718ed0e01af80dc0b2563ee9c8a5e4735e9f24",
+  "guest": "not_run_in_this_review_increment",
+  "sources_bound_before_and_after": true,
+  "review_comment": 4694723200,
+  "commands": [
+    "python3 tests/xypm_sdk_profile_host.py --output build/xypm_profile_build_id_final",
+    "python3 scripts/create_xypm_profile.py verify --runtime-family newlib --sdk \"$XOS_NEWLIB_SDK\" --profile \"$XOS_NEWLIB_CANDIDATE\""
+  ]
+}

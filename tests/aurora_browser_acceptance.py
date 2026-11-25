@@ -9,7 +9,7 @@ import boot_smoke
 from boot_smoke import Guest
 from task_smoke import send_bytes,pump
 from process_smoke import command,resources
-from graphics_guest import start_graphics, stop_graphics, reap_compositor
+from graphics_guest import start_graphics, stop_graphics, reap_compositor, wait_for_scanout
 from make_work_disk import create_fat32
 from work_disk import transfer
 p=argparse.ArgumentParser()
@@ -58,7 +58,14 @@ try:
    b=len(g.output);send_bytes(g,(b'spawn-file' if background else b'exec-file')+b' /bin/aurora.elf\r');g.expect(b'BROWSER_READY',start=b,timeout=90);pump(g,.3);return b
   def finish(b):
    stroke('esc');g.expect(b'kind=exited code=0',start=b,timeout=30);g.expect_supervisor(start=b);assert resources(g)==with_service
-  b=start();im=screenshot('start');assert b'BROWSER_LOADED path=/web/start.html' in bytes(g.output)[b:];assert b'BROWSER_CSS_LOADED path=/web/theme.css' in bytes(g.output)[b:];assert sum(1 for pixel in im.convert('RGB').get_flattened_data() if pixel==(244,247,252))>50000;mark('real_litehtml_engine_and_aurora_start_page')
+  b=start()
+  assert b'BROWSER_LOADED path=/web/start.html' in bytes(g.output)[b:]
+  assert b'BROWSER_CSS_LOADED path=/web/theme.css' in bytes(g.output)[b:]
+  im=wait_for_scanout(g,out/'start.ppm',lambda pic: pic.size==(800,600) and sum(
+   count for count,color in pic.getcolors(800*600) if color==(244,247,252))>50000)
+  im.save(out/'start.png')
+  report.setdefault('screenshots',{})['start']=sha(out/'start.png')
+  mark('real_litehtml_engine_and_aurora_start_page')
   if a.case=='interactive':
    anchor=list(re.finditer(rb'BROWSER_ANCHOR point=(\d+),(\d+)',bytes(g.output)[b:]))[-1];x,y=map(int,anchor.groups());sb=len(g.output);click_xy(x,y);g.expect(b'BROWSER_LINK target=/web/reading.html',start=sb);g.expect(b'BROWSER_LOADED path=/web/reading.html',start=sb);mark('real_ps2_anchor_click')
    screenshot('reading-top');stroke('pgdn');g.expect(b'BROWSER_SCROLL value=',start=b);stroke('end');pump(g,.2);screenshot('reading-end');assert max(map(int,re.findall(rb'BROWSER_SCROLL value=(\d+)',bytes(g.output)[b:])))>0;mark('address_bar_and_long_document_scroll')

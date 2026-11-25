@@ -1,8 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 """Start and reap both processes required by the Interactium Qt platform."""
 import re
+import time
 
 from process_smoke import command
+from task_smoke import pump
 
 
 def start_graphics(guest, *, fault_present=False, check_display=False):
@@ -57,3 +59,17 @@ def compare_composited_pixels(reference, scanout):
     assert scanout.getpixel((400, 300)) == (16, 24, 32)
     assert scanout.getpixel((401, 304)) == (245, 247, 250)
     assert scanout.getpixel((412, 317)) == (16, 24, 32)
+
+def wait_for_scanout(guest, screenshot, check, timeout=15):
+    from PIL import Image
+
+    deadline = time.monotonic() + timeout
+    while True:
+        guest.qmp('screendump', {'filename': str(screenshot)})
+        with Image.open(screenshot) as capture:
+            frame = capture.convert('RGB')
+        if check(frame):
+            return frame
+        if time.monotonic() >= deadline:
+            raise AssertionError('Expected pixels did not reach guest scanout')
+        pump(guest, 0.25)

@@ -19,7 +19,7 @@ import threading
 root = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(root / "tests"), str(root / "scripts")]
 from boot_smoke import Guest
-from graphics_guest import start_graphics, stop_graphics
+from graphics_guest import start_graphics, stop_graphics, wait_for_scanout
 from make_work_disk import create_fat32
 from process_smoke import command, resources
 from task_smoke import send_bytes, pump
@@ -42,7 +42,7 @@ def main():
               "not_run": ["DNS", "TLS", "redirect_navigation", "remote_keyboard_navigation",
                           "cross_origin_guest_negative", "forced_service_death", "hardware_network",
                           "remote_BMP", "remote_reload_history_tabs", "in_process_budget_reset",
-                          "visual_content_assertion", "GUI_responsiveness_during_synchronous_fetch"]}
+                          "GUI_responsiveness_during_synchronous_fetch"]}
     guest = server = worker = None
     host = {"requests": []}
     stopped = threading.Event()
@@ -173,13 +173,17 @@ def main():
                 pump(guest, 0.3)
                 if cycle == 0:
                     screenshot = out / "http-browser.ppm"
-                    guest.qmp("screendump", {"filename": str(screenshot)})
-                    from PIL import Image
-                    with Image.open(screenshot) as picture:
+                    # The DOM can be ready while the backing-store frame is still in flight.
+                    def painted(picture):
                         if picture.size != (800, 600):
-                            raise AssertionError("Unexpected browser scanout dimensions")
-                        picture.save(out / "http-browser.png")
+                            return False
+                        colors = {rgb: count for count, rgb in picture.crop((32, 222, 768, 550)).getcolors(800 * 600)}
+                        return colors.get((244, 247, 252), 0) > 5000 and colors.get((24, 50, 76), 0) > 30
+
+                    picture = wait_for_scanout(guest, screenshot, painted)
+                    picture.save(out / "http-browser.png")
                     report["screenshot_sha256"] = sha(out / "http-browser.png")
+                    report["checks"].append("remote_stylesheet_background_and_text_pixels")
                 for down in (True, False):
                     guest.qmp("input-send-event", {"events": [{"type": "key", "data": {
                         "down": down, "key": {"type": "qcode", "data": "esc"}}}]})

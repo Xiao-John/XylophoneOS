@@ -1,4 +1,5 @@
 {
+  "version": 1,
   "files": {
     "actual_newlib.json": "e2dbe9bc73b9e0e4d4fc2213973497c7b0146e2790409956250ca85ec02ee4d3",
     "host.json": "9f9439bf33383482f8b8d4673a1cf6c10f975c4c5cc930ea722e59d2c334b75a",

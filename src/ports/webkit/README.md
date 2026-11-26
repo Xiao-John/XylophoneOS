@@ -84,3 +84,12 @@ XOS 通过现有 VM 接口保留匿名区，再由目标 glibc 提交和更新�
 guard、物理释放与回收均按原生 VM 操作完成。
 [普通客体记录](../../../docs/work_log/fab9b5b1_clarke_wtf_os_allocator.md)绑定定位的对象、
 实际 WTF 归档与读写及回收验证。
+
+## XOS JSC 配置页
+
+`--wtf-config` 构建配置初始化和保护对象。XOS 在静态 CRT 的早期构造阶段以
+不替换的精确请求建立已对齐的匿名配置区。C++ 和原生 LLInt 取同一个只读 ELF
+字面量中的基址。WTF finalize 通过真实的 `mprotect` 冻结配置页。
+[正例与地址冲突客体](../../../docs/work_log/b73f1f0f_clarke_jsc_config_protection.md)
+分别验证初始化与原生只读权限、占用时的明确启动失败。完整 JSC 链接与 VM 启动
+另有独立验收。

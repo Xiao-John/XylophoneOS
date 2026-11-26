@@ -444,7 +444,15 @@ i64 client::read_at(u32 handle, void* data, u32 length, u64 offset) {
     request_.length = length;
     request_.offset = offset;
     const i64 result = call(op::read_at);
-    if (result != 0) { return result; }
+    if (result != 0) {
+        // Legacy services return an empty error reply for an unknown operation.
+        if ((result == status_value(status::invalid) || result == status_value(status::not_supported)) &&
+            (response_.length != 0 || response_.value != 0 || response_.handle != 0 ||
+             response_.flags != 0 || response_.reserved != 0 || response_.name_length != 0)) {
+            return status_value(status::io);
+        }
+        return result;
+    }
     if (response_.length > length || response_.value != response_.length ||
         response_.handle != 0 || response_.flags != 0 || response_.reserved != 0 ||
         response_.name_length != 0) { return status_value(status::io); }

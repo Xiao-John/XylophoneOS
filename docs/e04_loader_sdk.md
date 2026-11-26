@@ -157,6 +157,10 @@ files 统一持有每 inode 的 FIL，独立 open 保留独立偏移；dup/fork 
 cwd 由服务保留目录引用，spawn 在子进程启动前委派，fork 克隆，同 PID exec 保留。
 装载器显式 readonly pin 与已有可写打开互斥，冲突返回 open 阶段的 busy；普通只读
 打开不再阻止写者。rename/unlink/原子替换可以改变名字，但不能改变 pin 的旧对象。
+装载器对持有的 pin 使用 `read_at` 读取校验、映像回执与映射所需的准确字节，
+每次读取维持独立位置。旧服务首次返回空的 `invalid` 或 `not_supported` 时，
+仅为这次打开切换到原先的 seek/read。短读继续取剩余字节；过早 EOF 或无效回复
+终止装载。文件仍在全部映射完成后、进程可运行前关闭。
 依赖新 cwd/目录流语义的旧静态程序需用新 SDK 重建。协议、生命周期、限额和已运行
 宿主/未运行客体的边界见 [文件身份契约](contracts/file_identity.md)。
 

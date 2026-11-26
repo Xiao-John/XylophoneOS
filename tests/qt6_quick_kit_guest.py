@@ -25,6 +25,8 @@ from xypm_sdk_profile import relative_file
 
 def capture_external_scene(guest, capture):
     deadline = time.monotonic() + 5
+    partial_captures = 0
+    highest_partial_ink = 0
     while time.monotonic() < deadline:
         guest.qmp("screendump", {"filename": str(capture)})
         kind, geometry, depth, pixels = capture.read_bytes().split(b"\n", 3)
@@ -37,10 +39,15 @@ def capture_external_scene(guest, capture):
                 point = (y * width + 55) * 3
                 row = pixels[point:point + 200 * 3]
                 ink += sum(min(row[x:x + 3]) > 200 for x in range(0, len(row), 3))
-            assert ink > 100, ink
-            return {"mode": [width, height], "text_ink_pixels": ink, "sha256": digest(capture)}
+            if ink > 100:
+                return {"mode": [width, height], "text_ink_pixels": ink, "sha256": digest(capture),
+                        "partial_captures": partial_captures}
+            # QMP can read scanout while the compositor is still copying the window.
+            partial_captures += 1
+            highest_partial_ink = max(highest_partial_ink, ink)
         pump(guest, 0.12)
-    raise AssertionError("The external Qt Quick frame did not reach scanout")
+    raise AssertionError(f"The external Qt Quick scene did not reach scanout. "
+                         f"Partial captures: {partial_captures}, highest text ink: {highest_partial_ink}")
 
 
 def main():

@@ -36,7 +36,7 @@ def private_owned(path, owner, mode):
     path.chmod(mode)
 
 
-def run(system, output):
+def run(system, output, provider_filesystem):
     binding = bind_system(system)
     manifest = json.loads((system / "manifest.json").read_bytes())
     realm = deployment_realm(manifest["pumpkin_deployment_realm"])
@@ -52,6 +52,8 @@ def run(system, output):
               "runner_sha256": digest(Path(__file__)), "installation_realm": realm.hex(),
               "qemu": subprocess.check_output([os.environ.get("QEMU", "qemu-system-x86_64"), "--version"],
                                                text=True).splitlines()[0],
+              "provider_filesystem": subprocess.check_output(
+                  ["stat", "-f", "-c", "%T", provider_filesystem], text=True).strip(),
               "checks": []}
     try:
         with sealed_login_image(system / "xos-install.iso", binding[2]["xos-install.iso"]) as (image, descriptor):
@@ -63,14 +65,17 @@ def run(system, output):
             else:
                 raise AssertionError("the verified launch medium remained writable")
             report["checks"].append({"case": "verified launch medium is sealed"})
-        with tempfile.TemporaryDirectory(prefix="pumpkin_provider_") as temp:
+            print("PASS verified launch medium is sealed", flush=True)
+        with (tempfile.TemporaryDirectory(prefix="pumpkin_generation_", dir=provider_filesystem) as persistent,
+              tempfile.TemporaryDirectory(prefix="pumpkin_provider_") as temp):
             workspace = Path(temp)
             workspace.chmod(0o755)
             launcher = workspace / "operator"
-            root = workspace / "provider"
+            root = Path(persistent)
             sockets = workspace / "socket"
             private_owned(launcher, OPERATOR, 0o700)
-            private_owned(root, PROVIDER, 0o700)
+            os.chown(root, PROVIDER, GROUP)
+            root.chmod(0o700)
             private_owned(sockets, PROVIDER, 0o2750)
             state = launcher / "installation"
             wallet = launcher / "credential"
@@ -225,8 +230,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--system", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--provider-filesystem", type=Path, required=True)
     args = parser.parse_args()
-    run(args.system.resolve(strict=True), args.output.resolve())
+    run(args.system.resolve(strict=True), args.output.resolve(), args.provider_filesystem.resolve(strict=True))
 
 
 if __name__ == "__main__":

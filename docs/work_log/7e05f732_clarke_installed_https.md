@@ -31,6 +31,11 @@ in a separate guest boot. The browser showed its plain HTTP status, the body
 hash matched, and native resources recovered. The control report SHA-256 is
 `9e4379e6cb7b4b4c122dddc20ffc3f4e133a9b412bd953e0e45623e6c79f4d47`.
 
+The host test now waits for the server to record the rejected handshake before
+checking the trace. The same XPK passed all four checks in the synchronized
+replay. The QEMU report SHA-256 is
+`e79153b0284ebc0865f2e24ddee4e0025e3d67be32637f928e4d486852b1fe7c`.
+
 An initial candidate used a different DNS name from the certificate's SAN.
 The guest rejected it before sending HTTP. The accepted profile was rebuilt
 with the certificate's actual DNS name. Host checks also passed 211 parser

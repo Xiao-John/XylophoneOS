@@ -70,7 +70,7 @@ def context(certs, name, host, sni_names):
     return result
 
 
-def serve(listener, contexts, state, authority, bodies, trace, stopped):
+def serve(listener, contexts, state, authority, bodies, trace, stopped, untrusted_complete):
     while not stopped.is_set():
         try:
             raw, _ = listener.accept()
@@ -83,10 +83,13 @@ def serve(listener, contexts, state, authority, bodies, trace, stopped):
         with raw:
             raw.settimeout(6)
             trace["connections"] += 1
+            certificate = state["certificate"]
             try:
-                peer = contexts[state["certificate"]].wrap_socket(raw, server_side=True)
+                peer = contexts[certificate].wrap_socket(raw, server_side=True)
             except ssl.SSLError as error:
                 trace["handshake_errors"].append(error.reason)
+                if certificate == "unknown-ca":
+                    untrusted_complete.set()
                 continue
             with peer:
                 packet = bytearray()
@@ -120,6 +123,7 @@ def main():
     report = {"status": "failed", "checks": []}
     trace = {"requests": [], "sni": [], "handshake_errors": [], "connections": 0, "closed": 0}
     stopped = threading.Event()
+    untrusted_complete = threading.Event()
     guest = listener = worker = None
     try:
         manifest, profile, receipt = verify_inputs(args)
@@ -164,7 +168,7 @@ def main():
 
         def worker_main():
             try:
-                serve(listener, contexts, state, authority, bodies, trace, stopped)
+                serve(listener, contexts, state, authority, bodies, trace, stopped, untrusted_complete)
             except Exception as error:
                 trace["error"] = str(error)
 
@@ -223,6 +227,8 @@ def main():
             if b"BROWSER_LOADED path=" in guest.output[begin:]:
                 raise AssertionError("Untrusted TLS response became a page")
             exit_browser(guest, begin, baseline)
+            if not untrusted_complete.wait(timeout=6):
+                raise AssertionError(f"Host did not record the certificate rejection: {trace}")
             if (trace.get("error") or trace["requests"] != [page, css, bmp, mixed] or
                     trace["closed"] != 4 or trace["connections"] != 5 or trace["sni"] != [host] * 5 or
                     trace["handshake_errors"] != ["TLSV1_ALERT_UNKNOWN_CA"]):

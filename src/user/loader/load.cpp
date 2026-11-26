@@ -43,10 +43,17 @@ public:
         if (address <= 0) { return 0; }
         address_ = static_cast<u64>(address);
         length_ = rounded;
-        if (vm_change(vm_operation::commit, address_, length_, vm_protection::read_write) == 0) {
-            return 0;
+        // A public commit request covers at most 4096 pages.
+        constexpr u64 commit_batch = 4096 * vm_page_size;
+        for (u64 offset = 0; offset < length_;) {
+            const u64 remaining = length_ - offset;
+            const u64 batch = remaining > commit_batch ? commit_batch : remaining;
+            if (vm_change(vm_operation::commit, address_ + offset, batch, vm_protection::read_write) != 0) {
+                return release();
+            }
+            offset += batch;
         }
-        return release();
+        return 0;
     }
 
     u8* data() const { return reinterpret_cast<u8*>(address_); }

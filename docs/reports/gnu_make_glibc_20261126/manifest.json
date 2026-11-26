@@ -1,0 +1,12 @@
+{
+  "files": {
+    "build_inputs.json": "f8f506e8ed2a89e475d298daa555039e0f7a46a6f0873aa0f33a2a8c6cc2bb02",
+    "gnu_make.serial.log.gz": "bfab3c25c4d21a1098651974530e7f6307cac62e5356bc20d2b065145556b3bc",
+    "guest_report.json": "692caf93068fa732fed804606546ea91ffb52ae9f86f17f6f3e5f1aa0eea51a6",
+    "initial_output_sync_rejection.json": "f4e416787462b545cfdfcf63f856ae0e02aba2f06852a56fa2488a7f6f853b2c",
+    "initial_system_glob_link_errors.txt": "913f5ce99c529e96af477343abc13630f80486a64b49a6afc57c0bf441b7d977",
+    "legacy_build.json": "0bbc8d8b0511fe80cdc42385512c92ca84f9f169a9e83173c88e8cb115e76763"
+  },
+  "version": 1,
+  "raw_initial_output_sync_sha256": "a36cce135dd54ed66531b212e51a6cf4b9e2ccc68cc526bb9a77f159301df11c"
+}

@@ -1,0 +1,82 @@
+{
+  "build_id": "53424ae8acaebc44",
+  "cases": [
+    {
+      "expected_status": 0,
+      "name": "version",
+      "output": "gmake --version\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000353000\r\n[loader] started pid=10 file=/usr/bin/gmake\n[process] event=wait_blocked parent=7 child=10\r\nGNU Make 4.4.1\nBuilt for x86_64-unknown-xos\nCopyright (C) 1988-2023 Free Software Foundation, Inc.\nLicense GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.\n[task] event=reclaimed pid=10 pages=346\r\n[wait] pid=10 kind=exited code=0\nxsh> "
+    },
+    {
+      "expected_status": 0,
+      "name": "variables_dependencies",
+      "output": "gmake -B -r -f /work/Makefile WORD=override all\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x0000000000353000\r\n[loader] started pid=11 file=/usr/bin/gmake\n[process] event=wait_blocked parent=7 child=11\r\n[process] event=started pid=12 parent=11\r\n[process] pid=12 address_space=0x000000000068d000\r\n[process] event=wait_blocked parent=11 child=0\r\n[task] event=reclaimed pid=12 pages=229\r\n[process] event=started pid=13 parent=11\r\n[process] pid=13 address_space=0x00000000006ad000\r\n[process] event=wait_blocked parent=11 child=0\r\nGNU_MAKE_TARGET left\n[task] event=reclaimed pid=13 pages=316\r\n[process] event=started pid=14 parent=11\r\n[process] pid=14 address_space=0x00000000006ad000\r\n[process] event=wait_blocked parent=11 child=0\r\nGNU_MAKE_TARGET right\n[task] event=reclaimed pid=14 pages=316\r\n[process] event=started pid=15 parent=11\r\n[process] pid=15 address_space=0x00000000006ad000\r\n[process] event=wait_blocked parent=11 child=0\r\nGNU_MAKE_DEPS_OK override\n[task] event=reclaimed pid=15 pages=316\r\n[task] event=reclaimed pid=11 pages=378\r\n[wait] pid=11 kind=exited code=0\nxsh> "
+    },
+    {
+      "expected_status": 0,
+      "name": "wildcard",
+      "output": "gmake -B -r -f /work/Makefile wildcard\n[process] event=started pid=16 parent=7\r\n[process] pid=16 address_space=0x0000000000353000\r\n[loader] started pid=16 file=/usr/bin/gmake\n[process] event=wait_blocked parent=7 child=16\r\n[process] event=started pid=17 parent=16\r\n[process] pid=17 address_space=0x000000000068d000\r\n[process] event=wait_blocked parent=16 child=0\r\nGNU_MAKE_WILDCARD </work/vars.mk>\n[task] event=reclaimed pid=17 pages=316\r\n[task] event=reclaimed pid=16 pages=346\r\n[wait] pid=16 kind=exited code=0\nxsh> "
+    },
+    {
+      "expected_status": 0,
+      "name": "local_parallel_wait",
+      "output": "gmake -B -r -f /work/Makefile -j2 concurrent\n[process] event=started pid=18 parent=7\r\n[process] pid=18 address_space=0x0000000000353000\r\n[loader] started pid=18 file=/usr/bin/gmake\n[process] event=wait_blocked parent=7 child=18\r\n[process] event=started pid=19 parent=18\r\n[process] pid=19 address_space=0x000000000068d000\r\n[process] event=started pid=20 parent=18\r\n[process] pid=20 address_space=0x0000000000791000\r\n[process] event=wait_blocked parent=18 child=0\r\n[task] event=reclaimed pid=19 pages=229\r\n[process] event=wait_blocked parent=18 child=0\r\n[task] event=reclaimed pid=20 pages=229\r\n[process] event=started pid=21 parent=18\r\n[process] pid=21 address_space=0x000000000068d000\r\n[process] event=wait_blocked parent=18 child=0\r\nGNU_MAKE_PARALLEL_OK\n[task] event=reclaimed pid=21 pages=316\r\n[task] event=reclaimed pid=18 pages=377\r\n[wait] pid=18 kind=exited code=0\nxsh> "
+    },
+    {
+      "expected_status": 0,
+      "name": "pipe_recipe",
+      "output": "gmake -B -r -f /work/Makefile pipe\n[process] event=started pid=22 parent=7\r\n[process] pid=22 address_space=0x0000000000353000\r\n[loader] started pid=22 file=/usr/bin/gmake\n[process] event=wait_blocked parent=7 child=22\r\n[process] event=started pid=23 parent=22\r\n[process] pid=23 address_space=0x000000000068d000\r\n[process] event=wait_blocked parent=22 child=0\r\n[process] event=started pid=24 parent=23\r\n[process] pid=24 address_space=0x00000000007c9000\r\n[task] event=reclaimed pid=24 pages=229\r\n[process] event=started pid=25 parent=23\r\n[process] pid=25 address_space=0x00000000007c9000\r\n[process] event=wait_blocked parent=23 child=25\r\nGNU_MAKE_PIPE_OK\n[task] event=reclaimed pid=25 pages=229\r\n[task] event=reclaimed pid=23 pages=316\r\n[task] event=reclaimed pid=22 pages=346\r\n[wait] pid=22 kind=exited code=0\nxsh> "
+    },
+    {
+      "expected_status": 0,
+      "name": "capture_pipe",
+      "output": "gmake -B -r -f /work/Makefile capture\n[process] event=started pid=26 parent=7\r\n[process] pid=26 address_space=0x0000000000353000\r\n[loader] started pid=26 file=/usr/bin/gmake\n[process] event=wait_blocked parent=7 child=26\r\n[process] event=started pid=27 parent=26\r\n[process] pid=27 address_space=0x000000000068d000\r\n[task] event=reclaimed pid=27 pages=229\r\n[process] event=started pid=28 parent=26\r\n[process] pid=28 address_space=0x00000000006ac000\r\n[process] event=wait_blocked parent=26 child=0\r\nGNU_MAKE_CAPTURE <real-pipe-data>\n[task] event=reclaimed pid=28 pages=316\r\n[task] event=reclaimed pid=26 pages=377\r\n[wait] pid=26 kind=exited code=0\nxsh> "
+    },
+    {
+      "expected_status": 2,
+      "name": "parallel_error",
+      "output": "gmake -B -r -f /work/Makefile -j2 -k broken survivor\n[process] event=started pid=29 parent=7\r\n[process] pid=29 address_space=0x0000000000353000\r\n[loader] started pid=29 file=/usr/bin/gmake\n[process] event=wait_blocked parent=7 child=29\r\n[process] event=started pid=30 parent=29\r\n[process] pid=30 address_space=0x000000000068d000\r\n[task] event=reclaimed pid=30 pages=229\r\n[process] event=started pid=31 parent=29\r\n[process] pid=31 address_space=0x0000000000791000\r\ngmake: *** [/work/Makefile:36: /out/incomplete] Error 7\ngmake: *** Deleting file '/out/incomplete'\nGNU_MAKE_SURVIVOR_OK\n[task] event=reclaimed pid=31 pages=316\r\ngmake: Target 'broken' not remade because of errors.\n[task] event=reclaimed pid=29 pages=377\r\n[wait] pid=29 kind=exited code=2\nxsh> "
+    },
+    {
+      "expected_status": 0,
+      "name": "closed_partial_output",
+      "output": "/usr/bin/mkprobe absent /out/incomplete\n[process] event=started pid=32 parent=7\r\n[process] pid=32 address_space=0x0000000000353000\r\n[loader] started pid=32 file=/usr/bin/mkprobe\n[process] event=wait_blocked parent=7 child=32\r\n[task] event=reclaimed pid=32 pages=229\r\n[wait] pid=32 kind=exited code=0\nxsh> "
+    },
+    {
+      "expected_status": 0,
+      "name": "after_error",
+      "output": "dash /work/recovery.sh\n[process] event=started pid=33 parent=7\r\n[process] pid=33 address_space=0x0000000000353000\r\n[loader] started pid=33 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=33\r\n[process] event=started pid=34 parent=33\r\n[process] pid=34 address_space=0x000000000066f000\r\n[process] event=wait_blocked parent=33 child=34\r\n[process] event=started pid=35 parent=34\r\n[process] pid=35 address_space=0x00000000007c9000\r\n[process] event=wait_blocked parent=34 child=0\r\nGNU_MAKE_SURVIVOR_OK\n[task] event=reclaimed pid=35 pages=316\r\n[task] event=reclaimed pid=34 pages=346\r\nGNU_MAKE_DASH_OK\n[task] event=reclaimed pid=33 pages=316\r\n[wait] pid=33 kind=exited code=0\nxsh> "
+    },
+    {
+      "expected_status": 2,
+      "name": "reject_jobserver",
+      "output": "gmake -B -r -f /work/Makefile --jobserver-style=pipe all\n[process] event=started pid=36 parent=7\r\n[process] pid=36 address_space=0x0000000000353000\r\n[loader] started pid=36 file=/usr/bin/gmake\n[process] event=wait_blocked parent=7 child=36\r\ngmake: *** the recursive jobserver is unavailable on XOS.  Stop.\n[task] event=reclaimed pid=36 pages=346\r\n[wait] pid=36 kind=exited code=2\nxsh> "
+    },
+    {
+      "expected_status": 2,
+      "name": "reject_output_sync",
+      "output": "gmake -B -r -f /work/Makefile --output-sync=target all\n[process] event=started pid=37 parent=7\r\n[process] pid=37 address_space=0x0000000000353000\r\n[loader] started pid=37 file=/usr/bin/gmake\n[process] event=wait_blocked parent=7 child=37\r\ngmake: *** output synchronization is unavailable on XOS.  Stop.\n[task] event=reclaimed pid=37 pages=346\r\n[wait] pid=37 kind=exited code=2\nxsh> "
+    }
+  ],
+  "dash_sha256": "2b5bb54ab0161fb084d5d69ce43ec41006be873115cff9cd2c4ac7d475cc3724",
+  "image_sha256": "d54a9855a57b09096208c055214d724199cd88db3f2975fa328a46dfbac4d0db",
+  "inputs": {
+    "/usr/bin/dash": "2b5bb54ab0161fb084d5d69ce43ec41006be873115cff9cd2c4ac7d475cc3724",
+    "/usr/bin/gmake": "14d2151acf5cf90b5c2252d75b9c0ed8211e4b7af02255bfe8f521ed6702e826",
+    "/usr/bin/mkprobe": "5808b58086eb3e9a9ebe84d50cbef9af4579848e27aa7d3494e164220f7982e4",
+    "/work/Makefile": "4afbf8eb6da4b46a8e3fe19723fb31ef520c0352e0e0e0eed97af73f3db67186",
+    "/work/recovery.sh": "6c3e9c55a23eb74fcda7747d5d9e8aeb9dce8bb5b2cd92dfce3170f920491b1f",
+    "/work/vars.mk": "94a814731f984ae617056d6457123dce4ad166df090bc1d04b4cb3d423bd7e8c"
+  },
+  "make_sha256": "14d2151acf5cf90b5c2252d75b9c0ed8211e4b7af02255bfe8f521ed6702e826",
+  "probe_sha256": "5808b58086eb3e9a9ebe84d50cbef9af4579848e27aa7d3494e164220f7982e4",
+  "profile_sha256": "1dd89afc949f21a3ae07b2de617ae3319b590341b68870e7dd836563822c31c9",
+  "qemu": "QEMU emulator version 11.1.2",
+  "resources": [
+    129709,
+    3,
+    1
+  ],
+  "runner_sha256": "7352f9514ea3d5e94f86dc2a2712f6920c086385343e0ba1a2bac2aaf080577a",
+  "sdk_manifest_sha256": "45ec2bc96ef7b26f4d035fd1aa7ed424bf6efba55164b06ee89ebec8e19fef50",
+  "status": "passed_subset"
+}

@@ -1,0 +1,45 @@
+{
+  "configuration_sha256": "1a46f21754b37b8d4863338d7a1b7687437d6088a87d73a8687560eb2a62ff5e",
+  "cross_tools": {
+    "ar": {
+      "sha256": "39ade51a05fba3546be68906d1b2c1788ce87d25d60bb30a030eaefbb96621b4",
+      "version": "GNU ar (GNU Binutils) 2.47.20260726"
+    },
+    "as": {
+      "sha256": "616a1b8b8a202fbce829217332a197892571d4e48d119ed88d93b935b2615163",
+      "version": "GNU assembler (GNU Binutils) 2.47.20260726"
+    },
+    "gcc": {
+      "sha256": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+      "version": "x86_64-elf-gcc (GCC) 16.2.0"
+    },
+    "ld": {
+      "sha256": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1",
+      "version": "GNU ld (GNU Binutils) 2.47.20260726"
+    },
+    "ranlib": {
+      "sha256": "d9034b71a71fbab28306582bfc37480e81dfc85d976d1f1b0593698507671a1d",
+      "version": "GNU ranlib (GNU Binutils) 2.47.20260726"
+    }
+  },
+  "dash_elf_sha256": "2b5bb54ab0161fb084d5d69ce43ec41006be873115cff9cd2c4ac7d475cc3724",
+  "gnu_keyring_sha256": "0ed9052a6d6c70bf0cfcbdc59022f94c2493c6df02973f94d19e95ab9f125812",
+  "host_make_sha256": "43b86c7bfda0267e3adc5c341ea27b1b1481dd5d1ef770ef12b054ebe337b157",
+  "host_make_version": "GNU Make 4.4.1",
+  "make_elf_sha256": "14d2151acf5cf90b5c2252d75b9c0ed8211e4b7af02255bfe8f521ed6702e826",
+  "mkprobe_elf_sha256": "5808b58086eb3e9a9ebe84d50cbef9af4579848e27aa7d3494e164220f7982e4",
+  "profile_sha256": "1dd89afc949f21a3ae07b2de617ae3319b590341b68870e7dd836563822c31c9",
+  "sdk_manifest_sha256": "45ec2bc96ef7b26f4d035fd1aa7ed424bf6efba55164b06ee89ebec8e19fef50",
+  "sdk_tree_sha256": "cd91dc8edbb6252473c6c453e807fcd59e88c921d8a3a12de59aff3b9f7f9ddb",
+  "source_commit": "39b16f1a2b8e33a36e4b46139793133e4f05b987",
+  "stdio_receiver_sha256": "d1f00de566c6db2dfa8864d9899fc53f3f4da37e43f0a284f861c6b6cd548017",
+  "system_build_id": "53424ae8acaebc44",
+  "system_iso_sha256": "d54a9855a57b09096208c055214d724199cd88db3f2975fa328a46dfbac4d0db",
+  "system_manifest_sha256": "1eb09c24c42d84cb688229b5570ce2f6e827c1accfbc4bc676bc0ee9957b7fde",
+  "target": "x86_64-unknown-xos",
+  "upstream_archive_sha256": "dd16fb1d67bfab79a72f5e8390735c49e3e8e70b4945a15ab1f81ddb78658fb3",
+  "upstream_signature_sha256": "b0085e6c3f9a7461e739786a8d28dec9aeb090335bb8818e42b497fdeb73b929",
+  "verified_primary_signer": "6D4EEB02AD834703510B117680CB727A20C79BB2",
+  "verified_system_source_files": 1841,
+  "version": "4.4.1"
+}

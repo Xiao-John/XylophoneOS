@@ -26,3 +26,8 @@
 `Source/JavaScriptCore/CMakeLists.txt:338–350,418–479` 的两阶段 offlineasm 由宿主 Ruby 执行。读入的 `$<TARGET_FILE:LLIntSettingsExtractor>` 和 `$<TARGET_FILE:LLIntOffsetsExtractor>` 是目标编译器和目标配置产生的 ELF。`offlineasm/offsets.rb` 用二进制读取并按字节序搜索表标记，过程不启动这两个 ELF。持续保留目标字段布局、生成头和标记内容，禁止用宿主 `sizeof` 或宿主布局替换目标记录。Ruby/Python 与生成脚本走宿主工具路径，链接器、归档器及 ranlib 走目标 GNU 工具路径。
 
 本轮真实日志还在 `libbmalloc.a` 阶段记录宿主 ranlib 的 Mach-O 警告。下一次构建显式绑定已验的目标 GNU binutils，检查实际 Ninja 命令与 archive 成员。静态配置明确选择上游 `ENABLE_STATIC_JSC`，先验证两个目标提取器及生成的目标头，再构建静态 WTF/JavaScriptCore、链接 JSC shell 并进入客体。当前没有引擎运行或测试覆盖率数据。
+
+[原生布局生成](../../src/ports/webkit/README.md#原生-llint-布局生成) 现已完成两个
+提取器及 `LLIntAssembly.h`。XOS 选择真实 glibc pthread 类型，使同一套目标配置可
+供提取器使用。宿主 Ruby 解析两个目标 ELF，输出 `vmEntryToJavaScript` 的 x86-64
+汇编。WTF 运行时、单 mutator 准入和客体解释器执行仍待实现与验证。

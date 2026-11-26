@@ -61,6 +61,8 @@ ICU4C 79.1 的三个 XOS 静态组件已经构建并在客体测试，覆盖 NFC
 用 glibc 系统分配器开始编译后，当前停在 WTF 对目标线程类型及挂起接口的假设。
 独立的 XOS 栈边界适配器和真实 pthread 子集已在客体通过。WTF 接入、协作挂起与
 目标布局生成门见 [静态 JSCOnly 线程契约](../contracts/clarke_jsc_threading.md)。
+JSCOnly 的两个静态目标提取器已链接，宿主 Ruby 已从目标布局生成原生 x86-64
+LLInt 汇编头。静态 WTF、解释器链接和客体运行仍是后续验收门。
 [ICU 构建器](../../src/ports/webkit/icu/README.md) · [ICU 客体记录](../work_log/4df1ab2c_clarke_icu4c_xos.md)
 
 现有 VirtIO-Net、N2/N3 已通过独立实测，ClarkE 的受控 HTTP 可作为网络对照。

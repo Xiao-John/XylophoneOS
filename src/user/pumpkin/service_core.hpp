@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
 #include "account_store.hpp"
+#include "session_limits.hpp"
 
 namespace xos::user::pumpkin {
 
 inline constexpr u32 client_limit = 16;
-inline constexpr u64 connection_lifetime_ns = 30ull * 60 * 1000000000;
 
 struct entropy_api {
     void* context = nullptr;

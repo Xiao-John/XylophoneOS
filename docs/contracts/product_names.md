@@ -2,8 +2,8 @@
 
 | 产品 | 可见名称 | 正式客体入口 | xypm 目标包 ID |
 | --- | --- | --- | --- |
-| 系统 UI | Mobius | `/bin/mobius.elf` | `xos.mobius` |
-| 浏览器 | ClarkE | `/bin/clarke.elf` | `xos.clarke` |
+| 系统 UI | Mobius | `/usr/bin/mobius.elf` | `xos.mobius` |
+| 浏览器 | ClarkE | `/usr/bin/clarke.elf` | `xos.clarke` |
 
 客体入口随产品安装。单 Surface 会话优先使用正式入口。只有文件服务确认正式入口不存在时，才试旧盘上的 `/bin/desktop.elf` 或 `/bin/browser.elf`。打开失败的其他原因及加载失败继续如实返回。通过文件名启动的程序仍使用相同的装载权限和会话生命周期。
 

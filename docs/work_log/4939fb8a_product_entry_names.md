@@ -1,7 +1,7 @@
 # 4939fb8a · Mobius 和 ClarkE 的产品标识
 
 2026-11-26。Mobius 用于两套现有桌面入口的应用标识；ClarkE 用于浏览器应用、
-窗口和标题。单 Surface 会话优先请求 `/bin/mobius.elf` 和 `/bin/clarke.elf`，
+窗口和标题。单 Surface 会话优先请求 `/usr/bin/mobius.elf` 和 `/usr/bin/clarke.elf`，
 旧工作盘在正式文件缺失时可继续使用旧入口。产品名、包 ID 规划和共享 Aurora
 库的边界记录在 [产品标识契约](../contracts/product_names.md)。
 

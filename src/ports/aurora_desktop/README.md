@@ -23,8 +23,8 @@ Outputs: `desktop/desktop.elf`, `studio/studio.elf`, `semantics/semantics.elf`,
 Notes uses `src/ports/qt6/build_widgets_fixture.py`; Browser has its own
 `src/ports/aurora_browser/build.py`. Both must use these same Qt/SDK inputs.
 
-Install the ELFs on a **dedicated test FAT disk** as `/bin/mobius.elf`,
-`/bin/session.elf`, `/bin/studio.elf`, `/bin/notes.elf`, `/bin/clarke.elf` and copy
+Install the ELFs on a **dedicated test FAT disk** as `/usr/bin/mobius.elf`,
+`/bin/session.elf`, `/bin/studio.elf`, `/bin/notes.elf`, `/usr/bin/clarke.elf` and copy
 the public Browser fixtures into `/web/`. No host disk/partition is used.
 
 Boot the generated image with that test disk using the existing QEMU runner.
@@ -44,7 +44,7 @@ desktop to release its Surface, launches the selected independent application,
 waits and restores the desktop. No application-specific kernel operation exists.
 Unprivileged startup without that explicit grant fails honestly.
 
-Direct `exec-file /bin/mobius.elf` is a preview. It can exercise native settings
+Direct `exec-file /usr/bin/mobius.elf` is a preview. It can exercise native settings
 and controls, but app launch explains that a session parent is needed.
 Settings are session/process local. A real live settings broker is not implemented.
 Shell appearance is retained across child launches; legacy Notes/Browser still

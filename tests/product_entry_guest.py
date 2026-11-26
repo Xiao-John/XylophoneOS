@@ -24,13 +24,15 @@ def digest(path):
 
 
 def run_case(args, child, paths, desktop, browser):
-    name = 'canonical' if desktop == 'mobius' else 'legacy'
+    name = 'canonical' if desktop.startswith('/usr/') else 'legacy'
     with tempfile.TemporaryDirectory(prefix='xos_product_entries_') as temp:
         disk = Path(temp) / 'work.img'
         create_fat32(disk, 512)
         transfer(disk, 'mkdir', '/bin')
+        transfer(disk, 'mkdir', '/usr')
+        transfer(disk, 'mkdir', '/usr/bin')
         for path in paths:
-            transfer(disk, 'import', f'/bin/{path}.elf', child)
+            transfer(disk, 'import', path, child)
         transfer(disk, 'import', '/bin/session.elf', args.session)
         guest = Guest(args.image.resolve(), str(args.output.relative_to(ROOT / 'build') / name),
                       work_disk=disk, iso=True)
@@ -45,8 +47,8 @@ def run_case(args, child, paths, desktop, browser):
             guest.expect(b'DESKTOP_RESUMED Application closed.', start=start, timeout=45)
             guest.expect_supervisor(start=start, timeout=45)
             serial = bytes(guest.output)[start:]
-            assert serial.count(f'DESKTOP_ENTRY /bin/{desktop}.elf'.encode()) == 2, serial
-            assert serial.count(f'BROWSER_ENTRY /bin/{browser}.elf'.encode()) == 1, serial
+            assert serial.count(f'DESKTOP_ENTRY {desktop}'.encode()) == 2, serial
+            assert serial.count(f'BROWSER_ENTRY {browser}'.encode()) == 1, serial
             assert b'kind=exited code=0' in serial and resources(guest) == baseline
             return {'case': name, 'desktop': desktop, 'browser': browser, 'resources': baseline}
         finally:
@@ -71,10 +73,10 @@ def main():
     child = args.output / 'child.elf'
     subprocess.run([sys.executable, str(args.sdk.resolve() / 'compile.py'),
                     str(fixture), '-o', str(child)], check=True)
-    checks = [
-        run_case(args, child, ('mobius', 'desktop', 'clarke', 'browser'), 'mobius', 'clarke'),
-        run_case(args, child, ('desktop', 'browser'), 'desktop', 'browser'),
-    ]
+    canonical = ('/usr/bin/mobius.elf', '/usr/bin/clarke.elf')
+    legacy = ('/bin/desktop.elf', '/bin/browser.elf')
+    checks = [run_case(args, child, canonical + legacy, *canonical),
+              run_case(args, child, legacy, *legacy)]
     report = {'status': 'passed', 'checks': checks, 'image_sha256': digest(args.image),
               'session_sha256': digest(args.session), 'receipt_sha256': digest(receipt_path),
               'fixture_sha256': digest(fixture), 'child_sha256': digest(child),

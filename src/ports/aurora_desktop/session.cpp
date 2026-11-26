@@ -27,9 +27,9 @@ xos::i64 launch_app(const app_entry& entry, xos::u32 argc, const char** argv) {
 
 int main() {
     const app_entry apps[] = {
-        {"/bin/mobius.elf", "/bin/desktop.elf"},
+        {"/usr/bin/mobius.elf", "/bin/desktop.elf"},
         {"/bin/notes.elf"},
-        {"/bin/clarke.elf", "/bin/browser.elf"},
+        {"/usr/bin/clarke.elf", "/bin/browser.elf"},
         {"/bin/studio.elf"},
     };
     char preferences[16]="16";const char *notice="";

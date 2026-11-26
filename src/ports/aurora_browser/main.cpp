@@ -82,11 +82,11 @@ class Browser final:public aurora::canvas {
         path=candidate->current();
         if(!pipe_instance.isEmpty())candidate->allow_scene_observation(pipe_text);
         candidate->navigate=[this](QString target){navigate(target);};
-        candidate->titleChanged=[this](QString text){title->setText(text+" · Aurora");};
+        candidate->titleChanged=[this](QString text){title->setText(text+" · ClarkE");};
         candidate->setObjectName("page");
         auto *old=view;view=candidate;
         auto *item=layout()->replaceWidget(old,view);delete item;old->navigate={};old->titleChanged={};old->hide();view->show();old->deleteLater();
-        title->setText(candidate_title+" · Aurora");address->setText(browser::display_location(path));
+        title->setText(candidate_title+" · ClarkE");address->setText(browser::display_location(path));
         if(record){while(history.size()>index+1)history.removeLast();history.append(path);if(history.size()>16)history.removeFirst();index=history.size()-1;}
         tabbar->setTabText(active,title->text().section(" ·",0,0).left(19));updateButtons();message(browser::remote(path)?"HTTP page · liteHTML 0.9 · JavaScript off · plain HTTP":"Local page · liteHTML 0.9 · JavaScript off");view->setFocus();
         QTimer::singleShot(100,this,[this]{view->log_anchor_point();xos::thread_stats stats{};xos::sdk::syscall(xos::sys_thread_stats,reinterpret_cast<xos::u64>(&stats));std::printf("BROWSER_SAMPLE pages=%u threads=%u tab=%d scroll=%d\n",stats.process_user_pages,stats.threads,active,view->verticalScrollBar()->value());});
@@ -95,9 +95,9 @@ class Browser final:public aurora::canvas {
     void travel(int delta){const int target=index+delta;if(target<0||target>=history.size())return;if(navigate(browser::display_location(history[target]),false))index=target;updateButtons();}
     void point(const char *name,QWidget *w){auto p=w->mapToGlobal(w->rect().center());std::printf("BROWSER_POINT %s=%d,%d\n",name,p.x(),p.y());}
 public:
-    Browser(QString initial={},QString instance={},bool text_scope=false,xos::u64 service_pid=0):service_pid_(service_pid),pipe_instance(std::move(instance)),pipe_text(text_scope){setWindowTitle("Xylophone Browser — Aurora");resize(800,600);
+    Browser(QString initial={},QString instance={},bool text_scope=false,xos::u64 service_pid=0):service_pid_(service_pid),pipe_instance(std::move(instance)),pipe_text(text_scope){setWindowTitle("ClarkE");resize(800,600);
         auto *layout=new QVBoxLayout(this);layout->setContentsMargins(32,30,32,26);layout->setSpacing(10);
-        auto *tabs=new QHBoxLayout;title=new QLabel("Aurora / Start");title->setStyleSheet("color:#eef5ff;font-size:16px;font-weight:600;");tabs->addWidget(title,1);
+        auto *tabs=new QHBoxLayout;title=new QLabel("ClarkE / Start");title->setStyleSheet("color:#eef5ff;font-size:16px;font-weight:600;");tabs->addWidget(title,1);
         auto *newTab=new QLabel(service_pid_?"CONTROLLED HTTP":"LOCAL PREVIEW");newTab->setStyleSheet("color:#91cfdc;font-size:11px;");tabs->addWidget(newTab);
         auto *exit=new aurora::button("Close");exit->setFixedSize(64,34);tabs->addWidget(exit);connect(exit,&QPushButton::clicked,qApp,&QApplication::quit);layout->addLayout(tabs);
         auto *tabrow=new QHBoxLayout;tabbar=new QTabBar;tabbar->setExpanding(false);tabbar->setDrawBase(false);tabbar->setStyleSheet("QTabBar::tab { background:#233751; color:#b9cfe7; padding:7px 17px; margin-right:5px; border:1px solid #456381; border-radius:10px; } QTabBar::tab:selected { background:#46617e; color:white; }");tabbar->addTab("Start");tabrow->addWidget(tabbar);auto *add=new aurora::button("+");add->setFixedSize(32,30);tabrow->addWidget(add);tabrow->addStretch();layout->addLayout(tabrow);
@@ -112,7 +112,7 @@ public:
         view=new browser::HtmlView(this,service_pid_);view->setObjectName("page");layout->addWidget(view,1);
         status=new QLabel;status->setStyleSheet("color:#c0d0e5;font-size:10px;");status->setMinimumHeight(20);layout->addWidget(status);
         connect(back,&QPushButton::clicked,this,[this]{travel(-1);});connect(forward,&QPushButton::clicked,this,[this]{travel(1);});connect(reload,&QPushButton::clicked,this,[this]{if(index>=0)navigate(browser::display_location(history[index]),false);});connect(home,&QPushButton::clicked,this,[this]{navigate("file:/web/start.html");});connect(go,&QPushButton::clicked,this,[this]{navigate(address->text());});connect(address,&QLineEdit::returnPressed,this,[this]{navigate(address->text());});
-        view->navigate=[this](QString path){navigate(path);};view->titleChanged=[this](QString text){title->setText(text+" · Aurora");};
+        view->navigate=[this](QString path){navigate(path);};view->titleChanged=[this](QString text){title->setText(text+" · ClarkE");};
         auto *newTabKey=new QShortcut(QKeySequence("Ctrl+T"),this);connect(newTabKey,&QShortcut::activated,add,&QPushButton::click);auto *cycleTab=new QShortcut(QKeySequence("Ctrl+Tab"),this);connect(cycleTab,&QShortcut::activated,this,[this]{tabbar->setCurrentIndex((active+1)%tabbar->count());});
         auto *focus=new QShortcut(QKeySequence("Ctrl+L"),this);connect(focus,&QShortcut::activated,this,[this]{address->setFocus();address->selectAll();});
         auto *previous=new QShortcut(QKeySequence("Alt+Left"),this);connect(previous,&QShortcut::activated,this,[this]{travel(-1);});auto *next=new QShortcut(QKeySequence("Alt+Right"),this);connect(next,&QShortcut::activated,this,[this]{travel(1);});auto *refresh=new QShortcut(QKeySequence("Ctrl+R"),this);connect(refresh,&QShortcut::activated,this,[this]{if(index>=0)navigate(browser::display_location(history[index]),false);});auto *quit=new QShortcut(QKeySequence(Qt::Key_Escape),this);connect(quit,&QShortcut::activated,qApp,&QApplication::quit);
@@ -170,7 +170,7 @@ int main(int argc,char **argv){
         for(const auto c:instance)if(!((c>='0' && c<='9') || (c>='a' && c<='f')))return 2;
         qInstallMessageHandler(ipc_qt_message);
     }
-    QApplication app(argc,argv);aurora::initialize(app);
+    QApplication app(argc,argv);app.setApplicationName(QStringLiteral("ClarkE"));aurora::initialize(app);
 #ifdef XOS_SSG_TEST_ORACLE
     const bool hidden=app.arguments().contains("--ssg-hidden-test");
     if(hidden)app.setQuitOnLastWindowClosed(false);

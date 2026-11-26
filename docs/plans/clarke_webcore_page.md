@@ -19,3 +19,7 @@ headless 平台、Skia 和最小的本地页面特性，实测 GLib、Soup、图
 首个工作包建立可复用的目标 LibXml2，并验证 WebCore 使用的 push parser、namespace SAX 和
 回收行为。接续 WPE 目标配置、真实 WebCore 生成和对象编译，以最早的可运行 HTML 页面为
 目标。后端和依赖闭包的选择以实际构建推进程度和维护成本为依据。
+
+当前客体已完成共用 [LibXml2 前置](../work_log/d1cdb8f2_clarke_webcore_libxml2.md) 和
+真实 [WebCore HTML 分词](../work_log/4cc23087_clarke_webcore_html_tokenizer.md)。
+WPE headless 目标配置明确停在 GLib，DOM 与整页验收尚在推进。

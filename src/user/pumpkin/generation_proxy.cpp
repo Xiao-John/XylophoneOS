@@ -76,6 +76,7 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
     const bool credentials_needed = submitting || mode == scenario::user_enroll;
     wire_id credential_owner{};
     bool credential_exchanged = false, credential_slots_cleared = false;
+    bool destination_reserved = false;
 #else
 #if XOS_PUMPKIN_NAMED_RESOURCE_STORE
     if ((mode < scenario::cycle || mode > scenario::stale) && mode != scenario::named_empty) return false;
@@ -86,6 +87,15 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
     if (sdk::channel_send_wait(supervisor.transmit, &response.result, sizeof(response.result), deadline()) != 0) {
         return false;
     }
+#if XOS_PUMPKIN_USER_LOGIN
+    user_login::account_packet account_prompt{}, selected_account{};
+    account_prompt.op = mode;
+    if (!serial_exchange(uart, account_prompt, selected_account) ||
+        !user_login::selected_account(selected_account, mode) ||
+        sdk::channel_send_wait(supervisor.transmit, &selected_account, sizeof(selected_account), deadline()) != 0) {
+        return false;
+    }
+#endif
 #if XOS_PUMPKIN_USER_RESOURCE && XOS_PUMPKIN_NAMED_RESOURCE_STORE
     if (named_read || named_mutation) {
         named_operator::packet prompt{};
@@ -110,6 +120,16 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
         user_login::packet credentials{};
         const i64 report = sdk::ipc_recv(supervisor.receive, &credentials, sizeof(credentials));
         if (report == sizeof(credentials)) {
+            if (credentials.tag == user_login::account_magic) {
+                user_login::account_packet reservation{}, ack{};
+                __builtin_memcpy(static_cast<void*>(&reservation), &credentials, sizeof(reservation));
+                if (mode != scenario::user_enroll || destination_reserved || credential_exchanged ||
+                    !user_login::enrollment_ready(reservation) || !serial_exchange(uart, reservation, ack) ||
+                    !user_login::enrollment_ready(ack) ||
+                    sdk::channel_send_wait(supervisor.transmit, &ack, sizeof(ack), deadline()) != 0) { return false; }
+                destination_reserved = true;
+                continue;
+            }
 #if XOS_PUMPKIN_USER_RESOURCE && XOS_PUMPKIN_NAMED_RESOURCE_STORE
             if (credentials.tag == named_operator::magic) {
                 named_operator::packet returned{}, ack{};
@@ -123,7 +143,8 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
 #endif
             const auto operation = mode == scenario::user_enroll ? user_login::operation::issue : user_login::operation::submit;
             if (!credentials_needed || credentials.identity.number == 0 ||
-                credentials.identity.scope != disk_test_realm) return false;
+                credentials.identity.scope != disk_test_realm ||
+                (mode == scenario::user_enroll && !destination_reserved)) return false;
             if (credential_exchanged) {
                 if (credential_slots_cleared || !user_login::header(credentials, operation, 2) ||
                     !user_login::same_identity(credentials.identity, credential_owner) ||
@@ -164,6 +185,11 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
         if ((named_read || named_mutation) && completed && finish.pass != named_result) return false;
 #endif
         if (completed && credentials_needed && !credential_slots_cleared) return false;
+        if (finish.pass == user_login::duplicate_enrollment && mode == scenario::user_enroll &&
+            !credential_exchanged && !destination_reserved) {
+            valid = true;
+            completed = true;
+        }
 #endif
 #if XOS_PUMPKIN_NATIVE_LOGIN
         using result = xos::user::pumpkin::native_login::result;

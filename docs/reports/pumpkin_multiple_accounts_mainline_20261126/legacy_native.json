@@ -1,0 +1,89 @@
+{
+  "status": "passed_subset",
+  "system": {
+    "build_id": "9087776f6a2c6e1f",
+    "manifest_sha256": "858a8876d5f4ee95ca12cf4ab9075c589e89aab83a9256430b452dba91bc2a2b",
+    "sdk_manifest_sha256": "942136ee982ddb6a6d3e906716728bc38fbf2e87b143ec80c2ccf4f6f81b0ed2",
+    "sdk_tree_sha256": "086f12b53f606c3f3ed1e256d9406194d0f49e278d879b17ecf31f3853d1620e",
+    "artifacts": {
+      "xos-install.iso": "fe642dba0ddc72a7307415ed4cb719f342cb5fd90b4a2079f16bcdd00b5bbcd3",
+      "user_files.image.elf": "1e58dde4600c1517bfed20573286910a17deaa78d0a186ef1415876041c6108f",
+      "user_supervisor.image.elf": "0b535b2cb1609385f63a698e787586bea1ef39670b1edb41308a1ce8a52cabc4",
+      "user_pumpkin_durable.image.elf": "c7ec12f8bf94f0f253f5bce2751d2ea5db53e4b3cabf51f94d8885612d104dfc",
+      "user_p2_anchor_proxy.image.elf": "4e362845aafc430f2c252d27a90d1c4f1aae62ee32900aa29fb4458fe394256b",
+      "user_pumpkin_holder.image.elf": "474c84abd0bee56994cd2663bcfdc90e98f0f13a4531a19efb526434d3c4ee69"
+    }
+  },
+  "native_login": true,
+  "named_resources": false,
+  "runner_sha256": "a333567852b7aaa762f7407d73ba149c291ed3075e35b334f99a29ce56043ba4",
+  "boots": {
+    "cycle": {
+      "events": [
+        {
+          "read": null
+        },
+        {
+          "published": 1
+        },
+        {
+          "read": 1
+        },
+        {
+          "read": 1
+        },
+        {
+          "published": 2
+        },
+        {
+          "read": 2
+        },
+        {
+          "published": 3
+        }
+      ],
+      "input_disk_sha256": "6bec2c048774e359d45f0620a4828f8e40f95dfd10d9a811b4437fddd831fe31",
+      "qemu_version": "QEMU emulator version 11.1.2",
+      "snapshot_fence": {
+        "revision": 2,
+        "qmp_status": "paused",
+        "injected_delay_ns": 0,
+        "paused_snapshot_wall_ns": 1037695458
+      },
+      "finish_code": 1,
+      "output_disk_sha256": "7375f146ddf3040655871a034d6338fec61b6f3974206f924cf618d8becd99f8",
+      "tail_sha256": "6db101b11553ff46bf389bd748c2cfae12149ed1deb4e6183af518b05ed49d75",
+      "authority_revision": 3,
+      "offline_stale_copy_sha256": "a6ce63536e142cfd3c5d09022fc5694ca7cde805f20ad40d6637a53afb19407f",
+      "status": "passed"
+    },
+    "healthy": {
+      "events": [
+        {
+          "read": 3
+        }
+      ],
+      "input_disk_sha256": "7375f146ddf3040655871a034d6338fec61b6f3974206f924cf618d8becd99f8",
+      "qemu_version": "QEMU emulator version 11.1.2",
+      "finish_code": 1,
+      "output_disk_sha256": "7375f146ddf3040655871a034d6338fec61b6f3974206f924cf618d8becd99f8",
+      "tail_sha256": "6db101b11553ff46bf389bd748c2cfae12149ed1deb4e6183af518b05ed49d75",
+      "authority_revision": 3,
+      "status": "passed"
+    },
+    "stale": {
+      "events": [
+        {
+          "read": 3
+        }
+      ],
+      "input_disk_sha256": "a6ce63536e142cfd3c5d09022fc5694ca7cde805f20ad40d6637a53afb19407f",
+      "qemu_version": "QEMU emulator version 11.1.2",
+      "finish_code": 1,
+      "output_disk_sha256": "a6ce63536e142cfd3c5d09022fc5694ca7cde805f20ad40d6637a53afb19407f",
+      "tail_sha256": "05e2f559bcafbc4bf85fc87f9c134fab620fc60c6ce96010ef4e94129fa73df6",
+      "authority_revision": 3,
+      "status": "passed"
+    }
+  }
+}

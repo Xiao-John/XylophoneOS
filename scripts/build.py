@@ -164,7 +164,8 @@ def main():
                                       "pumpkin_durable_probe": args.pumpkin_durable_probe,
                                       **({"pumpkin_anchored_probe": True} if args.pumpkin_anchored_probe else {}),
                                       **({"pumpkin_native_login": True} if args.pumpkin_native_login else {}),
-                                      **({"pumpkin_user_login": True} if args.pumpkin_user_login else {}),
+                                      **({"pumpkin_user_login": True, "pumpkin_operator_protocol": 2}
+                                         if args.pumpkin_user_login else {}),
                                       **({"pumpkin_user_resource": True} if args.pumpkin_user_resource else {}),
                                       **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
                                       **({"pumpkin_named_resource_store": True} if args.pumpkin_named_resource_store else {}),
@@ -350,7 +351,7 @@ def main():
         "pumpkin_durable_probe": args.pumpkin_durable_probe,
         **({"pumpkin_anchored_probe": True} if args.pumpkin_anchored_probe else {}),
         **({"pumpkin_native_login": True} if args.pumpkin_native_login else {}),
-        **({"pumpkin_user_login": True} if args.pumpkin_user_login else {}),
+        **({"pumpkin_user_login": True, "pumpkin_operator_protocol": 2} if args.pumpkin_user_login else {}),
         **({"pumpkin_user_resource": True} if args.pumpkin_user_resource else {}),
         **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
         **({"pumpkin_named_resource_store": True} if args.pumpkin_named_resource_store else {}),

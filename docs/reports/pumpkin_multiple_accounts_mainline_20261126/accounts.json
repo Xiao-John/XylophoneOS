@@ -1,0 +1,152 @@
+{
+  "status": "passed_subset",
+  "build_id": "6a59513e11ba3742",
+  "system_manifest_sha256": "185d05ffeae518371cb7faecef77dddd73b6f0e6362e55374472d8d75c0778df",
+  "artifacts": {
+    "xos-install.iso": "3038efa278fb7bf2d0111e83a260c3a31792b81cb7399ae75ea958d8db3c4e14",
+    "user_files.image.elf": "1e58dde4600c1517bfed20573286910a17deaa78d0a186ef1415876041c6108f",
+    "user_supervisor.image.elf": "7a5298c1f01ec24176440f73f2655957302dd3541282d4442287b1fd56863793",
+    "user_pumpkin_durable.image.elf": "51ecf33b2d82268adc9dd5452ac091f19ec6fbba610e7ddd2260ef4591ae1042",
+    "user_p2_anchor_proxy.image.elf": "9f84d5f3aa5b3362b67be4bb47f0cd1e6dbe32223b6ac9e059880c9090bef919",
+    "user_pumpkin_holder.image.elf": "56cc3d89472d33e7b0dea6e17c495e4a26b12a472affaf8b0bcda59e2e987699",
+    "user_p2_sealed.image.elf": "01365bd56cf5e24636f3cdf98adfbd5b69b30acf50d21970b08a59d57f81dab9"
+  },
+  "sdk_manifest_sha256": "5448d347b7e1568e796a5c7a965e8da6b6a69f13ea4fbbeb45e1f42b8fe26977",
+  "sdk_tree_sha256": "e0bafb986a991a69737cb5729ddccae8f89388c36f9ac0495b4db6d843e6dc7a",
+  "entry_sha256": "a7747614ff1f78154bb7aae94fc02b495a4f22b0bf6c9bbb5e3ddb3b548dc939",
+  "runner_sha256": "182765ddc6fce14fd27b9cfa31ea6743a3829ce93137ffd40afb88e60f6fc7bc",
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "checks": [
+    {
+      "case": "create one isolated developer installation",
+      "revision": 0,
+      "exit": 0
+    },
+    {
+      "case": "issue Alice a real first credential",
+      "revision": 2,
+      "exit": 0
+    },
+    {
+      "case": "a fresh guest accepts the original Alice wallet and logs out",
+      "revision": 2,
+      "exit": 0
+    },
+    {
+      "case": "a fresh guest adds Carol to the existing account store",
+      "revision": 3,
+      "exit": 0
+    },
+    {
+      "case": "duplicate account is refused before reserving a new wallet",
+      "revision": 3,
+      "exit": 1
+    },
+    {
+      "case": "Carol authenticates with her unchanged wallet and logs out",
+      "revision": 3,
+      "exit": 0
+    },
+    {
+      "case": "Alice wallet cannot be submitted for Carol",
+      "revision": 3,
+      "exit": 1
+    },
+    {
+      "case": "the registrar publishes an object owned by Alice",
+      "revision": 4,
+      "exit": 0
+    },
+    {
+      "case": "Alice reads and her pending read is denied before expiry after logout",
+      "revision": 4,
+      "exit": 0
+    },
+    {
+      "case": "authenticated Carol cannot read Alice's object",
+      "revision": 4,
+      "exit": 4
+    },
+    {
+      "case": "the registrar replaces the same name with a new Carol-owned object",
+      "revision": 5,
+      "exit": 0
+    },
+    {
+      "case": "Alice remains authenticated but is refused Carol's replacement",
+      "revision": 5,
+      "exit": 4
+    },
+    {
+      "case": "Carol as owner cannot reopen the previous generation",
+      "revision": 5,
+      "exit": 4
+    },
+    {
+      "case": "Carol reads her object and independently proves logout before expiry",
+      "revision": 5,
+      "exit": 0
+    },
+    {
+      "case": "revoke Alice alone in the durable store",
+      "revision": 6,
+      "exit": 0
+    },
+    {
+      "case": "fresh VM refuses Alice's revoked wallet",
+      "revision": 6,
+      "exit": 3
+    },
+    {
+      "case": "Alice cannot establish a read session after revocation",
+      "revision": 6,
+      "exit": 3
+    },
+    {
+      "case": "Carol still reads her object after Alice is revoked",
+      "revision": 6,
+      "exit": 0
+    },
+    {
+      "case": "revoke the remaining owner without replacing the object",
+      "revision": 7,
+      "exit": 0
+    },
+    {
+      "case": "fresh VM rejects Carol's credential for her retained object",
+      "revision": 7,
+      "exit": 3
+    },
+    {
+      "case": "create another blank installation",
+      "revision": 0,
+      "exit": 0
+    },
+    {
+      "case": "a new installation permits a first account other than Alice",
+      "revision": 2,
+      "exit": 0
+    },
+    {
+      "case": "fresh VM restores without a preconfigured Alice",
+      "revision": 2,
+      "exit": 0
+    }
+  ],
+  "legacy": {
+    "build_id": "b520b0ee54972dd2",
+    "manifest_sha256": "1aacfc9c53192491b08fb4d373489636e94acf6842a18af02c920850dd778f0a",
+    "entry_sha256": "e1dcefa122f6b569e6cea932d027f8e444d9f5c95861b0e34540db928cc59fc3",
+    "sdk_tree_sha256": "149d01fc0f2ac6ac5007771fca22163d800a3ce9e492f0f2602e6e2f9c87e3cf",
+    "artifacts": {
+      "xos-install.iso": "4f48ce8515985a63ba2d42fa90da12eb19f1e949db9830f043da7b8a3c4326a2",
+      "user_files.image.elf": "1e58dde4600c1517bfed20573286910a17deaa78d0a186ef1415876041c6108f",
+      "user_supervisor.image.elf": "81025df7514bde69a334049124f9a0e823264b798ab612459f1d8c21c09176a9",
+      "user_pumpkin_durable.image.elf": "633c232534d77a76f6a5fd96564dc29303e88889dd0d434ca1bcdc4f1dfdb649",
+      "user_p2_anchor_proxy.image.elf": "91bd0d5f087b87785159809b526f5cf5195e162408a6f468571c003f389a6988",
+      "user_pumpkin_holder.image.elf": "fb48ff9ec5279e80ba4632c04aaeb8044cec341e5ab7a8a41e019a6a86f6e602",
+      "user_p2_sealed.image.elf": "01365bd56cf5e24636f3cdf98adfbd5b69b30acf50d21970b08a59d57f81dab9",
+      "sdk/manifest.json": "d5e03c645c116342e42fe9e457bb8c945181b3b755a21fcc865e6111659d2817"
+    }
+  }
+}

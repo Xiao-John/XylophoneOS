@@ -1,6 +1,6 @@
 # Pumpkin 用户凭据的领取和提交
 
-显式 `--pumpkin-anchored-probe --pumpkin-native-login --pumpkin-user-login` 构建专用开发入口。它复用真实 Pumpkin 守护进程、files 私有槽和独立宿主代际，由用户在宿主管理自己的凭据文件。当前配置分配一个固定开发账户 `alice`。 [原生凭据链](pumpkin_native_login.md)
+显式 `--pumpkin-anchored-probe --pumpkin-native-login --pumpkin-user-login` 构建专用开发入口。它复用真实 Pumpkin 守护进程、files 私有槽和独立宿主代际，由每个账户的持有者管理自己的宿主凭据文件。同一安装可以登记多个持久账户，沿用核心的 64 账户上限。`--account` 选择区分大小写的 1 到 32 字节账户名，省略时为兼容选择 `alice`。[原生凭据链](pumpkin_native_login.md)
 
 ## 启动和使用
 
@@ -13,13 +13,13 @@ python3 -B scripts/pumpkin_user_login.py login --system "$SYSTEM" --state "$STAT
 python3 -B scripts/pumpkin_user_login.py revoke --system "$SYSTEM" --state "$STATE"
 ```
 
-`prepare` 创建启动实例使用的私有目录、带隔离尾区的虚拟工作盘和盘外代际记录。每次登记、登录或吊销启动一个新的虚机进程。登记时账户在盘外确认修订 2 后，用户才收到凭据。凭据目标路径指向宿主机现有的用户私有目录。工具独占创建文件并同步文件和目录，确认后回执。登录读取用户选定的同一份文件，在普通权限下建立身份会话，核对持久账户身份，执行正常登出并确认原会话失效。退出码 0 表示指定操作已完成，3 表示实际普通认证被拒绝，1 表示操作失败或未确认。管理员吊销需要访问受信启动配置与安装状态，不使用登录文件。
+`prepare` 创建启动实例使用的私有目录、带隔离尾区的虚拟工作盘和盘外代际记录。每次登记、登录或吊销启动一个新的虚机进程。首个账户在修订 2 确认后交付凭据，后续新账户先恢复已发布账户库，再推进一个修订。登记端先核对名字未使用，确认宿主已独占预留凭据文件后才创建账户。重复登记即使给出新路径也不会创建新的凭据文件。状态明确后同步凭据文件和目录。登录读取用户选定的文件，在普通权限下建立身份会话，核对持久账户身份，执行正常登出并确认原会话失效。退出码 0 表示指定操作已完成，3 表示实际普通认证被拒绝，1 表示操作失败或未确认。管理员通过受信启动配置和安装状态选择要吊销的账户。吊销仅使该账户的会话和凭据失效。
 
-凭据文件是 64 字节的二进制记录，含格式、账户安装域和编号，以及 sys63 生成的 32 字节凭据。宿主工具通过 `openat` 的 Python 文件描述符接口打开或独占创建最终文件，在同一描述符上核验所有者、0600 权限、普通文件类型、单链接和长度，再完成读取或保存。符号链接、公开权限和多链接拒绝。一旦已经开始登记，未收到确认或写入失败不自动重复登记。保留原状态先确认账户记录，再由受信登记流程显式恢复或轮换。空、残缺或长度错误的文件不能提交。
+凭据文件沿用 `PUMKEY` 的原 64 字节记录，含格式、账户安装域和编号，以及 sys63 生成的 32 字节凭据。旧用户在原安装上继续使用原文件。登记库才负责把名字解析为完整账户 ID。宿主核对选定钱包在此 ID 下匹配后才发送凭据。工具通过 `openat` 的文件描述符接口打开或独占创建最终文件，在实际描述符上核验所有者、0600 权限、普通文件类型、单链接和长度，再完成读取或保存。符号链接、公开权限和多链接拒绝。一旦已经开始登记，未收到确认或写入失败不自动重复登记。保留原状态先确认账户记录，再由受信登记流程显式恢复或轮换。空、残缺或长度错误的文件不能提交。
 
 ## 私有输入路线
 
-普通终端的前台和回显状态无法认证提示来源。此入口在启动监督器把 COM1 独占交给内置代理、关闭旧调试路径后才交接凭据。宿主程序拥有专用 QEMU 输入输出管道和私有 QMP 套接字，丢弃交接前启动文本，不开启串口录制、网络或调试器。就绪之前没有凭据帧。首个发布或提交帧使用独立 `PKU1` 版本 1 格式和精确账户身份。现有 `PKA1` 代际帧只传代际元数据。每次虚机运行最多交换一份凭据，代理与受信监督器在交付后以等长无秘密帧覆盖双方暂存邮箱。不向传统通用串口测试器开放该镜像。
+普通终端的前台和回显状态无法认证提示来源。此入口在启动监督器把 COM1 独占交给内置代理、关闭旧调试路径后才交接凭据。宿主程序拥有专用 QEMU 输入输出管道和私有 QMP 套接字，丢弃交接前启动文本。安装使用配套的操作者协议 2 构建，加入两个固定 144 字节的无秘密 `PKO1` 交换。第一个在进入 daemon 前确定操作和账户名字，盘外记录为空时只有登记可启用初始化。第二个只在确认待登记名字未用后请求宿主预留钱包文件。凭据发布或提交帧沿用 `PKU1` 版本 1 和精确账户身份，`PKA1` 仍只传代际元数据。每次虚机运行最多交换一份凭据，代理与受信监督器在交付后以等长无秘密帧覆盖双方暂存邮箱。专用管道无需共享串口录制、网络或调试器。
 
 登记端来自真实父进程的既有授权。提交时，真实启动者只向经过双方内核端点验证的内置独立持有者转交凭据。持有者核对 daemon 对端，通过普通 Pumpkin 连接向核心发起真实认证。成功或拒绝后清理用户态工作缓冲，按既有会话生命周期回收。凭据全程不进入启动参数、共享串口录制、客体 FAT 明文、日志或验收报告。宿主文件由用户自行保护，具有同一宿主 UID 权限的程序、宿主管理员和虚拟化平台属于该配置的信任边界。
 
@@ -53,14 +53,15 @@ python3 -B scripts/pumpkin_user_login.py read-resource --system "$SYSTEM" --stat
 在封存资源所需的构建选项上追加 `--pumpkin-named-resource-store`，使用新的私有
 安装目录。此组合启用 `read-named`、`publish-named` 和 `erase-named`。
 用 `prepare --system "$SYSTEM" --state "$STATE"` 初始化本配置的盘外格式 2。
-用原 `enroll` 领取凭据。真实登记端从恢复的账户库确定所有者，`publish-named`
-和 `erase-named` 需要受信操作者对安装目录及启动配置的管理权限。
+用 `enroll --account` 领取各自凭据。`publish-named` 和 `import-fat` 通过 `--account`
+选择对象的持久所有者，由真实登记端从恢复的账户库解析。`publish-named` 和
+`erase-named` 需要受信操作者对安装目录及启动配置的管理权限。
 
 ```sh
 python3 -B scripts/pumpkin_user_login.py publish-named --system "$SYSTEM" --state "$STATE" \
-  --resource-name preview --generation 0 --resource-value 293
+  --account carol --resource-name preview --generation 0 --resource-value 293
 python3 -B scripts/pumpkin_user_login.py read-named --system "$SYSTEM" --state "$STATE" \
-  --resource-name preview --credential-file "$PRIVATE_CREDENTIAL"
+  --account carol --resource-name preview --credential-file "$PRIVATE_CREDENTIAL"
 python3 -B scripts/pumpkin_user_login.py erase-named --system "$SYSTEM" --state "$STATE" \
   --resource-name preview --generation "$CURRENT_GENERATION"
 ```
@@ -70,6 +71,8 @@ python3 -B scripts/pumpkin_user_login.py erase-named --system "$SYSTEM" --state 
 对象数据和新的对象键。成功读取返回代际及有界对象数据，退出前真实持有者完成
 登出并复核有效期内的待用读取被拒绝。退出码 4 表示无匹配对象或未获对象权限，
 5 表示变更的预期代际冲突。普通认证拒绝继续用 3。未确认变更后先检查实际代际。
+另一已登录账户选择同名同代际时仍通过自己的真实会话受检，缺少对象所有者权利时
+只收到退出码 4。显式替换当前对象可以选择另一持久账户，旧键失效。
 
 选择和结果用 `PKN1` 版本 2 帧走同一专用宿主管道。凭据仍由既有经过核验的私有
 描述符和专用 `PKU1` 帧传输。监督器只向通过普通认证的持有者交接 broker 的真实

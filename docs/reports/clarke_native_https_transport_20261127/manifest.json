@@ -1,0 +1,10 @@
+{
+  "files": {
+    "binding.json": "5e4b4022da800054f206b7747594cc55d7a1d271cacf443a982c486bc209ad07",
+    "guest.json": "d37915f6f6a1302006265a1ed4b94a6b7faacf55de71d0ff7744e32fd7679771",
+    "guest.serial.log.gz": "54acb834a49d5fe5e42255ad7c2d9bd25217ee071b06531f67561543a4baf230",
+    "https.ppm.gz": "6327aab4d0774a5db506880ad9e7287dd560acb491f7fe9ade2da35fbb9c277f",
+    "transport-host.log": "b8d370cd2786c3dd99048392a82e137784a1f5066d74d469dac1f8e41fe0471d"
+  },
+  "version": 1
+}

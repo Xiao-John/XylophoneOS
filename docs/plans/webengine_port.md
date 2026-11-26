@@ -203,6 +203,11 @@ WebKit 运行证据。M2 在实现前声明真实 WebCore 的进程位置和视�
 受控服务、挑战和响应字节。ClarkE 的受控 liteHTML 页面已用同一 Content-Length/GET
 解析器验证原生 HTTP 和显式证书信任配置下的 HTTPS。两者当前只收有界定长响应。
 DNS、公共信任根和 WebKit NetworkProcess 继续走 M3 验收。
+
+受控 HTTPS 传输已从 Qt 界面代码抽离为可共用的 `browser_http` 接口。经过验证的响应
+保留实际头字段和正文范围，可交给 WebKit 网络任务。现有安装浏览器已从客体验证原生
+DNS、TLS、内容和资源回收，真实 NetworkDataTask 接线继续独立验收。
+[传输回执](../work_log/clarke_native_https_transport.md)
 网络后端由锁定版本的实际接口、成熟组件和维护成本裁决，不以解析器替代网络服务。
 
 ### 安全与 M5 验收

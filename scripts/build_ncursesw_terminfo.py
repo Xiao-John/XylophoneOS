@@ -32,7 +32,7 @@ def main():
     if output.exists() or any(output.is_relative_to(p) for p in (ROOT / 'src', ROOT / 'localpilot', target_probe)):
         raise SystemExit('output must be a new private directory outside src and localpilot')
     lock = json.loads(LOCK_PATH.read_text())
-    if sha(archive) != lock['archive_sha256'] or lock['version'] != '6.5':
+    if sha(archive) != lock['sha256'] or lock['version'] != '6.5':
         raise SystemExit('ncurses source does not match the selected lock')
     target_report_path = target_probe / 'report.json'
     target_report = json.loads(target_report_path.read_text())
@@ -40,7 +40,7 @@ def main():
     target_library = target_probe / 'build/lib/libncursesw.a'
     target_config_text = target_config.read_text()
     if (target_report.get('archive_valid') is not True or
-        target_report.get('source_sha256') != lock['archive_sha256'] or
+        target_report.get('source_sha256') != lock['sha256'] or
         target_report.get('archive_sha256') != sha(target_library) or
         '#define MIXEDCASE_FILENAMES 1' not in target_config_text or
         '#define NCURSES_XNAMES 1' not in target_config_text):

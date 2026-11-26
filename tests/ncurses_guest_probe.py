@@ -61,8 +61,8 @@ def main():
         (not composed and (apps.get('sdk_tree_sha256') != sdk_receipt.get('sdk_tree_sha256') or
                            apps.get('probe_report_sha256') != sha(probe / 'report.json'))) or
         term.get('status') != 'built_guest_not_run' or
-        target.get('source_sha256') != source_lock['archive_sha256'] or
-        term.get('source_sha256') != source_lock['archive_sha256'] or
+        target.get('source_sha256') != source_lock['sha256'] or
+        term.get('source_sha256') != source_lock['sha256'] or
         term.get('source_lock_sha256') != sha(lock_path) or
         term.get('target_report_sha256') != sha(probe / 'report.json') or
         term.get('target_config_sha256') != sha(probe / 'build/include/ncurses_cfg.h') or

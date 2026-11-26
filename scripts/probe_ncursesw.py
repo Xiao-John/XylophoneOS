@@ -15,12 +15,14 @@ import shutil
 import subprocess
 import tarfile
 from xos_app import tree_receipt
+from glibc_g1_probe import clean_build_environment, tool_identity
+from xypm_sdk_profile import metadata_snapshot, verify_profile
 
 ROOT = Path(__file__).resolve().parents[1]
 LOCK_PATH = ROOT / 'src/ports/ncurses/source_lock.json'
 LOCK = json.loads(LOCK_PATH.read_text())
-SOURCE_URL = LOCK['source_url']
-SOURCE_SHA256 = LOCK['archive_sha256']
+SOURCE_URL = LOCK['url']
+SOURCE_SHA256 = LOCK['sha256']
 PUBLIC_HEADERS = ('curses.h', 'term.h', 'termcap.h', 'unctrl.h', 'ncurses_dll.h')
 
 
@@ -32,10 +34,38 @@ def digest(path):
     return h.hexdigest()
 
 
+def glibc_inputs(sdk, profile_path, binaries):
+    if sdk.name != 'sysroot':
+        raise ValueError('glibc ncurses requires a verified SDK sysroot')
+    profile = json.loads(profile_path.read_text())
+    binding = verify_profile(profile, 'glibc', sdk.parent)
+    if 'usr/lib/libxos_terminal.a' not in profile['sdk_binding']['link_artifacts']:
+        raise ValueError('glibc ncurses requires a verified SDK sysroot with native terminal support')
+    manifest = sdk.parent / 'manifest.json'
+    metadata, _ = metadata_snapshot(manifest, profile['sdk_binding']['sdk_manifest_sha256'])
+    tools = {}
+    for name, path in binaries.items():
+        tool = tool_identity(path)
+        if tool['sha256'] != metadata['tools']['x86_64-elf-' + name]['sha256']:
+            raise ValueError('target tool differs from glibc SDK: ' + name)
+        tools[name] = tool['sha256']
+    lib = sdk / 'usr/lib'
+    compile_flags = ['--sysroot=' + str(sdk), '-nostdinc', '-ftls-model=local-exec', '-D_GNU_SOURCE=1']
+    headers = ['-isystem', str(sdk / 'usr/include'), '-isystem', str(lib / 'compiler-include')]
+    startup = [str(lib / name) for name in ('xos_start.o', 'crti.o', 'crtbegin.o', 'xos_start_c.o')]
+    libraries = [str(lib / name) for name in ('libc.a', 'libm.a', 'libxos_terminal.a', 'libgcc.a')]
+    if (lib / 'libgcc_eh.a').is_file():
+        libraries.append(str(lib / 'libgcc_eh.a'))
+    shutdown = [str(lib / name) for name in ('crtend.o', 'crtn.o')]
+    return (binding, tools, manifest, lib / 'libc.a', compile_flags, headers, startup,
+            ['-Wl,--start-group', *libraries, '-Wl,--end-group', *shutdown])
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--archive', type=Path, required=True)
     parser.add_argument('--sdk', type=Path, required=True)
+    parser.add_argument('--glibc-profile', type=Path, help='use the verified static glibc sysroot supplied by --sdk')
     parser.add_argument('--output', type=Path, required=True,
                         help='new private output directory; must not already exist')
     parser.add_argument('--build', action='store_true',
@@ -52,11 +82,6 @@ def main():
         raise SystemExit('output must be outside src, localpilot and the selected SDK')
     if digest(archive) != SOURCE_SHA256:
         raise SystemExit('ncurses archive does not match the selected probe source')
-    for item in ('include', 'lib/libc.a', 'lib/libm.a', 'lib/libxos.a',
-                 'lib/libxos_loader.a', 'crt0_posix.o', 'user.ld', 'manifest.json'):
-        if not (sdk / item).exists():
-            raise SystemExit('SDK is missing ' + item)
-    sdk_tree, _ = tree_receipt(sdk)
     if digest(ROOT / 'src/ports/ncurses' / LOCK['notice']) != LOCK['notice_sha256']:
         raise SystemExit('stored upstream notice does not match lock')
     cc = shutil.which('x86_64-elf-gcc')
@@ -65,6 +90,25 @@ def main():
     target_ar, target_ranlib, target_nm = (shutil.which('x86_64-elf-' + n) for n in ('ar', 'ranlib', 'nm'))
     if not all((cc, cc_build, target_as, target_ld, target_ar, target_ranlib, target_nm)):
         raise SystemExit('target or build compiler tools are unavailable')
+    if args.glibc_profile:
+        binaries = {'gcc': cc, 'as': target_as, 'ld': target_ld, 'ar': target_ar, 'ranlib': target_ranlib}
+        profile_sha = digest(args.glibc_profile)
+        binding, tools_hash, sdk_manifest, sdk_libc, target_flags, cppflags, startup, libs = glibc_inputs(
+            sdk, args.glibc_profile, binaries)
+        sdk_tree = binding['sdk_tree_sha256']
+    else:
+        for item in ('include', 'lib/libc.a', 'lib/libm.a', 'lib/libxos.a',
+                     'lib/libxos_loader.a', 'crt0_posix.o', 'user.ld', 'manifest.json'):
+            if not (sdk / item).exists():
+                raise SystemExit('SDK is missing ' + item)
+        sdk_tree, _ = tree_receipt(sdk)
+        sdk_manifest, sdk_libc = sdk / 'manifest.json', sdk / 'lib/libc.a'
+        target_flags = []
+        cppflags = ['-isystem', str(sdk / 'include')]
+        startup = [str(sdk / 'crt0_posix.o')]
+        libgcc = subprocess.check_output([cc, '-print-libgcc-file-name'], text=True).strip()
+        libs = ['-Wl,--start-group', *(str(sdk / 'lib' / n) for n in
+                 ('libxos.a', 'libxos_loader.a', 'libc.a', 'libm.a')), libgcc, '-Wl,--end-group']
     work.mkdir(parents=True, exist_ok=False)
     with tarfile.open(archive) as source_archive:
         source_archive.extractall(work, filter='data')
@@ -78,17 +122,15 @@ def main():
     (tools / 'as').symlink_to(Path(target_as).resolve())
     (tools / 'ld').symlink_to(Path(target_ld).resolve())
     build_triplet = subprocess.check_output([str(source / 'config.guess')], text=True).strip()
-    libgcc = subprocess.check_output([cc, '-print-libgcc-file-name'], text=True).strip()
     flags = ['-B' + str(tools) + '/', '-O2', '-mno-red-zone', '-fno-pie', '-fno-pic',
-             '-fno-stack-protector', '-ffunction-sections', '-fdata-sections']
-    ldflags = ['-nostdlib', '-static', '-no-pie',
-               '-Wl,--gc-sections,--build-id=none,-z,noexecstack,-z,max-page-size=4096',
-               '-T', str(sdk / 'user.ld'), str(sdk / 'crt0_posix.o')]
-    libs = ['-Wl,--start-group'] + [str(sdk / 'lib' / n) for n in
-             ('libxos.a', 'libxos_loader.a', 'libc.a', 'libm.a')] + [libgcc, '-Wl,--end-group']
-    env = dict(os.environ)
+             '-fno-stack-protector', '-ffunction-sections', '-fdata-sections', *target_flags]
+    linker_settings = '--build-id=none,-z,noexecstack,-z,max-page-size=4096'
+    if not args.glibc_profile:
+        linker_settings = '--gc-sections,' + linker_settings
+    ldflags = ['-nostdlib', '-static', '-no-pie', '-Wl,' + linker_settings,
+               '-T', str(sdk / 'user.ld'), *startup]
+    env = clean_build_environment(os.environ)[0] if args.glibc_profile else dict(os.environ)
     env.pop('COMPILER_PATH', None)
-    cppflags = ['-isystem', str(sdk / 'include')]
     if args.xopen_source:
         cppflags.append('-D_XOPEN_SOURCE=' + args.xopen_source)
     env.update(CC=cc, BUILD_CC=cc_build, AR=target_ar, RANLIB=target_ranlib, CFLAGS=shlex.join(flags),
@@ -127,12 +169,18 @@ def main():
                     public_headers[name] = digest(header)
         except (OSError, subprocess.CalledProcessError):
             archive_valid = False
-    inputs_unchanged = tree_receipt(sdk)[0] == sdk_tree and digest(LOCK_PATH) == lock_hash
-    report = {'kind': 'cross_configuration_probe_only', 'source_url': SOURCE_URL,
+    if args.glibc_profile:
+        observed = glibc_inputs(sdk, args.glibc_profile, binaries)
+        inputs_unchanged = digest(args.glibc_profile) == profile_sha and observed[:2] == (binding, tools_hash)
+    else:
+        inputs_unchanged = tree_receipt(sdk)[0] == sdk_tree
+    inputs_unchanged = inputs_unchanged and digest(LOCK_PATH) == lock_hash
+    report = {'kind': 'cross_configuration_probe_only',
+              'runtime_family': 'glibc' if args.glibc_profile else 'newlib', 'source_url': SOURCE_URL,
               'source_lock_sha256': lock_hash, 'sdk_tree_sha256': sdk_tree,
               'inputs_unchanged': inputs_unchanged,
-              'source_sha256': SOURCE_SHA256, 'sdk_manifest_sha256': digest(sdk / 'manifest.json'),
-              'sdk_libc_sha256': digest(sdk / 'lib/libc.a'), 'target_compiler': cc,
+              'source_sha256': SOURCE_SHA256, 'sdk_manifest_sha256': digest(sdk_manifest),
+              'sdk_libc_sha256': digest(sdk_libc), 'target_compiler': cc,
               'build_compiler': cc_build, 'configure_command': command,
               'environment': {k: env[k] for k in ('CC', 'BUILD_CC', 'AR', 'RANLIB', 'CFLAGS', 'CPPFLAGS', 'LDFLAGS', 'LIBS')},
               'configure_exit_code': result.returncode, 'build_exit_code': build_exit_code,
@@ -142,6 +190,8 @@ def main():
               'required_symbols': required_symbols,
               'guest_run': False,
               'note': 'Configure probes do not establish target runtime semantics or a supported port.'}
+    if args.glibc_profile:
+        report.update(sdk_profile_sha256=profile_sha, target_tools=tools_hash)
     (work / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report, indent=2))
     return result.returncode or (build_exit_code or 0) or (1 if args.build and archive_valid is not True else 0) or (0 if inputs_unchanged else 1)

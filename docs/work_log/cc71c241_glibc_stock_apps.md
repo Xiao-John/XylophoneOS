@@ -68,3 +68,11 @@ profile 摘要与新候选相同，可以复用原应用字节。真实 QEMU 以
 随后新增 `--require-command-substitution`，用实际 `$()` 读取持久文件并核对内容，
 供带 fork 的新 SDK 在两次启动中验收。
 [安装提速后的应用组合证据](../reports/glibc_stock_apps_early_quiet_20261126/manifest.json)
+
+## 带原生单线程 fork 的 C/C++ kit
+
+外部 C、C++ 和 GNU Make 从 `xos-x86_64-glibc-stock-fork-v1` 的锁定源码与工具链重新
+编译。Linux arm64 上的真实 QEMU 在候选 `3bbbf73984b95c20` 两次启动均执行 C、C++
+线程及异常、Make、日用工具和 dash `$()` 。两次替换都读取并核对既有用户文件。每次
+核对三个包的摘要和 50 个登记文件，最后从同一 FAT 读取两个程序和两份用户状态文件。
+[带 fork 的同盘客体回执](../reports/glibc_stock_fork_app_matrix_20261126/manifest.json)

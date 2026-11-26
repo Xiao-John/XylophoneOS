@@ -1,0 +1,165 @@
+{
+  "corrected_archive": {
+    "bytes": 23347200,
+    "name": "glibc-detached-source-corrected-20261127.tar",
+    "sha256": "b8400ac41091ef23678ac5021e96a973f681155ba3f3c3a4ae4b3c07ec42da2d"
+  },
+  "corrected_relink_sample": {
+    "bytes": 190709760,
+    "checked_files": 1451,
+    "name": "glibc-static-relink-materials-corrected-20261127.tar",
+    "replayed_elf_sha256": {
+      "original": "e055a9937ce11690d0dba9ecde26d86e27db9108fc44eb715411870f7e0196bb",
+      "replacement": "84a36dcabc7ecf9eed2a33b32704acd82c1ccad93a59d77674553ecc8d161666"
+    },
+    "sha256": "7fbb2df9186dc895f1920b04f2121c207145409269cb7b5443289475b1e6408a"
+  },
+  "guest": {
+    "baseline": {
+      "elf_sha256": "8c089bbe7040b64dff11ba7801195f9540890b641ea3356eb139cffa1cf6a7b8",
+      "guest_qualification": "not_run",
+      "libc_sha256": "9db3d4951889b56197fd22f4987a549e74fb7ad2a60144e1fd54ae25e1a54d8f",
+      "profile_id": "xos-x86_64-glibc-rebuilt-relink-control-v1",
+      "profile_sha256": "f39a052a95f1a7134a71760b5debd19d74f558dced4bdf0afe9b1394d6b79153",
+      "runtime_family": "glibc",
+      "sdk_manifest_sha256": "8715ae424f10f54d98b5528e57e7c70e9c1e23461dcaaebeed76fcf0bae9a7f8",
+      "sdk_tree_sha256": "83121032e3c841b61cecac63afb8a1fc26dae8e828d27c9fb1c95ffc5b1cbde8",
+      "status": "candidate_binding_verified"
+    },
+    "object_sha256": "f4f9026fc9734a689ad1888bfe426bbc9991ac83520dbb7eada9c259aa3b4d7e",
+    "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+    "replacement": {
+      "elf_sha256": "53e44919776fc66d0641fc220ec923a5947f59e05062b597c65b1cc01da10649",
+      "guest_qualification": "not_run",
+      "libc_sha256": "7562568995a391e2b75d753f2d6da04761a45c60ef81dba2a18c166867d59d8f",
+      "profile_id": "xos-x86_64-glibc-rebuilt-relink-path-v1",
+      "profile_sha256": "a14d03cc2cfe1beb374d59d5700995d5529fb191d7e9541303918bde613a171d",
+      "runtime_family": "glibc",
+      "sdk_manifest_sha256": "37db48f49f4fcce49d18dc76f9bd4e3c1e99a325fd4a4b7bb0cdb5b2abd5f936",
+      "sdk_tree_sha256": "1eb2dab200c67ae2ba15a8908555ef22bb9a31e0a636531926b313d08f6fb9eb",
+      "status": "candidate_binding_verified"
+    },
+    "resources": [
+      129793,
+      2,
+      0
+    ],
+    "runner_sha256": "24611e937e9e3ff9ccade2427f6b1002c79c408d32713531788ae4c06507633d",
+    "source_sha256": "6394e70394533240963f49b41407dc763ebcee075c0d2beb2b51459ed167fc9b",
+    "status": "passed_subset",
+    "system_build_id": "17cebdf4873d898e",
+    "system_iso_sha256": "5bdf996623c96d0ee286fbc3c32f77cc8520a4ae5612c0fa4be14f58994ee73d",
+    "system_manifest_sha256": "0f1e35f6632f21e14013f82a19d3b33d19a6fffb16d84826ac2022a95fb0a5bd"
+  },
+  "initial_failure": {
+    "compiler_diagnostic": "missing loader image_reader.hpp",
+    "libc_archive_was_built_sha256": "40729cf2e853c1d300e928d04960df8df43548c2f646f65bede1c072d1dbdaef",
+    "status": "failed_terminal_support"
+  },
+  "loader_sources": {
+    "original": {
+      "corrected_input_count": 312,
+      "loader_headers": {
+        "src/user/loader/glibc_d1/entry_stack.hpp": "77e98fcfc4782caf6209caa1508eaa63f364f11ea3a18118ee75c340e2b7838b",
+        "src/user/loader/glibc_d1/image_mapping.hpp": "d26a4527dfc6d9d44776d62c6759d36de881f9c49ae0726da448a8498ee8a7d2",
+        "src/user/loader/glibc_d1/interpreter_entry.hpp": "13f278d1c08870d5d9d1b86b4ed1162a5c2d5f4947416071859b952bb98f8f49",
+        "src/user/loader/image_reader.hpp": "e1162a6bc2cc53ddeb7174a7074981bba8e9cc024b65c48d033ff333ab8804fd"
+      },
+      "loader_source_commit": "5a828b33b8f8c4051a4e7f8175b775388b9db26b",
+      "original_input_count": 308,
+      "updated_terminal_builder_sha256": "d7a16f916379ae2b8c64bbe79d3a44aee381eb3cc346624cd80119f5a69b0447"
+    },
+    "replacement": {
+      "corrected_input_count": 320,
+      "loader_headers": {
+        "src/user/loader/glibc_d1/entry_stack.hpp": "77e98fcfc4782caf6209caa1508eaa63f364f11ea3a18118ee75c340e2b7838b",
+        "src/user/loader/glibc_d1/image_mapping.hpp": "d26a4527dfc6d9d44776d62c6759d36de881f9c49ae0726da448a8498ee8a7d2",
+        "src/user/loader/glibc_d1/interpreter_entry.hpp": "13f278d1c08870d5d9d1b86b4ed1162a5c2d5f4947416071859b952bb98f8f49",
+        "src/user/loader/image_reader.hpp": "e1162a6bc2cc53ddeb7174a7074981bba8e9cc024b65c48d033ff333ab8804fd"
+      },
+      "loader_source_commit": "ab3628db5d489b3f6025de13b78d2496a0b256b3",
+      "original_input_count": 316,
+      "updated_terminal_builder_sha256": "d7a16f916379ae2b8c64bbe79d3a44aee381eb3cc346624cd80119f5a69b0447"
+    }
+  },
+  "object_allocated_section_comparison": {
+    "original": {
+      "differing_object_counts": {
+        "alloc_nonexec": 0,
+        "exec": 0
+      },
+      "elf_object_count": 1683,
+      "examples": {
+        "alloc_nonexec": [],
+        "exec": []
+      }
+    },
+    "replacement": {
+      "differing_object_counts": {
+        "alloc_nonexec": 0,
+        "exec": 0
+      },
+      "elf_object_count": 1683,
+      "examples": {
+        "alloc_nonexec": [],
+        "exec": []
+      }
+    }
+  },
+  "rebuilds": {
+    "original": {
+      "added_global_definitions": [],
+      "input_files": 312,
+      "installed_loader_source_headers": {
+        "src/user/loader/glibc_d1/entry_stack.hpp": "77e98fcfc4782caf6209caa1508eaa63f364f11ea3a18118ee75c340e2b7838b",
+        "src/user/loader/glibc_d1/image_mapping.hpp": "d26a4527dfc6d9d44776d62c6759d36de881f9c49ae0726da448a8498ee8a7d2",
+        "src/user/loader/glibc_d1/interpreter_entry.hpp": "13f278d1c08870d5d9d1b86b4ed1162a5c2d5f4947416071859b952bb98f8f49",
+        "src/user/loader/image_reader.hpp": "e1162a6bc2cc53ddeb7174a7074981bba8e9cc024b65c48d033ff333ab8804fd"
+      },
+      "installed_sdk_files": 881,
+      "per_archive_debug_stripped_sha256": [
+        "435798a9ddc3d6f20a578b0a8f830e2bf7b7079f35904e1c203eb5c4934bea1f",
+        "5ff21a4f12076cc4c18dd4535885387b818499ce78e7cbf6bb5ed74a75365fc8"
+      ],
+      "rebuilt_libc_sha256": "9db3d4951889b56197fd22f4987a549e74fb7ad2a60144e1fd54ae25e1a54d8f",
+      "rebuilt_member_count": 1683,
+      "rebuilt_sdk_manifest_sha256": "8715ae424f10f54d98b5528e57e7c70e9c1e23461dcaaebeed76fcf0bae9a7f8",
+      "release_libc_sha256": "d3384b92df41bf714100e56d1f9a02af17fd0c07144797558134e68f10651b98",
+      "release_member_count": 1683,
+      "removed_global_definitions": [],
+      "same_debug_stripped_archive": false,
+      "same_global_definitions": true,
+      "same_member_inventory": true,
+      "same_member_order": true,
+      "source_verification": "upstream_signature_verified"
+    },
+    "replacement": {
+      "added_global_definitions": [],
+      "input_files": 320,
+      "installed_loader_source_headers": {
+        "src/user/loader/glibc_d1/entry_stack.hpp": "77e98fcfc4782caf6209caa1508eaa63f364f11ea3a18118ee75c340e2b7838b",
+        "src/user/loader/glibc_d1/image_mapping.hpp": "d26a4527dfc6d9d44776d62c6759d36de881f9c49ae0726da448a8498ee8a7d2",
+        "src/user/loader/glibc_d1/interpreter_entry.hpp": "13f278d1c08870d5d9d1b86b4ed1162a5c2d5f4947416071859b952bb98f8f49",
+        "src/user/loader/image_reader.hpp": "e1162a6bc2cc53ddeb7174a7074981bba8e9cc024b65c48d033ff333ab8804fd"
+      },
+      "installed_sdk_files": 893,
+      "per_archive_debug_stripped_sha256": [
+        "977c847e0eb6bb146f779b4ddddc6f5a287f77de5c00c7364d528239416475ba",
+        "55277a7064f791076054f5ad7799014207b2982a10ca6bc7a4054d2ed8557426"
+      ],
+      "rebuilt_libc_sha256": "7562568995a391e2b75d753f2d6da04761a45c60ef81dba2a18c166867d59d8f",
+      "rebuilt_member_count": 1683,
+      "rebuilt_sdk_manifest_sha256": "37db48f49f4fcce49d18dc76f9bd4e3c1e99a325fd4a4b7bb0cdb5b2abd5f936",
+      "release_libc_sha256": "7ee8563f97b4906e03818868cba9fef6c6e570058112e4993010d78a2fc07a1e",
+      "release_member_count": 1683,
+      "removed_global_definitions": [],
+      "same_debug_stripped_archive": false,
+      "same_global_definitions": true,
+      "same_member_inventory": true,
+      "same_member_order": true,
+      "source_verification": "upstream_signature_verified"
+    }
+  },
+  "source_repair_commit": "d25c5def8676d7ada3994ad555ea722d25cc2067",
+  "status": "passed_subset"
+}

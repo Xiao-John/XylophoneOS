@@ -1,0 +1,145 @@
+{
+  "status": "passed_subset",
+  "system": {
+    "build_id": "a63e632665045550",
+    "manifest_sha256": "bb5e8b20a96c912b1dca9f0b1188fec8fe9268bb74a25b7021e7a47778f6a43a",
+    "sdk_manifest_sha256": "95ea0cefa4d3af5a982060666619e3acda09cc286e6b0af562aa20d51b0ef587",
+    "sdk_tree_sha256": "210c82d90d268385081e956990d187ac67110c98f8b4a01893335aedeec112f3",
+    "artifacts": {
+      "xos-install.iso": "55ab7db236ef17891a103938828ed2085d995c9de37d480527de4099b0c39293",
+      "user_files.image.elf": "1e58dde4600c1517bfed20573286910a17deaa78d0a186ef1415876041c6108f",
+      "user_supervisor.image.elf": "a1c6b37389feb22950941efa255b1a7873437b190af347d086fffe1fdc877ca1",
+      "user_pumpkin_durable.image.elf": "e71128b6ef001f8eb9c8aa0b8af9ae802b20ccd1f3fefe82f650560340c1d983",
+      "user_p2_anchor_proxy.image.elf": "216f839f991873781537708d3c364894765586d35172e69bb871507c27b5278e"
+    }
+  },
+  "native_login": false,
+  "named_resources": true,
+  "runner_sha256": "a333567852b7aaa762f7407d73ba149c291ed3075e35b334f99a29ce56043ba4",
+  "boots": {
+    "cycle": {
+      "events": [
+        {
+          "read": null
+        },
+        {
+          "published": 1
+        },
+        {
+          "read": 1
+        },
+        {
+          "published": 2
+        },
+        {
+          "read": 2
+        },
+        {
+          "published": 3
+        },
+        {
+          "read": 3
+        },
+        {
+          "published": 4
+        },
+        {
+          "read": 4
+        },
+        {
+          "published": 5
+        }
+      ],
+      "input_disk_sha256": "6bec2c048774e359d45f0620a4828f8e40f95dfd10d9a811b4437fddd831fe31",
+      "qemu_version": "QEMU emulator version 11.1.2",
+      "snapshot_fence": {
+        "revision": 4,
+        "qmp_status": "paused",
+        "injected_delay_ns": 7000000000,
+        "paused_snapshot_wall_ns": 8305599792
+      },
+      "finish_code": 1,
+      "output_disk_sha256": "dac835d533496ffdc0a2247bb7d10b3ae03f85daad55dc005846e3c7157126ab",
+      "tail_sha256": "9e84b900998a15189e7208c0e93ba7215d7d6473c1cb184dee4a1e5fbee38e7c",
+      "authority_revision": 5,
+      "offline_stale_copy_sha256": "972304e66a8bec9314a98201801c84bc09a897439cbe3c87d6b1941b39981c75",
+      "status": "passed"
+    },
+    "healthy": {
+      "events": [
+        {
+          "read": 5
+        },
+        {
+          "read": 5
+        },
+        {
+          "published": 6
+        },
+        {
+          "read": 6
+        },
+        {
+          "published": 7
+        },
+        {
+          "read": 7
+        },
+        {
+          "published": 8
+        }
+      ],
+      "input_disk_sha256": "dac835d533496ffdc0a2247bb7d10b3ae03f85daad55dc005846e3c7157126ab",
+      "qemu_version": "QEMU emulator version 11.1.2",
+      "finish_code": 1,
+      "output_disk_sha256": "d3c372424e85436921bab8153a5325ac9502eb9db8501710f528ea9569ae33d9",
+      "tail_sha256": "a27191e8d0bd72dbc31bd6c142a7acceebf209b15585c91a4995abcbd22fb2ec",
+      "authority_revision": 8,
+      "status": "passed"
+    },
+    "empty": {
+      "events": [
+        {
+          "read": 8
+        },
+        {
+          "read": 8
+        },
+        {
+          "published": 9
+        }
+      ],
+      "input_disk_sha256": "d3c372424e85436921bab8153a5325ac9502eb9db8501710f528ea9569ae33d9",
+      "qemu_version": "QEMU emulator version 11.1.2",
+      "finish_code": 1,
+      "output_disk_sha256": "08cae93d0f579c8899d6c72bb8fc5b24dce5b84809f2264272182dbe65af4b7f",
+      "tail_sha256": "452d66e35cdfd162aed4d5ca3bf6548408a45cf571b5944917e98cb57d94f0a7",
+      "authority_revision": 9,
+      "status": "passed"
+    },
+    "stale": {
+      "events": [
+        {
+          "read": 9
+        }
+      ],
+      "input_disk_sha256": "972304e66a8bec9314a98201801c84bc09a897439cbe3c87d6b1941b39981c75",
+      "qemu_version": "QEMU emulator version 11.1.2",
+      "finish_code": 1,
+      "output_disk_sha256": "972304e66a8bec9314a98201801c84bc09a897439cbe3c87d6b1941b39981c75",
+      "tail_sha256": "1a13938fcedb80e622eff578b66f60ea0b58647db11490a9793736a1e625c20d",
+      "authority_revision": 9,
+      "status": "passed"
+    }
+  },
+  "checks": [
+    "ordinary_roles",
+    "initial_owner_read",
+    "cross_account_denied",
+    "same_name_replacement",
+    "stale_key_denied",
+    "restored_owner_read",
+    "invalidation_and_restart",
+    "old_disk_rejected"
+  ]
+}

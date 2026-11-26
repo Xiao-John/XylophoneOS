@@ -1,0 +1,8 @@
+--- a/nptl/lowlevellock.c
++++ b/nptl/lowlevellock.c
+@@ -19,4 +19,5 @@
+ #include <sysdep.h>
+ #include <futex-internal.h>
++#include <lowlevellock.h>
+ #include <atomic.h>
+ #include <stap-probe.h>

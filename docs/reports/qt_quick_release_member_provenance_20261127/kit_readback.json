@@ -1,0 +1,20 @@
+{
+  "host": {
+    "archives": 17,
+    "members": 823,
+    "resources": 3
+  },
+  "kit_manifest_sha256": "c3b9f48353ab96cff9dd405a694f1064b4442ceb54f9bb5781ac5de6498053d2",
+  "packaged_generators": 5,
+  "status": "passed",
+  "target": {
+    "archives": 14,
+    "members": 42,
+    "replay_matches": 8,
+    "resources": 311
+  },
+  "changed_member_digest_rejected": true,
+  "omitted_generated_member_rejected": true,
+  "changed_embedded_digest_rejected": true,
+  "input_capture": "release_provenance.json.gz"
+}

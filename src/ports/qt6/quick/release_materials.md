@@ -87,8 +87,24 @@ python3 -B src/ports/qt6/quick/stage_sdk_sources.py --kit "$KIT" \
 ## 发行范围
 
 此材料覆盖 Qt 源码、修改、来源与声明记录，以及本外部应用的静态重链接。目标静态库的
-直接编译文本与 Qt 组件归属已登记。生成资源与生成代码的传递许可、宿主静态归档内部组成、
-SDK 继承的工具链 seed 重建、最终产品的安装信息和发布方式仍按发行组成核对。
+直接编译文本、生成成员及 Qt 组件归属已登记。`audit_release_provenance.py` 生成
+`xos_qt_quick_release_provenance_v1` 清单，包括套件与早期回执摘要、生成器字节、原 Ninja
+与 CMake 记录、目标与宿主归档顺序成员、具体输入、声明和按资源路径索引的嵌入字节摘要。
+`.generation.source.present` 与 `.generation.replay.status` 分别表示留存和复演观测。
+实际复演的对象必须为 `byte_identical` 才能关联到历史归档字节。
+
+```sh
+python3 -B src/ports/qt6/quick/verify_release_provenance.py --kit "$KIT" \
+  --inventory "$PROVENANCE" --inventory-sha256 "$PROVENANCE_SHA256" \
+  --target-members "$TARGET_MEMBER_SOURCES"
+```
+
+独立核验从可搬移套件读回静态库与生成器，使用早期成员清单判断目标生成成员覆盖范围，并从
+实际 ELF 对象读取嵌入内容。`PROVENANCE_SHA256` 取已冻结证据根清单记录的 gzip 字节摘要。
+
+资源的 `declaration_evidence` 指向直接原始输入或生成链中的声明。上游预编译着色器仍缺原始
+生成器和参数，已保留嵌入字节、上游归属及同名着色器源。成品传递许可与选择的许可分支、
+SDK 继承的工具链 seed 重建、最终产品安装信息和发布方式仍按发行组成核对。
 `notices/runtime/` 标识此次链接采用的 SDK 清单与 profile。各应用分发需要自己的应用对象
 或源码及重链接材料。
 [Qt 6.8 许可说明](https://doc.qt.io/qt-6.8/licensing.html) ·

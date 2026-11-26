@@ -1,0 +1,16 @@
+{
+  "files": {
+    "binding.json": "139b9db3f8ec7de657dc31828f220d98485110a4dbf1e5f54a5611f8d41c8919",
+    "build_detached_consumer.sh": "fdec9dc50c0df385798060154b9d45317b7b2377c54d11ba5d33644701651aa7",
+    "compare_abi.py": "cff553a6727333441a30eadb9c3b4430905e5de94c4c68ebde73d74cfe90736d",
+    "guest.json": "1d01b6fa5abbdf8351ef6ef31909d3866db3c52f243bde2bd3fa7ba22f73cd13",
+    "host_abi.json": "ed55b3ff904aca5fa5d9e233f6a7ea3b50fc9266fa47d56441dde1d6ef461d44",
+    "observations.json": "85354825eb3d01a27865c303cf42fea4a5bae4adf80aad5deb31dcbfe51ed5ff",
+    "post305_original_kit.serial.log.gz": "f8cc68244881644b5da655d56c403b306a74bc8e376c6d98dc9c550f26eaffed",
+    "post305_rebuilt_c.serial.log.gz": "387f97d96824ea74cbdc9bb4ca819999c0b15e8e05c4b83075e45e68a0a291f7",
+    "post305_static.json": "425a7ce0975e09f188a0341ba02d6af76414d2aeaf00c9b3c12edbe71480c4f3",
+    "qualified.serial.log.gz": "d43c3daa0c5fd35ca979cf7d0b6d201b9cde44f49944e9c98144f1bb3bf4e59f",
+    "restricted_launch.serial.log.gz": "81e6c5980a585c92e5ca8d9fbdfebc06950dee4dbbf8433d5665e7a6bede9fd6"
+  },
+  "version": 1
+}

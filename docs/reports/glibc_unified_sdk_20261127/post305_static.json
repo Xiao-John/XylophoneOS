@@ -1,0 +1,118 @@
+{
+  "archives": {
+    "libc.a": {
+      "global_definitions": 3704,
+      "member_count": 1683,
+      "post_sha256": "2d21ba19f1c5eacd5826f81bfb099acb8f9b3496056f26b2958ef1e54ddc58cd",
+      "pre_sha256": "5c22e215d68aea22a61cede19ee92e27716eb63b817b1fc4f82ac9a5472acb8c"
+    },
+    "libgcc.a": {
+      "global_definitions": 182,
+      "member_count": 147,
+      "post_sha256": "339898e1b135d8f0d9038270b41e7d17bf9b677c415e854784db4579f60af565",
+      "pre_sha256": "339898e1b135d8f0d9038270b41e7d17bf9b677c415e854784db4579f60af565"
+    },
+    "libm.a": {
+      "global_definitions": 1915,
+      "member_count": 831,
+      "post_sha256": "bc2832e404825ac16822972bd615c2cbbf5537bd601ee24c6982de3d1f4b53c2",
+      "pre_sha256": "da7a7e8026e5cfead978de1574ed70b555105171d500091894a7b62d2ab8e35e"
+    },
+    "libxos_terminal.a": {
+      "global_definitions": 104,
+      "member_count": 10,
+      "post_sha256": "0b81c4a8e3c1e4f6c8da7c0aad4470e1e460e6761a40837d2fc9d70cd3fe9b65",
+      "pre_sha256": "52df6bf395e70853e24244011d4ab7cfc0d1e43cfaf62840d33db3e13c6d8e94"
+    }
+  },
+  "installed_c_headers": 338,
+  "installed_c_headers_equal": true,
+  "iso_sha256": "075e2be263e45aff7d9579e90994cc40b647ea61be2788573854ec30e13f9d51",
+  "merged_main": "aece996570fa23ae37d2171c8ca1a56b90926f59",
+  "new_c_cases": [
+    {
+      "case": "g2_return",
+      "expected_exit_code": 37,
+      "expected_outcome": "exited",
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "case": "g2_exit",
+      "expected_exit_code": 39,
+      "expected_outcome": "exited",
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "case": "g2_fatal_stderr",
+      "expected_exit_code": 127,
+      "expected_outcome": "exited",
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "case": "g2_ctor_order",
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "status": "passed"
+    }
+  ],
+  "new_c_programs": {
+    "g2_ctor_order": "288314589f6f2ce5f2068c128ed4c1c365656a79af67a464519ac4db12c7923e",
+    "g2_exit": "090b22288f318f6aa155b2dab972bc61c3b501242b0e0d25d6bc0d7d112b6bb0",
+    "g2_fatal_stderr": "ec27e0a2a9212cb41e18b5fec7fd83cc8fd6b5a6dc1fb3505fbe1aeccd27e06e",
+    "g2_return": "090b22288f318f6aa155b2dab972bc61c3b501242b0e0d25d6bc0d7d112b6bb0"
+  },
+  "new_c_sdk_manifest_sha256": "a946ea2c7c310cd70fa553b97155cdb2dba9bc6a0eac70220f3d41e42d633196",
+  "new_c_system_newlib_control": "passed: current-system malloc/printf/exit/resources",
+  "original_kit_resources": [
+    129806,
+    2,
+    0
+  ],
+  "original_kit_runs": [
+    "fat_setup",
+    "stock_xypm",
+    "xsh_cxx",
+    "xsh_cwd",
+    "dash_combination",
+    "xsh_cxx",
+    "xsh_cwd",
+    "dash_combination",
+    "xsh_cxx",
+    "xsh_cwd",
+    "dash_combination"
+  ],
+  "original_sdk": {
+    "guest_qualification": "not_run",
+    "profile_id": "xos-x86_64-glibc-unified-cxx-v1",
+    "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+    "runtime_family": "glibc",
+    "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+    "sdk_tree_sha256": "b5fa570d12e502295069ee2bb973586f7bcf1a8ba0dbaf6b2df5b268fe14b77c",
+    "status": "candidate_binding_verified"
+  },
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "qt_materials_main": "adfa477e607b916ecb4bbb9fa9cb96d7a1b526a1",
+  "source_snapshot_tree": "f84457f679b2e8a11eee6765cb51d62b223914a8",
+  "system_build_id": "5e426385002fc2f2",
+  "system_manifest_sha256": "7c1b90c1076f56f80ac801d36de964bfb740941945dca72ed7b8810898720274"
+}

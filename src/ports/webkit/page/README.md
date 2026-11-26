@@ -57,4 +57,24 @@ cmake --build "$WEBKIT_OUTPUT" --target WebCore
 `XOS_WEBKIT_TOOLCHAIN` 使用同一 glibc C/C++ kit 的 C/C++ 驱动和 sysroot，提供上述目标
 库的 CMake 搜索根。编译器和原生 ABI 头的布置沿用
 [JSCOnly 配置](../README.md#原生-llint-布局生成)。明确关闭 JIT、WebAssembly、采样
-及宿主动态依赖搜索。完整目标归档、客体 DOM/CSS 布局以及 Qt 视口仍待验证。
+及宿主动态依赖搜索。软件配置在生成绑定前关闭 WebGL 和 WebGPU。重用早期的
+CMakeCache 时，将 `ENABLE_WEBGL` 和 `ENABLE_WEBGPU` 两项设为 `OFF`。
+
+## 本地整页验收
+
+使用该配置生成的 WebCore 命令编译 `tests/fixtures/webkit/local_page.cpp` 和锁定
+源包的 `Source/WebCore/testing/TestPage.cpp`，补上后者所在目录的头文件搜索路径。
+将两个对象与完整 WebCore、同配置的 JavaScriptCore/WTF、PAL 和软件 Skia 等目标
+归档链接成普通 XOS 应用 `local_page.elf`。链接回执 `local_page_link.json` 保存 ELF、
+C++ 夹具、HTML、SDK manifest、SDK profile、源锁及三个软件补丁的 SHA-256。
+字段名见客体运行器的 `inputs`。
+
+```sh
+python3 tests/webkit_local_page_guest.py --target "$PAGE_OUT" --sdk-kit "$XOS_SDK_KIT" \
+  --system "$SYSTEM_OUT" --output "$GUEST_OUT"
+```
+
+夹具通过 WebCore 的测试页加载本地 HTML，检查两个 DOM 元素的 CSS 边界并调用
+`LocalFrameView::paintContents` 绘制到 CPU 位图。客体分别读回原 HTML 和只改
+叠层颜色的 HTML。第二次应到达像素检查、退出码为 11，两个进程退出后资源均须
+回到基线。完整目标归档、此门的客体结果以及 Qt 视口仍待验证。

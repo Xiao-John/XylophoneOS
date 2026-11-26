@@ -20,19 +20,26 @@
  WEBKIT_OPTION_BEGIN()
  WEBKIT_OPTION_DEFINE(ENABLE_STATIC_JSC "Whether to build JavaScriptCore as a static library." PUBLIC OFF)
  WEBKIT_OPTION_DEFINE(USE_LIBBACKTRACE "Whether to enable usage of libbacktrace." PUBLIC OFF)
-@@ -24,6 +26,11 @@
+@@ -24,6 +26,18 @@
  endif ()
  WEBKIT_OPTION_DEFINE(ENABLE_JSC_GLIB_API "Whether to enable the JavaScriptCore GLib API." PUBLIC OFF)
  WEBKIT_OPTION_DEFINE(USE_SYSTEM_UNIFDEF "Whether to use a system-provided unifdef" PRIVATE OFF)
 +
 +if (XOS_WEBCORE_SOFTWARE)
++    WEBKIT_OPTION_DEFAULT_PORT_VALUE(ENABLE_WEBGL PRIVATE OFF)
++    WEBKIT_OPTION_DEFAULT_PORT_VALUE(ENABLE_WEBGPU PRIVATE OFF)
 +    WEBKIT_OPTION_DEFAULT_PORT_VALUE(USE_SKIA PRIVATE ON)
 +    WEBKIT_OPTION_DEFAULT_PORT_VALUE(USE_SKIA_ENCODERS PRIVATE OFF)
 +endif ()
 
  WEBKIT_OPTION_END()
++
++# Keep generated bindings and the C++ platform configuration on the same feature set.
++if (XOS_WEBCORE_SOFTWARE AND (ENABLE_WEBGL OR ENABLE_WEBGPU))
++    message(FATAL_ERROR "XOS software WebCore requires ENABLE_WEBGL=OFF and ENABLE_WEBGPU=OFF")
++endif ()
 
-@@ -125,3 +132,28 @@
+@@ -125,3 +139,28 @@
          message(FATAL_ERROR "libbacktrace is required for USE_LIBBACKTRACE")
      endif ()
  endif ()

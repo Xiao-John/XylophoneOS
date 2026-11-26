@@ -44,3 +44,16 @@ WebCore 目标现在启用已绑定的 HarfBuzz，并在未启用辅助功能时
 `HTMLDocumentParser.cpp` 均生成 x86-64 目标对象，检查了 `Page` 构造、`RenderView`
 布局及绘制符号。组合对象回执单独绑定目标图、补丁、编译器和三个实际工件。完整归档、
 最终链接和客体页面按各自的验收条件继续验证。
+
+## 软件绑定与本地整页夹具
+
+宿主批量构建找到了两处实际的绑定类型错误。CMake 旧值将 WebGL 放进生成绑定的
+Canvas 联合类型，同时 C++ 配置将 WebGL 关闭。软件目标现在在绑定功能收集前关闭
+WebGL 和 WebGPU，并拒绝显式启用这两个后端。重新生成的 Canvas 绑定去掉了 WebGL
+联合成员，原先失败的两个 WebCore 编译单元均生成 x86-64 目标对象。
+
+新增的本地整页夹具及上游的 `TestPage.cpp` 都以新目标图交叉编译通过。客体运行器
+要求绑定 ELF、HTML、SDK 和软件补丁，将原 HTML 和颜色变体分别写盘后读回，检查
+真实 DOM 布局、Skia 页面像素和资源回收。已用新配置重启 2171 个 WebCore 单元的
+批量编译。完整归档、整页 ELF 链接和客体结果待验证。
+[绑定与夹具对象回执](../reports/clarke_webcore_target_graph_20261127/local_page_and_bindings.json)

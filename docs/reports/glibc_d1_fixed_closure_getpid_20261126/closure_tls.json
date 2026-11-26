@@ -1,0 +1,62 @@
+{
+  "status": "passed_subset",
+  "scope": "GNU initial rtld TLS with an authenticated DSO closure",
+  "build_id": "ac319c480d42ed5b",
+  "iso_sha256": "5c7638bd0807c28eecc97d34731765c03c54bea84d50b3037b745e7a977d7106",
+  "system_manifest_sha256": "d69e4bbb02356176d7e5a200f983e4bf3e1742411e107a3790ddaf20f7d962a4",
+  "sdk_sha256": "f7522e7d5d8e462bf22d215be1bc7de16202958b057662b5c3f54a424ab1bd18",
+  "profile_sha256": "1ed5c424eb4f76df617938b91a0e62d62f0ad79ed113750bce8ddd53d26e8595",
+  "rtld_manifest_sha256": "4fc496f60b28ae097426ce81aafc2e3ca62bfae9b722ebed2235493beeb78051",
+  "guest_elf_sha256": "33400de3c3633253d98f9f5bb2ef8e8e4f25a2c45e4ab89729875395bcef1f49",
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "runs": {
+    "exhausted": {
+      "output": "exec-file /bin/closure_tls heap-limit\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/bin/closure_tls\n[process] event=wait_blocked parent=7 child=10\r\nXOS rtld: cannot allocate initial TLS slotinfo\n[task] event=reclaimed pid=10 pages=77\r\n[wait] pid=10 kind=exited code=127\nxsh> ",
+      "resources_after": [
+        129696,
+        3,
+        1
+      ]
+    },
+    "ordinary": {
+      "output": "exec-file /bin/closure_tls\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x0000000000360000\r\n[loader] started pid=11 file=/bin/closure_tls\n[process] event=wait_blocked parent=7 child=11\r\nD1_CLOSURE_TLS_OK modules=3 dsos=2 tdata=checked tbss=zero dtv=1 tp=preserved libc_errno=checked\n[task] event=reclaimed pid=11 pages=77\r\n[wait] pid=11 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        129696,
+        3,
+        1
+      ]
+    }
+  },
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "serial_sha256": "6972516a08f8561e9d2d060dbe3efc0a1022506bc6c0431b7782817e8e6654f0",
+  "dependencies": {
+    "libtls1.so": {
+      "sha256": "a467558c473fca2d34810f4fb0d8e1fcc68646da6c5a2680bb479c4b4dcc9e07",
+      "bias": 17592188141568,
+      "bytes": 17984,
+      "span": 28672,
+      "tls_file_offset": 16448,
+      "tls_vaddr": 24640,
+      "tls_file_bytes": 3,
+      "tls_memory_bytes": 145,
+      "tls_alignment": 64
+    },
+    "libtls2.so": {
+      "sha256": "90800c42c6083a94eaf5b53816ae12a5aa6069c949e99066d46fba0766189980",
+      "bias": 26389352808448,
+      "bytes": 18176,
+      "span": 28672,
+      "tls_file_offset": 16640,
+      "tls_vaddr": 24832,
+      "tls_file_bytes": 3,
+      "tls_memory_bytes": 145,
+      "tls_alignment": 256
+    }
+  },
+  "shared_interpreter_executed": false,
+  "shared_libc_leaf_scope": "link-time resolved errno"
+}

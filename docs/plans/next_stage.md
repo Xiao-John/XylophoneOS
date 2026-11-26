@@ -88,3 +88,56 @@ Pumpkin FAT 导入和多账户验收补齐，D1 映射器和私有 DNS 诊断已
 运行时重定位、受信部署的 Pumpkin 代际与凭据、ClarkE 的 WebCore 与网络组合，
 并保持 SDK 切换与回退的独立验证。
 [普通镜像复验](../work_log/1c7f9abb_next_stage_mainline_replay.md)
+
+
+`9ed4428d` 已含 Pumpkin 持久登录的 Mobius 会话、ClarkE 真实 HTML 分词和 Skia 软件栅格。
+前者验证两帧桌面、注销、持久吊销与旧登录回归，在线管理员撤销和部署凭据仍待验收。
+后者验证确定像素、FAT 输入绑定和资源回收，完整 DOM、CSS 布局及 Qt 视口仍待组合。
+[Mobius 会话](../work_log/242820a4_pumpkin_mobius_session.md) ·
+[Skia 栅格](../work_log/4cc10377_clarke_skia_raster.md)
+
+显式 glibc stock 候选 `7f88e4f9070640c2` 已验首个 dash 子进程、空盘自动安装和 13 个
+日用工具的重启与卸载。同盘外部应用组合在两次启动中运行 C、C++、GNU Make 和日用
+工具。首轮真实 dash 因预览版拒绝命令替换而退出，首次失败保留。组合复测确认文件
+持久化与回读，默认切换仍需命令替换、存量应用、升级及冻结 newlib 回退的独立证据。
+[安装 PR #288](https://github.com/Xiao-John/XylophoneOS/pull/288) ·
+[应用组合 PR #289](https://github.com/Xiao-John/XylophoneOS/pull/289)
+
+主线 `2a89b08f` 含明确选择的 xsh/dash 安装网络配置和 D1 早期堆。静态网络候选实测
+两种 Shell、四次页面绘制、TLS 关闭、资源回收及普通镜像对照。生产 DHCP 和 CA 仍待验。
+签名 C SDK 重建后的 D1 检查覆盖空和固定依赖、缺失堆计划拒绝及内存回收。首线程 TLS
+继续在该主线上复验，完整共享解释器和共享 libc 仍须完成实际启动。
+[网络合成回执](../work_log/cdd9b996_network_shell_post287.md) ·
+[D1 早期堆](../work_log/336f6cd9_glibc_d1_early_heap_combination.md)
+
+`31dae7e2` 纳入 glibc dash 的原生单线程 fork、GNU rtld 首线程 TLS 和可搬移 Qt Quick
+工具包。Qt 工具包在断网 Linux arm64 环境移位并重建外部应用，在同一普通镜像经两种
+Shell 输出相同实际帧。正式分发和静态重链接仍按许可范围验收。
+[Qt 工具包](../work_log/870aabad_qt_quick_relocatable_kit.md) ·
+[dash fork](../work_log/8d9ffeae_glibc_dash_fork.md) ·
+[首线程 TLS](../work_log/c4997306_glibc_d1_initial_thread_tls.md)
+
+主线 `d7c56292` 已纳入同一签名 C/C++ kit 的 stock 安装和应用组合。`3bbbf73984b95c20`
+从空盘安装到可用 shell 为 170.801 秒，13 项日用工具、卸载和用户数据保留均通过。
+同盘两次客体启动运行 C、C++、GNU Make、日用工具和命令替换。各次核对三个包及
+50 个登记文件。SDK 默认切换还需独立的跨启动升级、许可与回退材料验收。
+[安装回执](../work_log/843260b2_glibc_stock_installer.md) ·
+[应用组合](../work_log/cc71c241_glibc_stock_apps.md)
+
+主线 `6bd530bf` 纳入 ClarkE 的 Skia 原生定位读取补齐和 Pumpkin 的 Mobius 活动会话
+管理员吊销。ClarkE 合成普通镜像 `0b924a05c940fbe0` 验证真实 FAT 字体、确定像素、
+EOF、偏移边界、缺失文件及资源回收。Pumpkin 基于安装器/应用组合重建桌面和无桌面配置，
+通过 8 项和 13 项检查，覆盖注销、活动吊销、已吊销会话拒用和资源回收。生产初始账户
+发放应验证独立代际、空状态、不当操作者拒绝及跨重启持久化。完整 WebCore 页面和 Qt
+视口需在独立用户进程组合验收。
+[ClarkE 字体流](../work_log/e55d60c9_clarke_skia_file_stream.md) ·
+[Pumpkin 会话撤销](../work_log/7d205c98_pumpkin_verified_desktop_snapshot.md)
+
+`bbf38ffb` 记录 QEMU 三次冷启动的冻结回退，顺序为原 v0.0.1-1024、签名 glibc 候选、
+原 v0.0.1-1024。glibc 阶段使用单独 FAT 盘，原盘摘要保持一致。两次旧系统均运行字节
+一致的冻结 XPK，回退后读回原用户数据，三项跨 profile 操作均拒绝。
+[冻结 newlib 回退](../work_log/4ffa226d_glibc_stock_fork_frozen_rollback.md)
+
+从 `bbf38ffb` 重建普通镜像 `e8b6babe05cb7a3e`，79 项常规客体检查、10 项许可材料和
+ABI 表通过。普通配置验证与各专项配置的独立回执共同构成当前整合证据。
+[常规组合](../work_log/bbf38ffb_next_stage_combined.md)

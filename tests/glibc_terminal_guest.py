@@ -152,6 +152,22 @@ def main():
             if b'GLIBC_TERMINAL_WARMUP_PASS' not in warmup or re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)',warmup)!=[b'0']:
                 raise RuntimeError('authorized terminal warmup failed: '+repr(warmup))
             baseline=resources(guest);report['baseline_with_service']=baseline
+            start=len(guest.output)
+            send_bytes(guest,b'tty-run /bin/terminal_probe select\r')
+            for marker,value in ((b'GLIBC_TERMINAL_SELECT_FINITE_READY',b'A'),
+                                 (b'GLIBC_TERMINAL_SELECT_INFINITE_READY',b'B')):
+                guest.expect(marker,start=start,timeout=60)
+                pump(guest,0.05)
+                send_bytes(guest,value)
+            guest.expect(b'kind=exited code=',start=start,timeout=60)
+            guest.expect(b'xsh> ',start=start,timeout=30)
+            captured=bytes(guest.output[start:])
+            if b'GLIBC_TERMINAL_SELECT_PASS' not in captured or re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)',captured)!=[b'0']:
+                raise RuntimeError('terminal select failed: '+repr(captured))
+            after=resources(guest)
+            if after!=baseline:raise RuntimeError('terminal select resource drift: '+repr((baseline,after)))
+            report['runs'].append({'case':'terminal_select','status':'passed','resources':after,
+                                   'output':captured.decode(errors='replace')})
             for repetition in range(args.repetitions):
                 observation=observations[repetition]
                 start=len(guest.output)

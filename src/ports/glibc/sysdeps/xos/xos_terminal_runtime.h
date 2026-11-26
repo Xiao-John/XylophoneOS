@@ -25,8 +25,13 @@ long __xos_terminal_get_mode (struct xos_terminal_mode *)
   __attribute__ ((visibility ("hidden")));
 long __xos_terminal_set_mode (const struct xos_terminal_mode *, unsigned int)
   __attribute__ ((visibility ("hidden")));
+long __xos_terminal_wait_readable (xos_u64)
+  __attribute__ ((visibility ("hidden")));
 long __xos_terminal_drain (void) __attribute__ ((visibility ("hidden")));
 long __xos_terminal_flush_input (void) __attribute__ ((visibility ("hidden")));
+
+long __xos_terminal_fd_readable (int, xos_u64)
+  __attribute__ ((visibility ("hidden")));
 
 long __xos_terminal_tcgetattr (int, struct termios *)
   __attribute__ ((visibility ("hidden")));

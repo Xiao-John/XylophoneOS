@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
+#include <sys/select.h>
 #include <sys/stat.h>
 #include <termios.h>
 #include <time.h>
@@ -91,6 +92,53 @@ static void mode_check(int fd,struct termios *value) {
     CHECK(value->c_cflag==(CS8|CREAD|CLOCAL) && cfgetispeed(value)==B115200 && cfgetospeed(value)==B115200);
 }
 
+static int select_read(int fd, struct timeval *timeout) {
+    fd_set ready;
+    FD_ZERO(&ready); FD_SET(fd,&ready);
+    int count=select(fd+1,&ready,NULL,NULL,timeout);
+    CHECK(count==0 || count==1);
+    CHECK(!!FD_ISSET(fd,&ready)==count);
+    return count;
+}
+
+static void select_probe(void) {
+    struct timeval immediate={0,0}, bounded={0,70000}, arrival={5,0};
+    int alias=dup(0); CHECK(alias==3);
+    CHECK(select_read(0,&immediate)==0);
+    long long start=monotonic();
+    CHECK(select_read(alias,&bounded)==0 && bounded.tv_sec==0 && bounded.tv_usec==70000);
+    long long elapsed=monotonic()-start;
+    CHECK(elapsed>=70000000LL && elapsed<2000000000LL);
+    fd_set descriptors;
+    FD_ZERO(&descriptors); FD_SET(0,&descriptors); FD_SET(alias,&descriptors);
+    CHECK(select(alias+1,&descriptors,NULL,NULL,&immediate)==-1 && errno==ENOTSUP);
+    CHECK(FD_ISSET(0,&descriptors) && FD_ISSET(alias,&descriptors));
+    FD_CLR(alias,&descriptors);
+    CHECK(select(1,NULL,&descriptors,NULL,&immediate)==-1 && errno==ENOTSUP);
+    CHECK(select(1,NULL,NULL,&descriptors,&immediate)==-1 && errno==ENOTSUP);
+    CHECK(select(0,NULL,NULL,NULL,&immediate)==-1 && errno==ENOTSUP);
+    struct timeval invalid={0,1000000};
+    CHECK(select(1,&descriptors,NULL,NULL,&invalid)==-1 && errno==EINVAL);
+    CHECK(select(FD_SETSIZE+1,&descriptors,NULL,NULL,NULL)==-1 && errno==EINVAL);
+
+    int ordinary=open("/g3_select_file",O_RDWR|O_CREAT|O_TRUNC,0600); CHECK(ordinary==4);
+    CHECK(write(ordinary,"file",4)==4 && lseek(ordinary,0,SEEK_SET)==0);
+    FD_ZERO(&descriptors); FD_SET(ordinary,&descriptors);
+    CHECK(select(ordinary+1,&descriptors,NULL,NULL,&immediate)==-1 && errno==ENOTSUP);
+    CHECK(close(ordinary)==0 && unlink("/g3_select_file")==0);
+    CHECK(select(ordinary+1,&descriptors,NULL,NULL,&immediate)==-1 && errno==EBADF);
+
+    text("GLIBC_TERMINAL_SELECT_FINITE_READY\n");
+    CHECK(select_read(alias,&arrival)==1 && arrival.tv_sec==5 && arrival.tv_usec==0);
+    CHECK(select_read(0,&immediate)==1 && select_read(alias,&immediate)==1);
+    char byte=0;
+    CHECK(read(0,&byte,1)==1 && byte=='A' && select_read(alias,&immediate)==0);
+    text("GLIBC_TERMINAL_SELECT_INFINITE_READY\n");
+    CHECK(select_read(alias,NULL)==1 && read(alias,&byte,1)==1 && byte=='B');
+    CHECK(close(alias)==0);
+    text("GLIBC_TERMINAL_SELECT_PASS\n");
+}
+
 int main(int argc,char **argv) {
     struct termios value,original;
     if(argc>1 && !strcmp(argv[1],"inherited")) {
@@ -108,6 +156,7 @@ int main(int argc,char **argv) {
     struct stat info;CHECK(fstat(0,&info)==0 && S_ISCHR(info.st_mode));
     mode_check(0,&value);CHECK(value.c_cc[VMIN]==1 && value.c_cc[VTIME]==0);
     if(argc>1 && !strcmp(argv[1],"warmup")) { text("GLIBC_TERMINAL_WARMUP_PASS\n");return 0; }
+    if(argc==2 && !strcmp(argv[1],"select")) { select_probe();return 0; }
     CHECK(argc==3 && strlen(argv[2])==32);
     original=value;value.c_lflag=ICANON;
     errno=0;CHECK(tcsetattr(0,TCSANOW,&value)==-1 && errno==ENOTSUP);

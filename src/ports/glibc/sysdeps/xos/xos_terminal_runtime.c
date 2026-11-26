@@ -90,3 +90,15 @@ __xos_terminal_tcflush (int fd, int queue)
   (void) __xos_file_lease_release (&lease);
   return result;
 }
+
+long
+__xos_terminal_fd_readable (int fd, xos_u64 deadline)
+{
+  struct xos_file_lease lease;
+  long result = __xos_file_lease_acquire (fd, 0, &lease);
+  if (result < 0) return result;
+  result = lease.kind == xos_file_kind_terminal
+    ? __xos_terminal_wait_readable (deadline) : -ENOTSUP;
+  (void) __xos_file_lease_release (&lease);
+  return result;
+}

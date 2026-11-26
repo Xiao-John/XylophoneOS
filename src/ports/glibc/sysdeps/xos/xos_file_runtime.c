@@ -43,6 +43,8 @@ static struct xos_file_request request;
 static struct xos_file_response response;
 enum { file_stat = 3, file_open = 4, file_fstat = 18, file_anonymous = 21,
        file_anonymous_seal = 22, file_cwd_get = 27 };
+enum { pipe_create = 30, pipe_read = 31, pipe_write = 32, pipe_close = 33,
+       pipe_wait = 54, pipe_token_min = 65536, pipe_capacity = 4096 };
 /* The files service reserves this identity for its synthetic /dev namespace. */
 enum { file_device_directory_inode = 0xfffe };
 
@@ -349,7 +351,7 @@ restore_descriptors (const struct xos_file_startup *startup, int terminal_startu
           || (item->kind == kind_kernel && item->handle > 2)
           || (item->kind == kind_file && item->handle == 0)
           || ((item->kind == kind_pipe_read || item->kind == kind_pipe_write)
-              && item->handle < 65536)
+              && item->handle < pipe_token_min)
           || (item->kind == kind_terminal && (item->handle != 0
               || item->fd == ~(xos_u32) 0 || !terminal_startup))
           || (item->fd != ~(xos_u32) 0 && item->fd >= fd_limit))
@@ -517,13 +519,19 @@ free_descriptor (int minimum)
   return -1;
 }
 
+static int
+free_object (int minimum)
+{
+  for (int i = minimum; i < object_limit; ++i)
+    if (objects[i].references == 0) return i;
+  return -1;
+}
+
 static long
 open_file (const char *path, int flags, unsigned int operation)
 {
   if (!valid_flags ((unsigned int) flags)) return -EINVAL;
-  int fd = free_descriptor (0), index = -1;
-  for (int i = 0; i < object_limit; ++i)
-    if (objects[i].references == 0) { index = i; break; }
+  int fd = free_descriptor (0), index = free_object (0);
   if (fd < 0 || index < 0) return -EMFILE;
   memset (&request, 0, sizeof (request));
   if (operation == file_open)
@@ -598,6 +606,55 @@ __xos_file_seal_anonymous (int fd)
   return result;
 }
 
+long
+__xos_file_pipe (int output[2], int flags)
+{
+  if (output == 0) return -EFAULT;
+  if ((flags & ~(O_CLOEXEC | O_NONBLOCK)) != 0) return -EINVAL;
+  int error = begin ();
+  if (error != 0) return error;
+
+  /* Reserve two of each in the same locked transaction. Native allocation
+     begins only after local capacity has been checked. */
+  int reader = free_descriptor (0);
+  int writer = reader < 0 ? -1 : free_descriptor (reader + 1);
+  int read_object = free_object (0);
+  int write_object = read_object < 0 ? -1 : free_object (read_object + 1);
+  long result = -EMFILE;
+  if (writer >= 0 && write_object >= 0)
+    {
+      xos_u32 tokens[2] = { 0, 0 };
+      long created = file_trap (pipe_create, (xos_u64) tokens, 0, 0);
+      if (created < 0)
+        result = created == -5 ? -ENFILE : kernel_error (created);
+      else if (created != 0 || tokens[0] < pipe_token_min
+               || tokens[1] < pipe_token_min || tokens[0] == tokens[1])
+        {
+          if (tokens[0] >= pipe_token_min)
+            (void) file_trap (pipe_close, tokens[0], 0, 0);
+          if (tokens[1] >= pipe_token_min && tokens[1] != tokens[0])
+            (void) file_trap (pipe_close, tokens[1], 0, 0);
+          result = -EIO;
+        }
+      else
+        {
+          unsigned int status = (unsigned int) flags & O_NONBLOCK;
+          unsigned int close_on_exec = (flags & O_CLOEXEC) != 0;
+          objects[read_object] = (struct open_object) {
+            kind_pipe_read, tokens[0], status | O_RDONLY, 1 };
+          objects[write_object] = (struct open_object) {
+            kind_pipe_write, tokens[1], status | O_WRONLY, 1 };
+          descriptors[reader] = (struct fd_slot) { read_object, close_on_exec };
+          descriptors[writer] = (struct fd_slot) { write_object, close_on_exec };
+          output[0] = reader;
+          output[1] = writer;
+          result = 0;
+        }
+    }
+  unlock_session ();
+  return result;
+}
+
 static long
 close_object (int index)
 {
@@ -612,7 +669,7 @@ close_object (int index)
       if (result == 0 && response.length != 0) result = session_fault (EIO);
     }
   else if (object->kind == kind_terminal) result = __xos_terminal_close ();
-  else result = kernel_error (file_trap (object->kind == kind_kernel ? 13 : 33,
+  else result = kernel_error (file_trap (object->kind == kind_kernel ? 13 : pipe_close,
                                         object->handle, 0, 0));
   /* The FD has already been removed. A close error must never make retry
      accidentally close a later FD that reused its number. */
@@ -692,28 +749,34 @@ stream_io (struct open_object object, void *buffer, size_t length, int writing)
     && file_trap (34, 0, object.handle, 0) == 1;
   if (writing && console && length > 256) length = 256;
   const unsigned int number = object.kind == kind_kernel ? (writing ? 11 : 12)
-    : (writing ? 32 : 31);
-  const int atomic_write = writing && !console && length <= 4096;
+    : (writing ? pipe_write : pipe_read);
+  const int atomic_write = writing && !console && length <= pipe_capacity;
+  const int blocking_pipe_write = writing && !console && !(object.flags & O_NONBLOCK);
   const xos_u64 handle = object.handle | (atomic_write ? 1ULL << 63 : 0);
+  size_t done = 0;
   for (;;)
     {
-      long result = file_trap (number, handle, (xos_u64) buffer, length);
+      long result = file_trap (number, handle, (xos_u64) ((unsigned char *) buffer + done),
+                               length - done);
       if (result >= 0)
         {
-          if ((size_t) result > length) return -EIO;
+          if ((size_t) result > length - done) return -EIO;
           if (!writing && console)
             {
               unsigned char *bytes = buffer;
               for (long i = 0; i < result; ++i)
                 if (bytes[i] == '\r') bytes[i] = '\n';
             }
-          return result;
+          done += (size_t) result;
+          if (!blocking_pipe_write || done == length || result == 0) return (long) done;
+          continue;
         }
-      if (result != -3 || (object.flags & O_NONBLOCK)) return kernel_error (result);
+      if (result != -3 || (object.flags & O_NONBLOCK))
+        return done != 0 ? (long) done : kernel_error (result);
       if (!console)
         {
-          result = file_trap (54, object.handle, atomic_write ? length : writing ? 1 : 0, 0);
-          if (result < 0) return kernel_error (result);
+          result = file_trap (pipe_wait, object.handle, atomic_write ? length : writing ? 1 : 0, 0);
+          if (result < 0) return done != 0 ? (long) done : kernel_error (result);
         }
       else
         {

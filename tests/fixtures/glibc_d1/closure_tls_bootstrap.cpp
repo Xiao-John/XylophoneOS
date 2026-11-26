@@ -128,7 +128,7 @@ u32 inherited_input(const startup_info* startup) {
 }
 
 #ifdef D1_LIBC_HANDOFF
-extern "C" [[noreturn]] void d1_run_libc_handoff(u64, xos_rtld_images*, u32, u32, int);
+extern "C" [[noreturn]] void d1_run_libc_handoff(u64, u64, xos_rtld_images*, u32, u32, int);
 #else
 extern "C" [[noreturn]] void d1_run_closure_tls(u64, u64, int);
 #endif
@@ -155,8 +155,8 @@ extern "C" [[noreturn]] void __xos_glibc_start(const startup_info* startup, void
     state.plan = &plan;
 #ifdef D1_LIBC_HANDOFF
     const u32 native_input = inherited_input(startup);
-    const auto* images = &dependencies[wrong_version ? 1 : 0];
-    const auto* images_end = images + 1;
+    const auto* images = &dependencies[wrong_version ? 2 : 0];
+    const auto* images_end = images + 2;
     state.request.operation = static_cast<xos_file_u16>(file::op::read);
     state.request.handle = native_input;
     state.request.length = 4;
@@ -190,8 +190,8 @@ extern "C" [[noreturn]] void __xos_glibc_start(const startup_info* startup, void
     if (__xos_rtld_attach_images(&state) != 0) { fail("authenticated startup session"); }
 
     const auto first = verify_map(images[0], 70);
+    const auto second = verify_map(images[1], 71);
 #ifndef D1_LIBC_HANDOFF
-    const auto second = verify_map(dependencies[1], 71);
     if (__xos_rtld_finish_images(&state) != 0) { fail("finish authenticated pin phase"); }
 #endif
 
@@ -201,7 +201,7 @@ extern "C" [[noreturn]] void __xos_glibc_start(const startup_info* startup, void
             != static_cast<i64>(heap.base)
         || __xos_rtld_heap_begin(&heap) != 0) { fail("bounded private heap"); }
 #ifdef D1_LIBC_HANDOFF
-    d1_run_libc_handoff(first.bias, &state, startup->version, native_input, wrong_version);
+    d1_run_libc_handoff(first.bias, second.bias, &state, startup->version, native_input, wrong_version);
 #else
     d1_run_closure_tls(first.bias, second.bias, exhausted);
 #endif

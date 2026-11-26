@@ -31,8 +31,9 @@ GNU_SUPPORT = (*SUPPORT[:-2], *RELOCATION_SUPPORT, 'elf/xos_rtld_libc_handoff.os
                'elf/dl-lookup-direct.os', 'elf/dl-version.os', 'string/rtld-strncmp.os',
                'elf/d1-libc-handoff-fixture.o')
 CASES = {
-    'spawn': b'D1_LIBC_HANDOFF_OK native=v2 inherited=EFGH sequence=continuous',
-    'exec': b'D1_LIBC_HANDOFF_OK native=v3 inherited=EFGH alias=shared cloexec=closed sequence=continuous',
+    'spawn': b'D1_LIBC_HANDOFF_OK native=v2 inherited=EFGH sequence=continuous consumer=dt_needed',
+    'exec': (b'D1_LIBC_HANDOFF_OK native=v3 inherited=EFGH alias=shared cloexec=closed '
+             b'sequence=continuous consumer=dt_needed'),
     'version': b'D1_LIBC_HANDOFF_REFUSED version=checked files=early',
 }
 
@@ -84,9 +85,17 @@ def build(args, report, rtld):
     report['components'] = {}
     images = []
     with (output / 'closure_tls_plan.hpp').open('x') as plan:
+        def record_image(role, image, bias, **fields):
+            image_info = describe(image, role, bias, StringIO())
+            image_info.update(bias=bias, **fields)
+            report['components'][role] = image_info
+            octets = ','.join(hex(octet) for octet in bytes.fromhex(image_info['sha256']))
+            plan.write(f'static constexpr u8 {role}_digest[] = {{{octets}}};\n')
+            images.append(image)
+
         for role, file_name in (('private', 'libg3.so'), ('wrong', 'libg3-old.so')):
             script = output / (role + '.map')
-            replacement = 'd1_handoff_sequence; __errno_location;'
+            replacement = 'd1_handoff_sequence;'
             if role == 'private':
                 replacement += ' ' + symbol
             script.write_text(version_map.replace(symbol, replacement) + (
@@ -100,22 +109,38 @@ def build(args, report, rtld):
             info = run('inspect_' + role, 'readelf', '-hW', '-lW', '-dW', '-rW', '--dyn-syms', image)
             version = 'GLIBC_PRIVATE' if role == 'private' else 'D1_OLD'
             assert '__xos_file_adopt_startup@@' + version in info and 'd1_handoff_sequence@@GLIBC_PRIVATE' in info
-            assert '__errno_location@@GLIBC_PRIVATE' in info
-            assert all(name + '@@GLIBC_2.44' in info for name in ('read', 'close'))
+            assert all(name + '@@GLIBC_2.44' in info for name in ('read', 'close', '__errno_location'))
             assert all(tag not in info for tag in ('(NEEDED)', '(TEXTREL)', '(RPATH)', '(RUNPATH)'))
             relocs = set(re.findall(r'R_X86_64_\w+', info))
             assert 'R_X86_64_TPOFF64' in relocs and relocs <= {'R_X86_64_TPOFF64', 'R_X86_64_RELATIVE'}
-            bias = 0x140040000000
-            image_info = describe(image, role, bias, StringIO())
-            image_info.update(version=version, relocations=sorted(relocs))
-            report['components'][role] = image_info
-            octets = ','.join(hex(octet) for octet in bytes.fromhex(image_info['sha256']))
-            plan.write(f'static constexpr u8 {role}_digest[] = {{{octets}}};\n')
-            images.append(image)
+            record_image(role, image, 0x140040000000, version=version, relocations=sorted(relocs))
+
+        consumer, consumer_obj = output / 'g3-user.so', output / 'g3-user.o'
+        run('compile_consumer', 'gcc', *cxx_flags[:3], '-std=gnu11', '-O2', '-mno-red-zone',
+            '-fPIC', '-ffreestanding', '-fno-builtin', '-fno-stack-protector', '-Wall', '-Wextra', '-Werror',
+            '-isystem', sysroot / 'usr/include', '-isystem', lib / 'compiler-include',
+            '-c', FIXTURES / 'libc_handoff_consumer.c', '-o', consumer_obj)
+        run('link_consumer', 'ld', '-shared', '-e', 'd1_consumer_read_close', '-soname', consumer.name,
+            '-z', 'defs', '-z', 'relro', '-z', 'now', '-z', 'noexecstack', '-z', 'max-page-size=8192',
+            '-z', 'common-page-size=4096', '-z', 'separate-code', '--build-id=none',
+            '-o', consumer, consumer_obj, images[0])
+        info = run('inspect_consumer', 'readelf', '-hW', '-lW', '-dW', '-rW', '--version-info', consumer)
+        needed = re.findall(r'\(NEEDED\).*Shared library: \[([^\]]+)\]', info)
+        imports = sorted(re.findall(r'R_X86_64_JUMP_SLOT\s+[0-9a-f]+\s+(\w+@GLIBC_2\.44)', info))
+        assert needed == ['libg3.so'] and imports == ['__errno_location@GLIBC_2.44', 'close@GLIBC_2.44',
+                                                      'read@GLIBC_2.44']
+        assert 'BIND_NOW' in info and 'GNU_RELRO' in info
+        assert all(tag not in info for tag in ('(TEXTREL)', '(RPATH)', '(RUNPATH)'))
+        record_image('consumer', consumer, 0x140060000000, needed=needed, imports=imports,
+                     relocations=['R_X86_64_JUMP_SLOT'])
+
         plan.write('static constexpr dependency dependencies[] = {\n')
-        for role, image in zip(('private', 'wrong'), images):
-            plan.write(f'    {{"/tests/{image.name}", "libg3.so", 0x140040000000ULL, '
-                       f'{image.stat().st_size}, {report["components"][role]["span"]}, {role}_digest}},\n')
+        for role, image in (('private', images[0]), ('consumer', consumer),
+                            ('wrong', images[1]), ('consumer', consumer)):
+            image_info = report['components'][role]
+            soname = consumer.name if role == 'consumer' else 'libg3.so'
+            plan.write(f'    {{"/tests/{image.name}", "{soname}", {image_info["bias"]:#x}ULL, '
+                       f'{image.stat().st_size}, {image_info["span"]}, {role}_digest}},\n')
         plan.write('};\n')
 
     early, state, elf = (output / name for name in ('early.o', 'rtld-local-entry.o', 'd1_libc_handoff.elf'))
@@ -143,7 +168,7 @@ def exercise(args, report, inputs):
     (output / 'cleanup').write_bytes(b'close on exec')
     (output / 'spawn.sh').write_text('/usr/bin/d1_libc_handoff ordinary < /tests/input\n')
     (output / 'version.sh').write_text('/usr/bin/d1_libc_handoff wrong-version < /tests/input\n'
-                                      'rc=$?\ntrue >> /tests/libg3-old.so || exit 71\n'
+                                      'rc=$?\ntrue >> /tests/libg3-old.so && true >> /tests/g3-user.so || exit 71\n'
                                       'printf "D1_LIBC_REFUSAL_PIN=reopened\\n"\nexit "$rc"\n')
     with tempfile.TemporaryDirectory(prefix='xos_d1_libc_handoff_') as temporary:
         disk = Path(temporary) / 'work.img'

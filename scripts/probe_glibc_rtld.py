@@ -307,6 +307,9 @@ def main():
             private_version = version_text.partition('GLIBC_PRIVATE {')[2].partition('}')[0]
             if '__xos_file_adopt_startup;' not in private_version:
                 raise RuntimeError('GNU libc version map has no private file startup receiver')
+            public_version = version_text.partition('GLIBC_2.44 {')[2].partition('}')[0]
+            if '__errno_location;' not in public_version:
+                raise RuntimeError('GNU libc version map is missing the XOS errno accessor')
             tls_objects.append(version_map)
             for relative in LIBC_HANDOFF_COMPONENT_OBJECTS[:4] + ('nptl/xos_wait_word.os',):
                 path = build / relative

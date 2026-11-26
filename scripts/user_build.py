@@ -17,7 +17,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                 files_private_storage_probe=False, files_private_client_probe=False, pumpkin_durable_probe=False,
                 pumpkin_anchored_probe=False, pumpkin_native_login=False, pumpkin_user_login=False,
                 pumpkin_user_resource=False, pumpkin_named_resource_store=False,
-                quiet_demos_on_launch=False, net_dns_probe=False):
+                quiet_demos_on_launch=False, net_dns_probe=False, pumpkin_mobius=False):
     capture = capture_build(build, build_id, 'xos-source-declarations')
     sdk = build / "sdk"
     if sdk.is_symlink():
@@ -95,6 +95,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
     login_flags = ("-DXOS_PUMPKIN_NATIVE_LOGIN=1",) if pumpkin_native_login else ()
     if pumpkin_user_login:
         login_flags += ("-DXOS_PUMPKIN_USER_LOGIN=1",)
+    if pumpkin_mobius:
+        login_flags += ("-DXOS_PUMPKIN_MOBIUS=1", "-I", str(build))
     if pumpkin_user_resource:
         login_flags += ("-DXOS_PUMPKIN_USER_RESOURCE=1", "-DXOS_PUMPKIN_RESOURCE_BRIDGE=1")
     if pumpkin_named_resource_store:

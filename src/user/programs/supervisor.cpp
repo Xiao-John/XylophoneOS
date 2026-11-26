@@ -26,6 +26,9 @@
 #if XOS_PUMPKIN_NATIVE_LOGIN
 #include "../pumpkin/native_login.hpp"
 #endif
+#if XOS_PUMPKIN_MOBIUS
+#include "pumpkin_desktop_binding.hpp"
+#endif
 #endif
 
 namespace {
@@ -1103,8 +1106,15 @@ extern "C" int xos_user_main(const xos::startup_info*) {
 #if XOS_PUMPKIN_USER_RESOURCE
     broker = image_named(user::pumpkin::native_login::broker_image_name);
 #endif
+#if XOS_PUMPKIN_MOBIUS
+    const user::pumpkin::native_login::desktop_session desktop{
+        image_named("display"), image_named("interactiumd"), pumpkin_mobius_executable};
+    return user::pumpkin::durable_probe::run_anchored(image_named("pumpkin_durable"),
+        image_named("p2_anchor_proxy"), private_storage_grant, holder, broker, &desktop);
+#else
     return user::pumpkin::durable_probe::run_anchored(image_named("pumpkin_durable"),
         image_named("p2_anchor_proxy"), private_storage_grant, holder, broker);
+#endif
 #endif
     // Bootstrap installation must not run when marker inspection or guard
     // establishment fails; doing so could modify a disk awaiting recovery.

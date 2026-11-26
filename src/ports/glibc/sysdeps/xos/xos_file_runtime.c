@@ -161,7 +161,8 @@ restore_descriptors (const struct xos_file_startup *startup, int terminal_startu
   const struct xos_file_startup_exec *exec = (const void *) ((const char *) startup + 152);
   if (!valid_startup_range ((xos_u64) exec, sizeof (*exec))
       || exec->magic != 0x335845534f585546ULL || exec->reserved != 0
-      || exec->count > fd_limit || (exec->descriptors & 7) != 0
+      || exec->count > fd_limit
+      || exec->descriptors % _Alignof (struct xos_file_startup_descriptor) != 0
       || !valid_startup_range (exec->descriptors,
                               (xos_u64) exec->count * sizeof (struct xos_file_startup_descriptor)))
     return -EINVAL;

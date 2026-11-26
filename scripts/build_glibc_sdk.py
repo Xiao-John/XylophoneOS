@@ -192,7 +192,8 @@ def main():
             shutil.copyfile(origin, libdir / name)
             report['compiler_runtime'][name] = {'path': str(origin),
                                                  'sha256': sha(origin)}
-        for stem, source_name in [('xos_start', 'start.S'), ('xos_start_c', 'start.c')]:
+        for stem, source_name in [('xos_start', 'start.S'), ('xos_start_c', 'start.c'),
+                                  ('xos_stdio_receiver', 'stdio_receiver.c')]:
             run('crt-' + stem, [env['CC'], '-O2', '-g', '-mno-red-zone', '-fno-pie',
                                '-fno-stack-protector', '-fno-builtin', '-nostdinc',
                                '-isystem', str(sysroot / 'usr/include'),

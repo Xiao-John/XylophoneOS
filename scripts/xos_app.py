@@ -130,6 +130,8 @@ def build_glibc(project, value, sdk, profile, bound, inputs, output):
             cmd += ['--include-dir', str(source_root / 'src')]
         if value['language'] == 'cpp':
             cmd.append('--cxx')
+        if 'stdio_transfer' in value['required_features']:
+            cmd.append('--stdio-transfer')
         for source in value['sources']:
             cmd += ['--source', str(source_root / source)]
         result = subprocess.run(cmd, cwd=source_root)

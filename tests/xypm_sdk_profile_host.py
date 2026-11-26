@@ -59,6 +59,22 @@ def archive_bytes(machine=62):
     return archive_map_bytes({'fixture.o': object_bytes(machine)})
 
 
+def stdio_receiver_bytes():
+    data = bytearray(object_bytes(symbols={'__xos_file_startup_capabilities'}))
+    section_offset = struct.unpack_from('<Q', data, 40)[0]
+    sections = data[section_offset:]
+    del data[section_offset:]
+    names, marker = b'\0.xos.exec\0', module.XOS_EXEC_RECEIVER
+    names_offset = len(data)
+    data += names + marker
+    struct.pack_into('<Q', data, 40, len(data))
+    struct.pack_into('<HHH', data, 58, 64, 5, 3)
+    data += sections
+    data += struct.pack('<IIQQQQIIQQ', 0, 3, 0, 0, names_offset, len(names), 0, 0, 1, 0)
+    data += struct.pack('<IIQQQQIIQQ', 1, 1, 2, 0, names_offset + len(names), len(marker), 0, 0, 8, 0)
+    return bytes(data)
+
+
 def put(root, name, data=b'synthetic host fixture\n'):
     path = root / name
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -305,6 +321,22 @@ class profile_cases(unittest.TestCase):
         self.save_glibc()
         with self.assertRaisesRegex(PackageError, 'SDK file missing'):
             self.create()
+
+    def test_glibc_stdio_transfer_binds_staged_receiver(self):
+        with self.assertRaisesRegex(PackageError, 'SDK file missing.*xos_stdio_receiver'):
+            self.create(features=('stdio_transfer',))
+        object_path = put(self.sysroot, module.GLIBC_STDIO_RECEIVER, stdio_receiver_bytes())
+        linker = self.sysroot / 'user.ld'
+        linker.write_bytes(linker.read_bytes() + b'SECTIONS { .xos.exec : { KEEP(*(.xos.exec)) } }\n')
+        self.save_glibc()
+        profile = self.create(features=('stdio_transfer',))
+        self.assertEqual(profile['sdk_binding']['link_artifacts'][module.GLIBC_STDIO_RECEIVER],
+                         sha_file(object_path))
+        module.verify_profile(profile, 'glibc', self.glibc)
+        object_path.write_bytes(object_bytes(symbols={'__xos_file_startup_capabilities'}))
+        self.save_glibc()
+        with self.assertRaisesRegex(PackageError, 'glibc stdio receiver marker|ELF section names'):
+            self.create(features=('stdio_transfer',))
 
     def test_header_version_mismatch_rejected_after_rehash(self):
         put(self.sysroot, 'usr/include/features.h', b'#define __GLIBC__ 2\n#define __GLIBC_MINOR__ 43\n')

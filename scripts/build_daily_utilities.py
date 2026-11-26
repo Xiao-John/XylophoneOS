@@ -11,7 +11,7 @@ import sys
 
 from xos_app import tree_receipt
 from xypm_format import canonical, inspect_elf, load_json, require, sha_file
-from xypm_sdk_profile import verify_profile
+from xypm_sdk_profile import GLIBC_STDIO_RECEIVER, verify_profile
 
 ROOT = Path(__file__).resolve().parents[1]
 PORT = ROOT / 'src/ports/sbase'
@@ -59,6 +59,12 @@ def main():
         tools = []
         registry_hash = sha_file(PORT / 'daily_utilities.json')
         builder_hash = sha_file(__file__)
+        receiver = ROOT / 'src/ports/glibc/crt/stdio_receiver.c'
+        staged_receiver = profile is not None and 'stdio_transfer' in profile['features']
+        receiver_hash = None
+        if profile is not None:
+            receiver_hash = (profile['sdk_binding']['link_artifacts'][GLIBC_STDIO_RECEIVER]
+                             if staged_receiver else sha_file(receiver))
         source_hashes = {}
         for item in registry['tools']:
             name = item['name']
@@ -67,11 +73,16 @@ def main():
             source_hashes[name] = sha_file(src)
             output = out / name
             if profile is not None:
-                subprocess.run([sys.executable, str(ROOT / 'scripts/build_glibc_program.py'),
-                                '--sdk', str(sdk / 'sysroot'), '--profile', str(args.glibc_profile),
-                                '--source', str(src), '--output', str(output)], check=True)
+                command = [sys.executable, str(ROOT / 'scripts/build_glibc_program.py'),
+                           '--sdk', str(sdk / 'sysroot'), '--profile', str(args.glibc_profile),
+                           '--source', str(src), '--output', str(output)]
+                command += ['--stdio-transfer'] if staged_receiver else ['--source', str(receiver)]
+                subprocess.run(command, check=True)
                 link = load_json(out / (name + '.build') / 'manifest.json')
+                linked_receiver = (link['stdio_receiver_sha256'] if staged_receiver
+                                   else link['sources'][str(receiver)])
                 require(link['profile_binding']['profile_sha256'] == profile_digest and
+                        linked_receiver == receiver_hash and
                         link['elf_sha256'] == sha_file(output), 'glibc link inputs or output changed: ' + name)
             else:
                 command = [compiler, '-O2', '-mno-red-zone', '-fno-pie', '-fno-pic', '-fno-stack-protector',
@@ -88,6 +99,8 @@ def main():
         if profile is not None:
             require(verify_profile(profile, 'glibc', sdk) == glibc_binding and
                     load_json(args.glibc_profile) == profile, 'glibc SDK or profile changed during build')
+            if not staged_receiver:
+                require(sha_file(receiver) == receiver_hash, 'glibc stdio receiver changed during build')
         else:
             require(tree_receipt(sdk)[0] == digest, 'SDK changed during build')
         require(sha_file(PORT / 'daily_utilities.json') == registry_hash and sha_file(__file__) == builder_hash,
@@ -102,6 +115,7 @@ def main():
         if profile is not None:
             manifest['runtime_family'] = 'glibc'
             manifest['profile_sha256'] = profile_digest
+            manifest['stdio_receiver_sha256'] = receiver_hash
         (out / 'manifest.json').write_bytes(canonical(manifest))
         print(json.dumps(manifest, indent=2))
         return 0

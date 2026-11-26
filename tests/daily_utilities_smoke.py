@@ -22,14 +22,20 @@ def main():
     p.add_argument('--tools', type=Path, required=True)
     p.add_argument('--dash', type=Path, required=True)
     p.add_argument('--report', type=Path, required=True)
+    p.add_argument('--dash-timeout', type=int, default=180,
+                   help='seconds to wait for the dash script (default: 180)')
     p.add_argument('--foreground', action='store_true', help='exercise file operands without external pipes or redirects')
     a = p.parse_args()
+    if a.dash_timeout <= 0:
+        p.error('--dash-timeout must be positive')
     build = json.loads((a.tools / 'manifest.json').read_text())
     report = {'status': 'failed', 'image_sha256': hashlib.sha256(a.image.read_bytes()).hexdigest(),
               'tools_manifest_sha256': hashlib.sha256((a.tools / 'manifest.json').read_bytes()).hexdigest(),
               'dash_sha256': hashlib.sha256(a.dash.read_bytes()).hexdigest(), 'checks': []}
     if a.foreground:
         report['scope'] = 'foreground_without_external_stdio_transfer'
+    if a.dash_timeout != 180:
+        report['dash_timeout_seconds'] = a.dash_timeout
     try:
         with tempfile.TemporaryDirectory(prefix='xos_du12_') as tmp:
             folder = Path(tmp); disk = folder / 'disk.img'; create_fat32(disk, 512)
@@ -55,7 +61,7 @@ def main():
                 send_bytes(guest, b'demo quiet\r'); pump(guest, .4)
                 baseline = resources(guest) if a.foreground else None
                 start = len(guest.output); send_bytes(guest, b'dash /tests/du12.sh\r')
-                guest.expect_supervisor(start=start, timeout=180)
+                guest.expect_supervisor(start=start, timeout=a.dash_timeout)
                 output = bytes(guest.output[start:])
                 marker = b'DU12_FOREGROUND_OK' if a.foreground else b'DU12_OK'
                 if marker not in output:

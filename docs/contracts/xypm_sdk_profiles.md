@@ -49,6 +49,12 @@ profile；显式字段存在时必须为 `glibc`。其它 SDK 名称、相同 GC
 清单；出站进程能力还要求 native process 静态库和共享头。feature 是候选 SDK
 接口范围，实际客体资格由对应应用/系统验收结果提供。
 
+glibc 的 `stdio_transfer` 允许应用接收现有启动协议传入的标准文件描述符。
+候选绑定包含 SDK 内的 `usr/lib/xos_stdio_receiver.o`，并校验其只读
+`.xos.exec` 声明、强文件运行时引用和链接脚本保留规则。旧 SDK 缺少对象时
+无法申请该 feature。构建器通过 `--stdio-transfer` 选入对象并复核最终 ELF。
+`xos_app.py` 根据应用的 `required_features` 启用这一选项。
+
 ## C++ 与 unwinder
 
 newlib C++ 使用原 single 模型、16.2.0 头文件、`x86_64-unknown-elf` 配置和独立

@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "implementation_commit": "fbb84a4a4f5b3172237e64f0adf9355ee852f2d7",
+  "implementation_tree": "b0c0f2645c4e8c15f97534be6162db2586187cfa",
+  "serial_raw_sha256": "f2961b104ddfe615570bc3a30f725d040cfbbf50f1a04beddfb6282964a23763",
+  "files": {
+    "guest.json": "9068d2d57473715dee6f979e254e7798af7f55badfd48e1737e6983af7c4aee3",
+    "guest.serial.log.gz": "bced34b6d0e45daee9cada6576e18ef22268228cefeb2b97fb4163142b28a0a0"
+  }
+}

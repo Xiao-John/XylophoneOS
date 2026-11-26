@@ -642,10 +642,30 @@
         "src/ports/qt6/licenses/gui/src/gui/text/qt_attribution.json": "cc5c2eedae7d50df84088f1f73a7e3b4720eb3de07019e0ddcc97af74e631671"
       },
       "used_in": [
-        "static QtGui and QPA local functional qualification; embedded original DejaVuSans.ttf from locked Qt source"
+        "static QtGui and QPA local functional qualification; embedded original DejaVuSans.ttf from locked Qt source",
+        "standalone WebCore glyph prerequisite; native FreeType and HarfBuzz archives and original DejaVuSans.ttf for the local glyph probe"
       ],
-      "modifications": "0008 selects buffered FreeType file backend and excludes unsupported Unix platform services/dispatch; no font modifications",
+      "modifications": "0008 selects the buffered FreeType backend for QtGui; the standalone build uses upstream portable file I/O, bundled FreeType zlib, and separate HarfBuzz FreeType and ICU bindings; no font modifications",
       "distribution_status": "NOT_RUN: member-level audit, security review, complete static relinking/source/notice distribution obligations; no Release authorized"
+    },
+    {
+      "name": "ICU4C for WebKit qualification",
+      "version": "79.1",
+      "path": "src/ports/webkit/icu",
+      "source": "https://github.com/unicode-org/icu/releases/tag/release-79.1",
+      "source_archive_sha256": "06fa63ecb521048f8082f12ad988f6b678d90cbd88aafce24cbc94902b191d99",
+      "license": "Unicode-3.0 and the bundled notices in icu/LICENSE",
+      "notices": [
+        "src/ports/webkit/icu/LICENSE.upstream"
+      ],
+      "artifact_sha256": {
+        "src/ports/webkit/icu/LICENSE.upstream": "e09827667e0bb3c808b2a463548ba814a5e6249b67353234d70c8dfc2bcc417d"
+      },
+      "used_in": [
+        "static JSCOnly and standalone WebCore glyph prerequisites for local qualification"
+      ],
+      "modifications": "XOS target compiler wrapper and static configuration recorded in the ICU port",
+      "distribution_status": "Local qualification only; member-level review and binary distribution acceptance pending"
     },
     {
       "name": "Qt Widgets E17 and Xylophone Aurora Glass",

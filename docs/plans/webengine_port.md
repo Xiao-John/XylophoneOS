@@ -27,7 +27,7 @@
 | 结构亲和 | content 多进程可对上微内核，但工具链方向与 C06 相反 | 最差：Rust std 移植是硬前置 | WebKit2 的 UIProcess/WebProcess/NetworkProcess **就是用户态服务 + IPC**；WebProcess 作为无特权用户任务直接落在 C22/C28 授权模型上 |
 | 沙箱 | 绑 Linux seccomp/namespace，需整体重写 | 绑 GPU/主流 OS 假设 | 授权与撤销用 XOS 自身机制（C22），无 Linux 沙箱依赖 |
 | 自定义平台先例 | Fuchsia 端（但自带 POSIX/动态加载/套接字） | 主流 OS 之外几乎无先例 | Sony PlayStation 端、WPE、EFL 端：非主流平台 + 自定义显示后端的完整先例【上游公开资料】 |
-| 关键配置自由度 | — | — | JSC 提供官方解释器-only 配置（`ENABLE_JIT=0`）；cairo 软件渲染为 GTK/WPE 端官方后端 |
+| 关键配置自由度 | — | — | JSC 提供解释器配置（`ENABLE_JIT=0`）。锁定的 WPE 2.54.2 默认选用 Skia，并显式关闭 Cairo。 |
 | 许可 | BSD 系 | MPL | LGPLv2.1/BSD 双层；静态链接义务按 C10 第三方声明流程满足 |
 
 - 淘汰 Chromium：clang 强制与 C06 GCC/G++ 主线直接冲突，沙箱绑 Linux。
@@ -73,6 +73,11 @@ ICU4C 79.1 的三个 XOS 静态组件已经构建并在客体测试，覆盖 NFC
 NetworkProcess 接通原生服务，再验生产 DNS、信任来源及其失败路径。
 [安装包 HTTPS](../work_log/7e05f732_clarke_installed_https.md)
 
+M2 的共用字形前置已在 XOS glibc 上构建 FreeType、HarfBuzz 和 HarfBuzz ICU。
+锁定 WPE 的 CMake 发现模块识别了目标库，xsh 和 dash 客体复验了字体读取、连字、
+灰度栅格和资源回收。WebCore 字体注册、完整 WPE 配置和页面像素继续单独验收。
+[字形依赖主线复验](../work_log/3427d85e_clarke_webcore_font_stack_mainline.md)
+
 ## 3. 终态架构（各里程碑是它的纵切片，不是临时版）
 
 ```
@@ -99,7 +104,7 @@ NetworkProcess 接通原生服务，再验生产 DNS、信任来源及其失败�
 | 表面像捷径的选择 | 为何是终态而非债务 |
 |---|---|
 | JSC 解释器-only（`ENABLE_JIT=0`） | 上游官方配置。未来 JIT 是**增量**：届时按 C20 论证内核新增 W^X 可执行页授权并先登记 ABI，不返工。 |
-| cairo 软件渲染 → QImage/QPA 合成 | GTK/WPE 端同款官方路径；GPU 合成留给未来图形授权的自然延伸，不向内核加应用专属面。 |
+| 用户态软件渲染缓冲 → QImage/QPA 合成 | 渲染器按锁定源码和真实像素裁决。WPE 2.54.2 的 Skia 路径与自定义端的候选软件后端分别构建。设备授权留在现有图形服务。 |
 | 静态链接和多进程 | XOS 当前无动态加载器；进程入口、ELF 组织及上游构建假设须由 M0 验证。 |
 | HTTP 栈从用户态服务起步 | [browser_http README](../../src/ports/browser_http/README.md) 的受限解析器和 obligations 是纵切片资产；完整网络后端及其需求按锁定版本审计。 |
 | Qt/Aurora 作嵌入壳 | embedder 关系是上游常态；壳可替换，引擎不为壳打私有补丁。 |

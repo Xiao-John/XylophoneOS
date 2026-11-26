@@ -1,0 +1,32 @@
+# SPDX-License-Identifier: Apache-2.0
+cmake_minimum_required(VERSION 3.21)
+project(xos_webkit_font_discovery LANGUAGES NONE)
+
+set(CMAKE_MODULE_PATH "${XOS_WEBKIT_MODULES}")
+set(CMAKE_PREFIX_PATH "${XOS_FONT_PREFIX}")
+set(CMAKE_FIND_ROOT_PATH "${XOS_FONT_PREFIX}")
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+set(ENV{PKG_CONFIG_PATH} "")
+set(ENV{PKG_CONFIG_LIBDIR} "${XOS_FONT_PREFIX}/lib/pkgconfig")
+set(ENV{PKG_CONFIG_SYSROOT_DIR} "")
+
+find_package(Freetype 2.9.0 MODULE REQUIRED)
+find_package(HarfBuzz 2.7.4 MODULE REQUIRED COMPONENTS ICU)
+
+function(check_target name archive)
+    get_target_property(location "${name}" IMPORTED_LOCATION)
+    if(NOT location)
+        get_target_property(location "${name}" IMPORTED_LOCATION_RELEASE)
+    endif()
+    cmake_path(SET expected NORMALIZE "${XOS_FONT_PREFIX}/lib/${archive}")
+    if(NOT "${location}" STREQUAL "${expected}")
+        message(FATAL_ERROR "${name} resolved outside the verified target font libraries")
+    endif()
+endfunction()
+
+check_target(Freetype::Freetype libfreetype.a)
+check_target(HarfBuzz::HarfBuzz libharfbuzz.a)
+check_target(HarfBuzz::ICU libharfbuzz-icu.a)
+file(WRITE "${CMAKE_BINARY_DIR}/target-versions.txt" "${FREETYPE_VERSION_STRING}\n${HarfBuzz_VERSION}\n")

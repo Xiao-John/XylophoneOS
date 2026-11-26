@@ -11,7 +11,15 @@ using namespace xos;
 using namespace xos::glibc_d1;
 #include "interpreter_plan.hpp"
 
-#ifdef D1_SYSDEP_INVOKE
+#if defined(D1_ACTUAL_INTERPRETER)
+extern "C" [[noreturn]] void enter_gnu_interpreter(void**, Elf64_Addr);
+asm(
+    ".text\n"
+    ".globl enter_gnu_interpreter\n"
+    "enter_gnu_interpreter:\n"
+    "  movq %rdi, %rsp\n"
+    "  jmp *%rsi\n");
+#elif defined(D1_SYSDEP_INVOKE)
 extern "C" void d1_expect_gnu_callback(void**);
 extern "C" void d1_gnu_callback_observer(const Elf64_Phdr*, Elf64_Word, Elf64_Addr*, Elf64_auxv_t*);
 extern "C" int d1_observed_gnu_callback();
@@ -47,7 +55,9 @@ namespace {
 struct source { xos_file_session* owner; u32 handle = 0; u32 inode = 0; };
 xos_file_request request;
 xos_file_response response;
-#ifndef D1_SYSDEP_INVOKE
+#if defined(D1_ACTUAL_INTERPRETER)
+u64 bootstrap_deadline;
+#elif !defined(D1_SYSDEP_INVOKE)
 xos_rtld_images rtld_images;
 #endif
 
@@ -72,7 +82,11 @@ long file_call(xos_file_session& session, file::op operation, u32 handle = 0, u3
             ++request.name_length;
         }
     }
+#if defined(D1_ACTUAL_INTERPRETER)
+    return __xos_file_session_call_until(&session, &request, &response, bootstrap_deadline);
+#else
     return __xos_file_session_call(&session, &request, &response);
+#endif
 }
 
 bool positioned(void* context, u64 offset, u8* out, u32 length) {
@@ -117,11 +131,19 @@ extern "C" [[noreturn]] void __xos_glibc_start(const startup_info* startup, void
         || (startup->version != 2 && startup->version != 3) || startup->argc != 2) { fail("native startup"); }
     const auto* argv = reinterpret_cast<const char* const*>(startup->argv);
     const bool secure = sdk::equal(argv[1], "secure");
-#ifdef D1_SYSDEP_INVOKE
+#if defined(D1_ACTUAL_INTERPRETER)
+    const bool unlisted = sdk::equal(argv[1], "unlisted");
+    if (!secure && !unlisted && !sdk::equal(argv[1], "ordinary")) { fail("fixture mode"); }
+#elif defined(D1_SYSDEP_INVOKE)
     const bool obsolete = sdk::equal(argv[1], "obsolete");
     if (!secure && !obsolete && !sdk::equal(argv[1], "ordinary")) { fail("fixture mode"); }
 #else
     if (!secure && !sdk::equal(argv[1], "ordinary")) { fail("fixture mode"); }
+#endif
+#if defined(D1_ACTUAL_INTERPRETER)
+    const long now = sdk::syscall(46);
+    if (now < 0) { fail("clock"); }
+    bootstrap_deadline = static_cast<u64>(now) + 30000000000ULL;
 #endif
     xos_file_session early{};
     if (file_call(early, file::op::open, 0, 0, 0, file::read_only, "/tests/input") != 0) {
@@ -130,22 +152,45 @@ extern "C" [[noreturn]] void __xos_glibc_start(const startup_info* startup, void
     const u32 stream = response.handle;
     if (file_call(early, file::op::read, stream, 4) != 0 || response.length != 4
         || memcmp(response.data, "ABCD", 4) != 0) { fail("early file read"); }
+#if defined(D1_ACTUAL_INTERPRETER)
+    if (file_call(early, file::op::close, stream) != 0) { fail("close bootstrap stream"); }
+#endif
 
     source main{&early}, ld{&early}, dep{&early};
     verify(main, "/tests/main.pie", main_bytes, main_digest);
     verify(ld, "/tests/interpreter.so", interpreter_bytes, interpreter_digest);
+#if defined(D1_ACTUAL_INTERPRETER)
+    if (!unlisted) { verify(dep, "/tests/dependency.so", dependency_bytes, dependency_digest); }
+#else
     verify(dep, "/tests/dependency.so", dependency_bytes, dependency_digest);
+#endif
     const pinned_image main_source{main_image, main_bytes, positioned, &main, {main_span, main_span}};
     const pinned_image ld_source{interpreter_image, interpreter_bytes, positioned, &ld,
                                  {interpreter_span, interpreter_span}};
+    xos_rtld_pin_plan pins{};
+#if defined(D1_ACTUAL_INTERPRETER)
+    if (!unlisted) { pins.deadline_ns = bootstrap_deadline; }
+    const u64 heap_deadline = bootstrap_deadline;
+    constexpr u64 heap_pages = 32;
+#else
     const long now = sdk::syscall(46);
     if (now < 0) { fail("clock"); }
-    xos_rtld_pin_plan pins{};
     pins.deadline_ns = static_cast<u64>(now) + 30000000000ULL;
+    const u64 heap_deadline = pins.deadline_ns;
+    constexpr u64 heap_pages = 8;
+#endif
+#if defined(D1_ACTUAL_INTERPRETER)
+    if (!unlisted) {
+        pins.count = 1;
+        pins.pins[0] = {71, dep.handle, dep.inode, dependency_bytes, dependency_image.bias,
+                        dependency_span, dependency_span, "libc.so.0.1"};
+    }
+#else
     pins.count = 1;
     pins.pins[0] = {71, dep.handle, dep.inode, dependency_bytes, dependency_image.bias,
                     dependency_span, dependency_span, "libhandoff.so"};
-    const xos_rtld_heap_plan heap{0x120000200000ULL, 8 * vm_page_size, pins.deadline_ns};
+#endif
+    const xos_rtld_heap_plan heap{0x120000200000ULL, heap_pages * vm_page_size, heap_deadline};
     auto* frame = reinterpret_cast<xos_d1_entry_handoff*>(XOS_D1_STACK_ENTRY_MIN);
     *frame = {};
     interpreter_allocations images{};
@@ -157,6 +202,9 @@ extern "C" [[noreturn]] void __xos_glibc_start(const startup_info* startup, void
         || file_call(active_files, file::op::close, ld.handle) != 0) { fail("close bootstrap pins"); }
 
     auto** stack = reinterpret_cast<void**>(frame->stack.words);
+#if defined(D1_ACTUAL_INTERPRETER)
+    enter_gnu_interpreter(stack, frame->record.interpreter_entry);
+#else
     const u32 before = active_files.request_sequence;
 #ifdef D1_SYSDEP_INVOKE
     d1_expect_gnu_callback(stack);
@@ -201,4 +249,5 @@ extern "C" [[noreturn]] void __xos_glibc_start(const startup_info* startup, void
         : "D1_NATIVE_SYSDEP_OK secure=0 argv_env=gnu auxv=gnu file=continuous heap=live\n");
 #endif
     sdk::exit(0);
+#endif
 }

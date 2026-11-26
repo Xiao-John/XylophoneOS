@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "base": "91eedbaaae2b1c7ee045b208980e76e90f6402c4",
+  "target_artifacts_verified": 14,
+  "target_manifest_sha256": "a8d2d53d63649b1b9d48663a62da3138030eec93b4ce63203549b5cbf5ea6802",
+  "system_license_check": {
+    "scope": "registered_materials_and_sdk_copies",
+    "checked": 10,
+    "status": "passed"
+  }
+}

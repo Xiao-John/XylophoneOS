@@ -30,6 +30,9 @@ SDK profile 的 44 项宿主检查和 ABI 检查通过。
 | SDK profile 测试日志 | `0332cf5a4b2095e0157297fd35a7c528d73ccae9c28d7739ac3f0f8b527dc3f6` |
 | ABI 检查日志 | `e2e4c52a0306922418b0917ef27cc47d9eba2bec406bbb9f4f1387b8c86eb301` |
 
-原始日志与运行入口位于该 worktree 的 `build/combination-d155a61f35c5/`。
+源运行目录为 `build/combination-d155a61f35c5/`。八份日志和客体报告已导出到
+[仓库验收归档](../evidence_exports/next_stage_d155a61f/manifest.json)。清单记录原件和
+导出摘要；仅去除了需要替换的宿主路径，保留运行结果。完整 ISO、SDK 和串口原件
+由源运行目录留存，复核所用镜像与 SDK 的摘要见上表。
 显式 profile 只声明 `directories`。`spawn_delegate` 的探测触发其缺失能力检查，
 动态链接、POSIX 进程组、默认 SDK 切换、Pumpkin 生产认证和 ClarkE 完整引擎仍需各自验收。

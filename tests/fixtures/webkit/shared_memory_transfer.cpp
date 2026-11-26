@@ -5,6 +5,8 @@
 #include "xos/SharedMemoryTransferXOS.h"
 
 #include <cstdio>
+#include <cstring>
+#include <spawn.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <skia/core/SkCanvas.h>
@@ -180,20 +182,18 @@ void holder(const xos_shared_memory_route& route, Scenario scenario, pid_t child
     require(loan->release() == xos_loan_result::ok && loan->confirm_close(deadline()), "holder-release-and-close-confirmation");
 }
 
-void run(Scenario scenario)
+void run(char* imagePath, Scenario scenario)
 {
     const auto parent = xos::sdk::pid();
     require(!xos::sdk::ipc_name_publish(endpointName), "publish-rendezvous");
-    const auto child = fork();
-    require(child >= 0, "fork-child");
-    if (!child) {
-        const auto route = channel(false, parent, scenario);
-        if (scenario == Scenario::ownerExit)
-            owner(route, scenario);
-        else
-            holder(route, scenario);
-        _exit(0);
-    }
+    char childRole[] = "loan-child";
+    char mode[] = { static_cast<char>('0' + static_cast<unsigned int>(scenario)), '\0' };
+    char* arguments[] = { imagePath, childRole, mode, nullptr };
+    pid_t child = 0;
+    const int launch = posix_spawn(&child, imagePath, nullptr, nullptr, arguments, environ);
+    if (launch)
+        std::printf("XOS_WEBCORE_BITMAP_TRANSFER_SPAWN_ERROR %d\n", launch);
+    require(!launch && child > 0, "spawn-child");
 
     const auto route = channel(true, static_cast<uint64_t>(child), scenario);
     require(!xos::sdk::ipc_name_unpublish(endpointName), "unpublish-rendezvous");
@@ -206,16 +206,37 @@ void run(Scenario scenario)
         static_cast<unsigned long long>(scenario), static_cast<unsigned long long>(parent), static_cast<long>(child));
 }
 
+void runChild(Scenario scenario)
+{
+    // The kernel resolves zero to the real parent of this launched process.
+    xos::ipc_channel parentLane { };
+    xos::u64 parent = 0;
+    require(!xos::sdk::ipc_channel_create(0, parentLane)
+            && !xos::sdk::ipc_endpoint_peer(parentLane.send, parent)
+            && !xos::sdk::ipc_channel_close(parentLane.send), "authenticate-parent");
+    const auto route = channel(false, parent, scenario);
+    if (scenario == Scenario::ownerExit)
+        owner(route, scenario);
+    else
+        holder(route, scenario);
+    _exit(0);
 }
 
-int main()
+}
+
+int main(int argc, char** argv)
 {
-    run(Scenario::readOnly);
-    run(Scenario::readWrite);
-    run(Scenario::holderExit);
+    if (argc == 3 && !std::strcmp(argv[1], "loan-child")) {
+        require(argv[2][0] >= '1' && argv[2][0] <= '4' && !argv[2][1], "child-mode");
+        runChild(static_cast<Scenario>(argv[2][0] - '0'));
+    }
+    require(argc == 1, "driver-mode");
+    run(argv[0], Scenario::readOnly);
+    run(argv[0], Scenario::readWrite);
+    run(argv[0], Scenario::holderExit);
     // The exiting owner leaves the borrowed capability in this process's table.
     // The final test ends this process to exercise kernel holder-exit cleanup.
-    run(Scenario::ownerExit);
+    run(argv[0], Scenario::ownerExit);
     std::puts("XOS_WEBCORE_BITMAP_TRANSFER_PASS RO RW peer binding, release and both exit orders");
     return 0;
 }

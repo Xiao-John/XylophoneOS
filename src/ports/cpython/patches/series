@@ -6,3 +6,4 @@
 0006_xos_blocking_time.patch
 0007_glibc_clock_types.patch
 0008_newlib_getpath_metadata.patch
+0009_newlib_getpath_execute_access.patch

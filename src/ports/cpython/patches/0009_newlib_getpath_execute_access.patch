@@ -1,0 +1,23 @@
+From: XOS contributors
+Subject: [PATCH] use native executable checks for XOS newlib PATH lookup
+
+The FAT file service reports regular-file mode bits without execute bits.
+The XOS newlib access(X_OK) interface checks executable image format.
+Keep the regular-file check so searchable directories are skipped.
+
+--- a/Modules/getpath.c
++++ b/Modules/getpath.c
+@@ -239,6 +239,13 @@
+             (cchPath >= 4) &&
+             (CompareStringOrdinal(path + cchPath - 4, -1, L".exe", -1, 1 /* ignore case */) == CSTR_EQUAL)
+             ? Py_True : Py_False;
++#elif defined(__xos__) && !defined(__GLIBC__)
++        /* FAT metadata has no execute bits. Ask XOS newlib about the image. */
++        char *narrow = _Py_EncodeLocaleRaw(path, NULL);
++        struct stat st;
++        r = narrow && stat(narrow, &st) == 0 && S_ISREG(st.st_mode) &&
++            access(narrow, X_OK) == 0 ? Py_True : Py_False;
++        PyMem_RawFree(narrow);
+ #else
+         struct stat st;
+         r = (_Py_wstat(path, &st) == 0) &&

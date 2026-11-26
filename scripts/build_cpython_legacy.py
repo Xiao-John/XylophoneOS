@@ -71,13 +71,14 @@ def extract_source(archive, destination):
                 bundle.extract(member, destination)
 
 
-def apply_patches(source):
-    series = (PORT / "patches/series").read_text().splitlines()
+def apply_patches(source, *, port=PORT):
+    patches = port / "patches"
+    series = (patches / "series").read_text().splitlines()
     for name in (line.strip() for line in series):
         if not name or name.startswith("#"):
             continue
         run(
-            ["patch", "-p1", "--forward", "-i", str(PORT / "patches" / name)],
+            ["patch", "-p1", "--forward", "-i", str(patches / name)],
             cwd=source,
         )
 

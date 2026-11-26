@@ -41,6 +41,41 @@ python3 tests/cpython_glibc_guest.py --system-build build/system \
 本候选覆盖静态解释器核心。动态扩展、Pillow、zlib、SQLite、额外压缩库、
 全量标准库和交互 REPL 需要各自的资格。glibc 候选命令拒绝旧的外部扩展参数。
 
+## glibc XPK 候选
+
+原生安装需要从**同一个** glibc SDK 和 profile 构建的 CPython 与 xypm。
+创建独立的 `build/cpython-package-profile.json`，为现有 C/C++ SDK 增加
+`--cxx --feature directories --feature threads`，然后用上文入口将解释器
+重建到 `build/cpython-glibc-package`。用 `scripts/build_xypm.py --sdk` 和 `--profile`
+选择同一候选，将输出的管理器 ELF 提供为客体的 `/usr/bin/xypm`。
+
+```sh
+python3 scripts/package_cpython_glibc.py --cpython-build build/cpython-glibc-package \
+  --archive path/to/Python-3.14.9.tar.xz --sdk path/to/glibc-build \
+  --profile build/cpython-package-profile.json --output build/cpython.xpk
+```
+
+XPK 使用既有 PY1 规则选择库文件，并装为磁盘上的
+`/usr/lib/python314.zip`。库 ZIP 为 stored 格式，运行时无需 zlib。
+原始解释器和调试信息保留在构建目录。XPK 中的 `/usr/bin/python3` 采用
+同一已绑定工具剥离调试节并复核实际加载字节。包自带版本、源码摘要、
+SDK 绑定、完整输入与运行 ELF 摘要，以及标准库文件摘要和许可。
+随包放入 `/usr/lib/python3.14/os.py` 作为 CPython 安装前缀定位文件。
+
+将 XPK 置于客体 `/out/cpython.xpk` 后，可通过现有 P2 维护命令安装，
+再用普通路径启动脚本。维护会话仍使用既有租约。
+
+```text
+demo quiet
+audio stop
+maint-run /usr/bin/xypm install /out/cpython.xpk --sha256 <build digest>
+exec-file /usr/bin/python3 /work/example.py
+maint-run /usr/bin/xypm remove xos.cpython
+```
+
+候选以静态解释器和已验收标准库操作为范围。没有动态扩展和附加压缩依赖。
+启动时 CPython 可能报告缺少平台相关动态模块目录。
+
 ## 安装与运行契约
 
 - stage/manifest逐文件记录大小/摘要，解释器在/usr/bin/python3，库在/usr/lib/python3.14，

@@ -1,0 +1,86 @@
+{
+  "ordinary": {
+    "build_id": "568a0a5796b487ba",
+    "manifest_sha256": "008d2f7ac1c22f4e055a2f3deb1a13f820143d12a8d21ced50e9613406daf05b",
+    "source_sha256": "568a0a5796b487bade992941d11c01f54dc28440ec8b83751d86464127b5e5a4",
+    "source_inputs": 1899,
+    "artifacts": 292,
+    "iso_sha256": "3d8b329537c4db51d2fb2581b4430ed4b7aaeda9c39e1fb86339c7db6721d577",
+    "sdk_manifest_sha256": "d5288cfe12bac8cd6bb6adfc9d57945aba2b3e4c854721156a398401935c99d5",
+    "tool_digests": {
+      "gcc": "078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f",
+      "g++": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
+      "as": "61fd25605f17a290815123ff1eeb4fc6ef78a524f8cd5e95f4ae9767b0d3b05c",
+      "ld": "d0adfd06bc0e46fbc1c739caf55db5dcc98ca377692697f944f26671135527ab",
+      "objcopy": "9d97b69af734fd8bc78ef88ffe2d623b050233d5c74a0cfed798b203f807484c",
+      "nm": "a7eebf858a985c75e1ca9ec669cf6b46b4ec5abb616b61e31c245d6ddf08286e",
+      "ar": "3b91d5228f03db4ac45253a46a5452289593a185c13460da01c408a0fa0844ac",
+      "cc1": "ac8edcabeb79e97837066066d46d6a6a03b7eab40204fcdef3edd128de4fccb0",
+      "cc1plus": "13085889a10fdcfd9cd55b3cadb802b8866fe3d1875dcdb2e3abdfb028e0b8a5",
+      "nasm": "5d22db7ed80aee4eb0e1cb5ff8a87e40294012f6ddf943601556922d5128b725"
+    }
+  },
+  "static": {
+    "build_id": "a3ca99f06c828a59",
+    "manifest_sha256": "6b4c6e646ed9c19c0a5ed0e5db481b0989dd4aad2dcb2412b17d508898aa729c",
+    "source_sha256": "a3ca99f06c828a59f0650155e0c529b74a97c7fa8f3ddc93e0bae49376e774ad",
+    "source_inputs": 1899,
+    "artifacts": 292,
+    "iso_sha256": "5a02823e5898859caa95179c96fc62da4d8682272646866f1c76070867ce2f80",
+    "sdk_manifest_sha256": "7c66122c0186da0e89fd93638f4c404fc189e281617abd5c36bc99d821f59157",
+    "tool_digests": {
+      "gcc": "078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f",
+      "g++": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
+      "as": "61fd25605f17a290815123ff1eeb4fc6ef78a524f8cd5e95f4ae9767b0d3b05c",
+      "ld": "d0adfd06bc0e46fbc1c739caf55db5dcc98ca377692697f944f26671135527ab",
+      "objcopy": "9d97b69af734fd8bc78ef88ffe2d623b050233d5c74a0cfed798b203f807484c",
+      "nm": "a7eebf858a985c75e1ca9ec669cf6b46b4ec5abb616b61e31c245d6ddf08286e",
+      "ar": "3b91d5228f03db4ac45253a46a5452289593a185c13460da01c408a0fa0844ac",
+      "cc1": "ac8edcabeb79e97837066066d46d6a6a03b7eab40204fcdef3edd128de4fccb0",
+      "cc1plus": "13085889a10fdcfd9cd55b3cadb802b8866fe3d1875dcdb2e3abdfb028e0b8a5",
+      "nasm": "5d22db7ed80aee4eb0e1cb5ff8a87e40294012f6ddf943601556922d5128b725"
+    }
+  },
+  "login-mobius": {
+    "build_id": "07c5e448431211be",
+    "manifest_sha256": "9c63501816b2d73f75db82b23c662e7481b507cf9818b33115b58cc467ebe11c",
+    "source_sha256": "07c5e448431211be11558109e7e687877ae80f32dd95608a26c680652c1b6da2",
+    "source_inputs": 1899,
+    "artifacts": 298,
+    "iso_sha256": "885c5a2cb2bc0fc1649cc49511e104bb8d5ed55ca14413cfce0e0a6f19f99c6c",
+    "sdk_manifest_sha256": "11ee8e1546da5a4774e620b5dda97fdb11034d7f11e2636f63b8439c90c9952d",
+    "tool_digests": {
+      "gcc": "078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f",
+      "g++": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
+      "as": "61fd25605f17a290815123ff1eeb4fc6ef78a524f8cd5e95f4ae9767b0d3b05c",
+      "ld": "d0adfd06bc0e46fbc1c739caf55db5dcc98ca377692697f944f26671135527ab",
+      "objcopy": "9d97b69af734fd8bc78ef88ffe2d623b050233d5c74a0cfed798b203f807484c",
+      "nm": "a7eebf858a985c75e1ca9ec669cf6b46b4ec5abb616b61e31c245d6ddf08286e",
+      "ar": "3b91d5228f03db4ac45253a46a5452289593a185c13460da01c408a0fa0844ac",
+      "cc1": "ac8edcabeb79e97837066066d46d6a6a03b7eab40204fcdef3edd128de4fccb0",
+      "cc1plus": "13085889a10fdcfd9cd55b3cadb802b8866fe3d1875dcdb2e3abdfb028e0b8a5",
+      "nasm": "5d22db7ed80aee4eb0e1cb5ff8a87e40294012f6ddf943601556922d5128b725"
+    }
+  },
+  "login-legacy": {
+    "build_id": "6fe3b78b6e9920a8",
+    "manifest_sha256": "5370f5dcc9f4d32aadc522adccf989f377944a07d3a60d5e8266a8452029758d",
+    "source_sha256": "6fe3b78b6e9920a89ff2800de7558e7ff57ccf6e819e7987d5a7f3b578fef614",
+    "source_inputs": 1899,
+    "artifacts": 298,
+    "iso_sha256": "c1f78f6aa0d4e686cf18a3950f2761530a805c67611de767ca3c857bf716b8a6",
+    "sdk_manifest_sha256": "f622ed2b21ce343a32f70bda967544bc5b74e48f068eb8a3656c28bb020b5d4a",
+    "tool_digests": {
+      "gcc": "078530461bdb61bcd19fcb0da101c24d34ab19a924b31c4fc7b54bd5d7607b6f",
+      "g++": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
+      "as": "61fd25605f17a290815123ff1eeb4fc6ef78a524f8cd5e95f4ae9767b0d3b05c",
+      "ld": "d0adfd06bc0e46fbc1c739caf55db5dcc98ca377692697f944f26671135527ab",
+      "objcopy": "9d97b69af734fd8bc78ef88ffe2d623b050233d5c74a0cfed798b203f807484c",
+      "nm": "a7eebf858a985c75e1ca9ec669cf6b46b4ec5abb616b61e31c245d6ddf08286e",
+      "ar": "3b91d5228f03db4ac45253a46a5452289593a185c13460da01c408a0fa0844ac",
+      "cc1": "ac8edcabeb79e97837066066d46d6a6a03b7eab40204fcdef3edd128de4fccb0",
+      "cc1plus": "13085889a10fdcfd9cd55b3cadb802b8866fe3d1875dcdb2e3abdfb028e0b8a5",
+      "nasm": "5d22db7ed80aee4eb0e1cb5ff8a87e40294012f6ddf943601556922d5128b725"
+    }
+  }
+}

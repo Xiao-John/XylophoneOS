@@ -59,7 +59,12 @@ private:
 };
 
 // Takes ownership of the control pair. The service stops on its loss.
+struct backing_liveness {
+    void* context = nullptr;
+    bool (*live)(void*) = nullptr;
+};
 int serve_native(const store_api& store, const nonce& realm, const entropy_api& entropy,
-                 ipc_channel control, u64 controller, const char* service_name);
+                 ipc_channel control, u64 controller, const char* service_name,
+                 backing_liveness backing = {});
 
 }

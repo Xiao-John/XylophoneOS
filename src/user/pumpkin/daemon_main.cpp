@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "native_ipc.hpp"
+#if XOS_PUMPKIN_DURABLE_PROBE
+#include "files_slot_client.hpp"
+#endif
 
 namespace {
 using namespace xos;
@@ -71,6 +74,21 @@ bool introduce_control(const char* name, u64 parent, const ipc_channel& control,
     return consumed;
 }
 
+int serve_with_parent(const store_api& store, const nonce& realm, const entropy_api& entropy,
+                      const char* rendezvous, const char* service_name, backing_liveness backing = {}) {
+    // Zero binds to the real parent. The discovery name supplies no authority.
+    ipc_channel control{};
+    if (sdk::ipc_channel_create(0, control) != 0) {
+        return 11;
+    }
+    const u64 controller = authenticated_peer(control);
+    if (controller == 0 || !introduce_control(rendezvous, controller, control, realm)) {
+        close_ipc(control);
+        return 11;
+    }
+    return serve_native(store, realm, entropy, control, controller, service_name, backing);
+}
+
 }
 
 extern "C" int xos_user_main(const xos::startup_info* startup) {
@@ -79,6 +97,25 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
         return 10;
     }
     const auto* args = reinterpret_cast<const char* const*>(startup->argv);
+    const entropy_api entropy{nullptr, kernel_entropy};
+#if XOS_PUMPKIN_DURABLE_PROBE
+    const bool initialize = sdk::equal(args[1], "--durable-init-test");
+    if (initialize || sdk::equal(args[1], "--durable-test")) {
+        files_slot_client slots;
+        if (!slots.bind_bootstrap()) {
+            return 11;
+        }
+        disk_test_store storage(slots.io());
+        const auto store = storage.api();
+        if (initialize && provision_store(store, disk_test_realm) != status::ok) {
+            return 11;
+        }
+        return serve_with_parent(store, disk_test_realm, entropy, args[2], disk_test_service,
+                                  {&slots, [](void* context) {
+                                       return static_cast<files_slot_client*>(context)->live();
+                                   }});
+    }
+#endif
     if (!sdk::equal(args[1], "--volatile-test")) {
         return 10;
     }
@@ -86,22 +123,10 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
     nonce realm{};
     volatile_store memory;
     const store_api store{&memory, volatile_store::load, volatile_store::replace};
-    const entropy_api entropy{nullptr, kernel_entropy};
     if (!kernel_entropy(nullptr, realm.bytes, sizeof(realm.bytes)) ||
         provision_store(store, realm) != status::ok) {
         return 11;
     }
 
-    // Passing zero asks the kernel to bind the pair to our actual parent.
-    // The name is only a rendezvous and must resolve back to that parent.
-    ipc_channel control{};
-    if (sdk::ipc_channel_create(0, control) != 0) {
-        return 11;
-    }
-    const u64 controller = authenticated_peer(control);
-    if (controller == 0 || !introduce_control(args[2], controller, control, realm)) {
-        close_ipc(control);
-        return 11;
-    }
-    return serve_native(store, realm, entropy, control, controller, test_service_name);
+    return serve_with_parent(store, realm, entropy, args[2], test_service_name);
 }

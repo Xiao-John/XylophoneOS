@@ -21,6 +21,9 @@
 #if XOS_FILES_PRIVATE_CLIENT_PROBE
 #include "../services/files_private_broker.hpp"
 #endif
+#if XOS_PUMPKIN_DURABLE_PROBE
+#include "../../../tests/fixtures/pumpkin/durable_probe_supervisor.hpp"
+#endif
 
 namespace {
 using namespace xos;
@@ -213,6 +216,7 @@ bool private_storage_grant(u64 child, user::files_private_storage::access rights
     return false;
 }
 
+#if !XOS_PUMPKIN_DURABLE_PROBE
 void private_storage_probe(const char* mode) {
     namespace storage = user::files_private_storage;
     const bool read_only = equal(mode, "check");
@@ -244,6 +248,7 @@ void private_storage_probe(const char* mode) {
         result_line(static_cast<u64>(child));
     }
 }
+#endif
 #endif
 
 i64 delegate_audio_controller(u64 child, void*) {
@@ -831,10 +836,17 @@ void execute(u32 argc, char** argv) {
         print("maintenance: persistent recovery required; command blocked\n"); return;
     }
 #if XOS_FILES_PRIVATE_CLIENT_PROBE
+#if XOS_PUMPKIN_DURABLE_PROBE
+    if (argc == 2 && equal(argv[0], "pumpkin-durable-test")) {
+        user::pumpkin::durable_probe::run(image_named("pumpkin_durable"), private_storage_grant, argv[1]);
+        return;
+    }
+#else
     if (argc == 2 && equal(argv[0], "pumpkin-store-test")) {
         private_storage_probe(argv[1]);
         return;
     }
+#endif
 #endif
     if (equal(argv[0], "help")) {
         print("Files     ls [path] | cat/stat/rm/edit <file> | mkdir <path> | mv <old> <new> | sync\n"

@@ -128,7 +128,8 @@ progress process_request(service_core& core, transport_session& session, u64& no
 }
 
 int serve_native(const store_api& store, const nonce& realm, const entropy_api& entropy,
-                 ipc_channel control, u64 controller, const char* service_name) {
+                 ipc_channel control, u64 controller, const char* service_name,
+                 backing_liveness backing) {
     service_core core;
     transport_session registrar, clients[client_limit]{};
     const i64 initial = monotonic_now();
@@ -149,7 +150,7 @@ int serve_native(const store_api& store, const nonce& realm, const entropy_api& 
     int exit_code = 0;
     while (registrar.channel.send != 0) {
         const i64 clock = monotonic_now();
-        if (clock < 0) {
+        if (clock < 0 || (!draining && backing.live != nullptr && !backing.live(backing.context))) {
             exit_code = 12;
             break;
         }

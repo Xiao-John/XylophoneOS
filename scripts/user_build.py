@@ -14,7 +14,7 @@ from lwip_service_build import build as build_lwip_service
 
 def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=False,
                 ncurses_supervisor_probe=False, glibc_files_death_probe=False,
-                files_private_storage_probe=False, files_private_client_probe=False):
+                files_private_storage_probe=False, files_private_client_probe=False, pumpkin_durable_probe=False):
     capture = capture_build(build, build_id, 'xos-source-declarations')
     sdk = build / "sdk"
     if sdk.is_symlink():
@@ -83,14 +83,21 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
              "-c", str(source), "-o", str(obj)])
         return str(obj)
 
-    private_client_flags = ("-DXOS_FILES_PRIVATE_CLIENT_PROBE=1",) if files_private_client_probe else ()
+    files_slot_broker = files_private_client_probe or pumpkin_durable_probe
+    private_client_flags = ("-DXOS_FILES_PRIVATE_CLIENT_PROBE=1",) if files_slot_broker else ()
+    durable_flags = ("-DXOS_PUMPKIN_DURABLE_PROBE=1",) if pumpkin_durable_probe else ()
     private_storage_flags = (("-DXOS_FILES_PRIVATE_STORAGE_PROBE=1", *private_client_flags)
-                             if files_private_storage_probe or files_private_client_probe else ())
+                             if files_private_storage_probe or files_slot_broker else ())
     fatfs_objects = [compile_fatfs(root / "src/third_party/fatfs/ff.c"),
                      compile_fatfs(root / "src/user/services/fatfs_diskio.cpp", private_storage_flags),
                      compile_fatfs(root / "src/user/services/fatfs_unicode.cpp")]
     private_broker_objects = [compile_source(root / "src/user/services" / name) for name in
-                              ("files_private_broker.cpp", "files_private_lease.cpp")] if files_private_client_probe else []
+                              ("files_private_broker.cpp", "files_private_lease.cpp")] if files_slot_broker else []
+    durable_objects = []
+    if pumpkin_durable_probe:
+        durable_objects = [compile_source(root / "src/user/pumpkin" / name,
+                                          ("-Os", "-ffunction-sections", "-fdata-sections")) for name in
+                           ("account_store.cpp", "service_core.cpp", "daemon_protocol.cpp", "native_ipc.cpp")]
     # The bundle installer grew this translation unit; keep -Os so the
     # file-backed install ISO stays within its size budget.
     file_ui_object = compile_source(root / "src/user/services/file_ui.cpp", ("-Os",))
@@ -121,9 +128,13 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
     names = ("supervisor", "files", "demo", "fault", "spin", "slow", "echo", "hello", "ipc_probe", "libc_hello", "e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "display", "gfxdemo", "interactium", "interactiumd", "ic_client", "xypm_recover", "xos_diag", "terminal", "terminal_app_probe", "audio_service", "audio_tone", "net_service")
     if files_private_client_probe:
         names += ("p2_store_probe",)
+    if pumpkin_durable_probe:
+        names += ("pumpkin_durable", "p2_auth_probe")
     bootstrap_names = ("supervisor", "files")
     libc_programs = ("libc_hello", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "xos_diag", "terminal_app_probe")
     disk_programs = ("e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "xos_diag", "terminal", "terminal_app_probe")
+    if pumpkin_durable_probe:
+        disk_programs += ("p2_auth_probe",)
     metadata = []
     header = ["#pragma once", "#include <xos/types.hpp>", "namespace xos::user_images {",
               "struct segment { u64 address, offset, files, memory; u32 permissions; };",
@@ -145,15 +156,21 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
             source_path = root / "tests/fixtures/ncursesw/terminal_app_probe.cpp"
         if name == "p2_store_probe":
             source_path = root / "tests/fixtures/pumpkin/files_private_client_guest.cpp"
+        if name == "pumpkin_durable":
+            source_path = root / "src/user/pumpkin/daemon_main.cpp"
+        if name == "p2_auth_probe":
+            source_path = root / "tests/fixtures/pumpkin/durable_dash_client.cpp"
         extra_flags = ("-w",) if name in libc_programs else ()
         if name == "supervisor":
             # Keep the embedded supervisor compact after the bundle installer
             # additions.
-            extra_flags += ("-Os", *private_client_flags)
+            extra_flags += ("-Os", *private_client_flags, *durable_flags)
         if name == "files" and glibc_files_death_probe:
             extra_flags += ("-DXOS_GLIBC_FILES_DEATH_PROBE=1",)
         if name == "files":
             extra_flags += private_storage_flags
+        if name in ("pumpkin_durable", "p2_auth_probe"):
+            extra_flags += ("-Os", *durable_flags)
         if name == "net_service":
             extra_flags += ("-Os", "-ffunction-sections", "-fdata-sections")
             if net_configuration["enabled"]:
@@ -167,9 +184,16 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
         main = compile_source(source_path, extra_flags)
         fault_objects = [compile_source(root / "src/user/arch/x86_64/fault_test.cpp")] if name == "fault" else []
         executable = build / f"user_{name}.elf"
+        durable_link = pumpkin_durable_probe and name in ("supervisor", "pumpkin_durable", "p2_auth_probe")
+        extra_objects = list(durable_objects) if durable_link else []
+        if name == "supervisor" and pumpkin_durable_probe:
+            extra_objects.append(compile_source(root / "tests/fixtures/pumpkin/durable_probe_supervisor.cpp", ("-Os",)))
+        if name == "pumpkin_durable":
+            extra_objects.extend(compile_source(root / "src/user/pumpkin" / source, ("-Os",)) for source in
+                                 ("disk_test_store.cpp", "files_slot_client.cpp"))
         run([tool("g++"), *X86_FLAGS, "-nostdlib", "-static", "-no-pie",
              "-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
-             *(["-Wl,--gc-sections"] if name in ("libc_hello", "net_service") else []),
+             *(["-Wl,--gc-sections"] if name in ("libc_hello", "net_service") or durable_link else []),
              "-T", str(sdk / "user.ld"), str(sdk / ("crt0_posix.o" if name in ("runtime_probe", "cpp_runtime_probe", "tls_exit_probe") else "crt0_libc.o" if name in libc_programs else "crt0.o")), main,
              *([str(loader_archive)] if name in ("supervisor", "xos_diag", "files") else []), *fault_objects,
              *([str(core_archive), str(loader_archive)] if name in ("threading_core_probe", "gfxdemo", "terminal") else []),
@@ -184,6 +208,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
              *([*fatfs_objects] if name == "files" else []),
              *(private_broker_objects if name == "files" else []),
              *([compile_source(root / "src/user/pumpkin/account_store.cpp")] if name == "p2_store_probe" else []),
+             *extra_objects,
              *(["-Wl,--start-group", str(archive), str(loader_archive), "-L", str(sdk / "lib"),
                 "-lc", "-lm", "-lgcc", "-Wl,--end-group"]
                if name in libc_programs else [str(archive)]),

@@ -122,6 +122,7 @@ def build(args, directory, report, rtld, sysroot):
                              ('xos_rtld_sysdep_start.os', 'xos_rtld_mapping.os', 'xos_file_session.os',
                               'xos_rtld_heap.os', 'd1-native-sysdep-fixture.o')),
                            rtld.parent.parent / 'posix/rtld-environ.os',
+                           rtld.parent.parent / 'string/rtld-strcmp.os',
                            '--start-group', sdk / 'lib/libxos_loader.a', sdk / 'lib/libxos.a',
                            lib / 'libgcc.a', '--end-group'])
         report['program_headers'] = verify_elf(elf)
@@ -250,6 +251,8 @@ def main():
             assert sha(args.rtld_proof / source) == digest
         if args.native_sysdep:
             assert rtld_manifest['native_sysdep_fixture_sha256'] == sha(FIXTURES / 'sysdep_start_state.c')
+            assert {'shared/elf/xos_rtld_sysdep_start.os', 'shared/elf/d1-native-sysdep-fixture.o',
+                    'shared/posix/rtld-environ.os', 'shared/string/rtld-strcmp.os'} <= rtld_manifest['artifacts'].keys()
         assert rtld_manifest['source_sha256'] == load_json(args.sdk_build / 'manifest.json')['source_sha256']
         preparation = args.rtld_proof / 'prepared/manifest.json'
         assert sha(preparation) == rtld_manifest['preparation_manifest_sha256']

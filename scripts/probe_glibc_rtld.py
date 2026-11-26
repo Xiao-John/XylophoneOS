@@ -241,16 +241,21 @@ def main():
             tls_objects.extend(shared_errno)
 
         if args.native_sysdep_fixture:
-            environment = build / 'posix/rtld-environ.os'
-            _, compilation = run('make_rtld_environ',
-                                 ['make', '-C', source / 'posix', '-f', 'Makefile',
-                                  '-f', '../elf/rtld-Rules', 'rtld-all', 'subdir=posix',
-                                  'objdir=' + str(build), '-j' + str(args.jobs),
-                                  'rtld-modules=rtld-environ.os'])
-            if not any('-DMODULE_NAME=rtld' in line.split() and str(environment) in line.split()
-                       for line in compilation.splitlines()):
-                raise RuntimeError('GNU rtld environment storage did not compile')
-            tls_objects.append(environment)
+            leaves = [('posix', 'environ')]
+            if not args.gnu_relocation_fixture:
+                leaves.append(('string', 'strcmp'))
+            for subdir, name in leaves:
+                module = 'rtld-' + name + '.os'
+                path = build / subdir / module
+                _, compilation = run('make_rtld_' + name,
+                                     ['make', '-C', source / subdir, '-f', 'Makefile',
+                                      '-f', '../elf/rtld-Rules', 'rtld-all', 'subdir=' + subdir,
+                                      'objdir=' + str(build), '-j' + str(args.jobs),
+                                      'rtld-modules=' + module])
+                if not any('-DMODULE_NAME=rtld' in line.split() and str(path) in line.split()
+                           for line in compilation.splitlines()):
+                    raise RuntimeError('GNU rtld startup support did not compile: ' + module)
+                tls_objects.append(path)
 
         for requested, prefix, name in (
                 (args.initial_tp_fixture, 'initial_tp', 'initial_tls_guest.c'),

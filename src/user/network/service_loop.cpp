@@ -48,7 +48,7 @@ frame_io network_frame_io(virtio_net::driver& nic) {
 i64 serve(u64 controller, virtio_net::driver& nic) {
     i64 result = stack.initialize(network_frame_io(nic), nic.mac());
     if (result) { stack.shutdown(); return result; }
-    core.initialize(controller, stack.api());
+    core.initialize(controller, stack.api(), stack.dns_api());
     result = sdk::ipc_name_publish(net2::service_name);
     if (result) { stack.shutdown(); return result; }
     result = sdk::ipc_name_publish(net::service_name);

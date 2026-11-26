@@ -21,6 +21,7 @@ public:
     void shutdown();
     i64 poll();
     stack_api api();
+    resolver_api dns_api();
     i64 monotonic_time();
     u32 milliseconds();
     u32 random_word();
@@ -42,6 +43,13 @@ private:
     i64 failure_ = 0;
     u32 dropped_ = 0;
     bool active_ = false;
+#ifdef XOS_LWIP_DNS_LIFETIME
+    struct dns_subscription { u64 token; resolver_completion callback; void* owner; } subscriptions_[net2::client_sessions]{};
+    void configure_dns(bool enabled);
+    i64 resolve_name(const char* name, u64 token, resolver_completion callback, void* owner);
+    void cancel_dns(u64 token);
+    static void on_dns_found(const char*, const ip_addr_t*, void*);
+#endif
     i64 open(u32 slot, net2::protocol transport, u32 address, u16 port, u64 deadline);
     i64 status(u32 slot, u32& flags);
     i64 send(u32 slot, const u8* data, u32 length);

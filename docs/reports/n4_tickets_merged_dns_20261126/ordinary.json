@@ -1,0 +1,26 @@
+{
+  "build_id": "b6f5b6f22c62974d",
+  "capture_sha256": "bcd15d6b7d227d00f715c849a148df1f12d14e95edf8ee6e81e8ecaf1bb906ba",
+  "captured_dns_queries": 0,
+  "fixture_receipt_sha256": "10a20e2a533fc8da93864615be8172c3cea0d3ace3f39616d217fc54cd01c0d4",
+  "iso_sha256": "9d2b89eb3e679ea441f9acbb57d59c300605c0655e23378147240ac883fe2dcc",
+  "legacy": true,
+  "payload_sha256": "1db8aa4f7881a73c3ecac05aa86b79e23d50630aea42569d9b75ad7c9939d6c5",
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "resources_after": [
+    129695,
+    3,
+    1
+  ],
+  "resources_before": [
+    129695,
+    3,
+    1
+  ],
+  "runner_sha256": "6c855d2542f1605a1591be084ecc4cacaf1859650788d711a8af56516459f41a",
+  "sdk_tree_sha256": "7219bdae2bd03ea5d01a75a9997782cd8d67ae4300b4d31e903a552f17069732",
+  "serial_sha256": "5a0ff89ca5d52ebf383d85050a54ba8b2ee6c73403a6b1d72ad6a21a89f2df89",
+  "status": "passed_subset",
+  "system_manifest_sha256": "ceae59f372c3bb25fd7f0963d1d5f0e51eb246c2c8a723782079f43c49678bd8",
+  "transactions": []
+}

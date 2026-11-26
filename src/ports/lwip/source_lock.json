@@ -43,6 +43,20 @@
           "after": "502985a368bd25b005173b28d9fb536be4293594ccd7bac3c49d81364bc681b0"
         }
       }
+    },
+    {
+      "path": "patches/0004_dns_results.patch",
+      "sha256": "117774bf61ac3d5902eddbdbba6ae19096fe3917c20339ca30b650f3412cbc7e",
+      "files": {
+        "src/core/dns.c": {
+          "before": "0ad939d1079602c035750ac4d0927bceabbf8c0c6b8cf56bfcedd22ae2b3d649",
+          "after": "88c7f6aadab3b725999c54a1562fdbf34739378f6aaa5bd9ac9b87ae0db9d99e"
+        },
+        "src/include/lwip/dns.h": {
+          "before": "502985a368bd25b005173b28d9fb536be4293594ccd7bac3c49d81364bc681b0",
+          "after": "758d9cbb8bc0a7a7f8b9f1238abe39b508c2f83efa99276937b09e6290c5a5f3"
+        }
+      }
     }
   ]
 }

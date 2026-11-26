@@ -16,6 +16,7 @@ INPUTS = ('tests/fixtures/network/net_lifecycle_probe.cpp',
           'src/user/include/xos/net_service_client.hpp',
           'src/shared/include/xos/net_service_abi.hpp',
           'scripts/build_net_lifecycle_probe.py')
+RESOLVER_FIXTURE = 'tests/fixtures/network/net_resolver_probe.cpp'
 
 
 def sha(path):
@@ -26,6 +27,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--sdk', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--resolver', action='store_true', help='build only the resolver fixture')
     args = parser.parse_args()
     sdk, out = args.sdk.resolve(), args.output.resolve()
     out.relative_to(ROOT / 'build')
@@ -34,10 +36,13 @@ def main():
     for source in INPUTS[2:4]:
         if sha(ROOT / source) != sha(sdk / 'include/xos' / Path(source).name):
             raise ValueError('SDK network headers differ from current sources')
-    sources = {name: sha(ROOT / name) for name in INPUTS}
+    inputs = (RESOLVER_FIXTURE, *INPUTS[2:]) if args.resolver else INPUTS
+    sources = {name: sha(ROOT / name) for name in inputs}
     sdk_hash = tree_receipt(sdk)[0]
     artifacts, commands = {}, []
-    for source, name in zip(INPUTS[:2], ('net_lifecycle_probe.elf', 'net_exec_receiver.elf')):
+    programs = ((RESOLVER_FIXTURE, 'net_resolver_probe.elf'),) if args.resolver else zip(
+        INPUTS[:2], ('net_lifecycle_probe.elf', 'net_exec_receiver.elf'), strict=True)
+    for source, name in programs:
         binary = out / name
         command = [tool('g++'), '-std=c++17', '-Os', '-g', '-Wall', '-Wextra', '-Werror',
                    '-ffreestanding', '-fno-exceptions', '-fno-rtti', '-fno-threadsafe-statics',
@@ -54,7 +59,7 @@ def main():
             raise ValueError('fixture exceeds loader image bound')
         artifacts[name] = sha(binary)
         commands.append(command)
-    if sources != {name: sha(ROOT / name) for name in INPUTS} or sdk_hash != tree_receipt(sdk)[0]:
+    if sources != {name: sha(ROOT / name) for name in inputs} or sdk_hash != tree_receipt(sdk)[0]:
         raise ValueError('build inputs changed during compilation')
     receipt = {'sources': sources, 'sdk_tree_sha256': sdk_hash, 'artifacts': artifacts,
                'toolchain': versions, 'commands': commands, 'libc_linked': False}

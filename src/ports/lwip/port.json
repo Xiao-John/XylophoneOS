@@ -17,7 +17,8 @@
     "patches": [
       "patches/0001_dns_reply_validation.patch",
       "patches/0002_dns_bounded_entropy.patch",
-      "patches/0003_dns_lifecycle.patch"
+      "patches/0003_dns_lifecycle.patch",
+      "patches/0004_dns_results.patch"
     ]
   },
   "package": {

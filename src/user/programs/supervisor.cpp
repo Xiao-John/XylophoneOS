@@ -376,6 +376,25 @@ void network_control(net2::operation action, u64 peer = 0) {
         print(" udp_dropped="); decimal(info.udp_dropped); print("\n");
     } else { print("[net-revoke] pid="); decimal(peer); print(" result=0\n"); }
 }
+#ifdef XOS_NET_DNS_PROBE
+void configure_network_dns(const char* mode) {
+    if (!network_service_pid || (!equal(mode, "on") && !equal(mode, "off"))) {
+        print("net-dns: use on/off with an owned service\n"); return;
+    }
+    const i64 now = syscall(sys_clock_monotonic);
+    if (now < 0) { print("net-dns: clock unavailable\n"); return; }
+    const auto deadline = static_cast<u64>(now) + 2'000'000'000ull;
+    net2::session_client client;
+    net2::config_snapshot configuration{};
+    i64 result = client.connect(network_service_pid);
+    if (!result) result = client.configuration(deadline, configuration);
+    if (!result) result = client.configure(equal(mode, "on") ? net2::network_mode::static_direct :
+                                           net2::network_mode::disabled, configuration.epoch, deadline, configuration);
+    client.close();
+    if (result) { print("[net-dns-config] error="); signed_decimal(result); print("\n"); return; }
+    print("[net-dns-config] epoch="); decimal(configuration.epoch); print("\n");
+}
+#endif
 void stop_network() {
     if (!network_service_pid) { print("net: no owned service\n"); return; }
     net::client client;
@@ -909,6 +928,8 @@ void execute(u32 argc, char** argv) {
 #ifdef XOS_NET_DNS_PROBE
     } else if (equal(argv[0], "net-dns-probe") && argc == 2) {
         start_network(number(argv[1]), "probe_dns");
+    } else if (equal(argv[0], "net-dns-configure") && argc == 2) {
+        configure_network_dns(argv[1]);
 #endif
     } else if (equal(argv[0], "net-stop") && argc == 1) {
         stop_network();

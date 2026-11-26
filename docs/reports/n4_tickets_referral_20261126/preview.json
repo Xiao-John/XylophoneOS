@@ -1,0 +1,114 @@
+{
+  "answers": [
+    "192.0.2.121",
+    "192.0.2.137"
+  ],
+  "build_id": "7faac1c69f050d44",
+  "capture_sha256": "2d9d6aa63759f93172e24b0ac452595b480d823165f72faeea2cdc345a7a94c8",
+  "captured_dns_queries": 11,
+  "clients": [
+    {
+      "pid": 13,
+      "status": "killed",
+      "ticket": 1
+    },
+    {
+      "pid": 14,
+      "status": "resolved",
+      "ticket": 2
+    }
+  ],
+  "epochs": [
+    2,
+    3,
+    4
+  ],
+  "fixture_receipt_sha256": "a624253a0507a10866305eb86a44a653f12a782815f8627d31757701eb6c8a31",
+  "iso_sha256": "b6c5f8383ca89c8c8ef9d162fb179e6bfdaa7f7ebf1c4e4e7e2d42ee155824bf",
+  "legacy": false,
+  "payload_sha256": "35675af5d5f08cb3a91c9060e829e20c45bcadf51fffa9cdb2d104688c791dce",
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "resources_after": [
+    129690,
+    3,
+    1
+  ],
+  "resources_before": [
+    129690,
+    3,
+    1
+  ],
+  "runner_sha256": "1d079a14cae2f15c75057c3dd003f14f0f2c57fdb8d0ccc8f53e37747d6c0a08",
+  "sdk_tree_sha256": "de3b0d9c07ec6e0eb3c514bc7db3bf800d680ea14f674851784fed5030ab42f3",
+  "serial_sha256": "5aa90df9981b54945b5c6645e535975b519b678897c2f49122ac3c17f0b8d3ba",
+  "status": "passed_subset",
+  "system_manifest_sha256": "869eee83e0419208515f0195d4733c20b70997fe857160e1e682c36176a7cf83",
+  "transactions": [
+    {
+      "question_sha256": "4cce9156d93751e66bcf802572334f567a93df1a379acc8c2fe3f62bfed5d557",
+      "retries": 0,
+      "source_port": 42862,
+      "transaction_id": 4274
+    },
+    {
+      "question_sha256": "4cce9156d93751e66bcf802572334f567a93df1a379acc8c2fe3f62bfed5d557",
+      "retries": 0,
+      "source_port": 54271,
+      "transaction_id": 64891
+    },
+    {
+      "question_sha256": "c3750018b2767272a2ae9d00ba68b150e8fefe03ab00fa084201685eeb4dbf6b",
+      "retries": 0,
+      "source_port": 52492,
+      "transaction_id": 34580
+    },
+    {
+      "question_sha256": "54f11f8972872bf0a5995d442f7aed7fdf5f975dde2006e5e5b61c66f6471c94",
+      "retries": 0,
+      "source_port": 39885,
+      "transaction_id": 49455
+    },
+    {
+      "question_sha256": "e403679e08b233b1e2da77a4166efd2fda8cbfe23d1155a9dcd7ce084cd60744",
+      "retries": 0,
+      "source_port": 1683,
+      "transaction_id": 10686
+    },
+    {
+      "question_sha256": "0d2f16b25fea7b90a4cfdd8fef632dba01350bf21789951349de52a0d7839ead",
+      "retries": 0,
+      "source_port": 53279,
+      "transaction_id": 54012
+    },
+    {
+      "question_sha256": "a744e8a7f9e155f584b2dbd4ed788940a436bd8e5cef3f54e693127862a84004",
+      "retries": 0,
+      "source_port": 19745,
+      "transaction_id": 60679
+    },
+    {
+      "question_sha256": "bff6642c0bb53a180f02eb746ea332759ab9fe7d81a1436a661163643885c3dc",
+      "retries": 0,
+      "source_port": 10496,
+      "transaction_id": 29467
+    },
+    {
+      "question_sha256": "1657715b496e4bf4c1f16bc00745c29e10b1ba20843df79489804c1f84692744",
+      "retries": 0,
+      "source_port": 48625,
+      "transaction_id": 11622
+    },
+    {
+      "question_sha256": "3ad0d2b2ea616c028721d049e0d8c7a10f262d248999fcf1a5049b080c061654",
+      "retries": 0,
+      "source_port": 4423,
+      "transaction_id": 24134
+    },
+    {
+      "question_sha256": "f99d132513a808abb6db026076d4b2dc832f6766f4e5ae22e6b4080055713186",
+      "retries": 0,
+      "source_port": 15484,
+      "transaction_id": 30929
+    }
+  ]
+}

@@ -138,16 +138,22 @@ status broker_authority::authorize(broker_read_request& request) {
         request.deadline <= static_cast<u64>(now) || request.deadline - static_cast<u64>(now) > max_request_ns) {
         return status::unavailable;
     }
+    // The client's authorization deadline travels with the request. Once
+    // submitted, the shared pair must still consume its matching reply under
+    // a broker-owned budget before it can serve another client.
+    const auto transport_deadline = static_cast<u64>(now) + max_request_ns;
     request.sequence = ++sequence_;
     if (sdk::ipc_send(channel_.send, &request, sizeof(request)) == 0) {
         for (;;) {
             broker_read_reply reply{};
             const auto arrived = sdk::ipc_recv(channel_.receive, &reply, sizeof(reply));
             const auto clock = monotonic_now();
-            if (clock < 0 || static_cast<u64>(clock) >= request.deadline) { break; }
+            if (clock < now || static_cast<u64>(clock) >= transport_deadline) { break; }
             if (arrived == sizeof(reply) && reply.version == wire_version && reply.sequence == request.sequence) {
-                if (reply.result == wire_status::ok) { return status::ok; }
-                if (reply.result == wire_status::denied) { return status::denied; }
+                if (reply.result == wire_status::ok || reply.result == wire_status::denied) {
+                    if (static_cast<u64>(clock) >= request.deadline) { return status::unavailable; }
+                    return reply.result == wire_status::ok ? status::ok : status::denied;
+                }
             }
             if (arrived != process_error_would_block || !sleep_tick(static_cast<u64>(clock))) { break; }
         }

@@ -40,13 +40,15 @@ bool process_read(client_slot& client, sealed_blob& object, broker_authority& au
     const auto received = monotonic_now();
     if (received < 0 || static_cast<u64>(received) < now) { return false; }
     now = static_cast<u64>(received);
+    if (now >= client.expires) { return false; }
+    const auto client_deadline = input.deadline < client.expires ? input.deadline : client.expires;
     broker_data output{};
     if (input.deadline > now && input.deadline - now <= max_request_ns) {
         struct read_context {
             broker_authority& authority;
             const ipc_channel& pair;
             broker_read_request message;
-        } call{authority, client.pair, {wire_version, 0, 0, input.deadline, peer, client.number, input.ticket}};
+        } call{authority, client.pair, {wire_version, 0, 0, client_deadline, peer, client.number, input.ticket}};
         const blob_read_check check{&call, [](void* context, const nonce& incarnation, const owner_record& owner) {
             auto& read = *static_cast<read_context*>(context);
             read.message.incarnation = incarnation;
@@ -61,7 +63,7 @@ bool process_read(client_slot& client, sealed_blob& object, broker_authority& au
     }
     const auto before_reply = monotonic_now();
     if (before_reply < 0 || static_cast<u64>(before_reply) < now ||
-        static_cast<u64>(before_reply) >= input.deadline ||
+        static_cast<u64>(before_reply) >= client_deadline ||
         !authority.live() || authenticated_peer(client.pair) != peer ||
         sdk::ipc_send(client.pair.send, &output, sizeof(output)) != 0) { return false; }
     const auto sent = monotonic_now();

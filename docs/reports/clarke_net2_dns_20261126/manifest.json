@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "scope": "installed ClarkE developer HTTPS through authenticated net2 over an isolated loopback test network",
+  "source": {
+    "network_tickets_commit": "bbf85269e7bc28d60210868ff5ffdeacd2a0f2b1",
+    "browser_commit": "92b1cec5ef202d6e78efa8310ab9978f4187d7ff",
+    "system_and_test_commit": "28bf930a437cddb6a4dfd7e158b4a222423f9642"
+  },
+  "toolchain_container_id": "sha256:a71fb65026ab764d7883067a05a6a63a3fc5c3b8abaf6226e5cd0997831cdcc2",
+  "system_manifest_sha256": "46d83a31e63cebbd08f95b1753e4f9e8d6eabf8f4a9975cbf31c1b36e832dc25",
+  "native_tls_receipt_sha256": "4be2dbd15186fedfaebd7251911545062fb31fca6a32d53446191c5f8c165cc4",
+  "scanout": {
+    "width": 800,
+    "height": 600,
+    "crop_xyxy": [
+      32,
+      222,
+      768,
+      550
+    ],
+    "rgb_counts": {
+      "244,247,252": 226684,
+      "24,50,76": 1462,
+      "183,53,118": 1024
+    },
+    "raw_ppm_sha256": "75abb37cc152666ba7bb2604a65f933501e9fc37e398d0f7f9d994bd3ecbf4e4"
+  },
+  "raw_reports_sha256": {
+    "pinned_native_tls": "385ed1789e4e21a53dc7bd952a15d635073bcc5844dbaade1b59ca2908b331a1",
+    "host_http_parser": "5e73ad772e0a4fc1c07b7cda0e8d780fa325f8f7a06e9839d5266d8f41d49721",
+    "initial_diagnostic": "c5e5ce39d4fa7060bc2724796dd3f4edd85fec1d5237463db43d2f8aa9dc0d11"
+  },
+  "files": {
+    "guest.json": "ac79cbedcd8194cb980d50514cf753a0ff39b5ae924ed80e35036a8602ca14eb",
+    "guest_qemu.log.gz": "e141baa8b01eda3b3d6d468c39b4a6213960ac13d68ddd64180ff43131697aed",
+    "http-parser.json": "05cc4266be607090902b10f94e676391ed2d24a33b266c1cb32e7b0a1b38e1d2",
+    "https.ppm.gz": "3678445f4bdb83e777047c737adf890342fe30809405d0b9c160b52cee7889f5",
+    "initial-budget-timeout.json": "c5e5ce39d4fa7060bc2724796dd3f4edd85fec1d5237463db43d2f8aa9dc0d11",
+    "initial-budget-timeout.serial.log.gz": "b80c6e377499dc09106cb27d57e7ce89eba8d0688a7af9ff63f8bc5bff4d9218",
+    "license-audit.txt": "a5417f8be4fbd62c2ae4b78e951a53a7b42dcc015973fd508729f21d62f9aa45",
+    "pinned-guest_qemu.log.gz": "950fe50715b34717553a2311b6673f5f2811b5704626a78ad4d9fa6c23b66d50",
+    "pinned-guest_serial.log.gz": "f8118f95ace1e97d9255cac904f0ac84ca24ff49a46a56299012ed0e523c9446",
+    "pinned-no_entropy_qemu.log.gz": "950fe50715b34717553a2311b6673f5f2811b5704626a78ad4d9fa6c23b66d50",
+    "pinned-no_entropy_serial.log.gz": "14785b61c313643d519448f7bccd30e875149aa973e495f5909d22e49b941f3d",
+    "pinned-tls.json": "d6a424c0b650bedfa69b40ffdca72243e4f1fdc7add95497c037556be1713da7",
+    "serial.log.gz": "35707104dd476a5dcf8d75e5a3356355df257ee965b0a140169ff35513364ee2"
+  }
+}

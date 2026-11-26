@@ -1,0 +1,12 @@
+{
+  "status": "PASSED",
+  "evidence_kind": "host_parser_only",
+  "network": "NOT_RUN",
+  "returncode": 0,
+  "source_sha256": {
+    "src/ports/browser_http/http.cpp": "44682881bdefabe3a17d88189cfe6b8150db89cb0de0f4b4feda0ae792c2a345",
+    "tests/browser_http/probe.cpp": "116e548ecc5ff2690999632211779e24fcc2ffeb283f7c309e5d0219af76430b"
+  },
+  "compiler": "Apple clang version 21.0.0 (clang-2100.4.1.1)",
+  "output": "browser_http checks=211 malformed_vectors=4096 result=PASSED\n"
+}

@@ -53,3 +53,12 @@ dash 管道描述符宿主回归通过。
 | glibc profile | `f0323f7fef660bc36e55422c96bec6f589df50d675c3d5f87df64613f234a05a` |
 | QEMU 回执 | `48e76f088b7466ea121cedacf8dd7bb2eafb1dedd657d3c2d4eb2bff3b591ec0` |
 | 宿主回执 | `dce103452bf68e8e1c1bcd3107b736aacdd846a89002180aeb2dfc9ec4f606cc` |
+
+评审指出受限外部 here-document 的拒绝发生在实际打开重定向之后。现在先完成
+命令类型判断，再执行允许的 here-document 重定向。新增的两个入口回归均在真实
+工作盘预置文件，尝试向该文件重定向，然后离线核对原字节。
+从 `21f16cc5` 重建得到系统 `c244c7e24082e7ef`。QEMU 的 26 项检查和
+files/FatFs 复验通过。ISO 为
+`dcc81ddbc5c41d8d9c0712a67a84f90b18e039267c144c9b273e9558ba99aa40`，
+glibc SDK manifest 为 `08f666ae4cc0f31d4fe417dcccc4283476120fed700002ffa133819877fb2fce`，
+保留原文件的客体回执为 `f469eb34ffa6cc008fa31d1a21c1458daf6f96a88b1c7071005e45f559a0ae05`。

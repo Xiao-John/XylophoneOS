@@ -7,6 +7,8 @@ namespace {
 static_assert(process_stack_bottom == XOS_D1_STACK_BOTTOM);
 static_assert(process_startup_begin == XOS_D1_STARTUP_BEGIN);
 static_assert(process_stack_top == XOS_D1_STACK_TOP);
+static_assert(XOS_D1_STACK_GROWTH_BYTES * 2 == process_startup_begin - process_stack_bottom);
+static_assert(XOS_D1_STACK_ENTRY_MIN + sizeof(xos_d1_entry_handoff) <= process_startup_begin);
 
 const Elf64_Ehdr* linked_header(const mapped_image& image) {
     const auto* header = static_cast<const Elf64_Ehdr*>(mapped_file_address(image, 0, 0, sizeof(Elf64_Ehdr)));
@@ -55,7 +57,7 @@ interpreter_entry_result prepare_interpreter_entry(
     xos_file_session& early_files, xos_d1_entry_handoff& frame,
     interpreter_allocations& allocations) {
     const auto stack_address = reinterpret_cast<u64>(&frame);
-    if (stack_address < process_stack_bottom || stack_address > process_startup_begin - sizeof(frame)
+    if (stack_address < XOS_D1_STACK_ENTRY_MIN || stack_address > process_startup_begin - sizeof(frame)
         || (stack_address & 15) != 0 || frame.record.magic != 0
         || allocations.main.start != 0 || allocations.main.bytes != 0
         || allocations.interpreter.start != 0 || allocations.interpreter.bytes != 0

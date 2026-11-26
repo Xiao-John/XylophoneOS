@@ -18,7 +18,7 @@ int
 __xos_rtld_check_entry (void **start_argptr, struct xos_d1_entry_view *output)
 {
   const xos_u64 address = (xos_u64) start_argptr;
-  if (output == 0 || address < XOS_D1_STACK_BOTTOM
+  if (output == 0 || address < XOS_D1_STACK_ENTRY_MIN
       || address > XOS_D1_STARTUP_BEGIN - sizeof (struct xos_d1_entry_handoff)
       || (address & 15) != 0)
     return 0;

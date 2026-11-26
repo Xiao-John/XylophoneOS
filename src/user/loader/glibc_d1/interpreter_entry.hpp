@@ -24,6 +24,7 @@ struct interpreter_entry_result {
 
 // Prepare the actual interpreter address and ABI stack without executing it.
 // Supply fresh storage on the native stack before threads or user callbacks.
+// The first stack word must leave XOS_D1_STACK_GROWTH_BYTES below it.
 // Success consumes the bootstrap session into frame.record.files and transfers
 // both live allocations to the caller. Failures leave allocations empty. A
 // nonzero rollback result requires termination of the bootstrap process.

@@ -150,6 +150,7 @@ def exercise(args, directory, inputs, report):
             result = command(guest, 'dash /tests/child.sh', b'kind=exited code=', timeout=120)
             report['output'] = result.decode(errors='replace')
             assert re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', result) == [b'0'], result
+            assert b'D1_INTERPRETER_STACK low=rejected below_min=rejected' in result, result
             assert b'D1_INTERPRETER_ENTRY_RC=0' in result, result
             match = re.search(rb'D1_INTERPRETER_ENTRY_PREPARED phdr=(\d+) interpreter=0x([0-9a-f]+)'
                               rb' early=(\d+) late=(\d+) inherited=EFGH', result)
@@ -166,6 +167,8 @@ def exercise(args, directory, inputs, report):
 
 
 def main():
+    if not __debug__:
+        raise SystemExit('run this acceptance test without Python optimization so its checks execute')
     parser = argparse.ArgumentParser(description=__doc__)
     for field in ('system', 'sdk-build', 'profile', 'dash', 'dash-receipt', 'rtld-proof', 'output'):
         parser.add_argument('--' + field, type=lambda value: Path(value).resolve(), required=True)

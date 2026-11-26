@@ -114,14 +114,28 @@ extern "C" [[noreturn]] void __wrap___xos_glibc_start(const startup_info* startu
     }
     const pinned_image main_source{main_image, main_bytes, positioned, &app, {main_span, main_span}};
     pinned_image interpreter_source{interpreter_image, interpreter_bytes, positioned, &interpreter, {1, 1}};
-    // Sit below the test's active static startup stack, with room for the
-    // actual checker call below the synthetic interpreter entry %rsp.
-    auto* frame = reinterpret_cast<xos_d1_entry_handoff*>(process_stack_bottom + 16 * vm_page_size);
-    *frame = {};
-    const auto prepare = [&](main_headers headers) {
+    const auto stage = [&](xos_d1_entry_handoff& frame, main_headers headers) {
         return prepare_interpreter_entry(startup, main_source, headers, interpreter_source,
-                                         execution_mode::ordinary, native_entropy, early, *frame, images);
+                                         execution_mode::ordinary, native_entropy, early, frame, images);
     };
+    const u32 prior_sequence = early.request_sequence;
+    const u64 too_low_addresses[] = {process_stack_bottom, XOS_D1_STACK_ENTRY_MIN - 16};
+    for (const u64 address : too_low_addresses) {
+        auto* too_low = reinterpret_cast<xos_d1_entry_handoff*>(address);
+        *too_low = {};
+        const auto rejected = stage(*too_low, main_phdr);
+        if (rejected.error != interpreter_entry_error::layout || rejected.release_error != 0
+            || images.main.bytes != 0 || images.interpreter.bytes != 0 || too_low->record.magic != 0
+            || early.phase != xos_file_session_active || early.request_sequence != prior_sequence) {
+            fail("entry stack growth");
+        }
+    }
+    sdk::print("D1_INTERPRETER_STACK low=rejected below_min=rejected\n");
+
+    // Exercise the first allowed stack address with an actual checker call.
+    auto* frame = reinterpret_cast<xos_d1_entry_handoff*>(XOS_D1_STACK_ENTRY_MIN);
+    *frame = {};
+    const auto prepare = [&](main_headers headers) { return stage(*frame, headers); };
     auto result = prepare(main_phdr);
     if (result.error != interpreter_entry_error::interpreter_map || result.mapping.error != image_map_error::budget
         || result.release_error != 0 || images.main.bytes != 0 || images.interpreter.bytes != 0

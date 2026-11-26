@@ -8,6 +8,10 @@
 #define XOS_D1_AUX_ITEMS 9
 #define XOS_D1_ENTRY_WORDS (1 + XOS_D1_MAX_ARGS + 1 + XOS_D1_MAX_ENVIRONMENT + 1 + 2 * XOS_D1_AUX_ITEMS)
 #define XOS_D1_STACK_BOTTOM 0x7ffdc000ULL
+/* Leave half of the native 128 KiB stack below the initial interpreter %rsp.
+   The first call and the rest of startup grow downward from this address. */
+#define XOS_D1_STACK_GROWTH_BYTES (64ULL * 1024)
+#define XOS_D1_STACK_ENTRY_MIN (XOS_D1_STACK_BOTTOM + XOS_D1_STACK_GROWTH_BYTES)
 #define XOS_D1_STARTUP_BEGIN 0x7fffc000ULL
 #define XOS_D1_STACK_TOP 0x80000000ULL
 #define XOS_D1_ENTRY_MAGIC 0x3152544e45444f58ULL

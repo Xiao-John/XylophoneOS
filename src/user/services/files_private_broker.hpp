@@ -1,13 +1,17 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
 #include "files_private_lease.hpp"
+#include "../pumpkin/session_limits.hpp"
 #include <xos/thread_abi.hpp>
 
 namespace xos::user::files_private_storage {
 
 inline constexpr u64 lease_ns = 30'000'000'000ull;
+inline constexpr u64 desktop_lease_ns = pumpkin::connection_lifetime_ns + pumpkin::desktop_backing_grace_ns;
 inline constexpr u64 reply_ns = 500'000'000ull;
 inline constexpr u64 exchange_ns = 5'000'000'000ull;
+
+enum class lease_profile { short_operation, desktop };
 
 // Bounded transport helpers used only by the profile's compiled-in endpoints.
 inline bool peer_matches(const ipc_channel& channel, u64 expected) {
@@ -46,7 +50,8 @@ slot_io private_slot_io();
 
 class broker {
 public:
-    explicit broker(slot_io io) : lease_(io) {}
+    explicit broker(slot_io io, lease_profile profile = lease_profile::short_operation)
+        : lease_(io), lease_duration_(profile == lease_profile::desktop ? desktop_lease_ns : lease_ns) {}
     bool establish_bootstrap();
     bool bootstrap_session(const file_session_info& client) const;
     grant_reply grant(const grant_request& request, const file_session_info& source, u32 source_index, bool healthy);
@@ -58,6 +63,7 @@ private:
     bool controller_alive() const;
 
     slot_lease lease_;
+    const u64 lease_duration_;
     ipc_channel bootstrap_{};
     ipc_channel client_{};
     u32 controller_index_ = 0;

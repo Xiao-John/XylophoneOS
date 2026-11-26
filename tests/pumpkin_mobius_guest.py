@@ -11,6 +11,7 @@ import signal
 import subprocess
 import sys
 import tempfile
+from threading import Event
 import time
 from unittest.mock import patch
 
@@ -70,8 +71,10 @@ def frame(observation, image, future, light, timeout):
     raise AssertionError("Expected Mobius frame did not reach scanout")
 
 
-def live_desktop(system, state, wallet, output):
+def live_desktop(system, state, wallet, output, *, minimum_polls=0):
     commands, processes, sent = [], [], []
+    sustained = Event()
+    polls = 0
     command = operator.qemu_command
     start = operator.private_vm
     submit = operator.operator_exchange
@@ -89,11 +92,20 @@ def live_desktop(system, state, wallet, output):
         submit(vm, operation, private_frame, destination, stored)
         sent.append(stored)
 
+    def continue_session():
+        nonlocal polls
+        polls += 1
+        if polls >= minimum_polls:
+            sustained.set()
+        return False
+
     with (patch.object(operator, "qemu_command", build_command),
           patch.object(operator, "private_vm", start_guest),
           patch.object(operator, "operator_exchange", track_submission)):
         with ThreadPoolExecutor(max_workers=1) as executor:
-            future = executor.submit(operator.operate, system, state, "desktop", wallet)
+            mode = "desktop-admin" if minimum_polls else "desktop"
+            decision = continue_session if minimum_polls else None
+            future = executor.submit(operator.operate, system, state, mode, wallet, revoke_requested=decision)
             try:
                 end = time.monotonic() + 15
                 while not future.done() and (not commands or not commands[0].exists()) and time.monotonic() < end:
@@ -103,8 +115,15 @@ def live_desktop(system, state, wallet, output):
                 try:
                     first = frame(screen, output / "midnight.ppm", future, light=False, timeout=140)
                     assert len(sent) == 1 and not any(sent[0]), "The operator retained the submitted wallet"
-                    # Let the session span multiple identity polls before using it again.
-                    time.sleep(3.1)
+                    if minimum_polls:
+                        end = time.monotonic() + 65
+                        while not sustained.wait(0.1):
+                            if future.done():
+                                raise RuntimeError("Desktop exited before the sustained identity gate") \
+                                    from future.exception()
+                            assert time.monotonic() < end, "Desktop did not sustain periodic identity checks"
+                    else:
+                        time.sleep(3.1)
                     screen.press_ctrl("d")
                     second = frame(screen, output / "daybreak.ppm", future, light=True, timeout=16)
                     assert first["sha256"] != second["sha256"]
@@ -112,7 +131,10 @@ def live_desktop(system, state, wallet, output):
                 finally:
                     screen.close()
                 assert future.result(timeout=16) == 1
-                return {"before": first, "after": second}
+                result = {"before": first, "after": second}
+                if minimum_polls:
+                    result["verified_admin_polls"] = polls
+                return result
             finally:
                 if not future.done() and processes and processes[0].poll() is None:
                     processes[0].terminate()
@@ -205,6 +227,11 @@ def run(system, executable, output):
             report["admin_logout"] = managed_desktop(system, state, wallet, output, revoke=False)
             assert authority.read() == enrolled and operator.operate(system, state, "login", wallet) == 1
             report["checks"].append("admin-enabled desktop with no signal logged out and preserved the account")
+            sustained = output / "sustained"
+            sustained.mkdir()
+            report["sustained_desktop"] = live_desktop(system, state, wallet, sustained, minimum_polls=35)
+            assert authority.read() == enrolled
+            report["checks"].append("desktop accepted input and logged out after 35 identity polls past the old files lease")
             unaffected = private / "unaffected-wallet"
             assert operator.operate(system, state, "enroll", unaffected, account=b"bob") == 1
             revision = authority.read().revision

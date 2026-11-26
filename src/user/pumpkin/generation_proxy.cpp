@@ -166,7 +166,8 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
 #endif
 #if XOS_PUMPKIN_NATIVE_LOGIN
         using result = xos::user::pumpkin::native_login::result;
-        const auto last_error = mode == scenario::user_resource || named_read ? result::broker_cleanup : result::holder_exit;
+        const auto last_error = mode == scenario::user_resource || mode == scenario::user_named_read
+            ? result::broker_cleanup : result::holder_exit;
         valid = valid || (finish.pass >= static_cast<u8>(result::holder_start) &&
                           finish.pass <= static_cast<u8>(last_error));
 #endif

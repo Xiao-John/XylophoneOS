@@ -448,8 +448,8 @@ def main():
         parser.error("--credential-file is required for credential submission and enrollment")
     selected = None
     if args.operation in named_operations:
-        if args.resource_name is None or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,15}", args.resource_name) is None:
-            parser.error("select a logical resource name of 1 to 16 characters")
+        if args.resource_name is None or re.fullmatch(r"[a-z0-9][a-z0-9._-]{0,15}", args.resource_name) is None:
+            parser.error("select a logical resource name of 1 to 16 lowercase ASCII characters, starting with a letter or digit")
         if (args.generation is None and args.operation != "read-named") or not 0 <= (args.generation or 0) < 2**64:
             parser.error("specify the expected unsigned generation for a mutation")
         if args.operation == "erase-named" and args.generation == 0:

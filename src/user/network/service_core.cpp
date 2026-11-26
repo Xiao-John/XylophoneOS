@@ -28,8 +28,14 @@ bool normalize_name(const u8* input, u32 length, char (&name)[dns_name_limit + 1
 }
 }
 
-void service_core::initialize(u64 controller, const stack_api& stack, const resolver_api& resolver) {
+void service_core::initialize(u64 controller, const stack_api& stack, const resolver_api& resolver,
+                              u32 configured_resolver) {
     controller_ = controller; stack_ = stack; resolver_ = resolver;
+    if (valid_static_resolver(configured_resolver) && resolver_.configure) {
+        resolver_address_ = configured_resolver;
+        resolver_.configure(resolver_.context, resolver_address_);
+        mode_ = network_mode::static_direct;
+    }
 }
 u32 service_core::session_count() const {
     u32 count = 0; for (const auto& item : sessions_) if (item.peer) ++count; return count;
@@ -117,13 +123,14 @@ bool service_core::resolve(u32 slot, const message& input, u64 now, message& out
             }
             if (requested.expected_epoch != config_epoch_) { output.result = config_changed; return true; }
             if (count || connection_count() || config_epoch_ == ~u64{0}) { output.result = resources; return true; }
-            resolver_.configure(resolver_.context, requested.mode == network_mode::static_direct);
+            resolver_.configure(resolver_.context,
+                                requested.mode == network_mode::static_direct ? resolver_address_ : 0);
             mode_ = requested.mode;
             ++config_epoch_;
         }
-        const config_snapshot snapshot{configuration_revision, mode_, config_epoch_, resolve_in_a, 0x0a00020f,
-                                       0xffffff00, permitted_address,
-                                       mode_ == network_mode::static_direct ? permitted_address : 0, count, 0};
+        const config_snapshot snapshot{configuration_revision, mode_, config_epoch_, resolve_in_a, static_address,
+                                       static_mask, permitted_address,
+                                       mode_ == network_mode::static_direct ? resolver_address_ : 0, count, 0};
         __builtin_memcpy(output.data, &snapshot, sizeof(snapshot));
         output.length = sizeof(snapshot);
         return true;

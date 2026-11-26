@@ -1,0 +1,105 @@
+{
+  "status": "passed_subset",
+  "scope": "GNU initial thread TP handoff with prepared storage",
+  "shared_interpreter_executed": false,
+  "build_id": "93ae2e89d70c1ad4",
+  "iso_sha256": "bc62cafdc6294b66dbd0c2277aabb6c7e0012f7131326072833d49f93c9fb630",
+  "system_manifest_sha256": "aa14159c7e1931eda488dd0ba28e32b1b1531c99940445d05bda172516a9ce20",
+  "sdk_sha256": "1b748a352eb0a68fe0bd0bca3a8c1bfb0260802ebebfda87ebd2db73d4e47bcd",
+  "profile_sha256": "6cb149c16d8fef97e0ebe863c182dc4f6b0d6ef42c964da5472069f5b09ac5a7",
+  "rtld_manifest_sha256": "2b8d4154b62ff7f596479c54c570b9ffe3053be87229b0907d22008078d7bd71",
+  "rtld_objects": {
+    "shared/elf/rtld.os": "de1f430aa431c80fa4467c150562d917999ea033fcb0c50df3bccf01a55baf6f",
+    "shared/elf/xos_rtld_entry.os": "b24622206e20eccd38ea128e4ad91629978c4b634010bdb0a5b081de69d956e9",
+    "shared/elf/xos_rtld_mapping.os": "e4891d042aba9568987155a92d2fbd784cb273e524d91a2ebca233f9f2301135",
+    "shared/elf/xos_file_session.os": "6926c709bf8104b3727d206a04baaf81361a6ad49625c6fb6c3af247344a9528",
+    "shared/elf/dl-load.os": "c4ed76cc94664359ec68d3135eef89556e4fc993eb5268058c3ac2c710f969a6",
+    "shared/elf/xos_rtld_heap.os": "df572a78260657b697e8fba1b449c41b72ea56cd51f428e735dd70c86aff8752",
+    "shared/elf/dl-minimal-malloc.os": "ef915493e7f27d062d1d026eeb79e025e5589b06898bf5841fe95b27b6fa597a",
+    "shared/elf/dl-tls.os": "b88a6c90fd9fb49d4264eefe16133cd6ba2b40ec062b3cb3759d0248b275b9e5",
+    "shared/elf/dl-tls_init_tp.os": "b55eaf0c7fcef6c53268d85cf16ff5611488dccc21b748cb47e12794a3df6d25",
+    "shared/elf/dl-mutex.os": "e93f928c7bb4e3b46c6b9ffe5eebb8ef9325abf9e1871732228c248ea9a04b8b",
+    "shared/elf/d1-initial-tp-fixture.o": "b3ce901813319b12fc5e32f73d7dd8becea12b16d8210997420c4daa84b8cb58"
+  },
+  "tools": {
+    "x86_64-elf-ld": {
+      "available": true,
+      "sha256": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1",
+      "version_exit_code": 0,
+      "version": "GNU ld (GNU Binutils) 2.47.20260726"
+    },
+    "x86_64-elf-objcopy": {
+      "available": true,
+      "sha256": "92fba3a2b4292261e6e17de08596fb0080fc605ff6807c462bf78c5ce6d2a80a",
+      "version_exit_code": 0,
+      "version": "GNU objcopy (GNU Binutils) 2.47.20260726"
+    },
+    "x86_64-elf-nm": {
+      "available": true,
+      "sha256": "422d96cfd2867a90713df8881cd9f7cbb5799bf0f776054e5f0438a99360439c",
+      "version_exit_code": 0,
+      "version": "GNU nm (GNU Binutils) 2.47.20260726"
+    }
+  },
+  "sanitized_environment": [],
+  "program_headers": [
+    {
+      "type": 1,
+      "flags": 5,
+      "virtual_address": 1073741824,
+      "file_size": 3030,
+      "memory_size": 3030,
+      "alignment": 4096
+    },
+    {
+      "type": 1,
+      "flags": 4,
+      "virtual_address": 1073745920,
+      "file_size": 1496,
+      "memory_size": 1496,
+      "alignment": 4096
+    },
+    {
+      "type": 1,
+      "flags": 6,
+      "virtual_address": 1073750016,
+      "file_size": 2136,
+      "memory_size": 2248,
+      "alignment": 4096
+    },
+    {
+      "type": 7,
+      "flags": 4,
+      "virtual_address": 0,
+      "file_size": 0,
+      "memory_size": 0,
+      "alignment": 8
+    }
+  ],
+  "guest_elf_sha256": "a5d7585984db527b729aaed9853c52c01d54d94894b6e7e1076e659da1f47d5e",
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "resources_before": [
+    129709,
+    3,
+    1
+  ],
+  "runs": [
+    {
+      "output": "exec-file /bin/initial_tp\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000353000\r\n[loader] started pid=10 file=/bin/initial_tp\n[process] event=wait_blocked parent=7 child=10\r\nD1_INITIAL_TP_OK tcb=gnu tid=native stack=exact dtv=preserved dispatch=preserved\n[task] event=reclaimed pid=10 pages=51\r\n[wait] pid=10 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "output": "exec-file /bin/initial_tp\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x0000000000353000\r\n[loader] started pid=11 file=/bin/initial_tp\n[process] event=wait_blocked parent=7 child=11\r\nD1_INITIAL_TP_OK tcb=gnu tid=native stack=exact dtv=preserved dispatch=preserved\n[task] event=reclaimed pid=11 pages=51\r\n[wait] pid=11 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        129709,
+        3,
+        1
+      ]
+    }
+  ],
+  "serial_sha256": "548fb7cb6df02d48fbaf617672d8db4d1eb2a407c817d532724be856c438f9d6"
+}

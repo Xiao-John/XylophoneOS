@@ -1,0 +1,8 @@
+{
+  "profile": "dash_c3",
+  "version": "0.5.13.5",
+  "sha256": "27292b846aa9cef3ce3cdb9ee5267b51fd296f6dc9a9c7f6005be93bfad9c29d",
+  "bytes": 282272,
+  "load_segments_unchanged": true,
+  "sdk_manifest_sha256": "6ca9b5064203cd7a1741ab41b8857bb10927027142c0a2e88d4611463e48bfd9"
+}

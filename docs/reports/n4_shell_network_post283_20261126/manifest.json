@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "scope": "installed static net2 profile and xsh/dash rebinding on the merged #283 tree",
+  "source": {
+    "merged_base_commit": "1a840d4358e84c4f24bedcc95620eba76e72cf7c",
+    "system_and_runner_commit": "38cd52b224a6fdfca57fe53f53edcc314313c734",
+    "system_and_runner_tree": "434f6fe3ef4d8dc19a004c435d8951dce70ed5e8",
+    "earlier_guest_commit": "e3139a0c7e24188c1bf71ad69cf199bed9fcc179",
+    "reused_browser_build_commit": "afc8273036c577965d4ba6f1c425a548a0869fc4",
+    "reused_browser_verified_source_inputs": 128
+  },
+  "toolchain_container_id": "sha256:a71fb65026ab764d7883067a05a6a63a3fc5c3b8abaf6226e5cd0997831cdcc2",
+  "system_manifest_sha256": "f2142bf4743957f3d881b6bd195f5b988e08b8c68a9243b0a8858b6505626a7e",
+  "ordinary_manifest_sha256": "0edb38c277eb232d3e097ff39834388842cada80e50829ff2dd9c603b18f7fcb",
+  "reused_tls_receipt_sha256": "e061dc468195a42c4424eef2bd008ece8fae98a04ac28c03076b835091502b34",
+  "raw_dash_build_receipt_sha256": "a6baac142724584b3b8f673ba368655eb015b760ee0cf833447c532ff68aa133",
+  "runner_sha256": "9e2a469518986ab1c583032403f23c8c1475fa2d5540ecbbce150fae08e81b31",
+  "scanout": {
+    "width": 800,
+    "height": 600,
+    "crop_xyxy": [
+      32,
+      222,
+      768,
+      550
+    ],
+    "rgb_counts": {
+      "xsh.initial": {
+        "244,247,252": 226786,
+        "24,50,76": 1460,
+        "183,53,118": 1024
+      },
+      "xsh.rebound": {
+        "244,247,252": 226797,
+        "24,50,76": 1471,
+        "183,53,118": 1024
+      },
+      "dash.initial": {
+        "244,247,252": 226674,
+        "24,50,76": 1485,
+        "183,53,118": 1024
+      },
+      "dash.rebound": {
+        "244,247,252": 226709,
+        "24,50,76": 1456,
+        "183,53,118": 1024
+      }
+    }
+  },
+  "files": {
+    "dash.initial.ppm.gz": "b5acbc5c609e02f4a7f11b7642be4f7393601ce17c19084a67432eda04263c8f",
+    "dash.json": "deeb11c06f2afed020a11b513d3e0ee66fe09e28028af11edcbd4cf53e032fb7",
+    "dash.pcap": "5b3e7b048029b690c7ac7f3ef69a705d377c96444415f192d163165352c68b03",
+    "dash.rebound.ppm.gz": "a492d56346988c347df29eb2c573d13ab7091606ac8e427973f68510061a51ee",
+    "dash_qemu.log.gz": "e141baa8b01eda3b3d6d468c39b4a6213960ac13d68ddd64180ff43131697aed",
+    "dash_serial.log.gz": "c5bc61f1e8367a79ee00622591d5579a6fb4f36d1fb6543f69b9a33ae9d68b95",
+    "installed.json": "eedea4f06ff30c3e92a29e26ee59d455f2b7a069c976cfe72ff3d076277b8a74",
+    "ipc-exec.json": "d318740b507f003e7f59d7df97a9d2c692d31934872f1406627281b4e9ea740d",
+    "ipc_exec_qemu.log.gz": "9995d6e68f8b0c92e3fdd42c8616bab9e7b8e90c646d772804d9efaea4f70cee",
+    "ipc_exec_serial.log.gz": "7e436640f5bf1ac17cfda90efe641ff045b2315c67f964727e5b4e01fbed6365",
+    "license.txt": "1642c6a33a48ab230a9f1f677967308880dca2776121eb7750df13a99ce396d9",
+    "ordinary_qemu.log.gz": "e141baa8b01eda3b3d6d468c39b4a6213960ac13d68ddd64180ff43131697aed",
+    "ordinary_serial.log.gz": "636e5fd27e960d1c52429b69449012aaf3393b1211e6faf7a431a74d8c9eb205",
+    "pre-283.json": "e864fd9c20591d168a434bdf647a23b88c2b96b9472a40abe265820ae8902a04",
+    "profile.json": "5614e6876118ed26233ede73ddd77170b08ba11c1538810703f6b368c6b53de8",
+    "xsh.initial.ppm.gz": "04bcdb424f71e94e252b44b9bfedc88c152f61dbd0308d03b90b56a0a4582a64",
+    "xsh.pcap": "0e90f1cad12bfb3c43d0c3e72e805c15d40ac3771b8855146702a4915234ad3d",
+    "xsh.rebound.ppm.gz": "5305d34e20e6dde96ec40522d922e1a7e2ad12fe7f288f1cdb09af7b211fd2e1",
+    "xsh_qemu.log.gz": "e141baa8b01eda3b3d6d468c39b4a6213960ac13d68ddd64180ff43131697aed",
+    "xsh_serial.log.gz": "9e3c96093f918be4404b5d6c1b76f02e7e1479d56ab8972705d6dbbe37c8d046"
+  }
+}

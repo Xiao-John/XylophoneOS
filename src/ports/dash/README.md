@@ -69,9 +69,12 @@ open file descriptions with their offsets and append mode. Quoted here-document
 delimiters preserve literal text, and unquoted delimiters allow the preview's
 supported expansions. Parent-executed builtins can also read here-documents.
 
-Pipeline builtins and functions, compound pipe stages, subshells, command
-substitution, explicit exec, and executable text-script fallback remain outside
-the preview. The installed C3 route uses newlib.
+Command substitution uses the upstream expander and a single-thread child with
+the native inherited descriptors. Both `$(...)` and backticks capture stdout,
+strip trailing newlines, and report the child exit status. The existing 1 MiB
+raw output limit applies. Pipeline builtins and functions, compound pipe stages,
+standalone subshell syntax, explicit exec, and executable text-script fallback
+remain outside the preview. The legacy installed C3 route uses newlib.
 
 
 C1 experimental branch adds external-only, foreground pipelines of at most four

@@ -319,6 +319,92 @@ begin (void)
   return result;
 }
 
+#ifndef SHARED
+static long
+fork_deadline_status (xos_u64 deadline)
+{
+  const long now = file_trap (46, 0, 0, 0);
+  if (now < 0) return -EIO;
+  return (xos_u64) now >= deadline ? -ETIMEDOUT : 0;
+}
+
+static long
+fork_error (long result)
+{
+  switch (result)
+    {
+    case -1: return -EPERM;
+    case -5: return -EAGAIN;
+    case -11: return -EBUSY;
+    case -18: return -ENOTSUP;
+    default: return -EIO;
+    }
+}
+
+/* The kernel copies the FD table's native pipe references, memory, and TLS.
+   The files service separately retains the open descriptions and cwd under
+   the authenticated child identity. Commit only after both have succeeded. */
+long
+__xos_file_fork (void)
+{
+  long result = begin ();
+  if (result != 0) return result;
+  int terminal_inherited = 0;
+  for (unsigned int i = 0; i < object_limit; ++i)
+    if (objects[i].kind == kind_terminal && objects[i].references != 0)
+      {
+        terminal_inherited = 1;
+        break;
+      }
+
+  const long now = file_trap (46, 0, 0, 0);
+  if (now < 0 || now > LONG_MAX - 5000000000L)
+    {
+      unlock_session ();
+      return -EIO;
+    }
+  const xos_u64 deadline = (xos_u64) now + 5000000000ULL;
+  const long child = file_trap (57, 0, 0, 0);
+  if (child == 0)
+    {
+      /* The copied session endpoints are owned by the parent. The first
+         child request obtains its new authenticated endpoints and sequence. */
+      memset (&session, 0, sizeof (session));
+      if (terminal_inherited) __xos_terminal_fork_child ();
+    }
+  else if (child < 0)
+    result = fork_error (child);
+  else
+    {
+      result = fork_deadline_status (deadline);
+      if (result == 0 && terminal_inherited)
+        result = __xos_terminal_fork_prepare ((xos_u64) child, deadline);
+      if (result == 0)
+        {
+          do
+            {
+              memset (&request, 0, sizeof (request));
+              request.operation = file_clone_session;
+              request.offset = (xos_u64) child;
+              result = __xos_file_session_call_until (&session, &request, &response, deadline);
+            }
+          while (result == -EAGAIN);
+        }
+      if (result == 0)
+        result = fork_deadline_status (deadline);
+      if (result == 0)
+        {
+          const long committed = file_trap (58, (xos_u64) child, 0, 0);
+          result = committed == 0 ? child : fork_error (committed);
+        }
+      if (result < 0)
+        (void) file_trap (19, (xos_u64) child, 0, 0);
+    }
+  unlock_session ();
+  return result;
+}
+#endif
+
 static int
 object_for (int fd)
 {

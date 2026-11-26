@@ -1,0 +1,73 @@
+{
+  "elf": "build/quick_app.elf",
+  "elf_sha256": "fefc635595e90312742ea0d3808d3d87454de66391e8edc48b986fc12f5de50a",
+  "font_sha256": "7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954",
+  "guest_qualification": "not_run",
+  "kit_manifest_sha256": "c3b9f48353ab96cff9dd405a694f1064b4442ceb54f9bb5781ac5de6498053d2",
+  "program_headers": [
+    {
+      "alignment": 4096,
+      "file_size": 20985974,
+      "flags": 5,
+      "memory_size": 20985974,
+      "type": 1,
+      "virtual_address": 1073741824
+    },
+    {
+      "alignment": 4096,
+      "file_size": 6257859,
+      "flags": 4,
+      "memory_size": 6257859,
+      "type": 1,
+      "virtual_address": 1094729728
+    },
+    {
+      "alignment": 4096,
+      "file_size": 659872,
+      "flags": 6,
+      "memory_size": 778680,
+      "type": 1,
+      "virtual_address": 1100988416
+    },
+    {
+      "alignment": 16,
+      "file_size": 176,
+      "flags": 4,
+      "memory_size": 400,
+      "type": 7,
+      "virtual_address": 1101648112
+    }
+  ],
+  "qt_inputs": {
+    "BundledFreetype": "9552abedb8f0a4afc1c052cb692dee2bfb3cb15e28829d6e2d3c9053ad945935",
+    "BundledHarfbuzz": "3fe3cb77d4d51290125574c6c26f38a69d9bfbc91a6cdacc7291d28d95849300",
+    "BundledPcre2": "94c11453189b2ab0b85ae090696b7641ee8346a01e042e1a203f8f9fdecaae25",
+    "BundledZLIB": "2909fdb3be43096240091b59d4d418316e1e133027aab18f1972c7b2d2193d25",
+    "Core": "6572280dee0959c173828241d3eb1c53f05a2e8617c1d6e6330b99b2f1a7ac7e",
+    "Gui": "17b33e879ea78ec5189567218892eba6790e01d4964fee1f459bcfbec4559b99",
+    "Qml": "0f5bdbf3e0ccc9e7d2d1906df5be5ab51851ae67ee68321e9752ba4014146a5d",
+    "QmlMeta": "3cb89a118e7faa5fde94788e2e9ee6a34a650d03fb9a2fe3f02d0d57b011c4ca",
+    "QmlModels": "71a2f484268b7036a7a875bcace210f0851aae697d17d1755560cb55dda0af29",
+    "Quick": "5fb56984fab0bf937ae48de7bb900fb39f7f56222c216154a5f28b1c6dae2ec8",
+    "moc": "a1337c30d3e0c85b14aa64b9b5e12e958003d77206b2daa2986f7f1bf868bdfc",
+    "modelsplugin": "818a1f87a8a310c57d6ddc43ee9486a9ebe75620a0333d87007d7833441dda87",
+    "qmlcachegen": "a9d3ccf51af314b48c1040a3b2643d76b07f8b7fc8a8dc749adaabede1c21997",
+    "qmlimportscanner": "90afededfde8772d347760e4ba6e420858b8fc2526be643a512e0fbd62eba20e",
+    "qmlplugin": "4a6777b01601a8fd12d86702d47050b31c9b5b164551596084e0767b4859024e",
+    "qmltyperegistrar": "ee3a9b55ba15c40f974ddd736ab6b16326c7a6a4548d34e40cfe79e9d5a3bad6",
+    "qtquick2plugin": "2c6014bb637102c4807e148f4b59f4c1f0440bb8dbbb47ef6c69b893668bd973",
+    "quickwindow": "4cb6ab1d35d244a7479e4b81a74e7d8344ad648b16e5f9e8f4a14b013ad0f284",
+    "rcc": "9ca52ca0ba6139fcf92802ed2d8cd267c67e403e2744e6a7922f50fcc3d7f9ca"
+  },
+  "qtbase_source_sha256": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80",
+  "sdk_manifest_sha256": "7eee04884a96ced6de12d20794af6809f544e3f15bc4e409b4197e58b1583d7a",
+  "status": "static_quick_application_linked",
+  "target_tools": {
+    "ar": "39ade51a05fba3546be68906d1b2c1788ce87d25d60bb30a030eaefbb96621b4",
+    "as": "616a1b8b8a202fbce829217332a197892571d4e48d119ed88d93b935b2615163",
+    "g++": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+    "gcc": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+    "ld": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1",
+    "ranlib": "d9034b71a71fbab28306582bfc37480e81dfc85d976d1f1b0593698507671a1d"
+  }
+}

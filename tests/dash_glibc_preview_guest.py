@@ -107,6 +107,44 @@ done
 /bin/stream_child emit | /bin/stream_child verify || exit 82
 printf 'DASH_GLIBC_PIPE_RECOVERED=%s\n' "$i"
 '''
+SUBSTITUTION = r'''set -- 'two words' ''
+value=parent
+probe() { printf '%s:%s\n\n' "$value" "$1"; }
+result=$(probe "$1")
+test "$result" = 'parent:two words' || exit 101
+legacy=`printf '%s\n\n' backticks`
+test "$legacy" = backticks || exit 102
+result=$(value=child; cd /cases && probe "$1"; printf '%s\n\n' "$PWD")
+test "$result" = 'child:two words
+
+/cases' || exit 103
+test "$value:$PWD:$#" = 'parent:/:2' || exit 104
+result=$(printf '%s' "$(printf nested)")
+test "$result" = nested || exit 105
+result=$(printf 'nonzero\n'; exit 23)
+test "$?:$result" = '23:nonzero' || exit 106
+result=$(false)
+test "$?:$result" = '1:' || exit 107
+printf 'DASH_GLIBC_SUBSTITUTION_PASS\n'
+'''
+SUBSTITUTION_STREAM = r'''result=$(printf '%10037s' '')
+test "${#result}" -eq 10037 || exit 101
+printf '%s\n' 'file input' >/out/substitution.in || exit 102
+result=$(/bin/stream_child line </out/substitution.in) || exit 103
+test "$result" = 'file input' || exit 104
+result=$(/bin/stream_child emit | /bin/stream_child verify) || exit 105
+test "$result" = DASH_GLIBC_STREAM_BYTES=10037 || exit 106
+set -o pipefail
+result=$(/bin/stream_child emit7 | /bin/stream_child verify)
+test "$?:$result" = '7:DASH_GLIBC_STREAM_BYTES=10037' || exit 107
+printf 'DASH_GLIBC_SUBSTITUTION_STREAM_PASS\n'
+'''
+SUBSTITUTION_CLOSE = r'''exec 0<&- 2>&-
+result=$(printf retained)
+test "$result" = retained || exit 101
+/bin/stream_child closed-err || exit 102
+printf 'DASH_GLIBC_SUBSTITUTION_CLOSE_PASS\n'
+'''
 REDIRECT = r'''printf '%s\n' 'file input' >/out/stream.in || exit 81
 /bin/stream_child line </out/stream.in >/out/stream.log 2>&1 || exit 82
 /bin/stream_child line </out/stream.in >>/out/stream.log 2>&1 || exit 83
@@ -150,7 +188,11 @@ CASES = {
     'pipeline_builtin': ("printf unexpected | printf unexpected\n",
                          2, b'C1 pipeline requires external commands', ''),
     'subshell': ("(printf unexpected)\n", 2, b'subshells unavailable', ''),
-    'substitution': ('printf "%s\\n" "$(printf unexpected)"\n', 2, b'command substitution unavailable', ''),
+    'substitution': (SUBSTITUTION, 0, b'DASH_GLIBC_SUBSTITUTION_PASS', ''),
+    'substitution_stream': (SUBSTITUTION_STREAM, 0, b'DASH_GLIBC_SUBSTITUTION_STREAM_PASS', ''),
+    'substitution_close': (SUBSTITUTION_CLOSE, 0, b'DASH_GLIBC_SUBSTITUTION_CLOSE_PASS', ''),
+    'substitution_denied': ('test -z "$(printf unexpected)"\n', 2, b'Operation not permitted', ''),
+    'fork_runtime': ('/bin/fork_runtime\n', 0, b'DASH_GLIBC_FORK_RUNTIME_PASS', ''),
     'heredoc': (HEREDOC, 0, br'DASH_GLIBC_HERE_PASS <literal $word \keep> <expanded:expanded:12>', ''),
     'heredoc_failure': (HEREDOC_FAILURE, 0, b'DASH_GLIBC_HERE_RECOVERED=24', ''),
     'external_heredoc': (EXTERNAL_HEREDOC, 0, b'DASH_GLIBC_EXTERNAL_HERE_PASS', ''),
@@ -167,6 +209,7 @@ CASES = {
 }
 EXTERNAL_CASES = {'external_explicit', 'external_path', 'external_missing',
                   'external_text', 'authority_denied', 'unmarked_redirect'}
+RESTRICTED_CASES = {'authority_denied', 'substitution_denied'}
 
 
 def bind_preview(args):
@@ -200,9 +243,11 @@ def build_programs(args, report):
     fixtures = ROOT / 'tests/fixtures/glibc_g3'
     child_source = fixtures / 'dash_external_child.c'
     stream_source = fixtures / 'dash_stream_child.c'
+    fork_source = fixtures / 'dash_fork_runtime.c'
     launcher_source = fixtures / 'dash_without_create.cpp'
     child = args.artifacts / 'preview_child.elf'
     stream = args.artifacts / 'stream_child.elf'
+    fork = args.artifacts / 'fork_runtime.elf'
     launcher = args.artifacts / 'preview_without_create.elf'
     sdk = args.system / 'sdk'
     compiler = tool('g++')
@@ -211,6 +256,8 @@ def build_programs(args, report):
          '--source', child_source, '--output', child],
         [sys.executable, ROOT / 'scripts/build_glibc_program.py', '--sdk', args.glibc_sdk / 'sysroot',
          '--source', stream_source, '--output', stream],
+        [sys.executable, ROOT / 'scripts/build_glibc_program.py', '--sdk', args.glibc_sdk / 'sysroot',
+         '--source', fork_source, '--output', fork],
         [compiler, *COMMON_FLAGS, *X86_FLAGS, '-I', sdk / 'include', '-nostdlib', '-static', '-no-pie',
          '-Wl,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096',
          '-T', sdk / 'user.ld', sdk / 'crt0.o', launcher_source, '-Wl,--start-group',
@@ -221,9 +268,10 @@ def build_programs(args, report):
             subprocess.run(invocation, check=True, stdout=log, stderr=subprocess.STDOUT)
     report['programs'] = {
         binary.name: {'sha256': sha(binary), 'source_sha256': sha(source)}
-        for binary, source in ((child, child_source), (stream, stream_source), (launcher, launcher_source))
+        for binary, source in ((child, child_source), (stream, stream_source), (fork, fork_source),
+                               (launcher, launcher_source))
     }
-    return child, stream, launcher
+    return child, stream, fork, launcher
 
 
 def main():
@@ -241,7 +289,7 @@ def main():
         report.update(system_build_id=system['build_id'], iso_sha256=sha(iso),
                       system_manifest_sha256=sha(args.system / 'manifest.json'),
                       legacy=legacy, preview=bind_preview(args))
-        child, stream, launcher = build_programs(args, report)
+        child, stream, fork, launcher = build_programs(args, report)
         with tempfile.TemporaryDirectory(prefix='xos_dash_glibc_') as folder:
             work = Path(folder)
             disk = work / 'work.img'
@@ -250,7 +298,9 @@ def main():
             install(disk, args.preview_receipt, '/bin/dash_glibc')
             transfer(disk, 'import', '/bin/preview_child', child)
             transfer(disk, 'import', '/bin/stream_child', stream)
+            transfer(disk, 'import', '/bin/fork_runtime', fork)
             transfer(disk, 'import', '/bin/preview_without_create', launcher)
+            transfer(disk, 'import', '/bin/terminal.elf', args.system / 'user_terminal.image.elf')
             text_tool = args.artifacts / 'text_tool'
             text_tool.write_text('printf "DASH_GLIBC_TEXT_EXECUTED\\n"\n')
             report['fixtures'][text_tool.name] = sha(text_tool)
@@ -260,7 +310,7 @@ def main():
             fixtures = {'dot.inc': 'source_marker=DASH_GLIBC_FILES_PASS\n'}
             for name, (source, _, _, arguments) in CASES.items():
                 fixtures[name + '.sh'] = source
-                launcher = '/bin/preview_without_create' if name == 'authority_denied' else '/bin/dash_glibc'
+                launcher = '/bin/preview_without_create' if name in RESTRICTED_CASES else '/bin/dash_glibc'
                 fixtures['via_dash_' + name + '.sh'] = (
                     f'{launcher} /cases/{name}.sh{arguments}\nstatus=$?\n'
                     'printf "DASH_GLIBC_EXIT=%s\\n" "$status"\nexit "$status"\n')
@@ -281,8 +331,9 @@ def main():
             for shell in ('xsh', 'dash'):
                 for name, (_, status, marker, arguments) in CASES.items():
                     if shell == 'xsh':
-                        entry = 'exec-file ' if name == 'authority_denied' else ''
-                        line = f'{entry}/bin/dash_glibc /cases/{name}.sh{arguments}'
+                        entry = ('exec-file /bin/dash_glibc'
+                                 if name in RESTRICTED_CASES else '/bin/dash_glibc')
+                        line = f'{entry} /cases/{name}.sh{arguments}'
                     else:
                         line = f'dash /cases/via_dash_{name}.sh'
                     began = time.monotonic()
@@ -309,6 +360,32 @@ def main():
                     assert after == baseline, (baseline, after)
                     record.update(exit_code=status, resources=after)
                     print(f'PASS {shell} {name} ({record["elapsed_seconds"]:.2f}s)', flush=True)
+            start = len(guest.output)
+            send_bytes(guest, b'/bin/dash_glibc -i\r')
+            guest.expect(b'$ ', start=start, timeout=60)
+            start = len(guest.output)
+            send_bytes(guest, b'echo "$(printf \'DASH_GLIBC_%s\' INTERACTIVE_CAPTURE)"\r')
+            guest.expect(b'DASH_GLIBC_INTERACTIVE_CAPTURE', start=start, timeout=60)
+            start = len(guest.output)
+            send_bytes(guest, b'exit\r')
+            guest.expect_supervisor(start=start, timeout=60)
+            assert resources(guest) == baseline
+            report['interactive_substitution'] = 'passed'
+            print('PASS interactive substitution', flush=True)
+            terminal = command(guest, 'tty-run /bin/dash_glibc /cases/builtins.sh alpha',
+                               b'kind=exited code=', timeout=90)
+            assert b'DASH_GLIBC_BUILTINS_PASS' in terminal and b'kind=exited code=0' in terminal, terminal
+            terminal_baseline = resources(guest)
+            terminal = command(guest, 'tty-run /bin/dash_glibc /cases/substitution.sh',
+                               b'kind=exited code=', timeout=90)
+            assert re.findall(rb'\[wait\] pid=\d+ kind=(\w+) code=(-?\d+)', terminal) == [
+                (b'exited', b'0')]
+            assert b'DASH_GLIBC_SUBSTITUTION_PASS' in terminal, terminal
+            terminal_after = resources(guest)
+            assert terminal_after == terminal_baseline
+            report['terminal_substitution'] = {'status': 'passed', 'baseline': terminal_baseline,
+                                               'after': terminal_after}
+            print('PASS terminal service substitution', flush=True)
             command(guest, 'sync', b'[files] sync=ok')
             guest.close()
             report['reserved_after'] = reserved_snapshot(disk)
@@ -322,6 +399,8 @@ def main():
                 'heredoc.log': b'external:expanded\nstream stderr\nexternal:$value\nstream stderr\n',
                 'legacy.txt': b'file input\n',
                 'unmarked': b'',
+                'fork-shared.txt': b'abc',
+                'substitution.in': b'file input\n',
             }
             report['redirected_files'] = {}
             for name, expected in evidence.items():

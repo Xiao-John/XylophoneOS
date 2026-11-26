@@ -75,26 +75,35 @@ bool known_error(i64 result) {
     default: return false;
     }
 }
-i64 exchange(client& session, request& message, response& reply) {
+i64 deadline_status(u64 deadline_ns) {
+    if (deadline_ns == thread_deadline_infinite) return 0;
+    const i64 now = sdk::syscall(sys_clock_monotonic);
+    if (now < 0) return now;
+    return static_cast<u64>(now) >= deadline_ns ? thread_error_timeout : 0;
+}
+i64 exchange(client& session, request& message, response& reply, u64 deadline_ns = thread_deadline_infinite) {
     if (session.send_handle == 0 || session.receive_handle == 0 || session.next_sequence == 0) {
         close(session);
         return process_error_state;
     }
+    if (const i64 expired = deadline_status(deadline_ns); expired != 0) return expired;
     message.version = version; message.size = sizeof(message); message.sequence = session.next_sequence++;
-    i64 result = sdk::channel_send_wait(session.send_handle, &message, sizeof(message), thread_deadline_infinite);
+    i64 result = sdk::channel_send_wait(session.send_handle, &message, sizeof(message), deadline_ns);
     if (result == 0)
-        result = sdk::channel_receive_wait(session.receive_handle, &reply, sizeof(reply), thread_deadline_infinite);
+        result = sdk::channel_receive_wait(session.receive_handle, &reply, sizeof(reply), deadline_ns);
     if (result < 0) { close(session); return result; }
     if (result != static_cast<i64>(sizeof(reply)) || reply.version != version ||
         reply.size != sizeof(reply) || reply.sequence != message.sequence || reply.length > data_bytes ||
         reply.reserved != 0 || !known_error(reply.result)) {
         close(session); return process_error_state;
     }
-    return 0;
+    // A complete matching reply synchronizes the parent transport even when
+    // its caller's startup deadline has elapsed and the child must be aborted.
+    return deadline_status(deadline_ns);
 }
 }
 
-i64 register_fork(client& session, const channel_fork_pair& pair) {
+i64 register_fork_until(client& session, const channel_fork_pair& pair, u64 deadline_ns) {
     if (pair.version != channel_version || pair.size != sizeof(pair) || pair.child_pid == 0 ||
         pair.source_send != session.send_handle || pair.source_receive != session.receive_handle ||
         pair.child_send == 0 || pair.child_receive == 0 || pair.child_send == pair.child_receive)
@@ -105,10 +114,14 @@ i64 register_fork(client& session, const channel_fork_pair& pair) {
     message.length = sizeof(channels);
     const auto* bytes = reinterpret_cast<const u8*>(&channels);
     for (u32 i = 0; i < sizeof(channels); ++i) message.data[i] = bytes[i];
-    const i64 result = exchange(session, message, reply);
+    const i64 result = exchange(session, message, reply, deadline_ns);
     if (result != 0) return result;
     if (reply.result > 0 || reply.length != 0) { close(session); return process_error_state; }
     return reply.result;
+}
+
+i64 register_fork(client& session, const channel_fork_pair& pair) {
+    return register_fork_until(session, pair, thread_deadline_infinite);
 }
 
 i64 get_mode(client& session, mode& value) {

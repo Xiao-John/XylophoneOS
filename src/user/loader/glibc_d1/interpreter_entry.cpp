@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "interpreter_entry.hpp"
 #include <elf.h>
+#include <xos/vm.hpp>
 
 namespace xos::glibc_d1 {
 namespace {
@@ -58,9 +59,11 @@ void copy_pin_plan(xos_rtld_pin_plan& output, const xos_rtld_pin_plan* source) {
 
 interpreter_entry_result abandon(interpreter_entry_error error, interpreter_allocations& scratch,
                                  const image_map_result& mapped = {}) {
+    const i64 heap_error = release_image(scratch.early_heap);
     const i64 interpreter_error = release_image(scratch.interpreter);
     const i64 main_error = release_image(scratch.main);
-    return {error, mapped, interpreter_error != 0 ? interpreter_error : main_error};
+    const i64 image_error = interpreter_error != 0 ? interpreter_error : main_error;
+    return {error, mapped, heap_error != 0 ? heap_error : image_error};
 }
 }
 
@@ -68,12 +71,15 @@ interpreter_entry_result prepare_interpreter_entry(
     const startup_info* startup, const pinned_image& main, main_headers headers,
     const pinned_image& interpreter, execution_mode mode, entropy_source entropy,
     xos_file_session& early_files, xos_d1_entry_handoff& frame,
-    interpreter_allocations& allocations, const xos_rtld_pin_plan* dependencies) {
+    interpreter_allocations& allocations, const xos_rtld_pin_plan* dependencies,
+    const xos_rtld_heap_plan* early_heap) {
     const auto stack_address = reinterpret_cast<u64>(&frame);
     if (stack_address < XOS_D1_STACK_ENTRY_MIN || stack_address > process_startup_begin - sizeof(frame)
         || (stack_address & 15) != 0 || frame.record.magic != 0
         || allocations.main.start != 0 || allocations.main.bytes != 0
         || allocations.interpreter.start != 0 || allocations.interpreter.bytes != 0
+        || allocations.early_heap.start != 0 || allocations.early_heap.bytes != 0
+        || !xos_rtld_heap_plan_valid(early_heap)
         || (dependencies != nullptr && !xos_rtld_valid_pin_plan(dependencies))
         || &early_files == &frame.record.files || early_files.phase != xos_file_session_active) {
         return {interpreter_entry_error::layout, {}, 0};
@@ -92,10 +98,17 @@ interpreter_entry_result prepare_interpreter_entry(
     if (!build_entry_stack(startup, main.image, headers, interpreter.image, mode, entropy, frame.stack)) {
         return abandon(interpreter_entry_error::stack, scratch);
     }
+    const i64 reserved = sdk::vm_reserve(early_heap->base, early_heap->bytes, vm_page_size, true);
+    if (reserved >= 0) { scratch.early_heap = {static_cast<u64>(reserved), early_heap->bytes}; }
+    if (reserved != static_cast<i64>(early_heap->base)) {
+        return abandon(interpreter_entry_error::heap, scratch,
+                       {image_map_error::reserve, reserved < 0 ? reserved : vm_error_address, 0});
+    }
     if (__xos_file_session_take(&frame.record.files, &early_files) != 0) {
         return abandon(interpreter_entry_error::files, scratch);
     }
     copy_pin_plan(frame.record.dependencies, dependencies);
+    frame.record.heap = *early_heap;
     frame.record.version = XOS_D1_ENTRY_VERSION;
     frame.record.size = sizeof(frame.record);
     frame.record.main_phdr = main.image.bias + headers.address;

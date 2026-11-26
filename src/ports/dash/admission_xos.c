@@ -40,9 +40,6 @@ void xos_check_tree(union node *n) {
     case NARG:
         for (; n; n = n->narg.next) {
             struct nodelist *sub;
-#ifdef XOS_DASH_GLIBC_PREVIEW
-            if (n->narg.backquote) sh_error("command substitution unavailable in the glibc dash preview");
-#endif
             for (sub = n->narg.backquote; sub; sub = sub->next) xos_check_tree(sub->n);
         }
         break;

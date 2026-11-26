@@ -1,0 +1,732 @@
+{
+  "status": "passed_subset",
+  "runner_sha256": "65aca5885a686a063048491c2dbed3c48cd93ad464308edc5862088325f06c5d",
+  "runs": [
+    {
+      "case": "builtins",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/builtins.sh alpha\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000353000\r\n[loader] started pid=10 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=10\r\nDASH_GLIBC_BUILTINS_PASS\n[task] event=reclaimed pid=10 pages=317\r\n[wait] pid=10 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 0.534522863003076,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "files",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/files.sh\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x0000000000353000\r\n[loader] started pid=11 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=11\r\nDASH_GLIBC_FILES_PASS\n[task] event=reclaimed pid=11 pages=317\r\n[wait] pid=11 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 0.6828456279981765,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "pipeline",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/pipeline.sh\n[process] event=started pid=12 parent=7\r\n[process] pid=12 address_space=0x0000000000353000\r\n[loader] started pid=12 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=12\r\n[process] event=started pid=13 parent=12\r\n[process] pid=13 address_space=0x0000000000670000\r\n[process] event=started pid=14 parent=12\r\n[process] pid=14 address_space=0x0000000000755000\r\n[process] event=started pid=15 parent=12\r\n[process] pid=15 address_space=0x000000000083a000\r\n[process] event=wait_blocked parent=12 child=13\r\n[task] event=reclaimed pid=13 pages=229\r\n[process] event=wait_blocked parent=12 child=14\r\n[task] event=reclaimed pid=14 pages=229\r\n[process] event=wait_blocked parent=12 child=15\r\nDASH_GLIBC_STREAM_BYTES=10037\n[task] event=reclaimed pid=15 pages=229\r\nDASH_GLIBC_PIPE_PASS\n[task] event=reclaimed pid=12 pages=317\r\n[wait] pid=12 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 9.800809159001801,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "pipeline_printf",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/pipeline_printf.sh\n[process] event=started pid=16 parent=7\r\n[process] pid=16 address_space=0x0000000000353000\r\n[loader] started pid=16 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=16\r\n[process] event=started pid=17 parent=16\r\n[process] pid=17 address_space=0x0000000000670000\r\n[process] event=wait_blocked parent=16 child=17\r\nDASH_GLIBC_STREAM_BYTES=10037\n[task] event=reclaimed pid=17 pages=229\r\n[task] event=reclaimed pid=16 pages=317\r\n[wait] pid=16 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 3.5820101799981785,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "pipeline_status",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/pipeline_status.sh\n[process] event=started pid=18 parent=7\r\n[process] pid=18 address_space=0x0000000000353000\r\n[loader] started pid=18 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=18\r\n[process] event=started pid=19 parent=18\r\n[process] pid=19 address_space=0x0000000000670000\r\n[process] event=started pid=20 parent=18\r\n[process] pid=20 address_space=0x0000000000755000\r\n[process] event=wait_blocked parent=18 child=19\r\n[task] event=reclaimed pid=19 pages=229\r\nDASH_GLIBC_STREAM_BYTES=10037\n[task] event=reclaimed pid=20 pages=229\r\n[process] event=started pid=21 parent=18\r\n[process] pid=21 address_space=0x0000000000670000\r\n[process] event=started pid=22 parent=18\r\n[process] pid=22 address_space=0x0000000000755000\r\n[process] event=wait_blocked parent=18 child=21\r\n[task] event=reclaimed pid=22 pages=229\r\n[task] event=reclaimed pid=21 pages=229\r\nDASH_GLIBC_PIPE_STATUS_PASS\n[task] event=reclaimed pid=18 pages=317\r\n[wait] pid=18 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 12.537715962003858,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "pipeline_redirect",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/pipeline_redirect.sh\n[process] event=started pid=23 parent=7\r\n[process] pid=23 address_space=0x0000000000353000\r\n[loader] started pid=23 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=23\r\n[process] event=started pid=24 parent=23\r\n[process] pid=24 address_space=0x0000000000670000\r\n[process] event=started pid=25 parent=23\r\n[process] pid=25 address_space=0x0000000000755000\r\n[process] event=wait_blocked parent=23 child=24\r\n[task] event=reclaimed pid=24 pages=229\r\n[process] event=wait_blocked parent=23 child=25\r\n[task] event=reclaimed pid=25 pages=229\r\n[process] event=started pid=26 parent=23\r\n[process] pid=26 address_space=0x0000000000670000\r\n[process] event=wait_blocked parent=23 child=26\r\nDASH_GLIBC_STREAM_BYTES=10037\n[task] event=reclaimed pid=26 pages=229\r\nDASH_GLIBC_PIPE_FILE_PASS\n[task] event=reclaimed pid=23 pages=317\r\n[wait] pid=23 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 9.939511646996834,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "pipeline_closed",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/pipeline_closed.sh\n[process] event=started pid=27 parent=7\r\n[process] pid=27 address_space=0x0000000000353000\r\n[loader] started pid=27 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=27\r\n[process] event=started pid=28 parent=27\r\n[process] pid=28 address_space=0x0000000000670000\r\n[process] event=started pid=29 parent=27\r\n[process] pid=29 address_space=0x0000000000755000\r\n[process] event=wait_blocked parent=27 child=28\r\n[task] event=reclaimed pid=28 pages=229\r\n[process] event=wait_blocked parent=27 child=29\r\nDASH_GLIBC_STREAM_BYTES=10037\n[task] event=reclaimed pid=29 pages=229\r\n[process] event=started pid=30 parent=27\r\n[process] pid=30 address_space=0x0000000000670000\r\n[process] event=wait_blocked parent=27 child=30\r\n[task] event=reclaimed pid=30 pages=229\r\nDASH_GLIBC_PIPE_CLOSED_PASS\n[task] event=reclaimed pid=27 pages=317\r\n[wait] pid=27 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 9.468357942001603,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "pipeline_failure",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/pipeline_failure.sh\n[process] event=started pid=31 parent=7\r\n[process] pid=31 address_space=0x0000000000353000\r\n[loader] started pid=31 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=31\r\n[process] event=started pid=32 parent=31\r\n[process] pid=32 address_space=0x0000000000670000\r\n/cases/pipeline_failure.sh: 3: /bin/not_present: No such file or directory\n[task] event=reclaimed pid=32 pages=229\r\n[process] event=started pid=33 parent=31\r\n[process] pid=33 address_space=0x0000000000670000\r\n/cases/pipeline_failure.sh: 3: /bin/not_present: No such file or directory\n[task] event=reclaimed pid=33 pages=229\r\n[process] event=started pid=34 parent=31\r\n[process] pid=34 address_space=0x0000000000670000\r\n/cases/pipeline_failure.sh: 3: /bin/not_present: No such file or directory\n[task] event=reclaimed pid=34 pages=229\r\n[process] event=started pid=35 parent=31\r\n[process] pid=35 address_space=0x0000000000670000\r\n/cases/pipeline_failure.sh: 3: /bin/not_present: No such file or directory\n[task] event=reclaimed pid=35 pages=229\r\n[process] event=started pid=36 parent=31\r\n[process] pid=36 address_space=0x0000000000670000\r\n/cases/pipeline_failure.sh: 3: /bin/not_present: No such file or directory\n[task] event=reclaimed pid=36 pages=229\r\n[process] event=started pid=37 parent=31\r\n[process] pid=37 address_space=0x0000000000670000\r\n/cases/pipeline_failure.sh: 3: /bin/not_present: No such file or directory\n[task] event=reclaimed pid=37 pages=229\r\n[process] event=started pid=38 parent=31\r\n[process] pid=38 address_space=0x0000000000670000\r\n/cases/pipeline_failure.sh: 3: /bin/not_present: No such file or directory\n[task] event=reclaimed pid=38 pages=229\r\n[process] event=started pid=39 parent=31\r\n[process] pid=39 address_space=0x0000000000670000\r\n/cases/pipeline_failure.sh: 3: /bin/not_present: No such file or directory\n[task] event=reclaimed pid=39 pages=229\r\n[process] event=started pid=40 parent=31\r\n[process] pid=40 address_space=0x0000000000670000\r\n[process] event=started pid=41 parent=31\r\n[process] pid=41 address_space=0x0000000000755000\r\n[process] event=wait_blocked parent=31 child=40\r\n[task] event=reclaimed pid=40 pages=229\r\nDASH_GLIBC_STREAM_BYTES=10037\n[task] event=reclaimed pid=41 pages=229\r\nDASH_GLIBC_PIPE_RECOVERED=8\n[task] event=reclaimed pid=31 pages=317\r\n[wait] pid=31 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 30.551120107993484,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "pipeline_builtin",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/pipeline_builtin.sh\n[process] event=started pid=42 parent=7\r\n[process] pid=42 address_space=0x0000000000353000\r\n[loader] started pid=42 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=42\r\n/cases/pipeline_builtin.sh: 0: C1 pipeline requires external commands\n[task] event=reclaimed pid=42 pages=317\r\n[wait] pid=42 kind=exited code=2\nxsh> ",
+      "elapsed_seconds": 0.539085200005502,
+      "exit_code": 2,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "subshell",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/subshell.sh\n[process] event=started pid=43 parent=7\r\n[process] pid=43 address_space=0x0000000000353000\r\n[loader] started pid=43 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=43\r\n/cases/subshell.sh: 0: subshells unavailable in the glibc dash preview\n[task] event=reclaimed pid=43 pages=317\r\n[wait] pid=43 kind=exited code=2\nxsh> ",
+      "elapsed_seconds": 0.49201300799904857,
+      "exit_code": 2,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "substitution",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/substitution.sh\n[process] event=started pid=44 parent=7\r\n[process] pid=44 address_space=0x0000000000353000\r\n[loader] started pid=44 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=44\r\n[process] event=fork_prepared pid=45 parent=44 depth=1 pages=309\r\n[process] event=fork_committed pid=45 parent=44\r\n[task] event=reclaimed pid=45 pages=24\r\n[process] event=fork_prepared pid=46 parent=44 depth=1 pages=309\r\n[process] event=fork_committed pid=46 parent=44\r\n[task] event=reclaimed pid=46 pages=24\r\n[process] event=fork_prepared pid=47 parent=44 depth=1 pages=309\r\n[process] event=fork_committed pid=47 parent=44\r\n[task] event=reclaimed pid=47 pages=24\r\n[process] event=fork_prepared pid=48 parent=44 depth=1 pages=309\r\n[process] event=fork_committed pid=48 parent=44\r\n[process] event=fork_prepared pid=49 parent=48 depth=2 pages=309\r\n[process] event=fork_committed pid=49 parent=48\r\n[task] event=reclaimed pid=49 pages=23\r\n[task] event=reclaimed pid=48 pages=24\r\n[process] event=fork_prepared pid=50 parent=44 depth=1 pages=309\r\n[process] event=fork_committed pid=50 parent=44\r\n[task] event=reclaimed pid=50 pages=23\r\n[process] event=fork_prepared pid=51 parent=44 depth=1 pages=309\r\n[process] event=fork_committed pid=51 parent=44\r\n[task] event=reclaimed pid=51 pages=21\r\nDASH_GLIBC_SUBSTITUTION_PASS\n[task] event=reclaimed pid=44 pages=317\r\n[wait] pid=44 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 0.8755968719997327,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "substitution_stream",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/substitution_stream.sh\n[process] event=started pid=52 parent=7\r\n[process] pid=52 address_space=0x0000000000353000\r\n[loader] started pid=52 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=52\r\n[process] event=fork_prepared pid=53 parent=52 depth=1 pages=309\r\n[process] event=fork_committed pid=53 parent=52\r\n[task] event=reclaimed pid=53 pages=26\r\n[process] event=fork_prepared pid=54 parent=52 depth=1 pages=309\r\n[process] event=fork_committed pid=54 parent=52\r\n[process] event=started pid=55 parent=54\r\n[process] pid=55 address_space=0x000000000068d000\r\n[process] event=wait_blocked parent=54 child=55\r\nstream stderr\n[task] event=reclaimed pid=55 pages=229\r\n[task] event=reclaimed pid=54 pages=31\r\n[process] event=fork_prepared pid=56 parent=52 depth=1 pages=309\r\n[process] event=fork_committed pid=56 parent=52\r\n[process] event=started pid=57 parent=56\r\n[process] pid=57 address_space=0x000000000068e000\r\n[process] event=started pid=58 parent=56\r\n[process] pid=58 address_space=0x0000000000775000\r\n[process] event=wait_blocked parent=56 child=57\r\n[task] event=reclaimed pid=57 pages=229\r\n[task] event=reclaimed pid=58 pages=229\r\n[task] event=reclaimed pid=56 pages=32\r\n[process] event=fork_prepared pid=59 parent=52 depth=1 pages=309\r\n[process] event=fork_committed pid=59 parent=52\r\n[process] event=started pid=60 parent=59\r\n[process] pid=60 address_space=0x000000000068d000\r\n[process] event=started pid=61 parent=59\r\n[process] pid=61 address_space=0x0000000000774000\r\n[process] event=wait_blocked parent=59 child=60\r\n[task] event=reclaimed pid=60 pages=229\r\n[task] event=reclaimed pid=61 pages=229\r\n[task] event=reclaimed pid=59 pages=31\r\nDASH_GLIBC_SUBSTITUTION_STREAM_PASS\n[task] event=reclaimed pid=52 pages=317\r\n[wait] pid=52 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 15.73844392200408,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "substitution_close",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/substitution_close.sh\n[process] event=started pid=62 parent=7\r\n[process] pid=62 address_space=0x0000000000353000\r\n[loader] started pid=62 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=62\r\n[process] event=fork_prepared pid=63 parent=62 depth=1 pages=309\r\n[process] event=fork_committed pid=63 parent=62\r\n[task] event=reclaimed pid=63 pages=23\r\n[process] event=started pid=64 parent=62\r\n[process] pid=64 address_space=0x00000000005f7000\r\n[process] event=wait_blocked parent=62 child=64\r\n[task] event=reclaimed pid=64 pages=229\r\nDASH_GLIBC_SUBSTITUTION_CLOSE_PASS\n[task] event=reclaimed pid=62 pages=317\r\n[wait] pid=62 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 3.4913002379980753,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "substitution_denied",
+      "shell": "xsh",
+      "output": "exec-file /bin/dash_glibc /cases/substitution_denied.sh\n[process] event=started pid=65 parent=7\r\n[process] pid=65 address_space=0x0000000000353000\r\n[loader] started pid=65 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=65\r\n/cases/substitution_denied.sh: 1: fork: Operation not permitted\n[task] event=reclaimed pid=65 pages=317\r\n[wait] pid=65 kind=exited code=2\nxsh> ",
+      "elapsed_seconds": 0.4448984639966511,
+      "exit_code": 2,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "fork_runtime",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/fork_runtime.sh\n[process] event=started pid=66 parent=7\r\n[process] pid=66 address_space=0x0000000000353000\r\n[loader] started pid=66 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=66\r\n[process] event=started pid=67 parent=66\r\n[process] pid=67 address_space=0x0000000000670000\r\n[process] event=wait_blocked parent=66 child=67\r\n[process] event=fork_prepared pid=68 parent=67 depth=1 pages=223\r\n[process] event=fork_committed pid=68 parent=67\r\n[process] event=wait_blocked parent=67 child=68\r\n[task] event=reclaimed pid=68 pages=15\r\n[process] event=fork_prepared pid=69 parent=67 depth=1 pages=223\r\n[process] event=fork_committed pid=69 parent=67\r\n[process] event=wait_blocked parent=67 child=69\r\n[task] event=reclaimed pid=69 pages=13\r\nDASH_GLIBC_FORK_RUNTIME_PASS tls=isolated alias=shared atfork=ordered name_stack=rebound\n[task] event=reclaimed pid=67 pages=231\r\n[task] event=reclaimed pid=66 pages=317\r\n[wait] pid=66 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 3.5486812890012516,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "heredoc",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/heredoc.sh\n[process] event=started pid=70 parent=7\r\n[process] pid=70 address_space=0x0000000000353000\r\n[loader] started pid=70 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=70\r\nDASH_GLIBC_HERE_PASS <literal $word \\keep> <expanded:expanded:12>\n[task] event=reclaimed pid=70 pages=317\r\n[wait] pid=70 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 0.581301630998496,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "heredoc_failure",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/heredoc_failure.sh\n[process] event=started pid=71 parent=7\r\n[process] pid=71 address_space=0x0000000000353000\r\n[loader] started pid=71 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=71\r\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\nDASH_GLIBC_HERE_RECOVERED=24\n[task] event=reclaimed pid=71 pages=317\r\n[wait] pid=71 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 1.931058631002088,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "external_heredoc",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/external_heredoc.sh\n[process] event=started pid=72 parent=7\r\n[process] pid=72 address_space=0x0000000000353000\r\n[loader] started pid=72 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=72\r\n[process] event=started pid=73 parent=72\r\n[process] pid=73 address_space=0x0000000000670000\r\n[process] event=wait_blocked parent=72 child=73\r\n[task] event=reclaimed pid=73 pages=229\r\n[process] event=started pid=74 parent=72\r\n[process] pid=74 address_space=0x0000000000670000\r\n[process] event=wait_blocked parent=72 child=74\r\n[task] event=reclaimed pid=74 pages=229\r\nDASH_GLIBC_EXTERNAL_HERE_PASS\n[task] event=reclaimed pid=72 pages=317\r\n[wait] pid=72 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 6.96950805799861,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "external_redirect",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/external_redirect.sh\n[process] event=started pid=75 parent=7\r\n[process] pid=75 address_space=0x0000000000353000\r\n[loader] started pid=75 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=75\r\n[process] event=started pid=76 parent=75\r\n[process] pid=76 address_space=0x0000000000670000\r\n[process] event=wait_blocked parent=75 child=76\r\n[task] event=reclaimed pid=76 pages=229\r\n[process] event=started pid=77 parent=75\r\n[process] pid=77 address_space=0x0000000000670000\r\n[process] event=wait_blocked parent=75 child=77\r\n[task] event=reclaimed pid=77 pages=229\r\n[process] event=started pid=78 parent=75\r\n[process] pid=78 address_space=0x0000000000670000\r\n[process] event=wait_blocked parent=75 child=78\r\n[task] event=reclaimed pid=78 pages=229\r\n[process] event=started pid=79 parent=75\r\n[process] pid=79 address_space=0x0000000000670000\r\n[process] event=wait_blocked parent=75 child=79\r\n[task] event=reclaimed pid=79 pages=164\r\nDASH_GLIBC_REDIRECT_PASS\n[task] event=reclaimed pid=75 pages=317\r\n[wait] pid=75 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 11.291749476004043,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "unmarked_redirect",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/unmarked_redirect.sh\n[process] event=started pid=80 parent=7\r\n[process] pid=80 address_space=0x0000000000353000\r\n[loader] started pid=80 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=80\r\n/cases/unmarked_redirect.sh: 4: /bin/preview_child: Not supported\nDASH_GLIBC_CHILD_RC=126\n[task] event=reclaimed pid=80 pages=317\r\n[wait] pid=80 kind=exited code=126\nxsh> ",
+      "elapsed_seconds": 0.9816457439956139,
+      "exit_code": 126,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "external_explicit",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/external_explicit.sh\n[process] event=started pid=81 parent=7\r\n[process] pid=81 address_space=0x0000000000353000\r\n[loader] started pid=81 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=81\r\n[process] event=started pid=82 parent=81\r\n[process] pid=82 address_space=0x0000000000670000\r\n[process] event=wait_blocked parent=81 child=82\r\nDASH_GLIBC_CHILD_EXPLICIT argv_env_cwd=ok\n[task] event=reclaimed pid=82 pages=229\r\nDASH_GLIBC_CHILD_RC=0\n[task] event=reclaimed pid=81 pages=317\r\n[wait] pid=81 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 3.3915069909999147,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "external_path",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/external_path.sh\n[process] event=started pid=83 parent=7\r\n[process] pid=83 address_space=0x0000000000353000\r\n[loader] started pid=83 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=83\r\n[process] event=started pid=84 parent=83\r\n[process] pid=84 address_space=0x0000000000670000\r\n[process] event=wait_blocked parent=83 child=84\r\nDASH_GLIBC_CHILD_PATH argv_env_cwd=ok\n[task] event=reclaimed pid=84 pages=229\r\nDASH_GLIBC_CHILD_RC=23\n[task] event=reclaimed pid=83 pages=317\r\n[wait] pid=83 kind=exited code=23\nxsh> ",
+      "elapsed_seconds": 3.391549929001485,
+      "exit_code": 23,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "external_missing",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/external_missing.sh\n[process] event=started pid=85 parent=7\r\n[process] pid=85 address_space=0x0000000000353000\r\n[loader] started pid=85 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=85\r\n/cases/external_missing.sh: 4: missing_tool: not found\nDASH_GLIBC_CHILD_RC=127\n[task] event=reclaimed pid=85 pages=317\r\n[wait] pid=85 kind=exited code=127\nxsh> ",
+      "elapsed_seconds": 0.429033159998653,
+      "exit_code": 127,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "external_text",
+      "shell": "xsh",
+      "output": "/bin/dash_glibc /cases/external_text.sh\n[process] event=started pid=86 parent=7\r\n[process] pid=86 address_space=0x0000000000353000\r\n[loader] started pid=86 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=86\r\n/cases/external_text.sh: 4: /bin/text_tool: Exec format error\nDASH_GLIBC_CHILD_RC=126\n[task] event=reclaimed pid=86 pages=317\r\n[wait] pid=86 kind=exited code=126\nxsh> ",
+      "elapsed_seconds": 0.4237526040014927,
+      "exit_code": 126,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "authority_denied",
+      "shell": "xsh",
+      "output": "exec-file /bin/dash_glibc /cases/authority_denied.sh\n[process] event=started pid=87 parent=7\r\n[process] pid=87 address_space=0x0000000000353000\r\n[loader] started pid=87 file=/bin/dash_glibc\n[process] event=wait_blocked parent=7 child=87\r\n/cases/authority_denied.sh: 4: /bin/preview_child: Operation not permitted\nDASH_GLIBC_CHILD_RC=126\n[task] event=reclaimed pid=87 pages=317\r\n[wait] pid=87 kind=exited code=126\nxsh> ",
+      "elapsed_seconds": 0.48836768699402455,
+      "exit_code": 126,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "builtins",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_builtins.sh\n[process] event=started pid=88 parent=7\r\n[process] pid=88 address_space=0x0000000000353000\r\n[loader] started pid=88 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=88\r\n[process] event=started pid=89 parent=88\r\n[process] pid=89 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=88 child=89\r\nDASH_GLIBC_BUILTINS_PASS\n[task] event=reclaimed pid=89 pages=317\r\nDASH_GLIBC_EXIT=0\n[task] event=reclaimed pid=88 pages=164\r\n[wait] pid=88 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 0.4229786759970011,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "files",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_files.sh\n[process] event=started pid=90 parent=7\r\n[process] pid=90 address_space=0x0000000000353000\r\n[loader] started pid=90 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=90\r\n[process] event=started pid=91 parent=90\r\n[process] pid=91 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=90 child=91\r\nDASH_GLIBC_FILES_PASS\n[task] event=reclaimed pid=91 pages=317\r\nDASH_GLIBC_EXIT=0\n[task] event=reclaimed pid=90 pages=164\r\n[wait] pid=90 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 0.532652402005624,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "pipeline",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_pipeline.sh\n[process] event=started pid=92 parent=7\r\n[process] pid=92 address_space=0x0000000000353000\r\n[loader] started pid=92 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=92\r\n[process] event=started pid=93 parent=92\r\n[process] pid=93 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=92 child=93\r\n[process] event=started pid=94 parent=93\r\n[process] pid=94 address_space=0x0000000000714000\r\n[process] event=started pid=95 parent=93\r\n[process] pid=95 address_space=0x00000000007f9000\r\n[process] event=started pid=96 parent=93\r\n[process] pid=96 address_space=0x00000000008de000\r\n[process] event=wait_blocked parent=93 child=94\r\n[task] event=reclaimed pid=94 pages=229\r\n[task] event=reclaimed pid=95 pages=229\r\nDASH_GLIBC_STREAM_BYTES=10037\n[task] event=reclaimed pid=96 pages=229\r\nDASH_GLIBC_PIPE_PASS\n[task] event=reclaimed pid=93 pages=317\r\nDASH_GLIBC_EXIT=0\n[task] event=reclaimed pid=92 pages=164\r\n[wait] pid=92 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 9.37263181200251,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "pipeline_printf",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_pipeline_printf.sh\n[process] event=started pid=97 parent=7\r\n[process] pid=97 address_space=0x0000000000353000\r\n[loader] started pid=97 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=97\r\n[process] event=started pid=98 parent=97\r\n[process] pid=98 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=97 child=98\r\n[process] event=started pid=99 parent=98\r\n[process] pid=99 address_space=0x0000000000714000\r\n[process] event=wait_blocked parent=98 child=99\r\nDASH_GLIBC_STREAM_BYTES=10037\n[task] event=reclaimed pid=99 pages=229\r\n[task] event=reclaimed pid=98 pages=317\r\nDASH_GLIBC_EXIT=0\n[task] event=reclaimed pid=97 pages=164\r\n[wait] pid=97 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 3.450326510996092,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "pipeline_status",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_pipeline_status.sh\n[process] event=started pid=100 parent=7\r\n[process] pid=100 address_space=0x0000000000353000\r\n[loader] started pid=100 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=100\r\n[process] event=started pid=101 parent=100\r\n[process] pid=101 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=100 child=101\r\n[process] event=started pid=102 parent=101\r\n[process] pid=102 address_space=0x0000000000714000\r\n[process] event=started pid=103 parent=101\r\n[process] pid=103 address_space=0x00000000007f9000\r\n[process] event=wait_blocked parent=101 child=102\r\n[task] event=reclaimed pid=102 pages=229\r\nDASH_GLIBC_STREAM_BYTES=10037\n[task] event=reclaimed pid=103 pages=229\r\n[process] event=started pid=104 parent=101\r\n[process] pid=104 address_space=0x0000000000714000\r\n[process] event=started pid=105 parent=101\r\n[process] pid=105 address_space=0x00000000007f9000\r\n[process] event=wait_blocked parent=101 child=104\r\n[task] event=reclaimed pid=105 pages=229\r\n[task] event=reclaimed pid=104 pages=229\r\nDASH_GLIBC_PIPE_STATUS_PASS\n[task] event=reclaimed pid=101 pages=317\r\nDASH_GLIBC_EXIT=0\n[task] event=reclaimed pid=100 pages=164\r\n[wait] pid=100 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 12.379122848993575,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "pipeline_redirect",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_pipeline_redirect.sh\n[process] event=started pid=106 parent=7\r\n[process] pid=106 address_space=0x0000000000353000\r\n[loader] started pid=106 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=106\r\n[process] event=started pid=107 parent=106\r\n[process] pid=107 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=106 child=107\r\n[process] event=started pid=108 parent=107\r\n[process] pid=108 address_space=0x0000000000714000\r\n[process] event=started pid=109 parent=107\r\n[process] pid=109 address_space=0x00000000007f9000\r\n[process] event=wait_blocked parent=107 child=108\r\n[task] event=reclaimed pid=108 pages=229\r\n[process] event=wait_blocked parent=107 child=109\r\n[task] event=reclaimed pid=109 pages=229\r\n[process] event=started pid=110 parent=107\r\n[process] pid=110 address_space=0x0000000000714000\r\n[process] event=wait_blocked parent=107 child=110\r\nDASH_GLIBC_STREAM_BYTES=10037\n[task] event=reclaimed pid=110 pages=229\r\nDASH_GLIBC_PIPE_FILE_PASS\n[task] event=reclaimed pid=107 pages=317\r\nDASH_GLIBC_EXIT=0\n[task] event=reclaimed pid=106 pages=164\r\n[wait] pid=106 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 9.929048548001447,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "pipeline_closed",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_pipeline_closed.sh\n[process] event=started pid=111 parent=7\r\n[process] pid=111 address_space=0x0000000000353000\r\n[loader] started pid=111 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=111\r\n[process] event=started pid=112 parent=111\r\n[process] pid=112 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=111 child=112\r\n[process] event=started pid=113 parent=112\r\n[process] pid=113 address_space=0x0000000000714000\r\n[process] event=started pid=114 parent=112\r\n[process] pid=114 address_space=0x00000000007f9000\r\n[process] event=wait_blocked parent=112 child=113\r\n[task] event=reclaimed pid=113 pages=229\r\nDASH_GLIBC_STREAM_BYTES=10037\n[task] event=reclaimed pid=114 pages=229\r\n[process] event=started pid=115 parent=112\r\n[process] pid=115 address_space=0x0000000000714000\r\n[process] event=wait_blocked parent=112 child=115\r\n[task] event=reclaimed pid=115 pages=229\r\nDASH_GLIBC_PIPE_CLOSED_PASS\n[task] event=reclaimed pid=112 pages=317\r\nDASH_GLIBC_EXIT=0\n[task] event=reclaimed pid=111 pages=164\r\n[wait] pid=111 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 9.389163489999191,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "pipeline_failure",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_pipeline_failure.sh\n[process] event=started pid=116 parent=7\r\n[process] pid=116 address_space=0x0000000000353000\r\n[loader] started pid=116 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=116\r\n[process] event=started pid=117 parent=116\r\n[process] pid=117 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=116 child=117\r\n[process] event=started pid=118 parent=117\r\n[process] pid=118 address_space=0x0000000000714000\r\n/cases/pipeline_failure.sh: 3: /bin/not_present: No such file or directory\n[task] event=reclaimed pid=118 pages=229\r\n[process] event=started pid=119 parent=117\r\n[process] pid=119 address_space=0x0000000000714000\r\n/cases/pipeline_failure.sh: 3: /bin/not_present: No such file or directory\n[task] event=reclaimed pid=119 pages=229\r\n[process] event=started pid=120 parent=117\r\n[process] pid=120 address_space=0x0000000000714000\r\n/cases/pipeline_failure.sh: 3: /bin/not_present: No such file or directory\n[task] event=reclaimed pid=120 pages=229\r\n[process] event=started pid=121 parent=117\r\n[process] pid=121 address_space=0x0000000000714000\r\n/cases/pipeline_failure.sh: 3: /bin/not_present: No such file or directory\n[task] event=reclaimed pid=121 pages=229\r\n[process] event=started pid=122 parent=117\r\n[process] pid=122 address_space=0x0000000000714000\r\n/cases/pipeline_failure.sh: 3: /bin/not_present: No such file or directory\n[task] event=reclaimed pid=122 pages=229\r\n[process] event=started pid=123 parent=117\r\n[process] pid=123 address_space=0x0000000000714000\r\n/cases/pipeline_failure.sh: 3: /bin/not_present: No such file or directory\n[task] event=reclaimed pid=123 pages=229\r\n[process] event=started pid=124 parent=117\r\n[process] pid=124 address_space=0x0000000000714000\r\n/cases/pipeline_failure.sh: 3: /bin/not_present: No such file or directory\n[task] event=reclaimed pid=124 pages=229\r\n[process] event=started pid=125 parent=117\r\n[process] pid=125 address_space=0x0000000000714000\r\n/cases/pipeline_failure.sh: 3: /bin/not_present: No such file or directory\n[task] event=reclaimed pid=125 pages=229\r\n[process] event=started pid=126 parent=117\r\n[process] pid=126 address_space=0x0000000000714000\r\n[process] event=started pid=127 parent=117\r\n[process] pid=127 address_space=0x00000000007f9000\r\n[process] event=wait_blocked parent=117 child=126\r\n[task] event=reclaimed pid=126 pages=229\r\nDASH_GLIBC_STREAM_BYTES=10037\n[task] event=reclaimed pid=127 pages=229\r\nDASH_GLIBC_PIPE_RECOVERED=8\n[task] event=reclaimed pid=117 pages=317\r\nDASH_GLIBC_EXIT=0\n[task] event=reclaimed pid=116 pages=164\r\n[wait] pid=116 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 30.259521922002023,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "pipeline_builtin",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_pipeline_builtin.sh\n[process] event=started pid=128 parent=7\r\n[process] pid=128 address_space=0x0000000000353000\r\n[loader] started pid=128 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=128\r\n[process] event=started pid=129 parent=128\r\n[process] pid=129 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=128 child=129\r\n/cases/pipeline_builtin.sh: 0: C1 pipeline requires external commands\n[task] event=reclaimed pid=129 pages=317\r\nDASH_GLIBC_EXIT=2\n[task] event=reclaimed pid=128 pages=164\r\n[wait] pid=128 kind=exited code=2\nxsh> ",
+      "elapsed_seconds": 0.46475651299988385,
+      "exit_code": 2,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "subshell",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_subshell.sh\n[process] event=started pid=130 parent=7\r\n[process] pid=130 address_space=0x0000000000353000\r\n[loader] started pid=130 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=130\r\n[process] event=started pid=131 parent=130\r\n[process] pid=131 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=130 child=131\r\n/cases/subshell.sh: 0: subshells unavailable in the glibc dash preview\n[task] event=reclaimed pid=131 pages=317\r\nDASH_GLIBC_EXIT=2\n[task] event=reclaimed pid=130 pages=164\r\n[wait] pid=130 kind=exited code=2\nxsh> ",
+      "elapsed_seconds": 0.42082830899744295,
+      "exit_code": 2,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "substitution",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_substitution.sh\n[process] event=started pid=132 parent=7\r\n[process] pid=132 address_space=0x0000000000353000\r\n[loader] started pid=132 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=132\r\n[process] event=started pid=133 parent=132\r\n[process] pid=133 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=132 child=133\r\n[process] event=fork_prepared pid=134 parent=133 depth=1 pages=309\r\n[process] event=fork_committed pid=134 parent=133\r\n[task] event=reclaimed pid=134 pages=24\r\n[process] event=fork_prepared pid=135 parent=133 depth=1 pages=309\r\n[process] event=fork_committed pid=135 parent=133\r\n[task] event=reclaimed pid=135 pages=24\r\n[process] event=fork_prepared pid=136 parent=133 depth=1 pages=309\r\n[process] event=fork_committed pid=136 parent=133\r\n[task] event=reclaimed pid=136 pages=24\r\n[process] event=fork_prepared pid=137 parent=133 depth=1 pages=309\r\n[process] event=fork_committed pid=137 parent=133\r\n[process] event=fork_prepared pid=138 parent=137 depth=2 pages=309\r\n[process] event=fork_committed pid=138 parent=137\r\n[task] event=reclaimed pid=138 pages=23\r\n[task] event=reclaimed pid=137 pages=24\r\n[process] event=fork_prepared pid=139 parent=133 depth=1 pages=309\r\n[process] event=fork_committed pid=139 parent=133\r\n[task] event=reclaimed pid=139 pages=23\r\n[process] event=fork_prepared pid=140 parent=133 depth=1 pages=309\r\n[process] event=fork_committed pid=140 parent=133\r\n[task] event=reclaimed pid=140 pages=21\r\nDASH_GLIBC_SUBSTITUTION_PASS\n[task] event=reclaimed pid=133 pages=317\r\nDASH_GLIBC_EXIT=0\n[task] event=reclaimed pid=132 pages=164\r\n[wait] pid=132 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 0.8585803669993766,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "substitution_stream",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_substitution_stream.sh\n[process] event=started pid=141 parent=7\r\n[process] pid=141 address_space=0x0000000000353000\r\n[loader] started pid=141 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=141\r\n[process] event=started pid=142 parent=141\r\n[process] pid=142 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=141 child=142\r\n[process] event=fork_prepared pid=143 parent=142 depth=1 pages=309\r\n[process] event=fork_committed pid=143 parent=142\r\n[task] event=reclaimed pid=143 pages=26\r\n[process] event=fork_prepared pid=144 parent=142 depth=1 pages=309\r\n[process] event=fork_committed pid=144 parent=142\r\n[process] event=started pid=145 parent=144\r\n[process] pid=145 address_space=0x0000000000731000\r\n[process] event=wait_blocked parent=144 child=145\r\nstream stderr\n[task] event=reclaimed pid=145 pages=229\r\n[task] event=reclaimed pid=144 pages=31\r\n[process] event=fork_prepared pid=146 parent=142 depth=1 pages=309\r\n[process] event=fork_committed pid=146 parent=142\r\n[process] event=started pid=147 parent=146\r\n[process] pid=147 address_space=0x0000000000732000\r\n[process] event=started pid=148 parent=146\r\n[process] pid=148 address_space=0x0000000000819000\r\n[process] event=wait_blocked parent=146 child=147\r\n[task] event=reclaimed pid=147 pages=229\r\n[task] event=reclaimed pid=148 pages=229\r\n[task] event=reclaimed pid=146 pages=32\r\n[process] event=fork_prepared pid=149 parent=142 depth=1 pages=309\r\n[process] event=fork_committed pid=149 parent=142\r\n[process] event=started pid=150 parent=149\r\n[process] pid=150 address_space=0x0000000000731000\r\n[process] event=started pid=151 parent=149\r\n[process] pid=151 address_space=0x0000000000818000\r\n[process] event=wait_blocked parent=149 child=150\r\n[task] event=reclaimed pid=150 pages=229\r\n[task] event=reclaimed pid=151 pages=229\r\n[task] event=reclaimed pid=149 pages=31\r\nDASH_GLIBC_SUBSTITUTION_STREAM_PASS\n[task] event=reclaimed pid=142 pages=317\r\nDASH_GLIBC_EXIT=0\n[task] event=reclaimed pid=141 pages=164\r\n[wait] pid=141 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 15.791845984000247,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "substitution_close",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_substitution_close.sh\n[process] event=started pid=152 parent=7\r\n[process] pid=152 address_space=0x0000000000353000\r\n[loader] started pid=152 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=152\r\n[process] event=started pid=153 parent=152\r\n[process] pid=153 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=152 child=153\r\n[process] event=fork_prepared pid=154 parent=153 depth=1 pages=309\r\n[process] event=fork_committed pid=154 parent=153\r\n[task] event=reclaimed pid=154 pages=23\r\n[process] event=started pid=155 parent=153\r\n[process] pid=155 address_space=0x000000000069b000\r\n[process] event=wait_blocked parent=153 child=155\r\n[task] event=reclaimed pid=155 pages=229\r\nDASH_GLIBC_SUBSTITUTION_CLOSE_PASS\n[task] event=reclaimed pid=153 pages=317\r\nDASH_GLIBC_EXIT=0\n[task] event=reclaimed pid=152 pages=164\r\n[wait] pid=152 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 3.493363142995804,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "substitution_denied",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_substitution_denied.sh\n[process] event=started pid=156 parent=7\r\n[process] pid=156 address_space=0x0000000000353000\r\n[loader] started pid=156 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=156\r\n[process] event=started pid=157 parent=156\r\n[process] pid=157 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=156 child=157\r\n[process] event=started pid=158 parent=157\r\n[process] pid=158 address_space=0x0000000000632000\r\n[process] event=wait_blocked parent=157 child=158\r\n/cases/substitution_denied.sh: 1: fork: Operation not permitted\n[task] event=reclaimed pid=158 pages=317\r\n[task] event=reclaimed pid=157 pages=91\r\nDASH_GLIBC_EXIT=2\n[task] event=reclaimed pid=156 pages=164\r\n[wait] pid=156 kind=exited code=2\nxsh> ",
+      "elapsed_seconds": 0.4869661949996953,
+      "exit_code": 2,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "fork_runtime",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_fork_runtime.sh\n[process] event=started pid=159 parent=7\r\n[process] pid=159 address_space=0x0000000000353000\r\n[loader] started pid=159 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=159\r\n[process] event=started pid=160 parent=159\r\n[process] pid=160 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=159 child=160\r\n[process] event=started pid=161 parent=160\r\n[process] pid=161 address_space=0x0000000000714000\r\n[process] event=wait_blocked parent=160 child=161\r\n[process] event=fork_prepared pid=162 parent=161 depth=1 pages=223\r\n[process] event=fork_committed pid=162 parent=161\r\n[process] event=wait_blocked parent=161 child=162\r\n[task] event=reclaimed pid=162 pages=15\r\n[process] event=fork_prepared pid=163 parent=161 depth=1 pages=223\r\n[process] event=fork_committed pid=163 parent=161\r\n[process] event=wait_blocked parent=161 child=163\r\n[task] event=reclaimed pid=163 pages=13\r\nDASH_GLIBC_FORK_RUNTIME_PASS tls=isolated alias=shared atfork=ordered name_stack=rebound\n[task] event=reclaimed pid=161 pages=231\r\n[task] event=reclaimed pid=160 pages=317\r\nDASH_GLIBC_EXIT=0\n[task] event=reclaimed pid=159 pages=164\r\n[wait] pid=159 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 3.5883350639996934,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "heredoc",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_heredoc.sh\n[process] event=started pid=164 parent=7\r\n[process] pid=164 address_space=0x0000000000353000\r\n[loader] started pid=164 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=164\r\n[process] event=started pid=165 parent=164\r\n[process] pid=165 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=164 child=165\r\nDASH_GLIBC_HERE_PASS <literal $word \\keep> <expanded:expanded:12>\n[task] event=reclaimed pid=165 pages=317\r\nDASH_GLIBC_EXIT=0\n[task] event=reclaimed pid=164 pages=164\r\n[wait] pid=164 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 0.6206330370041542,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "heredoc_failure",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_heredoc_failure.sh\n[process] event=started pid=166 parent=7\r\n[process] pid=166 address_space=0x0000000000353000\r\n[loader] started pid=166 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=166\r\n[process] event=started pid=167 parent=166\r\n[process] pid=167 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=166 child=167\r\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\n/cases/heredoc_failure.sh: 3: cannot create /missing/heredoc-output: Directory nonexistent\nDASH_GLIBC_HERE_RECOVERED=24\n[task] event=reclaimed pid=167 pages=317\r\nDASH_GLIBC_EXIT=0\n[task] event=reclaimed pid=166 pages=164\r\n[wait] pid=166 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 2.000639530000626,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "external_heredoc",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_external_heredoc.sh\n[process] event=started pid=168 parent=7\r\n[process] pid=168 address_space=0x0000000000353000\r\n[loader] started pid=168 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=168\r\n[process] event=started pid=169 parent=168\r\n[process] pid=169 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=168 child=169\r\n[process] event=started pid=170 parent=169\r\n[process] pid=170 address_space=0x0000000000714000\r\n[process] event=wait_blocked parent=169 child=170\r\n[task] event=reclaimed pid=170 pages=229\r\n[process] event=started pid=171 parent=169\r\n[process] pid=171 address_space=0x0000000000714000\r\n[process] event=wait_blocked parent=169 child=171\r\n[task] event=reclaimed pid=171 pages=229\r\nDASH_GLIBC_EXTERNAL_HERE_PASS\n[task] event=reclaimed pid=169 pages=317\r\nDASH_GLIBC_EXIT=0\n[task] event=reclaimed pid=168 pages=164\r\n[wait] pid=168 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 7.0220372670009965,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "external_redirect",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_external_redirect.sh\n[process] event=started pid=172 parent=7\r\n[process] pid=172 address_space=0x0000000000353000\r\n[loader] started pid=172 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=172\r\n[process] event=started pid=173 parent=172\r\n[process] pid=173 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=172 child=173\r\n[process] event=started pid=174 parent=173\r\n[process] pid=174 address_space=0x0000000000714000\r\n[process] event=wait_blocked parent=173 child=174\r\n[task] event=reclaimed pid=174 pages=229\r\n[process] event=started pid=175 parent=173\r\n[process] pid=175 address_space=0x0000000000714000\r\n[process] event=wait_blocked parent=173 child=175\r\n[task] event=reclaimed pid=175 pages=229\r\n[process] event=started pid=176 parent=173\r\n[process] pid=176 address_space=0x0000000000714000\r\n[process] event=wait_blocked parent=173 child=176\r\n[task] event=reclaimed pid=176 pages=229\r\n[process] event=started pid=177 parent=173\r\n[process] pid=177 address_space=0x0000000000714000\r\n[process] event=wait_blocked parent=173 child=177\r\n[task] event=reclaimed pid=177 pages=164\r\nDASH_GLIBC_REDIRECT_PASS\n[task] event=reclaimed pid=173 pages=317\r\nDASH_GLIBC_EXIT=0\n[task] event=reclaimed pid=172 pages=164\r\n[wait] pid=172 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 11.38278651300061,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "unmarked_redirect",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_unmarked_redirect.sh\n[process] event=started pid=178 parent=7\r\n[process] pid=178 address_space=0x0000000000353000\r\n[loader] started pid=178 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=178\r\n[process] event=started pid=179 parent=178\r\n[process] pid=179 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=178 child=179\r\n/cases/unmarked_redirect.sh: 4: /bin/preview_child: Not supported\nDASH_GLIBC_CHILD_RC=126\n[task] event=reclaimed pid=179 pages=317\r\nDASH_GLIBC_EXIT=126\n[task] event=reclaimed pid=178 pages=164\r\n[wait] pid=178 kind=exited code=126\nxsh> ",
+      "elapsed_seconds": 1.0934351950054406,
+      "exit_code": 126,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "external_explicit",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_external_explicit.sh\n[process] event=started pid=180 parent=7\r\n[process] pid=180 address_space=0x0000000000353000\r\n[loader] started pid=180 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=180\r\n[process] event=started pid=181 parent=180\r\n[process] pid=181 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=180 child=181\r\n[process] event=started pid=182 parent=181\r\n[process] pid=182 address_space=0x0000000000714000\r\n[process] event=wait_blocked parent=181 child=182\r\nDASH_GLIBC_CHILD_EXPLICIT argv_env_cwd=ok\n[task] event=reclaimed pid=182 pages=229\r\nDASH_GLIBC_CHILD_RC=0\n[task] event=reclaimed pid=181 pages=317\r\nDASH_GLIBC_EXIT=0\n[task] event=reclaimed pid=180 pages=164\r\n[wait] pid=180 kind=exited code=0\nxsh> ",
+      "elapsed_seconds": 3.6340186439992976,
+      "exit_code": 0,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "external_path",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_external_path.sh\n[process] event=started pid=183 parent=7\r\n[process] pid=183 address_space=0x0000000000353000\r\n[loader] started pid=183 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=183\r\n[process] event=started pid=184 parent=183\r\n[process] pid=184 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=183 child=184\r\n[process] event=started pid=185 parent=184\r\n[process] pid=185 address_space=0x0000000000714000\r\n[process] event=wait_blocked parent=184 child=185\r\nDASH_GLIBC_CHILD_PATH argv_env_cwd=ok\n[task] event=reclaimed pid=185 pages=229\r\nDASH_GLIBC_CHILD_RC=23\n[task] event=reclaimed pid=184 pages=317\r\nDASH_GLIBC_EXIT=23\n[task] event=reclaimed pid=183 pages=164\r\n[wait] pid=183 kind=exited code=23\nxsh> ",
+      "elapsed_seconds": 3.70849277999514,
+      "exit_code": 23,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "external_missing",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_external_missing.sh\n[process] event=started pid=186 parent=7\r\n[process] pid=186 address_space=0x0000000000353000\r\n[loader] started pid=186 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=186\r\n[process] event=started pid=187 parent=186\r\n[process] pid=187 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=186 child=187\r\n/cases/external_missing.sh: 4: missing_tool: not found\nDASH_GLIBC_CHILD_RC=127\n[task] event=reclaimed pid=187 pages=317\r\nDASH_GLIBC_EXIT=127\n[task] event=reclaimed pid=186 pages=164\r\n[wait] pid=186 kind=exited code=127\nxsh> ",
+      "elapsed_seconds": 0.510379978994024,
+      "exit_code": 127,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "external_text",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_external_text.sh\n[process] event=started pid=188 parent=7\r\n[process] pid=188 address_space=0x0000000000353000\r\n[loader] started pid=188 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=188\r\n[process] event=started pid=189 parent=188\r\n[process] pid=189 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=188 child=189\r\n/cases/external_text.sh: 4: /bin/text_tool: Exec format error\nDASH_GLIBC_CHILD_RC=126\n[task] event=reclaimed pid=189 pages=317\r\nDASH_GLIBC_EXIT=126\n[task] event=reclaimed pid=188 pages=164\r\n[wait] pid=188 kind=exited code=126\nxsh> ",
+      "elapsed_seconds": 0.48134667900012573,
+      "exit_code": 126,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "case": "authority_denied",
+      "shell": "dash",
+      "output": "dash /cases/via_dash_authority_denied.sh\n[process] event=started pid=190 parent=7\r\n[process] pid=190 address_space=0x0000000000353000\r\n[loader] started pid=190 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=190\r\n[process] event=started pid=191 parent=190\r\n[process] pid=191 address_space=0x00000000005d7000\r\n[process] event=wait_blocked parent=190 child=191\r\n[process] event=started pid=192 parent=191\r\n[process] pid=192 address_space=0x0000000000632000\r\n[process] event=wait_blocked parent=191 child=192\r\n/cases/authority_denied.sh: 4: /bin/preview_child: Operation not permitted\nDASH_GLIBC_CHILD_RC=126\n[task] event=reclaimed pid=192 pages=317\r\n[task] event=reclaimed pid=191 pages=91\r\nDASH_GLIBC_EXIT=126\n[task] event=reclaimed pid=190 pages=164\r\n[wait] pid=190 kind=exited code=126\nxsh> ",
+      "elapsed_seconds": 0.5394967390020611,
+      "exit_code": 126,
+      "resources": [
+        129709,
+        3,
+        1
+      ]
+    }
+  ],
+  "fixtures": {
+    "text_tool": "0a0e31fb9b992402a225f5157e6380e1760942352acfb2e61286d4798444cbbd",
+    "dot.inc": "c9ef7f8c10126a2aaaea5dfbfb7fdeee92363d779e3659e4dffc0243880bc9ee",
+    "builtins.sh": "e1715b58969b6918e953fe80426ff2e354d357976fdb40469d23714437a32389",
+    "via_dash_builtins.sh": "722b19bea77f3db71215174ac1a1c24bd255d9460194a4e07b3ee3e1ba5383ce",
+    "files.sh": "f81a8d6d04f8efa1a7ecc16bdf71e240a93ad8e263b49f467d9cce7a9beecb6f",
+    "via_dash_files.sh": "2001146e65898352a8fc5593081c34ad5af6fed6f3851fd844f397af8357c34e",
+    "pipeline.sh": "7b68d9f662a3aebd7e69dbbc5df59721e436674854379dfef9ea768aef03ae44",
+    "via_dash_pipeline.sh": "d7cff4220096257deaa34a7744e1020c9792eb7165365d3ea85e41dcbc9aa89f",
+    "pipeline_printf.sh": "af67aa8af5a4143358593d965407717493b7e471469540e81e86f989081ebc14",
+    "via_dash_pipeline_printf.sh": "61301d035b330f0389b5db35a460ff0c76a4ad9b372b1d22fb4716db3c018cfd",
+    "pipeline_status.sh": "c4bc64dfec2913a009ff1cfbf1afae3169cc25982040aecd609b7b24f14294cd",
+    "via_dash_pipeline_status.sh": "90431273d2098e721cbcb795b698ed5e183b789b9bdeb7b0c59ba995db72558a",
+    "pipeline_redirect.sh": "5fc37557fc2a90033cbb738e1128317815c47b0269bb8ecf8717cc97df7ee024",
+    "via_dash_pipeline_redirect.sh": "695f6f70208fae2b76f769c06bdf7a9c74b544f3b4219001584a5308aa357b57",
+    "pipeline_closed.sh": "79d03ca042b961245f343d90dbde343d751d7e68cafc690c5bd6223700e608fc",
+    "via_dash_pipeline_closed.sh": "dcf80ce0430a186e34797bbba232bca89fe107c7dd4c88883cff03fd7e27d840",
+    "pipeline_failure.sh": "c6d6b8dbfac5f443e19137cbb4a1cf2e248e469bc052ccd69765222324e0018f",
+    "via_dash_pipeline_failure.sh": "48691f5bd67c7f9299919b68f49597521ecd72f71d1ec0a0d1dd134fa09e90c9",
+    "pipeline_builtin.sh": "273ecd85c9ea8dbb6496ec45f3ddc18e1971bb9a9d9c88cb252f4e2f3a9a1de7",
+    "via_dash_pipeline_builtin.sh": "f66641d0f121a603d125fbfdcccfdc4bda9919bfe047b59876f131044df89628",
+    "subshell.sh": "c15d15bb7391c6b40aa802f6c7a2a97977d77ce975fdb7eaf0cbb920d1ccee67",
+    "via_dash_subshell.sh": "56a4637e6d95635720a2c7ee0af92274e943f2c1e328df996efc781430189c52",
+    "substitution.sh": "d8074d6a735ce5f8a170fa0bf37f1135f9c0024f2f1e2f98bf26a0ae6577884e",
+    "via_dash_substitution.sh": "d3e53fa65ea39c9aabd5fdb55ffcf568784212d7e62b3acaf3b75c2b4a208da6",
+    "substitution_stream.sh": "05d6e954317b2ed265be34f45327b3b3f9fa29eb6d7138bcdc09e52e693b0f1e",
+    "via_dash_substitution_stream.sh": "d7e09999d5c0f0ba47bdefc1d754756d5cbdf6c01ff3b4c2d566e3454e20bfc7",
+    "substitution_close.sh": "de1f5687a12c23e7c7eb9f335ae92c068ab386307203cbaabe3620484aaa3ad7",
+    "via_dash_substitution_close.sh": "42a28048aec6a00de74905f1479f31cc36533fc704bc06d5156f49e376447384",
+    "substitution_denied.sh": "04f7339ddf82c7fbc73bfde7f5dcf5c72b2ab824a519a78b568ee8d4b06be476",
+    "via_dash_substitution_denied.sh": "c63f329e2bb3ad59dc28d4684ea9513a27ce5837f4a09c90c0321bb1ec0bfdb1",
+    "fork_runtime.sh": "9a83ce4a891fa88b61d36b095f149c68286af817d53305773109beb197f25816",
+    "via_dash_fork_runtime.sh": "b58d172b67ceb6a0c748d8b07c684a2ecad2f4ae368a33de8f4f4ca386262c94",
+    "heredoc.sh": "e2dd6f2754d3eb0453023ea052103df723d8a0601b7f8564bcfbe65202f4b4d0",
+    "via_dash_heredoc.sh": "c6eae17f232ce184b88e24b153ecc50ce2db2fe7afe11037fe1946783776ecaf",
+    "heredoc_failure.sh": "1f1826dd3590265b98e2a3d5b0cd3622c0167abb0e40916ade6b7dc7dc7ae9ac",
+    "via_dash_heredoc_failure.sh": "3c4aacfba3b1f77c4d9d6c24c14d5b255e73cbd967867d722b29fa95101582ba",
+    "external_heredoc.sh": "8e6014cc3b22824cc1b0074edd40e1519ec52695dde486529c0beafcfe0917b2",
+    "via_dash_external_heredoc.sh": "3d908073bc2c00f97b33b7c93f1787423c7fa39bae939470fea8476a922b67ed",
+    "external_redirect.sh": "0d47989894fb0749182076d5be61b0b07b2d7c4ce6c582c3226e95e9103c7d65",
+    "via_dash_external_redirect.sh": "9649a01fb50ece7e2c7db0a2316db4a907cf5510f8fd0e992e2faa5ca23e4a3f",
+    "unmarked_redirect.sh": "fe584bdd38ca26996b4d0bba5c7c53ca4540f7fb7ac1862521725f522fd9e9dc",
+    "via_dash_unmarked_redirect.sh": "16524e4c543f88fe8a1cd263e7a51661f66761c1489d3ef429798ccbcc557d08",
+    "external_explicit.sh": "f96a9e6e8e8e68835bf02c95c129dcb180f7fdce610d7288cdc9d2009186cc49",
+    "via_dash_external_explicit.sh": "eeb0b8922b0741aae75c27c57893349e27c425b76da8933854c286df3571471d",
+    "external_path.sh": "aec1d1b1422944f3df01ccae7a009d4c4eae74fdd6a91f559d940507b2a0e238",
+    "via_dash_external_path.sh": "d5cb5f2c7fc7c23c1b05bd2e0cd598be19f4ba7fe82c26347fbd3c8a2e8fca79",
+    "external_missing.sh": "343e2417b4dfced985d4dca6ffc2c00b178558d3393a908c38d46806fa1a7773",
+    "via_dash_external_missing.sh": "d3236af322e8e93fab1b2b35e2a811189735b188ce0b7a76f022f40e642cd24b",
+    "external_text.sh": "b3cb10f470fb64957ec853fc1d5ccd5eb62f375b1dfe7b9e2f4285befe822c53",
+    "via_dash_external_text.sh": "e6cf7c8e2b6100754c25b4da46577c42e72176a345214dcfe1b176eaf61f3bb7",
+    "authority_denied.sh": "f96a9e6e8e8e68835bf02c95c129dcb180f7fdce610d7288cdc9d2009186cc49",
+    "via_dash_authority_denied.sh": "4ec99646486e8b95b2cdff0fa3109905b6651a0e76e8c211b5a07f63b325623c"
+  },
+  "system_build_id": "9562fa4ec72cfd7a",
+  "iso_sha256": "dc9d10599b1a3c5aa7433be7a34db243aa64798987d6dff1e4dfd73aeca9c7bd",
+  "system_manifest_sha256": "7b207fd5a3261ba9185d4bad576db292592bedc3adc4e36af117f7289b9708fc",
+  "legacy": {
+    "receipt_sha256": "c20074f4a694823ab60c5dcf2479a97356ab41343466f0162acc80b0beb916ae",
+    "elf_sha256": "744a5939d47bf734a3af0dade1c1285a6b0e419bc948dbc436c30dfa84ee025c",
+    "sdk_manifest_sha256": "93f38da34538b6c59d0f3b2597736951f4749ad1014552b495355ce0905cac38"
+  },
+  "preview": {
+    "receipt_sha256": "62d1e0a30faf182b285edc9008585129b3e0ecfb71712d16c00ede4efde88602",
+    "elf_sha256": "a776bd1410e3e62e187a78345bb3575fe1e81250cc8fae289a1ab2f3e983883a",
+    "sdk_manifest_sha256": "c97adf1b9b24634d7f9de54f6d55d6e1d3fba9635194ccec06c1f11860f730fb",
+    "profile": {
+      "status": "candidate_binding_verified",
+      "runtime_family": "glibc",
+      "profile_id": "xos-x86_64-glibc-dash-fork",
+      "profile_sha256": "5ef63f8383f45f7b76a6b17983bde3a333e7d4b6e8e9ab294beef546e5d71673",
+      "sdk_tree_sha256": "614651f47ab6246ca960d7315ed0e07d38ec2306637dce7d1d85f414e2361a0d",
+      "guest_qualification": "not_run"
+    }
+  },
+  "programs": {
+    "preview_child.elf": {
+      "sha256": "1c9b33bd10fe70eeb4d05b566455805d553dee1ea23b2ee17010cbcde5cdc271",
+      "source_sha256": "fefb4d5cd96bd627c9614d7aa5d6fceb64c75b662cd4c0fd74c6eaedce57e83e"
+    },
+    "stream_child.elf": {
+      "sha256": "81c1764c25a5331a516ad615ec78dad9e92580a6d8b9ea321dab2f22e58ba5fb",
+      "source_sha256": "12b25be744dc69dc2aa7283c2dea9a98eef63939921b718e14c0af7a5519a5c8"
+    },
+    "fork_runtime.elf": {
+      "sha256": "c9fe3b6ea82fdf35531b51c40eb2f6b074cb00406e49f6bee109a62a2eccecaf",
+      "source_sha256": "aaa1542ae408ff1c9ab5716f36f5cebee95b00d70a1cf08e2bd559c92848ab72"
+    },
+    "preview_without_create.elf": {
+      "sha256": "a18142dcc65536ba95fe3014a805ca76f5048c799fb91cecc116e70943a0337a",
+      "source_sha256": "a6bc57a1b809367d5ca0a652e8e178cf1184298048b08a2dbdbd67e32a91d99e"
+    }
+  },
+  "reserved_before": {},
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "baseline": [
+    129709,
+    3,
+    1
+  ],
+  "interactive_substitution": "passed",
+  "terminal_substitution": {
+    "status": "passed",
+    "baseline": [
+      129525,
+      4,
+      2
+    ],
+    "after": [
+      129525,
+      4,
+      2
+    ]
+  },
+  "reserved_after": {},
+  "redirected_files": {
+    "pipeline.bin": "7c867f6882d1426d350885ab88583b5c411b294a6a0f0c5d428a17da0d8cd65e",
+    "stream.log": "081626ed42d09979be1f0c970b0febf31c6a66bb09e1532696f5d6dd14699a70",
+    "heredoc.log": "93aa0d069e1ceb913e2d00a174f787846e6a640dab3366dccec0c8a35508318f",
+    "legacy.txt": "d8d7508f657dbb7c44b860bce86de146be0e629f0fc19518a72f4e7a129ec2c9",
+    "unmarked": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "fork-shared.txt": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+    "substitution.in": "d8d7508f657dbb7c44b860bce86de146be0e629f0fc19518a72f4e7a129ec2c9"
+  },
+  "file_sha256": "ea4f86925ccf65d87425d8d3ae820d49cf722c46caafdb34d233ac807e48be82",
+  "serial_sha256": "044538f6333b1bd41602c1f0dc18c1161728269ca768c3de21d3ae4a2de36316"
+}

@@ -1,0 +1,28 @@
+{
+  "terminal-host": {
+    "status": "passed",
+    "raw_report_sha256": "daff262c81b7c8ac8e75a9eb0b9254e2c4a4d6359ac8483089a0d941bbc47859",
+    "sanitizers": [
+      "address",
+      "undefined"
+    ],
+    "summary": [
+      "PASS glibc_terminal fork_ok",
+      "PASS glibc_terminal fork_terminal_timeout",
+      "PASS glibc_terminal fork_files_timeout",
+      "PASS 27 glibc terminal groups"
+    ]
+  },
+  "files-host": {
+    "status": "passed",
+    "raw_report_sha256": "cd451ccd9905ca780706fe6324059a86ae9d71a45153f7430975cd0bd6f07bcc",
+    "sanitizers": [
+      "address",
+      "undefined"
+    ],
+    "summary": [
+      "PASS 49 glibc G3-F host cases",
+      "PASS 15 real glibc FD/files/FatFs integration groups"
+    ]
+  }
+}

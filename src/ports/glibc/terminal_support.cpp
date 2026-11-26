@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Freestanding bridge to the existing authenticated terminal application client.
 #include "sysdeps/xos/xos_terminal_runtime.h"
+#include <xos/channel_io.hpp>
 #include <xos/terminal_client.hpp>
 #include <xos/thread_abi.hpp>
 #include <errno.h>
@@ -18,9 +19,10 @@ static_assert(sizeof(xos_file_startup_extension) == sizeof(xos::startup_extensio
 static_assert(sizeof(xos_file_startup_descriptor) == sizeof(xos::startup_descriptor));
 static_assert(sizeof(xos_terminal_mode) == sizeof(xos::terminal::mode));
 
-long lock_terminal() {
+long lock_terminal(xos_u64 deadline = xos::thread_deadline_infinite) {
     while (__atomic_exchange_n(&terminal_lock, 1, __ATOMIC_ACQUIRE) != 0) {
-        const auto result = __xos_wait_word(&terminal_lock, 1, ~xos_u64{0});
+        const auto result = __xos_wait_word(&terminal_lock, 1, deadline);
+        if (result == xos::thread_error_timeout) return -ETIMEDOUT;
         if (result != 0 && result != xos::thread_value_changed) return -EIO;
     }
     return 0;
@@ -46,8 +48,8 @@ long result_errno(xos::i64 result) {
     default: return -EIO;
     }
 }
-template<class function> long exchange(function invoke) {
-    const long locked = lock_terminal();
+template<class function> long exchange(function invoke, xos_u64 deadline = xos::thread_deadline_infinite) {
+    const long locked = lock_terminal(deadline);
     if (locked < 0) return locked;
     const long result = result_errno(invoke());
     unlock_terminal();
@@ -65,6 +67,22 @@ extern "C" long __xos_terminal_close() {
     xos::terminal::close(terminal_session);
     unlock_terminal();
     return 0;
+}
+extern "C" long __xos_terminal_fork_prepare(xos_u64 child_pid, xos_u64 deadline) {
+    return exchange([&] {
+        xos::channel_fork_pair pair{xos::channel_version, sizeof(pair), child_pid,
+            terminal_session.send_handle, terminal_session.receive_handle, 0, 0};
+        const auto derived = xos::sdk::channel_fork(pair);
+        return derived == 0 ? xos::terminal::register_fork_until(terminal_session, pair, deadline) : derived;
+    }, deadline);
+}
+extern "C" void __xos_terminal_fork_child() {
+    const auto controller = terminal_session.controller_pid;
+    const auto service = terminal_session.service_pid;
+    terminal_session = {};
+    // Tokens belong to the parent. Reconnect to the child's registered pair.
+    // A service loss after commit leaves later terminal I/O unavailable.
+    (void)xos::terminal::connect(terminal_session, controller, service);
 }
 extern "C" long __xos_terminal_read(void* buffer, size_t length, unsigned int flags) {
     if ((flags & O_NONBLOCK) != 0) return -ENOTSUP;

@@ -47,6 +47,20 @@ round-robin 调度：
 想安静体验 ELF/文件命令，可在 supervisor 中分别 `kill 1`、`kill 3`、`kill 4`；
 保留无输出的 spinner 仍可验证抢占。
 
+## 应用启动候选镜像
+
+通过现有构建入口生成独立镜像：
+
+```sh
+python3 scripts/build.py --quiet-demos-on-launch --output-dir build/application-launch
+```
+
+候选也用 `run` 进入 Xsh。若尚未选择 `demo keep`，Xsh 找到可执行的外部
+ELF 后，会先停止四个持续运行的启动演示任务，再为程序创建进程。`dash`
+可以在 Xsh 第一个外部命令就启动自己的子程序。找不到可执行文件时仍保留
+当前演示状态。要观察真实演示，用 `run` 进入后先输入 `demo keep`，再用
+`demo quiet` 停止。构建 manifest 用 `quiet_demos_on_launch` 记录该选择。
+
 ## 失败与边界
 
 - `run` 不返回内核调试控制台；执行后要回到内核控制台只能重启 QEMU。

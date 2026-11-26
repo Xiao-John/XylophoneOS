@@ -2,7 +2,7 @@
 
 在软件 WebCore 配置中，依次应用 `software_context.patch`、`software_buffers.patch`、
 `software_graph.patch`、`shared_memory_xos.patch`、`shared_memory_transfer_xos.patch`。
-补丁采用现有的 XOS sys84 端点和 sys88 grant 权限，并以单调时钟限制接收等待。客体夹具通过
+补丁采用现有的 XOS sys84 端点和 sys88 grant 权限，并以单调时钟限制收发等待。客体夹具通过
 sys86 服务名建立端点。编译使用同一 WebCore 生成图和 XOS glibc C/C++ SDK，交叉头沿用
 [本地共享页](shared_memory_xos.md)的布置。原生 SDK syscall 实现须参与链接。
 
@@ -18,7 +18,8 @@ sys86 服务名建立端点。编译使用同一 WebCore 生成图和 XOS glibc 
 收发前分别向内核核对两个端点的对端 PID。线上的 32 字节记录携带交换号、grant 编号、
 显式长度和授权类型。真实映射由当前进程的内核句柄表检查。已有 ABI 分别完成端点查询
 和 grant 委派，信任边界包括由启动器选定、在交接期间维持身份的对端进程，以及通道中
-有序、串行的一次交换。消息正文只能选择当前进程获授的 grant。通用 WebKit2 IPC 编解码
+有序、串行的一次交换。消息正文只能选择当前进程获授的 grant。单向端点只能保留一条在途记录，收发会在调用方给出的期限内等待，包括前一条回执
+尚待对端读取的情况。通用 WebKit2 IPC 编解码
 以及把来自不同授权上下文的匿名引用混入同一通道，仍需单独定义并验收。
 
 ## 正常释放与退出

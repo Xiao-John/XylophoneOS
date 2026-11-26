@@ -145,7 +145,7 @@
  }
 
  std::optional<SharedMemory::Handle> SharedMemory::createHandle(Protection protection)
-@@ -90,6 +110,190 @@
+@@ -90,6 +110,203 @@
      if (protection == Protection::ReadWrite && m_xos_protection != Protection::ReadWrite)
          return std::nullopt;
      return Handle(Handle::Type(Ref { *m_xos_grant }, protection), size());
@@ -177,12 +177,27 @@
 +        && sender == route.expected_peer && receiver == route.expected_peer;
 +}
 +
++bool wait_for_record(uint64_t deadline)
++{
++    const auto now = xos::thread::clock();
++    return now < deadline && !xos::thread::sleep_until(now + std::min(deadline - now, uint64_t { 1'000'000 }));
++}
++
 +bool send_record(const xos_shared_memory_route& route, transfer_step step, uint64_t grant, uint64_t size,
-+    SharedMemoryProtection protection)
++    SharedMemoryProtection protection, uint64_t deadline)
 +{
 +    const transfer_record packet { transfer_magic, 1, static_cast<uint8_t>(step), static_cast<uint8_t>(protection),
 +        0, route.exchange, grant, size };
-+    return authenticated_route(route) && !xos::sdk::ipc_send(route.endpoints.send, &packet, sizeof(packet));
++    while (authenticated_route(route)) {
++        const auto result = xos::sdk::ipc_send(route.endpoints.send, &packet, sizeof(packet));
++        if (!result)
++            return true;
++        // Each endpoint holds one pending message. In particular, a borrower
++        // can finish its work before the owner consumes the mapped receipt.
++        if (result != xos::ipc_error_full || !wait_for_record(deadline))
++            return false;
++    }
++    return false;
 +}
 +
 +bool receive_record(const xos_shared_memory_route& route, transfer_step step, uint64_t deadline, transfer_record& packet)
@@ -194,9 +209,7 @@
 +                && packet.step == static_cast<uint8_t>(step) && !packet.reserved && packet.exchange == route.exchange
 +                && packet.grant && packet.size && packet.size <= grant_limit
 +                && packet.protection <= static_cast<uint8_t>(SharedMemoryProtection::ReadWrite);
-+        const auto now = xos::thread::clock();
-+        if (size != xos::process_error_would_block || now >= deadline
-+            || xos::thread::sleep_until(now + std::min(deadline - now, uint64_t { 1'000'000 })) != 0)
++        if (size != xos::process_error_would_block || !wait_for_record(deadline))
 +            return false;
 +    }
 +    return false;
@@ -223,7 +236,7 @@
 +{
 +}
 +
-+std::optional<xos_memory_offer> xos_memory_offer::send(SharedMemoryHandle&& handle, const xos_shared_memory_route& route)
++std::optional<xos_memory_offer> xos_memory_offer::send(SharedMemoryHandle&& handle, const xos_shared_memory_route& route, uint64_t deadline)
 +{
 +    auto& storage = handle.m_handle;
 +    if (!storage || !storage.m_grant->m_transferable || !authenticated_route(route))
@@ -242,7 +255,7 @@
 +    }
 +    RELEASE_ASSERT(delegated == grant.m_handle);
 +
-+    const auto published = send_record(route, transfer_step::offer, delegated, handle.size(), storage.m_protection);
++    const auto published = send_record(route, transfer_step::offer, delegated, handle.size(), storage.m_protection, deadline);
 +    return xos_memory_offer(WTF::move(storage.m_grant), route, handle.size(), storage.m_protection, published);
 +}
 +
@@ -283,7 +296,7 @@
 +        if (result != xos_loan_result::ok)
 +            return result;
 +    }
-+    m_close_reported = send_record(m_route, transfer_step::closed, m_number, m_length, m_protection);
++    m_close_reported = send_record(m_route, transfer_step::closed, m_number, m_length, m_protection, deadline);
 +    return m_close_reported ? xos_loan_result::ok : xos_loan_result::exchange_unconfirmed;
 +}
 +
@@ -309,20 +322,20 @@
 +    RefPtr<xos_memory_grant> grant = adoptRef(*new xos_memory_grant(packet.grant, false, false));
 +    auto handle = SharedMemoryHandle(SharedMemoryHandle::Type(Ref { *grant }, protection), packet.size);
 +    auto view = SharedMemory::map(WTF::move(handle), protection);
-+    if (!view || !send_record(route, transfer_step::mapped, packet.grant, packet.size, protection))
++    if (!view || !send_record(route, transfer_step::mapped, packet.grant, packet.size, protection, deadline))
 +        return std::nullopt;
 +
 +    return xos_memory_loan(WTF::move(grant), WTF::move(view), route, packet.grant, packet.size, protection);
 +}
 +
-+xos_loan_result xos_memory_loan::release()
++xos_loan_result xos_memory_loan::release(uint64_t deadline)
 +{
 +    if (!m_grant || m_released)
 +        return xos_loan_result::exchange_unconfirmed;
 +    m_view = nullptr;
 +    if (!m_grant->hasOneRef())
 +        return xos_loan_result::local_views_active;
-+    m_released = send_record(m_route, transfer_step::released, m_number, m_length, m_protection);
++    m_released = send_record(m_route, transfer_step::released, m_number, m_length, m_protection, deadline);
 +    return m_released ? xos_loan_result::ok : xos_loan_result::exchange_unconfirmed;
 +}
 +
@@ -365,7 +378,7 @@
 +// retain the offer until closure is confirmed or the supervised peer has exited.
 +class xos_memory_offer final {
 +public:
-+    static std::optional<xos_memory_offer> send(SharedMemoryHandle&&, const xos_shared_memory_route&);
++    static std::optional<xos_memory_offer> send(SharedMemoryHandle&&, const xos_shared_memory_route&, uint64_t deadline);
 +
 +    xos_memory_offer(xos_memory_offer&&) = default;
 +    xos_memory_offer(const xos_memory_offer&) = delete;
@@ -400,7 +413,7 @@
 +    xos_memory_loan(const xos_memory_loan&) = delete;
 +
 +    RefPtr<SharedMemory> view() const { return m_view; }
-+    xos_loan_result release();
++    xos_loan_result release(uint64_t deadline);
 +    bool confirm_close(uint64_t deadline);
 +
 +private:

@@ -121,8 +121,8 @@ void owner(const xos_shared_memory_route& route, Scenario scenario, pid_t child 
     require(!!handle, "owner-handle");
     auto wrong = route;
     wrong.expected_peer = xos::sdk::pid();
-    require(!xos_memory_offer::send(WTF::move(*handle), wrong), "reject-wrong-receiver");
-    auto offer = xos_memory_offer::send(WTF::move(*handle), route);
+    require(!xos_memory_offer::send(WTF::move(*handle), wrong, deadline()), "reject-wrong-receiver");
+    auto offer = xos_memory_offer::send(WTF::move(*handle), route, deadline());
     require(offer && offer->published(), "publish-handle");
     require(offer->confirm_map(deadline()), "owner-map-confirmation");
 
@@ -172,14 +172,15 @@ void holder(const xos_shared_memory_route& route, Scenario scenario, pid_t child
         require(waitForChild(child) && colorIs(*bitmap, SK_ColorRED), "alias-survives-owner-exit");
         bitmap = nullptr;
         memory = nullptr;
-        require(loan->release() == xos_loan_result::exchange_unconfirmed, "departed-owner-cannot-confirm-release");
+        require(loan->release(deadline()) == xos_loan_result::exchange_unconfirmed, "departed-owner-cannot-confirm-release");
         return;
     }
 
-    require(loan->release() == xos_loan_result::local_views_active, "holder-local-bitmap-pins-storage");
+    require(loan->release(deadline()) == xos_loan_result::local_views_active, "holder-local-bitmap-pins-storage");
     bitmap = nullptr;
     memory = nullptr;
-    require(loan->release() == xos_loan_result::ok && loan->confirm_close(deadline()), "holder-release-and-close-confirmation");
+    require(loan->release(deadline()) == xos_loan_result::ok, "holder-sent-release");
+    require(loan->confirm_close(deadline()), "holder-received-final-close");
 }
 
 void run(char* imagePath, Scenario scenario)

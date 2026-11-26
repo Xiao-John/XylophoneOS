@@ -75,3 +75,17 @@ QtCore 链接仍显示 `access`、`chdir`、`getcwd`、`mkdir`、`rmdir`、
 `chmod` 和 `flock` 等接口的明确未实现警告。已有测试只覆盖嵌入资源、QThread
 信号及退出资源回收。磁盘临时文件、计时器独立触发、Dash 入口、完整 QtCore G03、
 目标 Qt Declarative/G06、Qt Quick/G07 和静态分发均待验。
+
+## QtCore 包选择复验
+
+PR #185 复核发现 `QT_ADDITIONAL_PACKAGES_PREFIX_PATH` 可以让同版本的另一 Qt
+包优先于刚构建的目标 Qt。构建脚本从子进程环境移除此变量，夹具配置显式绑定
+`Qt6_DIR` 和 `Qt6Core_DIR`。链接前将 CMake 实际选中的 QtCore 归档路径与预期
+文件核对。
+
+用声明版本 6.8.3 的受控竞争 CMake 包复验，旧配置进入了竞争包并以预设诊断停止。
+同一环境下，修正后的配置选择原目标 QtCore 归档。复用上文已构建归档重新编译并
+链接夹具，得到与上表相同 SHA-256 的 ELF。使用上表镜像从 xsh 复跑，输出
+`QT_CORE_SMOKE_OK`、退出 0，资源计数前后均为 `[129714, 3, 1]`。
+本次客体回执 SHA-256 为
+`0d3a2b14a9e3926e7b4416c18d780a432cd851b4b910d4c98977841615a57878`。

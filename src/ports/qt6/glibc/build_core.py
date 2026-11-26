@@ -26,6 +26,31 @@ library dlopen system_pcre2 system_zlib
 """.split()
 
 
+def build_environment():
+    env, _ = clean_build_environment(os.environ)
+    env.pop("QT_ADDITIONAL_PACKAGES_PREFIX_PATH", None)
+    env["LC_ALL"] = "C"
+    return env
+
+
+def link_fixture(source, build, fixture_build, common, env, jobs):
+    fixture = ROOT / "tests/fixtures/qt6/glibc"
+    packages = build / "lib/cmake"
+    expected_qtcore = (build / "lib/libQt6Core.a").resolve(strict=True)
+    # The generated Qt toolchain supplies the target root and host tool discovery.
+    # Bind the fixture's package and archive to the matching target build.
+    subprocess.run(["cmake", "-S", str(fixture), "-B", str(fixture_build), *common,
+                    f"-DCMAKE_TOOLCHAIN_FILE={packages / 'Qt6/qt.toolchain.cmake'}",
+                    f"-DCMAKE_MODULE_PATH={source / 'cmake'}",
+                    f"-DQt6_DIR:PATH={packages / 'Qt6'}",
+                    f"-DQt6Core_DIR:PATH={packages / 'Qt6Core'}"], check=True, env=env)
+    linked_qtcore = Path((fixture_build / "qtcore_archive.txt").read_text().strip())
+    if linked_qtcore.resolve(strict=True) != expected_qtcore:
+        raise RuntimeError("The fixture's QtCore target differs from the freshly built archive")
+    subprocess.run(["cmake", "--build", str(fixture_build), "--parallel", str(jobs)],
+                   check=True, env=env)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("archive", "sdk-build", "sdk-profile", "host-qt", "output"):
@@ -58,8 +83,7 @@ def main():
             parser.error(f"{tool} differs from the SDK build")
         tools[name] = details
 
-    env, _ = clean_build_environment(os.environ)
-    env["LC_ALL"] = "C"
+    env = build_environment()
     host = args.host_qt.resolve(strict=True)
     source_lock = json.loads((PORT.parent / "source_lock.json").read_text())
     host_tools = {}
@@ -99,15 +123,8 @@ def main():
     subprocess.run(["cmake", "--build", str(build), "--parallel", str(args.jobs),
                     "--target", "Core"], check=True, env=env)
 
-    fixture = ROOT / "tests/fixtures/qt6/glibc"
     fixture_build = output / "fixture"
-    # Qt's generated toolchain adds the cross-built prefix without allowing
-    # host libraries. Its build-tree find modules still need the source helpers.
-    subprocess.run(["cmake", "-S", str(fixture), "-B", str(fixture_build), *common,
-                    f"-DCMAKE_TOOLCHAIN_FILE={build / 'lib/cmake/Qt6/qt.toolchain.cmake'}",
-                    f"-DCMAKE_MODULE_PATH={source / 'cmake'}"], check=True, env=env)
-    subprocess.run(["cmake", "--build", str(fixture_build), "--parallel", str(args.jobs)],
-                   check=True, env=env)
+    link_fixture(source, build, fixture_build, common, env, args.jobs)
     if (verify_profile(load_json(args.sdk_profile), "glibc", sdk_build) != binding
             or any(sha(Path(tool["path"])) != tool["sha256"] for tool in tools.values())
             or any(sha(path) != digest for path, digest in host_tools.items())):

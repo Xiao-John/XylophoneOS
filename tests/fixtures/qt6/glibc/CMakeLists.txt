@@ -11,3 +11,5 @@ qt_standard_project_setup()
 qt_add_executable(core_smoke ../core_smoke.cpp ../resources.qrc)
 set_target_properties(core_smoke PROPERTIES AUTORCC ON)
 target_link_libraries(core_smoke PRIVATE Qt6::Core)
+file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/qtcore_archive.txt"
+    CONTENT "$<TARGET_FILE:Qt6::Core>\n")

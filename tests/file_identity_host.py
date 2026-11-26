@@ -44,11 +44,13 @@ def main():
         image.write_bytes(make_image())
         fatfs = output / "fatfs.o"
         unicode = output / "fatfs_unicode.o"
+        elf = output / "elf.o"
         run([*host_flags, "-w", "-c", repo_root / "src/third_party/fatfs/ff.c", "-o", fatfs])
         run([*host_flags, "-c", repo_root / "src/user/services/fatfs_unicode.cpp", "-o", unicode])
+        run([*host_flags, "-c", repo_root / "src/user/loader/elf.cpp", "-o", elf])
         service_test = output / "file_identity"
         run([*host_flags, repo_root / "tests/fixtures/file_semantics/file_identity.cpp", fatfs,
-             unicode, *gc_sections_flags(), "-o", service_test])
+             unicode, elf, *gc_sections_flags(), "-o", service_test])
         run([service_test, image])
 
         runtime = output / "runtime.o"
@@ -70,13 +72,14 @@ def main():
         sources = [repo_root / path for path in (
             "tests/fixtures/file_semantics/libc_identity.cpp", "src/user/sdk/file_client.cpp",
             "src/user/sdk/terminal_client.cpp", "src/user/sdk/text.cpp")]
-        run([*runtime_flags, *sources, runtime, service, fatfs, unicode,
+        run([*runtime_flags, *sources, runtime, service, fatfs, unicode, elf,
              *gc_sections_flags(), "-o", libc_test])
         run([libc_test, image])
 
     paths = ["src/user/services/files.cpp", "src/user/libc/newlib_syscalls.cpp",
              "src/user/sdk/file_client.cpp", "src/shared/include/xos/file_abi.hpp",
-             "src/third_party/fatfs/ff.c", "src/third_party/fatfs/ff.h"]
+             "src/third_party/fatfs/ff.c", "src/third_party/fatfs/ff.h",
+             "src/user/loader/elf.cpp", "src/user/include/xos/elf.hpp"]
     paths.extend(str(path.relative_to(repo_root)) for path in
                  sorted((repo_root / "tests/fixtures/file_semantics").glob("*.cpp")))
     report = {"status": "passed", "guest": "not_run_by_this_host_runner",

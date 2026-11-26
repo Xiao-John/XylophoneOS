@@ -55,6 +55,21 @@ FatFs 锁或磁盘簇的槽当作空槽。maintenance acquire/release 同时检�
 临时 seek。`write_at` 使用显式位置，即使描述含 O_APPEND；普通 write 仍追加。
 它们沿用真实短 I/O、权限、空洞零填充、失败回滚及维护准入规则。
 
+## 可执行文件查询
+
+files wire v2 的 `stat`（op 3）接受 `stat_check_exec`（请求 flags bit13）。
+成功时返回原有 stat 数据，并加上 `stat_exec_checked`（响应 flags bit3）。目录
+沿用搜索权限投影。FAT 普通文件在同一服务请求中用原生纯 ELF 检查器验证格式，
+只读取 ELF64 头和至多 32 个程序头。普通文本和 `/dev/null` 返回 `access_denied`，
+读取错误沿用服务错误映射。
+
+查询借用已打开对象的物理 FIL，或者打开仅在本请求内有效的只读 FIL 并在回复前关闭。
+请求无需客户端 FD、远端 open description 或内容 pin，也不改变现有描述的逻辑 offset。
+普通 `stat` 请求继续发送零 flags，响应保持原样。旧服务可能忽略新请求位并成功返回
+普通 stat，支持此查询的客户端必须检查成功响应位。没有该位时，glibc 返回
+`ENOTSUP`，原会话继续可用于普通文件操作。文件服务负责路径解析和同步格式查询。
+真实启动的对象验证、不可变内容 pin 和进程权限仍由 loader 负责。
+
 ## rename、unlink 与原子替换
 
 对仍有引用的文件执行 unlink，会把该 inode 移到服务保留的根目录隐藏名字，立即

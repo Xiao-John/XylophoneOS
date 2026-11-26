@@ -1,0 +1,121 @@
+{
+  "status": "passed_subset",
+  "scope": "GNU initial thread TP handoff with prepared storage",
+  "shared_interpreter_executed": false,
+  "build_id": "97cce681943c3eb2",
+  "iso_sha256": "577424b28cc5ff91aba7181b7827b46632756253be6c2384fe0d164018e9eda7",
+  "system_manifest_sha256": "1a8ce17d8df6d3589e3f8a3f9410d302320d6b5c4aa7c2eaf68474ab7a22330d",
+  "sdk_sha256": "3846393a217e3c651f420587eed0ebc8234091c5180933017f48686f68e36353",
+  "profile_sha256": "f8eacfecdc05cb7dc9fc0b440e8f06233404cdfc3ea03423316a4b0e0b0fbfb0",
+  "rtld_manifest_sha256": "0405e4265fe77606f0d687979fc9ca8a4980fa0c1230741ee9cd6f4a1369d1bb",
+  "rtld_objects": {
+    "shared/elf/rtld.os": "cab24b27ef3aa3934fe5e52ba2616d6ecdc0be59a970bc40d2146650162141e1",
+    "shared/elf/xos_rtld_entry.os": "337b78ffa7ca84210705efbbff880dacbb914c257c719426665d850ea3b33802",
+    "shared/elf/xos_rtld_mapping.os": "62096825134ad9dab787184810bd57ec6f2b5c66c039f35baade928bade14e03",
+    "shared/elf/xos_file_session.os": "61eeea65828d16379136a243f80c902132262ba838e9a4ce7e86c348f8ae1571",
+    "shared/elf/dl-load.os": "2b27bc2595e75cf0850a55bbfbc3f5018eb692af7dc208901cdade58ccc90bb5",
+    "shared/elf/xos_rtld_heap.os": "a535de33f9d8c343aa83f09547b5715ddf36aea1103994e14fbc990627322b2e",
+    "shared/elf/dl-minimal-malloc.os": "3ec26c2f561b7ef9b70e7a678f2ca5c7ce76151a2f4e77cc336aae3fcc2773d5",
+    "shared/elf/dl-tls.os": "d7e4ba8ee285478f97a3a58833095ee5d6bb16562961a9987694f79c04f72a1a",
+    "shared/elf/dl-tls_init_tp.os": "a3907b47fcb32c14d17b918e18c8b35ee378ee2033b27f3ae79dd9f0f6f824a5",
+    "shared/elf/dl-mutex.os": "993e822dd36cbefb969ed024aaf9f09f2af5c137c7508cc580e1bebacc7a06f8",
+    "shared/elf/dl-minimal.os": "6bba792f6b2943c664c2d22ebbab74a17086b18a1226d4418d7f20dd670765e0",
+    "shared/elf/dl-catch.os": "029c406fd8e5c8947ecf7f5907d5e338b54b1ce4a49b3f19a0e510c27bc0fffa",
+    "shared/elf/dl-exception.os": "c75f617c8a1fae333e67fbe3dac47cf45871305140b1007ccc2023ede0fe1cc8",
+    "shared/elf/dl-printf.os": "240a42a8cb079b59cce44efe4063671056648b66b2c932d036bd097132e0d62f",
+    "shared/elf/dl-tunables.os": "07bf689f7b98e9392bc6e9f723d5388e9e9a3ee04270b5c36f5ddf5ca3a3c1ed",
+    "shared/elf/getpid.os": "aca52b2320002f3db80794f96614a1f62569ce466a2c44aa9d893e76fde0dbd7",
+    "shared/elf/_exit.os": "53398f88492ba65aff7a52d1aa8db3b4c0ad5071bf8d2255eeb0bd5c22baace0",
+    "shared/string/rtld-memmove.os": "825839045e2a0d239e78ef6f664218a6fbd4ebf8c7cfa0e20a2c3b1a680e5184",
+    "shared/string/rtld-memset.os": "6650e9d04ee2dc31a0ff139efd4656366e3bd416e6c0ccb49b44311f679d9702",
+    "shared/string/rtld-strlen.os": "c5c12b94e901765e06b150b46566b9aeb25f81a0abdbd4ffcb81e20ee10e09a5",
+    "shared/stdio-common/rtld-_fitoa_word.os": "200a4a4d60c94ee523538fc515763e1172bba2572f07d76de18d51ac816a5c67",
+    "shared/stdio-common/rtld-itoa-udigits.os": "7b0491b47193d2f3a1d5c6031576cb4a5d4e5afd51b8921dfe1f9921929b8749",
+    "shared/setjmp/rtld-__longjmp.os": "eba917466934fb0d0fa4100680a37846580a85eba2e6b6e6dddc424cf2ec79b7",
+    "shared/csu/errno-loc.os": "82b8b6dace87b45c79564367b2f48df135cf8d71bdd66be3e6427733650aa1af",
+    "shared/csu/errno.os": "8b7e7597e711b2652fc8960394e9748f492ecb95b348f5d6417a0fdb9489d502",
+    "shared/elf/d1-initial-tp-fixture.o": "7d0e33291c84ccd01d448048287db4bfa1abfd6623c2d63a02333e314fd60083",
+    "shared/elf/d1-closure-tls-fixture.o": "3f4d8acc97a6e7615a179b6a87d186d03af1e318c8ae27051d4ad0a569eea17f"
+  },
+  "tools": {
+    "x86_64-elf-ld": {
+      "available": true,
+      "sha256": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1",
+      "version_exit_code": 0,
+      "version": "GNU ld (GNU Binutils) 2.47.20260726"
+    },
+    "x86_64-elf-objcopy": {
+      "available": true,
+      "sha256": "92fba3a2b4292261e6e17de08596fb0080fc605ff6807c462bf78c5ce6d2a80a",
+      "version_exit_code": 0,
+      "version": "GNU objcopy (GNU Binutils) 2.47.20260726"
+    },
+    "x86_64-elf-nm": {
+      "available": true,
+      "sha256": "422d96cfd2867a90713df8881cd9f7cbb5799bf0f776054e5f0438a99360439c",
+      "version_exit_code": 0,
+      "version": "GNU nm (GNU Binutils) 2.47.20260726"
+    }
+  },
+  "sanitized_environment": [],
+  "program_headers": [
+    {
+      "type": 1,
+      "flags": 5,
+      "virtual_address": 1073741824,
+      "file_size": 3030,
+      "memory_size": 3030,
+      "alignment": 4096
+    },
+    {
+      "type": 1,
+      "flags": 4,
+      "virtual_address": 1073745920,
+      "file_size": 1496,
+      "memory_size": 1496,
+      "alignment": 4096
+    },
+    {
+      "type": 1,
+      "flags": 6,
+      "virtual_address": 1073750016,
+      "file_size": 2136,
+      "memory_size": 2248,
+      "alignment": 4096
+    },
+    {
+      "type": 7,
+      "flags": 4,
+      "virtual_address": 0,
+      "file_size": 0,
+      "memory_size": 0,
+      "alignment": 8
+    }
+  ],
+  "guest_elf_sha256": "d1d77947a048fccf586a23625638cf9461c5a7c948a32b4cc00b7127db173b11",
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "resources_before": [
+    129709,
+    3,
+    1
+  ],
+  "runs": [
+    {
+      "output": "exec-file /bin/initial_tp\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000353000\r\n[loader] started pid=10 file=/bin/initial_tp\n[process] event=wait_blocked parent=7 child=10\r\nD1_INITIAL_TP_OK tcb=gnu tid=native stack=exact dtv=preserved dispatch=preserved\n[task] event=reclaimed pid=10 pages=51\r\n[wait] pid=10 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        129709,
+        3,
+        1
+      ]
+    },
+    {
+      "output": "exec-file /bin/initial_tp\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x0000000000353000\r\n[loader] started pid=11 file=/bin/initial_tp\n[process] event=wait_blocked parent=7 child=11\r\nD1_INITIAL_TP_OK tcb=gnu tid=native stack=exact dtv=preserved dispatch=preserved\n[task] event=reclaimed pid=11 pages=51\r\n[wait] pid=11 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        129709,
+        3,
+        1
+      ]
+    }
+  ],
+  "serial_sha256": "a226cfcb7730bcf01b7435e1095cf4384134f56d8d1c6cb4575a6000b7e0e8d3"
+}

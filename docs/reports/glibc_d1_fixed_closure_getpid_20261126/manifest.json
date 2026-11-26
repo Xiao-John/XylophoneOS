@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "main_commit": "1ea5a358b70f6deeee368f643f7566e5f2ffac16",
+  "source_commit": "4bd0b1b3e45e2b18c336a53ae61a735ad4c6a3a8",
+  "source_tree": "5d1b27f0e0992a740d3af786c1ffcff4426c6f10",
+  "getpid_source_commit": "805e434e3491ad3a28860bd8a96f5c363e755735",
+  "system_build_id": "ac319c480d42ed5b",
+  "getpid": {
+    "static_text_sha256": "f9777c64889e19bae191539b13771fd2915f85e6e7f717401584819c496fe1a2",
+    "rtld_text_sha256": "6fe62c92f8954c4fa2d67c8f46241f829c4e4fa9aab92bed200646a1a3c706d6",
+    "host": "passed",
+    "rtld_imports": []
+  },
+  "files": {
+    "abi.log": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301",
+    "closure_tls.json": "525ac31125d3a9c97b8842e8a1b12be124052637e215a11818567470e4c3ed5c",
+    "initial_tp.json": "c63284edd00d26f2004aaaa137f3289d690d36a4da1a61f9676926dc231e9987"
+  },
+  "raw_guest_sha256": {
+    "initial_tp.json": "20cc7f15045e1be2eeae96f970be01d45cb9ff6549065d83edf9be1860349493",
+    "closure_tls.json": "8b325266ee91c901f0e84120e1bc2e204515e62c95df249ee91c462711b736dd"
+  }
+}

@@ -17,6 +17,7 @@ from boot_smoke import Guest
 from task_smoke import send_bytes, pump
 from make_work_disk import create_fat32
 from toolchain import COMMON_FLAGS, X86_FLAGS, tool
+from work_disk import host_tool
 
 
 def command(guest, line, prompt=b"xsh> ", timeout=30):
@@ -112,7 +113,7 @@ def main():
             wrong_isa.write_bytes(wrong_bytes)
             disk = folder / "xsh_ui_work.img"
             create_fat32(disk, 512)
-            helper = ROOT / "build/work_disk_host"
+            helper = host_tool()
             for directory in ("/usr", "/usr/bin", "/bin", "/tests", "/tmp"):
                 transfer(helper, disk, "mkdir", directory)
 

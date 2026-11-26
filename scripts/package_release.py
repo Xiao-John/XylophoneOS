@@ -9,6 +9,7 @@ import subprocess
 import sys
 import tarfile
 from sdk_receipt import verify_sdk, verify_runtime, tree_receipt, verify_copied_inputs
+from work_disk import host_tool
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
@@ -107,9 +108,10 @@ def main():
     disk = image_dir/'work_disk.img'
     if disk.exists():
         p.error('refuse to overwrite release work disk')
-    helper = ROOT/'build/work_disk_host'
-    if not helper.is_file():
-        p.error('build/work_disk_host must already be prepared; do not rebuild shared tools')
+    try:
+        helper = host_tool(build=False)
+    except FileNotFoundError as error:
+        p.error(str(error))
     entries = list(seed['install_files']) + list(sysroot['files'])
     diagnostic = out / 'user_xos_diag.image.elf'
     diagnostic_hash = system['artifacts']['user_xos_diag.image.elf']['sha256']

@@ -100,7 +100,7 @@ python3 "$SDK/compile.py" hello.cpp -o hello.elf        # C++
 ## 第四步：放进工作盘
 
 `scripts/work_disk.py` 是宿主离线文件桥（首次会用 `clang++`/`c++` 编译
-`scripts/work_disk_host.cpp` 到 `build/work_disk_host`）。实测参数（以
+`scripts/work_disk_host.cpp`，缓存按宿主系统和架构放在 `build/host_tools/`）。实测参数（以
 `--help` 为准）：
 
 ```text

@@ -44,21 +44,18 @@
 +#endif
 --- a/src/main.c
 +++ b/src/main.c
-@@ -867 +867,5 @@
+@@ -867 +867,7 @@
 -#ifdef NO_OUTPUT_SYNC
 +#if defined(__xos__)
++  if (jobserver_auth || jobserver_style)
++    O (fatal, NILF, _("the recursive jobserver is unavailable on XOS"));
 +  if ((output_sync_option && !streq (output_sync_option, "none")) || sync_mutex)
 +    O (fatal, NILF, _("output synchronization is unavailable on XOS"));
 +  output_sync = OUTPUT_SYNC_NONE;
 +#elif defined(NO_OUTPUT_SYNC)
-@@ -1837,0 +1842,4 @@
-+#ifdef __xos__
-+  if (jobserver_auth || jobserver_style)
-+    O (fatal, NILF, _("the recursive jobserver is unavailable on XOS"));
-+#endif
-@@ -2216,0 +2225 @@
+@@ -2216,0 +2223 @@
 +#ifndef __xos__
-@@ -2228,0 +2238,2 @@
+@@ -2228,0 +2236,2 @@
 +
 +#endif
 --- a/src/makeint.h

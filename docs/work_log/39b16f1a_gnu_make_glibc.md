@@ -50,5 +50,12 @@ include，命令行覆盖变量，菱形依赖共享任务只执行一次，通�
 [串口日志](../reports/gnu_make_glibc_20261126/gnu_make.serial.log.gz)
 [可重跑客体入口](../../tests/gnu_make_guest.py)
 
+审查后的 `dad77ebd` 在每次解析 Make 参数时拒绝递归 jobserver，同样覆盖
+Makefile 写入 `MAKEFLAGS` 后的再次解析。QEMU 镜像 `99bcb50a3ad84f74` 通过
+13 项，包括 `-j2` 真并发、在失败配方确实写出文件后以 `Error 7` 结束、独立目标
+继续执行和残件删除。晚到的 jobserver 设置在执行 recipe 前被拒绝，预期的产物路径
+仍为空。资源每项恢复到 `129696 / 3 / 1`。
+[审查复验回执](../reports/gnu_make_glibc_20261126/review_guest_report.json)
+
 该资格覆盖串口和显式重建下的单 GNU Make 实例。增量时间戳、异步信号、
 大规模并发和存量编译项目仍待组合验证。

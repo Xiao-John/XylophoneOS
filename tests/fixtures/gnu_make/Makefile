@@ -1,7 +1,11 @@
 include /work/vars.mk
 
-.PHONY: all left right common wildcard concurrent first second pipe capture broken survivor
+.PHONY: all left right common wildcard concurrent first second pipe capture broken survivor late_jobserver
 .DELETE_ON_ERROR:
+
+ifneq ($(filter late_jobserver,$(MAKECMDGOALS)),)
+MAKEFLAGS += --jobserver-auth=3,4
+endif
 
 all: left right
 	@printf 'GNU_MAKE_DEPS_OK %s\n' '$(WORD)';
@@ -37,3 +41,6 @@ broken: /out/incomplete
 
 survivor:
 	@echo GNU_MAKE_SURVIVOR_OK;
+
+late_jobserver:
+	@/usr/bin/mkprobe append /out/unexpected_jobserver

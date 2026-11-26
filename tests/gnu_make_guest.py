@@ -28,10 +28,12 @@ CASES = (
     ("local_parallel_wait", MAKE + " -j2 concurrent", 0, "GNU_MAKE_PARALLEL_OK"),
     ("pipe_recipe", MAKE + " pipe", 0, "GNU_MAKE_PIPE_OK"),
     ("capture_pipe", MAKE + " capture", 0, "GNU_MAKE_CAPTURE <real-pipe-data>"),
-    ("parallel_error", MAKE + " -j2 -k broken survivor", 2, "GNU_MAKE_SURVIVOR_OK"),
+    ("parallel_error", MAKE + " -j2 -k broken survivor", 2, "GNU_MAKE_SURVIVOR_OK\nError 7"),
     ("closed_partial_output", "/usr/bin/mkprobe absent /out/incomplete", 0, ""),
     ("after_error", "dash /work/recovery.sh", 0, "GNU_MAKE_DASH_OK"),
     ("reject_jobserver", MAKE + " --jobserver-style=pipe all", 2, "recursive jobserver is unavailable"),
+    ("reject_makefile_jobserver", MAKE + " -j2 late_jobserver", 2, "recursive jobserver is unavailable"),
+    ("no_jobserver_recipe", "/usr/bin/mkprobe absent /out/unexpected_jobserver", 0, ""),
     ("reject_output_sync", MAKE + " --output-sync=target all", 2, "output synchronization is unavailable"),
 )
 
@@ -96,7 +98,8 @@ def main():
                 print(name, flush=True)
                 output = run(guest, command, timeout=60)
                 report["cases"].append({"name": name, "expected_status": status, "output": output})
-                require(marker in output and "kind=exited code=" + str(status) + "\n" in output,
+                require(all(part in output for part in marker.splitlines())
+                        and "kind=exited code=" + str(status) + "\n" in output,
                         name + " returned the wrong output or exit status")
                 require(resources(guest) == baseline, name + " did not restore the guest resource baseline")
             start = len(guest.output)

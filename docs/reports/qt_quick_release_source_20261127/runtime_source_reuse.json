@@ -1,0 +1,43 @@
+{
+  "compiler_seed_rebuild": "not_run",
+  "compiler_seed_runtime_sha256": {
+    "crtbegin.o": "b13c4d2e37c5fb9276dae5da98fc9354b33a24d093ac962060a045ce4d6f1ead",
+    "crtend.o": "abab18582b725e367ab0e3a1aea24042d9acb0b72442e513938f614439ff9e56",
+    "libgcc.a": "339898e1b135d8f0d9038270b41e7d17bf9b677c415e854784db4579f60af565"
+  },
+  "cxx_runtime_rebuild": "not_run",
+  "kit_manifest_sha256": "c3b9f48353ab96cff9dd405a694f1064b4442ceb54f9bb5781ac5de6498053d2",
+  "sdk_manifest_sha256": "7eee04884a96ced6de12d20794af6809f544e3f15bc4e409b4197e58b1583d7a",
+  "status": "upstream_and_xos_sdk_sources_staged",
+  "upstream": {
+    "gcc": {
+      "name": "gcc-16.2.0.tar.xz",
+      "original_report_sha256": "4deed52764f73db80c182f3444a944188c2357a809487b397f391e47a049da37",
+      "sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e"
+    },
+    "glibc": {
+      "name": "glibc-2.44.tar.xz",
+      "original_report_sha256": "ec2fefec6423ee49bd77b9388503b90eff8bce970d01375862a766ce293216f7",
+      "sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667"
+    }
+  },
+  "xos_input_files": 256,
+  "xos_sdk_source_commit": "bac10c6d08bbc454e4068360e04e3058efd14855",
+  "materials_manifest_sha256": "a90e85503207d46d62c3797a8574f992c4f8661f33b253c4017c0b9b3df353a5",
+  "materials_archive": {
+    "name": "xos_qt_quick_sdk_sources.tar.zst",
+    "sha256": "610502a9f2259a6dd6095c86f1bc371812f2f30270b8b6dae1a2ffb502a077a1",
+    "bytes": 134714334
+  },
+  "verified_materials_files": 495,
+  "detached_signature_recheck": {
+    "glibc": "FD19E6D31B192EE4DC63EAD3DC2B16215ED5412A",
+    "gcc": "7F74F97C103468EE5D750B583AB00996FC26A641"
+  },
+  "detached_signature_raw_status_sha256": "65d8e9b0e8c179cdd1774135d482b82a5c3328dd5309a1cdc875fd9e113ecddf",
+  "other_sdk_preview": {
+    "sdk_manifest_sha256": "45ec2bc96ef7b26f4d035fd1aa7ed424bf6efba55164b06ee89ebec8e19fef50",
+    "sdk_profile_sha256": "1dd89afc949f21a3ae07b2de617ae3319b590341b68870e7dd836563822c31c9",
+    "matched": false
+  }
+}

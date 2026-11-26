@@ -1,0 +1,34 @@
+{
+  "status": "source_trees_compared",
+  "upstream_release_sha256": "1f03a2b8f5588b4face7da87926e9b2c1372b3a32157c52df07a75067a9db1af",
+  "observed_source_snapshot_sha256": "d7c47626d5c2bf82f672472c594ccd39757a54e398091e8bbe41a5a98b6a5e0a",
+  "upstream_source_files": 53153,
+  "observed_source_files": 53154,
+  "reprepared_source_files": 53154,
+  "reprepared_file_index_sha256": "e128dde42d3faac5f3d0ea042ee3c80ee8e0d77be98d3b46dcca3fc5a553c1ed",
+  "observed_file_index_sha256": "e128dde42d3faac5f3d0ea042ee3c80ee8e0d77be98d3b46dcca3fc5a553c1ed",
+  "upstream_to_reprepared": {
+    "added": [
+      "src/3rdparty/masm/wtf/os_allocator_xos.cpp"
+    ],
+    "removed": [],
+    "changed": [
+      "src/3rdparty/masm/wtf/PageBlock.cpp",
+      "src/qml/CMakeLists.txt",
+      "src/qml/jsruntime/qv4compilationunitmapper.cpp",
+      "src/qml/jsruntime/qv4engine.cpp",
+      "src/qml/memory/qv4stacklimits.cpp",
+      "src/qml/parser/qqmljsastvisitor_p.h",
+      "src/qml/qml/ftw/qqmlthread.cpp"
+    ]
+  },
+  "observed_to_reprepared": {
+    "added": [],
+    "removed": [],
+    "changed": []
+  },
+  "official_checksum_sha256": "509e64ee73c5de747a9ae5efb2be6b25cbef038492a38ef345067a575b6a55cc",
+  "official_source_url": "https://download.qt.io/archive/qt/6.8/6.8.3/submodules/qtdeclarative-everywhere-src-6.8.3.tar.xz",
+  "official_checksum_url": "https://download.qt.io/archive/qt/6.8/6.8.3/submodules/qtdeclarative-everywhere-src-6.8.3.tar.xz.sha256",
+  "upstream_release_bytes": 36503988
+}

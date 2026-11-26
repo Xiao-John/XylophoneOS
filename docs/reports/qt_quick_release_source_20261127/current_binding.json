@@ -1,0 +1,27 @@
+{
+  "abi": "passed",
+  "base_commit": "393a60bb80afcb21b3a18e01a6533bf31faab19f",
+  "candidate_base": "77081ccff2e6e4977fd2f62254752796d495b2e4",
+  "dash": {
+    "mode": [
+      800,
+      600
+    ],
+    "partial_captures": 0,
+    "sha256": "ba0c16e426bb616c66cbd5985ac0d694eb07f9e4152195c066542968a4232aa1",
+    "text_ink_pixels": 475
+  },
+  "image_sha256": "25d0b839e54363f0e410c43415d97435428261eb3ecd73a5758346ebc876e6f1",
+  "source_commit": "967aa2d60e70f8d443f36d12b2c3d96b478cc0c9",
+  "source_tree": "3b0c6018b5a37c134e0fff37a61463c76df61782",
+  "system_build_id": "470422325ebe087f",
+  "xsh": {
+    "mode": [
+      800,
+      600
+    ],
+    "partial_captures": 0,
+    "sha256": "ba0c16e426bb616c66cbd5985ac0d694eb07f9e4152195c066542968a4232aa1",
+    "text_ink_pixels": 475
+  }
+}

@@ -39,6 +39,20 @@ ifeq ($(filter login,$(subdirs)),)
 CFLAGS-set-freeres.os += -DXOS_FREERES_WITHOUT_LOGIN
 endif
 endif
+ifeq ($(subdir),posix)
+ifeq ($(filter nss,$(subdirs)),)
+CPPFLAGS-glob.os += -DXOS_TILDE_WITHOUT_NSS
+CPPFLAGS-glob64.os += -DXOS_TILDE_WITHOUT_NSS
+CPPFLAGS-wordexp.os += -DXOS_TILDE_WITHOUT_NSS
+endif
+endif
+ifeq ($(subdir),socket)
+ifeq ($(filter resolv,$(subdirs)),)
+# The checked address converters use the portable GNU implementations.
+sysdep_routines += inet_ntop inet_pton inet_pton_length
+shared-only-routines += inet_ntop inet_pton inet_pton_length
+endif
+endif
 ifeq ($(subdir),nptl)
 sysdep_headers += bits/pthread_stack_min-dynamic.h bits/pthread_stack_min.h
 sysdep_routines += xos_wait_word xos_lll_futex xos_timed_wait xos_thread_exit xos_thread_create xos_thread_tls xos_thread_entry

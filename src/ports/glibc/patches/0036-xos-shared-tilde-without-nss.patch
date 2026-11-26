@@ -1,0 +1,85 @@
+--- a/posix/glob.c
++++ b/posix/glob.c
+@@ -646,7 +646,7 @@
+                 }
+               else
+                 home_dir = "c:/users/default"; /* poor default */
+-#else
++#elif !defined XOS_TILDE_WITHOUT_NSS
+               int err;
+               struct passwd *p;
+               struct passwd pwbuf;
+@@ -751,7 +751,7 @@
+         }
+       else
+         {
+-#ifndef WINDOWS32
++#if !defined WINDOWS32 && !defined XOS_TILDE_WITHOUT_NSS
+           /* Recognize ~user as a shorthand for the specified user's home
+              directory.  */
+           char *end_name = strchr (dirname, '/');
+@@ -893,7 +893,8 @@
+               }
+             scratch_buffer_free (&pwtmpbuf);
+           }
+-#else /* WINDOWS32 */
++#else
++# ifdef WINDOWS32
+           /* On native Windows, access to a user's home directory
+              (via GetUserProfileDirectory) or to a user's environment
+              variables (via ExpandEnvironmentStringsForUser) requires
+@@ -903,12 +904,15 @@
+              user is getenv ("USERNAME") would not be a good idea,
+              since it would make people think that ~user is supported
+              in general.  */
++# else
++          /* The native configuration has no account lookup for ~user.  */
++# endif
+           if (flags & GLOB_TILDE_CHECK)
+             {
+               retval = GLOB_NOMATCH;
+               goto out;
+             }
+-#endif /* WINDOWS32 */
++#endif
+         }
+     }
+ 
+--- a/posix/wordexp.c
++++ b/posix/wordexp.c
+@@ -299,6 +299,9 @@
+ 	}
+       else
+ 	{
++#ifdef XOS_TILDE_WITHOUT_NSS
++	  *word = w_addchar (*word, word_length, max_length, '~');
++#else
+ 	  struct passwd pwd, *tpwd;
+ 	  uid_t uid = __getuid ();
+ 	  int result;
+@@ -331,10 +334,16 @@
+ 		}
+ 	    }
+ 	  scratch_buffer_free (&tmpbuf);
++#endif
+ 	}
+     }
+   else
+     {
++#ifdef XOS_TILDE_WITHOUT_NSS
++      /* Preserve the complete ~user literal without an account database.  */
++      *word = w_addmem (*word, word_length, max_length,
++		       words + *offset, i - *offset);
++#else
+       /* Look up user name in database to get home directory */
+       size_t userlen = i - (1 + *offset);
+       /* tmpbuf contains both the user and the __getpwnam_r working area.  */
+@@ -371,7 +380,7 @@
+ 	}
+ 
+       scratch_buffer_free (&tmpbuf);
+-
++#endif
+       *offset = i - 1;
+     }
+   return *word ? 0 : WRDE_NOSPACE;

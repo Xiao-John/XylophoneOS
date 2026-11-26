@@ -3,8 +3,17 @@
 2026-11-26 · 下一阶段里程碑。主线已合入可显式选择的 glibc C/C++ 应用 SDK、
 原生 xypm 客体维护、Qt Quick 软件渲染及外部应用工具包、Mobius glibc 会话和
 工作盘迁移。Pumpkin 开发配置已验跨重启登录、持久多账户和独立资源 broker。
-ClarkE 已验受控 HTTPS 安装包、JavaScriptCore 静态 shell 和 Test262 子集。
-普通镜像主线复验通过 79 项客体检查、10 项许可材料和 ABI 表。
+Pumpkin 的持久身份已在显式镜像中启动并收回真实 Mobius 桌面。ClarkE 已验受控
+HTTPS、JavaScriptCore 静态 shell、真实 HTML 分词和 Skia 软件栅格。`d7c56292`
+已合入 glibc dash 命令替换、GNU rtld 首线程 TLS、可搬移 Qt Quick 工具包和 glibc
+stock 安装及应用组合。签名 C/C++ 候选 `3bbbf73984b95c20` 通过冷装、重启和卸载，
+同盘应用组合两次启动均覆盖命令替换。普通镜像的 79 项、10 项许可材料和 ABI 通过。
+主线 `6bd530bf` 随后纳入 ClarkE 的 FAT 字体流修复，以及 Pumpkin 正在使用的 Mobius
+会话的管理员撤销。前者实测应用从 FAT 加载字形并恢复资源，后者通过 8 项桌面和
+13 项无桌面检查。Pumpkin 首次账户发放、完整 WebCore 页面和 SDK 默认切换继续按各自门验收。
+`bbf38ffb` 记录冻结 newlib 的三次冷启动回退。原发行盘在 glibc 运行期间完整摘要保持一致，
+回退后原 ELF 和用户数据可读回。[冻结回退](work_log/4ffa226d_glibc_stock_fork_frozen_rollback.md)
+[当前普通组合复验](work_log/bbf38ffb_next_stage_combined.md)
 [复验记录](work_log/1c7f9abb_next_stage_mainline_replay.md)
 [本阶段计划](plans/next_stage.md) · [上阶段整合记录](work_log/efc3a5ff_xos_integration_campaign.md)
 
@@ -73,9 +82,9 @@ ClarkE 已验受控 HTTPS 安装包、JavaScriptCore 静态 shell 和 Test262 �
 | 负责线 | 范围 |
 | --- | --- |
 | 总协调 | 阶段计划、产品标识、公共 ABI、SDK 默认和组合验收 |
-| 运行库 | D1 原生启动与文件状态交接、CPython XPK 合并前复验、普通应用冷启动和 SDK 默认资格 |
-| Qt 与浏览器 | Qt Quick 工具包维护、ClarkE JavaScriptCore 客体执行及浏览器生产网络 |
-| 身份 | Pumpkin 具名资源持久化、生产凭据和代际来源 |
+| 运行库 | GNU rtld 独立堆、首线程 TLS 与文件状态交接，范围为 glibc sysdeps 和 D1 私有 loader。另行推进 glibc dash 命令替换与 stock 安装，覆盖 shell、候选构建和应用组合。 |
+| Qt 与浏览器 | Qt Quick 工具包和显示兼容。ClarkE 的 WebCore 页面、CSS 布局与 Qt 视口，另行验收安装 Shell 的静态网络配置。 |
+| 身份 | Pumpkin 私有客户端、监督器与操作者工具负责在线撤销及 Mobius 会话回收。生产凭据、独立代际来源和长期资源归属继续验收。 |
 
 [阶段计划](plans/next_stage.md)
 

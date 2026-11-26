@@ -1,0 +1,45 @@
+{
+  "compile_database_sha256": "6ee8a5b77aafb67270d59b9f83fe46692cfd848c8dd5ec6411152863dcc404bc",
+  "compiled_by_target_cmake_command": [
+    {
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "object_sha256": "2ca01585ca19dda4e229165763e2412c13987920e8a807ca559fc0a9ecc864a8",
+      "returncode": 0,
+      "unit": "HTMLNames.cpp"
+    },
+    {
+      "log_sha256": "1e83592499db044790c588268955738753e853c3934ea102a8b2f4a55a415126",
+      "observed_failure": "compiler_terminated_by_signal",
+      "returncode": 1,
+      "unit": "UnifiedSource-page-44.cpp"
+    },
+    {
+      "log_sha256": "1e83592499db044790c588268955738753e853c3934ea102a8b2f4a55a415126",
+      "observed_failure": "compiler_terminated_by_signal",
+      "returncode": 1,
+      "unit": "UnifiedSource-html-167.cpp"
+    },
+    {
+      "log_sha256": "1e83592499db044790c588268955738753e853c3934ea102a8b2f4a55a415126",
+      "observed_failure": "compiler_terminated_by_signal",
+      "returncode": 1,
+      "unit": "UnifiedSource-rendering-123.cpp"
+    },
+    {
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "object_sha256": "f9505ed6ae5cb6c387633f152558fd32fee2b0f836f9d70724a532908562f2f9",
+      "returncode": 0,
+      "unit": "UnifiedSource-platform-224.cpp"
+    },
+    {
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "object_sha256": "326de0af8fa8d4ebd9e62ec27ba12921e5808b0ba8ab3cdbfbf80546a506ebdf",
+      "returncode": 0,
+      "unit": "UnifiedSource-platform-231.cpp"
+    }
+  ],
+  "initial_graph_html_parser_object_sha256": "c14bacaf4bb8250c55d23e6a7450789da23eeb46917b717979448c17a6586773",
+  "software_graph_sha256": "c42d2ca6e71a928910b6d0e83a7c48450b46fc4bfdaf90fe6695f8536ccb52b6",
+  "source_commit": "d5cebde5c106049aa87fcc8b30ae05d452d6e2ab",
+  "webcore_units": 2170
+}

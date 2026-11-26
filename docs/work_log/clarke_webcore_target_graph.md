@@ -21,3 +21,16 @@ Linux arm64 上的 CMake 4.4.5 生成 550 个 WebCore 编译单元，配置明�
 再绑定最终 SDK 与完整依赖重建结果。此次配置仍使用已经验收的目标依赖归档。
 [软件目标配置](../../src/ports/webkit/page/README.md#webcore-软件构建目标) ·
 [配置和对象回执](../reports/clarke_webcore_target_graph_20261127/manifest.json)
+
+## 目标命令复验
+
+通过 CMake 的正常生成规则补齐 PAL、WebCore 和 JSC 头文件与绑定。`HTMLNames.cpp`
+和包含 `HTMLDocumentParser.cpp` 的目标编译单元通过。首轮编译同时定位到 HarfBuzz
+功能开关、未启用辅助功能时的对象包装，以及 XOS 共享内存类型缺失。
+
+WebCore 目标现在启用已绑定的 HarfBuzz，并在未启用辅助功能时沿用上游的本地包装；
+将 WebCore 默认合并编译批次减为 2 后，CMake 列出 2170 个 WebCore 编译单元。
+生成的实际规则通过 `HTMLNames.cpp`、`GraphicsContextSkia.cpp` 和
+`SkiaSerializedImageBuffer.cpp` 所在的三个目标单元。部分页面和布局单元的编译器
+进程被信号终止，保留原始回执。复跑的构建统一采用较小批次，并显式允许无优化诊断
+构建。原生共享内存接口与整页客体验收仍继续推进。

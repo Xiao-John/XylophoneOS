@@ -48,6 +48,8 @@ image_map_result map_verified_image(const mapped_image& layout, u64 file_size,
                                     image_map_budget budget, image_allocation& allocation);
 
 // Releases the whole reservation, including holes. On failure the caller
-// retains the allocation and the native VM error is returned unchanged.
+// retains the reservation and the native VM error is returned unchanged.
+// A multi-batch release may have decommitted part of the image. The caller
+// must not resume object execution after starting its release.
 i64 release_image(image_allocation& allocation);
 }

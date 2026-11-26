@@ -1,0 +1,63 @@
+{
+  "status": "passed",
+  "source_kit_archive_sha256": "3706bf0fe13760f38eb50bcde6fd951c583479637f331000e96ff91090eba1c1",
+  "kit_manifest_sha256": "c3b9f48353ab96cff9dd405a694f1064b4442ceb54f9bb5781ac5de6498053d2",
+  "materials_manifest_sha256": "28566ca68b6d902dafa62bb90f60de1fa30631dd189977c3777ad361446ae676",
+  "original_application_receipt_sha256": "82a57c7289b9ef9498c7eef9b27eeb65a9b5e2ef60e77569e2c1a40c726d1f03",
+  "sdk_manifest_sha256": "7eee04884a96ced6de12d20794af6809f544e3f15bc4e409b4197e58b1583d7a",
+  "target_tools": {
+    "ar": "39ade51a05fba3546be68906d1b2c1788ce87d25d60bb30a030eaefbb96621b4",
+    "as": "616a1b8b8a202fbce829217332a197892571d4e48d119ed88d93b935b2615163",
+    "g++": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+    "gcc": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+    "ld": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1",
+    "ranlib": "d9034b71a71fbab28306582bfc37480e81dfc85d976d1f1b0593698507671a1d"
+  },
+  "host_build_environment": {
+    "platform": "linux/arm64",
+    "network": "none",
+    "image_id": "sha256:a71fb65026ab764d7883067a05a6a63a3fc5c3b8abaf6226e5cd0997831cdcc2"
+  },
+  "archives": {
+    "selected_qt": 18,
+    "ordered_members": 1066,
+    "target_members_sha256": "c4e86a4300a5d916e22ecc2a2cc824845b26e3d6b101208aa74dce05ba03a291"
+  },
+  "replacement": {
+    "archive": "link/kit/target/lib/libQt6Quick.a",
+    "member": "qquickitem.cpp.o",
+    "original_archive_sha256": "5fb56984fab0bf937ae48de7bb900fb39f7f56222c216154a5f28b1c6dae2ec8",
+    "original_member_sha256": "c6d14a86558a494270af81b16c5604df7af371fabc1b095dd336f2165247281f",
+    "replacement_archive_sha256": "107b3a8ec3014500e76ed2d199d11a162508f58aa3828f5ed933c0ced77bbd18",
+    "replacement_object_sha256": "b07ea249760efc330007250fe7bfb970645c36a705bf88fc07a35cbc2bbe5ad3",
+    "scan_elf_section": {
+      "name": ".xos_relink_proof",
+      "type": "PROGBITS",
+      "flags": [],
+      "data": "XOS Qt Quick static relink verification"
+    }
+  },
+  "linker_warnings": [
+    "__getcwd is not implemented and will always fail",
+    "access is not implemented and will always fail",
+    "chdir is not implemented and will always fail",
+    "chmod is not implemented and will always fail",
+    "fchmod is not implemented and will always fail",
+    "flock is not implemented and will always fail",
+    "getcwd is not implemented and will always fail",
+    "kill is not implemented and will always fail",
+    "mkdir is not implemented and will always fail",
+    "raise is not implemented and will always fail",
+    "readlink is not implemented and will always fail",
+    "rename is not implemented and will always fail",
+    "rmdir is not implemented and will always fail",
+    "sleep is not implemented and will always fail",
+    "symlink is not implemented and will always fail",
+    "sysconf is not implemented and will always fail",
+    "truncate is not implemented and will always fail",
+    "usleep is not implemented and will always fail",
+    "warning: get_nprocs will always return 1"
+  ],
+  "raw_relink_log_sha256": "1b355bece84bbad023b72a346690d0c125323e4037a1f5e65419e4af6edbd884",
+  "public_warning_list_is_derived": true
+}

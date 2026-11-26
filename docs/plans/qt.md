@@ -40,6 +40,8 @@ G04/G05 仅对各自冻结输入及声明范围通过；G06/G07 未运行，不�
 
 E18 的 Qt Declarative 6.8.3 源锁、静态宿主构建、QML 夹具与目标内存依赖见
 [2ebc9010](../work_log/2ebc9010_qt_e18_source_lock_and_headless_qml_build.md)。
+隔离 glibc SDK 的 QtCore 目标构建和客体冒烟已通过，见
+[8d6f3d2c](../work_log/8d6f3d2c_qt_e18_glibc_qtcore_target_build.md)。
 
 E17/G05 已在冻结输入上实现真实 Widgets 与 Aurora Notes，受限功能资格见
 [0078](../work_log/0078_qt_e17_aurora_qualification.md)，构建/保存/复现见

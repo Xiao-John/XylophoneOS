@@ -41,7 +41,15 @@
       "log_sha256": "f23baf964f7fb9ca421d0db88e8129c4097c06369b3926ddb6d49d87bc022697"
     }
   },
-  "guest_report_sha256": "0ea40ac2696b4560b04ec4726fdf703785a55aa58073198b3870fa0aaecb2388",
+  "guest_report_sha256": "37cae515e39b6a7918b7add5610b6f623f8b06f65b3d3fc191a4bbe4da9efdf1",
   "guest_serial_sha256": "a91cd1888fc2fff962add5beae73b5429caddea82ff31dd48c7192b6f03f769a",
-  "guest_serial_gzip_sha256": "31cffe1cb0368d3a2caae46470f1baa6bbf1cc73b119f326a54eedec885a0e4a"
+  "guest_serial_gzip_sha256": "31cffe1cb0368d3a2caae46470f1baa6bbf1cc73b119f326a54eedec885a0e4a",
+  "raw_guest_report_sha256": "0ea40ac2696b4560b04ec4726fdf703785a55aa58073198b3870fa0aaecb2388",
+  "host_path_templates": [
+    "XOS_BUILD",
+    "XOS_HOST_TEMP",
+    "XOS_ROOT",
+    "XOS_TARGET_TOOL_BIN",
+    "XOS_TOOLCHAIN_ROOT"
+  ]
 }

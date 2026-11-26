@@ -1,0 +1,24 @@
+{
+  "build_id": "8863999ce1a57285",
+  "compressed_serial_sha256": "79f28092d59ab5bf5571dda7402d2cabd28ee84db6b0e331f19fcbc7ddf7552c",
+  "elf_sha256": "87ce35b83b907bed1bed9b53d0bedeb7078eb3175108999b4337243ee39a80ed",
+  "fixture_sha256": "38aca42ba2bf5b23f9c27e297e5b405db4bf65b93053be3b582adc198d5e0685",
+  "iso_sha256": "3f0a5a4552a4e646b886095d68f9535f630f3fba9cf536338da4c913d8474f55",
+  "marker": "XOS_WEBCORE_IP_ADDRESS_OK",
+  "observed_output": "exec-file /ip-address.elf\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/ip-address.elf\n[process] event=wait_blocked parent=7 child=10\r\nXOS_WEBCORE_IP_ADDRESS_OK\n[task] event=reclaimed pid=10 pages=266\r\n[wait] pid=10 kind=exited code=0\nxsh> ",
+  "resources_after": [
+    129696,
+    3,
+    1
+  ],
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "sdk_profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "serial_sha256": "40e6e51c351d3beb3364bb90a63f6fafcd9205ab7c2c292734bd1272ef4688b4",
+  "status": "passed_subset",
+  "system_manifest_sha256": "6483e898265ed8af4d10cf6e939efb34877d60f54160eac2069ab682e7110ff0"
+}

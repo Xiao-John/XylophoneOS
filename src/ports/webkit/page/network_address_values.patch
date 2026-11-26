@@ -1,0 +1,295 @@
+--- a/Source/WebCore/platform/network/DNS.h
++++ b/Source/WebCore/platform/network/DNS.h
+@@ -29,9 +29,11 @@
+ #include <wtf/Forward.h>
+ #include <wtf/HashTraits.h>
+ #include <wtf/StdLibExtras.h>
+
+-#if OS(WINDOWS)
++#if OS(XOS)
++#include "XOSIPAddress.h"
++#elif OS(WINDOWS)
+ #include <winsock2.h>
+ #include <ws2tcpip.h>
+ #else
+ #include <netinet/in.h>
+@@ -40,14 +42,22 @@
+ namespace WebCore {
+
+ class IPAddress {
+ public:
+-    explicit IPAddress(const struct in_addr& address)
++#if OS(XOS)
++    using IPv4Address = XOSIPAddress::IPv4;
++    using IPv6Address = XOSIPAddress::IPv6;
++#else
++    using IPv4Address = struct in_addr;
++    using IPv6Address = struct in6_addr;
++#endif
++
++    explicit IPAddress(const IPv4Address& address)
+         : m_address(address)
+     {
+     }
+
+-    explicit IPAddress(const struct in6_addr& address)
++    explicit IPAddress(const IPv6Address& address)
+         : m_address(address)
+     {
+     }
+
+@@ -61,15 +71,15 @@
+     WEBCORE_EXPORT IPAddress isolatedCopy() const;
+     WEBCORE_EXPORT unsigned matchingNetMaskLength(const IPAddress& other) const;
+     WEBCORE_EXPORT static std::optional<IPAddress> fromString(const String&);
+
+-    bool isIPv4() const { return std::holds_alternative<struct in_addr>(m_address); }
+-    bool isIPv6() const { return std::holds_alternative<struct in6_addr>(m_address); }
++    bool isIPv4() const { return std::holds_alternative<IPv4Address>(m_address); }
++    bool isIPv6() const { return std::holds_alternative<IPv6Address>(m_address); }
+     bool containsOnlyZeros() const;
+     WEBCORE_EXPORT bool isLoopback() const;
+
+-    const struct in_addr& ipv4Address() const { return std::get<struct in_addr>(m_address); }
+-    const struct in6_addr& ipv6Address() const { return std::get<struct in6_addr>(m_address); }
++    const IPv4Address& ipv4Address() const { return std::get<IPv4Address>(m_address); }
++    const IPv6Address& ipv6Address() const { return std::get<IPv6Address>(m_address); }
+
+     friend std::partial_ordering operator<=>(const IPAddress& a, const IPAddress& b)
+     {
+         if (a.isIPv4() && b.isIPv4())
+@@ -83,9 +93,9 @@
+
+     friend bool operator==(const IPAddress& a, const IPAddress& b) { return is_eq(a <=> b); }
+
+ private:
+-    Variant<WTF::HashTableEmptyValueType, struct in_addr, struct in6_addr> m_address;
++    Variant<WTF::HashTableEmptyValueType, IPv4Address, IPv6Address> m_address;
+ };
+
+ enum class DNSError { Unknown, CannotResolve, Cancelled };
+
+--- a/Source/WebCore/platform/network/DNS.cpp
++++ b/Source/WebCore/platform/network/DNS.cpp
+@@ -37,9 +37,9 @@
+ #if PLATFORM(IOS_FAMILY)
+ #include <wtf/cocoa/RuntimeApplicationChecksCocoa.h>
+ #endif
+
+-#if OS(UNIX)
++#if OS(UNIX) && !OS(XOS)
+ #include <arpa/inet.h>
+ #endif
+
+ #if OS(QNX)
+@@ -87,39 +87,68 @@
+ }
+
+ bool IPAddress::containsOnlyZeros() const
+ {
++#if OS(XOS)
++    const auto isZero = [](const auto& address) {
++        return std::ranges::all_of(address, [](uint8_t byte) { return !byte; });
++    };
++    return isIPv4() ? isZero(ipv4Address()) : isIPv6() && isZero(ipv6Address());
++#else
+     return WTF::visit(WTF::makeVisitor([] (const WTF::HashTableEmptyValueType&) {
+         ASSERT_NOT_REACHED();
+         return false;
+-    }, [] (const in_addr& address) {
++    }, [] (const IPv4Address& address) {
+         return !address.s_addr;
+-    }, [] (const in6_addr& address) {
++    }, [] (const IPv6Address& address) {
+         for (uint8_t byte : address.s6_addr) {
+             if (byte)
+                 return false;
+         }
+         return true;
+     }), m_address);
++#endif
+ }
+
+ bool IPAddress::isLoopback() const
+ {
++#if OS(XOS)
++    if (isIPv4())
++        return ipv4Address() == IPv4Address { 127, 0, 0, 1 };
++    constexpr IPv6Address loopback { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
++    return isIPv6() && ipv6Address() == loopback;
++#else
+     return WTF::switchOn(m_address,
+-        [] (const struct in_addr& address) {
++        [] (const IPv4Address& address) {
+         return address.s_addr == htonl(INADDR_LOOPBACK);
+-    }, [] (const struct in6_addr& address) {
++    }, [] (const IPv6Address& address) {
+         constexpr auto in6addrLoopback = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\1"_span;
+         return equalSpans(asByteSpan(address.s6_addr), in6addrLoopback);
+     }, [] (const WTF::HashTableEmptyValueType&) {
+         ASSERT_NOT_REACHED();
+         return false;
+     });
++#endif
+ }
+
+ std::optional<IPAddress> IPAddress::fromString(const String& string)
+ {
+-#if OS(UNIX)
++#if OS(XOS)
++    const auto utf8 = string.utf8();
++    if (utf8.isNull() || !utf8.length())
++        return std::nullopt;
++    std::string_view literal { utf8.data(), utf8.length() };
++    // WTF URL hosts can include the IPv6 delimiters.
++    if (literal.starts_with('[') && literal.ends_with(']')) {
++        if (auto address = XOSIPAddress::parseIPv6(literal.substr(1, literal.size() - 2)))
++            return IPAddress { *address };
++        return std::nullopt;
++    }
++    if (auto address = XOSIPAddress::parseIPv6(literal))
++        return IPAddress { *address };
++    if (auto address = XOSIPAddress::parseIPv4(literal))
++        return IPAddress { *address };
++#elif OS(UNIX)
+     struct in6_addr addressV6;
+     if (inet_pton(AF_INET6, string.utf8().data(), &addressV6))
+         return IPAddress { addressV6 };
+
+@@ -150,13 +179,13 @@
+     std::span<const uint8_t> addressData;
+     std::span<const uint8_t> otherAddressData;
+     size_t addressLengthInBytes = 0;
+     if (isIPv4() && other.isIPv4()) {
+-        addressLengthInBytes = sizeof(struct in_addr);
++        addressLengthInBytes = sizeof(IPv4Address);
+         addressData = asByteSpan(ipv4Address());
+         otherAddressData = asByteSpan(other.ipv4Address());
+     } else if (isIPv6() && other.isIPv6()) {
+-        addressLengthInBytes = sizeof(struct in6_addr);
++        addressLengthInBytes = sizeof(IPv6Address);
+         addressData = asByteSpan(ipv6Address());
+         otherAddressData = asByteSpan(other.ipv6Address());
+     } else
+         return 0;
+--- a/Source/WebCore/PlatformJSCOnly.cmake
++++ b/Source/WebCore/PlatformJSCOnly.cmake
+@@ -27,8 +27,9 @@
+     list(APPEND WebCore_UNIFIED_SOURCE_LIST_FILES "platform/SourcesXOSSkia.txt")
+     list(APPEND WebCore_LIBRARIES "${XOS_SKIA_FONTCONFIG_ARCHIVE}" Fontconfig::Fontconfig)
+     list(APPEND WebCore_PRIVATE_INCLUDE_DIRECTORIES "${WEBCORE_DIR}/platform/network/xos")
+     list(APPEND WebCore_PRIVATE_FRAMEWORK_HEADERS
++        platform/network/XOSIPAddress.h
+         platform/network/xos/CertificateInfo.h
+         platform/network/xos/ResourceError.h
+         platform/network/xos/ResourceRequest.h
+         platform/network/xos/ResourceResponse.h)
+--- /dev/null
++++ b/Source/WebCore/platform/network/XOSIPAddress.h
+@@ -0,0 +1,106 @@
++// SPDX-License-Identifier: Apache-2.0
++#pragma once
++
++#include <algorithm>
++#include <array>
++#include <cstdint>
++#include <optional>
++#include <string_view>
++
++namespace WebCore::XOSIPAddress {
++
++using IPv4 = std::array<uint8_t, 4>;
++using IPv6 = std::array<uint8_t, 16>;
++
++inline std::optional<IPv4> parseIPv4(std::string_view literal)
++{
++    IPv4 address { };
++    for (size_t index = 0; index < address.size(); ++index) {
++        const auto separator = literal.find('.');
++        const auto octet = literal.substr(0, separator);
++        if (octet.empty() || octet.size() > 3 || (octet.size() > 1 && octet.front() == '0'))
++            return std::nullopt;
++        unsigned number = 0;
++        for (auto digit : octet) {
++            if (digit < '0' || digit > '9')
++                return std::nullopt;
++            number = 10 * number + static_cast<unsigned>(digit - '0');
++        }
++        if (number > 255 || ((separator == std::string_view::npos) != (index + 1 == address.size())))
++            return std::nullopt;
++        address[index] = static_cast<uint8_t>(number);
++        if (separator != std::string_view::npos)
++            literal.remove_prefix(separator + 1);
++    }
++    return address;
++}
++
++inline std::optional<IPv6> parseIPv6(std::string_view literal)
++{
++    std::array<uint16_t, 8> groups { };
++    size_t count = 0;
++    std::optional<size_t> compression;
++    if (literal.starts_with("::")) {
++        compression = 0;
++        literal.remove_prefix(2);
++    }
++    while (!literal.empty()) {
++        if (count == groups.size())
++            return std::nullopt;
++        const auto separator = literal.find(':');
++        const auto group = literal.substr(0, separator);
++        if (group.find('.') != std::string_view::npos) {
++            const auto ipv4 = parseIPv4(group);
++            if (!ipv4 || separator != std::string_view::npos || count > groups.size() - 2)
++                return std::nullopt;
++            groups[count++] = ((*ipv4)[0] << 8) | (*ipv4)[1];
++            groups[count++] = ((*ipv4)[2] << 8) | (*ipv4)[3];
++            break;
++        }
++        if (group.empty() || group.size() > 4)
++            return std::nullopt;
++        uint16_t number = 0;
++        for (char digit : group) {
++            unsigned value;
++            if (digit >= '0' && digit <= '9')
++                value = static_cast<unsigned>(digit - '0');
++            else if (digit >= 'a' && digit <= 'f')
++                value = 10 + static_cast<unsigned>(digit - 'a');
++            else if (digit >= 'A' && digit <= 'F')
++                value = 10 + static_cast<unsigned>(digit - 'A');
++            else
++                return std::nullopt;
++            number = static_cast<uint16_t>((number << 4) | value);
++        }
++        groups[count++] = number;
++        if (separator == std::string_view::npos)
++            break;
++        if (literal.substr(separator).starts_with("::")) {
++            if (compression)
++                return std::nullopt;
++            compression = count;
++            literal.remove_prefix(separator + 2);
++        } else {
++            literal.remove_prefix(separator + 1);
++            if (literal.empty())
++                return std::nullopt;
++        }
++    }
++    if (compression) {
++        if (count == groups.size())
++            return std::nullopt;
++        const size_t omitted = groups.size() - count;
++        std::move_backward(groups.begin() + *compression, groups.begin() + count, groups.end());
++        std::fill_n(groups.begin() + *compression, omitted, 0);
++    } else if (count != groups.size())
++        return std::nullopt;
++
++    IPv6 address { };
++    for (size_t index = 0; index < groups.size(); ++index) {
++        address[2 * index] = static_cast<uint8_t>(groups[index] >> 8);
++        address[2 * index + 1] = static_cast<uint8_t>(groups[index]);
++    }
++    return address;
++}
++
++} // namespace WebCore::XOSIPAddress

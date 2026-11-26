@@ -1,6 +1,11 @@
 {
-  "version": 1,
   "files": {
+    "address_values.json": "d5d2d738424425c2316b42478ef1d3eb1553e2f93aed6c4e1de46b198e744374",
+    "guest.json": "c32b2206552e21abe54522734bb9b719c25cef80cf21f12969573da12479a9cb",
+    "guest.serial.log.gz": "79f28092d59ab5bf5571dda7402d2cabd28ee84db6b0e331f19fcbc7ddf7552c",
+    "policy-guest.json": "0e2a5d638c4d32335ff5eb6d68955c51f14261875c28952dbd99a2f2e675e36f",
+    "policy-guest.serial.log.gz": "57c727f6f6d5c1a1de4379a25a2503fb4aadae64aba0c35522e801a9a192710d",
     "push_byte_order.json": "47f0250a7becc7362c9698b8052f306d0903579da3ce443a483fb17046b95366"
-  }
+  },
+  "version": 1
 }

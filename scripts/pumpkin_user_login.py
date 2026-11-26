@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import re
 import selectors
+import shutil
 import signal
 import socket
 import stat
@@ -212,7 +213,6 @@ def bind_system(system):
     return checked["build_id"], hashlib.sha256(metadata).hexdigest(), artifacts
 
 
-
 def select_deployment(system, binding, deployment):
     metadata = (system / "manifest.json").read_bytes()
     require(hashlib.sha256(metadata).hexdigest() == binding[1], "Login image manifest changed")
@@ -241,12 +241,29 @@ def check_installation(descriptor, deployment):
                 "The installation does not match the deployment profile")
 
 
+@contextmanager
+def sealed_login_image(path, expected_sha256):
+    descriptor = os.memfd_create("pumpkin-login-iso", os.MFD_CLOEXEC | os.MFD_ALLOW_SEALING)
+    try:
+        source = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        with os.fdopen(source, "rb") as stream, os.fdopen(os.dup(descriptor), "wb") as captured:
+            require(stat.S_ISREG(os.fstat(source).st_mode), "Login image must be a regular file")
+            shutil.copyfileobj(stream, captured)
+        seals = fcntl.F_SEAL_SHRINK | fcntl.F_SEAL_GROW | fcntl.F_SEAL_WRITE | fcntl.F_SEAL_SEAL
+        fcntl.fcntl(descriptor, fcntl.F_ADD_SEALS, seals)
+        reference = Path("/proc/self/fd") / str(descriptor)
+        require(digest(reference) == expected_sha256, "The sealed login image differs from its deployment profile")
+        yield reference, descriptor
+    finally:
+        os.close(descriptor)
+
+
 class private_vm:
     """Unlike the general test console, this pipe never accumulates a recording."""
 
-    def __init__(self, command):
+    def __init__(self, command, *, pass_fds=()):
         self.process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                        stderr=subprocess.DEVNULL, bufsize=0, close_fds=True)
+                                        stderr=subprocess.DEVNULL, bufsize=0, close_fds=True, pass_fds=pass_fds)
         self.reader = selectors.DefaultSelector()
         self.reader.register(self.process.stdout, selectors.EVENT_READ)
 
@@ -380,12 +397,17 @@ def named_exchange(vm, command, frame, selection, selection_sent):
 
 
 def boot(system, state, command, authority, previous, path, stored, account, selection, display, revoke_requested,
-         *, first_account=False, installation_realm=realm):
+         *, first_account=False, installation_realm=realm, expected_iso_sha256=None):
     with tempfile.TemporaryDirectory(prefix="pumpkin_user_") as private, ExitStack() as close_wallet:
         monitor = Path(private) / "qmp"
         drive = str(state / "work.img").replace(",", ",,")
-        vm = private_vm(qemu_command(system / "xos-install.iso", iso=True, work_disk=drive, qmp=monitor,
-                                     display=display))
+        image = system / "xos-install.iso"
+        descriptors = ()
+        if expected_iso_sha256 is not None:
+            image, pinned = close_wallet.enter_context(sealed_login_image(image, expected_iso_sha256))
+            descriptors = (pinned,)
+        vm = private_vm(qemu_command(image, iso=True, work_disk=drive, qmp=monitor, display=display),
+                        pass_fds=descriptors)
         try:
             vm.scan_boot(b"xos64> ")
             vm.send(b"run\r")
@@ -567,7 +589,8 @@ def operate(system, state, command, path, selection=None, account=b"alice", *, d
                 with credential_file(path, False) as wallet:
                     read_credential(wallet[0], stored, installation_realm)
             result = boot(system, state, command, authority, previous, path, stored, account, selection, display,
-                          revoke_requested, first_account=first_account, installation_realm=installation_realm)
+                          revoke_requested, first_account=first_account, installation_realm=installation_realm,
+                          expected_iso_sha256=binding[2]["xos-install.iso"] if deployment is not None else None)
             require(bind_system(system) == binding, "Login image receipt changed during operation")
             final = authority.read()
             if command == "enroll" and result == duplicate_enrollment:

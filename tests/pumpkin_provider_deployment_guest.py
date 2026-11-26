@@ -19,7 +19,7 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from pumpkin_generation_provider import deployment_realm, empty, frame, read_operation, signature
-from pumpkin_user_login import bind_system, credential_file_header, digest, file_magic, file_size
+from pumpkin_user_login import bind_system, credential_file_header, digest, file_magic, file_size, sealed_login_image
 
 OPERATOR, PROVIDER, HOLDER = 22101, 22102, 22103
 GROUP = 22100
@@ -54,6 +54,15 @@ def run(system, output):
                                                text=True).splitlines()[0],
               "checks": []}
     try:
+        with sealed_login_image(system / "xos-install.iso", binding[2]["xos-install.iso"]) as (image, descriptor):
+            assert digest(image) == binding[2]["xos-install.iso"]
+            try:
+                os.pwrite(descriptor, b"X", 0)
+            except PermissionError:
+                pass
+            else:
+                raise AssertionError("the verified launch medium remained writable")
+            report["checks"].append({"case": "verified launch medium is sealed"})
         with tempfile.TemporaryDirectory(prefix="pumpkin_provider_") as temp:
             workspace = Path(temp)
             workspace.chmod(0o755)

@@ -15,7 +15,8 @@ from lwip_service_build import build as build_lwip_service
 def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=False,
                 ncurses_supervisor_probe=False, glibc_files_death_probe=False,
                 files_private_storage_probe=False, files_private_client_probe=False, pumpkin_durable_probe=False,
-                pumpkin_anchored_probe=False, pumpkin_native_login=False, pumpkin_user_login=False):
+                pumpkin_anchored_probe=False, pumpkin_native_login=False, pumpkin_user_login=False,
+                quiet_demos_on_launch=False):
     capture = capture_build(build, build_id, 'xos-source-declarations')
     sdk = build / "sdk"
     if sdk.is_symlink():
@@ -187,6 +188,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
             # Keep the embedded supervisor compact after the bundle installer
             # additions.
             extra_flags += ("-Os", *private_client_flags, *durable_flags)
+            if quiet_demos_on_launch:
+                extra_flags += ("-DXOS_QUIET_DEMOS_ON_LAUNCH=1",)
         if name == "files" and glibc_files_death_probe:
             extra_flags += ("-DXOS_GLIBC_FILES_DEATH_PROBE=1",)
         if name == "files":

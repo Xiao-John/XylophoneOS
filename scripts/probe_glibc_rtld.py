@@ -103,11 +103,27 @@ def main():
                 ('_start', 'T'), ('_dl_start', 't'), ('_dl_start_user', 'T'), ('_dl_sysdep_start', 'U'))):
             raise RuntimeError('expected rtld entry and unresolved XOS startup handoff')
 
+        native_entry = build / 'elf/xos_rtld_entry.os'
+        _, native_compilation = run('make_native_entry', [*make_elf, native_entry])
+        if not any({'-fPIC', '-DSHARED', '-DMODULE_NAME=rtld'} <= set(line.split())
+                   and line.split()[0].endswith('/cc') for line in native_compilation.splitlines()
+                   if line.split()):
+            raise RuntimeError('expected the native entry checker to compile in the shared rtld module')
+        _, native_symbols = run('native_entry_symbols', [env['NM'], native_entry])
+        if '__xos_rtld_check_entry' not in native_symbols:
+            raise RuntimeError('missing native entry checker')
+        _, undefined = run('native_entry_undefined', [env['NM'], '-u', native_entry])
+        if undefined.strip():
+            raise RuntimeError('native entry checker unexpectedly depends on another object')
+        run('native_entry_readelf', [env['READELF'], '-hW', '-rW', native_entry])
+
         failure, reason = run('make_dl_sysdep', [*make_elf, build / 'elf/dl-sysdep.os'], allow_failure=True)
         if not failure or 'error: #error "XOS dynamic interpreter startup is not implemented"' not in reason:
             raise RuntimeError('expected the explicit XOS dynamic startup compile gate')
-        run('make_rtld_sizes', ['make', '-C', source / 'csu', 'objdir=' + str(build),
-                               '-j' + str(args.jobs), build / 'rtld-sizes.h'])
+        for header in ('rtld-sizes.h', 'sem_t-align.h', 'cpu-features-offsets.h',
+                       'features-offsets.h', 'link-defines.h', 'tlsdesc.h', 'rtld-offsets.h'):
+            run('make_' + header, ['make', '-C', source / 'csu', 'objdir=' + str(build),
+                                  '-j' + str(args.jobs), build / header])
         failure, _ = run('make_ld_so', [*make_elf, build / 'elf/ld.so'], allow_failure=True)
         if not failure or (build / 'elf/ld.so').exists():
             raise RuntimeError('ld.so unexpectedly linked despite the startup gate')
@@ -117,7 +133,7 @@ def main():
                 or sha(Path(__file__)) != report['probe_sha256']
                 or any(sha(Path(tool['path'])) != tool['sha256'] for tool in tools.values())):
             raise RuntimeError('source preparation or configured tools changed during the diagnostic')
-        report.update(status='rtld_entry_compiled_startup_blocked', artifacts={str(entry.relative_to(output)): sha(entry)})
+        report.update(status='rtld_entry_compiled_startup_blocked', artifacts={str(path.relative_to(output)): sha(path) for path in (entry, native_entry)})
     except Exception as error:
         report['error'] = str(error)
         raise

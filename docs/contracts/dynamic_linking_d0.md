@@ -210,6 +210,12 @@ glibc CRT 前后验证。早期单一持有方把当前 PID、内核认证端点
 尚未初始化的 G3，继承 FD 仍从现有 startup 描述恢复。动态解释器中的接入仍是 D1
 验收项。
 
+[入口准备回执](../work_log/4f844926_glibc_d1_interpreter_entry_preparation.md)
+将两个已核验输入的映射、真实 ELF 入口和 main PHDR、初始栈及 G3 会话组织为
+同一私有交接。受限记录位于栈容量之后，从原始入口栈指针定位。以 GNU 的实际共享
+rtld 编译规则构建入口检查器，通过原生客体读取。共享解释器仍受完整原生启动守卫
+约束。
+
 ## 6. 重定位、保护、TLS 和生命周期
 
 第一批固定一个 namespace、启动时完整闭包与 eager binding。rtld 严格校验

@@ -74,20 +74,43 @@ def prepare_daily_package(package, profile_path, sdk, system, entries, wheel_pac
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--release-dir', type=Path, default=ROOT/'build/releases'/VERSION)
-    p.add_argument('--dash-manifest',type=Path,required=True)
+    p.add_argument('--release-dir', type=Path)
+    p.add_argument('--dash-manifest', type=Path)
     p.add_argument('--cpython-stage',type=Path)
     p.add_argument('--extra-elf',action='append',default=[],metavar='NAME=PATH')
     p.add_argument('--wheel-package',type=Path)
     p.add_argument('--daily-package', type=Path, help='explicit daily utilities candidate XPK')
     p.add_argument('--daily-profile', type=Path, help='profile bound to the daily package and release SDK')
     p.add_argument('--daily-sdk', type=Path, help='composed SDK used by daily utilities; must match system SDK and C++ runtime')
+    p.add_argument('--glibc-candidate', type=Path, help='stock candidate with bound installer guest qualification')
+    p.add_argument('--glibc-app-kit', type=Path, help='application kit used by that candidate')
+    p.add_argument('--cpython-package', type=Path, help='same-profile static CPython/zlib XPK')
     a = p.parse_args()
+    if a.glibc_candidate:
+        if not (a.release_dir and a.glibc_app_kit and a.cpython_package):
+            p.error('--glibc-candidate requires --release-dir, --glibc-app-kit and --cpython-package')
+        if any((a.dash_manifest, a.cpython_stage, a.extra_elf, a.daily_profile, a.daily_sdk)):
+            p.error('glibc candidate supplies its own installer, SDK and profile')
+        out = a.release_dir.resolve()
+        if ROOT / 'build/releases' not in out.parents:
+            p.error('use a dedicated build/releases directory')
+        from package_glibc_release import assemble
+        try:
+            assemble(out, a.glibc_candidate, a.glibc_app_kit,
+                     a.daily_package or a.glibc_candidate / 'stock/daily.xpk',
+                     a.cpython_package, a.wheel_package, archive)
+        except (OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError) as error:
+            p.exit(1, 'glibc release assembly: ' + str(error) + '\n')
+        return
+    if a.glibc_app_kit or a.cpython_package:
+        p.error('--glibc-app-kit and --cpython-package require --glibc-candidate')
+    if a.dash_manifest is None:
+        p.error('--dash-manifest is required for the historical assembly path')
     if bool(a.daily_package) != bool(a.daily_profile):
         p.error('--daily-package and --daily-profile must be supplied together')
     if a.daily_sdk and not a.daily_package:
         p.error('--daily-sdk requires --daily-package and --daily-profile')
-    out = a.release_dir.resolve(strict=True)
+    out = (a.release_dir or ROOT/'build/releases'/VERSION).resolve(strict=True)
     if ROOT/'build/releases' not in out.parents:
         p.error('use a dedicated build/releases directory')
     system = json.loads((out/'system_manifest.json').read_text())

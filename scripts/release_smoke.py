@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 """Qualify the actual release ISO, empty-dash work disk, SDK and installed tools."""
+import argparse
 import hashlib
 import json
 from pathlib import Path
@@ -16,6 +17,23 @@ from xypm_image import Disk
 from xypm_format import require,sha_file
 from release_launcher import build_command
 from sdk_receipt import verify_sdk, verify_packaged_sdk, verify_copied_inputs
+
+PYTHON_RELEASE_SMOKE = '''import threading,json,zlib,gzip,zipfile,io,idna
+seen=[]
+t=threading.Thread(target=lambda: seen.append(42));t.start();t.join()
+assert seen==[42]
+assert json.loads(json.dumps({'x':42}))['x']==42
+assert gzip.decompress(gzip.compress(b'XOS'))==b'XOS'
+buf=io.BytesIO()
+stamp=(2024,1,1,0,0,0)
+with zipfile.ZipFile(buf,'w',compression=zipfile.ZIP_DEFLATED) as z:
+    z.writestr(zipfile.ZipInfo('x',stamp),'payload',compress_type=zipfile.ZIP_DEFLATED)
+with zipfile.ZipFile(buf) as z:
+    assert z.getinfo('x').compress_type==zipfile.ZIP_DEFLATED
+    assert z.read('x')==b'payload'
+assert idna.decode(idna.encode('例子.测试'))=='例子.测试'
+print('RELEASE_PY3_THREADS_JSON_ZLIB_IDNA_OK')
+'''
 
 def check_sdk_devkit(sdk, metadata, binding, report):
     """The packaged SDK must run its own XYPm host backend without a source checkout."""
@@ -108,6 +126,19 @@ def check_xypm_install(sdk, images, folder, report):
     report['checks'].append('sdk_xypm_install_query_remove')
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--glibc-release', type=Path)
+    parser.add_argument('--output', type=Path, help='new guest report and work disk directory')
+    parser.add_argument('--foreign-package', type=Path, help='optional known wrong-profile package for rejection')
+    arguments = parser.parse_args()
+    if arguments.glibc_release:
+        if arguments.output is None:
+            parser.error('--glibc-release requires --output')
+        from glibc_release_packages_guest import run
+        run(arguments.glibc_release, arguments.output, arguments.foreign_package, PYTHON_RELEASE_SMOKE)
+        return
+    if arguments.output or arguments.foreign_package:
+        parser.error('--output and --foreign-package require --glibc-release')
     version=(ROOT/'VERSION').read_text().strip();release=ROOT/'build/releases'/version
     images=release/('xylophoneos_revival_'+version+'_images');sdk=release/('xylophoneos_revival_'+version+'_sdk')
     metadata=json.loads((release/'release_manifest.json').read_text())
@@ -152,20 +183,7 @@ EOF
 (exec /usr/bin/cat /out/heredoc.txt)
 echo RELEASE_DASH_C3_OK
 ''',
-                'py3.py':'''import threading,json,zlib,gzip,zipfile,io,idna
-seen=[]
-t=threading.Thread(target=lambda: seen.append(42));t.start();t.join()
-assert seen==[42]
-assert json.loads(json.dumps({'x':42}))['x']==42
-assert gzip.decompress(gzip.compress(b'XOS'))==b'XOS'
-buf=io.BytesIO()
-stamp=(2024,1,1,0,0,0)
-with zipfile.ZipFile(buf,'w',compression=zipfile.ZIP_DEFLATED) as z:
-    z.writestr(zipfile.ZipInfo('x',stamp),'payload')
-with zipfile.ZipFile(buf) as z:assert z.read('x')==b'payload'
-assert idna.decode(idna.encode('例子.测试'))=='例子.测试'
-print('RELEASE_PY3_THREADS_JSON_ZLIB_IDNA_OK')
-''',
+                'py3.py':PYTHON_RELEASE_SMOKE,
                 'project.mk':'all:\n\tx86_64-elf-gcc -static --sysroot=/sysroot /src/hello.c -o /out/make_hello.elf\n\t/out/make_hello.elf\n'}
             with Disk(disk,folder) as backend:
                 for name,body in fixtures.items():

@@ -37,6 +37,10 @@ stage_freeze() {
 }
 
 stage_package() {
+  if (( $# )); then
+    "$PYTHON" scripts/package_release.py "$@"
+    return
+  fi
   # Override via env: DASH_MANIFEST, CPYTHON_STAGE, WHEEL, EXTRA_ELFS (space-separated NAME=PATH)
   local dash="${DASH_MANIFEST:?set DASH_MANIFEST to .cache/xos_seed/dash/<key>/manifest.json}"
   local stage="${CPYTHON_STAGE:?set CPYTHON_STAGE to .../stage_py3_b_manifest.json (must include zlib)}"
@@ -54,6 +58,10 @@ stage_package() {
 }
 
 stage_smoke() {
+  if (( $# )); then
+    "$PYTHON" scripts/release_smoke.py "$@"
+    return
+  fi
   "$PYTHON" scripts/release_smoke.py
   "$PYTHON" -c "import json;d=json.load(open('$R/package_smoke_report.json'));assert d['status']=='passed',d.get('error');print('smoke',len(d['checks']),'checks OK')"
 }
@@ -83,9 +91,9 @@ case "${1:-}" in
   build) stage_build ;;
   gates) stage_gates ;;
   freeze) stage_freeze ;;
-  package) stage_package ;;
+  package) shift; stage_package "$@" ;;
   application-preview) shift; "$PYTHON" scripts/package_application_preview.py "$@" ;;
-  smoke) stage_smoke ;;
+  smoke) shift; stage_smoke "$@" ;;
   materials) stage_materials ;;
   checksums) stage_checksums ;;
   status) stage_status ;;

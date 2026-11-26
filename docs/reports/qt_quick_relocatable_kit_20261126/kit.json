@@ -1,0 +1,38 @@
+{
+  "format_version": 1,
+  "host_platform": "linux-aarch64",
+  "input_application_receipt_sha256": "ea6f224d788e52773a2da04f96c51fae104a5093f64502282659319ebf7b548d",
+  "qt_inputs": {
+    "BundledFreetype": "9552abedb8f0a4afc1c052cb692dee2bfb3cb15e28829d6e2d3c9053ad945935",
+    "BundledHarfbuzz": "3fe3cb77d4d51290125574c6c26f38a69d9bfbc91a6cdacc7291d28d95849300",
+    "BundledPcre2": "94c11453189b2ab0b85ae090696b7641ee8346a01e042e1a203f8f9fdecaae25",
+    "BundledZLIB": "2909fdb3be43096240091b59d4d418316e1e133027aab18f1972c7b2d2193d25",
+    "Core": "6572280dee0959c173828241d3eb1c53f05a2e8617c1d6e6330b99b2f1a7ac7e",
+    "Gui": "17b33e879ea78ec5189567218892eba6790e01d4964fee1f459bcfbec4559b99",
+    "Qml": "0f5bdbf3e0ccc9e7d2d1906df5be5ab51851ae67ee68321e9752ba4014146a5d",
+    "QmlMeta": "3cb89a118e7faa5fde94788e2e9ee6a34a650d03fb9a2fe3f02d0d57b011c4ca",
+    "QmlModels": "71a2f484268b7036a7a875bcace210f0851aae697d17d1755560cb55dda0af29",
+    "Quick": "5fb56984fab0bf937ae48de7bb900fb39f7f56222c216154a5f28b1c6dae2ec8",
+    "moc": "a1337c30d3e0c85b14aa64b9b5e12e958003d77206b2daa2986f7f1bf868bdfc",
+    "modelsplugin": "818a1f87a8a310c57d6ddc43ee9486a9ebe75620a0333d87007d7833441dda87",
+    "qmlcachegen": "a9d3ccf51af314b48c1040a3b2643d76b07f8b7fc8a8dc749adaabede1c21997",
+    "qmlimportscanner": "90afededfde8772d347760e4ba6e420858b8fc2526be643a512e0fbd62eba20e",
+    "qmlplugin": "4a6777b01601a8fd12d86702d47050b31c9b5b164551596084e0767b4859024e",
+    "qmltyperegistrar": "ee3a9b55ba15c40f974ddd736ab6b16326c7a6a4548d34e40cfe79e9d5a3bad6",
+    "qtquick2plugin": "2c6014bb637102c4807e148f4b59f4c1f0440bb8dbbb47ef6c69b893668bd973",
+    "quickwindow": "4cb6ab1d35d244a7479e4b81a74e7d8344ad648b16e5f9e8f4a14b013ad0f284",
+    "rcc": "9ca52ca0ba6139fcf92802ed2d8cd267c67e403e2744e6a7922f50fcc3d7f9ca"
+  },
+  "qt_version": "6.8.3",
+  "qtbase_source_sha256": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80",
+  "sdk_manifest_sha256": "7eee04884a96ced6de12d20794af6809f544e3f15bc4e409b4197e58b1583d7a",
+  "sdk_profile_file_sha256": "5dde8b7cd0a2e5fe9d0db892b81f88eeed36e2f72ba89826209acb013362b10a",
+  "target_platform": "x86_64-xos",
+  "tree_sha256": {
+    "host_qml": "09bbfe0ce5654d31cbe71f78a0cad5a73b30839a06ae12829fc44877396bc70a",
+    "host_qt": "b6cb3f411cef58166eeea546dc7dc4201d1cde81d2955b81f96754a59b194178",
+    "notices": "98c5255a29e2c0a5afe99f1cfb317e1466ce69ac6b413c56b6617b61947ed41f",
+    "runtime": "faab8fe08bd35d6b8fb27a14a48c48e84e1b57d81319d62d5c201b8fe78f8ec0",
+    "target": "4cafd731fd002c01c11e3f22e77a4e1c858206975308914e518e524cb0afbd65"
+  }
+}

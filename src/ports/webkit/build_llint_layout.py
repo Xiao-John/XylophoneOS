@@ -77,6 +77,7 @@ def build(args):
     native_headers = {name: digest(root / name) for name in (
         "src/shared/include/xos/abi_types.hpp", "src/shared/include/xos/file_abi.hpp",
         "src/shared/include/xos/process_abi.hpp", "src/shared/include/xos/thread_abi.hpp",
+        "src/shared/include/xos/vm_abi.hpp",
         "src/user/include/xos/sdk.hpp", "src/user/include/xos/spawn.hpp")}
     native_include = drivers / "native"
     (native_include / "xos").mkdir(parents=True)
@@ -156,9 +157,12 @@ def build(args):
             raise RuntimeError("layout generator did not emit the native x86-64 interpreter entry")
         status = "target_llint_assembly_generated"
     else:
-        if args.stage in ("wtf_stack", "wtf_pthread"):
+        if args.stage in ("wtf_stack", "wtf_pthread", "wtf_allocator"):
             object_dir = "Source/WTF/wtf/CMakeFiles/WTF.dir/"
-            names = ("StackBounds.cpp.obj", "xos/xos_stack_bounds.cpp.obj", "Threading.cpp.obj")
+            if args.stage == "wtf_allocator":
+                names = ("posix/OSAllocatorPOSIX.cpp.obj",)
+            else:
+                names = ("StackBounds.cpp.obj", "xos/xos_stack_bounds.cpp.obj", "Threading.cpp.obj")
             if args.stage == "wtf_pthread":
                 names += ("posix/ThreadingPOSIX.cpp.obj",)
             artifacts = tuple(object_dir + name for name in names)
@@ -209,6 +213,8 @@ def main():
                         help="build only the native WTF stack objects")
     stages.add_argument("--wtf-pthread", dest="stage", action="store_const", const="wtf_pthread",
                         help="build the native WTF stack and pthread lifecycle objects")
+    stages.add_argument("--wtf-allocator", dest="stage", action="store_const", const="wtf_allocator",
+                        help="build the native WTF anonymous memory allocator object")
     stages.add_argument("--jsc-mutator", dest="stage", action="store_const", const="jsc_mutator",
                         help="build only the JSC mutator admission object")
     parser.set_defaults(stage="layout")

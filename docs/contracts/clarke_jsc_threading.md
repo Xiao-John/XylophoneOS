@@ -50,3 +50,8 @@ XOS 的 `JSLock::lock` 在持有内部锁时保留首个 VM 持锁线程的 WTF 
 在匿名保留区试验了提交、只读保护及回收。JSC 仍需要把分配器接入 XOS 的保留与
 提交两阶段、落实静态配置数据的实际保护，以及使 VM 所有者执行 GC 根采集和
 定时器任务。
+
+[原生 WTF 匿名页分配](../work_log/fab9b5b1_clarke_wtf_os_allocator.md)在常规客体验证
+`PageReservation` 和 `OSAllocator` 的对齐、guard 和分配生命周期。XOS 后端使用
+已有 VM 保留、提交、保护、decommit 和释放操作。当前静态 JSC 的配置页与 VM 所有者
+GC 调度仍有独立验证门。

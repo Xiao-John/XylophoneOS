@@ -1,0 +1,122 @@
+--- a/Source/WTF/wtf/posix/OSAllocatorPOSIX.cpp
++++ b/Source/WTF/wtf/posix/OSAllocatorPOSIX.cpp
+@@ -39,0 +40,6 @@
++#if OS(XOS)
++#include <cstring>
++#include <xos/sdk.hpp>
++#include <xos/vm_abi.hpp>
++#endif
++
+@@ -69,0 +76,66 @@
++#if OS(XOS)
++static xos::i64 xos_vm_call(xos::vm_operation operation, uintptr_t address, size_t bytes, size_t alignment = 0)
++{
++    xos::vm_request request { };
++    request.version = xos::vm_abi_version;
++    request.size = sizeof(request);
++    request.operation = static_cast<xos::u32>(operation);
++    request.address = address;
++    request.length = bytes;
++    request.alignment = alignment;
++    return xos::sdk::syscall(xos::sys_vm, reinterpret_cast<xos::u64>(&request));
++}
++
++static size_t xos_rounded_bytes(size_t bytes)
++{
++    size_t rounded;
++    if (__builtin_add_overflow(bytes, pageSize() - 1, &rounded))
++        return 0;
++    return rounded & ~(pageSize() - 1);
++}
++
++static int xos_page_protection(bool writable, bool executable)
++{
++    return PROT_READ | (writable ? PROT_WRITE : 0) | (executable ? PROT_EXEC : 0);
++}
++
++static void* try_reserve_xos(size_t requested_bytes, size_t alignment, void* address,
++    int protection, unsigned guard_pages)
++{
++    const size_t bytes = xos_rounded_bytes(requested_bytes);
++    if (!bytes || !hasOneBitSet(alignment) || alignment < pageSize())
++        return nullptr;
++
++    size_t guard_size;
++    size_t guarded_bytes;
++    if (__builtin_mul_overflow(static_cast<size_t>(guard_pages), pageSize(), &guard_size)
++        || __builtin_add_overflow(bytes, guard_size, &guarded_bytes)
++        || __builtin_add_overflow(guarded_bytes, guard_size, &guarded_bytes))
++        return nullptr;
++
++    // The kernel aligns the full reservation. Trim any leading alignment space
++    // before handing off the usable address and its adjacent guard pages.
++    const size_t prefix_size = (alignment - (guard_size % alignment)) % alignment;
++    size_t reserve_size;
++    if (__builtin_add_overflow(guarded_bytes, prefix_size, &reserve_size))
++        return nullptr;
++    const size_t data_offset = prefix_size + guard_size;
++    const auto data_hint = reinterpret_cast<uintptr_t>(address);
++    auto base_hint = data_hint >= data_offset ? data_hint - data_offset : 0;
++    if (base_hint < xos::vm_arena_begin || base_hint >= xos::vm_arena_end || !isPageAligned(base_hint))
++        base_hint = 0;
++
++    const auto reservation = xos_vm_call(xos::vm_operation::reserve, base_hint, reserve_size, alignment);
++    if (reservation < 0)
++        return nullptr;
++    const auto base = static_cast<uintptr_t>(reservation);
++    auto* usable = reinterpret_cast<void*>(base + data_offset);
++    if ((protection != PROT_NONE && mprotect(usable, bytes, protection))
++        || (prefix_size && munmap(reinterpret_cast<void*>(base), prefix_size))) {
++        RELEASE_ASSERT(!munmap(reinterpret_cast<void*>(base), reserve_size));
++        return nullptr;
++    }
++    return usable;
++}
++#endif
++
+@@ -76,0 +149,7 @@
++#if OS(XOS)
++    UNUSED_PARAM(usage);
++    if (jitCageEnabled || (writable && executable))
++        return nullptr;
++    return try_reserve_xos(bytes, pageSize(), address,
++        uncommitted ? PROT_NONE : xos_page_protection(writable, executable), numGuardPagesToAddOnEachEnd);
++#else
+@@ -132,0 +212 @@
++#endif
+@@ -137 +217,4 @@
+-#if OS(LINUX) || OS(HAIKU)
++#if OS(XOS)
++    void* result = tryReserveAndCommitImpl(bytes, usage, address, writable, executable, jitCageEnabled,
++        numGuardPagesToAddOnEachEnd, /* uncommitted */ true);
++#elif OS(LINUX) || OS(HAIKU)
+@@ -163,0 +247,6 @@
++#if OS(XOS)
++    UNUSED_PARAM(usage);
++    if (jitCageEnabled || (writable && executable))
++        return nullptr;
++    return try_reserve_xos(bytes, alignment, address, PROT_NONE, numGuardPagesToAddOnEachEnd);
++#else
+@@ -232,0 +322 @@
++#endif
+@@ -244 +334,4 @@
+-#if OS(LINUX) || OS(HAIKU) || OS(QNX)
++#if OS(XOS)
++    if (bytes)
++        RELEASE_ASSERT(!mprotect(address, bytes, xos_page_protection(writable, executable)));
++#elif OS(LINUX) || OS(HAIKU) || OS(QNX)
+@@ -263 +356,4 @@
+-#if OS(LINUX) || OS(HAIKU)
++#if OS(XOS)
++    if (bytes)
++        RELEASE_ASSERT(!xos_vm_call(xos::vm_operation::decommit, reinterpret_cast<uintptr_t>(address), xos_rounded_bytes(bytes)));
++#elif OS(LINUX) || OS(HAIKU)
+@@ -279 +375 @@
+-#if HAVE(MADV_DONTNEED)
++#if HAVE(MADV_DONTNEED) && !OS(XOS)
+@@ -354 +450,4 @@
+-#if OS(LINUX)
++#if OS(XOS)
++    if (size)
++        std::memset(base, 0, size);
++#elif OS(LINUX)

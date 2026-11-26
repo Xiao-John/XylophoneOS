@@ -42,3 +42,11 @@ XOS 的 `JSLock::lock` 在持有内部锁时保留首个 VM 持锁线程的 WTF 
 编译了 `StackBounds.cpp`、`Threading.cpp` 和复用的原生栈边界辅助对象。线程自身初始化
 使用实际的可访问栈范围。创建线程在入口握手锁内查询新线程的栈。`posix/ThreadingPOSIX.cpp`
 仍依赖信号挂起。WTF 链接、单 mutator 客体准入、GC 根保留和客体解释器执行仍待验收。
+
+[原生 WTF 运行库阶段](../work_log/73cec3d9_clarke_wtf_native_runtime.md)
+已在常规 Xsh 客体运行实际 WTF 初始入口、线程创建与加入、条件等待和栈查询。
+信号暂停独立于 pthread 生命周期。当前 XOS 返回 `ENOTSUP` 且要求调用者有
+真实暂停结果才可恢复和读取寄存器。内存占用使用 sys50 的当前进程计费页，
+在匿名保留区试验了提交、只读保护及回收。JSC 仍需要把分配器接入 XOS 的保留与
+提交两阶段、落实静态配置数据的实际保护，以及使 VM 所有者执行 GC 根采集和
+定时器任务。

@@ -1,0 +1,32 @@
+--- a/Source/WTF/wtf/posix/ThreadingPOSIX.cpp
++++ b/Source/WTF/wtf/posix/ThreadingPOSIX.cpp
+@@ -102 +102 @@
+-#if !OS(DARWIN)
++#if !OS(DARWIN) && !OS(XOS)
+@@ -193 +193 @@
+-#endif // !OS(DARWIN)
++#endif // !OS(DARWIN) && !OS(XOS)
+@@ -196,0 +197,2 @@
++// XOS uses pthreads without a signal-based thread suspension backend.
++#if !OS(XOS)
+@@ -238,0 +241 @@
++#endif // !OS(XOS)
+@@ -250 +253 @@
+-#if !OS(DARWIN)
++#if !OS(DARWIN) && !OS(XOS)
+@@ -578 +581,3 @@
+-#if OS(DARWIN)
++#if OS(XOS)
++    return makeUnexpected(ENOTSUP);
++#elif OS(DARWIN)
+@@ -607 +612,3 @@
+-#if OS(DARWIN)
++#if OS(XOS)
++    RELEASE_ASSERT_NOT_REACHED();
++#elif OS(DARWIN)
+@@ -664 +671,4 @@
+-#if OS(DARWIN)
++#if OS(XOS)
++    UNUSED_PARAM(registers);
++    RELEASE_ASSERT_NOT_REACHED();
++#elif OS(DARWIN)

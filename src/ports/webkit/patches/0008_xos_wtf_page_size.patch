@@ -1,0 +1,15 @@
+--- a/Source/WTF/wtf/PageBlock.cpp
++++ b/Source/WTF/wtf/PageBlock.cpp
+@@ -29 +29 @@
+-#if OS(UNIX)
++#if OS(UNIX) || OS(XOS)
+@@ -42 +42,8 @@
+-#if OS(UNIX)
++#if OS(XOS)
++
++inline size_t systemPageSize()
++{
++    return getpagesize();
++}
++
++#elif OS(UNIX)

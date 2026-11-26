@@ -1,0 +1,10 @@
+--- a/Source/WTF/wtf/ProcessID.h
++++ b/Source/WTF/wtf/ProcessID.h
+@@ -30 +30 @@
+-#if OS(UNIX)
++#if OS(UNIX) || OS(XOS)
+--- a/Source/WTF/wtf/WTFProcess.cpp
++++ b/Source/WTF/wtf/WTFProcess.cpp
+@@ -31 +31 @@
+-#if OS(UNIX)
++#if OS(UNIX) || OS(XOS)

@@ -1,0 +1,16 @@
+--- a/Source/WTF/wtf/WTFConfig.cpp
++++ b/Source/WTF/wtf/WTFConfig.cpp
+@@ -53 +53 @@
+-#elif OS(LINUX)
++#elif OS(LINUX) || OS(XOS)
+@@ -180,0 +181 @@
++#if !OS(XOS)
+@@ -181,0 +183 @@
++#endif
+@@ -193,0 +196 @@
++#if !OS(XOS)
+@@ -194,0 +198 @@
++#endif
+@@ -227 +231 @@
+-#elif OS(LINUX)
++#elif OS(LINUX) || OS(XOS)

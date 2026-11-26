@@ -1,0 +1,30 @@
+--- a/Source/WTF/wtf/RandomDevice.h
++++ b/Source/WTF/wtf/RandomDevice.h
+@@ -39 +39 @@
+-#if OS(DARWIN) || OS(FUCHSIA) || OS(WINDOWS)
++#if OS(DARWIN) || OS(FUCHSIA) || OS(WINDOWS) || OS(XOS)
+@@ -52 +52 @@
+-#if OS(DARWIN) || OS(FUCHSIA) || OS(WINDOWS)
++#if OS(DARWIN) || OS(FUCHSIA) || OS(WINDOWS) || OS(XOS)
+--- a/Source/WTF/wtf/RandomDevice.cpp
++++ b/Source/WTF/wtf/RandomDevice.cpp
+@@ -30,0 +31,5 @@
++
++#if OS(XOS)
++#include <algorithm>
++#include <unistd.h>
++#endif
+@@ -66 +71 @@
+-#if !OS(DARWIN) && !OS(FUCHSIA) && !OS(WINDOWS)
++#if !OS(DARWIN) && !OS(FUCHSIA) && !OS(WINDOWS) && !OS(XOS)
+@@ -79 +84 @@
+-#if !OS(DARWIN) && !OS(FUCHSIA) && !OS(WINDOWS)
++#if !OS(DARWIN) && !OS(FUCHSIA) && !OS(WINDOWS) && !OS(XOS)
+@@ -93,0 +99,7 @@
++#elif OS(XOS)
++    // glibc getentropy fills at most 256 bytes per request on XOS.
++    while (!buffer.empty()) {
++        auto chunk = buffer.first(std::min(buffer.size(), size_t { 256 }));
++        RELEASE_ASSERT(!getentropy(chunk.data(), chunk.size()));
++        buffer = buffer.subspan(chunk.size());
++    }

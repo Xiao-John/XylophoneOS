@@ -1,0 +1,81 @@
+{
+  "status": "passed_subset",
+  "candidate_source": "8b79200ca0753f5c1e3aa3d2ea62dcf5f8216879",
+  "build_id": "e6a349fa12ec0a89",
+  "candidate_manifest_sha256": "79331b98ba729a6f63ebfe1819dc67308246d03d558b42244b6857300425e3ae",
+  "iso_sha256": "b264f5d223d61e3e1bba993137dd7c8f525b050f41c739b94b062416f8b04f13",
+  "sdk_manifest_sha256": "45ec2bc96ef7b26f4d035fd1aa7ed424bf6efba55164b06ee89ebec8e19fef50",
+  "profile_sha256": "1dd89afc949f21a3ae07b2de617ae3319b590341b68870e7dd836563822c31c9",
+  "make_sha256": "e4ee672952bb613489879270d77b7e5367909243d1b8252c4ea02f07effa7b5e",
+  "make_manifest_sha256": "5bbd355299f495ab5c96a7406abeff7094a1e662b96ec4892e0e3bfc4d7c501f",
+  "packages": {
+    "c": {
+      "xpk_sha256": "d7aeef8b75b2186236694ed67a2da81de3ff7bd07be260181faa85cd623706e2",
+      "build_receipt_sha256": "af27e2a90d408bfc660fa094d2a034e669defbe604beb65d68bc6cc7da8ccc9e"
+    },
+    "cxx": {
+      "xpk_sha256": "256709dbfa82361ba178861dbb6e847eccda0e01329a926113167443e2d7a57c",
+      "build_receipt_sha256": "b7be430e4fa1006aedd24ae53a958ac28aa1caf9830e1b360b833cc4be822c62"
+    }
+  },
+  "runner_sha256": "04797a165a1c67b400bfb4877f33cd16bfd91ce2d76d166cc55e11ab72cfcfe2",
+  "boots": [
+    {
+      "outcome": "passed",
+      "before": [
+        128823,
+        7,
+        1
+      ],
+      "after": [
+        128867,
+        3,
+        1
+      ],
+      "retired_demo_tasks": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "markers": [
+        "GLIBC_KIT_C_OK 2.44",
+        "GLIBC_KIT_CPP_OK vector thread exception",
+        "XOS_MAKE_RECIPE_OK",
+        "XOS_COLD_APP_MATRIX_OK",
+        "kind=exited code=0"
+      ]
+    },
+    {
+      "outcome": "passed",
+      "before": [
+        128823,
+        7,
+        1
+      ],
+      "after": [
+        128867,
+        3,
+        1
+      ],
+      "retired_demo_tasks": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "markers": [
+        "GLIBC_KIT_C_OK 2.44",
+        "GLIBC_KIT_CPP_OK vector thread exception",
+        "XOS_MAKE_RECIPE_OK",
+        "XOS_COLD_APP_MATRIX_OK",
+        "kind=exited code=0"
+      ]
+    }
+  ],
+  "qemu": "QEMU emulator version 11.1.2",
+  "serial_sha256": {
+    "cold_matrix_1": "e19c8c8ea610870d56aaa67ec44627c6d841df6486484d700a310c9c192bb4e9",
+    "cold_matrix_2": "78bdae23f4bdcf9a84d35129f090e604213702d16774736b672ca7591d50f719"
+  }
+}

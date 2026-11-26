@@ -41,6 +41,10 @@ static int initialized, initialization_error, session_failed;
 static xos_u32 request_sequence, send_handle, receive_handle;
 static struct xos_file_request request;
 static struct xos_file_response response;
+enum { file_stat = 3, file_open = 4, file_close = 8, file_fstat = 18,
+       file_cwd_get = 27, file_read_at = 30, file_pin_read_only = 1 | (1 << 11) };
+/* The files service reserves this identity for its synthetic /dev namespace. */
+enum { file_device_directory_inode = 0xfffe };
 
 static int
 lock_session (void)
@@ -746,6 +750,14 @@ decode_stat (struct stat *output)
   return 0;
 }
 
+static long
+stat_path (const char *path, struct stat *output)
+{
+  long result = prepare_path (path);
+  if (result == 0) result = call_service (file_stat);
+  return result == 0 ? decode_stat (output) : result;
+}
+
 long
 __xos_file_stat (int fd, const char *path, struct stat *output)
 {
@@ -776,12 +788,108 @@ __xos_file_stat (int fd, const char *path, struct stat *output)
     }
   else
     {
-      result = prepare_path (path);
-      if (result != 0) goto done;
+      result = stat_path (path, output);
+      goto done;
     }
-  result = call_service (path == 0 ? 18 : 3);
+  result = call_service (file_fstat);
   if (result == 0) result = decode_stat (output);
 done:
+  unlock_session ();
+  return result;
+}
+
+long
+__xos_file_getcwd (char *output, size_t capacity)
+{
+  int error = begin ();
+  if (error != 0) return error;
+  memset (&request, 0, sizeof (request));
+  long result = call_service (file_cwd_get);
+  if (result == 0)
+    {
+      size_t length = response.name_length + 1;
+      if (length > capacity) result = -ERANGE;
+      else
+        {
+          memcpy (output, response.name, length);
+          result = (long) length;
+        }
+    }
+  unlock_session ();
+  return result;
+}
+
+struct pinned_image { xos_u32 handle; long error; };
+
+static bool
+read_pinned_image (void *context, xos_u64 offset, unsigned char *output, xos_u32 length)
+{
+  struct pinned_image *image = context;
+  memset (&request, 0, sizeof (request));
+  request.handle = image->handle;
+  request.offset = offset;
+  request.length = length;
+  image->error = call_service (file_read_at);
+  if (image->error != 0) return false;
+  if (response.length != length)
+    {
+      image->error = -EIO;
+      return false;
+    }
+  memcpy (output, response.data, length);
+  return true;
+}
+
+static long
+access_mode (const struct stat *status, int mode)
+{
+  if ((mode & R_OK) != 0 && (status->st_mode & S_IRUSR) == 0) return -EACCES;
+  if ((mode & W_OK) != 0 && ((status->st_mode & S_IWUSR) == 0
+                            || status->st_ino == file_device_directory_inode))
+    return -EACCES;
+  if ((mode & X_OK) != 0 && S_ISDIR (status->st_mode)
+      && (status->st_mode & S_IXUSR) == 0) return -EACCES;
+  return 0;
+}
+
+/* No process descriptor is consumed. Pin the same immutable bytes the
+   loader would inspect and check combined modes on that open file. */
+static long
+access_image (const char *path, int mode, xos_image_inspect inspect)
+{
+  memset (&request, 0, sizeof (request));
+  long result = prepare_path (path);
+  if (result != 0) return result;
+  request.flags = file_pin_read_only;
+  result = call_service (file_open);
+  if (result != 0) return result;
+  struct pinned_image image = { response.handle, 0 };
+  struct stat status;
+  memset (&request, 0, sizeof (request));
+  request.handle = image.handle;
+  result = call_service (file_fstat);
+  if (result == 0) result = decode_stat (&status);
+  if (result == 0) result = access_mode (&status, mode);
+  if (result == 0) result = inspect (read_pinned_image, &image, (xos_u64) status.st_size);
+  if (image.error != 0) result = image.error;
+  memset (&request, 0, sizeof (request));
+  request.handle = image.handle;
+  long closed = call_service (file_close);
+  return result != 0 ? result : closed;
+}
+
+long
+__xos_file_access (const char *path, int mode, xos_image_inspect inspect)
+{
+  if ((mode & ~(R_OK | W_OK | X_OK)) != 0) return -EINVAL;
+  int error = begin ();
+  if (error != 0) return error;
+  struct stat status;
+  memset (&request, 0, sizeof (request));
+  long result = stat_path (path, &status);
+  if (result == 0) result = access_mode (&status, mode);
+  if (result == 0 && (mode & X_OK) != 0 && !S_ISDIR (status.st_mode))
+    result = access_image (path, mode, inspect);
   unlock_session ();
   return result;
 }

@@ -21,6 +21,7 @@ from dash_c3_exec_smoke import exec_opt_in
 from glibc_g1_probe import clean_build_environment
 from make_work_disk import create_fat32
 from process_smoke import command, resources
+from shell_launch_support import bind_tool
 from task_smoke import send_bytes, pump
 from work_disk import transfer
 
@@ -111,6 +112,8 @@ def suite_cases(suite):
         cases.append(('g3_files_extra', 'glibc_g3/files_extra_public_probe.c', [], 0,
                       ['GLIBC_FILES_EXTRA_POSITIONED_PASS', 'GLIBC_FILES_EXTRA_DIRECTORY_PASS',
                        'GLIBC_FILES_EXTRA_PASS']))
+    if suite in ('cwd', 'all'):
+        cases.append(('g3_cwd', 'glibc_g3/cwd_probe.c', ['/'], 0, ['GLIBC_CWD_ACCESS_PASS']))
     return cases
 
 
@@ -219,15 +222,21 @@ def main():
     parser.add_argument('--death-system-build', type=Path,
                         help='private system built with --glibc-files-death-probe')
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--suite', choices=('g2', 'threads', 'files', 'files-extra', 'exit', 'all'), default='g2')
+    parser.add_argument('--suite', choices=('g2', 'threads', 'files', 'files-extra', 'cwd', 'exit', 'all'),
+                        default='g2')
+    parser.add_argument('--dash-receipt', type=Path, help='current-system dash C3 receipt for the cwd suite')
     parser.add_argument('--repetitions', type=int, default=3)
     args = parser.parse_args()
     if not 1 <= args.repetitions <= 10:
         parser.error('repetitions must be in 1..10')
+    if args.suite == 'cwd' and args.dash_receipt is None:
+        parser.error('cwd qualification requires --dash-receipt for the second launch path')
     cases = suite_cases(args.suite)
     required = {relative for _, relative, _, _, _ in cases}
     if args.suite in ('files', 'all'):
         required.add('glibc_g3/files_exec_parent.c')
+    if args.suite in ('cwd', 'all'):
+        required.add('glibc_g3/cwd_setup.c')
     missing = sorted(relative for relative in required
                      if not (ROOT / 'tests/fixtures' / relative).is_file())
     if missing:
@@ -336,6 +345,18 @@ def main():
                           ['/bin/g3_files_extra_receiver'], 0,
                           ['GLIBC_FILES_EXTRA_INHERIT_DIR_PASS', 'GLIBC_FILES_EXTRA_CHILD_PASS',
                            'GLIBC_FILES_EXTRA_PARENT_PASS']))
+        dash, cwd_suite = None, args.suite in ('cwd', 'all')
+        if cwd_suite:
+            programs['g3_cwd_setup'] = build_newlib_parent(
+                system_build, output, report, 'glibc_g3/cwd_setup.c', 'g3_cwd_setup')
+            if args.dash_receipt is not None:
+                dash, report['dash_binding'] = bind_tool(args.dash_receipt, 'dash_c3', system_build / 'sdk')
+                cases.append(('g3_cwd_dash', 'glibc_g3/cwd_probe.c', [], 0,
+                              ['GLIBC_CWD_ACCESS_PASS', 'GLIBC_CWD_DASH_RC=0']))
+                script = output / 'cwd_via_dash.sh'
+                script.write_text("cd /g3_cwd/sub || exit 2\n/bin/g3_cwd /g3_cwd/sub\n"
+                                  "rc=$?\nprintf 'GLIBC_CWD_DASH_RC=%s\\n' \"$rc\"\nexit \"$rc\"\n")
+                report['dash_script_sha256'] = sha(script)
         verify_inputs()
         report['status'] = 'failed'
         with tempfile.TemporaryDirectory(prefix='xos_glibc_static_') as temporary:
@@ -345,6 +366,18 @@ def main():
             if args.suite in ('files-extra', 'all'):
                 transfer(disk, 'mkdir', '/g3_enum')
                 transfer(disk, 'mkdir', '/g3_enum/sub')
+            if cwd_suite:
+                for directory in ('/g3_cwd', '/g3_cwd/sub', '/g3_cwd/路'):
+                    transfer(disk, 'mkdir', directory)
+                for name in ('plain.txt', 'read-only.txt'):
+                    path = output / name
+                    path.write_text('path access fixture\n')
+                    transfer(disk, 'import', '/g3_cwd/' + name, path)
+            if dash is not None:
+                transfer(disk, 'mkdir', '/usr')
+                transfer(disk, 'mkdir', '/usr/bin')
+                transfer(disk, 'import', '/usr/bin/dash', dash)
+                transfer(disk, 'import', '/g3_cwd/cwd_via_dash.sh', script)
             for name, binary in programs.items():
                 transfer(disk, 'import', '/bin/' + name, binary)
             guest = Guest(image, 'glibc_static_' + args.suite, work_disk=disk,
@@ -357,6 +390,13 @@ def main():
             command(guest, 'demo quiet', b'demo tasks')
             baseline = resources(guest)
             report['baseline'] = baseline
+            if cwd_suite:
+                captured = command(guest, 'exec-file /bin/g3_cwd_setup', b'kind=exited code=')
+                if b'GLIBC_CWD_READONLY_READY' not in captured or b'kind=exited code=0' not in captured:
+                    raise AssertionError('FAT directory setup failed: ' + repr(captured))
+                if resources(guest) != baseline:
+                    raise AssertionError('FAT directory setup did not restore resources')
+                report['cwd_setup'] = captured.decode(errors='replace')
             if args.suite in ('g2', 'all'):
                 captured = command(guest, 'exec libc_hello', b'kind=exited code=', timeout=30)
                 if b'libc says: malloc+printf 42 beef' not in captured or b'kind=exited code=7' not in captured:
@@ -368,6 +408,8 @@ def main():
                 for name, _, arguments, expected_status, markers in cases:
                     launch = 'exec-driver' if name in ('g3_files_parent', 'g3_files_extra_parent') else 'exec-file'
                     line = launch + ' /bin/' + name + ''.join(' ' + arg for arg in arguments)
+                    if name == 'g3_cwd_dash':
+                        line = 'dash /g3_cwd/cwd_via_dash.sh'
                     kind, code = ('exited', expected_status) if isinstance(expected_status, int) else expected_status
                     began = time.monotonic()
                     captured = command(guest, line, b'kind=', timeout=15 if name == 'g3_exit_abi' else 120)
@@ -411,6 +453,10 @@ def main():
             for name, binary in programs.items():
                 if sha(binary) != report['elfs'][name]['elf_sha256']:
                     raise RuntimeError('probe changed during qualification: ' + name)
+            if dash is not None:
+                if sha(dash) != report['dash_binding']['elf_sha256']:
+                    raise RuntimeError('dash changed during qualification')
+                report['dash_entry'] = 'passed'
             report['status'] = 'passed_subset'
     except (Exception, SystemExit) as error:
         report['error'] = str(error)

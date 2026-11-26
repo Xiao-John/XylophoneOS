@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Build native LLInt layout headers, WTF stack objects or the JSC mutator admission object for XOS."""
+"""Build native LLInt layout headers and focused WTF or JSC target objects for XOS."""
 
 import argparse
 import hashlib
@@ -74,6 +74,16 @@ def build(args):
     source_parent, icu, drivers = (output / name for name in ("source", "icu", "drivers"))
     for directory in (source_parent, icu, drivers):
         directory.mkdir()
+    native_headers = {name: digest(root / name) for name in (
+        "src/shared/include/xos/abi_types.hpp", "src/shared/include/xos/file_abi.hpp",
+        "src/shared/include/xos/process_abi.hpp", "src/shared/include/xos/thread_abi.hpp",
+        "src/user/include/xos/sdk.hpp", "src/user/include/xos/spawn.hpp")}
+    native_include = drivers / "native"
+    (native_include / "xos").mkdir(parents=True)
+    for name, checksum in native_headers.items():
+        destination = native_include / "xos" / Path(name).name
+        shutil.copyfile(root / name, destination)
+        match(destination, checksum)
     members = ("CMakeLists.txt", "Source/CMakeLists.txt", "Source/cmake", "Source/JavaScriptCore",
                "Source/WTF", "Source/bmalloc", "Source/ThirdParty/gtest", "Source/ThirdParty/unifdef", "Tools")
     run("unpack_webkit", ["tar", "-xJf", args.archive, "-C", source_parent,
@@ -120,6 +130,7 @@ def build(args):
                        "-DUSE_SYSTEM_UNIFDEF=ON", f"-DUNIFDEF_EXECUTABLE={unifdef}",
                        "-DUSE_LIBBACKTRACE=OFF", "-DCMAKE_BUILD_TYPE=Release",
                        "-DCMAKE_SYSTEM_NAME=XOS", "-DCMAKE_SYSTEM_PROCESSOR=x86_64",
+                       f"-DXOS_NATIVE_ABI_INCLUDE={native_include}",
                        "-DCMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY", f"-DCMAKE_SYSROOT={sdk}",
                        f"-DCMAKE_FIND_ROOT_PATH={sdk};{icu}", "-DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER",
                        "-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY", "-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY",
@@ -145,11 +156,13 @@ def build(args):
             raise RuntimeError("layout generator did not emit the native x86-64 interpreter entry")
         status = "target_llint_assembly_generated"
     else:
-        if args.stage == "wtf_stack":
+        if args.stage in ("wtf_stack", "wtf_pthread"):
             object_dir = "Source/WTF/wtf/CMakeFiles/WTF.dir/"
-            artifacts = tuple(object_dir + name for name in (
-                "StackBounds.cpp.obj", "xos/xos_stack_bounds.cpp.obj", "Threading.cpp.obj"))
-            status = "target_wtf_stack_objects_compiled"
+            names = ("StackBounds.cpp.obj", "xos/xos_stack_bounds.cpp.obj", "Threading.cpp.obj")
+            if args.stage == "wtf_pthread":
+                names += ("posix/ThreadingPOSIX.cpp.obj",)
+            artifacts = tuple(object_dir + name for name in names)
+            status = "target_" + args.stage + "_objects_compiled"
             run(args.stage, ["cmake", "--build", layout, "--target", *artifacts, "--parallel", "1"])
         else:
             artifacts = ("Source/JavaScriptCore/CMakeFiles/JavaScriptCore.dir/runtime/JSLock.cpp.obj",)
@@ -174,11 +187,14 @@ def build(args):
         raise RuntimeError("SDK or profile changed during the build")
     match(Path(__file__), recipe_digest)
     match(lock_path, lock_digest)
+    for name, checksum in native_headers.items():
+        match(root / name, checksum)
     for item in tools.values():
         match(Path(item["path"]), item["sha256"])
     receipt = {"status": status, "source_lock_sha256": lock_digest,
                "builder_sha256": recipe_digest, "sdk_manifest_sha256": manifest_digest,
                "profile_binding": binding, "icu_archive_sha256": icu_lock["archive_sha256"],
+               "native_header_sha256": native_headers,
                "target_tools": {name: item["sha256"] for name, item in tools.items()},
                "artifacts": {name: digest(layout / name) for name in artifacts}}
     (output / "manifest.json").write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
@@ -191,6 +207,8 @@ def main():
     stages = parser.add_mutually_exclusive_group()
     stages.add_argument("--wtf-stack", dest="stage", action="store_const", const="wtf_stack",
                         help="build only the native WTF stack objects")
+    stages.add_argument("--wtf-pthread", dest="stage", action="store_const", const="wtf_pthread",
+                        help="build the native WTF stack and pthread lifecycle objects")
     stages.add_argument("--jsc-mutator", dest="stage", action="store_const", const="jsc_mutator",
                         help="build only the JSC mutator admission object")
     parser.set_defaults(stage="layout")

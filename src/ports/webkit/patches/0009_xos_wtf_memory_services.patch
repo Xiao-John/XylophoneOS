@@ -1,0 +1,18 @@
+--- a/Source/WTF/wtf/PlatformJSCOnly.cmake
++++ b/Source/WTF/wtf/PlatformJSCOnly.cmake
+@@ -114,0 +115,6 @@
++elseif (WTF_OS_XOS)
++    list(APPEND WTF_SOURCES
++        xos/xos_memory_footprint.cpp
++        generic/MemoryPressureHandlerGeneric.cpp
++    )
++    list(APPEND WTF_PRIVATE_INCLUDE_DIRECTORIES "${XOS_NATIVE_ABI_INCLUDE}")
+--- a/Source/WTF/wtf/posix/FileHandlePOSIX.cpp
++++ b/Source/WTF/wtf/posix/FileHandlePOSIX.cpp
+@@ -182 +182,5 @@
+-    auto fileData = MmapSpan<uint8_t>::mmap(nullptr, size, pageProtection, MAP_FILE | (mapMode == MappedFileMode::Shared ? MAP_SHARED : MAP_PRIVATE), platformHandle());
++    int mapping_flags = mapMode == MappedFileMode::Shared ? MAP_SHARED : MAP_PRIVATE;
++#ifdef MAP_FILE
++    mapping_flags |= MAP_FILE;
++#endif
++    auto fileData = MmapSpan<uint8_t>::mmap(nullptr, size, pageProtection, mapping_flags, platformHandle());

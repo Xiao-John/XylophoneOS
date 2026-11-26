@@ -63,3 +63,16 @@ GC 仍各自验收。 [验证记录](../../../docs/work_log/89051575_clarke_nati
 对象。这一步关闭上游合并编译，保留实际的 JSCOnly 目标依赖。XOS 的 VM 只接纳首次
 取得该 VM 锁的线程，第二个线程在访问 VM 堆前触发发布构建断言。完整解释器仍依赖
 线程后端和 GC 调度。 [验证记录](../../../docs/work_log/0d1e1c54_clarke_jsc_single_vm_mutator_admission.md)
+
+## XOS WTF pthread 与基础运行库
+
+为现有入口指定 `--wtf-pthread` 和新的输出目录。这个阶段编译目标的栈查询、
+线程生命周期与 POSIX 线程实现。XOS 的正常线程初始化使用实际 pthread 与 TLS。
+当前平台对跨线程暂停返回 `ENOTSUP`；恢复和读取暂停线程寄存器要求真实暂停支持。
+
+在同一配置上构建 Ninja 的 `WTF` 目标可生成完整的目标归档。
+XOS 的进程号、页大小和熵沿用已绑定的 glibc 接口。内存占用返回当前进程
+计费的逻辑用户页。WTF 的保护接口调用目标 `mprotect` 并检查实际结果。
+[构建与客体回执](../../../docs/work_log/73cec3d9_clarke_wtf_native_runtime.md)记录
+实际线程、页保护、文件映射错误和资源回收。JSC 静态配置页、分配器和 VM GC
+另行验收。

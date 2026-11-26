@@ -709,20 +709,38 @@ __xos_file_spawn_end (struct xos_spawn_stdio *stdio)
   unlock_runtime (&spawn_cwd_lock);
 }
 
+static long
+close_descriptor (int fd)
+{
+  int index = object_for (fd);
+  if (index < 0) return -EBADF;
+  descriptors[fd] = (struct fd_slot) { -1, 0 };
+  return close_object (index);
+}
+
 long
 __xos_file_close (int fd)
 {
   int error = begin ();
   if (error != 0) return error;
-  int index = object_for (fd);
-  long result = -EBADF;
-  if (index >= 0)
-    {
-      descriptors[fd] = (struct fd_slot) { -1, 0 };
-      result = close_object (index);
-    }
+  long result = close_descriptor (fd);
   unlock_session ();
   return result;
+}
+
+long
+__xos_file_close_range (unsigned int first, unsigned int last)
+{
+  if (first > last) return -EINVAL;
+  if (first >= fd_limit) return 0;
+  int error = begin ();
+  if (error != 0) return error;
+  /* Closing retires the descriptor even if its final release reports an
+     error. The range operation ignores those individual close results. */
+  for (unsigned int fd = first; fd < fd_limit && fd <= last; ++fd)
+    (void) close_descriptor (fd);
+  unlock_session ();
+  return 0;
 }
 
 static long

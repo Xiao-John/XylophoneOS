@@ -1,0 +1,32 @@
+{
+  "frozen_newlib": {
+    "archive": {
+      "bytes": 8917110,
+      "sha256": "86583de2a13b3eea095e94e3768243fdb40216bdfb7e01bc8909d969331e5f66"
+    },
+    "profile_id": "xos-x86_64-static-single-v1",
+    "profile_sha256": "fd35dc5b949ea332d150e192e538ebc3da9a9868d8c0cdd4d6040cf3fa4e0253",
+    "release_tag": "v0.0.1-1024",
+    "system_build_id": "2c3876e640840ff5"
+  },
+  "glibc_application_sdk": {
+    "kit_tree_sha256": "8b67e1b967013a4b31f2289461af9eebf39eba27f2cf36c66b4de650291266a8",
+    "profile_id": "xos-x86_64-glibc-stock-fork-v1",
+    "profile_sha256": "a7bf0f845819b1deae2939991144e8feba03a335362e5fbee24c88f71dbe3b25",
+    "sdk_manifest_sha256": "d32a5c3b604016492df6af8ca04445b8d050cc81d4225db68cf4926e17c6aa7b",
+    "sdk_tree_sha256": "a720d515255bf7bfe4031fdf49a23d0f41edde367bfea3c00c909c7289d6e262"
+  },
+  "guest_qualification": "not_run",
+  "readme_sha256": "9fae533ad72b92681a2022872431accfd2aa57ceb88dfb4a451b71cd75bf034c",
+  "schema_version": 1,
+  "status": "application_sdk_preview",
+  "system": {
+    "build_id": "30071d4a06866c78",
+    "iso": {
+      "bytes": 913408,
+      "sha256": "f6da8c00ff9ec412b9e89ac21dbcf7f55996501175350fbee0bb268ef7389760"
+    },
+    "manifest_sha256": "a6af52341fa62f38724a3ffd5cd53a78b75ec179fb1dac55e19f8d2274b580b7",
+    "source_sha256": "30071d4a06866c78173a36d9a992617b88ba02bdce3fb37289a169473521057b"
+  }
+}

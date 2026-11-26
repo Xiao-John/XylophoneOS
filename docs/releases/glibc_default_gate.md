@@ -15,7 +15,7 @@
 | 已发版 Python 依赖 | `stage_py3_b` 和 `python_idna` 进入 0.0.2-1103。发行 smoke 运行 `zlib`、`gzip`、压缩 ZIP 和 IDNA。当前 glibc 静态核心仅覆盖已选标准库与 stored ZIP。 [发行回执](next_release.md#002-1103-打包状态2026-11-04) · [Python 构建与分发](../plans/cpython.md) | 用统一 SDK 重建静态 zlib 模块，绑定同一 profile 重打 idna wheel 的 XPK。用同一工作盘跑原有发行用例，覆盖旧文件/压缩数据读回和卸载保留。源、补丁、PSF/zlib/BSD 声明对应实际随包内容。 |
 | Qt 静态资产 | 上一版发布单独 Qt 资产。当前 Qt Quick 已在既有 profile 上验证源包、重链接样例和接收方安装、替换与回退。 [Qt 上一版审查](../licensing.md#qt-静态分发审查2026-11-03) · [Qt Quick 接收验证](../work_log/4d6f124f_qt_quick_receiver_install.md) | 随默认 ABI 同发时，从统一 SDK 重建并跑实际 GUI 用例；继续独立交付时，单独绑定其兼容 profile、启动入口和数据盘。用最终归档验证实际源码、补丁、成员许可、接收方重链接和安装说明。 |
 
-CPython 的 Pillow、SQLite、其他压缩模块及扩展，ncursesw/Vim、Mobius、ClarkE
+CPython 的 SSL、Pillow、SQLite、其他压缩模块及扩展，ncursesw/Vim、Mobius、ClarkE
 等继续按其各自计划验收。纳入发行清单时，同样绑定实际包、profile、系统、客体与
 材料回执。[端口账本](../ports_ledger.md)
 

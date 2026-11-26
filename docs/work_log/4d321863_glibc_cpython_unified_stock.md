@@ -62,5 +62,14 @@ python3 tests/cpython_glibc_xpk_guest.py --system-build "$candidate/system" --st
 
 ## 发行边界
 
-本批资格为静态核心、磁盘标准库的现有子集和同 profile 的原生包生命周期。交付与 `56b3ada5` 合并复核时，#311 的增量涉及 D1 动态装载及 glibc 源文件。本轮的 CPython 代码和打包入口保持一致，镜像与静态 SDK 继续引用各自的实际构建回执。上一版发行的 zlib、gzip、压缩 ZIP 与 idna 组合，额外静态扩展、交互式 REPL 和动态扩展加载继续使用各自的验收项。发行默认及 newlib 退役由最后资产组合的真实构建、介质验收和许可材料决定。
+本批覆盖静态核心及本轮实际运行的标准库子集。生成的 Makefile 将 `_ssl`、
+OpenSSL `_hashlib` 和 `zlib` 标为 `missing`。本轮实际运行的 `hashlib` 使用内置
+摘要，ELF 的静态 TLS 是线程局部存储。SSL、HTTPS、zlib/gzip/压缩 ZIP、IDNA wheel、
+额外静态扩展、交互式 REPL 和动态扩展加载分别保留资格边界。
+[构建配置与模块范围](../reports/glibc_cpython_unified_stock_20261127/module_scope.json)
+
+交付基线 `f09f2f7f` 包含 #311、#323 和 #324 的 D1 动态装载、普通组合回执与
+ClarkE HTTPS。CPython 源、构建和打包入口与本轮比较结果一致。镜像与静态 SDK
+沿用各自实际构建回执。发行默认及 newlib 退役由最终资产组合的真实构建、介质
+验收和许可材料决定。
 [默认发行验收表](../releases/glibc_default_gate.md)

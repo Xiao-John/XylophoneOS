@@ -17,6 +17,10 @@ struct blob_peer {
     connection_id connection;
     bool may_read;
 };
+struct blob_read_check {
+    void* context;
+    status (*authorize)(void*, const nonce&, const owner_record&);
+};
 
 // One sealed anonymous file owned by the broker's own files session. The
 // broker never transfers its native handle or exports an authorization result.
@@ -33,8 +37,13 @@ public:
                    const identity_id& owner, const u8* bytes, u32 length);
     status read(service_core& core, const blob_peer& peer, u64 now,
                 const resource_request& request, sealed_blob_reply& reply);
+    // A separate trusted broker retains the file and resolves the object
+    // before consulting the authority. The callback also checks its local
+    // client endpoint after the authorization exchange.
+    status read_associated(u64 object, const blob_read_check& check, sealed_blob_reply& reply);
 
 private:
+    status read_pinned(sealed_blob_reply& reply);
     file::client& files_;
     owner_record ownership_{};
     nonce authority_incarnation_{};

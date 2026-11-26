@@ -9,6 +9,9 @@
 #if XOS_PUMPKIN_NATIVE_LOGIN
 #include "login_resource.hpp"
 #endif
+#if XOS_PUMPKIN_RESOURCE_BRIDGE
+#include "resource_bridge.hpp"
+#endif
 
 namespace {
 using namespace xos;
@@ -82,7 +85,7 @@ bool introduce_control(const char* name, u64 parent, const ipc_channel& control,
 
 int serve_with_parent(const store_api& store, const nonce& realm, const entropy_api& entropy,
                       const char* rendezvous, const char* service_name, backing_liveness backing = {},
-                      login_resource* resource = nullptr) {
+                      login_resource* resource = nullptr, resource_bridge* bridge = nullptr) {
     // Zero binds to the real parent. The discovery name supplies no authority.
     ipc_channel control{};
     if (sdk::ipc_channel_create(0, control) != 0) {
@@ -93,7 +96,7 @@ int serve_with_parent(const store_api& store, const nonce& realm, const entropy_
         close_ipc(control);
         return 11;
     }
-    return serve_native(store, realm, entropy, control, controller, service_name, backing, resource);
+    return serve_native(store, realm, entropy, control, controller, service_name, backing, resource, bridge);
 }
 
 }
@@ -150,7 +153,13 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
                                    }});
     }
 #endif
-    if (!sdk::equal(args[1], "--volatile-test")) {
+    const bool volatile_test = sdk::equal(args[1], "--volatile-test");
+#if XOS_PUMPKIN_RESOURCE_BRIDGE
+    const bool bridge_test = sdk::equal(args[1], "--resource-bridge-test");
+#else
+    constexpr bool bridge_test = false;
+#endif
+    if (!volatile_test && !bridge_test) {
         return 10;
     }
 
@@ -162,5 +171,11 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
         return 11;
     }
 
+#if XOS_PUMPKIN_RESOURCE_BRIDGE
+    resource_bridge bridge;
+    if (bridge_test) {
+        return serve_with_parent(store, realm, entropy, args[2], test_service_name, {}, nullptr, &bridge);
+    }
+#endif
     return serve_with_parent(store, realm, entropy, args[2], test_service_name);
 }

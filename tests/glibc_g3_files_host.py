@@ -11,7 +11,8 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES = [
-    "basic", "bounds", "access_legacy_stat", "concurrent", "public_lease", "native_read_capacity",
+    "basic", "bounds", "access_legacy_stat", "spawn_cwd_serialization", "concurrent",
+    "public_lease", "native_read_capacity",
     "block_valid", "block_bad_value", "block_bad_payload", "block_zero_success", "block_large_success",
     "anonymous_valid", "anonymous_bad_handle", "anonymous_bad_inode", "anonymous_bad_flags",
     "anonymous_bad_size", "anonymous_bad_payload",

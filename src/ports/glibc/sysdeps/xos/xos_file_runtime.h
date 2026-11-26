@@ -48,6 +48,7 @@ long __xos_file_request_path (struct xos_file_request *, const char *)
   __attribute__ ((visibility ("hidden")));
 /* Serialized files exchange: one request ID and one failure latch shared by
    all libc and native-loader users of this process's authenticated session.
+   Cwd changes targeting this process also serialize against native spawn.
    The output is cleared before exchange and remains empty on failure. */
 long __xos_file_exchange (const struct xos_file_request *, struct xos_file_response *)
   __attribute__ ((visibility ("hidden")));

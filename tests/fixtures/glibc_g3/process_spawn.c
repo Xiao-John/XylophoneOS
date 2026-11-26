@@ -96,6 +96,8 @@ int main(int argc, char **argv)
     CHECK(unlink("gate") == 0 || errno == ENOENT);
     arguments[2] = "hold";
     CHECK(posix_spawn(&pid, "./child", NULL, NULL, arguments, environment) == 0 && pid > 0);
+    CHECK(waitpid(0, &status, WNOHANG) == -1 && errno == ENOTSUP && status == 0x12345678);
+    CHECK(waitpid(-2, &status, WNOHANG) == -1 && errno == ENOTSUP && status == 0x12345678);
     CHECK(waitpid(pid, &status, WNOHANG) == 0 && status == 0x12345678);
     CHECK(waitpid(-1, &status, WNOHANG) == 0 && status == 0x12345678);
     fd = open("gate", O_CREAT | O_WRONLY, 0600);

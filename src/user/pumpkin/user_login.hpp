@@ -9,6 +9,7 @@ inline constexpr u16 version = 1;
 inline constexpr u8 denied = 2;
 inline constexpr u8 resource_denied = 3;
 inline constexpr u8 duplicate_enrollment = 6;
+inline constexpr u8 desktop_revoked = 7;
 enum class operation : u8 { issue = 1, submit };
 
 // Private, separate from the generation records even though both use the
@@ -39,6 +40,35 @@ struct account_packet {
     u8 reserved[92]{};
 };
 static_assert(sizeof(account_packet) == sizeof(anchor_guest::packet));
+
+#if XOS_PUMPKIN_MOBIUS
+inline constexpr u32 desktop_admin_magic = 0x31444b50; // PKD1
+struct desktop_admin_poll {
+    u32 tag = desktop_admin_magic;
+    u16 format = version;
+    anchor_guest::scenario op = anchor_guest::scenario::user_desktop_admin;
+    u8 revoke = 0;
+    u64 sequence = 0;
+    u8 reserved[128]{};
+};
+static_assert(sizeof(desktop_admin_poll) == sizeof(anchor_guest::packet));
+
+inline bool header(const desktop_admin_poll& value, anchor_guest::scenario mode, u64 sequence) {
+    return value.tag == desktop_admin_magic && value.format == version && value.op == mode &&
+        value.sequence == sequence && value.revoke <= 1 && !has_bytes(value.reserved, sizeof(value.reserved));
+}
+
+inline bool poll_desktop_admin(const anchor_guest::pair& proxy, u64 sequence, bool& revoke) {
+    desktop_admin_poll request{}, reply{};
+    request.sequence = sequence;
+    const auto end = anchor_guest::deadline();
+    if (end == 0 || sdk::channel_send_wait(proxy.transmit, &request, sizeof(request), end) != 0 ||
+        sdk::channel_receive_wait(proxy.receive, &reply, sizeof(reply), end) != sizeof(reply) ||
+        !header(reply, request.op, sequence)) return false;
+    revoke = reply.revoke == 1;
+    return true;
+}
+#endif
 
 inline bool header(const account_packet& value, anchor_guest::scenario mode, u64 sequence) {
     return value.tag == account_magic && value.format == version && value.op == mode &&

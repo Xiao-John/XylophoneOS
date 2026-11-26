@@ -1,0 +1,28 @@
+{
+  "source_commit": "7d205c988c45a2990e24cb0caf73fdc860198135",
+  "source_tree": "d67a5ffd3bd70a486f95e71349accfc500e91e0c",
+  "source_sha256": "7dce547d94f7222f6fcaf7179a195b8b1ecde3f34bfe1cf8e7e19b13204f18a3",
+  "build_id": "7dce547d94f7222f",
+  "manifest_sha256": "d5a896b84bf3ea6e70024198b88f78131833c698d14f7732daeadcf9d748b75f",
+  "installer_sha256": "b0a11349c6c1cb24e7917445fc5641e5076b69ab2e17296f3aeabac3f88835b4",
+  "kernel_sha256": "24ac39e67cac49d540519ba3ba7ead66de55bca88480a7e5e487fd09a0904bf9",
+  "files_image_elf_sha256": "1e58dde4600c1517bfed20573286910a17deaa78d0a186ef1415876041c6108f",
+  "supervisor_image_elf_sha256": "591a77ad7079fc7ff522a91e80b7bc540cda55c89dadaaf4691009e647d6c979",
+  "toolchain": {
+    "target": "x86_64-elf",
+    "gcc": "16.2.0",
+    "binutils_release": "2.47",
+    "binutils": "2.47.20260726",
+    "nasm": "3.02",
+    "qemu": "11.1.2",
+    "cpp_standard": "c++20"
+  },
+  "mobius": {
+    "sha256": "9fdacb77d2dc935a83150d68f6275cc355f50cd3c8b693b7eb2e7529a612a413",
+    "bytes": 32670232
+  },
+  "app_profile_sha256": "5dde8b7cd0a2e5fe9d0db892b81f88eeed36e2f72ba89826209acb013362b10a",
+  "app_sdk_manifest_sha256": "7eee04884a96ced6de12d20794af6809f544e3f15bc4e409b4197e58b1583d7a",
+  "app_sdk_tree_sha256": "b0d6dc0e59ad68ce22b4b98d03f6df26e85aa1046bc833ee1c92d04ff1652125",
+  "app_build_receipt_sha256": "3f6ffda5f68f839cab3c590a2656c9de61e6376da4345efddff83018577c8483"
+}

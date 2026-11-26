@@ -1,0 +1,8 @@
+PASS elapsed reply budget only drops an occupied reply slot
+PASS full reply-read budget starts after successful enqueue
+PASS expired client reply is drained and a fresh authorized read retains the same channel
+PASS actual receive time closes an expired client before authorization or file access
+PASS a late named payload stays private and the next live read can return the current data
+PASS a missing authority reply closes its channel at the independent transport deadline
+PASS FAT import pins one object and only publishes a complete binary read after handle close
+PASS operator names and destination reservation use separate bounded, secret-free account frames

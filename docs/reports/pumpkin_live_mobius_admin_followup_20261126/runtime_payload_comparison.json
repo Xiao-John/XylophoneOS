@@ -1,0 +1,25 @@
+{
+  "build_ids": [
+    "e9481e988cda2385",
+    "df9ec1bf9024f646"
+  ],
+  "system_receipt_sha256": [
+    "ea1cbf82e567cda1fcb5a7be30158715861cccd163929f2c582369a57bcc239b",
+    "ea15609680909af6a1e5eacc3089ed5ef4509de8fd621390f7ba8990d5e77d1e"
+  ],
+  "changed_sources": [
+    "tests/pumpkin_mobius_guest.py"
+  ],
+  "same_user_image_count": 33,
+  "kernel": {
+    "affected_field": "two 16-byte build ID strings",
+    "build_id_locations": 2
+  },
+  "extended_attempt": {
+    "status": "black_scanout_timeout",
+    "screenshot_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077",
+    "managed_without_signal_screenshot_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+  },
+  "source_commit": "0ac9a91066e88ad37149453a0e1aef12145e50de",
+  "source_tree": "1cad81a4b46499d5c9af71d0326fcffe72b0d5e4"
+}

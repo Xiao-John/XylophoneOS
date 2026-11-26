@@ -1,0 +1,326 @@
+{
+  "status": "passed_subset",
+  "build_id": "f2d901b42f4bb8c1",
+  "frames": [
+    [
+      0.417,
+      "host",
+      "PKA1",
+      1,
+      14,
+      0
+    ],
+    [
+      0.955,
+      "guest",
+      "PKO1",
+      14,
+      0,
+      1
+    ],
+    [
+      0.955,
+      "host",
+      "PKO1",
+      14,
+      0,
+      1
+    ],
+    [
+      1.53,
+      "guest",
+      "PKA1",
+      2,
+      0,
+      1
+    ],
+    [
+      1.531,
+      "host",
+      "PKA1",
+      2,
+      0,
+      1
+    ],
+    [
+      2.111,
+      "guest",
+      "PKU1",
+      2,
+      0,
+      1
+    ],
+    [
+      2.111,
+      "host",
+      "PKU1",
+      2,
+      0,
+      1
+    ],
+    [
+      26.421,
+      "guest",
+      "PKD1",
+      14,
+      0,
+      1
+    ],
+    [
+      26.421,
+      "host",
+      "PKD1",
+      14,
+      0,
+      1
+    ],
+    [
+      27.489,
+      "guest",
+      "PKD1",
+      14,
+      0,
+      2
+    ],
+    [
+      27.489,
+      "host",
+      "PKD1",
+      14,
+      0,
+      2
+    ],
+    [
+      28.507,
+      "guest",
+      "PKD1",
+      14,
+      0,
+      3
+    ],
+    [
+      28.507,
+      "host",
+      "PKD1",
+      14,
+      0,
+      3
+    ],
+    [
+      29.088,
+      "guest",
+      "PKA1",
+      4,
+      1,
+      2
+    ],
+    [
+      29.088,
+      "host",
+      "PKA1",
+      4,
+      0,
+      2
+    ]
+  ],
+  "video_runtime": [
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 0,
+      "display_service_pid": 0,
+      "display_focus_pid": 0,
+      "task_pids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "current_pid": 0,
+      "rip": "0000000000122f20",
+      "since_boot": 0.219,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 0,
+      "display_service_pid": 0,
+      "display_focus_pid": 0,
+      "since_boot": 2.234,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "since_boot": 4.247,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "task_pids": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        0,
+        7,
+        8
+      ],
+      "current_pid": 8,
+      "rip": "000000004000b7bc",
+      "since_boot": 6.269,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "since_boot": 8.278,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "since_boot": 10.291,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "task_pids": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        0,
+        7,
+        8
+      ],
+      "current_pid": 8,
+      "rip": "000000000011e905",
+      "since_boot": 12.311,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "since_boot": 14.321,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "since_boot": 16.331,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "task_pids": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        7,
+        8
+      ],
+      "current_pid": 8,
+      "rip": "000000004000eeac",
+      "since_boot": 18.354,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "since_boot": 20.366,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "since_boot": 22.377,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "task_pids": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        7,
+        8
+      ],
+      "current_pid": 8,
+      "rip": "000000004000b7bc",
+      "since_boot": 24.399,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "since_boot": 26.413,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "since_boot": 28.422,
+      "ppm_sha256": "ae9d9abd47d64a26e27429256222eb86b0d3f923b5cd07226fdc63bb0b8308c6"
+    }
+  ],
+  "qemu_exits": [
+    0
+  ]
+}

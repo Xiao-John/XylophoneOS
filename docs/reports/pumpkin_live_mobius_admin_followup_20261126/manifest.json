@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "files": {
+    "diagnostic_no_signal_logout.json": "76e54d000e84b7b74eab9d1063c82fff015e1cc9cddaad800499a32ec552b3fc",
+    "extended_guest_attempt.json": "a49ac93f97558550d3796dd73a2eaeb7e910660d26879ed1124e6b2170fed151",
+    "managed_attempt_before_first_poll.json": "85e376f56b87b76695fb749d90aec836ab29e1348961daf7b09edfacb3e675f9",
+    "runtime_payload_comparison.json": "b7d6a777a6a64bc6f3e08f7b916be775ecbc3e649173d1d30d1f1aeb3cd6d701"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "status": "passed_subset",
+  "build_id": "1e85a6e85906dd85",
+  "system_manifest_sha256": "6865e577f3692537f1fa7169c5887beaa35769a66795d2dd690bf74757ae8698",
+  "artifacts": {
+    "xos-install.iso": "1c20d2e81a84cb5ff308a02c1afe2aea38e6352136c7884ffad610582d02b8eb",
+    "user_files.image.elf": "1e58dde4600c1517bfed20573286910a17deaa78d0a186ef1415876041c6108f",
+    "user_supervisor.image.elf": "48130fce92b248aebcf86c69e5ef23a01e667ce9b2628d442b6d04ba09e340b3",
+    "user_pumpkin_durable.image.elf": "fc0fc68a5c51066f07c88284de92b5c95f7882755344fd7c7d59a4cfa8c1cfa0",
+    "user_p2_anchor_proxy.image.elf": "31aca001e0f3d6093784fd7ffbfe3f6fff7c3b7ed110e9b0c1e16804ae32b34c",
+    "user_pumpkin_holder.image.elf": "663d46bd8299d03a47ec460ef3cdec7925d821c832c420b0075a0e3200d35aa7"
+  },
+  "entry_sha256": "d40d80b837fc876281f2be7aafe1f93f29a7fdb6323d576746f641fc533cc0c3",
+  "runner_sha256": "cf95d81fbe32cbb0cc93e978727e84281c82890f2f2567da47bfd1167be876f9",
+  "checks": [
+    {
+      "case": "private installation",
+      "exit": 0
+    },
+    {
+      "case": "existing destination refused before publication",
+      "exit": 1
+    },
+    {
+      "case": "durable issue to owner",
+      "exit": 0
+    },
+    {
+      "case": "duplicate enrollment refused",
+      "exit": 1
+    },
+    {
+      "case": "fresh VM accepts the same credential and logs out",
+      "exit": 0
+    },
+    {
+      "case": "credential symlink refused",
+      "exit": 1
+    },
+    {
+      "case": "multiply-linked credential refused",
+      "exit": 1
+    },
+    {
+      "case": "public credential mode refused",
+      "exit": 1
+    },
+    {
+      "case": "wrong credential rejected by ordinary session",
+      "exit": 3
+    },
+    {
+      "case": "durable registrar revocation",
+      "exit": 0
+    },
+    {
+      "case": "fresh VM rejects the original revoked credential",
+      "exit": 3
+    },
+    {
+      "case": "publication_unknown",
+      "revision": 2,
+      "replacement_created": false
+    },
+    {
+      "case": "wallet_sync_failed",
+      "revision": 2,
+      "replacement_created": false
+    }
+  ]
+}

@@ -14,7 +14,7 @@
 
 ## 后续客体接入
 
-Pumpkin 已具备 [files 槽与独立代际存储适配器](pumpkin_anchored_files_store.md)。宿主组合验证覆盖了发布、重启进程和只替换旧槽字节，客体到宿主的受保护通道仍待接入。
+Pumpkin 已具备 [files 槽与独立代际存储适配器](pumpkin_anchored_files_store.md)。[独占 COM1 的开发配置](pumpkin_anchored_guest.md) 用该宿主组件验证真实 files 租约、守护进程和完整客体重启。通常的客体启动入口不接管串口或创建独立提供者。
 
 显式测试监督器创建一次性工作盘及盘外宿主根目录，固定安装域、启动实例和唯一能使用代际记录的 Pumpkin 席位。在读记录、写槽、同步、读回和发布期间保留现有 files 租约。全配置同时只允许一个客体写者。通过未来受保护的专用通道接到 `publication_io` 的 `read_generation` 和 `publish_generation`。`None` 映射到已知空库，`generation_error` 映射到读取错误，四类发布结果逐一传递。通道交付后丢失回复按结果未知停止服务。客体用 `snapshot_publication` 选择精确槽位并检查完整摘要。
 

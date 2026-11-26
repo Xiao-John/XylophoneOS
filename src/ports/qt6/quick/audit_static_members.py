@@ -9,6 +9,7 @@ from functools import lru_cache
 import json
 from pathlib import Path, PurePosixPath
 import re
+import tomllib
 
 from relink import sha
 
@@ -68,8 +69,10 @@ def attributed_notices(root, source):
                 if files and not any(fnmatch.fnmatchcase(source.relative_to(area).as_posix(), entry)
                                      for entry in files):
                     continue
-                notice = record.get("LicenseFile")
-                if isinstance(notice, str):
+                notices = record.get("LicenseFiles", [])
+                if isinstance(record.get("LicenseFile"), str):
+                    notices = [record["LicenseFile"], *notices]
+                for notice in dict.fromkeys(notices):
                     candidate = area / notice
                     if candidate.is_file() and candidate.resolve().is_relative_to(root):
                         hits.append({"declaration": record.get("LicenseId", record.get("License")),
@@ -82,10 +85,52 @@ def attributed_notices(root, source):
     return hits
 
 
+@lru_cache(maxsize=None)
+def reuse_document(path):
+    with path.open("rb") as stream:
+        return tomllib.load(stream).get("annotations", [])
+
+
+@lru_cache(maxsize=None)
+def reuse_pattern(pattern):
+    atoms = {"**/": "(?:.*/)?", "**": ".*", "*": "[^/]*", "?": "[^/]"}
+    parts = re.split(r"(\*\*/|\*\*|\*|\?)", pattern)
+    return re.compile("".join(atoms.get(part, re.escape(part)) for part in parts))
+
+
+def reuse_annotations(root, source):
+    result = []
+    for directory in source.parents:
+        config = directory / "REUSE.toml"
+        if config.is_file():
+            relative = source.relative_to(directory).as_posix()
+            for row in reuse_document(config):
+                patterns = row["path"]
+                if isinstance(patterns, str):
+                    patterns = [patterns]
+                selected = [pattern for pattern in patterns if reuse_pattern(pattern).fullmatch(relative)]
+                if selected and "SPDX-License-Identifier" in row:
+                    result.append({"record": config.relative_to(root).as_posix(), "sha256": path_digest(config),
+                                   "patterns": selected, "precedence": row.get("precedence", "closest"),
+                                   "declaration": row["SPDX-License-Identifier"]})
+        if directory == root:
+            break
+    return result
+
+
 def source_declarations(root, source):
     contents = source.read_text(errors="replace")
+    sidecar = source.with_name(source.name + ".license")
+    annotations = reuse_annotations(root, source)
     expressions = sorted({match.rstrip(" */\t") for match in declaration.findall(contents)})
-    ids = {token.removesuffix("+") for expression in expressions for token in license_id.findall(expression)
+    adjacent = None
+    if sidecar.is_file():
+        adjacent = {"path": sidecar.relative_to(root).as_posix(), "sha256": path_digest(sidecar),
+                    "declarations": sorted({match.rstrip(" */\t")
+                                            for match in declaration.findall(sidecar.read_text())})}
+    applicable = [*expressions, *(item["declaration"] for item in annotations),
+                  *((adjacent or {}).get("declarations", []))]
+    ids = {token.removesuffix("+") for expression in applicable for token in license_id.findall(expression)
            if token not in {"AND", "OR", "WITH"}}
     texts = {}
     for identifier in sorted(ids):
@@ -95,7 +140,8 @@ def source_declarations(root, source):
     return {"source": source.relative_to(root).as_posix(), "source_sha256": path_digest(source),
             "spdx_declarations": expressions, "spdx_license_texts": texts,
             "spdx_without_module_license_text": sorted(ids - texts.keys()),
-            "component_notices": attributed_notices(root, source)}
+            "component_notices": attributed_notices(root, source), "reuse_annotations": annotations,
+            "license_sidecar": adjacent}
 
 
 def archive_location(relative, expected, root, prefix):
@@ -108,8 +154,14 @@ def archive_location(relative, expected, root, prefix):
 
 def audit_archive(name, entry, root, build, prefix, edges):
     relative = name.removeprefix("link/kit/target/")
-    if relative == name or PurePosixPath(relative).is_absolute() or ".." in PurePosixPath(relative).parts:
+    if relative == name:
         raise ValueError(f"Invalid target archive path {name}")
+    return audit_archive_relative(relative, entry, root, build, prefix, edges)
+
+
+def audit_archive_relative(relative, entry, root, build, prefix, edges):
+    if PurePosixPath(relative).is_absolute() or ".." in PurePosixPath(relative).parts:
+        raise ValueError(f"Invalid archive path {relative}")
     archive_location(relative, entry["archive_sha256"], build, prefix)
     _, objects = edges[relative]
     members = entry["members"]

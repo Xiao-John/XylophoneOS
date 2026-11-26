@@ -1,0 +1,37 @@
+--- a/src/ports/SkFontMgr_fontconfig.cpp
++++ b/src/ports/SkFontMgr_fontconfig.cpp
+@@ -782,6 +782,18 @@
+             return false;
+         }
+
++        const auto scanFile = [this](const char* path) {
++#if defined(__XOS__)
++            // The native file service supports positioned streams on FAT.
++            // SkData::MakeFromFileName requires a file-backed mapping.
++            auto stream = SkStream::MakeFromFile(path);
++            return stream && fScanner->scanFile(stream.get(), nullptr);
++#else
++            auto file = SkData::MakeFromFileName(path);
++            return file && fScanner->scanFile(SkMemoryStream::Make(file).get(), nullptr);
++#endif
++        };
++
+         // When sysroot was implemented in e96d7760886a3781a46b3271c76af99e15cb0146 (before 2.11.0)
+         // it was broken;  mostly fixed in d17f556153fbaf8fe57fdb4fc1f0efa4313f0ecf (after 2.11.1).
+         // This leaves Debian 8 and 9 with broken support for this feature.
+@@ -796,13 +808,11 @@
+             resolvedFilename = fSysroot;
+             resolvedFilename += filename;
+             if (sk_exists(resolvedFilename.c_str(), kRead_SkFILE_Flag)) {
+-                auto&& file(SkData::MakeFromFileName(resolvedFilename.c_str()));
+-                return file && fScanner->scanFile(SkMemoryStream::Make(file).get(), nullptr);
++                return scanFile(resolvedFilename.c_str());
+             }
+         }
+         if (sk_exists(filename, kRead_SkFILE_Flag)) {
+-            auto&& file(SkData::MakeFromFileName(filename));
+-            return file && fScanner->scanFile(SkMemoryStream::Make(file).get(), nullptr);
++            return scanFile(filename);
+         }
+         return false;
+     }

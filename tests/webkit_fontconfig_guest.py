@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Replay Fontconfig's native XOS directory scan, XML rules and glyph match."""
+"""Replay native Fontconfig and Skia font selection on the XOS guest."""
 
 import argparse
 from hashlib import file_digest
@@ -36,9 +36,10 @@ def main():
     system, target, font = (json.loads(path.read_bytes()) for path in
                             (system_receipt, target_receipt, font_receipt))
     image = args.system / 'xos-install.iso'
-    executable = args.target / 'fontconfig_match.elf'
+    skia = target['status'] == 'target_skia_fontconfig_linked'
+    executable = args.target / ('skia_fontconfig.elf' if skia else 'fontconfig_match.elf')
     sample = args.font_target / 'sample.ttf'
-    if (target['status'] != 'target_fontconfig_linked'
+    if ((not skia and target['status'] != 'target_fontconfig_linked')
         or digest(image) != system['artifacts'][image.name]['sha256']
         or digest(executable) != target['artifacts'][executable.name]
         or digest(font_receipt) != target['font_target_manifest_sha256']
@@ -46,7 +47,8 @@ def main():
         raise ValueError('Guest input differs from its upstream build receipt')
 
     args.output.mkdir(parents=True, exist_ok=False)
-    report = {'status': 'failed', 'build_id': system['build_id'], 'iso_sha256': digest(image),
+    report = {'status': 'failed', 'target': target['status'],
+              'build_id': system['build_id'], 'iso_sha256': digest(image),
               'system_manifest_sha256': digest(system_receipt), 'target_manifest_sha256': digest(target_receipt),
               'probe_sha256': digest(executable), 'font_sha256': digest(sample),
               'fixture_sha256': target['fixture_sha256'], 'runner_sha256': digest(Path(__file__)), 'cases': []}
@@ -74,16 +76,25 @@ def main():
             command(guest, 'demo quiet', b'demo tasks')
             baseline = resources(guest)
             report['resources_before'] = baseline
-            cases = (('/fc-fonts', 0, 'XOS_FONTCONFIG_MATCH_PASS family=DejaVu_Sans alias=sans-serif glyph=03bb'),
-                     ('/fc-empty', 5, 'XOS_FONTCONFIG_DIRECTORY_EMPTY'))
+            if skia:
+                cases = (('/fc-fonts', 0, rb'XOS_SKIA_FONTCONFIG_PASS family=DejaVu_Sans glyph=[1-9][0-9]* ink=[1-9][0-9]*'),
+                         ('/fc-empty', 5, rb'XOS_SKIA_FONTCONFIG_EMPTY'))
+            else:
+                cases = (('/fc-fonts', 0, rb'XOS_FONTCONFIG_MATCH_PASS family=DejaVu_Sans alias=sans-serif glyph=03bb'),
+                         ('/fc-empty', 5, rb'XOS_FONTCONFIG_DIRECTORY_EMPTY'))
             for directory, code, marker in cases:
-                invocation = f'exec-file /fontmatch.elf {directory} {font_path}'
+                invocation = f'exec-file /fontmatch.elf {directory}'
+                if not skia:
+                    invocation += ' ' + font_path
                 output = command(guest, invocation, b'[wait] pid=', timeout=90)
                 exits = re.findall(rb'\[wait\] pid=\d+ kind=exited code=(\d+)', output)
+                markers = re.findall(marker + rb'\r?\n', output)
                 after = resources(guest)
                 report['cases'].append({'directory': directory, 'exits': [int(exit) for exit in exits],
-                                        'marker_count': output.count(marker.encode()), 'resources_after': after})
-                if exits != [str(code).encode()] or output.count(marker.encode()) != 1 or after != baseline:
+                                        'marker_count': len(markers),
+                                        'markers': [line.decode().strip() for line in markers],
+                                        'resources_after': after})
+                if exits != [str(code).encode()] or len(markers) != 1 or after != baseline:
                     raise AssertionError(f'Unexpected Fontconfig result: {output[-1500:]!r}')
             report['status'] = 'passed_subset'
     finally:

@@ -15,6 +15,7 @@
 ## 实际编译与策略验证
 
 ```sh
+PROOF="$PWD/build/execstack-evidence/fixed"
 python3 -B scripts/probe_glibc_rtld.py --archive "$GLIBC_ARCHIVE" \
   --jobs 2 --output "$PROOF"
 source="$PROOF/prepared/glibc-2.44"

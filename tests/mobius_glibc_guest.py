@@ -44,6 +44,63 @@ def scanout(guest, path, light):
     raise AssertionError(f"Mobius {path.stem} did not reach scanout")
 
 
+MOBIUS_LAUNCHERS = (("preview", "exec-file /usr/bin/mobius.elf"),
+                   ("session", "exec-driver /usr/bin/mobius-session.elf"))
+
+
+def run_mobius(image, disk, output, report, launchers=MOBIUS_LAUNCHERS):
+    guest = Guest(image, "mobius", work_disk=disk, log_dir=output)
+    try:
+        report["qemu_version"] = subprocess.check_output(
+            [guest.command[0], "--version"], text=True).splitlines()[0]
+        guest.expect(b"xos64> ", timeout=40)
+        send_bytes(guest, b"run\r")
+        guest.expect_supervisor(trace=True, timeout=40)
+        pump(guest, 1.5)
+        report["baseline"] = resources(guest)
+        graphics = start_graphics(guest)
+        report["with_graphics"] = resources(guest)
+        report["launches"] = []
+
+        for launcher, entry in launchers:
+            begin = len(guest.output)
+            started = time.monotonic()
+            send_bytes(guest, entry.encode() + b"\r")
+            # The glibc parent reads the desktop through its bounded, polling file session.
+            guest.expect(b"DESKTOP_READY", start=begin, timeout=360 if launcher == "session" else 90)
+            ready_seconds = round(time.monotonic() - started, 3)
+            guest.expect(b"[qpa-frame]", start=begin, timeout=30)
+            dark = scanout(guest, output / f"{launcher}_midnight.ppm", light=False)
+            begin_appearance = len(guest.output)
+            press(guest, "comma", "ctrl")
+            guest.expect(b"DESKTOP_PAGE index=3", start=begin_appearance)
+            begin_theme = len(guest.output)
+            press(guest, "d", "ctrl")
+            guest.expect(b'"scheme":"daybreak"', start=begin_theme)
+            light = scanout(guest, output / f"{launcher}_daybreak.ppm", light=True)
+            assert light["sha256"] != dark["sha256"]
+            press(guest, "q", "ctrl")
+            guest.expect(b"kind=exited code=0", start=begin, timeout=30)
+            guest.expect_supervisor(start=begin)
+            serial = bytes(guest.output)[begin:]
+            pid = re.search(rb"\[loader\] started pid=(\d+)", serial)[1]
+            assert b"[wait] pid=" + pid + b" kind=exited code=0" in serial
+            assert b"input-thread-joined" in serial
+            sample = re.search(rb"DESKTOP_SAMPLE pages=(\d+) threads=(\d+) startup_ms=(\d+)", serial)
+            assert sample is not None
+            after = resources(guest)
+            assert after == report["with_graphics"]
+            report["launches"].append({"launcher": launcher, "ready_wall_seconds": ready_seconds,
+                                       "midnight": dark, "daybreak": light,
+                                       "desktop_sample": [int(number) for number in sample.groups()],
+                                       "after_payload": after})
+        stop_graphics(guest, *graphics)
+        report["after_services"] = resources(guest)
+        assert report["after_services"] == report["baseline"]
+    finally:
+        guest.close()
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("system", "target", "output"):
@@ -80,58 +137,8 @@ def main():
                     subprocess.run([args.work_disk_tool.resolve(), disk, *operation], check=True)
                 else:
                     transfer(disk, *operation)
-            guest = Guest(image, "mobius", work_disk=disk, log_dir=output)
-            try:
-                report["qemu_version"] = subprocess.check_output(
-                    [guest.command[0], "--version"], text=True).splitlines()[0]
-                guest.expect(b"xos64> ", timeout=40)
-                send_bytes(guest, b"run\r")
-                guest.expect_supervisor(trace=True, timeout=40)
-                pump(guest, 1.5)
-                report["baseline"] = resources(guest)
-                graphics = start_graphics(guest)
-                report["with_graphics"] = resources(guest)
-                report["launches"] = []
-
-                for launcher, entry in (("preview", "exec-file /usr/bin/mobius.elf"),
-                                        ("session", "exec-driver /usr/bin/mobius-session.elf")):
-                    begin = len(guest.output)
-                    started = time.monotonic()
-                    send_bytes(guest, entry.encode() + b"\r")
-                    # The glibc parent reads the desktop through its bounded, polling file session.
-                    guest.expect(b"DESKTOP_READY", start=begin, timeout=360 if launcher == "session" else 90)
-                    ready_seconds = round(time.monotonic() - started, 3)
-                    guest.expect(b"[qpa-frame]", start=begin, timeout=30)
-                    dark = scanout(guest, output / f"{launcher}_midnight.ppm", light=False)
-                    begin_appearance = len(guest.output)
-                    press(guest, "comma", "ctrl")
-                    guest.expect(b"DESKTOP_PAGE index=3", start=begin_appearance)
-                    begin_theme = len(guest.output)
-                    press(guest, "d", "ctrl")
-                    guest.expect(b'"scheme":"daybreak"', start=begin_theme)
-                    light = scanout(guest, output / f"{launcher}_daybreak.ppm", light=True)
-                    assert light["sha256"] != dark["sha256"]
-                    press(guest, "q", "ctrl")
-                    guest.expect(b"kind=exited code=0", start=begin, timeout=30)
-                    guest.expect_supervisor(start=begin)
-                    serial = bytes(guest.output)[begin:]
-                    pid = re.search(rb"\[loader\] started pid=(\d+)", serial)[1]
-                    assert b"[wait] pid=" + pid + b" kind=exited code=0" in serial
-                    assert b"input-thread-joined" in serial
-                    sample = re.search(rb"DESKTOP_SAMPLE pages=(\d+) threads=(\d+) startup_ms=(\d+)", serial)
-                    assert sample is not None
-                    after = resources(guest)
-                    assert after == report["with_graphics"]
-                    report["launches"].append({"launcher": launcher, "ready_wall_seconds": ready_seconds,
-                                               "midnight": dark, "daybreak": light,
-                                               "desktop_sample": [int(number) for number in sample.groups()],
-                                               "after_payload": after})
-                stop_graphics(guest, *graphics)
-                report["after_services"] = resources(guest)
-                assert report["after_services"] == report["baseline"]
-                report["status"] = "PASSED"
-            finally:
-                guest.close()
+            run_mobius(image, disk, output, report)
+            report["status"] = "PASSED"
     finally:
         (output / "report.json").write_text(json.dumps(report, indent=2) + "\n")
     print(report["status"])

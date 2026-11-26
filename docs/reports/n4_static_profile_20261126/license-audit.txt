@@ -1,0 +1,2 @@
+PASS: 10 license materials | build 02730f7823e080de | open license items: 0 -> none (register: licenses/open_items.json)
+PASS: 10 license materials | build a3a81c739cf0ec1a | open license items: 0 -> none (register: licenses/open_items.json)

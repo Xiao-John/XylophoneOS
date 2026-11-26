@@ -12,7 +12,7 @@ import subprocess
 import sys
 from toolchain import LOCK, TARGET, COMMON_FLAGS, X86_FLAGS, audit, tool, output
 from user_build import build_users
-from lwip_service_build import configuration as network_configuration
+from lwip_service_build import configuration as network_configuration, load_static_profile
 
 ROOT = Path(__file__).resolve().parents[1]
 BUILD = ROOT / "build"
@@ -32,6 +32,8 @@ def main():
     parser.add_argument("--output-dir", type=Path, default=BUILD)
     parser.add_argument("--net-dns-probe", action="store_true",
                         help="build an isolated Xsh diagnostic with the private resolver")
+    parser.add_argument("--net-static-profile", type=Path,
+                        help="seal a static resolver and NIC selection into the installed system")
     parser.add_argument("--quiet-demos-on-launch", action="store_true",
                         help="stop boot demos before Xsh launches an external ELF unless demo keep was selected")
     parser.add_argument("--capacity-probe", action="store_true",
@@ -79,6 +81,14 @@ def main():
     if args.net_dns_probe and (BUILD == ROOT / "build" or args.pumpkin_anchored_probe or
                                args.terminal_supervisor_probe or args.ncurses_supervisor_probe):
         parser.error("--net-dns-probe requires an isolated output and the Xsh supervisor")
+    if args.net_static_profile and (BUILD == ROOT / "build" or args.net_dns_probe or
+                                    args.pumpkin_anchored_probe or args.terminal_supervisor_probe or
+                                    args.ncurses_supervisor_probe):
+        parser.error("--net-static-profile requires isolated output and the normal Xsh supervisor")
+    try:
+        net_static_profile = load_static_profile(args.net_static_profile) if args.net_static_profile else None
+    except (OSError, ValueError) as error:
+        parser.error(str(error))
     if BUILD != ROOT / "build" and ROOT / "build" not in BUILD.parents:
         raise SystemExit("output directory must be build/ or one of its subdirectories")
     if args.vm1_probe and BUILD == ROOT / "build":
@@ -170,7 +180,7 @@ def main():
                                       **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
                                       **({"pumpkin_named_resource_store": True} if args.pumpkin_named_resource_store else {}),
                                       "virtio_gpu": gpu_config,
-                                      "network_service": network_configuration(ROOT, args.net_dns_probe)}, sort_keys=True).encode())
+                                      "network_service": network_configuration(ROOT, args.net_dns_probe, net_static_profile)}, sort_keys=True).encode())
     build_id = source_digest[:16]
     eggs = int(TARGET["easter_eggs"])
     (BUILD / "build_info.inc").write_text(
@@ -195,7 +205,7 @@ def main():
                                  pumpkin_user_resource=args.pumpkin_user_resource,
                                  pumpkin_named_resource_store=args.pumpkin_named_resource_store,
                                  quiet_demos_on_launch=args.quiet_demos_on_launch,
-                                 net_dns_probe=args.net_dns_probe)
+                                 net_dns_probe=args.net_dns_probe, net_static_profile=net_static_profile)
     user_programs = ("heartbeat", "spinner", "receiver", "sender", "probe", "quitter")
     header = ["#pragma once", "#include <xos/types.hpp>", "namespace xos::user_blobs {"]
     for name in user_programs:

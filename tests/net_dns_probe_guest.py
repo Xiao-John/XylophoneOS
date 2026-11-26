@@ -32,8 +32,9 @@ def wire_name(name):
     return b''.join(bytes((len(label),)) + label.encode('ascii') for label in name.split('.')) + b'\0'
 
 
-def captured_dns_queries(path):
+def captured_dns_queries(path, resolver=None):
     capture = path.read_bytes()
+    destination = socket.inet_aton(resolver) if resolver else None
     byte_order = {b'\xd4\xc3\xb2\xa1': '<', b'\xa1\xb2\xc3\xd4': '>'}.get(capture[:4])
     if len(capture) < 24 or not byte_order or struct.unpack_from(byte_order + 'I', capture, 20)[0] != 1:
         raise ValueError('expected an Ethernet PCAP from the guest')
@@ -50,7 +51,8 @@ def captured_dns_queries(path):
         if len(frame) < 42 or frame[12:14] != b'\x08\x00' or frame[23] != 17:
             continue
         udp = 14 + (frame[14] & 15) * 4
-        if udp >= 34 and udp + 8 <= len(frame) and frame[udp + 2:udp + 4] == b'\x00\x35':
+        if (udp >= 34 and udp + 8 <= len(frame) and frame[udp + 2:udp + 4] == b'\x00\x35' and
+                (destination is None or frame[30:34] == destination)):
             queries += 1
     return queries
 

@@ -1,0 +1,103 @@
+{
+  "status": "passed",
+  "boots": [
+    {
+      "shell": "xsh",
+      "browser_paths": [
+        "/840336eb26f07535a2deed7440cdc634/index.html",
+        "/840336eb26f07535a2deed7440cdc634/theme.css",
+        "/840336eb26f07535a2deed7440cdc634/proof.bmp"
+      ],
+      "resources": [
+        121374,
+        6,
+        4
+      ],
+      "scanout_sha256": "05fa409e48d33bec975291319567932510e188d2893546b40767447a20c1c412",
+      "service_closed": true,
+      "dns_destination": "10.0.2.3",
+      "captured_dns_requests": 1
+    },
+    {
+      "shell": "dash",
+      "browser_paths": [
+        "/f0125c06a728b7f7987126eaba0859f4/index.html",
+        "/f0125c06a728b7f7987126eaba0859f4/theme.css",
+        "/f0125c06a728b7f7987126eaba0859f4/proof.bmp"
+      ],
+      "resources": [
+        121374,
+        6,
+        4
+      ],
+      "scanout_sha256": "021b23123ed1c9e1aad97a6f9cdacb2775a8fee6f1e7eaf3a5c14d25c057fee8",
+      "service_closed": true,
+      "dns_destination": "10.0.2.3",
+      "captured_dns_requests": 1
+    }
+  ],
+  "system_build_id": "02730f7823e080de",
+  "iso_sha256": "7fc689cabc5fd20d175b91923707fb6951abf0749598d66367c520c3e0ce1ba2",
+  "installer_manifest_sha256": "3718ac11de095e20a42be58e8cc69e05e137bf69ec933759e9e39d2359bfad70",
+  "dash_sha256": "3ca05b97bec606b7440365a1b59ed5ba843d4f53b2ee4160b75e3e5604be4ad0",
+  "sdk_profile_sha256": "5dde8b7cd0a2e5fe9d0db892b81f88eeed36e2f72ba89826209acb013362b10a",
+  "sealed_profile": {
+    "revision": 1,
+    "pci_instance": 41,
+    "resolver": "10.0.2.3",
+    "source_sha256": "5614e6876118ed26233ede73ddd77170b08ba11c1538810703f6b368c6b53de8"
+  },
+  "browser_profile": {
+    "address_source": "net2_dns",
+    "host": "tls.xos.test",
+    "ipv4_address": "10.0.2.2",
+    "native_tls_receipt_sha256": "ded2524f58f09258f41991297dee3e21511ffc9324a49f24240fbe55a202c716",
+    "port": 18443,
+    "root_der_sha256": "0ae85d18be771da979b4f02e4305e91be83a9f35b0fa195732d90668357cc203"
+  },
+  "browser_sha256": "ff529e613bcd8ac1e76367599e653708da4ebef5331320da07ac54fffb64a66c",
+  "browser_receipt_sha256": "1ad3e35c9df4f4bfecb1567fd168bb34b08bf0020cdc2dd4b1ecd51b098b8034",
+  "package_sha256": "8cb4a5ad0e79d28c3acf48ca839af21be5ba5ccc47863613d38939bbb4012163",
+  "host": {
+    "requests": [
+      "/840336eb26f07535a2deed7440cdc634/index.html",
+      "/840336eb26f07535a2deed7440cdc634/theme.css",
+      "/840336eb26f07535a2deed7440cdc634/proof.bmp",
+      "/f0125c06a728b7f7987126eaba0859f4/index.html",
+      "/f0125c06a728b7f7987126eaba0859f4/theme.css",
+      "/f0125c06a728b7f7987126eaba0859f4/proof.bmp"
+    ],
+    "sni": [
+      "tls.xos.test",
+      "tls.xos.test",
+      "tls.xos.test",
+      "tls.xos.test",
+      "tls.xos.test",
+      "tls.xos.test"
+    ],
+    "handshake_errors": [],
+    "dns": [
+      {
+        "name": "tls.xos.test",
+        "answer": "10.0.2.2"
+      },
+      {
+        "name": "tls.xos.test",
+        "answer": "10.0.2.2"
+      }
+    ],
+    "connections": 6,
+    "closed": 6
+  },
+  "installation": {
+    "status": "exported_candidate",
+    "operation": "install",
+    "id": "xos.clarke",
+    "source_sha256": "4dab6c86e68e7f5ef0e060c7d7bd6004278d1c34af957f5e4faac401538d1912",
+    "output_sha256": "a5bf399057fffdfd94eb74c295b0c9d58314409a88288e64d9c4708efd5501ad",
+    "verified_files": 38,
+    "mutations": 65,
+    "backend_sha256": "ce3c39c9a9219e127fb1374a4921f8a241efd46a29586d0f4962f15df69a5e3f"
+  },
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)"
+}

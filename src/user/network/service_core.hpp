@@ -17,13 +17,14 @@ struct stack_api {
 using resolver_completion = void (*)(void*, u64, i64, u32, u64, u64);
 struct resolver_api {
     void* context;
-    void (*configure)(void*, bool);
+    void (*configure)(void*, u32);
     i64 (*start)(void*, const char*, u64, resolver_completion, void*);
     void (*cancel)(void*, u64);
 };
 class service_core {
 public:
-    void initialize(u64 controller, const stack_api& stack, const resolver_api& resolver = {});
+    void initialize(u64 controller, const stack_api& stack, const resolver_api& resolver = {},
+                    u32 configured_resolver = 0);
     i64 attach(u64 peer, u64 now);
     void detach(u32 session);
     void expire(u64 now);
@@ -47,6 +48,7 @@ private:
     u64 revoked_[16]{}, controller_ = 0, next_handle_ = 1, next_generation_ = 1;
     stack_api stack_{};
     resolver_api resolver_{};
+    u32 resolver_address_ = net2::permitted_address;
     net2::network_mode mode_ = net2::network_mode::disabled;
     u64 config_epoch_ = 1, next_ticket_ = 1;
     bool stopping_ = false;

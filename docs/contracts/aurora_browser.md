@@ -192,6 +192,13 @@ The resolver fixture and TLS listener serve only the controlled test origin.
 The runner also checks a trusted certificate for another hostname and a
 different DNS route without sending HTTP on either path.
 
+On an installed static network profile, launch `clarke.elf --network` from xsh
+or dash to select the supervisor-provided service binding. A shell launched
+before the service restarted retains the older binding. Relaunch ClarkE from
+xsh or a new dash instance to use the replacement service. The explicit
+`--network-service-pid` argument remains available for developer callers.
+[Network launch contract](network_n4_v1_proposal.md#22-静态安装-profile)
+
 Historical local-provider evidence, measured scope and failed iterations are in
 [0083](../work_log/0083_aurora_browser_offline.md).
 

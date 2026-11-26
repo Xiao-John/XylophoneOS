@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 #include <errno.h>
 #include "xos_rtld_mapping.h"
+#include "xos_rtld_heap.h"
 #include "xos_file_trap.h"
 
 enum { pinned_close = 8, pinned_read_at = 30, max_program_headers = 64 };
@@ -57,7 +58,13 @@ __xos_rtld_attach_entry_images (void **stack, struct xos_rtld_images *images,
     return EBUSY;
   images->files = &view.record->files;
   images->plan = &view.record->dependencies;
-  const int error = __xos_rtld_attach_images (images);
+  int error = __xos_rtld_attach_images (images);
+  if (error == 0)
+    {
+      error = __xos_rtld_heap_begin (&view.record->heap);
+      if (error != 0)
+        (void) __xos_rtld_finish_images (images);
+    }
   if (error == 0)
     *output = view;
   return error;

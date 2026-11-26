@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import sys
 import tempfile
+import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "scripts"), str(ROOT / "tests")]
@@ -75,9 +76,11 @@ def main():
         try:
             guest.expect(b"xos64> ", timeout=30)
             start = len(guest.output)
+            boot_started = time.monotonic()
             send_bytes(guest, b"run\r")
             bundle = metadata.get("boot_bundle")
             guest.expect_supervisor(trace=args.external, start=start, timeout=360 if bundle else 60)
+            report["boot_to_supervisor_ms"] = round((time.monotonic() - boot_started) * 1000)
             marker = b"[files] bundle installed: /usr/bin/dash" if bundle else b"[files] dash installed"
             guest.expect(marker, start=start, timeout=60)
             if args.external:
@@ -111,10 +114,12 @@ def main():
                            files.get("DASH.ELF") == metadata["dash_sha256"] and
                            "MANIFEST.TXT" in files),
             })
+            if all(check["passed"] for check in report["checks"]):
+                report["status"] = "passed"
         finally:
             guest.close()
-    report["status"] = "passed" if all(c["passed"] for c in report["checks"]) else "failed"
-    args.report.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
+            report["serial_sha256"] = hashlib.sha256(guest.output).hexdigest()
+            args.report.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
     print(json.dumps(report, indent=2, sort_keys=True))
     raise SystemExit(0 if report["status"] == "passed" else 1)
 

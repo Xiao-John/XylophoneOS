@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Build the optional, pinned NO_SYS network service without downloading inputs."""
 import hashlib
+import ipaddress
 import json
 import os
 from pathlib import Path
@@ -14,11 +15,40 @@ core_sources = ["init.c", "def.c", "inet_chksum.c", "ip.c", "mem.c", "memp.c", "
 ipv4_sources = ["etharp.c", "icmp.c", "ip4.c", "ip4_addr.c", "ip4_frag.c"]
 
 
-def configuration(root, dns_probe=False):
+def load_static_profile(path):
+    with path.open("rb") as stream:
+        data = stream.read(513)
+    if len(data) > 512:
+        raise ValueError("Static network profile exceeds 512 bytes")
+
+    def unique_fields(pairs):
+        result = dict(pairs)
+        if len(result) != len(pairs):
+            raise ValueError("Duplicate static network profile field")
+        return result
+
+    profile = json.loads(data, object_pairs_hook=unique_fields)
+    if not isinstance(profile, dict) or set(profile) != {"revision", "pci_instance", "resolver"}:
+        raise ValueError("Expected revision, pci_instance and resolver")
+    if type(profile["revision"]) is not int or profile["revision"] != 1:
+        raise ValueError("Expected static network profile revision 1")
+    instance, address = profile["pci_instance"], profile["resolver"]
+    if type(instance) is not int or not 1 <= instance <= 65536:
+        raise ValueError("pci_instance must be 1 + PCI BDF")
+    if not isinstance(address, str):
+        raise ValueError("resolver must be a canonical IPv4 address")
+    peer = ipaddress.IPv4Address(address)
+    if (str(peer) != address or peer not in ipaddress.IPv4Network("10.0.2.0/24") or
+            address in {"10.0.2.0", "10.0.2.15", "10.0.2.255"}):
+        raise ValueError("resolver must be a peer on the admitted static IPv4 subnet")
+    return dict(profile, source_sha256=hashlib.sha256(data).hexdigest())
+
+
+def configuration(root, dns_probe=False, static_profile=None):
     archive = os.environ.get("XOS_LWIP_SOURCE_ARCHIVE")
     if not archive:
-        if dns_probe:
-            raise SystemExit("The DNS probe requires XOS_LWIP_SOURCE_ARCHIVE")
+        if dns_probe or static_profile:
+            raise SystemExit("The resolver requires XOS_LWIP_SOURCE_ARCHIVE")
         return {"enabled": False, "wire_version": 2, "guest_qualification": "not_run"}
     lock = json.loads((root / "src/ports/lwip/source_lock.json").read_text())
     digest = hashlib.sha256(Path(archive).read_bytes()).hexdigest()
@@ -26,7 +56,8 @@ def configuration(root, dns_probe=False):
         raise SystemExit("Network service lwIP archive differs from source_lock.json")
     return {"enabled": True, "wire_version": 2, "lwip_version": lock["version"],
             "archive_sha256": digest, "patches": source_patches(root),
-            "guest_qualification": "not_run", **({"dns_probe": True} if dns_probe else {})}
+            "guest_qualification": "not_run", **({"dns_probe": True} if dns_probe else {}),
+            **({"static_profile": static_profile} if static_profile else {})}
 
 
 def source_patches(root):
@@ -96,21 +127,23 @@ def prepare_source(root, archive, output, *, patch_tool="patch", environment=Non
     return source
 
 
-def build(root, output, sdk, run, tool, isa_flags, dns_probe=False):
-    config = configuration(root, dns_probe)
+def build(root, output, sdk, run, tool, isa_flags, dns_probe=False, static_profile=None):
+    config = configuration(root, dns_probe, static_profile)
     if not config["enabled"]:
         return [], (), config
     work = output / "net_lwip"
     source = prepare_source(root, os.environ["XOS_LWIP_SOURCE_ARCHIVE"], work / "source")
     include_flags = ("-I", str(root / "src/user/network/include"),
                      "-I", str(root / "src/ports/lwip/include"), "-I", str(source / "src/include"),
-                     *(('-DXOS_NET_DNS_PROBE=1',) if dns_probe else ()))
+                     *(("-DXOS_NET_DNS_PROBE=1",) if dns_probe else ()),
+                     *((f"-DXOS_NET_STATIC_RESOLVER={int(ipaddress.IPv4Address(static_profile['resolver']))}u",)
+                       if static_profile else ()))
     flags = ["-std=c11", "-Os", "-ffreestanding", "-fno-stack-protector", "-fno-pie", "-fno-pic",
              "-ffunction-sections", "-fdata-sections", "-fno-asynchronous-unwind-tables", "-fno-unwind-tables",
              *isa_flags, "-I", str(sdk / "include"), *include_flags,
              "-ffile-prefix-map=" + str(root) + "=."]
     sources = [source / "src/core" / name for name in core_sources]
-    if dns_probe:
+    if dns_probe or static_profile:
         sources.append(source / "src/core/dns.c")
     sources += [source / "src/core/ipv4" / name for name in ipv4_sources]
     sources += [source / "src/netif/ethernet.c"]

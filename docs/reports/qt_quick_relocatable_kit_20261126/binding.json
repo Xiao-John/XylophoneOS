@@ -1,0 +1,142 @@
+{
+  "status": "qualified_external_quick_example",
+  "source_commit": "2b382380dc42880ec3d701bca6a120ec646c81c6",
+  "source_tree": "eba886af2a50c10ebb45da75f5e3caba1d700f13",
+  "baseline_mainline": "5a828b33b8f8c4051a4e7f8175b775388b9db26b",
+  "source_files_sha256": {
+    "src/ports/qt6/quick/quick_kit.py": "bf887018abfbc30f1937e42451e5968f48c67ccaed0de7e99f646bf8a57ead6b",
+    "src/ports/qt6/quick/build_app.py": "b8a5873dc512c3cb90af0e5c8b2293db6343e949da00cb9a09cfb3ff682191f0",
+    "src/ports/qt6/quick/XosQuickApp.cmake": "9848f7fd2aaaeeaaa9b6ee6b646a9ca97102bdfa0892d58647b7e4873441c296",
+    "tests/qt6_quick_kit_guest.py": "8a71dc16843d73efa277bd24bd97fc807fe536f55650fcde45b9f244bf7d26a0",
+    "tests/fixtures/qt6/quick_app/CMakeLists.txt": "5a82e24b5f8ddbefc9476bb9434a8ae6d59a85161ec2566b3cb21149c8c37384",
+    "tests/fixtures/qt6/quick_app/main.cpp": "33064cfaae56ca5d6d2ccdf2ce30da7732cb5a191b9c37bd1803c6b22afc785e",
+    "tests/fixtures/qt6/quick_app/Main.qml": "37b560d94e505c4a159dac8f6ade349b5c60b6e8124ac8f680d7a050e29e6d9d"
+  },
+  "target_system_build_id": "36fafd7e665ba3f8",
+  "target_system_manifest_sha256": "8a3edb8e01041d391ea5172647ec23116f88279d45707865c4a57a6e7fe1ca29",
+  "target_iso_sha256": "d04aae5454c9ac68f7a556d2828cab2af757f71ef886143fcfc40368e61520ad",
+  "archive": {
+    "filename": "xos_qt_quick_linux_arm64_final.tar.zst",
+    "bytes": 172264367,
+    "sha256": "3706bf0fe13760f38eb50bcde6fd951c583479637f331000e96ff91090eba1c1"
+  },
+  "application_elf_sha256": "fefc635595e90312742ea0d3808d3d87454de66391e8edc48b986fc12f5de50a",
+  "kit_manifest_sha256": "c3b9f48353ab96cff9dd405a694f1064b4442ceb54f9bb5781ac5de6498053d2",
+  "application_receipt_sha256": "82a57c7289b9ef9498c7eef9b27eeb65a9b5e2ef60e77569e2c1a40c726d1f03",
+  "build_environment": {
+    "container_image_sha256": "87c204c1263f7c18981b11752fe340a10e4bf8495e1ba2709456182e76bc1a22",
+    "host": "linux-aarch64",
+    "target_gcc": "16.2.0",
+    "cmake": "4.4.5",
+    "network": "disabled",
+    "original_inputs_mounted": false
+  },
+  "resolved_qt_inputs_relative_to_kit": {
+    "BundledFreetype": "target/lib/libQt6BundledFreetype.a",
+    "BundledHarfbuzz": "target/lib/libQt6BundledHarfbuzz.a",
+    "BundledPcre2": "target/lib/libQt6BundledPcre2.a",
+    "BundledZLIB": "target/lib/libQt6BundledZLIB.a",
+    "Core": "target/lib/libQt6Core.a",
+    "Gui": "target/lib/libQt6Gui.a",
+    "Qml": "target/lib/libQt6Qml.a",
+    "QmlMeta": "target/lib/libQt6QmlMeta.a",
+    "QmlModels": "target/lib/libQt6QmlModels.a",
+    "Quick": "target/lib/libQt6Quick.a",
+    "moc": "host_qt/libexec/moc",
+    "modelsplugin": "target/qml/QtQml/Models/libmodelsplugin.a",
+    "qmlcachegen": "host_qml/libexec/qmlcachegen",
+    "qmlimportscanner": "host_qml/libexec/qmlimportscanner",
+    "qmlplugin": "target/qml/QtQml/libqmlplugin.a",
+    "qmltyperegistrar": "host_qml/libexec/qmltyperegistrar",
+    "qtquick2plugin": "target/qml/QtQuick/libqtquick2plugin.a",
+    "quickwindow": "target/qml/QtQuick/Window/libquickwindowplugin.a",
+    "rcc": "host_qt/libexec/rcc"
+  },
+  "rewritten_imported_host_tool_locations": 21,
+  "checks": {
+    "archive_manifest_matches_staged": "passed",
+    "moved_unmodified_seed_host_export": {
+      "status": "failed",
+      "reason": "absolute_qmlimportscanner_import",
+      "raw_log_sha256": "bd112dd8d3c2683a1f5cc8f0ce581901787f097a5f7df49f302989781c41f639"
+    },
+    "moved_kit_cmake_configure_and_link": "passed",
+    "modified_cmake_file": {
+      "status": "rejected_before_output",
+      "raw_log_sha256": "dc9bed185cd737ec56f1f3d7cb72ab737d2ae30eb8d44e90dd554ffb2200658e"
+    },
+    "mixed_kit_and_individual_selectors": "rejected_before_output",
+    "independent_licensed_distribution_and_relink": "not_run",
+    "ordinary_smoke": {
+      "status": "passed",
+      "checks": 79,
+      "release_notice_checks": 10
+    },
+    "abi_documentation": "passed",
+    "separate_input_selectors": {
+      "status": "static_quick_application_linked",
+      "elf_sha256": "730134706762378811e4bbc8feff34fef23e0671a70c38de852254d8d88a625d",
+      "guest_qualification": "not_run",
+      "raw_log_sha256": "de3a59df02a3e88bdff542ef63fcce7fe9af73a558d4c93eefd230da7fa4d0e8"
+    }
+  },
+  "linker_reported_unsupported_functions": [
+    "__getcwd",
+    "access",
+    "chdir",
+    "chmod",
+    "fchmod",
+    "flock",
+    "getcwd",
+    "kill",
+    "mkdir",
+    "raise",
+    "readlink",
+    "rename",
+    "rmdir",
+    "sleep",
+    "symlink",
+    "sysconf",
+    "truncate",
+    "usleep"
+  ],
+  "raw_relocated_build_log_sha256": "e7494ed90a2b1f9d26c388bae35a22e61f9e65bf26b1ee68c6aa6e48efd7b98c",
+  "qml_generator_duplicate_type_descriptions": {
+    "matching_legacy_build": true,
+    "distinct_types": [
+      "QEventPointDerived",
+      "QQmlDelegateModelAttached",
+      "QQmlItemSelectionRangeValueType",
+      "QQmlLocaleEnums",
+      "QQmlModelIndexValueType",
+      "QQmlObjectModelAttached",
+      "QQmlPersistentModelIndexValueType",
+      "QQuickAccessibleAttached",
+      "QQuickColorSpaceValueType",
+      "QQuickColorValueType",
+      "QQuickDragAttached",
+      "QQuickEnterKeyAttached",
+      "QQuickFontValueType",
+      "QQuickGraphicsInfo",
+      "QQuickGridViewAttached",
+      "QQuickKeyNavigationAttached",
+      "QQuickKeysAttached",
+      "QQuickLayoutMirroringAttached",
+      "QQuickListViewAttached",
+      "QQuickMatrix4x4ValueType",
+      "QQuickPackageAttached",
+      "QQuickPathViewAttached",
+      "QQuickPositionerAttached",
+      "QQuickQuaternionValueType",
+      "QQuickScreenAttached",
+      "QQuickTableViewAttached",
+      "QQuickTextBlockForeign",
+      "QQuickVector2DValueType",
+      "QQuickVector3DValueType",
+      "QQuickVector4DValueType",
+      "QQuickViewTransitionAttached",
+      "QQuickWindowAttached"
+    ],
+    "legacy_log_sha256": "aeb50188fd1b020a2a65e7d56ed7cfd71e80bafabb0d0a65d53ab9f4f855c99f"
+  }
+}

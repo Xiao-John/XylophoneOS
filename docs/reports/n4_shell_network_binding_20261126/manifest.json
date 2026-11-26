@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "scope": "the installed static profile with caller-selected xsh and dash snapshots and the qualified DNS referral correction",
+  "source": {
+    "combined_network_base": "0e8b582691eba4cb4986fab3fbe95080584b9e76",
+    "dns_referral_fix_and_evidence": "3ff22f72",
+    "browser_and_tls": "afc8273036c577965d4ba6f1c425a548a0869fc4",
+    "system_and_run": "6face2bad70e9b2038b456f778b0767f8dc0d149"
+  },
+  "system_manifest_sha256": "57f72ddd563a62ec3bc225fb08f68aeb52a040560228cac4fb97bbb787896c99",
+  "ordinary_manifest_sha256": "0ca2afc7146d4947ab160401f3aa34469fac1a81ea55bce859d18fa5af9c5b04",
+  "tls_receipt_sha256": "e061dc468195a42c4424eef2bd008ece8fae98a04ac28c03076b835091502b34",
+  "toolchain_container_id": "sha256:a71fb65026ab764d7883067a05a6a63a3fc5c3b8abaf6226e5cd0997831cdcc2",
+  "scanout": {
+    "width": 800,
+    "height": 600,
+    "crop_xyxy": [
+      32,
+      222,
+      768,
+      550
+    ],
+    "rgb_counts": {
+      "xsh.initial": {
+        "244,247,252": 226681,
+        "24,50,76": 1470,
+        "183,53,118": 1024
+      },
+      "xsh.rebound": {
+        "244,247,252": 226756,
+        "24,50,76": 1461,
+        "183,53,118": 1024
+      },
+      "dash.initial": {
+        "244,247,252": 226822,
+        "24,50,76": 1455,
+        "183,53,118": 1024
+      },
+      "dash.rebound": {
+        "244,247,252": 226713,
+        "24,50,76": 1460,
+        "183,53,118": 1024
+      }
+    }
+  },
+  "unfiltered_ipc_report_sha256": "2be9c14bdf325bc0c0575898eaad3d0675be3f08fbc187198d3a97bfecb70dd0",
+  "files": {
+    "dash.initial.ppm.gz": "c09064e9b89a261ba68d896a7dc6a09560731a1b577ee41edf1c295ee242e123",
+    "dash.pcap": "25d0751e0343118308f0126920c88c3676f8d03f875efe4ad03273bb18c1feea",
+    "dash.rebound.ppm.gz": "a9dc434f15575926d996da9937d1efe92a61c057365b74f6c7a88dd1e18fca9d",
+    "dash_qemu.log.gz": "e141baa8b01eda3b3d6d468c39b4a6213960ac13d68ddd64180ff43131697aed",
+    "dash_serial.log.gz": "befc41e3c142eb1c8af2cf8bd74d9e558b9a972cd515bf16154d67ec2868a91c",
+    "installed.json": "553444960e230f853b188930fa47c212da612198c788a3cd141eab91353dab55",
+    "ipc-exec.json": "5b7a79662cd5c5b0a59caa87ed13001bbd5263534c0759d1978847ff957aaa76",
+    "ipc_exec_qemu.log.gz": "105c1d0b380efd5841cbd3bd8813d8c0cd07e5da6326b321f8dc8c841af3ae04",
+    "ipc_exec_serial.log.gz": "a373a7a048885c39391d6b019ae7b7f0c41a262719dcc6b8ee616d79b7af2212",
+    "license.txt": "9ad400dfaaa05b635125c0ad440479111f4af69b0c99888845e679f18a9fafcd",
+    "ordinary_qemu.log.gz": "e141baa8b01eda3b3d6d468c39b4a6213960ac13d68ddd64180ff43131697aed",
+    "ordinary_serial.log.gz": "ea7e6a75091d5b43f8c32c4e4b8623a4f8a638421efeca20e31a4ffdb326b548",
+    "profile.json": "5614e6876118ed26233ede73ddd77170b08ba11c1538810703f6b368c6b53de8",
+    "xsh.initial.ppm.gz": "84da26c570c8720f00ddbcea6f521c8b7cbd16033e1834658217397de81fc264",
+    "xsh.pcap": "19f653eb6d66bc60aff56eb9a0cab0b603629cbbcbe5781e4a1c87183c07c55e",
+    "xsh.rebound.ppm.gz": "440d79580e06e132e4b44be48a83b64246aaba045e4c1d79d93226075beb2121",
+    "xsh_qemu.log.gz": "e141baa8b01eda3b3d6d468c39b4a6213960ac13d68ddd64180ff43131697aed",
+    "xsh_serial.log.gz": "9a01ec68ff64195ae48cfbfeb866dd863f3e86e4ebfa5beff7c614cb28fec37e"
+  }
+}

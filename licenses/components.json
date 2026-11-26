@@ -704,6 +704,48 @@
       "distribution_status": "Local qualification; full member-level review and binary distribution acceptance pending"
     },
     {
+      "name": "Skia for ClarkE CPU raster qualification",
+      "version": "WPE WebKit 2.54.2 snapshot",
+      "path": "src/ports/webkit/raster",
+      "source": "https://wpewebkit.org/releases/wpewebkit-2.54.2.tar.xz",
+      "source_archive_sha256": "f3284e19e47fcb5ac8c63c2e1c113dbd65b2423eb8a545f5b345707829004f56",
+      "license": "Skia LICENSE (BSD-style) and per-file upstream notices",
+      "notices": [
+        "src/ports/webkit/raster/notices/skia_license.txt"
+      ],
+      "artifact_sha256": {
+        "src/ports/webkit/raster/notices/skia_license.txt": "5f787c1dee3c56547f09ccc2906ab5f5293c4d8dd6c8654e573216c38e908dbd"
+      },
+      "used_in": [
+        "local XOS glibc CPU raster dependency qualification"
+      ],
+      "distribution_status": "Local qualification; member-level and binary distribution acceptance pending"
+    },
+    {
+      "name": "QtBase image codecs for the ClarkE CPU raster qualification",
+      "version": "QtBase 6.8.3; libpng 1.6.47; libjpeg-turbo 3.0.3",
+      "path": "src/ports/webkit/raster",
+      "source": "https://download.qt.io/archive/qt/6.8/6.8.3/submodules/qtbase-everywhere-src-6.8.3.tar.xz",
+      "source_archive_sha256": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80",
+      "license": "libpng-2.0; IJG, BSD and zlib terms tracked by libjpeg-turbo",
+      "notices": [
+        "src/ports/webkit/raster/notices/libpng_license.txt",
+        "src/ports/webkit/raster/notices/libjpeg_license.txt",
+        "src/ports/webkit/raster/notices/libjpeg_copyright.txt",
+        "src/ports/webkit/raster/notices/libjpeg_ijg.txt"
+      ],
+      "artifact_sha256": {
+        "src/ports/webkit/raster/notices/libpng_license.txt": "16d9daaafbf63a31a5bdc91d4600972548fef5aaa1244202393288dbd079c49a",
+        "src/ports/webkit/raster/notices/libjpeg_license.txt": "96f5b328adbb78eeaaec6980d73fd558cb1e4d62560ed615646bc3cf5e532430",
+        "src/ports/webkit/raster/notices/libjpeg_copyright.txt": "f26a2c0b6c1ab7e40444de31cc5b112a534cc589d6fd9b93620054e9692b81c6",
+        "src/ports/webkit/raster/notices/libjpeg_ijg.txt": "1cb448f5e2e6d3aca60943f4eee1a04675628dc0266a074a42bc1560ebc28d61"
+      },
+      "used_in": [
+        "local XOS glibc CPU raster dependency qualification"
+      ],
+      "distribution_status": "Local qualification; member-level and binary distribution acceptance pending"
+    },
+    {
       "name": "Qt Widgets E17 and Xylophone Aurora Glass",
       "version": "QtBase 6.8.3; Aurora 1 (local qualification)",
       "path": "src/ports/qt6",

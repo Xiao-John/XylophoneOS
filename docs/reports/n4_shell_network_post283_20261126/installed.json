@@ -1,0 +1,183 @@
+{
+  "status": "passed",
+  "boots": [
+    {
+      "shell": "xsh",
+      "initial": {
+        "pid": 9,
+        "resources": [
+          121373,
+          6,
+          4
+        ],
+        "paths": [
+          "/804fcc34f297cd66138f031eb165e3c3/index.html",
+          "/804fcc34f297cd66138f031eb165e3c3/theme.css",
+          "/804fcc34f297cd66138f031eb165e3c3/proof.bmp"
+        ],
+        "scanout_sha256": "17dc3b17dacd53cf9f9d7fd76adf4d9e3376822f1ab561d0cc9d57f93e1cdae1"
+      },
+      "stale": {
+        "pid": 9,
+        "resources": [
+          121373,
+          6,
+          4
+        ],
+        "refused": true
+      },
+      "rebound": {
+        "pid": 14,
+        "resources": [
+          121373,
+          6,
+          4
+        ],
+        "paths": [
+          "/a764f5611523db4da2063c5cfd138cea/index.html",
+          "/a764f5611523db4da2063c5cfd138cea/theme.css",
+          "/a764f5611523db4da2063c5cfd138cea/proof.bmp"
+        ],
+        "scanout_sha256": "8f90d53050cddc23cee766448196d360d8ed3d226d90708738e14798707ab032"
+      },
+      "service_closed": true,
+      "dns_destination": "10.0.2.3",
+      "captured_dns_requests": 2
+    },
+    {
+      "shell": "dash",
+      "initial": {
+        "pid": 9,
+        "resources": [
+          121373,
+          6,
+          4
+        ],
+        "paths": [
+          "/7810b8b1f000ab5570bb6e699ac7e73b/index.html",
+          "/7810b8b1f000ab5570bb6e699ac7e73b/theme.css",
+          "/7810b8b1f000ab5570bb6e699ac7e73b/proof.bmp"
+        ],
+        "scanout_sha256": "ffeb78e52de8fed5a4245599dbd27c9b479ca869121a7acddc49d38bb472d3c1"
+      },
+      "stale": {
+        "pid": 9,
+        "resources": [
+          121373,
+          6,
+          4
+        ],
+        "refused": true
+      },
+      "rebound": {
+        "pid": 15,
+        "resources": [
+          121373,
+          6,
+          4
+        ],
+        "paths": [
+          "/46516a4265b865e197397c1b678ede23/index.html",
+          "/46516a4265b865e197397c1b678ede23/theme.css",
+          "/46516a4265b865e197397c1b678ede23/proof.bmp"
+        ],
+        "scanout_sha256": "1b88e9e8398b2568e7798c93a3fce88fb56f88253370b9860a80918f19fade86"
+      },
+      "service_closed": true,
+      "dns_destination": "10.0.2.3",
+      "captured_dns_requests": 2
+    }
+  ],
+  "system_build_id": "7dccaf2c1df972df",
+  "iso_sha256": "6eb21f0c7da8f0a29125b170c460b747ee5594348e4680b4f56a51afb0afcea9",
+  "installer_manifest_sha256": "e44bf201de134a105d93de34a8a5cbc60e7ba3bdfd458459b3f93862aef1f39c",
+  "dash_sha256": "27292b846aa9cef3ce3cdb9ee5267b51fd296f6dc9a9c7f6005be93bfad9c29d",
+  "sdk_profile_sha256": "5dde8b7cd0a2e5fe9d0db892b81f88eeed36e2f72ba89826209acb013362b10a",
+  "sealed_profile": {
+    "revision": 1,
+    "pci_instance": 41,
+    "resolver": "10.0.2.3",
+    "source_sha256": "5614e6876118ed26233ede73ddd77170b08ba11c1538810703f6b368c6b53de8"
+  },
+  "browser_profile": {
+    "address_source": "net2_dns",
+    "host": "tls.xos.test",
+    "ipv4_address": "10.0.2.2",
+    "native_tls_receipt_sha256": "e061dc468195a42c4424eef2bd008ece8fae98a04ac28c03076b835091502b34",
+    "port": 18443,
+    "root_der_sha256": "0ae85d18be771da979b4f02e4305e91be83a9f35b0fa195732d90668357cc203"
+  },
+  "browser_sha256": "425148ae3532f243635fd32bcd4f75fce4c8251e6ab8a3f23dfb42bcb9c49d2e",
+  "browser_receipt_sha256": "64e18d10dee2a924a9d52451147fb4f0dc2b2b5a8ff9097c6723f198052a0896",
+  "package_sha256": "8ce9de84e38820a18fe8603ead5824da9ce747ac7cbb60c3253383f73d7e463c",
+  "host": {
+    "requests": [
+      "/804fcc34f297cd66138f031eb165e3c3/index.html",
+      "/804fcc34f297cd66138f031eb165e3c3/theme.css",
+      "/804fcc34f297cd66138f031eb165e3c3/proof.bmp",
+      "/a764f5611523db4da2063c5cfd138cea/index.html",
+      "/a764f5611523db4da2063c5cfd138cea/theme.css",
+      "/a764f5611523db4da2063c5cfd138cea/proof.bmp",
+      "/7810b8b1f000ab5570bb6e699ac7e73b/index.html",
+      "/7810b8b1f000ab5570bb6e699ac7e73b/theme.css",
+      "/7810b8b1f000ab5570bb6e699ac7e73b/proof.bmp",
+      "/46516a4265b865e197397c1b678ede23/index.html",
+      "/46516a4265b865e197397c1b678ede23/theme.css",
+      "/46516a4265b865e197397c1b678ede23/proof.bmp"
+    ],
+    "sni": [
+      "tls.xos.test",
+      "tls.xos.test",
+      "tls.xos.test",
+      "tls.xos.test",
+      "tls.xos.test",
+      "tls.xos.test",
+      "tls.xos.test",
+      "tls.xos.test",
+      "tls.xos.test",
+      "tls.xos.test",
+      "tls.xos.test",
+      "tls.xos.test"
+    ],
+    "handshake_errors": [],
+    "dns": [
+      {
+        "name": "tls.xos.test",
+        "answer": "10.0.2.2"
+      },
+      {
+        "name": "tls.xos.test",
+        "answer": "10.0.2.2"
+      },
+      {
+        "name": "tls.xos.test",
+        "answer": "10.0.2.2"
+      },
+      {
+        "name": "tls.xos.test",
+        "answer": "10.0.2.2"
+      }
+    ],
+    "connections": 12,
+    "closed": 12
+  },
+  "installation": {
+    "status": "exported_candidate",
+    "operation": "install",
+    "id": "xos.clarke",
+    "source_sha256": "4dab6c86e68e7f5ef0e060c7d7bd6004278d1c34af957f5e4faac401538d1912",
+    "output_sha256": "ecb2bba8988a6c4532d4beddc9a4eba80c643b43211c2949a4520aff646020b3",
+    "verified_files": 38,
+    "mutations": 65,
+    "backend_sha256": "ce3c39c9a9219e127fb1374a4921f8a241efd46a29586d0f4962f15df69a5e3f"
+  },
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "ordinary": {
+    "build_id": "2930da81b58b830f",
+    "iso_sha256": "86eb8b82c56139e52f3f710ed0c369217894f3aa897bae3bc387ec001138855d",
+    "environment_absent": [
+      "xsh",
+      "dash"
+    ]
+  }
+}

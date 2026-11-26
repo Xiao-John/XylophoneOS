@@ -94,7 +94,7 @@ i64 lwip_stack::initialize(const frame_io& callbacks, const u8* mac) {
 void lwip_stack::shutdown() {
     if (active_) {
 #ifdef XOS_LWIP_DNS_LIFETIME
-        configure_dns(false);
+        configure_dns(0);
 #endif
         for (u32 i = 0; i < connection_limit; ++i) (void)close(i, true);
         netif_set_down(&interface_); netif_remove(&interface_); active_ = false;
@@ -300,12 +300,13 @@ stack_api lwip_stack::api() {
 }
 
 #ifdef XOS_LWIP_DNS_LIFETIME
-void lwip_stack::configure_dns(bool enabled) {
+void lwip_stack::configure_dns(u32 address) {
     dns_xos_reset();
     for (auto& subscription : subscriptions_) subscription = {};
-    if (enabled) {
+    if (address) {
         ip_addr_t resolver{};
-        IP_ADDR4(&resolver, 10, 0, 2, 2);
+        IP_ADDR4(&resolver, address >> 24, (address >> 16) & 0xff,
+                 (address >> 8) & 0xff, address & 0xff);
         dns_setserver(0, &resolver);
     }
 }
@@ -371,7 +372,7 @@ void lwip_stack::cancel_dns(u64 token) {
 resolver_api lwip_stack::dns_api() {
 #ifdef XOS_LWIP_DNS_LIFETIME
     return {this,
-        [](void* self, bool enabled) { static_cast<lwip_stack*>(self)->configure_dns(enabled); },
+        [](void* self, u32 address) { static_cast<lwip_stack*>(self)->configure_dns(address); },
         [](void* self, const char* name, u64 token, resolver_completion callback, void* owner) {
             return static_cast<lwip_stack*>(self)->resolve_name(name, token, callback, owner); },
         [](void* self, u64 token) { static_cast<lwip_stack*>(self)->cancel_dns(token); }};

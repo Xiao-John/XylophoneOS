@@ -33,5 +33,8 @@ int __xos_thread_attributes_get (xos_u64 tid, xos_u64 self_bottom,
                                 struct xos_thread_attributes *attributes);
 __attribute__ ((visibility ("hidden")))
 void __xos_thread_attributes_detach (xos_u64 tid);
+/* Called only in the native single-thread child, before public callbacks. */
+__attribute__ ((visibility ("hidden")))
+void __xos_thread_name_after_fork (xos_u64 previous_tid, xos_u64 child_tid);
 
 #endif

@@ -1,5 +1,8 @@
 # b9673c26 — Qt E19 external Quick application builder
 
+Linux arm64 可搬移开发包的构建与双入口验收见
+[870aabad](870aabad_qt_quick_relocatable_kit.md)。
+
 2026-11-26 · Qt 6.8.3 · XOS glibc C/C++ 候选。独立应用通过普通 `qt_add_qml_module`
 交叉链接，并在 QEMU 显示实际 Qt Quick 软件场景。应用源目录独立于 XOS 仓库、Qt 源码
 和 Qt 构建树，使用搬移后的目标安装前缀。QtCore、QtGui、QtQml 与 QtQuick 沿用

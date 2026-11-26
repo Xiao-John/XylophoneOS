@@ -1,0 +1,174 @@
+{
+  "status": "passed_subset",
+  "candidate_source": "89538b47d4a66c205952f40f48541dc7e60552c9",
+  "build_id": "4c169d887dc9a163",
+  "candidate_manifest_sha256": "479533677b0ffcd860dba8219a10de1cda3314e072ceb9a1eb0b9185b3f34120",
+  "iso_sha256": "451cc6db0dbe5dc1c6088d29532fcdb93e7ee90b047c6fb8e66b33c319c43d82",
+  "sdk_manifest_sha256": "45ec2bc96ef7b26f4d035fd1aa7ed424bf6efba55164b06ee89ebec8e19fef50",
+  "sdk_tree_sha256": "cd91dc8edbb6252473c6c453e807fcd59e88c921d8a3a12de59aff3b9f7f9ddb",
+  "profile_id": "xos-x86_64-glibc-stock-v1",
+  "profile_sha256": "6f78fd666c2ffc85555598720faa9d6af034ca1936623c82fa2f8c42a598da49",
+  "make_sha256": "4b5b3f46a35c12451321852f7863cc0d870896370a885e32fbb89910a0c1d824",
+  "make_manifest_sha256": "2f98a44294b66e56a1e8e2b06e53fb36e4555ecfadcd3d94296a6e991a6cc298",
+  "packages": {
+    "c": {
+      "id": "selection.kit_c",
+      "xpk_sha256": "827ba68408427b52960b7c216434fe740b2eee5d132ec9855d165e6b5353ebfd",
+      "build_receipt_sha256": "1dfa49230a338f02991725540a97b8d3c5b4cff16f77e84e280960c426c1ad16"
+    },
+    "cxx": {
+      "id": "selection.kit_cpp",
+      "xpk_sha256": "9f7b6736b07d310310ed80424865c4997d1594da073eb3c95a2a6c0afddcde75",
+      "build_receipt_sha256": "151c1abc5491585a1973bafa4bb45df95907bd1d2f2ba6c4b0565aa519165836"
+    }
+  },
+  "runner_sha256": "89dfd7e15036c7184c76f57a6e103a90fafb99d51f28d365424f167414fe05af",
+  "boots": [
+    {
+      "outcome": "passed",
+      "image_sha256": "451cc6db0dbe5dc1c6088d29532fcdb93e7ee90b047c6fb8e66b33c319c43d82",
+      "before": [
+        125780,
+        3,
+        1
+      ],
+      "after": [
+        125780,
+        3,
+        1
+      ],
+      "retired_demo_tasks": [],
+      "markers": [
+        "GLIBC_KIT_C_OK 2.44",
+        "GLIBC_KIT_CPP_OK vector thread exception",
+        "XOS_MAKE_RECIPE_OK",
+        "XOS_COLD_APP_MATRIX_OK",
+        "kind=exited code=0",
+        "XOS_STOCK_DAILY_OK"
+      ],
+      "installed_packages": {
+        "status": "verified",
+        "files": 50,
+        "packages": [
+          {
+            "id": "selection.kit_c",
+            "upstream_version": "0.1.0",
+            "revision": 0,
+            "sha256": "827ba68408427b52960b7c216434fe740b2eee5d132ec9855d165e6b5353ebfd"
+          },
+          {
+            "id": "selection.kit_cpp",
+            "upstream_version": "0.1.0",
+            "revision": 0,
+            "sha256": "9f7b6736b07d310310ed80424865c4997d1594da073eb3c95a2a6c0afddcde75"
+          },
+          {
+            "id": "xos.daily_utilities",
+            "upstream_version": "0.1.0",
+            "revision": 0,
+            "sha256": "dd2545ca4087a8ce46d2b5b42cc31864b12793c5928b9bd07c85a148a39919b6"
+          }
+        ]
+      },
+      "automatic_install": "completed_and_cleaned"
+    },
+    {
+      "outcome": "passed",
+      "image_sha256": "747f9030154f28d4fe36a0094bf678ebb780346f9987e476820df5fa85b86e56",
+      "before": [
+        129665,
+        7,
+        1
+      ],
+      "after": [
+        129709,
+        3,
+        1
+      ],
+      "retired_demo_tasks": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "markers": [
+        "GLIBC_KIT_C_OK 2.44",
+        "GLIBC_KIT_CPP_OK vector thread exception",
+        "XOS_MAKE_RECIPE_OK",
+        "XOS_COLD_APP_MATRIX_OK",
+        "kind=exited code=0",
+        "XOS_STOCK_DAILY_OK"
+      ],
+      "installed_packages": {
+        "status": "verified",
+        "files": 50,
+        "packages": [
+          {
+            "id": "selection.kit_c",
+            "upstream_version": "0.1.0",
+            "revision": 0,
+            "sha256": "827ba68408427b52960b7c216434fe740b2eee5d132ec9855d165e6b5353ebfd"
+          },
+          {
+            "id": "selection.kit_cpp",
+            "upstream_version": "0.1.0",
+            "revision": 0,
+            "sha256": "9f7b6736b07d310310ed80424865c4997d1594da073eb3c95a2a6c0afddcde75"
+          },
+          {
+            "id": "xos.daily_utilities",
+            "upstream_version": "0.1.0",
+            "revision": 0,
+            "sha256": "dd2545ca4087a8ce46d2b5b42cc31864b12793c5928b9bd07c85a148a39919b6"
+          }
+        ]
+      }
+    }
+  ],
+  "stock": {
+    "bundle_sha256": "a57a40ab646c3c1c357ac752a2c04a3815d04d1e7fb20a312f3008e7f75e1ce1",
+    "dash_sha256": "c5454205ef3755df0f0379d5de3d9c0fb9d36b70b3273f773a1ef1a84b45f96e",
+    "xypm_sha256": "fbd9c297e27fde9d7afaf772d6ca321d52fa53cd84935ad0119f1a58f65e0c6d",
+    "reboot_iso_sha256": "747f9030154f28d4fe36a0094bf678ebb780346f9987e476820df5fa85b86e56",
+    "daily": {
+      "id": "xos.daily_utilities",
+      "xpk_sha256": "dd2545ca4087a8ce46d2b5b42cc31864b12793c5928b9bd07c85a148a39919b6",
+      "build_receipt_sha256": "1abe326a80311599a411e6ec27b7feae320f452ed5a81ee6404d6cb686fcad8d"
+    }
+  },
+  "make_source": {
+    "archive_sha256": "dd16fb1d67bfab79a72f5e8390735c49e3e8e70b4945a15ab1f81ddb78658fb3",
+    "signature_sha256": "b0085e6c3f9a7461e739786a8d28dec9aeb090335bb8818e42b497fdeb73b929",
+    "upstream_keyring_sha256": "0ed9052a6d6c70bf0cfcbdc59022f94c2493c6df02973f94d19e95ab9f125812",
+    "source_verified_signer": "6D4EEB02AD834703510B117680CB727A20C79BB2"
+  },
+  "offline_external_install": {
+    "status": "verified",
+    "files": 24,
+    "packages": [
+      {
+        "id": "selection.kit_c",
+        "upstream_version": "0.1.0",
+        "revision": 0,
+        "sha256": "827ba68408427b52960b7c216434fe740b2eee5d132ec9855d165e6b5353ebfd"
+      },
+      {
+        "id": "selection.kit_cpp",
+        "upstream_version": "0.1.0",
+        "revision": 0,
+        "sha256": "9f7b6736b07d310310ed80424865c4997d1594da073eb3c95a2a6c0afddcde75"
+      }
+    ]
+  },
+  "qemu": "QEMU emulator version 11.1.2",
+  "serial_sha256": {
+    "cold_matrix_1": "456f876d1c7280bf42b970d22f64b7f8e6a3cbe2adedcc9fac19e28e43c48dbf",
+    "cold_matrix_2": "bea4373110e0a15a9cf9b0bfc58dabb7b300887c5479bf333061fa2af3816187"
+  },
+  "preserved_files": {
+    "/usr/bin/dash": "c5454205ef3755df0f0379d5de3d9c0fb9d36b70b3273f773a1ef1a84b45f96e",
+    "/usr/bin/gmake": "4b5b3f46a35c12451321852f7863cc0d870896370a885e32fbb89910a0c1d824",
+    "/state/user.txt": "8f4e0b044610ab2482009818f36bbc302ef04ee6f673f33a69a31af625839cee",
+    "/state/retained.txt": "8f4e0b044610ab2482009818f36bbc302ef04ee6f673f33a69a31af625839cee"
+  }
+}

@@ -19,7 +19,7 @@
 #define LWIP_DHCP 0
 #define LWIP_AUTOIP 0
 #define LWIP_IGMP 0
-#ifdef XOS_NET_DNS_PROBE
+#if defined(XOS_NET_DNS_PROBE) || defined(XOS_NET_STATIC_RESOLVER)
 #define LWIP_DNS 1
 #define XOS_LWIP_DNS_LIFETIME 1
 #else

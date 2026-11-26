@@ -60,3 +60,11 @@ profile 摘要与新候选相同，可以复用原应用字节。真实 QEMU 以
 启动同一工作盘，重复通过 C、C++、GNU Make、日用工具和状态文件持久化。每次停机均
 核对三个包、50 个登记文件，最终 FAT 读回四份文件。两张镜像及 runner 的摘要重新绑定。
 [新候选组合回执](../reports/glibc_stock_apps_post285_20261126/manifest.json)
+
+## 演示任务提前退出后的应用回归
+
+使用原静态 profile 的优化安装候选 `4c169d887dc9a163`，按旧应用 runner 再次通过两次
+实际启动、每次三个包和 50 个文件。保留原 runner 摘要及新候选两张冻结镜像的摘要。
+随后新增 `--require-command-substitution`，用实际 `$()` 读取持久文件并核对内容，
+供带 fork 的新 SDK 在两次启动中验收。
+[安装提速后的应用组合证据](../reports/glibc_stock_apps_early_quiet_20261126/manifest.json)

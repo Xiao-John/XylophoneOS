@@ -28,7 +28,7 @@ from xypm_image import transact
 EXECUTABLE = "usr/bin/clarke.elf"
 
 
-def verify_inputs(args):
+def verify_inputs(args, *, installed_static=False):
     manifest = json.loads((args.system / "manifest.json").read_text())
     for path, digest in manifest["sources"].items():
         if sha(args.system_source / path) != digest:
@@ -42,8 +42,9 @@ def verify_inputs(args):
     receipt = args.payload.with_suffix(".receipt.json")
     build = json.loads(receipt.read_text())
     profile = build["network_profile"]["controlled_tls"]
-    if profile.get("address_source") == "net2_dns" and not sdk["network_service"].get("dns_probe"):
-        raise ValueError("The DNS browser profile needs the explicitly built net2 resolver")
+    resolver_entry = "static_profile" if installed_static else "dns_probe"
+    if profile.get("address_source") == "net2_dns" and not sdk["network_service"].get(resolver_entry):
+        raise ValueError("The DNS browser profile needs the selected net2 resolver mode")
     anchor = ssl.PEM_cert_to_DER_cert((args.certificates / "root.pem").read_text())
     if build["elf_sha256"] != sha(args.payload) or sha256(anchor).hexdigest() != profile["root_der_sha256"]:
         raise ValueError("ClarkE ELF or compiled trust anchor differs")

@@ -14,6 +14,7 @@
 #include <QtCore/QtPlugin>
 #include <QtGui/QScreen>
 #include <cstdio>
+#include <cstdlib>
 #include <xos/thread_core.hpp>
 #include <QtCore/QJsonDocument>
 Q_IMPORT_PLUGIN(QXosIntegrationPlugin)
@@ -157,19 +158,36 @@ public:
     }
 };
 static void ipc_qt_message(QtMsgType,const QMessageLogContext &,const QString &message){std::printf("QT_MESSAGE %s\n",message.toUtf8().constData());}
+static bool parse_service_pid(const char* value, xos::u64& parsed) {
+    if (!value || !*value) return false;
+    xos::u64 pid = 0;
+    for (; *value; ++value) {
+        if (*value < '0' || *value > '9') return false;
+        const auto digit = static_cast<xos::u64>(*value - '0');
+        if (pid > (~xos::u64{0} - digit) / 10) return false;
+        pid = pid * 10 + digit;
+    }
+    parsed = pid;
+    return pid != 0;
+}
+
 int main(int argc,char **argv){
     QString instance,initial;bool text_scope=false;xos::u64 service_pid=0;
+    bool use_shell_network = false;
     for(int i=1;i<argc;++i){const QByteArray arg(argv[i]);
         if(arg=="--ssg-ipc-provider" && i+1<argc)instance=QString::fromLatin1(argv[++i]);
         else if(arg=="--ssg-ipc-text")text_scope=true;
-        else if(arg=="--network-service-pid"){
-            if(service_pid||i+1>=argc)return 2;
-            const char* value=argv[++i];if(!*value)return 2;
-            for(;*value;++value){if(*value<'0'||*value>'9')return 2;const auto digit=xos::u64(*value-'0');
-                if(service_pid>(~xos::u64{0}-digit)/10)return 2;service_pid=service_pid*10+digit;}
-            if(!service_pid)return 2;
-        }
-        else if(!arg.startsWith('-') && initial.isEmpty())initial=QString::fromUtf8(arg);
+        else if (arg == "--network") {
+            if (use_shell_network || service_pid) return 2;
+            use_shell_network = true;
+        } else if (arg == "--network-service-pid") {
+            if (use_shell_network || service_pid || i + 1 >= argc || !parse_service_pid(argv[++i], service_pid))
+                return 2;
+        } else if(!arg.startsWith('-') && initial.isEmpty())initial=QString::fromUtf8(arg);
+    }
+    if (use_shell_network && !parse_service_pid(std::getenv(xos::net2::service_pid_variable), service_pid)) {
+        std::fputs("ClarkE: network binding unavailable in this shell\n", stderr);
+        return 2;
     }
     if(!instance.isEmpty()){
         if(instance.size()!=32 || xos::sdk::syscall(xos::sys_process_stdio,0,0)!=0 || xos::sdk::syscall(xos::sys_process_stdio,0,2)!=0)return 2;

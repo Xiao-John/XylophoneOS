@@ -45,7 +45,7 @@ private:
     bool active_ = false;
 #ifdef XOS_LWIP_DNS_LIFETIME
     struct dns_subscription { u64 token; resolver_completion callback; void* owner; } subscriptions_[net2::client_sessions]{};
-    void configure_dns(bool enabled);
+    void configure_dns(u32 address);
     i64 resolve_name(const char* name, u64 token, resolver_completion callback, void* owner);
     void cancel_dns(u64 token);
     static void on_dns_found(const char*, const ip_addr_t*, void*);

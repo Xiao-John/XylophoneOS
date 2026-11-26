@@ -89,6 +89,8 @@ def main():
         parser.add_argument('--' + name, required=True, type=Path)
     parser.add_argument('--stock-install-timeout', type=int, default=600,
                         help='seconds to allow automatic stock installation before reporting failure')
+    parser.add_argument('--require-command-substitution', action='store_true',
+                        help='verify dash command substitution in both stock guest boots')
     args = parser.parse_args()
     if args.stock_install_timeout < 1:
         parser.error('--stock-install-timeout must be positive')
@@ -111,6 +113,8 @@ def main():
             and sha_file(args.sdk_kit / 'sdk/manifest.json') == binding['sdk_manifest_sha256'] == make['sdk_manifest_sha256']
             and sha_file(make_elf) == make['elf']['sha256'], 'Make and the installer must use the same SDK')
     stock = stock_installer(args.candidate, candidate, installed, profile_data, binding)
+    if args.require_command_substitution and stock is None:
+        parser.error('--require-command-substitution needs an installed stock bundle')
     if stock:
         make_lock = load_json(ROOT / 'src/ports/gnu_make/source_lock.json')
         require(inspect_app_kit(args.sdk_kit) == binding
@@ -128,7 +132,8 @@ def main():
                'profile_sha256': sha_file(profile), 'make_sha256': sha_file(make_elf),
                'make_manifest_sha256': sha_file(args.make_manifest),
                'packages': {},
-               'runner_sha256': sha_file(Path(__file__)), 'boots': []}
+               'runner_sha256': sha_file(Path(__file__)), 'boots': [],
+               'command_substitution_required': args.require_command_substitution}
     if stock:
         report['stock'] = stock
         report['make_source'] = {key: make[key] for key in
@@ -169,6 +174,12 @@ def main():
                     '/usr/bin/cat /state/retained.txt\n'
                     'echo XOS_STOCK_DAILY_OK\n'
                 )
+            if args.require_command_substitution:
+                fixtures['apps.sh'] += (
+                    'value=$(/usr/bin/cat /state/retained.txt)\n'
+                    'test "$value" = glibc-user-data\n'
+                    'echo XOS_STOCK_SUBSTITUTION_OK\n'
+                )
             for name, content in fixtures.items():
                 path = work / name
                 path.write_text(content)
@@ -177,6 +188,8 @@ def main():
             for index in range(2):
                 label = f'cold_matrix_{index + 1}'
                 boot_image = args.candidate / 'system/xos-install.iso' if stock and index else image
+                image_expected = stock['reboot_iso_sha256'] if stock and index else report['iso_sha256']
+                require(sha_file(boot_image) == image_expected, 'selected boot ISO changed before launch')
                 guest = Guest(boot_image, label, work_disk=disk, log_dir=args.output)
                 try:
                     report['qemu'] = subprocess.check_output([guest.command[0], '--version'], text=True).splitlines()[0]
@@ -206,6 +219,8 @@ def main():
                         milestones += ('XOS_STOCK_DAILY_OK',)
                         require('glibc-user-data' in output.splitlines(),
                                 f'daily cat did not read the retained data in {label}')
+                    if args.require_command_substitution:
+                        milestones += ('XOS_STOCK_SUBSTITUTION_OK',)
                     require(all(marker in output for marker in milestones)
                             and output.count(milestones[0]) == 2, f'Unexpected application outcome in {label}')
                     after = resources(guest)
@@ -220,7 +235,8 @@ def main():
                     require('GNU Make 4.4.1' in run(guest, 'gmake --version', timeout=45)
                             and resources(guest) == after, 'GNU Make did not return to the resource baseline')
                     command(guest, 'sync', b'[files] sync=ok', timeout=45)
-                    boot_record = {'outcome': 'passed', 'image_sha256': sha_file(boot_image),
+                    require(sha_file(boot_image) == image_expected, 'selected boot ISO changed during the test')
+                    boot_record = {'outcome': 'passed', 'image_sha256': image_expected,
                                    'before': before, 'after': after,
                                    'retired_demo_tasks': sorted(retired), 'markers': milestones}
                 finally:

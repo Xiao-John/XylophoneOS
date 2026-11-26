@@ -1,0 +1,22 @@
+{
+  "first_run": {
+    "configure_log_sha256": "605580f77a84610e196ec0e9eebac3cc50c2cfdc2a0c2e208bca062ee9d5915b",
+    "missing_archive": "libxos_terminal.a",
+    "reported_undefined_symbols": [
+      "__xos_terminal_close",
+      "__xos_terminal_fork_child",
+      "__xos_terminal_fork_prepare",
+      "__xos_terminal_read",
+      "__xos_terminal_restore",
+      "__xos_terminal_write"
+    ],
+    "result": "failed",
+    "runner_output_sha256": "eb2a1b5817fb29e64a94e4b6960c953f71eabd523d516fa246f3d5e5435267a2"
+  },
+  "recovery": {
+    "configure_log_sha256": "c54acb75e321a2eca4c08c5926d624cdb38aded6e7a6337ecd3fe558cc3c1362",
+    "result": "passed",
+    "runner_output_sha256": "f1395b4ea49a634cb28edf510d698d6a1995ad12c7162ada24c0d3b32c23b8f8",
+    "target_link_probe_sha256": "a1d16d1508feedd18b0c36d27b432c031cfe171bd0ef43d61a87ed1053ddd9e6"
+  }
+}

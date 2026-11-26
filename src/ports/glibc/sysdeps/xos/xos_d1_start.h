@@ -3,6 +3,7 @@
 #define XOS_GLIBC_D1_START_H
 #include "xos_file_session.h"
 #include "xos_rtld_pin_plan.h"
+#include "xos_rtld_heap_plan.h"
 
 #define XOS_D1_MAX_ARGS 64
 #define XOS_D1_MAX_ENVIRONMENT 64
@@ -16,7 +17,7 @@
 #define XOS_D1_STARTUP_BEGIN 0x7fffc000ULL
 #define XOS_D1_STACK_TOP 0x80000000ULL
 #define XOS_D1_ENTRY_MAGIC 0x3152544e45444f58ULL
-#define XOS_D1_ENTRY_VERSION 2
+#define XOS_D1_ENTRY_VERSION 3
 
 struct __attribute__ ((aligned (16))) xos_d1_entry_stack
 {
@@ -34,6 +35,7 @@ struct xos_d1_entry_record
   xos_u64 main_phdr, main_phnum, main_entry, interpreter_base, interpreter_entry;
   struct xos_file_session files;
   struct xos_rtld_pin_plan dependencies;
+  struct xos_rtld_heap_plan heap;
 };
 
 struct xos_d1_entry_handoff

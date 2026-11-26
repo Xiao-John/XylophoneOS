@@ -10,6 +10,12 @@ inline constexpr u32 connections_per_session = 2, tcp_receive_bytes = 8192, udp_
 inline constexpr u64 max_request_ns = 30'000'000'000ull, idle_ns = 60'000'000'000ull;
 inline constexpr u64 reply_timeout_ns = 500'000'000ull;
 inline constexpr u32 permitted_address = 0x0a000202;
+inline constexpr u32 static_address = 0x0a00020f, static_mask = 0xffffff00;
+inline constexpr bool valid_static_resolver(u32 address) {
+    const u32 network = static_address & static_mask;
+    return (address & static_mask) == network && address != static_address &&
+           address != network && address != (network | ~static_mask);
+}
 enum class protocol : u16 { none = 0, tcp = 1, udp = 2 };
 enum class operation : u32 {
     information = 1, open = 2, status = 3, send = 4, receive = 5,

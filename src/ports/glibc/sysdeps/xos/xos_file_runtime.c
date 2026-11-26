@@ -739,7 +739,7 @@ __xos_file_close_range (unsigned int first, unsigned int last)
   /* Closing retires the descriptor even if its final release reports an
      error. The range operation ignores those individual close results. */
   for (unsigned int fd = first; fd < fd_limit && fd <= last; ++fd)
-    (void) close_descriptor (fd);
+    (void) close_descriptor ((int) fd);
   unlock_session ();
   return 0;
 }

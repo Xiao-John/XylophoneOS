@@ -1,15 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
-#include <xos/elf.hpp>
+#include "image_mapping.hpp"
 #include <xos/spawn.hpp>
 
 namespace xos::glibc_d1 {
-struct mapped_image {
-    u64 bias, entry;
-    const elf::segment* loads;
-    u32 load_count;
-};
-
 struct main_headers {
     // From the unique verified PT_PHDR of the PIE, before the bias-dependent
     // PT_LOAD, PT_DYNAMIC and PT_INTERP entries. Both coordinates describe

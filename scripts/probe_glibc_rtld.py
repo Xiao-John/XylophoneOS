@@ -22,6 +22,8 @@ def main():
     parser.add_argument('--jobs', type=int, choices=(1, 2), default=2)
     parser.add_argument('--initial-tp-fixture', action='store_true',
                         help='compile the native TP fixture with the GNU rtld build flags')
+    parser.add_argument('--closure-tls-fixture', action='store_true',
+                        help='compile the fixed-closure TLS fixture and its GNU runtime support')
     args = parser.parse_args()
     archive = args.archive.resolve(strict=True)
     output = args.output.resolve()
@@ -179,9 +181,53 @@ def main():
                 '_rtld_local', '___rtld_mutex_lock', '___rtld_mutex_unlock'}:
             raise RuntimeError('the native initial TP handoff depends on an unexpected runtime')
         run('initial_tls_relocations', [env['READELF'], '-rW', entry, *tls_objects])
-        if args.initial_tp_fixture:
-            fixture_source = ROOT / 'tests/fixtures/glibc_d1/initial_tls_guest.c'
-            fixture = output / 'd1-initial-tp-fixture.c'
+        if args.closure_tls_fixture:
+            support = ('dl-minimal.os', 'dl-catch.os', 'dl-exception.os', 'dl-printf.os',
+                       'dl-tunables.os', 'getpid.os', '_exit.os')
+            for name in support:
+                path = build / 'elf' / name
+                _, compilation = run('make_' + name, [*make_elf, path])
+                if not any({'-fPIC', '-DSHARED', '-DMODULE_NAME=rtld'} <= set(line.split())
+                           for line in compilation.splitlines()):
+                    raise RuntimeError('GNU runtime support did not compile as rtld: ' + name)
+                tls_objects.append(path)
+            for subdir, names in (
+                    ('string', ('memmove', 'memset', 'strlen')),
+                    ('stdio-common', ('_fitoa_word', 'itoa-udigits')), ('setjmp', ('__longjmp',))):
+                modules = ['rtld-' + name + '.os' for name in names]
+                _, compilation = run('make_tls_support_' + subdir,
+                                     ['make', '-C', source / subdir, '-f', 'Makefile',
+                                      '-f', '../elf/rtld-Rules', 'rtld-all', 'subdir=' + subdir,
+                                      'objdir=' + str(build), '-j' + str(args.jobs),
+                                      'rtld-modules=' + ' '.join(modules)])
+                for module in modules:
+                    path = build / subdir / module
+                    if not any('-DMODULE_NAME=rtld' in line.split() and str(path) in line.split()
+                               for line in compilation.splitlines()):
+                        raise RuntimeError('GNU rtld support result did not compile: ' + module)
+                    tls_objects.append(path)
+            for name in ('__xos_rtld_init_tls', '__xos_rtld_init_tls_templates'):
+                if symbols.get(name) != 'T':
+                    raise RuntimeError('GNU rtld initial TLS entry is absent: ' + name)
+
+            shared_errno = [build / 'csu' / name for name in ('errno-loc.os', 'errno.os')]
+            for path in shared_errno:
+                _, compilation = run('make_libc_' + path.name,
+                                     ['make', '-C', source / 'csu', 'objdir=' + str(build),
+                                      '-j' + str(args.jobs), path])
+                if not any({'-fPIC', '-DSHARED', '-DMODULE_NAME=libc'} <= set(line.split())
+                           for line in compilation.splitlines()):
+                    raise RuntimeError('libc errno result did not compile using the shared build')
+            run('shared_libc_errno_relocations', [env['READELF'], '-rW', *shared_errno])
+            tls_objects.extend(shared_errno)
+
+        for requested, prefix, name in (
+                (args.initial_tp_fixture, 'initial_tp', 'initial_tls_guest.c'),
+                (args.closure_tls_fixture, 'closure_tls', 'closure_tls_runtime.c')):
+            if not requested:
+                continue
+            fixture_source = ROOT / 'tests/fixtures/glibc_d1' / name
+            fixture = output / ('d1-' + prefix.replace('_', '-') + '-fixture.c')
             fixture.write_bytes(fixture_source.read_bytes())
             fixture_digest = sha(fixture)
             command, = (shlex.split(line) for line in
@@ -189,15 +235,15 @@ def main():
                         if line.startswith(env['CC'] + ' '))
             if Path(command[1]).name != 'dl-tls_init_tp.c':
                 raise RuntimeError('cannot identify the GNU NPTL compile input')
-            artifact = build / 'elf/d1-initial-tp-fixture.o'
+            artifact = build / 'elf' / ('d1-' + prefix.replace('_', '-') + '-fixture.o')
             command[1] = fixture
             command[command.index('-o') + 1] = artifact
-            run('compile_initial_tp_fixture', [*command[:command.index('-MD')], '-Werror'],
+            run('compile_' + prefix + '_fixture', [*command[:command.index('-MD')], '-Werror'],
                 cwd=source / 'elf')
             if sha(fixture) != fixture_digest or sha(fixture_source) != fixture_digest:
-                raise RuntimeError('the GNU initial TP fixture changed during compilation')
+                raise RuntimeError('the GNU TLS fixture changed during compilation')
             tls_objects.append(artifact)
-            report['initial_tp_fixture_sha256'] = fixture_digest
+            report[prefix + '_fixture_sha256'] = fixture_digest
         failure, _ = run('make_ld_so', [*make_elf, build / 'elf/ld.so'], allow_failure=True)
         if not failure or (build / 'elf/ld.so').exists():
             raise RuntimeError('ld.so unexpectedly linked despite the startup gate')

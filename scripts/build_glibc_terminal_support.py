@@ -28,6 +28,7 @@ def input_paths():
     paths = [ROOT / name for name in SOURCES]
     paths += [p for directory in HEADER_ROOTS for p in sorted((ROOT / directory).rglob('*'))
               if p.is_file()]
+    paths += list((ROOT / 'src/user/loader').rglob('*.hpp'))
     paths += list((ROOT / 'src/ports/glibc/sysdeps/xos').rglob('*.h'))
     paths += [Path(__file__).resolve(), ROOT / 'scripts/glibc_g1_probe.py',
               ROOT / 'LICENSE', ROOT / 'licenses/mit_legacy.txt']

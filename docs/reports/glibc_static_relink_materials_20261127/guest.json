@@ -1,0 +1,38 @@
+{
+  "baseline": {
+    "elf_sha256": "e055a9937ce11690d0dba9ecde26d86e27db9108fc44eb715411870f7e0196bb",
+    "guest_qualification": "not_run",
+    "libc_sha256": "d3384b92df41bf714100e56d1f9a02af17fd0c07144797558134e68f10651b98",
+    "profile_id": "xos-x86_64-glibc-stock-fork-v1",
+    "profile_sha256": "a7bf0f845819b1deae2939991144e8feba03a335362e5fbee24c88f71dbe3b25",
+    "runtime_family": "glibc",
+    "sdk_manifest_sha256": "d32a5c3b604016492df6af8ca04445b8d050cc81d4225db68cf4926e17c6aa7b",
+    "sdk_tree_sha256": "a720d515255bf7bfe4031fdf49a23d0f41edde367bfea3c00c909c7289d6e262",
+    "status": "candidate_binding_verified"
+  },
+  "object_sha256": "5db224080340529a1aac9bc501723b1c01751f1a380c8e529b08da15f17ce322",
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "replacement": {
+    "elf_sha256": "84a36dcabc7ecf9eed2a33b32704acd82c1ccad93a59d77674553ecc8d161666",
+    "guest_qualification": "not_run",
+    "libc_sha256": "7ee8563f97b4906e03818868cba9fef6c6e570058112e4993010d78a2fc07a1e",
+    "profile_id": "xos-x86_64-glibc-relink-path-c-v1",
+    "profile_sha256": "3af400eaea81b75f58878ccf9c350273f79a9bea6608af70e12161830b599a87",
+    "runtime_family": "glibc",
+    "sdk_manifest_sha256": "e0016a3a369d4ec4ae04d4a8afa6524ae3a7bbcaa8c8b730383427ba4bc7d307",
+    "sdk_tree_sha256": "642d36d305cc1b7a968fb26aec0a100744078c70845a9fce60a1b0c8307fbf5e",
+    "status": "candidate_binding_verified"
+  },
+  "resources": [
+    129793,
+    2,
+    0
+  ],
+  "runner_sha256": "24611e937e9e3ff9ccade2427f6b1002c79c408d32713531788ae4c06507633d",
+  "runner_source_commit": "a5bbad87c324f8a06857b548e6e829bfbb2d0e67",
+  "source_sha256": "6394e70394533240963f49b41407dc763ebcee075c0d2beb2b51459ed167fc9b",
+  "status": "passed_subset",
+  "system_build_id": "17cebdf4873d898e",
+  "system_iso_sha256": "5bdf996623c96d0ee286fbc3c32f77cc8520a4ae5612c0fa4be14f58994ee73d",
+  "system_manifest_sha256": "0f1e35f6632f21e14013f82a19d3b33d19a6fffb16d84826ac2022a95fb0a5bd"
+}

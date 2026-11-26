@@ -48,5 +48,23 @@ qt6_add_resources(clarke xos_aurora PREFIX /xos BASE "${aurora}/assets"
 target_link_libraries(clarke PRIVATE clarke_aurora litehtml)
 set_target_properties(clarke PROPERTIES SUFFIX ".elf")
 
+if(XOS_CLARKE_TLS_BUILD)
+    set(tls "${CMAKE_CURRENT_LIST_DIR}/../../native_tls")
+    set(psa "${XOS_CLARKE_TLS_UPSTREAM}/tf-psa-crypto")
+    target_sources(clarke PRIVATE https.cpp "${tls}/stream.cpp" "${tls}/platform.c")
+    target_compile_features(clarke PRIVATE c_std_11)
+    target_compile_definitions(clarke PRIVATE
+        XOS_CLARKE_HTTPS=1
+        MBEDTLS_USER_CONFIG_FILE="${tls}/mbedtls_xos_config.h"
+        TF_PSA_CRYPTO_USER_CONFIG_FILE="${tls}/tf_psa_crypto_xos_config.h")
+    target_include_directories(clarke PRIVATE
+        "${XOS_CLARKE_TLS_CONFIG}" "${XOS_CLARKE_TLS_UPSTREAM}/include"
+        "${psa}/include" "${psa}/drivers/builtin/include")
+    target_link_libraries(clarke PRIVATE
+        "${XOS_CLARKE_TLS_BUILD}/mbedtls/library/libmbedtls.a"
+        "${XOS_CLARKE_TLS_BUILD}/mbedtls/library/libmbedx509.a"
+        "${XOS_CLARKE_TLS_BUILD}/mbedtls/tf-psa-crypto/core/libtfpsacrypto.a")
+endif()
+
 include("${qt_port}/glibc/xos_qpa.cmake")
 xos_link_qpa(clarke "${XOS_QTBASE_SOURCE}/src/3rdparty/wasm/DejaVuSans.ttf")

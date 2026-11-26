@@ -3,9 +3,13 @@
 """Build the ClarkE liteHTML renderer and existing native HTTP provider with glibc Qt Widgets."""
 
 import argparse
+from hashlib import sha256
+import ipaddress
 import json
 import os
 from pathlib import Path
+import re
+import shutil
 import subprocess
 import sys
 import tarfile
@@ -43,12 +47,71 @@ def prepare_engine(output, lock, archive, env):
     return source, patches, commands
 
 
+def prepare_tls(args, output, sdk, env):
+    tls = BROWSER.parent / "native_tls"
+    lock = load_json(tls / "source_lock.json")
+    origin = re.fullmatch(r"https://([a-z0-9.-]+)(?::([0-9]{1,5}))?", args.tls_origin)
+    require(origin is not None, "Use a lowercase HTTPS origin with a DNS name and optional port")
+    host, port_text = origin.groups()
+    port = int(port_text) if port_text else 443
+    require(len(host) <= 253 and "." in host and 1 <= port <= 65535 and
+            all(re.fullmatch(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?", label)
+                for label in host.split(".")), "Invalid HTTPS host or port")
+    address = str(ipaddress.IPv4Address(args.tls_address))
+    archive = args.tls_archive.resolve(strict=True)
+    root_der = args.tls_root_der.resolve(strict=True)
+    anchor = root_der.read_bytes()
+    require(1 <= len(anchor) <= 4096 and anchor[0] == 0x30, "Expected a bounded DER trust anchor")
+    anchor_digest = sha256(anchor).hexdigest()
+    config = output / "https"
+    config.mkdir()
+    root_header = config / "tls_test_root.h"
+    root_header.write_text("static constexpr unsigned char tls_test_root[] = {\n    "
+                           + ",\n    ".join(", ".join(f"0x{byte:02x}" for byte in anchor[offset:offset + 16])
+                                            for offset in range(0, len(anchor), 16)) + "\n};\n")
+    origin_header = config / "clarke_https_origin.hpp"
+    origin_header.write_text(f'static constexpr char clarke_tls_host[] = "{host}";\n'
+                             f'static constexpr char clarke_tls_address[] = "{address}";\n'
+                             f'static constexpr unsigned clarke_tls_port = {port};\n')
+    target = output / "tls"
+    archive_snapshot = config / "mbedtls.tar.bz2"
+    shutil.copyfile(archive, archive_snapshot)
+    require(sha(archive_snapshot) == lock["archive_sha256"], "Mbed TLS archive differs from the source lock")
+    command = [sys.executable, str(tls / "build_probe.py"), "--archive", str(archive_snapshot),
+               "--sdk", str(sdk), "--test-root", str(root_header), "--output", str(target)]
+    subprocess.run(command, env=env, check=True)
+    receipt = load_json(target / "receipt.json")
+    require(receipt["sdk_manifest_sha256"] == sha(sdk / "manifest.json") and
+            receipt["archive_sha256"] == lock["archive_sha256"] and
+            receipt["test_root_header_sha256"] == sha(root_header) and sha(root_der) == anchor_digest and
+            sha(archive) == lock["archive_sha256"], "Native TLS build differs from configured input")
+    upstream = target / "source" / lock["source_root"]
+    libraries = [target / name for name in receipt["archives"]]
+    require(all(sha(path) == receipt["archives"][str(path.relative_to(target))] for path in libraries),
+            "Native TLS library differs from the build receipt")
+    inputs = [archive, archive_snapshot, root_der, root_header, origin_header, target / "receipt.json", PORT / "https.cpp",
+              *libraries, *[ROOT / name for name in receipt["inputs"]],
+              *[path for path in upstream.rglob("*.h") if path.is_file()]]
+    flags = [f"-DXOS_CLARKE_TLS_{key}={path}" for key, path in
+             (("BUILD", target), ("UPSTREAM", upstream), ("CONFIG", config))]
+    details = {"host": host, "port": port, "ipv4_address": address, "root_der_sha256": anchor_digest,
+               "native_tls_receipt_sha256": sha(target / "receipt.json")}
+    return flags, inputs, command, details
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("sdk-build", "sdk-profile", "qt-build", "qt-prefix", "qt-source", "host-qt", "output"):
         parser.add_argument(f"--{name}", type=Path, required=True)
     parser.add_argument("--jobs", type=int, default=3)
+    parser.add_argument("--tls-origin", help="explicit developer HTTPS origin")
+    parser.add_argument("--tls-address", help="pinned IPv4 destination for that origin")
+    parser.add_argument("--tls-archive", type=Path, help="locked Mbed TLS source archive")
+    parser.add_argument("--tls-root-der", type=Path, help="DER trust anchor for that origin")
     args = parser.parse_args()
+    tls_options = (args.tls_origin, args.tls_address, args.tls_archive, args.tls_root_der)
+    if any(tls_options) and not all(tls_options):
+        parser.error("HTTPS requires origin, destination address, source archive and trust anchor together")
     sdk_build, qt_build, prefix, qt_source, host = (
         path.resolve(strict=True) for path in
         (args.sdk_build, args.qt_build, args.qt_prefix, args.qt_source, args.host_qt))
@@ -124,6 +187,14 @@ def main():
                for path in directory.glob("**/*") if path.suffix in (".h", ".hpp", ".cpp")],
              *[path for path in engine.rglob("*") if path.is_file()],
              *[path for name in package_names for path in (packages / name).glob("*.cmake")]]
+    tls_flags = []
+    network_profile = NETWORK
+    if args.tls_origin:
+        tls_flags, tls_inputs, tls_command, tls_profile = prepare_tls(args, output, sdk_build, env)
+        paths.extend(tls_inputs)
+        commands.append(tls_command)
+        network_profile = {**NETWORK, "protocol": "HTTP numeric IPv4 and controlled HTTPS",
+                           "controlled_tls": tls_profile}
     digests = {str(path): sha(path) for path in sorted(paths)}
     includes = ";".join(sdk_binding["cxx_runtime"]["include_directories"])
     build_dir = output / "build"
@@ -137,7 +208,7 @@ def main():
                  f"-DXOS_SOURCE_ROOT={ROOT}", f"-DXOS_GLIBC_CXX_INCLUDES={includes}",
                  *(f"-DXOS_GLIBC_{key}={tools[name]['path']}" for key, name in
                    (("CC", "gcc"), ("CXX", "g++"), ("AR", "ar"), ("RANLIB", "ranlib"))),
-                 *(f"-D{name}_DIR:PATH={packages / name}" for name in package_names)]
+                 *(f"-D{name}_DIR:PATH={packages / name}" for name in package_names), *tls_flags]
     build = ["cmake", "--build", str(build_dir), "--parallel", str(args.jobs)]
     subprocess.run(configure, env=env, check=True)
     lines = (build_dir / "qt_inputs.txt").read_text().splitlines()
@@ -154,7 +225,7 @@ def main():
     receipt = {"elf_sha256": sha(elf), "program_headers": verify_elf(elf),
                "commands": [*commands, configure, build], "inputs": digests, "runtime_family": "glibc",
                "sdk_manifest_sha256": sha(sdk_manifest), "sdk_tree_sha256": binding["sdk_tree_sha256"],
-               "network_profile": NETWORK, "engine_commit": lock["commit"],
+               "network_profile": network_profile, "engine_commit": lock["commit"],
                "engine_archives": {name: sha(path) for name, path in
                                    (("litehtml", build_dir / "litehtml/liblitehtml.a"),
                                     ("gumbo", build_dir / "litehtml/src/gumbo/libgumbo.a"))},

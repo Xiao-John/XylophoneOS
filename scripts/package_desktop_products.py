@@ -9,6 +9,7 @@ import tempfile
 
 from xos_app import application_sdk_check, sdk_notices
 from xypm_format import canonical, check_profile, inspect_elf, load_json, pack_package, require, sha_file
+from xypm_sdk_profile import metadata_snapshot
 
 ROOT = Path(__file__).resolve().parents[1]
 CLARKE = ROOT / 'src/ports/aurora_browser'
@@ -18,7 +19,7 @@ FEATURES = ['cxx_runtime', 'file_io', 'heap', 'static_tls', 'stdio', 'threads']
 
 def verify_elf(path, sdk_manifest, binding):
     receipt_path = path.with_suffix('.receipt.json')
-    receipt = load_json(receipt_path)
+    receipt, receipt_digest = metadata_snapshot(receipt_path)
     elf_digest = sha_file(path)
     require(elf_digest == receipt['elf_sha256'], f'ELF differs from receipt: {path}')
     require(receipt.get('sdk_tree_sha256') == binding['tree_sha256'], f'SDK tree differs from ELF receipt: {path}')
@@ -34,7 +35,12 @@ def verify_elf(path, sdk_manifest, binding):
     for name, expected in inputs.items():
         require(sha_file(Path(name)) == expected, f'ELF build input changed: {name}')
     inspect_elf(path)
-    return {'elf_sha256': elf_digest, 'build_receipt_sha256': sha_file(receipt_path)}
+    payload = {'elf_sha256': elf_digest, 'build_receipt_sha256': receipt_digest}
+    tls = receipt.get('network_profile', {}).get('controlled_tls')
+    if tls is not None:
+        require(receipt.get('runtime_family') == 'glibc', 'Controlled TLS requires the glibc browser build')
+        payload['controlled_tls'] = tls
+    return payload
 
 
 def package(root, product, elfs, resources, notices, profile, sdk, revision, destination):
@@ -59,6 +65,15 @@ def package(root, product, elfs, resources, notices, profile, sdk, revision, des
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(path, target)
         register(name, 'data')
+    if any('controlled_tls' in payload for payload in payloads.values()):
+        require(product == 'xos.clarke', 'Controlled browser TLS is only available for ClarkE')
+        tls_root = CLARKE.parent / 'native_tls'
+        tls_lock = load_json(tls_root / 'source_lock.json')
+        notices = notices.copy()
+        for name, digest in tls_lock['notices'].items():
+            path = tls_root / 'notices' / name
+            require(sha_file(path) == digest, 'Native TLS license differs from source lock: ' + name)
+            notices['native_tls/' + name] = path
     licenses = []
     for name, path in notices.items():
         filename = f'usr/share/licenses/{product}/{name}'

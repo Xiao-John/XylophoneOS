@@ -74,7 +74,7 @@ class Browser final:public aurora::canvas {
         if(path.isEmpty()||(browser::remote(path)&&!service_pid_)){
             message(service_pid_?"Blocked: use local /web pages or numeric IPv4 HTTP":"Blocked: local /web pages only; HTTP needs --network-service-pid");
             if(view->current().size())address->setText(browser::display_location(view->current()));return false;}
-        QString error, candidate_title;message(browser::remote(path)?"Loading HTTP page...":"Loading local page...");
+        QString error, candidate_title;message(browser::remote(path)?"Loading network page...":"Loading local page...");
         auto *candidate=new browser::HtmlView(this,service_pid_);
         candidate->resize(view->size());
         candidate->titleChanged=[&candidate_title](QString text){candidate_title=text;};
@@ -88,7 +88,13 @@ class Browser final:public aurora::canvas {
         auto *item=layout()->replaceWidget(old,view);delete item;old->navigate={};old->titleChanged={};old->hide();view->show();old->deleteLater();
         title->setText(candidate_title+" · ClarkE");address->setText(browser::display_location(path));
         if(record){while(history.size()>index+1)history.removeLast();history.append(path);if(history.size()>16)history.removeFirst();index=history.size()-1;}
-        tabbar->setTabText(active,title->text().section(" ·",0,0).left(19));updateButtons();message(browser::remote(path)?"HTTP page · liteHTML 0.9 · JavaScript off · plain HTTP":"Local page · liteHTML 0.9 · JavaScript off");view->setFocus();
+        tabbar->setTabText(active,title->text().section(" ·",0,0).left(19));updateButtons();
+        if (browser::secure_location(path)) {
+            message("HTTPS page · liteHTML 0.9 · JavaScript off · verified TLS");
+        } else {
+            message(browser::remote(path)?"HTTP page · liteHTML 0.9 · JavaScript off · plain HTTP":"Local page · liteHTML 0.9 · JavaScript off");
+        }
+        view->setFocus();
         QTimer::singleShot(100,this,[this]{view->log_anchor_point();xos::thread_stats stats{};xos::sdk::syscall(xos::sys_thread_stats,reinterpret_cast<xos::u64>(&stats));std::printf("BROWSER_SAMPLE pages=%u threads=%u tab=%d scroll=%d\n",stats.process_user_pages,stats.threads,active,view->verticalScrollBar()->value());});
         return true;
     }
@@ -98,7 +104,7 @@ public:
     Browser(QString initial={},QString instance={},bool text_scope=false,xos::u64 service_pid=0):service_pid_(service_pid),pipe_instance(std::move(instance)),pipe_text(text_scope){setWindowTitle("ClarkE");resize(800,600);
         auto *layout=new QVBoxLayout(this);layout->setContentsMargins(32,30,32,26);layout->setSpacing(10);
         auto *tabs=new QHBoxLayout;title=new QLabel("ClarkE / Start");title->setStyleSheet("color:#eef5ff;font-size:16px;font-weight:600;");tabs->addWidget(title,1);
-        auto *newTab=new QLabel(service_pid_?"CONTROLLED HTTP":"LOCAL PREVIEW");newTab->setStyleSheet("color:#91cfdc;font-size:11px;");tabs->addWidget(newTab);
+        auto *newTab=new QLabel(service_pid_?"CONTROLLED NETWORK":"LOCAL PREVIEW");newTab->setStyleSheet("color:#91cfdc;font-size:11px;");tabs->addWidget(newTab);
         auto *exit=new aurora::button("Close");exit->setFixedSize(64,34);tabs->addWidget(exit);connect(exit,&QPushButton::clicked,qApp,&QApplication::quit);layout->addLayout(tabs);
         auto *tabrow=new QHBoxLayout;tabbar=new QTabBar;tabbar->setExpanding(false);tabbar->setDrawBase(false);tabbar->setStyleSheet("QTabBar::tab { background:#233751; color:#b9cfe7; padding:7px 17px; margin-right:5px; border:1px solid #456381; border-radius:10px; } QTabBar::tab:selected { background:#46617e; color:white; }");tabbar->addTab("Start");tabrow->addWidget(tabbar);auto *add=new aurora::button("+");add->setFixedSize(32,30);tabrow->addWidget(add);tabrow->addStretch();layout->addLayout(tabrow);
         connect(tabbar,&QTabBar::currentChanged,this,[this](int target){switchTab(target);});connect(add,&QPushButton::clicked,this,[this]{if(tabbar->count()>=4){message("Tab limit: 4");return;}switching=true;int n=tabbar->addTab("New page");switching=false;tabbar->setCurrentIndex(n);});

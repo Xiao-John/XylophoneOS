@@ -85,16 +85,20 @@ error parse_url(const char* s, size_t n, url& out) {
     if (!s || n == 0) return error::invalid;
     if (n > max_url) return error::too_large;
     if (!safe_reference(s, n)) return error::invalid;
-    if (!starts(s, n, "http://")) return error::unsupported;
-    size_t end = 7;
+    const bool secure = starts(s, n, "https://");
+    if (!secure && !starts(s, n, "http://")) return error::unsupported;
+    out.protocol = secure ? scheme::https : scheme::http;
+    out.port = default_port(out.protocol);
+    const size_t beginning = secure ? 8 : 7;
+    size_t end = beginning;
     while (end < n && s[end] != '/' && s[end] != '?' && s[end] != '#') ++end;
-    size_t host_end = 7;
+    size_t host_end = beginning;
     while (host_end < end && s[host_end] != ':') ++host_end;
-    const size_t host_size = host_end - 7;
+    const size_t host_size = host_end - beginning;
     if (!host_size || host_size > 253) return error::invalid;
     // ASCII DNS reg-name / dotted IPv4 only. No credentials, IPv6, IDNA or escapes.
     size_t label = 0;
-    for (size_t i = 7; i < host_end; ++i) {
+    for (size_t i = beginning; i < host_end; ++i) {
         const char c = lower(s[i]);
         if (c == '.') {
             if (!label || s[i - 1] == '-') return error::invalid;
@@ -103,7 +107,7 @@ error parse_url(const char* s, size_t n, url& out) {
             if (!((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '-')) return error::invalid;
             if ((!label && c == '-') || ++label > 63) return error::invalid;
         }
-        out.host[i - 7] = c;
+        out.host[i - beginning] = c;
     }
     if (!label || s[host_end - 1] == '-') return error::invalid;
     out.host[host_size] = 0;
@@ -128,10 +132,12 @@ error resolve(const url& base, const char* s, size_t n, url& out) {
     if (starts(s, n, "http://") || starts(s, n, "https://")) return parse_url(s, n, out);
     if (n >= 2 && s[0] == '/' && s[1] == '/') {
         char absolute[max_url + 1];
-        if (n + 5 > max_url) return error::too_large;
-        copy(absolute, sizeof absolute, "http:", 5);
-        copy(absolute + 5, sizeof absolute - 5, s, n);
-        return parse_url(absolute, n + 5, out);
+        const bool secure = base.protocol == scheme::https;
+        const size_t prefix = secure ? 6 : 5;
+        if (n + prefix > max_url) return error::too_large;
+        copy(absolute, sizeof absolute, secure ? "https:" : "http:", prefix);
+        copy(absolute + prefix, sizeof absolute - prefix, s, n);
+        return parse_url(absolute, n + prefix, out);
     }
     size_t first = 0;
     while (first < n && s[first] != '/' && s[first] != '?' && s[first] != '#') {
@@ -158,7 +164,8 @@ error get_request(const url& u, char* out, size_t cap, size_t& size) {
     if (!out || !hn || hn > 253 || !tn || tn > max_url || !u.port) return error::invalid;
     // Revalidate caller-owned structures before emitting headers.
     char absolute[max_url + 300]; size_t a = 0;
-    const char* pre = "http://";
+    if (u.protocol != scheme::http && u.protocol != scheme::https) return error::invalid;
+    const char* pre = u.protocol == scheme::https ? "https://" : "http://";
     for (size_t i = 0; pre[i]; ++i) absolute[a++] = pre[i];
     for (size_t i = 0; i < hn; ++i) absolute[a++] = u.host[i];
     for (size_t i = 0; i < tn; ++i) absolute[a++] = u.target[i];
@@ -174,7 +181,7 @@ error get_request(const url& u, char* out, size_t cap, size_t& size) {
         return true;
     };
     if (!append("GET ", 4) || !append(checked.target, canonical_target_length) || !append(" HTTP/1.1\r\nHost: ", 17) || !append(checked.host, checked_host_length)) { size = 0; return error::too_large; }
-    if (u.port != 80) {
+    if (u.port != default_port(u.protocol)) {
         char digits[6]; size_t n = 0; unsigned port = u.port;
         do { digits[n++] = char('0' + port % 10); port /= 10; } while (port);
         if (!append(":", 1)) { size = 0; return error::too_large; }

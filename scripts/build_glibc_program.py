@@ -12,7 +12,7 @@ import subprocess
 
 from glibc_g1_probe import clean_build_environment, tool_identity
 from xypm_format import load_json
-from xypm_sdk_profile import metadata_snapshot, verify_profile
+from xypm_sdk_profile import GLIBC_STDIO_RECEIVER, metadata_snapshot, require_stdio_marker, verify_profile
 
 
 def sha(path):
@@ -62,6 +62,8 @@ def main():
     parser.add_argument('--sdk', type=Path, required=True)
     parser.add_argument('--profile', type=Path, help='explicit glibc candidate from create_xypm_profile.py')
     parser.add_argument('--cxx', action='store_true', help='build C++ using a C++ candidate profile')
+    parser.add_argument('--stdio-transfer', action='store_true',
+                        help='link the profile-verified startup stdio receiver')
     parser.add_argument('--source', type=Path, action='append', required=True)
     parser.add_argument('--include-dir', type=Path, action='append', default=[])
     parser.add_argument('--project-inputs', type=Path, help='build receipt inputs relative to the current project directory')
@@ -72,6 +74,8 @@ def main():
     args = parser.parse_args()
     if args.cxx and not args.profile:
         parser.error('--cxx requires a glibc C++ candidate profile')
+    if args.stdio_transfer and not args.profile:
+        parser.error('--stdio-transfer requires a glibc candidate profile')
     if args.diagnostic and args.profile:
         parser.error('--diagnostic and --profile are mutually exclusive')
     if any(not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*(?:=[^\r\n\x00]*)?', item)
@@ -106,6 +110,8 @@ def main():
             manifest, _ = metadata_snapshot(manifest_path, expected_sha)
             if args.cxx and 'cxx_runtime' not in candidate['features']:
                 parser.error('--cxx requires the candidate cxx_runtime feature')
+            if args.stdio_transfer and 'stdio_transfer' not in candidate['features']:
+                parser.error('--stdio-transfer requires the candidate stdio_transfer feature')
             suffixes = ('.cpp', '.cc', '.cxx') if args.cxx else ('.c',)
             if any(source.suffix not in suffixes for source in sources):
                 parser.error('source file extension does not match the selected language')
@@ -193,6 +199,9 @@ def main():
             if inputs is not None:
                 project_dependencies(depfile, Path.cwd(), inputs)
             objects.append(str(obj))
+        if args.stdio_transfer:
+            objects.append(str(sdk / GLIBC_STDIO_RECEIVER))
+            report['stdio_receiver_sha256'] = candidate['sdk_binding']['link_artifacts'][GLIBC_STDIO_RECEIVER]
         lib = sdk / 'usr/lib'
         unwind = [str(lib / 'libgcc_eh.a')] if (lib / 'libgcc_eh.a').is_file() else []
         cxx_libraries = [str(lib / name) for name in ('libstdc++.a', 'libsupc++.a')] if args.cxx else []
@@ -211,6 +220,8 @@ def main():
                      str(lib / 'libgcc.a'), *unwind, '-Wl,--end-group',
                      str(lib / 'crtend.o'), str(lib / 'crtn.o')])
         report['program_headers'] = verify_elf(linked)
+        if args.stdio_transfer:
+            require_stdio_marker(linked.read_bytes(), linked.name)
         if (sha(Path(__file__)) != report['builder_sha256']
                 or any(sha(path) != report['sources'][str(path)] for path in sources)):
             raise RuntimeError('source changed during compilation')

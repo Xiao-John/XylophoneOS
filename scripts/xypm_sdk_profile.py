@@ -18,8 +18,11 @@ GLIBC_FEATURE_FUNCTIONS = {
     'directories': {'opendir', 'readdir', 'closedir', 'mkdir', 'getcwd'},
     'threads': {'pthread_create', 'pthread_join'},
     'spawn_delegate': {'posix_spawn', '__spawni', 'execve', 'waitpid'},
+    'stdio_transfer': {'fcntl', 'dup2'},
 }
 GLIBC_CRT = ('xos_start.o', 'crti.o', 'crtbegin.o', 'xos_start_c.o', 'crtend.o', 'crtn.o')
+GLIBC_STDIO_RECEIVER = 'usr/lib/xos_stdio_receiver.o'
+XOS_EXEC_RECEIVER = struct.pack('<QII', 0x3349424143455858, 3, 16)
 GLIBC_UNWINDER_MEMBERS = {'unwind-dw2.o', 'unwind-dw2-fde.o', 'unwind-sjlj.o',
                          'unwind-c.o', 'emutls.o'}
 GLIBC_UNWINDER_SYMBOLS = {'pthread_mutex_lock', 'pthread_mutex_unlock', 'pthread_once'}
@@ -86,31 +89,55 @@ def target_object(data, label):
     require((kind, machine, version) == (1, 62, 1), 'SDK object target mismatch: ' + label)
 
 
-def strong_undefined_symbols(data):
-    """Read the bounded ELF64 symbol table; weak pthread references do not qualify."""
-    target_object(data, 'glibc unwinder')
+def elf_sections(data, label):
     offset = struct.unpack_from('<Q', data, 40)[0]
     entry_size, count = struct.unpack_from('<HH', data, 58)
     require(entry_size == 64 and count > 0 and offset + count * entry_size <= len(data),
-            'invalid unwinder ELF section table')
-    sections = [struct.unpack_from('<IIQQQQIIQQ', data, offset + index * entry_size)
-                for index in range(count)]
+            'invalid ELF section table: ' + label)
+    return [struct.unpack_from('<IIQQQQIIQQ', data, offset + index * entry_size)
+            for index in range(count)]
+
+
+def require_stdio_marker(data, label):
+    require(len(data) >= 64 and data[:7] == b'\x7fELF\x02\x01\x01',
+            'invalid ELF for glibc stdio receiver: ' + label)
+    sections = elf_sections(data, label)
+    names_index = struct.unpack_from('<H', data, 62)[0]
+    require(names_index < len(sections), 'invalid ELF section names: ' + label)
+    names_section = sections[names_index]
+    start, size = names_section[4:6]
+    require(names_section[1] == 3 and start + size <= len(data),
+            'invalid ELF section names: ' + label)
+    names = data[start:start + size]
+    markers = [section for section in sections
+               if names[section[0]:section[0] + 10] == b'.xos.exec\0']
+    require(len(markers) == 1, 'expected one glibc stdio receiver marker: ' + label)
+    _, kind, flags, _, start, size, *_ = markers[0]
+    require(kind == 1 and flags & 7 == 2 and size == len(XOS_EXEC_RECEIVER)
+            and data[start:start + size] == XOS_EXEC_RECEIVER,
+            'invalid glibc stdio receiver marker: ' + label)
+
+
+def strong_undefined_symbols(data, label='glibc unwinder'):
+    """Read strong undefined symbols from the bounded ELF64 symbol table."""
+    target_object(data, label)
+    sections = elf_sections(data, label)
     symbols = set()
     for section in sections:
         if section[1] != 2:  # SHT_SYMTAB
             continue
         begin, size, link, stride = section[4], section[5], section[6], section[9]
         require(stride == 24 and size % stride == 0 and begin + size <= len(data)
-                and link < count and sections[link][1] == 3, 'invalid unwinder ELF symbol table')
+                and link < len(sections) and sections[link][1] == 3, 'invalid ELF symbol table: ' + label)
         strings = sections[link]
-        require(strings[4] + strings[5] <= len(data), 'invalid unwinder ELF string table')
+        require(strings[4] + strings[5] <= len(data), 'invalid ELF string table: ' + label)
         names = data[strings[4]:strings[4] + strings[5]]
         for position in range(begin, begin + size, stride):
             name, info, _, index, _, _ = struct.unpack_from('<IBBHQQ', data, position)
             if index != 0 or info >> 4 != 1:  # Undefined STB_GLOBAL only.
                 continue
             require(name < len(names) and names.find(b'\0', name) >= 0,
-                    'invalid unwinder ELF symbol name')
+                    'invalid ELF symbol name: ' + label)
             raw = names[name:names.index(b'\0', name)]
             symbols.add(raw.decode('ascii'))
     return symbols
@@ -337,6 +364,15 @@ def glibc_binding(build, sdk, metadata, files, cxx, features):
         for name in ('COPYING3', 'COPYING.RUNTIME'):
             relative_file(sdk, 'usr/share/xos-glibc/cxx/licenses/' + name)
     objects = ['usr/lib/' + name for name in GLIBC_CRT]
+    if 'stdio_transfer' in features:
+        receiver = relative_file(sdk, GLIBC_STDIO_RECEIVER).read_bytes()
+        require_stdio_marker(receiver, GLIBC_STDIO_RECEIVER)
+        require('__xos_file_startup_capabilities' in
+                strong_undefined_symbols(receiver, GLIBC_STDIO_RECEIVER),
+                'glibc stdio receiver lacks the native file startup reference')
+        require('KEEP(*(.xos.exec))' in relative_file(sdk, 'user.ld').read_text(),
+                'glibc linker script does not retain the stdio receiver marker')
+        objects.append(GLIBC_STDIO_RECEIVER)
     members = link_inputs(sdk, archives, objects, member_hashes)
     for name in ('COPYING.LIB', 'LICENSES'):
         relative_file(sdk, 'usr/share/xos-glibc/' + name)

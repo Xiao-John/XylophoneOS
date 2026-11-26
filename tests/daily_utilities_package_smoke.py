@@ -32,12 +32,18 @@ def main():
     p.add_argument('--profile', type=Path, required=True)
     p.add_argument('--dash', type=Path, required=True)
     p.add_argument('--report', type=Path, required=True)
+    p.add_argument('--dash-timeout', type=int, default=180,
+                   help='seconds to wait for the dash script (default: 180)')
     a = p.parse_args()
+    if a.dash_timeout <= 0:
+        p.error('--dash-timeout must be positive')
     payload_count = len(verify_package(a.package, load_json(a.profile))['manifest']['files'])
     report = {'status':'failed', 'image_sha256':hashlib.sha256(a.image.read_bytes()).hexdigest(),
               'package_sha256':hashlib.sha256(a.package.read_bytes()).hexdigest(),
               'profile_sha256':hashlib.sha256(a.profile.read_bytes()).hexdigest(),
               'dash_sha256':hashlib.sha256(a.dash.read_bytes()).hexdigest(), 'checks':[]}
+    if a.dash_timeout != 180:
+        report['dash_timeout_seconds'] = a.dash_timeout
     def xypm(*args):
         p = subprocess.run([sys.executable, str(ROOT/'scripts/xypm.py'), *map(str,args),
                             '--profile', str(a.profile)], text=True, capture_output=True)
@@ -80,7 +86,7 @@ def main():
                 guest.expect_supervisor(start=start,timeout=40);pump(guest,.4)
                 send_bytes(guest,b'demo quiet\r');pump(guest,.4)
                 start=len(guest.output);send_bytes(guest,b'dash /tests/du12.sh\r')
-                guest.expect_supervisor(start=start,timeout=180); output=bytes(guest.output[start:])
+                guest.expect_supervisor(start=start,timeout=a.dash_timeout); output=bytes(guest.output[start:])
                 if b'DU12_OK' not in output: raise AssertionError(output[-4000:].decode('utf-8','replace'))
                 start=len(guest.output);send_bytes(guest,b'sync\r');guest.expect_supervisor(start=start,timeout=30)
             finally:guest.close()

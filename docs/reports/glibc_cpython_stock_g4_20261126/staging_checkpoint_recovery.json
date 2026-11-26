@@ -1,0 +1,94 @@
+{
+  "fixture": {
+    "checkpoint": 9,
+    "failed_disk_sha256": "d8897d30b347f54c356989b87b7b1b83e36199a467c6b02bb6ee0a665840757f",
+    "fault_elf_sha256": "ef95dcb46d7be9a62ee37ed42d133f8995a7fadad795c506cc61097c6596baf1",
+    "status": "test_checkpoint_injected",
+    "xpk_sha256": "a82ad13aba9c80966b3f37f359cafb39730422b0eef5c7b7aad28d8ca75c7287"
+  },
+  "recovery": {
+    "after": {
+      "cluster_bytes": 4096,
+      "disk_sha256": "ae3d879b90920c287b4eddf3daeafee993c59ba42c70027eebc9ca0d317c910e",
+      "free_bytes": 511762432,
+      "inputs": {
+        "/out/cpython.xpk": "a82ad13aba9c80966b3f37f359cafb39730422b0eef5c7b7aad28d8ca75c7287",
+        "/usr/bin/xypm": "ef95dcb46d7be9a62ee37ed42d133f8995a7fadad795c506cc61097c6596baf1",
+        "/work/user.txt": "9cda283a799cd426dbcf3be71525240d50d48c3da88c608cb80a7efc962a00c4"
+      },
+      "markers": {
+        "/usr/bin/python3": null,
+        "/usr/lib/python314.zip": null,
+        "/var/lib/xypm/db.json": null,
+        "/var/lib/xypm/index.tsv": null,
+        "/var/lib/xypm/transaction": null,
+        "/var/lib/xypm/transaction_commit": null,
+        "/var/lib/xypm/txdata": null,
+        "/var/lib/xypm/txdata/applying": null,
+        "/var/lib/xypm/txdata/committed": null,
+        "/var/lib/xypm/txdata/journal.tmp": null,
+        "/var/lib/xypm/txdata/new": null,
+        "/var/lib/xypm/txdata/old": null,
+        "/var/lib/xypm/txdata/prepare": null,
+        "/var/lib/xypm/txdata/reserve": null,
+        "/var/lib/xypm/txdata/reserve2": null,
+        "/var/lib/xypm/txprep": null
+      },
+      "staged_files": {}
+    },
+    "before": {
+      "cluster_bytes": 4096,
+      "disk_sha256": "d8897d30b347f54c356989b87b7b1b83e36199a467c6b02bb6ee0a665840757f",
+      "free_bytes": 511741952,
+      "inputs": {
+        "/out/cpython.xpk": "a82ad13aba9c80966b3f37f359cafb39730422b0eef5c7b7aad28d8ca75c7287",
+        "/usr/bin/xypm": "ef95dcb46d7be9a62ee37ed42d133f8995a7fadad795c506cc61097c6596baf1",
+        "/work/user.txt": "9cda283a799cd426dbcf3be71525240d50d48c3da88c608cb80a7efc962a00c4"
+      },
+      "markers": {
+        "/usr/bin/python3": null,
+        "/usr/lib/python314.zip": null,
+        "/var/lib/xypm/db.json": null,
+        "/var/lib/xypm/index.tsv": null,
+        "/var/lib/xypm/transaction": null,
+        "/var/lib/xypm/transaction_commit": null,
+        "/var/lib/xypm/txdata": {
+          "directory": true,
+          "size": 0
+        },
+        "/var/lib/xypm/txdata/applying": null,
+        "/var/lib/xypm/txdata/committed": null,
+        "/var/lib/xypm/txdata/journal.tmp": null,
+        "/var/lib/xypm/txdata/new": {
+          "directory": true,
+          "size": 0
+        },
+        "/var/lib/xypm/txdata/old": {
+          "directory": true,
+          "size": 0
+        },
+        "/var/lib/xypm/txdata/prepare": {
+          "directory": false,
+          "size": 8
+        },
+        "/var/lib/xypm/txdata/reserve": null,
+        "/var/lib/xypm/txdata/reserve2": null,
+        "/var/lib/xypm/txprep": null
+      },
+      "staged_files": {
+        "/usr/bin/python3": {
+          "directory": false,
+          "sha256": "b8e1306a214302ae15c8b3aa82fc08b9a9e0990b2aac7de5d09b9648294e4b08",
+          "size": 2048
+        }
+      }
+    },
+    "recovery_console_result": "maintenance: completed",
+    "resources_after_recovery": [
+      129806,
+      2,
+      0
+    ],
+    "status": "recovered"
+  }
+}

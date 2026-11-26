@@ -1,0 +1,22 @@
+{
+  "files": {
+    "docker_space_failed.serial.log.gz": "70ad0e73fa8fc05547656875d4768a3fc4c586c6ffab333116850475d2df598c",
+    "docker_space_installed.serial.log.gz": "6f076d19ba2f215f11d4b9be1df39f49012c48cc9a2a29fa4ddd5a946989e7c9",
+    "docker_space_recovery.serial.log.gz": "47b68147b50e8ec16c4f08a185979f4fb6a647e39971772f0525502c2b567bc1",
+    "docker_space_retry_remove.serial.log.gz": "2284c4e3b13cf17de076a6f18ee6da0419a422cce9fd290ce059a4f1953a34b4",
+    "initial_install_failed.serial.log.gz": "e8c1de826f7ff4ed34000d11e74e6a2dd7553f4f320a51672095d4914c9ec531",
+    "initial_install_failure.json": "603f81681648394deeb3f87c730999ddf0c050114ddff9144898a5c1d3efd5b1",
+    "install.serial.log.gz": "15663ba231c0b69d3d1ae13564bc0a9437bac2d3fb5c8f1140d296719573d02a",
+    "package_layouts.json": "516484e7f363d336c0c1ac4d5511c9dcbda8e03ae0417143304c921c18850cbd",
+    "previous_xpk_manifest.json": "63b16a28b43d989c126eac58ca22e3e1d8b7d96f133eb93910e377daecaffdcc",
+    "report.json": "1f451272f09e1e18339fa40436b02d789b9c630b4fecb1cf5d2c833f1e709829",
+    "run_remove.serial.log.gz": "d33e230aab33c5c6c70dfe6518b7cf6982a3aeb19e641ad2bff31e8560fac44e",
+    "selected_xpk_manifest.json": "54567e2bf4b60cc4c1b44c3ed27cb6c7fd1c005acd9ce7f3b61aad8dd086b31a",
+    "staging_checkpoint.serial.log.gz": "846a1bfd4fb59c80227ec09bcc59fcfe950e8dfe1b33b96c87de39481686d99a",
+    "staging_checkpoint_recovery.json": "f45a9d5a55e66553c5e9d4bc27e4bfdb5dfebd42679f3b77cd355e27bb852fe2",
+    "staging_recovery.serial.log.gz": "c43eba07818d246e01986f583018cbf65d051239f96e7c88d321bf0b36e344fe",
+    "storage_failure_and_recovery.json": "4357b10ef73594eda81be4ad713ffbc314df77f1179d3f3a2ad7ef89ccf6f554",
+    "uninstalled_disk.json": "1d6c3fb834a629fee3c57e328b14e7680e0b60b66c451aba1eefb8a4b0eab218"
+  },
+  "version": 1
+}

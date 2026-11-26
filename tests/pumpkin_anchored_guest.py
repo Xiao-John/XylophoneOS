@@ -29,6 +29,7 @@ frame_size = header.size + 2 * mark_struct.size
 ready, read, publish, finish = range(1, 5)
 result_codes = {publish_result.committed: 0, publish_result.conflict: 1,
                 publish_result.unchanged: 2, publish_result.outcome_unknown: 3}
+slow_snapshot_delay_ns = 7_000_000_000
 
 
 def digest(path):
@@ -47,6 +48,21 @@ def sparse_snapshot(source, destination):
         snapshot.flush()
         os.fsync(snapshot.fileno())
     assert digest(source) == digest(destination), "snapshot did not capture identical disk bytes"
+
+
+def snapshot_at_rev2(guest, source, destination, delay_ns):
+    guest.qmp("stop")
+    state = guest.qmp("query-status")
+    assert state["status"] == "paused" and state["running"] is False, state
+    start = time.monotonic_ns()
+    if delay_ns:
+        time.sleep(delay_ns / 1_000_000_000)
+    sparse_snapshot(source, destination)
+    paused_ns = time.monotonic_ns() - start
+    assert paused_ns >= delay_ns
+    guest.qmp("cont")
+    return {"revision": 2, "qmp_status": state["status"], "injected_delay_ns": delay_ns,
+            "paused_snapshot_wall_ns": paused_ns}
 
 
 def packet(operation, result, sequence, value=blank):
@@ -81,12 +97,13 @@ def binding(system):
             "sdk_tree_sha256": tree_receipt(system / "sdk")[0], "artifacts": artifacts}
 
 
-def boot(system, disk, output, phase, scenario, authority, stale_image, evidence):
+def boot(system, disk, output, phase, scenario, authority, stale_image, evidence, snapshot_delay_ns):
     guest = Guest(system / "xos-install.iso", phase, iso=True, work_disk=disk, log_dir=output)
     try:
         evidence["qemu_version"] = subprocess.check_output([guest.command[0], "--version"], text=True).splitlines()[0]
         events = evidence["events"]
         guest.expect(b"xos64> ", timeout=30)
+        assert guest.qmp("query-status")["running"] is True
         start = len(guest.output)
         send_bytes(guest, b"run\r")
         preamble = packet(ready, 0, 0)[:header.size]
@@ -118,9 +135,9 @@ def boot(system, disk, output, phase, scenario, authority, stale_image, evidence
                 assert published == publish_result.committed
                 events.append({"published": candidate.revision})
                 if candidate.revision == 2:
-                    # The guest has synced and verified this slot and is still
-                    # awaiting our reply. No other guest writer is started.
-                    sparse_snapshot(disk, stale_image)
+                    # The slot was synced and verified before publication. While
+                    # the guest awaits the ACK, stop its clock during the host copy.
+                    evidence["snapshot_fence"] = snapshot_at_rev2(guest, disk, stale_image, snapshot_delay_ns)
                 reply = packet(publish, result_codes[published], current_sequence)
             else:
                 assert operation == finish and expected == blank and value == blank
@@ -137,7 +154,7 @@ def boot(system, disk, output, phase, scenario, authority, stale_image, evidence
         guest.close()
 
 
-def run(system, output):
+def run(system, output, snapshot_delay_ns):
     output.mkdir(parents=True)
     report = {"status": "failed", "system": binding(system), "runner_sha256": digest(Path(__file__)), "boots": {}}
     try:
@@ -154,7 +171,7 @@ def run(system, output):
                 events = []
                 checks = {"events": events, "input_disk_sha256": digest(image)}
                 report["boots"][phase] = checks
-                boot(system, image, output, phase, scenario, authority, old, checks)
+                boot(system, image, output, phase, scenario, authority, old, checks, snapshot_delay_ns)
                 checks["output_disk_sha256"] = digest(image)
                 checks["tail_sha256"] = hashlib.sha256(tail_bytes(image, cutoff)).hexdigest()
                 checks["authority_revision"] = authority.read().revision
@@ -183,8 +200,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--system", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--slow-snapshot", action="store_true", help="hold the paused revision-2 copy for seven seconds")
     arguments = parser.parse_args()
-    run(arguments.system.resolve(), arguments.output.resolve())
+    run(arguments.system.resolve(), arguments.output.resolve(), slow_snapshot_delay_ns if arguments.slow_snapshot else 0)
 
 
 if __name__ == "__main__":

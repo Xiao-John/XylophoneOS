@@ -9,7 +9,7 @@ inline constexpr u32 magic = 0x31414b50; // PKA1
 inline constexpr u16 version = 1;
 inline constexpr u64 exchange_ns = 6'000'000'000;
 enum class operation : u8 { ready = 1, read, publish, finish };
-enum class scenario : u8 { cycle = 1, healthy, stale };
+enum class scenario : u8 { cycle = 1, healthy, stale, user_enroll, user_login, user_revoke };
 struct packet {
     u32 tag = magic;
     u16 format = version;

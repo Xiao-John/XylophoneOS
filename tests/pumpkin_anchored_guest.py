@@ -87,6 +87,7 @@ def receive(guest, offset, expected_sequence):
 def binding(system, native_login=False):
     manifest = json.loads((system / "manifest.json").read_bytes())
     assert manifest.get("pumpkin_anchored_probe"), "dedicated anchored developer image required"
+    assert not manifest.get("pumpkin_user_login"), "use the unrecorded private operator entry for this profile"
     assert manifest.get("pumpkin_native_login", False) == native_login, "native login profile mismatch"
     assert all(digest(root / name) == expected for name, expected in manifest["sources"].items()), "source mismatch"
     names = ("xos-install.iso", "user_files.image.elf", "user_supervisor.image.elf",

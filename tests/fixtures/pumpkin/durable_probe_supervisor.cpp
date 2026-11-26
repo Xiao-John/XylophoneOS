@@ -7,6 +7,9 @@
 #if XOS_PUMPKIN_NATIVE_LOGIN
 #include "../../../src/user/pumpkin/native_login.hpp"
 #endif
+#if XOS_PUMPKIN_USER_LOGIN
+#include "../../../src/user/pumpkin/user_login.hpp"
+#endif
 
 namespace xos::user::pumpkin::durable_probe {
 namespace {
@@ -292,7 +295,8 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
 #endif
     if (ready && bounded_start) {
         daemon server;
-        const bool started = server.start(image, grant, mode == anchor_guest::scenario::cycle,
+        const bool initialized = mode == anchor_guest::scenario::cycle || mode == anchor_guest::scenario::user_enroll;
+        const bool started = server.start(image, grant, initialized,
                                           {static_cast<u64>(proxy), proxy_control.transmit});
         switch (mode) {
         case anchor_guest::scenario::cycle: {
@@ -315,6 +319,24 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
         case anchor_guest::scenario::stale:
             passed = !started && server.control_admitted && server.stop(11);
             break;
+#if XOS_PUMPKIN_USER_LOGIN
+        case anchor_guest::scenario::user_enroll:
+            passed = started && native_login::enroll_user(server.control, {account, sizeof(account) - 1}, proxy_control) &&
+                server.stop();
+            break;
+        case anchor_guest::scenario::user_login:
+            if (started) {
+                login_result = native_login::login_user(holder_image, server.pid, server.control,
+                    {account, sizeof(account) - 1}, proxy_control);
+                passed = login_result != 0 && server.stop();
+            }
+            break;
+        case anchor_guest::scenario::user_revoke:
+            passed = started && native_login::revoke_user(server.control, {account, sizeof(account) - 1}) && server.stop();
+            break;
+#endif
+        default:
+            break;
         }
     }
 #if XOS_PUMPKIN_NATIVE_LOGIN
@@ -323,7 +345,12 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
 #endif
     u8 outcome = static_cast<u8>(passed);
 #if XOS_PUMPKIN_NATIVE_LOGIN
+#if XOS_PUMPKIN_USER_LOGIN
+    if (passed && mode == anchor_guest::scenario::user_login && login_result == user_login::denied) { outcome = login_result; }
+    if (!passed && login_result >= static_cast<u8>(native_login::result::holder_start)) { outcome = login_result; }
+#else
     if (!passed && login_result > 1) { outcome = login_result; }
+#endif
 #endif
     const anchor_guest::supervisor_result result{outcome};
     if (!ready || sdk::channel_send_wait(proxy_control.transmit, &result, sizeof(result), anchor_guest::deadline()) != 0) {

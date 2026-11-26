@@ -114,3 +114,9 @@ python3 tests/jsc_static_guest.py --image "$XOS_PROBE_ISO" \
 原有栈保留区。示例给出本次普通镜像的明确资源基线。VM 所有者调度、GC 根保留、
 WebCore 及浏览器进程均按各自门槛验收。
 [静态 shell 客体记录](../../../docs/work_log/3eba7c25_clarke_jsc_guest.md)
+
+## 原生字体配置
+
+[Fontconfig 目标构建](fontconfig/README.md)复用 FreeType、LibXml2 和 XOS glibc，提供
+原生 FAT 字体枚举、XML 家族替换和字形筛选的客体回归。WebCore 字体后端链接、页面
+布局和 Qt 视口仍分别验收。

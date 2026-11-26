@@ -53,11 +53,12 @@ ClarkE 的 M0 对照使用 [锁定的 WPE WebKit 2.54.2 发布归档](../../src/
 | XOS JSCOnly | 使用签名验证过的独立 glibc C/C++ sysroot，GCC 16.2.0 两个编译器 ABI 探针通过；上游配置对 CMake 的目标 OS `Generic` 明确拒绝 | 增加独立 XOS 识别及平台审查，再验证解释器静态链和客体运行 |
 
 XOS 平台标识补丁已用同一锁定归档实测。CMake 在 `CMAKE_SYSTEM_NAME=XOS` 下通过
-原先的平台检查并进入 JSCOnly 依赖检测，当前明确停在目标 ICU
-的 `data`、`i18n` 和 `uc` 组件。复现见 [目标配置记录](../../src/ports/webkit/README.md)。
+原先的平台检查。首轮配置停在目标 ICU 的 `data`、`i18n` 和 `uc` 组件。
+[目标配置记录](../../src/ports/webkit/README.md)
 
 ICU4C 79.1 的三个 XOS 静态组件已经构建并在客体测试，覆盖 NFC、大小写、词边界和
-排序。将已验证的 ICU 目标前缀纳入 JSCOnly 配置后，继续解释器的构建与客体验收。
+排序。纳入该 ICU 前缀后，JSCOnly 识别了三个目标静态归档，CMake 配置及生成均通过。
+下一门是解释器构建与客体验收。
 [ICU 构建器](../../src/ports/webkit/icu/README.md) · [ICU 客体记录](../work_log/4df1ab2c_clarke_icu4c_xos.md)
 
 现有 VirtIO-Net、N2/N3 已通过独立实测，ClarkE 的受控 HTTP 可作为网络对照。

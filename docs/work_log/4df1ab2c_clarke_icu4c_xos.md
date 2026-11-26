@@ -25,5 +25,13 @@ QEMU 11.1.3，常规 BIOS 系统 `dcc48dddea8b7785`，xsh 输出 `ICU_SMOKE_OK` 
 | 镜像 | `ec8b391369f738798387d492526b1e58740bb4a9b7878189af0d375092b10494` |
 | 客体回执 | `63c183669802df7561cd7674ddb5521a5c4431c6b72ce4d075c2784618c3155d` |
 
-独立安装前缀只用于开发。下一步为 JSCOnly 指定这三个归档并复测解释器。WebCore、
-完整 locale/文件语义、dash 入口和发行材料另行验收。
+## JSCOnly 配置复验
+
+在同一 WPE WebKit 2.54.2 归档上从空目录生成 XOS、x86-64、JIT 关闭的 Ninja
+构建图。Linux 采样环境缺少 Ruby，于工具检查退出。macOS 宿主以 CMake 4.4.4、
+Ruby 2.6.10 和 GCC 16.2.0 完成配置和生成。CMake 缓存中的 `data`、`i18n`、
+`uc` 均指向经过摘要核对的目标静态库。配置日志 SHA-256 为
+`937e7a3902baf009e0ce2cd876e76b1a34c1e9bac7f5c6bd8f31f7277077c7b9`。
+
+独立安装前缀只用于开发。解释器构建、WebCore、完整 locale/文件语义、dash 入口和
+发行材料各有独立验收门。

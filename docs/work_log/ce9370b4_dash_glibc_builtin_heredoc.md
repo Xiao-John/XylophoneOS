@@ -38,3 +38,18 @@ dash 管道描述符宿主回归通过。
 | 普通安装回执 | `c60d5456cf55f61dc8e65494948d84be619f320f7de2cb284f801c8417bba3ee` |
 | 来宾报告 | `926c86272d238f8d72287faf435e53a9ef0db51cb866aa8720330eef7d24c8b8` |
 | 串口 | `c4885d6b12326e8973c6421911552df684f0df61912f3ae55a4b946c1985b73f` |
+
+## 进程锁合入后的复验
+
+同步 `ff21348b` 时保留了匿名槽和 cwd 序列化使用的操作号。从 `e8659ae8`
+空目录重建正常系统和签名 glibc C SDK，QEMU 从 xsh 与 dash 合计通过 26 项，
+每项恢复 `129698 / 3 / 1`。原生 files 宿主测试和 15 组实际 FatFs 通过。
+
+| 工件 | SHA-256 |
+| --- | --- |
+| 系统 manifest | `b4d447ea866fd8d98a531c2053960de7944f5533c24c1a6915dd13a24de8aa16` |
+| 系统 ISO | `66a72e419ac0f833ec313bb1c760f5b98f339ec0fc115ddd5c2ae54b1266341d` |
+| glibc C SDK manifest | `d036a1c56ce3dfae3a76b8ed27fbce65fbbd9c4a7262a5df50b1e340952dc959` |
+| glibc profile | `f0323f7fef660bc36e55422c96bec6f589df50d675c3d5f87df64613f234a05a` |
+| QEMU 回执 | `48e76f088b7466ea121cedacf8dd7bb2eafb1dedd657d3c2d4eb2bff3b591ec0` |
+| 宿主回执 | `dce103452bf68e8e1c1bcd3107b736aacdd846a89002180aeb2dfc9ec4f606cc` |

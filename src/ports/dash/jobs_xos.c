@@ -97,6 +97,10 @@ struct job *makejob(int count) {
     return &owned->job;
 }
 int forkshell(struct job *job, union node *node, int mode) {
+#ifdef XOS_DASH_GLIBC_PREVIEW
+    (void)job; (void)node; (void)mode;
+    sh_error("fork unavailable in the glibc dash preview");
+#else
     int child;
     if (mode == FORK_BG || (!job && !xos_pipeline_active)) sh_error("untracked child unavailable");
     flushall(); flush_input();
@@ -129,6 +133,7 @@ int forkshell(struct job *job, union node *node, int mode) {
         if (xos_shell_foreground(pipeline_children, pipeline_count, 1) < 0) xos_pipeline_failed = 1;
     }
     return child;
+#endif
 }
 
 int xos_shell_script(const char *path) {
@@ -151,14 +156,21 @@ int xos_shell_script(const char *path) {
     return 1;
 }
 int xos_shell_execve(const char *path, char *const argv[], char *const envp[]) {
+#ifdef XOS_DASH_GLIBC_PREVIEW
+    (void)path; (void)argv; (void)envp;
+    errno = ENOTSUP;
+    return -1;
+#else
     // SL2: no name-based authorization; create authority is inherited via
     // the common spawn/exec contract (shell_launch §4). Legacy driver/make
     // execve helpers remain exported for compatibility but are unused here.
     return execve(path, argv, envp);
+#endif
 }
 static int xos_spawn(pid_t *child, const char *path, char **argv, char **envp) {
     // SL2: single ordinary spawn path; inherit-create covers gcc/make/dash alike.
     int error = posix_spawn(child, path, NULL, NULL, argv, envp);
+#ifndef XOS_DASH_GLIBC_PREVIEW
     if (error == ENOEXEC && xos_shell_script(path)) {
         char *script[65]; unsigned argc = 0;
         script[0] = "/usr/bin/dash"; script[1] = (char *)path;
@@ -170,6 +182,7 @@ static int xos_spawn(pid_t *child, const char *path, char **argv, char **envp) {
         if (!*child) { execve(script[0], script, envp); _exit(errno == ENOENT ? 127 : 126); }
         return 0;
     }
+#endif
     return error;
 }
 

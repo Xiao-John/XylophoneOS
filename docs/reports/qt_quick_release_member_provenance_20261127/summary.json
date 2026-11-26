@@ -1,0 +1,58 @@
+{
+  "target": {
+    "archives": 14,
+    "direct_sources_without_declarations": 0,
+    "embedded_resource_declaration_evidence": {
+      "direct_input": 156,
+      "generation_inputs": 155
+    },
+    "embedded_resource_occurrences_matched": 311,
+    "embedded_shader_provenance": {
+      "precompiled_upstream_resource": 2,
+      "recorded_qsb_command": 150
+    },
+    "generated_sources_present": 34,
+    "generation_issues": {
+      "generated_translation_unit_not_retained": 8
+    },
+    "generation_types": {
+      "automoc": 14,
+      "qlalr_parser": 2,
+      "qml_plugin_template": 3,
+      "qml_registration": 5,
+      "rcc": 18
+    },
+    "members": 42,
+    "replay_outcomes": {
+      "byte_identical": 8
+    },
+    "retained_objects_matched": 34
+  },
+  "host": {
+    "archives": 17,
+    "direct_sources_without_declarations": 0,
+    "embedded_resource_declaration_evidence": {
+      "direct_input": 3
+    },
+    "embedded_resource_occurrences_matched": 3,
+    "embedded_shader_provenance": {
+      "precompiled_upstream_resource": 2
+    },
+    "generated_sources_present": 156,
+    "generation_issues": {},
+    "generation_types": {
+      "automoc": 10,
+      "jpeg_source_copy": 144,
+      "rcc": 2
+    },
+    "members": 823,
+    "replay_outcomes": {},
+    "retained_objects_matched": 823
+  },
+  "kit_manifest_sha256": "c3b9f48353ab96cff9dd405a694f1064b4442ceb54f9bb5781ac5de6498053d2",
+  "open_items": [
+    "historical_outputs_not_retained_for_eight_byte_identically_replayed_target_members",
+    "two_upstream_precompiled_shader_files_have_no_original_producer_evidence",
+    "final_transitive_license_and_distribution_selection"
+  ]
+}

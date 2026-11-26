@@ -98,6 +98,35 @@ def exercise(args, report, elf):
             report['serial_sha256'] = sha(args.output / 'initial_tp_serial.log')
 
 
+def bind_rtld_inputs(args, report, fixture, fixture_key):
+    system = bind_system(args.system)
+    profile = load_json(args.profile)
+    sdk = verify_profile(profile, 'glibc', args.sdk_build)
+    sdk_manifest = args.sdk_build / 'manifest.json'
+    manifest_path = args.rtld_proof / 'manifest.json'
+    rtld = load_json(manifest_path)
+    prep_path = args.rtld_proof / 'prepared/manifest.json'
+    prepared = load_json(prep_path)
+    manifest = load_json(sdk_manifest)
+    if (rtld['status'] != 'rtld_entry_compiled_startup_blocked'
+            or prepared['source_verification']['status'] != 'upstream_signature_verified'
+            or sdk_inputs() != prepared['inputs']
+            or prepared['inputs'] != manifest['inputs']
+            or rtld['source_sha256'] != manifest['source_sha256']):
+        raise ValueError('rtld and SDK are outside the same authenticated source closure')
+    check_hash(prep_path, rtld['preparation_manifest_sha256'], 'rtld preparation')
+    check_hash(fixture, rtld[fixture_key], 'rtld fixture source')
+    artifacts = {relative_file(args.rtld_proof, Path(name)): digest
+                 for name, digest in rtld['artifacts'].items()}
+    for path, digest in artifacts.items():
+        check_hash(path, digest, 'rtld object')
+    report.update(build_id=system['build_id'], iso_sha256=sha(args.system / 'xos-install.iso'),
+                  system_manifest_sha256=sha(args.system / 'manifest.json'),
+                  sdk_sha256=sha(sdk_manifest), profile_sha256=sha(args.profile),
+                  rtld_manifest_sha256=sha(manifest_path), rtld_objects=rtld['artifacts'])
+    return system, sdk, rtld, artifacts
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('system', 'sdk-build', 'profile', 'rtld-proof', 'output'):
@@ -107,34 +136,11 @@ def main():
     report = {'status': 'failed', 'scope': 'GNU initial thread TP handoff with prepared storage',
               'shared_interpreter_executed': False, 'commands': {}}
     try:
-        system = bind_system(args.system)
-        profile = load_json(args.profile)
-        sdk = verify_profile(profile, 'glibc', args.sdk_build)
-        sdk_manifest = args.sdk_build / 'manifest.json'
-        manifest_path = args.rtld_proof / 'manifest.json'
-        rtld = load_json(manifest_path)
-        prep_path = args.rtld_proof / 'prepared/manifest.json'
-        prepared = load_json(prep_path)
-        if (rtld['status'] != 'rtld_entry_compiled_startup_blocked'
-                or prepared['source_verification']['status'] != 'upstream_signature_verified'
-                or sdk_inputs() != prepared['inputs']
-                or prepared['inputs'] != load_json(sdk_manifest)['inputs']
-                or rtld['source_sha256'] != load_json(sdk_manifest)['source_sha256']):
-            raise ValueError('rtld and SDK are outside the same authenticated source closure')
-        check_hash(prep_path, rtld['preparation_manifest_sha256'], 'rtld preparation')
-        check_hash(FIXTURE, rtld['initial_tp_fixture_sha256'], 'TP fixture source')
-        artifacts = {relative_file(args.rtld_proof, Path(name)): digest
-                     for name, digest in rtld['artifacts'].items()}
-        for path, digest in artifacts.items():
-            check_hash(path, digest, 'rtld object')
-        report.update(build_id=system['build_id'], iso_sha256=sha(args.system / 'xos-install.iso'),
-                      system_manifest_sha256=sha(args.system / 'manifest.json'),
-                      sdk_sha256=sha(sdk_manifest), profile_sha256=sha(args.profile),
-                      rtld_manifest_sha256=sha(manifest_path), rtld_objects=rtld['artifacts'])
+        system, sdk, rtld, artifacts = bind_rtld_inputs(args, report, FIXTURE, 'initial_tp_fixture_sha256')
         elf = build(args, report, rtld)
         exercise(args, report, elf)
         if (bind_system(args.system) != system or verify_profile(load_json(args.profile), 'glibc', args.sdk_build) != sdk
-                or sha(manifest_path) != report['rtld_manifest_sha256']
+                or sha(args.rtld_proof / 'manifest.json') != report['rtld_manifest_sha256']
                 or sha(elf) != report['guest_elf_sha256']
                 or any(sha(path) != digest for path, digest in artifacts.items())):
             raise ValueError('bound acceptance inputs changed during the guest run')

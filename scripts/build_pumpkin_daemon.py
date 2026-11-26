@@ -18,6 +18,7 @@ common_cpp = [module + name for name in
 programs = {"pumpkind.elf": module + "daemon_main.cpp",
             "pumpkin_probe.elf": "tests/fixtures/pumpkin/daemon_guest.cpp"}
 storage_programs = {"pumpkin_storage_probe.elf": "tests/fixtures/pumpkin/storage_guest.cpp"}
+resource_programs = {"pumpkin_resource_probe.elf": "tests/fixtures/pumpkin/resource_broker_guest.cpp"}
 sdk_headers = [
     ("src/shared/include/xos/", "abi_types.hpp"),
     ("src/shared/include/xos/", "file_abi.hpp"),
@@ -33,29 +34,33 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def source_hashes(storage_probe=False):
-    sources, entries = build_inputs(storage_probe)
+def source_hashes(storage_probe=False, resource_probe=False):
+    sources, entries = build_inputs(storage_probe, resource_probe)
     headers = [module + "account_store.hpp"] if storage_probe else [
         module + name for name in ("account_store.hpp", "service_core.hpp", "daemon_protocol.hpp", "native_ipc.hpp")
     ]
+    if resource_probe:
+        headers += [module + name for name in ("resource_dispatch.hpp", "sealed_blob.hpp")]
     inputs = sorted([*sources, *entries.values(), *headers, "scripts/build_pumpkin_daemon.py"])
     return {name: sha(root / name) for name in inputs}
 
 
-def build_inputs(storage_probe):
+def build_inputs(storage_probe, resource_probe=False):
     if storage_probe:
         return [module + "account_store.cpp"], storage_programs
+    if resource_probe:
+        return common_cpp + [module + name for name in ("resource_dispatch.cpp", "sealed_blob.cpp")], resource_programs
     return common_cpp, programs
 
 
-def build(sdk, out, storage_probe=False):
+def build(sdk, out, storage_probe=False, resource_probe=False):
     sdk_hash = tree_receipt(sdk)[0]
     for directory, name in sdk_headers:
         if sha(root / directory / name) != sha(sdk / "include/xos" / name):
             raise ValueError(f"SDK header differs from current source: {name}")
     versions = audit()
-    sources = source_hashes(storage_probe)
-    sources_cpp, entries = build_inputs(storage_probe)
+    sources = source_hashes(storage_probe, resource_probe)
+    sources_cpp, entries = build_inputs(storage_probe, resource_probe)
     out.relative_to(root / "build")
     out.mkdir(parents=True, exist_ok=False)
     prefix = [tool("g++"), "-std=c++20", "-Os", "-Wall", "-Wextra", "-Werror",
@@ -79,12 +84,16 @@ def build(sdk, out, storage_probe=False):
             raise ValueError(f"ELF exceeds loader image bound: {binary}")
         commands.extend([str(part) for part in items] for items in (command, strip))
 
-    if sources != source_hashes(storage_probe) or sdk_hash != tree_receipt(sdk)[0]:
+    if sources != source_hashes(storage_probe, resource_probe) or sdk_hash != tree_receipt(sdk)[0]:
         raise ValueError("build inputs changed during compilation")
+    profile = "pumpkin-p1-volatile-test"
+    if storage_probe:
+        profile = "pumpkin-storage-probe"
+    elif resource_probe:
+        profile = "pumpkin-resource-probe"
     receipt = {"sources": sources, "sdk_tree_sha256": sdk_hash, "toolchain": versions,
                "artifacts": {binary: sha(out / binary) for binary in entries}, "commands": commands,
-               "libc_linked": False,
-               "profile": "pumpkin-storage-probe" if storage_probe else "pumpkin-p1-volatile-test"}
+               "libc_linked": False, "profile": profile}
     (out / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
     print(out / "receipt.json")
 
@@ -93,9 +102,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sdk", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--storage-probe", action="store_true", help="build only the disposable storage fixture")
+    probes = parser.add_mutually_exclusive_group()
+    probes.add_argument("--storage-probe", action="store_true", help="build only the disposable storage fixture")
+    probes.add_argument("--resource-probe", action="store_true", help="build only the sealed-resource guest fixture")
     args = parser.parse_args()
-    build(args.sdk.resolve(strict=True), args.output.resolve(), args.storage_probe)
+    build(args.sdk.resolve(strict=True), args.output.resolve(), args.storage_probe, args.resource_probe)
 
 
 if __name__ == "__main__":

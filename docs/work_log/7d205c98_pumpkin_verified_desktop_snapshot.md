@@ -36,3 +36,14 @@ python3 tests/abi_doc_consistency.py
 回收。活动吊销在 3282 毫秒后确认持有者拒绝和完整回收，更改同尺寸 ELF 的启动继续
 被拒绝。独立无桌面镜像 `1e85a6e85906dd85` 通过 13 项原登录回归，ABI 文档对照通过。
 [镜像、SDK、基线失败和客体验收回执](../reports/pumpkin_verified_mobius_snapshot_20261126/manifest.json)
+
+## 与 Qt Quick #292 组合验收
+
+将 `31dae7e2` 合入得到 `05c11d52`。与上轮镜像的输入清单相比，变化仅为 Qt Quick 外部
+套件的两个构建脚本及其验收脚本。两个配置的 33 个内置客体 ELF 分别与上一轮逐字节一致。
+Mobius 沿用已绑定 glibc SDK 和应用配置的 ELF，并核实了文件 SHA-256、系统清单和实际
+客体回执的绑定。组合源码分别重建桌面镜像 `d33867f68e9733c3` 与无桌面镜像
+`494c64a6aeddd778`，独占运行 QEMU 并通过 8 项桌面、13 项无桌面和 ABI 对照。
+管理模式无信号时，Ctrl+Q 后 814 毫秒确认注销及资源回收。活动吊销在 2560 毫秒后确认
+原会话拒绝及资源回收。历史失败和早期身份复核原因未明的记录继续保留。
+[组合源码与真实客体回执](../reports/pumpkin_verified_mobius_post292_20261126/manifest.json)

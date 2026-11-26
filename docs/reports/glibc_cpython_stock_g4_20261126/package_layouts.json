@@ -1,0 +1,254 @@
+{
+  "caps": {
+    "archive_bytes": 277884928,
+    "manifest_bytes": 1048576,
+    "member_bytes": 67108864,
+    "payload_bytes": 268435456
+  },
+  "cpython_build_profiles": [
+    {
+      "original_elf": {
+        "bytes": 46544408,
+        "layout": {
+          "format": "static_elf64",
+          "load_and_main_stack_pages": 2242,
+          "load_segments": 3,
+          "machine": "x86_64",
+          "static_tls": true
+        },
+        "sha256": "fec0ab71f69e3a7020e4c750059d9bfee3eca9a1cd6820f7f0a2b12ff3781e14"
+      },
+      "profile": "xos-x86_64-glibc-cpython-package-preview-v1",
+      "profile_file_sha256": "b2d771e77c0f369b59f7fb6d246e4374843986487d34640e2a53621d064ceb21",
+      "sdk_manifest_sha256": "a9490cc126053b9e15808533e388f9d780ce0bc8e9b48ae71f3926932dfdfbdc",
+      "source_archive_sha256": "e02d9ac21cebda6e46435369744a92c65cc7cd8669697694122cf97ffacd1e53",
+      "static_extensions": [],
+      "target": "x86_64-unknown-xos",
+      "tools": {
+        "ar": {
+          "sha256": "39ade51a05fba3546be68906d1b2c1788ce87d25d60bb30a030eaefbb96621b4",
+          "version": "GNU ar (GNU Binutils) 2.47.20260726"
+        },
+        "as": {
+          "sha256": "616a1b8b8a202fbce829217332a197892571d4e48d119ed88d93b935b2615163",
+          "version": "GNU assembler (GNU Binutils) 2.47.20260726"
+        },
+        "g++": {
+          "sha256": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+          "version": "x86_64-elf-g++ (GCC) 16.2.0"
+        },
+        "gcc": {
+          "sha256": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+          "version": "x86_64-elf-gcc (GCC) 16.2.0"
+        },
+        "ld": {
+          "sha256": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1",
+          "version": "GNU ld (GNU Binutils) 2.47.20260726"
+        },
+        "ranlib": {
+          "sha256": "d9034b71a71fbab28306582bfc37480e81dfc85d976d1f1b0593698507671a1d",
+          "version": "GNU ranlib (GNU Binutils) 2.47.20260726"
+        },
+        "readelf": {
+          "sha256": "1bf54462b91fb25735cd40b479c1a8f425af7eac240d79bdcbea68666005ec42",
+          "version": "GNU readelf (GNU Binutils) 2.47.20260726"
+        }
+      }
+    },
+    {
+      "original_elf": {
+        "bytes": 46436592,
+        "layout": {
+          "format": "static_elf64",
+          "load_and_main_stack_pages": 2242,
+          "load_segments": 3,
+          "machine": "x86_64",
+          "static_tls": true
+        },
+        "sha256": "f2ccaf5edb1f6de8732e102db0be2e53581f24f0518036f40785919efeb82fcd"
+      },
+      "profile": "xos-x86_64-glibc-stock-fork-v1",
+      "profile_file_sha256": "a7bf0f845819b1deae2939991144e8feba03a335362e5fbee24c88f71dbe3b25",
+      "sdk_manifest_sha256": "d32a5c3b604016492df6af8ca04445b8d050cc81d4225db68cf4926e17c6aa7b",
+      "source_archive_sha256": "e02d9ac21cebda6e46435369744a92c65cc7cd8669697694122cf97ffacd1e53",
+      "static_extensions": [],
+      "target": "x86_64-unknown-xos",
+      "tools": {
+        "ar": {
+          "sha256": "39ade51a05fba3546be68906d1b2c1788ce87d25d60bb30a030eaefbb96621b4",
+          "version": "GNU ar (GNU Binutils) 2.47.20260726"
+        },
+        "as": {
+          "sha256": "616a1b8b8a202fbce829217332a197892571d4e48d119ed88d93b935b2615163",
+          "version": "GNU assembler (GNU Binutils) 2.47.20260726"
+        },
+        "g++": {
+          "sha256": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+          "version": "x86_64-elf-g++ (GCC) 16.2.0"
+        },
+        "gcc": {
+          "sha256": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+          "version": "x86_64-elf-gcc (GCC) 16.2.0"
+        },
+        "ld": {
+          "sha256": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1",
+          "version": "GNU ld (GNU Binutils) 2.47.20260726"
+        },
+        "ranlib": {
+          "sha256": "d9034b71a71fbab28306582bfc37480e81dfc85d976d1f1b0593698507671a1d",
+          "version": "GNU ranlib (GNU Binutils) 2.47.20260726"
+        },
+        "readelf": {
+          "sha256": "1bf54462b91fb25735cd40b479c1a8f425af7eac240d79bdcbea68666005ec42",
+          "version": "GNU readelf (GNU Binutils) 2.47.20260726"
+        }
+      }
+    }
+  ],
+  "new_stock_fork_profile": {
+    "archive_bytes": 20305920,
+    "dirs": [
+      "usr",
+      "usr/bin",
+      "usr/lib",
+      "usr/lib/python3.14",
+      "usr/share",
+      "usr/share/licenses",
+      "usr/share/licenses/xos.cpython",
+      "usr/share/licenses/xos.cpython/cpython",
+      "usr/share/licenses/xos.cpython/sdk",
+      "usr/share/licenses/xos.cpython/sdk/usr",
+      "usr/share/licenses/xos.cpython/sdk/usr/share",
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos",
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc",
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/compiler-runtime-licenses",
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos/terminal-support",
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos/terminal-support/licenses",
+      "usr/share/licenses/xos.cpython/xos",
+      "usr/share/xos.cpython"
+    ],
+    "files": {
+      "usr/bin/python3": 9402160,
+      "usr/lib/python3.14/os.py": 41958,
+      "usr/lib/python314.zip": 10654445,
+      "usr/share/licenses/xos.cpython/cpython/LICENSE": 13804,
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/COPYING.LIB": 26419,
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/LICENSES": 19665,
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/compiler-runtime-licenses/COPYING": 18002,
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/compiler-runtime-licenses/COPYING.LIB": 26527,
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/compiler-runtime-licenses/COPYING.RUNTIME": 3324,
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos/terminal-support/LICENSE": 11358,
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos/terminal-support/licenses/mit_legacy.txt": 1223,
+      "usr/share/licenses/xos.cpython/xos/LICENSE": 11358,
+      "usr/share/licenses/xos.cpython/xos/NOTICE": 1874,
+      "usr/share/xos.cpython/build_receipt.json": 55488
+    },
+    "manifest_bytes": 4681,
+    "max_member_bytes": 10654445,
+    "new_package_dirs": [
+      "usr/lib",
+      "usr/lib/python3.14",
+      "usr/share",
+      "usr/share/licenses",
+      "usr/share/licenses/xos.cpython",
+      "usr/share/licenses/xos.cpython/cpython",
+      "usr/share/licenses/xos.cpython/sdk",
+      "usr/share/licenses/xos.cpython/sdk/usr",
+      "usr/share/licenses/xos.cpython/sdk/usr/share",
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos",
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc",
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/compiler-runtime-licenses",
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos/terminal-support",
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos/terminal-support/licenses",
+      "usr/share/licenses/xos.cpython/xos",
+      "usr/share/xos.cpython"
+    ],
+    "profile": "xos-x86_64-glibc-stock-fork-v1",
+    "python_elf_bytes": 9402160,
+    "reserve_bytes": 7208960,
+    "sha256": "a82ad13aba9c80966b3f37f359cafb39730422b0eef5c7b7aad28d8ca75c7287",
+    "stdlib_zip_bytes": 10654445,
+    "total_payload_bytes": 20287605
+  },
+  "payload_changes": {
+    "usr/bin/python3": {
+      "new": "a581294047917223a7d4907f439b927bdb75f736389e858dd879a6b0062351be",
+      "previous": "6df75fa9ad6137a655dfc778cabf41e1caf8f14b9967daa52124d64388267df0"
+    },
+    "usr/share/xos.cpython/build_receipt.json": {
+      "new": "96824f139f1e18d879d6ccd706ff6a0906c83f9cc4c097261fd440a87825618b",
+      "previous": "abbaef0e81566bfe5281ab53ed497d98bc9fac2bc731b9d210691e9e7492da2f"
+    }
+  },
+  "previous_cpython_profile": {
+    "archive_bytes": 20305920,
+    "dirs": [
+      "usr",
+      "usr/bin",
+      "usr/lib",
+      "usr/lib/python3.14",
+      "usr/share",
+      "usr/share/licenses",
+      "usr/share/licenses/xos.cpython",
+      "usr/share/licenses/xos.cpython/cpython",
+      "usr/share/licenses/xos.cpython/sdk",
+      "usr/share/licenses/xos.cpython/sdk/usr",
+      "usr/share/licenses/xos.cpython/sdk/usr/share",
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos",
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc",
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/compiler-runtime-licenses",
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos/terminal-support",
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos/terminal-support/licenses",
+      "usr/share/licenses/xos.cpython/xos",
+      "usr/share/xos.cpython"
+    ],
+    "files": {
+      "usr/bin/python3": 9402096,
+      "usr/lib/python3.14/os.py": 41958,
+      "usr/lib/python314.zip": 10654445,
+      "usr/share/licenses/xos.cpython/cpython/LICENSE": 13804,
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/COPYING.LIB": 26419,
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/LICENSES": 19665,
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/compiler-runtime-licenses/COPYING": 18002,
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/compiler-runtime-licenses/COPYING.LIB": 26527,
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/compiler-runtime-licenses/COPYING.RUNTIME": 3324,
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos/terminal-support/LICENSE": 11358,
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos/terminal-support/licenses/mit_legacy.txt": 1223,
+      "usr/share/licenses/xos.cpython/xos/LICENSE": 11358,
+      "usr/share/licenses/xos.cpython/xos/NOTICE": 1874,
+      "usr/share/xos.cpython/build_receipt.json": 55501
+    },
+    "manifest_bytes": 4694,
+    "max_member_bytes": 10654445,
+    "new_package_dirs": [
+      "usr/lib",
+      "usr/lib/python3.14",
+      "usr/share",
+      "usr/share/licenses",
+      "usr/share/licenses/xos.cpython",
+      "usr/share/licenses/xos.cpython/cpython",
+      "usr/share/licenses/xos.cpython/sdk",
+      "usr/share/licenses/xos.cpython/sdk/usr",
+      "usr/share/licenses/xos.cpython/sdk/usr/share",
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos",
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc",
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/compiler-runtime-licenses",
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos/terminal-support",
+      "usr/share/licenses/xos.cpython/sdk/usr/share/xos/terminal-support/licenses",
+      "usr/share/licenses/xos.cpython/xos",
+      "usr/share/xos.cpython"
+    ],
+    "profile": "xos-x86_64-glibc-cpython-package-preview-v1",
+    "python_elf_bytes": 9402096,
+    "reserve_bytes": 7208960,
+    "sha256": "f3626102ea2d341d0c34fcd0375da7874a74def8aac2b7edf96fe1782b11b159",
+    "stdlib_zip_bytes": 10654445,
+    "total_payload_bytes": 20287554
+  },
+  "same_directories": true,
+  "same_path_set": true,
+  "same_source_archive": true,
+  "same_static_extensions": true,
+  "same_target": true,
+  "shared_stdlib_zip_sha256": "2eb1eb04dafd17e6fb8d84f9c86991b77b8631ac0350106419e5b485fce4be79"
+}

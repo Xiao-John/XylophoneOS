@@ -1,0 +1,237 @@
+{
+  "status": "passed_subset",
+  "suite": "glibc_terminal",
+  "runs": [
+    {
+      "case": "terminal_select",
+      "status": "passed",
+      "resources": [
+        129525,
+        4,
+        2
+      ],
+      "output": "tty-run /bin/terminal_probe select\nGLIBC_TERMINAL_SELECT_FINITE_READY\nGLIBC_TERMINAL_SELECT_INFINITE_READY\nGLIBC_TERMINAL_SELECT_PASS\n[wait] pid=12 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "public_terminal",
+      "repetition": 1,
+      "status": "passed",
+      "resources": [
+        129525,
+        4,
+        2
+      ],
+      "output": "tty-run /bin/terminal_probe /g3obs1 b5171c3454720b932b2534fca137e8e8\nGLIBC_TERMINAL_MODE_PASS raw=115200 timed=100ms ioctl=translated\nGLIBC_TERMINAL_BLOCK_READY\nGLIBC_TERMINAL_BLOCK_PASS escape=raw files=progress\nWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\nGLIBC_TERMINAL_WRITE_PASS bytes=600 short=bounded\nGLIBC_TERMINAL_FLUSH_QUEUE_READY\nGLIBC_TERMINAL_FLUSH_FRESH_READY\nGLIBC_TERMINAL_TCSA_QUEUE_READY\nGLIBC_TERMINAL_TCSA_FRESH_READY\nGLIBC_TERMINAL_FLUSH_PASS discarded=QX fresh=FN\nGLIBC_TERMINAL_PASS checks=80 aliases=retained reused_fd=file\n[wait] pid=13 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "native_exec_terminal_receiver",
+      "repetition": 1,
+      "status": "passed",
+      "resources": [
+        129525,
+        4,
+        2
+      ],
+      "output": "tty-run /bin/terminal_parent /bin/terminal_receiver\nGLIBC_TERMINAL_PARENT_READY sequence=advanced mode=timed alias=9\nGLIBC_TERMINAL_INHERIT_PASS alias=9 cloexec=1 sequence=resumed mode=retained\n[wait] pid=14 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "public_terminal",
+      "repetition": 2,
+      "status": "passed",
+      "resources": [
+        129525,
+        4,
+        2
+      ],
+      "output": "tty-run /bin/terminal_probe /g3obs2 6751d6fa6051605e53f869481b05607d\nGLIBC_TERMINAL_MODE_PASS raw=115200 timed=100ms ioctl=translated\nGLIBC_TERMINAL_BLOCK_READY\nGLIBC_TERMINAL_BLOCK_PASS escape=raw files=progress\nWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\nGLIBC_TERMINAL_WRITE_PASS bytes=600 short=bounded\nGLIBC_TERMINAL_FLUSH_QUEUE_READY\nGLIBC_TERMINAL_FLUSH_FRESH_READY\nGLIBC_TERMINAL_TCSA_QUEUE_READY\nGLIBC_TERMINAL_TCSA_FRESH_READY\nGLIBC_TERMINAL_FLUSH_PASS discarded=QX fresh=FN\nGLIBC_TERMINAL_PASS checks=81 aliases=retained reused_fd=file\n[wait] pid=16 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "native_exec_terminal_receiver",
+      "repetition": 2,
+      "status": "passed",
+      "resources": [
+        129525,
+        4,
+        2
+      ],
+      "output": "tty-run /bin/terminal_parent /bin/terminal_receiver\nGLIBC_TERMINAL_PARENT_READY sequence=advanced mode=timed alias=9\nGLIBC_TERMINAL_INHERIT_PASS alias=9 cloexec=1 sequence=resumed mode=retained\n[wait] pid=17 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "public_terminal",
+      "repetition": 3,
+      "status": "passed",
+      "resources": [
+        129525,
+        4,
+        2
+      ],
+      "output": "tty-run /bin/terminal_probe /g3obs3 1b518018381d161c563308634bfde9a0\nGLIBC_TERMINAL_MODE_PASS raw=115200 timed=100ms ioctl=translated\nGLIBC_TERMINAL_BLOCK_READY\nGLIBC_TERMINAL_BLOCK_PASS escape=raw files=progress\nWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\nGLIBC_TERMINAL_WRITE_PASS bytes=600 short=bounded\nGLIBC_TERMINAL_FLUSH_QUEUE_READY\nGLIBC_TERMINAL_FLUSH_FRESH_READY\nGLIBC_TERMINAL_TCSA_QUEUE_READY\nGLIBC_TERMINAL_TCSA_FRESH_READY\nGLIBC_TERMINAL_FLUSH_PASS discarded=QX fresh=FN\nGLIBC_TERMINAL_PASS checks=86 aliases=retained reused_fd=file\n[wait] pid=19 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "native_exec_terminal_receiver",
+      "repetition": 3,
+      "status": "passed",
+      "resources": [
+        129525,
+        4,
+        2
+      ],
+      "output": "tty-run /bin/terminal_parent /bin/terminal_receiver\nGLIBC_TERMINAL_PARENT_READY sequence=advanced mode=timed alias=9\nGLIBC_TERMINAL_INHERIT_PASS alias=9 cloexec=1 sequence=resumed mode=retained\n[wait] pid=20 kind=exited code=0\nxsh> "
+    }
+  ],
+  "input_events": [
+    {
+      "repetition": 1,
+      "input_hex": "1b5b41",
+      "after": "complete_fresh_observation_record",
+      "serial_offset": 3659,
+      "before_threads": 2,
+      "before_waiting": 1,
+      "after_threads": 2,
+      "after_waiting": 1,
+      "file_progress": 1,
+      "record_sha256": "351fdfb93de222f1a7650ba7533d06218b2e634ca1f1fb95a6c24f152c7eec44",
+      "observation": {
+        "path": "/g3obs1",
+        "nonce": "b5171c3454720b932b2534fca137e8e8",
+        "offset": 8224768,
+        "expected_sha256": "351fdfb93de222f1a7650ba7533d06218b2e634ca1f1fb95a6c24f152c7eec44"
+      }
+    },
+    {
+      "repetition": 2,
+      "input_hex": "1b5b41",
+      "after": "complete_fresh_observation_record",
+      "serial_offset": 5147,
+      "before_threads": 2,
+      "before_waiting": 1,
+      "after_threads": 2,
+      "after_waiting": 1,
+      "file_progress": 1,
+      "record_sha256": "16141ac2f1fe3390b56d709d456b8b25d91d782159d72e302230599e2e61e6ca",
+      "observation": {
+        "path": "/g3obs2",
+        "nonce": "6751d6fa6051605e53f869481b05607d",
+        "offset": 8228864,
+        "expected_sha256": "16141ac2f1fe3390b56d709d456b8b25d91d782159d72e302230599e2e61e6ca"
+      }
+    },
+    {
+      "repetition": 3,
+      "input_hex": "1b5b41",
+      "after": "complete_fresh_observation_record",
+      "serial_offset": 6635,
+      "before_threads": 2,
+      "before_waiting": 1,
+      "after_threads": 2,
+      "after_waiting": 1,
+      "file_progress": 1,
+      "record_sha256": "9c9ce286af7f2f83715bbf1fb169c3d6e57b0ee9dcaed29efafa0350069e6fd3",
+      "observation": {
+        "path": "/g3obs3",
+        "nonce": "1b518018381d161c563308634bfde9a0",
+        "offset": 8232960,
+        "expected_sha256": "9c9ce286af7f2f83715bbf1fb169c3d6e57b0ee9dcaed29efafa0350069e6fd3"
+      }
+    }
+  ],
+  "qmp": "disabled; serial-only",
+  "not_run": [
+    "hardware UART timing",
+    "continuous-input flush race",
+    "glibc outgoing terminal fork/exec/spawn",
+    "same-session full-duplex I/O",
+    "dash launch entry",
+    "service death during guest I/O"
+  ],
+  "system_build_id": "bec24eea8c3ee683",
+  "system_manifest_sha256": "7ff8a5b5c8cc272bb44cc267c2697da8cfd088c10344987c4e6a884431a9f5e6",
+  "glibc_manifest_sha256": "2840652b6b5e289aee6ae0e8985fecd0bd23ce5c81634690ba403b8df9f786d9",
+  "image_sha256": "8d1c4438bf37ccee62a8202f0b16f0bba5ab9320e169e52c65d141e70eff1363",
+  "runner_sha256": "a6028ba212b43530124038af376cc3dbc8a889740736a084a77cf67abe342a50",
+  "elfs": {
+    "terminal_probe": {
+      "source_sha256": "a12f0d42f444aec127497cd8f9a6f8c7eac222689f7f911fab680b6298dd1f5b",
+      "elf_sha256": "eda2d16e7b762152280363f717e9d5073182e59d9e4b56a97e2dfa25674dd1b0",
+      "tty_marker": {
+        "address": 1074289216,
+        "offset": 547392,
+        "load_flags": 4
+      },
+      "exec_marker": null
+    },
+    "terminal_receiver": {
+      "source_sha256": "a12f0d42f444aec127497cd8f9a6f8c7eac222689f7f911fab680b6298dd1f5b",
+      "elf_sha256": "43b8cbdfdb7c641409b9e2e58f5d06268d1ff064be977d0631d708284646e3cf",
+      "tty_marker": {
+        "address": 1074289216,
+        "offset": 547392,
+        "load_flags": 4
+      },
+      "exec_marker": {
+        "section": ".xos.exec",
+        "address": 1074289232,
+        "offset": 547408,
+        "flags": 2,
+        "load_flags": 4,
+        "sha256": "604c184f80d2c947a4cd359c3fb720343dfc2d1c6a006f6e4bf10a558a42e962",
+        "magic": "0x3349424143455858",
+        "version": 3,
+        "size": 16
+      }
+    },
+    "terminal_parent": {
+      "source_sha256": "f33e6900d34ba1ed106ec6c51e5974e1179119f472c6f644b63d3856e3cff580",
+      "elf_sha256": "7097d11fb232796e53b4311d3d03f2f0269f346e4bed33ba1ff14ae552e7f87a",
+      "sdk_inputs": {
+        "crt0_posix.o": "f41fcd6187ecd4e7f2d5dc0eb2c46ad5623304dac86d09ff818d5ee02b0fe2e9",
+        "user.ld": "b8b57be81f11d8f181ba6221f2c51db906b5d282ef8e436c2f0f9bcff068a1de",
+        "lib/libxos.a": "f442eecb163a1b4b541af5bebd3cf7c5664b41b66ff8fae7ea9a49bf827f3d69",
+        "lib/libxos_loader.a": "dc3515e487e9dcc290ddf7656c7ab331c71752412085d3c4e711a9408ac4cd02",
+        "lib/libc.a": "283fa07ad205c80af92e955a91da027435d8a8a90cb7e27933f57925cc5baa22",
+        "lib/libm.a": "4cfdd6324f6776d025923ee369fad51236a9ee5730c8143a6b3b03b963eefd80"
+      },
+      "libgcc_sha256": "339898e1b135d8f0d9038270b41e7d17bf9b677c415e854784db4579f60af565",
+      "compiler_sha256": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+      "sanitized_environment": [],
+      "tty_marker": {
+        "address": 1073856480,
+        "offset": 118752,
+        "load_flags": 4
+      }
+    }
+  },
+  "observations": [
+    {
+      "path": "/g3obs1",
+      "nonce": "b5171c3454720b932b2534fca137e8e8",
+      "offset": 8224768,
+      "expected_sha256": "351fdfb93de222f1a7650ba7533d06218b2e634ca1f1fb95a6c24f152c7eec44"
+    },
+    {
+      "path": "/g3obs2",
+      "nonce": "6751d6fa6051605e53f869481b05607d",
+      "offset": 8228864,
+      "expected_sha256": "16141ac2f1fe3390b56d709d456b8b25d91d782159d72e302230599e2e61e6ca"
+    },
+    {
+      "path": "/g3obs3",
+      "nonce": "1b518018381d161c563308634bfde9a0",
+      "offset": 8232960,
+      "expected_sha256": "9c9ce286af7f2f83715bbf1fb169c3d6e57b0ee9dcaed29efafa0350069e6fd3"
+    }
+  ],
+  "work_disk_initial_sha256": "8fd42803d74d3932263c6bead692e23085f19c02f2cd727d047f73c4a3b2a350",
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "before_terminal": [
+    129709,
+    3,
+    1
+  ],
+  "baseline_with_service": [
+    129525,
+    4,
+    2
+  ],
+  "serial_sha256": "6bc7ce2ce95b759f2bff2f0a6bbd4dd39da761fb848934551ec4b299342baeea"
+}

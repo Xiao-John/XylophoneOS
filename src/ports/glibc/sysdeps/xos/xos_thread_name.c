@@ -49,6 +49,23 @@ current_name (xos_u64 self)
   return entry != NULL ? entry : add_name (self, initial);
 }
 
+void
+__xos_thread_name_after_fork (xos_u64 previous_tid, xos_u64 child_tid)
+{
+  /* The native fork admits a single thread. Its child has an exclusive
+     copy of this registry and must discard all inherited thread IDs. */
+  const struct thread_name *entry = find_name (previous_tid);
+  struct thread_name inherited = { 0 };
+  if (entry != NULL)
+    inherited = *entry;
+  memset (names, 0, sizeof (names));
+  if (inherited.tid != 0)
+    {
+      inherited.tid = child_tid;
+      names[0] = inherited;
+    }
+}
+
 int
 __xos_thread_name_add (xos_u64 tid)
 {

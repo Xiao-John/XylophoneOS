@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-enum { file_stat = 3, file_open = 4, file_fstat = 18, file_anonymous = 21,
+enum { file_stat = 3, file_open = 4, file_fstat = 18, file_clone_session = 20, file_anonymous = 21,
        file_anonymous_seal = 22, file_cwd_set = 26, file_cwd_get = 27 };
 
 enum xos_file_session_phase

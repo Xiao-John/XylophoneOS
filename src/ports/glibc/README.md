@@ -92,8 +92,7 @@ system image must include the current-thread TLS contract and implementation.
 G3 thread and file suites are separate modules.  Dynamic loading, resolver/DNS,
 signals, asynchronous cancellation, process-shared/robust synchronization,
 fork/exec from a glibc parent and general POSIX conformance remain outside this
-G2 qualification.  Their current stub or unsupported behavior must not be
-interpreted as a successful implementation.
+G2 qualification.
 
 The G3 files-extra module adds bounded directory streams with real service
 identities and cookies, and positioned read/write operations which preserve the
@@ -102,6 +101,14 @@ glibc APIs, concurrent threads, a native parent sharing a file with a glibc
 child, and final resource recovery. Directory streams use the opt-in identity
 format of files op 2; positioned I/O uses op 30/31. Older services fail this
 extension explicitly; old directory clients retain their existing wire format.
+
+The static single-thread runtime can use the XOS process snapshot transaction.
+`fork` runs the POSIX atfork callbacks. `_Fork` uses the same transaction
+without callbacks. The child retains open descriptions, cwd, and pipe
+references and acquires its own authenticated files and terminal transports.
+Kernel process admission still enforces create authorization and fork depth.
+The shared build and threads-enabled process continue to reject these calls.
+Explicit glibc exec replacement remains a separate gate.
 
 ## G3 authenticated terminal adapter
 

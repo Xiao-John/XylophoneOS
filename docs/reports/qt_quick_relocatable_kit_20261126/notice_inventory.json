@@ -1,0 +1,19 @@
+{
+  "status": "notice_inventory_verified",
+  "components": {
+    "qtbase": {
+      "notice_files": 31,
+      "lock_sha256": "f37d1f82234b71066d59dd704febf86ba59762bce53021ef0ef0774709c6ed04"
+    },
+    "qtdeclarative": {
+      "notice_files": 4,
+      "lock_sha256": "2d772ab72e7447e4bdb16b61c9faf1fd3377a5b21339b41e76889d0ac6790a61"
+    },
+    "qtshadertools": {
+      "notice_files": 10,
+      "lock_sha256": "ccdb9d28acb50a668763b50747f5121cc6a69f42b82086fb3484fdbfb9037c4a"
+    }
+  },
+  "qtbase_archive_included": true,
+  "complete_source_member_license_relink_audit": "not_run"
+}

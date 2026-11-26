@@ -6,6 +6,7 @@ import argparse
 import json
 import os
 from pathlib import Path
+import shlex
 import struct
 import subprocess
 import sys
@@ -19,6 +20,8 @@ def main():
     parser.add_argument('--archive', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
     parser.add_argument('--jobs', type=int, choices=(1, 2), default=2)
+    parser.add_argument('--initial-tp-fixture', action='store_true',
+                        help='compile the native TP fixture with the GNU rtld build flags')
     args = parser.parse_args()
     archive = args.archive.resolve(strict=True)
     output = args.output.resolve()
@@ -102,6 +105,8 @@ def main():
         if any(symbols.get(name) != kind for name, kind in (
                 ('_start', 'T'), ('_dl_start', 't'), ('_dl_start_user', 'T'), ('_dl_sysdep_start', 'U'))):
             raise RuntimeError('expected rtld entry and unresolved XOS startup handoff')
+        if symbols.get('__xos_rtld_install_initial_tp') != 'U':
+            raise RuntimeError('GNU rtld does not select the XOS initial thread handoff')
 
         native_entry = build / 'elf/xos_rtld_entry.os'
         _, native_compilation = run('make_native_entry', [*make_elf, native_entry])
@@ -161,6 +166,38 @@ def main():
                        'features-offsets.h', 'link-defines.h', 'tlsdesc.h', 'rtld-offsets.h'):
             run('make_' + header, ['make', '-C', source / 'csu', 'objdir=' + str(build),
                                   '-j' + str(args.jobs), build / header])
+        tls_objects = [build / 'elf' / name for name in
+                       ('dl-tls.os', 'dl-tls_init_tp.os', 'dl-mutex.os')]
+        for tls_object in tls_objects:
+            _, compilation = run('make_' + tls_object.name, [*make_elf, tls_object])
+            if not any({'-fPIC', '-DSHARED', '-DMODULE_NAME=rtld'} <= set(line.split())
+                       and line.split()[0].endswith('/cc') for line in compilation.splitlines()
+                       if line.split()):
+                raise RuntimeError('expected shared rtld module flags: ' + tls_object.name)
+        _, tls_imports = run('initial_tp_imports', [env['NM'], '-u', tls_objects[1]])
+        if {line.split()[-1] for line in tls_imports.splitlines()} != {
+                '_rtld_local', '___rtld_mutex_lock', '___rtld_mutex_unlock'}:
+            raise RuntimeError('the native initial TP handoff depends on an unexpected runtime')
+        run('initial_tls_relocations', [env['READELF'], '-rW', entry, *tls_objects])
+        if args.initial_tp_fixture:
+            fixture_source = ROOT / 'tests/fixtures/glibc_d1/initial_tls_guest.c'
+            fixture = output / 'd1-initial-tp-fixture.c'
+            fixture.write_bytes(fixture_source.read_bytes())
+            fixture_digest = sha(fixture)
+            command, = (shlex.split(line) for line in
+                        (output / 'make_dl-tls_init_tp.os.log').read_text().splitlines()
+                        if line.startswith(env['CC'] + ' '))
+            if Path(command[1]).name != 'dl-tls_init_tp.c':
+                raise RuntimeError('cannot identify the GNU NPTL compile input')
+            artifact = build / 'elf/d1-initial-tp-fixture.o'
+            command[1] = fixture
+            command[command.index('-o') + 1] = artifact
+            run('compile_initial_tp_fixture', [*command[:command.index('-MD')], '-Werror'],
+                cwd=source / 'elf')
+            if sha(fixture) != fixture_digest or sha(fixture_source) != fixture_digest:
+                raise RuntimeError('the GNU initial TP fixture changed during compilation')
+            tls_objects.append(artifact)
+            report['initial_tp_fixture_sha256'] = fixture_digest
         failure, _ = run('make_ld_so', [*make_elf, build / 'elf/ld.so'], allow_failure=True)
         if not failure or (build / 'elf/ld.so').exists():
             raise RuntimeError('ld.so unexpectedly linked despite the startup gate')
@@ -170,7 +207,9 @@ def main():
                 or sha(Path(__file__)) != report['probe_sha256']
                 or any(sha(Path(tool['path'])) != tool['sha256'] for tool in tools.values())):
             raise RuntimeError('source preparation or configured tools changed during the diagnostic')
-        report.update(status='rtld_entry_compiled_startup_blocked', artifacts={str(path.relative_to(output)): sha(path) for path in (entry, native_entry, rtld_map, rtld_files, rtld_load, rtld_heap, rtld_allocator)})
+        report.update(status='rtld_entry_compiled_startup_blocked', artifacts={
+            str(path.relative_to(output)): sha(path) for path in
+            (entry, native_entry, rtld_map, rtld_files, rtld_load, rtld_heap, rtld_allocator, *tls_objects)})
     except Exception as error:
         report['error'] = str(error)
         raise

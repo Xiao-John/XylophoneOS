@@ -2,6 +2,7 @@
   "files": {
     "cmake.json": "23cd09af888add503dc0252f3f2894ce9228a62dd4428f02948b61f8d3272039",
     "input_binding.json": "bfd46303e2168e471bca6aeef0f4ba372f5ac73aea0a13d55cc7b61a91831653",
+    "page_and_layout_objects.json": "0a9716f961997b52fd70848aa60ed9fb042c15a9dc61254793f7baa9d741898c",
     "software_buffer_objects.json": "1ab98d8add1d7bf4e8e8996a08852b4df965bb4c225e4bef3b84c2b7b8647a3c",
     "target_graph_replay.json": "d7fd7d88e50f6baa97843586e36795fd74d43c99401bdfa6cf79c31290ed634c"
   },

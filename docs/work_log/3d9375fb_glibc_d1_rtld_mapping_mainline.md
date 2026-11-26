@@ -12,8 +12,10 @@ SDK 的 profile 一并进入客体。QEMU 11.1.3 经 dash 执行原生工具，�
 继承文件读出 `EFGH`，请求序号由 69 到 71。
 [客体回执](../reports/glibc_d1_rtld_mapping_mainline_20261126/report.json)
 
-完整 `ld.so` 的原生启动守卫继续启用。该客体执行了实际共享装载器编译出的
-映射对象，真实入口闭包、早期分配和最终 TLS 启动按 D1 后续门验收。
+原生静态夹具直接调用由 GNU 共享规则编译的 `__xos_rtld_map_fd` 和回收接口。
+实际 `dl-load.os` 由签名源编译，并检查其选择了 XOS 映射和解除映射符号。GNU
+`link_map` 字段落位、其 PHDR 回调和解除映射的 span 重建仍属编译级检查。
+完整 `ld.so` 的启动守卫继续启用。 [范围复验](../reports/glibc_d1_rtld_mapping_mainline_20261126/review_scope.json)
 
 ```sh
 python3 tests/glibc_d1_rtld_mapping_guest.py --system "$SYSTEM" \

@@ -167,7 +167,8 @@ def main():
         parser.add_argument('--' + name, type=lambda value: Path(value).resolve(), required=True)
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=False)
-    report = {'status': 'failed', 'scope': 'shared rtld mapping objects in a native static startup harness',
+    report = {'status': 'failed', 'scope': 'direct XOS rtld mapper and release calls in a native static startup harness',
+              'dl_load_os_qualification': 'compiled_mapping_and_unmapping_references_checked',
               'shared_interpreter_executed': False}
     try:
         system = bind_system(args.system)

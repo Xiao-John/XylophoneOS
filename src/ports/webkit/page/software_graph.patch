@@ -72,10 +72,34 @@
      list(APPEND WebCore_LIBRARIES OpenGL::GLES)
 
      list(APPEND WebCore_SYSTEM_INCLUDE_DIRECTORIES
+--- a/Source/WebCore/accessibility/AXCoreObject.h
++++ b/Source/WebCore/accessibility/AXCoreObject.h
+@@ -81,7 +81,7 @@
+
+ typedef WebCore::AccessibilityObjectAtspi AccessibilityObjectWrapper;
+
+-#elif PLATFORM(PLAYSTATION) || PLATFORM(HAIKU)
++#elif PLATFORM(PLAYSTATION) || PLATFORM(HAIKU) || (OS(XOS) && !ENABLE(ACCESSIBILITY))
+ class AccessibilityObjectWrapper : public RefCounted<AccessibilityObjectWrapper> { };
+ #else
+ class AccessibilityObjectWrapper;
+@@ -1505,7 +1505,7 @@
+     RetainPtr<WebAccessibilityObjectWrapper> m_wrapper;
+ #elif PLATFORM(WIN)
+     COMPtr<AccessibilityObjectWrapper> m_wrapper;
+-#elif PLATFORM(PLAYSTATION) || PLATFORM(HAIKU)
++#elif PLATFORM(PLAYSTATION) || PLATFORM(HAIKU) || (OS(XOS) && !ENABLE(ACCESSIBILITY))
+     RefPtr<AccessibilityObjectWrapper> m_wrapper;
+ #elif USE(ATSPI)
+     RefPtr<AccessibilityObjectAtspi> m_wrapper;
 --- /dev/null
 +++ b/Source/WebCore/PlatformJSCOnly.cmake
-@@ -0,0 +1,31 @@
+@@ -0,0 +1,35 @@
 +if (XOS_WEBCORE_SOFTWARE)
++    list(APPEND WebCore_DEFINITIONS USE_HARFBUZZ=1)
++    if (NOT DEFINED WEBKIT_MAX_BUNDLE_SIZE)
++        set(WEBKIT_MAX_BUNDLE_SIZE 2)
++    endif ()
 +    foreach (input XOS_SKIA_INCLUDE_DIRECTORY XOS_SKIA_RASTER_ARCHIVE XOS_SKIA_FONTCONFIG_ARCHIVE)
 +        if (NOT EXISTS "${${input}}")
 +            message(FATAL_ERROR "Missing target WebCore input ${input}")

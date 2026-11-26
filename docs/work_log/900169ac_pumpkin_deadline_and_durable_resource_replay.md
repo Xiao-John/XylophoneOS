@@ -47,3 +47,21 @@ QEMU 11.1.2 使用同一已登记凭据在两个新 VM 执行真实资源读取�
 | 普通系统 `1b5269d995185f78` 清单 | `3020ae5221e97dae0837ef0537734f16265bc2bd4c79c364b82b504b7623f649` |
 | `build/ordinary-guest/report.json` | `1563e32ccea546c995ab3e980093cad2be792810f943c61b31cf026aff88e09d` |
 | `build/ordinary-guest/guest_serial.log` | `a6b6c86f67c18e223764832ce4d26937ef6515422436a239edf3531292b9ed22` |
+
+## 当前主线组合
+
+基于主线 `15911f2c` 协调普通冷启动与 Pumpkin 专用登录的构建参数，两套
+参数各自保留于源码摘要、构建调用及产物清单。受测 Git 树
+`11f4cb2c2ef23d4ea6162b58bf56111ff0350f7c` 对应公开提交
+`596f579e138a0c432b04fe46f198451fc605575a`。同时选择两个需要不同
+supervisor 的配置时，构建按既有约定拒绝。
+
+三套镜像从该树重新构建。QEMU 11.1.2 的资源登录镜像通过 16 项，
+原登录镜像通过 13 项，普通镜像的 xsh/dash broker 回归和 10 项许可材料
+检查均通过。
+
+| 回执 | 系统 build ID | SHA-256 |
+| --- | --- | --- |
+| 持久资源登录 | `b5499cfa66bcdf02` | `98bfdd2d289f4074d5a2cc4431e48018e92c9b8e7579708dd301fc54aa01a841` |
+| 原登录 | `4d77032084b79614` | `9dfef15fc6f6d80826db54c495124e5c769ab4f4927f7859364461083063992a` |
+| 普通镜像 broker | `6709af2ea07befd0` | `ad0cdeddc6f8acb0e7700912fd53238b56684da35f1b408dc8c053e5c620d7f2` |

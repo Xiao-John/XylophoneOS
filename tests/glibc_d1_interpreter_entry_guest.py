@@ -8,6 +8,7 @@ import re
 import struct
 import subprocess
 import tempfile
+import time
 
 from boot_smoke import Guest
 from build_glibc_program import verify_elf
@@ -168,9 +169,15 @@ def exercise(args, directory, inputs, report):
         for mode, script in scripts.items():
             launch = f'{environment} /usr/bin/d1_entry {mode}\n'
             if args.sysdep_invocation:
-                launch += ('rc=$?\n: >> /tests/dependency.so || exit 71\n'
-                           'printf "D1_SYSDEP_CHILD_RC=%s writer=reopened\\n" "$rc"\nexit "$rc"\n')
+                launch += 'rc=$?\nprintf "D1_SYSDEP_CHILD_RC=%s\\n" "$rc"\n'
+                if mode != 'obsolete':
+                    launch += ('true >> /tests/dependency.so || exit 71\n'
+                               'printf "D1_SYSDEP_WRITER=reopened\\n"\n')
+                launch += 'exit "$rc"\n'
             script.write_text(launch)
+        if args.sysdep_invocation:
+            scripts['check_writer'] = directory / 'check_writer.sh'
+            scripts['check_writer'].write_text('true >> /tests/dependency.so\n')
     else:
         script = directory / 'child.sh'
         script.write_text('/usr/bin/d1_entry < /tests/input\nrc=$?\n'
@@ -212,7 +219,24 @@ def exercise(args, directory, inputs, report):
                     if args.sysdep_invocation:
                         assert b'D1_SYSDEP_OBSERVER_FAIL' not in result and b'D1_NATIVE_SYSDEP_FAIL' not in result
                         assert result.count(INVOCATION_RUNS['ordinary'][1]) == (code == b'0'), result
-                        assert b'D1_SYSDEP_CHILD_RC=' + code + b' writer=reopened' in result, result
+                        assert b'D1_SYSDEP_CHILD_RC=' + code + b'\n' in result, result
+                        if mode != 'obsolete':
+                            assert b'D1_SYSDEP_WRITER=reopened' in result, result
+                if args.sysdep_invocation:
+                    # The rejected obsolete record never became an authenticated
+                    # owner. Let the files service observe native process death.
+                    deadline = time.monotonic() + 10
+                    attempts = report['obsolete_writer_recovery'] = []
+                    while True:
+                        remaining = deadline - time.monotonic()
+                        assert remaining > 0, attempts
+                        result = command(guest, 'dash /tests/check_writer.sh', b'kind=exited code=',
+                                         timeout=remaining)
+                        attempts.append(result.decode(errors='replace'))
+                        if re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', result) == [b'0']:
+                            break
+                        assert b'Device or resource busy' in result, result
+                    assert resources(guest) == report['resources_before']
                 return
             result = command(guest, 'dash /tests/child.sh', b'kind=exited code=', timeout=120)
             report['output'] = result.decode(errors='replace')

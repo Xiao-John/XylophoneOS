@@ -1,11 +1,13 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Build the first native LLInt layout generation stage for XOS."""
+"""Build native LLInt layout headers or the WTF stack object targets for XOS."""
 
 import argparse
 import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
+import struct
 import subprocess
 import sys
 
@@ -78,6 +80,12 @@ def build(args):
     source = source_parent / archive_root
     for name in sorted(lock["patches"]):
         run(Path(name).stem, ["patch", "-d", source, "-p1", "-i", port / name])
+    platform_sources = source / "Source/WTF/wtf/xos"
+    platform_sources.mkdir()
+    for name, checksum in lock["platform_sources"].items():
+        destination = platform_sources / Path(name).name
+        shutil.copyfile(port / name, destination)
+        match(destination, checksum)
     run("unpack_icu", ["tar", "--zstd", "-xf", args.icu_archive, "-C", icu])
     for name, checksum in icu_lock["artifacts"].items():
         match(icu / name, checksum)
@@ -117,25 +125,39 @@ def build(args):
                        f"-DICU_DATA_LIBRARY_RELEASE={icu / 'lib/libicudata.a'}",
                        f"-DICU_UC_LIBRARY_RELEASE={icu / 'lib/libicuuc.a'}",
                        f"-DICU_I18N_LIBRARY_RELEASE={icu / 'lib/libicui18n.a'}"])
-    derived = "JavaScriptCore/DerivedSources/"
-    target = derived + "LLIntAssembly.h"
-    run("layout", ["cmake", "--build", layout, "--target", target, "--parallel", "1"])
-    extractors = ("bin/LLIntSettingsExtractor", "bin/LLIntOffsetsExtractor")
-    for name in extractors:
-        verify_elf(layout / name)
-    artifacts = (*extractors, derived + "LLIntDesiredSettings.h", derived + "LLIntDesiredOffsets.h", target)
-    if any((layout / name).stat().st_size == 0 for name in artifacts):
-        raise RuntimeError("layout generator produced an empty artifact")
-    assembly = (layout / target).read_text()
-    if "OFFLINE_ASM_GLOBAL_LABEL(vmEntryToJavaScript)" not in assembly or '"push %rbp ' not in assembly:
-        raise RuntimeError("layout generator did not emit the native x86-64 interpreter entry")
+    if args.wtf_stack:
+        object_dir = "Source/WTF/wtf/CMakeFiles/WTF.dir/"
+        artifacts = tuple(object_dir + name for name in (
+            "StackBounds.cpp.obj", "xos/xos_stack_bounds.cpp.obj", "Threading.cpp.obj"))
+        run("wtf_stack", ["cmake", "--build", layout, "--target", *artifacts, "--parallel", "1"])
+        for name in artifacts:
+            with (layout / name).open("rb") as stream:
+                header = stream.read(64)
+            if (len(header) != 64 or header[:7] != b"\x7fELF\x02\x01\x01"
+                    or struct.unpack_from("<HH", header, 16) != (1, 62)):
+                raise RuntimeError(name + " is not an x86-64 ELF relocatable object")
+        status = "target_wtf_stack_objects_compiled"
+    else:
+        derived = "JavaScriptCore/DerivedSources/"
+        target = derived + "LLIntAssembly.h"
+        run("layout", ["cmake", "--build", layout, "--target", target, "--parallel", "1"])
+        extractors = ("bin/LLIntSettingsExtractor", "bin/LLIntOffsetsExtractor")
+        for name in extractors:
+            verify_elf(layout / name)
+        artifacts = (*extractors, derived + "LLIntDesiredSettings.h", derived + "LLIntDesiredOffsets.h", target)
+        if any((layout / name).stat().st_size == 0 for name in artifacts):
+            raise RuntimeError("layout generator produced an empty artifact")
+        assembly = (layout / target).read_text()
+        if "OFFLINE_ASM_GLOBAL_LABEL(vmEntryToJavaScript)" not in assembly or '"push %rbp ' not in assembly:
+            raise RuntimeError("layout generator did not emit the native x86-64 interpreter entry")
+        status = "target_llint_assembly_generated"
     if verify_profile(load_json(args.sdk_profile), "glibc", args.sdk_build) != binding:
-        raise RuntimeError("SDK or profile changed during layout generation")
+        raise RuntimeError("SDK or profile changed during the build")
     match(Path(__file__), recipe_digest)
     match(lock_path, lock_digest)
     for item in tools.values():
         match(Path(item["path"]), item["sha256"])
-    receipt = {"status": "target_llint_assembly_generated", "source_lock_sha256": lock_digest,
+    receipt = {"status": status, "source_lock_sha256": lock_digest,
                "builder_sha256": recipe_digest, "sdk_manifest_sha256": manifest_digest,
                "profile_binding": binding, "icu_archive_sha256": icu_lock["archive_sha256"],
                "target_tools": {name: item["sha256"] for name, item in tools.items()},
@@ -147,6 +169,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("archive", "icu-archive", "sdk-build", "sdk-profile", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
+    parser.add_argument("--wtf-stack", action="store_true", help="build only the native WTF stack objects")
     build(parser.parse_args())
 
 

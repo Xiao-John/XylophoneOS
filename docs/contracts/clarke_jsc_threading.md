@@ -1,6 +1,6 @@
 # ClarkE 静态 JSCOnly 线程边界
 
-基线是 [锁定的 WPE WebKit 2.54.2](../../src/ports/webkit/source_lock.json) 和 XOS glibc 静态 C/C++ profile。真实 `jsc` 构建在开启 `USE_SYSTEM_MALLOC` 后到达 WTF。日志首先在 `ThreadingPrimitives.h:70` 拒绝平台，连带出现 `PlatformMutex`、`PlatformThreadHandle`、`ThreadSpecificKey` 及 `PlatformSuspendError` 缺失。`ThreadSpecific.h:169` 同样拒绝 XOS。`LLIntSettingsExtractor.cpp` 也通过这些头文件走到同一处。已实测独立栈适配器与 pthread 路径，WTF 和 JSC 仍待接入和链接。 [验证记录](../work_log/eb674281_clarke_jsc_static_threading_boundary.md)
+基线是 [锁定的 WPE WebKit 2.54.2](../../src/ports/webkit/source_lock.json) 和 XOS glibc 静态 C/C++ profile。初次 `jsc` 构建在开启 `USE_SYSTEM_MALLOC` 后到达 WTF，`ThreadingPrimitives.h:70` 和 `ThreadSpecific.h:169` 拒绝平台。`LLIntSettingsExtractor.cpp` 使用同一组头文件。独立客体栈适配器覆盖当前线程和存活工作线程的区间查询。 [验证记录](../work_log/eb674281_clarke_jsc_static_threading_boundary.md)
 
 ## 可接入的线程操作
 
@@ -30,4 +30,10 @@
 [原生布局生成](../../src/ports/webkit/README.md#原生-llint-布局生成) 现已完成两个
 提取器及 `LLIntAssembly.h`。XOS 选择真实 glibc pthread 类型，使同一套目标配置可
 供提取器使用。宿主 Ruby 解析两个目标 ELF，输出 `vmEntryToJavaScript` 的 x86-64
-汇编。WTF 运行时、单 mutator 准入和客体解释器执行仍待实现与验证。
+汇编。
+
+[原生 WTF 栈边界阶段](../work_log/207c6644_clarke_native_wtf_thread_and_stack_slice.md)
+编译了 `StackBounds.cpp`、`Threading.cpp` 和复用的原生栈边界辅助对象。线程自身初始化
+使用实际的可访问栈范围。创建线程在入口握手锁内查询新线程的栈。`posix/ThreadingPOSIX.cpp`
+仍依赖信号挂起。WTF 链接、
+单 mutator 准入、GC 根保留和客体解释器执行仍待验收。

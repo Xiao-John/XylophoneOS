@@ -1,0 +1,37 @@
+{
+  "status": "passed_subset",
+  "scope": "GNU initial thread TP handoff with prepared storage",
+  "build_id": "ac319c480d42ed5b",
+  "iso_sha256": "5c7638bd0807c28eecc97d34731765c03c54bea84d50b3037b745e7a977d7106",
+  "system_manifest_sha256": "d69e4bbb02356176d7e5a200f983e4bf3e1742411e107a3790ddaf20f7d962a4",
+  "sdk_sha256": "f7522e7d5d8e462bf22d215be1bc7de16202958b057662b5c3f54a424ab1bd18",
+  "profile_sha256": "1ed5c424eb4f76df617938b91a0e62d62f0ad79ed113750bce8ddd53d26e8595",
+  "rtld_manifest_sha256": "4fc496f60b28ae097426ce81aafc2e3ca62bfae9b722ebed2235493beeb78051",
+  "guest_elf_sha256": "f650ebf736ef500431a653e553656a61debc1856d03d0c1b0941030a1b17cddd",
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "runs": [
+    {
+      "output": "exec-file /bin/initial_tp\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/bin/initial_tp\n[process] event=wait_blocked parent=7 child=10\r\nD1_INITIAL_TP_OK tcb=gnu tid=native stack=exact dtv=preserved dispatch=preserved\n[task] event=reclaimed pid=10 pages=51\r\n[wait] pid=10 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        129696,
+        3,
+        1
+      ]
+    },
+    {
+      "output": "exec-file /bin/initial_tp\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x0000000000360000\r\n[loader] started pid=11 file=/bin/initial_tp\n[process] event=wait_blocked parent=7 child=11\r\nD1_INITIAL_TP_OK tcb=gnu tid=native stack=exact dtv=preserved dispatch=preserved\n[task] event=reclaimed pid=11 pages=51\r\n[wait] pid=11 kind=exited code=0\nxsh> ",
+      "resources_after": [
+        129696,
+        3,
+        1
+      ]
+    }
+  ],
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "serial_sha256": "8414facce2a038ad8324e1182a3d5dd09a667226c3d3e65b03f337e0ae8d02b4",
+  "shared_interpreter_executed": false
+}

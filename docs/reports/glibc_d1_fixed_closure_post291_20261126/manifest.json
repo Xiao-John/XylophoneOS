@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "source_commit": "98ee1f2276ab2053d1f23418eb1b48e97c4af1f3",
+  "source_tree": "2d73fb20558fbc599ea54e7663693856a49af886",
+  "system_build_id": "97cce681943c3eb2",
+  "files": {
+    "initial_tp.json": "adca0023fab7d3159329067aff619af428c6f5f1a87308a5b0d0116f6138714b",
+    "closure_tls.json": "703bb7b22adf339a1c1f90c1d79e2c231e862d6fde16e50482abe7e66f4d0047",
+    "abi.log": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301"
+  },
+  "raw_guest_sha256": {
+    "initial_tp.json": "0b595e4be78c5890a083b7f9287084fa3d5cb692e7f29c044169f247b65c3312",
+    "closure_tls.json": "786baa7dbee5f264b494fbc1c20e2f7ffd4cf053f6cb48a4b189965152ecd6dd"
+  }
+}

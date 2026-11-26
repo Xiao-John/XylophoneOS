@@ -36,6 +36,7 @@
 | `resolve_path` | 28 |
 | `read_at` | 30 |
 | `write_at` | 31 |
+| `remove_directory` | 32 |
 
 ## 谁负责什么
 

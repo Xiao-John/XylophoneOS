@@ -14,4 +14,6 @@
    xos/file_abi.hpp). NAME_MAX excludes the terminator. */
 #define NAME_MAX 255
 #define PATH_MAX 256
+/* Matches the native process_pipe_bytes capacity and atomic write limit. */
+#define PIPE_BUF 4096
 #endif

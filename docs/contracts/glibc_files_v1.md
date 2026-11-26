@@ -55,6 +55,25 @@ console/pipe 阻塞 I/O 在保留 open-description 引用后释放该锁，避�
 `close` 错误仍移除本地 FD，重复 close 返回 EBADF。`dup2` 先保留源描述再
 替换目标，目标旧描述的最终关闭错误不撤销已完成的替换。
 
+## 原生匿名管道
+
+`pipe` 和 `pipe2` 使用现有内核管道，在同一 FD 锁下登记读端和写端。
+`pipe2` 接受 `O_CLOEXEC` 和 `O_NONBLOCK`。描述符不足返回 `EMFILE`，
+原生管道配额耗尽返回 `ENFILE`，失败时保留调用者的输出数组。
+`dup` 产生的别名共享方向、缓冲区和 `O_NONBLOCK`，各自持有 `FD_CLOEXEC`。
+写端最后一个引用关闭后，读端先排空剩余数据再返回 EOF。读端最后一个引用
+关闭后，写端返回 `EPIPE`。当前原生信号 profile 不在该路径投递 `SIGPIPE`。
+
+`PIPE_BUF` 为 4096 字节。阻塞写入按需等到完成，期间保留并发 I/O 引用。
+非阻塞写入不大于 `PIPE_BUF` 时要么完整写入，要么返回 `EAGAIN`；
+更大的非阻塞写入可以短写。原生管道操作不依赖 files 会话。
+
+出站 `posix_spawn` 跳过额外的 CLOEXEC 描述符，保留父进程描述符。
+后续接入外部命令的管道重定向时，现有 `sys_process_stdio` 可将调用方所有的
+有向管道引用挂到正在构建的子进程的 0/1/2。glibc 启动快照仍须在提交或回滚前
+持有该引用，并检查读写方向及未映射的描述符；该映射当前返回 `ENOTSUP`。
+普通文件重定向沿用 loader 的 files 句柄转移契约。
+
 ## 定位读写与目录流
 
 `pread/pread64/pwrite/pwrite64` 使用独立 `xos_file_positioned.c` 与 files op
@@ -145,6 +164,7 @@ python3 tests/glibc_g3_files_host.py --output build/glibc_g3_files_host
 python3 tests/glibc_g3_files_host.py --sanitize --output build/glibc_g3_files_sanitize
 python3 tests/glibc_files_extra_host.py --output build/glibc_files_extra_host
 python3 tests/glibc_files_extra_host.py --sanitize --output build/glibc_files_extra_sanitize
+python3 tests/glibc_static_guest.py --system-build build --glibc-build build/glibc-c --suite pipe --output build/glibc_pipe_guest
 ```
 
 宿主回归替换内核陷阱而保留生产 FD/IPC 状态机，覆盖故障注入、并发、继承、

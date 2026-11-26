@@ -120,6 +120,10 @@ def suite_cases(suite):
     if suite in ('process', 'all'):
         cases.append(('g3_spawn', 'glibc_g3/process_spawn.c', ['parent'], 0,
                       ['GLIBC_SPAWN_CHILD_0', 'GLIBC_SPAWN_CHILD_23', 'GLIBC_SPAWN_WAIT_PASS']))
+    if suite in ('pipe', 'all'):
+        cases.append(('g3_pipe', 'glibc_g3/pipe_probe.c', [], 0,
+                      ['GLIBC_PIPE_NONBLOCK_PASS', 'GLIBC_PIPE_CAPACITY_PASS',
+                       'GLIBC_PIPE_THREAD_STDIO_PASS', 'GLIBC_PIPE_CLOEXEC_PASS']))
     return cases
 
 
@@ -229,7 +233,7 @@ def main():
                         help='private system built with --glibc-files-death-probe')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--suite', choices=('g2', 'threads', 'files', 'files-extra', 'path-mutations',
-                                            'cwd', 'process', 'exit', 'all'),
+                                            'cwd', 'process', 'pipe', 'exit', 'all'),
                         default='g2')
     parser.add_argument('--dash-receipt', type=Path, help='current-system dash C3 receipt for cwd and process suites')
     parser.add_argument('--repetitions', type=int, default=3)
@@ -450,6 +454,8 @@ def main():
                         line = 'exec-file /bin/g3_spawn denied'
                     elif name == 'g3_spawn_dash':
                         line = 'dash /g3_spawn/spawn_via_dash.sh'
+                    elif name == 'g3_pipe':
+                        line = '/bin/g3_pipe'
                     kind, code = ('exited', expected_status) if isinstance(expected_status, int) else expected_status
                     began = time.monotonic()
                     captured = command(guest, line, b'kind=', timeout=15 if name == 'g3_exit_abi' else 120)

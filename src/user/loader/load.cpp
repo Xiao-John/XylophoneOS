@@ -25,10 +25,22 @@ bool buffer_read(void* context, u64 offset, u8* destination, u32 length) {
     return true;
 }
 
-struct opened_file { file::client* client; u32 handle; };
+enum class file_read_mode { probe, positioned, sequential };
+struct opened_file {
+    file::client* client;
+    u32 handle;
+    u32 size;
+    file_read_mode mode = file_read_mode::probe;
+};
 bool file_read(void* context, u64 offset, u8* destination, u32 length) {
     auto& source = *static_cast<opened_file*>(context);
-    if (offset > 0xffffffffu || source.client->seek(source.handle, static_cast<u32>(offset)) < 0) {
+    if (offset > source.size || length > source.size - offset ||
+        (length != 0 && destination == nullptr)) {
+        return false;
+    }
+    if (length == 0) { return true; }
+    if (source.mode == file_read_mode::sequential &&
+        source.client->seek(source.handle, static_cast<u32>(offset)) < 0) {
         return false;
     }
     u32 done = 0;
@@ -36,7 +48,23 @@ bool file_read(void* context, u64 offset, u8* destination, u32 length) {
         const u32 remaining = length - done;
         const u32 request_size = remaining > file::response_data_size
             ? file::response_data_size : remaining;
-        const i64 got = source.client->read(source.handle, destination + done, request_size);
+        i64 got;
+        if (source.mode == file_read_mode::sequential) {
+            got = source.client->read(source.handle, destination + done, request_size);
+        } else {
+            got = source.client->read_at(source.handle, destination + done, request_size, offset + done);
+            if (source.mode == file_read_mode::probe) {
+                source.mode = file_read_mode::positioned;
+                // The previous file service used invalid for unknown operations.
+                // This first request has a valid range on the held read-only pin.
+                if (got == static_cast<i64>(file::status::invalid) ||
+                    got == static_cast<i64>(file::status::not_supported)) {
+                    source.mode = file_read_mode::sequential;
+                    if (source.client->seek(source.handle, static_cast<u32>(offset)) < 0) { return false; }
+                    continue;
+                }
+            }
+        }
         if (got <= 0 || static_cast<u64>(got) > request_size) { return false; }
         done += static_cast<u32>(got);
     }
@@ -416,7 +444,7 @@ i64 spawn_file_impl(const char* path, u32 argc, const char* const* argv, const s
     const i64 opened = file_client.open(path, file::read_only | file::open_pin, handle, size, version);
     (void)version; // The held read-only handle pins the opened version until close;
     if (opened < 0) { return opened; }
-    opened_file source{&file_client, handle};
+    opened_file source{&file_client, handle, size};
     return spawn_reader(path, size, file_read, &source, argc, argv, true, handle, options);
 }
 
@@ -446,7 +474,7 @@ i64 spawn_file_diagnosed_impl(const char* path, u32 argc, const char* const* arg
         diagnostic = {execution::launch_stage::open, opened, elf::error::none};
         return opened;
     }
-    opened_file source{&file_client, handle};
+    opened_file source{&file_client, handle, size};
     if (receipt != nullptr) {
         sha256 digest;
         for (u32 offset = 0; offset < size;) {

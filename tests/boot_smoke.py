@@ -19,19 +19,20 @@ from run_qemu import MACHINE, qemu_command
 
 class Guest:
     def __init__(self, image, name, *, cpu="qemu64,+rdrand", debug_port=None, work_disk=None, iso=None, network=False,
-                 qmp_enabled=True, network_capture=None, network_peer_port=None):
+                 qmp_enabled=True, network_capture=None, network_peer_port=None, log_dir=None):
         # Boot medium follows the image suffix unless the caller overrides:
         # .iso files need -cdrom, everything else (real_mode.img) stays floppy.
         if iso is None:
             iso = str(image).lower().endswith(".iso")
         self.name = name
+        self.log_dir = ROOT / 'build' if log_dir is None else Path(log_dir)
         self.output = bytearray()
         self.temp = tempfile.TemporaryDirectory(prefix="xos_")
         self.qmp_path = str(Path(self.temp.name) / "qmp.sock") if qmp_enabled else None
         self.command = qemu_command(image, qmp=self.qmp_path, cpu=cpu, debug_port=debug_port,
                                     work_disk=work_disk, iso=iso, network=network, network_capture=network_capture,
                                     network_peer_port=network_peer_port)
-        self.stderr = open(ROOT / f"build/{name}_qemu.log", "wb")
+        self.stderr = (self.log_dir / f'{name}_qemu.log').open('wb')
         self.process = subprocess.Popen(self.command, stdin=subprocess.PIPE,
                                         stdout=subprocess.PIPE, stderr=self.stderr)
         self.selector = selectors.DefaultSelector()
@@ -118,7 +119,7 @@ class Guest:
         self.process.stdin.close()
         self.process.stdout.close()
         self.stderr.close()
-        (ROOT / f"build/{self.name}_serial.log").write_bytes(self.output)
+        (self.log_dir / f'{self.name}_serial.log').write_bytes(self.output)
         self.temp.cleanup()
 
 

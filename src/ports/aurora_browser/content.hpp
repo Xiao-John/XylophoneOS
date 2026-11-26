@@ -5,8 +5,16 @@
 #include <QtCore/QByteArray>
 #include <QtCore/QStringList>
 namespace browser {
-// The provider accepts read-only /web files. No URL grants a file write, spawn,
-// device or kernel privilege. HTTP is a separate future provider.
+// URLs stay in the read-only /web namespace. Installed built-ins are a
+// fallback for the same five public paths on disks without the demo files.
+inline QString installed_builtin(const QString &path) {
+    const QStringList public_files{
+        "/web/start.html", "/web/reading.html", "/web/garden.html",
+        "/web/garden.bmp", "/web/theme.css"
+    };
+    return public_files.contains(path) ? QStringLiteral("/usr/share/xos.clarke") + path : QString{};
+}
+
 inline QString resolve(QString value, const QString &base) {
     if(value.size()>256 || value.contains(QChar('\0')) || value.contains('\\') || value.contains('%')) return {};
     if(value.startsWith("file:")) value=value.mid(5);
@@ -20,6 +28,8 @@ inline QString resolve(QString value, const QString &base) {
 }
 inline bool read(const QString &path,QByteArray &bytes,int limit,QString &error) {
     QFile file(path);
+    const auto builtin = installed_builtin(path);
+    if (!builtin.isEmpty() && !file.exists()) file.setFileName(builtin);
     if(!file.open(QIODevice::ReadOnly)){error="Page or resource missing";return false;}
     // Size is checked before allocation; read at most limit+1 handles changes.
     if(file.size()<0 || file.size()>limit){error="Resource byte budget exceeded";return false;}

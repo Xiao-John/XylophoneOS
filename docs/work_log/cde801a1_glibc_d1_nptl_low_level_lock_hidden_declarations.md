@@ -14,6 +14,8 @@ XOS 的 `futex-internal.h` 进入上游 NPTL 实现。该路径包含 `lowlevell
 GNU binutils 2.47 和两个构建任务。
 
 ```sh
+GLIBC_BUILD="$PWD/build/lowlevellock-glibc-sdk"
+SHARED_BUILD="$PWD/build/lowlevellock-shared"
 python3 -B scripts/build.py --output-dir "$SYSTEM_BUILD"
 python3 -B scripts/build_glibc_sdk.py --archive "$GLIBC_ARCHIVE" --output "$GLIBC_BUILD" --jobs 2
 python3 -B tests/glibc_static_guest.py --system-build "$SYSTEM_BUILD" --glibc-build "$GLIBC_BUILD" \

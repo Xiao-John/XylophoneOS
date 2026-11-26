@@ -14,6 +14,8 @@ phase_error (const struct xos_rtld_images *images)
     return ENOTSUP;
   if (images->files->phase != xos_file_session_active)
     return EIO;
+  if (images->plan->count == 0)
+    return 0;
   const long now = file_trap (46, 0, 0, 0);
   if (now < 0)
     return EIO;

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "interpreter_entry.hpp"
 #include "xos_rtld_mapping.h"
+#include <errno.h>
 #include <xos/fault_sha256.hpp>
 #include <xos/vm.hpp>
 
@@ -133,6 +134,7 @@ bool native_entropy(u8* bytes, u32 size) {
 
 extern "C" [[noreturn]] void __wrap___xos_glibc_start(const startup_info* startup, void* stack_top) {
     if (reinterpret_cast<u64>(startup) != process_startup_begin || startup->version != 2) { fail("startup"); }
+    const bool empty = startup->argc == 2;
     const auto* extension = reinterpret_cast<const startup_extension*>(process_startup_begin + startup_extension_offset);
     if (extension->file_handles[0] == 0) { fail("inherited stdin"); }
     xos_file_session early{};
@@ -143,7 +145,7 @@ extern "C" [[noreturn]] void __wrap___xos_glibc_start(const startup_info* startu
     file_pin app{&early, 0}, interpreter{&early, 0}, dependency{&early, 0};
     if (!pin_verified(app, "/tests/main.pie", main_bytes, main_digest)
         || !pin_verified(interpreter, "/tests/interpreter.so", interpreter_bytes, interpreter_digest)
-        || !pin_verified(dependency, "/tests/dependency.so", dependency_bytes, dependency_digest)) {
+        || (!empty && !pin_verified(dependency, "/tests/dependency.so", dependency_bytes, dependency_digest))) {
         fail("verified pins");
     }
     const pinned_image main_source{main_image, main_bytes, positioned, &app, {main_span, main_span}};
@@ -155,16 +157,17 @@ extern "C" [[noreturn]] void __wrap___xos_glibc_start(const startup_info* startu
     plan.count = 1;
     plan.pins[0] = {71, dependency.handle, dependency.inode, dependency_bytes, dependency_image.bias,
                     dependency_span, dependency_span, "libhandoff.so"};
-    const auto stage = [&](xos_d1_entry_handoff& frame, main_headers headers) {
+    const auto stage = [&](xos_d1_entry_handoff& frame, main_headers headers,
+                           const xos_rtld_pin_plan* dependencies) {
         return prepare_interpreter_entry(startup, main_source, headers, interpreter_source,
-                                         execution_mode::ordinary, native_entropy, early, frame, images, &plan);
+                                         execution_mode::ordinary, native_entropy, early, frame, images, dependencies);
     };
     const u32 prior_sequence = early.request_sequence;
     const u64 too_low_addresses[] = {process_stack_bottom, XOS_D1_STACK_ENTRY_MIN - 16};
     for (const u64 address : too_low_addresses) {
         auto* too_low = reinterpret_cast<xos_d1_entry_handoff*>(address);
         *too_low = {};
-        const auto rejected = stage(*too_low, main_phdr);
+        const auto rejected = stage(*too_low, main_phdr, empty ? nullptr : &plan);
         if (rejected.error != interpreter_entry_error::layout || rejected.release_error != 0
             || images.main.bytes != 0 || images.interpreter.bytes != 0 || too_low->record.magic != 0
             || early.phase != xos_file_session_active || early.request_sequence != prior_sequence) {
@@ -176,7 +179,15 @@ extern "C" [[noreturn]] void __wrap___xos_glibc_start(const startup_info* startu
     // Exercise the first allowed stack address with an actual checker call.
     auto* frame = reinterpret_cast<xos_d1_entry_handoff*>(XOS_D1_STACK_ENTRY_MIN);
     *frame = {};
-    const auto prepare = [&](main_headers headers) { return stage(*frame, headers); };
+    const auto prepare = [&](main_headers headers) { return stage(*frame, headers, empty ? nullptr : &plan); };
+    if (empty) {
+        plan.count = 0;
+        const auto rejected = stage(*frame, main_phdr, &plan);
+        if (rejected.error != interpreter_entry_error::layout || images.main.bytes != 0
+            || images.interpreter.bytes != 0 || early.request_sequence != prior_sequence) {
+            fail("empty closure with a nonzero deadline");
+        }
+    }
     auto result = prepare(main_phdr);
     if (result.error != interpreter_entry_error::interpreter_map || result.mapping.error != image_map_error::budget
         || result.release_error != 0 || images.main.bytes != 0 || images.interpreter.bytes != 0
@@ -201,7 +212,15 @@ extern "C" [[noreturn]] void __wrap___xos_glibc_start(const startup_info* startu
         || view.record->interpreter_entry != interpreter_image.bias + interpreter_image.entry
         || view.record->main_phdr != main_image.bias + main_phdr.address
         || view.record->main_phnum != main_phdr.count) { fail("actual rtld target checker"); }
-    prepare_dependency();
+    if (empty) {
+        const u32 sequence = view.record->files.request_sequence;
+        if (view.record->dependencies.count != 0 || view.record->dependencies.deadline_ns != 0
+            || __xos_rtld_open_pin("libhandoff.so") != -ENOENT || __xos_rtld_finish_images(&bound_images) != 0
+            || view.record->files.request_sequence != sequence) { fail("empty closure attachment"); }
+        sdk::print("D1_RTLD_ENTRY_EMPTY_OK no_requests\n");
+    } else {
+        prepare_dependency();
+    }
     early_sequence = view.record->files.request_sequence;
     if (__xos_file_adopt_early_session(&view.record->files) != 0
         || view.record->files.phase != xos_file_session_transferred) { fail("G3 ownership"); }

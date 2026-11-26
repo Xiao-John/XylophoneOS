@@ -131,6 +131,8 @@ def exercise(args, directory, inputs, report):
     script = directory / 'child.sh'
     script.write_text('/usr/bin/d1_entry < /tests/input\nrc=$?\n'
                       'printf "D1_INTERPRETER_ENTRY_RC=%s\\n" "$rc"\nexit "$rc"\n')
+    empty = directory / 'empty.sh'
+    empty.write_text(script.read_text().replace('/usr/bin/d1_entry <', '/usr/bin/d1_entry empty <', 1))
     pie, image, dependency, elf = inputs
     with tempfile.TemporaryDirectory(prefix='xos_d1_interpreter_entry_') as folder:
         disk = Path(folder) / 'work.img'
@@ -139,7 +141,7 @@ def exercise(args, directory, inputs, report):
             transfer(disk, 'mkdir', path)
         for path, source in (('/usr/bin/dash', args.dash), ('/usr/bin/d1_entry', elf),
                              ('/tests/main.pie', pie), ('/tests/interpreter.so', image), ('/tests/dependency.so', dependency),
-                             ('/tests/input', data), ('/tests/child.sh', script)):
+                             ('/tests/input', data), ('/tests/child.sh', script), ('/tests/empty.sh', empty)):
             transfer(disk, 'import', path, source)
         guest = Guest(args.system / 'xos-install.iso', 'interpreter_entry', work_disk=disk,
                       qmp_enabled=False, log_dir=directory)
@@ -165,6 +167,13 @@ def exercise(args, directory, inputs, report):
             assert int(phnum) == report['images']['main']['phnum']
             assert int(entry, 16) == report['images']['interpreter']['entry']
             assert int(late) == int(early) + 2
+            assert resources(guest) == report['resources_before']
+            result = command(guest, 'dash /tests/empty.sh', b'kind=exited code=', timeout=120)
+            report['empty_output'] = result.decode(errors='replace')
+            assert re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', result) == [b'0'], result
+            assert b'D1_RTLD_ENTRY_EMPTY_OK no_requests' in result, result
+            assert b'D1_INTERPRETER_ENTRY_RC=0' in result, result
+            assert b'inherited=EFGH' in result, result
             report['resources_after'] = resources(guest)
             assert report['resources_after'] == report['resources_before']
         finally:

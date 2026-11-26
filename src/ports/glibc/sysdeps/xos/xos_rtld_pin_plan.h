@@ -58,8 +58,12 @@ xos_rtld_same_soname (const char *first, const char *second)
 static inline int
 xos_rtld_valid_pin_plan (const struct xos_rtld_pin_plan *plan)
 {
-  if (plan == 0 || plan->count == 0 || plan->count > XOS_RTLD_MAX_PINS
-      || plan->reserved != 0 || plan->deadline_ns == 0 || plan->deadline_ns > __INT64_MAX__)
+  if (plan == 0 || plan->count > XOS_RTLD_MAX_PINS || plan->reserved != 0)
+    return 0;
+  /* A closure without pins has no file request to constrain.  */
+  if (plan->count == 0)
+    return plan->deadline_ns == 0;
+  if (plan->deadline_ns == 0 || plan->deadline_ns > __INT64_MAX__)
     return 0;
   for (xos_u32 i = 0; i < plan->count; ++i)
     {

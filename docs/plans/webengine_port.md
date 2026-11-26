@@ -78,6 +78,11 @@ M2 的共用字形前置已在 XOS glibc 上构建 FreeType、HarfBuzz 和 HarfB
 灰度栅格和资源回收。WebCore 字体注册、完整 WPE 配置和页面像素继续单独验收。
 [字形依赖主线复验](../work_log/3427d85e_clarke_webcore_font_stack_mainline.md)
 
+WebCore 的 Skia 软件绘制对象已在 XOS 交叉编译。录制与回放夹具用统一 glibc C/C++
+候选 SDK 链接，客体核对了混合模式、像素和资源回收。完整页面链接仍需完成后续对象
+和平台接口，之后按 M2 验收 DOM、布局和 Qt 视口。
+[WebCore 软件绘制回执](../work_log/clarke_webcore_software_context.md)
+
 ## 3. 终态架构（各里程碑是它的纵切片，不是临时版）
 
 ```

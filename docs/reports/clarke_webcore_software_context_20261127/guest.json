@@ -1,0 +1,26 @@
+{
+  "status": "passed_subset",
+  "build_id": "cd5133fc02597a12",
+  "iso_sha256": "b2e62e6eec14b67d30c30b9c2336b5c3214aa959f2b0d75de797e1cc1d1f6780",
+  "system_manifest_sha256": "0028f168ab83836de6bfdaa8008ddd3cd8fcfc5eec9154bf7d3f1714ced999e7",
+  "target_manifest_sha256": "3d70112de92ef6c39463e81f0a85442e61e477a9d4e7391f1f87c12359e277d7",
+  "probe_sha256": "cc18eb4c967ffb3a6990bd142213c7d8ec5f07abd860bc665b594cba87c47482",
+  "runner_sha256": "ab2788231fb5c61ecc49a8f03dc93737cf0ddef5736c5c396c36a9aee97282d4",
+  "fat_readback_sha256": "cc18eb4c967ffb3a6990bd142213c7d8ec5f07abd860bc665b594cba87c47482",
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "resources_after": [
+    129696,
+    3,
+    1
+  ],
+  "exit_codes": [
+    0
+  ],
+  "marker_count": 1,
+  "marker": "XOS_WEBCORE_SOFTWARE_RECORDING_PASS 16x8 red black blue white"
+}

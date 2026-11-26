@@ -41,7 +41,25 @@ int main(int argc, char **argv)
     CHECK(fd >= 0);
     char byte = '\0';
     CHECK(read(fd, &byte, 1) == 1 && byte == 'p');
+    CHECK(faccessat(fd, "/g3_cwd/plain.txt", R_OK, 0) == 0);
+    CHECK(faccessat(fd, "plain.txt", F_OK, 0) == -1 && errno == ENOTSUP);
     CHECK(close(fd) == 0);
+
+    CHECK(faccessat(AT_FDCWD, "plain.txt", R_OK, AT_EACCESS | AT_SYMLINK_NOFOLLOW) == 0);
+    CHECK(faccessat(AT_FDCWD, "read-only.txt", W_OK, AT_EACCESS) == -1 && errno == EACCES);
+    CHECK(faccessat(AT_FDCWD, "plain.txt", F_OK, 0x8000) == -1 && errno == EINVAL);
+    CHECK(faccessat(-1, "plain.txt", F_OK, 0) == -1 && errno == EBADF);
+    CHECK(readlink("plain.txt", &byte, 1) == -1 && errno == EINVAL && byte == 'p');
+    CHECK(readlink("missing", &byte, 1) == -1 && errno == ENOENT && byte == 'p');
+    CHECK(readlink("plain.txt/x", &byte, 1) == -1 && errno == ENOTDIR && byte == 'p');
+    char *canonical = realpath("sub/.././plain.txt", NULL);
+    CHECK(canonical != NULL && strcmp(canonical, "/g3_cwd/plain.txt") == 0);
+    free(canonical);
+    canonical = canonicalize_file_name("/g3_cwd/路/../plain.txt");
+    CHECK(canonical != NULL && strcmp(canonical, "/g3_cwd/plain.txt") == 0);
+    free(canonical);
+    CHECK(realpath("missing/../plain.txt", NULL) == NULL && errno == ENOENT);
+    CHECK(realpath("plain.txt/", NULL) == NULL && errno == ENOTDIR);
 
     CHECK(access("plain.txt", F_OK) == 0);
     CHECK(access("plain.txt", R_OK | W_OK) == 0);

@@ -510,11 +510,15 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
             break;
 #if XOS_PUMPKIN_MOBIUS
         case anchor_guest::scenario::user_desktop:
+        case anchor_guest::scenario::user_desktop_admin:
             if (started && desktop != nullptr) {
+                auto selected = *desktop;
+                selected.managed = mode == anchor_guest::scenario::user_desktop_admin;
                 login_result = native_login::login_user(holder_image, server.pid, server.control,
-                    chosen, proxy_control, 0, nullptr, desktop);
+                    chosen, proxy_control, 0, nullptr, &selected);
                 const bool stopped = server.stop();
-                passed = (login_result == 1 || login_result == user_login::denied) && stopped;
+                passed = (login_result == 1 || login_result == user_login::denied ||
+                          (selected.managed && login_result == user_login::desktop_revoked)) && stopped;
             }
             break;
 #endif
@@ -566,7 +570,7 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
         before.free_pages == after.free_pages && before.tasks == after.tasks && before.completions == after.completions;
     passed = passed && recovered;
 #if XOS_PUMPKIN_MOBIUS
-    if (mode == anchor_guest::scenario::user_desktop && !recovered) { login_result = 0; }
+    if (anchor_guest::desktop_scenario(mode) && !recovered) { login_result = 0; }
 #endif
 #endif
     u8 outcome = static_cast<u8>(passed);
@@ -586,8 +590,11 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
 #if XOS_PUMPKIN_NATIVE_LOGIN
 #if XOS_PUMPKIN_USER_LOGIN
     if (passed && (mode == anchor_guest::scenario::user_login || mode == anchor_guest::scenario::user_resource ||
-                   mode == anchor_guest::scenario::user_desktop) &&
+                   anchor_guest::desktop_scenario(mode)) &&
         login_result == user_login::denied) { outcome = login_result; }
+    if (passed && mode == anchor_guest::scenario::user_desktop_admin && login_result == user_login::desktop_revoked) {
+        outcome = login_result;
+    }
     if (passed && mode == anchor_guest::scenario::user_enroll && login_result == user_login::duplicate_enrollment) {
         outcome = login_result;
     }

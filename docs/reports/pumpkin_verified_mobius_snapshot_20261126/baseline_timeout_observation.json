@@ -1,0 +1,18 @@
+{
+  "status": "failed",
+  "reason": "no nonblack Mobius frame within the real desktop test deadline",
+  "scanout_timeout_seconds": 140,
+  "scanout_dimensions": [
+    800,
+    600
+  ],
+  "last_ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077",
+  "active_work_sample": {
+    "monotonic_host_seconds_approximate": 72,
+    "display_service_pid": 12,
+    "display_client_and_focus_pid": 13,
+    "kernel_symbol": "xos::block::read",
+    "symbol_offset_bytes": 124,
+    "note": "One running guest sample in ATA block read"
+  }
+}

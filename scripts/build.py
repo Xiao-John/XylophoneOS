@@ -49,6 +49,8 @@ def main():
                         help="test-only files self-exit trigger; requires an isolated output directory")
     parser.add_argument("--files-private-storage-probe", action="store_true",
                         help="test-only private storage on a formatted disposable work disk")
+    parser.add_argument("--files-private-client-probe", action="store_true",
+                        help="test-only boot delegation to a private slot client")
     args = parser.parse_args()
     if args.eager_fork and args.cow1_probe:
         parser.error("select eager control or the opt-in COW1 probe, not both")
@@ -64,8 +66,10 @@ def main():
         parser.error("VM1 probe requires an isolated build subdirectory")
     if args.glibc_files_death_probe and BUILD == ROOT / "build":
         parser.error("glibc files death probe requires an isolated build subdirectory")
-    if args.files_private_storage_probe and BUILD == ROOT / "build":
+    if (args.files_private_storage_probe or args.files_private_client_probe) and BUILD == ROOT / "build":
         parser.error("files private storage probe requires an isolated build subdirectory")
+    if args.files_private_storage_probe and args.files_private_client_probe:
+        parser.error("select private storage self-test or private client test, not both")
     if args.terminal_supervisor_probe and args.ncurses_supervisor_probe:
         parser.error("select at most one test supervisor")
     if (args.terminal_supervisor_probe or args.ncurses_supervisor_probe) and BUILD == ROOT / "build":
@@ -121,6 +125,7 @@ def main():
                                       "cow1_probe": args.cow1_probe, "cow_fork": not args.eager_fork,
                                       "glibc_files_death_probe": args.glibc_files_death_probe,
                                       "files_private_storage_probe": args.files_private_storage_probe,
+                                      "files_private_client_probe": args.files_private_client_probe,
                                       "virtio_gpu": gpu_config,
                                       "network_service": network_configuration(ROOT)}, sort_keys=True).encode())
     build_id = source_digest[:16]
@@ -138,7 +143,8 @@ def main():
     user_artifacts = build_users(ROOT, BUILD, nasm, run, build_id, args.terminal_supervisor_probe,
                                  args.ncurses_supervisor_probe,
                                  glibc_files_death_probe=args.glibc_files_death_probe,
-                                 files_private_storage_probe=args.files_private_storage_probe)
+                                 files_private_storage_probe=args.files_private_storage_probe,
+                                 files_private_client_probe=args.files_private_client_probe)
     user_programs = ("heartbeat", "spinner", "receiver", "sender", "probe", "quitter")
     header = ["#pragma once", "#include <xos/types.hpp>", "namespace xos::user_blobs {"]
     for name in user_programs:
@@ -290,6 +296,7 @@ def main():
         "ncurses_supervisor_probe": args.ncurses_supervisor_probe,
         "glibc_files_death_probe": args.glibc_files_death_probe,
         "files_private_storage_probe": args.files_private_storage_probe,
+        "files_private_client_probe": args.files_private_client_probe,
         "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config,
         "sources": source_hashes,
         "sdk_directories": [p.relative_to(BUILD / "sdk").as_posix()

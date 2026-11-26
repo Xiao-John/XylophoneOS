@@ -40,5 +40,6 @@ sys25 经现有 ATA `FLUSH CACHE`（0xe7），驱动等待 BSY 清除并检查 E
 可离线替换工作盘时，发布代际要由独立受保护来源提供。槽本身不会防止持宿主盘权限的
 操作者查看或回滚字节。本轮没有把账户库或关键凭据放入这两个测试槽。
 
+[受信客户端测试](pumpkin_files_client_probe.md) ·
 [客体验证记录](../work_log/7187ab3c_pumpkin_files_private_region.md) ·
 [持久化勘查](pumpkin_storage_feasibility.md) · [工作盘契约](../e07_persistent_work_disk.md)

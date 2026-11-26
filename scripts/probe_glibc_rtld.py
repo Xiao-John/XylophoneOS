@@ -24,6 +24,8 @@ def main():
                         help='compile the native TP fixture with the GNU rtld build flags')
     parser.add_argument('--closure-tls-fixture', action='store_true',
                         help='compile the fixed-closure TLS fixture and its GNU runtime support')
+    parser.add_argument('--gnu-relocation-fixture', action='store_true',
+                        help='compile the real GNU relocation fixture and its native runtime support')
     args = parser.parse_args()
     archive = args.archive.resolve(strict=True)
     output = args.output.resolve()
@@ -181,21 +183,30 @@ def main():
                 '_rtld_local', '___rtld_mutex_lock', '___rtld_mutex_unlock'}:
             raise RuntimeError('the native initial TP handoff depends on an unexpected runtime')
         run('initial_tls_relocations', [env['READELF'], '-rW', entry, *tls_objects])
-        if args.closure_tls_fixture:
+        if args.closure_tls_fixture or args.gnu_relocation_fixture:
             support = ('dl-minimal.os', 'dl-catch.os', 'dl-exception.os', 'dl-printf.os',
                        'dl-tunables.os', 'getpid.os', '_exit.os')
+            leaf_support = [('string', ('memmove', 'memset', 'strlen')),
+                            ('stdio-common', ('_fitoa_word', 'itoa-udigits')),
+                            ('setjmp', ('__longjmp',))]
+            if args.gnu_relocation_fixture:
+                support += ('dl-reloc.os', 'dl-lookup.os', 'dl-setup_hash.os', 'dl-audit.os',
+                            'dl-misc.os', 'dl-scope.os', 'tlsdesc.os', 'dl-tlsdesc.os',
+                            'dl-trampoline.os', 'dl-runtime.os', 'dl-get-cpu-features.os',
+                            'dl-thread_gscope_wait.os', 'dl-profile.os')
+                leaf_support.extend((('string', ('stpcpy', 'strcmp', 'memcmp')),
+                                     ('misc', ('mprotect',)), ('csu', ('errno',)),
+                                     ('nptl', ('lowlevellock', 'xos_lll_futex', 'xos_wait_word'))))
             for name in support:
                 path = build / 'elf' / name
                 _, compilation = run('make_' + name, [*make_elf, path])
-                if not any({'-fPIC', '-DSHARED', '-DMODULE_NAME=rtld'} <= set(line.split())
+                if not any({'-DPIC', '-DSHARED', '-DMODULE_NAME=rtld'} <= set(line.split())
                            for line in compilation.splitlines()):
                     raise RuntimeError('GNU runtime support did not compile as rtld: ' + name)
                 tls_objects.append(path)
-            for subdir, names in (
-                    ('string', ('memmove', 'memset', 'strlen')),
-                    ('stdio-common', ('_fitoa_word', 'itoa-udigits')), ('setjmp', ('__longjmp',))):
+            for subdir, names in leaf_support:
                 modules = ['rtld-' + name + '.os' for name in names]
-                _, compilation = run('make_tls_support_' + subdir,
+                _, compilation = run('make_tls_support_' + subdir + '_' + names[0],
                                      ['make', '-C', source / subdir, '-f', 'Makefile',
                                       '-f', '../elf/rtld-Rules', 'rtld-all', 'subdir=' + subdir,
                                       'objdir=' + str(build), '-j' + str(args.jobs),
@@ -223,7 +234,8 @@ def main():
 
         for requested, prefix, name in (
                 (args.initial_tp_fixture, 'initial_tp', 'initial_tls_guest.c'),
-                (args.closure_tls_fixture, 'closure_tls', 'closure_tls_runtime.c')):
+                (args.closure_tls_fixture, 'closure_tls', 'closure_tls_runtime.c'),
+                (args.gnu_relocation_fixture, 'gnu_relocation', 'relocation_runtime.c')):
             if not requested:
                 continue
             fixture_source = ROOT / 'tests/fixtures/glibc_d1' / name

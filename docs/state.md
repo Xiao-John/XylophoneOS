@@ -1,7 +1,9 @@
 # XOS 当前状态（全局快照）
 
-2026-11-26 · 下一阶段里程碑。主线已合入静态 glibc 迁移基线、QtCore 的 glibc 构建、
-Mobius/ClarkE 开发包及 Pumpkin 原生 IPC。各模块的客体结果与全量组合验收分别登记。
+2026-11-26 · 下一阶段里程碑。主线已合入显式 glibc C/C++ 应用打包、原生 xypm
+客体维护、Qt Quick 软件渲染及外部应用工具包、Mobius glibc 会话和工作盘迁移。
+Pumpkin 盘外代际由开发客体验证，ClarkE 的 LLInt 和 WTF 栈范围进入目标构建。
+各模块的客体结果与组合复验分别登记。
 [本阶段计划](plans/next_stage.md) · [上阶段整合记录](work_log/efc3a5ff_xos_integration_campaign.md)
 
 按 [Discipline](Discipline.md) 在合并、发行或里程碑更新。过程与证据见
@@ -32,9 +34,9 @@ Mobius/ClarkE 开发包及 Pumpkin 原生 IPC。各模块的客体结果与全�
 | 时钟/IRQ 统一（C29） | #33 已合，统一时基落地 | [0112](work_log/0112_clock_irq_split.md) |
 | VirtIO-Net / N2–N3 | sys112 授权的用户态驱动和 lwIP v2 已合入。传输、多应用隔离、生命周期和撤销有绑定客体结果。raw 诊断保持隔离。 | [原始帧纵切](contracts/net_user_driver.md)、[v2 契约](contracts/net_service_v2.md)、[多应用复验](work_log/69b0e274_network_guest_readiness_and_window.md) |
 | N4 DNS/DHCP | 配置与名称契约以及 DNS 回包收紧已合入。生产 DNS/DHCP 保持关闭。 | [N4 契约](contracts/network_n4_v1_proposal.md)、[DNS 记录](work_log/4e29c6b1_network_dns_hardening.md) |
-| ClarkE 浏览器 | 原有本地 HTML/CSS 和受控 HTTP 路径有客体证据。独立开发包的安装、升级、双入口启动和卸载通过。WebKit 已具备独立 XOS 平台识别。 | [产品包复验](work_log/af27a498_desktop_product_packages.md)、[WebKit 计划](plans/webengine_port.md) |
-| Mobius 系统 UI | 产品入口和独立开发包已合入。xsh 与 dash 客体启动均通过，卸载保留原用户文件。 | [产品包复验](work_log/af27a498_desktop_product_packages.md) |
-| Pumpkin | 身份核心、原生 IPC、私有存储区和受信测试客户端已合入。易失会话通过双 Shell 复验。可重启守护进程的测试配置已合入并重验。 | [身份核心](work_log/c6198fee_pumpkin_identity_core.md)、[授权客户端](work_log/eaf8370d_pumpkin_authenticated_files_client.md)、[重启复验](work_log/d1c062ce_next_stage_combination.md#持久守护进程合入后) |
+| ClarkE 浏览器 | 原有 HTML/CSS 与受控 HTTP、开发包生命周期、双入口有客体证据。WebKit 已生成实际目标 LLInt，WTF 线程栈范围通过原生辅助函数客体验证。完整引擎与受控 HTTPS 待验。 | [产品包复验](work_log/af27a498_desktop_product_packages.md)、[LLInt](work_log/89051575_clarke_native_llint_layout_bridge.md)、[WTF](work_log/207c6644_clarke_native_wtf_thread_and_stack_slice.md) |
+| Mobius 系统 UI | 正式入口和 glibc Qt Widgets 会话已合入。实际 XPK 安装后双入口启动，卸载后原 newlib 桌面可从旧入口启动，用户配置保留。 | [桌面客体](work_log/8f0020c4_mobius_glibc_widgets_guest.md)、[工作盘与回退](work_log/f38242fd_mobius_glibc_xpk_lifecycle.md) |
+| Pumpkin | 身份核心、原生 IPC、私有存储区和受信客户端已合入。实际开发守护进程通过吊销与当前盘恢复，开发专用盘外代际拒绝完整旧盘。生产代际存储、凭据发放与独立资源服务接入待验。 | [身份核心](work_log/c6198fee_pumpkin_identity_core.md)、[盘外代际复验](work_log/31dde03e_pumpkin_anchored_guest_snapshot_fence.md) |
 | Aurora UI v2 SDK | #29 已合（含 C30 改名与评审修复） | [0102](work_log/0102_aurora_ui_v2_sdk.md)、[0112](work_log/0112_aurora_c30_rename_and_fixes.md) |
 | Semantic Broker / 时间语义 / G3 复核 | #30/#31/#32 已合（勘查与限定模型） | [0108](work_log/0108_semantic_pipe_probe.md)、[0109](work_log/0109_temporal_semantics.md)、[0110](work_log/0110_aurora_g3_review.md) |
 | 现代应用兼容 Phase 1 | 已合，探针级；完整浏览器/Core/HTTPS 未通过 | [0085](work_log/0085_modern_app_compatibility_phase1.md) |
@@ -55,11 +57,11 @@ Mobius/ClarkE 开发包及 Pumpkin 原生 IPC。各模块的客体结果与全�
 | Shell / 终端 | dash C1–C3受限通过，xsh保留默认；终端服务交接与 ncursesw 宽字符客体验收通过 | [C3资格](reports/dash_c3_20261026/qualification.json)，build2f7160b7d6633ee6；无完整信号/作业控制；[0187](work_log/0187_w1_final_acceptance.md) |
 | 显示/ISO | sys65/66 在 buildef83c9fc92217380 重验 G02 19组通过 | [当前报告](reports/qt_e16_qualified_20261028/g02/report.json)、[显示历史](history/boot_display.md)；QtGui/QPA 单全屏 raster 已验 |
 | CPython | PY0–PY2/T3-PY、A1–A3、B1–B4专项通过 | [用户态摘要](history/userland.md)；B2–B4系统6251d26b611a388d，Python11c39c52e451a9499450 |
-| xypm | P2 验证、事务与启动恢复有客体记录。P3 离线仓库、锁、拒绝路径及重启后回读已合入并在匹配的 newlib SDK 客体复验。 | [P2](work_log/0066_xypm_p2_validation.md)、[P3](work_log/7c2de8a4_xypm_p3_preview_guest.md)、[包计划](plans/packages.md) |
-| glibc | 静态 C/C++ 构建、分配器锁修复和 dash 预览已合入。新预览在两种 Shell 各通过七项。完整 C3、D1–D4 和 SDK 默认切换待验。 | [迁移基线](work_log/c7442fa6_glibc_application_migration.md)、[分配器](work_log/54ff4de4_glibc_allocator_locking.md)、[dash](work_log/aff51323_dash_glibc_preview.md) |
+| xypm | P2 与 glibc C++ 客体安装、升级、卸载、重启和恢复已有实验 profile 证据，冻结 newlib 入口已复验。P3 离线仓库、锁和重启回读已合入。 | [glibc 事务](work_log/24df429a_xypm_glibc_guest_transactions.md)、[P2](work_log/0066_xypm_p2_validation.md)、[P3](work_log/7c2de8a4_xypm_p3_preview_guest.md) |
+| glibc | 静态 C/C++ 构建、分配器锁修复、进程启动/等待及显式应用打包已合入。glibc dash 可执行原生外部 ELF。完整 C3、D1–D4 和 SDK 默认切换待验。 | [迁移基线](work_log/c7442fa6_glibc_application_migration.md)、[应用生命周期](work_log/82cabf5d_glibc_xpk_lifecycle.md)、[dash](work_log/aff51323_dash_glibc_preview.md) |
 | SDK 过渡 | newlib 是现行默认。glibc C/C++ 使用隔离候选与配套验收，候选准入和激活分别登记。普通及线程 newlib 的文件能力清单已有同源阶段复验。 | [SDK profile 契约](contracts/xypm_sdk_profiles.md)、[glibc 源认证](work_log/53bc719e_glibc_source_authentication.md)、[阶段记录](work_log/efc3a5ff_xos_integration_campaign.md) |
 | 审计/整合 | A01–A04修复与PR3兼容已交付PR4 | [整合摘要](history/delivery_audit.md)，组合build76a2e4380f64fb2e，7定向组通过；非旧全量重验 |
-| POSIX/Qt | QtCore 和静态 QtQml 已合入。QtQml 已在独立客体通过脚本、绑定、回收和虚拟内存配额失败检查。Qt Quick 图形路径待验。 | [QtCore 复验](work_log/8d6f3d2c_qt_e18_glibc_qtcore_target_build.md)、[QtQml 复验](work_log/d8bd3467_qt_e18_target_qml_and_vm.md)、[Qt 专项进展](plans/qt.md) |
+| POSIX/Qt | 静态 QtQml 通过脚本、绑定、回收和 VM 配额负向检查。Quick 软件渲染及输入在两种 Shell 通过。外部应用使用独立工具包构建后通过实际文本画面与资源回收。 | [QtQml](work_log/d8bd3467_qt_e18_target_qml_and_vm.md)、[Quick](work_log/13a6b397_qt_e19_quick_through_legacy_dash.md)、[外部应用](work_log/b9673c26_qt_e19_external_quick_application_builder.md) |
 | 许可 | 材料检查通过；newlib 1053/1053、GCC 运行库 397/407 成员映射、GNU Seed 分发审查、Qt 静态分发审查与收口材料（文本/§4d0/补丁标注）已交付 | [许可证管理](licensing.md)、[0188](work_log/0188_d7_license_two_leaves.md)、[0189](work_log/0189_d7_license_full_closure.md)；均为映射/材料审查，**非法务意见**，Qt 静态交付物已按 B4/B5 门槛随 0.0.2-1103 分发（非法务意见） |
 
 每项资格绑定各自冻结的源码、SDK、镜像和配置。逐成员许可范围按各自审查记录追溯。
@@ -77,8 +79,8 @@ Mobius/ClarkE 开发包及 Pumpkin 原生 IPC。各模块的客体结果与全�
 
 ## 下一步
 
-- 首次组合快照复验通过启动、内核、文件、运行时及三个用户态模块。后续接口合入后
-  需再次绑定最终提交，重建两套 SDK 并运行全量组合门禁。[组合复验](work_log/d1c062ce_next_stage_combination.md)
+- 后续组合候选通过 79 项常规、10 项许可材料和 50 次 glibc 客体运行。最终实际
+  主线仍需绑定提交，重建两套 SDK 并运行组合门禁。[组合复验](work_log/ea2d71c6_next_stage_combined_guest.md)
 - N4 生产启用、glibc 默认 SDK 切换、动态链接 D1–D4、显示/ps2/ata 后续设备迁移、
   系统重建/自举（D6）与 Qt QML/Quick 各按专项计划推进。
 - 按 Discipline → 本页 → 宪法 → 专项契约/登记接手；新开发独立分支/PR 交付，

@@ -46,3 +46,9 @@ glibc C/C++ 已有 Linux arm64 实构建和静态客体证据，并发 C++ 普�
 glibc 日用工具、独立 Qt Quick 应用、Mobius 会话、Pumpkin 盘外代际和 ClarkE
 目标布局按各自门禁继续推进。
 [整合检查点](../work_log/8a09e2c7_next_stage_glibc_checkpoint.md)
+
+组合候选 `d155a61f` 从干净源码通过 79 项常规及 50 次 glibc 客体运行，
+独立核对了两种 dash 入口。此后合入了 Mobius glibc 软件包生命周期、xypm
+原生 glibc 维护、Pumpkin 开发代际回退防护和 ClarkE 目标线程布局。完整 C3、
+动态链接 D1–D4、Pumpkin 生产认证与资源服务、ClarkE 完整引擎和最终主线镜像
+继续按各自门禁验收。[绑定复验](../work_log/ea2d71c6_next_stage_combined_guest.md)

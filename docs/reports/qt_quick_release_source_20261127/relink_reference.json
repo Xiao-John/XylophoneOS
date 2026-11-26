@@ -1,0 +1,9 @@
+{
+  "status": "static_quick_application_linked",
+  "elf": "quick_app.elf",
+  "elf_sha256": "fefc635595e90312742ea0d3808d3d87454de66391e8edc48b986fc12f5de50a",
+  "kit_manifest_sha256": "c3b9f48353ab96cff9dd405a694f1064b4442ceb54f9bb5781ac5de6498053d2",
+  "materials_manifest_sha256": "bccec63133b64dad2f81841b6a5126fd76c04cecdc6df8f5cc6e7869e707200c",
+  "matches_reference": true,
+  "replacement_archives": {}
+}

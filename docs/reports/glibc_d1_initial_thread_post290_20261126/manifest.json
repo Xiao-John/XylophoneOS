@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "source_commit": "242edd5ce5bc09d481b3d75e05e189b804bd4038",
+  "implementation_tree": "6ebbfbb707849db37b0c662ef82281099da6efd2",
+  "mainline_base": "5a828b33b8f8c4051a4e7f8175b775388b9db26b",
+  "frozen_fixture_sha256": "ee3863e16675f2fa516c63a0d6426b6f1e7060897d0a735ece5157411947bdd3",
+  "files": {
+    "abi.log": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301",
+    "guest.json": "f053aa7e8d1f5abd790e5c4e21c229e401012494e7d5e3c3913533acac5a3c82"
+  },
+  "raw_guest_report_sha256": "57e041b1a5c0f437d34999807ea61587966e765dd122599f7a56f15b6b450b67"
+}

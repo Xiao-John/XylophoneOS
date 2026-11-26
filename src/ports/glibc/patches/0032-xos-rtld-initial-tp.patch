@@ -1,0 +1,40 @@
+--- a/sysdeps/nptl/dl-tls_init_tp.c
++++ b/sysdeps/nptl/dl-tls_init_tp.c
+@@ -26,0 +27,22 @@
++
++#if defined XOS_GLIBC_TLS && defined SHARED && IS_IN (rtld)
++# include "xos_rtld_initial_tp.h"
++# include "xos_file_trap.h"
++
++static __attribute__ ((noreturn)) void
++xos_initial_tls_fatal (void)
++{
++  static const char message[] = "XOS rtld: initial TLS handoff failed\n";
++  (void) file_trap (11, 2, (xos_u64) message, sizeof (message) - 1);
++  (void) file_trap (2, 127, 0, 0);
++  __builtin_trap ();
++}
++
++void
++__xos_rtld_install_initial_tp (void *address)
++{
++  if (!TLS_INIT_TP (address))
++    xos_initial_tls_fatal ();
++  __tls_init_tp ();
++}
++#endif
+@@ -83,0 +106,5 @@
++ # if defined SHARED && IS_IN (rtld)
++     xos_initial_tls_fatal ();
++   if (info.thread_pointer != (xos_u64) pd || info.stack_top <= info.stack_bottom)
++     xos_initial_tls_fatal ();
++# else
+@@ -84,0 +112 @@
++# endif
+@@ -131,0 +160,4 @@
++#if defined XOS_GLIBC_TLS && defined SHARED && IS_IN (rtld)
++  THREAD_SETMEM (pd, stackblock, (void *) info.stack_bottom);
++  THREAD_SETMEM (pd, stackblock_size, info.stack_top - info.stack_bottom);
++#else
+@@ -135,0 +168 @@
++#endif

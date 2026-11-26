@@ -1,0 +1,108 @@
+{
+  "configured_module_states": {
+    "ZLIB": "yes",
+    "_BZ2": "missing",
+    "_HASHLIB": "missing",
+    "_LZMA": "missing",
+    "_SQLITE3": "disabled",
+    "_SSL": "missing",
+    "_ZSTD": "missing"
+  },
+  "container_image_id": "sha256:a71fb65026ab764d7883067a05a6a63a3fc5c3b8abaf6226e5cd0997831cdcc2",
+  "cpython_build_receipt_sha256": "9b0a0a5a9fe88421ce8c955511d2779db48444c8d0f4cf06ceadf1b8eb1b3372",
+  "cpython_builders": {
+    "build_cpython.py": "c6d1c0ef5fb4543dfee16798d2db2f2fea081e0b5a00c425f236f431ce80bbb1",
+    "build_cpython_glibc.py": "7feafeff7ba91b9be288a33d5c36fa1e1614b8b586535c5338bc7170e1cd708a",
+    "build_cpython_legacy.py": "38a0a2102400aa848ff8c90691552a796babf06a419b422dc4d27202e292b163"
+  },
+  "cpython_executable": {
+    "bytes": 46744488,
+    "layout": {
+      "format": "static_elf64",
+      "load_and_main_stack_pages": 2265,
+      "load_segments": 3,
+      "machine": "x86_64",
+      "static_tls": true
+    },
+    "sha256": "d20b0ef45291df5d28fe1aa93853cedd551b97b79bcb3263b50f95054cf306ba"
+  },
+  "cpython_port_sha256": {
+    "README.md": "f3213a6a4f77376b388479e9e0854a50b13fb8e53768f2a74379106a94101baa",
+    "compression/compression_lock.json": "dcb34e462231d80954f46387e30ecff69da28c6e7e248ab76024f760a6ee5773",
+    "compression/upstream/bzip2-LICENSE": "c6dbbf828498be844a89eaa3b84adbab3199e342eb5cb2ed2f0d4ba7ec0f38a3",
+    "compression/upstream/xz-COPYING.0BSD": "0b01625d853911cd0e2e088dcfb743261034a091bb379246cb25a14cc4c74bf1",
+    "compression/upstream/zstd-LICENSE": "7055266497633c9025b777c78eb7235af13922117480ed5c674677adc381c9d8",
+    "config/xos_config.site": "45d75ae0c82aba46d6be1438117af657ea8a152d98034e846485baaf0d233df6",
+    "idna_lock.json": "c6c7fc8b825ef1a842d6658361051e549ce7d8260886bff1abab9539eb340834",
+    "patches/0001_configure_xos_target.patch": "affc1401ca099395923c1a759d2fe584433f01b56c63b25bcd2e310da3dffacf",
+    "patches/0002_xos_module_scope.patch": "1fcf70f90798800eb29b7359d4e6e9c5e5ac31dceaa52ed00f0ff878c5f6cb9c",
+    "patches/0003_xos_pthread_backend.patch": "674790b15462415dca337e20415a02e0c871d11ecad13fccc6a8a515fbab728b",
+    "patches/0004_xos_basic_repl.patch": "811c8bca211f3fc54564241114a85798180dfbb628e8a82af00ddacab50fe163",
+    "patches/0005_xos_zoneinfo_tzdata_fallback.patch": "4cf2f85eb3a0c2678976408e499fdbe808de3c1bfc7da39633e06ea17edf6897",
+    "patches/0006_xos_blocking_time.patch": "5cb3a91ae702918b2d31de64f7d2ae0fb2823d9af58e06d179406c9de36e112e",
+    "patches/0007_glibc_clock_types.patch": "a255142492b466c77cb7073521709d316c8faa61cb1acf585dab073c90e1520f",
+    "patches/0008_newlib_getpath_metadata.patch": "e6d42ebd1440adb3cc8be4583afcda0c1cab3dbd03323a03d1e6a06e19293d73",
+    "patches/0009_newlib_getpath_execute_access.patch": "13b44184bf524e8a14ffba45d0aea5f02e45bb0916bbcc06b22712c2f0143d21",
+    "patches/series": "07252df648070f20126986f4aea26b46506006941977f3dde4344c39c41313a1",
+    "pillow/LICENSE": "17f240ae101143707e5e7303a5d800450d9ccc7475b463cedb555cefdb3c6ece",
+    "pillow/source_lock.json": "f4870dca29539fe4eb3d7da629aea580062990697fda8260980b99c0910a0a58",
+    "source_lock.json": "8afcd6eccbcfb3c3e6395037164158739cf98e55c9474521f83f9dd6db8986fa",
+    "sqlite/README.md": "de30a9dac8c6fe7fa5945ef4c8b38e9b254c6b09c0ac9641ae97eaa8ca82a301",
+    "sqlite/UPSTREAM_LICENSE.md": "3a487aaf2da3a06e58adba55c6e507a927cda568bc20d822bf62c36bdeb33d14",
+    "sqlite/sqlite_lock.json": "c0f54b2c5682e8d0462183e3f48e69d80e257342a3fdcb660a3ce580fb8d2e73",
+    "sqlite/xos_vfs.c": "87e7788346192b17914ff98a3240444dfed5d0a5512e968b284f5d826765b844",
+    "tzdata_lock.json": "d47b7345284c283f3ab4aa8422b2b22d8dcbb36f5524088765038b452f9dada8",
+    "upstream/LICENSE": "b0e25a78cffb43f4d92de8b61ccfa1f1f98ecbc22330b54b5251e7b6ba010231",
+    "upstream/idna-LICENSE.md": "1a9a4f0e3d479a27240ddd59a9137a66ab4a0f9dfdc8ca6188cc0bfd85187f04",
+    "upstream/license.rst": "cd6f471c0bfdb099efefc25ddff9b3df8bf62e10428987f1f05e6f2f9e35d563",
+    "upstream/tzdata-2026.5-py2.py3-none-any.whl": "b683bd1b6659ddcd810ff02ad09ba821d4bf1065072805063eb35c49617905ac",
+    "upstream/tzdata-LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "upstream/zlib-LICENSE": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2",
+    "xos_time.cpp": "4b98e5ca4d4523c1e89708da3a2af91dbed58f2b779aec1b3b22cc13bca28b70",
+    "zlib_lock.json": "3d084526751f4b39c750411223dcc09e560c5789aae1ccbd63affb1884d915bc",
+    "zlib_patches/0001_xos_errno_header.patch": "da73f294389ce1ebccb101a3b50a13bb3b170946fbe101bc4aff13d8100693c8",
+    "zlib_patches/0002_glibc_probe_libraries.patch": "698ef44db0ece8dac26cddebee01203276114e531ec9aab984829434a7c56fe6"
+  },
+  "frozen_core_xpk_sha256": "7314b3768ad3451f72af3125827ea56de0fe18bd0da96649d464bcb3851db089",
+  "glibc_core_configure_without_zlib": {
+    "status": "configured_not_built",
+    "zlib": "missing"
+  },
+  "iso_sha256": "33314267f216b2dd1d0cda9736c2f2618939d043475508a7fe4f6a44eb7bd75c",
+  "managed_files": 15,
+  "package_bytes": 20408320,
+  "package_revision": 1,
+  "package_sha256": "2c23731b1f1728953bf604d7f0548f163b6ffcc3179b427548615e9c07ad739b",
+  "package_version": "3.14.9",
+  "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "sdk_binding": {
+    "guest_qualification": "not_run",
+    "profile_id": "xos-x86_64-glibc-unified-cxx-v1",
+    "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+    "runtime_family": "glibc",
+    "sdk_tree_sha256": "b5fa570d12e502295069ee2bb973586f7bcf1a8ba0dbaf6b2df5b268fe14b77c",
+    "status": "candidate_binding_verified"
+  },
+  "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "source_archive_sha256": "e02d9ac21cebda6e46435369744a92c65cc7cd8669697694122cf97ffacd1e53",
+  "source_commit": "9739fdaa0aed940721d3f29ccc166162eb4004df",
+  "stdlib_zip_sha256": "2eb1eb04dafd17e6fb8d84f9c86991b77b8631ac0350106419e5b485fce4be79",
+  "system_build_id": "6f700746e7efd3d8",
+  "system_manifest_sha256": "7edf2f84e5c3c81fcc6a816cdeffa6e4bcf0f6c7589243868443abb38f475298",
+  "system_source_commit": "9739fdaa0aed940721d3f29ccc166162eb4004df",
+  "target_makefile_sha256": "b01f531b9c88bc1ed6d302fce6dfbbf832f1aa8904074d3642aa97a18d5c37c9",
+  "xypm_build_receipt_sha256": "15774cd54222bd28d1927e3d4094caaf70909d671bd2c67c90fe6ccfdbd911de",
+  "xypm_elf_sha256": "3971e1e05cafaf4769465ca338c1e65df11da4b5f4c477926cebc863e2037736",
+  "zlib_license": {
+    "path": "usr/share/licenses/xos.cpython/zlib/LICENSE",
+    "role": "data",
+    "sha256": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2",
+    "size": 1002,
+    "type": "file"
+  },
+  "zlib_static_symbols": [
+    "0000000040274950 T PyInit_zlib",
+    "00000000403c8200 T deflate",
+    "00000000403ca040 T inflate"
+  ]
+}

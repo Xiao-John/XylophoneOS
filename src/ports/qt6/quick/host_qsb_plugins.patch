@@ -1,0 +1,8 @@
+--- a/tools/qsb/CMakeLists.txt
++++ b/tools/qsb/CMakeLists.txt
+@@ -27,2 +27,5 @@
+ #### Keys ignored in scope 1:.:.:qsb.pro:<TRUE>:
+ # _REQUIREMENTS = "qtConfig(process)"
++
++# qsb uses QCoreApplication and does not load the host GUI or image plugins.
++qt6_import_plugins(${target_name} NO_DEFAULT)

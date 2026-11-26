@@ -658,6 +658,50 @@
       "distribution_status": "NOT_RUN: archive member and static redistribution/relink review and distribution"
     },
     {
+      "name": "Qt Shader Tools E19 host qsb and bundled shader compilers",
+      "version": "6.8.3",
+      "path": "src/ports/qt6/quick",
+      "source": "https://download.qt.io/archive/qt/6.8/6.8.3/submodules/qtshadertools-everywhere-src-6.8.3.tar.xz",
+      "source_archive_sha256": "f6ec88bf42deba84d8f6b5d0914636ceed4749ccb51d1945b2f79b322b7ecf47",
+      "license": "Qt Shader Tools uses per-file Qt terms. The bundled glslang and SPIRV-Cross declarations record BSD-3-Clause, Apache-2.0, MIT Khronos old variant, GPL-3.0-or-later with Bison exception, and AML-glslang terms.",
+      "notices": [
+        "LICENSE",
+        "src/ports/qt6/licenses/GPL-2.0-only.txt",
+        "src/ports/qt6/licenses/GPL-3.0-only.txt",
+        "src/ports/qt6/licenses/LGPL-3.0-only.txt",
+        "src/ports/qt6/licenses/LicenseRef-Qt-Commercial.txt",
+        "src/ports/qt6/licenses/Qt-GPL-exception-1.0.txt",
+        "src/ports/qt6/qml/licenses/BSD-3-Clause.txt",
+        "src/ports/qt6/quick/licenses/AML-glslang.txt",
+        "src/ports/qt6/quick/licenses/Bison-exception-2.2.txt",
+        "src/ports/qt6/quick/licenses/GPL-3.0-or-later.txt",
+        "src/ports/qt6/quick/licenses/LicenseRef-MIT-Khronos-old.txt",
+        "src/ports/qt6/quick/licenses/glslang_copyright.txt",
+        "src/ports/qt6/quick/licenses/glslang_license.txt",
+        "src/ports/qt6/quick/licenses/glslang_qt_attribution.json",
+        "src/ports/qt6/quick/licenses/spirv_cross_copyright.txt",
+        "src/ports/qt6/quick/licenses/spirv_cross_license.txt",
+        "src/ports/qt6/quick/licenses/spirv_cross_qt_attribution.json"
+      ],
+      "artifact_sha256": {
+        "src/ports/qt6/quick/licenses/AML-glslang.txt": "b5545d31e12c303e8ee9a0cc203d0a2a8d6e02729dd450d4cda5f8ff0e1193d0",
+        "src/ports/qt6/quick/licenses/Bison-exception-2.2.txt": "193ff9d6e52b80b654fa9402ff351fd1f9f855381f31062a5b7400fd82409b29",
+        "src/ports/qt6/quick/licenses/GPL-3.0-or-later.txt": "1a52218b744fa3a722df8d0477a2041571ec2cecdb9906cf1f626fc1a2cf0d6f",
+        "src/ports/qt6/quick/licenses/LicenseRef-MIT-Khronos-old.txt": "fbeaca472f4f70e276dd1106ca5097435967a22ad6c1d8200aef7ad9f70aaf3f",
+        "src/ports/qt6/quick/licenses/glslang_copyright.txt": "7a0986b241205c038dcea76b343dd9b7030a424b644a7d59585200824831dae8",
+        "src/ports/qt6/quick/licenses/glslang_license.txt": "adb783e734e906d1f46db5df29991dbde84bdb0ceab502ac2febb44fe3c2b5f4",
+        "src/ports/qt6/quick/licenses/glslang_qt_attribution.json": "d00282c07cf26aa90884d2bfdf9d897945d2ae4426a67752304e1fecac3eabac",
+        "src/ports/qt6/quick/licenses/spirv_cross_copyright.txt": "afe3458e2431963def8b2c1520d342566725a07b46344aa34c5d327531bf2873",
+        "src/ports/qt6/quick/licenses/spirv_cross_license.txt": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "src/ports/qt6/quick/licenses/spirv_cross_qt_attribution.json": "b872edccc819552d75ebbf3d997327acf1797a350be02fab0903317fb221dc96"
+      },
+      "used_in": [
+        "E19 native host shader generation"
+      ],
+      "modifications": "The qsb executable disables default static GUI and image plugin import for the minimal QtBase host build. Shader compiler sources are unchanged.",
+      "distribution_status": "NOT_RUN: host tool and generated shader artifact redistribution review"
+    },
+    {
       "name": "liteHTML and bundled Gumbo (Aurora Browser)",
       "version": "liteHTML v0.9 commit 6ca1ab0419e770e6d35a1ef690238773a1dafcee; bundled Gumbo tree",
       "path": "src/ports/aurora_browser",

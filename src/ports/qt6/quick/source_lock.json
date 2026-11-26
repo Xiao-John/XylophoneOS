@@ -1,0 +1,9 @@
+{
+  "component": "qtshadertools",
+  "version": "6.8.3",
+  "tag": "v6.8.3",
+  "tag_commit": "75786914936b73212ae342f83c9a27ae4a69f406",
+  "url": "https://download.qt.io/archive/qt/6.8/6.8.3/submodules/qtshadertools-everywhere-src-6.8.3.tar.xz",
+  "sha256": "f6ec88bf42deba84d8f6b5d0914636ceed4749ccb51d1945b2f79b322b7ecf47",
+  "qtbase_commit": "c07c2d5a527a644d36e7853d55132ae38921682f"
+}

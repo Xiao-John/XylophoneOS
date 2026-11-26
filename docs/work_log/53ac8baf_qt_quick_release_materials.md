@@ -58,3 +58,11 @@ python3 -B tests/qt6_quick_kit_guest.py --system "$SYSTEM" \
 实际发行渠道和安装信息仍待核对。完整 Qt 重新编译和替换 ELF 的 dash 入口未运行。
 本次生成的归档保留在本地。
 [构建、重链接与客体回执](../reports/qt_quick_release_materials_20261126/manifest.json)
+
+## 主线组合入口复验
+
+以 `863946ac` 合入本 PR 的 `6196b02e` 得到 `a1bdc89d`，重建普通镜像
+`20f8c42fae412943` 和同镜像的 dash。替换 Qt Quick 归档成员所得 ELF 分别从 xsh 和
+dash 通过。两个客体都显示 800×600、475 个文字亮像素，画面摘要相同。应用和图形服务
+两个退出点恢复各自的资源基线，ABI 表对照通过。
+[组合绑定及两种入口回执](../reports/qt_quick_release_materials_20261126/manifest.json)

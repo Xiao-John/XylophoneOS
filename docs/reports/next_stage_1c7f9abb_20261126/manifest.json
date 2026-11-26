@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "source_commit": "1c7f9abbacde11943e2adf3aa403bb50e6af5a12",
+  "source_tree": "5562981bbf360c486bc142a73d0f5c6075fee1ec",
+  "profile": "ordinary",
+  "build_id": "8530ecb637372dac",
+  "artifacts": {
+    "iso": "08bf93480f134bf36866874fd172dd5d062f70d5898696ee0006704e958ce46b",
+    "system_manifest": "5409ca31d1bdd28bf5facd925c31adcabf5d7eba2cee62da67c118e524683d9d",
+    "sdk_manifest": "3862ddad56f8f30d871f859af914a497aed6f2ea2897d2f10e7a87344565c7d2"
+  },
+  "qemu": {
+    "sha256": "a8ee5cdeaa1b04fa6fcfbaf210c03209ab7c91357ce2b6eb4dff10c2b7bc7816",
+    "version": "QEMU emulator version 11.1.2"
+  },
+  "suites": [
+    {
+      "suite": "tests/boot_smoke.py",
+      "checks": 6
+    },
+    {
+      "suite": "tests/kernel_smoke.py",
+      "checks": 18
+    },
+    {
+      "suite": "tests/task_smoke.py",
+      "checks": 12
+    },
+    {
+      "suite": "tests/process_smoke.py",
+      "checks": 13
+    },
+    {
+      "suite": "tests/file_smoke.py",
+      "checks": 8
+    },
+    {
+      "suite": "tests/persist_smoke.py",
+      "checks": 4
+    },
+    {
+      "suite": "tests/full_disk_smoke.py",
+      "checks": 1
+    },
+    {
+      "suite": "tests/libc_smoke.py",
+      "checks": 3
+    },
+    {
+      "suite": "tests/e08_storage_smoke.py",
+      "checks": 9
+    },
+    {
+      "suite": "tests/runtime_smoke.py",
+      "checks": 5
+    },
+    {
+      "suite": "scripts/license_audit.py",
+      "checks": 10
+    }
+  ],
+  "abi": "passed",
+  "files": {
+    "abi.log": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301",
+    "smoke.log": "b1e930ed43c716301b87389839f16ed8f3e6e4377b25e7e949ee570d931ac65e"
+  }
+}

@@ -48,7 +48,8 @@ SDK 试行 `terminal_client.hpp` 可按启动者给出的 supervisor 与服务 P
 拒绝该启动扩展及 fork/exec；这里的多线程限制指既有 newlib 运行库。glibc 独立
 适配层以会话锁串行化请求、FD lease 保护阻塞 I/O，接收 startup v2/v3 终端继承；
 其模式转换、接口与六次客体结果见 [glibc 终端契约](glibc_terminal_v1.md) 和
-[e6b8c410](../work_log/e6b8c410_glibc_terminal.md)。glibc 出站终端继承另行实现。
+[e6b8c410](../work_log/e6b8c410_glibc_terminal.md)。静态单线程 glibc 也可派生
+终端会话，其登记和 files 克隆服从同一个绝对启动期限，失败收回未启动的子进程。
 单线程 exec
 试行显式保留应用通道，并在 startup v3 中传递下一请求序号；目标必须声明 `.xos.exec`
 v3 和 `.xos.tty` v1。非 CLOEXEC 的终端描述符按原别名恢复，全部关闭时通道按原

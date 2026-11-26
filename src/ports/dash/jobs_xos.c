@@ -97,10 +97,6 @@ struct job *makejob(int count) {
     return &owned->job;
 }
 int forkshell(struct job *job, union node *node, int mode) {
-#ifdef XOS_DASH_GLIBC_PREVIEW
-    (void)job; (void)node; (void)mode;
-    sh_error("fork unavailable in the glibc dash preview");
-#else
     int child;
     if (mode == FORK_BG || (!job && !xos_pipeline_active)) sh_error("untracked child unavailable");
     flushall(); flush_input();
@@ -133,7 +129,6 @@ int forkshell(struct job *job, union node *node, int mode) {
         if (xos_shell_foreground(pipeline_children, pipeline_count, 1) < 0) xos_pipeline_failed = 1;
     }
     return child;
-#endif
 }
 
 int xos_shell_script(const char *path) {

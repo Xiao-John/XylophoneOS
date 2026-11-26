@@ -1,0 +1,24 @@
+{
+  "source_commit": "7a3ebcf14f828a3b52b5f0ba775022d4c6389617",
+  "implementation_tree": "82969af2dda8b2be7270abdd64dbcd854d3d7885",
+  "mainline_base": "2a89b08fbe74e6358d7691790948af6b3f632533",
+  "system_build_id": "bec24eea8c3ee683",
+  "sdk_upstream_status": "upstream_signature_verified",
+  "sdk_upstream_archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+  "sdk_signature_report_sha256": "55cc651f4d7cf7cbde3650315a20bbc3980a69a95250ddbe2a50f0e0f7e1e3c3",
+  "sdk_artifacts_verified": 877,
+  "sdk_pthread_header_sha256": "e1222d3f1dfe88fb9e0db5512b6744bc2b964d34c196a6e23ecc3be9e4514f47",
+  "qemu_sha256": "c2c909703efdcec4296141ae6d6bd9e78d33494748b885526e5954bce6f4ef9d",
+  "guest_report_derivation": "omit host-specific launch and command paths while retaining exact guest observations",
+  "raw_guest_report_sha256": {
+    "dash": "0411b07e64743f77c89e2b8d40e146b98621887711e004736edbad2b71c81628",
+    "pthread": "b90594910743ad66613aefb319d47282850eaa50cab3fcca48399d8fb4343185",
+    "terminal": "a04e98fc673598da7463da7b93af5927eeddb0c1b700ffe74a386dbc3f3084ac"
+  },
+  "focused_probe_results": [
+    "PASS newlib native substitution vectors",
+    "PASS glibc interactive capture limit, retry and resources (129709, 3, 1)"
+  ],
+  "focused_probe_source_sha256": "9a91cf5f1227f50209b732cbe5489ede26fa51964cce2a61e36c48a5c2d098de",
+  "focused_probe_raw_serial_sha256": "1c9a382ef066854609e4f3f7e68075142531f92fce06a9df60af09296c80671a"
+}

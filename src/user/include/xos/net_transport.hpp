@@ -32,6 +32,30 @@ class client {
 public:
     i64 connect(u64 expected_service_pid) { return session_.connect(expected_service_pid); }
     void close() { session_.close(); }
+    // Use the authenticated session's single resolver ticket. The caller still
+    // owns application policy and uses the returned route with normal open().
+    i64 resolve_ipv4(const char* name, u32 length, u64 deadline, resolve_reply& answer) {
+        answer = {};
+        config_snapshot configuration{};
+        i64 result = session_.configuration(deadline, configuration);
+        if (result) return result;
+        if (configuration.mode != network_mode::static_direct) return closed;
+        u64 ticket = 0;
+        result = session_.resolve_start(name, length, deadline, ticket);
+        if (result) return result;
+        for (;;) {
+            result = session_.resolve_result(ticket, deadline, answer);
+            if (result != would_block) break;
+            result = pause(deadline);
+            if (result) { close(); return result; }
+        }
+        if (result) return result;
+        if (answer.epoch != configuration.epoch) { answer = {}; return config_changed; }
+        const i64 now = sdk::syscall(sys_clock_monotonic);
+        if (now < 0) { answer = {}; close(); return io; }
+        if (answer.expiry && answer.expiry <= static_cast<u64>(now)) { answer = {}; return dns_expired; }
+        return 0;
+    }
     i64 open(protocol transport, u32 address, u16 port, u64 deadline, u64& handle) {
         handle = 0;
         if ((transport != protocol::tcp && transport != protocol::udp) || !port) return invalid;

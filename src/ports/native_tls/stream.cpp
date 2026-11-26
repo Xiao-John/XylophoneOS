@@ -52,7 +52,7 @@ stream::~stream() {
 
 int stream::connect(xos::u64 service_pid, xos::u32 address, xos::u16 port,
                     const char* hostname, const unsigned char* trust_anchor,
-                    size_t trust_anchor_size, xos::u64 deadline) {
+                    size_t trust_anchor_size, xos::u64 deadline, route_source route) {
     if (started_ || !service_pid || !address || !port || !valid_dns_name(hostname) ||
         !trust_anchor || !trust_anchor_size)
         return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
@@ -78,6 +78,15 @@ int stream::connect(xos::u64 service_pid, xos::u32 address, xos::u16 port,
     status = mbedtls_ssl_set_hostname(&ssl_, hostname);
     if (status) return status;
     auto network = tcp_.connect(service_pid);
+    if (!network && route == route_source::net2_dns) {
+        xos::u32 length = 0;
+        while (hostname[length]) ++length;
+        xos::net2::resolve_reply answer{};
+        network = tcp_.resolve_ipv4(hostname, length, deadline_, answer);
+        if (network) return fail(static_cast<int>(network));
+        if (answer.address != address) return fail(static_cast<int>(xos::net2::denied));
+        address = answer.address;
+    }
     if (!network)
         network = tcp_.open(xos::net2::protocol::tcp, address, port, deadline_, handle_);
     if (network) return fail(transport_result(network));

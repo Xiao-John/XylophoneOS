@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "source_commit": "242820a431d1328df1db40c8c6747025b87d4d29",
+  "implementation_tree": "3b5ebc7c2f5f636d86c312324df0c70da458663b",
+  "system_sdk_manifest_sha256": "3aa04a37bc177c2054830797a6928acb3d1f9fa0b3313d087344a06db799d73f",
+  "mobius_package_sha256": "cb8522a405f9902e26d82b453f0b1f25592710245cad48cb651c3fdb40bd8a45",
+  "mobius_package_receipt_sha256": "d4cd27a8a521638d6c501339221702896fe59c3ba3fb632609e3f4a5a1ee83a5",
+  "mobius_sdk_manifest_sha256": "7eee04884a96ced6de12d20794af6809f544e3f15bc4e409b4197e58b1583d7a",
+  "mobius_profile_sha256": "5dde8b7cd0a2e5fe9d0db892b81f88eeed36e2f72ba89826209acb013362b10a",
+  "files": {
+    "daybreak.ppm.gz": "015aec1db5b3f35bb9205eb74aebc8d2eb5e6b06637e1adbcd3a3d4f1da196f3",
+    "desktop.json": "f99ea177324ae9e40bc29ba46549488a7a6e9342ec6ddbfc6e2912acfe025b10",
+    "legacy.json": "d90dc00f13ab67af20445e686bfd8d8c2101635629a25b17d8aad27ec255fbff",
+    "midnight.ppm.gz": "4885368343f1956b2bf6bbf6506e374c6dcc93e5f5ae5a47e9dfe7f667e4be80"
+  }
+}

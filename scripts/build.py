@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import stat
 import subprocess
 import sys
 from toolchain import LOCK, TARGET, COMMON_FLAGS, X86_FLAGS, audit, tool, output
@@ -63,6 +64,8 @@ def main():
                         help="exercise trusted credential delivery in the anchored developer profile")
     parser.add_argument("--pumpkin-user-login", action="store_true",
                         help="enable the private operator enrollment and login entry")
+    parser.add_argument("--pumpkin-mobius-elf", type=Path,
+                        help="bind the selected Mobius ELF into the private desktop login profile")
     parser.add_argument("--pumpkin-user-resource", action="store_true",
                         help="enable a sealed resource for the private operator login entry")
     parser.add_argument("--pumpkin-named-resource-store", action="store_true",
@@ -91,6 +94,8 @@ def main():
         parser.error("native Pumpkin login requires the anchored developer profile")
     if args.pumpkin_user_login and not args.pumpkin_native_login:
         parser.error("operator login requires the native Pumpkin developer profile")
+    if args.pumpkin_mobius_elf is not None and not args.pumpkin_user_login:
+        parser.error("Pumpkin Mobius requires the private operator login profile")
     if args.pumpkin_user_resource and not args.pumpkin_user_login:
         parser.error("operator resource access requires the private Pumpkin login profile")
     if args.pumpkin_named_resource_store and (not args.pumpkin_anchored_probe or
@@ -153,6 +158,27 @@ def main():
         sources.extend(p for p in sorted((ROOT / folder).rglob("*"))
                        if p.suffix in (".asm", ".s", ".sh", ".inc", ".py", ".cpp", ".hpp", ".c", ".h", ".ld", ".json", ".lldb", ".patch"))
     source_hashes = {str(p.relative_to(ROOT)): sha256(p.read_bytes()) for p in sources}
+    desktop_metadata = {}
+    if args.pumpkin_mobius_elf is not None:
+        if not args.pumpkin_mobius_elf.is_file():
+            parser.error("select a regular Mobius ELF")
+        with args.pumpkin_mobius_elf.open("rb") as executable:
+            source = os.fstat(executable.fileno())
+            if not stat.S_ISREG(source.st_mode) or not 64 <= source.st_size < 2**32:
+                parser.error("select a regular Mobius ELF within the file protocol size")
+            if executable.read(6) != b"\x7fELF\x02\x01":
+                parser.error("select a little-endian ELF64 Mobius executable")
+            executable.seek(0)
+            digest = hashlib.file_digest(executable, "sha256").hexdigest()
+            final = os.fstat(executable.fileno())
+            if (source.st_size, source.st_mtime_ns, source.st_ctime_ns) != (
+                    final.st_size, final.st_mtime_ns, final.st_ctime_ns):
+                parser.error("Mobius executable changed during binding")
+        desktop_metadata = {"pumpkin_mobius_executable": {"sha256": digest, "bytes": source.st_size}}
+        code = ", ".join(f"0x{byte:02x}" for byte in bytes.fromhex(digest))
+        (BUILD / "pumpkin_desktop_binding.hpp").write_text(
+            f"inline constexpr xos::execution::image_receipt pumpkin_mobius_executable"
+            f"{{{{{code}}}, {source.st_size}u}};\n")
     source_digest = sha256(json.dumps({"sources": source_hashes, "capacity_probe": args.capacity_probe,
                                       "terminal_supervisor_probe": args.terminal_supervisor_probe,
                                       "ncurses_supervisor_probe": args.ncurses_supervisor_probe,
@@ -166,6 +192,7 @@ def main():
                                       **({"pumpkin_native_login": True} if args.pumpkin_native_login else {}),
                                       **({"pumpkin_user_login": True, "pumpkin_operator_protocol": 2}
                                          if args.pumpkin_user_login else {}),
+                                      **desktop_metadata,
                                       **({"pumpkin_user_resource": True} if args.pumpkin_user_resource else {}),
                                       **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
                                       **({"pumpkin_named_resource_store": True} if args.pumpkin_named_resource_store else {}),
@@ -192,6 +219,7 @@ def main():
                                  pumpkin_anchored_probe=args.pumpkin_anchored_probe,
                                  pumpkin_native_login=args.pumpkin_native_login,
                                  pumpkin_user_login=args.pumpkin_user_login,
+                                 pumpkin_mobius=bool(desktop_metadata),
                                  pumpkin_user_resource=args.pumpkin_user_resource,
                                  pumpkin_named_resource_store=args.pumpkin_named_resource_store,
                                  quiet_demos_on_launch=args.quiet_demos_on_launch,
@@ -352,6 +380,7 @@ def main():
         **({"pumpkin_anchored_probe": True} if args.pumpkin_anchored_probe else {}),
         **({"pumpkin_native_login": True} if args.pumpkin_native_login else {}),
         **({"pumpkin_user_login": True, "pumpkin_operator_protocol": 2} if args.pumpkin_user_login else {}),
+        **desktop_metadata,
         **({"pumpkin_user_resource": True} if args.pumpkin_user_resource else {}),
         **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
         **({"pumpkin_named_resource_store": True} if args.pumpkin_named_resource_store else {}),

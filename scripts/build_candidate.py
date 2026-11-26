@@ -161,8 +161,13 @@ def main():
                 guest, guest_hash = metadata_snapshot(output / 'stock_guest/report.json')
                 require(guest['status'] == 'passed' and guest['system_build_id'] == system['build_id']
                         and guest['installer_iso_sha256'] == report['artifacts']['system/xos-install-dash.iso']
+                        and guest['image_sha256'] == report['artifacts']['system/xos-install.iso']
                         and guest['package_sha256'] == report['artifacts']['stock/daily.xpk']
-                        and guest['xypm_elf_sha256'] == report['artifacts']['stock/xypm.elf'],
+                        and guest['xypm_elf_sha256'] == report['artifacts']['stock/xypm.elf']
+                        and guest['xypm_receipt_sha256'] == report['artifacts']['stock/build_receipt.json']
+                        and guest['dash_receipt_sha256'] == report['artifacts']['dash_manifest.json']
+                        and guest['profile_binding_sha256'] == app_sdk['profile_sha256']
+                        and guest['sdk_manifest_sha256'] == app_sdk['sdk_manifest_sha256'],
                         'stock guest report does not bind the frozen installer inputs')
                 report['artifacts']['stock_guest/report.json'] = guest_hash
             report['installer_guest_qualification'] = 'passed'

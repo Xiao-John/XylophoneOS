@@ -43,8 +43,9 @@ issue, submit = range(1, 3)
 scenarios = {"enroll": 4, "login": 5, "revoke": 6, "read-resource": 7}
 named_operations = {"read-named": 1, "publish-named": 2, "erase-named": 3, "import-fat": 4}
 scenarios.update({"read-named": 9, "publish-named": 10, "erase-named": 11, "import-fat": 12})
+scenarios["desktop"] = 13
 named_writes = ("publish-named", "erase-named", "import-fat")
-submission_commands = ("login", "read-resource", "read-named")
+submission_commands = ("login", "read-resource", "read-named", "desktop")
 credential_operations = {"enroll": issue, **dict.fromkeys(submission_commands, submit)}
 named_layout = struct.Struct("<QIB3x16s")
 named_empty = bytes(frame_size - header.size)
@@ -183,6 +184,8 @@ def bind_system(system):
              "user_pumpkin_durable.image.elf", "user_p2_anchor_proxy.image.elf", "user_pumpkin_holder.image.elf")
     if checked.get("pumpkin_user_resource") is True:
         names += (broker_artifact,)
+    if "pumpkin_mobius_executable" in checked:
+        names += ("user_display.image.elf", "user_interactiumd.image.elf")
     artifacts = {name: digest(system / name) for name in names}
     require(all(checked["artifacts"][name]["sha256"] == value for name, value in artifacts.items()),
             "Login image differs from its build receipt")
@@ -327,11 +330,12 @@ def named_exchange(vm, command, frame, selection, selection_sent):
     return status, actual, returned
 
 
-def boot(system, state, command, authority, previous, path, stored, account, selection):
+def boot(system, state, command, authority, previous, path, stored, account, selection, display):
     with tempfile.TemporaryDirectory(prefix="pumpkin_user_") as private, ExitStack() as close_wallet:
         monitor = Path(private) / "qmp"
         drive = str(state / "work.img").replace(",", ",,")
-        vm = private_vm(qemu_command(system / "xos-install.iso", iso=True, work_disk=drive, qmp=monitor))
+        vm = private_vm(qemu_command(system / "xos-install.iso", iso=True, work_disk=drive, qmp=monitor,
+                                     display=display))
         try:
             vm.scan_boot(b"xos64> ")
             vm.send(b"run\r")
@@ -350,7 +354,8 @@ def boot(system, state, command, authority, previous, path, stored, account, sel
             for _ in range(20):
                 frame = bytearray(frame_size)
                 try:
-                    vm.receive(frame, time.monotonic() + 12)
+                    timeout = 31 * 60 if command == "desktop" and credential_seen else 12
+                    vm.receive(frame, time.monotonic() + timeout)
                     tag, version, operation, status, serial = header.unpack_from(frame)
                     if tag == b"PKO1":
                         require(version == 1 and operation == scenarios[command] and status == 0 and
@@ -375,7 +380,10 @@ def boot(system, state, command, authority, previous, path, stored, account, sel
                             expected = 2 if previous is None else previous.revision + 1
                             require(wallet is not None and committed is not None and committed.revision == expected,
                                     "Credential issue has no confirmed account publication")
-                        operator_exchange(vm, command, frame, wallet, stored)
+                        try:
+                            operator_exchange(vm, command, frame, wallet, stored)
+                        finally:
+                            wipe(stored)
                         credential_seen = True
                         continue
                     if tag == b"PKN1":
@@ -411,6 +419,8 @@ def boot(system, state, command, authority, previous, path, stored, account, sel
                         require(vm.process.wait(timeout=8) == 0, "Private guest shutdown failed")
                         if command in ("read-resource", "read-named") and status in resource_errors:
                             raise login_error(resource_errors[status])
+                        if command == "desktop" and status == 36:
+                            raise login_error("Pumpkin desktop could not start or its logout was not confirmed")
                         if command == "enroll" and status == duplicate_enrollment:
                             require(not credential_seen and wallet is None, "Duplicate enrollment attempted credential issue")
                             return status
@@ -435,8 +445,10 @@ def named_profile(system):
     return json.loads((system / "manifest.json").read_bytes()).get("pumpkin_named_resource_store") is True
 
 
-def operate(system, state, command, path, selection=None, account=b"alice"):
+def operate(system, state, command, path, selection=None, account=b"alice", *, display=None):
     binding = bind_system(system)
+    require(command != "desktop" or "user_interactiumd.image.elf" in binding[2],
+            "Select a private login image with a bound Mobius executable")
     named = named_profile(system)
     require(command != "read-resource" or (broker_artifact in binding[2] and not named),
             "Select the private Pumpkin sealed resource image")
@@ -457,7 +469,7 @@ def operate(system, state, command, path, selection=None, account=b"alice"):
             elif command in submission_commands:
                 with credential_file(path, False) as wallet:
                     read_credential(wallet[0], stored)
-            result = boot(system, state, command, authority, previous, path, stored, account, selection)
+            result = boot(system, state, command, authority, previous, path, stored, account, selection, display)
             require(bind_system(system) == binding, "Login image receipt changed during operation")
             final = authority.read()
             if command == "enroll" and result == duplicate_enrollment:
@@ -487,11 +499,14 @@ def main():
     parser.add_argument("--generation", type=int)
     parser.add_argument("--resource-value", type=int, help="unsigned 32-bit value for publish-named")
     parser.add_argument("--fat-source", help="absolute guest source file for import-fat")
+    parser.add_argument("--display", help="QEMU display backend for the desktop operation")
     args = parser.parse_args()
     if args.operation != "prepare" and args.system is None:
         parser.error("a matching --system is required")
     if (args.operation in credential_operations) != (args.credential_file is not None):
         parser.error("--credential-file is required for credential submission and enrollment")
+    if args.display is not None and args.operation != "desktop":
+        parser.error("--display requires the desktop operation")
     account = "alice" if args.account is None else args.account
     if (args.operation == "prepare" and args.account is not None) or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,31}", account) is None:
         parser.error("select an account name of 1 to 32 characters for an account operation")
@@ -526,7 +541,8 @@ def main():
             print("Private Pumpkin installation prepared")
             return 0
         path = args.credential_file.absolute() if args.credential_file is not None else None
-        result = operate(args.system.absolute(), state, args.operation, path, selected, account.encode("ascii"))
+        result = operate(args.system.absolute(), state, args.operation, path, selected, account.encode("ascii"),
+                         display=args.display)
         if selected is not None:
             result, generation, data = result
             if result == 1:
@@ -547,6 +563,7 @@ def main():
             return 3
         print({"enroll": "Pumpkin credential issued to your private file",
                "login": "Pumpkin login confirmed and session logged out",
+               "desktop": "Mobius closed and Pumpkin confirmed logout",
                "read-resource": "Pumpkin sealed resource read confirmed and session logged out",
                "revoke": "Pumpkin credential revoked"}[args.operation])
         return 0

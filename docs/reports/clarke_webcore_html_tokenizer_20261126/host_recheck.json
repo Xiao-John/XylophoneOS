@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "system_build": "0b8800877d41f80e",
+  "license_materials": {
+    "scope": "registered_materials_and_sdk_copies",
+    "checked": 10
+  },
+  "fat_transfer": {
+    "host_tool_sha256": "9041e64b77584948bb112980ef824d56a9299de127458ff2f0f0d975b0234090",
+    "host_driver_sha256": "9ad9180df909cabfc4e3820089680ca03e1df1ebe2c2da66dada214c76c7fe28",
+    "mainline_update": "88525cf628444e44c48aa2cb03ecad458852dd5b"
+  }
+}

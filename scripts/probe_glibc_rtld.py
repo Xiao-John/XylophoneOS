@@ -117,6 +117,25 @@ def main():
             raise RuntimeError('native entry checker unexpectedly depends on another object')
         run('native_entry_readelf', [env['READELF'], '-hW', '-rW', native_entry])
 
+        rtld_map = build / 'elf/xos_rtld_mapping.os'
+        rtld_files = build / 'elf/xos_file_session.os'
+        rtld_load = build / 'elf/dl-load.os'
+        for path in (rtld_map, rtld_files, rtld_load):
+            _, compilation = run('make_' + path.name, [*make_elf, path])
+            if not any({'-fPIC', '-DSHARED', '-DMODULE_NAME=rtld'} <= set(line.split())
+                       and line.split()[0].endswith('/cc') for line in compilation.splitlines()
+                       if line.split()):
+                raise RuntimeError('expected shared rtld module flags: ' + path.name)
+        _, mapping_reference = run('dl_load_mapping_reference', [env['READELF'], '-rW', rtld_load])
+        if not all(name in mapping_reference for name in ('__xos_rtld_map_fd', '__xos_rtld_release_image')):
+            raise RuntimeError('upstream dl-load did not select the XOS mapping backend')
+        _, mapping_imports = run('native_mapping_imports', [env['NM'], '-u', rtld_map])
+        if {line.split()[-1] for line in mapping_imports.splitlines()} != {'__xos_file_session_call'}:
+            raise RuntimeError('native rtld mapping unexpectedly depends on builtin libc or TLS')
+        _, files_imports = run('native_files_imports', [env['NM'], '-u', rtld_files])
+        if files_imports.strip():
+            raise RuntimeError('native early files transport unexpectedly depends on another object')
+
         failure, reason = run('make_dl_sysdep', [*make_elf, build / 'elf/dl-sysdep.os'], allow_failure=True)
         if not failure or 'error: #error "XOS dynamic interpreter startup is not implemented"' not in reason:
             raise RuntimeError('expected the explicit XOS dynamic startup compile gate')
@@ -133,7 +152,7 @@ def main():
                 or sha(Path(__file__)) != report['probe_sha256']
                 or any(sha(Path(tool['path'])) != tool['sha256'] for tool in tools.values())):
             raise RuntimeError('source preparation or configured tools changed during the diagnostic')
-        report.update(status='rtld_entry_compiled_startup_blocked', artifacts={str(path.relative_to(output)): sha(path) for path in (entry, native_entry)})
+        report.update(status='rtld_entry_compiled_startup_blocked', artifacts={str(path.relative_to(output)): sha(path) for path in (entry, native_entry, rtld_map, rtld_files, rtld_load)})
     except Exception as error:
         report['error'] = str(error)
         raise

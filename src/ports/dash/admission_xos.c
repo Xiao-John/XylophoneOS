@@ -15,6 +15,9 @@ static void xos_check_redirect(union node *n) {
                 sh_error("only descriptors 0, 1, and 2 are available in XOS dash B2");
             break;
         case NHERE: case NXHERE:
+#ifdef XOS_DASH_GLIBC_PREVIEW
+            sh_error("here-documents unavailable in the glibc dash preview");
+#endif
             xos_check_tree(n->nhere.doc);
             break;
         default:
@@ -32,6 +35,9 @@ void xos_check_tree(union node *n) {
     case NARG:
         for (; n; n = n->narg.next) {
             struct nodelist *sub;
+#ifdef XOS_DASH_GLIBC_PREVIEW
+            if (n->narg.backquote) sh_error("command substitution unavailable in the glibc dash preview");
+#endif
             for (sub = n->narg.backquote; sub; sub = sub->next) xos_check_tree(sub->n);
         }
         break;
@@ -56,6 +62,9 @@ void xos_check_tree(union node *n) {
         xos_check_tree(n->nredir.n); xos_check_redirect(n->nredir.redirect); break;
     case NNOT: xos_check_tree(n->nnot.com); break;
     case NPIPE: {
+#ifdef XOS_DASH_GLIBC_PREVIEW
+        sh_error("pipelines unavailable in the glibc dash preview");
+#endif
         struct nodelist *lp;
         unsigned count = 0;
         if (n->npipe.backgnd) sh_error("background pipeline unavailable in XOS dash C1");
@@ -66,6 +75,9 @@ void xos_check_tree(union node *n) {
         break;
     }
     case NSUBSHELL:
+#ifdef XOS_DASH_GLIBC_PREVIEW
+        sh_error("subshells unavailable in the glibc dash preview");
+#endif
         xos_check_tree(n->nredir.n); xos_check_redirect(n->nredir.redirect); break;
     case NBACKGND: sh_error("background jobs unavailable in XOS dash B2");
     default: sh_error("construct unavailable in XOS dash B2");

@@ -16,6 +16,7 @@ long __xos_file_write (int, const void *, size_t) __attribute__ ((visibility ("h
 long __xos_file_seek (int, long, int) __attribute__ ((visibility ("hidden")));
 long __xos_file_stat (int, const char *, struct stat *) __attribute__ ((visibility ("hidden")));
 long __xos_file_getcwd (char *, size_t) __attribute__ ((visibility ("hidden")));
+long __xos_file_chdir (const char *) __attribute__ ((visibility ("hidden")));
 long __xos_file_access (const char *, int) __attribute__ ((visibility ("hidden")));
 long __xos_file_dup (int, int, int, int) __attribute__ ((visibility ("hidden")));
 long __xos_file_fcntl (int, int, int) __attribute__ ((visibility ("hidden")));
@@ -23,6 +24,12 @@ long __xos_file_path_op (const char *, int) __attribute__ ((visibility ("hidden"
 long __xos_file_truncate (int, long) __attribute__ ((visibility ("hidden")));
 long __xos_file_sync (int) __attribute__ ((visibility ("hidden")));
 long __xos_file_isatty (int) __attribute__ ((visibility ("hidden")));
+long __xos_file_service_error (int) __attribute__ ((visibility ("hidden")));
+
+/* Keep the native stdio routes and cwd stable until loader commit or abort. */
+struct xos_spawn_stdio { int object[3], route[3]; };
+long __xos_file_spawn_begin (struct xos_spawn_stdio *) __attribute__ ((visibility ("hidden")));
+void __xos_file_spawn_end (struct xos_spawn_stdio *) __attribute__ ((visibility ("hidden")));
 
 /* Internal users retain an open description, never a reusable FD number.
    access is -1 for metadata, 0 for reading or 1 for writing. */
@@ -41,6 +48,7 @@ long __xos_file_request_path (struct xos_file_request *, const char *)
   __attribute__ ((visibility ("hidden")));
 /* Serialized files exchange: one request ID and one failure latch shared by
    all libc and native-loader users of this process's authenticated session.
+   Cwd changes targeting this process also serialize against native spawn.
    The output is cleared before exchange and remains empty on failure. */
 long __xos_file_exchange (const struct xos_file_request *, struct xos_file_response *)
   __attribute__ ((visibility ("hidden")));

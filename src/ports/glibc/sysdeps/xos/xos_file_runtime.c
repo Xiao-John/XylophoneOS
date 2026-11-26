@@ -36,21 +36,21 @@ struct fd_slot { int object; unsigned int close_on_exec; };
 struct open_object { unsigned int kind, handle, flags, references; };
 static struct fd_slot descriptors[fd_limit];
 static struct open_object objects[object_limit];
-static xos_u32 session_lock;
+static xos_u32 session_lock, spawn_cwd_lock;
 static int initialized, initialization_error, session_failed;
 static xos_u32 request_sequence, send_handle, receive_handle;
 static struct xos_file_request request;
 static struct xos_file_response response;
-enum { file_stat = 3, file_fstat = 18, file_cwd_get = 27 };
+enum { file_stat = 3, file_fstat = 18, file_cwd_set = 26, file_cwd_get = 27 };
 /* The files service reserves this identity for its synthetic /dev namespace. */
 enum { file_device_directory_inode = 0xfffe };
 
 static int
-lock_session (void)
+lock_runtime (xos_u32 *lock)
 {
-  while (__atomic_exchange_n (&session_lock, 1, __ATOMIC_ACQUIRE) != 0)
+  while (__atomic_exchange_n (lock, 1, __ATOMIC_ACQUIRE) != 0)
     {
-      long result = __xos_wait_word (&session_lock, 1, ~(xos_u64) 0);
+      long result = __xos_wait_word (lock, 1, ~(xos_u64) 0);
       if (result != 0 && result != -14)
         return -EIO;
     }
@@ -58,14 +58,17 @@ lock_session (void)
 }
 
 static void
-unlock_session (void)
+unlock_runtime (xos_u32 *lock)
 {
-  __atomic_store_n (&session_lock, 0, __ATOMIC_RELEASE);
-  (void) __xos_wake_word (&session_lock, 1);
+  __atomic_store_n (lock, 0, __ATOMIC_RELEASE);
+  (void) __xos_wake_word (lock, 1);
 }
 
-static long
-service_error (int value)
+static int lock_session (void) { return lock_runtime (&session_lock); }
+static void unlock_session (void) { unlock_runtime (&session_lock); }
+
+long
+__xos_file_service_error (int value)
 {
   switch (value)
     {
@@ -262,7 +265,7 @@ call_service (unsigned int operation)
               || response.name_length >= sizeof (response.name) || response.status_code > 0
               || response.status_code < -16 || !valid_response_shape (operation))
             return session_fault (EIO);
-          return service_error (response.status_code);
+          return __xos_file_service_error (response.status_code);
         }
       if (received != -3) return session_fault (EIO);
       /* Legacy files endpoints have no deadline-capable readiness wait.
@@ -578,6 +581,52 @@ close_object (int index)
      accidentally close a later FD that reused its number. */
   *object = (struct open_object) { 0 };
   return result;
+}
+
+long
+__xos_file_spawn_begin (struct xos_spawn_stdio *stdio)
+{
+  int error = lock_runtime (&spawn_cwd_lock);
+  if (error != 0) return error;
+  error = begin ();
+  if (error == 0)
+    {
+      for (int fd = 0; fd < fd_limit; ++fd)
+        {
+          int index = object_for (fd);
+          if (descriptors[fd].close_on_exec) index = -1;
+          if (index >= 0 && (fd >= 3 || objects[index].kind != kind_kernel
+              || (objects[index].flags & O_NONBLOCK) != 0
+              || (fd == 0) != (objects[index].handle == 0)))
+            {
+              error = -ENOTSUP;
+              break;
+            }
+          if (fd < 3)
+            {
+              stdio->object[fd] = index;
+              stdio->route[fd] = index < 0 ? -2 : (int) objects[index].handle;
+            }
+        }
+      if (error == 0)
+        for (int fd = 0; fd < 3; ++fd)
+          if (stdio->object[fd] >= 0) ++objects[stdio->object[fd]].references;
+      unlock_session ();
+    }
+  if (error != 0) unlock_runtime (&spawn_cwd_lock);
+  return error;
+}
+
+void
+__xos_file_spawn_end (struct xos_spawn_stdio *stdio)
+{
+  if (lock_session () == 0)
+    {
+      for (int fd = 0; fd < 3; ++fd)
+        if (stdio->object[fd] >= 0) (void) close_object (stdio->object[fd]);
+      unlock_session ();
+    }
+  unlock_runtime (&spawn_cwd_lock);
 }
 
 long
@@ -912,18 +961,30 @@ done:
 long
 __xos_file_path_op (const char *path, int operation)
 {
-  int error = begin ();
+  const int changes_cwd = (xos_file_u16) operation == file_cwd_set;
+  int error = changes_cwd ? lock_runtime (&spawn_cwd_lock) : 0;
   if (error != 0) return error;
-  memset (&request, 0, sizeof (request));
-  long result = prepare_path (path);
+  long result = begin ();
   if (result == 0)
     {
-      request.flags = operation == 513 ? 512 : 0;
-      result = call_service (operation == 513 ? 13 : (unsigned int) operation);
-      if (result == 0 && response.length != 0) result = session_fault (EIO);
+      memset (&request, 0, sizeof (request));
+      result = prepare_path (path);
+      if (result == 0)
+        {
+          request.flags = operation == 513 ? 512 : 0;
+          result = call_service (operation == 513 ? 13 : (unsigned int) operation);
+          if (result == 0 && response.length != 0) result = session_fault (EIO);
+        }
+      unlock_session ();
     }
-  unlock_session ();
+  if (changes_cwd) unlock_runtime (&spawn_cwd_lock);
   return result;
+}
+
+long
+__xos_file_chdir (const char *path)
+{
+  return __xos_file_path_op (path, file_cwd_set);
 }
 
 long
@@ -1042,12 +1103,21 @@ __xos_file_exchange (const struct xos_file_request *input, struct xos_file_respo
   /* Callers own disjoint request and response records. */
   if ((const void *) input == (const void *) output) return -EINVAL;
   memset (output, 0, sizeof (*output));
-  int error = begin ();
+  /* Match the service's self selectors. Spawn already owns the cwd lock
+     while the loader sets the new child's directory through this exchange. */
+  const int changes_cwd = input->operation == file_cwd_set
+    && (input->offset == 0 || input->offset == (xos_u64) file_trap (6, 0, 0, 0));
+  int error = changes_cwd ? lock_runtime (&spawn_cwd_lock) : 0;
   if (error != 0) return error;
-  request = *input;
-  long result = call_service (request.operation);
-  if (result == 0) *output = response;
-  unlock_session ();
+  long result = begin ();
+  if (result == 0)
+    {
+      request = *input;
+      result = call_service (request.operation);
+      if (result == 0) *output = response;
+      unlock_session ();
+    }
+  if (changes_cwd) unlock_runtime (&spawn_cwd_lock);
   return result;
 }
 

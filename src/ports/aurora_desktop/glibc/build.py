@@ -61,7 +61,8 @@ def main():
     modules = ("Core", "Gui", "Widgets", "BundledFreetype", "BundledHarfbuzz", "BundledPcre2", "BundledZLIB")
     archives = {module: prefix / "lib" / f"libQt6{module}.a" for module in modules}
     installed_tools = {name: host / "libexec" / name for name in ("moc", "rcc")}
-    expected = archives | installed_tools
+    qt_inputs = archives | installed_tools
+    expected = {name: path.resolve(strict=True) for name, path in qt_inputs.items()}
     for path in archives.values():
         if sha(path) != sha(qt_build / "lib" / path.name):
             parser.error(f"Installed archive differs from the matching Qt Widgets build: {path.name}")
@@ -94,7 +95,7 @@ def main():
                    for path in sorted(directory.rglob("*")) if path.suffix in (".h", ".hpp")]
     font = qt_source / "src/3rdparty/wasm/DejaVuSans.ttf"
     paths = [sdk_manifest, args.sdk_profile.resolve(), cache_path, font,
-             *product_inputs, *qt_port_inputs, *xos_headers, *expected.values()]
+             *product_inputs, *qt_port_inputs, *xos_headers, *qt_inputs.values()]
     digests = {str(path): sha(path) for path in paths}
     configure = ["cmake", "-S", str(PORT), "-B", str(output), "-G", "Ninja",
                  "-DCMAKE_BUILD_TYPE=Release", "-DCMAKE_FIND_USE_PACKAGE_REGISTRY=OFF",
@@ -119,6 +120,7 @@ def main():
     build = ["cmake", "--build", str(output), "--parallel", str(args.jobs)]
     subprocess.run(build, env=env, check=True)
     if ({str(path): sha(path) for path in paths} != digests
+            or any(path.resolve(strict=True) != expected[name] for name, path in qt_inputs.items())
             or verify_profile(load_json(args.sdk_profile), "glibc", sdk_build) != binding
             or any(sha(Path(tool["path"])) != tool["sha256"] for tool in tools.values())):
         raise RuntimeError("Mobius build inputs changed during compilation")

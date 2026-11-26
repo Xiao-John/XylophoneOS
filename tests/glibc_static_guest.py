@@ -114,6 +114,9 @@ def suite_cases(suite):
                        'GLIBC_FILES_EXTRA_PASS']))
     if suite in ('cwd', 'all'):
         cases.append(('g3_cwd', 'glibc_g3/cwd_probe.c', ['/'], 0, ['GLIBC_CWD_ACCESS_PASS']))
+    if suite in ('process', 'all'):
+        cases.append(('g3_spawn', 'glibc_g3/process_spawn.c', ['parent'], 0,
+                      ['GLIBC_SPAWN_CHILD_0', 'GLIBC_SPAWN_CHILD_23', 'GLIBC_SPAWN_WAIT_PASS']))
     return cases
 
 
@@ -222,15 +225,15 @@ def main():
     parser.add_argument('--death-system-build', type=Path,
                         help='private system built with --glibc-files-death-probe')
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--suite', choices=('g2', 'threads', 'files', 'files-extra', 'cwd', 'exit', 'all'),
+    parser.add_argument('--suite', choices=('g2', 'threads', 'files', 'files-extra', 'cwd', 'process', 'exit', 'all'),
                         default='g2')
-    parser.add_argument('--dash-receipt', type=Path, help='current-system dash C3 receipt for the cwd suite')
+    parser.add_argument('--dash-receipt', type=Path, help='current-system dash C3 receipt for cwd and process suites')
     parser.add_argument('--repetitions', type=int, default=3)
     args = parser.parse_args()
     if not 1 <= args.repetitions <= 10:
         parser.error('repetitions must be in 1..10')
-    if args.suite == 'cwd' and args.dash_receipt is None:
-        parser.error('cwd qualification requires --dash-receipt for the second launch path')
+    if args.suite in ('cwd', 'process') and args.dash_receipt is None:
+        parser.error(args.suite + ' qualification requires --dash-receipt for the second launch path')
     cases = suite_cases(args.suite)
     required = {relative for _, relative, _, _, _ in cases}
     if args.suite in ('files', 'all'):
@@ -345,18 +348,35 @@ def main():
                           ['/bin/g3_files_extra_receiver'], 0,
                           ['GLIBC_FILES_EXTRA_INHERIT_DIR_PASS', 'GLIBC_FILES_EXTRA_CHILD_PASS',
                            'GLIBC_FILES_EXTRA_PARENT_PASS']))
-        dash, cwd_suite = None, args.suite in ('cwd', 'all')
+        cwd_suite = args.suite in ('cwd', 'all')
+        process_suite = args.suite in ('process', 'all')
+        dash = None
+        dash_scripts = {}
+        if (cwd_suite or process_suite) and args.dash_receipt is not None:
+            dash, report['dash_binding'] = bind_tool(args.dash_receipt, 'dash_c3', system_build / 'sdk')
         if cwd_suite:
             programs['g3_cwd_setup'] = build_newlib_parent(
                 system_build, output, report, 'glibc_g3/cwd_setup.c', 'g3_cwd_setup')
-            if args.dash_receipt is not None:
-                dash, report['dash_binding'] = bind_tool(args.dash_receipt, 'dash_c3', system_build / 'sdk')
+            if dash is not None:
                 cases.append(('g3_cwd_dash', 'glibc_g3/cwd_probe.c', [], 0,
                               ['GLIBC_CWD_ACCESS_PASS', 'GLIBC_CWD_DASH_RC=0']))
                 script = output / 'cwd_via_dash.sh'
                 script.write_text("cd /g3_cwd/sub || exit 2\n/bin/g3_cwd /g3_cwd/sub\n"
                                   "rc=$?\nprintf 'GLIBC_CWD_DASH_RC=%s\\n' \"$rc\"\nexit \"$rc\"\n")
                 report['dash_script_sha256'] = sha(script)
+                dash_scripts['/g3_cwd/cwd_via_dash.sh'] = script
+        if process_suite:
+            cases.append(('g3_spawn_denied', 'glibc_g3/process_spawn.c', [], 0,
+                          ['GLIBC_SPAWN_DENIED_PASS']))
+            if dash is not None:
+                cases.append(('g3_spawn_dash', 'glibc_g3/process_spawn.c', [], 0,
+                              ['GLIBC_SPAWN_CHILD_0', 'GLIBC_SPAWN_CHILD_23',
+                               'GLIBC_SPAWN_WAIT_PASS', 'GLIBC_SPAWN_DASH_RC=0']))
+                script = output / 'spawn_via_dash.sh'
+                script.write_text("/bin/g3_spawn parent\nrc=$?\n"
+                                  "printf 'GLIBC_SPAWN_DASH_RC=%s\\n' \"$rc\"\nexit \"$rc\"\n")
+                report['spawn_dash_script_sha256'] = sha(script)
+                dash_scripts['/g3_spawn/spawn_via_dash.sh'] = script
         verify_inputs()
         report['status'] = 'failed'
         with tempfile.TemporaryDirectory(prefix='xos_glibc_static_') as temporary:
@@ -373,11 +393,18 @@ def main():
                     path = output / name
                     path.write_text('path access fixture\n')
                     transfer(disk, 'import', '/g3_cwd/' + name, path)
+            if process_suite:
+                transfer(disk, 'mkdir', '/g3_spawn')
+                transfer(disk, 'import', '/g3_spawn/child', programs['g3_spawn'])
+                plain = output / 'not_an_image.txt'
+                plain.write_text('ordinary data file\n')
+                transfer(disk, 'import', '/g3_spawn/plain.txt', plain)
             if dash is not None:
                 transfer(disk, 'mkdir', '/usr')
                 transfer(disk, 'mkdir', '/usr/bin')
                 transfer(disk, 'import', '/usr/bin/dash', dash)
-                transfer(disk, 'import', '/g3_cwd/cwd_via_dash.sh', script)
+                for path, script in dash_scripts.items():
+                    transfer(disk, 'import', path, script)
             for name, binary in programs.items():
                 transfer(disk, 'import', '/bin/' + name, binary)
             guest = Guest(image, 'glibc_static_' + args.suite, work_disk=disk,
@@ -410,6 +437,12 @@ def main():
                     line = launch + ' /bin/' + name + ''.join(' ' + arg for arg in arguments)
                     if name == 'g3_cwd_dash':
                         line = 'dash /g3_cwd/cwd_via_dash.sh'
+                    elif name == 'g3_spawn':
+                        line = '/bin/g3_spawn parent'
+                    elif name == 'g3_spawn_denied':
+                        line = 'exec-file /bin/g3_spawn denied'
+                    elif name == 'g3_spawn_dash':
+                        line = 'dash /g3_spawn/spawn_via_dash.sh'
                     kind, code = ('exited', expected_status) if isinstance(expected_status, int) else expected_status
                     began = time.monotonic()
                     captured = command(guest, line, b'kind=', timeout=15 if name == 'g3_exit_abi' else 120)

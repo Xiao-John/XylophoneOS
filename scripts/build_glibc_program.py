@@ -20,6 +20,17 @@ def sha(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
+def project_dependencies(depfile, project, inputs):
+    target, _, dependencies = depfile.read_text().replace('\\\n', '').partition(':')
+    if target != 'xos_object':
+        raise RuntimeError('invalid compiler dependency record')
+    for escaped in re.findall(r'(?:\\.|[^\s\\])+', dependencies):
+        name = re.sub(r'\\(.)', r'\1', escaped).replace('$$', '$')
+        path = Path(name).resolve(strict=True)
+        if not path.is_relative_to(project) or path.relative_to(project).as_posix() not in inputs:
+            raise RuntimeError('application dependency is outside the recorded project inputs: ' + name)
+
+
 def verify_elf(path):
     data = path.read_bytes()
     if data[:7] != b'\x7fELF\x02\x01\x01':
@@ -52,6 +63,8 @@ def main():
     parser.add_argument('--profile', type=Path, help='explicit glibc candidate from create_xypm_profile.py')
     parser.add_argument('--cxx', action='store_true', help='build C++ using a C++ candidate profile')
     parser.add_argument('--source', type=Path, action='append', required=True)
+    parser.add_argument('--include-dir', type=Path, action='append', default=[])
+    parser.add_argument('--project-inputs', type=Path, help='build receipt inputs relative to the current project directory')
     parser.add_argument('--define', action='append', default=[], metavar='NAME[=VALUE]')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--diagnostic', action='store_true',
@@ -68,6 +81,10 @@ def main():
         parser.error('--profile requires the SDK build sysroot directory')
     sdk = args.sdk.resolve(strict=True)
     sources = [path.resolve(strict=True) for path in args.source]
+    includes = [path.resolve(strict=True) for path in args.include_dir]
+    if any(not path.is_dir() for path in includes):
+        parser.error('--include-dir must name a directory')
+    inputs = load_json(args.project_inputs) if args.project_inputs else None
     if args.output.is_symlink():
         parser.error('output must be a new ELF path')
     output = args.output.resolve()
@@ -160,11 +177,21 @@ def main():
         else:
             flags += ['-std=gnu11', '-fno-builtin']
         flags += ['-isystem', str(sdk / 'usr/include'), '-isystem', str(private_headers)]
+        for include in includes:
+            flags += ['-I', str(include)]
+        if inputs is not None:
+            flags.append('-ffile-prefix-map=' + str(Path.cwd()) + '=/xos-app')
         flags.extend('-D' + item for item in args.define)
         objects = []
         for i, source in enumerate(sources):
             obj = work / ('program_' + str(i) + '.o')
-            run('compile-' + str(i), flags + ['-c', str(source), '-o', str(obj)])
+            compile_flags = flags
+            if inputs is not None:
+                depfile = work / ('program_' + str(i) + '.d')
+                compile_flags = flags + ['-MMD', '-MF', str(depfile), '-MT', 'xos_object']
+            run('compile-' + str(i), compile_flags + ['-c', str(source), '-o', str(obj)])
+            if inputs is not None:
+                project_dependencies(depfile, Path.cwd(), inputs)
             objects.append(str(obj))
         lib = sdk / 'usr/lib'
         unwind = [str(lib / 'libgcc_eh.a')] if (lib / 'libgcc_eh.a').is_file() else []

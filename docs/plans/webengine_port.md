@@ -185,8 +185,9 @@ WebKit 运行证据。M2 在实现前声明真实 WebCore 的进程位置和视�
 依次验收设备授权与撤销、用户态驱动收发、IP/TCP、DNS、受控 HTTP、TLS 与
 证书/时间/熵，最后接入选定 WebKit NetworkProcess；互不依赖的引擎工作可并行。
 每段同时记录故障、超时、取消、资源与对端死亡结果；端到端验收绑定真实客体、
-受控服务、挑战和响应字节。browser_http 的受限 Content-Length/GET 解析器可供
-纵切片和测试使用，但不支持 chunked、压缩或 HTTPS，不能预先视为完整浏览器网络栈。
+受控服务、挑战和响应字节。ClarkE 的受控 liteHTML 页面已用同一 Content-Length/GET
+解析器验证原生 HTTP 和显式证书信任配置下的 HTTPS。两者当前只收有界定长响应。
+DNS、公共信任根和 WebKit NetworkProcess 继续走 M3 验收。
 网络后端由锁定版本的实际接口、成熟组件和维护成本裁决，不以解析器替代网络服务。
 
 ### 安全与 M5 验收

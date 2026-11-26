@@ -1,4 +1,4 @@
-# ClarkE local HTML/CSS and controlled HTTP prototype
+# ClarkE local HTML/CSS and controlled web prototype
 
 2026-10-29. Application policy, not a new kernel ABI. The implementation uses the
 existing Qt 6.8.3 Widgets/QPA and `libXosAurora.a`, one fullscreen native window,
@@ -66,18 +66,25 @@ Latin/accented Latin/Greek glyphs do not establish CJK/full Unicode/IME coverage
 ## Network and future engine boundary
 
 2026-11-25 implementation update: local mode remains the default. Explicit
-`--network-service-pid <pid>` enables the native N3 HTTP provider, using the
+`--network-service-pid <pid>` enables the native web provider, using the
 authenticated [N2 service](net_service_v2.md). Obtain the PID from the trusted
 supervisor's `net-start 41` output; the client verifies both IPC peers. The
 browser receives bytes through the service and obtains no NIC/device rights.
 The Qt target build and controlled HTTP subset have been qualified in QEMU.
 
 Numeric IPv4 HTTP is supported within the service allowlist (currently 10.0.2.2).
-The provider accepts fully framed 2xx responses. DNS, HTTPS/TLS, JavaScript,
-chunked/compressed bodies and redirects remain outside this browser profile.
+An explicit glibc developer build can additionally load HTTPS at one configured
+DNS origin. The build binds that origin to one IPv4 destination and DER trust
+anchor. Mbed TLS validates the certificate chain and URL hostname before any
+HTTP bytes are sent. A complete response also requires TLS close notification.
+The shared parser accepts fully framed 2xx responses. DNS resolution, public
+trust roots, JavaScript, chunked or compressed bodies and redirects remain
+outside this profile.
+
 Remote CSS/BMP resources, including their callback base, must share the document
-host/port; remote resources cannot read local files. Local documents retain local
-resources. Explicit navigation, Home, history and bookmarks can switch modes.
+scheme, host and port. Remote resources cannot read local files. Local documents
+retain local resources. Explicit navigation, Home, history and bookmarks can
+switch modes.
 
 Each navigation shares a three-second absolute monotonic deadline starting at
 its first network request, at most 17 requests, and a 2 MiB response-read budget.
@@ -140,6 +147,35 @@ interactive, failure rollback, lifecycle and no-display suites.
 Remote history/tab/reload, in-process budget resets, forced network service
 death and GUI responsiveness during I/O still require separate qualification.
 See the [implementation and qualification log](../work_log/70ac29fe_browser_native_http_provider.md).
+
+## Controlled HTTPS guest build
+
+Generate the disposable certificates with `tests/native_tls_guest.py prepare`
+and convert their root certificate to DER. Add these options to the existing
+explicit glibc candidate build command. Use an available host loopback port.
+
+```sh
+openssl x509 -in "$certificates/root.pem" -outform DER -out "$root_der"
+python3 src/ports/aurora_browser/glibc/build.py --sdk-build "$sdk_build" --sdk-profile "$sdk_profile" \
+  --qt-build "$qt_build" --qt-prefix "$qt_prefix" --qt-source "$qt_source" --host-qt "$host_qt" \
+  --tls-origin https://tls.xos.test:28473 --tls-address 10.0.2.2 \
+  --tls-archive "$mbedtls_archive" --tls-root-der "$root_der" --output build/clarke_https
+```
+
+Package the resulting ELF through `scripts/package_desktop_products.py` using
+the same SDK and profile. The XPK retains the controlled trust metadata in its
+receipt and includes the locked Mbed TLS, TF-PSA-Crypto and framework notices.
+
+```sh
+python3 tests/clarke_https_guest.py --system "$system" --system-source "$system_source" \
+  --payload "$browser" --package "$package" --profile "$sdk_profile" \
+  --certificates "$certificates" --output build/clarke_https_guest
+```
+
+The guest test loads an authenticated page, same-origin CSS and a BMP from the
+installed browser. It observes rendered pixels, the verified TLS status,
+rejection of a plaintext stylesheet and an untrusted certificate, bilateral
+TLS close and process resource recovery.
 
 Historical local-provider evidence, measured scope and failed iterations are in
 [0083](../work_log/0083_aurora_browser_offline.md).

@@ -1,0 +1,176 @@
+{
+  "status": "passed_subset",
+  "system_build_id": "548bdc791b5af8c3",
+  "system_manifest_sha256": "92983c50ec27783fdb0bf049d061a18fecf0fc52163b2ef4b3edb743988a9c16",
+  "source_sha256": "548bdc791b5af8c327befd38e79708a3ebd166b238e1dff8b1457bdd493720d2",
+  "image_sha256": "44a7a266707b2e6a7822be85ce844dd7560e430f4e088e32c2ff2b1ededc54b8",
+  "profile_sha256": "5dde8b7cd0a2e5fe9d0db892b81f88eeed36e2f72ba89826209acb013362b10a",
+  "runner_sha256": "4a360561c29e5ebe2f4e4ffa4301366d1d42e1da1fa8b06efe7a0c474156dda0",
+  "package_id": "xos.qt-quick-example",
+  "executable": "/usr/bin/qt-quick-example.elf",
+  "cases": {
+    "installed": {
+      "package_sha256": "d7c2331fc0c70011ff7dd325452e4ad9c5ae46846b0d16cbf9ddde9352539967",
+      "revision": 0,
+      "installed_files": 71,
+      "installed_elf_sha256": "fefc635595e90312742ea0d3808d3d87454de66391e8edc48b986fc12f5de50a",
+      "build_receipt_sha256": "3f1644ab1d1a7fd39631fa7aca747e017a840d46357992fb4dd12e45dfd470f8",
+      "work_disk_before_boot_sha256": "6f4ad8f773e7d6e625a973cb2aae2989b1d6ce959e1673fff4eeeabaa25d913c",
+      "qemu_version": "QEMU emulator version 11.1.2",
+      "baseline": [
+        129696,
+        3,
+        1
+      ],
+      "with_graphics": [
+        121620,
+        5,
+        3
+      ],
+      "scanout": {
+        "mode": [
+          800,
+          600
+        ],
+        "text_ink_pixels": 475,
+        "sha256": "ba0c16e426bb616c66cbd5985ac0d694eb07f9e4152195c066542968a4232aa1",
+        "partial_captures": 0
+      },
+      "exit_code": 0,
+      "after_payload": [
+        121620,
+        5,
+        3
+      ],
+      "after_services": [
+        129696,
+        3,
+        1
+      ],
+      "serial_sha256": "8f8c584d98a93a5eca63945f22e2a097364d4ce7cd9e357d64b86921b1b5a4ba"
+    },
+    "replaced": {
+      "package_sha256": "922336da0865562ef76a77c098d4c769a35e5098b91664711d461b451e2d77ee",
+      "revision": 1,
+      "installed_files": 71,
+      "installed_elf_sha256": "bedd360902b203a3f2b33344f79303534689167e965e1300813dcef76b89255e",
+      "build_receipt_sha256": "8f781b878a603a70084f9a33012ceb40197ae0901cddc7c2bb3b4f101de1a1fd",
+      "work_disk_before_boot_sha256": "f2545035f5c1cb818d815c380e145676726f459567640341d0848e4e8b2f515e",
+      "qemu_version": "QEMU emulator version 11.1.2",
+      "baseline": [
+        129696,
+        3,
+        1
+      ],
+      "with_graphics": [
+        121620,
+        5,
+        3
+      ],
+      "scanout": {
+        "mode": [
+          800,
+          600
+        ],
+        "text_ink_pixels": 475,
+        "sha256": "ba0c16e426bb616c66cbd5985ac0d694eb07f9e4152195c066542968a4232aa1",
+        "partial_captures": 0
+      },
+      "exit_code": 0,
+      "after_payload": [
+        121620,
+        5,
+        3
+      ],
+      "after_services": [
+        129696,
+        3,
+        1
+      ],
+      "serial_sha256": "d01c99e601795ebe1a33eb0b35ef8d4e019d9f8fc8c3695d8261339c89710493"
+    },
+    "rolled_back": {
+      "package_sha256": "d7c2331fc0c70011ff7dd325452e4ad9c5ae46846b0d16cbf9ddde9352539967",
+      "revision": 0,
+      "installed_files": 71,
+      "installed_elf_sha256": "fefc635595e90312742ea0d3808d3d87454de66391e8edc48b986fc12f5de50a",
+      "build_receipt_sha256": "3f1644ab1d1a7fd39631fa7aca747e017a840d46357992fb4dd12e45dfd470f8",
+      "user_note_sha256": "719258f2d73380c2e34f14deb08f85f60fbb57360c6c14af5f2dbebc0ba6d4cf",
+      "work_disk_before_boot_sha256": "6173cf106fc4e3f5b21675fb9665841bd173b18a7181e1b4728c3692fb1e9796",
+      "qemu_version": "QEMU emulator version 11.1.2",
+      "baseline": [
+        129696,
+        3,
+        1
+      ],
+      "with_graphics": [
+        121620,
+        5,
+        3
+      ],
+      "scanout": {
+        "mode": [
+          800,
+          600
+        ],
+        "text_ink_pixels": 475,
+        "sha256": "ba0c16e426bb616c66cbd5985ac0d694eb07f9e4152195c066542968a4232aa1",
+        "partial_captures": 0
+      },
+      "exit_code": 0,
+      "after_payload": [
+        121620,
+        5,
+        3
+      ],
+      "after_services": [
+        129696,
+        3,
+        1
+      ],
+      "serial_sha256": "987dcd6df1fb253eed622912a2bcaa4a9a0bb547b1efea2960345c62da108d35"
+    }
+  },
+  "transactions": {
+    "install": {
+      "status": "exported_candidate",
+      "operation": "install",
+      "id": "xos.qt-quick-example",
+      "source_sha256": "4dab6c86e68e7f5ef0e060c7d7bd6004278d1c34af957f5e4faac401538d1912",
+      "output_sha256": "6f4ad8f773e7d6e625a973cb2aae2989b1d6ce959e1673fff4eeeabaa25d913c",
+      "verified_files": 71,
+      "mutations": 112,
+      "backend_sha256": "21d8ce2f8397e4f34adc80a56c6e4873517441a10ec81ef5c49d1ea59d12f4b5"
+    },
+    "replace": {
+      "status": "exported_candidate",
+      "operation": "upgrade",
+      "id": "xos.qt-quick-example",
+      "source_sha256": "f47170f5c5b97fc64d70a2ff183ad9a2e95826b455ab3c2301888ba91151f0df",
+      "output_sha256": "f2545035f5c1cb818d815c380e145676726f459567640341d0848e4e8b2f515e",
+      "verified_files": 71,
+      "mutations": 146,
+      "backend_sha256": "21d8ce2f8397e4f34adc80a56c6e4873517441a10ec81ef5c49d1ea59d12f4b5"
+    },
+    "remove_replacement": {
+      "status": "exported_candidate",
+      "operation": "remove",
+      "id": "xos.qt-quick-example",
+      "source_sha256": "9a796058522fb9560e87936a8af7831e3e516a29c2cdc8edb209c7bdff8ed8ca",
+      "output_sha256": "502cf6263729df6c4426d9ef41c117aa4410392f09e4dac90ef5afd734a11393",
+      "verified_files": 0,
+      "mutations": 111,
+      "backend_sha256": "21d8ce2f8397e4f34adc80a56c6e4873517441a10ec81ef5c49d1ea59d12f4b5"
+    },
+    "reinstall_reference": {
+      "status": "exported_candidate",
+      "operation": "install",
+      "id": "xos.qt-quick-example",
+      "source_sha256": "502cf6263729df6c4426d9ef41c117aa4410392f09e4dac90ef5afd734a11393",
+      "output_sha256": "6173cf106fc4e3f5b21675fb9665841bd173b18a7181e1b4728c3692fb1e9796",
+      "verified_files": 71,
+      "mutations": 111,
+      "backend_sha256": "21d8ce2f8397e4f34adc80a56c6e4873517441a10ec81ef5c49d1ea59d12f4b5"
+    }
+  }
+}

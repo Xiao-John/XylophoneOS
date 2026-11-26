@@ -1,0 +1,65 @@
+{
+  "standalone": {
+    "main": "32041a89297a71d029c7561008d0a0079e36f497",
+    "source_commit": "4d6f124fe01d75a1e33bc46d45aa11de37e790f6",
+    "source_git_tree": "ef054cd4cd2a94beb29da34e0e899b9f211ddd2b"
+  },
+  "combined": {
+    "main": "1adaa90856bdd4ccb67ed0b18e518fcc4225509b",
+    "source_commit": "a7c39b867b6068b492e14f4126436727b1820815",
+    "source_git_tree": "5faf3d446b4751109aa4e3a294bbde8c5c02d33c"
+  },
+  "packer_sha256": "7e33cc6a4c8134ea2129d0b814b1286c0d28f3ee56921b039f07855c4c348942",
+  "profile_id": "xos-x86_64-glibc-thread-locks-cxx-v1",
+  "profile_sha256": "5dde8b7cd0a2e5fe9d0db892b81f88eeed36e2f72ba89826209acb013362b10a",
+  "sdk_manifest_sha256": "7eee04884a96ced6de12d20794af6809f544e3f15bc4e409b4197e58b1583d7a",
+  "lwip_archive_sha256": "83729c274c499d3348e9fbbe043a3113f3fa8953e7efddc7c21c7fcbb1f2b7b1",
+  "linux_repack": "arm64 Python 3.14.10 without network",
+  "packages": {
+    "reference": {
+      "xpk_sha256": "d7c2331fc0c70011ff7dd325452e4ad9c5ae46846b0d16cbf9ddde9352539967",
+      "archive_size": 38809600,
+      "revision": 0,
+      "payload_files": 71,
+      "notice_files": 69,
+      "relink_receipt_sha256": "f65b32fa0947c3e9b1a2c1a505a4454894fc8bab7b8869615ae3eb348ae6769a",
+      "relink": {
+        "status": "static_quick_application_linked",
+        "elf": "quick_app.elf",
+        "elf_sha256": "fefc635595e90312742ea0d3808d3d87454de66391e8edc48b986fc12f5de50a",
+        "kit_manifest_sha256": "c3b9f48353ab96cff9dd405a694f1064b4442ceb54f9bb5781ac5de6498053d2",
+        "materials_manifest_sha256": "bccec63133b64dad2f81841b6a5126fd76c04cecdc6df8f5cc6e7869e707200c",
+        "matches_reference": true,
+        "replacement_archives": {}
+      },
+      "matches_linux_repack": true
+    },
+    "replacement": {
+      "xpk_sha256": "922336da0865562ef76a77c098d4c769a35e5098b91664711d461b451e2d77ee",
+      "archive_size": 38993920,
+      "revision": 1,
+      "payload_files": 71,
+      "notice_files": 69,
+      "relink_receipt_sha256": "c342a06f423fb4190e7657ffc923cf898083b6a7a69e68f6edafc896c7d7c6ac",
+      "relink": {
+        "status": "static_quick_application_linked",
+        "elf": "quick_app.elf",
+        "elf_sha256": "bedd360902b203a3f2b33344f79303534689167e965e1300813dcef76b89255e",
+        "kit_manifest_sha256": "c3b9f48353ab96cff9dd405a694f1064b4442ceb54f9bb5781ac5de6498053d2",
+        "materials_manifest_sha256": "bccec63133b64dad2f81841b6a5126fd76c04cecdc6df8f5cc6e7869e707200c",
+        "matches_reference": false,
+        "replacement_archives": {
+          "link/kit/target/lib/libQt6Qml.a": "32026716873cca21dab6732a54daf4356ace342de3ee2b167259b23dd4901124",
+          "link/kit/target/lib/libQt6Quick.a": "21f5297822b66b1d3e21e64cf2eee4c28ea1ab39f4b54e42adf7adf7622480d5"
+        }
+      },
+      "matches_linux_repack": true
+    }
+  },
+  "rejections_before_install": [
+    "wrong_material_digest",
+    "wrong_kit_in_relink_receipt",
+    "wrong_elf_digest",
+    "different_runtime_profile"
+  ]
+}

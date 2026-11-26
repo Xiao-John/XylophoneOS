@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "image_sha256": "02baddf9cf65b72fc0b7f86d76ded9fdc4a705bd34044c9b1eff0aa9f363fa37",
+  "jsc_sha256": "21c15eb5b1cf67abee9696b62f9ec44aa1b0f03f970fa0028662d89056cd6779",
+  "script_sha256": "5611b2a1a37236a6b867d993d709582c4633ad5ba44565887c189801c927dc3a",
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "wait_status": [
+    [
+      "exited",
+      0
+    ]
+  ],
+  "resources_after": [
+    129696,
+    3,
+    1
+  ],
+  "script_output": "CLARKE_JSC_LLINT_PASS 6,15,36"
+}

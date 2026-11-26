@@ -14,7 +14,6 @@ import sys
 from toolchain import LOCK, TARGET, COMMON_FLAGS, X86_FLAGS, audit, tool, output
 from user_build import build_users
 from lwip_service_build import configuration as network_configuration, load_static_profile
-from pumpkin_generation_provider import deployment_realm
 
 ROOT = Path(__file__).resolve().parents[1]
 BUILD = ROOT / "build"
@@ -111,6 +110,8 @@ def main():
     if args.pumpkin_deployment_realm is not None:
         if not args.pumpkin_user_login:
             parser.error("a Pumpkin deployment realm requires the private operator login profile")
+        from pumpkin_generation_provider import deployment_realm
+
         try:
             deployment = {"pumpkin_deployment_realm": deployment_realm(args.pumpkin_deployment_realm).hex()}
         except ValueError as error:

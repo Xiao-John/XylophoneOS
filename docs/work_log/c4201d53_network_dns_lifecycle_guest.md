@@ -37,6 +37,15 @@ N2 25+2 项宿主 ASan/UBSan 控制复验通过。宿主 D1 使用旧 DNS 选项
 [普通 N2 回执](../reports/n4_dns_lifecycle_20261126/n2_guest.json) ·
 [宿主回执摘要](../reports/n4_dns_lifecycle_20261126/host_checks.json)
 
+## 主线组合复验
+
+合并 `03c75d8a` 后，`b84146b1` 统一两种构建配置的参数传递。私有 DNS 镜像
+`ddd5b9c33514ca2f` 在 QEMU 11.1.2 再次通过同名订阅、过期刷新和回收，
+暖机前后的设备页与 DNS 资源计数分别记录。普通镜像 `6895a7b162ab789c`
+通过全部 13 项 N2 客体检查与 12 轮撤销。两种镜像分别构建并绑定各自的 SDK。
+公开 N2 回执省略宿主命令行，清单保留原回执摘要。
+[主线组合回执](../reports/n4_dns_mainline_20261126/manifest.json)
+
 明确保留直接 A 的单 resolver 诊断范围。生产 DNS/DHCP 关闭。下一组在原有 net2
 认证会话上接入经登记的 ticket/config epoch 和准确的 NODATA、NXDOMAIN、REFUSED
 等错误，验证跨应用、停止与期限。DHCP 继续按独立租约门推进。

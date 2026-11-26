@@ -18,6 +18,8 @@ struct url {
 };
 struct response {
     unsigned status = 0;
+    // Wire header fields after the status line, excluding the final blank line.
+    size_t headers_offset = 0, headers_length = 0;
     size_t body_offset = 0, body_length = 0;
     // A bounded Location copy; relative references are resolved separately.
     char location[max_url + 1]{};

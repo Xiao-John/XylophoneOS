@@ -62,3 +62,16 @@ files/FatFs 复验通过。ISO 为
 `dcc81ddbc5c41d8d9c0712a67a84f90b18e039267c144c9b273e9558ba99aa40`，
 glibc SDK manifest 为 `08f666ae4cc0f31d4fe417dcccc4283476120fed700002ffa133819877fb2fce`，
 保留原文件的客体回执为 `f469eb34ffa6cc008fa31d1a21c1458daf6f96a88b1c7071005e45f559a0ae05`。
+
+复核上游 `evalcommand` 后，将类别预检直接放在原有重定向点。允许的内建命令
+仍在命令前置赋值之前展开 here-document。双入口脚本核对正文读到外部变量值，
+临时赋值在内建命令结束后还原；同时重跑拒绝外部命令及其原文件字节检查。
+从 `7f0bf0a6f5c31a46bc5a8a70e0b774fb08b8c0d9` 重建，两种入口合计 26 项通过，
+files 宿主与真实 FatFs 检查通过。
+
+| 工件 | SHA-256 |
+| --- | --- |
+| 系统 `ec8b136ece22fa2e` 清单 | `dbef45fbb4ef3a4179086e5f78246b74afa53a8de5c5cd96842b74021d6be27c` |
+| 系统 ISO | `1a275e8217db085167f5a7b5cf61b51855fad807a19b88c88b58515a9b6abbf9` |
+| glibc C SDK 清单 | `c11710d5c435acf7842c1619ac136aae2642d14083800f53478bc2902c503a3f` |
+| QEMU 回执 | `680c32a19a98e250c9a3c2ebd8aabd5dbb7743ed01cb3d6c815a3e9c6f7551ff` |

@@ -59,35 +59,19 @@
 +	}
 --- a/src/eval.c
 +++ b/src/eval.c
-@@ -849 +849,7 @@
+@@ -849 +849,11 @@
 -	status = redirectsafe(cmd->ncmd.redirect, REDIR_PUSH|REDIR_SAVEFD2);
 +#ifdef XOS_DASH_GLIBC_PREVIEW
-+	int defer_here = xos_has_heredoc(cmd->ncmd.redirect);
-+	status = defer_here ? 0 :
-+	    redirectsafe(cmd->ncmd.redirect, REDIR_PUSH|REDIR_SAVEFD2);
-+#else
-+	status = redirectsafe(cmd->ncmd.redirect, REDIR_PUSH|REDIR_SAVEFD2);
-+#endif
-@@ -899,3 +905,16 @@
--	jp = NULL;
--
--	/* Execute the command. */
-+#ifdef XOS_DASH_GLIBC_PREVIEW
-+	if (defer_here) {
-+		if (cmdentry.cmdtype != CMDBUILTIN || execcmd || argc == 0) {
-+			sh_warnx("here-document requires a parent builtin in the glibc dash preview");
-+			execcmd = 0;
-+			status = 2;
-+			goto bail;
-+		}
-+		status = redirectsafe(cmd->ncmd.redirect, REDIR_PUSH|REDIR_SAVEFD2);
-+		if (unlikely(status))
-+			goto bail;
++	/* Reject unsupported commands before opening any redirection. */
++	if (xos_has_heredoc(cmd->ncmd.redirect) &&
++	    (argc == 0 || cmdentry.cmdtype != CMDBUILTIN || execcmd)) {
++		sh_warnx("here-document requires a parent builtin in the glibc dash preview");
++		execcmd = 0;
++		status = 2;
++		goto bail;
 +	}
 +#endif
-+	jp = NULL;
-+
-+	/* Execute the command. */
++	status = redirectsafe(cmd->ncmd.redirect, REDIR_PUSH|REDIR_SAVEFD2);
 --- a/src/redir.c
 +++ b/src/redir.c
 @@ -356,37 +356,14 @@

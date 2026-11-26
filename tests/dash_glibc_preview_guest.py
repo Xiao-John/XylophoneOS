@@ -46,6 +46,11 @@ IFS= read -r expanded <<UNQUOTED || exit 67
 expanded:$word:$((7+5))
 UNQUOTED
 test "$expanded" = 'expanded:expanded:12' || exit 68
+word=outer
+word=inner IFS= read -r prefixed <<ASSIGNMENT || exit 72
+$word
+ASSIGNMENT
+test "$prefixed:$word" = 'outer:outer' || exit 73
 printf 'DASH_GLIBC_HERE_PASS <%s> <%s>\n' "$literal" "$expanded"
 '''
 HEREDOC_FAILURE = r'''i=0

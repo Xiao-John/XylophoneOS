@@ -2,6 +2,10 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include "xos_file_result.h"
+
+/* The internal stat header declares __fstatat but only hides __fstatat64. */
+libc_hidden_proto (__fstatat)
+
 int __fstatat (int fd, const char *path, struct stat *output, int flags)
 {
   if (path == 0) return (int) xos_file_result (-EFAULT);

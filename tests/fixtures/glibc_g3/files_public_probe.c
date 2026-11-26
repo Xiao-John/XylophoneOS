@@ -136,6 +136,13 @@ int main (int argc, char **argv)
   struct stat information;
   CHECK (fstat (copy, &information) == 0 && information.st_size == 6
          && S_ISREG (information.st_mode) && information.st_ino != 0);
+  struct stat via_at;
+  CHECK (fstatat (AT_FDCWD, path, &via_at, AT_SYMLINK_NOFOLLOW) == 0
+         && via_at.st_ino == information.st_ino && via_at.st_size == information.st_size);
+  CHECK (fstatat (copy, "", &via_at, AT_EMPTY_PATH) == 0
+         && via_at.st_ino == information.st_ino && via_at.st_size == information.st_size);
+  errno = 0;
+  CHECK (fstatat (copy, "relative", &via_at, 0) == -1 && errno == ENOTSUP);
   CHECK (fsync (copy) == 0 && close (copy) == 0);
   FILE *stream = fopen (path, "w+");
   CHECK (stream != 0);

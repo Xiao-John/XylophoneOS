@@ -7,10 +7,12 @@
 #include <wctype.h>
 #include <stdint.h>
 
+#ifndef __GLIBC__
 struct xos_tty_marker { uint64_t magic; uint32_t version, size; };
 __attribute__((section(".xos.tty"), used)) static const struct xos_tty_marker marker = {
     0x31595454534f5858ULL, 1, sizeof(struct xos_tty_marker)
 };
+#endif
 
 /* This consumer must run on the target before its result is evidence. */
 int main(void) {

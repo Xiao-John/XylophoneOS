@@ -39,11 +39,11 @@ def main():
     args = parser.parse_args()
     source_archive, probe = args.archive.resolve(strict=True), args.probe.resolve(strict=True)
     lock = json.loads(LOCK.read_text())
-    if sha(source_archive.read_bytes()) != lock['archive_sha256']:
+    if sha(source_archive.read_bytes()) != lock['sha256']:
         raise SystemExit('source archive hash mismatch')
     report = json.loads((probe / 'report.json').read_text())
     library = probe / 'build/lib/libncursesw.a'
-    if sha(library.read_bytes()) != report['archive_sha256'] or report['source_sha256'] != lock['archive_sha256']:
+    if sha(library.read_bytes()) != report['archive_sha256'] or report['source_sha256'] != lock['sha256']:
         raise SystemExit('archive or source differs from ncurses probe receipt')
     names = subprocess.check_output(['x86_64-elf-ar', 't', str(library)], text=True).splitlines()
     if len(names) != len(set(names)) or len(names) != report['archive_member_count']:
@@ -86,7 +86,7 @@ def main():
                     raise SystemExit('unrecognized generated source: ' + str(source))
                 row.update(kind='generated_source', inputs=[upstream(p) for p in GENERATORS[stem]])
             rows.append(row)
-    result = {'status': 'provenance_screened_not_legal_review', 'source_archive_sha256': lock['archive_sha256'],
+    result = {'status': 'provenance_screened_not_legal_review', 'source_archive_sha256': lock['sha256'],
               'target_archive_sha256': report['archive_sha256'], 'compile_log_sha256': sha((probe / 'make.log').read_bytes()),
               'member_count': len(rows), 'members': rows,
               'limitations': ['generated dependency list is non-transitive', 'headers and terminfo data are not fully reviewed',
